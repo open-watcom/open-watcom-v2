@@ -77,7 +77,7 @@ void    GEndSubScr( itnode *arr ) {
     } else {
         EmitOp( FC_SUBSCRIPT );
         OutPtr( arr->sym_ptr );
-        dims = _DimCount( arr->sym_ptr->ns.si.va.dim_ext->dim_flags );
+        dims = _DimCount( arr->sym_ptr->ns.si.va.u.dim_ext->dim_flags );
     }
     arg = arr->list;
     while( dims != 0 ) {
@@ -87,7 +87,7 @@ void    GEndSubScr( itnode *arr ) {
     }
     if( ( arr->opn.us & USOPN_FLD ) == 0 ) {
         if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
-            if( arr->sym_ptr->ns.typ == FT_CHAR ) {
+            if( arr->sym_ptr->ns.u1.s.typ == FT_CHAR ) {
                 OutPtr( GTempString( 0 ) );
             }
         }

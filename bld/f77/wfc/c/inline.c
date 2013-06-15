@@ -446,9 +446,9 @@ call_handle     InitInlineCall( int rtn_id ) {
         strcpy( SymBuff, in_entry->name );
         sym = STAdd( SymBuff, name_len );
         sym->ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION;
-        sym->ns.typ = FT_INTEGER_TARG;
-        sym->ns.xt.size = TypeSize( sym->ns.typ );
-        sym->ns.address = NULL;
+        sym->ns.u1.s.typ = FT_INTEGER_TARG;
+        sym->ns.xt.size = TypeSize( sym->ns.u1.s.typ );
+        sym->ns.u3.address = NULL;
         in_entry->sym_ptr = sym;
         in_entry->aux = AuxLookupName( in_entry->name, name_len );
     }
@@ -475,8 +475,8 @@ void    FreeInlinePragmas( void ) {
         sym = InlineTab[ index ].sym_ptr;
         if( sym != NULL ) {
             if( ( CGFlags & CG_FATAL ) == 0 ) {
-                if( sym->ns.address != NULL ) {
-                    BEFreeBack( sym->ns.address );
+                if( sym->ns.u3.address != NULL ) {
+                    BEFreeBack( sym->ns.u3.address );
                 }
             }
             STFree( sym );

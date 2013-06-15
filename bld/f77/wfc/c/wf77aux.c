@@ -457,9 +457,9 @@ void    SubAuxFini( void ) {
         next = ArrayInfo->link;
         arr = SymFind( ArrayInfo->arr, strlen( ArrayInfo->arr ) );
         if( ( arr != NULL ) && ( arr->ns.flags & SY_SUBSCRIPTED ) &&
-            ( arr->ns.typ != FT_CHAR ) &&
+            ( arr->ns.u1.s.typ != FT_CHAR ) &&
             ( ( arr->ns.flags & SY_SUB_PARM ) || _Allocatable( arr ) ) ) {
-            arr->ns.si.va.dim_ext->dim_flags |= DIM_EXTENDED;
+            arr->ns.si.va.u.dim_ext->dim_flags |= DIM_EXTENDED;
         }
         FMemFree( ArrayInfo );
         ArrayInfo = next;
@@ -477,15 +477,15 @@ static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
     arr_info    *new_arr;
 
     for( arr = &ArrayInfo; *arr != NULL; arr = &(*arr)->link ) {
-        if( strlen( &(*arr)->arr ) != arr_len )
+        if( strlen( (*arr)->arr ) != arr_len )
             continue;
-        if( memcmp( &(*arr)->arr, arr_name, arr_len ) == 0 ) {
+        if( memcmp( (*arr)->arr, arr_name, arr_len ) == 0 ) {
             return;
         }
     }
     new_arr = FMemAlloc( sizeof( arr_info ) + arr_len );
     new_arr->link = NULL;
-    memcpy( &new_arr->arr, arr_name, arr_len );
+    memcpy( new_arr->arr, arr_name, arr_len );
     new_arr->arr[arr_len] = NULLCHAR;
     *arr = new_arr;
 }
@@ -505,14 +505,14 @@ void    AddDependencyInfo( source_t *fi ) {
     p = _fullpath( buff, fi->name, MAX_FILE );
     if( p != NULL ) {
         for( dep = &DependencyInfo; *dep != NULL; dep = &(*dep)->link ) {
-            if( strcmp( &(*dep)->fn, p ) == 0 ) {
+            if( strcmp( (*dep)->fn, p ) == 0 ) {
                 return;
             }
         }
         if( fstat( ((a_file *)(fi->fileptr))->handle, &stat_info ) != -1 ) {
             new_dep = FMemAlloc( sizeof( dep_info ) + strlen( p ) );
             new_dep->link = NULL;
-            strcpy( &new_dep->fn, p );
+            strcpy( new_dep->fn, p );
             new_dep->time_stamp = stat_info.st_mtime;
             *dep = new_dep;
         }

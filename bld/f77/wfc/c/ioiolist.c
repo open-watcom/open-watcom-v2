@@ -197,7 +197,7 @@ void    ListItem( void ) {
             Error( SX_SURP_OPR );
         }
     } else if( RecArrName() ) {
-        CITNode->sym_ptr->ns.xflags |= SY_DEFINED;
+        CITNode->sym_ptr->ns.u1.s.xflags |= SY_DEFINED;
         ChkAssumed();
         if( CITNode->typ == FT_STRUCTURE ) {
             ChkStructIO( CITNode->sym_ptr->ns.xt.sym_record );
@@ -206,7 +206,7 @@ void    ListItem( void ) {
             GIOArray();
         }
     } else if( CITNode->typ == FT_STRUCTURE ) {
-        CITNode->sym_ptr->ns.xflags |= SY_DEFINED;
+        CITNode->sym_ptr->ns.u1.s.xflags |= SY_DEFINED;
         if( CITNode->opn.us & USOPN_FLD ) {
             sd = CITNode->value.st.field_id->fd.xt.sym_record;
         } else {

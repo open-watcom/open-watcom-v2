@@ -82,7 +82,7 @@ void    CpIntrinsic(void) {
                 } else if( flags & ERR_MASK ) {
                     IllName( sym_ptr );
                 } else if( ( flags & SY_TYPE ) &&
-                           ( sym_ptr->ns.typ != func_typ ) ) {
+                           ( sym_ptr->ns.u1.s.typ != func_typ ) ) {
                     NameTypeErr( TY_TYP_PREV_DEF, sym_ptr );
                 } else {
                     // we must OR the flags since SY_TYPE and/or SY_REFERENCED
@@ -90,7 +90,7 @@ void    CpIntrinsic(void) {
                     sym_ptr->ns.flags |= SY_USAGE | SY_SUBPROGRAM |
                                          SY_FUNCTION | SY_INTRINSIC;
                     func_typ = IFType( func );
-                    sym_ptr->ns.typ = func_typ;
+                    sym_ptr->ns.u1.s.typ = func_typ;
                     sym_ptr->ns.xt.size = TypeSize( func_typ );
                     sym_ptr->ns.si.fi.index = func;
                 }

@@ -796,7 +796,7 @@ void            CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ ) {
         // check for structure type before checking for array
         // Consider:    A(1).X = A(2).X
         //    where A is an array of structures containing complex field X
-        if( sym->ns.typ == FT_STRUCTURE ) {
+        if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
             dest = XPop();
             GetU16(); // ignore structure information
         } else if( flags & SY_SUBSCRIPTED ) {

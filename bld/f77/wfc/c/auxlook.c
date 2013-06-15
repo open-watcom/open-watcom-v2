@@ -117,12 +117,12 @@ aux_info    *AuxLookup( sym_id sym ) {
         } else if( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) {
             return( &ProgramInfo );
         } else {
-            info = AuxLookupName( sym->ns.name, sym->ns.name_len );
+            info = AuxLookupName( sym->ns.name, sym->ns.u2.name_len );
             if( info == NULL ) return( &FortranInfo );
             return( info );
         }
     } else {
-        info = AuxLookupName( sym->ns.name, sym->ns.name_len );
+        info = AuxLookupName( sym->ns.name, sym->ns.u2.name_len );
         if( info == NULL ) return( &FortranInfo );
         return( info );
     }

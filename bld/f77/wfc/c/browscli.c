@@ -83,31 +83,31 @@ static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size ) {
                 cur_sec->sec_type = FILE_SECTION;
                 SDSetAttr( REC_FIXED | SEEK );
                 temp = tmpnam( NULL );
-                cur_sec->filename = FMemAlloc( strlen( temp ) + 1 );
-                strcpy( cur_sec->filename, temp );
-                cur_sec->fp = SDOpen( temp, UPDATE_FILE );
-                chkIOErr( cur_sec->fp, SM_OPENING_FILE, temp );
+                cur_sec->u2.filename = FMemAlloc( strlen( temp ) + 1 );
+                strcpy( cur_sec->u2.filename, temp );
+                cur_sec->u1.fp = SDOpen( temp, UPDATE_FILE );
+                chkIOErr( cur_sec->u1.fp, SM_OPENING_FILE, temp );
         } else {
                 cur_sec->sec_type = initial_section_type;
-                cur_sec->size = MEM_INCREMENT;
-                cur_sec->data = FMemAlloc( MEM_INCREMENT );
+                cur_sec->u1.size = MEM_INCREMENT;
+                cur_sec->u2.data = FMemAlloc( MEM_INCREMENT );
         }
     }
 
     switch( cur_sec->sec_type ) {
     case( MEM_SECTION ):
-        if ( cur_sec->size <= ( cur_sec->cur_offset + size ) ) {
-            temp = FMemAlloc( cur_sec->size + MEM_INCREMENT );
-            memcpy( temp, cur_sec->data, cur_sec->size );
-            FMemFree( cur_sec->data );
-            cur_sec->data = temp;
-            cur_sec->size += MEM_INCREMENT;
+        if ( cur_sec->u1.size <= ( cur_sec->cur_offset + size ) ) {
+            temp = FMemAlloc( cur_sec->u1.size + MEM_INCREMENT );
+            memcpy( temp, cur_sec->u2.data, cur_sec->u1.size );
+            FMemFree( cur_sec->u2.data );
+            cur_sec->u2.data = temp;
+            cur_sec->u1.size += MEM_INCREMENT;
         }
-        memcpy( ( cur_sec->data + cur_sec->cur_offset ), block, size );
+        memcpy( ( cur_sec->u2.data + cur_sec->cur_offset ), block, size );
         break;
     case( FILE_SECTION ):
-        SDWrite( cur_sec->fp, (byte *)block, size );
-        chkIOErr( cur_sec->fp, SM_IO_WRITE_ERR, "temporary file" );
+        SDWrite( cur_sec->u1.fp, (byte *)block, size );
+        chkIOErr( cur_sec->u1.fp, SM_IO_WRITE_ERR, "temporary file" );
         break;
     default:
         Error( CP_FATAL_ERROR, "Internal browse generator error" );
@@ -205,18 +205,18 @@ static void CLISeek( dw_sectnum sect, long offs, uint type ) {
             CLIZeroWrite( sect, temp );
         }
     } else if ( cur_sec->sec_type == FILE_SECTION ) {
-        if ( !( cur_sec->fp ) ) {
+        if ( !( cur_sec->u1.fp ) ) {
             CLIZeroWrite( sect, offs );
         } else {
             if ( cur_sec->max_offset < new_off ) {
-                SDSeek( cur_sec->fp, cur_sec->max_offset, 1 );
-                chkIOErr( cur_sec->fp, SM_IO_READ_ERR, "temporary file" );
+                SDSeek( cur_sec->u1.fp, cur_sec->max_offset, 1 );
+                chkIOErr( cur_sec->u1.fp, SM_IO_READ_ERR, "temporary file" );
                 cur_sec->cur_offset = cur_sec->max_offset;
                 temp = new_off - cur_sec->max_offset;
                 CLIZeroWrite( sect, temp );
             } else {
-                SDSeek( cur_sec->fp, new_off, 1 );
-                chkIOErr( cur_sec->fp, SM_IO_READ_ERR, "temporary file" );
+                SDSeek( cur_sec->u1.fp, new_off, 1 );
+                chkIOErr( cur_sec->u1.fp, SM_IO_READ_ERR, "temporary file" );
             }
         }
     } else {
@@ -291,11 +291,11 @@ int CLIRead( char *buf, int size, int sec ) {
 
     size = min(size, Sections[sec].max_offset - Sections[sec].cur_offset);
     if ( !size ) return( 0 );
-    if ( ( Sections[sec].sec_type == FILE_SECTION ) && Sections[sec].fp ) {
-        SDRead( Sections[sec].fp, buf, size );
-        chkIOErr( Sections[sec].fp, SM_IO_READ_ERR, "temporary file" );
-    } else if (( Sections[sec].sec_type==MEM_SECTION) && Sections[sec].data) {
-        memcpy( buf, Sections[sec].data + Sections[sec].cur_offset, size );
+    if ( ( Sections[sec].sec_type == FILE_SECTION ) && Sections[sec].u1.fp ) {
+        SDRead( Sections[sec].u1.fp, buf, size );
+        chkIOErr( Sections[sec].u1.fp, SM_IO_READ_ERR, "temporary file" );
+    } else if (( Sections[sec].sec_type==MEM_SECTION) && Sections[sec].u2.data) {
+        memcpy( buf, Sections[sec].u2.data + Sections[sec].cur_offset, size );
     } else {
         size = 0;
     }
@@ -337,14 +337,14 @@ void CLIClear( void ) {
     int         x = 0;
 
     for( x = 0; x < DW_DEBUG_MAX; x++ ) {
-        if ( ( Sections[x].sec_type == FILE_SECTION ) && Sections[x].fp ) {
-            SDClose( Sections[x].fp );
-            if ( Sections[x].filename ) {
-                SDScratch( Sections[x].filename );
-                FMemFree( Sections[x].filename );
+        if ( ( Sections[x].sec_type == FILE_SECTION ) && Sections[x].u1.fp ) {
+            SDClose( Sections[x].u1.fp );
+            if ( Sections[x].u2.filename ) {
+                SDScratch( Sections[x].u2.filename );
+                FMemFree( Sections[x].u2.filename );
             }
-        } else if ((Sections[x].sec_type == MEM_SECTION) && Sections[x].data){
-            FMemFree( Sections[x].data );
+        } else if ((Sections[x].sec_type == MEM_SECTION) && Sections[x].u2.data){
+            FMemFree( Sections[x].u2.data );
         }
         memset( &(Sections[x] ), 0, sizeof( section_data ) );
     }

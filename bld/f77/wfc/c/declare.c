@@ -126,7 +126,7 @@ sym_id  VarDecl( TYPE typ ) {
                         AdvanceITPtr();
                         return( sym );
                     } else if( flags & SY_INTRINSIC ) {
-                        if( sym->ns.typ != typ ) {
+                        if( sym->ns.u1.s.typ != typ ) {
                             NameTypeErr( TY_TYP_PREV_DEF, sym );
                             AdvanceITPtr();
                             return( sym );
@@ -143,7 +143,7 @@ sym_id  VarDecl( TYPE typ ) {
                 }
             }
             sym->ns.flags = flags | SY_TYPE;
-            sym->ns.typ = typ;
+            sym->ns.u1.s.typ = typ;
             sym->ns.xt.size = TypeSize( typ );
         }
     }
@@ -275,7 +275,7 @@ static  void    TypeDecl( TYPE typ ) {
                         NameErr( CV_CHARSTAR_ILLEGAL, sym );
                     }
                 } else {
-                    sym->ns.typ = MapTypes( typ, size );
+                    sym->ns.u1.s.typ = MapTypes( typ, size );
                     sym->ns.xt.size = size;
                     if( RecDiv() || RecCat() ) {
                         StmtExtension( DA_IN_TYPE_STMT );
@@ -429,7 +429,7 @@ void    ArrayDecl( sym_id sym ) {
                 return;
             }
         }
-        sym->ns.si.va.dim_ext = &dim_list;
+        sym->ns.si.va.u.dim_ext = &dim_list;
         if( ( ProgSw & PS_IN_SUBPROGRAM ) &&
             !( ProgSw & PS_BLOCK_DATA ) && !allocatable ) {
             dim_list.l.init_label = GBegSList();
@@ -578,7 +578,7 @@ void    ArrayDecl( sym_id sym ) {
         } else if( allocatable ) {
             Extension( VA_ALLOCATABLE_STORAGE, sym->ns.name );
             dim_list.dim_flags |= DIM_ALLOCATABLE;
-            sym->ns.xflags |= SY_ALLOCATABLE;
+            sym->ns.u1.s.xflags |= SY_ALLOCATABLE;
         } else {
             dim_list.num_elts = num_elts;
             if( sym->ns.flags & SY_SUB_PARM ) {
@@ -594,7 +594,7 @@ void    ArrayDecl( sym_id sym ) {
                 dim_list.l.init_label = 0;
             }
         }
-        sym->ns.si.va.dim_ext = STSubsList( &dim_list );
+        sym->ns.si.va.u.dim_ext = STSubsList( &dim_list );
         sym->ns.flags |= ( SY_USAGE | SY_SUBSCRIPTED );
     }
 }

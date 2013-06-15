@@ -108,9 +108,9 @@ static  void    PrSFList( void ) {
             if( parm == NULL ) break;
             num_parms++;
             sym_ptr = parm->shadow;
-            if( sym_ptr->ns.typ != CITNode->typ ) {
+            if( sym_ptr->ns.u1.s.typ != CITNode->typ ) {
                 TypeTypeErr( SF_PARM_TYPE_MISMATCH, CITNode->typ,
-                             sym_ptr->ns.typ );
+                             sym_ptr->ns.u1.s.typ );
             } else {
                 what = CITNode->opn.us & USOPN_WHAT;
                 where = CITNode->opn.us & USOPN_WHERE;

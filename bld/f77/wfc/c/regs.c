@@ -142,7 +142,7 @@ aux_info               IFXInfo = {
         FortranParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_Xnames,
+        IF_Xnames,
         NULL,
         0 };
 
@@ -154,7 +154,7 @@ aux_info                IFInfo = {
         IFParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_names,
+        IF_names,
         &IFArgValue,
         0 };
 
@@ -166,7 +166,7 @@ aux_info                IFCharInfo = {
         IFParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_names,
+        IF_names,
         &IFArgDescriptor,
         0 };
 
@@ -178,7 +178,7 @@ aux_info                IFChar2Info = {
         IFParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_Xnames,
+        IF_Xnames,
         NULL,
         0 };
 
@@ -190,7 +190,7 @@ aux_info                IFVarInfo = {
         StackParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_Xnames,
+        IF_Xnames,
         &IFArgValue,
         0 };
 
@@ -273,7 +273,7 @@ aux_info               IFXInfo = {
         FortranParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_Xnames,
+        IF_Xnames,
         NULL,
         0 };
 
@@ -285,7 +285,7 @@ aux_info                IFInfo = {
         IFParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_names,
+        IF_names,
         &IFArgValue,
         0 };
 
@@ -297,7 +297,7 @@ aux_info                IFCharInfo = {
         IFParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_names,
+        IF_names,
         &IFArgDescriptor,
         0 };
 
@@ -309,7 +309,7 @@ aux_info                IFChar2Info = {
         IFParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_Xnames,
+        IF_Xnames,
         NULL,
         0 };
 
@@ -321,7 +321,7 @@ aux_info                IFVarInfo = {
         StackParms,
         NULL,
         HW_D( HW_EMPTY ),
-        &IF_Xnames,
+        IF_Xnames,
         &IFArgValue,
         0 };
 

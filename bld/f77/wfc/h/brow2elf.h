@@ -40,11 +40,11 @@ typedef struct section_data {
     union {
         file_handle     *fp;
         long            size;
-    };
+    } u1;
     union {
         char            *data;
         char            *filename;
-    };
+    } u2;
     unsigned_32         sec_number;
 } section_data;
 

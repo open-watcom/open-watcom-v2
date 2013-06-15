@@ -58,9 +58,9 @@ sym_id  NewMagSym( int class ) {
     new->ns.reloc_chain.lr = NULL;
     _MgcSetClass( new, class );
     new->ns.flags = TEMP_FLAGS;
-    new->ns.xflags = 0;
+    new->ns.u1.s.xflags = 0;
     new->ns.xt.size = 0;
-    new->ns.typ = FT_NO_TYPE;
+    new->ns.u1.s.typ = FT_NO_TYPE;
     new->ns.si.ms.sym = NULL;
     return( new );
 }
@@ -97,7 +97,7 @@ sym_id  TmpVar( TYPE typ, uint size ) {
 
     ml = FindTempIndex( TempIndex, typ );
     ml->ns.xt.size = size;
-    ml->ns.typ = typ;
+    ml->ns.u1.s.typ = typ;
     TempIndex += size;
     if( TempIndex > MaxTempIndex ) {
         MaxTempIndex = TempIndex;
@@ -135,7 +135,7 @@ sym_id  StaticAlloc( uint size, TYPE typ ) {
     ml = NewMagSym( MAGIC_STATIC );
     ml->ns.si.ms.tmp_info.stat_off = NULL;
     ml->ns.xt.size = size;
-    ml->ns.typ = typ;
+    ml->ns.u1.s.typ = typ;
     return( ml );
 }
 
@@ -153,7 +153,7 @@ sym_id  StaticOffset( sym_id stat, int offset ) {
     ml->ns.reloc_chain.lr = NULL;
     ml->ns.xt.size = offset;
     ml->ns.flags = TEMP_FLAGS;
-    ml->ns.typ = FT_NO_TYPE;
+    ml->ns.u1.s.typ = FT_NO_TYPE;
     ml->ns.link = stat->ns.si.ms.tmp_info.stat_off;
     stat->ns.si.ms.tmp_info.stat_off = ml;
     return( ml );

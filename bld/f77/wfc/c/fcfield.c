@@ -72,7 +72,7 @@ void            FCFieldOp( void ) {
     }
     // add offset of field
     addr = CGBinary( O_PLUS, base, XPopValue( TY_INT_4 ), ptr_type );
-    if( sym->ns.xflags & SY_VOLATILE ) {
+    if( sym->ns.u1.s.xflags & SY_VOLATILE ) {
         addr = CGVolatile( addr );
     }
     XPush( addr );

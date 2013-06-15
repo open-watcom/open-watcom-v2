@@ -97,16 +97,16 @@ void    CpAllocate( void )
             sym = LkSym();
             if( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) {
                 if( (sym->ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) &&
-                    !( (sym->ns.typ == FT_CHAR) && (sym->ns.xt.size == 0) ) ) {
+                    !( (sym->ns.u1.s.typ == FT_CHAR) && (sym->ns.xt.size == 0) ) ) {
                     AdvanceITPtr();
                     ReqOpenParen();
-                    sym->ns.xflags |= SY_DEFINED;
+                    sym->ns.u1.s.xflags |= SY_DEFINED;
                     GAllocate( sym );
-                } else if( (sym->ns.typ == FT_CHAR) && (sym->ns.xt.size == 0) &&
+                } else if( (sym->ns.u1.s.typ == FT_CHAR) && (sym->ns.xt.size == 0) &&
                            !( sym->ns.flags & SY_SUBSCRIPTED ) ) {
                     AdvanceITPtr();
                     ReqMul();
-                    sym->ns.xflags |= SY_ALLOCATABLE | SY_DEFINED;
+                    sym->ns.u1.s.xflags |= SY_ALLOCATABLE | SY_DEFINED;
                     GAllocateString( sym );
                 } else {
                     IllName( sym );
@@ -192,7 +192,7 @@ void    DimArray( sym_id sym )
         }
         AdvanceITPtr();
         if( !RecComma() ||
-            ( subs == _DimCount( sym->ns.si.va.dim_ext->dim_flags ) ) ) break;
+            ( subs == _DimCount( sym->ns.si.va.u.dim_ext->dim_flags ) ) ) break;
     }
     ReqCloseParen();
     ReqNOpn();
@@ -231,8 +231,8 @@ void    CpDeAllocate( void )
             if( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) {
                 if( (sym->ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
                     GDeAllocate( sym );
-                } else if( (sym->ns.typ == FT_CHAR) && (sym->ns.xt.size == 0) ) {
-                    sym->ns.xflags |= SY_ALLOCATABLE;
+                } else if( (sym->ns.u1.s.typ == FT_CHAR) && (sym->ns.xt.size == 0) ) {
+                    sym->ns.u1.s.xflags |= SY_ALLOCATABLE;
                     GDeAllocateString( sym );
                 } else {
                     IllName( sym );

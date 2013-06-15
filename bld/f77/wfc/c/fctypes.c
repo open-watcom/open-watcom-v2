@@ -117,8 +117,8 @@ cg_type         F772CGType( sym_id sym ) {
 
 // Map a WATFOR-77 type to a CG type.
 
-    if( sym->ns.typ == FT_STRUCTURE ) return( sym->ns.xt.record->cg_typ );
-    return( MkCGType( ParmType( sym->ns.typ, sym->ns.xt.size ) ) );
+    if( sym->ns.u1.s.typ == FT_STRUCTURE ) return( sym->ns.xt.record->cg_typ );
+    return( MkCGType( ParmType( sym->ns.u1.s.typ, sym->ns.xt.size ) ) );
 }
 
 

@@ -282,8 +282,8 @@ void    GetFunctionShadow( void ) {
     // update type in function shadow symbol in case an
     // IMPLICIT statement changed the type of the function
     fn_shadow = FindShadow( CITNode->sym_ptr );
-    fn_shadow->ns.typ = CITNode->sym_ptr->ns.typ;
-    if( fn_shadow->ns.typ == FT_STRUCTURE ) {
+    fn_shadow->ns.u1.s.typ = CITNode->sym_ptr->ns.u1.s.typ;
+    if( fn_shadow->ns.u1.s.typ == FT_STRUCTURE ) {
         fn_shadow->ns.xt.record = CITNode->sym_ptr->ns.xt.record;
     } else {
         fn_shadow->ns.xt.size = CITNode->sym_ptr->ns.xt.size;
@@ -401,13 +401,13 @@ static  void    CkIntrinsic( void ) {
             if( func == IF_ISIZEOF ) {
                 ASType |= AST_ISIZEOF;
             }
-            sym_ptr->ns.si.fi.num_args = 0;
+            sym_ptr->ns.si.fi.u.num_args = 0;
             CITNode->flags |= SY_INTRINSIC;
             IFChkExtension( func );
             if( !IFIsGeneric( func ) ) {
                 CITNode->typ = IFType( func );
                 CITNode->size = TypeSize( CITNode->typ );
-                sym_ptr->ns.typ = CITNode->typ;
+                sym_ptr->ns.u1.s.typ = CITNode->typ;
                 sym_ptr->ns.xt.size = CITNode->size;
                 if( ( CITNode->typ != typ ) && ( CITNode->flags & SY_TYPE ) ) {
                     Error( LI_WRONG_TYPE );

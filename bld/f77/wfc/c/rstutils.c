@@ -48,8 +48,8 @@ char    *STExtractName( sym_id sym, char *buff ) {
 
 // Get the name of a symbol.
 
-    memcpy( buff, &sym->ns.name, sym->ns.name_len );
-    buff += sym->ns.name_len;
+    memcpy( buff, &sym->ns.name, sym->ns.u2.name_len );
+    buff += sym->ns.u2.name_len;
     *buff = NULLCHAR;
     return( buff );
 }
@@ -87,12 +87,12 @@ sym_id  STAdd( char *name, int length ) {
     sym_id    sym;
 
     sym = FMemAlloc( sizeof( symbol ) + AllocName( length ) );
-    sym->ns.name_len = length;
+    sym->ns.u2.name_len = length;
     memcpy( &sym->ns.name, name, length );
     sym->ns.flags = 0;
-    sym->ns.xflags = 0;
+    sym->ns.u1.s.xflags = 0;
     if( !(Options & OPT_REFERENCE) ) {
-        sym->ns.xflags |= SY_FAKE_REFERENCE;
+        sym->ns.u1.s.xflags |= SY_FAKE_REFERENCE;
     }
     return( sym );
 }

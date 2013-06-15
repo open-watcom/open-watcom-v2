@@ -724,7 +724,7 @@ static  void    StructIOItem( sym_id fd ) {
                                      TY_POINTER ),
                            TY_POINTER ) );
     } else {
-        if( IORtnTable == &OutRtn ) {
+        if( IORtnTable == OutRtn ) {
             rtn = RT_PRT_ARRAY;
         } else {
             rtn = RT_INP_ARRAY;
@@ -890,11 +890,11 @@ void    ArrayIO( RTCODE num_array, RTCODE chr_array ) {
     if( field == NULL ) {
         addr = SymAddr( arr );
         num_elts = ArrayNumElts( arr );
-        if( arr->ns.typ == FT_CHAR ) {
+        if( arr->ns.u1.s.typ == FT_CHAR ) {
             ChrArrayIO( chr_array, addr, num_elts, ArrayEltSize( arr ) );
         } else {
             NumArrayIO( num_array, addr, num_elts,
-                        ParmType( arr->ns.typ, arr->ns.xt.size ) );
+                        ParmType( arr->ns.u1.s.typ, arr->ns.xt.size ) );
         }
     } else { // must be a array field in a structure
         addr = XPop();

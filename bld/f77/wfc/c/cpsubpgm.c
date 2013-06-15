@@ -173,7 +173,7 @@ static  entry_pt *SubProgName( TYPE typ, unsigned_16 flags,
     sym_ptr->ns.xt.size = size;
     name_node->size = size;
     typ = MapTypes( typ, size );
-    sym_ptr->ns.typ = typ;
+    sym_ptr->ns.u1.s.typ = typ;
     name_node->typ = typ;
     CITNode = name_node;
     entry = AddEntryPt( sym_ptr );
@@ -268,7 +268,7 @@ void CpEntry( void )
             ( in_subr && (sym->ns.flags & SY_TYPE) ) ) {
             IllName( sym );
         } else {
-            sym->ns.typ = CITNode->typ;
+            sym->ns.u1.s.typ = CITNode->typ;
             sym->ns.flags &= SY_TYPE;
             if( in_subr ) {
                 sym->ns.flags |= SY_USAGE | SY_SUBPROGRAM | SY_SENTRY |
@@ -371,7 +371,7 @@ static parameter *NameParm( entry_pt *entry )
             IllName( sym );
             return( NULL );
         } else if( flags & SY_SUBSCRIPTED ) {
-            dim_ptr = sym->ns.si.va.dim_ext;
+            dim_ptr = sym->ns.si.va.u.dim_ext;
             if( dim_ptr->dim_flags & DIM_PVD ) {
                 dim_ptr->dim_flags |= DIM_ASSUMED;
                 NameExt( SV_PVD, sym );
@@ -463,7 +463,7 @@ static void DoWarps( void )
         sym = parm->id;
         if( ( sym->ns.flags & SY_CLASS ) != SY_VARIABLE ) continue;
         if( ( sym->ns.flags & SY_SUBSCRIPTED ) == 0 ) continue;
-        if( _AdvRequired( sym->ns.si.va.dim_ext ) == 0 ) continue;
+        if( _AdvRequired( sym->ns.si.va.u.dim_ext ) == 0 ) continue;
         GWarp( sym );
     }
 }

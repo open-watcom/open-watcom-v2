@@ -148,7 +148,7 @@ static  bool    DumpVariable( sym_id sym ) {
     flags = sym->ns.flags;
     CkDataOk( sym );
     if( !(flags & (SY_SUB_PARM | SY_DATA_INIT | SY_IN_EC)) ) {
-        if( (flags & SY_REFERENCED) && !(sym->ns.xflags & SY_DEFINED) ) {
+        if( (flags & SY_REFERENCED) && !(sym->ns.u1.s.xflags & SY_DEFINED) ) {
             NameWarn( VA_USED_NOT_DEFINED, sym );
         }
     }
@@ -158,7 +158,7 @@ static  bool    DumpVariable( sym_id sym ) {
         Extension( EV_MIXED_EQUIV );
     }
     if( flags & SY_SUBSCRIPTED ) {
-        dim_list = sym->ns.si.va.dim_ext;
+        dim_list = sym->ns.si.va.u.dim_ext;
         cp_reloc = !( flags & SY_SUB_PARM ) && !_Allocatable( sym );
         if( cp_reloc && ( dim_list->num_elts == 0 ) ) {
             NameErr( SV_ARR_PARM, sym );
@@ -178,7 +178,7 @@ static  bool    DumpVariable( sym_id sym ) {
                 }
             }
         }
-    } else if( sym->ns.typ == FT_STRUCTURE ) {
+    } else if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
         if( ( flags & SY_SUB_PARM ) == 0 ) {
             if( (flags & SY_IN_DIMEXPR) && (flags & SY_IN_COMMON) == 0 ) {
                 NameErr( SV_ARR_DECL, sym );
@@ -196,7 +196,7 @@ static  bool    DumpVariable( sym_id sym ) {
                 }
             }
         }
-    } else if( sym->ns.typ == FT_CHAR ) {
+    } else if( sym->ns.u1.s.typ == FT_CHAR ) {
         if( ( flags & SY_SUB_PARM ) == 0 ) {
             global_item = !_Allocatable( sym );
             if( ( sym->ns.xt.size == 0 ) && !_Allocatable( sym ) ){
@@ -301,7 +301,7 @@ static  void    UnrefSym( sym_id sym ) {
 
 // Issue a warning for unreferenced symbol.
 
-    if( !(sym->ns.xflags & SY_FAKE_REFERENCE) ) {
+    if( !(sym->ns.u1.s.xflags & SY_FAKE_REFERENCE) ) {
         NameWarn( VA_UNREFERENCED, sym );
     }
 }
@@ -416,7 +416,7 @@ static  void    DumpStrings( void ) {
     for( ; MList != NULL; MList = STFree( MList ) ) {
         // check if shadow for function return value
         if( MList->ns.flags & SY_PS_ENTRY ) continue;
-        if( MList->ns.typ == FT_CHAR ) {
+        if( MList->ns.u1.s.typ == FT_CHAR ) {
             if( ( MList->ns.xt.size != 0 ) && !( Options & OPT_AUTOMATIC ) ) {
                 AllocGlobal( MList->ns.xt.size, FALSE );
             }
@@ -445,7 +445,7 @@ static  void    DumpNameLists( void ) {
             flags = sym->ns.flags;
             // do error checks
             if( ((flags & SY_CLASS) != SY_VARIABLE) || (flags & SY_SUB_PARM) ||
-                (sym->ns.typ == FT_STRUCTURE) || _Allocatable( sym ) ) {
+                (sym->ns.u1.s.typ == FT_STRUCTURE) || _Allocatable( sym ) ) {
                 STGetName( sym, buff1 );
                 STNmListName( nl, buff2 );
                 Error( VA_BAD_SYM_IN_NAMELIST, buff1, buff2 );

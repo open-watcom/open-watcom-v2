@@ -61,9 +61,9 @@ void    SFPrologue( void ) {
     StmtSw |= SS_SF_REFERENCED;
     CkTypeDeclared();
     SFSymId = CITNode->sym_ptr;
-    if( ( SFSymId->ns.typ == FT_CHAR ) && ( SFSymId->ns.xt.size == 0 ) ) {
+    if( ( SFSymId->ns.u1.s.typ == FT_CHAR ) && ( SFSymId->ns.xt.size == 0 ) ) {
         Error( SF_ILL_CHAR_LEN );
-    } else if( SFSymId->ns.typ == FT_STRUCTURE ) {
+    } else if( SFSymId->ns.u1.s.typ == FT_STRUCTURE ) {
         Error( SF_ILL_TYPE );
     }
     GStartSF();
@@ -82,13 +82,13 @@ void    SFPrologue( void ) {
         for(;;) {
             if( ReqName( NAME_SF_DUMMY ) ) {
                 sym = LkSym();
-                sym->ns.xflags |= SY_DEFINED;
+                sym->ns.u1.s.xflags |= SY_DEFINED;
                 CkTypeDeclared();
                 if( ( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
                     ( ( sym->ns.flags & SY_SUBSCRIPTED ) == 0 ) &&
-                    ( ( sym->ns.typ != FT_CHAR ) ||
+                    ( ( sym->ns.u1.s.typ != FT_CHAR ) ||
                       ( sym->ns.xt.size != 0 ) ) &&
-                    ( sym->ns.typ != FT_STRUCTURE ) ) {
+                    ( sym->ns.u1.s.typ != FT_STRUCTURE ) ) {
                     if( sym->ns.flags & SY_SPECIAL_PARM ) {
                         Error( SF_DUPLICATE_DUMMY_PARM );
                     } else {

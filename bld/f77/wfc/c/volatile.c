@@ -64,7 +64,7 @@ void    CpVolatile( void ) {
             if( (sym->ns.flags & ~ERR_MASK ) != SY_VARIABLE ) {
                 IllName( sym );
             } else {
-                sym->ns.xflags |= SY_VOLATILE;
+                sym->ns.u1.s.xflags |= SY_VOLATILE;
             }
         }
         AdvanceITPtr();

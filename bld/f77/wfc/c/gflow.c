@@ -267,11 +267,11 @@ void    GStartSF( void ) {
 
     EmitOp( FC_START_SF );
     if( OZOpts & OZOPT_O_INLINE ) {
-        SFSymId->ns.si.sf.sequence = ObjTell();
+        SFSymId->ns.si.sf.u.sequence = ObjTell();
         OutObjPtr( 0 );
     } else {
         OutPtr( SFSymId );
-        SFSymId->ns.si.sf.location = NextLabel();
+        SFSymId->ns.si.sf.u.location = NextLabel();
         OutU16( NextLabel() );
     }
 }
@@ -286,11 +286,11 @@ void    GEndSF( void ) {
 
     if( OZOpts & OZOPT_O_INLINE ) {
         EmitOp( FC_END_OF_SEQUENCE );
-        curr_obj = ObjSeek( SFSymId->ns.si.sf.sequence );
+        curr_obj = ObjSeek( SFSymId->ns.si.sf.u.sequence );
         OutObjPtr( curr_obj );
         ObjSeek( curr_obj );
     } else {
-        if( TypeCmplx( SFSymId->ns.typ ) ) {
+        if( TypeCmplx( SFSymId->ns.u1.s.typ ) ) {
             EmitOp( FC_CMPLX_EXPR_DONE );
         } else {
             EmitOp( FC_EXPR_DONE );

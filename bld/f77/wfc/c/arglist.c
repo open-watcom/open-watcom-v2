@@ -61,7 +61,7 @@ static  void    GetImplType( sym_id sym ) {
 
     if( ( sym->ns.flags & SY_TYPE ) == 0 ) {
         sym->ns.flags |= SY_TYPE;
-        sym->ns.typ = ImplType( sym->ns.name[ 0 ] );
+        sym->ns.u1.s.typ = ImplType( sym->ns.name[ 0 ] );
         sym->ns.xt.size = ImplSize( sym->ns.name[ 0 ] );
     }
 }
@@ -73,11 +73,11 @@ static  void    ChkEntryType( sym_id sym, sym_id entry ) {
     // when we compile ENTRY statement, we make sure that its class
     // matches the class of the main entry
     if( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) return;
-    if( (entry->ns.typ == FT_CHAR) || (entry->ns.typ == FT_STRUCTURE) ) {
-        if( sym->ns.typ != entry->ns.typ ) {
+    if( (entry->ns.u1.s.typ == FT_CHAR) || (entry->ns.u1.s.typ == FT_STRUCTURE) ) {
+        if( sym->ns.u1.s.typ != entry->ns.u1.s.typ ) {
             NamNamErr( EY_TYPE_MISMATCH, entry, sym );
         } else {
-            if( entry->ns.typ == FT_STRUCTURE ) {
+            if( entry->ns.u1.s.typ == FT_STRUCTURE ) {
                 if( entry->ns.xt.record != sym->ns.xt.record ) {
                     NamNamErr( EY_TYPE_MISMATCH, entry, sym );
                 }
@@ -87,7 +87,7 @@ static  void    ChkEntryType( sym_id sym, sym_id entry ) {
                 }
             }
         }
-    } else if( (sym->ns.typ == FT_CHAR) || (sym->ns.typ == FT_STRUCTURE) ) {
+    } else if( (sym->ns.u1.s.typ == FT_CHAR) || (sym->ns.u1.s.typ == FT_STRUCTURE) ) {
         NamNamErr( EY_TYPE_MISMATCH, sym, SubProgId );
     }
 }
@@ -123,8 +123,8 @@ void    DumpEntries(void) {
         if( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
             fn_shadow = FindShadow( sym );
             fn_shadow->ns.xt.size = sym->ns.xt.size;
-            fn_shadow->ns.typ = sym->ns.typ;
-            typ = ParmType( sym->ns.typ, sym->ns.xt.size );
+            fn_shadow->ns.u1.s.typ = sym->ns.u1.s.typ;
+            typ = ParmType( sym->ns.u1.s.typ, sym->ns.xt.size );
             if( ( typ == PT_CHAR ) && ( sym->ns.xt.size == 0 ) ) {
                 typ |= VAR_LEN_CHAR;
             }
@@ -140,7 +140,7 @@ void    DumpEntries(void) {
             } else {
                 sym = curr_parm->id;
                 GetImplType( sym );
-                typ = ParmType( sym->ns.typ, sym->ns.xt.size );
+                typ = ParmType( sym->ns.u1.s.typ, sym->ns.xt.size );
                 flags = sym->ns.flags;
                 if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
                     code = PC_FN_OR_SUB;

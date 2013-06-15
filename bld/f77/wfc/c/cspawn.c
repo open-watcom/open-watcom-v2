@@ -43,7 +43,7 @@ int     CSpawn( void (*fn)( void ) )
     int         status;
 
     save_env = CSpawnStack;
-    CSpawnStack = env;
+    CSpawnStack = &env;
     status = setjmp( env );
     if( status == 0 ) {
         (*fn)();
@@ -56,5 +56,5 @@ int     CSpawn( void (*fn)( void ) )
 void    CSuicide( void )
 //=====================
 {
-    longjmp( CSpawnStack, 1 );
+    longjmp( *CSpawnStack, 1 );
 }

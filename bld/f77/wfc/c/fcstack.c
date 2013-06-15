@@ -79,7 +79,7 @@ void    InitStack( void ) {
 cg_type ArrayPtrType( sym_id sym ) {
 //==================================
 
-    if( sym->ns.si.va.dim_ext->dim_flags & DIM_EXTENDED ) {
+    if( sym->ns.si.va.u.dim_ext->dim_flags & DIM_EXTENDED ) {
 #if _CPU == 8086
         if( CGOpts & CGOPT_M_LARGE ) {
             return( TY_HUGE_POINTER );
@@ -134,7 +134,7 @@ cg_type SymPtrType( sym_id sym ) {
             } else {
                 item_size = _SymSize( sym );
                 if( flags & SY_SUBSCRIPTED ) {
-                    item_size *= sym->ns.si.va.dim_ext->num_elts;
+                    item_size *= sym->ns.si.va.u.dim_ext->num_elts;
                 }
                 if( offset + item_size <= MaxSegSize ) {
                     // object fits in first segment of common block
@@ -151,7 +151,7 @@ cg_type SymPtrType( sym_id sym ) {
             } else {
                 item_size = _SymSize( sym );
                 if( flags & SY_SUBSCRIPTED ) {
-                    item_size *= sym->ns.si.va.dim_ext->num_elts;
+                    item_size *= sym->ns.si.va.u.dim_ext->num_elts;
                 }
                 leader_seg = GetGlobalSeg( ce_ext->offset );
                 offset += ce_ext->offset;
@@ -172,7 +172,7 @@ cg_type SymPtrType( sym_id sym ) {
         } else {
             item_size = _SymSize( sym );
             if( flags & SY_SUBSCRIPTED ) {
-                item_size *= sym->ns.si.va.dim_ext->num_elts;
+                item_size *= sym->ns.si.va.u.dim_ext->num_elts;
             }
             if( ce_ext->com_blk->ns.flags & SY_EQUIVED_NAME ) {
                 if( ce_ext->offset + item_size <= MaxSegSize ) {
@@ -195,10 +195,10 @@ cg_type SymPtrType( sym_id sym ) {
         }
     } else if( ( flags & SY_SUBSCRIPTED ) && _Allocatable( sym ) ) {
         p_type = ArrayPtrType( sym );
-    } else if( ( flags & SY_SUBSCRIPTED ) || ( sym->ns.typ == FT_STRUCTURE ) ) {
+    } else if( ( flags & SY_SUBSCRIPTED ) || ( sym->ns.u1.s.typ == FT_STRUCTURE ) ) {
         item_size = _SymSize( sym );
         if( flags & SY_SUBSCRIPTED ) {
-            item_size *= sym->ns.si.va.dim_ext->num_elts;
+            item_size *= sym->ns.si.va.u.dim_ext->num_elts;
         }
         if( item_size > MaxSegSize ) {
             p_type = TY_HUGE_POINTER;
@@ -252,7 +252,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
     } else if( sym->ns.flags & SY_PS_ENTRY ) {
         // it's the shadow symbol for function return value
         if( CommonEntry == NULL ) {
-            if( sym->ns.typ == FT_CHAR ) {
+            if( sym->ns.u1.s.typ == FT_CHAR ) {
                 if( Options & OPT_DESCRIPTOR ) {
                     addr = CGFEName( ReturnValue, F772CGType( sym ) );
                     addr = CGUnary( O_POINTS, addr, TY_POINTER );
@@ -263,7 +263,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
                 addr = CGFEName( ReturnValue, F772CGType( sym ) );
             }
         } else {
-            if( (sym->ns.typ == FT_CHAR) && !(Options & OPT_DESCRIPTOR) ) {
+            if( (sym->ns.u1.s.typ == FT_CHAR) && !(Options & OPT_DESCRIPTOR) ) {
                 addr = SubAltSCB( CommonEntry );
             } else {
                 addr = CGUnary( O_POINTS, CGFEName( ReturnValue, TY_POINTER ),
@@ -274,7 +274,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         // subprogram argument
         if( sym->ns.flags & SY_SUBSCRIPTED ) {
             p_type = ArrayPtrType( sym );
-            if( sym->ns.typ == FT_CHAR ) {
+            if( sym->ns.u1.s.typ == FT_CHAR ) {
                 addr = CGUnary( O_POINTS, CGFEName( sym, p_type ), p_type );
                 if( !(sym->ns.flags & SY_VALUE_PARM) ) {
                     if( Options & OPT_DESCRIPTOR ) {
@@ -286,7 +286,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
             }
         } else {
             p_type = TY_POINTER;
-            if( sym->ns.typ == FT_CHAR ) {
+            if( sym->ns.u1.s.typ == FT_CHAR ) {
                 if( SCBRequired( sym ) ) {
                     addr = VarAltSCB( sym );
                 } else {
@@ -294,7 +294,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
                 }
             } else if( sym->ns.flags & SY_VALUE_PARM ) {
                 p_type = F772CGType( sym );
-                if( TypeCmplx( sym->ns.typ ) ) {
+                if( TypeCmplx( sym->ns.u1.s.typ ) ) {
                     p_type = CmplxBaseType( p_type );
                     addr = CGFEName( sym, p_type );
                     XPush( CGUnary( O_POINTS,
@@ -325,11 +325,11 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
 
             shadow = FindEqSetShadow( leader );
             if( shadow != NULL ) {
-                addr = CGFEName( shadow, shadow->ns.si.ms.cg_typ );
+                addr = CGFEName( shadow, shadow->ns.si.ms.u.cg_typ );
                 offset -= leader->ns.si.va.vi.ec_ext->low;
-            } else if( (leader->ns.typ == FT_CHAR) &&
+            } else if( (leader->ns.u1.s.typ == FT_CHAR) &&
                        !(leader->ns.flags & SY_SUBSCRIPTED) ) {
-                addr = CGBackName( leader->ns.si.va.bck_hdl, F772CGType( sym ) );
+                addr = CGBackName( leader->ns.si.va.u.bck_hdl, F772CGType( sym ) );
             } else {
                 addr = CGFEName( leader, F772CGType( sym ) );
             }
@@ -340,13 +340,13 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
             i = CGInteger( offset, TY_INT_4 );
         }
         addr = CGBinary( O_PLUS, addr, i, SymPtrType( sym ) );
-        if( (sym->ns.typ == FT_CHAR) && !(sym->ns.flags & SY_SUBSCRIPTED) ) {
+        if( (sym->ns.u1.s.typ == FT_CHAR) && !(sym->ns.flags & SY_SUBSCRIPTED) ) {
             // tell code generator where storage pointed to by SCB is located
             addr = CGBinary( O_COMMA, addr,
                              CGFEName( sym, F772CGType( sym ) ), TY_DEFAULT );
         }
         i = NULL;
-    } else if( ( sym->ns.typ == FT_CHAR ) &&
+    } else if( ( sym->ns.u1.s.typ == FT_CHAR ) &&
                ( ( sym->ns.flags & SY_SUBSCRIPTED ) == 0 ) ) {
         // character variable, address of scb
         addr = CGFEName( sym, F772CGType( sym ) );
@@ -371,9 +371,9 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         addr = CGBinary( O_PLUS, addr, i, SymPtrType( sym ) );
     }
     if( ( OZOpts & OZOPT_O_VOLATILE ) && data_reference &&
-        ( ( sym->ns.typ >= FT_REAL ) && ( sym->ns.typ <= FT_XCOMPLEX ) ) ) {
+        ( ( sym->ns.u1.s.typ >= FT_REAL ) && ( sym->ns.u1.s.typ <= FT_XCOMPLEX ) ) ) {
         addr = CGVolatile( addr );
-    } else if( sym->ns.xflags & SY_VOLATILE ) {
+    } else if( sym->ns.u1.s.xflags & SY_VOLATILE ) {
         addr = CGVolatile( addr );
     }
     return( addr );
@@ -395,7 +395,7 @@ void    FCPush( void ) {
     sym_id      sym;
 
     sym = GetPtr();
-    if( TypeCmplx( sym->ns.typ ) ) {
+    if( TypeCmplx( sym->ns.u1.s.typ ) ) {
         PushComplex( sym );
     } else {
         XPush( SymAddr( sym ) );
@@ -494,7 +494,7 @@ void    FCPop( void ) {
             }
         } else {
             fd = NULL;
-            if( sym->ns.typ == FT_STRUCTURE ) {
+            if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
                 if( GetU16() ) {
                     // target is a sub-field
                     dst = XPop();

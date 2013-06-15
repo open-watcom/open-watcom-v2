@@ -72,7 +72,7 @@ void    CpParameter( void ) {
     for(;;) {
         if( ReqName( NAME_VARIABLE ) ) {
             sym = LkSym();
-            typ = sym->ns.typ;
+            typ = sym->ns.u1.s.typ;
             assign_val = TRUE;
             if( sym->ns.flags & (SY_USAGE | SY_SUB_PARM | SY_IN_EC) ) {
                 IllName( sym );

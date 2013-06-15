@@ -591,7 +591,7 @@ sym_id    CkAssignOk( void ) {
             if( CITNode->opn.us & USOPN_ASY ) {
                 sym = CITNode->value.st.ss_id;
             }
-            sym->ns.xflags |= SY_DEFINED;
+            sym->ns.u1.s.xflags |= SY_DEFINED;
             return( sym );
         } else {
             ClassErr( EQ_CANNOT_ASSIGN, CITNode->sym_ptr );
@@ -878,7 +878,7 @@ static  void    Call( void ) {
                                     // ... after IFSpecific, DetCallList
                     func = CITNode->sym_ptr->ns.si.fi.index;
                     if( ( IsIFMax( func ) || IsIFMin( func ) ) &&
-                        ( CITNode->sym_ptr->ns.si.fi.num_args > 2 ) )
+                        ( CITNode->sym_ptr->ns.si.fi.u.num_args > 2 ) )
                         EvalList();
                     else
                         InlineCnvt();
@@ -946,9 +946,9 @@ static  void    IFPrmChk( void ) {
 
             if( (parm_code == PC_ARRAY_NAME) && _Allocatable( sym ) )
                 break;
-            if( (parm_code == PC_VARIABLE) && (sym->ns.typ == FT_CHAR) &&
+            if( (parm_code == PC_VARIABLE) && (sym->ns.u1.s.typ == FT_CHAR) &&
                 (sym->ns.xt.size == 0) && !(sym->ns.flags & SY_SUB_PARM) ) {
-                sym->ns.xflags |= SY_ALLOCATABLE;
+                sym->ns.u1.s.xflags |= SY_ALLOCATABLE;
                 break;
             }
             Error( LI_ARG_ALLOCATED );
@@ -969,7 +969,7 @@ static  void    IFPrmChk( void ) {
                 }
                 break;
             case USOPN_ARR:
-                MkConst( CITNode->sym_ptr->ns.si.va.dim_ext->num_elts *
+                MkConst( CITNode->sym_ptr->ns.si.va.u.dim_ext->num_elts *
                          _SymSize( CITNode->sym_ptr ) );
                 break;
             default:
@@ -1041,7 +1041,7 @@ static  void    IFPrmChk( void ) {
         ++parm_cnt;
     }
     // for intrinsic functions that take variable # of args (e.g. MAX, MIN)
-    sym->ns.si.fi.num_args = parm_cnt;
+    sym->ns.si.fi.u.num_args = parm_cnt;
     CITNode = oldcit;
     IFCntPrms( func, parm_cnt );
 }

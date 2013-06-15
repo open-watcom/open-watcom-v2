@@ -268,7 +268,7 @@ void    NameTypeErr( int errcod, sym_id sym ) {
     char        buff[MAX_SYMLEN+1];
 
     STGetName( sym, buff );
-    Error( errcod, buff, TypeKW( sym->ns.typ ) );
+    Error( errcod, buff, TypeKW( sym->ns.u1.s.typ ) );
 }
 
 
@@ -345,7 +345,7 @@ void    IllType( sym_id sym ) {
     char        stmt[MAX_MSGLEN+1];
 
     STGetName( sym, buff );
-    Error( TY_ILL_USE, buff, TypeKW( sym->ns.typ ), StmtName( stmt ) );
+    Error( TY_ILL_USE, buff, TypeKW( sym->ns.u1.s.typ ), StmtName( stmt ) );
 }
 
 

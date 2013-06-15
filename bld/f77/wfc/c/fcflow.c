@@ -371,7 +371,7 @@ void    FCWarp( void ) {
     warp_label  init_label;
 
     arr = GetPtr();
-    init_label = arr->ns.si.va.dim_ext->l.init_label;
+    init_label = arr->ns.si.va.u.dim_ext->l.init_label;
     WarpReturn = FCodeSeek( init_label );
 }
 
@@ -438,11 +438,11 @@ void    FCSFCall( void ) {
     for(;;) {
         sf_arg = GetPtr();
         if( sf_arg == NULL ) break;
-        if( sf_arg->ns.typ == FT_CHAR ) {
+        if( sf_arg->ns.u1.s.typ == FT_CHAR ) {
             value = Concat( 1, CGFEName( sf_arg, TY_CHAR ) );
         } else {
             sf_type = F772CGType( sf_arg );
-            if( TypeCmplx( sf_arg->ns.typ ) ) {
+            if( TypeCmplx( sf_arg->ns.u1.s.typ ) ) {
                 XPopCmplx( &z, sf_type );
                 sf_type = CmplxBaseType( sf_type );
                 value = ImagPtr( SymAddr( sf_arg ), sf_type );
@@ -460,7 +460,7 @@ void    FCSFCall( void ) {
             arg_list = CGBinary( O_COMMA, arg_list, value, TY_DEFAULT );
         }
     }
-    if( sf->ns.typ == FT_CHAR ) {
+    if( sf->ns.u1.s.typ == FT_CHAR ) {
         tmp = GetPtr();
         value = CGUnary( O_POINTS, CGFEName( tmp, TY_CHAR ), TY_CHAR );
         value = CGAssign( CGFEName( sf, TY_CHAR ), value, TY_CHAR );
@@ -480,14 +480,14 @@ void    FCSFCall( void ) {
         if( arg_list != NULL ) {
             CGTrash( arg_list );
         }
-        curr_obj = FCodeSeek( sf->ns.si.sf.sequence );
+        curr_obj = FCodeSeek( sf->ns.si.sf.u.sequence );
         GetObjPtr();
         FCodeSequence();
         FCodeSeek( curr_obj );
-        if( sf->ns.typ == FT_CHAR ) {
+        if( sf->ns.u1.s.typ == FT_CHAR ) {
             CGTrash( XPop() );
             XPush( value );
-        } else if( TypeCmplx( sf->ns.typ ) ) {
+        } else if( TypeCmplx( sf->ns.u1.s.typ ) ) {
             XPopCmplx( &z, sf_type );
             sf_type = CmplxBaseType( sf_type );
             XPush( TmpVal( MkTmp( z.imagpart, sf_type ), sf_type ) );
@@ -496,12 +496,12 @@ void    FCSFCall( void ) {
             XPush( TmpVal( MkTmp( XPopValue( sf_type ), sf_type ), sf_type ) );
         }
     } else {
-        value = CGWarp( arg_list, GetLabel( sf->ns.si.sf.location ), value );
+        value = CGWarp( arg_list, GetLabel( sf->ns.si.sf.u.location ), value );
         // consider: y = f( a, f( b, c, d ), e )
         // make sure that inner reference to f gets evaluated before we assign
         // arguments for outer reference
         value = CGEval( value );
-        if( TypeCmplx( sf->ns.typ ) ) {
+        if( TypeCmplx( sf->ns.u1.s.typ ) ) {
             SplitCmplx( TmpPtr( MkTmp( value, sf_type ), sf_type ), sf_type );
         } else {
             XPush( value );
@@ -525,7 +525,7 @@ void            FCStartSF( void ) {
         sf = GetPtr();
         SFEndLabel = GetU16();
         CGControl( O_GOTO, NULL, GetLabel( SFEndLabel ) );
-        CGControl( O_LABEL, NULL, GetLabel( sf->ns.si.sf.location ) );
+        CGControl( O_LABEL, NULL, GetLabel( sf->ns.si.sf.u.location ) );
     }
 }
 
@@ -558,9 +558,9 @@ void            FCSFReferenced( void ) {
     for(;;) {
         if( sf == NULL ) break;
         if( sf->ns.si.sf.header->ref_count == 0 ) {
-            if( sf->ns.si.sf.location != 0 ) {
-                DoneLabel( sf->ns.si.sf.location );
-                sf->ns.si.sf.location = 0;
+            if( sf->ns.si.sf.u.location != 0 ) {
+                DoneLabel( sf->ns.si.sf.u.location );
+                sf->ns.si.sf.u.location = 0;
             }
         }
         sf = sf->ns.si.sf.header->link;

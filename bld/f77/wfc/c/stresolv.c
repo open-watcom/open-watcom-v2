@@ -81,7 +81,7 @@ static  intstar4        CheckSubscr( act_eq_entry *eqv_entry ) {
     sym = eqv_entry->name_equived;
     dims_no = 0;
     if( sym->ns.flags & SY_SUBSCRIPTED ) {
-        dims = sym->ns.si.va.dim_ext;
+        dims = sym->ns.si.va.u.dim_ext;
         dims_no = _DimCount( dims->dim_flags );
         dims->dim_flags &= ~DIM_PVD;
     }
@@ -114,7 +114,7 @@ static  intstar4        CheckSubStr( act_eq_entry *eqv_entry ) {
 
     sym = eqv_entry->name_equived;
     substr = &eqv_entry->subscrs[ eqv_entry->subs_no ];
-    if( sym->ns.typ != FT_CHAR ) {
+    if( sym->ns.u1.s.typ != FT_CHAR ) {
         NameTypeErr( EV_ONLY_IF_CHAR, sym );
         offset = 0;
     } else {
@@ -252,7 +252,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
                   ( q_ext->ec_flags & MEMBER_IN_COMMON );
     q_type = q_ext->ec_flags & ES_TYPE;
     if( q_type == ES_NO_TYPE ) {
-        q_type = ClassifyType( q->ns.typ );
+        q_type = ClassifyType( q->ns.u1.s.typ );
     }
     for(;;) {   // find leader of A
         p_ext = p->ns.si.va.vi.ec_ext;
@@ -268,7 +268,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
                   ( p_ext->ec_flags & MEMBER_IN_COMMON );
     p_type = p_ext->ec_flags & ES_TYPE;
     if( p_type == ES_NO_TYPE ) {
-        p_type = ClassifyType( p->ns.typ );
+        p_type = ClassifyType( p->ns.u1.s.typ );
     }
     if( p == q ) {
         if( c - d != dist ) {
@@ -337,6 +337,6 @@ static  void    SetHigh( sym_id sym ) {
 
     sym->ns.si.va.vi.ec_ext->high = _SymSize( sym );
     if( sym->ns.flags & SY_SUBSCRIPTED ) {
-       sym->ns.si.va.vi.ec_ext->high *= sym->ns.si.va.dim_ext->num_elts;
+       sym->ns.si.va.vi.ec_ext->high *= sym->ns.si.va.u.dim_ext->num_elts;
     }
 }

@@ -214,8 +214,8 @@ sym_id        STFreeName( sym_id sym_ptr ) {
     } else {
         if( ( sym_ptr->ns.flags & SY_CLASS ) == SY_VARIABLE ) {
             if( sym_ptr->ns.flags & SY_SUBSCRIPTED ) {
-                if( sym_ptr->ns.si.va.dim_ext != NULL ) {
-                    FMemFree( sym_ptr->ns.si.va.dim_ext );
+                if( sym_ptr->ns.si.va.u.dim_ext != NULL ) {
+                    FMemFree( sym_ptr->ns.si.va.u.dim_ext );
                 }
             }
             if( sym_ptr->ns.flags & SY_IN_EC ) {

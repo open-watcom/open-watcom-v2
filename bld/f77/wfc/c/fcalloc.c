@@ -14,7 +14,7 @@
 *    provided with the Original Code and Modifications, and is also
 *    available at www.sybase.com/developer/opensource.
 *
-*    The Original Code and all software distributed under the License are
+*    The Original Code and all software distributed under the License areø
 *    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
 *    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
 *    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
@@ -133,7 +133,7 @@ void            FCAllocate( void ) {
         arr = SymPop();
         if( arr == NULL ) break;
         if( arr->ns.flags & SY_SUBSCRIPTED ) {
-            dim = arr->ns.si.va.dim_ext;
+            dim = arr->ns.si.va.u.dim_ext;
             CGAddParm( handle, CGInteger( _SymSize( arr ), TY_INT_4 ),
                        TY_INT_4 );
             CGAddParm( handle, CGInteger( _DimCount( dim->dim_flags ),

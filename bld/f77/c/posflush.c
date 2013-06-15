@@ -58,7 +58,7 @@ int     FlushBuffer( b_file *io ) {
                 rc = -1;
             }
         } else {
-            writebytes( io, &io->buffer, io->high_water );
+            writebytes( io, io->buffer, io->high_water );
             if( io->stat != IO_OK ) {
                 rc = -1;
             }

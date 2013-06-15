@@ -87,18 +87,18 @@ void    STComDump( void )
             BIStartComBlock( com_blk );
             // in case common block empty because of errors
             if( name_in_com == NULL ) break;
-            common_type = ClassifyType( name_in_com->ns.typ );
+            common_type = ClassifyType( name_in_com->ns.u1.s.typ );
             for(;;) {
                 sym = name_in_com;
                 if( ( common_type != CT_MIXED ) &&
-                    ( common_type != ClassifyType( sym->ns.typ ) ) ) {
+                    ( common_type != ClassifyType( sym->ns.u1.s.typ ) ) ) {
                     Extension( CM_MIXED_COMMON );
                     common_type = CT_MIXED;
                 }
                 size = _SymSize( sym );
                 if( sym->ns.flags & SY_SUBSCRIPTED ) {
-                    size *= sym->ns.si.va.dim_ext->num_elts;
-                    sym->ns.si.va.dim_ext->dim_flags &= ~DIM_PVD;
+                    size *= sym->ns.si.va.u.dim_ext->num_elts;
+                    sym->ns.si.va.u.dim_ext->dim_flags &= ~DIM_PVD;
                 }
                 if( sym->ns.flags & SY_IN_EQUIV ) {
                     com_blk->ns.flags |= SY_EQUIVED_NAME;

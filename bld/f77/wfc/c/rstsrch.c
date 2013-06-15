@@ -46,7 +46,7 @@ sym_id        STSearch( char *name, int len, sym_id head ) {
 
     for(;;) {
         if( head == NULL ) break;
-        if( head->ns.name_len == len ) {
+        if( head->ns.u2.name_len == len ) {
             if( memcmp( name, &head->ns.name, len ) == 0 ) break;
         }
         head = head->ns.link;
@@ -68,7 +68,7 @@ sym_id        STNameSearch( char *name, int len ) {
     if( head == NULL ) return( NULL );
     tail = HashTable[ HashValue ].h_tail;
     for(;;) {
-        if( head->ns.name_len == len ) {
+        if( head->ns.u2.name_len == len ) {
             if( memcmp( name, &head->ns.name, len ) == 0 ) return( head );
         }
         if( head == tail ) return( NULL );

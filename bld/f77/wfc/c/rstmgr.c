@@ -182,7 +182,7 @@ sym_id    STEqSetShadow( sym_id sym ) {
 
     sym_id       shadow;
 
-    shadow = StaticAlloc( sym->ns.xt.size, sym->ns.typ );
+    shadow = StaticAlloc( sym->ns.xt.size, sym->ns.u1.s.typ );
     shadow->ns.flags |= SY_SPECIAL_PARM | SY_IN_EQUIV;
     shadow->ns.si.ms.sym = sym;
     return( shadow );
@@ -214,7 +214,7 @@ sym_id    STFnShadow( sym_id sym ) {
 
     sym_id       shadow;
 
-    shadow = StaticAlloc( sym->ns.xt.size, sym->ns.typ );
+    shadow = StaticAlloc( sym->ns.xt.size, sym->ns.u1.s.typ );
     shadow->ns.flags |= SY_SPECIAL_PARM | SY_PS_ENTRY;
     shadow->ns.si.ms.sym = sym;
     return( shadow );
@@ -231,7 +231,7 @@ sym_id    STShadow( sym_id sym ) {
     if( StmtSw & SS_DATA_INIT ) { // implied do parm
         shadow = TmpVar( FT_INTEGER, TypeSize( FT_INTEGER ) );
     } else {
-        shadow = StaticAlloc( sym->ns.xt.size, sym->ns.typ );
+        shadow = StaticAlloc( sym->ns.xt.size, sym->ns.u1.s.typ );
     }
     shadow->ns.flags |= SY_SPECIAL_PARM;
     sym->ns.flags |= SY_SPECIAL_PARM;
@@ -284,7 +284,7 @@ sym_id  STName( char *name, int length ) {
     if( sym == NULL ) {
         sym = STAdd( name, length );
         sym->ns.si.va.vi.ec_ext = NULL;
-        sym->ns.address = NULL;
+        sym->ns.u3.address = NULL;
         HashInsert( HashTable, HashValue, &NList, sym );
     } else if( ( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
                ( sym->ns.flags & SY_SPECIAL_PARM ) ) {
@@ -309,7 +309,7 @@ sym_id  STCommon( char *name, int length ) {
         sym_ptr = STAdd( name, length );
         sym_ptr->ns.link = BList;
         sym_ptr->ns.si.cb.first = NULL;    // indicate an empty common block
-        sym_ptr->ns.address = NULL;
+        sym_ptr->ns.u3.address = NULL;
         BList = sym_ptr;
     }
     return( sym_ptr );

@@ -111,7 +111,7 @@ static  uint    SrcChar( itnode *op ) {
         return( op->sym_ptr->lt.length );
     }
     if( ( op->opn.us & USOPN_WHAT ) == USOPN_NNL ) { // character variable
-        if( op->sym_ptr->ns.typ == FT_STRUCTURE ) {
+        if( op->sym_ptr->ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
             return( op->sym_ptr->ns.xt.size );
@@ -126,14 +126,14 @@ static  uint    TargChar( itnode *op ) {
 
     if( op->opn.us & USOPN_SS1 ) return( op->value.st.ss_size );
     if( ( op->opn.us & USOPN_WHAT ) == USOPN_NNL ) { // character variable
-        if( op->sym_ptr->ns.typ == FT_STRUCTURE ) {
+        if( op->sym_ptr->ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
             return( op->sym_ptr->ns.xt.size );
         }
     }
     if( ( op->opn.us & USOPN_WHAT ) == USOPN_NWL ) { // character array
-        if( op->sym_ptr->ns.typ == FT_STRUCTURE ) {
+        if( op->sym_ptr->ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
             return( op->sym_ptr->ns.xt.size );

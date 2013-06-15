@@ -227,7 +227,7 @@ static  void    VarList( void ) {
             ++do_level;
         } else if( ReqName( NAME_VAR_OR_ARR ) ) {
             InitVar = LkSym();
-            if( InitVar->ns.typ == FT_STRUCTURE ) {
+            if( InitVar->ns.u1.s.typ == FT_STRUCTURE ) {
                 // make sure structure size is calculated - normally
                 // structure size is calculated by StructResolve() which
                 // is not called until the first executable statement

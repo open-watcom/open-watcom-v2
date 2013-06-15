@@ -158,7 +158,7 @@ static  void    BoolInq( FCODE routine ) {
         CkSize4();
         sym = CkAssignOk();
         if( sym != NULL ) {
-            sym->ns.xflags |= SY_VOLATILE;
+            sym->ns.u1.s.xflags |= SY_VOLATILE;
         }
         GPassAddr( routine );
     }
@@ -175,7 +175,7 @@ static  void    IntInq( FCODE routine ) {
         CkSize4();
         sym = CkAssignOk();
         if( sym != NULL ) {
-            sym->ns.xflags |= SY_VOLATILE;
+            sym->ns.u1.s.xflags |= SY_VOLATILE;
         }
         GPassAddr( routine );
     }
@@ -223,10 +223,10 @@ void    ChkAssumed( void ) {
 
     if( CITNode->opn.us & USOPN_FLD ) return;
     sym = CITNode->sym_ptr;
-    if( sym->ns.si.va.dim_ext->dim_flags & DIM_ASSUMED ) {
+    if( sym->ns.si.va.u.dim_ext->dim_flags & DIM_ASSUMED ) {
         NameErr( SV_CANT_USE_ASSUMED, sym );
     }
-    sym->ns.si.va.dim_ext->dim_flags |= DIM_USED_IN_IO;
+    sym->ns.si.va.u.dim_ext->dim_flags |= DIM_USED_IN_IO;
 }
 
 

@@ -80,7 +80,7 @@ typedef struct var {
     union {
         struct act_dim_list *dim_ext;   // pointer to dimension extension
         void                *bck_hdl;
-    };
+    } u;
     union vi            vi;             // variable information
 } var;
 
@@ -106,7 +106,7 @@ typedef struct subprog {
     union {
         label_id        entry;          // entry label
         signed          imp_segid;      // segment id for external subprograms
-    };
+    } u;
     void                *alt_scb;       // SCB for character*(*) functions
 } subprog;
 
@@ -118,7 +118,7 @@ typedef struct i_function {
     union {
         int             num_args;       // number of arguments
         signed          imp_segid;      // segment id for intrinsic function
-    };
+    } u;
 } i_function;
 
 // symbol table information for statement functions:
@@ -135,7 +135,7 @@ typedef struct st_function {
     union {
         label_id        location;       // entry label
         obj_ptr         sequence;       // F-Code sequence
-    };
+    } u;
 } st_function;
 
 // symbol table information for remote blocks:
@@ -171,19 +171,19 @@ typedef struct remote_block {
 
 // Manipulation macros
 #define _MgcIsMagic( sym ) \
-        ( sym->ns.magic_flags & MAGIC_BIT )
+        ( sym->ns.u2.magic_flags & MAGIC_BIT )
 
 #define _MgcClass( sym ) \
-        ( sym->ns.magic_flags & MAGIC_CLASSMASK )
+        ( sym->ns.u2.magic_flags & MAGIC_CLASSMASK )
 
 #define _MgcSetClass( sym, class ) \
-        sym->ns.magic_flags = ( MAGIC_BIT | class )
+        sym->ns.u2.magic_flags = ( MAGIC_BIT | class )
 
 #define _MgcSetLocalTemp( sym ) \
-        sym->ns.magic_flags |= ( MAGIC_BIT | MAGIC_LOCALIZED )
+        sym->ns.u2.magic_flags |= ( MAGIC_BIT | MAGIC_LOCALIZED )
 
 #define _MgcIsLocalTemp( sym ) \
-        ( _MgcIsMagic( sym ) && ( sym->ns.magic_flags & MAGIC_LOCALIZED ) )
+        ( _MgcIsMagic( sym ) && ( sym->ns.u2.magic_flags & MAGIC_LOCALIZED ) )
 
 
 typedef union tmp_info {
@@ -196,7 +196,7 @@ typedef struct m_sym {
     union {
         intstar4        *value;         // value of implied-DO variables
         unsigned short  cg_typ;         // cg-type for character temporaries
-    };                                  //   and equivalence sets allocated
+    } u;                                //   and equivalence sets allocated
 } m_sym;
 
 // symbol table structure for constants:
@@ -259,17 +259,17 @@ typedef struct named_symbol {
       struct {
         TYPE            typ;            // symbol type
         byte            xflags;         // extra symbol flags
-      };
+      } s;
       unsigned_16       xsize;          // extra size information for common
-    };                                  // blocks
+    } u1;                               // blocks
     union {
         signed char     name_len;       // length of symbol name
         byte            magic_flags;    // information about the magic symbol
-    };
+    } u2;
     union {
       obj_addr          address;        // address of symbol
       db_handle         dbh;            // browse handle
-    };
+    } u3;
     union {
         uint            size;           // size of data type
         struct fstruct  *record;        // pointer to structure definition

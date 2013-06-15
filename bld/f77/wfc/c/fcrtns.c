@@ -106,13 +106,13 @@ call_handle     InitCall( RTCODE rtn_id ) {
         sym->ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION |
                         SY_RT_ROUTINE;
         if( rt_entry->typ == FT_NO_TYPE ) {
-            sym->ns.typ = FT_INTEGER_TARG;
+            sym->ns.u1.s.typ = FT_INTEGER_TARG;
         } else {
-            sym->ns.typ = rt_entry->typ;
+            sym->ns.u1.s.typ = rt_entry->typ;
         }
-        sym->ns.xt.size = TypeSize( sym->ns.typ );
-        sym->ns.address = NULL;
-        sym->ns.si.sp.imp_segid = AllocImpSegId();
+        sym->ns.xt.size = TypeSize( sym->ns.u1.s.typ );
+        sym->ns.u3.address = NULL;
+        sym->ns.si.sp.u.imp_segid = AllocImpSegId();
         rt_entry->sym_ptr = sym;
     }
     typ = F772CGType( sym );
@@ -148,8 +148,8 @@ void    FreeRtRtns( void ) {
         sym = RtnTab[ rt_index ].sym_ptr;
         if( sym != NULL ) {
             if( ( CGFlags & CG_FATAL ) == 0 ) {
-                if( sym->ns.address != NULL ) {
-                    BEFreeBack( sym->ns.address );
+                if( sym->ns.u3.address != NULL ) {
+                    BEFreeBack( sym->ns.u3.address );
                 }
             }
             STFree( sym );

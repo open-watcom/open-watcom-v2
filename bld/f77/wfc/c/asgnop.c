@@ -55,7 +55,7 @@ void    AsgnOp( TYPE typ1, TYPE typ2, OPTR opr ) {
         EmitOp( FC_POP );
         SymRef( CITNode );
         GenTypes( CITNode, CITNode->link );
-        if( CITNode->sym_ptr->ns.typ == FT_STRUCTURE ) {
+        if( CITNode->sym_ptr->ns.u1.s.typ == FT_STRUCTURE ) {
             if( CITNode->opn.us & USOPN_SAFE ) {
                 // destination is a sub-field or an array element
                 OutU16( 1 );

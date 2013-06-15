@@ -1002,13 +1002,13 @@ void    DtDataDoLoop( void ) {
     e2 = DXPop();
     e1 = DXPop();
     do_var = GetPtr();
-    do_var->ns.si.ms.value = &e1;
+    do_var->ns.si.ms.u.value = &e1;
     iter_count = ( e2 - e1 + e3 ) / e3;
     curr_fc = FCodeTell( 0 );
     while( iter_count > 0 ) {
         FCodeSeek( curr_fc );
         FCodeSequence();
-        *do_var->ns.si.ms.value += e3;
+        *do_var->ns.si.ms.u.value += e3;
         iter_count--;
     }
 }
@@ -1158,11 +1158,11 @@ void    DtPush( void ) {
 
     sym = GetPtr();
     if( _MgcIsMagic( sym ) ) { // must be the value of an implied-DO-variable
-        DXPush( *sym->ns.si.ms.value );
+        DXPush( *sym->ns.si.ms.u.value );
     } else { // must be variable to initialize
         InitVar = sym;
         DtOffset = 0;
-        if( sym->ns.typ != FT_STRUCTURE ) {
+        if( sym->ns.u1.s.typ != FT_STRUCTURE ) {
             DtItemSize = InitVar->ns.xt.size;
         }
     }
@@ -1323,11 +1323,11 @@ void    DtSubscript( void ) {
     intstar4    offset;
 
     InitVar = GetPtr();
-    if( !Subscript( InitVar->ns.si.va.dim_ext, &offset ) ) {
+    if( !Subscript( InitVar->ns.si.va.u.dim_ext, &offset ) ) {
         NameStmtErr( EV_SSCR_INVALID, InitVar, PR_DATA );
     }
     DtOffset = offset * _SymSize( InitVar );
-    if( InitVar->ns.typ != FT_STRUCTURE ) {
+    if( InitVar->ns.u1.s.typ != FT_STRUCTURE ) {
         DtItemSize = InitVar->ns.xt.size;
     }
 }
@@ -1450,7 +1450,7 @@ void    DtInpArray( void ) {
     if( fd == NULL ) {
         InitVar = sym;
         DtOffset = 0;
-        InitArr( sym->ns.si.va.dim_ext, sym->ns.typ, _SymSize( sym ) );
+        InitArr( sym->ns.si.va.u.dim_ext, sym->ns.u1.s.typ, _SymSize( sym ) );
     } else { // array field within structure
         InitArr( fd->fd.dim_ext, fd->fd.typ, fd->fd.xt.size );
     }
@@ -1464,7 +1464,7 @@ void    DtInpStructArray( void ) {
 
     InitVar = GetPtr();
     DtOffset = 0;
-    InitStructArr( InitVar->ns.xt.record->fl.sym_fields, InitVar->ns.si.va.dim_ext );
+    InitStructArr( InitVar->ns.xt.record->fl.sym_fields, InitVar->ns.si.va.u.dim_ext );
 }
 
 

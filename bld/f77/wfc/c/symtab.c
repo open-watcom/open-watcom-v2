@@ -80,7 +80,7 @@ sym_id  SymLookup( char *name, int length ) {
     sym = STName( name, length );
     if( ( sym->ns.flags & ( SY_TYPE | SY_INTRINSIC ) ) == 0 ) {
         sym->ns.xt.size = ImplSize( *name );
-        sym->ns.typ = MapTypes( ImplType( *name ), sym->ns.xt.size );
+        sym->ns.u1.s.typ = MapTypes( ImplType( *name ), sym->ns.xt.size );
     }
     return( sym );
 }
@@ -97,8 +97,8 @@ sym_id  LkSym( void ) {
     CITNode->sym_ptr = sym;
     CITNode->flags = sym->ns.flags;
     CITNode->size = sym->ns.xt.size;
-    CITNode->typ = sym->ns.typ;
-    if( ( sym->ns.name_len > STD_SYMLEN ) &&
+    CITNode->typ = sym->ns.u1.s.typ;
+    if( ( sym->ns.u2.name_len > STD_SYMLEN ) &&
         ( ( ExtnSw & XS_LONG_NAME ) == 0 ) ) {
         NameExt( VA_NAME_LEN_EXT, sym );
         ExtnSw |= XS_LONG_NAME;

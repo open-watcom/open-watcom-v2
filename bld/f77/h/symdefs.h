@@ -76,8 +76,8 @@ typedef struct com_eq {                 //  common/equivalence extension
 #define _AdvRequired( dim )                     \
         (dim->dim_flags & (DIM_ASSUMED|DIM_VARIABLE|DIM_PVD|DIM_ALLOCATABLE))
 #define _Allocatable( sym )                     \
-        (sym->ns.xflags & (SY_ALLOCATABLE))
-#define _ArrElements( sym ) (sym->ns.si.va.dim_ext->num_elts)
+        (sym->ns.u1.s.xflags & (SY_ALLOCATABLE))
+#define _ArrElements( sym ) (sym->ns.si.va.u.dim_ext->num_elts)
 
 typedef struct dim_list {
     union {

@@ -267,7 +267,7 @@ void    __UseEnglishCharSet( void ) {
     CharSetInfo.character_width = &CharacterWidth;
     CharSetInfo.is_foreign = &IsForeign;
 #if !defined( __RT__ )
-    CharSetInfo.character_set = &CharSet;
+    CharSetInfo.character_set = CharSet;
     CharSetInfo.initializer = "__init_english";
 #endif
 }

@@ -47,7 +47,7 @@ void    SetComBlkSize( sym_id com, intstar4 com_size ) {
     com->ns.xt.size = com_size;
 #else
     com->ns.xt.size = com_size / 0x10000L;
-    com->ns.xsize = com_size % 0x10000L;
+    com->ns.u1.xsize = com_size % 0x10000L;
 #endif
 }
 
@@ -60,6 +60,6 @@ intstar4    GetComBlkSize( sym_id com ) {
 #if defined( __386__ )
     return( com->ns.xt.size );
 #else
-    return( (intstar4)com->ns.xt.size * 0x10000L + com->ns.xsize );
+    return( (intstar4)com->ns.xt.size * 0x10000L + com->ns.u1.xsize );
 #endif
 }

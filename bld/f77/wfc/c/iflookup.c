@@ -111,7 +111,7 @@ static  sym_id  IFSymLookup( char *name, uint len ) {
     sym = STSearch( name, len, IFList );
     if( sym == NULL ) {
         sym = STAdd( name, len );
-        sym->ns.address = NULL;
+        sym->ns.u3.address = NULL;
         sym->ns.link = IFList;
         IFList = sym;
     }
@@ -170,7 +170,7 @@ IFF     IFSpecific( TYPE typ ) {
         // when we process SIN( X ), the specific function DSIN already
         // has SY_IF_ARGUMENT set
         sym->ns.flags |= CITNode->sym_ptr->ns.flags | SY_REFERENCED;
-        sym->ns.typ = typ;
+        sym->ns.u1.s.typ = typ;
         sym->ns.xt.size = TypeSize( typ );
         sym->ns.si.fi.index = func;
         CITNode->sym_ptr = sym;

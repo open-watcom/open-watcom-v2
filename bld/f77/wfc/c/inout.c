@@ -187,7 +187,7 @@ void    InitMemIO( void ) {
 void    FiniComIO( void ) {
 //===================
 
-    if( TermBuff != &TokenBuff ) {
+    if( TermBuff != TokenBuff ) {
         FMemFree( TermBuff );
     }
 }

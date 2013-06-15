@@ -60,10 +60,10 @@ sym_id  TmpVar( TYPE typ, uint size ) {
     temp->ns.link = MList;
     MList = temp;
     temp->ns.flags = SY_USAGE | SY_TYPE | SY_VARIABLE;
-    temp->ns.xflags = 0;
-    temp->ns.address = NULL;
+    temp->ns.u1.s.xflags = 0;
+    temp->ns.u3.address = NULL;
     temp->ns.xt.size = size;
-    temp->ns.typ = typ;
+    temp->ns.u1.s.typ = typ;
     _MgcSetClass( temp, MAGIC_TEMP );
     temp->ns.si.ms.sym = NULL;
     return( temp );
