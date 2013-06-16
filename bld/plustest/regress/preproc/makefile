@@ -10,19 +10,19 @@ testcomp =  $(wpp_$(arch))
 .c.i:
     %append exec.out @@@ $^@ @@@
     $(testcomp) $[@ -w0 -pl -fo=.i -na
-    sed exec.out $^@ >tmp_exec.out
+    sed -e "" exec.out $^@ >tmp_exec.out
     cp tmp_exec.out exec.out
 
 .c.i1:
     %append exec.out @@@ $^@ @@@
     $(testcomp) $[@ -w0 -plc -fo=.i1 -na
-    sed exec.out $^@ >tmp_exec.out
+    sed -e "" exec.out $^@ >tmp_exec.out
     cp tmp_exec.out exec.out
 
 .c.i0:
     %append exec.out @@@ $^@ @@@
     $(testcomp) $[@ -w0 -pl -pw=0 -fo=.i0 -na
-    sed exec.out $^@ >tmp_exec.out
+    sed -e "" exec.out $^@ >tmp_exec.out
     cp tmp_exec.out exec.out
 
 all_tests = &

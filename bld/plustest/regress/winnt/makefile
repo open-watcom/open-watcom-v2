@@ -26,13 +26,13 @@ test : .symbolic clean start_test
 test : .symbolic clean start_test
 !else ifeq targ_env_386 wnt386
 test : .symbolic clean start_test tomdll.dll test.lnk tomexe.$(exe)
-    sed tomexe.out >>exec.out
+    sed -e "" tomexe.out >>exec.out
     diff exec.out exec.chk
 !else ifdef __NT386__
 test : .symbolic clean start_test
 !else
 test : .symbolic clean start_test tomdll.dll test.lnk tomexe.$(exe)
-    sed tomexe.out >>exec.out
+    sed -e "" tomexe.out >>exec.out
     diff exec.out exec.chk
 !endif
     %append $(log_file) PASS $(%__CWD__)

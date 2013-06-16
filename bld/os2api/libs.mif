@@ -105,25 +105,25 @@ os2.lib: lib286.lbc msgseg.obj
         $(librarian) $(libflags) @$[@ +$]@
 
 lib286.lbc: $(components286)
-        sed $< > $@
+        sed -e "" $< > $@
 
 os2386.lib: lib386.lbc msgseg32.obj
         $(librarian) $(libflags) @$[@ +$]@
 
 lib386.lbc: $(components386)
-        sed $< > $@
+        sed -e "" $< > $@
 
 rexx.lib: rexxall.lbc
         $(librarian) $(libflags) @$<
 
 rexxall.lbc: $(componentsrexx)
-        sed $< > $@
+        sed -e "" $< > $@
 
 mmpm2.lib: mmpm2all.lbc
         $(librarian) $(libflags) @$<
 
 mmpm2all.lbc: $(componentsmmpm2)
-        sed $< > $@
+        sed -e "" $< > $@
 
 libuls.lib: libuni.lbc
         $(librarian) $(libflags) @$<
