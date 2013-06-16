@@ -52,6 +52,5 @@ binbuild
 /distrib/ow/*/setup.*
 
 /rel/
-/rel2/
 /pass1/
 /pass2/
