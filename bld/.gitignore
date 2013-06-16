@@ -53,10 +53,8 @@
 /cpplib/*/*.dll/*.def
 /cpplib/rtdll/*/*/*.dll
 #
-/ctest/*.out
 /ctest/*.sav
 /ctest/*/*/*.dis
-/ctest/*/*/*.out
 /ctest/*/*/*.sav
 #
 /dip/*/*/*.dll
@@ -64,9 +62,7 @@
 #
 /editdll/*/*/*.dll
 #
-/f77test/*.out
 /f77test/*.sav
-/f77test/regress/nist/*.out
 /f77test/regress/nist/FOR*
 /f77test/regress/nist/FM*.DAT
 /f77test/regress/nist/fm*.dat
@@ -106,14 +102,10 @@
 /plusplus/*/*/*.dll
 /plusplus/*/*/ytab.c
 /plusplus/*/*/ytab.h
-/plusplus/*/*/y.out
 #
-/plustest/*.out
 /plustest/*.sav
 /plustest/*/*/*.dis
-/plustest/*/*/*.out
 /plustest/*/*/*.sav
-/plustest/*/*/*/*.out
 /plustest/*/*/*/*.sav
 /plustest/regress/owstl/mmwin16.cpp
 /plustest/regress/owstl/mmwindef.cpp
@@ -165,8 +157,6 @@
 /wasmtest/*.sav
 /wasmtest/*/*.dib
 /wasmtest/*/*.dis
-/wasmtest/*/*.OUT
-/wasmtest/*/*.out
 /wasmtest/*/*.sav
 #
 /wattcp/inc/sys/*
