@@ -6,7 +6,7 @@
     aliasgen aliases.lst ../a/ ../objs.mif
 
 clean : .symbolic
-    rm -f *.?bj *.err ../a/*.asm ../objs.mif
+    rm -f *.obj *.err ../a/*.asm ../objs.mif
 
 realclean : .symbolic clean
     rm -f ../objs.mif ../a/*.asm

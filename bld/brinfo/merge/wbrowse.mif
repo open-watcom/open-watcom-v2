@@ -19,11 +19,11 @@ incpath = ../hpp;../res;$(brinfo_dir)/h;$(lexlib_dir)/wclass/hpp;$(plusplus_dir)
 cflags=-w8-bt=nt-zq-fhd -d_WIN32 -dWIN32 -d_DBCS
 
 .cpp.obj: .AUTODEPEND
-	wpp386 $[@ $(debug_cpp_opts) $(cflags) -fh=wpch.pch
-	
+    wpp386 $[@ $(debug_cpp_opts) $(cflags) -fh=wpch.pch
+
 .cpp.brm: .AUTODEPEND .SYMBOLIC
-	wcpp386d $[@ -fbi=ft-zs $(debug_cpp_opts) $(cflags) -fh=wpchbrm.pch
-	
+    wcpp386d $[@ -fbi=ft-zs $(debug_cpp_opts) $(cflags) -fh=wpchbrm.pch
+
 objs = &
     wpch.obj &
     applic.obj &
@@ -88,18 +88,18 @@ wbrowse.dll: $(objs) WRes.res makefile .autodepend
     wlink @$(lnk)
     wlib -q -n wbrowse +wbrowse.dll
 #    @newer wbrowse.dll \bin\wbrowse.dll "^copy &f $#f > nul"
-	
+
 clean: .symbolic
-	@if exist *.?bj del *.?bj
-	@if exist *.lnk del *.lnk
-	@if exist *.ilk del *.ilk
-	@if exist *.exe del *.exe
-	@if exist *.sym del *.sym
-	@if exist *.dll del *.dll
-	@if exist *.lib del *.lib
-	@if exist *.res del *.res
-	@if exist *.lbc del *.lbc
-	@if exist *.map del *.map
-	@if exist *.pch del *.pch
-	@if exist *.err del *.err
-	@if exist wbrowse.bak del wbrowse.bak
+    @if exist *.obj del *.obj
+    @if exist *.lnk del *.lnk
+    @if exist *.ilk del *.ilk
+    @if exist *.exe del *.exe
+    @if exist *.sym del *.sym
+    @if exist *.dll del *.dll
+    @if exist *.lib del *.lib
+    @if exist *.res del *.res
+    @if exist *.lbc del *.lbc
+    @if exist *.map del *.map
+    @if exist *.pch del *.pch
+    @if exist *.err del *.err
+    @if exist wbrowse.bak del wbrowse.bak

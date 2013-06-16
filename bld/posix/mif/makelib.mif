@@ -19,4 +19,4 @@ posix.lib : $(libobjs)
         $(librarian) $(libflags) $<
 
 clean : .symbolic
-        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym

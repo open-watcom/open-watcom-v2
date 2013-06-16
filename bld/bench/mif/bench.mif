@@ -91,4 +91,4 @@ deflink = $(ibmc_root)\bin\ilink $(lflags_ibmc) /out:$^. $(bench_dir)\support\ib
 !endif
 
 clean: .SYMBOLIC .EXPLICIT
-        rm -f *.?bj *.lnk *.exe *.lib *.res *.clb *.lst *.err *.map *.sym *.tmp *.out
+        rm -f *.obj *.lnk *.exe *.lib *.res *.clb *.lst *.err *.map *.sym *.tmp *.out

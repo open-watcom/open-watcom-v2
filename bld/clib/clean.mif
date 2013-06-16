@@ -1,5 +1,5 @@
 clean killall: .SYMBOLIC .EXPLICIT
-    rm -f *.?bj *.bak *.def *.dll *.dmp *.err *.exe *.lbc
+    rm -f *.obj *.bak *.def *.dll *.dmp *.err *.exe *.lbc
     rm -f *.lib *.lnk *.lst *.map *.out *.sym *.tim *.tmp
     rm -f *.zip *.imp *.rc  *.res
 

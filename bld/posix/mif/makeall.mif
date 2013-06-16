@@ -41,20 +41,20 @@ clean : .symbolic
 curr_dir_all=$+ $(%CWD) $-
         @echo clean $(posixlibdir)
         @cd $(posixlibdir)
-        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !ifeq host_cpu i86
 !ifeq host_os dos
         @echo clean $(altposixlibdir)
         @cd $(altposixlibdir)
-        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !else ifeq host_os os2
         @echo clean $(altposixlibdir)
         @cd $(altposixlibdir)
-        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !endif
 !endif
         @cd $(curr_dir_all)
         @echo clean $(curr_dir_all)
-        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !endif
 

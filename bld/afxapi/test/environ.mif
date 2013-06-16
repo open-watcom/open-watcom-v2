@@ -118,7 +118,7 @@ clean : .symbolic global
     @%null
 
 common_clean : .procedure
-    @if exist *.?bj rm *.?bj
+    @if exist *.obj rm *.obj
     @if exist *.err rm *.err
     @if exist *.lnk rm *.lnk
     @if exist *.lbc rm *.lbc
