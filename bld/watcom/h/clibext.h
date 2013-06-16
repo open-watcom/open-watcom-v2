@@ -89,6 +89,8 @@
 #define snprintf _snprintf
 #define _mbislead _ismbblead
 #define utoa ultoa
+#define gmtime_r(a,b) gmtime_s(b,a)
+#define localtime_r(a,b) localtime_s(b,a)
 
 #endif
 
