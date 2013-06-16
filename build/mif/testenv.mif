@@ -134,9 +134,6 @@ bld_extra_defines = -DINLINETEST
 bld_extra_defines = -DINLINETEST
 !endif
 
-sed = sed
-awk = awk
-
 #
 # architectures -- 386, i86, axp, ppc, mps
 #
@@ -1027,7 +1024,7 @@ test.lnk : $(__MAKEFILES__)
 !endif
     @%append $(%ERROR_FILE) PASS executing $^&
 !ifdef ftest_name
-    diff $*.out expected/$*.exp >> exec.out
+    diff $*.out expected/$*.chk >> exec.out
 !endif
 
 ./chk_exec.exe : $(watcom_dir)/c/chk_exec.c

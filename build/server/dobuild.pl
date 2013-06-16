@@ -387,7 +387,7 @@ sub make_test_batch
     print BATCH "cd $OW\ncd bld\n";
     print BATCH "rm -f ctest/*.log\n";
     print BATCH "rm -f wasmtest/*.log\n";
-    print BATCH "rm -f f77/regress/*.log\n";
+    print BATCH "rm -f f77test/regress/*.log\n";
     print BATCH "rm -f plustest/*.log\n";
     if ($relsubdir eq "pass1") {
         print BATCH "builder -i test1\n";
@@ -572,7 +572,7 @@ sub run_tests
     print REPORT "REGRESSION TESTS COMPLETED : ", get_datetime(), "\n\n";
 
     print REPORT "\tFortran Compiler: ";
-    $fresult = process_log("$OW\/bld\/f77\/regress\/result.log");
+    $fresult = process_log("$OW\/bld\/f77test\/regress\/result.log");
     print REPORT "\tC Compiler      : ";
     $cresult = process_log("$OW\/bld\/ctest\/result.log");
     print REPORT "\tC++ Compiler    : ";

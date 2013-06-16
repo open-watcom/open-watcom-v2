@@ -2,11 +2,15 @@
 
 ftest_name = result
 
-all_tests = test0 test1 test2 test3 test4 test5 test6 test7 test8 test9
+test_grp_list = nist
+
+nist_tests = test0 test1 test2 test3 test4 test5 test6 test7 test8 test9
+
+all_tests = $(nist_tests)
 
 !include testenv.mif
 
-test : .symbolic clean start_test cd_nist $(all_tests) cd_back ./chktest.exe
+test : .symbolic clean start_test cd_regress $(test_grp_list) cd_back ./chktest.exe
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     %append $(log_file) TEST
@@ -18,10 +22,15 @@ start_test: .symbolic
     @if exist $(log_file) rm -f $(log_file)
     @set FTEST_LOG_FILE=$(log_file)
 
-cd_nist : .symbolic
-    cd nist
+cd_regress : .symbolic
+    cd regress
 
 cd_back : .symbolic
+    cd ..
+
+$(test_grp_list) : .symbolic
+    cd $@
+    @for %%a in ($($@_tests)) do -@%make %%a
     cd ..
 
 $(all_tests) : .procedure

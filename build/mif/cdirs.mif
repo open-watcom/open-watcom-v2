@@ -140,7 +140,7 @@ ctest_dir       = $(src_dir)/ctest
 f77_dir         = $(src_dir)/f77
 !endif
 !ifndef ftest_dir
-ftest_dir       = $(src_dir)/f77/regress
+ftest_dir       = $(src_dir)/f77test
 !endif
 !ifndef clib_dir
 clib_dir        = $(src_dir)/clib
