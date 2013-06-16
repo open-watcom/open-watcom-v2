@@ -25,8 +25,8 @@ echo # IMPLICIT RULES TEST 2A
 echo # ---------------------------
 sleep 2
 wtouch hello.h
-%1 -h -c -f IMP02A > tst1.out
-diff IMP02.CMP tst1.out
+%1 -h -c -f imp02a > tst1.out
+diff imp02.chk tst1.out
 if errorlevel 1 goto err2
     echo # Implicit Rules Test successful
     goto test2b
@@ -41,8 +41,8 @@ echo # IMPLICIT RULES TEST 2B
 echo # ---------------------------
 sleep 2
 wtouch hello.h
-%1 -c -h -f IMP02B > tst1.out
-diff IMP02.CMP tst1.out
+%1 -c -h -f imp02b > tst1.out
+diff imp02.chk tst1.out
 if errorlevel 1 goto err2b
     echo # Implicit Rules Test successful
     goto test2c
@@ -57,8 +57,8 @@ echo # IMPLICIT RULES TEST 2C
 echo # ---------------------------
 sleep 2
 wtouch hello.h
-%1 -h -c -f IMP02C /ms > tst1.out
-diff IMP02.CMP tst1.out
+%1 -h -c -f imp02c /ms > tst1.out
+diff imp02.chk tst1.out
 if errorlevel 1 goto err2c
     echo # Implicit Rules Test successful
     goto test2d
@@ -72,8 +72,8 @@ echo # ---------------------------
 echo # IMPLICIT RULES TEST 2D
 echo # ---------------------------
 rm -f hello.obj
-%1 -f IMP02D -h > tst1.out
-sed "s:of .*[\\/]:of :" tst1.out | diff IMP02D.CMP -
+%1 -f imp02d -h > tst1.out
+sed "s:of .*[\\/]:of :" tst1.out | diff imp02d.chk -
 if errorlevel 1 goto err2d
     echo # Implicit Rules Test successful
     goto test3

@@ -37,7 +37,7 @@ echo LONGFILENAME OK > "hello tmp.tmp"
 touch hello.h
 rm -f tmp.out
 $1 -h -a -f long01 > tmp.out 2>&1
-diff -b long01.cmp tmp.out
+diff -b long01.chk tmp.out
 do_check
 
 TEST=2
@@ -46,7 +46,7 @@ rm hello.h
 print_header
 rm tmp.out
 $1 -h -ms -a -f long02 > tmp.out 2>&1
-diff -b long02.cmp tmp.out
+diff -b long02.chk tmp.out
 do_check
 
 TEST=3
@@ -54,7 +54,7 @@ print_header
 rm tmp.out
 # This one MUST NOT use -a switch!
 $1 -h -ms -f long03 > tmp.out 2>&1
-diff -b long03.cmp tmp.out
+diff -b long03.chk tmp.out
 do_check
 
 # Unix version uses forward slashes
@@ -62,14 +62,14 @@ TEST=4
 print_header
 rm tmp.out
 $1 -h -m -f long04u > tmp.out 2>&1
-diff -b long04u.cmp tmp.out
+diff -b long04u.chk tmp.out
 do_check
 
 TEST=5
 print_header
 rm tmp.out
 $1 -h -m -f long05 > tmp.out 2>&1
-diff -b long05.cmp tmp.out
+diff -b long05.chk tmp.out
 do_check
 
 # Slightly different semantics on Unix

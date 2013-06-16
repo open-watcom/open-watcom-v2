@@ -10,7 +10,7 @@ echo #   Inline File Test 1
 echo # ---------------------------
 
 %1 -h -f inline01 > tmp.out 2>&1
-diff inline01.cmp tmp.out
+diff inline01.chk tmp.out
 if errorlevel 1 goto err1
 for %%e in (1 2 3) do if not exist test.%%e goto err1
     @echo # inline01 successful
@@ -26,7 +26,7 @@ echo #   Inline File Test 2
 echo # ---------------------------
 
 %1 -h -f inline02 > tmp.out 2>&1
-diff inline02.cmp tmp.out
+diff inline02.chk tmp.out
 if errorlevel 1 goto err2
 for %%e in (1 2 3) do if exist test.%%e goto err2
     @echo # inline02 successful
@@ -41,7 +41,7 @@ echo # ---------------------------
 echo #   Inline File Test 3
 echo # ---------------------------
 %1 -h -f inline03 > tmp.out 2>&1
-diff inline03.cmp tmp.out
+diff inline03.chk tmp.out
 if errorlevel 1 goto err3
     @echo # inline03 successful
     goto test4
@@ -55,7 +55,7 @@ echo #   Inline File Test 4
 echo # ---------------------------
 
 %1 -h -f inline04 > tmp.out 2>&1
-diff inline04.cmp tmp.out
+diff inline04.chk tmp.out
 if errorlevel 1 goto err4
     @echo # inline04 successful
     goto test5
@@ -70,7 +70,7 @@ echo #   Inline File Test 5
 echo # ---------------------------
 
 %1 -h -f inline05 > tmp.out 2>&1
-diff inline05.cmp tmp.out
+diff -i inline05.chk tmp.out
 if errorlevel 1 goto err5
     @echo # inline05 successful
     goto test6
@@ -85,7 +85,7 @@ echo #   Inline File Test 6
 echo # ---------------------------
 
 %1 -h -f inline06 > tmp.out 2>&1
-diff inline06.cmp tmp.out
+diff -i inline06.chk tmp.out
 if errorlevel 1 goto err6
     @echo # inline06 successful
     goto test7
@@ -100,7 +100,7 @@ echo #   Inline File Test 7
 echo # ---------------------------
 
 %1 -h -f inline07 > tmp.out 2>&1
-diff inline07.cmp tmp.out
+diff inline07.chk tmp.out
 if errorlevel 1 goto err7
     @echo # inline07 successful
     goto test8

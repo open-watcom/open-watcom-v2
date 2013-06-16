@@ -13,7 +13,7 @@ echo # ---------------------------
 if errorlevel 1 goto err1
 %1 -h -f upd01 -m -sn -y > tmp.out
 if errorlevel 1 goto err1
-diff upd01.out tmp.out
+diff upd01.chk tmp.out
 if errorlevel 1 goto err1
     @echo # UPD01 successful
     goto test2
@@ -50,7 +50,7 @@ echo # ---------------------------
 echo #   Test 4
 echo # ---------------------------
 %1 -h -f upd04 > tmp.out 2>&1
-diff -b upd04.out tmp.out
+diff -b upd04.chk tmp.out
 if errorlevel 1 goto err4
     echo # UPD04 successful
     goto test5
@@ -63,7 +63,7 @@ echo # ---------------------------
 echo #   Test 5
 echo # ---------------------------
 %1 -h -s -f upd05 > tmp.out
-diff -b upd05.out tmp.out
+diff -b upd05.chk tmp.out
 if errorlevel 1 goto err5
     echo # UPD05 successful
     goto test6
@@ -76,7 +76,7 @@ echo # ---------------------------
 echo #   Test 6
 echo # ---------------------------
 %1 -h -f upd06 > tmp.out
-diff upd06.out tmp.out
+diff upd06.chk tmp.out
 if errorlevel 1 goto err6
     echo # UPD06 successful
     goto test7
@@ -89,7 +89,7 @@ echo # ---------------------------
 echo #   Test 7
 echo # ---------------------------
 %1 -h -f upd07 > tmp.out
-diff upd07.out tmp.out
+diff upd07.chk tmp.out
 if errorlevel 1 goto err7
     echo # UPD07 successful
     goto test8
@@ -103,7 +103,7 @@ echo #   Test 8  --- ONLY FOR DOS
 echo # ---------------------------
 REM %1 -h -f upd08 >tmp.out
 REM if errorlevel 1 goto err
-REM     diff upd08.out tmp.out
+REM     diff upd08.chk tmp.out
 REM     if errorlevel 1 goto err8
 REM     echo # UPD08 successful
 REM     goto test9
@@ -140,7 +140,7 @@ echo # ---------------------------
 echo #   Test 11
 echo # ---------------------------
 %1 -h -ms -f upd11 > tmp.out 2>&1
-diff -b upd11.out tmp.out
+diff -b upd11.chk tmp.out
 if errorlevel 1 goto err11
     echo # UPD11 successful
     goto test12

@@ -42,7 +42,7 @@ echo \# ===========================
 TEST=1
 print_header
 $1 -h -f inline01 > tmp.out 2>&1
-diff inline01.cmp tmp.out
+diff inline01.chk tmp.out
 do_err_check
 [ -a test.1 -a -a test.2 -a -a test.3 ]
 do_check
@@ -50,7 +50,7 @@ do_check
 TEST=2
 print_header
 $1 -h -f inline02 > tmp.out 2>&1
-diff inline02.cmp tmp.out
+diff inline02.chk tmp.out
 do_err_check
 [ ! -a test.1 -a ! -a test.2 -a ! -a test.3 ]
 do_check
@@ -58,32 +58,32 @@ do_check
 TEST=3
 print_header
 $1 -h -f inline03 > tmp.out 2>&1
-diff inline03.cmp tmp.out
+diff inline03.chk tmp.out
 do_check
 
 TEST=4
 print_header
 $1 -h -f inline04 > tmp.out 2>&1
-diff inline04.cmp tmp.out
+diff inline04.chk tmp.out
 do_check
 
 # UNIX seems to behave too differently to make this test very meaningful
 #TEST=5
 #print_header
 #$1 -h -f inline05 > tmp.out 2>&1
-#diff inline05.cmp tmp.out
+#diff -i inline05.chk tmp.out
 #do_check
 
 TEST=6
 print_header
 $1 -h -f inline06 > tmp.out 2>&1
-diff inline06.cmp tmp.out
+diff -i inline06.chk tmp.out
 do_check
 
 TEST=7
 print_header
 $1 -h -f inline07 > tmp.out 2>&1
-diff inline07.cmp tmp.out
+diff inline07.chk tmp.out
 do_check
 
 rm -f tmp.out

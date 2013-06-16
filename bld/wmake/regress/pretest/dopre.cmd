@@ -22,9 +22,8 @@ if errorlevel 1 goto err1
 ECHO # -----------------------------
 ECHO #   Test 2
 ECHO # -----------------------------
-rm tmp3.out
 %1 -h -f pre03 pre03 > tmp.out 2>&1
-diff pre03.out tmp.out
+diff -i pre03.chk tmp.out
 if errorlevel 1 goto err2
     echo # Test2 successful
     goto test3
@@ -76,7 +75,7 @@ ECHO #   Test 6
 ECHO # -----------------------------
 rm tmp.out
 %1 -h -f pre07 > tmp.out 2>&1
-diff pre07.out tmp.out
+diff -i pre07.chk tmp.out
 if errorlevel 1 goto err6
     echo # Test 6 successful
     goto test7
@@ -91,7 +90,7 @@ ECHO # -----------------------------
 rm tmp.out
 %1 -h -f pre08 > tmp.out 2>&1
 if errorlevel 1 goto err7
-diff pre08.out tmp.out
+diff pre08.chk tmp.out
 if errorlevel 1 goto err7
     echo # Test 7 successful
     goto test8

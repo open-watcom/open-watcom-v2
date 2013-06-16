@@ -33,25 +33,25 @@ echo \# ===========================
 TEST=1
 print_header
 $1 -ms -h -f macro01 > tmp.out 2>&1
-diff -b macro01.cmp tmp.out
+diff -b macro01.chk tmp.out
 do_check
 
 TEST=2A
 print_header
 $1 -h -f macro02 > tmp.out 2>&1
-diff -b macro02a.cmp tmp.out
+diff -b macro02a.chk tmp.out
 do_check
 
 TEST=2B
 print_header
 $1 -h -ms -f macro02 > tmp.out 2>&1
-diff -b macro02b.cmp tmp.out
+diff -b macro02b.chk tmp.out
 do_check
 
 TEST=3A
 print_header
 $1 -h -f macro03 > tmp.out 2>&1
-diff -b macro03a.cmp tmp.out
+diff -b macro03a.chk tmp.out
 do_check
 
 TEST=3B
@@ -59,26 +59,26 @@ print_header
 export fubar=test depends on this environment variable
 $1 -h -ms -f macro03 > tmp.out 2>&1
 unset fubar
-diff -b -i macro03b.cmp tmp.out
+diff -b -i macro03b.chk tmp.out
 do_check
 
 TEST=4A
 print_header
 $1 -h -f macro04 > tmp.out 2>&1
-diff -b macro04a.cmp tmp.out
+diff -b macro04a.chk tmp.out
 do_check
 
 TEST=4B
 print_header
 $1 -h -ms -f macro04 > tmp.out 2>&1
-diff -b macro04b.cmp tmp.out
+diff -b macro04b.chk tmp.out
 do_check
 
 TEST=5
 print_header
 touch hello.boo hello.tmp hello.c
 $1 -h -ms -f macro05u > tmp.out 2>&1
-diff -b macro05u.cmp tmp.out
+diff -b macro05u.chk tmp.out
 do_check
 rm hello.boo hello.tmp hello.c
 
@@ -87,7 +87,7 @@ print_header
 touch hello.obj hello2.obj
 touch hello.c  hello2.c
 $1 -h -ms -f macro06 -a > tmp.out 2>&1
-diff -b macro06.cmp tmp.out
+diff -b macro06.chk tmp.out
 do_check
 
 TEST=7
@@ -95,13 +95,13 @@ print_header
 touch hello.obj hello2.obj
 touch hello.c  hello2.c
 $1 -h -ms -m -f macro07 -a cc=bwcl386 > tmp.out 2>&1
-diff -b macro07.cmp tmp.out
+diff -b macro07.chk tmp.out
 do_check
 
 TEST=8
 print_header
 $1 -h -f macro08 > tmp.out 2>&1
-diff -b macro08.cmp tmp.out
+diff -b macro08.chk tmp.out
 do_check
 
 rm -f hello.obj hello2.obj hello.boo hello.tmp hello.c hello2.c 

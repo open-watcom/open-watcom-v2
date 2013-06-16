@@ -83,7 +83,7 @@ int main( int argc, char **argv )
 #ifndef __WATCOMC__
           "    cc -c -o $@ $<\n"
 #else
-          "    wcc386 $[* /zq\n"
+          "    wcc386 $[* -zq\n"
 #endif
           "\n"
           "main.exe : main.obj &\n    ", fp);

@@ -11,7 +11,7 @@ wcl386 create.c -ox-d1-zq
 create 30
 rm -f err1.out
 wtouch err1.out
-%1 -h -f MAKETST1 -l err1.out > tst1.out
+%1 -h -f maketst1 -l err1.out > tst1.out
 diff -b tst1.out tst1.chk
 if errorlevel 1 goto tst1err
 diff -b err1.out err1.chk
@@ -29,7 +29,7 @@ if errorlevel 1 goto tst1err
     rm *.out
     rm main.*
     rm foo*.c
-    rm MAKETST1
+    rm maketst1
 goto end
 :usage
 echo usage: %0 prgname errorfile

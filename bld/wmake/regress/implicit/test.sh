@@ -45,7 +45,7 @@ print_header
 sleep 1
 touch hello.h
 $1 -h -c -f imp02a > tst1.out
-diff imp02.cmp tst1.out
+diff imp02.chk tst1.out
 do_check
 
 TEST=2B
@@ -53,7 +53,7 @@ print_header
 sleep 1
 touch hello.h
 $1 -c -h -f imp02b > tst1.out
-diff imp02.cmp tst1.out
+diff imp02.chk tst1.out
 do_check
 
 TEST=2C
@@ -61,7 +61,7 @@ print_header
 sleep 1
 touch hello.h
 $1 -h -c -f imp02c -ms > tst1.out
-diff imp02.cmp tst1.out
+diff imp02.chk tst1.out
 do_check
 
 # Won't work with non-OW compilers, which may not be available on UNIX
@@ -70,7 +70,7 @@ do_check
 #print_header
 #rm -f hello.obj
 #$1 -f imp02d -h > tst1.out
-#sed "s:of .*[\\/]:of :" tst1.out | diff imp02d.cmp -
+#sed "s:of .*[\\/]:of :" tst1.out | diff imp02d.chk -
 #do_check
 
 # hello.* hello?.* uses OW and Linux rm compatible wildcards. hello* no go

@@ -8,7 +8,7 @@ objs = ap1.obj ap2.obj ap3.obj
 
 .c:         .;..\c
 .c.obj:
-    wcc386 $[* /zq
+    wcc386 $[* -zq
 
 app : app.exe .symbolic
     @%null

@@ -10,7 +10,7 @@ echo #   PreProcess Test 1
 echo # ---------------------------
 
 %1 -h -f prep01 > tmp.out 2>&1
-diff -b prep01.cmp tmp.out
+diff -b -i prep01.chk tmp.out
 if errorlevel 1 goto err1
     @echo # prep01 successful
     goto test2
@@ -25,10 +25,10 @@ echo #   PreProcess Test 2
 echo # ---------------------------
 
 %1 -h -f prep02 -m -ms > tmp.out
-diff prep02.cmp tmp.out
+diff prep02.chk tmp.out
 if errorlevel 1 goto err2
 %1 -h -f prep02 -m     > tmp.out
-diff prep02.cmp tmp.out
+diff prep02.chk tmp.out
 if errorlevel 1 goto err2
     @echo # prep02 successful
     goto test3
@@ -43,7 +43,7 @@ echo #   PreProcess Test 3
 echo # ---------------------------
 
 %1 -h -f prep03 > tmp.out 2>&1
-diff -b prep03.cmp tmp.out
+diff -b -i prep03.chk tmp.out
 if errorlevel 1 goto err3
     @echo # prep03 successful
     goto test4
@@ -58,7 +58,7 @@ echo #   PreProcess Test 4
 echo # ---------------------------
 
 %1 -h -f prep04 > tmp.out 2>&1
-diff -b prep04.cmp tmp.out
+diff -b prep04.chk tmp.out
 if errorlevel 1 goto err4
     @echo # prep04 successful
     goto test5

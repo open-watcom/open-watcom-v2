@@ -9,8 +9,8 @@ echo # ---------------------------
 echo #   Macro Test 1
 echo # ---------------------------
 
-%1 -ms -m -h -f MACRO01 > tmp.out 2>&1
-diff -b MACRO01.CMP tmp.out
+%1 -ms -m -h -f macro01 > tmp.out 2>&1
+diff -b macro01.chk tmp.out
 if errorlevel 1 goto err1
     @echo # MACRO01 successful
     goto test2
@@ -24,8 +24,8 @@ echo # ---------------------------
 echo #   Macro Test 2A
 echo # ---------------------------
 
-%1 -h -f MACRO02 > tmp.out 2>&1
-diff -b MACRO02A.CMP tmp.out
+%1 -h -f macro02 > tmp.out 2>&1
+diff -b macro02a.chk tmp.out
 if errorlevel 1 goto err2a
     @echo # MACRO02A successful
     goto test2b
@@ -38,8 +38,8 @@ echo # ---------------------------
 echo #   Macro Test 2B
 echo # ---------------------------
 
-%1 -h -ms -m -f MACRO02 > tmp.out 2>&1
-diff -b MACRO02B.CMP tmp.out
+%1 -h -ms -m -f macro02 > tmp.out 2>&1
+diff -b macro02b.chk tmp.out
 if errorlevel 1 goto err2b
     @echo # MACRO02B successful
     goto test3
@@ -53,8 +53,8 @@ echo # ---------------------------
 echo #   Macro Test 3A
 echo # ---------------------------
 :: set TRMEM_CODE=3
-%1 -h -f MACRO03 > tmp.out 2>&1
-diff -b MACRO03A.CMP tmp.out
+%1 -h -f macro03 > tmp.out 2>&1
+diff -b macro03a.chk tmp.out
 if errorlevel 1 goto err3a
     @echo # MACRO03A successful
     goto test3b
@@ -69,9 +69,9 @@ echo #   Macro Test 3B
 echo # ---------------------------
 
 set fubar=test depends on this environment variable
-%1 -h -ms -m -f MACRO03 > tmp.out 2>&1
+%1 -h -ms -m -f macro03 > tmp.out 2>&1
 set fubar=
-diff -b MACRO03B.CMP tmp.out
+diff -b -i macro03b.chk tmp.out
 if errorlevel 1 goto err3b
     @echo # MACRO03B successful
     goto test4
@@ -85,8 +85,8 @@ echo # ---------------------------
 echo #   Macro Test 4A
 echo # ---------------------------
 
-%1 -h -f MACRO04 > tmp.out 2>&1
-diff -b MACRO04A.CMP tmp.out
+%1 -h -f macro04 > tmp.out 2>&1
+diff -b macro04a.chk tmp.out
 if errorlevel 1 goto err4a
     @echo # MACRO04A successful
     goto test4b
@@ -99,8 +99,8 @@ echo # ---------------------------
 echo #   Macro Test 4B
 echo # ---------------------------
 
-%1 -h -ms -m -f MACRO04 > tmp.out 2>&1
-diff -b MACRO04B.CMP tmp.out
+%1 -h -ms -m -f macro04 > tmp.out 2>&1
+diff -b macro04b.chk tmp.out
 if errorlevel 1 goto err4b
     @echo # MACRO0r4B successful
     goto test5
@@ -115,8 +115,8 @@ echo #   Macro Test 5
 echo # ---------------------------
 
 wtouch hello.boo hello.tmp hello.c
-%1 -h -ms -m -f MACRO05 > tmp.out 2>&1
-diff -b MACRO05.CMP tmp.out
+%1 -h -ms -m -f macro05 > tmp.out 2>&1
+diff -b macro05.chk tmp.out
 if errorlevel 1 goto err5
     @echo # MACRO05 successful
     goto test6
@@ -133,8 +133,8 @@ echo # ---------------------------
 
 wtouch hello.obj hello2.obj
 wtouch hello.c  hello2.c
-%1 -h -ms -m -f MACRO06 -a > tmp.out 2>&1
-diff -b MACRO06.CMP tmp.out
+%1 -h -ms -m -f macro06 -a > tmp.out 2>&1
+diff -b macro06.chk tmp.out
 if errorlevel 1 goto err6
     @echo # MACRO06 successful
     goto test7
@@ -150,8 +150,8 @@ echo # ---------------------------
 
 wtouch hello.obj hello2.obj
 wtouch hello.c  hello2.c
-%1 -h -ms -m -f MACRO07 -a cc=bwcl386 > tmp.out 2>&1
-diff -b MACRO07.CMP tmp.out
+%1 -h -ms -m -f macro07 -a cc=bwcl386 > tmp.out 2>&1
+diff -b macro07.chk tmp.out
 if errorlevel 1 goto err7
     @echo # MACRO07 successful
     goto test8
@@ -164,8 +164,8 @@ echo # ---------------------------
 echo #   Macro Test 8
 echo # ---------------------------
 
-%1 -h -f MACRO08 > tmp.out 2>&1
-diff -b MACRO08.CMP tmp.out
+%1 -h -f macro08 > tmp.out 2>&1
+diff -b macro08.chk tmp.out
 if errorlevel 1 goto err8
     @echo # MACRO08 successful
     goto test9

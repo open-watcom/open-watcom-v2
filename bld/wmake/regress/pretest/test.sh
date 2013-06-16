@@ -40,7 +40,7 @@ TEST=2
 print_header
 rm -f tmp.out
 $1 -h -f pre03 pre03 > tmp.out 2>&1
-diff pre03.out tmp.out
+diff pre03.chk tmp.out
 do_check
 
 TEST=3
@@ -62,14 +62,14 @@ TEST=6
 print_header
 rm -f tmp.out
 $1 -h -f pre07 > tmp.out 2>&1
-diff pre07.out tmp.out
+diff pre07.chk tmp.out
 do_check
 
 TEST=7
 print_header
 rm -f tmp.out
 $1 -h -f pre08 > tmp.out 2>&1
-diff pre08.out tmp.out
+diff pre08.chk tmp.out
 do_check
 
 rm -f tmp.out

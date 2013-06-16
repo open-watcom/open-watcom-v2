@@ -7,8 +7,8 @@ if .%1 == . goto usage
 echo # ---------------------------
 echo # Test A
 echo # ---------------------------
-%1 -h -f FOR01 > tst2.out 2>&1
-diff tst2.out FOR01.cmp
+%1 -h -f for01 > tst2.out 2>&1
+diff tst2.out for01.chk
 if errorlevel 1 goto tst2aerr
     echo # For Loop Test A successful
     goto tst2b
@@ -21,8 +21,8 @@ if errorlevel 1 goto tst2aerr
 echo # ---------------------------
 echo # Test B
 echo # ---------------------------
-%1 -h -f FOR02 > tst2.out 2>&1
-diff tst2.out FOR02.cmp
+%1 -h -f for02 > tst2.out 2>&1
+diff tst2.out for02.chk
 if errorlevel 1 goto tst2berr
     echo # For Loop Test B successful
     goto tst2c
@@ -35,8 +35,8 @@ if errorlevel 1 goto tst2berr
 echo # ---------------------------
 echo # Test C
 echo # ---------------------------
-%1 -h -f FOR03 > tst2.out 2>&1
-diff tst2.out FOR03.cmp
+%1 -h -f for03 > tst2.out 2>&1
+diff tst2.out for03.chk
 if errorlevel 1 goto tst2cerr
     echo # For Loop Test C successful
     goto tst2d
@@ -49,12 +49,12 @@ if errorlevel 1 goto tst2cerr
 echo # ---------------------------
 echo # Test D
 echo # ---------------------------
-type FOR04a.cmp   > tmpfile.tmp
+type for04a.chk   > tmpfile.tmp
 dir /b /-o       >> tmpfile.tmp
-type FOR04b.cmp  >> tmpfile.tmp
+type for04b.chk  >> tmpfile.tmp
 dir /b /-o for?? >> tmpfile.tmp
-type FOR04c.cmp  >> tmpfile.tmp
-%1 -h -f FOR04 > tst2.out 2>&1
+type for04c.chk  >> tmpfile.tmp
+%1 -h -f for04 > tst2.out 2>&1
 diff tst2.out tmpfile.tmp
 if errorlevel 1 goto tst2derr
     echo # For Loop Test D successful
@@ -68,8 +68,8 @@ if errorlevel 1 goto tst2derr
 echo # ---------------------------
 echo # Test E
 echo # ---------------------------
-%1 -h -f FOR05 > tst2.out 2>&1
-diff tst2.out FOR05.cmp
+%1 -h -f for05 > tst2.out 2>&1
+diff tst2.out for05.chk
 if errorlevel 1 goto tst2eerr
     echo # For Loop Test E successful
     goto tst2f
@@ -82,8 +82,8 @@ if errorlevel 1 goto tst2eerr
 echo # ---------------------------
 echo # Test F
 echo # ---------------------------
-%1 -h -f FOR06 > tst2.out 2>&1
-diff tst2.out FOR06.cmp
+%1 -h -f for06 > tst2.out 2>&1
+diff tst2.out for06.chk
 if errorlevel 1 goto tst2ferr
     echo # For Loop Test F successful
     goto tst2g
@@ -96,8 +96,8 @@ if errorlevel 1 goto tst2ferr
 echo # ---------------------------
 echo # Test G
 echo # ---------------------------
-%1 -h -f FOR07 > tst2.out 2>&1
-diff tst2.out FOR07.cmp
+%1 -h -f for07 > tst2.out 2>&1
+diff tst2.out for07.chk
 if errorlevel 1 goto tst2gerr
     echo # For Loop Test G successful
     goto tst2h
@@ -114,14 +114,14 @@ rem Need to set prompt, otherwise the test fails...
 prompt $p$g
 rm prntdir.exe
 wcl386 prntdir.c -ox-d1-zq
-type FOR08.cmp > tmpfile.tmp
+type for08.chk > tmpfile.tmp
 prntdir "echo a" >> tmpfile.tmp
 echo a >> tmpfile.tmp
 prntdir "echo b" >> tmpfile.tmp
 echo b >> tmpfile.tmp
 prntdir "echo c" >> tmpfile.tmp
 echo c >> tmpfile.tmp
-%1 -h -f FOR08 > tst2.out 2>&1
+%1 -h -f for08 > tst2.out 2>&1
 diff -b tst2.out tmpfile.tmp
 if errorlevel 1 goto tst2herr
     echo # For Loop Test H successful
@@ -133,7 +133,6 @@ if errorlevel 1 goto tst2herr
     if not .%verbose% == . goto end
     rm tmpfile.tmp
     rm tst2.out
-    rm temp.out
     rm *.obj
 
 goto end

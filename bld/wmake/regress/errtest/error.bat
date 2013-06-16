@@ -23,13 +23,13 @@ echo # ERROR 03:  Invalid Option
 echo # -----------------------------
 %1 "-." > tmp.out 2>&1
 egrep Error tmp.out > tmpfile.out
-diff tmpfile.out err03a.cmp
+diff tmpfile.out err03a.chk
 if errorlevel 1 goto err03
     echo # Test 03a successful
 
 %1 "- " > tmp.out 2>&1
 egrep Error tmp.out > tmpfile.out
-diff -b tmpfile.out err03b.cmp
+diff -b tmpfile.out err03b.chk
 if errorlevel 1 goto err03
     echo # Test 03b successful
     goto test04
@@ -44,7 +44,7 @@ echo # ERROR 04: -f must be followed by a filename
 echo # -----------------------------------------
 %1 -f > tmp.out 2>&1
 egrep Error tmp.out > tmpfile.out
-diff tmpfile.out err04.cmp
+diff tmpfile.out err04.chk
 if errorlevel 1 goto err04
     echo # Test 04 successful
     goto test05
@@ -62,7 +62,7 @@ rm tmp.out
 %1 -h "-" 2> tmp.out
 %1 -h - 2>> tmp.out
 %1 -h "-\" 2>> tmp.out
-diff tmp.out err13.cmp
+diff tmp.out err13.chk
 if errorlevel 1 goto err13
     echo # Test 13 successful
     goto test15
@@ -76,13 +76,13 @@ if errorlevel 1 goto err13
 echo # ------------------------------
 echo # ERROR 17: Token Too Long
 echo # ------------------------------
-%1 -h -f ERR17a >  tmp.out 2>&1
-%1 -h -f ERR17b >> tmp.out 2>&1
-%1 -h -f ERR17c >> tmp.out 2>&1
-%1 -h -f ERR17d >> tmp.out 2>&1
-%1 -h -f ERR17e >> tmp.out 2>&1
-%1 -h -f ERR17f >> tmp.out 2>&1
-diff tmp.out err17.cmp
+%1 -h -f err17a >  tmp.out 2>&1
+%1 -h -f err17b >> tmp.out 2>&1
+%1 -h -f err17c >> tmp.out 2>&1
+%1 -h -f err17d >> tmp.out 2>&1
+%1 -h -f err17e >> tmp.out 2>&1
+%1 -h -f err17f >> tmp.out 2>&1
+diff -i tmp.out err17.chk
 if errorlevel 1 goto err17
     echo # Test 17 successful
     goto test18
@@ -94,8 +94,8 @@ if errorlevel 1 goto err17
 echo # ------------------------------
 echo # ERROR 36: Illegal attempt to update special target
 echo # ------------------------------
-%1 -h -f ERR36 .c.obj > tmp.out 2>&1
-diff tmp.out err36.cmp
+%1 -h -f err36 .c.obj > tmp.out 2>&1
+diff tmp.out err36.chk
 if errorlevel 1 goto err36
     echo # Test 36 successful
     goto test37
@@ -108,8 +108,8 @@ echo # ------------------------------
 echo # ERROR 39: Target not mentioned in any makefile
 echo # ------------------------------
 wtouch ditty.c
-%1 -h -f ERR39 ditty.obj > tmp.out 2>&1
-diff tmp.out err39.cmp
+%1 -h -f err39 ditty.obj > tmp.out 2>&1
+diff tmp.out err39.chk
 if errorlevel 1 goto err39
     echo # Test 39 successful
     goto test40
@@ -124,10 +124,10 @@ echo # ERROR 40: Could not touch target
 echo # ------------------------------
 wtouch err40.tst >tmp.out
 chmod +r err40.tst >>tmp.out
-%1 -h -a -t -f ERR40 >> tmp.out 2>&1
+%1 -h -a -t -f err40 >> tmp.out 2>&1
 chmod -r err40.tst
 rm err40.tst
-diff tmp.out ERR40.CMP
+diff tmp.out err40.chk
 if errorlevel 1 goto err40
     echo # Test 40 successful
     goto test41
@@ -137,7 +137,7 @@ if errorlevel 1 goto err40
 
 :test41
 
-for %%i in (05 07 10 11 12 15 16 18 19 20 21 22 23 24 25 26 28 29A 29B 29C 30 31A 31B 31C 31D 31E 31F 32 33 34A 34B 37A 37B 38 41 42 43 44A 44B 44C) DO call work %1 %%i %2
+for %%i in (05 07 10 11 12 15 16 18 19 20 21 22 23 24 25 26 28 29a 29b 29c 30 31a 31b 31c 31d 31e 31f 32 33 34a 34b 37a 37b 38 41 42 43 44a 44b 44c) DO call work %1 %%i %2
 for %%j in (27 35) DO call debug %1 %%j %2
 
 goto done
