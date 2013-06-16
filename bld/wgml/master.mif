@@ -65,10 +65,10 @@ $(name).res : wgmlmsgs.gh ../h/wgml.msg ../h/wgmlmsg.h ../h/wgmlerr.msg ../h/wgm
         $(rc_aui) -I"$(wrc_dir)/h" $]@ -fo=$@
 
 rcmsg.gh : $(wrc_dir)/h/rc.msg
-        $(awk) -v rcbase=800 -f $(build_dir)/msgtoh.awk $[@ > $^@
+        awk -v rcbase=800 -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 wgmlmsgs.gh : ../h/wgmlerr.msg ../h/wgml.msg
-        $(awk) -v base=000 -f ../makemdef.awk $< > $^@
+        awk -v base=000 -f ../makemdef.awk $< > $^@
 
 wgmlmsge.gh : ../h/wgmlerr.msg ../h/wgml.msg
-        $(awk) -v base=000 -f ../msgtoenm.awk $< > $^@
+        awk -v base=000 -f ../msgtoenm.awk $< > $^@

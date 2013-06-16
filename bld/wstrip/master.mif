@@ -51,7 +51,7 @@ $(name).exe : $(dependants) $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_
 !endif
 
 msg.gh : wstrip.gh
-        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
+        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 incltext.gh : ../incltext.h ../wstrip.msg
         $(cpp) $(rc_aui_flags) -I.. $[@ >$^@

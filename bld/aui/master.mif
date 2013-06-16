@@ -131,4 +131,4 @@ japsrcha.dlg : ../h/japsrcha.dlg
 dlgfiles = dlgrx.h dlgsrch.h dlgrx.dlg dlgsrch.dlg dlgsrcha.dlg auistr.gh auistr.rc auigui.rc
 
 auistr.gh : $(aui_dir)/h/aui.msg
-        $(awk) -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@

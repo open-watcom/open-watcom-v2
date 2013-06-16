@@ -93,7 +93,7 @@ $(dllname).dll : $(dllobjs)
 rc_inc_dirs = $(inc_dirs)
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
+        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(wspy_dir)/spy.msg
         $(cpp) $(rc_aui_flags) $(rc_inc_path) $[@ >$^@

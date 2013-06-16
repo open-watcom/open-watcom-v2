@@ -66,7 +66,7 @@ $(proj_name).exe : wmpmsg.gh $(proj_name).res $(objs)
         $(wstrip) -q -a -r $@ . $(proj_name).res
 
 wmpmsg.gh : $(womp_dir)/womp.msg
-        $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 $(proj_name).res :  usage.rc ../h/$(proj_name).rc
         $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$^@

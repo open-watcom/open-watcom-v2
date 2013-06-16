@@ -96,7 +96,7 @@ $(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh
         $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@
 
 msg.gh : ../stand/wdis.msg
-        $(awk) -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 optencod_opt_qnx = -u $(extra_link_res_qnx) 
 optencod_targ_bsd   = bsd
@@ -107,11 +107,11 @@ optencod_targ_qnx   = qnx
 usage.gh : ../stand/options.gml
         optencod -q $(optencod_opt_$(host_os)) $]@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
         %append usage.tmp "."
-        $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk usage.tmp > $^@
+        awk -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk usage.tmp > $^@
 
 usagej.gh : ../stand/options.gml
         optencod -l 1 -q $]@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
         %append usagej.tmp "."
-        $(awk) -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk usagej.tmp > $^@
+        awk -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk usagej.tmp > $^@
 
 !include verrc.mif

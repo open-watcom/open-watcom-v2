@@ -327,7 +327,7 @@ $(libname).lib: $(objs) $(static_objs)
 
 $(intname).lib: $(objs)
     $(librarian) -z=tmp.def $(libflags) $<
-    $(sed) -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
+    sed -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
     sort < tmp2.def > tmp3.def
     uniq tmp3.def > export.def
     @rm tmp.def

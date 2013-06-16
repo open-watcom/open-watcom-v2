@@ -135,13 +135,13 @@ $(name).res : ../h/$(proj_name).rc usage.gh usagej.gh msg.gh wasmmsg.gh wmpmsg.g
         $(rc_aui) -D_STANDALONE_ $[@ -fo=$^@
 
 msg.gh : ../h/asmshare.msg
-        $(awk) -v base=MSG_SHARE_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=MSG_SHARE_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 wasmmsg.gh : ../h/wasm.msg
-        $(awk) -v base=MSG_WASM_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=MSG_WASM_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 wmpmsg.gh : ../h/womp.msg
-        $(awk) -v base=MSG_WOMP_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=MSG_WOMP_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 usage.gh : usage.u
         @%write $^&.tmp -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $^@

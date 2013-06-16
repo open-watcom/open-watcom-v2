@@ -17,7 +17,7 @@ test.out: $(exe_list)
         if exist test.out del test.out
         wtouch test.out
         @for %i in ($(exe_list)) do %i >> test.out
-        diff test.out good.out
+        diff test.out good.chk
 
 fact.exe: $(objs_fact)
         $(link_cmd)

@@ -263,7 +263,7 @@ msg.gh : ../h/rc.msg
         $(cpp) $(rc_aui_flags) $(rc_defines) $[@ >$@
 
 rcmsg.gh : msg.gh
-        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
+        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 wrc.res : ../rc.rc rcmsg.gh .AUTODEPEND
         $(rc_aui) -ad $(rc_defines) -I"../h" $[@ -fo=$^@

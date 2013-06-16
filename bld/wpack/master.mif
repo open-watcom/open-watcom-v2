@@ -35,4 +35,4 @@ $(proj_name).exe : $(objs)
 dtparse.obj : msg.gh
 
 msg.gh : $(wtouch_dir)/wtouch.msg
-        $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@

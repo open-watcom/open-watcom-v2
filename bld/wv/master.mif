@@ -624,8 +624,8 @@ litdefs.tmp : ../../h/wdengin.str ../../h/wd.str
         $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@
 
 litdef.gh : litdefs.tmp litdefm.tmp
-        $(awk) -v prefix=DBG_LITERAL_ -v base=DBG_LITERAL_BASE -f $(build_dir)/makemsg.awk litdefs.tmp >$^@
-        $(awk) -v prefix=DBG_LITERAL_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg.awk litdefm.tmp >> $^@
+        awk -v prefix=DBG_LITERAL_ -v base=DBG_LITERAL_BASE -f $(build_dir)/makemsg.awk litdefs.tmp >$^@
+        awk -v prefix=DBG_LITERAL_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg.awk litdefm.tmp >> $^@
 
 !ifeq release 0
 wsplice_keys = -kIS_RC -k$(host_os) -kHIDDEN

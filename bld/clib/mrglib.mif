@@ -30,7 +30,7 @@ $(libname).lib : $(libs)
     @rm -f export.def
     $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ @tmp.lbc +timstamp.obj
 !ifeq linkage dynamic
-    $(sed) -f $(lib_misc_dir)/sed/export.sed export.def > tmp.def
+    sed -f $(lib_misc_dir)/sed/export.sed export.def > tmp.def
     @cp tmp.def export.def
     @rm tmp.def
 !endif

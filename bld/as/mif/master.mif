@@ -205,15 +205,15 @@ $(name).res : as.rc msg.gh
 
 msg.gh : as.msg
         $(cpp) $(rc_aui_flags) $(cppflags) $[@ > msg.tmp
-        $(awk) -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
+        awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
 
 $(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c
         wsplice $(splice_opts) $[@ $^@
 
 $(yacc_out_c).c $(yacc_out_h) : $(yacc_in)
         $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
-        $(sed) -f $(as_dir)/mif/asyy.sed ytab.c > $(yacc_out_c).c
-        $(sed) -f $(as_dir)/mif/asyy.sed ytab.h > $(yacc_out_c).h
+        sed -f $(as_dir)/mif/asyy.sed ytab.c > $(yacc_out_c).c
+        sed -f $(as_dir)/mif/asyy.sed ytab.h > $(yacc_out_c).h
         # $(yacc) $(yacc_flags) $[@
 
 $(lex_in) : $(lex_src)

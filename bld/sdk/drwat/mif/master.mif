@@ -109,7 +109,7 @@ $(proj_name).res : ../drnt.rc .AUTODEPEND
 !endif
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
+        awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../drwatcom.msg
         $(cpp) $(rc_aui_flags) $(cppflags) $(inc_path) $[@ >$^@

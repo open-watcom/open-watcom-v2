@@ -41,12 +41,10 @@ bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
 bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
 bld_lib         = $(blib) $(bld_libflags)
 
-awk             = awk
 cwc             = bcwc
 edbind          = bedbind
 ide2make        = bide2mak
 re2c            = re2c
-sed             = sed
 w32bind         = w32bind
 wbind           = bwbind
 wstrip          = bwstrip

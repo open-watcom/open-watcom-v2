@@ -117,10 +117,10 @@ outcheck.exe : wgml.res $(outc_objs) $(wgml_libs) $(__MAKEFILES__)
     $(wstrip) -q -a -r $@ . wgml.res
 
 wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
-    $(awk) -v base=000 -f ../../makemdef.awk $< > $^@
+    awk -v base=000 -f ../../makemdef.awk $< > $^@
 
 wgmlmsge.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
-    $(awk) -v rcbase=000 -f ../../msgtoenm.awk $< > $^@
+    awk -v rcbase=000 -f ../../msgtoenm.awk $< > $^@
 
 wgml.res : wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h $(__MAKEFILES__) &
                        ../../h/wgmlerr.msg ../../h/wgml.rc

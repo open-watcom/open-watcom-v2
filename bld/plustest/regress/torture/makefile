@@ -32,7 +32,7 @@ opt_link = LIB tort.lib
 exes = dim2arr.$(exe) mdarrtst.$(exe)
 
 test : .symbolic clean start_test test.lnk tort.lib $(exes)
-    cat output >>exec.out
+    sed output >>exec.out
     diff exec.out exec.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
