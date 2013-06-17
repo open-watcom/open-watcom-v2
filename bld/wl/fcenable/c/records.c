@@ -35,54 +35,40 @@
 #include "wio.h"
 #include "fcenable.h"
 
-extern void *   MemAlloc( unsigned );
-extern void     MemFree( void * );
-extern void     Warning( char * );
-extern long     QSeek( int, long, int );
-extern void     IOError( char * );
-extern void     Error( char * );
-extern void     LinkList( void **, void * );
-extern int      QRead( int, void *, int );
-extern int      QWrite( int, void *, int );
-extern void     FreeList( void * );
-extern void     BuildRecord( void *, unsigned );
-extern int      GetIndex( char ** );
-extern void     IndexRecord( int );
-
 #define VARIABLE_SIZE 1
 #define MAJOR_OBJ_VERSION 1
 #define MINOR_OBJ_VERSION 1
 
+#include "pushpck1.h"
 typedef struct {
-        unsigned char class;
-        unsigned short int  length;
+    byte        class;
+    ushort      length;
 } HEAD;
 
 typedef struct {
-        char    rest[ VARIABLE_SIZE ];
+    byte    rest[VARIABLE_SIZE];
 } ANYOBJ_REC;
 
 typedef struct {
-        byte    attrib;
-        byte    class;
-        char    coment[ VARIABLE_SIZE ];
+    byte    attrib;
+    byte    class;
+    byte    coment[VARIABLE_SIZE];
 } COMENT_REC;
 
-#define MAX_COMENT_DATA (MAX_OBJECT_REC_SIZE - sizeof(COMENT_REC) - 1)
-
 typedef struct {
-        byte    name_len;
-        char    name[ VARIABLE_SIZE ];
+    byte    name_len;
+    char    name[VARIABLE_SIZE];
 } THEADR_REC;
 
 typedef struct {
-        HEAD            head;
-        union {
-            COMENT_REC  coment;
-            ANYOBJ_REC  anyobj;
-            THEADR_REC  theadr;
-        } u;
+    HEAD            head;
+    union {
+        COMENT_REC  coment;
+        ANYOBJ_REC  anyobj;
+        THEADR_REC  theadr;
+    } u;
 } OBJECT_REC;
+#include "poppck.h"
 
 #define         LIBRARY_HEADER  0xf0
 #define         LIBRARY_TRAILER 0xf1
@@ -128,37 +114,30 @@ typedef struct {
 #define         NEW_DBG_1       0xb4
 #define         NEW_DBG_2       0xb6
 
-extern int              InFile;
-extern int              OutFile;
-extern name_list *      ClassList;
-extern name_list *      SegList;
-extern exclude_list *   ExcludeList;
+int             PageLen;
 
-int                 PageLen;
-OBJECT_REC *        Rec1;
-
-static bool     Easy32;
-static bool     MakeUnsafe;
-static int      NameIndex;
-static int      SegIndex;
-static byte     SubTotal = 0;
-static char *   OutputBuffer;
-static unsigned InBuffer = 0;
-
-// forward declarations
-extern char *   SaveRecord( void * );
+static OBJECT_REC   *Rec1;
+static bool         Easy32;
+static bool         MakeUnsafe;
+static unsigned     NameIndex;
+static unsigned     SegIndex;
+static byte         SubTotal = 0;
+static byte         *OutputBuffer;
+static unsigned     InBuffer = 0;
 
 
-extern void InitRecStuff( void )
-/******************************/
+void *InitRecStuff( void )
+/************************/
 {
+
     Rec1 = MemAlloc( MAX_OBJECT_REC_SIZE );
     OutputBuffer = MemAlloc( MAX_OBJECT_REC_SIZE );
     PageLen = 0;
+    return( Rec1 );
 }
 
-extern void FileCleanup( void )
-/*****************************/
+void FileCleanup( void )
+/**********************/
 {
     PageLen = 0;
 }
@@ -172,8 +151,8 @@ static void ZeroIndicies( name_list *list )
     }
 }
 
-extern void CleanRecStuff( void )
-/*******************************/
+void CleanRecStuff( void )
+/************************/
 {
     ZeroIndicies( ClassList );
     ZeroIndicies( SegList );
@@ -182,8 +161,8 @@ extern void CleanRecStuff( void )
     SegIndex = 0;
 }
 
-extern void FinalCleanup( void )
-/******************************/
+void FinalCleanup( void )
+/***********************/
 {
     MemFree( Rec1 );
     MemFree( OutputBuffer );
@@ -214,7 +193,7 @@ static void proccoment( void )
     WriteRecord();
 }
 
-static bool FindName( name_list *list, char *name, int name_len )
+static bool FindName( name_list *list, byte *name, int name_len )
 /***************************************************************/
 {
     while( list != NULL ) {
@@ -227,7 +206,7 @@ static bool FindName( name_list *list, char *name, int name_len )
     return( FALSE );
 }
 
-static void SetExLnames( char *name, int name_len )
+static void SetExLnames( byte *name, int name_len )
 /*************************************************/
 {
     exclude_list *  list;
@@ -246,26 +225,26 @@ static void proclnames( void )
 {
     unsigned        rec_len;
     byte            name_len;
-    char            *name;
+    byte            *buff;
 
     rec_len = Rec1->head.length;
-    name = Rec1->u.anyobj.rest;
+    buff = Rec1->u.anyobj.rest;
     while( rec_len > 1 ) {
         ++NameIndex;
-        name_len = *name;
-        name++;
-        if( !FindName( ClassList, name, name_len ) ) {
-            FindName( SegList, name, name_len );
+        name_len = *buff;
+        buff++;
+        if( !FindName( ClassList, buff, name_len ) ) {
+            FindName( SegList, buff, name_len );
         }
-        SetExLnames( name, name_len );
-        name += name_len;
+        SetExLnames( buff, name_len );
+        buff += name_len;
         rec_len -= name_len + 1;
     }
     WriteRecord();
 }
 
-static bool MatchIndex( name_list *list, int index )
-/**************************************************/
+static bool MatchIndex( name_list *list, unsigned index )
+/*******************************************************/
 {
     while( list != NULL ) {
         if( list->lnameidx == index ) {
@@ -290,9 +269,9 @@ static void procsegdef( bool is386 )
 /**********************************/
 {
     byte            acbp;
-    int             segidx;
-    int             classidx;
-    char *          dataloc;
+    unsigned        segidx;
+    unsigned        classidx;
+    byte            *dataloc;
     byte            onebyte;
     unsigned long   fourbytes;
     exclude_list *  exclude;
@@ -338,9 +317,9 @@ static void procsegdef( bool is386 )
 static void ProcDataRec( bool is386 )
 /***********************************/
 {
-    int             segidx;
-    char *          dataloc;
-    exclude_list *  exclude;
+    unsigned        segidx;
+    byte            *dataloc;
+    exclude_list    *exclude;
     unsigned long   offset;
     unsigned long   endoffset;
 
@@ -387,8 +366,8 @@ static void procfixupp( void )
     WriteRecord();
 }
 
-extern void ProcessRec( void )
-/****************************/
+void ProcessRec( void )
+/*********************/
 {
     bool    is386;
 
@@ -410,11 +389,11 @@ extern void ProcessRec( void )
     }
 }
 
-extern int GetIndex( char **rec )
-/*******************************/
+unsigned GetIndex( byte **rec )
+/*****************************/
 {
-    char *  ptr;
-    int     index;
+    byte        *ptr;
+    ushort      index;
 
     ptr = *rec;
     index = *ptr;
@@ -429,8 +408,8 @@ extern int GetIndex( char **rec )
     return( index );
 }
 
-extern int ReadRec( void )
-/************************/
+int ReadRec( void )
+/*****************/
 {
     int     len;
     int     to_read;
@@ -455,14 +434,13 @@ extern int ReadRec( void )
         if( to_read >= MAX_OBJECT_REC_SIZE ) {
             Error( "object file record too long" );
         }
-        len = QRead( InFile, &(Rec1->u.anyobj.rest), to_read );
+        len = QRead( InFile, Rec1->u.anyobj.rest, to_read );
         if( len != to_read ) {
             Error( "premature end of file encountered" );
         }
         if( Rec1->head.class == THEADR ) {
             return( OBJECT );
-        } else if( Rec1->head.class == MODEND
-                   || Rec1->head.class == MODE32 ) {
+        } else if( Rec1->head.class == MODEND || Rec1->head.class == MODE32 ) {
             if( PageLen != 0 ) {            // skip padding in the library.
                 offset = tell( InFile );
                 offset = PageLen - offset % PageLen;
@@ -475,37 +453,37 @@ extern int ReadRec( void )
     return( OK );
 }
 
-static void AddToSubTotal( void * buff, unsigned len )
-/****************************************************/
+static void AddToSubTotal( void *buff, unsigned len )
+/***************************************************/
 {
-    char *  data;
+    byte   *data;
 
-    data = (char *)buff;
+    data = buff;
     while( len-- > 0 ) {
         SubTotal += *data++;
     }
 }
 
-extern void BuildRecord( void *info, unsigned len )
-/*************************************************/
+void BuildRecord( void *info, unsigned len )
+/******************************************/
 {
-    char *  data;
+    unsigned    wlen;
 
-    data = (char *) info;
-    AddToSubTotal( data, len );
+    AddToSubTotal( info, len );
     if( len + InBuffer > MAX_OBJECT_REC_SIZE ) {
-        memcpy( OutputBuffer + InBuffer, data, MAX_OBJECT_REC_SIZE - InBuffer );
+        wlen = MAX_OBJECT_REC_SIZE - InBuffer;
+        memcpy( OutputBuffer + InBuffer, info, wlen );
         QWrite( OutFile, OutputBuffer, MAX_OBJECT_REC_SIZE );
-        data += MAX_OBJECT_REC_SIZE - InBuffer;
-        len -= MAX_OBJECT_REC_SIZE - InBuffer;
+        info = (char *)info + wlen;
+        len -= wlen;
         InBuffer = 0;
     }
-    memcpy( OutputBuffer + InBuffer, data, len );
+    memcpy( OutputBuffer + InBuffer, info, len );
     InBuffer += len;
 }
 
-extern void FlushBuffer( void )
-/*****************************/
+void FlushBuffer( void )
+/**********************/
 {
     if( InBuffer > 0 ) {
         QWrite( OutFile, OutputBuffer, InBuffer );
@@ -513,12 +491,12 @@ extern void FlushBuffer( void )
     }
 }
 
-extern void IndexRecord( int index )
-/**********************************/
+void IndexRecord( unsigned index )
+/********************************/
 // note this assumes the intel byte ordering
 {
-    byte            onebyte;
-    unsigned short  twobytes;
+    byte        onebyte;
+    ushort      twobytes;
 
     if( index >= 128 ) {
         twobytes = index;

@@ -47,31 +47,6 @@
 #include "fcenable.h"
 #include "banner.h"
 
-extern void     MemInit( void );
-extern void     MemFini( void );
-extern void     *MemAlloc( unsigned );
-extern void     MemFree( void * );
-extern void     CleanRecStuff( void );
-extern int      ReadRec( void );
-extern void     ProcessRec( void );
-extern void     InitRecStuff( void );
-extern void     FlushBuffer( void );
-extern void     FinalCleanup( void );
-extern void     FileCleanup( void );
-extern void     IOError( char * );
-extern void     put( char * );
-extern void     Warning( char * );
-extern void     Error( char * );
-extern void     LinkList( void *, void * );
-extern void     FreeList( void * );
-extern void     putlen( char *, int );
-extern int      CopyFile( char *, char * );
-extern int      QRead( int, char *, int );
-extern int      QWrite( int, char *, int );
-
-extern void     *Rec1;
-extern int      PageLen;
-
 #define NOFILE -1
 #define STDOUT_HANDLE 1
 
@@ -85,16 +60,17 @@ typedef enum {
 
 int                 InFile;
 int                 OutFile;
-name_list *         ClassList = NULL;
-name_list *         SegList = NULL;
-exclude_list *      ExcludeList = NULL;
+name_list           *ClassList = NULL;
+name_list           *SegList = NULL;
+exclude_list        *ExcludeList = NULL;
 
-static bool             MakeBackup = TRUE;
-static bool             NewOption;
-static EX_STATE         ExcludeState;
-static exclude_list *   ExEntry;
+static bool         MakeBackup = TRUE;
+static bool         NewOption;
+static EX_STATE     ExcludeState;
+static exclude_list *ExEntry;
+static void         *InputBuffer = NULL;
 
-static char *       HelpMsg =
+static char         *HelpMsg =
 "Usage: FCENABLE { [options] [files] }\n"
 "This allows WLINK to do far call optimization on non-WATCOM object files\n"
 "Options are:\n"
@@ -173,17 +149,17 @@ static void QRemove( char *filename )
 }
 
 
-extern int main(int argc, char **argv )
-/*************************************/
+int main(int argc, char **argv )
+/******************************/
 {
-    int     retval;
+    int     retval = 0;
 
     MemInit();
     put( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) "\n" );
     put( banner2( "1990" ) "\n" );
     put( banner3 "\n" );
     put( banner3a "\n" );
-    InitRecStuff();
+    InputBuffer = InitRecStuff();
     InFile = NOFILE;
     OutFile = NOFILE;
     ClassList = MemAlloc( sizeof( name_list ) + sizeof( DEF_CLASS ) - 1 );
@@ -250,7 +226,7 @@ static void MakeListItem( name_list **list, char *item, int len )
     entry->lnameidx = 0;
     memcpy( entry->name, item, len );
     *(entry->name + len) = '\0';
-    LinkList( list, entry );
+    LinkList( (void **)list, entry );
 }
 
 static bool ProcClass( char *item, int len )
@@ -318,7 +294,7 @@ static bool ProcExclude( char *item, int len )
             if( ExcludeState == EX_GOT_COLON ) {
                 ExEntry->end_off += ExEntry->start_off;
             }
-            LinkList( &ExcludeList, ExEntry );
+            LinkList( (void **)&ExcludeList, ExEntry );
             ExcludeState = EX_NONE;
             return( TRUE );     // want a list separator after this.
         }
@@ -406,16 +382,22 @@ static void ReplaceExt( char * name, char * new_ext, bool force )
     }
 }
 
+
+#if defined( __UNIX__ )
+#define WLIB_EXE "wlib"
+#else
+#define WLIB_EXE "wlib.exe"
+#endif
+
 static void DoReplace( void )
 /***************************/
 // this supports concatenated object decks and libraries (PageLen != 0)
 {
     FlushBuffer();
-    if( PageLen != 0 ) {         // NYI - spawning WLIB every time is
+    if( PageLen != 0 ) {        // NYI - spawning WLIB every time is
         close( OutFile );       // rather slow. Replace this somehow??
         OutFile = NOFILE;
-        if( spawnlp( P_WAIT, "WLIB.EXE", "WLIB.EXE", TEMP_LIB_NAME, "/b",
-                                      "+" TEMP_OBJ_NAME, NULL ) != 0 ) {
+        if( spawnlp( P_WAIT, WLIB_EXE, WLIB_EXE, TEMP_LIB_NAME, "-b", "+" TEMP_OBJ_NAME, NULL ) != 0 ) {
             Error( "problem with temporary library" );
         }
         QRemove( TEMP_OBJ_NAME );
@@ -496,9 +478,9 @@ int CopyFile( char * file1, char * file2 )
     InFile = QOpen( file1, O_RDONLY | O_BINARY, 0 );
     OutFile = QOpen( file2, O_WRONLY|O_TRUNC|O_CREAT|O_BINARY, 0 );
     for( ;; ) {
-        len = QRead( InFile, Rec1, MAX_OBJECT_REC_SIZE );
+        len = QRead( InFile, InputBuffer, MAX_OBJECT_REC_SIZE );
         if( len == 0 ) break;
-        QWrite( OutFile, Rec1, len );
+        QWrite( OutFile, InputBuffer, len );
     }
     CloseFiles();
     if( stat( file1, &statblk ) == 0 ) {
@@ -509,14 +491,14 @@ int CopyFile( char * file1, char * file2 )
     return( OK );
 }
 
-extern void put( char * str )
-/***************************/
+void put( const char * str )
+/**************************/
 {
     write( STDOUT_HANDLE, str, strlen( str ) );
 }
 
-extern void putlen( char *str, int len )
-/**************************************/
+void putlen( const char *str, unsigned len )
+/******************************************/
 {
     write( STDOUT_HANDLE, str, len );
 }
@@ -527,21 +509,21 @@ typedef struct _node {      // structure used for list traversal routines.
     struct _node *  next;
 } node;
 
-extern void LinkList( void *in_head, void *newnode )
-/**************************************************/
+void LinkList( void **in_head, void *newnode )
+/********************************************/
 /* Link a new node into a linked list (new node goes at the end of the list) */
 {
     node                **owner;
 
-    owner = in_head;
+    owner = (node **)in_head;
     while( *owner != NULL ) {
         owner = &(*owner)->next;
     }
     *owner = newnode;
 }
 
-extern void FreeList( void *list )
-/********************************/
+void FreeList( void *list )
+/*************************/
 /* Free a list of nodes. */
 {
     node *  next_node;
@@ -555,16 +537,16 @@ extern void FreeList( void *list )
     }
 }
 
-extern void Warning( char * msg )
-/*******************************/
+void Warning( char * msg )
+/************************/
 {
     put( "warning: " );
     put( msg );
     put( "\n" );
 }
 
-extern void Error( char * msg )
-/*****************************/
+void Error( char * msg )
+/**********************/
 {
     put( "Error: " );
     put( msg );
@@ -572,8 +554,8 @@ extern void Error( char * msg )
     Suicide();
 }
 
-extern void IOError( char *msg )
-/******************************/
+void IOError( char *msg )
+/***********************/
 {
     put( msg );
     put( ": " );
@@ -584,8 +566,8 @@ extern void IOError( char *msg )
 
 // these are the file i/o routines for tdcvt.
 
-extern int QRead( int handle, char *buffer, int len )
-/***************************************************/
+int QRead( int handle, void *buffer, int len )
+/********************************************/
 {
     int result;
 
@@ -596,8 +578,8 @@ extern int QRead( int handle, char *buffer, int len )
     return( result );
 }
 
-extern int QWrite( int handle, char *buffer, int len )
-/****************************************************/
+int QWrite( int handle, void *buffer, int len )
+/*********************************************/
 {
     int result;
 
@@ -610,8 +592,8 @@ extern int QWrite( int handle, char *buffer, int len )
     return( result );
 }
 
-extern long int QSeek( int handle, long offset, int origin )
-/**********************************************************/
+long int QSeek( int handle, long offset, int origin )
+/***************************************************/
 {
     long int result;
 

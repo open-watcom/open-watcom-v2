@@ -24,118 +24,60 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory management routines for fcenable
 *
 ****************************************************************************/
 
 
-/*
-  Mem : memory management routines for fcenable
-
-  Modified: By:             Reason:
-  --------- ---             -------
-  86/08/06  T.G.Galvin      Initial implementation
-  28-mar-88 A.F.Scian       converted to C
-  22-jun-89 Jim Randall     added tryalloc, realloc & dump objcache when needed
-  22-aug-89 Jim Randall     swiped from wlink.
-  22-feb-90 Jim Randall     swiped from ms2wlink.
-  27-mar-90 Jim Randall     swiped from tdcvt.  (nice history, eh?)
-*/
 #include <stdlib.h>
 #include <malloc.h>
+#include "fcenable.h"
 
-#ifdef TRACKER
-extern void *TrMemInit(char *,void * (*)(int ),void * (*)(void *, int),
-                       void (*)(void *), void (*)(char *, unsigned));
-extern void TrCheck(void *);
-extern void TrMemFini(void *);
-extern void TrPrtUsage(void *);
-extern void TrPrtMemUse(void *);
-extern void *TrAlloc(unsigned int ,void (*)(void),void *);
-extern int  TrValidate(void *,void (*)(void),void *);
-extern int  TrChkRange(void *,unsigned int ,void (*)(void),void *);
-extern int  TrFree(void *,void *);
-extern int  TrFreeSize(void *,unsigned int ,void *);
+#ifdef TRMEM
 
-extern void (*FindRet(void))();
-#pragma aux FindRet modify [sp];
+#include "trmem.h"
 
-extern void putlen( char *, unsigned );
-extern void put( char * );
+static _trmem_hdl TrHdl;
 
-void    *TrHdl;
-#endif
-
-extern void Error( char * );
-
-#ifdef TRACKER
-
-extern void PrintLine( char *buff, unsigned len )
-/***********************************************/
+static void PrintLine( void *handle, const char *buff, unsigned len )
+/*******************************************************************/
 {
+    handle = handle;
     putlen( buff, len );
     put( "\n" );
 }
+
 #endif
 
 
-extern void MemInit( void )
-/*************************/
+void MemInit( void )
+/******************/
 {
-#ifdef TRACKER
-    TrHdl = TrMemInit( "FCE", malloc, realloc, free, PrintLine );
+#ifdef TRMEM
+    TrHdl = _trmem_open( malloc, free, NULL, NULL, NULL, PrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #endif
 }
 
 
-extern void MemFini( void )
-/*************************/
+void MemFini( void )
+/******************/
 {
-#ifdef TRACKER
-    TrPrtMemUse( TrHdl );
-    TrMemFini( TrHdl );
+#ifdef TRMEM
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
 #endif
 }
 
-#ifdef TRACKER
-extern void *TryAlloc( unsigned size )
+void *MemAlloc( size_t size )
+/***************************/
 {
-    extern void *DoLAlloc( unsigned, void (*)() );
-    void        (*ra)();
+    void        *ptr;
 
-    ra = FindRet(); /* must be first thing */
-
-    return( DoLAlloc( size, ra ) );
-}
-
-void *DoLAlloc( unsigned size, void (*ra)() )
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
-extern void *TryAlloc( unsigned size )
-#endif
-{
-    void    *p;
-
-#ifdef TRACKER
-    p = TrAlloc( size, ra, TrHdl );
-#else
-    p = malloc( size );
-#endif
-    return( p );
-}
-
-extern void * MemAlloc( unsigned size )
-/*************************************/
-{
-    void                *ptr;
-#ifdef TRACKER
-    void                (*ra)();
-
-    ra = FindRet(); /* must be first thing */
-
-    ptr = DoLAlloc( size, ra );
-#else
-    ptr = TryAlloc( size );
+    ptr = malloc( size );
 #endif
     if( ptr == NULL ) {
         Error( "Dynamic Memory Exhausted!!!" );
@@ -143,12 +85,13 @@ extern void * MemAlloc( unsigned size )
     return( ptr );
 }
 
-extern void MemFree( void *p )
-/****************************/
+void MemFree( void *p )
+/*********************/
 {
-    if( p == NULL ) return;
-#ifdef TRACKER
-    TrFree( p, TrHdl );
+    if( p == NULL )
+        return;
+#ifdef TRMEM
+    _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
 #endif

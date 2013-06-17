@@ -34,9 +34,10 @@
 #include "watcom.h"
 #include "bool.h"
 
-typedef unsigned char   byte;
-
 #define MAX_OBJECT_REC_SIZE 4096
+
+typedef unsigned char   byte;
+typedef unsigned short  ushort;
 
 // these are the results returned from ReadRec.
 
@@ -55,15 +56,53 @@ typedef struct exclude_list EXCLUDE_LIST;
 
 typedef struct name_list {
     NAME_LIST * next;
-    int         lnameidx;       // index of lname record which equals name
+    unsigned    lnameidx;       // index of lname record which equals name
     char        name[1];
 } name_list;
 
 typedef struct exclude_list {
     EXCLUDE_LIST *  next;
-    int             lnameidx;   // index of segment lname record
-    int             segidx;     // index of segment
+    unsigned        lnameidx;   // index of segment lname record
+    unsigned        segidx;     // index of segment
     unsigned long   start_off;  // starting offset
     unsigned long   end_off;    // ending offset;
     char            name[1];
 } exclude_list;
+
+extern int          PageLen;
+extern int          InFile;
+extern int          OutFile;
+extern name_list    *ClassList;
+extern name_list    *SegList;
+extern exclude_list *ExcludeList;
+
+// fcenable.c
+extern int      CopyFile( char *, char * );
+extern void     put( const char * );
+extern void     putlen( const char *, unsigned );
+extern void     LinkList( void **, void * );
+extern void     FreeList( void * );
+extern void     Warning( char * );
+extern void     Error( char * );
+extern void     IOError( char * );
+extern int      QRead( int, void *, int );
+extern int      QWrite( int, void *, int );
+extern long     QSeek( int, long, int );
+
+// mem.c
+extern void     MemInit( void );
+extern void     MemFini( void );
+extern void     *MemAlloc( size_t );
+extern void     MemFree( void * );
+
+// records.c
+extern void     *InitRecStuff( void );
+extern void     FileCleanup( void );
+extern void     CleanRecStuff( void );
+extern void     FinalCleanup( void );
+extern void     ProcessRec( void );
+extern unsigned GetIndex( byte ** );
+extern int      ReadRec( void );
+extern void     BuildRecord( void *, unsigned );
+extern void     FlushBuffer( void );
+extern void     IndexRecord( unsigned );

@@ -1,6 +1,8 @@
-proj_name = wlink
+proj_name = fcenable
 
-wlink_autodepends = .AUTODEPEND
+fcenable_autodepends = .AUTODEPEND
+
+fcenable_trmem = 1
 
 memory_model_i86 = s
 
@@ -8,17 +10,24 @@ memory_model_i86 = s
 !include defrule.mif
 !include deftarg.mif
 
+!include trmem.mif
+
 objs  = &
-!ifeq host_OS os2
-spawn.obj &
-!endif
 fcenable.obj &
 mem.obj &
-records.obj
+records.obj &
+$(trmem_objs)
 
-.c: ../c
+!ifeq host_os os2
+objs += spawn.obj
+!endif
 
-inc_dirs = -I"../h"
+.c: ../c;$(trmem_dir)
+
+inc_dirs = -I"../h" -I"$(trmem_dir)"
+
+extra_c_flags_mem      = $(trmem_cover_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
 
 fcenable.exe : $(objs)
 !ifndef __WATCOM__
