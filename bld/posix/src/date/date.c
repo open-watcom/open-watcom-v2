@@ -36,6 +36,7 @@
 #include <time.h>
 #include "getopt.h"
 #include "misc.h"
+#include "clibext.h"
 
 static const char *usageTxt[] = {
     "Usage:\tdate [-?u] [\"+format\"]",
@@ -51,7 +52,7 @@ static int      flagUTC;
 
 void main( int argc, char **argv )
 {
-    struct tm   time_of_day;
+    struct tm   *time_of_day;
     time_t      ltime;
     char        buf[ 256 ];
     int         ch;
@@ -83,11 +84,11 @@ void main( int argc, char **argv )
     }
     time( &ltime );
     if( flagUTC ) {
-        _gmtime( &ltime, &time_of_day );
+        time_of_day = gmtime( &ltime );
     } else {
-        _localtime( &ltime, &time_of_day );
+        time_of_day = localtime( &ltime );
     }
-    if( 0 == strftime( buf, sizeof( buf ), fmt, &time_of_day ) ) {
+    if( 0 == strftime( buf, sizeof( buf ), fmt, time_of_day ) ) {
         Quit( usageTxt, "strftime formatting error %s\n", fmt );
     } else {
         cputs( buf );

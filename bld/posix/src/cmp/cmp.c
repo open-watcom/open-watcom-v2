@@ -32,13 +32,13 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include "wio.h"
 #include "getopt.h"
 #include "misc.h"
 #include "argvenv.h"
+#include "clibext.h"
 
 static const char *usageTxt[] = {
     "Usage:\tcmp [-?lsx] [@env] file1 file2 [seek1 [seek2]]",

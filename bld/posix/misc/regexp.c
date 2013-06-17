@@ -65,8 +65,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "../h/regexp.h"
-#include "clibext.h"
+#include "regexp.h"
 
 
 /* IMPORTANT: must have ^$\\ FIRST */
