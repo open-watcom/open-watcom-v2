@@ -245,7 +245,7 @@ cdsay .
 #===========================
 [ INCLUDE <OWSRCDIR>/wasmtest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/f77/regress/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/f77test/regress/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 
 [ BLOCK . . ]
