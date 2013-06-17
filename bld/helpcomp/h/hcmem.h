@@ -38,9 +38,8 @@
 #ifndef HCMEM_H
 #define HCMEM_H
 
-#include "hcerrors.h"
 #include <stdio.h>  // for size_t
-#include <watcom.h> // for uint_8
+#include "hcerrors.h"
 
 
 //
@@ -72,7 +71,7 @@ extern void *renew( void *p, size_t size );
 
 class Pool
 {
-    uint_8  *_array;
+    unsigned char *_array;
     void    *_pfree;
 
     const unsigned  _block;

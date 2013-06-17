@@ -1064,7 +1064,7 @@ static bool FindUpgradeFile( char *path )
     d = opendir( path );
     SetPathEnd( path );
     path_end = path + strlen( path );
-    while( info = readdir( d ) ) {
+    while( (info = readdir( d )) != NULL ) {
         strcpy( path_end, info->d_name );
 #if defined( __UNIX__ )
         stat( path, &statbuf );
@@ -1994,7 +1994,7 @@ static bool NukePath( char *path, int status )
     d = opendir( path );
     SetPathEnd( path );
     path_end = path + strlen( path );
-    while( info = readdir( d ) ) {
+    while( (info = readdir( d )) != NULL ) {
         strcpy( path_end, info->d_name );
 #if defined( __UNIX__ )
         stat( path, &statbuf );

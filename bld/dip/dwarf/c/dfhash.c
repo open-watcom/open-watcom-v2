@@ -143,7 +143,7 @@ static uint_32 elf_hash( char const *name )
     while( *name != '\0' ) {
         h = (h << 4 ) + tolower( *name );
         ++name;
-        if( g = h & 0xf000000 ) {
+        if( (g = h & 0xf000000) != 0 ) {
             h ^= g >> 24;
         }
         h &= ~g;

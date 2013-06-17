@@ -31,6 +31,7 @@
 
 #include "imgedit.h"
 #include "wrdll.h"
+#include "iemem.h"
 
 /*
  * MemStart
@@ -47,7 +48,7 @@ void MemStart( void )
 /*
  * MemAlloc
  */
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     void *p;
 
@@ -64,7 +65,7 @@ void *MemAlloc( unsigned size )
 /*
  * MemReAlloc
  */
-void *MemReAlloc( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, size_t size )
 {
     void *p;
 

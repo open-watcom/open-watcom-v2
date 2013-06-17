@@ -52,12 +52,12 @@
 
 #if defined( __NT__ )
 //#if defined( __ALPHA__ )
-//    #pragma pack( 1 );
+//    #include "pushpck1.h"
 //#else
-    #pragma pack( 2 );
+    #include "pushpck2.h"
 //#endif
 #else
-    #pragma pack( 1 );
+    #include "pushpck1.h"
 #endif
 
 typedef struct {
@@ -102,9 +102,9 @@ typedef struct {
     //BYTE  dtilData;
 } _DLGITEMTEMPLATE;
 #if defined( __NT__ )
-    #pragma pack( 1 );
+    #include "pushpck1.h"
 #else
-    #pragma pack();
+    #include "poppck.h"
 #endif
 
 extern GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx, int dtcy, char *menuname, char *classname, char *captiontext, int pointsize, char *typeface );

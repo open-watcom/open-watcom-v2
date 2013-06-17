@@ -373,7 +373,7 @@ static boolean dataInitCheckHugeAlign( TYPE type )
     // The following is meaningless when TARGET_UINT_MAX == UINT_MAX
     // (but this code will only ever get called for i86 target)
 #if _CPU == 8086
-    if( total_size <= (TARGET_UINT_MAX+1) ) {
+    if( total_size <= (TARGET_UINT_MAX + 1) ) {
         return( FALSE );
     }
 #endif
@@ -383,7 +383,7 @@ static boolean dataInitCheckHugeAlign( TYPE type )
         base_type = ArrayType( type );
     }
     base_size = CgMemorySize( type );
-    return( (TARGET_UINT_MAX+1) % base_size );
+    return( ((TARGET_UINT_MAX + 1) % base_size) != 0 );
 }
 
 static TYPE dtorableObjectType( // GET TYPE OF DTORABLE OBJECT (AT ROOT) ELEMENT

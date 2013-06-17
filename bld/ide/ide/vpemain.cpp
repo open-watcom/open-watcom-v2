@@ -116,7 +116,10 @@ char _viperError[] = { "IDE Error" };
 char _viperRequest[] = { "IDE Request" };
 char _viperInfo[] = { "IDE Information" };
 
+#ifdef __WATCOMC__
 #pragma warning 438 9
+#endif
+
 const char* _viperDesc[] = {
     "",
     banner1w( "Integrated Development Environment", _VIPER_VERSION_ ),

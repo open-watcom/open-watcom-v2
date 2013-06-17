@@ -64,10 +64,10 @@ void GetConfigFilePath( char *path, size_t size )
         }
         FreeLibrary( library );
     } else {                                    /* should only get here on old machines */
-        GetWindowsDirectory( path, size );      /* that don't have SHFOLDER.DLL */
+        GetWindowsDirectory( path, (UINT)size );      /* that don't have SHFOLDER.DLL */
     }
 #else
-    GetWindowsDirectory( path, size );
+    GetWindowsDirectory( path, (UINT)size );
 #endif
 
 } /* GetConfigFilePath */

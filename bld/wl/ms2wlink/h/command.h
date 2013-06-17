@@ -65,3 +65,6 @@ typedef struct cmdfilelist {
     f_handle        file;
     char *          name;
 } cmdfilelist;
+
+extern cmdfilelist  *CmdFile;
+extern bool         MakeToken( sep_type separator, bool include_fn );

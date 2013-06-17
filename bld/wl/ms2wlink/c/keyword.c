@@ -36,33 +36,6 @@
 #include "ms2wlink.h"
 #include "command.h"
 
-extern void         AddCommand( char *, int, bool );
-extern void         NotNecessary( const char * );
-extern void         NotSupported( const char * );
-extern void         NotRecognized( const char * );
-extern void         AddNumOption( char *, unsigned );
-extern void         AddStringOption( char *, char *, int );
-extern void         Warning( char *, int );
-extern void         AddOption( char * );
-extern void         Suicide( void );
-extern void *       MemAlloc( unsigned );
-extern void         EatWhite( void );
-extern bool         MakeToken( sep_type, bool );
-extern void         DirectiveError( void );
-extern void         WriteHelp( void );
-extern void         ImplyFormat( format_type );
-extern void         StartNewFile( char * );
-extern void         ParseDefFile( void );
-extern char *       ToString( void );
-extern void         CommandOut( char *command );
-
-extern bool         MapOption;
-extern format_type  FmtType;
-extern extra_type   FmtInfo;
-extern bool         DebugInfo;
-
-extern cmdfilelist *CmdFile;
-
 static void             (*MultiLine)( void ) = NULL;
 static char *           OptionBuffer;
 static int              BufferLeft;
@@ -749,15 +722,16 @@ static void GetExport( void )
     toklen = namelen = CmdFile->len;
     memcpy( name, CmdFile->token, namelen );
     internal = NULL;
+    intlen = 0;
     if( MakeToken( SEP_EQUALS, TRUE ) ) {   // got an internal name.
-        internal = alloca( CmdFile->len );        // store it temporarily
+        internal = alloca( CmdFile->len );  // store it temporarily
         intlen = CmdFile->len;
         memcpy( internal, CmdFile->token, intlen );
         toklen += intlen + 1;        // +1 for = sign.
     }
     value = 0xFFFFF; // arbitrary >64K.
-    if( MakeToken( SEP_AT, TRUE ) ) {        // got an ordinal.
-        if( !GetNumber( &value ) || value > (64*1024UL) ) {
+    if( MakeToken( SEP_AT, TRUE ) ) {       // got an ordinal.
+        if( !GetNumber( &value ) || value > (64 * 1024UL) ) {
             Warning( "export ordinal value is invalid", OPTION_SLOT );
             return;
         } else {
@@ -889,6 +863,7 @@ static void GetImport( void )
     first = alloca( firstlen );
     memcpy( first, CmdFile->token, firstlen );
     second = NULL;
+    secondlen = 0;
     if( MakeToken( SEP_EQUALS, FALSE ) ) {        // got an internal name.
         secondlen = CmdFile->len;
         second = alloca( secondlen );
@@ -1206,7 +1181,8 @@ static void ProcAlignment( const char *arg )
     bool              success;
     unsigned long     value;
 
-    success = arg && GetNumberStr( &value, arg , strlen( arg ) );
+    value = 0;
+    success = ( arg && GetNumberStr( &value, arg , strlen( arg ) ) );
     if( !success ) {
         Warning( "invalid alignment specification", OPTION_SLOT );
     } else {
@@ -1521,7 +1497,8 @@ static void ProcStack( const char *arg )
     bool                success;
     unsigned long       value;
 
-    success = arg && GetNumberStr( &value, arg , strlen( arg ) );
+    value = 0;
+    success = ( arg && GetNumberStr( &value, arg , strlen( arg ) ) );
     if( !success ) {
         Warning( "stack argument not recognized", OPTION_SLOT );
     } else {

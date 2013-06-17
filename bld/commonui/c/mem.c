@@ -59,7 +59,7 @@ void MemStart( void )
 /*
  * MemAlloc - allocate some memory
  */
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     void *x;
 #if defined( DEBUGMEM )
@@ -80,7 +80,7 @@ void *MemAlloc( unsigned size )
 /*
  * MemReAlloc - allocate some memory
  */
-void *MemReAlloc( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, size_t size )
 {
     void *x;
 #ifndef __OS2_PM__

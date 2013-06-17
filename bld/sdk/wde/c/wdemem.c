@@ -32,6 +32,7 @@
 
 #include "wdeglbl.h"
 #include "wrdll.h"
+#include "wdemem.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -98,7 +99,7 @@ void MemStart( void )
 #endif
 }
 
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     void *p;
 
@@ -111,7 +112,7 @@ void *MemAlloc( unsigned size )
     return( p );
 }
 
-void *MemReAlloc( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, size_t size )
 {
     void *p;
 

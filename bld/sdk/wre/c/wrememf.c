@@ -31,6 +31,7 @@
 
 
 #include "precomp.h"
+#include <stdlib.h>
 #include "watcom.h"
 #include "wreglbl.h"
 #include "wremain.h"

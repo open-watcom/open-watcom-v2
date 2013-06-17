@@ -35,6 +35,7 @@
 #include <string.h>
 #include "watcom.h"
 #include "wrdll.h"
+#include "wremem.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -103,7 +104,7 @@ void MemStart( void )
 #endif
 }
 
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     void *p;
 
@@ -116,7 +117,7 @@ void *MemAlloc( unsigned size )
     return( p );
 }
 
-void *MemReAlloc( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, size_t size )
 {
     void *p;
 

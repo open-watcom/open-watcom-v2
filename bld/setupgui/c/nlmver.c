@@ -134,17 +134,17 @@ int CheckNewer( char *newNLM, char *oldNLM )
 
     /* Get the new NLMs creation date */
 
-    if( rc = ReturnNLMVersionInfoFromFile( newNLM, &newmajorVersion,
+    if( (rc = ReturnNLMVersionInfoFromFile( newNLM, &newmajorVersion,
                 &newminorVersion, &newrevision, &newyear, &newmonth, &newday,
-                NULL, NULL ) ) {
+                NULL, NULL )) != 0 ) {
         return BAD_PATH_NAME;
     }
 
     /* Get the old NLMs creation date */
 
-    if( rc = ReturnNLMVersionInfoFromFile( oldNLM, &majorVersion,
+    if( (rc = ReturnNLMVersionInfoFromFile( oldNLM, &majorVersion,
                 &minorVersion, &revision, &year, &month, &day,
-                NULL, NULL ) ) {
+                NULL, NULL )) != 0 ) {
         return NOT_IN_SYSTEM_DIRECTORY;
     }
 

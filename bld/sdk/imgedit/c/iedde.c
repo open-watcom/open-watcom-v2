@@ -606,7 +606,7 @@ void IEHandlePokedData( HDDEDATA hdata )
  * DdeCallBack
  */
 HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv, HSZ hsz1, HSZ hsz2,
-                               HDDEDATA hdata, DWORD lData1, DWORD lData2 )
+                               HDDEDATA hdata, ULONG_PTR lData1, ULONG_PTR lData2 )
 {
     img_node            *node;
     HSZPAIR             hszpair[2];

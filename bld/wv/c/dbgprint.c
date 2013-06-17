@@ -388,7 +388,7 @@ static void PrintDouble( char format, xreal *val )
             ;
         ++ptr;
     }
-    while( *ptr = *back ) {
+    while( (*ptr = *back) != '\0' ) {
         ++ptr;
         ++back;
     }

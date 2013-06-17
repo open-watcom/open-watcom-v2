@@ -114,13 +114,14 @@ typedef enum {
 /*
  * typedefs
  */
-#pragma pack( 1 );
+
+#include "pushpck1.h"
 typedef struct {
     WORD        file_id;
     DWORD       reserved[12];
     RGBQUAD     rgbqs[28];
 } a_pal_file;
-#pragma pack();
+#include "poppck.h"
 
 typedef struct {
     RECT        box;

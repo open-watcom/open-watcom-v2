@@ -24,31 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  memory functions and tracking
 *
 ****************************************************************************/
 
 
-/*
-MEM:  memory functions and tracking
-*/
-
-
-#include <malloc.h>
+#include <stdlib.h>
 #include "hcmem.h"
 
-#ifdef TRACKER
+#ifdef TRMEM
+
+#include "wio.h"
+#include "clibext.h"
+
 extern "C" {
 #include "trmem.h"
 }
-#include <io.h>
-#include <fcntl.h>
 
 static _trmem_hdl TrHdl;
 
+#ifdef __WATCOMC__
 #pragma initialize 40;
+#endif
 
+//static Memory bogus;    // just need to get the ctors called
 
 //
 //  PrintLine   -- output function used by the memory tracker.
@@ -57,17 +56,14 @@ static _trmem_hdl TrHdl;
 void PrintLine( void *parm, const char *buf, size_t len )
 {
     parm = parm;
-    write( STDOUT_FILENO, (void *) buf, (unsigned int) len );
+    write( STDOUT_FILENO, (void *)buf, (unsigned int)len );
 }
-#endif
-
 
 //
 //  Memory::Memory(), Memory::~Memory() -- Initialization and clean-up
 //                     functions for the mem. tracker.
 //
 
-#ifdef TRACKER
 Memory::Memory()
 {
     TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
@@ -80,8 +76,8 @@ Memory::~Memory()
     _trmem_prt_list( TrHdl );
     _trmem_close( TrHdl );
 }
-#endif
 
+#endif
 
 //
 //  new -- global allocator with hooks into the memory tracker.
@@ -90,10 +86,11 @@ Memory::~Memory()
 void *operator new( size_t size )
 {
     void *p;
-#ifdef TRACKER
-        p = _trmem_alloc( size, HCMemerr, TrHdl );
+
+#ifdef TRMEM
+    p = _trmem_alloc( size, HCMemerr, TrHdl );
 #else
-        p = malloc( size );
+    p = malloc( size );
 #endif
     return p;
 }
@@ -103,9 +100,9 @@ void *operator new( size_t size )
 //  renew -- global realloc function with hooks into the memory tracker.
 //
 
-void *renew( void * p, size_t size )
+void *renew( void *p, size_t size )
 {
-#ifdef TRACKER
+#ifdef TRMEM
     p = _trmem_realloc( p, size, HCMemerr, TrHdl );
 #else
     p = realloc( p, size );
@@ -120,8 +117,9 @@ void *renew( void * p, size_t size )
 
 void operator delete( void *p )
 {
-    if( p == NULL ) return;
-#ifdef TRACKER
+    if( p == NULL )
+        return;
+#ifdef TRMEM
     _trmem_free( p, HCMemerr, TrHdl );
 #else
     free( p );
@@ -136,19 +134,19 @@ void operator delete( void *p )
 const unsigned Pool::BLOCK_SIZE = 1024;
 
 Pool::Pool( size_t size, unsigned b_size )
-    : _size( size > sizeof(void*) ? size : sizeof(void*) ),
+    : _size( size > sizeof( void * ) ? size : sizeof( void * ) ),
       _block( b_size ? b_size : BLOCK_SIZE )
 {
-    uint_8  *index;
-    _array = new uint_8[ _block * _size + sizeof( uint_8 * ) ];
+    unsigned char *index;
+    _array = new unsigned char[_block * _size + sizeof( unsigned char * )];
 
-    for( index = _array; index < _array+(_block-1)*_size; index += _size ){
-    *((void**)index) = (void *) (index + _size);
+    for( index = _array; index < _array + ( _block - 1 ) * _size; index += _size ) {
+    *((void **)index) = (void *)( index + _size );
     }
-    *((void**)index) = NULL;
-    *((uint_8**)(index+_size)) = NULL;
+    *((void **)index) = NULL;
+    *((unsigned char **)( index + _size )) = NULL;
 
-    _pfree = (void *) _array;
+    _pfree = (void *)_array;
 }
 
 
@@ -158,11 +156,11 @@ Pool::Pool( size_t size, unsigned b_size )
 
 Pool::~Pool()
 {
-    uint_8  *temp;
+    unsigned char *temp;
     do{
-    temp = _array;
-    _array = *((uint_8 **) (_array + _block*_size));
-    delete[] temp;
+        temp = _array;
+        _array = *((unsigned char **)( _array + _block * _size ));
+        delete[] temp;
     } while( _array != NULL );
 }
 
@@ -176,19 +174,19 @@ void *Pool::get()
     void    *result;
 
     if( _pfree == NULL ){
-    uint_8  *index;
-    uint_8  *temp = new uint_8[ _block*_size + sizeof(uint_8 *) ];
+    unsigned char *index;
+    unsigned char *temp = new unsigned char[_block * _size + sizeof( unsigned char * )];
 
-    for( index=temp; index<temp+(_block-1)*_size; index+=_size ){
-        *((void**) index) = (void *) (index + _size);
+    for( index = temp; index < temp + ( _block - 1 ) * _size; index += _size ) {
+        *((void **)index) = (void *)( index + _size );
     }
-    *((void**) index) = NULL;
-    *((uint_8**) (index + _size)) = _array;
+    *((void **)index) = NULL;
+    *((unsigned char **)( index + _size )) = _array;
 
-    _pfree = (void *) (_array = temp);
+    _pfree = (void *)( _array = temp );
     }
     result = _pfree;
-    _pfree = *((void **) _pfree);
+    _pfree = *((void **)_pfree);
     return result;
 }
 
@@ -197,8 +195,8 @@ void *Pool::get()
 //  Pool::release   --General purpose de-allocator.
 //
 
-void Pool::release( void * p )
+void Pool::release( void *p )
 {
-    *((void **) p) = _pfree;
+    *((void **)p) = _pfree;
     _pfree = p;
 }

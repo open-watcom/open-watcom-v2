@@ -46,10 +46,10 @@
 /****************************************************************************/
 extern void WREMemOpen( void );
 extern void WREMemClose( void );
-extern void *WREMemAlloc( unsigned );
+extern void *WREMemAlloc( size_t );
 extern void WREMemFree( void * );
-extern void *WREMemRealloc( void *, unsigned );
+extern void *WREMemRealloc( void *, size_t );
 extern int  WREMemValidate( void * );
-extern int  WREMemChkRange( void *, unsigned );
+extern int  WREMemChkRange( void *, size_t );
 
 #endif
