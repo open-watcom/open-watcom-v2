@@ -1540,7 +1540,7 @@ bool SymUserModLoad( char *fname, address *loadaddr )
     if( !fname )
         return( TRUE );
 
-    if( !( fname_len = strlen( fname ) ) )
+    if( ( fname_len = strlen( fname ) ) == 0 )
         return( TRUE );
 
     image = DoCreateImage( fname, fname );

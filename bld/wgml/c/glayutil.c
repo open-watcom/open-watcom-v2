@@ -312,7 +312,7 @@ void    o_content( FILE * f, lay_att curr, content * tm )
         p = tm->string;
         if( tm->content_type == string_content ) { // user string with quotes
             fprintf_s( f, "        %s = '", att_names[curr] );
-            while( c = *p++ ) {
+            while( (c = *p++) != '\0' ) {
                 if( c == '&' ) {
                     fprintf_s( f, "&$amp." );
                 } else {

@@ -114,13 +114,17 @@ void DgAlignInternal(           // ALIGN INTERNAL CONTROL BLOCK
 void DgUninitBytes(             // DATA GENERATE UNINIT BYTES
     target_size_t size )        // - number of bytes
 {
-    if( size == TARGET_UINT_MAX+1 ) {
+#if ( _CPU == 8086 )
+    if( size == TARGET_UINT_MAX + 1 ) {
         size /= 2;
         DGUBytes( size );
         DGUBytes( size );
     } else {
         DGUBytes( size );
     }
+#else
+    DGUBytes( size );
+#endif
 }
 
 
@@ -128,13 +132,17 @@ void DgInitBytes(               // DATA GENERATE INIT BYTES
     target_size_t   size,       // - number of bytes
     uint_8          val )       // - byte to initialize with
 {
-    if( size == TARGET_UINT_MAX+1 ) {
+#if ( _CPU == 8086 )
+    if( size == TARGET_UINT_MAX + 1 ) {
         size /= 2;
         DGIBytes( size, val );
         DGIBytes( size, val );
     } else {
         DGIBytes( size, val );
     }
+#else
+    DGIBytes( size, val );
+#endif
 }
 
 

@@ -576,7 +576,7 @@ extern a_window *DbgTitleWndCreate( char * text, wnd_info *wndinfo,
 
     WndInitCreateStruct( &info );
     WndPosToRect( &WndPosition[ class ], &info.rect, WndMainClientSize() );
-    if( wnd = WndFindClass( NULL, class ) ) {
+    if( (wnd = WndFindClass( NULL, class )) != NULL ) {
         info.rect.x += WndMaxCharX( wnd );
         info.rect.y += WndMaxCharY( wnd );
     }

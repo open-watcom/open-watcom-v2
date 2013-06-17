@@ -732,11 +732,10 @@ boolean PtrCnvInfo(             // FILL IN PTR-CONVERSION INFORMATION
 //                          break;
                         }
                     }
-                } else if( ptr_src->id != ptr_tgt->id
+                } else if( ( ptr_src->id != ptr_tgt->id )
                         && IntegralType( ptr_src )
                         && IntegralType( ptr_tgt )
-                        && CgMemorySize( ptr_src )
-                        == CgMemorySize( ptr_tgt ) ) {
+                        && ( CgMemorySize( ptr_src ) == CgMemorySize( ptr_tgt ) ) ) {
                     info->ptr_integral_ext = TRUE;
                 }
                 if( ! retn ) {
