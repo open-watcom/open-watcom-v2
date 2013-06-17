@@ -44,7 +44,7 @@
 
 #include "trmem.h"
 
-typedef unsigned long   uint_32;
+typedef unsigned long   ulong;
 typedef unsigned        uint;
 
 #define MEMSET(p,c,l)   memset(p,c,l)
@@ -66,17 +66,17 @@ typedef unsigned        uint;
 #define msg(a,b)     static const char MSG_##a[]=b
 
 msg(OUT_OF_MEMORY,      "Tracker out of memory" );
-msg(CHUNK_BYTE_UNFREED, "%U chunks (%L bytes) unfreed" );
+msg(CHUNK_BYTE_UNFREED, "%U chunks (%Z bytes) unfreed" );
 msg(SIZE_ZERO,          "%W size zero" );
-msg(OVERRUN_ALLOCATION, "%W %D overrun allocation by %C of %U bytes" );
+msg(OVERRUN_ALLOCATION, "%W %D overrun allocation by %C of %T bytes" );
 //msg(UNDERRUN_ALLOCATION,"%W %D underrun allocation by %C of %U bytes" );
 msg(UNOWNED_CHUNK,      "%W unowned chunk %D" );
 msg(NULL_PTR,           "%W NULL pointer" );
 msg(NO_ROUTINE,         "Tracker was not given a %S routine!" );
 msg(NOT_IN_ALLOCATION,  "%W %D not in any allocation" );
-msg(OVERRUN_2,          "%W %D+%U overruns allocation %D+%U" );
-msg(PRT_USAGE,          "Current usage: %L bytes; Peak usage: %L bytes" );
-msg(MIN_ALLOC,          "%W allocation of %U less than minimum size" );
+msg(OVERRUN_2,          "%W %D+%T overruns allocation %D+%T" );
+msg(PRT_USAGE,          "Current usage: %Z bytes; Peak usage: %Z bytes" );
+msg(MIN_ALLOC,          "%W allocation of %T less than minimum size" );
 #if defined( M_I86SM )
     msg(PRT_LIST_1,     "Who  Addr Size   Call   Contents" );
     msg(PRT_LIST_2,     "==== ==== ==== ======== ===========================================" );
@@ -117,14 +117,14 @@ struct Entry {
     void            *mem;
     _trmem_who      who;
     size_t          size;       // real size = tr ^ mem ^ who ^ size
-    uint_32         when;
+    ulong           when;
 };
 
 struct _trmem_internal {
     entry_ptr   alloc_list;
-    uint_32     mem_used;
-    uint_32     max_mem;
-    uint_32     alloc_no;
+    memsize     mem_used;
+    memsize     max_mem;
+    ulong       alloc_no;
     void *      (*alloc)( size_t );
     void        (*free)( void * );
     void *      (*realloc)( void *, size_t );
@@ -167,7 +167,7 @@ static char *mystpcpy( char *dest, const char *src )
     return( dest );
 }
 
-static char *formHex( char *ptr, uint_32 data, uint size )
+static char *formHex( char *ptr, memsize data, uint size )
 {
     char            *str;
 
@@ -185,13 +185,13 @@ static char *formHex( char *ptr, uint_32 data, uint size )
 static char * formFarPtr( char *ptr, void far *data )
 /***************************************************/
 {
-    ptr = formHex( ptr, FP_SEG(data), 2 );
+    ptr = formHex( ptr, FP_SEG( data ), 2 );
     *ptr = ':';
     ptr++;
 #ifdef __WATCOMC__
 #pragma warning 579 9;  // shut up pointer truncated warning for FP_OFF
 #endif
-    return formHex( ptr, FP_OFF(data), sizeof( void near * ) );
+    return formHex( ptr, FP_OFF( data ), sizeof( void near * ) );
 #ifdef __WATCOMC__
 #pragma warning 579 4;  // reenable pointer truncated warning
 #endif
@@ -220,7 +220,7 @@ static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
 #if defined( M_I86LM ) || defined( M_I86HM ) || defined( M_I86MM )
     return formFarPtr( ptr, who );
 #else
-    return formHex( ptr, (uint_32) who, sizeof(who) );
+    return formHex( ptr, (memsize)who, sizeof( who ) );
 #endif
 }
 
@@ -231,7 +231,8 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
     char *      ptr;
     char        ch;
     uint        ui;
-    uint_32     ul;
+    ulong       ul;
+    memsize     msize;
     void        *dp;
     _trmem_who  who;
     char *      start;
@@ -250,9 +251,9 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
             case 'W':   /* "a1(a2):" */
                 ptr = mystpcpy( ptr, va_arg( args, const char * ) );
                 who = va_arg( args, _trmem_who );
-                if( who != _TRMEM_NO_ROUTINE ) {
+                if( who != NULL ) {
                     *ptr++ = '(';
-                    ptr = formHex( ptr, (uint_32)who, sizeof( who ) );
+                    ptr = formHex( ptr, (memsize)who, sizeof( who ) );
                     *ptr++ = ')';
                 }
                 *ptr++ = ':';
@@ -266,26 +267,35 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
 #if defined( M_I86LM ) || defined( M_I86HM ) || defined( M_I86CM )
                 ptr = formFarPtr( ptr, dp );
 #else
-                ptr = formHex( ptr, (uint_32)dp, sizeof( dp ) );
+                ptr = formHex( ptr, (memsize)dp, sizeof( dp ) );
 #endif
                 break;
-            case 'S':   /* char * (string) pointer */
+            case 'L':   /* unsigned long */
+                ul = va_arg( args, ulong );
+                ptr = formHex( ptr, ul, sizeof( ul ) );
+                break;
+            case 'S':   /* char *(string)pointer */
                 ptr = mystpcpy( ptr, va_arg( args, char * ) );
+                break;
+            case 'T':   /* size_t */
+                size = va_arg( args, size_t );
+                ptr = formHex( ptr, size, sizeof( size_t ) );
                 break;
             case 'U':   /* unsigned integer */
                 ui = va_arg( args, uint );
-                ptr = formHex( ptr, (uint_32)ui, sizeof( ui ) );
+                ptr = formHex( ptr, ui, sizeof( ui ) );
                 break;
-            case 'L':   /* unsigned long */
-                ul = va_arg( args, uint_32 );
-                ptr = formHex( ptr, (uint_32)ul, sizeof( ul ) );
+            case 'Z':   /* memory size */
+                msize = va_arg( args, memsize );
+                ptr = formHex( ptr, msize, sizeof( msize ) );
                 break;
             case 'X':   /* 14 bytes of hex data */
-                start = va_arg( args, char* );
+                start = va_arg( args, char * );
                 size = va_arg( args, size_t );
-                if( size > 14 ) size = 14;
+                if( size > 14 )
+                    size = 14;
                 xptr = start;
-                for( i=0; i<14; i++ ) {
+                for( i = 0; i < 14; i++ ) {
                     if( i < size ) {
                         ptr = formHex( ptr, *xptr, sizeof( char ) );
                         xptr++;
@@ -299,7 +309,7 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
                         ptr++;
                     }
                 }
-                for( i=0; i < size; i++ ) {
+                for( i = 0; i < size; i++ ) {
                     if( isprint( *start ) ) {
                         *ptr = *start;
                     } else {
@@ -431,7 +441,7 @@ unsigned _trmem_close( _trmem_hdl hdl )
 /*************************************/
 {
     uint        chunks;
-    uint_32     mem_used;
+    memsize     mem_used;
     entry_ptr   walk;
     entry_ptr   next;
 
@@ -442,7 +452,7 @@ unsigned _trmem_close( _trmem_hdl hdl )
         while( walk ) {
             next = walk->next;
             ++chunks;
-            _trmem_free( walk->mem, _TRMEM_NO_ROUTINE, hdl );
+            _trmem_free( walk->mem, NULL, hdl );
             walk = next;
         }
         if( chunks ) {
@@ -500,8 +510,7 @@ void *_trmem_alloc( size_t size, _trmem_who who, _trmem_hdl hdl )
     return( mem );
 }
 
-static int isValidChunk( entry_ptr tr, const char *rtn,
-    _trmem_who who, _trmem_hdl hdl )
+static int isValidChunk( entry_ptr tr, const char *rtn, _trmem_who who, _trmem_hdl hdl )
 {
     void *mem;
     size_t size;
@@ -569,16 +578,15 @@ void _trmem_free( void *mem, _trmem_who who, _trmem_hdl hdl )
     hdl->free( mem );
 }
 
-static void * ChangeAlloc( void *old, size_t size, _trmem_who who,
-                           _trmem_hdl hdl, void * (*fn)(void *,size_t),
-                           char * name )
+static void *ChangeAlloc( void *old, size_t size, _trmem_who who,
+                _trmem_hdl hdl, void *(*fn)(void *,size_t), char *name )
 /*********************************************************************/
 {
     entry_ptr   tr;
     void *      new_block;
     size_t      old_size;
 
-    if( fn == (void *) _TRMEM_NO_ROUTINE ) {
+    if( fn == NULL ) {
         trPrt( hdl, MSG_NO_ROUTINE, name );
         return( NULL );
     }
@@ -688,9 +696,8 @@ char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl )
     return( mem );
 }
 
-int _trmem_chk_range( void *start, size_t len,
-                _trmem_who who, _trmem_hdl hdl )
-/**********************************************/
+int _trmem_chk_range( void *start, size_t len, _trmem_who who, _trmem_hdl hdl )
+/*****************************************************************************/
 {
     entry_ptr   tr;
     void        *end;
@@ -710,8 +717,7 @@ int _trmem_chk_range( void *start, size_t len,
     }
     end = _PtrAdd( start, len );
     if( _PtrCmp( end, >, end_of_mem ) ) {
-        trPrt( hdl, MSG_OVERRUN_2, "ChkRange", who,
-            start, len, tr->mem, getSize( tr ) );
+        trPrt( hdl, MSG_OVERRUN_2, "ChkRange", who, start, len, tr->mem, getSize( tr ) );
         return( 0 );
     }
     return( isValidChunk( tr, "ChkRange", who, hdl ) );
@@ -759,14 +765,14 @@ size_t _trmem_msize( void *mem, _trmem_hdl hdl ) {
     return( getSize( findOnList( mem, hdl ) ) );
 }
 
-unsigned long _trmem_get_current_usage( _trmem_hdl hdl ) {
-/********************************************************/
-    return hdl->mem_used;
+memsize _trmem_get_current_usage( _trmem_hdl hdl ) {
+/****************************************************/
+    return( hdl->mem_used );
 }
 
-unsigned long _trmem_get_peak_usage( _trmem_hdl hdl ) {
-/*****************************************************/
-    return hdl->max_mem;
+memsize _trmem_get_peak_usage( _trmem_hdl hdl ) {
+/*************************************************/
+    return( hdl->max_mem );
 }
 
 #ifndef _M_IX86

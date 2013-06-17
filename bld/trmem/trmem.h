@@ -35,14 +35,20 @@
 
 #include <stddef.h>
 
-typedef struct _trmem_internal *_trmem_hdl;
+#if defined( _WIN64 )
+typedef unsigned __int64    memsize;
+#else
+typedef unsigned long       memsize;
+#endif
+
+typedef struct _trmem_internal  *_trmem_hdl;
 
 typedef void (*_trmem_who)( void );  /* generic pointer to code */
 #define _TRMEM_NO_ROUTINE   ((_trmem_who)0)
 
 /* generic pointer to code with realloc signature */
-typedef void *(*_trmem_realloc_who)(void*,size_t);
-#define _TRMEM_NO_REALLOC ((_trmem_realloc_who)0)
+typedef void *(*_trmem_realloc_who)(void *, size_t);
+#define _TRMEM_NO_REALLOC   ((_trmem_realloc_who)0)
 
 /*
     These are some special conditions that trmem can detect.  OR together
@@ -93,13 +99,13 @@ enum {
     _trmem_open can/will use any of __alloc, __free, or __prt_line; so be
     sure they are initialized before calling _trmem_open.
 */
-_trmem_hdl _trmem_open(
+extern _trmem_hdl _trmem_open(
     void *(*__alloc)(size_t),
     void (*__free)(void*),
     void * (*__realloc)(void*,size_t),
     void * (*__expand)(void*,size_t),
     void *__prt_parm,
-    void (*__prt_line)( void *__prt_parm, const char *__buf, size_t __len ),
+    void (*__prt_line)(void *__prt_parm, const char *__buf, size_t __len),
     unsigned __flags
 );
 
@@ -109,7 +115,7 @@ _trmem_hdl _trmem_open(
     allocated chunks were freed before closing the handle.
     Returns number of unfreed chunks.
 */
-unsigned _trmem_close( _trmem_hdl );
+extern unsigned _trmem_close( _trmem_hdl );
 
 
 /*
@@ -118,42 +124,42 @@ unsigned _trmem_close( _trmem_hdl );
     with
         ptr = _trmem_alloc( size, _trmem_guess_who(), hdl );
 */
-void *_trmem_alloc( size_t, _trmem_who, _trmem_hdl );
-void _trmem_free( void *, _trmem_who, _trmem_hdl );
-void *_trmem_realloc( void *, size_t, _trmem_who, _trmem_hdl );
-void *_trmem_expand( void *, size_t, _trmem_who, _trmem_hdl );
-char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl );
-size_t _trmem_msize( void *, _trmem_hdl );
+extern void *_trmem_alloc( size_t, _trmem_who, _trmem_hdl );
+extern void _trmem_free( void *, _trmem_who, _trmem_hdl );
+extern void *_trmem_realloc( void *, size_t, _trmem_who, _trmem_hdl );
+extern void *_trmem_expand( void *, size_t, _trmem_who, _trmem_hdl );
+extern char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl );
+extern size_t _trmem_msize( void *, _trmem_hdl );
 
 
 /*
     _trmem_prt_usage prints the current memory usage, and peak usage.
     _trmem_prt_list prints a list of all currently allocated chunks.
 */
-void _trmem_prt_usage( _trmem_hdl );
-unsigned _trmem_prt_list( _trmem_hdl );
+extern void _trmem_prt_usage( _trmem_hdl );
+extern unsigned _trmem_prt_list( _trmem_hdl );
 
 /*
     _trmem_get_current_usage retrieves the current memory usage.
     _trmem_get_peak_usage retrieves the peak memory usage.
 */
-unsigned long _trmem_get_current_usage( _trmem_hdl );
-unsigned long _trmem_get_peak_usage( _trmem_hdl );
+extern memsize _trmem_get_current_usage( _trmem_hdl );
+extern memsize _trmem_get_peak_usage( _trmem_hdl );
 
 /*
     _trmem_set_min_alloc sets a minimum allocation size.  If an allocation is
     done which is smaller than this minimum, trmem will print a warning.
 */
-void _trmem_set_min_alloc( size_t, _trmem_hdl );
+extern void _trmem_set_min_alloc( size_t, _trmem_hdl );
 
 /*
     _trmem_validate does some consitancy checks on an allocated chunk.
     _trmem_chk_range ensures that the __len memory locations beginning at
         __start are inside the boundaries of an allocated chunk.
 */
-int _trmem_validate( void *__ptr, _trmem_who, _trmem_hdl );
-int _trmem_validate_all( _trmem_hdl );
-int _trmem_chk_range( void *__start, size_t __len, _trmem_who, _trmem_hdl );
+extern int _trmem_validate( void *__ptr, _trmem_who, _trmem_hdl );
+extern int _trmem_validate_all( _trmem_hdl );
+extern int _trmem_chk_range( void *__start, size_t __len, _trmem_who, _trmem_hdl );
 
 /*
     _trmem_prt_use_seg_num changes whether the memory tracker (for windows
@@ -163,7 +169,7 @@ int _trmem_chk_range( void *__start, size_t __len, _trmem_who, _trmem_hdl );
     NOTE: the memory tracker uses toolhelp to lookup the segment number.
 */
 #ifdef __WINDOWS__
-int _trmem_prt_use_seg_num( _trmem_hdl, int use_set_num );
+extern int _trmem_prt_use_seg_num( _trmem_hdl, int use_set_num );
 #endif
 
 
@@ -185,9 +191,10 @@ int _trmem_prt_use_seg_num( _trmem_hdl, int use_set_num );
     _trmem_whoami returns the CS:eIP of an address within itself.  There are
     no restrictions on a module using _trmem_whoami (i.e., no need for /of).
 */
-_trmem_who  _trmem_guess_who( void );
-_trmem_who  _trmem_whoami( void );
+extern _trmem_who  _trmem_guess_who( void );
+extern _trmem_who  _trmem_whoami( void );
 
+#ifdef __WATCOMC__
 #if defined( __386__ )
     #pragma aux _trmem_guess_who = \
         0x8b 0x45 0x04      /*      mov     eax,+4[ebp]         */ \
@@ -232,6 +239,7 @@ _trmem_who  _trmem_whoami( void );
         value               [dx ax] \
         modify exact        [dx ax];
 
+#endif
 #endif
 
 #endif
