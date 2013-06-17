@@ -37,9 +37,9 @@ typedef enum {
 typedef int         f_handle;
 
 #define NIL_HANDLE      ((f_handle)-1)
-#define STDIN_HANDLE    ((f_handle)0)
-#define STDOUT_HANDLE   ((f_handle)1)
-#define STDERR_HANDLE   ((f_handle)2)
+#define STDIN_HANDLE    STDIN_FILENO
+#define STDOUT_HANDLE   STDOUT_FILENO
+#define STDERR_HANDLE   STDERR_FILENO
 
 #define MAX_LINE (256)
 #define FNMAX  80             // maximum file name length.
@@ -92,3 +92,73 @@ typedef struct cmdentry {
     char *              command;
     bool                asis;       // true iff entry should be printed "as is".
 } cmdentry;
+
+extern bool         MapOption;
+extern format_type  FmtType;
+extern extra_type   FmtInfo;
+extern bool         DebugInfo;
+
+extern cmdentry     *Commands[];
+extern char         *PromptText[];
+extern bool         HaveDefFile;
+
+extern format_type  FmtType;
+extern cmdentry     *Commands[];
+extern bool         MapOption;
+
+// mem.c
+extern void     MemInit( void );
+extern void     MemFini( void );
+extern void     MemFree( void * );
+extern void     *MemAlloc( size_t );
+
+// fileio.h
+extern f_handle QOpenR( const char *name );
+extern unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name );
+extern unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *name );
+extern void     QWriteNL( f_handle file, const char *name );
+extern void     QClose( f_handle file, const char *name );
+extern unsigned long QFileSize( f_handle file );
+extern bool     QReadStr( f_handle file, char *dest, unsigned size, const char *name );
+extern bool     QIsConIn( f_handle file );
+extern void     Error( char * msg );
+extern void     CommandOut( char *command );
+extern void     QSetBinary( f_handle file );
+
+// keyword.c
+extern bool     GetNumber( unsigned long *val );
+extern void     ProcessDefCommand( void );
+extern void     ProcessOption( const char *opt );
+
+// ms2wlink.c
+extern void     WriteHelp( void );
+
+// parsems.c
+extern void     EatWhite( void );
+extern bool     InitParsing( void );
+extern void     FreeParserMem( void );
+extern void     ParseDefFile( void );
+extern void     StartNewFile( char *fname );
+extern void     DirectiveError( void );
+extern char     *ToString( void );
+extern void     ParseMicrosoft( void );
+
+// utils.c
+extern void     UtilsInit( void );
+extern void     ImplyFormat( format_type typ );
+extern char     *FileName( char *buff, int len, int etype, bool force );
+extern void     AddCommand( char *msg, int prompt, bool verbatim );
+extern void     Warning( char *msg, int prompt );
+extern void     AddOption( char *msg );
+extern void     AddNumOption( char *msg, unsigned value );
+extern void     AddStringOption( char *msg, char *string, int len );
+extern void     NotSupported( const char *msg );
+extern void     NotNecessary( const char *msg );
+extern void     NotRecognized( const char *msg );
+extern char     *Msg2Splice( const char *msg1, const char *msg2 );
+extern char     *Msg3Splice( const char *msg1, const char *msg2, const char *msg3 );
+extern char     *FindNotAsIs( int slot );
+extern char     *FindObjectName( void );
+extern void     OutPutPrompt( int prompt );
+extern int      Spawn( void (*fn)( void ) );
+extern void     Suicide( void );

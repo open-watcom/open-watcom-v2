@@ -32,9 +32,19 @@
 #include <string.h>
 #include <malloc.h>
 #include <setjmp.h>
+#include "wio.h"
 #include "ms2wlink.h"
+#include "clibext.h"
 
-static  char *  DefExt[] = {
+char *PromptText[] = {
+    "Object Modules ",
+    "Run File ",
+    "List File ",
+    "Libraries ",
+    "Definitions File "
+};
+
+static char *DefExt[] = {
     ".obj",
     ".exe",
     ".map",
@@ -44,29 +54,8 @@ static  char *  DefExt[] = {
     ".obj"              // for overlay object files.
 };
 
-extern char *   PromptText[] = {
-    "Object Modules ",
-    "Run File ",
-    "List File ",
-    "Libraries ",
-    "Definitions File "
-};
-
 static bool     WritePrompt;
 
-extern void *   MemAlloc( unsigned );
-extern void     MemFree( void * );
-extern void     Error( char * );
-extern unsigned QWrite( f_handle, void *, unsigned, char * );
-extern bool     QIsConIn( f_handle );
-extern void     QSetBinary( f_handle );
-
-extern char     *Msg2Splice( const char *, const char * );
-extern char     *Msg3Splice( const char *, const char *, const char * );
-
-extern format_type  FmtType;
-extern cmdentry *   Commands[];
-extern bool         MapOption;
 
 extern void UtilsInit( void )
 /***************************/

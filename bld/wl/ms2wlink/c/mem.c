@@ -24,109 +24,60 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  memory management routines for ms2wlink
 *
 ****************************************************************************/
 
 
-/*
-  Mem : memory management routines for ms2wlink
-*/
 #include <stdlib.h>
-#include <malloc.h>
 #include "ms2wlink.h"
 
-#ifdef TRACKER
-extern void *TrMemInit( char *, void *(*)(int), void *(*)(void *,int),
-                        void (*)(void *), void (*)(char *, unsigned) );
-extern void TrCheck(void *);
-extern void TrMemFini(void *);
-extern void TrPrtUsage(void *);
-extern void TrPrtMemUse(void *);
-extern void *TrAlloc(unsigned int ,void (*)(void),void *);
-extern int  TrValidate(void *,void (*)(void),void *);
-extern int  TrChkRange(void *,unsigned int ,void (*)(void),void *);
-extern int  TrFree(void *,void *);
-extern int  TrFreeSize(void *,unsigned int ,void *);
+#ifdef TRMEM
 
-extern void (*FindRet(void))();
-#pragma aux FindRet modify [sp];
+#include "wio.h"
+#include "clibext.h"
+#include "trmem.h"
 
-extern unsigned QWrite( f_handle, void *, unsigned, char * );
-extern void     QWriteNL( f_handle, char * );
+static _trmem_hdl TrHdl;
 
-void    *TrHdl;
-#endif
-
-extern void Error( char * );
-
-#ifdef TRACKER
-
-void PrintLine( char *buff, unsigned len )
+static void PrintLine( void *handle, const char *buff, size_t len )
+/*****************************************************************/
 {
+    handle = handle;
     QWrite( STDERR_HANDLE, buff, len, NULL );
     QWriteNL( STDERR_HANDLE, NULL );
 }
+
 #endif
 
-
-extern void MemInit( void )
-/*************************/
+void MemInit( void )
+/******************/
 {
-#ifdef TRACKER
-    TrHdl = TrMemInit( "M2W", malloc, realloc, free, PrintLine );
+#ifdef TRMEM
+    TrHdl = _trmem_open( malloc, free, NULL, NULL, NULL, PrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #endif
 }
 
 
-extern void MemFini( void )
-/*************************/
+void MemFini( void )
+/******************/
 {
-#ifdef TRACKER
-    TrPrtMemUse( TrHdl );
-    TrMemFini( TrHdl );
+#ifdef TRMEM
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
 #endif
 }
 
-#ifdef TRACKER
-extern void *TryAlloc( unsigned size )
-{
-    extern void *DoLAlloc( unsigned, void (*)() );
-    void        (*ra)();
-
-    ra = FindRet(); /* must be first thing */
-
-    return( DoLAlloc( size, ra ) );
-}
-
-void *DoLAlloc( unsigned size, void (*ra)() )
-#else
-extern void *TryAlloc( unsigned size )
-#endif
-{
-    void    *p;
-
-#ifdef TRACKER
-    p = TrAlloc( size, ra, TrHdl );
-#else
-    p = malloc( size );
-#endif
-    return( p );
-}
-
-extern void * MemAlloc( unsigned size )
-/*************************************/
+void *MemAlloc( size_t size )
+/***************************/
 {
     void                *ptr;
-#ifdef TRACKER
-    void                (*ra)();
 
-    ra = FindRet(); /* must be first thing */
-
-    ptr = DoLAlloc( size, ra );
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
-    ptr = TryAlloc( size );
+    ptr = malloc( size );
 #endif
     if( ptr == NULL ) {
         Error( "Dynamic Memory Exhausted!!!" );
@@ -134,12 +85,12 @@ extern void * MemAlloc( unsigned size )
     return( ptr );
 }
 
-extern void MemFree( void *p )
-/****************************/
+void MemFree( void *p )
+/*********************/
 {
     if( p == NULL ) return;
-#ifdef TRACKER
-    TrFree( p, TrHdl );
+#ifdef TRMEM
+    _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
 #endif

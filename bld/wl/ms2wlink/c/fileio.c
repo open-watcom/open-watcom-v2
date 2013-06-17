@@ -24,38 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  file i/o routines for the microsoft linker file translator
 *
 ****************************************************************************/
 
-
-/*
- *  FILEIO : file i/o routines for the microsoft linker file translator
- *
-*/
 
 #include <errno.h>
 #include <stdio.h>      /* for SEEK_SET/SEEK_END */
 #include <string.h>
 #include "wio.h"
-#include "watcom.h"
+#include "clibext.h"
 #include "ms2wlink.h"
 
 static bool     DeleteMsg = FALSE;
 
-extern char *       Msg3Splice( char *, char *, char * );
-extern char *       Msg2Splice( char *, char * );
-extern void         Suicide( void );
-extern void         MemFree( void * );
-
-/* forward prototype */
-extern void Error( char * msg );
-
 // file io routines
 
-static void IOError( char *msgstart, char *name )
-/***********************************************/
+static void IOError( char *msgstart, const char *name )
+/*****************************************************/
 {
     char *  tempmsg;
     char *  realmsg;
@@ -67,8 +53,8 @@ static void IOError( char *msgstart, char *name )
     Error( realmsg );
 }
 
-extern f_handle QOpenR( char *name )
-/**********************************/
+f_handle QOpenR( const char *name )
+/*********************************/
 {
     f_handle h;
 
@@ -80,8 +66,8 @@ extern f_handle QOpenR( char *name )
     return( NIL_HANDLE );
 }
 
-extern unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
-/****************************************************************************/
+unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
+/***************************************************************************/
 {
     int ret;
 
@@ -92,8 +78,8 @@ extern unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
     return( ret );
 }
 
-extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
-/*****************************************************************************/
+unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *name )
+/**********************************************************************************/
 /* write from far memory */
 {
     int ret;
@@ -107,21 +93,22 @@ extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
     return( ret );
 }
 
-extern void QWriteNL( f_handle file, char *name )
-/***********************************************/
+void QWriteNL( f_handle file, const char *name )
+/**********************************************/
 {
     QWrite( file, "\n", 1, name );
 }
 
-extern void QClose( f_handle file, char *name )
-/*********************************************/
+void QClose( f_handle file, const char *name )
+/********************************************/
 /* file close */
 {
     int ret;
 
     ret = close( file );
-    if( ret != -1 ) return;
-    IOError( "io error processing ", name );
+    if( ret == -1 ) {
+        IOError( "io error processing ", name );
+    }
 }
 
 static unsigned long QPos( f_handle file )
@@ -130,8 +117,8 @@ static unsigned long QPos( f_handle file )
     return( tell( file ) );
 }
 
-extern unsigned long QFileSize( f_handle file )
-/*********************************************/
+unsigned long QFileSize( f_handle file )
+/**************************************/
 {
     unsigned long   curpos;
     unsigned long   size;
@@ -142,8 +129,8 @@ extern unsigned long QFileSize( f_handle file )
     return( size );
 }
 
-extern bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
-/**************************************************************************/
+bool QReadStr( f_handle file, char *dest, unsigned size, const char *name )
+/*************************************************************************/
 /* quick read string (for reading directive file) */
 {
     bool            eof;
@@ -163,16 +150,16 @@ extern bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
     return( eof );
 }
 
-extern bool QIsConIn( f_handle file )
-/***********************************/
+bool QIsConIn( f_handle file )
+/****************************/
 {
     return( isatty( file ) );
 }
 
 // routines based on the "quick" file i/o routines.
 
-extern void Error( char * msg )
-/*****************************/
+void Error( char * msg )
+/**********************/
 {
     QWrite( STDERR_HANDLE, msg, strlen( msg ), "console" );
     QWriteNL( STDERR_HANDLE, "console" );
@@ -182,15 +169,15 @@ extern void Error( char * msg )
     Suicide();
 }
 
-extern void CommandOut( char *command )
-/*************************************/
+void CommandOut( char *command )
+/******************************/
 {
     QWrite( STDOUT_HANDLE, command, strlen( command ), "console" );
     QWriteNL( STDOUT_HANDLE, "console" );
 }
 
-extern void QSetBinary( f_handle file )
-/*************************************/
+void QSetBinary( f_handle file )
+/******************************/
 {
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     setmode( file, O_BINARY );

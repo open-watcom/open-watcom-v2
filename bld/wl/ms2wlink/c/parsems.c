@@ -35,40 +35,14 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
+#include "wio.h"
 #include "ms2wlink.h"
 #include "command.h"
+#include "clibext.h"
 
 cmdfilelist         *CmdFile;
 
 static int          OverlayLevel = 0;
-
-extern cmdentry     *Commands[];
-extern char         *PromptText[];
-extern bool         HaveDefFile;
-
-extern void         Error( char * );
-extern void         OutPutPrompt( int );
-extern f_handle     QOpenR( char * );
-extern unsigned     QRead( f_handle, void *, unsigned, char * );
-extern void         QClose( f_handle, char * );
-extern unsigned long QFileSize( f_handle );
-extern bool         QReadStr( f_handle, char *, unsigned, char * );
-extern void         AddCommand( char *, int, bool );
-extern void         Warning( char *, int );
-extern char         *FindObjectName( void );
-extern char *       FileName( char *, int, char, bool );
-extern char *       Msg3Splice( char *, char *, char * );
-extern void *       MemAlloc( unsigned );
-extern void *       TryAlloc( unsigned );
-extern void         MemFree( void * );
-extern void         ProcessOption( const char *opt );
-extern void         ProcessDefCommand( void );
-extern void *       FindNotAsIs( int );
-
-extern bool         MakeToken( sep_type, bool );
-extern bool         GetNumber( unsigned long * );
-extern char *       ToString( void );
-
 
 extern void EatWhite( void )
 /**************************/
@@ -217,7 +191,7 @@ extern void StartNewFile( char *fname )
     newfile->file = QOpenR( newfile->name );
     size = QFileSize( newfile->file );
     if( size < 65510 ) {       // if can alloc a chunk big enough
-        CmdFile->buffer = TryAlloc( size + 1 );
+        CmdFile->buffer = MemAlloc( size + 1 );
         if( CmdFile->buffer != NULL ) {
             size = QRead( newfile->file, CmdFile->buffer, size, newfile->name );
             *(CmdFile->buffer + size) = '\0';
@@ -282,6 +256,7 @@ extern bool MakeToken( sep_type separator, bool include_fn )
         CmdFile->len = 0;
         return( FALSE );
     }
+    matchchar = '\0';
     CmdFile->len = 1;                 // for error reporting.
     switch( separator ){
     case SEP_QUOTE:
@@ -507,7 +482,7 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
     bool        first = TRUE;
     unsigned    oi;
     int         c;
-    int         idx1, idx2;
+    unsigned    idx1, idx2;
 
     first = TRUE;
     last_sep = sep_chr;
@@ -516,6 +491,7 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
         is_term = TRUE;
         return( 0 );
     }
+    c = 0;
     for( ;; ) {
         is_quoting = FALSE;
         oi = 0;
@@ -544,7 +520,7 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
             }
         }
         /* Check for line buffer overflow. */
-        if( oi == buf_len - 1 && (c = GetNextInputChar( prompt )) != '\n' && c != ',' && c != ';' ) {
+        if( ( oi == buf_len - 1 ) && (c = GetNextInputChar( prompt )) != '\n' && c != ',' && c != ';' ) {
             Error( "maximum line length exceeded" );
         }
         if( oi ) {  /* Index of the terminating null. */

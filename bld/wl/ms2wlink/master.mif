@@ -1,6 +1,8 @@
-proj_name = wlink
+proj_name = ms2wlink
 
-wlink_autodepends = .AUTODEPEND
+ms2wlink_autodepends = .AUTODEPEND
+
+ms2wlink_trmem = 1
 
 memory_model_i86 = c
 
@@ -8,17 +10,23 @@ memory_model_i86 = c
 !include defrule.mif
 !include deftarg.mif
 
+!include trmem.mif
+
 objs = &
 fileio.obj &
 keyword.obj &
 mem.obj &
 ms2wlink.obj &
 parsems.obj &
-utils.obj
+utils.obj &
+$(trmem_objs)
 
-.c: ../c
+.c: ../c;$(trmem_dir)
 
 inc_dirs = -I"../h"
+
+extra_c_flags_mem      = $(trmem_cover_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
 
 extra_l_flags_os2 = op stack=8k
 

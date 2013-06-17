@@ -71,20 +71,6 @@ format_type     FmtType = FMT_DEFAULT;
 extra_type      FmtInfo = NO_EXTRA;
 bool            HaveDefFile = FALSE;
 
-extern void         MemInit( void );
-extern void         MemFini( void );
-extern void         MemFree( void * );
-extern void         Error( char * );
-extern void         CommandOut( char * );
-extern int          Spawn( void (*fn)( void ) );
-extern void         ParseMicrosoft( void );
-extern bool         InitParsing( void );
-extern void         FreeParserMem( void );
-extern void         UtilsInit( void );
-extern char *       Msg2Splice( char *, char * );
-extern char *       Msg3Splice( char *, char *, char * );
-extern void         ImplyFormat( format_type );
-
 static void         DoConvert( void );
 
 static void FreeMemory( void )
@@ -106,7 +92,7 @@ static void FreeMemory( void )
     }
 }
 
-extern void main( void )
+int main( void )
 /**********************/
 {
     MemInit();
@@ -114,6 +100,7 @@ extern void main( void )
     Spawn( DoConvert );
     FreeMemory();
     MemFini();
+    return( 0 );
 }
 
 static void PrefixWrite( cmdentry *cmdlist, char *prefix, int len )
