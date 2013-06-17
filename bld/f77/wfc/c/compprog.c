@@ -35,7 +35,6 @@
 #include "cpopt.h"
 #include "stmtsw.h"
 #include "errcod.h"
-#include "sdfile.h"
 #include "global.h"
 #include "ferror.h"
 #include "frl.h"

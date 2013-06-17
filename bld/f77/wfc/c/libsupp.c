@@ -35,7 +35,6 @@
 //
 
 #include "ftnstd.h"
-#include "sdfile.h"
 #include "global.h"
 #include "omodes.h"
 #include "inout.h"
@@ -107,9 +106,9 @@ static  lib_handle SearchDir( char *path, char *name ) {
 
 // Search a directory for a source file.
 
-    char        fname[MAX_FILE+1];
+    char        fname[_MAX_PATH];
 
-    fname[ Combine( path, name, fname, MAX_FILE ) ] = NULLCHAR;
+    fname[ Combine( path, name, fname, _MAX_PATH - 1 ) ] = NULLCHAR;
     return( FindSrcFile( fname ) );
 }
 

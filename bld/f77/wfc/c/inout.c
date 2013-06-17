@@ -41,7 +41,6 @@
 #include "ferror.h"
 #include "comio.h"
 #include "inout.h"
-#include "sdfile.h"
 
 #include "banner.h"
 #ifdef _BANEXTRA
@@ -205,7 +204,7 @@ void    OpenSrc( void ) {
 
     file_handle fp;
     char        err_msg[ERR_BUFF_SIZE+1];
-    char        bld_name[MAX_FILE+1];
+    char        bld_name[_MAX_PATH];
     bool        erase_err;
 
     erase_err = ErrFile == NULL;
@@ -313,11 +312,11 @@ void    Include( char *inc_name ) {
 //=================================
 
     file_handle fp;
-    char        bld_name[MAX_FILE+1];
+    char        bld_name[_MAX_PATH];
     char        err_msg[ERR_BUFF_SIZE+1];
 
     SDInitAttr();
-    CopyMaxStr( inc_name, bld_name, MAX_FILE );
+    CopyMaxStr( inc_name, bld_name, _MAX_PATH - 1 );
     MakeName( bld_name, SDSrcExtn( bld_name ), bld_name );
     if( AlreadyOpen( inc_name ) )
         return;
@@ -431,7 +430,7 @@ static  file_handle Open( char *fn, char *extn, int mode ) {
 //==========================================================
 
     file_handle ptr;
-    char        buffer[MAX_FILE+1];
+    char        buffer[_MAX_PATH];
     char        errmsg[81];
 
     MakeName( fn, extn, buffer );
@@ -526,7 +525,7 @@ static  void    ChkErrErr( void ) {
 //=================================
 
     char        msg[81];
-    char        fnbuff[MAX_FILE+1];
+    char        fnbuff[_MAX_PATH];
 
     if( SDError( ErrFile, msg ) ) {
         CloseErr();
@@ -610,7 +609,7 @@ static  void    OpenListingFile( bool reopen ) {
 //==============================================
 
     char        errmsg[81];
-    char        name[MAX_FILE+1];
+    char        name[_MAX_PATH];
 
     reopen = reopen;
     if( ( Options & OPT_LIST ) == 0 ) {
@@ -896,7 +895,7 @@ static  void    ChkLstErr( void ) {
 //=================================
 
     char        msg[81];
-    char        fnbuff[MAX_FILE+1];
+    char        fnbuff[_MAX_PATH];
 
     if( SDError( ListFile, msg ) ) {
         CloseLst();
@@ -911,7 +910,7 @@ static  void    ChkLstErr( void ) {
 static  void    Erase( char *extn ) {
 //===================================
 
-    char        buffer[MAX_FILE+1];
+    char        buffer[_MAX_PATH];
 
     MakeName( SDFName( SrcName ), extn, buffer );
     SDScratch( buffer );

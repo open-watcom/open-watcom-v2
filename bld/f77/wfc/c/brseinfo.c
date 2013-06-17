@@ -40,7 +40,6 @@
 #include "cpopt.h"
 #include "progsw.h"
 #include "brseinfo.h"
-#include "sdfile.h"
 #include "dw.h"
 #include "astype.h"
 #include "browscli.h"
@@ -158,7 +157,7 @@ void    BIInit( void ) {
 void    BIEnd( void ) {
 //===============
 
-    char        fn[MAX_FILE+1];
+    char        fn[_MAX_PATH];
 
     if( !_GenerateBrInfo() ) return;
     MakeName( SDFName( SrcName ), BrowseExtn, fn );

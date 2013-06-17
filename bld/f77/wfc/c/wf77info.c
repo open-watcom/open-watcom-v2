@@ -35,7 +35,6 @@
 #include "wf77aux.h"
 #include "fcgbls.h"
 #include "ecflags.h"
-#include "sdfile.h"
 #include "segsw.h"
 #include "progsw.h"
 #include "cpopt.h"

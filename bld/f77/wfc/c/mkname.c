@@ -35,7 +35,6 @@
 //
 
 #include "ftnstd.h"
-#include "sdfile.h"
 
 #include <string.h>
 
@@ -59,15 +58,13 @@ int     MakeName( char *fn, char *extn, char *buff ) {
 
     int         len;
 
-    len = CopyMaxStr( fn, buff, MAX_FILE );
+    len = CopyMaxStr( fn, buff, _MAX_PATH - 1 );
     if( extn != NULL ) {
         buff += len;
-        if( EXTN_MARKER != NULLCHAR ) {
-            *buff = EXTN_MARKER;
-            ++buff;
-            ++len;
-        }
-        len += CopyMaxStr( extn, buff, MAX_FILE - len );
+        *buff = '.';
+        ++buff;
+        ++len;
+        len += CopyMaxStr( extn, buff, _MAX_PATH - 1 - len );
     }
     return( len );
 }

@@ -68,7 +68,6 @@ extern  void            FreeLabel(label_id);
 static bool BlockName( unsigned_16 rb_defined )
 {
     sym_id      sym_ptr;
-    unsigned_16 flag_mask;
     bool        rb_name;
 
     CSExtn();
@@ -79,8 +78,7 @@ static bool BlockName( unsigned_16 rb_defined )
             sym_ptr->ns.si.rb.entry = NextLabel();
             sym_ptr->ns.flags = RB_FLAGS;
         }
-        flag_mask = (unsigned_16)~( SY_RB_DEFINED | SY_REFERENCED );
-        if( ( ( sym_ptr->ns.flags & flag_mask ) == RB_FLAGS ) &&
+        if( ( ( sym_ptr->ns.flags & ~(SY_RB_DEFINED | SY_REFERENCED) ) == RB_FLAGS ) &&
             ( ( sym_ptr->ns.flags & rb_defined ) == 0 ) ) {
             sym_ptr->ns.flags |= rb_defined;
             rb_name = TRUE;

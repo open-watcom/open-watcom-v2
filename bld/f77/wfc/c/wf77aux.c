@@ -37,7 +37,6 @@
 #include "cpopt.h"
 #include "progsw.h"
 #include "fio.h"
-#include "sdfile.h"
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "inout.h"
@@ -500,9 +499,9 @@ void    AddDependencyInfo( source_t *fi ) {
     dep_info    **dep;
     dep_info    *new_dep;
     struct stat stat_info;
-    char        buff[MAX_FILE];
+    char        buff[_MAX_PATH];
 
-    p = _fullpath( buff, fi->name, MAX_FILE );
+    p = _fullpath( buff, fi->name, _MAX_PATH );
     if( p != NULL ) {
         for( dep = &DependencyInfo; *dep != NULL; dep = &(*dep)->link ) {
             if( strcmp( (*dep)->fn, p ) == 0 ) {

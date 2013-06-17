@@ -34,7 +34,6 @@
 #include "ftextvar.h"
 #include "rundat.h"
 #include "errcod.h"
-#include "sdfile.h"
 #include "units.h"
 #include "fio.h"
 #include "posio.h"
@@ -113,7 +112,7 @@ static  char    *GetSysName( ftnfile *fcb ) {
 
 // Return a system file name given a user name and a file structure.
 
-    char        buff[MAX_FILE];
+    char        buff[_MAX_PATH];
     char        *p;
 
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || (defined( __OS2__ ) && defined( _M_I86 ))
@@ -123,7 +122,7 @@ static  char    *GetSysName( ftnfile *fcb ) {
     } else
 #endif
     {
-        p = _fullpath( buff, fcb->filename, MAX_FILE );
+        p = _fullpath( buff, fcb->filename, _MAX_PATH );
     }
     if( p != NULL ) {
         p = RMemAlloc( strlen( buff ) + sizeof( char ) );

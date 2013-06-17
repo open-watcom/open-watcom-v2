@@ -35,7 +35,6 @@
 //
 
 #include "ftnstd.h"
-#include "sdfile.h"
 
 extern  char            ForExtn[];
 
@@ -77,7 +76,7 @@ char    *SDExtn( char *fn, char *default_extn ) {
     for(;;) {
         chr = *fn;
         if( chr == NULLCHAR ) break;
-        if( chr == EXTN_MARKER ) {
+        if( chr == '.' ) {
             src_extn = fn;
         }
         fn++;

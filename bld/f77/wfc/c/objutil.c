@@ -36,7 +36,6 @@
 #include "wio.h"
 #include "ftnstd.h"
 #include "progsw.h"
-#include "sdfile.h"
 #include "global.h"
 #include "fcgbls.h"
 #include "errcod.h"
@@ -67,7 +66,7 @@
 
 static  file_attr       PageFileAttrs = { REC_FIXED | SEEK };
 static  char            *PageFileName = { "__wfc__.vm" };
-static  char            PageFileBuff[MAX_FILE];
+static  char            PageFileBuff[_MAX_PATH];
 static  int             CurrPage;
 static  int             MaxPage;
 static  unsigned_8      PageFlags;

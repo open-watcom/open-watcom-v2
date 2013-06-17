@@ -33,7 +33,6 @@
 #include "ecflags.h"
 #include "errcod.h"
 #include "undef.h"
-#include "sdfile.h"
 #include "global.h"
 #include "progsw.h"
 #include "cpopt.h"
