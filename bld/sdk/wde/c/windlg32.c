@@ -199,7 +199,7 @@ GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID,
 } /* DialogEXTemplate */
 
 #if defined( __NT__ )
-#pragma pack( 1 );
+#include "pushpck1.h"
 typedef struct MyControlClass {
     unsigned short      crap;
     unsigned char       class[2];

@@ -42,9 +42,9 @@
 
 #if defined( __NT__ )
 //#if defined( __ALPHA__ )
-//    #pragma pack( 1 );
+//    #include "pushpck1.h"
 //#else
-    #pragma pack( 2 );
+    #include "pushpck2.h"
 //#endif
 #endif
 
@@ -80,7 +80,7 @@ typedef struct {
 } _DLGEXITEMTEMPLATE;
 
 #if defined( __NT__ )
-    #pragma pack( 1 );
+    #include "pushpck1.h"
 #endif
 
 extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy, char *menuname, char *classname, char *captiontext, short pointsize, char *typeface, short FontWeight, short FontItalic );
