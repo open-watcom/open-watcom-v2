@@ -632,10 +632,10 @@ int main(int argc, char *argv[])
       }
     } else {
       if(dummy_filename) {
+#if !defined( __UNIX__ )
         int m, f, r;
         m = f = 0;
 
-#if !defined( __UNIX__ )
 /*
   Get the file descriptor number
 */
