@@ -75,7 +75,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
 # Build help compilers and tools
 [ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/helpcomp/builder.ctl ]
