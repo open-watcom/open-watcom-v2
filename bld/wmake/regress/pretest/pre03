@@ -29,16 +29,16 @@ true=
 !!@#$%                      # error - unknown preprocessor directive
 
 
-!undef dowah                # error - trying to undefine an undefined macro
+!undef dowah                # OK - error only in debug mode
 
 !include alpha.foo          # error - unable to include
 
-!ifeq humho true            # error - macro is undefined
+!ifeq humho true            # OK - error only in debug mode
 !endif
 
 !define a&^b true           # error - invalid macro name
 
-!error should be warnings on lines 15, 24, 32, 36
+!error should be warnings on lines 15, 24
 !error should be errors on lines 28, 29, 34, 39
 !error one warning should follow, then the abort message
 

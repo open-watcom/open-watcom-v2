@@ -3,5 +3,5 @@
 
 all : .symbolic
     for %i in (1 2 3) do echo %i
-    for %i in (bogusa bogusb bogusc) do type %i
+    for %i in (bogusa bogusb bogusc) do if not exist %i echo The system cannot find the file specified.
 

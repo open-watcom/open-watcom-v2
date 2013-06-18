@@ -76,7 +76,7 @@ TEST=F
 print_header
 rm -f tst2.out
 $1 -h -f for06 > tst2.out 2>&1
-diff tst2.out for06.cmu
+diff tst2.out for06.chk
 do_check
 
 TEST=G
@@ -90,7 +90,7 @@ TEST=H
 print_header
 rm -f tst2.out
 $1 -h -f for08 > tst2.out 2>&1
-diff -b tst2.out for08.cmu
+diff -b tst2.out for08u.chk
 do_check
 
 

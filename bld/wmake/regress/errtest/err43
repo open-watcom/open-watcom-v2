@@ -4,9 +4,6 @@
 
 .ERASE
 
-#override mkerr
-mkerr = false
-
 all.43 : first z43.43 last
     @$(mkerr)
 

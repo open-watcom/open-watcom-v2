@@ -15,7 +15,7 @@ rm -f error.out
 
 # Make sure the utilities exist
 cd cmds
-$1 -h bootstrap=1
+$1 -h
 cd ..
 
 # ===========================

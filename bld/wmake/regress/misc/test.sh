@@ -68,4 +68,4 @@ $1 -a -c -h -f misc06u > tmp.out 2>&1
 diff -b misc06u.chk tmp.out
 do_check
 
-rm tmp.out
+rm -f tmp.out

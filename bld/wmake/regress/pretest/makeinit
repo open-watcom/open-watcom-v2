@@ -1,6 +1,7 @@
 !ifdef __UNIX__
+mkerr=../cmds/mkerr.exe
 ifeq = @../cmds/ifeq.exe
 !else
+mkerr=..\cmds\mkerr.exe
 ifeq = @..\cmds\ifeq.exe
 !endif
-mkerr = @false

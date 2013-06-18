@@ -4,32 +4,32 @@
 #  search paths. Unix path separators.
 #
 
-.EXTENSIONS: .out .txt
+.EXTENSIONS: .out .tmp
 
 PATHS = "Test Path";Another" Pa"th;
 FILES = "Test Path/Long Filename.out" 
 FILES+= "Another Path/Long Filename.out"
 
-.txt: $(PATHS)
+.tmp: $(PATHS)
 
-.txt.out:
+.tmp.out:
     cp "$[@" "$^@"
 
 test: .symbolic create $(FILES) clean    
 
 create: .symbolic
     -mkdir "Test Path"
-    @echo Creating <<"Test Path/Long Filename.txt"
+    @echo Creating <<"Test Path/Long Filename.tmp"
 OK
 << keep
     -mkdir "Another Path"
-    @echo Creating <<"Another Path/Long Filename.txt"
+    @echo Creating <<"Another Path/Long Filename.tmp"
 OK
 << keep
 
 clean: .symbolic
-    -rm "Test Path/Long Filename.txt"
-    -rm "Another Path/Long Filename.txt"
+    -rm "Test Path/Long Filename.tmp"
+    -rm "Another Path/Long Filename.tmp"
     -rm "Test Path/Long Filename.out"
     -rm "Another Path/Long Filename.out"
     -rmdir "Test Path"

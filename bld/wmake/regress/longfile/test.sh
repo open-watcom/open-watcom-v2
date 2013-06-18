@@ -78,7 +78,7 @@ TEST=6
 print_header
 rm tmp.out
 $1 -h -m -f long06 > tmp.out 2>&1
-diff -b long06.cmu tmp.out
+diff -b long06u.chk tmp.out
 do_check
 
 rm tmp.out

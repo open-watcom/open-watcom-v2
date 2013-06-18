@@ -114,4 +114,4 @@ goto done
 :usage
 echo usage: %0 prgname errorfile
 :done
-if exist tmp.out rm tmp.out
+rm -f tmp.out

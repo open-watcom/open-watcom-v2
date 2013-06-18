@@ -7,6 +7,6 @@
 
 dowah :
     @wtouch zzz.zzz
-    @del zzz.zzz
-    @false
+    @rm -f zzz.zzz
+    @$(mkerr)
 

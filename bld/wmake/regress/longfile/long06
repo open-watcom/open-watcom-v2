@@ -27,10 +27,10 @@ OK
     @echo Creating <<"Long Filename.t1"
 OK
 << keep
-    @echo Creating <<"Long Filename.txt"
+    @echo Creating <<"Long Filename.tmp"
 OK
 << keep
-    @echo Creating <<"Long Filename.txt1"
+    @echo Creating <<"Long Filename.tmp1"
 OK
 << keep
     @cd ..
@@ -52,9 +52,9 @@ clean: .symbolic
     for %i in (*1) do @echo %i
     -rm *.?1
     for %i in (*) do @echo %i
-    -rm *.txt
+    -rm *.tmp
     for %i in (*) do @echo %i
-    -rm *.txt1
+    -rm *.tmp1
     for %i in (*) do @echo %i
     -rm *.out
     for %i in (*) do @echo %i

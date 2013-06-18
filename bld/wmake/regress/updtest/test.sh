@@ -97,4 +97,4 @@ $1 -h -ms -f upd11 > tmp.out 2>&1
 diff upd11.chk tmp.out
 do_check
 
-rm tmp.out
+rm -f tmp.out

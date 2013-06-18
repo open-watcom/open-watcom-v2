@@ -1,4 +1,4 @@
-Creating longfile.txt
-Creating longfile2.txt
-rm longfile.txt
-rm longfile2.txt
+Creating longfile.tmp
+Creating longfile2.tmp
+rm longfile.tmp
+rm longfile2.tmp

@@ -7,6 +7,7 @@ if .%1 == . goto usage
 echo # ---------------------------
 echo # Test A
 echo # ---------------------------
+rm -f tst2.out
 %1 -h -f for01 > tst2.out 2>&1
 diff tst2.out for01.chk
 if errorlevel 1 goto tst2aerr
@@ -21,6 +22,7 @@ if errorlevel 1 goto tst2aerr
 echo # ---------------------------
 echo # Test B
 echo # ---------------------------
+rm -f tst2.out
 %1 -h -f for02 > tst2.out 2>&1
 diff tst2.out for02.chk
 if errorlevel 1 goto tst2berr
@@ -35,6 +37,7 @@ if errorlevel 1 goto tst2berr
 echo # ---------------------------
 echo # Test C
 echo # ---------------------------
+rm -f tst2.out
 %1 -h -f for03 > tst2.out 2>&1
 diff tst2.out for03.chk
 if errorlevel 1 goto tst2cerr
@@ -68,6 +71,7 @@ if errorlevel 1 goto tst2derr
 echo # ---------------------------
 echo # Test E
 echo # ---------------------------
+rm -f tst2.out
 %1 -h -f for05 > tst2.out 2>&1
 diff tst2.out for05.chk
 if errorlevel 1 goto tst2eerr
@@ -82,6 +86,7 @@ if errorlevel 1 goto tst2eerr
 echo # ---------------------------
 echo # Test F
 echo # ---------------------------
+rm -f tst2.out
 %1 -h -f for06 > tst2.out 2>&1
 diff tst2.out for06.chk
 if errorlevel 1 goto tst2ferr
@@ -96,6 +101,7 @@ if errorlevel 1 goto tst2ferr
 echo # ---------------------------
 echo # Test G
 echo # ---------------------------
+rm -f tst2.out
 %1 -h -f for07 > tst2.out 2>&1
 diff tst2.out for07.chk
 if errorlevel 1 goto tst2gerr
@@ -112,15 +118,14 @@ echo # Test H
 echo # ---------------------------
 rem Need to set prompt, otherwise the test fails...
 prompt $p$g
-rm prntdir.exe
-wcl386 prntdir.c -ox-d1-zq
 type for08.chk > tmpfile.tmp
-prntdir "echo a" >> tmpfile.tmp
+$(prntdir) "echo a" >> tmpfile.tmp
 echo a >> tmpfile.tmp
-prntdir "echo b" >> tmpfile.tmp
+$(prntdir) "echo b" >> tmpfile.tmp
 echo b >> tmpfile.tmp
-prntdir "echo c" >> tmpfile.tmp
+$(prntdir) "echo c" >> tmpfile.tmp
 echo c >> tmpfile.tmp
+rm -f tst2.out
 %1 -h -f for08 > tst2.out 2>&1
 diff -b tst2.out tmpfile.tmp
 if errorlevel 1 goto tst2herr
@@ -131,9 +136,9 @@ if errorlevel 1 goto tst2herr
 :err
 :done
     if not .%verbose% == . goto end
-    rm tmpfile.tmp
-    rm tst2.out
-    rm *.obj
+    rm -f tmpfile.tmp
+    rm -f tst2.out
+    rm -f *.obj
 
 goto end
 :usage

@@ -4,14 +4,14 @@ SET TRMEM_CODE=1
 set from=%cd%
 cd %OWSRCDIR%\wmake\regress
 
-if exist error.out del error.out
+rm -f error.out
 if .%1 == . goto usage
 
 REM ===========================
 REM Build utilities first 
 REM ===========================
 cd cmds
-wmake -h
+%1 -h
 cd ..
 
 REM ===========================
@@ -47,7 +47,7 @@ REM -- PRETEST - PRE COMPILER TEST
 REM ===========================
 echo *****************************************************************
 cd PRETEST
-%comspec% /c call dopre.bat %1 ..\error.out
+%comspec% /c call test.bat %1 ..\error.out
 cd ..
 
 :tst5
@@ -56,7 +56,7 @@ REM -- UPDTEST - UPDATE TEST
 REM ===========================
 echo *****************************************************************
 cd UPDTEST
-%comspec% /c call doupd.bat %1 ..\error.out
+%comspec% /c call test.bat %1 ..\error.out
 cd ..
 
 :tst6
@@ -66,7 +66,7 @@ REM -- ERRTEST - ERROR TEST
 REM ===========================
 echo *****************************************************************
 cd ERRTEST
-%comspec% /c call error.bat %1 ..\error.out
+%comspec% /c call test.bat %1 ..\error.out
 cd ..
 
 :tst7
@@ -103,7 +103,7 @@ REM -- MISC TEST -
 REM ===========================
 echo *****************************************************************
 cd MISC
-%comspec% /c call TEST.BAT %1 ..\error.out
+%comspec% /c call test.bat %1 ..\error.out
 cd ..
 
 :tst11

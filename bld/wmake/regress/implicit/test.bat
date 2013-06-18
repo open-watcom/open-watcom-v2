@@ -9,6 +9,7 @@ wtouch hello.cpp
 echo # ---------------------------
 echo # IMPLICIT RULES TEST 1
 echo # ---------------------------
+rm -f err1.out
 %1 -h -l err1.out > tst1.out
 if errorlevel 1 goto tst2err
     echo # Implicit Rules Test successful

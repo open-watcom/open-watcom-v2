@@ -22,6 +22,7 @@ if errorlevel 1 goto err1
 ECHO # -----------------------------
 ECHO #   Test 2
 ECHO # -----------------------------
+rm -f tmp.out
 %1 -h -f pre03 pre03 > tmp.out 2>&1
 diff -i pre03.chk tmp.out
 if errorlevel 1 goto err2
@@ -73,7 +74,7 @@ if errorlevel 1 goto err5
 ECHO # -----------------------------
 ECHO #   Test 6
 ECHO # -----------------------------
-rm tmp.out
+rm -f tmp.out
 %1 -h -f pre07 > tmp.out 2>&1
 diff -i pre07.chk tmp.out
 if errorlevel 1 goto err6
@@ -87,7 +88,7 @@ if errorlevel 1 goto err6
 ECHO # -----------------------------
 ECHO #   Test 7
 ECHO # -----------------------------
-rm tmp.out
+rm -f tmp.out
 %1 -h -f pre08 > tmp.out 2>&1
 if errorlevel 1 goto err7
 diff pre08.chk tmp.out
@@ -102,4 +103,4 @@ goto done
 :usage
 echo usage: %0 prgname errorfile
 :done
-if exist tmp.out rm tmp.out
+rm -f tmp.out

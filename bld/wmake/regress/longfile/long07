@@ -5,34 +5,34 @@
 #  backslash works.
 #
 
-.EXTENSIONS: .out .txt
+.EXTENSIONS: .out .tmp
 
 TESTPATH=testpath\
 FILES=myfile.out "my second file.out"
 
-.txt: $(TESTPATH)
+.tmp: $(TESTPATH)
 
-.txt.out:
+.tmp.out:
     cp -s "$[@" "$^@"
 
 test: .symbolic create $(FILES) clean    
 
 create: .symbolic
     -mkdir testpath
-    @echo Creating <<"testpath\myfile.txt"
+    @echo Creating <<"testpath\myfile.tmp"
 OK
 << keep
-    @echo Creating <<"testpath\my second file.txt"
+    @echo Creating <<"testpath\my second file.tmp"
 OK
 << keep
 
-myfile.out: $(TESTPATH)myfile.txt
+myfile.out: $(TESTPATH)myfile.tmp
 
-"my second file.out": $(TESTPATH)"my second file.txt"
+"my second file.out": "$(TESTPATH)my second file.tmp"
 
 clean: .symbolic
-    -rm.exe testpath\myfile.txt
-    -rm.exe "testpath\my second file.txt"
-    -rm.exe myfile.out
-    -rm.exe "my second file.out"
+    -rm -f testpath\myfile.tmp
+    -rm -f "testpath\my second file.tmp"
+    -rm -f myfile.out
+    -rm -f "my second file.out"
     -rmdir testpath

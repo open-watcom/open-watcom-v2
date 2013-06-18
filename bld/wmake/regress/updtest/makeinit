@@ -1,2 +1,7 @@
-mkerr=@false
-envarg=..\cmds\envarg
+!ifdef __UNIX__
+mkerr=../cmds/mkerr.exe
+envarg=../cmds/envarg.exe
+!else
+mkerr=..\cmds\mkerr.exe
+envarg=..\cmds\envarg.exe
+!endif

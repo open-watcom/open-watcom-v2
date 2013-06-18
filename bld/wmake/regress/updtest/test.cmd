@@ -62,7 +62,7 @@ if errorlevel 1 goto err4
 echo # ---------------------------
 echo #   Test 5
 echo # ---------------------------
-%1 -h -s -f upd05 > tmp.out
+%1 -h -s -f upd05 > tmp.out 2>&1
 diff -b upd05.chk tmp.out
 if errorlevel 1 goto err5
     echo # UPD05 successful
@@ -75,7 +75,7 @@ if errorlevel 1 goto err5
 echo # ---------------------------
 echo #   Test 6
 echo # ---------------------------
-%1 -h -f upd06 > tmp.out
+%1 -h -f upd06 > tmp.out 2>&1
 diff upd06.chk tmp.out
 if errorlevel 1 goto err6
     echo # UPD06 successful
@@ -88,7 +88,7 @@ if errorlevel 1 goto err6
 echo # ---------------------------
 echo #   Test 7
 echo # ---------------------------
-%1 -h -f upd07 > tmp.out
+%1 -h -f upd07 > tmp.out 2>&1
 diff upd07.chk tmp.out
 if errorlevel 1 goto err7
     echo # UPD07 successful
@@ -154,4 +154,4 @@ goto done
 :usage
 echo usage: %0 prgname errorfile
 :done
-if exist tmp.out rm tmp.out
+rm -f tmp.out

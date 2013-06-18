@@ -7,6 +7,7 @@
 #   $(guess)    tracks the preprocessor's attempts
 #   $(answer)   tracks the actual answer
 #
+
 true=
 guess=
 answer=

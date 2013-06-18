@@ -4,16 +4,16 @@
 #  Make sure LFN dependencies work properly.
 #
 
-test: .symbolic longfile.txt longfile2.txt
-    rm longfile.txt
-    rm longfile2.txt
+test: .symbolic longfile.tmp longfile2.tmp
+    rm longfile.tmp
+    rm longfile2.tmp
 
-longfile.txt:
-    @echo Creating <<longfile.txt
+longfile.tmp:
+    @echo Creating <<longfile.tmp
 Long file name 1
 << keep
 
-longfile2.txt:
-      @echo Creating <<longfile2.txt
+longfile2.tmp:
+      @echo Creating <<longfile2.tmp
 Long file name 2
 << keep

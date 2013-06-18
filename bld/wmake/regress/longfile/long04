@@ -4,32 +4,32 @@
 #  search paths.
 #
 
-.EXTENSIONS: .out .txt
+.EXTENSIONS: .out .tmp
 
 PATHS = "Test Path";Another" Pa"th;
 FILES = "Test Path\Long Filename.out" 
 FILES+= "Another Path\Long Filename.out"
 
-.txt: $(PATHS)
+.tmp: $(PATHS)
 
-.txt.out:
+.tmp.out:
     cp -s "$[@" "$^@"
 
 test: .symbolic create $(FILES) clean    
 
 create: .symbolic
     -mkdir "Test Path"
-    @echo Creating <<"Test Path\Long Filename.txt"
+    @echo Creating <<"Test Path\Long Filename.tmp"
 OK
 << keep
     -mkdir "Another Path"
-    @echo Creating <<"Another Path\Long Filename.txt"
+    @echo Creating <<"Another Path\Long Filename.tmp"
 OK
 << keep
 
 clean: .symbolic
-    -rm.exe "Test Path\Long filename.txt"
-    -rm.exe "Another Path\Long filename.txt"
+    -rm.exe "Test Path\Long filename.tmp"
+    -rm.exe "Another Path\Long filename.tmp"
     -rm.exe "Test Path\Long filename.out"
     -rm.exe "Another Path\Long filename.out"
     -rmdir "Test Path"

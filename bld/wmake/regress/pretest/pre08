@@ -45,17 +45,10 @@ pre08.005:
 
 
 pre08.006: .symbolic
-    true
+    $(mkerr) 0
     if not errorlevel 0 $(mkerr)
-    -false
-    # On Unix, 'false' returns 1. On Other platforms, 'false'
-    # returns EXIT_SUCCESS which is 255.
-!ifdef __UNIX__
-    if not errorlevel 1 $(mkerr)
-!else
-    if not errorlevel 255 $(mkerr)
-!endif    
-
+    -$(mkerr) 1
+    if errorlevel 2 $(mkerr)
 
 # this is an oddball case - try if a b == a echo hi under DOS
 pre08.007:

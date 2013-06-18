@@ -2,9 +2,8 @@ pre03(15): Warning(W30): Skipping !else ifdef block after !else
 pre03(24): Warning(W30): Skipping !else block after !else
 pre03(28): Error(E26): Unknown preprocessor directive: asdf
 pre03(29): Error(E26): Unknown preprocessor directive: 
-pre03(32): Warning(W35): Trying to !undef an undefined macro
 pre03(34): Error(E32): Opening file (alpha.foo): No such file or directory
-pre03(41): Error(E33): should be warnings on lines 15, 24, 32, 36
+pre03(41): Error(E33): should be warnings on lines 15, 24
 pre03(42): Error(E33): should be errors on lines 28, 29, 34, 39
 pre03(43): Error(E33): one warning should follow, then the abort message
 Warning(W34): !endif pending at end of file

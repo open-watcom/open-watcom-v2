@@ -1,10 +1,10 @@
 mkdir testpath
-Creating "testpath\myfile.txt"
-Creating "testpath\my second file.txt"
-cp -s "testpath\myfile.txt" "myfile.out"
-cp -s "testpath\my second file.txt" "my second file.out"
-rm.exe testpath\myfile.txt
-rm.exe "testpath\my second file.txt"
-rm.exe myfile.out
-rm.exe "my second file.out"
+Creating "testpath\myfile.tmp"
+Creating "testpath\my second file.tmp"
+cp -s "testpath\myfile.tmp" "myfile.out"
+cp -s "testpath\my second file.tmp" "my second file.out"
+rm -f testpath\myfile.tmp
+rm -f "testpath\my second file.tmp"
+rm -f myfile.out
+rm -f "my second file.out"
 rmdir testpath
