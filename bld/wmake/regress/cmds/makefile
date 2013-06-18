@@ -7,7 +7,7 @@ host_cpu = $(bld_cpu)
 !include deftarg.mif
 !include defrule.mif
 
-targets = mkerr.exe envarg.exe ifeq.exe
+targets = mkerr.exe envarg.exe ifeq.exe create.exe
 
 !ifdef __UNIX__
 targets += rem.exe

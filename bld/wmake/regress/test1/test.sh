@@ -32,8 +32,7 @@ echo \# Multiple Dependents Test
 echo \# ===========================
 
 TEST=1
-cc -o create create.c
-./create 30
+../cmds/create.exe 30
 rm -f err1.out
 touch err1.out
 $1 -h -f maketst1 -l err1.out > tst1.out
@@ -42,7 +41,6 @@ diff -b err1.out err1.chk
 do_check
 
 rm *.obj
-rm create
 rm *.out
 rm main.*
 rm foo*.c

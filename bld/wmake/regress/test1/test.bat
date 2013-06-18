@@ -7,8 +7,7 @@ if .%1 == . goto usage
 echo # ---------------------------
 echo # TEST 1
 echo # ---------------------------
-wcl386 create.c -ox-d1-zq
-create 30
+..\cmds\create.exe 30
 rm -f err1.out
 wtouch err1.out
 %1 -h -f maketst1 -l err1.out > tst1.out
