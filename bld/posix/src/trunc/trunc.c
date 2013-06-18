@@ -31,16 +31,14 @@
 
 
 #include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 #if defined(__QNX__)
  #include <utime.h>
 #else
  #include <sys/utime.h>
 #endif
+#include "wio.h"
 #include "argvenv.h"
 #include "getopt.h"
 #include "argvrx.h"

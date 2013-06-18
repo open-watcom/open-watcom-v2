@@ -33,8 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "wio.h"
 #include "misc.h"
 #include "fnutils.h"
 #include "getopt.h"

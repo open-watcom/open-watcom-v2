@@ -35,8 +35,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "wio.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"

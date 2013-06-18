@@ -129,6 +129,7 @@ static const char * usage_data[] = {
 #include <unistd.h>
 #include <fcntl.h>
 #endif
+#include "clibext.h"
 
 /* ENC is the basic 1-character encoding function to make a char printing */
 #define ENC(c) ((c) ? ((c) & 077) + ' ': '`')

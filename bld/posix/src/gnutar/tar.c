@@ -43,7 +43,7 @@
 #include <sys/types.h>                  /* Needed for typedefs in tar.h */
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include "wio.h"
 
 #ifdef MSDOS
 #include <conio.h>

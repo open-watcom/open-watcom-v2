@@ -31,13 +31,12 @@
 
 
 #include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
+#include "wio.h"
+#include "clibext.h"
 #include "getopt.h"
 #include "misc.h"
 
