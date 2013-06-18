@@ -12,11 +12,11 @@ objs_asm = fshand.obj
 
 # .C files (in RUNTIME\C)
 
-objs_c =
 
 !ifeq release 0
-objs_c +=   rtdbgst.obj
-objs_c +=   rtdbgcom.obj
+objs_c = rtdbgst.obj rtdbgcom.obj
+!else
+objs_c =
 !endif
 
 # .CPP files (in RUNTIME\CPP)
@@ -40,14 +40,6 @@ objs_reg = ljmpdtor.obj &
 objs_reg =
 !endif
 
-targdir=
-!include $(cpplib_dir)/runtime/static.mif
-!ifeq linkage dynamic
-objs_dyn = $(dynamic_objs)
-!else
-objs_dyn = $(static_objs)
-!endif
-
 !ifdef require_registration
 objs_reg += &
     $(_subdir_)fsregist.obj &
@@ -57,6 +49,14 @@ objs_reg += &
 objs_reg += &
     pdctxaxp.obj &
     pdregist.obj
+!endif
+
+targdir=
+!include $(cpplib_dir)/runtime/static.mif
+!ifeq linkage dynamic
+objs_dyn = $(dynamic_objs)
+!else
+objs_dyn = $(static_objs)
 !endif
 
 objs_cpp = &

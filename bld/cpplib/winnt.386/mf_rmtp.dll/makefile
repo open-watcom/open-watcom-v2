@@ -10,5 +10,5 @@ subdir     = mf_rmtp.dll
 
 additional_cleanup  = export*.def
 
-define_library_include = $(cpplib_dir)/plib.mif
+define_library_include = $(cpplib_dir)/pliblibs.mif
 !include $(cpplib_dir)/mrglib.mif

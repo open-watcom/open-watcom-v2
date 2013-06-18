@@ -5,5 +5,6 @@ model      = mf
 convention = register
 linkage    = static
 subdir     = mf_r
-define_library_include = $(cpplib_dir)/plib.mif
+
+define_library_include = $(cpplib_dir)/pliblibs.mif
 !include $(cpplib_dir)/mrglib.mif

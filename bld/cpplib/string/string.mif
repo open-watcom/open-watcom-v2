@@ -1,6 +1,6 @@
 # files in STRING\CPP
 
-objs_cpp += &
+objs_cpp = &
     $(_subdir_)allocrep.obj &
     $(_subdir_)allomusz.obj &
     $(_subdir_)constrch.obj &
@@ -70,7 +70,7 @@ objs_cpp += &
 
 # files in STRING\C
 
-objs_c += $(_subdir_)strsrch.obj
+objs_c = $(_subdir_)strsrch.obj
 
 pch_flags = -fh=pch01.pch
 pch_flags_x = -fh=pch01x.pch

@@ -12,16 +12,6 @@ _subdir_ =
 objs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
 files = $+ $(static_objs) $-
 
-!ifdef objs_asm
-!undef objs_asm
-!endif
-!ifdef objs_c
-!undef objs_c
-!endif
-!ifdef objs_cpp
-!undef objs_cpp
-!endif
-
 !ifeq processor 087
 target_lib = $(prefix)7$(suffix).lib
 target_lib_x = $(prefix_x)7$(suffix).lib

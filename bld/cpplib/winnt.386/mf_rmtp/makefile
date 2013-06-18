@@ -8,5 +8,5 @@ mthreaded  = 1
 profile    = 1
 subdir     = mf_rmtp
 
-define_library_include = $(cpplib_dir)/plib.mif
+define_library_include = $(cpplib_dir)/pliblibs.mif
 !include $(cpplib_dir)/mrglib.mif

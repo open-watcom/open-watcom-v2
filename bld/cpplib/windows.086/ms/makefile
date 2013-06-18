@@ -4,5 +4,6 @@ system     = windows
 model      = ms
 linkage    = static
 subdir     = ms
-define_library_include = $(cpplib_dir)/plib.mif
+
+define_library_include = $(cpplib_dir)/pliblibs.mif
 !include $(cpplib_dir)/mrglib.mif
