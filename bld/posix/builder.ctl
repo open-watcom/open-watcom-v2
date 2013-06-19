@@ -15,9 +15,11 @@ set PROJNAME=build POSIX tools
     <CPCMD> <OWOBJDIR>/cat.exe   <OWBINDIR>/cat<CMDEXT>
     <CPCMD> <OWOBJDIR>/cp.exe    <OWBINDIR>/cp<CMDEXT>
     <CPCMD> <OWOBJDIR>/egrep.exe <OWBINDIR>/egrep<CMDEXT>
+    <CPCMD> <OWOBJDIR>/head.exe  <OWBINDIR>/head<CMDEXT>
     <CPCMD> <OWOBJDIR>/chmod.exe <OWBINDIR>/chmod<CMDEXT>
-    <CPCMD> <OWOBJDIR>/ls.exe    <OWBINDIR>/ls<CMDEXT>
     <CPCMD> <OWOBJDIR>/sed.exe   <OWBINDIR>/sed<CMDEXT>
+    <CPCMD> <OWOBJDIR>/sleep.exe <OWBINDIR>/sleep<CMDEXT>
+    <CPCMD> <OWOBJDIR>/tee.exe   <OWBINDIR>/tee<CMDEXT>
     <CPCMD> <OWOBJDIR>/uniq.exe  <OWBINDIR>/uniq<CMDEXT>
     <CPCMD> <OWOBJDIR>/wc.exe    <OWBINDIR>/wc<CMDEXT>
     <CPCMD> <OWOBJDIR>/which.exe <OWBINDIR>/which<CMDEXT>
@@ -30,12 +32,16 @@ set PROJNAME=build POSIX tools
     rm -f <OWBINDIR>/cp<CMDEXT>
     echo rm -f <OWBINDIR>/egrep<CMDEXT>
     rm -f <OWBINDIR>/egrep<CMDEXT>
+    echo rm -f <OWBINDIR>/head<CMDEXT>
+    rm -f <OWBINDIR>/head<CMDEXT>
     echo rm -f <OWBINDIR>/chmod<CMDEXT>
     rm -f <OWBINDIR>/chmod<CMDEXT>
-    echo rm -f <OWBINDIR>/ls<CMDEXT>
-    rm -f <OWBINDIR>/ls<CMDEXT>
     echo rm -f <OWBINDIR>/sed<CMDEXT>
     rm -f <OWBINDIR>/sed<CMDEXT>
+    echo rm -f <OWBINDIR>/sleep<CMDEXT>
+    rm -f <OWBINDIR>/sleep<CMDEXT>
+    echo rm -f <OWBINDIR>/tee<CMDEXT>
+    rm -f <OWBINDIR>/tee<CMDEXT>
     echo rm -f <OWBINDIR>/uniq<CMDEXT>
     rm -f <OWBINDIR>/uniq<CMDEXT>
     echo rm -f <OWBINDIR>/wc<CMDEXT>

@@ -33,16 +33,14 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <fcntl.h>
-#include <io.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <string.h>
+#include "wio.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
-#include "clibext.h"
 
 #define  M_BYTES        0x01            // Binary output modes.
 #define  M_WORDS        0x02

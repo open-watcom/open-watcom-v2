@@ -35,8 +35,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
+#if defined( __NT__ )
+#include <windows.h>
+#endif
 #include "wio.h"
-#include "clibext.h"
 #include "getopt.h"
 #include "misc.h"
 
@@ -99,14 +101,13 @@ void main( int argc, char *argv[] ) {
     for(;;) {
         bytes_read = read( STDIN_FILENO, buffer, BUFFER_SIZE );
         if( bytes_read < 0 ) {
-            #ifdef __NT__
+#ifdef __NT__
             {
-                extern int __stdcall GetLastError( void );
                 if( GetLastError() == 109 ) {   // BROKEN_PIPE
                     break;
                 }
             }
-            #endif
+#endif
             Die( "error reading (stdin): %s\n", strerror( errno ) );
         }
         if( bytes_read == 0 ) break;

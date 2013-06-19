@@ -5,61 +5,61 @@
 #   The directory $(posix_dir)\src\<command_name> must exist and contain
 #   the source for each command.
 
-#                 all qnx build doc test
-#======================================
-!inject basename  all qnx 
-!inject cat       all qnx build     test
-!inject cmp       all qnx 
-!inject comm      all qnx 
-!inject compress  all qnx 
-!inject cp        all     build doc test
-!inject cut       all qnx 
-!inject date      all qnx 
-!inject dev       all qnx 
-!inject df        all 
-!inject dirname   all qnx 
-!inject du        all 
-!inject egrep     all     build doc
-!inject env       all qnx 
-!inject expand    all qnx 
-!inject false     all qnx 
-!inject fgrep     all 
-!inject fmt       all qnx 
-!inject fold      all qnx 
-!inject gnutar    all 
-!inject head      all qnx 
-!inject chmod     all     build
-!inject lc        all qnx 
-!inject line      all qnx 
-!inject ls        all     build
-!inject mkdir     all           doc
-!inject more      all qnx 
-!inject od        all 
-!inject paste     all qnx 
-!inject ps        all qnx 
-!inject pwd       all qnx 
-!inject rev       all qnx 
-!inject rm        all 
-!inject rmdir     all           doc
-!inject sed       all qnx build     test
-!inject sleep     all 
-!inject split     all qnx 
-!inject strings   all qnx 
-!inject tail      all qnx 
-!inject tee       all qnx 
-!inject tr        all qnx 
-!inject true      all qnx 
-!inject trunc     all qnx 
-!inject unexpand  all qnx 
-!inject uniq      all qnx build
-!inject uudecode  all qnx 
-!inject uuencode  all qnx 
-!inject wc        all qnx build     test
-!inject which     all     build
-!inject who       all qnx 
+#                 all qnx boot      # build doc test
+#==============================     ================
+!inject basename  all qnx           #
+!inject cat       all qnx boot      # build     test
+!inject cmp       all qnx           #
+!inject comm      all qnx           #
+!inject compress  all qnx           #
+!inject cp        all     boot      # build doc test
+!inject cut       all qnx           #
+!inject date      all qnx           #
+!inject dev       all qnx           #
+!inject df        all               #
+!inject dirname   all qnx           #
+!inject du        all               #
+!inject egrep     all     boot      # build doc test
+!inject env       all qnx           #
+!inject expand    all qnx           #
+!inject false     all qnx           #
+!inject fgrep     all               #
+!inject fmt       all qnx           #
+!inject fold      all qnx           #
+!inject gnutar    all               #
+!inject head      all qnx boot      #           test
+!inject chmod     all     boot      #           test
+!inject lc        all qnx           #
+!inject line      all qnx           #
+!inject ls        all               #
+!inject mkdir     all               #
+!inject more      all qnx           #
+!inject od        all               #
+!inject paste     all qnx           #
+!inject ps        all qnx           #
+!inject pwd       all qnx           #
+!inject rev       all qnx           #
+!inject rm        all               #
+!inject rmdir     all               #
+!inject sed       all qnx boot      # build     test
+!inject sleep     all     boot      #           test
+!inject split     all qnx           #
+!inject strings   all qnx           #
+!inject tail      all qnx           #
+!inject tee       all qnx boot      #           test
+!inject tr        all qnx           #
+!inject true      all qnx           #
+!inject trunc     all qnx           #
+!inject unexpand  all qnx           #
+!inject uniq      all qnx boot      # build
+!inject uudecode  all qnx           #
+!inject uuencode  all qnx           #
+!inject wc        all qnx boot      # build     test
+!inject which     all     boot      #
+!inject who       all qnx           #
 
 !ifeq bootstrap 1
-commands = $(build)
+commands = $(boot)
 !else ifeq host_os qnx
 commands = $(qnx)
 !else

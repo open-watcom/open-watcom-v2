@@ -33,7 +33,6 @@
 #include <stdarg.h>
 #include "wio.h"
 #include "misc.h"
-#include "clibext.h"
 
 void Die( const char *str, ... )
 {

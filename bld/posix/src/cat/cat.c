@@ -39,7 +39,6 @@
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
-#include "clibext.h"
 
 #define  BUFSIZE    16384
 

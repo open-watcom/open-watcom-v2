@@ -39,7 +39,6 @@
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
-#include "clibext.h"
                                         // Search flags:
 #define  M_SEARCH_INVERT        0x01    //      - invert sense of search
 #define  M_SEARCH_EXACT         0x02    //      - pattern must match entire line
