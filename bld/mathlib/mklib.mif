@@ -6,7 +6,7 @@ $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ $(objs) $(libs)
 !ifeq linkage dynamic
     sed -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
-    sed -e "" ../../../export.$(processor) tmp2.def > tmp3.def
+    cat ../../../export.$(processor) tmp2.def > tmp3.def
     sort < tmp3.def > tmp4.def
     uniq tmp4.def > export.def
     @rm -f tmp.def

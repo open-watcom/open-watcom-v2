@@ -32,7 +32,7 @@ perlasso.$(exe) : perlasso.obj perlclas.obj regex.obj
 tstio.$(exe) : tstio.obj perlclas.obj regex.obj
 
 test : .symbolic clean start_test test.lnk $(exes)
-    sed -e "" t2.out >>exec.out
+    cat t2.out >>exec.out
     diff exec.out exec.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean

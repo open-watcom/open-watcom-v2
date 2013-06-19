@@ -379,7 +379,7 @@ void hack() {
 
 main()
 {
-   ofstream output("output");
+   ofstream output("output.out");
    cout << "main()" << endl;
    set_new_handler(JAM_out_of_mem);
    JAM_NewLog newlog;

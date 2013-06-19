@@ -141,7 +141,7 @@ runtests : .symbolic
     -@..\os2.cmd | tee.exe -a os2.log
 #    -@..\winos2.cmd | tee.exe -a os2.log
 #    -@command /e:2048 /c ..\dos.bat | tee.exe -a os2.log
-    @sed -e "" os2.log >> ..\_os2_.log
+    @cat os2.log >> ..\_os2_.log
 !else ifdef __MSDOS__
     @%make underdos
     -@clog dos.log
@@ -150,20 +150,20 @@ runtests : .symbolic
     -@command /e:2048 /c ..\dos.bat
     -@command /e:2048 /c ..\windows.bat
     -@clog
-    @sed -e "" dos.log >> ..\_dos_.log
+    @cat dos.log >> ..\_dos_.log
 !else ifdef __NT__
     @%make underwnt
     @cdsay | tee.exe wnt.log
     @echo Running tests under Windows NT... | tee.exe -a wnt.log
     -@..\wnt.bat | tee.exe -a wnt.log
-    @sed -e "" wnt.log >> ..\_wnt_.log
+    @cat wnt.log >> ..\_wnt_.log
 !else ifdef __LINUX__
     @%make underlnx386
     @cdsay | tee lnx.log
     @echo Running tests under Linux... | tee -a lnx.log
     -@./lnx_3r | tee -a lnx.log
     -@./lnx_3s | tee -a lnx.log
-    @sed -e "" lnx.log >> ../_lnx_.log
+    @cat lnx.log >> ../_lnx_.log
 !else
 !error Operating system unknown.
 !endif
