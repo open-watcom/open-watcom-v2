@@ -10,7 +10,7 @@ all: .symbolic
     echo foo > foo
     rm foo
     echo foo > foo
-    attrib +r foo
+    chmod +r foo
     -rm foo
     rm -f foo
     rm -f foo

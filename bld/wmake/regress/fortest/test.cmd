@@ -120,11 +120,11 @@ echo # ---------------------------
 rem Need to set prompt, otherwise the test fails...
 prompt $p$g
 type for08.chk > tmpfile.tmp
-$(prntdir) "echo a" >> tmpfile.tmp
+..\cmds\prntdir.exe "echo a" >> tmpfile.tmp
 echo a >> tmpfile.tmp
-$(prntdir) "echo b" >> tmpfile.tmp
+..\cmds\prntdir.exe "echo b" >> tmpfile.tmp
 echo b >> tmpfile.tmp
-$(prntdir) "echo c" >> tmpfile.tmp
+..\cmds\prntdir.exe "echo c" >> tmpfile.tmp
 echo c >> tmpfile.tmp
 rm -f tst2.out
 %1 -h -f for08 > tst2.out 2>&1

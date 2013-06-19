@@ -1,5 +1,0 @@
-!ifdef __UNIX__
-prntdir=../cmds/prntdir.exe
-!else
-prntdir=..\cmds\prntdir.exe
-!endif

@@ -28,9 +28,9 @@ OK
 << keep
 
 clean: .symbolic
-    -rm.exe "Test Path\Long filename.tmp"
-    -rm.exe "Another Path\Long filename.tmp"
-    -rm.exe "Test Path\Long filename.out"
-    -rm.exe "Another Path\Long filename.out"
+    -rm "Test Path\Long filename.tmp"
+    -rm "Another Path\Long filename.tmp"
+    -rm "Test Path\Long filename.out"
+    -rm "Another Path\Long filename.out"
     -rmdir "Test Path"
     -rmdir "Another Path"

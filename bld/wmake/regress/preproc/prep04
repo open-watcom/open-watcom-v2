@@ -29,7 +29,7 @@ DIR = dyr
 !    error failed
 !endif
 
-!if [false] || [echo evaluate this] || [set VAR=done]
+!if [$(mkerr)] || [echo evaluate this] || [set VAR=done]
 !endif
 
 all : .symbolic

@@ -3,7 +3,7 @@ rmdir food 2> NUL
 echo foo > foo
 rm foo
 echo foo > foo
-attrib +r foo
+chmod +r foo
 rm foo
 Error(E43): Deleting (foo): Permission denied
 rm -f foo
