@@ -197,9 +197,7 @@ bld_extra_defines = -DINLINETEST
 !endif
 !ifndef __LOADDLL__
 # this feature isn't supported
-!  ifdef use_dll
-!    undef use_dll
-!  endif
+!  undef use_dll
 !endif
 
 !ifndef log_file
@@ -599,9 +597,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 
-!ifdef dll_loaded
-!  undef dll_loaded
-!endif
+!undef dll_loaded
 
 !ifdef use_dll
 !  define dll_loaded
