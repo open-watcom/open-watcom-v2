@@ -792,7 +792,7 @@ STATIC void bangUnDef( void )
 
     value = GetMacroValue( name );
     if( value == NULL ) {
-        PrtMsg( WRN | LOC | TRYING_UNDEF_UNDEF, directives[D_UNDEF] );
+        PrtMsg( DBG | WRN | LOC | TRYING_UNDEF_UNDEF, directives[D_UNDEF] );
         FreeSafe( name );
         return;
     }

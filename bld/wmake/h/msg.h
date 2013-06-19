@@ -44,7 +44,7 @@ enum MsgClass {
 
 
     PRNTSTR     = 0x1000,   /* print first arg as a string. used for*/
-                                /* printing ANYTHING greater than 256   */
+                            /* printing ANYTHING greater than 256   */
     LOC         = 0x2000,   /* print file and line info if possible */
     NEOL        = 0x4000,   /* suppress the automatic end of line   */
 

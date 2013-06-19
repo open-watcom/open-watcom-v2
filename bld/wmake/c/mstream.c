@@ -238,7 +238,7 @@ RET_T InsFile( const char *name, BOOLEAN envsearch )
     assert( name != NULL );
 
     if( TrySufPath( path, name, NULL, envsearch ) == RET_SUCCESS ) {
-        PrtMsg( DBG | INF |LOC | ENTERING_FILE, path );
+        PrtMsg( DBG | INF | LOC | ENTERING_FILE, path );
 
         fh = sopen3( path, O_RDONLY | O_BINARY, SH_DENYWR );
         if( fh == -1 ) {
@@ -517,7 +517,7 @@ void dispSENT( void )
                 break;
             case SENT_CHAR:
                 pos += FmtStr( &buf[pos], "character 0x%x]", cur->data.ch );
-                PrtMsg( INF| PRNTSTR, buf );
+                PrtMsg( INF | PRNTSTR, buf );
                 break;
             }
             cur = cur->next;

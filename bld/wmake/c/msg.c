@@ -438,33 +438,29 @@ void PrtMsg( enum MsgClass num, ... )
     }
 
     class = num & CLASS_MSK;
-    switch( class ) {
-    case INF & CLASS_MSK:
+    if( class == INF ) {
         fh = STDOUT_FILENO;
-        break;
-    default:
+    } else {
         fh = STDERR_FILENO;
         switch( class ) {
-        case WRN & CLASS_MSK:
+        case WRN:
             wefchar = 'W';
             pref = M_WARNING;
             break;
-        case ERR & CLASS_MSK:
+        case ERR:
             Glob.erroryet = TRUE;
             wefchar = 'E';
             pref = M_ERROR;
             break;
-        case FTL & CLASS_MSK:
+        case FTL:
             Glob.erroryet = TRUE;
             wefchar = 'F';
             pref = M_ERROR;
             break;
         }
-        if( !( num & PRNTSTR ) ) {
-            len += FmtStr( &buff[len], "%M(%c%D): ", pref, wefchar,
-                num & NUM_MSK );
+        if( !(num & PRNTSTR) ) {
+            len += FmtStr( &buff[len], "%M(%c%D): ", pref, wefchar, num & NUM_MSK );
         }
-        break;
     }
 
     Header();
@@ -475,7 +471,7 @@ void PrtMsg( enum MsgClass num, ... )
      * with the doFmtStr() substitution.
      */
     if( len > 0 ) {
-        if( fh == STDERR_FILENO ) {
+        if( class != INF ) {
             logWrite( buff, len );
         }
         write( fh, buff, len );
@@ -485,15 +481,14 @@ void PrtMsg( enum MsgClass num, ... )
     if( num & PRNTSTR ) {       /* print a big string */
         str = va_arg( args, char * );
 
-        if( fh == STDERR_FILENO ) {
+        if( class != INF ) {
             logWrite( str, strlen( str ) );
         }
         write( fh, str, (unsigned)strlen( str ) );
         len = 0;
     } else {                    /* print a formatted string */
         if( ( num & NUM_MSK ) >= END_OF_RESOURCE_MSG ) {
-            len = doFmtStr( buff, msgText[(num&NUM_MSK)-END_OF_RESOURCE_MSG],
-                                                                args );
+            len = doFmtStr( buff, msgText[(num&NUM_MSK)-END_OF_RESOURCE_MSG], args );
         } else if( MsgReOrder( num & NUM_MSK, msgbuff, &paratype ) ) {
             USEARGVALUE = 1;
             reOrder( args, paratype ); /* reposition the parameters */
@@ -506,15 +501,15 @@ void PrtMsg( enum MsgClass num, ... )
     if( !(num & NEOL) ) {
         buff[len++] = EOL;
     }
-    if( fh == STDERR_FILENO ) {
+    if( class != INF ) {
         logWrite( buff, len );
     }
     write( fh, buff, len );
-    if( !Glob.compat_nmake && ( num == ( CANNOT_NEST_FURTHER | FTL | LOC ) ||
-                             num == ( IGNORE_OUT_OF_PLACE_M | ERR | LOC ))) {
+    if( !Glob.compat_nmake
+      && ( num == ( FTL | LOC | CANNOT_NEST_FURTHER) || num == ( ERR | LOC | IGNORE_OUT_OF_PLACE_M))) {
         PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
     }
-    if( class == ( FTL & CLASS_MSK ) ) {
+    if( class == FTL ) {
         exit( ExitSafe( EXIT_FATAL ) );
     }
 }

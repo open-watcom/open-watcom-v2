@@ -208,7 +208,7 @@ STATIC const char * const   dosInternals[] = {   /* COMMAND.COM commands */
     "REM",
     "REN",
     "RENAME",
-"RMDIR",
+    "RMDIR",
     "SET",
 #define COM_SET     30
     "SETLOCAL",
@@ -292,14 +292,14 @@ STATIC char *createTmpFileName( void )
         FmtStr( fileName, "wm%c%u.tmp", tmpFileChar, tmpFileNumber );
         if( tmpPath != NULL ) {
             if( strlen( tmpPath ) >= _MAX_PATH ) {
-                PrtMsg( ERR | FTL | TMP_PATH_TOO_LONG );
                 FreeVec( buf );
                 FreeSafe( tmpPath );
+                PrtMsg( FTL | TMP_PATH_TOO_LONG );
                 return( NULL );
             } else if( strlen( tmpPath ) + strlen( fileName ) >= _MAX_PATH ) {
-                PrtMsg( ERR | FTL | TMP_PATH_TOO_LONG );
-                FreeSafe( tmpPath );
                 FreeVec( buf );
+                FreeSafe( tmpPath );
+                PrtMsg( FTL | TMP_PATH_TOO_LONG );
                 return( NULL );
             }
         }
@@ -1014,7 +1014,7 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
             return( RET_SUCCESS );
         }
         if( lastErrorLevel == 127 ) {
-            PrtMsg( ERR| UNABLE_TO_EXEC, cmdname );
+            PrtMsg( ERR | UNABLE_TO_EXEC, cmdname );
         }
     }
 #else

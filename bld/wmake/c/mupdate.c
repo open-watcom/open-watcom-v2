@@ -912,7 +912,7 @@ RET_T Update( TARGET *targ )
     if( targ->busy ) {
         PrtMsg( FTL | RECURSIVE_DEFINITION, targ->node.name );
     }
-    PrtMsg( DBG|INF|NEOL| UPDATING_TARGET, targ->node.name );
+    PrtMsg( DBG | INF | NEOL | UPDATING_TARGET, targ->node.name );
     targ->busy = TRUE;
     targExists( targ );     /* find file using sufpath */
     startcount = cListCount;
