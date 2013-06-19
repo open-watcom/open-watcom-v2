@@ -79,9 +79,6 @@
 #define FNM_LEADING_DIR 0x10
 #define NAME_MAX FILENAME_MAX
 #define PATH_MAX FILENAME_MAX
-#define STDIN_FILENO  _fileno( stdin )
-#define STDOUT_FILENO _fileno( stdout )
-#define STDERR_FILENO _fileno( stderr )
 #define __alloca _alloca
 #define fseeko fseek
 #define strcasecmp stricmp
