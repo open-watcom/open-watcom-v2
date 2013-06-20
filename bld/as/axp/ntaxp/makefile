@@ -1,6 +1,8 @@
-#pmake: cpu_axp os_nt target_axp
+#pmake: nobuild target_axp os_nt cpu_axp
 
 host_os  = nt
 host_cpu = axp
 
-!include ../../target.mif
+no_asi_lib = 1
+
+!include ../target.mif

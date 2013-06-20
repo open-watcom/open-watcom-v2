@@ -44,8 +44,15 @@ static uint_32  buffer[MAX_NUM_INS];
 static int      curLine;
 
 
-enum sym_state AsmQueryExternal( char *name ) {
-//*********************************************
+void *AsmQuerySymbol( char *name ) {
+//**********************************
+// CC provides this
+
+    return( name );
+}
+
+enum sym_state AsmQueryState( void *name ) {
+//******************************************
 // CC provides this
 
     char    str[80];
@@ -62,7 +69,7 @@ enum sym_state AsmQueryExternal( char *name ) {
     return( SYM_UNDEFINED );
 }
 
-uint_32 AsmQuerySPOffsetOf( char *name ) {
+uint_32 AsmQuerySPOffsetOf( void *name ) {
 //****************************************
 // CC provides this
 

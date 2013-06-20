@@ -34,4 +34,8 @@
 
 #define AS_MSG_BASE         1
 
+#if defined( _STANDALONE_ )
 #include "msg.gh"
+#else
+#include "asi_msg.gh"
+#endif

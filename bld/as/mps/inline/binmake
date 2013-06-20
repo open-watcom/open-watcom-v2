@@ -1,9 +1,0 @@
-#pmake: binmake
-
-host_os  = $(bld_os)
-host_cpu = $(bld_cpu)
-
-inline_as = 1
-asi_build_lib = 1
-
-!include ../../target.mif

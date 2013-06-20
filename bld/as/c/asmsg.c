@@ -50,9 +50,12 @@ static char *asMessages[] = {
     #define pick( id, e_msg, j_msg )    e_msg,
     #include "as.msg"
     #undef pick
+#if 0 
+//#if defined( JAPANESE )
     #define pick( id, e_msg, j_msg )    j_msg,
     #include "as.msg"
     #undef pick
+#endif
 };
 
 #define TXT_MSG_SIZE    (sizeof( asMessages ) / sizeof( asMessages[0] ))

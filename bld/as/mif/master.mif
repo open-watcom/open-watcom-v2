@@ -10,9 +10,15 @@ name = was$(target_cpu)
 was_autodepends = .AUTODEPEND
 !endif
 
+stand_subdir = stand
+
 .extensions: .rc .y .re .gh .msg
 
-additional_cleanup = *.y *.re asytab.c asytab.h ytab.c ytab.h aslexyy.c
+additional_cleanup = *.c *.h *.re *.y
+additional_cleanup += $(stand_subdir)/*.c $(stand_subdir)/*.h $(stand_subdir)/*.re 
+additional_cleanup += $(stand_subdir)/*.y $(stand_subdir)/*.pch
+
+additional_cleanup_subdir = $(stand_subdir)
 
 !include cproj.mif
 !include defrule.mif
@@ -20,6 +26,8 @@ additional_cleanup = *.y *.re asytab.c asytab.h ytab.c ytab.h aslexyy.c
 
 !include $(owl_dir)/client.mif
 !include wres.mif
+
+!include $(as_dir)/mif/client.mif
 
 # yacc
 #########################
@@ -29,57 +37,58 @@ yacc_flags      = -b -d
 #yacc_flags     = -b "y" -l -v
 yacc_src        = as.y
 yacc_in         = as_in.y
-yacc_out_c      = asytab
+yacc_out        = asytab
 yacc_out_h      = asytab.h
 
 lex_flags       =
 lex_src         = scan.re
 lex_in          = scan_in.re
-lex_out_c       = aslexyy
+lex_out         = aslexyy
 lex_out_h       =
 
 # objects
 ##########
-as_comm_objs_axp = alphafmt.obj alphains.obj
-as_comm_objs_mps = mipsfmt.obj mipsins.obj
-as_comm_objs_ppc = ppcfmt.obj ppcins.obj
+as_comm_objs_axp = $(_subdir_)alphafmt.obj $(_subdir_)alphains.obj
+as_comm_objs_mps = $(_subdir_)mipsfmt.obj $(_subdir_)mipsins.obj
+as_comm_objs_ppc = $(_subdir_)ppcfmt.obj $(_subdir_)ppcins.obj
 
 as_comm_objs = &
-    $(yacc_out_c).obj &
-    $(lex_out_c).obj &
-    asexpr.obj &
-    asopernd.obj &
-    asmem.obj &
-    asutils.obj &
-    asregs.obj &
-    assymbol.obj &
-    asdrectv.obj &
-    asdirop.obj &
-    asnumlab.obj &
-    ashash.obj &
-    asmsg.obj
+    $(_subdir_)$(yacc_out).obj &
+    $(_subdir_)$(lex_out).obj &
+    $(_subdir_)asexpr.obj &
+    $(_subdir_)asopernd.obj &
+    $(_subdir_)asmem.obj &
+    $(_subdir_)asutils.obj &
+    $(_subdir_)asregs.obj &
+    $(_subdir_)assymbol.obj &
+    $(_subdir_)asdrectv.obj &
+    $(_subdir_)asdirop.obj &
+    $(_subdir_)asnumlab.obj &
+    $(_subdir_)ashash.obj &
+    $(_subdir_)asmsg.obj
 
 as_stand_objs = &
-    main.obj &
-    obj.obj &
-    sections.obj &
-    options.obj &
-    preproc.obj &
-    ppexpr.obj &
-    ppmacro.obj &
-    ppmem.obj &
-    trmemcvr.obj
+    $(stand_subdir)/main.obj &
+    $(stand_subdir)/obj.obj &
+    $(stand_subdir)/sections.obj &
+    $(stand_subdir)/options.obj &
+    $(stand_subdir)/preproc.obj &
+    $(stand_subdir)/ppexpr.obj &
+    $(stand_subdir)/ppmacro.obj &
+    $(stand_subdir)/ppmem.obj &
+    $(stand_subdir)/trmemcvr.obj
 !ifeq release 0
-as_stand_objs += trmem.obj
+as_stand_objs += $(stand_subdir)/trmem.obj
 !endif
 
 as_inline_objs = &
     asinline.obj &
     asiobj.obj
 
-as_objs = $(as_comm_objs) $(as_comm_objs_$(target_cpu)) $(as_stand_objs)
-
-asi_objs = $(as_comm_objs) $(as_comm_objs_$(target_cpu)) $(as_inline_objs)
+_subdir_ = $(stand_subdir)/
+as_objs = $+$(as_comm_objs) $(as_comm_objs_$(target_cpu))$- $(as_stand_objs)
+_subdir_ =
+asi_objs = $+$(as_comm_objs) $(as_comm_objs_$(target_cpu))$- $(as_inline_objs)
 
 asi_test_objs = asitest.obj trmemcvr.obj
 !ifeq release 0
@@ -92,9 +101,6 @@ extra_cppflags_axp = -DAS_ALPHA
 extra_cppflags_mps = -DAS_MIPS
 extra_cppflags_ppc = -DAS_PPC
 extra_cpp_flags = $(extra_cppflags_$(target_cpu))
-!ifndef inline_as
-extra_cpp_flags += -D_STANDALONE_
-!endif
 !ifeq release 0
 extra_cpp_flags += -DTRMEM -DYYDEBUG=1 -DAS_DEBUG_DUMP
 !endif
@@ -106,14 +112,17 @@ extra_c_flags_386 = -of+
 !endif
 
 !ifdef __WATCOM__
-extra_c_flags_aslexyy = -fh=pch02.pch
-extra_c_flags_preproc = -fh=pch04.pch
-extra_c_flags_ppexpr = -fh=pch04.pch
-extra_c_flags_ppmacro = -fh=pch04.pch
-extra_c_flags_ppmem = -fh=pch04.pch
-extra_c_flags_trmemcvr = -fh=pch05.pch
+extra_c_flags_aslexyy = -fh=$^:pch02.pch
+extra_c_flags_preproc = -fh=$^:pch04.pch
+extra_c_flags_ppexpr = -fh=$^:pch04.pch
+extra_c_flags_ppmacro = -fh=$^:pch04.pch
+extra_c_flags_ppmem = -fh=$^:pch04.pch
+extra_c_flags_trmemcvr = -fh=$^:pch05.pch
 !endif
-#extra_c_flags_asmsg = -pcl -fo=.i
+
+!ifdef __WATCOM__
+stand_pch_c_flags = -fh=stand.pch
+!endif
 
 # lflags
 #########
@@ -128,9 +137,6 @@ splice_opts_axp = -kAS_ALPHA
 splice_opts_mps = -kAS_MIPS
 splice_opts_ppc = -kAS_PPC
 splice_opts     = $(splice_opts_$(target_cpu))
-!ifndef inline_as
-splice_opts += -k_STANDALONE_
-!endif
 
 # include directory
 ####################
@@ -148,35 +154,24 @@ inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" -I
 # explicit rules
 #################
 
-!ifeq bootstrap 1
-asi_dir = $(as_dir)/$(target_cpu)/inline/$(%OWOBJDIR)
-!else
-asi_dir = $(as_dir)/$(target_cpu)/inline/osi$(host_cpu)
-!endif
-
-asi_lib = $(asi_dir)/asinline.lib
-
 !ifdef test_inline_as
-asi_test_name = asinline
-
-$(asi_test_name).exe : $(asi_test_objs) $(asi_lib)
-        $(cl) $(clflags) $(asi_test_objs) $(asi_lib) $(ldflags)
-
-$(asi_lib) :
-curr_dir=$+$(%cwd)$-
-        cd $(asi_dir)
-        !wmake -h
-        cd $(curr_dir)
-!endif
-
-!ifdef asi_build_lib
-$(asi_lib) : msg.gh $(asi_objs)
-        $(librarian) $(libflags) $(asi_objs)
+asinline.exe : $(asi_test_objs) $(asminline_lib)
+        $(cl) $(clflags) $(asi_test_objs) $(asminline_lib) $(ldflags)
 !endif
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+all_as =
+!ifndef no_asi_lib
+all_as += asinline.lib
+!endif
+!ifndef no_standalone
+all_as += $(name).exe
+!endif
+
+all : $(all_as) .symbolic
 
 $(name).exe : msg.gh $(as_objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
@@ -191,29 +186,72 @@ $(name).exe : msg.gh $(as_objs) $(libs) $(name).res $(version_res_exe_$(host_os)
         @%make bind_version_res_exe
         $(wstrip) -q -a -r $@ . $(name).res
 
-!ifndef inline_as
 $(name).res : as.rc msg.gh
-        $(rc_aui) $(cppflags) $[@ -fo=$^@
-!endif
+        $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$^@
+
+asinline.lib : asi_msg.gh $(asi_objs)
+        $(librarian) $(libflags) $(asi_objs)
 
 !include verrc.mif
 
 msg.gh : as.msg
+        $(cpp) $(rc_aui_flags) $(cppflags) -D_STANDALONE_ $[@ > msg.tmp
+        awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
+
+asi_msg.gh : as.msg
         $(cpp) $(rc_aui_flags) $(cppflags) $[@ > msg.tmp
         awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
 
-$(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c
+$(stand_subdir)/$(yacc_in) : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
+        @if not exist $(stand_subdir) mkdir $(stand_subdir)
+        wsplice $(splice_opts) -k_STANDALONE_ $[@ $^@
+
+$(yacc_in) : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
         wsplice $(splice_opts) $[@ $^@
 
-$(yacc_out_c).c $(yacc_out_h) : $(yacc_in)
+$(stand_subdir)/$(yacc_out).c : $(stand_subdir)/$(yacc_in)
         $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
-        sed -f $(as_dir)/mif/asyy.sed ytab.c > $(yacc_out_c).c
-        sed -f $(as_dir)/mif/asyy.sed ytab.h > $(yacc_out_c).h
+        sed -f $(as_dir)/mif/asyy.sed -e "s/asytab.h/stand\/asytab.h/g" ytab.c > $^*.c
+        sed -f $(as_dir)/mif/asyy.sed -e "s/asytab.h/stand\/asytab.h/g" ytab.h > $^*.h
         # $(yacc) $(yacc_flags) $[@
 
-$(lex_in) : $(lex_src)
-        wsplice $(splice_opts) $[@ $^.
+$(yacc_out).c : $(yacc_in)
+        $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
+        sed -f $(as_dir)/mif/asyy.sed ytab.c > $^*.c
+        sed -f $(as_dir)/mif/asyy.sed ytab.h > $^*.h
+        # $(yacc) $(yacc_flags) $[@
+
+$(stand_subdir)/$(lex_in) : $(as_dir)/y/$(lex_src)
+        @if not exist $(stand_subdir) mkdir $(stand_subdir)
+        wsplice $(splice_opts) -k_STANDALONE_ $[@ - | sed -e "s/asytab.h/stand\/asytab.h/g" > $@
+
+$(lex_in) : $(as_dir)/y/$(lex_src)
+        wsplice $(splice_opts) $[@ $@
+
+#$(stand_subdir)/$(yacc_out).obj : $(stand_subdir)/$(yacc_out).c
+#$(stand_subdir)/$(lex_out).obj : $(stand_subdir)/$(lex_out).c
 
 .ERASE
-$(lex_out_c).c $(lex_out_h) : $(lex_in)
-        $(re2c) $(lex_flags) $[@ > $^.
+$(stand_subdir)/$(lex_out).c : $(stand_subdir)/$(lex_in)
+        $(re2c) $(lex_flags) $[@ > $@
+
+$(lex_out).c : $(lex_in)
+        $(re2c) $(lex_flags) $[@ > $@
+
+.c{$(stand_subdir)}.obj: $($(proj_name)_autodepends)
+        @if not exist $(stand_subdir) mkdir $(stand_subdir)
+!ifeq verbose 1
+        $(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+!else
+        @echo cc $@
+        @$(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+!endif
+
+{$(stand_subdir)}.c{$(stand_subdir)}.obj: $($(proj_name)_autodepends)
+        @if not exist $(stand_subdir) mkdir $(stand_subdir)
+!ifeq verbose 1
+        $(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+!else
+        @echo cc $@
+        @$(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+!endif

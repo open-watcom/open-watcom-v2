@@ -6,9 +6,9 @@
 #
 
 !ifeq bootstrap 1
-asminline_lib = $(as_dir)/$(target_cpu)/inline/$(%OWOBJDIR)/asinline.lib
+asminline_lib = $(as_dir)/$(target_cpu)/$(%OWOBJDIR)/asinline.lib
 !else
-asminline_lib = $(as_dir)/$(target_cpu)/inline/osi$(host_cpu)/asinline.lib
+asminline_lib = $(as_dir)/$(target_cpu)/osi$(host_cpu)/asinline.lib
 !endif
 
 #
@@ -19,7 +19,6 @@ asminline_lib = $(as_dir)/$(target_cpu)/inline/osi$(host_cpu)/asinline.lib
 
 #
 asminline_c = $(as_dir)/c
-asminline_h = $(as_dir)/$(target_cpu)/h;$(as_dir)/h;$(owl_dir)/h
 asminline_inc_dirs = -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h"
 asminline_deps =
 asminline_objs =
