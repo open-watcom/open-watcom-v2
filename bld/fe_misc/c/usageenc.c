@@ -58,7 +58,7 @@ static void CopyFile(  FILE *ifp, FILE *ofp)
     memset( &usage_header, 0, sizeof( usage_header ) );
     usage_header.header.code = LS_Usage;
     usage_header.header.signature = LS_Usage_SIG;
-    fwrite( &usage_header, sizeof( usage_header ), 1, ofp );
+    fwrite( &usage_header, offsetof( LocaleUsage, data ), 1, ofp );
     for(;;) {
         c = fgetc( ifp );
         if( c == EOF ) break;

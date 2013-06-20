@@ -1457,7 +1457,7 @@ static void dumpInternational( void ) {
         errors_header.header.code = LS_Errors;
         errors_header.header.signature = LS_Errors_SIG;
         errors_header.number = messageCounter;
-        fwrite( &errors_header, sizeof( errors_header ), 1, fp );
+        fwrite( &errors_header, offsetof( LocaleErrors, data ), 1, fp );
         if( langTextCount[lang] > ( messageCounter / 2 ) ) {
             dump_warning = 1;
         } else {

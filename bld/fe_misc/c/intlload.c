@@ -66,7 +66,7 @@ static int (*codeDispatch[])( IntlData *, _LocaleItem * ) = {
 
 static int doErrors( IntlData *data, _LocaleItem *item )
 {
-    LocaleErrors *errors_item = (LocaleErrors*) item;
+    LocaleErrors *errors_item = (LocaleErrors*)item;
     unsigned count;
     int skip;
     char *p;
@@ -96,7 +96,7 @@ static int doErrors( IntlData *data, _LocaleItem *item )
 
 static int doUsage( IntlData *data, _LocaleItem *item )
 {
-    LocaleUsage *usage_item = (LocaleUsage*) item;
+    LocaleUsage *usage_item = (LocaleUsage*)item;
 
     data->usage_text = usage_item->data;
     return( 0 );

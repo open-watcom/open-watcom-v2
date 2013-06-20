@@ -34,6 +34,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stddef.h>
 #include "lsspec.h"
 #include "encodlng.h"
 
@@ -2225,7 +2226,7 @@ static void dumpInternational( void )
         memset( &usage_header, 0, sizeof( usage_header ) );
         usage_header.header.code = LS_Usage;
         usage_header.header.signature = LS_Usage_SIG;
-        fwrite( &usage_header, sizeof( usage_header ), 1, bfp );
+        fwrite( &usage_header, offsetof( LocaleUsage, data ), 1, bfp );
         processUsage( lang, emitUsageB );
         fputc( 0, bfp );
         fclose( bfp );
