@@ -1,8 +1,6 @@
 !ifneq bootstrap 1
 !ifeq host_cpu x64
-!ifdef __WATCOM__
 !undef __WATCOM__
-!endif
 !else
 !define __WATCOM__
 !endif
