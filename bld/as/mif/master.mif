@@ -56,7 +56,8 @@ as_comm_objs = &
     asdrectv.obj &
     asdirop.obj &
     asnumlab.obj &
-    ashash.obj
+    ashash.obj &
+    asmsg.obj
 
 as_stand_objs = &
     main.obj &
@@ -76,7 +77,7 @@ as_inline_objs = &
     asinline.obj &
     asiobj.obj
 
-as_objs = $(as_comm_objs) $(as_comm_objs_$(target_cpu)) asmsg.obj $(as_stand_objs)
+as_objs = $(as_comm_objs) $(as_comm_objs_$(target_cpu)) $(as_stand_objs)
 
 asi_objs = $(as_comm_objs) $(as_comm_objs_$(target_cpu)) $(as_inline_objs)
 
@@ -106,13 +107,13 @@ extra_c_flags_386 = -of+
 
 !ifdef __WATCOM__
 extra_c_flags_aslexyy = -fh=pch02.pch
-extra_c_flags_asmsgj = -fh=pch03.pch
 extra_c_flags_preproc = -fh=pch04.pch
 extra_c_flags_ppexpr = -fh=pch04.pch
 extra_c_flags_ppmacro = -fh=pch04.pch
 extra_c_flags_ppmem = -fh=pch04.pch
 extra_c_flags_trmemcvr = -fh=pch05.pch
 !endif
+#extra_c_flags_asmsg = -pcl -fo=.i
 
 # lflags
 #########
@@ -153,8 +154,7 @@ asi_dir = $(as_dir)/$(target_cpu)/inline/$(%OWOBJDIR)
 asi_dir = $(as_dir)/$(target_cpu)/inline/osi$(host_cpu)
 !endif
 
-asi_lib     = $(asi_dir)/asinline.lib
-asi_lib_j   = $(asi_dir)/asinlinj.lib
+asi_lib = $(asi_dir)/asinline.lib
 
 !ifdef test_inline_as
 asi_test_name = asinline
@@ -170,13 +170,8 @@ curr_dir=$+$(%cwd)$-
 !endif
 
 !ifdef asi_build_lib
-all_lib : msg.gh $(asi_lib) $(asi_lib_j) .symbolic
-
-$(asi_lib) : $(asi_objs) asmsg.obj
-        $(librarian) $(libflags) $<
-
-$(asi_lib_j) : $(asi_objs) asmsgj.obj
-        $(librarian) $(libflags) $<
+$(asi_lib) : msg.gh $(asi_objs)
+        $(librarian) $(libflags) $(asi_objs)
 !endif
 
 # systems where version resource must be added to .EXE

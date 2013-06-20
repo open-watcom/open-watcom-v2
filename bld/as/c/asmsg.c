@@ -30,44 +30,53 @@
 
 
 #include "as.h"
+#include "wreslang.h"
+
 #ifdef _STANDALONE_
+
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
 #include <fcntl.h>
 #include "wressetr.h"
 #include "wresset2.h"
-#include "wreslang.h"
+
 #else
+
+#define TXT_MSG_LANG_SPACING    (ABS_REF_NOT_ALLOWED - AS_MSG_BASE + 1)
+
+// No res file to use. Just compile in the messages...
 static char *asMessages[] = {
-    "IMPOSSIBLE",
-    // No res file to use. Just compile in the messages...
-    // Use English message unless compiled with "-DJAPANESE"
-#if !defined( JAPANESE )
     #define pick( id, e_msg, j_msg )    e_msg,
-#else
+    #include "as.msg"
+    #undef pick
     #define pick( id, e_msg, j_msg )    j_msg,
-#endif
     #include "as.msg"
     #undef pick
 };
+
+#define TXT_MSG_SIZE    (sizeof( asMessages ) / sizeof( asMessages[0] ))
+
 #endif
 
+static int              msgShift;
+
 #ifdef _STANDALONE_
+
 #define NIL_HANDLE      ((int)-1)
 
-#define NO_RES_MESSAGE "Error: could not open message resource file\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
+#define NO_RES_MESSAGE  "Error: could not open message resource file\r\n"
+#define NO_RES_SIZE     (sizeof(NO_RES_MESSAGE)-1)
+
+extern long             FileShift;
 
 static HANDLE_INFO      hInstance = {0};
-static unsigned         msgShift;
-extern long             FileShift;
 
 static off_t resSeek( int handle, off_t position, int where )
 //***********************************************************
 {
     if( where == SEEK_SET ) {
-        return( lseek( handle, position+FileShift, where ) - FileShift );
+        return( lseek( handle, position + FileShift, where ) - FileShift );
     } else {
         return( lseek( handle, position, where ) );
     }
@@ -76,8 +85,8 @@ static off_t resSeek( int handle, off_t position, int where )
 WResSetRtns( open, close, read, write, resSeek, tell, MemAlloc, MemFree );
 #endif
 
-extern int AsMsgInit() {
-//**********************
+extern int AsMsgInit( void ) {
+//****************************
 
 #ifdef _STANDALONE_
     int         error;
@@ -106,6 +115,12 @@ extern int AsMsgInit() {
         AsMsgFini();
         return 0;
     }
+#else
+    msgShift = WResLanguage() * TXT_MSG_LANG_SPACING;
+    if( msgShift >= TXT_MSG_SIZE )
+        msgShift = 0;
+    msgShift -= AS_MSG_BASE;
+    return( 1 );
 #endif
     return 1;
 }
@@ -114,14 +129,13 @@ extern int AsMsgGet( int resourceid, char *buffer ) {
 //***************************************************
 
 #ifdef _STANDALONE_
-    if( LoadString( &hInstance, resourceid + msgShift,
-                (LPSTR) buffer, MAX_RESOURCE_SIZE ) == -1 ) {
+    if( LoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == -1 ) {
         buffer[0] = '\0';
         return( 0 );
     }
     return( 1 );
 #else
-    strcpy( buffer, asMessages[ resourceid ] );
+    strcpy( buffer, asMessages[resourceid + msgShift] );
     return( 1 );
 #endif
 }
