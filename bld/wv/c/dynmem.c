@@ -44,8 +44,6 @@
  #include "wio.h"
  #include "trmem.h"
  #include "dui.h"
-// #include <unistd.h>
-// #include <fcntl.h>
 #else
  #include "dbgio.h"
  #include "dui.h"

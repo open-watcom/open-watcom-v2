@@ -42,7 +42,6 @@
 #include <conio.h>
 #endif
 #include "wio.h"
-#include "watcom.h"
 #include "bool.h"
 #include "orl.h"
 #include "ar.h"

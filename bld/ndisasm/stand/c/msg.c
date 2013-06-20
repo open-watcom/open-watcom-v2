@@ -30,11 +30,11 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #if defined( __WATCOMC__ )
     #include <process.h>
 #endif
 #include "wio.h"
-#include "watcom.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"

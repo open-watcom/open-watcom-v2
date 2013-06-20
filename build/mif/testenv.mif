@@ -1033,6 +1033,6 @@ test.lnk : $(__MAKEFILES__)
     $(bld_cl) $(bld_cl_opts) $<
 
 common_clean : .procedure
-    rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
-    rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+    -rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+    -rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
 

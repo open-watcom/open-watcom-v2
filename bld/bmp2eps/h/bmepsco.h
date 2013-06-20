@@ -137,7 +137,6 @@
 #include <process.h>
 #endif
 #include "wio.h"
-#include "clibext.h"
 
 #endif
 /* ifndef BMEPSCO_INC */

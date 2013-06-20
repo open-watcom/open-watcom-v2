@@ -157,7 +157,7 @@ static void    sort( LINE *vector, SLONG vecsize );
 static void    error( char *format, ... );
 static INT     check( char *fileAname, char *fileBname );
 static void    output( char *fileAname, char *fileBname );
-static INT     getline( FILE *fd, char *buffer );
+static INT     getinpline( FILE *fd, char *buffer );
 static void    fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char *pfx );
 
 
@@ -368,7 +368,7 @@ void input( SLONG which )
 
     lentry = ( LINE * ) myalloc( sizeof( LINE )* ( lsize + 3 ), "line" );
     fd = infd[which];
-    while( !getline( fd, text ) ) {
+    while( !getinpline( fd, text ) ) {
         if( ++linect >= lsize ) {
             lsize += 200;
             lentry = ( LINE * ) compact( ( char *) lentry,
@@ -805,13 +805,13 @@ INT check( char *fileAname, char *fileBname )
         if( match[a] == 0 ) {
             /* Unique line in A */
             oldseek[a + OFFSET] = ftell( infd[0] );
-            getline( infd[0], text );
+            getinpline( infd[0], text );
             continue;
         }
         while( b < match[a] ) {
             /* Skip over unique lines in B */
             newseek[b + OFFSET] = ftell( infd[1] );
-            getline( infd[1], textb );
+            getinpline( infd[1], textb );
             b++;
         }
 
@@ -825,8 +825,8 @@ INT check( char *fileAname, char *fileBname )
         oldseek[a + OFFSET] = ftell( infd[0] );
         newseek[b + OFFSET] = ftell( infd[1] );
         //      }
-        getline( infd[0], text );
-        getline( infd[1], textb );
+        getinpline( infd[0], text );
+        getinpline( infd[1], textb );
         if( !streq( text, textb ) ) {
 #ifdef DEBUG
             fprintf( stderr, "Spurious match:\n" );
@@ -842,7 +842,7 @@ INT check( char *fileAname, char *fileBname )
     }
     for( ; b <= lenB; b++ ) {
         newseek[b + OFFSET] = ftell( infd[1] );
-        getline( infd[1], textb );
+        getinpline( infd[1], textb );
     }
     /*
      * The logical converse to the code up above, for NON-VMS systems, to
@@ -1062,11 +1062,11 @@ void fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char
  * Input routine, read one line to buffer[], return TRUE on eof, else FALSE.
  * The terminating newline is always removed.  If "-b" was given, trailing
  * whitespace (blanks and tabs) are removed and strings of blanks and
- * tabs are replaced by a single blank.  Getline() does all hacking for
+ * tabs are replaced by a single blank.  getinpline() does all hacking for
  * redirected input files.
  */
 
-INT getline( FILE *fd, char *buffer )
+INT getinpline( FILE *fd, char *buffer )
 {
     char     *top;
     char     *fromp;

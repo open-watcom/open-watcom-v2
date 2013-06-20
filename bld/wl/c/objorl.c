@@ -30,6 +30,7 @@
 
 
 #include <string.h>
+#include "wio.h"
 #include "linkstd.h"
 #include "msg.h"
 #include "wlnkmsg.h"

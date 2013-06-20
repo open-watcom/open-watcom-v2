@@ -32,6 +32,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "wio.h"
 #include "walloca.h"
 #include "linkstd.h"
 #include "loadfile.h"
@@ -53,9 +54,9 @@ cmdfilelist      *CmdFile = NULL;
 /* Default File Extension array, see ldefext.h */
 
 static  char    *DefExt[] = {
-#undef pick1
 #define pick1(enum,text) text,
 #include "ldefext.h"
+#undef pick1
 };
 
 static bool     CheckFence( void );
@@ -110,9 +111,10 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
             _splitpath( start, drive, directory, NULL, NULL );
             for(;;) {
                 dirent = readdir( dir );
-                if( dirent == NULL ) break;
-                if( dirent->d_attr &
-                  (_A_HIDDEN+_A_SYSTEM+_A_VOLID+_A_SUBDIR) ) continue;
+                if( dirent == NULL )
+                    break;
+                if( dirent->d_attr & (_A_HIDDEN+_A_SYSTEM+_A_VOLID+_A_SUBDIR) )
+                    continue;
                 _splitpath( dirent->d_name, NULL, NULL, name, extin );
                 _makepath( pathin, drive, directory, name, extin );
                 Token.this = pathin;            // dangerous?

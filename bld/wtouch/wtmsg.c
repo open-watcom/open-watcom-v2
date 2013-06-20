@@ -38,7 +38,6 @@
 #include <process.h>
 #endif
 #include "wio.h"
-#include "watcom.h"
 #include "wtmsg.h"
 #include "wressetr.h"
 #include "wresset2.h"

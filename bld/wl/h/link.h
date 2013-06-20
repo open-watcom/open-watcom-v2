@@ -158,9 +158,9 @@ typedef enum obj_format {
 /* Default File Extension Enumeration, see ldefext.h */
 
 typedef enum file_defext {
-#undef pick1
 #define pick1(enum,text) enum,
 #include "ldefext.h"
+#undef pick1
 } file_defext;
 
 

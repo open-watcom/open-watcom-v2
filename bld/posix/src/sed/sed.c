@@ -7,7 +7,7 @@ the argument NULL which tells it to filter standard input. It executes
 the compiled commands in cmds[] on each line in turn.
    The function command() does most of the work. Match() and advance()
 are used for matching text against precompiled regular expressions and
-dosub() does right-hand-side substitution.  Getline() does text input;
+dosub() does right-hand-side substitution.  getinpline() does text input;
 readout() and memeql() are output and string-comparison utilities.
 
 ==== Written for the GNU operating system by Eric S. Raymond ====
@@ -71,7 +71,7 @@ static void     dosub( char const *rhsbuf );
 static char     *place( register char *asp, register char const *al1, register char const *al2 );
 static void     listto( register char const *p1, FILE *fp );
 static void     command( sedcmd *ipc );
-static char     *getline( register char *buf );
+static char     *getinpline( register char *buf );
 static int      memeql( register char const *a, register char const *b, int count );
 static void     readout( void );
 
@@ -98,7 +98,7 @@ void execute( const char *file )        /* name of text source file to filter */
     for( ;; ) {
                                         /* get next line to filter */
                                         /* jump is set but not cleared by D */
-        if( ( execp = getline( jump ? spend : linebuf ) ) == NULL ) {
+        if( ( execp = getinpline( jump ? spend : linebuf ) ) == NULL ) {
             if( jump ) {
                 for( p1 = linebuf; p1 < spend; p1++ )
                     putc( *p1, stdout );
@@ -733,7 +733,7 @@ static void command( sedcmd *ipc )
         if( !nflag )
             puts( linebuf );            /* flush out the current line */
         readout();                      /* do any pending a, r commands */
-        if( ( execp = getline( linebuf ) ) == NULL ) {
+        if( ( execp = getinpline( linebuf ) ) == NULL ) {
             pending = ipc;
             delete = TRUE;
             break;
@@ -744,7 +744,7 @@ static void command( sedcmd *ipc )
     case CNCMD:                         /* append next line to pattern space */
         readout();                      /* do any pending a, r commands */
         *spend++ = '\n';                /* seperate lines with '\n' */
-        if( ( execp = getline( spend ) ) == NULL ) {
+        if( ( execp = getinpline( spend ) ) == NULL ) {
             *--spend = '\0';            /* Remove '\n' added for new line */
             pending = ipc;
             delete = TRUE;
@@ -838,7 +838,7 @@ static void command( sedcmd *ipc )
 }
 
 /* get next line of text to be filtered */
-static char *getline( register char *buf )  /* where to send the input */
+static char *getinpline( register char *buf )  /* where to send the input */
 {
     static char const * const   linebufend = linebuf + MAXBUF + 2;
     int const                   room = linebufend - buf;
@@ -856,7 +856,12 @@ static char *getline( register char *buf )  /* where to send the input */
         while( ( *buf++ ) != 0 ) ;      /* find the end of the input */
         if( buf-- - sbuf >= room )
             fprintf( stderr, NOROOM, room, lnum ), buf++;
-        if( *--buf != '\n' ) buf++;
+        if( *(buf - 1) == '\n' ) {
+            --buf;
+            if( *(buf - 1) == '\r' ) {
+                --buf;
+            }
+        }
         *buf = 0;
         if( eargc == 0 ) {              /* if no more args */
             lastline = ( ( temp = getc( stdin ) ) == EOF );

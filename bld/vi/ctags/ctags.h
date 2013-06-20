@@ -31,7 +31,6 @@
 
 
 #include "wio.h"
-#include "watcom.h"
 #include "bool.h"
 
 typedef enum {

@@ -35,6 +35,7 @@
 #include <process.h>
 #include <conio.h>
 #include <errno.h>
+#include "wio.h"
 #include "linkstd.h"
 #include "msg.h"
 #include "alloc.h"

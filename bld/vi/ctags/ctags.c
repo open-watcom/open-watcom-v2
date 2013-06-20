@@ -41,6 +41,7 @@
 #else
     #include <direct.h>
 #endif
+#include "clibext.h"
 #include "ctags.h"
 #include "banner.h"
 
