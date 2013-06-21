@@ -82,5 +82,4 @@ clean : .procedure
     @if exist for007 rm for007
     @if exist for009 rm for009
     @if exist for024 rm for024
-    @if exist FM411.DAT rm FM411.DAT
     @%make common_clean

@@ -222,7 +222,7 @@ C                                                                       02200411
 C     I04  CONTAINS THE LOGICAL UNIT NUMBER FOR A SEQUENTIAL ACCESS FILE02220411
 CX040        THIS CARD IS REPLACED BY CONTENTS OF X-040 CARD            02230411
 CX041        THIS CARD IS REPLACED BY CONTENTS OF X-041 CARD            02240411
-      OPEN (UNIT=I04,FILE='fm411.dat',ACCESS='SEQUENTIAL',FORM=         OW
+      OPEN (UNIT=I04,FILE='fm411.tmp',ACCESS='SEQUENTIAL',FORM=         OW
      &      'UNFORMATTED',STATUS='UNKNOWN')                             OW
       IPROG = 411                                                       02250411
       IFILE = I04                                                       02260411

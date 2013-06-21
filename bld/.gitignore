@@ -62,8 +62,6 @@
 #
 /f77test/*.sav
 /f77test/regress/nist/FOR*
-/f77test/regress/nist/FM*.DAT
-/f77test/regress/nist/fm*.dat
 #
 /graphlib/fix/*/clib.mod
 /graphlib/fix/*/graph.mod
