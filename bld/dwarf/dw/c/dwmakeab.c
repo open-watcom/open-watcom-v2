@@ -717,7 +717,7 @@ void emitEncodings(
         if( p == end ) break;
         fprintf( fp, "," );
         if( ( p - encodingBuf ) % 8 == 0 ) {
-            fprintf( fp, "\n    /* 0x%02x */ ", p - encodingBuf );
+            fprintf( fp, "\n    /* 0x%02x */ ", (unsigned)( p - encodingBuf ) );
         }
     }
     fprintf( fp, "\n};\n\n" );
@@ -818,7 +818,8 @@ uint_32 emitInfo(
     for(;;) {
         fprintf( fp, "/*%-32s*/{ 0x%08lx, 0x%04x, 0x%02x, 0x%02x, 0x%02x }",
             abbrevInfo[ u ].name,
-            abbrevInfo[ u ].valid_mask, total,
+            (unsigned long)abbrevInfo[ u ].valid_mask,
+            (unsigned)total,
             abbrevExtra[ u ].data_offset,
             abbrevExtra[ u ].data_len,
             abbrevInfo[ u ].tag
@@ -878,8 +879,8 @@ int main( void )
     }
     fprintf( fp, "/* this file created by dwmakeab.c */\n" );
     /* we need this value for determining the size of the dw_client struct */
-    fprintf( fp, "\n#define AB_LAST_CODE    0x%08lx\n\n",  total );
-    fprintf( fp, "\n#define AB_BITVECT_SIZE 0x%08lx\n\n", ( total + 7 ) / 8 );
+    fprintf( fp, "\n#define AB_LAST_CODE    0x%08lx\n\n", (unsigned long)total );
+    fprintf( fp, "\n#define AB_BITVECT_SIZE 0x%08lx\n\n", (unsigned long)( ( total + 7 ) / 8 ) );
     emitEnum( fp );
     fprintf( fp, "\n" );
     fclose( fp );

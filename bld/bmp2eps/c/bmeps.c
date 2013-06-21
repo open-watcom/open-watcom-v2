@@ -31,6 +31,7 @@
 #endif
 #define BMEPS_C 1
 #include "bmeps.h"
+#include "clibext.h"
 
 static char the_version_number[] = { VERSNUMB };
 
@@ -110,20 +111,6 @@ void bmeps_setup(int psl, int col, int a85, int rl, int fl,
   int mix, int specbg, int bg_red, int bg_green, int bg_blue, int dsc_show
 )
 {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   is_configured = 1;
   bmeps_color = bmeps_enc_a85 = bmeps_enc_rl = bmeps_enc_fl = 0;
   bmeps_alpha = bmeps_trans = bmeps_altrig = 0;
