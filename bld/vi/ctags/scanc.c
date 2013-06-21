@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "ctags.h"
+#include "clibext.h"
 
 static int      acceptOnlyEndif;
 static int      structStack[MAX_STRUCT_DEPTH];

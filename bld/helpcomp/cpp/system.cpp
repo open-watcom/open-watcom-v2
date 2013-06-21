@@ -41,7 +41,7 @@ SYSTEM:  handle "global" WinHelp file information
 
 //  SystemText::SystemText
 
-SystemText::SystemText( uint_16 flg, char *txt )
+SystemText::SystemText( uint_16 flg, const char *txt )
 {
     _flag = flg;
     int length = strlen( txt ) + 1;

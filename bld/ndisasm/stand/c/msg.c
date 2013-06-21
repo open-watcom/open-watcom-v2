@@ -39,6 +39,7 @@
 #include "wresset2.h"
 #include "wreslang.h"
 #include "msg.h"
+#include "clibext.h"
 
 #define NO_RES_MESSAGE "Error: could not open message resource file\r\n"
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)

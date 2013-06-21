@@ -34,7 +34,7 @@
 #include "wfilenam.hpp"
 #include "wresstr.hpp"
 
-static  char            *FilterList = "All files(*.*)\0*.*\0\0";
+static  const char          *FilterList = "All files(*.*)\0*.*\0\0";
 
 
 WEXPORT WFileDialog::WFileDialog( WWindow* parent, const char *filter )
@@ -59,7 +59,7 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, unsigned res_idx )
     filter = flt;
 
     do {
-        if( filter[ i ] == REPCHAR ) {
+        if( filter[i] == REPCHAR ) {
             buffer[ i ] = '\0';
         } else {
             buffer[ i ] = filter[ i ];

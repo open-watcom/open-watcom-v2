@@ -74,7 +74,7 @@ wprojRcs        Wproj;
 
 extern "C" {
 
-static char *rcs_type_strings[] = {
+static const char *rcs_type_strings[] = {
     "no_rcs",
     "mks_rcs",
     "mks_si",
@@ -85,7 +85,7 @@ static char *rcs_type_strings[] = {
     "wproj" // hidden
 };
 
-static char *pause_strings[] = {
+static const char *pause_strings[] = {
     "no_pause",
     "pause"
 };
@@ -170,8 +170,7 @@ int RCSAPI RCSSetSystem( rcsdata data, int rcs_type )
     if( d==NULL ) return( 0 );
     if( !d->setSystem( rcs_type ) ) return( FALSE );
     if( rcs_type > MAX_RCS_TYPE ) return( FALSE );
-    MyWriteProfileString( (char*)d->getCfgDir(), RCS_CFG, RCS_SECTION,
-                          RCS_KEY, rcs_type_strings[rcs_type] );
+    MyWriteProfileString( d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY, rcs_type_strings[rcs_type] );
     return( TRUE );
 
 }
@@ -183,11 +182,11 @@ int RCSAPI RCSQuerySystem( rcsdata data )
 
     userData *d = (userData*)data;
     if( d==NULL ) return( 0 );
-    MyGetProfileString( (char*)d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY,
-                        RCS_DEFAULT, buffer, MAX_RCS_STRING_LEN );
+    MyGetProfileString( d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY, RCS_DEFAULT, buffer, MAX_RCS_STRING_LEN );
     for( i=1; i <= MAX_RCS_TYPE; i++ ) {
-        if( strnicmp( buffer, rcs_type_strings[i],
-                        strlen( rcs_type_strings[i] ) ) == 0 ) return( i );
+        if( strnicmp( buffer, rcs_type_strings[i], strlen( rcs_type_strings[i] ) ) == 0 ) {
+	    return( i );
+	}
     }
     return( 0 );
 }
@@ -219,8 +218,7 @@ BOOL WINAPI DllMain( HINSTANCE hDll, DWORD reason, LPVOID res )
 
 #elif defined( __WINDOWS__ )
 
-int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize,
-                        LPSTR lpszCmdLine )
+int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize, LPSTR lpszCmdLine )
 {
     wDataSeg = wDataSeg;
     wHeapSize = wHeapSize;
@@ -265,8 +263,7 @@ int userData::setSystem( int rcs_type )
     return( TRUE );
 }
 
-int rcsSystem::checkout( userData *d, rcsstring name,
-                         rcsstring pj, rcsstring tgt )
+int rcsSystem::checkout( userData *d, rcsstring name, rcsstring pj, rcsstring tgt )
 {
     char Buffer[BUFLEN];
     if( d == NULL ) return( 0 );
@@ -279,8 +276,7 @@ int rcsSystem::checkout( userData *d, rcsstring name,
     return( 1 );
 }
 
-int rcsSystem::checkin( userData *d, rcsstring name,
-                        rcsstring pj, rcsstring tgt )
+int rcsSystem::checkin( userData *d, rcsstring name, rcsstring pj, rcsstring tgt )
 {
     char MsgBuf[BUFLEN];
     char Buffer[BUFLEN];

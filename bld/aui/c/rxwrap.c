@@ -29,5 +29,6 @@
 ****************************************************************************/
 
 
+#include "clibext.h"
 #include "rxwrap.h"
 #include "../../posix/misc/regexp.c"

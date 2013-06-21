@@ -78,7 +78,7 @@ class SystemText : public SystemRec
     SystemText &    operator=( SystemText const & ){ return *this; };
 
 public:
-    SystemText( uint_16 flg, char *txt );
+    SystemText( uint_16 flg, const char *txt );
     ~SystemText();
 
     int dump( OutFile * dest );

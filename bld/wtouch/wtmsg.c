@@ -42,6 +42,7 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+#include "clibext.h"
 
 
 #define NIL_HANDLE      ((int)-1)

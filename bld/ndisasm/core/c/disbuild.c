@@ -707,8 +707,8 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
             fprintf( stderr, "internal error constructing range table\n" );
             for( i = 0; i < head->num; ++i ) {
                 fprintf( stderr, "    machine:%s, opcode:%8.8lx, mask:%8.8lx, idx:%s\n",
-                        prefix, data[head->entry[i]].opcode,
-                                data[head->entry[i]].mask ,
+                        prefix, (unsigned long)data[head->entry[i]].opcode,
+                                (unsigned long)data[head->entry[i]].mask,
                                 data[head->entry[i]].idx_name );
             }
             exit( 1 );
@@ -812,8 +812,8 @@ int main( void )
             for( j = 0; j < *num_ins; ++j ) {
                 fprintf( fp, "    { 0x%4.4x, 0x%8.8lx, 0x%8.8lx, %s }, /* %s */\n",
                     (*insnames)[j].string_idx,
-                    (*decode)[j].opcode,
-                    (*decode)[j].mask,
+                    (unsigned long)(*decode)[j].opcode,
+                    (unsigned long)(*decode)[j].mask,
                     (*decode)[j].handler,
                     (*decode)[j].idx_name );
             }

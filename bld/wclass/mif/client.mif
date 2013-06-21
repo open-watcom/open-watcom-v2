@@ -18,6 +18,7 @@ wclass_lib_nt_axp    = $(wclass_dir)/win/ntaxp/wclass.lib
 wclass_lib_nt_x64    = $(wclass_dir)/win/ntx64/wclass.lib
 wclass_lib_win_i86   = $(wclass_dir)/win/wini86/wclass.lib
 wclass_lib_linux_386 = $(wclass_dir)/linux386/wclass.lib
+wclass_lib_linux_x64 = $(wclass_dir)/linuxx64/wclass.lib
 !ifeq bootstrap 1
 wclass_lib = $(wclass_dir)/$(%OWOBJDIR)/wclass.lib
 !else

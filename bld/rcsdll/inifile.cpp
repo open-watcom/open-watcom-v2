@@ -39,26 +39,26 @@
     }
 
     // just use the os/2 user .ini file
-    int MyGetProfileString( char *dir, char *filename, char *section,
-                            char *key, char *def, char *buffer, int len ) {
+    int MyGetProfileString( const char *dir, const char *filename, const char *section,
+                            const char *key, const char *def, char *buffer, int len ) {
         dir = dir; filename = filename;
-        return( PrfQueryProfileString( HINI_USERPROFILE, (char const *)section, (char const *)key, (char const *)def, (void *)buffer, len ) );
+        return( PrfQueryProfileString( HINI_USERPROFILE, section, key, def, (void *)buffer, len ) );
     }
-    int MyWriteProfileString( char *dir, char *filename, char *section,
-                              char *key, char *string ) {
+    int MyWriteProfileString( const char *dir, const char *filename, const char *section,
+                              const char *key, const char *string ) {
         dir = dir; filename = filename;
-        return( PrfWriteProfileString( HINI_USERPROFILE, (char const *)section, (char const *)key, (char const *)string ) );
+        return( PrfWriteProfileString( HINI_USERPROFILE, section, key, string ) );
     }
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>
-    int MyGetProfileString( char *dir, char *filename, char *section,
-                            char *key, char *def, char *buffer, int len )
+    int MyGetProfileString( const char *dir, const char *filename, const char *section,
+                            const char *key, const char *def, char *buffer, int len )
     {
         dir =dir; // ignored in this model
         return(GetPrivateProfileString(section,key,def,buffer,len,filename));
     }
-    int MyWriteProfileString( char *dir, char *filename, char *section,
-                              char *key, char *string )
+    int MyWriteProfileString( const char *dir, const char *filename, const char *section,
+                              const char *key, const char *string )
     {
         dir =dir; // ignored in this model
         return(WritePrivateProfileString(section,key,string,filename));
@@ -69,8 +69,8 @@
 #include <stdlib.h>
 #include "watcom.h"
 
-    int MyGetProfileString( char *dir, char *filename, char *section,
-                            char *key, char *def, char *buffer, int len )
+    int MyGetProfileString( const char *dir, const char *filename, const char *section,
+                            const char *key, const char *def, char *buffer, int len )
     {
         char path[_MAX_PATH];
         FILE *fp;
@@ -102,8 +102,8 @@
         return( 1 );
     }
 
-    int MyWriteProfileString( char *dir, char *filename, char *section,
-                              char *key, char *string )
+    int MyWriteProfileString( const char *dir, const char *filename, const char *section,
+                              const char *key, const char *string )
     {
         char path[_MAX_PATH];
         FILE *fp;
@@ -135,8 +135,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-    int MyGetProfileString( char *dir, char *filename, char *section,
-                            char *key, char *def, char *buffer, int len )
+    int MyGetProfileString( const char *dir, const char *filename, const char *section,
+                            const char *key, const char *def, char *buffer, int len )
     {
         char path[_MAX_PATH];
         FILE *fp;
@@ -163,8 +163,8 @@
         return( 1 );
     }
 
-    int MyWriteProfileString( char *dir, char *filename, char *section,
-                              char *key, char *string )
+    int MyWriteProfileString( const char *dir, const char *filename, const char *section,
+                              const char *key, const char *string )
     {
         char path[_MAX_PATH];
         FILE *fp;

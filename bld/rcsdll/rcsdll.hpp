@@ -78,7 +78,7 @@ extern mksRcsSystem MksRcs;
 class mksSISystem : public rcsSystem
 {
 public:
-    mksSISystem() { dllId = NULL; };
+    mksSISystem() { dllId = 0; };
     ~mksSISystem();
     int init( userData * );
     int fini();
@@ -129,7 +129,7 @@ extern wprojRcs Wproj;
 class objectCycleSystem : public rcsSystem
 {
 public:
-    objectCycleSystem() { dllId = NULL; };
+    objectCycleSystem() { dllId = 0; };
     ~objectCycleSystem();
     int init( userData * );
     int fini();
