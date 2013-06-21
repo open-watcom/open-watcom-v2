@@ -14,9 +14,7 @@ stand_subdir = stand
 
 .extensions: .rc .y .re .gh .msg
 
-additional_cleanup = *.c *.h *.re *.y
-additional_cleanup += $(stand_subdir)/*.c $(stand_subdir)/*.h $(stand_subdir)/*.re 
-additional_cleanup += $(stand_subdir)/*.y $(stand_subdir)/*.pch
+additional_cleanup = *.c *.h *.re *.y $(stand_subdir)/*.pch
 
 additional_cleanup_subdir = $(stand_subdir)
 
@@ -37,14 +35,16 @@ yacc_flags      = -b -d
 #yacc_flags     = -b "y" -l -v
 yacc_src        = as.y
 yacc_in         = as_in.y
+asi_yacc_in     = asi_in.y
 yacc_out        = asytab
-yacc_out_h      = asytab.h
+asi_yacc_out    = asiytab
 
 lex_flags       =
 lex_src         = scan.re
 lex_in          = scan_in.re
+asi_lex_in      = scani_in.re
 lex_out         = aslexyy
-lex_out_h       =
+asi_lex_out     = asilexyy
 
 # objects
 ##########
@@ -53,8 +53,6 @@ as_comm_objs_mps = $(_subdir_)mipsfmt.obj $(_subdir_)mipsins.obj
 as_comm_objs_ppc = $(_subdir_)ppcfmt.obj $(_subdir_)ppcins.obj
 
 as_comm_objs = &
-    $(_subdir_)$(yacc_out).obj &
-    $(_subdir_)$(lex_out).obj &
     $(_subdir_)asexpr.obj &
     $(_subdir_)asopernd.obj &
     $(_subdir_)asmem.obj &
@@ -68,6 +66,8 @@ as_comm_objs = &
     $(_subdir_)asmsg.obj
 
 as_stand_objs = &
+    $(stand_subdir)/$(yacc_out).obj &
+    $(stand_subdir)/$(lex_out).obj &
     $(stand_subdir)/main.obj &
     $(stand_subdir)/obj.obj &
     $(stand_subdir)/sections.obj &
@@ -82,6 +82,8 @@ as_stand_objs += $(stand_subdir)/trmem.obj
 !endif
 
 as_inline_objs = &
+    $(asi_yacc_out).obj &
+    $(asi_lex_out).obj &
     asinline.obj &
     asiobj.obj
 
@@ -112,7 +114,8 @@ extra_c_flags_386 = -of+
 !endif
 
 !ifdef __WATCOM__
-extra_c_flags_aslexyy = -fh=$^:pch02.pch
+extra_c_flags_aslexyy = -fh=pch02.pch
+extra_c_flags_asilexyy = -fh=pch03.pch
 extra_c_flags_preproc = -fh=$^:pch04.pch
 extra_c_flags_ppexpr = -fh=$^:pch04.pch
 extra_c_flags_ppmacro = -fh=$^:pch04.pch
@@ -199,21 +202,15 @@ msg.gh : as.msg
         awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
 
 asi_msg.gh : as.msg
-        $(cpp) $(rc_aui_flags) $(cppflags) $[@ > msg.tmp
-        awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
-
-$(stand_subdir)/$(yacc_in) : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
-        @if not exist $(stand_subdir) mkdir $(stand_subdir)
-        wsplice $(splice_opts) -k_STANDALONE_ $[@ $^@
+        $(cpp) $(rc_aui_flags) $(cppflags) $[@ > asi_msg.tmp
+        awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk asi_msg.tmp >> $^@
 
 $(yacc_in) : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
-        wsplice $(splice_opts) $[@ $^@
+        @if not exist $(stand_subdir) mkdir $(stand_subdir)
+        wsplice $(splice_opts) -k_STANDALONE_ $[@ - | sed -e "s/ytab.h/asytab.h/g" > $^@
 
-$(stand_subdir)/$(yacc_out).c : $(stand_subdir)/$(yacc_in)
-        $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
-        sed -f $(as_dir)/mif/asyy.sed -e "s/asytab.h/stand\/asytab.h/g" ytab.c > $^*.c
-        sed -f $(as_dir)/mif/asyy.sed -e "s/asytab.h/stand\/asytab.h/g" ytab.h > $^*.h
-        # $(yacc) $(yacc_flags) $[@
+$(asi_yacc_in) : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
+        wsplice $(splice_opts) $[@ - | sed -e "s/ytab.h/asiytab.h/g" > $^@
 
 $(yacc_out).c : $(yacc_in)
         $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
@@ -221,33 +218,27 @@ $(yacc_out).c : $(yacc_in)
         sed -f $(as_dir)/mif/asyy.sed ytab.h > $^*.h
         # $(yacc) $(yacc_flags) $[@
 
-$(stand_subdir)/$(lex_in) : $(as_dir)/y/$(lex_src)
-        @if not exist $(stand_subdir) mkdir $(stand_subdir)
-        wsplice $(splice_opts) -k_STANDALONE_ $[@ - | sed -e "s/asytab.h/stand\/asytab.h/g" > $@
+$(asi_yacc_out).c : $(asi_yacc_in)
+        $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
+        sed -f $(as_dir)/mif/asyy.sed ytab.c > $^*.c
+        sed -f $(as_dir)/mif/asyy.sed ytab.h > $^*.h
+        # $(yacc) $(yacc_flags) $[@
 
 $(lex_in) : $(as_dir)/y/$(lex_src)
-        wsplice $(splice_opts) $[@ $@
+        @if not exist $(stand_subdir) mkdir $(stand_subdir)
+        wsplice $(splice_opts) -k_STANDALONE_ $[@ - | sed -e "s/ytab.h/asytab.h/g" > $@
 
-#$(stand_subdir)/$(yacc_out).obj : $(stand_subdir)/$(yacc_out).c
-#$(stand_subdir)/$(lex_out).obj : $(stand_subdir)/$(lex_out).c
+$(asi_lex_in) : $(as_dir)/y/$(lex_src)
+        wsplice $(splice_opts) $[@ - | sed -e "s/ytab.h/asiytab.h/g" > $@
 
 .ERASE
-$(stand_subdir)/$(lex_out).c : $(stand_subdir)/$(lex_in)
-        $(re2c) $(lex_flags) $[@ > $@
-
 $(lex_out).c : $(lex_in)
         $(re2c) $(lex_flags) $[@ > $@
 
-.c{$(stand_subdir)}.obj: $($(proj_name)_autodepends)
-        @if not exist $(stand_subdir) mkdir $(stand_subdir)
-!ifeq verbose 1
-        $(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-        @echo cc $@
-        @$(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
+$(asi_lex_out).c : $(asi_lex_in)
+        $(re2c) $(lex_flags) $[@ > $@
 
-{$(stand_subdir)}.c{$(stand_subdir)}.obj: $($(proj_name)_autodepends)
+.c{$(stand_subdir)}.obj: $($(proj_name)_autodepends)
         @if not exist $(stand_subdir) mkdir $(stand_subdir)
 !ifeq verbose 1
         $(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@

@@ -1,7 +1,7 @@
 %{
     #include "as.h"
     #include "lexyacc.h"
-    #include "asytab.h"
+    #include "ytab.h"
     
     typedef uint_16         YYACTIONBASETYPE;
     typedef uint_16         YYACTIONTYPE;

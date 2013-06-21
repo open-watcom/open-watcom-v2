@@ -1,6 +1,6 @@
 #include "as.h"
 #include "lexyacc.h"
-#include "asytab.h"
+#include "ytab.h"
 #ifdef _STANDALONE_
 #include "preproc.h"
 #endif
