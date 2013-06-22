@@ -35,11 +35,12 @@
 
 WEXPORT WMenuObject::WMenuObject()
     : _id( 0 )
-    , _text( NULL )
     , _owner( NULL )
     , _enabled( TRUE )
-    , _checked( FALSE ) {
+    , _checked( FALSE )
+    , _text( NULL )
 /***********************/
+{
 
 }
 

@@ -38,12 +38,13 @@
 WAbout::WAbout( WWindow* parent, WHotSpots* hs, int idx )
     : WDialog( parent )
     , _idx( idx )
+    , _textArray( NULL ) 
+    , _title( NULL )
     , _height( 0 )
     , _width( 0 )
     , _hotSpot( hs )
-    , _title( NULL )
-    , _textArray( NULL ) {
 /************************/
+{
 
 }
 
@@ -51,12 +52,13 @@ WAbout::WAbout( WWindow* parent, WHotSpots* hs, int idx )
 WAbout::WAbout( WWindow* parent, WHotSpots* hs, int idx, const char* title )
     : WDialog( parent, title )
     , _idx( idx )
+    , _textArray( NULL )
+    , _title( title )
     , _height( 0 )
     , _width( 0 )
     , _hotSpot( hs )
-    , _title( title )
-    , _textArray( NULL ) {
 /************************/
+{
 
 }
 
@@ -64,12 +66,13 @@ WAbout::WAbout( WWindow* parent, WHotSpots* hs, int idx, const char* title )
 WAbout::WAbout( WWindow* parent, WHotSpots* hs, int idx, const char* title, const char* text[] )
     : WDialog( parent, title )
     , _idx( idx )
+    , _textArray( text )
+    , _title( title )
     , _height( 0 )
     , _width( 0 )
     , _hotSpot( hs )
-    , _title( title )
-    , _textArray( text ) {
 /************************/
+{
 
 }
 

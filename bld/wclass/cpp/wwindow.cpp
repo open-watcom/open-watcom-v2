@@ -367,31 +367,32 @@ void WWindow::makeWindow( const char *text, WStyle style, WExStyle exstyle ) {
 
 
 WEXPORT WWindow::WWindow( WWindow *parent )
-    : _painting( FALSE )
-    , _firstDirtyRow( 0 )
-    , _numDirtyRows( 0 )
-    , _currCursor( GUI_ARROW_CURSOR )
+    : _handle( NULL )
     , _parent( parent )
     , _menu( NULL )
     , _popup( NULL )
     , _toolBar( NULL )
-    , _handle( NULL ) {
+    , _currCursor( GUI_ARROW_CURSOR )
+    , _firstDirtyRow( 0 )
+    , _numDirtyRows( 0 )
+    , _painting( FALSE )
 /*********************/
+{
 
 }
 
 WEXPORT WWindow::WWindow( const char *text, WStyle style, WExStyle exstyle )
-    : _painting( FALSE )
-    , _firstDirtyRow( 0 )
-    , _numDirtyRows( 0 )
-    , _currCursor( GUI_ARROW_CURSOR )
+    : _handle( NULL )
     , _parent( NULL )
     , _menu( NULL )
     , _popup( NULL )
     , _toolBar( NULL )
-    , _handle( NULL ) {
+    , _currCursor( GUI_ARROW_CURSOR )
+    , _firstDirtyRow( 0 )
+    , _numDirtyRows( 0 )
+    , _painting( FALSE )
 /*********************/
-
+{
     WSystemMetrics::defaultRectangle( _autosize );
     makeWindow( text, style, exstyle );
 }
@@ -399,17 +400,17 @@ WEXPORT WWindow::WWindow( const char *text, WStyle style, WExStyle exstyle )
 
 WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style,
                           WExStyle exstyle )
-    : _painting( FALSE )
-    , _firstDirtyRow( 0 )
-    , _numDirtyRows( 0 )
-    , _currCursor( GUI_ARROW_CURSOR )
+    : _handle( NULL )
     , _parent( parent )
     , _menu( NULL )
     , _popup( NULL )
     , _toolBar( NULL )
-    , _handle( NULL ) {
+    , _currCursor( GUI_ARROW_CURSOR )
+    , _firstDirtyRow( 0 )
+    , _numDirtyRows( 0 )
+    , _painting( FALSE )
 /*********************/
-
+{
     WSystemMetrics::defaultRectangle( _autosize );
     makeWindow( text, style, exstyle );
 }
@@ -417,18 +418,18 @@ WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style,
 
 WEXPORT WWindow::WWindow( WWindow* parent, const WRect& r, const char *text,
                           WStyle style, WExStyle exstyle )
-    : _painting( FALSE )
-    , _firstDirtyRow( 0 )
-    , _numDirtyRows( 0 )
-    , _currCursor( GUI_ARROW_CURSOR )
+    : _handle( NULL )
     , _parent( parent )
     , _menu( NULL )
     , _popup( NULL )
     , _toolBar( NULL )
     , _autosize( r )
-    , _handle( NULL ) {
+    , _currCursor( GUI_ARROW_CURSOR )
+    , _firstDirtyRow( 0 )
+    , _numDirtyRows( 0 )
+    , _painting( FALSE )
 /*********************/
-
+{
     makeWindow( text, style, exstyle );
 }
 
@@ -591,7 +592,7 @@ static key_map KeyMapping[] = {
 static WKeyCode MapAccelKey( int key ) {
 /**************************************/
 
-    for( int i = 0; i < sizeof( KeyMapping ); ++i ) {
+    for( unsigned i = 0; i < sizeof( KeyMapping ); ++i ) {
         if( KeyMapping[i].ascii == key ) {
             return( KeyMapping[i].alt_key );
         }

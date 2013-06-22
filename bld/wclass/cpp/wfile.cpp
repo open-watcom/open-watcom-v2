@@ -53,11 +53,11 @@ WEXPORT WFile::WFile()
     : _handle( FILE_ERROR )
     , _eof( TRUE )
     , _ok( FALSE )
-    , _lineCount( 0 )
     , _chsaved( FALSE )
     , _buffer( NULL )
     , _bOffset( 0 )
     , _bLength( 0 )
+    , _lineCount( 0 )
 {
 }
 
@@ -120,7 +120,7 @@ long WEXPORT WFile::getl()
 {
     char temp[30];
     int len = 0;
-    for( int i=0; !_eof && i<=sizeof(temp); i++ ) {
+    for( unsigned i = 0; !_eof && i <= sizeof( temp ); i++ ) {
         temp[i] = getch();
         len = i;
         if( !( isdigit( temp[i] ) || temp[i] == '-' ) ) {
@@ -294,7 +294,7 @@ bool WFile::putByte( char ch )
         }
         _buffer[ _bOffset++ ] = ch;
         if( _bOffset >= MAX_BUFFER ) {
-            int len = write( _buffer, _bOffset );
+            unsigned len = write( _buffer, _bOffset );
             if( len != _bOffset ) {
                 _ok = FALSE;
             }

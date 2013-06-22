@@ -38,10 +38,10 @@
 
 WEXPORT WDialog::WDialog( WWindow* parent )
         : WWindow()
+        , _text()
         , _quitCode( 0 )
-        , _text() {
 /*****************/
-
+{
     WRect       r;
 
     setParent( parent );
@@ -52,10 +52,10 @@ WEXPORT WDialog::WDialog( WWindow* parent )
 
 WEXPORT WDialog::WDialog( WWindow* parent, const char *text )
         : WWindow()
+        , _text( text )
         , _quitCode( 0 )
-        , _text( text ) {
 /***********************/
-
+{
     WRect       r;
 
     setParent( parent );
@@ -66,10 +66,10 @@ WEXPORT WDialog::WDialog( WWindow* parent, const char *text )
 
 WEXPORT WDialog::WDialog( const WRect& r, const char *text )
         : WWindow()
+        , _text( text )
         , _quitCode( 0 )
-        , _text( text ) {
 /***********************/
-
+{
     setParent( NULL );
     setAutosize( r );
 }
@@ -77,10 +77,10 @@ WEXPORT WDialog::WDialog( const WRect& r, const char *text )
 
 WEXPORT WDialog::WDialog( const char *text, const WRect& r )
         : WWindow()
+        , _text( text )
         , _quitCode( 0 )
-        , _text( text ) {
 /***********************/
-
+{
     setParent( NULL );
     setAutosize( r );
 }
@@ -88,10 +88,10 @@ WEXPORT WDialog::WDialog( const char *text, const WRect& r )
 
 WEXPORT WDialog::WDialog( WWindow *parent, const WRect& r, const char *text )
         : WWindow()
+        , _text( text )
         , _quitCode( 0 )
-        , _text( text ) {
 /***********************/
-
+{
     setParent( parent );
     setAutosize( r );
 }
@@ -99,10 +99,10 @@ WEXPORT WDialog::WDialog( WWindow *parent, const WRect& r, const char *text )
 
 WEXPORT WDialog::WDialog( WWindow *parent, const char *text, const WRect& r )
         : WWindow()
+        , _text( text )
         , _quitCode( 0 )
-        , _text( text ) {
 /***********************/
-
+{
     setParent( parent );
     setAutosize( r );
 }

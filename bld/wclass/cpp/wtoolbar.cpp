@@ -36,12 +36,12 @@
 
 
 WEXPORT WToolBar::WToolBar( bool fixed )
-    : _rect( NULL )
-    , _parent( NULL )
+    : _parent( NULL )
+    , _changedClient( NULL )
     , _changed( NULL )
-    , _changedClient( NULL ) {
+    , _rect( 0, 0, 0, 0 )
 /****************************/
-
+{
     if( fixed ) {
         _flags = WToolFlagsFixed;
     }
@@ -49,12 +49,12 @@ WEXPORT WToolBar::WToolBar( bool fixed )
 
 
 WEXPORT WToolBar::WToolBar( bool fixed, bool use_tips )
-    : _rect( NULL )
-    , _parent( NULL )
+    : _parent( NULL )
+    , _changedClient( NULL )
     , _changed( NULL )
-    , _changedClient( NULL ) {
+    , _rect( 0, 0, 0, 0 )
 /****************************/
-
+{
     _flags = 0;
     if( fixed ) {
         _flags |= WToolFlagsFixed;
@@ -66,12 +66,12 @@ WEXPORT WToolBar::WToolBar( bool fixed, bool use_tips )
 
 
 WEXPORT WToolBar::WToolBar( WRect r )
-    : _rect( r )
-    , _parent( NULL )
+    : _parent( NULL )
+    , _changedClient( NULL )
     , _changed( NULL )
-    , _changedClient( NULL ) {
+    , _rect( r )
 /****************************/
-
+{
     _flags = WToolFlagsUseRect;
 }
 

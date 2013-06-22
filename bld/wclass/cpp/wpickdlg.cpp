@@ -43,10 +43,10 @@ static  char    OKText[] = "&OK";
 WEXPORT WPickDialog::WPickDialog( WPickList& list, cbs getname,
                                   WWindow *parent, const char *text )
     : WDialog( parent, text )
+    , _list( &list )
     , _getname( getname )
-    , _list( &list ) {
 /********************/
-
+{
     setDefaultQuitCode( -1 );
 }
 

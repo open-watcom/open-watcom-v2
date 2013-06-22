@@ -39,9 +39,11 @@ WEXPORT WInfiniteList::WInfiniteList( WWindow* prt, const WRect& r, char * t,
                             WObject * client, ocbloi fillcb, ccbo namecb,
                             uint loadSize, WStyle wstyle )
                 : WWindow( prt, r, t, wstyle )
-                ,_selected( -1 )
-                ,_top( 0 )
                 ,_loadSize( loadSize )
+                ,_top( 0 )
+                ,_selected( -1 )
+                ,_full( FALSE )
+                ,_leftDown( FALSE )
                 ,_fillClient( client )
                 ,_fill( fillcb )
                 ,_name( namecb )
@@ -49,8 +51,6 @@ WEXPORT WInfiniteList::WInfiniteList( WWindow* prt, const WRect& r, char * t,
                 ,_changed( NULL )
                 ,_dblClickClient( NULL )
                 ,_dblClick( NULL )
-                ,_full( FALSE )
-                ,_leftDown( FALSE )
 {
     int nRows = getRows();
 

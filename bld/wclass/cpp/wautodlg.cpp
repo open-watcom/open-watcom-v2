@@ -47,9 +47,10 @@ WEXPORT WAutoDialog::WAutoDialog( WWindow *parent, const char *text,
                                   WStringList &prompts, unsigned editwidth )
     : WDialog( parent, text )
     , _prompts( &prompts )
+    , _replys( NULL )
     , _editwidth( editwidth )
-    , _replys( NULL ) {
 /*********************/
+{
 
 }
 
