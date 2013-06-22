@@ -45,9 +45,9 @@
 MemoryPool::MemoryPool( const char * owner )
     : _elemSize( 0 )
     , _elemsPerBlock( 0 )
-    , _currBlock( NULL )
     , _lastElement( NULL )
     , _currElement( NULL )
+    , _currBlock( NULL )
     , _freeList( NULL )
 
     #if DEBUG

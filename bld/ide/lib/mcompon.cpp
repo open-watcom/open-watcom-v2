@@ -52,17 +52,17 @@ extern "C" {
 Define( MComponent )
 
 MComponent::MComponent( MProject* project, MRule* rule, const WString& mask, const char* target )
-    : _project( project )
-    , _dirty( TRUE )
+    : _dirty( TRUE )
     , _needsMake( TRUE )
+    , _project( project )
     , _filename( NULL )
     , _relFilename( target )
-    , _mask( mask )
     , _target( NULL )
+    , _mask( mask )
     , _autodepend( rule->autodepend() )
     , _autotrack( rule->autotrack() )
-    , _batchMode( FALSE )
     , _mode( SWMODE_DEBUG )
+    , _batchMode( FALSE )
 {
     WFileName targ;
     makeNames( target, _filename, _relFilename, targ );

@@ -40,10 +40,10 @@
 Define( MState )
 
 MState::MState( MTool* tool, SwMode mode, MSwitch* sw )
-        : _tool( tool )
-        , _switch( sw )
-        , _toolTag( tool->tag() )
+        : _toolTag( tool->tag() )
+        , _tool( tool )
         , _switchTag( "" )
+        , _switch( sw )
         , _mode( mode )
 {
     if( _switch ) {

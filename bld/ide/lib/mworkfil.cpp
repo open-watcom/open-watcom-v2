@@ -44,8 +44,8 @@
 WEXPORT MWorkFile::MWorkFile( const char* name, SwMode mode, MItem* item, MComponent* comp )
     : WFileName( name )
     , _item( item )
-    , _component( comp )
     , _browseable( FALSE )
+    , _component( comp )
 {
     _item->addStates( _states, mode );
 }

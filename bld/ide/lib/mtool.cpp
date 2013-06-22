@@ -64,8 +64,8 @@ MTool::MTool( WTokenFile& fil, WString& tok )
 }
 
 MTool::MTool( const char* name, const char* tag )
-    : _name( name )
-    , _tag( tag )
+    : _tag( tag )
+    , _name( name )
 {
 }
 

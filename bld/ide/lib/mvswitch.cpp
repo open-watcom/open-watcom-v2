@@ -38,9 +38,9 @@ Define( MVSwitch )
 
 MVSwitch::MVSwitch( WTokenFile& fil, WString& tok )
     : MSwitch( fil, tok )
+    , _quote( '\'' )
     , _optional( FALSE )
     , _multiple( FALSE )
-    , _quote( '\'' )
 {
     fil.token( _on );
     fil.token( _connector );

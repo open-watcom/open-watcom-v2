@@ -42,8 +42,8 @@
 Define( MRule )
 
 MRule::MRule( WTokenFile& fil, WString& tok )
-    : _autodepend( FALSE )
-    , _tagMask( "*" )
+    : _tagMask( "*" )
+    , _autodepend( FALSE )
 {
     fil.token( _tag );
     _tool = _config->nilTool();
@@ -96,9 +96,9 @@ MRule::MRule( WTokenFile& fil, WString& tok )
 }
 
 MRule::MRule( const char* tag, MTool* tool )
-    : _autodepend( FALSE )
+    : _tool( tool )
     , _tag( tag )
-    , _tool( tool )
+    , _autodepend( FALSE )
 {
 }
 
