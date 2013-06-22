@@ -72,7 +72,7 @@ cxx_386     += $(bld_incs)
 
 # common settings
 ############################
-common_cppflags_linux = -D__LINUX__ -D__UNIX__ -D__SMALL__ -D__FLAT__
+common_cppflags_linux = -D__LINUX__ -D__UNIX__ -D__FLAT__
 
 common_cppflags_386   = -D_M_IX86 -D__386__ -D__LINUX_386__
 common_cppflags_x64   = -D_M_X64 -D__LINUX_X64__
@@ -124,7 +124,7 @@ cl_libs = $(cl_libs_gen)
 # bld settings
 ############################
 bcc  = gcc -pipe -c
-bcxx = gcc -pipe -c
+bcxx = g++ -pipe -c
 bcl  = gcc -pipe
 
 blib      = ar
@@ -141,7 +141,7 @@ bld_cflags   = $(common_cflags) $(common_flags) -o $@
 bld_cxxflags =
 
 # options for linking
-bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
+bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map -lstdc++
 
 bld_ldflags  = $(bld_extra_ldflags)
 
@@ -155,7 +155,7 @@ bld_libflags = crs $^@
 # standard settings
 ############################
 cc   = gcc -pipe -c
-cxx  = gcc -pipe -c
+cxx  = g++ -pipe -c
 cl   = gcc -pipe
 
 librarian = ar
@@ -174,7 +174,7 @@ cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib
 cflags_wind = $(cflags_gen)
 
 # options for linking
-ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
+ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map -lstdc++
 
 ldflags_gen  = $(cl_libs_gen) $(extra_ldflags)
 ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll)
@@ -218,7 +218,7 @@ incl_file_opts = -include
 
 # common settings
 ############################
-common_cppflags_nt = -D__NT__ -D__SMALL__ -D__FLAT__
+common_cppflags_nt = -D__NT__ -D__FLAT__
 
 common_cppflags_386  = -D__386__ -D__NT_386__
 common_cppflags_x64  = -D__NT_X64__
