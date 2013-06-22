@@ -36,7 +36,7 @@
 #include "wtokfile.hpp"
 #include "wvlist.hpp"
 
-typedef char SwMode;
+typedef unsigned char SwMode;
 #define SWMODE_RELEASE  0
 #define SWMODE_DEBUG    1
 #define SWMODE_COUNT    2

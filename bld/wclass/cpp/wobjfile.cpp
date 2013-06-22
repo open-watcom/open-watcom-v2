@@ -175,6 +175,17 @@ void WEXPORT WObjectFile::readObject( char* obj )
     readEOItem();
 }
 
+void WEXPORT WObjectFile::readObject( unsigned char* obj )
+{
+    if( _version <= 38 ) {
+        *obj = getch();
+    } else {
+        /* changed to use text format */
+        *obj = (unsigned char)getl();
+    }
+    readEOItem();
+}
+
 void WEXPORT WObjectFile::readObject( char* obj, int len, bool exact )
 {
     if( exact ) {
@@ -261,6 +272,13 @@ void WEXPORT WObjectFile::writeObject( bool obj )
 }
 
 void WEXPORT WObjectFile::writeObject( char obj )
+{
+        putl( obj ); // as of version 39 -- text only
+        // putch( obj );
+        writeEOItem();
+}
+
+void WEXPORT WObjectFile::writeObject( unsigned char obj )
 {
         putl( obj ); // as of version 39 -- text only
         // putch( obj );
