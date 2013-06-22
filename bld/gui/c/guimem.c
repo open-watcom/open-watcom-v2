@@ -148,5 +148,7 @@ extern void GUIMemPrintLine( void *handle, const char *buff, size_t len )
 {
 #ifdef TRMEM
     write( *(int *)handle, buff, len );
+#else
+    handle=handle; buff=buff; len=len;
 #endif
 }

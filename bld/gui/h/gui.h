@@ -176,7 +176,7 @@ typedef enum {
     GUI_UTIL_2          = 0x80
 } gui_menu_styles ;
 
-typedef unsigned long gui_help_instance;
+typedef void    *gui_help_instance;
 
 typedef enum {
     GUI_HELP_CONTENTS
