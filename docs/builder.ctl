@@ -26,7 +26,6 @@ set PROJNAME=docs
     <CPCMD> readme.txt      <OWRELROOT>/readme.txt
     <CPCMD> freadme.txt     <OWRELROOT>/freadme.txt
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
-    <CPCMD> instlic.txt     <OWRELROOT>/instlic.txt
 
 [ BLOCK . . ]
 #============
