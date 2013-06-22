@@ -28,7 +28,7 @@ commonui        - GUI common dialogs library
 comp_cfg        - compiler config
 cpp             - C-style preprocessor
 cpplib          - C++ class library
-ctest           - C compiler regression tests
+ctest           - C compiler testing
 cvpack          - CodeView debug info packing utility
 dig             - used by debugger
 dip             - used by debugger
@@ -41,6 +41,7 @@ f77             - fortran 77 compiler
                     f77lib          - F77 run-time library
                     wfc             - F77 Compiler
                     wfl             - F77 Compile and link utility
+f77test         - FORTRAN 77 compiler testing
 fe_misc         - misc. compiler front end stuff
 fileext         - Rationale for adding new extentions to Open Watcom
 fpuemu          - FPU emulator libraries
@@ -59,8 +60,8 @@ mathlib         - math library
 misc            - real-mode compiler and tool stubs
 mstools         - microsoft clone tools ( cl, link, rc, etc. )
 ncurses         - Linux curses stub for vi and wv projects
-ndisasm         - "new" disassembler
-nwlib           - "new" WLIB librarian
+ndisasm         - disassembler
+nwlib           - WLIB librarian
 omftools        - OMF manipulation tools
 online          - online help files
 orl             - object reading library
