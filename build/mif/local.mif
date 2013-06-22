@@ -138,7 +138,7 @@ bld_cppflags = $(common_cppflags_linux) $(common_cppflags_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
-bld_cxxflags =
+bld_cxxflags = -std=c++11
 
 # options for linking
 bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map -lstdc++
@@ -167,7 +167,7 @@ cppflags_ppc   = $(common_cppflags_ppc)
 cppflags_mips  = $(common_cppflags_mips)
 cppflags_x64   = $(common_cppflags_x64)
 
-cxxflags =
+cxxflags = -std=c++11
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
 cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -o $@
