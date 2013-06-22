@@ -84,7 +84,7 @@ extern  hw_reg_set      CalcSegment( sym_handle sym, cg_class class ) {
         attr = EMPTY;
     }
     id = AskSegID( sym, class );
-    reg = FEAuxInfo( (pointer)id, PEGGED_REGISTER );
+    reg = FEAuxInfo( (pointer)(pointer_int)id, PEGGED_REGISTER );
     if( reg != NULL && !HW_CEqual( *reg, HW_EMPTY ) ) {
         if( HW_COvlap( *reg, HW_SEGS ) )
             return( *reg );

@@ -178,26 +178,25 @@ uint_16 RTFparser::closeBraces()
 int RTFparser::isParCommand()
 {
     int result=0;
-    if( _input->look(1)->_type == TOK_COMMAND ){
-    int com_num = FindCommand( _input->look(1)->_text );
-    switch( FindCommand( _input->look(1)->_text ) ){
-    case RC_BOX:
-    case RC_FI:
-    case RC_LI:
-    case RC_KEEP:
-    case RC_KEEPN:
-    case RC_PARD:
-    case RC_RI:
-    case RC_QC:
-    case RC_QJ:
-    case RC_QL:
-    case RC_QR:
-    case RC_SA:
-    case RC_SB:
-    case RC_SL:
-    case RC_TX:
-        result = 1;
-    }
+    if( _input->look(1)->_type == TOK_COMMAND ) {
+        switch( FindCommand( _input->look(1)->_text ) ) {
+        case RC_BOX:
+        case RC_FI:
+        case RC_LI:
+        case RC_KEEP:
+        case RC_KEEPN:
+        case RC_PARD:
+        case RC_RI:
+        case RC_QC:
+        case RC_QJ:
+        case RC_QL:
+        case RC_QR:
+        case RC_SA:
+        case RC_SB:
+        case RC_SL:
+        case RC_TX:
+            result = 1;
+        }
     }
     return result;
 }
@@ -213,60 +212,56 @@ int RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
     int num = FindCommand( tok->_text );
 
     // First check for a command which 'toggles' a font attribute.
-    switch( num ){
+    switch( num ) {
     case RC_B:
     case RC_I:
     case RC_SCAPS:
     case RC_STRIKE:
     case RC_UL:
     case RC_ULDB:
-    uint_8  style;
-    switch( num ){
-    case RC_B: style = FNT_BOLD; break;
-    case RC_I: style = FNT_ITALICS; break;
-    case RC_SCAPS: style = FNT_SMALL_CAPS; break;
-    case RC_STRIKE: style = FNT_STRIKEOUT; break;
-    case RC_UL: style = FNT_UNDERLINE; break;
-    case RC_ULDB: style = FNT_DBL_UNDER; break;
-    }
-    if( !tok->_hasValue || tok->_value != 0 ){
-        *newfont = _fontFile->setAttribs( style );
-    } else {
-        *newfont = _fontFile->clearAttribs( style );
-    }
-    result = 1;
-    break;
+        uint_8  style;
+        switch( num ){
+        case RC_B: style = FNT_BOLD; break;
+        case RC_I: style = FNT_ITALICS; break;
+        case RC_SCAPS: style = FNT_SMALL_CAPS; break;
+        case RC_STRIKE: style = FNT_STRIKEOUT; break;
+        case RC_UL: style = FNT_UNDERLINE; break;
+        case RC_ULDB: style = FNT_DBL_UNDER; break;
+        }
+        if( !tok->_hasValue || tok->_value != 0 ) {
+            *newfont = _fontFile->setAttribs( style );
+        } else {
+            *newfont = _fontFile->clearAttribs( style );
+        }
+        result = 1;
+        break;
 
     default:
-
-    // Now check for commands which change the base font.
-    switch( num ){
+        // Now check for commands which change the base font.
+        switch( num ){
         case RC_F:
-        if( tok->_hasValue ){
-        *newfont = _fontFile->selectFont( (short) tok->_value,
-                                           tok->_lineNum,
-                           _input->file()->name() );
-        result = 1;
-        } else {
-        HCWarning( FONT_NONUM, tok->_lineNum, _fname );
-        _wereWarnings = 1;
-        tok->_type = TOK_NONE;
-        result = 0;
-        }
-        break;
+            if( tok->_hasValue ) {
+                *newfont = _fontFile->selectFont( (short) tok->_value, tok->_lineNum, _input->file()->name() );
+                result = 1;
+            } else {
+                HCWarning( FONT_NONUM, tok->_lineNum, _fname );
+                _wereWarnings = 1;
+                tok->_type = TOK_NONE;
+                result = 0;
+            }
+            break;
 
         case RC_FS:
-        if( tok->_hasValue ){
-        *newfont = _fontFile->newSize( (uint_8) (tok->_value) );
-        result = 1;
-        } else {
-        HCWarning( RTF_NOARG, (const char *) tok->_text,
-                   tok->_lineNum, _fname );
-        _wereWarnings = 1;
-        tok->_type = TOK_NONE;
-        result = 0;
-        }
-        break;
+            if( tok->_hasValue ) {
+                *newfont = _fontFile->newSize( (uint_8)(tok->_value) );
+                result = 1;
+            } else {
+                HCWarning( RTF_NOARG, (const char *)tok->_text, tok->_lineNum, _fname );
+                _wereWarnings = 1;
+                tok->_type = TOK_NONE;
+                result = 0;
+            }
+            break;
 
         uint_8  pos;
         case RC_UP:
@@ -290,13 +285,15 @@ int RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
             break;
 
         case RC_PLAIN:
-        *newfont = _fontFile->clearAttribs( 0xFF );
-        result = 1;
-        break;
+            *newfont = _fontFile->clearAttribs( 0xFF );
+            result = 1;
+            break;
 
         default:
-        result = 0;
-    }
+            result = 0;
+            break;
+        }
+        break;
     }
     return result;
 }
@@ -315,27 +312,26 @@ void RTFparser::handleCommand()
 
     // Certain commands may necessitate a new node in the |TOPIC file.
     if( _writeState == HEADER ){
-    switch( com_num ){
-    case RC_LINE:
-    case RC_PAR:
-    case RC_SECT:
-    case RC_TAB:
-    case RC_V:
-        _writeState = SCROLL;
-        _topFile->newNode(0);
-        _topFile->addAttr( TOP_FONT_CHANGE, _curFont );
-        _topFile->startScroll();
-    }
+        switch( com_num ) {
+        case RC_LINE:
+        case RC_PAR:
+        case RC_SECT:
+        case RC_TAB:
+        case RC_V:
+            _writeState = SCROLL;
+            _topFile->newNode(0);
+            _topFile->addAttr( TOP_FONT_CHANGE, _curFont );
+            _topFile->startScroll();
+        }
     }
 
-    switch( com_num ){
+    switch( com_num ) {
     // Sections to skip 'cos they're unused in .HLP files.
     case RC_COLORTBL:   // actually, I should support this one.
     case RC_INFO:
     case RC_STYLESHEET:
-    skipSection();
-    break;
-
+        skipSection();
+        break;
 
     // Commands to ignore 'cos they're meaningless in .HLP files.
     case RC_ENDNHERE:
@@ -343,256 +339,225 @@ void RTFparser::handleCommand()
     case RC_LINEX:
     case RC_SECTD:
     case RC_ULW:
-    // do nothing
-    break;
-
+        // do nothing
+        break;
 
     case RC_BOX:    // The "Boxed paragraph" command
-    _topFile->setPar( TOP_BORDER, 0x1 );
-    break;
-
+        _topFile->setPar( TOP_BORDER, 0x1 );
+        break;
 
     case RC_DEFF:   // The "Set Default Font" command
-    if( !_current->_hasValue ){
-        HCWarning( RTF_NOARG, (const char *) _current->_text,
+        if( !_current->_hasValue ){
+            HCWarning( RTF_NOARG, (const char *) _current->_text,
                    _current->_lineNum, _fname );
-        _wereWarnings = 1;
-    } else {
-        _defFont = (uint_16) _current->_value;
-    }
-    break;
-
+            _wereWarnings = 1;
+        } else {
+            _defFont = (uint_16) _current->_value;
+        }
+        break;
 
     case RC_FI: // The "First Line Indent" command
-    if( !_current->_hasValue ){
-        HCWarning( RTF_NOARG, (const char *) _current->_text,
+        if( !_current->_hasValue ){
+            HCWarning( RTF_NOARG, (const char *) _current->_text,
                    _current->_lineNum, _fname );
-        _wereWarnings = 1;
-    } else {
-        if( !_topFile->setPar( TOP_FIRST_INDENT, _current->_value ) ){
-        HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-        _wereWarnings = 1;
+            _wereWarnings = 1;
+        } else {
+            if( !_topFile->setPar( TOP_FIRST_INDENT, _current->_value ) ){
+                HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
+                _wereWarnings = 1;
+            }
         }
-    }
-    break;
-
+        break;
 
     case RC_FONTTBL: // The "Font Table" command
-    if( !_current->_hasValue || _current->_value != 0 ){
-        handleFonts();
-    }
-    break;
-
+        if( !_current->_hasValue || _current->_value != 0 ){
+            handleFonts();
+        }
+        break;
 
     case RC_KEEP:   // The "No LineWrap" command
-    _topFile->setPar( TOP_NO_LINE_WRAP );
-    break;
-
+        _topFile->setPar( TOP_NO_LINE_WRAP );
+        break;
 
     case RC_KEEPN:  // The "Start Non-scroll Area" command.
-    if( _writeState == HEADER ){
-        _topFile->newNode(0);
-        _topFile->addAttr( TOP_FONT_CHANGE, _curFont );
-        _topFile->startNonScroll();
-        _writeState = NON_SCROLL;
-    } else if( _writeState == SCROLL ){
-        HCWarning( RTF_LATEKEEPN, _current->_lineNum, _fname );
-        _wereWarnings = 1;
-    }
-    break;
-
+        if( _writeState == HEADER ){
+            _topFile->newNode(0);
+            _topFile->addAttr( TOP_FONT_CHANGE, _curFont );
+            _topFile->startNonScroll();
+            _writeState = NON_SCROLL;
+        } else if( _writeState == SCROLL ){
+            HCWarning( RTF_LATEKEEPN, _current->_lineNum, _fname );
+            _wereWarnings = 1;
+        }
+        break;
 
     case RC_LI: // The "Left Indent" command.
-    if( !_current->_hasValue ){
-        HCWarning( RTF_NOARG, (const char *) _current->_text,
+        if( !_current->_hasValue ){
+            HCWarning( RTF_NOARG, (const char *) _current->_text,
                        _current->_lineNum, _fname );
-        _wereWarnings = 1;
-    } else {
-        if( !_topFile->setPar( TOP_LEFT_INDENT, _current->_value ) ){
-        HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-        _wereWarnings = 1;
+            _wereWarnings = 1;
+        } else {
+            if( !_topFile->setPar( TOP_LEFT_INDENT, _current->_value ) ){
+                HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
+                _wereWarnings = 1;
+            }
         }
-    }
-    break;
-
+        break;
 
     case RC_LINE:   // The "Explicit New-Line".
-    _topFile->addAttr( TOP_NEW_LINE );
-    break;
-
+        _topFile->addAttr( TOP_NEW_LINE );
+        break;
 
     case RC_PAGE:   // The "Hard Page".
-    // \page ALWAYS signals a new topic.
-    HCTick();
-    _topFile->newNode( 1 );
-    _topFile->clearPar();
-    _curFont = _fontFile->clearAttribs( 0xFF );
-    _writeState = HEADER;
-    break;
-
+        // \page ALWAYS signals a new topic.
+        HCTick();
+        _topFile->newNode( 1 );
+        _topFile->clearPar();
+        _curFont = _fontFile->clearAttribs( 0xFF );
+        _writeState = HEADER;
+        break;
 
     case RC_PAR:        // "Paragraph return".
     case RC_SECT:       // deliberate fall-through
-    _topFile->addAttr( TOP_NEW_PAR );
-    _lastFont = _fontFile->clearAttribs( 0xFF );
-    temp_font = closeBraces();
+        _topFile->addAttr( TOP_NEW_PAR );
+        _lastFont = _fontFile->clearAttribs( 0xFF );
+        temp_font = closeBraces();
 
-    // These commands signal a new topic if the next token is
-    // a paragraph command, or if the current topic has grown
-    // too large for comfort.
+        // These commands signal a new topic if the next token is
+        // a paragraph command, or if the current topic has grown
+        // too large for comfort.
 
-    is_new_topic = _topFile->presentSize() >= TOPIC_LIMIT || isParCommand();
-    if( is_new_topic || _curFont != temp_font ){
-        if( is_new_topic ){
-        _topFile->newNode(0);
+        is_new_topic = _topFile->presentSize() >= TOPIC_LIMIT || isParCommand();
+        if( is_new_topic || _curFont != temp_font ){
+            if( is_new_topic ){
+                _topFile->newNode(0);
+            }
+            _curFont = temp_font;
+            int attr = _topFile->addAttr( TOP_FONT_CHANGE, _curFont );
+            attribs = _fontFile->getAttribs( _curFont );
+            if( attribs & ( FNT_UNDERLINE | FNT_STRIKEOUT | FNT_DBL_UNDER ) ){
+                _hotlinkStart = attr;
+            }
         }
-        _curFont = temp_font;
-        int attr = _topFile->addAttr( TOP_FONT_CHANGE, _curFont );
-        attribs = _fontFile->getAttribs( _curFont );
-        if( attribs & ( FNT_UNDERLINE | FNT_STRIKEOUT |
-        FNT_DBL_UNDER ) ){
-        _hotlinkStart = attr;
-        }
-    }
-    break;
-
+        break;
 
     case RC_PARD:   // "Set Paragraph Properties to Default"
-    _topFile->clearPar();
-    if( _writeState == NON_SCROLL ){
-        _topFile->startScroll();
-        _writeState = SCROLL;
-    }
-    _tabType = TAB_LEFT;
-    break;
-
+        _topFile->clearPar();
+        if( _writeState == NON_SCROLL ){
+            _topFile->startScroll();
+            _writeState = SCROLL;
+        }
+        _tabType = TAB_LEFT;
+        break;
 
     case RC_QC: // Centre Justification
-    _topFile->unsetPar( TOP_RIGHT_JUST );
-    _topFile->setPar( TOP_CENTRE_JUST );
-    break;
-
+        _topFile->unsetPar( TOP_RIGHT_JUST );
+        _topFile->setPar( TOP_CENTRE_JUST );
+        break;
 
     case RC_QJ: // Normal justification
     case RC_QL: // deliberate fall-through
-    _topFile->unsetPar( TOP_RIGHT_JUST );
-    _topFile->unsetPar( TOP_CENTRE_JUST );
-    break;
-
+        _topFile->unsetPar( TOP_RIGHT_JUST );
+        _topFile->unsetPar( TOP_CENTRE_JUST );
+        break;
 
     case RC_QR: // Right Justification
-    _topFile->unsetPar( TOP_CENTRE_JUST );
-    _topFile->setPar( TOP_RIGHT_JUST );
-    break;
-
+        _topFile->unsetPar( TOP_CENTRE_JUST );
+        _topFile->setPar( TOP_RIGHT_JUST );
+        break;
 
     case RC_RI: // The "Right Indent" command.
-    if( !_current->_hasValue ){
-        HCWarning( RTF_NOARG, (const char *) _current->_text,
-                   _current->_lineNum, _fname );
-        _wereWarnings = 1;
-    } else {
-        if( !_topFile->setPar( TOP_RIGHT_INDENT, _current->_value ) ){
-        HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-        _wereWarnings = 1;
+        if( !_current->_hasValue ){
+            HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
+            _wereWarnings = 1;
+        } else {
+            if( !_topFile->setPar( TOP_RIGHT_INDENT, _current->_value ) ){
+                HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
+                _wereWarnings = 1;
+            }
         }
-    }
-    break;
-
+        break;
 
     case RC_SA: // The "Space After Paragraph" command.
-    if( !_current->_hasValue ){
-        HCWarning( RTF_NOARG, (const char *) _current->_text,
-                   _current->_lineNum, _fname );
-        _wereWarnings = 1;
-    } else {
-        if( !_topFile->setPar( TOP_SPACE_AFTER, _current->_value ) ){
-        HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-        _wereWarnings = 1;
+        if( !_current->_hasValue ){
+            HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
+            _wereWarnings = 1;
+        } else {
+            if( !_topFile->setPar( TOP_SPACE_AFTER, _current->_value ) ){
+                HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
+                _wereWarnings = 1;
+            }
         }
-    }
-    break;
-
+        break;
 
     case RC_SB: // The "Space Before Paragraph" command.
-    if( !_current->_hasValue ){
-        HCWarning( RTF_NOARG, (const char *) _current->_text,
-                   _current->_lineNum, _fname );
-        _wereWarnings = 1;
-    } else {
-        if( !_topFile->setPar( TOP_SPACE_BEFORE, _current->_value ) ){
-        HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-        _wereWarnings = 1;
+        if( !_current->_hasValue ){
+            HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
+            _wereWarnings = 1;
+        } else {
+            if( !_topFile->setPar( TOP_SPACE_BEFORE, _current->_value ) ){
+                HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
+                _wereWarnings = 1;
+            }
         }
-    }
-    break;
-
+        break;
 
     case RC_SL: // "Line Spacing".
-    if( !_current->_hasValue ){
-        HCWarning( RTF_NOARG, (const char *) _current->_text,
-                   _current->_lineNum, _fname );
-        _wereWarnings = 1;
-    } else {
-        if( !_topFile->setPar( TOP_LINE_SPACE, _current->_value ) ){
-        HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
-        _wereWarnings = 1;
+        if( !_current->_hasValue ){
+            HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
+            _wereWarnings = 1;
+        } else {
+            if( !_topFile->setPar( TOP_LINE_SPACE, _current->_value ) ){
+                HCWarning( TOP_BADARG, _current->_value, _current->_lineNum, _fname );
+                _wereWarnings = 1;
+            }
         }
-    }
-    break;
-
+        break;
 
     case RC_TAB:    // The "Tab" command. (Well, DUH! :-)
-    _topFile->addAttr( TOP_HTAB );
-    break;
-
+        _topFile->addAttr( TOP_HTAB );
+        break;
 
     case RC_TQC:    // "Center tab"
-    _tabType = TAB_CENTER;
-    break;
-
+        _tabType = TAB_CENTER;
+        break;
 
     case RC_TQR:
-    _tabType = TAB_RIGHT;
-    break;
-
+        _tabType = TAB_RIGHT;
+        break;
 
     case RC_TX: // "Set Tab Stop"
-    if( !_current->_hasValue ){
-        HCWarning( RTF_NOARG, (const char *) _current->_text,
-                   _current->_lineNum, _fname );
-        _wereWarnings = 1;
-    } else {
-        if( !_topFile->setTab( _current->_value, _tabType ) ){
-        HCWarning( TOP_BADTAB, _current->_value, _current->_lineNum, _fname );
-        _wereWarnings = 1;
+        if( !_current->_hasValue ){
+            HCWarning( RTF_NOARG, (const char *)_current->_text, _current->_lineNum, _fname );
+            _wereWarnings = 1;
         } else {
-        _tabType = TAB_LEFT;
+            if( !_topFile->setTab( _current->_value, _tabType ) ){
+                HCWarning( TOP_BADTAB, _current->_value, _current->_lineNum, _fname );
+                _wereWarnings = 1;
+            } else {
+                _tabType = TAB_LEFT;
+            }
         }
-    }
-    break;
-
+        break;
 
     case RC_V:  // "Start/Stop Hidden Text".
-    if( !_current->_hasValue || _current->_value == 0 ){
-        attribs = _fontFile->getAttribs( _curFont );
-        if( attribs & FNT_UNDERLINE ){
-        _linkType = POPUP;
-        handleHidden(1);
-        } else if( attribs & (FNT_STRIKEOUT | FNT_DBL_UNDER ) ){
-        _linkType = JUMP;
-        handleHidden(1);
-        } else {
-        handleHidden(0);
+        if( !_current->_hasValue || _current->_value == 0 ){
+            attribs = _fontFile->getAttribs( _curFont );
+            if( attribs & FNT_UNDERLINE ){
+                _linkType = POPUP;
+                handleHidden(1);
+            } else if( attribs & (FNT_STRIKEOUT | FNT_DBL_UNDER ) ){
+                _linkType = JUMP;
+                handleHidden(1);
+            } else {
+                handleHidden(0);
+            }
         }
-    }
-    break;
-
+        break;
 
     default:
-    HCWarning( RTF_UNKNOWN, (const char *) _current->_text,
-               _current->_lineNum, _fname );
-    _wereWarnings = 1;
+        HCWarning( RTF_UNKNOWN, (const char *)_current->_text, _current->_lineNum, _fname );
+        _wereWarnings = 1;
     }
 }
 

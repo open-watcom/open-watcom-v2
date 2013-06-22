@@ -401,14 +401,14 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
 
     sym = AskForLblSym( lbl );
     if( AskIfRTLabel( lbl ) ) {
-        OutRTImport( (rt_class)(int)sym, f );
+        OutRTImport( (rt_class)(pointer_int)sym, f );
         if( class & ATTR_FAR ) {
             _OutFarD( 0, 0 );
         } else {
             _OutFarOff( 0 );
         }
     } else if( AskIfCommonLabel( lbl ) ) {
-        OutSpecialCommon( (import_handle)sym, f, rel );
+        OutSpecialCommon( (import_handle)(pointer_int)sym, f, rel );
         _OutFarOff( 0 );
     } else if( sym != NULL && UseImportForm( FEAttr( sym ) ) ) { /* 90-05-22 */
         OutImport( sym, f, rel );
@@ -513,11 +513,11 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
             lbl = *(pointer *)cur;
             cur += sizeof( pointer );
             if( AskIfRTLabel( lbl ) ) {
-                OutRTImportRel( (rt_class)(int)AskForLblSym( lbl ), F_OFFSET, FALSE );
+                OutRTImportRel( (rt_class)(pointer_int)AskForLblSym( lbl ), F_OFFSET, FALSE );
                 val = 0;
             } else {
                 if( AskIfCommonLabel( lbl ) ) {
-                    OutSpecialCommon( (import_handle)AskForLblSym( lbl ), class, rel );
+                    OutSpecialCommon( (import_handle)(pointer_int)AskForLblSym( lbl ), class, rel );
                 } else {
                     OutReloc( seg, class, rel );
                 }
@@ -621,10 +621,10 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
         lbl = oc->oc_handle.handle;
         sym = AskForLblSym( lbl );
         if( AskIfRTLabel( lbl ) ) {
-            OutRTImport( (rt_class)(int)sym, F_OFFSET );
+            OutRTImport( (rt_class)(pointer_int)sym, F_OFFSET );
             lc = 0;
         } else if( AskIfCommonLabel( lbl ) ) {
-            OutSpecialCommon( (import_handle)sym, F_OFFSET, FALSE );
+            OutSpecialCommon( (import_handle)(pointer_int)sym, F_OFFSET, FALSE );
             lc = 0;
         } else if( sym != NULL && UseImportForm( FEAttr( sym ) ) ) {
             OutImport( sym, F_OFFSET, FALSE );

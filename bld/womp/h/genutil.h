@@ -36,7 +36,7 @@
 #include "wpmsg.h"
 
 #define WRN 0x8000
-#ifndef __AXP__
+#if defined( __WATCOMC__ ) && !defined( __AXP__ )
 #pragma aux Fatal aborts;
 #endif
 extern void Fatal( unsigned msg, ... );

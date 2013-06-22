@@ -288,7 +288,7 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
             /* FIXME: not sure what to do here */
             if( op->c.value != NULL ) {
                 info->symbol.p = &HighAddrSymbol;
-                info->offset = (signed_32)op->c.value;
+                info->offset = (signed_32)(pointer_int)op->c.value;
             } else {
                 info->symbol.p = &HighAddrConst;
                 info->offset = (signed_32)op->c.int_value;

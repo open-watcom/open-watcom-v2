@@ -240,8 +240,8 @@ public:
 //  PTable::PTable  --Constructor.
 
 PTable::PTable()
-    : _maxSize( PTBL_SIZE ),
-      _size( 0 ),
+    : _size( 0 ),
+      _maxSize( PTBL_SIZE ),
       _iterPos( -1 )
 {
     _edges = new Pool( sizeof(Edge) );
@@ -587,17 +587,16 @@ void PTable::prune()
 
 //  HFPhrases::HFPhrases()  --Default constructor.
 
-HFPhrases::HFPhrases( HFSDirectory * d_file, InFile* (*firstf)(),
-                      InFile* (*nextf)() )
-    : _firstf( firstf ),
-      _nextf( nextf ),
-      _oldPtable( NULL ),
+HFPhrases::HFPhrases( HFSDirectory * d_file, InFile* (*firstf)(), InFile* (*nextf)() )
+    : _oldPtable( NULL ),
       _newPtable( NULL ),
       _result( NULL ),
       _htable( NULL ),
-      _scanner( NULL ),
+      _numPhrases( 0 ),
       _size( 0 ),
-      _numPhrases( 0 )
+      _nextf( nextf ),
+      _firstf( firstf ),
+      _scanner( NULL )
 {
     d_file->addFile( this, "|Phrases" );
 }
@@ -1049,7 +1048,7 @@ int HFPhrases::oldTable( char const *path )
 
     Phrase  current;
     int     ptable_size = PTBL_SIZE;
-    int     done = 0;
+//    int     done = 0;
     int     c = '\0';
     int     totalsize;  // Size of the phrase data loaded.
 

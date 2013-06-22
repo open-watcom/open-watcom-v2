@@ -48,7 +48,7 @@ WEXPORT WMenuItem::WMenuItem( const char *text, WObject* obj, cbm pick,
 
     setText( text );
     setMenuId( WWindow::_idMaster++ );
-    WWindow::_idMap.setThis( this, (WHANDLE)menuId() );
+    WWindow::_idMap.setThis( this, (WHANDLE)(pointer_int)menuId() );
 }
 
 

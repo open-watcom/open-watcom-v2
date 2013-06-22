@@ -632,7 +632,7 @@ static VOIDPTR NextLibrary( int index, aux_class request )
     if( request == LIBRARY_NAME || name == NULL )
         return( name );
     /* library index */
-    return( (VOIDPTR)index );
+    return( (VOIDPTR)(pointer_int)index );
 }
 
 //    NextAlias
@@ -688,7 +688,7 @@ static VOIDPTR NextAlias( int index, aux_class request )
     } else if( request == ALIAS_SUBST_SYMBOL ) {
         return( (VOIDPTR)subst_sym );
     } else {    // this had better be a NEXT_ALIAS request
-        return( (VOIDPTR)index );
+        return( (VOIDPTR)(pointer_int)index );
     }
 }
 
@@ -794,7 +794,7 @@ char *FEExtName( CGSYM_HANDLE sym_handle, int request )
     case EXTN_PATTERN:
         return( GetNamePattern( sym_handle ) );
     case EXTN_PRMSIZE:
-        return( (char *)GetParmsSize( sym_handle ) );
+        return( (char *)(pointer_int)GetParmsSize( sym_handle ) );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );
@@ -1003,7 +1003,7 @@ static VOIDPTR NextImport( int index, aux_class request )
     if( request == IMPORT_NAME || name == NULL )
         return( name );
     /* return the index */
-    return( (char *)index );
+    return( (char *)(pointer_int)index );
 }
 
 static VOIDPTR NextImportS( int index, aux_class request )
@@ -1034,7 +1034,7 @@ static VOIDPTR NextImportS( int index, aux_class request )
     if( request == IMPORT_NAME_S || symbol == NULL )
         return( symbol );
     /* return the index */
-    return( (char *)index );
+    return( (char *)(pointer_int)index );
 }
 
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
@@ -1057,7 +1057,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     case SOURCE_LANGUAGE:
         return( "C" );
     case STACK_SIZE_8087:
-        return( (VOIDPTR)(unsigned)Stack87 );
+        return( (VOIDPTR)(pointer_int)Stack87 );
     case CODE_GROUP:
         return( (VOIDPTR)GenCodeGroup );
     case DATA_GROUP:
@@ -1069,7 +1069,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     case AUX_LOOKUP:
         return( (VOIDPTR)sym_handle );
     case PROEPI_DATA_SIZE:
-        return( (VOIDPTR)ProEpiDataSize );
+        return( (VOIDPTR)(pointer_int)ProEpiDataSize );
     case DBG_PREDEF_SYM:
         return( (VOIDPTR)SymDFAbbr );
     case P5_CHIP_BUG_SYM:
@@ -1084,7 +1084,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
             return( Alignment );
         }
     case CLASS_NAME:
-        return( SegClassName( (unsigned)sym_handle ) );
+        return( SegClassName( (pointer_int)sym_handle ) );
     case USED_8087:
         CompFlags.pgm_used_8087 = 1;
         return( NULL );
@@ -1092,7 +1092,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     case P5_PROF_DATA:
         return( (VOIDPTR)FunctionProfileBlock );
     case P5_PROF_SEG:
-        return( (VOIDPTR)FunctionProfileSegment );
+        return( (VOIDPTR)(pointer_int)FunctionProfileSegment );
   #endif
     case SOURCE_NAME:
         if( SrcFName == ModuleName ) {
@@ -1111,33 +1111,33 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
         return( NULL );
     case NEXT_LIBRARY:
     case LIBRARY_NAME:
-        return( NextLibrary( (int)sym_handle, request ) );
+        return( NextLibrary( (pointer_int)sym_handle, request ) );
     case NEXT_IMPORT:
     case IMPORT_NAME:
-        return( NextImport( (int)sym_handle, request ) );
+        return( NextImport( (pointer_int)sym_handle, request ) );
     case NEXT_IMPORT_S:
     case IMPORT_NAME_S:
-        return( NextImportS( (int)sym_handle, request ) );
+        return( NextImportS( (pointer_int)sym_handle, request ) );
     case NEXT_ALIAS:
     case ALIAS_NAME:
     case ALIAS_SYMBOL:
     case ALIAS_SUBST_NAME:
     case ALIAS_SUBST_SYMBOL:
-        return( NextAlias( (int)sym_handle, request ) );
+        return( NextAlias( (pointer_int)sym_handle, request ) );
     case TEMP_LOC_NAME:
         return( (char *)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL:
         return( NULL );
     case NEXT_DEPENDENCY:                               /* 03-dec-92 */
         if( CompFlags.emit_dependencies )
-            return( NextDependency( (FNAMEPTR) cgsym_handle ) );
+            return( NextDependency( (FNAMEPTR)cgsym_handle ) );
         return( NULL );
     case DEPENDENCY_TIMESTAMP:
-        return( getFileDepTimeStamp( (FNAMEPTR) cgsym_handle ) );
+        return( getFileDepTimeStamp( (FNAMEPTR)cgsym_handle ) );
     case DEPENDENCY_NAME:
-        return( FNameFullPath( (FNAMEPTR) cgsym_handle ) );
+        return( FNameFullPath( (FNAMEPTR)cgsym_handle ) );
     case PEGGED_REGISTER:
-        return( SegPeggedReg( (unsigned)cgsym_handle ) );
+        return( SegPeggedReg( (pointer_int)cgsym_handle ) );
     default:
         break;
     }

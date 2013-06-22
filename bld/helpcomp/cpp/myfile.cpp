@@ -69,11 +69,11 @@ File::File( char const filename[], uint_8 type )
 }
 
 File::File()
-    : _shortName( NULL ),
+    : _flags( 0 ),
       _fp( NULL ),
       _badFile( 1 ),
-      _flags( 0 ),
-      _fullName( NULL )
+      _fullName( NULL ),
+      _shortName( NULL )
 {
     // empty
 }

@@ -1189,7 +1189,7 @@ static void saveRewrite( void *e, carve_walk_base *d )
     PCHWriteCVIndex( d->index );
     PCHWriteVar( *s );
     for( h = s->srcfiles_refd; h != NULL; h = h->next ) {
-        PCHWriteCVIndex( (cv_index)SrcFileGetIndex( h->srcfile ) );
+        PCHWriteCVIndex( (cv_index)(pointer_int)SrcFileGetIndex( h->srcfile ) );
     }
     PCHWriteCVIndexTerm();
     s->list = save_list;
@@ -1247,7 +1247,7 @@ pch_status PCHReadRewrites( void )
         r->stream = _TokenPosMapIndex( r );  // must be last
         r->srcfiles_refd = NULL;
         for( ; (i = PCHReadCVIndex()) != CARVE_NULL_INDEX; ) {
-            newSrcFileHandle( r, SrcFileMapIndex( (SRCFILE)i ) );
+            newSrcFileHandle( r, SrcFileMapIndex( (SRCFILE)(pointer_int)i ) );
         }
     }
     CarveInitStart( carveREWRITE_TOKENS, &data );

@@ -63,11 +63,11 @@ int HFCtxomap::CmapRec::dump( OutFile * dest )
 //  HFCtxomap::HFCtxomap
 
 HFCtxomap::HFCtxomap( HFSDirectory *d_file, HFContext *offsets )
-    : _offsetFile( offsets ),
-      _numRecords( 0 ),
+    : _numRecords( 0 ),
       _firstRec( NULL ),
       _lastRec( NULL ),
       _size( sizeof( uint_16 ) ),   // size of _numRecords
+      _offsetFile( offsets ),
       _resolved( 0 )
 {
     d_file->addFile( this, "|CTXOMAP" );

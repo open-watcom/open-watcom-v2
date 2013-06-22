@@ -896,15 +896,15 @@ INITDEFN( front_end, cgfrontInit, cgfrontFini )
 
 pch_status PCHWriteFrontData( void )
 {
-    PCHWriteCVIndex( (cv_index)CGFileGetIndex( dataCGFILE ) );
-    PCHWriteCVIndex( (cv_index)CGFileGetIndex( codeCGFILE ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)CGFileGetIndex( dataCGFILE ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)CGFileGetIndex( codeCGFILE ) );
     return( PCHCB_OK );
 }
 
 pch_status PCHReadFrontData( void )
 {
-    dataCGFILE = CGFileMapIndex( (CGFILE *)PCHReadCVIndex() );
-    codeCGFILE = CGFileMapIndex( (CGFILE *)PCHReadCVIndex() );
+    dataCGFILE = CGFileMapIndex( (CGFILE *)(pointer_int)PCHReadCVIndex() );
+    codeCGFILE = CGFileMapIndex( (CGFILE *)(pointer_int)PCHReadCVIndex() );
     return( PCHCB_OK );
 }
 

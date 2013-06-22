@@ -608,15 +608,14 @@ extern  void    ParmIns( pn parm, call_state *state ) {
             AddIns( ins );
         } else if( !CvtOk( TypeClass(addr->tipe), reg->n.name_class ) ) {
             ins = NULL;
-            FEMessage( MSG_BAD_PARM_REGISTER, (pointer) parm->num );
+            FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)parm->num );
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         } else if( HW_CEqual( reg->r.reg, HW_ABCD ) ) {
             ins = NULL;
-            FEMessage( MSG_BAD_PARM_REGISTER, (pointer) parm->num );
+            FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)parm->num );
 #endif
         } else {
-            ins = MakeConvert( curr, reg,
-                               reg->n.name_class, TypeClass( addr->tipe ) );
+            ins = MakeConvert( curr, reg, reg->n.name_class, TypeClass( addr->tipe ) );
             AddIns( ins );
         }
 #endif
@@ -857,14 +856,14 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
                 reg_tipe  = AllocRegName( parm->regs )->n.name_class;
                 if( parm_tipe != FD || reg_tipe != U8 ) {
                     if( !CvtOk( parm_tipe, reg_tipe ) ) {
-                        FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(parms + 1));
+                        FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)( parms + 1 ) );
                     }
                 }
             }
         } else {
-        #if ( _TARGET & _TARG_PPC ) == 0
+#if ( _TARGET & _TARG_PPC ) == 0
             parm->alignment = 1;
-        #endif
+#endif
             parm->regs = ParmReg( TypeClass( parm->name->tipe ),
                                    parm->name->tipe->length,
                                    parm->alignment,
@@ -896,4 +895,3 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
     call_ins->zap = &AllocRegName( CallZap( state ) )->r;
     return( push_no_pop );
 }
-

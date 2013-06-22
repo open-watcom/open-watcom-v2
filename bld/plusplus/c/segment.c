@@ -1412,7 +1412,7 @@ pch_status PCHReadSegments( void )
         RingAppend( &seg_list, curr );
     }
     RingIterBeg( seg_list, curr ) {
-        sib_id = (fe_seg_id) curr->sibling;
+        sib_id = (fe_seg_id)(pointer_int)curr->sibling;
         if( sib_id != curr->seg_id ) {
             curr->sibling = segIdLookup( sib_id );
         } else {
@@ -1444,7 +1444,7 @@ pch_status PCHWriteSegments( void )
             class_name_len = strlen( curr->class_name ) + 1;
         }
         save_sibling = curr->sibling;
-        curr->sibling = (PC_SEGMENT *)save_sibling->seg_id;
+        curr->sibling = (PC_SEGMENT *)(pointer_int)save_sibling->seg_id;
         save_label = curr->label;
         curr->label = SymbolGetIndex( save_label );
         save_class_name = curr->class_name;

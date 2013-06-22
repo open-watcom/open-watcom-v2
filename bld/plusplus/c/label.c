@@ -1033,7 +1033,7 @@ void LabelPCHWrite( LAB_MEM *p )
     auto carve_walk_base data;
 
     PCHWriteCVIndex( CarveLastValidIndex( p->carve ) );
-    PCHWriteCVIndex( (cv_index)CarveGetIndex( p->carve, p->blk_hdr ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)CarveGetIndex( p->carve, p->blk_hdr ) );
     data.extra = p->carve;
     CarveWalkAllFree( p->carve, markFreeBLK_INIT );
     CarveWalkAll( p->carve, saveBLK_INIT, &data );
@@ -1047,7 +1047,7 @@ void LabelPCHRead( LAB_MEM *p )
 
     p->carve = CarveRestart( p->carve );
     CarveMapOptimize( p->carve, PCHReadCVIndex() );
-    p->blk_hdr = CarveMapIndex( p->carve, (void *)PCHReadCVIndex() );
+    p->blk_hdr = CarveMapIndex( p->carve, (void *)(pointer_int)PCHReadCVIndex() );
     CarveInitStart( p->carve, &data );
     for( ; (b = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *b );

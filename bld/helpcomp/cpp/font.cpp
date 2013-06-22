@@ -40,11 +40,11 @@
 //  FontName::FontName
 
 FontName::FontName( char const fontname[], short num1, uint_16 num2, uint_8 fam )
-    : _userNum( num1 ),
+    : _nextName( NULL ),
+      _prevName( NULL ),
+      _userNum( num1 ),
       _sysNum( num2 ),
-      _family( fam ),
-      _nextName( NULL ),
-      _prevName( NULL )
+      _family( fam )
 {
     _name = new char[FONT_NAME_LEN];
     strncpy( _name, fontname, FONT_NAME_LEN );
@@ -127,8 +127,8 @@ int FontDesc::dump( OutFile * dest )
 //  HFFont::HFFont
 
 HFFont::HFFont( HFSDirectory *d_file )
-    : _head( NULL ),
-      _defDesc( 8 ) // A garbage value, but WinHelp likes it.
+    : _defDesc( 8 ), // A garbage value, but WinHelp likes it.
+      _head( NULL )
 {
     FontDesc    *current;
 

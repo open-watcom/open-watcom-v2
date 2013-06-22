@@ -31,6 +31,7 @@
 *
 ****************************************************************************/
 
+#include <functional>
 #include <algorithm>
 #include "cell.hpp"
 #include "errors.hpp"

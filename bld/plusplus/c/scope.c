@@ -7508,7 +7508,7 @@ static void saveSymbol( void *e, carve_walk_base *d )
     }
     save_next = s->next;
     if( s == s->next ) {
-        s->next = (SYMBOL)d->index;
+        s->next = (SYMBOL)(pointer_int)d->index;
     } else {
         s->next = SymbolGetIndex( save_next );
     }
@@ -7633,13 +7633,13 @@ pch_status PCHWriteScopes( void )
     auto carve_walk_base data;
 
     PCHWriteUInt( PCHGetUInt( NameGetIndex( uniqueNameSpaceName ) ) );
-    PCHWriteCVIndex( (cv_index)NameSpaceGetIndex( allNameSpaces ) );
-    PCHWriteCVIndex( (cv_index)ScopeGetIndex( GetCurrScope() ) );
-    PCHWriteCVIndex( (cv_index)ScopeGetIndex( GetFileScope() ) );
-    PCHWriteCVIndex( (cv_index)ScopeGetIndex( GetInternalScope() ) );
-    PCHWriteCVIndex( (cv_index)SymbolGetIndex( ChipBugSym ) );
-    PCHWriteCVIndex( (cv_index)SymbolGetIndex( DFAbbrevSym ) );
-    PCHWriteCVIndex( (cv_index)SymbolGetIndex( PCHDebugSym ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)NameSpaceGetIndex( allNameSpaces ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex( GetCurrScope() ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex( GetFileScope() ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex( GetInternalScope() ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( ChipBugSym ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( DFAbbrevSym ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( PCHDebugSym ) );
     CarveWalkAllFree( carveSYM_REGION, markFreeSymRegion );
     CarveWalkAll( carveSYM_REGION, saveSymRegion, &data );
     PCHWriteCVIndexTerm();
@@ -7786,7 +7786,7 @@ static void readSymbols( void )
     for( ; (i = PCHReadCVIndex()) != CARVE_NULL_INDEX; ) {
         sym = CarveInitElement( &data, i );
         PCHReadVar( *sym );
-        if( i == (cv_index)sym->next ) {
+        if( i == (cv_index)(pointer_int)sym->next ) {
             // most symbols are not overloaded
             sym->next = sym;
         } else {
@@ -7833,13 +7833,13 @@ static void readSymbols( void )
 pch_status PCHReadScopes( void )
 {
     uniqueNameSpaceName = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
-    allNameSpaces = NameSpaceMapIndex( (NAME_SPACE *)PCHReadCVIndex() );
-    SetCurrScope(ScopeMapIndex( (SCOPE)PCHReadCVIndex() ));
-    SetFileScope(ScopeMapIndex( (SCOPE)PCHReadCVIndex() ));
-    SetInternalScope(ScopeMapIndex( (SCOPE)PCHReadCVIndex() ));
-    ChipBugSym = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
-    DFAbbrevSym = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
-    PCHDebugSym = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
+    allNameSpaces = NameSpaceMapIndex( (NAME_SPACE *)(pointer_int)PCHReadCVIndex() );
+    SetCurrScope(ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() ));
+    SetFileScope(ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() ));
+    SetInternalScope(ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() ));
+    ChipBugSym = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
+    DFAbbrevSym = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
+    PCHDebugSym = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
     readSymRegion();
     readUsingNS();
     readNameSpaces();

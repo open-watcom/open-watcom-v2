@@ -690,7 +690,7 @@ segment_id GenP5ProfileData( char *fe_name, label_handle *data, label_handle *st
 /***********************************************************************************/
 {
     seg_id          old;
-    segment_id      data_seg = (segment_id)FEAuxInfo( NULL, P5_PROF_SEG );
+    segment_id      data_seg = (pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
 
     old = SetOP( data_seg );
     TellOptimizerByPassed();
@@ -733,7 +733,7 @@ void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
     _Code;
     LayOpbyte( 0x68 );
     ILen += 4;
-    DoLblRef( *data, (segment_id)FEAuxInfo( NULL, P5_PROF_SEG ), 0, OFST);
+    DoLblRef( *data, (pointer_int)FEAuxInfo( NULL, P5_PROF_SEG ), 0, OFST);
     _Emit;
     RTCall( prolog ? RT_PROFILE_ON : RT_PROFILE_OFF, ATTR_POP );
 }
@@ -745,14 +745,14 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
     if( _IsTargetModel( NEW_P5_PROFILING ) ) {
         doProfilingCode( "", &CurrProc->targ.routine_profile_data, prolog );
     } else {
-        bck_info                *bck;
+        bck_info        *bck;
         label_handle    data_lbl;
-        segment_id              data_seg;
+        segment_id      data_seg;
 
         bck = (bck_info *)FEAuxInfo( AskForLblSym( label ), P5_PROF_DATA );
         if( bck == NULL ) return;
         data_lbl = bck->lbl;
-        data_seg = (segment_id)FEAuxInfo( NULL, P5_PROF_SEG );
+        data_seg = (pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
         TellKeepLabel( data_lbl );
         _Code;
         if( prolog ) {
@@ -959,7 +959,7 @@ void StartBlockProfiling( block *blk )
 
     if( !_IsTargetModel( NEW_P5_PROFILING ) ) return;
     if( !_IsTargetModel( STATEMENT_COUNTING ) ) return;
-    data_seg = (segment_id)FEAuxInfo( NULL, P5_PROF_SEG );
+    data_seg = (pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
     if( blk->label == NULL ) return;
     TellKeepLabel( blk->label );
     old = SetOP( data_seg );

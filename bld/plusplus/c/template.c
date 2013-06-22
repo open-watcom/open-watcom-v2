@@ -3531,11 +3531,11 @@ static void saveTemplateSpecialization( TEMPLATE_SPECIALIZATION *s, TEMPLATE_SPE
         PCHWriteUInt( PCHGetUInt( NameGetIndex( s->arg_names[i] ) ) );
     }
     for( i = 0; i < s->num_args; ++i ) {
-        PCHWriteCVIndex( (cv_index)TypeGetIndex( s->type_list[i] ) );
+        PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( s->type_list[i] ) );
     }
     RingIterBeg( s->member_defns, member ){
-        PCHWriteCVIndex( (cv_index)ScopeGetIndex( member->scope ) );
-        PCHWriteCVIndex( (cv_index)RewriteGetIndex( member->defn ) );
+        PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex( member->scope ) );
+        PCHWriteCVIndex( (cv_index)(pointer_int)RewriteGetIndex( member->defn ) );
         if( member->arg_names != s->arg_names ) {
             PCHWriteUInt( s->num_args );
             for( i = 0; i < s->num_args; ++i ) {
@@ -3600,7 +3600,7 @@ static void saveTemplateInfo( void *p, carve_walk_base *d )
     s->defarg_list = save_defarg_list;
 
     for( i = 0; i < tprimary->num_args; ++i ) {
-        PCHWriteCVIndex( (cv_index)RewriteGetIndex( s->defarg_list[i] ) );
+        PCHWriteCVIndex( (cv_index)(pointer_int)RewriteGetIndex( s->defarg_list[i] ) );
     }
 
     RingIterBeg( s->unbound_templates, unbound ) {
@@ -3739,8 +3739,8 @@ pch_status PCHWriteTemplates( void )
     auto carve_walk_base data;
 
     PCHWriteVar( templateData.max_depth );
-    PCHWriteCVIndex( (cv_index)TemplateClassInfoGetIndex( allClassTemplates ) );
-    PCHWriteCVIndex( (cv_index)TemplateFunctionInfoGetIndex( allFunctionTemplates ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)TemplateClassInfoGetIndex( allClassTemplates ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)TemplateFunctionInfoGetIndex( allFunctionTemplates ) );
     CarveWalkAllFree( carveCLASS_INST, markFreeClassInst );
     CarveWalkAll( carveCLASS_INST, saveClassInst, &data );
     PCHWriteCVIndexTerm();
@@ -3776,8 +3776,8 @@ pch_status PCHReadTemplates( void )
     auto cvinit_t data;
 
     PCHReadVar( templateData.max_depth );
-    allClassTemplates = TemplateClassInfoMapIndex( (TEMPLATE_INFO *)PCHReadCVIndex() );
-    allFunctionTemplates = TemplateFunctionInfoMapIndex( (FN_TEMPLATE *)PCHReadCVIndex() );
+    allClassTemplates = TemplateClassInfoMapIndex( (TEMPLATE_INFO *)(pointer_int)PCHReadCVIndex() );
+    allFunctionTemplates = TemplateFunctionInfoMapIndex( (FN_TEMPLATE *)(pointer_int)PCHReadCVIndex() );
 
     CarveInitStart( carveCLASS_INST, &data );
     for( ; (ci = PCHReadCVIndexElement( &data )) != NULL; ) {
@@ -3833,7 +3833,7 @@ pch_status PCHReadTemplates( void )
         defarg_list = CPermAlloc( defarg_list_size * sizeof( REWRITE * ) );
         ti->defarg_list = defarg_list;
         for( j = 0; j < defarg_list_size; ++j ) {
-            defarg_list[j] = RewriteMapIndex( (REWRITE *)PCHReadCVIndex() );
+            defarg_list[j] = RewriteMapIndex( (REWRITE *)(pointer_int)PCHReadCVIndex() );
         }
 
         cont = ( ti->unbound_templates != NULL );
@@ -3872,10 +3872,10 @@ pch_status PCHReadTemplates( void )
                 arg_names[j] = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
             }
             for( j = 0; j < ts->num_args; ++j ) {
-                type_list[j] = TypeMapIndex( (TYPE)PCHReadCVIndex() );
+                type_list[j] = TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() );
             }
-            for( ; (scope = ScopeMapIndex( (SCOPE)PCHReadCVIndex() )) != NULL; ) {
-                memb_defn = RewriteMapIndex( (REWRITE *)PCHReadCVIndex() );
+            for( ; (scope = ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() )) != NULL; ) {
+                memb_defn = RewriteMapIndex( (REWRITE *)(pointer_int)PCHReadCVIndex() );
                 j = PCHReadUInt();
                 if( j != 0 ) {
                     memb_arg_names = CPermAlloc( arg_names_size );

@@ -197,7 +197,7 @@ static void doReloc( asm_reloc *reloc, ins_operand *op, owl_reloc_type rtype, ui
     if( op == NULL ) return;
     if( !( OP_HAS_RELOC( op ) ) ) return;
     addReloc( reloc, op->reloc.target, relocType( op->reloc.type, rtype ),
-              (unsigned)offset - (unsigned)result, ( op->flags & RELOC ) );
+              (unsigned)( (char *)offset - (char *)result ), ( op->flags & RELOC ) );
 }
 
 /*
@@ -277,7 +277,7 @@ static void doAutoVar( asm_reloc *reloc, op_reloc_target targ, uint_32 *buffer, 
         Error( BAD_BASE_REG_FOR_STACKVAR );
         return;
     }
-    addReloc( reloc, targ, OWL_RELOC_FP_OFFSET, (unsigned)buffer - (unsigned)&result[ 0 ], TRUE );
+    addReloc( reloc, targ, OWL_RELOC_FP_OFFSET, (unsigned)( (char *)buffer - (char *)result ), TRUE );
     doOpcodeRaRb( buffer, table->opcode, RegIndex( ins->operands[0]->reg ),
                   FP_REG_IDX, 0 );
 }

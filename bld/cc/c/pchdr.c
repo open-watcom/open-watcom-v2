@@ -1402,7 +1402,7 @@ static char *FixupSymbols( char *p, unsigned symbol_count )
         symptr->seginfo = TextSegArray[PCHGetUInt( symptr->seginfo )];
         PCH_SymArray[handle] = symptr;
     }
-    for( handle = 0; handle < (unsigned)SpecialSyms; ++handle ) {
+    for( handle = 0; handle < (unsigned)(pointer_int)SpecialSyms; ++handle ) {
         SymGet( &sym, (SYM_HANDLE)(pointer_int)handle );  // Redo special syms
         symptr  = PCH_SymArray[handle];
         *symptr = sym;

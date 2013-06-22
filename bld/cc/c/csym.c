@@ -110,7 +110,7 @@ unsigned SymGetNumSyms( void )
 
 unsigned SymGetNumSpecialSyms( void )
 {
-    return( (unsigned)SpecialSyms );
+    return( (unsigned)(pointer_int)SpecialSyms );
 }
 
 SYM_HANDLE SymGetFirst( void )
@@ -120,10 +120,10 @@ SYM_HANDLE SymGetFirst( void )
 
 SYM_HANDLE SymGetNext( SYM_HANDLE sym_handle )
 {
-    unsigned    handle = (unsigned)sym_handle;
+    unsigned    handle = (unsigned)(pointer_int)sym_handle;
 
     if( handle < NextSymHandle )
-        return( (SYM_HANDLE)(handle + 1) );
+        return( (SYM_HANDLE)(pointer_int)( handle + 1 ) );
     else
         return( SYM_INVALID );
 }
@@ -140,7 +140,7 @@ SYM_HANDLE SegSymbol( char *name, int segment )             /* 15-mar-92 */
     SYM_HANDLE      handle;
 
     NewSym();
-    handle = (SYM_HANDLE)NextSymHandle;
+    handle = (SYM_HANDLE)(pointer_int)NextSymHandle;
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
     sym.sym_type = GetType( TYPE_USHORT );
     sym.name = name;
@@ -162,8 +162,8 @@ SYM_HANDLE SpcSymbol( char *name, int stg_class )
     sym.sym_type = GetType( TYPE_USHORT );
     sym.name = name;
     sym.stg_class = stg_class;
-    SymReplace( &sym, (SYM_HANDLE)NextSymHandle );
-    return( (SYM_HANDLE)NextSymHandle );
+    SymReplace( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
+    return( (SYM_HANDLE)(pointer_int)NextSymHandle );
 }
 
 void SpcSymInit( void )
@@ -179,19 +179,19 @@ void SpcSymInit( void )
     SymReplace( &sym, 0 );
 #ifdef __SEH__
     NewSym();                           /* 05-dec-92 */
-    TrySymHandle = (SYM_HANDLE)NextSymHandle;               /* create special _try sym */
+    TrySymHandle = (SYM_HANDLE)(pointer_int)NextSymHandle;               /* create special _try sym */
     sym.stg_class = SC_AUTO;
     sym.name = ".try";
     sym.sym_type = GetType( TYPE_VOID );
-    SymReplace( &sym, (SYM_HANDLE)NextSymHandle );
+    SymReplace( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
 #endif
     /* create special symbol for "extern unsigned int __near __chipbug" */
     NewSym();
-    SymChipBug = (SYM_HANDLE)NextSymHandle;
+    SymChipBug = (SYM_HANDLE)(pointer_int)NextSymHandle;
     sym.stg_class = SC_EXTERN;
     sym.name = "__chipbug";
     sym.sym_type = GetType( TYPE_UINT );
-    SymReplace( &sym, (SYM_HANDLE)NextSymHandle );
+    SymReplace( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
 
     /* create special symbol table entry for __segname("_CODE") */
     Sym_CS = SegSymbol( ".CS", SEG_CODE );              /* 18-jan-92 */
@@ -202,7 +202,7 @@ void SpcSymInit( void )
     /* create special symbol table entry for __segname("_DATA") */
     SegSymbol( ".DS", SEG_DATA );
 
-    SpecialSyms = (SYM_HANDLE)NextSymHandle;
+    SpecialSyms = (SYM_HANDLE)(pointer_int)NextSymHandle;
 
     /* Create special symbol table entries for use by stosw, stosb pragmas
      * This should be a TYPE_FUNCTION returning pointer to char
@@ -232,9 +232,9 @@ void SpcSymInit( void )
 #endif
     SymCover = MakeFunction( "__COVERAGE", typ );       /* 04-apr-92 */
     MakeFunction( "__C", typ );                 /* 04-apr-92 */
-    SymGet( &sym, (SYM_HANDLE)NextSymHandle );
+    SymGet( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
     sym.stg_class = SC_STATIC;
-    SymReplace( &sym, (SYM_HANDLE)NextSymHandle );
+    SymReplace( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
 }
 
 
@@ -249,9 +249,9 @@ SYM_HANDLE MakeFunction( char *id, TYPEPTR typ )
     sym.handle = SpecialSyms;
     sym.sym_type = typ;
     NewSym();
-    SpecialSyms = (SYM_HANDLE)NextSymHandle;
-    SymReplace( &sym, (SYM_HANDLE)NextSymHandle );
-    return( (SYM_HANDLE)NextSymHandle );
+    SpecialSyms = (SYM_HANDLE)(pointer_int)NextSymHandle;
+    SymReplace( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
+    return( (SYM_HANDLE)(pointer_int)NextSymHandle );
 }
 
 
@@ -304,7 +304,7 @@ void SymAccess( unsigned sym_num )
 
 SYMPTR SymGetPtr( SYM_HANDLE sym_handle )
 {
-    unsigned    handle = (unsigned)sym_handle;
+    unsigned    handle = (unsigned)(pointer_int)sym_handle;
     SYMPTR      symptr;
 
     ++SymStats.getptr;
@@ -323,7 +323,7 @@ SYMPTR SymGetPtr( SYM_HANDLE sym_handle )
 
 void SymGet( SYMPTR sym, SYM_HANDLE sym_handle )
 {
-    unsigned    handle = (unsigned)sym_handle;
+    unsigned    handle = (unsigned)(pointer_int)sym_handle;
     SYMPTR      symptr;
 
     ++SymStats.get;
@@ -343,7 +343,7 @@ void SymGet( SYMPTR sym, SYM_HANDLE sym_handle )
 
 void SymReplace( SYMPTR sym, SYM_HANDLE sym_handle )
 {
-    unsigned    handle = (unsigned)sym_handle;
+    unsigned    handle = (unsigned)(pointer_int)sym_handle;
 
     ++SymStats.replace;
     if( sym_handle == CurFuncHandle ) {
@@ -402,7 +402,7 @@ SYM_HANDLE SymAdd( int h, SYMPTR sym )
     }
     NewSym();
     sym->level = SymLevel;
-    hsym = SymHash( sym, (SYM_HANDLE)NextSymHandle );
+    hsym = SymHash( sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
     sym->info.hash_value = h;
     head = &HashTab[ h ];               /* add name to head of list */
     for( ;; ) {
@@ -425,7 +425,7 @@ SYM_HANDLE SymAddL0( int h, SYMPTR new_sym )    /* add symbol to level 0 */
     ++GblSymCount;
     NewSym();
     new_sym->level = 0;
-    new_hsym = SymHash( new_sym, (SYM_HANDLE)NextSymHandle );
+    new_hsym = SymHash( new_sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
     new_hsym->next_sym = NULL;
     new_sym->info.hash_value = h;
     hsym = HashTab[h];
@@ -758,7 +758,7 @@ local SYM_HASHPTR GetSymList( void )                    /* 25-jun-92 */
         }
         for( hsym = sym_list; hsym; hsym = next_hsymptr ) {
             next_hsymptr = hsym->next_sym;
-            i = (unsigned)hsym->handle / (SYMS_PER_BUF * SYMBUFS_PER_SEG);
+            i = (unsigned)(pointer_int)hsym->handle / (SYMS_PER_BUF * SYMBUFS_PER_SEG);
             hsym->next_sym = sym_seglist[i];
             sym_seglist[i] = hsym;
         }
@@ -771,7 +771,7 @@ local SYM_HASHPTR GetSymList( void )                    /* 25-jun-92 */
             }
             for( hsym = sym_seglist[i]; hsym; hsym = next_hsymptr ) {
                 next_hsymptr = hsym->next_sym;
-                j = ((unsigned)hsym->handle / SYMS_PER_BUF) % SYMBUFS_PER_SEG;
+                j = ((unsigned)(pointer_int)hsym->handle / SYMS_PER_BUF) % SYMBUFS_PER_SEG;
                 hsym->next_sym = sym_buflist[j];
                 sym_buflist[j] = hsym;
                 if( sym_buftail[j] == NULL )

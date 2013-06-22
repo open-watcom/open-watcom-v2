@@ -468,7 +468,7 @@ void CarveInsertFree( carve_t cv, void *data )
 void *CarveMapIndex( carve_t cv, void *aindex )
 /*********************************************/
 {
-    unsigned    index = (unsigned) aindex;
+    unsigned    index = (unsigned)(pointer_int)aindex;
     blk_t *     block;
     blk_t **    block_map;
     unsigned    block_index;

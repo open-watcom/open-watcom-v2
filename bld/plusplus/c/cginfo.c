@@ -154,7 +154,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         CppExit( 1 );         /* exit to DOS do not pass GO */
         break;
     case MSG_BAD_PARM_REGISTER:
-        CErr2( ERR_BAD_PARM_REGISTER, (int)parm );
+        CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_int)parm );
         break;
     case MSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (SYMBOL)parm ) );
@@ -178,7 +178,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         }
         break;
     case MSG_BACK_END_ERROR:
-        CErr2( ERR_BACK_END_ERROR, (int)parm );
+        CErr2( ERR_BACK_END_ERROR, (int)(pointer_int)parm );
         break;
     case MSG_BAD_SAVE:
         CErr2p( ERR_BAD_SAVE, FEName( (SYMBOL)parm ) );
@@ -1175,7 +1175,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case STACK_SIZE_8087:
         DbgNotSym();
         DbgNotRetn();
-        retn = (void *)Stack87;
+        retn = (void *)(pointer_int)Stack87;
         break;
 #endif
 #if _INTEL_CPU
@@ -1223,7 +1223,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case PROEPI_DATA_SIZE:
         DbgNotSym();
         DbgNotRetn();
-        retn = (void *) ProEpiDataSize;
+        retn = (void *)(pointer_int)ProEpiDataSize;
         break;
   #if _CPU != 8086
     case P5_PROF_DATA:
@@ -1250,10 +1250,10 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case CLASS_NAME:
         DbgNotSym();
         DbgNotRetn();
-        if(((fe_seg_id) sym) == SEG_CODE ) {
+        if( ((fe_seg_id)(pointer_int)sym) == SEG_CODE ) {
             retn = CodeClassName;
         } else {
-            retn = SegmentClassName( (fe_seg_id) sym );
+            retn = SegmentClassName( (fe_seg_id)(pointer_int)sym );
         }
         break;
 #endif
@@ -1401,7 +1401,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case TEMP_LOC_TELL :
         DbgNotSym();
         DbgNotRetn();
-        CgBackDtorAutoOffset( dtor_sym, (unsigned)sym );
+        CgBackDtorAutoOffset( dtor_sym, (unsigned)(pointer_int)sym );
         break;
     case DEFAULT_IMPORT_RESOLVE :
         retn = ExtrefResolve( sym, &res_info );
@@ -1485,7 +1485,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case PEGGED_REGISTER :
         DbgNotSym();
         DbgNotRetn();
-        retn = SegmentBoundReg( (fe_seg_id)sym );
+        retn = SegmentBoundReg( (fe_seg_id)(pointer_int)sym );
         break;
 #endif
     case CLASS_APPENDED_NAME :

@@ -379,7 +379,7 @@ pch_status PCHReadTypeSigs( void )
     TYPE_SIG *s;
     auto cvinit_t data;
 
-    type_sigs = TypeSigMapIndex( (TYPE_SIG *)PCHReadCVIndex() );
+    type_sigs = TypeSigMapIndex( (TYPE_SIG *)(pointer_int)PCHReadCVIndex() );
     CarveInitStart( carveTYPE_SIG, &data );
     for( ; (s = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *s );
@@ -444,7 +444,7 @@ pch_status PCHWriteTypeSigs( void )
 {
     auto carve_walk_base data;
 
-    PCHWriteCVIndex( (cv_index)TypeSigGetIndex( type_sigs ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)TypeSigGetIndex( type_sigs ) );
     CarveWalkAllFree( carveTYPE_SIG, markFreeTypeSig );
     CarveWalkAll( carveTYPE_SIG, saveTypeSig, &data );
     PCHWriteCVIndexTerm();

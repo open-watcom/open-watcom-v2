@@ -130,13 +130,13 @@ BtreePage *BtreeData::seekNext( BtreePage *first )
 #define TREEPAGE_HEADER_SIZE    4
 
 BtreePage::BtreePage( uint_32 max_size, BtreePage *ancestor, BtreePage *descendant )
-        : _maxSize( max_size ),
-          _parent( ancestor ),
-          _firstChild( descendant ),
-          _numEntries( 0 ),
+        : _numEntries( 0 ),
           _prevPage( NULL ),
           _nextPage( NULL ),
-          _entries( NULL )
+          _maxSize( max_size ),
+          _entries( NULL ),
+          _parent( ancestor ),
+          _firstChild( descendant )
 {
     if( descendant == NULL ){
         // Leaf pages start with a header and indices to the previous
@@ -226,7 +226,7 @@ int BtreePage::dump( OutFile *dest )
 
 int BtreePage::split()
 {
-    int         i=0;
+//    int         i=0;
     uint_16     limit = (uint_16) ((_numEntries + 1) / 2);
     uint_32     cur_size = 0;
     uint_16     cur_num = 0;
@@ -346,13 +346,13 @@ int BtreePage::needSplit( uint_32 size )
 //  Btree::Btree
 
 Btree::Btree( char const *magnum, uint_32 max_size )
-        : _magic( magnum ),
-          _maxSize( max_size ),
-          _size( 0 ),
-          _numLevels( 1 ),
+        : _numLevels( 1 ),
           _totalEntries( 0 ),
           _numPages( 0 ),
-          _numSplits( 0 )
+          _numSplits( 0 ),
+          _size( 0 ),
+          _maxSize( max_size ),
+          _magic( magnum )
 {
     _root = new BtreePage( max_size, NULL );
 }

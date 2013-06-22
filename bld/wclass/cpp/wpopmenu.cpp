@@ -45,7 +45,7 @@ WEXPORT WPopupMenu::WPopupMenu( const char *text )
     setOwner( NULL );
     setText( text );
     setMenuId( WWindow::_idMaster++ );
-    WWindow::_popupIdMap.setThis( this, (WHANDLE)menuId() );
+    WWindow::_popupIdMap.setThis( this, (WHANDLE)(pointer_int)menuId() );
 }
 
 

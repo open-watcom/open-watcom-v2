@@ -114,5 +114,5 @@ bool WEXPORT WSystemHelp::sysHelpId( int help_id ) {
 
     if( !_helpInstance ) return( FALSE );
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_CONTEXT, (char *)_library, (char *)help_id ) );
+                         GUI_HELP_CONTEXT, (char *)_library, (char *)(pointer_int)help_id ) );
 }

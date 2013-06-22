@@ -730,7 +730,7 @@ void FEMessage( int class, void *parm )
     case MSG_CODE_SIZE:
         if( !CompFlags.quiet_mode ) {
             CGetMsg( msgtxt, PHRASE_CODE_SIZE );
-            sprintf( msgbuf, "%s: %u", msgtxt, (unsigned)parm );
+            sprintf( msgbuf, "%s: %u", msgtxt, (unsigned)(pointer_int)parm );
             NoteMsg( msgbuf );
         }
         break;
@@ -746,7 +746,7 @@ void FEMessage( int class, void *parm )
         break;
     case MSG_BAD_PARM_REGISTER:
         /* this will be issued after a call to CGInitCall or CGProcDecl */
-        CErr2( ERR_BAD_PARM_REGISTER, (int)parm );
+        CErr2( ERR_BAD_PARM_REGISTER, (int)(pointer_int)parm );
         break;
     case MSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (CGSYM_HANDLE)parm ) );
@@ -773,7 +773,7 @@ void FEMessage( int class, void *parm )
         }
         break;
     case MSG_BACK_END_ERROR:
-        CErr2( ERR_BACK_END_ERROR, (int)parm );
+        CErr2( ERR_BACK_END_ERROR, (int)(pointer_int)parm );
         break;
     case MSG_BAD_SAVE:
         CErr2p( ERR_BAD_SAVE, FEName( (CGSYM_HANDLE)parm ) );

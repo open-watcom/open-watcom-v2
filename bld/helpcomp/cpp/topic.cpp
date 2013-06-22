@@ -56,8 +56,8 @@ struct TextAttr
 struct TopicLink
 {
     TopicLink       *_next;
-    uint_32     _size;
-    int         _isFirstLink;
+    uint_32         _size;
+    int             _isFirstLink;
     Buffer<char>    _myData;
 
     TopicLink( uint_32 s );
@@ -243,7 +243,7 @@ class TextHolder
 
 //  TopicLink::TopicLink
 
-TopicLink::TopicLink( uint_32 s ) : _size( s ), _myData( s ), _isFirstLink(0)
+TopicLink::TopicLink( uint_32 s ) : _size( s ), _isFirstLink(0), _myData( s )
 {
     // empty
 }
@@ -252,11 +252,11 @@ TopicLink::TopicLink( uint_32 s ) : _size( s ), _myData( s ), _isFirstLink(0)
 //  GenericNode::GenericNode
 
 GenericNode::GenericNode( uint_32 prev )
-    : _prevNode( prev ),
-      _topicSize( GENERIC_NODE_SIZE ),
-      _size( GENERIC_NODE_SIZE ),
+    : _topicSize( GENERIC_NODE_SIZE ),
       _dataSize( 0 ),
-      _nextNode( ~0 )
+      _prevNode( prev ),
+      _nextNode( ~0 ),
+      _size( GENERIC_NODE_SIZE )
 {
     // empty
 }
@@ -274,14 +274,14 @@ void GenericNode::dumpTo( TopicLink *dest )
 //  TopicHeader::TopicHeader
 
 TopicHeader::TopicHeader( uint_32 tnum )
-    : _topicNum( tnum ),
-      _size( TOPIC_HEADER_SIZE ),
-      _totalSize( 0 ),
-      _nextTopic( ~0 ),
+    : _totalSize( 0 ),
       _nextBrowse( ~0 ),
       _prevBrowse( ~0 ),
+      _topicNum( tnum ),
       _startNonScroll( ~0 ),
-      _startScroll( ~0 )
+      _startScroll( ~0 ),
+      _nextTopic( ~0 ),
+      _size( TOPIC_HEADER_SIZE )
 {
     // empty
 }
@@ -309,14 +309,14 @@ PageHeader::PageHeader()
 
 #define TSTOP_BLOCKS 10
 TextHeader::TextHeader()
-    : _tabStops( TSTOP_BLOCKS ),
-      _tabFlags( TSTOP_BLOCKS ),
-      _attribs( TEXT_ATTR_MAX ),
-      _size( TEXT_HEADER_SIZE ),
+    : _size( TEXT_HEADER_SIZE ),
       _parAttrSize( 0 ),
       _flags( 0 ),
+      _tabStops( TSTOP_BLOCKS ),
+      _tabFlags( TSTOP_BLOCKS ),
       _numStops( 0 ),
       _maxStops( TSTOP_BLOCKS ),
+      _attribs( TEXT_ATTR_MAX ),
       _numAttribs( 0 ),
       _maxAttribs( TEXT_ATTR_MAX )
 {
@@ -802,11 +802,11 @@ void TextHeader::dumpTo( TopicLink *dest )
 //  TextHolder::TextHolder
 
 TextHolder::TextHolder()
-    : _text( TEXT_BLOCK_SIZE+1 ),
-      _zeroes( TEXT_ZERO_SIZE ),
-      _size( 0 ),
+    : _size( 0 ),
       _uncompSize( 0 ),
       _maxSize( TEXT_BLOCK_SIZE ),
+      _text( TEXT_BLOCK_SIZE+1 ),
+      _zeroes( TEXT_ZERO_SIZE ),
       _numZeroes( 0 ),
       _maxZeroes( TEXT_ZERO_SIZE )
 {
@@ -831,19 +831,19 @@ HFTopic::HFTopic( HFSDirectory * d_file, HFPhrases *ph )
     : _size( PAGE_HEADER_SIZE ),  // The initial 3-DWORD page header.
       _numPages( 1 ),
       _numTopics( 0 ),
-      _haveCleanedUp( 0 ),
-      _phFile( ph ),
       _head( NULL ),
       _tail( NULL ),
+      _phFile( ph ),
       _browseStr( NULL ),
       _bhead( NULL ),
       _btail( NULL ),
+      _lastNode( NULL ),
+      _lastHeader( NULL ),
       _curOffset( PAGE_HEADER_SIZE ),
       _curCharOffset( 0 ),
       _lastTopic( ~0 ),
       _lastLink( ~0 ),
-      _lastNode( NULL ),
-      _lastHeader( NULL )
+      _haveCleanedUp( 0 )
 {
     _size = PAGE_HEADER_SIZE;
     _useCompress = (ph != NULL);

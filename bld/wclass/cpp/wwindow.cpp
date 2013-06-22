@@ -82,19 +82,19 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
     switch( msg ) {
     case GUI_CLICKED: {
         GUI_GETID( parm, control_id );
-        WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)control_id );
+        WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_int)control_id );
         if( menu != NULL ) {
             menu->picked();
             return( TRUE );
         }
         // a popup menu with no menu items will generate GUI_CLICKED
         // - simulate a GUI_INITMENUPOPUP
-        WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)control_id );
+        WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)control_id );
         if( pop != NULL ) {
             pop->popup();
             return( TRUE );
         }
-        WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)control_id );
+        WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)(pointer_int)control_id );
         if( tool != NULL ) {
             tool->picked();
             return( TRUE );
@@ -214,7 +214,7 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
     }
     case GUI_INITMENUPOPUP: {
         GUI_GETID( parm, control_id );
-        WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)control_id );
+        WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)control_id );
         pop->popup();
         return( TRUE );
     }
@@ -1049,7 +1049,7 @@ bool WEXPORT WWindow::keyDown( WKeyCode key, WKeyState ) {
 WControl * WWindow::getControl( unsigned id ) {
 /*********************************************/
 
-    return (WControl *)_idMap.findThis( (WHANDLE)id );
+    return (WControl *)_idMap.findThis( (WHANDLE)(pointer_int)id );
 }
 
 

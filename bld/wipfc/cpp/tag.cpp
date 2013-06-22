@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+#include <functional>
 #include <algorithm>
 #include "tag.hpp"
 #include "document.hpp"

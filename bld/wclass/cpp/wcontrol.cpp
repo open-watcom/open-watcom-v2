@@ -63,7 +63,7 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
     }
     control_info.style = (gui_control_styles)gui_style;
     control_info.id = _control_id;
-    WWindow::_idMap.setThis( this, (WHANDLE)_control_id );
+    WWindow::_idMap.setThis( this, (WHANDLE)(pointer_int)_control_id );
     parent->addChild( this );
     GUIAddControl( &control_info, NULL, NULL );
 }

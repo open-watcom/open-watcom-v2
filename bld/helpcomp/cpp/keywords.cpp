@@ -190,8 +190,8 @@ int KWKey::dump( OutFile * dest )
 
 KWRec::KWRec( char const kword[], uint_32 first_off )
         : KWKey( kword ),
-          _count( 0 ),
-          _head( NULL )
+          _head( NULL ),
+          _count( 0 )
 {
     addOffset( first_off );
 }
@@ -344,8 +344,8 @@ void HFKwbtree::addKW( char const keyword[], uint_32 offset )
 //  HFKwdata::HFKwdata
 
 HFKwdata::HFKwdata( HFSDirectory * d_file, HFKwbtree * tree )
-        : _iterator( *tree->words() ),
-          _myTree( tree ),
+        : _myTree( tree ),
+          _iterator( *tree->words() ),
           _size( 0 )
 {
     d_file->addFile( this, "|KWDATA" );
@@ -384,8 +384,8 @@ int HFKwdata::dump( OutFile * dest )
 //  HFKwmap::HFKwmap
 
 HFKwmap::HFKwmap( HFSDirectory * d_file, HFKwbtree * tree )
-        : _iterator( *tree->words() ),
-          _myTree( tree ),
+        : _myTree( tree ),
+          _iterator( *tree->words() ),
           _numRecs( 0 )
 {
     d_file->addFile( this, "|KWMAP" );

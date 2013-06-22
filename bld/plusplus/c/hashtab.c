@@ -501,7 +501,7 @@ static void saveHashTable( void *e, carve_walk_base *d )
     src_links = hash->table;
     buckets = hash->half + hash->expand_next;
     for( i = 0; i < buckets; ++i ) {
-        PCHWriteCVIndex( (cv_index)SymbolNameGetIndex( src_links[i] ) );
+        PCHWriteCVIndex( (cv_index)(pointer_int)SymbolNameGetIndex( src_links[i] ) );
     }
 }
 
@@ -510,7 +510,7 @@ pch_status PCHWriteHashTables( void )
 {
     auto carve_walk_base data;
 
-    PCHWriteCVIndex( (cv_index)SymbolNameGetIndex( listSentinel ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolNameGetIndex( listSentinel ) );
     CarveWalkAllFree( carveHASHTAB, markFreeHashTable );
     CarveWalkAll( carveHASHTAB, saveHashTable, &data );
     PCHWriteCVIndexTerm();
@@ -528,7 +528,7 @@ pch_status PCHReadHashTables( void )
     unsigned buckets;
     auto cvinit_t data;
 
-    listSentinel = SymbolNameMapIndex( (SYMBOL_NAME)PCHReadCVIndex() );
+    listSentinel = SymbolNameMapIndex( (SYMBOL_NAME)(pointer_int)PCHReadCVIndex() );
     CarveInitStart( carveHASHTAB, &data );
     for( ; (hash = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *hash );
@@ -538,7 +538,7 @@ pch_status PCHReadHashTables( void )
         hash->table = links;
         buckets = half + hash->expand_next;
         for( i = 0; i < buckets; ++i ) {
-            links[i] = SymbolNameMapIndex( (SYMBOL_NAME)PCHReadCVIndex() );
+            links[i] = SymbolNameMapIndex( (SYMBOL_NAME)(pointer_int)PCHReadCVIndex() );
         }
     }
     return( PCHCB_OK );

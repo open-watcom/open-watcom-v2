@@ -134,8 +134,8 @@ void operator delete( void *p )
 const unsigned Pool::BLOCK_SIZE = 1024;
 
 Pool::Pool( size_t size, unsigned b_size )
-    : _size( size > sizeof( void * ) ? size : sizeof( void * ) ),
-      _block( b_size ? b_size : BLOCK_SIZE )
+    : _block( b_size ? b_size : BLOCK_SIZE ),
+      _size( size > sizeof( void * ) ? size : sizeof( void * ) )
 {
     unsigned char *index;
     _array = new unsigned char[_block * _size + sizeof( unsigned char * )];

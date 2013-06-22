@@ -7701,10 +7701,10 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
 
                 // using SC_NULL here is a bit dirty...
                 if( ( sym->id == SC_NULL ) && ( sym->u.sval == 0 ) ) {
-                    sym->u.sval = (target_int)(*b_top)->u.id.name;
+                    sym->u.sval = (target_int)(pointer_int)(*b_top)->u.id.name;
                 }
 
-                if( ( sym->id != SC_NULL ) || ( sym->u.sval != (target_int)(*b_top)->u.id.name ) ) {
+                if( ( sym->id != SC_NULL ) || ( sym->u.sval != (target_int)(pointer_int)(*b_top)->u.id.name ) ) {
                     // already bound to different value
                     PTreeFree( *b_top );
                     PTreeFree( *u_top );
@@ -8770,11 +8770,11 @@ static void pchWriteArgLists( type_pch_walk *data )
         args->except_spec = PCHSetUInt( except_spec_count );
         PCHWrite( args, offsetof( arg_list, type_list ) );
         for( i = 0; i < args->num_args; ++i ) {
-            PCHWriteCVIndex( (cv_index)TypeGetIndex( args->type_list[i] ) );
+            PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( args->type_list[i] ) );
         }
         if( save_except_spec != NULL ) {
             for( etype = save_except_spec; *etype != NULL; ++etype ) {
-                PCHWriteCVIndex( (cv_index)TypeGetIndex( *etype ) );
+                PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( *etype ) );
             }
         }
         args->except_spec = save_except_spec;
@@ -8950,9 +8950,9 @@ static void saveClassInfo( void *e, carve_walk_base *d )
         friend_is_type = FriendIsType( friend );
         PCHWriteVar( friend_is_type );
         if( friend_is_type ) {
-            PCHWriteCVIndex( (cv_index)TypeGetIndex( FriendGetType( friend ) ) );
+            PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( FriendGetType( friend ) ) );
         } else {
-            PCHWriteCVIndex( (cv_index)SymbolGetIndex( FriendGetSymbol( friend ) ) );
+            PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( FriendGetSymbol( friend ) ) );
         }
     } RingIterEnd( friend )
     friend_is_type = -1;
@@ -9043,7 +9043,7 @@ static void saveDeclInfo( void *e, carve_walk_base *d )
 
 static void writeType( TYPE t )
 {
-    PCHWriteCVIndex( (cv_index)TypeGetIndex( t ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( t ) );
 }
 
 static void writeTypeHashed( TYPE *vector )
@@ -9120,7 +9120,7 @@ pch_status PCHWriteTypes( void )
 
 static void readType( TYPE *t )
 {
-    *t = TypeMapIndex( (TYPE)PCHReadCVIndex() );
+    *t = TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() );
 }
 
 static void readTypeHashed( TYPE *vector )
@@ -9206,9 +9206,9 @@ static void readClassInfos( void )
             if( friend_is_type == -1 )
                 break;
             if( friend_is_type ) {
-                ScopeRawAddFriendType( ci, TypeMapIndex( (TYPE)PCHReadCVIndex() ) );
+                ScopeRawAddFriendType( ci, TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() ) );
             } else {
-                ScopeRawAddFriendSym( ci, SymbolMapIndex( (SYMBOL)PCHReadCVIndex() ) );
+                ScopeRawAddFriendSym( ci, SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() ) );
             }
         }
     }
@@ -9299,13 +9299,13 @@ pch_status PCHReadTypes( void )
         args = AllocArgListPerm( tmp_arglist.num_args );
         args->qualifier = tmp_arglist.qualifier;
         for( j = 0; j < tmp_arglist.num_args; ++j ) {
-            args->type_list[j] = TypeMapIndex( (TYPE)PCHReadCVIndex() );
+            args->type_list[j] = TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() );
         }
         except_spec_count = PCHGetUInt( tmp_arglist.except_spec );
         if( except_spec_count != 0 ) {
             args->except_spec = CPermAlloc( ( except_spec_count + 1 ) * sizeof( TYPE ) );
             for( j = 0; j < except_spec_count; ++j ) {
-                args->except_spec[j] = TypeMapIndex( (TYPE)PCHReadCVIndex() );
+                args->except_spec[j] = TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() );
             }
             args->except_spec[j] = NULL;
         } else {

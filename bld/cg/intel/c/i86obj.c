@@ -2051,8 +2051,8 @@ extern  void    ObjFini( void )
     FiniAbsPatches();
     EndModule();
     CloseObj();
-    FEMessage( MSG_CODE_SIZE, (pointer)CodeSize );
-    FEMessage( MSG_DATA_SIZE, (pointer)DataSize );
+    FEMessage( MSG_CODE_SIZE, (pointer)(pointer_int)CodeSize );
+    FEMessage( MSG_DATA_SIZE, (pointer)(pointer_int)DataSize );
 }
 
 

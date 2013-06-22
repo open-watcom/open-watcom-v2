@@ -139,8 +139,8 @@ pch_status PCHWriteConstantPool( void )
 {
     auto carve_walk_base data;
 
-    PCHWriteCVIndex( (cv_index)ConstantPoolGetIndex( pool_float ) );
-    PCHWriteCVIndex( (cv_index)ConstantPoolGetIndex( pool_int64 ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)ConstantPoolGetIndex( pool_float ) );
+    PCHWriteCVIndex( (cv_index)(pointer_int)ConstantPoolGetIndex( pool_int64 ) );
     CarveWalkAllFree( carvePOOL_CON, markFreeConstant );
     CarveWalkAll( carvePOOL_CON, saveConstant, &data );
     PCHWriteCVIndexTerm();
@@ -153,8 +153,8 @@ pch_status PCHReadConstantPool( void )
     POOL_CON *c;
     auto cvinit_t data;
 
-    pool_float = ConstantPoolMapIndex( (POOL_CON *)PCHReadCVIndex() );
-    pool_int64 = ConstantPoolMapIndex( (POOL_CON *)PCHReadCVIndex() );
+    pool_float = ConstantPoolMapIndex( (POOL_CON *)(pointer_int)PCHReadCVIndex() );
+    pool_int64 = ConstantPoolMapIndex( (POOL_CON *)(pointer_int)PCHReadCVIndex() );
     CarveInitStart( carvePOOL_CON, &data );
     for( ; (c = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *c );

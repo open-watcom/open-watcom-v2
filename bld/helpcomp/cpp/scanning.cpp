@@ -47,9 +47,9 @@ Token::Token() : _text( BUF_SIZE )
 //  C-tor and D-tor for class Scanner.
 
 Scanner::Scanner( InFile *src )
-    : _buffer( BUF_SIZE ),
-      _source( src ),
-      _lineNum( 1 )
+    : _source( src ),
+      _lineNum( 1 ),
+      _buffer( BUF_SIZE )
 {
     tokens[2] = new Token;
     tokens[1] = new Token;

@@ -144,7 +144,7 @@ bool ObjInit( char *fname ) {
     ErrorFile = fopen( errorFilename, "wt" );
     OwlHandle = OWLInit( &funcs, OBJ_OWL_CPU );
     obj_format = ( _IsOption( OBJ_COFF ) ? OWL_FORMAT_COFF : OWL_FORMAT_ELF );
-    OwlFile = OWLFileInit( OwlHandle, fname, (owl_client_file)objFile, obj_format, OWL_FILE_OBJECT );
+    OwlFile = OWLFileInit( OwlHandle, fname, (owl_client_file)(pointer_int)objFile, obj_format, OWL_FILE_OBJECT );
     ObjSwitchSection( AS_SECTION_TEXT );
     CurrAlignment = 0;
     return( TRUE );

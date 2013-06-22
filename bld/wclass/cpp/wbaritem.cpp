@@ -48,7 +48,7 @@ WEXPORT WToolBarItem::WToolBarItem( const char *text, WResource tool,
     _toolbar.hinttext = (char *)htext;
     _toolbar.tip = (char *)tip;
     _toolbar.id = WWindow::_idMaster++;
-    WWindow::_toolBarIdMap.setThis( this, (WHANDLE)(unsigned)_toolbar.id );
+    WWindow::_toolBarIdMap.setThis( this, (WHANDLE)(pointer_int)_toolbar.id );
 }
 
 

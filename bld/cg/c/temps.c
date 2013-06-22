@@ -140,7 +140,7 @@ static  void    TellTempLocs( void )
             if( ans == TEMP_LOC_QUIT ) break;
             if( temp->t.location == NO_LOCATION ) continue;
             if( ans == TEMP_LOC_YES ) {
-                FEAuxInfo( (pointer)TempLocation( temp ), TEMP_LOC_TELL );
+                FEAuxInfo( (pointer)(pointer_int)TempLocation( temp ), TEMP_LOC_TELL );
             }
         }
     }
