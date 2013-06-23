@@ -47,7 +47,7 @@
 !inject strings   all qnx           #
 !inject tail      all qnx           #
 !inject tee       all qnx boot      #           test
-!inject tr        all qnx           #
+!inject tr        all qnx boot      #           test
 !inject true      all qnx           #
 !inject trunc     all qnx           #
 !inject unexpand  all qnx           #

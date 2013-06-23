@@ -20,6 +20,7 @@ set PROJNAME=build POSIX tools
     <CPCMD> <OWOBJDIR>/sed.exe   <OWBINDIR>/sed<CMDEXT>
     <CPCMD> <OWOBJDIR>/sleep.exe <OWBINDIR>/sleep<CMDEXT>
     <CPCMD> <OWOBJDIR>/tee.exe   <OWBINDIR>/tee<CMDEXT>
+    <CPCMD> <OWOBJDIR>/tr.exe    <OWBINDIR>/tr<CMDEXT>
     <CPCMD> <OWOBJDIR>/uniq.exe  <OWBINDIR>/uniq<CMDEXT>
     <CPCMD> <OWOBJDIR>/wc.exe    <OWBINDIR>/wc<CMDEXT>
     <CPCMD> <OWOBJDIR>/which.exe <OWBINDIR>/which<CMDEXT>
@@ -42,6 +43,8 @@ set PROJNAME=build POSIX tools
     rm -f <OWBINDIR>/sleep<CMDEXT>
     echo rm -f <OWBINDIR>/tee<CMDEXT>
     rm -f <OWBINDIR>/tee<CMDEXT>
+    echo rm -f <OWBINDIR>/tr<CMDEXT>
+    rm -f <OWBINDIR>/tr<CMDEXT>
     echo rm -f <OWBINDIR>/uniq<CMDEXT>
     rm -f <OWBINDIR>/uniq<CMDEXT>
     echo rm -f <OWBINDIR>/wc<CMDEXT>
