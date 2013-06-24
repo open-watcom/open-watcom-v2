@@ -1,11 +1,11 @@
 proj_name = wlink_lnk
 
 !ifeq host_subdir binnt64
-!ifneq bld_cpu x64
+!ifndef bld64host_nt
 skip_build: .symbolic
 !endif
 !else ifeq host_subdir binl64
-!ifneq bld_cpu x64
+!ifndef bld64host_linux
 skip_build: .symbolic
 !endif
 !endif

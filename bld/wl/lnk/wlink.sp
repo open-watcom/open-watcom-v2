@@ -30,14 +30,14 @@ system begin 286
     library windows
     option nocaseexact
     option stack=8k, heapsize=1k
-    format windows ^
+    format windows
 end
 system begin 386
     option osname='Windows NT character-mode'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
-    format windows nt ^
+    format windows nt
     runtime console=4.0
 end
 :elsesegment binl | binl64
