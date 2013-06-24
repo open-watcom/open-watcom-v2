@@ -1929,7 +1929,8 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
 #ifdef __UNIX__  /* For UNIX we must for now use system since
                     without splitting argv[1] the spawnvp below
                     does not always work */
-            retcode = mySystem( cmdname, cmd );
+            my_ret = mySystem( cmdname, cmd );
+            retcode = (UINT8)lastErrorLevel;
 #else
             retcode = spawnvp( P_WAIT, cmdname, argv );
 #endif
