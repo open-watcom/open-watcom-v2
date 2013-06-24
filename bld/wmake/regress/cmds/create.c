@@ -80,22 +80,14 @@ int main( int argc, char **argv )
     fp = safeopen( "maketst1", "w" );
     fputs("# big makefile!\n"
           ".c.obj:\n"
-#ifndef __WATCOMC__
-          "    cc -c -o $@ $<\n"
-#else
           "    wcc386 $[* -zq\n"
-#endif
           "\n"
           "main.exe : main.obj &\n    ", fp);
     for( i=1; i<= max; i++ ) {
         fprintf( fp, "foo%04d.obj ", i );
         if( i%6 == 0 ) fputs( "&\n    ", fp );
     }
-#ifndef __WATCOMC__
-    fputs("\n    cc -o main.exe $<\n", fp);
-#else
     fputs("\n    wlink @main.lnk\n", fp);
-#endif
     fclose(fp);
 
     fp = safeopen( "main.lnk", "w" );

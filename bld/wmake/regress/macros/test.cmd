@@ -150,7 +150,7 @@ echo # ---------------------------
 
 wtouch hello.obj hello2.obj
 wtouch hello.c  hello2.c
-%1 -h -ms -m -f macro07 -a cc=bwcl386 > tmp.out 2>&1
+%1 -h -ms -m -f macro07 -a cc=wcl386 > tmp.out 2>&1
 diff -b macro07.chk tmp.out
 if errorlevel 1 goto err7
     @echo # MACRO07 successful

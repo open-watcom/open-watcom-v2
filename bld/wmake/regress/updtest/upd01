@@ -10,23 +10,22 @@
 #   test implicit rules across multiple (non-existing) targets
 #
 
-wk = @wtouch
+wk = wtouch
 
 .extensions:
 .extensions: .ee .dd .cc .bb .aa
 
 .aa.bb:
-    $(wk) $[*.bb
+    @$(wk) $[*.bb
 
 .bb.cc:
-    $(wk) $[*.cc
+    @$(wk) $[*.cc
 
 .cc.dd:
-    $(wk) $[*.dd
+    @$(wk) $[*.dd
 
 .dd.ee:
-    $(wk) $[*.ee
-
+    @$(wk) $[*.ee
 
 #
 #   We use first/last instead of .BEFORE/.AFTER to ensure that the commands
@@ -37,7 +36,7 @@ all: first upd01xa.ee last  .symbolic
 
 first: .symbolic
     @-if exist upd01x*.* @rm upd01x*.* # Handled internally, not by shell.
-    @wtouch upd01xa.aa
+    @$(wk) upd01xa.aa
 
 last: .symbolic
     @rm upd01x*.*

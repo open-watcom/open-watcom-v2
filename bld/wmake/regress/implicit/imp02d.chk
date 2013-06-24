@@ -1,18 +1,18 @@
 wcc386 -zq -fo=hello.obj hello.c
-bwcl386 -zq -fe=hello.exe hello.obj
+wcl386 -zq -fe=hello.exe hello.obj
 sleep 2
 sleep 2
 wtouch hello0.h
 hello.obj will be built because of hello0.h
 wcc386 -zq -fo=hello.obj hello.c
 hello.exe will be built because of hello.obj
-bwcl386 -zq -fe=hello.exe hello.obj
+wcl386 -zq -fe=hello.exe hello.obj
 sleep 2
 wtouch hello1.h
 hello.obj will be built because of hello1.h
 wcc386 -zq -fo=hello.obj hello.c
 hello.exe will be built because of hello.obj
-bwcl386 -zq -fe=hello.exe hello.obj
+wcl386 -zq -fe=hello.exe hello.obj
 sleep 2
 wtouch hello0.h
 wtouch hello1.h
@@ -20,4 +20,4 @@ hello.obj will be built because of hello0.h
 hello.obj will be built because of hello1.h
 wcc386 -zq -fo=hello.obj hello.c
 hello.exe will be built because of hello.obj
-bwcl386 -zq -fe=hello.exe hello.obj
+wcl386 -zq -fe=hello.exe hello.obj

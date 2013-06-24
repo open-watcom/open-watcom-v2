@@ -30,12 +30,13 @@
 
 
 #include <stdio.h>
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <direct.h>
 #else
     #include <unistd.h>
     #include <limits.h>
 #endif
+#include "clibext.h"
 
 int main( int argc, char* argv[] )
 {

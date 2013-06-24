@@ -1,1 +1,1 @@
-CC=bwcl386 Cc=gcc cC=c89 cc=bwcl386
+CC=wcl386 Cc=gcc cC=c89 cc=wcl386

@@ -1,9 +1,5 @@
 !ifdef __UNIX__
 mkerr=../cmds/mkerr.exe
-chmod_ro=chmod -w
-chmod_wr=chmod +w
 !else
 mkerr=..\cmds\mkerr.exe
-chmod_ro=chmod +r
-chmod_wr=chmod -r
 !endif
