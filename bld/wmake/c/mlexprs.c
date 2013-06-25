@@ -279,8 +279,7 @@ STATIC BOOLEAN checkDotName( const char *str )
     assert( str[0] == DOT );
 
     ptr = str + 1;
-    key = bsearch( &ptr, DotNames, DOT_MAX,
-            sizeof( char * ), (int (*)( const void*, const void* ))KWCompare );
+    key = bsearch( &ptr, DotNames, DOT_MAX, sizeof( char * ), KWCompare );
 
     if( key == NULL ) {         /* not a special dot-name */
         return( FALSE );

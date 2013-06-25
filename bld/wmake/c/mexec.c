@@ -598,8 +598,7 @@ STATIC int findInternal( const char *cmd )
         return( CNUM );
     }
     for( ;; ) {
-        key = bsearch( &cmd, dosInternals, CNUM, sizeof( char * ),
-              (int (*)( const void *, const void * ))KWCompare );
+        key = bsearch( &cmd, dosInternals, CNUM, sizeof( char * ), KWCompare );
         if( key != NULL ) {
             break;
         }
@@ -892,8 +891,7 @@ STATIC RET_T percentCmd( const char *cmdname, char *arg )
     assert( cmdname != NULL && arg != NULL );
 
     ptr = cmdname + 1;
-    key = bsearch( &ptr, percentCmds, PNUM, sizeof( char * ),
-          (int (*)( const void*, const void* ))KWCompare );
+    key = bsearch( &ptr, percentCmds, PNUM, sizeof( char * ), KWCompare );
 
     if( key == NULL ) {
         PrtMsg( ERR | UNKNOWN_PERCENT_CMD );

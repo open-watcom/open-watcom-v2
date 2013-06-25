@@ -240,16 +240,12 @@
 
 #define MSG_USAGE_BASE                  230
 
-
-// #define USAGE_LN_0                   160
-// etc...
-// #define USAGE_LN_31                  191
-
 #include "usageend.gh"
 
-#define MSG_LANG_SPACING                1000
-
 #define END_OF_RESOURCE_MSG             MSG_USAGE_LAST
+
+
+#define MSG_LANG_SPACING                1000
 
 #define MAX_RESOURCE_SIZE               128
 
@@ -265,5 +261,3 @@ extern void     MsgGetTail( int resourceid, char *buffer );
 extern void     MsgFini( void );
 extern int      MsgReOrder( int resourceid, char *buff, char **paratype );
 extern BOOLEAN  ResAutoDep( char *name, time_t stamp, BOOLEAN (*chk)(time_t,time_t), time_t *pmax_time );
-
-// extern long FileShift; /* This is defined in %devdir%\sdk\rc\wres\c\loadstr.c */ incompatible with mautores.c W.Briscoe 20031106

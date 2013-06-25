@@ -43,7 +43,7 @@ extern int          _fFNameCmp( const char FAR *a, const char FAR *b );
 #endif
 extern char const   *DoWildCard( const char *base );
 extern void         DoWildCardClose( void );
-extern int          KWCompare( const char **p1, const char **p2 );
+extern int          KWCompare( const void *p1, const void *p2 );
 extern char         *SkipWS( char *p );
 extern char         *FindNextWS( char *str );
 extern char         *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src );

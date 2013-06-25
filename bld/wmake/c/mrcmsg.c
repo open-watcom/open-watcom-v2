@@ -53,7 +53,8 @@
         #undef pick
     };
 
-    static int compar( const void *s1, const void *s2 ) {
+    static int compar( const void *s1, const void *s2 )
+    {
         return ((struct idstr *)s1)->id - ((struct idstr *)s2)->id;
     }
 
@@ -148,17 +149,18 @@ int MsgGet( int resourceid, char *buffer )
 #ifdef BOOTSTRAP
     {
         struct idstr *s;
-        s = bsearch( &resourceid, StringTable, _arraysize( StringTable ),
-                     sizeof( *s ), compar );
-        if( !s ) {
+        struct idstr msgid;
+
+        msgid.id = resourceid;
+        s = bsearch( &msgid, StringTable, _arraysize( StringTable ), sizeof( *s ), compar );
+        if( s == NULL ) {
             buffer[0] = '\0';
             return( 0 );
         }
         strcpy( buffer, s->s );
     }
 #else
-    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer,
-            MAX_RESOURCE_SIZE ) == -1 ) {
+    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == -1 ) {
         buffer[0] = '\0';
         return( 0 );
     }

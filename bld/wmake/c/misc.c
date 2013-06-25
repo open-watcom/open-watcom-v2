@@ -450,10 +450,10 @@ void DoWildCardClose( void )
 }
 
 
-int KWCompare( const char **p1, const char **p2 )    /* for bsearch */
-/******************************************************/
+int KWCompare( const void *p1, const void *p2 )     /* for bsearch */
+/*********************************************/
 {
-    return( stricmp( *p1, *p2 ) );
+    return( stricmp( *(const char **)p1, *(const char **)p2 ) );
 }
 
 

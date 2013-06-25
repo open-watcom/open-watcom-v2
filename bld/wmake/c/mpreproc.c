@@ -232,8 +232,7 @@ STATIC directiveTok getPreTok( void )
     UnGetCH( eatWhite() );
 
     tmp = tok;
-    key = bsearch( &tmp, directives, NUM_DIRECT, sizeof( char * ),
-           (int (*)( const void *, const void * )) KWCompare );
+    key = bsearch( &tmp, directives, NUM_DIRECT, sizeof( char * ), KWCompare );
 
     if( key == NULL ) {
         if( !curNest.skip ) {
