@@ -32,7 +32,7 @@ echo \# Multiple Dependents Test
 echo \# ===========================
 
 TEST=1
-../cmds/create.exe 30
+../cmds/create 30
 rm -f err1.out
 wtouch err1.out
 $1 -h -f maketst1 -l err1.out > tst1.out

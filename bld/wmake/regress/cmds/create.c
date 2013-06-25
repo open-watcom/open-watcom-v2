@@ -80,7 +80,7 @@ int main( int argc, char **argv )
     fp = safeopen( "maketst1", "w" );
     fputs("# big makefile!\n"
           ".c.obj:\n"
-          "    wcc386 $[* -zq\n"
+          "    wcc386 $[@ -fo=$@ -zq\n"
           "\n"
           "main.exe : main.obj &\n    ", fp);
     for( i=1; i<= max; i++ ) {
@@ -91,9 +91,9 @@ int main( int argc, char **argv )
     fclose(fp);
 
     fp = safeopen( "main.lnk", "w" );
-    fputs( "NAME main\nFILE MAIN\nOPTION quiet\n", fp);
+    fputs( "NAME main.exe\nFILE main.obj\nOPTION quiet\n", fp);
     for( i=1; i<=max; i++ ) {
-        fprintf( fp, "FILE foo%04d\n", i);
+        fprintf( fp, "FILE foo%04d.obj\n", i);
     }
     fclose(fp);
     return( 0 );

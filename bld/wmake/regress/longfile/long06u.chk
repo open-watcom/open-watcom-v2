@@ -6,79 +6,79 @@ Creating "Long Filename.tmp"
 Creating "Long Filename.tmp1"
 for %i in (L*e.*) do @echo %i
 Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
 Long Filename.tmp
+Long Filename.t1
+Long Filename.out
 Long Filename.tmp1
+Long Filename.out1
 for %i in (l*e.*) do @echo %i
 l*e.*
 for %i in (*F*e.*) do @echo %i
 Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
 Long Filename.tmp
+Long Filename.t1
+Long Filename.out
 Long Filename.tmp1
+Long Filename.out1
 for %i in (*f*e.*) do @echo %i
 *f*e.*
 for %i in (*e.*) do @echo %i
 Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
 Long Filename.tmp
+Long Filename.t1
+Long Filename.out
 Long Filename.tmp1
+Long Filename.out1
 for %i in (*a??.*) do @echo %i
 Long Filename.o1
-Long Filename.out
-Long Filename.out1
-Long Filename.t1
 Long Filename.tmp
+Long Filename.t1
+Long Filename.out
 Long Filename.tmp1
+Long Filename.out1
 for %i in (*a*.*) do @echo %i
 Long Filename.o1
-Long Filename.out
-Long Filename.out1
+Long Filename.tmp
 Long Filename.t1
-Long Filename.tmp
-Long Filename.tmp1
-for %i in (*.???) do @echo %i
 Long Filename.out
-Long Filename.tmp
-for %i in (*.????) do @echo %i
-Long Filename.out1
 Long Filename.tmp1
+Long Filename.out1
+for %i in (*.???) do @echo %i
+Long Filename.tmp
+Long Filename.out
+for %i in (*.????) do @echo %i
+Long Filename.tmp1
+Long Filename.out1
 for %i in (*.?????) do @echo %i
 *.?????
 for %i in (*.???1) do @echo %i
-Long Filename.out1
 Long Filename.tmp1
+Long Filename.out1
 for %i in (*.*1) do @echo %i
 Long Filename.o1
-Long Filename.out1
 Long Filename.t1
 Long Filename.tmp1
+Long Filename.out1
 for %i in (*1) do @echo %i
 Long Filename.o1
-Long Filename.out1
 Long Filename.t1
 Long Filename.tmp1
+Long Filename.out1
 rm *.?1
 for %i in (*) do @echo %i
 .
+Long Filename.tmp
 ..
 Long Filename.out
-Long Filename.out1
-Long Filename.tmp
 Long Filename.tmp1
+Long Filename.out1
 rm *.tmp
 for %i in (*) do @echo %i
 .
 ..
 Long Filename.out
-Long Filename.out1
 Long Filename.tmp1
+Long Filename.out1
 rm *.tmp1
 for %i in (*) do @echo %i
 .

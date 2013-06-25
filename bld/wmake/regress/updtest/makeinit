@@ -1,7 +1,7 @@
 !ifdef __UNIX__
-mkerr=../cmds/mkerr.exe
-envarg=../cmds/envarg.exe
+mkerr=../cmds/mkerr
+envarg=../cmds/envarg
 !else
-mkerr=..\cmds\mkerr.exe
-envarg=..\cmds\envarg.exe
+mkerr=..\cmds\mkerr
+envarg=..\cmds\envarg
 !endif

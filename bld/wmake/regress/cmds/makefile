@@ -1,11 +1,11 @@
 proj_name = wmake_regress_cmds
 
-targets = mkerr.exe envarg.exe ifeq.exe create.exe
+commands = mkerr envarg ifeq create
 
 !ifdef __UNIX__
-targets += rem.exe
+commands += rem
 !else
-targets += prntdir.exe
+commands += prntdir
 !endif
 
 cl_386  = wcl386
@@ -15,11 +15,8 @@ cl_i86  = wcl
 cl_mps  = wclmps
 cl_ppc  = wclppc
 
-all: $(targets) .SYMBOLIC
-        @%null
-        
-.c.exe :
-        $(cl_$(bld_cpu)) -zq -I"../../../watcom/h" -Fe$@ $[@
+$(commands) : .symbolic
+        $(cl_$(bld_cpu)) -zq -I"../../../watcom/h" $@.c
 
 clean: .symbolic
-        rm -f *.obj *.exe
+        rm -f *.obj *.o *.exe $(commands)

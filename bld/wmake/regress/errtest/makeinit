@@ -1,5 +1,5 @@
 !ifdef __UNIX__
-mkerr=../cmds/mkerr.exe
+mkerr=../cmds/mkerr
 !else
-mkerr=..\cmds\mkerr.exe
+mkerr=..\cmds\mkerr
 !endif

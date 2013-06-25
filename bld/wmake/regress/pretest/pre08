@@ -46,8 +46,9 @@ pre08.005:
 
 pre08.006: .symbolic
     $(mkerr) 0
-    if not errorlevel 0 $(mkerr)
+    if errorlevel 1 $(mkerr)
     -$(mkerr) 1
+    if not errorlevel 1 $(mkerr)
     if errorlevel 2 $(mkerr)
 
 # this is an oddball case - try if a b == a echo hi under DOS

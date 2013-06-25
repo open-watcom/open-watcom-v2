@@ -1,32 +1,32 @@
-cc -c -o main.obj main.c
-cc -c -o foo0001.obj foo0001.c
-cc -c -o foo0002.obj foo0002.c
-cc -c -o foo0003.obj foo0003.c
-cc -c -o foo0004.obj foo0004.c
-cc -c -o foo0005.obj foo0005.c
-cc -c -o foo0006.obj foo0006.c
-cc -c -o foo0007.obj foo0007.c
-cc -c -o foo0008.obj foo0008.c
-cc -c -o foo0009.obj foo0009.c
-cc -c -o foo0010.obj foo0010.c
-cc -c -o foo0011.obj foo0011.c
-cc -c -o foo0012.obj foo0012.c
-cc -c -o foo0013.obj foo0013.c
-cc -c -o foo0014.obj foo0014.c
-cc -c -o foo0015.obj foo0015.c
-cc -c -o foo0016.obj foo0016.c
-cc -c -o foo0017.obj foo0017.c
-cc -c -o foo0018.obj foo0018.c
-cc -c -o foo0019.obj foo0019.c
-cc -c -o foo0020.obj foo0020.c
-cc -c -o foo0021.obj foo0021.c
-cc -c -o foo0022.obj foo0022.c
-cc -c -o foo0023.obj foo0023.c
-cc -c -o foo0024.obj foo0024.c
-cc -c -o foo0025.obj foo0025.c
-cc -c -o foo0026.obj foo0026.c
-cc -c -o foo0027.obj foo0027.c
-cc -c -o foo0028.obj foo0028.c
-cc -c -o foo0029.obj foo0029.c
-cc -c -o foo0030.obj foo0030.c
-cc -o main.exe main.obj foo0001.obj foo0002.obj foo0003.obj foo0004.obj foo0005.obj foo0006.obj foo0007.obj foo0008.obj foo0009.obj foo0010.obj foo0011.obj foo0012.obj foo0013.obj foo0014.obj foo0015.obj foo0016.obj foo0017.obj foo0018.obj foo0019.obj foo0020.obj foo0021.obj foo0022.obj foo0023.obj foo0024.obj foo0025.obj foo0026.obj foo0027.obj foo0028.obj foo0029.obj foo0030.obj
+wcc386 main.c -fo=main.obj -zq
+wcc386 foo0001.c -fo=foo0001.obj -zq
+wcc386 foo0002.c -fo=foo0002.obj -zq
+wcc386 foo0003.c -fo=foo0003.obj -zq
+wcc386 foo0004.c -fo=foo0004.obj -zq
+wcc386 foo0005.c -fo=foo0005.obj -zq
+wcc386 foo0006.c -fo=foo0006.obj -zq
+wcc386 foo0007.c -fo=foo0007.obj -zq
+wcc386 foo0008.c -fo=foo0008.obj -zq
+wcc386 foo0009.c -fo=foo0009.obj -zq
+wcc386 foo0010.c -fo=foo0010.obj -zq
+wcc386 foo0011.c -fo=foo0011.obj -zq
+wcc386 foo0012.c -fo=foo0012.obj -zq
+wcc386 foo0013.c -fo=foo0013.obj -zq
+wcc386 foo0014.c -fo=foo0014.obj -zq
+wcc386 foo0015.c -fo=foo0015.obj -zq
+wcc386 foo0016.c -fo=foo0016.obj -zq
+wcc386 foo0017.c -fo=foo0017.obj -zq
+wcc386 foo0018.c -fo=foo0018.obj -zq
+wcc386 foo0019.c -fo=foo0019.obj -zq
+wcc386 foo0020.c -fo=foo0020.obj -zq
+wcc386 foo0021.c -fo=foo0021.obj -zq
+wcc386 foo0022.c -fo=foo0022.obj -zq
+wcc386 foo0023.c -fo=foo0023.obj -zq
+wcc386 foo0024.c -fo=foo0024.obj -zq
+wcc386 foo0025.c -fo=foo0025.obj -zq
+wcc386 foo0026.c -fo=foo0026.obj -zq
+wcc386 foo0027.c -fo=foo0027.obj -zq
+wcc386 foo0028.c -fo=foo0028.obj -zq
+wcc386 foo0029.c -fo=foo0029.obj -zq
+wcc386 foo0030.c -fo=foo0030.obj -zq
+wlink @main.lnk
