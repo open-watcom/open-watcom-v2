@@ -33,13 +33,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "wio.h"
 
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "wpatch.h"
-
-#include <unistd.h>
-#include <fcntl.h>
 
 //#include "exeform.h"
 
@@ -236,11 +234,13 @@ void Usage( char *name )
     char msgbuf[80];
     int i;
 
-    GetMsg( msgbuf, MSG_USAGE_LN_1 );
-    printf( msgbuf, name );
-    for( i = MSG_USAGE_LN_2; i <= MSG_USAGE_LN_6; i++ ) {
+    i = MSG_USAGE_FIRST;
     GetMsg( msgbuf, i );
-    puts( msgbuf );
+    printf( msgbuf, name );
+    for( i = i + 1; i <= MSG_USAGE_LAST; i++ ) {
+        GetMsg( msgbuf, i );
+        if( msgbuf[0] == 0 ) break;
+        puts( msgbuf );
     }
     MsgFini();
     exit( EXIT_FAILURE );

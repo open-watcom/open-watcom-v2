@@ -24,64 +24,84 @@ all : bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.ex
 #
 # WCPATCH. Create patch.
 #
-WBJS = dopatchw.obj msg.obj myio.obj wcptchio.obj wcpatch.obj bdiffmem.obj wbdiff.obj
+wobjs = dopatchw.obj msg.obj myio.obj wcptchio.obj wcpatch.obj bdiffmem.obj wbdiff.obj
 
-wcpatch.exe : $(WBJS) $(wres_lib) $(__MAKEFILES__)
+wcpatch.exe : $(wobjs) $(wres_lib) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(wobjs) $(wres_lib) $(ldflags)
+!else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(WBJS)) do @%append $^&.lnk file %i
+        @for %i in ($(wobjs)) do @%append $^&.lnk file %i
         $(linker) @$^&.lnk
+!endif
 
 #
 # WPATCH. Apply patch.
 #
-YBJS = dopatchp.obj msg.obj myio.obj oldfile.obj wpatchio.obj wpatch.obj bdiffmem.obj bpatch.obj
+yobjs = dopatchp.obj msg.obj myio.obj oldfile.obj wpatchio.obj wpatch.obj bdiffmem.obj bpatch.obj
 
-wpatch.exe : $(YBJS) $(wres_lib) $(__MAKEFILES__)
+wpatch.exe : $(yobjs) $(wres_lib) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(yobjs) $(wres_lib) $(ldflags)
+!else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(YBJS)) do @%append $^&.lnk file %i
+        @for %i in ($(yobjs)) do @%append $^&.lnk file %i
         $(linker) @$^&.lnk
+!endif
 
 #
 # BPATCH.
 #
-OBJ = bpatch.obj dopatchp.obj msg.obj myio.obj oldfile.obj patchio.obj patmain.obj bdiffmem.obj
+objs = bpatch.obj dopatchp.obj msg.obj myio.obj oldfile.obj patchio.obj patmain.obj bdiffmem.obj
 
-bpatch.exe : bpatch.res $(OBJ) $(wres_lib) $(__MAKEFILES__)
+bpatch.exe : bpatch.res $(objs) $(wres_lib) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(wres_lib) $(ldflags)
+!else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(OBJ)) do @%append $^&.lnk file %i
+        @for %i in ($(objs)) do @%append $^&.lnk file %i
         $(linker) @$^&.lnk
+!endif
         $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
 # BDUMP.
 #
-XBJ = bdump.obj dopatchx.obj msg.obj myio.obj oldfile.obj patchio.obj patmain.obj bdiffmem.obj
+xobjs = bdump.obj dopatchx.obj msg.obj myio.obj oldfile.obj patchio.obj patmain.obj bdiffmem.obj
 
-bdump.exe : bpatch.res $(XBJ) $(wres_lib) $(__MAKEFILES__)
+bdump.exe : bpatch.res $(xobjs) $(wres_lib) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(xobjs) $(wres_lib) $(ldflags)
+!else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(XBJ)) do @%append $^&.lnk file %i
+        @for %i in ($(xobjs)) do @%append $^&.lnk file %i
         $(linker) @$^&.lnk
+!endif
         $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
 # BDIFF.
 #
-DBJ = bdiff.obj bdiffmem.obj dopatchd.obj msg.obj myio.obj
+dobjs = bdiff.obj bdiffmem.obj dopatchd.obj msg.obj myio.obj
 
-bdiff.exe : $(DBJ) bdiff.res $(wres_lib) $(__MAKEFILES__)
+bdiff.exe : $(dobjs) bdiff.res $(wres_lib) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(dobjs) $(wres_lib) $(ldflags)
+!else
         @%create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(DBJ)) do @%append $^&.lnk file %i
+        @for %i in ($(dobjs)) do @%append $^&.lnk file %i
         $(linker) @$^&.lnk
+!endif
         $(wstrip) -q -a -r $^@ . bdiff.res
 
 #
@@ -90,7 +110,11 @@ bdiff.exe : $(DBJ) bdiff.res $(wres_lib) $(__MAKEFILES__)
 bpcmt_objs = bpcmt.obj bdiffmem.obj
 
 bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(bpcmt_objs) $(ldflags)
+!else
         $(linker) $(lflags) file { $(bpcmt_objs) }
+!endif
 
 #
 # BLEVEL
@@ -98,23 +122,27 @@ bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
 bplevel_objs = bplevel.obj
 
 bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(bplevel_objs) $(ldflags)
+!else
         $(linker) $(lflags) file { $(bplevel_objs) }
+!endif
 
 # resources
 ############
 pusage.gh : ../usage.sp
         wsplice -kBPATCH -kENGLISH -t8 @<<pusage.tmp $[@ $@
--f "pick(MSG_USAGE_LN_1+%#%+, \"%s\", \"\")"
+-f "pick(MSG_USAGE_FIRST+%#%+, \"%s\", \"\")"
 <<
 
 pusagej.gh : ../usage.sp
         wsplice -kBPATCH -kJAPANESE -t8 @<<pusagej.tmp $[@ $@
--f "pick(MSG_USAGE_LN_1+%#%+, \"\", \"%s\")"
+-f "pick(MSG_USAGE_FIRST+%#%+, \"\", \"%s\")"
 <<
 
 dusage.gh : ../usage.sp
         wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 @<<dusage.tmp $[@ $@
--f "pick(%+MSG_USAGE_LN_%#, \"%s\", \"%s\")"
+-f "pick(MSG_USAGE_FIRST+%#%+, \"%s\", \"\")"
 <<
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh

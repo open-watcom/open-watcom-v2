@@ -107,16 +107,6 @@ void SeekCheck( long pos, char *name )
     }
     }
 
-    void AddHole( foff offset, foff diff )
-    {
-        if( NumHoles == HoleArraySize ) {
-            FlushHoles();
-        }
-        HoleArray[ NumHoles ].offset = offset;
-        HoleArray[ NumHoles ].diff = diff;
-        NumHoles++;
-    }
-
     int HoleCompare( const void *_h1, const void *_h2 )
     {
         const save_hole *h1 = _h1;
@@ -147,6 +137,16 @@ void SeekCheck( long pos, char *name )
             }
             NumHoles = 0;
         }
+    }
+
+    void AddHole( foff offset, foff diff )
+    {
+        if( NumHoles == HoleArraySize ) {
+            FlushHoles();
+        }
+        HoleArray[ NumHoles ].offset = offset;
+        HoleArray[ NumHoles ].diff = diff;
+        NumHoles++;
     }
 
 #else

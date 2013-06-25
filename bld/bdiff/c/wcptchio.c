@@ -95,7 +95,7 @@ void PatchAddFile( char *path ) {
     char filechar;
 
     inF = fopen( path, "rb" );
-    if ( fstat( inF->_handle, &filestats ) == -1 ) {
+    if ( fstat( fileno( inF ), &filestats ) == -1 ) {
         printf( "Error opening file %s.\n", path );
         exit( -1 );
     }

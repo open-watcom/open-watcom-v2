@@ -34,6 +34,8 @@
 
 /* Usage message codes for whomever wishes to use them. */
 
+#define MSG_USAGE_FIRST                 16
+
 #define MSG_USAGE_LN_1                  16
 #define MSG_USAGE_LN_2                  17
 #define MSG_USAGE_LN_3                  18

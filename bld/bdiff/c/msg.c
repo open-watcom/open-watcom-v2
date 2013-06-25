@@ -37,9 +37,7 @@
 #include <ctype.h>
 #include <process.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include "wio.h"
 
 #include "bdiff.h"
 #include "wressetr.h"
@@ -101,7 +99,7 @@ int MsgInit( void )
         }
     }
     MsgShift = WResLanguage() * MSG_LANG_SPACING;
-    if( !initerror && !GetMsg( name, MSG_USAGE_LN_1 ) ) {
+    if( !initerror && !GetMsg( name, MSG_USAGE_FIRST ) ) {
         initerror = 1;
     }
     if( initerror ) {

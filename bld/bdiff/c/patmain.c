@@ -55,11 +55,12 @@ void Usage( char *name )
     char msgbuf[80];
     int i;
 
+    i = MSG_USAGE_FIRST;
     PrintBanner();
-    GetMsg( msgbuf, MSG_USAGE_LN_1 );
+    GetMsg( msgbuf, i );
     printf( msgbuf, name );
     printf( "\n" );
-    for( i = MSG_USAGE_LN_2; i <= MSG_USAGE_LAST; i++ ) {
+    for( i = i + 1; i <= MSG_USAGE_LAST; i++ ) {
         GetMsg( msgbuf, i );
         if( msgbuf[ 0 ] == 0 ) break;
         printf( "\n" );

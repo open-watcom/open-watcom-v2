@@ -29,18 +29,17 @@
 ****************************************************************************/
 
 
-#ifndef __UNIX__
+#if !defined( __UNIX__ )
 #include <conio.h>
+#include <process.h>
 #endif
 #include <ctype.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <malloc.h>
-#include <process.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "wio.h"
 
 #include "banner.h"
 #include "machtype.h"

@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
-#include <unistd.h>
+#include "wio.h"
 
 #include "bdiff.h"
 #include "wpatchio.h"
