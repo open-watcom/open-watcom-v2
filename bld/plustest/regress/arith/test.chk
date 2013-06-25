@@ -154,8 +154,8 @@ PASS compiling calc_pi3
 31415924575674353818
 PASS executing calc_pi3
 --------dmc--------
-compression ratio: 39% (PKZIP ratio=60%)
-decompression ratio: 39% (PKZIP ratio=60%)
+compression ratio: 41% (PKZIP ratio=58%)
+decompression ratio: 41% (PKZIP ratio=58%)
 PASS compiling mldiv
 1/1 = 1 (remainder 0)
 1194/1 = 1194 (remainder 0)
