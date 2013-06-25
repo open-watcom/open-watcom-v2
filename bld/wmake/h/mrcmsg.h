@@ -117,8 +117,8 @@
 #define NOKEEP_ONLY                      62
 #define NON_MATCHING_QUOTE               63
 #define INVALID_STRING_SUBSTITUTE        64
-#define DOT_DEFAULT_REDEFINITION         65
-#define MAX_FILE_LENGTH_EXCEED           66
+#define MAX_FILE_LENGTH_EXCEED           65
+#define DOT_DEFAULT_REDEFINITION         66
 #define NON_MATCHING_CURL_PAREN          67
 #define INVALID_SUFSUF                   68
 #define PATH_TOO_LONG                    69

@@ -105,6 +105,18 @@ pick( CHANGING_DIR,                "CD'ing to %E: %Z",
                                 "%E にディレクトリを変更します: %Z" )
 pick( CHANGING_DRIVE,                "Changing to drive %C:",
                                 "ドライフ %C: に変ります" )
+#if defined( __DOS__ )
+pick( OS_CORRUPTED,             "DOS memory inconsistency detected! System may halt ...",
+                                "DOSﾒﾓﾘ管理に矛盾が見つかりました！ｼｽﾃﾑがﾎｰﾙﾄするかもしれません･･･" )
+#else
+pick( OS_CORRUPTED,             "OS corruption detected",
+                                "ＯＳが壊れているのが、見つかりました" )
+#endif
+pick( READ_ERROR,                "While reading (%s): %Z",
+                                "(%s)を読み出しています: %Z" )
+pick( INCOMPATIBLE__OPTIONS,    "Incompatible options",
+                                "Incompatible options" )
+
 pick( PARSE_IFEXPR,             "!IF Parse Error",
                                 "!IF フェーズエラー" )
 pick( TMP_PATH_TOO_LONG,        "TMP Path/File Too Long",
@@ -149,18 +161,6 @@ pick( MICROSOFT_MAKEFILE,       "Makefile may be Microsoft; try /ms switch",
                                 "Makefile may be Microsoft; try /ms switch")
 pick( ERROR_STRING_OPEN,    "Expecting double quote character to end open string.",
                 "Expecting double quote character to end open string.")
-
-#if defined( __DOS__ )
-pick( OS_CORRUPTED,                "DOS memory inconsistency detected! System may halt ...",
-                                "DOSﾒﾓﾘ管理に矛盾が見つかりました！ｼｽﾃﾑがﾎｰﾙﾄするかもしれません･･･" )
-#else
-pick( OS_CORRUPTED,             "OS corruption detected",
-                                "ＯＳが壊れているのが、見つかりました" )
-#endif
-pick( READ_ERROR,                "While reading (%s): %Z",
-                                "(%s)を読み出しています: %Z" )
-pick( INCOMPATIBLE__OPTIONS,    "Incompatible options",
-                                "Incompatible options" )
 
 /*
  * all msgs beyond here should not have a number printed with them
