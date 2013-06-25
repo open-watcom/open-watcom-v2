@@ -57,12 +57,11 @@ verrc_exe_skel = ../../exever.rc
 !include verrc.mif
 
 owcchelp.gh: ../../owcchelp.sp
-        wsplice "-f\"%s\"," $< $@
+        wsplice -f "\"%s\"," $< $@
 
 $(owcc_specs): $(wlink_dir)/lnk/specs.sp
 !ifeq bootstrap 1
-        wsplice -k Pspecs $< sed.tmp
-        sed -f ../../convtool.sed sed.tmp >$@
+        wsplice -k Pspecs $< - | sed -f ../../convtool.sed >$@
 !else
         wsplice -k Pspecs $< $@
 !endif

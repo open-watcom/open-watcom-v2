@@ -103,13 +103,19 @@ bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
 # resources
 ############
 pusage.gh : ../usage.sp
-        wsplice -kBPATCH -kENGLISH -t8 -f "pick(%+MSG_USAGE_LN_1-1+%$#, \"%s\", \"\")" $[@ $^@
+        wsplice -kBPATCH -kENGLISH -t8 @<<pusage.tmp $[@ $@
+-f "pick(MSG_USAGE_LN_1+%#%+, \"%s\", \"\")"
+<<
 
 pusagej.gh : ../usage.sp
-        wsplice -kBPATCH -kJAPANESE -t8 -f "pick(%+MSG_USAGE_LN_1-1+%$#, \"\", \"%s\")" $[@ $^@
+        wsplice -kBPATCH -kJAPANESE -t8 @<<pusagej.tmp $[@ $@
+-f "pick(MSG_USAGE_LN_1+%#%+, \"\", \"%s\")"
+<<
 
 dusage.gh : ../usage.sp
-        wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(%+MSG_USAGE_LN_%$#, \"%s\", \"%s\")" $[@ $^@
+        wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 @<<dusage.tmp $[@ $@
+-f "pick(%+MSG_USAGE_LN_%#, \"%s\", \"%s\")"
+<<
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
         $(rc_aui) -I.. -DBPATCH $[@ -fo=$^@

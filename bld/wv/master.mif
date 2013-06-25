@@ -634,12 +634,14 @@ wsplice_keys = -kIS_RC -k$(host_os)
 !endif
 
 usage.gh : $(hdir)/usage.sp
-        @%write usage.tmp -kENGLISH $(wsplice_keys) -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
-        wsplice @usage.tmp
+        wsplice -kENGLISH $(wsplice_keys) -t8 @<<usage.tmp $< $@
+-f "pick((MSG_USAGE_BASE+%#%+), \"%s\", \"\")"
+<<
 
 usagej.gh : $(hdir)/usage.sp
-        @%write usagej.tmp -kJAPANESE $(wsplice_keys) -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@
-        wsplice @usagej.tmp
+        wsplice -kJAPANESE $(wsplice_keys) -t8 @<<usagej.tmp $< $@
+-f "pick((MSG_USAGE_BASE+%#%+), \"\", \"%s\")"
+<<
 
 usage.u : $(hdir)/usage.sp
-        wsplice -kENGLISH -k$(host_os) -klinkres -u $[@ $^@
+        wsplice -u -kENGLISH -k$(host_os) -klinkres $[@ $@

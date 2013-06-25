@@ -97,19 +97,22 @@ $(xname).exe :: usageend.gh $(objs) $(libs) wmake.res $(version_res_exe_$(host_o
         $(wstrip) -q -a -r $(xname).exe . wmake.res
 
 wmake.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh
-        $(rc_aui) $[@ -fo=$^@
+        $(rc_aui) $[@ -fo=$@
 
 usage.gh : ../h/usage.sp
-        @%write usage.tmp -kIS_RC -kENGLISH -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< -o "%n%n%n%n" $^@
-        wsplice @usage.tmp
+        wsplice -kIS_RC -kENGLISH @<<usage.tmp $@
+-f "pick((MSG_USAGE_BASE+%#%+), \"%s\", \"\")" $< -o "%n%n%n%n"
+<<
 
 usagej.gh : ../h/usage.sp
-        @%write usage.tmp -kIS_RC -kJAPANESE -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< -o "%n%n%n%n" $^@
-        wsplice @usage.tmp
+        wsplice -kIS_RC -kJAPANESE @<<usagej.tmp $@
+-f "pick((MSG_USAGE_BASE+%#%+), \"\", \"%s\")" $< -o "%n%n%n%n"
+<<
 
-usageend.gh : usage.gh usagej.gh
-        @%write usage.tmp -f "%+" usage.gh -o "$#define MSG_USAGE_LAST (MSG_USAGE_BASE+%$#)%n" $^@
-        wsplice @usage.tmp
+usageend.gh : usage.gh
+        wsplice @<<usageend.tmp $@
+-f "%+" $< -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n"
+<<
 
 # usage.h : ..\h\usage.sp
 # I want the usage message codes to be generated on the fly, and also
@@ -118,8 +121,8 @@ usageend.gh : usage.gh usagej.gh
 # make the final program any larger.  Oh well - the end justifying the
 # means, I suppose. CSK
 #       wsplice -k$(OS) -kENGLISH -f "%s"..\h\usage.sp -o "%n%n%n%n%n%n%n%n%n%n" usage.h
-#       wsplice -f "$#define USAGE_LN_%$# (MSG_USAGE_BASE+%$#)%+" usage.h usage.h
-#       wsplice -f "%s%+"usage.h -o "$#define MSG_USAGE_LAST (MSG_USAGE_BASE+%$#)" usage.h
+#       wsplice -f "#define USAGE_LN_%# (MSG_USAGE_BASE+%#)%+" usage.h usage.h
+#       wsplice -f "%s%+"usage.h -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)" usage.h
 
 !include verrc.mif
 
@@ -158,8 +161,12 @@ deps : .symbolic
 do : .symbolic
     wmake -h -n | sed -f ../mif/mkdo.sed >do.bat
 
-# In NT, failure of ..\regress\test does not set a failure return code.
 test : $(xname).exe .always .symbolic
-    ..\regress\test $(%cwd)\$(xname).exe # Works in NT, will fail in Linux
-    # ../regress/test $(%cwd)\$(xname).exe # Fails in NT
-    # No Linux ../regress/test has been ported. W.Briscoe 2004-01-17
+curr_dir=$+$(%CWD)$-
+    cd ../regress
+!ifdef __UNIX__
+    -./test.sh $(curr_dir)/$(xname).exe
+!else
+    -test $(curr_dir)\$(xname).exe
+!endif
+    cd $(curr_dir)
