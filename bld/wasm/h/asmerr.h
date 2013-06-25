@@ -72,9 +72,9 @@ extern void             AsmNote( int level, int msgnum, ... );
 
     #define MAX_MESSAGE_SIZE    128
 
-    #define MSG_SHARE_RC_BASE   1
-    #define MSG_WOMP_RC_BASE    200
-    #define MSG_WASM_RC_BASE    500
+    #define MSG_SHARE_BASE      1
+    #define MSG_WOMP_BASE       200
+    #define MSG_WASM_BASE       500
     #define MSG_USAGE_BASE      900
 
     extern int MsgInit( void );
@@ -87,12 +87,15 @@ extern void             AsmNote( int level, int msgnum, ... );
 
 enum {
 #define pick(num,etext,jtext) num,
-    START_BASE1 = MSG_SHARE_RC_BASE - 1,
+    START_BASE1 = MSG_SHARE_BASE - 1,
 #include "../h/asmshare.msg"
-    START_BASE2 = MSG_WOMP_RC_BASE - 1,
+    MSG_SHARE_LAST,
+    START_BASE2 = MSG_WOMP_BASE - 1,
 #include "../h/womp.msg"
-    START_BASE3 = MSG_WASM_RC_BASE - 1,
+    MSG_WOMP_LAST,
+    START_BASE3 = MSG_WASM_BASE - 1,
 #include "../h/wasm.msg"
+    MSG_WASM_LAST,
 #undef pick
 };
 
@@ -100,8 +103,8 @@ enum {
 
     #define MSG_LANG_SPACING    1000
 
-    #include "wmpmsg.gh"
     #include "msg.gh"
+    #include "wmpmsg.gh"
     #include "wasmmsg.gh"
 
     extern void MsgPutUsage( void );

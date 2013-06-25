@@ -39,22 +39,14 @@
 
 #if defined( USE_TEXT_MSGS )
 
-typedef struct msgtxt {
-    int     num;
-    char    *text;
-} msgtxt;
-
-msgtxt txtmsgs[] = {
-    #define pick(num,etext,jtext) {num,etext},
+static const char *txtmsgs[] = {
+    #define pick(num,etext,jtext) {etext},
     #include "../h/asmshare.msg"
     #include "../h/womp.msg"
     #include "../h/wasm.msg"
     #include "usage.gh"
     #undef pick
 };
-
-#define MSG_NUM sizeof( txtmsgs ) / sizeof( txtmsgs[0] )
-#define MSG_SIZE sizeof( txtmsgs[0] )
 
 #else
 
@@ -174,18 +166,7 @@ void MsgPrintf1( int resourceid, char *token )
     printf( msgbuf, token );
 }
 
-#if defined( USE_TEXT_MSGS )
-
-static int msg_cmp( const void *p1, const void *p2 )
-{
-    if( ((msgtxt *)p1)->num == ((msgtxt *)p2)->num )
-        return( 0 );
-    if( ((msgtxt *)p1)->num > ((msgtxt *)p2)->num )
-        return( 1 );
-    return( -1 );
-}
-
-#else
+#if !defined( USE_TEXT_MSGS )
 
 static off_t res_seek( int handle, off_t position, int where )
 /* fool the resource compiler into thinking that the resource information
@@ -201,6 +182,7 @@ static off_t res_seek( int handle, off_t position, int where )
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 #endif
+
 
 int MsgInit( void )
 {
@@ -245,24 +227,36 @@ void MsgFini( void )
 #endif
 }
 
+#define TXT_SHARE_BASE  0
+#define TXT_WOMP_BASE   (TXT_SHARE_BASE + MSG_SHARE_LAST - MSG_SHARE_BASE)
+#define TXT_WASM_BASE   (TXT_WOMP_BASE + MSG_WOMP_LAST - MSG_WOMP_BASE)
+#define TXT_USAGE_BASE  (TXT_WASM_BASE + MSG_WASM_LAST - MSG_WASM_BASE)
+
 int MsgGet( int id, char *buffer )
 {
 #if defined( USE_TEXT_MSGS )
-    msgtxt  keyx;
-    msgtxt  *result;
+    int index;
 
-    keyx.num = id;
-    result = bsearch( &keyx, txtmsgs, MSG_NUM, MSG_SIZE, msg_cmp );
-    if( result != NULL ) {
-        strncpy( buffer, result->text, MAX_MESSAGE_SIZE );
-        buffer[MAX_MESSAGE_SIZE - 1] = '\0';
-        return( 1 );
+    if( id >= MSG_SHARE_BASE && id < MSG_SHARE_LAST ) {
+        index = id - MSG_SHARE_BASE + TXT_SHARE_BASE;
+    } else if( id >= MSG_WOMP_BASE && id < MSG_WOMP_LAST ) {
+        index = id - MSG_WOMP_BASE + TXT_WOMP_BASE;
+    } else if( id >= MSG_WASM_BASE && id < MSG_WASM_LAST ) {
+        index = id - MSG_WASM_BASE + TXT_WASM_BASE;
+    } else if( id >= MSG_USAGE_BASE ) {
+        index = id - MSG_USAGE_BASE + TXT_USAGE_BASE;
+    } else {
+        buffer[0] = '\0';
+        return( 0 );
     }
+    strncpy( buffer, txtmsgs[index], MAX_MESSAGE_SIZE - 1 );
+    buffer[MAX_MESSAGE_SIZE - 1] = '\0';
+    return( 1 );
 #else
     if( LoadString( &hInstance, id + MsgShift, (LPSTR)buffer, MAX_MESSAGE_SIZE ) == 0 ) {
         return( 1 );
     }
-#endif
     buffer[0] = '\0';
     return( 0 );
+#endif
 }

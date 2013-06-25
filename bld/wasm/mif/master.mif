@@ -31,12 +31,13 @@ libs = $(wres_lib)
 #cflags stuff
 #########
 extra_cpp_flags =-D_STANDALONE_
+#extra_cpp_flags += -DUSE_TEXT_MSGS
 !ifeq release 0
 extra_cpp_flags += -DDEBUG_OUT
 !endif
 
-extra_c_flags_genmsomf = -DMSG_WOMP_RC_BASE=200
-extra_c_flags_fixup = -DMSG_WOMP_RC_BASE=200
+extra_c_flags_genmsomf = -DMSG_WOMP_BASE=200
+extra_c_flags_fixup = -DMSG_WOMP_BASE=200
 extra_c_flags_asmalloc = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_asmfixup = -I"$(cg_dir)/intel/h"
@@ -135,29 +136,30 @@ $(name).res : ../h/$(proj_name).rc usage.gh usagej.gh msg.gh wasmmsg.gh wmpmsg.g
         $(rc_aui) -D_STANDALONE_ $[@ -fo=$^@
 
 msg.gh : ../h/asmshare.msg
-        awk -v base=MSG_SHARE_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 wasmmsg.gh : ../h/wasm.msg
-        awk -v base=MSG_WASM_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 wmpmsg.gh : ../h/womp.msg
-        awk -v base=MSG_WOMP_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
+        awk -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
-usage.gh : usage.u
-        @%write $^&.tmp -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $^@
-        wsplice @$^&.tmp
+usage.gh : ../h/options.gml
+        optencod -q $(optencod_opt_$(host_os)) $]@ . . $^&.tmp any
+        %append $^&.tmp "."
+        wsplice @<<
+-t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp $^@
+<<
 
-usagej.gh : usagej.u
-        @%write $^&.tmp -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $^@
-        wsplice @$^&.tmp
+usagej.gh : ../h/options.gml
+        optencod -l 1 -q $]@ . . $^&.tmp any
+        %append $^&.tmp "."
+        wsplice @<<
+-t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp $^@
+<<
 
 usage.u : ../h/options.gml
-        optencod -q -u $@ $]@ $(nulldevice) $(nulldevice) $(nulldevice) any
-        %append $@ .
-
-usagej.u : ../h/options.gml
-        optencod -l 1 -q -u $@ $]@ $(nulldevice) $(nulldevice) $(nulldevice) any
-        %append $@ .
+        optencod -q -u $@ $]@ . . . any
 
 ###################################################################
 
