@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"
+#include "bool.h"
 #include "getopt.h"
 #include "misc.h"
 
@@ -46,7 +47,6 @@ static const char *usageTxt[] = {
     "\tstring2     : chars from string1 are translated into the corresponding",
     "\t\t      char from string2",
     "\tOptions: -? : print this list",
-    "\t\t -b : treat input stream as binary",
     "\t\t -c : complement string1 w.r.t the universe of ascii chars",
     "\t\t -d : delete all input characters in string1",
     "\t\t -s : squeeze all repeated output characters in string2 into a",
@@ -63,12 +63,12 @@ static const char *usageTxt[] = {
 
 #define MAX_STR 256
 
-char    translationMatrix[ MAX_STR ];
-char    deleteSet[ MAX_STR ];           /* formed from string1 */
-char    squeezeSet[ MAX_STR ];          /* formed from string2 */
-int     flagDelete;
-int     flagSqueeze;
-int     flagComplement;
+unsigned char   translationMatrix[MAX_STR];
+bool            deleteSet[MAX_STR];           /* formed from string1 */
+bool            squeezeSet[MAX_STR];          /* formed from string2 */
+int             flagDelete;
+int             flagSqueeze;
+int             flagComplement;
 
 /*
     in str:
@@ -83,16 +83,19 @@ int     flagComplement;
                 If n is not present, then it defaults to 256.
 */
 
-char expandChar( char **str ) {
+unsigned char expandChar( char **str ) {
 
-    char        ch;
+    unsigned char   ch;
 
-    ch = **str;
-    if( ch == 0 ) return( ch );
+    ch = *(unsigned char *)*str;
+    if( ch == 0 )
+        return( ch );
     ++*str;
-    if( ch != '\\' ) return( ch );
+    if( ch != '\\' )
+        return( ch );
     ch = **str;
-    if( ch == 0 ) return( ch );
+    if( ch == 0 )
+        return( ch );
     ++*str;
     switch( ch ) {
     case 'a':   return( '\a' );
@@ -116,7 +119,7 @@ char expandChar( char **str ) {
 }
 
 
-size_t expandString( char *str, char *output ) {
+size_t expandString( char *str, unsigned char *output ) {
 
     static const char class_msg[] = {
         "[] class must be of the form [x-y] or [a*n]\n"
@@ -124,27 +127,28 @@ size_t expandString( char *str, char *output ) {
     static const char length_msg[] = {
         "a string cannot expand to greater than 256 characters\n"
     };
-    char        ch;
-    int         low;
-    int         hi;
-    char        *outp;
-    int         numb;
+    int             low;
+    int             hi;
+    unsigned char   *outp;
+    int             numb;
 
     outp = output;
     for( ;; ) {
-        ch = *str;
-        if( ch == 0 ) break;
-        if( ch == '[' ) {
+        if( *str == 0 ) break;
+        if( *str == '[' ) {
             ++str;
             low = expandChar( &str );
-            if( *str == 0 ) Die( class_msg );
+            if( *str == 0 )
+                Die( class_msg );
             switch( *str ) {
             case '-':
                 ++str;
                 hi = expandChar( &str );
-                if( *str == 0 ) Die( class_msg );
+                if( *str == 0 )
+                    Die( class_msg );
                 while( low <= hi ) {
-                    if( outp - output >= MAX_STR ) Die( length_msg );
+                    if( outp - output >= MAX_STR )
+                        Die( length_msg );
                     *outp++ = low++;
                 }
                 break;
@@ -152,23 +156,29 @@ size_t expandString( char *str, char *output ) {
                 ++str;
                 if( *str != ']' ) {
                     numb = strtoul( str, &str, 0 );
-                    if( *str == 0 ) Die( class_msg );
+                    if( *str == 0 ) {
+                        Die( class_msg );
+                    }
                 } else {
                     numb = MAX_STR - ( outp - output );
                 }
                 while( numb ) {
-                    if( outp - output >= MAX_STR ) Die( length_msg );
+                    if( outp - output >= MAX_STR )
+                        Die( length_msg );
                     *outp++ = low;
                     --numb;
                 }
                 break;
             default:
                 Die( class_msg );
+                break;
             }
-            if( *str != ']' ) Die( class_msg );
+            if( *str != ']' )
+                Die( class_msg );
             ++str;
         } else {
-            if( outp - output >= MAX_STR ) Die( length_msg );
+            if( outp - output >= MAX_STR )
+                Die( length_msg );
             *outp++ = expandChar( &str );
         }
     }
@@ -176,7 +186,7 @@ size_t expandString( char *str, char *output ) {
 }
 
 
-void doTranslate( size_t len1, char *str1, size_t len2, char *str2 ) {
+void doTranslate( size_t len1, unsigned char *str1, size_t len2, unsigned char *str2 ) {
 
     int         i;
     int         j;
@@ -184,69 +194,64 @@ void doTranslate( size_t len1, char *str1, size_t len2, char *str2 ) {
     int         last_ch;
 
     for( i = 0; i < MAX_STR; ++i ) {
-        translationMatrix[ i ] = i;
+        translationMatrix[i] = i;
     }
     if( flagComplement ) {
         for( i = 0; i < MAX_STR; ++i ) {
-            deleteSet[ i ] = !deleteSet[ i ];
+            deleteSet[i] = !deleteSet[i];
         }
         j = 0;
         for( i = 0; i < MAX_STR && j < len2; ++i ) {
-            if( deleteSet[ i ] ) {
-                translationMatrix[ i ] = str2[ j ];
+            if( deleteSet[i] ) {
+                translationMatrix[i] = str2[j];
                 ++j;
             }
         }
     } else {
         j = 0;
         for( i = 0; i < len1 && i < len2; ++i ) {
-            translationMatrix[ ((unsigned char *)str1)[ i ] ] = str2[ i ];
+            translationMatrix[str1[i]] = str2[i];
         }
     }
     last_ch = -1;
     for( ;; ) {
         ch = getchar();
         if( ch == EOF ) break;
-        if( flagDelete && deleteSet[ ch ] ) continue;
-        ch = translationMatrix[ ch ];
-        if( flagSqueeze && last_ch == ch && squeezeSet[ ch ] ) continue;
+        if( flagDelete && deleteSet[ch] ) continue;
+        ch = translationMatrix[ch];
+        if( flagSqueeze && last_ch == ch && squeezeSet[ch] ) continue;
         putchar( ch );
         last_ch = ch;
     }
 }
 
 
-void makeSet( size_t len, void *s, char set[], int no_dups ) {
+void makeSet( size_t len, unsigned char *str, bool set[], int no_dups ) {
 
-    unsigned char   *str = s;
     int             i;
 
-    memset( set, 0, MAX_STR );
+    memset( set, FALSE, MAX_STR );
     for( i = 0; i < len; ++i ) {
-        if( no_dups && set[ str[ i ] ] ) {
+        if( no_dups && set[str[i]] ) {
             Die( "no duplicates allowed in string1" );
         }
-        set[ str[ i ] ] = 1;
+        set[str[i]] = TRUE;
     }
 }
 
 
 void main( int argc, char **argv ) {
 
-    int         ch;
-    char        string1[ MAX_STR ];
-    size_t      string1_len;
-    char        string2[ MAX_STR ];
-    size_t      string2_len;
+    int             ch;
+    unsigned char   string1[MAX_STR];
+    size_t          string1_len;
+    unsigned char   string2[MAX_STR];
+    size_t          string2_len;
 
     for( ;; ) {
-        ch = GetOpt( &argc, argv, "bcds", usageTxt );
+        ch = GetOpt( &argc, argv, "cds", usageTxt );
         if( ch == -1 ) break;
         switch( ch ) {
-        case 'b':
-            setmode( fileno( stdin ), O_BINARY );
-            setmode( fileno( stdout ), O_BINARY );
-            break;
         case 'c':       flagComplement = 1;     break;
         case 'd':       flagDelete = 1;         break;
         case 's':       flagSqueeze = 1;        break;
@@ -256,17 +261,22 @@ void main( int argc, char **argv ) {
         Quit( usageTxt, "too many arguments" );
     }
     if( argc > 1 ) {
-        string1_len = expandString( argv[ 1 ], string1 );
+        string1_len = expandString( argv[1], string1 );
         makeSet( string1_len, string1, deleteSet, 1 );
     } else {
         string1_len = 0;
     }
     if( argc > 2 ) {
-        string2_len = expandString( argv[ 2 ], string2 );
+        string2_len = expandString( argv[2], string2 );
         makeSet( string2_len, string2, squeezeSet, 0 );
     } else {
         string2_len = 0;
     }
+    /* We ALWAYS open the input and output streams in binary mode
+     * to don't do CRLF translations.
+     */
+    setmode( fileno( stdin ), O_BINARY );
+    setmode( fileno( stdout ), O_BINARY );
     doTranslate( string1_len, string1, string2_len, string2 );
     exit( 0 );
 }

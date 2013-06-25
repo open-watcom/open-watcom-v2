@@ -59,11 +59,7 @@ exes = &
 dmc.$(exe) : dmc.obj
     $(linker) @test.lnk NAME $@ FILE $[@
     @%append exec.out --------$^*--------
-!ifdef __UNIX__
     tr -d "\r" <dmc.cpp >dmctest.out
-!else
-    tr -b -d "\r" <dmc.cpp >dmctest.out
-!endif
     $(run) $(exec_prefix)$@ c dmctest.out dmc.out >>exec.out
     $(run) $(exec_prefix)$@ d dmc.out cpp.out >>exec.out
     diff -b cpp.out dmctest.out >>exec.out
