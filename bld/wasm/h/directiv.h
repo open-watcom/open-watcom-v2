@@ -193,8 +193,8 @@ typedef struct {
     label_list          *paralist;      // list of parameters
     label_list          *locallist;     // list of local variables
     label_list          *labellist;     // list of local labels
-    int                 parasize;       // total no. of bytes used by parameters
-    int                 localsize;      // total no. of bytes used by local variables
+    unsigned long       parasize;       // total no. of bytes used by parameters
+    unsigned long       localsize;      // total no. of bytes used by local variables
     memtype             mem_type;       // distance of procedure: near or far
     unsigned            is_vararg   :1; // if it has a vararg
     unsigned            pe_type     :1; // prolog/epilog code type 0:8086/186 1:286 and above

@@ -408,10 +408,14 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
     } else if( ( op0->constant & 0xff ) == op0->constant ) { // OP_IMMED implied
         extra = _LIT( op0->constant ); // this lit is between 0..255
         (void)ensureOpAbsolute( op0, 0 );
-    } else if( m_opt == DOMOV_ABS &&
-               ( ( ( abs_val = abs( op0->constant ) ) & 0xff ) == abs_val ) ) {
-        extra = _LIT( abs_val ); // this lit is between 0..255
-        // ensureOpAbsolute( op0, 0 );  should be done before calling doMov
+    } else if( m_opt == DOMOV_ABS ) {
+        abs_val = abs( op0->constant );
+        if( ( abs_val & 0xff ) == abs_val ) {
+            extra = _LIT( abs_val ); // this lit is between 0..255
+            // ensureOpAbsolute( op0, 0 );  should be done before calling doMov
+        } else {
+            ready = FALSE;
+        }
     } else {
         ready = FALSE;
     }
@@ -432,7 +436,7 @@ static void ITLoadAddress( ins_table *table, instruction *ins, uint_32 *buffer, 
     ins_operand         *op;
     ins_operand         *ops[2];
     unsigned            inc;
-    op_const            val;
+//    op_const            val;
     uint_8              s_reg;
 
     table = table;
@@ -445,7 +449,7 @@ static void ITLoadAddress( ins_table *table, instruction *ins, uint_32 *buffer, 
         op->reg = ZERO_REG;
     }
     assert( op->type == OP_REG_INDIRECT );
-    val = op->constant;
+//    val = op->constant;
     s_reg = RegIndex( op->reg );
     if( !OP_HAS_RELOC( op ) && s_reg == ZERO_REG_IDX ) {
         // doMov() can only be called when op->reg is ZERO_REG and no reloc
@@ -582,9 +586,12 @@ static void opError( instruction *ins, op_type actual, op_type wanted, int i ) {
 static bool opValidate( ot_array *verify, instruction *ins, ins_opcount num_op, unsigned num_var ) {
 //**************************************************************************************************
 
-    int             ctr, var, lasterr;
-    op_type         actual, wanted;
+    int             ctr, var;
+    int             lasterr;
+    op_type         actual = 0;
+    op_type         wanted = 0;
 
+    lasterr = -1;
     for( var = 0; var < num_var; var++ ) {
         lasterr = -1;
         for( ctr = 0; ctr < num_op; ctr++ ) {

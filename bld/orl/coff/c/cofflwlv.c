@@ -41,7 +41,7 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
 {
     int                 loop;
     int                 prev;
-    int                 len;
+//    int                 len;
     uint_16             type; // type of CoffSymEnt
     coff_symbol_handle  current;
     coff_sym_section *  aux;
@@ -64,7 +64,7 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
             current->name = (char *)( file_hnd->string_table->contents + current->symbol->name.non_name.offset - sizeof( coff_sec_size ) );
             current->name_alloced = COFF_FALSE;
         } else {
-            len = strlen( current->symbol->name.name_string );
+//            len = strlen( current->symbol->name.name_string );
             if( strlen( current->symbol->name.name_string ) >= COFF_SYM_NAME_LEN ) {
                 current->name = _ClientAlloc( file_hnd, COFF_SYM_NAME_LEN + 1 );
                 strncpy( current->name, current->symbol->name.name_string, COFF_SYM_NAME_LEN );

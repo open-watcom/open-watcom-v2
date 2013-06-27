@@ -43,7 +43,7 @@ struct TextAttr
 {
     FontFlags   _type;
     uint_32 _data;
-    int     _size;
+    unsigned _size;
     char    *_stringDat;
 };
 
@@ -185,8 +185,8 @@ class TextHeader
     static const uint_32 _parBits[];
 
     Buffer<TextAttr>    _attribs;
-    int         _numAttribs;
-    int         _maxAttribs;
+    unsigned            _numAttribs;
+    unsigned            _maxAttribs;
 
     static const uint_8 _attrBits[];
     static const int    _attrSizes[];
@@ -195,18 +195,16 @@ class TextHeader
     ~TextHeader();
 
     // Functions to manipulate paragraph attributes (tabs, indents, ...)
-    void    dumpTo( TopicLink *dest );
-    int     setTab( int val, uint_8 flags );
-    int     setPar( ParFlags type, int val );
-    void    unsetPar( ParFlags type );
-    void    clearPar();
-    int     addAttr( FontFlags type, uint_32 val, char const str[], int length );
-    int     appendAttr( int index, FontFlags type, uint_32 val,
-                     char const str[], int length );
-    void    chgAttr( int index, FontFlags type, uint_32 val,
-                          char const str[], int length );
-    uint_32 attrData( int index );
-    void    reset();
+    void        dumpTo( TopicLink *dest );
+    int         setTab( int val, uint_8 flags );
+    int         setPar( ParFlags type, int val );
+    void        unsetPar( ParFlags type );
+    void        clearPar();
+    unsigned    addAttr( FontFlags type, uint_32 val, char const str[], int length );
+    unsigned    appendAttr( unsigned index, FontFlags type, uint_32 val, char const str[], int length );
+    void        chgAttr( unsigned index, FontFlags type, uint_32 val, char const str[], int length );
+    uint_32     attrData( unsigned index );
+    void        reset();
 
     friend class HFTopic;
 };
@@ -229,8 +227,8 @@ class TextHolder
     // I must be able to insert those zeroes in the middle of the text.
 
     Buffer<uint_16> _zeroes;
-    uint_16     _numZeroes;
-    uint_16     _maxZeroes;
+    uint_16         _numZeroes;
+    uint_16         _maxZeroes;
 
     TextHolder();
 
@@ -334,7 +332,7 @@ TextHeader::~TextHeader()
 
 void TextHeader::reset()
 {
-    for( int i=0; i<_numAttribs; i++ ){
+    for( unsigned i=0; i<_numAttribs; i++ ){
     if( _attribs[i]._stringDat != NULL ){
         delete[] _attribs[i]._stringDat;
     }
@@ -372,9 +370,9 @@ int TextHeader::setTab( int val, uint_8 flag )
     uint_16 trueval;
 
     if( val < 0 ){
-    return 0;
+        return 0;
     } else if( val >= INT_LARGE_LIMIT ){
-    return 0;
+        return 0;
     }
 
     // Convert the value into WinHelp's bizarre format for
@@ -383,31 +381,31 @@ int TextHeader::setTab( int val, uint_8 flag )
     trueval = (uint_16) (val/10);
     trueval <<= 1;
     if( trueval < INT_SMALL_LIMIT ){
-    _parAttrSize += 1;
+        _parAttrSize += 1;
     } else {
-    trueval |= 0x1;
-    _parAttrSize += 2;
+        trueval |= 0x1;
+        _parAttrSize += 2;
     }
     if( flag != 0x0 ){
-    _parAttrSize += 1;
-    if( trueval < INT_SMALL_LIMIT ){
-        trueval |= 0x80;
-    } else {
-        trueval |= 0x8000;
-    }
+        _parAttrSize += 1;
+        if( trueval < INT_SMALL_LIMIT ){
+            trueval |= 0x80;
+        } else {
+            trueval |= 0x8000;
+        }
     }
 
     if( _numStops == 0 ){
-    _parAttrSize += 1;
+        _parAttrSize += 1;
     } else if( _numStops == _maxStops ){
-    _maxStops += TSTOP_BLOCKS;
-    _tabStops.resize( _maxStops );
-    _tabFlags.resize( _maxStops );
+        _maxStops += TSTOP_BLOCKS;
+        _tabStops.resize( _maxStops );
+        _tabFlags.resize( _maxStops );
     }
     _tabStops[_numStops] = trueval;
     _tabFlags[_numStops] = flag;
     if( ++_numStops == 0x40 ){
-    _parAttrSize += 1;
+        _parAttrSize += 1;
     }
 
     _flags |= _parBits[TOP_TAB_STOPS];
@@ -420,76 +418,78 @@ int TextHeader::setTab( int val, uint_8 flag )
 int TextHeader::setPar( ParFlags type, int val )
 {
     int already_set = _flags & _parBits[type];
-    int sign;
-    uint_16 trueval;
+    int sign = 0;
+    uint_16 trueval = 0;
+
     if( val < 0 && type == TOP_TAB_STOPS ){
-    return 0;
+        return 0;
     }
 
     if( type == TOP_BORDER ){
-    _border = (uint_32) val;
-    _parAttrSize += BORDER_BYTE_SIZE;
+        _border = (uint_32) val;
+        _parAttrSize += BORDER_BYTE_SIZE;
     } else {
-    // Convert the value into binary form.
-    // This is complicated by WinHelp's bizarre format for
-    // storing integers; see "topic.doc".
-    if( type < TOP_RIGHT_JUST ){
-        if( val == -1 ) return 1;
-        sign = val < 0;
-        if( sign ){
-        val = -val;
+        // Convert the value into binary form.
+        // This is complicated by WinHelp's bizarre format for
+        // storing integers; see "topic.doc".
+        if( type < TOP_RIGHT_JUST ){
+            if( val == -1 )
+                return 1;
+            sign = ( val < 0 );
+            if( sign ){
+                val = -val;
+            }
+            if( val >= INT_LARGE_LIMIT ) {
+                return 0;
+            }
+            trueval = (uint_16)( val / 10 );
+            trueval <<= 1;
         }
-        if( val >= INT_LARGE_LIMIT ) {
-        return 0;
-        }
-        trueval = (uint_16) (val/10);
-        trueval <<= 1;
-    }
-    if( type == TOP_TAB_STOPS ){
-        if( trueval < INT_SMALL_LIMIT ){
-        _parAttrSize += 1;
-        } else {
-        trueval |= 0x1;
-        _parAttrSize += 2;
-        }
+        if( type == TOP_TAB_STOPS ){
+            if( trueval < INT_SMALL_LIMIT ){
+                _parAttrSize += 1;
+            } else {
+                trueval |= 0x1;
+                _parAttrSize += 2;
+            }
 
-        if( _numStops == 0 ){
-        _parAttrSize += 1;
-        } else if( _numStops == _maxStops ){
-        _maxStops += TSTOP_BLOCKS;
-        _tabStops.resize( _maxStops );
-        _tabFlags.resize( _maxStops );
+            if( _numStops == 0 ){
+                _parAttrSize += 1;
+            } else if( _numStops == _maxStops ){
+                _maxStops += TSTOP_BLOCKS;
+                _tabStops.resize( _maxStops );
+                _tabFlags.resize( _maxStops );
+            }
+            _tabStops[ _numStops ] = trueval;
+            _tabFlags[ _numStops ] = 0x0;
+            if( ++_numStops == 0x40 ){
+                _parAttrSize += 1;
+            }
+        } else if( type < TOP_TAB_STOPS ){
+            if( already_set ){
+                if( _spacing[ type ] & 0x1 ){
+                    _parAttrSize -= 2;
+                } else {
+                    _parAttrSize -= 1;
+                }
+            }
+            if( trueval < INT_SMALL_LIMIT ){
+                trueval |= 0x80;
+                _parAttrSize += 1;
+            } else {
+                trueval |= 0x8001;
+                _parAttrSize += 2;
+            }
+            if( sign ){
+                if( trueval & 01 ){
+                    trueval ^= (uint_16) ~1;
+                } else {
+                    trueval ^= (uint_8) ~1;
+                }
+                trueval += 4;
+            }
+            _spacing[ type ] = trueval;
         }
-        _tabStops[ _numStops ] = trueval;
-        _tabFlags[ _numStops ] = 0x0;
-        if( ++_numStops == 0x40 ){
-        _parAttrSize += 1;
-        }
-    } else if( type < TOP_TAB_STOPS ){
-        if( already_set ){
-        if( _spacing[ type ] & 0x1 ){
-            _parAttrSize -= 2;
-        } else {
-            _parAttrSize -= 1;
-        }
-        }
-        if( trueval < INT_SMALL_LIMIT ){
-        trueval |= 0x80;
-        _parAttrSize += 1;
-        } else {
-        trueval |= 0x8001;
-        _parAttrSize += 2;
-        }
-        if( sign ){
-        if( trueval & 01 ){
-            trueval ^= (uint_16) ~1;
-        } else {
-            trueval ^= (uint_8) ~1;
-        }
-        trueval += 4;
-        }
-        _spacing[ type ] = trueval;
-    }
     }
     _flags |= _parBits[type];
     return 1;
@@ -554,10 +554,9 @@ const int TextHeader::_attrSizes[] = {  3, 1, 1, 1, 9, 9, 9, 1, 3, 3,
 
 //  TextHeader::addAttr --Add a text attribute.
 
-int TextHeader::addAttr( FontFlags type, uint_32 val, char const str[],
-                          int length )
+unsigned TextHeader::addAttr( FontFlags type, uint_32 val, char const str[], int length )
 {
-    int result = _numAttribs;
+    unsigned result = _numAttribs;
     if( _numAttribs == _maxAttribs ){
     _maxAttribs += TEXT_ATTR_MAX;
     _attribs.resize( _maxAttribs );
@@ -585,14 +584,14 @@ int TextHeader::addAttr( FontFlags type, uint_32 val, char const str[],
 
 //  TextHeader::appendAttr   --Append a text attribute after a given one.
 
-int TextHeader::appendAttr( int index, FontFlags type, uint_32 val,
+unsigned TextHeader::appendAttr( unsigned index, FontFlags type, uint_32 val,
                  char const str[], int length )
 {
     if( index >= _numAttribs ){
     HCError( HLP_ATTR );
     }
 
-    int result = index+1;
+    unsigned result = index+1;
 
     if( _numAttribs == _maxAttribs ){
     _maxAttribs += TEXT_ATTR_MAX;
@@ -626,7 +625,7 @@ int TextHeader::appendAttr( int index, FontFlags type, uint_32 val,
 
 //  TextHeader::chgAttr   --Modify a text attribute.
 
-void TextHeader::chgAttr( int index, FontFlags type, uint_32 val,
+void TextHeader::chgAttr( unsigned index, FontFlags type, uint_32 val,
                            char const str[], int length )
 {
     if( index >= _numAttribs ){
@@ -658,7 +657,7 @@ void TextHeader::chgAttr( int index, FontFlags type, uint_32 val,
 
 //  TextHeader::attrData    --Read the data from an attribute.
 
-uint_32 TextHeader::attrData( int index )
+uint_32 TextHeader::attrData( unsigned index )
 {
     if( index >= _numAttribs ){
     HCError( HLP_ATTR );
@@ -673,8 +672,8 @@ uint_32 TextHeader::attrData( int index )
 
 void TextHeader::dumpTo( TopicLink *dest )
 {
-    char    *location = dest->_myData;
-    int     i;
+    char        *location = dest->_myData;
+    unsigned    i;
 
     *( (uint_16*) location ) = (uint_16) ( (2*_headerSize) | 0x8000 );
     location += sizeof( uint_16 );
@@ -1155,187 +1154,184 @@ void HFTopic::dumpBrowse()
 
 void HFTopic::newNode( int is_new_topic )
 {
-    int     forget_node = 0;
-    int     i;
-    int     j,k,zero_pos;
+    int         forget_node = 0;
+    unsigned    i;
+    unsigned    j,k,zero_pos;
     FontFlags   the_flag;
 
-    if( _curNode->_recordType == TOP_TEXT &&
-        _curPar->_numAttribs == _curText->_size ){
-    for( i=0; i<_curPar->_numAttribs; i++ ){
-        the_flag = _curPar->_attribs[i]._type;
-        if( the_flag == TOP_NEW_LINE ||
-            the_flag == TOP_NEW_PAR  ||
-        the_flag == TOP_HTAB ){
-        break;
+    if( _curNode->_recordType == TOP_TEXT && _curPar->_numAttribs == _curText->_size ){
+        for( i=0; i<_curPar->_numAttribs; i++ ){
+            the_flag = _curPar->_attribs[i]._type;
+            if( the_flag == TOP_NEW_LINE || the_flag == TOP_NEW_PAR || the_flag == TOP_HTAB ){
+                break;
+            }
         }
-    }
-    if( i == _curPar->_numAttribs ){
-        forget_node = 1;
-    }
+        if( i == _curPar->_numAttribs ){
+            forget_node = 1;
+        }
     }
 
     if( forget_node ){
-    delete _curNode;
+        delete _curNode;
     } else {
-    // Clean up the current text block and record its size.
-    if( _curNode->_recordType != TOP_HEADER ){
-        // See if any successive font changes can be combined into
-        // a single change.
-        for( i=0; i<_curText->_numZeroes-1; i++ ){
-        if( _curPar->_attribs[i]._type != TOP_FONT_CHANGE ){
-            continue;
-        }
-        zero_pos = _curText->_zeroes[i];
-        j = i+1;
-        while( j < _curText->_numZeroes &&
-               _curPar->_attribs[j]._type == TOP_FONT_CHANGE &&
-               _curText->_zeroes[j]-zero_pos == j-i ){
-            j++;
-        }
-        if( j > i+1 ){
-            memmove( &_curPar->_attribs[i], &_curPar->_attribs[j-1],
-                     (_curPar->_numAttribs-j+1)*sizeof(TextAttr) );
-            _curPar->_numAttribs -= (j-1-i);
-            _curPar->_size -= (j-1-i)*3;
-            memmove( _curText->_text+_curText->_zeroes[i]+1,
-                     _curText->_text+_curText->_zeroes[j-1]+1,
-                 _curText->_size-_curText->_zeroes[j-1]-1 );
-            _curText->_size -= j-1-i;
-            _curText->_uncompSize -= j-1-i;
-            _curText->_numZeroes -= static_cast<uint_16>(j-1-i);
-            for( k=i; k<_curText->_numZeroes; k++ ){
-            _curText->_zeroes[k] = (uint_16) (_curText->_zeroes[k+j-1-i]-j+1+i);
+        // Clean up the current text block and record its size.
+        if( _curNode->_recordType != TOP_HEADER ){
+            // See if any successive font changes can be combined into
+            // a single change.
+            for( i = 0; i + 1 < _curText->_numZeroes; i++ ){
+                if( _curPar->_attribs[i]._type != TOP_FONT_CHANGE ){
+                    continue;
+                }
+                zero_pos = _curText->_zeroes[i];
+                j = i+1;
+                while( j < _curText->_numZeroes &&
+                 _curPar->_attribs[j]._type == TOP_FONT_CHANGE &&
+                 _curText->_zeroes[j]-zero_pos == j-i ){
+                    j++;
+                }
+                if( j > i+1 ){
+                    memmove( &_curPar->_attribs[i], &_curPar->_attribs[j-1],
+                         (_curPar->_numAttribs-j+1)*sizeof(TextAttr) );
+                    _curPar->_numAttribs -= (j-1-i);
+                    _curPar->_size -= (j-1-i)*3;
+                    memmove( _curText->_text+_curText->_zeroes[i]+1,
+                         _curText->_text+_curText->_zeroes[j-1]+1,
+                         _curText->_size-_curText->_zeroes[j-1]-1 );
+                    _curText->_size -= j-1-i;
+                    _curText->_uncompSize -= j-1-i;
+                    _curText->_numZeroes -= static_cast<uint_16>(j-1-i);
+                    for( k = i; k < _curText->_numZeroes; k++ ){
+                        _curText->_zeroes[k] = (uint_16) (_curText->_zeroes[k+j-1-i]-j+1+i);
+                    }
+                }
+            }
+            addAttr( TOP_END );
+            _curPar->_size += _curPar->_parAttrSize;
+            _curPar->_textSize = (uint_16) _curText->_size;
+            _curPar->_headerSize = (uint_16) (_curPar->_size-3);
+            if( _curPar->_textSize >= INT_SMALL_LIMIT ){
+                _curPar->_size += 1;
             }
         }
-        }
-        addAttr( TOP_END );
-        _curPar->_size += _curPar->_parAttrSize;
-        _curPar->_textSize = (uint_16) _curText->_size;
-        _curPar->_headerSize = (uint_16) (_curPar->_size-3);
-        if( _curPar->_textSize >= INT_SMALL_LIMIT ){
-        _curPar->_size += 1;
-        }
-    }
-    _curNode->_dataSize = _curText->_uncompSize;
+        _curNode->_dataSize = _curText->_uncompSize;
 
-    // Create memory for the current node.
-    TopicLink   *first, *second, *third;
+        // Create memory for the current node.
+        TopicLink   *first, *second, *third;
 
-    first = new TopicLink( _curNode->_size );
-    _curNode->_myLink = first;
-    if( _curNode->_recordType == TOP_HEADER ){
-        second = new TopicLink( _curTopic->_size );
-        _curTopic->_myLink = second;
-    } else {
-        second = new TopicLink( _curPar->_size );
-        _curPar->dumpTo( second );
-    }
-    third = new TopicLink( _curText->_size );
-    _curText->dumpTo( third );
-
-    // Update a few more size and linked list variables.
-    _curNode->_topicSize = first->_size + second->_size + third->_size;
-    _curNode->_dataOffset = first->_size + second->_size;
-    _curTopic->_totalSize += first->_size + second->_size + third->_size;
-
-    // See if the current page can hold this node.
-    if( _useCompress ){
+        first = new TopicLink( _curNode->_size );
+        _curNode->_myLink = first;
         if( _curNode->_recordType == TOP_HEADER ){
-        _size += _myReader->skip( first->_size + second->_size );
+            second = new TopicLink( _curTopic->_size );
+            _curTopic->_myLink = second;
         } else {
-        _size += _myReader->skip( first->_size );
-        _size += _myReader->compress( second->_myData, second->_size );
+            second = new TopicLink( _curPar->_size );
+            _curPar->dumpTo( second );
         }
-        _size += _myReader->compress( third->_myData, third->_size );
-    } else {
-        _size += first->_size + second->_size + third->_size;
-    }
+        third = new TopicLink( _curText->_size );
+        _curText->dumpTo( third );
 
-    // Create a new page, if necessary.
-    if( _size>= _numPages * COMP_PAGE_SIZE ){
-        _ptail->_next = new PageHeader;
-        _ptail->_next->nextNode() = _ptail->nextNode() + (COMP_PAGE_SIZE<<2);
-        _ptail = _ptail->_next;
-        _ptail->lastNode() = _lastLink;
-        _ptail->lastTopic() = _lastTopic;
-        if( _curTopic->_startNonScroll == _curOffset ){
-        _curTopic->_startNonScroll = _ptail->nextNode();
-        }
-        if( _curTopic->_startScroll == _curOffset ){
-        _curTopic->_startScroll = _ptail->nextNode();
-        }
-        _curOffset = _ptail->nextNode();
-        if( _browseOffset == _curCharOffset ){
-        _browseOffset = ( _curOffset & ~((COMP_PAGE_SIZE<<2)-1) ) << 1;
-        }
-        _curCharOffset = ( _curOffset & ~((COMP_PAGE_SIZE<<2)-1) ) << 1;
-        _size = (_numPages++) * COMP_PAGE_SIZE + PAGE_HEADER_SIZE;
+        // Update a few more size and linked list variables.
+        _curNode->_topicSize = first->_size + second->_size + third->_size;
+        _curNode->_dataOffset = first->_size + second->_size;
+        _curTopic->_totalSize += first->_size + second->_size + third->_size;
+
+        // See if the current page can hold this node.
         if( _useCompress ){
-        _myReader->flush();
+            if( _curNode->_recordType == TOP_HEADER ){
+                _size += _myReader->skip( first->_size + second->_size );
+            } else {
+                _size += _myReader->skip( first->_size );
+                _size += _myReader->compress( second->_myData, second->_size );
+            }
+            _size += _myReader->compress( third->_myData, third->_size );
+        } else {
+            _size += first->_size + second->_size + third->_size;
+        }
+
+        // Create a new page, if necessary.
+        if( _size >= _numPages * COMP_PAGE_SIZE ){
+            _ptail->_next = new PageHeader;
+            _ptail->_next->nextNode() = _ptail->nextNode() + (COMP_PAGE_SIZE<<2);
+            _ptail = _ptail->_next;
+            _ptail->lastNode() = _lastLink;
+            _ptail->lastTopic() = _lastTopic;
+            if( _curTopic->_startNonScroll == _curOffset ){
+                _curTopic->_startNonScroll = _ptail->nextNode();
+            }
+            if( _curTopic->_startScroll == _curOffset ){
+                _curTopic->_startScroll = _ptail->nextNode();
+            }
+            _curOffset = _ptail->nextNode();
+            if( _browseOffset == _curCharOffset ){
+                _browseOffset = ( _curOffset & ~((COMP_PAGE_SIZE<<2)-1) ) << 1;
+            }
+            _curCharOffset = ( _curOffset & ~((COMP_PAGE_SIZE<<2)-1) ) << 1;
+            _size = (_numPages++) * COMP_PAGE_SIZE + PAGE_HEADER_SIZE;
+            if( _useCompress ){
+                _myReader->flush();
+                if( _curNode->_recordType == TOP_HEADER ){
+                    _size += _myReader->skip( first->_size + second->_size );
+                } else {
+                    _size += _myReader->skip( first->_size );
+                    _size += _myReader->compress( second->_myData, second->_size );
+                }
+                _size += _myReader->compress( third->_myData, third->_size );
+            } else {
+                _size += first->_size + second->_size + third->_size;
+            }
+            first->_isFirstLink = 1;
+        }
+
+        // Update linked list pointers in old nodes we've been saving,
+        // and dump them at last.
+
+        _lastLink = _curOffset;
+        if( _lastNode != NULL ){
+            _lastNode->_nextNode = _curOffset;
+            _lastNode->dumpTo( _lastNode->_myLink );
+            delete _lastNode;
+        }
+        _lastNode = _curNode;
         if( _curNode->_recordType == TOP_HEADER ){
-            _size += _myReader->skip( first->_size + second->_size );
+            _lastTopic = _curOffset;
+            if( _lastHeader != NULL ){
+                _lastHeader->_nextTopic = _curOffset;
+                _lastHeader->dumpTo( _lastHeader->_myLink );
+                delete _lastHeader;
+            }
+            _lastHeader = _curTopic;
+        }
+
+        // Increment the 'current location' counters.
+        _curOffset += first->_size + second->_size + third->_size;
+        if( _curNode->_recordType != TOP_HEADER ){
+            _curCharOffset += third->_size;
+        }
+
+        // Add the new data blocks to the linked list of such blocks.
+        if( _tail != NULL ){
+            _tail->_next = first;
         } else {
-            _size += _myReader->skip( first->_size );
-            _size += _myReader->compress( second->_myData, second->_size );
+            _head = first;
         }
-        _size += _myReader->compress( third->_myData, third->_size );
-        } else {
-        _size += first->_size + second->_size + third->_size;
-        }
-        first->_isFirstLink = 1;
-    }
-
-    // Update linked list pointers in old nodes we've been saving,
-    // and dump them at last.
-
-    _lastLink = _curOffset;
-    if( _lastNode != NULL ){
-        _lastNode->_nextNode = _curOffset;
-        _lastNode->dumpTo( _lastNode->_myLink );
-        delete _lastNode;
-    }
-    _lastNode = _curNode;
-    if( _curNode->_recordType == TOP_HEADER ){
-        _lastTopic = _curOffset;
-        if( _lastHeader != NULL ){
-        _lastHeader->_nextTopic = _curOffset;
-        _lastHeader->dumpTo( _lastHeader->_myLink );
-        delete _lastHeader;
-        }
-        _lastHeader = _curTopic;
-    }
-
-    // Increment the 'current location' counters.
-    _curOffset += first->_size + second->_size + third->_size;
-    if( _curNode->_recordType != TOP_HEADER ){
-        _curCharOffset += third->_size;
-    }
-
-    // Add the new data blocks to the linked list of such blocks.
-    if( _tail != NULL ){
-        _tail->_next = first;
-    } else {
-        _head = first;
-    }
-    first->_next = second;
-    second->_next = third;
-    third->_next = NULL;
-    _tail = third;
+        first->_next = second;
+        second->_next = third;
+        third->_next = NULL;
+        _tail = third;
     }
 
     // Create the new current node.
     _curNode = new GenericNode( _lastLink );
     if( is_new_topic ){
-    if( _lastHeader != NULL && _browseStr != NULL ){
-        recordBrowse( _lastHeader->_myLink );
-        _browseStr = NULL;
-    }
-    _curTopic = new TopicHeader( _numTopics++ );
-    _curNode->_recordType = TOP_HEADER;
+        if( _lastHeader != NULL && _browseStr != NULL ){
+            recordBrowse( _lastHeader->_myLink );
+            _browseStr = NULL;
+        }
+        _curTopic = new TopicHeader( _numTopics++ );
+        _curNode->_recordType = TOP_HEADER;
     } else {
-    _curPar->reset();
-    _curNode->_recordType = TOP_TEXT;
+        _curPar->reset();
+        _curNode->_recordType = TOP_TEXT;
     }
     _curText->reset();
 }
@@ -1348,27 +1344,27 @@ void HFTopic::addText( char const source[], int use_phr )
 {
     int length;
     if( source[0] == '\0' ){
-    length = 1;
+        length = 1;
     } else {
-    length = strlen( source );
+        length = strlen( source );
     }
     if( length + _curText->_size > _curText->_maxSize ){
-    _curText->_maxSize = (length + _curText->_size) / TEXT_BLOCK_SIZE + 1;
-    _curText->_maxSize *= TEXT_BLOCK_SIZE;
-    _curText->_text.resize( _curText->_maxSize );
+        _curText->_maxSize = (length + _curText->_size) / TEXT_BLOCK_SIZE + 1;
+        _curText->_maxSize *= TEXT_BLOCK_SIZE;
+        _curText->_text.resize( _curText->_maxSize );
     }
 
     _curText->_uncompSize += length;
 
     // Use phrase replacement, if appropriate.
     if( use_phr && _useCompress ){
-    _phFile->replace( _curText->_text+_curText->_size, source, length );
+        _phFile->replace( _curText->_text+_curText->_size, source, length );
     } else {
-    memcpy( _curText->_text + _curText->_size, source, length );
+        memcpy( _curText->_text + _curText->_size, source, length );
     }
 
     if( length + _curText->_size > COMP_PAGE_SIZE ){
-    HCError( TOP_TOOLARGE );
+        HCError( TOP_TOOLARGE );
     }
     _curText->_size += length;
 }
@@ -1377,30 +1373,29 @@ void HFTopic::addText( char const source[], int use_phr )
 //  HFTopic::addZero    --Add a 0x00 byte (to signal a format change) to
 //            the current text buffer.
 
-void HFTopic::addZero( int index )
+void HFTopic::addZero( unsigned index )
 {
     int zero_pos;
     if( _curText->_size == COMP_PAGE_SIZE ){
-    HCError( TOP_TOOLARGE );
+        HCError( TOP_TOOLARGE );
     }
     if( _curText->_numZeroes == _curText->_maxZeroes ){
-    _curText->_maxZeroes += TEXT_ZERO_SIZE;
-    _curText->_zeroes.resize( _curText->_maxZeroes );
+        _curText->_maxZeroes += TEXT_ZERO_SIZE;
+        _curText->_zeroes.resize( _curText->_maxZeroes );
     }
     if( _curText->_size == _curText->_maxSize ){
-    _curText->_maxSize += TEXT_BLOCK_SIZE;
-    _curText->_text.resize( _curText->_maxSize );
+        _curText->_maxSize += TEXT_BLOCK_SIZE;
+        _curText->_text.resize( _curText->_maxSize );
     }
     if( index < _curText->_numZeroes ){
-    zero_pos = _curText->_zeroes[index] + 1;
-    char    *position = _curText->_text + zero_pos;
-    memmove( position+1, position, _curText->_size - zero_pos );
-    memmove( _curText->_zeroes+index+2, _curText->_zeroes+index+1,
-             (_curText->_numZeroes-index-1)*2 );
-    _curText->_zeroes[index+1] = (uint_16) zero_pos;
+        zero_pos = _curText->_zeroes[index] + 1;
+        char    *position = _curText->_text + zero_pos;
+        memmove( position+1, position, _curText->_size - zero_pos );
+        memmove( _curText->_zeroes+index+2, _curText->_zeroes+index+1, (_curText->_numZeroes-index-1)*2 );
+        _curText->_zeroes[index+1] = (uint_16) zero_pos;
     } else {
-    zero_pos = _curText->_size;
-    _curText->_zeroes[_curText->_numZeroes] = (uint_16) zero_pos;
+        zero_pos = _curText->_size;
+        _curText->_zeroes[_curText->_numZeroes] = (uint_16) zero_pos;
     }
     _curText->_text[ zero_pos ] = '\0';
     _curText->_size += 1;
@@ -1415,9 +1410,9 @@ uint_32 HFTopic::presentSize()
 {
     uint_32 result = _curNode->_size + _curText->_size;
     if( _curNode->_recordType == TOP_HEADER ){
-    result += _curTopic->_size;
+        result += _curTopic->_size;
     } else {
-    result += _curPar->_size + _curPar->_parAttrSize;
+        result += _curPar->_size + _curPar->_parAttrSize;
     }
     return result;
 }
@@ -1426,10 +1421,10 @@ uint_32 HFTopic::presentSize()
 //  What follows are several HFTopic member functions used as front
 //  ends to the corresponding TextHeader member functions.
 
-int HFTopic::addAttr( FontFlags type, uint_32 val )
+unsigned HFTopic::addAttr( FontFlags type, uint_32 val )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     // This had better not be a variable length attribute.
@@ -1440,35 +1435,36 @@ int HFTopic::addAttr( FontFlags type, uint_32 val )
     case TOP_JUMP_FILE:
     case TOP_POPUP_FILE_INVIS:
     case TOP_JUMP_FILE_INVIS:
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
+        break;
     }
     addZero( _curPar->_numAttribs );
     return _curPar->addAttr( type, val, NULL, 0 );
 }
 
-int HFTopic::addAttr( FontFlags type, char const str[], uint_16 len )
+unsigned HFTopic::addAttr( FontFlags type, char const str[], uint_16 len )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     switch( type ){
     case TOP_MACRO_LINK:
     case TOP_MACRO_INVIS:
-    break;
+        break;
 
     default:
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     addZero( _curPar->_numAttribs );
     return _curPar->addAttr( type, 0, str, len );
 }
 
-int HFTopic::addAttr( FontFlags type, char const str[], uint_16 len, uint_32 val )
+unsigned HFTopic::addAttr( FontFlags type, char const str[], uint_16 len, uint_32 val )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     switch( type ){
@@ -1476,20 +1472,20 @@ int HFTopic::addAttr( FontFlags type, char const str[], uint_16 len, uint_32 val
     case TOP_POPUP_FILE:
     case TOP_JUMP_FILE_INVIS:
     case TOP_POPUP_FILE_INVIS:
-    break;
+        break;
 
     default:
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     addZero( _curPar->_numAttribs );
     return _curPar->addAttr( type, val, str, len );
 }
 
-int HFTopic::appendAttr( int index, FontFlags type, uint_32 val )
+unsigned HFTopic::appendAttr( unsigned index, FontFlags type, uint_32 val )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     // This had better not be a variable length attribute.
@@ -1498,42 +1494,42 @@ int HFTopic::appendAttr( int index, FontFlags type, uint_32 val )
     case TOP_JUMP_LINK:
     case TOP_POPUP_INVIS:
     case TOP_JUMP_INVIS:
-    break;
+        break;
 
     default:
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
-    int result = _curPar->appendAttr( index, type, val, NULL, 0 );
+    unsigned result = _curPar->appendAttr( index, type, val, NULL, 0 );
     addZero( index );
     return result;
 }
 
-int HFTopic::appendAttr( int index, FontFlags type, char const str[], uint_16 len )
+unsigned HFTopic::appendAttr( unsigned index, FontFlags type, char const str[], uint_16 len )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     switch( type ){
     case TOP_MACRO_LINK:
     case TOP_MACRO_INVIS:
-    break;
+        break;
 
     default:
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
-    int result = _curPar->appendAttr( index, type, 0, str, len );
+    unsigned result = _curPar->appendAttr( index, type, 0, str, len );
     addZero( index );
     return result;
 }
 
-int HFTopic::appendAttr( int index, FontFlags type, char const str[], uint_16 len,
+unsigned HFTopic::appendAttr( unsigned index, FontFlags type, char const str[], uint_16 len,
                        uint_32 val )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     switch( type ){
@@ -1541,21 +1537,21 @@ int HFTopic::appendAttr( int index, FontFlags type, char const str[], uint_16 le
     case TOP_POPUP_FILE:
     case TOP_JUMP_FILE_INVIS:
     case TOP_POPUP_FILE_INVIS:
-    break;
+        break;
 
     default:
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
-    int result = _curPar->appendAttr( index, type, val, str, len );
+    unsigned result = _curPar->appendAttr( index, type, val, str, len );
     addZero( index );
     return result;
 }
 
-void HFTopic::chgAttr( int index, FontFlags type, uint_32 val )
+void HFTopic::chgAttr( unsigned index, FontFlags type, uint_32 val )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     // This had better not be a variable length attribute.
@@ -1566,35 +1562,35 @@ void HFTopic::chgAttr( int index, FontFlags type, uint_32 val )
     case TOP_JUMP_FILE:
     case TOP_POPUP_FILE_INVIS:
     case TOP_JUMP_FILE_INVIS:
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
+        break;
     }
 
     _curPar->chgAttr( index, type, val, NULL, 0 );
 }
 
-void HFTopic::chgAttr( int index, FontFlags type, char const str[], uint_16 len )
+void HFTopic::chgAttr( unsigned index, FontFlags type, char const str[], uint_16 len )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     switch( type ){
     case TOP_MACRO_LINK:
     case TOP_MACRO_INVIS:
-    break;
+        break;
 
     default:
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     _curPar->chgAttr( index, type, 0, str, len );
 }
 
-void HFTopic::chgAttr( int index, FontFlags type, char const str[], uint_16 len,
-                        uint_32 val )
+void HFTopic::chgAttr( unsigned index, FontFlags type, char const str[], uint_16 len, uint_32 val )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     switch( type ){
@@ -1602,19 +1598,19 @@ void HFTopic::chgAttr( int index, FontFlags type, char const str[], uint_16 len,
     case TOP_JUMP_FILE:
     case TOP_POPUP_FILE_INVIS:
     case TOP_JUMP_FILE_INVIS:
-    break;
+        break;
 
     default:
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     _curPar->chgAttr( index, type, val, str, len );
 }
 
-uint_32 HFTopic::attrData( int index )
+uint_32 HFTopic::attrData( unsigned index )
 {
     if( _curNode->_recordType == TOP_HEADER ){
-    HCError( HLP_ATTR );
+        HCError( HLP_ATTR );
     }
 
     return _curPar->attrData( index );

@@ -79,7 +79,9 @@ static vi_rc readKeyData( void )
 vi_rc MapKey( int flag, char *data )
 {
     char        keystr[MAX_STR];
+#ifndef VICOMP
     key_map     *maps;
+#endif
     int         j;
     vi_key      key;
     vi_rc       rc;
@@ -93,7 +95,6 @@ vi_rc MapKey( int flag, char *data )
         }
 #ifndef VICOMP
     }
-#endif
 
     /*
      * get if it is an input/regular key mapping
@@ -103,6 +104,7 @@ vi_rc MapKey( int flag, char *data )
     } else {
         maps = KeyMaps;
     }
+#endif
 
     if( NextWord1( data, keystr ) <= 0 ) {
         return( ERR_INVALID_MAP );

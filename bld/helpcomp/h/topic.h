@@ -131,8 +131,8 @@ class TextHolder;
 class HFTopic : public Dumpable
 {
     uint_32     _size;
-    int         _numPages;
-    int         _numTopics;
+    unsigned    _numPages;
+    unsigned    _numTopics;
     int         _useCompress;
     TopicLink   *_head, *_tail;
     PageHeader  *_phead, *_ptail;
@@ -168,7 +168,7 @@ class HFTopic : public Dumpable
     int         _haveCleanedUp;
 
     // A private function called by the appendAttr() functions.
-    void        addZero( int index );
+    void        addZero( unsigned index );
 
     // Assignment of HFTopic's is not allowed.
     HFTopic( HFTopic const & ){};
@@ -197,19 +197,17 @@ public:
 
     // Various ways to add things to the |TOPIC file.
     void        addText( char const source[], int use_phr=0 );
-    int         addAttr( FontFlags type, uint_32 val=0 );
-    int         addAttr( FontFlags type, char const str[], uint_16 len );
-    int         addAttr( FontFlags type, char const str[], uint_16 len, uint_32 val );
-    int         appendAttr( int index, FontFlags type, uint_32 val );
-    int         appendAttr( int index, FontFlags type, char const str[], uint_16 len );
-    int         appendAttr( int index, FontFlags type, char const str[], uint_16 len,
-                             uint_32 val );
-    void        chgAttr( int index, FontFlags type, uint_32 val=0 );
-    void        chgAttr( int index, FontFlags type, char const str[], uint_16 len );
-    void        chgAttr( int index, FontFlags type, char const str[], uint_16 len,
-                          uint_32 val );
+    unsigned    addAttr( FontFlags type, uint_32 val=0 );
+    unsigned    addAttr( FontFlags type, char const str[], uint_16 len );
+    unsigned    addAttr( FontFlags type, char const str[], uint_16 len, uint_32 val );
+    unsigned    appendAttr( unsigned index, FontFlags type, uint_32 val );
+    unsigned    appendAttr( unsigned index, FontFlags type, char const str[], uint_16 len );
+    unsigned    appendAttr( unsigned index, FontFlags type, char const str[], uint_16 len, uint_32 val );
+    void        chgAttr( unsigned index, FontFlags type, uint_32 val=0 );
+    void        chgAttr( unsigned index, FontFlags type, char const str[], uint_16 len );
+    void        chgAttr( unsigned index, FontFlags type, char const str[], uint_16 len, uint_32 val );
 
-    uint_32     attrData( int index );
+    uint_32     attrData( unsigned index );
 
     // Overrides of the "Dumpable" virtual functions.
     uint_32     size();

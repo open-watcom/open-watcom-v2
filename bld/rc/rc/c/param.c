@@ -187,7 +187,7 @@ static bool ScanOptionsArg( const char * arg )
     char        *p;
     char        *delims = ",";
     size_t      findlen = 0;
-    size_t      replen = 0;
+//    size_t      replen = 0;
 
     contok = true;
 
@@ -319,7 +319,7 @@ static bool ScanOptionsArg( const char * arg )
         }
         p = strtok( NULL, delims );
         if( p != NULL ) {
-            replen = strlen( p );
+//            replen = strlen( p );
             strcpy( &frStrings->buf[findlen+1], p );
             frStrings->replaceString = &frStrings->buf[findlen+1];
         } else {

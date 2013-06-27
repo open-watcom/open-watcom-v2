@@ -1121,8 +1121,8 @@ static bool FarCallOpt( fix_data *fix )
 /*************************************/
 {
     byte        *code;
-    unsigned_16 temp16;
-    unsigned_32 temp32;
+    unsigned_16 temp16 = 0;
+    unsigned_32 temp32 = 0;
     byte        instruction;
     bool        is32bit;
 

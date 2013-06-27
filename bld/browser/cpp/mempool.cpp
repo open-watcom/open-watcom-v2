@@ -62,13 +62,12 @@ MemoryPool::MemoryPool( const char * owner )
 }
 
 
-MemoryPool::MemoryPool( size_t elemSize, const char * owner,
-                        size_t elemsPerBlock )
+MemoryPool::MemoryPool( size_t elemSize, const char * owner, size_t elemsPerBlock )
     : _elemSize( 0 )
     , _elemsPerBlock( 0 )
-    , _currBlock( NULL )
     , _lastElement( NULL )
     , _currElement( NULL )
+    , _currBlock( NULL )
     , _freeList( NULL )
 
     #if DEBUG

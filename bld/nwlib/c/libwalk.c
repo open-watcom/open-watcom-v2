@@ -55,10 +55,10 @@ void LibWalk( libfile io, char *name, void (*rtn)( arch_header *, libfile io ) )
     ar_header           ar;
     arch_header         arch;
     file_offset         bytes_read;
-    int                 dict_count;
+//    int                 dict_count;
     file_offset         pos;
 
-    dict_count = 0;
+//    dict_count = 0;
     arch.fnametab = NULL;
     arch.ffnametab = NULL;
     while( (bytes_read = LibRead( io, &ar, AR_HEADER_SIZE )) != 0 ) {

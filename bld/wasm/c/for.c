@@ -42,16 +42,16 @@ extern void             AddTokens( asm_tok **, int, int );
 static const char macroname[] = "__STATIC_IRP_MACRO_";
 
 int ForDirective( int i, enum irp_type type )
-/*************************************/
+/*******************************************/
 {
     int start = i - 1; /* location of "directive name .. after any labels" */
     int arg_loc;
-    char *parmstring;
+    char *parmstring = NULL;
     char *ptr;
     char *next_parm;
     char *end_of_parms;
     char buffer[MAX_LINE_LEN];
-    int len;
+    int len = 0;
 
     if( type == IRP_REPEAT ) {
         ExpandTheWorld( i, FALSE, TRUE );

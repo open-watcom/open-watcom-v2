@@ -469,9 +469,9 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
     uint_32             diff;
     RcStatus            status;
     ResFileInfo         *info;
-    int                 closefile;
+//    int                 closefile;
 
-    closefile = FALSE;
+//    closefile = FALSE;
     if( !entry->IsDirEntry ) {
         info = WResGetFileInfo( entry->u.Data.Wind );
         if( copy_info->curres == NULL || copy_info->curres == info ) {
@@ -507,12 +507,12 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
 /****************************************************************/
 {
     CopyResInfo     copy_info;
-    pe_va           start_rva;
+//    pe_va           start_rva;
     uint_32         start_off;
     RcStatus        ret;
     int             tmpopened;
 
-    start_rva = tmp->u.PEInfo.Res.ResRVA + tmp->u.PEInfo.Res.DirSize + tmp->u.PEInfo.Res.String.StringBlockSize;
+//    start_rva = tmp->u.PEInfo.Res.ResRVA + tmp->u.PEInfo.Res.DirSize + tmp->u.PEInfo.Res.String.StringBlockSize;
     start_off = tmp->u.PEInfo.Res.ResOffset + tmp->u.PEInfo.Res.DirSize + tmp->u.PEInfo.Res.String.StringBlockSize;
 
     copy_info.to_handle = to_handle;

@@ -681,7 +681,7 @@ void DFA_emit( DFA *d, FILE *o )
 
     // mark backtracking points
     for( s = d->head; s != NULL; s = s->next ) {
-        RegExp  *ignore = NULL; /* RuleOp */
+//        RegExp  *ignore = NULL; /* RuleOp */
 
         if( s->rule != NULL ) {
             for( i = 0; i < s->go.nSpans; ++i ) {
@@ -693,7 +693,7 @@ void DFA_emit( DFA *d, FILE *o )
                     continue;
                 }
             }
-            ignore = s->rule;
+//            ignore = s->rule;
         }
     }
 

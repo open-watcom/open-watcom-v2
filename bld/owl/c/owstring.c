@@ -178,7 +178,8 @@ static void patDump( patricia *tree, unsigned indent ) {
     for( i = 0; i < indent; i++ ) {
         printf( "\t" );
     }
-    printf( "%x (%d,'%s',l=%x,r=%x)\n", tree, tree->bit, tree->text, tree->left, tree->right );
+    printf( "%lx (%d,'%s',l=%lx,r=%lx)\n", (unsigned long)(pointer_int)tree, tree->bit, tree->text,
+            (unsigned long)(pointer_int)tree->left, (unsigned long)(pointer_int)tree->right );
     child = tree->right;
     if( child != NULL && child->bit > tree->bit ) {
         patDump( child, indent + 1 );

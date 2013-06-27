@@ -210,6 +210,7 @@ int RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
 {
     int result;
     int num = FindCommand( tok->_text );
+    uint_8  style = 0;
 
     // First check for a command which 'toggles' a font attribute.
     switch( num ) {
@@ -219,7 +220,6 @@ int RTFparser::isFontCommand( Token * tok, uint_16 *newfont )
     case RC_STRIKE:
     case RC_UL:
     case RC_ULDB:
-        uint_8  style;
         switch( num ){
         case RC_B: style = FNT_BOLD; break;
         case RC_I: style = FNT_ITALICS; break;
@@ -1208,10 +1208,10 @@ void RTFparser::handleFonts()
     int done = 0;
     int com_num;
     int ok2read = 1;
-    short   cur_num;
-    uint_8  cur_family;
+    short   cur_num = 0;
+    uint_8  cur_family = 0;
     char    cur_name[FONT_NAME_SIZE];
-    int     name_size;
+    int     name_size = 0;
     enum { NUMBER, FAMILY, NAME } state = NUMBER;
 
     // some handy loop variables we may need.

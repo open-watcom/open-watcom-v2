@@ -56,7 +56,7 @@ static int get_float( asm_tok *buf, char **input, char **output )
 {
     /* valid floats look like:  (int)[.(int)][e(int)] */
 
-    char    got_decimal = FALSE;
+//    char    got_decimal = FALSE;
     char    got_e = FALSE;
     char    *ptr = *input;
 
@@ -67,7 +67,7 @@ static int get_float( asm_tok *buf, char **input, char **output )
             break;
         switch( tolower( *ptr ) ) {
         case '.':
-            got_decimal = TRUE;
+//            got_decimal = TRUE;
             continue;
         case 'r':
             *ptr=' ';

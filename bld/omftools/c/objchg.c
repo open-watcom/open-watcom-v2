@@ -361,8 +361,8 @@ static int ProcFile( FILE *fp, FILE *fo )
 /**************************************/
 {
     byte        hdr[ 3 ];
-    unsigned_16 page_len;
-    unsigned_32 offset;
+//    unsigned_16 page_len;
+//    unsigned_32 offset;
     fpos_t      pos;
     int         isChanged;
     int         renameIt;
@@ -375,13 +375,13 @@ static int ProcFile( FILE *fp, FILE *fo )
         symbol_name_change_len = strlen( symbol_name_change ) - 1;
     }
     renameIt = 1;
-    page_len = 0;
+//    page_len = 0;
     RecBuff = NULL;
     RecMaxLen = 0;
     for( ; renameIt; ) {
         isChanged = 0;
         fgetpos( fp, &pos );
-        offset = ftell( fp );
+//        offset = ftell( fp );
         if( fread( hdr, 1, 3, fp ) != 3 ) {
             if( ferror( fp ) )
                 renameIt = 0;

@@ -388,7 +388,8 @@ static void ProcessLine( const char *line )
     char    *cmd, *p, *str;
     char    *line_copy;
     char    *type, *redist, *dir, *usr, *rel, *cond;
-    char    *pack, *where, *desc, *old, *patch, *dstvar;
+    char    *where, *desc, *old, *dstvar;
+//    char    *pack, *patch;
     int     special;
 
     special = FALSE;
@@ -398,11 +399,11 @@ static void ProcessLine( const char *line )
     usr = DEFVAL( DefUsr );
     rel = DEFVAL( DefRel );
     cond = DEFVAL( DefCond );
-    pack = DEFVAL( DefPack );
+//    pack = DEFVAL( DefPack );
     where = DefWhere;
     desc = DEFVAL( DefDesc );
     old = DEFVAL( DefOld );
-    patch = DEFVAL( DefPatch );
+//    patch = DEFVAL( DefPatch );
     dstvar = DEFVAL( DefDstvar );
 
     line_copy = strdup( line );
@@ -427,7 +428,7 @@ static void ProcessLine( const char *line )
         } else if( !stricmp( cmd, "cond" ) ) {
             cond = str;
         } else if( !stricmp( cmd, "pack" ) ) {
-            pack = str;
+//            pack = str;
         } else if( !stricmp( cmd, "where" ) ) {
             where = str;
         } else if( !stricmp( cmd, "desc" ) ) {
@@ -437,7 +438,7 @@ static void ProcessLine( const char *line )
         } else if( !stricmp( cmd, "old" ) ) {
             old = str;
         } else if( !stricmp( cmd, "patch" ) ) {
-            patch = str;
+//            patch = str;
         } else if( !stricmp( cmd, "dstvar" ) ) {
             dstvar = str;
         } else {

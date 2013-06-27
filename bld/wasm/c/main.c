@@ -1264,6 +1264,8 @@ void set_cpu_parameters( void )
     case 6:
         token =  SWData.protect_mode ? T_DOT_686P : T_DOT_686;
         break;
+    default:
+        return;
     }
     cpu_directive( token );
 }
@@ -1271,6 +1273,8 @@ void set_cpu_parameters( void )
 void set_fpu_parameters( void )
 /*****************************/
 {
+    asm_token   token;
+
     switch( floating_point ) {
     case DO_FP_EMULATION:
         add_constant( "__FPI__" );
@@ -1286,35 +1290,38 @@ void set_fpu_parameters( void )
     switch( SWData.fpu ) {
     case 0:
     case 1:
-        cpu_directive( T_DOT_8087 );
+        token = T_DOT_8087;
         break;
     case 2:
-        cpu_directive( T_DOT_287 );
+        token = T_DOT_287;
         break;
     case 3:
     case 5:
     case 6:
-        cpu_directive( T_DOT_387 );
+        token = T_DOT_387;
         break;
     case 7:
     default: // unspecified FPU
         switch( SWData.cpu ) {
         case 0:
         case 1:
-            cpu_directive( T_DOT_8087 );
+            token = T_DOT_8087;
             break;
         case 2:
-            cpu_directive( T_DOT_287 );
+            token = T_DOT_287;
             break;
         case 3:
         case 4:
         case 5:
         case 6:
-            cpu_directive( T_DOT_387 );
+            token = T_DOT_387;
             break;
+        default:
+            return;
         }
         break;
     }
+    cpu_directive( token );
 }
 
 void CmdlParamsInit( void )

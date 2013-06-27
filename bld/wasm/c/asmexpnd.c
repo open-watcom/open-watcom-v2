@@ -127,7 +127,9 @@ int ExpandProcString( int index )
     int_8               i;
     int_8               cnt;
     int_8               count = 0; /* number of words in the name string */
-    int                 offset, left_bracket, right_bracket;
+    int                 offset;
+    int                 left_bracket = 0;
+    int                 right_bracket = 0;
     char                *string;
     char                *word;
     char                *replace = NULL;
@@ -471,7 +473,7 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
                     We want a '$' symbol to have the value at it's
                     point of definition, not point of expansion.
                 */
-                sprintf( buff, ".$%x/%lx", GetCurrSeg(), GetCurrAddr() );
+                sprintf( buff, ".$%lx/%lx", (unsigned long)GetCurrSeg(), (unsigned long)GetCurrAddr() );
                 AsmBuffer[start+i]->string_ptr = buff;
                 if( AsmGetSymbol( buff ) == NULL ) {
                     new_constant = TRUE;

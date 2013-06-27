@@ -1049,7 +1049,7 @@ static int write_pub( void )
 void FlushCurrSeg( void )
 /***************************/
 {
-    unsigned i;
+    unsigned i = 0;
 
     /* this IF is for code segments which contain entirely data up to the
      * point when they are flushed

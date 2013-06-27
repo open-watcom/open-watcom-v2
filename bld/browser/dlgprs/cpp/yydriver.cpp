@@ -69,6 +69,7 @@ int YYPARSER::yyparse()
   int yyerrflag;
 
   yyerrflag = 0;
+  yyaction = 0;
   yysp = yys;
   yyvp = yyv;
   *yysp = YYSTART;

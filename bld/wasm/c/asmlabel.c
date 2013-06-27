@@ -74,10 +74,10 @@ int MakeLabel( char *symbol_name, memtype mem_type )
 {
     struct asm_sym      *sym;
 #if defined( _STANDALONE_ )
-    int                 addr;
+    int                 addr = 0;
     char                buffer[20];
     struct asm_sym      *newsym;
-    proc_info           *info;
+//    proc_info           *info;
 
     if( CurrSeg == NULL )
         AsmError( LABEL_OUTSIDE_SEGMENT );
@@ -118,7 +118,7 @@ int MakeLabel( char *symbol_name, memtype mem_type )
                 AsmError( SYNTAX_ERROR );
                 return( ERROR );
             }
-            info = CurrProc->e.procinfo;
+//            info = CurrProc->e.procinfo;
             sym = AsmLookup( symbol_name );
             if( sym == NULL )
                 return( ERROR );

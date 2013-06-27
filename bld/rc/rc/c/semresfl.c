@@ -49,18 +49,16 @@ int copyAResource( int handle, WResDirWindow *wind, char *buffer,
     WResLangInfo        *langinfo;
     WResTypeInfo        *typeinfo;
     WResResInfo         *resinfo;
-    RcStatus            rc;
+//    RcStatus            rc;
     int                 err_code;
 
     langinfo = WResGetLangInfo( *wind );
     resinfo = WResGetResInfo( *wind );
     typeinfo = WResGetTypeInfo( *wind );
     loc.start = SemStartResource();
-    rc = CopyData( langinfo->Offset, langinfo->Length, handle,
-                buffer, BUFFER_SIZE, &err_code );
+    /* rc = */ CopyData( langinfo->Offset, langinfo->Length, handle, buffer, BUFFER_SIZE, &err_code );
     loc.len = SemEndResource( loc.start );
-    SemAddResource2( &resinfo->ResName, &typeinfo->TypeName,
-                        langinfo->MemoryFlags, loc, filename );
+    SemAddResource2( &resinfo->ResName, &typeinfo->TypeName, langinfo->MemoryFlags, loc, filename );
     return( FALSE );
 }
 

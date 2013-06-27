@@ -609,11 +609,11 @@ extern void ClosePass2FilesAndFreeMem( void )
 {
     ExeFileInfo         *tmp;
     ExeFileInfo         *old;
-    char                *tmpfilename;
+//    char                *tmpfilename;
 
     tmp = &(Pass2Info.TmpFile);
     old = &(Pass2Info.OldFile);
-    tmpfilename = Pass2Info.TmpFileName;
+//    tmpfilename = Pass2Info.TmpFileName;
 
     if( old->IsOpen ) {
         RcClose( old->Handle );

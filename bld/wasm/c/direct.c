@@ -2779,7 +2779,8 @@ int LocalDef( int i )
     label_list      *local;
     label_list      *curr;
     proc_info       *info;
-    struct asm_sym  *sym, *tmp;
+    struct asm_sym  *sym;
+    struct asm_sym  *tmp = NULL;
 
     /*
 
@@ -2924,7 +2925,8 @@ int ArgDef( int i )
     label_list      *paracurr;
     int             type, register_count, parameter_size, unused_stack_space, parameter_on_stack = TRUE;
 
-    struct asm_sym  *param, *tmp;
+    struct asm_sym  *param;
+    struct asm_sym  *tmp = NULL;
 
     /*
 
@@ -3253,7 +3255,7 @@ static int proc_exam( dir_node *proc, int i )
     char            *token;
     char            *typetoken;
     int_8           minimum;        // Minimum value of the type of token to be read
-    int_8           finish;
+//    int_8           finish;
     proc_info       *info;
     regs_list       *regist;
     regs_list       *temp_regist;
@@ -3265,7 +3267,7 @@ static int proc_exam( dir_node *proc, int i )
     info = proc->e.procinfo;
 
     minimum = TOK_PROC_FAR;
-    finish = FALSE;
+//    finish = FALSE;
     proc->sym.langtype = ModuleInfo.langtype;
 
     // fixme ... we need error checking here --- for nested procs
@@ -3649,7 +3651,7 @@ int WritePrologue( void )
     char                buffer[80];
     proc_info           *info;
     label_list          *curr;
-    long                offset;
+    unsigned long       offset;
     unsigned long       size;
     int                 register_count = 0;
     int                 parameter_on_stack = TRUE;
@@ -3670,14 +3672,14 @@ int WritePrologue( void )
             size_override( buffer, curr->size );
             if( Options.mode & MODE_IDEAL ) {
                 if( curr->sym != NULL ) {
-                    sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
+                    sprintf( buffer + strlen(buffer), "(%s %s%lu)", curr->sym->name,
                              Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
                 } else {
-                    sprintf( buffer + strlen(buffer), "%s%d",
+                    sprintf( buffer + strlen(buffer), "%s%lu",
                              Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
                 }
             } else {
-                sprintf( buffer + strlen(buffer), "%s%d]",
+                sprintf( buffer + strlen(buffer), "%s%lu]",
                          Use32 ? LOCAL_STRING_32 : LOCAL_STRING, offset );
             }
             curr->replace = AsmAlloc( strlen( buffer ) + 1 );
@@ -3711,27 +3713,27 @@ int WritePrologue( void )
                 if( Use32 ) {
                     if( Options.mode & MODE_IDEAL ) {
                         if( curr->sym != NULL ) {
-                            sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
+                            sprintf( buffer + strlen(buffer), "(%s %s%lu)", curr->sym->name,
                                      IDEAL_ARGUMENT_STRING_32, offset );
                         } else {
-                            sprintf( buffer + strlen(buffer), "%s%d",
+                            sprintf( buffer + strlen(buffer), "%s%lu",
                                      IDEAL_ARGUMENT_STRING_32, offset );
                         }
                     } else {
-                        sprintf( buffer + strlen(buffer), "%s%d]",
+                        sprintf( buffer + strlen(buffer), "%s%lu]",
                                  ARGUMENT_STRING_32, offset );
                     }
                 } else {
                     if( Options.mode & MODE_IDEAL ) {
                         if( curr->sym != NULL ) {
-                            sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
+                            sprintf( buffer + strlen(buffer), "(%s %s%lu)", curr->sym->name,
                                      IDEAL_ARGUMENT_STRING, offset );
                         } else {
-                            sprintf( buffer + strlen(buffer), "%s%d",
+                            sprintf( buffer + strlen(buffer), "%s%lu",
                                      IDEAL_ARGUMENT_STRING, offset );
                         }
                     } else {
-                        sprintf( buffer + strlen(buffer), "%s%d]",
+                        sprintf( buffer + strlen(buffer), "%s%lu]",
                                  ARGUMENT_STRING, offset );
                     }
                 }
@@ -3795,7 +3797,7 @@ int WritePrologue( void )
             if( info->localsize != 0 ) {
                 InputQueueLine( buffer );
                 strcpy( buffer, "sub esp," );
-                sprintf( buffer+strlen(buffer), "%d", info->localsize );
+                sprintf( buffer+strlen(buffer), "%lu", info->localsize );
             }
         } else {
             // write 8086 prolog code
@@ -3808,7 +3810,7 @@ int WritePrologue( void )
             if( info->localsize != 0 ) {
                 InputQueueLine( buffer );
                 strcpy( buffer, "sub sp," );
-                sprintf( buffer+strlen(buffer), "%d", info->localsize );
+                sprintf( buffer+strlen(buffer), "%lu", info->localsize );
             }
         }
         InputQueueLine( buffer );
@@ -3960,19 +3962,19 @@ int Ret( int i, int count, int flag_iret )
             case LANG_FORTRAN:
             case LANG_PASCAL:
                 if( info->parasize != 0 ) {
-                    sprintf( buffer + strlen( buffer ), "%d", info->parasize );
+                    sprintf( buffer + strlen( buffer ), "%lu", info->parasize );
                 }
                 break;
             case LANG_STDCALL:
                 if( !info->is_vararg && info->parasize != 0 ) {
-                    sprintf( buffer + strlen( buffer ), "%d", info->parasize );
+                    sprintf( buffer + strlen( buffer ), "%lu", info->parasize );
                 }
                 break;
             case LANG_WATCOM_C:
                 if( ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
                     ( info->is_vararg == FALSE ) &&
                     ( info->parasize != 0 ) ) {
-                    sprintf( buffer + strlen( buffer ), "%d", info->parasize );
+                    sprintf( buffer + strlen( buffer ), "%lu", info->parasize );
                 }
                 break;
             default:

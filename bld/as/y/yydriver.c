@@ -81,6 +81,7 @@ int yyparse( void )
   short yyerrflag;
 
   yyerrflag = 0;
+  yyaction = 0;
   yysp = yys;
   yyvp = yyv;
   *yysp = YYSTART;

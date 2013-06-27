@@ -79,7 +79,7 @@ static void output_float( unsigned char index, unsigned no_of_bytes, char negati
 {
     double              double_value;
     float               float_value;
-    char                *char_ptr;
+    char                *char_ptr = NULL;
     uint_8              count;
     TB_LD               tbyte;
 
@@ -138,7 +138,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
 {
     int                 cur_pos = start_pos;
     char                count;
-    char                *char_ptr;
+    char                *char_ptr = NULL;
     char                negative = FALSE;
 
 #if defined( _STANDALONE_ )
@@ -337,7 +337,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             break;
         case TC_ID: {
             int                 i;
-            enum fixup_types    fixup_type;
+            enum fixup_types    fixup_type = 0;
             asm_sym             *init_sym;
             char                *ptr;
             long                data = 0;
@@ -471,7 +471,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             }
         case TC_UNARY_OPERATOR: {
             int                 i;
-            enum fixup_types    fixup_type;
+            enum fixup_types    fixup_type = 0;
             int                 seg_off_operator_loc = 0;
             asm_sym             *init_sym;
             char                *ptr;
@@ -658,7 +658,7 @@ static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned
 */
 {
     int                 cur_pos = start_pos;
-    int                 returned_pos;
+    int                 returned_pos = 0;
     int                 count;
 #if defined( _STANDALONE_ )
     bool                was_first;
@@ -741,7 +741,7 @@ int data_init( int sym_loc, int initializer_loc )
     struct asm_sym      *sym = NULL;
     struct asm_sym      *struct_sym = NULL;
 #if defined( _STANDALONE_ )
-    uint                old_offset;
+    uint                old_offset = 0;
     char                label_dir = FALSE;
 
     struct_field = FALSE;

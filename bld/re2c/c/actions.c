@@ -208,6 +208,7 @@ static Range *getRange( SubStr *s )
     return( Range_new( lb, ub + 1 ) );
 }
 
+#if 0
 static void Range_out( FILE *o, const Range *r )
 {
     if( r == NULL )
@@ -222,6 +223,7 @@ static void Range_out( FILE *o, const Range *r )
     }
     Range_out( o, r->next );
 }
+#endif
 
 static uint AltOp_fixedLength( RegExp *r )
 {
@@ -398,6 +400,7 @@ static void RegExp_split( RegExp *re, CharSet *s )
     }
 }
 
+#if 0
 static void RegExp_display( RegExp *re, FILE *o )
 {
     switch( re->type ) {
@@ -428,6 +431,7 @@ static void RegExp_display( RegExp *re, FILE *o )
         break;
     }
 }
+#endif
 
 static RegExp *RegExp_new_MatchOp( Range *m )
 {

@@ -289,7 +289,7 @@ static bool dirFuncStorageAlloc( directive_t *dir, dir_table_enum parm )
     int_32                      expr;
     char                        *buffer;
     owl_section_handle          curr_section;
-    reserved_section            as_section;
+    reserved_section            as_section = 0;
 
     if( !dirNumOperandsVerify( dir->num_operands, 2 ) ) {
         return( TRUE );
@@ -626,7 +626,7 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
     static float        flt;
     static double       dbl;
     int_32              rep;
-    uint_8              prev_alignment;
+    uint_8              prev_alignment = 0;
     int                 opnum;
     void                *target = NULL;
     owl_reloc_type      rtype;

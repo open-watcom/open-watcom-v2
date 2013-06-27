@@ -91,7 +91,7 @@ Bitmap::Bitmap( InFile *fp ) : Bmx( fp )
 uint_32 Bitmap::size()
 {
     if( _size != 0 ){
-    return _size;
+        return _size;
     }
 
     _fp->open();
@@ -102,90 +102,89 @@ uint_32 Bitmap::size()
 
     if( _headSize == BIH_SIZE ){
 
-    // If _headSize==0x28, this bitmap uses a BitmapInfoHeader
-    // and RBG quads.
+        // If _headSize==0x28, this bitmap uses a BitmapInfoHeader
+        // and RBG quads.
 
-    _fp->readbuf( &_width, 1, sizeof( uint_32 ) );
-    _fp->readbuf( &_height, 1, sizeof( uint_32 ) );
+        _fp->readbuf( &_width, 1, sizeof( uint_32 ) );
+        _fp->readbuf( &_height, 1, sizeof( uint_32 ) );
 
-    _fp->readbuf( &_planes, 1, sizeof( uint_16 ) );
-    _fp->readbuf( &_bitsPerPix, 1, sizeof( uint_16 ) );
+        _fp->readbuf( &_planes, 1, sizeof( uint_16 ) );
+        _fp->readbuf( &_bitsPerPix, 1, sizeof( uint_16 ) );
 
-    _fp->readbuf( &_compression, 1, sizeof( uint_32 ) );
-    _fp->readbuf( &_imageSize, 1, sizeof( uint_32 ) );
-    _fp->readbuf( &_xpels, 1, sizeof( uint_32 ) );
-    _fp->readbuf( &_ypels, 1, sizeof( uint_32 ) );
-    _fp->readbuf( &_colsUsed, 1, sizeof( uint_32 ) );
+        _fp->readbuf( &_compression, 1, sizeof( uint_32 ) );
+        _fp->readbuf( &_imageSize, 1, sizeof( uint_32 ) );
+        _fp->readbuf( &_xpels, 1, sizeof( uint_32 ) );
+        _fp->readbuf( &_ypels, 1, sizeof( uint_32 ) );
+        _fp->readbuf( &_colsUsed, 1, sizeof( uint_32 ) );
 
-    if( _colsUsed == 0 ){
-        // We can calculate _colsUsed from _bitsPerPix, except
-        // in the case of a 24-bit bitmap.
-        if( _bitsPerPix < 24 ){
-        _colsUsed = 1<<_bitsPerPix;
+        if( _colsUsed == 0 ){
+            // We can calculate _colsUsed from _bitsPerPix, except
+            // in the case of a 24-bit bitmap.
+            if( _bitsPerPix < 24 ){
+                _colsUsed = 1<<_bitsPerPix;
+            }
         }
-    }
 
-    _fp->readbuf( &_colsImportant, 1, sizeof(uint_32) );
-    _dataPos = _fp->tell();
-    _fp->reset( sizeof(uint_32)*_colsUsed, SEEK_CUR );
+        _fp->readbuf( &_colsImportant, 1, sizeof(uint_32) );
+        _dataPos = _fp->tell();
+        _fp->reset( sizeof(uint_32)*_colsUsed, SEEK_CUR );
 
     } else {
 
-    // The other case is _headSize==0x0C, meaning this bitmap
-    // uses a BitmapCoreHeader and RGB triples.
+        // The other case is _headSize==0x0C, meaning this bitmap
+        // uses a BitmapCoreHeader and RGB triples.
 
-    _width = 0;
-    _fp->readbuf( &_width, 1, sizeof( uint_16 ) );
-    _height = 0;
-    _fp->readbuf( &_height, 1, sizeof( uint_16 ) );
-    _fp->readbuf( &_planes, 1, sizeof( uint_16 ) );
-    _fp->readbuf( &_bitsPerPix, 1, sizeof( uint_16 ) );
+        _width = 0;
+        _fp->readbuf( &_width, 1, sizeof( uint_16 ) );
+        _height = 0;
+        _fp->readbuf( &_height, 1, sizeof( uint_16 ) );
+        _fp->readbuf( &_planes, 1, sizeof( uint_16 ) );
+        _fp->readbuf( &_bitsPerPix, 1, sizeof( uint_16 ) );
 
-    // Again, calculate _colsUsed from _bitsPerPix, unless
-    // this is a 24-bit bitmap.
-    if( _bitsPerPix < 24 ){
-        _colsUsed = 1<<_bitsPerPix;
-    } else {
-        _colsUsed = 0;
+        // Again, calculate _colsUsed from _bitsPerPix, unless
+        // this is a 24-bit bitmap.
+        if( _bitsPerPix < 24 ){
+            _colsUsed = 1<<_bitsPerPix;
+        } else {
+            _colsUsed = 0;
+        }
+        _colsImportant = 0;
+
+        _dataPos = _fp->tell();
+        _fp->reset( 3*_colsUsed, SEEK_CUR );
     }
-    _colsImportant = 0;
 
-    _dataPos = _fp->tell();
-    _fp->reset( 3*_colsUsed, SEEK_CUR );
-    }
-
-    _objOffset = sizeof(uint_32)*_colsUsed + 0x1C; // 0x1C = size of
-                               // object header
+    _objOffset = sizeof(uint_32)*_colsUsed + 0x1C; // 0x1C = size of object header
 
     if( _bitsPerPix >= MIN_16BIT ){
-    _objOffset += 1;
+        _objOffset += 1;
     }
     if( _width >= MIN_32BIT ){
-    _objOffset += 2;
+        _objOffset += 2;
     }
     if( _height >= MIN_32BIT ){
-    _objOffset += 2;
+        _objOffset += 2;
     }
     if( _colsUsed >= MIN_32BIT ){
-    _objOffset += 2;
+        _objOffset += 2;
     }
 
     // Calculate the size of the compressed pixel data.
     CompWriter  riter;
     CompReader  reader( &riter );
-    char    *buffer = new char[BLOCK_SIZE];
-    int     blocksize;
-    int     count = _pixOffset;
+    char        *buffer = new char[BLOCK_SIZE];
+    unsigned    blocksize;
+    unsigned    count = _pixOffset;
 
     _pixSize = 0;
     while( count < _fileSize ){
-    blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
-    count += blocksize;
-    _pixSize += reader.compress( buffer, blocksize );
+        blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
+        count += blocksize;
+        _pixSize += reader.compress( buffer, blocksize );
     }
 
     if( _pixSize >= MIN_32BIT ){
-    _objOffset += 2;
+        _objOffset += 2;
     }
     _size = _objOffset+OBJ_OFFSET+_pixSize;
 
@@ -219,34 +218,34 @@ int Bitmap::dump( OutFile *dest )
 
     _bitsPerPix *= 2;
     if( _bitsPerPix >= 2*MIN_16BIT ){
-    _bitsPerPix += 1;
-    dest->writebuf( &_bitsPerPix, sizeof( uint_16 ), 1 );
+        _bitsPerPix += 1;
+        dest->writebuf( &_bitsPerPix, sizeof( uint_16 ), 1 );
     } else {
-    dest->writech( *((uint_8*) &_bitsPerPix) );
+        dest->writech( *((uint_8*) &_bitsPerPix) );
     }
 
     _width *= 2;
     if( _width >= 2*MIN_32BIT ){
-    _width += 1;
-    dest->writebuf( &_width, sizeof( uint_32 ), 1 );
+        _width += 1;
+        dest->writebuf( &_width, sizeof( uint_32 ), 1 );
     } else {
-    dest->writebuf( (uint_16*) &_width, sizeof( uint_16 ), 1 );
+        dest->writebuf( (uint_16*) &_width, sizeof( uint_16 ), 1 );
     }
 
     _height *= 2;
     if( _height >= 2*MIN_32BIT ){
-    _height += 1;
-    dest->writebuf( &_height, sizeof( uint_32 ), 1 );
+        _height += 1;
+        dest->writebuf( &_height, sizeof( uint_32 ), 1 );
     } else {
-    dest->writebuf( (uint_16*) &_height, sizeof( uint_16 ), 1 );
+        dest->writebuf( (uint_16*) &_height, sizeof( uint_16 ), 1 );
     }
 
     _colsUsed *= 2;
     if( _colsUsed >= 2*MIN_32BIT ){
-    _colsUsed += 1;
-    dest->writebuf( &_colsUsed, sizeof( uint_32 ), 1 );
+        _colsUsed += 1;
+        dest->writebuf( &_colsUsed, sizeof( uint_32 ), 1 );
     } else {
-    dest->writebuf( (uint_16*) &_colsUsed, sizeof( uint_16 ), 1 );
+        dest->writebuf( (uint_16*) &_colsUsed, sizeof( uint_16 ), 1 );
     }
     _colsUsed /= 2; // We need this quantity again later.
 
@@ -254,10 +253,10 @@ int Bitmap::dump( OutFile *dest )
 
     _pixSize *= 2;
     if( _pixSize >= 2*MIN_32BIT ){
-    _pixSize += 1;
-    dest->writebuf( &_pixSize, sizeof( uint_32 ), 1 );
+        _pixSize += 1;
+        dest->writebuf( &_pixSize, sizeof( uint_32 ), 1 );
     } else {
-    dest->writebuf( (uint_16*) &_pixSize, sizeof( uint_16 ), 1 );
+        dest->writebuf( (uint_16*) &_pixSize, sizeof( uint_16 ), 1 );
     }
 
     dest->writebuf( (uint_16*) &big_zero, sizeof( uint_16 ), 1 );
@@ -270,28 +269,28 @@ int Bitmap::dump( OutFile *dest )
     _fp->open();
     _fp->reset( _dataPos );
     if( _headSize == BIH_SIZE ){
-    for( int i=0; i<_colsUsed; i++ ){
-        _fp->readbuf( &colour, 1, sizeof( uint_32 ) );
-        dest->writebuf( &colour, sizeof( uint_32 ), 1 );
-    }
+        for( unsigned i = 0; i < _colsUsed; i++ ){
+            _fp->readbuf( &colour, 1, sizeof( uint_32 ) );
+            dest->writebuf( &colour, sizeof( uint_32 ), 1 );
+        }
     } else {
-    colour = 0;
-    for( int i=0; i<_colsUsed; i++ ){
-        _fp->readbuf( &colour, 3 );
-        dest->writebuf( &colour, sizeof( uint_32 ), 1 );
-    }
+        colour = 0;
+        for( unsigned i = 0; i < _colsUsed; i++ ){
+            _fp->readbuf( &colour, 3 );
+            dest->writebuf( &colour, sizeof( uint_32 ), 1 );
+        }
     }
 
-    CompOutFile     riter( dest );
-    CompReader      reader( &riter );
+    CompOutFile riter( dest );
+    CompReader  reader( &riter );
     char        *buffer = new char[BLOCK_SIZE];
-    int         blocksize;
-    int         count = _pixOffset;
+    unsigned    blocksize;
+    unsigned    count = _pixOffset;
 
     while( count < _fileSize ){
-    blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
-    count += blocksize;
-    reader.compress( buffer, blocksize );
+        blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
+        count += blocksize;
+        reader.compress( buffer, blocksize );
     }
 
     delete[] buffer;

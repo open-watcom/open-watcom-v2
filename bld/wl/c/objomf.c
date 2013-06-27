@@ -459,9 +459,9 @@ static void DoMSOMF( void )
     if( ObjBuff == EOObjRec )
         CurrMod->omfdbg = OMF_DBG_CODEVIEW;    /* Assume MS style */
     else {
-        unsigned_8  version;
+//        unsigned_8  version;
 
-        version = *ObjBuff++;
+        /* version = * */ ObjBuff++;
         if( ObjBuff[0] == 'C' && ObjBuff[1] == 'V' ) {
             CurrMod->omfdbg = OMF_DBG_CODEVIEW;
         } else if( ObjBuff[0] == 'H' && ObjBuff[1] == 'L' ) {

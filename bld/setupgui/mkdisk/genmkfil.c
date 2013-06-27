@@ -115,11 +115,11 @@ int InVersionList( char *str )
 int ReadList( FILE *fp )
 //======================
 {
-    char                *type;
+//    char                *type;
     char                *path;
     char                *file;
     char                *rel_file;
-    char                *extra;
+//    char                *extra;
     char                *patch;
     char                *where;
     char                buf[ 128 ];
@@ -134,11 +134,13 @@ int ReadList( FILE *fp )
                 continue;
             }
         }
-        type = strtok( buf, " \t" );
+//        type = strtok( buf, " \t" );
+        strtok( buf, " \t" );
         path = strtok( NULL, " \t" );
         file = strtok( NULL, " \t" );
         rel_file = strtok( NULL, " \t" );
-        extra = strtok( NULL, " \t" );
+//        extra = strtok( NULL, " \t" );
+        strtok( NULL, " \t" );
         patch = strtok( NULL, " \t" );
         for( ;; ) {
             where = strtok( NULL, " \t" );

@@ -35,11 +35,11 @@ bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, in
     unsigned long   height;
     unsigned long   x, y;
     int             bpp;    /* bits per pixel */
-    int             alpha, trans, altrig;
+//    int             alpha, trans, altrig;
     int             rowbytes;
-    int             mix;    /* mix foreground and background */
-    int             specbg; /* specified background from command line */
-    int             bg_red, bg_green, bg_blue;
+//    int             mix;    /* mix foreground and background */
+//    int             specbg; /* specified background from command line */
+//    int             bg_red, bg_green, bg_blue;
     unsigned char   *row, **rows, **rowp;
     bmp_file_header bmfh;
     bmp_info_header bmih;
@@ -50,14 +50,14 @@ bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, in
     if( !in )
         return 0;
 
-    alpha    = bmeps_get_alpha();
-    trans    = bmeps_get_trans();
-    altrig   = bmeps_get_altrig();
-    mix      = bmeps_get_mix();
-    specbg   = bmeps_get_specbg();
-    bg_red   = bmeps_get_bg_red();
-    bg_green = bmeps_get_bg_green();
-    bg_blue  = bmeps_get_bg_blue();
+//    alpha    = bmeps_get_alpha();
+//    trans    = bmeps_get_trans();
+//    altrig   = bmeps_get_altrig();
+//    mix      = bmeps_get_mix();
+//    specbg   = bmeps_get_specbg();
+//    bg_red   = bmeps_get_bg_red();
+//    bg_green = bmeps_get_bg_green();
+//    bg_blue  = bmeps_get_bg_blue();
     rewind( in );
 
     // Check for the 'BM' header

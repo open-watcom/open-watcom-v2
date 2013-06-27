@@ -136,7 +136,7 @@ static void fill_in_objfile_space( uint size )
 int AlignDirective( asm_token directive, int i )
 /********************************************/
 {
-    int_32 align_val;
+    int_32 align_val = 0;
     int seg_align;
 
     switch( directive ) {

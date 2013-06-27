@@ -80,16 +80,16 @@ static void SemCall( symbol *call )
 
 static void Choice( symbol *rule, instruction *exit )
 {
-    instruction *choice;
+    instruction *choice = NULL;
     instruction *def_lbl;
     char        def;
-    class       typ;
-    unsigned    first_value;
+    class       typ = 0;
+    unsigned    first_value = 0;
     instruction *first_lbl;
     instruction *bot;
     instruction *lbl;
-    symbol      *ret;
-    symbol      *call;
+    symbol      *ret = NULL;
+    symbol      *call = NULL;
     symbol      *sym;
 
     Scan();

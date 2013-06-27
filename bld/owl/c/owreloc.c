@@ -173,7 +173,7 @@ static Elf32_Word elfRelocTypes386[] = {
 Elf32_Word OWLENTRY ElfRelocType( owl_reloc_type reloc_type, owl_cpu cpu ) {
 //**************************************************************************
 
-    Elf32_Word  *elf_relocs;
+    Elf32_Word  *elf_relocs = NULL;
 
     switch( cpu ) {
     case OWL_CPU_PPC:
@@ -197,7 +197,7 @@ Elf32_Word OWLENTRY ElfRelocType( owl_reloc_type reloc_type, owl_cpu cpu ) {
 uint_32 OWLENTRY CoffRelocType( owl_reloc_type reloc_type, owl_cpu cpu ) {
 //************************************************************************
 
-    uint_32     *coff_relocs;
+    uint_32     *coff_relocs = NULL;
 
     switch( cpu ) {
     case OWL_CPU_PPC:
@@ -272,7 +272,7 @@ static unsigned alphaMasks[] = {
 unsigned OWLENTRY OWLRelocBitMask( owl_file_handle file, owl_reloc_info *reloc ) {
 //********************************************************************************
 
-    unsigned    *mask_array;
+    unsigned    *mask_array = NULL;
 
     assert( reloc != NULL );
     switch( file->info->cpu ) {

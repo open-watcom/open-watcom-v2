@@ -884,7 +884,7 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
     omf_rec_size        len;
     uint_8              datum;
     int                 is32;
-    int                 wordsize;
+//    int                 wordsize;
 
     assert( ofh );
 
@@ -893,7 +893,7 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
         return( err );
 
     is32 = check32Bit( ofh, typ );
-    wordsize = OmfGetWordSize( is32 );
+//    wordsize = OmfGetWordSize( is32 );
 
     len = ofh->parselen;
     buffer = ofh->parsebuf;

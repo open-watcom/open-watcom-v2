@@ -467,12 +467,13 @@ int HPJReader::skipSection()
 
 int HPJReader::handleBaggage()
 {
-    int result;
+    int result = 0;
+
     while( _numBagFiles < NB_FILES ){
-    result = _scanner.getLine();
-    if( !result ) break;
-    if( _scanner[0] == '[' ) break;
-    _bagFiles[ _numBagFiles++ ] = new Baggage( _dir, _scanner );
+        result = _scanner.getLine();
+        if( !result ) break;
+        if( _scanner[0] == '[' ) break;
+        _bagFiles[ _numBagFiles++ ] = new Baggage( _dir, _scanner );
     }
     return result;
 }
@@ -689,190 +690,191 @@ int HPJReader::handleWindows()
     char    *arg;
     int     bad_param;
     int     red, green, blue;
-
     uint_16 wflags;
     char    name[HLP_SYS_NAME];
     char    caption[HLP_SYS_CAP];
-    uint_16 x,y,width,height;
-    uint_16 use_max_flag;
+    uint_16 x = 0;
+    uint_16 y = 0;
+    uint_16 width = 0;
+    uint_16 height = 0;
+    uint_16 use_max_flag = 0;
     uint_32 rgb_main, rgb_nonscroll;
 
-    for( ;; ){
-    result = _scanner.getLine();
-    if( !result || _scanner[0] == '[' ) break;
+    for( ; (result = _scanner.getLine()) != 0; ) {
+        if( _scanner[0] == '[' ) break;
 
-    limit = HLP_SYS_NAME-1;
-    if( limit > result-1 ){
-        limit = result-1;
-    }
-    for( i=0; i<limit && !isspace(_scanner[i]) && _scanner[i] != '=' ; i++ ){
-        name[i] = _scanner[i];
-    }
-    if( i == result-1 ){
-        HCWarning( HPJ_INCOMPLETEWIN, _scanner.lineNum(), _scanner.name() );
-        continue;
-    } else if( i == HLP_SYS_NAME ){
-        HCWarning( HPJ_LONGWINNAME, _scanner.lineNum(), _scanner.name() );
-    }
-    name[i] = '\0';
-    while( i<result-1 && !isspace(_scanner[i]) ){
-        i++;
-    }
-
-    arg = _scanner.getArg(i);
-    if( arg == NULL || *arg == '\0' ){
-        HCWarning( HPJ_INCOMPLETEWIN, _scanner.lineNum(), _scanner.name() );
-        continue;
-    }
-
-    wflags = VALID_TYPE | VALID_NAME;
-    _winParamBuf = arg;
-
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        i = 0;
-        if( *arg == '"' ){
-        arg++;
+        limit = HLP_SYS_NAME-1;
+        if( limit > result-1 ){
+            limit = result-1;
         }
-        while( i<HLP_SYS_CAP-1 && *arg != '\0' && *arg != '"' ){
-        caption[i++] = *arg++;
+        for( i=0; i<limit && !isspace(_scanner[i]) && _scanner[i] != '=' ; i++ ) {
+            name[i] = _scanner[i];
         }
-        caption[i] = '\0';
-        wflags |= VALID_CAPTION;
-    }
+        if( i == result-1 ){
+            HCWarning( HPJ_INCOMPLETEWIN, _scanner.lineNum(), _scanner.name() );
+            continue;
+        } else if( i == HLP_SYS_NAME ){
+            HCWarning( HPJ_LONGWINNAME, _scanner.lineNum(), _scanner.name() );
+        }
+        name[i] = '\0';
+        while( i<result-1 && !isspace(_scanner[i]) ){
+            i++;
+        }
 
-    bad_param = 0;
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        x = (uint_16) strtol( arg, NULL, 0 );
-        if( x > PARAM_MAX ){
-        bad_param = 1;
+        arg = _scanner.getArg(i);
+        if( arg == NULL || *arg == '\0' ){
+            HCWarning( HPJ_INCOMPLETEWIN, _scanner.lineNum(), _scanner.name() );
+            continue;
+        }
+
+        wflags = VALID_TYPE | VALID_NAME;
+        _winParamBuf = arg;
+
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            i = 0;
+            if( *arg == '"' ){
+                arg++;
+            }
+            while( i<HLP_SYS_CAP-1 && *arg != '\0' && *arg != '"' ){
+                caption[i++] = *arg++;
+            }
+            caption[i] = '\0';
+            wflags |= VALID_CAPTION;
+        }
+
+        bad_param = 0;
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            x = (uint_16) strtol( arg, NULL, 0 );
+            if( x > PARAM_MAX ){
+                bad_param = 1;
+            } else {
+                wflags |= VALID_X;
+            }
+        }
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            y = (uint_16) strtol( arg, NULL, 0 );
+            if( y > PARAM_MAX ){
+                bad_param = 1;
+            } else {
+                wflags |= VALID_Y;
+            }
+        }
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            width = (uint_16) strtol( arg, NULL, 0 );
+            if( width > PARAM_MAX ){
+                bad_param = 1;
+            } else {
+                wflags |= VALID_WIDTH;
+            }
+        }
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            height = (uint_16) strtol( arg, NULL, 0 );
+            if( height > PARAM_MAX ){
+                bad_param = 1;
+            } else {
+                wflags |= VALID_HEIGHT;
+            }
+        }
+        if( bad_param ){
+            HCWarning( HPJ_WINBADPARAM, _scanner.lineNum(), _scanner.name() );
+            continue;
+        }
+
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            use_max_flag = (uint_16) strtol( arg, NULL, 0 );
+            wflags |= VALID_MAX;
+        }
+
+        red = green = blue = 0;
+        bad_param = 0;
+
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            red = strtol( arg, NULL, 0 );
+            if( red < 0 || red > 255 ){
+                bad_param = 1;
+            }
+            wflags |= VALID_RGB1;
+        }
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            green = strtol( arg, NULL, 0 );
+            if( green < 0 || green > 255 ){
+                bad_param = 1;
+            }
+            wflags |= VALID_RGB1;
+        }
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            blue = strtol( arg, NULL, 0 );
+            if( blue < 0 || blue > 255 ){
+                bad_param = 1;
+            }
+            wflags |= VALID_RGB1;
+        }
+
+        if( bad_param ){
+            HCWarning( HPJ_WINBADCOLOR, _scanner.lineNum(), _scanner.name() );
+            continue;
         } else {
-        wflags |= VALID_X;
+            rgb_main = (uint_32) (red + (green<<8) + (blue<<16));
         }
-    }
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        y = (uint_16) strtol( arg, NULL, 0 );
-        if( y > PARAM_MAX ){
-        bad_param = 1;
+
+        red = green = blue = 0;
+        bad_param = 0;
+
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            red = strtol( arg, NULL, 0 );
+            if( red < 0 || red > 255 ){
+                bad_param = 1;
+            }
+            wflags |= VALID_RGB2;
+        }
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            green = strtol( arg, NULL, 0 );
+            if( green < 0 || green > 255 ){
+                bad_param = 1;
+            }
+            wflags |= VALID_RGB2;
+        }
+        arg = nextWinParam();
+        if( *arg != '\0' ){
+            blue = strtol( arg, NULL, 0 );
+            if( blue < 0 || blue > 255 ){
+                bad_param = 1;
+            }
+            wflags |= VALID_RGB2;
+        }
+
+        if( bad_param ){
+            HCWarning( HPJ_WINBADCOLOR, _scanner.lineNum(), _scanner.name() );
+            continue;
         } else {
-        wflags |= VALID_Y;
+            rgb_nonscroll = (uint_32) (red + (green<<8) + (blue<<16));
         }
-    }
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        width = (uint_16) strtol( arg, NULL, 0 );
-        if( width > PARAM_MAX ){
-        bad_param = 1;
-        } else {
-        wflags |= VALID_WIDTH;
+
+        arg = nextWinParam();
+        if( *arg != 0 || strtol( arg, NULL, 0 ) != 0 ){
+            wflags |= VALID_ONTOP;
         }
-    }
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        height = (uint_16) strtol( arg, NULL, 0 );
-        if( height > PARAM_MAX ){
-        bad_param = 1;
-        } else {
-        wflags |= VALID_HEIGHT;
-        }
-    }
-    if( bad_param ){
-        HCWarning( HPJ_WINBADPARAM, _scanner.lineNum(), _scanner.name() );
-        continue;
-    }
 
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        use_max_flag = (uint_16) strtol( arg, NULL, 0 );
-        wflags |= VALID_MAX;
-    }
-
-    red = green = blue = 0;
-    bad_param = 0;
-
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        red = strtol( arg, NULL, 0 );
-        if( red < 0 || red > 255 ){
-        bad_param = 1;
-        }
-        wflags |= VALID_RGB1;
-    }
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        green = strtol( arg, NULL, 0 );
-        if( green < 0 || green > 255 ){
-        bad_param = 1;
-        }
-        wflags |= VALID_RGB1;
-    }
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        blue = strtol( arg, NULL, 0 );
-        if( blue < 0 || blue > 255 ){
-        bad_param = 1;
-        }
-        wflags |= VALID_RGB1;
-    }
-
-    if( bad_param ){
-        HCWarning( HPJ_WINBADCOLOR, _scanner.lineNum(), _scanner.name() );
-        continue;
-    } else {
-        rgb_main = (uint_32) (red + (green<<8) + (blue<<16));
-    }
-
-    red = green = blue = 0;
-    bad_param = 0;
-
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        red = strtol( arg, NULL, 0 );
-        if( red < 0 || red > 255 ){
-        bad_param = 1;
-        }
-        wflags |= VALID_RGB2;
-    }
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        green = strtol( arg, NULL, 0 );
-        if( green < 0 || green > 255 ){
-        bad_param = 1;
-        }
-        wflags |= VALID_RGB2;
-    }
-    arg = nextWinParam();
-    if( *arg != '\0' ){
-        blue = strtol( arg, NULL, 0 );
-        if( blue < 0 || blue > 255 ){
-        bad_param = 1;
-        }
-        wflags |= VALID_RGB2;
-    }
-
-    if( bad_param ){
-        HCWarning( HPJ_WINBADCOLOR, _scanner.lineNum(), _scanner.name() );
-        continue;
-    } else {
-        rgb_nonscroll = (uint_32) (red + (green<<8) + (blue<<16));
-    }
-
-    arg = nextWinParam();
-    if( *arg != 0 || strtol( arg, NULL, 0 ) != 0 ){
-        wflags |= VALID_ONTOP;
-    }
-
-    if( strcmp( name, Smain ) == 0 ){
-        _sysFile->addRecord( new SystemWin( wflags, Smain, name, caption,
+        if( strcmp( name, Smain ) == 0 ){
+            _sysFile->addRecord( new SystemWin( wflags, Smain, name, caption,
                             x, y, width, height, use_max_flag,
                         rgb_main, rgb_nonscroll ) );
-    } else {
-        _sysFile->addRecord( new SystemWin( wflags, Ssecondary, name, caption,
+        } else {
+            _sysFile->addRecord( new SystemWin( wflags, Ssecondary, name, caption,
                             x, y, width, height, use_max_flag,
                         rgb_main, rgb_nonscroll ) );
-    }
+        }
     }
     return result;
 }

@@ -547,7 +547,7 @@ void process_style( char *parms[], char *str )
 /********************************************/
 {
     char            **ptr;
-    control_type    control;
+    control_type    control = 0;
     int             i;
     
     if( strcmp( str, "DIALOG" ) != 0 ) {

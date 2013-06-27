@@ -390,11 +390,11 @@ static void ITBranchSpec( ins_table *table, instruction *ins, uint_32 *buffer, a
 //*************************************************************************************************
 
     ins_operand *op[2];
-    ins_flags   flags;
+//    ins_flags   flags;
     int         ctr;
 
     assert( ins->num_operands == 2 );
-    flags = ( ins->format->flags & table->optional ) | table->required;
+//    flags = ( ins->format->flags & table->optional ) | table->required;
     for( ctr = 0; ctr < 2; ++ctr ) {
         op[ctr] = ins->operands[ctr];
         if( !ensureOpAbsolute( op[ctr], ctr ) ) return;
@@ -976,7 +976,10 @@ static void ITSMSrwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
 //*********************************************************************************************
 
     ins_operand *const_op;
-    uint        n, sh, mb, me;
+    uint        n;
+    uint        sh = 0;
+    uint        mb = 0;
+    uint        me = 0;
 
     assert( ins->num_operands == 3 );
     const_op = ins->operands[2];
@@ -1152,9 +1155,10 @@ static void ITSMBC( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 // iii) bdnz OP_BI, OP_IMMED(reloc okay)
 //  iv) bdnz OP_IMMED(no reloc), OP_IMMED(reloc okay)
 
-    ins_operand *op0, *opBd;
+    ins_operand *op0;
+    ins_operand *opBd = NULL;
     ins_flags   flags;
-    uint        valueBI;
+    uint        valueBI = 0;
 
     assert( ins->num_operands >= 1 && ins->num_operands <= 2 );
     op0 = ins->operands[0];
@@ -1190,7 +1194,9 @@ static void ITSMBC( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 static void ITSMBSpecIcc( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
 //*************************************************************************************************
 
+#ifndef NDEBUG
     ins_operand *op0;
+#endif
     ins_special special;
     uint        startBI;
 
@@ -1198,8 +1204,10 @@ static void ITSMBSpecIcc( ins_table *table, instruction *ins, uint_32 *buffer, a
     if( ins->num_operands == 0 ) {
         startBI = 0;
     } else { // ins->num_operands == 1
+#ifndef NDEBUG
         op0 = ins->operands[0];
         assert( op0->type == OP_CRF );
+#endif
         startBI = RegCrfToBI( ins->operands[0]->reg );
     }
     special = table->special;
@@ -1217,7 +1225,7 @@ static void ITSMBSpec( ins_table *table, instruction *ins, uint_32 *buffer, asm_
 //  iv) bdnzlr OP_IMMED(no reloc)
 
     ins_operand *op0;
-    uint        valueBI;
+    uint        valueBI = 0;
 
     assert( ins->num_operands == 0 || ins->num_operands == 1 );
     switch( ins->num_operands ) {

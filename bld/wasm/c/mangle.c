@@ -210,6 +210,7 @@ char *Mangle( struct asm_sym *sym, char *buffer )
     case LANG_C:
         mangler = CMangler;
         break;
+    default:
     case LANG_NONE:
         mangler = sym->mangler;
         if( mangler == NULL )

@@ -169,7 +169,7 @@ TokenTypes Scanner::handleSlash( Token * tok )
 int Scanner::isSpecial( int c )
 {
     static uint_8 const specials[] = "-:\\_{|}\"";
-    int     i;
+    unsigned            i;
 
     for( i = 0; i < sizeof( specials ) - 1; i++ ) {
         if( c == specials[i] ) {

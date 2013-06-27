@@ -225,7 +225,7 @@ static int macro_local( void )
         }
         strcpy( buffer, AsmBuffer[i]->string_ptr );
         strcat( buffer, " TEXTEQU " );
-        sprintf( buffer + strlen( buffer ), "??%#04d", MacroLocalVarCounter );
+        sprintf( buffer + strlen( buffer ), "??%04d", MacroLocalVarCounter );
         MacroLocalVarCounter++;
         InputQueueLine( buffer );
         i++;
@@ -454,7 +454,7 @@ int ExpandMacro( int tok_count)
     int         count = 0;
     int         macro_name_loc;
     char        expansion_flag = FALSE;
-    int         exp_start;
+    int         exp_start = 0;
     int         nesting_depth;
     char        *ptr;
 

@@ -108,7 +108,8 @@ static bool elfAddImport( arch_header *arch, libfile io )
     orl_sec_handle  string_sec;
     Elf32_Export    *export_table;
     Elf32_Sym       *sym_table;
-    orl_sec_size    export_size, sym_size;
+    orl_sec_size    export_size;
+//    orl_sec_size    sym_size;
     char            *strings;
     processor_type  processor = WL_PROC_NONE;
     char            *oldname;
@@ -154,7 +155,7 @@ static bool elfAddImport( arch_header *arch, libfile io )
     export_size = (Elf32_Word) ORLSecGetSize( export_sec ) / sizeof( Elf32_Export );
     sym_sec = ORLSecGetSymbolTable( export_sec );
     ORLSecGetContents( sym_sec, (unsigned_8 **)&sym_table );
-    sym_size = (Elf32_Word) ORLSecGetSize( sym_sec ) / sizeof( Elf32_Sym );
+//    sym_size = (Elf32_Word) ORLSecGetSize( sym_sec ) / sizeof( Elf32_Sym );
     string_sec = ORLSecGetStringTable( sym_sec );
     ORLSecGetContents( string_sec, (unsigned_8 **)&strings );
 

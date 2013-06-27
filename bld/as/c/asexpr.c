@@ -202,7 +202,8 @@ static expr_tree *binaryFold( expr_tree *tree ) {
     right = ETBurn( BINARY_RIGHT( tree ) );
     if( _IsConstant( left->type ) && _IsConstant( right->type ) ) {
         if( left->type == ET_CONSTANT && right->type == ET_CONSTANT ) {
-            signed_32   l_val, r_val, result;
+            signed_32   l_val, r_val;
+            signed_32   result = 0;
 
             l_val = CONST_VALUE( left );
             r_val = CONST_VALUE( right );
@@ -243,7 +244,8 @@ static expr_tree *binaryFold( expr_tree *tree ) {
             CONST_VALUE( tree ) = result;
             tree->type = ET_CONSTANT;
         } else {
-            double      l_val, r_val, result;
+            double      l_val, r_val;
+            double      result = 0.0;
 
             if( left->type == ET_CONSTANT ) {
                 l_val = (double)CONST_VALUE( left );

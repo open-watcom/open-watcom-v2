@@ -1879,7 +1879,7 @@ static int fix( expr_list *res, int start, int end )
     int                 diff;
     int                 i;
     int                 old_start;
-    int                 old_end;
+//    int                 old_end;
     int                 need_number;
 
     MakeConst( res );
@@ -1958,7 +1958,7 @@ static int fix( expr_list *res, int start, int end )
         }
 
         old_start = start;
-        old_end = end;
+//        old_end = end;
 
         for( i = start; i <= end; i++ ) {
             /* Store the original AsmBuffer[] data */
@@ -2308,13 +2308,13 @@ extern int EvalConstant( int count, int start_tok, int end_tok, bool flag_msg )
 /*****************************************************************************/
 {
     int         i = start_tok;
-    bool        const_expr = TRUE;
+//    bool        const_expr = TRUE;
 
     TokCnt = count;
     error_msg = flag_msg;
     while( i < TokCnt && i <= end_tok ) {
         if( !is_expr1( i ) ) {
-            const_expr = FALSE;
+//            const_expr = FALSE;
             break;
         }
         i++;
