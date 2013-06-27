@@ -118,7 +118,7 @@ sw_c_msdos_086    = -oax
 sw_c_msdos_286    = -oax
 sw_c_msdos_386    = -oaxt
 sw_c_rdos_386     = -oaxt-bm
-sw_c_rdosdev_386  = -oaxt-bm-zu
+sw_c_rdosdev_386  = -oaxt-bm-zu-zdp-zff-zgf
 sw_c_nw_clib_386  = -oaxt-bm -D__far= -D__near= -D_NETWARE_CLIB
 sw_c_nw_clibl_386 = -oaxt-bm -D__far= -D__near= -D_NETWARE_CLIB -D_THIN_LIB
 sw_c_nw_libc_386  = -oaxt-bm -D__far= -D__near= -D_NETWARE_LIBC
