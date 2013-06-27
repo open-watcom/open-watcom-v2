@@ -95,7 +95,7 @@ class Bitmap : public Bmx
     uint_32 _objOffset;
     uint_32 _pixSize;
 
-    uint_32 _dataPos;
+    long _dataPos;
 
     uint_32 _size;
 

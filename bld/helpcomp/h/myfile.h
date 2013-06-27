@@ -130,10 +130,10 @@ public:
     int putback( int c )
         { return ungetc( c, _fp ); };
 
-    int reset( int pos = 0, int where = SEEK_SET )
+    int reset( long pos = 0, int where = SEEK_SET )
         { return fseek( _fp, pos, where ); };
 
-    int tell()
+    long tell()
         { return ftell( _fp ); };
 };
 
