@@ -116,7 +116,7 @@ int ContextKey::lessThan( BtreeData *other )
 
 int ContextKey::dump( OutFile * dest )
 {
-    dest->writebuf( &_hashValue, sizeof( uint_32 ), 1 );
+    dest->write( _hashValue );
     return 1;
 }
 
@@ -125,8 +125,8 @@ int ContextKey::dump( OutFile * dest )
 
 int ContextRec::dump( OutFile * dest )
 {
-    dest->writebuf( &_hashValue, sizeof( uint_32 ), 1 );
-    dest->writebuf( &_offset, sizeof( uint_32 ), 1 );
+    dest->write( _hashValue );
+    dest->write( _offset );
     return 1;
 }
 

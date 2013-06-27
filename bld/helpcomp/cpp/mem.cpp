@@ -47,7 +47,7 @@ static _trmem_hdl TrHdl;
 #pragma initialize 40;
 #endif
 
-//static Memory bogus;    // just need to get the ctors called
+static Memory bogus;    // just need to get the ctors called
 
 //
 //  PrintLine   -- output function used by the memory tracker.

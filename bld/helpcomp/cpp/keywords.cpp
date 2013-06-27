@@ -181,7 +181,7 @@ uint_32 KWKey::size()
 
 int KWKey::dump( OutFile * dest )
 {
-    dest->writebuf( _keyword, 1, strlen( _keyword )+1 );
+    dest->write( _keyword, 1, strlen( _keyword )+1 );
     return 1;
 }
 
@@ -225,9 +225,9 @@ uint_32 KWRec::size()
 int KWRec::dump( OutFile * dest )
 {
     int len = strlen( _keyword ) + 1;
-    dest->writebuf( _keyword, 1, len );
-    dest->writebuf( &_count, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_dataOffset, sizeof( uint_32 ), 1 );
+    dest->write( _keyword, 1, len );
+    dest->write( _count );
+    dest->write( _dataOffset );
     return 1;
 }
 
@@ -374,7 +374,7 @@ int HFKwdata::dump( OutFile * dest )
     for( _iterator.init(); _iterator.data() != NULL; _iterator++ ){
         record = (KWRec*) _iterator.data();
         for( p_off = record->head(); p_off!=NULL; p_off = p_off->_next ){
-            dest->writebuf( &p_off->_offset, sizeof( uint_32 ), 1 );
+            dest->write( p_off->_offset );
         }
     }
     return 1;
@@ -413,14 +413,14 @@ uint_32 HFKwmap::size()
 
 int HFKwmap::dump( OutFile * dest )
 {
-    dest->writebuf( &_numRecs, sizeof( uint_16 ), 1 );
+    dest->write( _numRecs );
     _iterator.init();
     uint_32     rec_count = 0;
     uint_16     page_num;
     while( _iterator.data() != NULL ){
         page_num = _iterator.thisPage();
-        dest->writebuf( &rec_count, sizeof( uint_32 ), 1 );
-        dest->writebuf( &page_num, sizeof( uint_16 ), 1 );
+        dest->write( rec_count );
+        dest->write( page_num );
         rec_count += _iterator.pageEntries();
         _iterator.nextPage();
     }

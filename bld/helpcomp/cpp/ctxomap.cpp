@@ -54,8 +54,8 @@ HFCtxomap::CmapRec::CmapRec( uint_32 num, uint_32 h_val )
 
 int HFCtxomap::CmapRec::dump( OutFile * dest )
 {
-    dest->writebuf( &_mapnum, sizeof( uint_32 ), 1 );
-    dest->writebuf( &_offset, sizeof( uint_32 ), 1 );
+    dest->write( _mapnum );
+    dest->write( _offset );
     return 1;
 }
 
@@ -132,7 +132,7 @@ uint_32 HFCtxomap::size()
 
 int HFCtxomap::dump( OutFile * dest )
 {
-    dest->writebuf( &_numRecords, sizeof( uint_16 ), 1 );
+    dest->write( _numRecords );
     CmapRec *current = _firstRec;
     while( current != NULL ){
     current->dump( dest );

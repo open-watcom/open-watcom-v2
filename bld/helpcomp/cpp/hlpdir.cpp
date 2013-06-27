@@ -87,7 +87,7 @@ public:
 
 int HFSkey::dump( OutFile *dest )
 {
-    dest->writebuf( _name, 1, strlen(_name)+1 );
+    dest->write( _name, 1, strlen(_name)+1 );
     return 1;
 }
 
@@ -113,8 +113,8 @@ int HFSkey::lessThan( BtreeData *other )
 
 int HFSnode::dump( OutFile * dest )
 {
-    dest->writebuf( _name, 1, strlen(_name)+1 );
-    dest->writebuf( &_offset, sizeof( uint_32 ), 1 );
+    dest->write( _name, 1, strlen(_name)+1 );
+    dest->write( _offset );
     return 1;
 }
 
@@ -178,15 +178,15 @@ void HFSDirectory::dump()
                         0xFFFFFFFF
     };
 
-    _output.writebuf( header, sizeof( uint_32 ), 3 );
-    _output.writebuf( &filesize, sizeof( uint_32 ), 1 );
+    _output.write( header, sizeof( uint_32 ), 3 );
+    _output.write( filesize );
 
     // Now dump the directory file itself.
     direct_size += FILE_HEADER_SIZE;
-    _output.writebuf( &direct_size, sizeof( uint_32 ), 1 );
+    _output.write( direct_size );
     direct_size -= FILE_HEADER_SIZE;
-    _output.writebuf( &direct_size, sizeof( uint_32 ), 1 );
-    _output.writech( 0x04 );    // WinHelp needs a 0x04 at this point.
+    _output.write( direct_size );
+    _output.write( (uint_8)0x04 );    // WinHelp needs a 0x04 at this point.
     _files.dump( &_output );
 
     // Now dump the each of the files listed in the b-tree.
@@ -196,10 +196,10 @@ void HFSDirectory::dump()
     while( current != NULL ){
     cursize = ((HFSnode*) current)->_pointer->size();
     cursize += FILE_HEADER_SIZE;
-    _output.writebuf( &cursize, sizeof( uint_32 ), 1 );
+    _output.write( cursize );
     cursize -= FILE_HEADER_SIZE;
-    _output.writebuf( &cursize, sizeof( uint_32 ), 1 );
-    _output.writech( 0x00 );    // Again, keeping WinHelp happy.
+    _output.write( cursize );
+    _output.write( (uint_8)0x00 );    // Again, keeping WinHelp happy.
     ((HFSnode*) current)->_pointer->dump( &_output );
     current = (++iterator).data();
     }

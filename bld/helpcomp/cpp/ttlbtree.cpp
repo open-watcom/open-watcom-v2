@@ -107,7 +107,7 @@ uint_32 TTLKey::size()
 
 int TTLKey::dump( OutFile * dest )
 {
-    dest->writebuf( &_offset, sizeof( uint_32 ), 1 );
+    dest->write( _offset );
     return 1;
 }
 
@@ -144,8 +144,8 @@ uint_32 TTLRec::size()
 
 int TTLRec::dump( OutFile * dest )
 {
-    dest->writebuf( &_offset, sizeof( uint_32 ), 1 );
-    dest->writebuf( _title, 1, strlen( _title ) + 1 );
+    dest->write( _offset );
+    dest->write( _title, 1, strlen( _title ) + 1 );
     return 1;
 }
 

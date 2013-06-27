@@ -109,7 +109,7 @@ int main( int argc, char *argv[] )
         if( j == pagebreaks[i] ){
             compactor.flush();
             while( amount_written < PAGE_SIZE ){
-                output.writech( 0 );
+                output.write( (uint_8)0 );
                 amount_written++;
             }
             amount_written = 0;

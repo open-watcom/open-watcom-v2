@@ -659,16 +659,16 @@ int HFPhrases::dump( OutFile *dest )
     const uint_16 magic = 0x0100;
     int       i;
 
-    dest->writebuf( &_numPhrases, sizeof( uint_16 ), 1 );
-    dest->writebuf( &magic, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_phSize, sizeof( uint_32 ), 1 );
+    dest->write( _numPhrases );
+    dest->write( magic );
+    dest->write( _phSize );
 
     uint_16 curr_size = (uint_16) ( (_numPhrases+1) * sizeof( uint_16 ) );
     for( i=0; i<_numPhrases; i++ ){
-    dest->writebuf( &curr_size, sizeof( uint_16 ), 1 );
-    curr_size = (uint_16) (curr_size + _result[i]->_len);
+    dest->write( curr_size );
+    curr_size = (uint_16)( curr_size + _result[i]->_len );
     }
-    dest->writebuf( &curr_size, sizeof( uint_16 ), 1 );
+    dest->write( curr_size );
 
     CompOutFile riter( dest );
     CompReader  reader( &riter );
@@ -1018,9 +1018,9 @@ void HFPhrases::createQueue( char const *path )
     for( i=0; (current = _newPtable->next()) != NULL; i++ ){
     _result[i] = new P_String( *current );
 
-    ph_file.writebuf( _result[i]->_str, 1, _result[i]->_len );
-    ph_file.writech( '\r' );
-    ph_file.writech( '\n' );
+    ph_file.write( _result[i]->_str, 1, _result[i]->_len );
+    ph_file.write( (uint_8)'\r' );
+    ph_file.write( (uint_8)'\n' );
 
     _result[i]->_index = i;
     }

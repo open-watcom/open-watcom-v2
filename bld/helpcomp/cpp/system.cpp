@@ -72,9 +72,9 @@ SystemText::~SystemText()
 
 int SystemText::dump( OutFile * dest )
 {
-    dest->writebuf( &_flag, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_size, sizeof( uint_16 ), 1 );
-    dest->writebuf( _text, 1, _size );
+    dest->write( _flag );
+    dest->write( _size );
+    dest->write( _text, 1, _size );
     return 1;
 }
 
@@ -93,9 +93,9 @@ SystemNum::SystemNum( uint_16 flg, uint_32 val )
 
 int SystemNum::dump( OutFile * dest )
 {
-    dest->writebuf( &_flag, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_size, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_num, sizeof( uint_32 ), 1 );
+    dest->write( _flag );
+    dest->write( _size );
+    dest->write( _num );
     return 1;
 }
 
@@ -130,16 +130,16 @@ SystemWin::SystemWin( uint_16 wflgs,
 
 int SystemWin::dump( OutFile * dest )
 {
-    dest->writebuf( &_flag, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_size, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_winFlags, sizeof( uint_16 ), 1 );
-    dest->writebuf( _type, 1, HLP_SYS_TYPE );
-    dest->writebuf( _name, 1, HLP_SYS_NAME );
-    dest->writebuf( _caption, 1, HLP_SYS_CAP );
-    dest->writebuf( _position, sizeof( uint_16 ), 4 );
-    dest->writebuf( &_maximize, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_rgbMain, sizeof( uint_32 ), 1 );
-    dest->writebuf( &_rgbNonScroll, sizeof( uint_32 ), 1 );
+    dest->write( _flag );
+    dest->write( _size );
+    dest->write( _winFlags );
+    dest->write( _type, 1, HLP_SYS_TYPE );
+    dest->write( _name, 1, HLP_SYS_NAME );
+    dest->write( _caption, 1, HLP_SYS_CAP );
+    dest->write( _position, sizeof( uint_16 ), 4 );
+    dest->write( _maximize );
+    dest->write( _rgbMain );
+    dest->write( _rgbNonScroll );
     return 1;
 }
 
@@ -283,14 +283,14 @@ int HFSystem::dump( OutFile *dest )
 
     // Write the |SYSTEM header to output.
     static const uint_16    magic[3] = { 0x036C, 0x0015, 0x0001 };
-    dest->writebuf( magic, sizeof( uint_16 ), 3 );
+    dest->write( magic, sizeof( uint_16 ), 3 );
 
     // Write the "time of creation" for the help file.
     uint_32 cur_time = time( NULL );
-    dest->writebuf( &cur_time, sizeof( uint_32 ), 1 );
+    dest->write( cur_time );
 
     // Write out the compression level.
-    dest->writebuf( &_compLevel, sizeof( uint_16 ), 1 );
+    dest->write( _compLevel );
 
     // Dump the records in the linked list, in order.
     SystemRec   *current = _first;

@@ -169,31 +169,30 @@ BtreePage::~BtreePage()
 int BtreePage::dump( OutFile *dest )
 {
     uint_32     amount_left = _maxSize;
-    uint_16     nil_16 = (uint_16) ~0;
 
     // Spit out the page header.
-    dest->writech(0);
-    dest->writech(0);
-    dest->writebuf( &_numEntries, sizeof( uint_16 ), 1 );
+    dest->write( (uint_8)0 );
+    dest->write( (uint_8)0 );
+    dest->write( _numEntries );
     amount_left -= TREEPAGE_HEADER_SIZE;
 
     // If this a leaf node, print the indices of the previous
     // and next pages.
     if( _firstChild == NULL ){
         if( _prevPage ){
-            dest->writebuf( &(_prevPage->_thisPage), sizeof( uint_16 ), 1 );
+            dest->write( _prevPage->_thisPage );
         } else {
-            dest->writebuf( &nil_16, sizeof( uint_16 ), 1 );
+            dest->write( (uint_16)~0 );
         }
         if( _nextPage ){
-            dest->writebuf( &(_nextPage->_thisPage), sizeof( uint_16 ), 1 );
+            dest->write( _nextPage->_thisPage );
         } else {
-            dest->writebuf( &nil_16, sizeof( uint_16 ), 1 );
+            dest->write( (uint_16)~0 );
         }
         amount_left -= 2 * sizeof( uint_16 );
     } else {
         // If this is a tree node, print the index of the first child.
-        dest->writebuf( &(_firstChild->_thisPage), sizeof( uint_16 ), 1 );
+        dest->write( _firstChild->_thisPage );
         amount_left -= sizeof( uint_16 );
     }
 
@@ -207,14 +206,14 @@ int BtreePage::dump( OutFile *dest )
         // corresponding to this data.
 
         if( _firstChild != NULL ){
-            dest->writebuf( &(i->child()->_thisPage), sizeof( uint_16 ), 1 );
+            dest->write( i->child()->_thisPage );
             amount_left -= sizeof( uint_16 );
         }
     }
 
     // Pad out the remaining space.
     while( amount_left ){
-        dest->writech( 0 );
+        dest->write( (uint_8)0 );
         amount_left--;
     }
     return 1;
@@ -450,9 +449,9 @@ int Btree::dump( OutFile *dest )
                                    0xFFFF, _numPages, _numLevels };
 
     // Write the magic number and header information.
-    dest->writebuf( _magic, 1, _magNumSize );
-    dest->writebuf( header, sizeof( uint_16 ), hsize );
-    dest->writebuf( &_totalEntries, sizeof( uint_32 ), 1 );
+    dest->write( _magic, 1, _magNumSize );
+    dest->write( header, sizeof( uint_16 ), hsize );
+    dest->write( _totalEntries );
 
     // Dump all of the pages recursively.
     dumpPage( dest, _root );

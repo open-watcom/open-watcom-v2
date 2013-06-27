@@ -63,7 +63,7 @@ FontName::~FontName()
 
 int FontName::dump( OutFile * dest )
 {
-    dest->writebuf( _name, 1, FONT_NAME_LEN );
+    dest->write( _name, 1, FONT_NAME_LEN );
     return 1;
 }
 
@@ -107,10 +107,10 @@ FontDesc::FontDesc( FontDesc & other )
 
 int FontDesc::dump( OutFile * dest )
 {
-    dest->writech( _flags );
-    dest->writech( _halfPoints );
-    dest->writech( _family );
-    dest->writebuf( &_index, sizeof( uint_16 ), 1 );
+    dest->write( _flags );
+    dest->write( _halfPoints );
+    dest->write( _family );
+    dest->write( _index );
 
     // Convert the _rgb "colour quad" into a triple of bytes.
     uint_8  colours[3];
@@ -118,8 +118,8 @@ int FontDesc::dump( OutFile * dest )
     colours[i] = (uint_8) ((_rgb >> i*8) & 0xFF);
     }
 
-    dest->writebuf( colours, 1, 3 );
-    dest->writebuf( colours, 1, 3 );
+    dest->write( colours, 1, 3 );
+    dest->write( colours, 1, 3 );
     return 1;
 }
 
@@ -499,11 +499,11 @@ uint_32 HFFont::size()
 
 int HFFont::dump( OutFile * dest )
 {
-    dest->writebuf( &_numFonts, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_numDescs, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_defDesc, sizeof( uint_16 ), 1 );
+    dest->write( _numFonts );
+    dest->write( _numDescs );
+    dest->write( _defDesc );
     uint_16 desc_offset = (uint_16) (_numFonts*FONT_NAME_LEN + 4*sizeof( uint_16 ));
-    dest->writebuf( &desc_offset, sizeof( uint_16 ), 1 );
+    dest->write( desc_offset );
 
     FontName *cur_name = _firstName;
     while( cur_name != NULL ){

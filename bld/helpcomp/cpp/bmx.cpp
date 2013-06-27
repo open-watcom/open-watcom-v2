@@ -200,68 +200,62 @@ uint_32 Bitmap::size()
 
 int Bitmap::dump( OutFile *dest )
 {
-    uint_16 magic = SHG1_MAGIC;
-    uint_16 num_objs = 1;
-    uint_32 offset = OBJ_OFFSET;
-    uint_16 two_hund = 0x200;
-    uint_32 big_zero = 0x00000000;
-
-    dest->writebuf( &magic, sizeof( uint_16 ), 1 );
-    dest->writebuf( &num_objs, sizeof( uint_16 ), 1 );
-    dest->writebuf( &offset, sizeof( uint_32 ), 1 );
-    dest->writech( 0x06 );      // Identifies this as a .BMP
-    dest->writech( 0x02 );      // Specifies the compression type
-    dest->writech( 0xC0 );      // Specifies 96dpi
-    dest->writech( 0x00 );      // Magic
-    dest->writech( 0xC0 );      // Specifies 96dpi again
-    dest->writebuf( &two_hund, sizeof( uint_16 ), 1 );
+    dest->write( (uint_16)SHG1_MAGIC );
+    dest->write( (uint_16)1 );
+    dest->write( (uint_32)OBJ_OFFSET );
+    dest->write( (uint_8)0x06 );      // Identifies this as a .BMP
+    dest->write( (uint_8)0x02 );      // Specifies the compression type
+    dest->write( (uint_8)0xC0 );      // Specifies 96dpi
+    dest->write( (uint_8)0x00 );      // Magic
+    dest->write( (uint_8)0xC0 );      // Specifies 96dpi again
+    dest->write( (uint_16)0x200 );
 
     _bitsPerPix *= 2;
     if( _bitsPerPix >= 2*MIN_16BIT ){
         _bitsPerPix += 1;
-        dest->writebuf( &_bitsPerPix, sizeof( uint_16 ), 1 );
+        dest->write( _bitsPerPix );
     } else {
-        dest->writech( *((uint_8*) &_bitsPerPix) );
+        dest->write( (uint_8)_bitsPerPix );
     }
 
     _width *= 2;
     if( _width >= 2*MIN_32BIT ){
         _width += 1;
-        dest->writebuf( &_width, sizeof( uint_32 ), 1 );
+        dest->write( _width );
     } else {
-        dest->writebuf( (uint_16*) &_width, sizeof( uint_16 ), 1 );
+        dest->write( (uint_16)_width );
     }
 
     _height *= 2;
     if( _height >= 2*MIN_32BIT ){
         _height += 1;
-        dest->writebuf( &_height, sizeof( uint_32 ), 1 );
+        dest->write( _height );
     } else {
-        dest->writebuf( (uint_16*) &_height, sizeof( uint_16 ), 1 );
+        dest->write( (uint_16)_height );
     }
 
     _colsUsed *= 2;
     if( _colsUsed >= 2*MIN_32BIT ){
         _colsUsed += 1;
-        dest->writebuf( &_colsUsed, sizeof( uint_32 ), 1 );
+        dest->write( _colsUsed );
     } else {
-        dest->writebuf( (uint_16*) &_colsUsed, sizeof( uint_16 ), 1 );
+        dest->write( (uint_16)_colsUsed );
     }
     _colsUsed /= 2; // We need this quantity again later.
 
-    dest->writebuf( (uint_16*) &big_zero, sizeof( uint_16 ), 1 );
+    dest->write( (uint_16)0 );
 
     _pixSize *= 2;
     if( _pixSize >= 2*MIN_32BIT ){
         _pixSize += 1;
-        dest->writebuf( &_pixSize, sizeof( uint_32 ), 1 );
+        dest->write( _pixSize );
     } else {
-        dest->writebuf( (uint_16*) &_pixSize, sizeof( uint_16 ), 1 );
+        dest->write( (uint_16)_pixSize );
     }
 
-    dest->writebuf( (uint_16*) &big_zero, sizeof( uint_16 ), 1 );
-    dest->writebuf( &_objOffset, sizeof( uint_32 ), 1 );
-    dest->writebuf( &big_zero, sizeof( uint_32 ), 1 );
+    dest->write( (uint_16)0 );
+    dest->write( _objOffset );
+    dest->write( (uint_32)0 );
 
     // now write the colour table and pixel data.
     uint_32 colour;
@@ -271,13 +265,13 @@ int Bitmap::dump( OutFile *dest )
     if( _headSize == BIH_SIZE ){
         for( unsigned i = 0; i < _colsUsed; i++ ){
             _fp->readbuf( &colour, 1, sizeof( uint_32 ) );
-            dest->writebuf( &colour, sizeof( uint_32 ), 1 );
+            dest->write( colour );
         }
     } else {
         colour = 0;
         for( unsigned i = 0; i < _colsUsed; i++ ){
             _fp->readbuf( &colour, 3 );
-            dest->writebuf( &colour, sizeof( uint_32 ), 1 );
+            dest->write( colour );
         }
     }
 
@@ -330,7 +324,7 @@ int SegGraph::dump( OutFile *dest )
 
     _fp->open();
     while( (this_block=_fp->readbuf(block, BLOCK_SIZE)) != 0 ){
-    dest->writebuf( block, 1, this_block );
+    dest->write( block, 1, this_block );
     }
 
     return 1;

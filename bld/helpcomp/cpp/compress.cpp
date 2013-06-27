@@ -135,8 +135,8 @@ int CompWriter::putCode( int distance, int length )
 void CompOutFile::dump()
 {
     if( _numTokens > 0 ){
-    _dest->writech( _bitMask );
-    _dest->writebuf( _buffer, 1, _numBytes );
+    _dest->write( _bitMask );
+    _dest->write( _buffer, 1, _numBytes );
     _numBytes = _numTokens = 0;
     }
     _bitMask = 0;

@@ -965,7 +965,7 @@ int HFTopic::dump( OutFile * dest )
 
     TopicLink       *current = _head;
     PageHeader      *cur_page = _phead->_next;
-    dest->writebuf( _phead->_pageNums, sizeof( uint_32 ), 3 );
+    dest->write( _phead->_pageNums, sizeof( uint_32 ), 3 );
     uint_32     page_size = PAGE_HEADER_SIZE;
 
     // Write the linked list nodes in order.
@@ -980,11 +980,11 @@ int HFTopic::dump( OutFile * dest )
         _myReader->flush();
         }
         while( page_size < COMP_PAGE_SIZE ){
-        dest->writech( 0 );
+        dest->write( (uint_8)0 );
         page_size++;
         }
         page_size = PAGE_HEADER_SIZE;
-        dest->writebuf( cur_page->_pageNums, sizeof( uint_32 ), 3 );
+        dest->write( cur_page->_pageNums, sizeof( uint_32 ), 3 );
         cur_page = cur_page->_next;
     }
 
@@ -1007,7 +1007,7 @@ int HFTopic::dump( OutFile * dest )
     } else {
         for( i=0; i<3; i++, current=current->_next ){
         page_size += current->_size;
-        dest->writebuf( current->_myData, 1, current->_size );
+        dest->write( current->_myData, 1, current->_size );
         }
     }
     }

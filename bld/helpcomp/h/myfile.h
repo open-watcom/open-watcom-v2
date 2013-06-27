@@ -94,10 +94,16 @@ class OutFile : public File
 public:
     OutFile( char const filename[] ) : File( filename, WRITE|BIN ) {};
 
-    int writech( char c )
+    int write( uint_8 c )
         { return fputc( c, _fp ); };
 
-    int writebuf( const void *buf, size_t el_size, size_t nelems )
+    int write( uint_16 d )
+        { return fwrite( &d, sizeof( d ), 1, _fp ); };
+
+    int write( uint_32 d )
+        { return fwrite( &d, sizeof( d ), 1, _fp ); };
+
+    int write( const void *buf, size_t el_size, size_t nelems )
         { return fwrite( buf, el_size, nelems, _fp ); };
 };
 
@@ -125,7 +131,7 @@ public:
         { return ungetc( c, _fp ); };
 
     int reset( int pos = 0, int where = SEEK_SET )
-    { return fseek( _fp, pos, where ); };
+        { return fseek( _fp, pos, where ); };
 
     int tell()
         { return ftell( _fp ); };
