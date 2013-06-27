@@ -77,7 +77,7 @@ Lexer::Token Ddf::parseAttributes( Lexer* lexer )
 void Ddf::buildText( Cell* cell )
 {
     try {
-        STD1::uint16_t tocIndex( document->tocIndexByRes( res ) );
+//        STD1::uint16_t tocIndex( document->tocIndexByRes( res ) );
         XRef xref( fileName, row );
         document->addXRef( res, xref );
         cell->addByte( 0xFF );  //ESC

@@ -324,7 +324,9 @@ void Bitmap::findBlockSize( size_t width, size_t height, size_t bitsPerPixel )
 /***************************************************************************/
 void Bitmap::compress( std::FILE* in )
 {
+#ifdef CHECKCOMP
     unsigned int    count( 1 );
+#endif
     STD1::uint32_t   bytesToRead( bytesPerRow * bmih.height );
     STD1::uint32_t   bytes( 0 );
     while( bytes < bytesToRead ) {

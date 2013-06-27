@@ -71,7 +71,7 @@ void Nls::setCodePage( int cp )
         path += "ty";
     else {
         char code[ 6 ];
-        std::sprintf( code, "%04.4d", cp );
+        std::sprintf( code, "%4.4d", cp );
         path.append( code, 4 );
     }
     path += ".txt";
@@ -296,7 +296,7 @@ STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
 /*****************************************************************************/
 void Nls::SbcsGrammerDef::setDefaultBits( NlsRecType type )
 {
-    static const char defbits[ 2 ][ 32 ] = {\
+    static const unsigned char defbits[ 2 ][ 32 ] = {\
         { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xc0, 
           0x7f, 0xff, 0xff, 0xe0, 0x7f, 0xff, 0xff, 0xe0, 
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 

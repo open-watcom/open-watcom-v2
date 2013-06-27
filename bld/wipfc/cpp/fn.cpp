@@ -45,7 +45,7 @@
 Lexer::Token Fn::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
-    bool done( false );
+//    bool done( false );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC)) {
         if( lexer->tagId() == Lexer::EFN ) {
             tok = Tag::parseAttributes( lexer );

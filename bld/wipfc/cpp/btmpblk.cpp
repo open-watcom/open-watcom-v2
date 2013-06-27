@@ -75,8 +75,8 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
         std::vector< STD1::uint8_t >::const_iterator itr( buffer.begin() );
         size_t          bytesIn( 1 );
         size_t          bytesOut( 0 );
-        size_t          checkPoint( 0 );
-        size_t          oldCompRatio( 100 );
+//        size_t          checkPoint( 0 );
+//        size_t          oldCompRatio( 100 );
         size_t          newCompRatio;
         STD1::uint16_t  nextCode( FIRST );
         STD1::uint16_t  codeIndex;
@@ -110,13 +110,13 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
                                 maxCode = maxVal( INITBITS );
                                 bytesIn = 0;
                                 bytesOut = 0;
-                                oldCompRatio = 100;
+//                                oldCompRatio = 100;
                                 std::fill( code.begin(), code.end(), UNDEFINED );
                             }
-                            else
-                                oldCompRatio = newCompRatio;
+//                            else
+//                                oldCompRatio = newCompRatio;
                         }
-                        checkPoint = bytesIn + checkCount;    // Set new checkpoint
+//                        checkPoint = bytesIn + checkCount;    // Set new checkpoint
                     }
                 }
             }

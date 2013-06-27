@@ -52,7 +52,7 @@ Lexer::Token Lexer::lex( IpfData* input )
     Token type( END );
     if( input ) {
         wchar_t ch;
-        wchar_t quoteChar;
+        wchar_t quoteChar = L'\0';
         bool inQuote( false );
         buffer.clear();
         charNum = input->currentCol();
