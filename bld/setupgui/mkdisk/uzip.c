@@ -51,33 +51,35 @@ int add_files( struct zip *archive, const char *list_fname, char *dir )
     char                srcname[FILENAME_MAX];
     int                 retval;
     int                 len;
+    char                *dir_fname;
 
     if( (f = fopen( list_fname, "r" )) == NULL ) {
         fprintf( stderr, "failed to open list '%s': %s\n", list_fname, strerror( errno ) );
         return( -1 );
     }
-    len = strlen( dir );
+    dir_fname = dir + strlen( dir );
     /* Loop over list, add individual files */
     retval = 0;
     while( fgets( srcname, sizeof( srcname ), f ) != NULL ) {
-        size_t  len1;
-#if !defined( __UNIX__ )
-        int     i;
-#endif
+        char    *d;
+        char    *s;
+        char    c;
 
-        /* Strip terminating newline */
-        len1 = strlen( srcname );
-        if( srcname[len1 - 1] == '\n' ) {
-            srcname[--len1] = '\0';
-        }
-#if !defined( __UNIX__ )
-        for( i = 0; i < len1; ++i ) {
-            if( srcname[i] == '/' ) {
-                srcname[i] = '\\';
+        d = dir_fname;
+        s = srcname;
+        while( (c = *s++) != '\0' ) {
+            /* remove terminating newline */
+            if( c == '\n' ) {
+                s[-1] = '\0';
+                break;
             }
-        }
+#if !defined( __UNIX__ )
+            if( c == '/' )
+                c = '\\';
 #endif
-        strcpy( dir + len, srcname );
+            *d++ = c;
+        }
+        *d = '\0';
         /* Add file to archive */
         if( (zsrc = zip_source_file( archive, dir, 0, 0 )) == NULL || zip_add( archive, srcname, zsrc ) < 0) {
             zip_source_free( zsrc );
