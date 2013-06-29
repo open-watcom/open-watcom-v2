@@ -4,11 +4,6 @@ contrib_dir  = $(%OWROOT)/contrib
 build_dir    = $(%OWROOT)/build
 src_dir      = $(%OWSRCDIR)
 verbose      = $(%OWVERBOSE)
-!ifdef %OWDLLOBJDIR
-dll_subdir   = $(%OWDLLOBJDIR)
-!else
-dll_subdir   = dllobjs
-!endif
 
 # don't ask, just nuke the files
 .ERASE

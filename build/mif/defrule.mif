@@ -1,3 +1,9 @@
+!ifdef %OWDLLOBJDIR
+dll_subdir = $(%OWDLLOBJDIR)
+!else
+dll_subdir = dllobjs
+!endif
+
 .c.obj: $($(proj_name)_autodepends)
 !ifeq verbose 1
         $(cc) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
