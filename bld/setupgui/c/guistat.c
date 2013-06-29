@@ -110,7 +110,7 @@ static gui_create_info StatusInfo = {
     NULL,                               // Menu's
     WND_NUMBER_OF_COLORS,               // number of color attributes
                                         // ArraySize( StatusColours );
-    &StatusColours,                     // Array of color attributes
+    StatusColours,                      // Array of color attributes
     &StatusEventProc,                   // Callback function
     NULL,                               // Extra
     NULL                                // Icon
@@ -431,6 +431,7 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
         return( TRUE );
     case GUI_KEYDOWN:
         GUI_GET_KEY_STATE( parm, key, state );
+        state = state;
         switch( key ) {
         case GUI_KEY_ESCAPE:
             if( !button_pressed ) {

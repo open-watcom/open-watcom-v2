@@ -366,7 +366,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     int                 i, j, sign;
     unsigned            id_i;
     unsigned            id_j;
-    unsigned            checked_radio_id;
+    unsigned            checked_radio_id = 0;
     unsigned            new_check_candidate;
     unsigned            focus;
     unsigned            new_focus;
@@ -374,7 +374,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     bool                control_on_new_line[MAX_VARS];
     bool                visible_checked_radiobutton;
     vhandle             var_handle;
-    vhandle             *pVariable;
+//    vhandle             *pVariable;
 
     if( gui == NULL ) return;
     if( init ) {
@@ -440,7 +440,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     for( i = 0; i < curr_dialog->num_controls; i++ ) {
         if( curr_dialog->controls[i].control_class == GUI_RADIO_BUTTON ||
             curr_dialog->controls[i].control_class == GUI_CHECK_BOX ) {
-            pVariable = curr_dialog->pVariables;
+//            pVariable = curr_dialog->pVariables;
             var_handle = curr_dialog->controls[i].id;
             if( curr_dialog->controls[i].control_class == GUI_RADIO_BUTTON &&
                 GUIIsChecked( gui, VarGetId( var_handle ) ) ) {
@@ -555,7 +555,9 @@ static GUICALLBACK GenericEventProc;
 static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
 /****************************************************************************/
 {
+#if !defined( _UI )
     static bool         first_time = TRUE;
+#endif
     unsigned            id;
     DLG_WINDOW_SET      *result;
     a_dialog_header     *curr_dialog;
@@ -597,7 +599,9 @@ static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
             }
         }
 #endif
+#if !defined( _UI )
         first_time = TRUE;
+#endif
         initializing = FALSE;
         return( TRUE );
 #if !defined( _UI )

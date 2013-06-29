@@ -62,13 +62,10 @@ typedef enum {
 } DIR_PARAM_STACK_OPS;
 
 
-static bool SetupOperations()
-/***************************/
+static bool SetupOperations( void )
+/*********************************/
 {
-    bool                ok;
     bool                uninstall;
-
-    ok = ok;
 
     // are we doing an UnInstall?
     uninstall = VarGetIntVal( UnInstall );

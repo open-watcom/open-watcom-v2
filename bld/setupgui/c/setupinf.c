@@ -441,7 +441,7 @@ static bool SameExprTree( tree_node *a, tree_node *b )
     case OP_EXIST:
         return( stricmp( (char *)a->u.left, (char *)b->u.left ) == 0 );
     case OP_VAR:
-        return( (vhandle)a->u.left == (vhandle)b->u.left );
+        return( (vhandle)(pointer_int)a->u.left == (vhandle)(pointer_int)b->u.left );
         break;
     case OP_TRUE:
     case OP_FALSE:
@@ -539,7 +539,7 @@ int GetOptionVarValue( vhandle var_handle, bool is_minimal )
 static int EvalExprTree( tree_node *tree, bool is_minimal )
 /*********************************************************/
 {
-    int         value;
+    int         value = 0;
     char        buff[_MAX_PATH];
 
     switch( tree->op ) {
@@ -559,13 +559,12 @@ static int EvalExprTree( tree_node *tree, bool is_minimal )
         value = access( buff, F_OK ) == 0;
         break;
     case OP_VAR:
-        value = GetOptionVarValue( (vhandle)tree->u.left, is_minimal );
+        value = GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal );
         break;
     case OP_TRUE:
         value = !is_minimal;
         break;
     case OP_FALSE:
-        value = 0;
         break;
     }
     return( value );
@@ -612,7 +611,7 @@ static void PropagateValue( tree_node *tree, int value )
         break;
     case OP_VAR:
         if( value != 1 ) break;
-        var_handle = (vhandle)tree->u.left;
+        var_handle = (vhandle)(pointer_int)tree->u.left;
         if( VarGetAutoSetCond( var_handle ) != NULL ) {
             if( !VarIsRestrictedFalse( var_handle ) ) {
                 SetVariableByHandle( PreviousInstall, "1" );
@@ -1217,7 +1216,7 @@ static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
 static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
 /************************************************************/
 {
-    int                 len;
+//    int                 len;
     char                *line;
     char                *vbl_name;
     const char          *val;
@@ -1278,7 +1277,7 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
 
     line = TrimQuote( line );
     var_handle_2 = AddVariable( line );
-    len = max( BW, strlen( line + 2 ) );
+//    len = max( BW, strlen( line + 2 ) );
     button_text = line;
     line = next; next = NextToken( line, ',' );
     dialog_name = line;
@@ -1752,7 +1751,7 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_DIALOG:
         {
             static DIALOG_INFO  dialog_info;
-            bool                added;
+            bool                added = FALSE;
 
             next = NextToken( line, '=' );
             if( stricmp( line, "name" ) == 0 ) {
@@ -3424,7 +3423,7 @@ extern void SimCalcAddRemove()
 /****************************/
 {
     int                 i, j, k;
-    int                 targ_index;
+    int                 targ_index = 0;
     int                 dir_index;
     unsigned            cs; /* cluster size */
     bool                previous;
@@ -3432,7 +3431,7 @@ extern void SimCalcAddRemove()
     bool                uninstall;
     bool                remove;
     long                diskette;
-    long                tmp_size;
+    long                tmp_size = 0;
     vhandle             reinstall;
 #if defined( __NT__ )
     char                ext[_MAX_EXT];
