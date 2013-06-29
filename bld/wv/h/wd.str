@@ -160,10 +160,9 @@ pick( DLL_Name,
        "Break on Image Load",
        "jBreak on Image Load" )//dbgexec
 
-
 pick( The_WATCOM_Debugger,
-       "Open Watcom Debugger",
-       "jOpen Watcom Debugger" )//dbgmain
+       "Open Watcom Debugger" STR_BITNEES,
+       "jOpen Watcom Debugger" STR_BITNEES )//dbgmain
 
 pick( About_The_WATCOM_Debugger,
        "About Open Watcom Debugger",

@@ -18,12 +18,9 @@ pick(   STR_UNABLE_TO_AUTOREFRESH,
 pick(   STR_INTERV_NOT_NUMERIC,
         "The Interval field must contain a numeric value",
         "間隔は数値で指定しなければなりません" )
-pick(   STR_ABOUT_NAME_NT,
-        "Open Watcom Zoom for Windows",
-        "Open Watcom ズームのWindows版" )
 pick(   STR_ABOUT_NAME,
-        "Open Watcom Zoom for Windows",
-        "Open Watcom ズームのWindows版" )
+        "Open Watcom Zoom for Windows" STR_BITNEES,
+        "Open Watcom ズームのWindows版" STR_BITNEES )
 pick(   STR_INTERV_IS_ZERO,
         "The refresh interval must be greater than zero.",
         "更新間隔は 0 より大きい値です." )

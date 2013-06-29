@@ -428,11 +428,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         case SPY_ABOUT:
             ai.owner = hwnd;
             ai.inst = Instance;
-#ifdef __NT__
-            ai.name = AllocRCString( STR_ABOUT_NAME_NT );
-#else
-            ai.name = AllocRCString( STR_ABOUT_NAME_WIN );
-#endif
+            ai.name = AllocRCString( STR_ABOUT_NAME );
             ai.version = (LPSTR)banner1p2( _SPY_VERSION_ );
             ai.first_cr_year = (LPSTR)AllocRCString( STR_COPYRIGHT_YEAR );
             ai.title = (LPSTR)AllocRCString( STR_ABOUT_TITLE );

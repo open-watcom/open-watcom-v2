@@ -5,10 +5,8 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_BORDER
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            "VIWICON", -1, 6, 12, 18, 20
-    LTEXT           "Open Watcom Editor For Windows ", STARTUP_EDITORNAME, 34, 12,
-                    140, 8
-    LTEXT           "Portions Copyright (c) 1989-2002 Sybase, Inc.", -1, 34,
-                    32, 172, 8
+    LTEXT           [ WATCOM_ABOUT_EDITOR STR_BITNEES ], STARTUP_EDITORNAME, 34, 12, 140, 8
+    LTEXT           "Portions Copyright (c) 1989-2002 Sybase, Inc.", -1, 34, 32, 172, 8
     LTEXT           "", STARTUP_VERSION, 34, 20, 140, 8
     ICON            "WATCOMICON", -1, 94, 64, 18, 20
     LTEXT           "All Rights Reserved.", -1, 34, 40, 84, 8

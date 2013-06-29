@@ -41,6 +41,7 @@
 #ifdef __NT__
     #include <commctrl.h>
 #endif
+#include "strbitns.h"
 
 static char windowBordersG[] =  {
 #if defined( __UNIX__ )
@@ -489,7 +490,7 @@ vi_rc DoAboutBox( void )
 
     ai.owner = Root;
     ai.inst = InstanceHandle;
-    ai.name = WATCOM_ABOUT_EDITOR;
+    ai.name = WATCOM_ABOUT_EDITOR STR_BITNEES;
     ai.version = banner1p2( _VI_VERSION_ );
     ai.first_cr_year = "1989";
     ai.title = "About Open Watcom Text Editor";

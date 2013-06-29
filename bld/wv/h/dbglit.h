@@ -36,6 +36,7 @@
 
 #include "bool.h"
 #include "litdef.h"
+#include "strbitns.h"
 
 #include "language.h"
 #define LITSTR( x, y ) extern char *LIT( x );

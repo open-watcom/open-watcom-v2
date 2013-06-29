@@ -1,6 +1,8 @@
 #include "../../brinfo/merge/res/wresdefn.h"
 #include "wdmsg.h"
 #include "wreslang.h"
+#include "strbitns.h"
+
 #include "wv.rc"
 
 STRINGTABLE

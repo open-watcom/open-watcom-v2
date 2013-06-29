@@ -188,8 +188,8 @@ pick(   W_UPDATEMODIFIEDSYM,
         "The symbols have been modified.\nSave?",
         "The symbols have been modified.\nSave?" )
 pick(   W_ABOUT_NAME,
-        "Open Watcom String Editor for Windows",
-        "Open Watcom String Editor for Windows" )
+        "Open Watcom String Editor for Windows" STR_BITNEES,
+        "Open Watcom String Editor for Windows" STR_BITNEES )
 pick(   W_ABOUT_COPYRIGHT_YEAR,
         "2002",
         "2002" )

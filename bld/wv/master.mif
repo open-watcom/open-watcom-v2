@@ -384,7 +384,7 @@ wd.lib : litdef.gh $(engine_objs) $(sysobjs)
 
 $(lnk) : $(__MAKEFILES__)
 
-rcinclude=-I. -I"$(hdir)" -I"$(dig_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs)
+rc_inc_dirs = -I. -I"$(hdir)" -I"$(dig_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs)
 
 bitmaps = &
         $(wv_dir)/win/zapant.ico &
@@ -524,25 +524,25 @@ rcfiles = &
     japhis.dlg
 
 wvui.res : $(hdir)/wvui.rc $(rcfiles) usage.gh usagej.gh .autodepend
-        $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+        $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvntdll.res : $(hdir)/strings.rc litdef.gh .autodepend
-        $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvpmdll.res : $(hdir)/strings.rc litdef.gh .autodepend
-        $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rc_inc_path) $[@ -fo=$^@
 
 wvwin.res : $(hdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvnt.res : $(hdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_nt) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvpm.res : $(hdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rc_inc_path) $[@ -fo=$^@
 
 wvpmj.res : $(hdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad -DJAPANESE -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad -DJAPANESE -I"$(aui_dir)/os2386.pm" $(rc_inc_path) $[@ -fo=$^@
 
 !ifneq sys_windowed 1
 .dlg : $(hdir)

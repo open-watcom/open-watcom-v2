@@ -3,16 +3,6 @@
 #include "about.h"
 #include "banner.h"
 
-#undef pick
-#undef sp
-#ifdef JAPANESE
- #define pick( a, b, c ) a, c
- #define sp( s1, s2 ) s2
-#else
- #define pick( a, b, c ) a, b
- #define sp( s1, s2 ) s1
-#endif
-
 #ifdef __NT__
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 #endif
@@ -32,12 +22,19 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 
 #include "menu.rc"
 
+#include "strbitns.h"
+
+#ifdef JAPANESE
+ #define pick( a, b, c ) a, [ c ]
+#else
+ #define pick( a, b, c ) a, [ b ]
+#endif
 STRINGTABLE
 BEGIN
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
 END
-
+#undef pick
 
 #include "msgfilt.dlg"
 #include "cbfilt.dlg"

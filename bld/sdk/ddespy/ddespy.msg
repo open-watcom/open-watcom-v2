@@ -216,9 +216,8 @@ pick(   STR_APP_NAME,
         "Open Watcom DDE Spy",
         "Open Watcom DDE Spy" )
 pick(   STR_ABOUT_NAME,
-        "Open Watcom DDE Spy for Windows",
-        "Open Watcom DDE Spy Windows版" )
-
+        "Open Watcom DDE Spy for Windows" STR_BITNEES,
+        "Open Watcom DDE Spy Windows版" STR_BITNEES )
 pick(   STR_HINT_SAVE,
         "Save information in the event list to a file.",
         "イベントリストの情報のファイルへの保存." )

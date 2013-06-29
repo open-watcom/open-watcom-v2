@@ -35,8 +35,8 @@ pick( STR_ERASE_LOG,
     "Erase Log File: %s",
     "Erase Log File: %s" )
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows",
-    "Dr. Watcom for Windows" )
+    "Dr. Watcom for Windows (16-bit)",
+    "Dr. Watcom for Windows (16-bit)" )
 pick( STR_ABOUT_VERSION,    //NOT USED
     "",
     "" )

@@ -1,3 +1,9 @@
+#ifdef JAPANESE
+ #define sp( s1, s2 ) s2
+#else
+ #define sp( s1, s2 ) s1
+#endif
+
 "DDEMENU" MENU
 BEGIN
     POPUP sp( "&File",
@@ -106,3 +112,5 @@ BEGIN
                      "ƒo|ƒWƒ‡ƒ“î•ñ(&A)" ), DDEMENU_ABOUT
     END
 END
+
+#undef sp

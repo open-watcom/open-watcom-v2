@@ -103,21 +103,23 @@ BEGIN
     VK_F4, IMGED_TILE, VIRTKEY, SHIFT
 END
 
-#undef pick
-#undef sp
+#include "strbitns.h"
+
 #define pick( a, b, c ) a, [ b ]
-#define sp( a, b ) a
 STRINGTABLE
 BEGIN
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
 END
+#undef pick
 
 #ifdef __NT__
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 #endif
 
+#define sp( a, b ) a
 #include "wimgedit.men"
+#undef sp
 
 #include "selimg.dlg"
 #include "selcolor.dlg"

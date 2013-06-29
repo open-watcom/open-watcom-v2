@@ -1,4 +1,6 @@
 #include "windows.h"
+#include "strbitns.h"
+
 #include "wv.rc"
 ApplIcon icon "../zapant.ico"
 

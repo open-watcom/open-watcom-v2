@@ -55,12 +55,9 @@ pick(   STR_1_WIN_TITLE,
 pick(   STR_1_NAMED_WIN_TITLE,
         "%s - hWnd %0*x (%s)",
         "%s - hWnd %0*x (%s)" )
-pick(   STR_ABOUT_NAME_NT,
-        "Open Watcom Spy for Windows",
-        "Open Watcom Spy for Windows" )
-pick(   STR_ABOUT_NAME_WIN,
-        "Open Watcom Spy for Windows",
-        "Open Watcom Spy for Windows" )
+pick(   STR_ABOUT_NAME,
+        "Open Watcom Spy for Windows" STR_BITNEES,
+        "Open Watcom Spy for Windows" STR_BITNEES )
 pick(   STR_ABOUT_VERSION,
         "NOT USED",
         "NOT USED" )

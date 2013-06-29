@@ -2,7 +2,7 @@
 STRINGTABLE
 BEGIN
 #include "language.h"
-#define LITSTR( x, y ) DBG_LITERAL_##x, y
+#define LITSTR( x, y ) DBG_LITERAL_##x, [ y ]
 #include "literals.h"
 #include "menustr.h"
 #undef LITSTR

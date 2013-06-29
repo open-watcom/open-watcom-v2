@@ -71,7 +71,7 @@ extern void         OpenLog( const char * );
 extern void         CloseLog( void );
 extern const char   *LogDirEquals( char *dir );
 extern void         Fatal( const char *, ... );
-extern void         *Alloc( unsigned );
+extern void         *Alloc( size_t );
 extern char         *SkipBlanks( const char * );
 extern int          RunIt( char *, bool );
 extern void         ResetArchives( copy_entry * );

@@ -36,7 +36,7 @@
 #include "winrtns.h"
 
 #if defined( __WINDOWS_386__ )
-    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows (32-bit)"
+    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
     #define MAKEPTR( a )        ((void far *)MK_FP32( (void *) a ))
     #define __FAR__             __far
     #define MEMCPY              _fmemcpy

@@ -40,18 +40,19 @@ END
 "InsertSub"     BITMAP "inssub.bmp"
 "InsertNoSub"   BITMAP "insnosub.bmp"
 
-#undef pick
-#undef sp
-#define pick( a, b ) a, b
-#define sp( a, b ) a
+#include "strbitns.h"
 
+#define pick( a, b ) a, [ b ]
 STRINGTABLE
 BEGIN
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
 END
+#undef pick
 
+#define sp( a, b ) a
 #include "wmenu.men"
+#undef sp
 
 #include "menedit.dlg"
 #include "about.dlg"

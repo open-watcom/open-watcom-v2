@@ -66,12 +66,15 @@ NODROP          CURSOR  nodrop.cur
 STATMOVE        CURSOR  statmove.cur
 DROPSS          CURSOR  dropss.cur
 
+#include "strbitns.h"
+
 #define pick( a, b, c )  a b
 STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
 END
+#undef pick
 
 #include "filelist.dlg"
 #include "fgrep.dlg"

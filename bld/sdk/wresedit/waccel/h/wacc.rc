@@ -35,18 +35,19 @@ END
 "DeleteKey"  BITMAP "delkey.bmp"
 "PressKey"   BITMAP "presskey.bmp"
 
-#undef pick
-#undef sp
-#define pick( a, b ) a, b
-#define sp( a, b ) a
+#include "strbitns.h"
 
+#define pick( a, b ) a, [ b ]
 STRINGTABLE
 BEGIN
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
 END
+#undef pick
 
+#define sp( a, b ) a
 #include "wacc.men"
+#undef sp
 
 #include "accedit.dlg"
 #include "acckey.dlg"

@@ -34,6 +34,7 @@
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dui.h"
+#include "strbitns.h"
 
 #include "language.h"
 #define LITSTR( x, y ) char *LIT( x );

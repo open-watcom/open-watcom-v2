@@ -99,7 +99,7 @@ void CloseLog( void )
     }
 }
 
-void *Alloc( unsigned size )
+void *Alloc( size_t size )
 {
     void        *p;
 

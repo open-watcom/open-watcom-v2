@@ -381,10 +381,14 @@ pick( STR_PROCESS_X,
 pick( STR_DRNT_STARTED,
     "%s started",
     "%s started" )
-#ifdef CHICAGO
+#if defined( CHICAGO )
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows 9x",
-    "Dr. Watcom for Windows 9x" )
+    "Dr. Watcom for Windows 9x (32-bit)",
+    "Dr. Watcom for Windows 9x (32-bit)" )
+#elif defined( _M_IX86 )
+pick( STR_ABOUT_NAME,
+    "Dr. Watcom for Windows (32-bit)",
+    "Dr. Watcom for Windows (32-bit)" )
 #else
 pick( STR_ABOUT_NAME,
     "Dr. Watcom for Windows",

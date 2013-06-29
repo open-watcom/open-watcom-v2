@@ -30,6 +30,7 @@
 
 
 #include "banner.h"
+#include "strbitns.h"
 
 #ifdef _BANEXTRA
     #undef  _BANEXTRA
@@ -38,7 +39,8 @@
 
 char *AboutMessage[] = {
     "",
-    banner1w( "Execution Profiler", _WPROF_VERSION_ ),
+    banner1w1( "Execution Profiler" STR_BITNEES ),
+    banner1w2( _WPROF_VERSION_ ),
     banner2p1( "1987" ),
     banner2p2(),
     banner3,

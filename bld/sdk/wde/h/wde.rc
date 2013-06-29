@@ -5,18 +5,19 @@
 #include "rcstr.gh"
 #include "uistr.gh"
 
-#undef pick
-#undef sp
-#define pick( a, b ) a, [ b ]
-#define sp( a, b ) a
+#include "strbitns.h"
 
+#define pick( a, b ) a, [ b ]
 STRINGTABLE
 BEGIN
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
 END
+#undef pick
 
+#define sp( a, b ) a
 #include "wde.men"
+#undef sp
 
 #ifdef __NT__
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"

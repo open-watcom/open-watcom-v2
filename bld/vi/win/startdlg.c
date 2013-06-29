@@ -61,7 +61,6 @@ WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         newy = (maxy - height) / 2;
         SetWindowPos( hwnd, HWND_TOPMOST, newx, newy, 0, 0, SWP_NOSIZE );
         SetDlgItemText( hwnd, STARTUP_VERSION, vers );
-        SetDlgItemText( hwnd, STARTUP_EDITORNAME, WATCOM_ABOUT_EDITOR );
 #endif
         return( TRUE );
     }

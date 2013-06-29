@@ -213,8 +213,8 @@ pick(   STR_UNABLE_2_STARTUP,
 
 // about box information
 pick(   STR_ABOUT_NAME,
-        "Open Watcom Heapwalker for Windows",
-        "Open Watcom Heapwalker for Windows" )
+        "Open Watcom Heapwalker for Windows (16-bit)",
+        "Open Watcom Heapwalker for Windows (16-bit)" )
 pick(   STR_ABOUT_VERSION, //NOT USED
         "",
         "" )

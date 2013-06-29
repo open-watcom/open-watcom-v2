@@ -417,11 +417,7 @@ static void displayAbout( HWND hwnd ) {
 
     ai.owner = hwnd;
     ai.inst = Instance;
-    #ifdef __NT__
-        ai.name = AllocRCString( STR_ABOUT_NAME_NT );
-    #else
-        ai.name = AllocRCString( STR_ABOUT_NAME );
-    #endif
+    ai.name = AllocRCString( STR_ABOUT_NAME );
     ai.version = banner1p2( _ZOOM_VERSION_ );
     ai.first_cr_year = AllocRCString( STR_ABOUT_YEAR );
     ai.title = AllocRCString( STR_ABOUT_TITLE );

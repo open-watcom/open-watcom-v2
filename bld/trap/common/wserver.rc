@@ -1,5 +1,6 @@
 #include "windows.h"
 #include "wserver.h"
+#include "strbitns.h"
 
 // Use low-color icons for Windows 3.x.
 #ifdef __WINDOWS__
@@ -31,7 +32,8 @@ STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "About..."
 BEGIN
     CTEXT "Watcom Remote Debug Server", -1, 0,  5, 144, 8
-    CTEXT "Version 1.0", -1, 0, 14, 144, 8
+    CTEXT [ "for Windows" STR_BITNEES ], -1, 0,  14, 144, 8
+    CTEXT "Version 1.0", -1, 0, 23, 144, 8
     DEFPUSHBUTTON "OK", IDOK, 53, 59, 32, 14, WS_GROUP
     ICON "ServerIcon", -1, 15,15,40,40
 END
