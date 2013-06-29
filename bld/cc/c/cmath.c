@@ -555,6 +555,14 @@ static cmp_result IsMeaninglessCompare( signed_64 val, TYPEPTR typ_op1, TYPEPTR 
     if( result_size == 0 ) {
         return( CMP_VOID );
     }
+    if( typ_op2->decl_type != TYPE_LONG64 && typ_op2->decl_type != TYPE_ULONG64 ) {
+        if( typ_op2->decl_type == TYPE_ULONG || typ_op2->decl_type == TYPE_UINT ) {
+            U32ToU64( val.u._32[0], &val );
+        } else {
+            I32ToI64( val.u._32[0], &val );
+        }
+    }
+
     rev_ret = FALSE;
     switch( opr ) { // mapped rel ops to equivalent cases
     case T_NE:
@@ -764,14 +772,8 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     if( CompFlags.pre_processing == 0 ) {
         cmp_cc = CMP_VOID;
         if( op2->op.opr == OPR_PUSHINT ) {
-            if( op2_type != TYPE_LONG64 && op2_type != TYPE_ULONG64 ) {
-                I32ToI64( op2->op.long_value, &op2->op.long64_value );
-            }
             cmp_cc = IsMeaninglessCompare( op2->op.long64_value, typ1, typ2, opr );
         } else if( op1->op.opr == OPR_PUSHINT ) {
-            if( op1_type != TYPE_LONG64 && op1_type != TYPE_ULONG64 ) {
-                I32ToI64( op1->op.long_value, &op1->op.long64_value );
-            }
             cmp_cc = IsMeaninglessCompare( op1->op.long64_value, typ2, typ1, CommRelOp( opr ) );
         }
         if( cmp_cc != CMP_VOID ) {

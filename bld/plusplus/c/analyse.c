@@ -1453,6 +1453,8 @@ void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
         NodeIsIntConstant( op2, &icon );
         if( icon.type->id == TYP_SLONG64 || icon.type->id == TYP_ULONG64 ) {
             val = icon.value;
+        } else if( icon.type->id == TYP_ULONG || icon.type->id == TYP_UINT ) {
+            U32ToU64( icon.uval, &val );
         } else {
             I32ToI64( icon.sval, &val );
         }

@@ -25,7 +25,7 @@ void main()
     signed long sl; 
     long l;
     signed long long sll; 
-    long long ll;
+    unsigned long long ull;
     char *p;
     char *p1;
     nums e;
@@ -82,8 +82,8 @@ void main()
     if( sll >= LLONG_MIN ); // always 1
     if( sll <= LLONG_MAX ); // always 1
 
-    if( ll <= LLONG_MAX );  // always 1
-    if( ll < LLONG_MIN );   // always 0
+    if( sll <= LLONG_MAX ); // always 1
+    if( sll < LLONG_MIN );  // always 0
 
     if( p >= 0 );           // always 1
     if( 0 <= p );           // always 1
@@ -111,4 +111,8 @@ void main()
     if( (l=1,c) >= (l=1,-3) );  // always 1
     if( (l=1,p1) >= (l=1,0) );  // always 1
 
+    if( ull > (unsigned long)-1 );  // OK
+    if( ull > (unsigned int)-1 );   // OK
+    if( ull > (unsigned short)-1 ); // OK
+    if( ull > (unsigned char)-1 );  // OK
 }

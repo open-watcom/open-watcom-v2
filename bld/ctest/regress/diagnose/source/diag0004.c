@@ -172,5 +172,14 @@ int main( int argc, char **argv )
     if( st.ull != 0 )  // no problem here
         st.ret = 1;
 
+    if( ull > (unsigned long)-1 )  // no problem here
+        ret = 1;
+    if( ull > (unsigned int)-1 )   // no problem here
+        ret = 1;
+    if( ull > (unsigned short)-1 ) // no problem here
+        ret = 1;
+    if( ull > (unsigned char)-1 )  // no problem here
+        ret = 1;
+
     return( ui );
 }
