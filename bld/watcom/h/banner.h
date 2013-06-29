@@ -46,21 +46,24 @@
 
 #define CURR_YEAR       "2010"
 
-#define banner1p1(p)  p
-#define banner1p2(v)  "Version " v
-#define banner1(p,v) banner1p1(p) " " banner1p2(v)
-#define banner1w(p,v) "Open Watcom " banner1p1(p) " " banner1p2(v)
+#define banner1p1(p)    p
+#define banner1p2(v)    "Version " v
+#define banner1(p,v)    banner1p1(p) " " banner1p2(v)
+#define banner1w(p,v)   "Open Watcom " banner1p1(p) " " banner1p2(v)
+
+#define banner1w1(p)    "Open Watcom " p
+#define banner1w2(v)    banner1p2(v)
 
 #define banner2p1(year) "Portions Copyright (c) " year "-2002 Sybase, Inc. All Rights Reserved"
-//#define banner2p2() "All rights reserved"
+//#define banner2p2()     "All rights reserved"
 //#define banner2(year) banner2p1(year) ". " banner2p2() "."
-#define banner2p2() ""
-#define banner2(year) banner2p1(year) "."
+#define banner2p2()     ""
+#define banner2(year)   banner2p1(year) "."
 
-#define banner2a() "Portions Copyright (c) 1984-2002 Sybase, Inc. All Rights Reserved."
+#define banner2a()      "Portions Copyright (c) 1984-2002 Sybase, Inc. All Rights Reserved."
 
-#define banner3       "Source code is available under the Sybase Open Watcom Public License."
-#define banner3a      "See http://www.openwatcom.org/ for details."
+#define banner3         "Source code is available under the Sybase Open Watcom Public License."
+#define banner3a        "See http://www.openwatcom.org/ for details."
 
 #define banner1ps(p,v)  "Powersoft " banner1p1(p) " " banner1p2(v)
 #define banner2ps       banner2a()
