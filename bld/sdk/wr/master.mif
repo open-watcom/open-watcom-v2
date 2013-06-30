@@ -22,6 +22,7 @@ wr_trmem = 1
 WINDOWS = 1
 !include wres.mif
 !include $(commonui_dir)/client.mif
+!include $(cpp_dir)/client.mif
 
 !include trmem.mif
 
@@ -33,8 +34,7 @@ object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
             wrdata.obj wrnamoor.obj wrwresid.obj &
             wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
             wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
-            wrrnames.obj wrhash.obj wredit.obj wrutil.obj &
-            $(trmem_objs) &
+            wrrnames.obj wrhash.obj wredit.obj wrutil.obj $(trmem_objs) &
             preproc.obj ppexpr.obj ppmacro.obj &
             rcerrprt.obj rcgetenv.obj &
             wrstubs.obj &
@@ -44,7 +44,7 @@ object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
             errors.obj tmpctl.obj autodep.obj layer0.obj incdirs.obj &
             dbtable.obj sharedio.obj rcspawn.obj
 
-msgfiles = $(wrc_dir)/h/rc.msg ../h/wr.msg
+msgfiles = $(wrc_dir)/h/rc.msg ../res/wr.msg
 
 extra_cpp_flags   = -DWIN_GUI -DWRDLL
 
@@ -57,9 +57,11 @@ extra_c_flags_wrmem = $(trmem_cover_cflags)
 
 extra_c_flags_trmem = $(trmem_cflags)
 
-.c:   ../c;$(trmem_dir);$(cpp_dir);$(wrc_dir)/c;$(watcom_dir)/c
+.c:   ../c;$(trmem_dir);$(cpp_c_dirs);$(wrc_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" -I"$(cpp_dir)" -I"$(wres_dir)/h" -I"$(wrc_dir)/h" $(commonui_inc_dirs)
+inc_dirs = -I. -I"../h" $(cpp_inc_dirs) -I"$(wres_dir)/h" -I"$(wrc_dir)/h" $(commonui_inc_dirs)
+
+rc_inc_dirs = #$(cpp_inc_dirs) -I"$(wres_dir)/h" -I"$(wrc_dir)/h" $(commonui_inc_dirs)
 
 xlibs = $(wres_lib) $(commonui_lib)
 
@@ -105,8 +107,8 @@ test.exe: $(name).lib $(TESTLNK) test.obj
 rcmsg.gh: wrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-wrmsg.gh: ../h/master.msg $(msgfiles)
-        $(cpp) $(rc_aui_flags) -I"../h" -I"$(wrc_dir)/h" $[@ >$^@
+wrmsg.gh: ../res/master.msg $(msgfiles)
+        $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" $[@ >$^@
 
 ytab.gh : $(wrc_dir)/y/rc.y $(wrc_dir)/y/yydriver.c $(wrc_dir)/h/rcmem.h
         $(yacc) -d -b $[@ $(wrc_dir)/y/yydriver.c >$(nulldevice)
@@ -114,7 +116,7 @@ ytab.gh : $(wrc_dir)/y/rc.y $(wrc_dir)/y/yydriver.c $(wrc_dir)/h/rcmem.h
         @rm -f ytab.h
         @rm -f ytab.c # ytab.c isn't used
 
-$(name).res: ../h/wr.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad $(inc_path) $[@ -fo=$^@
+$(name).res: ../res/wr.rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 !include verrc.mif

@@ -21,6 +21,7 @@ WINDOWS = 1
 !include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(cpp_dir)/client.mif
 
 objs = $(sys_object)
 objs +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
@@ -46,10 +47,12 @@ extra_c_flags_ppmacro = -zm
 
 wr_lib = $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
 
-.c: ../c;../../c;$(sdk_misc_dir);$(cpp_dir)
+.c: ../c;../../c;$(sdk_misc_dir);$(cpp_c_dirs)
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(wr_dir)/h" -I"$(wres_dir)/h" -I"$(cpp_dir)"
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(wr_dir)/h" -I"$(wres_dir)/h" $(cpp_inc_dirs)
 inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs) -I"$(sdk_misc_dir)"
+
+rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 
 extra_l_flags_dll = op map
 extra_l_flags_dll_nt = op stack=16k,heap=16k commit heap=8k
@@ -78,13 +81,13 @@ $(name).dll: rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_dll_$(host_os)_
 !endif
         $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
-$(name).res: ../h/$(name).rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
+$(name).res: ../res/$(name).rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 rcstr.gh: rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh: ../h/$(name).msg
-        $(cpp) $(rc_aui_flags) -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
+rcstrmsg.gh: ../res/$(name).msg
+        $(cpp) $(rc_aui_flags) -I"../../res" $[@ >$^@
 
 !include verrc.mif

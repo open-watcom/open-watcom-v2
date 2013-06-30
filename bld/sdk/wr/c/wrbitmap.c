@@ -47,7 +47,7 @@
 #define START_OF_HEADER         sizeof( BITMAPFILEHEADER )
 #define HUGE_SHIFT              8
 #define CHUNK_SIZE              (48 * 1024)
-#define RGBQ_SIZE( bc )         (sizeof( RGBQUAD ) * (1L << (bc)))
+#define RGBQ_SIZE( bc )         (sizeof( RGBQUAD ) * ((size_t)1 << (bc)))
 #define SCANLINE_SIZE           32
 #define MAX_CHUNK               32768
 
@@ -154,7 +154,7 @@ static BITMAPCOREINFO *WRReadCoreInfo( BYTE **data )
 
 static void WRReadInPieces( BYTE _HUGE *dst, BYTE *data, DWORD size )
 {
-    BYTE                *buffer;
+    BYTE                *buffer = NULL;
     WORD                chunk_size;
 
     chunk_size = CHUNK_SIZE;
@@ -182,8 +182,8 @@ static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *in
     BYTE _HUGE          *mask_ptr;      /* pointer to bit array in memory */
     HDC                 hdc;
     HPALETTE            new_palette, old_palette;
-    BITMAPINFO          *bm_info;
-    BITMAPCOREINFO      *bm_core;
+    BITMAPINFO          *bm_info = NULL;
+    BITMAPCOREINFO      *bm_core = NULL;
     HBITMAP             bitmap_handle;
     int                 pos;
 
@@ -292,7 +292,7 @@ HBITMAP WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info )
     }
 
     if( info != NULL ) {
-        info->is_core = core;
+        info->is_core = ( core != 0 );
     }
 
     return( bitmap_handle );

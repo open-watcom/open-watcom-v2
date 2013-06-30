@@ -2,4 +2,4 @@
 host_OS = win
 host_CPU = i86
 
-!include ../mif/waccel.mif
+!include ../waccel.mif

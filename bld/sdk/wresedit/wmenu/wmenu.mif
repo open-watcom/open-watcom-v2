@@ -6,4 +6,4 @@ sys_object =    wmain.obj w_menu.obj winfo.obj whndl.obj &
                 wdel.obj wnewitem.obj &
                 wsvobj.obj wprev.obj wmen2rc.obj
 
-!include ../../mif/master.mif
+!include ../../master.mif

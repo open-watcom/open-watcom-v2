@@ -6,4 +6,4 @@ sys_object =    wmain.obj winfo.obj wacc.obj whndl.obj &
                 wvk2str.obj wdel.obj wnewitem.obj &
                 wkey.obj wsvobj.obj wacc2rc.obj
 
-!include ../../mif/master.mif
+!include ../../master.mif

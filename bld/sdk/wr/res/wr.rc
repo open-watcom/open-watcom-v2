@@ -5,14 +5,14 @@
 #include "memflags.h"
 #include "editsym.h"
 #include "addsym.h"
-#include "errors.h"
+#include "wrmsg.h"
 
-#undef pick
 #define pick( a, b, c ) a, b
 STRINGTABLE
 BEGIN
     #include "wrmsg.gh"
 END
+#undef pick
 
 #include "selft.dlg"
 #include "selimage.dlg"

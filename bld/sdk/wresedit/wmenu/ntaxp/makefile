@@ -2,4 +2,4 @@
 host_OS = nt
 host_CPU = axp
 
-!include ../mif/wmenu.mif
+!include ../wmenu.mif

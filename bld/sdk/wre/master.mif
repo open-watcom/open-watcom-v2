@@ -19,6 +19,7 @@ WINDOWS = 1
 !include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(cpp_dir)/client.mif
 
 !ifeq wre_trmem 1
 TRMEM           = -DTRMEM
@@ -54,11 +55,13 @@ objs += trmem.tbj trmemcvr.tbj
 !endif
 
 # where to look for various files
-.c         : ../c;$(cpp_dir);$(trmem_dir)
+.c : ../c;$(cpp_c_dirs);$(trmem_dir)
 
 inc_dirs  = -I. -I"../h" -I"$(wresedit_dir)/h" -I"$(wr_dir)/h"
-inc_dirs += -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)"
+inc_dirs += -I"$(trmem_dir)" -I"$(wres_dir)/h" $(cpp_inc_dirs)
 inc_dirs += -I"$(sdk_misc_dir)" $(commonui_inc_dirs) $(wpi_inc_dirs)
+
+rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 
 xlibs = $(commonui_lib) $(wresedit_dir)/waccel/$(host_os)$(host_cpu)/wacc.lib &
         $(wresedit_dir)/wmenu/$(host_os)$(host_cpu)/wmenu.lib &
@@ -88,13 +91,13 @@ $(name).exe: rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_exe_$(host_os)_
 !endif
         $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 
+rcstrmsg.gh: ../res/wre.msg
+        $(cpp) $(rc_aui_flags) $[@ >$^@
+
 rcstr.gh: rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh: ../h/wre.msg $(msgfiles)
-        $(cpp) $(rc_aui_flags) -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
-
-$(name).res: ../h/$(name).rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
+$(name).res: ../res/$(name).rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 !include verrc.mif

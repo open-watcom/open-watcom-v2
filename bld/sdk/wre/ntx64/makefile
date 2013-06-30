@@ -4,4 +4,4 @@ host_CPU = x64
 
 wre_release = 0
 
-!include ../mif/master.mif
+!include ../master.mif

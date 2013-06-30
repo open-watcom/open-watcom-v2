@@ -4,4 +4,4 @@ host_CPU = x64
 
 wresedit_release = 0
 
-!include ../mif/wmenu.mif
+!include ../wmenu.mif

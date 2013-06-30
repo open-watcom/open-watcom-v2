@@ -5,4 +5,4 @@ sys_object =    wmain.obj winfo.obj wstr.obj whndl.obj &
                 wedit.obj wtoolbar.obj wribbon.obj &
                 wdel.obj wnewitem.obj wsvobj.obj wstr2rc.obj
 
-!include ../../mif/master.mif
+!include ../../master.mif

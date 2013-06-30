@@ -2,4 +2,4 @@
 host_OS = nt
 host_CPU = 386
 
-!include ../mif/waccel.mif
+!include ../waccel.mif
