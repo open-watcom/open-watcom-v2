@@ -35,16 +35,16 @@
 #define BANSTR( p )     DOBANSTR( p )
 
 #ifndef _BETASTR_
-#define _BETASTR_ "beta"
+#define _BETASTR_       "beta"
 #endif
 
 #ifdef _BETAVER
-#define _BETA_                  _BETASTR_ BANSTR( _BETAVER )  _BANEXTRA
+#define _BETA_          " " _BETASTR_ " " BANSTR( _BETAVER )  _BANEXTRA
 #else
-#define _BETA_                  _BANEXTRA
+#define _BETA_          _BANEXTRA
 #endif
 
-#define CURR_YEAR       "2010"
+#define CURR_YEAR       "2013"
 
 #define banner1p1(p)    p
 #define banner1p2(v)    "Version " v
@@ -56,7 +56,7 @@
 
 #define banner2p1(year) "Portions Copyright (c) " year "-2002 Sybase, Inc. All Rights Reserved"
 //#define banner2p2()     "All rights reserved"
-//#define banner2(year) banner2p1(year) ". " banner2p2() "."
+//#define banner2(year)   banner2p1(year) ". " banner2p2() "."
 #define banner2p2()     ""
 #define banner2(year)   banner2p1(year) "."
 
@@ -71,7 +71,7 @@
 
 /* Used by setupgui/c/guiinit.c */
 #define banner4gui()    "Copyright © 2002-%s Open Watcom Contributors. All Rights Reserved."
-#define banner2agui() "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
+#define banner2agui()   "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
 
 // the following macros define the delimeters used by the resource
 // compiler when concatenating strings
