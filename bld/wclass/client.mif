@@ -10,17 +10,8 @@ wclass_inc_dirs = $(wclass_inc_dirs_$(host_os)_$(host_cpu))
 wclass_inc_dirs = $(wclass_inc_dirs_$(host_os))
 !endif
 
-wclass_lib_dos_i86   = $(wclass_dir)/dos/dosi86/wclass.lib
-wclass_lib_dos_386   = $(wclass_dir)/dos/dos386/wclass.lib
-wclass_lib_os2_386   = $(wclass_dir)/pm/os2386/wclass.lib
-wclass_lib_nt_386    = $(wclass_dir)/win/nt386/wclass.lib
-wclass_lib_nt_axp    = $(wclass_dir)/win/ntaxp/wclass.lib
-wclass_lib_nt_x64    = $(wclass_dir)/win/ntx64/wclass.lib
-wclass_lib_win_i86   = $(wclass_dir)/win/wini86/wclass.lib
-wclass_lib_linux_386 = $(wclass_dir)/linux386/wclass.lib
-wclass_lib_linux_x64 = $(wclass_dir)/linuxx64/wclass.lib
 !ifeq bootstrap 1
 wclass_lib = $(wclass_dir)/$(%OWOBJDIR)/wclass.lib
 !else
-wclass_lib = $(wclass_lib_$(host_os)_$(host_cpu))
+wclass_lib = $(wclass_dir)/$(host_os)$(host_cpu)/wclass.lib
 !endif
