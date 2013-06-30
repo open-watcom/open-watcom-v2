@@ -60,10 +60,11 @@ extra_l_flags_dll = option map, implib
 extra_l_flags_dll_win = font mem option rwr segment CLASS 'CODE' PRELOAD FIXED export WEP RESIDENT
 extra_l_flags_dll_nt  = initglobal
 
-.c: $(wspy_dir);$(sdk_misc_dir)
-.h: $(wspy_dir);$(sdk_misc_dir)
+.c: ../c;$(sdk_misc_dir)
 
-inc_dirs = -I. -I"$(wspy_dir)" $(commonui_inc_dirs) $(wpi_inc_dirs)
+inc_dirs = -I. -I"../h" $(commonui_inc_dirs) $(wpi_inc_dirs)
+
+rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
@@ -90,15 +91,13 @@ $(dllname).dll : $(dllobjs)
         $(cl) $(clflags_dll) $< $(ldflags_dll) $(extra_ldflags_dll)
 !endif
 
-rc_inc_dirs = $(inc_dirs)
-
 rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh : $(wspy_dir)/spy.msg
-        $(cpp) $(rc_aui_flags) $(rc_inc_path) $[@ >$^@
+rcstrmsg.gh : ../res/spy.msg
+        $(cpp) $(rc_aui_flags) $[@ >$^@
 
-$(name).res: ../$(name).rc .AUTODEPEND
+$(name).res: ../res/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 !include verrc.mif
