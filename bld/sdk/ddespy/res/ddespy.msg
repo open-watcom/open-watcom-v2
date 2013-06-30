@@ -194,12 +194,6 @@ pick(   STR_EVENT_LIST_HEADER,
         "Open Watcom DDE SPY event listing made: %s\n\n",
         "Open Watcom DDE SPY イベントリスト作成: %s\n\n" )
 
-pick(   STR_ABOUT_VERSION,
-        "", //NOT USED
-        "" )
-pick(   STR_ABOUT_COPYRIGHT_YEAR,
-        "2002",
-        "2002" )
 pick(   STR_ABOUT_TITLE,
         "About Open Watcom DDE Spy",
         "Open Watcom DDE Spyバ－ジョン情報" )
@@ -218,6 +212,12 @@ pick(   STR_APP_NAME,
 pick(   STR_ABOUT_NAME,
         "Open Watcom DDE Spy for Windows" STR_BITNEES,
         "Open Watcom DDE Spy Windows版" STR_BITNEES )
+pick(   STR_ABOUT_VERSION,
+        banner1p2( _DDESPY_VERSION_ ),
+        banner1p2( _DDESPY_VERSION_ ) )
+pick(   STR_ABOUT_COPYRIGHT_YEAR,
+        "2002",
+        "2002" )
 pick(   STR_HINT_SAVE,
         "Save information in the event list to a file.",
         "イベントリストの情報のファイルへの保存." )

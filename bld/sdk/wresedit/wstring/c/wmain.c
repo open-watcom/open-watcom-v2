@@ -863,11 +863,12 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             ai.owner = hWnd;
             ai.inst = WGetEditInstance();
             ai.name = AllocRCString( W_ABOUT_NAME );
-            ai.version = banner1p2( _RESEDIT_VERSION_ );
+            ai.version = AllocRCString( W_ABOUT_VERSION );
             ai.first_cr_year = AllocRCString( W_ABOUT_COPYRIGHT_YEAR );
             ai.title = AllocRCString( W_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );
+            FreeRCString( ai.version );
             FreeRCString( ai.first_cr_year );
             FreeRCString( ai.title );
             pass_to_def = FALSE;

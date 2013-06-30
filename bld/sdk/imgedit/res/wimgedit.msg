@@ -557,6 +557,9 @@ pick(   WIE_NEIMAGENOTCREATED,
 pick(   WIE_ABOUTTEXT,
         "Open Watcom Image Editor for Windows" STR_BITNEES,
         "Open Watcom Image Editor for Windows" STR_BITNEES )
+pick(   WIE_ABOUTVERSION,
+        banner1p2( _RESEDIT_VERSION_ ),
+        banner1p2( _RESEDIT_VERSION_ ) )
 pick(   WIE_ABOUTFIRSTYEAR,
         "2002",
         "2002" )

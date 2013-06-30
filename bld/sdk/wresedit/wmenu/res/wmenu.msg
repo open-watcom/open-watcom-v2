@@ -184,6 +184,9 @@ pick(   W_UPDATEMODIFIEDSYM,
 pick(   W_ABOUT_NAME,
         "Open Watcom Menu Editor for Windows" STR_BITNEES,
         "Open Watcom Menu Editor for Windows" STR_BITNEES )
+pick(   W_ABOUT_VERSION,
+        banner1p2( _RESEDIT_VERSION_ ),
+        banner1p2( _RESEDIT_VERSION_ ) )
 pick(   W_ABOUT_COPYRIGHT_YEAR,
         "2002",
         "2002" )

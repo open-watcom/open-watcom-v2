@@ -348,6 +348,9 @@ pick(   WRE_INVALIDINPUTFILE,
 pick(   WRE_ABOUT_NAME,
         "Open Watcom Resource Editor for Windows" STR_BITNEES,
         "Open Watcom Resource Editor for Windows" STR_BITNEES )
+pick(   WRE_ABOUT_VERSION,
+        banner1p2( _RESEDIT_VERSION_ ),
+        banner1p2( _RESEDIT_VERSION_ ) )
 pick(   WRE_ABOUT_COPYRIGHT_YEAR,
         "1984",
         "1984" )

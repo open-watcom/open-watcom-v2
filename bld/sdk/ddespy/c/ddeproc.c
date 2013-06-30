@@ -398,11 +398,12 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             ai.owner = hwnd;
             ai.inst = Instance;
             ai.name = AllocRCString( STR_ABOUT_NAME );
-            ai.version = banner1p2( _DDESPY_VERSION_ );
+            ai.version = AllocRCString( STR_ABOUT_VERSION );
             ai.first_cr_year = AllocRCString( STR_ABOUT_COPYRIGHT_YEAR );
             ai.title = AllocRCString( STR_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );
+            FreeRCString( ai.version );
             FreeRCString( ai.first_cr_year );
             FreeRCString( ai.title );
             break;

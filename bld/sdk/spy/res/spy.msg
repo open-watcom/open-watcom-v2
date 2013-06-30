@@ -59,8 +59,8 @@ pick(   STR_ABOUT_NAME,
         "Open Watcom Spy for Windows" STR_BITNEES,
         "Open Watcom Spy for Windows" STR_BITNEES )
 pick(   STR_ABOUT_VERSION,
-        "NOT USED",
-        "NOT USED" )
+        banner1p2( _SPY_VERSION_ ),
+        banner1p2( _SPY_VERSION_ ) )
 pick(   STR_COPYRIGHT_YEAR,
         "1993",
         "1993" )

@@ -383,20 +383,16 @@ pick( STR_DRNT_STARTED,
     "%s started" )
 #if defined( CHICAGO )
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows 9x (32-bit)",
-    "Dr. Watcom for Windows 9x (32-bit)" )
-#elif defined( _M_IX86 )
-pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows (32-bit)",
-    "Dr. Watcom for Windows (32-bit)" )
+    "Dr. Watcom for Windows 9x" STR_BITNEES,
+    "Dr. Watcom for Windows 9x" STR_BITNEES )
 #else
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows",
-    "Dr. Watcom for Windows" )
+    "Dr. Watcom for Windows" STR_BITNEES,
+    "Dr. Watcom for Windows" STR_BITNEES )
 #endif
-pick( STR_ABOUT_VERSION, // NOT USED
-    "",
-    "" )
+pick( STR_ABOUT_VERSION,
+    banner1p2( _DRNT_VERSION_ ),
+    banner1p2( _DRNT_VERSION_ ) )
 pick( STR_ABOUT_COPYRIGHT_YEAR,
     "2002",
     "2002" )

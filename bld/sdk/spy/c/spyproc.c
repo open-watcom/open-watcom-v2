@@ -429,11 +429,12 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             ai.owner = hwnd;
             ai.inst = Instance;
             ai.name = AllocRCString( STR_ABOUT_NAME );
-            ai.version = (LPSTR)banner1p2( _SPY_VERSION_ );
-            ai.first_cr_year = (LPSTR)AllocRCString( STR_COPYRIGHT_YEAR );
-            ai.title = (LPSTR)AllocRCString( STR_ABOUT_TITLE );
+            ai.version = AllocRCString( STR_ABOUT_VERSION );
+            ai.first_cr_year = AllocRCString( STR_COPYRIGHT_YEAR );
+            ai.title = AllocRCString( STR_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );
+            FreeRCString( ai.version );
             FreeRCString( ai.first_cr_year );
             FreeRCString( ai.title );
             break;

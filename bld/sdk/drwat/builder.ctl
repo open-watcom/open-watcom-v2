@@ -14,10 +14,10 @@ set PROJNAME=drwatcom
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> win/wini86/drwatcom.exe  <OWRELROOT>/binw/drwatcom.exe
-    <CCCMD> nt/nt386/drwatcom.exe    <OWRELROOT>/binnt/drwatcom.exe
-    <CCCMD> nt/win95/drwatcom.exe    <OWRELROOT>/binnt/_drwin95.exe
-    <CCCMD> nt/ntaxp/drwatcom.exe    <OWRELROOT>/axpnt/drwatcom.exe
+    <CCCMD> wini86/drwatcom.exe  <OWRELROOT>/binw/drwatcom.exe
+    <CCCMD> nt386/drwatcom.exe   <OWRELROOT>/binnt/drwatcom.exe
+    <CCCMD> win95/drwatcom.exe   <OWRELROOT>/binnt/_drwin95.exe
+    <CCCMD> ntaxp/drwatcom.exe   <OWRELROOT>/axpnt/drwatcom.exe
 
 [ BLOCK . . ]
 #============

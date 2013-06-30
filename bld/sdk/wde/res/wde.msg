@@ -454,6 +454,9 @@ pick(   WDE_INPUTFILENOTFOUND,
 pick(   WDE_ABOUT_NAME,
         "Open Watcom Dialog Editor for Windows" STR_BITNEES,
         "Open Watcom Dialog Editor for Windows" STR_BITNEES )
+pick(   WDE_ABOUT_VERSION,
+        banner1p2( _RESEDIT_VERSION_ ),
+        banner1p2( _RESEDIT_VERSION_ ) )
 pick(   WDE_ABOUT_COPYRIGHT_YEAR,
         "1984",
         "1984" )

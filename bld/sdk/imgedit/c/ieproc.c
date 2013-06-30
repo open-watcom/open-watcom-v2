@@ -415,12 +415,15 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
             ai.owner = hwnd;
             ai.inst = Instance;
             ai.name = IEAllocRCString( WIE_ABOUTTEXT );
-            ai.version = banner1p2( _RESEDIT_VERSION_ );
+            ai.version = IEAllocRCString( WIE_ABOUTVERSION );
             ai.first_cr_year = IEAllocRCString( WIE_ABOUTFIRSTYEAR );
             ai.title = IEAllocRCString( WIE_ABOUTTITLE );
             DoAbout( &ai );
             if( ai.name != NULL ) {
                 IEFreeRCString( ai.name );
+            }
+            if( ai.version != NULL ) {
+                IEFreeRCString( ai.version );
             }
             if( ai.title != NULL ) {
                 IEFreeRCString( ai.title );

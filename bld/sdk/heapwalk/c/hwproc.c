@@ -347,7 +347,7 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam,
             ai.owner = hwnd;
             ai.inst = Instance;
             ai.name = HWGetRCString( STR_ABOUT_NAME );
-            ai.version = banner1p2( _HEAPWALKER_VERSION_ );
+            ai.version = HWGetRCString( STR_ABOUT_VERSION );
             ai.first_cr_year = HWGetRCString( STR_ABOUT_COPYRIGHT_YEAR );
             ai.title = HWGetRCString( STR_ABOUT_TITLE );
             DoAbout( &ai );
