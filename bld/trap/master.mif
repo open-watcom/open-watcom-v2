@@ -248,10 +248,12 @@ inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"
 .asm: ../asm;../../asm;$(trap_dir)/common/$(os);$(trap_dir)/common;$(extra_srcs)
 .rc: ../c;$(trap_dir)/common/$(os);$(trap_dir)/common;$(extra_srcs)
 
+rc_inc_dirs = -I"$(trap_dir)/common"
+
 # implicit rules
 #################
 .rc.res: .AUTODEPEND
-        $(rc) $(rc_flags) -I"$(trap_dir)/common" $(inc_dirs_sys) $[@ -fo=$^@
+        $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
 usage.u : ../$(srv).sp
         wsplice -u $< $@

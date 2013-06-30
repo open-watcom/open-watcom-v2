@@ -22,6 +22,7 @@
 #include "../ctl/setfs.h"
 #include "../ctl/setscr.h"
 #include "../ctl/setgen.h"
+#include "winvi.h"
 
 #ifdef __NT__
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
@@ -68,7 +69,7 @@ DROPSS          CURSOR  dropss.cur
 
 #include "strbitns.h"
 
-#define pick( a, b, c )  a b
+#define pick( a, b, c )  a, [ b ]
 STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
     #include "rcstrmsg.gh"

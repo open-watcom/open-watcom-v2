@@ -102,64 +102,66 @@ verrcppc_exe = $(proj_name)ppc
 patch_level = 0
 !endif
 
+verrc_inc_path = $(extra_verrc_inc_path) $(inc_dirs_sys) -I"$(watcom_dir)/h"
+
 $(verrc_exe_out): $(verrc_exe_skel)
 !ifeq verbose 1
         genverrc $]@ $(verrc_exe_int) $$ $(verrc_exe) $(patch_level)
-        $(rc) $(rc_flags) $(inc_path) $(verrc_exe_int) -fo=$^@
+        $(rc) $(rc_flags) $(verrc_inc_path) $(verrc_exe_int) -fo=$^@
 !else
         @genverrc $]@ $(verrc_exe_int) $$ $(verrc_exe) $(patch_level)
         @echo rc $@
-        @$(rc) $(rc_flags) $(inc_path) $(verrc_exe_int) -fo=$^@
+        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrc_exe_int) -fo=$^@
 !endif
 
 $(verrc386_exe_out): $(verrc386_exe_skel)
 !ifeq verbose 1
         genverrc $]@ $(verrc386_exe_int) $$ $(verrc386_exe) $(patch_level)
-        $(rc) $(rc_flags) $(inc_path) $(verrc386_exe_int) -fo=$^@
+        $(rc) $(rc_flags) $(verrc_inc_path) $(verrc386_exe_int) -fo=$^@
 !else
         @genverrc $]@ $(verrc386_exe_int) $$ $(verrc386_exe) $(patch_level)
         @echo rc $@
-        @$(rc) $(rc_flags) $(inc_path) $(verrc386_exe_int) -fo=$^@
+        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrc386_exe_int) -fo=$^@
 !endif
 
 $(verrcx64_exe_out): $(verrcx64_exe_skel)
 !ifeq verbose 1
         genverrc $]@ $(verrcx64_exe_int) $$ $(verrcx64_exe) $(patch_level)
-        $(rc) $(rc_flags) $(inc_path) $(verrcx64_exe_int) -fo=$^@
+        $(rc) $(rc_flags) $(verrc_inc_path) $(verrcx64_exe_int) -fo=$^@
 !else
         @genverrc $]@ $(verrcx64_exe_int) $$ $(verrcx64_exe) $(patch_level)
         @echo rc $@
-        @$(rc) $(rc_flags) $(inc_path) $(verrcx64_exe_int) -fo=$^@
+        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrcx64_exe_int) -fo=$^@
 !endif
 
 $(verrcaxp_exe_out): $(verrcaxp_exe_skel)
 !ifeq verbose 1
         genverrc $]@ $(verrcaxp_exe_int) $$ $(verrcaxp_exe) $(patch_level)
-        $(rc) $(rc_flags) $(inc_path) $(verrcaxp_exe_int) -fo=$^@
+        $(rc) $(rc_flags) $(verrc_inc_path) $(verrcaxp_exe_int) -fo=$^@
 !else
         @genverrc $]@ $(verrcaxp_exe_int) $$ $(verrcaxp_exe) $(patch_level)
         @echo rc $@
-        @$(rc) $(rc_flags) $(inc_path) $(verrcaxp_exe_int) -fo=$^@
+        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrcaxp_exe_int) -fo=$^@
 !endif
 
 $(verrcppc_exe_out): $(verrcppc_exe_skel)
 !ifeq verbose 1
         genverrc $]@ $(verrcppc_exe_int) $$ $(verrcppc_exe) $(patch_level)
-        $(rc) $(rc_flags) $(inc_path) $(verrcppc_exe_int) -fo=$^@
+        $(rc) $(rc_flags) $(verrc_inc_path) $(verrcppc_exe_int) -fo=$^@
 !else
         @genverrc $]@ $(verrcppc_exe_int) $$ $(verrcppc_exe) $(patch_level)
         @echo rc $@
-        @$(rc) $(rc_flags) $(inc_path) $(verrcppc_exe_int) -fo=$^@
+        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrcppc_exe_int) -fo=$^@
 !endif
 
 $(verrc_dll_out): $(verrc_dll_skel)
 !ifeq verbose 1
         genverrc $]@ $(verrc_dll_int) $$ $(verrc_dll) $(patch_level)
-        $(rc) $(rc_flags) $(inc_path) $(verrc_dll_int) -fo=$^@
+        $(rc) $(rc_flags) $(verrc_inc_path) $(verrc_dll_int) -fo=$^@
 !else
         @genverrc $]@ $(verrc_dll_int) $$ $(verrc_dll) $(patch_level)
         @echo rc $@
-        @$(rc) $(rc_flags) $(inc_path) $(verrc_dll_int) -fo=$^@
+        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrc_dll_int) -fo=$^@
 !endif
 
 #
