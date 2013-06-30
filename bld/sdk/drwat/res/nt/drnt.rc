@@ -1,9 +1,3 @@
-#ifdef JAPANESE
- #define sp( s1, s2 ) s2
-#else
- #define sp( s1, s2 ) s1
-#endif
-
 #include "menu.h"
 #include "mark.h"
 #include "procctl.h"
@@ -35,7 +29,13 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 "APPLICON" ICON "drwatcom.ico"
 "ERRICON" ICON "err.ico"
 
+#ifdef JAPANESE
+ #define sp( s1, s2 ) s2
+#else
+ #define sp( s1, s2 ) s1
+#endif
 #include "menu.rc"
+#undef sp
 
 STRINGTABLE
 BEGIN
@@ -71,5 +71,3 @@ END
 #include "memwnd.rc"
 #include "memdmp.dlg"
 #include "dipload.dlg"
-
-#undef sp

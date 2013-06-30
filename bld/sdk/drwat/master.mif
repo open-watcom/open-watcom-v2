@@ -78,9 +78,11 @@ proj_obj =  listbox.obj log.obj stat.obj lognote.obj &
             $(dip_objs)
 
 .asm : .
-.c : ..;$(common_dir);$(dig_srcs);$(mad_srcs);$(dis_srcs)
+.c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs)
 
-inc_dirs = -I. -I.. -I"$(common_dir)" -I"$(dig_dir)/h" $(dis_includes) $(commonui_inc_dirs)
+inc_dirs = -I. -I"../$(host_os)" -I"../h" -I"$(dig_dir)/h" $(dis_includes) $(commonui_inc_dirs)
+
+rc_inc_dirs = -I"../res/$(host_os)" -I"../res" -I"../$(host_os)" -I"$(dig_dir)/h" $(commonui_inc_dirs)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
@@ -101,17 +103,17 @@ $(link_name) : $(__MAKEFILES__)
         @%append $^@ lib { $(xlibs) }
 
 !ifeq host_OS win
-$(proj_name).res : ../drwatcom.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk $(inc_path) $[@ -fo=$^@
+$(proj_name).res : ../res/$(host_os)/drwatcom.rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk $(cppflags) $(rc_inc_path) $[@ -fo=$^@
 !else
-$(proj_name).res : ../drnt.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(inc_path) $[@ -fo=$^@
+$(proj_name).res : ../res/$(host_os)/drnt.rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$^@
 !endif
 
 rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh : ../drwatcom.msg
-        $(cpp) $(rc_aui_flags) $(cppflags) $(inc_path) $[@ >$^@
+rcstrmsg.gh : ../res/$(host_os)/drwatcom.msg
+        $(cpp) $(rc_aui_flags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) $[@ >$^@
 
 !include verrc.mif

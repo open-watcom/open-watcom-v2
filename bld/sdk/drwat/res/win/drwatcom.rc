@@ -15,25 +15,27 @@
 #include "notelog.h"
 #include "banner.h"
 
-#undef pick
-#undef sp
-#ifdef JAPANESE
- #define pick( a, b, c ) a, c
- #define sp( s1, s2 ) s2
-#else
- #define pick( a, b, c ) a, b
- #define sp( s1, s2 ) s1
-#endif
-
 "APPLICON" ICON "drwatcom.ico"
 "ALERTICON" ICON "err.ico"
 
+#ifdef JAPANESE
+ #define sp( s1, s2 ) s2
+#else
+ #define sp( s1, s2 ) s1
+#endif
 #include "menu.rc"
+#undef sp
 
+#ifdef JAPANESE
+ #define pick( a, b, c ) a, c
+#else
+ #define pick( a, b, c ) a, b
+#endif
 STRINGTABLE
 BEGIN
     #include "rcstrmsg.gh"
 END
+#undef pick
 
 #include "about.dlg"
 #include "intdlg.dlg"

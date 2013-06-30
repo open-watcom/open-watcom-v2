@@ -28,11 +28,11 @@ extra_l_flags_win = op stack=7k, heapsize=2k lib stress.lib, commdlg.lib
 
 xlibs = $(commonui_lib)
 
-inc_dirs = -I. -I.. $(commonui_inc_dirs) $(dis_includes)
+inc_dirs = -I. -I"../h" $(commonui_inc_dirs) $(dis_includes)
 
-.c   : ..;$(dis_srcs)
-.asm : ..
-.rc  : ..
+rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(dis_includes)
+
+.c   : ../c;$(dis_srcs)
 
 objs_win = heapwalk.obj hwlist.obj hwproc.obj hwglob.obj hwsort.obj &
         hwbox.obj hwdisp.obj hwsave.obj hwobjec.obj hwlocal.obj &
@@ -45,11 +45,11 @@ $(name).exe : rcstr.gh $(dis_prereq) $(objs) $(dis_objs) $(xlibs) $(name).res
         $(linker) $(lflags) name $^@ file {$(objs) $(dis_objs)} lib {$(xlibs)}
         $(rc) -k $(name).res $^@
 
+rcstrmsg.gh : ../res/heapwalk.msg
+        $(cpp) $(rc_aui_flags) $[@ >$^@
+
 rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh : ../heapwalk.msg $(msgfiles)
-        $(cpp) $(rc_aui_flags) -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
-
-.rc.res: .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
+$(name).res: ../res/$(name).rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
