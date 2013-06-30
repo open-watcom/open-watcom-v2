@@ -118,7 +118,7 @@ inline KWoffset::KWoffset( uint_32 off )
 
 KWKey::KWKey( char const kword[] )
 {
-    int len = strlen( kword ) + 1;
+    size_t len = strlen( kword ) + 1;
     _keyword = new char[ len ];
     strcpy( _keyword, kword );
 }
@@ -181,7 +181,7 @@ uint_32 KWKey::size()
 
 int KWKey::dump( OutFile * dest )
 {
-    dest->write( _keyword, 1, strlen( _keyword )+1 );
+    dest->write( _keyword, 1, strlen( _keyword ) + 1 );
     return 1;
 }
 
@@ -215,7 +215,7 @@ KWRec::~KWRec()
 
 uint_32 KWRec::size()
 {
-    uint_32 len = strlen( _keyword )+1+sizeof( uint_16 )+sizeof( uint_32 );
+    size_t len = strlen( _keyword ) + 1 + sizeof( uint_16 ) + sizeof( uint_32 );
     return len;
 }
 
@@ -224,7 +224,7 @@ uint_32 KWRec::size()
 
 int KWRec::dump( OutFile * dest )
 {
-    int len = strlen( _keyword ) + 1;
+    size_t len = strlen( _keyword ) + 1;
     dest->write( _keyword, 1, len );
     dest->write( _count );
     dest->write( _dataOffset );

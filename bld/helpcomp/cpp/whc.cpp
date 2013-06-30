@@ -54,12 +54,6 @@
 static char const   HlpExt[] = ".hlp";
 
 
-//  Memory tracking (debug version only)
-#ifdef TRACKER
-static Memory bogus;
-#endif
-
-
 int main( int argc, char *[] )
 {
     if( argc < 2 || argc > 3 ) {

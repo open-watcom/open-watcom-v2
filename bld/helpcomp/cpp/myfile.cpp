@@ -45,26 +45,26 @@ File::File( char const filename[], uint_8 type )
 // Open the file and record the name.
 {
     char    mode[3] = "rb";
-    int length = strlen( filename );
+    size_t  length = strlen( filename );
 
-    _shortName = new char[length+1];
-    strncpy( _shortName, filename, length+1 );
+    _shortName = new char[length + 1];
+    strncpy( _shortName, filename, length + 1 );
 
     if( type & WRITE ){
-    mode[0] = 'w';
+        mode[0] = 'w';
     }
     if( type & TEXT ){
-    mode[1] = 't';
+        mode[1] = 't';
     }
     _fp = fopen( filename, mode );
     _badFile = ( _fp == NULL );
     if( !_badFile ){
-    _flags = type;
-    _fullName = new char[ _MAX_PATH ];
-    _fullpath( _fullName, filename, _MAX_PATH );
-    _flags |= _isOpen;
+        _flags = type;
+        _fullName = new char[ _MAX_PATH ];
+        _fullpath( _fullName, filename, _MAX_PATH );
+        _flags |= _isOpen;
     } else {
-    _fullName = NULL;
+        _fullName = NULL;
     }
 }
 
@@ -82,35 +82,37 @@ int File::open( char const filename[], uint_8 type )
 // Open the file and record the name.
 {
     char mode[3] = "rb";
-    int length = strlen( filename );
+    size_t length = strlen( filename );
+
     if( _shortName != NULL ){
-    renew( _shortName, length+1 );
+        renew( _shortName, length + 1 );
     } else {
-    _shortName = new char[length + 1];
+        _shortName = new char[length + 1];
     }
-    strncpy( _shortName, filename, length+1 );
+    strncpy( _shortName, filename, length + 1 );
 
     if( type & WRITE ){
-    mode[0] = 'w';
+        mode[0] = 'w';
     }
     if( type & TEXT ){
-    mode[1] = 't';
+        mode[1] = 't';
     }
-    if( _fp ) fclose( _fp );
+    if( _fp )
+        fclose( _fp );
     _fp = fopen( filename, mode );
     _badFile = ( _fp == NULL );
     if( !_badFile ){
-    _flags = type;
-    if( !_fullName ){
-        _fullName = new char[ _MAX_PATH ];
-    }
-    _fullpath( _fullName, filename, _MAX_PATH );
-    _flags |= _isOpen;
+        _flags = type;
+        if( !_fullName ){
+            _fullName = new char[ _MAX_PATH ];
+        }
+        _fullpath( _fullName, filename, _MAX_PATH );
+        _flags |= _isOpen;
     } else {
-    if( _fullName ){
-        delete[] _fullName;
-        _fullName = NULL;
-    }
+        if( _fullName ){
+            delete[] _fullName;
+            _fullName = NULL;
+        }
     }
 
     return _badFile;

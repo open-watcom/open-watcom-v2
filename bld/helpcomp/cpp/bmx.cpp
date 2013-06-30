@@ -263,13 +263,13 @@ int Bitmap::dump( OutFile *dest )
     _fp->open();
     _fp->reset( _dataPos );
     if( _headSize == BIH_SIZE ){
-        for( unsigned i = 0; i < _colsUsed; i++ ){
+        for( uint_32 i = 0; i < _colsUsed; i++ ){
             _fp->readbuf( &colour, 1, sizeof( uint_32 ) );
             dest->write( colour );
         }
     } else {
         colour = 0;
-        for( unsigned i = 0; i < _colsUsed; i++ ){
+        for( uint_32 i = 0; i < _colsUsed; i++ ){
             _fp->readbuf( &colour, 3 );
             dest->write( colour );
         }
@@ -324,7 +324,7 @@ int SegGraph::dump( OutFile *dest )
 
     _fp->open();
     while( (this_block=_fp->readbuf(block, BLOCK_SIZE)) != 0 ){
-    dest->write( block, 1, this_block );
+        dest->write( block, 1, this_block );
     }
 
     return 1;

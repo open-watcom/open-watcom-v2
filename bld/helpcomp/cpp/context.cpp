@@ -49,7 +49,7 @@ struct FutureHash
     FutureHash      *_prev;
     FutureHash      *_next;
 
-    FutureHash(int len) : _string(len), _next(NULL) {};
+    FutureHash( size_t len ) : _string( len ), _next( NULL ) {};
 };
 
 
@@ -167,7 +167,7 @@ HFContext::~HFContext()
     }
 }
 
-const uint_32 HFContext::_badValue = ~0;
+const uint_32 HFContext::_badValue = (uint_32)~0L;
 
 
 //  HFContext::addOffset    --Add a new entry to the btree.
@@ -177,8 +177,9 @@ void HFContext::addOffset( uint_32 hval, uint_32 off )
     // Check to see if we have a reference to this hash value.
     FutureHash  *current = _head;
     while( current != NULL ){
-    if( Hash( current->_string ) == hval ) break;
-    current = current->_next;
+        if( Hash( current->_string ) == hval )
+            break;
+        current = current->_next;
     }
 
     // If a reference exists, delete it.
@@ -231,7 +232,7 @@ void HFContext::recordContext( char const str[] )
     if( c_rec != NULL ) return;
 
     FutureHash  *current = _head;
-    int     length = strlen( str ) + 1;
+    size_t  length = strlen( str ) + 1;
     int     comparison = 1;
 
     // Check to see if this topic has already been referenced.
@@ -276,7 +277,7 @@ int HFContext::dump( OutFile * dest )
 {
     FutureHash  *current = _head;
     while( current != NULL ){
-    HCWarning( HLP_NOTOPIC,  (char *) current->_string );
+    HCWarning( HLP_NOTOPIC,  (const char *)current->_string );
     current = current->_next;
     }
     return _data->dump( dest );

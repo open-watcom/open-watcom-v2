@@ -203,7 +203,7 @@ int Scanner::isFootnoteChar( int c )
 
 void Scanner::pullCommand( Token * tok )
 {
-    int     current;
+    int     current = 0;
     char    num_string[7];
     int     i;
 
@@ -244,8 +244,9 @@ void Scanner::pullText( Token * tok )
     tok->_text[0] = static_cast<char>(nextch());
 
     int     i = 1;
-    int     current;
-    while( i<BUF_SIZE-1 ) {
+    int     current = 0;
+
+    while( i < BUF_SIZE - 1 ) {
         current = nextch();
 
         if( current == S_ENDC  ||
@@ -271,7 +272,7 @@ void Scanner::pullText( Token * tok )
     tok->_text[i] = '\0';
     tok->_value = i;
     if( current != S_ENDC && i<BUF_SIZE-1 ) {
-    putback( current );
+        putback( current );
     }
 }
 
@@ -281,10 +282,10 @@ void Scanner::pullText( Token * tok )
 void Scanner::pullHex( Token * tok )
 {
     char    result[3];
-    int     current;
+    int     current = 0;
     int     i;
 
-    for( i=0; i<2; ++i ) {
+    for( i = 0; i < 2; ++i ) {
         current = nextch();
         if( !isxdigit( current ) ) {
             break;

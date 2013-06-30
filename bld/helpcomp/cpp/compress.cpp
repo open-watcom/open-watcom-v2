@@ -135,9 +135,9 @@ int CompWriter::putCode( int distance, int length )
 void CompOutFile::dump()
 {
     if( _numTokens > 0 ){
-    _dest->write( _bitMask );
-    _dest->write( _buffer, 1, _numBytes );
-    _numBytes = _numTokens = 0;
+        _dest->write( _bitMask );
+        _dest->write( _buffer, 1, _numBytes );
+        _numBytes = _numTokens = 0;
     }
     _bitMask = 0;
 }
@@ -237,7 +237,7 @@ int CompReader::compress( char const source[], int amount )
     int hash_value;
     int key_size, old_key_size;
     short   offset;
-    short   best_match;
+    short   best_match = 0;
     int     limit;
     uint_8  *p1, *p2;
 
@@ -292,7 +292,7 @@ int CompReader::compress( char const source[], int amount )
         result += _dest->putChr( _buffer[_current] );
         _current += 1;
     } else {
-        result += _dest->putCode( _current-best_match, old_key_size );
+        result += _dest->putCode( _current - best_match, old_key_size );
         _current += static_cast<short>(old_key_size);
     }
     if( _current > HOLD_SIZE ){

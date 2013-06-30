@@ -740,9 +740,9 @@ void RTFparser::Go()
         }
         } else {
         if( _current->_value == '~' ){
-            smallstr[0] = (char) 0xA0;
+            smallstr[0] = '\xA0';
         } else {
-            smallstr[0] = (char) _current->_value;
+            smallstr[0] = (char)_current->_value;
         }
         _topFile->addText( smallstr );
         }
@@ -1302,9 +1302,9 @@ void RTFparser::handleFonts()
             _wereWarnings = 1;
             state = NUMBER;
             ok2read = 0;
-            if( name_size > 0 ){
-            cur_name[name_size] = '\0';
-            _fontFile->addFont( cur_name, cur_family, cur_num );
+            if( name_size > 0 ) {
+                cur_name[name_size] = '\0';
+                _fontFile->addFont( cur_name, cur_family, cur_num );
             }
         }
         break;

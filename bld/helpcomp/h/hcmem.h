@@ -108,24 +108,21 @@ template<class T> class Buffer
     Buffer<T> & operator=( Buffer<T> const & ) { return *this; };
 
 public:
-    Buffer( int size );
+    Buffer( size_t size );
     ~Buffer();
 
     operator T *() { return _data; };
-    T &operator[]( int index ) { return _data[index]; };
-    void *resize( int size );
+    T &operator[]( size_t index ) { return _data[index]; };
+    void *resize( size_t size );
 };
 
 template<class T>
-inline Buffer<T>::Buffer( int size )
+inline Buffer<T>::Buffer( size_t size )
 {
-    if( size<0 ){
-    HCError( BOUND_ERR );
-    }
     if( size == 0 ){
-    _data = NULL;
+        _data = NULL;
     } else {
-    _data = new T[size];
+        _data = new T[size];
     }
 }
 
@@ -136,16 +133,13 @@ inline Buffer<T>::~Buffer()
 }
 
 template<class T>
-void *Buffer<T>::resize( int size )
+void *Buffer<T>::resize( size_t size )
 {
-    if( size < 0 ){
-    HCError( BOUND_ERR );
-    }
     if( size == 0 ){
-    if( _data ) delete[] _data;
-    _data = NULL;
+        if( _data ) delete[] _data;
+        _data = NULL;
     } else {
-    _data = (T*) renew( _data, size*sizeof(T) );
+        _data = (T*)renew( _data, size * sizeof( T ) );
     }
     return _data;
 }

@@ -44,19 +44,19 @@ SYSTEM:  handle "global" WinHelp file information
 SystemText::SystemText( uint_16 flg, const char *txt )
 {
     _flag = flg;
-    int length = strlen( txt ) + 1;
+    size_t length = strlen( txt ) + 1;
 
     // Impose a maximum size restriction: the size has to
     // be expressible as a uint_16.
     if( length > 0xFFFF ){
-    _size = 0xFFFF;
+        _size = 0xFFFF;
     } else {
-    _size = (uint_16) length;
+        _size = (uint_16)length;
     }
 
     _text = new char[ _size ];
-    _text[_size-1] = '\0';
-    strncpy( _text, txt, _size-1 );
+    _text[_size - 1] = '\0';
+    strncpy( _text, txt, _size - 1 );
 }
 
 
@@ -85,7 +85,7 @@ SystemNum::SystemNum( uint_16 flg, uint_32 val )
 {
     _flag = flg;
     _num = val;
-    _size = (uint_16) 4;
+    _size = (uint_16)4;
 }
 
 
@@ -149,7 +149,7 @@ int SystemWin::dump( OutFile * dest )
 HFSystem::HFSystem( HFSDirectory *d_file, HFContext *h_file )
     : _hashFile( h_file )
 {
-    _compLevel = (uint_16) 0;
+    _compLevel = 0;
     _contentNum = 0;
     _size = 25; // 12 byte header + default SYS_COPYRIGHT,SYS_CONTENTS
 
@@ -188,9 +188,9 @@ HFSystem::~HFSystem()
 void HFSystem::setCompress( int val )
 {
     if( val ){
-    _compLevel = LZW_COMPRESSED;
+        _compLevel = LZW_COMPRESSED;
     } else {
-    _compLevel = NO_COMPRESSION;
+        _compLevel = NO_COMPRESSION;
     }
     return;
 }
@@ -273,12 +273,12 @@ int HFSystem::dump( OutFile *dest )
 {
     // Get the address of the contents topic.
     if( _contentNum != 0 ){
-    _contentNum = _hashFile->getOffset( _contentNum );
-    if( _contentNum == HFContext::_badValue ){
-        HCWarning( SYS_NOCONTENTS );
-    } else {
-        addRecord( new SystemNum( SYS_CONTENTS, _contentNum ) );
-    }
+        _contentNum = _hashFile->getOffset( _contentNum );
+        if( _contentNum == HFContext::_badValue ){
+            HCWarning( SYS_NOCONTENTS );
+        } else {
+            addRecord( new SystemNum( SYS_CONTENTS, _contentNum ) );
+        }
     }
 
     // Write the |SYSTEM header to output.
@@ -295,8 +295,8 @@ int HFSystem::dump( OutFile *dest )
     // Dump the records in the linked list, in order.
     SystemRec   *current = _first;
     while( current != NULL ){
-    current->dump( dest );
-    current = current->_next;
+        current->dump( dest );
+        current = current->_next;
     }
     return 1;
 }
