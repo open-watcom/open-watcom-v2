@@ -42,9 +42,9 @@ BEGIN
                  | WS_GROUP | DT_MNEMONIC | WS_VISIBLE
         EDITTEXT        "", BMP_HEIGHT, 59, 37, 32, 12, ES_AUTOSCROLL
                  | DT_MNEMONIC | WS_VISIBLE
-        CONTROL         "16 ~Colour", BMP_16COLOUR, 127, 50, 48, 10, WC_BUTTON
+        CONTROL         "16 ~Colour", BMP_16COLOR, 127, 50, 48, 10, WC_BUTTON
                  , BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_VISIBLE
-        CONTROL         "2 Colour ~Monochrome", BMP_2COLOUR, 127, 37, 81, 10, WC_BUTTON
+        CONTROL         "2 Colour ~Monochrome", BMP_2COLOR, 127, 37, 81, 10, WC_BUTTON
                  , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
         RTEXT           "~Width:", -1, 29, 52, 28, 8, DT_MNEMONIC
         RTEXT           "~Height:", -1, 29, 39, 26, 8, NOT

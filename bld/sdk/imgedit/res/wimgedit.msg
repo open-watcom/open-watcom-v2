@@ -555,8 +555,8 @@ pick(   WIE_NEIMAGENOTCREATED,
         "New image not created",
         "New image not created" )
 pick(   WIE_ABOUTTEXT,
-        "Open Watcom Image Editor for Windows",
-        "Open Watcom Image Editor for Windows" )
+        "Open Watcom Image Editor for Windows" STR_BITNEES,
+        "Open Watcom Image Editor for Windows" STR_BITNEES )
 pick(   WIE_ABOUTFIRSTYEAR,
         "2002",
         "2002" )

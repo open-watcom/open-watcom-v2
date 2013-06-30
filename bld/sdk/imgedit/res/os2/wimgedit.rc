@@ -3,67 +3,67 @@ rcinclude "img_os2.h"
 rcinclude "dialogs.h"
 rcinclude "settings.h"
 rcinclude "menuids.h"
-rcinclude "res\selimg.dlg"
-rcinclude "res\settings.dlg"
-rcinclude "res\selcolor.dlg"
+rcinclude "selimg.dlg"
+rcinclude "settings.dlg"
+rcinclude "selcolor.dlg"
 
 //ICON  ICON_ID         test.ico
-ICON    ICON_ID         BMP_DIR\app_pm.ico
+ICON    ICON_ID         app_pm.ico
 
-POINTER POINT_CUR       BMP_DIR\pasteptr.ptr
-POINTER PENCILCURSOR    BMP_DIR\pencil.ptr
-POINTER CROSSHAIRSCUR   BMP_DIR\crosshrs.ptr
-POINTER FILLCURSOR      BMP_DIR\fill.ptr
-POINTER PAINTBRUSHCUR   BMP_DIR\paintb.ptr
-POINTER HOTSPOTCUR      BMP_DIR\hotspot.ptr
+POINTER POINT_CUR       pasteptr.ptr
+POINTER PENCILCURSOR    pencil.ptr
+POINTER CROSSHAIRSCUR   crosshrs.ptr
+POINTER FILLCURSOR      fill.ptr
+POINTER PAINTBRUSHCUR   paintb.ptr
+POINTER HOTSPOTCUR      hotspot.ptr
 
-BITMAP  OPENBMP         MISC_DIR\open.bmp
-BITMAP  NEWBMP          MISC_DIR\new.bmp
-BITMAP  SAVEBMP         MISC_DIR\save.bmp
-BITMAP  GRIDBMP         BMP_DIR\grid.bmp
-BITMAP  GRIDDBMP        BMP_DIR\gridd.bmp
-BITMAP  MAXIMIZEBMP     BMP_DIR\maxmize.bmp
-BITMAP  MAXIMIZEDBMP    BMP_DIR\maxmized.bmp
-BITMAP  CUTBMP          MISC_DIR\cut.bmp
-BITMAP  COPYBMP         MISC_DIR\copy.bmp
-BITMAP  PASTEBMP        MISC_DIR\paste.bmp
-BITMAP  UNDOBMP         MISC_DIR\undo.bmp
-BITMAP  REDOBMP         MISC_DIR\redo.bmp
-BITMAP  CLEARBMP        MISC_DIR\clear.bmp
-BITMAP  SNAPBMP         BMP_DIR\snap.bmp
-BITMAP  RIGHTBMP        BMP_DIR\right.bmp
-BITMAP  LEFTBMP         BMP_DIR\left.bmp
-BITMAP  UPBMP           BMP_DIR\up.bmp
-BITMAP  DOWNBMP         BMP_DIR\down.bmp
-BITMAP  HFLIPBMP        BMP_DIR\fliph.bmp
-BITMAP  HFLIPDBMP       BMP_DIR\fliphd.bmp
-BITMAP  VFLIPBMP        BMP_DIR\flipv.bmp
-BITMAP  VFLIPDBMP       BMP_DIR\flipvd.bmp
-BITMAP  CLROTBMP        BMP_DIR\rotcl.bmp
-BITMAP  CLROTDBMP       BMP_DIR\rotcld.bmp
-BITMAP  CCROTBMP        BMP_DIR\rotcc.bmp
-BITMAP  CCROTDBMP       BMP_DIR\rotccd.bmp
+BITMAP  OPENBMP         open.bmp
+BITMAP  NEWBMP          new.bmp
+BITMAP  SAVEBMP         save.bmp
+BITMAP  GRIDBMP         grid.bmp
+BITMAP  GRIDDBMP        gridd.bmp
+BITMAP  MAXIMIZEBMP     maxmize.bmp
+BITMAP  MAXIMIZEDBMP    maxmized.bmp
+BITMAP  CUTBMP          cut.bmp
+BITMAP  COPYBMP         copy.bmp
+BITMAP  PASTEBMP        paste.bmp
+BITMAP  UNDOBMP         undo.bmp
+BITMAP  REDOBMP         redo.bmp
+BITMAP  CLEARBMP        clear.bmp
+BITMAP  SNAPBMP         snap.bmp
+BITMAP  RIGHTBMP        right.bmp
+BITMAP  LEFTBMP         left.bmp
+BITMAP  UPBMP           up.bmp
+BITMAP  DOWNBMP         down.bmp
+BITMAP  HFLIPBMP        fliph.bmp
+BITMAP  HFLIPDBMP       fliphd.bmp
+BITMAP  VFLIPBMP        flipv.bmp
+BITMAP  VFLIPDBMP       flipvd.bmp
+BITMAP  CLROTBMP        rotcl.bmp
+BITMAP  CLROTDBMP       rotcld.bmp
+BITMAP  CCROTBMP        rotcc.bmp
+BITMAP  CCROTDBMP       rotccd.bmp
 
-BITMAP  PENCIL          BMP_DIR\pencil.bmp
-BITMAP  PENCILD         BMP_DIR\pencild.bmp
-BITMAP  LINE            BMP_DIR\line.bmp
-BITMAP  LINED           BMP_DIR\lined.bmp
-BITMAP  CIRCLEO         BMP_DIR\circleo.bmp
-BITMAP  CIRCLEOD        BMP_DIR\circleod.bmp
-BITMAP  CIRCLEF         BMP_DIR\circlef.bmp
-BITMAP  CIRCLEFD        BMP_DIR\circlefd.bmp
-BITMAP  RECTO           BMP_DIR\recto.bmp
-BITMAP  RECTOD          BMP_DIR\rectod.bmp
-BITMAP  RECTF           BMP_DIR\rectf.bmp
-BITMAP  RECTFD          BMP_DIR\rectfd.bmp
-BITMAP  FILL            BMP_DIR\fill.bmp
-BITMAP  FILLD           BMP_DIR\filld.bmp
-BITMAP  BRUSH           BMP_DIR\brush.bmp
-BITMAP  BRUSHD          BMP_DIR\brushd.bmp
-BITMAP  CLPRECT         BMP_DIR\clprect.bmp
-BITMAP  CLPRECTD        BMP_DIR\clprectd.bmp
-BITMAP  HOTSPOT         BMP_DIR\hotspot.bmp
-BITMAP  HOTSPOTD        BMP_DIR\hotspotd.bmp
+BITMAP  PENCIL          pencil.bmp
+BITMAP  PENCILD         pencild.bmp
+BITMAP  LINE            line.bmp
+BITMAP  LINED           lined.bmp
+BITMAP  CIRCLEO         circleo.bmp
+BITMAP  CIRCLEOD        circleod.bmp
+BITMAP  CIRCLEF         circlef.bmp
+BITMAP  CIRCLEFD        circlefd.bmp
+BITMAP  RECTO           recto.bmp
+BITMAP  RECTOD          rectod.bmp
+BITMAP  RECTF           rectf.bmp
+BITMAP  RECTFD          rectfd.bmp
+BITMAP  FILL            fill.bmp
+BITMAP  FILLD           filld.bmp
+BITMAP  BRUSH           brush.bmp
+BITMAP  BRUSHD          brushd.bmp
+BITMAP  CLPRECT         clprect.bmp
+BITMAP  CLPRECTD        clprectd.bmp
+BITMAP  HOTSPOT         hotspot.bmp
+BITMAP  HOTSPOTD        hotspotd.bmp
 
 MENU    MENU_ID PRELOAD
 BEGIN
@@ -132,7 +132,7 @@ BEGIN
         MENUITEM "Change ~Image Size ...", IMGED_SIZE, MIS_TEXT
         MENUITEM "", -1, MIS_SEPARATOR
         MENUITEM "Show ~Tool Window\tF6", IMGED_TOOLBAR, MIS_TEXT
-        MENUITEM "Show Color ~Palette\tF7", IMGED_COLOUR, MIS_TEXT
+        MENUITEM "Show Color ~Palette\tF7", IMGED_COLOR, MIS_TEXT
         MENUITEM "Show ~View Window(s)\tF8", IMGED_VIEW, MIS_TEXT
     END
     SUBMENU "~Palette", IMGED_PAL
@@ -141,9 +141,9 @@ BEGIN
         MENUITEM "~Reset Current Palette", IMGED_CRESET, MIS_TEXT
         MENUITEM "~Set Screen Color ...", IMGED_CSCREEN, MIS_TEXT
         MENUITEM "", -1, MIS_SEPARATOR
-        MENUITEM "~Load Color Palette ...", IMGED_LCOLOUR, MIS_TEXT
-        MENUITEM "Sa~ve Color Palette ...", IMGED_SCOLOUR, MIS_TEXT
-        MENUITEM "Res~tore Color Palette", IMGED_RCOLOUR, MIS_TEXT
+        MENUITEM "~Load Color Palette ...", IMGED_LCOLOR, MIS_TEXT
+        MENUITEM "Sa~ve Color Palette ...", IMGED_SCOLOR, MIS_TEXT
+        MENUITEM "Res~tore Color Palette", IMGED_RCOLOR, MIS_TEXT
     END
     SUBMENU "~Tools", IMGED_TOOLS
     BEGIN

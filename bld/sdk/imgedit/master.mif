@@ -22,43 +22,29 @@ WINDOWS=1
 
 .JUST_ENOUGH
 
-!ifeq host_OS os2
-# OS/2 specific stuff here
+.c : c;../c
 
-resdir = $(wimgedit_dir)/objos2/res
-rcdeps = $(resdir)/$(name).rc
-resinc = -I"$(wimgedit_dir)/objos2/res"
-objs =  imgedit.obj ieproc.obj ieclrpal.obj ieglob.obj pmcreate.obj &
-        curclr.obj clrcntls.obj colors.obj imgdata.obj hinttext.obj &
-        ienew.obj ieutil.obj drawproc.obj pmutils.obj xorand.obj &
-        iedraw.obj ieviewin.obj trnsform.obj iesave.obj &
-        mem.obj iestatus.obj iefonts.obj fill.obj freehand.obj &
-        ieopen.obj wbitmap.obj ieprofil.obj settings.obj &
-        getdata.obj clip.obj iconinfo.obj bkcolor.obj pmicon.obj undo.obj &
-        ietoolbr.obj funcbar.obj chgsize.obj bits.obj wpi_mem.obj closeall.obj &
+objs_common = &
+        imgedit.obj ieproc.obj ieglob.obj ieclrpal.obj ienew.obj &
+        iedraw.obj ieviewin.obj ieutil.obj iesave.obj iestatus.obj &
+        iefonts.obj ieopen.obj ieprofil.obj ietoolbr.obj xorand.obj &
+        freehand.obj clip.obj drawproc.obj undo.obj colors.obj &
+        iconinfo.obj fill.obj clrcntls.obj curclr.obj funcbar.obj &
+        bkcolor.obj imgdata.obj getdata.obj chgsize.obj settings.obj &
+        trnsform.obj hinttext.obj wpi_mem.obj closeall.obj bits.obj &
         errors.obj
 
-.c : $(wimgedit_dir)/objos2/c;$(wimgedit_dir)/c
-.h : $(wimgedit_dir)/objos2/h;$(wimgedit_dir)/h
-.dlg : $(wimgedit_dir)/objos2/res;$(wimgedit_dir)/res
+extras_win = wincreat.obj title.obj winutils.obj
 
+objs_os2 = pmcreate.obj pmutils.obj pmicon.obj mem.obj wbitmap.obj
+objs_win = icon.obj snap.obj modclrs.obj pickbmp.obj iebmpdat.obj iedde.obj iemem.obj iectl3d.obj $(extras_win)
+
+!ifeq host_os os2
+objs = $(objs_common) $(objs_os2)
 !else
-# Other OS's specific stuff
-
-objs =  imgedit.obj ieproc.obj ieglob.obj ieclrpal.obj ienew.obj &
-        ieopen.obj iesave.obj ieviewin.obj iedraw.obj icon.obj &
-        ietoolbr.obj &
-        xorand.obj freehand.obj clip.obj drawproc.obj iestatus.obj &
-        undo.obj snap.obj colors.obj iconinfo.obj ieutil.obj fill.obj &
-        clrcntls.obj curclr.obj funcbar.obj modclrs.obj bkcolor.obj &
-        imgdata.obj getdata.obj pickbmp.obj iefonts.obj chgsize.obj &
-        settings.obj trnsform.obj hinttext.obj ieprofil.obj &
-        wpi_mem.obj closeall.obj bits.obj errors.obj &
-        iebmpdat.obj iedde.obj iemem.obj iectl3d.obj $(extras)
-
-extras = wincreat.obj title.obj winutils.obj
-.c : $(wimgedit_dir)/c
+objs = $(objs_common) $(objs_win)
 !endif
+
 
 extra_cpp_flags = -DWIN_GUI
 !ifdef wpitest
@@ -78,33 +64,20 @@ extra_l_flags     = option map lib { $(libs) }
 
 extra_l_flags_win = option rwr option stack=16k option heapsize=2k lib ddeml.lib
 extra_l_flags_nt  = option stack=100k
-!ifeq host_CPU 386
+!ifeq host_cpu 386
 extra_l_flags_nt += alias '_WinMain'='_WinMain@16'
 !endif
 extra_l_flags_os2 = option stack=12k option heapsize=2k &
                     option symfile=$(name).sym
 
-inc_dirs  = -I. -Ih -I"$(wimgedit_dir)/h" -I"$(wres_dir)/h" -I"$(wr_dir)/h" $(commonui_inc_dirs)
+inc_dirs  = -I. -Ih -I"../h" -I"$(wres_dir)/h" -I"$(wr_dir)/h" $(commonui_inc_dirs)
 inc_dirs += -I"$(sdk_misc_dir)" $(wpi_inc_dirs)
+
+rc_inc_dirs = -I"../res" $(commonui_inc_dirs) -Ih
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
-
-!ifeq host_OS os2
-
-$(name).exe : $(name).res $(objs) $(libs)
-        %create $^&.lnk
-        @%append $^&.lnk $(lflags)
-        @%append $^&.lnk file { $(objs) }
-        $(linker)  name $^@ @$^&.lnk
-        $(rc) -k $^&.res $^@
-
-$(name).res : $(wimgedit_dir)/objos2/res/$(name).rc $(rcdeps)
-        $(rc) $(rc_flags) -DBMP_DIR=$(wimgedit_dir)/res &
-        -DMISC_DIR=$(sdk_misc_dir) $(inc_path) $(resinc) $[@ $^@
-
-!else
 
 $(name).exe : $(name).res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
@@ -117,15 +90,22 @@ $(name).exe : $(name).res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cp
 !endif
         $(rc) -k $^&.res $^@ $(bind_version_res_exe_add)
 
+!ifeq host_os os2
+
+$(name).res : ../res/os2/$(name).rc $(rcdeps)
+        $(rc) $(rc_flags) -ad -zk0 -I"../res/os2" $(rc_inc_path) $[@ -fo=$^@
+
+!else
+
+$(name).res : ../res/$(name).rc rcstr.gh
+        $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
+
+!endif
+
+rcstrmsg.gh : ../res/wimgedit.msg
+        $(cpp) $(rc_aui_flags) $[@ >$^@
+
 rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh : $(wimgedit_dir)/h/wimgedit.msg
-        $(cpp) $(rc_aui_flags) $(inc_path) $[@ >$^@
-
-$(name).res : ../res/$(name).rc rcstr.gh
-        $(rc) $(rc_flags) -ad -zk0 -I"$(wimgedit_dir)/res" $(inc_path) $[@ -fo=$^@
-
 !include verrc.mif
-
-!endif
