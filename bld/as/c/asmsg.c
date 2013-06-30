@@ -109,7 +109,7 @@ extern int AsMsgInit( void ) {
             }
         }
     }
-    msgShift = WResLanguage() * MSG_LANG_SPACING;
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !error && !AsMsgGet( USAGE_1, name ) ) {
         error = 1;
     }
@@ -119,7 +119,7 @@ extern int AsMsgInit( void ) {
         return 0;
     }
 #else
-    msgShift = WResLanguage() * TXT_MSG_LANG_SPACING;
+    msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;
     if( msgShift >= TXT_MSG_SIZE )
         msgShift = 0;
     msgShift -= AS_MSG_BASE;

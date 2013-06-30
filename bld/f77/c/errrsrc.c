@@ -83,7 +83,7 @@ static  void    ErrorInit( const char *pgm_name )
     ResFlags |= RF_OPENED;
     if( FindResources( &hInstance ) ) return;
     if( InitResources( &hInstance ) ) return;
-    MsgShift = WResLanguage() * MSG_LANG_SPACING;
+    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     ResFlags |= RF_INITIALIZED;
 }
 

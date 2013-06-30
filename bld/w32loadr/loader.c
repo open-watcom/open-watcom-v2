@@ -156,7 +156,7 @@ char *PickMsg( int num )
 {
     char        *msg;
 
-    switch( WResLanguage() ) {
+    switch( _WResLanguage() ) {
     case RLE_JAPANESE:
         msg = JapaneseMsgs[num];
         break;

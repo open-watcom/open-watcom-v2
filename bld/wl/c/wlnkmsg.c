@@ -99,7 +99,7 @@ int InitMsg( void )
     if( !initerror ) {
         initerror = InitResources( &hInstance );
     }
-    MsgShift = WResLanguage() * MSG_LANG_SPACING;
+    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !initerror && !Msg_Get( MSG_PRODUCT, buff ) ) {
         initerror = 1;
     }

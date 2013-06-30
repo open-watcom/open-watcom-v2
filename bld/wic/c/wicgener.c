@@ -99,7 +99,7 @@ void initWicResources( char * fname )
         fprintf(stderr, "Internal error: Cannot open resources");
         wicExit(-1);
     }
-    MsgShift = WResLanguage() * MSG_LANG_SPACING;
+    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
 }
 
 int getResStr( int resourceid, char *buffer )

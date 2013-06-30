@@ -96,7 +96,7 @@ void InitMsg( void )
             CloseResFile( &hInstance );
         }
     }
-    MsgShift = WResLanguage() * MSG_LANG_SPACING;
+    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( initerror ) {
         Res_Flag = EXIT_FAILURE;
         FatalResError();

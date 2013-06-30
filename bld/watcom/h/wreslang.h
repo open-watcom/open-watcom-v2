@@ -47,7 +47,4 @@ _WCRTLINK extern res_language_enumeration _WResLanguage(void);
 extern res_language_enumeration _WResLanguage(void);
 #endif
 
-/* for ease of migration to new name */
-#define WResLanguage _WResLanguage
-
 #endif

@@ -429,7 +429,7 @@ char *ResName( char *res )
 
     len = strlen( res );
     memcpy( buff, res, len );
-    buff[len+0] = WResLanguage() + '0';
+    buff[len+0] = _WResLanguage() + '0';
     buff[len+1] = '\0';
     return( buff );
 }

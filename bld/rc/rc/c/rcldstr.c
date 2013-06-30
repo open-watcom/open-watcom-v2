@@ -95,7 +95,7 @@ int InitRcMsgs( const char *fname )
     if( !error ) {
         error = InitResources( &Instance );
     }
-    MsgShift = WResLanguage() * MSG_LANG_SPACING;
+    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !error && !GetRcMsg( USAGE_MSG_FIRST, testbuf, sizeof( testbuf ) ) ) {
         error = TRUE;
     }

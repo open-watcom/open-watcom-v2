@@ -125,7 +125,7 @@ int MsgInit( void )
             }
         }
         if( !initerror ) {
-            msg_shift = WResLanguage() * MSG_LANG_SPACING;
+            msg_shift = _WResLanguage() * MSG_LANG_SPACING;
             for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
                 if( LoadString( &hInstance, i + msg_shift, (LPSTR) buffer, 128 ) == -1 ) {
                     if( i == ERR_FIRST_MESSAGE ) {
@@ -160,7 +160,7 @@ int MsgInit( HANDLE inst )
     char        buffer[128];
     unsigned    msg_shift;
 
-    msg_shift = WResLanguage() * MSG_LANG_SPACING;
+    msg_shift = _WResLanguage() * MSG_LANG_SPACING;
 
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
         if( LoadString( inst, i + msg_shift, (LPSTR) buffer, 128 ) == -1 ) {

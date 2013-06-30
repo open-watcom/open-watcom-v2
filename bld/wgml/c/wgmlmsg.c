@@ -91,7 +91,7 @@ int init_msgs( void )
         if( !error ) {
             error = InitResources( &Instance );
         }
-        MsgShift = WResLanguage() * MSG_LANG_SPACING;
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( !error && !get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
             error = TRUE;
         }

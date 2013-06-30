@@ -77,7 +77,7 @@ extern int MsgInit( void )
             }
         }
     }
-    MsgShift = WResLanguage() * MSG_LANG_SPACING;
+    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !error && !MsgGet( WDIS_LITERAL_BASE, name ) ) {
         error = 1;
     }

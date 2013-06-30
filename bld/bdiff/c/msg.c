@@ -98,7 +98,7 @@ int MsgInit( void )
             }
         }
     }
-    MsgShift = WResLanguage() * MSG_LANG_SPACING;
+    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !initerror && !GetMsg( name, MSG_USAGE_FIRST ) ) {
         initerror = 1;
     }

@@ -127,7 +127,7 @@ int Msg_Init( void )
     } else {
         Res_Flag = EXIT_SUCCESS;
     }
-    MsgShift = WResLanguage() * MSG_LANG_SPACING;
+    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !initerror && !Msg_Get( MSG_USAGE_FIRST, name ) ) {
         Res_Flag = EXIT_FAILURE;
         write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
