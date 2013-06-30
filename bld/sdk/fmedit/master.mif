@@ -46,9 +46,10 @@ objs =  align.obj       &
 #
 
 .c:   ../src;$(version_dir)
-.rc : ../src
 
-inc_dirs = -I"../src" -I"../dev"
+inc_dirs = -I"../src" -I"../dev" -I"../res"
+
+rc_inc_dirs = -I"../res" -I"../dev"
 
 extra_cpp_flags = -DFMEDITDLL
 
@@ -83,7 +84,7 @@ $(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$
 !endif
     $(rc) -k $(name).res $(name).dll $(bind_version_res_dll_add)
 
-$(name).res: $(name).rc .AUTODEPEND
-    $(rc) $(rc_flags) $(inc_path) $[@ -fo=$^@
+$(name).res: ../res/$(name).rc .AUTODEPEND
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
 !include verrc.mif

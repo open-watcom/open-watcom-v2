@@ -41,7 +41,7 @@
 #include "opts.h"
 #include "define.h"
 
-#include "constant.def"
+#include "fmmenu.def"
 
 /****************************************************************************/
 /* Misc. Constants                                                          */

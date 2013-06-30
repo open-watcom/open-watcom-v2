@@ -35,6 +35,7 @@ typedef BOOL (CALLBACK *OBJECT)( ACTION, OBJPTR, void *, void * );
 typedef void MOUSEACTION( HWND, RECT * );
 
 #include "constant.def"
+#include "fmmenu.def"
 #include "list.def"
 #include "actions.def"
 #include "subreq.def"

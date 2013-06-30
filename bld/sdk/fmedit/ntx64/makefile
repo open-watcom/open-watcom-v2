@@ -5,4 +5,4 @@ host_cpu = x64
 
 fmedit_release = 0
 
-!include ../mif/master.mif
+!include ../master.mif

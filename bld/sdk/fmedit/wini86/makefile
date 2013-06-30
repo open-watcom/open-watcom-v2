@@ -3,4 +3,4 @@
 host_os  = win
 host_cpu = i86
 
-!include ../mif/master.mif
+!include ../master.mif

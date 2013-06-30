@@ -1,6 +1,6 @@
-#include "windows.h"
+#include <windows.h>
 #include "fmdlgs.h"
-#include "constant.def"
+#include "fmmenu.def"
 
 FMEDIT ICON "fmedit.ico"
 
