@@ -8,14 +8,14 @@ ide2make_autodepends = .AUTODEPEND
 !include deftarg.mif
 !include defrule.mif
 
-!include $(idelib_dir)/mif/client.mif
-!include $(wclass_dir)/mif/client.mif
+!include $(idelib_dir)/client.mif
+!include $(wclass_dir)/client.mif
 
 objs = bviper.obj
 
-inc_dirs = $(idelib_inc_dirs) $(wclass_inc_dirs)
+inc_dirs = -I"../h" $(idelib_inc_dirs) $(wclass_inc_dirs)
 
-.cpp: ..
+.cpp: ../cpp
 
 libs = $(idelib_lib) $(wclass_lib)
 

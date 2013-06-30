@@ -1,4 +1,4 @@
-idelib_inc_dirs = -I"$(idelib_dir)"
+idelib_inc_dirs = -I"$(idelib_dir)/h"
 !ifeq bootstrap 1
 idelib_lib = $(idelib_dir)/$(%OWOBJDIR)/ide.lib
 !else

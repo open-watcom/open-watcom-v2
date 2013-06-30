@@ -30,14 +30,14 @@ to_os_path=/=\
 !include defrule.mif
 !include deftarg.mif
 
-!include $(idelib_dir)/mif/client.mif
-!include $(wclass_dir)/mif/client.mif
+!include $(idelib_dir)/client.mif
+!include $(wclass_dir)/client.mif
 !include $(gui_dir)/client.mif
 
 WINDOWS = 1
 !include wres.mif
 
-!include ../mif/objects.mif
+!include ../objects.mif
 
 description = 'Open Watcom IDE'
 
@@ -45,12 +45,16 @@ c_path_os2 = $(batch_dir)/os2
 c_path_nt  = $(batch_dir)/nt
 c_path_win = $(batch_dir)/dos;$(batch_dir)/os2
 
-rc_path_os2 = ../os2
-rc_path_nt  = ../win
-rc_path_win = ../win
+rc_path_os2 = ../res/os2
+rc_path_nt  = ../res/win
+rc_path_win = ../res/win
+
+rc_ide_inc_dirs_os2 = -I"$(rc_path_os2)"
+rc_ide_inc_dirs_nt  = -I"$(rc_path_nt)"
+rc_ide_inc_dirs_win = -I"$(rc_path_win)"
 
 .c : $(c_path_$(host_os));$(watcom_dir)/c
-.cpp : ..
+.cpp : ../cpp
 .rc : $(rc_path_$(host_os))
 
 !ifeq host_os win
@@ -73,8 +77,10 @@ doc_inc_dirs_win    = -I"$(doc_path_win)"
 
 inc_dirs_win = -I"$(batch_dir)/dos"
 
-inc_dirs = $(wclass_inc_dirs) $(idelib_inc_dirs) $(gui_inc_dirs) $(doc_inc_dirs_$(host_os))
+inc_dirs = -I"../h" $(wclass_inc_dirs) $(idelib_inc_dirs) $(gui_inc_dirs) $(doc_inc_dirs_$(host_os))
 inc_dirs += -I"$(editdll_dir)" -I"$(rcsdll_dir)" -I"$(batch_dir)/h"
+
+rc_inc_dirs = $(rc_ide_inc_dirs_$(host_os)) -I"../res" -I"../h" $(gui_inc_dirs)
 
 libs = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
 
@@ -97,8 +103,8 @@ $(proj_name).exe : $(objs) $(libs) ide.res $(version_res_exe_$(host_os)_$(host_c
 !endif
         $(rc) -k ide.res $^@ $(bind_version_res_exe_add)
 
-ide.res : $(gui_dir)/h/gui.rc ide.rc
-        $(rc) $(rc_flags) -I.. $(inc_path) $]@ -fo=$^@
+ide.res : ide.rc $(gui_dir)/h/gui.rc
+        $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
 verrc_exe = $(proj_name)
 !include verrc.mif

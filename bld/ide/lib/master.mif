@@ -9,7 +9,7 @@ idelib_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-!include $(wclass_dir)/mif/client.mif
+!include $(wclass_dir)/client.mif
 
 objs = &
     contfile.obj &
@@ -43,9 +43,9 @@ objs = &
 extra_c_flags_i86 = -zc -zm
 !endif
 
-inc_dirs = -I. $(wclass_inc_dirs) -I"$(lib_misc_dir)/h"
+inc_dirs = -I. -I"../h" $(wclass_inc_dirs) -I"$(lib_misc_dir)/h"
 
-.cpp : ..
+.cpp : ../cpp
 
 $(name).lib : $(objs)
         $(librarian) $(libflags) $(objs)
