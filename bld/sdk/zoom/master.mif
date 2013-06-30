@@ -25,10 +25,11 @@ extra_l_flags_win = op stack=7k, heapsize=2k
 
 xlibs = $(commonui_lib)
 
-inc_dirs = -I. -I.. $(commonui_inc_dirs)
+inc_dirs = -I. -I"../h" $(commonui_inc_dirs)
 
-.c: ..
-.h: ..
+rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
+
+.c: ../c
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
@@ -49,15 +50,13 @@ $(name)j.exe : $(name).exe $(name)j.res
 rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh : ../wzoom.msg
-        $(cpp) $(rc_aui_flags) $(inc_path) $[@ >$^@
+rcstrmsg.gh : ../res/wzoom.msg
+        $(cpp) $(rc_aui_flags) $[@ >$^@
 
-rc_inc_dirs = $(inc_dirs)
+$(name).res : ../res/wzoom.rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
-$(name).res : ../wzoom.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 -I"../res" $(rc_inc_path) $[@ -fo=$^@
-
-$(name)j.res : ../wzoom.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 -I"../res/kanji" $(rc_inc_path) -DJAPANESE $[@ -fo=$^@
+$(name)j.res : ../res/wzoom.rc .AUTODEPEND
+        $(rc) $(rc_flags) -DJAPANESE -ad -zk0 -I"../res/kanji" $(rc_inc_path) $[@ -fo=$^@
 
 !include verrc.mif
