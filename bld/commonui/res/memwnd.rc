@@ -1,3 +1,8 @@
+#ifdef JAPANESE
+ #define sp( s1, s2 ) s2
+#else
+ #define sp( s1, s2 ) s1
+#endif
 "MEMINFOMENU" MENU
 BEGIN
     POPUP sp( "&File",
@@ -38,6 +43,7 @@ BEGIN
     MENUITEM sp( "Set Offset...",
                  "Set Offset..." ), MEMINFO_OFFSET
 END
+#undef sp
 
 #include "offset.dlg"
 #include "selinfo.dlg"
