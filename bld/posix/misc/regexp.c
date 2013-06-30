@@ -112,17 +112,14 @@ static void regError( int rc )
 }
 
 /* StrChr - case sensitive/insensitive version of strchr */
-static char *StrChr( char *s, int c )
+static char *StrChr( char *s, char c )
 {
-    char        ch;
-
-    ch = c;
     if( CASEIGNORE ) {
-        while( ( tolower( *s ) != tolower( ch ) ) && *s != 0 ) {
+        while( ( tolower( *s ) != tolower( c ) ) && *s != 0 ) {
             s++;
         }
     } else {
-        while( *s != ch && *s != 0 ) {
+        while( *s != c && *s != 0 ) {
             s++;
         }
     }
@@ -282,7 +279,8 @@ regexp *RegComp( char *instr )
     char        *scan, *longest, *exp;
     char        buff[MAX_STR*2];
     int         flags, ignmag = FALSE;
-    unsigned    i, j, k, len;
+    unsigned    j;
+    size_t      i, k, len;
 
 #ifdef WANT_EXCLAMATION
     if( instr[0] == '!' ) {
@@ -372,14 +370,13 @@ regexp *RegComp( char *instr )
             longest = NULL;
             len = 0;
             for( ; scan != NULL; scan = regnext( scan ) ) {
-                if( OP( scan ) == EXACTLY &&
-                                          ( int ) strlen( OPERAND( scan ) ) >= len ) {
+                if( OP( scan ) == EXACTLY && strlen( OPERAND( scan ) ) >= len ) {
                     longest = OPERAND( scan );
                     len = strlen( OPERAND( scan ) );
                 }
             }
             r->regmust = longest;
-            r->regmlen = len;
+            r->regmlen = (short)len;
         }
     }
 
@@ -680,7 +677,7 @@ static char *regatom( int *flagp )
         break;
     default:
         {
-            unsigned len;
+            size_t len;
             char ender;
 
             regparse--;
@@ -776,7 +773,7 @@ static void reginsert( char op, char *opnd )
 static void regtail( char *p, char *val )
 {
     char        *scan, *temp;
-    int         offset;
+    short       offset;
 
     if( p == &regdummy ) {
         return;
@@ -793,12 +790,12 @@ static void regtail( char *p, char *val )
     }
 
     if( OP( scan ) == BACK ) {
-        offset = scan - val;
+        offset = (short)( scan - val );
     } else {
-        offset = val - scan;
+        offset = (short)( val - scan );
     }
-    *( scan + 1 ) = ( offset >> 8 ) & 0377;
-    *( scan + 2 ) = offset & 0377;
+    *( scan + 1 ) = offset >> 8;
+    *( scan + 2 ) = offset;
 }
 
 /* regoptail - regtail on operand of first argument; nop if operandless */
@@ -822,7 +819,7 @@ static char     **regendp;          /* Ditto for endp. */
 /* Forwards.  */
 static int      regtry( regexp *prog, char *string );
 static int      regmatch( char *prog );
-static unsigned regrepeat( char *p );
+static size_t   regrepeat( char *p );
 
 /* RegExec2 - match a regexp against a string */
 static int RegExec2( regexp *prog, char *string, bool anchflag )
@@ -957,7 +954,7 @@ static int regmatch( char *prog )
             break;
         case EXACTLY:
             {
-                unsigned len;
+                size_t len;
                 char *opnd;
 
                 opnd = OPERAND( scan );
@@ -1168,7 +1165,7 @@ static int regmatch( char *prog )
         case PLUS:
             {
                 char nextch;
-                unsigned no;
+                size_t no;
                 char *save;
                 unsigned min;
 
@@ -1232,9 +1229,9 @@ static int regmatch( char *prog )
 }
 
 /* regrepeat - repeatedly match something simple, report how many */
-static unsigned regrepeat( char *p )
+static size_t regrepeat( char *p )
 {
-    unsigned    count = 0;
+    size_t      count = 0;
     char        *scan, *opnd;
 
     scan = reginput;

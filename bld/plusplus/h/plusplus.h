@@ -44,6 +44,9 @@
 
 #include "wcpp.h"
 #include "target.h"
+#if defined( __WATCOMC__ ) && !defined( NDEBUG )
+#include "trap.h"
+#endif
 
 #define ARRAY_SIZE( array ) ( sizeof( array ) / sizeof( array[0] ) )
 #define PAD_UNSIGNED unsigned :0;

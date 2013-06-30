@@ -201,7 +201,7 @@ int main( int argc, char *argv[] )
  */
 static void parseTD( char *arg, char pc, unsigned *a, unsigned *b, unsigned *c  )
 {
-    unsigned    len;
+    size_t      len;
     char        tmp[3];
 
     len = strlen( arg );

@@ -132,12 +132,12 @@ static LIST                 *Include = NULL;
 static const char           MksetupInf[] = "mksetup.inf";
 
 
-static char *mygets( char *buf, int len, FILE *fp )
-/*************************************************/
+static char *mygets( char *buf, size_t len, FILE *fp )
+/****************************************************/
 {
     char        *p,*q,*start;
     int         lang;
-    int         got;
+    size_t      got;
 
     /* syntax is //nstring//mstring//0 */
 

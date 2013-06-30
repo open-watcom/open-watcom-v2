@@ -36,7 +36,9 @@
    28-jan-92    Craig Eisler    split from ls.c
    25-mar-92    Craig Eisler    NT port
  */
+
 #if !defined( __QNX__ )
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
@@ -49,11 +51,15 @@
 #endif
 #include "clibext.h"
 
-long GetClusterSize( unsigned drive )
+long GetClusterSize( unsigned char drive )
 {
-    if( drive == 0 )
-        _dos_getdrive( &drive );
-#if defined( __NT__ )
+    unsigned cur_drive;
+
+    if( drive == 0 ) {
+        _dos_getdrive( &cur_drive );
+        drive = cur_drive;
+    }
+  #if defined( __NT__ )
     {
         char    root[4];
         char    *proot;
@@ -71,18 +77,18 @@ long GetClusterSize( unsigned drive )
         GetDiskFreeSpace( root, &spc, &bps, &nofc, &tnoc );
         return( spc * bps );
     }
-#elif defined( __OS2__ )
+  #elif defined( __OS2__ )
     {
         FSALLOCATE      fs;
-        DosQFSInfo( drive, 1, ( void *) & fs, sizeof( FSALLOCATE ) );
-        return( ( long ) fs.cbSector * ( long ) fs.cSectorUnit );
+        DosQFSInfo( drive, 1, (void *)&fs, sizeof( FSALLOCATE ) );
+        return( (long)fs.cbSector * (long)fs.cSectorUnit );
     }
-#else
+  #else
     {
         struct diskfree_t       df;
         _dos_getdiskfree( drive, &df );
-        return( ( long ) df.bytes_per_sector * ( long ) df.sectors_per_cluster );
+        return( (long)df.bytes_per_sector * (long)df.sectors_per_cluster );
     }
-#endif
+  #endif
 }
 #endif

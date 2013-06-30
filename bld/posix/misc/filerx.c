@@ -78,8 +78,8 @@ int FileMatch( void *crx, char *name )
 /* FileNameWild - determine if a file name has a wild card */
 int FileNameWild( char *wild, int isrx )
 {
-    unsigned len, i;
-    int ch;
+    size_t      len, i;
+    int         ch;
 
     len = strlen( wild );
     for( i = 0; i < len; i++ ) {
@@ -102,9 +102,9 @@ int FileNameWild( char *wild, int isrx )
 char *FileMatchInit( void **crx, char *wild )
 {
     char        *tomatch;
-    int         j;
+    size_t      j;
     regexp      *rx;
-    unsigned    i, len;
+    size_t      i, len;
 
     /*
         Calculate size of regular expression.  We calculate it because it
@@ -167,9 +167,9 @@ void FileMatchFini( void *crx )
 /* OpenDirAll */
 DIR *OpenDirAll( char *filename, char *wild )
 {
-    unsigned    i, j, len;
+    size_t      i, j, len;
     char        npath[_MAX_PATH];
-    int         ch;
+    char        ch;
 
     len = strlen( filename );
     for( i = len; i > 0; --i ) {
@@ -199,11 +199,12 @@ int FileMatchNoRx( char *name, char *wild )
     char        sp_buf[_MAX_PATH2];
     char        *cfname;
     char        *cext;
-    unsigned    i, j, k, len, elen, flen, rlen;
+    unsigned    j, elen, flen;
+    size_t      i, k, len;
 
     len = strlen( wild );
-    elen = flen = 0;
 
+    elen = flen = 0;
     for( i = 0; i < len; i++ ) {
         if( wild[i] == '.' ) {
             i++;
@@ -242,16 +243,16 @@ int FileMatchNoRx( char *name, char *wild )
     }
 
     len = strlen( cfname );
-    rlen = max( len, flen );
-    for( i = 0; i < rlen; i++ ) {
+    len = max( len, flen );
+    for( i = 0; i < len; i++ ) {
         if( FNameCharCmp( cfname[i], fname[i] ) != 0 && fname[i] != '?' ) {
             return( FALSE );
         }
     }
 
     len = strlen( cext );
-    rlen = max( len, elen );
-    for( i = 0; i < rlen; i++ ) {
+    len = max( len, elen );
+    for( i = 0; i < len; i++ ) {
         if( FNameCharCmp( cext[i], ext[i] ) != 0 && ext[i] != '?' ) {
             return( FALSE );
         }

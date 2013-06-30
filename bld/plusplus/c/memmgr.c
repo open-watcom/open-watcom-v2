@@ -43,9 +43,6 @@
 #include "initdefs.h"
 #include "pragdefn.h"
 #include "codegen.h"
-#if defined( __WATCOMC__ ) && !defined( NDEBUG )
-#include "trap.h"
-#endif
 
 #ifdef USE_CG_MEMMGT
 #   undef TRACKER

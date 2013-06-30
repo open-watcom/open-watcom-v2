@@ -366,7 +366,7 @@ static bool ContainsWord( const char *str, const char *word )
     char    *s_copy;
     char    *p;
     bool    result = FALSE;
-    int     len;
+    size_t  len;
 
     len = strlen( str ) + 1;
     s_copy = Alloc( len + 1 ); // extra 1 byte is required for processing by First/NextWord

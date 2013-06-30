@@ -50,7 +50,6 @@ int add_files( struct zip *archive, const char *list_fname, char *dir )
     FILE                *f;
     char                srcname[FILENAME_MAX];
     int                 retval;
-    int                 len;
     char                *dir_fname;
 
     if( (f = fopen( list_fname, "r" )) == NULL ) {

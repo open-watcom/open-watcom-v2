@@ -271,7 +271,7 @@ void DoCP( char *f, char *dir )
     char                *source_tail;
     char                dest_buf[ _MAX_PATH ];
     char                *dest_tail;
-    unsigned            i;
+    size_t              i;
 
     /*
      * get file path prefix
