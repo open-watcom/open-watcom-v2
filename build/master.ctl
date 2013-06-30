@@ -4,7 +4,10 @@
 # Set default output directory
 [ BLOCK .<OWRELROOT> . ]
 #=======================
-    set OWRELROOT=<OWROOT>/rel
+    set OWRELROOT=<OWROOT>\rel
+    [ IFDEF <BLD_HOST> UNIX ]
+        set OWRELROOT=<OWROOT>/rel
+    [ ENDIF ]
 
 [ BLOCK . . ]
 #============
