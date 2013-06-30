@@ -77,7 +77,7 @@ what not. The makefile must define the following:
 .np
 Valid values for
 .id host_cpu
-are 386, i86, axp, ppc. These should be self-explanatory.
+are 386, i86, axp, mps, ppc, x64. These should be self-explanatory.
 Valid values for
 .id host_os
 are dos, nt, os2, nov, qnx, win, osi, linux. These should be self-explanatory
@@ -159,7 +159,7 @@ set correctly
 all depended upon projects have been built
 .bull
 any required executables from under
-.us bld\build
+.us build/bin
 are in the path
 .endbull
 .np
@@ -509,7 +509,7 @@ In each object file directory, create a makefile which looks like the following:
 #pmake: build os_X cpu_Y
 host_os  = X
 host_cpu = Y
-!include ..\master.mif
+!include ../master.mif
 .millust end
 .endnote
 .np
@@ -775,14 +775,12 @@ Again not a test per se, the 'Viper demo' is a good way to verify basic IDE
 functionality.
 .note wasm
 Extensive assembler test can be found (rather predictably) in
-.us bld\wasm\test.
+.us bld\wasmtest.
 .note wdisasm
 Tests for the 'old' disassembler are located in
 .us bld\wdisasm\test.
 .note wmake
 Extensive make utility tests can be found in
-.us bld\wmake\reg
-and
 .us bld\wmake\regress.
 .note wprof
 A profiler test program is located in

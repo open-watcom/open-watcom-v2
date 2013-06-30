@@ -165,13 +165,9 @@ building documentation.
 part of the C++ source browser.
 .note browser
 the GUI C++ source browser.
-.note build
-directory holding build related files such as binaries used internally during
-build process and several master make include files which lie at the heart of
-the build system. Worth visiting!
 .note builder
 builder tool controlled by those
-.us lang.ctl
+.us builder.ctl
 files that are all over the place.
 .note causeway
 the popular CauseWay DOS extender, in a form buildable with Open Watcom tools.
@@ -209,13 +205,13 @@ a simple OMF dump utility.
 library for reading and writing DWARF style debugging information.
 .note editdll
 interface modules between the IDE and external editors.
-.note emu
-80387 emulator library.
-.note emu86
-8087 emulator library.
+.note fpuemu
+8087 and 80387 emulator library.
 .note f77
-FORTRAN 77 compiler front end, runtime library, regression tests and
+FORTRAN 77 compiler front end, runtime library and
 samples. All the FORTRAN stuff is crowded in there.
+.note f77test
+FORTRAN 77 compiler regression tests.
 .note fe_misc
 miscellaneous compiler front-end stuff shared between projects.
 .note fmedit
@@ -228,8 +224,12 @@ GUI library used by IDE, debugger, source browser and other tools.
 source files of header files distributed with the compilers.
 .note help
 character mode help viewer (WHELP).
+.note ide
+the Open Watcom IDE.
 .note idebatch
 batch processor for the IDE.
+.note idedemo
+IDE demo program.
 .note lib_misc
 miscellaneous files shared between clib and other tools.
 .note mad
@@ -243,10 +243,10 @@ Microsoft clone tools, front ends for compilers and utilities.
 .note ncurses
 a version of the ncurses library used by Linux console tools.
 .note ndisasm
-the "new" disassembler supporting variety of file format and
+the disassembler supporting variety of file format and
 instruction sets. Very handy.
 .note nwlib
-the "new" library manager.
+the library manager.
 .note online
 place for finished online help files and associated header files.
 .note orl
@@ -299,10 +299,6 @@ memory tracker library (good for discovering and plugging memory leaks).
 user interface library.
 .note vi
 Open Watcom vi editor, clone of the popular (or not) Unix editor.
-.note viper
-the Open Watcom IDE.
-.note viprdemo
-IDE demo program.
 .note w16api
 headers and libraries for the Windows 3.x API.
 .note w32api
@@ -312,6 +308,8 @@ loaders for OS independent (OSI) binaries.
 .note wasm
 the x86 assembler. Large parts of the source are shared between standalone
 wasm and inline assembler support for compilers targeting x86 platforms.
+.note wasmtest
+the x86 assembler regression tests.
 .note watcom
 contains internal headers and libraries shared by many projects.
 .note wclass
