@@ -12,7 +12,7 @@ wgml_research_autodepends = .AUTODEPEND
 !include ../../wgmlobjs.mif
 !include wres.mif
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(wres_dir)/h" -I"$(wrc_dir)/h"
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(wres_dir)/h"
 
 .c: ../c;../../c;$(watcom_dir)/c
 
@@ -122,6 +122,5 @@ wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
 wgmlmsge.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
     awk -v rcbase=000 -f ../../msgtoenm.awk $< > $^@
 
-wgml.res : wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h $(__MAKEFILES__) &
-                       ../../h/wgmlerr.msg ../../h/wgml.rc
-    $(rc_aui) -I"$(wrc_dir)/h" $]@ -fo=$@
+wgml.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
+    $(rc_aui) $[@ -fo=$@
