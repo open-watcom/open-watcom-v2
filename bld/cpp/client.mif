@@ -1,0 +1,2 @@
+cpp_c_dirs = $(cpp_dir)
+cpp_inc_dirs = -I"$(cpp_dir)"
