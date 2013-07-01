@@ -5,4 +5,4 @@ host_cpu = axp
 
 wlink_dll = 1
 
-!include ../wlink.mif
+!include ../master.mif

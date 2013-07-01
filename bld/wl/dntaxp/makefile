@@ -4,4 +4,4 @@ host_cpu = axp
 
 wlink_release = 0
 
-!include ../wlink.mif
+!include ../master.mif

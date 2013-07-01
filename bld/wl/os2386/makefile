@@ -5,4 +5,4 @@ host_cpu = 386
 
 wlink_dll = 1
 
-!include ../wlink.mif
+!include ../master.mif

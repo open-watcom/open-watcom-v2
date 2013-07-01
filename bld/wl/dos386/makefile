@@ -5,4 +5,4 @@ host_cpu = 386
 
 use_virtmem = 1
 
-!include ../wlink.mif
+!include ../master.mif

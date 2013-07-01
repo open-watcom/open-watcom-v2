@@ -39,7 +39,7 @@ suppress_zc = 1
 
 !include ../wlobjs.mif
 
-inc_dirs = -I. -I"../h" $(dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
+inc_dirs = -I. -I"../h" $(dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" $(wres_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
 
 .c: ../c;$(watcom_dir)/c;$(wrc_dir)/c;$(lib_misc_dir)/c;$(trmem_dir)
 

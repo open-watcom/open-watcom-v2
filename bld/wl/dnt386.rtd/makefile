@@ -6,4 +6,4 @@ wlink_dll     = 1
 wlink_rtdll   = 1
 wlink_release = 0
 
-!include ../wlink.mif
+!include ../master.mif

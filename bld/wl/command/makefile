@@ -49,4 +49,4 @@ demangle.obj : $(lib_misc_dir)/c/demangle.c
 host_os  = nt
 host_cpu = 386
 
-!include ../wlink.mif
+!include ../master.mif
