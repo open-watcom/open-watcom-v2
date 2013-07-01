@@ -1,3 +1,2 @@
 clean killall: .SYMBOLIC .EXPLICIT
-    rm -f *.err *.obj *.lbc *.exe *.tmp *.out
-    rm -f *.lnk *.lst *.zip *.lib *.tim *.def
+    rm -f *.err *.obj *.lbc *.exe *.tmp *.out *.lnk *.lst *.zip *.lib *.tim *.def
