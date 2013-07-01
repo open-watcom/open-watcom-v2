@@ -33,7 +33,7 @@ to_os_path=/=\
 !include deftarg.mif
 
 !include $(dwarfr_dir)/client.mif
-!include $(wclass_dir)/mif/client.mif
+!include $(wclass_dir)/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
