@@ -1,0 +1,7 @@
+!ifeq bootstrap 1
+wr_path = $(wr_dir)/$(%OWOBJDIR)
+!else
+wr_path = $(wr_dir)/$(host_os)$(host_cpu)
+!endif
+wr_lib = $(wr_path)/wr.lib
+wr_inc_dirs = -I"$(wr_path)" -I"$(wr_dir)/h" -I"$(wr_dir)/res"
