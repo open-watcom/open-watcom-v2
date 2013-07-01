@@ -39,6 +39,7 @@
 #include "errors.h"
 #include "ytab2.gh"
 #include "scan.h"
+#include "scan2.h"
 #include "keyword2.h"
 #include "depend.h"
 #include "errprt.h"

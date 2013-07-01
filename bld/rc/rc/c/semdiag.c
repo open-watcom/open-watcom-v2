@@ -77,7 +77,7 @@ struct ControlData {
 #include "rcmem.h"
 #include "global.h"
 #include "errors.h"
-#include "ytab.gh"
+#include "ytabw.gh"
 #include "semantic.h"
 #include "semdiag.h"
 #include "resdefs.h"

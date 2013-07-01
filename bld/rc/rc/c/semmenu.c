@@ -66,7 +66,7 @@ struct PopupMenuExItem {
 #include "errors.h"
 #include "global.h"
 #include "rcmem.h"
-#include "ytab.gh"
+#include "ytabw.gh"
 #include "semantic.h"
 #include "semmenu.h"
 #include "resdefs.h"

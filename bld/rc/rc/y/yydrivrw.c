@@ -35,8 +35,9 @@
 #include "semantic.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "ytab.gh"
-#include "yydriver.h"
+#include "ytabw.gh"
+#include "yydrivrw.h"
+#include "scanw.h"
 #include "errprt.h"
 #include "resdefs.h"
 

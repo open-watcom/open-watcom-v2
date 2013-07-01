@@ -24,38 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  Data types used by lexical scanner.
+* Description:  Lexical scanner interface, WIN specifics.
 *
 ****************************************************************************/
 
 
-#ifndef SCAN_H_INCLUDED
-#define SCAN_H_INCLUDED
+#ifndef SCANW_H_INCLUDED
+#define SCANW_H_INCLUDED
 
 #include "varstr.h"
 
-typedef struct ScanString {
-    int         lstring;        /* was string prefixed by L like this L"bob" */
-    int         length;
-    char        *string;
-} ScanString;
-
-typedef enum {
-    SCAN_INT_TYPE_DEFAULT,
-    SCAN_INT_TYPE_LONG,
-    SCAN_INT_TYPE_UNSIGNED
-} ScanIntType;
-
-typedef struct {
-    ScanIntType         type;   /* non-default int type - long/unsigned */
-    unsigned long       val;
-    char                *str;
-} ScanInt;
-
-typedef union {
-    ScanInt     intinfo;
-    ScanString  string;
-    char        UnknownChar;
-} ScanValue;
-
+extern void  ScanInit( void );
+extern int   Scan( ScanValue * value );
+extern void  ScanInitStatics( void );
 #endif

@@ -24,18 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Public interface to WIN specific yydriver module.
 *
 ****************************************************************************/
 
 
-#ifndef _YYDRIVER_H
+#ifndef _YYDRIVRW_H
+#define _YYDRIVRW_H
 
 extern void ParseInit( void );
 extern void ParseFini( void );
 extern bool Parse( void );
 extern void ParseInitStatics( void );
 
-#define _YYDRIVER_H
 #endif

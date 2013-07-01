@@ -33,9 +33,10 @@
 #include "varstr.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "ytab.gh"
+#include "ytabw.gh"
 #include "scan.h"
-#include "keyword.h"
+#include "scanw.h"
+#include "keywordw.h"
 #include "depend.h"
 #include "errprt.h"
 

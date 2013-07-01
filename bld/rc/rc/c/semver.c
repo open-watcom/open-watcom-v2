@@ -35,7 +35,7 @@
 #include "rcmem.h"
 #include "global.h"
 #include "errors.h"
-#include "ytab.gh"
+#include "ytabw.gh"
 #include "semantic.h"
 #include "semver.h"
 #include "resdefs.h"

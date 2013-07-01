@@ -102,7 +102,6 @@ extern void             SemanticInitStatics( void );
 
 /**** include all the semantic structures and routine prototypes for each ****/
 /**** type of structure ****/
-#include "scan.h"
 
 #include "semaccel.h"
 #include "semmenu.h"

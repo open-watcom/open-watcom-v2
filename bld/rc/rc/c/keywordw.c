@@ -32,9 +32,9 @@
 #include <string.h>
 #include <ctype.h>
 #include "scan.h"
-#include "ytab.gh"
-#include "keyword.h"
-#include "weights.gh"
+#include "ytabw.gh"
+#include "keywordw.h"
+#include "weightsw.gh"
 
 #define IGNORE_CASE
 #include "kwhash.h"
@@ -134,7 +134,7 @@ typedef struct HashEntry {
 
 static const HashEntry HashTable[] = {
     #define pick( a, b, c ) {b, c},
-    #include "keywords.gh"
+    #include "keywordw.gh"
     #undef pick
 };
 

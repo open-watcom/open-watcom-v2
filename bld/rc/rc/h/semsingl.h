@@ -34,6 +34,7 @@
 
 #include "wresall.h"
 #include "rctypes.h"
+#include "scan.h"
 
 #include "pushpck1.h"
 typedef struct IcoFileDirEntry {

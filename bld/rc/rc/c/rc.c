@@ -34,7 +34,7 @@
 #include "global.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "yydriver.h"
+#include "yydrivrw.h"
 #include "yydrivr2.h"
 #include "depend.h"
 #include "rcldstr.h"
@@ -47,6 +47,8 @@
 #include "iortns.h"
 #include "wresset2.h"
 #include "semantic.h"
+#include "scanw.h"
+#include "scan2.h"
 
 extern HANDLE_INFO  Instance;
 
@@ -68,6 +70,7 @@ void InitGlobs( void )
     ErrorInitStatics();
     SharedIOInitStatics();
     ScanInitStatics();
+    ScanInitStaticsOS2();
     AutoDepInitStatics();
     DbtableInitStatics();
     LoadstrInitStatics();
