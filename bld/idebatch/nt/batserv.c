@@ -219,8 +219,7 @@ void main( int argc, char *argv[] )
     SemReadUp = CreateSemaphore( NULL, 0, 1, READUP_NAME );
     SemReadDone = CreateSemaphore( NULL, 0, 1, READDONE_NAME );
     SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
-    MemHdl = CreateFileMapping( (HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE,
-                                0, 1024, SHARED_MEM_NAME  );
+    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, SHARED_MEM_NAME  );
     SharedMem = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
     CmdProc = getenv( "ComSpec" );
     if( CmdProc == NULL ) {
@@ -233,8 +232,7 @@ void main( int argc, char *argv[] )
     attr.nLength = sizeof( attr );
     attr.lpSecurityDescriptor = NULL;
     attr.bInheritHandle = TRUE;
-    NulHdl = CreateFile( "NUL", GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE,
-            &attr, OPEN_EXISTING, 0, NULL );
+    NulHdl = CreateFile( "NUL", GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, &attr, OPEN_EXISTING, 0, NULL );
     if( NulHdl == INVALID_HANDLE_VALUE ) {
         fprintf( stderr, "Unable to open NUL device\n" );
         exit( 1 );
