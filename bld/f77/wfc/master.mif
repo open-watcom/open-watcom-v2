@@ -9,7 +9,7 @@ wfc_autodepends = .AUTODEPEND
 !include defrule.mif
 
 !include $(cg_dir)/mif/fe.mif
-!include $(as_dir)/mif/client.mif
+!include $(as_dir)/client.mif
 !include $(wasm_dir)/mif/client.mif
 
 !include wres.mif

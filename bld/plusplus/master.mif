@@ -28,7 +28,7 @@ additional_cleanup = *.u *.int y.out ytab.c *.mbr
 !include deftarg.mif
  
 !include $(cg_dir)/mif/fe.mif
-!include $(as_dir)/mif/client.mif
+!include $(as_dir)/client.mif
 !include $(wasm_dir)/mif/client.mif
  
 !include trmem.mif
