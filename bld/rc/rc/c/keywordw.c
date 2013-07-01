@@ -138,8 +138,8 @@ static const HashEntry HashTable[] = {
     #undef pick
 };
 
-int LookupKeyword( ScanString newstring )
-/***************************************/
+int LookupKeywordWIN( ScanString newstring )
+/******************************************/
 {
     int         hash;
     const char  *str = newstring.string;

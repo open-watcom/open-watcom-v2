@@ -32,9 +32,9 @@
 #ifndef _YYDRIVRW_H
 #define _YYDRIVRW_H
 
-extern void ParseInit( void );
-extern void ParseFini( void );
-extern bool Parse( void );
-extern void ParseInitStatics( void );
+extern void ParseInitWIN( void );
+extern void ParseFiniWIN( void );
+extern bool ParseWIN( void );
+extern void ParseInitStaticsWIN( void );
 
 #endif

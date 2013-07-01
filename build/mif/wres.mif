@@ -56,3 +56,5 @@ wres_lib = $(wres_dir)/$(%OWOBJDIR)/wres.lib
 !else
 wres_lib = $(name_$(host_cpu))
 !endif
+
+wres_inc_dirs = -I"$(wres_dir)/h"

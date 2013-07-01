@@ -170,8 +170,8 @@ static int ScanCPPDirective( ScanValue *value )
     return( token );
 } /* ScanCPPDirective */
 
-extern void ScanInit( void )
-/**************************/
+void ScanInitWIN( void )
+/**********************/
 {
     enter_start_state;
 } /* ScanInit */
@@ -727,7 +727,7 @@ static int ScanDFA( ScanValue * value )
             value->string.string = VarStringEnd( newstring,
                         &(value->string.length) );
             DEBUGPUTS( value->string.string )
-            token = LookupKeyword( value->string );
+            token = LookupKeywordWIN( value->string );
             if( token != Y_NAME ) {
                 /* release the string if it is a keyword */
                 RcMemFree( value->string.string );
@@ -753,8 +753,8 @@ static int ScanDFA( ScanValue * value )
         }
 } /* ScanDFA */
 
-extern int Scan( ScanValue *value )
-/*********************************/
+int ScanWIN( ScanValue *value )
+/*****************************/
 {
     int     token;
 
@@ -766,8 +766,8 @@ extern int Scan( ScanValue *value )
     return( token );
 } /* Scan */
 
-extern void ScanInitStatics( void )
-/*********************************/
+void ScanInitStaticsWIN( void )
+/*****************************/
 {
     _next = 0;
     LookAhead = 0;

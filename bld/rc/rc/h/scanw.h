@@ -34,7 +34,7 @@
 
 #include "varstr.h"
 
-extern void  ScanInit( void );
-extern int   Scan( ScanValue * value );
-extern void  ScanInitStatics( void );
+extern void  ScanInitWIN( void );
+extern int   ScanWIN( ScanValue * value );
+extern void  ScanInitStaticsWIN( void );
 #endif

@@ -69,7 +69,7 @@ void InitGlobs( void )
     SemanticInitStatics();
     ErrorInitStatics();
     SharedIOInitStatics();
-    ScanInitStatics();
+    ScanInitStaticsWIN();
     ScanInitStaticsOS2();
     AutoDepInitStatics();
     DbtableInitStatics();
@@ -77,7 +77,8 @@ void InitGlobs( void )
     WriteInitStatics();
     PreprocVarInit();
     PPMacroVarInit();
-    ParseInitStatics();
+    ParseInitStaticsWIN();
+    ParseInitStaticsOS2();
 }
 
 void FiniGlobs( void )
@@ -129,8 +130,8 @@ static int Pass1( void )
                 ParseInitOS2();
                 ParseOS2();
             } else {
-                ParseInit();
-                Parse();
+                ParseInitWIN();
+                ParseWIN();
             }
             WriteDependencyRes();
         } else {

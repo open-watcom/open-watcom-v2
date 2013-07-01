@@ -161,13 +161,13 @@ static void puts_far( const char YYFAR * string )
 
 #endif
 
-int yylex( void )
-/***************/
+static int yylexWIN( void )
+/*************************/
 {
     int         curtoken;
     ScanValue   value;
 
-    curtoken = Scan( &value );
+    curtoken = ScanWIN( &value );
 
     while (RcIoIsCOrHFile()) {
         switch (curtoken) {
@@ -188,7 +188,7 @@ int yylex( void )
             break;
         }
 
-        curtoken = Scan( &value );
+        curtoken = ScanWIN( &value );
     }
     END_LOOP:
 
@@ -310,14 +310,14 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
     }
 }
 
-void ParseInit( void )
-/********************/
+void ParseInitWIN( void )
+/***********************/
 {
-    ScanInit();
+    ScanInitWIN();
 }
 
-void ParseFini( void )
-/********************/
+void ParseFiniWIN( void )
+/***********************/
 {
 }
 
@@ -383,7 +383,7 @@ static p_action doParse( parse_stack * resource_state )
     token_count = 0;
 
     do {
-        token = yylex();
+        token = yylexWIN();
         if (error_state) {
             token_count++;
             if (token_count >= YYERRORTHRESHOLD) {
@@ -408,8 +408,8 @@ static p_action doParse( parse_stack * resource_state )
     return( what );
 }
 
-bool Parse( void )
-/****************/
+bool ParseWIN( void )
+/*******************/
 {
     parse_stack resource_state;
     p_action    what;
@@ -424,7 +424,7 @@ bool Parse( void )
     return( what != P_ACCEPT );
 }
 
-void ParseInitStatics( void ) {
+void ParseInitStaticsWIN( void ) {
 /******************************/
     memset( &yylval, 0, sizeof( YYSTYPE ) );
     yysyntaxerror = FALSE;
