@@ -29,7 +29,7 @@ cc_nosymfile = 1
 # CODEGEN stuff
 !include $(cg_dir)/mif/fe.mif
 !include $(as_dir)/client.mif
-!include $(wasm_dir)/mif/client.mif
+!include $(wasm_dir)/client.mif
 
 !include trmem.mif
 
