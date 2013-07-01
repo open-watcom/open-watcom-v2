@@ -605,7 +605,7 @@ static RcStatus writePEHeadAndObjTable( void )
  * segment(s). The OS/2 resource table is completely different as well and
  * only contains resource types/IDs.
  */
-extern int MergeResExeNE( void )
+int MergeResExeNE( void )
 {
     RcStatus        error;
     int             err_code;
@@ -677,7 +677,7 @@ STOP_ERROR:
 } /* MergeResExeNE */
 
 
-extern int MergeResExeOS2NE( void )
+int MergeResExeOS2NE( void )
 {
     RcStatus        error;
     int             err_code;
@@ -746,7 +746,7 @@ STOP_ERROR:
 } /* MergeResExeOS2NE */
 
 
-extern RcStatus updateDebugDirectory( void )
+static RcStatus updateDebugDirectory( void )
 {
     ExeFileInfo         *tmp;
     ExeFileInfo         *old;
@@ -813,7 +813,7 @@ extern RcStatus updateDebugDirectory( void )
 } /* updateDebugDirectory */
 
 
-extern int MergeResExePE( void )
+int MergeResExePE( void )
 {
     RcStatus    error;
     int         err_code;
@@ -1008,7 +1008,7 @@ static RcStatus copyLXDebugInfo( void )
 } /* copyLXDebugInfo */
 
 
-extern int MergeResExeLX( void )
+int MergeResExeLX( void )
 {
     RcStatus    error;
     int         err_code;

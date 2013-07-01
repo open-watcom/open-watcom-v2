@@ -38,7 +38,7 @@ object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
             preproc.obj ppexpr.obj ppmacro.obj &
             rcerrprt.obj rcgetenv.obj &
             wrstubs.obj &
-            pass2.obj exeseg.obj exeres.obj rcstr.obj ppalloc.obj &
+            pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
             exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
             global.obj semstr.obj semsingl.obj semantic.obj semraw.obj &
             errors.obj tmpctl.obj autodep.obj layer0.obj incdirs.obj &
@@ -84,7 +84,7 @@ extra_l_flags_dll_win = op rwr,stack=16k export WEP RESIDENT
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
 
-$(name).dll: ytab.gh rcmsg.gh $(object) $(xlibs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(name).dll: ytabw.gh rcmsg.gh $(object) $(xlibs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(object) $(xlibs) $(ldflags)
 !else
@@ -110,9 +110,9 @@ rcmsg.gh: wrmsg.gh
 wrmsg.gh: ../res/master.msg $(msgfiles)
         $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" $[@ >$^@
 
-ytab.gh : $(wrc_dir)/y/rc.y $(wrc_dir)/y/yydriver.c $(wrc_dir)/h/rcmem.h
-        $(yacc) -d -b $[@ $(wrc_dir)/y/yydriver.c >$(nulldevice)
-        @cp ytab.h ytab.gh
+ytabw.gh : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h
+        $(yacc) -d -b $[@ $(wrc_dir)/y/yydrivrw.c >$(nulldevice)
+        @cat ytab.h >ytabw.gh
         @rm -f ytab.h
         @rm -f ytab.c # ytab.c isn't used
 
