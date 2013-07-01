@@ -21,6 +21,7 @@ WINDOWS = 1
 !include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
 objs = $(sys_object)
@@ -45,11 +46,9 @@ extra_c_flags_ppexpr = -zm
 extra_c_flags_ppmacro = -zm
 !endif
 
-wr_lib = $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
-
 .c: ../c;../../c;$(sdk_misc_dir);$(cpp_c_dirs)
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(wr_dir)/h" -I"$(wres_dir)/h" $(cpp_inc_dirs)
+inc_dirs = -I. -I"../h" -I"../../h" $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs)
 inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs) -I"$(sdk_misc_dir)"
 
 rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)

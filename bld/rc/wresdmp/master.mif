@@ -8,7 +8,7 @@ wresdmp_autodepeds = .AUTODEPEND
 
 !include wres.mif
 
-inc_dirs = -I"../h" -I"$(wres_dir)/h" -I"$(trmem_dir)"
+inc_dirs = -I"../h" $(wres_inc_dirs) -I"$(trmem_dir)"
 
 .c: ../c;$(trmem_dir);$(watcom_dir)/c
 

@@ -16,6 +16,7 @@ gui_autodepends = .AUTODEPEND
 !include deftarg.mif
 
 !include trmem.mif
+!include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(ui_dir)/client.mif
@@ -87,7 +88,7 @@ extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_guimem = $(trmem_cover_cflags)
 !endif
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" $(commonui_inc_dirs) $(wpi_inc_dirs) $(ui_inc_dirs) -I"$(wres_dir)/h"
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" $(commonui_inc_dirs) $(wpi_inc_dirs) $(ui_inc_dirs) $(wres_inc_dirs)
 
 .c:     ../c;../../c;$(help_dir)/c;$(trmem_dir)
 .h:     ../h;../../h

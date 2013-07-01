@@ -19,6 +19,7 @@ WINDOWS = 1
 !include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
 !ifeq wre_trmem 1
@@ -57,17 +58,16 @@ objs += trmem.tbj trmemcvr.tbj
 # where to look for various files
 .c : ../c;$(cpp_c_dirs);$(trmem_dir)
 
-inc_dirs  = -I. -I"../h" -I"$(wresedit_dir)/h" -I"$(wr_dir)/h"
-inc_dirs += -I"$(trmem_dir)" -I"$(wres_dir)/h" $(cpp_inc_dirs)
+inc_dirs  = -I. -I"../h" -I"$(wresedit_dir)/h" $(wr_inc_dirs)
+inc_dirs += -I"$(trmem_dir)" $(wres_inc_dirs) $(cpp_inc_dirs)
 inc_dirs += -I"$(sdk_misc_dir)" $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 
-xlibs = $(commonui_lib) $(wresedit_dir)/waccel/$(host_os)$(host_cpu)/wacc.lib &
+xlibs = $(commonui_lib) $(wr_lib) $(wres_lib) $(wpi_lib) &
+        $(wresedit_dir)/waccel/$(host_os)$(host_cpu)/wacc.lib &
         $(wresedit_dir)/wmenu/$(host_os)$(host_cpu)/wmenu.lib &
-        $(wresedit_dir)/wstring/$(host_os)$(host_cpu)/wstring.lib &
-        $(wr_dir)/$(host_os)$(host_cpu)/wr.lib &
-        $(wres_lib) $(wpi_lib)
+        $(wresedit_dir)/wstring/$(host_os)$(host_cpu)/wstring.lib
 
 extra_l_flags = op map
 extra_l_flags_nt = op stack=100k,heap=16k commit heap=8k

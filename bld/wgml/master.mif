@@ -32,7 +32,7 @@ extra_c_flags      += -zpw
 !include ../wgmlobjs.mif
 
 
-inc_dirs = -I. -I"../h" -I"$(wres_dir)/h"
+inc_dirs = -I. -I"../h" $(wres_inc_dirs)
 
 res_depends = wgml.res  wgmlmsgs.gh wgmlmsge.gh
 #inc_dirs    += -I"$(wrc_dir)/$(host_os)$(host_cpu)"

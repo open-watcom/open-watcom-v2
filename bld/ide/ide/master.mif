@@ -80,7 +80,7 @@ inc_dirs_win = -I"$(batch_dir)/dos"
 inc_dirs = -I"../h" $(wclass_inc_dirs) $(idelib_inc_dirs) $(gui_inc_dirs) $(doc_inc_dirs_$(host_os))
 inc_dirs += -I"$(editdll_dir)" -I"$(rcsdll_dir)" -I"$(batch_dir)/h"
 
-rc_inc_dirs = $(rc_ide_inc_dirs_$(host_os)) -I"../res" -I"../h" $(gui_inc_dirs)
+rc_inc_dirs = $(rc_ide_inc_dirs_$(host_os)) -I"../res" $(gui_inc_dirs)
 
 libs = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
 

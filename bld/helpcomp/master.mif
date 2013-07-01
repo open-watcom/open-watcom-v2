@@ -2,7 +2,7 @@ proj_name = whc
 
 whc_autodepends = .autodepend
 
-whc_trmem = 1
+#whc_trmem = 1
 
 !include cproj.mif
 !include deftarg.mif
@@ -10,7 +10,7 @@ whc_trmem = 1
 
 !include trmem.mif
 
-inc_dirs = -I"../h" -I"$(cpp_dir)"
+inc_dirs = -I"../h"
 
 extra_cxx_flags = -xs
 

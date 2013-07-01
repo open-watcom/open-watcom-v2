@@ -21,6 +21,7 @@ WINDOWS=1
 !include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
 
 extra_cpp_flags   = -DWIN_GUI
@@ -73,7 +74,7 @@ objs =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
 .c : ../$(host_os)/c;../c;$(cpp_c_dirs)
 
 inc_dirs  = -I. -I"../$(host_os)/h" -I"../h" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs)
-inc_dirs += -I"$(wr_dir)/h" -I"$(wres_dir)/h" $(cpp_inc_dirs) $(wpi_inc_dirs)
+inc_dirs += $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs) $(wpi_inc_dirs)
 
 rc_inc_dirs = -I"../res" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs)
 
@@ -83,8 +84,7 @@ extra_l_flags_win  = op stack=32k, rwr
 extra_l_flags_win += library commdlg, ddeml
 
 xlibs = $(fmedit_dir)/$(host_os)$(host_cpu)/fmedit.lib &
-        $(wr_dir)/$(host_os)$(host_cpu)/wr.lib &
-        $(wpi_lib) $(commonui_lib) $(wres_lib)
+        $(wr_lib) $(wpi_lib) $(commonui_lib) $(wres_lib)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res

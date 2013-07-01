@@ -83,7 +83,7 @@ libs_win = $(gui_lib)
 !else
 
 # custom version of resource finder
-extra_c_flags_loadfind = -I"$(wres_dir)/h"
+extra_c_flags_loadfind = $(wres_inc_dirs)
 objs += loadfind.obj
 
 libs_dos   = $(gui_lib) $(ui_lib) $(wres_lib)

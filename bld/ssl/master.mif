@@ -5,9 +5,11 @@ ssl_autodepends = .autodepend
 !include deftarg.mif
 !include defrule.mif
 
-inc_dirs = -I"../h" -I"$(cpp_dir)"
+!include $(cpp_dir)/client.mif
 
-.c: ../c;$(cpp_dir)
+inc_dirs = -I"../h" $(cpp_inc_dirs)
+
+.c: ../c;$(cpp_c_dirs)
 
 objs =                  &
         ssl.obj         &

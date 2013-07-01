@@ -1,11 +1,7 @@
+wasm_inline_i86 = 1
+wasm_inline_386 = 1
 
-!ifeq target_cpu i86
-intel_cpu = 1
-!else ifeq target_cpu 386
-intel_cpu = 1
-!endif
-
-!ifdef intel_cpu
+!ifdef wasm_inline_$(host_cpu)
 asminline_c = $(wasm_dir)/c
 asminline_inc_dirs = -I"$(wasm_dir)/h"
 asminline_objs = &

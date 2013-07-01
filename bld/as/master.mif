@@ -144,12 +144,6 @@ splice_opts     = $(splice_opts_$(target_cpu))
 ####################
 
 .c: $(as_dir)/$(target_cpu)/c;$(as_dir)/c;$(trmem_dir);$(cpp_c_dirs)
-.h: $(as_dir)/$(target_cpu)/h;$(as_dir)/h;$(trmem_dir);$(cpp_dir)
-.y: $(as_dir)/$(target_cpu)/y;$(as_dir)/y
-.re: $(as_dir)/$(target_cpu)/y;$(as_dir)/y
-.rc: $(as_dir)/h
-.gh: .
-.msg: $(as_dir)/h
 
 inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" $(cpp_inc_dirs) -I"$(trmem_dir)"
 
@@ -191,7 +185,7 @@ $(name).exe : msg.gh $(as_objs) $(libs) $(name).res $(version_res_exe_$(host_os)
         @%make bind_version_res_exe
         $(wstrip) -q -a -r $@ . $(name).res
 
-$(name).res : as.rc msg.gh
+$(name).res : $(as_dir)/h/as.rc msg.gh
         $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$^@
 
 asinline.lib : asi_msg.gh $(asi_objs)
@@ -199,11 +193,11 @@ asinline.lib : asi_msg.gh $(asi_objs)
 
 !include verrc.mif
 
-msg.gh : as.msg
+msg.gh : $(as_dir)/h/as.msg
         $(cpp) $(rc_aui_flags) $(cppflags) -D_STANDALONE_ $[@ > msg.tmp
         awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
 
-asi_msg.gh : as.msg
+asi_msg.gh : $(as_dir)/h/as.msg
         $(cpp) $(rc_aui_flags) $(cppflags) $[@ > asi_msg.tmp
         awk -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk asi_msg.tmp >> $^@
 
