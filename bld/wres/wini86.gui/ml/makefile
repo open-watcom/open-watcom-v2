@@ -6,4 +6,4 @@ is_gui = 1
 model = l
 linkage = static
 
-!include $(wres_dir)/master.mif
+!include ../../master.mif

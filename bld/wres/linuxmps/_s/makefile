@@ -4,4 +4,4 @@ host_cpu = mps
 
 linkage = static
 
-!include $(wres_dir)/master.mif
+!include ../../master.mif

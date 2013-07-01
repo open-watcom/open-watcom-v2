@@ -7,4 +7,4 @@ model = f
 linkage = static
 convention = stack
 
-!include $(wres_dir)/master.mif
+!include ../../master.mif

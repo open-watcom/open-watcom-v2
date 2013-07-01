@@ -6,4 +6,4 @@ model = f
 linkage = static
 convention = register
 
-!include $(wres_dir)/master.mif
+!include ../../master.mif

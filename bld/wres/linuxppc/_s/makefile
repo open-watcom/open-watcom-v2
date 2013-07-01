@@ -4,4 +4,4 @@ host_cpu = ppc
 
 linkage = static
 
-!include $(wres_dir)/master.mif
+!include ../../master.mif
