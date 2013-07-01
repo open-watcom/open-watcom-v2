@@ -4,4 +4,4 @@ host_os  = linux
 host_cpu = ppc
 
 proj_path = ..
-!include $(proj_path)/mif/master.mif
+!include $(proj_path)/master.mif

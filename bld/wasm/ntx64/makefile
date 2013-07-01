@@ -4,4 +4,4 @@ host_os  = nt
 host_cpu = x64
 
 proj_path = ..
-!include $(proj_path)/mif/master.mif
+!include $(proj_path)/master.mif

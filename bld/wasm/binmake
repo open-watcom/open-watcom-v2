@@ -5,4 +5,4 @@ host_cpu = $(bld_cpu)
 
 proj_path = ..
 
-!include ../mif/master.mif
+!include ../master.mif
