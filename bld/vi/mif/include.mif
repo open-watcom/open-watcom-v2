@@ -18,4 +18,4 @@ inc_dirs_os2 = -I"$(vi_dir)/ctl" -I"$(vi_dir)/pm" $(winstuff)
 inc_dirs_win = -I"$(vi_dir)/win"
 !endif
 
-rc_inc_dirs = -I"$(vi_dir)/win" $(commonui_inc_dirs)
+rc_inc_dirs = -I"$(vi_dir)/res" -I"$(vi_dir)/win" $(commonui_inc_dirs)

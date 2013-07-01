@@ -97,16 +97,16 @@ setgen.dh : ../ctl/setgen.dyn
 setfs.dh setgen.dh:
         parsedyn $[@ $@ Dyn_$^&
 
-$(name).res : $(vi_dir)/win/viw.rc .AUTODEPEND
+$(name).res : $(vi_dir)/res/viw.rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh : $(vi_dir)/vi.msg $(vi_dir)/tooltips.msg ../h/langdef.h $(msgfiles)
+rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles)
         $(cpp) $(rc_aui_flags) -I"$(sdk_misc_dir)" $[@ >$^@
 
-verrc_exe_skel = ../win/exever.rc
+#verrc_exe_skel = ../exever.rc
 !include verrc.mif
 
 !ifeq host_os win

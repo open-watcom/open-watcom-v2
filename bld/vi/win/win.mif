@@ -17,13 +17,11 @@ objwiny  =  main.obj mainwnd.obj editwnd.obj dosdir.obj time.obj &
 
 extraobjs = $(objcb) $(objwiny)
 
-rc_deps = ../win/viw.ico ../win/filelist.dlg ../win/fgrep.dlg &
-          ../win/asavedlg.dlg ../win/finddlg.dlg ../win/grep.dlg ../win/cmd.dlg &
-          ../win/repdlg.dlg ../win/snoop.dlg &
-          ../win/startup.dlg  ../win/usage.dlg ../win/tagdlg.dlg &
-          ../win/linedlg.dlg ../win/clrbar.dlg ../win/ftbar.dlg &
-          ../win/dropclr.cur ../win/nodrop.cur ../win/dropft.cur &
-          ../win/dropss.cur &
+rc_deps = ../res/viw.ico ../res/filelist.dlg ../res/fgrep.dlg ../res/asavedlg.dlg &
+          ../res/finddlg.dlg ../res/grep.dlg ../res/cmd.dlg ../res/repdlg.dlg &
+          ../res/snoop.dlg ../res/startup.dlg  ../res/usage.dlg ../res/tagdlg.dlg &
+          ../res/linedlg.dlg ../res/clrbar.dlg ../res/ftbar.dlg ../res/dropclr.cur &
+          ../res/nodrop.cur ../res/dropft.cur ../res/dropss.cur &
           $(commonui_dir)/h/about.dlg  &
           ../ctl/setfs.dlg ../ctl/setscr.dlg ../ctl/setgen.dlg
 
