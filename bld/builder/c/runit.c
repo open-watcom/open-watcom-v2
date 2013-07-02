@@ -562,16 +562,17 @@ static int DoPMake( pmake_data *data )
     pmake_list  *curr;
     int         res;
     char        cmd[256];
+    int         rc = 0;
 
     for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
         res = SysChdir( curr->dir_name );
         if( res != 0 ) {
-            if( data->ignore_err ) {
-                Log( FALSE, "non-zero return: %d\n", res );
-                continue;
-            } else {
+            if( data->ignore_err == FALSE ) {
                 return( res );
             }
+            Log( FALSE, "non-zero return: %d\n", res );
+            rc = res;
+            continue;
         }
         getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
         if( data->display )
@@ -579,14 +580,14 @@ static int DoPMake( pmake_data *data )
         PMakeCommand( data, cmd );
         res = SysRunCommand( cmd );
         if( res != 0 ) {
-            if( data->ignore_err ) {
-                Log( FALSE, "non-zero return: %d\n", res );
-            } else {
+            if( data->ignore_err == FALSE ) {
                 return( res );
             }
+            Log( FALSE, "non-zero return: %d\n", res );
+            rc = res;
         }
     }
-    return( 0 );
+    return( rc );
 }
 
 static int ProcPMake( char *cmd, bool ignore_errors )
