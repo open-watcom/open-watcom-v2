@@ -33,7 +33,7 @@
 
 typedef struct sword {
     char    *word;
-    int     index;
+    size_t  index;
 } sword;
    
 static char enum_key[ KEY_MAX_LEN + 10 ];
@@ -71,7 +71,7 @@ char *get_enum_key( const char *src )
                 *dst++ = '_';
                 add_underscore = 0;
             }
-            *dst++ = toupper( *src );
+            *dst++ = (char)toupper( *src );
         }
         ++src;
     }

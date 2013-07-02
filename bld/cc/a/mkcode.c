@@ -67,14 +67,13 @@ int main(int argc, char *argv[])
     struct bursts       *cb;
     struct stat         bufstat;
 
-
-    if( argc > 2 ) {
-        fi = open( argv[1], O_BINARY );
-        fp = fopen( argv[2], "w" );
-        stat( argv[1], &bufstat );
-    } else {
+    if( argc < 3 ) {
         printf( usage );
+        return( 1 );
     }
+    fi = open( argv[1], O_BINARY );
+    fp = fopen( argv[2], "w" );
+    stat( argv[1], &bufstat );
     buff = malloc( bufstat.st_size );
     read( fi, buff, bufstat.st_size );
     close( fi );

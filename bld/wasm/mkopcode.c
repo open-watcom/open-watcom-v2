@@ -42,14 +42,14 @@
 
 char Chars[32000];
 
-static unsigned short inst_table[HASH_TABLE_SIZE] = { 0 };
-static unsigned short *index_table;
-static unsigned short *pos_table;
+static int inst_table[HASH_TABLE_SIZE] = { 0 };
+static int *index_table;
+static int *pos_table;
 
 int len_compare( const void *pv1, const void *pv2 )
 {
-    int             len1;
-    int             len2;
+    size_t          len1;
+    size_t          len2;
     const sword     *p1 = pv1;
     const sword     *p2 = pv2;
 
@@ -67,12 +67,12 @@ void make_inst_hash_tables( unsigned int count, sword *Words )
 {
     char            *name;
     unsigned short  i;
-    unsigned short  *p;
+    int             *p;
     int             pos;
     int             size = sizeof( AsmOpTable ) / sizeof( AsmOpTable[0] );
 
-    index_table = calloc( count, sizeof( unsigned short ) );
-    pos_table = calloc( count, sizeof( unsigned short ) );
+    index_table = calloc( count, sizeof( *index_table ) );
+    pos_table = calloc( count, sizeof( *pos_table ) );
     for( pos = 0, i = 0; i < count; i++ ) {
         // create indexes for hash item lists
         name = Words[i].word;
@@ -102,10 +102,10 @@ int main( int argc, char *argv[] )
     FILE            *in;
     FILE            *out;
     char            *out_name;
-    unsigned int    i;
-    unsigned int    index;
-    unsigned int    count;
-    unsigned int    len;
+    size_t          i;
+    size_t          index;
+    int             count;
+    size_t          len;
     int             idx;
     sword           *Words;
     char            *word;
@@ -156,27 +156,27 @@ int main( int argc, char *argv[] )
     qsort( Words, count, sizeof( sword ), len_compare );
     index = 0;
     Chars[0] = '\0';
-    for( i = 0; i < count; i++ ) {
-        word = strstr( Chars, Words[i].word );
+    for( idx = 0; idx < count; idx++ ) {
+        word = strstr( Chars, Words[idx].word );
         if( word == NULL ) {
             word = &Chars[index];
-            len = strlen( Words[i].word ) - 1;
+            len = strlen( Words[idx].word ) - 1;
             if( index < len )
                 len = index;
             for( ; ; ) {
                 if( len == 0 )
                     break;
-                if( memcmp( word - len, Words[i].word, len ) == 0 ) {
+                if( memcmp( word - len, Words[idx].word, len ) == 0 ) {
                     word -= len;
                     index -= len;
                     break;
                 }
                 len--;
             }
-            strcpy( word, Words[i].word );
+            strcpy( word, Words[idx].word );
             index += strlen( word );
         }
-        Words[i].index = word - Chars;
+        Words[idx].index = word - Chars;
     }
     qsort( Words, count, sizeof( sword ), str_compare );
 
@@ -198,14 +198,15 @@ int main( int argc, char *argv[] )
     }
     fprintf( out, "'\\0'\n};\n\n" );
     fprintf( out, "static const unsigned short inst_table[HASH_TABLE_SIZE] = {\n" );
-    for( i = 0; i < HASH_TABLE_SIZE; i++ )
-        fprintf( out, "\t%d,\n", inst_table[i] );
+    for( idx = 0; idx < HASH_TABLE_SIZE; idx++ )
+        fprintf( out, "\t%d,\n", inst_table[idx] );
     fprintf( out, "};\n\n" );
     fprintf( out, "const struct AsmCodeName AsmOpcode[] = {\n" );
-    for( i = 0; i < count; i++ ) {
-        word = Words[i].word;
+    for( idx = 0; idx < count; idx++ ) {
+        word = Words[idx].word;
         fprintf( out, "\t{\t%d,\t%d,\t%d,\t%d\t},\t/* %s */\n", 
-                 pos_table[i], (int)strlen( word ), Words[i].index, index_table[i], get_enum_key( word ) );
+                 pos_table[idx], (int)strlen( word ), Words[idx].index,
+                 index_table[idx], get_enum_key( word ) );
     }
     fprintf( out, "\t{\t0,\t0,\t0,\t0\t}\t/* T_NULL */\n" );
     fprintf( out, "};\n\n" );
