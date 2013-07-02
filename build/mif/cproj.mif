@@ -285,7 +285,7 @@ cppflags_dos    = -D__WATCOM_LFN__
 ##########################
 # C/C++ COMPILERS SETINGS
 ######
-cflags_all      =-w8 -we $(mode_cflags) -fo=$@
+cflags_all      =-w8 -we $(mode_cflags) -fo=$@ -j
 
 cflags_386      = $(model_switch_$(host_cpu))
 cflags_i86      = $(model_switch_$(host_cpu))
@@ -347,7 +347,7 @@ cflags_wind      = $(cflags_gen_all) $(cflags_wind_$(host_os)) $(proj_c_flags)
 ###################################
 # COMPILE AND LINK UTILITY SETINGS
 ######
-clflags_all  = $(mode_clflags) $(cl_model_switch)
+clflags_all  = $(mode_clflags) $(cl_model_switch) -j
 
 cl_fpu_flags = $(fpu_flags)
 
