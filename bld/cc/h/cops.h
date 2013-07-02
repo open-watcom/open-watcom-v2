@@ -149,7 +149,7 @@ typedef struct  opnode {
         cond_code       cc;             // OPR_CMP: EQ,NE,LT,LE,GT,GE
         unsigned char   mathfunc;       // OPR_MATHFUNC
         unsigned char   unroll_count;   // OPR_STMT
-    };
+    } u1;
     union {
         cg_sym_handle   sym_handle;     // OPR_PUSHSYM, OPR_PUSHADDR, ...
                                         // OPR_CALL_INDIRECT
@@ -170,19 +170,19 @@ typedef struct  opnode {
         struct func_info {              // OPR_FUNCEND, OPR_RETURN
             SYM_HANDLE      sym_handle;// OPR_FUNCTION
             func_flags      flags;
-        }func;
+        } func;
         struct { /* try_info */
             union {
                 SYM_HANDLE      try_sym_handle; // OPR_EXCEPT, OPR_FINALLY
                 tryindex_t      try_index;      // OPR_TRY
-            };
+            } u;
             tryindex_t  parent_scope;
         } st;
         struct { /* ptr_conv_info */        // OPR_CONVERT_PTR
             char        oldptr_class;
             char        newptr_class;
         } sp;
-    };
+    } u2;
 } OPNODE;
 
 typedef struct expr_node {

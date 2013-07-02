@@ -391,23 +391,23 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
     switch( tree->op.opr ) {
     case OPR_PUSHINT:
         info->state = IS_ADDR;
-        info->offset = tree->op.long_value;
+        info->offset = tree->op.u2.long_value;
         if( info->offset != 0 ) CompFlags.non_zero_data = 1;
         break;
     case OPR_PUSHFLOAT:
         info->state = IS_ADDR;
-        if( tree->op.float_value->len != 0 ) {
-            info->offset = (long)atof( tree->op.float_value->string );
+        if( tree->op.u2.float_value->len != 0 ) {
+            info->offset = (long)atof( tree->op.u2.float_value->string );
         } else {
 #ifdef _LONG_DOUBLE_
             long_double ld;
             double d;
 
-            ld = tree->op.float_value->ld;
+            ld = tree->op.u2.float_value->ld;
             __LDFD( (long_double near *)&ld, (double near *)&d );
             info->offset = (long)d;
 #else
-            info->offset = (long)tree->op.float_value->ld.value;
+            info->offset = (long)tree->op.u2.float_value->ld.value;
 #endif
         }
         if( info->offset != 0 ) CompFlags.non_zero_data = 1;
@@ -419,8 +419,8 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
         }
         info->addr_set = TRUE;
         info->is_str = TRUE;
-        info->str_h = tree->op.string_handle;
-        tree->op.string_handle->ref_count++;
+        info->str_h = tree->op.u2.string_handle;
+        tree->op.u2.string_handle->ref_count++;
         CompFlags.non_zero_data = 1;
         break;
     case OPR_PUSHADDR:
@@ -431,8 +431,8 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
         }
         info->addr_set = TRUE;
         info->is_str = FALSE;
-        SymGet( &sym, tree->op.sym_handle );
-        info->sym_h = tree->op.sym_handle;
+        SymGet( &sym, tree->op.u2.sym_handle );
+        info->sym_h = tree->op.u2.sym_handle;
         CompFlags.non_zero_data = 1;
         if( sym.stg_class == SC_AUTO ) {
             info->is_error = TRUE;
@@ -441,10 +441,10 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
     case OPR_INDEX:
         if( tree->right->op.opr == OPR_PUSHINT ) {
             AddrFold( tree->left, info );
-            offset = tree->right->op.long_value;
+            offset = tree->right->op.u2.long_value;
         } else if( tree->left->op.opr == OPR_PUSHINT ) {
             AddrFold( tree->right, info );
-            offset = tree->left->op.long_value;
+            offset = tree->left->op.u2.long_value;
         } else {
             info->is_error = TRUE;
         }
@@ -461,16 +461,16 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
         if( tree->right->op.opr == OPR_PUSHINT ) {
             AddrFold( tree->left, info );
             if( tree->op.opr == OPR_ADD ) {
-                info->offset = info->offset+tree->right->op.long_value;
+                info->offset = info->offset+tree->right->op.u2.long_value;
             } else {
-                info->offset = info->offset-tree->right->op.long_value;
+                info->offset = info->offset-tree->right->op.u2.long_value;
             }
         } else if( tree->left->op.opr == OPR_PUSHINT ) {
             AddrFold( tree->right, info );
             if( tree->op.opr == OPR_ADD ) {
-                info->offset = tree->left->op.long_value+info->offset;
+                info->offset = tree->left->op.u2.long_value+info->offset;
             } else {
-                info->offset = tree->left->op.long_value-info->offset;
+                info->offset = tree->left->op.u2.long_value-info->offset;
             }
         } else {
             info->is_error = TRUE;
@@ -489,7 +489,7 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
         if( info->state == IS_VALUE ) { // must be foldable
             info->is_error = TRUE;
         }
-        info->offset += tree->right->op.long_value;
+        info->offset += tree->right->op.u2.long_value;
         if( tree->op.flags & OPFLAG_RVALUE ) {
             info->state = IS_VALUE;
         }
@@ -505,7 +505,7 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
         break;
     case OPR_DOT:
         AddrFold( tree->left, info );
-        info->offset += tree->right->op.long_value;
+        info->offset += tree->right->op.u2.long_value;
         CompFlags.non_zero_data = 1;
         if( tree->op.flags & OPFLAG_RVALUE ) {
             info->state = IS_VALUE;
@@ -626,7 +626,7 @@ local void StoreInt64( TYPEPTR typ )
         tree = InitAsgn( typ, tree ); // as if we are assigning
         if( IsConstLeaf( tree ) ) {
             CastConstValue( tree, typ->decl_type );
-            dq.u.long64 = tree->op.ulong64_value;
+            dq.u.long64 = tree->op.u2.ulong64_value;
         } else {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
         }
@@ -738,7 +738,7 @@ local void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
         tree = SingleExpr();
         if( IsConstLeaf( tree ) ) {
             CastConstValue( tree, typ->decl_type );
-            *(unsigned long *)field = tree->op.ulong_value;
+            *(unsigned long *)field = tree->op.u2.ulong_value;
         } else {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
         }
@@ -1132,10 +1132,10 @@ local void StoreFloat( DATA_TYPE dtype, unsigned long size )
 #ifdef _LONG_DOUBLE_
                 long_double ld;
 
-                ld = tree->op.float_value->ld;
+                ld = tree->op.u2.float_value->ld;
                 __LDFD( (long_double near *)&ld, (double near *)&dq.u.double_value );
 #else
-                dq.u.double_value = tree->op.float_value->ld.value;
+                dq.u.double_value = tree->op.u2.float_value->ld.value;
 #endif
             }
         } else {
@@ -1245,7 +1245,7 @@ local void AssignAggregate( TREEPTR lvalue, TREEPTR rvalue, TYPEPTR typ )
     tree = ExprNode( lvalue, OPR_EQUALS, rvalue );
     tree->right->op.opr = OPR_PUSHSYM;
     tree->expr_type = typ;
-    tree->op.result_type = typ;
+    tree->op.u2.result_type = typ;
     AddStmt( tree );
 }
 
@@ -1294,7 +1294,7 @@ local void InitStructVar( unsigned base, SYMPTR sym, SYM_HANDLE sym_handle, TYPE
         }
         opnd = ExprNode( opnd, OPR_DOT, UIntLeaf( base + field->offset ) );
         opnd->expr_type = typ2;
-        opnd->op.result_type = typ2;
+        opnd->op.u2.result_type = typ2;
         AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
         if( token == T_LEFT_BRACE )  MustRecog( T_RIGHT_BRACE );
         if( CurToken == T_EOF ) break;
@@ -1425,7 +1425,7 @@ local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 value = CommaExpr();
                 opnd = ExprNode( opnd, OPR_INDEX, IntLeaf( i ) );
                 opnd->expr_type = typ2;
-                opnd->op.result_type = typ2;
+                opnd->op.u2.result_type = typ2;
                 AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
                 if( token == T_LEFT_BRACE )  MustRecog( T_RIGHT_BRACE );
                 ++i;
@@ -1445,7 +1445,7 @@ local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                     opnd = VarLeaf( sym, sym_handle );
                     opnd = ExprNode( opnd, OPR_INDEX, IntLeaf( i ) );
                     opnd->expr_type = typ2;
-                    opnd->op.result_type = typ2;
+                    opnd->op.u2.result_type = typ2;
                     AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
                     ++i;
                 }

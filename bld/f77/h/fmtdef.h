@@ -37,7 +37,7 @@
 //
 
 #ifdef __RT__           // Data is packed in the executable
-  #pragma pack(push,1);
+  #include "pushpck1.h"
 #endif
 
 typedef struct fmt {    //  used for: S, SP, SS, BN, BZ, /, :,
@@ -75,7 +75,7 @@ typedef struct fmtstring {
 } fmtstring;
 
 #ifdef __RT__           // Return packing to normal
-  #pragma pack(pop);
+  #include "poppck.h"
 #endif
 
 typedef union fmt_desc {

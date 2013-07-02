@@ -31,11 +31,11 @@
 
 
 
-#pragma pack(push,1);
+#include "pushpck1.h"
 
 typedef struct fmt_header {
     obj_ptr     link;
     unsigned_16 label;
 } fmt_header;
 
-#pragma pack(pop);
+#include "poppck.h"

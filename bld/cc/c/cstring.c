@@ -296,12 +296,12 @@ TREEPTR StringLeaf( int flags )
     }
 
     leaf_index = LeafNode( OPR_PUSHSTRING );
-    leaf_index->op.string_handle = new_lit;
+    leaf_index->op.u2.string_handle = new_lit;
     // set op.flags field
     leaf_index->expr_type = StringLeafType();
 
     if( CurFunc != NULL ) {                             /* 22-feb-92 */
-        CurFuncNode->op.func.flags &= ~FUNC_OK_TO_INLINE;
+        CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
     }
     return( leaf_index );
 }

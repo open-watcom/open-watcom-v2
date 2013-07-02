@@ -82,7 +82,7 @@ void StmtInit( void )
 static void ChkStringLeaf( TREEPTR leaf )
 {
     if( leaf->op.opr == OPR_PUSHSTRING ) {
-        leaf->op.string_handle->ref_count++;
+        leaf->op.u2.string_handle->ref_count++;
     }
 }
 
@@ -148,8 +148,8 @@ void AddStmt( TREEPTR stmt )
 {
     WalkExprTree( stmt, ChkStringLeaf, NoOp, NoOp, DoConstFold );
     stmt = ExprNode( 0, OPR_STMT, stmt );
-    stmt->op.src_loc = SrcLoc;
-    stmt->op.unroll_count = UnrollCount;
+    stmt->op.u2.src_loc = SrcLoc;
+    stmt->op.u1.unroll_count = UnrollCount;
     if( FirstStmt == NULL )  FirstStmt = stmt;
     if( LastStmt != NULL ) {
         LastStmt->left = stmt;
@@ -176,12 +176,12 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
 
     tree = LeafNode( OPR_FUNCTION );
     sym = SymGetPtr( sym_handle );
-    tree->op.func.sym_handle = sym_handle;
-    tree->op.func.flags = FUNC_NONE;
+    tree->op.u2.func.sym_handle = sym_handle;
+    tree->op.u2.func.flags = FUNC_NONE;
     if( (Toggles & TOGGLE_INLINE) || (sym->attrib & FLAG_INLINE) ){
         if( !sym->naked ){
             if( strcmp( sym->name, "main" ) != 0 ) {
-                tree->op.func.flags |= FUNC_OK_TO_INLINE;
+                tree->op.u2.func.flags |= FUNC_OK_TO_INLINE;
             }
         }
     }
@@ -208,7 +208,7 @@ static void DropLabel( LABEL_INDEX label )
     CompFlags.label_dropped = 1;
     DeadCode = 0;
     tree = LeafNode( OPR_LABEL );
-    tree->op.label_index = label;
+    tree->op.u2.label_index = label;
     AddStmt( tree );
 }
 
@@ -254,7 +254,7 @@ static void JumpCond( TREEPTR expr,
     } else {
         tree = ExprNode( 0, jump_opcode, tree );
     }
-    tree->op.label_index = label;
+    tree->op.u2.label_index = label;
     AddStmt( tree );
 }
 
@@ -265,7 +265,7 @@ static void Jump( LABEL_INDEX label )
 
     if( ! DeadCode ) {
         tree = LeafNode( OPR_JUMP );
-        tree->op.label_index = label;
+        tree->op.u2.label_index = label;
         AddStmt( tree );
         DeadCode = 1;
     }
@@ -278,7 +278,7 @@ static int JumpFalse( TREEPTR expr, LABEL_INDEX label )
 
     jump_generated = 0;
     if( expr->op.opr == OPR_PUSHINT ) {
-        if( ! expr->op.long_value ) {
+        if( ! expr->op.u2.long_value ) {
             Jump( label );
             jump_generated = 1;
         }
@@ -294,7 +294,7 @@ static int JumpFalse( TREEPTR expr, LABEL_INDEX label )
 static void JumpTrue( TREEPTR expr, LABEL_INDEX label )
 {
     if( expr->op.opr == OPR_PUSHINT ) {
-        if( expr->op.long_value ) {
+        if( expr->op.u2.long_value ) {
             Jump( label );
         }
         FreeExprNode( expr );
@@ -356,7 +356,7 @@ static void UnWindTry( tryindex_t try_scope )
     TREEPTR     tree;
 
     tree = LeafNode( OPR_UNWIND );
-    tree->op.st.try_index = try_scope;
+    tree->op.u2.st.u.try_index = try_scope;
     AddStmt( tree );
 #else
     try_scope = try_scope;
@@ -381,7 +381,7 @@ static void ReturnStmt( SYM_HANDLE func_result, struct return_info *info )
         tree = FixupAss( tree, func_type );
         tree = ExprNode( 0, OPR_RETURN, tree );
         tree->expr_type = func_type;
-        tree->op.sym_handle = func_result;
+        tree->op.u2.sym_handle = func_result;
         AddStmt( tree );
         with = RETURN_WITH_EXPR;
         info->with_expr = TRUE;
@@ -499,7 +499,7 @@ static void LeftBrace( void )
     BlockStack->sym_list = 0;
     BlockStack->gen_endblock = TRUE;
     DeclList( &BlockStack->sym_list );
-    tree->op.sym_handle = BlockStack->sym_list;
+    tree->op.u2.sym_handle = BlockStack->sym_list;
 }
 
 
@@ -691,7 +691,7 @@ static void ForStmt( void )
             } else {
                 parsed_semi_colon = TRUE;   // LoopDecl ate it up
             }
-            tree->op.sym_handle = BlockStack->sym_list;
+            tree->op.u2.sym_handle = BlockStack->sym_list;
         } else {
             ChkStmtExpr();          // init_expr
         }
@@ -793,7 +793,7 @@ static void AddCaseLabel( unsigned long value )
         }
         SwitchStack->last_case_label = new_ce->label;
         tree = LeafNode( OPR_CASE );
-        tree->op.case_info = new_ce;
+        tree->op.u2.case_info = new_ce;
         AddStmt( tree );
     }
 }
@@ -846,8 +846,8 @@ static void TryStmt( void )
 
     MarkTryVolatile( CurFunc->u.func.parms );
     MarkTryVolatile( CurFunc->u.func.locals );
-    CurFuncNode->op.func.flags |=  FUNC_USES_SEH;
-    CurFuncNode->op.func.flags &= ~FUNC_OK_TO_INLINE;
+    CurFuncNode->op.u2.func.flags |=  FUNC_USES_SEH;
+    CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
     CurToken = T__TRY;
     StartNewBlock();
     NextToken();
@@ -856,8 +856,8 @@ static void TryStmt( void )
     BlockStack->try_index = TryCount;
     TryScope = TryCount;
     tree = LeafNode( OPR_TRY );
-    tree->op.st.try_index = 0;
-    tree->op.st.parent_scope = TryCount;
+    tree->op.u2.st.u.try_index = 0;
+    tree->op.u2.st.parent_scope = TryCount;
     AddStmt( tree );
 }
 
@@ -885,8 +885,8 @@ static int EndTry( void )
     DropBreakLabel();           /* _leave jumps to this label */
     parent_scope = BlockStack->parent_index;
     tree = LeafNode( OPR_TRY );
-    tree->op.st.try_index = BlockStack->try_index;
-    tree->op.st.parent_scope = parent_scope;
+    tree->op.u2.st.u.try_index = BlockStack->try_index;
+    tree->op.u2.st.parent_scope = parent_scope;
     AddStmt( tree );
     if( (CurToken == T__EXCEPT) || (CurToken == T___EXCEPT) ) {
         NextToken();
@@ -895,8 +895,8 @@ static int EndTry( void )
         Jump( BlockStack->break_label );
         DeadCode = 0;
         tree = LeafNode( OPR_EXCEPT );
-        tree->op.st.try_sym_handle = DummyTrySymbol();
-        tree->op.st.parent_scope = parent_scope;
+        tree->op.u2.st.u.try_sym_handle = DummyTrySymbol();
+        tree->op.u2.st.parent_scope = parent_scope;
         AddStmt( tree );
         CompFlags.exception_filter_expr = 1;
         expr = RValue( BracketExpr() );
@@ -913,7 +913,7 @@ static int EndTry( void )
         func->op.opr = OPR_FUNCNAME;
         expr = ExprNode( NULL, OPR_PARM, expr );
         expr->expr_type = typ;
-        expr->op.result_type = typ;
+        expr->op.u2.result_type = typ;
         tree = ExprNode( func, OPR_CALL, expr );
         tree->expr_type = GetType( TYPE_VOID );
         AddStmt( tree );
@@ -924,8 +924,8 @@ static int EndTry( void )
         BlockStack->block_type = T__FINALLY;
         DeadCode = 0;
         tree = LeafNode( OPR_FINALLY );
-        tree->op.st.try_sym_handle = DummyTrySymbol();
-        tree->op.st.parent_scope = parent_scope;
+        tree->op.u2.st.u.try_sym_handle = DummyTrySymbol();
+        tree->op.u2.st.parent_scope = parent_scope;
         AddStmt( tree );
         return( 1 );
     }
@@ -941,7 +941,7 @@ static void PopBlock( void )
 
     if( BlockStack->gen_endblock ) {
         tree = LeafNode( OPR_ENDBLOCK );
-        tree->op.sym_handle = BlockStack->sym_list;
+        tree->op.u2.sym_handle = BlockStack->sym_list;
         AddStmt( tree );
     }
     if( BlockStack->sym_list != 0 ) {
@@ -1002,7 +1002,7 @@ static void SwitchStmt( void )
         CErr1( ERR_INVALID_TYPE_FOR_SWITCH );
     }
     tree = ExprNode( 0, OPR_SWITCH, tree );
-    tree->op.switch_info = sw;
+    tree->op.u2.switch_info = sw;
     AddStmt( tree );
 }
 
@@ -1170,7 +1170,7 @@ static void FixupC99MainReturn( SYM_HANDLE func_result, struct return_info *info
         tree = IntLeaf( 0 );    /* zero is the default return value */
         tree = ExprNode( 0, OPR_RETURN, tree );
         tree->expr_type = main_type;
-        tree->op.sym_handle = func_result;
+        tree->op.u2.sym_handle = func_result;
         AddStmt( tree );
         info->with_expr = TRUE;
     }
@@ -1414,13 +1414,13 @@ void Statement( void )
         DropLabel( end_of_func_label );
     }
     DeadCode = 0;
-    tree->op.label_count = LabelIndex;
+    tree->op.u2.label_count = LabelIndex;
     tree = LeafNode( OPR_FUNCEND );
     if( !return_info.with_expr ) {
         tree->expr_type = NULL;
-        tree->op.sym_handle = 0;
+        tree->op.u2.sym_handle = 0;
     } else {
-        tree->op.sym_handle = func_result;
+        tree->op.u2.sym_handle = func_result;
         SetFuncReturnNode( tree );
     }
     AddStmt( tree );
@@ -1442,11 +1442,11 @@ void Statement( void )
 
     if( Toggles & TOGGLE_INLINE ) {
         if( Inline_Threshold < NodeCount ) {
-            CurFuncNode->op.func.flags &= ~FUNC_OK_TO_INLINE;
+            CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
         }
     }
     if( VarParm( CurFunc ) ) {
-        CurFuncNode->op.func.flags &= ~FUNC_OK_TO_INLINE;
+        CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
     }
     NodeCount = 0;
     if( CompFlags.addr_of_auto_taken ) {                /* 23-oct-91 */

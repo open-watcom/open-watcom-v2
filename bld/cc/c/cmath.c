@@ -698,7 +698,7 @@ TREEPTR BoolConv( TYPEPTR typ, TREEPTR tree )
     if( DataTypeOf( typ ) == TYPE_BOOL && TypeOf( tree ) != typ ) {
         tree = ExprNode( tree, OPR_QUESTION, ExprNode( IntLeaf( 1 ), OPR_COLON, IntLeaf( 0 ) ) );
         typ = GetType( TYPE_BOOL );
-        tree->op.result_type = typ;
+        tree->op.u2.result_type = typ;
         tree->expr_type      = typ;
         FoldExprTree( tree );
     }
@@ -772,9 +772,9 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     if( CompFlags.pre_processing == 0 ) {
         cmp_cc = CMP_VOID;
         if( op2->op.opr == OPR_PUSHINT ) {
-            cmp_cc = IsMeaninglessCompare( op2->op.long64_value, typ1, typ2, opr );
+            cmp_cc = IsMeaninglessCompare( op2->op.u2.long64_value, typ1, typ2, opr );
         } else if( op1->op.opr == OPR_PUSHINT ) {
-            cmp_cc = IsMeaninglessCompare( op1->op.long64_value, typ2, typ1, CommRelOp( opr ) );
+            cmp_cc = IsMeaninglessCompare( op1->op.u2.long64_value, typ2, typ1, CommRelOp( opr ) );
         }
         if( cmp_cc != CMP_VOID ) {
             if( cmp_cc == CMP_COMPLEX ) {
@@ -825,29 +825,29 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     } else {
         switch( opr ) {
             case T_EQ:
-                tree->op.cc = CC_EQ;
+                tree->op.u1.cc = CC_EQ;
                 break;
             case T_NE:
-                tree->op.cc = CC_NE;
+                tree->op.u1.cc = CC_NE;
                 break;
             case T_LT:
-                tree->op.cc = CC_LT;
+                tree->op.u1.cc = CC_LT;
                 break;
             case T_LE:
-                tree->op.cc = CC_LE;
+                tree->op.u1.cc = CC_LE;
                 break;
             case T_GT:
-                tree->op.cc = CC_GT;
+                tree->op.u1.cc = CC_GT;
                 break;
             case T_GE:
-                tree->op.cc = CC_GE;
+                tree->op.u1.cc = CC_GE;
                 break;
             default:
                 assert( 0 );
-                tree->op.cc = 0;
+                tree->op.u1.cc = 0;
                 break;
         }
-        tree->op.compare_type = cmp_type;
+        tree->op.u2.compare_type = cmp_type;
         tree->expr_type = GetType( TYPE_INT );
     }
     return( tree );
@@ -868,12 +868,12 @@ TREEPTR FlowOp( TREEPTR op1, opr_code opr, TREEPTR op2 )
     }
     if( op1->op.opr == OPR_PUSHINT ) {
         if( opr == OPR_OR_OR ) {
-            if( op1->op.long_value == 0 ) {
+            if( op1->op.u2.long_value == 0 ) {
                 FreeExprNode( op1 );
                 return( op2 );
             }
         } else {        // OPR_AND_AND
-            if( op1->op.long_value != 0 ) {
+            if( op1->op.u2.long_value != 0 ) {
                 FreeExprNode( op1 );
                 return( op2 );
             }
@@ -881,12 +881,12 @@ TREEPTR FlowOp( TREEPTR op1, opr_code opr, TREEPTR op2 )
     }
     if( op2->op.opr == OPR_PUSHINT ) {
         if( opr == OPR_OR_OR ) {
-            if( op2->op.long_value == 0 ) {
+            if( op2->op.u2.long_value == 0 ) {
                 FreeExprNode( op2 );
                 return( op1 );
             }
         } else {        // OPR_AND_AND
-            if( op2->op.long_value != 0 ) {
+            if( op2->op.u2.long_value != 0 ) {
                 FreeExprNode( op2 );
                 return( op1 );
             }
@@ -894,7 +894,7 @@ TREEPTR FlowOp( TREEPTR op1, opr_code opr, TREEPTR op2 )
     }
     tree = ExprNode( op1, opr, op2 );
     tree->expr_type = GetType( TYPE_INT );
-    tree->op.label_index = NextLabel();
+    tree->op.u2.label_index = NextLabel();
     return( tree );
 }
 
@@ -904,7 +904,7 @@ local TREEPTR MulByConst( TREEPTR opnd, long amount )
     TREEPTR     tree;
 
     if( opnd->op.opr == OPR_PUSHINT ) {
-        opnd->op.long_value *= amount;
+        opnd->op.u2.long_value *= amount;
         return( opnd );
     }
     switch( TypeOf( opnd )->decl_type ) {
@@ -919,7 +919,7 @@ local TREEPTR MulByConst( TREEPTR opnd, long amount )
         tree = ExprNode( opnd, OPR_MUL, IntLeaf( amount ) );
         tree->expr_type = GetType( TYPE_INT );
     }
-    tree->op.result_type = tree->expr_type;
+    tree->op.u2.result_type = tree->expr_type;
     return( tree );
 }
 
@@ -933,12 +933,12 @@ local TREEPTR PtrSubtract( TREEPTR result, unsigned long size, int result_type)
 
     typ = GetType( result_type );
     result->expr_type = typ;
-    result->op.result_type = typ;
+    result->op.u2.result_type = typ;
     for( n = 2, shift_count = 1; shift_count < 8; ++shift_count ) {
         if( n == size ) {
             tree = ExprNode( result, OPR_RSHIFT, IntLeaf( shift_count ) );
             tree->expr_type = typ;
-            tree->op.result_type = typ;
+            tree->op.u2.result_type = typ;
             return( tree );
         }
         n *= 2;
@@ -950,7 +950,7 @@ local TREEPTR PtrSubtract( TREEPTR result, unsigned long size, int result_type)
         tree = ExprNode( result, OPR_DIV, LongLeaf( size ) );
         tree->expr_type = GetType( TYPE_LONG );
     }
-    tree->op.result_type = tree->expr_type;
+    tree->op.u2.result_type = tree->expr_type;
     return( tree );
 }
 
@@ -974,7 +974,7 @@ extern TREEPTR LCastAdj( TREEPTR tree )
     } else if( opnd->op.opr == OPR_POINTS ) {
         // fix up fred's screw ball pointer op
         modifiers = FlagOps( opnd->op.flags );
-        opnd->op.result_type = PtrNode( typ, modifiers, SEG_DATA );
+        opnd->op.u2.result_type = PtrNode( typ, modifiers, SEG_DATA );
     }
     return( opnd );
 }
@@ -1018,11 +1018,11 @@ static TREEPTR ArrayPlusConst( TREEPTR op1, TREEPTR op2 )
             SKIP_TYPEDEFS( typ );
             if( typ->decl_type == TYPE_ARRAY ) {
 
-                op2->op.long_value *= SizeOfArg( typ->object );
-                typ = PtrofSym( op1->op.sym_handle, typ->object );
+                op2->op.u2.long_value *= SizeOfArg( typ->object );
+                typ = PtrofSym( op1->op.u2.sym_handle, typ->object );
                 result = ExprNode( op1, OPR_ADD, op2 );
                 result->expr_type = typ;
-                result->op.result_type = typ;
+                result->op.u2.result_type = typ;
                 return( result );
             }
         }
@@ -1042,12 +1042,12 @@ static TREEPTR ArrayMinusConst( TREEPTR op1, TREEPTR op2 )
             typ = op1->expr_type;
             SKIP_TYPEDEFS( typ );
             if( typ->decl_type == TYPE_ARRAY ) {
-                op2->op.long_value =
-                        (- op2->op.long_value) * SizeOfArg( typ->object );
-                typ = PtrofSym( op1->op.sym_handle, typ->object );
+                op2->op.u2.long_value =
+                        (- op2->op.u2.long_value) * SizeOfArg( typ->object );
+                typ = PtrofSym( op1->op.u2.sym_handle, typ->object );
                 result = ExprNode( op1, OPR_ADD, op2 );
                 result->expr_type = typ;
-                result->op.result_type = typ;
+                result->op.u2.result_type = typ;
                 return( result );
             }
         }
@@ -1224,7 +1224,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     }
     tree = ExprNode( op1, TokenToOperator( opr ), op2 );
     tree->expr_type = res_type;
-    tree->op.result_type = res_type;
+    tree->op.u2.result_type = res_type;
     return( tree );
 }
 
@@ -1283,7 +1283,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
                 max_value = ~0ul;
                 break;
             }
-            if( op2->op.ulong_value > max_value ) {
+            if( op2->op.u2.ulong_value > max_value ) {
                 CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
             }
         }
@@ -1310,7 +1310,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         tree = ErrorNode( tree );
     } else {
         tree->expr_type = GetType( result_type );
-        tree->op.result_type = typ;
+        tree->op.u2.result_type = typ;
     }
     return( tree );
 }
@@ -1322,11 +1322,11 @@ local void SetSymAssigned( TREEPTR opnd )
 
     while( opnd->op.opr == OPR_INDEX ) opnd = opnd->left;
     if( opnd->op.opr == OPR_PUSHADDR ) {
-        SymGet( &sym, opnd->op.sym_handle );
+        SymGet( &sym, opnd->op.u2.sym_handle );
         if( sym.level != 0 ) {
             if( !(sym.flags & SYM_ASSIGNED) ) {
                 sym.flags |= SYM_ASSIGNED;
-                SymReplace( &sym, opnd->op.sym_handle );
+                SymReplace( &sym, opnd->op.u2.sym_handle );
             }
         }
     }
@@ -1403,18 +1403,18 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         if( op1_class != op2_class ) {
             if( FAR16_PTRCLASS( op1_class ) || FAR16_PTRCLASS( op2_class ) ) {  // if far16 pointer
                 op2 = ExprNode( NULL, OPR_CONVERT_PTR, op2 );
-                op2->op.sp.oldptr_class = op2_class;
-                op2->op.sp.newptr_class = op1_class;
+                op2->op.u2.sp.oldptr_class = op2_class;
+                op2->op.u2.sp.newptr_class = op1_class;
             } else {
                  op2 = ExprNode( NULL, OPR_CONVERT, op2 );
-                 op2->op.result_type = typ;
+                 op2->op.u2.result_type = typ;
             }
             op2->expr_type = typ;
         }
         op1 = ExprNode( op1, TokenToOperator( opr ), op2 );
         op1->op.flags |= volatile_flag;
         op1->expr_type = typ;
-        op1->op.result_type = typ;
+        op1->op.u2.result_type = typ;
     } else {
         FreeExprTree( op2 );
     }
@@ -1466,7 +1466,7 @@ TREEPTR IntOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         op1 = ErrorNode( op1 );
     } else {
         op1->expr_type = GetType( result_type );
-        op1->op.result_type = op1->expr_type;
+        op1->op.u2.result_type = op1->expr_type;
     }
     return( op1 );
 }
@@ -1507,7 +1507,7 @@ TREEPTR ShiftOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         op1 = ErrorNode( op1 );
     } else {
         op1->expr_type = GetType( result_type );
-        op1->op.result_type = op1->expr_type;
+        op1->op.u2.result_type = op1->expr_type;
     }
     return( op1 );
 }
@@ -1611,7 +1611,7 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, int cast_op )
         if( newtyp->decl_type == TYPE_VOID ) {
             opnd = ExprNode( 0, OPR_CONVERT, opnd );
             opnd->expr_type = newtyp;
-            opnd->op.result_type = newtyp;
+            opnd->op.u2.result_type = newtyp;
             if( cast_op )  CompFlags.meaningless_stmt = 0;      /* 21-jul-89 */
         } else if( newtyp->decl_type == TYPE_ENUM ) {
             if( typ->decl_type == TYPE_POINTER ) {
@@ -1655,7 +1655,7 @@ convert:                                /* moved here 30-aug-89 */
                             (newtyp->u.p.decl_flags & FLAG_FAR) ) {
                             opnd = BasedPtrNode( typ, opnd );
                             opnd->expr_type = newtyp;
-                            opnd->op.result_type = newtyp;
+                            opnd->op.u2.result_type = newtyp;
                             SetDiagPop();
                             return( opnd );
                         }
@@ -1727,18 +1727,18 @@ convert:                                /* moved here 30-aug-89 */
                     if( new_class != old_class &&
                     (FAR16_PTRCLASS( new_class ) || FAR16_PTRCLASS( old_class )) ) { // foreign pointers
                         opnd = ExprNode( NULL, OPR_CONVERT_PTR, opnd );
-                        opnd->op.sp.oldptr_class = old_class;
-                        opnd->op.sp.newptr_class = new_class;
+                        opnd->op.u2.sp.oldptr_class = old_class;
+                        opnd->op.u2.sp.newptr_class = new_class;
 #if _CPU == 8086
                     } else if( cnv == P2A && newtyp->type_flags & TF2_TYPE_SEGMENT ) {
                         // getting segment value of pointer
                         opnd = BasedPtrNode( typ, opnd );
                         opnd = ExprNode( NULL, OPR_CONVERT_SEG, opnd );
-                        opnd->op.result_type = newtyp;
+                        opnd->op.u2.result_type = newtyp;
 #endif
                     } else {
                         opnd = ExprNode( NULL, OPR_CONVERT, opnd );
-                        opnd->op.result_type = newtyp;
+                        opnd->op.u2.result_type = newtyp;
                     }
                     opnd->expr_type = newtyp;
                 }
@@ -1749,7 +1749,7 @@ convert:                                /* moved here 30-aug-89 */
         } else if( opnd->expr_type != newtyp ) {
             opnd = ExprNode( NULL, OPR_CONVERT, opnd );
             opnd->expr_type = newtyp;
-            opnd->op.result_type = newtyp;
+            opnd->op.u2.result_type = newtyp;
         } else { // NIL convert
             opnd->op.flags |= flags;
         }
@@ -1790,18 +1790,18 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
         old_class = ExprTypeClass( typ );
         if( new_class != old_class ) {
             opnd = ExprNode( NULL, OPR_CONVERT_PTR, opnd );
-            opnd->op.sp.oldptr_class = old_class;
-            opnd->op.sp.newptr_class = new_class;
+            opnd->op.u2.sp.oldptr_class = old_class;
+            opnd->op.u2.sp.newptr_class = new_class;
         } else {
             opnd = ExprNode( NULL, OPR_CONVERT, opnd );
-            opnd->op.result_type = newtyp;
+            opnd->op.u2.result_type = newtyp;
         }
     } else {
         if( IsConstLeaf( opnd ) ) {
             CastConstValue( opnd, newtyp->decl_type );
         } else {
             opnd = ExprNode( NULL, OPR_CONVERT, opnd );
-            opnd->op.result_type = newtyp;
+            opnd->op.u2.result_type = newtyp;
         }
     }
     opnd->expr_type = newtyp;
@@ -1823,7 +1823,7 @@ TREEPTR UMinus( TREEPTR opnd )
             } else {
                 opnd = ExprNode( 0, OPR_NEG, opnd );
                 opnd->expr_type = GetType( SubResult[t][t] );
-                opnd->op.result_type = opnd->expr_type;
+                opnd->op.u2.result_type = opnd->expr_type;
             }
         }
     }
@@ -1835,22 +1835,22 @@ TREEPTR UMinus( TREEPTR opnd )
         switch( opnd->op.const_type ) {
         case TYPE_CHAR:
         case TYPE_UCHAR:
-            opnd->op.long_value =  -(char)opnd->op.long_value;
+            opnd->op.u2.long_value =  -(char)opnd->op.u2.long_value;
             break;
         case TYPE_SHORT:
         case TYPE_USHORT:
-            opnd->op.long_value = -(short)opnd->op.long_value;
+            opnd->op.u2.long_value = -(short)opnd->op.u2.long_value;
             break;
         case TYPE_INT:
-            opnd->op.long_value = -(target_int)opnd->op.long_value;
+            opnd->op.u2.long_value = -(target_int)opnd->op.u2.long_value;
             break;
         case TYPE_UINT:
-            opnd->op.long_value =
-                        (target_uint)( - (target_uint)opnd->op.long_value);
+            opnd->op.u2.long_value =
+                        (target_uint)( - (target_uint)opnd->op.u2.long_value);
             break;
         case TYPE_LONG:
         case TYPE_ULONG:
-            opnd->op.long_value = - opnd->op.long_value;
+            opnd->op.u2.long_value = - opnd->op.u2.long_value;
             break;
         }
         break;
@@ -1862,7 +1862,7 @@ TREEPTR UMinus( TREEPTR opnd )
 #ifdef _LONG_DOUBLE_
             flt->ld.exponent ^= 0x8000;     // - flip binary sign bit
 #else
-            flt->ld.word[1] ^= 0x80000000;  // - flip sign
+            flt->ld.u.word[1] ^= 0x80000000;  // - flip sign
 #endif
         }
         break;
@@ -1875,7 +1875,7 @@ TREEPTR UMinus( TREEPTR opnd )
         } else {
             opnd = ExprNode( 0, OPR_NEG, opnd );
             opnd->expr_type = GetType( SubResult[t][t] );
-            opnd->op.result_type = opnd->expr_type;
+            opnd->op.u2.result_type = opnd->expr_type;
         }
         break;
     }
@@ -1901,7 +1901,7 @@ TREEPTR UComplement( TREEPTR opnd )
             } else {
                 opnd = ExprNode( 0, OPR_COM, opnd );
                 opnd->expr_type = GetType( SubResult[t][t] );
-                opnd->op.result_type = opnd->expr_type;
+                opnd->op.u2.result_type = opnd->expr_type;
             }
         }
     }
@@ -1913,21 +1913,21 @@ TREEPTR UComplement( TREEPTR opnd )
         switch( opnd->op.const_type ) {
         case TYPE_CHAR:
         case TYPE_UCHAR:
-            opnd->op.long_value = (char)~opnd->op.long_value;
+            opnd->op.u2.long_value = (char)~opnd->op.u2.long_value;
             break;
         case TYPE_SHORT:
         case TYPE_USHORT:
-            opnd->op.long_value = (short)~opnd->op.long_value;
+            opnd->op.u2.long_value = (short)~opnd->op.u2.long_value;
             break;
         case TYPE_INT:
-            opnd->op.long_value = (target_int)~opnd->op.long_value;
+            opnd->op.u2.long_value = (target_int)~opnd->op.u2.long_value;
             break;
         case TYPE_UINT:
-            opnd->op.ulong_value = (target_uint)~opnd->op.ulong_value;
+            opnd->op.u2.ulong_value = (target_uint)~opnd->op.u2.ulong_value;
             break;
         case TYPE_LONG:
         case TYPE_ULONG:
-            opnd->op.ulong_value = ~opnd->op.ulong_value;
+            opnd->op.u2.ulong_value = ~opnd->op.u2.ulong_value;
             break;
         }
         break;
@@ -1942,7 +1942,7 @@ TREEPTR UComplement( TREEPTR opnd )
         } else {
             opnd = ExprNode( 0, OPR_COM, opnd );
             opnd->expr_type = GetType( SubResult[t][t] );
-            opnd->op.result_type = opnd->expr_type;
+            opnd->op.u2.result_type = opnd->expr_type;
         }
         break;
     }
@@ -2003,13 +2003,13 @@ TYPEPTR TernType( TREEPTR true_part, TREEPTR false_part )
     dtype1 = DataTypeOf( typ1 );
     dtype2 = DataTypeOf( typ2 );
     if( dtype1 == TYPE_POINTER && false_part->op.opr == OPR_PUSHINT ) {
-        if( false_part->op.long_value != 0 ) {
+        if( false_part->op.u2.long_value != 0 ) {
             CWarn1( WARN_NONPORTABLE_PTR_CONV, ERR_NONPORTABLE_PTR_CONV );
         }
         return( MergedType( typ1, typ2 ) ); /* merge near/far/const etc. */
     }
     if( dtype2 == TYPE_POINTER && true_part->op.opr == OPR_PUSHINT ) {
-        if( true_part->op.long_value != 0 ) {
+        if( true_part->op.u2.long_value != 0 ) {
             CWarn1( WARN_NONPORTABLE_PTR_CONV, ERR_NONPORTABLE_PTR_CONV );
         }
         return( MergedType( typ2, typ1 ) ); /* merge near/far/const etc. */

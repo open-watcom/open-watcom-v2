@@ -115,7 +115,7 @@ static byte_seq_reloc *GetFixups( void )
         case SC_REGISTER:
         case SC_AUTO:
             sym.flags |= SYM_USED_IN_PRAGMA;
-            CurFuncNode->op.func.flags &= ~FUNC_OK_TO_INLINE;
+            CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
 //            uses_auto = 1;
             break;
         }
@@ -489,7 +489,7 @@ void AsmSysMakeInlineAsmFunc( int too_many_bytes )
         CurrEntry = NULL;
         sym_handle = MakeFunction( CStrSave( name ), FuncNode( GetType( TYPE_VOID ), 0, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );
-        tree->op.sym_handle = sym_handle;
+        tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );
         tree->expr_type = GetType( TYPE_VOID );
         AddStmt( tree );

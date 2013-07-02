@@ -856,7 +856,7 @@ local SYM_HASHPTR FreeSym( void )
             ChkReference( &sym, hsym->name );
             if( sym.stg_class == SC_STATIC              /* 27-nov-91 */
             && !(sym.flags & SYM_FUNCTION) ) {
-                CurFuncNode->op.func.flags &= ~FUNC_OK_TO_INLINE;
+                CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
                 SymReplace( CurFunc, CurFuncHandle );
             }
         }

@@ -1,15 +1,10 @@
-!ifdef __UNIX__
-host_os = linux
-link_sys = linux
-!else ifdef __MSDOS__
-host_os = dos
-link_sys = dos4g
-!else ifdef __NT__
-host_os = nt
-link_sys = nt
-!else ifdef __OS2__
-host_os = os2
-link_sys = os2v2
+link_sys_dos   = dos4g
+link_sys_os2   = os2v2
+
+!ifdef link_sys_$(bld_os)
+link_sys = $(link_sys_$(bld_os))
+!else
+link_sys = $(bld_os)
 !endif
 
 !ifdef __UNIX__
@@ -18,7 +13,8 @@ exe =
 exe = .exe
 !endif
 
-OBJS= macros.obj main.obj massert.obj mautodep.obj mautoomf.obj mautoorl.obj &
+objs = &
+  macros.obj main.obj massert.obj mautodep.obj mautoomf.obj mautoorl.obj &
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj &
   mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj &
   msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj autodept.obj &
@@ -34,7 +30,7 @@ $(%OWBINDIR)/wmake$(exe): wmk.exe
 !endif
 
 .c.obj : .AUTODEPEND
-        *wcc386 -zq -bt=$(host_os) -DBOOTSTRAP -I. -I"../h" -I"../../watcom/h" -I"../../lib_misc/h" -fo=$@ $<
+        *wcc386 -zq -bt=$(bld_os) -DBOOTSTRAP -I. -I"../h" -I"../../watcom/h" -I"../../lib_misc/h" -fo=$@ $<
 
 ./wsplice.exe : wsplice.obj
         wlink name $@ op q sys $(link_sys) file {$<}
@@ -56,8 +52,8 @@ usageend.gh: usage.gh ./wsplice.exe
 isarray.gh : ./cretype.exe
         $]@ > $@
 
-wmk.exe: usageend.gh isarray.gh $(OBJS)
-        wlink name $@ op q sys $(link_sys) file {$(OBJS)}
+wmk.exe: usageend.gh isarray.gh $(objs)
+        wlink name $@ op q sys $(link_sys) file {$(objs)}
 
 clean:  .symbolic
         rm -f *.obj *.gh *.exe *.err

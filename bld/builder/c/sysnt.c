@@ -82,7 +82,7 @@ void SysSetTitle( char *title )
 //    != 0 means success
 // save pinfo for closing child
 
-static DWORD RunChildProcessCmdl( const char *cmdl, PROCESS_INFORMATION *pinfo, HANDLE *readpipe )
+static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo, LPHANDLE readpipe )
 {
     HANDLE              cp;
     HANDLE              parent_std_output;
@@ -147,15 +147,15 @@ int SysRunCommand( const char *cmd )
     PROCESS_INFORMATION pinfo;
 
     memset( &pinfo, 0, sizeof( pinfo ) );
-    readpipe = (HANDLE)0;
+    readpipe = INVALID_HANDLE_VALUE;
     rc = RunChildProcessCmdl( cmd, &pinfo, &readpipe );
     if( rc != 0 ) {
-        if( readpipe != (HANDLE)0 ) {
+        if( readpipe != INVALID_HANDLE_VALUE ) {
             CloseHandle( readpipe );
         }
         return( rc );
     }
-    if( readpipe != (HANDLE)0 ) {
+    if( readpipe != INVALID_HANDLE_VALUE ) {
         for( ;; ) {
             char    *dst;
             DWORD   i;

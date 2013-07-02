@@ -622,11 +622,11 @@ extern void ChkCallParms( void )
         callnode = nextcall->callnode;
         if( callnode != NULL ) {
             callsite = callnode->left;      // point to OPR_FUNCNAME node
-            SymGet( &sym, callsite->op.sym_handle );
+            SymGet( &sym, callsite->op.u2.sym_handle );
             typ = sym.sym_type;
             SKIP_TYPEDEFS( typ );
             if( !(sym.flags & SYM_TEMP) )
-                SetDiagSymbol( &sym, callsite->op.sym_handle );
+                SetDiagSymbol( &sym, callsite->op.u2.sym_handle );
             SetErrLoc( &nextcall->src_loc );
             if( typ->u.fn.parms != NULL ) {
                 CompareParms( typ->u.fn.parms, callnode->right, ParmsToBeReversed( sym.attrib, NULL ) );
@@ -637,7 +637,7 @@ extern void ChkCallParms( void )
                 if( sym.flags & SYM_TEMP ) {
                     CWarn1( WARN_NONPROTO_FUNC_CALLED_INDIRECT, ERR_NONPROTO_FUNC_CALLED_INDIRECT );
                 } else {
-                    CWarn2p( WARN_NONPROTO_FUNC_CALLED, ERR_NONPROTO_FUNC_CALLED, SymName( &sym, callsite->op.sym_handle ) );
+                    CWarn2p( WARN_NONPROTO_FUNC_CALLED, ERR_NONPROTO_FUNC_CALLED, SymName( &sym, callsite->op.u2.sym_handle ) );
                 }
             }
             InitErrLoc();
@@ -660,21 +660,21 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
         case TYPE_FIELD:
         case TYPE_UFIELD:
             high = 0xfffffffful >> (MAXSIZE - (typ1->u.f.field_width));
-            if( opnd2->op.ulong_value > high ) {
-                if( (opnd2->op.ulong_value | (high >> 1)) != ~0UL ) {
+            if( opnd2->op.u2.ulong_value > high ) {
+                if( (opnd2->op.u2.ulong_value | (high >> 1)) != ~0UL ) {
                     return( FALSE );
                 }
             }
             break;
         case TYPE_CHAR:
-            if( opnd2->op.long_value > 127 ||
-                opnd2->op.long_value < -128 ) {
+            if( opnd2->op.u2.long_value > 127 ||
+                opnd2->op.u2.long_value < -128 ) {
                 return( FALSE );
             }
             break;
         case TYPE_UCHAR:
-            if( opnd2->op.ulong_value > 0xff) {
-                if( (opnd2->op.ulong_value | (0xff >> 1)) != ~0UL ) {
+            if( opnd2->op.u2.ulong_value > 0xff) {
+                if( (opnd2->op.u2.ulong_value | (0xff >> 1)) != ~0UL ) {
                     return( FALSE );
                 }
             }
@@ -685,8 +685,8 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 #endif
             // fall throught
         case TYPE_USHORT:
-            if( opnd2->op.ulong_value > 0xffff ) {
-                if( (opnd2->op.ulong_value | (0xffff >> 1)) != ~0UL ) {
+            if( opnd2->op.u2.ulong_value > 0xffff ) {
+                if( (opnd2->op.u2.ulong_value | (0xffff >> 1)) != ~0UL ) {
                     return( FALSE );
                 }
             }
@@ -697,8 +697,8 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 #endif
             // fall throught
         case TYPE_SHORT:
-            if( opnd2->op.long_value > 32767 ||
-                opnd2->op.long_value < -32768L ) {
+            if( opnd2->op.u2.long_value > 32767 ||
+                opnd2->op.u2.long_value < -32768L ) {
                 return( FALSE );
             }
             break;
@@ -707,7 +707,7 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
         }
     } else if( opnd2->op.opr == OPR_PUSHFLOAT ) {
         if( typ1->decl_type == TYPE_FLOAT ) {
-            if( atof( opnd2->op.float_value->string ) > TARGET_FLT_MAX ) {
+            if( atof( opnd2->op.u2.float_value->string ) > TARGET_FLT_MAX ) {
                 return( FALSE );
             }
         }
@@ -816,7 +816,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     case PC:
         if( asgn_check ) {  /* Allow only "... *p = int 0";  */
             if( IsPointer( typ1 ) && opnd2->op.opr == OPR_PUSHINT ) {
-                if( opnd2->op.long_value != 0 ) {
+                if( opnd2->op.u2.long_value != 0 ) {
                     CWarnP1( parmno, WARN_NONPORTABLE_PTR_CONV, ERR_NONPORTABLE_PTR_CONV );
                 }
             } else {

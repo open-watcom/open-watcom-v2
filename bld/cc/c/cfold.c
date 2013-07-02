@@ -223,11 +223,11 @@ int DoSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     left = 0;
     const_type = tree->expr_type->decl_type;
     if( op1 != NULL ) {
-        left = op1->op.long_value;
+        left = op1->op.u2.long_value;
     }
-    right = op2->op.long_value;
+    right = op2->op.u2.long_value;
     if( tree->op.opr == OPR_CMP ) {
-        switch( tree->op.cc ) {
+        switch( tree->op.u1.cc ) {
         case CC_EQ:
             value = (left == right);
             break;
@@ -252,17 +252,17 @@ int DoSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
             break;
         }
         const_type = TYPE_INT;
-        tree->op.long_value = (target_int)value;
+        tree->op.u2.long_value = (target_int)value;
     } else {
         value = DoOp32( left, tree->op.opr, right, TRUE );
         if( const_type == TYPE_LONG ) {
-            tree->op.long_value = value;
+            tree->op.u2.long_value = value;
         } else {
-            tree->op.long_value = (target_int)value;
+            tree->op.u2.long_value = (target_int)value;
         }
     }
     tree->op.opr = OPR_PUSHINT;
-    tree->op.const_type = const_type;
+    tree->op.u1.const_type = const_type;
     tree->left = NULL;
     tree->right = NULL;
     FreeExprNode( op1 );
@@ -282,11 +282,11 @@ int DoUnSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     left = 0;
     const_type = tree->expr_type->decl_type;
     if( op1 != NULL ) {
-        left = op1->op.ulong_value;
+        left = op1->op.u2.ulong_value;
     }
-    right = op2->op.ulong_value;
+    right = op2->op.u2.ulong_value;
     if( tree->op.opr == OPR_CMP ) {
-        switch( tree->op.cc ) {
+        switch( tree->op.u1.cc ) {
         case CC_EQ:
             value = (left == right);
             break;
@@ -311,17 +311,17 @@ int DoUnSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
             break;
         }
         const_type = TYPE_INT;
-        tree->op.long_value = (target_int)value;
+        tree->op.u2.long_value = (target_int)value;
     } else {
         value = DoOp32( left, tree->op.opr, right, FALSE );
         if( const_type == TYPE_ULONG || const_type == TYPE_POINTER ) {
-            tree->op.ulong_value = value;
+            tree->op.u2.ulong_value = value;
         } else {
-            tree->op.ulong_value = (target_uint)value;
+            tree->op.u2.ulong_value = (target_uint)value;
         }
     }
     tree->op.opr = OPR_PUSHINT;
-    tree->op.const_type = const_type;
+    tree->op.u1.const_type = const_type;
     tree->left = NULL;
     tree->right = NULL;
     FreeExprNode( op1 );
@@ -340,49 +340,49 @@ int64 LongValue64( TREEPTR leaf )
     long_double     ld;
     bool            sign;
 
-    switch( leaf->op.const_type ) {
+    switch( leaf->op.u1.const_type ) {
     case TYPE_CHAR:
         sign = TRUE;
-        val32 = (signed char)leaf->op.ulong_value;
+        val32 = (signed char)leaf->op.u2.ulong_value;
         break;
     case TYPE_UCHAR:
         sign = FALSE;
-        val32 = (unsigned char)leaf->op.ulong_value;
+        val32 = (unsigned char)leaf->op.u2.ulong_value;
         break;
     case TYPE_SHORT:
         sign = TRUE;
-        val32 = (target_short)leaf->op.ulong_value;
+        val32 = (target_short)leaf->op.u2.ulong_value;
         break;
     case TYPE_USHORT:
         sign = FALSE;
-        val32 = (target_ushort)leaf->op.ulong_value;
+        val32 = (target_ushort)leaf->op.u2.ulong_value;
         break;
     case TYPE_INT:
         sign = TRUE;
-        val32 = (target_int)leaf->op.ulong_value;
+        val32 = (target_int)leaf->op.u2.ulong_value;
         break;
     case TYPE_UINT:
         sign = FALSE;
-        val32 = (target_uint)leaf->op.ulong_value;
+        val32 = (target_uint)leaf->op.u2.ulong_value;
         break;
     case TYPE_LONG:
         sign = TRUE;
-        val32 = (target_long)leaf->op.ulong_value;
+        val32 = (target_long)leaf->op.u2.ulong_value;
         break;
     case TYPE_POINTER:
     case TYPE_ULONG:
         sign = FALSE;
-        val32 = (target_ulong)leaf->op.ulong_value;
+        val32 = (target_ulong)leaf->op.u2.ulong_value;
         break;
     case TYPE_LONG64:
     case TYPE_ULONG64:
-        return( leaf->op.ulong64_value );
+        return( leaf->op.u2.ulong64_value );
         break;
     case TYPE_FLOAT:
     case TYPE_DOUBLE:
     case TYPE_LONG_DOUBLE:
         sign = TRUE;
-        flt = leaf->op.float_value;
+        flt = leaf->op.u2.float_value;
         if( flt->len == 0 ) {
             ld = flt->ld;
         } else {
@@ -429,7 +429,7 @@ int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     const_type = tree->expr_type->decl_type;
     if( tree->op.opr == OPR_CMP ) {
         tmp = U64Cmp( &left, &right );
-        switch( tree->op.cc ) {
+        switch( tree->op.u1.cc ) {
         case CC_EQ:
             tmp = tmp == 0;
             break;
@@ -450,17 +450,17 @@ int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
             break;
         }
         const_type = TYPE_INT;
-        tree->op.long_value = (target_int)tmp;
+        tree->op.u2.long_value = (target_int)tmp;
     } else {
         value = DoOp64( left, tree->op.opr, right, FALSE );
         if( const_type  == TYPE_ULONG64 ) {
-            tree->op.long64_value = value;
+            tree->op.u2.long64_value = value;
         } else {
-            tree->op.ulong_value = value.u._32[L];
+            tree->op.u2.ulong_value = value.u._32[L];
         }
     }
     tree->op.opr = OPR_PUSHINT;
-    tree->op.const_type = const_type;
+    tree->op.u1.const_type = const_type;
     tree->left = NULL;
     tree->right = NULL;
     FreeExprNode( op1 );
@@ -485,7 +485,7 @@ int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     const_type = tree->expr_type->decl_type;
     if( tree->op.opr == OPR_CMP ) {
         tmp = I64Cmp( &left, &right );
-        switch( tree->op.cc ) {
+        switch( tree->op.u1.cc ) {
         case CC_EQ:
             tmp = tmp == 0;
             break;
@@ -506,17 +506,17 @@ int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
             break;
         }
         const_type = TYPE_INT;
-        tree->op.long_value = (target_int)tmp;
+        tree->op.u2.long_value = (target_int)tmp;
     } else {
         value = DoOp64( left, tree->op.opr, right, TRUE );
         if( const_type  == TYPE_LONG64 ) {
-            tree->op.long64_value = value;
+            tree->op.u2.long64_value = value;
         } else {
-            tree->op.long_value = (signed_32)value.u._32[L];
+            tree->op.u2.long_value = (signed_32)value.u._32[L];
         }
     }
     tree->op.opr = OPR_PUSHINT;
-    tree->op.const_type = const_type;
+    tree->op.u1.const_type = const_type;
     tree->left = NULL;
     tree->right = NULL;
     FreeExprNode( op1 );
@@ -535,19 +535,19 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #endif
 
     if( leaf->op.opr == OPR_PUSHFLOAT ) {
-        flt = leaf->op.float_value;
+        flt = leaf->op.u2.float_value;
         if( flt->len == 0 ) {           // if contains binary value
             ld = flt->ld;
         } else {
             __Strtold( flt->string, &ld, &endptr );
         }
     } else {    // integer
-        switch( leaf->op.const_type ) {
+        switch( leaf->op.u1.const_type ) {
         case TYPE_LONG64:
 #ifdef _LONG_DOUBLE_
             __I8LD( &leaf->op.long64_value, (long_double near *)&ld );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
-            ld.value = (double)leaf->op.long64_value.u._64[0];
+            ld.value = (double)leaf->op.u2.long64_value.u._64[0];
 #else
 
     #error not implemented for compiler with integral max bits < 64
@@ -558,7 +558,7 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #ifdef _LONG_DOUBLE_
             __U8LD( &leaf->op.ulong64_value, (long_double near *)&ld );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
-            ld.value = (double)leaf->op.ulong64_value.u._64[0];
+            ld.value = (double)leaf->op.u2.ulong64_value.u._64[0];
 #else
 
     #error not implemented for compiler with integral max bits < 64
@@ -571,25 +571,25 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
         case TYPE_INT:
         case TYPE_LONG:
 #ifdef _LONG_DOUBLE_
-            __I4LD( leaf->op.long_value, (long_double near *)&ld );
+            __I4LD( leaf->op.u2.long_value, &ld );
 #else
-            ld.value = (double)leaf->op.long_value;
+            ld.value = (double)leaf->op.u2.long_value;
 #endif
             break;
         default:
         //unsigned types
 #ifdef _LONG_DOUBLE_
-            __U4LD( leaf->op.ulong_value, (long_double near *)&ld );
+            __U4LD( leaf->op.u2.ulong_value, &ld );
 #else
-            ld.value = (double)leaf->op.ulong_value;
+            ld.value = (double)leaf->op.u2.ulong_value;
 #endif
             break;
         }
         flt = CMemAlloc( sizeof(FLOATVAL) );
-        leaf->op.float_value = flt;
+        leaf->op.u2.float_value = flt;
         leaf->op.opr = OPR_PUSHFLOAT;
     }
-    leaf->op.const_type = newtype;
+    leaf->op.u1.const_type = newtype;
     switch( newtype ) {
     case TYPE_FLOAT:
 #ifdef _LONG_DOUBLE_
@@ -626,7 +626,7 @@ void MakeBinaryFloat( TREEPTR opnd )
     if( opnd->op.opr == OPR_PUSHINT ) {
         CastFloatValue( opnd, TYPE_DOUBLE );
     }
-    flt = opnd->op.float_value;
+    flt = opnd->op.u2.float_value;
     if( flt->len != 0 ) {
         __Strtold( flt->string, &ld, &endptr );
         if( flt->type == TYPE_FLOAT ) {
@@ -674,11 +674,11 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 
     // load ld1 and ld2 from op1 and op2
     MakeBinaryFloat( op2 );
-    ld2 = op2->op.float_value->ld;
+    ld2 = op2->op.u2.float_value->ld;
     typ2 = TypeOf( op2 );
     if( op1 != NULL ) {                 // if not unary op
         MakeBinaryFloat( op1 );
-        ld1 = op1->op.float_value->ld;
+        ld1 = op1->op.u2.float_value->ld;
         typ1 = TypeOf( op1 );
     } else {
         typ1 = TypeOf( op2 );           // default to same type
@@ -687,7 +687,7 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     switch( tree->op.opr ) {
     case OPR_CMP:
         cond = FltCmp( (long_double near *)&ld1, (long_double near *)&ld2 );
-        switch( tree->op.cc ) {
+        switch( tree->op.u1.cc ) {
         case CC_EQ:
             value = (cond == 0);
             break;
@@ -712,8 +712,8 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
             break;
         }
         tree->op.opr = OPR_PUSHINT;
-        tree->op.ulong_value = value;
-        tree->op.const_type = TYPE_INT;
+        tree->op.u2.ulong_value = value;
+        tree->op.u1.const_type = TYPE_INT;
         tree->expr_type = GetType( TYPE_INT );
         tree->left = NULL;
         tree->right = NULL;
@@ -777,15 +777,15 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     }
     /* The expression type must obey the usual arithmetic conversions. */
     tree->op.opr = OPR_PUSHFLOAT;
-    tree->op.float_value = op2->op.float_value;
-    tree->op.float_value->ld = result;
-    tree->op.const_type = TYPE_DOUBLE;
+    tree->op.u2.float_value = op2->op.u2.float_value;
+    tree->op.u2.float_value->ld = result;
+    tree->op.u1.const_type = TYPE_DOUBLE;
     tree->expr_type = GetType( BinExprType( typ1, typ2 ) );
     tree->left = NULL;
     tree->right = NULL;
     FreeExprNode( op1 );
-    // we reused op2->op.float_value, so change op2->op.opr so that
-    // FreeExprNode doesn't try to free op2->op.float_value
+    // we reused op2->op.u2.float_value, so change op2->op.opr so that
+    // FreeExprNode doesn't try to free op2->op.u2.float_value
     op2->op.opr = OPR_NOP;
     FreeExprNode( op2 );
     return( 1 );
@@ -798,41 +798,41 @@ static int_32 LongValue( TREEPTR leaf )
     char        *endptr;
     long_double ld;
 
-    switch( leaf->op.const_type ) {
+    switch( leaf->op.u1.const_type ) {
     case TYPE_CHAR:
-        value = (signed char)leaf->op.ulong_value;
+        value = (signed char)leaf->op.u2.ulong_value;
         break;
     case TYPE_UCHAR:
-        value = (unsigned char)leaf->op.ulong_value;
+        value = (unsigned char)leaf->op.u2.ulong_value;
         break;
     case TYPE_SHORT:
-        value = (target_short)leaf->op.ulong_value;
+        value = (target_short)leaf->op.u2.ulong_value;
         break;
     case TYPE_USHORT:
-        value = (target_ushort)leaf->op.ulong_value;
+        value = (target_ushort)leaf->op.u2.ulong_value;
         break;
     case TYPE_INT:
-        value = (target_int)leaf->op.ulong_value;
+        value = (target_int)leaf->op.u2.ulong_value;
         break;
     case TYPE_UINT:
-        value = (target_uint)leaf->op.ulong_value;
+        value = (target_uint)leaf->op.u2.ulong_value;
         break;
     case TYPE_LONG:
-        value = (target_long)leaf->op.ulong_value;
+        value = (target_long)leaf->op.u2.ulong_value;
         break;
     case TYPE_ULONG:
     case TYPE_POINTER:
-        value = (target_ulong)leaf->op.ulong_value;
+        value = (target_ulong)leaf->op.u2.ulong_value;
         break;
     case TYPE_LONG64:
-        value = (target_long)leaf->op.ulong64_value.u._32[L];
+        value = (target_long)leaf->op.u2.ulong64_value.u._32[L];
         break;
     case TYPE_ULONG64:
-        value = (target_ulong)leaf->op.ulong64_value.u._32[L];
+        value = (target_ulong)leaf->op.u2.ulong64_value.u._32[L];
         break;
     case TYPE_FLOAT:
     case TYPE_DOUBLE:
-        flt = leaf->op.float_value;
+        flt = leaf->op.u2.float_value;
         if( flt->len == 0 ) {
             ld = flt->ld;
         } else {
@@ -840,7 +840,7 @@ static int_32 LongValue( TREEPTR leaf )
         }
         CMemFree( flt );
 #ifdef _LONG_DOUBLE_
-        value = __LDI4( (long_double near *)&ld );
+        value = __LDI4( &ld );
 #else
         value = ld.value;
 #endif
@@ -859,7 +859,7 @@ void CastConstValue( TREEPTR leaf, DATA_TYPE newtyp )
     int64       val64;
     DATA_TYPE   oldtyp;
 
-    oldtyp = leaf->op.const_type;
+    oldtyp = leaf->op.u1.const_type;
 
     if( (newtyp == TYPE_DOUBLE || newtyp == TYPE_FLOAT || newtyp == TYPE_LONG_DOUBLE)
      && (oldtyp == TYPE_DOUBLE || oldtyp == TYPE_FLOAT || oldtyp == TYPE_LONG_DOUBLE) ) {
@@ -867,39 +867,39 @@ void CastConstValue( TREEPTR leaf, DATA_TYPE newtyp )
         return;
     } else if( newtyp == TYPE_LONG64 || newtyp == TYPE_ULONG64 ) {
         val64 = LongValue64( leaf );
-        leaf->op.ulong64_value = val64;
+        leaf->op.u2.ulong64_value = val64;
     } else if( newtyp == TYPE_BOOL ) {
-        leaf->op.ulong_value = IsConstantZero( leaf ) ? 0 : 1;
+        leaf->op.u2.ulong_value = IsConstantZero( leaf ) ? 0 : 1;
         newtyp = TYPE_UCHAR;
     } else {
         val32 = LongValue( leaf );
         switch( newtyp ) {
         case TYPE_CHAR:
-            leaf->op.ulong_value = (signed char)val32;
+            leaf->op.u2.ulong_value = (signed char)val32;
             break;
         case TYPE_UCHAR:
-            leaf->op.ulong_value = (unsigned char)val32;
+            leaf->op.u2.ulong_value = (unsigned char)val32;
             break;
         case TYPE_SHORT:
-            leaf->op.ulong_value = (target_short)val32;
+            leaf->op.u2.ulong_value = (target_short)val32;
             break;
         case TYPE_USHORT:
-            leaf->op.ulong_value = (target_ushort)val32;
+            leaf->op.u2.ulong_value = (target_ushort)val32;
             break;
         case TYPE_INT:
-            leaf->op.ulong_value = (target_int)val32;
+            leaf->op.u2.ulong_value = (target_int)val32;
             break;
         case TYPE_UINT:
-            leaf->op.ulong_value = (target_uint)val32;
+            leaf->op.u2.ulong_value = (target_uint)val32;
             break;
         case TYPE_LONG:
-            leaf->op.ulong_value = (target_long)val32;
+            leaf->op.u2.ulong_value = (target_long)val32;
             break;
         case TYPE_ULONG:
-            leaf->op.ulong_value = (target_ulong)val32;
+            leaf->op.u2.ulong_value = (target_ulong)val32;
             break;
         case TYPE_POINTER:
-            leaf->op.ulong_value = (target_ulong)val32;
+            leaf->op.u2.ulong_value = (target_ulong)val32;
             break;
         case TYPE_FLOAT:
         case TYPE_DOUBLE:
@@ -911,7 +911,7 @@ void CastConstValue( TREEPTR leaf, DATA_TYPE newtyp )
         }
     }
     leaf->op.opr = OPR_PUSHINT;
-    leaf->op.const_type = newtyp;
+    leaf->op.u1.const_type = newtyp;
 }
 
 void CastConstNode( TREEPTR leaf, TYPEPTR newtyp )
@@ -922,7 +922,7 @@ void CastConstNode( TREEPTR leaf, TYPEPTR newtyp )
         // This really ought to be in CastConstValue, but that
         // function can't figure out the exact pointer size
         if ( TypeSize( newtyp ) == TARGET_SHORT ) {
-            leaf->op.ulong_value = (target_ushort)leaf->op.ulong_value;
+            leaf->op.u2.ulong_value = (target_ushort)leaf->op.u2.ulong_value;
         }
     }
 }
@@ -941,14 +941,14 @@ static bool IsConstantZero( TREEPTR tree )
         long_double ldzero;
 
         assert( tree->op.opr == OPR_PUSHFLOAT );
-        flt = tree->op.float_value;
+        flt = tree->op.u2.float_value;
         if( flt->len == 0 ) {           // if contains binary value
             ld = flt->ld;
         } else {
             __Strtold( flt->string, &ld, &endptr );
         }
 #ifdef _LONG_DOUBLE_
-        __I4LD( 0, (long_double near *)&ldzero );
+        __I4LD( 0, &ldzero );
 #else
         ldzero.value = 0;
 #endif
@@ -1048,7 +1048,7 @@ static bool FoldableTree( TREEPTR tree )
           && (opnd->right->op.opr == OPR_PUSHADDR || opnd->right->op.opr == OPR_PUSHSYM) ) {
             SYM_ENTRY   sym;
 
-            SymGet( &sym, opnd->right->op.sym_handle );
+            SymGet( &sym, opnd->right->op.u2.sym_handle );
             if( sym.stg_class != SC_AUTO && sym.stg_class != SC_REGISTER ) {
                 /* &(static object) is known to be non-zero */
                 /* replace it by a 1 */
@@ -1066,18 +1066,18 @@ static bool FoldableTree( TREEPTR tree )
         offset = 0;
         opnd = tree->right;
         while( opnd->op.opr == OPR_DOT ) {
-            offset += opnd->right->op.long_value;
+            offset += opnd->right->op.u2.long_value;
             opnd = opnd->left;
         }
         if( opnd->op.opr == OPR_ARROW ) {
-            offset += opnd->right->op.long_value;
+            offset += opnd->right->op.u2.long_value;
             opnd = opnd->left;
             if( opnd->op.opr == OPR_PUSHINT ) {
-                offset += opnd->op.long_value;
+                offset += opnd->op.u2.long_value;
                 opnd = tree->right;
                 tree->op.opr = OPR_PUSHINT;
-                tree->op.long_value = offset;
-                tree->op.const_type = TYPE_UINT;
+                tree->op.u2.long_value = offset;
+                tree->op.u1.const_type = TYPE_UINT;
                 tree->expr_type = GetType( TYPE_UINT );
                 tree->right = NULL;
                 FreeExprTree( opnd );
@@ -1099,9 +1099,9 @@ static bool FoldableTree( TREEPTR tree )
             off_val = LongValue64( tree->right );
             U64ShiftL( &seg_val, TARGET_NEAR_POINTER * 8, &value );
             U64Or( &value, &off_val, &value );
-            tree->op.ulong64_value = value;
+            tree->op.u2.ulong64_value = value;
             tree->op.opr = OPR_PUSHINT;
-            tree->op.const_type = TYPE_POINTER;
+            tree->op.u1.const_type = TYPE_POINTER;
             tree->op.flags |= OPFLAG_FARPTR;
             tree->left = NULL;
             tree->right = NULL;
@@ -1186,7 +1186,7 @@ static void CheckOpndValues( TREEPTR tree )
             case SIGNED_INT: {
                 int_32      right;
 
-                right = opnd->op.long_value;
+                right = opnd->op.u2.long_value;
                 if( right < 0 )
                     shift_negative = TRUE;
                 else if( right >= max_shift )
@@ -1206,7 +1206,7 @@ static void CheckOpndValues( TREEPTR tree )
                 break;
                 }
             case UNSIGNED_INT:
-                if( (uint_32)opnd->op.long_value >= max_shift )
+                if( (uint_32)opnd->op.u2.long_value >= max_shift )
                     shift_too_big = TRUE;
                 break;
             case UNSIGNED_INT64: {
@@ -1242,7 +1242,7 @@ static void CheckOpndValues( TREEPTR tree )
             switch( con ) {
             case SIGNED_INT:
             case UNSIGNED_INT:
-                if( opnd->op.long_value == 0 )
+                if( opnd->op.u2.long_value == 0 )
                     zero_divisor = TRUE;
                 break;
             case SIGNED_INT64:
@@ -1283,7 +1283,7 @@ void DoConstFold( TREEPTR tree )
         arithmetic_type     con;
 
         if( tree->op.opr == OPR_CMP ) {
-            decl_type = tree->op.compare_type->decl_type;
+            decl_type = tree->op.u2.compare_type->decl_type;
         } else {
             decl_type = tree->expr_type->decl_type;
         }

@@ -156,15 +156,15 @@ static void StartFunction( OPNODE *node )
         LocalVarList = NULL;
     }
 
-    FuncNodePtr->func.flags |=  FUNC_INUSE;
-    DoFuncDefn( node->func.sym_handle );
+    FuncNodePtr->u2.func.flags |=  FUNC_INUSE;
+    DoFuncDefn( node->u2.func.sym_handle );
 }
 
 static void DefineLabels( OPNODE *node )
 {
     int         i;
 
-    LabelIndex = node->label_count;
+    LabelIndex = node->u2.label_count;
     if( LabelIndex != 0 ) {
         CGLabelHandles = (label_handle *)CMemAlloc( (LabelIndex + 1) *
                                                 sizeof(label_handle) );
@@ -221,16 +221,16 @@ static void EndFunction( OPNODE *node )
         CGLabelHandles = NULL;
     }
 #ifdef __SEH__
-    if( FuncNodePtr->func.flags & FUNC_USES_SEH ) {
+    if( FuncNodePtr->u2.func.flags & FUNC_USES_SEH ) {
         CallTryFini();          // generate call to __TryFini
         FreeTrySymBackInfo();
     }
 #endif
-    if( node->sym_handle == 0 ) {
+    if( node->u2.sym_handle == 0 ) {
         dtype = CGenType( CurFunc->sym_type->object );
         CGReturn( NULL, dtype );
     } else {                            // return value
-        SymGet( &sym, node->sym_handle );
+        SymGet( &sym, node->u2.sym_handle );
         dtype = CGenType( sym.sym_type );
         name = CGTempName( sym.info.return_var, dtype );
         name = CGUnary( O_POINTS, name, dtype );
@@ -246,7 +246,7 @@ static void EndFunction( OPNODE *node )
             DBEndBlock();
         }
     }
-    FuncNodePtr->func.flags &= ~FUNC_INUSE;
+    FuncNodePtr->u2.func.flags &= ~FUNC_INUSE;
 }
 
 static void ReturnExpression( OPNODE *node, cg_name expr )
@@ -255,7 +255,7 @@ static void ReturnExpression( OPNODE *node, cg_name expr )
     cg_type     dtype;
     SYM_ENTRY   sym;
 
-    SymGet( &sym, node->sym_handle );
+    SymGet( &sym, node->u2.sym_handle );
     dtype = CGenType( sym.sym_type );
     name = CGTempName( sym.info.return_var, dtype );
     CGDone( CGAssign( name, expr, dtype ) );
@@ -302,7 +302,7 @@ static cg_name PushSymSeg( OPNODE *node )
     SYMPTR      sym;
     SYM_HANDLE  sym_handle;
 
-    sym_handle = node->sym_handle;
+    sym_handle = node->u2.sym_handle;
     if( sym_handle == 0 ) {         /* 30-nov-91 */
         segname = CGInteger( 0, TY_UNSIGNED );
     } else {
@@ -476,7 +476,7 @@ static cg_name PushSym( OPNODE *node )
     TYPEPTR     typ;
     SYM_ENTRY   sym;
 
-    SymGet( &sym, node->sym_handle );
+    SymGet( &sym, node->u2.sym_handle );
     typ = sym.sym_type;
     if( sym.flags & SYM_FUNCTION ) {
         dtype = CodePtrType( sym.attrib );
@@ -486,7 +486,7 @@ static cg_name PushSym( OPNODE *node )
     if( sym.flags & SYM_FUNC_RETURN_VAR ) {
         name = CGTempName( sym.info.return_var, dtype );
     } else {
-        name = CGFEName( node->sym_handle, dtype );
+        name = CGFEName( node->u2.sym_handle, dtype );
     }
     if( node->flags & OPFLAG_UNALIGNED ) {
         name = CGAttr( name, CG_SYM_UNALIGNED );
@@ -507,7 +507,7 @@ static cg_name PushSymAddr( OPNODE *node )
     SYM_ENTRY   sym;
     TYPEPTR     typ;
 
-    SymGet( &sym, node->sym_handle );
+    SymGet( &sym, node->u2.sym_handle );
     typ = sym.sym_type;
     if( sym.flags & SYM_FUNCTION ) {
         dtype = CodePtrType( sym.attrib );
@@ -517,7 +517,7 @@ static cg_name PushSymAddr( OPNODE *node )
     if( sym.flags & SYM_FUNC_RETURN_VAR ) {
         name = CGTempName( sym.info.return_var, dtype );
     } else {
-        name = CGFEName( node->sym_handle, dtype );
+        name = CGFEName( node->u2.sym_handle, dtype );
      // if( (sym.attrib & FLAG_VOLATILE) ||
      //     (sym.flags & SYM_USED_IN_PRAGMA) ) {
      //     name = CGVolatile( name );
@@ -534,7 +534,7 @@ static cg_name PushRValue( OPNODE *node, cg_name name )
     TYPEPTR     typ;
 
     if( node->flags & OPFLAG_RVALUE ) {
-        typ = node->result_type;
+        typ = node->u2.result_type;
         if( node->flags & OPFLAG_VOLATILE ) {
             name = CGVolatile( name );
         } else {
@@ -554,10 +554,10 @@ static cg_name DotOperator( cg_name op1, OPNODE *node, cg_name op2 )
     TYPEPTR     typ;
     cg_name     name;
 
-    // node->result_type is the type of the data
+    // node->u2.result_type is the type of the data
     // for the O_PLUS we want a pointer type
     name = CGBinary( O_PLUS, op1, op2, DataPointerType( node ) );
-    typ = node->result_type;
+    typ = node->u2.result_type;
     if( typ->decl_type == TYPE_FIELD || typ->decl_type == TYPE_UFIELD ) {
         name = CGBitMask( name, typ->u.f.field_start,
                     typ->u.f.field_width, CGenType( typ ) );
@@ -570,7 +570,7 @@ static cg_name DotOperator( cg_name op1, OPNODE *node, cg_name op2 )
 
 static cg_name ArrowOperator( cg_name op1, OPNODE *node, cg_name op2 )
 {
-    // node->result_type is the type of the data
+    // node->u2.result_type is the type of the data
     // for the O_PLUS we want a pointer type
 #if _CPU == 386
     if( Far16Pointer( node->flags ) ) {
@@ -587,7 +587,7 @@ static cg_name IndexOperator( cg_name op1, OPNODE *node, cg_name op2 )
     long        element_size;
     int         index_type;
 
-    // node->result_type is the type of the data
+    // node->u2.result_type is the type of the data
     // for the O_PLUS we want a pointer type
     // op2 needs to be multiplied by the element size of the array
 
@@ -596,7 +596,7 @@ static cg_name IndexOperator( cg_name op1, OPNODE *node, cg_name op2 )
         op1 = CGUnary( O_PTR_TO_NATIVE, op1, TY_POINTER );
     }
 #endif
-    element_size = SizeOfArg( node->result_type );
+    element_size = SizeOfArg( node->u2.result_type );
     if( element_size != 1 ) {
         index_type = TY_INTEGER;
 #if _CPU == 8086
@@ -621,7 +621,7 @@ static cg_name DoAddSub( cg_name op1, OPNODE *node, cg_name op2 )
     cg_name     name;
     TYPEPTR     typ;
 
-    typ = node->result_type;
+    typ = node->u2.result_type;
     SKIP_TYPEDEFS( typ );
     name = CGBinary( CGOperator[node->opr], op1, op2, CGenType( typ ) );
 //  if( typ->decl_type == TYPE_POINTER ) {
@@ -638,8 +638,8 @@ static cg_name PushConstant( OPNODE *node )
     FLOATVAL    *flt;
     char        *flt_string;
 
-    dtype = CGDataType[ node->const_type ];
-    switch( node->const_type ) {
+    dtype = CGDataType[ node->u1.const_type ];
+    switch( node->u1.const_type ) {
     case TYPE_CHAR:
     case TYPE_UCHAR:
     case TYPE_SHORT:
@@ -648,14 +648,14 @@ static cg_name PushConstant( OPNODE *node )
     case TYPE_UINT:
     case TYPE_LONG:
     case TYPE_ULONG:
-        name = CGInteger( node->ulong_value, dtype );
+        name = CGInteger( node->u2.ulong_value, dtype );
         break;
     case TYPE_POINTER:
-        name = CGInteger( node->ulong_value, DataPointerType( node ) );
+        name = CGInteger( node->u2.ulong_value, DataPointerType( node ) );
         break;
     case TYPE_LONG64:
     case TYPE_ULONG64:
-        name = CGInt64( node->ulong64_value, dtype );
+        name = CGInt64( node->u2.ulong64_value, dtype );
         break;
     case TYPE_FLOAT:
     case TYPE_DOUBLE:
@@ -663,7 +663,7 @@ static cg_name PushConstant( OPNODE *node )
     case TYPE_FIMAGINARY:
     case TYPE_DIMAGINARY:
     case TYPE_LDIMAGINARY:
-        flt = node->float_value;
+        flt = node->u2.float_value;
         if( flt->len != 0 ) {                   // if still in string form
             flt_string = flt->string;
         } else {                                // else in binary form
@@ -683,7 +683,7 @@ static cg_name PushString( OPNODE *node )
 {
     STRING_LITERAL      *string;
 
-    string = node->string_handle;
+    string = node->u2.string_handle;
     Emit1String( string );
     return( CGBackName( string->cg_back_handle, TY_UINT_1 ) );
 }
@@ -693,7 +693,7 @@ static cg_name DoIndirection( OPNODE *node, cg_name name )
     TYPEPTR     typ;
 
     // check for special kinds of pointers, eg. call __Far16ToFlat
-    typ = node->result_type;
+    typ = node->u2.result_type;
 #if _CPU == 386
     if( Far16Pointer( node->flags ) ) {
         // Do NOT convert __far16 function pointers to flat because the
@@ -718,9 +718,9 @@ static cg_name DoIndirection( OPNODE *node, cg_name name )
 static cg_name ConvertPointer( OPNODE *node, cg_name name )
 {
 #if _CPU == 386
-    if( FAR16_PTRCLASS( node->sp.oldptr_class ) ) {
+    if( FAR16_PTRCLASS( node->u2.sp.oldptr_class ) ) {
         name = CGUnary( O_PTR_TO_NATIVE, name, TY_POINTER );
-    } else if( FAR16_PTRCLASS( node->sp.newptr_class ) ) {
+    } else if( FAR16_PTRCLASS( node->u2.sp.newptr_class ) ) {
         name = CGUnary( O_PTR_TO_FOREIGN, name, TY_POINTER );
     }
 #endif
@@ -734,13 +734,13 @@ static call_handle InitFuncCall( OPNODE *node )
     TYPEPTR     typ;
     SYMPTR      sym;
 
-    sym = SymGetPtr( node->sym_handle );
+    sym = SymGetPtr( node->u2.sym_handle );
     typ = sym->sym_type;
     dtype = CGenType( typ );
-    name = CGFEName( node->sym_handle, dtype );
+    name = CGFEName( node->u2.sym_handle, dtype );
 //    dtype = FESymType( sym );
     SKIP_TYPEDEFS( typ );
-    return( CGInitCall( name, CGenType( typ->object ), node->sym_handle ) );
+    return( CGInitCall( name, CGenType( typ->object ), node->u2.sym_handle ) );
 }
 
 static call_handle InitIndFuncCall( OPNODE *node, cg_name name )
@@ -748,10 +748,10 @@ static call_handle InitIndFuncCall( OPNODE *node, cg_name name )
     TYPEPTR     typ;
     SYMPTR      sym;
 
-    sym = SymGetPtr( node->sym_handle );
+    sym = SymGetPtr( node->u2.sym_handle );
     typ = sym->sym_type;
     SKIP_TYPEDEFS( typ );
-    return( CGInitCall( name, CGenType( typ->object ), node->sym_handle ) );
+    return( CGInitCall( name, CGenType( typ->object ), node->u2.sym_handle ) );
 }
 
 local void DoSwitch( OPNODE *node, cg_name name )
@@ -761,7 +761,7 @@ local void DoSwitch( OPNODE *node, cg_name name )
     CASEPTR     ce;
 
     table = CGSelInit();
-    sw = node->switch_info;
+    sw = node->u2.switch_info;
     for( ce = sw->case_list; ce; ce = ce->next_case ) {
         CGSelCase( table, CGLabelHandles[ ce->label ], ce->value );
     }
@@ -801,11 +801,11 @@ local void EmitNodes( TREEPTR tree )
             break;
         case OPR_NEWBLOCK:              // start of new block { vars; }
             DBBegBlock();
-            CDoAutoDecl( node->sym_handle );
+            CDoAutoDecl( node->u2.sym_handle );
             break;
         case OPR_ENDBLOCK:              // end of new block { vars; }
             DBEndBlock();
-            LocalVarList = ReleaseVars( node->sym_handle, LocalVarList );
+            LocalVarList = ReleaseVars( node->u2.sym_handle, LocalVarList );
             break;
         case OPR_LABELCOUNT:            // number of labels used in function
             DefineLabels( node );
@@ -826,13 +826,13 @@ local void EmitNodes( TREEPTR tree )
             if( node->flags & OPFLAG_VOLATILE ) { // is lvalue volatile
                  op1 = CGVolatile( op1 );
             }
-            if( IsStruct( node->result_type ) ) {
+            if( IsStruct( node->u2.result_type ) ) {
                 dtype = DataPointerType( node );
-                op1 = CGLVAssign( op1, op2, CGenType( node->result_type ));
+                op1 = CGLVAssign( op1, op2, CGenType( node->u2.result_type ));
                 op1 = PushRValue( node, op1 );
             } else {
-                dtype =  CGenType( node->result_type );
-                op1 = CGAssign( op1, op2, CGenType( node->result_type ));
+                dtype =  CGenType( node->u2.result_type );
+                op1 = CGAssign( op1, op2, CGenType( node->u2.result_type ));
             }
             PushCGName( op1 );
           } break;
@@ -853,15 +853,15 @@ local void EmitNodes( TREEPTR tree )
             op2 = PopCGName();
             op1 = PopCGName();
             PushCGName( CGBinary( CGOperator[node->opr], op1, op2,
-                                    CGenType( node->result_type ) ) );
+                                    CGenType( node->u2.result_type ) ) );
             break;
         case OPR_COMMA:                 // expr , expr
           {
             cg_type     dtype;
             op2 = PopCGName();
             op1 = PopCGName();
-            dtype =  IsStruct( node->result_type ) ?
-                   DataPointerType( node ) : CGenType( node->result_type );
+            dtype =  IsStruct( node->u2.result_type ) ?
+                   DataPointerType( node ) : CGenType( node->u2.result_type );
             op1 = CGBinary( O_COMMA, op1, op2, dtype );
             PushCGName( PushRValue( node, op1 ) );
           } break;
@@ -881,23 +881,23 @@ local void EmitNodes( TREEPTR tree )
                  op1 = CGVolatile( op1 );
             }
             PushCGName( CGPreGets( CGOperator[node->opr], op1, op2,
-                                    CGenType( node->result_type ) ) );
+                                    CGenType( node->u2.result_type ) ) );
             break;
         case OPR_NEG:                   // negate
             op1 = PopCGName();
             PushCGName( CGUnary( O_UMINUS, op1,
-                                    CGenType( node->result_type ) ) );
+                                    CGenType( node->u2.result_type ) ) );
             break;
         case OPR_CMP:                   // compare
             op2 = PopCGName();
             op1 = PopCGName();
-            PushCGName( CGCompare( CC2CGOp[ node->cc ], op1, op2,
-                                    CGenType( node->compare_type ) ) );
+            PushCGName( CGCompare( CC2CGOp[ node->u1.cc ], op1, op2,
+                                    CGenType( node->u2.compare_type ) ) );
             break;
         case OPR_COM:                   // ~
             op1 = PopCGName();
             PushCGName( CGUnary( O_COMPLEMENT, op1,
-                                    CGenType( node->result_type ) ) );
+                                    CGenType( node->u2.result_type ) ) );
             break;
         case OPR_NOT:                   // !
             op1 = PopCGName();
@@ -910,8 +910,8 @@ local void EmitNodes( TREEPTR tree )
             op2 = PopCGName();          // false_part
             op1 = PopCGName();          // true_part
             expr = PopCGName();         // test expr
-            dtype =  IsStruct( node->result_type ) ?
-                   DataPointerType( node ) : CGenType( node->result_type );
+            dtype =  IsStruct( node->u2.result_type ) ?
+                   DataPointerType( node ) : CGenType( node->u2.result_type );
             op1 = CGChoose( expr, op1, op2, dtype );
 
             PushCGName( PushRValue( node, op1 ) );
@@ -937,7 +937,7 @@ local void EmitNodes( TREEPTR tree )
                  op1 = CGVolatile( op1 );
             }
             PushCGName( CGPostGets( CGOperator[node->opr], op1, op2,
-                                    CGenType( node->result_type ) ) );
+                                    CGenType( node->u2.result_type ) ) );
             break;
         case OPR_PUSHSYM:               // push sym_handle
             PushCGName( PushSym( node ) );
@@ -972,10 +972,10 @@ local void EmitNodes( TREEPTR tree )
             PushCGName( CGUnary( O_POINTS, name, TY_LONG_POINTER ) );
           } break;
         case OPR_CONVERT:
-            if( node->result_type->decl_type != TYPE_VOID ) {
+            if( node->u2.result_type->decl_type != TYPE_VOID ) {
                 op1 = PopCGName();      // - get expression
                 PushCGName( CGUnary( O_CONVERT, op1,
-                                CGenType( node->result_type )) );
+                                CGenType( node->u2.result_type )) );
             }
             break;
         case OPR_CONVERT_PTR:           // convert pointer
@@ -995,12 +995,12 @@ local void EmitNodes( TREEPTR tree )
           } break;
         case OPR_MATHFUNC:              // intrinsic math func with 1 parm
             op1 = PopCGName();          // - get expression
-            PushCGName( CGUnary( node->mathfunc, op1, TY_DOUBLE ) );
+            PushCGName( CGUnary( node->u1.mathfunc, op1, TY_DOUBLE ) );
             break;
         case OPR_MATHFUNC2:             // intrinsic math func with 2 parms
             op2 = PopCGName();          // - get expression
             op1 = PopCGName();          // - get expression
-            PushCGName( CGBinary( node->mathfunc, op1, op2, TY_DOUBLE ) );
+            PushCGName( CGBinary( node->u1.mathfunc, op1, op2, TY_DOUBLE ) );
             break;
         case OPR_DOT:                   // sym.field
             op2 = PopCGName();          // - get offset of field
@@ -1036,34 +1036,34 @@ local void EmitNodes( TREEPTR tree )
             call_list = PopCGName();    // - get call_handle
             op1 = CGCall( call_list );
             if( node->flags & OPFLAG_RVALUE ) {
-                op1 = CGUnary( O_POINTS, op1, CGenType( node->result_type ) );
+                op1 = CGUnary( O_POINTS, op1, CGenType( node->u2.result_type ) );
             }
             PushCGName( op1 );
             break;
         case OPR_PARM:                  // function parm
             op1 = PopCGName();          // - get parm
             call_list = PopCGName();    // - get call_handle
-            CGAddParm( call_list, op1, CGenType( node->result_type ) );
+            CGAddParm( call_list, op1, CGenType( node->u2.result_type ) );
             PushCGName( call_list );
             break;
         case OPR_LABEL:                 // label
-            CGControl( O_LABEL, NULL, CGLabelHandles[ node->label_index ] );
+            CGControl( O_LABEL, NULL, CGLabelHandles[ node->u2.label_index ] );
             break;
         case OPR_CASE:                  // case label
-            if( node->case_info->gen_label ) {
-                CGControl( O_LABEL, NULL, CGLabelHandles[ node->case_info->label ] );
+            if( node->u2.case_info->gen_label ) {
+                CGControl( O_LABEL, NULL, CGLabelHandles[ node->u2.case_info->label ] );
             }
             break;
         case OPR_JUMP:                  // jump
-            CGControl( O_GOTO, NULL, CGLabelHandles[ node->label_index ] );
+            CGControl( O_GOTO, NULL, CGLabelHandles[ node->u2.label_index ] );
             break;
         case OPR_JUMPTRUE:              // jump if true
             op1 = PopCGName();
-            CGControl( O_IF_TRUE, op1, CGLabelHandles[ node->label_index ] );
+            CGControl( O_IF_TRUE, op1, CGLabelHandles[ node->u2.label_index ] );
             break;
         case OPR_JUMPFALSE:             // jump if false
             op1 = PopCGName();
-            CGControl( O_IF_FALSE, op1, CGLabelHandles[ node->label_index ] );
+            CGControl( O_IF_FALSE, op1, CGLabelHandles[ node->u2.label_index ] );
             break;
         case OPR_SWITCH:                // switch
             op1 = PopCGName();
@@ -1071,17 +1071,17 @@ local void EmitNodes( TREEPTR tree )
             break;
 #ifdef __SEH__
         case OPR_TRY:                   // start of try block
-            SetTryScope( node->st.parent_scope );
+            SetTryScope( node->u2.st.parent_scope );
             break;
         case OPR_EXCEPT:
         case OPR_FINALLY:
-            CGBigLabel( FEBack( node->sym_handle ) );
+            CGBigLabel( FEBack( node->u2.sym_handle ) );
             break;
         case OPR_END_FINALLY:
             EndFinally();
             break;
         case OPR_UNWIND:
-            CallTryUnwind( node->st.try_index );
+            CallTryUnwind( node->u2.st.u.try_index );
             break;
         case OPR_EXCEPT_CODE:
             op1 = TryExceptionInfoAddr();
@@ -1162,23 +1162,23 @@ local TREEPTR GenOptimizedCode( TREEPTR tree )
 
     unroll_count = 0;
     while( tree != NULL ) {
-        if( tree->op.src_loc.line != SrcLoc.line || tree->op.src_loc.fno != SrcLoc.fno ) {
+        if( tree->op.u2.src_loc.line != SrcLoc.line || tree->op.u2.src_loc.fno != SrcLoc.fno ) {
             if( Saved_CurFunc == 0 ) {      /* 24-nov-91 */
                 FNAMEPTR    flist;
 
-                flist = FileIndexToFName( tree->op.src_loc.fno );
+                flist = FileIndexToFName( tree->op.u2.src_loc.fno );
                 if( flist->index_db == -1 ) {
                     char *fullpath;
 
                     fullpath = FNameFullPath( flist );
                     flist->index_db = DBSrcFile( fullpath );
                 }
-                DBSrcCue( flist->index_db, tree->op.src_loc.line, 1 );
+                DBSrcCue( flist->index_db, tree->op.u2.src_loc.line, 1 );
             }
-            SrcLoc = tree->op.src_loc;
+            SrcLoc = tree->op.u2.src_loc;
         }
-        if( tree->op.unroll_count != unroll_count ) {
-            unroll_count = tree->op.unroll_count;
+        if( tree->op.u1.unroll_count != unroll_count ) {
+            unroll_count = tree->op.u1.unroll_count;
             BEUnrollCount( unroll_count );
         }
         /* eliminate functions that are always inlined or not used */
@@ -1186,7 +1186,7 @@ local TREEPTR GenOptimizedCode( TREEPTR tree )
             TREEPTR right;
 
             right = tree->right;
-            if ( ! ( right->op.func.flags & FUNC_USED ) ) {
+            if ( ! ( right->op.u2.func.flags & FUNC_USED ) ) {
                 if( InLineDepth == 0 ) {
                     while( tree->right->op.opr != OPR_FUNCEND ) {
                         tree = tree->left;
@@ -1198,7 +1198,7 @@ local TREEPTR GenOptimizedCode( TREEPTR tree )
         EmitNodes( LinearizeTree( tree->right ) );
 #ifdef __SEH__
         if( tree->right->op.opr == OPR_FUNCTION ) {     // if start of func
-           if( FuncNodePtr->func.flags & FUNC_USES_SEH ) {
+           if( FuncNodePtr->u2.func.flags & FUNC_USES_SEH ) {
                 GenerateTryBlock( tree->left );
            }
         }
@@ -1262,8 +1262,8 @@ bool IsInLineFunc( SYM_HANDLE sym_handle )
         tree = FindFuncStmtTree(sym_handle);
         if( tree != NULL ) {
            right = tree->right;
-           if( !(right->op.func.flags & FUNC_INUSE) ) {
-               ret =  right->op.func.flags & FUNC_OK_TO_INLINE;
+           if( !(right->op.u2.func.flags & FUNC_INUSE) ) {
+               ret =  right->op.u2.func.flags & FUNC_OK_TO_INLINE;
            }
         }
     }
@@ -1284,7 +1284,7 @@ local int ScanFunction( TREEPTR tree, int inline_depth )
     int                 marked;
 
     if( tree == NULL || tree->right == NULL ) return 0;
-    f = &tree->right->op.func;
+    f = &tree->right->op.u2.func;
 
     if( inline_depth == -1 ) {
         /* non-recursive call */
@@ -1307,7 +1307,7 @@ local int ScanFunction( TREEPTR tree, int inline_depth )
         right = LinearizeTree( tree->right );
         while( right ) {
             if( right->op.opr == OPR_FUNCNAME )
-                marked += ScanFunction( FindFuncStmtTree( right->op.sym_handle ),
+                marked += ScanFunction( FindFuncStmtTree( right->op.u2.sym_handle ),
                                         inline_depth );
             right = right->thread;
         }
@@ -1332,9 +1332,9 @@ local void PruneFunctions( void )
     marked = 0;
     for( tree = FirstStmt; tree != NULL; tree = tree->left ) {
         if( tree->right->op.opr == OPR_FUNCTION ) {
-            SymGet( &sym, tree->right->op.func.sym_handle );
+            SymGet( &sym, tree->right->op.u2.func.sym_handle );
             if( sym.stg_class != SC_STATIC || ( sym.flags & SYM_ADDR_TAKEN ) ) {
-                tree->right->op.func.flags |= FUNC_MARKED | FUNC_USED;
+                tree->right->op.u2.func.flags |= FUNC_MARKED | FUNC_USED;
                 marked++;
             }
         }
@@ -1343,8 +1343,8 @@ local void PruneFunctions( void )
         marked = 0;
         for( tree = FirstStmt; tree != NULL; tree = tree->left ) {
             if( tree->right->op.opr == OPR_FUNCTION ) {
-                if (tree->right->op.func.flags & FUNC_MARKED) {
-                    tree->right->op.func.flags &= ~FUNC_MARKED;
+                if (tree->right->op.u2.func.flags & FUNC_MARKED) {
+                    tree->right->op.u2.func.flags &= ~FUNC_MARKED;
                     marked += ScanFunction( tree, -1 );
                 }
             }
@@ -1582,7 +1582,7 @@ local int DoFuncDefn( SYM_HANDLE funcsym_handle )
     CGLastParm();
     CDoAutoDecl( CurFunc->u.func.locals );
 #ifdef __SEH__
-    if( FuncNodePtr->func.flags & FUNC_USES_SEH ) {
+    if( FuncNodePtr->u2.func.flags & FUNC_USES_SEH ) {
         CGAutoDecl( TrySymHandle, TryRefno );
         CallTryInit();                  // generate call to __TryInit
     }
@@ -2001,7 +2001,7 @@ static void GenerateTryBlock( TREEPTR tree )
             break;
         switch( stmt->op.opr ) {
         case OPR_TRY:
-            try_index = stmt->op.st.try_index;
+            try_index = stmt->op.u2.st.u.try_index;
             if( try_index > max_try_index )
                 max_try_index = try_index;
             break;
@@ -2029,13 +2029,13 @@ static void GenerateTryBlock( TREEPTR tree )
         DGLabel( except_table );
         for( try_index = 0; try_index <= max_try_index; try_index++ ) {
             stmt = ValueStack[ try_index ];
-            DGInteger( stmt->op.st.parent_scope, TY_UINT_1 );  // parent index
+            DGInteger( stmt->op.u2.st.parent_scope, TY_UINT_1 );  // parent index
             if( stmt->op.opr == OPR_EXCEPT ) {
                 DGInteger( 0, TY_UINT_1 );
             } else {
                 DGInteger( 1, TY_UINT_1 );
             }
-            except_label = FEBack( stmt->op.st.try_sym_handle );
+            except_label = FEBack( stmt->op.u2.st.u.try_sym_handle );
             DGBackPtr( except_label, FESegID( CurFuncHandle ), 0, TY_CODE_PTR );
         }
         BESetSeg( old_segment );

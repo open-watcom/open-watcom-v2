@@ -470,7 +470,7 @@ local void AddParms( void )
 
             tree = ExprNode( VarLeaf( &new_sym, new_sym_handle ),
                  OPR_EQUALS, RValue( VarLeaf(&parm->sym, sym_handle) ) );
-            tree->op.result_type = typ;
+            tree->op.u2.result_type = typ;
             tree->expr_type = typ;
             AddStmt( tree );
         }

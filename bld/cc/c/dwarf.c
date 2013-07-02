@@ -578,15 +578,15 @@ static void dwarfDumpNode( TREEPTR node )
 
     switch( node->op.opr ) {
     case OPR_FUNCTION:          // start of function
-        sym = SymGetPtr( node->op.func.sym_handle );
-        dwarfFunctionDefine( node->op.func.sym_handle, sym );
+        sym = SymGetPtr( node->op.u2.func.sym_handle );
+        dwarfFunctionDefine( node->op.u2.func.sym_handle, sym );
         break;
     case OPR_FUNCEND:           // end of function
         DWEndSubroutine( Client );
         break;
     case OPR_NEWBLOCK:          // start of new block { vars; }
         DWBeginLexicalBlock( Client, NULL, NULL );
-        dwarfEmitVariables( node->op.sym_handle );
+        dwarfEmitVariables( node->op.u2.sym_handle );
         break;
     case OPR_ENDBLOCK:          // end of new block { vars; }
         DWEndLexicalBlock( Client );
@@ -594,7 +594,7 @@ static void dwarfDumpNode( TREEPTR node )
     case OPR_PUSHSYM:           // push sym_handle
     case OPR_PUSHADDR:          // push address of sym_handle
     case OPR_FUNCNAME:          // function name
-        sym = SymGetPtr( node->op.sym_handle );
+        sym = SymGetPtr( node->op.u2.sym_handle );
         if( !(sym->flags & SYM_TEMP) ) {
             dw_handle   dh;
 
@@ -619,7 +619,7 @@ static void dwarfEmitFunctions( void )
 
     tree = FirstStmt;
     while( tree != NULL ) {
-        CurLoc = tree->op.src_loc;
+        CurLoc = tree->op.u2.src_loc;
         WalkExprTree( tree->right, dwarfDumpNode, NoOp, NoOp, dwarfDumpNode );
         tree = tree->left;
     }

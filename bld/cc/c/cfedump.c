@@ -99,26 +99,26 @@ void DumpOpnd( TREEPTR opnd )
         printf( "error" );
         break;
     case OPR_PUSHINT:
-        printf( "%ld", opnd->op.long_value );
+        printf( "%ld", opnd->op.u2.long_value );
         break;
     case OPR_PUSHFLOAT:
 #ifdef _LONG_DOUBLE_
-        DumpALD( &opnd->op.float_value->ld );
+        DumpALD( &opnd->op.u2.float_value->ld );
 #else
-        if( opnd->op.float_value->len != 0 ) {
-            printf( "%s", opnd->op.float_value->string );
+        if( opnd->op.u2.float_value->len != 0 ) {
+            printf( "%s", opnd->op.u2.float_value->string );
         } else {
-            printf( "%g", opnd->op.float_value->ld.value );
+            printf( "%g", opnd->op.u2.float_value->ld.value );
         }
 #endif
         break;
     case OPR_PUSHSTRING:
-        DumpAString( opnd->op.string_handle );
+        DumpAString( opnd->op.u2.string_handle );
         break;
     case OPR_PUSHSYM:
     case OPR_PUSHADDR:
     case OPR_FUNCNAME:
-        SymGet( &sym, opnd->op.sym_handle );
+        SymGet( &sym, opnd->op.u2.sym_handle );
         printf( "%s", sym.name );
         break;
     case OPR_EXCEPT_CODE:
@@ -147,7 +147,7 @@ void DumpPrefix( TREEPTR node )
         break;
     case OPR_MATHFUNC:
     case OPR_MATHFUNC2:
-        switch( node->op.mathfunc ) {
+        switch( node->op.u1.mathfunc ) {
         case O_LOG:     printf( "__LOG(" );     break;
         case O_COS:     printf( "__COS(" );     break;
         case O_SIN:     printf( "__SIN(" );     break;
@@ -185,11 +185,11 @@ void DumpInfix( TREEPTR node )
 
     switch( node->op.opr ) {
     case OPR_FUNCTION:
-        SymGet( &sym, node->op.func.sym_handle );
+        SymGet( &sym, node->op.u2.func.sym_handle );
         printf( "function %s", sym.name );
         break;
     case OPR_LABELCOUNT:
-        printf( "label count=%u", node->op.label_count );
+        printf( "label count=%u", node->op.u2.label_count );
         break;
     case OPR_FUNCEND:
         printf( "funcend\n" );
@@ -198,11 +198,11 @@ void DumpInfix( TREEPTR node )
     case OPR_JUMP:
     case OPR_JUMPTRUE:
     case OPR_JUMPFALSE:
-        printf( "%s L%u ", _Ops[ node->op.opr ], node->op.label_index );
+        printf( "%s L%u ", _Ops[ node->op.opr ], node->op.u2.label_index );
         break;
     case OPR_CASE:
         printf( "%s %u (L%u)", _Ops[ node->op.opr ], 
-                node->op.case_info->value, node->op.case_info->label );
+                node->op.u2.case_info->value, node->op.u2.case_info->label );
         break;
     case OPR_INDEX:
         printf( "[" );
@@ -224,17 +224,17 @@ void DumpInfix( TREEPTR node )
         }
         break;
     case OPR_CMP:
-        printf( " %s ", CCOps[ node->op.cc ] );
+        printf( " %s ", CCOps[ node->op.u1.cc ] );
         break;
     case OPR_TRY:
-        printf( "%s %d", _Ops[ node->op.opr ], node->op.st.parent_scope );
+        printf( "%s %d", _Ops[ node->op.opr ], node->op.u2.st.parent_scope );
         break;
     case OPR_UNWIND:
-        printf( "%s %d", _Ops[ node->op.opr ], node->op.st.try_index );
+        printf( "%s %d", _Ops[ node->op.opr ], node->op.u2.st.u.try_index );
         break;
     case OPR_EXCEPT:
     case OPR_FINALLY:
-        printf( "%s parent=%d", _Ops[ node->op.opr ], node->op.st.parent_scope );
+        printf( "%s parent=%d", _Ops[ node->op.opr ], node->op.u2.st.parent_scope );
         break;
     default:
         printf( " " );
@@ -281,7 +281,7 @@ void DumpExpr( TREEPTR tree )
 
 void DumpStmt( TREEPTR tree )
 {
-    printf( "line %3.3u: ", tree->op.src_loc.line );
+    printf( "line %3.3u: ", tree->op.u2.src_loc.line );
     WalkExprTree( tree->right, DumpOpnd, DumpPrefix, DumpInfix, DumpPostfix );
     printf( "\n" );
 }

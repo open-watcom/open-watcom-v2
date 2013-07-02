@@ -91,7 +91,7 @@ TREEPTR CallNode( TREEPTR func, TREEPTR parms, TYPEPTR func_result )
 
     tree = ExprNode( func, OPR_CALL, parms );
     tree->expr_type = func_result;
-    tree->op.result_type = func_result;
+    tree->op.u2.result_type = func_result;
     typ = func_result;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type != TYPE_VOID && TypeSize( typ ) == 0 ) {
@@ -136,8 +136,8 @@ TREEPTR FarPtr16Cvt( TREEPTR newparm  )
         op2_class = ExprTypeClass( newparm->expr_type );
         newparm = ExprNode( NULL, OPR_CONVERT_PTR, newparm );
         newparm->expr_type = parmtyp;
-        newparm->op.sp.oldptr_class = op2_class;
-        newparm->op.sp.newptr_class = op1_class;
+        newparm->op.u2.sp.oldptr_class = op2_class;
+        newparm->op.u2.sp.newptr_class = op1_class;
     }
     return( newparm );
 }
@@ -157,7 +157,7 @@ TREEPTR ParmNode( TREEPTR parmlist, TREEPTR newparm, int far16_func )
         parmtyp = newparm->expr_type;
     }
     tree->expr_type = parmtyp;
-    tree->op.result_type = parmtyp;
+    tree->op.u2.result_type = parmtyp;
     return( tree );
 }
 
@@ -209,35 +209,35 @@ TREEPTR ConstLeaf( void )
     FLOATVAL    *flt;
 
     leaf = LeafNode( OPR_PUSHINT );     // assume integer value
-    leaf->op.const_type = ConstType;
+    leaf->op.u1.const_type = ConstType;
     switch( ConstType ) {
     case TYPE_WCHAR:
         if( sizeof( wchar_t ) == sizeof( unsigned short ) ) {
-            leaf->op.const_type = TYPE_USHORT;
+            leaf->op.u1.const_type = TYPE_USHORT;
         } else {
-            leaf->op.const_type = TYPE_CHAR;
+            leaf->op.u1.const_type = TYPE_CHAR;
         }
-        leaf->op.long_value = Constant;
+        leaf->op.u2.long_value = Constant;
         break;
     case TYPE_CHAR:
-        leaf->op.const_type = TYPE_INT;
+        leaf->op.u1.const_type = TYPE_INT;
     case TYPE_INT:
-        leaf->op.long_value = Constant;
+        leaf->op.u2.long_value = Constant;
         break;
     case TYPE_UINT:
-        leaf->op.ulong_value = Constant;
+        leaf->op.u2.ulong_value = Constant;
         break;
     case TYPE_LONG:
-        leaf->op.long_value = Constant;
+        leaf->op.u2.long_value = Constant;
         break;
     case TYPE_ULONG:
-        leaf->op.ulong_value = Constant;
+        leaf->op.u2.ulong_value = Constant;
         break;
     case TYPE_LONG64:
-        leaf->op.long64_value = Const64;
+        leaf->op.u2.long64_value = Const64;
         break;
     case TYPE_ULONG64:
-        leaf->op.ulong64_value = Const64;
+        leaf->op.u2.ulong64_value = Const64;
         break;
     case TYPE_FLOAT:
     case TYPE_DOUBLE:
@@ -251,13 +251,13 @@ TREEPTR ConstLeaf( void )
         flt->len = TokenLen + 1;
         flt->type = ConstType;
         flt->next = NULL;
-        leaf->op.float_value = flt;
+        leaf->op.u2.float_value = flt;
         leaf->op.opr = OPR_PUSHFLOAT;
         /* Convert constant to binary; that ensures it'll be cast properly. */
         MakeBinaryFloat( leaf );
         break;
     }
-    leaf->expr_type = GetType( leaf->op.const_type );
+    leaf->expr_type = GetType( leaf->op.u1.const_type );
     return( leaf );
 }
 
@@ -266,8 +266,8 @@ TREEPTR IntLeaf( target_int value )
     TREEPTR     leaf;
 
     leaf = LeafNode( OPR_PUSHINT );
-    leaf->op.const_type = TYPE_INT;
-    leaf->op.long_value = value;
+    leaf->op.u1.const_type = TYPE_INT;
+    leaf->op.u2.long_value = value;
     leaf->expr_type = GetType( TYPE_INT );
     return( leaf );
 }
@@ -277,8 +277,8 @@ TREEPTR UIntLeaf( target_uint value )
     TREEPTR     leaf;
 
     leaf = LeafNode( OPR_PUSHINT );
-    leaf->op.const_type = TYPE_UINT;
-    leaf->op.ulong_value = value;
+    leaf->op.u1.const_type = TYPE_UINT;
+    leaf->op.u2.ulong_value = value;
     leaf->expr_type = GetType( TYPE_UINT );
     return( leaf );
 }
@@ -288,8 +288,8 @@ TREEPTR LongLeaf( target_long value )
     TREEPTR     leaf;
 
     leaf = LeafNode( OPR_PUSHINT );
-    leaf->op.const_type = TYPE_LONG;
-    leaf->op.long_value = value;
+    leaf->op.u1.const_type = TYPE_LONG;
+    leaf->op.u2.long_value = value;
     leaf->expr_type = GetType( TYPE_LONG );
     return( leaf );
 }
@@ -308,7 +308,7 @@ local TREEPTR EnumLeaf( ENUMPTR ep )
         // fall through
     case TYPE_INT:
     case TYPE_LONG:
-        leaf->op.long_value = (signed_32)ep->value.u._32[L];
+        leaf->op.u2.long_value = (signed_32)ep->value.u._32[L];
         break;
     case TYPE_UCHAR:
     case TYPE_USHORT:
@@ -316,14 +316,14 @@ local TREEPTR EnumLeaf( ENUMPTR ep )
         // fall through
     case TYPE_UINT:
     case TYPE_ULONG:
-        leaf->op.long_value = ep->value.u._32[L];
+        leaf->op.u2.long_value = ep->value.u._32[L];
         break;
     case TYPE_LONG64:
     case TYPE_ULONG64:
-        leaf->op.long64_value = ep->value;
+        leaf->op.u2.long64_value = ep->value;
         break;
     }
-    leaf->op.const_type = decl_type;
+    leaf->op.u1.const_type = decl_type;
     leaf->expr_type = GetType( decl_type );
     return( leaf );
 }
@@ -335,7 +335,7 @@ TREEPTR VarLeaf( SYMPTR sym, SYM_HANDLE sym_handle )
     type_modifiers  flags;
 
     leaf = LeafNode( OPR_PUSHADDR );
-    leaf->op.sym_handle = sym_handle;
+    leaf->op.u2.sym_handle = sym_handle;
     typ = sym->sym_type;
     leaf->expr_type = typ;
     flags = sym->attrib & MASK_PTR;
@@ -545,11 +545,11 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
 
             decl_flags = FlagOps( tree->op.flags );
             if( tree->op.opr == OPR_PUSHADDR ) {
-                SymGet( &sym, tree->op.sym_handle );
+                SymGet( &sym, tree->op.u2.sym_handle );
                 symb_flags = sym.flags;
                 sym.flags |= SYM_REFERENCED | SYM_ASSIGNED;
                 if( symb_flags != sym.flags ) {
-                    SymReplace( &sym, tree->op.sym_handle );
+                    SymReplace( &sym, tree->op.u2.sym_handle );
                 }
             }
             if( IsCallValue( tree ) ) {
@@ -562,15 +562,15 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
 
         symb_flags = FLAG_NONE;
         if( tree->op.opr == OPR_PUSHADDR ) {
-            SymGet( &sym, tree->op.sym_handle );
+            SymGet( &sym, tree->op.u2.sym_handle );
             decl_flags = sym.attrib;
             symb_flags = sym.flags;
             sym.flags |= SYM_REFERENCED | SYM_ADDR_TAKEN;
             if( symb_flags != sym.flags ) {
-                    SymReplace( &sym, tree->op.sym_handle );
+                    SymReplace( &sym, tree->op.u2.sym_handle );
             }
         } else if( tree->op.opr == OPR_POINTS ) {
-            decl_flags = tree->op.result_type->u.p.decl_flags;
+            decl_flags = tree->op.u2.result_type->u.p.decl_flags;
         } else {
             decl_flags = FLAG_NONE;
         }
@@ -588,7 +588,7 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             }
         }
         if( tree->op.opr == OPR_PUSHSYM || tree->op.opr == OPR_PUSHADDR ) {
-            SymGet( &sym, tree->op.sym_handle );
+            SymGet( &sym, tree->op.u2.sym_handle );
             symb_flags = sym.flags;
             sym.flags |= SYM_REFERENCED;                /* 07-jun-89 */
             if( CompFlags.label_dropped == 0  &&  SizeOfCount == 0 ) {
@@ -598,12 +598,12 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
                     if( !(sym.flags & SYM_ASSIGNED) ) {
                       /* turn on flag so msg only comes out once per sym */
                         sym.flags |= SYM_ASSIGNED;
-                        CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, SymName( &sym, tree->op.sym_handle ) );
+                        CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, SymName( &sym, tree->op.u2.sym_handle ) );
                     }
                 }
             }
             if( symb_flags != sym.flags ) {
-                SymReplace( &sym, tree->op.sym_handle );
+                SymReplace( &sym, tree->op.u2.sym_handle );
             }
         }
     }
@@ -626,10 +626,10 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
     case OPR_CALL:                      // func()
         tree->op.flags |= OPFLAG_RVALUE;
         if( tree->left->op.opr == OPR_FUNCNAME ) {
-            SymGet( &sym, tree->left->op.sym_handle );
+            SymGet( &sym, tree->left->op.u2.sym_handle );
             if( sym.stg_class == SC_FORWARD && !(sym.flags & SYM_TYPE_GIVEN) ) {
                  sym.flags |= SYM_TYPE_GIVEN;
-                 SymReplace( &sym, tree->left->op.sym_handle );
+                 SymReplace( &sym, tree->left->op.u2.sym_handle );
             }
         }
         break;
@@ -637,7 +637,7 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
         if( tree->left->op.opr == OPR_PUSHSTRING ) {    // *"abc"
             STRING_LITERAL      *string;
 
-            string = tree->left->op.string_handle;
+            string = tree->left->op.u2.string_handle;
             value = string->literal[0];
             typ = tree->left->expr_type;
             if( typ->object->decl_type == TYPE_USHORT ) {  /* 24-jul-92 */
@@ -708,7 +708,7 @@ static TREEPTR AddrOp( TREEPTR tree )
         // #define offsetof(typ,field) (size_t)&(((typ*)0)->field)
         if( tree->left->op.opr == OPR_PUSHINT ) {
             leaf = tree->left;
-            leaf->op.ulong_value += tree->right->op.ulong_value;
+            leaf->op.u2.ulong_value += tree->right->op.u2.ulong_value;
             tree->left = NULL;
             FreeExprTree( tree );
             leaf->expr_type = PtrNode( typ, FLAG_NONE, SEG_DATA );
@@ -719,7 +719,7 @@ static TREEPTR AddrOp( TREEPTR tree )
     modifiers  = FLAG_NONE;
     segid = SEG_DATA;
     if( leaf->op.opr == OPR_PUSHADDR ) {
-        SymGet( &sym, leaf->op.sym_handle );
+        SymGet( &sym, leaf->op.u2.sym_handle );
         if( sym.stg_class == SC_REGISTER ) {
             CErr1( ERR_CANT_TAKE_ADDR_OF_REGISTER );
         }
@@ -727,10 +727,10 @@ static TREEPTR AddrOp( TREEPTR tree )
             sym.flags |= SYM_ASSIGNED;
         }
         sym.flags |= SYM_ADDR_TAKEN | SYM_REFERENCED;
-        SymReplace( &sym, leaf->op.sym_handle );
+        SymReplace( &sym, leaf->op.u2.sym_handle );
     }
     if( tree->op.opr == OPR_PUSHADDR ) {
-        SymGet( &sym, leaf->op.sym_handle );
+        SymGet( &sym, leaf->op.u2.sym_handle );
         modifiers = sym.attrib;
         if( sym.stg_class == SC_AUTO ) {
             segid = SEG_STACK;
@@ -741,7 +741,7 @@ static TREEPTR AddrOp( TREEPTR tree )
         }
         typ = PtrNode( typ, modifiers & MASK_PTR, segid );
     } else if( tree->op.opr == OPR_POINTS ) {
-        typ = tree->op.result_type;
+        typ = tree->op.u2.result_type;
     } else {
         modifiers = FlagOps( tree->op.flags );
         typ = PtrNode( typ, modifiers, SEG_DATA );
@@ -776,7 +776,7 @@ static TREEPTR FarPtrCvt( SYMPTR sym, SYM_HANDLE sym_handle )
             tree->op.opr = OPR_PUSHSYM;
             tree = ExprNode( NULL, OPR_CONVERT, tree );
             tree->expr_type = typ;
-            tree->op.result_type = PtrNode( typ->object, FLAG_FAR, 0 );
+            tree->op.u2.result_type = PtrNode( typ->object, FLAG_FAR, 0 );
         }
     } else {
         assert( 0 );
@@ -815,7 +815,7 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
         tree->op.flags &= ~OPFLAG_RVALUE;
         based_sym = ExprNode( tree, OPR_DUPE, NULL );
         based_sym->op.flags |= OPFLAG_RVALUE;
-        based_sym->op.result_type = tree->op.result_type;
+        based_sym->op.u2.result_type = tree->op.u2.result_type;
         tree = MakeFarOp( based_sym, tree );
         tree->right = NULL;
         break;
@@ -839,7 +839,7 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
         old = PtrNode( old->object, typ->u.p.decl_flags, 0 );
         tree = ExprNode( based_sym, OPR_ADD, tree );
         tree->expr_type = old;
-        tree->op.result_type = old;
+        tree->op.u2.result_type = old;
       } break;
     case BASED_SEGVAR:           //__based( <var> )             add offset to seg var
         sym = SymGetPtr( sym_handle );
@@ -859,8 +859,8 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
             based_sym->op.opr = OPR_PUSHSEG;
         } else { //error I guess
             based_sym = LeafNode( OPR_PUSHINT );
-            based_sym->op.const_type = TYPE_INT;
-            based_sym->op.long_value = segid;
+            based_sym->op.u1.const_type = TYPE_INT;
+            based_sym->op.u2.long_value = segid;
             based_sym->expr_type =  GetType( TYPE_USHORT );
         }
         tree = MakeFarOp( based_sym, tree );
@@ -916,7 +916,7 @@ TREEPTR PtrOp( TREEPTR tree )
     typ = typ->object;
 //  SKIP_TYPEDEFS( typ );
     tree->expr_type = typ;
-    tree->op.result_type = ptrtyp;
+    tree->op.u2.result_type = ptrtyp;
     tree->op.flags = OpFlags( flags );
     if( SizeOfCount == 0 ) {
         if( tree->op.flags & OPFLAG_VOLATILE ) {
@@ -1013,19 +1013,19 @@ TREEPTR DotOp( TREEPTR tree )
         field->xref->next_xref = NewXref( field->xref->next_xref );
     }
     if( tree->op.opr == OPR_DOT || tree->op.opr == OPR_ARROW ) {
-        tree->right->op.ulong_value += offset;
+        tree->right->op.u2.ulong_value += offset;
     } else {
         if( tree->op.opr == OPR_PUSHADDR ) {
-            SymGet( &sym, tree->op.sym_handle );
+            SymGet( &sym, tree->op.u2.sym_handle );
             if( !(sym.flags & SYM_ASSIGNED) ) {
                 sym.flags |= SYM_ASSIGNED;
-                SymReplace( &sym, tree->op.sym_handle );
+                SymReplace( &sym, tree->op.u2.sym_handle );
             }
         }
         tree = ExprNode( tree, OPR_DOT, UIntLeaf( offset ) );
     }
     tree->expr_type = typ;
-    tree->op.result_type = typ;
+    tree->op.u2.result_type = typ;
     tree->op.flags = opflag;
     return( tree );
 }
@@ -1070,7 +1070,7 @@ TREEPTR ArrowOp( TREEPTR tree )
     tree = ExprNode( tree, OPR_ARROW, UIntLeaf( offset ) );
     typ = field->field_type;
     tree->expr_type = typ;
-    tree->op.result_type = typ;
+    tree->op.u2.result_type = typ;
     flags |= field->attrib;
     tree->op.flags |= OpFlags( flags );
     return( tree );
@@ -1104,25 +1104,25 @@ bool ConstExprAndType( const_val *val )
     val->type = TYPE_INT;
     switch( tree->op.opr ) {
     case OPR_PUSHINT:
-        val->type = tree->op.const_type;
-        switch( tree->op.const_type ) {
+        val->type = tree->op.u1.const_type;
+        switch( tree->op.u1.const_type ) {
         case TYPE_LONG64:
         case TYPE_ULONG64:
-            val->value = tree->op.long64_value;
+            val->value = tree->op.u2.long64_value;
             break;
         case TYPE_ULONG:
         case TYPE_UINT:
-            U32ToU64( tree->op.long_value, &val->value );
+            U32ToU64( tree->op.u2.long_value, &val->value );
             break;
         default:
-            I32ToI64( tree->op.long_value, &val->value );
+            I32ToI64( tree->op.u2.long_value, &val->value );
             break;
         }
         ret = TRUE;
         break;
     case OPR_PUSHFLOAT:
         CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
-        I32ToI64( (long)atof( tree->op.float_value->string ), &val->value );
+        I32ToI64( (long)atof( tree->op.u2.float_value->string ), &val->value );
         ret = FALSE;
         break;
     default:
@@ -1228,7 +1228,7 @@ local TREEPTR GetExpr( void )
                 }
                 tree = ExprNode( op1, OPR_COMMA, tree );
                 tree->expr_type = typ;
-                tree->op.result_type = typ;
+                tree->op.u2.result_type = typ;
                 break;
             case TC_ASSIGNMENT:  /*  = += -= *= /= %= >>= <<= &= ^= |=  */
                 ChkConst( op1 );
@@ -1353,9 +1353,9 @@ local TREEPTR GetExpr( void )
                     --n;
                 }
                 functree = ValueStack[ n ];
-                sym = SymGetPtr( functree->op.sym_handle );
+                sym = SymGetPtr( functree->op.u2.sym_handle );
                 if( !(sym->flags & SYM_TEMP) )
-                    SetDiagSymbol( sym, functree->op.sym_handle );
+                    SetDiagSymbol( sym, functree->op.u2.sym_handle );
                 tree = GenNextParm( tree, &plist );
                 tree = GenFuncCall( tree );
                 if( plist != NULL ) {   // function has prototype
@@ -1599,16 +1599,16 @@ local TREEPTR ExprOpnd( void )
             FLOATVAL    *flt;
 
             tree = LeafNode( OPR_PUSHFLOAT );
-            tree->op.const_type = TYPE_DIMAGINARY;
+            tree->op.u1.const_type = TYPE_DIMAGINARY;
             flt = CMemAlloc( sizeof( FLOATVAL ) + 3 );
             flt->string[0] = '+';
             strcpy( &flt->string[1], "1.0" );
             flt->len = 3 + 1;
             flt->type = TYPE_DIMAGINARY;
             flt->next = NULL;
-            tree->op.float_value = flt;
+            tree->op.u2.float_value = flt;
             tree->op.opr = OPR_PUSHFLOAT;
-            tree->expr_type = GetType( tree->op.const_type );
+            tree->expr_type = GetType( tree->op.u1.const_type );
             }
             NextToken();
             break;
@@ -1757,11 +1757,11 @@ local TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
     // Some crappy little optimization that probably does nothing
     if( index_expr->op.opr == OPR_PUSHINT  &&
         tree->expr_type->decl_type == TYPE_ARRAY ) {
-        index_expr->op.long_value *= SizeOfArg( typ );
+        index_expr->op.u2.long_value *= SizeOfArg( typ );
         tree = ExprNode( tree, OPR_DOT, index_expr );
 #if _CPU == 8086
-        if( index_expr->op.long_value > 0x7FFF ) {
-            index_expr->op.const_type = TYPE_LONG;
+        if( index_expr->op.u2.long_value > 0x7FFF ) {
+            index_expr->op.u1.const_type = TYPE_LONG;
             index_expr->expr_type = GetType( TYPE_LONG );
         }
 #endif
@@ -1778,7 +1778,7 @@ local TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
         tree = ExprNode( tree, OPR_INDEX, index_expr );
     }
     tree->expr_type = typ;
-    tree->op.result_type = typ;
+    tree->op.u2.result_type = typ;
     tree->op.flags = tree_flags;
     return( tree );
 }
@@ -1977,7 +1977,7 @@ local TREEPTR GenVaStartNode( TREEPTR last_parm )
         Token[Level-2] == T_LEFT_PAREN ) {
         offset = 0;
         if( last_parm->op.opr == OPR_PUSHINT &&
-            last_parm->op.long_value == 0 ) {           // varargs.h
+            last_parm->op.u2.long_value == 0 ) {           // varargs.h
             offset = -REG_SIZE;
         }
         parmsym = ValueStack[Level];            // get name of parameter
@@ -1987,16 +1987,16 @@ local TREEPTR GenVaStartNode( TREEPTR last_parm )
             while( parms_list != 0 ) {
                 sym = SymGetPtr( parms_list );
                 offset += _RoundUp( SizeOfArg( sym->sym_type ), REG_SIZE );
-                if( parms_list == parmsym->op.sym_handle )
+                if( parms_list == parmsym->op.u2.sym_handle )
                     break;
                 parms_list = sym->handle;
             }
         }
         if( offset == 0 || parms_list == 0 ) {
             // error: name not found in parm list
-            sym = SymGetPtr( parmsym->op.sym_handle );
+            sym = SymGetPtr( parmsym->op.u2.sym_handle );
             CErr2p( ERR_SYM_NOT_IN_PARM_LIST,
-                        SymName( sym, parmsym->op.sym_handle ) );
+                        SymName( sym, parmsym->op.u2.sym_handle ) );
         }
         FreeExprNode( parmsym );
         tree = ValueStack[ Level - 1 ];
@@ -2044,7 +2044,7 @@ local TREEPTR GenVaArgNode( TREEPTR last_parm )
         Token[Level-1] != T_LEFT_PAREN &&
         Token[Level-2] == T_LEFT_PAREN ) {
         if( last_parm->op.opr == OPR_PUSHINT &&
-            last_parm->op.long_value == 0 ) {           // varargs.h
+            last_parm->op.u2.long_value == 0 ) {           // varargs.h
         }
         parmsym = ValueStack[Level];            // get name of parameter
         FreeExprNode( parmsym );
@@ -2088,8 +2088,8 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
     functree = ValueStack[ n ];
     typ = TypeOf( functree );
     if( typ->decl_type == TYPE_FUNCTION ) {
-        SymGet( &sym, functree->op.sym_handle );
-        sym_name = SymName( &sym, functree->op.sym_handle );
+        SymGet( &sym, functree->op.u2.sym_handle );
+        sym_name = SymName( &sym, functree->op.u2.sym_handle );
         flags = sym.attrib;
         typ = typ->object;
         SKIP_TYPEDEFS( typ );
@@ -2103,12 +2103,12 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
             aux_info    *inf;
             aux_entry   *ent;
 
-            inf = FindInfo( &sym, functree->op.sym_handle );
+            inf = FindInfo( &sym, functree->op.u2.sym_handle );
             if( (inf->flags & AUX_FLAG_FAR16) || (sym.attrib & FLAG_FAR16) ) {
                 far16_func = 1;
                 typ = Far16Type( typ );
             }
-            sym_name = SymName( &sym, functree->op.sym_handle );
+            sym_name = SymName( &sym, functree->op.u2.sym_handle );
             ent = AuxLookup( sym_name );
         }
 #endif
@@ -2124,7 +2124,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
             ++i;
             tree = ParmNode( NULL, ValueStack[i], far16_func );
         }
-        tree->op.result_type = typ;
+        tree->op.u2.result_type = typ;
         while( i != Level ) {
             ++i;
             tree = ParmNode( tree, ValueStack[i], far16_func );
@@ -2137,10 +2137,10 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
         optimized = 0;
         if( last_parm->op.opr == OPR_PUSHSTRING ) {
             if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
-                string_len = last_parm->op.string_handle->length;
+                string_len = last_parm->op.u2.string_handle->length;
                 if( functree->op.opr == OPR_PUSHADDR ) {
-                    SymGet( &sym, functree->op.sym_handle );
-                    sym_name = SymName( &sym, functree->op.sym_handle );
+                    SymGet( &sym, functree->op.u2.sym_handle );
+                    sym_name = SymName( &sym, functree->op.u2.sym_handle );
                     if( far_strcmp( sym_name, "_inline_strcmp", 15 ) == 0 ) {
                         SymGet( &sym, SymMEMCMP );
                         tree = VarLeaf( &sym, SymMEMCMP );
@@ -2150,11 +2150,11 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
             }
         } else {
             if( functree->op.opr == OPR_FUNCNAME ) {
-                SymGet( &sym, functree->op.sym_handle );
-                if( functree->op.sym_handle == CurFuncHandle ) {
+                SymGet( &sym, functree->op.u2.sym_handle );
+                if( functree->op.u2.sym_handle == CurFuncHandle ) {
                     recursive = 1;                      /* 22-sep-91 */
                 }
-                sym_name = SymName( &sym, functree->op.sym_handle );
+                sym_name = SymName( &sym, functree->op.u2.sym_handle );
                 n = far_strlen_plus1( sym_name );
                 if( (GenSwitches & NO_OPTIMIZATION) == 0  &&
                     CompFlags.extensions_enabled ) {
@@ -2171,7 +2171,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
                                                         last_parm );
                             }
                             tree->expr_type = GetType( TYPE_DOUBLE );
-                            tree->op.mathfunc = MathFuncs[i].mathop;
+                            tree->op.u1.mathfunc = MathFuncs[i].mathop;
                             goto done_call;
                         }
                     }
@@ -2209,7 +2209,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
     if( ! DeadCode ) {                          /* 09-apr-93 */
         if( functree->op.opr == OPR_FUNCNAME ) {
             CompFlags.pending_dead_code |=
-                        FunctionAborts( &sym, functree->op.sym_handle );
+                        FunctionAborts( &sym, functree->op.u2.sym_handle );
         }
     }
 done_call:
@@ -2275,9 +2275,9 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
     }
     if( tree->op.opr == OPR_PUSHADDR ) {        /* direct call */
         tree->op.opr = OPR_FUNCNAME;            // change to funcname
-        sym_handle = tree->op.sym_handle;
+        sym_handle = tree->op.u2.sym_handle;
         SymGet( &sym, sym_handle );
-        if( tree->op.sym_handle == CurFuncHandle ) {
+        if( tree->op.u2.sym_handle == CurFuncHandle ) {
             recursive = 1;
         }
         decl_flags = sym.attrib;
@@ -2295,7 +2295,7 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
             SymReplace( &sym, sym_handle );
             tree = ExprNode( 0, OPR_CALL_INDIRECT, tree );
             tree->expr_type = typ;
-            tree->op.sym_handle = sym_handle;
+            tree->op.u2.sym_handle = sym_handle;
         }
     }
     if( typ->decl_type != TYPE_FUNCTION ) {
@@ -2335,7 +2335,7 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
             SYM_NAMEPTR         func_name;
 
             if( !(sym.flags & SYM_TEMP) ) {
-                sym_handle = tree->op.sym_handle;
+                sym_handle = tree->op.u2.sym_handle;
                 SymGet( &sym, sym_handle );
                 func_name = SymName( &sym, sym_handle );
                 if( strcmp( func_name, "_exception_code" ) == 0 ) {
@@ -2391,7 +2391,7 @@ local TREEPTR OrOr( TREEPTR tree )
 {
     // This routine is called when || token is found
     if( tree->op.opr == OPR_PUSHINT ) {
-        if( tree->op.long_value != 0 ) {
+        if( tree->op.u2.long_value != 0 ) {
             ++SizeOfCount;      /* skip code gen */
             CurToken = T_NULL;
         }
@@ -2404,7 +2404,7 @@ local TREEPTR AndAnd( TREEPTR tree )
 {
     // This routine is called when && token is found
     if( tree->op.opr == OPR_PUSHINT ) {
-        if( tree->op.long_value == 0 ) {
+        if( tree->op.u2.long_value == 0 ) {
             ++SizeOfCount;      /* skip code gen */
             CurToken = T_NULL;
         }
@@ -2436,9 +2436,9 @@ TREEPTR BoolExpr( TREEPTR tree )
 
             val64 = LongValue64( tree );
             if( U64Test( &val64 ) != 0 ) {
-                tree->op.ulong_value = 1;
+                tree->op.u2.ulong_value = 1;
             }
-            tree->op.const_type = TYPE_INT;
+            tree->op.u1.const_type = TYPE_INT;
             tree->expr_type = GetType( TYPE_INT );
         } else {
             tree = RelOp( tree, T_NE, IntLeaf( 0 ) );
@@ -2454,7 +2454,7 @@ local TREEPTR NotOp( TREEPTR tree )
     FLOATVAL    *flt;
 
     if( IsConstLeaf( tree ) ) {
-        switch( tree->op.const_type ) {
+        switch( tree->op.u1.const_type ) {
         case TYPE_CHAR:
         case TYPE_UCHAR:
         case TYPE_SHORT:
@@ -2463,25 +2463,25 @@ local TREEPTR NotOp( TREEPTR tree )
         case TYPE_UINT:
         case TYPE_LONG:
         case TYPE_ULONG:
-            if( tree->op.long_value == 0 ) {
-                tree->op.long_value = 1;
+            if( tree->op.u2.long_value == 0 ) {
+                tree->op.u2.long_value = 1;
             } else {
-                tree->op.long_value = 0;
+                tree->op.u2.long_value = 0;
             }
-            tree->op.const_type = TYPE_INT;
+            tree->op.u1.const_type = TYPE_INT;
             break;
         case TYPE_FLOAT:
         case TYPE_DOUBLE:
         case TYPE_LONG_DOUBLE:
-            flt = tree->op.float_value;
+            flt = tree->op.u2.float_value;
             if( atof( flt->string ) == 0.0 ) {
-                tree->op.long_value = 1;
+                tree->op.u2.long_value = 1;
             } else {
-                tree->op.long_value = 0;
+                tree->op.u2.long_value = 0;
             }
             CMemFree( flt );
             tree->op.opr = OPR_PUSHINT;
-            tree->op.const_type = TYPE_INT;
+            tree->op.u1.const_type = TYPE_INT;
             break;
         default:
             tree = RelOp( ScalarExpr( tree ), T_EQ, IntLeaf( 0 ) );
@@ -2565,10 +2565,10 @@ static TREEPTR TernOp( TREEPTR expr1, TREEPTR true_part, TREEPTR false_part )
         FreeExprNode( expr1 );
     } else {
         tree = ExprNode( true_part, OPR_COLON, false_part );
-        tree->op.label_index = NextLabel();
+        tree->op.u2.label_index = NextLabel();
         NextLabel();                            // need 2 labels
         tree = ExprNode( expr1, OPR_QUESTION, tree );
-        tree->op.result_type = result_typ;
+        tree->op.u2.result_type = result_typ;
         ops = OPFLAG_NONE;
         if( !IsConstLeaf( true_part ) ) {
             ops |= (true_part->op.flags & OPFLAG_MEM_MODEL);
@@ -2599,7 +2599,7 @@ local TREEPTR UnaryPlus( TREEPTR tree )
     case TYPE_UFIELD:                           /* 26-mar-91 */
         tree = ExprNode( NULL, OPR_CONVERT, tree );
         tree->expr_type = GetType( TYPE_INT );
-        tree->op.result_type = tree->expr_type;
+        tree->op.u2.result_type = tree->expr_type;
         break;
     case TYPE_ARRAY:                            /* 26-mar-91 */
     case TYPE_POINTER:                          /* 26-mar-91 */
