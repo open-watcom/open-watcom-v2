@@ -2637,10 +2637,10 @@ File: source\diag0246.c
 (83,13): Warning! W689: conditional expression is always true (non-zero)
   range of possible values for type '__int64' is -9223372036854775808 to 9223372036854775807
   constant expression in comparison has value 9223372036854775807
-(85,12): Warning! W689: conditional expression is always true (non-zero)
+(85,13): Warning! W689: conditional expression is always true (non-zero)
   range of possible values for type '__int64' is -9223372036854775808 to 9223372036854775807
   constant expression in comparison has value 9223372036854775807
-(86,12): Warning! W690: conditional expression is always false (zero)
+(86,13): Warning! W690: conditional expression is always false (zero)
   range of possible values for type '__int64' is -9223372036854775808 to 9223372036854775807
   constant expression in comparison has value -9223372036854775808
 (88,11): Warning! W354: pointer expression is always >= 0
