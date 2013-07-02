@@ -80,7 +80,7 @@ common_cppflags_ppc   = -D__PPC__
 common_cppflags_mips  = -D__MIPS__ -Umips
 
 # common release/debug flags
-common_flags_rel = -O
+common_flags_rel = -O -g
 common_flags_dbg = -g
 !ifeq release 1
 common_flags = $(common_flags_rel)
@@ -129,7 +129,7 @@ bcl  = gcc -pipe
 
 blib      = ar
 
-bld_cc_sys = -funsigned-char -fno-asm -fno-common
+bld_cc_sys = -fno-asm -fno-common -fsigned-char
 bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
