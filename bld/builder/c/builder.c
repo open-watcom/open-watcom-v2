@@ -465,13 +465,15 @@ static int MatchFound( char *p )
 }
 
 
-static void ProcessCtlFile( const char *name )
+static int ProcessCtlFile( const char *name )
 {
     char        *p;
     char        *log_name;
     int         res;
     bool        logit;
+    int         rc;
 
+    rc = 0;
     PushInclude( name );
     while( GetALine( Line ) ) {
         SubstLine( Line, ProcLine );
@@ -542,6 +544,7 @@ static void ProcessCtlFile( const char *name )
                     if( !IgnoreErrors ) {
                         Fatal( "Build failed\n" );
                     }
+                    rc = res;
                 }
                 LogFlush();
             } else if( logit && ( VerbLevel > 1 ) ) {
@@ -549,6 +552,7 @@ static void ProcessCtlFile( const char *name )
             }
         }
     }
+    return( rc );
 }
 
 static bool SearchUpDirs( const char *name, char *result )
@@ -596,6 +600,7 @@ int main( int argc, char *argv[] )
 {
     ctl_file    *next;
     const char  *p;
+    int         rc = 0;
 
     SysInit( argc, argv );
     ProcessOptions( argv + 1 );
@@ -609,11 +614,13 @@ int main( int argc, char *argv[] )
         AddCtlFile( Line );
     }
     while( CtlList != NULL ) {
-        ProcessCtlFile( CtlList->name );
+        if( ProcessCtlFile( CtlList->name ) ) {
+            rc = 1;
+        }
         next = CtlList->next;
         free( CtlList );
         CtlList = next;
     }
     CloseLog();
-    return( 0 );
+    return( rc );
 }
