@@ -33,7 +33,7 @@
 #define MADSTR_H_INCLUDED
 
 typedef enum {
-    #define pick( r, e, j ) MAD_##r,
+    #define pick(c,e,j) MAD_##c,
     #include "mad.str"
     #undef pick
     MAD_MSTR_LAST_ONE

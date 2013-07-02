@@ -82,13 +82,15 @@ END
 
 #include "strbitns.h"
 
-#define pick( a, b, c ) a, [ b ]
 STRINGTABLE
 BEGIN
+    #define pick(c,e,j) c, [ e ]
+
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
+
+    #undef pick
 END
-#undef pick
 
 #include "msgs.dlg"
 #include "spymsgs.dlg"

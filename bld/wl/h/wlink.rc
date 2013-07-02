@@ -10,21 +10,19 @@
 
 STRINGTABLE
 BEGIN
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-#undef pick
-#define pick( code, string1, string2 )  \
-        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
+    #include "lnkerror.msg"
+    #include "wlink.msg"
+    #include "wrcmsg.gh"
 
-#include "lnkerror.msg"
-#include "wlink.msg"
-#include "wrcmsg.gh"
+    #undef pick
 
-#undef pick
-#define pick( code, string1, string2 )  \
-        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
-#include "lnkerror.msg"
-#include "wlink.msg"
-#include "wrcmsg.gh"
+    #include "lnkerror.msg"
+    #include "wlink.msg"
+    #include "wrcmsg.gh"
 
+    #undef pick
 END

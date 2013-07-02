@@ -42,11 +42,11 @@
 #include "demangle.h"
 #include "msg.h"
 
-#undef pick
-#define pick( num, string ) string
-
-static char *MsgStrings[] = {
-#include "msg.h"
+char *MsgStrings[] = {
+    #define pick( name, string ) string,
+    #include "wlbanner.h"
+    #undef pick
+};
 
 static  char *          LocFile;
 static  char *          LocMem;

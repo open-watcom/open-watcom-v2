@@ -24,14 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WLINK banner message definitions.
 *
 ****************************************************************************/
 
 
-#ifdef JAPANESE
-#define pick( a, b, c ) LITSTR( a, c )
+#if 0
+    #define IDV     "** EXPERIMENTAL ** "
+#elif _DEVELOPMENT == _ON
+    #define IDV   " **INTERNAL DEVELOPMENT** "
 #else
-#define pick( a, b, c ) LITSTR( a, b )
+    #define IDV
 #endif
+
+pick( PRODUCT,      banner1( IDV "Open Watcom Linker", _WLINK_VERSION_ ) )
+pick( COPYRIGHT,    banner2( "1985" ) )
+pick( TRADEMARK,    banner3 )
+pick( TRADEMARK2,   banner3a )

@@ -36,9 +36,15 @@
 #include "dui.h"
 #include "strbitns.h"
 
-#include "language.h"
+#ifdef JAPANESE
+  #define pick(c,e,j) LITSTR( c, j )
+#else
+  #define pick(c,e,j) LITSTR( c, e )
+#endif
 #define LITSTR( x, y ) char *LIT( x );
+
 #include "wd.str"
+
 #undef LITSTR
 
 void DUIInitLiterals()

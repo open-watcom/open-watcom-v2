@@ -28,16 +28,18 @@
 
 #include "strbitns.h"
 
-#ifdef JAPANESE
- #define pick( a, b, c ) a, [ c ]
-#else
- #define pick( a, b, c ) a, [ b ]
-#endif
 STRINGTABLE
 BEGIN
+  #ifdef JAPANESE
+    #define pick(c,e,j) c, [ j ]
+  #else
+    #define pick(c,e,j) c, [ e ]
+  #endif
+
     #include "rcstrmsg.gh"
+
+    #undef pick
 END
-#undef pick
 
 #include "about.dlg"
 #include "intdlg.dlg"

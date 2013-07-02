@@ -1,6 +1,7 @@
 #include "errcod.h"
 
-stringtable begin
+STRINGTABLE
+BEGIN
 
     CP_TERMINATE+MSG_LANG_BASE "program abnormally terminated"
     EX_Z_2_NOT_POS+MSG_LANG_BASE "zero**J where J <= 0 is not allowed"
@@ -88,4 +89,5 @@ stringtable begin
     MS_TRACE_INFO+MSG_LANG_BASE "- Executing line %u1 in file %s2"
     MS_CALLED_FROM+MSG_LANG_BASE "- Called from line %u1 in file %s2"
 
-end
+END
+

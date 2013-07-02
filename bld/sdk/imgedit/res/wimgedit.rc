@@ -105,13 +105,15 @@ END
 
 #include "strbitns.h"
 
-#define pick( a, b, c ) a, [ b ]
 STRINGTABLE
 BEGIN
+    #define pick(c,e,j) c, [ e ]
+
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
+
+    #undef pick
 END
-#undef pick
 
 #ifdef __NT__
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"

@@ -38,9 +38,15 @@
 #include "litdef.h"
 #include "strbitns.h"
 
-#include "language.h"
+#ifdef JAPANESE
+  #define pick(c,e,j) LITSTR( c, j )
+#else
+  #define pick(c,e,j) LITSTR( c, e )
+#endif
 #define LITSTR( x, y ) extern char *LIT( x );
+
 #include "literals.h"
+
 #undef LITSTR
 #undef pick
 

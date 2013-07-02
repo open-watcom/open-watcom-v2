@@ -16,20 +16,19 @@
 
 STRINGTABLE
 BEGIN
+  #if defined( JAPANESE )
+    #define pick(c,e,j) c, [ j ]
+  #else
+    #define pick(c,e,j) c, [ e ]
+  #endif
 
-#undef pick
-#if defined( JAPANESE )
-# define pick( code, string1, string2 ) code, string2
-#else
-# define pick( code, string1, string2 ) code, string1
-#endif
+    #include "..\womp.msg"
 
-#include "..\womp.msg"
+    #undef pick
 
-#if defined( JAPANESE )
-#include "usagej.rc"
-#else
-#include "usage.rc"
-#endif
-
+  #if defined( JAPANESE )
+    #include "usagej.rc"
+  #else
+    #include "usage.rc"
+  #endif
 END

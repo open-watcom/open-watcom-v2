@@ -68,12 +68,6 @@ typedef struct {
     uint_8                      end_sequence : 1;
 } line_state_info;
 
-#undef pick
-#define pick( num, string ) string
-
-static char *MsgStrings[] = {
-#include "msg.h"
-
 typedef struct symrecinfo {
     struct symrecinfo   *next;
     symbol              *sym;

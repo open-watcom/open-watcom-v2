@@ -36,13 +36,15 @@ END
 
 #include "strbitns.h"
 
-#define pick( a, b ) a, [ b ]
 STRINGTABLE
 BEGIN
+    #define pick(c,e) c, [ e ]
+
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
+
+    #undef pick
 END
-#undef pick
 
 #define sp( a, b ) a
 #include "wstring.men"

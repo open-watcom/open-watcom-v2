@@ -1,6 +1,7 @@
 #include "errcod.h"
 
-stringtable begin
+STRINGTABLE
+BEGIN
 
     AR_BAD_COUNT+MSG_LANG_BASE "invalid number of arguments to intrinsic function %s1"
     AR_DUPLICATE_PARM+MSG_LANG_BASE "dummy argument %s1 appears more than once"
@@ -439,4 +440,4 @@ stringtable begin
     MS_OZOPT_O_FLOW_REG_SAVES+MSG_LANG_BASE "move register saves into flow graph"
     MS_OZOPT_O_LOOP_INVAR+MSG_LANG_BASE "loop optimizations/assume loop invariant float-pt. variables are initialized"
 
-end
+END

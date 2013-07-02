@@ -4,16 +4,15 @@
 
 #include "wlnkmsg.h"
 
-#undef pick
-#if defined( JAPANESE )
-#define pick( code, e_string, j_string ) code, j_string
-#else
-#define pick( code, e_string, j_string ) code, e_string
-#endif
-
 STRINGTABLE
 BEGIN
+  #if defined( JAPANESE )
+    #define pick(c,e,j) c, [ j ]
+  #else
+    #define pick(c,e,j) c, [ e ]
+  #endif
 
-#include "lnkerror.msg"
+    #include "lnkerror.msg"
 
+    #undef pick
 END

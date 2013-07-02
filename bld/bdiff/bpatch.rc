@@ -3,25 +3,25 @@
 
 STRINGTABLE
 BEGIN
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-#define pick( code, string1, string2 )  \
-        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
-#include "bpatch.msg"
-#if defined( BPATCH )
-#include "pusage.gh"
-#else
-#include "dusage.gh"
-#endif
-#undef pick
+    #include "bpatch.msg"
+  #if defined( BPATCH )
+    #include "pusage.gh"
+  #else
+    #include "dusage.gh"
+  #endif
 
-#define pick( code, string1, string2 )  \
-        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
-#include "bpatch.msg"
-#if defined( BPATCH )
-#include "pusagej.gh"
-#else
-#include "dusage.gh"
-#endif
-#undef pick
+    #undef pick
 
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+
+    #include "bpatch.msg"
+  #if defined( BPATCH )
+    #include "pusagej.gh"
+  #else
+    #include "dusage.gh"
+  #endif
+
+    #undef pick
 END

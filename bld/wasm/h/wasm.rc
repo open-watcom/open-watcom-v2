@@ -3,27 +3,27 @@
 
 STRINGTABLE
 BEGIN
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-#define pick( code, string1, string2 )  \
-        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
-#include "../h/asmshare.msg"
-#if defined( _STANDALONE_ )
+    #include "../h/asmshare.msg"
+  #if defined( _STANDALONE_ )
     #include "../h/womp.msg"
     #include "../h/wasm.msg"
 
     #include "usage.gh"
-#endif
-#undef pick
+  #endif
 
-#define pick( code, string1, string2 )  \
-        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
-#include "../h/asmshare.msg"
-#if defined( _STANDALONE_ )
+    #undef pick
+
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+
+    #include "../h/asmshare.msg"
+  #if defined( _STANDALONE_ )
     #include "../h/womp.msg"
     #include "../h/wasm.msg"
 
     #include "usagej.gh"
-#endif
-#undef pick
+  #endif
 
+    #undef pick
 END

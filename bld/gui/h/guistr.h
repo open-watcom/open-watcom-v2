@@ -40,7 +40,7 @@
 
 #define LITSTR( sym, val )
 
-#define pick( a, b, c ) extern char *LIT( a );
+#define pick(c,e,j)     extern char *LIT( c );
 #include "gui.msg"
 #undef pick
 
@@ -67,9 +67,9 @@ extern bool GUIFiniInternalStringTable( void );
 #endif
 
 #ifdef JAPANESE
-#define pick( a,b,c ) LITSTR( a,c )
+#define pick(c,e,j) LITSTR( c, j )
 #else
-#define pick( a,b,c ) LITSTR( a,b )
+#define pick(c,e,j) LITSTR( c, e )
 #endif
 #include "gui.msg"
 #undef pick

@@ -3,15 +3,15 @@
 
 STRINGTABLE
 BEGIN
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-#define pick( code, e_string, j_string )  \
-        (code+RLE_ENGLISH*MSG_LANG_SPACING), e_string
-#include "msg.gh"
-#undef pick
+    #include "msg.gh"
 
-#define pick( code, e_string, j_string )  \
-        (code+RLE_JAPANESE*MSG_LANG_SPACING), j_string
-#include "msg.gh"
-#undef pick
+    #undef pick
 
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+
+    #include "msg.gh"
+
+    #undef pick
 END

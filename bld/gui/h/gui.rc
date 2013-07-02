@@ -1,11 +1,14 @@
 #include "guimsgs.h"
+
 STRINGTABLE
 BEGIN
-    #ifdef JAPANESE
-        #define pick( a, b, c ) GUI_LITERAL_##a, c
-    #else
-        #define pick( a, b, c ) GUI_LITERAL_##a, b
-    #endif
+  #ifdef JAPANESE
+    #define pick(c,e,j) GUI_LITERAL_##c, [ j ]
+  #else
+    #define pick(c,e,j) GUI_LITERAL_##c, [ e ]
+  #endif
+
     #include "gui.msg"
+
     #undef pick
 END

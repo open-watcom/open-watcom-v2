@@ -4,11 +4,13 @@
 
 #include "progress.dlg"
 
-#undef pick
-#define pick( a, b, c ) a, b
 STRINGTABLE
 BEGIN
+    #define pick(c,e) c, [ e ]
+
     #include "rcstrmsg.gh"
+
+    #undef pick
 END
 
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"

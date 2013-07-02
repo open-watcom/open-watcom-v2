@@ -11,7 +11,7 @@ END
 
 #include "../sample.men"
 
-#include "win.rc"
+CLOSEBMP        BITMAP "closebmp.bmp"
 
 MINIMIZE        BITMAP "../res/min.bmp"
 MAXIMIZE        BITMAP "../res/max.bmp"

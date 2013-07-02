@@ -9,7 +9,7 @@ BEGIN
     STRMSG2, "this is msg 2"
 END
 
-#include "winpm.rc"
+BITMAP  CLOSEBMP        "closebmp.bmp"
 
 BITMAP  MINIMIZE        "../res/min.bmp"
 BITMAP  MAXIMIZE        "../res/max.bmp"

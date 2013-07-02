@@ -2,11 +2,13 @@
 #include "newproj.h"
 #include "rcstr.gh"
 
-#define pick( a, b, c ) a, [ b ]
-
 STRINGTABLE
 BEGIN
+    #define pick(c,e,j) c, [ e ]
+
     #include "appwiz.msg"
+
+    #undef pick
 END
 
 #ifdef __NT__

@@ -39,20 +39,22 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 
 #include "strbitns.h"
 
-#ifdef JAPANESE
-    #define pick( a, b, c ) a, [ c ]
-    #define madpick( a, b, c ) __##a, [ c ]
-#else
-    #define pick( a, b, c ) a, [ b ]
-    #define madpick( a, b, c ) __##a, [ b ]
-#endif
 STRINGTABLE
 BEGIN
+  #ifdef JAPANESE
+    #define pick(c,e,j)    c, [ j ]
+    #define madpick(c,e,j) __##c, [ j ]
+  #else
+    #define pick(c,e,j)    c, [ e ]
+    #define madpick(c,e,j) __##c, [ e ]
+  #endif
+
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
+
+    #undef madpick
+    #undef pick
 END
-#undef madpick
-#undef pick
 
 #include "procctl.dlg"
 #include "about.dlg"

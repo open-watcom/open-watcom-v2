@@ -86,7 +86,7 @@ extern void             AsmNote( int level, int msgnum, ... );
 #if defined( USE_TEXT_MSGS )
 
 enum {
-#define pick(num,etext,jtext) num,
+#define pick(c,e,j) c,
     START_BASE1 = MSG_SHARE_BASE - 1,
 #include "../h/asmshare.msg"
     MSG_SHARE_LAST,
@@ -121,7 +121,7 @@ enum {
 #else
     /* set up the enum for error messages */
 
-    #define pick(code,emsg,jmsg)   asmerr(code,emsg),
+    #define pick(c,e,j)         asmerr(c,e),
   #ifndef asmerr
     #define asmerr(code,emsg)   code
     enum    asmerr_codes {

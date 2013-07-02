@@ -35,9 +35,15 @@
 #include "dbgmem.h"
 #include "dui.h"
 
-#include "language.h"
+#ifdef JAPANESE
+  #define pick(c,e,j) LITSTR( c, j )
+#else
+  #define pick(c,e,j) LITSTR( c, e )
+#endif
 #define LITSTR( x, y ) char *LIT( x );
+
 #include "wdengin.str"
+
 #undef LITSTR
 
 void InitEngineLiterals()

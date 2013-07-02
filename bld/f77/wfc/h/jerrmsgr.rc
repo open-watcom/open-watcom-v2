@@ -1,6 +1,7 @@
 #include "errcod.h"
 
-stringtable begin
+STRINGTABLE
+BEGIN
 
     AR_BAD_COUNT+MSG_LANG_BASE "組込み関数%s1で定義された引数の数とそれを呼出すために指定した引数の数が一致していません。"
     AR_DUPLICATE_PARM+MSG_LANG_BASE "同じ仮引数%s1が2度以上使われてはいけません。"
@@ -414,4 +415,4 @@ stringtable begin
     MS_OZOPT_O_FLOW_REG_SAVES+MSG_LANG_BASE "ﾚｼﾞｽﾀ保存をﾌﾛｰｸﾞﾗﾌに移動します"
     MS_OZOPT_O_LOOP_INVAR+MSG_LANG_BASE "ﾙｰﾌﾟ最適化/ﾙｰﾌﾟ内で浮動小数点数が不変であると仮定します。変数は初期化されます"
 
-end
+END

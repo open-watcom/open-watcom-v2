@@ -3,20 +3,18 @@
 
 STRINGTABLE
 BEGIN
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-#undef pick
-#define pick( code, string1, string2 )  \
-        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
+    #include "..\wdisasm.msg"
 
-#include "..\wdisasm.msg"
+    #undef pick
 
-#undef pick
-#define pick( code, string1, string2 )  \
-        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
-#include "..\wdisasm.msg"
+    #include "..\wdisasm.msg"
 
-#include "usage.rc"
-#include "usagej.rc"
+    #undef pick
 
+    #include "usage.rc"
+    #include "usagej.rc"
 END

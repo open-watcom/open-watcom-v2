@@ -69,13 +69,15 @@ DROPSS          CURSOR  dropss.cur
 
 #include "strbitns.h"
 
-#define pick( a, b, c )  a, [ b ]
 STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
+    #define pick(c,e,j)  c, [ e ]
+
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
+
+    #undef pick
 END
-#undef pick
 
 #include "filelist.dlg"
 #include "fgrep.dlg"
