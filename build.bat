@@ -11,8 +11,8 @@ wmake -f ..\wmake %OWBUILDER_OUTPUT%
 if errorlevel == 1 goto error_exit
 goto make_builder
 :native_tools
-nmake -nologo -f ..\nmake clean %OWBUILDER_OUTPUT%
-nmake -nologo -f ..\nmake %OWBUILDER_OUTPUT%
+nmake -f ..\nmake clean %OWBUILDER_OUTPUT%
+nmake -f ..\nmake %OWBUILDER_OUTPUT%
 if errorlevel == 1 goto error_exit
 :make_builder
 cd %OWSRCDIR%\builder
