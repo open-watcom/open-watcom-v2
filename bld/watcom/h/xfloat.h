@@ -43,8 +43,16 @@
 extern "C" {
 #endif
 
-#if defined( _M_IX86 ) && defined(__WATCOMC__)
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
  #define _LONG_DOUBLE_
+#endif
+
+#if defined( __WATCOMC__ )
+typedef unsigned long   u4;
+typedef long            i4;
+#else
+typedef unsigned int    u4;
+typedef int             i4;
 #endif
 
 typedef struct {                // This layout matches Intel 8087
@@ -54,24 +62,24 @@ typedef struct {                // This layout matches Intel 8087
     unsigned short exponent;    // - exponent and sign
   #else                         // use this for all other 32-bit RISC
     union {
-        double          value;  // - double value
-        unsigned long   word[2];// - so we can access bits
-    };
+        double  value;          // - double value
+        u4      word[2];        // - so we can access bits
+    } u;
   #endif
 } long_double;
 
 typedef struct {                // Layout of IEEE 754 double (FD)
     union {
-        double          value;  // - double value
-        unsigned long   word[2];// - so we can access bits
-    };
+        double  value;          // - double value
+        u4      word[2];        // - so we can access bits
+    } u;
 } float_double;
 
 typedef struct {                // Layout of IEEE 754 single (FS)
     union {
-        float           value;  // - double value
-        unsigned long   word;   // - so we can access bits
-    };
+        float   value;          // - double value
+        u4      word;           // - so we can access bits
+    } u;
 } float_single;
 
 /* NB: The following values *must* match FP_ macros in math.h! */
@@ -119,11 +127,15 @@ typedef long_double __based( __segname( "_STACK" ) )    *ld_arg;
 typedef double      __based( __segname( "_STACK" ) )    *dbl_arg;
 typedef float       __based( __segname( "_STACK" ) )    *flt_arg;
 typedef char        __based( __segname( "_STACK" ) )    *buf_arg;
+typedef void        __based( __segname( "_STACK" ) )    *i8_arg;
+typedef void        __based( __segname( "_STACK" ) )    *u8_arg;
 #else
 typedef long_double _WCNEAR                             *ld_arg;
 typedef double      _WCNEAR                             *dbl_arg;
 typedef float       _WCNEAR                             *flt_arg;
 typedef char        _WCNEAR                             *buf_arg;
+typedef void        _WCNEAR                             *i8_arg;
+typedef void        _WCNEAR                             *u8_arg;
 #endif
 
 _WMRTLINK extern void __LDcvt(
@@ -147,19 +159,19 @@ extern  void    __iLDFD( ld_arg, dbl_arg );
 extern  void    __iLDFS( ld_arg, flt_arg );
 extern  void    __iFDLD( dbl_arg, ld_arg );
 extern  void    __iFSLD( flt_arg, ld_arg );
-extern  long    __LDI4( ld_arg );
-extern  void    __I4LD( long, ld_arg );
-extern  void    __U4LD(unsigned long,long_double _WCNEAR *);
+extern  i4      __LDI4( ld_arg );
+extern  void    __I4LD( i4, ld_arg );
+extern  void    __U4LD( u4, ld_arg);
 //The 64bit types change depending on what's being built.
 //(u)int64* (un)signed_64* don't seem suitable, and we use void* instead.
-extern  void    __LDI8(long_double _WCNEAR *, void _WCNEAR *);
-extern  void    __I8LD(void _WCNEAR *, long_double _WCNEAR *);
-extern  void    __U8LD(void _WCNEAR *, long_double _WCNEAR *);
-extern void __FLDA(long_double _WCNEAR *,long_double _WCNEAR *,long_double _WCNEAR *);
-extern void __FLDS( ld_arg, ld_arg, ld_arg );
-extern void __FLDM( ld_arg, ld_arg, ld_arg );
-extern void __FLDD( ld_arg, ld_arg, ld_arg );
-extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
+extern  void    __LDI8( ld_arg, i8_arg );
+extern  void    __I8LD( i8_arg, ld_arg );
+extern  void    __U8LD( u8_arg, ld_arg );
+extern  void    __FLDA( ld_arg, ld_arg, ld_arg );
+extern  void    __FLDS( ld_arg, ld_arg, ld_arg );
+extern  void    __FLDM( ld_arg, ld_arg, ld_arg );
+extern  void    __FLDD( ld_arg, ld_arg, ld_arg );
+extern  int     __FLDC( ld_arg, ld_arg );
 #endif
 
 #ifdef __WATCOMC__
@@ -566,14 +578,6 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
   #pragma aux   __FLDC  "*"  parm caller [ax] [dx] value [ax];
  #endif
 #endif
-#endif
-
-#ifdef _LONG_DOUBLE_
-  // macros to allow old source code names to still work
-  #define __FDLD __iFDLD
-  #define __FSLD __iFSLD
-  #define __LDFD __iLDFD
-  #define __LDFS __iLDFS
 #endif
 
 // define number of significant digits for long double numbers (80-bit)

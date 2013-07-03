@@ -108,7 +108,7 @@ void DumpOpnd( TREEPTR opnd )
         if( opnd->op.u2.float_value->len != 0 ) {
             printf( "%s", opnd->op.u2.float_value->string );
         } else {
-            printf( "%g", opnd->op.u2.float_value->ld.value );
+            printf( "%g", opnd->op.u2.float_value->ld.u.value );
         }
 #endif
         break;

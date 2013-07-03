@@ -63,7 +63,7 @@ char *ftoa( FLOATVAL *flt )
     double      dbl;
     long_double ld;
     ld = flt->ld;
-    __LDFD( (long_double near *)&ld, (double near *)&dbl );
+    __iLDFD( &ld, &dbl );
     sprintf( buf, "%.19e", dbl );
   #else
     sprintf( buf, "%.19e", flt->ld );

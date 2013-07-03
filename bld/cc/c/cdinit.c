@@ -404,10 +404,10 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
             double d;
 
             ld = tree->op.u2.float_value->ld;
-            __LDFD( (long_double near *)&ld, (double near *)&d );
+            __iLDFD( &ld, &d );
             info->offset = (long)d;
 #else
-            info->offset = (long)tree->op.u2.float_value->ld.value;
+            info->offset = (long)tree->op.u2.float_value->ld.u.value;
 #endif
         }
         if( info->offset != 0 ) CompFlags.non_zero_data = 1;
@@ -1133,9 +1133,9 @@ local void StoreFloat( DATA_TYPE dtype, unsigned long size )
                 long_double ld;
 
                 ld = tree->op.u2.float_value->ld;
-                __LDFD( (long_double near *)&ld, (double near *)&dq.u.double_value );
+                __iLDFD( &ld, &dq.u.double_value );
 #else
-                dq.u.double_value = tree->op.u2.float_value->ld.value;
+                dq.u.double_value = tree->op.u2.float_value->ld.u.value;
 #endif
             }
         } else {

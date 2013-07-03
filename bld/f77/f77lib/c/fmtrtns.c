@@ -51,7 +51,7 @@ void    R_F2E( extended val, char *buff, int fld_width, int digs, bool plus,
 
     /* convert this double into a long double */
     double_value = val;
-    __FDLD( &double_value, &ld );
+    __iFDLD( &double_value, &ld );
 #else
     ld.value = val;
 #endif
@@ -116,7 +116,7 @@ void    R_F2F( extended val, char *buff, int fld_width, int digs, bool plus,
 
     /* convert this double into a long double */
     double_value = val;
-    __FDLD( &double_value, &ld );
+    __iFDLD( &double_value, &ld );
 #else
     ld.value = val;
 #endif

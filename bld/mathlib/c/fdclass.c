@@ -39,17 +39,17 @@ _WMRTLINK int _FDClass( double x )
 {
     float_double    fd;
 
-    fd.value = x;
-    if( (fd.word[1] & 0x7FF00000) == 0x7FF00000 ) {    /* NaN or Inf */
-        if( (fd.word[1] & 0x7FFFFFFF) == 0x7FF00000 && fd.word[0] == 0 ) {
+    fd.u.value = x;
+    if( (fd.u.word[1] & 0x7FF00000) == 0x7FF00000 ) {    /* NaN or Inf */
+        if( (fd.u.word[1] & 0x7FFFFFFF) == 0x7FF00000 && fd.u.word[0] == 0 ) {
             return( __INFINITY );
         }
         return( __NAN );
     }
-    if( (fd.word[1] & 0x7FFFFFFF) == 0 && fd.word[0] == 0 ) {
+    if( (fd.u.word[1] & 0x7FFFFFFF) == 0 && fd.u.word[0] == 0 ) {
         return( __ZERO );
     }
-    if( (fd.word[1] & 0x7FF00000) == 0 ) {
+    if( (fd.u.word[1] & 0x7FF00000) == 0 ) {
         return( __DENORMAL );
     }
     return( __NONZERO );

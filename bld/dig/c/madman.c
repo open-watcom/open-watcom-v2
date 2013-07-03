@@ -1334,7 +1334,7 @@ static char *DoStrReal( long_double *value, char *p, mad_type_info const *mti )
 #ifdef __WATCOMC__
     mant = __xcvt( value, mant_digs, &exp, &sign, buff );
 #else
-    mant = ecvt( value->value, mant_digs, &exp, &sign );
+    mant = ecvt( value->u.value, mant_digs, &exp, &sign );
 #endif
     if( !isdigit( *mant ) ) {
         /* special magical thingy (nan, inf, ...) */

@@ -39,6 +39,6 @@ _WMRTLINK int _FDSign( double x )
 {
     float_double    fd;
 
-    fd.value = x;
-    return( fd.word[1] >> 31 );
+    fd.u.value = x;
+    return( fd.u.word[1] >> 31 );
 }

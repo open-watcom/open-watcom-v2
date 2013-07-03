@@ -390,10 +390,10 @@ int64 LongValue64( TREEPTR leaf )
         }
         CMemFree( flt );
 #ifdef _LONG_DOUBLE_
-        __LDI8( (long_double _WCNEAR *)&ld, (void _WCNEAR *)value.u._64 );
+        __LDI8( &ld, &value );
         return( value );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
-        value.u._64[0] = ld.value;
+        value.u._64[0] = ld.u.value;
         return( value );
 #else
         val32 = ld.value;
@@ -532,6 +532,7 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #ifdef _LONG_DOUBLE_
     double      doubleval;
     float       floatval;
+    int64       value;
 #endif
 
     if( leaf->op.opr == OPR_PUSHFLOAT ) {
@@ -545,9 +546,10 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
         switch( leaf->op.u1.const_type ) {
         case TYPE_LONG64:
 #ifdef _LONG_DOUBLE_
-            __I8LD( &leaf->op.long64_value, (long_double near *)&ld );
+            value = leaf->op.u2.long64_value;
+            __I8LD( &value, &ld );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
-            ld.value = (double)leaf->op.u2.long64_value.u._64[0];
+            ld.u.value = (double)leaf->op.u2.long64_value.u._64[0];
 #else
 
     #error not implemented for compiler with integral max bits < 64
@@ -556,9 +558,10 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
             break;
         case TYPE_ULONG64:
 #ifdef _LONG_DOUBLE_
-            __U8LD( &leaf->op.ulong64_value, (long_double near *)&ld );
+            value = leaf->op.u2.long64_value;
+            __U8LD( &value, &ld );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
-            ld.value = (double)leaf->op.u2.ulong64_value.u._64[0];
+            ld.u.value = (double)leaf->op.u2.ulong64_value.u._64[0];
 #else
 
     #error not implemented for compiler with integral max bits < 64
@@ -573,7 +576,7 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #ifdef _LONG_DOUBLE_
             __I4LD( leaf->op.u2.long_value, &ld );
 #else
-            ld.value = (double)leaf->op.u2.long_value;
+            ld.u.value = (double)leaf->op.u2.long_value;
 #endif
             break;
         default:
@@ -581,7 +584,7 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #ifdef _LONG_DOUBLE_
             __U4LD( leaf->op.u2.ulong_value, &ld );
 #else
-            ld.value = (double)leaf->op.u2.ulong_value;
+            ld.u.value = (double)leaf->op.u2.ulong_value;
 #endif
             break;
         }
@@ -593,16 +596,16 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
     switch( newtype ) {
     case TYPE_FLOAT:
 #ifdef _LONG_DOUBLE_
-        __LDFS( (long_double near *)&ld, (float near *)&floatval );
-        __FSLD( (float near *)&floatval, (long_double near *)&ld );
+        __iLDFS( &ld, &floatval );
+        __iFSLD( &floatval, &ld );
 #else
-        ld.value = (float)ld.value;
+        ld.u.value = (float)ld.u.value;
 #endif
         break;
     case TYPE_DOUBLE:
 #ifdef _LONG_DOUBLE_
-        __LDFD( (long_double near *)&ld, (double near *)&doubleval );
-        __FDLD( (double near *)&doubleval, (long_double near *)&ld );
+        __iLDFD( &ld, &doubleval );
+        __iFDLD( &doubleval, &ld );
 #endif
         break;
     }
@@ -631,15 +634,15 @@ void MakeBinaryFloat( TREEPTR opnd )
         __Strtold( flt->string, &ld, &endptr );
         if( flt->type == TYPE_FLOAT ) {
 #ifdef _LONG_DOUBLE_
-            __LDFS( (long_double near *)&ld, (float near *)&floatval );
-            __FSLD( (float near *)&floatval, (long_double near *)&ld );
+            __iLDFS( &ld, &floatval );
+            __iFSLD( &floatval, &ld );
 #else
-            ld.value = (float)ld.value;
+            ld.u.value = (float)ld.u.value;
 #endif
         } else if( flt->type == TYPE_DOUBLE ) {
 #ifdef _LONG_DOUBLE_
-        __LDFD( (long_double near *)&ld, (double near *)&doubleval );
-        __FDLD( (double near *)&doubleval, (long_double near *)&ld );
+        __iLDFD( &ld, &doubleval );
+        __iFDLD( &doubleval, &ld );
 #endif
         }
         flt->ld = ld;
@@ -654,8 +657,8 @@ int FltCmp( long_double near *ld1, long_double near *ld2 )
 #ifdef _LONG_DOUBLE_
     return( __FLDC( ld1, ld2 ) );
 #else
-    if( ld1->value == ld2->value ) return( 0 );
-    if( ld1->value <  ld2->value ) return( -1 );
+    if( ld1->u.value == ld2->u.value ) return( 0 );
+    if( ld1->u.value <  ld2->u.value ) return( -1 );
     return( 1 );
 #endif
 }
@@ -722,29 +725,23 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         return( 1 );
     case OPR_ADD:
 #ifdef _LONG_DOUBLE_
-        __FLDA( (long_double near *)&ld1,
-                (long_double near *)&ld2,
-                (long_double near *)&result );
+        __FLDA( &ld1, &ld2, &result );
 #else
-        result.value = ld1.value + ld2.value;
+        result.u.value = ld1.u.value + ld2.u.value;
 #endif
         break;
     case OPR_SUB:
 #ifdef _LONG_DOUBLE_
-        __FLDS( (long_double near *)&ld1,
-                (long_double near *)&ld2,
-                (long_double near *)&result );
+        __FLDS( &ld1, &ld2, &result );
 #else
-        result.value = ld1.value - ld2.value;
+        result.u.value = ld1.u.value - ld2.u.value;
 #endif
         break;
     case OPR_MUL:
 #ifdef _LONG_DOUBLE_
-        __FLDM( (long_double near *)&ld1,
-                (long_double near *)&ld2,
-                (long_double near *)&result );
+        __FLDM( &ld1, &ld2, &result );
 #else
-        result.value = ld1.value * ld2.value;
+        result.u.value = ld1.u.value * ld2.u.value;
 #endif
         break;
     case OPR_DIV:
@@ -752,15 +749,13 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         if( ld2.exponent == 0 && ld2.high_word == 0 && ld2.low_word == 0 ) {
             result = ld2;
         } else {
-            __FLDD( (long_double near *)&ld1,
-                    (long_double near *)&ld2,
-                    (long_double near *)&result );
+            __FLDD( &ld1, &ld2, &result );
         }
 #else
-        if( ld2.value == 0.0 ) {
-            result.value = 0.0;
+        if( ld2.u.value == 0.0 ) {
+            result.u.value = 0.0;
         } else {
-            result.value = ld1.value / ld2.value;
+            result.u.value = ld1.u.value / ld2.u.value;
         }
 #endif
         break;
@@ -769,7 +764,7 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         result = ld2;
         result.exponent ^= 0x8000;
 #else
-        result.value = - ld2.value;
+        result.u.value = - ld2.u.value;
 #endif
         break;
     default:
@@ -842,7 +837,7 @@ static int_32 LongValue( TREEPTR leaf )
 #ifdef _LONG_DOUBLE_
         value = __LDI4( &ld );
 #else
-        value = ld.value;
+        value = ld.u.value;
 #endif
         break;
     default:
@@ -950,7 +945,7 @@ static bool IsConstantZero( TREEPTR tree )
 #ifdef _LONG_DOUBLE_
         __I4LD( 0, &ldzero );
 #else
-        ldzero.value = 0;
+        ldzero.u.value = 0;
 #endif
         return( !FltCmp( &ld, &ldzero ) );
     }
@@ -985,7 +980,7 @@ static void FoldQuestionTree( TREEPTR tree )
           tree->op.opr = OPR_PUSHSYM;
           ops &= ~OPFLAG_RVALUE;
         }
-    tree->op.flags = ops;
+        tree->op.flags = ops;
     }
 }
 

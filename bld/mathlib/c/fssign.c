@@ -39,6 +39,6 @@ _WMRTLINK int _FSSign( float x )
 {
     float_single    fs;
 
-    fs.value = x;
-    return( fs.word >> 31 );
+    fs.u.value = x;
+    return( fs.u.word >> 31 );
 }
