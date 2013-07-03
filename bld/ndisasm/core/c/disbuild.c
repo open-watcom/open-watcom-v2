@@ -52,6 +52,8 @@
         #who                            \
         }
 
+typedef unsigned char   str_len;
+
 typedef struct {
     char                *string;
     unsigned            string_idx;
@@ -60,7 +62,7 @@ typedef struct {
 typedef struct {
     unsigned_32         opcode;
     unsigned_32         mask;
-    unsigned            idx;
+    dis_selector        idx;
     char                *idx_name;
     char                *handler;
 } ins_decode_data;
@@ -79,15 +81,15 @@ typedef struct {
 typedef struct string_list {
     struct string_list  *next;
     string_data         *data;
-    unsigned            len;
+    str_len             len;
 } string_list;
 
 typedef struct range {
     struct range        *next;
     unsigned_32         check;
-    unsigned            idx;
     unsigned            num;
-    unsigned            entry[1]; /* variable sized */
+    dis_selector        idx;
+    dis_selector        entry[1]; /* variable sized */
 } range;
 
 #if DISCPU & DISCPU_axp
@@ -484,19 +486,18 @@ unsigned        StringIndex;
 dis_selector    SelTable[MAX_SEL_ENTRIES];
 unsigned        SelIndex;
 
-static unsigned AddString( string_data *data )
+static str_len AddString( string_data *data )
 {
-    unsigned    len;
-    string_list **owner;
-    string_list *curr;
-    string_list *new;
+    str_len         len;
+    string_list     **owner;
+    string_list     *curr;
+    string_list     *new;
 
-    len = strlen( data->string );
+    len = (str_len)strlen( data->string );
     owner = &Strings;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL ) break;
-        if( curr->len < len ) break;
+    for( ; (curr = *owner) != NULL; ) {
+        if( curr->len < len )
+            break;
         owner = &curr->next;
     }
     new = malloc( sizeof( *new ) );
@@ -513,30 +514,32 @@ static unsigned AddString( string_data *data )
 
 static int StringMatch( unsigned idx, string_list *curr )
 {
-    unsigned            i;
+    str_len             len;
     unsigned char       c;
     char                *str;
 
     str = curr->data->string;
-    i = curr->len;
-    for( ;; ) {
-        if( i == 0 ) return( 1 );
-        if( idx >= StringIndex ) return( 0 );
+    len = curr->len;
+    for( ; len != 0; ) {
+        if( idx >= StringIndex )
+            return( 0 );
         c = StringTable[idx++];
         if( !(c & LENGTH_BIT) ) {
-            if( c != *str ) return( 0 );
+            if( c != *(unsigned char *)str )
+                return( 0 );
             ++str;
-            --i;
+            --len;
         }
     }
+    return( 1 );
 }
 
 static void BuildStringTable( void )
 {
-    string_list *curr;
-    string_list *fix;
-    string_list *next;
-    unsigned    idx;
+    string_list     *curr;
+    string_list     *fix;
+    string_list     *next;
+    unsigned        idx;
 
     for( curr = Strings; curr != NULL; curr = curr->next ) {
         idx = 0;
@@ -553,7 +556,7 @@ static void BuildStringTable( void )
                 break;
             }
             if( StringMatch( idx, curr ) ) {
-                if( (StringTable[idx]&~LENGTH_BIT) != curr->len ) {
+                if( (StringTable[idx] & ~LENGTH_BIT) != curr->len ) {
                     if( StringIndex + 1 >= MAX_STR_ENTRIES ) {
                         fprintf( stderr, "internal error (MAX_STR_ENTRIES may need increasing)\n" );
                         exit( 1 );
@@ -580,8 +583,7 @@ static void BuildStringTable( void )
 }
 
 
-static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
-                char *prefix )
+static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num, char *prefix )
 {
     unsigned            i;
     unsigned            j;
@@ -615,13 +617,13 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
     for( i = 0; i < num; ++i ) {
         /* Mask of zero is an instruction synonym */
         if( data[i].mask != 0 ) {
-            head->entry[idx++] = i;
+            head->entry[idx++] = (dis_selector)i;
         }
     }
     head->num = idx;
     head->idx = 0;
     head->next = NULL;
-    head->check = ~0;
+    head->check = (unsigned_32)~0UL;
     for( ;; ) {
         memset( bit_count, 0, sizeof( bit_count ) );
         opcode_or = 0;
@@ -652,7 +654,7 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
                     masks use the bit.
                 */
                 if( (head->check & (1UL << i))
-                 && (bit_count[i] < (3*bit_count[best_bit]) / 4) ) break;
+                 && (bit_count[i] < (3 * bit_count[best_bit]) / 4) ) break;
                 shifted_mask <<= 1;
                 shifted_mask |= 1;
                 if( shifted_mask == 0xff ) break;
@@ -664,7 +666,7 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
                 for( ;; ) {
                     if( i == 0 ) break;
                     if( (head->check & (1UL << i))
-                        && (bit_count[i] < (3*bit_count[best_bit]) / 4) ) break;
+                        && (bit_count[i] < (3 * bit_count[best_bit]) / 4) ) break;
                     shifted_mask <<= 1;
                     shifted_mask |= 1;
                     --shift;
@@ -681,7 +683,7 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
                     idx_mask = (data[head->entry[j]].mask >> shift) & shifted_mask;
                     if( (i & idx_mask) == idx ) {
                         if( SelTable[SelIndex + i] == 0 ) {
-                            SelTable[SelIndex + i] = head->entry[ j ] + 1;
+                            SelTable[SelIndex + i] = head->entry[j] + 1;
                         } else {
                             if( SelTable[SelIndex + i] > 0 ) {
                                 new = malloc( offsetof( range, entry ) + num * sizeof( new->entry[0] ) );
@@ -690,7 +692,8 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
                                     exit( 1 );
                                 }
                                 new->next = NULL;
-                                new->check = head->check &= ~curr_mask;
+                                head->check &= ~curr_mask;
+                                new->check = head->check;
                                 new->idx = tail->idx + 1;
                                 new->num = 1;
                                 new->entry[0] = SelTable[SelIndex + i] - 1;
@@ -698,14 +701,14 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
                                 tail->next = new;
                                 tail = new;
                             }
-                            tail->entry[tail->num++] = head->entry[ j ];
+                            tail->entry[tail->num++] = head->entry[j];
                         }
                     }
                 }
             }
             SelIndex += shifted_mask + 1;
             if( SelIndex >= MAX_SEL_ENTRIES ) {
-                fprintf( stderr, "internal error (MAX_ENTRIES may need increasing)\n" );
+                fprintf( stderr, "internal error (MAX_SEL_ENTRIES may need increasing)\n" );
                 exit( 1 );
             }
         } else {
@@ -730,7 +733,7 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
     }
     for( ; first_sel < SelIndex; ++first_sel ) {
         if( SelTable[first_sel] > 0 ) {
-            SelTable[first_sel] = data[ SelTable[first_sel] - 1 ].idx;
+            SelTable[first_sel] = data[SelTable[first_sel] - 1].idx;
         }
     }
     return( dumped_entries );
@@ -745,8 +748,8 @@ int main( void )
     FILE            *fp;
     unsigned        i;
     unsigned        j;
-    unsigned        max_name;
-    unsigned        len;
+    str_len         max_name;
+    str_len         len;
     machine_data    *mach;
     string_data     **insnames;
     ins_decode_data **decode;
@@ -769,12 +772,13 @@ int main( void )
         for( ; *insnames != NULL ; ++insnames ) {
             for( j = 0; j < *num_ins; ++j ) {
                 len = AddString( &(*insnames)[j] );
-                if( len > max_name ) max_name = len;
+                if( len > max_name ) {
+                    max_name = len;
+                }
             }
             ++num_ins;
         }
-        fprintf( fp, "const unsigned char %sMaxInsName = %u;\n\n",
-            mach->prefix, max_name );
+        fprintf( fp, "const unsigned char %sMaxInsName = %u;\n\n", mach->prefix, max_name );
         for( j = 0; j < mach->num_reg_names; ++j ) {
             AddString( &mach->reg_names[j] );
         }
@@ -854,14 +858,14 @@ int main( void )
         for( decode = mach->decode; *decode != NULL; ++decode ) {
             fprintf( fp, "\n    /* Table_%d */\n\n", ( len + 1 ) );
             listl = realloc( listl, ( len + 1 ) * sizeof( int ) );
-            listl[ len++ ] = j;
+            listl[len++] = j;
             j += BuildRanges( fp, decode, num_ins, mach->prefix );
             ++num_ins;
         }
         fprintf( fp, "};\n" );
         fprintf( fp, "\nconst int %sRangeTablePos[] = {\n", mach->prefix );
         for( j = 0; j < len; ++j ) {
-            fprintf( fp, "    %d,\n", listl[ j ] );
+            fprintf( fp, "    %d,\n", listl[j] );
         }
         fprintf( fp, "    -1\n" );
         fprintf( fp, "};\n" );
@@ -869,9 +873,12 @@ int main( void )
     }
     fprintf( fp, "\nconst dis_selector DisSelectorTable[] = {\n" );
     for( i = 0; i < SelIndex; ++i ) {
-        if( (i % 16) == 0 ) fprintf( fp, "/*%4.4x*/", i );
+        if( (i % 16) == 0 )
+            fprintf( fp, "/*%4.4x*/", i );
         fprintf( fp, "%4d,", SelTable[i] );
-        if( (i % 16) == 15 ) fprintf( fp, "\n" );
+        if( (i % 16) == 15 ) {
+            fprintf( fp, "\n" );
+        }
     }
     fprintf( fp, "};\n" );
     fclose( fp );
