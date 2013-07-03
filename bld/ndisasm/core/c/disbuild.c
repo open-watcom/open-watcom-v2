@@ -32,12 +32,25 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include "distypes.h"
 #include "dis.h"
 
 #define NUM_ELTS( a ) (sizeof( a ) / sizeof( a[0] ))
 
 #define LENGTH_BIT      0x80
+
+#define TABLE( who )                    \
+        {                               \
+        who##RegTable,                  \
+        NUM_ELTS( who##RegTable ),      \
+        who##RefTable,                  \
+        NUM_ELTS( who##RefTable ),      \
+        who##InsNum,                    \
+        who##InsTable,                  \
+        who##DecodeTable,               \
+        #who                            \
+        }
 
 typedef struct {
     char                *string;
@@ -51,6 +64,31 @@ typedef struct {
     char                *idx_name;
     char                *handler;
 } ins_decode_data;
+
+typedef struct {
+    string_data         *reg_names;
+    unsigned            num_reg_names;
+    string_data         *ref_names;
+    unsigned            num_ref_names;
+    unsigned            *num_ins;
+    string_data         **ins_names;
+    ins_decode_data     **decode;
+    char                *prefix;
+} machine_data;
+
+typedef struct string_list {
+    struct string_list  *next;
+    string_data         *data;
+    unsigned            len;
+} string_list;
+
+typedef struct range {
+    struct range        *next;
+    unsigned_32         check;
+    unsigned            idx;
+    unsigned            num;
+    unsigned            entry[1]; /* variable sized */
+} range;
 
 #if DISCPU & DISCPU_axp
 
@@ -413,29 +451,6 @@ string_data *MIPSInsTable[] = {
 
 #endif
 
-typedef struct {
-    string_data         *reg_names;
-    unsigned            num_reg_names;
-    string_data         *ref_names;
-    unsigned            num_ref_names;
-    unsigned            *num_ins;
-    string_data         **ins_names;
-    ins_decode_data     **decode;
-    char                *prefix;
-} machine_data;
-
-#define TABLE( who )                    \
-        {                               \
-        who##RegTable,                  \
-        NUM_ELTS( who##RegTable ),      \
-        who##RefTable,                  \
-        NUM_ELTS( who##RefTable ),      \
-        who##InsNum,                    \
-        who##InsTable,                  \
-        who##DecodeTable,               \
-        #who                            \
-        }
-
 machine_data AMachine[] = {
 #if DISCPU & DISCPU_axp
     TABLE( AXP ),
@@ -460,29 +475,14 @@ machine_data AMachine[] = {
 #endif
 };
 
-typedef struct string_list string_list;
+#define MAX_SEL_ENTRIES     0x18000
+#define MAX_STR_ENTRIES     0x04000
 
-struct string_list {
-    string_list         *next;
-    string_data         *data;
-    unsigned            len;
-};
-
-#define MAX_ENTRIES     96*1024
 string_list     *Strings;
-unsigned char   StringTable[MAX_ENTRIES];
+unsigned char   StringTable[MAX_STR_ENTRIES];
 unsigned        StringIndex;
-dis_selector    SelTable[MAX_ENTRIES];
+dis_selector    SelTable[MAX_SEL_ENTRIES];
 unsigned        SelIndex;
-
-typedef struct range    range;
-struct range {
-    range       *next;
-    unsigned_32 check;
-    unsigned    idx;
-    unsigned    num;
-    unsigned    entry[1]; /* variable sized */
-};
 
 static unsigned AddString( string_data *data )
 {
@@ -542,17 +542,23 @@ static void BuildStringTable( void )
         idx = 0;
         for( ;; ) {
             if( idx >= StringIndex ) {
+                if( StringIndex + curr->len >= MAX_STR_ENTRIES ) {
+                    fprintf( stderr, "internal error (MAX_STR_ENTRIES may need increasing)\n" );
+                    exit( 1 );
+                }
                 curr->data->string_idx = StringIndex;
                 StringTable[StringIndex++] = LENGTH_BIT | curr->len;
-                memcpy( &StringTable[StringIndex], curr->data->string,
-                                curr->len );
+                memcpy( &StringTable[StringIndex], curr->data->string, curr->len );
                 StringIndex += curr->len;
                 break;
             }
             if( StringMatch( idx, curr ) ) {
                 if( (StringTable[idx]&~LENGTH_BIT) != curr->len ) {
-                    memmove( &StringTable[idx+1], &StringTable[idx],
-                            StringIndex - idx );
+                    if( StringIndex + 1 >= MAX_STR_ENTRIES ) {
+                        fprintf( stderr, "internal error (MAX_STR_ENTRIES may need increasing)\n" );
+                        exit( 1 );
+                    }
+                    memmove( &StringTable[idx + 1], &StringTable[idx], StringIndex - idx );
                     ++StringIndex;
                     StringTable[idx] = LENGTH_BIT | curr->len;
                     for( fix = Strings; fix != curr; fix = fix->next ) {
@@ -599,7 +605,7 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
 
     dumped_entries = 0;
     first_sel = SelIndex;
-    head = malloc( sizeof( *head ) + num * sizeof( head->entry[0] ) );
+    head = malloc( offsetof( range, entry ) + num * sizeof( head->entry[0] ) );
     if( head == NULL ) {
         fprintf( stderr, "out of memory!\n" );
         exit( 1 );
@@ -678,7 +684,7 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
                             SelTable[SelIndex + i] = head->entry[ j ] + 1;
                         } else {
                             if( SelTable[SelIndex + i] > 0 ) {
-                                new = malloc( sizeof( *new ) + num * sizeof( new->entry[0] ) );
+                                new = malloc( offsetof( range, entry ) + num * sizeof( new->entry[0] ) );
                                 if( new == NULL ) {
                                     fprintf( stderr, "out of memory!\n" );
                                     exit( 1 );
@@ -698,7 +704,7 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num,
                 }
             }
             SelIndex += shifted_mask + 1;
-            if( SelIndex >= MAX_ENTRIES ) {
+            if( SelIndex >= MAX_SEL_ENTRIES ) {
                 fprintf( stderr, "internal error (MAX_ENTRIES may need increasing)\n" );
                 exit( 1 );
             }
