@@ -2,21 +2,31 @@
 #       This is the common makefile for each library.
 #
 
-#
-#       The following macros must be defined:
-#
-#       posix_dir       The root of the posix project (no trailing \)
-#
-
-make_lib = 1
 !include $(posix_dir)/mif/common.mif
-!include $(posix_dir)/mif/lib.mif
+!include deftarg.mif
+
+objs = &
+    alloc.obj &
+    argvenv.obj &
+    argvrx.obj &
+    console.obj &
+    die.obj &
+    filerx.obj &
+    fnlower.obj &
+    fncomp.obj &
+    getclsz.obj &
+    getopt.obj &
+    isdotdot.obj &
+    lineprt.obj &
+    quit.obj &
+    regexp.obj
+
+inc_dirs = -I"$(posix_dir)/h"
+
+.c: $(posix_dir)/misc
 
 #
 #       define the main target
 #
-posix.lib : $(libobjs)
+posix.lib : $(objs)
         $(librarian) $(libflags) $<
-
-clean : .symbolic
-        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym

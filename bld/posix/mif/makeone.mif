@@ -11,38 +11,26 @@
 #
 
 !include $(posix_dir)/mif/common.mif
+!include deftarg.mif
+
+inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
+
+.c: $(posix_dir)/src/$(name)
 
 #
 #       define the main target
 #
+$(name).exe: $(objs) $(libdir)/posix.lib
 !ifndef __WATCOM__
-$(name).exe: $(objs) $(posixlibdir)/posix.lib
         $(cl) $(clflags) $< $(ldflags)
 !else
-$(name).exe: $(objs) $(name).lnk $(posixlibdir)/posix.lib $(__MAKEFILES__)
-        $(linker) @$(name).lnk
-!endif
-!ifeq host_os os2
-!ifeq host_cpu i86
-        $(binder)\bind $(name).exe $(apilib) $(doscalls)
-!endif
-!else ifeq host_os dos
-!ifeq host_cpu 386
-        $(posix_dir)\misc\pharlap\bind386 $(posix_dir)\misc\pharlap\run386b $(name).exp
-!endif
-!endif
-
-#
-#       create the lnk file
-#
-$(name).lnk : $(objs) $(__MAKEFILES__)
         @%create $(name).lnk
         @%append $(name).lnk name $(name).exe
         @%append $(name).lnk debug all option quiet,map
 !ifeq release 0 
         @%append $(name).lnk option symfile
 !endif
-        @%append $(name).lnk lib $(posixlibdir)/posix.lib
+        @%append $(name).lnk lib $(libdir)/posix.lib
 !ifeq host_os os2
 !  ifeq host_cpu i86
         @%append $(name).lnk system os2 pmc
@@ -78,6 +66,14 @@ $(name).lnk : $(objs) $(__MAKEFILES__)
 !ifdef extra_lnk
         @%make $(extra_lnk)
 !endif
-
-clean : .symbolic
-        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+        $(linker) @$(name).lnk
+!endif
+!ifeq host_os os2
+!ifeq host_cpu i86
+        $(binder)\bind $(name).exe $(apilib) $(doscalls)
+!endif
+!else ifeq host_os dos
+!ifeq host_cpu 386
+        $(posix_dir)\misc\pharlap\bind386 $(posix_dir)\misc\pharlap\run386b $(name).exp
+!endif
+!endif

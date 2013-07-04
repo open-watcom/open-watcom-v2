@@ -18,19 +18,13 @@ all : lib $(commands) .symbolic
 
 lib : .symbolic $(__MAKEFILES__)
 curr_dir_all=$+ $(%CWD) $-
-        @if not exist $(posixlibdir) @mkdir $(posixlibdir)
-        @cd $(posixlibdir)
+        @if not exist $(libdir) @mkdir $(libdir)
+        @cd $(libdir)
         !@wmake -h release=$(release) bootstrap=$(bootstrap) $(mkfile)
-!ifeq host_cpu i86
-!ifeq host_os dos
-        @if not exist $(altposixlibdir) @mkdir $(altposixlibdir)
-        @cd $(altposixlibdir)
+!ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
+        @if not exist $(altlibdir) @mkdir $(altlibdir)
+        @cd $(altlibdir)
         !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
-!else ifeq host_os os2
-        @if not exist $(altposixlibdir) @mkdir $(altposixlibdir)
-        @cd $(altposixlibdir)
-        !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
-!endif
 !endif
         @cd $(curr_dir_all)
 
@@ -39,19 +33,13 @@ $(commands) : .symbolic $(__MAKEFILES__)
 
 clean : .symbolic
 curr_dir_all=$+ $(%CWD) $-
-        @echo clean $(posixlibdir)
-        @cd $(posixlibdir)
+        @echo clean $(libdir)
+        @cd $(libdir)
         rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
-!ifeq host_cpu i86
-!ifeq host_os dos
-        @echo clean $(altposixlibdir)
-        @cd $(altposixlibdir)
+!ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
+        @echo clean $(altlibdir)
+        @cd $(altlibdir)
         rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
-!else ifeq host_os os2
-        @echo clean $(altposixlibdir)
-        @cd $(altposixlibdir)
-        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
-!endif
 !endif
         @cd $(curr_dir_all)
         @echo clean $(curr_dir_all)

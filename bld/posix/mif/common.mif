@@ -62,35 +62,19 @@ alt_subdir_dosi86_c = ms
 alt_subdir_os2i86_c = ms
 
 libmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
-altlibmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
+altlibmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
 
 !ifeq bootstrap 1
-posixlibdir=$(subdir_$(host_cpu))
-altposixlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
+libdir=$(subdir_$(host_cpu))
+altlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
 !else
-posixlibdir=$(libmakepath:$(to_os_path))
-altposixlibdir=$(altlibmakepath:$(to_os_path))
+libdir=$(libmakepath:$(to_os_path))
+altlibdir=$(altlibmakepath:$(to_os_path))
 !endif
 
 #
 #       compiler options
 #
 
-#
-#       define options for each specific operating system supported
-#
-
 extra_cppflags_ntaxp = -DWIN32 -D_WIN32
 extra_cpp_flags      += -DSTANDALONE_RX $(extra_cppflags_$(host_os)$(host_cpu))
-
-!ifndef make_lib
-inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
-!else
-inc_dirs = -I"$(posix_dir)/h"
-!endif
-
-!ifndef make_lib
-.c: $(posix_dir)/src/$(name);$(posix_dir)/misc
-!else
-.c: $(posix_dir)/misc
-!endif
