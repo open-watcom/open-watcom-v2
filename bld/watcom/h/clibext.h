@@ -88,6 +88,7 @@
 #define utoa ultoa
 #define gmtime_r(a,b) gmtime_s(b,a)
 #define localtime_r(a,b) localtime_s(b,a)
+#define _dos_getdiskfree _getdiskfree
 
 #endif
 
