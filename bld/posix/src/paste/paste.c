@@ -38,7 +38,12 @@
 #include "argvrx.h"
 #include "getopt.h"
 
-FILE *inputFile[_NFILES];
+typedef struct inpfile {
+    struct inpfile *next;
+    FILE *file;
+} inpfile;
+
+inpfile *inputFile;
 
 char *OptEnvVar="paste";
 
@@ -51,17 +56,26 @@ static const char *usageMsg[] = {
     NULL
 };
 
+void free_list( void )
+{
+    inpfile     *curr;
+
+    while( inputFile != NULL ) {
+        curr = inputFile;
+        inputFile = inputFile->next;
+        free( curr );
+    }
+}
 
 void main( int argc, char **argv )
 /********************************/
 {
-    FILE        **curr;
-    FILE        **stop;
     FILE        *fp;
     int         c;
     int         ch;
     unsigned    nfiles;
     int         rxflag;
+    inpfile     **curr;
     struct {
         int something_read : 1;
         int something_before : 1;
@@ -84,37 +98,42 @@ void main( int argc, char **argv )
         Quit( usageMsg, "No files specified\n" );
     }
     nfiles = 0;
-    curr = inputFile;
+    curr = &inputFile;
     for( ++argv; *argv != NULL; ++argv ) {
         if( strcmp( *argv, "-" ) == 0 ) {
             fp = stdin;
         } else {
             fp = fopen( *argv, "r" );
             if( fp == NULL ) {
+                *curr = NULL;
+                free_list();
                 Die( "could not open: '%s'\n", *argv );
             }
         }
-        *curr = fp;
-        ++curr;
+        *curr = malloc( sizeof( inpfile ) );
+        (*curr)->file = fp;
+        curr = &((*curr)->next);
         ++nfiles;
     }
-    stop = curr;
+    *curr = NULL;
     for(;;) {
         flags.something_before = 0;
-        for( curr = inputFile; curr != stop; ++curr ) {
-            fp = *curr;
-            if( fp == NULL ) continue;
+        for( curr = &inputFile; *curr != NULL; curr = &((*curr)->next) ) {
+            fp = (*curr)->file;
+            if( fp == NULL )
+                continue;
             flags.something_read = 0;
             for(;;) {
                 c = fgetc( fp );
                 if( c == EOF ) {
                     fclose( fp );
-                    *curr = NULL;
+                    (*curr)->file = NULL;
                     --nfiles;
                     break;
                 }
                 flags.something_read = 1;
-                if( c == '\n' ) break;
+                if( c == '\n' )
+                    break;
                 if( flags.something_before ) {
                     /* full paste allows one to change this */
                     putchar( '\t' );
@@ -129,5 +148,6 @@ void main( int argc, char **argv )
         if( nfiles == 0 ) break;
         putchar( '\n' );
     }
+    free_list();
     exit(EXIT_SUCCESS);
 }

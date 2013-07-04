@@ -1,6 +1,7 @@
 name = gnutar
 objs =  tar.obj create.obj extract.obj buffer.obj getoopt.obj &
-        list.obj names.obj port.obj getopt.obj
+        list.obj names.obj port.obj
+
 # MSDOS is defined when compiling for DOSOS2.  Make sure it is set for
 # any other configuration
 !ifdef __LINUX__

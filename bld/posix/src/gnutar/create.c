@@ -40,12 +40,10 @@
  * @(#)create.c 1.19 9/9/86 Public Domain - gnu
  */
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include "wio.h"
 
 #include "tar.h"
 #include "create.h"
@@ -71,13 +69,15 @@
 #ifdef V7
 #include "dir.h"
 #else
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include "direct.h"
 #else
 #include "ndir.h"
 #endif /* __WATCOMC__ */
 #endif /* V7 */
 #endif /* !BSD42 */
+
+#include "clibext.h"
 
 #ifdef USG
 #ifdef MSDOS
@@ -572,7 +572,7 @@ union record   *start_header( char *name, struct stat *st )
         hstat[0] = *st;                         /* save stat for verbose-mode listing */
 
         header = (union record *) findrec();
-        bzero(header->charptr, sizeof(*header));        /* XXX speed up */
+        memset(header->charptr, 0, sizeof(*header));        /* XXX speed up */
         strcpy(header->header.name, name);
         if (header->header.name[NAMSIZ - 1])
         {
@@ -617,7 +617,7 @@ void finish_header( union record *header )
     int    i, sum;
     char  *p;
 
-    bcopy(CHKBLANKS, header->header.chksum, sizeof(header->header.chksum));
+    memcpy(CHKBLANKS, header->header.chksum, sizeof(header->header.chksum));
 
     sum = 0;
     p = header->charptr;
@@ -692,10 +692,10 @@ void write_eot( void )
         union record   *p;
 
         p = findrec();
-        bzero(p->charptr, RECORDSIZE);
+        memset(p->charptr, 0, RECORDSIZE);
         userec(p);
         /* FIXME, only one EOT block should be needed. */
         p = findrec();
-        bzero(p->charptr, RECORDSIZE);
+        memset(p->charptr, 0, RECORDSIZE);
         userec(p);
 }

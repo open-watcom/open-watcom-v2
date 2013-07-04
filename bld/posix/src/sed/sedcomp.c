@@ -562,6 +562,7 @@ static char *recomp(
     int             tags;               /* # of closed tags */
     char            *obr[MAXTAGS+1] = {0}; /* ep values when \( seen */
     int             opentags = 0;       /* Used to index obr */
+    int             i;
 
     if( *cp == redelim )                /* if first char is RE endmarker */
         return( cp++, *ep++ = CEOF, ep ); /* use existing RE. */
@@ -712,39 +713,39 @@ static char *recomp(
 
         case '[':                       /* begin character set pattern */
             {
-                int                     classct; /* class element count */
-                register unsigned       uc; /* current-character */
-
-                if( ep + 17 >= expbuf + RELIMIT )
+                if( ep + CHARBITSSIZE + 1 >= expbuf + RELIMIT )
                     ABORT( REITL );     /* Not exercised by sedtest.mak */
                 *ep++ = CCL;            /* insert class mark */
-                if( ( negclass = (int)( ( uc = *sp++ ) == '^' ) ) != 0 )
-                    uc = *sp++;
+                negclass = ( (c = *sp++) == '^' );
+                if( negclass )
+                    c = *sp++;
                 svclass = sp;           /* save ptr to class start */
                 do {
-                    switch( uc ) {
+                    switch( c ) {
                     case '\0':
                         ABORT( CGMSG );
                     case '-':           /* handle character ranges */
                         if( sp > svclass && *sp != ']' ) {
-                            unsigned const  lo = (unsigned)*( sp - 2 );
-                            unsigned const  hi = (unsigned)*sp;
+                            int const  lo = *(unsigned char *)( sp - 2 );
+                            int const  hi = *(unsigned char *)sp;
                             if( lo > hi )
                                 ABORT( CGMSG );
                             if( sp[1] == '-' && sp[2] != ']' )
                                 ABORT( CGMSG );
-                            for( uc = lo; uc <= hi; uc++ )
-                                ep[uc >> 3] |= bits[uc & 7];
+                            for( i = lo; i <= hi; i++ )
+                                SETCHARBIT( ep, i );
                             continue;
                         }
                         break;
                     case '\\':          /* handle escape sequences in sets */
-                        if( ( uc = *sp++ ) == 'n' )
-                            uc = '\n';
-                        else if( uc == 't' )
-                            uc = '\t';
-                        else
-                            --sp, uc = '\\'; /* \n and \t are special, \* is not */
+                        if( ( c = *sp++ ) == 'n' ) {
+                            c = '\n';
+                        } else if( c == 't' ) {
+                            c = '\t';
+                        } else {
+                            --sp, c = '\\'; /* \n and \t are special, \* is not */
+                        }
+                        break;
                     case '[':           /* Handle named character class */
                         if( *sp == ':' ) {
                             static const struct {
@@ -767,28 +768,34 @@ static char *recomp(
                             size_t si;
                             int ( *isf )( int c );
 
-                            for( si = 0; si < sizeof t / sizeof *t; si++ )
-                                if( strncmp( sp+1, t[si].s, strlen( t[si].s ) ) == 0 )
+                            for( si = 0; si < sizeof( t ) / sizeof( *t ); si++ ) {
+                                if( strncmp( sp+1, t[si].s, strlen( t[si].s ) ) == 0 ) {
                                     break;
-                            if( si >= sizeof t / sizeof *t ) /* Add class */
+                                }
+                            }
+                            if( si >= sizeof( t ) / sizeof( *t ) ) /* Add class */
                                 ABORT( UNCLS );
                             sp += 1 + strlen( t[si].s );
-                            for( isf = t[si].isf, uc = 1; uc < 128; uc++ )
-                                if( isf( (int)uc ) )
-                                    ep[uc >> 3] |= bits[uc & 7];
+                            for( isf = t[si].isf, i = 1; i < CHARBITSSIZE * 8; i++ ) {
+                                if( isf( i ) ) {
+                                    SETCHARBIT( ep, i );
+                                }
+                            }
                             continue;
                         }
                         break;
                     }
-                                        /* add (maybe translated) char to set */
-                    ep[uc >> 3] |= bits[uc & 7];
-                } while ( ( uc = *sp++ ) != ']' );
-                                        /* invert bitmask if all-but needed */
-                if( negclass )
-                    for( classct = 0; classct < 16; classct++ )
-                        ep[classct] ^= 0xFF;
+                    /* add (maybe translated) char to set */
+                    SETCHARBIT( ep, c );
+                } while ( ( c = *sp++ ) != ']' );
+                /* invert bitmask if all-but needed */
+                if( negclass ) {
+                    for( i = 0; i < CHARBITSSIZE; i++ ) {
+                        ep[i] ^= 0xFF;
+                    }
+                }
                 ep[0] &= 0xFE;          /* never match ASCII 0 */
-                ep += 16;               /* advance ep past set mask */
+                ep += CHARBITSSIZE;     /* advance ep past set mask */
             }
             break;
 
@@ -809,15 +816,15 @@ static char *recomp(
             case CKET: {
                     /* Make room to insert skip marker in expbuf */
                     char * const    firstep = obr[opentags];
-                    int const       width = ep - firstep;
-                    int             i = width;
+                    int             width = ep - firstep;
 
                     if( width >= 256 )
                         ABORT( REITL ); /* Not exercised by sedtest.mak */
                     *firstep |= ( *lastep ^ CKET ) ; /* Mark \( as * or \{ terminated */
+                    i = width;
                     while( --i >= 2 )
-                        firstep[i+1] = firstep[i];
-                    firstep[2] = (char)width-1;
+                        firstep[i + 1] = firstep[i];
+                    firstep[2] = (char)( width - 1 );
                     lastep++;
                     ep++;
                 }

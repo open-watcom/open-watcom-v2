@@ -28,15 +28,10 @@
 *
 ****************************************************************************/
 
-#ifndef _GETOPT_H_DD6E8779_03B2_4F3E_AE3D_C31192E79DE1
-#define _GETOPT_H_DD6E8779_03B2_4F3E_AE3D_C31192E79DE1
+#ifndef _GETOOPT_H_DD6E8779_03B2_4F3E_AE3D_C31192E79DE1
+#define _GETOOPT_H_DD6E8779_03B2_4F3E_AE3D_C31192E79DE1
 
-// gnutar getopt changed to ow_getopt as it clashes with
-// unistd.h getopt which should be used
-extern int  ow_getopt(int nargc, char ** nargv, char *ostr);
 extern int  getoldopt( int argc, char **argv, char *optstring );
-extern int  optind; /* index into parent argv vector */
-extern char *optarg;      
 
-#endif /* _GETOPT_H_DD6E8779_03B2_4F3E_AE3D_C31192E79DE1 */
+#endif /* _GETOOPT_H_DD6E8779_03B2_4F3E_AE3D_C31192E79DE1 */
 

@@ -44,10 +44,9 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>                  /* For non-Berkeley systems */
-#include <fcntl.h>
 #include <signal.h>
-#include <unistd.h>
 #include <process.h>
+#include "wio.h"
 
 #include "tar.h"
 #include "port.h"

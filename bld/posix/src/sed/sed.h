@@ -32,6 +32,10 @@
 #define XCMD    0x18    /* x -- exhange pattern and hold spaces         */
 #define YCMD    0x19    /* y -- transliterate text                      */
 
+#define CHARBITSSIZE    (128 / 8)
+#define SETCHARBIT(a,c) (a[(unsigned char)c >> 3] |= bits[c & 7])
+#define TESTCHARBIT(a,c) (a[(unsigned char)c >> 3] & bits[c & 7])
+
 typedef struct cmd_t    sedcmd;         /* use this name for declarations */
 struct cmd_t {                          /* compiled-command representation */
     char                *addr1;         /* first address for command */

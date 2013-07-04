@@ -65,7 +65,9 @@ char *fgets();
 #include "create.h"
 #include "extract.h"
 #include "buffer.h"
-#include "getopt.h"
+#include "getoopt.h"
+
+#include "clibext.h"
 
 /*
  * We should use a conversion routine that does reasonable error
@@ -183,6 +185,8 @@ dupflags:
 }
 
 
+#define Str(x) #x
+
 /*
  * Parse the options for tar.
  */
@@ -192,7 +196,7 @@ void options( int argc, char **argv )
 
         /* Set default option values */
         blocking = DEFBLOCKING;         /* From Makefile */
-        ar_file = DEF_AR_FILE;          /* From Makefile */
+        ar_file = Str( DEF_AR_FILE );   /* From Makefile */
 
         /* Parse options */
         while ((c = getoldopt(argc, argv, "b:BcdDf:hikmopsS:tT:u:vV:xzZ")

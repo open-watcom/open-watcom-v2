@@ -275,9 +275,9 @@ static int advance(
 
         case CCL:                       /* a closure */
             c = *lp++ &0177;
-            if( !( ep[c >> 3] & bits[c & 07] ) ) /* is char in set? */
+            if( !TESTCHARBIT( ep, c ) ) /* is char in set? */
                 return( FALSE );        /* return false */
-            ep += 16;                   /* skip rest of bitmask */
+            ep += CHARBITSSIZE;         /* skip rest of bitmask */
             break;                      /*   and keep going */
 
         case CBRA:                      /* start of tagged pattern */
@@ -325,8 +325,8 @@ static int advance(
 
         case CCL | STAR:                /* match [...]* */
             curlp = lp;                 /* save closure start loc */
-            while( c = *lp++ & 0x7F, ep[c >> 3] & bits[c & 07] ) ;
-            ep += 16;                   /* skip past the set */
+            while( c = *lp++ & 0x7F, TESTCHARBIT( ep, c ) ) ;
+            ep += CHARBITSSIZE;         /* skip past the set */
             goto star;                  /* match followers */
 
         star:                           /* the repeat part of a * or + match */
@@ -461,10 +461,10 @@ static int advance(
 
         case CCL | MTYPE:               /* match [...]\{...\} */
             tep = ep;
-            ep += 16;
+            ep += CHARBITSSIZE;
             i1 = *ep++ & 0xFF, i2 = *ep++ & 0xFF;
             /* WFB 1 CCL|MTYPE handler must be like CCHR|MTYPE or off by 1 */
-            while( ct = *lp, tep[(unsigned)ct >> 3] & bits[ct & 7] && i1 )
+            while( ct = *lp, TESTCHARBIT( tep, ct ) && i1 )
                 lp++, i1--;
             if( i1 )
                 return( FALSE );
@@ -473,7 +473,7 @@ static int advance(
             if( i2 == 0xFF )
                 i2 = MAXBUF;
             curlp = lp;
-            while( ct = *lp++ & 0xff, tep[(unsigned)ct >> 3] & bits[ct & 7] && i2 )
+            while( ct = *lp++ & 0xff, TESTCHARBIT( tep, ct ) && i2 )
                 i2--;
             goto star;
 

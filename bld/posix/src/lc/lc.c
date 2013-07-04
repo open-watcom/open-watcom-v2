@@ -64,6 +64,8 @@
 #include "fnutils.h"
 #include "console.h"
 
+#include "clibext.h"
+
 #define LINE_WIDTH      80      /* FIXME: should really determine screen width*/
 #define COLUMN_WIDTH    16
 #define GUTTER_WIDTH    2
@@ -147,8 +149,11 @@ int main( int argc, char *argv[] )
     return( 0 );
 } /* main */
 
-int Compare( struct dirent **p1, struct dirent **p2 )
+int Compare( const void *_p1, const void *_p2 )
 {
+    const struct dirent **p1 = (const struct dirent **)_p1;
+    const struct dirent **p2 = (const struct dirent **)_p2;
+
     return( strcmp( (*p1)->d_name,(*p2)->d_name ) );
 } /* Compare */
 
@@ -246,9 +251,9 @@ void DoLC( char *dir )
     }
 
     /*
-     * sort the data. need to cast Compare as it's prototype is wrong. (marginally) better than casting the params to Compare
+     * sort the data.
      */
-    qsort( files, filecnt, sizeof(struct dirent *), (int (*)(const void *, const void * ))Compare );
+    qsort( files, filecnt, sizeof(struct dirent *), Compare );
 
     /*
      * determine if there are files and/or directories

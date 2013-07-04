@@ -44,9 +44,12 @@
  */
 
 #include <stdio.h>
-
-#include "getopt.h"	/* local copy of getopt */
+#if defined( __WATCOMC__ ) || defined( __UNIX__ )
+#include <unistd.h>
+#endif
+#include "getoopt.h"    /* local copy of getopt */
 #include "port.h"
+#include "clibext.h"
 
 int getoldopt( int argc, char **argv, char *optstring )
 {
@@ -69,7 +72,7 @@ int getoldopt( int argc, char **argv, char *optstring )
         }
 
         if (use_getopt)
-                return ow_getopt(argc, argv, optstring);
+                return getopt(argc, argv, optstring);
 
         c = *key++;
         if (c == '\0')

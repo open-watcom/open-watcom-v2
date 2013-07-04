@@ -52,11 +52,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
 #include <stdarg.h>
-#include <unistd.h>
+#include "wio.h"
 
 #include "port.h"
 
@@ -70,54 +69,54 @@
 
 int ugetc(int f)
 {
-	char c;
+        char c;
 
-	if (read(f, &c, 1) != 1)
-		return(EOF);
+        if (read(f, &c, 1) != 1)
+                return(EOF);
 
-	return(c);
+        return(c);
 }
 
 #define UPRBUFSIZ 256
 
 void uprintf(int z, char * fmt, ... )
 {
-	char *		buf;
-	va_list     arg_list;
+        char *          buf;
+        va_list     arg_list;
 
-	buf = malloc(UPRBUFSIZ);
-	if (buf==NULL)
-	{
-		fprintf(stderr, "uprintf: out of memory\n");
-		exit(-1);
-	}
+        buf = malloc(UPRBUFSIZ);
+        if (buf==NULL)
+        {
+                fprintf(stderr, "uprintf: out of memory\n");
+                exit(-1);
+        }
 
-	va_start( arg_list, fmt );
-	vsprintf( buf,fmt, arg_list );
-	va_end( arg_list );
-	if (strlen(buf)+1 > UPRBUFSIZ)
-	{
-		fprintf(stderr,"uprintf: overflowed buffer.\n");
-		exit(-1);
-	}
+        va_start( arg_list, fmt );
+        vsprintf( buf,fmt, arg_list );
+        va_end( arg_list );
+        if (strlen(buf)+1 > UPRBUFSIZ)
+        {
+                fprintf(stderr,"uprintf: overflowed buffer.\n");
+                exit(-1);
+        }
 
-	if (write(z, buf, strlen(buf)) != strlen(buf))
-	{
-		sprintf(buf, "uprintf: fd %d");
-		perror(buf);
-	}
+        if (write(z, buf, strlen(buf)) != strlen(buf))
+        {
+                sprintf(buf, "uprintf: fd %d");
+                perror(buf);
+        }
 
-	free(buf);
+        free(buf);
 }
 
 #if 0
-char *	ugets(char *buf, int siz, int f)
+char *  ugets(char *buf, int siz, int f)
 {
-	int size;
-	size = read(f, buf, siz);
-	if( buf[size] == '\n') {
-		buf[size] == '\0';
-	}
+        int size;
+        size = read(f, buf, siz);
+        if( buf[size] == '\n') {
+                buf[size] == '\0';
+        }
 }
 #endif
 
@@ -128,7 +127,7 @@ char *	ugets(char *buf, int siz, int f)
  */
 int lstat(const char * path, struct stat * buf)
 {
-	return (stat(path, buf));
+        return (stat(path, buf));
 }
 
 /*
@@ -137,7 +136,7 @@ int lstat(const char * path, struct stat * buf)
  */
 char *valloc(unsigned size)
 {
-	return (malloc(size));
+        return (malloc(size));
 }
 
 #ifndef MSDOS
@@ -214,12 +213,12 @@ int mkdir( char *dpath, int dmode )
 
 char * index(char *s, int c)
 {
-	return (strchr(s, c));
+        return (strchr(s, c));
 }
 
 char * rindex(char *s, int c)
 {
-	return (strrchr(s, c));
+        return (strrchr(s, c));
 }
 
 /*
@@ -227,7 +226,7 @@ char * rindex(char *s, int c)
  */
 void bcopy( const void *__s1, void *__s2, size_t __n )
 {
-	memcpy(__s2, __s1, __n);
+        memcpy(__s2, __s1, __n);
 }
 
 #if 0
@@ -242,7 +241,7 @@ int             n;
 
 void bzero(char * s1, int n)
 {
-	memset(s1, 0, n);
+        memset(s1, 0, n);
 }
 #endif
 
@@ -252,8 +251,8 @@ void bzero(char * s1, int n)
 
 void bzero(char * s1, int n)
 {
-	while (n-- > 0) 
-		*s1++ = 0;
+        while (n-- > 0) 
+                *s1++ = 0;
 }
 
 #endif /* V7 */

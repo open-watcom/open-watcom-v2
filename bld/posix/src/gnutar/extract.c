@@ -42,20 +42,15 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <string.h>
 #include <direct.h>
 #include <process.h>
 #include <sys/utime.h>
 #include <time.h>
+#include "wio.h"
 
 #ifdef BSD42
 #include <sys/file.h>
-#endif
-
-#ifdef USG
-#include <fcntl.h>
 #endif
 
 #include "tar.h"
