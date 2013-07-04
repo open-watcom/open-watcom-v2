@@ -67,9 +67,11 @@ altlibmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)
 !ifeq bootstrap 1
 libdir=$(subdir_$(host_cpu))
 altlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
+posix_lib = $(libdir)/posix.lib
 !else
 libdir=$(libmakepath:$(to_os_path))
 altlibdir=$(altlibmakepath:$(to_os_path))
+posix_lib = $(libmakepath)/posix.lib
 !endif
 
 #

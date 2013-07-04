@@ -29,7 +29,7 @@ curr_dir_all=$+ $(%CWD) $-
         @cd $(curr_dir_all)
 
 $(commands) : .symbolic $(__MAKEFILES__)
-        !@wmake -h host_os=$(host_os) host_cpu=$(host_cpu) make_all=1 release=$(release) bootstrap=$(bootstrap) -f $(posix_dir)/src/$^@/makefile
+        !@wmake -h host_os=$(host_os) host_cpu=$(host_cpu) release=$(release) bootstrap=$(bootstrap) -f $(posix_dir)/src/$^@/makefile
 
 clean : .symbolic
 curr_dir_all=$+ $(%CWD) $-
@@ -44,5 +44,5 @@ curr_dir_all=$+ $(%CWD) $-
         @cd $(curr_dir_all)
         @echo clean $(curr_dir_all)
         rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
-!endif
 
+!endif
