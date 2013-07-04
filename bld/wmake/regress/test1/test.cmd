@@ -9,7 +9,7 @@ echo # TEST 1
 echo # ---------------------------
 ..\cmds\create.exe 30
 rm -f err1.out
-wtouch err1.out
+echo. >err1.out
 %1 -h -f maketst1 -l err1.out > tst1.out
 diff -b tst1.out tst1.chk
 if errorlevel 1 goto tst1err

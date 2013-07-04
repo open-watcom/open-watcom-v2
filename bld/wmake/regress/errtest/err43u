@@ -9,7 +9,7 @@ all.43 : first z43.43 last
 
 first : .symbolic
     @chmod +w all.43
-    @wtouch all.43
+    @%write all.43
     @chmod -w all.43
 
 z43.43 :

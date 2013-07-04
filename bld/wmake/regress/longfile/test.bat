@@ -9,7 +9,7 @@ echo # ---------------------------
 echo #   Long FileName Test 1
 echo # ---------------------------
 echo LONGFILENAME OK > "HELLO TMP.TMP"
-wtouch hello.h
+echo. >hello.h
 rm -f tmp.out
 %1 -h -a -f long01 > tmp.out 2>&1
 diff -b long01.chk tmp.out

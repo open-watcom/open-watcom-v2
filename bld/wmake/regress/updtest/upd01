@@ -10,7 +10,7 @@
 #   test implicit rules across multiple (non-existing) targets
 #
 
-wk = wtouch
+wk = %create
 
 .extensions:
 .extensions: .ee .dd .cc .bb .aa

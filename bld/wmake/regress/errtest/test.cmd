@@ -112,7 +112,7 @@ if errorlevel 1 goto err36
 echo # ------------------------------
 echo # ERROR 39: Target not mentioned in any makefile
 echo # ------------------------------
-wtouch ditty.c
+echo. >ditty.c
 rm tmp.out
 %1 -h -f err39 ditty.obj > tmp.out 2>&1
 diff tmp.out err39.chk
@@ -129,8 +129,8 @@ echo # ------------------------------
 echo # ERROR 40: Could not touch target
 echo # ------------------------------
 rm tmp.out
-wtouch err40.tst >tmp.out
-chmod +r err40.tst >>tmp.out
+echo. >err40.tst
+chmod +r err40.tst >tmp.out
 %1 -h -a -t -f err40 >> tmp.out 2>&1
 chmod -r err40.tst
 rm err40.tst

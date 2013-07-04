@@ -27,8 +27,8 @@ fi
 
 LOGFILE=$2
 
-wtouch hello.obj
-wtouch hello.cpp
+echo >hello.obj
+echo >hello.cpp
 
 echo \# ===========================
 echo \# Implicit Rules Test
@@ -43,7 +43,7 @@ do_check
 TEST=2A
 print_header
 sleep 1
-wtouch hello.h
+echo >hello.h
 $1 -h -c -f imp02a > tst1.out
 diff imp02.chk tst1.out
 do_check
@@ -51,7 +51,7 @@ do_check
 TEST=2B
 print_header
 sleep 1
-wtouch hello.h
+echo >hello.h
 $1 -c -h -f imp02b > tst1.out
 diff imp02.chk tst1.out
 do_check
@@ -59,7 +59,7 @@ do_check
 TEST=2C
 print_header
 sleep 1
-wtouch hello.h
+echo >hello.h
 $1 -h -c -f imp02c -ms > tst1.out
 diff imp02.chk tst1.out
 do_check

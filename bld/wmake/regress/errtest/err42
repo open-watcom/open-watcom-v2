@@ -6,7 +6,8 @@
 .NOCHECK
 
 dowah :
-    @wtouch zzz.zzz
+    @%create zzz.zzz
+    @cd .
     @rm -f zzz.zzz
     @$(mkerr)
 

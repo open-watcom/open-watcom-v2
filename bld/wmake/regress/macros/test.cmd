@@ -114,7 +114,9 @@ echo # ---------------------------
 echo #   Macro Test 5
 echo # ---------------------------
 
-wtouch hello.boo hello.tmp hello.c
+echo. >hello.boo
+echo. >hello.tmp
+echo. >hello.c
 %1 -h -ms -f macro05 > tmp.out 2>&1
 diff -b macro05.chk tmp.out
 if errorlevel 1 goto err5
@@ -131,8 +133,10 @@ echo # ---------------------------
 echo #   Macro Test 6
 echo # ---------------------------
 
-wtouch hello.obj hello2.obj
-wtouch hello.c  hello2.c
+echo. >hello.obj
+echo. >hello2.obj
+echo. >hello.c
+echo. >hello2.c
 %1 -h -ms -f macro06 -a > tmp.out 2>&1
 diff -b macro06.chk tmp.out
 if errorlevel 1 goto err6
@@ -148,8 +152,10 @@ echo # ---------------------------
 echo #   Macro Test 7
 echo # ---------------------------
 
-wtouch hello.obj hello2.obj
-wtouch hello.c  hello2.c
+echo. >hello.obj
+echo. >hello2.obj
+echo. >hello.c
+echo. >hello2.c
 %1 -h -ms -m -f macro07 -a cc=wcl386 > tmp.out 2>&1
 diff -b macro07.chk tmp.out
 if errorlevel 1 goto err7

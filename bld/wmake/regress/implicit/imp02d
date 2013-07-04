@@ -5,40 +5,34 @@ all: hello.exe .symbolic
         sleep 2
         @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
         sleep 2
-        @wtouch hello0.h
-        @echo wtouch hello0.h
+        @%append hello0.h
+        @echo %append hello0.h
         @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
         sleep 2
-        @wtouch hello1.h
-        @echo wtouch hello1.h
+        @%append hello1.h
+        @echo %append hello1.h
         @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
         sleep 2
-        @wtouch hello0.h
-        @echo wtouch hello0.h
-        @wtouch hello1.h
-        @echo wtouch hello1.h
+        @%append hello0.h
+        @echo %append hello0.h
+        @%append hello1.h
+        @echo %append hello1.h
         @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
 
 hello.exe : hello.obj
         wcl386 -zq -fe=$@ $<
 
 hello.c : $(__MAKEFILES__)
-        @cat << > hello0.h
-$#include <stdio.h>
-<<
-        @cat << > hello1.h
-static void hello( void )
-{
-    puts( "Hello! Universe." );
-}
-<<
-        @cat << > $@
-$#include "hello0.h"
-$#include "hello1.h"
-
-int main( void )
-{
-    hello();
-    return( 0 );
-}
-<<
+        @%write  hello0.h $#include <stdio.h>
+        @%write  hello1.h static void hello( void )
+        @%append hello1.h {
+        @%append hello1.h     puts( "Hello! Universe." );
+        @%append hello1.h }
+        @%write  $@ $#include "hello0.h"
+        @%append $@ $#include "hello1.h"
+        @%append $@ 
+        @%append $@ int main( void )
+        @%append $@ {
+        @%append $@     hello();
+        @%append $@     return( 0 );
+        @%append $@ }

@@ -28,20 +28,20 @@ pre08.002: .symbolic
 
 
 pre08.003: .symbolic
-    wtouch pre08.003
+    %create pre08.003
     if not exist pre08.003 $(mkerr)
     rm pre08.003
     if exist pre08.003 $(mkerr)
 
 
 pre08.004: .symbolic
-    wtouch pre08.003
-    if not exist pre*.003 $(mkerr)
-    rm pre08.003
+    %create pre08.004
+    if not exist pre*.004 $(mkerr)
+    rm pre08.004
 
 
 pre08.005:
-    if a == a if a== a if a ==a if a==a wtouch pre08.005
+    if a == a if a== a if a ==a if a==a %create pre08.005
 
 
 pre08.006: .symbolic
@@ -53,11 +53,11 @@ pre08.006: .symbolic
 
 # this is an oddball case - try if a b == a echo hi under DOS
 pre08.007:
-    if a b == a wtouch pre08.007
+    if a b == a %create pre08.007
 
 
 pre08.008:
-    if a        ==      a       wtouch pre08.008
+    if a        ==      a       %create pre08.008
 
 
 pre08.009: .symbolic

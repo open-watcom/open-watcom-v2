@@ -5,4 +5,9 @@
 
 "hello tmp.tmp": hello.h
       echo hello
-      cat "hello tmp.tmp"
+      @echo type "hello tmp.tmp"
+!ifdef __UNIX__
+      @cat "hello tmp.tmp"
+!else
+      @type "hello tmp.tmp"
+!endif

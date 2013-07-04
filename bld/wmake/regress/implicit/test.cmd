@@ -1,6 +1,6 @@
 @echo off
-wtouch hello.obj
-wtouch hello.cpp
+echo. >hello.obj
+echo. >hello.cpp
 echo # ===========================
 echo # Implicit Rules Test
 echo # ===========================
@@ -24,7 +24,7 @@ echo # ---------------------------
 echo # IMPLICIT RULES TEST 2A
 echo # ---------------------------
 sleep 2
-wtouch hello.h
+echo. >hello.h
 %1 -h -c -f imp02a > tst1.out
 diff imp02.chk tst1.out
 if errorlevel 1 goto err2
@@ -40,7 +40,7 @@ echo # ---------------------------
 echo # IMPLICIT RULES TEST 2B
 echo # ---------------------------
 sleep 2
-wtouch hello.h
+echo. >hello.h
 %1 -c -h -f imp02b > tst1.out
 diff imp02.chk tst1.out
 if errorlevel 1 goto err2b
@@ -56,7 +56,7 @@ echo # ---------------------------
 echo # IMPLICIT RULES TEST 2C
 echo # ---------------------------
 sleep 2
-wtouch hello.h
+echo. >hello.h
 %1 -h -c -f imp02c /ms > tst1.out
 diff imp02.chk tst1.out
 if errorlevel 1 goto err2c

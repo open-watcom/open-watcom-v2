@@ -7,5 +7,5 @@
 
 .c.obj :
     @echo Compile $[@
-    @wtouch $^@
+    @%create $^@
 

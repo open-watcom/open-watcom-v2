@@ -76,7 +76,9 @@ do_check
 
 TEST=5
 print_header
-wtouch hello.boo hello.tmp hello.c
+echo >hello.boo
+echo >hello.tmp
+echo >hello.c
 $1 -h -ms -f macro05u > tmp.out 2>&1
 diff -b macro05u.chk tmp.out
 do_check
@@ -84,16 +86,20 @@ rm hello.boo hello.tmp hello.c
 
 TEST=6
 print_header
-wtouch hello.obj hello2.obj
-wtouch hello.c  hello2.c
+echo >hello.obj
+echo >hello2.obj
+echo >hello.c
+echo >hello2.c
 $1 -h -ms -f macro06 -a > tmp.out 2>&1
 diff -b macro06.chk tmp.out
 do_check
 
 TEST=7
 print_header
-wtouch hello.obj hello2.obj
-wtouch hello.c  hello2.c
+echo >hello.obj
+echo >hello2.obj
+echo >hello.c
+echo >hello2.c
 $1 -h -ms -m -f macro07 -a cc=wcl386 > tmp.out 2>&1
 diff -b macro07.chk tmp.out
 do_check

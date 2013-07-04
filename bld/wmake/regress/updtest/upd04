@@ -14,7 +14,8 @@ setup : .symbolic
 !else
     @echo Should get Error(E42) on (upd04a1) and (upd04b1.d)
 !endif
-    @wtouch upd04b1.1 upd04b2.2
+    @%create upd04b1.1
+    @%create upd04b2.2
 
 clean : .symbolic
     @rm -f upd04a2 upd04b1.1 upd04b2.2 upd04b2.d
@@ -30,7 +31,7 @@ upd04a1 :
     @$(mkerr)
 
 upd04a2 :
-    @wtouch upd04a2
+    @%create upd04a2
 
 
 #
@@ -44,7 +45,7 @@ upd04a2 :
     @$(mkerr)
 
 .2.d :
-    @wtouch $^@
+    @%create $^@
 
 targb : upd04b1.d upd04b2.d
     @%abort

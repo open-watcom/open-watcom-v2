@@ -1,13 +1,13 @@
 if exist upd01x*.* @rm upd01x*.*
-wtouch upd01xa.aa
+%create upd01xa.aa
 upd01xa.bb will be built because of upd01xa.aa
-wtouch upd01xa.bb
+%create upd01xa.bb
 upd01xa.cc will be built because of upd01xa.bb
-wtouch upd01xa.cc
+%create upd01xa.cc
 upd01xa.dd will be built because of upd01xa.cc
-wtouch upd01xa.dd
+%create upd01xa.dd
 upd01xa.ee will be built because of upd01xa.dd
-wtouch upd01xa.ee
+%create upd01xa.ee
 rm upd01x*.*
 %null
 all will be built because of first

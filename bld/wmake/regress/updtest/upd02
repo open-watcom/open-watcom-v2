@@ -13,25 +13,25 @@
 .extensions: .cc .bb .aa
 
 .bb.cc:
-    @wtouch $[*.cc
+    @%create $[*.cc
 
 all: first upd02xa.3 upd02xb.cc last .symbolic
     @%null
 
 first: .symbolic
     @-if exist upd02x*.* @rm upd02x*.* # Handled internally, not by shell.
-    @wtouch upd02xa.1
-    @wtouch upd02xb.aa
+    @%create upd02xa.1
+    @%create upd02xb.aa
 
 last: .symbolic
     @-rm upd02x*.*
 
 upd02xa.3 :: upd02xa.1
-    @wtouch upd02xa.2
+    @%create upd02xa.2
 
 upd02xa.3 :: upd02xa.2
-    @wtouch upd02xa.3
+    @%create upd02xa.3
 
 upd02xb.cc :: upd02xb.aa
-    @wtouch upd02xb.bb
+    @%create upd02xb.bb
 

@@ -34,7 +34,7 @@ echo \# ===========================
 TEST=1
 print_header
 echo LONGFILENAME OK > "hello tmp.tmp"
-wtouch hello.h
+echo >hello.h
 rm -f tmp.out
 $1 -h -a -f long01 > tmp.out 2>&1
 diff -b long01.chk tmp.out
