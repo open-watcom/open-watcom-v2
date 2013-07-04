@@ -32,9 +32,10 @@
 #define XCMD    0x18    /* x -- exhange pattern and hold spaces         */
 #define YCMD    0x19    /* y -- transliterate text                      */
 
-#define CHARBITSSIZE    (128 / 8)
-#define SETCHARBIT(a,c) (a[(unsigned char)c >> 3] |= bits[c & 7])
-#define TESTCHARBIT(a,c) (a[(unsigned char)c >> 3] & bits[c & 7])
+#define CHARSETSIZE     (256 / 8)
+
+#define SETCHARSET(a,c)     (a[(unsigned char)c >> 3] |= bits[c & 7])
+#define TESTCHARSET(a,c)    (a[(unsigned char)c >> 3] & bits[c & 7])
 
 typedef struct cmd_t    sedcmd;         /* use this name for declarations */
 struct cmd_t {                          /* compiled-command representation */
@@ -43,7 +44,7 @@ struct cmd_t {                          /* compiled-command representation */
     union {
         char            *lhs;           /* s command lhs */
         sedcmd          *link;          /* label link */
-    }                   u;
+    } u;
     unsigned char       command;        /* command code */
     char                *rhs;           /* s command replacement string */
     FILE                *fout;          /* associated output file descriptor */
@@ -53,25 +54,25 @@ struct cmd_t {                          /* compiled-command representation */
         unsigned        global  : 1;    /* was g postfix specified? */
         unsigned        print   : 2;    /* was p postfix specified? */
         unsigned        inrange : 1;    /* in an address range? */
-    }                   flags;
+    } flags;
 };
 
 #define BAD     ((char *)-1LL)          /* guaranteed not a string ptr */
 
 /* address and regular expression compiled-form markers */
-#define STAR    1       /* marker for Kleene star */
-#define CCHR    2       /* non-newline character to be matched follows */
-#define CDOT    4       /* dot wild-card marker */
-#define CCL     6       /* character class follows */
-#define CNL     8       /* match line start */
-#define CDOL    10      /* match line end */
-#define CBRA    12      /* tagged pattern start marker */
-#define CKET    14      /* tagged pattern end marker */
-#define CBACK   16      /* backslash-digit pair marker */
-#define CLNUM   18      /* numeric-address index follows */
-#define CEND    20      /* symbol for end-of-source */
-#define CEOF    22      /* end-of-field mark */
-#define MTYPE   32      /* multiple counts |'d into RE      \{...\}    */
+#define STAR    0x01    /* marker for Kleene star */
+#define CCHR    0x02    /* non-newline character to be matched follows */
+#define CDOT    0x04    /* dot wild-card marker */
+#define CCL     0x06    /* character class follows */
+#define CNL     0x08    /* match line start */
+#define CDOL    0x0A    /* match line end */
+#define CBRA    0x0C    /* tagged pattern start marker */
+#define CKET    0x0E    /* tagged pattern end marker */
+#define CBACK   0x10    /* backslash-digit pair marker */
+#define CLNUM   0x12    /* numeric-address index follows */
+#define CEND    0x14    /* symbol for end-of-source */
+#define CEOF    0x16    /* end-of-field mark */
+#define MTYPE   0x20    /* multiple counts |'d into RE      \{...\}    */
 
 extern void     execute( const char *file ); /* In sed.c */
 
@@ -82,7 +83,7 @@ extern sedcmd           cmds[];         /* hold compiled commands */
 extern long             linenum[];      /* numeric-addresses table */
 
                                         /* miscellaneous shared variables */
-extern int                  nflag;      /* -n option flag */
+extern bool                 nflag;      /* -n option flag */
 extern int                  eargc;      /* scratch copy of argument count */
 extern unsigned char const  bits[];     /* the bits table */
 

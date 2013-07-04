@@ -33,7 +33,7 @@ aadiff =afore     2>> stray | diff afore -
 
 .before
     @rm -f stray
-    @wtouch stray
+    @%create stray
 
 .after
     # stray should be empty
@@ -44,8 +44,8 @@ aadiff =afore     2>> stray | diff afore -
 
 all: .symbolic sedcomp sed susv3 bre dospencer
 
-dospencer: .symbolic spencer.cmd
-    $(here)spencer.cmd 2>&1 | tee spencer.log
+dospencer: .symbolic ./spencer.cmd
+    $]@ 2>&1 | tee spencer.log
     # spencer.log should be empty
     @diff spencer.log $(blackhole) > $(blackhole)
 
@@ -732,7 +732,7 @@ listto: .symbolic listto.exe
     $(sed) -n "N;l" $(axdiff)
 !ifndef __UNIX__
     > xpect cat <<
-$$
+\00\00This sed silently ignores data between NUL and NL$$
 This sed quietly terminates a line with a decimal 26 character$$
 \01\02\03\04\05\06\a\b\t$$
 \v\f\0e\0f\10\11\12\13\14\15\16\17\18\19$$
@@ -798,7 +798,7 @@ int main( int argc, char *argv[] ) {
     cp listto.c afore
     sed "s/quietly.*character/does not treat a decimal 26 character as special/" afore > listto.c
 !endif
-    $(bld_cl) -zq -fe=listto.exe listto.c $(wcl_util_opts)
+    $(bld_cl) listto.c $(bld_clflags) $(bld_ldflags)
 
 command: .symbolic substitute listto readout getline
     > afore echo hello
@@ -1074,8 +1074,8 @@ $# Transform each pair into one line with a conditional failure diagnostic.
 N;s,\n\(.*\), | $(sed) -n \"1s/.*/Test $#\1 failed!/p\",
 <<
 
-spencer.cmd: spen0.sed spen0.dat spen1.sed
-    $(sed) -f spen0.sed spen0.dat | $(sed) -f spen1.sed > spencer.cmd
+./spencer.cmd: spen0.sed spen0.dat spen1.sed
+    $(sed) -f spen0.sed spen0.dat | $(sed) -f spen1.sed > $@
 
 # This rule tests things, not otherwise tested, specified in IEEE Std 1003.1,
 # 2004 Edition http://www.opengroup.org/onlinepubs/000095399/utilities/sed.html

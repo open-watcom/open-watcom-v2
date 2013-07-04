@@ -1,9 +1,11 @@
-!ifdef __LINUX__
-all : .symbolic
+#
+#   define macro for OS's which need POSIX utilities
+#
+need_posix_dos = 1
+need_posix_nt  = 1
+need_posix_os2 = 1
 
-clean : .symbolic
-
-!else
+!ifdef need_posix_$(host_os)
 
 !include $(posix_dir)/mif/commands.mif
 !include $(posix_dir)/mif/common.mif
