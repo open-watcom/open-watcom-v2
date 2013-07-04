@@ -61,7 +61,7 @@ static void freeCB( ctrl_block *cb, int freecb );
 /*
  * GrabFile - read in a specified file, dump it to destination
  */
-int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
+int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
 {
 #if defined( __OS2__ ) && defined( __386__ )
     int                 result;
@@ -217,8 +217,8 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
     cb->prev = cb->next = NULL;
     cb->srcattr = srcattr;
     if( npflag ) {
-        cb->t = t;
-        cb->d = d;
+        cb->t = (unsigned short)t;
+        cb->d = (unsigned short)d;
     }
     if( !sflag ) {
         PrintALine( "reading file %s (%ld bytes)", cb->inname, cb->bytes_pending );
@@ -373,7 +373,7 @@ void FlushMemoryBlocks()
     mem_block           *mb;
     long                total=0;
     unsigned            bytes;
-    time_t              timetaken;
+    unsigned long       timetaken;
     time_t              secs,hunds;
 
     curr = CBHead;

@@ -63,7 +63,7 @@ char *OptEnvVar = "which";
 
 static void writeNL( const char *buf )
 {
-    write( 1, buf, strlen( buf ) );
+    write( 1, buf, (unsigned)strlen( buf ) );
     write( 1, "\n", 1 );
 }
 

@@ -57,7 +57,7 @@ long GetClusterSize( unsigned char drive )
 
     if( drive == 0 ) {
         _dos_getdrive( &cur_drive );
-        drive = cur_drive;
+        drive = (unsigned char)cur_drive;
     }
   #if defined( __NT__ )
     {

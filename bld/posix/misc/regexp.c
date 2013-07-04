@@ -241,7 +241,7 @@ static char *StrChr( char *s, char c )
 
 /* Global work variables for RegComp().  */
 static char *regparse;          /* Input-scan pointer. */
-static int regnpar;             /* () count. */
+static char regnpar;            /* () count. */
 static char regdummy;
 static char *regcode;           /* Code-emit pointer; &regdummy = don't. */
 static long regsize;            /* Code size. */
@@ -396,7 +396,7 @@ static char *reg( int paren, int *flagp )
 {
     char        *ret, *br, *ender;
     int         flags;
-    int         parno = 0;
+    char        parno = 0;
 
     *flagp = HASWIDTH;      /* Tentatively. */
 
@@ -599,9 +599,6 @@ static char *regatom( int *flagp )
         break;
     case '[':
         {
-            int class;
-            int classend;
-
             if( *regparse == '^' ) { /* Complement of range. */
                 ret = regnode( ANYBUT );
                 regparse++;
@@ -617,13 +614,16 @@ static char *regatom( int *flagp )
                     if( *regparse == ']' || *regparse == '\0' ) {
                         regc( '-' );
                     } else {
+                        int class;
+                        int classend;
+
                         class = UCHARAT( regparse - 2 ) + 1;
                         classend = UCHARAT( regparse );
                         if( class > classend + 1 ) {
                             FAIL( ERR_RE_INVALID_SB_RANGE );
                         }
                         for( ; class <= classend; class++ ) {
-                            regc( class );
+                            regc( (char)class );
                         }
                         regparse++;
                     }
@@ -711,19 +711,16 @@ static char *regatom( int *flagp )
  */
 static char *regnode( char op )
 {
-    char        *ret, *ptr;
+    char        *ret;
 
     ret = regcode;
     if( ret == &regdummy ) {
         regsize += 3;
         return( ret );
     }
-
-    ptr = ret;
-    *ptr++ = op;
-    *ptr++ = '\0';          /* Null "next" pointer. */
-    *ptr++ = '\0';
-    regcode = ptr;
+    *regcode++ = op;
+    *regcode++ = '\0';          /* Null "next" pointer. */
+    *regcode++ = '\0';
 
     return( ret );
 }
@@ -747,7 +744,7 @@ static void regc( char b )
  */
 static void reginsert( char op, char *opnd )
 {
-    char        *src, *dst, *place;
+    char        *src, *dst;
 
     if( regcode == &regdummy ) {
         regsize += 3;
@@ -761,10 +758,10 @@ static void reginsert( char op, char *opnd )
         *--dst = *--src;
     }
 
-    place = opnd;           /* Op node, where operand used to be. */
-    *place++ = op;
-    *place++ = '\0';
-    *place++ = '\0';
+    /* Op node, where operand used to be. */
+    *opnd++ = op;
+    *opnd++ = '\0';
+    *opnd++ = '\0';
 }
 
 /*
@@ -795,7 +792,7 @@ static void regtail( char *p, char *val )
         offset = (short)( val - scan );
     }
     *( scan + 1 ) = offset >> 8;
-    *( scan + 2 ) = offset;
+    *( scan + 2 ) = (char)offset;
 }
 
 /* regoptail - regtail on operand of first argument; nop if operandless */

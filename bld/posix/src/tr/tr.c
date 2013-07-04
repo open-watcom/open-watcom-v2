@@ -87,13 +87,13 @@ unsigned char expandChar( char **str ) {
 
     unsigned char   ch;
 
-    ch = *(unsigned char *)*str;
+    ch = **(unsigned char **)str;
     if( ch == 0 )
         return( ch );
     ++*str;
     if( ch != '\\' )
         return( ch );
-    ch = **str;
+    ch = **(unsigned char **)str;
     if( ch == 0 )
         return( ch );
     ++*str;
@@ -112,8 +112,8 @@ unsigned char expandChar( char **str ) {
     case '4':
     case '5':
     case '6':
-    case '7':   return( strtol( *str, str, 8 ) );
-    case 'x':   return( strtol( *str + 1, str, 16 ) );
+    case '7':   return( (unsigned char)strtol( *str, str, 8 ) );
+    case 'x':   return( (unsigned char)strtol( *str + 1, str, 16 ) );
     default:    return( ch );
     }
 }
@@ -127,8 +127,8 @@ size_t expandString( char *str, unsigned char *output ) {
     static const char length_msg[] = {
         "a string cannot expand to greater than 256 characters\n"
     };
-    int             low;
-    int             hi;
+    unsigned char   low;
+    unsigned        hi;
     unsigned char   *outp;
     int             numb;
 
@@ -160,7 +160,7 @@ size_t expandString( char *str, unsigned char *output ) {
                         Die( class_msg );
                     }
                 } else {
-                    numb = MAX_STR - ( outp - output );
+                    numb = (int)( MAX_STR - ( outp - output ) );
                 }
                 while( numb ) {
                     if( outp - output >= MAX_STR )
@@ -194,7 +194,7 @@ void doTranslate( size_t len1, unsigned char *str1, size_t len2, unsigned char *
     int         last_ch;
 
     for( i = 0; i < MAX_STR; ++i ) {
-        translationMatrix[i] = i;
+        translationMatrix[i] = (unsigned char)i;
     }
     if( flagComplement ) {
         for( i = 0; i < MAX_STR; ++i ) {
@@ -226,9 +226,9 @@ void doTranslate( size_t len1, unsigned char *str1, size_t len2, unsigned char *
 }
 
 
-void makeSet( size_t len, unsigned char *str, bool set[], int no_dups ) {
+void makeSet( size_t len, unsigned char *str, bool set[], bool no_dups ) {
 
-    int             i;
+    size_t      i;
 
     memset( set, FALSE, MAX_STR );
     for( i = 0; i < len; ++i ) {
@@ -262,13 +262,13 @@ void main( int argc, char **argv ) {
     }
     if( argc > 1 ) {
         string1_len = expandString( argv[1], string1 );
-        makeSet( string1_len, string1, deleteSet, 1 );
+        makeSet( string1_len, string1, deleteSet, TRUE );
     } else {
         string1_len = 0;
     }
     if( argc > 2 ) {
         string2_len = expandString( argv[2], string2 );
-        makeSet( string2_len, string2, squeezeSet, 0 );
+        makeSet( string2_len, string2, squeezeSet, FALSE );
     } else {
         string2_len = 0;
     }

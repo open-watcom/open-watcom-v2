@@ -117,7 +117,7 @@ static int RunCommand( const char *cmd )
         }
     }
     argv[i] = NULL;
-    i = spawnvp( P_WAIT, cmdnam, argv );
+    i = (int)spawnvp( P_WAIT, cmdnam, argv );
     free( cmdnam );
     free( (void *)argv );
     return( i );

@@ -89,7 +89,7 @@ typedef struct ctrl_block {
 #endif
     mem_block *head,*curr;
     unsigned short t,d;
-    char srcattr;
+    unsigned srcattr;
 } ctrl_block;
 
 typedef struct file_list {
@@ -115,7 +115,7 @@ extern int todflag,pattrflag,rxflag;
 void MemInit( void );
 void DoCP( char *, char * );
 void CopyOneFile( char *, char *);
-int GrabFile( char *, struct stat *, char *, char );
+int GrabFile( char *, struct stat *, char *, unsigned );
 void FlushMemoryBlocks( void );
 void __FAR *FarAlloc( size_t );
 void *NearAlloc( size_t );

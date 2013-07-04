@@ -253,10 +253,10 @@ static char *getNextLine( int in, int newfile, const char *filename, unsigned li
             errorExit( "I/O error" );
         start = offset = IObuffer;
         endbuf = IObuffer + rd;
-        finalread = ( rd != IObsize );
+        finalread = ( (unsigned)rd != IObsize );
     }
     for( ; ; ) {
-        unsigned const      len = ( ( endbuf - start ) - ( offset - start ) );
+        unsigned const      len = (unsigned)( endbuf - offset );
         char * const        lf = memchr( offset, '\n', len );
         char * const        line = start;
 
@@ -286,7 +286,7 @@ static char *getNextLine( int in, int newfile, const char *filename, unsigned li
         rd = read( in, offset, IObsize - len );
         if( -1 == rd )
             errorExit( "I/O error" );
-        finalread = ( rd != IObsize - len );
+        finalread = ( (unsigned)rd != IObsize - len );
         endbuf = offset + rd;
     }
 }
