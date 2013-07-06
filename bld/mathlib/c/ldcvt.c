@@ -214,7 +214,7 @@ static void CalcScaleFactor( ld_arg factor, int n )
     }
 }
 
-static void _do_LDScale10x( long_double _WCNEAR *ld, int scale )
+static void _do_LDScale10x( ld_arg ld, int scale )
 {
     long_double factor;
 
@@ -257,7 +257,7 @@ static double Pow10Table[] = {
     1e1, 1e2, 1e4, 1e8, 1e16, 1e32, 1e64, 1e128, 1e256,
 };
 
-void _LDScale10x( long_double *ld, int scale )
+void _LDScale10x( ld_arg ld, int scale )
 {
     double      factor;
     double      *pow;

@@ -85,7 +85,7 @@ enum {
 #define MAX_HEX_DIGITS  16
 
 #if !(defined(_LONG_DOUBLE_) || defined(__WIDECHAR__))
-void __ZBuf2LD( char _WCNEAR *buf, long_double _WCNEAR *ld )
+void __ZBuf2LD( buf_arg buf, ld_arg ld )
 {
     int         i;
     int         n;

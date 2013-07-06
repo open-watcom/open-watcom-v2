@@ -76,7 +76,7 @@ namespace std {
 
     /* convert this double into a long double */
     double_value = f;
-    __EFG__FDLD( (double _WCNEAR *)&double_value, (long_double _WCNEAR *)&ld );
+    __EFG__FDLD( &double_value, &ld );
 #else
     ld.value = f;
 #endif

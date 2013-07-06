@@ -35,13 +35,13 @@
 
 /* This routine is called from C++ iostream class */
 
-_WMRTLINK void __cnvd2ld( double _WCNEAR *src, long_double _WCNEAR *dst )
+_WMRTLINK void __cnvd2ld( dbl_arg src, ld_arg dst )
 {
     __iFDLD( src, dst );
 }
 
 #ifdef __MAKE_DLL_MATHLIB
-_WMRTLINK void (*__get__cnvd2ld( void ))( double _WCNEAR *, long_double _WCNEAR * )
+_WMRTLINK void (*__get__cnvd2ld( void ))( dbl_arg src, ld_arg dst )
 {
     return( &__cnvd2ld );
 }

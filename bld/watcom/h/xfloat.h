@@ -151,7 +151,7 @@ _WMRTLINK extern int __Strtold(
 extern  int     __LDClass( long_double * );
 extern  void    __ZBuf2LD( buf_arg, ld_arg );
 extern  void    _LDScale10x( ld_arg, int );
-_WMRTLINK extern void  __cnvd2ld( double _WCNEAR *src, long_double _WCNEAR *dst );
+_WMRTLINK extern void  __cnvd2ld( dbl_arg, ld_arg );
 _WMRTLINK extern void  __cnvs2d( char *buf, double *value );
 _WMRTLINK extern int   __cnvd2f( double *src, float *tgt );
 #ifdef _LONG_DOUBLE_
