@@ -28,14 +28,9 @@ d:\
               d:\bld\plusplus - C++ compiler
               etc. (see projects.txt for details)
 
-    rel2    - this is where the software we actually ship gets copied
-              after it is built - it matches the directory structure of our
-              shipping Open Watcom C/C++/FORTRAN tools. Note: the rel2
-              directory structure is created on the fly.
-
-    bat     - batch files, many of which aren't used anymore
+    build   - various files used by building tools
               of most interest are the .ctl files - scripts for the "builder"
-              tool (see below)  and make init files (makeint et al.).
+              tool (see below) and make files (makeint et al.).
 
     docs    - here is everything related to documentation, sources and tools
 
@@ -44,6 +39,17 @@ d:\
 
     contrib - 3rd party source code which is not integral part of
               Open Watcom. Contains primarily several DOS extenders.
+
+    ---------
+
+    build/bin - this is where all build tools created during phase 1 are placed.
+
+    rel     - this is default location where the software we actually ship gets
+              copied after it is built - it matches the directory structure of 
+              our shipping Open Watcom C/C++/FORTRAN tools. 
+
+    Note: - the rel directory structure is created on the fly.
+          - you can change location of rel tree by OWRELROOT environment variable
 
 
 ------------------------------
@@ -69,33 +75,36 @@ d:\
   saving them is one way to do this.
   
 ------------------------------
-3) Priming the pump:
+3) Build process:
 
-Besides the Open Watcom C/C++ 1.x binaries you'll need a few other executables
-used by the build process, primarily builder. The source is in \bld\builder.
-Run wmake in the directory corresponding to your host platform and if you set
-up everything properly, the executables will be built and copied to the
-right place. Perhaps someone will fully automate this process one day. For
-now please consider it an aptitude test.
+WGML OW tool is still only available as DOS version that on platforms
+where can not be run some DOS emulator is necessary.
+Under Linux, DOSEMU and FREEDOS need to be installed.
+Under 64-bit Windows, DOSBOX need to be installed.
 
-------------------------------
-4) Build process:
+Build process consists from two phases.
+First one creates minimal set of OW tools which are sufficient to build full OW.
+Second one build full OW by minimal set of pre-build OW tools from phase 1.
 
-----
-Linux note - build process on Linux is somewhat different. It uses gcc to
-bootstrap Open Watcom, ie. wmake, the C compiler and several other utilities
-are first built using gcc, then the rest of the tree is built using the
-freshly created Open Watcom tools. See the build.sh script in the root of
-the source tree - it should take care of everything.
+Bellow is list of supported compilers.
 
-WGML OW tool is still only available as DOS version. Under Linux,
-DOSEMU and FREEDOS need to be installed to be able to do a complete build.
+			OW for 16/32-bit hosts	OW for 64-bit hosts
+build OS		supported compilers	supported compilers
+DOS			Open Watcom		-
+OS/2			Open Watcom		-
+Windows 32-bit		Open Watcom, Visual C++	-
+Windows 64-bit		Visual C++		Visual C++ (for x64 target)
+Linux x86 32-bit	Open Watcom, GCC	-
+Linux x64 64-bit	GCC			GCC (for x64 target)
+
+Note: OW for 64-bit hosts can be build only on appropriate build OS, 
+    because it uses native 64-bit compilers (OW doesn't support 64-bit targets)
 
 We use the Open Watcom C/C++ compilers and Open Watcom wmake to build our
 tools, but at the top level we have a tool which oversees traversing the
 build tree, deciding which projects to build for what platforms, logging
 the results to a file, and copying the finished software into the release
-tree (rel2), making fully automated builds a possibility.
+tree (rel), making fully automated builds a possibility.
 
 This tool is called builder.
 
@@ -119,7 +128,8 @@ the previous build.log file is copied to build.lo1.
 Common commands:
 
 builder build - build the software
-builder rel2  - build the software, and copy it into the "rel2" release tree
+builder rel   - build the software, and copy it into the "rel" release tree
+builder cprel - copy software into the "rel" release tree
 builder clean - erase object files, exe's, etc. so you can build from scratch
 
 Many of the projects use the "pmake" features of builder (see builder.doc).
@@ -139,7 +149,7 @@ for all target platforms.
 
 For example:
 
-builder rel2 os_nt
+builder rel os_nt
 
 will (generally) build only the NT version of the tools.
 
@@ -155,7 +165,7 @@ Builder is useful for making full builds while running wmake in the right spot
 is handy during development.
 
 ------------------------------
-5) Getting more information:
+4) Getting more information:
 
 If you have any further questions (and you will if you're serious), visit
 http://www.openwatcom.org/ and subscribe to the Open Watcom newsgroups at
