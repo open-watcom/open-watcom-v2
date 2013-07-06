@@ -48,8 +48,8 @@ d:\
               copied after it is built - it matches the directory structure of 
               our shipping Open Watcom C/C++/FORTRAN tools. 
 
-    Note: - the rel directory structure is created on the fly.
-          - you can change location of rel tree by OWRELROOT environment variable
+    Note: the rel directory structure is created on the fly.
+          location of rel tree can be changed by OWRELROOT environment variable
 
 
 ------------------------------
