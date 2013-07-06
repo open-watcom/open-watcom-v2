@@ -44,7 +44,7 @@ VIDEOMP_MODE    VideoModes[] = {
     MODE_RES(  800,  600 ),
     MODE_RES( 1024,  768 ),
     MODE_RES( 1152,  864 ),
-    MODE_RES( 1280,  728 ),
+    MODE_RES( 1280,  720 ),
     MODE_RES( 1280,  800 ),
     MODE_RES( 1280,  960 ),
     MODE_RES( 1360,  768 ),
