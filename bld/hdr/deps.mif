@@ -142,11 +142,9 @@ _algmut.h       : ../watcom/_algmut.mh ../crwatcnt.sp ../readonly.sp
 _algnmod.h      : ../watcom/_algnmod.mh ../crwatcnt.sp ../readonly.sp
 _algsort.h      : ../watcom/_algsort.mh ../crwatcnt.sp ../readonly.sp
 _comdef.h       : ../watcom/_comdef.mh ../crwat.sp ../readonly.sp
-_graph.h        : ../watcom/_graph.mh $(graph_deps)
 _hash.h         : ../watcom/_hash.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 _ialias.h       : ../watcom/_ialias.mh ../crwatcnt.sp ../readonly.sp
 _meta.h         : ../watcom/_meta.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-_pgchart.h      : ../watcom/_pgchart.mh $(pgchart_deps)
 _rbtree.h       : ../watcom/_rbtree.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 _strdef.h       : ../watcom/_strdef.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 alloca.h        : ../watcom/alloca.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../sizet.sp ../null.sp $(cplus) ../alloca.sp

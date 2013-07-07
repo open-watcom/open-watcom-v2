@@ -51,7 +51,7 @@ objs = &
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
 
 .c: ../c
 
@@ -72,9 +72,20 @@ extra_c_flags_i86 = -nt=GRAPH_TEXT
 
 extra_c_flags_win = -zW
 
-$(libname).lib : pgchart.lbc
-        $(librarian) $(libflags) @$<
+$(libname).lib : _graph.gh _pgchart.gh pgchart.lbc
+        $(librarian) $(libflags) @pgchart.lbc
 
 pgchart.lbc : $(objs)
         %create $@
         @for %i in ($<) do @%append $@ +%i
+
+wsplice_options_dos = -kDOS
+wsplice_options_os2 = -kDOS
+wsplice_options_qnx = -kQNX -u
+wsplice_options_win = -kDOS
+
+_pgchart.gh: $(hdr_dir)/watcom/pgchart.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
+        wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@
+
+_graph.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
+        wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@

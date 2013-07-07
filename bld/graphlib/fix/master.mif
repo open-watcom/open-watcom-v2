@@ -80,7 +80,7 @@ graph3s.lib : ../../qnx386r/graph3r.lib ../../pgchart/dos386s/chart3s.lib
 
 extra_c_flags_seginit = -zld -DDOSX286
 
-all: seginit.obj
+all: _graph.gh seginit.obj
 
 !endif
 

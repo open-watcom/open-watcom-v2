@@ -4,6 +4,16 @@
 ::   pgchart.h  : public version.
 ::   _pgchart.h : internal version used for build graphics library.
 ::
+:segment INTERNAL
+/*
+ *  _pgchart.h : internal version used for build graphics library.
+ *
+ */
+#ifndef _PGCHART_H_INCLUDED
+#define _PGCHART_H_INCLUDED
+
+:include owrtlink.sp
+:elsesegment
 /*
  *  pgchart.h   Presentation Graphics functions
  *
@@ -17,6 +27,7 @@
 :include owrtlink.sp
 
 :include cpluspro.sp
+:endsegment
 
 :include pshpackl.sp
 
@@ -275,6 +286,9 @@ _WCRTLINK short
 
 :include poppack.sp
 
+:segment !INTERNAL
 :include cplusepi.sp
+
+:endsegment
 
 #endif

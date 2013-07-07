@@ -4,11 +4,9 @@
 !inject _algnmod.h             hcpp
 !inject _algsort.h             hcpp
 !inject _comdef.h                   hdos hlnx hqnx
-!inject _graph.h                    hdos      hqnx
 !inject _hash.h                hcpp
 !inject _ialias.h                   hdos hlnx hqnx
 !inject _meta.h                hcpp
-!inject _pgchart.h                  hdos      hqnx
 !inject _rbtree.h              hcpp
 !inject _strdef.h              hcpp
 !inject algorith         noext hcpp

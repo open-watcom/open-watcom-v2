@@ -4,6 +4,16 @@
 ::   graph.h  : public version.
 ::   _graph.h : internal version used for build graphics library.
 ::
+:segment INTERNAL
+/*
+ *  _graph.h : internal version used for build graphics library.
+ *
+ */
+#ifndef _GRAPH_H_INCLUDED
+#define _GRAPH_H_INCLUDED
+
+:include owrtlink.sp
+:elsesegment
 /*
  *  graph.h     Graphics functions
  *
@@ -17,11 +27,8 @@
 :include owrtlink.sp
 
 :include cpluspro.sp
-
-:include pshpackl.sp
-
-:segment !INTERNAL
 :segment QNX
+
 #if !defined(__386__)
  #pragma library (graph);
 #elif defined(__SW_3S)
@@ -32,8 +39,10 @@
 :elsesegment DOS
 #pragma library (graph);
 :endsegment
-
 :endsegment
+
+:include pshpackl.sp
+
 struct xycoord {                /* structure for pixel position */
         short   xcoord;
         short   ycoord;
@@ -842,6 +851,9 @@ _WCRTLINK void
 
 :include poppack.sp
 
+:segment !INTERNAL
 :include cplusepi.sp
+
+:endsegment
 
 #endif

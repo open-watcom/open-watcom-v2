@@ -3,7 +3,7 @@ proj_name=hdr
 !include ../hfiles.mif
 
 dos_options   = -kDOS -kUNICODE
-linux_options = -kLINUX -t8 -u
+linux_options = -kLINUX -u
 qnx_options   = -kQNX -t8 -u
 
 splice = wsplice -i.. $($(system)_options) ../common.sp $[@ $^@

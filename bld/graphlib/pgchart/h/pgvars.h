@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "_graph.h"
-#include "_pgchart.h"
+#include "_graph.gh"
+#include "_pgchart.gh"
 #include "pgstubs.h"
 
 #if defined ( __386__ )
