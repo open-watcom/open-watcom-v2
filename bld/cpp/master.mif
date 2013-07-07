@@ -8,7 +8,7 @@ wcpp_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-.c : ..;$(posix_dir)/misc
+.c : ../c;$(posix_dir)/misc
 
 inc_dirs        = -I"../h" -I"$(posix_dir)/h"
 
