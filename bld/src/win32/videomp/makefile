@@ -33,9 +33,29 @@ boxvideo.sys : $(OBJS) $(__MAKEFILES__) videomp.res
 videomp.res : videomp.rc
     $(RC) $(RCFLAGS) $(INCS) $<
 
+# Create a 1.44MB distribution floppy image.
+# NB: The mkimage tool is not supplied.
+videomp.img : boxvideo.sys disk1 readme.txt oemsetup.inf vidmini.inf
+    if not exist dist mkdir dist
+    cp disk1        dist
+    cp boxvideo.sys dist
+    cp boxvideo.sym dist
+    cp oemsetup.inf dist
+    cp vidmini.inf  dist
+    cp readme.txt   dist
+    mkimage -l VIDEOMP -o videomp.img dist
+    
 clean : .symbolic
     rm -f *.obj
     rm -f *.sys
     rm -f *.sym
     rm -f *.res
     rm -f *.map
+    rm -f videomp.img
+    rm -f dist/disk1
+    rm -f dist/boxvideo.sys
+    rm -f dist/boxvideo.sym
+    rm -f dist/oemsetup.inf
+    rm -f dist/vidmini.inf
+    rm -f dist/readme.txt
+    if exist dist rmdir dist
