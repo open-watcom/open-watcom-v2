@@ -37,7 +37,7 @@ to_os_path=/=\
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
-!include ../mif/template.mif
+!include ../template.mif
 
 .c: ../cpp;../merge/c;$(posix_dir)/misc;$(lib_misc_dir)/c
 .cpp: ../cpp;../brg/cpp

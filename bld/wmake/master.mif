@@ -53,7 +53,7 @@ extra_cpp_flags_dos_386 = -DCAUSEWAY
 
 extra_c_flags_i86 = -zt32
 
-!include ../mif/wmk.mif                    #   get our objs macro
+!include ../wmkobjs.mif                     #   get our objs macro
 
 ##############################################################################
 
@@ -144,8 +144,8 @@ mglob.obj : isarray.gh .AUTODEPEND
 
 # print a list of unreferenced messages
 chkmsg :
-    sed -f ../mif/msgdef.sed ../h/msg.h | sort -u >chkmsg.1
-    awk -f ../mif/msgref.awk chkmsg.1 >chkmsg.2
+    sed -f ../msgdef.sed ../h/msg.h | sort -u >chkmsg.1
+    awk -f ../msgref.awk chkmsg.1 >chkmsg.2
     sed -f chkmsg.2 ../c/*.c | sort -u >chkmsg.3
     comm -3 chkmsg.1 chkmsg.3 | tee chkmsg
     rm chkmsg.?
@@ -156,10 +156,10 @@ strip : .symbolic
 
 deps : .symbolic
     cd ../c
-    ../support/mmk >../mif/makedeps.mif
+    ../support/mmk >../makedeps.mif
 
 do : .symbolic
-    wmake -h -n | sed -f ../mif/mkdo.sed >do.bat
+    wmake -h -n | sed -f ../mkdo.sed >do.bat
 
 test : $(xname).exe .always .symbolic
 curr_dir=$+$(%CWD)$-

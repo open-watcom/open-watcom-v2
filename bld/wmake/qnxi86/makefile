@@ -4,4 +4,4 @@ host_cpu = i86
 
 memory_model_i86 = c
 
-!include ../mif/master.mif
+!include ../master.mif

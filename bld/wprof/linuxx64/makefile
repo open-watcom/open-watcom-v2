@@ -5,4 +5,4 @@ host_cpu = x64
 
 extra_ldflags = -ldl
 
-!include ../mif/master.mif
+!include ../master.mif

@@ -5,4 +5,4 @@ host_cpu = axp
 
 quick_link = 1
 
-!include ../mif/master.mif
+!include ../master.mif

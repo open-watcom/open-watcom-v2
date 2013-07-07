@@ -4,4 +4,4 @@ host_CPU = i86
 
 sys_windowed = 1
 
-!include ../mif/master.mif
+!include ../master.mif

@@ -10,7 +10,7 @@ additional_cleanup = usage.u
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
-!include ../mif/wprofobj.mif
+!include ../wprofobj.mif
 
 !include wres.mif
 
