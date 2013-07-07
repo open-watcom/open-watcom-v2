@@ -101,10 +101,12 @@ VP_STATUS HwVidFindAdapter( PVOID HwDevExt, PVOID HwContext, PWSTR ArgumentStrin
     ULONG                   cbVramSize;
     PWSTR                   pwszDesc;
     ULONG                   cbDesc;
+#ifdef USE_GETACCESSRANGES
     VIDEO_ACCESS_RANGE      pciAccessRanges[NUM_PCI_RANGES];
     USHORT                  usVendorId = BOXV_PCI_VEN;
     USHORT                  usDeviceId = BOXV_PCI_DEV;
     ULONG                   ulSlot = 0;
+#endif
 
     //@todo: The framebuffer address should not be hardcoded for non-PCI access
 #define NUM_ACCESS_RANGES   2
@@ -121,6 +123,11 @@ VP_STATUS HwVidFindAdapter( PVOID HwDevExt, PVOID HwContext, PWSTR ArgumentStrin
         return( ERROR_INVALID_PARAMETER );
     }
 
+    /* Sadly, VideoPortGetAccessRanges was not present in NT 3.1. There is no
+     * reasonably simple way to dynamically import port driver routines on 
+     * newer versions, so we'll just do without. 
+     */
+#ifdef USE_GETACCESSRANGES
     /* If PCI is supported, query the bus for resource mappings. */
     if( ConfigInfo->AdapterInterfaceType == PCIBus ) {
         /* Ask for bus specific access ranges. */
@@ -145,6 +152,7 @@ VP_STATUS HwVidFindAdapter( PVOID HwDevExt, PVOID HwContext, PWSTR ArgumentStrin
             return( ERROR_DEV_NOT_EXIST );
         }
     }
+#endif
 
     /* Some versions of vga.sys trap accesses to ports 0x1CE-0x1CF used on
      * old ATI cards. On Windows 2000 and later we can report legacy
