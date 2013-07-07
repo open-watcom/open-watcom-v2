@@ -41,14 +41,14 @@ set CCCMD=accopy
     set LOGFNAME=build
     echo **** BUILD rule
 
-[ BLOCK <1> rel pass1 pass2 ]
-#============================
+[ BLOCK <1> rel pass ]
+#=====================
     set LOGFNAME=<1>
     echo **** REL rule
     set 1=rel
 
-[ BLOCK <1> clean clean1 clean2 ]
-#================================
+[ BLOCK <1> clean ]
+#==================
     set LOGFNAME=<1>
     echo **** CLEAN rule
     set 1=clean
@@ -57,37 +57,27 @@ set CCCMD=accopy
 #============================
     set LOGFNAME=<1>
 
-[ BLOCK <1> boot boot1 boot2 ]
-#=============================
+[ BLOCK <1> boot ]
+#=================
     set LOGFNAME=<1>
     echo **** Building the <PROJNAME> bootstrap
     set 1=boot
 
 [ BLOCK <1> bootclean ]
+#======================
     set LOGFNAME=btclean
-[ BLOCK <1> bootclean1 ]
-    set LOGFNAME=btclean1
-[ BLOCK <1> bootclean2 ]
-    set LOGFNAME=btclean2
-[ BLOCK <1> bootclean bootclean1 bootclean2 ]
-#============================================
     echo **** BOOTCLEAN rule
     set 1=bootclean
 
-[ BLOCK <1> test test1 test2 ]
-#=============================
+[ BLOCK <1> test ]
+#=================
     set LOGFNAME=<1>
     echo **** TEST rule
     set 1=test
 
 [ BLOCK <1> testclean ]
+#======================
     set LOGFNAME=tstclean
-[ BLOCK <1> testclean1 ]
-    set LOGFNAME=tstclean1
-[ BLOCK <1> testclean2 ]
-    set LOGFNAME=tstclean2
-[ BLOCK <1> testclean testclean1 testclean2 ]
-#============================================
     echo **** TESTCLEAN rule
     set 1=testclean
 

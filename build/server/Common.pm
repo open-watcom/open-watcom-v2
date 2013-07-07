@@ -40,6 +40,7 @@ sub read_config
 
     $Common::config{"OWCVS"} = "";
     $Common::config{"WATCOM"} = "";
+    $Common::config{"RELROOT"} = "";
     $Common::config{"WIN95HC"} = "";
     $Common::config{"HHC"} = "";
     $Common::config{"GHOSTSCRIPTPATH"} = "";

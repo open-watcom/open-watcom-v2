@@ -28,12 +28,11 @@ WIN95HC=hcrtf
 HHC=hhc
 
 # File holding the baseline build results for each pass. Relative to HOME.
-BLDBASE1=bldbase1.txt
-BLDBASE2=bldbase2.txt
+BLDBASE=bldbase.txt
 BLDBASED=bldbased.txt
 
 # File holding the most recent build results for each pass. Relative to HOME.
-BLDLAST1=bldlast1.txt
-BLDLAST2=bldlast2.txt
+BLDLAST=bldlast.txt
 BLDLASTD=bldlastd.txt
 
+RELROOT=c:\ow\ow\pass
