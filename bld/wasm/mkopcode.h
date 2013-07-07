@@ -32,8 +32,8 @@
 #define KEY_MAX_LEN 80
 
 typedef struct sword {
-    char    *word;
-    size_t  index;
+    char        *word;
+    unsigned    index;
 } sword;
    
 static char enum_key[ KEY_MAX_LEN + 10 ];

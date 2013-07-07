@@ -42,9 +42,9 @@
 
 char Chars[32000];
 
-static int inst_table[HASH_TABLE_SIZE] = { 0 };
-static int *index_table;
-static int *pos_table;
+static unsigned inst_table[HASH_TABLE_SIZE] = { 0 };
+static unsigned *index_table;
+static unsigned *pos_table;
 
 int len_compare( const void *pv1, const void *pv2 )
 {
@@ -66,10 +66,10 @@ void make_inst_hash_tables( unsigned int count, sword *Words )
 /*******************************************************************/
 {
     char            *name;
-    unsigned short  i;
-    int             *p;
-    int             pos;
-    int             size = sizeof( AsmOpTable ) / sizeof( AsmOpTable[0] );
+    unsigned        i;
+    unsigned        *p;
+    unsigned        pos;
+    unsigned        size = sizeof( AsmOpTable ) / sizeof( AsmOpTable[0] );
 
     index_table = calloc( count, sizeof( *index_table ) );
     pos_table = calloc( count, sizeof( *pos_table ) );
@@ -102,11 +102,12 @@ int main( int argc, char *argv[] )
     FILE            *in;
     FILE            *out;
     char            *out_name;
-    size_t          i;
-    size_t          index;
-    int             count;
-    size_t          len;
-    int             idx;
+    int             i1;
+    int             i2;
+    unsigned        words_count;
+    unsigned        chars_count;
+    unsigned        len;
+    unsigned        idx;
     sword           *Words;
     char            *word;
     char            buf[KEY_MAX_LEN];
@@ -115,72 +116,72 @@ int main( int argc, char *argv[] )
     --argc;
 
     // Count the words in all the input files
-    count = 0;
-    for( idx = 1; idx < argc; ++idx ) {
-        in = fopen( argv[idx], "r" );
+    words_count = 0;
+    for( i1 = 1; i1 < argc; ++i1 ) {
+        in = fopen( argv[i1], "r" );
         if( in == NULL ) {
-            printf( "Unable to open '%s'\n", argv[idx] );
+            printf( "Unable to open '%s'\n", argv[i1] );
             exit( 1 );
         }
         for( ; fgets( buf, KEY_MAX_LEN, in ) != NULL; ) {
-            count++;
+            words_count++;
         }
         fclose( in );
     }
-    Words = malloc( ( count + 1 ) * sizeof( sword ) );
+    Words = malloc( ( words_count + 1 ) * sizeof( sword ) );
     if( Words == NULL ) {
         printf( "Unable to allocate Words array\n" );
         exit( 1 );
     }
-    Words[count].word = NULL;
-    index = 0;
-    for( idx = 1; idx < argc; ++idx ) {
-        in = fopen( argv[idx], "r" );
+    Words[words_count].word = NULL;
+    words_count = 0;
+    for( i1 = 1; i1 < argc; ++i1 ) {
+        in = fopen( argv[i1], "r" );
         if( in == NULL ) {
-            printf( "Unable to open '%s'\n", argv[idx] );
+            printf( "Unable to open '%s'\n", argv[i1] );
             exit( 1 );
         }
         for( ; fgets( buf, KEY_MAX_LEN, in ) != NULL; ) {
-            for( i = 0; buf[i] && !isspace( buf[i] ); i++ )
+            for( i2 = 0; buf[i2] && !isspace( buf[i2] ); i2++ )
                 ;
-            buf[i] = '\0';
-            Words[index].word = strdup( buf );
-            if( Words[index].word == NULL ) {
+            buf[i2] = '\0';
+            Words[words_count].word = strdup( buf );
+            if( Words[words_count].word == NULL ) {
                 printf( "Out of memory\n" );
                 exit( 1 );
             }
-            ++index;
+            ++words_count;
         }
         fclose( in );
     }
-    qsort( Words, count, sizeof( sword ), len_compare );
-    index = 0;
+    qsort( Words, words_count, sizeof( sword ), len_compare );
+    chars_count = 0;
     Chars[0] = '\0';
-    for( idx = 0; idx < count; idx++ ) {
+    for( idx = 0; idx < words_count; idx++ ) {
         word = strstr( Chars, Words[idx].word );
         if( word == NULL ) {
-            word = &Chars[index];
+            word = &Chars[chars_count];
             len = strlen( Words[idx].word ) - 1;
-            if( index < len )
-                len = index;
+            if( chars_count < len )
+                len = chars_count;
             for( ; ; ) {
                 if( len == 0 )
                     break;
                 if( memcmp( word - len, Words[idx].word, len ) == 0 ) {
                     word -= len;
-                    index -= len;
+                    chars_count -= len;
                     break;
                 }
                 len--;
             }
             strcpy( word, Words[idx].word );
-            index += strlen( word );
+            chars_count += (unsigned)strlen( word );
         }
         Words[idx].index = word - Chars;
     }
-    qsort( Words, count, sizeof( sword ), str_compare );
+    qsort( Words, words_count, sizeof( sword ), str_compare );
 
-    make_inst_hash_tables( count, Words );
+    make_inst_hash_tables( words_count, Words );
 
     out = fopen( out_name, "w" );
     if( out == NULL ) {
@@ -188,24 +189,24 @@ int main( int argc, char *argv[] )
         exit( 1 );
     }
     fprintf( out, "const char AsmChars[] = {\n" );
-    for( i = 0; i < index; i++ ) {
-        if( i % 10 == 0 )
-            fprintf( out, "/*%4d*/ ", i );
-        fprintf( out, "'%c',", Chars[i] );
-        if( i % 10 == 9 ) {
+    for( idx = 0; idx < chars_count; idx++ ) {
+        if( idx % 10 == 0 )
+            fprintf( out, "/*%4u*/ ", idx );
+        fprintf( out, "'%c',", Chars[idx] );
+        if( idx % 10 == 9 ) {
             fprintf( out, "\n" );
         }
     }
     fprintf( out, "'\\0'\n};\n\n" );
     fprintf( out, "static const unsigned short inst_table[HASH_TABLE_SIZE] = {\n" );
     for( idx = 0; idx < HASH_TABLE_SIZE; idx++ )
-        fprintf( out, "\t%d,\n", inst_table[idx] );
+        fprintf( out, "\t%u,\n", inst_table[idx] );
     fprintf( out, "};\n\n" );
     fprintf( out, "const struct AsmCodeName AsmOpcode[] = {\n" );
-    for( idx = 0; idx < count; idx++ ) {
+    for( idx = 0; idx < words_count; idx++ ) {
         word = Words[idx].word;
-        fprintf( out, "\t{\t%d,\t%d,\t%d,\t%d\t},\t/* %s */\n", 
-                 pos_table[idx], (int)strlen( word ), Words[idx].index,
+        fprintf( out, "\t{\t%u,\t%u,\t%u,\t%u\t},\t/* %s */\n", 
+                 pos_table[idx], (unsigned)strlen( word ), Words[idx].index,
                  index_table[idx], get_enum_key( word ) );
     }
     fprintf( out, "\t{\t0,\t0,\t0,\t0\t}\t/* T_NULL */\n" );
