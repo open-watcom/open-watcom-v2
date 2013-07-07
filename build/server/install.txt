@@ -36,20 +36,18 @@ comments in the file for more information.
 Create necessary directories: www\install
                               www\reports
                               www\snaparch
-Create empty files:           owbuild\bldbase1.txt
-                              owbuild\bldbase2.txt
+Create empty files:           owbuild\bldbase.txt
                               owbuild\bldbased.txt
 3. Run the build system via 'perl dobuild.pl'. It will not run to completion as the
 message base is not correct. The baseline is created next.
 
-4. The created log files pass1.log, pass2.log and docs\build.log will serve as
+4. The created log files pass.log and docs/doc.log will serve as
 your baseline. Run the program summary.pl over these
 
-        summary c:\OW\bld\pass1.log bldbase1.txt
-        summary c:\OW\bld\pass2.log bldbase2.txt
-        summary c:\OW\docs\pass1.log bldbased.txt
+        summary c:\OW\bld\pass.log bldbase.txt
+        summary c:\OW\docs\doc.log bldbased.txt
 
-and save the results to files such as bldbase1.txt, ...
+and save the results to files such as bldbase.txt, ...
 (use the same names as you specified in config.txt).
 
 You should verify that all messages in bldbasex.txt are normal. This build system

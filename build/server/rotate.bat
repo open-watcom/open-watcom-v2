@@ -5,7 +5,7 @@ rem ==================
 set WWWPATH=\www
 set ARCH7Z=c:\Program Files\7-Zip\7z
 set OWROOT=c:\ow\ow
-set OWRELROOT=c:\ow\ow\pass1
+set OWRELROOT=c:\ow\ow\pass
 
 rem Initialization
 rem ==============
@@ -25,8 +25,8 @@ if exist %WWWPATH%\snaparch\ss.7z %OWBINDIR%\rm -f %WWWPATH%\snaparch\ss.7z
 "%ARCH7Z%" a -tzip -r %WWWPATH%\snaparch\ss.zip %OWRELROOT%\*
 "%ARCH7Z%" a -t7z -r %WWWPATH%\snaparch\ss.7z %OWRELROOT%\*
 
-rem Move pass1 build
-rem =================
+rem Move build to snapshot directory
+rem ================================
 if exist %WWWPATH%\snapshot move %WWWPATH%\snapshot %WWWPATH%\snapshot.bak
 if exist %WWWPATH%\snapshot goto done
 move %OWRELROOT% %WWWPATH%\snapshot

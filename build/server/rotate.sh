@@ -5,7 +5,7 @@
 wwwpath=/www
 arch7z=7za
 export OWROOT=/home/ow/ow
-export OWRELROOT=/home/ow/ow/pass1
+export OWRELROOT=/home/ow/ow/pass
 
 # Initialization
 # ==============
@@ -24,8 +24,8 @@ rm -f $wwwpath/snaparch/ss.7z
 $arch7z a -tzip -r $wwwpath/snaparch/ss.zip $OWRELROOT/*
 $arch7z a -t7z -r $wwwpath/snaparch/ss.7z $OWRELROOT/*
 
-# Move pass1 build
-# =================
+# Move build to snapshot directory
+# ================================
 if [ -d $wwwpath/snapshot ]; then
     if ! mv $wwwpath/snapshot $wwwpath/snapshot.bak; then
         echo "Existing snapshot backup failed. Can't continue with rotation."
