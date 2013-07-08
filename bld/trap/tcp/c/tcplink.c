@@ -47,42 +47,47 @@
 
 #if defined ( __RDOS__ )
     #include "rdos.h"
-#else
-#if defined(__NT__) || defined(__WINDOWS__)
+#elif defined( __NT__ ) || defined( __WINDOWS__ )
     #include <winsock.h>
-#else
-    #if defined(__OS2__)
-        #include <types.h>
-    #else
-        #include <sys/types.h>
-    #endif
+#elif defined ( __NETWARE__ )
+    #include <sys/types.h>
     #include <unistd.h>
-#if !defined ( __NETWARE__ )
+#else
+  #if defined( __OS2__ )
+    #include <types.h>
+  #else
+    #include <sys/types.h>
+  #endif
+    #include <unistd.h>
     #include <sys/socket.h>
-#endif
-#if !defined ( __LINUX__ ) && !defined ( __NETWARE__ )
+  #if !defined ( __LINUX__ )
     #include <sys/select.h>
-#endif
-#if !defined ( __NETWARE__ )
+  #endif
     #include <sys/time.h>
     #include <netinet/in.h>
     #include <netinet/tcp.h>
     #include <netdb.h>
-#endif
-    #if defined(__OS2__) && !defined(__386__)
+  #if defined( __OS2__ ) 
+    #if defined( _M_I86 )
         #include <netlib.h>
-    #elif defined(__UNIX__) || defined(__DOS__) || defined(__OS2__)
+    #else
         #include <arpa/inet.h>
     #endif
-#endif
-#endif
-
-#include <watcom.h>
-#if defined(__DOS__)
-    #include <machtype.h>
+    #include <sys/ioctl.h>
+    #include <net/if.h>
+  #elif defined( __DOS__ )
+    #include <arpa/inet.h>
+    #define BSD         /* To get the right macros from wattcp headers. */
+    #include <sys/ioctl.h>
+    #undef BSD
+    #include <net/if.h>
     #include <tcp.h>
+  #elif defined( __UNIX__ )
+    #include <arpa/inet.h>
+  #endif
 #endif
 
+#include "watcom.h"
 #if defined ( __NETWARE__ )
     #include "novhax.h"
 #endif
@@ -114,71 +119,60 @@
 #endif
 #endif
 
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-#define IS_SOCK_ERROR(x)    (x==INVALID_SOCKET)
-#elif defined( __DOS__ )
-#define IS_SOCK_ERROR(x)    (x<0)
-#else
-#define IS_SOCK_ERROR(x)    (x<0)
-#define INVALID_SOCKET      -1
-#endif
-
-#define DEFAULT_PORT    0xDEB
+#define DEFAULT_PORT    0x0DEB  /* 3563 */
 
 #ifdef __RDOS__
 
-#define SOCKET_BUFFER   0x7000
+    #define SOCKET_BUFFER   0x7000
 
-static int listen_handle = 0;
-static int wait_handle = 0;
-static int socket_handle = 0;
+    static int listen_handle = 0;
+    static int wait_handle = 0;
+    static int socket_handle = 0;
 
 #else
 
-#ifndef IPPROTO_TCP
+  #ifndef IPPROTO_TCP
     #define IPPROTO_TCP 6
-#endif
-
-#ifndef socklen_t
-  #ifdef __LINUX__
-    #define socklen_t unsigned int
-  #else
-    #define socklen_t int
   #endif
-#endif
 
-#if !defined( __LINUX__ )
-static struct ifi_info  *get_ifi_info( int family, int doaliases );
-static void             free_ifi_info( struct ifi_info *ifihead );
-#endif
+  #if defined( __NT__ ) || defined( __WINDOWS__ )
+    #define IS_SOCK_ERROR(x)    (x==INVALID_SOCKET)
+    #define trp_socket          SOCKET
+    #define trp_socklen         int
+    #define soclose( s )        closesocket( s )
+  #elif defined( __DOS__ )
+    #define IS_SOCK_ERROR(x)    (x<0)
+    #define trp_socket          int
+    #define trp_socklen         int
+  #elif defined( __OS2__ )
+    #define IS_SOCK_ERROR(x)    (x<0)
+    #define INVALID_SOCKET      -1
+    #define trp_socket          int
+    #define trp_socklen         int
+  #else
+    #define IS_SOCK_ERROR(x)    (x<0)
+    #define INVALID_SOCKET      -1
+    #define trp_socket          int
+    #define trp_socklen         socklen_t
+    #define soclose( s )        close( s )
+  #endif
 
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-static SOCKET               data_socket = INVALID_SOCKET;
-#else
-static int                  data_socket = INVALID_SOCKET;
-#endif
-static struct sockaddr_in   socket_address;
-static bool die = FALSE;
-#ifdef SERVER
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-static SOCKET               control_socket;
-#else
-static int                  control_socket;
-#endif
-#endif
+  #if !defined( __LINUX__ )
+    static struct ifi_info      *get_ifi_info( int family, int doaliases );
+    static void                 free_ifi_info( struct ifi_info *ifihead );
+  #endif
+
+    static trp_socket           data_socket = INVALID_SOCKET;
+    static struct sockaddr_in   socket_address;
+    static bool die = FALSE;
+  #ifdef SERVER
+    static trp_socket           control_socket;
+  #endif
 
 #endif
 
 #if  defined(SERVER)
 extern void     ServMessage( char * );
-#endif
-
-#if defined(__UNIX__)
-    #define soclose( s )        close( s )
-#elif defined(__NT__) || defined(__WINDOWS__)
-    #define soclose( s )        closesocket( s )
-#elif defined(__NETWARE__)
-    #define soclose( s)         close( s )
 #endif
 
 bool Terminate( void )
@@ -206,12 +200,12 @@ static unsigned FullGet( void *get, unsigned len )
     for( ;; ) {
         rec = recv( data_socket, get, len, 0 );
         if( die || rec == (unsigned)-1 ) return( REQUEST_FAILED );
-#if defined(__OS2__)
+  #if defined(__OS2__)
         /* OS/2 TCP/IP docs say that return value of 0 indicates closed
          * connection; this is unlike other TCP/IP implementations.
          */
         if( rec == 0 ) return( REQUEST_FAILED );
-#endif
+  #endif
         len -= rec;
         if( len == 0 ) break;
         get = (unsigned_8 *)get + rec;
@@ -318,7 +312,7 @@ static void nodelay( void )
 bool RemoteConnect( void )
 {
 #ifdef SERVER
-#ifdef __RDOS__
+  #ifdef __RDOS__
     void *obj;
 
     obj = RdosWaitTimeout( wait_handle, 250 );
@@ -330,11 +324,11 @@ bool RemoteConnect( void )
         _DBG_NET(("Found a connection\r\n"));
         return( TRUE );
     }
-#else
-    struct      timeval timeout;
-    fd_set ready;
-    struct      sockaddr dummy;
-    socklen_t   dummy_len = sizeof( dummy );
+  #else
+    struct          timeval timeout;
+    fd_set          ready;
+    struct          sockaddr dummy;
+    trp_socklen     dummy_len = sizeof( dummy );
 
     FD_ZERO( &ready );
     FD_SET( control_socket, &ready );
@@ -348,19 +342,19 @@ bool RemoteConnect( void )
             return( TRUE );
         }
     }
-#endif
+  #endif
 #else
-#ifdef __RDOS__
-// todo: Add code for connect!
-#else
+  #ifdef __RDOS__
+    // todo: Add code for connect!
+  #else
     data_socket = socket( AF_INET, SOCK_STREAM, 0 );
     if( !IS_SOCK_ERROR( data_socket ) ) {
-        if( connect( data_socket, (struct sockaddr *)&socket_address, sizeof( socket_address ) ) >= 0 ) {
+        if( connect( data_socket, (struct sockaddr TRAPFAR *)&socket_address, sizeof( socket_address ) ) >= 0 ) {
             nodelay();
             return( TRUE );
         }
     }
-#endif
+  #endif
 #endif
     return( FALSE );
 }
@@ -384,24 +378,24 @@ void RemoteDisco( void )
 
 char *RemoteLink( char *name, bool server )
 {
-    unsigned            port;
+    unsigned short      port;
 #ifndef __RDOS__    
     struct servent      *sp;
 #endif    
 
 #ifdef SERVER
-#ifndef __RDOS__
-    socklen_t           length;
-#if !defined(__LINUX__)   /* FIXME */
+  #ifndef __RDOS__
+    trp_socklen         length;
+    #if !defined(__LINUX__)   /* FIXME */
     struct ifi_info     *ifi, *ifihead;
     struct sockaddr     *sa;
-#endif
+    #endif
     char                buff2[128];
-#endif
+  #endif
 
     _DBG_NET(("SERVER: Calling into RemoteLink\r\n"));
 
-#if defined(__NT__) || defined(__WINDOWS__)
+  #if defined(__NT__) || defined(__WINDOWS__)
     {
         WSADATA data;
 
@@ -409,25 +403,25 @@ char *RemoteLink( char *name, bool server )
             return( TRP_ERR_unable_to_initialize_TCPIP );
         }
     }
-#endif
+  #endif
 
-#ifndef __RDOS__
+  #ifndef __RDOS__
     control_socket = socket(AF_INET, SOCK_STREAM, 0);
     if( IS_SOCK_ERROR( control_socket ) ) {
         return( TRP_ERR_unable_to_open_stream_socket );
     }
-#endif   
+  #endif   
  
     port = 0;
     if( name == NULL || name[0] == '\0' )
         name = "tcplink";
 
-#ifndef __RDOS__
+  #ifndef __RDOS__
     sp = getservbyname( name, "tcp" );
     if( sp != NULL ) {
         port = sp->s_port;
     } else
-#endif 
+  #endif 
     {
         while( isdigit( *name ) ) {
             port = port * 10 + (*name - '0');
@@ -435,26 +429,26 @@ char *RemoteLink( char *name, bool server )
         }
         if( port == 0 ) port = DEFAULT_PORT;
 
-#ifndef __RDOS__        
+  #ifndef __RDOS__        
         port = htons( port );
-#endif
+  #endif
     }
 
-#ifdef __RDOS__
+  #ifdef __RDOS__
     wait_handle = RdosCreateWait( );
     listen_handle = RdosCreateTcpListen( port, 1, SOCKET_BUFFER );
     RdosAddWaitForTcpListen( wait_handle, listen_handle, &listen_handle );
-#else
+  #else
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
     socket_address.sin_port = port;
-    if( bind( control_socket, (struct sockaddr *)&socket_address, sizeof( socket_address ) ) ) {
+    if( bind( control_socket, (struct sockaddr TRAPFAR *)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
     }
     /* Find out assigned port number and print it out */
     length = sizeof( socket_address );
-    if( getsockname( control_socket, (struct sockaddr *)&socket_address, &length ) ) {
+    if( getsockname( control_socket, (struct sockaddr TRAPFAR *)&socket_address, &length ) ) {
         return( TRP_ERR_unable_to_get_socket_name );
     }
     sprintf( buff2, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );
@@ -463,7 +457,7 @@ char *RemoteLink( char *name, bool server )
     _DBG_NET((buff2));
     _DBG_NET(("\r\n"));
 
-#if !defined(__LINUX__)   /* FIXME */
+    #if !defined(__LINUX__)   /* FIXME */
     /* Find and print TCP/IP interface addresses, ignore aliases */
     ifihead = get_ifi_info( AF_INET, FALSE );
     for( ifi = ifihead; ifi != NULL; ifi = ifi->ifi_next ) {
@@ -478,21 +472,21 @@ char *RemoteLink( char *name, bool server )
         }
     }
     free_ifi_info( ifihead );
-#endif
-#endif
+    #endif
+  #endif
 
     _DBG_NET(("Start accepting connections\r\n"));
     /* Start accepting connections */
-#ifndef __RDOS__    
+  #ifndef __RDOS__    
     listen( control_socket, 5 );
-#endif
+  #endif
 #else
-#ifdef __RDOS__
-// Todo: handle connect
-#else
+  #ifdef __RDOS__
+    // Todo: handle connect
+  #else
     char        *sock;
 
-#if defined(__NT__) || defined(__WINDOWS__)
+    #if defined(__NT__) || defined(__WINDOWS__)
     {
         WSADATA data;
 
@@ -500,7 +494,7 @@ char *RemoteLink( char *name, bool server )
             return( TRP_ERR_unable_to_initialize_TCPIP );
         }
     }
-#endif
+    #endif
 
     /* get port number out of name */
     sock = name;
@@ -512,10 +506,11 @@ char *RemoteLink( char *name, bool server )
         }
         ++sock;
     }
-    if( sock[0] == '\0' )
+    if( sock[0] == '\0' ) {
         sp = getservbyname( "tcplink", "tcp" );
-    else
+    } else {
         sp = getservbyname( sock, "tcp" );
+    }
     if( sp != NULL ) {
         port = sp->s_port;
     } else {
@@ -534,7 +529,7 @@ char *RemoteLink( char *name, bool server )
     socket_address.sin_family = AF_INET;
     /* OS/2's TCP/IP gethostbyname doesn't handle numeric addresses */
     socket_address.sin_addr.s_addr = inet_addr( name );
-    if( socket_address.sin_addr.s_addr == -1UL ) {
+    if( socket_address.sin_addr.s_addr == (unsigned long)-1L ) {
         struct hostent  *hp;
 
         hp = gethostbyname( name );
@@ -545,7 +540,7 @@ char *RemoteLink( char *name, bool server )
         }
     }
     socket_address.sin_port = port;
-#endif
+  #endif
 #endif
     server = server;
     return( NULL );
@@ -556,7 +551,7 @@ void RemoteUnLink( void )
 {
 #ifdef SERVER
 
-#ifdef __RDOS__
+  #ifdef __RDOS__
     if( wait_handle ) {
         RdosCloseWait( wait_handle );
         wait_handle = 0;
@@ -566,59 +561,49 @@ void RemoteUnLink( void )
         RdosCloseTcpListen( listen_handle );
         listen_handle = 0;
     }
-#else
+  #else
     soclose( control_socket );
-#endif
+  #endif
 #else
     Terminate();
 #endif
 
-#ifdef __RDOS__
+#if defined( __RDOS__ )
     if( socket_handle ) {
         RdosPushTcpConnection( socket_handle );
         RdosCloseTcpConnection( socket_handle );
         socket_handle = 0;
     }
-#endif
-
-#if defined(__NT__) || defined(__WINDOWS__)
+#elif defined(__NT__) || defined(__WINDOWS__)
     WSACleanup();
-#endif
-#if defined(__DOS__)
+#elif defined(__DOS__)
     sock_exit();
 #endif
 }
 
 #ifndef __RDOS__
 
-#ifdef SERVER
+  #ifdef SERVER
 
 /* Functions to manage IP interface information lists. On multi-homed hosts,
  * determining the IP address the TCP debug link responds on is not entirely
  * straightforward.
  */
 
-#if defined( __OS2__ ) || defined( __DOS__ )
+    #if defined( __OS2__ ) || defined( __DOS__ )
 
 /* Actual implementation - feel free to port to further OSes */
 
-#ifdef __DOS__
-    #define BSD /* To get the right macros from wattcp headers. */
-#endif
-
-#include <sys/ioctl.h>
-#include <net/if.h>
-
 /* Sort out implementation differences. */
-#ifdef __DOS__
-    #define w_ioctl         ioctlsocket
-    #define HAVE_SA_LEN     FALSE
-#endif
+      #ifdef __DOS__
+        #define w_ioctl         ioctlsocket
+        #define HAVE_SA_LEN     FALSE
+      #endif
 
-#ifdef __OS2__
-    #define w_ioctl         ioctl
-    #define HAVE_SA_LEN     TRUE
-#endif
+      #ifdef __OS2__
+        #define w_ioctl         ioctl
+        #define HAVE_SA_LEN     TRUE
+      #endif
 
 static struct ifi_info * get_ifi_info( int family, int doaliases )
 {
@@ -628,11 +613,7 @@ static struct ifi_info * get_ifi_info( int family, int doaliases )
     struct ifconf       ifc;
     struct ifreq        *ifr, ifrcopy;
     struct sockaddr_in  *sinptr;
-#if defined( __NT__ )
-    SOCKET              sockfd;
-#else
-    int                 sockfd;
-#endif
+    trp_socket          sockfd;
 
     sockfd = socket( AF_INET, SOCK_DGRAM, 0 );
 
@@ -657,11 +638,11 @@ static struct ifi_info * get_ifi_info( int family, int doaliases )
     for( ptr = buf; ptr < buf + ifc.ifc_len; ) {
         ifr = (struct ifreq *) ptr;
 
-#if HAVE_SA_LEN
+      #if HAVE_SA_LEN
         len = max( sizeof( struct sockaddr ), ifr->ifr_addr.sa_len );
-#else
+      #else
         len = sizeof( struct sockaddr );
-#endif
+      #endif
         ptr += sizeof( ifr->ifr_name ) + len; /* for next one in buffer */
 
         if( ifr->ifr_addr.sa_family != family )
@@ -724,7 +705,7 @@ static void free_ifi_info( struct ifi_info *ifihead )
     }
 }
 
-#elif !defined( __LINUX__ )
+    #elif !defined( __LINUX__ )
 
 /* Stubbed out */
 static struct ifi_info * get_ifi_info(int family, int doaliases)
@@ -736,8 +717,8 @@ static void free_ifi_info(struct ifi_info *ifihead)
 {
 }
 
-#endif
+    #endif
 
-#endif
+  #endif
 
 #endif

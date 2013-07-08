@@ -15,6 +15,4 @@ remote_link = 1
 inc_dirs   = -I"$(wattcp_dir)/inc"
 extra_libs = $(wattcp_dir)/dosi86/wattcpl.lib
 
-extra_a_flags = -D__LARGE__
-
 !include $(trap_dir)/master.mif
