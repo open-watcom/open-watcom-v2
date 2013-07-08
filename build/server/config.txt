@@ -14,25 +14,26 @@ OW=c:\ow\ow
 # The location of your installed compiler (for doing the build).
 WATCOM=c:\ow\ow19
 
-# CVS version
+# CVS system used by OW
 OWCVS=git
 
-# The location of DOSBOX emulator
+# The location of DOSBOX emulator (64-bit Windows build host).
 DOSBOX=dosbox.exe
 
-# PATH required by GhostScript for PDF creation on used host OS
+# PATH required by GhostScript for PDF creation on used host OS.
 GHOSTSCRIPTPATH=c:\gs\gs7.04\bin;c:\gs\gs7.04\lib
 
-# Programs for creation Windows help on used host OS
+# The location of Windows help compilers.
 WIN95HC=hcrtf
 HHC=hhc
 
-# File holding the baseline build results for each pass. Relative to HOME.
+# File holding the baseline build results (relative to HOME).
 BLDBASE=bldbase.txt
 BLDBASED=bldbased.txt
 
-# File holding the most recent build results for each pass. Relative to HOME.
+# File holding the most recent build results (relative to HOME).
 BLDLAST=bldlast.txt
 BLDLASTD=bldlastd.txt
 
+# The location of release tree for build server.
 RELROOT=c:\ow\ow\pass

@@ -36,6 +36,7 @@ comments in the file for more information.
 Create necessary directories: www\install
                               www\reports
                               www\snaparch
+                              www\snapshot
 Create empty files:           owbuild\bldbase.txt
                               owbuild\bldbased.txt
 3. Run the build system via 'perl dobuild.pl'. It will not run to completion as the

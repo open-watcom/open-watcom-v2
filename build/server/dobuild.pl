@@ -37,9 +37,6 @@ my(@CVS_messages);
 my($OStype);
 my($ext);
 my($setenv);
-my($buildlog);
-my($bldbase);
-my($bldlast);
 my($build_platform);
 
 if ($#ARGV == -1) {
@@ -51,10 +48,10 @@ if ($#ARGV == -1) {
     exit 1;
 }
 
-my $home    = $Common::config{"HOME"};
-my $OW      = $Common::config{"OW"};
-my $WATCOM  = $Common::config{"WATCOM"};
-my $relroot = $Common::config{"RELROOT"};
+my $home      = $Common::config{"HOME"};
+my $OW        = $Common::config{"OW"};
+my $WATCOM    = $Common::config{"WATCOM"};
+my $relroot   = $Common::config{"RELROOT"};
 
 if ($^O eq "MSWin32") {
     $OStype = "WIN32";
@@ -121,15 +118,6 @@ sub set_prev_changeno
     close(CHNGNO);
 }
 
-#sub write_environ_log
-#{
-#    if ($OStype eq "UNIX") {
-#        print BATCH "echo ", $_[0], " PATH=\$PATH >>$home/env.log\n";
-#    } else {
-#        print BATCH "echo ", $_[0], " PATH=%PATH% >>$home\\env.log\n";
-#    }
-#}
-
 sub batch_output_make_change_objdir
 {
     if ($OStype eq "UNIX") {
@@ -141,7 +129,7 @@ sub batch_output_make_change_objdir
     }
 }
 
-sub batch_output_set_watcom_env
+sub batch_output_set_test_env
 {
     print BATCH "$setenv WATCOM=", $relroot, "\n";
     if ($^O eq "MSWin32") {
@@ -161,19 +149,21 @@ sub batch_output_set_watcom_env
     }
 }
 
-sub batch_output_set_watcom_bootstrap_env
+sub batch_output_set_boot_env
 {
-    print BATCH "$setenv WATCOM=", $WATCOM, "\n";
-    if ($^O eq "MSWin32") {
-        print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt\n";
-        print BATCH "$setenv PATH=%OWBINDIR%;%OWROOT%\\build;%WATCOM%\\binnt;%WATCOM%\\binw;%OWDEFPATH%\n";
-    } elsif ($^O eq "os2") {
-        print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\os2\n";
-        print BATCH "$setenv PATH=%OWBINDIR%;%OWROOT%\\build;%WATCOM%\\binp;%WATCOM%\\binw;%OWDEFPATH%\n";
-        print BATCH "$setenv BEGINLIBPATH=%WATCOM%\\binp\\dll;%OWDEFBEGINLIBPATH%\n";
-    } elsif ($^O eq "linux") {
-        print BATCH "$setenv INCLUDE=\$WATCOM/lh\n";
-        print BATCH "$setenv PATH=\$OWBINDIR:\$OWROOT/build:\$WATCOM/binl:\$OWDEFPATH\n";
+    if ($WATCOM ne "") {
+	print BATCH "$setenv WATCOM=", $WATCOM, "\n";
+	if ($^O eq "MSWin32") {
+	    print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt\n";
+	    print BATCH "$setenv PATH=%OWBINDIR%;%OWROOT%\\build;%WATCOM%\\binnt;%WATCOM%\\binw;%OWDEFPATH%\n";
+	} elsif ($^O eq "os2") {
+	    print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\os2\n";
+	    print BATCH "$setenv PATH=%OWBINDIR%;%OWROOT%\\build;%WATCOM%\\binp;%WATCOM%\\binw;%OWDEFPATH%\n";
+	    print BATCH "$setenv BEGINLIBPATH=%WATCOM%\\binp\\dll;%OWDEFBEGINLIBPATH%\n";
+	} elsif ($^O eq "linux") {
+	    print BATCH "$setenv INCLUDE=\$WATCOM/lh\n";
+	    print BATCH "$setenv PATH=\$OWBINDIR:\$OWROOT/build:\$WATCOM/binl:\$OWDEFPATH\n";
+	}
     }
 }
 
@@ -230,7 +220,6 @@ sub batch_output_build_wmake_builder_rm
 sub make_boot_batch
 {
     open(BATCH, ">$build_boot_batch_name") || die "Unable to open $build_boot_batch_name file.";
-#    write_environ_log("BOOT input");
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
@@ -241,12 +230,9 @@ sub make_boot_batch
         else                        { print BATCH; }
     }
     close(INPUT);
-    if ($WATCOM ne "") {
-        batch_output_set_watcom_bootstrap_env();
-    }
-#    write_environ_log("BOOT start");
-    # Add additional commands to do the build.
+    batch_output_set_boot_env();
     print BATCH "$setenv OWRELROOT=", $relroot, "\n";
+    # Add additional commands to do the build.
     print BATCH "$setenv OWDOCBUILD=0\n";
     print BATCH "$setenv OWDOCQUIET=1\n";
     # Create fresh builder tools, to prevent lockup build server
@@ -265,7 +251,6 @@ sub make_boot_batch
 sub make_build_batch
 {
     open(BATCH, ">$build_batch_name") || die "Unable to open $build_batch_name file.";
-#    write_environ_log("BUILD input");
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
@@ -277,13 +262,12 @@ sub make_build_batch
         else                         { print BATCH; }
     }
     close(INPUT);
-    # Add additional commands to do the build.
     print BATCH "$setenv OWRELROOT=", $relroot, "\n";
+    # Add additional commands to do the build.
     print BATCH "$setenv OWDOCBUILD=0\n";
     print BATCH "$setenv OWDOCQUIET=1\n";
     # start building by bootstrap tools.
-#    write_environ_log("BUILD start");
-    # Remove release directory.
+    # Remove release directory tree.
     print BATCH "rm -rf ", $relroot, "\n";
     # Clean previous build.
     print BATCH "cd $OW\ncd bld\n";
@@ -299,7 +283,6 @@ sub make_build_batch
 sub make_docs_batch
 {
     open(BATCH, ">$docs_batch_name") || die "Unable to open $docs_batch_name file.";
-#    write_environ_log("DOCS input");
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
@@ -314,9 +297,8 @@ sub make_docs_batch
         else                                  { print BATCH; }
     }
     close(INPUT);
-#    write_environ_log("DOCS start");
-    # Add additional commands to do the build.
     print BATCH "$setenv OWRELROOT=", $relroot, "\n";
+    # Add additional commands to do the build.
     if ($Common::config{"GHOSTSCRIPTPATH"} ne "") {
         print BATCH "$setenv OWGHOSTSCRIPTPATH=", $Common::config{"GHOSTSCRIPTPATH"}, "\n";
     }
@@ -339,7 +321,6 @@ sub make_docs_batch
 sub make_test_batch
 {
     open(BATCH, ">$test_batch_name") || die "Unable to open $test_batch_name file.";
-#    write_environ_log("TEST input");
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
@@ -351,8 +332,7 @@ sub make_test_batch
         else                         { print BATCH; }
     }
     close(INPUT);
-    batch_output_set_watcom_env();
-#    write_environ_log("TEST start");
+    batch_output_set_test_env();
     # Add additional commands to do the testing.
     print BATCH "\n";
     if ($^O eq "MSWin32") { 
@@ -386,8 +366,8 @@ sub make_installer_batch
         else                        { print BATCH; }
     }
     close(INPUT);
-    # Add additional commands to do installers.
     print BATCH "$setenv OWRELROOT=", $relroot, "\n";
+    # Add additional commands to do installers.
     print BATCH "cd $OW\ncd distrib\ncd ow\n";
     print BATCH "builder missing\n";
     print BATCH "builder build\n";
@@ -410,16 +390,6 @@ sub make_rotate_batch
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $rotate_batch_name;
-}
-
-sub create_all_batches
-{
-    make_rotate_batch();
-    make_docs_batch();
-    make_installer_batch();
-    make_boot_batch();
-    make_build_batch();
-    make_test_batch();
 }
 
 sub process_log
@@ -554,13 +524,17 @@ sub run_boot_build
 
 sub run_build
 {
+    my $logfile = "$OW\/bld\/pass.log";
+    my $bldbase = "$home\/$Common::config{'BLDBASE'}";
+    my $bldlast = "$home\/$Common::config{'BLDLAST'}";
+
     print REPORT "CLEAN+BUILD STARTED        : ", get_datetime(), "\n";
     if (system($build_batch_name) == 0) {
         print REPORT "CLEAN+BUILD COMPLETED      : ", get_datetime(), "\n\n";
 
         # Analyze build result.
 
-        Common::process_summary($buildlog, $bldlast);
+        Common::process_summary($logfile, $bldlast);
         # If 'compare' fails, end now. Don't test if there was a build failure.
         if (Common::process_compare($bldbase, $bldlast, \*REPORT)) {
             return "fail";
@@ -578,6 +552,10 @@ sub run_build
 
 sub run_docs_build
 {
+    my $logfile = "$OW\/docs\/doc.log";
+    my $bldbase = "$home\/$Common::config{'BLDBASED'}";
+    my $bldlast = "$home\/$Common::config{'BLDLASTD'}";
+
     print REPORT "CLEAN+BUILD STARTED        : ", get_datetime(), "\n";
     if (system($docs_batch_name) != 0) {
         print REPORT "clean+build failed!\n\n";
@@ -585,7 +563,7 @@ sub run_docs_build
     } else {
         print REPORT "CLEAN+BUILD COMPLETED      : ", get_datetime(), "\n\n";
         # Analyze build result.
-        Common::process_summary($buildlog, $bldlast);
+        Common::process_summary($logfile, $bldlast);
         # If 'compare' fails, end now. Don't test if there was a build failure.
         if (Common::process_compare($bldbase, $bldlast, \*REPORT)) {
             return "fail";
@@ -704,10 +682,18 @@ open(REPORT, ">$report_name") || die "Unable to open $report_name file.";
 print REPORT "Open Watcom Build Report (build on ", $build_platform, ")\n";
 print REPORT "================================================\n\n";
 
-create_all_batches();
+# create all batch files
+########################
+
+make_boot_batch();
+make_build_batch();
+make_test_batch();
+make_docs_batch();
+make_installer_batch();
+make_rotate_batch();
 
 # Do a CVS sync to get the latest changes.
-#########################################
+##########################################
 
 if ($Common::config{'OWCVS'} ne "") {
     $CVS_result = CVS_check_sync($Common::config{'OWCVS'});
@@ -733,10 +719,6 @@ print REPORT "\n";
 print REPORT "Compilers and Tools\n";
 print REPORT "===================\n\n";
 
-$buildlog         = "$OW\/bld\/pass.log";
-$bldbase          = "$home\/$Common::config{'BLDBASE'}";
-$bldlast          = "$home\/$Common::config{'BLDLAST'}";
-
 $boot_result = run_boot_build();
 
 if ($boot_result eq "success") {
@@ -752,10 +734,6 @@ if ($boot_result eq "success") {
     print REPORT "\n";
     print REPORT "Documentation Build\n";
     print REPORT "===================\n\n";
-
-    $buildlog	  = "$OW\/docs\/doc.log";
-    $bldbase      = "$home\/$Common::config{'BLDBASED'}";
-    $bldlast      = "$home\/$Common::config{'BLDLASTD'}";
 
     if (defined($ENV{"OWDOCSKIP"}) && ($ENV{"OWDOCSKIP"} eq "1")) {
         $docs_result = "success";
