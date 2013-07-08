@@ -55,25 +55,6 @@ extern const char *wattcpCapabilities (void); /* what's been compiled in */
 #define DWORD  unsigned long
 #endif
 
-/*
- * Old compatibility
- */
-#ifndef byte
-#define byte  BYTE
-#endif
-
-#ifndef word
-#define word  WORD
-#endif
-
-#ifndef dword
-#define dword DWORD
-#endif
-
-#ifndef longword
-#define longword DWORD
-#endif
-
 #ifndef eth_address
 typedef BYTE  eth_address[6];
 #endif
