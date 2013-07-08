@@ -1,5 +1,11 @@
 # test NMAKE style [cmd] expressions
 
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
 foo = "str] || [echo ing"
 DIR = dyr
 

@@ -8,6 +8,12 @@
 #   $(answer)   is what the result should be
 #
 
+!ifdef __UNIX__
+ifeq=../cmds/ifeq
+!else
+ifeq=..\cmds\ifeq
+!endif
+
 true=
 guess=
 answer=
@@ -119,5 +125,5 @@ answer += 26
 # but that what we're testing!
 #
 pre01: .symbolic
-    $(ifeq) "$(answer)" "$(guess)"
+    @$(ifeq) "$(answer)" "$(guess)"
 

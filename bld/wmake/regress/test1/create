@@ -1,0 +1,47 @@
+numset= &
+  0001 0002 0003 0004 0005 0006 0007 0008 0009 0010 &
+  0011 0012 0013 0014 0015 0016 0017 0018 0019 0020 &
+  0021 0022 0023 0024 0025 0026 0027 0028 0029 0030
+
+all: .symbolic
+# create C source files fooN..N.c
+    @for %i in ($(numset)) do @%write foo%i.c extern int printf(char *,...); void foo%i(void){printf("%i\t");};
+# create C source file main.c
+    @%write main.c $#include <stdio.h>
+    @for %i in ($(numset)) do @%append main.c extern void foo%i(void);
+    @%append main.c int main(void)
+    @%append main.c {
+    @for %i in ($(numset)) do @%append main.c     foo%i();
+    @%append main.c     printf( "\n" );
+    @%append main.c     return( 0 );
+    @%append main.c }
+# create make file
+    @%write maketst1 $# big makefile!
+    @%append maketst1
+    @%append maketst1 host_os  = $$(bld_os)
+    @%append maketst1 host_cpu = $$(bld_cpu)
+    @%append maketst1
+    @%append maketst1 proj_name = wmaketest
+    @%append maketst1
+    @%append maketst1 verbose = 0
+    @%append maketst1
+    @%append maketst1 !include cproj.mif
+    @%append maketst1 !include defrule.mif
+    @%append maketst1 !include deftarg.mif
+    @%append maketst1
+    @%append maketst1 objs= & 
+    @%append maketst1     main.obj & 
+    @for %i in ($(numset)) do @%append maketst1     foo%i.obj & 
+    @%append maketst1
+    @%append maketst1 main.exe : $$(objs)
+    @%append maketst1     @echo link main
+!ifdef __WATCOM__
+    @%append maketst1     @$$(linker) $$(lflags) @main.lnk
+!else
+    @%append maketst1     @$$(cl) $$(clflags) $$(objs) $$(ldflags)
+!endif
+# create wlink directive file
+    @%write main.lnk OPTION quiet
+    @%append main.lnk NAME main.exe
+    @%append main.lnk FILE main.obj
+    @for %i in ($(numset)) do @%append main.lnk FILE foo%i.obj

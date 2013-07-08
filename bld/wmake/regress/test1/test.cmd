@@ -7,7 +7,7 @@ if .%1 == . goto usage
 echo # ---------------------------
 echo # TEST 1
 echo # ---------------------------
-..\cmds\create.exe 30
+%1 -h -f create
 rm -f err1.out
 echo. >err1.out
 %1 -h -f maketst1 -l err1.out > tst1.out

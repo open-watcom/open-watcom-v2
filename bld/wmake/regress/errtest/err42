@@ -2,6 +2,12 @@
 # ERROR 42: last cmd returned bad status
 # ----------------------------------------
 
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
 .HOLD
 .NOCHECK
 

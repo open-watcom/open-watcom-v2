@@ -2,6 +2,12 @@
 #   test the interpreted if
 #
 
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
 .silent
 
 tests = pre08.001 pre08.002 pre08.003 pre08.004 pre08.005 pre08.006     &

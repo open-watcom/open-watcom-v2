@@ -8,6 +8,12 @@
 #   $(answer)   tracks the actual answer
 #
 
+!ifdef __UNIX__
+ifeq=../cmds/ifeq
+!else
+ifeq=..\cmds\ifeq
+!endif
+
 true=
 guess=
 answer=
@@ -341,9 +347,9 @@ g3 = $+$(answer)$-
 
 #
 pre02: .symbolic
-    $(ifeq) "$(a1)" "$(g1)"
-    $(ifeq) "$(a2)" "$(g2)"
-    $(ifeq) "$(a3)" "$(g3)"
+    @$(ifeq) "$(a1)" "$(g1)"
+    @$(ifeq) "$(a2)" "$(g2)"
+    @$(ifeq) "$(a3)" "$(g3)"
 
 
 

@@ -1,6 +1,13 @@
+host_os  = $(bld_os)
+host_cpu = $(bld_cpu)
+
 proj_name = wmake_regress_cmds
 
-commands = mkerr envarg ifeq create
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+commands = mkerr envarg ifeq
 
 !ifdef __UNIX__
 commands += rem
@@ -8,15 +15,5 @@ commands += rem
 commands += prntdir
 !endif
 
-cl_386  = wcl386
-cl_x64  = wcl386
-cl_axp  = wclaxp
-cl_i86  = wcl
-cl_mps  = wclmps
-cl_ppc  = wclppc
-
 $(commands) : .symbolic
-        $(cl_$(bld_cpu)) -zq -I"../../../watcom/h" $@.c
-
-clean: .symbolic
-        rm -f *.obj *.o *.exe $(commands)
+        $(bld_cl) $@.c -I"../../../watcom/h" $(bld_clflags) $(bld_ldflags)

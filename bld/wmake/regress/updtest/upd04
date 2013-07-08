@@ -3,6 +3,12 @@
 #           is an error
 #
 
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
 .CONTINUE
 
 all : setup targa targb clean .symbolic

@@ -1,7 +1,0 @@
-!ifdef __UNIX__
-mkerr=../cmds/mkerr
-ifeq = @../cmds/ifeq
-!else
-mkerr=..\cmds\mkerr
-ifeq = @..\cmds\ifeq
-!endif

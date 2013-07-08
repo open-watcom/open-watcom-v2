@@ -2,6 +2,12 @@
 #   test single-colon dependent append
 #
 
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
 
 all : setup upd05a upd05b clean .symbolic
     @%null

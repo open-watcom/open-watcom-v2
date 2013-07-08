@@ -1,3 +1,9 @@
+!ifdef __UNIX__
+envarg=../cmds/envarg
+!else
+envarg=..\cmds\envarg
+!endif
+
 all :   .symbolic
     @$(envarg) no * version just for reference
     @*$(envarg) 12345678901

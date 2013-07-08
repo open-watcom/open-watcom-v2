@@ -2,6 +2,12 @@
 # ERROR 44C: BEFORE/AFTER/ERROR cmd ret bad status
 # -----------------------------------------------
 
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
 .ERROR
     @$(mkerr)
 

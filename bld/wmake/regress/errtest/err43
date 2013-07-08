@@ -2,6 +2,12 @@
 # ERROR 43: syserr deleting file
 # --------------------------------
 
+!ifdef __UNIX__
+mkerr=../cmds/mkerr
+!else
+mkerr=..\cmds\mkerr
+!endif
+
 .ERASE
 
 all.43 : first z43.43 last
