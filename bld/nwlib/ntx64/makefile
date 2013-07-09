@@ -3,6 +3,6 @@
 host_os  = nt
 host_cpu = x64
 
-#wlib_dll = 1
+wlib_dll = 1
 
 !include ../master.mif

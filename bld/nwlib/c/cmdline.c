@@ -123,7 +123,7 @@ static void DuplicateOption( char *c )
 
 static char *ParseOption( char *c, char *buff )
 {
-    long            page_size;
+    unsigned long   page_size;
     char            *start;
     char            *page;
     char            *endptr;
@@ -374,7 +374,7 @@ static char *ParseOption( char *c, char *buff )
                 FatalError( ERR_PAGE_RANGE );
             }
             MemFree( page );
-            SetPageSize( page_size );
+            SetPageSize( (unsigned short)page_size );
         }
         break;
     case 'n': //                       (always create a new library)
@@ -424,8 +424,8 @@ static void FreeCommands( void )
 
 static char *ParseCommand( char *c )
 {
-    int             doquotes = TRUE;
-    int             ignoreSpacesInQuotes = FALSE;
+    bool            doquotes = TRUE;
+    bool            ignoreSpacesInQuotes = FALSE;
     char            *start;
     operation       ops = 0;
     //char        buff[_MAX_PATH];
@@ -689,10 +689,15 @@ void ProcessCmdLine( char *argv[] )
     char        *env;
     lib_cmd     *cmd;
     char        *fname;
-#ifdef IDE_PGM
-    char buffer[ PATH_MAX ];
+#if defined( IDE_PGM ) || !defined( __WATCOMC__ ) && defined( __NT__ )
+    char        buffer[ PATH_MAX ];
+#endif
 
+#if defined( IDE_PGM )
     _cmdname( buffer );
+    fname = MakeFName( buffer );
+#elif !defined( __WATCOMC__ )
+    get_dllname( buffer, sizeof( buffer ) );
     fname = MakeFName( buffer );
 #else
     fname = MakeFName( _LpDllName );

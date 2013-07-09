@@ -33,6 +33,8 @@
 #include "walloca.h"
 #include <assert.h>
 #include <error.h>
+#include "coff.h"
+#include "coffwrt.h"
 
 typedef struct name_len {
     unsigned    len;

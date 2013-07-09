@@ -75,11 +75,16 @@ WResSetRtns( open, close, read, write, res_seek, tell, MemAllocGlobal, MemFreeGl
 
 void InitMsg( void )
 {
-    int initerror;
-#if defined( IDE_PGM )
-    char        fname[_MAX_PATH];
+    int     initerror;
+#if defined( IDE_PGM ) || !defined( __WATCOMC__ ) && defined( __NT__ )
+    char    fname[_MAX_PATH];
+#endif
 
+#if defined( IDE_PGM )
     _cmdname( fname );
+    initerror = OpenResFile( &hInstance, fname ) == NIL_HANDLE;
+#elif !defined( __WATCOMC__ )
+    get_dllname( fname, sizeof( fname ) );
     initerror = OpenResFile( &hInstance, fname ) == NIL_HANDLE;
 #else
     initerror = OpenResFile( &hInstance, _LpDllName ) == NIL_HANDLE;

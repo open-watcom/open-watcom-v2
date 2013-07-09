@@ -71,8 +71,6 @@
 #include "implib.h"
 #include "symlist.h"
 #include "writelib.h"
-#include "coff.h"
-#include "coffwrt.h"
 #include "pcobj.h"
 #include "omfutil.h"
 #include "omfproc.h"

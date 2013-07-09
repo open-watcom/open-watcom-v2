@@ -30,6 +30,7 @@
 
 
 #include "wlib.h"
+#include "coff.h"
 
 // must correspond to defines in implib.h
 static char *procname[ 5 ] = { "", "AXP", "PPC", "X86","" };
