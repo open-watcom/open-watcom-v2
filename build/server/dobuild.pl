@@ -83,8 +83,7 @@ my $build_batch_name      = "$home\/build.$ext";
 my $docs_batch_name       = "$home\/docsbld.$ext";
 my $build_installer_name  = "$home\/instbld.$ext";
 my $test_batch_name       = "$home\/test.$ext";
-my $rotate_batch_name     = "$home\/rotate1.$ext";
-my $rotate                = "$home\/rotate.$ext";
+my $post_batch_name       = "$home\/post.$ext";
 my $setvars               = "$OW\/setvars.$ext";
 my $prev_changeno_name    = "$home\/changeno.txt";
 my $prev_changeno         = "0";
@@ -374,22 +373,6 @@ sub make_installer_batch
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $build_installer_name;
-}
-
-sub make_rotate_batch
-{
-    open(BATCH, ">$rotate_batch_name") || die "Unable to open $rotate_batch_name file.";
-    open(INPUT, "$rotate") || die "Unable to open $rotate file.";
-    while (<INPUT>) {
-        s/\r?\n/\n/;
-        if    (/$setenv OWROOT=/i)    { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv OWRELROOT=/i) { print BATCH "$setenv OWRELROOT=", $relroot, "\n"; }
-        else                          { print BATCH; }
-    }
-    close(INPUT);
-    close(BATCH);
-    # On Windows it has no efect
-    chmod 0777, $rotate_batch_name;
 }
 
 sub process_log
@@ -690,7 +673,6 @@ make_build_batch();
 make_test_batch();
 make_docs_batch();
 make_installer_batch();
-make_rotate_batch();
 
 # Do a CVS sync to get the latest changes.
 ##########################################
@@ -743,7 +725,7 @@ if ($boot_result eq "success") {
     }
 }
 
-# Rotate the freshly built system into position on the web site.
+# Run installers build and post batch file
 ################################################################
 if (($boot_result eq "success") &&
     ($pass_result eq "success") &&
@@ -757,8 +739,12 @@ if (($boot_result eq "success") &&
     if (system($build_installer_name) != 0) {
         print REPORT "INSTALLER BUILD FAILED!\n";
     } else {
-        system("$rotate_batch_name");
-        print REPORT "INSTALLER BUILD COMPLETED  : ", get_datetime(), "\n";
+        print REPORT "INSTALLER BUILD COMPLETED  : ", get_datetime(), "\n\n";
+	if (system($post_batch_name) != 0) {
+	    print REPORT "POST BATCH FILE RUN FAILED!\n";
+	} else {
+	    print REPORT "POST BATCH FILE RUN COMPLETED  : ", get_datetime(), "\n";
+	}
     }
     print REPORT "\n\n";
     if ($Common::config{'OWCVS'} ne "") {
