@@ -57,7 +57,6 @@
 [ INCLUDE <OWSRCDIR>/wipfc/files.dat ]
 [ INCLUDE <OWSRCDIR>/redist/files.dat ]
 [ INCLUDE <OWSRCDIR>/uninstal/files.dat ]
-[ INCLUDE <OWROOT>/distrib/ow/readme.dat ]
 
 # Currently Missing:
 #-------------------------------------

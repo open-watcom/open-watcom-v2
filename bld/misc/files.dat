@@ -39,3 +39,13 @@ type="s"			dir="binl"	usr="unicode.437"	cond="lnxhost"	where="c jc"
 type="s"			dir="binl"	usr="unicode.852"	cond="lnxhost"	where="c jc"
 type="s"			dir="binl"	usr="unicode1.250"	cond="lnxhost"	where="c jc"
 type="s"			dir="binl"	usr="unicode1.252"	cond="lnxhost"	where="c jc"
+
+# readme files
+
+usr="readme.txt"        dir="."         where="c"
+usr="freadme.txt"       dir="."         where="f77"
+usr="areadme.txt"       dir="."         where="ac"
+
+# Miscellaneous files required by the installer
+
+usr="license.txt"       dir="."         where="c ac f77"

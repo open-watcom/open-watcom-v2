@@ -14,11 +14,15 @@ set PROJNAME=misc
 
 [ BLOCK <1> rel cprel ]
 #======================
+    set OWDOCROOT=<OWROOT>/docs
 
     <CPCMD> unicode*                <OWRELROOT>/binw/
     <CPCMD> watcom.ico              <OWRELROOT>/
     <CPCMD> unicode*                <OWRELROOT>/binl/
-    <CPCMD> <OWROOT>/license.txt    <OWRELROOT>/license.txt
+    <CPCMD> <OWROOT>/license.txt    <OWRELROOT>/
+    <CPCMD> <OWDOCROOT>/readme.txt  <OWRELROOT>/
+    <CPCMD> <OWDOCROOT>/areadme.txt <OWRELROOT>/
+    <CPCMD> <OWDOCROOT>/freadme.txt <OWRELROOT>/
 
 [ BLOCK . . ]
 #============
