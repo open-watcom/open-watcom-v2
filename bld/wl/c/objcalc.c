@@ -508,7 +508,7 @@ void AllocClasses( section *sect )
             } else {
                 // segmented
                 save = class->BaseAddr;
-                ChkLocated( &save, class->flags & CLASS_FIXED );    // Process fixed locations if any
+                ChkLocated( &save, ( (class->flags & CLASS_FIXED) != 0 ) );    // Process fixed locations if any
             }
             RingWalk( class->segs, AllocSeg );
         }

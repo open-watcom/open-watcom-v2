@@ -1077,7 +1077,7 @@ unsigned_32 GetStubSize( void )
     name = FmtData.u.os2.stub_file_name;
     stub_len = sizeof( DosStub ) + DoExeName();
     if( name != NULL && stricmp( name, Root->outfile->fname ) != 0 ) {
-        the_file = SearchPath( name );
+        the_file = FindPath( name );
         if( the_file != NIL_FHANDLE ) {
             QRead( the_file, &dosheader, sizeof( dos_exe_header ), name );
             if( dosheader.signature == DOS_SIGNATURE ) {
@@ -1140,7 +1140,7 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
         LnkMsg( ERR+MSG_STUB_SAME_AS_LOAD, NULL );
         stub_len = WriteDefStub( stub_align );
     } else {
-        the_file = SearchPath( name );
+        the_file = FindPath( name );
         if( the_file == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", name );
             return( WriteDefStub( stub_align ) );   // NOTE: <== a return here.

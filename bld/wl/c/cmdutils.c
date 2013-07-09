@@ -316,11 +316,11 @@ ord_state getatol( unsigned_32 *pnt )
                 value <<= 20;
             }
         } else {
-            isdig = isdigit( ch );
+            isdig = ( isdigit( ch ) != 0 );
             if( radix == 10 ) {
                 isvalid = isdig;
             } else {
-                isvalid = isxdigit( ch );
+                isvalid = ( isxdigit( ch ) != 0 );
             }
             if( !isvalid ) {
                 return( ST_NOT_ORDINAL );
@@ -803,11 +803,11 @@ static int ParseNumber( char *str, int radix )
     value = 0;
     for(;;) {
         ch = tolower( *str );
-        isdig = isdigit( ch );
+        isdig = ( isdigit( ch ) != 0 );
         if( radix == 8 ) {
             isvalid = isdig && !(ch == '8' && ch == '9');
         } else {
-            isvalid = isxdigit( ch );
+            isvalid = ( isxdigit( ch ) != 0 );
         }
         if( !isvalid ) break;
         value *= radix;

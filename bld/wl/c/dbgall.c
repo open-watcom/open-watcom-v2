@@ -450,11 +450,11 @@ unsigned DBICalcLineQty( lineinfo *info )
     return( size );
 }
 
-static bool DoLineWalk( lineinfo *info, void (*cbfn)( lineinfo * ) )
-/******************************************************************/
+static bool DoLineWalk( void *info, void *cbfn )
+/***********************************************/
 {
-    if( !info->seg->isdead ) {
-        cbfn( info );
+    if( !((lineinfo *)info)->seg->isdead ) {
+        ((void(*)(lineinfo *))cbfn)( (lineinfo *)info );
     }
     return( FALSE );
 }
@@ -462,7 +462,7 @@ static bool DoLineWalk( lineinfo *info, void (*cbfn)( lineinfo * ) )
 void DBILineWalk( lineinfo *lines, void (*cbfn)( lineinfo * ) )
 /*************************************************************/
 {
-    RingLookup( lines, (int(*)(void *,void *))DoLineWalk, cbfn );
+    RingLookup( lines, DoLineWalk, cbfn );
 }
 
 virt_mem DBIAlloc( virt_mem_size size )

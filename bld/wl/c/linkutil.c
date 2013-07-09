@@ -455,8 +455,8 @@ void Suicide( void )
     }
 }
 
-f_handle SearchPath( char *name )
-/**************************************/
+f_handle FindPath( char *name )
+/*****************************/
 {
     char        *path;
     f_handle    file;

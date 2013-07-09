@@ -49,7 +49,7 @@ extern bool             GetToken( sep_type, tokcontrol );
 extern void             InitCmdFile( void );
 extern void             SetCommandFile( f_handle, char * );
 extern void             NewCommandSource( char *, char *, method );
-extern f_handle         SearchPath( char * );
+extern f_handle         FindPath( char * );
 extern bool             ProcOne( parse_entry *, sep_type, bool );
 extern int              Spawn(void (*)() );
 extern void             BurnSystemList( void );
@@ -304,7 +304,7 @@ static void ProcessInfo( void )
 
     Root = NewSection();
     SetUpCommands();
-    file = SearchPath( INIT_FILE_NAME );
+    file = FindPath( INIT_FILE_NAME );
     if( file == NIL_HANDLE ) return;   /* NO WLINK.LNK */
     _ChkAlloc( fname, sizeof(INIT_FILE_NAME));
     memcpy( fname, INIT_FILE_NAME, sizeof(INIT_FILE_NAME) );

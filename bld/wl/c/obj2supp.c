@@ -408,7 +408,7 @@ static void BuildReloc( save_fixup *save, frame_spec *targ, frame_spec *frame )
     }
     if( !fix.imported ) {
         if( fix.ffix == FFIX_NOT_A_FLOAT ) {
-            ConvertToFrame( &fix.tgt_addr, faddr.seg, (fixtype & (FIX_OFFSET_8 | FIX_OFFSET_16)) );
+            ConvertToFrame( &fix.tgt_addr, faddr.seg, ( (fixtype & (FIX_OFFSET_8 | FIX_OFFSET_16)) != 0 ) );
         } else {
             fix.tgt_addr.seg = faddr.seg;
         }

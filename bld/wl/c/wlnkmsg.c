@@ -76,15 +76,20 @@ int InitMsg( void )
 {
     char        buff[_MAX_PATH];
     int         initerror;
-#if !defined( IDE_PGM )
-    char        *fname;
-
-    fname = _LpDllName;
-    initerror = fname == NULL;
-#else
+#if defined( IDE_PGM ) || !defined( __WATCOMC__ ) && defined( __NT__ )
     char        fname[_MAX_PATH];
+#else
+    char        *fname;
+#endif
 
-    initerror = _cmdname( fname ) == NULL;
+#if defined( IDE_PGM )
+    initerror = ( _cmdname( fname ) == NULL );
+#elif !defined( __WATCOMC__ )
+    get_dllname( fname, sizeof( fname ) );
+    initerror = ( *fname == '\0' );
+#else
+    fname = _LpDllName;
+    initerror = ( fname == NULL );
 #endif
     Res_Flag = EXIT_SUCCESS;
     BannerPrinted = FALSE;

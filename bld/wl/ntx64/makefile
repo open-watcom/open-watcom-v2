@@ -3,4 +3,6 @@
 host_os  = nt
 host_cpu = x64
 
+wlink_dll = 1
+
 !include ../master.mif

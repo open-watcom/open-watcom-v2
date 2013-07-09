@@ -33,14 +33,10 @@
 #include <stdarg.h>
 #include <time.h>
 #include "watcom.h"
+#include "bool.h"
 
 #define NLCHAR         '\n'
 #define CTRLZ          '\32'
-
-#ifndef FALSE
-    #define FALSE 0
-    #define TRUE 1
-#endif
 
 /* round up by a power of 2 */
 #define ROUND_UP( x, r )        (((x)+((r)-1))&~((r)-1))
@@ -90,10 +86,6 @@
     #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
 #endif
 
-#ifndef BOOL_DEFINED
-#define BOOL_DEFINED
-typedef int bool;
-#endif
 typedef unsigned char   byte;
 typedef unsigned        f_handle;
 

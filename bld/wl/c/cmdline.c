@@ -220,10 +220,10 @@ void DoCmdFile( char *fname )
         LnkMsg( INF+MSG_PRESS_CTRL_Z, NULL );
     }
     namelnk = GetEnvString( INIT_FILE_ENV );
-    file = ( namelnk != NULL ) ? SearchPath( namelnk ) : NIL_FHANDLE;
+    file = ( namelnk != NULL ) ? FindPath( namelnk ) : NIL_FHANDLE;
     if( file == NIL_FHANDLE ) {
         namelnk = INIT_FILE_NAME;
-        file = SearchPath( namelnk );
+        file = FindPath( namelnk );
     }
     if( file != NIL_FHANDLE ) {
         fname = ChkStrDup( namelnk );
@@ -332,7 +332,7 @@ static void Crash( bool check_file )
     f_handle    fp;
 
     if( check_file ) {
-        fp = SearchPath( "wlink.hlp" );
+        fp = FindPath( "wlink.hlp" );
         if( fp != NIL_FHANDLE ) {
             WLPrtBanner();
             for( ; (len = QRead( fp, buff, 80, "wlink.hlp" )) != 0; ) {

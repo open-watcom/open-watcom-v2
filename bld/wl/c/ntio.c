@@ -326,7 +326,7 @@ bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
 bool QIsDevice( f_handle file )
 /*****************************/
 {
-    return( isatty( file ) );
+    return( isatty( file ) != 0 );
 }
 
 static f_handle NSOpen( char *name, unsigned mode )
