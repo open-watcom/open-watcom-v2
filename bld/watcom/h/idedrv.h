@@ -54,7 +54,8 @@
 , _IDEDRV( IDEDRV_ERR_INFO_EXEC , "error return from init-info routine" ) \
 , _IDEDRV( IDEDRV_ERR_RUN       , "cannot find run-self routine" ) \
 , _IDEDRV( IDEDRV_ERR_RUN_EXEC  , "error return from run-self routine" ) \
-, _IDEDRV( IDEDRV_ERR_RUN_FATAL , "fatal return from run-self routine" )
+, _IDEDRV( IDEDRV_ERR_RUN_FATAL , "fatal return from run-self routine" ) \
+, _IDEDRV( IDEDRV_ERR_STOP      , "cannot find stop routine" )
 
 typedef enum                    // error codes
 {

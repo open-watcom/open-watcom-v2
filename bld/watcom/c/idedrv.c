@@ -760,17 +760,15 @@ int IdeDrvStopRunning           // SIGNAL A BREAK
 #else
 // Dynamic Linkage: indirect call
 {
-    int         retcode;                // - return code
     StopRunFn   idestopdll;
 
     if( inf->loaded ) {
-        if( 0 == sysdepDLLgetProc( inf, IDETOOL_STOPRUN, (P_FUN*)&idestopdll ) ) {
-           idestopdll();
+        if( 0 != sysdepDLLgetProc( inf, IDETOOL_STOPRUN, (P_FUN*)&idestopdll ) ) {
+            return( IDEDRV_ERR_STOP );
         }
-    } else {
-        retcode = IDEDRV_SUCCESS;
+        idestopdll();
     }
-    return( retcode );
+    return( IDEDRV_SUCCESS );
 }
 #endif
 
