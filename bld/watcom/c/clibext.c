@@ -2456,6 +2456,15 @@ unsigned sleep( unsigned time )
 
 #endif /* _MSC_VER */
 
+char *get_dllname( char *buf, int len )
+{
+    *buf = '\0';
+#ifdef _MSC_VER
+    GetModuleFileName( NULL, buf, len );
+#endif
+    return( buf );
+}
+
 int _vbprintf( char *s, size_t bufsize, const char *format, __va_list arg )
 {
     int rc;

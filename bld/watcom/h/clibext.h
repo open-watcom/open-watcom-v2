@@ -201,6 +201,7 @@ extern void   _splitpath2( const char *inp, char *outp, char **drive, char **dir
 extern int    _bgetcmd( char *buffer, int len );
 extern char   *getcmd( char *buffer );
 extern char   *_cmdname( char *name );
+extern char   *get_dllname( char *buf, int len );
 
 #ifdef __cplusplus
 }
