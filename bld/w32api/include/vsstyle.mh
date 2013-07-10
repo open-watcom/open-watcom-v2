@@ -138,7 +138,7 @@ enum CHECKBOXSTATES {
     CBS_MIXEDNORMAL         = 9,
     CBS_MIXEDHOT            = 10,
     CBS_MIXEDPRESSED        = 11,
-    CBS_MIXEDDISBALED       = 12,
+    CBS_MIXEDDISABLED       = 12,
     CBS_IMPLICITNORMAL      = 13,
     CBS_IMPLICITHOT         = 14,
     CBS_IMPLICITPRESSED     = 15,
