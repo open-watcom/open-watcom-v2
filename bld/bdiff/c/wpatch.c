@@ -36,6 +36,7 @@
 #include <io.h>
 #include "bdiff.h"
 #include "wpatchio.h"
+#include "msg.h"
 
 #define FALSE 0
 
@@ -44,8 +45,6 @@ struct {
     int origTgtDirLen;
 } glob;
 
-extern void     GetMsg( char *, int );
-extern void     MsgPrintf( int resourceid, va_list arglist );
 
 int     cmpStrings( const void *, const void * );
 void    WPatchApply( char *PatchName, char *TgtPath );
@@ -76,7 +75,7 @@ void WPatchApply( char *PatchName, char *TgtPath )
     char    FullPath[ PATCH_MAX_PATH_SIZE ];
 
     PatchReadOpen( PatchName );
-    while( 1 ) {
+    for( ;; ) {
         PatchReadFile( &flag, RelPath );
         if ( flag == PATCH_EOF ) break;
         strcpy( FullPath, TgtPath );
@@ -184,7 +183,7 @@ int cmpStrings( const void *op1, const void *op2 )
 
 static void Err( int format, va_list args )
 {
-    char        msgbuf[80];
+    char        msgbuf[MAX_RESOURCE_SIZE];
 
     GetMsg( msgbuf, MSG_ERROR );
     printf( msgbuf );

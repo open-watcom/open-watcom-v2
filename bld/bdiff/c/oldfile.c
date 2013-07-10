@@ -31,6 +31,7 @@
 
 
 #include "bdiff.h"
+#include "msg.h"
 
 MY_FILE OldFile;
 
@@ -40,7 +41,6 @@ extern int      DoPrompt;
 extern void MyOpen( MY_FILE *file, int handle, char *name );
 extern void Input( MY_FILE *file, void *tmp, foff off, size_t len );
 extern void MyClose( MY_FILE *file );
-extern void GetMsg( char *buffer, int resourceid );
 extern int  SecondaryPatchSearch( char *name, char *path );
 
 extern void PatchError( int, ... );
@@ -117,8 +117,9 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
     NewName = new_path;
 #if !defined( INSTALL_PROGRAM )
     {
-        char        temp[_MAX_PATH];
-        char    msgbuf[80];
+        char    temp[_MAX_PATH];
+        char    msgbuf[MAX_RESOURCE_SIZE];
+
         if( prompt && DoPrompt ) {
             for( ;; ) {
                 GetMsg( msgbuf, MSG_MODIFY );

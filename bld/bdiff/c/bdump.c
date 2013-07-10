@@ -32,14 +32,18 @@
 
 #include "bdiff.h"
 
+#ifdef __WATCOMC__
 #pragma off(unreferenced);
+#endif
 
 byte *NewFile;
 
 void OpenNew( foff len )
 {
+    len = len;
 }
 
 void CloseNew( foff len, foff actual_sum )
 {
+    len = len; actual_sum = actual_sum;
 }

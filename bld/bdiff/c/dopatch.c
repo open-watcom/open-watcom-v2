@@ -31,8 +31,7 @@
 
 #include "bdiff.h"
 #include "bool.h"
-
-extern  void    Message( int, ... );
+#include "msg.h"
 
 extern void PatchError( int, ... );
 extern void FilePatchError( int, ... );

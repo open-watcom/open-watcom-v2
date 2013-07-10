@@ -39,6 +39,7 @@
 
 #include "watcom.h"
 #include "symtab.h"
+#include "msg.h"
 
 #include "machtype.h"
 #ifdef USE_DBGINFO
@@ -107,10 +108,8 @@ int     AppendPatchLevel;
 char    *SyncString = NULL;
 
 extern void     Execute( byte * );
-extern void     GetMsg( char *, int );
 extern void     FileCheck( int fd, char *name );
 extern void     SeekCheck( long pos, char *name );
-extern void     MsgPrintf( int resourceid, va_list arglist );
 
 #define MAX_DIFF        (1L<<17)
 #define MIN_DIFF        (1L<<7)
@@ -171,7 +170,7 @@ void SortHoleArray( void );
 
 static void Err( int format, va_list args )
 {
-    char        msgbuf[80];
+    char        msgbuf[MAX_RESOURCE_SIZE];
 
     GetMsg( msgbuf, MSG_ERROR );
     printf( msgbuf );
@@ -227,7 +226,7 @@ void NotNull( void *p, char *str )
 
 void Usage( char *name )
 {
-    char msgbuf[80];
+    char msgbuf[MAX_RESOURCE_SIZE];
     int i;
 
     i = MSG_USAGE_FIRST;
@@ -621,7 +620,7 @@ void printd( char *p )
 
 void fatal( int p )
 {
-    char msgbuf[80];
+    char msgbuf[MAX_RESOURCE_SIZE];
 
     GetMsg( msgbuf, p );
     puts( msgbuf );
@@ -631,7 +630,7 @@ void fatal( int p )
 
 void IOError( char *file )
 {
-    char msgbuf[80];
+    char msgbuf[MAX_RESOURCE_SIZE];
 
     GetMsg( msgbuf, MSG_IO_ERROR );
     printf( msgbuf, file );
@@ -938,7 +937,7 @@ void ProcessExe( char *name, char *sym_name, exe_info *exe )
     auto mod_info mod_name;
     auto addr_info seg_chunk;
     auto exe_mod tmp_mod;
-    char msgbuf[80];
+    char msgbuf[MAX_RESOURCE_SIZE];
 
     _splitpath( name, drive, dir, fname, ext );
     if( ext[0] == '\0' ) {

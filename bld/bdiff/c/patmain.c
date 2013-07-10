@@ -30,11 +30,9 @@
 
 
 #include "bdiff.h"
+#include "msg.h"
 
 extern  PATCH_RET_CODE  DoPatch( char *, int, int, int, char * );
-extern  int             GetMsg( char *, int );
-extern  void            Message( int, ... );
-extern  void            MsgPrintf( int resourceid, va_list arglist );
 
 
 static void PrintBanner( void )
@@ -52,7 +50,7 @@ static void PrintBanner( void )
 
 void Usage( char *name )
 {
-    char msgbuf[80];
+    char msgbuf[MAX_RESOURCE_SIZE];
     int i;
 
     i = MSG_USAGE_FIRST;
@@ -72,7 +70,7 @@ void Usage( char *name )
 
 static void Err( int format, va_list args )
 {
-    char        msgbuf[80];
+    char        msgbuf[MAX_RESOURCE_SIZE];
 
     GetMsg( msgbuf, MSG_ERROR );
     printf( msgbuf );

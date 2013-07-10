@@ -44,8 +44,8 @@
 #include "wresset2.h"
 #include "wreslang.h"
 #include "watcom.h"
+#include "msg.h"
 
-#define NIL_HANDLE      ((int)-1)
 #define STDOUT_HANDLE   ((int)1)
 
 static  HANDLE_INFO     hInstance = { 0 };
@@ -71,8 +71,7 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 int GetMsg( char *buffer, int resourceid )
 {
-    if( !LoadString( &hInstance, resourceid + MsgShift,
-                (LPSTR) buffer, 128 ) == 0 ) {
+    if( !LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == 0 ) {
         buffer[0] = '\0';
         return( 0 );
     }
@@ -88,10 +87,8 @@ int MsgInit( void )
     if( _cmdname( name ) == NULL ) {
         initerror = 1;
     } else {
-        OpenResFile( &hInstance, name );
-        if( hInstance.handle == NIL_HANDLE ) {
-            initerror = 1;
-        } else {
+        initerror = OpenResFile( &hInstance, name );
+        if( !initerror ) {
             initerror = FindResources( &hInstance );
             if( !initerror ) {
                 initerror = InitResources( &hInstance );
@@ -128,7 +125,7 @@ static void OrderMsg ( int order[], int num_arg, char *msg_ptr )
 
 void MsgPrintf( int resourceid, va_list arglist )
 {
-    char        msgbuf[80];
+    char        msgbuf[MAX_RESOURCE_SIZE];
     int         order[3] = { 0, 0, 0 };
     char        *argbuf[3];
     int         i;

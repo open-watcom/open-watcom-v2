@@ -1,2 +1,5 @@
-[ DEFAULT ]
-type="e" dir="binw"	usr="bpatch.exe" rel="." where="c jc f77 jf77 ac"	desc="Patch utility"	old="binb"
+[ DEFAULT rel="." where="c jc f77 jf77 ac" desc="Patch utility" ]
+type="e" dir="binw"	usr="bpatch.exe"       old="binb"
+type="e" dir="binp"	usr="bpatch.exe"
+type="e" dir="binnt"	usr="bpatch.exe"
+type="e" dir="binnt64"	usr="bpatch.exe"

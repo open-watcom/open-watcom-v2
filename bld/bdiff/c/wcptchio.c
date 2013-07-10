@@ -100,7 +100,7 @@ void PatchAddFile( char *path ) {
         exit( -1 );
     }
     fwrite( &filestats.st_size, sizeof(off_t), 1, PatchF );
-    while (1) {
+    for( ;; ) {
         filechar = fgetc( inF );
         if (feof( inF )) break;
         fputc( filechar, PatchF );
