@@ -2458,9 +2458,14 @@ unsigned sleep( unsigned time )
 
 char *get_dllname( char *buf, int len )
 {
+#ifdef _MSC_VER
+    HMODULE hnd = NULL;
+#endif
+
     *buf = '\0';
 #ifdef _MSC_VER
-    GetModuleFileName( NULL, buf, len );
+    GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)get_dllname, &hnd);
+    GetModuleFileName( hnd, buf, len );
 #endif
     return( buf );
 }
