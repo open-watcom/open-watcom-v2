@@ -55,7 +55,7 @@ typedef struct ResFileInfo {
     struct ResFileInfo  *next;
     char                *name;
     int                 IsOpen;
-    int                 Handle;
+    WResFileID          Handle;
     WResDir             Dir;
 } ResFileInfo;
 

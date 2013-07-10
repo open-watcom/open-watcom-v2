@@ -3,6 +3,5 @@ host_OS = win
 host_CPU = i86
 
 model = l
-linkage = static
 
 !include ../../master.mif

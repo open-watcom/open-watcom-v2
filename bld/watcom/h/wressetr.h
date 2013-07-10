@@ -46,7 +46,9 @@
 #endif
 #define WResFileOffset  long
 
-typedef int     WResFileID;
+typedef int             WResFileID;
+
+#define NIL_HANDLE      ((WResFileID)-1)
 
 typedef struct WResRoutines {                                           /* defaults */
     /* I/O routines */
@@ -74,6 +76,6 @@ typedef struct WResRoutines {                                           /* defau
     }
 
 /* This is a global variable exported by function FindResources */
-extern long     FileShift;
+extern WResFileOffset   FileShift;
 
 #endif

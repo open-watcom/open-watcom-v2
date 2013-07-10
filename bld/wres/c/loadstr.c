@@ -155,7 +155,8 @@ extern int WResLoadString(   PHANDLE_INFO        hInstance,
 extern int OpenResFile( PHANDLE_INFO hInstance, const char *filename )
 /********************************************************************/
 {
-    return( WRESHANDLE = ResOpenFileRO( filename ) );
+    WRESHANDLE = ResOpenFileRO( filename );
+    return( WRESHANDLE == NIL_HANDLE );
 }
 
 extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance )

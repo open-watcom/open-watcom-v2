@@ -57,13 +57,14 @@ _WCRTLINK extern char *_cmdname( char *__name );
 #include "wmsg.h"
 #include "wreslang.h"
 #if defined(__WINDOWS__)
- #include "windows.h"
+#include "windows.h"
 #else
- #include "wressetr.h"
- #include "wresset2.h"
- #include "watcom.h"
+#include "wressetr.h"
+#include "wresset2.h"
+#include "watcom.h"
+#endif
 
-#define NIL_HANDLE      ((int)-1)
+#if !defined(__WINDOWS__)
 #ifndef STDOUT_HANDLE
  #define STDOUT_HANDLE   ((int)1)
 #endif
@@ -105,20 +106,18 @@ int MsgInit( void )
     if( _cmdname( buffer ) == NULL ) {
         initerror = 1;
     } else {
-        OpenResFile( &hInstance, buffer );
+        initerror = OpenResFile( &hInstance, buffer );
 #if defined(_PLS)
-        if( hInstance.handle == NIL_HANDLE ) {
+        if( initerror ) {
             _splitpath2( buffer, fullpath, NULL, NULL, &fname, NULL );
             _makepath( buffer, NULL, NULL, fname, ".exp" );
             _searchenv( buffer, "PATH", fullpath );
             if( fullpath[0] != '\0' ) {
-                OpenResFile( &hInstance, fullpath );
+                initerror = OpenResFile( &hInstance, fullpath );
             }
         }
 #endif
-        if( hInstance.handle == NIL_HANDLE ) {
-            initerror = 1;
-        } else {
+        if( !initerror ) {
             initerror = FindResources( &hInstance );
             if( !initerror ) {
                 initerror = InitResources( &hInstance );
@@ -127,7 +126,7 @@ int MsgInit( void )
         if( !initerror ) {
             msg_shift = _WResLanguage() * MSG_LANG_SPACING;
             for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-                if( LoadString( &hInstance, i + msg_shift, (LPSTR) buffer, 128 ) == -1 ) {
+                if( LoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) == -1 ) {
                     if( i == ERR_FIRST_MESSAGE ) {
                         initerror = 1;
                         break;
@@ -163,7 +162,7 @@ int MsgInit( HANDLE inst )
     msg_shift = _WResLanguage() * MSG_LANG_SPACING;
 
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-        if( LoadString( inst, i + msg_shift, (LPSTR) buffer, 128 ) == -1 ) {
+        if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) == -1 ) {
             if( i == ERR_FIRST_MESSAGE ) {
                 return( 0 );
                 break;

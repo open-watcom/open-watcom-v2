@@ -67,10 +67,8 @@ extern int MsgInit( void )
     if( _cmdname( name ) == NULL ) {
         error = 1;
     } else {
-        OpenResFile( &hInstance, name );
-        if( hInstance.handle == NIL_HANDLE ) {
-            error = 1;
-        } else {
+        error = OpenResFile( &hInstance, name );
+        if( !error ) {
             error = FindResources( &hInstance );
             if( !error ) {
                 error = InitResources( &hInstance );

@@ -168,7 +168,7 @@ static RcStatus copyOneObject( ExeFileInfo *old, object_record *old_obj,
                                ExeFileInfo *new, object_record *new_obj )
 /***********************************************************************/
 {
-    int             seek_rc;
+    long            seek_rc;
     int             copy_rc;
     lx_map_entry    *old_map;
     lx_map_entry    *new_map;
@@ -208,7 +208,7 @@ static int copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
 /*****************************************************************/
 /* Copies parts of header and loader/fixup sections that won't be changing */
 {
-    int                 seek_rc;
+    long                seek_rc;
     int                 ret;
     uint_32             old_pages;
     uint_32             offset;

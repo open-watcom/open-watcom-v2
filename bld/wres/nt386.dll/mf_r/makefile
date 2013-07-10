@@ -3,7 +3,7 @@ host_os = nt
 host_cpu = 386
 
 model = f
-linkage = dynamic
-convention = register
+
+wres_rtdll = 1
 
 !include ../../master.mif

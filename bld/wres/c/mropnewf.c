@@ -40,7 +40,7 @@ WResFileID MResOpenNewFile( const char * filename )
     WResFileID  ret;
 
     ret = WRESOPEN( filename, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, PMODE_RW );
-    if( ret == -1 ) {
+    if( ret == NIL_HANDLE ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }
     return( ret );

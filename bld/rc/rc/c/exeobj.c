@@ -180,9 +180,9 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
  * copyOneObject
  * if an error occurs this function MUST return without altering errno
  */
-static RcStatus copyOneObject( int old_handle, pe_object * old_obj,
-                        int new_handle, pe_object * new_obj )
-/************************************************************/
+static RcStatus copyOneObject( WResFileID old_handle, pe_object * old_obj,
+                        WResFileID new_handle, pe_object * new_obj )
+/************************************************************************/
 {
     /*
      * if this an uninitialized object (one for which there is not

@@ -162,8 +162,7 @@ Bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
                 WdeRibbonInfo->items[i].depressed = WdeRibbonInfo->items[i].u.bmp;
             }
             if( tools[i].tip_id >= 0 ) {
-                LoadString( inst, tools[i].tip_id, WdeRibbonInfo->items[i].tip,
-                            MAX_TIP );
+                LoadString( inst, tools[i].tip_id, WdeRibbonInfo->items[i].tip, MAX_TIP );
             } else {
                 WdeRibbonInfo->items[i].tip[0] = '\0';
             }

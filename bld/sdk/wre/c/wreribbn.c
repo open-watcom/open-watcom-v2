@@ -116,8 +116,7 @@ Bool WREInitRibbon( HINSTANCE inst )
                 WRERibbonInfo->items[i].depressed = WRERibbonInfo->items[i].u.bmp;
             }
             if( WRERibbonNames[i].tip_id >= 0 ) {
-                LoadString( inst, WRERibbonNames[i].tip_id, WRERibbonInfo->items[i].tip,
-                            MAX_TIP );
+                LoadString( inst, WRERibbonNames[i].tip_id, WRERibbonInfo->items[i].tip, MAX_TIP );
             } else {
                 WRERibbonInfo->items[i].tip[0] = '\0';
             }

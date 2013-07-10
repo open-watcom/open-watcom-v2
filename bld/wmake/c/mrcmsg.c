@@ -64,8 +64,6 @@
 
 #endif
 
-#define NIL_HANDLE      ((int)-1)
-
 /* this is a table storing msg id's which need two parameters for PrtMsg.
  * keep it in order.
  */
@@ -119,10 +117,8 @@ int MsgInit( void )
     if( _cmdname( name ) == NULL ) {
         initerror = 1;
     } else {
-        OpenResFile( &hInstance, name );
-        if( hInstance.handle == NIL_HANDLE ) {
-            initerror = 1;
-        } else {
+        initerror = OpenResFile( &hInstance, name );
+        if( !initerror ) {
             initerror = FindResources( &hInstance );
             if( !initerror ) {
                 initerror = InitResources( &hInstance );

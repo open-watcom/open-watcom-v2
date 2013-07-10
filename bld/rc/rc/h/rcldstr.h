@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-extern int  InitRcMsgs( const char * );
+extern int  InitRcMsgs( void );
 extern int  GetRcMsg( unsigned, char *, unsigned );
 extern void FiniRcMsgs( void );

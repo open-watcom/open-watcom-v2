@@ -36,6 +36,7 @@
 #include "leadbyte.h"
 
 #ifdef __NT__
+
 #include <windows.h>
 
 void SetNativeLeadBytes( void ) {

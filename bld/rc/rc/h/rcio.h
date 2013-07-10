@@ -59,7 +59,7 @@ typedef struct RcResFileID {
     FullStringTable     *ErrorTable;
     uint_16             NextCurOrIcon;
     WResDir             dir;                    /* don't write this if !IsWatcomRes */
-    int                 handle;                 /* posix level I/O handle */
+    WResFileID          handle;                 /* posix level I/O handle */
     FullFontDir         *FontDir;
     char                namebuf[ _MAX_PATH ];   /* filename usually points here */
 } RcResFileID;
@@ -88,7 +88,7 @@ extern void RcIoSetIsCOrHFlag( void );
 extern const LogicalFileInfo * RcIoGetLogicalFileInfo( void );
 extern int RcIoIsCOrHFile( void );
 extern void RcIoSetLogicalFileInfo( int linenum, char * filename );
-extern int RcIoOpenInput( char * filename, int flags, ... );
+extern WResFileID RcIoOpenInput( char * filename, int flags, ... );
 extern void RcFindResource( char *name, char *fullpath );
 extern char *RcGetEnv( const char *name );
 

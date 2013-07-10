@@ -3,7 +3,5 @@ host_OS = nt
 host_CPU = 386
 
 model = f
-linkage = static
-convention = register
 
 !include ../../master.mif

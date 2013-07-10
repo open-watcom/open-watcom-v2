@@ -82,14 +82,13 @@ int init_msgs( void )
     if( _cmdname( fname ) == NULL ) {
         error = TRUE;
     } else {
-        OpenResFile( &Instance, fname );
+        error = OpenResFile( &Instance, fname );
         WGMLItself = Instance.handle;
-        if( Instance.handle == -1 ) error = TRUE;
         if( !error ) {
             error = FindResources( &Instance );
-        }
-        if( !error ) {
-            error = InitResources( &Instance );
+            if( !error ) {
+                error = InitResources( &Instance );
+            }
         }
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( !error && !get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
@@ -97,7 +96,8 @@ int init_msgs( void )
         }
     }
     if( error ) {
-        if( Instance.handle != -1 ) CloseResFile( &Instance );
+        if( Instance.handle != NIL_HANDLE )
+            CloseResFile( &Instance );
         out_msg( "Resources not found\n" );
         g_suicide();
     }

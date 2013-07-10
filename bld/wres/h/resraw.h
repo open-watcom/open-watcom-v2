@@ -33,6 +33,6 @@
 #ifndef RESRAW_INCLUDED
 #define RESRAW_INCLUDED
 
-extern int ResWrite( void * buffer, int len, int handle );
+extern int ResWrite( void * buffer, int len, WResFileID handle );
 
 #endif

@@ -190,14 +190,13 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
 } /* addExeResRecord */
 
 static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
-            WResLangInfo *lang, WResResInfo *res, int reshandle,
-            int outhandle, int shift_count, int *err_code )
+            WResLangInfo *lang, WResResInfo *res, WResFileID reshandle,
+            WResFileID outhandle, int shift_count, int *err_code )
 /**********************************************************************/
 {
     RcStatus            error;
-    int                 iorc;
-    uint_32             out_offset;
-    uint_32             align_amount;
+    long                out_offset;
+    long                align_amount;
 
     /* align the output file to a boundary for shift_count */
     error = RS_OK;
@@ -209,8 +208,7 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     }
     if( error == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        iorc = RcSeek( outhandle, align_amount, SEEK_CUR );
-        if( iorc == -1 ) {
+        if( RcSeek( outhandle, align_amount, SEEK_CUR ) == -1 ) {
             error = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -218,8 +216,7 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     }
 
     if( error == RS_OK ) {
-        iorc = RcSeek( reshandle, lang->Offset, SEEK_SET );
-        if( iorc == -1 ) {
+        if( RcSeek( reshandle, lang->Offset, SEEK_SET ) == -1 ) {
             error = RS_READ_ERROR;
             *err_code = errno;
         }

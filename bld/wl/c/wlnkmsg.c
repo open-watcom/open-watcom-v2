@@ -76,37 +76,31 @@ int InitMsg( void )
 {
     char        buff[_MAX_PATH];
     int         initerror;
-#if defined( IDE_PGM ) || !defined( __WATCOMC__ ) && defined( __NT__ )
-    char        fname[_MAX_PATH];
+#if defined( IDE_PGM ) || !defined( __WATCOMC__ )
+    char        imageName[_MAX_PATH];
 #else
-    char        *fname;
+    char        *imageName;
 #endif
 
 #if defined( IDE_PGM )
-    initerror = ( _cmdname( fname ) == NULL );
+    _cmdname( imageName );
 #elif !defined( __WATCOMC__ )
-    get_dllname( fname, sizeof( fname ) );
-    initerror = ( *fname == '\0' );
+    get_dllname( imageName, sizeof( imageName ) );
 #else
-    fname = _LpDllName;
-    initerror = ( fname == NULL );
+    imageName = _LpDllName;;
 #endif
     Res_Flag = EXIT_SUCCESS;
     BannerPrinted = FALSE;
+    initerror = OpenResFile( &hInstance, imageName );
     if( !initerror ) {
-        OpenResFile( &hInstance, fname );
-        if( hInstance.handle == NIL_HANDLE ) {
-            initerror = TRUE;
-        } else {
-            initerror = FindResources( &hInstance );
+        initerror = FindResources( &hInstance );
+        if( !initerror ) {
+            initerror = InitResources( &hInstance );
         }
-    }
-    if( !initerror ) {
-        initerror = InitResources( &hInstance );
     }
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !initerror && !Msg_Get( MSG_PRODUCT, buff ) ) {
-        initerror = 1;
+        initerror = TRUE;
     }
     if( initerror ) {
         Res_Flag = EXIT_FAILURE;
@@ -119,12 +113,11 @@ int InitMsg( void )
 
 int Msg_Get( int resourceid, char *buffer )
 {
-    if( Res_Flag != EXIT_SUCCESS || LoadString( &hInstance, resourceid + MsgShift,
-                (LPSTR) buffer, RESOURCE_MAX_SIZE ) != 0 ) {
+    if( Res_Flag != EXIT_SUCCESS || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) != 0 ) {
         buffer[0] = '\0';
-        return( 0 );
+        return( FALSE );
     }
-    return( 1 );
+    return( TRUE );
 }
 
 void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,

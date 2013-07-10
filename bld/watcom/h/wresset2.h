@@ -44,8 +44,6 @@
   #endif
 #endif
 
-#define NIL_HANDLE      ((int)-1)
-
 typedef struct handle_info {
     WResFileID  handle;
 #ifdef WIN_GUI

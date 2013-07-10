@@ -132,7 +132,7 @@ static int Pass1InitRes( void )
         CurrResFile.IsWatcomRes = TRUE;
         CurrResFile.handle = WResOpenNewFile( CurrResFile.filename );
     }
-    if( CurrResFile.handle == -1 ) {
+    if( CurrResFile.handle == NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
         CurrResFile.IsOpen = false;
         return( TRUE );
@@ -462,7 +462,7 @@ static int OpenResFileInfo( ExeType type )
         Pass2Info.ResFiles = RcMemMalloc( sizeof( ResFileInfo ) );
         Pass2Info.ResFiles->name = NULL;
         Pass2Info.ResFiles->IsOpen = FALSE;
-        Pass2Info.ResFiles->Handle = -1;
+        Pass2Info.ResFiles->Handle = NIL_HANDLE;
         Pass2Info.ResFiles->Dir = NULL;
         return( TRUE );
     }
@@ -493,7 +493,7 @@ static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
     exe_pe_header   *pehdr;
 
     info->Handle = RcOpen( filename, O_RDONLY|O_BINARY );
-    if( info->Handle == -1 ) {
+    if( info->Handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( FALSE );
     }
@@ -553,7 +553,7 @@ static int openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
     info->Handle = RcOpen( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY, PMODE_RW );
-    if( info->Handle == -1 ) {
+    if( info->Handle == NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( FALSE );
     }
@@ -792,7 +792,7 @@ static int OpenPhysicalFile( PhysFileInfo * phys )
 {
     if( !phys->IsOpen ) {
         phys->Handle = RcIoOpenInput( phys->Filename, O_RDONLY | O_TEXT );
-        if( phys->Handle == -1 ) {
+        if( phys->Handle == NIL_HANDLE ) {
             RcError( ERR_CANT_OPEN_FILE, phys->Filename, strerror( errno ) );
             return( TRUE );
         }
@@ -1038,10 +1038,10 @@ extern int RcIoIsCOrHFile( void )
  * RcIoOpenInput
  * NB when an error occurs this function MUST return without altering errno
  */
-extern int RcIoOpenInput( char * filename, int flags, ... )
-/********************************************************/
+WResFileID RcIoOpenInput( char * filename, int flags, ... )
+/*6*******************************************************/
 {
-    int                 handle;
+    WResFileID          handle;
     int                 perms;
     va_list             args;
     FileStackEntry      *currfile;
@@ -1056,12 +1056,12 @@ extern int RcIoOpenInput( char * filename, int flags, ... )
 
     handle = RcOpen( filename, flags, perms );
 
-    if( handle == -1 && errno == EMFILE ) {
+    if( handle == NIL_HANDLE && errno == EMFILE ) {
         /* set currfile to be the first (not before first) entry */
         currfile = InStack.Stack + 1;
         /* close open files except the current input file until able to open */
         /* don't close the current file because Offset isn't set */
-        while( currfile < InStack.Current && handle == -1 && errno == EMFILE ) {
+        while( currfile < InStack.Current && handle == NIL_HANDLE && errno == EMFILE ) {
             if( currfile->Physical.IsOpen ) {
                 ClosePhysicalFile( &(currfile->Physical) );
                 handle = RcOpen( filename, flags, perms );

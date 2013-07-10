@@ -84,15 +84,14 @@ int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
         resfile->Dir = WResInitDir();
         resfile->name = resnames->name;
         resfile->Handle = ResOpenFileRO( resfile->name );
-        if( resfile->Handle == -1 ) {
+        if( resfile->Handle == NIL_HANDLE ) {
             RcError( ERR_CANT_OPEN_FILE, resfile->name, LastWresErrStr() );
             resfile->IsOpen = FALSE;
             goto HANDLE_ERROR;
         } else {
             resfile->IsOpen = TRUE;
         }
-        error = WResReadDir2( resfile->Handle, resfile->Dir, &dup_discarded,
-                                resfile );
+        error = WResReadDir2( resfile->Handle, resfile->Dir, &dup_discarded, resfile );
         if( error ) {
             switch( LastWresStatus() ) {
             case WRS_BAD_SIG:
@@ -110,7 +109,7 @@ int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
         if( rescnt >= MAX_OPEN_RESFILES ) {
             resfile->IsOpen = FALSE;
             ResCloseFile( resfile->Handle );
-            resfile->Handle = -1;
+            resfile->Handle = NIL_HANDLE;
             *allopen = FALSE;
         }
 

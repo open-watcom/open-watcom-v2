@@ -4,7 +4,6 @@ host_OS = dos
 host_CPU = 386
 
 model = s
-linkage = static
 convention = stack
 
 !include ../../master.mif

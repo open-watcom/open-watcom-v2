@@ -2,6 +2,4 @@
 host_OS = linux
 host_CPU = x64
 
-linkage = static
-
 !include ../../master.mif

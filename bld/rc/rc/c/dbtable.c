@@ -46,8 +46,8 @@ typedef struct {
 
 static DBCharInfo       charInfo;
 
-static RcStatus readDBHeader( int fp ) {
-
+static RcStatus readDBHeader( WResFileID fp )
+{
     int                 ret;
 
     ret = RcRead( fp, &charInfo.header, sizeof( DBTableHeader ) );
@@ -68,8 +68,8 @@ static RcStatus readDBHeader( int fp ) {
     return( RS_OK );
 }
 
-static RcStatus readDBRanges( int fp ) {
-
+static RcStatus readDBRanges( WResFileID fp )
+{
     int                 ret;
 
     ret = RcRead( fp, &charInfo.begchars, 256 );
@@ -83,8 +83,8 @@ static RcStatus readDBRanges( int fp ) {
     return( RS_OK );
 }
 
-static RcStatus readDBIndex( int fp ) {
-
+static RcStatus readDBIndex( WResFileID fp )
+{
     int                 ret;
     int                 size;
 
@@ -101,7 +101,8 @@ static RcStatus readDBIndex( int fp ) {
     return( RS_OK );
 }
 
-static RcStatus readDBTable( int fp ) {
+static RcStatus readDBTable( WResFileID fp )
+{
     int                 ret;
     int                 size;
 
@@ -118,15 +119,17 @@ static RcStatus readDBTable( int fp ) {
     return( RS_OK );
 }
 
-RcStatus OpenTable( char *fname, char *path ) {
-    int         fp;
+RcStatus OpenTable( char *fname, char *path )
+{
+    WResFileID  fp;
     RcStatus    status;
 
     status = RS_OK;
     _searchenv( fname, "PATH", path );
-    if( path[0] == '\0' ) return( RS_FILE_NOT_FOUND );
+    if( path[0] == '\0' )
+        return( RS_FILE_NOT_FOUND );
     fp = RcOpen( path, O_RDONLY | O_BINARY );
-    if( fp == -1 ) {
+    if( fp == NIL_HANDLE ) {
         status = RS_OPEN_ERROR;
     }
     if( status == RS_OK ) status = readDBHeader( fp );

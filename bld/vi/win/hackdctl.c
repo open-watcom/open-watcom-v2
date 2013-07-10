@@ -392,7 +392,7 @@ static BOOL ctl_combo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
     SendDlgItemMessage( dlg, elt->control, ctl_combo_clr_msg( dlg, elt->control ), 0, 0L );
     for( id = elt->info.combo.start_id; id <= elt->info.combo.end_id; ++id ) {
 
-        LoadString( inst, id, value, 50 );
+        LoadString( inst, id, value, sizeof( value ) );
         value[49] = '\0';
         SendDlgItemMessage( dlg, elt->control, ctl_combo_add_msg( dlg, elt->control ), 0, (LPARAM)value );
     }

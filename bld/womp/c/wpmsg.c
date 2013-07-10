@@ -72,14 +72,12 @@ extern int MsgInit( char *fname )
 {
     int initerror;
 
-    OpenResFile( &hInstance, fname );
-    if( hInstance.handle == NIL_HANDLE ) {
-        initerror = 1;
-    } else {
-        initerror = FindResources( &hInstance );
-    }
+    initerror = OpenResFile( &hInstance, fname );
     if( !initerror ) {
-        initerror = InitResources( &hInstance );
+        initerror = FindResources( &hInstance );
+        if( !initerror ) {
+            initerror = InitResources( &hInstance );
+        }
     }
     if( initerror ) {
         Res_Flag = EXIT_FAILURE;

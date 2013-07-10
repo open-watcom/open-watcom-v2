@@ -3,7 +3,4 @@
 host_os  = nt
 host_cpu = axp
 
-#is_gui = 1
-linkage = static
-
 !include ../../master.mif

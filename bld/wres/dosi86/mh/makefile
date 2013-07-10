@@ -3,6 +3,5 @@ host_OS = dos
 host_CPU = i86
 
 model   = h
-linkage = static
 
 !include ../../master.mif

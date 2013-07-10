@@ -37,13 +37,13 @@
 #include "semantic.h"
 #include "tmpctl.h"
 
-static WResLangType     curLang;
-static int              resourceHasLang;
-static WResLangType     resourceLang;
+static WResLangType curLang;
+static int          resourceHasLang;
+static WResLangType resourceLang;
 
 /* used in the work around for MS format RES files */
-static int  MSFormatHandle;     /* holding place for the RES file handle */
-static char MSFormatTmpFile[ _MAX_PATH ] = "";
+static WResFileID   MSFormatHandle;     /* holding place for the RES file handle */
+static char         MSFormatTmpFile[_MAX_PATH] = "";
 
 /* Modified from WINNT.H */
 #ifndef MAKELANGID
@@ -109,7 +109,7 @@ SemOffset SemStartResource( void )
         RcTmpFileName( MSFormatTmpFile );
         MSFormatHandle = CurrResFile.handle;
         CurrResFile.handle = MResOpenNewFile( MSFormatTmpFile );
-        if (CurrResFile.handle == -1) {
+        if( CurrResFile.handle == NIL_HANDLE ) {
             CurrResFile.handle = MSFormatHandle;
             ResCloseFile( CurrResFile.handle );
             remove( CurrResFile.filename );
@@ -164,7 +164,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     uint_8              cur_byte;
     long                seek_rc;
     int                 error;
-    int                 tmp_handle;
+    WResFileID          tmp_handle;
 
     /* fill in and output a MS format resource header */
     ms_head.Type = WResIDToNameOrOrd( type );
@@ -193,7 +193,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
         RcMemFree( ms_head.Type );
         RcMemFree( ms_head.Name );
         tmp_handle = ResOpenFileRO( MSFormatTmpFile );
-        if (tmp_handle == -1) {
+        if( tmp_handle == NIL_HANDLE ) {
             RcError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
             ErrorHasOccured = TRUE;
             return;
@@ -220,8 +220,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
             } else {
                 error = ResWriteUint8( &cur_byte, CurrResFile.handle );
                 if( error ) {
-                    RcError( ERR_WRITTING_RES_FILE,
-                             CurrResFile.filename, LastWresErrStr() );
+                    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                     ResCloseFile( tmp_handle );
                     ErrorHasOccured = TRUE;
                     return;
@@ -229,16 +228,14 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
             }
         }
         if( ResCloseFile( tmp_handle ) == -1 ) {
-            RcError( ERR_WRITTING_RES_FILE, MSFormatTmpFile,
-                     LastWresErrStr() );
+            RcError( ERR_WRITTING_RES_FILE, MSFormatTmpFile, LastWresErrStr() );
             ErrorHasOccured = TRUE;
         }
     }
 }
 
-void SemAddResource( WResID * name, WResID * type, ResMemFlags flags,
-                ResLocation loc )
-/**********************************************************************/
+void SemAddResource( WResID * name, WResID * type, ResMemFlags flags, ResLocation loc )
+/*************************************************************************************/
 {
     SemAddResource2( name, type, flags, loc, NULL );
 }
@@ -701,6 +698,6 @@ extern void SemanticInitStatics( void )
     memset( &curLang, 0, sizeof( WResLangType ) );
     resourceHasLang = 0;
     memset( &resourceLang, 0, sizeof( WResLangType ) );
-    MSFormatHandle = 0;
+    MSFormatHandle = NIL_HANDLE;
 }
 

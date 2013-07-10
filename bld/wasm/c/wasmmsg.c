@@ -54,7 +54,6 @@ static const char *txtmsgs[] = {
 #include "wresset2.h"
 #include "wreslang.h"
 
-#define NIL_HANDLE      ((int)-1)
 #define STDOUT_HANDLE   ((int)1)
 
 #define NO_RES_MESSAGE  "Error: could not open message resource file.\r\n"
@@ -194,10 +193,8 @@ int MsgInit( void )
     if( _cmdname( name ) == NULL ) {
         initerror = 1;
     } else {
-        OpenResFile( &hInstance, name );
-        if( hInstance.handle == NIL_HANDLE ) {
-            initerror = 1;
-        } else {
+        initerror = OpenResFile( &hInstance, name );
+        if( !initerror ) {
             initerror = FindResources( &hInstance );
             if( !initerror ) {
                 initerror = InitResources( &hInstance );

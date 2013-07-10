@@ -689,19 +689,9 @@ void ProcessCmdLine( char *argv[] )
     char        *env;
     lib_cmd     *cmd;
     char        *fname;
-#if defined( IDE_PGM ) || !defined( __WATCOMC__ ) && defined( __NT__ )
     char        buffer[ PATH_MAX ];
-#endif
 
-#if defined( IDE_PGM )
-    _cmdname( buffer );
-    fname = MakeFName( buffer );
-#elif !defined( __WATCOMC__ )
-    get_dllname( buffer, sizeof( buffer ) );
-    fname = MakeFName( buffer );
-#else
-    fname = MakeFName( _LpDllName );
-#endif
+    fname = MakeFName( _cmdname( buffer ) );
     if( FNCMP( fname, "ar" ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL ) {
         Options.ar = TRUE;
     }

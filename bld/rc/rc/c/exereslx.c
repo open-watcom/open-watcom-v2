@@ -180,7 +180,7 @@ static int mergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
 extern int WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
 /**********************************************************************/
 {
-    int             seek_rc;
+    long            seek_rc;
     int             copy_rc;
     WResLangInfo    *res_info;
     LXResTable      *dir;

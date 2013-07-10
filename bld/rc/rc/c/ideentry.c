@@ -45,9 +45,6 @@
 #include "rcldstr.h"
 #include "errors.h"
 #include "banner.h"
-#if !defined( __WATCOMC__ ) && defined( __NT__ )
-#include <windows.h>
-#endif
 
 #ifdef _BANEXTRA
 #undef  _BANEXTRA
@@ -183,14 +180,16 @@ static void RcIoPrintBanner( void )
     RcMsgFprintf( stderr, &errinfo, BannerText );
 }
 
-static void RcIoPrintHelp( const char * progpath )
-/************************************************/
+static void RcIoPrintHelp( void )
+/*******************************/
 {
     char        progfname[ _MAX_FNAME ];
     int         index;
     char        buf[256];
     OutPutInfo  errinfo;
+    char        imageName[_MAX_PATH];
 
+    _cmdname( imageName );
     InitOutPutInfo( &errinfo );
     errinfo.severity = SEV_BANNER;
 #ifdef __OSI__
@@ -198,7 +197,7 @@ static void RcIoPrintHelp( const char * progpath )
         RcMsgFprintf( stdout, &errinfo, "%s\n", _Copyright );
     }
 #endif
-    _splitpath( progpath, NULL, NULL, progfname, NULL );
+    _splitpath( imageName, NULL, NULL, progfname, NULL );
     strlwr( progfname );
 
     index = USAGE_MSG_FIRST;
@@ -221,25 +220,13 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     bool        pass1;
     unsigned    i;
     int         rc;
-#if defined( IDE_PGM ) || !defined( __WATCOMC__ ) && defined( __NT__ )
-    char        ImageName[_MAX_PATH];
-#else
-    char        *ImageName;
-#endif
 
     curBufPos = formatBuffer;
     RcMemInit();
-#if defined( IDE_PGM )
-    _cmdname( ImageName );
-#elif !defined( __WATCOMC__ ) && defined( __NT__ )
-    GetModuleFileName( NULL, ImageName, sizeof( ImageName ) );
-#else
-    ImageName = _LpDllName;
-#endif
     InitGlobs();
     rc = setjmp( jmpbuf_RCFatalError );
     if( rc == 0 ) {
-        InitRcMsgs( ImageName );
+        InitRcMsgs();
         if( opts != NULL ) {
             str = opts;
             argc = ParseEnvVar( str, NULL, NULL );
@@ -278,7 +265,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
             RcIoPrintBanner();
         }
         if (CmdLineParms.PrintHelp) {
-            RcIoPrintHelp( ImageName );
+            RcIoPrintHelp();
         }
         if( rc == 0 ) {
             rc = RCSpawn( RCmain );

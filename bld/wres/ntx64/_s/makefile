@@ -2,7 +2,4 @@
 host_OS = nt
 host_CPU = x64
 
-is_gui = 1
-linkage = static
-
 !include ../../master.mif

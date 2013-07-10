@@ -2464,7 +2464,7 @@ char *get_dllname( char *buf, int len )
 
     *buf = '\0';
 #ifdef _MSC_VER
-    GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)_argv, &hnd);
+    GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)&optind, &hnd);
     GetModuleFileName( hnd, buf, len );
 #endif
     return( buf );

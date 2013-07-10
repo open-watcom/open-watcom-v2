@@ -97,7 +97,7 @@ static int copyOtherTables( int *err_code )
     /* of the non-resident names table */
     tablelen = (oldhead->nonres_off + oldhead->nonres_size) - ( oldhead->resident_off + oldoffset );
 
-    if( RcSeek( oldhdl, oldhead->resident_off + oldoffset, SEEK_SET ) == -1) {
+    if( RcSeek( oldhdl, oldhead->resident_off + oldoffset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
@@ -290,9 +290,9 @@ static RcStatus copyDebugInfo( void )
     old = &(Pass2Info.OldFile);
     tmp = &(Pass2Info.TmpFile);
 
-    if( RcSeek( old->Handle, old->DebugOffset, SEEK_SET ) == -1)
+    if( RcSeek( old->Handle, old->DebugOffset, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
-    if( RcSeek( tmp->Handle, tmp->DebugOffset, SEEK_SET ) == -1)
+    if( RcSeek( tmp->Handle, tmp->DebugOffset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
     return( CopyExeDataTilEOF( old->Handle, tmp->Handle ) );
 
@@ -963,9 +963,9 @@ static RcStatus copyLXNonresData( void )
     // DebugOffset is pointing to the current EOF
     new_head->nonres_off = tmp->DebugOffset;
 
-    if( RcSeek( old->Handle, old_head->nonres_off, SEEK_SET ) == -1)
+    if( RcSeek( old->Handle, old_head->nonres_off, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
-    if( RcSeek( tmp->Handle, tmp->DebugOffset, SEEK_SET ) == -1)
+    if( RcSeek( tmp->Handle, tmp->DebugOffset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
 
     error = CopyExeData( Pass2Info.OldFile.Handle, Pass2Info.TmpFile.Handle, old_head->nonres_size );

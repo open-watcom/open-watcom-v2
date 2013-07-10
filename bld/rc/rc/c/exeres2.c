@@ -197,14 +197,13 @@ extern uint_32 ComputeOS2ResSegCount( WResDir dir )
  * This is fine because all segments but the last one are 64K big, and
  * hence will be nicely aligned.
  */
-static RcStatus copyOneResource( WResLangInfo *lang, int reshandle,
-            int outhandle, int shift_count, int *err_code )
-/*****************************************************************/
+static RcStatus copyOneResource( WResLangInfo *lang, WResFileID reshandle,
+            WResFileID outhandle, int shift_count, int *err_code )
+/************************************************************************/
 {
     RcStatus            error;
-    int                 iorc;
-    uint_32             out_offset;
-    uint_32             align_amount;
+    long                out_offset;
+    long                align_amount;
 
     /* align the output file to a boundary for shift_count */
     error = RS_OK;
@@ -215,8 +214,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, int reshandle,
     }
     if( error == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        iorc = RcSeek( outhandle, align_amount, SEEK_CUR );
-        if( iorc == -1 ) {
+        if( RcSeek( outhandle, align_amount, SEEK_CUR ) == -1 ) {
             error = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -224,8 +222,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, int reshandle,
     }
 
     if( error == RS_OK ) {
-        iorc = RcSeek( reshandle, lang->Offset, SEEK_SET );
-        if( iorc == -1 ) {
+        if( RcSeek( reshandle, lang->Offset, SEEK_SET ) == -1 ) {
             error = RS_READ_ERROR;
             *err_code = errno;
         }
@@ -258,7 +255,7 @@ extern int CopyOS2Resources( void )
     int                 currseg;
     segment_record      *tmpseg;
     uint_32             seg_offset;
-    uint_32             align_amount;
+    long                align_amount;
     int                 i;
 
     restab    = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);

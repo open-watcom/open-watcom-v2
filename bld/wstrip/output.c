@@ -94,8 +94,7 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 static int Msg_Get( int resourceid, char *buffer )
 {
-    if ( LoadString( &hInstance, resourceid + MsgShift,
-                (LPSTR) buffer, RESOURCE_MAX_SIZE ) != 0 ) {
+    if ( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) != 0 ) {
         buffer[0] = '\0';
         return( 0 );
     }
@@ -111,14 +110,12 @@ int Msg_Init( void )
     if( _cmdname( name ) == NULL ) {
         initerror = 1;
     } else {
-        OpenResFile( &hInstance, name );
-        if( hInstance.handle == NIL_HANDLE ) {
-            initerror = 1;
-        } else {
-            initerror = FindResources( &hInstance );
-        }
+        initerror = OpenResFile( &hInstance, name );
         if( !initerror ) {
-            initerror = InitResources( &hInstance );
+            initerror = FindResources( &hInstance );
+            if( !initerror ) {
+                initerror = InitResources( &hInstance );
+            }
         }
     }
     if( initerror ) {

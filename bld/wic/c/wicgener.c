@@ -48,7 +48,7 @@
 #endif
 
 static int _fileNum = 0;
-static int MsgShift = 0;
+static unsigned MsgShift = 0;
 
 static void reportBadHeap(int retval);
 
@@ -104,8 +104,7 @@ void initWicResources( char * fname )
 
 int getResStr( int resourceid, char *buffer )
 {
-    if ( LoadString( &hInstance, resourceid + MsgShift,
-                (LPSTR) buffer, MAX_RESOURCE_SIZE ) != 0 ) {
+    if ( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) != 0 ) {
         buffer[0] = 0;
         return 0;
     } else {

@@ -38,8 +38,8 @@
  * CopyExeData
  * NB When an error occurs the function MUST return without altering errno
  */
-extern RcStatus CopyExeData( int inhandle, int outhandle, uint_32 length )
-/************************************************************************/
+RcStatus CopyExeData( WResFileID inhandle, WResFileID outhandle, uint_32 length )
+/*******************************************************************************/
 {
     uint    numio;      /* number of bytes read or wrote */
     uint_32 bufflen;
@@ -72,8 +72,8 @@ extern RcStatus CopyExeData( int inhandle, int outhandle, uint_32 length )
  * CopyExeDataTilEOF
  * NB when an error occurs this function MUST return without altering errno
  */
-extern RcStatus CopyExeDataTilEOF( int inhandle, int outhandle )
-/***************************************************************/
+RcStatus CopyExeDataTilEOF( WResFileID inhandle, WResFileID outhandle )
+/*********************************************************************/
 {
     uint    numread;
 
@@ -96,16 +96,16 @@ extern RcStatus CopyExeDataTilEOF( int inhandle, int outhandle )
     return( RS_OK );
 } /* CopyExeDataTilEOF */
 
-extern uint_32 AlignAmount( uint_32 offset, uint_16 shift_count )
-/***************************************************************/
+long AlignAmount( long offset, uint_16 shift_count )
+/**************************************************/
 {
     uint_32     low_bits;       /* low shift_count bits of offset */
 
-    low_bits = offset & (0xfffffffful >> (32 - shift_count));
+    low_bits = offset & (0xffffffffUL >> (32 - shift_count));
     if (low_bits == 0) {
         return( 0 );
     } else {
-        return( (0x1ul << shift_count) - low_bits );
+        return( (0x1UL << shift_count) - low_bits );
     }
 } /* AlignAmount */
 
@@ -158,8 +158,8 @@ extern uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
  *PadExeData
  * NB When an error occurs the function MUST return without altering errno
  */
-extern RcStatus PadExeData( int handle, uint_32 length )
-/******************************************************/
+RcStatus PadExeData( WResFileID handle, long length )
+/***************************************************/
 {
     memset( Pass2Info.IoBuffer, 0, IO_BUFFER_SIZE );
 
@@ -221,8 +221,8 @@ extern unsigned_32 OffsetFromRVA( ExeFileInfo *exe, pe_va rva )
  * SeekRead
  * NB When an error occurs the function MUST return without altering errno
  */
-RcStatus SeekRead( int handle, long newpos, void *buff, unsigned size )
-/*********************************************************************/
+RcStatus SeekRead( WResFileID handle, long newpos, void *buff, unsigned size )
+/****************************************************************************/
 /* seek to a specified spot in the file, and read some data */
 {
     unsigned   bytes_read;
@@ -251,8 +251,8 @@ RcStatus SeekRead( int handle, long newpos, void *buff, unsigned size )
 /* information starts before the end of the address of the os2_exe_header */
 /* so this is not a valid windows EXE file. */
 
-ExeType FindNEPELXHeader( int handle, unsigned_32 *nh_offset )
-/************************************************************/
+ExeType FindNEPELXHeader( WResFileID handle, unsigned_32 *nh_offset )
+/*******************************************************************/
 /* Determine type of executable */
 {
     os2_exe_header  ne_header;

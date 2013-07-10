@@ -62,11 +62,9 @@ static char *asMessages[] = {
 
 #endif
 
-static int              msgShift;
+static unsigned         msgShift;
 
 #ifdef _STANDALONE_
-
-#define NIL_HANDLE      ((int)-1)
 
 #define NO_RES_MESSAGE  "Error: could not open message resource file\r\n"
 #define NO_RES_SIZE     (sizeof(NO_RES_MESSAGE)-1)
@@ -99,10 +97,8 @@ extern int AsMsgInit( void ) {
     if( _cmdname( name ) == NULL ) {
         error = 1;
     } else {
-        OpenResFile( &hInstance, name );
-        if( hInstance.handle == NIL_HANDLE ) {
-            error = 1;
-        } else {
+        error = OpenResFile( &hInstance, name );
+        if( !error ) {
             error = FindResources( &hInstance );
             if( !error ) {
                 error = InitResources( &hInstance );

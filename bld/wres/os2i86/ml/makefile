@@ -4,6 +4,5 @@ host_CPU = i86
 
 pegged  = 1
 model   = l
-linkage = static
 
 !include ../../master.mif

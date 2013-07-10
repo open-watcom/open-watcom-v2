@@ -38,6 +38,7 @@
 #include <process.h>
 #endif
 #include "wio.h"
+#include "bool.h"
 #include "wtmsg.h"
 #include "wressetr.h"
 #include "wresset2.h"
@@ -45,14 +46,12 @@
 #include "clibext.h"
 
 
-#define NIL_HANDLE      ((int)-1)
-
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 extern  long            FileShift;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
+#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
 
 static long resSeek( int handle, long position, int where )
@@ -68,20 +67,19 @@ static long resSeek( int handle, long position, int where )
 
 WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
 
-extern int MsgInit()
+int MsgInit( void )
 /******************/
 {
     int         initerror;
     char        name[_MAX_PATH];
+    char        dummy[MAX_RESOURCE_SIZE];
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) == NULL ) {
-        initerror = 1;
+        initerror = TRUE;
     } else {
-        OpenResFile( &hInstance, name );
-        if( hInstance.handle == NIL_HANDLE ) {
-            initerror = 1;
-        } else {
+        initerror = OpenResFile( &hInstance, name );
+        if( !initerror ) {
             initerror = FindResources( &hInstance );
             if( !initerror ) {
                 initerror = InitResources( &hInstance );
@@ -89,26 +87,25 @@ extern int MsgInit()
         }
     }
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-    if( !initerror && !MsgGet( MSG_USAGE_BASE, name ) ) {
-        initerror = 1;
+    if( !initerror && !MsgGet( MSG_USAGE_BASE, dummy ) ) {
+        initerror = TRUE;
     }
     if( initerror ) {
         write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
         MsgFini();
-        return( 0 );
+        return( FALSE );
     }
-    return( 1 );
+    return( TRUE );
 }
 
-extern int MsgGet( int resourceid, char *buffer )
-/************************************************/
+int MsgGet( int resourceid, char *buffer )
+/****************************************/
 {
-    if( LoadString( &hInstance, resourceid + MsgShift,
-        (LPSTR) buffer, MAX_RESOURCE_SIZE ) != 0 ) {
+    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) != 0 ) {
         buffer[0] = '\0';
-        return( 0 );
+        return( FALSE );
     }
-    return( 1 );
+    return( TRUE );
 }
 
 static char *strApp( char *dest, const char *src )
@@ -121,8 +118,8 @@ static char *strApp( char *dest, const char *src )
     return( dest );
 }
 
-extern void MsgSubStr( int resourceid, char *buff, char *p )
-/**********************************************************/
+void MsgSubStr( int resourceid, char *buff, char *p )
+/***************************************************/
 {
     char        msgbuff[MAX_RESOURCE_SIZE];
     char        *src;
@@ -145,7 +142,7 @@ extern void MsgSubStr( int resourceid, char *buff, char *p )
                 break;
             case 'Z' :
                 {
-                    char        tmpbuff[MAX_RESOURCE_SIZE];
+                    char    tmpbuff[MAX_RESOURCE_SIZE];
 
                     MsgGet( MSG_SYS_ERR_0+errno, tmpbuff );
                     dest = strApp( dest, tmpbuff );
@@ -160,7 +157,7 @@ extern void MsgSubStr( int resourceid, char *buff, char *p )
     *dest = '\0';
 }
 
-extern void MsgFini()
+void MsgFini( void )
 /******************/
 {
     if( hInstance.handle != NIL_HANDLE ) {

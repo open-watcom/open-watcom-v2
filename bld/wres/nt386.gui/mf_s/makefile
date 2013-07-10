@@ -4,7 +4,6 @@ host_CPU = 386
 
 is_gui = 1
 model = f
-linkage = static
 convention = stack
 
 !include ../../master.mif

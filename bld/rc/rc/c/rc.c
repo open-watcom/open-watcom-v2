@@ -90,7 +90,7 @@ void FiniGlobs( void )
 
 static bool CreatePreprocFile( void )
 {
-    int         hdl;
+    WResFileID  hdl;
     bool        error;
     int         ch;
     char        ch1;
@@ -98,7 +98,7 @@ static bool CreatePreprocFile( void )
 
     error = FALSE;
     hdl = RcOpen( CmdLineParms.OutResFileName, O_WRONLY | O_TEXT | O_CREAT | O_TRUNC, PMODE_RW );
-    if( hdl == -1 ) {
+    if( hdl == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
         error = TRUE;
     } else {
@@ -113,7 +113,7 @@ static bool CreatePreprocFile( void )
             ch = RcIoGetChar();
         }
     }
-    if( hdl != -1 ) RcClose( hdl );
+    if( hdl != NIL_HANDLE ) RcClose( hdl );
     return( error );
 }
 

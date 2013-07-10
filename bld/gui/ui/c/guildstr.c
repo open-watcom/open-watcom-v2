@@ -85,7 +85,7 @@ bool GUILoadStrInit( const char *fname )
 {
     bool        error;
 
-    error = OpenResFile( &hInstance, fname ) == NIL_HANDLE;
+    error = OpenResFile( &hInstance, fname );
     if( !error ) {
         if( GUIGetExtName() != NULL ) {
             // we are using an external resource file so we don't have to

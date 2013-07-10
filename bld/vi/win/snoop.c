@@ -125,7 +125,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
             bi.hwndOwner = hwnd;
             bi.pidlRoot = NULL;
             bi.pszDisplayName = NULL;
-            LoadString( GET_HINSTANCE( hwnd ), VI_BROWSE_MSG, buffer1, MAX_PATH );
+            LoadString( GET_HINSTANCE( hwnd ), VI_BROWSE_MSG, buffer1, sizeof( buffer1 ) );
             bi.lpszTitle = buffer1;
             bi.ulFlags = BIF_RETURNONLYFSDIRS;
             bi.lpfn = BrowseCallbackProc;

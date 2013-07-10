@@ -39,6 +39,7 @@
 #include "rcldstr.h"
 #include "wresset2.h"
 #include "iortns.h"
+#include "clibint.h"
 
 extern HANDLE_INFO  Instance;
 
@@ -49,9 +50,8 @@ static char *StringTable[] = {
     #include "incltext.gh"
 };
 
-int InitRcMsgs( const char *fname )
+int InitRcMsgs( void )
 {
-    fname = fname;
     return( 1 );
 }
 
@@ -70,38 +70,49 @@ void FiniRcMsgs( void ) {}
 
 static unsigned MsgShift;
 
-int InitRcMsgs( const char *fname )
+int InitRcMsgs( void )
 {
     int         error;
     WResFileID  (* oldopen)(const char *, int, ...);
     char        testbuf[1];
+#if defined( IDE_PGM ) || !defined( __WATCOMC__ )
+    char        imageName[_MAX_PATH];
+#else
+    char        *imageName;
+#endif
 
-    error = FALSE;
-
-    /* swap open functions so this file handle is not buffered.
-        * This makes it easier for layer0 to fool WRES into thinking
-        * that the resource information starts at offset 0 */
+#if defined( IDE_PGM )
+    _cmdname( imageName );
+#elif !defined( __WATCOMC__ )
+    get_dllname( imageName, sizeof( imageName ) );
+#else
+    imageName = _LpDllName;
+#endif
+    /*
+     * swap open functions so this file handle is not buffered.
+     * This makes it easier for layer0 to fool WRES into thinking
+     * that the resource information starts at offset 0
+     */
     oldopen = WResRtns.open;
     WResRtns.open = open;
-    OpenResFile( &Instance, fname );
+    error = OpenResFile( &Instance, imageName );
     WResRtns.open = oldopen;
-
-    if( Instance.handle == -1 )
-        error = TRUE;
     if( !error ) {
         RegisterOpenFile( Instance.handle );
         error = FindResources( &Instance );
-    }
-    if( !error ) {
-        error = InitResources( &Instance );
+        if( !error ) {
+            error = InitResources( &Instance );
+        }
+        if( error ) {
+            CloseResFile( &Instance );
+            UnRegisterOpenFile( Instance.handle );
+        }
     }
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !error && !GetRcMsg( USAGE_MSG_FIRST, testbuf, sizeof( testbuf ) ) ) {
         error = TRUE;
     }
     if( error ) {
-        if( Instance.handle != -1 )
-            CloseResFile( &Instance );
         RcFatalError( ERR_RCSTR_NOT_FOUND );
     }
     return( 1 );
@@ -119,6 +130,7 @@ int GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
 void FiniRcMsgs( void )
 {
     CloseResFile( &Instance );
+    UnRegisterOpenFile( Instance.handle );
 }
 
 #endif

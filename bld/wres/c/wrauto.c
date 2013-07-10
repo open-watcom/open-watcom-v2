@@ -48,7 +48,7 @@ DepInfo *WResGetAutoDep( const char *fname ) {
     int             rc;
 
     fhdl = ResOpenFileRO( fname );
-    if( fhdl == -1 ) return( NULL );
+    if( fhdl == NIL_HANDLE ) return( NULL );
 
     if( !WResIsWResFile( fhdl ) ) {
         ResCloseFile( fhdl );

@@ -30,13 +30,10 @@
 
 
 #include <stdio.h>
-#ifdef __OS2__
-#include <os2def.h>
-#else
-#include <windows.h>
-#endif
 
 #ifdef __NT__
+
+#include <windows.h>
 
 BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
 /**************************************************************/
@@ -47,7 +44,9 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
     return( TRUE );
 }
 
-#elif defined(__WINDOWS__)
+#elif defined( __WINDOWS__ )
+
+#include <windows.h>
 
 int WINAPI LibMain( HANDLE inst, WORD wDataSeg, WORD wHeapSize, LPSTR lpszCmdLine )
 /*********************************************************************************/
@@ -67,7 +66,9 @@ int WINAPI WEP( int res )
     return( 1 );
 }
 
-#else
+#elif defined( __OS2__ )
+
+#include <os2def.h>
 
 unsigned APIENTRY LibMain( unsigned hmod, unsigned termination )
 /**************************************************************/

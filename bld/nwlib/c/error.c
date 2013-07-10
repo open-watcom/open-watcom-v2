@@ -52,7 +52,7 @@ void FiniMsg( void ) {}
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
-#ifndef IDE_PGM
+#if !defined( IDE_PGM )
 #include "clibint.h"
 #endif
 
@@ -76,27 +76,25 @@ WResSetRtns( open, close, read, write, res_seek, tell, MemAllocGlobal, MemFreeGl
 void InitMsg( void )
 {
     int     initerror;
-#if defined( IDE_PGM ) || !defined( __WATCOMC__ ) && defined( __NT__ )
-    char    fname[_MAX_PATH];
+#if defined( IDE_PGM ) || !defined( __WATCOMC__ )
+    char    imageName[_MAX_PATH];
+#else
+    char    *imageName;
 #endif
 
 #if defined( IDE_PGM )
-    _cmdname( fname );
-    initerror = OpenResFile( &hInstance, fname ) == NIL_HANDLE;
+    _cmdname( imageName );
 #elif !defined( __WATCOMC__ )
-    get_dllname( fname, sizeof( fname ) );
-    initerror = OpenResFile( &hInstance, fname ) == NIL_HANDLE;
+    get_dllname( imageName, sizeof( imageName ) );
 #else
-    initerror = OpenResFile( &hInstance, _LpDllName ) == NIL_HANDLE;
+    imageName = _LpDllName;
 #endif
+    initerror = OpenResFile( &hInstance, imageName );
     if( !initerror ) {
         initerror = FindResources( &hInstance );
-        if( initerror ) {
-            CloseResFile( &hInstance );
+        if( !initerror ) {
+            initerror = InitResources( &hInstance );
         }
-    }
-    if( !initerror ) {
-        initerror = InitResources( &hInstance );
         if( initerror ) {
             CloseResFile( &hInstance );
         }
@@ -112,8 +110,7 @@ void InitMsg( void )
 
 void MsgGet( int resourceid, char *buffer )
 {
-    if( LoadString( &hInstance, resourceid + MsgShift,
-                (LPSTR)buffer, 128 ) != 0 ) {
+    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_ERROR_SIZE ) != 0 ) {
         buffer[ 0 ] = '\0';
     }
 }

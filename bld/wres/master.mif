@@ -8,10 +8,6 @@ proj_name = wres
 wres_autodepends = .AUTODEPEND
 wres_distrib_lib = 1
 
-!ifeq linkage dynamic
-wres_rtdll = 1
-!endif
-
 !ifdef model
 memory_model_i86 = $(model)
 memory_model_386 = $(model)
