@@ -48,9 +48,9 @@ fpuemu          - FPU emulator libraries
 graphlib        - graphics library (including pgchart subproject)
 gui             - GUI library
 hcdos           - help compiler for .ihp help files used by whelp
+hcwin           - whc help compiler, used for windows doc build
 hdr             - header files
-help            - whelp character mode help utility
-helpcomp        - whc help compiler, used for doc build
+hlpview         - whelp character mode help utility
 ide             - Watcom IDE
 idebatch        - batch processor for watcom IDE
 idedemo         - three-d demo - IDE demo program
@@ -80,7 +80,7 @@ re2c            - regexp-to-c lexer generator
 redist          - miscellaneous files from other providers
 rsilib          - DOS4GW library ( used by trap and sampler )
 rtdll           - clib, mathlib, c++ lib. runtime DLLs
-sdk             - dialog editor,image editor,resource compiler,etc.
+sdk             - dialog editor,image editor,resource editor,etc.
 setupgui        - installation utility
 src             - sample source code
 ssl             - expression parser generator for debugger
@@ -111,6 +111,7 @@ womp            - object module processor, parts used by wasm
 wpack           - used by install / patch
 wpi             - macro library used by GUI
 wprof           - execution profiler
+wres            - resource records manipulation library
 wsample         - sampler
 wstrip          - executable strip utility
 wstub           - DOS/4GW stub program
