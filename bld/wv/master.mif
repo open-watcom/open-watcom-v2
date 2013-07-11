@@ -265,7 +265,7 @@ extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
 inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)"
 !ifndef dll
 inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
-inc_dirs += -I"$(gui_dir)/ui/h" -I"$(help_dir)/h"
+inc_dirs += -I"$(gui_dir)/ui/h" -I"$(hlpview_dir)/h"
 !endif
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx"
 inc_dirs += -I"$(ncurses_dir)/h"

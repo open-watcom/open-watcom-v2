@@ -1,0 +1,24 @@
+Key Concepts:                       keycon.txt
+
+The WinHelp internal filesystem:    whifs.txt
+
+B-Trees:                            b_tree.txt
+
+Compression:                        compress.txt
+
+Internal files overview:	    files.txt
+
+Internal files:
+	|SYSTEM:                    system.txt
+	|FONT:                      font.txt
+	|Phrases:                   phrases.txt
+	|TOPIC:                     topic.txt   (long)
+	|TTLBTREE:                  ttlbtree.txt
+	|TOMAP:                     tomap.txt
+	|CONTEXT:                   context.txt
+	|CTXOMAP:                   ctxomap.txt
+	|KWBTREE:                   kwbtree.txt
+	|KWMAP:                     kwmap.txt
+	|KWDATA:                    kwdata.txt
+	Baggage:                    baggage.txt
+	Bitmap files:               bmx.txt

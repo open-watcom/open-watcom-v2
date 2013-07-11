@@ -78,7 +78,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
 # Build help compilers and tools
 [ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/helpcomp/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/hcwin/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wipfc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/bmp2eps/builder.ctl ]
 # Build ide2make tool for idedemo
@@ -108,8 +108,7 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/ncurses/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/ui/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/vi/builder.ctl ]
-##[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/help/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
 ## Build gui/aui lib and the profiler
 #[ INCLUDE <OWSRCDIR>/gui/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/aui/builder.ctl ]
@@ -216,12 +215,10 @@ cdsay .
 # IDE samples
 [ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
 # Build help viewer
-#[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/help/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
 # Build help compilers
 [ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/hcwin/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/helpcomp/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/hcwin/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wipfc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/bmp2eps/builder.ctl ]
 # Copy the redistributable components

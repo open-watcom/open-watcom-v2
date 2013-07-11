@@ -1,0 +1,60 @@
+THE WINHELP INTERNAL FILE SYSTEM
+================================
+
+Introduction
+------------
+
+Quite simply, a Windows help file consists of a series of consecutive blocks
+of data, where each block represents a 'file' that serves some specific
+purpose.  (See files.txt for a list of possible 'files'.)  In addition,
+a simple 'file system' is included to make it easier to locate specific
+files.  The file system has three components:
+
+    -- The WinHelp header structure
+    -- Internal file headers
+    -- The internal 'directory' file.
+    
+The WinHelp Header
+------------------
+
+Each *.hlp file starts with a 16-byte header, arranged as follows:
+
+	Bytes		Meaning
+	-----------------------
+	0-3		Magic Number:	0x00035FF3
+	4-7		Offset of the directory within the .hlp file
+	8-11		Constant Value:	0xFFFFFFFF
+	12-15		File Size in bytes
+	
+This header allows WinHelp to find the directory file, and hence all of
+the other internal files.
+
+Internal File Headers
+---------------------
+
+Each internal file within the *.hlp file starts with a 9-byte header:
+
+	Bytes		Meaning
+	-----------------------
+	0-3		File Size, including this header
+	4-7		File Size, not including this header
+	8		Constant Value:	0x00
+	
+Here 'File Size' refers to the size of this internal file in bytes.
+Presumably, both sizes are included as a checksum technique.  In many
+of the internal files, this header is the only way of determining where
+the file ends.
+
+The Directory File
+------------------
+
+The directory file is a special file, containing the names and offsets of
+all other internal files sorted alphabetically.  The directory is a B-Tree
+but unlike the other trees in a WinHelp file the directory
+uses 1K pages instead of 2K pages.  Each index node contains page numbers
+alternated with zero-terminated filename strings.  Each leaf node contains
+zero terminated filename strings followed by their (long int) offsets within
+the .hlp file.  Like other internal files, the directory has a 9-byte file
+header as described above.
+
+See b_tree.txt for more information about the structure of WinHelp B-trees.

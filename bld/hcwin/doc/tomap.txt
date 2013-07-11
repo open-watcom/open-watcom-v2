@@ -1,0 +1,22 @@
+THE WINHELP |TOMAP INTERNAL FILE
+================================
+
+The |TOMAP file is a Windows 3.0 feature supported by the 3.1 WinHelp program
+for compatability.  A |TOMAP file should only be present in a help file if
+the Flags field in the |SYSTEM header structure is set to 0x000A (see
+system.txt).
+
+If the |TOMAP file is present, it will begin with a 64-byte header:
+
+	Bytes		Meaning
+	-----------------------
+	0-3		Offset of the 'index' or 'contents' topic
+	4-63		Reserved, and usually all zeros.
+	
+Following the header and continuing to the end of the file are a list of
+four-byte offsets into the |TOPIC file, which enumerate all of the topic
+in the order in which they are stored.  All offsets are "Character" offsets;
+see the section on offsets in topic.txt.
+
+In Windows 3.1 help files, the |TOMAP file is not needed due the changed
+linked-list structures in the |TOPIC file.

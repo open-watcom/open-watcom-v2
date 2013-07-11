@@ -1,0 +1,213 @@
+GRAPHICS IN WINHELP INTERNAL FILES
+==================================
+
+Any files specified in the [BITMAP] section of a .HPJ file will be copied
+into the .HLP file like baggage files (see baggage.txt) but with
+significantly more modifications than normal baggage.  The most obvious
+modification is the name; graphics files are renamed |bm0, |bm1, |bm2, and
+so forth when transformed into WinHelp internal files.  The more significant
+change is that all graphics files, whatever their original format, are
+converted into Microsoft's "Segmented Hyper-Graphics" or .SHG format.
+
+Note that WinHelp only supports images of 16 colours or less; 265 colours
+are not supported.
+
+The .SHG Structure
+------------------
+NOTE:  Not all of the information here is 100% solid.  The .SHG format is
+almost entirely undocumented, and almost everything I know about it is
+from an article by Pete Davis in Windows/DOS Developers Journal (Feb 1994).
+Also, the format listed here differs slightly from the format for "pure"
+.SHG files created by Microsoft's Hot spot Editor.  Finally, most of the info
+here applies equally to Microsoft's Multi-Resolution Bitmap or .MRB format,
+as the two formats are nearly identical.  I will point out wherever the
+two formats differ.
+
+A .SHG file has several sections:   the .SHG header, image headers, data
+headers and the image data, and hot spot headers with hotlink data.  The
+key thing to remember is that the .SHG format is intended to contain
+existing Windows bitmaps or placeable metafiles, along with additional
+data concerning possible embedded "hot spots" used to link with WinHelp
+topics.
+
+Silly Compression Tricks
+------------------------
+
+As in the |TOPIC file, occasionally to save a few bytes of space numeric
+values will be doubled so they can be placed in a data area half the size.
+Sounds confusing?  Here's an example:  suppose a quantity has a maximum
+value large enough to warrant a WORD, but 90% of the time is small enough
+to fit in a BYTE.  What will often happen in a .HLP file is that the
+quantity will be doubled, and then the lowest bit will be used as a flag
+to indicate whether an entire WORD is being used for storage or just a BYTE.
+
+So suppose you have such a quantity, and the value you need to store is
+0x005B.  Double it, and you get 0x00B6, which still fits in a byte.  So
+you store the byte 0xB6.  Since the low bit is zero, whoever reads it knows
+only one byte was used to store the quantity, so they right shift it back
+to get the original 0x5B.
+
+Now suppose you want to store 0x00E3.  Double that, and you get 0x01C6, which
+doesn't fit in a byte.  So you store the two bytes 0xC7, 0x01.  Since the
+lowest bit is 1, the reader know that two bytes are being used, so they
+read in both and then right shift the result to get 0x00E3, the original
+value.
+
+If most of the values you store are small (and you never need to store
+anything above 0x7FFF) this scheme saves you a few bytes for a *lot* of
+trouble.  Note this technique is also used to store DWORDs in two-byte
+spaces.
+
+Not So Silly Compression Tricks
+-------------------------------
+
+Pixel data in a .SHG file will occasionally be compressed in a format
+different from the one described in compress.txt, so I had better explain
+it here.  There is a simplified form of the standard bitmap RLE compression
+used in .SHG files, which is best described by the decompression algorithm:
+
+	1) if not at the end of the data, read 1 byte into "count", else
+	   quit.
+	2) If bit 8 of "count" is set, go to step 5.
+	3) Copy the next input byte "count" times to output.
+	4) Go to step 1.
+	5) Subtract 0x80 from "count".
+	6) Copy "count" bytes from input verbatim to output.
+	7) Go to step 1.
+	
+This is not the only way in which pixel data may be compressed; see
+"The Image Header", below.
+	
+The .SHG header
+---------------
+
+The .SHG header is a variable-length record with the following format:
+	Bytes		Meaning
+	-----------------------
+	0-1		Magic number:  either 0x706C or 0x506C (see below)
+	2-3		Number of objects in file
+	4-?		List of long offsets to the objects, one
+			offset for every object
+	
+The magic number depends on the compression level: if the compression is
+not specified in the .HPJ file, the number will be 0x706C, otherwise
+it will be 0x506C.  The offsets are the offsets of individual images within
+the .SHG or |bmx file (the average .SHG file will only contain one image,
+however .MRB files must contain one bitmap for each resolution they directly
+support).
+
+Following the .SHG header are the various pieces of data for each image
+stored in the file.  The information for each image consists of an image
+header, data header with its associated pixel data, and hotlink data.
+
+The Image Header
+----------------
+
+The image header for each object in the .SHG file is (usually)
+three bytes long, as follows:
+	Byte		Meaning
+	-----------------------
+	0		Image type (0x06=.BMP, 0x08=.WMF)
+	1		Compression type (see below)
+	2		Dots Per Inch x 2
+	
+The 'Dots Per Inch' field is stored via the silly low-bit trick described
+above, so the header may be four bytes long.  However, that would imply
+a resolution of 128dpi or more, which is pretty high for a bitmap.
+Nevertheless, it could happen.
+
+'Compression type' refers to how the pixel data is stored in the data
+section to follow.  0x00 means no compression of the pixel data, 0x01 means
+RLE compression, and 0x02 means LZ77 compression (or rather, the version
+of LZ77 compression used in help files; see compress.txt).  Whether
+the help file text is compressed has no bearing on how bitmaps are
+compressed; it seems to be up to the help compiler.
+
+Since Windows Metafiles don't use pixel data as such, if the object
+represents a placeable metafile the compression type will be 0x01 and the
+'Dots per Inch' field will hold 0x10, but both are meaningless quantities.
+
+Image Data for Bitmaps
+----------------------
+
+At this point things get messy; the 'data area' of an image object varies
+depending on whether it represents a bitmap or a metafile.  The data header
+for a bitmap object is as follows:
+
+	  Bytes		Meaning
+	  -----------------------
+	  0		Constant Value: 0x00
+	* 1		Dots Per Inch
+	  2-3		Constant Value: 0x0200
+	* 4		Number of bits per pixel
+	* 5-6		Width in pixels
+	* 7-8		Height in pixels
+	* 9-10		Number of RGB 'quads' in colour table
+	* 11-12		Number of significant RGB quads
+	* 13-14		Size of compressed pixel data
+	* 15-16		Size of Hot spot data area
+	  17-20		Offset of pixel data within this object
+	  21-24		Offset of Hot spot data within this object
+	 
+Every quantity with a (*) beside it is stored with the silly low-bit scheme
+described before, so any or all of those fields may be twice as large as
+I've shown here, and they'll contain a value twice as large as the actual
+value they represent.  (This compiler is going to be REAL fun to write.  All
+these variable length records!  FUN!!! :-( )
+
+Following the header is the standard .BMP colour table, followed by the
+pixel data, which has been uncompressed from whatever schemed used in the
+.BMP file and possibly recompressed in the format specified in the image
+header (or not compressed at all, if that's the case).
+
+Hot spot Data
+-------------
+
+All of the hot spots embedded in an image object are stored in a single
+block at the end of the object.  The block begins with a 7-byte header
+as follows:
+	Bytes		Meaning
+	-----------------------
+	0		Constant Value:		0x01
+	1-2		Number of hot spots
+	3-6		Size of Macro Data
+
+If none of the hot spots execute WinHelp macros, the last field will be zero.
+Following this header are a list of hot spot records, one for each hot spot.
+These headers are 15 bytes long:
+	Bytes		Meaning
+	-----------------------
+	0-1		Hot spot type
+	2		Constant value:		0x00
+	3-4		Left edge of bounding box
+	5-6		Top edge
+	7-8		Right edge
+	9-10		Bottom edge
+	11-14		Macro string offset / context string hash
+	
+There are six values for the hot spot type:
+
+		Jump		Popup		Macro
+		-------------------------------------
+Invisible	0x04E7		0x04E6		0x04CC
+Visible		0x00E3		0x00E2		0x00C8
+
+"Visible/Invisible" refers to whether the bounding box for the hot spot
+will be visible in the resulting image.
+If the hot spot is a jump or a popup, the last field holds the hash value
+of the context string of the destination topic.  If the hot spot is a macro,
+the last field holds the offset of the macro string within the macro data.
+
+The macro data, if any, follows the hot spot records and consists of a list
+of zero-terminated ASCII strings.  These strings hold the macro to be
+executed exactly as it was specified by whoever created the graphic,
+arguments, short forms, and all.
+
+Finally, a series of zero terminated ASCII strings are listed.  These strings
+occur in pairs corresponding to the hotspot records, and the pairs occur
+in the same order as those records.  The first in each pair of strings is
+the name of the hot spot, which is really only for the programmer's
+reference.  The second string is either the context string of the destination
+topic or the macro string again, depending on whether the hot spot is a
+jump/popup or a macro.  I'm not sure whether the context string or the hash
+value is used to 'dereference' a hot spot.

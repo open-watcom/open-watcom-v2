@@ -88,9 +88,9 @@ extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_guimem = $(trmem_cover_cflags)
 !endif
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" $(commonui_inc_dirs) $(wpi_inc_dirs) $(ui_inc_dirs) $(wres_inc_dirs)
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) $(wpi_inc_dirs) $(ui_inc_dirs) $(wres_inc_dirs)
 
-.c:     ../c;../../c;$(help_dir)/c;$(trmem_dir)
+.c:     ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
 .h:     ../h;../../h
 .msg:   ../../h
 

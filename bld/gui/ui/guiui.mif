@@ -82,7 +82,7 @@ wv_sysobjs = &
 
 help_objext=obj
 
-!include $(help_dir)/help.mif
+!include $(hlpview_dir)/help.mif
 
 wv_sysobjs += $(help_objs)
 

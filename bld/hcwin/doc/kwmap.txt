@@ -1,0 +1,30 @@
+THE WINHELP |KWMAP INTERNAL FILE
+================================
+
+The |KWMAP file is a means of speeding up access to the |KWBTREE file if
+you are searching for a keyword record by it's index rather than it's string.
+
+The first word of the file is the number of 'map' records in the file.
+The map records are listed immediately after each number.  Each record
+is 6 bytes long with the following format:
+
+	Bytes		Meaning
+	-----------------------
+	0-3		The index of the first keyword record on some
+			page of the |KWBTREE tree.
+	4-5		The index of the corresponding leaf page.
+	
+E.g., if page 0 is the leftmost leaf page of |KWBTREE, and page 1 is the
+next page, then if page 0 has 0x35 keyword records the first 14 bytes of
+the |KWMAP file will be:
+
+ 20 00         00 00 00 00  00 00   35 00 00 00  01 00    ...
+ ^^^^^         ^^^^^^^^^^^^^^^^^^   ^^^^^^^^^^^^^^^^^^
+ # of records  First map record     Second map record     ...
+ 
+In other words, the 0th map record begins on the 0th page of |KWBTREE,
+the 53rd (0x35) record begins on the 1st page, and so on.
+
+I'm not sure what the |KWMAP file is used for in WinHelp, but it seems to
+be a handy file, and it's not hard to construct, so it doesn't worry me too
+much.  Any file which uses keyword searching contains a |KWMAP file.

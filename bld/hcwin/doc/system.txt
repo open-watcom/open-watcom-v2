@@ -1,0 +1,104 @@
+THE WINHELP |SYSTEM INTERNAL FILE
+=================================
+
+The |SYSTEM file contains much of the information which is global to the
+help file, such as the compression level, help file title, and macros to
+execute when the help file is opened.  The |SYSTEM file consists of a
+fixed length header followed by a sequence of variable length records.
+
+The |SYSTEM header
+------------------
+
+This is a 12 byte header arranged as follows:
+
+	Bytes		Meaning
+	-----------------------
+	0		Magic Number:	0x6C
+	1		Version Number.  Usually 0x03
+	2		Revision Number.  Usually 0x15
+	3		Constant Value:	0x00
+	4-5		Constant Value: 0x0001
+	6-9		Date/Time help file was generated, in time_t format.
+	10-11		Flags
+	
+The flag field can have several values.  The known values are 0x0000 for
+an uncompressed file, 0x0004 and 0x0008 for compressed files, and 0x000A
+for a Windows 3.0 help file (which I'm not going to go into here).  If
+LZ77 compression is used on the |TOPIC and |Phrases files, the flag should
+be 0x0004, otherwise 0x0000.
+
+After the header are a series of variable-length records.  Note that the
+only way to read the records is to go through them sequentially, and use
+the length of the file as given in the file header to figure out when you're
+done.
+
+|SYSTEM Records
+---------------
+
+A system record has the following general format:
+
+	Bytes		Meaning
+	-----------------------
+	0-1		Flag value
+	2-3		Length of the data to follow
+	4-?		Data area
+	
+Known flag values, and the associated data, are:
+
+ 0x0001	-- Title record.  The data area will contain a zero-terminated ASCII
+ string containing the title of the help file.
+ 
+ 0x0002 -- Copyright record.  The data area will contain a zero-terminated
+ ASCII string containing the copyright notice, as defined in the .HPJ file.
+ If no copyright notice is specified, this record will still be present and
+ the data area will contain a single zero byte.
+ 
+ 0x0003 -- Contents Record.  The data area will contain the 'table of
+ contents' topic as a 4-byte 'Character' offset (see topic.txt for info
+ on the two kinds of topic file offsets) .
+ 
+ 0x0004	-- Macro Record.  The data area will contain a zero-terminated ASCII
+ string containing a WinHelp macro to be executed when the file is opened.
+ There will be one record for every macro specified in the [CONFIG] section
+ of the *.HPJ file, presumably in the same order.
+ 
+ 0x0005 -- Icon record.  I'm not sure about this one, I've never seen one.
+ But presumably it stores the icon to used for the minimized help program,
+ since this can be changed in the *.HPJ file.  I don't know how it's stored.
+ 
+ 0x0006 -- Secondary window record.  The data area will contain a record
+ specifying the nature of a secondary window type defined in the [WINDOW]
+ section of a *.HPJ file.  See 'Secondary Window Records', below.
+ 
+ 0x0008 -- Citation record.  Again, I'm not sure about this one.  All I know
+ is that it has something to do with the CITATIONS= command in the [OPTIONS]
+ section of a *.HPJ file.  Gotta remember to check this out.
+ 
+Secondary Window Records
+------------------------
+
+Following a type-0x0006 system record will be a 90-byte record of the
+following format:
+
+	Bytes		Meaning
+	-----------------------
+	0-1		Flags (see below)
+	2-11		The type string for this window (?).
+	12-20		Window name
+	21-71		Window Caption
+	72-73		X starting co-ordinate
+	74-75		Y starting co-ordinate
+	76-77		Width
+	78-79		Height
+	80-81		Maximize flag
+	82-84		Background colour as RGB values
+	85		Unknown (possible 0 as part of above)
+	86-88		Background colour of non-scrollable region as RGB
+	89		Unknown (possibly 0 as part of above)
+	
+The flags mostly specify which parts of the structure are actually valid:
+
+ 0x0001 -- Type		0x0002 -- Name		0x0004 -- Caption
+ 0x0008 -- X		0x0010 -- Y		0x0020 -- Width
+ 0x0040 -- Height	0x0080 -- Maximize	0x0100 -- First RGB
+ 0x0200 -- Second RGB	0x0400 -- "On Top" was set in HPJ file.

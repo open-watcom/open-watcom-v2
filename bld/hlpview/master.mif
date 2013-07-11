@@ -17,7 +17,7 @@ objs =  main.obj filelist.obj
 objs += $(help_objs)
 objs += $(trmem_objs) $(trmemcvr_objs)
 
-inc_dirs = -I"$(help_dir)/h" $(ui_inc_dirs) -I"$(trmem_dir)"
+inc_dirs = -I"../h" $(ui_inc_dirs) -I"$(trmem_dir)"
 
 .c: ../c;$(trmem_dir)
 

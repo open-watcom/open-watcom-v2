@@ -6,9 +6,9 @@ hcdos_autodepends = .autodepend
 !include deftarg.mif
 !include defrule.mif
 
-inc_dirs = -I"../h" -I"$(help_dir)/h" -I"$(ui_dir)/h"
+inc_dirs = -I"../h" -I"$(hlpview_dir)/h" -I"$(ui_dir)/h"
 
-.c: ../c;$(help_dir)/c
+.c: ../c;$(hlpview_dir)/c
 
 objs =                  &
         sorthelp.obj    &

@@ -1,0 +1,19 @@
+THE WINHELP |CTXOMAP INTERNAL FILE
+==================================
+
+The |CTXOMAP records the topics which correspond to context numbers defined
+in the [MAP] section of a .HPJ file.
+
+The |CTXOMAP format
+-------------------
+
+The first word of the file is the number of records in the file.  Immediately
+following are the records in order.  Each record is 8 bytes long, where the
+first four bytes are the (long int) map number assigned in the [MAP] section,
+and the last four bytes are the offset of the corresponding topic.  These
+offsets are "Character" offsets; see the section on offsets in topic.txt.
+
+The |CTXOMAP file is present in all .HLP files whether a [MAP] section
+if specified or not.  If no [MAP] section was specified, the file will
+consist of the standard file header and the word 0x0000 indicating no
+records are present.

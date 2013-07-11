@@ -1,0 +1,33 @@
+KEY CONCEPTS ABOUT WINHELP FILES
+================================
+
+ 1) A Windows help file consists of several seperate blocks or "files",
+    organized via a simple file system *within* the help file.  Each of
+    these "internal files" serves a different purpose within the larger
+    help file.
+    
+    Overview of the WinHelp file system:	whifs.txt
+    Overview of the internal files:		files.txt
+    
+ 2) Many of these internal files are arranged as B-Trees, and act as lookup
+    tables to help the WinHelp program find help text.  In particular,
+    a special directory file lists the offsets of all the other internal
+    files.
+    
+    Overview of the directory file:		whifs.txt
+    Overview of WinHelp B-Trees:		b_tree.txt
+    
+ 3) The actual help text is usually compressed two ways:  first with phrase
+    replacement, and then with a simplified LZ77 compression algorithm.
+    The compression algorithm may be proprietary to Microsoft; at this point,
+    we don't know.
+    
+    The modified LZ77 algorithm:		compress.txt
+    The phrase replacement system:		phrases.txt
+    
+ Finally, the file hypertxt.txt explains how some key hypertext concepts are
+ represented in a WinHelp file.
+ 
+ 
+ Written by:  Peter Milley
+ Feb 22, 1993

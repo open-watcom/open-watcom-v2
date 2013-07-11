@@ -214,8 +214,8 @@ editdll_dir     = $(src_dir)/editdll
 !ifndef ui_dir
 ui_dir          = $(src_dir)/ui
 !endif
-!ifndef help_dir
-help_dir        = $(src_dir)/help
+!ifndef hlpview_dir
+help_dir        = $(src_dir)/hlpview
 !endif
 !ifndef wv_dir
 wv_dir          = $(src_dir)/wv
