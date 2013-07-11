@@ -14,7 +14,7 @@ set PROJNAME=ui library
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> qnx/tix/*.tix <OWRELROOT>/qnx/tix/
+#    <CCCMD> qnx/tix/*.tix <OWRELROOT>/qnx/tix/
 
 [ BLOCK . . ]
 #============

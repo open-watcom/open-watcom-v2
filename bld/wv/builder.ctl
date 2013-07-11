@@ -20,8 +20,8 @@ set PROJNAME=wd
     <CPCMD> ssl/*.prs               <OWRELROOT>/binl/
     <CPCMD> dbg/*.dbg               <OWRELROOT>/rdos/
     <CPCMD> ssl/*.prs               <OWRELROOT>/rdos/
-    <CPCMD> dbg/*.dbg               <OWRELROOT>/qnx/watcom/wd/
-    <CPCMD> ssl/*.prs               <OWRELROOT>/qnx/watcom/wd/
+#    <CPCMD> dbg/*.dbg               <OWRELROOT>/qnx/watcom/wd/
+#    <CPCMD> ssl/*.prs               <OWRELROOT>/qnx/watcom/wd/
 
     <CCCMD> rfx/dosi86/rfx.exe      <OWRELROOT>/binw/rfx.exe
     <CCCMD> dsx/dos386/wv.exe       <OWRELROOT>/binw/wd.exe
