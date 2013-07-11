@@ -730,6 +730,7 @@ if ($boot_result eq "success") {
 if (($boot_result eq "success") &&
     ($pass_result eq "success") &&
     ($docs_result eq "success")) {
+    my $installers_result = "fail";
 
     print REPORT "\n";
     print REPORT "Installers build\n";
@@ -739,12 +740,19 @@ if (($boot_result eq "success") &&
     if (system($build_installer_name) != 0) {
         print REPORT "INSTALLER BUILD FAILED!\n";
     } else {
-        print REPORT "INSTALLER BUILD COMPLETED  : ", get_datetime(), "\n\n";
-	if (system($post_batch_name) != 0) {
-	    print REPORT "POST BATCH FILE RUN FAILED!\n";
-	} else {
-	    print REPORT "POST BATCH FILE RUN COMPLETED  : ", get_datetime(), "\n";
-	}
+        print REPORT "INSTALLER BUILD COMPLETED  : ", get_datetime(), "\n";
+        $installers_result = "success";
+    }
+    print REPORT "\n";
+    print REPORT "Post tasks\n";
+    print REPORT "================\n";
+    print REPORT "\n";
+    if ($installers_result eq "fail") {
+        print REPORT "POST RUN skipped.\n";
+    } elsif (system($post_batch_name) != 0) {
+	print REPORT "POST RUN FAILED!\n";
+    } else {
+	print REPORT "POST RUN COMPLETED  : ", get_datetime(), "\n";
     }
     print REPORT "\n\n";
     if ($Common::config{'OWCVS'} ne "") {
