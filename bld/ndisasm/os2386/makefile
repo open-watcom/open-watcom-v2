@@ -4,4 +4,4 @@ host_os = os2
 
 target_cpu = all
 
-!include ../mif/master.mif
+!include ../master.mif

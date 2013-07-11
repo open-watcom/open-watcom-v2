@@ -35,7 +35,7 @@ additional_cleanup = *.d32 *.mad
 !include deftarg.mif
 !include defrule.mif
 
-!include $(disasm_dir)/mif/dis.mif
+!include $(disasm_dir)/dis.mif
 
 # cflags stuff
 ###############

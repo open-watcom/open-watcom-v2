@@ -21,7 +21,7 @@ additional_cleanup = *.u
 
 xlibs = $(orl_lib) $(wres_lib)
 
-!include ../mif/dis.mif
+!include ../dis.mif
 
 !include trmem.mif
 

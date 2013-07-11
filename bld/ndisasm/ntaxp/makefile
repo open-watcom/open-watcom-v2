@@ -4,4 +4,4 @@ host_os = nt
 
 target_cpu = all
 
-!include ../mif/master.mif
+!include ../master.mif

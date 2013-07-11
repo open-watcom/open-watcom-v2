@@ -9,11 +9,11 @@ name = dis
 !include defrule.mif
 !include deftarg.mif
 
-!include ../../mif/dis.mif
+!include ../../dis.mif
 
 extra_cpp_flags = -DNDIS_$(target_cpu)
 
-.c: $(dis_srcs);$(disasm_dir)/test/c
+.c: $(dis_srcs);../c
 .h: $(dis_hdirs)
 
 inc_dirs = $(dis_includes)

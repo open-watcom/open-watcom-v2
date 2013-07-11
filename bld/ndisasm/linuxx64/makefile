@@ -5,4 +5,4 @@ host_cpu = x64
 
 target_cpu = all
 
-!include ../mif/master.mif
+!include ../master.mif

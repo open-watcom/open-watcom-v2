@@ -5,4 +5,4 @@ host_cpu = $(bld_cpu)
 
 target_cpu = all
 
-!include ../mif/master.mif
+!include ../master.mif
