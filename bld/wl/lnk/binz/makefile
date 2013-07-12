@@ -1,4 +1,4 @@
-#pmake: build os_zdos cpu_386
+#pmake: nobuild os_zdos cpu_386
 
 host_subdir = binz
 

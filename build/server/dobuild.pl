@@ -752,7 +752,7 @@ if (($boot_result eq "success") &&
     } elsif (system($post_batch_name) != 0) {
 	print REPORT "POST RUN FAILED!\n";
     } else {
-	print REPORT "POST RUN COMPLETED  : ", get_datetime(), "\n";
+	print REPORT "POST RUN COMPLETED         : ", get_datetime(), "\n";
     }
     print REPORT "\n\n";
     if ($Common::config{'OWCVS'} ne "") {
