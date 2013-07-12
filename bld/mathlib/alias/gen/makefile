@@ -3,4 +3,4 @@
 .mif: $(mif_path)
 
 !include cproj.mif
-!include $(lib_misc_dir)/mif/alias.mif
+!include $(lib_misc_dir)/alias.mif

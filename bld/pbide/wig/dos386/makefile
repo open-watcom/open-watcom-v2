@@ -1,7 +1,8 @@
-#pmake: cpu_386 os_dos
-host_CPU=386
-host_os = dos
+#pmake: nobuild cpu_386 os_dos
+
+host_os  = dos
+host_cpu = 386
 
 objs = error.obj
 
-!include ../mif/master.mif
+!include ../master.mif

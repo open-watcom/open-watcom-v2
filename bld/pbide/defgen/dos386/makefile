@@ -1,4 +1,4 @@
-#pmake: os_dos cpu_386
+#pmake: nobuild os_dos cpu_386
 
 proj_name = defgen
 

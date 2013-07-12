@@ -14,7 +14,7 @@ exc_name = $(proj_name).exe
 !include defrule.mif
 !include deftarg.mif
 
-!include $(wdisasm_dir)/mif/disasm.mif
+!include $(wdisasm_dir)/client.mif
 !include $(commonui_dir)/client.mif
 
 !ifndef drwatcom_95

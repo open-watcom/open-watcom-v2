@@ -5,4 +5,4 @@ host_cpu = x64
 
 wrc_dll = 1
 
-!include ../mif/master.mif
+!include ../master.mif

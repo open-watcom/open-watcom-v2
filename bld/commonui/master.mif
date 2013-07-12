@@ -16,7 +16,7 @@ sys_windowed = 1
 
 !include $(wpi_dir)/client.mif
 
-!include $(wdisasm_dir)/mif/disasm.mif
+!include $(wdisasm_dir)/client.mif
 
 msgfiles = &
         ../res/about.msg &

@@ -13,7 +13,7 @@ sys_windowed=1
 !include deftarg.mif
 !include defrule.mif
 
-!include $(wdisasm_dir)/mif/disasm.mif
+!include $(wdisasm_dir)/client.mif
 !include $(commonui_dir)/client.mif
 
 extra_c_flags_i86   = -s-zu-zW

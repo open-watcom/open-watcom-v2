@@ -1,8 +1,10 @@
 #pmake: build cpu_386 os_nt
-host_CPU = 386
-host_OS = nt
+
+host_os  = nt
+host_cpu = 386
+
 sys_dll = 1
 
 objs = pbide.obj errdll.obj
 
-!include ../mif/master.mif
+!include ../master.mif

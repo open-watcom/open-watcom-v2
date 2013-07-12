@@ -3,4 +3,4 @@
 host_os  = linux
 host_cpu = mps
 
-!include ../mif/master.mif
+!include ../master.mif

@@ -4,4 +4,4 @@ host_cpu = 386
 
 wrc_release = 0
 
-!include ../mif/master.mif
+!include ../master.mif
