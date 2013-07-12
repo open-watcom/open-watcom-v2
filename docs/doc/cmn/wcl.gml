@@ -227,10 +227,6 @@ system definitions and these may be specified as an argument to the
 "l=" option.
 The "system_name" specified in the "l=" option is used to create a
 "SYSTEM system_name" &lnkname directive when linking the application.
-.note x
-.ix '&wclcmdup16 options' 'x'
-.ix '&wclcmdup32 options' 'x'
-make names case sensitive
 .note @<directive_file>
 .ix '&wclcmdup16 options' '@'
 .ix '&wclcmdup32 options' '@'

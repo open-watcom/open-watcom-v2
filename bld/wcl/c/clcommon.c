@@ -161,8 +161,8 @@ void BuildLinkFile( void )
         fputs( "library ", Fp );
         FputnlQuoted( itm->item, Fp );
     }
-    if( Flags.two_case ) {
-        Fputnl( "option caseexact", Fp );
+    if( Flags.link_ignorecase ) {
+        Fputnl( "option nocaseexact", Fp );
     }
     fclose( Fp );       /* close Temp_Link */
     Fp = NULL;

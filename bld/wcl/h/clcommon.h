@@ -55,25 +55,25 @@ typedef struct  list {
 } list;
 
 typedef struct  flags {
-    unsigned math_8087    : 1;  /* 0 ==> no 8087, otherwise /7 option */
-    unsigned map_wanted   : 1;  /* -fm option specified               */
-    unsigned two_case     : 1;  /* two case option                    */
-    unsigned tiny_model   : 1;  /* tiny memory model                  */
-    unsigned be_quiet     : 1;  /* -zq option to be quiet             */
-    unsigned no_link      : 1;  /* -c compile only, no link step      */
-    unsigned do_link      : 1;  /* flag for link if no .obj in Cmd    */
-    unsigned do_disas     : 1;  /* flag to call wdis                  */
-    unsigned do_cvpack    : 1;  /* flag for link do codeview cvpack   */
-    unsigned link_for_dos : 1;  /* -lr produce DOS executable         */
-    unsigned link_for_os2 : 1;  /* -lp produce OS/2 executable        */
-    unsigned windows      : 1;  /* -zw specified for Windows          */
-    unsigned link_for_sys : 1;  /* -l<system> option given            */
-    unsigned is32bit      : 1;  /* 32bit link                         */
-    unsigned force_c      : 1;  /* -cc option                         */
-    unsigned force_c_plus : 1;  /* -cc++ option                       */
-    unsigned strip_all    : 1;  /* -s option for owcc                 */
-    unsigned want_errfile : 1;  /* -fr option in owcc                 */
-    unsigned keep_exename : 1;  /* verbatim -o name from owcc         */
+    unsigned math_8087        : 1;  /* 0 ==> no 8087, otherwise /7 option */
+    unsigned map_wanted       : 1;  /* -fm option specified               */
+    unsigned link_ignorecase  : 1;  /* link nocaseexact option            */
+    unsigned tiny_model       : 1;  /* tiny memory model                  */
+    unsigned be_quiet         : 1;  /* -zq option to be quiet             */
+    unsigned no_link          : 1;  /* -c compile only, no link step      */
+    unsigned do_link          : 1;  /* flag for link if no .obj in Cmd    */
+    unsigned do_disas         : 1;  /* flag to call wdis                  */
+    unsigned do_cvpack        : 1;  /* flag for link do codeview cvpack   */
+    unsigned link_for_dos     : 1;  /* -lr produce DOS executable         */
+    unsigned link_for_os2     : 1;  /* -lp produce OS/2 executable        */
+    unsigned windows          : 1;  /* -zw specified for Windows          */
+    unsigned link_for_sys     : 1;  /* -l<system> option given            */
+    unsigned is32bit          : 1;  /* 32bit link                         */
+    unsigned force_c          : 1;  /* -cc option                         */
+    unsigned force_c_plus     : 1;  /* -cc++ option                       */
+    unsigned strip_all        : 1;  /* -s option for owcc                 */
+    unsigned want_errfile     : 1;  /* -fr option in owcc                 */
+    unsigned keep_exename     : 1;  /* verbatim -o name from owcc         */
 } flags;
 
 extern FILE     *Fp;                /* file pointer for Temp_Link         */

@@ -165,6 +165,7 @@
 #if defined(WCLI86)
 "-wo diagnose problems in overlaid code",
 #endif
+"-x  preprocessor ignores env.variables",
 "-xr (C++) enable RTTI",
 "-z{a,e} disable/enable extensions",
 "-zc place strings in CODE segment",
@@ -282,6 +283,5 @@
 "-lr create a DOS real-mode program",
 #endif
 "-l=<os> link for the specified OS",
-"-x  make names case sensitive",
 "@<file> additional directive file",
 "-\"<linker directives>\"",

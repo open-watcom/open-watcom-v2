@@ -176,25 +176,25 @@ static struct {
 static void initialize_Flags( void )
 /**********************************/
 {
-    Flags.math_8087    = 1;
-    Flags.map_wanted   = 0;
-    Flags.two_case     = 0;
-    Flags.tiny_model   = 0;
-    Flags.be_quiet     = 0;
-    Flags.no_link      = 0;
-    Flags.do_link      = 0;
-    Flags.do_disas     = 0;
-    Flags.do_cvpack    = 0;
-    Flags.link_for_dos = 0;
-    Flags.link_for_os2 = 0;
-    Flags.windows      = 0;
-    Flags.link_for_sys = 0;
-    Flags.is32bit      = 0;
-    Flags.force_c      = 0;
-    Flags.force_c_plus = 0;
-    Flags.strip_all    = 0;
-    Flags.want_errfile = 0;
-    Flags.keep_exename = 0;
+    Flags.math_8087       = 1;
+    Flags.map_wanted      = 0;
+    Flags.link_ignorecase = 0;
+    Flags.tiny_model      = 0;
+    Flags.be_quiet        = 0;
+    Flags.no_link         = 0;
+    Flags.do_link         = 0;
+    Flags.do_disas        = 0;
+    Flags.do_cvpack       = 0;
+    Flags.link_for_dos    = 0;
+    Flags.link_for_os2    = 0;
+    Flags.windows         = 0;
+    Flags.link_for_sys    = 0;
+    Flags.is32bit         = 0;
+    Flags.force_c         = 0;
+    Flags.force_c_plus    = 0;
+    Flags.strip_all       = 0;
+    Flags.want_errfile    = 0;
+    Flags.keep_exename    = 0;
 }
 
 
@@ -629,12 +629,6 @@ static int Parse( char *Cmd )
                         break;
                     }
                     wcc_option = 0;
-                    break;
-                case 'x':
-                    if( Word[0] == '\0' ) {
-                        Flags.two_case = TRUE;
-                        wcc_option = 0;
-                    }
                     break;
                 case '@':
                     if( Word[0] != '\0' ) {
