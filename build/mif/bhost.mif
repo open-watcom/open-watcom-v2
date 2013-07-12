@@ -25,11 +25,11 @@ bld_gen_cflags  = -ox -w8 -fo=.obj
 bld_cflags      = $(bld_gen_cflags)
 
 # options for single source utility compilations
-bld_clflags      = $(bld_gen_cflags) -fe=$^@
+bld_clflags     = $(bld_gen_cflags) -fe=$^@
 
 !ifneq bootstrap 1
-#bld_cflags      += -x -xc
-#bld_clflags     += -y -xc
+bld_cflags      += -x -xx
+bld_clflags     += -x -xx
 !endif
 
 # options for linking

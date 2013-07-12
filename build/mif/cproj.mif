@@ -170,7 +170,7 @@ mode_clflags   += -"op nored"
 !endif
 !ifneq bootstrap 1
 mode_cflags  += -x -xx
-#mode_clflags += -yx -xc
+mode_clflags += -x -xx
 !endif
 
 !ifndef $(proj_name)_nosymfile
