@@ -1,5 +1,5 @@
-sw_c_common = -we-w8-zl-d__RT__
-#sw_c_common = -wx-w8 -wce=307 -wce=308 -wce=309 -zl-d__RT__
+sw_c_common = -we-w8-zl-x-xx-D__RT__
+#sw_c_common = -wx-w8 -wce=307 -wce=308 -wce=309 -zl-x-xx-D__RT__
 sw_a_common = -we
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
@@ -16,7 +16,7 @@ sw_l_common += option map,mangle,artificial,verbose
 
 # sw_c_(linkage)
 sw_c_static  =
-sw_c_dynamic = -d__DLL__
+sw_c_dynamic = -D__DLL__
 
 # sw_c_(processor)_(model)
 sw_c_intel    = -of
@@ -114,27 +114,27 @@ sw_c_msdos_286    = -oax
 sw_c_msdos_287    = -oax
 sw_c_msdos_386    = -oaxt
 sw_c_msdos_387    = -oaxt
-sw_c_netware_386  = -oaxt-d__MT__ #-bm
-sw_c_netware_387  = -oaxt-d__MT__ #-bm
+sw_c_netware_386  = -oaxt-D__MT__ #-bm
+sw_c_netware_387  = -oaxt-D__MT__ #-bm
 sw_c_os2_286      = -oax
 sw_c_os2_287      = -oax
-sw_c_os2_386      = -oaxt-d__MT__ #-bm
-sw_c_os2_387      = -oaxt-d__MT__ #-bm
-sw_c_os2_ppc      = -oaxt-d__MT__ #-bm
+sw_c_os2_386      = -oaxt-D__MT__ #-bm
+sw_c_os2_387      = -oaxt-D__MT__ #-bm
+sw_c_os2_ppc      = -oaxt-D__MT__ #-bm
 sw_c_qnx_286      = -oax
 sw_c_qnx_287      = -oax
-sw_c_qnx_386      = -oaxt-d__MT__ #-bm
-sw_c_qnx_387      = -oaxt-d__MT__ #-bm
+sw_c_qnx_386      = -oaxt-D__MT__ #-bm
+sw_c_qnx_387      = -oaxt-D__MT__ #-bm
 sw_c_windows_086  = -oax
 sw_c_windows_087  = -oax
-sw_c_windows_386  = -oaxt-d__CALL21__
-sw_c_windows_387  = -oaxt-d__CALL21__
-sw_c_winnt_386    = -oaxt-d__MT__ #-bm
-sw_c_winnt_387    = -oaxt-d__MT__ #-bm
-sw_c_winnt_axp    = -oaxt-d__MT__-dWIN32-d_WIN32 #-bm
-sw_c_winnt_ppc    = -oaxt-d__MT__-dWIN32-d_WIN32 #-bm
-sw_c_linux_386    = -oaxt #-d__MT__
-sw_c_linux_387    = -oaxt #-d__MT__
+sw_c_windows_386  = -oaxt-D__CALL21__
+sw_c_windows_387  = -oaxt-D__CALL21__
+sw_c_winnt_386    = -oaxt-D__MT__ #-bm
+sw_c_winnt_387    = -oaxt-D__MT__ #-bm
+sw_c_winnt_axp    = -oaxt-D__MT__ -DWIN32 -D_WIN32 #-bm
+sw_c_winnt_ppc    = -oaxt-D__MT__ -DWIN32 -D_WIN32 #-bm
+sw_c_linux_386    = -oaxt #-D__MT__
+sw_c_linux_387    = -oaxt #-D__MT__
 
 # sw_a_(system)_(processor)
 sw_a_msdos_086    =
@@ -215,17 +215,17 @@ l_flags =$(sw_l_common) $(sw_l_$(system)_$(processor))
 c_flags += -of
 !endif
 !ifdef dll16
-c_flags += -d__MT__ -bd #-bm
+c_flags += -D__MT__ -bd #-bm
 a_flags += -d__MT__
 !endif
 !ifdef share
-c_flags += -d__SHARE__ -dIN_SLIB -d_NO_SLIB
+c_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
 !endif
 !ifdef debug
 c_flags += -en
 !endif
 !ifdef threading16
-c_flags += -d__MT__ #-bm
+c_flags += -D__MT__ #-bm
 a_flags += -d__MT__
 !endif
 
@@ -235,7 +235,7 @@ c_dbg_flags = -d2
 a_dbg_flags = -d1
 !else
 c_dbg_flags = -DNDEBUG
-a_dbg_flags = -DNDEBUG
+a_dbg_flags = -dNDEBUG
 !endif
 
 # bt_(system)
@@ -244,8 +244,8 @@ bt_netware    =-bt=netware
 bt_os2        =-bt=os2
 bt_qnx        =-bt=qnx
 bt_windows_086=
-bt_windows_386=-d__WIN386__
-bt_windows    =$(bt_windows_$(processor)) -bt=windows -dSTRICT
+bt_windows_386=-D__WIN386__
+bt_windows    =$(bt_windows_$(processor)) -bt=windows -DSTRICT
 bt_winnt      =-bt=nt
 bt_linux      =-bt=linux
 
