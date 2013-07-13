@@ -7,8 +7,8 @@ need_posix_os2 = 1
 
 !ifdef need_posix_$(host_os)
 
-!include $(posix_dir)/mif/commands.mif
-!include $(posix_dir)/mif/common.mif
+!include $(posix_dir)/commands.mif
+!include $(posix_dir)/common.mif
 
 !ifeq bootstrap 1
 mkfile = -f $(libmakepath)/makefile

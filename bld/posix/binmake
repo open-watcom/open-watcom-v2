@@ -3,4 +3,4 @@
 host_os = $(bld_os)
 host_cpu = $(bld_cpu)
 
-!include ../mif/makeall.mif
+!include ../makeall.mif

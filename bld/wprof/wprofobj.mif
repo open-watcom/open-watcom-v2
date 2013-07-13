@@ -9,8 +9,8 @@ dig_os_osx      = osx
 
 dig_os          = $(dig_os_$(host_os))
 
-!include $(dig_dir)/mif/dipcli.mif
-!include $(dig_dir)/mif/madcli.mif
+!include $(dig_dir)/dipcli.mif
+!include $(dig_dir)/madcli.mif
 
 srcmgt_obj = srcmgt.obj
 

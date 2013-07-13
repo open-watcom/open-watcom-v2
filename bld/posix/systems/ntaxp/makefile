@@ -3,4 +3,4 @@
 host_os  = nt
 host_cpu = axp
 
-!include $(posix_dir)/mif/makeall.mif
+!include $(posix_dir)/makeall.mif

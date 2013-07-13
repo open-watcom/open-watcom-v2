@@ -3,4 +3,4 @@ host_cpu = 386
 
 model=s
 
-!include $(posix_dir)/mif/makelib.mif
+!include $(posix_dir)/makelib.mif

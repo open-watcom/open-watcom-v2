@@ -19,7 +19,7 @@ dig_os = $(host_os)
 dig_os = $(dig_os_$(host_os)_$(host_cpu))
 !endif
 
-!include $(dig_dir)/mif/dipcli.mif
+!include $(dig_dir)/dipcli.mif
 
 inc_dirs = -I"../h" -I"$(dig_dir)/h"
 

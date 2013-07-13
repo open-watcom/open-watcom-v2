@@ -10,4 +10,4 @@ extra_cpp_flags = -DUSG -DMSDOS -DNONAMES -DDEF_AR_FILE=\"ARCHIVE.TAR\" -DDEFBLO
 extra_cpp_flags = -DUSG -DMSDOS -DNONAMES -DDEF_AR_FILE="ARCHIVE.TAR" -DDEFBLOCKING=20
 !endif
 
-!include $(posix_dir)/mif/makeone.mif
+!include $(posix_dir)/makeone.mif

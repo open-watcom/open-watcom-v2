@@ -48,8 +48,8 @@ extra_l_flags_nt = op stack=100k
 extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup
 
 dig_os = $(host_OS)
-!include $(dig_dir)/mif/dipcli.mif
-!include $(dig_dir)/mif/madcli.mif
+!include $(dig_dir)/dipcli.mif
+!include $(dig_dir)/madcli.mif
 
 extra_proj_obj_nt = global.obj param.obj procctl.obj dipcli.obj memory.obj &
             drproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &

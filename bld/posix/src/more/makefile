@@ -7,7 +7,7 @@ extra_lnk = xlnk
 !endif
 !endif
 
-!include $(posix_dir)/mif/makeone.mif
+!include $(posix_dir)/makeone.mif
 
 # this is required for OS2V2 because some thunk routines need a big chunk
 # of stack space

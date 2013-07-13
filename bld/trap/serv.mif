@@ -76,7 +76,7 @@ target          = $(xname).exe
 !endif
 
 dig_os = $(os)
-!include $(dig_dir)/mif/trpcli.mif
+!include $(dig_dir)/trpcli.mif
 
 !ifndef test
 !ifdef builtin_trap

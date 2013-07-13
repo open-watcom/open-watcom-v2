@@ -8,7 +8,7 @@ model=s
 model=f
 !endif
 
-!include $(posix_dir)/mif/makeone.mif
+!include $(posix_dir)/makeone.mif
 
 xlnk: .PROCEDURE
     @%append $(name).lnk op stack=10k
