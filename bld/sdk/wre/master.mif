@@ -24,7 +24,7 @@ WINDOWS = 1
 
 !ifeq wre_trmem 1
 TRMEM           = -DTRMEM
-!ifneq host_CPU axp
+!ifneq host_cpu axp
 TRMEM           += -of+
 !endif
 !endif

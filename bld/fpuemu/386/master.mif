@@ -28,12 +28,12 @@ extra_c_flags = -s -fpc
 extra_c_flags_dos = -zl -zls
 extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)"
 
-!ifeq host_OS dos
+!ifeq host_os dos
 
 emu387.lib: emu387.obj 386inite.obj
     $(librarian) $(libflags) $<
 
-!else ifeq host_OS qnx
+!else ifeq host_os qnx
 
 emu387: usage.u qnxemu87.obj emu387.obj fpeqnx.obj
     $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,quiet,res=usage.u
@@ -41,7 +41,7 @@ emu387: usage.u qnxemu87.obj emu387.obj fpeqnx.obj
 usage.u : ../../usage.sp
     wsplice -u $< $@
 
-!else ifeq host_OS win
+!else ifeq host_os win
 
 !else
 

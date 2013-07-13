@@ -1,7 +1,7 @@
 #pmake: os_dos os_win cpu_i86 cpu_386
 
-host_OS = dos
-host_CPU = i86
+host_os  = dos
+host_cpu = i86
 
 !include cproj.mif
 !include defrule.mif

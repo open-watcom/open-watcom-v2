@@ -1,6 +1,6 @@
 #pmake: build os_dos cpu_386 386 intel target_386
 
-host_os = dos
+host_os  = dos
 host_cpu = 386
 
 !include ../mif/master.mif

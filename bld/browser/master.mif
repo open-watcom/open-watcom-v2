@@ -102,7 +102,7 @@ rc2_flags_os2 = -p
 res_file_nt  = wbrw.res
 res_file_win = wbrw.res
 res_file_os2 = wbrwpm.res
-res_file     = $(res_file_$(host_OS))
+res_file     = $(res_file_$(host_os))
 
 #linker
 LIBS_dos = $(ui_lib)

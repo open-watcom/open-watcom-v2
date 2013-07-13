@@ -2,7 +2,7 @@
 #
 # WATCOM Presentation Graphics (PGCHART.LIB)
 #
-host_os = dos
+host_os  = dos
 host_cpu = 386
 
 libname    = chart3r

@@ -47,7 +47,7 @@ extra_l_flags = option map,quiet name $(exc_name)
 extra_l_flags_nt = op stack=100k
 extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup
 
-dig_os = $(host_OS)
+dig_os = $(host_os)
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
 
@@ -74,7 +74,7 @@ extra_proj_obj_win = globals.obj notify.obj winproc.obj debug.obj dump.obj &
 proj_obj =  listbox.obj log.obj stat.obj lognote.obj &
             drwatcom.obj sym.obj profile.obj fault.obj &
             disasm.obj &
-            $(extra_proj_obj_$(host_OS)) &
+            $(extra_proj_obj_$(host_os)) &
             $(dip_objs)
 
 .asm : .
@@ -102,7 +102,7 @@ $(link_name) : $(__MAKEFILES__)
         @%append $^@ file { $(proj_obj) }
         @%append $^@ lib { $(xlibs) }
 
-!ifeq host_OS win
+!ifeq host_os win
 $(proj_name).res : ../res/$(host_os)/drwatcom.rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk $(cppflags) $(rc_inc_path) $[@ -fo=$^@
 !else

@@ -3,8 +3,8 @@
 # WATCOM Debugger makefile for NT (character mode)
 #
 
-host_OS=nt
-host_CPU=x64
+host_os=nt
+host_cpu=x64
 
 sysobjs =   &
     autoenv.obj &

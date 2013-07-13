@@ -3,8 +3,8 @@
 # Open Watcom Debugger makefile for Linux
 #
 
-host_OS  = linux
-host_CPU = 386
+host_os  = linux
+host_cpu = 386
 
 syshdir =
 

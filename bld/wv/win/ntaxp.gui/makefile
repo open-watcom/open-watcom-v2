@@ -3,8 +3,8 @@
 # WATCOM Debugger makefile for NT AXP (GUI mode)
 #
 
-host_CPU=axp
-host_OS=nt
+host_cpu=axp
+host_os=nt
 
 sys_windowed = 1
 

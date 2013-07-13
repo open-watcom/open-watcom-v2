@@ -1,6 +1,6 @@
 #pmake: serv remote os_nt cpu_386 nov axp
 host_cpu = axp
-host_os = nt
+host_os  = nt
 
 os = nt
 srv = nov

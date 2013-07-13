@@ -89,7 +89,7 @@ sysobjs = guixscal.obj &
           guif1hk.obj  &
           guiclen.obj
 
-!ifeq host_OS os2
+!ifeq host_os os2
 sysobjs +=             &
           os2mem.obj   &
           os2dlg.obj

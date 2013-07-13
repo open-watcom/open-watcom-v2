@@ -3,8 +3,8 @@
 # WATCOM Debugger makefile for NT (real GUI version)
 #
 
-host_OS=nt
-host_CPU=x64
+host_os=nt
+host_cpu=x64
 
 sys_windowed = 1
 

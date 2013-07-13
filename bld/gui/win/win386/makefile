@@ -1,5 +1,5 @@
 #pmake: cpu_386 os_win
-host_CPU = 386
-host_OS = win
+host_cpu = 386
+host_os  = win
 
 !include ../guiwin.mif

@@ -1,6 +1,6 @@
 #pmake: cpu_axp os_nt
 
-host_CPU        = axp
-host_OS         = nt
+host_cpu = axp
+host_os  = nt
 owl_rtdll = 1
 !include ../master.mif

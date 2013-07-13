@@ -41,7 +41,7 @@ extra_objs_os2 = new_os2.obj
 
 inc_dirs = -I"../h"
 
-objs = $(objs_$(host_OS)) $(extra_objs_$(host_OS))
+objs = $(objs_$(host_os)) $(extra_objs_$(host_os))
 
 wpi.lib: $(objs)
         $(librarian) $(libflags) $(objs)

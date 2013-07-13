@@ -1,6 +1,6 @@
 #pmake: build cpu_386 os_os2
-host_CPU = 386
-host_OS  = os2
+host_cpu = 386
+host_os  = os2
 
 !include ../os2.mif
 

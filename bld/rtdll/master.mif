@@ -9,7 +9,7 @@ rtdll_host_cpu_386=386
 rtdll_host_cpu_387=386
 rtdll_host_cpu_axp=axp
 rtdll_host_cpu_ppc=ppc
-host_CPU = $(rtdll_host_cpu_$(processor))
+host_cpu = $(rtdll_host_cpu_$(processor))
 
 rtdll_host_os_generic =dos
 rtdll_host_os_msdos   =dos
@@ -20,7 +20,7 @@ rtdll_host_os_qnx     =qnx
 rtdll_host_os_windows =win
 rtdll_host_os_winnt   =nt
 rtdll_host_os_linux   =linux
-host_OS=$(rtdll_host_os_$(system))
+host_os=$(rtdll_host_os_$(system))
 
 !include cproj.mif
 !include deftarg.mif

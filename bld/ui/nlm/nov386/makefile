@@ -1,6 +1,6 @@
 #pmake: cpu_386 os_nov
-host_CPU = 386
-host_OS = nov
+host_cpu = 386
+host_os  = nov
 
 !include ../nov.mif
 

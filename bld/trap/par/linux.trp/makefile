@@ -1,6 +1,6 @@
 #pmake: build trap remote os_linux cpu_386 par
 host_cpu = 386
-host_os = linux
+host_os  = linux
 
 os = linux
 srv = par

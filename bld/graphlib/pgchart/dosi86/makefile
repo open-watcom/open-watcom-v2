@@ -2,7 +2,7 @@
 #
 # WATCOM Presentation Graphics (PGCHART.LIB)
 #
-host_os = dos
+host_os  = dos
 host_cpu = i86
 
 libname = charts

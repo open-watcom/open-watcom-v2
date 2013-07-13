@@ -1,6 +1,6 @@
 #pmake: build trap remote os_dos cpu_i86 cpu_386 winl x86
 host_cpu = i86
-host_os = dos
+host_os  = dos
 
 os = dos
 srv = win

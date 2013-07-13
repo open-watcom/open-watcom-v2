@@ -1,5 +1,5 @@
 proj_name = yacc
-host_CPU = 386
+host_cpu = 386
 !include cproj.mif
 .erase
 

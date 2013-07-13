@@ -1,6 +1,6 @@
 #pmake: serv remote os_nov cpu_386 nov x86
 host_cpu = 386
-host_os = nov
+host_os  = nov
 
 nlm_ver = 5
 os = nlm

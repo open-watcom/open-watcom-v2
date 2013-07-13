@@ -3,7 +3,7 @@
 # Create the OS/2 STD16.DLL
 #
 host_cpu = i86
-host_os = os2
+host_os  = os2
 
 os      = os2
 srv     = lcl

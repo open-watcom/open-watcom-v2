@@ -2,8 +2,8 @@
 #
 # Create the OS/2 STD32.DLL (16-bit version)
 #
-host_CPU = i86
-host_OS = os2
+host_cpu = i86
+host_os  = os2
 
 os      = os2
 srv     = lcl

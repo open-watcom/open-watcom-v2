@@ -3,8 +3,8 @@
 # Open Watcom Debugger makefile for Windows
 #
 
-host_OS=win
-host_CPU=i86
+host_os=win
+host_cpu=i86
 
 sysobjs =   &
     autoenv.obj &

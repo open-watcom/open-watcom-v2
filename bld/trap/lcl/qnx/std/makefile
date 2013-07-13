@@ -3,7 +3,7 @@
 # Create the QNX STD.TRP
 #
 host_cpu = 386
-host_os = qnx
+host_os  = qnx
 
 os      = qnx
 srv     = lcl

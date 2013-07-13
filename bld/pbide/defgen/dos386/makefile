@@ -2,8 +2,8 @@
 
 proj_name = defgen
 
-host_OS  = dos
-host_CPU = 386
+host_os  = dos
+host_cpu = 386
 
 xname = defgen.exe
 

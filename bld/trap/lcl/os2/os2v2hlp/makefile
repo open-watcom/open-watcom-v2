@@ -3,7 +3,7 @@
 # Create OS2V2HLP.EXE
 #
 host_cpu = 386
-host_os = os2
+host_os  = os2
 
 proj_name = os2v2hlp
 

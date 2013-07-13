@@ -1,6 +1,6 @@
 #pmake: nobuild cpu_386 os_dos
 
 host_cpu = 386
-host_os = dos
+host_os  = dos
 
 !include ../master.mif

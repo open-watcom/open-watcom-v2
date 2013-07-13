@@ -26,5 +26,5 @@ extra_l_flags_os2 = op newfile
 .c: ..
 .asm: ..
 
-techinfo.exe : $($(host_OS)objs)
-    $(linker) $(lflags) name $^@ file {$($(host_OS)objs)}
+techinfo.exe : $($(host_os)objs)
+    $(linker) $(lflags) name $^@ file {$($(host_os)objs)}

@@ -3,7 +3,7 @@ name = cl
 #
 # Define the name(s) of the program(s) to build.
 #
-!ifeq host_OS nt
+!ifeq host_os nt
 all: clx.exe cl386.exe claxp.exe clppc.exe
 !else
 all: cl386.exe claxp.exe clppc.exe

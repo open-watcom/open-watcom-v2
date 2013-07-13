@@ -1,5 +1,5 @@
 #pmake: build cpu_386 os_rdos 
-host_CPU = 386
-host_OS = rdos
+host_cpu = 386
+host_os  = rdos
 
 !include ../rdos.mif

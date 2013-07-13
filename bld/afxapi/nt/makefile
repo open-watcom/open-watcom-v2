@@ -1,6 +1,6 @@
 #pmake/50: build os_nt cpu_386
 
-host_os         = nt
+host_os  = nt
 
 root_dir        = ..
 include_dir     = $(root_dir)/include

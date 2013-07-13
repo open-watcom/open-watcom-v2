@@ -25,10 +25,10 @@ dwarfr_lib_qnx_386   = $(dwarfr_dir)/qnx386/dwarfr.lib
 !endif
 
 #
-!ifdef dwarfr_lib_$(host_OS)_$(host_CPU)$(inline_vmem_$(host_os)_$(host_cpu))
-dwarfr_lib = $(dwarfr_lib_$(host_OS)_$(host_CPU)$(inline_vmem_$(host_os)_$(host_cpu)))
+!ifdef dwarfr_lib_$(host_os)_$(host_cpu)$(inline_vmem_$(host_os)_$(host_cpu))
+dwarfr_lib = $(dwarfr_lib_$(host_os)_$(host_cpu)$(inline_vmem_$(host_os)_$(host_cpu)))
 !else
-dwarfr_lib = $(dwarfr_lib_$(host_CPU))
+dwarfr_lib = $(dwarfr_lib_$(host_cpu))
 !endif
 
 dwarfr_inc_dirs = -I"$(dwarfr_dir)/h"

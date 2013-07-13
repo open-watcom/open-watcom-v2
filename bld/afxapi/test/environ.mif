@@ -72,7 +72,7 @@ wpp_386 += $(targ_bld_$(targ_env_386))
 proj_name = afxapitest
 host_cpu = $(arch)
 !ifdef __NT__
-!  define host_OS nt
+!  define host_os nt
 !else
 !  error unknown OS
 !endif

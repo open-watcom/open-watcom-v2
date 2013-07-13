@@ -1,6 +1,6 @@
 #pmake: trap remote os_qnx cpu_i86 cpu_386 tcp x86
 host_cpu = 386
-host_os = qnx
+host_os  = qnx
 
 os = qnx
 srv = tcp

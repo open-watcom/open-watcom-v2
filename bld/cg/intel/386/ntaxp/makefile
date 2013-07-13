@@ -1,6 +1,6 @@
 #pmake: os_nt cpu_axp 386 intel target_386
 
-host_os = nt
+host_os  = nt
 host_cpu = axp
 
 !include ../mif/master.mif

@@ -1,5 +1,5 @@
-host_CPU = i86
-host_OS = dos
+host_cpu = i86
+host_os  = dos
 !include cproj.mif
 .erase
 

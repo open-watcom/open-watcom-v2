@@ -1,6 +1,6 @@
 #pmake: build serv lcl os_dos dsx cpu_386 x86
 
-host_os = dos
+host_os  = dos
 host_cpu = 386
 
 os = cw

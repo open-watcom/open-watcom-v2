@@ -1,4 +1,4 @@
 #pmake: build os_rdos cpu_386
-host_OS = rdos
-host_CPU = 386
+host_os  = rdos
+host_cpu = 386
 !include ../master.mif

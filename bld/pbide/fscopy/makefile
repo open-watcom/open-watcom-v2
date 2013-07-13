@@ -1,8 +1,8 @@
 #pmake: build cpu_i86 os_dos
 proj_name = fscopy
 
-host_OS = dos
-host_CPU = i86
+host_os  = dos
+host_cpu = i86
 
 memory_model_i86 = s
 

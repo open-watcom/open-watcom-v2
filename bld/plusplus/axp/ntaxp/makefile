@@ -1,7 +1,7 @@
 #pmake: nobuild nomodel cpu_axp target_axp os_nt
 
-host_os    = nt
-host_cpu   = axp
+host_os  = nt
+host_cpu = axp
 
 plusplus_dll = 1
 

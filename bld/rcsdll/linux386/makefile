@@ -1,5 +1,5 @@
 #pmake: build cpu_386 os_linux
-host_OS = linux
-host_CPU = 386
+host_os  = linux
+host_cpu = 386
 
 !include ../master.mif

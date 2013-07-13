@@ -3,8 +3,8 @@
 # WATCOM Debugger makefile for NT (character mode)
 #
 
-host_OS=rdos
-host_CPU=386
+host_os=rdos
+host_cpu=386
 
 sysobjs =   &
     autoenv.obj &

@@ -1,5 +1,5 @@
 #pmake: cpu_i86 os_dos
-host_OS = dos
-host_CPU = i86
+host_os  = dos
+host_cpu = i86
 
 !include ../master.mif

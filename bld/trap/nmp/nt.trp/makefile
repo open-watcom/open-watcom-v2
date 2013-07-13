@@ -1,6 +1,6 @@
 #pmake: trap remote os_nt cpu_i86 cpu_386 nmp
 host_cpu = 386
-host_os = nt
+host_os  = nt
 
 os = nt
 srv = nmp

@@ -1,6 +1,6 @@
 #pmake: serv remote os_os2 cpu_i86 nmp
 host_cpu = i86
-host_os = os2
+host_os  = os2
 
 os  = os2
 srv = nmp
