@@ -1024,6 +1024,7 @@ void PtdPrint(                  // DEBUG: print decoration for a node
 {
     PTD* curr;                  // - current entry
     char const * name;          // - name to be printed
+    VBUF vbuf;
 
     printf( "%d. Decorated Node: %x\n", numb, node );
     RingIterBeg( node->decor, curr ) {
@@ -1039,7 +1040,8 @@ void PtdPrint(                  // DEBUG: print decoration for a node
             printf( "\n" );
             break;
           case PTD_FMT_SYMBOL :
-            printf( " %s\n", DbgSymNameFull( curr->symbol.sym ) );
+            printf( " %s\n", DbgSymNameFull( curr->symbol.sym, &vbuf ) );
+            VbufFree( &vbuf );
             break;
           case PTD_FMT_OFFSET :
             printf( " offset = %x\n", curr->off.offset );

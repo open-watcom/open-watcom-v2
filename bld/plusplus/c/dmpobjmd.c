@@ -219,14 +219,14 @@ static void dumpMember(         // DUMP A MEMBER
     if( type->id == TYP_BITFIELD ) {
         di = dumpBitMemb( di
                         , "bit member:"
-                        , name
+                        , NameStr( name )
                         , offset
                         , type->u.b.field_start
                         , type->u.b.field_width );
     } else {
         di = dumpDataMemb( di
                          , "member:"
-                         , name
+                         , NameStr( name )
                          , offset
                          , CgMemorySize( type ) );
     }
@@ -247,7 +247,7 @@ static DUMP_INFO* dumpStruct(   // DUMP A STRUCTURE
     info = type->u.c.info;
     parent = VstkPush( &di->stack );
     *parent = info->name;
-    di = dumpTitle( di, title, info->name );
+    di = dumpTitle( di, title, NameStr( info->name ) );
     if( type != di->original ) {
         di = bufferInit( di );
         di = bufferStr( di, "embedded size: " );
@@ -341,7 +341,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     VBUF buffer;                // - printing buffer
     char buf[16];               // - buffer
     long numb;                  // - a numeric value
-    NAME name;                  // - name to be printed
+    char *name;                 // - name to be printed
     boolean sign;               // - TRUE ==> signed enum
     unsigned long mask;         // - used to mask to true size
     unsigned long val;          // - value as unsigned
@@ -351,7 +351,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     sym = base->u.t.sym;
     VbufInit( &buffer );
     VbufConcStr( &buffer, "Object Model for: " );
-    name = sym->name->name;
+    name = NameStr( sym->name->name );
     if( NULL == name || name[0] == '.' ) {
         name = "anonymous enum type";
     }
@@ -414,7 +414,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
         if( ! SymIsEnumeration( sym ) ) break;
         VbufRewind( &buffer );
         VbufConcStr( &buffer, "    " );
-        VbufConcStr( &buffer, sym->name->name );
+        VbufConcStr( &buffer, NameStr( sym->name->name ) );
         VbufConcStr( &buffer, " = " );
         numb = sym->u.sval;
         if( sign && numb < 0 ) {

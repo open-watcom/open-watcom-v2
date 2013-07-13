@@ -150,7 +150,7 @@ static boolean fmtSymName( SYMBOL sym, NAME name, VBUF *pvprefix, VBUF *pvbuf, F
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault );
                 VbufConcVbufRev( pvbuf, &suffix );
                 if( name != NULL ) {
-                    VbufConcStrRev( pvbuf, name );
+                    VbufConcStrRev( pvbuf, NameStr( name ) );
                 }
                 VbufConcVbufRev( pvprefix, &prefix );
                 VbufFree( &prefix );
@@ -166,7 +166,7 @@ static boolean fmtSymName( SYMBOL sym, NAME name, VBUF *pvprefix, VBUF *pvbuf, F
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault );
                 VbufConcVbufRev( pvbuf, &suffix );
                 if( name != NULL ) {
-                    VbufConcStrRev( pvbuf, name );
+                    VbufConcStrRev( pvbuf, NameStr( name ) );
                 }
                 VbufConcStrRev( pvbuf, dtorPrefix );
                 VbufConcVbufRev( pvprefix, &prefix );
@@ -217,8 +217,8 @@ static boolean fmtSymName( SYMBOL sym, NAME name, VBUF *pvprefix, VBUF *pvbuf, F
 
 static void fmtSymScope( SCOPE scope, VBUF *pvbuf, boolean include_function );
 
-static void formatScopedSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
-/*************************************************************************/
+static char *formatScopedSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
+/**************************************************************************/
 {
     VBUF    prefix;
     boolean ctordtor;
@@ -236,6 +236,7 @@ static void formatScopedSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
         VbufConcVbuf( pvbuf, &prefix );
     }
     VbufFree( &prefix );
+    return( VbufString( pvbuf ) );
 }
 
 static void makeUnknownTemplate( VBUF *parms )
@@ -343,7 +344,7 @@ static void fmtSymScope( SCOPE scope, VBUF *pvbuf, boolean include_function )
             break;
         case SCOPE_CLASS:
             class_type = ScopeClass( scope );
-            scope_name = SimpleTypeName( class_type );
+            scope_name = NameStr( SimpleTypeName( class_type ) );
             if( scope_name != NULL ) {
                 VbufConcStrRev( pvbuf, scopeSep );
                 if( class_type->flag & TF1_INSTANTIATION ) {
@@ -390,43 +391,43 @@ void FormatScope( SCOPE scope, VBUF *pvbuf, boolean include_function )
     strrev( VbufString( pvbuf ) );
 }
 
-static void doFormatSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
+static char *doFormatSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
 {
     VbufInit( pvbuf );
     if( sym == NULL ) {
         VbufConcStr( pvbuf, nullSymbol );
+        return( VbufString( pvbuf ) );
     } else {
-        formatScopedSym( sym, pvbuf, control );
-        strrev( VbufString( pvbuf ) );
+        return( strrev( formatScopedSym( sym, pvbuf, control ) ) );
     }
 }
 
-void FormatSym( SYMBOL sym, VBUF *pvbuf )
-/***************************************/
+char *FormatSym( SYMBOL sym, VBUF *pvbuf )
+/****************************************/
 {
-    doFormatSym( sym, pvbuf, FF_NULL );
+    return( doFormatSym( sym, pvbuf, FF_NULL ) );
 }
 
-void FormatSymWithTypedefs( SYMBOL sym, VBUF *pvbuf )
-/***************************************************/
+char *FormatSymWithTypedefs( SYMBOL sym, VBUF *pvbuf )
+/****************************************************/
 {
-    doFormatSym( sym, pvbuf, FF_TYPEDEF_STOP );
+    return( doFormatSym( sym, pvbuf, FF_TYPEDEF_STOP ) );
 }
 
-void FormatFnDefnWithTypedefs( SYMBOL sym, VBUF *pvbuf )
-/******************************************************/
+char *FormatFnDefnWithTypedefs( SYMBOL sym, VBUF *pvbuf )
+/*******************************************************/
 {
-    doFormatSym( sym, pvbuf, FF_TYPEDEF_STOP | FF_ARG_NAMES );
+    return( doFormatSym( sym, pvbuf, FF_TYPEDEF_STOP | FF_ARG_NAMES ) );
 }
 
-void FormatFnDefn( SYMBOL sym, VBUF *pvbuf )
-/******************************************/
+char *FormatFnDefn( SYMBOL sym, VBUF *pvbuf )
+/*******************************************/
 {
-    doFormatSym( sym, pvbuf, FF_ARG_NAMES );
+    return( doFormatSym( sym, pvbuf, FF_ARG_NAMES ) );
 }
 
-void FormatName( NAME name, VBUF *pvbuf )
-/***************************************/
+char *FormatName( NAME name, VBUF *pvbuf )
+/****************************************/
 {
     VBUF    prefix;
     boolean ctordtor;
@@ -438,5 +439,5 @@ void FormatName( NAME name, VBUF *pvbuf )
         VbufConcVbuf( pvbuf, &prefix );
     }
     VbufFree( &prefix );
-    strrev( VbufString( pvbuf ) );
+    return( strrev( VbufString( pvbuf ) ) );
 }

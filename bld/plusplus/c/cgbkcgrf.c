@@ -68,7 +68,9 @@
 
     static void _DUMP_CGRF( char *msg, SYMBOL sym ) {
         if( PragDbgToggle.callgraph ) {
-            printf( msg, DbgSymNameFull( sym ) );
+            VBUF vbuf;
+            printf( msg, DbgSymNameFull( sym, &vbuf ) );
+            VbufFree( &vbuf );
         }
     }
 #else
@@ -943,8 +945,9 @@ static void markAsGen(          // MARK CODE FILE TO BE GENERATED
             }
         #ifndef NDEBUG
             if( PragDbgToggle.dump_emit_ic ) {
-                printf( "Selected code file: %s\n"
-                      , DbgSymNameFull( func ) );
+                VBUF vbuf;
+                printf( "Selected code file: %s\n", DbgSymNameFull( func, &vbuf ) );
+                VbufFree( &vbuf );
             }
         #endif
         }
@@ -1137,8 +1140,9 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
     if( node->inline_fun ) {
 #ifndef NDEBUG
         if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph ) {
-            printf( "Removed inline code file: %s\n"
-                  , DbgSymNameFull( func ) );
+            VBUF vbuf;
+            printf( "Removed inline code file: %s\n", DbgSymNameFull( func, &vbuf ) );
+            VbufFree( &vbuf );
         }
 #endif
         CgioFreeFile( cgfile );
@@ -1147,15 +1151,14 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
     } else if ( SymIsRegularStaticFunc( func ) ) {
 #ifndef NDEBUG
         if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph ) {
-            printf( "Removed static code file: %s\n"
-                  , DbgSymNameFull( func ) );
+            VBUF vbuf;
+            printf( "Removed static code file: %s\n", DbgSymNameFull( func, &vbuf ) );
+            VbufFree( &vbuf );
         }
 #endif
         CgioFreeFile( cgfile );
-#ifndef NDEBUG
     } else {
-        CFatal( "cgbkcgrf: removeCodeFile function not removable" );
-#endif
+        DbgStmt( CFatal( "cgbkcgrf: removeCodeFile function not removable" ) );
     }
 }
 
@@ -1297,16 +1300,17 @@ static boolean setFunctionStab( // SET STATE-TABLE INFO. FOR FUNCTION
             if( PragDbgToggle.dump_emit_ic ||
                 PragDbgToggle.callgraph         ||
                 PragDbgToggle.dump_stab ) {
+                VBUF vbuf;
                 SYMBOL func = cgfile->symbol;
                 if( state_table ) {
                     printf( "%s has state table: flags = %d gen=%d\n"
-                          , DbgSymNameFull( func )
+                          , DbgSymNameFull( func, &vbuf )
                           , max_cond_flags
                           , stab_gen );
                 } else {
-                    printf( "%s has no state table\n"
-                          , DbgSymNameFull( func ) );
+                    printf( "%s has no state table\n", DbgSymNameFull( func, &vbuf ) );
                 }
+                VbufFree( &vbuf );
             }
 #endif
         }

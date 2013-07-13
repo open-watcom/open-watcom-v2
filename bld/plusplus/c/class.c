@@ -3039,7 +3039,7 @@ void ClassStoreInlineFunc( DECL_INFO *dinfo )
     RingAppend( &(data->inlines), dinfo );
 }
 
-void ClassMakeUniqueName( TYPE class_type, char *signature )
+void ClassMakeUniqueName( TYPE class_type, NAME signature )
 /**********************************************************/
 {
     size_t len;
@@ -3079,7 +3079,7 @@ void ClassMakeUniqueName( TYPE class_type, char *signature )
     if( signature == NULL ) {
         len = 0;
     } else {
-        len = strlen( signature );
+        len = strlen( NameStr( signature ) );
     }
     hash *= len + 1;
     buff[0] = '_';
@@ -3090,7 +3090,7 @@ void ClassMakeUniqueName( TYPE class_type, char *signature )
 
         VbufInit( &big_buff );
         VbufConcStr( &big_buff, buff );
-        VbufConcStr( &big_buff, signature );
+        VbufConcStr( &big_buff, NameStr( signature ) );
         info->name = NameCreateLen( VbufString( &big_buff ), VbufLen( &big_buff ) );
         VbufFree( &big_buff );
     } else {

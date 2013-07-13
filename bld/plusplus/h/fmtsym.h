@@ -34,12 +34,12 @@
 
 #include "vbuf.h"
 
-void FormatSym( SYMBOL, VBUF * );
-void FormatSymWithTypedefs( SYMBOL, VBUF * );
-void FormatFnDefnWithTypedefs( SYMBOL, VBUF * );
-void FormatFnDefn( SYMBOL, VBUF * );
+char *FormatSym( SYMBOL, VBUF * );
+char *FormatSymWithTypedefs( SYMBOL, VBUF * );
+char *FormatFnDefnWithTypedefs( SYMBOL, VBUF * );
+char *FormatFnDefn( SYMBOL, VBUF * );
 void FormatScope( SCOPE, VBUF *, boolean );
-void FormatName( NAME, VBUF * );
+char *FormatName( NAME, VBUF * );
 void FormatTemplateParms( VBUF *, TYPE );
 void FormatUnboundTemplateParms( VBUF *, TYPE );
 void FormatTemplateParmScope( VBUF *parms, SCOPE parm_scope );

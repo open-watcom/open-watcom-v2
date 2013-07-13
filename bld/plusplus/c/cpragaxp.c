@@ -194,7 +194,7 @@ static void AuxCopy(           // COPY AUX STRUCTURE
     to->code = AuxCodeDup( from->code );
 }
 
-AUX_INFO *AsmSysCreateAux( NAME name )
+AUX_INFO *AsmSysCreateAux( char *name )
 /************************************/
 {
     CreateAux( name );

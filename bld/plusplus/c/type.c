@@ -2452,13 +2452,13 @@ DECL_SPEC *PTypeMSDeclSpec( DECL_SPEC *dspec, PTREE id )
     }
     name = id->u.id.name;
     spec = makeDeclSpec();
-    if( strcmp( name, "dllimport" ) == 0 ) {
+    if( strcmp( NameStr( name ), "dllimport" ) == 0 ) {
         spec->ms_declspec = STS_DLLIMPORT;
-    } else if( strcmp( name, "dllexport" ) == 0 ) {
+    } else if( strcmp( NameStr( name ), "dllexport" ) == 0 ) {
         spec->ms_declspec = STS_DLLEXPORT;
-    } else if( strcmp( name, "thread" ) == 0 ) {
+    } else if( strcmp( NameStr( name ), "thread" ) == 0 ) {
         spec->ms_declspec = STS_THREAD;
-    } else if( strcmp( name, "naked" ) == 0 ) {
+    } else if( strcmp( NameStr( name ), "naked" ) == 0 ) {
         spec->ms_declspec = STS_NAKED;
     } else {
         PTreeErrorExprName( id, ERR_UNSUPPORTED_DECLSPEC, name );

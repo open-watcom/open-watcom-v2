@@ -52,7 +52,7 @@ SPFN SpecialFunction(           // IDENTIFY SPECIAL FUNCTION
 {
     SPFN retn;                  // - return: code for that function
     SYMBOL_NAME sn;             // - symbol_name structure
-    const char* sname;          // - name of function
+    NAME sname;                 // - name of function
     SPEC_FUNC* spp;             // - current definition
     unsigned sname_len;         // - size of name
 
@@ -62,11 +62,11 @@ SPFN SpecialFunction(           // IDENTIFY SPECIAL FUNCTION
     if( sn != NULL && ScopeIsGlobalNameSpace( sn->containing ) != NULL ) {
         sname = sn->name;
         if( sname != NULL ) {
-            sname_len = strlen( sname );
+            sname_len = strlen( NameStr( sname ) );
             for( spp = SPEC_FUN_END - 1; spp != funs; --spp ) {
-                if( spp->name[0] == sname[0]
+                if( spp->name[0] == NameStr( sname )[0]
                  && sname_len == spp->length
-                 && 0 == memcmp( spp->name, sname, sname_len ) ) break;
+                 && 0 == memcmp( spp->name, NameStr( sname ), sname_len ) ) break;
             }
             retn = spp - funs;
         }

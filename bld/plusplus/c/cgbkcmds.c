@@ -511,6 +511,7 @@ static void cgGenerateCmdsComponent(// EMIT COMPONENT CMDS
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
                 const char* code;
+                VBUF vbuf;
                 switch( curr->cmd_type ) {
                   case DTC_COMP_VBASE : code = "DTC_COMP_VBASE"; break;
                   case DTC_COMP_DBASE : code = "DTC_COMP_DBASE"; break;
@@ -523,7 +524,8 @@ static void cgGenerateCmdsComponent(// EMIT COMPONENT CMDS
                       , code
                       , curr->obj->offset
                       , curr->offset
-                      , DbgSymNameFull( curr->dtor ) );
+                      , DbgSymNameFull( curr->dtor, &vbuf ) );
+                VbufFree( &vbuf );
             }
 #endif
             DgAlignPad( sizeof( DTOR_CMD_CODE ) );
@@ -564,9 +566,11 @@ static void cgGenerateCmdsDel1( // EMIT DELETE-1 CMDS
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_1 ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
+                VBUF vbuf;
                 printf( "DTC_DLT_1 offset=%x %s\n"
                       , curr->offset
-                      , DbgSymNameFull( curr->op_del ) );
+                      , DbgSymNameFull( curr->op_del, &vbuf ) );
+                VbufFree( &vbuf );
             }
 #endif
             DgAlignPad( sizeof( DTOR_CMD_CODE ) );
@@ -586,9 +590,11 @@ static void cgGenerateCmdsDel1Array( // EMIT DELETE-1-ARRAY CMDS
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_1_ARRAY ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
+                VBUF vbuf;
                 printf( "DTC_DLT_1_ARRAY offset=%x %s\n"
                       , curr->offset
-                      , DbgSymNameFull( curr->op_del ) );
+                      , DbgSymNameFull( curr->op_del, &vbuf ) );
+                VbufFree( &vbuf );
             }
 #endif
             DgAlignPad( sizeof( DTOR_CMD_CODE ) );
@@ -608,10 +614,12 @@ static void cgGenerateCmdsDel2( // EMIT DELETE-2 CMDS
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_2 ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
+                VBUF vbuf;
                 printf( "DTC_DLT_2 offset=%x size=%x %s\n"
                       , curr->offset
                       , curr->size
-                      , DbgSymNameFull( curr->op_del ) );
+                      , DbgSymNameFull( curr->op_del, &vbuf ) );
+                VbufFree( &vbuf );
             }
 #endif
             DgAlignPad( sizeof( DTOR_CMD_CODE ) );
@@ -632,10 +640,12 @@ static void cgGenerateCmdsDel2Array( // EMIT DELETE-2-ARRAY CMDS
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_2_ARRAY ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
+                VBUF vbuf;
                 printf( "DTC_DLT_2_ARRAY offset=%x size=%x %s\n"
                       , curr->offset
                       , curr->size
-                      , DbgSymNameFull( curr->op_del ) );
+                      , DbgSymNameFull( curr->op_del, &vbuf ) );
+                VbufFree( &vbuf );
             }
 #endif
             DgAlignPad( sizeof( DTOR_CMD_CODE ) );

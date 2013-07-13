@@ -70,10 +70,12 @@ ExtraRptCtr( cgio_locates_thunk );
     static void _dump( CGFILE* cgfile, const char* prefix )
     {
         if( PragDbgToggle.callgraph ) {
+            VBUF vbuf;
             printf( "Cgio: %x %s - %s\n"
                   , cgfile
                   , prefix
-                  , DbgSymNameFull( cgfile->symbol ) );
+                  , DbgSymNameFull( cgfile->symbol, &vbuf ) );
+            VbufFree( &vbuf );
         }
     }
 
@@ -81,7 +83,9 @@ ExtraRptCtr( cgio_locates_thunk );
     {
         if( NULL != ring ) {
             CGFILE* curr;
+            VBUF vbuf;
             printf( "\n%s\n", msg );
+            VbufInit( &vbuf );
             RingIterBeg( ring, curr ) {
                 printf( "\nCGFILE[%x] %s\n"
                         "     first[%x] offset[%x] buffer[%x] cursor[%x]"
@@ -92,7 +96,7 @@ ExtraRptCtr( cgio_locates_thunk );
                         " calls_inline(%d) can_throw(%d)\n"
                         "     stab_gen(%d) ctor_test(%d) write_to_pch(%d)\n"
                       , curr
-                      , DbgSymNameFull( curr->symbol )
+                      , DbgSymNameFull( curr->symbol, &vbuf )
                       , curr->first
                       , curr->offset
                       , curr->buffer
@@ -115,6 +119,7 @@ ExtraRptCtr( cgio_locates_thunk );
                       , curr->s.write_to_pch
                       );
             } RingIterEnd( curr )
+            VbufFree( &vbuf );
         }
     }
 

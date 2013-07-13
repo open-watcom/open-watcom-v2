@@ -84,9 +84,11 @@ void BeGenTsRef(                // GENERATE REFERENCE TO TYPE-SIGNATURE
     TypeSigSymOffset( ts, &sym, &offset );
 #ifndef NDEBUG
     if( PragDbgToggle.dump_stab ) {
+        VBUF vbuf;
         printf( " typsig=%s+%x"
-              , DbgSymNameFull( sym )
+              , DbgSymNameFull( sym, &vbuf )
               , offset );
+        VbufFree( &vbuf );
     }
 #endif
     DgPtrSymDataOffset( sym, offset );
@@ -238,14 +240,20 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
         genName( thr, ts->type );
 #ifndef NDEBUG
         if( PragDbgToggle.dump_stab ) {
+            VBUF vbuf1;
+            VBUF vbuf2;
+            VBUF vbuf3;
             printf( " size=%x\n"
                     "     ctor = %s\n"
                     "     copy = %s\n"
                     "     dtor = %s\n"
                   , size
-                  , DbgSymNameFull( ts->default_ctor )
-                  , DbgSymNameFull( ts->copy_ctor )
-                  , DbgSymNameFull( ts->dtor ) );
+                  , DbgSymNameFull( ts->default_ctor, &vbuf1 )
+                  , DbgSymNameFull( ts->copy_ctor, &vbuf2 )
+                  , DbgSymNameFull( ts->dtor, &vbuf3 ) );
+            VbufFree( &vbuf1 );
+            VbufFree( &vbuf2 );
+            VbufFree( &vbuf3 );
         }
 #endif
       } break;

@@ -75,21 +75,15 @@
 extern char *FEName( SYMBOL );
 
 char *DbgSymNameFull(           // GET FULL SYMBOL NAME
-    SYMBOL sym )                // - symbol
+    SYMBOL sym,                 // - symbol
+    VBUF *vbuf )                // - variable-sized buffer
 {
-    VBUF vbuf;                  // - variable-sized buffer
-    static char name[ 1024 ];   // - debugging buffer
-    static char* name_ptr;
-
-    if( sym == NULL ) {
-        name_ptr = "**NULL**";
-    } else {
-        FormatSym( sym, &vbuf );
-        stpcpy( name, VbufString( &vbuf ) );
-        VbufFree( &vbuf );
-        name_ptr = name;
+    if( sym != NULL ) {
+        return( FormatSym( sym, vbuf ) );
     }
-    return name_ptr;
+    VbufInit( vbuf );
+    VbufConcStr( vbuf, "**NULL**" );
+    return( VbufString( vbuf ) );
 }
 
 
@@ -281,6 +275,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
     CGINTER *ins;               // - instruction
     char *opcode;               // - opcode
     unsigned uvalue;            // - value with opcode
+    VBUF vbuf;
 
     ins = instruction;
     opcode = DbgIcOpcode( ins->opcode );
@@ -300,7 +295,8 @@ void DumpCgFront(               // DUMP GENERATED CODE
               , disk_blk, offset
               , opcode
               , uvalue
-              , DbgSymNameFull( ins->value.pvalue ) );
+              , DbgSymNameFull( ins->value.pvalue, &vbuf ) );
+        VbufFree( &vbuf );
         break;
       case DBG_OPCODE_TYP :
       { VBUF fmt_prefix, fmt_suffix;
@@ -459,7 +455,6 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
     };
 
     if( sym != NULL ) {
-        FormatSym( sym, &vbuf );
         printf( "SYMBOL"        F_BADDR
                 " next"         F_PTR
                 " thread"       F_PTR
@@ -486,7 +481,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
               , sym->flag
               , sym->flag2
               , sym->segid
-              , VbufString( &vbuf )
+              , FormatSym( sym, &vbuf )
               );
         if( sym->sym_type != NULL ) {
             DumpFullType( sym->sym_type );
@@ -622,7 +617,7 @@ void DumpClassInfo(             // DUMP CLASSINFO
     if( ci->name == NULL ) {
         class_name = "**UN-NAMED**";
     } else {
-        class_name = ci->name;
+        class_name = NameStr( ci->name );
     }
     printf( "    CLASSINFO" F_BADDR
             " bases"        F_PTR
@@ -1486,11 +1481,13 @@ void DbgGenned(                 // INDICATE SYMBOL GENERATED
     if( NULL == sym ) {
         printf( "Generated: module initialization\n" );
     } else {
+        VBUF vbuf;
         printf( "Generated: %s\n"
-              , DbgSymNameFull( sym ) );
+              , DbgSymNameFull( sym, &vbuf ) );
         if( sym->flag2 & SF2_TOKEN_LOCN ) {
             dumpLocation( &sym->locn->tl );
         }
+        VbufFree( &vbuf );
     }
 }
 

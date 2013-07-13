@@ -1410,11 +1410,12 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
                                VbufString( &vbuf1 ), VbufString( &vbuf2 ) );
         VbufFree( &vbuf1 );
         VbufFree( &vbuf2 );
-        FormatSym( fn_templ, &vbuf1 );
-        printf( "  symbol: %s ", VbufString( &vbuf1 ) );
+
+        printf( "  symbol: %s ", FormatSym( fn_templ, &vbuf1 ) );
+        VbufFree( &vbuf1 );
+
         DbgDumpTokenLocn( fn_templ->locn );
         printf( "\n" );
-        VbufFree( &vbuf1 );
     }
 #endif
 
@@ -3048,11 +3049,11 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
         VbufFree( &vbuf2 );
         VbufFree( &vbuf3 );
 
-        FormatSym( fn_sym, &vbuf1 );
-        printf( "  symbol: %s ", VbufString( &vbuf1 ) );
+        printf( "  symbol: %s ", FormatSym( fn_sym, &vbuf1 ) );
+        VbufFree( &vbuf1 );
+
         DbgDumpTokenLocn( fn_sym->locn );
         printf( "\n" );
-        VbufFree( &vbuf1 );
     }
 #endif
 
@@ -3169,9 +3170,11 @@ static void processInstantiationMembers( CLASS_INST *instance )
 
 #ifndef NDEBUG
             if( PragDbgToggle.member_inst ) {
+                VBUF vbuf;
                 printf( "instantiating %stemplate member: %s\n",
                         curr_member->is_inline ? "inline " : "",
-                        DbgSymNameFull( sym ) );
+                        DbgSymNameFull( sym, &vbuf ) );
+                VbufFree( &vbuf );
             }
 #endif
 

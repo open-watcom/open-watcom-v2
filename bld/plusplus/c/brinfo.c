@@ -276,6 +276,7 @@ void _dbgScope
     , char const * text )
 {
     IfDbgToggle( browse ) {
+        VBUF vbuf;
         switch( scope->id ) {
           case SCOPE_FILE :
             printf( "%s: File Scope %x\n", text, scope );
@@ -288,7 +289,8 @@ void _dbgScope
             printf( "%s: Function Scope: %x %s\n"
                   , text
                   , scope
-                  , DbgSymNameFull( scope->owner.sym ) );
+                  , DbgSymNameFull( scope->owner.sym, &vbuf ) );
+            VbufFree( &vbuf );
             break;
           case SCOPE_BLOCK :
             printf( "%s: Block Scope: %x %d\n"
@@ -806,12 +808,11 @@ void BrinfDeclSymbol            // VALID SYMBOL HAS BEEN DECLARED
      && activeScopesAdjust( sym ) ) {
         ExtraRptIncrementCtr( ctr_symbol_decl );
         IfDbgToggle( browse ) {
-            DbgStmt( printf( "Br-inf-dcl: symbol is %s"
-                           , DbgSymNameFull( sym )
-                           )
-                   );
+            DbgStmt( VBUF vbuf );
+            DbgStmt( printf( "Br-inf-dcl: symbol is %s", DbgSymNameFull( sym, &vbuf ) ) );
             DbgStmt( DbgDumpTokenLocn( &sym->locn->tl ) );
             DbgStmt( printf( "\n" ) );
+            DbgStmt( VbufFree( &vbuf ) );
         }
         if( SymIsFunction( sym ) ) {
             if( CompFlags.optbr_f ) {
@@ -836,12 +837,11 @@ void BrinfDeclTemplateClass     // VALID CLASS TEMPLATE HAS BEEN DECLARED
      && activeScopesAdjust( tc ) ) {
         ExtraRptIncrementCtr( ctr_template_class_decl );
         IfDbgToggle( browse ) {
-            DbgStmt( printf( "Br-inf-def: template class is %s"
-                           , DbgSymNameFull( tc )
-                           )
-                   );
+            DbgStmt( VBUF vbuf );
+            DbgStmt( printf( "Br-inf-def: template class is %s", DbgSymNameFull( tc, &vbuf ) ) );
             DbgStmt( DbgDumpTokenLocn( &tc->locn->tl ) );
             DbgStmt( printf( "\n" ) );
+            DbgStmt( VbufFree( &vbuf ) );
         }
         refSymType( tc );
     }
@@ -855,12 +855,11 @@ void BrinfDeclTypedef           // VALID TYPEDEF HAS BEEN DECLARED
      && activeScopesAdjust( td ) ) {
         ExtraRptIncrementCtr( ctr_typedef );
         IfDbgToggle( browse ) {
-            DbgStmt( printf( "Br-inf-def: typedef is %s"
-                           , DbgSymNameFull( td )
-                           )
-                   );
+            DbgStmt( VBUF vbuf );
+            DbgStmt( printf( "Br-inf-def: typedef is %s", DbgSymNameFull( td, &vbuf ) ) );
             DbgStmt( DbgDumpTokenLocn( &td->locn->tl ) );
             DbgStmt( printf( "\n" ) );
+            DbgStmt( VbufFree( &vbuf ) );
         }
         if( CompFlags.optbr_t ) {
             brinfIcDclSym( IC_BR_DCL_TDEF, td );
@@ -877,12 +876,11 @@ void BrinfReferenceSymbol       // SYMBOL REFERENCE
     if( BrinfActive()
      && SymIsBrowsable( sym ) ) {
         IfDbgToggle( browse ) {
-            DbgStmt( printf( "Br-inf-ref: symbol is %s"
-                           , DbgSymNameFull( sym )
-                           )
-                   );
+            DbgStmt( VBUF vbuf );
+            DbgStmt( printf( "Br-inf-ref: symbol is %s", DbgSymNameFull( sym, &vbuf ) ) );
             DbgStmt( DbgDumpTokenLocn( locn ) );
             DbgStmt( printf( "\n" ) );
+            DbgStmt( VbufFree( &vbuf ) );
         }
         if( SymIsFunction( sym ) ) {
             ExtraRptIncrementCtr( ctr_ref_func );

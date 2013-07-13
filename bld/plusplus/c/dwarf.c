@@ -703,7 +703,7 @@ static dw_handle dwarfClass( TYPE type, DC_CONTROL control )
     if( !defined || type->u.c.info->unnamed || (control & DC_DEFINE) ) {
         type_update( type, TF2_DWARF_DEF, dh );
         if( (type->u.c.info->anonymous == 0) && (type->u.c.info->unnamed == 0) ) {
-            name = SimpleTypeName( type );
+            name = NameStr( SimpleTypeName( type ) );
         } else {
             name = NULL;
         }
@@ -745,11 +745,11 @@ static dw_handle dwarfEnum( TYPE type, DC_CONTROL control )
         SYMBOL      sym;
         type_update( type, TF2_DWARF_DEF, dh );
         DWHandleSet( Client, dh );
-        dh = DWBeginEnumeration( Client, CgTypeSize( type->of ), SimpleTypeName( type ), 0, 0 );
+        dh = DWBeginEnumeration( Client, CgTypeSize( type->of ), NameStr( SimpleTypeName( type ) ), 0, 0 );
         sym = type->u.t.sym->thread;
         while( SymIsEnumeration( sym ) ) {
             // fixme: enums need to be in reverse order
-            DWAddConstant( Client, sym->u.sval, sym->name->name );
+            DWAddConstant( Client, sym->u.sval, NameStr( sym->name->name ) );
             sym = sym->thread;
         }
         DWEndEnumeration( Client );
@@ -804,7 +804,7 @@ static dw_handle dwarfTypedef( TYPE type, DC_CONTROL control )
         DWHandleSet( Client, dh );
         dh = DWTypedef( Client,
                         of_hdl,
-                        SimpleTypeName( type ),
+                        NameStr( SimpleTypeName( type ) ),
                         0,
                         flags );
     }

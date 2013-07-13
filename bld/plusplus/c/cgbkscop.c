@@ -227,10 +227,12 @@ static void _printScopeResAll( SCOPE_RES const *sr, char const * msg )
 static void _printFunction( SYMBOL fun, char const * msg )
 {
     if( PragDbgToggle.callgraph_scan ) {
+        VBUF vbuf;
         printf( "%s [%x] %s\n"
               , msg
               , fun
-              , DbgSymNameFull( fun ) );
+              , DbgSymNameFull( fun, &vbuf ) );
+        VbufFree( &vbuf );
     }
 }
 
@@ -241,13 +243,15 @@ static boolean _printCallNode
     UNR_USAGE *fu;
     ctl = ctl;
     if( PragDbgToggle.callgraph_scan ) {
+        VBUF vbuf;
         printf( "CALLNODE[%x] unresolved[%x] %s\n"
               , node
               , node->unresolved
-              , DbgSymNameFull( node->base.object ) );
+              , DbgSymNameFull( node->base.object, &vbuf ) );
         RingIterBeg( node->unresolved, fu ) {
             _printUnrUsage( fu, "" );
         } RingIterEnd( fu );
+        VbufFree( &vbuf );
     }
     return FALSE;
 }

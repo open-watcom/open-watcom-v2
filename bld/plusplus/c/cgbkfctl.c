@@ -226,6 +226,7 @@ void FnctlDump()                // DEBUGGING -- dump stack
     for( fctl = VstkTop( &stack_files )
        ; fctl != NULL
        ; fctl = VstkNext( &stack_files, fctl ) ) {
+        VBUF vbuf;
         SYMBOL func = fctl->func;
         if( func == NULL ) {
             func = ModuleInitFuncSym();
@@ -243,7 +244,7 @@ void FnctlDump()                // DEBUGGING -- dump stack
                 "  coded_return(%d) has_cdtor_val(%d) temp_dtoring(%d) ctor_test(%d)\n"
                 "\n"
               , fctl
-              , DbgSymNameFull( func )
+              , DbgSymNameFull( func, &vbuf )
               , fctl->base_labs_cs
               , fctl->base_goto_near
               , fctl->try_depth
@@ -276,6 +277,7 @@ void FnctlDump()                // DEBUGGING -- dump stack
               , fctl->temp_dtoring
               , fctl->ctor_test
               );
+        VbufFree( &vbuf );
     }
 }
 

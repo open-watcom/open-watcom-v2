@@ -37,7 +37,9 @@
 // 91/11/07 -- J.W.Welch        -- placed common definitions in WCCP.H
 // 92/12/29 -- B.J. Stecher     -- QNX support
 
+#ifdef NDEBUG
 #define NAME_PTR_IS_NAME_MEMBER
+#endif
 
 #include <stdlib.h>
 #include <string.h>

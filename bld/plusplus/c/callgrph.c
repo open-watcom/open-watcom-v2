@@ -296,12 +296,14 @@ static boolean cgrfDumpCall(    // DUMP CALL GRAPH EDGE
     CALLGRAPH *ctl,             // - call graph information
     CALLEDGE *edge )            // - edge in graph
 {
+    VBUF vbuf;
     ctl = ctl;
     printf( "- calls[%p] refs(%d) addrs(%d) %s\n"
           , edge
           , edge->refs
           , edge->addrs
-          , DbgSymNameFull( edge->base.target->object ) );
+          , DbgSymNameFull( edge->base.target->object, &vbuf ) );
+    VbufFree( &vbuf );
     return FALSE;
 }
 
@@ -311,6 +313,8 @@ static boolean cgrfDumpNode(    // DUMP CALL GRAPH NODE
     CALLNODE *node )            // - node to dump
 {
     SYMBOL func;
+    VBUF vbuf;
+
     func = node->base.object;
     if( func == NULL ) {
         func = ModuleInitFuncSym();
@@ -332,9 +336,10 @@ static boolean cgrfDumpNode(    // DUMP CALL GRAPH NODE
           , node->state_table
           , node->rescan
           , node->stab_gen
-          , DbgSymNameFull( node->base.object )
+          , DbgSymNameFull( node->base.object, &vbuf )
           , func->flag );
     CgrfWalkCalls( ctl, node, &cgrfDumpCall );
+    VbufFree( &vbuf );
     return FALSE;
 }
 

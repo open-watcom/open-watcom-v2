@@ -316,7 +316,7 @@ static void fmtTypeArgument( TYPE arg_type, unsigned arg_index, VBUF *pvbuf, FMT
     if( control & FF_ARG_NAMES ) {
         name = getArgName( arg_index );
         if( name != NULL ) {
-            VbufConcStr( pvbuf, name );
+            VbufConcStr( pvbuf, NameStr( name ) );
         }
     }
     VbufConcVbuf( pvbuf, &arg_suffix );
@@ -577,7 +577,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                                   pprefix );
                     name = SimpleTypeName( class_type );
                     if( name != NULL ) {
-                        VbufConcStr( pprefix, name );
+                        VbufConcStr( pprefix, NameStr( name ) );
                     } else {
                         VbufConcStr( pprefix, memberPointer );
                     }
@@ -595,7 +595,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 if( name == NULL ) {
                     VbufConcStr( pprefix, typeName[top->type->id] );
                 } else {
-                    VbufConcStr( pprefix, name );
+                    VbufConcStr( pprefix, NameStr( name ) );
                     VbufConcStr( pprefix, whiteSpace );
                 }
                 break;
@@ -610,7 +610,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                         VbufConcStr( pprefix, typeName[top->type->id] );
                     }
                 } else {
-                    VbufConcStr( pprefix, name );
+                    VbufConcStr( pprefix, NameStr( name ) );
                     if( flags & TF1_INSTANTIATION ) {
                         fmtTemplateParms( top->type, pprefix );
                     } else if( flags & TF1_UNBOUND ) {
@@ -747,7 +747,7 @@ static PTREE traverse_FormatPTreeId( PTREE curr )
         }
     } else if( curr->op == PT_ID ) {
         if( curr->u.id.name != NULL ) {
-            VbufConcStr( vbuf_FormatPTreeId, curr->u.id.name );
+            VbufConcStr( vbuf_FormatPTreeId, NameStr( curr->u.id.name ) );
         }
     }
 
@@ -772,7 +772,7 @@ void FormatTemplateInfo( TEMPLATE_INFO *tinfo, VBUF *pvbuf )
 
     VbufInit( pvbuf );
 
-    VbufConcStr( pvbuf, tinfo->sym->name->name );
+    VbufConcStr( pvbuf, NameStr( tinfo->sym->name->name ) );
     VbufConcStr( pvbuf, "<" );
     for( i = 0; i < tprimary->num_args; i++ ) {
         VBUF prefix, suffix;
@@ -801,7 +801,7 @@ void FormatTemplateSpecialization( TEMPLATE_SPECIALIZATION *tspec, VBUF *pvbuf)
 
         VbufInit( pvbuf );
 
-        VbufConcStr( pvbuf, tspec->tinfo->sym->name->name );
+        VbufConcStr( pvbuf, NameStr( tspec->tinfo->sym->name->name ) );
         VbufConcStr( pvbuf, "<" );
 
         FormatPTreeList( tspec->spec_args, &prefix );

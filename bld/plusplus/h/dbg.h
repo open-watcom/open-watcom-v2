@@ -158,7 +158,8 @@ void DumpSymInfo(               // DUMP COMPLETE INFO FOR SYMBOL
     SYMBOL sym )                // - symbol
 ;
 char *DbgSymNameFull(           // GET FULL SYMBOL NAME
-    SYMBOL sym )                // - symbol
+    SYMBOL sym,                 // - symbol
+    VBUF *vbuf )                // - variable length buffer
 ;
 char *DbgSymNameShort(          // GET Short SYMBOL NAME
     SYMBOL sym )                // - symbol

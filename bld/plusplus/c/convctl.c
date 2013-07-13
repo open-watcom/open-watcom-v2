@@ -1477,6 +1477,8 @@ static char const * const ruffstr[] =
 void DbgConvCtl                 // DUMP CONVCTL INFORMATION
     ( CONVCTL* info )           // - structure
 {
+    VBUF vbuf;
+
     printf( "CONVCTL[%X] rough[%s]\n\n"
           , info
           , ruffstr[ info->rough ] );
@@ -1503,7 +1505,7 @@ void DbgConvCtl                 // DUMP CONVCTL INFORMATION
           , info->req
           , info->rough
           , info->ctd
-          , info->conv_fun, DbgSymNameFull( info->conv_fun )
+          , info->conv_fun, DbgSymNameFull( info->conv_fun, &vbuf )
           );
     if( NULL != info->conv_type ) {
         printf( "conversion type:" );
@@ -1513,6 +1515,7 @@ void DbgConvCtl                 // DUMP CONVCTL INFORMATION
     #define CONVCTL_FLAG( f ) printf( "%d : " #f "\n", info->f );
     CONVCTL_FLAGS
     #undef CONVCTL_FLAG
+    VbufFree( &vbuf );
 }
 
 #undef prtflag

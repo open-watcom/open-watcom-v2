@@ -174,8 +174,7 @@ void PrintFnovList( FNOV_LIST *root )
 
     i = 1;
     RingIterBeg( root, entry ) {
-        FormatSym( entry->sym, &name );
-        printf( "[%d]: '%s'", i++, VbufString( &name ) );
+        printf( "[%d]: '%s'", i++, FormatSym( entry->sym, &name ) );
         VbufFree( &name );
         if( entry->member || entry->stdops ) {
             printf( " flags=( " );

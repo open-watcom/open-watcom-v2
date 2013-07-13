@@ -923,7 +923,7 @@ boolean AsmSysInsertFixups( VBUF *code )
 }
 
 AUX_INFO *AsmSysCreateAux( char *name )
-/*************************************/
+/************************************/
 {
     CreateAux( name );
     AuxCopy( CurrInfo, &WatcallInfo );

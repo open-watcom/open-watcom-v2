@@ -629,7 +629,7 @@ static boolean adjustForVirtualCall( // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
 static intrinsic_mapping* intrinsicMapping // GET INTRINSIC MAPPING
     ( SYMBOL sym )
 {
-    char *name;
+    NAME name;
     intrinsic_mapping *curr;
 
     name = sym->name->name;
@@ -641,7 +641,7 @@ static intrinsic_mapping* intrinsicMapping // GET INTRINSIC MAPPING
         }
         /* it would be nice to do a pointer compare but we would
            need to convert the strings to NAMEs first (AFS) */
-        if( strcmp( name, iname ) == 0 ) break;
+        if( strcmp( NameStr( name ), iname ) == 0 ) break;
     }
     return curr;
 }

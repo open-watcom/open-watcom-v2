@@ -445,7 +445,7 @@ static dbg_type symCVDebugClassType( TYPE type )
     if( info->unnamed ){
         ds = DBBegStruct( CgTypeOutput( type ), !(root->flag & TF1_UNION) );
     }else{
-        ds = DBBegNameStruct( info->name, CgTypeOutput( type ), !(root->flag & TF1_UNION) );
+        ds = DBBegNameStruct( NameStr( info->name ), CgTypeOutput( type ), !(root->flag & TF1_UNION) );
     }
     DBNested( FALSE );
     dt = DBStructForward( ds );
@@ -773,8 +773,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
          && !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_PARM ) ) {
             if( !CompFlags.no_debug_type_names ) {
                 if( !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_INST ) ) {
-                    fwd_info->dn = DBBegName( SimpleTypeName( type ),
-                                              DBG_NIL_TYPE );
+                    fwd_info->dn = DBBegName( NameStr( SimpleTypeName( type ) ), DBG_NIL_TYPE );
                 }
             }
             type->dbgflag |= TF2_SYMDBG;
@@ -839,13 +838,13 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
         de = DBBegEnum( CgTypeOutput( type ) );
         sym = base->u.t.sym->thread;
         while( SymIsEnumeration( sym ) ) {
-            DBAddConst( de, sym->name->name, sym->u.sval );
+            DBAddConst( de, NameStr( sym->name->name ), sym->u.sval );
             sym = sym->thread;
         }
         dt = DBEndEnum( de );
         name = SimpleTypeName( base );
         if( name != NULL ) {
-            DBEndName( DBBegName( name, scopeEnum ), dt );
+            DBEndName( DBBegName( NameStr( name ), scopeEnum ), dt );
         }
     }   break;
     case TYP_POINTER:
@@ -892,7 +891,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
             if( !(base->flag & TF1_INSTANTIATION) ) {
                 name = SimpleTypeName( base );
                 if( name != NULL ) {
-                    fwd_info->dn = DBBegName( name, fwd_info->dt );
+                    fwd_info->dn = DBBegName( NameStr( name ), fwd_info->dt );
                 }
             }
             prevFwdInfo = fwd_info;

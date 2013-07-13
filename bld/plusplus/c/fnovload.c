@@ -2108,10 +2108,7 @@ boolean IsOverloadedFunc( SYMBOL sym )
 #ifndef NDEBUG
     if( PragDbgToggle.dump_rank ) {
         VBUF name;
-        FormatSym( sym, &name );
-        printf( "Function '%s' is%soverloaded\n",
-            VbufString( &name ),
-            retn ? " " : " not " );
+        printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), retn ? " " : " not " );
         VbufFree( &name );
     }
 #endif
@@ -2199,10 +2196,8 @@ SYMBOL sym, SEARCH_RESULT *result ) // - function to be tested
 #ifndef NDEBUG
     if( PragDbgToggle.dump_rank ) {
         VBUF name;
-        FormatSym( sym, &name );
         printf( "Function '%s' is%soverloaded (ignoring default arguments)\n",
-            VbufString( &name ),
-            retn ? " " : " not " );
+            FormatSym( sym, &name ), retn ? " " : " not " );
         VbufFree( &name );
     }
 #endif

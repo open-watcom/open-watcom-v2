@@ -59,7 +59,7 @@ static boolean formatClassForSym( SYMBOL sym, VBUF *buf )
     if( info != NULL ) {
         name = info->name;
         if( name != NULL ) {
-            VbufConcStr( buf, name );
+            VbufConcStr( buf, NameStr( name ) );
             retn = TRUE;
         }
     }

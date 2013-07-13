@@ -210,7 +210,9 @@ void *CtxWhereAreYou(           // SET DEBUGGING BUFFER
         if( func == NULL ) {
             buf = stpcpy( buf, "data generation" );
         } else {
-            buf = stpcpy( buf, DbgSymNameFull( func ) );
+            VBUF vbuf;
+            buf = stpcpy( buf, DbgSymNameFull( func, &vbuf ) );
+            VbufFree( &vbuf );
         }
         if( ( context == CTX_FUNC_GEN )
           &&( line != 0 ) ) {

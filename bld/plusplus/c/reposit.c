@@ -82,7 +82,7 @@ REPO_REC_FUN* RepoFunRead(      // GET FUNCTION RECORD FROM REPOSITORY
 
     retn = NULL;
     RingIterBeg( funRepository, curr ) {
-        if( 0 == strcmp( name, curr->name ) ) {
+        if( 0 == strcmp( NameStr( name ), NameStr( curr->name ) ) ) {
             retn = curr;
             break;
         }

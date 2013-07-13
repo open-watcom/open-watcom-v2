@@ -164,7 +164,7 @@ typedef struct {
 } rtti_leap_walk;
 
 typedef struct {
-    char                *name;
+    NAME                name;
     TYPE                found;
 } bound_base_walk;
 
@@ -231,7 +231,7 @@ typedef struct {                                /* I - input, O - output */
     SCOPE               start;                  /* I: type of (*p) in "p->C::a" */
     SCOPE               disambiguate;           /* I: C in "p->C::a" */
     SCOPE               ignore;                 /* I: don't search here */
-    char                *name;                  /* I: a in "p->C::a" */
+    NAME                name;                   /* I: a in "p->C::a" */
     TYPE                type;                   /* I: T in "p->operator T()" */
     TYPE                fn_type;                /* I: type of virtual fn */
     SYMBOL              fn_sym;                 /* I: sym of virtual fn */
@@ -402,7 +402,7 @@ static void printScopeName( SCOPE scope, char *suffix )
 
     switch( scope->id ) {
     case SCOPE_CLASS:
-        name = ScopeClass( scope )->u.c.info->name;
+        name = NameStr( ScopeClass( scope )->u.c.info->name );
         if( name == NULL ) {
             name = "**un-named**";
         }
@@ -433,7 +433,7 @@ static void printScopeName( SCOPE scope, char *suffix )
 static void printSymbolName( SYMBOL sym )
 {
     printScopeName( SymScope( sym ), NULL );
-    printf( ":: %s ", sym->name->name );
+    printf( ":: %s ", NameStr( sym->name->name ) );
 }
 
 static void dumpThunk( THUNK_ACTION *thunk )
@@ -1247,7 +1247,7 @@ static void handleFileSyms( SYMBOL sym )
                 if( ! SymIsInitialized( sym ) ) {
                     /* Check to see if we have a matching aux entry with code attached */
                     AUX_ENTRY *paux = NULL;
-                    paux = AuxLookup( sym->name->name );
+                    paux = AuxLookup( NameStr( sym->name->name ) );
                     if( !paux || !paux->info || !paux->info->code ) {
                         if( sym != ModuleInitFuncSym() ) {
                             CErr2p( ERR_FUNCTION_NOT_DEFINED, sym );
@@ -1921,7 +1921,7 @@ char *ScopeNameSpaceFormatName( SCOPE scope )
         }
         ns_sym = ns->sym;
         if( ns_sym != NULL ) {
-            return( ns_sym->name->name );
+            return( NameStr( ns_sym->name->name ) );
         }
     }
     return( NULL );
@@ -3237,8 +3237,7 @@ static boolean okToUseAccess( lookup_walk *data, SYMBOL sym, BASE_PATH *path )
     return( TRUE );
 }
 
-static PATH_CAP *recordPath( lookup_walk *data, BASE_STACK *top,
-                             SYMBOL_NAME sym_name, SYMBOL sym )
+static PATH_CAP *recordPath( lookup_walk *data, BASE_STACK *top, SYMBOL_NAME sym_name, SYMBOL sym )
 {
     BASE_CLASS *base;
     PATH_CAP *cap;
@@ -3291,8 +3290,7 @@ static PATH_CAP *recordPath( lookup_walk *data, BASE_STACK *top,
     return( cap );
 }
 
-static void recordLocation( lookup_walk *data,
-                            SCOPE scope, SYMBOL_NAME sym_name )
+static void recordLocation( lookup_walk *data, SCOPE scope, SYMBOL_NAME sym_name )
 {
     BASE_STACK *stack;
 
@@ -6982,7 +6980,7 @@ SYMBOL ScopeASMLookup( NAME name )
     SEARCH_RESULT   *result;
 
     sym = NULL;
-    result = ScopeFindNaked( GetCurrScope(), NameCreateNoLen( name ) );
+    result = ScopeFindNaked( GetCurrScope(), name );
     if( result != NULL ) {
         if( result->simple ) {
             sym = result->sym_name->name_syms;
@@ -7003,7 +7001,7 @@ SYMBOL ScopeASMLookup( NAME name )
 SYMBOL ScopeIntrinsic( boolean turn_on )
 /**************************************/
 {
-    char *name;
+    NAME name;
     SEARCH_RESULT *result;
     SYMBOL_NAME sym_name;
     SYMBOL sym;

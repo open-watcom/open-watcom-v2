@@ -3224,7 +3224,9 @@ static void writeVirtualFile(   // EMIT AND FREE A VIRTUAL FILE
         if( func == NULL ) {
             printf( "generating module data\n" );
         } else {
-            printf( "generating %s\n", DbgSymNameFull( func ) );
+            VBUF vbuf;
+            printf( "generating %s\n", DbgSymNameFull( func, &vbuf ) );
+            VbufFree( &vbuf );
         }
     }
     if( PragDbgToggle.genned ) {
@@ -3436,15 +3438,19 @@ void FEGenProc(                 // INLINE SUPPORT
     curr = CallStabStateTablePosn( handle );
 #ifndef NDEBUG
     if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
-        if( PragDbgToggle.dump_exec_ic ) printf( "\n" );
-        printf( "start of inline function: %s\n"
-              , DbgSymNameFull( sym ) );
+        VBUF vbuf;
+        if( PragDbgToggle.dump_exec_ic )
+            printf( "\n" );
+        printf( "start of inline function: %s\n", DbgSymNameFull( sym, &vbuf ) );
         if( PragDbgToggle.dump_stab ) {
             printf( "   positions: state-table(%x) call(%x)\n"
                   , FstabCurrPosn()
                   , curr );
         }
-        if( PragDbgToggle.dump_exec_ic ) printf( "\n" );
+        if( PragDbgToggle.dump_exec_ic ) {
+            printf( "\n" );
+        }
+        VbufFree( &vbuf );
     }
 #endif
     SymTransNewBlock();
@@ -3455,15 +3461,19 @@ void FEGenProc(                 // INLINE SUPPORT
     emit_virtual_file( file_ctl, handle );
 #ifndef NDEBUG
     if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
-        if( PragDbgToggle.dump_exec_ic ) printf( "\n" );
-        printf( "end of inline function: %s\n"
-              , DbgSymNameFull( sym ) );
+        VBUF vbuf;
+        if( PragDbgToggle.dump_exec_ic )
+            printf( "\n" );
+        printf( "end of inline function: %s\n", DbgSymNameFull( sym, &vbuf ) );
         if( PragDbgToggle.dump_stab ) {
             printf( "   positions: state-table(%x) marked_posn(%x)\n"
                   , FstabCurrPosn()
                   , FstabMarkedPosn() );
         }
-        if( PragDbgToggle.dump_exec_ic ) printf( "\n" );
+        if( PragDbgToggle.dump_exec_ic ) {
+            printf( "\n" );
+        }
+        VbufFree( &vbuf );
     }
 #endif
     file_ctl->buffer = buffering;

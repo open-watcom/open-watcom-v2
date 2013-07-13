@@ -378,7 +378,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         type_add = FALSE;
         break;
       case PT_ID :
-        text = pnode->u.id.name;
+        text = NameStr( pnode->u.id.name );
         type_add = FALSE;
         break;
       case PT_SYMBOL :
@@ -403,7 +403,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
             } else if( sym->name->name == NULL ) {
                 stpcpy( text, "**NULL**" );
             } else {
-                stpcpy( text, sym->name->name );
+                stpcpy( text, NameStr( sym->name->name ) );
             }
             text = buffer;
         }

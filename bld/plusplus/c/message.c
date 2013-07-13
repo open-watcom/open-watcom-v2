@@ -967,16 +967,12 @@ void DefAddPrototype(           // ADD PROTOTYPE FOR SYMBOL TO .DEF FILE
     if( fn->id == SC_STATIC ) {
         return;
     }
+    fprintf( DefFile, "//#line \"%s\" %u\n", fileName( fn->locn->tl.src_file ), fn->locn->tl.line );
     if( CompFlags.use_base_types ) {
-        FormatFnDefn( fn, &proto );
+        fprintf( DefFile, "extern %s;\n", FormatFnDefn( fn, &proto ) );
     } else {
-        FormatFnDefnWithTypedefs( fn, &proto );
+        fprintf( DefFile, "extern %s;\n", FormatFnDefnWithTypedefs( fn, &proto ) );
     }
-    fprintf( DefFile
-           , "//#line \"%s\" %u\n"
-           , fileName( fn->locn->tl.src_file )
-           , fn->locn->tl.line );
-    fprintf( DefFile, "extern %s;\n", VbufString( &proto ) );
     VbufFree( &proto );
 }
 

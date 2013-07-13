@@ -495,6 +495,8 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
 {
     SE* se;                     // - state entry
     char const* sv_name;        // - name of entry
+    VBUF vbuf1;
+    VBUF vbuf2;
 
     se = arg;
     sv_name = DbgSeName( se->base.se_type );
@@ -512,14 +514,18 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
         break;
       case DTC_SYM_AUTO :
         printf( "\n    sym(%s) dtor(%s) offset(%x)\n"
-              , DbgSymNameFull( se->sym_auto.sym )
-              , DbgSymNameFull( se->sym_auto.dtor )
+              , DbgSymNameFull( se->sym_auto.sym, &vbuf1 )
+              , DbgSymNameFull( se->sym_auto.dtor, &vbuf2 )
               , se->sym_auto.offset );
+        VbufFree( &vbuf1 );
+        VbufFree( &vbuf2 );
         break;
       case DTC_SYM_STATIC :
         printf( "\n    sym(%s) dtor(%s)\n"
-              , DbgSymNameFull( se->sym_static.sym )
-              , DbgSymNameFull( se->sym_static.dtor ) );
+              , DbgSymNameFull( se->sym_static.sym, &vbuf1 )
+              , DbgSymNameFull( se->sym_static.dtor, &vbuf2 ) );
+        VbufFree( &vbuf1 );
+        VbufFree( &vbuf2 );
         break;
       case DTC_SET_SV :
         printf( "\n    se(%x = %d)\n"
@@ -534,7 +540,8 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
         printf( "\n    reg(%x) offset(%x) dtor(%s)\n"
               , se->component.obj
               , se->component.offset
-              , DbgSymNameFull( se->component.dtor ) );
+              , DbgSymNameFull( se->component.dtor, &vbuf1 ) );
+        VbufFree( &vbuf1 );
         break;
       case DTC_TEST_FLAG :
         printf( "\n    index(%d) true(%x = %d) false(%x = %d)\n"
@@ -548,8 +555,9 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
         printf( "\n    impl(%x) sigs(%x) sym(%s)\n"
               , se->try_blk.try_impl
               , se->try_blk.sigs
-              , DbgSymNameFull( se->try_blk.sym ) );
+              , DbgSymNameFull( se->try_blk.sym, &vbuf1 ) );
         DbgDumpTypeSigEnt( se->try_blk.sigs );
+        VbufFree( &vbuf1 );
         break;
       case DTC_CATCH :
         printf( "\n    try(%x) sig(%x)\n"
@@ -572,7 +580,8 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
               , se->subobj.offset
               , se->subobj.original
               , DbgSeName( se->subobj.kind )
-              , DbgSymNameFull( se->subobj.dtor ) );
+              , DbgSymNameFull( se->subobj.dtor, &vbuf1 ) );
+        VbufFree( &vbuf1 );
         break;
       case DTC_ARRAY_INIT :
         printf( "\n    reg(%x)\n"
@@ -581,15 +590,17 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
       case DTC_DLT_1 :
       case DTC_DLT_1_ARRAY :
         printf( "\n    op_del(%s) offset(%x)\n"
-              , DbgSymNameFull( se->del_1.op_del )
+              , DbgSymNameFull( se->del_1.op_del, &vbuf1 )
               , se->del_1.offset );
+        VbufFree( &vbuf1 );
         break;
       case DTC_DLT_2 :
       case DTC_DLT_2_ARRAY :
         printf( "\n    op_del(%s) offset(%x) size(%x)\n"
-              , DbgSymNameFull( se->del_2.op_del )
+              , DbgSymNameFull( se->del_2.op_del, &vbuf1 )
               , se->del_2.offset
               , se->del_2.size );
+        VbufFree( &vbuf1 );
         break;
     }
 }
@@ -603,9 +614,10 @@ void DbgDumpStateTableDefn(     // DUMP STATE TABLE DEFINITION
 
     defn = arg;
     if( defn != NULL ) {
+        VBUF vbuf;
         printf( "State Table Definition[%x] R/O(%s) kind(%x)\n"
               , defn
-              , DbgSymNameFull( defn->ro ) );
+              , DbgSymNameFull( defn->ro, &vbuf ) );
         if( defn->state_table != NULL ) {
             for( se = defn->state_table; ; se = se->base.prev ) {
                 DbgDumpStateEntry( se );
@@ -613,6 +625,7 @@ void DbgDumpStateTableDefn(     // DUMP STATE TABLE DEFINITION
             }
         }
         fflush( stdout );
+        VbufFree( &vbuf );
     }
 }
 
@@ -622,15 +635,17 @@ void DbgDumpStateTable(         // DUMP STATE TABLE INSTANCE
 {
     STAB_CTL* sctl;             // - control info: instance
     STAB_DEFN* defn;            // - control info: definition
+    VBUF vbuf;
 
     sctl = arg;
     defn = sctl->defn;
     printf( "State Table Instance[%x] definition(%x) R/W(%s)\n"
           , sctl
           , defn
-          , DbgSymNameFull( sctl->rw ) );
+          , DbgSymNameFull( sctl->rw, &vbuf ) );
     DbgDumpStateTableDefn( defn );
     fflush( stdout );
+    VbufFree( &vbuf );
 }
 
 #endif

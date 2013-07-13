@@ -292,6 +292,9 @@ void DumpCdoptClElem(           // DUMP A CLASS ELEMENT
     CL_ELEM* elem )             // - the element
 {
     if( elem != NULL ) {
+        VBUF vbuf1;
+        VBUF vbuf2;
+
         printf( "  CL_ELEM[%x]: next(%x) type(%x) offset(%x) type(%s)\n"
                 "       descr(%x) cdtor(%s) sym(%s)\n"
                 "       elim_intermed(%d) cannot_define(%d) must_call(%d)\n"
@@ -301,12 +304,14 @@ void DumpCdoptClElem(           // DUMP A CLASS ELEMENT
               , elem->offset
               , __fmt_TOB( elem->otype )
               , elem->descr
-              , DbgSymNameFull( elem->cdtor )
-              , DbgSymNameFull( elem->sym )
+              , DbgSymNameFull( elem->cdtor, &vbuf1 )
+              , DbgSymNameFull( elem->sym, &vbuf2 )
               , elem->elim_intermed
               , elem->cannot_define
               , elem->must_call
               );
+        VbufFree( &vbuf1 );
+        VbufFree( &vbuf2 );
     }
 }
 
@@ -318,6 +323,8 @@ void DumpCdoptInfo(             // DUMP CD_DESCR
     ACC_FUN* af;                // - current function access
 
     if( PragDbgToggle.cdopt ) {
+        VBUF vbuf;
+
         printf( "CD_DESCR[%x]: type(%x) opt(%s) elements(%x)\n"
                 "              accessed(%x) vft(%d) vbt(%d)\n"
               , info
@@ -331,9 +338,11 @@ void DumpCdoptInfo(             // DUMP CD_DESCR
         RingIterBeg( info->elements, elem ) {
             DumpCdoptClElem( elem );
         } RingIterEnd( elem )
+        VbufInit( &vbuf );
         RingIterBeg( info->accessed, af ) {
-            printf( "       Accessed: %s\n", DbgSymNameFull( af->fun ) );
+            printf( "       Accessed: %s\n", DbgSymNameFull( af->fun, &vbuf ) );
         } RingIterEnd( af )
+        VbufFree( &vbuf );
     }
 }
 

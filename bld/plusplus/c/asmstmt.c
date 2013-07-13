@@ -194,7 +194,7 @@ PTREE AsmStmt( void )
     }
     if( AsmCodeAddress != 0 ) {
         fn_name = NameDummy();
-        auxinfo = AsmSysCreateAux( fn_name );
+        auxinfo = AsmSysCreateAux( NameStr( fn_name ) );
         uses_auto = AsmSysInsertFixups( &code_buffer );
         if( uses_auto ) {
             AsmSysUsesAuto();

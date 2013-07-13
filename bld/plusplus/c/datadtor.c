@@ -88,12 +88,14 @@ PTREE DataDtorObjPush(          // START OF DTORABLE OBJECT
 
 #ifndef NDEBUG
     if( PragDbgToggle.dump_data_dtor ) {
+        VBUF vbuf;
         printf( "DataDtorObjPush -- symbol %s\n"
                 "                -- offset %x\n"
                 "                -- "
-              , DbgSymNameFull( init_sym )
+              , DbgSymNameFull( init_sym, &vbuf )
               , offset );
         DumpFullType( type );
+        VbufFree( &vbuf );
     }
 #endif
     dtor_type = type;

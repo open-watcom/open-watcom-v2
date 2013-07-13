@@ -41,7 +41,7 @@
 
 static SYMBOL existingThunk(    // GET EXISTING THUNK SYMBOL FOR NAME
     SCOPE scope,                // - scope to look in
-    char *name )                // - thunk name
+    NAME name )                 // - thunk name
 {
     SYMBOL sym;                 // - symbol for name
     SEARCH_RESULT *result;      // - search result
@@ -91,7 +91,7 @@ static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
     TYPE thunk_type;            // - type of new symbol
     SYMBOL new_sym;             // - the new symbol
     SCOPE scope;                // - scope for new symbol
-    char *name;                 // - name of new symbol
+    NAME name;                  // - name of new symbol
     symbol_class thunk_class;   // - SC_.. for thunk
 
     switch( classification ) {
@@ -124,7 +124,7 @@ static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
 static void insertArgument(     // INSERT AN ARGUMENT
     TYPE type )                 // - type of argument
 {
-    char *name;                 // - name of argument
+    NAME name;                  // - name of argument
     SYMBOL sym;                 // - new argument
 
     sym = SymMakeDummy( type, &name );
@@ -182,7 +182,7 @@ static void thunkEpilogue(      // THUNK EPILOGUE
 static PTREE thunkArgList(      // BUILD THUNK ARGUMENT LIST
     SCOPE scope )               // - scope for arguments
 {
-    char *ret_name;             // - name of return value symbol
+    NAME ret_name;              // - name of return value symbol
     PTREE expr;                 // - argument expression
     PTREE list;                 // - arg. list under construction
     SYMBOL stopper;             // - stopping value
@@ -380,7 +380,7 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
     SYMBOL thunk_sym;
     SYMBOL override_sym;
     SYMBOL return_sym;
-    char *name;
+    NAME name;
     PTREE stmt;
     PTREE args;
     PTREE this_arg;

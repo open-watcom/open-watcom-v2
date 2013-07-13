@@ -145,7 +145,7 @@ extern void ClassStoreInlineFunc( DECL_INFO * );
 extern void ClassStoreDefArg( DECL_INFO * );
 extern void ClassAccessDeclaration( PTREE, TOKEN_LOCN * );
 extern void ClassAccessTypeDeclaration( DECL_SPEC *, TOKEN_LOCN * );
-extern void ClassMakeUniqueName( TYPE, char * );
+extern void ClassMakeUniqueName( TYPE, NAME );
 extern boolean ClassAnonymousUnion( DECL_SPEC * );
 extern TYPE ClassTagDefinition( TYPE, NAME );
 extern PTREE ClassMemInit( SYMBOL, REWRITE * );
