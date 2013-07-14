@@ -1288,7 +1288,7 @@ static int dtor( output_desc *data, state_desc *state )
     return( TRUE );
 }
 
-static int delete( output_desc *data, state_desc *state )
+static int op_delete( output_desc *data, state_desc *state )
 {
     _output2( DM_SET_INDEX, state->prefix );
     _output1( DM_OPERATOR_PREFIX );
