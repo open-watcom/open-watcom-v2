@@ -61,7 +61,6 @@ long _WCI86FAR _CGRAPH           _imagesize_w_87( double, double, double, double
 #else
     #pragma aux fpi parm [ax];
 #endif
-#endif
 
 #pragma aux (fpi)  _arc_w_87;
 #pragma aux (fpi)  _ellipse_w_87;
@@ -80,3 +79,5 @@ long _WCI86FAR _CGRAPH           _imagesize_w_87( double, double, double, double
 #pragma aux (fpi)  _setcharspacing_w_87;
 #pragma aux (fpi)  _setpixel_w_87;
 #pragma aux (fpi)  _setwindow_87;
+
+#endif
