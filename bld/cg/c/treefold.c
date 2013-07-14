@@ -41,6 +41,7 @@
 #include "types.h"
 #include "treefold.h"
 #include "bldins.h"
+#include "utils.h"
 
 typedef union i32 {
     signed_32   s;
@@ -57,7 +58,6 @@ extern  tn              TGBinary(cg_op,tn,tn,type_def*);
 extern  void            BurnTree(tn);
 extern  tn              TGConst(cfloat *,type_def*);
 extern  tn              TGConvert(tn,type_def*);
-extern  uint            Length(char*);
 extern  tn              TGTrash(tn);
 extern  tn              TGNode( tn_class, cg_op, tn, tn, type_def * );
 extern  bool            TGCanDuplicate( tn node );

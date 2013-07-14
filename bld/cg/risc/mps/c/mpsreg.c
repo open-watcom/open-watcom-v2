@@ -36,6 +36,7 @@
 #include "cgmem.h"
 #include "data.h"
 #include "feprotos.h"
+#include "utils.h"
 
 extern  hw_reg_set      ReturnReg( type_class_def );
 extern  hw_reg_set      *ParmRegs( void );

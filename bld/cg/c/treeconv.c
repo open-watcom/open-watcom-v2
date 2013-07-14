@@ -37,6 +37,7 @@
 #include "treeconv.h"
 #include "zoiks.h"
 #include "cfloat.h"
+#include "utils.h"
 
 extern  void            BurnTree(tn);
 extern  tn              TGConst(pointer,type_def*);

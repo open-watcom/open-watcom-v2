@@ -37,12 +37,12 @@
 #include "cgmem.h"
 #include "data.h"
 #include "feprotos.h"
+#include "utils.h"
 
 extern  hw_reg_set      FullReg(hw_reg_set);
 extern  bool            IsRegClass(hw_reg_set,type_class_def);
 extern  hw_reg_set      ReturnReg(type_class_def,bool);
 extern  hw_reg_set      StructReg( void );
-extern  byte            *Copy(void*,void*,uint);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
 extern  hw_reg_set      FixedRegs( void );
 extern  hw_reg_set      StackReg( void );
@@ -177,7 +177,7 @@ extern  type_class_def  CallState( aux_handle aux,
     }
     i++;
     state->parm.table = CGAlloc( i*sizeof( hw_reg_set ) );
-    Copy( parms, state->parm.table, i*sizeof( hw_reg_set ) );
+    Copy( parms, state->parm.table, i * sizeof( hw_reg_set ) );
     HW_CAsgn( state->parm.used, HW_EMPTY );
     state->parm.curr_entry = state->parm.table;
     state->parm.offset  = 0;

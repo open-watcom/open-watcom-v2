@@ -46,6 +46,7 @@
 #include "cgstub.h"
 #include "feprotos.h"
 #include "cgmem.h"
+#include "utils.h"
 
 #include "stubdata.h"
 
@@ -66,8 +67,6 @@ extern  int             FStdOut();
 extern  char            *EnvVar(char*);
 
 extern  void            DumpTree(pointer);
-extern  char            *CopyStr(char*,char*);
-extern  byte            *Copy(void*,void*,uint);
 extern  void            exit(int);
 extern  void            VDefLabel(l *);
 extern  void            InitDbgInfo();

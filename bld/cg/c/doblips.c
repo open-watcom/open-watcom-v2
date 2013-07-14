@@ -33,6 +33,7 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "feprotos.h"
+#include "utils.h"
 
 #define Version         "WATCOM Code Generator --------"
 
@@ -43,8 +44,6 @@ extern  int             OSCall(void);
  static void OSCall(void){}
 #endif
 
-extern  uint            Length(char*);
-extern  bool            Equal(char*,char*,int);
 extern  void            FatalError(char *);
 extern  void            Blip(unsigned_16,char);
 extern  void            BlipInit( void );

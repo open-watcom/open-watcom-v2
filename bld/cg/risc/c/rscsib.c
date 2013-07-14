@@ -35,6 +35,7 @@
 #include "cgmem.h"
 #include "data.h"
 #include "makeins.h"
+#include "utils.h"
 
 extern  instruction     *SIBPossibleIndex(instruction*,name*,name**,bool*,hw_reg_set,hw_reg_set,bool*,bool*);
 extern  name            *AllocRegName(hw_reg_set);
@@ -42,7 +43,6 @@ extern  name            *AllocIntConst(int);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  hw_reg_set      Low64Reg(hw_reg_set);
 extern  void            ReplaceOperand(instruction*,name*,name*);
-extern  byte            *Copy(byte*,byte*,uint);
 
 typedef struct sib_info {
     struct sib_info     *next;

@@ -51,6 +51,7 @@
 #include "display.h"
 #include "rtrtn.h"
 #include "feprotos.h"
+#include "utils.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
 extern  void            DoFunnyRef(int);
@@ -84,7 +85,6 @@ extern  void            Pow2Div(instruction*);
 extern  void            By2Div(instruction*);
 extern  void            Pow2Div286(instruction*);
 extern  void            LayLeaRegOp(instruction*);
-extern  pointer         Copy(pointer,pointer,uint);
 extern  void            GenUnkLea(pointer);
 extern  name            *IntEquivalent(name*);
 extern  void            AdjustStackDepth(instruction*);

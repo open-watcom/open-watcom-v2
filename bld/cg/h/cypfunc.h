@@ -32,7 +32,7 @@
 
 extern  byte            *CypCopy(byte*,byte*,uint);
 extern  char            *CypFill(byte*,uint,byte);
-extern  uint            CypLength(char*);
+extern  uint            CypLength(const char*);
 extern  bool            CypEqual(byte*,byte*,uint);
 
 #if defined(__WATCOMC__) && defined( _M_IX86 )

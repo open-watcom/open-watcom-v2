@@ -43,6 +43,7 @@
 #include "types.h"
 #include "feprotos.h"
 #include "cgprotos.h"
+#include "utils.h"
 
 struct lf_info {
      char       size;

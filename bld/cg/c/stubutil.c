@@ -46,13 +46,11 @@
 #include "cgstub.h"
 #include "feprotos.h"
 #include "cgmem.h"
+#include "utils.h"
 
 #include "stubdata.h"
 
 extern  void            DumpTree(n *);
-extern  uint            Length(char*);
-extern  char            *CopyStr(char*,char*);
-extern  byte            *Copy(void*,void*,uint);
 extern  void            BECloseFiles();
 extern  void            exit(int);
 extern  void            Action(char * str, ... );

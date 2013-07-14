@@ -53,7 +53,7 @@ extern    handle        ObjFile;
 
 
 extern  pointer         FEAuxInfo(pointer*,aux_class);
-extern  int             Length( char* );
+extern  int             Length( const char* );
 extern  void            PLBlip();
 extern void CloseStream(handle );
 extern void PutObjRec(int ,void *,uint );

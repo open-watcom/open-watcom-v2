@@ -36,6 +36,7 @@
 #include "vergen.h"
 #include "score.h"
 #include "makeins.h"
+#include "utils.h"
 
 extern  void            ReplIns(instruction*,instruction*);
 extern  opcode_entry    *FindGenEntry(instruction*,bool*);

@@ -31,10 +31,9 @@
 
 
 #include "cgstd.h"
+#include "utils.h"
 
 extern  char            *_Envptr;
-extern  char            *CopyStr( char *src, char *dst );
-extern  uint            Length(char*);
 extern  int             memicmp(char *,char *,uint);
 
 char *EnvLook( char *name, char *p )

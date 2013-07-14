@@ -45,6 +45,7 @@
 #include "import.h"
 #include "feprotos.h"
 #include "targsys.h"
+#include "utils.h"
 
 #include "langenvd.h"
 #if _TARGET & _TARG_PPC
@@ -57,8 +58,6 @@
   #define   __TGT_SYS   __TGT_SYS_X86
 #endif
 #include "langenv.h"
-
-extern  char            *CopyStr(char*,char*);
 
 #define SPEC_PREFIX             ".PREFIX_DATA."
 #define DLLIMPORT_PREFIX        "__imp_"

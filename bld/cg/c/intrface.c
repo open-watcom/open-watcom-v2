@@ -45,6 +45,7 @@
 #include "cgprotos.h"
 #include "types.h"
 #include "bldins.h"
+#include "utils.h"
 
 #ifndef NDEBUG
 #include "echoapi.h"
@@ -119,7 +120,6 @@ extern  tn              TGAlign( tn, uint );
 extern  void            DGBlip(void);
 extern  void            DataLabel(label_handle);
 extern  void            BackPtr(bck_info*,seg_id,offset,type_def*);
-extern  uint            Length(char*);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            DataBytes(unsigned_32,byte*);
 extern  void            IterBytes(offset,byte);

@@ -30,6 +30,7 @@
 
 
 #include "optwif.h"
+#include "utils.h"
 
 typedef struct common_info {
         ins_entry   *start_com;
@@ -37,7 +38,6 @@ typedef struct common_info {
         uint        save;
 } common_info;
 
-extern  bool            Equal( pointer, pointer, uint );
 extern  ins_entry       *IsolatedCode( ins_entry * );
 extern  void            AddNewJump( ins_entry *, code_lbl * );
 extern  void            InsertQueue( ins_entry *, ins_entry * );

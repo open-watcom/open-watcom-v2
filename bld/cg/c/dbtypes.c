@@ -47,8 +47,8 @@
 #include "echoapi.h"
 #endif
 #include "i64.h"
+#include "utils.h"
 
-extern  uint            Length(char*);
 extern  dbg_loc         LocDupl( dbg_loc );
 extern  offset          LocSimpField( dbg_loc );
 
@@ -217,8 +217,8 @@ extern  dbg_type _CGAPI DBScope( char *name ) {
 
 
 
-extern  name_entry * _CGAPI DBBegName( char *nm, dbg_type scope ) {
-/*****************************************************************/
+extern  name_entry * _CGAPI DBBegName( const char *nm, dbg_type scope ) {
+/***********************************************************************/
 
     name_entry  *name;
     uint        len;
@@ -727,8 +727,8 @@ bool _CGAPI DBNested( bool nested ){
     return( nested );
 }
 
-struct_list * _CGAPI DBBegNameStruct( char *nm, cg_type tipe, bool is_struct ) {
-/******************************************************************************/
+struct_list * _CGAPI DBBegNameStruct( const char *nm, cg_type tipe, bool is_struct ) {
+/************************************************************************************/
 
     uint      n_len;
     struct_list *st;
@@ -1026,8 +1026,8 @@ extern  enum_list * _CGAPI DBBegEnum( cg_type  tipe ) {
     return( en );
 }
 
-extern  void _CGAPI DBAddConst( enum_list *en, char *nm, signed_32      val ) {
-/*********************************************************************/
+void _CGAPI DBAddConst( enum_list *en, const char *nm, signed_32 val ) {
+/**********************************************************************/
 
     const_entry *cons;
     uint        len;
@@ -1045,8 +1045,8 @@ extern  void _CGAPI DBAddConst( enum_list *en, char *nm, signed_32      val ) {
     en->num++;
 }
 
-extern  void _CGAPI DBAddConst64( enum_list *en, char *nm, signed_64  val ) {
-/*********************************************************************/
+void _CGAPI DBAddConst64( enum_list *en, const char *nm, signed_64  val ) {
+/*************************************************************************/
 
     const_entry *cons;
     uint        len;

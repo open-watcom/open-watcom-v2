@@ -2542,7 +2542,7 @@ locate the lvalue of the symbol.
 :P.define a symbol which "scopes" subsequent symbols.
 In C, the keywords :HP2.enum:eHP2., :HP2.union:eHP2., :HP2.struct:eHP2.
 may perform this function as in :HP2.struct foo:eHP2..
-.section dbg_name DBBegName( char *name, dbg_type scope )
+.section dbg_name DBBegName( const char *name, dbg_type scope )
 :I1.DBBegName
 :P.start a type name whose type is yet undetermined
 .section dbg_type DBForward( dbg_name name )
@@ -2630,10 +2630,10 @@ evaluated.
 .section dbg_enum DBBegEnum( cg_type tipe )
 :I1.DBBegEnum
 :P.begin defining an enumerated type
-.section void DBAddConst( dbg_enum en, char *nm, signed_32 val )
+.section void DBAddConst( dbg_enum en, const char *nm, signed_32 val )
 :I1.DBAddConst
 :P.add a symbolic constant to an enumerated type
-.section void DBAddConst64( dbg_enum en, char *nm, signed_64 val )
+.section void DBAddConst64( dbg_enum en, const char *nm, signed_64 val )
 :I1.DBAddConst64
 :P.add a symbolic 64-bit integer constant to an enumerated type
 .section dbg_type DBEndEnum( dbg_enum en )

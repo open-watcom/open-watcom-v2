@@ -38,6 +38,7 @@
 #include "owl.h"
 #include "model.h"
 #include "zoiks.h"
+#include "utils.h"
 
 extern  void    OutLabel( label_handle );
 extern  void    ObjBytes( const char *, unsigned );
@@ -49,7 +50,6 @@ extern  void    OutLineNum( cg_linenum, bool );
 extern  void    TellScrapLabel( code_lbl * );
 extern  void    OutFuncStart( code_lbl *, offset, cg_linenum );
 extern  void    OutFuncEnd( offset );
-extern  pointer Copy(pointer,pointer,uint);
 extern  void    OutPDataRec( code_lbl *, offset, offset );
 
 extern  void    EncodeRet( oc_ret * );

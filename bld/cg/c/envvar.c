@@ -35,8 +35,8 @@
 #include "cg.h"
 #include "coderep.h"
 #include "feprotos.h"
+#include "utils.h"
 
-extern  char    *CopyStr( char *src, char *dst );
 
 extern  bool    GetEnvVar( char *what, char *buff, int len ) {
 /*************************************************************/

@@ -40,6 +40,7 @@
 #include "x87.h"
 #include "makeins.h"
 #include "foldins.h"
+#include "utils.h"
 
 
 typedef enum {

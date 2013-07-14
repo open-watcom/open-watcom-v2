@@ -34,6 +34,7 @@
 #include "cgaux.h"
 #include "cgmem.h"
 #include "data.h"
+#include "utils.h"
 
 
 extern  hw_reg_set      ReturnReg(type_class_def);

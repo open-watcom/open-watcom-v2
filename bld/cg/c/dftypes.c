@@ -48,6 +48,7 @@
 #include "dw.h"
 #include "dwarf.h"
 #include "cgprotos.h"
+#include "utils.h"
 
 extern  byte            *Copy(void*,void*,uint);
 extern  type_length     NewBase(name*);

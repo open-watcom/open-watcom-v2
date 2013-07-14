@@ -59,6 +59,7 @@
 #include "typemap.h"
 #include "types.h"
 #include "i64.h"
+#include "utils.h"
 
 #include "feprotos.h"
 #include "cgprotos.h"

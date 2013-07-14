@@ -42,6 +42,7 @@
 #include "types.h"
 #include "addrfold.h"
 #include "display.h"
+#include "utils.h"
 
 static    pointer       *AddrNameFrl;
 

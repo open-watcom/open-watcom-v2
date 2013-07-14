@@ -37,6 +37,7 @@
 #include "spawn.h"
 #include "memout.h"
 #include "data.h"
+#include "utils.h"
 
 extern  byte            *Copy(void*,void*,uint);
 extern  void            MakeLiveInfo(void);

@@ -46,7 +46,7 @@
 typedef int handle;
 #include "s37dbtyp.def"
 
-extern uint            Length(char*);
+extern uint            Length(const char*);
 extern byte           *Copy(void*,void*,uint);
 extern type_def       *TypeAddress(cg_type);
 extern char           *DbgFmtInt( char *, offset );

@@ -46,6 +46,7 @@
 #include "zoiks.h"
 #include "banner.h"
 #include "feprotos.h"
+#include "utils.h"
 
 
 typedef int             handle;
@@ -53,7 +54,6 @@ typedef objhandle       objoffset;
 
 enum stdfd { HStdIn=0, HStdOut =1, HStdErr = 2 };
 
-extern  char            *CopyStr( char *, char * );
 extern  void            FatalError( char * );
 
 

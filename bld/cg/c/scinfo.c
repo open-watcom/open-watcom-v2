@@ -34,8 +34,7 @@
 #include "score.h"
 #include "zoiks.h"
 #include "data.h"
-
-extern  pointer         Copy(pointer,pointer,uint);
+#include "utils.h"
 
 static  pointer SegConstSymbol;/*no other pointer points to here*/
 static  pointer HighAddrSymbol;/*ditto*/

@@ -54,7 +54,7 @@ extern    source_line_number    SrcLine;
 extern    unsigned_16           TypeIdx;
 extern    proc_def              *CurrProc;
 
-extern  uint            Length(char*);
+extern  uint            Length(const char*);
 extern  byte           *Copy(void*,void*,uint);
 extern  pointer         FEAuxInfo(pointer,int);
 extern  fe_attr         FEAttr(pointer);

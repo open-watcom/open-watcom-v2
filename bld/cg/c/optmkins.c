@@ -31,11 +31,11 @@
 
 #include "optwif.h"
 #include "freelist.h"
+#include "utils.h"
 
 extern  void            AddInstr( ins_entry *, ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
 extern  oc_class        NextClass( ins_entry * );
-extern  pointer         Copy( pointer, pointer, uint );
 extern  int             OptInsSize( oc_class, oc_dest_attr );
 
 

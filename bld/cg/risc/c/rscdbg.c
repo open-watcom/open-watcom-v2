@@ -102,8 +102,8 @@ extern  dbg_type        DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type bas
     return( base );
 }
 
-struct_list     *DBBegNameStruct( char *nm, cg_type tipe, bool is_struct ) {
-/**************************************************************************/
+struct_list     *DBBegNameStruct( const char *nm, cg_type tipe, bool is_struct ) {
+/********************************************************************************/
 
     nm = nm;
     tipe = tipe;

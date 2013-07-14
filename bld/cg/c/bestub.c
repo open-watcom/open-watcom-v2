@@ -144,7 +144,7 @@ extern void DBEndBlock(void){}
 extern dbg_type DBFtnType(char *_5,dbg_ftn_type _4){return(0);}
 extern dbg_type DBScalar(char *_5,cg_type _4){return(0);}
 extern dbg_type DBScope(char *_6){return(0);}
-extern name_entry *DBBegName(char *_5,dbg_type _4){return(0);}
+extern name_entry *DBBegName(const char *_5,dbg_type _4){return(0);}
 extern dbg_type DBForward(name_entry *_6){return(0);}
 extern dbg_type DBEndName(name_entry *_5,dbg_type _4){return(0);}
 extern void DumpName(name_entry *_5,dbg_type _4){}
@@ -161,7 +161,7 @@ extern void DBAddField(struct_list *_5,unsigned_32 _1,char *_2,dbg_type _4){}
 extern void DBAddBitField(struct_list *_5,unsigned_32 _1,byte _2,byte _3,char *_6,dbg_type _4){}
 extern dbg_type DBEndStruct(struct_list *_6){return(0);}
 extern enum_list *DBBegEnum(cg_type _4){return(0);}
-extern void DBAddConst(enum_list *_5,char *_6,signed_32 _4){}
+extern void DBAddConst(enum_list *_5,const char *_6,signed_32 _4){}
 extern dbg_type DBEndEnum(enum_list *_6){return(0);}
 extern proc_list *DBBegProc(cg_type _1,dbg_type _4){return(0);}
 extern void DBAddParm(proc_list *_5,dbg_type _4){}

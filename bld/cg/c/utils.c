@@ -30,21 +30,22 @@
 
 
 #include "cgstd.h"
+#include "utils.h"
 
 #if defined( _M_IX86 ) && defined(__WATCOMC__)
 
 #include "cypfunc.h"
 
-extern  byte    *Copy( byte *x, byte *y, uint len ) {
+extern  byte    *Copy( void *x, void *y, uint len ) {
 /***************************************************/
 
     return( CypCopy( x, y, len ) );
 }
 
-extern  bool    Equal( char *src, char *dst, int length ) {
+extern  bool    Equal( void *src, void *dst, int length ) {
 /*********************************************************/
 
-    return( CypEqual( (byte *)src, (byte *)dst, length ) );
+    return( CypEqual( src, dst, length ) );
 }
 
 extern  char    *CopyStr( char *src, char *dst ) {
@@ -53,8 +54,8 @@ extern  char    *CopyStr( char *src, char *dst ) {
     return( (char *)CypCopy( (byte *)src, (byte *)dst, CypLength( src ) + 1 ) - 1 );
 }
 
-extern  uint    Length( char *string ) {
-/**************************************/
+extern  uint    Length( const char *string ) {
+/********************************************/
 
     return( CypLength( string ) );
 }
@@ -63,7 +64,7 @@ extern  uint    Length( char *string ) {
 
 #include <string.h>
 
-extern  byte    *Copy( byte *x, byte *y, uint len ) {
+extern  byte    *Copy( void *x, void *y, uint len ) {
 /***************************************************/
 
     return( memcpy( y, x, len ) );
@@ -75,7 +76,7 @@ extern  char    *Fill( char *start, uint len, byte filler ) {
     return( memset( start,  filler, len  ) );
 }
 
-extern  bool    Equal( char *src, char *dst, int length ) {
+extern  bool    Equal( void *src, void *dst, int length ) {
 /*********************************************************/
 
     return( memcmp( src, dst, length ) == 0 );
@@ -88,8 +89,8 @@ extern  char    *CopyStr( char *src, char *dst ) {
     return( dst + strlen( dst ) );
 }
 
-extern  uint    Length( char *string ) {
-/**************************************/
+extern  uint    Length( const char *string ) {
+/********************************************/
 
     return( strlen( string ) );
 }

@@ -78,6 +78,7 @@ essentially no worst case performance scenario.
     #include <sys/osinfo.h>
     #include <sys/seginfo.h>
 #endif
+#include "utils.h"
 
 #ifdef __DOS__
 
@@ -122,8 +123,6 @@ extern      short   __psp;
 typedef pointer_int     tag;
 
 extern bool     GetEnvVar( char*, char*, int );
-extern char     *CopyStr( char *src, char *dst );
-extern uint     Length( char* );
 extern void     FatalError( char* );
 
 

@@ -605,8 +605,8 @@ extern  dbg_type        DBScope( char *nm ) {
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-extern  dbg_name        DBBegName( char *nm, dbg_type scope ) {
-//=============================================================
+extern  dbg_name        DBBegName( const char *nm, dbg_type scope ) {
+//===================================================================
 
     name_entry  *name;
 
@@ -834,8 +834,8 @@ extern  dbg_type        DBPtr( cg_type ptr_tipe, dbg_type base ) {
     return( TypeIdx );
 }
 
-struct_list     *DBBegNameStruct( char *nm, cg_type tipe, bool is_struct ) {
-/**************************************************************************/
+struct_list     *DBBegNameStruct( const char *nm, cg_type tipe, bool is_struct ) {
+/********************************************************************************/
     struct_list *st;
 
     is_struct = is_struct;
@@ -1107,7 +1107,8 @@ extern  enum_list       *DBBegEnum( cg_type tipe ) {
     Action( " -> %p%n", en );
     return( en );
 }
-extern  void    DBAddConst( enum_list *en, char *nm, signed_32 val ) {
+
+void    DBAddConst( enum_list *en, const char *nm, signed_32 val ) {
 //====================================================================
 
     const_entry *cons;

@@ -49,6 +49,7 @@
 #include "data.h"
 #include "feprotos.h"
 #include "rtrtn.h"
+#include "utils.h"
 
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)(x + 1))
 #define OWL_TO_HANDLE(x)    ((pointer_int)x - 1)
@@ -58,7 +59,6 @@ extern  void            OpenObj( void );
 extern  void            PutObjBytes( const char *, uint );
 extern  char            *AskRTName( rt_class );
 extern  void            TryScrapLabel( code_lbl * );
-extern  char            *CopyStr(char*,char*);
 extern  void            DoOutObjectName(sym_handle,void(*)(char*,void*),void*,import_type);
 extern  bool            SymIsExported( sym_handle );
 extern  code_lbl        *GetWeirdPPCDotDotLabel( code_lbl * );

@@ -39,6 +39,7 @@
 #include "makeins.h"
 #include "data.h"
 #include "feprotos.h"
+#include "utils.h"
 
 extern  void            TellBeginExecutions(void);
 extern  void            FreeNames(void);

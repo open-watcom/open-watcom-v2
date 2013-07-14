@@ -42,10 +42,10 @@
 #include "bldins.h"
 #include "addrfold.h"
 #include "display.h"
+#include "utils.h"
 
 
 extern  an              MakeConst(pointer,type_def*);
-extern  uint            Length(char*);
 extern  an              MakeAddrName(cg_class,sym_handle,type_def*);
 extern  an              MakeTypeTempAddr(name*,type_def*);
 extern  void            GenKillLabel(pointer);

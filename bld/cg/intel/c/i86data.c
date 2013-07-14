@@ -43,6 +43,7 @@
 #include "i86obj.h"
 #include "data.h"
 #include "feprotos.h"
+#include "utils.h"
 
 extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  void            OutPatch(label_handle,patch_attr);
@@ -68,7 +69,6 @@ extern  seg_id          AskCodeSeg(void);
 extern  bool            IsFarFunc(sym_handle);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            GenSelEntry(bool);
-extern  bool            Equal(char*,char*,int);
 extern  void            EmptyQueue( void );
 extern  bool            UseImportForm( fe_attr );
 extern  offset          AskLocation(void);

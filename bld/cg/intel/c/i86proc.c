@@ -42,6 +42,7 @@
 #include "feprotos.h"
 #include "display.h"
 #include "rtrtn.h"
+#include "utils.h"
 
 extern  void        OutDLLExport(uint,sym_handle);
 extern  void        GenLeaSP(long);
@@ -85,7 +86,6 @@ extern  void        Gpusha( void );
 extern  void        Gpopa( void );
 extern  void        AbsPatch(abspatch_handle,offset);
 extern  unsigned    DepthAlign( unsigned );
-extern  char        *CopyStr(char*,char*);
 extern  void        EyeCatchBytes(byte*,byte_seq_len);
 extern  void        GenSelEntry(bool);
 extern  void        TellKeepLabel(label_handle);

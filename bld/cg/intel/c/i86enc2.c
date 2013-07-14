@@ -49,6 +49,7 @@
 #include "data.h"
 #include "types.h"
 #include "feprotos.h"
+#include "utils.h"
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            EjectInst( void );
@@ -77,7 +78,6 @@ extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
 extern  void            EmitOffset(offset);
 extern  seg_id          AskCodeSeg( void );
-extern  byte            *Copy(void*,void*,uint);
 
 extern  void            CodeBytes( byte *src, byte_seq_len len );
 extern  void            GenReturn( int pop, bool is_long, bool iret );

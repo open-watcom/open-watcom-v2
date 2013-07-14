@@ -39,6 +39,7 @@
 #include "makeins.h"
 #include "convins.h"
 #include "data.h"
+#include "utils.h"
 
 extern  conflict_node   *GiveRegister(conflict_node*,bool);
 extern  conflict_node   *NameConflict(instruction*,name*);

@@ -45,6 +45,7 @@
 #include "feprotos.h"
 #include "rtrtn.h"
 #include "i86obj.h"
+#include "utils.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
     #define _OMF_32
@@ -127,7 +128,6 @@ typedef struct dbg_seg_info {
 } dbg_seg_info;
 
 
-extern  pointer         Copy(pointer,pointer,uint);
 extern  char            *AskRTName(rt_class);
 extern  void            TellImportHandle(sym_handle,import_handle);
 extern  import_handle   AskImportHandle(sym_handle);
@@ -135,9 +135,7 @@ extern  void            TellDonePatch(label_handle);
 extern  void            TellAddress(label_handle,offset);
 extern  void            FatalError(char *);
 extern  void            PutObjRec(byte,byte*,uint);
-extern  char            *CopyStr(char*,char*);
 extern  void            EmptyQueue( void );
-extern  uint            Length(pointer);
 extern  void            TellCommonLabel(label_handle,import_handle);
 extern  void            TellUnreachLabels(void);
 extern  void            KillLblRedirects( void );
@@ -520,7 +518,7 @@ static  void    OutIdx( omf_idx value, array_control *dest )
     OutByte( value, dest );
 }
 
-static  void    OutBuffer( char *name, unsigned len, array_control *dest )
+static  void    OutBuffer( void *name, unsigned len, array_control *dest )
 /************************************************************************/
 {
     int     need;
@@ -529,7 +527,7 @@ static  void    OutBuffer( char *name, unsigned len, array_control *dest )
     if( need > dest->alloc ) {
         ReallocArray( dest, need );
     }
-    _CopyTrans( name, &_ARRAY( dest, char ), len );
+    _CopyTrans( name, &_ARRAY( dest, byte ), len );
     dest->used = need;
 }
 

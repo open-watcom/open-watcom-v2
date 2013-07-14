@@ -70,7 +70,7 @@ extern  dbg_type        DBScope( char *nm )
     return( 0 );
 }
 
-extern  dbg_name        DBBegName( char *nm, dbg_type scope )
+extern  dbg_name        DBBegName( const char *nm, dbg_type scope )
 {
     return( 0 );
 }
@@ -149,7 +149,7 @@ extern  void    *DBBegEnum( cg_type tipe )
     return( 0 );
 }
 
-extern  void    DBAddConst( void *en, char *nm, signed_32 val )
+extern  void    DBAddConst( void *en, const char *nm, signed_32 val )
 {
 }
 
