@@ -88,11 +88,11 @@
 #define ARRAY_SUFFIX            ']'
 #define FUNCTION_PREFIX         '('
 #define FUNCTION_SUFFIX         ')'
-#define OP_FUN_PREFIX           'o'
-#define REL_FUN_PREFIX          'r'
-#define SPEC_TYPE_PREFIX        't'
-#define WAT_FUN_PREFIX          'w'
-#define ASGN_FUN_PREFIX         'a'
+#define OP_FUN_PREFIX           'O'
+#define REL_FUN_PREFIX          'R'
+#define SPEC_TYPE_PREFIX        'T'
+#define WAT_FUN_PREFIX          'W'
+#define ASGN_FUN_PREFIX         'A'
 
 typedef char *(*realloc_fn_t)( char *, size_t );
 
@@ -1264,92 +1264,103 @@ static int assignment_function( output_desc *data, state_desc *state )
 
 static int op_new( output_desc *data, state_desc *state )
 {
-    if( nextChar( data ) == 'W' ) {
-        advanceChar( data );
-        _output2( DM_SET_INDEX, state->prefix );
-        _output1( DM_OPERATOR_PREFIX );
-        _output1( DM_OPERATOR_NEW );
-        return( TRUE );
-    }
-    if( nextChar( data ) == 'A' ) {
-        advanceChar( data );
-        _output2( DM_SET_INDEX, state->prefix );
-        _output1( DM_OPERATOR_PREFIX );
-        _output1( DM_OPERATOR_NEW_ARRAY );
-        return( TRUE );
-    }
-    return( FALSE );
+    _output2( DM_SET_INDEX, state->prefix );
+    _output1( DM_OPERATOR_PREFIX );
+    _output1( DM_OPERATOR_NEW );
+    return( TRUE );
 }
 
-static int dtor_or_delete( output_desc *data, state_desc *state )
+static int array_new( output_desc *data, state_desc *state )
 {
-    char c;
-
-    c = nextChar( data );
-    switch( c ) {
-    case 'T':
-        advanceChar( data );
-        _output2( DM_SET_INDEX, state->prefix );
-        _output1( DM_DESTRUCTOR_CHAR );
-        _output1( DM_DESTRUCTOR );
-        data->pending_loc = data->count - data->index;
-        data->ctdt_pending = TRUE;
-        return( TRUE );
-    case 'L':
-        advanceChar( data );
-        _output2( DM_SET_INDEX, state->prefix );
-        _output1( DM_OPERATOR_PREFIX );
-        _output1( DM_OPERATOR_DELETE );
-        return( TRUE );
-    case 'A':
-        advanceChar( data );
-        _output2( DM_SET_INDEX, state->prefix );
-        _output1( DM_OPERATOR_PREFIX );
-        _output1( DM_OPERATOR_DELETE_ARRAY );
-        return( TRUE );
-    }
-    return( FALSE );
+    _output2( DM_SET_INDEX, state->prefix );
+    _output1( DM_OPERATOR_PREFIX );
+    _output1( DM_OPERATOR_NEW_ARRAY );
+    return( TRUE );
 }
 
-static int ctor_or_convert( output_desc *data, state_desc *state )
+static int dtor( output_desc *data, state_desc *state )
 {
-    char c;
+    _output2( DM_SET_INDEX, state->prefix );
+    _output1( DM_DESTRUCTOR_CHAR );
+    _output1( DM_DESTRUCTOR );
+    data->pending_loc = data->count - data->index;
+    data->ctdt_pending = TRUE;
+    return( TRUE );
+}
 
-    c = nextChar( data );
-    if( c == 'T' ) {
-        advanceChar( data );
-        _output1( DM_CONSTRUCTOR );
-        data->pending_loc = data->count - data->index;
-        data->ctdt_pending = TRUE;
-        return( TRUE );
-    } else if( c == 'V' ) {
-        advanceChar( data );
-        _output2( DM_SET_INDEX, state->prefix );
-        _output1( DM_OPERATOR_PREFIX );
-        _output1( DM_OPERATOR_CONVERT );
-        data->cv_pending = TRUE;
-        return( TRUE );
-    }
-    return( FALSE );
+static int delete( output_desc *data, state_desc *state )
+{
+    _output2( DM_SET_INDEX, state->prefix );
+    _output1( DM_OPERATOR_PREFIX );
+    _output1( DM_OPERATOR_DELETE );
+    return( TRUE );
+}
+
+static int array_delete( output_desc *data, state_desc *state )
+{
+    _output2( DM_SET_INDEX, state->prefix );
+    _output1( DM_OPERATOR_PREFIX );
+    _output1( DM_OPERATOR_DELETE_ARRAY );
+    return( TRUE );
+}
+
+static int ctor( output_desc *data, state_desc *state )
+{
+    _output1( DM_CONSTRUCTOR );
+    data->pending_loc = data->count - data->index;
+    data->ctdt_pending = TRUE;
+    return( TRUE );
+}
+
+static int user_conversion( output_desc *data, state_desc *state )
+{
+    _output2( DM_SET_INDEX, state->prefix );
+    _output1( DM_OPERATOR_PREFIX );
+    _output1( DM_OPERATOR_CONVERT );
+    data->cv_pending = TRUE;
+    return( TRUE );
 }
 
 static int op_name( output_desc *data, state_desc *state )
 {
     char c;
 
-    c = tolower( nextChar( data ) );
+    c = nextChar( data );
     switch( c ) {
-    case 'c':
+    case 'C':
         advanceChar( data );
-        return( ctor_or_convert( data, state ) );
+        c = nextChar( data );
+        if( c == 'T' ) {
+            advanceChar( data );
+            return( ctor( data, state ) );
+        } else if( c == 'V' ) {
+            advanceChar( data );
+            return( user_conversion( data, state ) );
+        }
         break;
-    case 'd':
+    case 'D':
         advanceChar( data );
-        return( dtor_or_delete( data, state ) );
+        c = nextChar( data );
+        if( c == 'T' ) {
+            advanceChar( data );
+            return( dtor( data, state ) );
+        } else if( c == 'L' ) {
+            advanceChar( data );
+            return( op_delete( data, state ) );
+        } else if( c == 'A' ) {
+            advanceChar( data );
+            return( array_delete( data, state ) );
+        }
         break;
-    case 'n':
+    case 'N':
         advanceChar( data );
-        return( op_new( data, state ) );
+        if( nextChar( data ) == 'W' ) {
+            advanceChar( data );
+            return( op_new( data, state ) );
+        } else if( nextChar( data ) == 'A' ) {
+            advanceChar( data );
+            return( array_new( data, state ) );
+        }
         break;
     case ASGN_FUN_PREFIX:
         advanceChar( data );

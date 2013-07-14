@@ -699,7 +699,7 @@ static char *GetNamePattern(           // MANGLE SYMBOL NAME
     return( patbuff );
 }
 
-char *FEExtName( SYMBOL sym, int request ) {
+const char *FEExtName( SYMBOL sym, int request ) {
 //******************************************
 
 // Return symbol name related info for object file.
@@ -710,9 +710,9 @@ char *FEExtName( SYMBOL sym, int request ) {
     case EXTN_PATTERN:
         return( GetNamePattern( sym ) );
     case EXTN_PRMSIZE:
-        return( (char *)GetParmsSize( sym ) );
+        return( (const char *)GetParmsSize( sym ) );
     case EXTN_CALLBACKNAME:
-        return( (char *)CallbackName( sym ) );
+        return( CallbackName( sym ) );
     default:
         return( NULL );
     }

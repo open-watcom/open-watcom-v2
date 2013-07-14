@@ -922,8 +922,8 @@ boolean AsmSysInsertFixups( VBUF *code )
     return( uses_auto );
 }
 
-AUX_INFO *AsmSysCreateAux( char *name )
-/************************************/
+AUX_INFO *AsmSysCreateAux( const char *name )
+/*******************************************/
 {
     CreateAux( name );
     AuxCopy( CurrInfo, &WatcallInfo );

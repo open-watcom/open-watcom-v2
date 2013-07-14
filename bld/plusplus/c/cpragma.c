@@ -1255,7 +1255,7 @@ static AUX_INFO *MagicKeywordInfo(   // LOOKUP A MAGIC KEYWORD FROM BUFFER
 
 
 void CreateAux(                 // CREATE AUX ID
-        char *id )              // - id
+    const char *id )            // - id
 {
     CurrEntry = CMemAlloc( offsetof( AUX_ENTRY, name ) + strlen( id ) + 1 );
     strcpy( CurrEntry->name, id );

@@ -67,7 +67,7 @@ static DUMP_INFO* bufferChr(    // CONCATENATE CHAR TO BUFFER
 
 static DUMP_INFO* bufferStr(    // CONCATENATE STRING TO BUFFER
     DUMP_INFO* di,              // - dump information
-    char* str )                 // - to be concatenated
+    const char *str )           // - to be concatenated
 {
     VbufConcStr( &di->buffer, str );
     return di;
@@ -119,9 +119,9 @@ static void dumpVirtual( BASE_CLASS*, void * );
 
 
 static DUMP_INFO* dumpTitle(    // DUMP A TITLE LINE
-    DUMP_INFO* di,              // - dump information
-    char* title,                // - title line
-    char* class_name )          // - name of class
+    DUMP_INFO *di,              // - dump information
+    const char *title,          // - title line
+    const char *class_name )    // - name of class
 {
     di = bufferRewind( di );
     di = bufferChr( di, '\n' );
@@ -162,9 +162,9 @@ static DUMP_INFO* dumpParentage( // DUMP PARENTAGE
 
 
 static DUMP_INFO* dumpBitMemb(  // DUMP A BITFIELD MEMBER
-    DUMP_INFO* di,              // - dump information
-    char* kind,                 // - kind of field
-    char* name,                 // - field name
+    DUMP_INFO *di,              // - dump information
+    const char *kind,           // - kind of field
+    const char *name,           // - field name
     target_offset_t offset,     // - field offset
     target_size_t start,        // - field start
     target_size_t size )        // - field size
@@ -185,9 +185,9 @@ static DUMP_INFO* dumpBitMemb(  // DUMP A BITFIELD MEMBER
 
 
 static DUMP_INFO* dumpDataMemb( // DUMP A DATA MEMBER
-    DUMP_INFO* di,              // - dump information
-    char* kind,                 // - kind of field
-    char* name,                 // - field name
+    DUMP_INFO *di,              // - dump information
+    const char *kind,           // - kind of field
+    const char *name,           // - field name
     target_offset_t offset,     // - field offset
     target_size_t size )        // - field size
 {
@@ -341,7 +341,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     VBUF buffer;                // - printing buffer
     char buf[16];               // - buffer
     long numb;                  // - a numeric value
-    char *name;                 // - name to be printed
+    const char *name;           // - name to be printed
     boolean sign;               // - TRUE ==> signed enum
     unsigned long mask;         // - used to mask to true size
     unsigned long val;          // - value as unsigned

@@ -328,13 +328,12 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
     pnode = node->pnode;
     switch( pnode->op ) {
       case PT_ERROR :
-        text = PTREE_ERROR_NODE;
+        stpcpy( buffer, PTREE_ERROR_NODE );
         type_add = FALSE;
         break;
       case PT_UNARY :
       case PT_BINARY :
         stpcpy( buffer, DbgOperator( pnode->cgop ) );
-        text = buffer;
         type_add = printTypes;
         break;
       case PT_INT_CONSTANT :
@@ -347,47 +346,40 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
             break;
           case TYP_SLONG64 :
           case TYP_ULONG64 :
-          { char *buf;
             buffer[0] = '<';
-            buf = stxcpy( &buffer[1], pnode->u.int64_constant.u._32[0] );
-            *buf='~';
-            buf = stxcpy( buf+1, pnode->u.int64_constant.u._32[1] );
-            buf[0] = '>';
-            buf[1] = '\0';
-          } break;
+            text = stxcpy( &buffer[1], pnode->u.int64_constant.u._32[0] );
+            *text = '~';
+            text = stxcpy( text + 1, pnode->u.int64_constant.u._32[1] );
+            text[0] = '>';
+            text[1] = '\0';
+            break;
           default :
             stdcpy( buffer, pnode->u.uint_constant );
             break;
         }
-        text = buffer;
         type_add = printTypes;
         break;
       case PT_FLOATING_CONSTANT :
         BFCnvFS( pnode->u.floating_constant, buffer, 256 );
-        text = buffer;
         type_add = printTypes;
         break;
       case PT_STRING_CONSTANT :
         stvcpy( buffer, pnode->u.string->string, pnode->u.string->len );
-        text = buffer;
         type_add = printTypes;
         break;
       case PT_TYPE :
         textType( buffer, pnode->type, "<> " );
-        text = buffer;
         type_add = FALSE;
         break;
       case PT_ID :
-        text = NameStr( pnode->u.id.name );
+        stpcpy( buffer, NameStr( pnode->u.id.name ) );
         type_add = FALSE;
         break;
       case PT_SYMBOL :
         if( pnode->cgop == CO_NAME_THIS ) {
             stpcpy( buffer, "this" );
-            text = buffer;
         } else if( pnode->cgop == CO_NAME_CDTOR_EXTRA ) {
             stpcpy( buffer, "cdtor_extra" );
-            text = buffer;
         } else {
             SYMBOL sym;
             if( pnode->cgop == CO_NAME_PARM_REF ) {
@@ -405,7 +397,6 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
             } else {
                 stpcpy( text, NameStr( sym->name->name ) );
             }
-            text = buffer;
         }
         type_add = printTypes;
         break;
@@ -413,29 +404,26 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         text = stpcpy( buffer, "dup[" );
         text = stxcpy( text, (unsigned)pnode->u.subtree[0] );
         stpcpy( text, "]" );
-        text = buffer;
         type_add = printTypes;
         break;
       case PT_IC :
         text = stpcpy( buffer, DbgIcOpcode( pnode->u.ic.opcode ) );
         text = stpcpy( text, " " );
         text = stxcpy( text, pnode->u.ic.value.uvalue );
-        text = buffer;
         type_add = printTypes;
         break;
     }
     if( type_add && ( pnode->type != NULL ) ) {
-        textType( strend( text )
+        textType( strend( buffer )
                 , pnode->type
                 , (pnode->flags & PTF_LVALUE ) ? "<LV> " : "<RV> " );
     }
     if( 0 != node->numb ) {
-        char* p;
-        p = stpcpy( strend( text ), " {" );
-        p = stdcpy( p, node->numb );
-        p = stpcpy( p, "}" );
+        text = stpcpy( strend( buffer ), " {" );
+        text = stdcpy( text, node->numb );
+        text = stpcpy( text, "}" );
     }
-    return text;
+    return( buffer );
 }
 
 

@@ -1354,7 +1354,7 @@ extern boolean ScopeDirectBase( SCOPE, TYPE );
 extern boolean ScopeIndirectVBase( SCOPE, TYPE );
 extern NAME ScopeUnnamedNamespaceName( TOKEN_LOCN * );
 extern NAME ScopeNameSpaceName( SCOPE );
-extern char *ScopeNameSpaceFormatName( SCOPE );
+extern const char *ScopeNameSpaceFormatName( SCOPE );
 extern TYPE ScopeClass( SCOPE );
 extern SYMBOL ScopeFunction( SCOPE );
 extern unsigned ScopeIndex( SCOPE );

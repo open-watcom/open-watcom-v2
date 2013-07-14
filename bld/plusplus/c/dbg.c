@@ -612,8 +612,10 @@ static void dumpBaseClass(      // DUMP BASE_CLASS
 void DumpClassInfo(             // DUMP CLASSINFO
     CLASSINFO *ci )             // - class information
 {
-    char *class_name;
-    if( ci == NULL ) return;
+    const char *class_name;
+
+    if( ci == NULL )
+        return;
     if( ci->name == NULL ) {
         class_name = "**UN-NAMED**";
     } else {

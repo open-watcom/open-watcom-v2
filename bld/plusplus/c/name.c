@@ -55,7 +55,7 @@
 #define NAME_PTR(n)     ((idname *)((char *)(n) - NAME_SIZE ))
 #define NAME_RETVAL(n)  ((n)->name)     
 #else
-#define NAME_PTR(n)     (n)
+#define NAME_PTR(n)     ((idname *)(n))
 #define NAME_RETVAL(n)  (n)     
 #endif
 
@@ -286,7 +286,7 @@ boolean IsNameDummy( NAME name )
 #ifdef NAME_PTR_IS_NAME_MEMBER
 #define sname   name
 #else
-    char *sname = name->name;
+    const char *sname = name->name;
 #endif
 
     return( ( sname[0] == NAME_OPERATOR_OR_DUMMY_PREFIX_0 ) && ( sname[1] == NAME_DUMMY_PREFIX_1 ) );

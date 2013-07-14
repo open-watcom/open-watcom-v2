@@ -89,7 +89,7 @@ void freeAuxInfo( AUX_INFO *i ) // FREE ALL AUX INFO MEM
     CMemFree( i->code );
 }
 
-AUX_ENTRY *AuxLookup( char *name )
+AUX_ENTRY *AuxLookup( const char *name )
 {
     AUX_ENTRY *ent;
 

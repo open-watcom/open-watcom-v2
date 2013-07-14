@@ -1462,7 +1462,7 @@ TYPE TypeFromCgType(            // GET C++ TYPE FOR cg_type
     cg_type cgtype )            // - code-gen type
 ;
 
-char *CallbackName(             // GET CALLBACK FUNCTION NAME
+const char *CallbackName(       // GET CALLBACK FUNCTION NAME
     void *f )                   // - function pointer
 ;
 #endif

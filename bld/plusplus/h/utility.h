@@ -63,7 +63,7 @@ boolean CppLookupOperatorName(  // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
     NAME name,                  // - name to find
     CGOP *oper )                // - index found
 ;
-char *GetMangledName(           // MANGLE SYMBOL NAME
+const char *GetMangledName(     // MANGLE SYMBOL NAME
     SYMBOL sym )                // - symbol to mangle
 ;
 NAME CppMembPtrOffsetName(      // CREATE NAME FOR MEMBER-PTR OFFSET FUNCTION

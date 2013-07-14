@@ -398,7 +398,7 @@ static inherit_flag checkBaseAccess( SCOPE, SCOPE, derived_status );
 #ifndef NDEBUG
 static void printScopeName( SCOPE scope, char *suffix )
 {
-    char *name;
+    const char *name;
 
     switch( scope->id ) {
     case SCOPE_CLASS:
@@ -1908,8 +1908,8 @@ NAME ScopeNameSpaceName( SCOPE scope )
     return( NULL );
 }
 
-char *ScopeNameSpaceFormatName( SCOPE scope )
-/*******************************************/
+const char *ScopeNameSpaceFormatName( SCOPE scope )
+/*************************************************/
 {
     NAME_SPACE *ns;
     SYMBOL ns_sym;

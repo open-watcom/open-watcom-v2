@@ -181,7 +181,7 @@ static void putByte( REWRITE *r, uint_8 v )
     rt->stream[ rt->count++ ] = v;
 }
 
-static void putString( REWRITE *r, char *p )
+static void putString( REWRITE *r, const char *p )
 {
     for( ; *p != '\0'; ++p ) {
         putByte( r, *p );

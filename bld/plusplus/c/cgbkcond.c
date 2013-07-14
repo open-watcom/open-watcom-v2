@@ -379,7 +379,7 @@ void CondInfoNewCtorEnd(        // CTOR OF NEW'ED OBJECT: END
 }
 
 
-char *CallbackName( void *f )
+const char *CallbackName( void *f )
 {
 #ifndef NDEBUG
     if( f == callBackTrue )

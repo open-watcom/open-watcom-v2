@@ -328,10 +328,10 @@ static void fmtTemplateParms( VBUF *pvbuf, TYPE class_type )
 static void fmtSymScope( SCOPE scope, VBUF *pvbuf, boolean include_function )
 /***************************************************************************/
 {
-    TYPE    class_type;
-    char    *scope_name;
-    SYMBOL  sym;
-    VBUF    prefix;
+    TYPE        class_type;
+    const char  *scope_name;
+    SYMBOL      sym;
+    VBUF        prefix;
 
     while( scope != NULL ) {
         switch( scope->id ) {

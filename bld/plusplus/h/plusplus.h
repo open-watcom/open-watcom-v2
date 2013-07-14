@@ -82,11 +82,11 @@ typedef struct idname {
 } idname;
 
 #ifdef NAME_PTR_IS_NAME_MEMBER
-typedef char            *NAME;      // name pointer
-#define NameStr(x)      (x)
+typedef const char          *NAME;      // name pointer
+#define NameStr(x)          (x)
 #else
-typedef struct idname   *NAME;      // name pointer
-#define NameStr(x)      (x)->name
+typedef const struct idname *NAME;      // name pointer
+#define NameStr(x)          (x)->name
 #endif
 
 #ifndef NDEBUG

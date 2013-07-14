@@ -83,7 +83,7 @@ void freeAuxInfo(               // FREE ALL AUX INFO MEM
     AUX_INFO *i )
 ;
 AUX_ENTRY *AuxLookup(           // LOOK UP AUX ENTRY
-    char *name )
+    const char *name )
 ;
 char *AuxRetrieve(              // RETRIEVE NAME OF AUX ENTRY
     AUX_INFO *pragma )
@@ -95,7 +95,7 @@ void CgInfoAddPragmaExtrefN(    // ADD EXTREF FOR PRAGMA'D NAME
     char *name )
 ;
 void CreateAux(                 // CREATE AUX ID
-    char *id )                  // - id
+    const char *id )            // - id
 ;
 void DumpObjectModelClass(      // DUMP OBJECT MODEL: CLASS
     TYPE type )                 // - structure type

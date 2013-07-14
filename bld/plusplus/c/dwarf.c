@@ -677,7 +677,7 @@ static dw_handle dwarfClass( TYPE type, DC_CONTROL control )
 /**********************************************************/
 {
     dw_handle       dh;
-    char            *name;
+    const char      *name;
     boolean         defined;
     boolean         check_friends;
 
@@ -1886,9 +1886,9 @@ static bool ADirtyNameSpace( SYMBOL curr )
 static void dwarfBegNameSpace( SYMBOL curr )
 /*********************************************/
 {
-    char      *name;
-    TYPE      type;
-    dw_handle dh;
+    const char  *name;
+    TYPE        type;
+    dw_handle   dh;
 
     type = curr->sym_type;
     type_reset( type );
