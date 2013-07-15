@@ -32,11 +32,17 @@
 
 #ifndef _DEMANGLE_H
 #define _DEMANGLE_H
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 #include <stddef.h>
+#if defined( __WATCOMC__ )
+#include <_comdef.h>
+#endif
 #include "dm_pts.h"
+
+typedef void (*outfunPtr)(void **, dm_pts, size_t, char const *);
 
 /*
     extra semantics:
@@ -47,37 +53,20 @@ extern "C" {
                         i.e. int foo( int(*)(float) ) -> int foo( int(*)() );
 */
 
-#ifdef __LIB__
-_WCRTLINK
-#endif
-size_t __demangle_t(                            // DEMANGLE A C++ TYPE
-    char const *input,                          // - mangled C++ type
-    size_t len,                                 // - length of mangled type
-    char *output,                               // - for demangled C++ type
-    size_t size )                               // - size of output buffer
-;
-
-typedef void (*outfunPtr)(void**,dm_pts,int,char const *);
-
-#ifndef __LIB__
-
 size_t __demangle_l(                            // DEMANGLE A C++ NAME
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
     char *output,                               // - for demangled C++ name
     size_t size )                               // - size of output buffer
 ;
-size_t __demangle_r(                            // DEMANGLE A C++ NAME
-    char const *input,                          // - mangled C++ name
-    size_t len,                                 // - length of mangled name
-    char **output,                              // - for demangled C++ name
-    size_t size,                                // - size of output buffer
-    char * (*realloc)( char *, size_t ) )       // - size adjuster for output
-;
+
 int __is_mangled(                               // IS NAME MANGLED ?
     char const *name,                           // - C++ name
     size_t len )                                // - length of name
 ;
+
+#if !defined( __WLIB__ ) && !defined( __DISASM__ )
+
 int __is_mangled_internal(                      // IS NAME MANGLED? INTERNAL?
     char const *name,                           // - C++ name
     size_t len )                                // - length of name
@@ -95,6 +84,30 @@ int __unmangled_name(                           // FIND UNMANGLED BASE NAME
     size_t *size )                              // - size of base name
 ;                                               // return TRUE if name mangled
 
+#if !defined( __WLINK__ )
+
+#if !defined( __DIP__ )
+
+#if defined( __WATCOMC__ )
+_WCRTLINK
+#endif
+size_t __demangle_t(                            // DEMANGLE A C++ TYPE
+    char const *input,                          // - mangled C++ type
+    size_t len,                                 // - length of mangled type
+    char *output,                               // - for demangled C++ type
+    size_t size )                               // - size of output buffer
+;
+
+size_t __demangle_r(                            // DEMANGLE A C++ NAME
+    char const *input,                          // - mangled C++ name
+    size_t len,                                 // - length of mangled name
+    char **output,                              // - for demangled C++ name
+    size_t size,                                // - size of output buffer
+    void *(*realloc)( void *, size_t ) )        // - size adjuster for output
+;
+
+#endif // !__DIP__
+
 int __scope_name(                               // EXTRACT A C++ SCOPE NAME
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
@@ -110,8 +123,6 @@ size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
     size_t size )                               // - size of output buffer
 ;                                               // return len of output
 
-#ifdef __DIP__
-
 size_t __mangle_operator(                       // MANGLE OPERATOR NAME
     char const *op,                             // - operator token
     size_t len,                                 // - length of operator token
@@ -119,18 +130,12 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
 ;                                               // return len of operator name
                                                 // ZERO if not found
 
-void __parse_mangled_name(                      // PARSE MANGLED NAME
-    char const *input,                          // - mangled C++ name
-    size_t len,                                 // - length of mangled name
-    void *cookie,                               // - data to carry around
-    outfunPtr ofn )                             // - function to invoke
-;                                               // returns TRUE on success
+#endif // !__WLINK__
 
-#endif //__DIP__
-
-#endif //!__LIB__
+#endif // !__WLIB__ && !__DISASM__
 
 #ifdef __cplusplus
 };
 #endif
+
 #endif
