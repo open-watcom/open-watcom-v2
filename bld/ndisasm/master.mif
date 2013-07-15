@@ -25,13 +25,15 @@ xlibs = $(orl_lib) $(wres_lib)
 
 !include trmem.mif
 
+extra_cpp_flags = -D__DISASM__
+
+extra_c_flags_memfuncs = $(trmem_cover_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
+
 extra_link_res_qnx = usage.u
 
 extra_l_flags = option map
 extra_l_flags_qnx = op res=$(extra_link_res_qnx), off=8k
-
-extra_c_flags_memfuncs = $(trmem_cover_cflags)
-extra_c_flags_trmem    = $(trmem_cflags)
 
 inc_dirs  = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" 
 inc_dirs += -I"$(disasm_dir)/h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" 
