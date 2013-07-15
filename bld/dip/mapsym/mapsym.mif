@@ -18,4 +18,4 @@ name = mapsym
 #extra_incs = $(lib_misc_dir)/h
 #extra_srcs = $(lib_misc_dir)/c
 
-!include ../../imp.mif
+!include ../../master.mif

@@ -26,4 +26,4 @@ extra_cppflags = -DDIP_PRIORITY=DP_DEFAULT
 imp_libs = $(dwarfr_lib)
 
 !include $(dwarfr_dir)/client.mif
-!include ../../imp.mif
+!include ../../master.mif

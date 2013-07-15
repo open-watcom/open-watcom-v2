@@ -11,4 +11,4 @@ name = javavm
 
 extra_incs = $(javasdk)/include;$(javasdk)/include/win32;$(java_src_dir)/src/win32/java/include;$(lang_root)/h/nt
 
-!include ../../imp.mif
+!include ../../master.mif

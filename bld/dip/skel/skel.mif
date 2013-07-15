@@ -32,4 +32,4 @@ extra_srcs = $(lib_misc_dir)/c
 #
 extra_cppflag = -DIM_A_MACRO
 
-!include ../../imp.mif
+!include ../../master.mif

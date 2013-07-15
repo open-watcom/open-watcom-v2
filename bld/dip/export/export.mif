@@ -19,4 +19,4 @@ name = export
 #extra_srcs = $(lib_misc_dir)/c
 extra_cppflags = -DDIP_PRIORITY=DP_EXPORTS
 
-!include ../../imp.mif
+!include ../../master.mif
