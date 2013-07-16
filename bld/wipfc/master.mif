@@ -3,8 +3,8 @@ proj_name = wipfc
 wipfc_autodepends = .autodepend
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 extra_cpp_flags = -D__STDC_LIMIT_MACROS
 

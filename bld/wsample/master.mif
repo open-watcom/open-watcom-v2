@@ -29,8 +29,8 @@ xname_linux_x64 = wsample
 xname = $(xname_$(target)_$(host_cpu))
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include wres.mif
 !include $(commonui_dir)/windbg.mif

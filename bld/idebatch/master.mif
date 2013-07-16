@@ -3,8 +3,8 @@ proj_name = idebatch
 idebatch_autodepend = .AUTODEPEND
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !ifeq host_os os2
 

@@ -8,8 +8,9 @@ wspy_autodepends = .AUTODEPEND
 sys_windowed = 1
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include dllrule.mif
+!include deftarg.mif
 
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
@@ -32,7 +33,7 @@ objs_nt =  spy.obj spyglob.obj spybox.obj spyproc.obj spymsgs.obj &
 
 objs = $(objs_$(host_os))
 
-dllobjs = $(dll_subdir)/spydll.obj
+dll_objs = $(dll_subdir)/spydll.obj
 
 extra_cpp_flags_nt = -DNOUSE3D
 
@@ -84,9 +85,9 @@ $(name).exe : rcstr.gh $(dllname).dll $(objs) $(xlibs) $(name).res $(version_res
 !endif
         $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 
-$(dllname).dll : $(dllobjs)
+$(dllname).dll : $(dll_objs)
 !ifdef __WATCOM__
-        $(linker) name $@ $(lflags_dll) file {$(dllobjs)}
+        $(linker) name $@ $(lflags_dll) file {$(dll_objs)}
 !else
         $(cl) $(clflags_dll) $< $(ldflags_dll) $(extra_ldflags_dll)
 !endif

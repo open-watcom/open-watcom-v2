@@ -6,8 +6,8 @@ conv_distrib_lib = 1
 additional_cleanup = *.asm *.c *.inc
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .EXTENSIONS: .def
 

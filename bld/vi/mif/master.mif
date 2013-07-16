@@ -27,8 +27,8 @@ lname = $(name).exe
 additional_cleanup = *.dh *.ch $(bind_compiled)
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include trmem.mif
 !include $(commonui_dir)/client.mif

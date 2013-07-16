@@ -10,8 +10,8 @@ sys_windowed = 1
 memory_model_i86 = l
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .EXTENSIONS: .res .rc
 

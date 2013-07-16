@@ -9,8 +9,8 @@ dlgprs_autodepends=.AUTODEPEND
 .EXTENSIONS: .gh
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .cpp: .;../cpp;$(browse_dir)/cpp
 

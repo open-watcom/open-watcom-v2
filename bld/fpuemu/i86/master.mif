@@ -19,8 +19,8 @@ fpu_flags_qnx_i86 = -fpc
 fpu_flags_qnx_386 = -fpc
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .ERASE
 

@@ -3,8 +3,8 @@ proj_name = wresdmp
 wresdmp_autodepeds = .AUTODEPEND
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include wres.mif
 

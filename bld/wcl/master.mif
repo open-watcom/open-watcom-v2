@@ -12,6 +12,12 @@ owcc_specs = b$(owcc_specs)
 
 wcl_trmem = 1
 
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include trmem.mif
+
 !ifdef target_cpu
 objs = clcommon.obj cmdlhelp.obj wcl.obj
 !else
@@ -19,12 +25,6 @@ objs = clcommon.obj cmdlhelp.obj owcc.obj getopt.obj quit.obj
 extra_deps = owcchelp.gh $(owcc_specs)
 !endif
 objs += $(trmem_objs)
-
-!include cproj.mif
-!include deftarg.mif
-!include defrule.mif
-
-!include trmem.mif
 
 extra_c_flags += -s
 

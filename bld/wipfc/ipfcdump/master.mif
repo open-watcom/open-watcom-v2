@@ -3,8 +3,8 @@ proj_name = ipfcdump
 ipfcdump_autodepends = .autodepend
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 extra_l_flags = op eliminate, map
 

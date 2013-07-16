@@ -2,8 +2,8 @@ proj_name = femisc
 femisc_autodepends = .autodepend
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 all: optencod.exe msgencod.exe findhash.exe .symbolic
 

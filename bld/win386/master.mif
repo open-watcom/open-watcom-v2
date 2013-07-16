@@ -5,8 +5,8 @@ win386_autodepends = .AUTODEPEND
 fpu_flags_win_i86  = -fpc
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 wdebug_name  = WDEBUG
 wemu387_name = WEMU387

@@ -5,8 +5,8 @@ wfl_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include wres.mif
 

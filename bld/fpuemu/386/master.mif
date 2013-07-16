@@ -8,8 +8,8 @@ additional_cleanup = usage.u
 .ERASE
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .c : ../c;../../c
 .asm : ../asm

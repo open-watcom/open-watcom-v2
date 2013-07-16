@@ -5,8 +5,8 @@ w32loadr_autodepends = .autodepend
 additional_cleanup = mkdginfo.bat
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .asm: ..
 .c: ..

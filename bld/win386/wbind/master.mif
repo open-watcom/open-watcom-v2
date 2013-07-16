@@ -7,8 +7,8 @@ wbind_autodepends = .AUTODEPEND
 memory_model_i86 = c
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .c : ..
 

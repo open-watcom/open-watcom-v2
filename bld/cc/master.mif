@@ -23,8 +23,9 @@ additional_cleanup = *.int *.u
 cc_nosymfile = 1
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include dllrule.mif
+!include deftarg.mif
 
 # CODEGEN stuff
 !include $(cg_dir)/mif/fe.mif

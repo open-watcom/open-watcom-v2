@@ -11,8 +11,8 @@ commonui_autodepends = .autodepend
 sys_windowed = 1
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(wpi_dir)/client.mif
 

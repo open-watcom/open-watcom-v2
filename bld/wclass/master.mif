@@ -4,8 +4,8 @@ name = wclass
 wclass_autodepends = .autodepend
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 inc_dir_dos  = -I"$(wclass_dir)/dos/hpp" 
 inc_dir_nt   = -I"$(wclass_dir)/win/hpp" 

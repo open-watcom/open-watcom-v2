@@ -2,8 +2,8 @@ proj_name = re2c
 re2c_autodepends = .autodepend
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 inc_dirs = -I"$(re2c_dir)/h"
 

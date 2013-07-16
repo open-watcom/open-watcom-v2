@@ -3,8 +3,8 @@ proj_name = res2res
 res2res_autodepends = .AUTODEPEND
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include wres.mif
 

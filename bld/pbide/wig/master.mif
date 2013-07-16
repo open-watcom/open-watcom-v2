@@ -13,8 +13,8 @@ suppress_zc = 1
 .EXTENSIONS: .gh .y
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 objs += keywords.obj &
         scanner.obj &

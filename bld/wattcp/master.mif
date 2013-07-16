@@ -9,8 +9,8 @@ wattcp_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 objs = asmpkt.obj   asmpkt4.obj   &
        chksum0.obj  cpumodel.obj  &

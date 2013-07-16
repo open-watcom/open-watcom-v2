@@ -5,8 +5,8 @@ ncurses_autodepends = .AUTODEPEND
 inc_dirs        = -I"../h"
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .c: ../c
 

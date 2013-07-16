@@ -10,8 +10,8 @@ xname = defgen.exe
 lnk = $(name).lnk
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 inc_dirs = -I..
 

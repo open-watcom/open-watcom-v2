@@ -3,8 +3,8 @@ proj_name = objread
 objread_autodepends = .autodepend
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(orl_dir)/client.mif
 

@@ -4,8 +4,8 @@ cf_autodepends = .autodepend
 inc_dirs        = -I"../h"
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .c: $(cfloat_dir)/c
 

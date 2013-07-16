@@ -2,8 +2,8 @@ proj_name = ssl
 ssl_autodepends = .autodepend
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(cpp_dir)/client.mif
 

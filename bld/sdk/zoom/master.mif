@@ -8,8 +8,8 @@ wzoom_autodepends = .AUTODEPEND
 sys_windowed = 1
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(commonui_dir)/client.mif
 

@@ -12,8 +12,8 @@ wvpmhelp_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
         @%null

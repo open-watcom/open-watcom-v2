@@ -41,8 +41,8 @@ inc_dirs = -I. -I"../h" -I"../../h" -I"../c"
 # Include standard .mif files to do the work.
 #
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res

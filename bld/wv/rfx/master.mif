@@ -16,8 +16,8 @@ dig_os = os2v2
 .EXTENSIONS : .str
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(dig_dir)/trpcli.mif
 

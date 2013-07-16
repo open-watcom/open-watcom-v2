@@ -1,11 +1,11 @@
 proj_name       = owl
 owl_autodepends = .autodepend
 
-inc_dirs        = -I"../h"
-
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
+
+inc_dirs    = -I"../h"
 
 .c: $(owl_dir)/c
 

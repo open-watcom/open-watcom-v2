@@ -3,8 +3,8 @@ proj_name = bmp2eps
 bmp2eps_autodepends = .autodepend
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 inc_dirs = -I"../h"
 

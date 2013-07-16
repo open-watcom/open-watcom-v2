@@ -3,8 +3,8 @@ proj_name = techinfo
 techinfo_autodepends = .AUTODEPEND
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .CONTINUE
 .ERASE

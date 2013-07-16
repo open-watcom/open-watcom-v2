@@ -4,8 +4,8 @@ os2apitest_autodepends = .autodepend
 all : testc.exe testpp.exe .symbolic
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !ifeq host_cpu 386
 inc_dirs = -I"../../os2386/h"

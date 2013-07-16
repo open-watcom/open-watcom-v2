@@ -10,8 +10,8 @@ nmpbind_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 objs = nmpbind.obj nmpos2.obj
 

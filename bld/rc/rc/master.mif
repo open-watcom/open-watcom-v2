@@ -18,6 +18,7 @@ additional_cleanup = ytab.* ytab2.* ytabw.*
 
 !include cproj.mif
 !include defrule.mif
+!include dllrule.mif
 !include deftarg.mif
 
 !include wres.mif

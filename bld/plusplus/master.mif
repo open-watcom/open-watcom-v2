@@ -25,6 +25,7 @@ additional_cleanup = *.u *.int y.out ytab.c *.mbr
  
 !include cproj.mif
 !include defrule.mif
+!include dllrule.mif
 !include deftarg.mif
  
 !include $(cg_dir)/mif/fe.mif

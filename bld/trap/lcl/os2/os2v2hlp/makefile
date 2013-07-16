@@ -12,8 +12,8 @@ os2v2hlp_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .asm : ../asm
 

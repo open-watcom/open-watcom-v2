@@ -5,8 +5,8 @@ wfc_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(cg_dir)/mif/fe.mif
 !include $(as_dir)/client.mif

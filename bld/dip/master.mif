@@ -34,8 +34,8 @@ ext_rdos_386    = .dll
 objs = dipimp.obj $(imp_objs)
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .c: ../c;../../c;$(extra_srcs)
 

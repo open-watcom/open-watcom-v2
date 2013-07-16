@@ -14,7 +14,6 @@ cdsay <PROJDIR>
     mkdir <OWOBJDIR>
     cdsay <OWOBJDIR>
     wmake -h -f ../binmake bootstrap=1
-    wmake -h -f ../binmake bootstrap=1 sharedlib=1
     cdsay <PROJDIR>
 
 [ BLOCK <1> bootclean ]

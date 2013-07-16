@@ -7,8 +7,9 @@ proj_name = wgml_research
 wgml_research_autodepends = .AUTODEPEND
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
+
 !include ../../wgmlobjs.mif
 !include wres.mif
 

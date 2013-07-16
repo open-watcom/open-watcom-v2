@@ -2,26 +2,26 @@ proj_name = watcom
 
 watcom_autodepends = .autodepend
 
-!ifeq sharedlib 1
-sys_dll = 1
-objs     = $(dll_subdir)/clibext.obj
-lib_name = clibexts.lib
-!else
-objs     = clibext.obj
-lib_name = clibext.lib
-!endif
-
 !include cproj.mif
 !include defrule.mif
+!include dllrule.mif
 !include deftarg.mif
+
+objs     = clibext.obj
+dll_objs = $(dll_subdir)/clibext.obj
 
 .c: ../c
 
 inc_dirs = -I"../h"
 
-!ifdef __WATCOM__
-skip : .symbolic
-!else
-$(lib_name) : $(objs)
-    $(bld_lib) $<
+!ifndef __WATCOM__
+libs = clibext.lib clibexts.lib
 !endif
+
+all: $(libs) .symbolic
+
+clibext.lib : $(objs)
+    $(bld_lib) $<
+
+clibexts.lib : $(dll_objs)
+    $(bld_lib) $<

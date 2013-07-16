@@ -8,8 +8,8 @@ dipdump_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 dig_os_os2_386 = os2v2
 dig_os_dos_386 = dsx

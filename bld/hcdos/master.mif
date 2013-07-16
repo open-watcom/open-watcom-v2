@@ -3,8 +3,8 @@ proj_name = hcdos
 hcdos_autodepends = .autodepend
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 inc_dirs = -I"../h" -I"$(hlpview_dir)/h" -I"$(ui_dir)/h"
 

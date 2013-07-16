@@ -3,8 +3,8 @@ proj_name = pbide
 pbide_autodepends = .AUTODEPEND
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 dlldbg.exe : dlldbg.obj dlldbg.res
         $(linker) op map $(lflags) name $^. file dlldbg.obj

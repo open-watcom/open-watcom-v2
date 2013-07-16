@@ -10,8 +10,8 @@ sys_windowed=1
 .EXTENSIONS: .res .rc
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(wdisasm_dir)/client.mif
 !include $(commonui_dir)/client.mif

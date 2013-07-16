@@ -29,6 +29,7 @@ suppress_zc = 1
 !endif
 !include cproj.mif
 !include defrule.mif
+!include dllrule.mif
 !include deftarg.mif
 
 !include $(orl_dir)/client.mif

@@ -5,8 +5,8 @@ whelp_autodepends = .AUTODEPEND
 whelp_trmem = 1
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include trmem.mif
 

@@ -32,8 +32,8 @@ ext_rdos_386  = .dll
 additional_cleanup = *.d32 *.mad
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(disasm_dir)/dis.mif
 

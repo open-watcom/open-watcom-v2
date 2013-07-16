@@ -13,10 +13,7 @@ name = wgml
 wgml_autodepends = .AUTODEPEND
 !endif
 
-!ifeq release 0
 wgml_trmem = 1
-verbose    = 1
-!endif
 
 extra_c_flags      += -zpw
 #  extra_c_flags      += -fti
@@ -24,8 +21,9 @@ extra_c_flags      += -zpw
 #extra_c_flags_gsyssym = -P
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
+
 !include trmem.mif
 !include wres.mif
 

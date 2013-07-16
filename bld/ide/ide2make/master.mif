@@ -5,8 +5,8 @@ ide2make_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(idelib_dir)/client.mif
 !include $(wclass_dir)/client.mif

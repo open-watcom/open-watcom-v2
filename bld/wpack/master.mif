@@ -3,8 +3,8 @@ proj_name = wpack
 wpack_autodepends = .AUTODEPEND
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 inc_dirs = -I"$(wpack_dir)/h" -I"$(wtouch_dir)" -I"$(clib_dir)/h"
 

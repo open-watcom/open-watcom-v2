@@ -8,8 +8,8 @@ extra_cxx_flags = -xs
 extra_l_flags   = name cvpack.exe op map #option eliminate
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 objs =  cvpack.obj retrieve.obj cverror.obj packtype.obj
 objs += subsect.obj cssymbol.obj makeexe.obj symdis.obj

@@ -4,8 +4,8 @@ host_os  = nt
 host_cpu = 386
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 all: dbginst.exe .SYMBOLIC
 

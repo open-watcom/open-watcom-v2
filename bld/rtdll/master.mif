@@ -23,8 +23,8 @@ rtdll_host_os_linux   =linux
 host_os=$(rtdll_host_os_$(system))
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(rtdll_dir)/dllname.mif
 !include $(rtdll_dir)/dllbase.mif

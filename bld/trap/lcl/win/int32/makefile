@@ -8,11 +8,11 @@ wint32_autodepends = .autodepend
 
 sys_dll = 1
 
-objs = intmain.obj ints.obj int32.obj
-
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
+
+objs = intmain.obj ints.obj int32.obj
 
 extra_c_flags = -s -fpc -zu -zw
 

@@ -5,8 +5,8 @@ wstrip_autodepends = .AUTODEPEND
 name = wstripx
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include wres.mif
 

@@ -23,6 +23,7 @@ wlib_nosymfile = 1
 
 !include cproj.mif
 !include defrule.mif
+!include dllrule.mif
 !include deftarg.mif
 
 !include trmem.mif

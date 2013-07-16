@@ -1,9 +1,3 @@
-!ifdef %OWDLLOBJDIR
-dll_subdir = $(%OWDLLOBJDIR)
-!else
-dll_subdir = dllobjs
-!endif
-
 .c.obj: $($(proj_name)_autodepends)
 !ifeq verbose 1
         $(cc) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
@@ -12,30 +6,12 @@ dll_subdir = dllobjs
         @$(cc) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
 !endif
 
-.c{$(dll_subdir)}.obj: $($(proj_name)_autodepends)
-        @if not exist $(dll_subdir) mkdir $(dll_subdir)
-!ifeq verbose 1
-        $(cc) $(cflags_dll) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-        @echo cc $@
-        @$(cc) $(cflags_dll) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
-
 .cpp.obj: $($(proj_name)_autodepends)
 !ifeq verbose 1
         $(cxx) $(cflags) $(cxxflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
 !else
         @echo c++ $@
         @$(cxx) $(cflags) $(cxxflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
-
-.cpp{$(dll_subdir)}.obj: $($(proj_name)_autodepends)
-        @if not exist $(dll_subdir) mkdir $(dll_subdir)
-!ifeq verbose 1
-        $(cxx) $(cflags_dll) $(cxxflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-        @echo c++ $@
-        @$(cxx) $(cflags_dll) $(cxxflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
 !endif
 
 .asm.obj: $($(proj_name)_autodepends)

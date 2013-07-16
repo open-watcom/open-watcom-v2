@@ -5,8 +5,8 @@ cg_autodepends = .AUTODEPEND
 !endif 
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !include $(cg_dir)/mif/cg.mif
 !include $(cg_dir)/mif/hostos.mif

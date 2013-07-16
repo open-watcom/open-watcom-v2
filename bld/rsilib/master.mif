@@ -5,8 +5,8 @@ rsilib_autodepends = .autodepend
 fpu_flags_dos_i86 = -fpc
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .c: ../c
 .asm: ../asm

@@ -88,8 +88,8 @@ name = $(srv)
 !endif
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 !ifeq release 1
 !ifdef test

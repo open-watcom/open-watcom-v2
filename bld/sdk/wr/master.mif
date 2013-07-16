@@ -14,8 +14,8 @@ sys_dll = 1
 wr_trmem = 1
 
 !include cproj.mif
-!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 .EXTENSIONS: .msg .res .rc
 
