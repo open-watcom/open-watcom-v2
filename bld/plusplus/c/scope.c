@@ -402,11 +402,11 @@ static void printScopeName( SCOPE scope, char *suffix )
 
     switch( scope->id ) {
     case SCOPE_CLASS:
-        name = NameStr( ScopeClass( scope )->u.c.info->name );
-        if( name == NULL ) {
-            name = "**un-named**";
+        if( ScopeClass( scope )->u.c.info->name == NULL ) {
+            printf( "%s ", "**un-named**" );
+        } else {
+            printf( "%s ", NameStr( ScopeClass( scope )->u.c.info->name ) );
         }
-        printf( "%s ", name );
         break;
     case SCOPE_FILE:
         name = ScopeNameSpaceFormatName( scope );

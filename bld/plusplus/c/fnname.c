@@ -279,14 +279,14 @@ static void appendNameSpaceName(// APPEND A NAMESPACE NAME
 static void appendSymName(      // APPEND A SYMBOL's MANGLED NAME
     SYMBOL sym )                // - the symbol
 {
-    const char  *sname;
+    NAME    name;
 
-    sname = NameStr( sym->name->name );
-    if( nameHasPrefix( sym->name->name, IN_OP_PREFIX ) ) {
+    name = sym->name->name;
+    if( nameHasPrefix( name, IN_OP_PREFIX ) ) {
         appendStr( IN_NAME_PREFIX );
-        appendStr( &sname[ sizeof( IN_NAME_PREFIX ) ] );
+        appendStr( &( NameStr( name )[sizeof( IN_NAME_PREFIX )] ) );
     } else {
-        appendReplName( sname );
+        appendReplName( NameStr( name ) );
     }
 }
 
@@ -1100,20 +1100,18 @@ boolean IsCppNameInterestingDebug(      // CHECK FOR INTERNAL NAMES
     SYMBOL sym )                        // - symbol
 {
     NAME name;
-    const char *sname;
 
     name = sym->name->name;
     if( IsInternalName( name ) ) {
         // internal symbol names
         return( FALSE );
     }
-    sname = NameStr( name );
-    if( sname[0] == NAME_OPERATOR_OR_DUMMY_PREFIX_0 ) {
+    if( NameStr( name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 ) {
         if( name == specialNames[ SPECIAL_RETURN_VALUE ] ) {
             // special case for ".return"
             return( TRUE );
         }
-        if( sname[1] == NAME_OPERATOR_PREFIX_1 ) {
+        if( NameStr( name )[1] == NAME_OPERATOR_PREFIX2 ) {
             // operator function names
             return( TRUE );
         }

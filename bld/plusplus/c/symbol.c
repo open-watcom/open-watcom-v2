@@ -465,7 +465,7 @@ boolean SymIsTemporary(         // DETERMINE IF INTERNAL SYMBOL
     } else if( SymIsAnError( sym ) ) {
         retn = TRUE;
     } else {
-        retn = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX_0 );
+        retn = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 );
     }
     return( retn );
 }
@@ -481,7 +481,7 @@ boolean SymIsGenedFunc(         // DETERMINE IF SYMBOL IS A GENERATED FUNC.
     } else if( SymIsAnError( sym ) ) {
         retn = TRUE;
     } else {
-        retn = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX_0 );
+        retn = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 );
     }
     return( retn );
 }
@@ -792,7 +792,7 @@ boolean SymIsModuleDtorable(    // TEST IF SYMBOL IS MODULE-DTORABLE
             (3) function static variables
     */
     symGetScope( sym, scope );
-    if( ( NameStr( sym->name->name )[0] != NAME_OPERATOR_OR_DUMMY_PREFIX_0 ) && ( ScopeId( scope ) == SCOPE_FILE ) ) {
+    if( ( NameStr( sym->name->name )[0] != NAME_OPERATOR_OR_DUMMY_PREFIX1 ) && ( ScopeId( scope ) == SCOPE_FILE ) ) {
         retn = TRUE;
     } else {
         retn = ( sym->id == SC_STATIC );

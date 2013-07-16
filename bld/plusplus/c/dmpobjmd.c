@@ -351,11 +351,11 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     sym = base->u.t.sym;
     VbufInit( &buffer );
     VbufConcStr( &buffer, "Object Model for: " );
-    name = NameStr( sym->name->name );
-    if( NULL == name || name[0] == '.' ) {
-        name = "anonymous enum type";
+    if( NULL == sym->name->name || NameStr( sym->name->name )[0] == '.' ) {
+        VbufConcStr( &buffer, "anonymous enum type" );
+    } else {
+        VbufConcStr( &buffer, NameStr( sym->name->name ) );
     }
-    VbufConcStr( &buffer, name );
     switch( TypedefModifierRemove( base->of ) -> id ) {
       case TYP_CHAR :
       case TYP_UCHAR :
