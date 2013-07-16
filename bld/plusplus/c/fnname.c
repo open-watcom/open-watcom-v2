@@ -618,7 +618,7 @@ static void appendDelta(        // CONCATENATE A DELTA OPERATION
 {
     char buff[16];
 
-    buff[0] = 'o';
+    buff[0] = 'O';
     ultoa( offset, &buff[1], 31 );
     appendStr( buff );
 }
@@ -941,9 +941,9 @@ NAME CppThunkName(              // CREATE NAME OF VIRTUAL FN THUNK
         appendDelta( thunk->delta );
     }
     if( thunk->ctor_disp ) {
-        appendChar( 'c' );
+        appendChar( 'C' );
         if( thunk->input_virtual ) {
-            appendChar( 'i' );
+            appendChar( 'I' );
             appendDelta( thunk->in.vb_offset );
             appendDelta( thunk->in.vb_index );
         }
