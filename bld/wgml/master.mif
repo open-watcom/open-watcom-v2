@@ -15,11 +15,6 @@ wgml_autodepends = .AUTODEPEND
 
 wgml_trmem = 1
 
-extra_c_flags      += -zpw
-#  extra_c_flags      += -fti
-#  extra_c_flags      += -pcl
-#extra_c_flags_gsyssym = -P
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -29,25 +24,21 @@ extra_c_flags      += -zpw
 
 !include ../wgmlobjs.mif
 
-
 inc_dirs = -I. -I"../h" $(wres_inc_dirs)
 
-res_depends = wgml.res  wgmlmsgs.gh wgmlmsge.gh
-#inc_dirs    += -I"$(wrc_dir)/$(host_os)$(host_cpu)"
+res_depends = wgml.res wgmlmsgs.gh wgmlmsge.gh
 
 .c: ../c;../../watcom/c;$(trmem_dir)
 
-!ifeq wgml_trmem 1
-extra_cpp_flags += -DTRMEM
-!endif
+extra_c_flags      += -zpw
+#  extra_c_flags      += -fti
+#  extra_c_flags      += -pcl
+#extra_c_flags_gsyssym = -P
 
-!ifeq wgml_trmem 1
-extra_c_flags += -of+
-objs          += $(trmem_objs)
-inc_dirs      += -I"$(trmem_dir)"
-!endif
+extra_c_flags_gmemory = $(trmem_cover_cflags)
+extra_c_flags_trmem   = $(trmem_cflags)
 
-libs     += $(wres_lib)
+libs += $(wres_lib)
 
 
 wgml.exe: $(res_depends) $(objs) $(libs) $(__MAKEFILES__)

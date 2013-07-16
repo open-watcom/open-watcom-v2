@@ -116,11 +116,11 @@ void *mem_alloc( size_t size )
 {
     void    *p;
 
-    #ifdef TRMEM
-        p = _trmem_alloc( size, _trmem_guess_who(), handle );
-    #else
-        p = malloc( size );
-    #endif
+#ifdef TRMEM
+    p = _trmem_alloc( size, _trmem_guess_who(), handle );
+#else
+    p = malloc( size );
+#endif
     if( p == NULL ) {
         g_err( err_nomem_avail );
         err_count++;
@@ -137,11 +137,11 @@ void *mem_realloc( void * oldp, size_t size )
 {
     void    *   p;
 
-    #ifdef TRMEM
-        p = _trmem_realloc( oldp, size, _trmem_guess_who(), handle );
-    #else
-        p = realloc( oldp, size );
-    #endif
+#ifdef TRMEM
+    p = _trmem_realloc( oldp, size, _trmem_guess_who(), handle );
+#else
+    p = realloc( oldp, size );
+#endif
     if( p == NULL ) {
         g_err( err_nomem_avail );
         err_count++;
@@ -157,11 +157,11 @@ void *mem_realloc( void * oldp, size_t size )
 
 void mem_free( void * p )
 {
-    #ifdef TRMEM
-        _trmem_free( p, _trmem_guess_who(), handle );
-    #else
-        free( p );
-    #endif
+#ifdef TRMEM
+    _trmem_free( p, _trmem_guess_who(), handle );
+#else
+    free( p );
+#endif
     p = NULL;
 }
 
