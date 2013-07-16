@@ -58,6 +58,6 @@ void FreeErrInfo( WatIDEErrInfo *info );
 #undef pick
 #define pick( x, y ) x
 enum {
-    #include "error.lst"
+    #include "errors.h"
 };
 #endif

@@ -45,7 +45,7 @@
 #define pick( x, y )    y
 
 static char     *errMsgs[] = {
-    #include "error.lst"
+    #include "errors.h"
 };
 
 static FILE     *errFile = stdout;

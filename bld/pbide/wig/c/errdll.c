@@ -42,7 +42,7 @@
 #define pick( x, y )    y
 
 static char     *errMsgs[] = {
-    #include "error.lst"
+    #include "errors.h"
 };
 
 jmp_buf         ErrorEnv;
