@@ -39,7 +39,7 @@
 
 extern handle   LocalFullPathOpen( char *name, char *ext, char *result, unsigned max_result );
 extern char     *StrCopy( char *src, char *dst );
-extern int      DUIEnvLkup( char *, char *, int );
+extern unsigned DUIEnvLkup( char *, char *, unsigned );
 
 extern char             *TxtBuff;
 

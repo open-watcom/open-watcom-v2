@@ -47,7 +47,7 @@
 extern void     DebugMain( void );
 extern void     DebugFini( void );
 extern char     *StrCopy( char *, char * );
-extern unsigned EnvLkup( char *, char *, int );
+extern unsigned EnvLkup( char *, char *, unsigned );
 
 static char             *CmdStart;
 static volatile bool    BrkPending;

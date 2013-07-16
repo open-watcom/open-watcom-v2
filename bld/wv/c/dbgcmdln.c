@@ -44,7 +44,7 @@
 
 extern unsigned         ConfigScreen( void );
 extern unsigned         Lookup( char *, char *, unsigned );
-extern int              DUIEnvLkup( char *, char *, int );
+extern unsigned         DUIEnvLkup( char *, char *, unsigned );
 extern char             *Format( char *, char *, ... );
 extern bool             OptDelim( char );
 extern void             ProcSysOptInit( void );
@@ -532,7 +532,7 @@ void ProcCmd( void )
 {
     char        buff[TXT_LEN];
     unsigned    screen_mem;
-    int         have_env;
+    unsigned    have_env;
     int         pass;
 
     MemSize = MIN_MEM_SIZE;

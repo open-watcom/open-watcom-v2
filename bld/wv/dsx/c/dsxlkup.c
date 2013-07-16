@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-
 #include <string.h>
 #include <watcom.h>
 #include "dpmi.h"
@@ -41,13 +40,7 @@
   extern int                    _psp;
 #endif
 
-
 #define PSP_ENV_VARS_OFF        0x2c
-
-
-
-extern char             *StrCopy( char *, char * );
-
 
 char *DOSEnvFind( char *src )
 {
@@ -71,12 +64,30 @@ char *DOSEnvFind( char *src )
 #endif
 }
 
-int EnvLkup( char *src, char *dst, int max_len )
+unsigned EnvLkup( char *src, char *buff, unsigned max_len )
 {
     char        *env;
+    unsigned    len;
+    int         output = 0;
+    char        c;
 
-    max_len = max_len; // nyi obey
     env = DOSEnvFind( src );
-    if( env == NULL ) env = "";
-    return( StrCopy( env, dst ) - dst );
+    if( env == NULL )
+        return( 0 );
+    if( max_len != 0 && buff != NULL ) {
+        --max_len;
+        output = 1;
+    }
+    for( len = 0; (c = *env++) != '\0'; ++len ) {
+        if( output ) {
+            if( len >= max_len ) {
+                break;
+            }
+            *buff++ = c;
+        }
+    }
+    if( output ) {
+        buff[len] = '\0';
+    }
+    return( len );
 }

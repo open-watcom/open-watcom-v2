@@ -40,7 +40,7 @@
 #endif
 #include "trptypes.h"
 
-extern int              DUIEnvLkup( char *, char *, int );
+extern unsigned         DUIEnvLkup( char *, char *, unsigned );
 extern char             *StrCopy( char const *, char * );
 extern void             FreeRing( char_ring * );
 extern unsigned         RemoteStringToFullName( bool, char *, char *, unsigned );
@@ -642,7 +642,7 @@ void PathFini( void )
 static void EnvParse( char_ring **owner, char *src )
 {
     char       *start, *end;
-    int         len;
+    unsigned   len;
     char_ring  *new;
 
     for( start = end = src;; ++end ) {
@@ -651,7 +651,7 @@ static void EnvParse( char_ring **owner, char *src )
                 ++start;
             }
             len = end - start;
-            while( len > 0 && start[len-1] == ' ' ) {
+            while( len > 0 && start[len - 1] == ' ' ) {
                 --len;
             }
             _Alloc( new, sizeof( char_ring ) + len );
@@ -666,19 +666,25 @@ static void EnvParse( char_ring **owner, char *src )
         }
     }
 }
+
 #endif
 
 void PathInit( void )
 {
 #if !defined( BUILD_RFX )
-    #define BSIZE 2048
     char        *buff;
+    unsigned	size;
 
-    _Alloc( buff, BSIZE ); /* allocate enough room for a very long PATH */
+  #if defined( __RDOS__ )
+    size = 2048;
+  #else
+    size = DUIEnvLkup( "PATH", NULL, 0 ) + 1;
+  #endif
+    _Alloc( buff, size );   /* allocate enough room for a very long PATH */
     if( buff == NULL ) {
         StartupErr( LIT( ERR_NO_MEMORY ) );
     }
-    if( DUIEnvLkup( "PATH", buff, BSIZE ) != 0 ) {
+    if( DUIEnvLkup( "PATH", buff, size ) != 0 ) {
         EnvParse( &LclPath, buff );
     }
     _Free( buff );

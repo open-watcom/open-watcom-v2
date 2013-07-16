@@ -60,7 +60,7 @@
 extern bool     VarInfoRelease( void );
 extern bool     DlgInfoRelease( void );
 extern char     *Format( char *, char *, ... );
-extern int      DUIEnvLkup( char *, char *, int );
+extern unsigned DUIEnvLkup( char *, char *, unsigned );
 extern void     PopErrBox( char * );
 
 

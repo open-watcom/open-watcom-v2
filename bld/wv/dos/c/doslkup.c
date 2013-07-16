@@ -35,9 +35,7 @@
 #include <string.h>
 #include "farptrs.h"
 
-
-#define DOSEnv 0X002C
-
+#define DOSEnv 0x002C
 
 extern  addr_seg    _psp;
 
@@ -62,16 +60,30 @@ char far *DOSEnvFind( char far *src )
  * EnvLkup -- lookup up string in environment area
  */
 
-int EnvLkup( char *src, char *dst )
+unsigned EnvLkup( char *src, char *buff, unsigned max_len )
 {
-    int         len;
     char        far *env;
+    unsigned    len;
+    int         output = 0;
+    char        c;
 
     env = DOSEnvFind( src );
-    if( env == NULL ) {
-        *dst = NULLCHAR;
+    if( env == NULL )
         return( 0 );
+    if( max_len != 0 && buff != NULL ) {
+        --max_len;
+        output = 1;
     }
-    for( len = 0; ( *dst++ = *env++ ) != NULLCHAR; len++ ) {}
+    for( len = 0; (c = *env++) != '\0'; ++len ) {
+        if( output ) {
+            if( len >= max_len ) {
+                break;
+            }
+            *buff++ = c;
+        }
+    }
+    if( output ) {
+        buff[len] = '\0';
+    }
     return( len );
 }

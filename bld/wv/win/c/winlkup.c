@@ -58,18 +58,31 @@ char *DOSEnvFind( char *src )
  * EnvLkup -- lookup up string in environment area
  */
 
-int EnvLkup( char *src, char *dst, int max_len )
+unsigned EnvLkup( char *src, char *buff, unsigned max_len )
 {
-    int         len;
+    unsigned    len;
     char        *env;
+    int         output = 0;
+    char        c;
 
-    max_len = max_len; // nyi obey
     env = DOSEnvFind( src );
-    if( env == NULL ) {
-        *dst = NULLCHAR;
+    if( env == NULL )
         return( 0 );
+    if( max_len != 0 && buff != NULL ) {
+        --max_len;
+        output = 1;
     }
-    for( len = 0; ( *dst++ = *env++ ) != NULLCHAR; len++ ) {}
+    for( len = 0; (c = *env++) != '\0'; ++len ) {
+        if( output ) {
+            if( len >= max_len ) {
+                break;
+            }
+            *buff++ = c;
+        }
+    }
+    if( output ) {
+        buff[len] = '\0';
+    }
     return( len );
 }
 #else
@@ -77,9 +90,8 @@ int EnvLkup( char *src, char *dst, int max_len )
  * EnvLkup -- lookup up string in environment area
  */
 
-int EnvLkup( char *src, char *dst, int max_len )
+unsigned EnvLkup( char *src, char *dst, unsigned max_len )
 {
-
     return( GetEnvironmentVariable( src, dst, max_len ) );
 }
 #endif

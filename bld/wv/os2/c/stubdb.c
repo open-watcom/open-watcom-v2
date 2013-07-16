@@ -881,8 +881,9 @@ bool DUIIsDBCS( void )
     return( FALSE );
 }
 
-extern int EnvLkup( char *src, char *dst, int );
-int DUIEnvLkup( char *src, char *dst, int max_len )
+extern unsigned EnvLkup( char *src, char *dst, unsigned );
+
+unsigned DUIEnvLkup( char *src, char *dst, unsigned max_len )
 {
     return( EnvLkup( src, dst, max_len ) );
 }

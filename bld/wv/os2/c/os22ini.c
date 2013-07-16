@@ -96,7 +96,7 @@ void GUISysFini( void )
     DebugFini();
 }
 
-void WndCleanUp()
+void WndCleanUp( void )
 {
 }
 
@@ -119,25 +119,42 @@ void KillDebugger( int ret_code )
     DosExit( EXIT_PROCESS, ret_code );
 }
 
-void GrabHandlers()
+void GrabHandlers( void )
 {
 }
 
-void RestoreHandlers()
+void RestoreHandlers( void )
 {
 }
 
-unsigned EnvLkup( char *name, char *buff, int max_len )
+unsigned EnvLkup( char *name, char *buff, unsigned max_len )
 {
     char        *env;
+    unsigned    len;
+    int         output = 0;
+    char        c;
 
-    max_len = max_len; // nyi obey
     // use getenv() so that autoenv has an effect (we can't
     // reliably modify the "master" process environment on OS/2)
     env = getenv( name );
     if( env == NULL )
         return( 0 );
-    return( StrCopy( env, buff ) - buff );
+    if( max_len != 0 && buff != NULL ) {
+        --max_len;
+        output = 1;
+    }
+    for( len = 0; (c = *env++) != '\0'; ++len ) {
+        if( output ) {
+            if( len >= max_len ) {
+                break;
+            }
+            *buff++ = c;
+        }
+    }
+    if( output ) {
+        buff[len] = '\0';
+    }
+    return( len );
 }
 
 long _fork( char *cmd, unsigned len )
@@ -203,7 +220,7 @@ long _fork( char *cmd, unsigned len )
     return( rc );
 }
 
-bool TBreak()
+bool TBreak( void )
 {
     bool    ret;
 
@@ -217,6 +234,6 @@ int _set_errno( int a )
     return( a );
 }
 
-void SysSetMemLimit()
+void SysSetMemLimit( void )
 {
 }

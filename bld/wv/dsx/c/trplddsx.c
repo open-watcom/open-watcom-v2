@@ -78,7 +78,7 @@ static dos_memory               TrapMem;
 
 static void __far               *RawPMtoRMSwitchAddr;
 
-extern int                      EnvLkup( char *, char *, int max );
+extern unsigned                 EnvLkup( char *, char *, unsigned max );
 extern handle                   PathOpen( char *, uint, char * );
 extern sys_handle               GetSystemHandle( handle );
 

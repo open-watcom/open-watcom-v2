@@ -36,7 +36,7 @@
 #include "rdos.h"
 
 
-int EnvLkup( char *src, char *dst, int max_len )
+unsigned EnvLkup( char *src, char *dst, unsigned max_len )
 {
     int handle;
     int size;

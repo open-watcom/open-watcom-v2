@@ -68,7 +68,7 @@ extern void DUIExitCriticalSection( void );
 extern void DUIInitLiterals( void );
 extern void DUIFiniLiterals( void );
 extern bool DUIIsDBCS( void );
-extern int  DUIEnvLkup( char *, char *, int );
+extern unsigned DUIEnvLkup( char *, char *, unsigned );
 extern void DUIDirty( void );
 extern void DUISrcOrAsmInspect( address );
 extern void DUIAddrInspect( address );

@@ -37,23 +37,29 @@
 #include "os2.h"
 
 
-unsigned EnvLkup( char *name, char *buff, int max_len )
+unsigned EnvLkup( char *name, char *buff, unsigned max_len )
 {
     char    far *env;
     unsigned    len;
+    int         output = 0;
+    char        c;
 
-    max_len = max_len; // nyi obey
-    if( DosScanEnv( name, &env ) == 0 ) {
-        len = 0;
-        for(;;) {
-            *buff = *env;
-            if( *buff == NULLCHAR ) break;
-            ++len;
-            ++buff;
-            ++env;
-        }
-        return( len );
+    if( DosScanEnv( name, &env ) != 0 )
+        return( 0 );
+    if( max_len != 0 && buff != NULL ) {
+        --max_len;
+        output = 1;
     }
-    return( 0 );
+    for( len = 0; (c = *env++) != '\0'; ++len ) {
+        if( output ) {
+            if( len >= max_len ) {
+                break;
+            }
+            *buff++ = c;
+        }
+    }
+    if( output ) {
+        buff[len] = '\0';
+    }
+    return( len );
 }
-
