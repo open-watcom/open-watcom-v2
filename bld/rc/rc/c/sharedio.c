@@ -35,7 +35,7 @@
 #include "errors.h"
 #include "autodep.h"
 #include "reserr.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 #define MAX_OPEN_RESFILES       6
 

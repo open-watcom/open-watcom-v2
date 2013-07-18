@@ -50,7 +50,7 @@
 #include "wrenames.h"
 #include "wrrnames.h"
 #include "wre_rc.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

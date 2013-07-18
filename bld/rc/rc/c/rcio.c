@@ -50,7 +50,7 @@
 #include "rcldstr.h"
 #include "iortns.h"
 #include "semantic.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 
 #ifdef __UNIX__

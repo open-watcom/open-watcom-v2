@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include "wresall.h"
 #include "wresset2.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 #include "loadstr.h"
 
 #define GET_STR_BUF_LEN 128

@@ -40,7 +40,7 @@
 #include "watcom.h"
 #include "wressetr.h"
 #include "resdiag.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 #define DLG_X_MULT      4
 #define DLG_Y_MULT      14

@@ -80,7 +80,7 @@ struct ControlData {
 #include "ytabw.gh"
 #include "semantic.h"
 #include "semdiag.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 
 static FullDialogBoxHeader *NewDialogBoxHeader( void )

@@ -39,7 +39,7 @@
 #include "reserr.h"
 #include "depend.h"
 #include "iortns.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 /**** forward references ****/
 static void AddIconResource( WResID * name, ResMemFlags flags,

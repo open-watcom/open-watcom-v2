@@ -24,17 +24,61 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windows resources definitions used by resource compiler
 *
 ****************************************************************************/
 
 
-/*
- *      Windows definitions used by resource compiler - faster than
- *      including "windows.h".
- */
+#ifndef WRESDEFN_INCLUDED
+#define WRESDEFN_INCLUDED
 
+#if defined( WIN_GUI )
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
+#if !defined( WIN_GUI )
+
+/*** predefined type numbers ***/
+#define RT_CURSOR           1
+#define RT_BITMAP           2
+#define RT_ICON             3
+#define RT_MENU             4
+#define RT_DIALOG           5
+#define RT_STRING           6
+#define RT_FONTDIR          7
+#define RT_FONT             8
+#define RT_ACCELERATOR      9
+#define RT_RCDATA           10
+#define RT_GROUP_CURSOR     12      /* note: no type 13 resource */
+#define RT_GROUP_ICON       14
+
+#endif
+
+// these symbols are not defined in windows.h
+#ifndef RT_VERSIONINFO
+#define RT_VERSIONINFO      16
+#endif
+
+#ifndef RT_MESSAGETABLE
+#define RT_MESSAGETABLE     11      /* for NT res files only */
+#endif
+#ifndef RT_ERRTABLE
+#define RT_ERRTABLE         11
+#endif
+#ifndef RT_NAMETABLE
+#define RT_NAMETABLE        15
+#endif
+#ifndef RT_VERSION
+#define RT_VERSION          16
+#endif
+#ifndef RT_DLGINCLUDE
+#define RT_DLGINCLUDE       17
+#endif
+
+#define RT_TOOLBAR          0xF1
+
+#if !defined( WIN_GUI )
 
 /* Window Styles */
 
@@ -408,3 +452,7 @@
 #define TCS_OWNERDRAWFIXED      0x2000
 #define TCS_TOOLTIPS            0x4000
 #define TCS_FOCUSNEVER          0x8000
+
+#endif
+
+#endif

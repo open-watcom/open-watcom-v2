@@ -38,7 +38,7 @@
 #include "ytabw.gh"
 #include "semantic.h"
 #include "semver.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 
 /*** Forward References ***/

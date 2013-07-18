@@ -69,7 +69,7 @@ struct PopupMenuExItem {
 #include "ytabw.gh"
 #include "semantic.h"
 #include "semmenu.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 static void SemFreeSubMenu( FullMenu *submenu );
 

@@ -39,7 +39,7 @@
 #include "yydrivrw.h"
 #include "scanw.h"
 #include "errprt.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 typedef uint_16         YYCHKTYPE;
 typedef uint_16         YYACTTYPE;

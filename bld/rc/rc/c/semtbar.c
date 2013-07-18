@@ -37,7 +37,7 @@
 #include "semtbar.h"
 #include "global.h"
 #include "restbar.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 static void initToolBarItems( ToolBarItems *ret ) {
     ret->next = NULL;

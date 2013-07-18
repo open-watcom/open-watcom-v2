@@ -35,7 +35,7 @@
 #include "trmemcvr.h"
 #include "wresall.h"
 #include "dmpdiag.h"
-#include "resdefs.h"
+#include "wresdefn.h"
 
 static void PrintDialogBoxHeader( DialogBoxHeader * head )
 /********************************************************/
