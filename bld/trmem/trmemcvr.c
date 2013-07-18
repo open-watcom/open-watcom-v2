@@ -29,13 +29,10 @@
 ****************************************************************************/
 
 
-#ifdef __UNIX__
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
 #include <string.h>
 #include <stdlib.h>
+#include "wio.h"
+#include "watcom.h"
 #include "trmem.h"
 
 #ifdef TRMEM
