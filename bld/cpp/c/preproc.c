@@ -394,10 +394,8 @@ int PP_ReadBuf( void )
 
     this_file = PP_File;
     len = read( this_file->handle, this_file->buffer, PPBUFSIZE );
-    if( len != 0 ) {                    // if not end of file
-        this_file->buffer[len] = '\0';
-        PPBufPtr = this_file->buffer;
-    }
+    this_file->buffer[len] = '\0';
+    PPBufPtr = this_file->buffer;
     return( len );
 }
 
