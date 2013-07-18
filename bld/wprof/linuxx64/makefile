@@ -3,6 +3,4 @@
 host_os  = linux
 host_cpu = x64
 
-extra_ldflags = -ldl
-
 !include ../master.mif

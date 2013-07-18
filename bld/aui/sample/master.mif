@@ -4,30 +4,27 @@
 !include defrule.mif
 !include deftarg.mif
 
-!ifeq sys_windowed 1
-gui_type = win
-!else
-gui_type = ui
-!endif
-
 !include $(aui_dir)/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 !include wres.mif
 
-inc_dirs = $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) -I"../h"
+.c: ../c
+
+inc_dirs = -I"../h" $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
 
 rcfiles = &
     $(gui_dir)/h/gui.rc &
-    $(aui_dir)/h/aui.rc &
-    $(aui_dir)/sample/h/appcomm.rc &
-    $(aui_dir)/sample/h/dlgoptn.h &
-    $(aui_dir)/sample/h/dlgoptn.dlg &
-    ../one.bmp &
-    ../two.bmp &
-    ../three.bmp &
-    ../four.bmp &
-    ../five.bmp
+    $(aui_dialogs) &
+    ../../res/aui.rc &
+    ../h/dlgoptn.h &
+    ../res/appcomm.rc &
+    ../res/dlgoptn.dlg &
+    ../res/one.bmp &
+    ../res/two.bmp &
+    ../res/three.bmp &
+    ../res/four.bmp &
+    ../res/five.bmp
 
 objs = app.obj util.obj window1.obj window2.obj window3.obj &
        window4.obj window5.obj window6.obj window7.obj window8.obj &
@@ -56,19 +53,19 @@ app.exe : $(objs) $(libs) $(resfile)
         $(wstrip) -q -a -r $^@ . $(resfile)
 !endif
 
-app.res : ../h/app.rc $(rcfiles)
-        $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
+rc_inc_dirs = -I"../res" -I"../h" $(aui_rc_inc_dirs) $(gui_inc_dirs)
 
-appj.res : ../h/app.rc $(rcfiles)
-        $(rc) $(rc_flags) $(inc_path) -DJAPANESE $[@ -fo=$@
+app.res : ../res/app.rc $(rcfiles)
+        $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-appui.res : ../h/appui.rc ../h/app.rc $(rcfiles)
-        $(rc_aui) $(inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
+appj.res : ../res/app.rc $(rcfiles)
+        $(rc) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-appuij.res : ../h/appui.rc ../h/app.rc $(rcfiles)
-        $(rc_aui) $(inc_path) $(inc_dirs_sys_win) -DJAPANESE $[@ -fo=$@
+appui.res : ../res/appui.rc ../res/app.rc $(rcfiles)
+        $(rc_aui) $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
 
-apppm.res apppmj.res : ../h/apppm.rc ../h/app.rc $(rcfiles)
-        $(rc) $(rc_flags) $(inc_dirs_os2) $(inc_path) $[@ -fo=$@
+appuij.res : ../res/appui.rc ../res/app.rc $(rcfiles)
+        $(rc_aui) -DJAPANESE $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
 
-.c: ../c
+apppm.res apppmj.res : ../res/apppm.rc ../res/app.rc $(rcfiles)
+        $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

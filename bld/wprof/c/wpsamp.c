@@ -41,6 +41,7 @@
 #include "wpsrcfil.h"
 #include "wpasmfil.h"
 #include "msg.h"
+#include "memutil.h"
 
 
 extern image_info *SImageGetImage(a_window *wnd,int row);
@@ -70,7 +71,6 @@ extern void WPAsmClose(wp_asmfile *wpasm_file);
 extern char *WPAsmGetLine(a_window *wnd,int line);
 extern int WPAsmFindSrcLine(sio_data *curr_sio,int line);
 extern wp_asmline *WPGetAsmLoc(wp_asmfile *wpasm_file,int row,int *group_loc,int *row_loc);
-extern void *ProfRealloc(void *p,size_t new_size);
 extern bint GetCurrentAbsBar(sio_data *curr_sio);
 extern bint GetCurrentRelBar(sio_data *curr_sio);
 extern bint GetCurrentMaxBar(sio_data *curr_sio);

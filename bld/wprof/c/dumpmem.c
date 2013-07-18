@@ -36,7 +36,11 @@
 
 #define LOCSIZE     1
 
-
+#ifdef _M_I86
+#define FAR	__far
+#else
+#define FAR
+#endif
 
 /*
  * WalkMem - walk through the memory locations.   For the PC version only.
@@ -94,7 +98,7 @@ extern void DumpMem( void )
         heap_status = _heapwalk( &h_info );
         if( heap_status != _HEAPOK ) break;
         if( start_size == 0 ) {
-            start_size = (char __far *)h_info._pentry - (char __far *)0;
+            start_size = (char FAR *)h_info._pentry - (char FAR *)0;
         }
         printf( "  %s block at %Fp of size %4.4X-%d\n",
                   (h_info._useflag == _USEDENTRY ? "USED" : "FREE"),
@@ -107,11 +111,11 @@ extern void DumpMem( void )
         heap_status = _heapwalk( &h_info );
         if( heap_status != _HEAPOK ) break;
         if( h_info._useflag == _USEDENTRY ) {
-            loc_mark = 254;
+            loc_mark = '\xFE';
         } else {
-            loc_mark = 249;
+            loc_mark = '\xF9';
         }
-        curr_addr = (char __far *)h_info._pentry - (char __far *)0;
+        curr_addr = (char FAR *)h_info._pentry - (char FAR *)0;
         loc_size = h_info._size;
         for( ;; ) {
             if( loc_count == 60 ) {

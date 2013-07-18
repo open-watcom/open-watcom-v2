@@ -11,8 +11,6 @@ additional_cleanup = *.u
 
 wv_trmem = 1
 
-.EXTENSIONS : .dlg .str
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -34,10 +32,10 @@ dig_os = $(dig_os_$(host_os)_$(host_cpu))
 !include $(ui_dir)/client.mif
 
 !include wres.mif
-
 !include trmem.mif
 
 engine_objs = &
+        $(trmem_objs) &
         $(dip_objs) &
         $(mad_objs) &
         $(trap_objs) &
@@ -186,8 +184,6 @@ ui_objs = &
         dbgtool.obj &
         dbgfing.obj
 
-engine_objs += $(trmem_objs)
-
 !ifneq sys_windowed 1
 objs_win_i86        = helpio.obj
 objs_nt_386         = helpio.obj
@@ -202,9 +198,9 @@ ui_objs += $(objs_$(host_os)_$(host_cpu))
 
 objs = $(engine_objs) $(ui_objs)
 
-
 cdir   = $(wv_dir)/c
 hdir   = $(wv_dir)/h
+rdir   = ../../res
 
 !ifeq host_os nt
 sysdir = win
@@ -240,24 +236,20 @@ extra_cpp_flags = -D__CHAR__
 !ifeq release 0
 extra_cpp_flags += -DAUI_DBG -DDBG_DBG
 !endif
-
 extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 
 extra_c_flags = -s
 
-extra_c_flags_win += -zW -zc
+extra_c_flags_win = -zW -zc
 !ifeq sys_windowed 1
 extra_c_flags_os2_i86 = -zc -zu
 !else
 extra_c_flags_os2_i86 = -zc
 !endif
-extra_c_flags_os2 += $(extra_c_flags_os2_$(host_cpu))
 extra_c_flags_dos_i86 = -wo -of -D_OVERLAYED_
-extra_c_flags_dos += $(extra_c_flags_dos_$(host_cpu))
 
 extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_dynmem = $(trmem_cover_cflags)
-
 extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
 
 # inc_dirs
@@ -384,108 +376,170 @@ wd.lib : litdef.gh $(engine_objs) $(sysobjs)
 
 $(lnk) : $(__MAKEFILES__)
 
-rc_inc_dirs = -I. -I"$(hdir)" -I"$(dig_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs)
+rc_inc_dir_nt  = -I"$(rdir)/win"
+rc_inc_dir_os2 = -I"$(rdir)/os2"
+rc_inc_dir_win = -I"$(rdir)/win"
 
-bitmaps = &
-        $(wv_dir)/win/zapant.ico &
-        $(wv_dir)/os2/zapant.ico
+rc_inc_dirs = -I. $(rc_inc_dir_$(host_os)) -I"$(rdir)/dlgs" -I"$(rdir)"
+rc_inc_dirs += -I"$(hdir)" $(aui_rc_inc_dirs) $(gui_inc_dirs) -I"$(dig_dir)/h"
 
 !ifeq sys_windowed 1
-bitmaps += &
-        $(wv_dir)/win/8087.ico &
-        $(wv_dir)/os2/8087.ico &
-        $(wv_dir)/win/asm.ico &
-        $(wv_dir)/os2/asm.ico &
-        $(wv_dir)/win/brk.ico &
-        $(wv_dir)/os2/brk.ico &
-        $(wv_dir)/win/call.ico &
-        $(wv_dir)/os2/call.ico &
-        $(wv_dir)/win/exe.ico &
-        $(wv_dir)/os2/exe.ico &
-        $(wv_dir)/win/func.ico &
-        $(wv_dir)/os2/func.ico &
-        $(wv_dir)/win/glob.ico &
-        $(wv_dir)/os2/glob.ico &
-        $(wv_dir)/win/hot.ico &
-        $(wv_dir)/os2/hot.ico &
-        $(wv_dir)/win/io.ico &
-        $(wv_dir)/os2/io.ico &
-        $(wv_dir)/win/log.ico &
-        $(wv_dir)/os2/log.ico &
-        $(wv_dir)/win/mem.ico &
-        $(wv_dir)/os2/mem.ico &
-        $(wv_dir)/win/mod.ico &
-        $(wv_dir)/os2/mod.ico &
-        $(wv_dir)/win/reg.ico &
-        $(wv_dir)/os2/reg.ico &
-        $(wv_dir)/win/repl.ico &
-        $(wv_dir)/os2/repl.ico &
-        $(wv_dir)/win/src.ico &
-        $(wv_dir)/os2/src.ico &
-        $(wv_dir)/win/srch.ico &
-        $(wv_dir)/os2/srch.ico &
-        $(wv_dir)/win/thrd.ico &
-        $(wv_dir)/os2/thrd.ico &
-        $(wv_dir)/win/var.ico &
-        $(wv_dir)/os2/var.ico &
-        $(wv_dir)/win/splash.bmp &
-        $(wv_dir)/win/closebmp.bmp &
-        $(wv_dir)/win/read1.bmp &
-        $(wv_dir)/win/read2.bmp &
-        $(wv_dir)/win/write1.bmp &
-        $(wv_dir)/win/write2.bmp &
-        $(wv_dir)/win/open1.bmp &
-        $(wv_dir)/win/open2.bmp &
-        $(wv_dir)/win/close1.bmp &
-        $(wv_dir)/win/close2.bmp &
-        $(wv_dir)/win/points1.bmp &
-        $(wv_dir)/win/points2.bmp &
-        $(wv_dir)/win/codeher1.bmp &
-        $(wv_dir)/win/codeher2.bmp &
-        $(wv_dir)/win/brkhere1.bmp &
-        $(wv_dir)/win/brkhere2.bmp &
-        $(wv_dir)/win/dimbrk1.bmp &
-        $(wv_dir)/win/dimbrk2.bmp &
-        $(wv_dir)/win/source1.bmp &
-        $(wv_dir)/win/source2.bmp &
-        $(wv_dir)/win/source2.bmp &
-        $(wv_dir)/win/source1.bmp &
-        $(wv_dir)/win/assembl1.bmp &
-        $(wv_dir)/win/assembl2.bmp &
-        $(wv_dir)/win/assembl2.bmp &
-        $(wv_dir)/win/assembl1.bmp &
-        $(wv_dir)/win/currlin1.bmp &
-        $(wv_dir)/win/currlin2.bmp &
-        $(wv_dir)/win/unpoint1.bmp &
-        $(wv_dir)/win/unpoint2.bmp &
-        $(wv_dir)/win/currbrk1.bmp &
-        $(wv_dir)/win/currbrk2.bmp &
-        $(wv_dir)/win/currdim1.bmp &
-        $(wv_dir)/win/currdim2.bmp &
-        $(wv_dir)/win/go.bmp &
-        $(wv_dir)/win/over.bmp &
-        $(wv_dir)/win/into.bmp &
-        $(wv_dir)/win/return.bmp &
-        $(wv_dir)/win/back.bmp &
-        $(wv_dir)/win/for.bmp &
-        $(wv_dir)/win/up.bmp &
-        $(wv_dir)/win/down.bmp &
-        $(wv_dir)/win/home.bmp
+
+bitmaps_os2 = &
+    $(rdir)/os2/zapant.ico &
+    $(rdir)/os2/8087.ico &
+    $(rdir)/os2/asm.ico &
+    $(rdir)/os2/brk.ico &
+    $(rdir)/os2/call.ico &
+    $(rdir)/os2/exe.ico &
+    $(rdir)/os2/func.ico &
+    $(rdir)/os2/glob.ico &
+    $(rdir)/os2/hot.ico &
+    $(rdir)/os2/io.ico &
+    $(rdir)/os2/log.ico &
+    $(rdir)/os2/mem.ico &
+    $(rdir)/os2/mod.ico &
+    $(rdir)/os2/reg.ico &
+    $(rdir)/os2/repl.ico &
+    $(rdir)/os2/src.ico &
+    $(rdir)/os2/srch.ico &
+    $(rdir)/os2/thrd.ico &
+    $(rdir)/os2/var.ico
+
+bitmaps_win = &
+    $(rdir)/win/zapant.ico &
+    $(rdir)/win/8087.ico &
+    $(rdir)/win/asm.ico &
+    $(rdir)/win/brk.ico &
+    $(rdir)/win/call.ico &
+    $(rdir)/win/exe.ico &
+    $(rdir)/win/func.ico &
+    $(rdir)/win/glob.ico &
+    $(rdir)/win/hot.ico &
+    $(rdir)/win/io.ico &
+    $(rdir)/win/log.ico &
+    $(rdir)/win/mem.ico &
+    $(rdir)/win/mod.ico &
+    $(rdir)/win/reg.ico &
+    $(rdir)/win/repl.ico &
+    $(rdir)/win/src.ico &
+    $(rdir)/win/srch.ico &
+    $(rdir)/win/thrd.ico &
+    $(rdir)/win/var.ico
+
+bitmaps_nt = $(bitmaps_win)
+
+bitmaps = &
+    $(bitmaps_$(host_os)) &
+    $(rdir)/splash.bmp &
+    $(rdir)/closebmp.bmp &
+    $(rdir)/read1.bmp &
+    $(rdir)/read2.bmp &
+    $(rdir)/write1.bmp &
+    $(rdir)/write2.bmp &
+    $(rdir)/open1.bmp &
+    $(rdir)/open2.bmp &
+    $(rdir)/close1.bmp &
+    $(rdir)/close2.bmp &
+    $(rdir)/points1.bmp &
+    $(rdir)/points2.bmp &
+    $(rdir)/codeher1.bmp &
+    $(rdir)/codeher2.bmp &
+    $(rdir)/brkhere1.bmp &
+    $(rdir)/brkhere2.bmp &
+    $(rdir)/dimbrk1.bmp &
+    $(rdir)/dimbrk2.bmp &
+    $(rdir)/source1.bmp &
+    $(rdir)/source2.bmp &
+    $(rdir)/source2.bmp &
+    $(rdir)/source1.bmp &
+    $(rdir)/assembl1.bmp &
+    $(rdir)/assembl2.bmp &
+    $(rdir)/assembl2.bmp &
+    $(rdir)/assembl1.bmp &
+    $(rdir)/currlin1.bmp &
+    $(rdir)/currlin2.bmp &
+    $(rdir)/unpoint1.bmp &
+    $(rdir)/unpoint2.bmp &
+    $(rdir)/currbrk1.bmp &
+    $(rdir)/currbrk2.bmp &
+    $(rdir)/currdim1.bmp &
+    $(rdir)/currdim2.bmp &
+    $(rdir)/go.bmp &
+    $(rdir)/over.bmp &
+    $(rdir)/into.bmp &
+    $(rdir)/return.bmp &
+    $(rdir)/back.bmp &
+    $(rdir)/for.bmp &
+    $(rdir)/up.bmp &
+    $(rdir)/down.bmp &
+    $(rdir)/home.bmp
+
 !endif
 
+pmfont=-font=10.Helv
+pmfontj=-font=
+
+dlgdir = $(rdir)/dlgs/
+!ifeq sys_windowed 1
+!ifeq host_os os2
+dlgdir =
+dlgayn.dlg : $(rdir)/dlgs/dlgayn.dlg
+        parsedlg $(pmfont) $[@ $@
+dlgbrk.dlg : $(rdir)/dlgs/dlgbrk.dlg
+        parsedlg $(pmfont) $[@ $@
+dlgcmd.dlg : $(rdir)/dlgs/dlgcmd.dlg
+        parsedlg $(pmfont) $[@ $@
+dlglist.dlg : $(rdir)/dlgs/dlglist.dlg
+        parsedlg $(pmfont) $[@ $@
+dlgnewp.dlg : $(rdir)/dlgs/dlgnewp.dlg
+        parsedlg $(pmfont) $[@ $@
+dlgoptn.dlg : $(rdir)/dlgs/dlgoptn.dlg
+        parsedlg $(pmfont) $[@ $@
+dlgvarx.dlg : $(rdir)/dlgs/dlgvarx.dlg
+        parsedlg $(pmfont) $[@ $@
+dlgamb.dlg : $(rdir)/dlgs/dlgamb.dlg
+        parsedlg $(pmfont) $[@ $@
+dlgwind.dlg : $(rdir)/dlgs/dlgwind.dlg
+        parsedlg $(pmfont) $[@ $@
+dlgstk.dlg : $(rdir)/dlgs/dlgstk.dlg
+        parsedlg $(pmfont) $[@ $@
+dlghis.dlg : $(rdir)/dlgs/dlghis.dlg
+        parsedlg $(pmfont) $[@ $@
+dlgasync.dlg : $(rdir)/dlgs/dlgasync.dlg
+        parsedlg $(pmfont) $[@ $@
+japayn.dlg : $(rdir)/dlgs/japayn.dlg
+        parsedlg $(pmfontj) $[@ $@
+japbrk.dlg : $(rdir)/dlgs/japbrk.dlg
+        parsedlg $(pmfontj) $[@ $@
+japcmd.dlg : $(rdir)/dlgs/japcmd.dlg
+        parsedlg $(pmfontj) $[@ $@
+japlist.dlg : $(rdir)/dlgs/japlist.dlg
+        parsedlg $(pmfontj) $[@ $@
+japnewp.dlg : $(rdir)/dlgs/japnewp.dlg
+        parsedlg $(pmfontj) $[@ $@
+japoptn.dlg : $(rdir)/dlgs/japoptn.dlg
+        parsedlg $(pmfontj) $[@ $@
+japvarx.dlg : $(rdir)/dlgs/japvarx.dlg
+        parsedlg $(pmfontj) $[@ $@
+japamb.dlg : $(rdir)/dlgs/japamb.dlg
+        parsedlg $(pmfontj) $[@ $@
+japwind.dlg : $(rdir)/dlgs/japwind.dlg
+        parsedlg $(pmfontj) $[@ $@
+japstk.dlg : $(rdir)/dlgs/japstk.dlg
+        parsedlg $(pmfontj) $[@ $@
+japhis.dlg : $(rdir)/dlgs/japhis.dlg
+        parsedlg $(pmfontj) $[@ $@
+!endif
+!endif
 
 rcfiles = &
     $(gui_dir)/h/gui.rc &
     $(gui_dir)/h/gui.msg &
-    $(aui_dir)/h/aui.rc &
-    $(aui_dir)/h/dlgrx.dlg &
-    $(aui_dir)/h/dlgsrch.dlg &
-    $(aui_dir)/h/dlgsrcha.dlg &
-    $(aui_dir)/h/japrx.dlg &
-    $(aui_dir)/h/japsrch.dlg &
-    $(aui_dir)/h/japsrcha.dlg &
-    $(hdir)/dialogs.rc &
-    $(hdir)/strings.rc &
+    $(aui_dir)/res/aui.rc &
+    $(aui_dialogs) &
+    $(rdir)/dialogs.rc &
+    $(rdir)/strings.rc &
     litdef.gh &
     $(hdir)/dlgamb.h &
     $(hdir)/dlgayn.h &
@@ -499,105 +553,50 @@ rcfiles = &
     $(hdir)/dlgwind.h &
     $(hdir)/dlgstk.h &
     $(hdir)/dlgasync.h &
-    dlgayn.dlg &
-    dlgbrk.dlg &
-    dlgcmd.dlg &
-    dlglist.dlg &
-    dlgnewp.dlg &
-    dlgoptn.dlg &
-    dlgvarx.dlg &
-    dlgamb.dlg &
-    dlgwind.dlg &
-    dlgstk.dlg &
-    dlghis.dlg &
-    dlgasync.dlg &
-    japayn.dlg &
-    japbrk.dlg &
-    japcmd.dlg &
-    japlist.dlg &
-    japnewp.dlg &
-    japoptn.dlg &
-    japvarx.dlg &
-    japamb.dlg &
-    japwind.dlg &
-    japstk.dlg &
-    japhis.dlg
+    $(dlgdir)dlgayn.dlg &
+    $(dlgdir)dlgbrk.dlg &
+    $(dlgdir)dlgcmd.dlg &
+    $(dlgdir)dlglist.dlg &
+    $(dlgdir)dlgnewp.dlg &
+    $(dlgdir)dlgoptn.dlg &
+    $(dlgdir)dlgvarx.dlg &
+    $(dlgdir)dlgamb.dlg &
+    $(dlgdir)dlgwind.dlg &
+    $(dlgdir)dlgstk.dlg &
+    $(dlgdir)dlghis.dlg &
+    $(dlgdir)dlgasync.dlg &
+    $(dlgdir)japayn.dlg &
+    $(dlgdir)japbrk.dlg &
+    $(dlgdir)japcmd.dlg &
+    $(dlgdir)japlist.dlg &
+    $(dlgdir)japnewp.dlg &
+    $(dlgdir)japoptn.dlg &
+    $(dlgdir)japvarx.dlg &
+    $(dlgdir)japamb.dlg &
+    $(dlgdir)japwind.dlg &
+    $(dlgdir)japstk.dlg &
+    $(dlgdir)japhis.dlg
 
-wvui.res : $(hdir)/wvui.rc $(rcfiles) usage.gh usagej.gh .autodepend
+wvui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh .autodepend
         $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvntdll.res : $(hdir)/strings.rc litdef.gh .autodepend
+wvntdll.res : $(rdir)/strings.rc litdef.gh .autodepend
         $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvpmdll.res : $(hdir)/strings.rc litdef.gh .autodepend
-        $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rc_inc_path) $[@ -fo=$^@
-
-wvwin.res : $(hdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
+wvpmdll.res : $(rdir)/strings.rc litdef.gh .autodepend
         $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvnt.res : $(hdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
+wvwin.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
         $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvpm.res : $(hdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rc_inc_path) $[@ -fo=$^@
+wvnt.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
+        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvpmj.res : $(hdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
-        $(rc) $(rc_flags) -ad -DJAPANESE -I"$(aui_dir)/os2386.pm" $(rc_inc_path) $[@ -fo=$^@
+wvpm.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
+        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-!ifneq sys_windowed 1
-.dlg : $(hdir)
-!else ifneq host_os os2
-.dlg : $(hdir)
-!else
-pmfont=-font=10.Helv
-pmfontj=-font=
-dlgayn.dlg : $(hdir)/dlgayn.dlg
-        parsedlg $(pmfont) $[@ dlgayn.dlg
-dlgbrk.dlg : $(hdir)/dlgbrk.dlg
-        parsedlg $(pmfont) $[@ dlgbrk.dlg
-dlgcmd.dlg : $(hdir)/dlgcmd.dlg
-        parsedlg $(pmfont) $[@ dlgcmd.dlg
-dlglist.dlg : $(hdir)/dlglist.dlg
-        parsedlg $(pmfont) $[@ dlglist.dlg
-dlgnewp.dlg : $(hdir)/dlgnewp.dlg
-        parsedlg $(pmfont) $[@ dlgnewp.dlg
-dlgoptn.dlg : $(hdir)/dlgoptn.dlg
-        parsedlg $(pmfont) $[@ dlgoptn.dlg
-dlgvarx.dlg : $(hdir)/dlgvarx.dlg
-        parsedlg $(pmfont) $[@ dlgvarx.dlg
-dlgamb.dlg : $(hdir)/dlgamb.dlg
-        parsedlg $(pmfont) $[@ dlgamb.dlg
-dlgwind.dlg : $(hdir)/dlgwind.dlg
-        parsedlg $(pmfont) $[@ dlgwind.dlg
-dlgstk.dlg : $(hdir)/dlgstk.dlg
-        parsedlg $(pmfont) $[@ dlgstk.dlg
-dlghis.dlg : $(hdir)/dlghis.dlg
-        parsedlg $(pmfont) $[@ dlghis.dlg
-dlgasync.dlg : $(hdir)/dlgasync.dlg
-        parsedlg $(pmfont) $[@ dlgasync.dlg
-japayn.dlg : $(hdir)/japayn.dlg
-        parsedlg $(pmfontj) $[@ japayn.dlg
-japbrk.dlg : $(hdir)/japbrk.dlg
-        parsedlg $(pmfontj) $[@ japbrk.dlg
-japcmd.dlg : $(hdir)/japcmd.dlg
-        parsedlg $(pmfontj) $[@ japcmd.dlg
-japlist.dlg : $(hdir)/japlist.dlg
-        parsedlg $(pmfontj) $[@ japlist.dlg
-japnewp.dlg : $(hdir)/japnewp.dlg
-        parsedlg $(pmfontj) $[@ japnewp.dlg
-japoptn.dlg : $(hdir)/japoptn.dlg
-        parsedlg $(pmfontj) $[@ japoptn.dlg
-japvarx.dlg : $(hdir)/japvarx.dlg
-        parsedlg $(pmfontj) $[@ japvarx.dlg
-japamb.dlg : $(hdir)/japamb.dlg
-        parsedlg $(pmfontj) $[@ japamb.dlg
-japwind.dlg : $(hdir)/japwind.dlg
-        parsedlg $(pmfontj) $[@ japwind.dlg
-japstk.dlg : $(hdir)/japstk.dlg
-        parsedlg $(pmfontj) $[@ japstk.dlg
-japhis.dlg : $(hdir)/japhis.dlg
-        parsedlg $(pmfontj) $[@ japhis.dlg
-!endif
+wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
+        $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
 
 !ifeq sys_windowed 1
 verrc_exe = wdw
@@ -608,8 +607,6 @@ verrc_exe = wd
 
 ####################
 
-.str: $(hdir)
-
 .h: $(syshdir);$(hdir);$(aui_dir)/h
 
 .c: $(syscdir);$(cdir);$(aui_dir)/c;$(dig_srcs);$(trmem_dir)
@@ -618,7 +615,6 @@ verrc_exe = wd
 
 litdefm.tmp : ../../h/menu.str
         $(cpp) $(rc_aui_flags) $< >$@
-
 
 litdefs.tmp : ../../h/wdengin.str ../../h/wd.str
         $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" $< >$@

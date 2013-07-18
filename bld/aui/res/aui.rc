@@ -1,0 +1,13 @@
+#include "gui.rc"
+#include "dlgrx.h"
+#include "dlgsrch.h"
+#include "auistr.rc"
+#ifdef JAPANESE
+#include "japrx.dlg"
+#include "japsrch.dlg"
+#include "japsrcha.dlg"
+#else
+#include "dlgrx.dlg"
+#include "dlgsrch.dlg"
+#include "dlgsrcha.dlg"
+#endif

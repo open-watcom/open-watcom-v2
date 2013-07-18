@@ -18,12 +18,11 @@ srcmgt_obj = srcmgt.obj
 debug_objs = dumpmem.obj
 !endif
 
-!ifdef wprof_trmem
-trmem_objs = $(trmem_dir)/dos/trmemcvr.obj &
-             $(trmem_dir)/dos/trmem.obj
-!endif
-
-objs = $(trmem_objs) $(debug_objs) $(srcmgt_obj) &
+objs = &
+    $(trmem_objs) &
+    $(trmemcvr_objs) &
+    $(debug_objs) &
+    $(srcmgt_obj) &
     aboutmsg.obj &
     clrsamps.obj &
     dipinter.obj &

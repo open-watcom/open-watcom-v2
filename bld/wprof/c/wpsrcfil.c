@@ -43,10 +43,9 @@
 #include "_srcmgt.h"
 #include "srcmgt.h"
 #include "msg.h"
+#include "memutil.h"
 
 
-extern void *ProfRealloc(void *p,size_t new_size);
-extern void *ProfCAlloc(size_t size);
 extern void ErrorMsg(char *msg,... );
 
 STATIC void setSrcLineData( wp_srcfile *, sio_data *, mod_info *,

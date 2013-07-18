@@ -36,14 +36,12 @@
 #include "aui.h"
 #include "guidlg.h"
 #include "msg.h"
+#include "memutil.h"
 
 #ifdef _BANEXTRA
     #undef  _BANEXTRA
     #define _BANEXTRA _BANEXSHORT
 #endif
-
-extern void *ProfAlloc(size_t size);
-extern void ProfFree(void *ptr);
 
 extern char     *AboutMessage[];
 extern int      AboutSize;

@@ -32,16 +32,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "msg.h"
+#include "memutil.h"
 #ifdef TRMEM
 #include "trmemcvr.h"
 #endif
 
 
 extern void fatal(char *msg,... );
-
+extern int WalkMem( void ) ;
 
 
 #ifdef TRMEM
@@ -148,7 +150,7 @@ void *ProfCAlloc( size_t size )
 }
 
 
-
+#if 0
 extern void *WndAlloc( unsigned size )
 /************************************/
 {
@@ -191,4 +193,30 @@ extern void WndMemInit( void )
 extern void WndMemFini( void )
 /****************************/
 {
+}
+#endif
+
+void WPMemOpen( void )
+/********************/
+{
+#ifdef TRMEM
+    TRMemOpen();
+    TRMemRedirect( STDOUT_FILENO );
+#endif
+}
+
+void WPMemClose( void )
+/*********************/
+{
+#ifdef TRMEM
+    TRMemClose();
+#endif
+}
+
+void WPMemPrtUsage( void )
+/************************/
+{
+#ifdef TRMEM
+    TRMemPrtUsage();
+#endif
 }

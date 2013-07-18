@@ -11,6 +11,24 @@ aui_path = $(aui_path_$(host_os)$(host_cpu))
 aui_path = $(aui_dir)/$(host_os)$(host_cpu)
 !endif
 !endif
+aui_dialogs = &
+    $(aui_dir)/res/dlgs/dlgrx.dlg &
+    $(aui_dir)/res/dlgs/dlgsrch.dlg &
+    $(aui_dir)/res/dlgs/dlgsrcha.dlg &
+    $(aui_dir)/res/dlgs/japrx.dlg &
+    $(aui_dir)/res/dlgs/japsrch.dlg &
+    $(aui_dir)/res/dlgs/japsrcha.dlg
+!ifeq sys_windowed 1
+!ifeq host_os os2
+aui_dialogs = &
+    $(aui_path)/dlgrx.dlg &
+    $(aui_path)/dlgsrch.dlg &
+    $(aui_path)/dlgsrcha.dlg &
+    $(aui_path)/japrx.dlg &
+    $(aui_path)/japsrch.dlg &
+    $(aui_path)/japsrcha.dlg
+!endif
+!endif
 aui_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/h"
 aui_lib = $(aui_path)/aui.lib
-
+aui_rc_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/res/dlgs" -I"$(aui_dir)/res" -I"$(aui_dir)/h"

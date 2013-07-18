@@ -58,6 +58,7 @@
 #include "myassert.h"
 #include "msg.h"
 #include "pathlist.h"
+#include "memutil.h"
 
 #if defined(__UNIX__)
  #define PATH_SEPARATOR '/'
@@ -70,7 +71,6 @@
 #endif
 #define HELP_NAME  "WWINHELP"
 
-extern void *ProfAlloc(size_t size);
 extern void fatal(char *msg,... );
 extern dig_fhandle DIGCliOpen(char *name,dig_open mode);
 extern void AddPath( path_list **path_var, char * path_data );

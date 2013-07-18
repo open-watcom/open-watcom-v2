@@ -42,6 +42,7 @@
 #include "myassert.h"
 #include "sampinfo.h"
 #include "pathlist.h"
+#include "memutil.h"
 
 
 extern void         ClearMassaged(sio_data *curr_sio);
@@ -52,10 +53,6 @@ extern process_info *WPDipProc(void);
 extern void         WPDipDestroyProc(process_info *dip_proc);
 extern void         WPDipSetProc(process_info *dip_proc);
 extern mod_handle   WPDipLoadInfo(int f_handle,char *f_name,void *image,int image_size,unsigned int dip_start,unsigned int dip_end);
-extern void         *ProfAlloc(size_t size);
-extern void         ProfFree(void *ptr);
-extern void         *ProfRealloc(void *p,size_t new_size);
-extern void         *ProfCAlloc(size_t size);
 extern void         ReplaceExt(char *path,char *addext);
 extern void         ErrorMsg(char *msg,... );
 extern image_info   *AddrImage(address *addr);

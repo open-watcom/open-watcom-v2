@@ -37,12 +37,12 @@
 #include "sampinfo.h"
 #include "wpsrcfil.h"
 #include "wpasmfil.h"
+#include "memutil.h"
 
 
 extern void WPSourceClose(wp_srcfile *wpsrc_file);
 extern void WPDipDestroyProc(process_info *dip_proc);
 extern void WPAsmClose(wp_asmfile *wpasm_file);
-extern void ProfFree(void *ptr);
 
 extern sio_data *       SIOData;
 

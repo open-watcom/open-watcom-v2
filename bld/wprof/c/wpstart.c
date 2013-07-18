@@ -44,16 +44,11 @@
 #include "aui.h"
 #include "sampinfo.h"
 #include "pathlist.h"
-#ifdef TRMEM
-#include "trmemcvr.h"
-#endif
+#include "memutil.h"
 
 extern void WPFiniHelp(void);
 extern void WPDipInit(void);
 extern void WPDipFini(void);
-extern void *ProfAlloc(size_t size);
-extern void ProfFree(void *ptr);
-extern void *ProfRealloc(void *p,size_t new_size);
 extern bint GetSampleInfo(void);
 extern void InitPaths(void);
 extern void ErrorMsg(char *msg,... );
@@ -61,6 +56,7 @@ extern void fatal(char *msg,... );
 extern void ReportSampleInfo(void);
 extern void InitMADInfo(void);
 extern void FiniMADInfo(void);
+extern void ClearAllSamples( void );
 
 
 STATIC bint     procCmd( char * );
@@ -150,10 +146,7 @@ extern void WPInit( void )
     bint        do_report;
     char        buff[256];
 
-#ifdef TRMEM
-    TRMemOpen();
-    TRMemRedirect( STDOUT_FILENO );
-#endif
+    WPMemOpen();
     SamplePath[0] = 0;
     InitPaths();
     rover = getenv( "WPROF" );
@@ -179,16 +172,12 @@ extern void WPInit( void )
 extern void WPFini( void )
 /************************/
 {
-#ifdef TRMEM
     ClearAllSamples();
-#endif
     WPFiniHelp();
     WndFini();
     WPDipFini();
     FiniMADInfo();
-#ifdef TRMEM
-    TRMemClose();
-#endif
+    WPMemClose();
 }
 
 

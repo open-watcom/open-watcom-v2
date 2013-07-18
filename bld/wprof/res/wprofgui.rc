@@ -1,0 +1,23 @@
+#ifdef __OS2__
+#include <os2.h>
+#else
+#include <windows.h>
+#endif
+
+#include "rcdef.h"
+#include "wprof.rc"
+
+#ifdef __NT__
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
+#endif
+
+#ifdef __OS2__
+
+ICON 1          "prof_i.ico"
+ICON WPROF_ICON "prof_i.ico"
+
+#else
+
+ApplIcon icon "prof_i.ico"
+
+#endif

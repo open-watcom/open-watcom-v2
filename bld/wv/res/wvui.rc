@@ -1,4 +1,4 @@
-#include "../../brinfo/merge/res/wresdefn.h"
+#include "wresdefn.h"
 #include "wdmsg.h"
 #include "wreslang.h"
 #include "strbitns.h"

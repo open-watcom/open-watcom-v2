@@ -42,9 +42,6 @@
 #include "sampinfo.h"
 #include "msg.h"
 #include "pathlist.h"
-#ifdef TRMEM
-#include "trmemcvr.h"
-#endif
 
 extern void WPProcHelp(gui_help_actions action);
 extern void WPFini(void);
@@ -58,6 +55,7 @@ extern bint GetSampleInfo(void);
 extern void WPSampleOpen(void);
 extern void AboutSetOff(void);
 extern void ErrorMsg(char *msg,... );
+extern void WPMemPrtUsage( void );
 
 extern char         SamplePath[_MAX_PATH];
 extern sio_data *   CurrSIOData;
@@ -161,7 +159,7 @@ extern bool WndMainMenuProc( a_window * wnd, unsigned id )
 #ifdef TRMEM
     case MENU_MEMPRT:
         GUISpawnStart();
-        TRMemPrtUsage();
+        WPMemPrtUsage();
         getchar();
         GUISpawnEnd();
         break;

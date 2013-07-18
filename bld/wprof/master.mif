@@ -2,6 +2,14 @@ proj_name = wprof
 
 additional_cleanup = usage.u
 
+wprof_trmem = 1
+
+!ifeq host_os qnx
+exe = qnx
+!else
+exe = exe
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -10,18 +18,14 @@ additional_cleanup = usage.u
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
-!include ../wprofobj.mif
-
+!include trmem.mif
 !include wres.mif
 
-.c : ../c;$(dig_srcs);$(watcom_dir)/c
-.h : ../h
+!include ../wprofobj.mif
 
-!ifeq host_os qnx
-exe = qnx
-!else
-exe = exe
-!endif
+.c : ../c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
+
+inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs) -I"$(dig_dir)/h"
 
 # cflags stuff
 ###############
@@ -33,18 +37,19 @@ extra_c_flags   = -s
 !ifdef check
 extra_c_flags   += -zs
 !endif
-!ifdef wprof_trmem
-!ifneq host_cpu axp
-extra_c_flags   += -of+
-!endif
-!endif
 
-!ifeq host_cpu i86
-extra_c_flags_qnx       = -zt32
-extra_c_flags_win       = -zW
-!endif
+extra_c_flags_qnx_i86 = -zt32
+extra_c_flags_win_i86 = -zW
 
 extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
+extra_c_flags_memutil = $(trmem_cover_cflags)
+extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
+!ifeq wprof_trmem 1
+!ifeq release 0
+extra_c_flags_wpdriver = -DTRMEM
+!endif
+!endif
 
 # lflags stuff
 ###############
@@ -59,42 +64,39 @@ extra_l_flags_dos       = op map,stack=20k #export DOS4GOPTIONS=_DOS4GOPTIONS
 
 wprof_libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 
-# resources stuff
-##################
-!ifeq sys_windowed 1
-resfile                 = wprofgui.res
-!else
-resfile                 = wprofui.res
-!endif
-
-rcfiles = &
-    $(gui_dir)/h/gui.rc &
-    $(gui_dir)/h/gui.msg &
-    $(aui_dir)/h/aui.rc &
-    $(aui_dir)/h/dlgrx.dlg &
-    $(aui_dir)/h/dlgsrch.dlg &
-    $(aui_dir)/h/dlgsrcha.dlg &
-    $(aui_dir)/h/japrx.dlg &
-    $(aui_dir)/h/japsrch.dlg &
-    $(aui_dir)/h/japsrcha.dlg
-
-rcinclude= -I. -I"../h" -I"$(dig_dir)/h" $(aui_inc_dirs) -I"$(gui_dir)" $(gui_inc_dirs) -I"$(brinfo_dir)/merge/res"
-
-inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs) -I"$(trmem_dir)" -I"$(dig_dir)/h"
-
-# systems where version resource must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-
-!ifeq bootstrap 1
+!ifndef __WATCOM__
 !ifeq host_os linux
 extra_ldflags = -ldl
 !endif
 !endif
 
+# resources stuff
+##################
+!ifeq sys_windowed 1
+resfile = wprofgui.res
+!else
+resfile = wprofui.res
+!endif
+
+rcfiles = &
+    $(gui_dir)/h/gui.rc &
+    $(gui_dir)/h/gui.msg &
+    $(aui_dir)/res/aui.rc &
+    $(aui_dialogs)
+
+rc_inc_dirs_nt  = -I"../res/win"
+rc_inc_dirs_os2 = -I"../res/os2"
+rc_inc_dirs_win = -I"../res/win"
+
+rc_inc_dirs = -I. $(rc_inc_dirs_$(host_os)) -I"../res" -I"../h" $(aui_rc_inc_dirs) $(gui_inc_dirs)
+
+# systems where version resource must be added to .EXE
+version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
+
 # explicit rules
 #################
-$(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wprof_libs) $(sys_libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
+$(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wprof_libs) $(sys_libs) $(version_res_exe_$(host_os)_$(host_cpu))
     @rm -f finger.obj
     @%make finger.obj
 !ifndef __WATCOM__
@@ -109,23 +111,11 @@ $(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(objs) $(sys_objs) $(dip_obj
     $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
 !endif
 
-!ifeq host_os os2
-wprofgui.res : ../h/wprofgui.rc .AUTODEPEND
-    $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $]@ -fo=$^@
-!else ifeq host_os nt
-wprofgui.res : ../h/wprofgui.rc .AUTODEPEND
-    $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_nt) $]@ -fo=$^@
-!else
-wprofgui.res : ../h/wprofgui.rc .AUTODEPEND
-    $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_win) $]@ -fo=$^@
-!endif
+wprofgui.res : ../res/wprofgui.rc $(rcfiles) .AUTODEPEND
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-msg.obj : msg.c msg.h
-
-msgstr.obj : msgstr.c msg.h
-
-wprofui.res : ../h/wprofui.rc .AUTODEPEND
-    $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+wprofui.res : ../res/wprofui.rc .AUTODEPEND
+    $(rc_aui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $[@ -fo=$^@
 
 usage.u : ../h/usage.sp
     wsplice -u $< $@

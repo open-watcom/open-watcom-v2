@@ -37,9 +37,9 @@
 #include "wpaui.h"
 #include "dip.h"
 #include "sampinfo.h"
+#include "memutil.h"
 
 
-extern void *ProfRealloc(void *p,size_t new_size);
 extern void SetSampleInfo(sio_data *curr_sio);
 
 /* Forward declarations */
