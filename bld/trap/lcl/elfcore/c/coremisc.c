@@ -46,15 +46,15 @@ trap_retval ReqFile_get_config( void )
 
     ret->file.ext_separator = '.';
 #ifdef __UNIX__
+    ret->file.drv_separator = '\0';
     ret->file.path_separator[0] = '/';
     ret->file.path_separator[1] = '\0';
-    ret->file.path_separator[2] = '\0';
     ret->file.newline[0] = '\n';
     ret->file.newline[1] = '\0';
 #else
+    ret->file.drv_separator = ':';
     ret->file.path_separator[0] = '\\';
     ret->file.path_separator[1] = '/';
-    ret->file.path_separator[2] = ':';
     ret->file.newline[0] = '\r';
     ret->file.newline[1] = '\n';
 #endif

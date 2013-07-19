@@ -40,6 +40,11 @@
 #endif
 #include "trptypes.h"
 
+#define CHECK_SEP_END(c,i)  ((c) == i->path_separator[0] || (c) == i->path_separator[1] || (c) == i->drv_separator)
+#define CHECK_SEP_BEG(p,i)  ((p)[0] == i->path_separator[0] || (p)[0] == i->path_separator[1] \
+                             || (p)[1] != '\0' && (p)[1] == i->drv_separator \
+                             && (p)[2] != '\0' && ((p)[2] == i->path_separator[0] || (p)[2] == i->path_separator[1]))
+
 extern unsigned         DUIEnvLkup( char *, char *, unsigned );
 extern char             *StrCopy( char const *, char * );
 extern void             FreeRing( char_ring * );
@@ -327,9 +332,7 @@ bool IsAbsolutePath( char *path )
     p = RealFName( path, &loc );
     info = PathInfo( p, loc );
     if( strlen( p ) == 0 ) return( FALSE );
-    return( p[0] == info->path_separator[0]
-         || p[0] == info->path_separator[1]
-         || p[0] == info->path_separator[2] );
+    return( CHECK_SEP_BEG( p, info ) );
 }
 
 char *AppendPathDelim( char *path, open_access loc )
@@ -341,10 +344,7 @@ char *AppendPathDelim( char *path, open_access loc )
     info = PathInfo( path, loc );
     len = strlen( path );
     end = &path[len];
-    if( len == 0 ||
-        (   end[-1] != info->path_separator[0]
-         && end[-1] != info->path_separator[1]
-         && end[-1] != info->path_separator[2] ) ) {
+    if( len == 0 || !CHECK_SEP_END( end[-1], info ) ) {
         *end++ = info->path_separator[0];
     }
     return( end );
@@ -361,9 +361,7 @@ char  *SkipPathInfo( char const *path, open_access loc )
     for( ;; ) {
         c = *path++;
         if( c == NULLCHAR ) break;
-        if( c == info->path_separator[0]
-         || c == info->path_separator[1]
-         || c == info->path_separator[2] ) {
+        if( CHECK_SEP_END( c, info ) ) {
             name = path;
         }
     }
@@ -383,10 +381,11 @@ char  *ExtPointer( char const *path, open_access loc )
     for( ;; ) {
         c = *--p;
         if( p < path ) return( end );
-        if( c == info->path_separator[0]
-         || c == info->path_separator[1]
-         || c == info->path_separator[2] ) return( end );
-        if( c == info->ext_separator ) return( p );
+        if( CHECK_SEP_END( c, info ) )
+            return( end );
+        if( c == info->ext_separator ) {
+            return( p );
+        }
     }
 }
 
@@ -430,12 +429,8 @@ static unsigned MakeNameWithPath( open_access loc,
         } else {
             info = &RemFile;
         }
-        if( plen > 0 &&
-            p[-1] != LclFile.path_separator[0] &&
-            p[-1] != LclFile.path_separator[1] &&
-            p[-1] != LclFile.path_separator[2] ) {
-            p[0] = LclFile.path_separator[0];
-            ++p;
+        if( plen > 0 && CHECK_SEP_END( p[-1], LclFile ) ) {
+            *p++ = info.path_separator[0];
         }
     }
     memcpy( p, name, nlen );
@@ -477,6 +472,7 @@ static handle FullPathOpenInternal( char const *name, char *ext, char *result,
     bool        have_path;
     file_components *file;
     handle      f;
+    char        c;
 
     loc = 0;
     p = FileLoc( name, &loc );
@@ -493,20 +489,17 @@ static handle FullPathOpenInternal( char const *name, char *ext, char *result,
         file = &RemFile;
     }
     p = buffer;
-    while( *name != '\0' ) {
-        *p = *name;
-        if( *p == file->path_separator[0] ||
-            *p == file->path_separator[1] ||
-            *p == file->path_separator[2] ) {
+    while( (c = *name) != '\0' ) {
+        if( CHECK_SEP_END( c, file ) ) {
             have_ext = FALSE;
             have_path = TRUE;
-        } else if( *p == file->ext_separator ) {
+        } else if( c == file->ext_separator ) {
             have_ext = TRUE;
         }
-        ++p;
+        *p++ = c;
         ++name;
     }
-    *p = *name;
+    *p = c;
     if( !have_ext ) {
         *p++ = file->ext_separator;
         p = StrCopy( ext, p );
