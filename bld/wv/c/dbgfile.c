@@ -449,7 +449,7 @@ handle LclStringToFullName( char *name, unsigned len, char *full )
 {
     char_ring   *curr;
     handle      hndl;
-    int         plen;
+    unsigned    plen;
 
     MakeNameWithPath( OP_LOCAL, NULL, 0, name, len, full );
     curr = LclPath;
@@ -457,8 +457,8 @@ handle LclStringToFullName( char *name, unsigned len, char *full )
         hndl = FileOpen( full, OP_READ );
         if( hndl != NIL_HANDLE ) return( hndl );
         if( curr == NULL ) return( NIL_HANDLE );
-        plen = curr->name[0];
-        MakeNameWithPath( OP_LOCAL, &curr->name[1], plen, name, len, full );
+        plen = strlen( curr->name );
+        MakeNameWithPath( OP_LOCAL, curr->name, plen, name, len, full );
         curr = curr->next;
     }
 }
@@ -659,8 +659,8 @@ static void EnvParse( char_ring **owner, char *src )
             *owner = new;
             owner = &new->next;
             new->next = NULL;
-            new->name[0] = len;
-            memcpy( &new->name[1], start, len );
+            memcpy( new->name, start, len );
+            new->name[len] = NULLCHAR;
             if( *end == NULLCHAR ) return;
             start = end + 1;
         }
@@ -673,7 +673,7 @@ void PathInit( void )
 {
 #if !defined( BUILD_RFX )
     char        *buff;
-    unsigned	size;
+    unsigned    size;
 
   #if defined( __RDOS__ )
     size = 2048;
