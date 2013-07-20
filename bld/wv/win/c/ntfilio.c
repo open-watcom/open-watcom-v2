@@ -46,7 +46,7 @@ extern char *Format(char *,char *,... );
 extern char *StrCopy(char *,char *);
 extern void FreeRing(char_ring *);
 
-file_components         LclFile = { '.', { '\\', '/', ':' }, { '\r', '\n' } };
+file_components         LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
 char                    LclPathSep = { ';' };
 
 

@@ -59,7 +59,7 @@ extern void FreeRing(char_ring *);
 
 extern int              DbgConHandle; /* Debugger's console file handle */
 
-file_components         LclFile = { '.', { '/' }, { '\n' } };
+file_components         LclFile = { '.', '\0',{ '/' }, { '\n' } };
 char                    LclPathSep = { ':' };
 
 

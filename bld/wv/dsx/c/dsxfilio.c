@@ -44,7 +44,7 @@
 
 extern char             _osmajor;
 
-file_components         LclFile = { '.', { '\\', '/', ':' }, { '\r', '\n' } };
+file_components         LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
 char                    LclPathSep = { ';' };
 
 void LocalErrMsg( sys_error code, char *buff )

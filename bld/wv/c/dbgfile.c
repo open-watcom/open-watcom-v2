@@ -40,10 +40,10 @@
 #endif
 #include "trptypes.h"
 
-#define CHECK_SEP_END(c,i)  ((c) == i->path_separator[0] || (c) == i->path_separator[1] || (c) == i->drv_separator)
-#define CHECK_SEP_BEG(p,i)  ((p)[0] == i->path_separator[0] || (p)[0] == i->path_separator[1] \
-                             || (p)[1] != '\0' && (p)[1] == i->drv_separator \
-                             && (p)[2] != '\0' && ((p)[2] == i->path_separator[0] || (p)[2] == i->path_separator[1]))
+#define CHECK_SEP_END(c,i)  ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1] || (c) == (i)->drv_separator)
+#define CHECK_SEP_BEG(p,i)  ((p)[0] == (i)->path_separator[0] || (p)[0] == (i)->path_separator[1] \
+                             || (p)[1] != '\0' && (p)[1] == (i)->drv_separator \
+                             && (p)[2] != '\0' && ((p)[2] == (i)->path_separator[0] || (p)[2] == (i)->path_separator[1]))
 
 extern unsigned         DUIEnvLkup( char *, char *, unsigned );
 extern char             *StrCopy( char const *, char * );
@@ -429,8 +429,8 @@ static unsigned MakeNameWithPath( open_access loc,
         } else {
             info = &RemFile;
         }
-        if( plen > 0 && CHECK_SEP_END( p[-1], LclFile ) ) {
-            *p++ = info.path_separator[0];
+        if( plen > 0 && CHECK_SEP_END( p[-1], &LclFile ) ) {
+            *p++ = info->path_separator[0];
         }
     }
     memcpy( p, name, nlen );

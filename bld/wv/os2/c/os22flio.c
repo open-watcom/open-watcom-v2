@@ -50,7 +50,7 @@
 #define READWRITE   2
 #define FROMEND     2
 
-file_components         LclFile = { '.', { '\\', '/', ':' }, { '\r', '\n' } };
+file_components         LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
 char                    LclPathSep = { ';' };
 
 void LocalErrMsg(sys_error code, char *buff)
