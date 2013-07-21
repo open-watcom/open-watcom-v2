@@ -34,12 +34,14 @@
 
 use Common;
 
+$\ = "\n";
+
 #############
 # Main Script
 #############
 
 if ($#ARGV != 1) {
-    print "Usage: compare old_summary new_summary\n";
+    print 'Usage: compare old_summary new_summary';
     exit 1;
 }
 

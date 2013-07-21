@@ -31,20 +31,22 @@ use strict;
 
 package Common;
 
-my($OWloc) = "";
+my($OWloc) = '';
+
+$\ = "\n";
 
 sub read_config
 {
     my($filename) = $_[0];
     my(@fields);
 
-    $Common::config{"OWCVS"} = "";
-    $Common::config{"WATCOM"} = "";
-    $Common::config{"RELROOT"} = "";
-    $Common::config{"WIN95HC"} = "";
-    $Common::config{"HHC"} = "";
-    $Common::config{"GHOSTSCRIPTPATH"} = "";
-    $Common::config{"DOSBOX"} = "";
+    $Common::config{'OWCVS'} = '';
+    $Common::config{'WATCOM'} = '';
+    $Common::config{'RELROOT'} = '';
+    $Common::config{'WIN95HC'} = '';
+    $Common::config{'HHC'} = '';
+    $Common::config{'GHOSTSCRIPTPATH'} = '';
+    $Common::config{'DOSBOX'} = '';
     open(CONFIG_FILE, $filename) || die "Unable to open configuration file: $filename.";
     while (<CONFIG_FILE>) {
         s/\r?\n/\n/;
@@ -55,8 +57,8 @@ sub read_config
         $Common::config{$fields[0]} = $fields[1];
     }
     close(CONFIG_FILE);
-    if (defined($Common::config{"OW"})) {
-        $OWloc = $Common::config{"OW"};
+    if (defined($Common::config{'OW'})) {
+        $OWloc = $Common::config{'OW'};
         $OWloc =~ s/\\/\\\\/g;
     }
 }
@@ -73,11 +75,11 @@ sub process_summary
 {
     my($inp_filename)    = $_[0];
     my($out_filename)    = $_[1];
-    my($current_project) = "";
+    my($current_project) = '';
     my(@header);
 
     open(INFILE, $inp_filename) || die "Unable to open input file: $inp_filename";
-    open(OUTFILE, ">", $out_filename) || die "Unable to open output file: $out_filename";
+    open(OUTFILE, '>', $out_filename) || die "Unable to open output file: $out_filename";
 
     # Read the build log file a line at a time and output the error summary.
     while (<INFILE>) {
@@ -87,8 +89,9 @@ sub process_summary
             @header = split;
             $current_project = remove_OWloc($header[2]);
         } elsif (/Error!|\*ERROR\*| error |Warning!|\*WARNING\*| WARNING: |Can not/) {
-            print OUTFILE "\nPROJECT $current_project\n";
-            print OUTFILE remove_OWloc($_) . "\n";
+            print OUTFILE '';
+            print OUTFILE "PROJECT $current_project";
+            print OUTFILE remove_OWloc($_);
         }
     }
     close(OUTFILE);
@@ -108,10 +111,10 @@ sub read_record
         $record = $_;
         $line = <$file>;
         chomp($line);
-        $record = $record . "|" . $line;
+        $record = $record . '|' . $line;
         return $record;
     }
-    return "EOF";
+    return 'EOF';
 }
 
 # Display a combined record as two lines.
@@ -121,7 +124,9 @@ sub print_record
     my($fh) = $_[1];
 
     my(@fields) = split /\|/, $record;
-    print $fh "$fields[0]\n$fields[1]\n\n";
+    print $fh "$fields[0]";
+    print $fh "$fields[1]";
+    print $fh '';
 }
 
 sub process_compare
@@ -137,13 +142,13 @@ sub process_compare
 
     # Read both the old and new summaries into memory.
     open(OLDFILE, $filename1) || die "Unable to open input file: $filename1";
-    while (($record = read_record(\*OLDFILE)) ne "EOF") {
+    while (($record = read_record(\*OLDFILE)) ne 'EOF') {
         push @old_records, $record;
     }
     close(OLDFILE);
 
     open(NEWFILE, $filename2) || die "Unable to open output file: $filename2";
-    while (($record = read_record(\*NEWFILE)) ne "EOF") {
+    while (($record = read_record(\*NEWFILE)) ne 'EOF') {
         push @new_records, $record;
     }
     close(NEWFILE);
@@ -151,25 +156,26 @@ sub process_compare
     # Now compare the summaries. This runs in O(n^2) where n is the # of records.
     #############################################################################
 
-    $something_added   = "no";
-    $something_removed = "no";
-    $first_added       = "yes";
-    $first_removed     = "yes";
+    $something_added   = 'no';
+    $something_removed = 'no';
+    $first_added       = 'yes';
+    $first_removed     = 'yes';
 
-    $something_added = "no";
+    $something_added = 'no';
     foreach $record (@new_records) {
-        $found = "no";
+        $found = 'no';
         foreach $candidate (@old_records) {
-            if ($record eq $candidate) { $found = "yes"; }
+            if ($record eq $candidate) { $found = 'yes'; }
         }
-        if ($found eq "no") {
-            if ($first_added eq "yes") {
-                print $fh "Messages Added\n";
-                print $fh "--------------\n\n";
-                $first_added = "no";
+        if ($found eq 'no') {
+            if ($first_added eq 'yes') {
+                print $fh 'Messages Added';
+                print $fh '--------------';
+                print $fh '';
+                $first_added = 'no';
             }   
             print_record($record, $fh);
-            $something_added = "yes";
+            $something_added = 'yes';
         }
     }
 
@@ -177,20 +183,21 @@ sub process_compare
     # messages might appear to vanish because certain compilations failed to
     # finish. Only trust the removal list if there are no additional errors.
     #
-    if ($something_added eq "no") {
+    if ($something_added eq 'no') {
         foreach $record (@old_records) {
-            $found = "no";
+            $found = 'no';
             foreach $candidate (@new_records) {
-                if ($record eq $candidate) { $found = "yes"; }
+                if ($record eq $candidate) { $found = 'yes'; }
             }
-            if ($found eq "no") {
-                if ($first_removed eq "yes") {
-                    print $fh "Messages Removed\n";
-                    print $fh "----------------\n\n";
-                    $first_removed = "no";
+            if ($found eq 'no') {
+                if ($first_removed eq 'yes') {
+                    print $fh 'Messages Removed';
+                    print $fh '----------------';
+                    print $fh '';
+                    $first_removed = 'no';
                 }   
                 print_record($record, $fh);
-                $something_removed = "yes";
+                $something_removed = 'yes';
             }
         }
     }
@@ -198,8 +205,9 @@ sub process_compare
     $exit_status = 1;  # Assume failure.
 
     # This is what we like to see.
-    if ($something_added eq "no" && $something_removed eq "no") {
-        print $fh "Build Successful\n\n";
+    if ($something_added eq 'no' && $something_removed eq 'no') {
+        print $fh 'Build Successful';
+        print $fh '';
         $exit_status = 0;
     }
     return $exit_status;

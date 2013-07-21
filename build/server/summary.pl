@@ -33,12 +33,14 @@
 
 use Common;
 
+$\ = "\n";
+
 if( $#ARGV == 1 ) {
-    Common::read_config( "config.txt" );
+    Common::read_config( 'config.txt' );
 } elsif( $#ARGV == 2 ) {
     Common::read_config( $ARGV[2] );
 } else {
-    print "Usage: summary build_log summary_result [config_file]\n";
+    print 'Usage: summary build_log summary_result [config_file]';
     exit 1;
 }
 Common::process_summary( $ARGV[0], $ARGV[1] );
