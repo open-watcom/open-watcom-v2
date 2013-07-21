@@ -40,10 +40,11 @@
 #endif
 #include "trptypes.h"
 
-#define CHECK_SEP_END(c,i)  ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1] || (c) == (i)->drv_separator)
-#define CHECK_SEP_BEG(p,i)  ((p)[0] == (i)->path_separator[0] || (p)[0] == (i)->path_separator[1] \
-                             || (p)[1] != '\0' && (p)[1] == (i)->drv_separator \
-                             && (p)[2] != '\0' && ((p)[2] == (i)->path_separator[0] || (p)[2] == (i)->path_separator[1]))
+#define CHK_DIR_SEP(c,i)    ((c) != '\0' && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
+#define CHK_DRV_SEP(c,i)    ((c) != '\0' && (c) == (i)->drv_separator)
+
+#define CHECK_DIR_SEP(c,i)  (CHK_DIR_SEP((c),i) || CHK_DRV_SEP((c),i))
+#define CHECK_PATH_ABS(p,i) (CHK_DIR_SEP((p)[0],i) || (p)[0] != '\0' && CHK_DRV_SEP((p)[1],i) && CHK_DIR_SEP((p)[2],i))
 
 extern unsigned         DUIEnvLkup( char *, char *, unsigned );
 extern char             *StrCopy( char const *, char * );
@@ -332,7 +333,7 @@ bool IsAbsolutePath( char *path )
     p = RealFName( path, &loc );
     info = PathInfo( p, loc );
     if( strlen( p ) == 0 ) return( FALSE );
-    return( CHECK_SEP_BEG( p, info ) );
+    return( CHECK_PATH_ABS( p, info ) );
 }
 
 char *AppendPathDelim( char *path, open_access loc )
@@ -344,7 +345,7 @@ char *AppendPathDelim( char *path, open_access loc )
     info = PathInfo( path, loc );
     len = strlen( path );
     end = &path[len];
-    if( len == 0 || !CHECK_SEP_END( end[-1], info ) ) {
+    if( len == 0 || !CHECK_DIR_SEP( end[-1], info ) ) {
         *end++ = info->path_separator[0];
     }
     return( end );
@@ -361,7 +362,7 @@ char  *SkipPathInfo( char const *path, open_access loc )
     for( ;; ) {
         c = *path++;
         if( c == NULLCHAR ) break;
-        if( CHECK_SEP_END( c, info ) ) {
+        if( CHECK_DIR_SEP( c, info ) ) {
             name = path;
         }
     }
@@ -381,7 +382,7 @@ char  *ExtPointer( char const *path, open_access loc )
     for( ;; ) {
         c = *--p;
         if( p < path ) return( end );
-        if( CHECK_SEP_END( c, info ) )
+        if( CHECK_DIR_SEP( c, info ) )
             return( end );
         if( c == info->ext_separator ) {
             return( p );
@@ -429,7 +430,7 @@ static unsigned MakeNameWithPath( open_access loc,
         } else {
             info = &RemFile;
         }
-        if( plen > 0 && CHECK_SEP_END( p[-1], &LclFile ) ) {
+        if( plen > 0 && !CHECK_DIR_SEP( p[-1], &LclFile ) ) {
             *p++ = info->path_separator[0];
         }
     }
@@ -490,7 +491,7 @@ static handle FullPathOpenInternal( char const *name, char *ext, char *result,
     }
     p = buffer;
     while( (c = *name) != '\0' ) {
-        if( CHECK_SEP_END( c, file ) ) {
+        if( CHECK_DIR_SEP( c, file ) ) {
             have_ext = FALSE;
             have_path = TRUE;
         } else if( c == file->ext_separator ) {

@@ -43,7 +43,7 @@ trap_retval ReqFile_get_config( void )
     ret = GetOutPtr( 0 );
 
     ret->file.ext_separator = '.';
-    ret->file.drv_separator[2] = ':';
+    ret->file.drv_separator = ':';
     ret->file.path_separator[0] = '\\';
     ret->file.path_separator[1] = '/';
     ret->file.newline[0] = '\r';
