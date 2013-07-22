@@ -191,11 +191,11 @@ local void SetTargName( char *name, unsigned len )
         CMemFree( SwData.sys_name );
         SwData.sys_name = NULL;
     }
-    if( name == NULL || len == 0 ) return;
+    if( name == NULL || len == 0 )
+        return;
     SwData.sys_name = CMemAlloc( len + 1 ); /* for NULLCHAR */
     p = SwData.sys_name;
-    while( len != 0 )
-    {
+    while( len != 0 ) {
         *p++ = toupper( *name++ );
         --len;
     }
@@ -247,100 +247,77 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
     #error SetTargSystem not configured
 #endif
 
-
     PreDefine_Macro( "__WATCOM_INT64__" );
     PreDefine_Macro( "_INTEGRAL_MAX_BITS=64" );
-    if( SwData.sys_name == NULL )
-    {
-        #if _CPU == 386 || _CPU == 8086
-            #if defined( __OSI__ )
-                switch( __OS )
-                {                        // 11-mar-94
-                case OS_DOS:
-                case OS_WIN:
-                    _SetConstTarg( "dos" );
-                    break;
-                case OS_OS2:
-                    _SetConstTarg( "os2" );
-                    break;
-                case OS_NT:
-                    _SetConstTarg( "nt" );
-                    break;
-                }
-            #elif defined( __NOVELL__ )
-                _SetConstTarg( "netware" );
-            #elif defined( __QNX__ )
-                _SetConstTarg( "qnx" );
-            #elif defined( __LINUX__ )
-                _SetConstTarg( "linux" );
-            #elif defined( __SOLARIS__ ) || defined( __sun__ )
-                _SetConstTarg( "solaris" );
-            #elif defined( __OSX__ ) || defined( __APPLE__ )
-                _SetConstTarg( "osx" );
-            #elif defined( __OS2__ )
-                _SetConstTarg( "os2" );
-            #elif defined( __NT__ )
-                _SetConstTarg( "nt" );
-            #elif defined( __DOS__ )
-                _SetConstTarg( "dos" );
-            #else
-                #error "Target OS not defined"
-            #endif
-        #elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
-            /* we only have NT libraries for Alpha right now */
+    if( SwData.sys_name == NULL ) {
+#if _CPU == 386 || _CPU == 8086
+    #if defined( __OSI__ )
+        switch( __OS ) {
+        case OS_DOS:
+        case OS_WIN:
+            _SetConstTarg( "dos" );
+            break;
+        case OS_OS2:
+            _SetConstTarg( "os2" );
+            break;
+        case OS_NT:
             _SetConstTarg( "nt" );
-        #else
-            #error Target Machine OS not configured
-        #endif
+            break;
+        }
+    #elif defined( __NOVELL__ )
+        _SetConstTarg( "netware" );
+    #elif defined( __QNX__ )
+        _SetConstTarg( "qnx" );
+    #elif defined( __LINUX__ )
+        _SetConstTarg( "linux" );
+    #elif defined( __SOLARIS__ ) || defined( __sun__ )
+        _SetConstTarg( "solaris" );
+    #elif defined( __OSX__ ) || defined( __APPLE__ )
+        _SetConstTarg( "osx" );
+    #elif defined( __OS2__ )
+        _SetConstTarg( "os2" );
+    #elif defined( __NT__ )
+        _SetConstTarg( "nt" );
+    #elif defined( __DOS__ )
+        _SetConstTarg( "dos" );
+    #else
+        #error "Target OS not defined"
+    #endif
+#elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
+        /* we only have NT libraries for Alpha right now */
+        _SetConstTarg( "nt" );
+#else
+    #error Target Machine OS not configured
+#endif
     }
 
-    if( strcmp( SwData.sys_name, "DOS" ) == 0 )
-    {
+    if( strcmp( SwData.sys_name, "DOS" ) == 0 ) {
         TargSys = TS_DOS;
-    }
-    else if( strcmp( SwData.sys_name, "NETWARE" ) == 0 )
-    {
+    } else if( strcmp( SwData.sys_name, "NETWARE" ) == 0 ) {
         TargSys = TS_NETWARE;
-    }
-    else if( strcmp( SwData.sys_name, "NETWARE5" ) == 0 )
-    {
+    } else if( strcmp( SwData.sys_name, "NETWARE5" ) == 0 ) {
         TargSys = TS_NETWARE5;
-    }
-    else if( strcmp( SwData.sys_name, "WINDOWS" ) == 0 )
-    {
+    } else if( strcmp( SwData.sys_name, "WINDOWS" ) == 0 ) {
         TargSys = TS_WINDOWS;
-    }
-    else if( strcmp( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 )
-    {
+    } else if( strcmp( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
         TargSys = TS_CHEAP_WINDOWS;
-    }
-    else if( strcmp( SwData.sys_name, "NT" ) == 0 )
-    {
+    } else if( strcmp( SwData.sys_name, "NT" ) == 0 ) {
         TargSys = TS_NT;
-    }
-    else if( strcmp( SwData.sys_name, "LINUX" ) == 0 )
-    {
+    } else if( strcmp( SwData.sys_name, "LINUX" ) == 0 ) {
         TargSys = TS_LINUX;
-    }
-    else if( strcmp( SwData.sys_name, "QNX" ) == 0 )
-    {
+    } else if( strcmp( SwData.sys_name, "QNX" ) == 0 ) {
         TargSys = TS_QNX;
-    }
-    else if( strcmp( SwData.sys_name, "OS2" ) == 0 )
-    {
+    } else if( strcmp( SwData.sys_name, "OS2" ) == 0 ) {
         TargSys = TS_OS2;
-    }
-    else
-    {
+    } else {
         TargSys = TS_OTHER;
     }
 
-    switch( TargSys )
-    {
+    switch( TargSys ) {
     case TS_DOS:
         PreDefine_Macro( "MSDOS" );
         PreDefine_Macro( "_DOS" );
-    break;
+        break;
 
 #if _CPU == 386
     case TS_NETWARE:
@@ -348,8 +325,7 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
         /* fall through */
     case TS_NETWARE5:
         /* no "fpr" for Netware 5.0 */
-        if( SwData.mem == SW_M_DEF )
-        {
+        if( SwData.mem == SW_M_DEF ) {
             SwData.mem = SW_MS;
         }
         if( TargSys == TS_NETWARE5 )
@@ -359,57 +335,52 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
         //  NETWARE uses stack based calling conventions
         //  by default - silly people.
         */
-        if( !CompFlags.register_conv_set )
-        {
+        if( !CompFlags.register_conv_set ) {
             CompFlags.register_conventions = 0;
         }
-    break;
+        break;
 
     case TS_NT:
         PreDefine_Macro( "_WIN32" );
-    break;
+        break;
 #endif
     case TS_QNX:
         /* fall through */
     case TS_LINUX:
         PreDefine_Macro( "__UNIX__" );
-    break;
+        break;
 
     case TS_CHEAP_WINDOWS:
-        #if _CPU == 8086
-            PreDefine_Macro( "__WINDOWS__" );
-            PreDefine_Macro( "_WINDOWS" );
-        #else
-            TargSys = TS_WINDOWS;
-        #endif
+#if _CPU == 8086
+        PreDefine_Macro( "__WINDOWS__" );
+        PreDefine_Macro( "_WINDOWS" );
+#else
+        TargSys = TS_WINDOWS;
+#endif
         /* fall through */
-
     case TS_WINDOWS:
-        #if _CPU == 386
-            PreDefine_Macro( "__WINDOWS_386__" );
-            if( !SwData.peg_fs_used )
-            {
-                SwData.peg_fs_on = 0;
-                SwData.peg_fs_used = 1;
-            }
-            switch( SwData.fpt )
-            {
-            case SW_FPT_DEF:
-            case SW_FPT_EMU:
-                SwData.fpt = SW_FPT_INLINE;
-                break;
-            default:
-                break;
-            }
-            TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
-        #elif _CPU == 8086
-            if( !SwData.peg_ds_used )
-            {
-                SwData.peg_ds_on = 1;
-                SwData.peg_ds_used = 1;
-            }
-            TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
-        #endif
+#if _CPU == 386
+        PreDefine_Macro( "__WINDOWS_386__" );
+        if( !SwData.peg_fs_used ) {
+            SwData.peg_fs_on = 0;
+            SwData.peg_fs_used = 1;
+        }
+        switch( SwData.fpt ) {
+        case SW_FPT_DEF:
+        case SW_FPT_EMU:
+            SwData.fpt = SW_FPT_INLINE;
+            break;
+        default:
+            break;
+        }
+        TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
+#elif _CPU == 8086
+        if( !SwData.peg_ds_used ) {
+            SwData.peg_ds_on = 1;
+            SwData.peg_ds_used = 1;
+        }
+        TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
+#endif
         break;
     }
     strcpy( buff, "__" );
@@ -423,18 +394,18 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
 static void SetGenSwitches( void )
 {
 #if _CPU == 8086 || _CPU == 386
-    #if _CPU == 386
-        if( SwData.cpu == SW_CPU_DEF ) SwData.cpu = SW_CPU6;
-        if( SwData.fpu == SW_FPU_DEF ) SwData.fpu = SW_FPU3;
-        if( SwData.mem == SW_M_DEF   ) SwData.mem = SW_MF;
-        TargetSwitches |= USE_32;
-    #else
-        if( SwData.cpu == SW_CPU_DEF ) SwData.cpu = SW_CPU0;
-        if( SwData.fpu == SW_FPU_DEF ) SwData.fpu = SW_FPU0;
-        if( SwData.mem == SW_M_DEF   ) SwData.mem = SW_MS;
-        SET_PEG( f );
-        SET_PEG( g );
-    #endif
+  #if _CPU == 386
+    if( SwData.cpu == SW_CPU_DEF ) SwData.cpu = SW_CPU6;
+    if( SwData.fpu == SW_FPU_DEF ) SwData.fpu = SW_FPU3;
+    if( SwData.mem == SW_M_DEF   ) SwData.mem = SW_MF;
+    TargetSwitches |= USE_32;
+  #else
+    if( SwData.cpu == SW_CPU_DEF ) SwData.cpu = SW_CPU0;
+    if( SwData.fpu == SW_FPU_DEF ) SwData.fpu = SW_FPU0;
+    if( SwData.mem == SW_M_DEF   ) SwData.mem = SW_MS;
+    SET_PEG( f );
+    SET_PEG( g );
+  #endif
     switch( SwData.fpu ) {
     case SW_FPU0:
         SET_FPU_LEVEL( ProcRevision, FPU_87 );
@@ -486,9 +457,9 @@ static void SetGenSwitches( void )
         TargetSwitches |= BIG_CODE | BIG_DATA | CHEAP_POINTER;
         break;
     case SW_MH:
-#if _CPU == 386
+  #if _CPU == 386
         TargetSwitches |= CHEAP_POINTER;
-#endif
+  #endif
         TargetSwitches |= BIG_CODE | BIG_DATA;
         break;
     default:
@@ -528,11 +499,11 @@ static void MacroDefs( void )
         Define_Macro( "__SW_OM" );
     }
 #if _CPU == 8086 || _CPU == 386
- #if _CPU == 8086
-  #define X86 "_M_I86"
- #else
-  #define X86 "_M_386"
- #endif
+  #if _CPU == 8086
+    #define X86 "_M_I86"
+  #else
+    #define X86 "_M_386"
+  #endif
     switch( SwData.mem ) {
     case SW_MS:
         Define_Macro( "__SW_MS" );
@@ -629,7 +600,6 @@ static void MacroDefs( void )
     if( CompFlags.use_long_double ) {
         Define_Macro( "__SW_FLD" );
     }
-
     if( CompFlags.signed_char ) {
         Define_Macro( "__SW_J" );
     }
@@ -685,8 +655,7 @@ static void MacroDefs( void )
     if( CompFlags.bd_switch_used ) {
         Define_Macro( "__SW_BD" );
     }
-    if( CompFlags.bc_switch_used ) /*    Target is console application */
-    {
+    if( CompFlags.bc_switch_used ) { /* Target is console application */
         Define_Macro( "__SW_BC" );
     }
     if( CompFlags.bg_switch_used ) {
@@ -797,15 +766,15 @@ static void AddIncList( char *str )
         len2 = strlen( IncPathList );
         p = (char *) CMemAlloc( len + len2 + 2 );
         memcpy( p, IncPathList, len2 );
-        p[ len2 ] = INCLUDE_SEP;
+        p[len2] = INCLUDE_SEP;
         memcpy( p + len2 + 1, str, len );
-        p[ len + len2 + 1 ] = '\0';
+        p[len + len2 + 1] = '\0';
         CMemFree( IncPathList );
         IncPathList = p;
     } else {
-        p = (char *) CMemAlloc( (len + 1) * sizeof( char ) );
+        p = (char *)CMemAlloc( len + 1 );
         memcpy( p, str, len );
-        p[ len ] = '\0';
+        p[len] = '\0';
         IncPathList = p;
     }
 }
@@ -835,20 +804,22 @@ void MergeInclude( void )
         strcat( buff, "_" INC_VAR );
         env_var = FEGetEnv( buff );
         if( env_var != NULL ) {
-            while( *env_var == ' ' )  ++env_var;        /* 23-jun-93 */
+            while( *env_var == ' ' )
+                ++env_var;
             AddIncList( env_var );
         }
 
 #if _CPU == 386
-        env_var = FEGetEnv( "INC386" );               /* 03-may-89 */
-        if( env_var == NULL ) {                 /* 12-mar-90 */
+        env_var = FEGetEnv( "INC386" );
+        if( env_var == NULL ) {
             env_var = FEGetEnv( INC_VAR );
         }
 #else
         env_var = FEGetEnv( INC_VAR );
 #endif
         if( env_var != NULL ) {
-            while( *env_var == ' ' )  ++env_var;        /* 23-jun-93 */
+            while( *env_var == ' ' )
+                ++env_var;
             AddIncList( env_var );
         }
     }
@@ -869,9 +840,10 @@ static void EnsureEndOfSwitch( void )
     char        c;
 
     if( !OptionDelimiter( *OptScanPtr ) ) {
-        for(;;) {                       // find start of switch
+        for( ;; ) {                       // find start of switch
             c = *OptScanPtr;
-            if( c == '-' || c == SwitchChar ) break;
+            if( c == '-' || c == SwitchChar )
+                break;
             --OptScanPtr;
         }
         OptScanPtr = BadCmdLine( ERR_INVALID_OPTION, OptScanPtr );
@@ -1029,8 +1001,8 @@ static void Set_COFF( void )        { GenSwitches &= ~OBJ_OWL;
                                       GenSwitches |= OBJ_COFF; }
 #endif
 #if _CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
-static void Set_EndianLittle( void ){ GenSwitches &= ~OBJ_ENDIAN_BIG; }
-static void Set_EndianBig( void )   { GenSwitches |= OBJ_ENDIAN_BIG; }
+static void Set_EndianLittle( void ) { GenSwitches &= ~OBJ_ENDIAN_BIG; }
+static void Set_EndianBig( void )    { GenSwitches |= OBJ_ENDIAN_BIG; }
 #endif
 
 static void Set_EP( void )
@@ -1068,7 +1040,7 @@ static char *CopyOfParm( void )
     len = OptScanPtr - OptParm;
     p = (char *) CMemAlloc( len + 1 );
     memcpy( p, OptParm, len );
-    p[ len ] = '\0';
+    p[len] = '\0';
     return( p );
 }
 
@@ -1201,7 +1173,7 @@ static void Set_TP( void )
     CMemFree( togname );
 }
 
-static void SetDataThreshHold( void ){ DataThreshold = OptValue; }
+static void SetDataThreshHold( void ) { DataThreshold = OptValue; }
 
 static void Set_U( void )
 {
@@ -1772,18 +1744,21 @@ static char *ProcessOption( struct option const *op_table, char *p, char *option
 
     for( i = 0; ; i++ ) {
         opt = op_table[i].option;
-        if( opt == NULL ) break;
+        if( opt == NULL )
+            break;
         c = tolower( *p );
         if( c == *opt ) {
             OptValue = op_table[i].value;
             j = 1;
-            for(;;) {
+            for( ;; ) {
                 ++opt;
                 if( *opt == '\0' || *opt == '*' ) {
                     if( *opt == '\0' ) {
                         if( p - option_start == 1 ) {
                             // make sure end of option
-                            if( !OptionDelimiter( p[j] ) ) break;
+                            if( !OptionDelimiter( p[j] ) ) {
+                                break;
+                            }
                         }
                     }
                     OptScanPtr = p + j;
@@ -1793,47 +1768,51 @@ static char *ProcessOption( struct option const *op_table, char *p, char *option
                 if( *opt == '#' ) {             // collect a number
                     if( p[j] >= '0' && p[j] <= '9' ) {
                         OptValue = 0;
-                        for(;;) {
+                        for( ;; ) {
                             c = p[j];
-                            if( c < '0' || c > '9' ) break;
+                            if( c < '0' || c > '9' )
+                                break;
                             OptValue = OptValue * 10 + c - '0';
                             ++j;
                         }
                     }
                 } else if( *opt == '$' ) {      // collect an identifer
                     OptParm = &p[j];
-                    for(;;) {
-                        c = p[j];
-                        if( c == '\0' ) break;
-                        if( c == '-' ) break;
-                        if( c == ' ' ) break;
-                        if( c == SwitchChar ) break;
+                    for( ; (c = p[j]) != '\0'; ) {
+                        if( c == '-' )
+                            break;
+                        if( c == ' ' )
+                            break;
+                        if( c == SwitchChar )
+                            break;
                         ++j;
                     }
                 } else if( *opt == '@' ) {      // collect a filename
                     OptParm = &p[j];
                     c = p[j];
-                    if( c == '"' ){ // "filename"
-                        for(;;){
+                    if( c == '"' ) { // "filename"
+                        for( ;; ) {
                             c = p[++j];
-                            if( c == '"' ){
+                            if( c == '"' ) {
                                 ++j;
                                 break;
                             }
-                            if( c == '\0' )break;
-                            if( c == '\\' ){
+                            if( c == '\0' )
+                                break;
+                            if( c == '\\' ) {
                                 ++j;
                             }
                         }
-                    }else{
-                        for(;;) {
-                            c = p[j];
-                            if( c == '\0' ) break;
-                            if( c == ' ' ) break;
-                            if( c == '\t' ) break;
-                            #if ! defined( __UNIX__ )
-                                if( c == SwitchChar ) break;
-                            #endif
+                    } else {
+                        for( ; (c = p[j]) != '\0'; ) {
+                            if( c == ' ' )
+                                break;
+                            if( c == '\t' )
+                                break;
+#if !defined( __UNIX__ )
+                            if( c == SwitchChar )
+                                break;
+#endif
                             ++j;
                         }
                     }
@@ -1842,8 +1821,11 @@ static char *ProcessOption( struct option const *op_table, char *p, char *option
                 } else {
                     c = tolower( p[j] );
                     if( *opt != c ) {
-                        if( *opt < 'A' || *opt > 'Z' ) break;
-                        if( *opt != p[j] ) break;
+                        if( *opt < 'A' || *opt > 'Z' )
+                            break;
+                        if( *opt != p[j] ) {
+                            break;
+                        }
                     }
                     ++j;
                 }
@@ -1863,9 +1845,11 @@ static void ProcessSubOption( struct option const *op_table )
     char        *option_start;
 
     option_start = OptScanPtr - 2;
-    for(;;) {
+    for( ;; ) {
         OptScanPtr = ProcessOption( op_table, OptScanPtr, option_start );
-        if( OptionDelimiter( *OptScanPtr ) ) break;
+        if( OptionDelimiter( *OptScanPtr ) ) {
+            break;
+        }
     }
 }
 
@@ -1887,18 +1871,21 @@ static char *CollectEnvOrFileName( char *str )
     char        *env;
     char        ch;
 
-    while( *str == ' ' || *str == '\t' ) ++str;
-    env = TokenBuf;
-    for( ;; ) {
-        ch = *str;
-        if( ch == '\0' ) break;
+    while( *str == ' ' || *str == '\t' )
         ++str;
-        if( ch == ' ' ) break;
-        if( ch == '\t' ) break;
-        #if ! defined( __UNIX__ )
-            if( ch == '-' ) break;
-            if( ch == SwitchChar ) break;
-        #endif
+    env = TokenBuf;
+    for( ; (ch = *str) != '\0'; ) {
+        ++str;
+        if( ch == ' ' )
+            break;
+        if( ch == '\t' )
+            break;
+#if ! defined( __UNIX__ )
+        if( ch == '-' )
+            break;
+        if( ch == SwitchChar )
+            break;
+#endif
         *env++ = ch;
     }
     *env = '\0';
@@ -1923,17 +1910,16 @@ static char *ReadIndirectFile( void )
         close( handle );
         // zip through characters changing \r, \n etc into ' '
         str = env;
-        while( *str ) {
-            ch = *str;
+        while( (ch = *str) != '\0' ) {
             if( ch == '\r' || ch == '\n' ) {
                 *str = ' ';
             }
-            #if ! defined( __UNIX__ )
-                if( ch == 0x1A ) {      // if end of file
-                    *str = '\0';        // - mark end of str
-                    break;
-                }
-            #endif
+#if !defined( __UNIX__ )
+            if( ch == 0x1A ) {      // if end of file
+                *str = '\0';        // - mark end of str
+                break;
+            }
+#endif
             ++str;
         }
     }
@@ -1951,8 +1937,9 @@ local void ProcOptions( char *str )
     if( str != NULL ) {
         level = 0;
         buffers[0] = NULL;
-        for(;;) {
-            while( *str == ' ' || *str == '\t' ) ++str;     /* 16-mar-91 */
+        for( ;; ) {
+            while( *str == ' ' || *str == '\t' )
+                ++str;
             if( *str == '@' && level < MAX_NESTING ) {
                 save[level] = CollectEnvOrFileName( str + 1 );
                 ++level;
@@ -1962,11 +1949,13 @@ local void ProcOptions( char *str )
                     str = ReadIndirectFile();
                     buffers[level] = str;
                 }
-                if( str != NULL )  continue;
+                if( str != NULL )
+                    continue;
                 str = save[--level];
             }
             if( *str == '\0' ) {
-                if( level == 0 ) break;
+                if( level == 0 )
+                    break;
                 if( buffers[level] != NULL ) {
                     CMemFree( buffers[level] );
                     buffers[level] = NULL;
@@ -1981,33 +1970,36 @@ local void ProcOptions( char *str )
                 int len;
 
                 beg = str;
-                if( *str == '"' ){
-                    for(;;){
+                if( *str == '"' ) {
+                    for( ;; ) {
                         ++str;
-                        if( *str == '"' ){
+                        if( *str == '"' ) {
                             ++str;
                             break;
                         }
-                        if( *str == '\0' ) break;
-                        if( *str == '\\' ){
+                        if( *str == '\0' )
+                            break;
+                        if( *str == '\\' ) {
                             ++str;
                         }
                     }
-                }else{
-                    for(;;) {
-                        if( *str == '\0' ) break;
-                        if( *str == ' '  ) break;
-                        if( *str == '\t'  ) break;              /* 16-mar-91 */
-                        #if ! defined( __UNIX__ )
-                            if( *str == SwitchChar ) break;
-                        #endif
+                } else {
+                    for( ; *str != '\0'; ) {
+                        if( *str == ' '  )
+                            break;
+                        if( *str == '\t'  )
+                            break;              /* 16-mar-91 */
+#if ! defined( __UNIX__ )
+                        if( *str == SwitchChar )
+                            break;
+#endif
                         ++str;
                     }
                 }
                 len = str-beg;
                 p = (char *) CMemAlloc( len + 1 );
                 memcpy( p, beg, len );
-                p[ len ] = '\0';
+                p[len] = '\0';
                 StripQuotes( p );
                 if( WholeFName != NULL ) {
                     /* more than one file to compile ? */
@@ -2060,7 +2052,7 @@ local void Define_Memory_Model( void )
 
     DataPtrSize = TARGET_POINTER;
     CodePtrSize = TARGET_POINTER;
-    #if _CPU == 8086 || _CPU == 386
+#if _CPU == 8086 || _CPU == 386
     switch( TargetSwitches & (BIG_CODE|BIG_DATA) ) {
     case 0:                     /* -ms */
         model = 's';
@@ -2103,76 +2095,76 @@ local void Define_Memory_Model( void )
         DataPtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
         break;
     }
-    #endif
-    #if _CPU == 8086
-        strcpy( CLIB_Name, "1clib?" );                          /* 15-may-00 */
-        if( CompFlags.bm_switch_used ) {
-            strcpy( CLIB_Name, "1clibmt?" );
-        }
-        if( CompFlags.bd_switch_used ) {
-            if( TargSys == TS_WINDOWS ||
-                TargSys == TS_CHEAP_WINDOWS ) {
-                strcpy( CLIB_Name, "1clib?" );
-            } else {
-                strcpy( CLIB_Name, "1clibdl?" );
-            }
-        }
-        if( GET_FPU_EMU( ProcRevision ) ) {         /* 07-jan-90 */
-            strcpy( MATHLIB_Name, "7math87?" );
-            EmuLib_Name = "8emu87";                     /* 02-apr-90 */
-        } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
-            strcpy( MATHLIB_Name, "5math?" );
-            EmuLib_Name = NULL;
+#endif
+#if _CPU == 8086
+    strcpy( CLIB_Name, "1clib?" );                          /* 15-may-00 */
+    if( CompFlags.bm_switch_used ) {
+        strcpy( CLIB_Name, "1clibmt?" );
+    }
+    if( CompFlags.bd_switch_used ) {
+        if( TargSys == TS_WINDOWS ||
+            TargSys == TS_CHEAP_WINDOWS ) {
+            strcpy( CLIB_Name, "1clib?" );
         } else {
-            strcpy( MATHLIB_Name, "7math87?" );
-            EmuLib_Name = "8noemu87";                   /* 02-apr-90 */
+            strcpy( CLIB_Name, "1clibdl?" );
         }
-    #elif _CPU == 386
-        model = 'r';                                    /* 07-nov-89 */
-        if( ! CompFlags.register_conventions ) model = 's';
-        if( CompFlags.br_switch_used ) {                /* 15-may-95 */
-            strcpy( CLIB_Name, "1clb?dll" );
+    }
+    if( GET_FPU_EMU( ProcRevision ) ) {         /* 07-jan-90 */
+        strcpy( MATHLIB_Name, "7math87?" );
+        EmuLib_Name = "8emu87";                     /* 02-apr-90 */
+    } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
+        strcpy( MATHLIB_Name, "5math?" );
+        EmuLib_Name = NULL;
+    } else {
+        strcpy( MATHLIB_Name, "7math87?" );
+        EmuLib_Name = "8noemu87";                   /* 02-apr-90 */
+    }
+#elif _CPU == 386
+    model = 'r';                                    /* 07-nov-89 */
+    if( ! CompFlags.register_conventions ) model = 's';
+    if( CompFlags.br_switch_used ) {                /* 15-may-95 */
+        strcpy( CLIB_Name, "1clb?dll" );
+    } else {
+        strcpy( CLIB_Name, "1clib3?" );     // There is only 1 CLIB now!
+    }
+    if( GET_FPU_EMU( ProcRevision ) ) {
+        if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
+            strcpy( MATHLIB_Name, "7mt7?dll" );
         } else {
-            strcpy( CLIB_Name, "1clib3?" );     // There is only 1 CLIB now!
+            strcpy( MATHLIB_Name, "7math387?" );
         }
-        if( GET_FPU_EMU( ProcRevision ) ) {
-            if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
-                strcpy( MATHLIB_Name, "7mt7?dll" );
-            } else {
-                strcpy( MATHLIB_Name, "7math387?" );
-            }
-            EmuLib_Name = "8emu387";
-        } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
-            if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
-                strcpy( MATHLIB_Name, "5mth?dll" );
-            } else {
-                strcpy( MATHLIB_Name, "5math3?" );
-            }
-            EmuLib_Name = NULL;
+        EmuLib_Name = "8emu387";
+    } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
+        if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
+            strcpy( MATHLIB_Name, "5mth?dll" );
         } else {
-            if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
-                strcpy( MATHLIB_Name, "7mt7?dll" );
-            } else {
-                strcpy( MATHLIB_Name, "7math387?" );
-            }
-            EmuLib_Name = "8noemu387";
-        }
-    #elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
-        if( CompFlags.br_switch_used ) {                /* 15-may-95 */
-            strcpy( CLIB_Name, "1clbdll" );
-            strcpy( MATHLIB_Name, "7mthdll" );
-        } else {
-            strcpy( CLIB_Name, "1clib" );
-            strcpy( MATHLIB_Name, "7math" );
+            strcpy( MATHLIB_Name, "5math3?" );
         }
         EmuLib_Name = NULL;
-    #else
-        #error Define_Memory_Model not configured
-    #endif
-    #if _CPU == 8086 || _CPU == 386
-        *strchr( CLIB_Name, '?' ) = model;
-        *strchr( MATHLIB_Name, '?' ) = model;
-    #endif
+    } else {
+        if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
+            strcpy( MATHLIB_Name, "7mt7?dll" );
+        } else {
+            strcpy( MATHLIB_Name, "7math387?" );
+        }
+        EmuLib_Name = "8noemu387";
+    }
+#elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
+    if( CompFlags.br_switch_used ) {                /* 15-may-95 */
+        strcpy( CLIB_Name, "1clbdll" );
+        strcpy( MATHLIB_Name, "7mthdll" );
+    } else {
+        strcpy( CLIB_Name, "1clib" );
+        strcpy( MATHLIB_Name, "7math" );
+    }
+    EmuLib_Name = NULL;
+#else
+    #error Define_Memory_Model not configured
+#endif
+#if _CPU == 8086 || _CPU == 386
+    *strchr( CLIB_Name, '?' ) = model;
+    *strchr( MATHLIB_Name, '?' ) = model;
+#endif
 }
 
 void GenCOptions( char **cmdline )
