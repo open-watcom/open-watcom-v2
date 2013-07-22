@@ -51,11 +51,21 @@
     #define _MAX_PATH2  (PATH_MAX + 4)
 #endif
 
-#if defined( __UNIX__ )
-    #define IS_PATH_SEP( ch ) ((ch) == PATH_SEP)
+#if defined(__UNIX__)
+ #define C_PATH         "../c"
+ #define H_PATH         "../h"
+ #define OBJ_EXT        ".o"
 #else
-    #define IS_PATH_SEP( ch ) ((ch) == PATH_SEP || (ch) == '/')
+ #define C_PATH         "..\\c"
+ #define H_PATH         "..\\h"
+ #define OBJ_EXT        ".obj"
 #endif
+#define DEF_EXT         ".def"
+#define ERR_EXT         ".err"
+#define MBR_EXT         ".mbr"
+#define C_EXT           ".c"
+#define CPP_EXT         ".i"
+#define DEP_EXT         ".d"
 
 #define MAX_INC_DEPTH   255
 
@@ -71,7 +81,7 @@ static  void        DelErrFile( void );
 static  void        MakePgmName( void );
 static  int         OpenFCB( FILE *fp, const char *filename );
 static  bool        IsFNameOnce( char const *filename );
-static  bool        TryOpen( char *prefix, char separator, const char *filename, char *suffix );
+static  bool        TryOpen( char *prefix, const char *filename );
 static  void        ParseInit( void );
 static  void        CPP_Parse( void );
 static  int         FCB_Alloc( FILE *fp, const char *filename );
@@ -473,8 +483,8 @@ static int OpenPgmFile( void )
         }
         return( FALSE );
     }
-    if( !TryOpen( "", '\0', WholeFName, "" ) ) {
-        if( CompFlags.ignore_default_dirs || !TryOpen( C_PATH, PATH_SEP, WholeFName, "" ) ) {
+    if( !TryOpen( "", WholeFName ) ) {
+        if( CompFlags.ignore_default_dirs || !TryOpen( C_PATH, WholeFName ) ) {
             CantOpenFile( WholeFName );
             CSuicide();
             return( FALSE );
@@ -538,9 +548,14 @@ char *GetSourceDepName( void )
 }
 
 
-char *ObjFileName( char *ext )
+char *ObjFileName( void )
 {
-    return( CreateFileName( ObjectFileName, ext, FALSE ) );
+    return( CreateFileName( ObjectFileName, OBJ_EXT, FALSE ) );
+}
+
+char *CppFileName( void )
+{
+    return( CreateFileName( ObjectFileName, CPP_EXT, FALSE ) );
 }
 
 char *DepFileName( void )
@@ -657,7 +672,7 @@ void OpenCppFile( void )
     char  *name = NULL;
 
     if( CompFlags.cpp_output_to_file ) {                /* 29-sep-90 */
-        name = ObjFileName( CPP_EXT );
+        name = CppFileName();
         CppFile = fopen( name, "w" );
     } else {
         CppFile = stdout;
@@ -758,7 +773,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
     if( drive[ 0 ] != '\0' || IS_PATH_SEP( dir[ 0 ] ) ) {
         // try absolute path
         // if drive letter given or path from root given
-        if( TryOpen( "", '\0', filename, "" ) ) {
+        if( TryOpen( "", filename ) ) {
             return( TRUE );
         }
     } else {
@@ -767,19 +782,19 @@ bool OpenSrcFile( const char *filename, bool is_lib )
                 // physical file name must be used, not logical
                 _splitpath2( SrcFile->src_flist->name, buff, &drive, &dir, NULL, NULL );
                 _makepath( try, drive, dir, filename, NULL );
-                if( TryOpen( "", '\0', try, "" ) ) {
+                if( TryOpen( "", try ) ) {
                     return( TRUE );
                 }
             } else {
                 // try current directory
-                if( !GlobalCompFlags.ignore_current_dir && TryOpen( "", '\0', filename, "" ) ) {
+                if( !GlobalCompFlags.ignore_current_dir && TryOpen( "", filename ) ) {
                     return( TRUE );
                 }
                 for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
                     // physical file name must be used, not logical
                     _splitpath2( curr->src_flist->name, buff, &drive, &dir, NULL, NULL );
                     _makepath( try, drive, dir, filename, NULL );
-                    if( TryOpen( "", '\0', try, "" ) ) {
+                    if( TryOpen( "", try ) ) {
                         return( TRUE );
                     }
                 }
@@ -792,7 +807,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
                 while( *p == ' ' )
                     ++p;
                 for( ;; ) {
-                    if( *p == INCLUDE_SEP || *p == ';' )
+                    if( IS_INCL_SEP( *p ) )
                         break;
                     if( *p == '\0' )
                         break;
@@ -807,12 +822,9 @@ bool OpenSrcFile( const char *filename, bool is_lib )
                     --i;
                 }
                 buff[ i ] = '\0';
-                if( i > 0 && buff[i - 1] == PATH_SEP ) {
-                    buff[ i - 1 ] = '\0';
-                }
-                if( TryOpen( buff, PATH_SEP, filename, "" ) )
+                if( TryOpen( buff, filename ) )
                     return( TRUE );
-                if( *p == INCLUDE_SEP || *p == ';' ) {
+                if( IS_INCL_SEP( *p ) ) {
                     ++p;
                 }
             } while( *p != '\0' );
@@ -820,7 +832,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
         if( !is_lib ) {
             if( !CompFlags.ignore_default_dirs ) {
                 // try current ../h directory
-                if( TryOpen( H_PATH, PATH_SEP, filename, "" ) ) {
+                if( TryOpen( H_PATH, filename ) ) {
                     return( TRUE );
                 }
             }
@@ -940,9 +952,9 @@ bool FreeSrcFP( void )
     return( ret );
 }
 
-static bool TryOpen( char *prefix, char separator, const char *filename, char *suffix )
+static bool TryOpen( char *prefix, const char *filename )
 {
-    int         i, j;
+    int         i;
     FILE        *fp;
     char        buf[ 2 * 130 ];
 
@@ -954,13 +966,16 @@ static bool TryOpen( char *prefix, char separator, const char *filename, char *s
     i = 0;
     while( (buf[ i ] = *prefix++) != '\0' )
         ++i;
-    if( separator != '\0' ) {
-        buf[i++] = separator;
+    if( i > 0 ) {
+#if defined( __UNIX__ )
+        if( !IS_PATH_SEP( buf[i - 1] ) ) {
+#else
+        if( !IS_PATH_SEP( buf[i - 1] ) && buf[i - 1] != ':' ) {
+#endif
+            buf[i++] = PATH_SEP;
+        }
     }
-    j = i;
     while( (buf[ i ] = *filename++) != '\0' )
-        ++i;
-    while( (buf[ i ] = *suffix++) != '\0' )
         ++i;
     filename = &buf[ 0 ];               /* point to the full name */
     if( IsFNameOnce( filename ) ) {
@@ -1188,7 +1203,7 @@ static const char *IncPathElement( const char *path, char *prefix )
     for( ; ; ) {
         if( *path == '\0' )
             break;
-        if( *path == INCLUDE_SEP || *path == ';' ) {
+        if( IS_INCL_SEP( *path ) ) {
             ++path;
             if( length != 0 ) {
                 break;
@@ -1198,8 +1213,6 @@ static const char *IncPathElement( const char *path, char *prefix )
             *prefix++ = *path++;
         }
     }
-    if( ( length > 1 ) && IS_PATH_SEP( *(prefix - 1) ) )
-        --prefix;
     *prefix = '\0';
     return( path );
 }

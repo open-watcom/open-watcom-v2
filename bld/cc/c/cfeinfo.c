@@ -1063,7 +1063,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     case DATA_GROUP:
         return( (VOIDPTR)DataSegName );
     case OBJECT_FILE_NAME:
-        return( (VOIDPTR)ObjFileName( OBJ_EXT ) );
+        return( (VOIDPTR)ObjFileName() );
     case REVISION_NUMBER:
         return( (VOIDPTR)II_REVISION );
     case AUX_LOOKUP:
@@ -1216,7 +1216,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     case SOURCE_LANGUAGE:
         return( "C" );
     case OBJECT_FILE_NAME:
-        return( (VOIDPTR)ObjFileName( OBJ_EXT ) );
+        return( (VOIDPTR)ObjFileName() );
     case REVISION_NUMBER:
         return( (VOIDPTR)II_REVISION );
     case AUX_LOOKUP:

@@ -29,23 +29,15 @@
 ****************************************************************************/
 
 #if defined(__UNIX__)
- #define C_PATH         "../c"
- #define H_PATH         "../h"
  #define PATH_SEP       '/'
  #define INCLUDE_SEP    ':'
- #define OBJ_EXT        ".o"
+ #define IS_PATH_SEP(c) ((c) == PATH_SEP)
+ #define IS_INCL_SEP(c) ((c) == INCLUDE_SEP || (c) == ';')
 #elif defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__OSI__)
- #define C_PATH         "..\\c"
- #define H_PATH         "..\\h"
  #define PATH_SEP       '\\'
  #define INCLUDE_SEP    ';'
- #define OBJ_EXT        ".obj"
+ #define IS_PATH_SEP(c) ((c) == PATH_SEP || (c) == '/')
+ #define IS_INCL_SEP(c) ((c) == INCLUDE_SEP)
 #else
  #error IOPATH.H not configured for system
 #endif
-#define DEF_EXT         ".def"
-#define ERR_EXT         ".err"
-#define MBR_EXT         ".mbr"
-#define C_EXT           ".c"
-#define CPP_EXT         ".i"
-#define DEP_EXT         ".d"
