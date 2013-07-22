@@ -766,7 +766,7 @@ static void AddIncList( char *str )
         len2 = strlen( IncPathList );
         p = (char *) CMemAlloc( len + len2 + 2 );
         memcpy( p, IncPathList, len2 );
-        p[len2] = INCLUDE_SEP;
+        p[len2] = PATH_LIST_SEP;
         memcpy( p + len2 + 1, str, len );
         p[len + len2 + 1] = '\0';
         CMemFree( IncPathList );

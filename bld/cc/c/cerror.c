@@ -30,7 +30,6 @@
 
 
 #include "cvars.h"
-#include "iopath.h"
 #include <stdarg.h>
 
 /*

@@ -24,20 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  Host file system conventions configuration.
+* Description:  Host file system conventions macros.
 *
 ****************************************************************************/
 
+
 #if defined(__UNIX__)
- #define PATH_SEP       '/'
- #define INCLUDE_SEP    ':'
- #define IS_PATH_SEP(c) ((c) == PATH_SEP)
- #define IS_INCL_SEP(c) ((c) == INCLUDE_SEP || (c) == ';')
-#elif defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__OSI__)
- #define PATH_SEP       '\\'
- #define INCLUDE_SEP    ';'
- #define IS_PATH_SEP(c) ((c) == PATH_SEP || (c) == '/')
- #define IS_INCL_SEP(c) ((c) == INCLUDE_SEP)
+ #define DIR_SEP                '/'
+ #define PATH_LIST_SEP          ':'
+ #define IS_DIR_SEP(c)          ((c) == DIR_SEP)
+ #define IS_PATH_SEP(c)         IS_DIR_SEP( c )
+ #define IS_PATH_ABS(p)         IS_DIR_SEP( (p)[0] )
+ #define HAS_PATH(p)            IS_DIR_SEP( (p)[0] )
+ #define IS_PATH_LIST_SEP(c)    ((c) == PATH_LIST_SEP)
+ #define IS_INCL_SEP(c)         (IS_PATH_LIST_SEP( c ) || (c) == ';')
 #else
- #error IOPATH.H not configured for system
+ #define DIR_SEP                '\\'
+ #define DRIVE_SEP              ':'
+ #define PATH_LIST_SEP          ';'
+ #define IS_DIR_SEP(c)          ((c) == DIR_SEP || (c) == '/')
+ #define IS_PATH_SEP(c)         (IS_DIR_SEP( c ) || c == DRIVE_SEP)
+ // '\foo.txt' is absolute, so is 'c:\foo.txt', but 'c:foo.txt' is not
+ #define IS_PATH_ABS(p)         (IS_DIR_SEP( (p)[0] ) || (p)[0] != '\0' && (p)[1] == DRIVE_SEP && IS_DIR_SEP( (p)[2] ))
+ #define HAS_PATH(p)            (IS_DIR_SEP( (p)[0] ) || (p)[0] != '\0' && (p)[1] == DRIVE_SEP)
+ #define IS_PATH_LIST_SEP(c)    ((c) == PATH_LIST_SEP)
+ #define IS_INCL_SEP(c)         IS_PATH_LIST_SEP( c )
 #endif

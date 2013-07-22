@@ -770,7 +770,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
 
     // include path here...
     _splitpath2( filename, buff, &drive, &dir, NULL, NULL );
-    if( drive[0] != '\0' || IS_PATH_SEP( dir[0] ) ) {
+    if( drive[0] != '\0' || IS_DIR_SEP( dir[0] ) ) {
         // try absolute path
         // if drive letter given or path from root given
         if( TryOpen( "", filename ) ) {
@@ -966,14 +966,8 @@ static bool TryOpen( char *prefix, const char *filename )
     i = 0;
     while( (buf[i] = *prefix++) != '\0' )
         ++i;
-    if( i > 0 ) {
-#if defined( __UNIX__ )
-        if( !IS_PATH_SEP( buf[i - 1] ) ) {
-#else
-        if( !IS_PATH_SEP( buf[i - 1] ) && buf[i - 1] != ':' ) {
-#endif
-            buf[i++] = PATH_SEP;
-        }
+    if( i > 0 && !IS_PATH_SEP( buf[i - 1] ) ) {
+        buf[i++] = DIR_SEP;
     }
     while( (buf[i] = *filename++) != '\0' )
         ++i;
@@ -1033,19 +1027,12 @@ FNAMEPTR AddFlist( char const *filename )
         index++;
     }
     if( flist == NULL ) {
-        char const  *p;
-
-        for( p = filename; p[0] != '\0'; p++ ) {
-            if( IS_PATH_SEP( p[0] ) ) {
-                break;
-            }
-        }
-        if( p[0] == '\0' && DependHeaderPath != NULL ) {
-            flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + strlen( DependHeaderPath ) + strlen( filename ) + 1 );
-            sprintf( flist->name, "%s%s", DependHeaderPath, filename );
-        } else {
+        if( HAS_PATH( filename ) || DependHeaderPath == NULL ) {
             flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + strlen( filename ) + 1 );
             strcpy( flist->name, filename );
+        } else {
+            flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + strlen( DependHeaderPath ) + strlen( filename ) + 1 );
+            sprintf( flist->name, "%s%s", DependHeaderPath, filename );
         }
         *lnk = flist;
         flist->next = NULL;
