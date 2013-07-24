@@ -1125,6 +1125,7 @@ static int GetByteSeq( void )
 
     VbufInit( &code_buffer );
     AsmSysInit();
+    PPCTL_ENABLE_MACROS();
     NextToken();
     len = 0;
     for( ;; ) {
@@ -1215,6 +1216,7 @@ static int GetByteSeq( void )
         }
         VbufSetLen( &code_buffer, len );
     }
+    PPCTL_DISABLE_MACROS();
     uses_auto = AsmSysInsertFixups( &code_buffer );
     AsmSysFini();
     VbufFree( &code_buffer );
