@@ -1,16 +1,18 @@
 #include "fail.h"
 
+#define INSTR_NOP   0x90
+
 extern int a;
 
 extern void bar( int );
 
 #if defined(__I86__)
 
-#pragma aux bar = "mov a,ax" parm [ax];
+#pragma aux bar = INSTR_NOP "mov a,ax" parm [ax];
 
 #elif defined(__386__)
 
-#pragma aux bar = "mov a,eax" parm [eax];
+#pragma aux bar = INSTR_NOP "mov a,eax" parm [eax];
 
 #else
 
