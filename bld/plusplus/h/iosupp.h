@@ -68,9 +68,6 @@ typedef unsigned                DISK_OFFSET;    // offset in disk block
 
 // PROTOTYPES:
 
-char *IoSuppAddIncPathSep(      // ADD AN INCLUDE PATH SEPARATOR
-    char *path )                // - place to add separator
-;
 boolean IoSuppCloseFile(        // CLOSE FILE IF OPENED
     FILE **file_ptr )           // - addr( file pointer )
 ;
@@ -97,7 +94,7 @@ boolean IoSuppOpenSrc(          // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
     enum file_type )            // - what type of file is it?
 ;
-char *IoSuppIncPathElement(     // GET ONE PATH ELEMENT FROM INCLUDE LIST
+const char *IoSuppIncPathElement( // GET ONE PATH ELEMENT FROM INCLUDE LIST
     const char *path,           // - include list
     char *prefix )              // - buffer to store element
 ;

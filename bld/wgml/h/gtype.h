@@ -32,16 +32,7 @@
 #ifndef GTYPE_H_INCLUDED
 #define GTYPE_H_INCLUDED
 
-
-#if defined(__QNX__) || defined(__LINUX__) // try to be nice to linux
-    #define PATH_SEP        '/'
-    #define INCLUDE_SEP     ':'
-#elif defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__OSI__)
-    #define PATH_SEP        '\\'
-    #define INCLUDE_SEP     ';'
-#else
-    #error gtype.h not configured for system
-#endif
+#include "iopath.h"
 
 #define ulong           unsigned long
 

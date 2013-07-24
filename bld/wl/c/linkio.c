@@ -371,25 +371,21 @@ int QMakeFileName( char **pos, char *name, char *fname )
     if( pathptr == NULL )
         return( 0 );
     while( *pathptr != '\0' ) {
-        if( IS_PATH_LIST_SEP( *pathptr ) )
+        if( IS_INCL_SEP( *pathptr ) )
             *pos = ++pathptr;
         for( ;; ) {
             if( *pathptr == '\0' )
                 break;
-            if( IS_PATH_LIST_SEP( *pathptr ) )
+            if( IS_INCL_SEP( *pathptr ) )
                 break;
             pathptr++;
         }
         path_len = pathptr - *pos;
         if( path_len != 0 ) {
-            memcpy( fname, *pos, path_len );
-            file_ptr = fname + path_len;
-            switch( file_ptr[ -1 ] ) {
-            CASE_PATH_SEP:
-                break;
-            default:
-                *file_ptr++ = PATH_SEP;
-                break;
+            file_ptr = memcpy( fname, *pos, path_len );
+            file_ptr += path_len;
+            if( !IS_PATH_SEP( file_ptr[-1] ) ) {
+                *file_ptr++ = DIR_SEP;
             }
             strcpy( file_ptr, name );
             *pos = pathptr;

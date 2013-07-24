@@ -37,6 +37,7 @@
 #else
     #include "clibext.h"
 #endif
+#include "iopath.h"
 #include "autoenv.h"
 
 #if defined( __LINUX__ )
@@ -68,6 +69,8 @@ static int add_path( const char *var_name, const char *new_dirs )
 {
     char    *path;
     char    *new_path;
+    char    *p;
+    size_t  len;
 
     /* Get env var contents */
     path = getenv( var_name );
@@ -79,13 +82,15 @@ static int add_path( const char *var_name, const char *new_dirs )
     } else {
         if( strstr( path, new_dirs ) == NULL ) {
             /* Our path is not present */
-            new_path = malloc( strlen( path ) + strlen( new_dirs ) * 2 + 16 );
+            len = strlen( new_dirs );
+            new_path = malloc( strlen( path ) + len * 2 + 16 );
             if( new_path == NULL ) {
                 return( -2 );
             }
-            strcpy( new_path, new_dirs );
-            strcat( new_path, PATH_SEP_STR );
-            strcat( new_path, path );
+            p = memcpy( new_path, new_dirs, len );
+            p += len;
+            *p++ = PATH_LIST_SEP;
+            strcpy( p, path );
             if( setenv( var_name, new_path, 1 ) != 0 ) {
                 free( new_path );
                 return( -2 );
@@ -112,6 +117,7 @@ static int add_path( const char *var_name, const char *new_dirs )
 static int setup_os_env( const char *watcom )
 {
     char        *buf;
+    size_t      len;
 #ifdef __OS220__
     char        old_blpath[1024] = "";
     int         old_blpath_len;
@@ -125,9 +131,10 @@ static int setup_os_env( const char *watcom )
      * this may not have much effect since we aren't really updating the
      * 'master' environment maintained by the OS.
      */
-    buf = malloc( strlen( watcom ) + 16 );
-    strcpy( buf, watcom );
-    strcat( buf, "\\binp\\help;" );
+    len = strlen( watcom );
+    buf = malloc( len + 16 );
+    memcpy( buf, watcom, len );
+    strcpy( buf, "\\binp\\help;" );
     if( add_path( "HELP", buf ) ) {
         free( buf );
         return( -6 );
@@ -169,13 +176,14 @@ static int setup_os_env( const char *watcom )
     } else {
         old_blpath_len = 0;
     }
-    buf = malloc( strlen( watcom ) + 16 + old_blpath_len );
+    len = strlen( watcom );
+    buf = malloc( len + 16 + old_blpath_len );
     if( buf == NULL ) {
         dbg_puts( "autoenv: Memory allocation failed" );
         return( -8 );
     }
-    strcpy( buf, watcom );
-    strcat( buf, "\\binp\\dll;" );
+    memcpy( buf, watcom, len );
+    strcpy( buf + len, "\\binp\\dll;" );
     strcat( buf, old_blpath );
     rc = fnDosSetExtLIBPATH( buf, BEGIN_LIBPATH );
     if( rc == NO_ERROR ) {
@@ -205,12 +213,13 @@ int watcom_setup_env( void )
     char        *watcom;
     char        buf[FILENAME_MAX * 2];
     int         rc;
+    size_t      len;
+    char        *p;
 
     watcom = getenv( "WATCOM" );
     /* If WATCOM env var isn't set, try to construct it */
     if( watcom == NULL ) {
 //        int     len;
-        char    *p;
         char    *path_sep = NULL;
         char    *prev_path_sep = NULL;
 
@@ -222,7 +231,7 @@ int watcom_setup_env( void )
 //        len = strlen( buf );
         p = buf;
         while( *p != '\0' ) {
-            if( *p == DIR_SEP_CHAR ) {
+            if( *p == DIR_SEP ) {
                 if( path_sep != NULL ) {
                     prev_path_sep = path_sep;
                 }
@@ -243,18 +252,22 @@ int watcom_setup_env( void )
         dbg_puts( watcom );
     }
     /* At this point, WATCOM is set; construct what we want in PATH */
-    if( sizeof( buf ) < (2 * strlen( watcom ) + 16) ) {
+    len = strlen( watcom );
+    if( sizeof( buf ) < (2 * len + 16) ) {
         return( -2 );
     }
-    strcpy( buf, watcom );
-    strcat( buf, DIR_SEP_STR );
-    strcat( buf, PRIMARY_PATH );
+    p = memcpy( buf, watcom, len );
+    p += len;
+    *p++ = DIR_SEP;
+    strcpy( p, PRIMARY_PATH );
 #if defined( SECONDARY_PATH )
     /* Add second path component on platforms that require it */
-    strcat( buf, PATH_SEP_STR );
-    strcat( buf, watcom );
-    strcat( buf, DIR_SEP_STR );
-    strcat( buf, SECONDARY_PATH );
+    p += strlen( p );
+    *p++ = PATH_LIST_SEP;
+    memcpy( p, watcom, len );
+    p += len;
+    *p++ = DIR_SEP;
+    strcpy( p, SECONDARY_PATH );
 #endif
 
     /* Stick it in the PATH env var */

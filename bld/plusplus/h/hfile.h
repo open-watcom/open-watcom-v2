@@ -38,8 +38,7 @@
 // PROTOTYPES:
 
 void HFileAppend(               // APPEND HFILE TO LIST
-    const char *filename,       // - file name
-    size_t size );              // - size of name
+    const char *path_list );    // - path names
 
 int  HFileListSize(             // RETURN AN APPROXIMATE SIZE OF THE H-FILE LIST
     void );

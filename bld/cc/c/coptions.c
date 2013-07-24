@@ -755,27 +755,31 @@ static void MacroDefs( void )
     }
 }
 
-static void AddIncList( char *str )
+static void AddIncList( const char *str )
 {
-    int         len2;
+    int         old_len;
     int         len;
+    char        *old_list;
     char        *p;
 
     len = strlen( str );
-    if( IncPathList != NULL ) {
-        len2 = strlen( IncPathList );
-        p = (char *) CMemAlloc( len + len2 + 2 );
-        memcpy( p, IncPathList, len2 );
-        p[len2] = PATH_LIST_SEP;
-        memcpy( p + len2 + 1, str, len );
-        p[len + len2 + 1] = '\0';
-        CMemFree( IncPathList );
-        IncPathList = p;
-    } else {
-        p = (char *)CMemAlloc( len + 1 );
-        memcpy( p, str, len );
-        p[len] = '\0';
-        IncPathList = p;
+    if( len != 0 ) {
+        if( IncPathList != NULL ) {
+            old_len = strlen( IncPathList );
+            old_list = IncPathList;
+            IncPathList = CMemAlloc( old_len + 1 + len + 1 );
+            memcpy( IncPathList, old_list, old_len );
+            CMemFree( old_list );
+            p = IncPathList + old_len;
+        } else {
+            p = IncPathList = CMemAlloc( len + 1 );
+        }
+        while( *str != '\0' ) {
+            if( p != IncPathList )
+                *p++ = PATH_LIST_SEP;
+            str = IncPathElement( str, p );
+            p += strlen( p );
+        }
     }
 }
 

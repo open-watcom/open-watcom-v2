@@ -40,16 +40,10 @@
 #include "iosupp.h"
 #include "srcfile.h"
 #include "cgdata.h"
+#include "iopath.h"
 //#include "hfile.h"
 
 static FILE *AutoDepFile;
-
-// macro copied from bld/cc/c/ccmain.c
-#ifdef __UNIX__
-    #define IS_PATH_SEP( ch ) ((ch) == '/')
-#else
-    #define IS_PATH_SEP( ch ) ((ch) == '/' || (ch) == '\\')
-#endif
 
 
 char *DoForceSlash( char *name, char slash )
@@ -57,9 +51,8 @@ char *DoForceSlash( char *name, char slash )
     char *save = name;
     if( !slash || !save )
         return name;
-    while( name[0] )
-    {
-        if( IS_PATH_SEP( name[0] ) )
+    while( name[0] ) {
+        if( IS_DIR_SEP( name[0] ) )
             name[0] = slash;
         name++;
     }
@@ -68,43 +61,22 @@ char *DoForceSlash( char *name, char slash )
 
 void AdDump( void )
 {
-    if( AutoDepFile )
-    {
-        SRCFILE retn;
-        int hadone;
-        fprintf( AutoDepFile, "%s : "
-               , DoForceSlash( IoSuppOutFileName( OFT_TRG )
-                             , ForceSlash ) );
-        fprintf( AutoDepFile, "%s"
-               , DoForceSlash( IoSuppOutFileName( OFT_SRCDEP )
-                             , ForceSlash ) );
-        for( retn = SrcFileWalkInit(), retn?(hadone=1):(hadone=0);
-             hadone;
-            ((retn = SrcFileWalkNext( retn )),retn?(hadone=1):(hadone=0) ),
-             (retn = SrcFileNotReadOnly( retn ) ) )
+    SRCFILE retn;
+    char    *name;
+
+    if( AutoDepFile ) {
+        fprintf( AutoDepFile, "%s : ", DoForceSlash( IoSuppOutFileName( OFT_TRG ), ForceSlash ) );
+        fprintf( AutoDepFile, "%s", DoForceSlash( IoSuppOutFileName( OFT_SRCDEP ), ForceSlash ) );
+        for( retn = SrcFileNotReadOnly( SrcFileWalkInit() );
+             retn != NULL && !IsSrcFilePrimary( retn );
+             retn = SrcFileNotReadOnly( SrcFileWalkNext( retn ) ) )
         {
-           char *name;
-           if( IsSrcFilePrimary( retn ) )
-              continue;
-           name = SrcFileName(retn);
-        if( DependHeaderPath )
-        {
-           char *p = name;
-           while( p && p[0] )
-              if( IS_PATH_SEP( *p ) )
-                 break;
-           else p++;
-           fprintf( AutoDepFile, " %s%s"
-                  , (p && p[0])?"":DependHeaderPath
-                  , DoForceSlash( name
-                                , ForceSlash ) );
-        }
-        else
-        {
-           fprintf( AutoDepFile, " %s"
-                         , DoForceSlash( name
-                                       , ForceSlash ) );
-        }
+            name = SrcFileName(retn);
+            if( HAS_PATH( name ) || DependHeaderPath == NULL ) {
+               fprintf( AutoDepFile, " %s", DoForceSlash( name, ForceSlash ) );
+            } else {
+               fprintf( AutoDepFile, " %s%s", DependHeaderPath, DoForceSlash( name, ForceSlash ) );
+            }
         }
     }
 }

@@ -1298,7 +1298,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
 }
 #endif
 
-char *SrcFullPath( char *buff, char const *name, unsigned max )
+char *SrcFullPath( char const *name, char *buff, unsigned max )
 {
     return( _getFilenameFullPath( buff, name, max ) );
 }

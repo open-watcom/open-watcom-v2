@@ -40,9 +40,8 @@
 #include "stdui.h"
 #include "help.h"
 #include "helpmem.h"
+#include "iopath.h"
 
-
-#define PATH_SEPARATOR '/'
 
 help_file HelpFiles[MAX_HELP_FILES] = {
     {NULL, 0 }
@@ -65,11 +64,10 @@ static void freeSearchList( void )
     }
 }
 
-static bool search_for_file( char *fullpath, char *fname,
-                                 HelpSrchPathItem *where )
-/**************************************************************/
+static bool search_for_file( char *fullpath, char *fname, HelpSrchPathItem *where )
+/*********************************************************************************/
 {
-    unsigned            i;
+    unsigned    i;
 
     if( where == NULL ) {
         if( !HelpAccess( fname, HELP_ACCESS_EXIST ) ) {
@@ -82,13 +80,14 @@ static bool search_for_file( char *fullpath, char *fname,
     /* check the current working directory */
     if( !HelpAccess( fname, HELP_ACCESS_EXIST ) ) {
         HelpGetCWD( fullpath, _MAX_PATH );
-        i = strlen( fullpath );
-        fullpath[i] = PATH_SEPARATOR;
-        fullpath[i+1] = '\0';
-        strcat( fullpath, fname );
+        fullpath += strlen( fullpath );
+        if( !IS_PATH_SEP( fullpath[-1] ) ) {
+            *fullpath++ = DIR_SEP;
+        }
+        strcpy( fullpath, fname );
         return( TRUE );
     }
-    for( i=0; ; i++ ) {
+    for( i = 0; ; i++ ) {
         switch( where[i].type ) {
 #ifndef __NETWARE_386__
         case SRCHTYPE_ENV:

@@ -51,15 +51,8 @@
 #include "iortns.h"
 #include "semantic.h"
 #include "wresdefn.h"
+#include "iopath.h"
 
-
-#ifdef __UNIX__
-#define PATH_SEP '/'
-#define PATH_SPLIT ':'
-#else
-#define PATH_SEP '\\'
-#define PATH_SPLIT ';'
-#endif
 
 static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
 /******************************************************************************/
@@ -151,7 +144,7 @@ extern void RcFindResource( char *name, char *fullpath ) {
 
     char        *src;
     char        *dst;
-    char        end;
+    char        c;
     char        drive[_MAX_DRIVE];
     char        dir[_MAX_DIR];
 
@@ -159,7 +152,7 @@ extern void RcFindResource( char *name, char *fullpath ) {
     //if the filename has a drive or is an absolute path then ignore
     //the include path and just look at the specified location
     _splitpath( name, drive, dir, NULL, NULL );
-    if( drive[0] != '\0' || dir[0] ==PATH_SEP ) {
+    if( drive[0] != '\0' || IS_DIR_SEP( dir[0] ) ) {
         if( access( name, F_OK ) == 0 ) {
             strcpy( fullpath, name );
         }
@@ -171,19 +164,19 @@ extern void RcFindResource( char *name, char *fullpath ) {
     }
     if( NewIncludeDirs != NULL ) {
         src = NewIncludeDirs;
-        end = *NewIncludeDirs;
-        while( end != '\0' ) {
+        while( *src != '\0' ) {
             dst = fullpath;
-            while( *src != ';' && *src != PATH_SPLIT && *src != '\0' ) {
-                *dst = *src;
-                dst ++;
-                src ++;
+            while( (c = *src) != '\0' ) {
+                ++src;
+                if( IS_INCL_SEP( c ) ) {
+                    break;
+                }
+                *dst++ = c;
             }
-            end = *src;
-            src ++;
-            if( *( dst - 1 ) != PATH_SEP ) {
-                *dst = PATH_SEP;
-                dst++;
+            if( dst != fullpath ) {
+                if( !IS_PATH_SEP( dst[-1] ) ) {
+                    *dst++ = DIR_SEP;
+                }
             }
             strcpy( dst, name );
             if( access( fullpath, F_OK ) == 0 ) return;
@@ -197,24 +190,24 @@ extern void RcTmpFileName( char * tmpfilename )
 /* uses the TMP env. var. if it is set and puts the result into tmpfilename */
 /* which is assumed to be a buffer of at least _MAX_PATH characters */
 {
-    char *  nextchar;
-    char *  tmpdir;
+    char    *nextchar;
+    char    *tmpdir;
+    size_t  len;
 
     tmpdir = RcGetEnv( "TMP" );
     if( tmpdir != NULL ) {
         /* leave room for the '\' and the filename */
         strncpy( tmpfilename, tmpdir, _MAX_PATH - L_tmpnam - 1 );
-        nextchar = tmpfilename + strlen( tmpfilename ) - 1;
+        tmpfilename[_MAX_PATH - L_tmpnam - 1] = '\0';
+        len = strlen( tmpfilename );
+        nextchar = tmpfilename + len;
         /* tack a '\' onto the end if it is not there already */
-        if( *nextchar != PATH_SEP ) {
-            nextchar++;
-            *nextchar = PATH_SEP;
+        if( len > 0 && !IS_PATH_SEP( nextchar[-1] ) ) {
+            *nextchar++ = DIR_SEP;
         }
-        nextchar++;
     } else {
         nextchar = tmpfilename;
     }
-
     tmpnam( nextchar );
 }
 

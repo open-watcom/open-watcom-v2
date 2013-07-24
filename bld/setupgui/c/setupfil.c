@@ -52,18 +52,15 @@
 #include "genvbl.h"
 #include "gendlg.h"
 #include "utils.h"
+#include "iopath.h"
 
 #if defined( __UNIX__ )
     #define SETENV          "export "
     #define SETENV_LEN      7
-    #define PATH_SEP        ":"
-    #define PATH_SEP_CHAR   ':'
     #define ENV_NAME        "$%s"
 #else
     #define SETENV          "SET "
     #define SETENV_LEN      4
-    #define PATH_SEP        ";"
-    #define PATH_SEP_CHAR   ';'
     #define ENV_NAME        "%%%s%%"
 #endif
 
@@ -218,13 +215,13 @@ static void modify_value( char *value, char *new_value, append_mode append, bool
 {
     char    buf[MAXENVVAR + 1];
 
-    NoDupPaths( value, new_value, PATH_SEP_CHAR );
+    NoDupPaths( value, new_value, PATH_LIST_SEP );
     if( !uninstall ) {
         if( append == AM_AFTER ) {
-            sprintf( buf, "%s" PATH_SEP "%s", value, new_value );
+            sprintf( buf, "%s%c%s", value, PATH_LIST_SEP, new_value );
             strcpy( value, buf );
         } else if( append == AM_BEFORE ) {
-            sprintf( buf, "%s" PATH_SEP "%s", new_value, value );
+            sprintf( buf, "%s%c%s", new_value, PATH_LIST_SEP, value );
             strcpy( value, buf );
         } else {
             strcpy( value, new_value );
@@ -262,14 +259,14 @@ static void modify_value_libpath( char *val_before, char *val_after, char *new_v
     char    buf[MAXENVVAR + 1];
 
     if( append == AM_AFTER ) {
-        NoDupPaths( val_before, new_value, PATH_SEP_CHAR );
-        NoDupPaths( val_after, new_value, PATH_SEP_CHAR );
-        sprintf( buf, "%s" PATH_SEP "%s", val_after, new_value );
+        NoDupPaths( val_before, new_value, PATH_LIST_SEP );
+        NoDupPaths( val_after, new_value, PATH_LIST_SEP );
+        sprintf( buf, "%s%c%s", val_after, PATH_LIST_SEP, new_value );
         strcpy( val_after, buf );
     } else if( append == AM_BEFORE ) {
-        NoDupPaths( val_before, new_value, PATH_SEP_CHAR );
-        NoDupPaths( val_after, new_value, PATH_SEP_CHAR );
-        sprintf( buf, "%s" PATH_SEP "%s", new_value, val_before );
+        NoDupPaths( val_before, new_value, PATH_LIST_SEP );
+        NoDupPaths( val_after, new_value, PATH_LIST_SEP );
+        sprintf( buf, "%s%c%s", new_value, PATH_LIST_SEP, val_before );
         strcpy( val_before, buf );
     } else {
         strcpy( val_before, new_value );
@@ -432,9 +429,9 @@ static void FinishEnvironmentLines( FILE *fp, char *line, int num, bool *Found, 
                     strcpy( val_before, new_val );
                 }
             } else if( append == AM_AFTER ) {
-                sprintf( env_val, ENV_NAME PATH_SEP "%s", new_var, new_val );
+                sprintf( env_val, ENV_NAME "%c%s", new_var, PATH_LIST_SEP, new_val );
             } else if( append == AM_BEFORE ) {
-                sprintf( env_val, "%s" PATH_SEP ENV_NAME, new_val, new_var );
+                sprintf( env_val, "%s%c" ENV_NAME, new_val, PATH_LIST_SEP, new_var );
             } else {
                 strcpy( env_val, new_val );
             }

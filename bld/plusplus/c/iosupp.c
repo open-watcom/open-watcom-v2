@@ -52,6 +52,7 @@
 #include "ring.h"
 #include "brinfo.h"
 #include "autodept.h"
+#include "iopath.h"
 
 typedef struct buf_alloc BUF_ALLOC;
 struct buf_alloc {              // BUF_ALLOC -- allocated buffer
@@ -68,8 +69,10 @@ static char *tempname;          // name of temp file
 static DISK_ADDR tempBlock;     // next available block in temp file
 static unsigned outFileChecked; // mask for checking output files
 
-static char  workFile[] =       // template for work file
-    "__wrk0__";
+                                // template for work file name
+static char workFile[] = "__wrk0__.tmp";
+
+#define MAX_TMP_PATH (_MAX_PATH - sizeof( workFile ) - 1)
 
 #if defined(__OS2__) || defined(__DOS__) || defined(__NT__)
 
@@ -120,11 +123,6 @@ static char* extsOut[] =        // extensions for output files
     ,   ".d"
     ,   ".obj"
     };
-
-#define IS_DIR_SEP( c )         ((c)=='/'||(c)=='\\')
-#define IS_PATH_SEP( c )        ((c)==':'||IS_DIR_SEP(c))
-#define PATH_SEP                '\\'
-#define INC_PATH_SEP            ';'
 
 #elif defined(__UNIX__)
 
@@ -178,11 +176,6 @@ static char* extsOut[] =        // extensions for output files
     ,   ".d"
     ,   ".o"
     };
-
-#define IS_DIR_SEP( c )         ((c)=='/')
-#define IS_PATH_SEP( c )        IS_DIR_SEP( c )
-#define PATH_SEP                '/'
-#define INC_PATH_SEP            ':'
 
 #else
 
@@ -476,22 +469,6 @@ static char *openSrcExts(       // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
 }
 
 
-static char *concSep(           // CONCATENATE PATH SEPARATOR AS REQUIRED
-    char *pp,                   // - pointer into buffer
-    char *buffer )              // - buffer
-{
-    char *pred;                 // - preceding char in buffer
-
-    if( pp > buffer ) {
-        pred = pp - 1;
-        if( !IS_PATH_SEP( *pred ) ) {
-            *pp++ = PATH_SEP;
-        }
-    }
-    return pp;
-}
-
-
 static boolean openSrcPath(     // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     char *path,                 // - path
     char **exts,                // - file extensions
@@ -504,6 +481,7 @@ static boolean openSrcPath(     // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     char *pp;                   // - pointer into path
     char *ext;                  // - extension opened
 
+    dir[0] = '\0';
     splitFileName( path, &pd );
     if( fd->drv[0] == '\0' ) {
         pp = stpcpy( dir, path );
@@ -516,7 +494,11 @@ static boolean openSrcPath(     // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     if( pp == NULL ) {
         retn = FALSE;
     } else {
-        pp = concSep( pp, dir );
+        if( pp > dir ) {
+            if( !IS_PATH_SEP( pp[-1] ) ) {
+                *pp++ = DIR_SEP;
+            }
+        }
         makeDirName( pp, fd );
         splitFileName( dir, &pd );
         ext = openSrcExts( exts, &pd, typ );
@@ -569,7 +551,7 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
         retn = openSrcPath( "", exts, fd, typ );
         if( retn )
             break;
-        if( !CompFlags.ignore_default_dirs && !IS_PATH_SEP( fd->dir[0] ) ) {
+        if( !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
             paths = pathSrc;
         }
         break;
@@ -581,7 +563,7 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
             retn = openSrcPath( "", exts, fd, typ );
             break;
         }
-        if( typ == FT_HEADER && !IS_PATH_SEP( fd->dir[0] ) ) {
+        if( typ == FT_HEADER && !IS_DIR_SEP( fd->dir[0] ) ) {
             if( CompFlags.ignore_default_dirs ) {
                 curr = SrcFileCurrent();
                 splitFileName( SrcFileName( curr ), &idescr );
@@ -633,7 +615,7 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
         if( retn ) {
             break;
         }
-        if( typ == FT_HEADER && !CompFlags.ignore_default_dirs && !IS_PATH_SEP( fd->dir[0] ) ) {
+        if( typ == FT_HEADER && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
             paths = pathHdr;
         }
         break;
@@ -642,7 +624,7 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
         retn = openSrcPath( "", exts, fd, typ );
         if( retn )
             break;
-        if( !IS_PATH_SEP( fd->dir[0] ) ) {
+        if( !IS_DIR_SEP( fd->dir[0] ) ) {
             paths = pathCmd;
         }
         break;
@@ -690,41 +672,43 @@ boolean IoSuppOpenSrc(          // OPEN A SOURCE FILE (PRIMARY,HEADER)
     }
 #endif
     splitFileName( file_name, &fd );
-    if( doIoSuppOpenSrc( &fd, typ ) ) return TRUE;
-    #if !defined(__DOS__)
-        if( !CompFlags.check_truncated_fnames ) return FALSE;
-        if( strlen( fd.fnm ) <= 8 ) return FALSE;
-        fd.fnm[8] = '\0';
-        if( doIoSuppOpenSrc( &fd, typ ) ) return TRUE;
-    #endif
+    if( doIoSuppOpenSrc( &fd, typ ) )
+        return TRUE;
+#if !defined( __DOS__ )
+    if( !CompFlags.check_truncated_fnames )
+        return FALSE;
+    if( strlen( fd.fnm ) <= 8 )
+        return FALSE;
+    fd.fnm[8] = '\0';
+    if( doIoSuppOpenSrc( &fd, typ ) )
+        return TRUE;
+#endif
     return FALSE;
 }
 
 static void tempFname( char *fname )
 {
     char    *env;
-    int     i;
+    size_t  len;
 
-    #if defined(__UNIX__)
-        env = CppGetEnv( "TMPDIR" );
-        if( env == NULL ) env = CppGetEnv( "TMP" );
-    #else
+#if defined(__UNIX__)
+    env = CppGetEnv( "TMPDIR" );
+    if( env == NULL )
         env = CppGetEnv( "TMP" );
-    #endif
-
-    if( env == NULL ) env = "";
-
-    #define TMP_EXT ".tmp"
-    #define MAX_TMP_PATH (_MAX_PATH - sizeof( workFile ) - sizeof( TMP_EXT ) - 2)
+#else
+    env = CppGetEnv( "TMP" );
+#endif
+    if( env == NULL )
+        env = "";
 
     strncpy( fname, env, MAX_TMP_PATH );
     fname[ MAX_TMP_PATH ] = '\0';
-    i = strlen( fname );
-    if( i > 0 && !IS_PATH_SEP( fname[i-1] ) ) {
-        fname[i++] = PATH_SEP;
+    len = strlen( fname );
+    fname += len;
+    if( len > 0 && !IS_PATH_SEP( fname[-1] ) ) {
+        *fname++ = DIR_SEP;
     }
-    strcpy( &fname[i], workFile );
-    strcpy( &fname[i+sizeof(workFile)-1], TMP_EXT );
+    strcpy( fname, workFile );
 }
 
 #if defined(__DOS__)
@@ -877,36 +861,29 @@ void IoSuppTempRead(            // READ FROM TEMPORARY FILE
 }
 
 
-char *IoSuppIncPathElement(     // GET ONE PATH ELEMENT FROM INCLUDE LIST
-    const char *path,           // - include list
-    char *prefix )              // - buffer to store element
+const char *IoSuppIncPathElement(   // GET ONE PATH ELEMENT FROM INCLUDE LIST
+    const char *path_list,          // - include list
+    char *path )                    // - buffer to store element
 {
-    unsigned    length;
+    bool    is_blank;
+    char    c;
 
-    length = 0;
-    for( ; ; ) {
-        if( *path == '\0' ) break;
-        if( (*path == INC_PATH_SEP) || (*path == ';') ) {
-            ++path;
-            if( length != 0 ) {
+    is_blank = TRUE;
+    while( (c = *path_list) != '\0' ) {
+        ++path_list;
+        if( IS_INCL_SEP( c ) ) {
+            if( !is_blank ) {
                 break;
             }
-        } else {
-            ++length;
-            *prefix++ = *path++;
+        } else if( !is_blank ) {
+            *path++ = c;
+        } else if( c != ' ' ) {
+            is_blank = FALSE;
+            *path++ = c;
         }
     }
-    if( ( length > 1 ) && IS_DIR_SEP( *(prefix-1) ) ) --prefix;
-    *prefix = '\0';
-    return( (char *)path );
-}
-
-
-char *IoSuppAddIncPathSep(      // ADD AN INCLUDE PATH SEPARATOR
-    char *path )                // - place to add separator
-{
-    *path = INC_PATH_SEP;
-    return( path + 1 );
+    *path = '\0';
+    return( path_list );
 }
 
 

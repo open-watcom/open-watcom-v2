@@ -41,6 +41,7 @@
 #include "ferror.h"
 #include "comio.h"
 #include "inout.h"
+#include "iopath.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -202,46 +203,66 @@ static  void    DefOption( opt_entry *optn, char *ptr ) {
 }
 
 
-static  void    PathOption( opt_entry *optn, char *ptr ) {
-//========================================================
+static char *IncPathElement( char *path_list, char *path )
+{
+    bool    is_blank;
+    char    c;
 
-// Process "INCPATH=" option.
-
-    char        *tmp;
-    int         len;
-    int         len1;
-
-    optn = optn;
-    len1 = strlen( ptr );
-    // skip quotes
-    if( ptr[0] == '"' && ptr[len1 - 1] == '"' ) {
-        len1 -= 2;
-        ++ptr;
-    }
-    // skip leading INCLUDE_SEP
-    while( ptr[0] == INCLUDE_SEP ) {
-        --len1;
-        ++ptr;
-    }
-    if( len1 == 0 )
-        return;
-    if( !IncludePath ) {
-        len = 0;
-        IncludePath = FMemAlloc( len1 + 1 );
-    } else {
-        len = strlen( IncludePath );
-        tmp = FMemAlloc( len + len1 + 2 );
-        memcpy( tmp, IncludePath, len );
-        FMemFree( IncludePath );
-        IncludePath = tmp;
-        // We must glue the strings together correctly.
-        if( ( tmp[len - 1] != INCLUDE_SEP ) ) {
-            tmp[len++] = INCLUDE_SEP;
-            tmp[len] = NULLCHAR;
+    is_blank = TRUE;
+    while( (c = *path_list) != NULLCHAR ) {
+        ++path_list;
+        if( IS_INCL_SEP( c ) ) {
+            if( !is_blank ) {
+                break;
+            }
+        } else if( !is_blank ) {
+            *path++ = c;
+        } else if( c != ' ' ) {
+            is_blank = FALSE;
+            *path++ = c;
         }
     }
-    memcpy( IncludePath + len, ptr, len1 );
-    IncludePath[len + len1] = NULLCHAR;
+    *path = NULLCHAR;
+    return( path_list );
+}
+
+
+static  void    PathOption( opt_entry *optn, char *ptr )
+//============================================================
+// Process "INCPATH=" option.
+{
+    char        *p;
+    char        *old_list;
+    int         old_len;
+    int         len;
+
+    optn = optn;
+    len = strlen( ptr );
+    // skip quotes
+    if( ptr[0] == '"' && ptr[len - 1] == '"' ) {
+        len -= 2;
+        ++ptr;
+        ptr[len] = NULLCHAR;
+    }
+    if( len == 0 )
+        return;
+    if( IncludePath == NULL ) {
+        p = IncludePath = FMemAlloc( len + 1 );
+    } else {
+        old_len = strlen( IncludePath );
+        old_list = IncludePath;
+        IncludePath = FMemAlloc( old_len + 1 + len + 1 );
+        memcpy( IncludePath, old_list, len );
+        FMemFree( old_list );
+        p = IncludePath + old_len;
+    }
+    while( *ptr != NULLCHAR ) {
+        if( p != IncludePath ) {
+            *p++ = PATH_LIST_SEP;
+        }
+        ptr = IncPathElement( ptr, p );
+        p += strlen( p );
+    }
 }
 
 

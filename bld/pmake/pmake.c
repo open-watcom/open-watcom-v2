@@ -35,12 +35,10 @@
 #include <string.h>
 #include <stdlib.h>
 #ifdef __UNIX__
-#define IS_PATH_SEP(x) ( (x) == '/')
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #else
-#define IS_PATH_SEP(x) ( ( (x) == '\\') || (x) == '/')
 #include <direct.h>
 #include <dos.h>
 #include <io.h>
@@ -50,6 +48,7 @@
 #include <stdarg.h>
 #include "watcom.h"
 #include "pmake.h"
+#include "iopath.h"
 
 #ifdef __UNIX__
 #define DEFAULT_MAKE_CMD        "wmake"
@@ -273,7 +272,7 @@ static void DeQueue( void )
 static unsigned CountDepth( char *path, unsigned slashcount )
 {
     while( *path != '\0' ) {
-        if( IS_PATH_SEP( *path ) ) {
+        if( IS_DIR_SEP( *path ) ) {
             slashcount++;
         }
         path++;
@@ -309,11 +308,11 @@ static char *RelativePath( char *oldpath, char *newpath )
         ofs++;
     }
     // oldpath is a prefix of newpath
-    if( oldpath[ofs] == '\0' && IS_PATH_SEP( newpath[ofs] ) ) {
+    if( oldpath[ofs] == '\0' && IS_DIR_SEP( newpath[ofs] ) ) {
         return( &newpath[ofs + 1] );
     }
     // newpath is a prefix of oldpath
-    if( newpath[0] == '\0' && IS_PATH_SEP( oldpath[ofs] ) ) {
+    if( newpath[0] == '\0' && IS_DIR_SEP( oldpath[ofs] ) ) {
         newdepth = CountDepth( newpath, 0 );
         olddepth = CountDepth( oldpath, 0 );
         tp = PrependDotDotSlash( Buff, olddepth - newdepth );
@@ -321,10 +320,8 @@ static char *RelativePath( char *oldpath, char *newpath )
         return( Buff );
     }
     /* back up to start of directory */
-    for( ;; ) {
-        if( ofs == 0 )
-            break;
-        if( IS_PATH_SEP( newpath[ofs - 1] ) )
+    while( ofs != 0 ) {
+        if( IS_DIR_SEP( newpath[ofs - 1] ) )
             break;
         --ofs;
     }

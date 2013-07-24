@@ -70,15 +70,6 @@ typedef struct WResHeader {
 
 
 #define NULLCHAR        '\0'
-#ifdef __UNIX__
-    #define PATH_SEP '/'
-    #define CASE_PATH_SEP case'/'
-    #define PATH_LIST_SEP ':'
-#else
-    #define PATH_SEP '\\'
-    #define CASE_PATH_SEP   case '\\': case '/': case ':'
-    #define PATH_LIST_SEP ';'
-#endif
 
 typedef enum {
     WRAP_NONE,

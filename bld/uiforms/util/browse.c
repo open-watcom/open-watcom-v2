@@ -42,6 +42,7 @@
 #include "stdui.h"
 #include "dirui.h"
 #include "uivedit.h"
+#include "iopath.h"
 
 #ifndef NULL
 #define NULL            0               /* NULL pointer         */
@@ -64,56 +65,54 @@
 #ifdef __QNX__
 #   define  IS_DIR( dir )   S_ISDIR((dir)->d_stat.st_mode)
 #   define  FULL_MASK       "*"
-#   define  PATH_SEP        '/'
 #else
 #   define  IS_DIR( dir )   (((dir)->d_attr & _A_SUBDIR)!=0)
 #   define  FULL_MASK       "*.*"
-#   define  PATH_SEP        '\\'
 #endif
 
 struct name {
-        bool dir;
-        char str[ NAME_MAX + 7 ];
+    bool dir;
+    char str[NAME_MAX + 7];
 };
 
 static struct name *Names = NULL;
 
 static EVENT DirEvents[] = {
-        EV_NO_EVENT,            /* end of list of ranges */
-        EV_MOUSE_PRESS,
-        EV_MOUSE_DRAG,
-        EV_MOUSE_DCLICK,
-        EV_MOUSE_RELEASE,
-        EV_CURSOR_UP,
-        EV_CURSOR_DOWN,
-        EV_RETURN,
-        EV_ESCAPE,
-        EV_NO_EVENT
+    EV_NO_EVENT,            /* end of list of ranges */
+    EV_MOUSE_PRESS,
+    EV_MOUSE_DRAG,
+    EV_MOUSE_DCLICK,
+    EV_MOUSE_RELEASE,
+    EV_CURSOR_UP,
+    EV_CURSOR_DOWN,
+    EV_RETURN,
+    EV_ESCAPE,
+    EV_NO_EVENT
 };
 
 static EVENT GetDirEvents[] = {
-        EV_NO_EVENT,            /* end of list of ranges */
-        EV_MOUSE_PRESS,
-        EV_MOUSE_DCLICK,
-        EV_CURSOR_UP,
-        EV_CURSOR_DOWN,
-        EV_RETURN,
-        EV_ESCAPE,
-        EV_NO_EVENT
+    EV_NO_EVENT,            /* end of list of ranges */
+    EV_MOUSE_PRESS,
+    EV_MOUSE_DCLICK,
+    EV_CURSOR_UP,
+    EV_CURSOR_DOWN,
+    EV_RETURN,
+    EV_ESCAPE,
+    EV_NO_EVENT
 };
 
 static VEDITLINE DirEdit = {
-        0, 0,                   /* first line of window */
-        NAME_MAX + 7,           /* length of field      */
-        0,                      /* first visible char   */
-        0,                      /* buffer length        */
-        NULL,                   /* character buffer     */
-        0,                      /* cursor in buffer     */
-        0,                      /* attribute            */
-        FALSE,                  /* buffer changed       */
-        TRUE,                   /* update               */
-        FALSE,                  /* autoclear line       */
-        FALSE                   /* invisible line       */
+    0, 0,                   /* first line of window */
+    NAME_MAX + 7,           /* length of field      */
+    0,                      /* first visible char   */
+    0,                      /* buffer length        */
+    NULL,                   /* character buffer     */
+    0,                      /* cursor in buffer     */
+    0,                      /* attribute            */
+    FALSE,                  /* buffer changed       */
+    TRUE,                   /* update               */
+    FALSE,                  /* autoclear line       */
+    FALSE                   /* invisible line       */
 };
 
 static  char            FullMask[] = FULL_MASK;
@@ -141,11 +140,11 @@ static  char            FullMask[] = FULL_MASK;
                 attr = ATTR_NORMAL;
             }
             if( index < dirptr->dirsize ) {
-                str = Names[ index ].str;
+                str = Names[index].str;
             } else {
                 str = "";
             }
-            uivtextput( wptr, row, 0, UIData->attrs[ attr ], str,
+            uivtextput( wptr, row, 0, UIData->attrs[attr], str,
                         wptr->area.width );
         }
     }
@@ -156,8 +155,9 @@ static void add_name( DIRECTORY *direct, char *name, char **where )
 {
     char    *add_point;
 
-    add_point = &direct->pathbuff[ strlen( direct->pathbuff ) ];
-    if( where != NULL ) *where = add_point;
+    add_point = &direct->pathbuff[strlen( direct->pathbuff )];
+    if( where != NULL )
+        *where = add_point;
     if( add_point > direct->pathbuff && add_point[-1] != '/' ) {
         *add_point++ = '/';
     }
@@ -190,11 +190,12 @@ static struct dirent *my_readdir( DIRECTORY *direct, DIR *dp )
 /*  currently only supports masks of type *.ext */
 static bool checkMask( char *name, char *mask )
 {
-    if( mask == NULL) return( TRUE );
+    if( mask == NULL)
+        return( TRUE );
     if( mask[0] == '*' && mask[1] == '.' &&
                 ( strcspn( &mask[2], "*?" ) == strlen( &mask[2] ) ) ) {
         mask++;
-        if( stricmp( mask, name+strlen(name)-strlen(mask) ) == 0 ) {
+        if( stricmp( mask, name + strlen( name ) - strlen( mask ) ) == 0 ) {
             return( TRUE );     /* wildcard matches */
         } else {
             return( FALSE );    /* wildcard doesn't match */
@@ -214,7 +215,7 @@ static bool checkMask( char *name, char *mask )
     register int                flag;
     register int                index;
 {
-    register int                len;
+    register size_t             len;
 #ifndef __QNX__
     register char               *str;
 #endif
@@ -235,39 +236,40 @@ static bool checkMask( char *name, char *mask )
 #else
             direntp = my_readdir( dirptr, dptr );
 #endif
-            if( direntp == NULL ) break;
+            if( direntp == NULL )
+                break;
             if( IS_DIR( direntp ) == flag ) {
-                Names[ index ].dir = flag;
+                Names[index].dir = flag;
                 len = 0;
 #ifdef __QNX__
 #define NAME_START 6
-                strcpy( &Names[ index ].str[0], flag ? "<DIR> " : "      " );
-                strcpy( &Names[ index ].str[NAME_START], direntp->d_name );
+                strcpy( &Names[index].str[0], flag ? "<DIR> " : "      " );
+                strcpy( &Names[index].str[NAME_START], direntp->d_name );
 #else
 #define NAME_START 0
                 str = direntp->d_name;
                 while( *str != '\0' ) {
-                    if( ( *str == '.' ) && ( *( str-len ) != '.' ) ) {
+                    if( ( *str == '.' ) && ( *( str - len ) != '.' ) ) {
                         ++str;
                         break;
                     }
-                    Names[ index ].str[ len ] = *str;
+                    Names[index].str[len] = *str;
                     ++str;
                     ++len;
                 }
                 while( len < 9 ) {
-                    Names[ index ].str[ len ] = ' ';
+                    Names[index].str[len] = ' ';
                     ++len;
                 }
-                strcpy( Names[ index ].str + len, str );
-                len = strlen( Names[ index ].str );
+                strcpy( Names[index].str + len, str );
+                len = strlen( Names[index].str );
                 while( len < 14 ) {
-                    Names[ index ].str[ len ] = ' ';
+                    Names[index].str[len] = ' ';
                     ++len;
                 }
-                Names[ index ].str[ len ] = '\0';
-                if( Names[ index ].dir ) {
-                    memcpy( Names[ index ].str + 13, "<DIR>", 6 );
+                Names[index].str[len] = '\0';
+                if( Names[index].dir ) {
+                    memcpy( Names[index].str + 13, "<DIR>", 6 );
                 }
 #endif
                 ++index;
@@ -288,13 +290,13 @@ static bool checkMask( char *name, char *mask )
 #ifdef __QNX__
     buff = buff;
 #else
-    register int                len;
+    size_t  len;
 
     len = strlen( buff );
-    buff += len - 1;
-    if( buff[ 0 ] != PATH_SEP ) {
-        buff[ 1 ] = PATH_SEP;
-        buff[ 2 ] = '\0';
+    buff += len;
+    if( len > 0 && !IS_PATH_SEP( buff[-1] ) ) {
+        *buff++ = DIR_SEP;
+        *buff = '\0';
     }
 #endif
 }
@@ -303,8 +305,8 @@ static bool checkMask( char *name, char *mask )
  static int outdir( VSCREEN *wptr, char *buff )
 /*********************************************/
 {
-    register int                len;
-    register int                width;
+    size_t      len;
+    int         width;
 
     len = strlen( buff );
     width = wptr->area.width;
@@ -314,7 +316,7 @@ static bool checkMask( char *name, char *mask )
         len = 0;
     }
     buff += len;
-    uivtextput( wptr, 0, 0, UIData->attrs[ ATTR_BRIGHT ], buff, width );
+    uivtextput( wptr, 0, 0, UIData->attrs[ATTR_BRIGHT], buff, width );
     return( len );
 }
 
@@ -332,9 +334,7 @@ static bool checkMask( char *name, char *mask )
     while( ( *buf != ' ' ) && ( *buf != '\0' ) ) {
         ++buf;
     }
-    if( ( buf == dirptr->pathbuff ) ||
-        ( *( buf - 1 ) == PATH_SEP ) ||
-        ( *( buf - 1 ) == ':' ) ) {
+    if( ( buf == dirptr->pathbuff ) || IS_PATH_SEP( buf[-1] ) ) {
         if( *str != '.' ) {
             for( ;; ) {
                 if( *str == ' ' ) {
@@ -376,13 +376,11 @@ static bool checkMask( char *name, char *mask )
     buf = dirptr->pathbuff + strlen( dirptr->pathbuff ) - 1;
     while( buf >= dirptr->pathbuff ) {
         --buf;
-        if( ( buf < dirptr->pathbuff ) ||
-            ( *buf == PATH_SEP ) ||
-            ( *buf == ':' ) ) {
+        if( ( buf < dirptr->pathbuff ) || IS_PATH_SEP( *buf ) ) {
             if( mask != NULL ) {
                 strcpy( mask, buf + 1 );
             }
-            *( buf+1 ) = '\0';
+            *( buf + 1 ) = '\0';
             return( TRUE );
         }
     }
@@ -442,12 +440,12 @@ static bool checkMask( char *name, char *mask )
     int         row;
 
     DirEdit.scroll = 0;
-    uivtextput( wptr, 1, 0, UIData->attrs[ ATTR_NORMAL ],
+    uivtextput( wptr, 1, 0, UIData->attrs[ATTR_NORMAL],
         "Invalid directory", wptr->area.width );
     for( i = 1; i <= wptr->area.height-1; i ++ ) {
         row = i - dirptr->index + dirptr->currrow;
         if( ( row > 0 ) && ( row < wptr->area.height ) ) {
-            uivtextput( wptr, row, 0, UIData->attrs[ ATTR_NORMAL ], "",
+            uivtextput( wptr, row, 0, UIData->attrs[ATTR_NORMAL], "",
                         wptr->area.width );
         }
     }
@@ -462,7 +460,7 @@ static bool checkMask( char *name, char *mask )
 {
     register int                index;
     register char               *mask;
-    auto     char               buff[ DIR_MAX + 1 ];
+    auto     char               buff[DIR_MAX + 1];
              void               *tmp;
              int                ret;
     struct   stat               blk;
@@ -506,7 +504,7 @@ static bool checkMask( char *name, char *mask )
     if( tmp != NULL ) {
         Names = tmp;
         if( index == 0 ) {
-            strcpy( Names[ index ].str, "." );
+            strcpy( Names[index].str, "." );
         } else {
             index = addnames( dirptr, FullMask, TRUE, 0 );
             addnames( dirptr, mask, 0, index );
@@ -553,18 +551,18 @@ static bool checkMask( char *name, char *mask )
     register EVENT              ev;
     register EVENT              new;
     register ATTR               attr;
-    auto     char               olddir[ DIR_MAX + 1 ];
+    auto     char               olddir[DIR_MAX + 1];
              int                ret;
 
     strcpy( olddir, dirptr->pathbuff );
-    DirEdit.attr = UIData->attrs[ ATTR_BRIGHT ];
+    DirEdit.attr = UIData->attrs[ATTR_BRIGHT];
     DirEdit.fldlen = wptr->area.width;
     DirEdit.length = dirptr->pathbufflen;
     DirEdit.buffer = dirptr->pathbuff;
     DirEdit.dirty = TRUE;
     uipushlist( GetDirEvents );
-    dirptr->pathbuff[ DirEdit.length ] = '\0';
-    attr = UIData->attrs[ ATTR_NORMAL ];
+    dirptr->pathbuff[DirEdit.length] = '\0';
+    attr = UIData->attrs[ATTR_NORMAL];
     new = EV_NO_EVENT;
     DirEdit.update = TRUE;
     *new_dir = FALSE;
@@ -577,11 +575,11 @@ static bool checkMask( char *name, char *mask )
         case EV_RETURN:
             finidir( wptr, dirptr );
             len = 0;
-            while( dirptr->pathbuff[ len ] != ' '
-                        && dirptr->pathbuff[ len ] != '\0' ) {
+            while( dirptr->pathbuff[len] != ' '
+                        && dirptr->pathbuff[len] != '\0' ) {
                 ++len;
             }
-            dirptr->pathbuff[ len ] = '\0';
+            dirptr->pathbuff[len] = '\0';
             ret = displaydir( wptr, dirptr );
             switch( ret ) {
             case NO_MEM_4_DIR:
@@ -589,7 +587,7 @@ static bool checkMask( char *name, char *mask )
                 break;
             case OK_DIR:
                 strcpy( olddir, dirptr->pathbuff );
-                str = Names[ 0 ].str;
+                str = Names[0].str;
                 uivtextput( wptr, 1, 0, attr, str, wptr->area.width );
                 *new_dir = TRUE;
                 break;
@@ -729,9 +727,9 @@ static bool checkMask( char *name, char *mask )
         /* fall through */
         ev = EV_RETURN;
     case EV_RETURN :
-        if( Names[ index ].dir ) {
-            if( Names[ index ].str[NAME_START] == '.' ) {
-                if( Names[ index ].str[NAME_START+1] == '.' ) {
+        if( Names[index].dir ) {
+            if( Names[index].str[NAME_START] == '.' ) {
+                if( Names[index].str[NAME_START+1] == '.' ) {
 #ifdef __QNX__
                     char    *start;
                     char    *end;
@@ -750,8 +748,9 @@ static bool checkMask( char *name, char *mask )
                             }
                         }
                     }
-                    end = &start[ strlen( start ) ];
-                    while( end > start && *end != '/' ) --end;
+                    end = start + strlen( start );
+                    while( end > start && *end != '/' )
+                        --end;
                     *end = '\0';
                     finidir( wptr, dirptr );
                     if( displaydir( wptr, dirptr ) == NO_MEM_4_DIR ) {
@@ -774,10 +773,10 @@ static bool checkMask( char *name, char *mask )
                  }
             } else {
 #ifdef __QNX__
-                add_name( dirptr, &Names[ dirptr->index ].str[NAME_START], NULL );
+                add_name( dirptr, &Names[dirptr->index].str[NAME_START], NULL );
 #else
                 strip( dirptr, NULL );
-                concat( dirptr, Names[ dirptr->index ].str );
+                concat( dirptr, Names[dirptr->index].str );
 #endif
                 finidir( wptr, dirptr );  /* frees up Names */
                 if( initdir( wptr, dirptr ) == FALSE ) {
@@ -787,10 +786,10 @@ static bool checkMask( char *name, char *mask )
             }
         } else {
 #ifdef __QNX__
-            add_name( dirptr, &Names[ dirptr->index ].str[NAME_START], NULL );
+            add_name( dirptr, &Names[dirptr->index].str[NAME_START], NULL );
 #else
             strip( dirptr, NULL );
-            concat( dirptr, Names[ dirptr->index ].str );
+            concat( dirptr, Names[dirptr->index].str );
 #endif
             finidir( wptr, dirptr );
             new = ev;

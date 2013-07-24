@@ -756,7 +756,6 @@ static void DelDepFile( void )
 
 bool OpenSrcFile( const char *filename, bool is_lib )
 {
-    int         i;
     char        *p;
     char        buff[_MAX_PATH2];
     char        try[_MAX_PATH];
@@ -764,6 +763,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
     char        *dir;
     int         save;
     FCB         *curr;
+    char        c;
 
     // See if there's an alias for this filename
     filename = IncludeAlias( filename, is_lib );
@@ -802,32 +802,20 @@ bool OpenSrcFile( const char *filename, bool is_lib )
         }
         if( IncPathList != NULL ) {
             p = IncPathList;
-            do {
-                i = 0;
-                while( *p == ' ' )
+            while( *p != '\0' ) {
+                dir = buff;
+                while( (c = *p) != '\0' ) {
                     ++p;
-                for( ;; ) {
-                    if( IS_INCL_SEP( *p ) )
+                    if( IS_PATH_LIST_SEP( c ) ) {
                         break;
-                    if( *p == '\0' )
-                        break;
-                    if( i < sizeof( buff ) - 2 ) {
-                        buff[i++] = *p;
                     }
-                    ++p;
+                    *dir++ = c;
                 }
-                while( i != 0 ) {
-                    if( buff[i - 1] != ' ' )
-                        break;
-                    --i;
-                }
-                buff[i] = '\0';
-                if( TryOpen( buff, filename ) )
+                *dir = '\0';
+                if( TryOpen( buff, filename ) ) {
                     return( TRUE );
-                if( IS_INCL_SEP( *p ) ) {
-                    ++p;
                 }
-            } while( *p != '\0' );
+            }
         }
         if( !is_lib ) {
             if( !CompFlags.ignore_default_dirs ) {
@@ -1064,7 +1052,7 @@ char *FNameFullPath( FNAMEPTR flist )
     char   *fullpath;
 
     if( flist->fullpath == NULL ) {
-        fullpath = SrcFullPath( fullbuff, flist->name, sizeof( fullbuff ) );
+        fullpath = SrcFullPath( flist->name, fullbuff, sizeof( fullbuff ) );
         if( fullpath != NULL ) {
             fullpath = CStrSave( fullpath );
             flist->fullpath = fullpath;
@@ -1181,27 +1169,27 @@ void FreeRDir( void )
     }
 }
 
-// GET ONE PATH ELEMENT FROM INCLUDE LIST
-static const char *IncPathElement( const char *path, char *prefix )
+const char *IncPathElement( const char *path_list, char *path )
 {
-    unsigned    length;
+    bool    is_blank;
+    char    c;
 
-    length = 0;
-    for( ; ; ) {
-        if( *path == '\0' )
-            break;
-        if( IS_INCL_SEP( *path ) ) {
-            ++path;
-            if( length != 0 ) {
+    is_blank = TRUE;
+    while( (c = *path_list) != '\0' ) {
+        ++path_list;
+        if( IS_INCL_SEP( c ) ) {
+            if( !is_blank ) {
                 break;
             }
-        } else {
-            ++length;
-            *prefix++ = *path++;
+        } else if( !is_blank ) {
+            *path++ = c;
+        } else if( c != ' ' ) {
+            is_blank = FALSE;
+            *path++ = c;
         }
     }
-    *prefix = '\0';
-    return( path );
+    *path = '\0';
+    return( path_list );
 }
 
 void SrcFileReadOnlyDir( char const *dir )
@@ -1212,7 +1200,7 @@ void SrcFileReadOnlyDir( char const *dir )
 
     while( *dir != '\0' ) {
         dir = IncPathElement( dir, path );
-        full = SrcFullPath( buff, path, sizeof( buff ) );
+        full = SrcFullPath( path, buff, sizeof( buff ) );
         AddRDir( full );
     }
 }

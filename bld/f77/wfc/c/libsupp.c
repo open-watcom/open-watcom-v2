@@ -38,17 +38,12 @@
 #include "global.h"
 #include "omodes.h"
 #include "inout.h"
+#include "iopath.h"
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-
-#if defined( __UNIX__ )
-#define PATH_SEP '/'
-#else
-#define PATH_SEP '\\'
-#endif
 
 #define LIBRARY_SEP ';'
 
@@ -90,11 +85,9 @@ static  int     Combine( char *path, char *name, char *buff, int buff_len ) {
     int         len;
 
     len = CopyMaxStr( path, buff, buff_len );
-    if( ( buff[ len - 1 ] != ':' ) && ( buff[ len - 1 ] != '\\' ) &&
-        ( buff[ len - 1 ] != '/' ) ) {
-        buff[ len ] = PATH_SEP;
-        ++len;
-        buff[ len ] = NULLCHAR;
+    if( len > 0 && !IS_PATH_SEP( buff[len - 1] ) ) {
+        buff[len++] = DIR_SEP;
+        buff[len] = NULLCHAR;
     }
     len += CopyMaxStr( name, buff + len, buff_len - len );
     return( len );
@@ -108,7 +101,7 @@ static  lib_handle SearchDir( char *path, char *name ) {
 
     char        fname[_MAX_PATH];
 
-    fname[ Combine( path, name, fname, _MAX_PATH - 1 ) ] = NULLCHAR;
+    fname[Combine( path, name, fname, _MAX_PATH - 1 )] = NULLCHAR;
     return( FindSrcFile( fname ) );
 }
 
@@ -121,17 +114,14 @@ static  bool    ExtractName( char **lib ) {
     char        *ptr;
     bool        last;
 
+    last = TRUE;
     ptr = *lib;
-    for(;;) {
-        if( *ptr == NULLCHAR ) {
-            last = TRUE;
-            break;
-        }
-        if( *ptr == LIBRARY_SEP ) {
+    while( *ptr != NULLCHAR ) {
+        if( IS_INCL_SEP( *ptr ) ) {
             last = FALSE;
             break;
         }
-       ptr++;
+        ptr++;
     }
     *lib = ptr;
     for(;;) {

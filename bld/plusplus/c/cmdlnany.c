@@ -499,7 +499,7 @@ int MergeIncludeFromEnv( char *env )
 
     env_value = CppGetEnv( env );
     if( NULL != env_value ) {
-        HFileAppend( env_value, strlen( env_value ) );
+        HFileAppend( env_value );
         return( 1 );
     }
     return( 0 );
@@ -1154,7 +1154,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         OPT_STRING *s;
         reverseList( &(data->i_value) );
         for( s = data->i_value; s != NULL; s = s->next ) {
-            HFileAppend( s->data, strlen( s->data ) );
+            HFileAppend( s->data );
         }
     }
     if( data->jw ) {

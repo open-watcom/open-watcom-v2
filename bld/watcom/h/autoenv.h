@@ -32,18 +32,6 @@
 #ifndef _AUTOENV_H
 #define _AUTOENV_H
 
-#ifdef __UNIX__
-    #define DIR_SEP_CHAR   '/'
-    #define DIR_SEP_STR    "/"
-    #define PATH_SEP_CHAR  ':'
-    #define PATH_SEP_STR   ":"
-#else
-    #define DIR_SEP_CHAR   '\\'
-    #define DIR_SEP_STR    "\\"
-    #define PATH_SEP_CHAR  ';'
-    #define PATH_SEP_STR   ";"
-#endif
-
 #ifdef __cplusplus
     extern "C"
 #endif

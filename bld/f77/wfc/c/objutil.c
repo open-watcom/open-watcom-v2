@@ -46,12 +46,7 @@
 #include "fmemmgr.h"
 #include "emitobj.h"
 #include "ferror.h"
-
-#if defined( __UNIX__ )
-#define PATH_SEP '/'
-#else
-#define PATH_SEP '\\'
-#endif
+#include "iopath.h"
 
 #if defined( __386__ )
   #define PAGE_SIZE     (16*1024)
@@ -122,11 +117,10 @@ void    InitObj( void ) {
         tmp = getenv( "TMP" );
         if( tmp != NULL ) {
             strcpy( fn, tmp );
-            len += strlen( fn );
+            len = strlen( fn );
             fn += len;
-            if( ( fn[-1] != ':' ) && ( fn[-1] != '\\' ) && ( fn[-1] != '/' ) ) {
-                *fn = PATH_SEP;
-                ++fn;
+            if( len > 0 && !IS_PATH_SEP( fn[-1] ) ) {
+                *fn++ = DIR_SEP;
                 ++len;
             }
         }

@@ -34,6 +34,7 @@
 #include <time.h>
 #include "watcom.h"
 #include "bool.h"
+#include "iopath.h"
 
 #define NLCHAR         '\n'
 #define CTRLZ          '\32'
@@ -61,20 +62,10 @@
 #endif
 
 #if defined( __UNIX__ )
-    #define PATH_SEP '/'
-    #define IS_PATH_SEP( a ) ((a)=='/')
-    #define CASE_PATH_SEP case'/'
-    #define PATH_LIST_SEP ':'
-    #define IS_PATH_LIST_SEP(a) ((a)==':' || (a)==';')
 
     #define CASE_SENSITIVE
 
 #else
-    #define PATH_SEP '\\'
-    #define IS_PATH_SEP( a ) ((a)=='\\' || (a)=='/' || (a)==':')
-    #define CASE_PATH_SEP   case '\\': case '/': case ':'
-    #define PATH_LIST_SEP ';'
-    #define IS_PATH_LIST_SEP(a) ((a)==';')
 
 //    #define CASE_SENSITIVE
 

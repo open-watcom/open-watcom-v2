@@ -39,6 +39,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "builder.h"
+#include "iopath.h"
 
 #define DEFCTLNAME      "files.dat"
 #define DEFCTLENV       "FILES_DAT"
@@ -182,13 +183,9 @@ static void PushInclude( const char *name )
     /* _makepath add trailing path separator
        it must be removed for chdir          */
     len = strlen( dir_name );
-#ifdef __UNIX__
-    if( len > 1 && dir_name[len - 1] == '/' ) {
-#else
-    if( len > 1 && dir_name[len - 2] != ':' &&
-        (dir_name[len - 1] == '\\' || dir_name[len - 1] == '/') ) {
-#endif
-        dir_name[len - 1] = '\0';
+    dir = dir_name + len - 1;
+    if( len > 1 && IS_DIR_SEP_END( dir ) ) {
+        *dir = '\0';
     }
     if( chdir( dir_name ) != 0 ) {
         Fatal( "Could not chdir to '%s': %s\n", dir_name, strerror( errno ) );

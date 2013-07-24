@@ -55,19 +55,7 @@
 #include "wgml.h"
 #include "copdir.h"
 #include "gvars.h"
-
-#if 0
-/* This macro is retained in case search_file_in_dirs() is ever extended to accept
- * filenames which include path information. The intended use of this macro is to
- * determine if fn_path begins with an OS-appropriate slash character.
- */
-
-#if defined( __UNIX__ )
-    #define IS_PATH_SEP( ch ) ((ch) == '/')
-#else
-    #define IS_PATH_SEP( ch ) ((ch) == '/' || (ch) == '\\')
-#endif
-#endif
+#include "iopath.h"
 
 /* Local struct. */
 
@@ -151,30 +139,30 @@ static void initialize_directory_list( char const * in_path_list, \
             }
             i = j;
             if( in_path_list[i] == '\0' ) {
-                if( in_path_list[i - 1] == INCLUDE_SEP ) path_count++;
-                if( in_path_list[i - 1] != PATH_SEP ) byte_count++;
+                if( IS_INCL_SEP( in_path_list[i - 1] ) ) path_count++;
+                if( !IS_DIR_SEP( in_path_list[i - 1] ) ) byte_count++;
                 break;
             }
             continue;
         }
-        if( in_path_list[i] == INCLUDE_SEP ) {
-            if( in_path_list[i - 1] != INCLUDE_SEP ) {
+        if( IS_INCL_SEP( in_path_list[i] ) ) {
+            if( !IS_INCL_SEP( in_path_list[i - 1] ) ) {
                 path_count++;
                 if( in_path_list[i - 1] == '"' ) {
-                    if( in_path_list[i - 2] != PATH_SEP ) byte_count++;
+                    if( !IS_DIR_SEP( in_path_list[i - 2] ) ) byte_count++;
                 }
-                if( in_path_list[i - 1] != PATH_SEP ) byte_count++;
+                if( !IS_DIR_SEP( in_path_list[i - 1] ) ) byte_count++;
                 continue;
             }
         }
         byte_count++;
     }
-    if( in_path_list[i - 1] != INCLUDE_SEP ) {
+    if( !IS_INCL_SEP( in_path_list[i - 1] ) ) {
         path_count++;
         if( in_path_list[i - 1] == '"' ) {
-            if( in_path_list[i - 2] != PATH_SEP ) byte_count++;
+            if( !IS_DIR_SEP( in_path_list[i - 2] ) ) byte_count++;
         }
-        if( in_path_list[i - 1] != PATH_SEP ) byte_count++;
+        if( !IS_DIR_SEP( in_path_list[i - 1] ) ) byte_count++;
     }
 
     /* Initialize local_list. */
@@ -195,22 +183,22 @@ static void initialize_directory_list( char const * in_path_list, \
             }
             i = j;
             if( in_path_list[i] == '\0' ) {
-                if( in_path_list[i - 1] == INCLUDE_SEP ) {
+                if( IS_INCL_SEP( in_path_list[i - 1] ) ) {
                     if( ++k < path_count ) array_base[k] = current;
                 }
-                if( in_path_list[i - 1] != PATH_SEP ) *current++ = PATH_SEP;
+                if( !IS_DIR_SEP( in_path_list[i - 1] ) ) *current++ = DIR_SEP;
                 *current++ = '\0';
                 break;
             }
             continue;
         }
-        if( in_path_list[i] == INCLUDE_SEP ) {
-            if( in_path_list[i - 1] != INCLUDE_SEP ) {
-                if( in_path_list[i - 1] != PATH_SEP ) {
+        if( IS_INCL_SEP( in_path_list[i] ) ) {
+            if( !IS_INCL_SEP( in_path_list[i - 1] ) ) {
+                if( !IS_DIR_SEP( in_path_list[i - 1] ) ) {
                     if( in_path_list[i - 1] == '"' ) {
-                        if( in_path_list[i - 2] != PATH_SEP ) \
-                                                        *current++ = PATH_SEP;
-                    } else *current++ = PATH_SEP;
+                        if( !IS_DIR_SEP( in_path_list[i - 2] ) ) \
+                                                        *current++ = DIR_SEP;
+                    } else *current++ = DIR_SEP;
                 }
                 *current++ = '\0';
                 if( ++k < path_count ) array_base[k] = current;
@@ -219,11 +207,11 @@ static void initialize_directory_list( char const * in_path_list, \
         }
         *current++ = in_path_list[i];
     }
-    if( in_path_list[i - 1] != INCLUDE_SEP ) {
+    if( !IS_INCL_SEP( in_path_list[i - 1] ) ) {
         if( in_path_list[i - 1] == '"' ) {
-            if( in_path_list[i - 2] != PATH_SEP ) *current++ = PATH_SEP;
+            if( !IS_DIR_SEP( in_path_list[i - 2] ) ) *current++ = DIR_SEP;
         }
-        if( in_path_list[i - 1] != PATH_SEP ) *current++ = PATH_SEP;
+        if( !IS_DIR_SEP( in_path_list[i - 1] ) ) *current++ = DIR_SEP;
         *current++ = '\0';
     }
 

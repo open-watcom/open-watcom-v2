@@ -49,12 +49,12 @@
 #endif
 #include "rcs.h"
 #include "autoenv.h"
+#include "iopath.h"
 #ifdef __WATCOMC__
 #include "clibint.h"
 #endif
 
 static char     nullFN[] = "no_name";
-static char     defaultEDPath[] = DIR_SEP_STR "eddat";
 static char     *cFN;
 static char     *cfgFN = NULL;
 static char     *cTag = NULL;
@@ -238,11 +238,13 @@ static void doInitializeEditor( int argc, char *argv[] )
 
         watcom = getenv( "WATCOM" );
         if( watcom != NULL ) {
-            char edpath[FILENAME_MAX];
+            char    edpath[FILENAME_MAX];
+            size_t  len;
 
-            strcpy( edpath, watcom );
-            strcat( edpath, defaultEDPath );
-
+            len = strlen( watcom );
+            memcpy( edpath, watcom, len );
+            edpath[len++] = DIR_SEP;
+            strcpy( edpath + len, "eddat" );
             if( setenv( "EDPATH", edpath, 0 ) != 0 ) {
                 /*
                  * Bail out silently on error, as we will get error message later on.

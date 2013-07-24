@@ -36,4 +36,4 @@ extern aux_info     *FindInfo( SYMPTR, SYM_HANDLE );
 extern int          FunctionAborts( SYMPTR, SYM_HANDLE );
 extern int          ParmsToBeReversed( int, aux_info * );
 extern aux_info     *GetLangInfo( type_modifiers flags );
-extern char         *SrcFullPath( char *, char const *, unsigned );
+extern char         *SrcFullPath( char const *, char *, unsigned );

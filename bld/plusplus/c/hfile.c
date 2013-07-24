@@ -38,6 +38,7 @@
 #include "hfile.h"
 #include "iosupp.h"
 #include "initdefs.h"
+#include "iopath.h"
 
 static char *hfile_list;        // list of H files
 static char *hfile_ptr;         // current position in list
@@ -63,38 +64,47 @@ void HFileListStart(            // START PROCESSING H-FILE LIST
 void HFileListNext(             // GET NEXT H-FILE PREFIX
     char *prefix )              // - prefix location
 {
+    char    c;
+
     if( hfile_ptr != NULL ) {
-        while( isspace( *hfile_ptr ) ) {
+        while( (c = *hfile_ptr) != '\0' ) {
             ++hfile_ptr;
+            if( IS_PATH_LIST_SEP( c ) ) 
+                break;
+            *prefix++ = c;
         }
-        hfile_ptr = IoSuppIncPathElement( hfile_ptr, prefix );
-    } else {
-        *prefix = '\0';
     }
+    *prefix = '\0';
 }
 
 
 void HFileAppend(               // APPEND HFILE TO LIST
-    const char *filename,       // - file name
-    size_t len )                // - size of name
+    const char *path_list )     // - list of path names
 {
     int old_len;                // - length of old H list
     char *p;                    // - points into H list
     char *old_list;             // - old H list
+    int len;
 
-    if( hfile_list != NULL ) {
-        old_list = hfile_list;
-        old_len = strlen( old_list );
-        p = (char *) CMemAlloc( len + old_len + 2 );
-        hfile_list = p;
-        p = stpcpy( p, old_list );
-        p = IoSuppAddIncPathSep( p );
-        CMemFree( old_list );
-    } else {
-        p = (char *) CMemAlloc( len + 1 );
-        hfile_list = p;
+    len = strlen( path_list );
+    if( len != 0 ) {
+        if( hfile_list != NULL ) {
+            old_list = hfile_list;
+            old_len = strlen( old_list );
+            hfile_list = (char *)CMemAlloc( old_len + 1 + len + 1 );
+            memcpy( hfile_list, old_list, old_len );
+            CMemFree( old_list );
+            p = hfile_list + old_len;
+        } else {
+            p = hfile_list = (char *)CMemAlloc( len + 1 );
+        }
+        while( *path_list != '\0' ) {
+            if( p != hfile_list )
+                *p++ = PATH_LIST_SEP;
+            path_list = IoSuppIncPathElement( path_list, p );
+            p += strlen( p );
+        }
     }
-    p = stvcpy( p, filename, len );
 }
 
 

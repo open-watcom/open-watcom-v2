@@ -59,21 +59,18 @@
 #include "msg.h"
 #include "pathlist.h"
 #include "memutil.h"
+#include "iopath.h"
 
 #if defined(__UNIX__)
- #define PATH_SEPARATOR '/'
- #define LIST_SEPARATOR ':'
  #define PATH_NAME  "WD_PATH"
 #else
- #define PATH_SEPARATOR '\\'
- #define LIST_SEPARATOR ';'
  #define PATH_NAME  "PATH"
 #endif
 #define HELP_NAME  "WWINHELP"
 
 extern void fatal(char *msg,... );
 extern dig_fhandle DIGCliOpen(char *name,dig_open mode);
-extern void AddPath( path_list **path_var, char * path_data );
+extern void AddPath( path_list **path_var, const char * path_data );
 
 path_list *     HelpPathList = NULL;
 path_list *     FilePathList = NULL;
@@ -213,30 +210,53 @@ extern void InitPaths()
 
 
 
-extern void AddPath( path_list **path_var, char *path_data )
-/**********************************************************/
+static const char *IncPathElement( const char *path_list, char *path )
+{
+    bool    is_blank;
+    char    c;
+
+    is_blank = TRUE;
+    while( (c = *path_list) != '\0' ) {
+        ++path_list;
+        if( IS_INCL_SEP( c ) ) {
+            if( !is_blank ) {
+                break;
+            }
+        } else if( !is_blank ) {
+            *path++ = c;
+        } else if( c != ' ' ) {
+            is_blank = FALSE;
+            *path++ = c;
+        }
+    }
+    *path = '\0';
+    return( path_list );
+}
+
+
+extern void AddPath( path_list **path_var, const char *path_data )
+/****************************************************************/
 {
     char            path[_MAX_PATH];
     path_list *     path_tail;
     path_list *     path_item;
-    int             index;
+    int             len;
+    char            *dst;
 
-    if( path_data == NULL ) return;
+    if( path_data == NULL )
+        return;
     path_tail = *path_var;
-    for(;;) {
-        if( *path_data == '\0' ) break;
-        index = 0;
-        while( *path_data != NULLCHAR ) {
-            if( *path_data == LIST_SEPARATOR ) break;
-            path[index++] = *path_data++;
-        }
-        if( index != 0 ) {
-            if( path[index-1] != PATH_SEPARATOR ) {
-                path[index++] = PATH_SEPARATOR;
+    while( *path_data != NULLCHAR ) {
+        path_data = IncPathElement( path_data, path );
+        len = strlen( path );
+        if( len > 0 ) {
+            dst = path + len;
+            if( !IS_PATH_SEP( dst[-1] ) ) {
+                *dst++ = DIR_SEP;
             }
-            path_item = ProfAlloc( sizeof(path_list)+index+1 );
-            memcpy( path_item->path_data, path, index );
-            path_item->path_data[index] = NULLCHAR;
+            path_item = ProfAlloc( sizeof( path_list ) + len + 1 );
+            memcpy( path_item->path_data, path, len );
+            path_item->path_data[len] = NULLCHAR;
             if( path_tail == NULL ) {
                 path_item->next = path_item;
             } else {
@@ -244,9 +264,6 @@ extern void AddPath( path_list **path_var, char *path_data )
                 path_tail->next = path_item;
             }
             path_tail = path_item;
-        }
-        if( *path_data == LIST_SEPARATOR ) {
-            ++path_data;
         }
     }
     *path_var = path_tail;

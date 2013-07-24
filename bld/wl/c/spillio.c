@@ -80,15 +80,11 @@ f_handle OpenTempFile( char **fname )
     } else {
         tlen = strlen( ptr );
         _ChkAlloc( *fname, tlen + 1 + TEMPFNAME_SIZE );
-        memcpy( *fname, ptr, tlen );
-        switch( (*fname)[tlen-1] ) {
-        CASE_PATH_SEP:
-            break;
-        default:
-            (*fname)[tlen++] = PATH_SEP;
-            break;
+        tptr = memcpy( *fname, ptr, tlen );
+        tptr += tlen;
+        if( !IS_PATH_SEP( tptr[-1] ) ) {
+            *tptr++ = DIR_SEP;
         }
-        tptr = *fname + tlen;
     }
     ptr = MakeTempName( tptr );
     tlen = 0;
