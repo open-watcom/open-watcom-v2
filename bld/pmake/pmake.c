@@ -321,7 +321,7 @@ static char *RelativePath( char *oldpath, char *newpath )
     }
     /* back up to start of directory */
     while( ofs != 0 ) {
-        if( IS_DIR_SEP( newpath[ofs - 1] ) )
+        if( IS_PATH_SEP( newpath[ofs - 1] ) )
             break;
         --ofs;
     }
