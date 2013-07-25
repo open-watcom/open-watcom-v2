@@ -36,6 +36,7 @@
  #define IS_DIR_SEP_END(p)      IS_DIR_SEP( (p)[0] )
  #define IS_PATH_SEP(c)         IS_DIR_SEP( c )
  #define IS_PATH_ABS(p)         IS_DIR_SEP( (p)[0] )
+ #define IS_PATH_SEP_END(p)     IS_DIR_SEP( (p)[0] )
  #define HAS_PATH(p)            IS_DIR_SEP( (p)[0] )
  #define IS_PATH_LIST_SEP(c)    ((c) == PATH_LIST_SEP)
  #define IS_INCL_SEP(c)         (IS_PATH_LIST_SEP( c ) || (c) == ';')
@@ -48,6 +49,7 @@
  #define IS_PATH_SEP(c)         (IS_DIR_SEP( c ) || c == DRIVE_SEP)
  // '\foo.txt' is absolute, so is 'c:\foo.txt', but 'c:foo.txt' is not
  #define IS_PATH_ABS(p)         (IS_DIR_SEP( (p)[0] ) || (p)[0] != '\0' && (p)[1] == DRIVE_SEP && IS_DIR_SEP( (p)[2] ))
+ #define IS_PATH_SEP_END(p)     (IS_DIR_SEP( (p)[0] ) && (p)[-1] != ':')
  #define HAS_PATH(p)            (IS_DIR_SEP( (p)[0] ) || (p)[0] != '\0' && (p)[1] == DRIVE_SEP)
  #define IS_PATH_LIST_SEP(c)    ((c) == PATH_LIST_SEP)
  #define IS_INCL_SEP(c)         IS_PATH_LIST_SEP( c )
