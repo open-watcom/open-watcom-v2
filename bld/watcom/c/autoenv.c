@@ -231,7 +231,7 @@ int watcom_setup_env( void )
 //        len = strlen( buf );
         p = buf;
         while( *p != '\0' ) {
-            if( *p == DIR_SEP ) {
+            if( IS_DIR_SEP( *p ) ) {
                 if( path_sep != NULL ) {
                     prev_path_sep = path_sep;
                 }
