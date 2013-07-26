@@ -379,6 +379,7 @@ sub make_installer_batch
 
 sub process_log
 {
+    my($title)         = $_[0];
     my($os2_result)    = 'success';
     my($result)        = 'success';
     my($project_name)  = 'none';
@@ -386,13 +387,13 @@ sub process_log
     my($arch_test)     = '';
     my(@fields);
 
-    open(LOGFILE, $_[0]) || die "Can't open $_[0]";
+    open(LOGFILE, $_[1]) || die "Can't open $_[0]";
     while (<LOGFILE>) {
         s/\r?\n//;
         if (/^[=]+ .* [=]+$/) {     # new project start
             if ($project_name ne 'none') {
                 if ($first_message eq 'yes') {
-                    print REPORT 'Failed!';
+                    print REPORT "$title Failed!";
                     $result = 'fail';
                     $first_message = 'no';
                 }
@@ -417,7 +418,7 @@ sub process_log
     if ($project_name ne 'none') {
       if ($arch_test ne '') {
         if ($first_message eq 'yes') {
-            print REPORT 'Failed!';
+            print REPORT "$title Failed!";
             $first_message = 'no';
         }
         print REPORT "\t\t$project_name\t$arch_test";
@@ -427,7 +428,7 @@ sub process_log
 
     # This is what we want to see.
     if ($result eq 'success') {
-        print REPORT 'Succeeded.';
+        print REPORT "$title Succeeded.";
     }
     return $result;
 }
@@ -480,14 +481,10 @@ sub run_tests
     print REPORT 'REGRESSION TESTS COMPLETED : ', get_datetime();
     print REPORT '';
 
-    print REPORT '\tFortran Compiler: ';
-    $fresult = process_log("$OW\/bld\/f77test\/result.log");
-    print REPORT '\tC Compiler      : ';
-    $cresult = process_log("$OW\/bld\/ctest\/result.log");
-    print REPORT '\tC++ Compiler    : ';
-    $presult = process_log("$OW\/bld\/plustest\/result.log");
-    print REPORT '\tWASM            : ';
-    $aresult = process_log("$OW\/bld\/wasmtest\/result.log");
+    $fresult = process_log("\tFortran Compiler:", "$OW\/bld\/f77test\/result.log");
+    $cresult = process_log("\tC Compiler      :", "$OW\/bld\/ctest\/result.log");
+    $presult = process_log("\tC++ Compiler    :", "$OW\/bld\/plustest\/result.log");
+    $aresult = process_log("\tWASM            :", "$OW\/bld\/wasmtest\/result.log");
     print REPORT '';
 
     if ($aresult eq 'success' && $cresult eq 'success' && $fresult eq 'success' && $presult eq 'success') {
@@ -620,7 +617,7 @@ sub CVS_check_sync
             if (/^(.*)/) {
                 if ($prev_changeno eq $1) {
                     $build_needed = 0;
-                    print REPORT '\tNo source code changes, build not needed';
+                    print REPORT "\tNo source code changes, build not needed";
                 } else {
                     $prev_changeno = $1;
                     print REPORT "\tBuilding through change: $1";
@@ -634,7 +631,7 @@ sub CVS_check_sync
             if (/^change = (.*)/) {
                 if ($prev_changeno eq $1) {
                     $build_needed = 0;
-                    print REPORT '\tNo source code changes, build not needed';
+                    print REPORT "\tNo source code changes, build not needed";
                 } else {
                     $prev_changeno = $1;
                     print REPORT "\tBuilding through change: $1";
