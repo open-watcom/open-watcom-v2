@@ -387,7 +387,7 @@ sub process_log
     my($arch_test)     = '';
     my(@fields);
 
-    open(LOGFILE, $_[1]) || die "Can't open $_[0]";
+    open(LOGFILE, $_[1]) || die "Can't open $_[1]";
     while (<LOGFILE>) {
         s/\r?\n//;
         if (/^[=]+ .* [=]+$/) {     # new project start
@@ -481,10 +481,10 @@ sub run_tests
     print REPORT 'REGRESSION TESTS COMPLETED : ', get_datetime();
     print REPORT '';
 
-    $fresult = process_log("\tFortran Compiler:", "$OW\/bld\/f77test\/result.log");
-    $cresult = process_log("\tC Compiler      :", "$OW\/bld\/ctest\/result.log");
-    $presult = process_log("\tC++ Compiler    :", "$OW\/bld\/plustest\/result.log");
-    $aresult = process_log("\tWASM            :", "$OW\/bld\/wasmtest\/result.log");
+    $fresult = process_log("\tFortran Compiler :", "$OW\/bld\/f77test\/result.log");
+    $cresult = process_log("\tC Compiler       :", "$OW\/bld\/ctest\/result.log");
+    $presult = process_log("\tC++ Compiler     :", "$OW\/bld\/plustest\/result.log");
+    $aresult = process_log("\tWASM             :", "$OW\/bld\/wasmtest\/result.log");
     print REPORT '';
 
     if ($aresult eq 'success' && $cresult eq 'success' && $fresult eq 'success' && $presult eq 'success') {
