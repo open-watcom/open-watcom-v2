@@ -41,7 +41,7 @@ object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
             pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
             exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
             global.obj semstr.obj semsingl.obj semantic.obj semraw.obj &
-            errors.obj tmpctl.obj autodep.obj layer0.obj incdirs.obj &
+            errors.obj tmpctl.obj autodep.obj layer0.obj &
             dbtable.obj sharedio.obj rcspawn.obj
 
 msgfiles = $(wrc_dir)/h/rc.msg ../res/wr.msg

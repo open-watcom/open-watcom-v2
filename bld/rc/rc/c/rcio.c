@@ -140,49 +140,9 @@ static int Pass1InitRes( void )
     return( FALSE );
 } /* Pass1InitRes */
 
-extern void RcFindResource( char *name, char *fullpath ) {
-
-    char        *src;
-    char        *dst;
-    char        c;
-    char        drive[_MAX_DRIVE];
-    char        dir[_MAX_DIR];
-
-    fullpath[0] = '\0';
-    //if the filename has a drive or is an absolute path then ignore
-    //the include path and just look at the specified location
-    _splitpath( name, drive, dir, NULL, NULL );
-    if( drive[0] != '\0' || IS_DIR_SEP( dir[0] ) ) {
-        if( access( name, F_OK ) == 0 ) {
-            strcpy( fullpath, name );
-        }
-        return;
-    }
-    if( !CmdLineParms.IgnoreCWD && access( name, F_OK ) == 0 ) {
-        strcpy( fullpath, name );
-        return;
-    }
-    if( NewIncludeDirs != NULL ) {
-        src = NewIncludeDirs;
-        while( *src != '\0' ) {
-            dst = fullpath;
-            while( (c = *src) != '\0' ) {
-                ++src;
-                if( IS_INCL_SEP( c ) ) {
-                    break;
-                }
-                *dst++ = c;
-            }
-            if( dst != fullpath ) {
-                if( !IS_PATH_SEP( dst[-1] ) ) {
-                    *dst++ = DIR_SEP;
-                }
-            }
-            strcpy( dst, name );
-            if( access( fullpath, F_OK ) == 0 ) return;
-        }
-    }
-    fullpath[0] = '\0';
+int RcFindResource( const char *name, char *fullpath )
+{
+    return( PP_FindInclude( name, fullpath, PPINCLUDE_SRC ) )
 }
 
 extern void RcTmpFileName( char * tmpfilename )
@@ -220,12 +180,11 @@ static int PreprocessInputFile( void )
     char       *p;
     int         rc;
 
-    // We have already merged INCLUDE path with /i paths
-    flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
+    flags = PPFLAG_EMIT_LINE | PPFLAG_IGNORE_INCLUDE;
     if( CmdLineParms.IgnoreCWD ) {
         flags |= PPFLAG_IGNORE_CWD;
     }
-    rc = PP_Init2( CmdLineParms.InFileName, flags, NewIncludeDirs, CharSetLen );
+    rc = PP_Init2( CmdLineParms.InFileName, flags, NULL, CharSetLen );
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( TRUE );
@@ -283,20 +242,23 @@ extern int RcPass1IoInit( void )
         } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
             includepath = RcGetEnv( "OS2_INCLUDE" );
         }
+        if( includepath != NULL ) {
+            PP_AddIncludePath( includepath );
+        }
+        includepath = RcGetEnv( "INCLUDE" );
+        if( includepath != NULL ) {
+            PP_AddIncludePath( includepath );
+        }
     }
-    if( includepath != NULL ) {
-        AddNewIncludeDirs( includepath );
+    if( !CmdLineParms.NoPreprocess ) {
+        if( PreprocessInputFile() ) {
+            return( FALSE );
+        }
     }
-    if( CmdLineParms.NoPreprocess ) {
-        RcIoTextInputInit();
-        error = RcIoPushInputFile( CmdLineParms.InFileName );
-    } else {
-        error = PreprocessInputFile();
-        if( error ) return( FALSE );
-        RcIoTextInputInit();
-        error = RcIoPushInputFile( CmdLineParms.InFileName );
-    }
-    if( error ) return( FALSE );
+    RcIoTextInputInit();
+    error = RcIoPushInputFile( CmdLineParms.InFileName );
+    if( error )
+        return( FALSE );
 
     if( !CmdLineParms.PreprocessOnly ) {
         error = Pass1InitRes();

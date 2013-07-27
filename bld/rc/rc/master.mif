@@ -58,7 +58,6 @@ common_objs = &
     $(_subdir_)pass2.obj &
     $(_subdir_)rc.obj &
     $(_subdir_)rcio.obj &
-    $(_subdir_)incdirs.obj &
     $(_subdir_)rcmem.obj &
     $(_subdir_)rcstr.obj &
     $(_subdir_)ppalloc.obj &

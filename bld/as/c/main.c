@@ -42,8 +42,6 @@ extern void     AsLexerFini( void );
 extern bool     DoReport;
 extern int      CurrLineno;
 
-extern char     *AsIncPath;
-
 jmp_buf         AsmParse;
 int             ExitStatus = EXIT_SUCCESS;
 
@@ -76,7 +74,7 @@ int main( int argc, char **argv )
         }
         while( *argv ) {
             fname = MakeAsmFilename( *argv );
-            if( PP_Init( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE, AsIncPath ) != 0 ) {
+            if( PP_Init( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE, NULL ) != 0 ) {
                 AsOutMessage( stderr, UNABLE_TO_OPEN, fname );
                 fputc( '\n', stderr );
             } else {

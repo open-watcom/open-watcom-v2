@@ -38,16 +38,16 @@ extern  char    PP__TIME__[11];
 
 
 typedef struct macro_arg {
-        char            *name;
-        MACRO_TOKEN     *arg;
+    char            *name;
+    MACRO_TOKEN     *arg;
 } MACRO_ARG;
 
 typedef struct nested_macros {
-        struct nested_macros *next;
-        MACRO_ENTRY *fmentry;
-        MACRO_ARG *macro_parms;
-        bool    rescanning;
-        bool    substituting_parms;
+    struct nested_macros *next;
+    MACRO_ENTRY *fmentry;
+    MACRO_ARG *macro_parms;
+    bool    rescanning;
+    bool    substituting_parms;
 } NESTED_MACRO;
 
 NESTED_MACRO *NestedMacros;
@@ -571,16 +571,16 @@ MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
 
 MACRO_TOKEN *BuildMTokenList( MACRO_ENTRY *me, MACRO_ARG *macro_parms )
 {
-    MACRO_TOKEN *mtok;
-    MACRO_TOKEN *head;
-    MACRO_TOKEN *tail;
-    char        *p;
-    char        *p2;
-    unsigned    len;
-    int         i;
-    char        token;
-    char        prev_token;
-    char        c;
+    MACRO_TOKEN     *mtok;
+    MACRO_TOKEN     *head;
+    MACRO_TOKEN     *tail;
+    char            *p;
+    char            *p2;
+    size_t          len;
+    unsigned char   i;
+    char            token;
+    char            prev_token;
+    char            c;
 
     p = me->replacement_list;
     for( i = 1; i < me->parmcount; i++ ) {
@@ -899,4 +899,3 @@ void PPMacroVarInit( void )
     NestedMacros = NULL;
     MacroDepth = 0;
 }
-

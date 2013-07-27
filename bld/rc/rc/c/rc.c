@@ -60,7 +60,6 @@ void InitGlobs( void )
     memset( &CmdLineParms, 0, sizeof( struct RCParams ) );
     memset( &CurrResFile, 0, sizeof( RcResFileID ) );
     memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
-    NewIncludeDirs = NULL;
     ErrorHasOccured = false;
     memset( CharSetLen, 0, sizeof( CharSetLen ) );
     memset( &Instance, 0, sizeof( HANDLE_INFO ) );

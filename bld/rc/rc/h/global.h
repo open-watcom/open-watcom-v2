@@ -58,7 +58,6 @@
 RCEXTERN struct RCParams    CmdLineParms;
 RCEXTERN RcResFileID        CurrResFile;
 RCEXTERN RcPass2Info        Pass2Info;
-RCEXTERN char               *NewIncludeDirs;
 RCEXTERN char               CharSetLen[256];
 RCEXTERN bool               StopInvoked;
 RCEXTERN bool               IgnoreINCLUDE;

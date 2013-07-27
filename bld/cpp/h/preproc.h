@@ -67,10 +67,11 @@
 #define PPFLAG_DEPENDENCIES     0x0020
 #define PPFLAG_ASM_COMMENT      0x0040
 #define PPFLAG_IGNORE_CWD       0x0080
-#define PPFLAG_DB_KANJI         0x0100
-#define PPFLAG_DB_CHINESE       0x0200
-#define PPFLAG_DB_KOREAN        0x0400
-#define PPFLAG_UTF8             0x0800
+#define PPFLAG_IGNORE_DEFDIRS   0x0100
+#define PPFLAG_DB_KANJI         0x0200
+#define PPFLAG_DB_CHINESE       0x0400
+#define PPFLAG_DB_KOREAN        0x0800
+#define PPFLAG_UTF8             0x1000
 #define PPFLAG_DONT_READ        0x4000
 #define PPFLAG_UNDEFINED_VAR    0x8000
 
@@ -82,34 +83,34 @@
 #define PPINCLUDE_SRC       2
 
 typedef struct macro_entry {
-        struct macro_entry *next;
-        char            *replacement_list;
-        unsigned char   parmcount;      /* 255 - indicates special macro */
-        char            name[1];
+    struct macro_entry *next;
+    char            *replacement_list;
+    unsigned char   parmcount;      /* 255 - indicates special macro */
+    char            name[1];
 } MACRO_ENTRY;
 #define PP_SPECIAL_MACRO        255
 
 typedef struct macro_token {
-        struct macro_token *next;
-        char    token;
-        char    data[1];
+    struct macro_token *next;
+    char    token;
+    char    data[1];
 } MACRO_TOKEN;
 
 typedef struct  file_list {
-        struct file_list *prev_file;
-        char             *prev_bufptr;
-        char             *filename;
-        int              handle;
-        unsigned         linenum;
-        char             buffer[PPBUFSIZE+2];
+    struct file_list *prev_file;
+    char             *prev_bufptr;
+    char             *filename;
+    int              handle;
+    unsigned         linenum;
+    char             buffer[PPBUFSIZE+2];
 } FILELIST;
 
 typedef struct preproc_value {
-        int             type;   // PPTYPE_SIGNED or PPTYPE_UNSIGNED
-        union {
-            long int    ivalue;
-            unsigned long uvalue;
-        } val;
+    int             type;   // PPTYPE_SIGNED or PPTYPE_UNSIGNED
+    union {
+        long int    ivalue;
+        unsigned long uvalue;
+    } val;
 } PREPROC_VALUE;
 
 typedef void        pp_callback(const char *, const char *, int);
@@ -135,6 +136,9 @@ extern  MACRO_TOKEN *PPNextToken(void);
 extern  MACRO_TOKEN *NextMToken(void);
 extern  void        DeleteNestedMacro(void);
 extern  void        DoMacroExpansion( MACRO_ENTRY *__me );
+extern  void        PP_AddIncludePath( const char *path_list );
+extern  void        PP_IncludePathFini( void );
+extern  int         PP_FindInclude( const char *filename, char *fullfilename, int sys_include );
 
 extern  void        *PP_Malloc( size_t __size );
 extern  void        PP_Free( void *__ptr );

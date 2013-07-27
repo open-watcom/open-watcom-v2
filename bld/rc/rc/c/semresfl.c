@@ -119,13 +119,12 @@ HANDLE_ERROR:
     return( TRUE );
 }
 
-void SemAddResFile( char *filename )
-/************************************/
+void SemAddResFile( const char *filename )
+/****************************************/
 {
     char                full_filename[ _MAX_PATH ];
 
-    RcFindResource( filename, full_filename );
-    if (full_filename[0] == '\0') {
+    if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }

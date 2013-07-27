@@ -125,8 +125,8 @@ extern RcStatus SemCopyDataUntilEOF( long offset, int handle, void *buff,
 
 #define BUFFER_SIZE   0x200
 
-extern ResLocation SemCopyRawFile( char *filename )
-/*************************************************/
+ResLocation SemCopyRawFile( const char *filename )
+/************************************************/
 {
     int         handle;
     RcStatus    error;
@@ -138,8 +138,7 @@ extern ResLocation SemCopyRawFile( char *filename )
 
     buffer = RcMemMalloc( BUFFER_SIZE );
 
-    RcFindResource( filename, full_filename );
-    if (full_filename[0] == '\0') {
+    if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }

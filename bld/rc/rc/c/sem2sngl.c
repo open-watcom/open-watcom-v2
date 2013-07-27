@@ -45,7 +45,7 @@ static void AddFontResources( WResID * name, ResMemFlags, char * filename );
 
 
 extern void SemOS2AddSingleLineResource( WResID *name, uint_8 type,
-                       FullOptFlagsOS2 *fullflags, char *filename )
+                 FullOptFlagsOS2 *fullflags, const char *filename )
 /*****************************************************************/
 {
     ResLocation     start;
@@ -59,8 +59,7 @@ extern void SemOS2AddSingleLineResource( WResID *name, uint_8 type,
         return;
     }
 
-    RcFindResource( filename, full_filename );
-    if( full_filename[0] == '\0' ) {
+    if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }

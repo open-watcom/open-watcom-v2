@@ -30,6 +30,7 @@
 
 #include "wio.h"
 #include "global.h"
+#include "preproc.h"
 #include "errors.h"
 #include "rcmem.h"
 #include "swchar.h"
@@ -39,13 +40,6 @@
 #endif
 #include "leadbyte.h"
 
-#if defined(__UNIX__)
-# define PATH_SPLIT_S       ":"     /* path seperator in string form        */
-#else
-# define PATH_SPLIT_S       ";"     /* path seperator in string form        */
-#endif
-
-extern void AddNewIncludeDirs( const char * arg );
 
 /* forward declaration */
 static bool scanEnvVar( const char *varname, int *nofilenames );
@@ -109,18 +103,17 @@ static bool scanString( char *buf, const char *str, unsigned len )
 /*****************************************************************/
 {
     bool        have_quote;
+    char        c;
 
     have_quote = FALSE;
     while( isspace( *str ) ) str++;
-    while( *str != '\0' && len > 0 ) {
-        if( *str == '\"' ) {
+    while( (c = *str++) != '\0' && len > 0 ) {
+        if( c == '\"' ) {
             have_quote = !have_quote;
         } else {
-            *buf = *str;
-            buf++;
+            *buf++ = c;
             len--;
         }
-        str++;
     }
     *buf = '\0';
     return( have_quote );
@@ -203,7 +196,6 @@ static bool ScanOptionsArg( const char * arg )
         } else if( tolower( *arg ) == 'p' ) {
             arg++;
             if( *arg == '=' ) arg++;
-            strncpy( CmdLineParms.PrependString, arg, _MAX_PATH );
             if( scanString( CmdLineParms.PrependString, arg, _MAX_PATH  ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
@@ -252,7 +244,6 @@ static bool ScanOptionsArg( const char * arg )
     case 'c':
         arg++;
         if( *arg == '=' ) arg++;
-        strcpy( CmdLineParms.CodePageFile, arg );
         if( scanString( CmdLineParms.CodePageFile, arg, _MAX_PATH  ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
@@ -269,7 +260,6 @@ static bool ScanOptionsArg( const char * arg )
         case 'o':
             arg++;
             if( *arg == '=' ) arg++;
-            strncpy( CmdLineParms.OutResFileName, arg, _MAX_PATH );
             if( scanString( CmdLineParms.OutResFileName, arg, _MAX_PATH  ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
@@ -303,7 +293,6 @@ static bool ScanOptionsArg( const char * arg )
         arg++;
         if( *arg == '=' ) arg++;
         temp = RcMemMalloc( strlen( arg ) + 1 );
-        strcpy( temp, arg );
         if( scanString( temp, arg, _MAX_PATH  ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
@@ -333,8 +322,14 @@ static bool ScanOptionsArg( const char * arg )
         break;
     case 'i':
         arg++;
-        if( *arg == '=' ) arg++;
-        AddNewIncludeDirs( arg );
+        if( *arg == '=' )
+            arg++;
+        temp = RcMemMalloc( _MAX_PATH );
+        if( scanString( temp, arg, _MAX_PATH  ) ) {
+            RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
+        }
+        PP_AddIncludePath( temp );
+        RcMemFree( temp );
         break;
     case 'o':
         CmdLineParms.PreprocessOnly = TRUE;
@@ -544,19 +539,6 @@ static void CheckPass2Only( void )
     }
 } /* CheckPass2Only */
 
-static void SetIncludeVar( void )
-/*******************************/
-{
-    char *  old_inc_dirs;
-
-    if( !CmdLineParms.IgnoreINCLUDE ) {
-        old_inc_dirs = RcGetEnv( "INCLUDE" );
-        if( old_inc_dirs != NULL ) {
-            AddNewIncludeDirs( old_inc_dirs );
-        }
-    }
-} /* SetIncludeVar */
-
 static void CheckParms( void )
 /****************************/
 {
@@ -568,8 +550,7 @@ static void CheckParms( void )
     /* was an EXE file name given */
     if( CmdLineParms.InExeFileName[0] == '\0' ) {
         if (CmdLineParms.NoResFile) {
-            strncpy( CmdLineParms.InExeFileName, CmdLineParms.InFileName,
-                        _MAX_PATH );
+            strncpy( CmdLineParms.InExeFileName, CmdLineParms.InFileName, _MAX_PATH );
         } else {
             MakeFileName( CmdLineParms.InFileName,
                              CmdLineParms.InExeFileName, "exe" );
@@ -593,8 +574,7 @@ static void CheckParms( void )
 
     /* was an output EXE file name given */
     if( CmdLineParms.OutExeFileName[0] == '\0' ) {
-        strncpy( CmdLineParms.OutExeFileName,
-                CmdLineParms.InExeFileName, _MAX_PATH );
+        strncpy( CmdLineParms.OutExeFileName, CmdLineParms.InExeFileName, _MAX_PATH );
     } else {
         CheckExtension( CmdLineParms.OutExeFileName, "exe" );
     }
@@ -633,7 +613,6 @@ static void CheckParms( void )
     if( CmdLineParms.PreprocessOnly && CmdLineParms.NoPreprocess ) {
         RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-o", "-zn" );
     }
-    SetIncludeVar();
 
 } /* CheckParms */
 
@@ -692,7 +671,6 @@ static void defaultParms( void )
     #else
         CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
     #endif
-    NewIncludeDirs = NULL;
 } /* defaultParms */
 
 
@@ -985,9 +963,7 @@ extern void ScanParamShutdown( void )
     if( CmdLineParms.CPPArgs != NULL ) {
         RcMemFree( CmdLineParms.CPPArgs );
     }
-    if( NewIncludeDirs != NULL ) {
-        RcMemFree( NewIncludeDirs );
-    }
+    PP_IncludePathFini();
     while( CmdLineParms.ExtraResFiles != NULL ) {
         tmpres = CmdLineParms.ExtraResFiles;
         CmdLineParms.ExtraResFiles = CmdLineParms.ExtraResFiles->next;

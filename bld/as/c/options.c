@@ -34,14 +34,13 @@
 #include <ctype.h>
 #include "preproc.h"
 #include "banner.h"
+#include "iopath.h"
 
 #ifdef AS_ALPHA
 as_flags        AsOptions = OBJ_COFF;   // COFF is default.
 #else
 as_flags        AsOptions = 0;          // ELF is default.
 #endif
-
-char            *AsIncPath = NULL;
 
 static char     **ppDefines = NULL;
 static int      maxNumPredefines;
@@ -114,8 +113,7 @@ extern void OptionsFini( void ) {
         }
         MemFree( ppDefines );
     }
-
-    if( AsIncPath ) MemFree( AsIncPath );
+    PP_IncludePathFini();
 }
 
 extern bool OptionsInit( int argc, char **argv ) {
@@ -177,15 +175,8 @@ extern bool OptionsInit( int argc, char **argv ) {
                 if( *s == '=' ) {
                     ++s;
                 }
-                if( *s == '\0' ) break;
-                if( AsIncPath ) { // Additional /i switch
-                    AsIncPath = MemRealloc( AsIncPath, strlen( AsIncPath ) +
-                        strlen( s ) + 2 );      // for ';' and EOL
-                    strcat( AsIncPath, ";" );
-                    strcat( AsIncPath, s );
-                } else { // First /i switch
-                    AsIncPath = MemAlloc( strlen( s ) + 1 );
-                    strcpy( AsIncPath, s );
+                if( *s != '\0' ) {
+                    PP_AddIncludePath( s );
                 }
                 break;
             case 'o':

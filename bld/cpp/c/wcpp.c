@@ -37,6 +37,7 @@
 #include <stdarg.h>
 #include "getopt.h"
 #include "misc.h"
+#include "iopath.h"
 
 
 char *OptEnvVar = "";
@@ -82,8 +83,6 @@ void Quit( const char *usage_msg[], const char *str, ... )
 int main( int argc, char *argv[] )
 {
     int         flags = 0;
-    char        *inc_path = NULL;
-    size_t      len;
     char        **defines = NULL;
     char        **curr_def = NULL;
     int         numdefs = 0;
@@ -115,16 +114,7 @@ int main( int argc, char *argv[] )
             Quit( usageMsg, NULL );
             break;
         case 'i':
-            len = 2 + strlen( OptArg );
-            if( inc_path != NULL ) {
-                len += strlen( inc_path );
-                inc_path = realloc( inc_path, len );
-            } else {
-                inc_path = malloc( len );
-                *inc_path = '\0';
-            }
-            strcat( inc_path, ";" );
-            strcat( inc_path, OptArg );
+            PP_AddIncludePath( OptArg );
             break;
         case 'l':
             flags |= PPFLAG_EMIT_LINE;
@@ -163,7 +153,7 @@ int main( int argc, char *argv[] )
         }
     }
     while( *(++argv) != NULL ) {
-        if( PP_Init( *argv, flags, inc_path ) != 0 ) {
+        if( PP_Init( *argv, flags, NULL ) != 0 ) {
             fprintf( stderr, "Unable to open '%s'\n", *argv );
             return( EXIT_FAILURE );
         }
@@ -180,5 +170,6 @@ int main( int argc, char *argv[] )
         }
         PP_Fini();
     }
+    PP_IncludePathFini();
     return( EXIT_SUCCESS );
 }

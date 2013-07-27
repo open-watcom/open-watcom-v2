@@ -76,7 +76,7 @@ extern void SemAddMessageTable( WResID *name, ScanString *filename ) {
 }
 
 extern void SemAddSingleLineResource( WResID * name, uint_8 type,
-                    FullMemFlags * fullflags, char * filename )
+                FullMemFlags * fullflags, const char * filename )
 /***************************************************************/
 {
     ResMemFlags flags;
@@ -96,8 +96,7 @@ extern void SemAddSingleLineResource( WResID * name, uint_8 type,
         purity_option = CUR_ICON_PURITY_31;
     }
 
-    RcFindResource( filename, full_filename );
-    if (full_filename[0] == '\0') {
+    if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }
