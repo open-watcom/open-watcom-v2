@@ -119,8 +119,8 @@ HANDLE_ERROR:
     return( TRUE );
 }
 
-void SemAddResFile( const char *filename )
-/****************************************/
+void SemAddResFile( char *filename )
+/**********************************/
 {
     char                full_filename[ _MAX_PATH ];
 

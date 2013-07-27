@@ -101,12 +101,10 @@ typedef struct BitmapFileHeader {
 #define BITMAP_MAGIC    0x4d42      /* the letters BM */
 #define BMARRAY_MAGIC   0x4142      /* the letters BA */
 
-extern void SemAddSingleLineResource( WResID * name, uint_8 type,
-                    FullMemFlags * fullflags, char * filename );
+extern void SemAddSingleLineResource( WResID * name, uint_8 type, FullMemFlags * fullflags, char * filename );
 extern void SemWriteFontDir( void );
 extern void SemOS2WriteFontDir( void );
 extern void SemAddMessageTable( WResID *name, ScanString *filename );
-extern void SemOS2AddSingleLineResource( WResID *name, uint_8 type,
-                       FullOptFlagsOS2 *fullflags, char *filename );
+extern void SemOS2AddSingleLineResource( WResID *name, uint_8 type, FullOptFlagsOS2 *fullflags, char *filename );
 
 #endif

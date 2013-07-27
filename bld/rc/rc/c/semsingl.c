@@ -76,7 +76,7 @@ extern void SemAddMessageTable( WResID *name, ScanString *filename ) {
 }
 
 extern void SemAddSingleLineResource( WResID * name, uint_8 type,
-                FullMemFlags * fullflags, const char * filename )
+                      FullMemFlags * fullflags, char * filename )
 /***************************************************************/
 {
     ResMemFlags flags;
