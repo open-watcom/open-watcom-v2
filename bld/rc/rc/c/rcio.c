@@ -142,7 +142,7 @@ static int Pass1InitRes( void )
 
 int RcFindResource( const char *name, char *fullpath )
 {
-    return( PP_FindInclude( name, fullpath, PPINCLUDE_SRC ) )
+    return( PP_FindInclude( name, fullpath, PPINCLUDE_SRC ) );
 }
 
 extern void RcTmpFileName( char * tmpfilename )
