@@ -238,13 +238,10 @@ static void doInitializeEditor( int argc, char *argv[] )
 
         watcom = getenv( "WATCOM" );
         if( watcom != NULL ) {
-            char    edpath[FILENAME_MAX];
-            size_t  len;
+            char edpath[FILENAME_MAX];
 
-            len = strlen( watcom );
-            memcpy( edpath, watcom, len );
-            edpath[len++] = DIR_SEP;
-            strcpy( edpath + len, "eddat" );
+            sprintf( edpath, "%s%c%s", watcom, DIR_SEP, "eddat" );
+
             if( setenv( "EDPATH", edpath, 0 ) != 0 ) {
                 /*
                  * Bail out silently on error, as we will get error message later on.

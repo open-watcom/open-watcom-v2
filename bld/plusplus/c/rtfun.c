@@ -250,7 +250,7 @@ static void rtfInit(            // INITIALIZE NAMES FOR NAMES PROCESSING
 {
     defn = defn;
     if( CompFlags.dll_subsequent ) {
-        memset( runTimeCodeName, 0, sizeof( runTimeCodeName ) );
+        memset( (void *)runTimeCodeName, 0, sizeof( runTimeCodeName ) );
     }
 }
 

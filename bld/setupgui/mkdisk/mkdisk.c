@@ -37,9 +37,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "disksize.h"
+#include "iopath.h"
 
 #define RoundUp( size, limit )  ( ( ( size + limit - 1 ) / limit ) * limit )
 
+#define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
 enum {
         FALSE, TRUE
@@ -125,6 +127,22 @@ int                     Lang = 1;
 int                     Upgrade = FALSE;
 LIST                    *Include = NULL;
 const char              MkdiskInf[] = "mkdisk.inf";
+
+
+static void ConcatDirSep( char *dir )
+/************************************/
+{
+    size_t      len;
+
+    len = strlen( dir );
+    if( len > 0 ) {
+        char c = dir[len - 1];
+        if( !IS_PATH_SEP( c ) ) {
+            dir[len++] = DIR_SEP;
+            dir[len] = '\0';
+        }
+    }
+}
 
 
 static char *mygets( char *buf, unsigned len, FILE *fp )
@@ -364,7 +382,7 @@ int ReadList( FILE *fp )
         }
         while( *condition == ' ' ) ++condition;
         while( *dst_var == ' ' ) ++dst_var;
-        if( strcmp( dst_var, "." ) == 0 ) {
+        if( IS_EMPTY( dst_var ) ) {
             dst_var = NULL;
         } else {
             dst_var = strdup( dst_var );
@@ -411,31 +429,25 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
     char                src[ _MAX_PATH ], dst[ _MAX_PATH ];
     size_list           *ns,*sl;
 
-    if( stricmp( rel_file, "." ) != 0 ) {
-        if( strchr( rel_file, ':' ) != NULL
-        ||  *rel_file == '\\'
-        ||  *rel_file == '/' ) {
+    if( !IS_EMPTY( rel_file ) ) {
+        if( HAS_PATH( rel_file ) ) {
             strcpy( src, rel_file );
         } else {
             strcpy( src, RelRoot );
-            if( src[ strlen( src ) - 1 ] != '\\' ) {
-                strcat( src, "\\" );
-            }
+            ConcatDirSep( src );
             strcat( src, rel_file );
         }
     } else if( strchr( path, ':' ) != NULL ) {
         // path is absolute. don't use RelRoot
         strcpy( src, path );
-        strcat( src, "\\" );
+        ConcatDirSep( src );
         strcat( src, file );
     } else {
         strcpy( src, RelRoot );
-        if( src[ strlen( src ) - 1 ] != '\\' ) {
-            strcat( src, "\\" );
-        }
-        if( path[ 0 ] != '.' ) {
+        ConcatDirSep( src );
+        if( !IS_EMPTY( path ) ) {
             strcat( src, path );
-            strcat( src, "\\" );
+            ConcatDirSep( src );
         }
         strcat( src, file );
     }
@@ -447,9 +459,7 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
         time = stat_buf.st_mtime;
     }
     strcpy( dst, PackDir );
-    if( dst[ strlen( dst ) - 1 ] != '\\' ) {
-        strcat( dst, "\\" );
-    }
+    ConcatDirSep( dst );
     strcat( dst, patch );
     if( stat( dst, &stat_buf ) != 0 ) {
         printf( "\n'%s' does not exist\n", dst );

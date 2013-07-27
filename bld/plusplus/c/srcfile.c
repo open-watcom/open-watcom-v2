@@ -1619,7 +1619,7 @@ void SrcFileReadOnlyDir(        // SPECIFY DIRECTORY AS READ-ONLY
     DIR_LIST* curr;             // - current R/O entry
     DIR_LIST* srch;             // - search R/O entry
 
-    for( ; *dir != '\0'; ) {
+    while( *dir != '\0' ) {
         dir = IoSuppIncPathElement( dir, path );
         full = IoSuppFullPath( path, buff, sizeof( buff ) );
         curr = NULL;

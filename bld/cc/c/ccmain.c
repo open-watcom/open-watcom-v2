@@ -756,6 +756,7 @@ static void DelDepFile( void )
 
 bool OpenSrcFile( const char *filename, bool is_lib )
 {
+    char        *s;
     char        *p;
     char        buff[_MAX_PATH2];
     char        try[_MAX_PATH];
@@ -801,17 +802,16 @@ bool OpenSrcFile( const char *filename, bool is_lib )
             }
         }
         if( IncPathList != NULL ) {
-            p = IncPathList;
-            while( *p != '\0' ) {
-                dir = buff;
-                while( (c = *p) != '\0' ) {
-                    ++p;
-                    if( IS_PATH_LIST_SEP( c ) ) {
+            s = IncPathList;
+            while( (c = *s) != '\0' ) {
+                p = buff;
+                do {
+                    ++s;
+                    if( IS_PATH_LIST_SEP( c ) )
                         break;
-                    }
-                    *dir++ = c;
-                }
-                *dir = '\0';
+                    *p++ = c;
+                } while( (c = *s) != '\0' );
+                *p = '\0';
                 if( TryOpen( buff, filename ) ) {
                     return( TRUE );
                 }
@@ -940,26 +940,29 @@ bool FreeSrcFP( void )
     return( ret );
 }
 
-static bool TryOpen( char *prefix, const char *filename )
+static bool TryOpen( char *prefix, const char *fname )
 {
-    int         i;
     FILE        *fp;
-    char        buf[2 * 130];
+    char        filename[2 * 130];
+    char        *p;
 
     if( IncFileDepth == 0 ) {
         CErr2( ERR_INCDEPTH, MAX_INC_DEPTH );
         CSuicide();
         return( FALSE );
     }
-    i = 0;
-    while( (buf[i] = *prefix++) != '\0' )
-        ++i;
-    if( i > 0 && !IS_PATH_SEP( buf[i - 1] ) ) {
-        buf[i++] = DIR_SEP;
+    p = filename;
+    while( (*p = *prefix++) != '\0' )
+        ++p;
+    if( p != filename ) {
+        char c = p[-1];
+        if( !IS_PATH_SEP( c ) ) {
+            *p++ = DIR_SEP;
+        }
     }
-    while( (buf[i] = *filename++) != '\0' )
-        ++i;
-    filename = &buf[0];               /* point to the full name */
+    while( (*p = *fname++) != '\0' )
+        ++p;
+    *p = '\0';
     if( IsFNameOnce( filename ) ) {
         return( TRUE );
     }

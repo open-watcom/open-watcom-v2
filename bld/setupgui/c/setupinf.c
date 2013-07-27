@@ -61,10 +61,12 @@
 #include "dlggen.h"
 #include "utils.h"
 #include "setupio.h"
-#include "diskos.h"
+#include "iopath.h"
 #ifdef PATCH
     #include "bdiff.h"
 #endif
+
+#define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
 extern char             *TrimQuote(char*);
 extern int              SkipDialogs;
@@ -387,7 +389,7 @@ static tree_node *BuildExprTree( const char *str )
     char                *p;
     tree_node           *tree;
 
-    if( str == NULL || str[0] == '\0' || str[0] == '.' ) {
+    if( str == NULL || IS_EMPTY( str ) ) {
         return( TreeNode( OP_TRUE, NULL, NULL ) );
     }
     GUIStrDup( str, &str2 );
@@ -625,20 +627,6 @@ static void PropagateValue( tree_node *tree, int value )
 }
 
 #ifdef PATCH
-static void EndHandle( char *source )
-/***********************************/
-// ASSUMES the source has room for additional '\'
-{
-
-    int         length;
-
-    length = strlen( source );
-    if( source[length - 1] != SYS_DIR_SEP_CHAR ) {
-        source[length] = SYS_DIR_SEP_CHAR;
-        source[length + 1] = '\0';
-    }
-}
-
 static void GetDestDir( int i, char *buffer )
 /*******************************************/
 {
@@ -648,26 +636,24 @@ static void GetDestDir( int i, char *buffer )
     int                 intvalue = 0;
 
     ReplaceVars( buffer, GetVariableStrVal( "DstDir" ) );
-    EndHandle( buffer );
+    ConcatDirSep( buffer );
     intvalue = atoi( PatchInfo[i].destdir );
     if( intvalue != 0 ) {
         temp = strchr( DirInfo[intvalue - 1].desc, '=' ) + 1;
-    }
-    else {
+    } else {
         // if destination dir specifies the drive, just use it
         ReplaceVars( temp2, PatchInfo[i].destdir );
         _splitpath( temp2, drive, NULL, NULL, NULL );
         if( drive[0] != 0 ) {  // drive specified
             strcpy( buffer, temp2 );
-            EndHandle( buffer );
+            ConcatDirSep( buffer );
             return;
-        }
-        else {
+        } else {
             temp = temp2;
         }
     }
     strcat( buffer, temp );
-    EndHandle( buffer );
+    ConcatDirSep( buffer );
 }
 
 static int SecondaryPatchSearch( char *filename, char *buff, int Index )
@@ -694,7 +680,7 @@ static int SecondaryPatchSearch( char *filename, char *buff, int Index )
         return( TRUE );
     } else {
         ReplaceVars( path, GetVariableStrVal( "DstDir" ) );
-        EndHandle( path );
+        ConcatDirSep( path );
         strcat( path, filename );
         if( access( path, F_OK ) == 0 ) {
             strcpy( buff, path );
@@ -2278,7 +2264,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
     if( access( buff, F_OK ) != 0 )
         return( FALSE );
 
-    strcat( buff, SYS_DIR_SEP_STR );
+    ConcatDirSep( buff );
     dir_end = buff + strlen( buff );
     found = FALSE;
     supp = TargetInfo[DirInfo[FileInfo[i].dir_index].target].supplimental;
@@ -2753,26 +2739,12 @@ extern void SimDirNoSlash( int i, char *buff )
 /********************************************/
 {
     char                dir[_MAX_DIR];
-    int                 len;
 
     SimTargetDir( DirInfo[i].target, buff );
     strcpy( dir, DirInfo[i].desc );
-    if( dir[0] != '.' && dir[0] != '\0' ) {
-        len = strlen( buff );
-        if( len > 0 && buff[len - 1] != SYS_DIR_SEP_CHAR ) {
-            buff[len] = SYS_DIR_SEP_CHAR;
-            buff[len + 1] = '\0';
-        }
+    if( !IS_EMPTY( dir ) ) {
+        ConcatDirSep( buff );
         strcat( buff, dir );
-    }
-    len = strlen( buff );
-
-    if( len > 1 && buff[len - 1] == SYS_DIR_SEP_CHAR ) {
-#ifndef __UNIX__
-        if( !(len == 3 && buff[1] == ':') )
-            /* got a trailing slash that's not a root directory */
-#endif
-            buff[len - 1] = '\0';
     }
 }
 
@@ -2785,14 +2757,8 @@ extern bool SimDirUsed( int i )
 extern void SimGetDir( int i, char *buff )
 /****************************************/
 {
-    int         len;
-
     SimDirNoSlash( i, buff );
-    len = strlen( buff );
-    if( len > 0 && buff[len - 1] != SYS_DIR_SEP_CHAR ) {
-        buff[len] = SYS_DIR_SEP_CHAR;
-        buff[len + 1] = '\0';
-    }
+    ConcatDirSep( buff );
 }
 
 /*
@@ -3619,7 +3585,7 @@ extern bool SimCalcTargetSpaceNeeded()
 static void AddFileName( int i, char *buffer, int rename )
 /********************************************************/
 {
-    EndHandle( buffer );
+    ConcatDirSep( buffer );
     if( !rename ) {
         if( PatchInfo[i].destfile ) {
             strcat( buffer, PatchInfo[i].destfile );
@@ -4538,7 +4504,7 @@ static void CompileCondition( char *str, char **to )
     char        *str2;
     char        *token;
 
-    if( str == NULL || str[0] == '\0' || str[0] == '.' ) {
+    if( str == NULL || IS_EMPTY( str ) ) {
         GUIStrDup( "", to );
         return;
     }

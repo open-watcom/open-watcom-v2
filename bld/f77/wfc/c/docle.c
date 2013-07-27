@@ -89,7 +89,7 @@ static  void    FmtU32( char *buff, unsigned_32 num, uint len ) {
 void    StatProg( void ) {
 //==================
 
-    char        stats[LIST_BUFF_SIZE];
+    char        stats[_MAX_PATH + LIST_BUFF_SIZE];
     char        *ptr;
     uint        len;
 

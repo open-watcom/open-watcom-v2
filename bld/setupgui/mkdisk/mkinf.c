@@ -38,11 +38,12 @@
     #include <dos.h>
 #endif
 #include "wio.h"
-#include "diskos.h"
+#include "iopath.h"
 #include "clibext.h"
 
 #define RoundUp( size, limit )  ( ( ( size + limit - 1 ) / limit ) * limit )
 
+#define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
 enum {
     FALSE, TRUE
@@ -132,12 +133,28 @@ static LIST                 *Include = NULL;
 static const char           MksetupInf[] = "mksetup.inf";
 
 
-static char *mygets( char *buf, size_t len, FILE *fp )
-/****************************************************/
+static void ConcatDirSep( char *dir )
+/************************************/
+{
+    size_t      len;
+
+    len = strlen( dir );
+    if( len > 0 ) {
+        char c = dir[len - 1];
+        if( !IS_PATH_SEP( c ) ) {
+            dir[len++] = DIR_SEP;
+            dir[len] = '\0';
+        }
+    }
+}
+
+
+static char *mygets( char *buf, unsigned len, FILE *fp )
+/******************************************************/
 {
     char        *p,*q,*start;
     int         lang;
-    size_t      got;
+    unsigned    got;
 
     /* syntax is //nstring//mstring//0 */
 
@@ -495,37 +512,25 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
 
     archive = archive_name;
 
-    if( strcmp( rel_file, "." ) != 0 ) {
-        if( strchr( rel_file, ':' ) != NULL
-        ||  *rel_file == '\\'
-        ||  *rel_file == '/' ) {
+    if( !IS_EMPTY( rel_file ) ) {
+        if( HAS_PATH( rel_file ) ) {
             strcpy( src, rel_file );
         } else {
-            char        c;
-
             strcpy( src, RelRoot );
-            c = src[ strlen( src ) - 1 ];
-            if( (c != '/') && (c != '\\') ) {
-                strcat( src, SYS_DIR_SEP_STR );
-            }
+            ConcatDirSep( src );
             strcat( src, rel_file );
         }
-    } else if( strchr( path, ':' ) != NULL ) {
+    } else if( HAS_PATH( path ) ) {
         // path is absolute. don't use RelRoot
         strcpy( src, path );
-        strcat( src, SYS_DIR_SEP_STR );
+        ConcatDirSep( src );
         strcat( src, file );
     } else {
-        char    c;
-
         strcpy( src, RelRoot );
-        c = src[ strlen( src ) - 1 ];
-        if( (c != '\\') && (c != '/') ) {
-            strcat( src, SYS_DIR_SEP_STR );
-        }
-        if( path[ 0 ] != '.' ) {
+        ConcatDirSep( src );
+        if( !IS_EMPTY( path ) ) {
             strcat( src, path );
-            strcat( src, SYS_DIR_SEP_STR );
+            ConcatDirSep( src );
         }
         strcat( src, file );
     }
@@ -534,6 +539,7 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
         if( IgnoreMissingFiles ) {
             act_size = 1024;
             time = 0;
+//            return( TRUE );
         } else if( CreateMissingFiles ) {
             FILE    *fp;
             char    c;
@@ -576,7 +582,7 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
         p = strchr( ++path, '%' );
         if( p == NULL ) {
             printf( "Invalid path(%s)\n", path );
-            return( 0 );
+            return( FALSE );
         }
         *p = '\0';
         target = AddTarget( path );
@@ -587,13 +593,13 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
             ++path;
         } else {
             printf( "Invalid path (%s)\n", path );
-            return( 0 );
+            return( FALSE );
         }
     } else {
         target = AddTarget( "DstDir" );
     }
     if( target == 0 ) {
-        return( 0 );
+        return( FALSE );
     }
 
     // handle sub-directories in path before full path
@@ -914,7 +920,7 @@ static char *ReplaceEnv( char *file_name )
 
 #define SECTION_BUF_SIZE 8192   // allow long text strings
 
-static char             SectionBuf[ SECTION_BUF_SIZE ];
+static char             SectionBuf[SECTION_BUF_SIZE];
 
 void ReadSection( FILE *fp, char *section, LIST **list )
 /******************************************************/
@@ -925,7 +931,7 @@ void ReadSection( FILE *fp, char *section, LIST **list )
 
     Setup = "setup.exe";
     for( ;; ) {
-        if( mygets( SectionBuf, sizeof( SectionBuf ), fp ) == NULL ) {
+        if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
             printf( "%s section not found in '%s'\n", section, MksetupInf );
             return;
         }
@@ -934,7 +940,7 @@ void ReadSection( FILE *fp, char *section, LIST **list )
         if( stricmp( SectionBuf, section ) == 0 ) break;
     }
     for( ;; ) {
-        if( mygets( SectionBuf, sizeof( SectionBuf ), fp ) == NULL ) {
+        if( mygets( SectionBuf, SECTION_BUF_SIZE, fp ) == NULL ) {
             if( --file_curr >= 0 ) {
                 fclose( fp );
                 fp = file_stack[file_curr];

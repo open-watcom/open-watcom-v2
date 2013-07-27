@@ -91,12 +91,12 @@ void HFileAppend(               // APPEND HFILE TO LIST
         if( hfile_list != NULL ) {
             old_list = hfile_list;
             old_len = strlen( old_list );
-            hfile_list = (char *)CMemAlloc( old_len + 1 + len + 1 );
+            hfile_list = CMemAlloc( old_len + 1 + len + 1 );
             memcpy( hfile_list, old_list, old_len );
             CMemFree( old_list );
             p = hfile_list + old_len;
         } else {
-            p = hfile_list = (char *)CMemAlloc( len + 1 );
+            p = hfile_list = CMemAlloc( len + 1 );
         }
         while( *path_list != '\0' ) {
             if( p != hfile_list )

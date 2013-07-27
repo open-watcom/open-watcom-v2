@@ -478,7 +478,7 @@ extern  FNAMEPTR FileIndexToFName(unsigned);
 extern  char    *FNameFullPath( FNAMEPTR flist );
 extern  char    *FileIndexToCorrectName( unsigned file_index );
 extern  int     FListSrcQue(void);
-extern  const char *IncPathElement( const char *path, char *prefix );
+extern  const char *IncPathElement( const char *path_list, char *path );
 extern  void    SrcFileReadOnlyDir( char const *dir );
 extern  void    SrcFileReadOnlyFile( char const *file );
 extern  bool    SrcFileInRDir( FNAMEPTR flist );

@@ -54,10 +54,8 @@
   #define PAGE_SIZE     (1*1024)
 #endif
 #define _PageNumber( v_ptr ) ((v_ptr) / PAGE_SIZE)
-#define _PageOffset( v_ptr ) (ObjCode +                                        \
-                             ( (v_ptr) - ( (v_ptr) / PAGE_SIZE ) * PAGE_SIZE ))
-#define _MakeVirtual( page, obj_ptr ) ((page) * PAGE_SIZE +                    \
-                                      ( (obj_ptr) - ObjCode ))
+#define _PageOffset( v_ptr ) (ObjCode + ( (v_ptr) - ( (v_ptr) / PAGE_SIZE ) * PAGE_SIZE ))
+#define _MakeVirtual( page, obj_ptr ) ((page) * PAGE_SIZE + ( (obj_ptr) - ObjCode ))
 
 static  file_attr       PageFileAttrs = { REC_FIXED | SEEK };
 static  char            *PageFileName = { "__wfc__.vm" };

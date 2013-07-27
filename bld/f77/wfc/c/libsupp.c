@@ -87,7 +87,6 @@ static  int     Combine( char *path, char *name, char *buff, int buff_len ) {
     len = CopyMaxStr( path, buff, buff_len );
     if( len > 0 && !IS_PATH_SEP( buff[len - 1] ) ) {
         buff[len++] = DIR_SEP;
-        buff[len] = NULLCHAR;
     }
     len += CopyMaxStr( name, buff + len, buff_len - len );
     return( len );

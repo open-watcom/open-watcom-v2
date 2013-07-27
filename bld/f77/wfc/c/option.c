@@ -103,8 +103,6 @@ static const char __FAR * const __FAR CompDrctvs[] = {
 // Used for matching OZOpts bits
 #define _BitsMatched( bits, ptrn )      !((bits & ptrn) ^ ptrn)
 
-#define INCLUDE_SEP     ';'
-
 static  char    *SkipOpt( char *buff ) {
 //======================================
 

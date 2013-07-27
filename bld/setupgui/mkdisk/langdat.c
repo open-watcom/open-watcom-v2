@@ -675,17 +675,14 @@ static bool SearchUpDirs( const char *name, char *result )
         end = &dir[strlen( dir ) - 1];
         if( end == dir )
             return( FALSE );
-        switch( *end ) {
-        case '\\':
-        case '/':
+        if( IS_DIR_SEP( *end ) )
             --end;
-        }
         for( ;; ) {
             if( end == dir ) {
-                *end++ = '/';
+                *end++ = DIR_SEP;
                 break;
             }
-            if( *end == '\\' || *end == '/' )
+            if( IS_DIR_SEP( *end ) )
                 break;
             --end;
         }

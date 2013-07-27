@@ -352,7 +352,7 @@ static void dataInitCheckHugeSegment( target_size_t position )
 #if _CPU == 8086
     target_size_t check;
 
-    check = position % (TARGET_UINT_MAX+1);
+    check = position % (TARGET_UINT_MAX + 1);
     if( position > 0 && check == 0 ) {
         DgSegmentIncrement();
     }
@@ -1316,16 +1316,15 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
     //DtorArrayIndex
 }
 
-static void dataInitRunTimeCallHuge( target_size_t position,
-/**********************************************************/
-    target_size_t diff )
+static void dataInitRunTimeCallHuge( target_size_t position, target_size_t diff )
+/*******************************************************************************/
 {
     target_size_t     increment;
 
     while( diff != 0 && currInit->state != DS_ERROR ) {
         dataInitCheckHugeSegment( position );
-        position %= (TARGET_UINT_MAX+1);
-        increment = min( diff, TARGET_UINT_MAX+1 - position );
+        position %= (TARGET_UINT_MAX + 1);
+        increment = min( diff, TARGET_UINT_MAX + 1 - position );
         increment -= (increment % currInit->size_type );
         dataInitRunTimeCall( position, increment );
         diff -= increment;
@@ -1404,8 +1403,7 @@ static void dataInitStashExpr( PTREE expr )
     case DL_EXTERNAL_PUBLIC:
         dataInitLabel();
         if( currInit->huge_sym ) {
-            dataInitCheckHugeSegment( currInit->nest->base
-                                    + currInit->nest->offset );
+            dataInitCheckHugeSegment( currInit->nest->base + currInit->nest->offset );
         }
         if( constant ) {
             if( currInit->const_int ) {

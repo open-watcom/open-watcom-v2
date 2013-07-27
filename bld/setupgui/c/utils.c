@@ -59,7 +59,7 @@
 #include "guiutil.h"
 #include "utils.h"
 #include "setupio.h"
-#include "diskos.h"
+#include "iopath.h"
 #ifdef PATCH
 #include "bdiff.h"
 #include "wpack.h"
@@ -103,15 +103,19 @@ int             Invisible;
 int             NoProgramGroups;
 int             NoStartupChange;
 
-static void SetPathEnd( char *dir )
-/*********************************/
+void ConcatDirSep( char *dir )
+/*****************************/
 {
     int     len;
+    char    c;
 
-    len = strlen( dir );
-    if( len > 0  && dir[len - 1] != SYS_DIR_SEP_CHAR ) {
-        dir[len] = SYS_DIR_SEP_CHAR;
-        dir[len + 1] = '\0';
+    if( *dir != '\0' ) {
+        len = strlen( dir );
+        c = dir[len - 1];
+        if( !IS_PATH_SEP( c ) ) {
+            dir[len++] = DIR_SEP;
+            dir[len] = '\0';
+        }
     }
 }
 
@@ -426,7 +430,7 @@ static void GetTmpFileNameUNC( char *path, char *buff )
     }
     if( TEST_UNC( path ) ) {
         strcpy( buff, path );
-        SetPathEnd( buff );
+        ConcatDirSep( buff );
         strcat( buff, TMPFILENAME );
     } else {
         buff[0] = *path;
@@ -442,8 +446,10 @@ static void GetTmpFileNameUNC( char *path, char *buff )
 static void GetTmpFileName( char drive, char *buff )
 /**************************************************/
 {
-    buff[0] = drive;
-    strcpy( buff + 1, ":" SYS_DIR_SEP_STR TMPFILENAME );
+    *buff++ = drive;
+    *buff++ = DRIVE_SEP;
+    *buff++ = DIR_SEP;
+    strcpy( buff, TMPFILENAME );
 }
 
 static void GetTmpFileNameInTarget( char drive, char *buff )
@@ -455,7 +461,7 @@ static void GetTmpFileNameInTarget( char drive, char *buff )
     for( i = 0; i < max_targets; ++i ) {
         SimTargetDir( i, buff );
         if( tolower( buff[0] ) == tolower( drive ) && buff[1] == ':' ) {
-            SetPathEnd( buff );
+            ConcatDirSep( buff );
             strcat( buff, TMPFILENAME );
             return;
         }
@@ -741,18 +747,18 @@ extern bool GetRootFromPath( char *root, char *path )
     if( isalpha( path[0] ) && path[1] == ':' ) {
         // turn a path like "c:\dir" into "c:\"
         root[0] = path[0];
-        root[1] = ':';
-        root[2] = SYS_DIR_SEP_CHR;
+        root[1] = path[1];
+        root[2] = DIR_SEP;
         root[3] = '\0';
         return( TRUE );
     } else if( TEST_UNC( path ) ) {
         // turn a UNC name like "\\root\share\dir\subdir" into "\\root\share\"
         strcpy( root, path );
-        i = 0;
-        SetPathEnd( root );
+        ConcatDirSep( root );
         index = root;
+        i = 0;
         while( *index != '\0' ) {
-            if( *index == SYS_DIR_SEP_CHAR ) {
+            if( IS_DIR_SEP( *index ) ) {
                 i++;
             }
             index++;
@@ -768,7 +774,7 @@ extern bool GetRootFromPath( char *root, char *path )
             return( FALSE );
         }
         _splitpath( curr_dir, root, NULL, NULL, NULL );
-        strcat( root, SYS_DIR_SEP_STR );
+        ConcatDirSep( root );
         return( TRUE );
     }
 }
@@ -919,13 +925,13 @@ void MakeParentDir( char *dir, char *drive, char *path )
     int                 path_len;
 
     _splitpath( dir, drive, path, NULL, NULL );
+    if( *path == '\0' )
+        return;
     path_len = strlen( path );
     end = path + path_len - 1;
-    if( path_len == 0 )
-        return;
-    if( *end == '\\' || *end == '/' )
+    if( IS_DIR_SEP( *end ) )
         *end = '\0';
-    if( path[0] == '\0' )
+    if( *path == '\0' )
         return;
     parent = alloca( strlen( drive ) + path_len + 10 ); // lotsa room
     strcpy( parent, drive );
@@ -1062,7 +1068,7 @@ static bool FindUpgradeFile( char *path )
     if( StatusCancelled() )
         return( FALSE );
     d = opendir( path );
-    SetPathEnd( path );
+    ConcatDirSep( path );
     path_end = path + strlen( path );
     while( (info = readdir( d )) != NULL ) {
         strcpy( path_end, info->d_name );
@@ -1167,7 +1173,7 @@ extern bool CheckDrive( bool issue_message )
     for( i = 0; i < max_targs; i++ ) {
         // get drive letter for each target (actually the path including the drive letter)
         disks[i] = SimGetTargetDriveLetter( i );
-        SetPathEnd( disks[i] );
+        ConcatDirSep( disks[i] );
         if( disks[i] == NULL ) {
             return( FALSE );
         } else {
@@ -1795,11 +1801,11 @@ static bool DoCopyFiles( void )
         _makepath( dst_path, NULL, dir, file_desc, NULL );
 
         strcpy( src_path, GetVariableStrVal( "SrcDir" ) );
-        SetPathEnd( src_path );
+        ConcatDirSep( src_path );
         cp = GetVariableStrVal( "DstDir" );
         len = strlen( cp );
         if( strncmp( dir, cp, len ) == 0 ) {
-            if( dir[len] == SYS_DIR_SEP_CHAR )  // if 1st char to concat is a backslash, skip it
+            if( dir[len] == DIR_SEP )       // if 1st char to concat is a backslash, skip it
                 len++;
             strcat( src_path, dir + len );  // get rid of the dest directory, just keep the subdir
         } else {
@@ -1945,9 +1951,9 @@ extern  void DetermineSrcState( char *src_dir )
     // if installing from CD or hard disk, add DISK# to source path
     strcpy( dir, src_dir );
 #if defined( __UNIX__ )
-    strcat( dir, SYS_DIR_SEP_STR "diskimgs" SYS_DIR_SEP_STR  "disk01" );
+    strcat( dir, "/diskimgs/disk01" );
 #else
-    strcat( dir, SYS_DIR_SEP_STR "cd_source" );
+    strcat( dir, "\cd_source" );
 #endif
     if( access( dir, F_OK ) == 0 ) {
         SetVariableByName( "SrcIsCD", "1" );
@@ -1992,7 +1998,7 @@ static bool NukePath( char *path, int status )
 #endif
 
     d = opendir( path );
-    SetPathEnd( path );
+    ConcatDirSep( path );
     path_end = path + strlen( path );
     while( (info = readdir( d )) != NULL ) {
         strcpy( path_end, info->d_name );
@@ -2434,12 +2440,7 @@ extern bool GetDirParams( int argc, char **argv, char **inf_name, char **tmp_pat
 
     if( i < argc ) {
         strcpy( *tmp_path, argv[i] );
-        if( **tmp_path ) {
-            i = strlen( *tmp_path ) - 1;
-            if( (*tmp_path)[i] == SYS_DIR_SEP_CHAR ) {
-                (*tmp_path)[i] = '\0';
-            }
-        }
+        ConcatDirSep( *tmp_path );
     } else {
         _splitpath( *inf_name, drive, dir, NULL, NULL );
         _makepath( *tmp_path, drive, dir, NULL, NULL );

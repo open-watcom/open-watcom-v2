@@ -37,15 +37,35 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
+#include "iopath.h"
 #include "clibext.h"
+
+#define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
 #define BUF_SIZE        4096
 #define MAX_PACK_SIZE   (3L*(1024*1024)/4)      // half of 1.44 meg
+
 char    buff[BUF_SIZE];
 char    prev_cond[BUF_SIZE];
 char    prev_dir[_MAX_DIR];
 char    name[_MAX_PATH];
 char    new_pack[_MAX_FNAME];
+
+static void ConcatDirSep( char *dir )
+/************************************/
+{
+    size_t      len;
+
+    len = strlen( dir );
+    if( len > 0 ) {
+        char c = dir[len - 1];
+        if( !IS_PATH_SEP( c ) ) {
+            dir[len++] = DIR_SEP;
+            dir[len] = '\0';
+        }
+    }
+}
+
 
 int main( int argc, char **argv )
 {
@@ -84,10 +104,10 @@ int main( int argc, char **argv )
         cond = strtok( NULL, "\0" );
         if( cond == NULL ) cond = pack_file+strlen(pack_file);
         strcpy( name, argv[1] );
-        strcat( name, "\\" );
-        if( *rel_file == '.' ) {
+        ConcatDirSep( name );
+        if( IS_EMPTY( rel_file ) ) {
             strcat( name, dir );
-            strcat( name, "\\" );
+            ConcatDirSep( name );
             strcat( name, file );
         } else {
             strcat( name, rel_file );

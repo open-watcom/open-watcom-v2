@@ -62,3 +62,4 @@ extern long             ClusterSize( char *path );
 extern signed int       IncrementDLLUsageCount( char *path );
 extern signed int       DecrementDLLUsageCount( char *path );
 extern void             ReadVariablesFile( const char * name );
+extern void             ConcatDirSep( char *dir );

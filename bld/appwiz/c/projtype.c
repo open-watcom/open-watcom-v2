@@ -37,15 +37,10 @@
 #include "errmsg.h"
 #include "projtype.h"
 #include "rcstr.gh"
+#include "iopath.h"
 
 #define PROJTYPE_CONFIG_FILE    "projtype.cfg"
 #define TEMPLATE_DIR            "template"
-
-#if defined( __WIN__ )
-    #define PATH_SEP    "\\"
-#else
-    #define PATH_SEP    "/"
-#endif
 
 typedef struct project_type {
     char                typename[128];
@@ -194,11 +189,8 @@ bool GetTemplateFilePath( char *typename, char *filename, char *buffer )
 /**********************************************************************/
 {
     char searchname[256];
-    strcpy( searchname, TEMPLATE_DIR );
-    strcat( searchname, PATH_SEP );
-    strcat( searchname, typename );
-    strcat( searchname, PATH_SEP );
-    strcat( searchname, filename );
+
+    sprintf( searchname, "%s%c%s%c%s", TEMPLATE_DIR, DIR_SEP, typename, DIR_SEP, filename );
     _searchenv( searchname, "WATCOM", buffer );
     if( buffer[0] == '\0' ) {
         ShowError( APPWIZ_TEMPLATE_MISSING, filename );

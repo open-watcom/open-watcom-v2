@@ -712,10 +712,11 @@ static void tempFname( char *fname )
 }
 
 #if defined(__DOS__)
- #include "tinyio.h"
-extern void __SetIOMode( int, unsigned );
-#endif
 
+#include "tinyio.h"
+extern void __SetIOMode( int, unsigned );
+
+#endif
 
 static void ioSuppError(        // SIGNAL I/O ERROR AND ABORT
     int error_code )            // - error code

@@ -56,7 +56,7 @@ char *DoForceSlash( char *name, char slash )
             name[0] = slash;
         name++;
     }
-    return save;
+    return( save );
 }
 
 void AdDump( void )
@@ -89,12 +89,12 @@ void AdOpen( void )
 void AdClose( int and_erase )
 {
     // for now fake out doing anything....
-    //and_erase = TRUE;
-    if( AutoDepFile )
-    {
+    // and_erase = TRUE;
+    if( AutoDepFile != NULL ) {
         fclose( AutoDepFile );
         AutoDepFile = NULL;
     }
-    if( and_erase )
+    if( and_erase ) {
         remove( IoSuppOutFileName( OFT_DEP ) );
+    }
 }
