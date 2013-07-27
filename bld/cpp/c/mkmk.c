@@ -36,10 +36,16 @@
 
 extern char PreProcChar;
 
-void MkMkDependency( char *filename, char *fullname, char *delim )
+void MkMkDependency( const char *filename, const char *fullname, int incl_type )
 {
-    printf( "#include %c%s%c  ==> ", delim[0], filename, delim[1] );
-    printf( "%c%s%c\n", delim[0], fullname, delim[1] );
+    char    *fmt;
+
+    if( incl_type == PPINCLUDE_SYS ) {
+        fmt = "#include <%s>  ==> <%s>\n";
+    } else {
+        fmt = "#include \"%s\"  ==> \"%s\"\n";
+    }
+    printf( fmt, filename, fullname );
 }
 
 int main( int argc, char *argv[] )
