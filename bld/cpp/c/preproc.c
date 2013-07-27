@@ -34,14 +34,7 @@
 #include <time.h>
 #include "wio.h"
 #include "watcom.h"
-
-#ifndef SLASH_CHAR
-    #ifdef __UNIX__
-        #define SLASH_CHAR      '/'
-    #else
-        #define SLASH_CHAR      '\\'
-    #endif
-#endif
+#include "iopath.h"
 
 #define DOS_EOF_CHAR    0x1A
 
@@ -68,7 +61,7 @@ char        PP__TIME__[] = "\"12:00:00\"";  // value for __TIME__ macro
 char        *PPBufPtr;                      // block buffer pointer
 char        *PPCharPtr;                     // character pointer
 char        *PPTokenPtr;                    // pointer to next char in token
-char        *PPIncludePath;                 // include path
+const char  *PPIncludePath;                 // include path
 MACRO_TOKEN *PPTokenList;                   // pointer to list of tokens
 MACRO_TOKEN *PPCurToken;                    // pointer to current token
 char        PPSavedChar;                    // saved char at end of token
@@ -76,7 +69,7 @@ char        PPLineBuf[4096+2];              // line buffer
 MACRO_ENTRY *PPHashTable[HASH_SIZE];
 char        PreProcChar = '#';              // preprocessor line intro
 
-void (*PP_CallBack)(char *,char *,char *);  // mkmk dependency callback function
+pp_callback *PP_CallBack;                   // mkmk dependency callback function
 
 
 static char *Months[] = {
@@ -99,25 +92,7 @@ static char *doStrDup( const char *str )
     return( ptr );
 }
 
-/* Determine whether pathname is absolute */
-int isAbsPath( const char *str )
-{
-#ifdef __UNIX__
-    // UNIX is really easy
-    return( str[0] == SLASH_CHAR );
-#else
-    // '\foo.txt' is absolute, so is 'c:\foo.txt', but 'c:foo.txt' is not
-    if( str[0] == SLASH_CHAR ) {
-        return( 1 );
-    }
-    if( str[0] != '\0' && str[1] == ':' && str[2] == SLASH_CHAR ) {
-        return( 1 );
-    }
-    return( 0 );
-#endif
-}
-
-int PP_Open( char *filename )
+int PP_Open( const char *filename )
 {
     int         handle;
     FILELIST    *prev_file;
@@ -144,27 +119,27 @@ int PP_Open( char *filename )
     return( handle );
 }
 
-char *PP_FindInclude( char *filename, char *path, char *buffer )
+char *PP_FindInclude( const char *filename, const char *path, char *buffer )
 {
     int         len;
     char        c;
 
     if( path != NULL ) {
-        for( ;; ) {
+        for( ; (c = *path) != '\0'; ) {
             len = 0;
-            for( ;; ) {
-                c = *path++;
-                if( c == ';' ) break;
-#ifdef __UNIX__
-                if( c == ':' ) break;
-#endif
-                if( c == '\0' ) break;
+            do {
+                ++path;
+                if( IS_INCL_SEP( c ) )
+                    break;
                 buffer[len++] = c;
+                c = *path;
+            } while( c != '\0' );
+            if( len > 0 && !IS_PATH_SEP( buffer[len-1] ) )
+                buffer[len++] = DIR_SEP;
+            strcpy( buffer + len, filename );
+            if( access( buffer, R_OK ) == 0 ) {
+                return( buffer );
             }
-            if( len != 0 && buffer[len-1] != SLASH_CHAR )  buffer[len++] = SLASH_CHAR;
-            strcpy( &buffer[len], filename );
-            if( access( buffer, R_OK ) == 0 )  return( buffer );
-            if( c == '\0' ) break;
         }
     }
     return( NULL );
@@ -190,22 +165,20 @@ char *PP_FindInclude( char *filename, char *path, char *buffer )
  * Note that some of these steps will be skipped if PPFLAG_IGNORE_CWD and/or
  * PPGLAG_IGNORE_INCLUDE is set.
  */
-int PP_OpenInclude( char *filename, char *delim )
+int PP_OpenInclude( const char *filename, int incl_type )
 {
-    char        *path;
+    const char  *path;
     char        buffer[258];
     char        pathbuf[ _MAX_PATH ];
     char        drivebuf[ _MAX_DRIVE ];
     char        dirbuf[ _MAX_DIR ];
-    int         sys_include;
 
-    sys_include = !strcmp( delim, "<>" );
     path = filename;
-    if( !isAbsPath( filename ) ) {
-        if( sys_include || (PPFlags & PPFLAG_IGNORE_CWD) || access( filename, R_OK ) != 0 ) {
+    if( !IS_PATH_ABS( filename ) ) {
+        if( incl_type == PPINCLUDE_SYS || (PPFlags & PPFLAG_IGNORE_CWD) || access( filename, R_OK ) != 0 ) {
             path = NULL;
         }
-        if( path == NULL && PP_File != NULL && !sys_include ) {
+        if( path == NULL && PP_File != NULL && incl_type != PPINCLUDE_SYS ) {
             _splitpath( PP_File->filename, drivebuf, dirbuf, NULL, NULL );
             _makepath( pathbuf, drivebuf, dirbuf, NULL, NULL );
             path = PP_FindInclude( filename, pathbuf, buffer );
@@ -217,7 +190,11 @@ int PP_OpenInclude( char *filename, char *delim )
             path = PP_FindInclude( filename, getenv( "INCLUDE" ), buffer );
         }
         if( path == NULL && !(PPFlags & PPFLAG_IGNORE_CWD) ) {
-            sprintf( pathbuf, "..%ch", SLASH_CHAR );
+            pathbuf[0] = '.';
+            pathbuf[1] = '.';
+            pathbuf[2] = DIR_SEP;
+            pathbuf[3] = 'h';
+            pathbuf[4] = '\0';
             path = PP_FindInclude( filename, pathbuf, buffer );
         }
         if( path == NULL && !(PPFlags & PPFLAG_IGNORE_CWD) ) {
@@ -225,7 +202,7 @@ int PP_OpenInclude( char *filename, char *delim )
         }
     }
     if( PPFlags & PPFLAG_DEPENDENCIES ) {               /* 04-feb-93 */
-        (*PP_CallBack)( filename, path, delim );
+        (*PP_CallBack)( filename, path, incl_type );
         return( -1 );
     } else {
         if( path == NULL ) {
@@ -249,9 +226,13 @@ static void PP_GenLine( void )
         fname = PP_File->filename;
         while( *fname != '\0' ) {
 #ifndef __UNIX__
-            if( *fname == SLASH_CHAR )  *p++ = SLASH_CHAR;          // 14-sep-94
+            if( IS_DIR_SEP( *fname ) ) {
+                *p++ = DIR_SEP;
+                *p++ = DIR_SEP;
+                continue;
+            }
 #endif
-            for( i = MBCharLen[(unsigned char)*fname] + 1; i > 0; --i ) {
+            for( i = MBCharLen[*(unsigned char *)fname] + 1; i > 0; --i ) {
                 *p++ = *fname++;
             }
         }
@@ -298,13 +279,12 @@ void PP_SetLeadBytes( const char *bytes )
     }
 }
 
-int PP_Init( char *filename, unsigned flags, char *include_path )
+int PP_Init( const char *filename, unsigned flags, const char *include_path )
 {
     return( PP_Init2( filename, flags, include_path, NULL ) );
 }
 
-int PP_Init2( char *filename, unsigned flags, char *include_path,
-                const char *leadbytes )
+int PP_Init2( const char *filename, unsigned flags, const char *include_path, const char *leadbytes )
 {
     int         handle;
     int         hash;
@@ -347,7 +327,7 @@ int PP_Init2( char *filename, unsigned flags, char *include_path,
     return( 0 );
 }
 
-void PP_Dependency_List( void (*callback)(char *,char *,char *) )
+void PP_Dependency_List( pp_callback *callback )
 {
     PP_CallBack = callback;
     for( ;; ) {
@@ -498,22 +478,25 @@ char *PP_ScanName( char *ptr )
 void PP_Include( char *ptr )
 {
     char        *filename;
-    char        *delim;
+    char        delim;
+    int         incl_type;
 
     while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
     filename = ptr+1;
     if( *ptr == '<' ) {
-        delim = "<>";
-    } else if( *ptr == '\"' ) {
-        delim = "\"\"";
+        delim = '>';
+        incl_type = PPINCLUDE_SYS;
+    } else if( *ptr == '"' ) {
+        delim = '"';
+        incl_type = PPINCLUDE_USR;
     } else {
         PP_GenError( "Unrecognized INCLUDE directive" );
         return;
     }
     ++ptr;
-    while( *ptr != delim[1]  &&  *ptr != '\0' )  ++ptr;
+    while( *ptr != delim  &&  *ptr != '\0' )  ++ptr;
     *ptr = '\0';
-    if( PP_OpenInclude( filename, delim ) == -1 ) {
+    if( PP_OpenInclude( filename, incl_type ) == -1 ) {
         filename = doStrDup( filename );        // want to reuse buffer
         PPCharPtr = &PPLineBuf[1];
         sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar, filename );
@@ -526,9 +509,10 @@ void PP_Include( char *ptr )
 void PP_RCInclude( char *ptr )
 {
     char        *filename;
-    char        *delim;
     int         quoted = 0;
+    int         incl_type;
 
+    incl_type = PPINCLUDE_USR;
     while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
     if( *ptr == '\"' ) {
         ptr++;
@@ -536,13 +520,12 @@ void PP_RCInclude( char *ptr )
     }
 
     filename = ptr;
-    delim = "\"\"";
     ++ptr;
     if( quoted ) {
-        while( *ptr != '\"' )
+        while( *ptr != '\"' ) {
             ptr++;
-    }
-    else
+        }
+    } else {
         for( ;; ) {
             if( *ptr == ' ' ) break;
             if( *ptr == '\t' ) break;
@@ -552,13 +535,12 @@ void PP_RCInclude( char *ptr )
             if( *ptr == '\"' ) break;
             ++ptr;
         }
-
+    }
     *ptr = '\0';
-    if( PP_OpenInclude( filename, delim ) == -1 ) {
+    if( PP_OpenInclude( filename, incl_type ) == -1 ) {
         filename = doStrDup( filename );        // want to reuse buffer
         PPCharPtr = &PPLineBuf[1];
-        sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar,
-                                filename );
+        sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar, filename );
         PP_Free( filename );
     } else {
         PP_GenLine();
