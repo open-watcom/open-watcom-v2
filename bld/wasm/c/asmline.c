@@ -532,7 +532,7 @@ static bool CheckHaveSeg( void )
     return( FALSE );
 }
 
-static const char *GetPathElement( const char *path_list, const char *end, char **dst )
+static char *GetPathElement( char *path_list, char *end, char **path )
 {
     bool        is_blank;
     char        c;
@@ -545,17 +545,17 @@ static const char *GetPathElement( const char *path_list, const char *end, char 
                 break;
             }
         } else if( !is_blank ) {
-            *dst++ = c;
+            *(*path)++ = c;
         } else if( c != ' ' ) {
             is_blank = FALSE;
-            *dst++ = c;
+            *(*path)++ = c;
         }
     }
     return( path_list );
 }
 
-void AddItemToIncludePath( const char *path_list, const char *end )
-/*****************************************************************/
+void AddItemToIncludePath( char *path_list, char *end )
+/*****************************************************/
 {
     size_t      len;
     size_t      old_len;
