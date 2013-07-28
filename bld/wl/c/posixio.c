@@ -364,48 +364,6 @@ f_handle TempFileOpen( char *name )
     return( NSOpen( name, O_RDWR ) );
 }
 
-int QMakeFileName( char **pos, char *name, char *fname )
-/*************************************************************/
-{
-    char                *pathptr;
-    unsigned int        path_len;
-    char                *file_ptr;
-
-    pathptr = *pos;
-    if( pathptr == NULL )
-        return( 0 );
-    while( *pathptr != '\0' ) {
-        if( IS_INCL_SEP( *pathptr ) )
-            *pos = ++pathptr;
-        for(;;) {
-            if( *pathptr == '\0' )
-                break;
-            if( IS_INCL_SEP( *pathptr ) )
-                break;
-            pathptr++;
-        }
-        path_len = pathptr - *pos;
-        if( path_len != 0 ) {
-            file_ptr = memcpy( fname, *pos, path_len );
-            file_ptr += path_len;
-            if( !IS_PATH_SEP( file_ptr[-1] ) ) {
-                *file_ptr++ = DIR_SEP;
-            }
-            strcpy( file_ptr, name );
-            *pos = pathptr;
-            return( 1 );
-        }
-        *pos = pathptr;
-    }
-    return( 0 );
-}
-
-bool QHavePath( char *name )
-/*********************************/
-{
-    return( IS_PATH_SEP( *name ) );
-}
-
 bool QSysHelp( char **cmd_ptr )
 /************************************/
 {

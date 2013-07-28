@@ -58,7 +58,7 @@ void ResetCmdAll( void )
 {
     LastFile = NULL;
     LastLibFile = NULL;
-    LibPath = NULL;
+    UsrLibPath = NULL;
 }
 
 bool ProcDosSeg( void )
@@ -341,10 +341,10 @@ static void *AddObjFile( char *name, char *member, file_list **filelist )
     }
     new_entry = AllocNewFile( new_member );
     if( new_member != NULL ) {
-        new_entry->file = AllocUniqueFileEntry( name, LibPath );
+        new_entry->file = AllocUniqueFileEntry( name, UsrLibPath );
         new_entry->file->flags |= INSTAT_LIBRARY;
     } else {
-        new_entry->file = AllocFileEntry( name, Path );
+        new_entry->file = AllocFileEntry( name, ObjPath );
     }
     *filelist = new_entry;
     return( new_entry );
@@ -380,7 +380,7 @@ file_list *AddObjLib( char *name, lib_priority priority )
     /* if we need to add one */
     if( lib == NULL ) {
         lib = AllocNewFile( NULL );
-        lib->file = AllocUniqueFileEntry( name, LibPath );
+        lib->file = AllocUniqueFileEntry( name, UsrLibPath );
         lib->file->flags |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
         LinkState |= LIBRARIES_ADDED;
     }
@@ -408,7 +408,7 @@ static bool AddLibFile( void )
         return( TRUE );
     }
     entry = AllocNewFile( NULL );
-    entry->file = AllocFileEntry( ptr, LibPath );
+    entry->file = AllocFileEntry( ptr, UsrLibPath );
     entry->next_file = *LastLibFile;
     *LastLibFile = entry;
     LastLibFile = &entry->next_file;
@@ -558,17 +558,23 @@ bool ProcPath( void )
 {
     bool            ret;
     path_entry      *new_path;
-    char            *ptr;
+    char            *p;
+    char            *end;
 
     ret = GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME  );
     if( ret != FALSE ) {
         _ChkAlloc( new_path, sizeof( path_entry ) + Token.len );
-        ptr = new_path->name;
-        memcpy( ptr, Token.this, Token.len );
-        ptr[ Token.len ] = '\0';
-        new_path->next = Path;
-        Path = new_path;
-        DEBUG(( DBG_BASE, "path: %s", ptr ));
+        end = Token.this + Token.len;
+        p = new_path->name;
+        while( Token.this != end ) {
+            if( p != new_path->name )
+                *p++ = PATH_LIST_SEP;
+            Token.this = GetPathElement( Token.this, end, &p );
+        }
+        *p = '\0';
+        new_path->next = ObjPath;
+        ObjPath = new_path;
+        DEBUG(( DBG_BASE, "path: %s", new_path->name ));
     }
     return( ret );
 }
@@ -970,7 +976,7 @@ static sysblock *FindSystemBlock( char *name )
 {
     sysblock    *sys;
     sysblock    *tmpblk;
-    unsigned    len;
+    size_t      len;
 
     tmpblk = FindSysBlock( name );
     if( tmpblk == NULL ) {

@@ -58,7 +58,7 @@ static void memLine( void *fh, const char *buf, unsigned size )
 void MemInit( void )
 {
 #ifdef TRMEM
-    memFile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR );
+    memFile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
     memHandle = _trmem_open( malloc, free, realloc, _expand, &memFile, memLine,
         _TRMEM_ALLOC_SIZE_0 |
         _TRMEM_FREE_NULL |

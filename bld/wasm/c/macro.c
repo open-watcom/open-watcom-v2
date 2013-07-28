@@ -378,6 +378,7 @@ static int my_sprintf( char *dest, char *format, int argc, char *argv[] )
     char *end;
     int  parmno = 0;
 
+    argc = argc;
     *dest = '\0';
     start = format;
     for( end = start ;*end != '\0'; start = end + PLACEHOLDER_SIZE ) {

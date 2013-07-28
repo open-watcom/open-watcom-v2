@@ -498,7 +498,7 @@ void FiniNovellLoadFile( void )
     unsigned_32         temp;
     unsigned_32         image_size;
     char *              filename;
-    char *              lastslash;
+    char *              startname;
     char                ch;
     unsigned_8          len;
     struct tm *         currtime;
@@ -508,33 +508,34 @@ void FiniNovellLoadFile( void )
 
 /* find module name (output file name without the path.) */
 
-    lastslash = filename = Root->outfile->fname;
-    while( *filename != '\0' ) {
-        ch = *filename++;
-        if( IS_PATH_SEP( ch ) ) {
-            lastslash = filename;     // NOTE: 1 added already.
-        }
+    startname = filename = Root->outfile->fname;
+    for( ; (ch = *filename) != '\0'; ++filename ) {
         if( '.' == ch ) {
-            pPeriod = filename-1;
+            pPeriod = filename;
+            continue;
+        }
+        if( IS_PATH_SEP( ch ) ) {
+            startname = filename + 1;
+            pPeriod = NULL;
         }
     }
-    strupr( lastslash );
+    strupr( startname );
 
     /*
     // cull the module name to 8.3 (NOV_MAX_MODNAME_LEN) if necessary
     */
     if( pPeriod ) {
-        len = __min__((pPeriod - lastslash), NOV_MAX_NAME_LEN);
-        strncpy(module_name, lastslash, len);
-        strncpy(&module_name[len], pPeriod, NOV_MAX_EXT_LEN + 2);    /* + period and null */
+        len = __min__( ( pPeriod - startname ), NOV_MAX_NAME_LEN );
+        strncpy( module_name, startname, len );
+        strncpy( &module_name[len], pPeriod, NOV_MAX_EXT_LEN + 2 );    /* + period and null */
         module_name[len + NOV_MAX_EXT_LEN + 1] = '\0';
     } else {
         /* still only copy 8 chars else the module name will be too long */
-        strncpy(module_name, lastslash, NOV_MAX_NAME_LEN);
+        strncpy( module_name, startname, NOV_MAX_NAME_LEN );
     }
 
     module_name[NOV_MAX_MODNAME_LEN] = '\0';
-    if( 0 != strcmp( module_name, lastslash ) ) {
+    if( 0 != strcmp( module_name, startname ) ) {
         LnkMsg( WRN+MSG_INTERNAL_MOD_NAME_DIFF_FROM_FILE, "s", module_name );
     }
 

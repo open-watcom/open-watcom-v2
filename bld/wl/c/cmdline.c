@@ -158,7 +158,7 @@ static void ResetCmdFile( void )
     Extension = E_LOAD;
     Name = NULL;
     CmdFlags = CF_UNNAMED;
-    Path = NULL;
+    ObjPath = NULL;
     memset( &FmtData, 0, sizeof( FmtData ) );
     FmtData.base = NO_BASE_SPEC;
     FmtData.objalign = NO_BASE_SPEC;
@@ -617,8 +617,8 @@ void FreePaths( void )
 /***************************/
 // Free paths & filenames.
 {
-    FreeList( Path );
-    Path = NULL;
+    FreeList( ObjPath );
+    ObjPath = NULL;
     if( Name != NULL ) {
         _LnkFree( Name );
         Name = NULL;
@@ -656,7 +656,7 @@ void SetFormat( void )
     if( CmdFlags & CF_NO_EXTENSION ) {
         fname = Name;
     } else {
-        unsigned    len = strlen( Name );
+        size_t  len = strlen( Name );
 
         if( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
             Extension = E_HEX;       //   has been specified
@@ -734,7 +734,7 @@ void AddFmtLibPaths( void )
         }
     }
     if( possible != 0 ) {
-        AddEnvPaths( check->lib_var_name );
+        AddLibPathsToEnd( GetEnvString( check->lib_var_name ) );
     }
 }
 
@@ -837,43 +837,61 @@ void AddCommentLib( char *ptr, unsigned len, lib_priority priority )
     _LnkFree( ptr );
 }
 
-void AddLibPaths( char *name, unsigned len, bool add_to_front )
-/***************************************************************/
+void AddLibPaths( char *path_list, unsigned len, bool add_to_front )
+/******************************************************************/
 {
-    path_entry         *newpath;
-    file_list const    *libfiles;
+    path_entry      *newpath;
+    file_list const *libfiles;
+    char            *p;
+    char            *end;
 
     _ChkAlloc( newpath, sizeof( path_entry ) + len );
-    memcpy( newpath->name, name, len );
-    newpath->name[len] = '\0';
-    if( add_to_front ) {
-        newpath->next = LibPath;
-        LibPath = newpath;
-    } else {
-        LinkList( &LibPath, newpath );
+    p = newpath->name;
+    end = path_list + len;
+    while( path_list != end ) {
+        if( p != newpath->name )
+            *p++ = PATH_LIST_SEP;
+        path_list = GetPathElement( path_list, end, &p );
     }
-    if( LibPath == newpath ) {
+    *p = '\0';
+    if( add_to_front ) {
+        newpath->next = UsrLibPath;
+        UsrLibPath = newpath;
+    } else {
+        LinkList( &UsrLibPath, newpath );
+    }
+    if( UsrLibPath == newpath ) {
         for( libfiles = ObjLibFiles; libfiles != NULL; libfiles = libfiles->next_file ) {
-            libfiles->file->path_list = LibPath;
+            libfiles->file->path_list = UsrLibPath;
         }
         for( libfiles = Root->files; libfiles != NULL; libfiles = libfiles->next_file ) {
             if( libfiles->file->flags & INSTAT_USE_LIBPATH ) {
-                libfiles->file->path_list = LibPath;
+                libfiles->file->path_list = UsrLibPath;
             }
         }
     }
 }
 
-void AddEnvPaths( char *envname )
+void AddLibPathsToEnd( char *path_list )
 /**************************************/
 {
-    char * const        val = GetEnvString( envname );
-    unsigned            len;
+    if( path_list != NULL && *path_list != '\0' ) {
+        AddLibPaths( path_list, strlen( path_list ), FALSE );
+    }
+}
 
-    if( val == NULL )
-        return;
-    len = strlen( val );
-    AddLibPaths( val, len, FALSE );
+void AddLibPathsToEndList( const char *path_list )
+/************************************************/
+{
+    size_t          len;
+    path_entry      *newpath;
+
+    if( path_list != NULL && *path_list != '\0' ) {
+        len = strlen( path_list );
+        _ChkAlloc( newpath, sizeof( path_entry ) + len );
+        memcpy( newpath->name, path_list, len + 1 );
+        LinkList( &UsrLibPath, newpath );
+    }
 }
 
 void ExecSystem( char *name )

@@ -992,26 +992,22 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
 }
 
 
-char *FileName( char *buff, unsigned len, file_defext etype, bool force )
-/***********************************************************************/
+char *FileName( char *buff, size_t len, file_defext etype, bool force )
+/*********************************************************************/
 {
     char        *namptr;
     char        *namstart;
     char        *ptr;
-    unsigned    cnt;
-    unsigned    namelen;
+    size_t      cnt;
+    size_t      namelen;
+    char        c;
 
-    namptr = buff + len;
-    cnt = 0;
-    while( cnt != len ) {
-        cnt++;
-        --namptr;
-        if( IS_PATH_SEP( *namptr ) ) {
+    
+    for( namptr = buff + len; namptr != buff; --namptr ) {
+        c = namptr[-1];
+        if( IS_PATH_SEP( c ) ) {
             break;
         }
-    }
-    if( IS_PATH_SEP( *namptr ) ) {
-        namptr++;
     }
     namstart = namptr;
     cnt = len - ( namptr - buff );

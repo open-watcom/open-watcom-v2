@@ -58,6 +58,7 @@ extern void             ExecSystem( char * );
 extern void             PruneSystemList( void );
 extern void             BurnSystemList( void );
 extern void             AddLibPaths( char *, unsigned, bool );
-extern void             AddEnvPaths( char * );
+extern void             AddLibPathsToEnd( char * );
+extern void             AddLibPathsToEndList( const char *list );
 extern file_list        *AddObjLib( char *, lib_priority );
 extern int              DoBuffCmdParse( char *cmd );

@@ -329,19 +329,11 @@ static void PrepFileList( perm_write_info *info )
 /***********************************************/
 {
     infilelist  *list;
-    char        *path_ptr;
-    char        *name;
     char        new_name[ PATH_MAX ];
 
     for( list = CachedFiles; list != NULL; list = list->next ) {
-        if( list->prefix != NULL ) {
-            path_ptr = list->prefix;
-            QMakeFileName( &path_ptr, list->name, new_name );
-            name = new_name;
-        } else {
-            name = list->name;
-        }
-        list->name = GetString( info, name );
+        MakeFileName( list, new_name );
+        list->name = GetString( info, new_name );
     }
 }
 

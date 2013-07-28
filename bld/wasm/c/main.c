@@ -385,21 +385,28 @@ static void add_constant( char *string )
     StoreConstant( string, tmp, FALSE ); // don't allow it to be redef'd
 }
 
-static void AddStringToIncludePath( char *string, int len )
-/*********************************************************/
+static void AddStringToIncludePath( char *str, const char *end )
+/**************************************************************/
 {
-    if( *string == '"' ) {
-        ++string;
-        --len;
-        while( isspace( *string ) && len > 0 ) {
-            ++string;
-            --len;
-        }
-        if( len > 0 ) {
-            --len;
+    char        *src;
+    char        *p;
+    bool        have_quote;
+    char        c;
+
+    have_quote = FALSE;
+    src = str;
+    while( isspace( *src ) && src < end )
+        src++;
+    p = str;
+    while( (c = *src) != '\0' && src < end ) {
+        ++src;
+        if( c == '\"' ) {
+            have_quote = !have_quote;
+        } else {
+            *p++ = c;
         }
     }
-    AddItemToIncludePath( string, len );
+    AddItemToIncludePath( str, p );
 }
 
 static void get_fname( char *token, int type )
@@ -435,7 +442,7 @@ static void get_fname( char *token, int type )
 
         _makepath( name, pg.drive, pg.dir, NULL, NULL );
         /* add the source path to the include path */
-        AddItemToIncludePath( name, strlen( name ) );
+        AddItemToIncludePath( name, NULL );
 
         if( AsmFiles.fname[OBJ] == NULL ) {
             /* set up default object and error filename */
@@ -573,7 +580,7 @@ static void Set_FL( void ) { get_fname( GetAFileName(), LST ); Options.write_lis
 
 static void Set_FO( void ) { get_fname( GetAFileName(), OBJ ); }
 
-static void SetInclude( void ) { AddStringToIncludePath( OptParm, OptScanPtr - OptParm ); }
+static void SetInclude( void ) { AddStringToIncludePath( OptParm, OptScanPtr ); }
 
 static void Set_S( void ) { Options.sign_value = TRUE; }
 
@@ -713,7 +720,7 @@ static void get_os_include( void )
 
     env = getenv( tmp );
     if( env != NULL ) {
-        AddItemToIncludePath( env, strlen( env ) );
+        AddItemToIncludePath( env, NULL );
     }
 }
 
@@ -1171,7 +1178,7 @@ static void do_init_stuff( char **cmdline )
     get_os_include();
     env = getenv( "INCLUDE" );
     if( env != NULL )
-        AddItemToIncludePath( env, strlen( env ) );
+        AddItemToIncludePath( env, NULL );
     if( !Options.quiet && !Options.banner_printed ) {
         Options.banner_printed = TRUE;
         trademark();

@@ -69,7 +69,7 @@ void FreeRdosFmt( void )
 extern bool ProcRdos( void )
 /*************************/
 {
-    LinkState |= MAKE_RELOCS + FMT_DECIDED;     // make relocations;
+    LinkState |= MAKE_RELOCS | FMT_DECIDED;     // make relocations;
     ProcOne( RdosOptions, SEP_NO, FALSE );
     return( TRUE );
 }

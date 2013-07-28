@@ -41,6 +41,7 @@
 #include "macro.h"
 #include "asminput.h"
 #include "pathgrp.h"
+#include "iopath.h"
 
 extern int              in_prologue;
 
@@ -84,16 +85,6 @@ uint_32                 BufSize;                // size of CodeBuffer
 static input_queue      *line_queue  = NULL;    // line queue
 static file_list        *file_stack  = NULL;    // top of included file stack
 static char             *IncludePath = NULL;
-
-#if defined(__UNIX__)
-#define                 INCLUDE_PATH_DELIM  ":"
-#define                 DIR_SEPARATOR       '/'
-#define                 DIR_SEP_STRING      "/"
-#else
-#define                 INCLUDE_PATH_DELIM  ";"
-#define                 DIR_SEPARATOR       '\\'
-#define                 DIR_SEP_STRING      "\\"
-#endif
 
 #else
 
@@ -273,7 +264,7 @@ static file_list *push_flist( const char *name, bool is_a_file )
 }
 
 const FNAME *get_curr_srcfile( void )
-/************************************/
+/***********************************/
 {
     return( file_stack == NULL ? ModuleInfo.srcfile : file_stack->srcfile );
 }
@@ -322,35 +313,39 @@ void InputQueueLine( char *line )
     strcpy( new->line, line );
 }
 
-static FILE *open_file_in_include_path( char *name, char *fullpath )
-/******************************************************************/
+static FILE *open_file_in_include_path( const char *name, char *fullpath )
+/************************************************************************/
 {
-    char            *inc_path_list;
-    char            *next_path;
-    char            buffer[MAX_LINE_LEN];
+    char            *path_list;
+    char            *p;
     FILE            *file = NULL;
+    char            c;
 
     while( isspace( *name ) )
         name++;
 
-    inc_path_list = AsmTmpAlloc( strlen( IncludePath ) + 1 );
-    strcpy( inc_path_list, IncludePath );
-    next_path = strtok( inc_path_list, INCLUDE_PATH_DELIM ";");
-
-    while( ( file == NULL ) && ( next_path != NULL ) ) {
-        strcpy( buffer, next_path );
-//NYI: this is no good for DOS - have to check '/', '\\', and ':'
-        if( buffer[ strlen( buffer ) - 1] != DIR_SEPARATOR ) {
-            strcat( buffer, DIR_SEP_STRING );
+    path_list = IncludePath;
+    if( path_list != NULL ) {
+        while( (c = *path_list) != '\0' ) {
+            p = fullpath;
+            do {
+                ++path_list;
+                if( IS_PATH_LIST_SEP( c ) ) {
+                    break;
+                }
+                *p++ = c;
+            } while( (c = *path_list) != '\0' );
+            c = p[-1];
+            if( !IS_PATH_SEP( c ) ) {
+                *p++ = DIR_SEP;
+            }
+            strcpy( p, name );
+            file = fopen( fullpath, "r" );
+            if( file != NULL ) {
+                break;
+            }
         }
-        strcat( buffer, name );
-
-        file = fopen( buffer, "r" );
-        if( file )
-            break;
-        next_path = strtok( NULL, INCLUDE_PATH_DELIM ";");
     }
-    strcpy( fullpath, buffer );
     return( file );
 }
 
@@ -537,25 +532,59 @@ static bool CheckHaveSeg( void )
     return( FALSE );
 }
 
-void AddItemToIncludePath( char *string, int len )
-/************************************************/
+static const char *GetPathElement( const char *path_list, const char *end, char **dst )
 {
-    char    *tmp;
-    int     len1;
+    bool        is_blank;
+    char        c;
 
-    if( IncludePath == NULL ) {
-        IncludePath = AsmAlloc( len + 1 );
-        memcpy( IncludePath, string, len );
-        IncludePath[len] = '\0';
+    is_blank = TRUE;
+    while( path_list != end ) {
+        c = *path_list++;
+        if( IS_INCL_SEP( c ) ) {
+            if( !is_blank ) {
+                break;
+            }
+        } else if( !is_blank ) {
+            *dst++ = c;
+        } else if( c != ' ' ) {
+            is_blank = FALSE;
+            *dst++ = c;
+        }
+    }
+    return( path_list );
+}
+
+void AddItemToIncludePath( const char *path_list, const char *end )
+/*****************************************************************/
+{
+    size_t      len;
+    size_t      old_len;
+    char        *old_list;
+    char        *p;
+
+    if( end == NULL ) {
+        len = strlen( path_list );
+        end = path_list + len;
     } else {
-        len1 = strlen( IncludePath );
-        tmp = AsmAlloc( len1 + 1 + len + 1 );
-        memcpy( tmp, IncludePath, len1 );
-        memcpy( tmp + len1, INCLUDE_PATH_DELIM, 1 );
-        memcpy( tmp + len1 + 1, string, len );
-        tmp[len1 + 1 + len] = '\0';
-        AsmFree( IncludePath );
-        IncludePath = tmp;
+        len = end - path_list;
+    }
+    if( len > 0 ) {
+        if( IncludePath == NULL ) {
+            p = IncludePath = AsmAlloc( len + 1 );
+        } else {
+            old_list = IncludePath;
+            old_len = strlen( old_list );
+            IncludePath = AsmAlloc( old_len + 1 + len + 1 );
+            memcpy( IncludePath, old_list, old_len );
+            AsmFree( old_list );
+            p = IncludePath + old_len;
+        }
+        do {
+            if( p != IncludePath )
+                *p++ = PATH_LIST_SEP;
+            path_list = GetPathElement( path_list, end, &p );
+        } while( path_list != end );
+        *p = '\0';
     }
 }
 

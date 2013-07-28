@@ -91,7 +91,7 @@ struct asmfixup         *ModendFixup = NULL; // start address fixup
 
 global_vars     Globals = { 0, 0, 0, 0, 0, 0, 0 };
 
-static FNAME            *FNames = NULL;
+static const FNAME      *FNames = NULL;
 static unsigned long    lastLineNumber;
 
 const FNAME *AddFlist( char const *name )
@@ -105,7 +105,7 @@ const FNAME *AddFlist( char const *name )
 
     index = 0;
     fname = _getFilenameFullPath( buff, name, sizeof( buff ) );
-    last = FNames;
+    last = (FNAME *)FNames;
     for( flist = last; flist != NULL; flist = flist->next ) {
         if( strcmp( name, flist->name ) == 0 )
             return( flist );
@@ -114,10 +114,10 @@ const FNAME *AddFlist( char const *name )
         index++;
         last = flist;
     }
-    flist = (FNAME *)AsmAlloc( sizeof( FNAME ) );
-    flist->name = (char *)AsmAlloc( strlen( name ) + 1 );
+    flist = AsmAlloc( sizeof( FNAME ) );
+    flist->name = AsmAlloc( strlen( name ) + 1 );
     strcpy( flist->name, name );
-    flist->fullname = (char *)AsmAlloc( strlen( fname ) + 1 );
+    flist->fullname = AsmAlloc( strlen( fname ) + 1 );
     strcpy( flist->fullname, fname );
     flist->mtime = _getFilenameTimeStamp( fname );
     flist->next = NULL;

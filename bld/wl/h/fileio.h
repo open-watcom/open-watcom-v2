@@ -78,8 +78,6 @@ extern bool             QReadStr( f_handle, char *, unsigned, char * );
 extern bool             QIsDevice( f_handle );
 extern f_handle         QObjOpen( char * );
 extern f_handle         TempFileOpen( char * );
-extern int              QMakeFileName( char **, char *, char * );
-extern bool             QHavePath( char * );
 extern bool             QSysHelp( char ** );
 extern bool             QModTime( char *, time_t * );
 extern time_t           QFModTime( int );

@@ -80,6 +80,7 @@
 #include "wcomdef.h"
 #include "objomf.h"
 #include "wlink.h"
+#include "ideentry.h"
 
 static void     PreAddrCalcFormatSpec( void );
 static void     PostAddrCalcFormatSpec( void );
@@ -183,7 +184,7 @@ static void CleanSubSystems( void )
     FreeOutFiles();
     _LnkFree( MapFName );
     BurnSystemList();
-    FreeList( LibPath );
+    FreeList( UsrLibPath );
     CloseSpillFile();
     CleanTraces();
     FreePaths();
@@ -220,6 +221,7 @@ static void DoLink( char *cmdline )
   #endif
 #endif
     StartTime();
+    InitEnvVars();
     DoCmdFile( cmdline );
     CheckErr();
     MapInit();
@@ -265,6 +267,7 @@ static void DoLink( char *cmdline )
     FiniLoadFile();
     WritePermData();
     BuildImpLib();
+    FiniEnvVars();
     EndTime();
 #ifdef __ZDOS__
     signal( SIGBREAK, SIG_IGN );  /* we're going to clean up anyway */
@@ -397,16 +400,16 @@ static void FindLibPaths( void )
 {
     AddFmtLibPaths();
     if( LinkState & FMT_SEEN_64_BIT ) {
-        AddEnvPaths( "LIBX64" );
+        AddLibPathsToEnd( GetEnvString( "LIBX64" ) );
     } else if( LinkState & FMT_SEEN_32_BIT ) {
-        AddEnvPaths( "LIB386" );
+        AddLibPathsToEnd( GetEnvString( "LIB386" ) );
     } else {
-        AddEnvPaths( "LIB286" );
+        AddLibPathsToEnd( GetEnvString( "LIB286" ) );
         /*
             If we haven't seen a 386 object file by this time, we're
             not going to.
         */
         HintFormat( MK_16BIT );
     }
-    AddEnvPaths( "LIB" );
+    AddLibPathsToEndList( LibPath );
 }

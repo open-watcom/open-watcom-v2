@@ -3501,6 +3501,7 @@ int ProcDef( int i, bool proc_def )
     char            *name;
     int             n;
 
+    proc_def = proc_def;
     if( Options.mode & MODE_IDEAL ) {
         n = ++i;
     } else {

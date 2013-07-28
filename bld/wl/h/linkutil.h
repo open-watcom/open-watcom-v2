@@ -47,6 +47,7 @@ extern void             LinkList( void *, void * );
 extern void             FreeList( void * );
 extern int              Spawn( void (*)( void ) );
 extern void             Suicide( void );
+extern char             *GetPathElement( char *path_list, char *end, char **path );
 extern f_handle         FindPath( char * );
 extern name_list        *AddNameTable( char *, unsigned, bool, name_list ** );
 extern unsigned_16      binary_log( unsigned_16 );
@@ -56,3 +57,5 @@ extern void             WriteNulls( f_handle, unsigned_32, char * );
 extern void             VMemQSort( virt_mem, unsigned, unsigned,
                                     void (*swapfn)(virt_mem, virt_mem),
                                     int (*cmpfn)(virt_mem, virt_mem) );
+extern void             InitEnvVars( void );
+extern void             FiniEnvVars( void );

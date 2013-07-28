@@ -48,6 +48,7 @@
 #include "strtab.h"
 #include "loadfile.h"
 #include "permdata.h"
+#include "objio.h"
 #include "mapio.h"
 
 
@@ -448,38 +449,118 @@ int Spawn( void (*fn)( void ) )
 }
 
 void Suicide( void )
-/*************************/
+/******************/
 {
     if( SpawnStack != NULL ) {
         longjmp( SpawnStack, 1 );
     }
 }
 
+char *GetPathElement( char *path_list, char *end, char **path )
+/*************************************************************/
+{
+    bool        is_blank;
+    char        c;
+
+    is_blank = TRUE;
+    while( path_list != end ) {
+        c = *path_list++;
+        if( IS_INCL_SEP( c ) ) {
+            if( !is_blank ) {
+                break;
+            }
+        } else if( !is_blank ) {
+            *(*path)++ = c;
+        } else if( c != ' ' ) {
+            is_blank = FALSE;
+            *(*path)++ = c;
+        }
+    }
+    return( path_list );
+}
+
+void InitEnvVars( void )
+/**********************/
+{
+    char        *path_list;
+    size_t      len;
+    char        *p;
+    char        *end;
+
+    if( ExePath == NULL ) {
+#if defined( __QNX__ )
+        path_list = "/usr/watcom";
+#else
+        path_list = GetEnvString( "PATH" );
+#endif
+        if( path_list != NULL && *path_list != '\0' ) {
+            len = strlen( path_list );
+            _ChkAlloc( ExePath, len + 1 );
+            p = ExePath;
+            end = path_list + len;
+            do {
+                if( p != ExePath )
+                    *p++ = PATH_LIST_SEP;
+                path_list = GetPathElement( path_list, end, &p );
+            } while( path_list != end );
+            *p = '\0';
+        } else {
+            _ChkAlloc( ExePath, 1 );
+            *ExePath = '\0';
+        }
+    }
+    if( LibPath == NULL ) {
+        path_list = GetEnvString("LIB");
+        if( path_list != NULL && *path_list != '\0' ) {
+            len = strlen( path_list );
+            _ChkAlloc( LibPath, len + 1 );
+            p = LibPath;
+            end = path_list + len;
+            do {
+                if( p != LibPath )
+                    *p++ = PATH_LIST_SEP;
+                path_list = GetPathElement( path_list, end, &p );
+            } while( path_list != end );
+            *p = '\0';
+        } else {
+            _ChkAlloc( LibPath, 1 );
+            *LibPath = '\0';
+        }
+    }
+}
+
+void FiniEnvVars( void )
+/**********************/
+{
+    if( ExePath != NULL ) {
+        _LnkFree( ExePath );
+        ExePath = NULL;
+    }
+    if( LibPath != NULL ) {
+        _LnkFree( LibPath );
+        LibPath = NULL;
+    }
+}
+
 f_handle FindPath( char *name )
 /*****************************/
 {
-    char        *path;
+    char        *path_list;
     f_handle    file;
     char        fullpath[PATH_MAX];
 
     file = QObjOpen( name );
-    if( file != NIL_FHANDLE ) {
-        return( file );
-    }
-#if defined( __QNX__ )
-    path = "/usr/watcom";
-#else
-    path = GetEnvString( "PATH" );
-#endif
-    if( path != NULL ) {
-        while( QMakeFileName( &path, name, fullpath ) ) {
+    if( file == NIL_FHANDLE && ExePath != NULL ) {
+        path_list = ExePath;
+        while( *path_list != '\0' ) {
+            strcpy( MakePath( fullpath, &path_list ), name );
             file = QObjOpen( fullpath );
             if( file != NIL_FHANDLE ) {
                 return( file );
             }
         }
     }
-    return( NIL_FHANDLE );
+    return( file );
 }
 
 group_entry *FindGroup( segment seg )

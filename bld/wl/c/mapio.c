@@ -46,6 +46,7 @@
 #include "fileio.h"
 #include "overlays.h"
 #include "ring.h"
+#include "objio.h"
 #include "mapio.h"
 
 #include "dwarf.h"
@@ -173,7 +174,7 @@ static void WriteBox( unsigned int msgnum )
 {
     char        box_buff[RESOURCE_MAX_SIZE];
     char        msg_buff[RESOURCE_MAX_SIZE];
-    int         i;
+    size_t      i;
 
     Msg_Get( msgnum, msg_buff );
     WriteMapNL( 2 );
@@ -324,21 +325,14 @@ void WritePubHead( void )
 }
 
 void WritePubModHead( void )
-/*********************************/
+/**************************/
 {
     char        full_name[PATH_MAX];
 
     if ( CurrMod->f.source == NULL ) {
-        strcpy( full_name , CurrMod->name );
+        strcpy( full_name, CurrMod->name );
     } else {
-        char    *path_ptr;
-
-        path_ptr = CurrMod->f.source->file->prefix;
-        if( path_ptr != NULL ) {
-            QMakeFileName( &path_ptr, CurrMod->f.source->file->name, full_name );
-        } else {
-            strcpy( full_name, CurrMod->f.source->file->name );
-        }
+        MakeFileName( CurrMod->f.source->file, full_name );
     }
     Msg_Write_Map( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name );
 }
@@ -826,21 +820,14 @@ void WriteLibsUsed( void )
 /*******************************/
 {
     file_list   *lib;
-    char        *name;
-    char        *path_ptr;
     char        new_name[PATH_MAX];
 
     if( LinkState & GENERATE_LIB_LIST ) {
         WriteBox( MSG_MAP_BOX_LIB_USED );
         for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
             if( lib->status & STAT_LIB_USED ) {
-                name = lib->file->name;
-                if( lib->file->prefix != NULL ) {
-                    path_ptr = lib->file->prefix;
-                    QMakeFileName( &path_ptr, name, new_name );
-                    name = new_name;
-                }
-                WriteMap( "%s", name );
+                MakeFileName( lib->file, new_name );
+                WriteMap( "%s", new_name );
             }
         }
         LinkState &= ~GENERATE_LIB_LIST;

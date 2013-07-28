@@ -44,3 +44,6 @@ extern void             FreeTokBuffs( void );
 extern void             BadObject( void );
 extern void             EarlyEOF( void );
 extern void             ResetObjIO( void );
+extern char             *MakePath( char *fullname, char **path_list );
+extern char             *MakeFileName( infilelist *file, char *fullname );
+extern int              MakeFileNameFromList( char **path_list, char *name, char *fullname );

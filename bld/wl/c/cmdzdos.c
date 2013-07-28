@@ -51,7 +51,7 @@ extern bool ProcZdos( void )
 /*************************/
 {
     FmtData.base = 0x1000;                      // assume user application
-    LinkState |= MAKE_RELOCS + FMT_DECIDED;     // make relocations;
+    LinkState |= MAKE_RELOCS | FMT_DECIDED;     // make relocations;
     ProcOne( ZdosOptions, SEP_NO, FALSE );
     if( FmtData.osname == NULL )
         FmtData.osname = "ZDOS User Application";
