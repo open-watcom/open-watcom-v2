@@ -490,10 +490,10 @@ void AsmSymFini( void )
 static int compare_fn( const void *p1, const void *p2 )
 /*****************************************************/
 {
-    struct asm_sym * const  *sym1 = p1;
-    struct asm_sym * const  *sym2 = p2;
+    const struct asm_sym *sym1 = *(const struct asm_sym **)p1;
+    const struct asm_sym *sym2 = *(const struct asm_sym **)p2;
 
-    return( strcmp( (*sym1)->name, (*sym2)->name ) );
+    return( strcmp( sym1->name, sym2->name ) );
 }
 
 static struct asm_sym **SortAsmSyms( void )

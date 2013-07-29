@@ -105,9 +105,10 @@ int main( int argc, char *argv[] )
     int             i1;
     int             i2;
     unsigned        words_count;
-    unsigned        chars_count;
-    unsigned        len;
+    size_t          chars_count;
+    size_t          len;
     unsigned        idx;
+    size_t          idxs;
     sword           *Words;
     char            *word;
     char            buf[KEY_MAX_LEN];
@@ -175,9 +176,9 @@ int main( int argc, char *argv[] )
                 len--;
             }
             strcpy( word, Words[idx].word );
-            chars_count += (unsigned)strlen( word );
+            chars_count += strlen( word );
         }
-        Words[idx].index = word - Chars;
+        Words[idx].index = (unsigned)( word - Chars );
     }
     qsort( Words, words_count, sizeof( sword ), str_compare );
 
@@ -189,11 +190,11 @@ int main( int argc, char *argv[] )
         exit( 1 );
     }
     fprintf( out, "const char AsmChars[] = {\n" );
-    for( idx = 0; idx < chars_count; idx++ ) {
-        if( idx % 10 == 0 )
-            fprintf( out, "/*%4u*/ ", idx );
-        fprintf( out, "'%c',", Chars[idx] );
-        if( idx % 10 == 9 ) {
+    for( idxs = 0; idxs < chars_count; idxs++ ) {
+        if( idxs % 10 == 0 )
+            fprintf( out, "/*%4u*/ ", (unsigned)idxs );
+        fprintf( out, "'%c',", Chars[idxs] );
+        if( idxs % 10 == 9 ) {
             fprintf( out, "\n" );
         }
     }
