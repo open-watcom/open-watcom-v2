@@ -152,7 +152,6 @@ extern void RcTmpFileName( char *tmpfilename )
 {
     char    *nextchar;
     char    *tmpdir;
-    size_t  len;
 
     tmpdir = RcGetEnv( "TMP" );
     nextchar = tmpfilename;
