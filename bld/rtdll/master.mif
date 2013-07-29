@@ -2,6 +2,8 @@ proj_name=rtdll
 
 rtdll_autodepends = .AUTODEPEND
 
+additional_cleanup = *.imp
+
 rtdll_host_cpu_086=i86
 rtdll_host_cpu_286=i86
 rtdll_host_cpu_287=i86
