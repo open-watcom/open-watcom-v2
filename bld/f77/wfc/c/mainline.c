@@ -90,7 +90,7 @@ int     main( int argc, char *argv[] ) {
     _real87 = _8087 = 0;
 #endif
     p = getenv( _WFC );
-    if( p != NULL ) {
+    if( p != NULL && *p != '\0' ) {
         strcpy( CmdBuff, p );
         p = &CmdBuff[ strlen( p ) ];
         *p = ' ';

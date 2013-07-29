@@ -475,7 +475,7 @@ static boolean openSrcPath(     // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     struct path_descr *fd,      // - file descriptor
     enum file_type typ )        // - type of file being opened
 {
-    boolean retn;               // - return: TRUE ==> opened
+    boolean retn = FALSE;       // - return: TRUE ==> opened
     struct path_descr pd;       // - path descriptor
     char dir[ _MAX_PATH*2 ];    // - new path
     char *pp;                   // - pointer into path
@@ -489,30 +489,24 @@ static boolean openSrcPath(     // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
         pp = stpcpy( dir, fd->drv );
         pp = stpcpy( pp, path );
     } else {
-        pp = NULL;
+        return( retn );
     }
-    if( pp == NULL ) {
-        retn = FALSE;
-    } else {
-        if( pp > dir ) {
-            if( !IS_PATH_SEP( pp[-1] ) ) {
-                *pp++ = DIR_SEP;
-            }
-        }
-        makeDirName( pp, fd );
-        splitFileName( dir, &pd );
-        ext = openSrcExts( exts, &pd, typ );
-        if( ext == NULL ) {
-            retn = FALSE;
-        } else {
-            if( ( typ == FT_SRC ) && ( ext != fd->ext ) ) {
-                _makepath( dir, fd->drv, fd->dir, fd->fnm, ext );
-                WholeFName = FNameAdd( dir );
-            }
-            retn = TRUE;
+    if( pp > dir ) {
+        if( !IS_PATH_SEP( pp[-1] ) ) {
+            *pp++ = DIR_SEP;
         }
     }
-    return retn;
+    makeDirName( pp, fd );
+    splitFileName( dir, &pd );
+    ext = openSrcExts( exts, &pd, typ );
+    if( ext != NULL ) {
+        retn = TRUE;
+        if( ( typ == FT_SRC ) && ( ext != fd->ext ) ) {
+            _makepath( dir, fd->drv, fd->dir, fd->fnm, ext );
+            WholeFName = FNameAdd( dir );
+        }
+    }
+    return( retn );
 }
 
 
@@ -862,9 +856,9 @@ void IoSuppTempRead(            // READ FROM TEMPORARY FILE
 }
 
 
-const char *IoSuppIncPathElement(   // GET ONE PATH ELEMENT FROM INCLUDE LIST
+const char *IoSuppGetPathElement(   // GET ONE PATH ELEMENT FROM INCLUDE LIST
     const char *path_list,          // - include list
-    char *path )                    // - buffer to store element
+    char **path )                   // - buffer to store element
 {
     bool    is_blank;
     char    c;
@@ -877,13 +871,12 @@ const char *IoSuppIncPathElement(   // GET ONE PATH ELEMENT FROM INCLUDE LIST
                 break;
             }
         } else if( !is_blank ) {
-            *path++ = c;
+            *(*path)++ = c;
         } else if( c != ' ' ) {
             is_blank = FALSE;
-            *path++ = c;
+            *(*path)++ = c;
         }
     }
-    *path = '\0';
     return( path_list );
 }
 

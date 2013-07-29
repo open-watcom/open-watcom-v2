@@ -77,6 +77,7 @@ extern  bool            SDError(file_handle,char *);
 extern  bool            SDEof(file_handle);
 extern  void            SDScratch(char *);
 extern  void            SDSetAttr(file_attr);
+extern  char            *GetPathElement( char *path_list, char **path );
 
 #define PF_INIT         0x00    // initial page flags
 #define PF_DIRTY        0x01    // page has been updated
@@ -113,21 +114,23 @@ void    InitObj( void ) {
         fn = PageFileBuff;
         len = 0;
         tmp = getenv( "TMP" );
-        if( tmp != NULL ) {
-            strcpy( fn, tmp );
-            len = strlen( fn );
-            fn += len;
-            if( len > 0 && !IS_PATH_SEP( fn[-1] ) ) {
-                *fn++ = DIR_SEP;
-                ++len;
+        if( tmp != NULL && *tmp != NULLCHAR ) {
+            GetPathElement( tmp, &fn );
+            if( fn != PageFileBuff ) {
+                char c = fn[-1];
+                if( !IS_PATH_SEP( c ) ) {
+                    *fn++ = DIR_SEP;
+                }
             }
         }
         strcpy( fn, PageFileName );
-        len += strlen( fn );
-        PageFileBuff[ len + 1 ] = NULLCHAR;
-        for( idx = 0; idx <= 25; idx++ ) {
-            PageFileBuff[ len ] = 'a' + idx;
-            if( access( PageFileBuff, 0 ) == -1 ) break;
+        fn += strlen( fn );
+        fn[1] = NULLCHAR;
+        for( idx = 0; idx < 26; idx++ ) {
+            fn[0] = 'a' + idx;
+            if( access( PageFileBuff, 0 ) == -1 ) {
+                break;
+            }
         }
         if( idx == 26 ) {
             Error( SM_OUT_OF_VM_FILES, PageFileName );

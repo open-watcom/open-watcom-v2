@@ -51,6 +51,8 @@ extern  void            FiniMacroProcessor(void);
 extern  void            SetDefaultOpts(void);
 extern  void            MsgBuffer(uint,char *,...);
 extern  void            ShowOptions(char *);
+extern  void            FIncludePathInit(void);
+extern  void            FIncludePathFini(void);
 
 extern  char            *UsageLines[];
 
@@ -59,6 +61,7 @@ void    InitCompMain( void ) {
 //======================
 
     FMemInit();
+    FIncludePathInit();
     InitCompile();
     ProgSw |= PS_FIRST_COMPILE;
     InitMacroProcessor();
@@ -71,6 +74,7 @@ void    FiniCompMain( void ) {
 //======================
 
     FiniMacroProcessor();
+    FIncludePathFini();
     FMemFini();
 }
 

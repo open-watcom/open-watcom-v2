@@ -44,20 +44,13 @@
 #include "pragdefn.h"
 #include "cfeinfo.h"
 
-#ifndef _MAX_PATH
-    #define _MAX_PATH   (PATH_MAX + 1)
-#endif
-#ifndef _MAX_PATH2
-    #define _MAX_PATH2  (PATH_MAX + 4)
-#endif
-
 #if defined(__UNIX__)
- #define C_PATH         "../c"
- #define H_PATH         "../h"
+ #define C_PATH         "../c/"
+ #define H_PATH         "../h/"
  #define OBJ_EXT        ".o"
 #else
- #define C_PATH         "..\\c"
- #define H_PATH         "..\\h"
+ #define C_PATH         "..\\c\\"
+ #define H_PATH         "..\\h\\"
  #define OBJ_EXT        ".obj"
 #endif
 #define DEF_EXT         ".def"
@@ -81,7 +74,7 @@ static  void        DelErrFile( void );
 static  void        MakePgmName( void );
 static  int         OpenFCB( FILE *fp, const char *filename );
 static  bool        IsFNameOnce( char const *filename );
-static  bool        TryOpen( char *prefix, const char *filename );
+static  bool        TryOpen( const char *path, const char *filename );
 static  void        ParseInit( void );
 static  void        CPP_Parse( void );
 static  int         FCB_Alloc( FILE *fp, const char *filename );
@@ -126,7 +119,7 @@ void ClearGlobals( void )
     DefFile = NULL;
     CppFile = NULL;
     DepFile = NULL;
-    IncPathList = NULL;
+    IncPathList = CMemAlloc( 1 );
     IncFileDepth = MAX_INC_DEPTH;
     SegmentNum = FIRST_PRIVATE_SEGMENT;
     BufSize = BUF_SIZE;
@@ -801,20 +794,22 @@ bool OpenSrcFile( const char *filename, bool is_lib )
                 }
             }
         }
-        if( IncPathList != NULL ) {
-            s = IncPathList;
-            while( (c = *s) != '\0' ) {
-                p = buff;
-                do {
-                    ++s;
-                    if( IS_PATH_LIST_SEP( c ) )
-                        break;
-                    *p++ = c;
-                } while( (c = *s) != '\0' );
-                *p = '\0';
-                if( TryOpen( buff, filename ) ) {
-                    return( TRUE );
-                }
+        s = IncPathList;
+        while( (c = *s) != '\0' ) {
+            p = buff;
+            do {
+                ++s;
+                if( IS_PATH_LIST_SEP( c ) )
+                    break;
+                *p++ = c;
+            } while( (c = *s) != '\0' );
+            c = p[-1];
+            if( !IS_PATH_SEP( c ) ) {
+                *p++ = DIR_SEP;
+            }
+            *p = '\0';
+            if( TryOpen( buff, filename ) ) {
+                return( TRUE );
             }
         }
         if( !is_lib ) {
@@ -940,10 +935,10 @@ bool FreeSrcFP( void )
     return( ret );
 }
 
-static bool TryOpen( char *prefix, const char *fname )
+static bool TryOpen( const char *path, const char *fname )
 {
     FILE        *fp;
-    char        filename[2 * 130];
+    char        filename[_MAX_PATH];
     char        *p;
 
     if( IncFileDepth == 0 ) {
@@ -952,17 +947,10 @@ static bool TryOpen( char *prefix, const char *fname )
         return( FALSE );
     }
     p = filename;
-    while( (*p = *prefix++) != '\0' )
+    while( (*p = *path++) != '\0' )
         ++p;
-    if( p != filename ) {
-        char c = p[-1];
-        if( !IS_PATH_SEP( c ) ) {
-            *p++ = DIR_SEP;
-        }
-    }
     while( (*p = *fname++) != '\0' )
         ++p;
-    *p = '\0';
     if( IsFNameOnce( filename ) ) {
         return( TRUE );
     }
@@ -1051,7 +1039,7 @@ FNAMEPTR FileIndexToFName( unsigned file_index )
 
 char *FNameFullPath( FNAMEPTR flist )
 {
-    char   fullbuff[2 * PATH_MAX];
+    char   fullbuff[2 * _MAX_PATH];
     char   *fullpath;
 
     if( flist->fullpath == NULL ) {
@@ -1172,7 +1160,7 @@ void FreeRDir( void )
     }
 }
 
-const char *IncPathElement( const char *path_list, char *path )
+const char *GetPathElement( const char *path_list, char **path )
 {
     bool    is_blank;
     char    c;
@@ -1185,24 +1173,25 @@ const char *IncPathElement( const char *path_list, char *path )
                 break;
             }
         } else if( !is_blank ) {
-            *path++ = c;
+            *(*path)++ = c;
         } else if( c != ' ' ) {
             is_blank = FALSE;
-            *path++ = c;
+            *(*path)++ = c;
         }
     }
-    *path = '\0';
     return( path_list );
 }
 
-void SrcFileReadOnlyDir( char const *dir )
+void SrcFileReadOnlyDir( char const *dirs )
 { // add dir to ro set
     char    *full;              // - full path
     char    path[_MAX_PATH];  // - used to extract directory
     char    buff[_MAX_PATH];  // - expanded path for directory
 
-    while( *dir != '\0' ) {
-        dir = IncPathElement( dir, path );
+    while( *dirs != '\0' ) {
+        char *p = path;
+        dirs = GetPathElement( dirs, &p );
+        *p = '\0';
         full = SrcFullPath( path, buff, sizeof( buff ) );
         AddRDir( full );
     }

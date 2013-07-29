@@ -201,7 +201,8 @@ static  void    DefOption( opt_entry *optn, char *ptr ) {
 }
 
 
-static char *IncPathElement( char *path_list, char *path )
+char *GetPathElement( char *path_list, char **path )
+//==================================================
 {
     bool    is_blank;
     char    c;
@@ -214,13 +215,12 @@ static char *IncPathElement( char *path_list, char *path )
                 break;
             }
         } else if( !is_blank ) {
-            *path++ = c;
+            *(*path)++ = c;
         } else if( c != ' ' ) {
             is_blank = FALSE;
-            *path++ = c;
+            *(*path)++ = c;
         }
     }
-    *path = NULLCHAR;
     return( path_list );
 }
 
@@ -247,27 +247,54 @@ static  void    PathOption( opt_entry *optn, char *ptr )
     if( IncludePath == NULL ) {
         p = IncludePath = FMemAlloc( len + 1 );
     } else {
-        old_len = strlen( IncludePath );
         old_list = IncludePath;
+        old_len = strlen( old_list );
         IncludePath = FMemAlloc( old_len + 1 + len + 1 );
         memcpy( IncludePath, old_list, len );
         FMemFree( old_list );
         p = IncludePath + old_len;
     }
     while( *ptr != NULLCHAR ) {
-        if( p != IncludePath ) {
+        if( p != IncludePath )
             *p++ = PATH_LIST_SEP;
+        ptr = GetPathElement( ptr, &p );
+    }
+    *p = NULLCHAR;
+}
+
+void    FIncludePathInit( void )
+//==============================
+{
+    char    *env;
+    size_t  len;
+    char    *p;
+
+    FIncludePath = NULL;
+    env = getenv( "FINCLUDE" );
+    if( env != NULL && *env != '\0' ) {
+        len = strlen( env );
+        p = FIncludePath = FMemAlloc( len + 1 );
+        while( *env != NULLCHAR ) {
+            if( p != IncludePath )
+                *p++ = PATH_LIST_SEP;
+            env = GetPathElement( env, &p );
         }
-        ptr = IncPathElement( ptr, p );
-        p += strlen( p );
+        *p = NULLCHAR;
     }
 }
 
+void    FIncludePathFini( void )
+//==============================
+{
+    if( FIncludePath != NULL ) {
+        FMemFree( FIncludePath );
+    }
+}
 
-void            FiniProcCmd(void) {
-//=================================
+void    FiniProcCmd( void ) {
+//===========================
 
-    if( IncludePath ) {
+    if( IncludePath != NULL ) {
         FMemFree( IncludePath );
     }
 }

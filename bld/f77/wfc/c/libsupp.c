@@ -45,8 +45,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-#define LIBRARY_SEP ';'
-
 extern  void            SDClose(file_handle);
 extern  file_handle     SDOpen(char *,int);
 extern  uint            SDRead(file_handle,char *,uint);
@@ -57,8 +55,6 @@ extern  int             MakeName(char *,char *,char *);
 extern  int             CopyMaxStr(char *,char *,int);
 
 extern  char            ForExtn[];
-
-static  char            LibEnvStr[] = { "FINCLUDE" };
 
 
 static  lib_handle FindSrcFile( char *fname ) {
@@ -77,85 +73,35 @@ static  lib_handle FindSrcFile( char *fname ) {
 }
 
 
-static  int     Combine( char *path, char *name, char *buff, int buff_len ) {
-//===========================================================================
+static lib_handle SearchPath( char *path_list, char *name ) {
+//===========================================================
 
-// Combine the path and filename.
-
-    int         len;
-
-    len = CopyMaxStr( path, buff, buff_len );
-    if( len > 0 && !IS_PATH_SEP( buff[len - 1] ) ) {
-        buff[len++] = DIR_SEP;
-    }
-    len += CopyMaxStr( name, buff + len, buff_len - len );
-    return( len );
-}
-
-
-static  lib_handle SearchDir( char *path, char *name ) {
-//======================================================
-
-// Search a directory for a source file.
-
-    char        fname[_MAX_PATH];
-
-    fname[Combine( path, name, fname, _MAX_PATH - 1 )] = NULLCHAR;
-    return( FindSrcFile( fname ) );
-}
-
-
-static  bool    ExtractName( char **lib ) {
-//=========================================
-
-// Extract a file name from library specification.
-
-    char        *ptr;
-    bool        last;
-
-    last = TRUE;
-    ptr = *lib;
-    while( *ptr != NULLCHAR ) {
-        if( IS_INCL_SEP( *ptr ) ) {
-            last = FALSE;
-            break;
-        }
-        ptr++;
-    }
-    *lib = ptr;
-    for(;;) {
-        ptr--;
-        if( *ptr != ' ' ) break;
-    }
-    ptr++;
-    *ptr = NULLCHAR;
-    return( last );
-}
-
-
-static lib_handle SearchPath( char *path, char *name ) {
-//======================================================
-
-    char        *ptr;
+    char        *p;
     lib_handle  lp;
-    bool        last;
+    char        buff[2 * _MAX_PATH];
+    char        c;
 
     lp = NULL;
-    ptr = alloca( strlen( path ) + sizeof( char ) );
-    if( ptr != NULL ) {
-        strcpy( ptr, path );
-        for(;;) {
-            path = ptr;
-            last = ExtractName( &ptr );
-            lp = SearchDir( path, name );
-            if( lp != NULL ) break;
-            if( last ) break;
-            ptr++; // skip the LIBRARY_SEP
+    while( (c = *path_list) != '\0' ) {
+        p = buff;
+        do {
+            ++path_list;
+            if( IS_PATH_LIST_SEP( c ) )
+                break;
+            *p++ = c;
+        } while( (c = *path_list) != '\0' );
+        c = p[-1];
+        if( !IS_PATH_SEP( c ) ) {
+            *p++ = DIR_SEP;
+        }
+        strcpy( p, name );
+        lp = FindSrcFile( buff );
+        if( lp != NULL ) {
+            break;
         }
     }
     return( lp );
 }
-
 
 lib_handle      IncSearch( char *name ) {
 //=======================================
@@ -163,16 +109,13 @@ lib_handle      IncSearch( char *name ) {
 // Search for a library member.
 
     lib_handle  lp;
-    char        *path;
 
     lp = NULL;
     if( IncludePath != NULL ) {
         lp = SearchPath( IncludePath, name );
-        if( lp != NULL ) return( lp );
     }
-    path = getenv( LibEnvStr );
-    if( path != NULL ) {
-        lp = SearchPath( path, name );
+    if( lp == NULL && FIncludePath != NULL ) {
+        lp = SearchPath( FIncludePath, name );
     }
     return( lp );
 }
@@ -212,5 +155,3 @@ void    IncMemClose( lib_handle lp ) {
 
     SDClose( lp );
 }
-
-

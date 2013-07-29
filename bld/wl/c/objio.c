@@ -141,11 +141,9 @@ char *MakePath( char *fullname, char **path_list )
             }
             *p++ = c;
         } while( (c = **path_list) != '\0' );
-        if( p != fullname ) {
-            c = p[-1];
-            if( !IS_PATH_SEP( c ) ) {
-                *p++ = DIR_SEP;
-            }
+        c = p[-1];
+        if( !IS_PATH_SEP( c ) ) {
+            *p++ = DIR_SEP;
         }
     }
     return( p );

@@ -210,7 +210,7 @@ extern void InitPaths()
 
 
 
-static const char *IncPathElement( const char *path_list, char *path )
+static const char *GetPathElement( const char *path_list, char **path )
 {
     bool    is_blank;
     char    c;
@@ -223,13 +223,12 @@ static const char *IncPathElement( const char *path_list, char *path )
                 break;
             }
         } else if( !is_blank ) {
-            *path++ = c;
+            *(*path)++ = c;
         } else if( c != ' ' ) {
             is_blank = FALSE;
-            *path++ = c;
+            *(*path)++ = c;
         }
     }
-    *path = '\0';
     return( path_list );
 }
 
@@ -240,21 +239,20 @@ extern void AddPath( path_list **path_var, const char *path_data )
     char            path[_MAX_PATH];
     path_list *     path_tail;
     path_list *     path_item;
-    int             len;
-    char            *dst;
+    size_t          len;
 
     if( path_data == NULL )
         return;
     path_tail = *path_var;
     while( *path_data != NULLCHAR ) {
-        path_data = IncPathElement( path_data, path );
-        len = strlen( path );
-        if( len > 0 ) {
-            dst = path + len;
-            if( !IS_PATH_SEP( dst[-1] ) ) {
-                *dst++ = DIR_SEP;
+        char *p = path;
+        path_data = GetPathElement( path_data, &p );
+        if( p != path ) {
+            if( !IS_PATH_SEP( p[-1] ) ) {
+                *p++ = DIR_SEP;
             }
-            path_item = ProfAlloc( sizeof( path_list ) + len + 1 );
+            len = p - path;
+            path_item = ProfAlloc( sizeof( path_list ) + len );
             memcpy( path_item->path_data, path, len );
             path_item->path_data[len] = NULLCHAR;
             if( path_tail == NULL ) {

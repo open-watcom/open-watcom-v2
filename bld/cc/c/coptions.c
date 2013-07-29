@@ -755,31 +755,27 @@ static void MacroDefs( void )
     }
 }
 
-static void AddIncList( const char *str )
+static void AddIncList( const char *path_list )
 {
     int         old_len;
     int         len;
     char        *old_list;
     char        *p;
 
-    len = strlen( str );
-    if( len != 0 ) {
-        if( IncPathList != NULL ) {
-            old_len = strlen( IncPathList );
-            old_list = IncPathList;
-            IncPathList = CMemAlloc( old_len + 1 + len + 1 );
-            memcpy( IncPathList, old_list, old_len );
-            CMemFree( old_list );
-            p = IncPathList + old_len;
-        } else {
-            p = IncPathList = CMemAlloc( len + 1 );
-        }
-        while( *str != '\0' ) {
+    if( path_list != NULL && *path_list != '\0' ) {
+        len = strlen( path_list );
+        old_list = IncPathList;
+        old_len = strlen( old_list );
+        IncPathList = CMemAlloc( old_len + 1 + len + 1 );
+        memcpy( IncPathList, old_list, old_len );
+        CMemFree( old_list );
+        p = IncPathList + old_len;
+        while( *path_list != '\0' ) {
             if( p != IncPathList )
                 *p++ = PATH_LIST_SEP;
-            str = IncPathElement( str, p );
-            p += strlen( p );
+            path_list = GetPathElement( path_list, &p );
         }
+        *p = '\0';
     }
 }
 
@@ -806,12 +802,7 @@ void MergeInclude( void )
             break;
         }
         strcat( buff, "_" INC_VAR );
-        env_var = FEGetEnv( buff );
-        if( env_var != NULL ) {
-            while( *env_var == ' ' )
-                ++env_var;
-            AddIncList( env_var );
-        }
+        AddIncList( FEGetEnv( buff ) );
 
 #if _CPU == 386
         env_var = FEGetEnv( "INC386" );
@@ -821,11 +812,7 @@ void MergeInclude( void )
 #else
         env_var = FEGetEnv( INC_VAR );
 #endif
-        if( env_var != NULL ) {
-            while( *env_var == ' ' )
-                ++env_var;
-            AddIncList( env_var );
-        }
+        AddIncList( env_var );
     }
     CMemFree( SwData.sys_name );
 }

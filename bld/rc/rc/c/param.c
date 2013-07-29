@@ -106,7 +106,8 @@ static bool scanString( char *buf, const char *str, unsigned len )
     char        c;
 
     have_quote = FALSE;
-    while( isspace( *str ) ) str++;
+    while( isspace( *str ) )
+        ++str;
     while( (c = *str++) != '\0' && len > 0 ) {
         if( c == '\"' ) {
             have_quote = !have_quote;
@@ -658,19 +659,19 @@ static void defaultParms( void )
     CmdLineParms.PreprocessOnly = FALSE;
     CmdLineParms.ExtraResFiles = NULL;
     CmdLineParms.FindReplaceStrings = NULL;
-    #ifdef __OSI__
-        if( __OS == OS_NT ) {
-            CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
-        } else {
-            CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
-        }
-    #elif defined(__NT__)
+#ifdef __OSI__
+    if( __OS == OS_NT ) {
         CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
-    #elif defined(__OS2__)
-        CmdLineParms.TargetOS = RC_TARGET_OS_OS2;
-    #else
+    } else {
         CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
-    #endif
+    }
+#elif defined(__NT__)
+    CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
+#elif defined(__OS2__)
+    CmdLineParms.TargetOS = RC_TARGET_OS_OS2;
+#else
+    CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
+#endif
 } /* defaultParms */
 
 

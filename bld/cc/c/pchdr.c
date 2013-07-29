@@ -325,13 +325,8 @@ static void OutPutIncPathList( void )     // output include paths
     int         rc;
     unsigned    len;
 
-    if( IncPathList == NULL ) {
-        len = 0;
-        rc = PCHWrite( &len, 1 );
-    } else {
-        len = strlen( IncPathList ) + 1;
-        rc = PCHWrite( IncPathList, len );
-    }
+    len = strlen( IncPathList ) + 1;
+    rc = PCHWrite( IncPathList, len );
     if( rc != 0 ) {
         longjmp( PH_jmpbuf, rc );
     }
@@ -1821,7 +1816,7 @@ int UsePreCompiledHeader( const char *filename )
         return( -1 );
     }
     len = strlen( p ) + 1;              // get length of saved IncPathList
-    if( IncPathList == NULL && len > 1 || IncPathList != NULL && FNAMECMPSTR( p, IncPathList ) != 0 ) {
+    if( FNAMECMPSTR( p, IncPathList ) != 0 ) {
         PCHNote( PCHDR_INCPATH_CHANGED );
         AbortPreCompiledHeader();
         return( -1 );

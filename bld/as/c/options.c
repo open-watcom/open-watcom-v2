@@ -105,11 +105,9 @@ extern void OptionsFini( void ) {
     unsigned    idx = 0;
     char        *str;
 
-    if( ppDefines ) {
-        str = ppDefines[idx++];
-        while( str ) {
+    if( ppDefines != NULL ) {
+        while( (str = ppDefines[idx++]) != NULL ) {
             MemFree( str );
-            str = ppDefines[idx++];
         }
         MemFree( ppDefines );
     }
@@ -121,6 +119,7 @@ extern bool OptionsInit( int argc, char **argv ) {
 
     char        *s;
 
+    PP_IncludePathInit();
 #ifdef AS_ALPHA
     s = "__WASAXP__=" BANSTR( _BANVER ) ;
 #elif defined( AS_PPC )
@@ -172,9 +171,8 @@ extern bool OptionsInit( int argc, char **argv ) {
                 break;
             case 'i':
             case 'I':
-                if( *s == '=' ) {
+                if( *s == '=' )
                     ++s;
-                }
                 if( *s != '\0' ) {
                     PP_AddIncludePath( s );
                 }

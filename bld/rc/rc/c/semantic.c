@@ -43,7 +43,7 @@ static WResLangType resourceLang;
 
 /* used in the work around for MS format RES files */
 static WResFileID   MSFormatHandle;     /* holding place for the RES file handle */
-static char         MSFormatTmpFile[_MAX_PATH] = "";
+static char         MSFormatTmpFile[2 * _MAX_PATH] = "";
 
 /* Modified from WINNT.H */
 #ifndef MAKELANGID

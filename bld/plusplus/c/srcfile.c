@@ -1586,8 +1586,7 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
     boolean read_only;          // - TRUE ==> file is in read-only directory
     char const *file_name;      // - file name of current entry
 
-    for( ; ; curr = curr->unique ) {
-        if( NULL == curr ) break;
+    for( ; curr != NULL; curr = curr->unique ) {
         if( curr->read_only ) continue;
         read_only = FALSE;
         file_name = SrcFileFullName( curr );
@@ -1611,7 +1610,7 @@ static void addRoDir( const char *dirname )
 }
 
 void SrcFileReadOnlyDir(        // SPECIFY DIRECTORY AS READ-ONLY
-    char const *dir )           // - the directory
+    char const *path_list )     // - the directory
 {
     char *full;                 // - full path
     auto char path[_MAX_PATH];  // - used to extract directory
@@ -1619,8 +1618,10 @@ void SrcFileReadOnlyDir(        // SPECIFY DIRECTORY AS READ-ONLY
     DIR_LIST* curr;             // - current R/O entry
     DIR_LIST* srch;             // - search R/O entry
 
-    while( *dir != '\0' ) {
-        dir = IoSuppIncPathElement( dir, path );
+    while( *path_list != '\0' ) {
+        char *p = path;
+        path_list = IoSuppGetPathElement( path_list, &p );
+        *p = '\0';
         full = IoSuppFullPath( path, buff, sizeof( buff ) );
         curr = NULL;
         RingIterBeg( roDirs, srch ) {

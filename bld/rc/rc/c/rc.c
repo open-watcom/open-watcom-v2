@@ -76,6 +76,7 @@ void InitGlobs( void )
     WriteInitStatics();
     PreprocVarInit();
     PPMacroVarInit();
+    PP_IncludePathInit();
     ParseInitStaticsWIN();
     ParseInitStaticsOS2();
 }

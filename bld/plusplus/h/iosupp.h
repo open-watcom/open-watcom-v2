@@ -94,9 +94,9 @@ boolean IoSuppOpenSrc(          // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
     enum file_type )            // - what type of file is it?
 ;
-const char *IoSuppIncPathElement( // GET ONE PATH ELEMENT FROM INCLUDE LIST
-    const char *path,           // - include list
-    char *prefix )              // - buffer to store element
+const char *IoSuppGetPathElement( // GET ONE PATH ELEMENT FROM INCLUDE LIST
+    const char *path_list,      // - include list
+    char **path )               // - buffer to store element
 ;
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     enum out_file_type )        // - extension

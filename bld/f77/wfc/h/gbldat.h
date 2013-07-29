@@ -67,6 +67,7 @@ gbl_defn char           *SrcName;       // name of source file
 gbl_defn char           *ObjName;       // name of object output file
 gbl_defn source_t       *CurrFile;      // linked list of open FOR77 files
 gbl_defn char           *IncludePath;   // path for INCLUDE files
+gbl_defn char           *FIncludePath;  // path for FINCLUDE files
 
 gbl_defn char           TokenBuff[TOKLEN+1];
     // Buffer for collecting tokens. Also used for passing source

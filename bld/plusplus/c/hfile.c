@@ -101,9 +101,9 @@ void HFileAppend(               // APPEND HFILE TO LIST
         while( *path_list != '\0' ) {
             if( p != hfile_list )
                 *p++ = PATH_LIST_SEP;
-            path_list = IoSuppIncPathElement( path_list, p );
-            p += strlen( p );
+            path_list = IoSuppGetPathElement( path_list, &p );
         }
+        *p = '\0';
     }
 }
 

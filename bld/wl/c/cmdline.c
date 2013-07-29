@@ -846,8 +846,8 @@ void AddLibPaths( char *path_list, unsigned len, bool add_to_front )
     char            *end;
 
     _ChkAlloc( newpath, sizeof( path_entry ) + len );
-    p = newpath->name;
     end = path_list + len;
+    p = newpath->name;
     while( path_list != end ) {
         if( p != newpath->name )
             *p++ = PATH_LIST_SEP;

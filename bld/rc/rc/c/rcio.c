@@ -145,8 +145,8 @@ int RcFindResource( const char *name, char *fullpath )
     return( PP_FindInclude( name, fullpath, PPINCLUDE_SRC ) );
 }
 
-extern void RcTmpFileName( char * tmpfilename )
-/*********************************************/
+extern void RcTmpFileName( char *tmpfilename )
+/********************************************/
 /* uses the TMP env. var. if it is set and puts the result into tmpfilename */
 /* which is assumed to be a buffer of at least _MAX_PATH characters */
 {
@@ -155,18 +155,12 @@ extern void RcTmpFileName( char * tmpfilename )
     size_t  len;
 
     tmpdir = RcGetEnv( "TMP" );
-    if( tmpdir != NULL ) {
-        /* leave room for the '\' and the filename */
-        strncpy( tmpfilename, tmpdir, _MAX_PATH - L_tmpnam - 1 );
-        tmpfilename[_MAX_PATH - L_tmpnam - 1] = '\0';
-        len = strlen( tmpfilename );
-        nextchar = tmpfilename + len;
-        /* tack a '\' onto the end if it is not there already */
-        if( len > 0 && !IS_PATH_SEP( nextchar[-1] ) ) {
+    nextchar = tmpfilename;
+    if( tmpdir != NULL && *tmpdir != '\0' ) {
+        GetPathElement( tmpdir, &nextchar );
+        if( !IS_PATH_SEP( nextchar[-1] ) ) {
             *nextchar++ = DIR_SEP;
         }
-    } else {
-        nextchar = tmpfilename;
     }
     tmpnam( nextchar );
 }
