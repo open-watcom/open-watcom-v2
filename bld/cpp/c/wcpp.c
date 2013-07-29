@@ -88,6 +88,7 @@ int main( int argc, char *argv[] )
     int         numdefs = 0;
     int         ch;
 
+    PP_IncludePathInit();
 #ifdef __UNIX__
     AltOptChar = '-';
 #endif

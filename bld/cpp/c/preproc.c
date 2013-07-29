@@ -38,6 +38,12 @@
 
 #define DOS_EOF_CHAR    0x1A
 
+#if defined( __UNIX__ )
+#define H_DIR	"../h/"
+#else
+#define H_DIR	"..\\h\\"
+#endif
+
 typedef struct cpp_info {
     struct cpp_info *prev_cpp;
     unsigned char   cpp_type;
@@ -50,7 +56,7 @@ enum cpp_types {
     PP_ELSE
 };
 
-FILELIST    *PP_File;
+FILELIST    *PP_File = NULL;
 CPP_INFO    *PPStack;
 int         NestLevel;
 int         SkipLevel;
@@ -120,7 +126,7 @@ int PP_Open( const char *filename )
     return( handle );
 }
 
-static const char *IncPathElement( const char *path_list, char *path )
+const char *GetPathElement( const char *path_list, char **path )
 {
     bool    is_blank;
     char    c;
@@ -133,13 +139,12 @@ static const char *IncPathElement( const char *path_list, char *path )
                 break;
             }
         } else if( !is_blank ) {
-            *path++ = c;
+            *(*path)++ = c;
         } else if( c != ' ' ) {
             is_blank = FALSE;
-            *path++ = c;
+            *(*path)++ = c;
         }
     }
-    *path = '\0';
     return( path_list );
 }
 
@@ -165,9 +170,9 @@ static char *AddIncludePath( char *old_list, const char *path_list )
         while( *path_list != '\0' ) {
             if( p != new_list )
                 *p++ = PATH_LIST_SEP;
-            path_list = IncPathElement( path_list, p );
-            p += strlen( p );
+            path_list = GetPathElement( path_list, &p );
         }
+        *p = '\0';
     }
     return( new_list );
 }
@@ -177,11 +182,15 @@ void PP_AddIncludePath( const char *path_list )
     IncludePath1 = AddIncludePath( IncludePath1, path_list );
 }
 
+void PP_IncludePathInit( void )
+{
+    IncludePath1 = PP_Malloc( 1 );
+    *IncludePath1 = '\0';
+}
+
 void PP_IncludePathFini( void )
 {
-    if( IncludePath1 != NULL ) {
-        PP_Free( IncludePath1 );
-    }
+    PP_Free( IncludePath1 );
 }
 
 static int findInclude( const char *path, const char *filename, char *fullfilename )
@@ -189,26 +198,22 @@ static int findInclude( const char *path, const char *filename, char *fullfilena
     char        *p;
     char        c;
 
-    if( path != NULL ) {
-        while( (c = *path) != '\0' ) {
-            p = fullfilename;
-            do {
-                ++path;
-                if( IS_PATH_LIST_SEP( c ) ) {
-                    break;
-                }
-                *p++ = c;
-            } while( (c = *path) != '\0' );
-            if( p != fullfilename ) {
-                c = p[-1];
-                if( !IS_PATH_SEP( c ) ) {
-                    *p++ = DIR_SEP;
-                }
+    while( (c = *path) != '\0' ) {
+        p = fullfilename;
+        do {
+            ++path;
+            if( IS_PATH_LIST_SEP( c ) ) {
+                break;
             }
-            strcpy( p, filename );
-            if( access( fullfilename, R_OK ) == 0 ) {
-                return( 0 );
-            }
+            *p++ = c;
+        } while( (c = *path) != '\0' );
+        c = p[-1];
+        if( !IS_PATH_SEP( c ) ) {
+            *p++ = DIR_SEP;
+        }
+        strcpy( p, filename );
+        if( access( fullfilename, R_OK ) == 0 ) {
+            return( 0 );
         }
     }
     return( -1 );
@@ -265,14 +270,14 @@ int PP_FindInclude( const char *filename, char *fullfilename, int incl_type )
             strcpy( fullfilename + len, filename );
             rc = access( fullfilename, R_OK );
         }
-        if( rc == -1 ) {
+        if( rc == -1 && IncludePath1 != NULL ) {
             rc = findInclude( IncludePath1, filename, fullfilename );
         }
-        if( rc == -1 ) {
+        if( rc == -1 && IncludePath2 != NULL ) {
             rc = findInclude( IncludePath2, filename, fullfilename );
         }
         if( rc == -1 && incl_type == PPINCLUDE_USR && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
-            sprintf( fullfilename, "..%ch%c%s", DIR_SEP, DIR_SEP, filename );
+            sprintf( fullfilename, H_DIR "%s", filename );
             rc = access( fullfilename, R_OK );
         }
     }
@@ -376,7 +381,8 @@ int PP_Init2( const char *filename, unsigned flags, const char *include_path, co
     NestLevel = 0;
     SkipLevel = 0;
     PPFlags = flags;
-    IncludePath2 = NULL;
+    IncludePath2 = PP_Malloc( 1 );
+    *IncludePath2 = '\0';
     IncludePath2 = AddIncludePath( IncludePath2, include_path );
     if( (PPFlags & PPFLAG_IGNORE_INCLUDE) == 0 ) {
         IncludePath2 = AddIncludePath( IncludePath2, getenv( "INCLUDE" ) );
@@ -1329,5 +1335,4 @@ extern void PreprocVarInit( void )
     PPCurToken = NULL;
     memset( PPLineBuf, 0, sizeof( PPLineBuf ) );
     PreProcChar = '#';
-    IncludePath1 = NULL;
 }
