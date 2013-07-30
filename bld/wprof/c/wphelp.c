@@ -35,19 +35,17 @@
 #include "aui.h"
 #include "dip.h"
 #include "msg.h"
-#include "pathlist.h"
-
-extern void ErrorMsg(char *msg,... );
-extern char *FindFile(char *path,char *name,path_list *path_tail);
-
-
-STATIC gui_help_instance    helpHandle;
-
-extern a_window             *WndMain;
-extern path_list            *HelpPathList;
 
 #define HELPNAME        "wprof.hlp"
 #define HTMLHELPNAME    "wprof.chm"
+
+extern void ErrorMsg(char *msg,... );
+extern char *FindFile(char *path, char *name, char *path_list);
+
+extern a_window             *WndMain;
+extern char                 *HelpPathList;
+
+STATIC gui_help_instance    helpHandle;
 
 
 void WPInitHelp( void )

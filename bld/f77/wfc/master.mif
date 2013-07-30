@@ -32,7 +32,7 @@ extra_c_flags_i86 = -zp1
 extra_c_flags_386 = -zp1
 
 .h: ..;../../h;../../../h
-.c: ..;../../c;../../../c;$(asminline_c);$(trmem_dir);
+.c: ..;../../c;../../../c;$(asminline_c);$(trmem_dir);$(watcom_dir)/c
 
 !ifeq host_cpu axp
 extra_a_flags = -oc

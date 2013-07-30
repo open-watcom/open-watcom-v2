@@ -50,6 +50,7 @@
 #include "permdata.h"
 #include "objio.h"
 #include "mapio.h"
+#include "pathlist.h"
 
 
 void WriteNulls( f_handle file, unsigned_32 len, char *name )
@@ -456,36 +457,12 @@ void Suicide( void )
     }
 }
 
-char *GetPathElement( char *path_list, char *end, char **path )
-/*************************************************************/
-{
-    bool        is_blank;
-    char        c;
-
-    is_blank = TRUE;
-    while( path_list != end ) {
-        c = *path_list++;
-        if( IS_INCL_SEP( c ) ) {
-            if( !is_blank ) {
-                break;
-            }
-        } else if( !is_blank ) {
-            *(*path)++ = c;
-        } else if( c != ' ' ) {
-            is_blank = FALSE;
-            *(*path)++ = c;
-        }
-    }
-    return( path_list );
-}
-
 void InitEnvVars( void )
 /**********************/
 {
     char        *path_list;
     size_t      len;
     char        *p;
-    char        *end;
 
     if( ExePath == NULL ) {
 #if defined( __QNX__ )
@@ -497,12 +474,11 @@ void InitEnvVars( void )
             len = strlen( path_list );
             _ChkAlloc( ExePath, len + 1 );
             p = ExePath;
-            end = path_list + len;
             do {
                 if( p != ExePath )
                     *p++ = PATH_LIST_SEP;
-                path_list = GetPathElement( path_list, end, &p );
-            } while( path_list != end );
+                path_list = GetPathElement( path_list, &p );
+            } while( *path_list != '\0' );
             *p = '\0';
         } else {
             _ChkAlloc( ExePath, 1 );
@@ -515,12 +491,11 @@ void InitEnvVars( void )
             len = strlen( path_list );
             _ChkAlloc( LibPath, len + 1 );
             p = LibPath;
-            end = path_list + len;
             do {
                 if( p != LibPath )
                     *p++ = PATH_LIST_SEP;
-                path_list = GetPathElement( path_list, end, &p );
-            } while( path_list != end );
+                path_list = GetPathElement( path_list, &p );
+            } while( *path_list != '\0' );
             *p = '\0';
         } else {
             _ChkAlloc( LibPath, 1 );

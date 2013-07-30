@@ -41,7 +41,6 @@
 #include "dlgcnvt.h"
 #include "sampinfo.h"
 #include "msg.h"
-#include "pathlist.h"
 
 
 extern void ReplaceExt(char *path,char *addext);

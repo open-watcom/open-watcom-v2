@@ -80,6 +80,7 @@ common_objs = &
     $(_subdir_)cgendata.obj &
     $(_subdir_)exprtree.obj &
     $(_subdir_)treewalk.obj &
+    $(_subdir_)pathlist.obj &
     $(_subdir_)mngless.obj
 
 !ifeq release 0

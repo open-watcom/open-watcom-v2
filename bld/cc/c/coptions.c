@@ -45,6 +45,7 @@
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "iopath.h"
+#include "pathlist.h"
 #ifdef __OSI__
  #include "ostype.h"
 #endif

@@ -43,7 +43,6 @@
 #include "dip.h"
 #include "aui.h"
 #include "sampinfo.h"
-#include "pathlist.h"
 #include "memutil.h"
 
 extern void WPFiniHelp(void);

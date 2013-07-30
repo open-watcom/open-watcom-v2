@@ -136,7 +136,6 @@ extern  MACRO_TOKEN *PPNextToken(void);
 extern  MACRO_TOKEN *NextMToken(void);
 extern  void        DeleteNestedMacro(void);
 extern  void        DoMacroExpansion( MACRO_ENTRY *__me );
-extern  const char  *GetPathElement( const char *path_list, char **path );
 extern  void        PP_AddIncludePath( const char *path_list );
 extern  void        PP_IncludePathInit( void );
 extern  void        PP_IncludePathFini( void );

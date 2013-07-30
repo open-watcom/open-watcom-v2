@@ -39,6 +39,7 @@
 #include "iosupp.h"
 #include "initdefs.h"
 #include "iopath.h"
+#include "pathlist.h"
 
 static char *hfile_list;        // list of H files
 static char *hfile_ptr;         // current position in list
@@ -101,7 +102,7 @@ void HFileAppend(               // APPEND HFILE TO LIST
         while( *path_list != '\0' ) {
             if( p != hfile_list )
                 *p++ = PATH_LIST_SEP;
-            path_list = IoSuppGetPathElement( path_list, &p );
+            path_list = GetPathElement( path_list, &p );
         }
         *p = '\0';
     }

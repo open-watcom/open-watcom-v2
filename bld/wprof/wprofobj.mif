@@ -55,4 +55,5 @@ objs = &
     wpsort.obj &
     wpstart.obj &
     wpsrcfil.obj &
+    pathlist.obj &
     wpwind.obj

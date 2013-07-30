@@ -60,6 +60,7 @@
 // #include "permdata.h"
 #include "dbgall.h"
 #include "loadfile.h"
+#include "pathlist.h"
 
 #ifdef _INT_DEBUG
 unsigned int            Debug;
@@ -851,7 +852,7 @@ void AddLibPaths( char *path_list, unsigned len, bool add_to_front )
     while( path_list != end ) {
         if( p != newpath->name )
             *p++ = PATH_LIST_SEP;
-        path_list = GetPathElement( path_list, end, &p );
+        path_list = GetPathElementEnd( path_list, end, &p );
     }
     *p = '\0';
     if( add_to_front ) {

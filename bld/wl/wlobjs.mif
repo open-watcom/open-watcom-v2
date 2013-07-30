@@ -104,6 +104,7 @@ common_objs = &
     $(_subdir_)exerespe.obj &
     $(_subdir_)sharedio.obj &
     $(_subdir_)rcstr.obj &
+    $(_subdir_)pathlist.obj &
     $(trmem_objs)
 
 !ifeq use_virtmem 1

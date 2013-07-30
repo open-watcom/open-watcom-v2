@@ -9,7 +9,7 @@ ssl_autodepends = .autodepend
 
 inc_dirs = -I"../h" $(cpp_inc_dirs)
 
-.c: ../c;$(cpp_c_dirs)
+.c: ../c;$(cpp_c_dirs);$(watcom_dir)/c
 
 objs =                  &
         ssl.obj         &
@@ -20,7 +20,8 @@ objs =                  &
         preproc.obj     &
         ppexpr.obj      &
         ppmacro.obj     &
-        ppmem.obj
+        ppmem.obj       &
+        pathlist.obj
 
 $(proj_name).exe : $(objs)
 !ifndef __WATCOM__

@@ -36,7 +36,6 @@
 #include "wpaui.h"
 #include "dip.h"
 #include "msg.h"
-#include "pathlist.h"
 
 
 extern void OpenSample(void);

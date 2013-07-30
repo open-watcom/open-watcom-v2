@@ -201,6 +201,7 @@ common_objs = &
     $(_subdir_)ytab.obj &
 # watcom files
     $(_subdir_)autodept.obj &
+    $(_subdir_)pathlist.obj &
 # fe_misc files
     $(_subdir_)intlload.obj &
 # in-line assembler files

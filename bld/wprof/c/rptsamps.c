@@ -39,7 +39,6 @@
 #include "machtype.h"
 #include "msg.h"
 #include "sampinfo.h"
-#include "pathlist.h"
 
 extern unsigned         FormatAddr( address a, char *buffer, unsigned max );
 

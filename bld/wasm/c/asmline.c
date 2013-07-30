@@ -42,6 +42,7 @@
 #include "asminput.h"
 #include "pathgrp.h"
 #include "iopath.h"
+#include "pathlist.h"
 
 extern int              in_prologue;
 
@@ -532,28 +533,6 @@ static bool CheckHaveSeg( void )
     return( FALSE );
 }
 
-static char *GetPathElement( char *path_list, char *end, char **path )
-{
-    bool        is_blank;
-    char        c;
-
-    is_blank = TRUE;
-    while( path_list != end ) {
-        c = *path_list++;
-        if( IS_INCL_SEP( c ) ) {
-            if( !is_blank ) {
-                break;
-            }
-        } else if( !is_blank ) {
-            *(*path)++ = c;
-        } else if( c != ' ' ) {
-            is_blank = FALSE;
-            *(*path)++ = c;
-        }
-    }
-    return( path_list );
-}
-
 void AddItemToIncludePath( char *path_list, char *end )
 /*****************************************************/
 {
@@ -582,7 +561,7 @@ void AddItemToIncludePath( char *path_list, char *end )
         do {
             if( p != IncludePath )
                 *p++ = PATH_LIST_SEP;
-            path_list = GetPathElement( path_list, end, &p );
+            path_list = GetPathElementEnd( path_list, end, &p );
         } while( path_list != end );
         *p = '\0';
     }

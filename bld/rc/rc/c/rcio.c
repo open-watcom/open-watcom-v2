@@ -52,6 +52,7 @@
 #include "semantic.h"
 #include "wresdefn.h"
 #include "iopath.h"
+#include "pathlist.h"
 
 
 static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )

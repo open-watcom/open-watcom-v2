@@ -856,31 +856,6 @@ void IoSuppTempRead(            // READ FROM TEMPORARY FILE
 }
 
 
-const char *IoSuppGetPathElement(   // GET ONE PATH ELEMENT FROM INCLUDE LIST
-    const char *path_list,          // - include list
-    char **path )                   // - buffer to store element
-{
-    bool    is_blank;
-    char    c;
-
-    is_blank = TRUE;
-    while( (c = *path_list) != '\0' ) {
-        ++path_list;
-        if( IS_INCL_SEP( c ) ) {
-            if( !is_blank ) {
-                break;
-            }
-        } else if( !is_blank ) {
-            *(*path)++ = c;
-        } else if( c != ' ' ) {
-            is_blank = FALSE;
-            *(*path)++ = c;
-        }
-    }
-    return( path_list );
-}
-
-
 static boolean pathExists(      // TEST IF A PATH EXISTS
     char *path )                // - path to be tested
 {

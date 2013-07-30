@@ -47,6 +47,7 @@
 #include "emitobj.h"
 #include "ferror.h"
 #include "iopath.h"
+#include "pathlist.h"
 
 #if defined( __386__ )
   #define PAGE_SIZE     (16*1024)
@@ -77,7 +78,6 @@ extern  bool            SDError(file_handle,char *);
 extern  bool            SDEof(file_handle);
 extern  void            SDScratch(char *);
 extern  void            SDSetAttr(file_attr);
-extern  char            *GetPathElement( char *path_list, char **path );
 
 #define PF_INIT         0x00    // initial page flags
 #define PF_DIRTY        0x01    // page has been updated

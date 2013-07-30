@@ -38,7 +38,6 @@
 #include "machtype.h"
 #include "msg.h"
 #include "sampinfo.h"
-#include "pathlist.h"
 #include "memutil.h"
 
 

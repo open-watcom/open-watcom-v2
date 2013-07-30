@@ -49,10 +49,8 @@ typedef void *          pointer;
 typedef enum { P_FALSE = (0==1), P_TRUE = (0==0) } bint;
 
 #if defined(__UNIX__)
-#define PATH_DELIM      ':'
 #define ALLFILES        "All Files\0*\0"
 #else
-#define PATH_DELIM      ';'
 #define ALLFILES        "All Files\0*.*\0"
 #endif
 

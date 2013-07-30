@@ -29,7 +29,7 @@ objs +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
             winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
             wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
             widn2str.obj wclip.obj wisedit.obj weditsym.obj &
-            preproc.obj ppexpr.obj ppmacro.obj
+            preproc.obj ppexpr.obj ppmacro.obj pathlist.obj
 
 extra_cpp_flags     = -DWIN_GUI -DWRESEDLL
 
@@ -46,7 +46,7 @@ extra_c_flags_ppexpr = -zm
 extra_c_flags_ppmacro = -zm
 !endif
 
-.c: ../c;../../c;$(sdk_misc_dir);$(cpp_c_dirs)
+.c: ../c;../../c;$(sdk_misc_dir);$(cpp_c_dirs);$(watcom_dir)/c
 
 inc_dirs = -I. -I"../h" -I"../../h" $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs)
 inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs) -I"$(sdk_misc_dir)"

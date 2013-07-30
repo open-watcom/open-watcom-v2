@@ -68,10 +68,10 @@ objs =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
         wdefsbar.obj wdeflvw.obj wdeftvw.obj wdefhdr.obj wdeftabc.obj &
         wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
         windlg.obj windlg32.obj &
-        preproc.obj ppexpr.obj ppmacro.obj
+        preproc.obj ppexpr.obj ppmacro.obj pathlist.obj
 
 # where to look for various files
-.c : ../$(host_os)/c;../c;$(cpp_c_dirs)
+.c : ../$(host_os)/c;../c;$(cpp_c_dirs);$(watcom_dir)/c
 
 inc_dirs  = -I. -I"../$(host_os)/h" -I"../h" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs)
 inc_dirs += $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs) $(wpi_inc_dirs)

@@ -197,7 +197,8 @@ tdroot = &
     auxlook.obj &
     forcstat.obj &
     gsegs.obj &
-    objutil.obj
+    objutil.obj &
+    pathlist.obj
 
 tdovl1 += &
     fieldops.obj &

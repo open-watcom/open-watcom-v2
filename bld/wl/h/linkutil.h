@@ -47,7 +47,6 @@ extern void             LinkList( void *, void * );
 extern void             FreeList( void * );
 extern int              Spawn( void (*)( void ) );
 extern void             Suicide( void );
-extern char             *GetPathElement( char *path_list, char *end, char **path );
 extern f_handle         FindPath( char * );
 extern name_list        *AddNameTable( char *, unsigned, bool, name_list ** );
 extern unsigned_16      binary_log( unsigned_16 );

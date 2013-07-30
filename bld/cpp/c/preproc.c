@@ -35,6 +35,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "iopath.h"
+#include "pathlist.h"
 
 #define DOS_EOF_CHAR    0x1A
 
@@ -124,28 +125,6 @@ int PP_Open( const char *filename )
         }
     }
     return( handle );
-}
-
-const char *GetPathElement( const char *path_list, char **path )
-{
-    bool    is_blank;
-    char    c;
-
-    is_blank = TRUE;
-    while( (c = *path_list) != '\0' ) {
-        ++path_list;
-        if( IS_INCL_SEP( c ) ) {
-            if( !is_blank ) {
-                break;
-            }
-        } else if( !is_blank ) {
-            *(*path)++ = c;
-        } else if( c != ' ' ) {
-            is_blank = FALSE;
-            *(*path)++ = c;
-        }
-    }
-    return( path_list );
 }
 
 static char *AddIncludePath( char *old_list, const char *path_list )

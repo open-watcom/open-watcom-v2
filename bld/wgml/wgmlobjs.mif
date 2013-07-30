@@ -5,6 +5,7 @@
 common_objs =  &
         wgmlsupp.obj &
         findfile.obj &
+        pathlist.obj &
         gargutil.obj &
         gdata.obj    &
         gdeflay.obj  &

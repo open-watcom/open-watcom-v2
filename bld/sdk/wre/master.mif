@@ -49,14 +49,14 @@ objs =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
         wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
         wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
         wreclip.obj wresym.obj &
-        preproc.obj ppexpr.obj ppmacro.obj
+        preproc.obj ppexpr.obj ppmacro.obj pathlist.obj
 
 !ifeq wre_trmem 1
 objs += trmem.tbj trmemcvr.tbj
 !endif
 
 # where to look for various files
-.c : ../c;$(cpp_c_dirs);$(trmem_dir)
+.c : ../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
 
 inc_dirs  = -I. -I"../h" -I"$(wresedit_dir)/h" $(wr_inc_dirs)
 inc_dirs += -I"$(trmem_dir)" $(wres_inc_dirs) $(cpp_inc_dirs)

@@ -94,6 +94,7 @@ common_objs = &
     $(_subdir_)leadbyte.obj &
     $(_subdir_)ideentry.obj &
     $(_subdir_)idemsgpr.obj &
+    $(_subdir_)pathlist.obj &
     $(_subdir_)rcspawn.obj
 
 !ifeq release 0

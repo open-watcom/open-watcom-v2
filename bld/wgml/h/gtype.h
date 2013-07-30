@@ -32,7 +32,6 @@
 #ifndef GTYPE_H_INCLUDED
 #define GTYPE_H_INCLUDED
 
-#include "iopath.h"
 
 #define ulong           unsigned long
 

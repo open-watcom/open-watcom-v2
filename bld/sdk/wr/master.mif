@@ -35,7 +35,7 @@ object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
             wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
             wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
             wrrnames.obj wrhash.obj wredit.obj wrutil.obj $(trmem_objs) &
-            preproc.obj ppexpr.obj ppmacro.obj &
+            preproc.obj ppexpr.obj ppmacro.obj pathlist.obj &
             rcerrprt.obj rcgetenv.obj &
             wrstubs.obj &
             pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &

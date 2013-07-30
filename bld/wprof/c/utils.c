@@ -57,31 +57,28 @@
 #include "wpaui.h"
 #include "myassert.h"
 #include "msg.h"
-#include "pathlist.h"
 #include "memutil.h"
 #include "iopath.h"
+#include "pathlist.h"
 
-#if defined(__UNIX__)
+#if defined( __UNIX__ )
  #define PATH_NAME  "WD_PATH"
 #else
  #define PATH_NAME  "PATH"
 #endif
 #define HELP_NAME  "WWINHELP"
 
-extern void fatal(char *msg,... );
-extern dig_fhandle DIGCliOpen(char *name,dig_open mode);
-extern void AddPath( path_list **path_var, const char * path_data );
+extern void             fatal(char *msg, ...);
+extern dig_fhandle      DIGCliOpen(char *name, dig_open mode);
 
-path_list *     HelpPathList = NULL;
-path_list *     FilePathList = NULL;
-path_list *     DipExePathList = NULL;
-
-
+char   *HelpPathList = NULL;
+char   *FilePathList = NULL;
+char   *DipExePathList = NULL;
 
 extern void ReplaceExt( char * path, char * addext )
 /**************************************************/
 {
-    char        buff [ _MAX_PATH2 ];
+    char        buff[ _MAX_PATH2 ];
     char *      drive;
     char *      dir;
     char *      fname;
@@ -97,39 +94,42 @@ extern void ReplaceExt( char * path, char * addext )
 #endif
 }
 
-
-
-extern char * FindFile( char * path, char * name, path_list * path_tail )
-/***********************************************************************/
+char *FindFile( char *fullname, char *name, char *path_list )
+/***********************************************************/
 {
-    path_list *     path_item;
     file_handle     fh;
+    char            *p;
+    char            c;
 
     fh = open( name, O_RDONLY | O_BINARY, S_IREAD );
     if( fh != -1 ) {
         close( fh );
-        strcpy( path, name );
-        return( path );
+        strcpy( fullname, name );
+        return( fullname );
     }
-    if( path_tail == NULL ) {
-        return( NULL );
-    }
-    path_item = path_tail->next;
-    for(;;) {
-        strcpy( path, path_item->path_data );
-        strcat( path, name );
-        fh = open( path, O_RDONLY | O_BINARY, S_IREAD );
-        if( fh != -1 ) {
-            close( fh );
-            return( path );
+    if( path_list != NULL ) {
+        while( (c = *path_list) != NULLCHAR ) {
+            p = fullname;
+            do {
+                ++path_list;
+                if( IS_PATH_LIST_SEP( c ) )
+                    break;
+                *p = c;
+            } while( (c = *path_list) != NULLCHAR );
+            c = p[-1];
+            if( !IS_PATH_SEP( c ) ) {
+                *p++ = DIR_SEP;
+            }
+            strcat( p, name );
+            fh = open( fullname, O_RDONLY | O_BINARY, S_IREAD );
+            if( fh != -1 ) {
+                close( fh );
+                return( fullname );
+            }
         }
-        if( path_item == path_tail ) break;
-        path_item = path_item->next;
     }
     return( NULL );
 }
-
-
 
 #if defined( __QNX__ ) || defined( __LINUX__ ) || defined( __DOS__ )
 extern dig_fhandle FullPathOpen( char const *name, char *ext,
@@ -139,7 +139,7 @@ extern dig_fhandle FullPathOpen( char const *name, char *ext,
     char        realname[ _MAX_PATH2 ];
     char *      filename;
 
-    if( ext == NULL || *ext == '\0' ) {
+    if( ext == NULL || *ext == NULLCHAR ) {
         strcpy( realname, name );
     } else {
         _splitpath2( name, result, NULL, NULL, &filename, NULL );
@@ -164,110 +164,73 @@ extern dig_fhandle PathOpen( char * name, unsigned len, char * ext )
 }
 #endif
 
-
-
-extern void InitPaths()
-/*********************/
+char *AddPath( char *old_list, const char *path_list )
+/***************************************************/
 {
-    char *      env;
+    size_t          len;
+    size_t          old_len;
+    char            *new_list;
+    char            *p;
+
+    new_list = old_list;
+    if( path_list != NULL && *path_list != NULLCHAR ) {
+        len = strlen( path_list );
+        if( old_list == NULL ) {
+            p = new_list = ProfAlloc( len + 1 );
+        } else {
+            old_len = strlen( old_list );
+            new_list = ProfAlloc( old_len + 1 + len + 1 );
+            memcpy( new_list, old_list, old_len );
+            ProfFree( old_list );
+            p = new_list + old_len;
+        }
+        while( *path_list != NULLCHAR ) {
+            if( p != new_list )
+                *p++ = PATH_LIST_SEP;
+            path_list = GetPathElement( path_list, &p );
+        }
+        *p = NULLCHAR;
+    }
+    return( new_list );
+}
+
+extern void InitPaths( void )
+/***************************/
+{
+    char        *env;
 #if defined(__UNIX__)
     char        buff [ _MAX_PATH ];
     char        *p;
 #endif
 
     env = getenv( PATH_NAME );
-    if( env != NULL && *env != '\0' ) {
-        AddPath( &FilePathList, env );
-        AddPath( &HelpPathList, env );
-    }
+    FilePathList = AddPath( FilePathList, env );
+    HelpPathList = AddPath( HelpPathList, env );
     env = getenv( HELP_NAME );
-    if( env != NULL && *env != '\0' ) {
-        AddPath( &HelpPathList, env );
-    }
+    HelpPathList = AddPath( HelpPathList, env );
 #if defined(__UNIX__)
     if( _cmdname( buff ) != NULL ) {
         p = strrchr( buff, '/' );
         if( p != NULL ) {
-            *p = '\0';
+            *p = NULLCHAR;
             p = strrchr( buff, '/' );
             if( p != NULL ) {
                 /* look in the sibling directories of where the executable is */
                 strcpy( p + 1, "wd" );
-                AddPath( &HelpPathList, buff );
-                AddPath( &DipExePathList, buff );
-                *p = '\0';
-                AddPath( &HelpPathList, buff );
-                AddPath( &DipExePathList, buff );
+                HelpPathList = AddPath( HelpPathList, buff );
+                DipExePathList = AddPath( DipExePathList, buff );
+                *p = NULLCHAR;
+                HelpPathList = AddPath( HelpPathList, buff );
+                DipExePathList = AddPath( DipExePathList, buff );
             }
         }
     }
-    AddPath( &HelpPathList, "/usr/watcom/wd" );
-    AddPath( &DipExePathList, "/usr/watcom/wd" );
-    AddPath( &HelpPathList, "/usr/watcom" );
-    AddPath( &DipExePathList, "/usr/watcom" );
+    HelpPathList = AddPath( HelpPathList, "/usr/watcom/wd" );
+    DipExePathList = AddPath( DipExePathList, "/usr/watcom/wd" );
+    HelpPathList = AddPath( HelpPathList, "/usr/watcom" );
+    DipExePathList = AddPath( DipExePathList, "/usr/watcom" );
 #endif
 }
-
-
-
-static const char *GetPathElement( const char *path_list, char **path )
-{
-    bool    is_blank;
-    char    c;
-
-    is_blank = TRUE;
-    while( (c = *path_list) != '\0' ) {
-        ++path_list;
-        if( IS_INCL_SEP( c ) ) {
-            if( !is_blank ) {
-                break;
-            }
-        } else if( !is_blank ) {
-            *(*path)++ = c;
-        } else if( c != ' ' ) {
-            is_blank = FALSE;
-            *(*path)++ = c;
-        }
-    }
-    return( path_list );
-}
-
-
-extern void AddPath( path_list **path_var, const char *path_data )
-/****************************************************************/
-{
-    char            path[_MAX_PATH];
-    path_list *     path_tail;
-    path_list *     path_item;
-    size_t          len;
-
-    if( path_data == NULL )
-        return;
-    path_tail = *path_var;
-    while( *path_data != NULLCHAR ) {
-        char *p = path;
-        path_data = GetPathElement( path_data, &p );
-        if( p != path ) {
-            if( !IS_PATH_SEP( p[-1] ) ) {
-                *p++ = DIR_SEP;
-            }
-            len = p - path;
-            path_item = ProfAlloc( sizeof( path_list ) + len );
-            memcpy( path_item->path_data, path, len );
-            path_item->path_data[len] = NULLCHAR;
-            if( path_tail == NULL ) {
-                path_item->next = path_item;
-            } else {
-                path_item->next = path_tail->next;
-                path_tail->next = path_item;
-            }
-            path_tail = path_item;
-        }
-    }
-    *path_var = path_tail;
-}
-
-
 
 #if defined( __QNX__ )
 /*
@@ -314,8 +277,6 @@ extern unsigned BigRead( int fh, void * buff, unsigned size )
     return( doread( fh, buff, size ) );
 }
 
-
-
 #if defined( __DOS__ )
 extern void DoRingBell( void );
 #pragma aux DoRingBell =                                \
@@ -325,8 +286,6 @@ extern void DoRingBell( void );
         " pop    ebp            "                       \
         modify exact [ ax ];
 #endif
-
-
 
 extern void Ring( void )
 /**********************/
@@ -342,16 +301,14 @@ extern void Ring( void )
 #endif
 }
 
-
-
 #ifndef NDEBUG
 extern void AssertionFailed( char * file, unsigned line )
 /*******************************************************/
 {
     char        path[ _MAX_PATH2 ];
-    char        buff[ 13+_MAX_FNAME ];
-    char *      fname;
-    unsigned    size;
+    char        buff[ 13 + _MAX_FNAME ];
+    char        *fname;
+    size_t      size;
 
     _splitpath2( file, path, NULL, NULL, &fname, NULL ); /* _MAX_FNAME */
     size = strlen( fname );

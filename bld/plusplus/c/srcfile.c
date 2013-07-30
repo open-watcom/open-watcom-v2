@@ -49,6 +49,7 @@
 #include "pcheader.h"
 #include "initdefs.h"
 #include "iosupp.h"
+#include "pathlist.h"
 #ifndef NDEBUG
 #include "pragdefn.h"
 #endif
@@ -1620,7 +1621,7 @@ void SrcFileReadOnlyDir(        // SPECIFY DIRECTORY AS READ-ONLY
 
     while( *path_list != '\0' ) {
         char *p = path;
-        path_list = IoSuppGetPathElement( path_list, &p );
+        path_list = GetPathElement( path_list, &p );
         *p = '\0';
         full = IoSuppFullPath( path, buff, sizeof( buff ) );
         curr = NULL;

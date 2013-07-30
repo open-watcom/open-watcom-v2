@@ -75,6 +75,7 @@ as_stand_objs = &
     $(stand_subdir)/ppexpr.obj &
     $(stand_subdir)/ppmacro.obj &
     $(stand_subdir)/ppmem.obj &
+    $(stand_subdir)/pathlist.obj &
     $(stand_subdir)/trmemcvr.obj
 !ifeq release 0
 as_stand_objs += $(stand_subdir)/trmem.obj
@@ -143,7 +144,7 @@ splice_opts     = $(splice_opts_$(target_cpu))
 # include directory
 ####################
 
-.c: $(as_dir)/$(target_cpu)/c;$(as_dir)/c;$(trmem_dir);$(cpp_c_dirs)
+.c: $(as_dir)/$(target_cpu)/c;$(as_dir)/c;$(trmem_dir);$(cpp_c_dirs);$(watcom_dir)/c
 
 inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" $(cpp_inc_dirs) -I"$(trmem_dir)"
 

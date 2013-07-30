@@ -41,7 +41,6 @@
 #include "dip.h"
 #include "sampinfo.h"
 #include "msg.h"
-#include "pathlist.h"
 
 extern void WPProcHelp(gui_help_actions action);
 extern void WPFini(void);

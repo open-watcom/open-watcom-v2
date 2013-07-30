@@ -42,6 +42,7 @@
 #include "comio.h"
 #include "inout.h"
 #include "iopath.h"
+#include "pathlist.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -201,30 +202,6 @@ static  void    DefOption( opt_entry *optn, char *ptr ) {
 }
 
 
-char *GetPathElement( char *path_list, char **path )
-//==================================================
-{
-    bool    is_blank;
-    char    c;
-
-    is_blank = TRUE;
-    while( (c = *path_list) != NULLCHAR ) {
-        ++path_list;
-        if( IS_INCL_SEP( c ) ) {
-            if( !is_blank ) {
-                break;
-            }
-        } else if( !is_blank ) {
-            *(*path)++ = c;
-        } else if( c != ' ' ) {
-            is_blank = FALSE;
-            *(*path)++ = c;
-        }
-    }
-    return( path_list );
-}
-
-
 static  void    PathOption( opt_entry *optn, char *ptr )
 //============================================================
 // Process "INCPATH=" option.
@@ -275,7 +252,7 @@ void    FIncludePathInit( void )
         len = strlen( env );
         p = FIncludePath = FMemAlloc( len + 1 );
         while( *env != NULLCHAR ) {
-            if( p != IncludePath )
+            if( p != FIncludePath )
                 *p++ = PATH_LIST_SEP;
             env = GetPathElement( env, &p );
         }

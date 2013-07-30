@@ -43,6 +43,7 @@
 #include "swchar.h"
 #include "pragdefn.h"
 #include "cfeinfo.h"
+#include "pathlist.h"
 
 #if defined(__UNIX__)
  #define C_PATH         "../c/"
@@ -1158,28 +1159,6 @@ void FreeRDir( void )
         RDirNames = dirlist->next;
         CMemFree( dirlist );
     }
-}
-
-const char *GetPathElement( const char *path_list, char **path )
-{
-    bool    is_blank;
-    char    c;
-
-    is_blank = TRUE;
-    while( (c = *path_list) != '\0' ) {
-        ++path_list;
-        if( IS_INCL_SEP( c ) ) {
-            if( !is_blank ) {
-                break;
-            }
-        } else if( !is_blank ) {
-            *(*path)++ = c;
-        } else if( c != ' ' ) {
-            is_blank = FALSE;
-            *(*path)++ = c;
-        }
-    }
-    return( path_list );
 }
 
 void SrcFileReadOnlyDir( char const *dirs )
