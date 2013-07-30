@@ -37,10 +37,7 @@
 #include "dbgreg.h"
 #include "dbgio.h"
 
-#include "trpconf.h"
-#ifdef WANT_RFX
 #include "trprfx.h"
-#endif
 
 #define INCL_DOS
 #define INCL_SUB

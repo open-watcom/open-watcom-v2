@@ -51,15 +51,10 @@ static trap_shandle     SuppRunThreadId = 0;
 
 bool InitRunThreadSupp( void )
 {
-#ifdef WANT_RUN_THREAD
     SuppRunThreadId = GetSuppId( RUN_THREAD_SUPP_NAME );
     if( SuppRunThreadId == 0 ) return( FALSE );
     InitRunThreadWnd();
     return( TRUE );
-#else
-    SuppRunThreadId = 0;
-    return( FALSE );
-#endif
 }
 
 bool HaveRemoteRunThread( void )

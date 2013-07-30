@@ -42,10 +42,7 @@
 #include "dbgreg.h"
 #include "dbgio.h"
 
-#include "trpconf.h"
-#ifdef WANT_RFX
 #include "trprfx.h"
-#endif
 
 #include "local.h"
 

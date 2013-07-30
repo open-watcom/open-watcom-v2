@@ -47,13 +47,9 @@ static trap_shandle     SuppEnvId = 0;
 
 bool InitEnvSupp( void )
 {
-#ifdef WANT_ENV
     SuppEnvId = GetSuppId( ENV_SUPP_NAME );
     if( SuppEnvId != 0 )
         return( TRUE );
-#else
-    SuppEnvId = 0;
-#endif
     return( FALSE );
 }
 

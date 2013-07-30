@@ -45,9 +45,7 @@
 #include "dta.h"
 #include "tcerr.h"
 #include "trpcore.h"
-#ifdef WANT_RFX
 #include "trprfx.h"
-#endif
 
 #include "local.h"
 

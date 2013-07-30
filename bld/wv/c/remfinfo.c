@@ -47,13 +47,9 @@ static trap_shandle     SuppFileInfoId = 0;
 
 bool InitFileInfoSupp()
 {
-#ifdef WANT_FILE_INFO
     SuppFileInfoId = GetSuppId( FILE_INFO_SUPP_NAME );
     if( SuppFileInfoId != 0 )
         return( TRUE );
-#else
-    SuppFileInfoId = 0;
-#endif
     return( FALSE );
 }
 

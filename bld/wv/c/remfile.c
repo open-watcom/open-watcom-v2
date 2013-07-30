@@ -138,7 +138,6 @@ int DelCachedHandle( int local )
 
 bool InitFileSupp( void )
 {
-#ifdef WANT_FILE
     file_get_config_req acc;
 
     InitHandleCache();
@@ -149,11 +148,6 @@ bool InitFileSupp( void )
     SUPP_FILE_SERVICE( acc, REQ_FILE_GET_CONFIG );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( RemFile ), &RemFile );
     return( TRUE );
-#else
-    SuppFileId = 0;
-    InitHandleCache();
-    return( FALSE );
-#endif
 }
 
 bool HaveRemoteFiles( void )

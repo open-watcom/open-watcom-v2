@@ -486,7 +486,6 @@ bool InitCapabilities( void )
     Supports8ByteBreakpoints = FALSE;
     SupportsExactBreakpoints = FALSE;
 
-#ifdef WANT_CAPABILITIES
     SuppCapabilitiesId = GetSuppId( CAPABILITIES_SUPP_NAME );
     if( SuppCapabilitiesId == 0 ) 
         return( FALSE );
@@ -501,10 +500,6 @@ bool InitCapabilities( void )
         CapabilitiesSetExactBreakpointSupport( TRUE );
         
     return( TRUE );
-#else
-    SuppCapabilitiesId = 0;
-    return( FALSE );
-#endif
 }
 
 #define SUPP_CAPABILITIES_SERVICE( in, request )   \

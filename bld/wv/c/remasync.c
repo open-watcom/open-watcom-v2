@@ -61,13 +61,9 @@ static trap_shandle     SuppAsyncId = 0;
 
 bool InitAsyncSupp( void )
 {
-#ifdef WANT_ASYNC
     SuppAsyncId = GetSuppId( ASYNC_SUPP_NAME );
     if( SuppAsyncId != 0 )
         return( TRUE );
-#else
-    SuppAsyncId = 0;
-#endif
     return( FALSE );
 }
 

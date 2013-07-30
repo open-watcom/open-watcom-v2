@@ -50,13 +50,8 @@ trap_shandle    SuppThreadId = 0;
 
 bool InitThreadSupp()
 {
-#ifdef WANT_THREAD
     SuppThreadId = GetSuppId( THREAD_SUPP_NAME );
     return( SuppThreadId != 0 );
-#else
-    SuppThreadId = 0;
-    return( FALSE );
-#endif
 }
 
 dtid_t RemoteGetNextThread( dtid_t tid, unsigned *state )

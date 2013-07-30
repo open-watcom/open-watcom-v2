@@ -52,13 +52,8 @@ static trap_shandle     SuppOvlId = 0;
 
 bool InitOvlSupp( void )
 {
-#ifdef WANT_OVL
     SuppOvlId = GetSuppId( OVERLAY_SUPP_NAME );
     return( SuppOvlId != 0 );
-#else
-    SuppOvlId = 0;
-    return( FALSE );
-#endif
 }
 
 unsigned RemoteOvlSectSize( void )
