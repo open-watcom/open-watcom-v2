@@ -9,11 +9,6 @@ sw_a_common += -fo=.obj
 # Include system headers in dependency lists
 sw_c_common += -D_ENABLE_AUTODEPEND
 
-sw_l_common = option quiet,impfile reference __DLLstart_ disable 121
-!ifeq release 0
-sw_l_common += option map,mangle,artificial,verbose
-!endif
-
 # sw_c_(linkage)
 sw_c_static  =
 sw_c_dynamic = -D__DLL__
@@ -165,35 +160,6 @@ sw_a_winnt_ppc    = -oc -d__MT__ #-dWIN32 -d_WIN32
 sw_a_linux_386    = #-d__MT__
 sw_a_linux_387    = #-d__MT__
 
-# sw_l_(system)_(processor)
-sw_l_msdos_086    =
-sw_l_msdos_087    =
-sw_l_msdos_286    =
-sw_l_msdos_287    =
-sw_l_msdos_386    =
-sw_l_msdos_387    =
-sw_l_netware_386  =
-sw_l_netware_387  =
-sw_l_os2_286      =
-sw_l_os2_287      =
-sw_l_os2_386      = sys os2v2 dll initinstance terminstance op manyautodata
-sw_l_os2_387      = sys os2v2 dll initinstance terminstance op manyautodata
-sw_l_os2_ppc      = sys os2ppc dll initinstance terminstance op manyautodata
-sw_l_qnx_286      =
-sw_l_qnx_287      =
-sw_l_qnx_386      =
-sw_l_qnx_387      =
-sw_l_windows_086  =
-sw_l_windows_087  =
-sw_l_windows_386  =
-sw_l_windows_387  =
-sw_l_winnt_386    = sys nt_dll initinstance terminstance
-sw_l_winnt_387    = sys nt_dll initinstance terminstance
-sw_l_winnt_axp    = sys ntaxp_dll initinstance terminstance
-sw_l_winnt_ppc    = sys ntppc_dll initinstance terminstance
-sw_l_linux_386    =
-sw_l_linux_387    =
-
 #make bug
 !ifndef extra_c_flags
 extra_c_flags =
@@ -208,7 +174,6 @@ c_flags += $(extra_c_flags)
 a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model))
 a_flags += $(sw_a_$(processor)) $(sw_a_$(system)_$(processor))
 a_flags += $(extra_a_flags)
-l_flags =$(sw_l_common) $(sw_l_$(system)_$(processor))
 
 # special case switches
 !ifdef overlay
