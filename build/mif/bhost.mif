@@ -15,6 +15,10 @@ bld_inc_dirs_sys  = $(bld_inc_dirs_lang) $(inc_dirs_sys_$(bld_os))
 
 bld_incs        = $(bld_extra_incs) $(bld_inc_dirs_sys) -I"$(watcom_dir)/h"
 
+!ifneq bootstrap 1
+no_def_include  = -x -xx
+!endif
+
 !ifeq release 0
 bld_gen_cflags  = -d2 -w8 -fo=.obj
 !else
@@ -22,15 +26,10 @@ bld_gen_cflags  = -ox -w8 -fo=.obj
 !endif
 
 # options for source compilations
-bld_cflags      = $(bld_gen_cflags)
+bld_cflags      = $(bld_gen_cflags) $(no_def_include)
 
 # options for single source utility compilations
-bld_clflags     = $(bld_gen_cflags) -fe=$^@
-
-!ifneq bootstrap 1
-bld_cflags      += -x -xx
-bld_clflags     += -x -xx
-!endif
+bld_clflags     = $(bld_gen_cflags) $(no_def_include) -fe=$^@
 
 # options for linking
 bld_ldflags     =
