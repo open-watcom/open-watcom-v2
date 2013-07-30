@@ -2,7 +2,7 @@ proj_name=rtdll
 
 rtdll_autodepends = .AUTODEPEND
 
-additional_cleanup = *.imp
+additional_cleanup = *.ilb
 
 rtdll_host_cpu_086=i86
 rtdll_host_cpu_286=i86
@@ -51,7 +51,7 @@ br_suffix=0
 patch_level=0
 !endif
 
-extra_l_flags_dll = option impfile=$(dllname).imp reference __DLLstart_ disable 121
+extra_l_flags_dll = option impfile=$(dllname).ilb reference __DLLstart_ disable 121
 !ifeq release 0
 extra_l_flags_dll += option map,mangle,artificial,verbose
 !endif
@@ -68,7 +68,7 @@ $(libdllname).lib : $(dllname).lbc
     $(librarian) $(libflags) @$(dllname).lbc
 
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
-    awk -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v LSTFILE="$(rtdll_dir:\=/)/brfunc.dat" $(dllname).imp > $@
+    awk -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v LSTFILE="$(rtdll_dir:\=/)/brfunc.dat" $(dllname).ilb > $@
     @for %i in ($(static_objs)) do @%append $@ +%i
 
 !ifeq system winnt

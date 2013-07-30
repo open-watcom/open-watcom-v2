@@ -30,6 +30,7 @@
 *.hpp text
 *.htm text
 *.html text
+*.imp text
 *.inc text
 *.inf text
 *.ini text

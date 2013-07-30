@@ -10,7 +10,7 @@
 *.i
 *.i0
 *.i1
-*.imp
+*.ilb
 *.int
 *.lbc
 *.lk1
