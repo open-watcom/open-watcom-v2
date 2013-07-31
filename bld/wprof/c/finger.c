@@ -32,11 +32,6 @@
 #include "banner.h"
 #include "strbitns.h"
 
-#ifdef _BANEXTRA
-    #undef  _BANEXTRA
-    #define _BANEXTRA _BANEXSHORT
-#endif
-
 char *AboutMessage[] = {
     "",
     banner1w1( "Execution Profiler" STR_BITNEES ),

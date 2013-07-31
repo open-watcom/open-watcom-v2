@@ -155,10 +155,15 @@ int main(int argc, char **argv )
     int     retval = 0;
 
     MemInit();
-    put( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) "\n" );
-    put( banner2( "1990" ) "\n" );
-    put( banner3 "\n" );
-    put( banner3a "\n" );
+#if defined( _BETAVER )
+    put( banner1w1( "Far Call Optimization Enabling Utility" ) );
+    put( banner1w2( _FCENABLE_VERSION_ ) );
+#else
+    put( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) );
+#endif
+    put( banner2( "1990" ) );
+    put( banner3 "" );
+    put( banner3a "" );
     InputBuffer = InitRecStuff();
     InFile = NOFILE;
     OutFile = NOFILE;

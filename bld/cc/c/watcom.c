@@ -32,11 +32,6 @@
 #include "cvars.h"
 #include <banner.h>
 
-#ifdef _BANEXTRA
-#undef  _BANEXTRA
-#define _BANEXTRA _BANEXSHORT
-#endif
-
 
 char CompilerID[] = { "__WATCOMC__=" BANSTR( _BANVER ) };
 
@@ -53,20 +48,44 @@ void CBanner( void )
 {
     if( CompFlags.banner_printed ) return;              /* 13-mar-90 */
     if( CompFlags.quiet_mode )     return;
-#if _CPU == _AXP
-    BannerMsg( banner1w( "C Alpha AXP Optimizing Compiler",
-                                                _WCC_VERSION_ ) );
+#if _CPU == 8086
+  #if defined( _BETAVER )
+    BannerMsg( banner1w1( "C x86 16-bit Optimizing Compiler" ) );
+    BannerMsg( banner1w2( _WCC_VERSION_ ) );
+  #else
+    BannerMsg( banner1w( "C x86 16-bit Optimizing Compiler", _WCC_VERSION_ ) );
+  #endif
+#elif _CPU == _AXP
+  #if defined( _BETAVER )
+    BannerMsg( banner1w1( "C Alpha AXP Optimizing Compiler" ) );
+    BannerMsg( banner1w2( _WCC_VERSION_ ) );
+  #else
+    BannerMsg( banner1w( "C Alpha AXP Optimizing Compiler", _WCC_VERSION_ ) );
+  #endif
 #elif _CPU == _PPC
-    BannerMsg( banner1w( "C PowerPC Optimizing Compiler",
-                                                _WCC_VERSION_ ) );
+  #if defined( _BETAVER )
+    BannerMsg( banner1w1( "C PowerPC Optimizing Compiler" ) );
+    BannerMsg( banner1w2( _WCC_VERSION_ ) );
+  #else
+    BannerMsg( banner1w( "C PowerPC Optimizing Compiler", _WCC_VERSION_ ) );
+  #endif
 #elif _CPU == _MIPS
-    BannerMsg( banner1w( "C MIPS Optimizing Compiler",
-                                                _WCC_VERSION_ ) );
+  #if defined( _BETAVER )
+    BannerMsg( banner1w1( "C MIPS Optimizing Compiler" ) );
+    BannerMsg( banner1w2( _WCC_VERSION_ ) );
+  #else
+    BannerMsg( banner1w( "C MIPS Optimizing Compiler", _WCC_VERSION_ ) );
+  #endif
 #else
-    BannerMsg( banner1w( "C" _386 _COMPILER, _WCC_VERSION_ ) );
+  #if defined( _BETAVER )
+    BannerMsg( banner1w1( "C x86 32-bit Optimizing Compiler" ) );
+    BannerMsg( banner1w2( _WCC_VERSION_ ) );
+  #else
+    BannerMsg( banner1w( "C x86 32-bit Optimizing Compiler", _WCC_VERSION_ ) );
+  #endif
 #endif
     BannerMsg( banner2( "1984" ) );
     BannerMsg( banner3 );
     BannerMsg( banner3a );
-    CompFlags.banner_printed = 1;                       /* 13-mar-90 */
+    CompFlags.banner_printed = 1;
 }

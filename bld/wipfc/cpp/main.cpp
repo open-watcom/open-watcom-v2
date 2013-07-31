@@ -47,10 +47,10 @@ Env Environment;
 
 static void printBanner( void )
 {
-    std::cout << "Open Watcom OS/2 Help Compiler Version " << BAN_VER_STR << std::endl;
-    std::cout << "Copyright (c) " << CURR_YEAR << " Open Watcom Contributors. All Rights Reserved." << std::endl;
-    std::cout << "Source code is available under the Sybase Open Watcom Public License." << std::endl;
-    std::cout << "See http://www.openwatcom.org/ for details." << std::endl;
+    std::cout << banner1w( "OS/2 Help Compiler", _WIPFC_VERSION_ ) << std::endl;
+    std::cout << banner2b( CURR_YEAR ) << std::endl;
+    std::cout << banner3 << std::endl;
+    std::cout << banner3a << std::endl;
 }
 
 int main(int argc, char **argv)

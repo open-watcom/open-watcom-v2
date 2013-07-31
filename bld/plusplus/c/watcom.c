@@ -38,11 +38,6 @@
 
 #define __puts( x )     MsgDisplayBanner( x )
 
-#ifdef _BANEXTRA
-#undef  _BANEXTRA
-#define _BANEXTRA _BANEXSHORT
-#endif
-
 #if _CPU == 386
  #define __TARCH "32"
 #elif _CPU == 8086
@@ -59,7 +54,28 @@ void CBanner( void )
 {
     if( CompFlags.banner_printed ) return;
     if( CompFlags.quiet_mode )     return;
-    __puts( banner1w( _C __TARCH _COMPILER, _WPP_VERSION_ ) );
+#if _CPU == 8086
+  #if defined( _BETAVER )
+    __puts( banner1w1( "C++ x86 16-bit Optimizing Compiler" ) );
+    __puts( banner1w2( _WPP_VERSION_ ) );
+  #else
+    __puts( banner1w( "C++ x86 16-bit Optimizing Compiler", _WPP_VERSION_ ) );
+  #endif
+#elif _CPU == 386
+  #if defined( _BETAVER )
+    __puts( banner1w1( "C++ x86 32-bit Optimizing Compiler" ) );
+    __puts( banner1w2( _WPP_VERSION_ ) );
+  #else
+    __puts( banner1w( "C++ x86 32-bit Optimizing Compiler", _WPP_VERSION_ ) );
+  #endif
+#elif _CPU == _AXP
+  #if defined( _BETAVER )
+    __puts( banner1w1( "C++ Alpha AXP Optimizing Compiler" ) );
+    __puts( banner1w2( _WPP_VERSION_ ) );
+  #else
+    __puts( banner1w( "C++ Alpha AXP Optimizing Compiler", _WPP_VERSION_ ) );
+  #endif
+#endif
     __puts( banner2( "1989" ) );
     __puts( banner3 );
     __puts( banner3a );

@@ -38,11 +38,6 @@
 #include "msg.h"
 #include "memutil.h"
 
-#ifdef _BANEXTRA
-    #undef  _BANEXTRA
-    #define _BANEXTRA _BANEXSHORT
-#endif
-
 extern char     *AboutMessage[];
 extern int      AboutSize;
 

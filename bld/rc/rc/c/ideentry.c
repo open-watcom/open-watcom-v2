@@ -46,11 +46,6 @@
 #include "errors.h"
 #include "banner.h"
 
-#ifdef _BANEXTRA
-#undef  _BANEXTRA
-#define _BANEXTRA _BANEXSHORT
-#endif
-
 #define PRINTF_BUF_SIZE         2048
 
 extern void InitGlobs( void );
@@ -164,7 +159,12 @@ char *RcGetEnv( const char *name )
 }
 
 static const char * BannerText =
+#if defined( _BETAVER )
+    banner1w1( "Windows and OS/2 Resource Compiler" )"\n"
+    banner1w2( _WRC_VERSION_ )"\n"
+#else
     banner1w( "Windows and OS/2 Resource Compiler", _WRC_VERSION_ )"\n"
+#endif
     banner2("1993") "\n"
     banner3         "\n"
     banner3a        "\n"

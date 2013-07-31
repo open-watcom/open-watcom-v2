@@ -50,8 +50,6 @@
 #include "cmdlhelp.h"
 #include "clcommon.h"
 #include "banner.h"
-#undef  _BANEXTRA
-#define _BANEXTRA _BANEXSHORT
 
 #ifdef BOOTSTRAP
 #define BPRFX   "b"
@@ -91,23 +89,23 @@
 #ifdef WCLAXP
   #define WCLENV      "WCLAXP"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
-  #define _NAME_      "C/C++ Alpha AXP "
+  #define _NAME_      "C/C++ Alpha AXP"
 #elif defined( WCLPPC )
   #define WCLENV      "WCLPPC"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
-  #define _NAME_      "C/C++ PowerPC "
+  #define _NAME_      "C/C++ PowerPC"
 #elif defined( WCLMPS )
   #define WCLENV      "WCLMPS"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
-  #define _NAME_      "C/C++ MIPS "
+  #define _NAME_      "C/C++ MIPS"
 #elif defined( WCL386 )
   #define WCLENV      "WCL386"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
-  #define _NAME_      "C/C++32 "
+  #define _NAME_      "C/C++ x86 32-bit"
 #else
   #define WCLENV      "WCL"             /* name of environment variable    */
   #define STACKSIZE   "4096"            /* default stack size              */
-  #define _NAME_      "C/C++16 "
+  #define _NAME_      "C/C++ x86 16-bit"
 #endif
 
 #define TEMPFILE      "__wcl__.lnk"     /* temporary linker directive file */
@@ -127,7 +125,7 @@ static  list    *Res_List;          /* list of resources from Cmd         */
 static  char    CC_Opts[MAX_CMD];   /* list of compiler options from Cmd  */
 static  char    PathBuffer[_MAX_PATH];/* buffer for path name of tool     */
 static  char    *Link_Name;         /* Temp_Link copy if /fd specified    */
-static  list    *Directive_List;    /* linked list of directives   */
+static  list    *Directive_List;    /* linked list of directives          */
 static  char    *StackSize;         /* size of stack                      */
 static  int     DebugFlag = 0;      /* debug info wanted                  */
 static  char    Conventions;        /* 'r' for -3r or 's' for -3s         */
@@ -301,7 +299,12 @@ void print_banner( void )
 
     if( done )
         return;
-    puts( banner1w( _NAME_ "Compile and Link Utility", _WCL_VERSION_ ) );
+#if defined( _BETAVER )
+    puts( banner1w1( _NAME_ " " "Compile and Link Utility" ) );
+    puts( banner1w2( _WCL_VERSION_ ) );
+#else
+    puts( banner1w( _NAME_ " " "Compile and Link Utility", _WCL_VERSION_ ) );
+#endif
     puts( banner2( "1988" ) );
     puts( banner3 );
     puts( banner3a );

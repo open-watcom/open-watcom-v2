@@ -43,10 +43,6 @@
 #include "inout.h"
 
 #include "banner.h"
-#ifdef _BANEXTRA
-#undef _BANEXTRA
-#endif
-#define _BANEXTRA
 
 #include <stdio.h>
 #include <string.h>

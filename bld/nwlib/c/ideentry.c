@@ -36,11 +36,6 @@
 #endif
 #include <banner.h>
 
-#if !defined( NDEBUG ) && defined( _BANEXTRA )
-#undef  _BANEXTRA
-#define _BANEXTRA _BANEXSHORT
-#endif
-
 static IDECBHdl     ideHdl;
 static IDECallBacks *ideCb;
 static IDEInitInfo  *ideInfo;

@@ -39,9 +39,9 @@
 #endif
 
 #ifdef _BETAVER
-#define _BETA_          " " _BETASTR_ " " BANSTR( _BETAVER )  _BANEXTRA
+#define _BETA_          " " _BETASTR_ " " _BANEXTRA
 #else
-#define _BETA_          _BANEXTRA
+#define _BETA_          " " _BANEXSHORT
 #endif
 
 #define CURR_YEAR       "2013"
@@ -61,6 +61,8 @@
 #define banner2(year)   banner2p1(year) "."
 
 #define banner2a()      "Portions Copyright (c) 1984-2002 Sybase, Inc. All Rights Reserved."
+
+#define banner2b(year)  "Copyright (c) 2002-" year " Open Watcom Contributors. All Rights Reserved."
 
 #define banner3         "Source code is available under the Sybase Open Watcom Public License."
 #define banner3a        "See http://www.openwatcom.org/ for details."
@@ -161,6 +163,7 @@
 #define _RC_CLONE_VERSION_      BAN_VER_STR
 #define _WIC_VERSION_           BAN_VER_STR
 #define _WGML_VERSION_          BAN_VER_STR
+#define _WIPFC_VERSION_         BAN_VER_STR
 
 /*
  * Java Tools

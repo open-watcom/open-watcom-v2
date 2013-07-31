@@ -32,12 +32,12 @@
 #if 0
     #define IDV     "** EXPERIMENTAL ** "
 #elif _DEVELOPMENT == _ON
-    #define IDV   " **INTERNAL DEVELOPMENT** "
+    #define IDV     "**INTERNAL DEVELOPMENT** "
 #else
     #define IDV
 #endif
 
-pick( PRODUCT,      banner1( IDV "Open Watcom Linker", _WLINK_VERSION_ ) )
+pick( PRODUCT,      IDV banner1w( "Linker", _WLINK_VERSION_ ) )
 pick( COPYRIGHT,    banner2( "1985" ) )
 pick( TRADEMARK,    banner3 )
 pick( TRADEMARK2,   banner3a )

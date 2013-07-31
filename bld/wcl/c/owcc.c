@@ -54,8 +54,6 @@
 #include "diskos.h"
 #include "clcommon.h"
 #include "banner.h"
-#undef  _BANEXTRA
-#define _BANEXTRA _BANEXSHORT
 
 #if defined(__UNIX__)
 #define strfcmp strcmp
@@ -73,22 +71,27 @@
 #define CC          BPRFX "wcc"           /* Open Watcom C compiler (16-bit)   */
 #define CCXX        BPRFX "wpp"           /* Open Watcom C++ compiler (16-bit) */
 #define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
+#define _NAME_      "C/C++ x86 16-bit"
 #elif defined( __AXP__ )
 #define CC          BPRFX "wccaxp"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppaxp"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasaxp"        /* Open Watcom assembler             */
+#define _NAME_      "C/C++ Alpha AXP"
 #elif defined( __PPC__ )
 #define CC          BPRFX "wccppc"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppppc"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasppc"        /* Open Watcom assembler             */
+#define _NAME_      "C/C++ PowerPC"
 #elif defined( __MIPS__ )
 #define CC          BPRFX "wccmps"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppmps"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasmps"        /* Open Watcom assembler             */
+#define _NAME_      "C/C++ MIPS"
 #else
 #define CC          BPRFX "wcc386"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wpp386"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
+#define _NAME_      "C/C++ x86 32-bit"
 #endif
 #define PACK              "cvpack"        /* Open Watcom executable packer      */
 #define LINK        BPRFX "wlink"         /* Open Watcom linker                 */
@@ -96,7 +99,6 @@
 #define SPECS_FILE  BPRFX "specs.owc"     /* spec file with target definition   */
 
 #define WCLENV      "OWCC"
-#define _NAME_      "C/C++32 "
 
 #define OUTPUTFILE  "a.out"
 #define TEMPFILE    "__owcc__.lnk"  /* temporary linker directive file    */
@@ -284,7 +286,7 @@ void print_banner( void )
 
     if( done )
         return;
-    puts( banner1w( _NAME_ "Compiler Driver Program", _WCL_VERSION_ ) );
+    puts( banner1w( _NAME_ " " "Compiler Driver Program", _WCL_VERSION_ ) );
     puts( banner2( "1988" ) );
     puts( banner3 );
     puts( banner3a );

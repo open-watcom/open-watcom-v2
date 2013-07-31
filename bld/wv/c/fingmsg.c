@@ -37,11 +37,6 @@
 #define _BETASTR_ " Beta "
 #include "banner.h"
 
-#ifdef _BANEXTRA
-    #undef  _BANEXTRA
-    #define _BANEXTRA _BANEXSHORT
-#endif
-
 char *AboutMessage[] = {
     "", // constructed
     banner2( "1987" ),
