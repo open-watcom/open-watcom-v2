@@ -504,6 +504,7 @@ static bool goToDir( gui_window *gui, char *dir )
     int         len;
     int         rc;
 
+    gui = gui;
     if( dir == NULL ) {
         return( FALSE );
     }

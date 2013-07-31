@@ -124,7 +124,7 @@ static void nukeButtons( void )
     toolBarTail = NULL;
 }
 
-BOOL MyToolBarProc( HWND hwnd, UINT msg, UINT w, LONG l );
+BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
 void ToolBarHelp( HWND hwnd, UINT id, BOOL isdown );
 
 #if 0

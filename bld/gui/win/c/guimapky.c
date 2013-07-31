@@ -448,12 +448,11 @@ bool GUIWindowsMapKey( WPI_PARAM1 vk, WPI_PARAM2 data, gui_key *scan )
 WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                            WPI_PARAM2 lparam )
 {
-    gui_window          *wnd;
+    gui_window          *wnd = NULL;
     gui_key_state       key_state;
     gui_event           gui_ev;
     HWND                low_l;
 
-    wnd=wnd;
     switch( msg ) {
     case WM_MENUCHAR :
         low_l = GET_WM_COMMAND_HWND( wparam, lparam );

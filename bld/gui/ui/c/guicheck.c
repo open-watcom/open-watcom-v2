@@ -76,7 +76,7 @@ bool GUISetChecked( gui_window * wnd, unsigned id, unsigned checked )
     a_check     *check;
     unsigned    prev_radio;
 
-    prev_radio = NULL;
+    prev_radio = 0;
     field = GUIGetField( wnd, id );
     if( field == NULL ) {
         return( FALSE );

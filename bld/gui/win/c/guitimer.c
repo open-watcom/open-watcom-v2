@@ -38,7 +38,7 @@
 extern void GUITimer( void );
 
 #if defined(__NT__)
-VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime )
+VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime )
 {
     gui_window *wnd;
     gui_timer_event timer;
@@ -56,9 +56,9 @@ VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime )
 void GUIStartTimer( gui_window *wnd, int id, int msec )
 {
     if( wnd )
-        SetTimer( wnd->hwnd, id, msec, GUITimerProc );
+        SetTimer( wnd->hwnd, id, (UINT)msec, GUITimerProc );
     else
-        SetTimer( 0, id, msec, GUITimerProc );
+        SetTimer( 0, id, (UINT)msec, GUITimerProc );
 }
 
 void GUIStopTimer( gui_window *wnd, int id )

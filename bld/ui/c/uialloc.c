@@ -104,7 +104,7 @@ void UIMemPrtUsage( void )
 }
 
 
-void *uicalloc( unsigned n, unsigned size )
+void *uicalloc( size_t n, size_t size )
 {
 #ifdef TRMEM
     void *result = _trmem_alloc( n * size, _trmem_guess_who(), UIMemHandle );
@@ -117,7 +117,7 @@ void *uicalloc( unsigned n, unsigned size )
 #endif
 }
 
-void *uimalloc( unsigned size )
+void *uimalloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), UIMemHandle ) );
@@ -135,7 +135,7 @@ void uifree( void *ptr )
 #endif
 }
 
-void *uirealloc( void *old, unsigned size )
+void *uirealloc( void *old, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( old, size, _trmem_guess_who(), UIMemHandle ) );

@@ -93,7 +93,6 @@ LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
     code = 0;
 #else
     qmsg = (WPI_QMSG *) msg_param;
-    parm2 = parm2;      // unused
 #endif
 
     message = _wpi_qmsgmessage( qmsg );

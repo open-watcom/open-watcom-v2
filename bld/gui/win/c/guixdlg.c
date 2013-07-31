@@ -740,7 +740,6 @@ WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1
 {
     WPI_PRES            hdc;
     WPI_RECT            rect;
-    WPI_FONT            prev;
     WPI_DLGRESULT       ret;
 
     lparam = lparam;
@@ -753,10 +752,9 @@ WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1
         break;
 #endif
     case WM_INITDIALOG:
-        prev = prev;
         hdc = _wpi_getpres( hwnd );
 #ifndef __OS2_PM__
-        prev = _wpi_selectfont( hdc, DlgFont );
+        _wpi_selectfont( hdc, DlgFont );
 #else
         DlgFont = (WPI_FONT)NULL;
 #endif

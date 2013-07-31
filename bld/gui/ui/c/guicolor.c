@@ -212,7 +212,7 @@ gui_colour GetColour( ATTR attr )
             return( i );
         }
     }
-    return( (gui_colour)NULL );
+    return( GUI_BLACK );
 }
 
 void GUIXGetWindowColours( gui_window * wnd, gui_colour_set * colours )

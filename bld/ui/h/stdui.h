@@ -32,6 +32,7 @@
 #ifndef _STDUI_H_INCLUDED_
 #define _STDUI_H_INCLUDED_
 
+#include <stdio.h>
 #include "bool.h"
 
 #ifndef         _FAR
@@ -604,7 +605,7 @@ extern          void            uibarf( void );
 extern          void            uiblankarea( SAREA );
 extern          void            uiblankscreen( void );
 extern          void            uiblankattr( ATTR );
-extern          void           *uicalloc( unsigned , unsigned );
+extern          void           *uicalloc( size_t , size_t );
 extern          bool            uichecklist( EVENT, EVENT _FARD * );
 extern          void            uiclose( VSCREEN _FARD * );
 extern          void            uicntrtext( VSCREEN _FARD *, SAREA *, ATTR,
@@ -637,7 +638,7 @@ extern          bool            uiinitgmouse( int );
 extern          bool            uiinlist( EVENT );
 extern          bool            uiintoplist( EVENT );
 extern          bool            uikeepbackground( void );
-extern          void           *uimalloc( unsigned );
+extern          void           *uimalloc( size_t );
 extern          void            uimouse( int );
 extern          void            uimouseforceoff( void );
 extern          void            uimouseforceon( void );
@@ -654,7 +655,7 @@ extern          void            uiposition( SAREA *, ORD, ORD, int, int, bool );
 extern          void            uiprotect( VSCREEN _FARD* );
 extern          void            uipushlist( EVENT _FARD* );
 extern          void            uiputlist( EVENTLIST _FARD* );
-extern          void           *uirealloc( void *, unsigned );
+extern          void           *uirealloc( void *, size_t );
 extern          void            uirefresh( void );
 extern          bool            uiremovebackground( void );
 extern          bool            uiset80col( void );

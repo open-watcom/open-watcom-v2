@@ -828,9 +828,11 @@ static void NextWndToFront( HWND hwnd )
 static bool IsToolBarCommand( gui_window *wnd, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
 #ifdef __NT__
+    wparam=wparam; //lparam=lparam;
     return( wnd != NULL && wnd->toolbar != NULL && wnd->toolbar->hdl != NULL &&
             GET_WM_COMMAND_HWND( wparam, lparam ) == ToolBarWindow( wnd->toolbar->hdl ) );
 #else
+    wnd=wnd; wparam=wparam; lparam=lparam;
     return( FALSE );
 #endif
 }
@@ -864,6 +866,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #endif
 
     root = NULL;
+    createinfo = NULL;
     ret = 0L;
     use_defproc = FALSE;
     if( msg == WM_CREATE ) {
@@ -987,7 +990,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     case WM_CTLCOLORSTATIC :
     //case WM_CTLCOLOREDIT :
         ret = (WPI_MRESULT)GUICtl3dCtlColorEx( msg, wparam, lparam );
-        if( ret == (HBRUSH)NULL ) {
+        if( ret == (WPI_MRESULT)NULL ) {
             SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
                         GUIGetBack( wnd, GUI_BACKGROUND ) ) );
             ret = (WPI_MRESULT)wnd->bk_brush;
@@ -1062,9 +1065,9 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #ifndef __OS2_PM__
     case WM_ACTIVATEAPP :
         root = GUIGetRootWindow();
-        ActivateNC( root, wparam );
+        ActivateNC( root, ( wparam != 0 ) );
         if( GUICurrWnd != NULL ) {
-            ActivateNC( GUICurrWnd, wparam );
+            ActivateNC( GUICurrWnd, ( wparam != 0 ) );
         }
         use_defproc = (bool)wparam; // I'm cheating and using 'use_defproc'
                                     // outside of its self-documented purpose

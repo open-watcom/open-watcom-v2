@@ -43,15 +43,14 @@
 #include "guihotsp.h"
 #include <string.h>
 
+
 bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GUI_data )
 /*
  * "free" edit_control->buffer and "strdup" text to it.
  * isGUIdata chooses between local and ui functions to allow ui to realloc
  */
 {
-    void        *uimalloc( unsigned size );
-    void        uifree( void *ptr );
-    void        *(*allocate)( unsigned size );
+    void        *(*allocate)( size_t size );
     void        (*dealloc)( void *ptr );
     char const  *filler;
     size_t      fillerLength;

@@ -150,8 +150,8 @@ static char *GetFontInfo( LOGFONT *lf )
     char                buff[MAX_STR];
     char                *str;
 
-    GetFontFormatString( lf, &buff );
-    if( GUIStrDup( &buff, &str ) ) {
+    GetFontFormatString( lf, buff );
+    if( GUIStrDup( buff, &str ) ) {
         return( str );
     } else {
         return( NULL );
