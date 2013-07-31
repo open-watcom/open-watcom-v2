@@ -126,7 +126,7 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
     type_old = old_sym->sym_type;
     SKIP_TYPEDEFS( type_old );
 
-    SetDiagType2( type_old->object, type_new->object );
+    SetDiagType2( type_new->object, type_old->object );
     if( !IdenticalType( type_new->object, type_old->object ) ) {
         TYPEPTR     ret_new, ret_old;
 

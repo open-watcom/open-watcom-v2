@@ -1606,7 +1606,7 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, int cast_op )
         opnd = RValue( opnd );
     }
     typ = TypeOf( opnd );
-    SetDiagType2( typ, newtyp );
+    SetDiagType2( newtyp, typ );
     if( newtyp->decl_type > TYPE_POINTER ) {
         if( newtyp->decl_type == TYPE_VOID ) {
             opnd = ExprNode( 0, OPR_CONVERT, opnd );
