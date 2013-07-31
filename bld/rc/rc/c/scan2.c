@@ -34,7 +34,6 @@
 #include "varstr.h"
 #include "rctypes.h"
 #include "global.h"
-#include "rcio.h"
 #include "rcmem.h"
 #include "errors.h"
 #include "ytab2.gh"

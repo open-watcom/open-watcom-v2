@@ -21,6 +21,7 @@ objs =                  &
         ppexpr.obj      &
         ppmacro.obj     &
         ppmem.obj       &
+        ppenv.obj       &
         pathlist.obj
 
 $(proj_name).exe : $(objs)

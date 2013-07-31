@@ -75,6 +75,7 @@ as_stand_objs = &
     $(stand_subdir)/ppexpr.obj &
     $(stand_subdir)/ppmacro.obj &
     $(stand_subdir)/ppmem.obj &
+    $(stand_subdir)/ppenv.obj &
     $(stand_subdir)/pathlist.obj &
     $(stand_subdir)/trmemcvr.obj
 !ifeq release 0
@@ -120,6 +121,7 @@ extra_c_flags_preproc = -fh=$^:pch04.pch
 extra_c_flags_ppexpr = -fh=$^:pch04.pch
 extra_c_flags_ppmacro = -fh=$^:pch04.pch
 extra_c_flags_ppmem = -fh=$^:pch04.pch
+extra_c_flags_ppenv = -fh=$^:pch04.pch
 extra_c_flags_trmemcvr = -fh=$^:pch05.pch
 !endif
 

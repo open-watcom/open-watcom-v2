@@ -364,7 +364,7 @@ int PP_Init2( const char *filename, unsigned flags, const char *include_path, co
     *IncludePath2 = '\0';
     IncludePath2 = AddIncludePath( IncludePath2, include_path );
     if( (PPFlags & PPFLAG_IGNORE_INCLUDE) == 0 ) {
-        IncludePath2 = AddIncludePath( IncludePath2, getenv( "INCLUDE" ) );
+        IncludePath2 = AddIncludePath( IncludePath2, PP_GetEnv( "INCLUDE" ) );
     }
     PP_AddMacro( "__LINE__" );
     PP_AddMacro( "__FILE__" );

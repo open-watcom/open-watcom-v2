@@ -29,7 +29,7 @@ objs +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
             winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
             wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
             widn2str.obj wclip.obj wisedit.obj weditsym.obj &
-            preproc.obj ppexpr.obj ppmacro.obj pathlist.obj
+            preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
 
 extra_cpp_flags     = -DWIN_GUI -DWRESEDLL
 
@@ -42,8 +42,9 @@ extra_c_flags_win = -zu-zw-zc
 # preprocessor objects
 !ifdef __WATCOM__
 extra_c_flags_preproc = -zm
-extra_c_flags_ppexpr = -zm
+extra_c_flags_ppexpr  = -zm
 extra_c_flags_ppmacro = -zm
+extra_c_flags_ppenv   = -zm
 !endif
 
 .c: ../c;../../c;$(sdk_misc_dir);$(cpp_c_dirs);$(watcom_dir)/c

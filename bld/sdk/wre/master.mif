@@ -40,6 +40,7 @@ extra_c_flags_win = -zu-zw-zc
 extra_c_flags_preproc = -zm -fh=preproc.pch
 extra_c_flags_ppexpr  = -zm -fh=preproc.pch
 extra_c_flags_ppmacro = -zm -fh=preproc.pch
+extra_c_flags_ppenv   = -zm -fh=preproc.pch
 
 objs =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
         wregetfn.obj wrestrdp.obj wreselft.obj wreres.obj wrehints.obj &
@@ -49,7 +50,7 @@ objs =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
         wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
         wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
         wreclip.obj wresym.obj &
-        preproc.obj ppexpr.obj ppmacro.obj pathlist.obj
+        preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
 
 !ifeq wre_trmem 1
 objs += trmem.tbj trmemcvr.tbj
