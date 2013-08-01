@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "banner.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"

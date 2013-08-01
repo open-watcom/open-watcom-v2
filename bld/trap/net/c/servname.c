@@ -32,4 +32,3 @@
 
 #include "trperr.h"
 char    ServUsage[] = { TRP_NETSERV_Usage };
-char    ServName[] = { TRP_NetBIOS_Name };

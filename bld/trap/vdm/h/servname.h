@@ -30,5 +30,8 @@
 ****************************************************************************/
 
 
-#include "trperr.h"
-char    ServUsage[] = { TRP_PARSERV_Usage };
+#define SERVNAME    "Virtual DOS Machine Debug Server"
+
+#if defined( _BETAVER )
+#define VERSION_ON_EXTRA_LINE
+#endif

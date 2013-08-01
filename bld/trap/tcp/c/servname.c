@@ -32,4 +32,3 @@
 
 #include "trperr.h"
 char    ServUsage[] = { TRP_TCPSERV_Usage };
-char    ServName[] = { TRP_TCP_Name };

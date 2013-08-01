@@ -559,30 +559,6 @@ trappick( TRP_TCPSERV_Usage,
 trappick( TRP_WINSERV_Usage,
     "winserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
     "jwinserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
-trappick( TRP_Parallel_Name,
-    "Parallel Debug Server",
-    "jParallel Debug Server" )
-trappick( TRP_Serial_Name,
-    "Serial Debug Server",
-    "jSerial Debug Server" )
-trappick( TRP_NetBIOS_Name,
-    "NetBIOS Debug Server",
-    "jNetBIOS Debug Server" )
-trappick( TRP_Novell_Name,
-    "Novell Debug Server",
-    "jNovell Debug Server" )
-trappick( TRP_Virtual_Name,
-    "Virtual DOS Machine Debug Server",
-    "jVirtual DOS Machine Debug Server" )
-trappick( TRP_Named_Name,
-    "Named Pipe Debug Server",
-    "jNamed Pipe Debug Server" )
-trappick( TRP_TCP_Name,
-    "TCP/IP Debug Server",
-    "jTCP/IP Debug Server" )
-trappick( TRP_Windows_Name,
-    "Windows DOS box Debug Server",
-    "jWindows DOS box Debug Server" )
 trappick( TRP_ERR_one_allowed,
     "Only One Server Allowed",
     "jOnly One Server Allowed" )

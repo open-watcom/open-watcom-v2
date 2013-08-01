@@ -30,5 +30,4 @@
 ****************************************************************************/
 
 
-#include "trperr.h"
-char    ServUsage[] = { TRP_PARSERV_Usage };
+#define SERVNAME    "NetBIOS Debug Server"

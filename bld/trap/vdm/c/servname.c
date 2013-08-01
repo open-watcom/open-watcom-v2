@@ -32,4 +32,3 @@
 
 #include "trperr.h"
 char    ServUsage[] = { TRP_VDMSERV_Usage };
-char    ServName[] = { TRP_Virtual_Name };

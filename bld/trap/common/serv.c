@@ -45,6 +45,7 @@
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
+#include "servname.h"
 #include "tcerr.h"
 
 
@@ -52,7 +53,6 @@ extern trap_version     TrapVersion;
 static bool             OneShot;
 
 extern char             RWBuff[ 0x400 ];
-extern char             ServName[];
 
 extern void             Output( char * );
 extern void             SayGNiteGracey( int );
@@ -94,9 +94,12 @@ void Initialize( void )
 
 void OpeningStatement( void )
 {
-    Output( "Open Watcom " );
-    Output( ServName );
-    Output( " Version " _XXXSERV_VERSION_ "\r\n" );
+#if defined( VERSION_ON_EXTRA_LINE )
+    Output( banner1w1( SERVNAME ) "\r\n" );
+    Output( banner1w2( _XXXSERV_VERSION_ ) "\r\n" );
+#else
+    Output( banner1w( SERVNAME, _XXXSERV_VERSION_ ) "\r\n" );
+#endif
     Output( banner2( "1988" ) "\r\n" );
     Output( banner3 "\r\n" );
     Output( banner3a "\r\n" );
@@ -131,9 +134,11 @@ int main( int argc, char **argv )
         Output( TRP_MSG_session_started );
         Output( "\r\n\r\n" );
         Session();
-        #ifndef NETWARE
-            while( KeyPress() ) KeyGet(); /* flush keyboard input */
-        #endif
+#ifndef NETWARE
+        /* flush keyboard input */
+        while( KeyPress() )
+            KeyGet();
+#endif
         Output( "\r\n\r\n" );
         Output( TRP_MSG_session_ended );
         Output( "\r\n\r\n" );

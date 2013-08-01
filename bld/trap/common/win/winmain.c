@@ -36,6 +36,7 @@
 #include "trpimp.h"
 #include "trperr.h"
 #include "winserv.h"
+#include "servname.h"
 #include "packet.h"
 
 extern void OpeningStatement( void );
@@ -55,7 +56,6 @@ extern void SetAppl(void);
 extern bool CreateSelections(short, short, short, short );
 
 char _mainclass[] = "wdservw";
-extern char ServName[];
 
 HANDLE  Instance;
 
@@ -70,11 +70,11 @@ int PASCAL WinMain( HANDLE thishandle, HANDLE prevhandle, LPSTR cmdline, int cmd
     Instance = thishandle;
     cmdshow = cmdshow;
     if( prevhandle ) {
-        MessageBox( MainWindowHandle, TRP_ERR_one_allowed, ServName, MB_ICONEXCLAMATION | MB_OK );
+        MessageBox( MainWindowHandle, TRP_ERR_one_allowed, SERVNAME, MB_ICONEXCLAMATION | MB_OK );
         return( FALSE );
     }
     if( !( GetWinFlags() & WF_PMODE ) ) {
-        MessageBox( MainWindowHandle, TRP_WIN_not_protect_mode, ServName, MB_ICONEXCLAMATION | MB_OK );
+        MessageBox( MainWindowHandle, TRP_WIN_not_protect_mode, SERVNAME, MB_ICONEXCLAMATION | MB_OK );
         return( FALSE );
     }
     _fstrcpy( str, cmdline );
@@ -167,7 +167,7 @@ static BOOL initAppl( void )
 
     MainWindowHandle = CreateWindow(
         _mainclass,             /* class */
-        ServName,               /* caption */
+        SERVNAME,               /* caption */
         WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW,
         0,                      /* init. x pos */
         0,                      /* init. y pos */

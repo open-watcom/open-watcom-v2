@@ -32,4 +32,3 @@
 
 #include "trperr.h"
 char    ServUsage[] = { TRP_NOVSERV_Usage };
-char    ServName[] = { TRP_Novell_Name };

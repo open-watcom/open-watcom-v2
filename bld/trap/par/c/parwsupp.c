@@ -36,6 +36,7 @@
 #include <windows.h>
 #include "packet.h"
 #include "winserv.h"
+#include "servname.h"
 #include "trperr.h"
 
 extern unsigned NumPrinters( void );
@@ -51,7 +52,7 @@ extern BOOL RemoteLinkObtained;
 
 HWND PortChildren[MAX_PPORTS];
 
-char _pgmname[]=TRP_Parallel_Name;
+char _pgmname[] = SERVNAME;
 
 
 void SetAppl( void )

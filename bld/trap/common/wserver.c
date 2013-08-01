@@ -35,15 +35,14 @@
 #include <process.h>
 #include "wi163264.h"
 #include "wserver.h"
-#include "banner.h"
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
+#include "servname.h"
 #include "tcerr.h"
 
 extern trap_version TrapVersion;
 extern char         RWBuff[ 0x400 ];
-extern char         ServName[];
 
 extern void         NothingToDo( void );
 extern bool         Session( void );
@@ -167,7 +166,7 @@ static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
      */
     hwndMain = CreateWindow(
         ServerClass,            /* class */
-        ServName,
+        SERVNAME,
         WS_OVERLAPPEDWINDOW,    /* style */
         CW_USEDEFAULT,          /* init. x pos */
         CW_USEDEFAULT,          /* init. y pos */

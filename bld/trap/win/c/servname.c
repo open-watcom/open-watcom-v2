@@ -32,4 +32,3 @@
 
 #include "trperr.h"
 char    ServUsage[] = { TRP_WINSERV_Usage };
-char    ServName[]   = TRP_Windows_Name;
