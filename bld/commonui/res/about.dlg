@@ -1,22 +1,22 @@
 #if !defined( _JAPANESE_ )
 
-About DIALOG 19, 17, 222, 132
+About DIALOG 19, 17, 222, 142
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
-    PUSHBUTTON      "OK", IDOK, 174, 108, 40, 14
+    PUSHBUTTON      "OK", IDOK, 174, 118, 40, 14
     ICON            "APPLICON", -1, 10, 10, 18, 20
     LTEXT           "", ABOUT_NAME, 42, 8, 177, 8
     LTEXT           "", ABOUT_VERSION, 42, 18, 177, 8
-    LTEXT           "Portions Copyright © 1989-2002 Sybase, Inc.",
-                    ABOUT_COPYRIGHT, 42, 28, 177, 18
-    LTEXT           banner3,  -1, 42, 48, 177, 16
-    LTEXT           banner3a, -1, 42, 68, 177, 16
-    CONTROL         "", 102, "Static", SS_BLACKRECT, 4, 88, 214, 2
-    LTEXT           "", ABOUT_INFO1, 8,  98, 158, 8
-    LTEXT           "", ABOUT_INFO2, 8, 108, 159, 8
-    LTEXT           "", ABOUT_INFO3, 8, 118, 158, 8
+    LTEXT           [ banner2 ], -1, 42, 28, 177, 18
+    LTEXT           [ banner2a( "1989" ) ], ABOUT_COPYRIGHT, 42, 48, 177, 18
+    LTEXT           [ banner3 ],  -1, 42, 68, 177, 18
+    LTEXT           [ banner3a ], -1, 42, 88, 177, 8
+    CONTROL         "", 102, "Static", SS_BLACKRECT, 4, 98, 214, 2
+    LTEXT           "", ABOUT_INFO1, 8, 108, 158, 8
+    LTEXT           "", ABOUT_INFO2, 8, 118, 159, 8
+    LTEXT           "", ABOUT_INFO3, 8, 128, 158, 8
 END
 
 #else
@@ -30,8 +30,7 @@ BEGIN
     ICON            "APPLICON", -1, 10, 10, 18, 20
     LTEXT           "", 107, 42, 8, 177, 8
     LTEXT           "", 106, 42, 18, 177, 8
-    LTEXT           "Copyright (C) 1989-2002 Sybase, Inc.", 109, 42,
-                    28, 177, 8
+    LTEXT           "Copyright (C) 1989-2002 Sybase, Inc.", 109, 42, 28, 177, 8
     CONTROL         "", 102, "Static", SS_BLACKRECT, 4, 48, 214, 2
     LTEXT           "", 103, 8, 58, 158, 8
     LTEXT           "", 104, 8, 68, 159, 8
