@@ -381,28 +381,6 @@ extern  void    ObjError( int    errcode ) {
     FatalError( strerror(  errcode ) );
 }
 
-#if _TARGET & _TARG_80386
-
-#define COPYRITEMSG     "WATCOM 80386 Code Generator Version 8.0        \r\n" \
-                        "Copyright by WATCOM Systems Inc. 1984, 1990." \
-                        "  All rights reserved.\r\n" \
-                        "WATCOM is a trademark of WATCOM Systems Inc."
-
-#else
-
-#define COPYRITEMSG     "WATCOM 8086 Code Generator Version 8.0         \r\n" \
-                        "Copyright by WATCOM Systems Inc. 1984, 1990." \
-                        "  All rights reserved.\r\n" \
-                        "WATCOM is a trademark of WATCOM Systems Inc."
-
-#endif
-
-extern  void    CopyRite() {
-/**************************/
-
-    write( HStdErr, COPYRITEMSG, sizeof( COPYRITEMSG ) );
-}
-
 extern  void    DumpChar( char c ) {
 /**********************************/
 

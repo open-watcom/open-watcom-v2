@@ -235,14 +235,15 @@ void Banner( void )
     IDEMsgInfo          msg_info;
     static char *bannerText[] = {
 #ifndef NDEBUG
-banner1w( "Library Manager", _WLIB_VERSION_ ) " [Internal Development]",
+        banner1w( "Library Manager", _WLIB_VERSION_ ) " [Internal Development]",
 #else
-banner1w( "Library Manager", _WLIB_VERSION_ ),
+        banner1w( "Library Manager", _WLIB_VERSION_ ),
 #endif
-banner2a(),
-banner3,
-banner3a,
-    NULL
+        banner2,
+        banner2a( "1984" ),
+        banner3,
+        banner3a,
+        NULL
     };
     static int alreadyDone=0;
     char **text;

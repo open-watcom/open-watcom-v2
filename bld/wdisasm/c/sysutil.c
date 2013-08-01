@@ -48,7 +48,8 @@ void  SysHelp()
     DirectPuts( MSG_BANNER, stdout );
     fputs(
         banner1( "", _WDISASM_VERSION_ ) "\n"
-        banner2( "1988" ) "\n"
+        banner2 "\n",
+        banner2a( "1988" ) "\n"
         banner3 "\n",
         banner3a "\n",
         stdout

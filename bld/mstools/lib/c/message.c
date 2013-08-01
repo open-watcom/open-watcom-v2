@@ -55,7 +55,8 @@ void BannerMessage( void )
     static int          alreadyPrinted;
     static char *       helpMsg = {
         banner1w( "C/C++ LIB Clone for " CPU_NAME " ", _LIB_CLONE_VERSION_ ) "\n"
-        banner2( "1995" ) "\n"
+        banner2 "\n"
+        banner2a( "1995" ) "\n"
         banner3 "\n"
         banner3a "\n"
     };

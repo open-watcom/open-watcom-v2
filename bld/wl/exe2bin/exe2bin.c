@@ -386,7 +386,8 @@ int main( int argc, char *argv[] )
     result = parse_cmdline( &arg, argc, argv );
     if( !arg.opt.be_quiet ) {
         puts( banner1w( "EXE to Binary Converter", _EXE2BIN_VERSION_ ) );
-        puts( banner2( "2001" ) );
+        puts( banner2 );
+        puts( banner2a( "2001" ) );
         puts( banner3 );
         puts( banner3a );
     }

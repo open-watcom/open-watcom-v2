@@ -48,7 +48,7 @@ Env Environment;
 static void printBanner( void )
 {
     std::cout << banner1w( "OS/2 Help Compiler", _WIPFC_VERSION_ ) << std::endl;
-    std::cout << banner2b( CURR_YEAR ) << std::endl;
+    std::cout << banner2 << std::endl;
     std::cout << banner3 << std::endl;
     std::cout << banner3a << std::endl;
 }

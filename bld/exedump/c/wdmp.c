@@ -194,7 +194,8 @@ static void wbanner( void )
 /*************************/
 {
     Wdputs( banner1w( "Executable Image Dump Utility", BAN_VER_STR ) "\n" );
-    Wdputs( banner2a() "\n" );
+    Wdputs( banner2 "\n" );
+    Wdputs( banner2a( "1984" ) "\n" );
     Wdputs( banner3 "\n" );
     Wdputs( banner3a "\n\n" );
 }

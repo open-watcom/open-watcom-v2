@@ -117,10 +117,11 @@ static void doError( char *str, ... )
 
 static void doBanner( void )
 {
-    myPrintf( "%s\n", banner1w( "Win386 Bind Utility",_WBIND_VERSION_ ) );
-    myPrintf( "%s\n", banner2( "1991" ) );
-    myPrintf( "%s\n", banner3 );
-    myPrintf( "%s\n", banner3a );
+    myPrintf( banner1w( "Win386 Bind Utility",_WBIND_VERSION_ ) "\n" );
+    myPrintf( banner2 "\n" );
+    myPrintf( banner2a( "1991" ) "\n" );
+    myPrintf( banner3 "\n" );
+    myPrintf( banner3a "\n" );
     myPrintf("\n");
 }
 

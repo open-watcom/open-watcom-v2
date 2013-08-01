@@ -126,7 +126,8 @@ const char* _viperDesc[] = {
     "",
     banner1w1( "Integrated Development Environment" STR_BITNEES ),
     banner1w2( _VIPER_VERSION_ ),
-    banner2( "1993" ),
+    banner2,
+    banner2a( "1993" ),
     banner3,
     banner3a,
     NULL

@@ -32,59 +32,34 @@
 #include "cvars.h"
 #include <banner.h>
 
+#if _CPU == 8086
+#define _TARGET_    "x86 16-bit"
+#elif _CPU == 386
+#define _TARGET_    "x86 32-bit"
+#elif _CPU == _AXP
+#define _TARGET_    "Alpha AXP"
+#elif _CPU == _PPC
+#define _TARGET_    "PowerPC"
+#elif _CPU == _MIPS
+#define _TARGET_    "MIPS"
+#else
+#error Unknown System
+#endif
 
 char CompilerID[] = { "__WATCOMC__=" BANSTR( _BANVER ) };
 
-#define _COMPILER " Optimizing Compiler"
-
-#if _CPU == 386
- #define _386 "32"
-#else
- #define _386 "16"
-#endif
-
-
 void CBanner( void )
 {
-    if( CompFlags.banner_printed ) return;              /* 13-mar-90 */
+    if( CompFlags.banner_printed ) return;
     if( CompFlags.quiet_mode )     return;
-#if _CPU == 8086
-  #if defined( _BETAVER )
-    BannerMsg( banner1w1( "C x86 16-bit Optimizing Compiler" ) );
+#if defined( _BETAVER )
+    BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler" ) );
     BannerMsg( banner1w2( _WCC_VERSION_ ) );
-  #else
-    BannerMsg( banner1w( "C x86 16-bit Optimizing Compiler", _WCC_VERSION_ ) );
-  #endif
-#elif _CPU == _AXP
-  #if defined( _BETAVER )
-    BannerMsg( banner1w1( "C Alpha AXP Optimizing Compiler" ) );
-    BannerMsg( banner1w2( _WCC_VERSION_ ) );
-  #else
-    BannerMsg( banner1w( "C Alpha AXP Optimizing Compiler", _WCC_VERSION_ ) );
-  #endif
-#elif _CPU == _PPC
-  #if defined( _BETAVER )
-    BannerMsg( banner1w1( "C PowerPC Optimizing Compiler" ) );
-    BannerMsg( banner1w2( _WCC_VERSION_ ) );
-  #else
-    BannerMsg( banner1w( "C PowerPC Optimizing Compiler", _WCC_VERSION_ ) );
-  #endif
-#elif _CPU == _MIPS
-  #if defined( _BETAVER )
-    BannerMsg( banner1w1( "C MIPS Optimizing Compiler" ) );
-    BannerMsg( banner1w2( _WCC_VERSION_ ) );
-  #else
-    BannerMsg( banner1w( "C MIPS Optimizing Compiler", _WCC_VERSION_ ) );
-  #endif
 #else
-  #if defined( _BETAVER )
-    BannerMsg( banner1w1( "C x86 32-bit Optimizing Compiler" ) );
-    BannerMsg( banner1w2( _WCC_VERSION_ ) );
-  #else
-    BannerMsg( banner1w( "C x86 32-bit Optimizing Compiler", _WCC_VERSION_ ) );
-  #endif
+    BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler", _WCC_VERSION_ ) );
 #endif
-    BannerMsg( banner2( "1984" ) );
+    BannerMsg( banner2 );
+    BannerMsg( banner2a( "1984" ) );
     BannerMsg( banner3 );
     BannerMsg( banner3a );
     CompFlags.banner_printed = 1;

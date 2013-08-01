@@ -60,20 +60,20 @@
 #include "swchar.h"
 
 #if _CPU == 8086
-    #define _NAME_      "F77/16 "
+    #define _TARGET_    "x86 16-bit"
     #define WFC         "wfc"           // copmiler name
     #define WFLENV      "WFL"           // "WFL" environment variable
 #elif _CPU == 386
-    #define _NAME_      "F77/32 "
-  #define WFC           "wfc386"        // compiler name
+    #define _TARGET_    "x86 32-bit"
+    #define WFC         "wfc386"        // compiler name
     #define WFLENV      "WFL386"        // "WFL" environment variable
 #elif _CPU == _AXP
-    #define _NAME_      "F77 Alpha AXP "
-  #define WFC           "wfcaxp"        // copmiler name
+    #define _TARGET_    "Alpha AXP"
+    #define WFC         "wfcaxp"        // copmiler name
     #define WFLENV      "WFLAXP"        // "WFL" environment variable
 #elif _CPU == _PPC
-    #define _NAME_      "F77 PowerPC "
-  #define WFC           "wfcppc"        // copmiler name
+    #define _TARGET_    "PowerPC"
+    #define WFC         "wfcppc"        // copmiler name
     #define WFLENV      "WFLPPC"        // "WFL" environment variable
 #else
     #error Unknown Target CPU
@@ -204,8 +204,14 @@ static  void    PrintMsg( uint msg, ... ) {
 static  void    PrtBanner( void ) {
 //===========================
 
-    puts( banner1w( _NAME_ "Compile and Link Utility", _WFL_VERSION_ ) );
-    puts( banner2( "1990" ) );
+#if defined( _BETAVER )
+    puts( banner1w1( "F77 " _TARGET_ " Compile and Link Utility" ) );
+    puts( banner1w2( _WFL_VERSION_ ) );
+#else
+    puts( banner1w( "F77 " _TARGET_ " Compile and Link Utility", _WFL_VERSION_ ) );
+#endif
+    puts( banner2 );
+    puts( banner2a( "1990" ) );
     puts( banner3 );
     puts( banner3a );
 }

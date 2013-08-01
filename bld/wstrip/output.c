@@ -163,7 +163,8 @@ static void Outc( char c )
 void Banner( void )
 {
     Outs( 1, banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) );
-    Outs( 1, banner2( "1988" ) );
+    Outs( 1, banner2 );
+    Outs( 1, banner2a( "1988" ) );
     Outs( 1, banner3 );
     Outs( 1, banner3a );
 }

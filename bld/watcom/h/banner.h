@@ -44,36 +44,29 @@
 #define _BETA_          " " _BANEXSHORT
 #endif
 
-#define CURR_YEAR       "2013"
+#define CURR_YEAR           "2013"
 
-#define banner1p1(p)    p
-#define banner1p2(v)    "Version " v
-#define banner1(p,v)    banner1p1(p) " " banner1p2(v)
-#define banner1w(p,v)   "Open Watcom " banner1p1(p) " " banner1p2(v)
+#define banner1p1(p)        p
+#define banner1p2(v)        "Version " v
+#define banner1(p,v)        banner1p1(p) " " banner1p2(v)
+#define banner1w(p,v)       "Open Watcom " banner1p1(p) " " banner1p2(v)
 
-#define banner1w1(p)    "Open Watcom " p
-#define banner1w2(v)    banner1p2(v)
+#define banner1w1(p)        "Open Watcom " p
+#define banner1w2(v)        banner1p2(v)
 
-#define banner2p1(year) "Portions Copyright (c) " year "-2002 Sybase, Inc. All Rights Reserved"
-//#define banner2p2()     "All rights reserved"
-//#define banner2(year)   banner2p1(year) ". " banner2p2() "."
-#define banner2p2()     ""
-#define banner2(year)   banner2p1(year) "."
+#define banner2             "Copyright (c) 2002-" CURR_YEAR " Open Watcom Contributors. All Rights Reserved."
+#define banner2a(year)      "Portions Copyright (c) " year "-2002 Sybase, Inc. All Rights Reserved."
 
-#define banner2a()      "Portions Copyright (c) 1984-2002 Sybase, Inc. All Rights Reserved."
+#define banner3             "Source code is available under the Sybase Open Watcom Public License."
+#define banner3a            "See http://www.openwatcom.org/ for details."
 
-#define banner2b(year)  "Copyright (c) 2002-" year " Open Watcom Contributors. All Rights Reserved."
-
-#define banner3         "Source code is available under the Sybase Open Watcom Public License."
-#define banner3a        "See http://www.openwatcom.org/ for details."
-
-#define banner1ps(p,v)  "Powersoft " banner1p1(p) " " banner1p2(v)
-#define banner2ps       banner2a()
-#define banner3ps       "All rights reserved.  Powersoft is a trademark of Sybase, Inc."
+#define banner1ps(p,v)      "Powersoft " banner1p1(p) " " banner1p2(v)
+#define banner2ps           banner2( "1984" )
+#define banner3ps           "All rights reserved.  Powersoft is a trademark of Sybase, Inc."
 
 /* Used by setupgui/c/guiinit.c */
-#define banner4gui()    "Copyright © 2002-%s Open Watcom Contributors. All Rights Reserved."
-#define banner2agui()   "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
+#define gui_banner2         "Copyright © 2002-" CURR_YEAR " Open Watcom Contributors. All Rights Reserved."
+#define gui_banner2a        "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
 
 // the following macros define the delimeters used by the resource
 // compiler when concatenating strings
@@ -108,8 +101,6 @@
 #endif
 
 /* these should all be _BANVER/100.0 */
-#define _I86WCGL_VERSION_       BAN_VER_STR
-#define _386WCGL_VERSION_       BAN_VER_STR
 #define _WCC_VERSION_           BAN_VER_STR
 #define _WPP_VERSION_           BAN_VER_STR
 #define _WCL_VERSION_           BAN_VER_STR

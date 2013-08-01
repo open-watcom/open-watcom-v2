@@ -969,12 +969,11 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             ai.inst = hInstWde;
             ai.name = AllocRCString( WDE_ABOUT_NAME );
             ai.version = AllocRCString( WDE_ABOUT_VERSION );
-            ai.first_cr_year = AllocRCString( WDE_ABOUT_COPYRIGHT_YEAR );
+            ai.first_cr_year = "1984";
             ai.title = AllocRCString( WDE_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );
             FreeRCString( ai.version );
-            FreeRCString( ai.first_cr_year );
             FreeRCString( ai.title );
             pass_to_def = FALSE;
             break;

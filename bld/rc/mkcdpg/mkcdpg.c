@@ -238,10 +238,11 @@ int main( int argc, char *argv[] ) {
     BOOL                error;
 
     error = FALSE;
-    printf( "%s\n", banner1( "WRC Code Page Generator", "1.0") );
-    printf( "%s\n", banner2a() );
-    printf( "%s\n\n", banner3 );
-    printf( "%s\n\n", banner3a );
+    printf( banner1( "WRC Code Page Generator", "1.0" ) "\n" );
+    printf( banner2 "\n" );
+    printf( banner2a( "1984" ) "\n" );
+    printf( banner3 "\n" );
+    printf( banner3a "\n\n" );
     if( argc != 3 ) {
         printf( "This program creates data files used by the resource compiler to convert text\n" );
         printf( "from a given code page into UNICODE. It can only create data files for code\n" );

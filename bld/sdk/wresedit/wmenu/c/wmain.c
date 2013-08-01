@@ -997,12 +997,11 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             ai.inst = WGetEditInstance();
             ai.name = AllocRCString( W_ABOUT_NAME );
             ai.version = AllocRCString( W_ABOUT_VERSION );
-            ai.first_cr_year = AllocRCString( W_ABOUT_COPYRIGHT_YEAR );
+            ai.first_cr_year = "2002";
             ai.title = AllocRCString( W_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );
             FreeRCString( ai.version );
-            FreeRCString( ai.first_cr_year );
             FreeRCString( ai.title );
             pass_to_def = FALSE;
             break;

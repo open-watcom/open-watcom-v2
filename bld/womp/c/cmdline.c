@@ -146,11 +146,12 @@ STATIC void header( void ) {
     headerDone = 1;
     if( cmdLine.quiet ) return;
     PrtFmt(
-banner1w( "Object Module Processor", _WOMP_VERSION_ ) "\n"
-banner2( "1990" ) "\n"
-banner3 "\n"
-banner3a "\n"
-);
+        banner1w( "Object Module Processor", _WOMP_VERSION_ ) "\n"
+        banner2 "\n"
+        banner2a( "1990" ) "\n"
+        banner3 "\n"
+        banner3a "\n"
+    );
 }
 
 static void waitForKey( void ) {

@@ -70,10 +70,11 @@
 #define LBL_NO                          "no"
 
 #define MSG_BANNER \
-        banner1w( "PE ExeDmp Utility", "1.0" )"\n" \
-        banner2("1997") "\n" \
-        banner3         "\n" \
-        banner3a        "\n\n"
+        banner1w( "PE ExeDmp Utility", "1.0" ) "\n" \
+        banner2          "\n" \
+        banner2a("1997") "\n" \
+        banner3          "\n" \
+        banner3a         "\n\n"
 
 #define MSG_HELP \
         " Usage:\n" \

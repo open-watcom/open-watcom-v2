@@ -61,7 +61,7 @@ void g_banner( void )
 {
     if( !(GlobalFlags.bannerprinted | GlobalFlags.quiet) ) {
         out_msg( banner1w( "Script/GML", _WGML_VERSION_ ) CRLF );
-        out_msg( banner2a() CRLF );
+        out_msg( banner2 CRLF );
         out_msg( banner3 CRLF );
         out_msg( banner3a CRLF );
         out_msg( "Compiled with WATCOMC "xmystr(__WATCOMC__)

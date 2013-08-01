@@ -30,33 +30,13 @@
 
 
 #include "vi.h"
+#include "banner.h"
+#include "strbitns.h"
 
-#if defined( __WINDOWS_386__ )
-  #define TT "vi/win386"
-#elif defined( __WINDOWS__ )
-  #define TT "vi/win"
-#elif defined( __OS2V2__ )
-  #define TT "vi/os2v2"
-#elif defined( __OS2__ )
-  #define TT "vi/os2"
-#elif defined( __NT__ )
-  #if defined( __WIN__ )
-    #define TT "vi/ntwin"
-  #else
-    #define TT "vi/nt"
-  #endif
-#elif defined( __PHAR__ ) || defined( __4G__ )
-  #define TT "vi/386"
-#elif defined( __QNX__ )
-  #define TT "vi/qnx"
-#elif defined( __LINUX__ )
-  #define TT "vi/linux"
-#elif defined( __UNIX__ )
-  #define TT "vi/unix"
-#elif defined( __286__ )
-  #define TT "vi/286"
+#if defined( __WIN__ )
+char _NEAR BANNER1[] = banner1w( "Text Editor for Windows" STR_BITNEES, _VI_VERSION_ );
 #else
-  #define TT "vi/86"
+char _NEAR BANNER1[] = banner1w( "Vi Text Editor", _VI_VERSION_ );
 #endif
-
-char _NEAR TITLE[] = TT;
+char _NEAR BANNER2[] = banner2;
+char _NEAR BANNER2A[] = banner2a( "1991" );

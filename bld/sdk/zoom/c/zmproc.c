@@ -419,12 +419,11 @@ static void displayAbout( HWND hwnd ) {
     ai.inst = Instance;
     ai.name = AllocRCString( STR_ABOUT_NAME );
     ai.version = AllocRCString( STR_ABOUT_VERSION );
-    ai.first_cr_year = AllocRCString( STR_ABOUT_YEAR );
+    ai.first_cr_year = "1994";
     ai.title = AllocRCString( STR_ABOUT_TITLE );
     DoAbout( &ai );
     FreeRCString( (char *)ai.name );
     FreeRCString( (char *)ai.version );
-    FreeRCString( (char *)ai.first_cr_year );
     FreeRCString( (char *)ai.title );
 }
 

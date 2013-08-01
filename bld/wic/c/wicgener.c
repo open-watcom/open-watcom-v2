@@ -57,7 +57,8 @@ void incDebugCount(void);
 
 const char *FingerMsg[] = {
     banner1w( "Interface Converter", _WIC_VERSION_ ),
-    banner2( "1993" ),
+    banner2,
+    banner2a( "1993" ),
     banner3,
     banner3a,
     0

@@ -89,23 +89,23 @@
 #ifdef WCLAXP
   #define WCLENV      "WCLAXP"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
-  #define _NAME_      "C/C++ Alpha AXP"
+  #define _TARGET_    "Alpha AXP"
 #elif defined( WCLPPC )
   #define WCLENV      "WCLPPC"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
-  #define _NAME_      "C/C++ PowerPC"
+  #define _TARGET_    "PowerPC"
 #elif defined( WCLMPS )
   #define WCLENV      "WCLMPS"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
-  #define _NAME_      "C/C++ MIPS"
+  #define _TARGET_    "MIPS"
 #elif defined( WCL386 )
   #define WCLENV      "WCL386"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
-  #define _NAME_      "C/C++ x86 32-bit"
+  #define _TARGET_    "x86 32-bit"
 #else
   #define WCLENV      "WCL"             /* name of environment variable    */
   #define STACKSIZE   "4096"            /* default stack size              */
-  #define _NAME_      "C/C++ x86 16-bit"
+  #define _TARGET_    "x86 16-bit"
 #endif
 
 #define TEMPFILE      "__wcl__.lnk"     /* temporary linker directive file */
@@ -300,12 +300,13 @@ void print_banner( void )
     if( done )
         return;
 #if defined( _BETAVER )
-    puts( banner1w1( _NAME_ " " "Compile and Link Utility" ) );
+    puts( banner1w1( "C/C++ " _TARGET_ " Compile and Link Utility" ) );
     puts( banner1w2( _WCL_VERSION_ ) );
 #else
-    puts( banner1w( _NAME_ " " "Compile and Link Utility", _WCL_VERSION_ ) );
+    puts( banner1w( "C/C++ " _TARGET_ " Compile and Link Utility", _WCL_VERSION_ ) );
 #endif
-    puts( banner2( "1988" ) );
+    puts( banner2 );
+    puts( banner2a( "1988" ) );
     puts( banner3 );
     puts( banner3a );
     done = 1;

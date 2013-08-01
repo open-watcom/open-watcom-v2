@@ -61,10 +61,11 @@ void Banner( void )
     if( qflag ) {
         return;
     }
-    printf( "%s\n", banner1w( "Editor Bind Utility", _EDBIND_VERSION_ ) );
-    printf( "%s\n", banner2a() );
-    printf( "%s\n", banner3 );
-    printf( "%s\n", banner3a );
+    printf( banner1w( "Editor Bind Utility", _EDBIND_VERSION_ ) "\n" );
+    printf( banner2 "\n" );
+    printf( banner2a( "1984" ) "\n" );
+    printf( banner3 "\n" );
+    printf( banner3a "\n" );
 }
 
 /*

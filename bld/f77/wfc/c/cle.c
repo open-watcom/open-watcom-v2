@@ -62,13 +62,19 @@ extern  void            FiniAuxInfo( void );
 extern  void            InitGlobalSegs( void );
 extern  void            FreeGlobalSegs( void );
 extern  void            SDRewind(file_handle);
+extern  void            TOutBanner( void );
+extern  void            PrtOptions(void);
 
 unsigned_32     CompTime;
 
 static  void StartCompile( void )
 {
     OpenLst();
+    if( !(Options & OPT_QUIET) && !(Options & OPT_TYPE) ) {
+        TOutBanner();
+    }
     PrtBanner();
+    PrtOptions();
 }
 
 static void Compile( void )

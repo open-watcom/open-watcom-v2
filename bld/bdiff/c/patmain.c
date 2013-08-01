@@ -42,7 +42,8 @@ static void PrintBanner( void )
     if( !banner_printed ) {
         banner_printed = 1;
         printf( banner1w( "BPATCH", _BPATCH_VERSION_ ) "\n" );
-        printf( banner2( "1990" ) "\n" );
+        printf( banner2 "\n" );
+        printf( banner2a( "1990" ) "\n" );
         printf( banner3 "\n" );
         printf( banner3a "\n" );
     }

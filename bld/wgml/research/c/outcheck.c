@@ -3160,7 +3160,7 @@ static void emulate_wgml( void )
 extern void print_banner( void )
 {
     puts( banner1w( "Document Output Test Program", _RESEARCH_VERSION_ ) );
-    puts( banner2( "1983" ) );
+    puts( banner2 );
     puts( banner3 );
     puts( banner3a );
 }

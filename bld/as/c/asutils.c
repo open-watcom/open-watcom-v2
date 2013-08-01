@@ -68,7 +68,8 @@ extern void Banner( void ) {
 #else
     #error unknown AS_CPU
 #endif
-    puts( banner2a() );
+    puts( banner2 );
+    puts( banner2a( "1984" ) );
     puts( banner3 );
     puts( banner3a );
     printed = TRUE;

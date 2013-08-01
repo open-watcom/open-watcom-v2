@@ -718,8 +718,8 @@ vi_rc EnterHexKey( void )
  */
 vi_rc DoVersion( void )
 {
-    Message1( "\"%s\" v%s  %s %s", TITLE,VERSIONT, DATESTAMP_T, DATESTAMP_D );
-    Message2( "%s", AUTHOR );
+    Message1( "%s", BANNER1 );
+    Message2( "%s", BANNER2 );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
 
 } /* DoVersion */

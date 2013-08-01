@@ -62,8 +62,14 @@ void BannerMessage( void )
 {
     static int          alreadyPrinted;
     static char *       helpMsg = {
+#if defined( _BETAVER )
+        banner1w1( "C/C++ CL Clone for " CPU_NAME ) "\n"
+        banner1w2( _CL_CLONE_VERSION_ ) "\n"
+#else
         banner1w( "C/C++ CL Clone for " CPU_NAME " ", _CL_CLONE_VERSION_ ) "\n"
-        banner2( "1995" ) "\n"
+#endif
+        banner2 "\n"
+        banner2a( "1995" ) "\n"
         banner3 "\n"
         banner3a "\n"
         "Compatible with CL Version " _MS_CL_VERSION_ "\n"

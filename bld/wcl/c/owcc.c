@@ -62,36 +62,36 @@
 #endif
 
 #ifdef BOOTSTRAP
-#define BPRFX	"b"
+#define BPRFX   "b"
 #else
-#define BPRFX	""
+#define BPRFX   ""
 #endif
 
 #if defined( _M_I86 )
 #define CC          BPRFX "wcc"           /* Open Watcom C compiler (16-bit)   */
 #define CCXX        BPRFX "wpp"           /* Open Watcom C++ compiler (16-bit) */
 #define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
-#define _NAME_      "C/C++ x86 16-bit"
+#define _TARGET_    "x86 16-bit"
 #elif defined( __AXP__ )
 #define CC          BPRFX "wccaxp"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppaxp"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasaxp"        /* Open Watcom assembler             */
-#define _NAME_      "C/C++ Alpha AXP"
+#define _TARGET_    "Alpha AXP"
 #elif defined( __PPC__ )
 #define CC          BPRFX "wccppc"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppppc"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasppc"        /* Open Watcom assembler             */
-#define _NAME_      "C/C++ PowerPC"
+#define _TARGET_    "PowerPC"
 #elif defined( __MIPS__ )
 #define CC          BPRFX "wccmps"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppmps"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasmps"        /* Open Watcom assembler             */
-#define _NAME_      "C/C++ MIPS"
+#define _TARGET_    "MIPS"
 #else
 #define CC          BPRFX "wcc386"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wpp386"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
-#define _NAME_      "C/C++ x86 32-bit"
+#define _TARGET_    "x86 32-bit"
 #endif
 #define PACK              "cvpack"        /* Open Watcom executable packer      */
 #define LINK        BPRFX "wlink"         /* Open Watcom linker                 */
@@ -286,8 +286,14 @@ void print_banner( void )
 
     if( done )
         return;
-    puts( banner1w( _NAME_ " " "Compiler Driver Program", _WCL_VERSION_ ) );
-    puts( banner2( "1988" ) );
+#if defined( _BETAVER )
+    puts( banner1w1( "C/C++ " _TARGET_ " Compiler Driver Program" ) );
+    puts( banner1w2( _WCL_VERSION_ ) );
+#else
+    puts( banner1w( "C/C++ " _TARGET_ " Compiler Driver Program", _WCL_VERSION_ ) );
+#endif
+    puts( banner2 );
+    puts( banner2a( "1988" ) );
     puts( banner3 );
     puts( banner3a );
     done = 1;
@@ -1351,7 +1357,7 @@ int main( int argc, char **argv )
     _argv = argv;
 #endif
 
-	if( argc <= 1 ) {
+    if( argc <= 1 ) {
         /* no arguments: just tell the user who I am */
         puts( "Usage: owcc [-?] [options] file ..." );
         exit( EXIT_SUCCESS );

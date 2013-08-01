@@ -36,8 +36,9 @@ char *AboutMessage[] = {
     "",
     banner1w1( "Execution Profiler" STR_BITNEES ),
     banner1w2( _WPROF_VERSION_ ),
-    banner2p1( "1987" ),
-    banner2p2(),
+    banner2,
+    banner2a( "1987" ),
+    "",
     banner3,
     banner3a,
 #ifdef D32_NAME

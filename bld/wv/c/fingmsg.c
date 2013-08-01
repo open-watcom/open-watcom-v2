@@ -39,7 +39,8 @@
 
 char *AboutMessage[] = {
     "", // constructed
-    banner2( "1987" ),
+    banner2,
+    banner2a( "1987" ),
     banner3,
     banner3a,
 #ifdef D32_NAME

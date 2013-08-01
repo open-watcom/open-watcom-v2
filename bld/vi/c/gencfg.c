@@ -222,8 +222,7 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
     if( buff != NULL ) {
         setvbuf( f, buff, _IOFBF, VBUF_SIZE );
     }
-    MyFprintf( f, "#\n# WATCOM %s %s configuration file\n# %s\n#\n",
-               TITLE, VERSIONT, AUTHOR );
+    MyFprintf( f, "#\n# %s configuration file\n# %s\n#\n", BANNER1, BANNER2 );
     if( is_cmdline ) {
         GetDateTimeString( token );
         MyFprintf( f, "# File generated on %s\n#\n", token );

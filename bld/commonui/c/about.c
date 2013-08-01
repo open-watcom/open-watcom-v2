@@ -79,9 +79,9 @@ WINEXPORT BOOL CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 #else
             if( strcmp( pai->first_cr_year, CURR_YEAR ) ) {
 #endif
-                sprintf( buff, banner2( "%s" ), pai->first_cr_year );
+                sprintf( buff, banner2a( "%s" ), pai->first_cr_year );
             } else {
-                strcpy( buff, banner2a() );
+                strcpy( buff, banner2a( "1984" ) );
             }
             SetDlgItemText( hwnd, ABOUT_COPYRIGHT, buff );
         }

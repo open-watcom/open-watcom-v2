@@ -51,9 +51,10 @@
 
 static const char* CVpackHeader =
     banner1w( "CV4 Symbolic Debugging Information Compactor", BAN_VER_STR ) "\n" \
-    banner2( "1995" ) "\n" \
+    banner2 "\n" \
+    banner2a( "1995" ) "\n" \
     banner3 "\n" \
-    banner3a;
+    banner3a "\n";
 
 static const char* CVpackUsage = "usage : cvpack [/nologo] <exefile>\n";
 

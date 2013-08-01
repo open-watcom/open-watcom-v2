@@ -416,7 +416,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
             ai.inst = Instance;
             ai.name = IEAllocRCString( WIE_ABOUTTEXT );
             ai.version = IEAllocRCString( WIE_ABOUTVERSION );
-            ai.first_cr_year = IEAllocRCString( WIE_ABOUTFIRSTYEAR );
+            ai.first_cr_year = "1994";
             ai.title = IEAllocRCString( WIE_ABOUTTITLE );
             DoAbout( &ai );
             if( ai.name != NULL ) {
@@ -427,9 +427,6 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
             }
             if( ai.title != NULL ) {
                 IEFreeRCString( ai.title );
-            }
-            if( ai.first_cr_year != NULL ) {
-                IEFreeRCString( ai.first_cr_year );
             }
 #endif
             break;

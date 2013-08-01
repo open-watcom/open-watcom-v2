@@ -48,8 +48,19 @@
 #include <string.h>
 #include <time.h>
 
+#if _CPU == 8086
+    #define _Banner "FORTRAN 77 x86 16-bit Optimizing Compiler"
+#elif _CPU == 386
+    #define _Banner "FORTRAN 77 x86 32-bit Optimizing Compiler"
+#elif _CPU == _AXP
+    #define _Banner "FORTRAN 77 Alpha AXP Optimizing Compiler"
+#elif _CPU == _PPC
+    #define _Banner "FORTRAN 77 PowerPC Optimizing Compiler"
+#else
+    #error Unknown System
+#endif
+
 extern  void            BISetSrcFile( void );
-extern  void            PrtOptions(void);
 extern  lib_handle      IncSearch(char *);
 extern  int             LibRead(lib_handle);
 extern  bool            LibEof(lib_handle);
@@ -88,22 +99,6 @@ extern  file_attr       TrmAttr;
 extern  file_attr       ErrAttr;
 extern  file_handle     FStdOut;
 extern  character_set   CharSetInfo;
-
-#define _Copyright "1984"
-
-#define       VERSION _WFC_VERSION_
-#if _CPU == 8086
-    #define _Banner "FORTRAN 77/16 Optimizing Compiler"
-#elif _CPU == 386
-    #define _Banner "FORTRAN 77/32 Optimizing Compiler"
-#elif _CPU == _AXP
-    #define _Banner "FORTRAN 77 Alpha AXP Optimizing Compiler"
-#elif _CPU == _PPC
-    #define _Banner "FORTRAN 77 PowerPC Optimizing Compiler"
-#else
-    #error Unknown System
-#endif
-
 
 static char           *ListBuff;      // listing file buffer
 static file_handle    ListFile;       // file pointer for the listing file
@@ -589,8 +584,7 @@ void    TOutNL( char *string ) {
 void    TOut( char *string ) {
 //============================
 
-    SendBuff( string, TermBuff, TERM_BUFF_SIZE, &TermCursor, TermFile,
-              &ChkTermErr );
+    SendBuff( string, TermBuff, TERM_BUFF_SIZE, &TermCursor, TermFile, &ChkTermErr );
 }
 
 
@@ -669,82 +663,47 @@ bool    WasStmtListed( void ) {
 }
 
 
+void    TOutBanner( void ) {
+//==========================
+
+#if defined( _BETAVER )
+    TOutNL( banner1w1( _Banner ) );
+    TOutNL( banner1w2( _WFC_VERSION_ ) );
+#else
+    TOutNL( banner1w( _Banner, _WFC_VERSION_ ) );
+#endif
+    TOutNL( banner2 );
+    TOutNL( banner2a( "1984" ) );
+    TOutNL( banner3 );
+    TOutNL( banner3a );
+}
+
 #define MAX_TIME_STR    (4+1+2+1+2+1+2+1+2+1+2)
-
-void    GetBanner( char *buff ) {
-//===============================
-
-    strcpy( buff, banner1w( _Banner, VERSION ) );
-}
-
-static void    GetBannerWithTime( char *buff ) {
-//===============================
-
-    time_t      time_of_day;
-    struct tm   *t;
-
-    GetBanner( buff );
-    time_of_day = time( NULL );
-    t = localtime( &time_of_day );
-    MsgFormat( "  %4d1/%2d2/%2d3 %2d4:%2d5:%2d6", buff + strlen( buff ),
-               1900 + t->tm_year, t->tm_mon + 1, t->tm_mday,
-               t->tm_hour, t->tm_min, t->tm_sec );
-}
-
-
-void    GetCopyright( char *buff ) {
-//==================================
-
-    strcpy( buff, banner2( _Copyright ) );
-}
-
-
-void    GetTrademark( char *buff ) {
-//==================================
-
-    strcpy( buff, banner3 );
-}
-
-void    GetMoreInfo( char *buff ) {
-//=================================
-
-    strcpy( buff, banner3a );
-}
-
 
 void    PrtBanner( void ) {
 //=========================
 
-    char        banner[LIST_BUFF_SIZE+1];
+    char        banner[LIST_BUFF_SIZE + 1];
+    time_t      time_of_day;
+    struct tm   *t;
 
-    GetBanner( banner );
-    if( !(Options & OPT_QUIET) && !(Options & OPT_TYPE) ) {
-        TOutNL( banner );
-    }
-
-    GetBannerWithTime( banner );
+#if defined( _BETAVER )
+    strcpy( banner, banner1w1( _Banner ) );
     PrtLstNL( banner );
-
-    GetCopyright( banner );
-    if( !(Options & OPT_QUIET) && !(Options & OPT_TYPE) ) {
-        TOutNL( banner );
-    }
+    strcpy( banner, banner1w2( _WFC_VERSION_ ) );
+#else
+    strcpy( banner, banner1w( _Banner, _WFC_VERSION_ ) );
+#endif
+    time_of_day = time( NULL );
+    t = localtime( &time_of_day );
+    MsgFormat( "  %4d1/%2d2/%2d3 %2d4:%2d5:%2d6", banner + strlen( banner ),
+               1900 + t->tm_year, t->tm_mon + 1, t->tm_mday,
+               t->tm_hour, t->tm_min, t->tm_sec );
     PrtLstNL( banner );
-
-    GetTrademark( banner );
-    if( !(Options & OPT_QUIET) && !(Options & OPT_TYPE) ) {
-        TOutNL( banner );
-    }
-    PrtLstNL( banner );
-
-    GetMoreInfo( banner );
-    if( !(Options & OPT_QUIET) && !(Options & OPT_TYPE) ) {
-        TOutNL( banner );
-    }
-    PrtLstNL( banner );
-
-    PrtOptions();
-    LFSkip();
+    PrtLstNL( banner2 );
+    PrtLstNL( banner2a( "1984" ) );
+    PrtLstNL( banner3 );
+    PrtLstNL( banner3a );
 }
 
 
@@ -753,7 +712,7 @@ void    GetLstName( char *buffer ) {
 
     if( Options & OPT_TYPE ) {
         strcpy( buffer, SDTermOut );
-#if ! defined( __UNIX__ )
+#if !defined( __UNIX__ )
     // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
     //             and set the spooling bit
     // On QNX, there is no /PRINT option

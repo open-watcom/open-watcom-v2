@@ -36,47 +36,30 @@
 
 #include "fingprnt.h"
 
-#define __puts( x )     MsgDisplayBanner( x )
-
-#if _CPU == 386
- #define __TARCH "32"
-#elif _CPU == 8086
- #define __TARCH "16"
+#if _CPU == 8086
+#define _TARGET_    "x86 16-bit"
+#elif _CPU == 386
+#define _TARGET_    "x86 32-bit"
 #elif _CPU == _AXP
- #define __TARCH " AXP"
+#define _TARGET_    "Alpha AXP"
+#else
+#error Unknown System
 #endif
 
-#define _C      "C++"
-
-#define _COMPILER " Optimizing Compiler"
+#define __puts( x )     MsgDisplayBanner( x )
 
 void CBanner( void )
 {
     if( CompFlags.banner_printed ) return;
     if( CompFlags.quiet_mode )     return;
-#if _CPU == 8086
-  #if defined( _BETAVER )
-    __puts( banner1w1( "C++ x86 16-bit Optimizing Compiler" ) );
+#if defined( _BETAVER )
+    __puts( banner1w1( "C++ " _TARGET_ " Optimizing Compiler" ) );
     __puts( banner1w2( _WPP_VERSION_ ) );
-  #else
-    __puts( banner1w( "C++ x86 16-bit Optimizing Compiler", _WPP_VERSION_ ) );
-  #endif
-#elif _CPU == 386
-  #if defined( _BETAVER )
-    __puts( banner1w1( "C++ x86 32-bit Optimizing Compiler" ) );
-    __puts( banner1w2( _WPP_VERSION_ ) );
-  #else
-    __puts( banner1w( "C++ x86 32-bit Optimizing Compiler", _WPP_VERSION_ ) );
-  #endif
-#elif _CPU == _AXP
-  #if defined( _BETAVER )
-    __puts( banner1w1( "C++ Alpha AXP Optimizing Compiler" ) );
-    __puts( banner1w2( _WPP_VERSION_ ) );
-  #else
-    __puts( banner1w( "C++ Alpha AXP Optimizing Compiler", _WPP_VERSION_ ) );
-  #endif
+#else
+    __puts( banner1w( "C++ " _TARGET_ " Optimizing Compiler", _WPP_VERSION_ ) );
 #endif
-    __puts( banner2( "1989" ) );
+    __puts( banner2 );
+    __puts( banner2a( "1989" ) );
     __puts( banner3 );
     __puts( banner3a );
     if( Token[0] != '$' ) {             /* if finger print present */

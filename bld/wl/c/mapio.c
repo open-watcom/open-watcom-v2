@@ -149,6 +149,9 @@ void MapInit( void )
     msg = MsgStrings[COPYRIGHT];
     BufWrite( msg, strlen( msg ) );
     WriteMapNL( 1 );
+    msg = MsgStrings[COPYRIGHT2];
+    BufWrite( msg, strlen( msg ) );
+    WriteMapNL( 1 );
     ptr = tim;
     ptr = PutDec( ptr, localt->tm_hour );
     *ptr++ = ':';

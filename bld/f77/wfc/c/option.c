@@ -770,4 +770,5 @@ void    PrtOptions( void ) {
         }
     }
     PrtLstNL( "" );
+    LFSkip();
 }

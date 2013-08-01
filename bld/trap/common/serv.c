@@ -100,7 +100,8 @@ void OpeningStatement( void )
 #else
     Output( banner1w( SERVNAME, _XXXSERV_VERSION_ ) "\r\n" );
 #endif
-    Output( banner2( "1988" ) "\r\n" );
+    Output( banner2 "\r\n" );
+    Output( banner2a( "1988" ) "\r\n" );
     Output( banner3 "\r\n" );
     Output( banner3a "\r\n" );
 }

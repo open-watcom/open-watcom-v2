@@ -76,15 +76,12 @@ char *Bolt[] = {
 
 #define WND_APPROX_SIZE 10000
 
-static char         cpy1[sizeof( banner4gui() ) + 5];
-static char         *cpy2 = banner2agui();
-
 gui_resource WndGadgetArray[] = {
     BITMAP_SPLASH, "splash",
 };
 
-gui_ord BitMapBottom;
-gui_coord               BitMapSize;
+gui_ord     BitMapBottom;
+gui_coord   BitMapSize;
 
 extern GUICALLBACK WndMainEventProc;
 bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
@@ -136,8 +133,8 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
             GUIGetRGB( GUI_BLACK, &foreg );     /* foreground */
 
             /* Start at bottom left of hotspot and use neagtive offset */
-            GUIDrawTextRGB( gui, cpy1, strlen( cpy1 ), row_count - 2, indent, foreg, rgb );
-            GUIDrawTextRGB( gui, cpy2, strlen( cpy2 ), row_count - 1, indent, foreg, rgb );
+            GUIDrawTextRGB( gui, gui_banner2, sizeof( gui_banner2 ) - 1, row_count - 2, indent, foreg, rgb );
+            GUIDrawTextRGB( gui, gui_banner2a, sizeof( gui_banner2a ) - 1, row_count - 1, indent, foreg, rgb );
 
         } else {
             for( i = 0; i < sizeof( Bolt ) / sizeof( Bolt[0] ); ++i ) {
@@ -158,8 +155,6 @@ extern bool SetupPreInit( void )
 /******************************/
 {
     gui_rect            rect;
-    char                *curr_date = __DATE__;  // Mon DD YYYY
-    size_t              adj_date;
 
     /* Cancel button may be wider in other languages */
     NominalButtonWidth = strlen( LIT( Cancel ) ) + 5;
@@ -176,25 +171,6 @@ extern bool SetupPreInit( void )
     rect.width = GUIScale.x;
     rect.height = GUIScale.y;
     GUISetScale( &rect );
-
-    /*
-     *  Create copyright information 
-     *
-     *  If the compile fails at this line, then the date is not in the 'MMM DD YYYY'
-     *  format that I was expecting so we should check what it is as the code below
-     *  [adj_date onwards] may fail horribly
-     *
-     *  see curr_date above
-     */
-#if 1
-    {
-        char        tt[sizeof( __DATE__ ) == 12];
-        tt[0] = 0;
-    }
-#endif
-
-    adj_date = strlen( curr_date ) - 4; /* subtract YYYY */
-    sprintf( cpy1, banner4gui(), &curr_date[adj_date] );
 
     return( TRUE );
 }

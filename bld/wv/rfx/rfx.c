@@ -702,7 +702,8 @@ static void Interactive( void )
     interactive = LocalInteractive( STD_IN );
     if( interactive ) {
         Error( banner1w( "Remote File eXchange program", _RFX_VERSION_ ) );
-        Error( banner2( "1990" ) );
+        Error( banner2 );
+        Error( banner2a( "1990" ) );
         Error( banner3 );
         Error( banner3a );
         Error( "" );

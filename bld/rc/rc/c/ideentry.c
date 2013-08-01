@@ -165,7 +165,8 @@ static const char * BannerText =
 #else
     banner1w( "Windows and OS/2 Resource Compiler", _WRC_VERSION_ )"\n"
 #endif
-    banner2("1993") "\n"
+    banner2         "\n"
+    banner2a("1993") "\n"
     banner3         "\n"
     banner3a        "\n"
 ;

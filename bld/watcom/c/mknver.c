@@ -32,7 +32,6 @@
 #include <banner.h>
 
 int     bannerver = _BANVER;
-char *  bannerstr = banner2a();
 
 int main ( int argc, char *argv[] )
 {
@@ -51,6 +50,6 @@ int main ( int argc, char *argv[] )
 #endif
 
     printf( "OP VERSION = %u.%u.%u\n", majorver, minorver, revision);
-    printf( "OP COPYRIGHT '%s'\n", bannerstr);
+    printf( "OP COPYRIGHT '" banner2a( "1984" ) "'\n" );
     return( 0 );
 }

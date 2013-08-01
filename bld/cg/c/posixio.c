@@ -454,26 +454,3 @@ void    ScratchObj( void )
     EraseObj = TRUE;
     CloseObj();
 }
-
-void    PutError( char *str )
-/***************************/
-{
-    while( *str != '\0' ) {
-        write( HStdErr, str, 1 );
-        ++str;
-    }
-}
-
-
-void    CopyRite( void )
-/**********************/
-{
-    PutError( banner1w( "80x86 Code Generator", _I86WCGL_VERSION_ ) );
-    PutError( "\r\n" );
-    PutError( banner2( "1984" ) );
-    PutError( "\r\n" );
-    PutError( banner3 );
-    PutError( "\r\n" );
-    PutError( banner3a );
-    PutError( "\r\n" );
-}

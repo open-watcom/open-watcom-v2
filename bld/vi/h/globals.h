@@ -33,11 +33,8 @@
 #define _GLOBALS_INCLUDED
 
 /* strings */
-extern char _NEAR   TITLE[];
-extern char _NEAR   AUTHOR[];
-extern char _NEAR   VERSIONT[];
-extern char _NEAR   DATESTAMP_T[];
-extern char _NEAR   DATESTAMP_D[];
+extern char _NEAR   BANNER1[];
+extern char _NEAR   BANNER2[];
 extern char _NEAR   MSG_CHARACTERS[];
 extern char _NEAR   MSG_LINES[];
 extern char _NEAR   MSG_PRESSANYKEY[];

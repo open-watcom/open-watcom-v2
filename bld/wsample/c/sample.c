@@ -346,11 +346,13 @@ void REPORT_TYPE report( void )
 void Usage( void )
 {
     Output(
-banner1w( "Execution Sampler", _WSAMP_VERSION_ ) NL
-banner2( "1989" ) NL
-banner3 NL
-banner3a NL
-NL );
+        banner1w( "Execution Sampler", _WSAMP_VERSION_ ) NL
+        banner2 NL
+        banner2a( "1989" ) NL
+        banner3 NL
+        banner3a NL
+        NL
+    );
     MsgPrintfUsage( MSG_USAGE_LN_1, MSG_USAGE_LN_3 );
 //  MSG_USAGE_4 is the option for call graph support
 //  (undocumented for now)

@@ -173,7 +173,8 @@ static void BuildWATCOM( void )
 static char TheHelp[] = {
     banner1w1( "Microsoft to Watcom linker command translation utility" ) NL
     banner1w2( _MS2WLINK_VERSION_ ) NL
-    banner2( "1990" ) NL
+    banner2 NL
+    banner2a( "1990" ) NL
     banner3 NL
     "usage: pass this program the same arguments that would be passed to the" NL
     "       Microsoft linker, and an equivalent set of wlink commands" NL

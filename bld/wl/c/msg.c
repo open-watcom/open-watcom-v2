@@ -578,6 +578,8 @@ void WLPrtBanner( void )
         WriteStdOutInfo( msg, BANNER, NULL );
         msg = MsgStrings[ COPYRIGHT ];
         WriteStdOutInfo( msg, BANNER, NULL );
+        msg = MsgStrings[ COPYRIGHT2 ];
+        WriteStdOutInfo( msg, BANNER, NULL );
         msg = MsgStrings[ TRADEMARK ];
         WriteStdOutInfo( msg, BANNER, NULL );
         msg = MsgStrings[ TRADEMARK2 ];

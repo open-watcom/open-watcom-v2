@@ -40,6 +40,18 @@
 #include "boot77.h"
 #include "cle.h"
 
+#if _CPU == 8086
+#define _NAME_  "wfc"
+#elif _CPU == 386
+#define _NAME_  "wfc386"
+#elif _CPU == _AXP
+#define _NAME_  "wfcaxp"
+#elif _CPU == _PPC
+#define _NAME_  "wfcppc"
+#else
+#error Unknown System
+#endif
+
 extern  void            SDInitIO(void);
 extern  void            FiniProcCmd(void);
 extern  void            InitOptions(void);
@@ -53,6 +65,7 @@ extern  void            MsgBuffer(uint,char *,...);
 extern  void            ShowOptions(char *);
 extern  void            FIncludePathInit(void);
 extern  void            FIncludePathFini(void);
+extern  void            TOutBanner(void);
 
 extern  char            *UsageLines[];
 
@@ -149,28 +162,14 @@ void    Compile( char *buffer ) {
 }
 
 
-#if _CPU == 8086
-  #define _CmpName "wfc"
-#else
-  #define _CmpName "wfc386"
-#endif
-
-
 void    ShowUsage( void ) {
 //===================
 
     char        buff[LIST_BUFF_SIZE+1];
 
-    GetBanner( buff );
-    TOutNL( buff );
-    GetCopyright( buff );
-    TOutNL( buff );
-    GetTrademark( buff );
-    TOutNL( buff );
-    GetMoreInfo( buff );
-    TOutNL( buff );
+    TOutBanner();
     TOutNL( "" );
-    MsgBuffer( MS_USAGE_LINE, buff, _CmpName );
+    MsgBuffer( MS_USAGE_LINE, buff, _NAME_ );
     TOutNL( buff );
     TOutNL( "" );
     ShowOptions( buff );

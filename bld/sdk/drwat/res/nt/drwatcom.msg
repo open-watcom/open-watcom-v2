@@ -393,9 +393,6 @@ pick( STR_ABOUT_NAME,
 pick( STR_ABOUT_VERSION,
     banner1p2( _DRNT_VERSION_ ),
     banner1p2( _DRNT_VERSION_ ) )
-pick( STR_ABOUT_COPYRIGHT_YEAR,
-    "2002",
-    "2002" )
 #ifdef CHICAGO
 pick( STR_ABOUT_TITLE,
     "About Dr. Watcom for Windows 9x",

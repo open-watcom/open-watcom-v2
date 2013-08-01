@@ -781,9 +781,8 @@ static int parse_defined_name( void )
 
 void print_banner( void )
 {
-    puts( banner1w( "Script/GML Defined Name Parser Program", \
-                                                        _RESEARCH_VERSION_ ) );
-    puts( banner2( "1983" ) );
+    puts( banner1w( "Script/GML Defined Name Parser Program", _RESEARCH_VERSION_ ) );
+    puts( banner2 );
     puts( banner3 );
     puts( banner3a );
 }

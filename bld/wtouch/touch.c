@@ -169,11 +169,12 @@ static void usage( void )
 /***********************/
 {
     static char *useText[] = {
-banner1w( "Touch Utility", _WTOUCH_VERSION_ ),
-banner2( "1988" ),
-banner3,
-banner3a,
-    NULL
+        banner1w( "Touch Utility", _WTOUCH_VERSION_ ),
+        banner2,
+        banner2a( "1988" ),
+        banner3,
+        banner3a,
+        NULL
     };
     char **text;
     char msgbuff[MAX_RESOURCE_SIZE];

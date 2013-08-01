@@ -88,10 +88,11 @@ static void displayBanner( void )
     if( quietFlag ) {
         return;
     }
-    printf( "%s\n", banner1w( "CTAGS Utility", "1.0" ) );
-    printf( "%s\n", banner2a() );
-    printf( "%s\n", banner3 );
-    printf( "%s\n", banner3a );
+    printf( banner1w( "CTAGS Utility", "1.0" ) "\n" );
+    printf( banner2 "\n" );
+    printf( banner2a( "1984" ) "\n" );
+    printf( banner3 "\n" );
+    printf( banner3a "\n" );
 
 } /* displayBanner */
 

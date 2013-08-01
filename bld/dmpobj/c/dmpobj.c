@@ -52,7 +52,8 @@ static void ShowProductInfo( void )
 {
     if( quiet == FALSE ) {
         Output( banner1w( "OMF Dump Utility", BAN_VER_STR ) CRLF );
-        Output( banner2a() CRLF );
+        Output( banner2 CRLF );
+        Output( banner2a( "1984" ) CRLF );
         Output( banner3 CRLF );
         Output( banner3a CRLF );
     }

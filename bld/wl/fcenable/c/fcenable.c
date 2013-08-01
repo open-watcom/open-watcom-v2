@@ -161,9 +161,10 @@ int main(int argc, char **argv )
 #else
     put( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) );
 #endif
-    put( banner2( "1990" ) );
-    put( banner3 "" );
-    put( banner3a "" );
+    put( banner2 );
+    put( banner2a( "1990" ) );
+    put( banner3 );
+    put( banner3a );
     InputBuffer = InitRecStuff();
     InFile = NOFILE;
     OutFile = NOFILE;

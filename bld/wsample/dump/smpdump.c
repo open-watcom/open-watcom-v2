@@ -90,7 +90,8 @@ int main( int argc, char **argv )
 
 
     puts( banner1w( "Sample File Dump Utility", _WSAMP_VERSION_ ) );
-    puts( banner2( "1989" ) );
+    puts( banner2 );
+    puts( banner2a( "1989" ) );
     puts( banner3 );
     puts( banner3a );
 
