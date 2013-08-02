@@ -1,0 +1,38 @@
+proj_name = wd_ssl
+
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .symbolic
+!else ifndef bld64host_$(host_os)
+skip_build: .symbolic
+!endif
+!endif
+
+prs_list = &
+    fortran.prs &
+    cpp.prs &
+    c.prs &
+    java.prs
+
+!ifeq release 0
+ssl_options = -v
+!endif
+
+all : $(prs_list) .SYMBOLIC
+
+common_ssl = ../dbgintr.ssl ../dbgrules.ssl
+
+fortran.prs : ../fortran.ssl $(common_ssl)
+    ssl $(ssl_options) $[@ $^@
+
+cpp.prs : ../cpp.ssl ../pp_c.ssl $(common_ssl)
+    ssl $(ssl_options) $[@ $^@
+
+c.prs : ../c.ssl ../pp_c.ssl $(common_ssl)
+    ssl $(ssl_options) $[@ $^@
+
+java.prs : ../java.ssl ../pp_c.ssl $(common_ssl)
+    ssl $(ssl_options) $[@ $^@
+
+clean: .SYMBOLIC
+    rm -f *.prs *.tbl

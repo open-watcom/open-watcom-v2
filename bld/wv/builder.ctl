@@ -14,14 +14,24 @@ set PROJNAME=wd
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CPCMD> dbg/*.dbg               <OWRELROOT>/binw/
-    <CPCMD> ssl/*.prs               <OWRELROOT>/binw/
-    <CPCMD> dbg/*.dbg               <OWRELROOT>/binl/
-    <CPCMD> ssl/*.prs               <OWRELROOT>/binl/
-    <CPCMD> dbg/*.dbg               <OWRELROOT>/rdos/
-    <CPCMD> ssl/*.prs               <OWRELROOT>/rdos/
-#    <CPCMD> dbg/*.dbg               <OWRELROOT>/qnx/watcom/wd/
-#    <CPCMD> ssl/*.prs               <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> dbg/dos/*.dbg           <OWRELROOT>/binw/
+    <CCCMD> ssl/dos/*.prs           <OWRELROOT>/binw/
+    <CCCMD> dbg/nt386/*.dbg         <OWRELROOT>/binnt/
+    <CCCMD> ssl/nt386/*.prs         <OWRELROOT>/binnt/
+    <CCCMD> dbg/os2/*.dbg           <OWRELROOT>/binp/
+    <CCCMD> ssl/os2/*.prs           <OWRELROOT>/binp/
+    <CCCMD> dbg/linux386/*.dbg      <OWRELROOT>/binl/
+    <CCCMD> ssl/linux386/*.prs      <OWRELROOT>/binl/
+    <CCCMD> dbg/rdos386/*.dbg       <OWRELROOT>/rdos/
+    <CCCMD> ssl/rdos386/*.prs       <OWRELROOT>/rdos/
+#    <CCCMD> dbg/qnx/*.dbg           <OWRELROOT>/qnx/watcom/wd/
+#    <CCCMD> ssl/qnx/*.prs           <OWRELROOT>/qnx/watcom/wd/
+
+    <CCCMD> dbg/linuxx64/*.dbg      <OWRELROOT>/binl64/
+    <CCCMD> ssl/linuxx64/*.prs      <OWRELROOT>/binl64/
+
+    <CCCMD> dbg/ntx64/*.dbg         <OWRELROOT>/binnt64/
+    <CCCMD> ssl/ntx64/*.prs         <OWRELROOT>/binnt64/
 
     <CCCMD> rfx/dosi86/rfx.exe      <OWRELROOT>/binw/rfx.exe
     <CCCMD> dsx/dos386/wv.exe       <OWRELROOT>/binw/wd.exe
@@ -37,8 +47,8 @@ set PROJNAME=wd
     <CCCMD> os2/os2386/wv.sym       <OWRELROOT>/binp/wd.sym
     <CCCMD> os2/os2386.gui/wv.exe   <OWRELROOT>/binp/wdw.exe
     <CCCMD> os2/os2386.gui/wv.sym   <OWRELROOT>/binp/wdw.sym
-#   <CCCMD> os2/os2i86/wv.exe       <OWRELROOT>/binp/wd16.exe
-#   <CCCMD> os2/os2i86.gui/wv.exe   <OWRELROOT>/binp/wdw16.exe
+#    <CCCMD> os2/os2i86/wv.exe       <OWRELROOT>/binp/wd16.exe
+#    <CCCMD> os2/os2i86.gui/wv.exe   <OWRELROOT>/binp/wdw16.exe
     <CCCMD> win/nt386/wv.exe        <OWRELROOT>/binnt/wd.exe
     <CCCMD> win/nt386/wv.sym        <OWRELROOT>/binnt/wd.sym
     <CCCMD> win/nt386.gui/wv.exe    <OWRELROOT>/binnt/wdw.exe

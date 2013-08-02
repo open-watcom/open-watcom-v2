@@ -1,0 +1,51 @@
+proj_name = wddbg
+
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .symbolic
+!else ifndef bld64host_$(host_os)
+skip_build: .symbolic
+!endif
+!endif
+
+dbg_list = &
+    addsrc.dbg &
+    ads.dbg &
+    animate.dbg &
+    bcnt.dbg &
+    bif.dbg &
+    bp.dbg &
+    cntbrks.dbg &
+    colour.dbg &
+    cvkeys.dbg &
+    default.dbg &
+    fill.dbg &
+    fox.dbg &
+    mono.dbg &
+    nwvkeys.dbg &
+    owvkeys.dbg &
+    resize.dbg &
+    restart.dbg &
+    return.dbg &
+    save.dbg &
+    setup.dbg &
+    slow.dbg &
+    tdemu.dbg &
+    tdkeys.dbg &
+    vc.dbg &
+    vikeys.dbg &
+    vr.dbg &
+    wd.dbg &
+    wdkeys.dbg
+
+.extensions : .dbg .sp
+
+.sp : ..
+
+all: $(dbg_list) .symbolic
+
+.sp.dbg:
+    wsplice $< $@
+
+clean : .symbolic
+    rm -f *.dbg
