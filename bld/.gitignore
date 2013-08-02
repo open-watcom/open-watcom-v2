@@ -68,8 +68,7 @@
 /graphlib/fix/*/graph.ref
 /graphlib/fix/*/graph.stb
 #
-/ide/cfg/ide.cfg
-/ide/cfg/*/idex.cfg
+/ide/cfg/*/*.cfg
 #
 /idedemo/*/*/*.dll
 #
@@ -179,4 +178,5 @@
 #
 #/wsample/
 #
+/wv/dbg/*/*.dbg
 /wv/os2/*/*.dlg
