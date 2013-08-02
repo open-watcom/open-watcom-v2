@@ -1,7 +1,7 @@
 #
 # Linker initialization file - default systems
 #
-:segment binw
+:segment dos
 ::
 :: DOS, Windows (16-bit) default systems
 ::
@@ -18,10 +18,7 @@ system begin 386
     op stub=wstub.exe
     format os2 le
 end
-:elsesegment binnt | binnt64
-::
-:: NT (WIN32) default systems
-::
+:elsesegment nt
 # remember, don't put carets (^) in following two entries!
 system begin 286
     option osname='Windows 16-bit'
@@ -32,6 +29,21 @@ system begin 286
     option stack=8k, heapsize=1k
     format windows
 end
+:segment axp
+::
+:: NT (AXP) default systems
+::
+system begin 386
+    option osname='Windows NT(AXP) character-mode'
+    libpath %WATCOM%\libaxp
+    libpath %WATCOM%\libaxp\nt
+    format windows nt
+    runtime console
+end
+:elsesegment
+::
+:: NT (WIN32) default systems
+::
 system begin 386
     option osname='Windows NT character-mode'
     libpath %WATCOM%/lib386
@@ -40,7 +52,8 @@ system begin 386
     format windows nt
     runtime console=4.0
 end
-:elsesegment binl | binl64
+:endsegment
+:elsesegment linux
 ::
 :: Linux (x86) default systems
 ::
@@ -62,7 +75,7 @@ system begin 386
     op exportall
     op norelocs
 end
-:elsesegment binp
+:elsesegment os2
 ::
 :: OS/2 default systems
 ::
@@ -80,27 +93,7 @@ system begin 386
     libpath %WATCOM%\lib386\os2
     format os2 lx
 end
-:elsesegment axpnt
-::
-:: NT (AXP) default systems
-::
-# remember, don't put carets (^) in following two entries!
-system begin 286
-    option osname='Windows 16-bit'
-    libpath %WATCOM%\lib286
-    libpath %WATCOM%\lib286\win
-    library windows
-    option stack=8k, heapsize=1k
-    format windows
-end
-system begin 386
-    option osname='Windows NT(AXP) character-mode'
-    libpath %WATCOM%\libaxp
-    libpath %WATCOM%\libaxp\nt
-    format windows nt
-    runtime console
-end
-:elsesegment binq
+:elsesegment qnx
 ::
 :: QNX default systems
 ::
@@ -118,7 +111,7 @@ system begin 386
 #    format qnx flat
     format qnx 
 end
-:elsesegment binz
+:elsesegment zdos
 ::
 :: ZDOS default system
 ::

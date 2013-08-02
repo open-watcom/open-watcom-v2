@@ -1,22 +1,20 @@
 proj_name = wlink_lnk
 
-!ifeq host_subdir binnt64
-!ifndef bld64host_nt
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
 skip_build: .symbolic
-!endif
-!else ifeq host_subdir binl64
-!ifndef bld64host_linux
+!else ifndef bld64host_$(host_os)
 skip_build: .symbolic
 !endif
 !endif
 
-!ifeq host_subdir binw
+!ifeq host_os dos
 wlsystem.lnk : ../specs.sp wlink.lnk
     wsplice -k Pwlsystem $[@ $@
 !endif
 
 wlink.lnk : ../wlink.sp ../specs.sp
-    wsplice -k Pwlsystem -k $(host_subdir) $< $@
+    wsplice -k Pwlsystem -k $(host_os) -k $(host_cpu) $< $@
 
 clean : .symbolic
     rm -f wlink.lnk wlsystem.lnk

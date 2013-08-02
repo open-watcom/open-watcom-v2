@@ -1,5 +1,6 @@
 #pmake: nobuild os_nt cpu_axp
 
-host_subdir = axpnt
+host_os  = nt
+host_cpu = axp
 
 !include ../master.mif
