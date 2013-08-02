@@ -44,13 +44,14 @@ set PROJNAME=ide cfg
     <CCCMD> idelnx.cfg        <OWRELROOT>/binl/
     <CCCMD> iderdos.cfg       <OWRELROOT>/binl/
 
-    <CCCMD> wini86/idex.cfg   <OWRELROOT>/binw/
-    <CCCMD> os2386/idex.cfg   <OWRELROOT>/binp/
-    <CCCMD> nt386/idex.cfg    <OWRELROOT>/binnt/
-    <CCCMD> linux386/idex.cfg <OWRELROOT>/binl/
-    <CCCMD> ntx64/idex.cfg    <OWRELROOT>/binnt64/
+    <CCCMD> wini86/*.cfg      <OWRELROOT>/binw/
+    <CCCMD> os2/*.cfg         <OWRELROOT>/binp/
+    <CCCMD> nt386/*.cfg       <OWRELROOT>/binnt/
+    <CCCMD> linux386/*.cfg    <OWRELROOT>/binl/
 
-    <CCCMD> ntaxp/idex.cfg    <OWRELROOT>/axpnt/
+    <CCCMD> ntx64/*.cfg       <OWRELROOT>/binnt64/
+
+    <CCCMD> ntaxp/*.cfg       <OWRELROOT>/axpnt/
 
 [ BLOCK . . ]
 #============
