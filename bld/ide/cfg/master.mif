@@ -36,14 +36,8 @@ wsplice_opts_win   = -k FOR_WIN
 
 wsplice_opts_axp   = -k FOR_AXP
 
-ide.cfg : ide.sp
-    wsplice $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $^@
-
-idex.cfg : idex.sp
-    wsplice $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $^@
-
 .sp.cfg:
-    wsplice $< $^@
+    wsplice $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $^@
 
 clean : .symbolic
     rm -f *.cfg

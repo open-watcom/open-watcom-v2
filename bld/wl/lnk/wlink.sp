@@ -19,6 +19,9 @@ system begin 386
     format os2 le
 end
 :elsesegment nt
+::
+:: NT (16-bit) default system
+::
 # remember, don't put carets (^) in following two entries!
 system begin 286
     option osname='Windows 16-bit'
@@ -31,7 +34,7 @@ system begin 286
 end
 :segment axp
 ::
-:: NT (AXP) default systems
+:: NT (AXP) default system
 ::
 system begin 386
     option osname='Windows NT(AXP) character-mode'
@@ -42,7 +45,7 @@ system begin 386
 end
 :elsesegment
 ::
-:: NT (WIN32) default systems
+:: NT (x86) default system
 ::
 system begin 386
     option osname='Windows NT character-mode'

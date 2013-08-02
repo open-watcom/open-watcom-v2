@@ -2,13 +2,17 @@ projname = src_idedemo
 
 !include cproj.mif
 
+ide_cfg_nt  = $(idecfg_dir)/nt386/ide.cfg
+ide_cfg_os2 = $(idecfg_dir)/os2386/ide.cfg
+ide_cfg_win = $(idecfg_dir)/wini86/ide.cfg
+
 objs = $(idedemo_dir)/src/$(targ_dir)/box.obj &
     $(idedemo_dir)/src/$(targ_dir)/drawroom.obj &
     $(idedemo_dir)/src/$(targ_dir)/furnitu.obj
 
 !ifdef targ_file
 src_objs : .SYMBOLIC
-    $(ide2make) -r $(targ_file).tgt -c $(idecfg_dir)/ide.cfg
+    $(ide2make) -r $(targ_file).tgt -c $(ide_cfg_$(host_os))
     sed -f "../../convtool.sed" -f "../../conv$(host_os).sed" $(targ_file).mk1 >temp.mk1
     wmake -i -h -f temp.mk1 $(objs)
 !else
@@ -16,7 +20,7 @@ $(host_os)_3d.dll: $(host_os)_3d.mk1
     wmake -i -h -f project.mk
 
 $(host_os)_3d.mk1: $(host_os)_3d.tgt
-    $(ide2make) -r $< -c $(idecfg_dir)/ide.cfg
+    $(ide2make) -r $< -c $(ide_cfg_$(host_os))
     sed -f "../../convtool.sed" -f "../../conv$(host_os).sed" $(host_os)_3d.mk1 >temp.mk1
     cp temp.mk1 $(host_os)_3d.mk1
 !endif

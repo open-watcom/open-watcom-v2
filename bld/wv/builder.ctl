@@ -14,18 +14,18 @@ set PROJNAME=wd
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dbg/dos/*.dbg           <OWRELROOT>/binw/
-    <CCCMD> ssl/dos/*.prs           <OWRELROOT>/binw/
+    <CCCMD> dbg/dos386/*.dbg        <OWRELROOT>/binw/
+    <CCCMD> ssl/dos386/*.prs        <OWRELROOT>/binw/
     <CCCMD> dbg/nt386/*.dbg         <OWRELROOT>/binnt/
     <CCCMD> ssl/nt386/*.prs         <OWRELROOT>/binnt/
-    <CCCMD> dbg/os2/*.dbg           <OWRELROOT>/binp/
-    <CCCMD> ssl/os2/*.prs           <OWRELROOT>/binp/
+    <CCCMD> dbg/os2386/*.dbg        <OWRELROOT>/binp/
+    <CCCMD> ssl/os2386/*.prs        <OWRELROOT>/binp/
     <CCCMD> dbg/linux386/*.dbg      <OWRELROOT>/binl/
     <CCCMD> ssl/linux386/*.prs      <OWRELROOT>/binl/
     <CCCMD> dbg/rdos386/*.dbg       <OWRELROOT>/rdos/
     <CCCMD> ssl/rdos386/*.prs       <OWRELROOT>/rdos/
-#    <CCCMD> dbg/qnx/*.dbg           <OWRELROOT>/qnx/watcom/wd/
-#    <CCCMD> ssl/qnx/*.prs           <OWRELROOT>/qnx/watcom/wd/
+#    <CCCMD> dbg/qnx386/*.dbg        <OWRELROOT>/qnx/watcom/wd/
+#    <CCCMD> ssl/qnx386/*.prs        <OWRELROOT>/qnx/watcom/wd/
 
     <CCCMD> dbg/linuxx64/*.dbg      <OWRELROOT>/binl64/
     <CCCMD> ssl/linuxx64/*.prs      <OWRELROOT>/binl64/
