@@ -52,7 +52,7 @@ static unsigned_32  DataSize = 0;
 static unsigned_32  HeaderSize = 0;
 
 
-#define MB_BASE 0x110000
+#define MB_BASE 0x120000
 
 struct mb_header
 {
@@ -154,7 +154,7 @@ static void WriteRDOSData( void )
 
 /* write groups and relocations */
     leader = NULL;
-	isdata = 0;
+        isdata = 0;
     for( group = Groups; group != NULL; ) {
         if( leader != group->leaders ) {
             isdata = 0;
@@ -268,8 +268,8 @@ static void WriteMbootHeader( void )
 
     SeekLoad( 0 );
     _HostU32toTarg(0x1BADB002, mb_head.mb_magic );
-    _HostU32toTarg(0x00010001, mb_head.mb_flags );
-    _HostU32toTarg(0xE4514FFD, mb_head.mb_checksum );
+    _HostU32toTarg(0x00010003, mb_head.mb_flags );
+    _HostU32toTarg(0xE4514FFB, mb_head.mb_checksum );
     _HostU32toTarg(linear, mb_head.mb_header_addr );
     _HostU32toTarg(linear, mb_head.mb_load_addr );
     linear += CodeSize + sizeof( struct mb_header );
