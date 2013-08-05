@@ -113,8 +113,8 @@ local void FuncDefn( SYMPTR sym )
         sym->flags |= SYM_OK_TO_RECURSE;                /* 25-sep-91 */
     }
 
-    if( sym->stg_class == SC_EXTERN  ||  sym->stg_class == SC_FORWARD ) {
-        sym->stg_class = SC_NULL;       /* indicate exported function */
+    if( sym->attribs.stg_class == SC_EXTERN  ||  sym->attribs.stg_class == SC_FORWARD ) {
+        sym->attribs.stg_class = SC_NULL;       /* indicate exported function */
     }
 
     CompFlags.external_defn_found = 1;
@@ -122,7 +122,7 @@ local void FuncDefn( SYMPTR sym )
         sym->flags |= SYM_CHECK_STACK;
 
     if( !CompFlags.zu_switch_used ) {
-        if( (sym->attrib & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
+        if( (sym->mods & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
             /* interrupt function */
             TargetSwitches |= FLOATING_SS;      /* force -zu switch on */
         } else {
@@ -130,8 +130,8 @@ local void FuncDefn( SYMPTR sym )
         }
     }
     if( strcmp( CurFunc->name, "main" ) == 0 || strcmp( CurFunc->name, "wmain" ) == 0 ) {
-        sym->attrib &= ~MASK_LANGUAGES;  // Turn off any language flags
-        sym->attrib |= LANG_WATCALL;     // Turn on __watcall calling convention for main
+        sym->mods &= ~MASK_LANGUAGES;  // Turn off any language flags
+        sym->mods |= LANG_WATCALL;     // Turn on __watcall calling convention for main
     }
     SymReplace( sym, CurFuncHandle );
 }
@@ -318,7 +318,7 @@ local void ParmDeclList( void )     /* process old style function definitions */
                     } else {
                         ArgPromotion( &sym );
                         parm->sym.sym_type = sym.sym_type;
-                        parm->sym.stg_class = info.stg;
+                        parm->sym.attribs.stg_class = info.stg;
                     }
                 }
                 CMemFree( sym.name );
@@ -355,7 +355,7 @@ local void ReverseParms( void )       /* reverse order of parms */
 {
     PARMPTR     prev_parm, parm, next_parm;
 
-    if( ParmsToBeReversed( CurFunc->attrib, NULL ) ) {
+    if( ParmsToBeReversed( CurFunc->mods, NULL ) ) {
         prev_parm = NULL;
         parm = ParmList;
         while( parm != NULL ) {
@@ -412,15 +412,15 @@ local void AddParms( void )
     while( parm != NULL ) {
         new_sym_handle = 0;
         parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
-        parm->sym.is_parm = TRUE;
+        parm->sym.attribs.is_parm = TRUE;
         hash = parm->sym.info.hash_value;
         if( parm->sym.name[0] == '\0' ) {
             /* no name ==> ... */
             parm->sym.sym_type = GetType( TYPE_DOT_DOT_DOT );
-            parm->sym.stg_class = SC_AUTO;
+            parm->sym.attribs.stg_class = SC_AUTO;
         } else if( parm->sym.sym_type == NULL ) {
             parm->sym.sym_type = TypeDefault();
-            parm->sym.stg_class = SC_AUTO;
+            parm->sym.attribs.stg_class = SC_AUTO;
         } else {
 /*
         go through ParmList again, looking for FLOAT parms
@@ -471,7 +471,7 @@ local void AddParms( void )
             tree = ExprNode( VarLeaf( &new_sym, new_sym_handle ),
                  OPR_EQUALS, RValue( VarLeaf(&parm->sym, sym_handle) ) );
             tree->op.u2.result_type = typ;
-            tree->expr_type = typ;
+            tree->u.expr_type = typ;
             AddStmt( tree );
         }
 
@@ -497,7 +497,7 @@ local void AddParms( void )
     // TODO not following my scheme
     CurFunc->sym_type = FuncNode( typ->object, FLAG_NONE,
         MakeParmList( parmlist, parm_count,
-        ParmsToBeReversed( CurFunc->attrib, NULL ) ) );
+        ParmsToBeReversed( CurFunc->mods, NULL ) ) );
 
     if( PrevProtoType != NULL ) {                       /* 12-may-91 */
         ChkProtoType();
@@ -544,7 +544,7 @@ local void ChkParms( void )
             prev_parm = parm;
             prev_sym_handle = sym_handle;
             parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
-            parm->sym.is_parm = TRUE;
+            parm->sym.attribs.is_parm = TRUE;
             parm = parm->next_parm;
         }
         if( prev_parm != NULL ) {

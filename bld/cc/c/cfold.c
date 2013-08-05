@@ -221,7 +221,7 @@ int DoSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     DATA_TYPE       const_type;
 
     left = 0;
-    const_type = tree->expr_type->decl_type;
+    const_type = tree->u.expr_type->decl_type;
     if( op1 != NULL ) {
         left = op1->op.u2.long_value;
     }
@@ -280,7 +280,7 @@ int DoUnSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     DATA_TYPE       const_type;
 
     left = 0;
-    const_type = tree->expr_type->decl_type;
+    const_type = tree->u.expr_type->decl_type;
     if( op1 != NULL ) {
         left = op1->op.u2.ulong_value;
     }
@@ -426,7 +426,7 @@ int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         left =  LongValue64( op1 );
     }
     right = LongValue64( op2 );
-    const_type = tree->expr_type->decl_type;
+    const_type = tree->u.expr_type->decl_type;
     if( tree->op.opr == OPR_CMP ) {
         tmp = U64Cmp( &left, &right );
         switch( tree->op.u1.cc ) {
@@ -482,7 +482,7 @@ int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         left =  LongValue64( op1 );
     }
     right = LongValue64( op2 );
-    const_type = tree->expr_type->decl_type;
+    const_type = tree->u.expr_type->decl_type;
     if( tree->op.opr == OPR_CMP ) {
         tmp = I64Cmp( &left, &right );
         switch( tree->op.u1.cc ) {
@@ -717,7 +717,7 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         tree->op.opr = OPR_PUSHINT;
         tree->op.u2.ulong_value = value;
         tree->op.u1.const_type = TYPE_INT;
-        tree->expr_type = GetType( TYPE_INT );
+        tree->u.expr_type = GetType( TYPE_INT );
         tree->left = NULL;
         tree->right = NULL;
         FreeExprNode( op1 );
@@ -775,7 +775,7 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     tree->op.u2.float_value = op2->op.u2.float_value;
     tree->op.u2.float_value->ld = result;
     tree->op.u1.const_type = TYPE_DOUBLE;
-    tree->expr_type = GetType( BinExprType( typ1, typ2 ) );
+    tree->u.expr_type = GetType( BinExprType( typ1, typ2 ) );
     tree->left = NULL;
     tree->right = NULL;
     FreeExprNode( op1 );
@@ -1013,10 +1013,10 @@ static bool FoldableTree( TREEPTR tree )
     case OPR_CONVERT:
         opnd = tree->right;
         if( IsConstLeaf( opnd ) ) {
-            typ = tree->expr_type;
+            typ = tree->u.expr_type;
             CastConstNode( opnd, typ );
             *tree = *opnd;
-            tree->expr_type = typ;
+            tree->u.expr_type = typ;
             opnd->op.opr = OPR_NOP;
             FreeExprNode( opnd );
         }
@@ -1024,7 +1024,7 @@ static bool FoldableTree( TREEPTR tree )
     case OPR_RETURN:
         opnd = tree->right;
         if( IsConstLeaf( opnd ) ) {
-            CastConstNode( opnd, tree->expr_type );
+            CastConstNode( opnd, tree->u.expr_type );
         }
         break;
     case OPR_COMMA:
@@ -1044,7 +1044,7 @@ static bool FoldableTree( TREEPTR tree )
             SYM_ENTRY   sym;
 
             SymGet( &sym, opnd->right->op.u2.sym_handle );
-            if( sym.stg_class != SC_AUTO && sym.stg_class != SC_REGISTER ) {
+            if( sym.attribs.stg_class != SC_AUTO && sym.attribs.stg_class != SC_REGISTER ) {
                 /* &(static object) is known to be non-zero */
                 /* replace it by a 1 */
                 FreeExprNode( opnd->right );
@@ -1073,7 +1073,7 @@ static bool FoldableTree( TREEPTR tree )
                 tree->op.opr = OPR_PUSHINT;
                 tree->op.u2.long_value = offset;
                 tree->op.u1.const_type = TYPE_UINT;
-                tree->expr_type = GetType( TYPE_UINT );
+                tree->u.expr_type = GetType( TYPE_UINT );
                 tree->right = NULL;
                 FreeExprTree( opnd );
             }
@@ -1170,12 +1170,12 @@ static void CheckOpndValues( TREEPTR tree )
             int     max_shift;
 
             opnd = tree->right;
-            r_type = opnd->expr_type;
+            r_type = opnd->u.expr_type;
             con = ArithmeticType( r_type->decl_type );
 
             // shift arguments undergo integral promotion; 'char c = 1 << 10;'
             // is not undefined, though it will overflow
-            max_shift = max( SizeOfArg( tree->left->expr_type ),
+            max_shift = max( SizeOfArg( tree->left->u.expr_type ),
                         SizeOfArg( GetType( TYPE_INT ) ) ) * 8;
             switch( con ) {
             case SIGNED_INT: {
@@ -1231,7 +1231,7 @@ static void CheckOpndValues( TREEPTR tree )
             bool    zero_divisor = FALSE;
 
             opnd = tree->right;
-            r_type = opnd->expr_type;
+            r_type = opnd->u.expr_type;
             con = ArithmeticType( r_type->decl_type );
 
             switch( con ) {
@@ -1280,7 +1280,7 @@ void DoConstFold( TREEPTR tree )
         if( tree->op.opr == OPR_CMP ) {
             decl_type = tree->op.u2.compare_type->decl_type;
         } else {
-            decl_type = tree->expr_type->decl_type;
+            decl_type = tree->u.expr_type->decl_type;
         }
         con = ArithmeticType( decl_type );
         switch( con ) {

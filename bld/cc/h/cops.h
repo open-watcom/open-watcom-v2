@@ -191,7 +191,7 @@ typedef struct expr_node {
     union {
         TYPEPTR         expr_type;      // used during pass 1
         TREEPTR         thread;         // used during pass 2 full codegen
-    };
+    } u;
     OPNODE          op;
     bool            visit;
     bool            checked;            // opnd values have been checked

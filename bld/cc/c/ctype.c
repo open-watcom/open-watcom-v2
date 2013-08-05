@@ -621,7 +621,7 @@ static void DeclSpecifiers( char *plain_int, decl_info *info )
                 sym_handle = SymLookTypedef( SavedHash, SavedId, &sym );
             }
             if( sym_handle == 0 )                 goto got_specifier;
-            if( sym.stg_class != SC_TYPEDEF ) goto got_specifier;
+            if( sym.attribs.stg_class != SC_TYPEDEF ) goto got_specifier;
             if( SymLevel != 0 && flags == 0 ) {
                 if( CurToken == T_ID ) {
                     LookAhead();
@@ -631,21 +631,21 @@ static void DeclSpecifiers( char *plain_int, decl_info *info )
             ++SymTypedef;
             typ = sym.sym_type;
             SymGet( &sym, sym_handle );  // get rest of sym from nutty sym table
-            if( flags & sym.attrib ) {      /* 24-mar-91, 12-may-91 */
+            if( flags & sym.mods ) {      /* 24-mar-91, 12-may-91 */
                 CErr1( ERR_INV_TYPE );
             }
-            flags |= sym.attrib;
-            if( sym.attrib & FLAG_BASED ) {
+            flags |= sym.mods;
+            if( sym.mods & FLAG_BASED ) {
                 info->seg = sym.u.var.segment;
             }
-            if( sym.declspec != DECLSPEC_NONE ) {
+            if( sym.attribs.declspec != DECLSPEC_NONE ) {
                 if( info->decl == DECLSPEC_NONE ) {
-                    info->decl = sym.declspec;
+                    info->decl = sym.attribs.declspec;
                 } else {
                     CErr1( ERR_INVALID_DECLSPEC );
                 }
             }
-            if( sym.naked ) {
+            if( sym.attribs.naked ) {
                 if( info->naked ) {
                     CErr1( ERR_INVALID_DECLSPEC );
                 } else {
@@ -803,13 +803,13 @@ local FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     if( tag->u.field_list == NULL ) {
         tag->u.field_list = new_field;
     } else {
-        prev_field = tag->last_field;
+        prev_field = tag->u1.last_field;
         prev_field->next_field = new_field;
         if( SizeOfArg( prev_field->field_type ) == 0 ) { /* 05-jun-92 */
             CErr2p( ERR_INCOMPLETE_TYPE, prev_field->name );
         }
     }
-    tag->last_field = new_field;
+    tag->u1.last_field = new_field;
     return( new_field );
 }
 

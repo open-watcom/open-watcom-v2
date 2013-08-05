@@ -178,15 +178,15 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     sym = SymGetPtr( sym_handle );
     tree->op.u2.func.sym_handle = sym_handle;
     tree->op.u2.func.flags = FUNC_NONE;
-    if( (Toggles & TOGGLE_INLINE) || (sym->attrib & FLAG_INLINE) ){
-        if( !sym->naked ){
+    if( (Toggles & TOGGLE_INLINE) || (sym->mods & FLAG_INLINE) ){
+        if( !sym->attribs.naked ){
             if( strcmp( sym->name, "main" ) != 0 ) {
                 tree->op.u2.func.flags |= FUNC_OK_TO_INLINE;
             }
         }
     }
-    tree->op.flags = OpFlags( sym->attrib );
-    tree->expr_type = sym->sym_type->object;    // function return type
+    tree->op.flags = OpFlags( sym->mods );
+    tree->u.expr_type = sym->sym_type->object;    // function return type
     AddStmt( tree );
     // Evil, evil globals! But we need this for later lookups in cgen.c
     sym->u.func.start_of_func = LastStmt;
@@ -380,7 +380,7 @@ static void ReturnStmt( SYM_HANDLE func_result, struct return_info *info )
         ChkRetType( tree );
         tree = FixupAss( tree, func_type );
         tree = ExprNode( 0, OPR_RETURN, tree );
-        tree->expr_type = func_type;
+        tree->u.expr_type = func_type;
         tree->op.u2.sym_handle = func_result;
         AddStmt( tree );
         with = RETURN_WITH_EXPR;
@@ -408,11 +408,11 @@ static void SetFuncReturnNode( TREEPTR tree )
     TYPEPTR     typ;
 
     typ = CurFunc->sym_type->object;
-    tree->expr_type = typ;
+    tree->u.expr_type = typ;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYPE_STRUCT || typ->decl_type == TYPE_UNION ) {
         tree->right = LeafNode( OPR_NOP );      // place holder
-        tree->right->expr_type = NULL;
+        tree->right->u.expr_type = NULL;
     }
 }
 
@@ -912,10 +912,10 @@ static int EndTry( void )
         func = VarLeaf( SymGetPtr( SymExcept ), SymExcept );
         func->op.opr = OPR_FUNCNAME;
         expr = ExprNode( NULL, OPR_PARM, expr );
-        expr->expr_type = typ;
+        expr->u.expr_type = typ;
         expr->op.u2.result_type = typ;
         tree = ExprNode( func, OPR_CALL, expr );
-        tree->expr_type = GetType( TYPE_VOID );
+        tree->u.expr_type = GetType( TYPE_VOID );
         AddStmt( tree );
         return( 1 );
     } else if( (CurToken == T__FINALLY) || (CurToken == T___FINALLY) ) {
@@ -1149,7 +1149,7 @@ static bool IsDeclarator( TOKEN token )
         } else {    /* T_SAVED_ID */
             sym_handle = SymLookTypedef( SavedHash, SavedId, &sym );
         }
-        if( sym_handle != 0 && sym.stg_class == SC_TYPEDEF ) {
+        if( sym_handle != 0 && sym.attribs.stg_class == SC_TYPEDEF ) {
             return( TRUE );
         }
     }
@@ -1169,7 +1169,7 @@ static void FixupC99MainReturn( SYM_HANDLE func_result, struct return_info *info
     if( main_type->decl_type == TYPE_INT ) {
         tree = IntLeaf( 0 );    /* zero is the default return value */
         tree = ExprNode( 0, OPR_RETURN, tree );
-        tree->expr_type = main_type;
+        tree->u.expr_type = main_type;
         tree->op.u2.sym_handle = func_result;
         AddStmt( tree );
         info->with_expr = TRUE;
@@ -1402,11 +1402,11 @@ void Statement( void )
         }
     }
     if( !return_info.with_expr ) {   /* no return values present */
-        if( !DeadCode && !CurFunc->naked ) {
+        if( !DeadCode && !CurFunc->attribs.naked ) {
             ChkRetValue();
         }
     } else if( ! return_at_outer_level ) {              /* 28-feb-92 */
-        if( ! DeadCode && !CurFunc->naked ) {
+        if( ! DeadCode && !CurFunc->attribs.naked ) {
             CWarn2p( WARN_MISSING_RETURN_VALUE, ERR_MISSING_RETURN_VALUE, CurFunc->name );
         }
     }
@@ -1417,7 +1417,7 @@ void Statement( void )
     tree->op.u2.label_count = LabelIndex;
     tree = LeafNode( OPR_FUNCEND );
     if( !return_info.with_expr ) {
-        tree->expr_type = NULL;
+        tree->u.expr_type = NULL;
         tree->op.u2.sym_handle = 0;
     } else {
         tree->op.u2.sym_handle = func_result;
@@ -1434,7 +1434,7 @@ void Statement( void )
         if( DefFile == NULL ) {
             OpenDefFile();
         }
-        if( DefFile != NULL && CurFunc->stg_class == SC_NULL ) {
+        if( DefFile != NULL && CurFunc->attribs.stg_class == SC_NULL ) {
             /* function exported */
             DumpFuncDefn();
         }

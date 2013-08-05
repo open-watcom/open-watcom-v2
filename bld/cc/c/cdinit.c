@@ -371,15 +371,15 @@ local void StoreIValue64( DATA_TYPE dtype, uint64 value )
 
 
 typedef struct {
-    long                       offset;
+    long                        offset;
     union {
-        STR_HANDLE       str_h;
-        SYM_HANDLE       sym_h;
-    };
-    bool                      is_str;
-    bool                      addr_set;
-    bool                      is_error;
-    enum { IS_VALUE, IS_ADDR } state;
+        STR_HANDLE                  str_h;
+        SYM_HANDLE                  sym_h;
+    }                           u;
+    bool                        is_str;
+    bool                        addr_set;
+    bool                        is_error;
+    enum { IS_VALUE, IS_ADDR }  state;
 } addrfold_info;
 
 local void AddrFold( TREEPTR tree, addrfold_info *info )
@@ -419,7 +419,7 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
         }
         info->addr_set = TRUE;
         info->is_str = TRUE;
-        info->str_h = tree->op.u2.string_handle;
+        info->u.str_h = tree->op.u2.string_handle;
         tree->op.u2.string_handle->ref_count++;
         CompFlags.non_zero_data = 1;
         break;
@@ -432,9 +432,9 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
         info->addr_set = TRUE;
         info->is_str = FALSE;
         SymGet( &sym, tree->op.u2.sym_handle );
-        info->sym_h = tree->op.u2.sym_handle;
+        info->u.sym_h = tree->op.u2.sym_handle;
         CompFlags.non_zero_data = 1;
-        if( sym.stg_class == SC_AUTO ) {
+        if( sym.attribs.stg_class == SC_AUTO ) {
             info->is_error = TRUE;
         }
         break;
@@ -451,7 +451,7 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
         if( info->state == IS_VALUE ) { // must be foldable
             info->is_error = TRUE;
         }
-        info->offset +=  offset * SizeOfArg( tree->expr_type );
+        info->offset +=  offset * SizeOfArg( tree->u.expr_type );
         if( tree->op.flags & OPFLAG_RVALUE ) {
             info->state = IS_VALUE;
         }
@@ -563,7 +563,7 @@ local void StorePointer( TYPEPTR typ, unsigned long size )
         tree = AddrExpr();
         tree = InitAsgn( typ, tree ); // as if we are assigning
         info.offset = 0;
-        info.sym_h = 0;
+        info.u.sym_h = 0;
         info.addr_set = FALSE;
         info.state = IS_VALUE;
         info.is_str = FALSE;
@@ -586,10 +586,10 @@ local void StorePointer( TYPEPTR typ, unsigned long size )
         } else {
             if( info.is_str ) {
                 dq.type = QDT_STRING;
-                dq.u.string_leaf = info.str_h;
+                dq.u.string_leaf = info.u.str_h;
             } else {
                 dq.type = QDT_ID;
-                dq.u.var.sym_handle = info.sym_h;
+                dq.u.var.sym_handle = info.u.sym_h;
                 dq.u.var.offset = info.offset;
             }
         }
@@ -1244,7 +1244,7 @@ local void AssignAggregate( TREEPTR lvalue, TREEPTR rvalue, TYPEPTR typ )
 
     tree = ExprNode( lvalue, OPR_EQUALS, rvalue );
     tree->right->op.opr = OPR_PUSHSYM;
-    tree->expr_type = typ;
+    tree->u.expr_type = typ;
     tree->op.u2.result_type = typ;
     AddStmt( tree );
 }
@@ -1293,7 +1293,7 @@ local void InitStructVar( unsigned base, SYMPTR sym, SYM_HANDLE sym_handle, TYPE
             SKIP_TYPEDEFS( typ2 );
         }
         opnd = ExprNode( opnd, OPR_DOT, UIntLeaf( base + field->offset ) );
-        opnd->expr_type = typ2;
+        opnd->u.expr_type = typ2;
         opnd->op.u2.result_type = typ2;
         AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
         if( token == T_LEFT_BRACE )  MustRecog( T_RIGHT_BRACE );
@@ -1424,7 +1424,7 @@ local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 opnd = VarLeaf( sym, sym_handle );
                 value = CommaExpr();
                 opnd = ExprNode( opnd, OPR_INDEX, IntLeaf( i ) );
-                opnd->expr_type = typ2;
+                opnd->u.expr_type = typ2;
                 opnd->op.u2.result_type = typ2;
                 AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
                 if( token == T_LEFT_BRACE )  MustRecog( T_RIGHT_BRACE );
@@ -1444,7 +1444,7 @@ local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                     value = IntLeaf( 0 );
                     opnd = VarLeaf( sym, sym_handle );
                     opnd = ExprNode( opnd, OPR_INDEX, IntLeaf( i ) );
-                    opnd->expr_type = typ2;
+                    opnd->u.expr_type = typ2;
                     opnd->op.u2.result_type = typ2;
                     AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
                     ++i;
@@ -1508,7 +1508,7 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     TYPEPTR     typ;
 
-    if( SymLevel == 0  ||  sym->stg_class == SC_STATIC ) {
+    if( SymLevel == 0 || sym->attribs.stg_class == SC_STATIC ) {
         if( sym->flags & SYM_INITIALIZED ) {
             CErrSymName( ERR_VAR_ALREADY_INITIALIZED, sym, sym_handle );
         }

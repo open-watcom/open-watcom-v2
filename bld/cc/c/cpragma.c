@@ -392,7 +392,7 @@ void SetCurrInfo( char *name )
             sym_handle = SymLook( HashValue, name );
             if( sym_handle != 0 ) {
                 SymGet( &sym, sym_handle );
-                sym_attrib = sym.attrib;
+                sym_attrib = sym.mods;
             }
             CurrAlias = GetLangInfo( sym_attrib );
         }

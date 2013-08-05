@@ -166,7 +166,7 @@ enum sym_state AsmQueryState( void *handle )
         sym.flags |= SYM_REFERENCED;
         SymReplace( &sym, sym_handle );
     }
-    switch( sym.stg_class ) {
+    switch( sym.attribs.stg_class ) {
     case SC_AUTO:
     case SC_REGISTER:
         return( SYM_STACK );
@@ -437,7 +437,7 @@ void AsmSysMakeInlineAsmFunc( int too_many_bytes )
         tree = LeafNode( OPR_FUNCNAME );
         tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );
-        tree->expr_type = GetType( TYPE_VOID );
+        tree->u.expr_type = GetType( TYPE_VOID );
         AddStmt( tree );
     }
     AsmFiniRelocs();

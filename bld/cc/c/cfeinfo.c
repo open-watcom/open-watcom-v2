@@ -445,8 +445,8 @@ aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
         }
     }
 #if _CPU == 386
-    if( (inf->flags & AUX_FLAG_FAR16) || (sym->attrib & FLAG_FAR16) ) {
-        if( (sym->attrib & MASK_LANGUAGES) == LANG_PASCAL || (inf->cclass & REVERSE_PARMS) ) {
+    if( (inf->flags & AUX_FLAG_FAR16) || (sym->mods & FLAG_FAR16) ) {
+        if( (sym->mods & MASK_LANGUAGES) == LANG_PASCAL || (inf->cclass & REVERSE_PARMS) ) {
             return( &Far16PascalInfo );
         } else {
             return( &Far16CdeclInfo );
@@ -485,10 +485,10 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
             if( inf != &DefaultInfo ) {
                 cclass = inf->cclass;
             } else {
-                cclass = GetLangInfo( sym.attrib )->cclass;
+                cclass = GetLangInfo( sym.mods )->cclass;
 #if _CPU == 8086
                 if( TargSys == TS_WINDOWS ) {
-                    if( sym.attrib & (LANG_CDECL | LANG_PASCAL) ) {
+                    if( sym.mods & (LANG_CDECL | LANG_PASCAL) ) {
                         cclass |= FAT_WINDOWS_PROLOG;
                     }
                 }
@@ -498,22 +498,22 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
             if( CompFlags.emit_names ) {
                 cclass |= EMIT_FUNCTION_NAME;
             }
-            if( sym.attrib & FLAG_FAR ) {
+            if( sym.mods & FLAG_FAR ) {
                 cclass |= FAR_CALL;
-                if( sym.attrib & FLAG_NEAR ) {
+                if( sym.mods & FLAG_NEAR ) {
                     cclass |= INTERRUPT;
                 }
-            } else if( sym.attrib & FLAG_NEAR ) {
+            } else if( sym.mods & FLAG_NEAR ) {
                 cclass &= ~ FAR_CALL;
             }
 #endif
 #ifdef DLL_EXPORT
-            if( sym.attrib & FLAG_EXPORT ) {  /* 12-mar-90 */
+            if( sym.mods & FLAG_EXPORT ) {  /* 12-mar-90 */
                 cclass |= DLL_EXPORT;
             }
 #endif
 #ifdef LOAD_DS_ON_ENTRY
-            if( sym.attrib & FLAG_LOADDS ) {  /* 26-apr-90 */
+            if( sym.mods & FLAG_LOADDS ) {  /* 26-apr-90 */
   #if 0 /* John - 11-mar-93 */          /* 21-feb-93 */
                 if( TargSys == TS_WINDOWS ) {
                     cclass |= FAT_WINDOWS_PROLOG;
@@ -747,7 +747,7 @@ static char *GetNamePattern( CGSYM_HANDLE sym_handle )
         pattern = "*";
     } else {
 #endif
-        inf = LangInfo( sym.attrib, inf );
+        inf = LangInfo( sym.mods, inf );
         if( sym.flags & SYM_FUNCTION ) {
             pattern = inf->objname;
 #if ( _CPU == 386 ) || ( _CPU == 8086 )
@@ -1145,12 +1145,12 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     switch( request ) {
     case SAVE_REGS:
         if( sym_handle != 0 ) {
-            inf = LangInfo( sym.attrib, inf );
+            inf = LangInfo( sym.mods, inf );
         } else {
-            sym.attrib = 0;
+            sym.mods = 0;
         }
         save_set = inf->save;
-        if( sym.attrib & FLAG_SAVEREGS ) {
+        if( sym.mods & FLAG_SAVEREGS ) {
             HW_CTurnOn( save_set, HW_SEGS );
         }
 
@@ -1162,7 +1162,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
         return( &save_set );
     case RETURN_REG:
         if( sym_handle != 0 ) {
-            inf = LangInfo( sym.attrib, inf );
+            inf = LangInfo( sym.mods, inf );
         }
         return( &inf->returns );
     case CALL_BYTES:
@@ -1177,7 +1177,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
         }
   #endif
         if( sym_handle != 0 ) {
-            inf = LangInfo( sym.attrib, inf );
+            inf = LangInfo( sym.mods, inf );
             if( inf->code == NULL && VarFunc( &sym ) ) {
                 return( DefaultVarParms );
             }
@@ -1185,7 +1185,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
         return( inf->parms );
     case STRETURN_REG:
         if( sym_handle != 0 ) {
-            inf = LangInfo( sym.attrib, inf );
+            inf = LangInfo( sym.mods, inf );
         }
         return( &inf->streturn );
     default:
@@ -1270,22 +1270,22 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     switch( request ) {
     case SAVE_REGS:
         if( sym_handle != 0 ) {
-            inf = LangInfo( sym.attrib, inf );
+            inf = LangInfo( sym.mods, inf );
         } else {
-            sym.attrib = 0;
+            sym.mods = 0;
         }
         save_set = inf->save;
         return( &save_set );
     case RETURN_REG:
         if( sym_handle != 0 ) {
-            inf = LangInfo( sym.attrib, inf );
+            inf = LangInfo( sym.mods, inf );
         }
         return( &inf->returns );
     case CALL_BYTES:
         return( inf->code );
     case PARM_REGS:
         if( sym_handle != 0 ) {
-            inf = LangInfo( sym.attrib, inf );
+            inf = LangInfo( sym.mods, inf );
             if( inf->code == NULL && VarFunc( &sym ) ) {
                 return( DefaultVarParms );
             }

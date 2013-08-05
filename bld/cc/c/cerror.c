@@ -58,7 +58,7 @@ typedef struct ErrPostList
             TOKEN       opr;
             TYPEPTR     types[ 2 ];
         } o;
-    };
+    } u;
 } ErrPostList;
 
 static ErrPostList  *PostList;
@@ -214,16 +214,16 @@ static void PrintPostNotes( void )
     while( PostList != NULL ) {
         switch( PostList->type ) {
         case POSTLIST_SYMBOL:
-            CInfoMsg( INFO_SYMBOL_DECLARATION, PostList->s.sym_name, PostList->s.sym_file, PostList->s.sym_line );
+            CInfoMsg( INFO_SYMBOL_DECLARATION, PostList->u.s.sym_name, PostList->u.s.sym_file, PostList->u.s.sym_line );
             break;
         case POSTLIST_TWOTYPES_1:
-            PrintType( INFO_SRC_CNV_TYPE, PostList->o.types[ 0 ] );
-            PrintType( INFO_TGT_CNV_TYPE, PostList->o.types[ 1 ] );
+            PrintType( INFO_SRC_CNV_TYPE, PostList->u.o.types[ 0 ] );
+            PrintType( INFO_TGT_CNV_TYPE, PostList->u.o.types[ 1 ] );
             break;
         case POSTLIST_TWOTYPES_2:
-            CInfoMsg( INFO_OPERATOR, Tokens[PostList->o.opr] );
-            PrintType( INFO_FIRST_OPND_TYPE, PostList->o.types[ 0 ] );
-            PrintType( INFO_SECOND_OPND_TYPE, PostList->o.types[ 1 ] );
+            CInfoMsg( INFO_OPERATOR, Tokens[PostList->u.o.opr] );
+            PrintType( INFO_FIRST_OPND_TYPE, PostList->u.o.types[ 0 ] );
+            PrintType( INFO_SECOND_OPND_TYPE, PostList->u.o.types[ 1 ] );
             break;
         }
         SetDiagPop();
@@ -453,11 +453,11 @@ void SetDiagSymbol( SYMPTR sym, SYM_HANDLE handle )
     struct ErrPostList  *np;
 
     np = NewPostList( POSTLIST_SYMBOL );
-    np->s.sym_name = SymName( sym, handle );
-    if( np->s.sym_name == NULL )
-        np->s.sym_name = "???";
-    np->s.sym_file = FileIndexToCorrectName( sym->src_loc.fno );
-    np->s.sym_line = sym->src_loc.line;
+    np->u.s.sym_name = SymName( sym, handle );
+    if( np->u.s.sym_name == NULL )
+        np->u.s.sym_name = "???";
+    np->u.s.sym_file = FileIndexToCorrectName( sym->src_loc.fno );
+    np->u.s.sym_line = sym->src_loc.line;
 }
 
 void SetDiagEnum( ENUMPTR ep )
@@ -465,9 +465,9 @@ void SetDiagEnum( ENUMPTR ep )
     struct ErrPostList  *np;
 
     np = NewPostList( POSTLIST_SYMBOL );
-    np->s.sym_name = ep->name;
-    np->s.sym_file = FileIndexToCorrectName( ep->src_loc.fno );
-    np->s.sym_line = ep->src_loc.line;
+    np->u.s.sym_name = ep->name;
+    np->u.s.sym_file = FileIndexToCorrectName( ep->src_loc.fno );
+    np->u.s.sym_line = ep->src_loc.line;
 }
 
 void SetDiagMacro( MEPTR mp )
@@ -475,9 +475,9 @@ void SetDiagMacro( MEPTR mp )
     struct ErrPostList  *np;
 
     np = NewPostList( POSTLIST_SYMBOL );
-    np->s.sym_name = mp->macro_name;
-    np->s.sym_file = FileIndexToCorrectName( mp->src_loc.fno );
-    np->s.sym_line = mp->src_loc.line;
+    np->u.s.sym_name = mp->macro_name;
+    np->u.s.sym_file = FileIndexToCorrectName( mp->src_loc.fno );
+    np->u.s.sym_line = mp->src_loc.line;
 }
 
 void SetDiagType1( TYPEPTR typ_source )
@@ -490,9 +490,9 @@ void SetDiagType2( TYPEPTR typ_target, TYPEPTR typ_source )
     struct ErrPostList  *np;
 
     np = NewPostList( POSTLIST_TWOTYPES_1 );
-    np->o.opr = 0;
-    np->o.types[ 0 ] = typ_source;
-    np->o.types[ 1 ] = typ_target;
+    np->u.o.opr = 0;
+    np->u.o.types[ 0 ] = typ_source;
+    np->u.o.types[ 1 ] = typ_target;
 }
 
 void SetDiagType3( TYPEPTR typ_first, TYPEPTR typ_second, TOKEN opr )
@@ -500,9 +500,9 @@ void SetDiagType3( TYPEPTR typ_first, TYPEPTR typ_second, TOKEN opr )
     struct ErrPostList  *np;
 
     np = NewPostList( POSTLIST_TWOTYPES_2 );
-    np->o.opr = opr;
-    np->o.types[ 0 ] = typ_first;
-    np->o.types[ 1 ] = typ_second;
+    np->u.o.opr = opr;
+    np->u.o.types[ 0 ] = typ_first;
+    np->u.o.types[ 1 ] = typ_second;
 }
 
 void SetDiagPop( void )

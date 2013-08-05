@@ -323,7 +323,7 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
     textsegment         *seginfo;           /* also used by pre-compiled header */
     dw_handle           dwarf_handle;       /* used for browsing info; could be
                                              * perhaps stored in 'info' union. */
-    type_modifiers      attrib;             /* LANG_CDECL, _PASCAL, _FORTRAN */
+    type_modifiers      mods;               /* LANG_CDECL, _PASCAL, _FORTRAN */
     sym_flags           flags;
 #if defined( _M_IX86 ) || defined( _M_X64 )
     unsigned char       level;
@@ -336,7 +336,7 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
         unsigned char naked      : 1;
         unsigned char is_parm    : 1;
         unsigned char rent       : 1;
-    };
+    } attribs;
 } SYM_ENTRY, *SYMPTR;
 
 typedef struct parm_entry {
@@ -396,7 +396,7 @@ typedef struct tag_entry {
     union   {
         ENUMPTR         last_enum;         /* for ENUM */
         FIELDPTR        last_field;        /* for STRUCT or UNION */
-    };
+    } u1;
     char                name[1];
 } TAGDEFN, *TAGPTR;
 

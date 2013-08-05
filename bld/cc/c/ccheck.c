@@ -629,7 +629,7 @@ extern void ChkCallParms( void )
                 SetDiagSymbol( &sym, callsite->op.u2.sym_handle );
             SetErrLoc( &nextcall->src_loc );
             if( typ->u.fn.parms != NULL ) {
-                CompareParms( typ->u.fn.parms, callnode->right, ParmsToBeReversed( sym.attrib, NULL ) );
+                CompareParms( typ->u.fn.parms, callnode->right, ParmsToBeReversed( sym.mods, NULL ) );
             } else {
                 // Unprototyped function called. Note that for indirect calls, there
                 // is no symbol associated with the function and diagnostic information
@@ -746,7 +746,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     // Fold RHS expression so that we can properly check for null
     // pointers or out of range constants
     FoldExprTree( opnd2 );
-    typ2 = opnd2->expr_type;
+    typ2 = opnd2->u.expr_type;
 
     SetDiagType2( typ1, typ2 );
     switch( CompatibleType( typ1, typ2, TRUE, IsNullConst( opnd2 ) ) ) {

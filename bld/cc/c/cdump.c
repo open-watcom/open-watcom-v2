@@ -469,7 +469,7 @@ static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch )
     case TYPE_FUNCTION:
         DumpDecl( Object( typ ), NULL, pch );
         if ( funcsym ) {
-            flags = funcsym->attrib;
+            flags = funcsym->mods;
             if( flags & FLAG_LOADDS )
                 put_keyword( T___LOADDS, pch );
             if( flags & FLAG_EXPORT )
@@ -584,7 +584,7 @@ void DumpFuncDefn( void )
 
     ChunkInit( &chunk );
 
-    if( CurFunc->stg_class == SC_STATIC ) {
+    if( CurFunc->attribs.stg_class == SC_STATIC ) {
         put_keyword( T_STATIC, &chunk );
     } else {
         put_keyword( T_EXTERN, &chunk );

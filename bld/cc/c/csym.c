@@ -144,7 +144,7 @@ SYM_HANDLE SegSymbol( char *name, int segment )             /* 15-mar-92 */
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
     sym.sym_type = GetType( TYPE_USHORT );
     sym.name = name;
-    sym.stg_class = SC_STATIC;
+    sym.attribs.stg_class = SC_STATIC;
     sym.level = 1;  // make invisible
     SymReplace( &sym, handle );
     if( segment ) {
@@ -161,7 +161,7 @@ SYM_HANDLE SpcSymbol( char *name, int stg_class )
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
     sym.sym_type = GetType( TYPE_USHORT );
     sym.name = name;
-    sym.stg_class = stg_class;
+    sym.attribs.stg_class = stg_class;
     SymReplace( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
     return( (SYM_HANDLE)(pointer_int)NextSymHandle );
 }
@@ -180,7 +180,7 @@ void SpcSymInit( void )
 #ifdef __SEH__
     NewSym();                           /* 05-dec-92 */
     TrySymHandle = (SYM_HANDLE)(pointer_int)NextSymHandle;               /* create special _try sym */
-    sym.stg_class = SC_AUTO;
+    sym.attribs.stg_class = SC_AUTO;
     sym.name = ".try";
     sym.sym_type = GetType( TYPE_VOID );
     SymReplace( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
@@ -188,7 +188,7 @@ void SpcSymInit( void )
     /* create special symbol for "extern unsigned int __near __chipbug" */
     NewSym();
     SymChipBug = (SYM_HANDLE)(pointer_int)NextSymHandle;
-    sym.stg_class = SC_EXTERN;
+    sym.attribs.stg_class = SC_EXTERN;
     sym.name = "__chipbug";
     sym.sym_type = GetType( TYPE_UINT );
     SymReplace( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
@@ -233,7 +233,7 @@ void SpcSymInit( void )
     SymCover = MakeFunction( "__COVERAGE", typ );       /* 04-apr-92 */
     MakeFunction( "__C", typ );                 /* 04-apr-92 */
     SymGet( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
-    sym.stg_class = SC_STATIC;
+    sym.attribs.stg_class = SC_STATIC;
     SymReplace( &sym, (SYM_HANDLE)(pointer_int)NextSymHandle );
 }
 
@@ -244,7 +244,7 @@ SYM_HANDLE MakeFunction( char *id, TYPEPTR typ )
 
     memset( &sym, 0, sizeof( SYM_ENTRY ) );
     sym.name = id;
-    sym.stg_class = SC_EXTERN;
+    sym.attribs.stg_class = SC_EXTERN;
     sym.flags = SYM_FUNCTION;
     sym.handle = SpecialSyms;
     sym.sym_type = typ;
@@ -370,7 +370,7 @@ SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
     sym_len = strlen( sym->name );
     hsym = SymHashAlloc( offsetof( sym_hash_entry, name ) + sym_len + 1 );
     hsym->sym_type = NULL;
-    if( sym->stg_class == SC_TYPEDEF ) {        /* 28-feb-92 */
+    if( sym->attribs.stg_class == SC_TYPEDEF ) {        /* 28-feb-92 */
         typ = sym->sym_type; {
             typ = TypeNode( TYPE_TYPEDEF, typ );
             typ->u.typedefn = sym_handle;
@@ -452,7 +452,7 @@ SYM_HANDLE GetNewSym( SYMPTR sym, char id, TYPEPTR typ, int stg_class )
     SymCreate( sym, name );
     sym_handle = SymAdd( 0, sym );
     sym->sym_type = typ;
-    sym->stg_class = stg_class;
+    sym->attribs.stg_class = stg_class;
     sym->flags |= SYM_REFERENCED | SYM_TEMP;
     return( sym_handle );
 }
@@ -497,7 +497,7 @@ SYM_HANDLE SymLookTypedef( int h, char *id, SYMPTR sym )  /* 28-feb-92 */
         if( far_strcmp( hsym->name, id, len ) == 0 ) {
             if( hsym->sym_type == NULL ) break;
             sym->sym_type = hsym->sym_type;
-            sym->stg_class = SC_TYPEDEF;
+            sym->attribs.stg_class = SC_TYPEDEF;
             sym->level = hsym->level;
             return( hsym->handle );
         }
@@ -524,10 +524,10 @@ SYM_HANDLE Sym0Look( int h, char *id )  /* look for symbol on level 0 */
 local void ChkReference( SYM_ENTRY *sym, SYM_NAMEPTR name )
 {
     if( sym->flags & SYM_DEFINED ) {
-        if( sym->stg_class != SC_EXTERN ) {
+        if( sym->attribs.stg_class != SC_EXTERN ) {
             if( !(sym->flags & SYM_REFERENCED) ) {
                 if( !(sym->flags & SYM_IGNORE_UNREFERENCE) ) {  /*25-apr-91*/
-                    if( sym->is_parm ) {
+                    if( sym->attribs.is_parm ) {
                         CWarn2p( WARN_PARM_NOT_REFERENCED, ERR_PARM_NOT_REFERENCED, name );
                     } else {
                         CWarn2p( WARN_SYM_NOT_REFERENCED, ERR_SYM_NOT_REFERENCED, name );
@@ -535,7 +535,7 @@ local void ChkReference( SYM_ENTRY *sym, SYM_NAMEPTR name )
                 }
             } else if( ! (sym->flags & SYM_ASSIGNED) ) {
                 if( sym->sym_type->decl_type != TYPE_ARRAY
-                &&  sym->stg_class != SC_STATIC ) {         /* 06-aug-90 */
+                &&  sym->attribs.stg_class != SC_STATIC ) {         /* 06-aug-90 */
                     CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
                 }
             }
@@ -548,11 +548,11 @@ local void ChkIncomplete( SYM_ENTRY *sym, SYM_NAMEPTR name )
 {
     TYPEPTR     typ;
 
-    if( sym->stg_class != SC_TYPEDEF ) {
+    if( sym->attribs.stg_class != SC_TYPEDEF ) {
         if( !(sym->flags & (SYM_FUNCTION | SYM_TEMP)) ) {
             if( (sym->flags & SYM_REFERENCED) == 0 ) {
                 /* if it wasn't referenced, don't worry 19-sep-90 AFS */
-                if( sym->stg_class == SC_EXTERN ) {     /* 08-nov-91 */
+                if( sym->attribs.stg_class == SC_EXTERN ) {     /* 08-nov-91 */
                     return;
                 }
             }
@@ -560,7 +560,7 @@ local void ChkIncomplete( SYM_ENTRY *sym, SYM_NAMEPTR name )
             SKIP_TYPEDEFS( typ );
             if( SizeOfArg( typ ) == 0  &&  typ->decl_type != TYPE_FUNCTION
             &&  typ->decl_type != TYPE_DOT_DOT_DOT ) {
-                if( !(sym->stg_class == SC_EXTERN) ) {
+                if( !(sym->attribs.stg_class == SC_EXTERN) ) {
                     CErr2p( ERR_INCOMPLETE_TYPE, name );
                 }
             }
@@ -572,7 +572,7 @@ local void ChkIncomplete( SYM_ENTRY *sym, SYM_NAMEPTR name )
 local void ChkDefined( SYM_ENTRY *sym, SYM_NAMEPTR name )
 {
     if( sym->flags & SYM_DEFINED ) {
-        if( sym->stg_class == SC_STATIC ) {
+        if( sym->attribs.stg_class == SC_STATIC ) {
             if( !(sym->flags & SYM_REFERENCED) ) {
                 if( !(sym->flags & SYM_IGNORE_UNREFERENCE) ) {  /*14-may-91*/
                     CWarn2p( WARN_SYM_NOT_REFERENCED, ERR_SYM_NOT_REFERENCED, name );
@@ -581,7 +581,7 @@ local void ChkDefined( SYM_ENTRY *sym, SYM_NAMEPTR name )
         }
     } else {    /* not defined */
         if( sym->flags & SYM_REFERENCED ) {     /* 28-apr-88 AFS */
-            if( sym->stg_class == SC_STATIC ) {
+            if( sym->attribs.stg_class == SC_STATIC ) {
                 if( sym->flags & SYM_FUNCTION ) {
                     /* Check to see if we have a matching aux entry with code attached */
                     aux_entry   *paux = AuxLookup( name );
@@ -589,8 +589,8 @@ local void ChkDefined( SYM_ENTRY *sym, SYM_NAMEPTR name )
                         CErr2p( ERR_FUNCTION_NOT_DEFINED, name );
                     }
                 }
-            } else if( sym->stg_class == SC_FORWARD ) {
-                sym->stg_class = SC_EXTERN;
+            } else if( sym->attribs.stg_class == SC_FORWARD ) {
+                sym->attribs.stg_class = SC_EXTERN;
             }
         }
     }
@@ -599,16 +599,16 @@ local void ChkDefined( SYM_ENTRY *sym, SYM_NAMEPTR name )
 local void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
 {
 #if _CPU == 8086 || _CPU == 386                         /* 05-nov-91 */
-    if( sym->stg_class == SC_STATIC ) {
+    if( sym->attribs.stg_class == SC_STATIC ) {
         if( sym->flags & SYM_ADDR_TAKEN ) {
             if( CompFlags.using_overlays ) {
                 CWarn2p( WARN_ADDR_OF_STATIC_FUNC_TAKEN, ERR_ADDR_OF_STATIC_FUNC_TAKEN, name );
             }
         } else {
-            if( (sym->attrib & (FLAG_FAR | FLAG_NEAR)) == 0
+            if( (sym->mods & (FLAG_FAR | FLAG_NEAR)) == 0
             && (TargetSwitches & BIG_CODE)
             && !CompFlags.multiple_code_segments ) {
-                sym->attrib |= FLAG_NEAR;
+                sym->mods |= FLAG_NEAR;
             }
         }
     }
@@ -816,15 +816,15 @@ local SYM_HASHPTR FreeSym( void )
     for( hsym = sym_list; hsym; hsym = next_hsymptr ) {
         SymGet( &sym, hsym->handle );
         next_hsymptr = hsym->next_sym;
-        if( (sym.stg_class == SC_TYPEDEF ||             /* 10-nov-87 FWC */
+        if( (sym.attribs.stg_class == SC_TYPEDEF ||             /* 10-nov-87 FWC */
             (SymLevel != 0) ||
             (sym.flags & (SYM_REFERENCED | SYM_DEFINED))) ||
-            (sym.stg_class == SC_NULL) ) {
+            (sym.attribs.stg_class == SC_NULL) ) {
             if( SymLevel == 0 ) {
                 bucket = SymBucket( &sym );
                 sym.handle = head[ bucket ];
                 if( ( sym.flags & SYM_FUNCTION ) == 0 ) {  /* if var */
-                    if( sym.stg_class == SC_NULL ) {    /* 28-nov-90 */
+                    if( sym.attribs.stg_class == SC_NULL ) {    /* 28-nov-90 */
                         if( sym.sym_type->decl_type == TYPE_ARRAY ) {
                             if( sym.sym_type->u.array->dimension == 0 ) {
                                 sym.sym_type->u.array->dimension = 1;
@@ -854,7 +854,7 @@ local SYM_HASHPTR FreeSym( void )
             ChkDefined( &sym, hsym->name );
         } else {
             ChkReference( &sym, hsym->name );
-            if( sym.stg_class == SC_STATIC              /* 27-nov-91 */
+            if( sym.attribs.stg_class == SC_STATIC              /* 27-nov-91 */
             && !(sym.flags & SYM_FUNCTION) ) {
                 CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
                 SymReplace( CurFunc, CurFuncHandle );

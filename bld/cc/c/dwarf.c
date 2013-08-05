@@ -433,15 +433,15 @@ static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
 
     call_type = 0;
     typ = func_sym->sym_type;
-    if( func_sym->attrib & FLAG_NEAR ) {
+    if( func_sym->mods & FLAG_NEAR ) {
         call_type = DW_SB_NEAR_CALL;
-    } else if( func_sym->attrib &  FLAG_FAR ) {
+    } else if( func_sym->mods &  FLAG_FAR ) {
         call_type = DW_SB_FAR_CALL;
-    } else if( func_sym->attrib & FLAG_FAR16 ) {
+    } else if( func_sym->mods & FLAG_FAR16 ) {
         call_type = DW_SB_FAR16_CALL;
     }
     flags = DW_FLAG_PROTOTYPED;
-    if( func_sym->stg_class == SC_STATIC ) {
+    if( func_sym->attribs.stg_class == SC_STATIC ) {
         flags |= DW_SUB_STATIC;
     }
     return_dh = dwarfType( typ->object, DC_RETURN );
@@ -487,16 +487,16 @@ static dw_handle dwarfFunctionDecl( SYMPTR func_sym )
 
     call_type = 0;
     typ = func_sym->sym_type;
-    if( func_sym->attrib & FLAG_NEAR ) {
+    if( func_sym->mods & FLAG_NEAR ) {
         call_type = DW_SB_NEAR_CALL;
-    } else if( func_sym->attrib &  FLAG_FAR ) {
+    } else if( func_sym->mods &  FLAG_FAR ) {
         call_type = DW_SB_FAR_CALL;
-    } else if( func_sym->attrib & FLAG_FAR16 ) {
+    } else if( func_sym->mods & FLAG_FAR16 ) {
         call_type = DW_SB_FAR16_CALL;
     }
     flags = DW_FLAG_PROTOTYPED;
     flags |= DW_FLAG_DECLARATION;
-    if( func_sym->stg_class == SC_STATIC ) {
+    if( func_sym->attribs.stg_class == SC_STATIC ) {
         flags |= DW_SUB_STATIC;
     }
     return_dh = dwarfType( typ->object, DC_RETURN );
@@ -523,7 +523,7 @@ static dw_handle dwarfVariable( SYMPTR sym )
     uint      flags;
 
     flags = 0;
-    if( sym->stg_class == SC_NULL ) {
+    if( sym->attribs.stg_class == SC_NULL ) {
         flags = DW_FLAG_GLOBAL;
     }
     dh = dwarfType( sym->sym_type, DC_DEFAULT );
@@ -557,7 +557,7 @@ static void dwarfEmitVariables( SYM_HANDLE sym_handle )
                     dh = dwarfFunctionDecl( sym );
                 }
 //              printf( "func: %s", sym->name );
-            } else if( sym->stg_class == SC_TYPEDEF ) {
+            } else if( sym->attribs.stg_class == SC_TYPEDEF ) {
                 dh = dwarfType( typ, DC_DEFAULT );
 //              printf( "typedef: %s", sym->name );
             } else {

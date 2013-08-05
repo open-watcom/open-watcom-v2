@@ -479,7 +479,7 @@ static cg_name PushSym( OPNODE *node )
     SymGet( &sym, node->u2.sym_handle );
     typ = sym.sym_type;
     if( sym.flags & SYM_FUNCTION ) {
-        dtype = CodePtrType( sym.attrib );
+        dtype = CodePtrType( sym.mods );
     } else {
         dtype = CGenType( typ );
     }
@@ -510,7 +510,7 @@ static cg_name PushSymAddr( OPNODE *node )
     SymGet( &sym, node->u2.sym_handle );
     typ = sym.sym_type;
     if( sym.flags & SYM_FUNCTION ) {
-        dtype = CodePtrType( sym.attrib );
+        dtype = CodePtrType( sym.mods );
     } else {
         dtype = CGenType( typ );
     }
@@ -518,7 +518,7 @@ static cg_name PushSymAddr( OPNODE *node )
         name = CGTempName( sym.info.return_var, dtype );
     } else {
         name = CGFEName( node->u2.sym_handle, dtype );
-     // if( (sym.attrib & FLAG_VOLATILE) ||
+     // if( (sym.mods & FLAG_VOLATILE) ||
      //     (sym.flags & SYM_USED_IN_PRAGMA) ) {
      //     name = CGVolatile( name );
      // }
@@ -793,7 +793,7 @@ local void EmitNodes( TREEPTR tree )
     OPNODE      *node;
 
     index = 0;
-    for( ; tree != NULL; tree = tree->thread ) {
+    for( ; tree != NULL; tree = tree->u.thread ) {
         node = &tree->op;
         switch( node->opr ) {
         case OPR_FUNCTION:              // start of function
@@ -1124,7 +1124,7 @@ local void EmitNodes( TREEPTR tree )
 local void ThreadNode( TREEPTR node )
 {
     if( FirstNode == NULL )  FirstNode = node;
-    if( LastNode != NULL )   LastNode->thread = node;
+    if( LastNode != NULL )   LastNode->u.thread = node;
     LastNode = node;
 }
 
@@ -1133,7 +1133,7 @@ local TREEPTR LinearizeTree( TREEPTR tree )
     FirstNode = NULL;
     LastNode = NULL;
     WalkExprTree( tree, ThreadNode, NoOp, NoOp, ThreadNode );
-    LastNode->thread = NULL;
+    LastNode->u.thread = NULL;
     return( FirstNode );
 }
 
@@ -1309,7 +1309,7 @@ local int ScanFunction( TREEPTR tree, int inline_depth )
             if( right->op.opr == OPR_FUNCNAME )
                 marked += ScanFunction( FindFuncStmtTree( right->op.u2.sym_handle ),
                                         inline_depth );
-            right = right->thread;
+            right = right->u.thread;
         }
         if( tree->right->op.opr == OPR_FUNCEND ) break;
         tree = tree->left;
@@ -1333,7 +1333,7 @@ local void PruneFunctions( void )
     for( tree = FirstStmt; tree != NULL; tree = tree->left ) {
         if( tree->right->op.opr == OPR_FUNCTION ) {
             SymGet( &sym, tree->right->op.u2.func.sym_handle );
-            if( sym.stg_class != SC_STATIC || ( sym.flags & SYM_ADDR_TAKEN ) ) {
+            if( sym.attribs.stg_class != SC_STATIC || ( sym.flags & SYM_ADDR_TAKEN ) ) {
                 tree->right->op.u2.func.flags |= FUNC_MARKED | FUNC_USED;
                 marked++;
             }
@@ -1446,7 +1446,7 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
     unsigned long       size;
 
     typ = sym->sym_type;
-    if( (GenSwitches & DBG_TYPES) && (sym->stg_class == SC_TYPEDEF) ) {
+    if( (GenSwitches & DBG_TYPES) && (sym->attribs.stg_class == SC_TYPEDEF) ) {
         if( typ->decl_type != TYPE_TYPEDEF ) {
             DBEndName( DBBegName( sym->name, DBG_NIL_TYPE ),
                                   DBType( typ ) );
@@ -1454,8 +1454,8 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
     }
     SKIP_TYPEDEFS( typ );
     CGenType( typ );    /* create refno for ARRAY type, etc */
-    if( sym->stg_class != SC_EXTERN     &&  /* if not imported */
-        sym->stg_class != SC_TYPEDEF ) {
+    if( sym->attribs.stg_class != SC_EXTERN     &&  /* if not imported */
+        sym->attribs.stg_class != SC_TYPEDEF ) {
         if( ( sym->flags & SYM_FUNCTION ) == 0 ) {
             segment = sym->u.var.segment;
             if( (sym->flags & SYM_INITIALIZED) == 0 || segment == SEG_BSS) {
@@ -1498,9 +1498,9 @@ local void EmitSyms( void )
         if( ( GenSwitches & DBG_LOCALS ) &&
             ( sym.sym_type->decl_type != TYPE_FUNCTION ) &&
             ( (sym.flags & SYM_TEMP) == 0 )  && /* 06-oct-93 */
-            ( sym.stg_class != SC_TYPEDEF )) {
+            ( sym.attribs.stg_class != SC_TYPEDEF )) {
 #if _CPU == 370
-                if( sym.stg_class != SC_EXTERN || sym.flags & SYM_REFERENCED) {
+                if( sym.attribs.stg_class != SC_EXTERN || sym.flags & SYM_REFERENCED) {
                     DBModSym( sym_handle, TY_DEFAULT );
                 }
 #else
@@ -1524,7 +1524,7 @@ local int DoFuncDefn( SYM_HANDLE funcsym_handle )
     CurFuncHandle = funcsym_handle;
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
     if( ! CompFlags.zu_switch_used ) {
-        if( (CurFunc->attrib & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
+        if( (CurFunc->mods & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
             /* interrupt function */
             TargetSwitches |= FLOATING_SS;      /* force -zu switch on */
         } else {
@@ -1635,7 +1635,7 @@ local void CDoAutoDecl( SYM_HANDLE sym_handle )
         emit_debug_info = 0;
         emit_extra_info = 0;
         if( (GenSwitches & NO_OPTIMIZATION) )  emit_debug_info = 1;
-        if( sym.stg_class == SC_STATIC ) {
+        if( sym.attribs.stg_class == SC_STATIC ) {
             emit_debug_info = 0;
             if( (sym.flags & SYM_EMITTED) == 0 ) {
                 if( sym.sym_type->decl_type != TYPE_VOID ) {
@@ -1646,8 +1646,8 @@ local void CDoAutoDecl( SYM_HANDLE sym_handle )
                     SymReplace( &sym, sym_handle );
                 }
             }
-        } else if( sym.stg_class != SC_EXTERN &&
-                   sym.stg_class != SC_TYPEDEF ) {      /* 25-nov-94 */
+        } else if( sym.attribs.stg_class != SC_EXTERN &&
+                   sym.attribs.stg_class != SC_TYPEDEF ) {      /* 25-nov-94 */
             if( sym.flags & SYM_ADDR_TAKEN ) {
                 emit_extra_info = 1;
             }
@@ -1731,7 +1731,7 @@ local void FreeLocalVars( SYM_HANDLE sym_list )
     for( ; (sym_handle = sym_list) != NULL; ) {
         SymGet( &sym, sym_handle );
         sym_list = sym.handle;
-        if( sym.stg_class != SC_EXTERN ) {
+        if( sym.attribs.stg_class != SC_EXTERN ) {
             if( ! (sym.flags & SYM_FUNC_RETURN_VAR) ) {
                 if( sym.sym_type->decl_type != TYPE_VOID ) {
                     FreeSymBackInfo( &sym, sym_handle );
@@ -1764,7 +1764,7 @@ local void RelExtVars( SYM_HANDLE sym_handle )
         sym = SymGetPtr( sym_handle );
         sym_handle = sym->handle;
         if( !(sym->flags & SYM_FUNC_RETURN_VAR) ) {
-            if( sym->stg_class == SC_EXTERN || sym->stg_class == SC_STATIC ||
+            if( sym->attribs.stg_class == SC_EXTERN || sym->attribs.stg_class == SC_STATIC ||
                 sym->sym_type->decl_type == TYPE_VOID ) {
                 if( sym->info.backinfo != NULL ) {
                     BEFreeBack( sym->info.backinfo );

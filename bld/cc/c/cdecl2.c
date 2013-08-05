@@ -115,7 +115,7 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
 {
     TYPEPTR     type_new, type_old;
 
-    if( (new_sym->attrib & ~MASK_FUNC) != (old_sym->attrib & ~MASK_FUNC) ) {
+    if( (new_sym->mods & ~MASK_FUNC) != (old_sym->mods & ~MASK_FUNC) ) {
         CErr2p( ERR_MODIFIERS_DISAGREE, new_sym->name );
     }
 
@@ -137,7 +137,7 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
         SKIP_TYPEDEFS( ret_new );
         SKIP_TYPEDEFS( ret_old );
         /* don't reorder this expression */
-        if( old_sym->stg_class != SC_FORWARD ) {
+        if( old_sym->attribs.stg_class != SC_FORWARD ) {
             CErr2p( ERR_INCONSISTENT_TYPE, new_sym->name );
         } else if( ret_new->decl_type != TYPE_VOID
                || (old_sym->flags & SYM_TYPE_GIVEN) ) { //return value used in forward
@@ -168,9 +168,9 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     if( *state & DECL_STATE_NOTYPE ) {
         CWarn2p( WARN_NO_RET_TYPE_GIVEN, ERR_NO_RET_TYPE_GIVEN, sym->name );
     }
-    sym->rent = FALSE;   // Assume not override aka re-entrant
-    if( CompFlags.rent && (sym->declspec == DECLSPEC_DLLIMPORT) ) {
-        sym->rent = TRUE;
+    sym->attribs.rent = FALSE;   // Assume not override aka re-entrant
+    if( CompFlags.rent && (sym->attribs.declspec == DECLSPEC_DLLIMPORT) ) {
+        sym->attribs.rent = TRUE;
     }
     if( stg_class == SC_REGISTER ||
         stg_class == SC_AUTO ||
@@ -219,14 +219,14 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             // check lang flags to make sure no one saw an incompatible prototype; if
             // previous prototype specified calling convention and later definition does
             // not, propagate the convention from the prototype
-            if( (sym->attrib & MASK_LANGUAGES) && !ChkCompatibleLanguage( sym->attrib, old_sym.attrib ) ) {
+            if( (sym->mods & MASK_LANGUAGES) && !ChkCompatibleLanguage( sym->mods, old_sym.mods ) ) {
                 CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
             }
-            if( (sym->attrib & FLAG_INLINE) != (old_sym.attrib & FLAG_INLINE) ) {
-                old_sym.attrib |= FLAG_INLINE; //either is inline
+            if( (sym->mods & FLAG_INLINE) != (old_sym.mods & FLAG_INLINE) ) {
+                old_sym.mods |= FLAG_INLINE; //either is inline
             }
-            if( sym->declspec != old_sym.declspec ) {
-                switch( sym->declspec ) {
+            if( sym->attribs.declspec != old_sym.attribs.declspec ) {
+                switch( sym->attribs.declspec ) {
                 case DECLSPEC_DLLIMPORT:
                 case DECLSPEC_THREAD:
                     CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
@@ -235,27 +235,27 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
                     /* Allow the following:     void foo( void ); void _Export foo( void );
                      * IBM's compiler allows this, so does our C++ compiler; and it's real useful!
                      */
-                    if( old_sym.declspec == DECLSPEC_DLLIMPORT || old_sym.declspec == DECLSPEC_NONE ) {
-                        old_sym.declspec = DECLSPEC_DLLEXPORT;
+                    if( old_sym.attribs.declspec == DECLSPEC_DLLIMPORT || old_sym.attribs.declspec == DECLSPEC_NONE ) {
+                        old_sym.attribs.declspec = DECLSPEC_DLLEXPORT;
                     } else {
                         CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
                     }
                     break;
                 }
             }
-            old_sym.naked |= sym->naked;
-            if( stg_class == SC_STATIC && old_sym.stg_class == SC_EXTERN ) {
+            old_sym.attribs.naked |= sym->attribs.naked;
+            if( stg_class == SC_STATIC && old_sym.attribs.stg_class == SC_EXTERN ) {
                 /* can't redeclare extern function as static */
                 /* NB: We may want to handle SC_FORWARD functions too! */
                 CWarn2p( WARN_FUNCTION_STG_CLASS_REDECLARED, ERR_FUNCTION_STG_CLASS_REDECLARED, sym->name );
             }
             CMemFree( sym->name );
-            if( stg_class == SC_NULL && old_sym.stg_class != SC_FORWARD ) {     /* 05-jul-89 */
-                stg_class = old_sym.stg_class;
+            if( stg_class == SC_NULL && old_sym.attribs.stg_class != SC_FORWARD ) {     /* 05-jul-89 */
+                stg_class = old_sym.attribs.stg_class;
             }
             if( old_sym.sym_type->decl_type == TYPE_FUNCTION ) {
                 old_sym.sym_type = FuncNode( old_sym.sym_type->object,
-                    old_sym.attrib, old_sym.sym_type->u.fn.parms );
+                    old_sym.mods, old_sym.sym_type->u.fn.parms );
             }
             memcpy( sym, &old_sym, sizeof( SYM_ENTRY ) );
             sym_handle = old_sym_handle;
@@ -264,13 +264,13 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     }
     sym->flags |= SYM_FUNCTION;
     if( (sym->flags & SYM_DEFINED) == 0 ) {
-        if( sym->attrib & FLAG_INLINE ) {
+        if( sym->mods & FLAG_INLINE ) {
             sym->flags |= SYM_IGNORE_UNREFERENCE;
             stg_class = SC_STATIC;
         } else if( stg_class == SC_NULL ) {
             stg_class = SC_EXTERN;  /* SC_FORWARD; */
         }
-        sym->stg_class = stg_class;
+        sym->attribs.stg_class = stg_class;
     }
     return( sym_handle );
 }
@@ -307,11 +307,11 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         CWarn2p( WARN_NO_DATA_TYPE_GIVEN, ERR_NO_DATA_TYPE_GIVEN, sym->name );
     }
     if( CompFlags.rent ) {
-        sym->rent = TRUE; //Assume instance data
+        sym->attribs.rent = TRUE; //Assume instance data
     } else {
-        sym->rent = FALSE;//Assume non instance data
+        sym->attribs.rent = FALSE;//Assume non instance data
     }
-    if( sym->naked ) {         /* 25-jul-95 */
+    if( sym->attribs.naked ) {         /* 25-jul-95 */
         CErr1( ERR_INVALID_DECLSPEC );
     }
 
@@ -325,7 +325,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         } else if( stg_class == SC_NULL ) {
             CompFlags.external_defn_found = 1;
         }
-        if( sym->declspec == DECLSPEC_THREAD ) {          /* 25-jul-95 */
+        if( sym->attribs.declspec == DECLSPEC_THREAD ) {          /* 25-jul-95 */
             if( !CompFlags.thread_data_present ) {
                 ThreadSeg = DefThreadSeg();
                 CompFlags.thread_data_present = 1;
@@ -340,10 +340,10 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
             stg_class = SC_AUTO;
         }
         if( stg_class == SC_AUTO  ||  stg_class == SC_REGISTER ) {
-            if( sym->attrib & MASK_LANGUAGES ) {
+            if( sym->mods & MASK_LANGUAGES ) {
                 CErr1( ERR_INVALID_DECLARATOR );
             }
-            if( sym->declspec != DECLSPEC_NONE ) {          /* 25-jul-95 */
+            if( sym->attribs.declspec != DECLSPEC_NONE ) {          /* 25-jul-95 */
                 CErr1( ERR_INVALID_DECLSPEC );
             }
             /*
@@ -352,13 +352,13 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
             // NOT here but in "cexpr.c" [OPR_PUSHADDR])
             */
             if( TargetSwitches & FLOATING_SS ) {
-                sym->attrib |= FLAG_FAR;
+                sym->mods |= FLAG_FAR;
             }
         }
         /*
         // static class variables can be thread local also
         */
-        if( (stg_class == SC_STATIC) && (sym->declspec == DECLSPEC_THREAD) ) {          /* 06-JAN-03 */
+        if( (stg_class == SC_STATIC) && (sym->attribs.declspec == DECLSPEC_THREAD) ) {          /* 06-JAN-03 */
             if( !CompFlags.thread_data_present ) {
                 ThreadSeg = DefThreadSeg();
                 CompFlags.thread_data_present = 1;
@@ -374,11 +374,11 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         SymGet( &old_sym, old_sym_handle );
         if( old_sym.level == SymLevel ) {
             SetDiagSymbol( &old_sym, old_sym_handle );
-            if( old_sym.stg_class == SC_EXTERN  &&  stg_class == SC_EXTERN ) {
+            if( old_sym.attribs.stg_class == SC_EXTERN  &&  stg_class == SC_EXTERN ) {
                 if( ! IdenticalType( old_sym.sym_type, sym->sym_type ) ) {
                     CErr2p( ERR_TYPE_DOES_NOT_AGREE, sym->name );
                 }
-            } else if( old_sym.stg_class == SC_TYPEDEF ) {
+            } else if( old_sym.attribs.stg_class == SC_TYPEDEF ) {
                 CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );
             }
             SetDiagPop();
@@ -392,8 +392,8 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         SetDiagSymbol( &old_sym, old_sym_handle );
         if( old_sym.level == SymLevel           /* 28-mar-88 */
         ||      stg_class == SC_EXTERN ) {              /* 12-dec-88 */
-            old_attrs = old_sym.attrib;
-            new_attrs = sym->attrib;
+            old_attrs = old_sym.mods;
+            new_attrs = sym->mods;
             /* add default far/near flags depending on data model */
             if( TargetSwitches & BIG_DATA ) {
                 old_attrs |= FLAG_FAR;
@@ -405,22 +405,22 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
             if( (new_attrs & ~MASK_FUNC) != (old_attrs & ~MASK_FUNC) ) {
                  CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
             }
-            if( (sym->attrib & MASK_LANGUAGES) != (old_sym.attrib & MASK_LANGUAGES) ) {
+            if( (sym->mods & MASK_LANGUAGES) != (old_sym.mods & MASK_LANGUAGES) ) {
                 // just inherit old lang flags
                 // if new != 0 then it's possible someone saw a different prototype
-                if( (sym->attrib & MASK_LANGUAGES) != 0 ) {
+                if( (sym->mods & MASK_LANGUAGES) != 0 ) {
                      CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
                 }
             }
-            if( sym->declspec != old_sym.declspec ) {
-                switch( sym->declspec ) {
+            if( sym->attribs.declspec != old_sym.attribs.declspec ) {
+                switch( sym->attribs.declspec ) {
                 case DECLSPEC_DLLIMPORT:
                 case DECLSPEC_THREAD:
                     CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
                     break;
                 case DECLSPEC_DLLEXPORT:
-                    if( old_sym.declspec == DECLSPEC_DLLIMPORT ) {
-                        old_sym.declspec = DECLSPEC_DLLEXPORT;
+                    if( old_sym.attribs.declspec == DECLSPEC_DLLIMPORT ) {
+                        old_sym.attribs.declspec = DECLSPEC_DLLEXPORT;
                     } else {
                         CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
                     }
@@ -454,18 +454,18 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         SetDiagSymbol( &old_sym, old_sym_handle );
         /* verify that newly specified storage class doesn't conflict */
         if( (stg_class == SC_NULL) || (stg_class == SC_STATIC) ) {
-            if( sym->stg_class == SC_EXTERN ) {
+            if( sym->attribs.stg_class == SC_EXTERN ) {
                 /* was extern, OK to change to none */
                 if( stg_class == SC_NULL ) {
-                    sym->stg_class = stg_class;     /* 03-oct-88 */
+                    sym->attribs.stg_class = stg_class;     /* 03-oct-88 */
                 } else {
                     /* was extern, not OK to make static */
                     CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
                 }
-            } else if( sym->stg_class == SC_STATIC && stg_class == SC_NULL ) {
+            } else if( sym->attribs.stg_class == SC_STATIC && stg_class == SC_NULL ) {
                 /* was static, not OK to redefine */
                 CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
-            } else if( sym->stg_class == SC_NULL && stg_class == SC_STATIC ) {
+            } else if( sym->attribs.stg_class == SC_NULL && stg_class == SC_STATIC ) {
                 /* was extern linkage, not OK to to make static */
                 CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
             }
@@ -492,7 +492,7 @@ new_var:
             CErr2p( ERR_VAR_CANT_BE_VOID, sym->name );
             sym->sym_type = TypeDefault();
         }
-        sym->stg_class = stg_class;
+        sym->attribs.stg_class = stg_class;
         sym_handle = SymAdd( sym->info.hash_value, sym );
     }
     if( sym->u.var.segment == 0  &&     /* 22-oct-92 */
@@ -514,7 +514,7 @@ new_var:
                 CErr1( ERR_CANT_INITIALIZE_EXTERN_VAR );
             }
         }
-        sym->stg_class = stg_class;
+        sym->attribs.stg_class = stg_class;
         NextToken();
         VarDeclEquals( sym, sym_handle );
         sym->flags |=  SYM_ASSIGNED;
@@ -533,11 +533,11 @@ local void AdjSymTypeNode( SYMPTR sym, type_modifiers decl_mod )
     if( decl_mod ) {
         typ = sym->sym_type;
         if( typ->decl_type == TYPE_FUNCTION ) {
-            if( (sym->attrib & MASK_LANGUAGES) != decl_mod ) {
-                if( sym->attrib & MASK_LANGUAGES ) {
+            if( (sym->mods & MASK_LANGUAGES) != decl_mod ) {
+                if( sym->mods & MASK_LANGUAGES ) {
                     CErr1( ERR_INVALID_DECLSPEC );
                 } else {
-                    sym->attrib |= decl_mod;
+                    sym->mods |= decl_mod;
                     if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
                         if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
                             CErr1( ERR_INVALID_DECLSPEC );
@@ -564,10 +564,10 @@ local void AdjSymTypeNode( SYMPTR sym, type_modifiers decl_mod )
                     }
                 }
             } else {
-                if( sym->attrib & MASK_LANGUAGES ) {
+                if( sym->mods & MASK_LANGUAGES ) {
                     CErr1( ERR_INVALID_DECLSPEC );
                 } else {
-                    sym->attrib |= decl_mod;
+                    sym->mods |= decl_mod;
                 }
             }
         }
@@ -611,7 +611,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
                 SymGet( &old_sym, old_sym_handle );
                 otyp = old_sym.sym_type;        /* skip typedefs 25-sep-92 */
                 SKIP_TYPEDEFS( otyp );
-                if( old_sym.stg_class == SC_TYPEDEF &&
+                if( old_sym.attribs.stg_class == SC_TYPEDEF &&
                     old_sym.level == SymLevel &&
                     IdenticalType( typ, otyp ) ) {
                     return( 0 );        /* indicate already in symbol tab */
@@ -619,18 +619,18 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
             }
         }
         VfyNewSym( sym->info.hash_value, sym->name );
-        sym->stg_class = info->stg;
+        sym->attribs.stg_class = info->stg;
         AdjSymTypeNode( sym, info->decl_mod );
         sym_handle = SymAdd( sym->info.hash_value, sym );
     } else {
-        sym->declspec = info->decl;
-        sym->naked = info->naked;
-        if( sym->declspec == DECLSPEC_DLLEXPORT ) { //sync up flags
-            sym->attrib |= FLAG_EXPORT; //need to get rid of this
-        } else if( sym->attrib & FLAG_EXPORT ) {
-            if( sym->declspec == DECLSPEC_NONE ) {
-                sym->declspec = DECLSPEC_DLLEXPORT;
-            } else if( sym->declspec  != DECLSPEC_DLLEXPORT ) {
+        sym->attribs.declspec = info->decl;
+        sym->attribs.naked = info->naked;
+        if( sym->attribs.declspec == DECLSPEC_DLLEXPORT ) { //sync up flags
+            sym->mods |= FLAG_EXPORT; //need to get rid of this
+        } else if( sym->mods & FLAG_EXPORT ) {
+            if( sym->attribs.declspec == DECLSPEC_NONE ) {
+                sym->attribs.declspec = DECLSPEC_DLLEXPORT;
+            } else if( sym->attribs.declspec  != DECLSPEC_DLLEXPORT ) {
                  CErr1( ERR_INVALID_DECLSPEC );
             }
         }
@@ -950,7 +950,7 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
                 sym_handle = SymLook( HashValue, Buffer );
                 if( sym_handle == 0 ) {         /* 10-jan-92 */
                     SymCreate( &sym, Buffer );
-                    sym.stg_class = SC_EXTERN;  /* indicate extern decl */
+                    sym.attribs.stg_class = SC_EXTERN;  /* indicate extern decl */
                     CErr2p( ERR_UNDECLARED_SYM, Buffer );
                     sym.sym_type = GetType( TYPE_INT );
                     sym_handle = SymAdd( HashValue, &sym );
@@ -968,7 +968,7 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
                        }
                     } else if( typ->decl_type == TYPE_POINTER ) {
                         info->based_kind = BASED_VAR;
-                    } else if( sym.attrib & FLAG_SEGMENT ) {
+                    } else if( sym.mods & FLAG_SEGMENT ) {
                         info->based_kind = BASED_SEGVAR;
                     } else {
                         CErr1( ERR_SYM_MUST_BE_TYPE_SEGMENT );
@@ -1021,7 +1021,7 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
                     sym_handle = SymLook( HashValue, Buffer );
                     if( sym_handle == 0 ) {         /* 10-jan-92 */
                         SymCreate( &sym, Buffer );
-                        sym.stg_class = SC_EXTERN; /* indicate extern decl */
+                        sym.attribs.stg_class = SC_EXTERN; /* indicate extern decl */
                         CErr2p( ERR_UNDECLARED_SYM, Buffer );
                         sym.sym_type = GetType( TYPE_INT );
                         sym_handle = SymAdd( HashValue, &sym );
@@ -1121,7 +1121,7 @@ static void AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ )
             ParseDeclPart2( &sym->sym_type, typ, FLAG_NONE );
         }
     } else {
-        sym->attrib = info.modifier;
+        sym->mods = info.modifier;
         sym->u.var.segment = info.segment;              /* 01-dec-91 */
         typ = DeclPart2( typ, info.modifier );
         sym->sym_type = typ;
@@ -1163,7 +1163,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
                 MustRecog( T_RIGHT_PAREN );
             }
         }
-        ParseDeclPart2( &sym->sym_type, typ, sym->attrib );
+        ParseDeclPart2( &sym->sym_type, typ, sym->mods );
         typ = sym->sym_type;
     } else {
         if( (CurToken == T_ID) || (CurToken == T_SAVED_ID) ) {
@@ -1194,7 +1194,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
         } else {
             SymCreate( sym, "" );
         }
-        sym->attrib = info.modifier;
+        sym->mods = info.modifier;
         sym->u.var.segment = info.segment;              /* 01-dec-91 */
 #if 0
         if( modifier & FLAG_INTERRUPT )  sym->flags |= SYM_INTERRUPT_FN;
@@ -1430,13 +1430,11 @@ void AdjParmType( SYMPTR sym )
     typ = sym->sym_type;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYPE_FUNCTION ) {
-        sym->sym_type = PtrNode( sym->sym_type, sym->attrib, SEG_CODE );
-        sym->attrib = FLAG_NONE;
+        sym->sym_type = PtrNode( sym->sym_type, sym->mods, SEG_CODE );
+        sym->mods = FLAG_NONE;
     } else if( typ->decl_type == TYPE_ARRAY ) {
-        sym->sym_type = PtrNode( typ->object,
-                        FLAG_WAS_ARRAY | sym->attrib,
-                       SEG_DATA );
-        sym->attrib = FLAG_NONE;
+        sym->sym_type = PtrNode( typ->object, FLAG_WAS_ARRAY | sym->mods, SEG_DATA );
+        sym->mods = FLAG_NONE;
     }
 }
 
@@ -1503,7 +1501,7 @@ local TYPEPTR *GetProtoType( decl_info *first )
                 stg_class = SC_AUTO;
             }
         }
-        sym->stg_class = stg_class;
+        sym->attribs.stg_class = stg_class;
         AdjSymTypeNode( sym, info.decl_mod );
         AdjParmType( sym );
         parmlist = NewParm( sym->sym_type, parmlist );

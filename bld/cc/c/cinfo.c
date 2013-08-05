@@ -78,11 +78,11 @@ static  int         userSegment;
 void AssignSeg( SYM_ENTRY *sym )
 {
     SetFarHuge( sym, 1 );
-    if( (sym->stg_class == SC_AUTO) || (sym->stg_class == SC_REGISTER)
-     || (sym->stg_class == SC_TYPEDEF) ) {
+    if( (sym->attribs.stg_class == SC_AUTO) || (sym->attribs.stg_class == SC_REGISTER)
+     || (sym->attribs.stg_class == SC_TYPEDEF) ) {
         /* if stack/register var, there is no segment */
         sym->u.var.segment = 0;
-    } else if( sym->stg_class != SC_EXTERN ) {  /* if not imported */
+    } else if( sym->attribs.stg_class != SC_EXTERN ) {  /* if not imported */
         if( (sym->flags & SYM_INITIALIZED) == 0 ) {
             if( sym->u.var.segment == 0 ) {             /* 15-mar-92 */
                 SetSegment( sym );
@@ -93,10 +93,10 @@ void AssignSeg( SYM_ENTRY *sym )
             }
             SetSegAlign( sym );                 /* 02-feb-92 */
         }
-    } else if( sym->attrib & (FLAG_FAR | FLAG_HUGE) ) {
+    } else if( sym->mods & (FLAG_FAR | FLAG_HUGE) ) {
         sym->u.var.segment = SegImport;
         --SegImport;
-    } else if( (SegData != 0) && (sym->attrib & FLAG_NEAR) ) {  // imported and near
+    } else if( (SegData != 0) && (sym->mods & FLAG_NEAR) ) {  // imported and near
         sym->u.var.segment = SegData;
     }
 }
@@ -110,19 +110,19 @@ void SetFarHuge( SYMPTR sym, int report )
 
     report = report; /* in case not used */
 #if _CPU == 8086
-    if( sym->declspec == DECLSPEC_DLLIMPORT
-     || sym->declspec == DECLSPEC_DLLEXPORT ) {      /* 16-dec-94 */
-        sym->attrib |= FLAG_FAR;
-    } else if( sym->attrib & FLAG_EXPORT ) {
-        sym->attrib |= FLAG_FAR;
+    if( sym->attribs.declspec == DECLSPEC_DLLIMPORT
+     || sym->attribs.declspec == DECLSPEC_DLLEXPORT ) {      /* 16-dec-94 */
+        sym->mods |= FLAG_FAR;
+    } else if( sym->mods & FLAG_EXPORT ) {
+        sym->mods |= FLAG_FAR;
     }
 #endif
     size = SizeOfArg( sym->sym_type );
     if( TargetSwitches & BIG_DATA ) {
-        attrib = sym->attrib;
+        attrib = sym->mods;
         if( (attrib & MASK_ALL_MEM_MODELS) == 0 ) {
             if( size == 0 ) {   /* unspecified array size */
-                if( sym->stg_class == SC_EXTERN ) {
+                if( sym->attribs.stg_class == SC_EXTERN ) {
                     typ = sym->sym_type;
                     if( typ->decl_type == TYPE_ARRAY ) {
                         attrib |= FLAG_FAR;
@@ -131,7 +131,7 @@ void SetFarHuge( SYMPTR sym, int report )
             } else if( size > DataThreshold ) {
                 attrib |= FLAG_FAR;
             } else if( CompFlags.strings_in_code_segment
-                       && ( sym->attrib & FLAG_CONST ) ) {
+                       && ( sym->mods & FLAG_CONST ) ) {
                 attrib |= FLAG_FAR;
             }
 #if _CPU == 8086
@@ -140,11 +140,11 @@ void SetFarHuge( SYMPTR sym, int report )
                 attrib |= FLAG_HUGE;
             }
 #endif
-            sym->attrib = attrib;
+            sym->mods = attrib;
         }
     }
 #if _CPU == 8086
-   if( report && size > 0x10000 && !(sym->attrib & FLAG_HUGE) ) {
+   if( report && size > 0x10000 && !(sym->mods & FLAG_HUGE) ) {
         SetErrLoc( &sym->src_loc );
         CErr1( ERR_VAR_TOO_LARGE );
         InitErrLoc();
@@ -163,7 +163,7 @@ static fe_attr FESymAttr( SYMPTR sym )
     fe_attr         attr;
 
     attr = 0;
-    switch( sym->stg_class ) {
+    switch( sym->attribs.stg_class ) {
     case SC_FORWARD:
     case SC_EXTERN:
         attr = FE_GLOBAL | FE_IMPORT | FE_STATIC;
@@ -194,19 +194,19 @@ static fe_attr FESymAttr( SYMPTR sym )
     if( sym->flags & SYM_TRY_VOLATILE ) {
         attr |= FE_MEMORY | FE_VOLATILE;
     }
-    if( sym->attrib & FLAG_VOLATILE ) {
+    if( sym->mods & FLAG_VOLATILE ) {
         attr |= FE_MEMORY | FE_VOLATILE;
-    } else if( sym->attrib & FLAG_CONST ) {
+    } else if( sym->mods & FLAG_CONST ) {
         attr |= FE_CONSTANT;
     }
-    switch( sym->declspec ) {
+    switch( sym->attribs.declspec ) {
     case DECLSPEC_DLLIMPORT:
         if( (attr & FE_IMPORT) || CompFlags.rent ) {
             attr |= FE_DLLIMPORT;
         }
         break;
     case DECLSPEC_DLLEXPORT:
-        if( sym->stg_class == SC_NULL ) {
+        if( sym->attribs.stg_class == SC_NULL ) {
             attr |= FE_DLLEXPORT;
         }
         break;
@@ -214,10 +214,10 @@ static fe_attr FESymAttr( SYMPTR sym )
         attr |= FE_THREAD_DATA;
         break;
     }
-    if( sym->naked ) {
+    if( sym->attribs.naked ) {
         attr |= FE_NAKED;
     }
-    if( sym->rent ) {   //Override on function or r/w data
+    if( sym->attribs.rent ) {   //Override on function or r/w data
         attr |= FE_THREAD_DATA;
     }
     return( attr );
@@ -262,28 +262,28 @@ void SetSegment( SYMPTR sym )
 
 
 #if _CPU == 8086
-    if( (sym->attrib & FLAG_FAR) && CompFlags.zc_switch_used ) {
-        if( CONSTANT( sym->attrib )
-        || (sym->stg_class == SC_STATIC  &&  (sym->flags & SYM_TEMP)) ) {
+    if( (sym->mods & FLAG_FAR) && CompFlags.zc_switch_used ) {
+        if( CONSTANT( sym->mods )
+        || (sym->attribs.stg_class == SC_STATIC  &&  (sym->flags & SYM_TEMP)) ) {
             sym->u.var.segment = SEG_CODE;
             return;
         }
     }
 #elif _CPU == 386
     if( !CompFlags.rent ) {
-        if( (sym->attrib & FLAG_FAR) || (TargetSwitches & FLAT_MODEL) ) {
-           if( CONSTANT( sym->attrib ) && CompFlags.zc_switch_used ) {
+        if( (sym->mods & FLAG_FAR) || (TargetSwitches & FLAT_MODEL) ) {
+           if( CONSTANT( sym->mods ) && CompFlags.zc_switch_used ) {
                 sym->u.var.segment = SEG_CODE;
                 return;
            }
-           if( (sym->stg_class == SC_STATIC) && (sym->flags & SYM_TEMP) ) {
+           if( (sym->attribs.stg_class == SC_STATIC) && (sym->flags & SYM_TEMP) ) {
                 sym->u.var.segment = SEG_CODE;
                 return;
             }
          }
      }
 #endif
-    if( sym->attrib & ( FLAG_FAR | FLAG_HUGE ) ) {
+    if( sym->mods & ( FLAG_FAR | FLAG_HUGE ) ) {
         size = SizeOfArg( sym->sym_type );
         seg = NULL;
 #if _CPU == 8086
@@ -832,7 +832,7 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
             if( sym->seginfo != NULL ) {
                 id = sym->seginfo->segment_number;
             } else if( attr & FE_IMPORT ) {
-                if( (sym->attrib & FLAG_FAR) || (TargetSwitches & BIG_CODE) ) {
+                if( (sym->mods & FLAG_FAR) || (TargetSwitches & BIG_CODE) ) {
                     if( sym->flags & SYM_ADDR_TAKEN ) {
                         id = SegImport;
                         --SegImport;
@@ -931,7 +931,7 @@ cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
 #if _CPU == 386
         if( sym_handle != 0 ) {                         /* 22-mar-94 */
             sym = SymGetPtr( sym_handle );
-            if( sym->attrib & FLAG_FAR16 ) {
+            if( sym->mods & FLAG_FAR16 ) {
                 return( TY_INT_2 );
             }
         }
