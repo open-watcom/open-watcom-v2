@@ -191,6 +191,7 @@ condcode    getarg( void )
                         break;
                     }
                 }
+                break;
             }
         }
         if( quoted ) {
@@ -375,6 +376,16 @@ bool    is_stop_char( char c )
 
     test = ( c == '.' ) || ( c == ':' ) || ( c == '!' ) || ( c == '?' );
     return( test );
+}
+
+
+/*
+ * Test character for a space or tab character
+ */
+bool    is_space_tab_char( char c )
+{
+
+    return( ( c == ' ' ) || ( c == '\t' ) );
 }
 
 

@@ -44,11 +44,12 @@ rem NT/XP? or OS/2 or eCS?
 
 :BLD1
 
-set options=set date 'April 28, 2009' set time '21:11:02' wscript dev ps pass 1 verbose warn stat incl
+set options=set date 'April 28, 2009' set time '21:11:02' wscript dev ps pass 1 verbose warn stat incl index
 
 set gmlinc=%owroot%\docs\doc\devguide;%owroot%\docs\doc\gml;%owroot%\docs\doc\whelp;%owroot%\docs\doc\hlp
 set gmllib=%owroot%\docs\gml\syslib;%owroot%\docs\doc\whelp;%owroot%\docs\doc\hlp
 %owroot%\docs\gml\%wg4_dir%\wgml  %1.gml     ( %options% out %1.ops %2 %3 %4 %5 %6 %7 %8 %9 >%1.old
+%owsrcdir%\wgml\%wgml_dir%\wgml %1.gml     ( %options% out %1.nps %2 %3 %4 %5 %6 %7 %8 %9 >%1.ntr
 %owsrcdir%\wgml\%wgml_dir%\wgml %1.gml  -r ( %options% out %1.nps %2 %3 %4 %5 %6 %7 %8 %9 >%1.new
 goto eof
 

@@ -227,7 +227,7 @@ void    gml_ol( const gmltag * entry )
     while( *p == ' ' ) {
         p++;
     }
-    scan_start = p;                     // over spaces
+    scan_start = p;
     if( !strnicmp( "compact", p, 7 ) ) {
         compact = true;
         scan_start = p + 7;
@@ -494,7 +494,7 @@ static  void    gml_li_ol( const gmltag * entry )
     p = scan_start;
 
     if( nest_cb == NULL ) {
-        xx_nest_err( err_li_lp_no_list );   // tag must in found in a list
+        xx_nest_err( err_li_lp_no_list );   // tag must be in a list
         scan_start = scan_stop + 1;
         return;
     }
@@ -504,14 +504,15 @@ static  void    gml_li_ol( const gmltag * entry )
                      ((ol_lay_tag *)(nest_cb->lay_tag))->number_style );
     if( pn != NULL ) {
         num_len = strlen( pn );
+        *(pn + num_len) = ' ';          // trailing space like wgml4 does
+        *(pn + num_len + 1) = '\0';
+        num_len++;
     } else {
         pn = charnumber;
         *pn = '?';
         *(pn + 1) = 0;
         num_len = 1;
     }
-
-    start_doc_sect();                   // if not already done
 
     scr_process_break();
 
@@ -533,7 +534,7 @@ static  void    gml_li_ol( const gmltag * entry )
 
     ProcFlags.keep_left_margin = true;  // keep special Note indent
 
-    start_line_with_string( charnumber, g_curr_font );
+    start_line_with_string( charnumber, g_curr_font, true );
     g_cur_h_start = g_cur_left +
         conv_hor_unit( &(((ol_lay_tag *)(nest_cb->lay_tag))->align) );
 
@@ -576,12 +577,10 @@ static  void    gml_li_sl( const gmltag * entry )
     p = scan_start;
 
     if( nest_cb == NULL ) {
-        xx_nest_err( err_li_lp_no_list );   // tag must in found in a list
+        xx_nest_err( err_li_lp_no_list );   // tag must be in a list
         scan_start = scan_stop + 1;
         return;
     }
-
-    start_doc_sect();                   // if not already done
 
     scr_process_break();
 
@@ -624,14 +623,14 @@ static  void    gml_li_sl( const gmltag * entry )
 static  void    gml_li_ul( const gmltag * entry )
 {
     char        *   p;
-    char            bullet[2];
+    char            bullet[3];
 
     entry = entry;
     scan_err = false;
     p = scan_start;
 
     if( nest_cb == NULL ) {
-        xx_nest_err( err_li_lp_no_list );   // tag must in found in a list
+        xx_nest_err( err_li_lp_no_list );   // tag must be in a list
         scan_start = scan_stop + 1;
         return;
     }
@@ -642,9 +641,8 @@ static  void    gml_li_ul( const gmltag * entry )
     } else {
         bullet[0] = ((ul_lay_tag *)(nest_cb->lay_tag))->bullet;
     }
-    bullet[1] = 0;
-
-    start_doc_sect();                   // if not already done
+    bullet[1] = ' ';                    // 1 trailing space as wgml4 does
+    bullet[2] = 0;
 
     scr_process_break();
 
@@ -667,7 +665,7 @@ static  void    gml_li_ul( const gmltag * entry )
 
     ProcFlags.keep_left_margin = true;  // keep special Note indent
 
-    start_line_with_string( bullet, g_curr_font );
+    start_line_with_string( bullet, g_curr_font, true );
     g_cur_h_start = g_cur_left +
         conv_hor_unit( &(((ul_lay_tag *)(nest_cb->lay_tag))->align) );
 
@@ -758,7 +756,7 @@ void    gml_lp( const gmltag * entry )
     p = scan_start;
 
     if( nest_cb == NULL ) {
-        xx_nest_err( err_li_lp_no_list );   // tag must in found in a list
+        xx_nest_err( err_li_lp_no_list );   // tag must be in a list
         scan_start = scan_stop + 1;
         return;
     }
@@ -795,8 +793,6 @@ void    gml_lp( const gmltag * entry )
 
     nest_cb->lm = nest_cb->prev->lm + nest_cb->prev->left_indent;
     nest_cb->rm = nest_cb->prev->rm - nest_cb->prev->right_indent;
-
-    start_doc_sect();                   // if not already done
 
     scr_process_break();
 

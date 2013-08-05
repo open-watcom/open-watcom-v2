@@ -58,6 +58,9 @@ static void gml_hp_sf_common( const gmltag * entry, int level, e_tags t )
     if( *p ) {
         process_text( p, g_curr_font );
     }
+    if( !ProcFlags.concat && (input_cbs->fmflags & II_eol) ) {
+        scr_process_break();            // ensure line is output
+    }
     scan_start = scan_stop + 1;
     return;
 }
@@ -99,6 +102,11 @@ void    gml_hp3( const gmltag * entry )
     gml_hp_sf_common( entry, 3, t_HP3 );
 }
 
+
+/***************************************************************************/
+/*  :eHPx :eSF common processing                                           */
+/***************************************************************************/
+
 static  void    gml_ehp_esf_common( const gmltag * entry, e_tags t )
 {
     char    *   p;
@@ -121,6 +129,9 @@ static  void    gml_ehp_esf_common( const gmltag * entry, e_tags t )
         if( *p == '.' ) p++;            // over '.'
         if( *p ) {
             process_text( p, g_curr_font );
+        }
+        if( !ProcFlags.concat && (input_cbs->fmflags & II_eol) ) {
+            scr_process_break();        // ensure line is output
         }
     }
     scan_start = scan_stop + 1;

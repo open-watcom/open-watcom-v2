@@ -14,59 +14,67 @@ IV. The "Memory Exhausted" Error
 
 I. Directory "testsrc"
 
-This directory will contain the source for the four test devices found in the
-planned directory "testlib".
+This directory contains the source for the five test devices found in the
+directory "testlib".
 
     A. Test Device Description
 
-The four test devices are:
+The five test devices are:
 
-TEST01 -- a typical character-mode device, using NEWLINE blocks, and 
-          containing both FINISH blocks to see if both are ever used by wgml 4.0
-TEST02 -- TEST01 with ABSOLUTEADDRESS instead of NEWLINE and with the HLINE, 
-          VLINE and DBOX blocks added; used to verify that, for devices with the
-          same metrics, the text is assigned the same position on the page 
-          whether ABSOLUTEADDRESS is defined or is not defined and the NEWLINE 
-          blocks are used. It also has only the DOCUMENT FINISH block, showing
-          that wgml 4.0 will use that block if no END FINISH block is present.
-PSTEST -- TEST02 with the "ps" prefix, used to identify the first set of PS 
-          Augmentations found. This has the same character-mode metrics as 
-          TEST01 and TEST02
-PSSPEC -- This is, essentially, the PS device using the test blocks instead of 
-          the real ones. It was used to identify still more PS Augmentations. 
-          It is useful in determining exactly how large each word is, as each 
-          word is output separately.
+TEST01  -- a typical character-mode device, using NEWLINE blocks, and 
+           containing both FINISH blocks to see if both are ever used by wgml 4.0
+TEST02  -- TEST01 with ABSOLUTEADDRESS instead of NEWLINE and with the HLINE, 
+           VLINE and DBOX blocks added; used to verify that, for devices with the
+           same metrics, the text is assigned the same position on the page 
+           whether ABSOLUTEADDRESS is defined or is not defined and the NEWLINE 
+           blocks are used. It also has only the DOCUMENT FINISH block, showing
+           that wgml 4.0 will use that block if no END FINISH block is present.
+PSTEST  -- TEST02 with the "ps" prefix, used to identify the first set of PS 
+           Augmentations found. This has the same character-mode metrics as 
+           TEST01 and TEST02
+PSSPEC  -- This is, essentially, the PS device using the test blocks instead of 
+           the real ones. It was used to identify still more PS Augmentations. 
+           It is useful in determining exactly how large each word is, as each 
+           word is output separately.
+XPSSPEC -- This is PSSSPEC with the names changed to start with "X". This can be
+           used to verify that something being done by wgml 4.0 is not, in fact,
+           specific to the PS device but rather to all devices defining the
+           ABSOLUTEADDRESS block.
 
     B. File Names
 
 This table gives the defined names and member names for the DEVICE and DRIVER 
 blocks. The source file names are the same as the member names.
 
-Device  | Member Name   | Defined Name
-TEST01: |               |
- device | test01        | test01
- driver | tdrv01        | testdrv01
-TEST02: |               |
- device | test02        | test02
- driver | tdrv02        | testdrv02
-PSTEST: |               |
- device | pstest        | pstest
- driver | pstdrv        | pstestdrv
-PSSPEC: |               |
- device | psspec        | psspec
- driver | pssdrv        | psspecdrv
+Device   | Member Name   | Defined Name
+TEST01:  |               |
+ device  | test01        | test01
+ driver  | tdrv01        | testdrv01
+TEST02:  |               |
+ device  | test02        | test02
+ driver  | tdrv02        | testdrv02
+PSTEST:  |               |
+ device  | pstest        | pstest
+ driver  | pstdrv        | pstestdrv
+PSSPEC:  |               |
+ device  | psspec        | psspec
+ driver  | pssdrv        | psspecdrv
+XPSSPEC: |               |
+ device  | xpsspec       | xpsspec
+ driver  | xpssdrv       | xpsspecdrv
 
 The document files produced will have these extensions (unless overridden by 
 the OUTput option):
 
-TEST01 -- tx1
-TEST02 -- tx2
-PSTEST -- pst
-PSSPEC -- pss
+TEST01  -- tx1
+TEST02  -- tx2
+PSTEST  -- pst
+PSSPEC  -- pss
+XPSSPEC -- psx
 
-Two sets of ten fonts each are provided, one set for use with PSSPEC (based on
-one of the PS device fonts) and the other set for use with TEST01, TEST02 and 
-PSTEST (based on the font MONO01):
+Two sets of ten fonts each are provided, one set for use with PSSPEC and XPSSPEC 
+(based on one of the PS device fonts) and the other set for use with TEST01, TEST02 
+and PSTEST (based on the font MONO01):
 
 Intended
 Font Number  | Member Name   | Defined Name
@@ -95,22 +103,33 @@ PSSPEC:
 
     C. Include Files
 
-Unless otherwise noted, all four test devices use the include file.
+For the device files:
 
-DEV01.INC -- The PAUSE blocks
-DEV02.INC -- The DEVICEFONT and DEFAULTFONT blocks for TEST01, TEST02, PSTEST
-DEV03.INC -- The FONTPAUSE blocks
-DEV04.INC -- The BOX block for TEST01, TEST02, PSTEST
-DEV05.INC -- The USCORE block
-DEV06.INC -- The PAGESTART and PAGEOFFSET blocks for TEST01, TEST02, PSTEST
-DEV07.INC -- INTRANS and OUTRANS blocks
+DEV01.INC   -- The PAUSE blocks for all five test devices
+DEV02.INC   -- The DEVICEFONT and DEFAULTFONT blocks for TEST01, TEST02, PSTEST
+DEV02PS.INC -- The DEVICEFONT and DEFAULTFONT blocks for PSSPEC and XPSSPEC
+DEV03.INC   -- The FONTPAUSE blocks for all five test devices
+DEV04.INC   -- The BOX block for TEST01, TEST02, PSTEST
+DEV04PS.INC -- The BOX block for PSSPEC and XPSSPEC
+DEV05.INC   -- The USCORE block for all five test devices
+DEV06.INC   -- The PAGESTART and PAGEOFFSET blocks for TEST01, TEST02, PSTEST
+DEV06PS.INC -- The PAGESTART and PAGEOFFSET blocks for PSSPEC and XPSSPEC
+DEV07.INC   -- INTRANS and OUTRANS blocks for TEST01, TEST02, PSTEST
+DEV07PS.INC -- INTRANS and OUTRANS blocks for PSSPEC and XPSSPEC
+INTRAN.TBL  -- A file included by every device in the repository and every device
+               provided with the wgml 3.3 update
+
+DEV07PS.INC includes DEV07.INC
+DEV07.INC includes INTRAN.TBL
+
+For the driver files:
 
 DRV01.INC -- The INIT and DOCUMENT DEFINE blocks
 DRV02.INC -- The remaining DRIVER blocks
 DRV03.INC -- The PAGEADDRESS block for TEST01, TEST02, PSTEST
 DRV04.INC -- ABSOLUTEADDRESS, HLINE, VLINE, and DBOX for all but TEST01
 
-No include files are used with fonts, in part to allow individual fonts to be
+No include files are used with fonts; this allows the individual fonts to be
 reconfigured as needed for testing.
 
     D. Test Device Structure Mapping
@@ -119,39 +138,39 @@ Blocks are shown in the order used in the Wiki. Where multiple instances are
 allowed, all instances are in the file indicated. The fields with "--" 
 indicate that that block is not defined at all for that device.
    
-Block           | TEST01    | TEST02    | PSTEST    | PSSPEC
-Attributes      | test01    | test02    | pstest    | psspec
-PAUSE           | dev01     | dev01     | dev01     | dev01
-DEVICEFONT      | dev02     | dev02     | dev02     | psspec
-DEFAULTFONT     | dev02     | dev02     | dev02     | psspec
-FONTPAUSE       | dev03     | dev03     | dev03     | dev03
-BOX             | dev04     | dev04     | dev04     | psspec
-UNDERSCORE      | dev05     | dev05     | dev05     | psspec
-PAGESTART       | dev06     | dev06     | dev06     | psspec
-PAGEOFFSET      | dev06     | dev06     | dev06     | psspec
-INTRANS         | dev07     | dev07     | dev07     | dev07 
-OUTTRANS        | dev07     | dev07     | dev07     | dev07 
+Block           | TEST01    | TEST02    | PSTEST    | PSSPEC    | XPSSPEC
+Attributes      | test01    | test02    | pstest    | psspec    | xpsspec
+PAUSE           | dev01     | dev01     | dev01     | dev01     | dev01
+DEVICEFONT      | dev02     | dev02     | dev02     | dev02ps   | dev02ps
+DEFAULTFONT     | dev02     | dev02     | dev02     | dev02ps   | dev02ps
+FONTPAUSE       | dev03     | dev03     | dev03     | dev03     | dev03
+BOX             | dev04     | dev04     | dev04     | dev04ps   | dev04ps
+UNDERSCORE      | dev05     | dev05     | dev05     | dev05     | dev05
+PAGESTART       | dev06     | dev06     | dev06     | dev06ps   | dev06ps
+PAGEOFFSET      | dev06     | dev06     | dev06     | dev06ps   | dev06ps
+INTRANS         | dev07     | dev07     | dev07     | dev07ps   | dev07ps
+OUTTRANS        | dev07     | dev07     | dev07     | dev07ps   | dev07ps
 
-Block           | TDRV01    | TDRV02    | PSTDRV    | PSSDRV
-Attributes      | tdrv01    | tdrv02    | pstdrv    | pssdrv
-INIT (both)     | drv01     | drv01     | drv01     | drv01
-FINISH (doc)    | drv01     | drv01     | drv01     | drv01
-FINISH (end)    | tdrv01    | --        | --        | --
-NEWLINE         | tdrv01    | --        | --        | --
-NEWPAGE         | drv02     | drv02     | drv02     | drv02
-HTAB            | drv02     | drv02     | drv02     | drv02
-FONTSTYLE       | drv02     | drv02     | drv02     | drv02
-FONTSWITCH      | drv02     | drv02     | drv02     | drv02
-PAGEADDRESS     | drv03     | drv03     | drv03     | pssdrv
-ABSOLUTEADDRESS | --        | drv04     | drv04     | drv04
-HLINE           | --        | drv04     | drv04     | drv04
-VLINE           | --        | drv04     | drv04     | drv04
-DBOX            | --        | drv04     | drv04     | drv04
+Block           | TDRV01    | TDRV02    | PSTDRV    | PSSDRV    | XPSSDRV
+Attributes      | tdrv01    | tdrv02    | pstdrv    | pssdrv    | xpssdrv
+INIT (both)     | drv01     | drv01     | drv01     | drv01     | drv01
+FINISH (doc)    | drv01     | drv01     | drv01     | drv01     | drv01
+FINISH (end)    | tdrv01    | --        | --        | --        | --
+NEWLINE         | tdrv01    | --        | --        | --        | --
+NEWPAGE         | drv02     | drv02     | drv02     | drv02     | drv02
+HTAB            | drv02     | drv02     | drv02     | drv02     | drv02
+FONTSTYLE       | drv02     | drv02     | drv02     | drv02     | drv02
+FONTSWITCH      | drv02     | drv02     | drv02     | drv02     | drv02
+PAGEADDRESS     | drv03     | drv03     | drv03     | pssdrv    | xpssdrv
+ABSOLUTEADDRESS | --        | drv04     | drv04     | drv04     | drv04
+HLINE           | --        | drv04     | drv04     | drv04     | drv04
+VLINE           | --        | drv04     | drv04     | drv04     | drv04
+DBOX            | --        | drv04     | drv04     | drv04     | drv04
 
 II. Test Device Output
 
 The test devices were developed to test various aspects of wgml 4.0's output,
-since the test devices do not, in general, provide enough information.
+since the actual devices do not, in general, provide enough information.
 
 Each block announces itself with a very explicit character string which begins 
 and ends with an asterisk ("*") and appears on its own line. Thus, the first 
@@ -219,19 +238,10 @@ FONTPAUSE or FONTSWITCH name will be identical to the font number.
 
 Six FONTSTYLE blocks are defined, one for each of 'plain', 'bold', 'uline',
 'uscore', 'ulbold', and 'usbold'. These names correspond to the values used 
-before the FONTSTYLE block was developed, and the action of each is modeled on
-the standard multipass font styles discussed in the Wiki; that is, ignoring 
-the test device output, these rules apply:
-1. The first, or only, pass always does %textpass(), thus outputting the text.
-2. The final pass of any 'bold', 'ulbold' and 'usbold' also does %textpass().
-3. The second pass of 'uline', 'uscore', 'ulbold' and 'usbold' emit underscore 
-characters.
-4. For 'uscore' and 'usbold', the second pass does not have a FIRSTWORD block.
-
-Except for the second pass of 'uscore' and 'usbold', all passes implement all
-of the blocks in a LINEPASS block (STARTVALUE, FIRSTWORD, STARTWORD, ENDWORD,
-and ENDVALUE). All FONTSTYLE blocks also implement the FONTSTYLE (that is, the 
-not-in-a-LINEPROC) STARTVALUE and ENDVALUE blocks.
+before the FONTSTYLE block was developed. Originally, the action of each was 
+modeled on the standard multipass font styles discussed in the Wiki; however, 
+in most cases, this is more confusing than it is helpful, and so they are all
+now implemented as a single pass doing %textpass(), that is, outputting the text. 
 
     C. Determining Word Length
 
@@ -314,6 +324,14 @@ with the same WIDTH table. If detailed word width comparisons are used,
 modifying the WIDTH table of PSSFON01 and then comparing the same text in the
 default font (that is, PSSFON00) and an HP1/eHP1 (that is, PSSFON01) phrase
 would allow very precise control.
+
+When justification is on, output for PSSPEC and XPSSPEC does not always produce 
+the correct value for word width when the above computation is done. If the wgml
+4.0 word width is an issue, then a line such as
+
+.ty &'width(<text>,U)
+
+will provide it. Note that, if <text> includes a comma, then it must be delimited.
 
 III. Directory "testsrc"
 

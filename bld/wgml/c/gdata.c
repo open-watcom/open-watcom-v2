@@ -113,6 +113,16 @@ void init_global_vars( void )
     in_esc              = ' ';
     tab_char            = 0x09;
 
+    box_line.current    = 0;
+    box_line.length     = BOXCOL_COUNT;
+    box_line.cols       = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
+    cur_line.current    = 0;
+    cur_line.length     = BOXCOL_COUNT;
+    cur_line.cols       = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
+    prev_line.current   = 0;
+    prev_line.length    = BOXCOL_COUNT;
+    prev_line.cols      = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
+
     c_stop              = NULL;
 
     t_element               = NULL;
@@ -148,6 +158,7 @@ void init_global_vars( void )
     lay_files           = NULL;         // filename(s) from ( LAYout option
 
     index_dict          = NULL;
+    init_ref_dict( &iref_dict );
 
     init_dict( &global_dict );
     init_macro_dict( &macro_dict );
@@ -170,7 +181,7 @@ void init_global_vars( void )
     buff2               = mem_alloc( buf_size );
     workbuf             = mem_alloc( buf_size );
 
-    post_space          = 0;            // experimental
+    post_space          = 0;
 
     g_blank_lines       = 0;
     g_post_skip         = 0;
@@ -189,7 +200,9 @@ void init_global_vars( void )
 
 void init_pass_data( void )
 {
-    bool    flag_save = ProcFlags.fb_document_done;
+    bool    flag_save   = ProcFlags.fb_document_done;
+    bool    aa_save     = ProcFlags.has_aa_block;
+    bool    ps_save     = ProcFlags.ps_device;
 
     memset( &ProcFlags, 0, sizeof( ProcFlags ) );
     ProcFlags.fb_document_done = flag_save; // keep value
@@ -202,6 +215,8 @@ void init_pass_data( void )
     ProcFlags.doc_sect_nxt  = doc_sect_none;// no document section yet
     ProcFlags.frontm_seen  = false;     // FRONTM not yet seen
     ProcFlags.in_trans  = (in_esc != ' ');// translation wanted
+    ProcFlags.has_aa_block = aa_save;
+    ProcFlags.ps_device = ps_save;
     layout_work.hx[0].headn = 0;        // reset used header headn numbers
     layout_work.hx[1].headn = 0;
     layout_work.hx[2].headn = 0;
@@ -221,4 +236,11 @@ void init_pass_data( void )
     bm = tm;                                            // bottom margin &sysbm
     hm = bin_device->vertical_base_units / LPI;         // heading margin &syshm
     fm = hm;                                            // footing margin &sysfm
+    g_indent            = 0;
+
+    ixhtag[0] = NULL;                   // last higher level :IH1 :IH2 tags
+    ixhtag[1] = NULL;                   // last higher level :IH1 :IH2 tags
+    ixhtag[2] = NULL;                   // last higher level :IH1 :IH2 tags
+    ixhtag[3] = NULL;                   // last higher level :IH1 :IH2 tags
+    free_ix_e_index_dict( &index_dict );// clear some index entries
 }

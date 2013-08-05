@@ -67,8 +67,6 @@
 *               the variables:
 *                   bin_device
 *                   bin_driver
-*                   has_aa_block
-*                   ps_device
 *                   wgml_font_cnt
 *                   wgml_fonts
 *
@@ -538,8 +536,6 @@ typedef struct {
     #define global  extern
 #endif
 
-global bool             has_aa_block;   // true if device defined :ABSOLUTEADDRESS
-global bool             ps_device;      // true if device is PostScript
 global cop_device   *   bin_device;     // binary device being used
 global cop_driver   *   bin_driver;     // binary driver being used
 global uint16_t         wgml_font_cnt;  // number of available fonts

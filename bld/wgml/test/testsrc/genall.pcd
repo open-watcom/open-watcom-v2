@@ -1,3 +1,5 @@
+:INCLUDE file='xpsspec'.
+:INCLUDE file='xpssdrv'.
 :INCLUDE file='psspec'.
 :INCLUDE file='pssdrv'.
 :INCLUDE file='pstest'.

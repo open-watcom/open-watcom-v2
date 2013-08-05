@@ -1,4 +1,4 @@
-.* test for :Hx :HDREF tags
+:cmt. test for :Hx :HDREF tags
 .se fil=&'left(&sysfnam,&'lastpos('.',&sysfnam)-1)
 :layout
 :H1

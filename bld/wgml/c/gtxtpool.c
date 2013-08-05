@@ -313,6 +313,12 @@ doc_element * alloc_doc_el(  element_type type )
         curr->element.binc.has_rec_type = false;
         curr->element.binc.file[0] = '\0';
         break;
+    case el_dbox :
+        curr->element.dbox.h_start = 0;
+        curr->element.dbox.v_start = 0;
+        curr->element.dbox.h_len = 0;
+        curr->element.dbox.v_len = 0;
+        break;
     case el_graph :
         curr->element.graph.cur_left = 0;
         curr->element.graph.depth = 0;
@@ -324,13 +330,24 @@ doc_element * alloc_doc_el(  element_type type )
         curr->element.graph.at_top = false;
         curr->element.graph.file[0] = '\0';
         break;
+    case el_hline :
+        curr->element.hline.h_start = 0;
+        curr->element.hline.v_start = 0;
+        curr->element.hline.h_len = 0;
+        break;
     case el_text :
         curr->element.text.overprint = false;
         curr->element.text.spacing = 0;
         curr->element.text.first = NULL;
         break;
+    case el_vline :
+        curr->element.vline.h_start = 0;
+        curr->element.vline.v_start = 0;
+        curr->element.vline.v_len = 0;
+        curr->element.vline.twice = true;
+        break;
     default :
-        g_err( err_intern, __FILE__, __LINE__ );
+        internal_err( __FILE__, __LINE__ );
     }
 
     return( curr );

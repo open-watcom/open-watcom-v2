@@ -114,7 +114,7 @@ void    gml_binclude( const gmltag * entry )
                 break;
             }
             depth_found = true;
-            if( att_val_to_SU( &depth_su, true ) ) {
+            if( att_val_to_su( &depth_su, true ) ) {
                 return;
             }
             depth = conv_vert_unit( &depth_su, spacing );

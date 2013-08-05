@@ -34,7 +34,7 @@
 #include    "gvars.h"
 
 /***************************************************************************/
-/*  :P.perhaps paragraph elements                                          */
+/*  :P. :PC common routine                                                 */
 /***************************************************************************/
 void    proc_p_pc( p_lay_tag * p_pc )
 {
@@ -52,7 +52,7 @@ void    proc_p_pc( p_lay_tag * p_pc )
     } else {
         g_cur_left = g_cur_left;
     }
-                                            // possibly indent first line
+                                        // possibly indent first line
     g_cur_h_start = g_cur_left + conv_hor_unit( &(p_pc->line_indent) );
 
     g_cur_threshold = layout_work.widow.threshold; // standard threshold
@@ -95,7 +95,8 @@ extern  void    gml_note( const gmltag * entry )
 {
     char            *p;
     font_number     font_save;
-//    int32_t         skip_save;
+    text_chars      *marker;
+    uint32_t        spc_cnt;
 
     entry = entry;
     scan_err = false;
@@ -118,12 +119,17 @@ extern  void    gml_note( const gmltag * entry )
     g_cur_h_start = g_cur_left;
     ProcFlags.keep_left_margin = true;  // keep special Note indent
 
-    start_line_with_string( layout_work.note.string, layout_work.note.font );
+    start_line_with_string( layout_work.note.string, layout_work.note.font, false );
 
+    /* the value of post_space after start_line_with_string() is wrong for  */
+    /* two reasons: 1) it uses the wrong font; 2) it is at most "1" even if */
+    /* more than one space appears at the end of the note_string.           */
+
+    spc_cnt = post_space / wgml_fonts[g_curr_font].spc_width;
+    post_space = spc_cnt * wgml_fonts[font_save].spc_width;
     if( (t_line != NULL)  && (t_line->last != NULL) ) {
         g_cur_left += t_line->last->width + post_space;
     }
-    post_space = 0;
     g_cur_h_start = g_cur_left;
     ju_x_start = g_cur_h_start;
 
@@ -132,9 +138,27 @@ extern  void    gml_note( const gmltag * entry )
 
     set_skip_vars( NULL, NULL, NULL, spacing, g_curr_font );
     if( *p == '.' ) p++;                // over '.'
-    while( *p == ' ' ) p++;             // skip initial spaces
-    if( *p ) {
-        process_text( p, g_curr_font ); // if text follows
+    while( *p == ' ' ) p++;             // skip initial space
+    if( *p ) {                          // if text follows
+        post_space = 0;
+        process_text( p, g_curr_font );
+    } else if( !ProcFlags.concat && ProcFlags.has_aa_block &&
+               (t_line != NULL) && (post_space > 0) ) {
+
+        /* only create marker if line not empty,                            */
+        /* :NOTE note_string is not nullstring and ends in at least 1 space */
+
+        marker = alloc_text_chars( NULL, 0, font_save );
+        marker->x_address = g_cur_h_start;
+        if( t_line->first == NULL ) {
+            t_line->first = marker;
+            t_line->last = t_line->first;
+        } else {
+            marker->prev = t_line->last;
+            t_line->last->next = marker;
+            t_line->last = t_line->last->next;
+        }
+        post_space = 0;
     }
     g_curr_font = font_save;
     scan_start = scan_stop + 1;

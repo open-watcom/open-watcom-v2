@@ -103,7 +103,9 @@ void  scr_process_break( void )
 {
     if( t_line != NULL ) {
         if( t_line->first != NULL ) {
-            process_line_full( t_line, false );
+            /* the last line is not justified, but is right-aligned or centered */
+            process_line_full( t_line, ((ProcFlags.justify != ju_off) &&
+                (ProcFlags.justify != ju_on) && (ProcFlags.justify != ju_half)) );
             t_line = NULL;
         }
     }

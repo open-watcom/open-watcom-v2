@@ -6,6 +6,7 @@
  *
  *      japanese is provided as the templates use it
  */
+
 pick( ERR_INTERN,               "Internal Error: File %s, Line %i",
                                 "Internal Error: File %s, Line %i" )
 
@@ -360,11 +361,14 @@ pick( WNG_ID_XXX,               "For id '%s'",
 pick( INF_ID_LEN,               "Identifier name should have no more than seven characters",
                                 "Identifier name should have no more than seven characters" )
 
-pick( INF_ID_DUPLICATE,         "Duplicate heading id",
-                                "Duplicate heading id" )
+pick( INF_ID_DUPLICATE,         "ID already defined",
+                                "ID already defined" )
 
-pick( INF_ID_UNKNOWN,           "Heading id not defined",
-                                "Heading id not defined" )
+pick( INF_ID_UNKNOWN,           "ID not defined",
+                                "ID not defined" )
+
+pick( ERR_REFID_NOT_ALLOWED,    "REFID not allowed",
+                                "REFID not allowed" )
 
 pick( ERR_ATT_VAL,              "Value '%s' for the '%s' attribute is not defined",
                                 "Value '%s' for the '%s' attribute is not defined" )
@@ -377,6 +381,9 @@ pick( ERR_ATT_TEXT_REQ,         "Tag text must be specified with the '%s' tag",
 
 pick( WNG_ATT_NAME,             "'%s' is not a valid attribute name",
                                 "'%s' is not a valid attribute name" )
+
+pick( WNG_INDEX_OPT,            "Index option must be specified to process index tags",
+                                "Index option must be specified to process index tags")
 
 pick( ERR_ATT_REQ,              "For the tag '%s', the required attribute(s) %s have not been specified",
                                 "For the tag '%s', the required attribute(s) %s have not been specified" )
@@ -468,6 +475,12 @@ pick( ERR_TAG_BEFORE_GDOC,      "%s tag must appear after the GDOC tag",
 pick( ERR_TAG_STARTING,         "\tStarting %s tag on",
                                 "\tStarting %s tag on" )
 
+pick( ERR_PARENT_UNDEF,         "Parent index entry not defined",
+                                "Parent index entry not defined" )
+
+pick( ERR_REF_NOT_ALLOWED,      "Referencing not allowed for %s tag",
+                                "Referencing not allowed for %s tag" )
+
 pick( ERR_CHAR_ONLY,            "Only a single character is allowed",
                                 "Only a single character is allowed")
 
@@ -494,10 +507,13 @@ pick( ERR_INV_DEPTH_GRAPHIC,    "The GRAPHIC depth must be greater than zero",
 pick( ERR_INV_WIDTH_GRAPHIC,    "The GRAPHIC width must be greater than zero",
                                 "The GRAPHIC width must be greater than zero" )
 
-/* Attribute/value parsing error messages */
+/* Attribute value/control word operand parsing error messages */
 
 pick( ERR_INV_ATT_VAL,          "Invalid attribute value",
                                 "Invalid attribute value" )
+
+pick( ERR_INV_CW_OP_VAL,        "Invalid control word operand value",
+                                "Invalid control word operand value" )
 
 pick( ERR_NUM_TOO_LARGE,        "Number is too large or contains invalid characters",
                                 "Number is too large or contains invalid characters" )
@@ -584,4 +600,83 @@ pick( ERR_NO_LI_LP,             "LI or LP tag must follow the start of a list",
 
 pick( ERR_LI_LP_NO_LIST,        "LI or LP tag only allowed in a list",
                                 "LI or LP tag only allowed in a list" )
+
+/* cop file errors */
+
+pick( ERR_BLOCK_NOT_FOUND,      "For %s block %s: name not defined\n",
+                                "For %s block %s: name not defined\n")
+
+pick( ERR_DEV_DATA_FILE,        "Error reading device/driver/font file %s\n",
+                                "Error reading device/driver/font file %s\n")
+
+pick( ERR_DEV_LIB_DATA,         "Device library corrupt or wrong version: %s\n",
+                                "Device library corrupt or wrong version: %s\n")
+
+pick( ERR_DEV_LIB_FILE,         "Error reading device/font library in %s\n",
+                                "Error reading device/font library in %s\n")
+
+pick( ERR_DEV_NOT_FOUND,        "File for device/driver/font %s not found\n",
+                                "File for device/driver/font %s not found\n")
+
+pick( ERR_FONT_OPT_SCALED,      "For the FONT option with font %d, the font_height attribute must be specified when the font is scaled.",
+                                "For the FONT option with font %d, the font_height attribute must be specified when the font is scaled.")
+
+pick( ERR_FONT_SCALED,          "For default font %d, the font_height attribute must be specified when the font is scaled.",
+                                "For default font %d, the font_height attribute must be specified when the font is scaled.")
+
+pick( ERR_REC_DEV_FUNC,         "Recursive use of %s, check device library.",
+                                "Recursive use of %s, check device library.")
+
+pick( ERR_WRONG_GENDEV,         "Device/font library was created with a different version of GENDEV",
+                                "Device/font library was created with a different version of GENDEV")
+
+pick( ERR_ZERO_DIVISOR,         "Zero divisor found in device function %s.",
+                                "Zero divisor found in device function %s.")
+
+/* outbuff.c specific errors */
+
+pick( ERR_CLOSE_OUT_FILE,       "Unable to close output file %s\n",
+                                "Unable to close output file %s\n")
+
+pick( ERR_IN_FILE,              "Error reading file for tag %s: %s",
+                                "Error reading file for tag %s: %s")
+
+pick( ERR_OPEN_OUT_FILE,        "Unable to open output file %s\n",
+                                "Unable to open output file %s\n")
+
+pick( ERR_WRITE_OUT_FILE,       "Error writing output file %s\n",
+                                "Error writing output file %s\n")
+
+pick( ERR_OUT_REC_SIZE,         "Output file's record size is too small for the device '%s'\n",
+                                "Output file's record size is too small for the device '%s'\n")
+
+pick( ERR_OUT_REC_SIZE2,        "Output record length is too large, max is %s\n",
+                                "Output record length is too large, max is %s\n")
+
+pick( ERR_REC_ATT_NOT_SUP,      "Record attribute %s is not currently supported\n",
+                                "Record attribute %s is not currently supported\n")
+
+pick( ERR_REC_ATT_BAD_FMT,      "Record attribute %s is not formatted correctly\n",
+                                "Record attribute %s is not formatted correctly\n")
+
+/* find file errors */
+
+pick( ERR_FILE_MAX,             "File name is too long and will not be searched for: %s%s\n",
+                                "File name is too long and will not be searched for: %s%s\n")
+
+pick( ERR_FILE_NAME,            "File names cannot contain path information! Filename: %s\n",
+                                "File names cannot contain path information! Filename: %s\n")
+
+pick( ERR_MEM_DIR,              "Member file not found in same directory as directory file: %s%s\n",
+                                "Member file not found in same directory as directory file: %s%s\n")
+
+pick( ERR_PATH_MAX,             "Directory path is too long and will not be used: %s\n",
+                                "Directory path is too long and will not be used: %s\n")
+
+/* BX/FIG/IXHEAD error messages */
+
+pick( ERR_SPC_NOT_VALID,        "Space value is not valid",
+                                "Space value is not valid")
+
+
 

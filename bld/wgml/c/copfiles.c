@@ -157,7 +157,7 @@ static void compute_metrics( wgml_font * in_font )
 
         /* The default_width is the char_width properly scaled. */
 
-        in_font->default_width = scale_basis_to_horizontal_base_units( \
+        in_font->default_width = scale_basis_to_horizontal_base_units(
                                         in_font->bin_font->char_width, in_font );
     }
 
@@ -165,11 +165,10 @@ static void compute_metrics( wgml_font * in_font )
 
     if( in_font->font_height == 0 ) {
 
-        /* Use the line_height and line_space values from the :FONT block. */
+        /* Use the line_height and line_space values from the FONT block. */
 
         in_font->line_space = in_font->bin_font->line_space;
-            in_font->line_height = in_font->bin_font->line_height + \
-                                                            in_font->line_space;
+        in_font->line_height = in_font->bin_font->line_height + in_font->line_space;
     } else {
 
         /* Use the font_height, font_space, and vertical_base_units values.
@@ -182,8 +181,8 @@ static void compute_metrics( wgml_font * in_font )
          */
 
 
-        height = (in_font->font_height + in_font->font_space) * \
-                                                bin_device->vertical_base_units;
+        height = (in_font->font_height + in_font->font_space) *
+                                         bin_device->vertical_base_units;
 
         in_font->line_height = height / 7200;
 
@@ -224,7 +223,7 @@ static void compute_metrics( wgml_font * in_font )
      * fields are already correct for a non-PS device.
      */
 
-    if( ps_device ) {
+    if( ProcFlags.ps_device ) {
 
         /* The formula is: (font height * 3) / 10, rounded down.
          * The font height is in vertical base units, computed as above.
@@ -248,8 +247,8 @@ static void compute_metrics( wgml_font * in_font )
 }
 
 /* Function get_cop_device().
- * Converts the defined name of a :DEVICE block into a cop_device struct
- * containing the information in that :DEVICE block.
+ * Converts the defined name of a DEVICE block into a cop_device struct
+ * containing the information in that DEVICE block.
  *
  * Parameter:
  *      in_name points to the defined name of the device.
@@ -274,7 +273,7 @@ static cop_device * get_cop_device( char const * in_name )
         return( out_device );
     }
 
-    /* Determine if the file encodes a :DEVICE block. */
+    /* Determine if the file encodes a DEVICE block. */
 
     file_type = parse_header( try_fp );
 
@@ -283,50 +282,53 @@ static cop_device * get_cop_device( char const * in_name )
 
         /* File error, including premature eof. */
 
-        out_msg( "ERR_FILE_IO %d %s\n", errno, try_file_name );
-        err_count++;
-        g_suicide();
+        xx_simple_err_c( err_dev_data_file, try_file_name );
+        break;
+
+    case not_se_v4_1:
+
+        /* File was created by a different version of gendev. */
+
+        xx_simple_err( err_wrong_gendev );
+        break;
 
     case not_bin_dev:
-    case not_se_v4_1:
     case dir_v4_1_se:
 
         /* Wrong type of file: something is wrong with the device library. */
 
-        out_msg( "Device library corrupt or wrong version: %s\n", try_file_name );
-        return( out_device );
+        xx_simple_err_c( err_dev_lib_data, try_file_name );
+        break;
 
     case se_v4_1_not_dir:
 
         /* try_fp was a same-endian version 4.1 file, but not a directory file. */
 
         if( !is_dev_file( try_fp ) ) {
-            out_msg( "Device library problem: file given for device %s does not" \
-                            " encode a device:\n  %s\n", in_name, try_file_name );
+            xx_simple_err_c( err_dev_lib_data, try_file_name );
             break;
         }
 
         out_device = parse_device( try_fp );
-        if( out_device == NULL ) \
-            out_msg( "Device library problem: file given for device %s appears" \
-                            " to be corrupted:\n  %s\n", in_name, try_file_name );
+        if( out_device == NULL ) {
+            xx_simple_err_c( err_dev_lib_data, try_file_name );
+        }
         break;
 
     default:
 
         /* parse_header() returned an unknown value. */
 
-        out_msg("wgml internal error\n");
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
+        break;
     }
 
     return( out_device );
 }
 
 /* Function get_cop_driver().
- * Converts the defined name of a :DRIVER block into a cop_driver struct
- * containing the information in that :DRIVER block.
+ * Converts the defined name of a DRIVER block into a cop_driver struct
+ * containing the information in that DRIVER block.
  *
  * Parameter:
  *      in_name points to the defined name of the device.
@@ -347,7 +349,7 @@ static cop_driver * get_cop_driver( char const * in_name )
         return( out_driver );
     }
 
-    /* Determine if the file encodes a :DRIVER block. */
+    /* Determine if the file encodes a DRIVER block. */
 
     file_type = parse_header( try_fp );
 
@@ -356,50 +358,53 @@ static cop_driver * get_cop_driver( char const * in_name )
 
         /* File error, including premature eof. */
 
-        out_msg( "ERR_FILE_IO %d %s\n", errno, try_file_name );
-        err_count++;
-        g_suicide();
+        xx_simple_err_c( err_dev_lib_file, try_file_name );
+        break;
+
+    case not_se_v4_1:
+
+        /* File was created by a different version of gendev. */
+
+        xx_simple_err( err_wrong_gendev );
+        break;
 
     case not_bin_dev:
-    case not_se_v4_1:
     case dir_v4_1_se:
 
         /* Wrong type of file: something is wrong with the device library. */
 
-        out_msg( "Device library corrupt or wrong version: %s\n", try_file_name );
-        return( out_driver );
+        xx_simple_err_c( err_dev_lib_data, try_file_name );
+        break;
 
     case se_v4_1_not_dir:
 
         /* try_fp was a same-endian version 4.1 file, but not a directory file. */
 
         if( !is_drv_file( try_fp ) ) {
-            out_msg( "Device library problem: file given for driver %s does not" \
-                            " encode a driver:\n  %s\n", in_name, try_file_name );
+            xx_simple_err_c( err_dev_data_file, try_file_name );
             break;
         }
 
         out_driver = parse_driver( try_fp );
-        if( out_driver == NULL ) \
-            out_msg( "Device library problem: file given for driver %s appears" \
-                            " to be corrupted:\n  %s\n", in_name, try_file_name );
+        if( out_driver == NULL ) {
+            xx_simple_err_c( err_dev_data_file, try_file_name );
+        }
         break;
 
     default:
 
         /* parse_header() returned an unknown value. */
 
-        out_msg("wgml internal error\n");
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
+        break;
     }
 
     return( out_driver );
 }
 
 /* Function get_cop_font().
- * Converts the defined name of a :FONT block into a cop_font struct
- * containing the information in that :FONT block.
+ * Converts the defined name of a FONT block into a cop_font struct
+ * containing the information in that FONT block.
  *
  * Parameter:
  *      in_name points to the defined name of the font.
@@ -420,7 +425,7 @@ static cop_font * get_cop_font( char const * in_name )
         return( out_font );
     }
 
-    /* Determine if the file encodes a :FONT block. */
+    /* Determine if the file encodes a FONT block. */
 
     file_type = parse_header( try_fp );
 
@@ -429,42 +434,45 @@ static cop_font * get_cop_font( char const * in_name )
 
         /* File error, including premature eof. */
 
-        out_msg( "ERR_FILE_IO %d %s\n", errno, try_file_name );
-        err_count++;
-        g_suicide();
+        xx_simple_err_c( err_dev_lib_file, try_file_name );
+        break;
+
+    case not_se_v4_1:
+
+        /* File was created by a different version of gendev. */
+
+        xx_simple_err( err_wrong_gendev );
+        break;
 
     case not_bin_dev:
-    case not_se_v4_1:
     case dir_v4_1_se:
 
         /* Wrong type of file: something is wrong with the device library. */
 
-        out_msg( "Device library corrupt or wrong version: %s\n", try_file_name );
-        return( out_font );
+        xx_simple_err_c( err_dev_lib_data, try_file_name );
+        break;
 
     case se_v4_1_not_dir:
 
         /* try_fp was a same-endian version 4.1 file, but not a directory file. */
 
         if( !is_fon_file( try_fp ) ) {
-            out_msg( "Device library problem: file given for font %s does not" \
-                            " encode a font:\n  %s\n", in_name, try_file_name );
+            xx_simple_err_c( err_dev_data_file, try_file_name );
             break;
         }
 
         out_font = parse_font( try_fp, in_name );
-        if( out_font == NULL ) \
-            out_msg( "Device library problem: file given for font %s appears" \
-                            " to be corrupted:\n  %s\n", in_name, try_file_name );
+        if( out_font == NULL ) {
+            xx_simple_err_c( err_dev_data_file, try_file_name );
+        }
         break;
 
     default:
 
         /* parse_header() returned an unknown value. */
 
-        out_msg("wgml internal error\n");
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
+        break;
     }
 
     return( out_font );
@@ -475,7 +483,7 @@ static cop_font * get_cop_font( char const * in_name )
  * to the bin_fonts list if necessary.
  *
  * Parameter:
- *      in_name is the defined name of the desired binary :FONT block.
+ *      in_name is the defined name of the desired binary FONT block.
  *
  * Returns:
  *      a pointer to the cop_font instance on success.
@@ -502,12 +510,11 @@ static cop_font * find_cop_font( char const * in_name )
     if( retval == NULL ) {
         retval = get_cop_font( in_name );
         if( retval == NULL ) {
-            out_msg( "Designated font not found: %s\n", in_name );
-            err_count++;
-            g_suicide();
+            xx_simple_err_c( err_dev_not_found, in_name );
+        } else {
+            retval->next_font = bin_fonts;
+            bin_fonts = retval;
         }
-        retval->next_font = bin_fonts;
-        bin_fonts = retval;
     }
 
     return( retval );
@@ -517,7 +524,7 @@ static cop_font * find_cop_font( char const * in_name )
  * Finds the device_font instance for the requested font.
  *
  * Parameter:
- *      in_name is the defined name of the desired binary :DEVICEFONT block.
+ *      in_name is the defined name of the desired binary DEVICEFONT block.
  *
  * Returns:
  *      a pointer to the device_font instance on success.
@@ -542,9 +549,7 @@ static device_font * find_dev_font( char const * in_name )
     }
 
     if( retval == NULL ) {
-        out_msg( "Designated :DEVICEFONT block not found: %s\n", in_name );
-        err_count++;
-        g_suicide();
+        xx_simple_err_cc( err_block_not_found, "DEVICEFONT", in_name );
     }
 
     return( retval );
@@ -554,7 +559,7 @@ static device_font * find_dev_font( char const * in_name )
  * Finds the fonstyle_block instance for the requested font style.
  *
  * Parameter:
- *      in_name is the defined name of the desired binary :FONTSTYLE block.
+ *      in_name is the defined name of the desired binary FONTSTYLE block.
  *
  * Returns:
  *      a pointer to the fonstyle_block instance on success.
@@ -579,9 +584,7 @@ static fontstyle_block * find_style( char const * in_name )
     }
 
     if( retval == NULL ) {
-        out_msg( "Designated :FONTSTYLE block not found: %s\n", in_name );
-        err_count++;
-        g_suicide();
+        xx_simple_err_cc( err_block_not_found, "FONTSTYLE", in_name );
     }
 
     return( retval );
@@ -591,7 +594,7 @@ static fontstyle_block * find_style( char const * in_name )
  * Finds the fontswitch_block instance for the requested font switch.
  *
  * Parameter:
- *      in_name is the defined name of the desired binary :FONTSWITCH block.
+ *      in_name is the defined name of the desired binary FONTSWITCH block.
  *
  * Returns:
  *      a pointer to the fontswitch_block instance on success.
@@ -616,9 +619,7 @@ static fontswitch_block * find_switch( char const * in_name )
     }
 
     if( retval == NULL ) {
-        out_msg( "Designated :FONTSWITCH block not found: %s\n", in_name );
-        err_count++;
-        g_suicide();
+        xx_simple_err_cc( err_block_not_found, "FONTSWITCH", in_name );
     }
 
     return( retval );
@@ -655,7 +656,7 @@ static void free_opt_fonts( void )
 
 /* Function cop_in_trans().
  * Translates the given character per the tables associated with the .TI
- * command word and the various :INTRANS blocks.
+ * command word and the various INTRANS blocks.
  *
  * Parameter:
  *      in_char contains the character to be translated.
@@ -687,6 +688,9 @@ uint8_t cop_in_trans( uint8_t in_char, font_number font )
 /* Function cop_setup().
  * Initialize the static globals and those extern globals which depend either
  * contain information from or depend on information in the device library.
+ *
+ * Note: a missing device name is caught during option processing. If this function
+ *       is reached, then the name exists.
  */
 
 void cop_setup( void )
@@ -701,22 +705,12 @@ void cop_setup( void )
     opt_font        *   cur_opt         = NULL;
     wgml_font           def_font;
 
-    /* A "device" option must have been processed,
-     * and it must have provided a device name.
-     */
-
-    if( (dev_name == NULL) || !strcmp(dev_name, "''") ) {
-        out_msg( "A device name is required!\n" );
-        err_count++;
-        g_suicide();
-    }
-
     /* Set the externs to known values. */
 
     bin_device = NULL;
     bin_driver = NULL;
-    has_aa_block = false;
-    ps_device = false;
+    ProcFlags.has_aa_block = false;
+    ProcFlags.ps_device = false;
     wgml_font_cnt = 0;
     wgml_fonts = NULL;
 
@@ -737,86 +731,74 @@ void cop_setup( void )
 
     /* Emit the expected message. */
 
-    out_msg( "Processing device information\n" );
+    g_info_lm( inf_proc_start );
 
     /* Process the device. */
 
     bin_device = get_cop_device( dev_name );
 
     if( bin_device == NULL ) {
-        out_msg( "Designated device not found: %s\n", dev_name );
-        err_count++;
-        g_suicide();
+        xx_simple_err_cc( err_block_not_found, "DEVICE", dev_name );
     }
 
     /* The value of horizontal_base_units cannot be "0". */
 
     if( bin_device->horizontal_base_units == 0 ) {
-        out_msg( \
-        "Device library error: horizontal_base_units cannot have value '0'\n" );
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
     }
 
     /* The value of vertical_base_units cannot be "0". */
 
     if( bin_device->vertical_base_units == 0 ) {
-        out_msg( \
-            "Device library error: vertical_base_units cannot have value '0'\n" );
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
     }
 
     /* A driver name must exist. */
 
     if( bin_device->driver_name == NULL ) {
-        out_msg( "Device library error: driver name not provided\n" );
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
     }
     bin_driver = get_cop_driver( bin_device->driver_name );
 
     if( bin_driver == NULL ) {
-        out_msg( "Designated driver not found: %s\n", bin_device->driver_name );
-        err_count++;
-        g_suicide();
+        xx_simple_err_cc( err_block_not_found, "DRIVER", bin_device->driver_name );
     }
 
-    /* Attribute x_positive in :PAGEADDRESS cannot be "no", since horizontal
+    /* Attribute x_positive in PAGEADDRESS cannot be "no", since horizontal
      * positioning does not check this value or react to it. This prevents
      * the generation of negative values for horizontal positions.
      */
 
     if( bin_driver->x_positive == 0 ) {
-        out_msg( "The value 'no' is not supported for attribute 'x_positive'\n" );
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
     }
 
-    /* If attribute y_positive in :PAGEADDRESS was "no", then attribute
-     * y_start in :PAGESTART must not be "0". This prevents the generation
+    /* If attribute y_positive in PAGEADDRESS was "no", then attribute
+     * y_start in PAGESTART must not be "0". This prevents the generation
      * of negative values for vertical positions.
      */
 
     if( bin_driver->y_positive == 0 ) {
         if( bin_device->y_start == 0 ) {
-            out_msg( "Vertical start position cannot be 0\n" );
-            err_count++;
-            g_suicide();
+            internal_err( __FILE__, __LINE__ );
         }
     }
 
-    /* Set has_aa_block to "true" if the driver defines the
-     * :ABSOLUTEADDRESS block.
+    /* Set ProcFlags.has_aa_block to "true" if the driver defines the
+     * ABSOLUTEADDRESS block.
      */
 
-    if( bin_driver->absoluteaddress.text != NULL ) has_aa_block = true;
+    if( bin_driver->absoluteaddress.text != NULL ) {
+        ProcFlags.has_aa_block = true;
+    }
 
-    /* Set ps_device to "true" if the driver name begins with "ps" or "PS". */
+    /* Set ProcFlags.ps_device to "true" if the driver name begins with "ps" or "PS". */
 
-    if( !_strnicmp( bin_device->driver_name, "ps", 2 ) ) ps_device = true;
+    if( !_strnicmp( bin_device->driver_name, "ps", 2 ) ) {
+        ProcFlags.ps_device = true;
+    }
 
-    /* Get the highest font_number and reduce it by one so it contains the
+    /* Get the highest font and reduce it by one so it contains the
      * highest valid array index.
      */
 
@@ -841,16 +823,15 @@ void cop_setup( void )
 
      wgml_font_cnt++;
 
-    /* If either :BOX or :UNDERSCORE provided a font name, increment the count.
-     * If both :BOX and :UNDERSCORE provided a font name, increment the count
+    /* If either BOX or UNDERSCORE provided a font name, increment the count.
+     * If both BOX and UNDERSCORE provided a font name, increment the count
      * once if the font names were identical, twice if they were different.
      * But not if the device is PS: for PS, such fonts are never created.
      */
 
-    if( !ps_device ) {
+    if( !ProcFlags.ps_device ) {
         if( bin_device->box.font_name == NULL ) {
-            if( bin_device->underscore.specified_font && \
-                                (bin_device->underscore.font_name != NULL) ) {
+            if( bin_device->underscore.specified_font && (bin_device->underscore.font_name != NULL) ) {
                 gen_cnt++;
             }
         } else {
@@ -920,10 +901,11 @@ void cop_setup( void )
             wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
         }
         wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
-        if( cur_dev_font->resident == 0x00 )
+        if( cur_dev_font->resident == 0x00 ) {
             wgml_fonts[fnt].font_resident = 'n';
-        else
+        } else {
             wgml_fonts[fnt].font_resident = 'y';
+        }
         if( wgml_fonts[fnt].bin_font->outtrans == NULL ) {
             wgml_fonts[fnt].outtrans = bin_device->outtrans;
         } else {
@@ -932,11 +914,9 @@ void cop_setup( void )
 
         /* If scale_basis is not "0", then font_height must not be "0". */
 
-        if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && (wgml_fonts[fnt].font_height == 0)) {
-            out_msg( "For default font %i, the font_height attribute\n", i );
-            out_msg( "must be specified when the font is scaled.\n" );
-            err_count++;
-            g_suicide();
+        if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && 
+                (wgml_fonts[fnt].font_height == 0)) {
+            xx_simple_err_i( err_font_scaled, fnt );
         }
 
         compute_metrics( &wgml_fonts[fnt] );
@@ -966,14 +946,16 @@ void cop_setup( void )
             wgml_fonts[fnt].font_resident = 'n';
         else
             wgml_fonts[fnt].font_resident = 'y';
+        if( wgml_fonts[fnt].bin_font->outtrans == NULL ) {
+            wgml_fonts[fnt].outtrans = bin_device->outtrans;
+        } else {
+            wgml_fonts[fnt].outtrans = wgml_fonts[fnt].bin_font->outtrans;
+        }
 
         /* If scale_basis is not "0", then font_height must not be "0". */
 
         if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && (wgml_fonts[fnt].font_height == 0)) {
-            out_msg( "For the FONT option with font %i, the font_height\n", fnt );
-            out_msg( "attribute must be specified when the font is scaled.\n" );
-            err_count++;
-            g_suicide();
+            xx_simple_err_i( err_font_opt_scaled, fnt );
         }
 
         compute_metrics( &wgml_fonts[fnt] );
@@ -981,8 +963,8 @@ void cop_setup( void )
     }
     free_opt_fonts();
 
-    /* Generate any entries required by the :BOX and/or :UNDERSCORE blocks.
-     * Note that the font_number will become non-zero and will be used in
+    /* Generate any entries required by the BOX and/or UNDERSCORE blocks.
+     * Note that the font will become non-zero and will be used in
      * document processing instead of the font name. If the device is PS,
      * then gen_cnt will be "0" and no fonts will be generated.
      */
@@ -1010,14 +992,15 @@ void cop_setup( void )
             wgml_fonts[fnt].line_space = 0;
             wgml_fonts[fnt].font_resident = 'n';
 
-            /* The font used with the :UNDERSCORE block cannot be scaled. */
+            /* If scale_basis is not "0", then font_height must not be "0". */
 
-            if( wgml_fonts[fnt].bin_font->scale_basis != 0 ) {
-                out_msg( "The UNDERSCORE block cannot specify a font which is scaled.\n" );
-                err_count++;
-                g_suicide();
+            if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && (wgml_fonts[fnt].font_height == 0)) {
+                xx_simple_err_i( err_font_scaled, fnt );
             }
-        } else if( bin_device->box.font_name != NULL ) {
+
+            break;
+        }
+        if( bin_device->box.font_name != NULL ) {
             fnt = font_base;
             bin_device->box.font = font_base;
             wgml_fonts[fnt].bin_font = find_cop_font( bin_device->box.font_name );
@@ -1035,14 +1018,7 @@ void cop_setup( void )
             wgml_fonts[fnt].line_height = 1;
             wgml_fonts[fnt].line_space = 0;
             wgml_fonts[fnt].font_resident = 'n';
-
-            /* The font used with the :BOX block cannot be scaled. */
-
-            if( wgml_fonts[fnt].bin_font->scale_basis != 0 ) {
-                out_msg( "The BOX block cannot specify a font which is scaled.\n" );
-                err_count++;
-                g_suicide();
-            }
+            break;
         }
         break;
     case 2:
@@ -1065,12 +1041,10 @@ void cop_setup( void )
             wgml_fonts[fnt].line_space = 0;
             wgml_fonts[fnt].font_resident = 'n';
 
-            /* The font used with the :UNDERSCORE block cannot be scaled. */
+            /* If scale_basis is not "0", then font_height must not be "0". */
 
-            if( wgml_fonts[fnt].bin_font->scale_basis != 0 ) {
-                out_msg( "The UNDERSCORE block cannot specify a font which is scaled.\n" );
-                err_count++;
-                g_suicide();
+            if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && (wgml_fonts[fnt].font_height == 0)) {
+                xx_simple_err_i( err_font_scaled, fnt );
             }
         }
         if( bin_device->box.font_name != NULL ) {
@@ -1092,28 +1066,16 @@ void cop_setup( void )
             wgml_fonts[fnt].line_height = 1;
             wgml_fonts[fnt].line_space = 0;
             wgml_fonts[fnt].font_resident = 'n';
-
-            /* The font used with the :BOX block cannot be scaled. */
-
-            if( wgml_fonts[fnt].bin_font->scale_basis != 0 ) {
-                out_msg( "The BOX block cannot specify a font which is scaled.\n" );
-                err_count++;
-                g_suicide();
-            }
         }
         break;
     default:
-        out_msg( "wgml internal error\n" );
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
     }
 
     /* Ensure that font 0 was initialized */
 
     if( wgml_fonts[0].bin_font == NULL ) {
-        out_msg( "Device Library Error: Font 0 not defined\n" );
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
     }
 
     /* Fill in any skipped entries with the values used for wgml_font 0 */
@@ -1144,29 +1106,10 @@ void cop_setup( void )
         }
     }
 
-    /* Ensure that at least one binary :FONT block was processed. */
+    /* Ensure that at least one binary FONT block was processed. */
 
     if( bin_fonts == NULL ) {
-        out_msg( "Device Library Error: No :FONT blocks loaded\n" );
-        err_count++;
-        g_suicide();
-    }
-
-    if( !has_aa_block ) {
-        uint32_t    test_height;
-
-        /* Verify that all line_height fields have the same value. */
-
-        test_height = wgml_fonts[0].line_height;
-        for( fnt = 1; fnt < wgml_font_cnt - gen_cnt; fnt++ ) {
-            if( test_height != wgml_fonts[fnt].line_height ) {
-                out_msg( "     Computed line height values for devices\n" );
-                out_msg( "     which rely on :NEWLINE blocks must be the\n" );
-                out_msg( "     same for all fonts\n" );
-                err_count++;
-                g_suicide();
-            }
-        }
+        internal_err( __FILE__, __LINE__ );
     }
 
     /* Initialize items dependent on the device library. */
@@ -1203,6 +1146,14 @@ void cop_setup( void )
         wgml_fonts[fnt].em_base = wgml_fonts[fnt].width_table['M'];
         wgml_fonts[fnt].spc_width = wgml_fonts[fnt].width_table[' '];
     }
+
+    /* Initialize the column width used with BX. */
+
+    box_col_width = bin_device->horizontal_base_units / CPI;
+
+    /* Initialize the horizontal offset used to position the HLINE output. */
+
+    h_vl_offset = bin_device->horizontal_base_units / 20;
 
     /* Initialize the default tabs and related extern variables. */
 
@@ -1313,8 +1264,8 @@ void cop_teardown( void )
  *
  * Note:
  *      This version simply adds up the widths, in horizontal_base_units, of
- *          the first count characters in text. For :FONT blocks without
- *          a :WIDTH block, it might be more efficient to use the
+ *          the first count characters in text. For FONT blocks without
+ *          a WIDTH block, it might be more efficient to use the
  *          product of default_width and count. However, many counts will be
  *          quite small, and the cost of determining whether or not the
  *          bin_font contains a width table must be considered.
@@ -1464,29 +1415,27 @@ void cop_ti_table( char * p )
 }
 
 /* Function fb_dbox().
- * Interprets the :DBOX block.
+ * Interprets the DBOX block.
  *
  * Parameters:
- *      h_start contains the horizontal position.
- *      v_start contains the vertical position.
- *      h_len contains the horizontal extent.
- *      v_len contains the vertical extent.
+ *      in_dbox points to a dbox_element
  *
  * Prerequisites:
- *      The :DBOX block must exist.
- *      The :ABSOLUTEADDRESS block must exist.
+ *      The DBOX block must exist.
+ *      The ABSOLUTEADDRESS block must exist.
  *
  * Notes:
- *      The :ABSOLUTEADDRESS block is required to position the print to the
+ *      The ABSOLUTEADDRESS block is required to position the print to the
  *          start of the line or box.
- *      The :DBOX block must exist because the box-drawing code should be
- *          checking this and drawing the box using either :HLINE and :VLINE
- *          or the :BOX block characters instead.
+ *      The DBOX block must exist because the box-drawing code should be
+ *          checking this and drawing the box using either HLINE and VLINE
+ *          or the BOX block characters instead.
  */
 
-void fb_dbox( uint32_t h_start, uint32_t v_start, uint32_t h_len, uint32_t v_len )
+void fb_dbox( dbox_element * in_dbox )
 {
-    fb_line_block( &(bin_driver->dbox), h_start, v_start, h_len, v_len, "DBOX" );
+    fb_line_block( &(bin_driver->dbox), in_dbox->h_start, in_dbox->v_start,
+                   in_dbox->h_len, in_dbox->v_len, false );
     return;
 }
 
@@ -1496,12 +1445,12 @@ void fb_dbox( uint32_t h_start, uint32_t v_start, uint32_t h_len, uint32_t v_len
 
 void fb_document( void )
 {
-    /* Interpret the DOCUMENT :PAUSE block. */
+    /* Interpret the DOCUMENT PAUSE block. */
 
     if( bin_device->pauses.document_pause != NULL )
         df_interpret_device_functions( bin_device->pauses.document_pause->text );
 
-    /* Interpret the DOCUMENT :INIT block. */
+    /* Interpret the DOCUMENT INIT block. */
 
     if( bin_driver->inits.document != NULL )
         fb_init( bin_driver->inits.document );
@@ -1522,7 +1471,7 @@ void fb_document( void )
 }
 
 /* Function fb_document_page().
- * Interprets the :NEWPAGE block and increments the page number variable.
+ * Interprets the NEWPAGE block and increments the page number variable.
  *
  * Note:
  *      This function should be used for new document pages within a section,
@@ -1533,17 +1482,17 @@ void fb_document( void )
 
 void fb_document_page( void )
 {
-    /* Interpret a :LINEPROC :ENDVALUE block if appropriate. */
+    /* Interpret a LINEPROC ENDVALUE block if appropriate. */
 
     fb_lineproc_endvalue();
 
-    /* Interpret the :NEWPAGE block. */
+    /* Interpret the NEWPAGE block. */
 
     df_interpret_driver_functions( bin_driver->newpage.text );
 
-    /* Interpret the DOCUMENT_PAGE :PAUSE block. */
+    /* Interpret the DOCUMENT_PAGE PAUSE block. */
 
-    if( bin_device->pauses.docpage_pause != NULL ) \
+    if( bin_device->pauses.docpage_pause != NULL )
         df_interpret_device_functions( bin_device->pauses.docpage_pause->text );
 
     /* Set up for a new document page. */
@@ -1559,46 +1508,45 @@ void fb_document_page( void )
 
 void fb_finish( void )
 {
-    /* Interpret a :LINEPROC :ENDVALUE block if appropriate. */
+    /* Interpret a LINEPROC ENDVALUE block if appropriate. */
 
     fb_lineproc_endvalue();
 
-    /* If the END :FINISH block is present, interpret it. If the END
-     * :FINISH block is not present, then, if the DOCUMENT :FINISH block
+    /* If the END FINISH block is present, interpret it. If the END
+     * FINISH block is not present, then, if the DOCUMENT FINISH block
      * is present, interpret it.
      */
 
-    if( bin_driver->finishes.end != NULL ) \
+    if( bin_driver->finishes.end != NULL )
         df_interpret_driver_functions( bin_driver->finishes.end->text );
-    else if( bin_driver->finishes.document != NULL ) \
+    else if( bin_driver->finishes.document != NULL )
         df_interpret_driver_functions( bin_driver->finishes.document->text );
 
     return;
 }
 
 /* Function fb_hline().
- * Interprets the :HLINE block.
+ * Interprets the HLINE block.
  *
  * Parameters:
- *      h_start contains the horizontal position.
- *      v_start contains the vertical position.
- *      h_len contains the horizontal extent.
+ *      in_hline contains a pointer to an hline_element
  *
  * Prerequisites:
- *      The :HLINE block must exist.
- *      The :ABSOLUTEADDRESS block must exist.
+ *      The HLINE block must exist.
+ *      The ABSOLUTEADDRESS block must exist.
  *
  * Notes:
- *      The :ABSOLUTEADDRESS block is required to position the print to the
+ *      The ABSOLUTEADDRESS block is required to position the print to the
  *          start of the line or box.
- *      The :HLINE block must exist because the box-drawing code should be
- *          checking this and, in some cases, drawing the line using the :BOX
+ *      The HLINE block must exist because the box-drawing code should be
+ *          checking this and, in some cases, drawing the line using the BOX
  *          block characters instead.
  */
 
-void fb_hline( uint32_t h_start, uint32_t v_start, uint32_t h_len )
+void fb_hline( hline_element * in_hline )
 {
-    fb_line_block( &(bin_driver->hline), h_start, v_start, h_len, 0, "HLINE" );
+    fb_line_block( &(bin_driver->hline), in_hline->h_start, in_hline->v_start,
+                   in_hline->h_len, 0, false );
 }
 
 /* Function fb_output_textline.
@@ -1610,7 +1558,7 @@ void fb_hline( uint32_t h_start, uint32_t v_start, uint32_t h_len )
  *
  * Note:
  *      This function deals with the normal output sequence only.
- *      It is expected that lines drawn with :BOX characters will require
+ *      It is expected that lines drawn with BOX characters will require
  *          other, specialized fb_output_ functions.
  */
 
@@ -1660,14 +1608,14 @@ void fb_output_textline( text_line * out_line )
 
 void fb_start( void )
 {
-    /* Interpret the START :PAUSE block and reset the function table. */
+    /* Interpret the START PAUSE block and reset the function table. */
 
-    if( bin_device->pauses.start_pause != NULL ) \
+    if( bin_device->pauses.start_pause != NULL )
         df_interpret_device_functions( bin_device->pauses.start_pause->text );
 
     df_populate_device_table();
 
-    /* Interpret the START :INIT block. */
+    /* Interpret the START INIT block. */
 
     if( bin_driver->inits.start != NULL ) fb_init( bin_driver->inits.start );
 
@@ -1675,28 +1623,27 @@ void fb_start( void )
 }
 
 /* Function fb_vline().
- * Interprets the :VLINE block.
+ * Interprets the VLINE block.
  *
  * Parameters:
- *      h_start contains the horizontal position.
- *      v_start contains the vertical position.
- *      v_len contains the vertical extent.
+ *      in_vline is a pointer to a vline_element
  *
  * Prerequisites:
- *      The :VLINE block must exist.
- *      The :ABSOLUTEADDRESS block must exist.
+ *      The VLINE block must exist.
+ *      The ABSOLUTEADDRESS block must exist.
  *
  * Notes:
- *      The :ABSOLUTEADDRESS block is required to position the print to the
+ *      The ABSOLUTEADDRESS block is required to position the print to the
  *          start of the line or box.
- *      The :VLINE block must exist because the box-drawing code should be
- *          checking this and, in some cases, drawing the line using the :BOX
+ *      The VLINE block must exist because the box-drawing code should be
+ *          checking this and, in some cases, drawing the line using the BOX
  *          block characters instead.
  */
 
-void fb_vline( uint32_t h_start, uint32_t v_start, uint32_t v_len )
+void fb_vline( vline_element * in_vline )
 {
-    fb_line_block( &(bin_driver->vline), h_start, v_start, 0, v_len, "VLINE" );
+    fb_line_block( &(bin_driver->vline), in_vline->h_start, in_vline->v_start, 0,
+                   in_vline->v_len, in_vline->twice );
     return;
 }
 

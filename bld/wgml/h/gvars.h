@@ -57,8 +57,11 @@ global  char        *   scan_restart;   // used by character scanning routines
 global  bool            scan_err;       // used by character scanning routines
 global  char        *   tok_start;      // start of scanned token
 global  size_t          arg_flen;       // arg length
+global  char        *   var_start;      // variable start
+global  size_t          var_len;        // variable length
 global  size_t          val_len;        // value length
 global  char        *   val_start;      // value start
+global  char            quote_char;     // value is quoted by this char or \0
 global  locflags        rs_loc;         // restricted location
 
 global  int             switch_char;    // DOS switch character
@@ -78,8 +81,8 @@ global  char        *   out_file;       // output file name
 global  char        *   out_file_attr;  // output file attributes (T:2222)
 global  unsigned        inc_level;   // include nesting level 1 = MasterFname
 global  unsigned        max_inc_level;  // maximum include level depth
-global  lineno_t        line_from;      // starting lineno to process
-global  lineno_t        line_to;        // ending lineno to process
+global  line_number     line_from;      // starting lineno to process
+global  line_number     line_to;        // ending lineno to process
 #define LINEFROM_DEFAULT    1
 #define LINETO_DEFAULT      (0x1000000) // 16 MiB lines should be enough
 
@@ -107,7 +110,7 @@ global  int             pass;           // current document pass no
 
 global  uint32_t        apage;          // current absolute pageno &$apage
 global  uint32_t        page;           // current document pageno &$page
-global  lineno_t        line;           // current output lineno   &$line
+global  line_number     line;           // current output lineno   &$line
 global  int32_t         lcmax;          // remaining lines on page initial
 global  int32_t         lc;             // remaining lines on page &$lc
 
@@ -120,15 +123,17 @@ global  int32_t         fm;             // footing margin          &$fm
 global  int32_t         lm;             // left margin             &$pagelm
 global  int32_t         rm;             // right margin            &$pagerm
 
+global  ix_h_blk    *   ixhtag[4];// last higher level :IH1 :IH2 tags in index
 global  ix_h_blk    *   index_dict;     // index structure dictionary
+global  ref_entry   *   iref_dict;  // reference id dictionary :Ix :IHx :IREF
+global  ref_entry   *   ref_dict;       // reference dictionary :Hx tags
+global  ref_entry   *   fig_dict;       // reference dictionary :FIG tags
+global  ref_entry   *   fn_dict;        // reference dictionary :FN tags
 
 global  symvar      *   global_dict;    // global symbol dictionary
 global  symvar      *   sys_dict;       // global system symbol dictionary
 global  mac_entry   *   macro_dict;     // macro dictionary
 global  gtentry     *   tag_dict;       // user tag dictionary
-global  ref_entry   *   ref_dict;       // reference id dictionary :Hx tags
-global  ref_entry   *   fig_dict;       // reference id dictionary :FIG tags
-global  ref_entry   *   fn_dict;        // reference id dictionary :FN tags
 
 global  char            research_file_name[48]; // filename for research
 global  ulong           research_from;  // line no start for research output
@@ -211,6 +216,9 @@ global struct ProcFlags {
     unsigned        keep_left_margin: 1;// for indent NOTE tag paragraph
     unsigned        need_li_lp      : 1;// just list tag (:SL,...) seen
 
+    unsigned        has_aa_block    : 1;// true if device defined :ABSOLUTEADDRESS
+    unsigned        ps_device       : 1;// true if device is PostScript
+
     unsigned        layout          : 1;// within :layout tag and sub tags
     unsigned        lay_specified   : 1;// LAYOUT option or :LAYOUT tag seen
     unsigned        banner          : 1;// within layout banner definition
@@ -242,6 +250,12 @@ global gaentry  *   att_entry;          // ... entry in tag_dict
 global  long        li_cnt;             // remaining count for .li processing
 
 global  uint8_t     in_esc;             // input escape char from .ti
+
+global  box_col_set     box_line;       // the current line to be drawn
+global  box_col_set     cur_line;       // the line from the current BX line
+global  box_col_set     prev_line;      // the previously drawn line
+global  uint32_t        box_col_width;  // width of one column, as used with BX
+global  uint32_t        h_vl_offset;    // horizontal offset used to position VLINE output
 
 global  tab_stop    *   c_stop;         // current tab_stop
 global  uint32_t        first_tab;      // first default top position

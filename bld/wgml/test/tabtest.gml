@@ -3727,7 +3727,7 @@ and
 .mono LDBL_&SYSRB.
 refer to type
 .kw long double
-:CMT...ct ..li .
+..ct ..li .
 .begbull
 .keep begin
 .bull

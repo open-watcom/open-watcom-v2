@@ -148,7 +148,7 @@ void    scr_tb( void )
     }
     len = p - pa;
 
-    if( (len > 0) &&  !memicmp( pa , "set", len ) ) {
+    if( (len == 3) &&  !memicmp( pa , "set", len ) ) {
         while( *p && (*p == ' ') ) {        // tab char
             p++;
         }

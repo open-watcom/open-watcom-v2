@@ -99,7 +99,7 @@ static int try_open( char *prefix, char *filename )
 
     filename_length = strnlen_s( prefix, FILENAME_MAX ) + strnlen_s( filename, FILENAME_MAX ) + 1;
     if( filename_length > FILENAME_MAX ) {
-        out_msg( "File name is too long and will not be searched for:\n%s%s\n", prefix, filename );
+        xx_simple_err_cc( err_file_max, prefix, filename );
         return(0);
     }
 
@@ -125,11 +125,19 @@ static int try_open( char *prefix, char *filename )
     for( ;; ) {
         strlwr( buff );                 // for the sake of linux use lower only
         erc = fopen_s( &fp, buff, "rb" );
-        if( erc == 0 ) break;
-        if( errno != ENOMEM && errno != ENFILE && errno != EMFILE ) break;
-        if( !free_resources( errno ) ) break;
+        if( erc == 0 ) {
+            break;
+        }
+        if( errno != ENOMEM && errno != ENFILE && errno != EMFILE ) {
+            break;
+        }
+        if( !free_resources( errno ) ) {
+            break;
+        }
     }
-    if( fp == NULL ) return( 0 );
+    if( fp == NULL ) {
+        return( 0 );
+    }
 
     /* Set the globals on success. */
 
@@ -282,9 +290,8 @@ int search_file_in_dirs( const char *filename, char *defext, char *altext, dirse
     /* Ensure filename will fit into buff. */
 
     if( strnlen_s( filename, FILENAME_MAX ) == FILENAME_MAX ) {
-        out_msg( "File name is too long and will not be searched for:\n%s\n", filename );
-        err_count++;
-        g_suicide();
+        xx_simple_err_c( err_file_max, filename );
+        return( 0 );
     }
 
     /* Initialize the filename buffers. */
@@ -302,9 +309,8 @@ int search_file_in_dirs( const char *filename, char *defext, char *altext, dirse
         _splitpath2( filename, buff, &fn_drive, &fn_dir, &fn_name, &fn_ext );
 
         if( fn_drive[0] != '\0' || fn_dir[0] != '\0' ) {
-            out_msg( "File names cannot contain path information! Filename:\n%s\n", filename );
-            err_count++;
-            g_suicide();
+            xx_simple_err_c( err_file_name, filename );
+            return( 0 );
         }
 
         /* Ensure the file name will fit in the buffers if the literal extensions
@@ -313,9 +319,23 @@ int search_file_in_dirs( const char *filename, char *defext, char *altext, dirse
 
         if( *fn_ext == '\0' ) {
             if( strnlen_s( filename, FILENAME_MAX ) + 4 == FILENAME_MAX ) {
-                out_msg( "File name is too long and will not be searched for:\n%s\nNote: length used includes a default extension.", filename );
-                err_count++;
-                g_suicide();
+                switch( sequence ) {
+                case ds_opt_file:
+                    xx_simple_err_cc( err_file_max, filename, ".opt" );
+                    break;
+                case ds_doc_spec:
+                    xx_simple_err_cc( err_file_max, filename, ".gml" );
+                    break;
+                case ds_bin_lib:
+                    xx_simple_err_cc( err_file_max, filename, ".cop" );
+                    break;
+                case ds_lib_src:
+                    xx_simple_err_cc( err_file_max, filename, ".pcd" );
+                    break;
+                default:
+                    xx_simple_err_cc( err_file_max, filename, ".xxx" );
+                }
+                return( 0 );
             }
         }
     }
@@ -380,9 +400,8 @@ int search_file_in_dirs( const char *filename, char *defext, char *altext, dirse
         searchdirs[3] = NULL;
         break;
     default:
-        out_msg( "findfile internal error\n" );
-        err_count++;
-        g_suicide();
+        internal_err( __FILE__, __LINE__ );
+        return( 0 );
     }
 
     /* Search each directory for each filename. */
@@ -409,12 +428,16 @@ int search_file_in_dirs( const char *filename, char *defext, char *altext, dirse
 
             /* See if dir_ptr contains a wgmlst.cop file. */
 
-                if( try_open( dir_name, "wgmlst.cop" ) == 0 ) continue;
+                if( try_open( dir_name, "wgmlst.cop" ) == 0 ) {
+                    continue;
+                }
 
                 /* try_fp now contains a FILE * to the directory file. */
 
                 member_name = get_member_name( filename );
-                if( member_name == NULL ) continue;
+                if( member_name == NULL ) {
+                    continue;
+                }
 
                 /* Construct primary_file and open it normally. */
 
@@ -433,38 +456,41 @@ int search_file_in_dirs( const char *filename, char *defext, char *altext, dirse
                             mem_free( member_name );
                             member_name = NULL;
                         } else {
-                            out_msg( "Member name is too long and will not be searched for:\n%s.cop\n", member_name );
+                            xx_simple_err_cc( err_file_max, member_name, ".cop" );
                             mem_free( member_name );
                             member_name = NULL;
-                            err_count++;
-                            g_suicide();
+                            return( 0 );
                         }
                     } else {
-                        out_msg( "Member name is too long and will not be searched for:\n%s\n", member_name );
+                        xx_simple_err_cc( err_file_max, member_name, "" );
                         mem_free( member_name );
                         member_name = NULL;
-                        err_count++;
-                        g_suicide();
+                        return( 0 );
                     }
                 }
             }
 
-            if( try_open( dir_name, primary_file ) != 0 ) return( 1 );
+            if( try_open( dir_name, primary_file ) != 0 ) {
+                return( 1 );
+            }
 
             /* Not finding the file is only a problem for ds_bin_lib. */
 
             if( sequence == ds_bin_lib ) {
-                out_msg( "Member file not found in same directory as directory file:\n%s%s\n", dir_name, primary_file );
-                err_count++;
-                g_suicide();
+                xx_simple_err_cc( err_mem_dir, dir_name, primary_file );
+                return( 0 );
             }
 
             if( alternate_file != NULL ) {
-                if( try_open( dir_name, alternate_file ) != 0 ) return( 1 );
+                if( try_open( dir_name, alternate_file ) != 0 ) {
+                    return( 1 );
+                }
             }
 
             if( default_file != NULL ) {
-                if( try_open( dir_name, default_file ) != 0 ) return( 1 );
+                if( try_open( dir_name, default_file ) != 0 ) {
+                    return( 1 );
+                }
             }
         }
     }

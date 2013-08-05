@@ -136,6 +136,7 @@ void    lay_date( const gmltag * entry )
 
                 switch( curr ) {
                 case   e_date_form:
+                    p = l_args.start[0] + l_args.len[0];
                     cvterr = i_date_form( p, curr, layout_work.date.date_form );
                     break;
                 case   e_left_adjust:

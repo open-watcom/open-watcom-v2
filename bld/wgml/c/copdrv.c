@@ -313,7 +313,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver, \
 
     /* Get the number of line passes, which can be 0. */
 
-    fread( &fontstyle_block_ptr->line_passes, \
+    fread( &fontstyle_block_ptr->line_passes,
            sizeof( fontstyle_block_ptr->line_passes ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( in_driver );
@@ -987,7 +987,9 @@ bool is_drv_file( FILE * in_file)
     /* Get the descriminator. */
 
     fread( &descriminator, 3, 1, in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( false );
+    if( ferror( in_file ) || feof( in_file ) ) {
+        return( false );
+    }
 
     /* Verify that the descriminator is for a .COP driver file. */
 
@@ -1123,8 +1125,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Get the fill_char. */
 
-    fread( &out_driver->fill_char, sizeof( out_driver->fill_char ), 1, \
-        in_file );
+    fread( &out_driver->fill_char, sizeof( out_driver->fill_char ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_driver );
         out_driver = NULL;
@@ -1133,8 +1134,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Get the x_positive flag. */
 
-    fread( &out_driver->x_positive, sizeof( out_driver->x_positive ), 1, \
-        in_file );
+    fread( &out_driver->x_positive, sizeof( out_driver->x_positive ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_driver );
         out_driver = NULL;
@@ -1143,8 +1143,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Get the y_positive flag. */
 
-    fread( &out_driver->y_positive, sizeof( out_driver->y_positive ), 1, \
-        in_file );
+    fread( &out_driver->y_positive, sizeof( out_driver->y_positive ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_driver );
         out_driver = NULL;
@@ -1301,8 +1300,8 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Get the number of NewlineBlocks */
 
-    memcpy_s( &out_driver->newlines.count, sizeof( out_driver->newlines.count ), \
-                                current, sizeof( out_driver->newlines.count ) );
+    memcpy_s( &out_driver->newlines.count, sizeof( out_driver->newlines.count ),
+              current, sizeof( out_driver->newlines.count ) );
     current += sizeof( out_driver->newlines.count );
 
     /* Add the newline_block structs. */
@@ -1749,8 +1748,8 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Get the fontstyle_count and ensure it is not 0. */
 
-    fread( &out_driver->fontstyles.count, sizeof( out_driver->fontstyles.count ), \
-                                                                    1, in_file );
+    fread( &out_driver->fontstyles.count, sizeof( out_driver->fontstyles.count ),
+           1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_driver );
         out_driver = NULL;
@@ -1789,8 +1788,8 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* The initial ShortFontstyleBlock must be processed separately. */
     
-    out_driver = parse_font_style( in_file, out_driver, fontstyle_block_ptr, \
-                                            &p_buffer_set, &current, count8 );
+    out_driver = parse_font_style( in_file, out_driver, fontstyle_block_ptr,
+                                   &p_buffer_set, &current, count8 );
     if( out_driver == NULL ) return( out_driver );
     fontstyle_block_ptr = OUT_DRV_MAP( out_driver->fontstyles.fontstyleblocks );
 
@@ -1982,8 +1981,8 @@ cop_driver * parse_driver( FILE * in_file )
     
         /* Get the thickness. */
 
-        fread( &out_driver->hline.thickness, \
-                            sizeof( out_driver->hline.thickness ), 1, in_file );
+        fread( &out_driver->hline.thickness,
+               sizeof( out_driver->hline.thickness ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_driver );
             out_driver = NULL;
@@ -2091,8 +2090,8 @@ cop_driver * parse_driver( FILE * in_file )
     
         /* Get the thickness. */
 
-        fread( &out_driver->vline.thickness, \
-                            sizeof( out_driver->vline.thickness ), 1, in_file );
+        fread( &out_driver->vline.thickness, 
+               sizeof( out_driver->vline.thickness ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_driver );
             out_driver = NULL;
@@ -2193,8 +2192,8 @@ cop_driver * parse_driver( FILE * in_file )
     
         /* Get the thickness. */
 
-        fread( &out_driver->dbox.thickness, \
-                            sizeof( out_driver->dbox.thickness ), 1, in_file );
+        fread( &out_driver->dbox.thickness,
+               sizeof( out_driver->dbox.thickness ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_driver );
             out_driver = NULL;

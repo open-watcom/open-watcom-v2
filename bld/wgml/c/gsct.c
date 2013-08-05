@@ -87,7 +87,6 @@ void    scr_ct( void )
             } else {
                 process_text( p, g_curr_font ); // text follows
             }
-            ProcFlags.ct = false;
         }
     }
     scan_restart = scan_stop + 1;

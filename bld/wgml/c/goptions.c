@@ -154,8 +154,7 @@ static  int     split_tokens( char *str )
         new->bol = linestart;
         linestart = false;
         new->toklen = tokl;
-        strncpy_s(new->token, new->toklen + 1, tokstart, tokl );
-
+        strncpy_s( new->token, new->toklen + 1, tokstart, tokl );
         if( tok == NULL ) {
             cmd_tokens[level] = new;
         } else {
@@ -312,7 +311,7 @@ static void set_altext( option * opt )
 {
     char    *   pw;
     char    *   p;
-    int         len;
+    size_t      len;
 
     if( tokennext == NULL || tokennext->bol || is_option() == true ) {
         bad_cmd_line( err_missing_opt_value, opt->option, ' ' );
@@ -343,7 +342,6 @@ static void set_altext( option * opt )
 static void set_bind( option * opt )
 {
     bool        scanerr;
-    char    *   p;
     su          bindwork;
 
     if( tokennext == NULL || tokennext->bol || tokennext->token[0] == '(' \
@@ -353,8 +351,9 @@ static void set_bind( option * opt )
         err_count++;
 
     } else {
-        p = tokennext->token;
-        scanerr = to_internal_SU( &p, &bindwork );
+        val_start = tokennext->token;
+        val_len = tokennext->toklen;
+        scanerr = att_val_to_su( &bindwork, true ); // must be positive TBD
         if( scanerr ) {
             g_err( err_miss_inv_opt_value, opt->option,
                    tokennext->token );
@@ -374,8 +373,9 @@ static void set_bind( option * opt )
                 memcpy_s( &bind_even, sizeof( bind_even), &bind_odd,
                           sizeof( bind_odd ) );  // use bind_odd
             } else {
-                p = tokennext->token;
-                scanerr = to_internal_SU( &p, &bindwork );
+                val_start = tokennext->token;
+                val_len = tokennext->toklen;
+                scanerr = att_val_to_su( &bindwork, true ); // must be positive TBD
                 if( scanerr ) {
                     g_err( err_miss_inv_opt_value, opt->option,
                           tokennext->token );
@@ -488,7 +488,7 @@ static void set_device( option * opt )
 
     char    *   pw;
     char    *   p;
-    int         len;
+    size_t      len;
 
     if( tokennext == NULL || tokennext->bol || is_option() == true ) {
         bad_cmd_line( err_missing_device_name, opt->option, ' ' );
@@ -524,7 +524,7 @@ static bool font_points( cmd_tok * in_tok, char buff[5] )
     bool        has_pt;
     char    *   p;
     int         i;
-    int         len;
+    size_t      len;
     int         post_pt;
     int         pre_pt;
 
@@ -588,7 +588,7 @@ static void set_font( option * opt )
     char        *   p;
     int             i;
     int             fn;
-    int             len;
+    size_t          len;
     int             old_errs;
     int             opts_cnt;
     opt_font    *   new_font;
@@ -844,7 +844,7 @@ static void set_font( option * opt )
         }
         break;
     default:
-        g_err( err_intern, __FILE__, __LINE__ );
+        internal_err( __FILE__, __LINE__ );
         g_suicide();
     }
 
@@ -884,7 +884,7 @@ static void set_font( option * opt )
 
 static void set_layout( option * opt )
 {
-    int     len;
+    size_t  len;
     char    attrwork[MAX_FILE_ATTR];
     struct  laystack    * laywk;
     struct  laystack    * laywork;
@@ -925,7 +925,7 @@ static void set_layout( option * opt )
 
 static void set_outfile( option * opt )
 {
-    int     len;
+    size_t  len;
     char    attrwork[MAX_FILE_ATTR];
 
     if( tokennext == NULL || tokennext->bol || is_option() == true ) {
@@ -1107,7 +1107,7 @@ static void set_stats( option * opt )
 
 static void set_OPTFile( option * opt )
 {
-    int         len;
+    size_t      len;
     char        attrwork[MAX_FILE_ATTR];
     char    *   str;
 
@@ -1205,7 +1205,7 @@ static void set_quiet( option * opt )
 
 static void set_research( option * opt )
 {
-    int         len;
+    size_t      len;
     char        str[256];
 
 
@@ -1481,8 +1481,8 @@ static cmd_tok  *process_option( option * op_table, cmd_tok * tok )
 static cmd_tok  *process_option_old( option * op_table, cmd_tok * tok )
 {
     int         i;
-    int         j;
-    int         len;
+    size_t      j;
+    size_t      len;
     char    *   opt;
     char        c;
     char    *   p;
@@ -1625,7 +1625,7 @@ static cmd_tok  *process_option_old( option * op_table, cmd_tok * tok )
 static bool is_option( void )
 {
     int         i;
-    int         len;
+    size_t      len;
     char    *   opt;
     char        c;
     char    *   p;
@@ -1690,7 +1690,7 @@ static cmd_tok  *process_master_filename( cmd_tok * tok )
     char        attrwork[MAX_FILE_ATTR];
     char    *   p;
     char    *   str;
-    int         len;
+    size_t      len;
 
     len = tok->toklen;
     p = mem_alloc( len + 1 );

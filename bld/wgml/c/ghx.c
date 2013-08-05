@@ -41,7 +41,7 @@ static char hnumx[7] = "$hnumX";
 /*  and update $headn global variable                                      */
 /***************************************************************************/
 
-static  void    update_headnumx( int level, char *hnumstr, size_t hnsize )
+static  void    update_headnumx( int lvl, char *hnumstr, size_t hnsize )
 {
     size_t          pos;
     char            *pn;
@@ -49,108 +49,220 @@ static  void    update_headnumx( int level, char *hnumstr, size_t hnsize )
 
     *hnumstr = 0;
     pos = 0;
-    if( layout_work.hx[level].number_form == none ) {
+    if( layout_work.hx[lvl].number_form == none ) {
         return;                         // no number output
     }
 
-    if( level > 0 ) {           // reuse formatted number from previous level
-       if( (layout_work.hx[level].number_form == num_prop) &&
-           (layout_work.hx[level - 1].headnsub != NULL) ) {
+    if( lvl > 0 ) {               // reuse formatted number from previous lvl
+       if( (layout_work.hx[lvl].number_form == num_prop) &&
+           (layout_work.hx[lvl - 1].headnsub != NULL) ) {
 
-           strcpy( hnumstr, layout_work.hx[level - 1].headnsub->value );
+           strcpy( hnumstr, layout_work.hx[lvl - 1].headnsub->value );
            pos = strlen( hnumstr );
        }
     }
-    if( pos > 0 ) {             // we have formatted number from previous lvl
+    if( pos > 0 ) {             // we have a formatted number from parent lvl
        *(hnumstr + pos) = layout_work.heading.delim;
        pos++;
        *(hnumstr + pos) = 0;
     }
-    pn = format_num( layout_work.hx[level].headn, hnumstr + pos, hnsize - pos,
-                     layout_work.hx[level].number_style );
+    pn = format_num( layout_work.hx[lvl].headn, hnumstr + pos, hnsize - pos,
+                     layout_work.hx[lvl].number_style );
     if( pn != NULL ) {
          pos += strlen( pn );           // all ok
     } else {
          pn = hnumstr + pos;
-         *pn = '?';                     // dummy number
+         *pn = '?';                     // create dummy number
          *(pn + 1) = 0;
          pos++;
     }
-    if( layout_work.hx[level].headnsub == NULL ) {  // first time here
+
+    if( layout_work.hx[lvl].headnsub == NULL ) {// first time here
         rc = add_symvar_addr( &global_dict, hnumx, hnumstr, no_subscript, 0,
-                              &layout_work.hx[level].headnsub );
+                              &layout_work.hx[lvl].headnsub );
     } else {
-        if( strlen( layout_work.hx[level].headnsub->value ) < strlen( hnumstr ) ) {     // need more room
-            layout_work.hx[level].headnsub->value =
-                mem_realloc( layout_work.hx[level].headnsub->value, strlen( hnumstr ) + 1 );
+        if( strlen( layout_work.hx[lvl].headnsub->value ) < strlen( hnumstr ) ) {     // need more room
+            layout_work.hx[lvl].headnsub->value =
+                mem_realloc( layout_work.hx[lvl].headnsub->value, strlen( hnumstr ) + 1 );
         }
-        strcpy_s( layout_work.hx[level].headnsub->value, strlen( hnumstr ) + 1, hnumstr );
+        strcpy_s( layout_work.hx[lvl].headnsub->value, strlen( hnumstr ) + 1, hnumstr );
     }
 }
 
 
 /***************************************************************************/
+/*  output hx Header  only  called if display_heading = yes                */
+/***************************************************************************/
+
+static  void    hx_header( int hx_lvl, char * hnumstr, char * txt )
+{
+    doc_element     *   cur_el;
+    font_number         s_font;
+    font_number         font;
+    int32_t             width;
+    int32_t             widthn;
+    text_chars      *   curr_t;
+    text_chars      *   curr_tn;
+    text_line       *   hd_line;
+
+    hd_line = NULL;
+    s_font = g_curr_font;
+    spacing = layout_work.hx[hx_lvl].spacing;
+
+    if( layout_work.hx[hx_lvl].line_break ) {
+        set_skip_vars( &layout_work.hx[hx_lvl].pre_skip,
+                       &layout_work.hx[hx_lvl].pre_top_skip,
+                       &layout_work.hx[hx_lvl].post_skip,
+                       spacing,
+                       layout_work.hx[hx_lvl].number_font );
+    } else {
+        set_skip_vars( &layout_work.hx[hx_lvl].pre_skip,
+                       &layout_work.hx[hx_lvl].pre_top_skip,
+                       NULL,
+                       spacing,
+                       layout_work.hx[hx_lvl].number_font );
+    }
+
+    post_space = 0;
+
+    curr_t  = NULL;
+    curr_tn = NULL;
+    width   = 0;
+    widthn  = 0;
+    hd_line = alloc_text_line();
+
+    if( layout_work.hx[hx_lvl].number_form != none ) {
+        font = layout_work.hx[hx_lvl].number_font;
+        curr_tn = alloc_text_chars( hnumstr, strlen( hnumstr ), font );
+        curr_tn->width = cop_text_width( curr_tn->text, curr_tn->count, font );
+        widthn = curr_tn->width + wgml_fonts[font].spc_width;;
+
+        hd_line->first = curr_tn;
+        hd_line->line_height = wgml_fonts[font].line_height;
+        hd_line->last = curr_tn;
+    }
+
+    if( (txt != NULL) && (*txt != '\0') ) {
+        font = layout_work.hx[hx_lvl].font;
+
+        curr_t = alloc_text_chars( txt, strlen( txt ), font );
+        curr_t->width = cop_text_width( curr_t->text, curr_t->count, font );
+        width = curr_t->width;
+
+        if( hd_line->first == NULL ) {
+            hd_line->first = curr_t;
+        } else {
+            curr_tn->next = curr_t;
+            curr_t->prev  = curr_tn;
+        }
+        hd_line->last = curr_t;
+        if( hd_line->line_height < wgml_fonts[font].line_height ) {
+            hd_line->line_height = wgml_fonts[font].line_height;
+        }
+    }
+    if( curr_t == NULL ) {
+        curr_t = curr_tn;
+        curr_tn = NULL;
+        width = widthn;
+        widthn = 0;
+    }
+    g_cur_left = g_page_left + conv_hor_unit( &layout_work.hx[hx_lvl].indent )
+                             + conv_hor_unit( &layout_work.hx[hx_lvl].align );
+
+    if( layout_work.hx[hx_lvl].page_position == pos_left ) {
+        if( curr_tn != NULL ) {
+            curr_tn->x_address = g_cur_left;
+        }
+        curr_t->x_address = g_cur_left + widthn;
+    } else {
+        if( layout_work.hx[hx_lvl].page_position == pos_center ) {
+            curr_t->x_address = g_cur_left + widthn
+                             + (g_page_right - g_cur_left - widthn - width) / 2;
+        } else {
+            curr_t->x_address = g_page_right - width;
+        }
+        if( curr_tn != NULL ) {
+            curr_tn->x_address = curr_t->x_address - widthn;
+        }
+    }
+    if( input_cbs->fmflags & II_research ) {
+        test_out_t_line( hd_line );
+    }
+    cur_el = alloc_doc_el( el_text );
+    cur_el->blank_lines = g_blank_lines;
+    g_blank_lines = 0;
+    cur_el->depth = hd_line->line_height;
+    cur_el->subs_skip = g_subs_skip;
+    cur_el->top_skip = g_top_skip;
+    cur_el->element.text.overprint = ProcFlags.overprint;
+    ProcFlags.overprint = false;
+    cur_el->element.text.spacing = g_spacing;
+    cur_el->element.text.first = hd_line;
+    ProcFlags.skips_valid = false;
+    hd_line = NULL;
+
+    if( layout_work.hx[hx_lvl].page_eject == ej_no ) {
+        insert_col_main( cur_el );
+    } else {
+        insert_page_width( cur_el );
+    }
+}
+
+/***************************************************************************/
 /*  :H0 - :H6  common processing                                           */
 /***************************************************************************/
+
 static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
 {
     char    *   p;
-    char    *   pa;
-    char    *   pe;
     char    *   headp;
-    char        quote;
-    char        c;
     bool        idseen;
     bool        stitleseen;
     int         rc;
+    int         k;
     size_t      headlen;
     size_t      txtlen;
-    size_t      len;
     char        hnumstr[64];
     ref_entry   *   re;
     ref_entry   *   rwk;
-    static char hxstring[4] = ":HX";
+    static char hxstr[4] = ":HX";
     static char htextx[8] = "$htextX";
     static char headx[7]  = "$headX";
 
     entry = entry;
+
+    *(hxstr + 2) = '0' + hx_lvl;
+    htextx[6] = '0' + hx_lvl;
+    hnumx[5] = '0' + hx_lvl;
+    headx[5] = '0' + hx_lvl;
+
     switch( hx_lvl ) {
     case   0:
         if( !((ProcFlags.doc_sect == doc_sect_body) ||
             (ProcFlags.doc_sect_nxt == doc_sect_body)) ) {
 
-            g_err( err_tag_wrong_sect, ":H0", ":BODY section" );
+            g_err( err_tag_wrong_sect, hxstr, ":BODY section" );
             err_count++;
             file_mac_info();
         }
-        htextx[6] = '0';
-        hnumx[5] = '0';
-        headx[5] = '0';
         break;
     case  1:
         if( !((ProcFlags.doc_sect >= doc_sect_body) ||
             (ProcFlags.doc_sect_nxt >= doc_sect_body)) ) {
 
-            g_err( err_tag_wrong_sect, ":H1", ":BODY :APPENDIX :BACKM sections" );
+            g_err( err_tag_wrong_sect, hxstr, ":BODY :APPENDIX :BACKM sections" );
             err_count++;
             file_mac_info();
         }
-        htextx[6] = '1';
-        hnumx[5] = '1';
-        headx[5] = '1';
         break;
     default:
-        *(hxstring + 2) = '0' + hx_lvl;
         if( !((ProcFlags.doc_sect >= doc_sect_abstract) ||
             (ProcFlags.doc_sect_nxt >= doc_sect_abstract)) ) {
 
-            g_err( err_tag_wrong_sect, hxstring, ":ABSTRACT section or later" );
+            g_err( err_tag_wrong_sect, hxstr, ":ABSTRACT section or later" );
             err_count++;
             file_mac_info();
         }
-        htextx[6] = '0' + hx_lvl;
-        hnumx[5] = '0' + hx_lvl;
-        headx[5] = '0' + hx_lvl;
         break;
     }
     if( layout_work.hx[hx_lvl].number_form != num_none ) {
@@ -176,7 +288,7 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
             break;                      // tag end found
         }
         if( !strnicmp( "stitle=", p, 7 ) ) {
-            p += 7;
+            p += 6;
             stitleseen = true;
 
             /***************************************************************/
@@ -186,34 +298,13 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
             wng_count++;
             file_mac_info();
 
-            while( *p == ' ' ) {
-                p++;
-            }
-            if( is_quote_char( *p ) ) {
-                quote = *p;
-                p++;
-            } else {
-                quote = '\0';
-            }
-            pa = p;
-            while( *p && (*p != quote) ) {
-                p++;
-            }
-            if( is_quote_char( *p ) ) {
-                p++;
-            }
-#if 0
-            len = p - pa;
-            c = *p;
-            *p = '\0';
+            p = get_att_value( p );
 
-            *p = c;
-#endif
-            if( *p == quote ) {
-                p++;
-            }
             scan_start = p;
-            continue;
+            if( !ProcFlags.tag_end_found ) {
+                continue;
+            }
+            break;
         }
 
         /*******************************************************************/
@@ -221,62 +312,26 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
         /*******************************************************************/
 
         if( !strnicmp( "id=", p, 3 ) ) {
-            p += 3;
+            p += 2;
 
-            while( *p == ' ' ) {
-                p++;
-            }
-            if( is_quote_char( *p ) ) {
-                quote = *p;
-                p++;
-            } else {
-                quote = '\0';
-            }
-            pa = p;
-            while( *p && is_id_char( *p ) ) {
-                p++;
-            }
+            p = get_refid_value( p );
 
-            len = p - pa;
-            pe = pa + len;
-            c = *pe;
-            if( GlobalFlags.firstpass && (len > 7) ) {// wgml 4 warning level
-                *pe = '\0';
-                g_warn( wng_id_xxx, pa );
-                g_info( inf_id_len );
-                file_mac_info();
-                wng_count++;
-                *pe = c;
-            }
-
-            /***************************************************************/
-            /*  restrict the length to ID_LEN (15) in the hope that no     */
-            /*  truncation occurs                                          */
-            /*  wgml4 warns about ids of more than 7 chars, but processes  */
-            /*  much longer ids                                  TBD       */
-            /***************************************************************/
-
-            len = min( ID_LEN, p - pa );// restrict length
-
-            if( len > 0 ) {
+            if( val_len > 0 ) {
                 idseen = true;          // valid id attribute found
-                pe = pa + len;
-                c = *pe;
-                *pe = '\0';
+                *(val_start + val_len) = '\0';
 
                 if( re == NULL ) {      // prepare reference entry
                     re = mem_alloc( sizeof( ref_entry ) );
-                    init_ref_entry( re, pa, len );
+                    init_ref_entry( re, val_start, val_len );
                 } else {
-                    fill_id( re, pa, len );
+                    fill_id( re, val_start, val_len );
                 }
-                *pe = c;
-            }
-            if( *p && (quote == *p) ) {
-                p++;
             }
             scan_start = p;
-            continue;
+            if( !ProcFlags.tag_end_found ) {
+                continue;
+            }
+            break;
         }
 
         /*******************************************************************/
@@ -287,24 +342,30 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
     if( *p == '.' ) {                   // tag end ?
         p++;
     }
+
     /************************************************************************/
-    /*   Now set the global vars $headx, $headnumx, $htextx                 */
-    /*                                                                      */
+    /*  set the global vars $headx, $headnumx, $htextx                      */
+    /*    perhaps text translated to upper or lower case                    */
     /************************************************************************/
-    if( *p ) {                          // text line follows
-        while( *p == ' ' ) {            // ignore leading blanks
-            p++;
-        }
-        rc = add_symvar( &global_dict, htextx, p, no_subscript, 0 );
-    } else {                            // empty heading text
-        rc = add_symvar( &global_dict, htextx, p, no_subscript, 0 );
+    while( *p == ' ' ) {                // ignore leading blanks
+        p++;
     }
-    update_headnumx( hx_lvl, hnumstr, sizeof( hnumstr ) );
+    if( *p ) {                          // text exists
+        if( layout_work.hx[hx_lvl].cases == case_lower ) {
+            strlwr( p );
+        } else if( layout_work.hx[hx_lvl].cases == case_upper ) {
+            strupr( p );
+        }
+    }
+    rc = add_symvar( &global_dict, htextx, p, no_subscript, 0 );
+
+    update_headnumx( hx_lvl, &hnumstr, sizeof( hnumstr ) );
+
     txtlen = strlen( p );
-    headlen = strlen( hnumstr ) + txtlen + 2;
+    headlen = strlen( hnumstr) + txtlen + 2;
     headp = mem_alloc( headlen );
     if( layout_work.hx[hx_lvl].number_form != num_none ) {
-        strcpy_s( headp, headlen, hnumstr ); // numbered header
+        strcpy_s( headp, headlen, hnumstr); // numbered header
         strcat_s( headp, headlen, " " );
     } else {
         *headp = '\0';
@@ -317,20 +378,23 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
     mem_free( headp );
 
     /***********************************************************************/
-    /*  if id  specified put it into reference dict                        */
+    /*  if id  specified add it to reference dict                          */
     /***********************************************************************/
     if( idseen ) {
         rwk = find_refid( ref_dict, re->id );
         if( !rwk ) {                    // new entry
             if( txtlen > 0 ) {          // text line not empty
-                re->text_cap = mem_alloc( txtlen + 1 );
-                strcpy_s( re->text_cap, txtlen + 1, p );
+                re->u.info.text_cap = mem_alloc( txtlen + 1 );
+                strcpy_s( re->u.info.text_cap, txtlen + 1, p );
             }
             add_ref_entry( &ref_dict, re );
             re = NULL;                  // free will be done via dictionary
         } else {
             /***************************************************************/
             /*  test for duplicate id                                      */
+            /*  it is done with comparing line no only, in the hope that   */
+            /*  two identical ids are not specified in different files on  */
+            /*  the same line no.                                          */
             /***************************************************************/
             if( re->lineno != rwk->lineno ) {
                 g_err( wng_id_xxx, re->id );
@@ -338,22 +402,60 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
                 file_mac_info();
                 err_count++;
             }
-            // anything more to do if not first pass ??? TBD
-            if( re->text_cap != NULL ) {
-                mem_free( re->text_cap );   // no longer needed
+            if( re->u.info.text_cap != NULL ) {
+                mem_free( re->u.info.text_cap );
             }
-            mem_free( re );             // no longer needed
+            mem_free( re );
+        }
+    }
+
+    if( layout_work.hx[hx_lvl].number_reset ) {
+        for( k = hx_lvl + 1; k < 7; k++ ) {
+            layout_work.hx[k].headn = 0;// reset following levels
+            if( layout_work.hx[k].headnsub != NULL ) {
+                *(layout_work.hx[k].headnsub->value) = '\0';
+            }
         }
     }
 
     /***********************************************************************/
-    /*  creation of actual heading TBD                                     */
+    /*  creation of actual heading                                         */
     /***********************************************************************/
+
+    /***********************************************************************/
+    /*  eject page(s) if specified                                         */
+    /***********************************************************************/
+    if( layout_work.hx[hx_lvl].page_eject != ej_no ) {
+
+        if( ProcFlags.page_started ) {
+            do_page_out();
+            reset_t_page();
+        }
+
+        if( !ProcFlags.start_section ) {
+            start_doc_sect();
+        }
+        set_headx_banners( hx_lvl );        // set possible banners
+        reset_t_page();                     // and adjust page margins
+
+
+        if( (layout_work.hx[hx_lvl].page_eject == ej_odd) && (page & 1) ) {
+            do_page_out();              // next page would be even
+            reset_t_page();
+        } else if( (layout_work.hx[hx_lvl].page_eject == ej_even) && !(page & 1) ) {
+            do_page_out();              // next page would be odd
+            reset_t_page();
+        }
+    }
+
+    if( layout_work.hx[hx_lvl].display_heading ) {
+
+        hx_header( hx_lvl, hnumstr, p );
+    }
 
     scan_start = scan_stop + 1;
     return;
 }
-
 
 /******************************************************************************/
 /*H0, H1, H2, H3, H4, H5, H6                                                  */

@@ -3007,7 +3007,7 @@ static void emulate_wgml( void )
 //        oc_v_start += 2 * line_height_zero;
     }
 
-    if( has_aa_block ) {
+    if( ProcFlags.has_aa_block ) {
         if( bin_driver->y_positive == 0x00 ) {
             if( bin_driver->hline.text != NULL ) {
 //                fb_hline( oc_h_start, oc_v_start, oc_h_len );
@@ -3053,7 +3053,7 @@ static void emulate_wgml( void )
     }
 
 //    oc_h_start = bin_device->horizontal_base_units;
-    if( has_aa_block != NULL ) {
+    if( ProcFlags.has_aa_block != NULL ) {
         if( bin_driver->y_positive == 0x00 ) {
             if( bin_driver->dbox.text != NULL ) {
 //                fb_dbox( oc_h_start, oc_v_start - oc_v_len, oc_h_len, oc_v_len );

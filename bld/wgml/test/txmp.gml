@@ -12,7 +12,7 @@
         post_skip = 0
 :LP
         left_indent = 4
-        right_indent = 3
+        right_indent = 4
         line_indent = 2
         pre_skip = 1
         post_skip = 0
@@ -108,15 +108,16 @@
 :eLAYOUT.
 :GDOC.
 :BODY.
+.ju off
 .ty body  in=&$in inr=&$inr ir=&$ir ll=&$ll lc=&$lc lst=&$lst pg=&$pgnuma
 :p.
 First paragraph. Example follows:
 :cmt. :xmp depth='2cm'.
-:xmp.
+:xmp. Line zero.
   Line1 xxxx
   Line2 yyyy
   :p. P. Line3 xyz xyz xyz xyz xyz
-  Line44 zzzz 1111
+  Line4 zzzz 1111
 .ty typexxxx
 :p. P. new paragraph with a large line to let it overflow or perhaps truncated or something different or something quite different?
 :p. P. another paragraph this is last of example.
@@ -133,7 +134,7 @@ First paragraph. Example follows:
     :ol.
 .*      This is text before first &gml.li which extends over more
 .*         than one line to see how it looks.
-        :li.ordered 1 no compact spacing 2 and some text to hit the right margin
+        :li.ordered 1 no compact spacing 1 and some text to hit the right margin
 to see how a multi line list item looks
 .ty li ol in=&$in inr=&$inr ir=&$ir ll=&$ll lc=&$lc lst=&$lst pg=&$pgnuma
         :li.ordered 2 no compact

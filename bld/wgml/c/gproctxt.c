@@ -64,6 +64,25 @@ static  uint32_t        tab_space       = 0;        // space count between text 
 static  void    puncadj( text_line * line, int32_t * delta0, int32_t rem,
                          int32_t cnt, uint32_t lm )
 {
+
+/***************************************************************************/
+/*  puncadj has been disabled because, while the idea is correct, the      */
+/*  details are wrong                                                      */
+/*  further testing showed that at least "," is treated specially and      */
+/*  that "." does not use a half-space-width                               */
+/*  "," has either 1 or 2 hbu added to it, but only in PS                  */
+/*  "." has approximately 1/4 of a space-width added to it (in PS)         */
+/*  and so it depends on the font, but it is sometimes rounded up and      */
+/*  sometimes not, in a pattern that remains to be explored                */
+/*  Note: wgml 4.0 appears to be doing something strange with the end      */
+/*  positions reported following "," and especially following ".", making  */
+/*  the width uncomputable using the before & after positions in the       */
+/*  output file produced by the test device PSSPEC; the widths need to be  */
+/*  obtained using ".ty &'width(<text>,U)"                                 */
+/*  A spreadsheet is heartily recommended for crunching the data!          */
+/***************************************************************************/
+
+#if 0
     text_chars  *   tleft;              // first text_char to justify
     text_chars  *   tn;
     text_chars  *   tw;
@@ -85,7 +104,7 @@ static  void    puncadj( text_line * line, int32_t * delta0, int32_t rem,
         return;                         // only 1 text_chars no justify
     }
 
-    if( ps_device ) {
+    if( ProcFlags.ps_device ) {
         space /= 2;                     // TBD
 //      space -= 3;                     // TBD
     }
@@ -94,7 +113,7 @@ static  void    puncadj( text_line * line, int32_t * delta0, int32_t rem,
     delta = *delta0;
     loop_cnt = 3;                       // 3 passes
     while( loop_cnt > 2 && delta >= space ) {   // only 1 pass TBD
-        if( ps_device ) {
+        if( ProcFlags.ps_device ) {
             space = wgml_fonts[0].spc_width / 2;// TBD
 //          space += loop_cnt - 1;      // TBD
         }
@@ -173,8 +192,8 @@ static  void    puncadj( text_line * line, int32_t * delta0, int32_t rem,
         loop_cnt--;
     }
     *delta0 = delta;
+#endif
 }
-
 
 /***************************************************************************/
 /*  return the width of text up to the first tab stop                      */
@@ -214,11 +233,13 @@ static void next_tab( void )
     uint32_t            r_length;
     uint32_t            r_width;
 
+    /* Note: use of g_cur_left & g_page_left appears to be correct, even in */
+    /* the presence of .in, but this may not be entirely true               */
 
     if( g_cur_left > g_cur_h_start ) {
         g_cur_h_start = g_cur_left;
     }
-    cur_h = g_cur_h_start - g_cur_left;
+    cur_h = g_cur_h_start - g_page_left;
     if( user_tabs.current > 0 ) {   // try user tabs first
         if( (c_tab == NULL) || (c_stop->column < cur_h) ) {
             for( i = 0; i < user_tabs.current; i++ ) {
@@ -329,6 +350,9 @@ static void do_fc_comp( void )
 /***************************************************************************/
 /*  expand any wgml tabs infesting t_line->last                            */
 /*  g_cur_h_start is correct when the function returns                     */
+/*  Note: g_cur_left reflects the left indent of .in                       */
+/*        g_page_left does not                                             */
+/*        both appear to be needed, in different places                    */
 /***************************************************************************/
 
 static void wgml_tabs( void )
@@ -389,9 +413,6 @@ static void wgml_tabs( void )
         tab_chars.last = NULL;
 
         if( t_line->last == NULL ) {
-#if 0
-            if( in_chars->x_address > g_cur_left ) {    // spaces preceed tab char
-#endif
             if( tab_space > 0 ) {                       // spaces preceed tab char
                 c_chars = do_c_chars( c_chars, in_chars, in_text, t_count,
                             g_cur_h_start, in_chars->width,
@@ -572,14 +593,14 @@ static void wgml_tabs( void )
         switch( c_stop->alignment ) {
         case al_left:
             if( !tabbing || (s_multi == NULL) ) {
-                g_cur_h_start = g_cur_left + c_stop->column;
+                g_cur_h_start = g_page_left + c_stop->column;
                 tabbing = false;
             }
             break;
         case al_center:
-            if( gap_start < (g_cur_left + c_stop->column - ((m_width + s_width) / 2)) ) {
+            if( gap_start < (g_page_left + c_stop->column - ((m_width + s_width) / 2)) ) {
                 // split the width as evenly as possible
-                g_cur_h_start = g_cur_left + c_stop->column + (s_width / 2 ) - (m_width / 2);
+                g_cur_h_start = g_page_left + c_stop->column + (s_width / 2 ) - (m_width / 2);
                 if( (s_width % 2) > 0 ) {
                     g_cur_h_start++;
                 }
@@ -588,15 +609,15 @@ static void wgml_tabs( void )
             }
             break;
         case al_right:
-            if( gap_start < (g_cur_left + c_stop->column + tab_col -
+            if( gap_start < (g_page_left + c_stop->column + tab_col -
                                                             (m_width + s_width)) ) {
-                g_cur_h_start = g_cur_left + c_stop->column + tab_col - m_width;
+                g_cur_h_start = g_page_left + c_stop->column + tab_col - m_width;
             } else {    // find the next tab stop; this one won't do
                 skip_tab = true;
             }
             break;
         default:
-            g_err( err_intern, __FILE__, __LINE__ );
+            internal_err( __FILE__, __LINE__ );
         }
 
         if( skip_tab ) {    // never true for al_left
@@ -889,7 +910,11 @@ static uint32_t split_text( text_chars * in_chars, uint32_t limit )
 
 
 /***************************************************************************/
-/*  justification  experimental    treat half as left               TBD    */
+/*  justification and alignment                                            */
+/*  there are several differences between how justification and alignment  */
+/*  are done here and how they are done by wgml 4.0                        */
+/*  Note: the description of the function in the TSO is different from     */
+/*  both how wgml 4.0 actually implements JU and this implementation       */
 /***************************************************************************/
 
 void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
@@ -897,7 +922,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
     text_chars  *   tc;
     text_chars  *   tw;
     text_chars  *   tl;                 // last text_chars in line
-    int32_t         sum_w;              // sum of words widths
+//    int32_t         sum_w;              // sum of words widths
     int32_t         hor_end;
     int32_t         cnt;                // # of text_chars
     int32_t         line_width;         // usable line length
@@ -917,16 +942,19 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
         return;
     }
 
+#if 0
     /***********************************************************************/
     /*  for PS device remainder decrement is treated differently      TBD  */
     /***********************************************************************/
-    if( ps_device ) {
+    if( ProcFlags.ps_device ) {
         deltarem = 1;                   // TBD was 2
     } else {
         deltarem = 1;
     }
+#endif
+    deltarem = 1;
 
-    sum_w = 0;
+//    sum_w = 0;
     hor_end = 0;
     cnt = 0;
     tw = line->first;
@@ -935,24 +963,32 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
     hor_end = tl->x_address + tl->width;// hor end position
 
     do {                                // calculate used width
-        if( tw->x_address >= lm ) {  // no justify for words left of ju start
+        if( tw->x_address >= lm ) {     // no justify for words left of ju start
             if( cnt == 0 ) {
-                tc = tw;              // remember first text_char for justify
+                tc = tw;                // remember first text_char for justify
             }
             cnt++;                      // number of 'words'
-            sum_w += tw->width;         // sum of 'words' widths
+//            sum_w += tw->width;       // sum of 'words' widths
         }
         tw = tw->next;
     } while( tw != NULL );
 
     line_width = rm - lm;
 
-    if( (sum_w <= 0) || (hor_end >= rm) || (line_width < 1) ) {
+//    if( (sum_w <= 0) || (hor_end >= rm) || (line_width < 1) ) {
+    if( (hor_end >= rm) || (line_width < 1) ) {
         return;                         // no justify needed / possible
     }
     delta0 = rm - hor_end;
+
+    /* both here and below, it is not clear if this should be rounded up */
+    /* when delta0 is odd                                                */
+    if( ProcFlags.justify == ju_half ) {
+        delta0 /= 2;
+    }
+
     if( ProcFlags.justify == ju_on ) {
-        if( cnt < 2 ) {      // one text_chars only, no full justify possible
+        if( cnt < 2 ) {                 // one text_chars only, no full justify possible
             return;
         }
     }
@@ -966,26 +1002,31 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
 
     if( input_cbs->fmflags & II_research && GlobalFlags.lastpass ) {
         find_symvar( &sys_dict, "$ju", no_subscript, &symjusub);// .ju as string
+#if 0
         out_msg( "\n ju_%s lm:%d %d rm:%d sum_w:%d hor_end:%d"
                  " delta:%d rem:%d delta0:%d cnt:%d\n", symjusub->value,
                  lm, line_width, rm, sum_w, hor_end, delta, rem, delta0, cnt );
+#endif
+        out_msg( "\n ju_%s lm:%d %d rm:%d hor_end:%d"
+                 " delta:%d rem:%d delta0:%d cnt:%d\n", symjusub->value,
+                 lm, line_width, rm, hor_end, delta, rem, delta0, cnt );
     }
     if( delta < 1 && rem < 1 ) {        // nothing to distribute
         return;
     }
-    switch( ProcFlags.justify ) { // convert inside / outside to left / right
+    switch( ProcFlags.justify ) {       // convert inside / outside to left / right
     case ju_inside :                    // depending on odd / even page
         if( page & 1 ) {
-            just = ju_left;
-        } else {
             just = ju_right;
+        } else {
+            just = ju_left;
         }
         break;
     case ju_outside :
         if( page & 1 ) {
-            just = ju_right;
-        } else {
             just = ju_left;
+        } else {
+            just = ju_right;
         }
         break;
     default :
@@ -993,7 +1034,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
         break;
     }
 
-    switch( just ) {                  // what type of justification is wanted
+    switch( just ) {                    // what type of justification is wanted
 /*************************************
     case  ju_half :                   Treated as left ??? TBD
         delta /= 2;
@@ -1002,15 +1043,23 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
         }
         // falltrough
 ************************************** */
+    case  ju_half :
     case  ju_on :
 //      if( tc->x_address < lm ) {
 //          break;                      // left of left margin no justify
 //      }
 
+        /* presumably, puncadj required the recomputation of hor_end & delta0 */
         puncadj( line, &delta0, rem, cnt - 1, lm );
 
         hor_end = tl->x_address + tl->width;// hor end position
         delta0 = rm - hor_end;          // TBD
+
+        /* if delta0 is recomputed, then it must also be re-halved */
+        if( ProcFlags.justify == ju_half ) {
+            delta0 /= 2;
+        }
+
         if( cnt < 2 ) {
             delta = delta0;             // one text_chars gets all space
             rem   = 0;
@@ -1021,9 +1070,15 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
 
         if( input_cbs->fmflags & II_research && GlobalFlags.lastpass ) {
             test_out_t_line( line );
+#if 0
             out_msg( "\n ju_%s lm:%d %d rm:%d sum_w:%d hor_end:%d"
                      " delta:%d rem:%d delta0:%d cnt:%d\n", symjusub->value,
                      lm, line_width, rm, sum_w, hor_end, delta, rem, delta0,
+                     cnt );
+#endif
+            out_msg( "\n ju_%s lm:%d %d rm:%d hor_end:%d"
+                     " delta:%d rem:%d delta0:%d cnt:%d\n", symjusub->value,
+                     lm, line_width, rm, hor_end, delta, rem, delta0,
                      cnt );
         }
         if( delta < 1 && rem < 1 ) {    // nothing to distribute
@@ -1037,7 +1092,7 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
             if( rem > 0 ) {             // distribute remainder, too
                 tw->x_address += delta + deltarem;
                 delta += delta1 + deltarem;
-//              if( !ps_device ) {      // TBD
+//              if( !ProcFlags.ps_device ) {    // TBD
                     rem -= deltarem;
 //              }
             } else {
@@ -1047,7 +1102,6 @@ void    do_justify( uint32_t lm, uint32_t rm, text_line * line )
             tw = tw->next;
         }
         break;
-    case  ju_half :                     // treat as left
     case  ju_left :
         delta = tc->x_address - lm;     // shift to the left
         if( delta < 1 ) {
@@ -1306,7 +1360,7 @@ void    process_text( char * text, font_number font )
     if( t_line->first == NULL ) {    // first phrase in paragraph
         post_space = 0;
         tab_space = 0;
-        if( ProcFlags.concat ) {    // ".co on": skip initial spaces
+        if( ProcFlags.concat && !ProcFlags.xmp_active ) {    // ".co on": skip initial spaces
             while( *p == ' ' ) {
                 p++;
                 tab_space++;
@@ -1320,13 +1374,13 @@ void    process_text( char * text, font_number font )
         }
         ju_x_start = g_cur_h_start; // g_cur_h_start appears correct on entry
     } else {                        // subsequent phrase in paragraph
-        if( ProcFlags.concat ) {    // ".co on"
+        if( ProcFlags.concat && !ProcFlags.xmp_active ) {    // ".co on"
             if( post_space == 0 ) {
                 // compute initial spacing if needed; .ct affects this
                 if( (*p == ' ') || ((input_cbs->fmflags & II_sol) && !ProcFlags.ct
                                 && (ju_x_start <= t_line->last->x_address)) ) {
                     post_space = wgml_fonts[font].spc_width;
-                    if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) ) {
+                    if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) && !ProcFlags.xmp_active ) {
                         post_space += wgml_fonts[font].spc_width;
                     }
                     if( (c_stop != NULL) && (t_line->last->width == 0) ) {
@@ -1413,7 +1467,7 @@ void    process_text( char * text, font_number font )
                         continue;           // guarded space no word end
                     }
                 }
-                if( !ProcFlags.concat ) { // .co off: include internal spaces
+                if( !ProcFlags.concat && !ProcFlags.xmp_active ) { // .co off: include internal spaces
                     continue;
                 }
             }
@@ -1432,7 +1486,7 @@ void    process_text( char * text, font_number font )
         n_char->x_address = g_cur_h_start;
         o_count = n_char->count;        // catches special case below
 
-        if( ProcFlags.concat ) {
+        if( ProcFlags.concat || ProcFlags.xmp_active ) {
 
             /***********************************************************/
             /* test if word exceeds right margin                       */
@@ -1618,7 +1672,7 @@ void    process_text( char * text, font_number font )
         if( ((input_cbs->fmflags & II_eol) && !*p) || (*p == ' ' ) ) {
             pword = p;
             post_space = wgml_fonts[font].spc_width;
-            if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) ) {
+            if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) && !ProcFlags.xmp_active ) {
                 post_space += wgml_fonts[font].spc_width;
             }
             if( ProcFlags.concat ) {// ignore multiple blanks in concat mode

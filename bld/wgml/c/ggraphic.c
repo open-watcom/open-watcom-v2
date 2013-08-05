@@ -113,10 +113,16 @@ void    gml_graphic( const gmltag * entry )
                 break;
             }
             depth_found = true;
-            if( att_val_to_SU( &cur_su, true ) ) {
+            pa = val_start;
+            if( att_val_to_su( &cur_su, true ) ) {
                 return;
             }
             depth = conv_vert_unit( &cur_su, spacing );
+            if( depth == 0 ) {
+                xx_line_err( err_inv_depth_graphic, pa );
+                scan_start = scan_stop + 1;
+                return;
+            }
             if( ProcFlags.tag_end_found ) {
                 break;
             }
@@ -132,15 +138,16 @@ void    gml_graphic( const gmltag * entry )
                 // default value is the correct value to use
             } else {    // value actually specifies the width
                 pa = val_start;
-                if( att_val_to_SU( &cur_su, true ) ) {
+                if( att_val_to_su( &cur_su, true ) ) {
                     return;
                 }
                 width = conv_hor_unit( &cur_su );
-                if( depth == 0 ) {
+                if( width == 0 ) {
                     xx_line_err( err_inv_width_graphic, pa );
                     scan_start = scan_stop + 1;
                     return;
                 }
+                /* there should be a check somewhere for width > page width */
             }
             if( ProcFlags.tag_end_found ) {
                 break;
@@ -184,7 +191,7 @@ void    gml_graphic( const gmltag * entry )
             if( val_start == NULL ) {
                 break;
             }
-            if( att_val_to_SU( &cur_su, false ) ) {
+            if( att_val_to_su( &cur_su, false ) ) {
                 return;
             }
             xoff = conv_hor_unit( &cur_su );
@@ -197,7 +204,7 @@ void    gml_graphic( const gmltag * entry )
             if( val_start == NULL ) {
                 break;
             }
-            if( att_val_to_SU( &cur_su, false ) ) {
+            if( att_val_to_su( &cur_su, false ) ) {
                 return;
             }
             yoff = conv_vert_unit( &cur_su, spacing );
@@ -220,7 +227,7 @@ void    gml_graphic( const gmltag * entry )
 
     cur_el = alloc_doc_el(  el_graph );
     cur_el->depth = depth;              // always used with GRAPHIC
-    if( !ps_device ) {                  // character devices ignore SK & post_skip
+    if( !ProcFlags.ps_device ) {        // character devices ignore SK & post_skip
         g_skip = 0;
         g_post_skip = 0;
     }

@@ -46,7 +46,7 @@ static loc_to_name  l2n_names[L2N_ENTRIES] = { { address_tag, "EADDRESS" },
 /*  display offending text line and mark the offending token               */
 /***************************************************************************/
 
-static void show_line_error( char * pa )
+static void show_line_error( const char * pa )
 {
     char    *   buf = NULL;
     int         cnt;
@@ -140,6 +140,14 @@ void    file_mac_info_nest( void )
             out_msg( "\n" );
         }
     }
+    return;
+}
+
+
+void internal_err( char * file, int line )
+{
+    err_count++;
+    g_err( err_intern, file, line );
     return;
 }
 
@@ -256,7 +264,20 @@ void    tag_text_req_err( char * tagname )
 }
 
 
-void    xx_tag_err( const msg_ids errid, char const *cw )
+void    val_parse_err( const char * pa, bool tag )
+{
+    err_count++;
+    if( tag ) {
+        g_err( err_inv_att_val );
+    } else {
+        g_err( err_inv_cw_op_val );
+    }
+    file_mac_info();
+    show_line_error( pa );
+    return;
+}
+
+void    xx_tag_err( const msg_ids errid, char const * cw )
 {
     err_count++;
     g_err( errid, cw );
@@ -292,6 +313,33 @@ void    xx_line_err( const msg_ids errid, char *pa )
     return;
 }
 
+void    xx_simple_err( const msg_ids errid )
+{
+    err_count++;
+    g_err( errid );
+    return;
+}
+
+void    xx_simple_err_c( const msg_ids errid, const char * arg )
+{
+    err_count++;
+    g_err( errid, arg );
+    return;
+}
+
+void    xx_simple_err_i( const msg_ids errid, int arg )
+{
+    err_count++;
+    g_err( errid, arg );
+    return;
+}
+
+void    xx_simple_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+{
+    err_count++;
+    g_err( errid, arg1, arg2 );
+    return;
+}
 
 void    xx_err( const msg_ids errid )
 {

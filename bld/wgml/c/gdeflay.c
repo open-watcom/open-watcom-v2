@@ -55,23 +55,15 @@ void    init_def_lay( void )
     static  char    n4[] = "4";
     static  char    n15[] = "15";
     static  char    n25[] = "25";
-    char    *       p;
     int             k;
 
     /***********************************************************************/
     /*  :PAGE  values                                                      */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.page.top_margin );
-
-    p = i1;
-    to_internal_SU( &p, &layout_work.page.left_margin );
-
-    p = i7;
-    to_internal_SU( &p, &layout_work.page.right_margin );
-
-    p = i966;
-    to_internal_SU( &p, &layout_work.page.depth );
+    lay_init_su( z0, &layout_work.page.top_margin );
+    lay_init_su( i1, &layout_work.page.left_margin );
+    lay_init_su( i7, &layout_work.page.right_margin );
+    lay_init_su( i966, &layout_work.page.depth );
 
     /***********************************************************************/
     /*  :DEFAULT values                                                    */
@@ -81,11 +73,8 @@ void    init_def_lay( void )
     layout_work.defaults.font = 0;
     layout_work.defaults.justify = 1;
     layout_work.defaults.input_esc = ' ';
-    p = i05;
-    to_internal_SU( &p, &layout_work.defaults.gutter );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.defaults.binding );
+    lay_init_su( i05, &layout_work.defaults.gutter );
+    lay_init_su( z0, &layout_work.defaults.binding );
 
     /***********************************************************************/
     /* :WIDOW values                                                       */
@@ -95,148 +84,80 @@ void    init_def_lay( void )
     /***********************************************************************/
     /* :FN    values                                                       */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.fn.line_indent );
-
-    p = i04;
-    to_internal_SU( &p, &layout_work.fn.align );
-
-    p = n2;
-    to_internal_SU( &p, &layout_work.fn.pre_lines );
-
-    p = n2;
-    to_internal_SU( &p, &layout_work.fn.skip );
-
+    lay_init_su( z0, &layout_work.fn.line_indent );
+    lay_init_su( i04, &layout_work.fn.align );
+    lay_init_su( n2, &layout_work.fn.pre_lines );
+    lay_init_su( n2, &layout_work.fn.skip );
     layout_work.fn.spacing = 1;
-
     layout_work.fn.font = 0;
-
     layout_work.fn.number_font = 0;
-
     layout_work.fn.number_style = h_style;
-
     layout_work.fn.frame = 0;
 
     /***********************************************************************/
-    /* :FN    values                                                       */
+    /* :FNREF  values                                                      */
     /***********************************************************************/
     layout_work.fnref.font = 0;
-
     layout_work.fnref.number_style = h_style | xp_style;
-
 
     /***********************************************************************/
     /*  :P     values                                                      */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.p.line_indent );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.p.pre_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.p.post_skip );
-
+    lay_init_su( z0, &layout_work.p.line_indent );
+    lay_init_su( n1, &layout_work.p.pre_skip );
+    lay_init_su( z0, &layout_work.p.post_skip );
 
     /***********************************************************************/
     /*  :PC    values                                                      */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.pc.line_indent );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.pc.pre_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.pc.post_skip );
-
+    lay_init_su( z0, &layout_work.pc.line_indent );
+    lay_init_su( n1, &layout_work.pc.pre_skip );
+    lay_init_su( z0, &layout_work.pc.post_skip );
 
     /***********************************************************************/
     /*  :FIG   values                                                      */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.fig.left_adjust );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.fig.right_adjust );
-
-    p = n2;
-    to_internal_SU( &p, &layout_work.fig.pre_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.fig.post_skip );
-
+    lay_init_su( z0, &layout_work.fig.left_adjust );
+    lay_init_su( z0, &layout_work.fig.right_adjust );
+    lay_init_su( n2, &layout_work.fig.pre_skip );
+    lay_init_su( z0, &layout_work.fig.post_skip );
     layout_work.fig.spacing = 1;
     layout_work.fig.font = 0;
     layout_work.fig.default_place = top_place;
-
     layout_work.fig.default_frame.type = rule_frame;
-
     strcpy( layout_work.fig.default_frame.string, "????" ); // not used
-
 
     /***********************************************************************/
     /*  :XMP   values                                                      */
     /***********************************************************************/
-    p = i025;
-    to_internal_SU( &p, &layout_work.xmp.left_indent );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.xmp.right_indent );
-
-    p = n2;
-    to_internal_SU( &p, &layout_work.xmp.pre_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.xmp.post_skip );
-
+    lay_init_su( i025, &layout_work.xmp.left_indent );
+    lay_init_su( z0, &layout_work.xmp.right_indent );
+    lay_init_su( n2, &layout_work.xmp.pre_skip );
+    lay_init_su( z0, &layout_work.xmp.post_skip );
     layout_work.xmp.spacing = 1;
-
     layout_work.xmp.font = 0;
-
 
     /***********************************************************************/
     /*  :NOTE  values                                                      */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.note.left_indent );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.note.right_indent );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.note.pre_skip );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.note.post_skip );
-
+    lay_init_su( z0, &layout_work.note.left_indent );
+    lay_init_su( z0, &layout_work.note.right_indent );
+    lay_init_su( n1, &layout_work.note.pre_skip );
+    lay_init_su( n1, &layout_work.note.post_skip );
     layout_work.note.spacing = 1;
-
     layout_work.note.font = 2;
-
     strcpy( layout_work.note.string, "NOTE: " );
-
 
     /***********************************************************************/
     /*  :H0 - :H6 values                                                   */
     /***********************************************************************/
 
     k = 0;                              // -----------------
-
     layout_work.hx[k].group = 0;
-
-    p = i05;
-    to_internal_SU( &p, &layout_work.hx[k].indent );
-
-    p = n4;
-    to_internal_SU( &p, &layout_work.hx[k].pre_top_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.hx[k].pre_skip );
-
-    p = n4;
-    to_internal_SU( &p, &layout_work.hx[k].post_skip );
-
+    lay_init_su( i05, &layout_work.hx[k].indent );
+    lay_init_su( n4, &layout_work.hx[k].pre_top_skip );
+    lay_init_su( z0, &layout_work.hx[k].pre_skip );
+    lay_init_su( n4, &layout_work.hx[k].post_skip );
     layout_work.hx[k].spacing = 1;
     layout_work.hx[k].font = 3;
     layout_work.hx[k].number_font = 3;
@@ -248,33 +169,21 @@ void    init_def_lay( void )
     layout_work.hx[k].display_heading = true;
     layout_work.hx[k].number_reset = true;
     layout_work.hx[k].cases = case_mixed;
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.hx[k].align );
+    lay_init_su( z0, &layout_work.hx[k].align );
 
     k = 1;                              // -----------------
     memcpy( &layout_work.hx[1], &layout_work.hx[0],
             sizeof( layout_work.hx[0] ) );
-    p = z0;
-    to_internal_SU( &p, &layout_work.hx[k].indent );
-
-    p = n3;
-    to_internal_SU( &p, &layout_work.hx[k].pre_top_skip );
-
-    p = n3;
-    to_internal_SU( &p, &layout_work.hx[k].post_skip );
-
+    lay_init_su( z0, &layout_work.hx[k].indent );
+    lay_init_su( n3, &layout_work.hx[k].pre_top_skip );
+    lay_init_su( n3, &layout_work.hx[k].post_skip );
     layout_work.hx[k].number_form = num_new;
 
     k = 2;                              // -----------------
     memcpy( &layout_work.hx[2], &layout_work.hx[1],
             sizeof( layout_work.hx[0] ) );
-    p = n2;
-    to_internal_SU( &p, &layout_work.hx[k].pre_top_skip );
-
-    p = n2;
-    to_internal_SU( &p, &layout_work.hx[k].post_skip );
-
+    lay_init_su( n2, &layout_work.hx[k].pre_top_skip );
+    lay_init_su( n2, &layout_work.hx[k].post_skip );
     layout_work.hx[k].number_form = num_prop;
     layout_work.hx[k].page_eject = ej_no;
 
@@ -298,7 +207,6 @@ void    init_def_lay( void )
 
     layout_work.hx[k].font = 1;
 
-
     /***********************************************************************/
     /*  :HEADING  values                                                   */
     /***********************************************************************/
@@ -311,18 +219,10 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :LQ       values                                                   */
     /***********************************************************************/
-    p = i025;
-    to_internal_SU( &p, &layout_work.lq.left_indent );
-
-    p = i025;
-    to_internal_SU( &p, &layout_work.lq.right_indent );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.lq.pre_skip );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.lq.post_skip );
-
+    lay_init_su( i025, &layout_work.lq.left_indent );
+    lay_init_su( i025, &layout_work.lq.right_indent );
+    lay_init_su( n1, &layout_work.lq.pre_skip );
+    lay_init_su( n1, &layout_work.lq.post_skip );
     layout_work.lq.spacing = 1;
     layout_work.lq.font = 0;
 
@@ -339,13 +239,10 @@ void    init_def_lay( void )
     layout_work.ixmajor.font = 2;
     layout_work.ixpgnum.font = 0;
 
-
     /***********************************************************************/
     /*  :FIGCAP     values                                                 */
     /***********************************************************************/
-    p = n1;
-    to_internal_SU( &p, &layout_work.figcap.pre_lines );
-
+    lay_init_su( n1, &layout_work.figcap.pre_lines );
     strcpy( layout_work.figcap.string, "Figure " );
     layout_work.figcap.font = 0;
     layout_work.figcap.string_font = 0;
@@ -354,28 +251,20 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :FIGDESC    values                                                 */
     /***********************************************************************/
-    p = n1;
-    to_internal_SU( &p, &layout_work.figdesc.pre_lines );
-
+    lay_init_su( n1, &layout_work.figdesc.pre_lines );
     layout_work.figdesc.font = 0;
-
 
     /***********************************************************************/
     /*  :DD         values                                                 */
     /***********************************************************************/
-    p = i05;
-    to_internal_SU( &p, &layout_work.dd.line_left );
-
+    lay_init_su( i05, &layout_work.dd.line_left );
     layout_work.dd.font = 0;
 
     /***********************************************************************/
     /*  :ABSTRACT   values                                                 */
     /***********************************************************************/
-    p = n1;
-    to_internal_SU( &p, &layout_work.abstract.post_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.abstract.pre_top_skip );
-
+    lay_init_su( n1, &layout_work.abstract.post_skip );
+    lay_init_su( n1, &layout_work.abstract.pre_top_skip );
     layout_work.abstract.font = 1;
     layout_work.abstract.spacing = 1;
     layout_work.abstract.header = true;
@@ -387,11 +276,8 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :PREFACE    values                                                 */
     /***********************************************************************/
-    p = n1;
-    to_internal_SU( &p, &layout_work.preface.post_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.preface.pre_top_skip );
-
+    lay_init_su( n1, &layout_work.preface.post_skip );
+    lay_init_su( n1, &layout_work.preface.pre_top_skip );
     layout_work.preface.font = 1;
     layout_work.preface.spacing = 1;
     layout_work.preface.header = true;
@@ -403,11 +289,8 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :BODY       values                                                 */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.body.post_skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.body.pre_top_skip );
-
+    lay_init_su( z0, &layout_work.body.post_skip );
+    lay_init_su( z0, &layout_work.body.pre_top_skip );
     layout_work.body.header = false;
     layout_work.body.string[0] = '\0';
     layout_work.body.page_eject = ej_yes;
@@ -417,11 +300,8 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :BACKM      values                                                 */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.backm.post_skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.backm.pre_top_skip );
-
+    lay_init_su( z0, &layout_work.backm.post_skip );
+    lay_init_su( z0, &layout_work.backm.pre_top_skip );
     layout_work.backm.header = false;
     layout_work.backm.string[0] = '\0';
     layout_work.backm.page_eject = ej_yes;
@@ -432,38 +312,20 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :LP       values                                                   */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.lp.left_indent );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.lp.right_indent );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.lp.line_indent );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.lp.pre_skip );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.lp.post_skip );
-
+    lay_init_su( z0, &layout_work.lp.left_indent );
+    lay_init_su( z0, &layout_work.lp.right_indent );
+    lay_init_su( z0, &layout_work.lp.line_indent );
+    lay_init_su( n1, &layout_work.lp.pre_skip );
+    lay_init_su( n1, &layout_work.lp.post_skip );
     layout_work.lp.spacing = 1;
 
     /***********************************************************************/
     /*  :INDEX    values                                                   */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.index.post_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.index.pre_top_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.index.left_adjust );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.index.right_adjust );
-
+    lay_init_su( z0, &layout_work.index.post_skip );
+    lay_init_su( z0, &layout_work.index.pre_top_skip );
+    lay_init_su( z0, &layout_work.index.left_adjust );
+    lay_init_su( z0, &layout_work.index.right_adjust );
     layout_work.index.spacing = 1;
     layout_work.index.columns = 1;
     strcpy( layout_work.index.see_string, "See " );
@@ -477,16 +339,10 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :IXHEAD   values                                                   */
     /***********************************************************************/
-    p = n2;
-    to_internal_SU( &p, &layout_work.ixhead.pre_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.ixhead.post_skip );
-
+    lay_init_su( n2, &layout_work.ixhead.pre_skip );
+    lay_init_su( z0, &layout_work.ixhead.post_skip );
     layout_work.ixhead.font = 2;
-    p = z0;
-    to_internal_SU( &p, &layout_work.ixhead.indent );
-
+    lay_init_su( z0, &layout_work.ixhead.indent );
     layout_work.ixhead.frame.type = box_frame;
     layout_work.ixhead.frame.string[0] = '\0';
     layout_work.ixhead.header = true;
@@ -496,66 +352,36 @@ void    init_def_lay( void )
     /***********************************************************************/
 
     k = 0;                              // -----------------
-    p = n1;
-    to_internal_SU( &p, &layout_work.ix[k].pre_skip );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.ix[k].post_skip );
-
-    p = n1;
-    to_internal_SU( &p, &layout_work.ix[k].skip );
-
+    lay_init_su( n1, &layout_work.ix[k].pre_skip );
+    lay_init_su( n1, &layout_work.ix[k].post_skip );
+    lay_init_su( n1, &layout_work.ix[k].skip );
     layout_work.ix[0].font = 0;
-    p = z0;
-    to_internal_SU( &p, &layout_work.ix[k].indent );
-
-    p = i04;
-    to_internal_SU( &p, &layout_work.ix[k].wrap_indent );
-
+    lay_init_su( z0, &layout_work.ix[k].indent );
+    lay_init_su( i04, &layout_work.ix[k].wrap_indent );
     layout_work.ix[k].index_delim[0] = ' ';
     layout_work.ix[k].index_delim[1] = ' ';
     layout_work.ix[k].index_delim[2] = '\0';
     layout_work.ix[k].string_font = 0;
 
     k = 1;                              // -----------------
-    p = z0;
-    to_internal_SU( &p, &layout_work.ix[k].pre_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.ix[k].post_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.ix[k].skip );
-
+    lay_init_su( z0, &layout_work.ix[k].pre_skip );
+    lay_init_su( z0, &layout_work.ix[k].post_skip );
+    lay_init_su( z0, &layout_work.ix[k].skip );
     layout_work.ix[0].font = 0;
-    p = i03;
-    to_internal_SU( &p, &layout_work.ix[k].indent );
-
-    p = i04;
-    to_internal_SU( &p, &layout_work.ix[k].wrap_indent );
-
+    lay_init_su( i03, &layout_work.ix[k].indent );
+    lay_init_su( i04, &layout_work.ix[k].wrap_indent );
     layout_work.ix[k].index_delim[0] = ' ';
     layout_work.ix[k].index_delim[1] = ' ';
     layout_work.ix[k].index_delim[2] = '\0';
     layout_work.ix[k].string_font = 0;
 
     k = 2;                              // -----------------
-    p = z0;
-    to_internal_SU( &p, &layout_work.ix[k].pre_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.ix[k].post_skip );
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.ix[k].skip );
-
+    lay_init_su( z0, &layout_work.ix[k].pre_skip );
+    lay_init_su( z0, &layout_work.ix[k].post_skip );
+    lay_init_su( z0, &layout_work.ix[k].skip );
     layout_work.ix[k].font = 0;
-    p = i03;
-    to_internal_SU( &p, &layout_work.ix[k].indent );
-
-    p = i04;
-    to_internal_SU( &p, &layout_work.ix[k].wrap_indent );
-
+    lay_init_su( i03, &layout_work.ix[k].indent );
+    lay_init_su( i04, &layout_work.ix[k].wrap_indent );
     layout_work.ix[k].index_delim[0] = ' ';
     layout_work.ix[k].index_delim[1] = ' ';
     layout_work.ix[k].index_delim[2] = '\0';
@@ -564,10 +390,8 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :TOC        values                                                 */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.toc.left_adjust );
-    p = z0;
-    to_internal_SU( &p, &layout_work.toc.right_adjust );
+    lay_init_su( z0, &layout_work.toc.left_adjust );
+    lay_init_su( z0, &layout_work.toc.right_adjust );
     layout_work.toc.spacing = 1;
     layout_work.toc.columns = 1;
     layout_work.toc.toc_levels = 4;
@@ -577,8 +401,7 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :TOCPGNUM   values                                                 */
     /***********************************************************************/
-    p = i04;
-    to_internal_SU( &p, &layout_work.tocpgnum.size );
+    lay_init_su( i04, &layout_work.tocpgnum.size );
     layout_work.tocpgnum.font = 0;
 
     /***********************************************************************/
@@ -586,140 +409,80 @@ void    init_def_lay( void )
     /***********************************************************************/
     k = 0;                              // --------------
     layout_work.tochx[k].group = 0;
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].indent );
-    p = n1;
-    to_internal_SU( &p, &layout_work.tochx[k].skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.tochx[k].pre_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.tochx[k].post_skip );
-
+    lay_init_su( z0, &layout_work.tochx[k].indent );
+    lay_init_su( n1, &layout_work.tochx[k].skip );
+    lay_init_su( n1, &layout_work.tochx[k].pre_skip );
+    lay_init_su( n1, &layout_work.tochx[k].post_skip );
     layout_work.tochx[k].font = 0;
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].align );
-
+    lay_init_su( z0, &layout_work.tochx[k].align );
     layout_work.tochx[k].display_in_toc = true;
 
     k = 1;                              // --------------
     layout_work.tochx[k].group = 0;
-
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].indent );
-    p = n1;
-    to_internal_SU( &p, &layout_work.tochx[k].skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].pre_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.tochx[k].post_skip );
-
+    lay_init_su( z0, &layout_work.tochx[k].indent );
+    lay_init_su( n1, &layout_work.tochx[k].skip );
+    lay_init_su( z0, &layout_work.tochx[k].pre_skip );
+    lay_init_su( n1, &layout_work.tochx[k].post_skip );
     layout_work.tochx[k].font = 0;
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].align );
-
+    lay_init_su( z0, &layout_work.tochx[k].align );
     layout_work.tochx[k].display_in_toc = true;
 
     k = 2;                              // --------------
     layout_work.tochx[k].group = 0;
-
-    p = i02;
-    to_internal_SU( &p, &layout_work.tochx[k].indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].pre_skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].post_skip );
-
+    lay_init_su( i02, &layout_work.tochx[k].indent );
+    lay_init_su( z0, &layout_work.tochx[k].skip );
+    lay_init_su( z0, &layout_work.tochx[k].pre_skip );
+    lay_init_su( z0, &layout_work.tochx[k].post_skip );
     layout_work.tochx[k].font = 0;
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].align );
-
+    lay_init_su( z0, &layout_work.tochx[k].align );
     layout_work.tochx[k].display_in_toc = true;
 
     k = 3;                              // --------------
     layout_work.tochx[k].group = 0;
-
-    p = i02;
-    to_internal_SU( &p, &layout_work.tochx[k].indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].pre_skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].post_skip );
-
+    lay_init_su( i02, &layout_work.tochx[k].indent );
+    lay_init_su( z0, &layout_work.tochx[k].skip );
+    lay_init_su( z0, &layout_work.tochx[k].pre_skip );
+    lay_init_su( z0, &layout_work.tochx[k].post_skip );
     layout_work.tochx[k].font = 0;
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].align );
-
+    lay_init_su( z0, &layout_work.tochx[k].align );
     layout_work.tochx[k].display_in_toc = true;
 
     k = 4;                              // --------------
     layout_work.tochx[k].group = 0;
-
-    p = i02;
-    to_internal_SU( &p, &layout_work.tochx[k].indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].pre_skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].post_skip );
-
+    lay_init_su( i02, &layout_work.tochx[k].indent );
+    lay_init_su( z0, &layout_work.tochx[k].skip );
+    lay_init_su( z0, &layout_work.tochx[k].pre_skip );
+    lay_init_su( z0, &layout_work.tochx[k].post_skip );
     layout_work.tochx[k].font = 0;
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].align );
-
+    lay_init_su( z0, &layout_work.tochx[k].align );
     layout_work.tochx[k].display_in_toc = false;
 
     k = 5;                              // --------------
     layout_work.tochx[k].group = 0;
-
-    p = i02;
-    to_internal_SU( &p, &layout_work.tochx[k].indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].pre_skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].post_skip );
-
+    lay_init_su( i02, &layout_work.tochx[k].indent );
+    lay_init_su( z0, &layout_work.tochx[k].skip );
+    lay_init_su( z0, &layout_work.tochx[k].pre_skip );
+    lay_init_su( z0, &layout_work.tochx[k].post_skip );
     layout_work.tochx[k].font = 0;
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].align );
-
+    lay_init_su( z0, &layout_work.tochx[k].align );
     layout_work.tochx[k].display_in_toc = false;
-
 
     k = 6;                              // --------------
     layout_work.tochx[k].group = 0;
-
-    p = i02;
-    to_internal_SU( &p, &layout_work.tochx[k].indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].pre_skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].post_skip );
-
+    lay_init_su( i02, &layout_work.tochx[k].indent );
+    lay_init_su( z0, &layout_work.tochx[k].skip );
+    lay_init_su( z0, &layout_work.tochx[k].pre_skip );
+    lay_init_su( z0, &layout_work.tochx[k].post_skip );
     layout_work.tochx[k].font = 0;
-    p = z0;
-    to_internal_SU( &p, &layout_work.tochx[k].align );
-
+    lay_init_su( z0, &layout_work.tochx[k].align );
     layout_work.tochx[k].display_in_toc = false;
 
     /***********************************************************************/
     /*  :FIGLIST    values                                                 */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.figlist.left_adjust );
-    p = z0;
-    to_internal_SU( &p, &layout_work.figlist.right_adjust );
-    p = z0;
-    to_internal_SU( &p, &layout_work.figlist.skip );
+    lay_init_su( z0, &layout_work.figlist.left_adjust );
+    lay_init_su( z0, &layout_work.figlist.right_adjust );
+    lay_init_su( z0, &layout_work.figlist.skip );
     layout_work.figlist.spacing = 1;
     layout_work.figlist.columns = 1;
     layout_work.figlist.fill_string[0] = '.';
@@ -728,8 +491,7 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :FLPGNUM   values                                                  */
     /***********************************************************************/
-    p = i04;
-    to_internal_SU( &p, &layout_work.flpgnum.size );
+    lay_init_su( i04, &layout_work.flpgnum.size );
     layout_work.flpgnum.font = 0;
 
     /***********************************************************************/
@@ -741,87 +503,64 @@ void    init_def_lay( void )
     /***********************************************************************/
     /*  :TITLE      values                                                 */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.title.left_adjust );
-    p = i1;
-    to_internal_SU( &p, &layout_work.title.right_adjust );
+    lay_init_su( z0, &layout_work.title.left_adjust );
+    lay_init_su( i1, &layout_work.title.right_adjust );
     layout_work.title.page_position = pos_right;
     layout_work.title.font = 2;
-    p = n15;
-    to_internal_SU( &p, &layout_work.title.pre_top_skip );
-    p = n2;
-    to_internal_SU( &p, &layout_work.title.skip );
+    lay_init_su( n15, &layout_work.title.pre_top_skip );
+    lay_init_su( n2, &layout_work.title.skip );
 
     /***********************************************************************/
     /*  :DOCNUM     values                                                 */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.docnum.left_adjust );
-    p = i1;
-    to_internal_SU( &p, &layout_work.docnum.right_adjust );
+    lay_init_su( z0, &layout_work.docnum.left_adjust );
+    lay_init_su( i1, &layout_work.docnum.right_adjust );
     layout_work.docnum.page_position = pos_right;
     layout_work.docnum.font = 0;
-    p = n2;
-    to_internal_SU( &p, &layout_work.docnum.pre_skip );
+    lay_init_su( n2, &layout_work.docnum.pre_skip );
     strcpy( layout_work.docnum.string, "Document Number " );
 
     /***********************************************************************/
     /*  :DATE       values                                                 */
     /***********************************************************************/
     strcpy( layout_work.date.date_form, "$ml $dsn, $yl" );
-    p = z0;
-    to_internal_SU( &p, &layout_work.date.left_adjust );
-    p = i1;
-    to_internal_SU( &p, &layout_work.date.right_adjust );
+    lay_init_su( z0, &layout_work.date.left_adjust );
+    lay_init_su( i1, &layout_work.date.right_adjust );
     layout_work.date.page_position = pos_right;
     layout_work.date.font = 0;
-    p = n2;
-    to_internal_SU( &p, &layout_work.date.pre_skip );
+    lay_init_su( n2, &layout_work.date.pre_skip );
 
     /***********************************************************************/
     /*  :AUTHOR     values                                                 */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.author.left_adjust );
-    p = i1;
-    to_internal_SU( &p, &layout_work.author.right_adjust );
+    lay_init_su( z0, &layout_work.author.left_adjust );
+    lay_init_su( i1, &layout_work.author.right_adjust );
     layout_work.author.page_position = pos_right;
     layout_work.author.font = 0;
-    p = n25;
-    to_internal_SU( &p, &layout_work.author.pre_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.author.skip );
+    lay_init_su( n25, &layout_work.author.pre_skip );
+    lay_init_su( n1, &layout_work.author.skip );
 
     /***********************************************************************/
     /*  :ADDRESS     values                                                 */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.address.left_adjust );
-    p = i1;
-    to_internal_SU( &p, &layout_work.address.right_adjust );
+    lay_init_su( z0, &layout_work.address.left_adjust );
+    lay_init_su( i1, &layout_work.address.right_adjust );
     layout_work.address.page_position = pos_right;
     layout_work.address.font = 0;
-    p = n2;
-    to_internal_SU( &p, &layout_work.address.pre_skip );
+    lay_init_su( n2, &layout_work.address.pre_skip );
 
     /***********************************************************************/
     /*  :ALINE       values                                                 */
     /***********************************************************************/
-    p = n1;
-    to_internal_SU( &p, &layout_work.aline.skip );
+    lay_init_su( n1, &layout_work.aline.skip );
 
     /***********************************************************************/
     /*  :APPENDIX   values                                                 */
     /***********************************************************************/
-    p = z0;
-    to_internal_SU( &p, &layout_work.appendix.indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.appendix.pre_top_skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.appendix.pre_skip );
-    p = n3;
-    to_internal_SU( &p, &layout_work.appendix.post_skip );
-
+    lay_init_su( z0, &layout_work.appendix.indent );
+    lay_init_su( z0, &layout_work.appendix.pre_top_skip );
+    lay_init_su( z0, &layout_work.appendix.pre_skip );
+    lay_init_su( n3, &layout_work.appendix.post_skip );
     layout_work.appendix.spacing = 1;
     layout_work.appendix.font = 3;
     layout_work.appendix.number_font = 3;
@@ -833,8 +572,7 @@ void    init_def_lay( void )
     layout_work.appendix.display_heading = true;
     layout_work.appendix.number_reset = true;
     layout_work.appendix.cases = case_mixed;
-    p = z0;
-    to_internal_SU( &p, &layout_work.appendix.align );
+    lay_init_su( z0, &layout_work.appendix.align );
     layout_work.appendix.header = true;
     strcpy( layout_work.appendix.string, "APPENDIX " );
     layout_work.appendix.page_reset = false;
@@ -845,17 +583,11 @@ void    init_def_lay( void )
     /*  :SL         values                                                 */
     /***********************************************************************/
     layout_work.sl.level = 1;
-    p = z0;
-    to_internal_SU( &p, &layout_work.sl.left_indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.sl.right_indent );
-    p = n1;
-    to_internal_SU( &p, &layout_work.sl.pre_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.sl.skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.sl.post_skip );
-
+    lay_init_su( z0, &layout_work.sl.left_indent );
+    lay_init_su( z0, &layout_work.sl.right_indent );
+    lay_init_su( n1, &layout_work.sl.pre_skip );
+    lay_init_su( n1, &layout_work.sl.skip );
+    lay_init_su( n1, &layout_work.sl.post_skip );
     layout_work.sl.spacing = 1;
     layout_work.sl.font = 0;
 
@@ -863,19 +595,12 @@ void    init_def_lay( void )
     /*  :OL         values                                                 */
     /***********************************************************************/
     layout_work.ol.level = 1;
-    p = z0;
-    to_internal_SU( &p, &layout_work.ol.left_indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.ol.right_indent );
-    p = n1;
-    to_internal_SU( &p, &layout_work.ol.pre_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.ol.skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.ol.post_skip );
-    p = i04;
-    to_internal_SU( &p, &layout_work.ol.align );
-
+    lay_init_su( z0, &layout_work.ol.left_indent );
+    lay_init_su( z0, &layout_work.ol.right_indent );
+    lay_init_su( z0, &layout_work.ol.pre_skip );
+    lay_init_su( n1, &layout_work.ol.skip );
+    lay_init_su( n1, &layout_work.ol.post_skip );
+    lay_init_su( i04, &layout_work.ol.align );
     layout_work.ol.spacing = 1;
     layout_work.ol.font = 0;
     layout_work.ol.number_style = h_style | xd_style;;
@@ -885,19 +610,12 @@ void    init_def_lay( void )
     /*  :UL         values                                                 */
     /***********************************************************************/
     layout_work.ul.level = 1;
-    p = z0;
-    to_internal_SU( &p, &layout_work.ul.left_indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.ul.right_indent );
-    p = n1;
-    to_internal_SU( &p, &layout_work.ul.pre_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.ul.skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.ul.post_skip );
-    p = i04;
-    to_internal_SU( &p, &layout_work.ul.align );
-
+    lay_init_su( z0, &layout_work.ul.left_indent );
+    lay_init_su( z0, &layout_work.ul.right_indent );
+    lay_init_su( n1, &layout_work.ul.pre_skip );
+    lay_init_su( n1, &layout_work.ul.skip );
+    lay_init_su( n1, &layout_work.ul.post_skip );
+    lay_init_su( i04, &layout_work.ul.align );
     layout_work.ul.spacing = 1;
     layout_work.ul.font = 0;
     layout_work.ul.bullet = '*';
@@ -908,19 +626,12 @@ void    init_def_lay( void )
     /*  :DL         values                                                 */
     /***********************************************************************/
     layout_work.dl.level = 1;
-    p = z0;
-    to_internal_SU( &p, &layout_work.dl.left_indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.dl.right_indent );
-    p = n1;
-    to_internal_SU( &p, &layout_work.dl.pre_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.dl.skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.dl.post_skip );
-    p = i1;
-    to_internal_SU( &p, &layout_work.dl.align );
-
+    lay_init_su( z0, &layout_work.dl.left_indent );
+    lay_init_su( z0, &layout_work.dl.right_indent );
+    lay_init_su( n1, &layout_work.dl.pre_skip );
+    lay_init_su( n1, &layout_work.dl.skip );
+    lay_init_su( n1, &layout_work.dl.post_skip );
+    lay_init_su( i1, &layout_work.dl.align );
     layout_work.dl.spacing = 1;
     layout_work.dl.line_break = false;
 
@@ -928,26 +639,18 @@ void    init_def_lay( void )
     /*  :GL         values                                                 */
     /***********************************************************************/
     layout_work.gl.level = 1;
-    p = z0;
-    to_internal_SU( &p, &layout_work.gl.left_indent );
-    p = z0;
-    to_internal_SU( &p, &layout_work.gl.right_indent );
-    p = n1;
-    to_internal_SU( &p, &layout_work.gl.pre_skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.gl.skip );
-    p = n1;
-    to_internal_SU( &p, &layout_work.gl.post_skip );
-    p = z0;
-    to_internal_SU( &p, &layout_work.gl.align );
-
+    lay_init_su( z0, &layout_work.gl.left_indent );
+    lay_init_su( z0, &layout_work.gl.right_indent );
+    lay_init_su( n1, &layout_work.gl.pre_skip );
+    lay_init_su( n1, &layout_work.gl.skip );
+    lay_init_su( n1, &layout_work.gl.post_skip );
+    lay_init_su( z0, &layout_work.gl.align );
     layout_work.gl.spacing = 1;
     layout_work.gl.delim = ':';
 
     /***********************************************************************/
     /*  :BANNER     values                                                 */
     /***********************************************************************/
-
     banner_defaults();
 
 }

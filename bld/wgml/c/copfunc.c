@@ -160,13 +160,19 @@ p_buffer * get_p_buffer( FILE * in_file )
 
     p_count = 0;
     test_char = fgetc( in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( out_buffer );
+    if( ferror( in_file ) || feof( in_file ) ) {
+        return( out_buffer );
+    }
     while( test_char == 80 ) {
         ++p_count;
         fseek( in_file, 80, SEEK_CUR );
-        if( ferror( in_file ) || feof( in_file ) ) return( out_buffer );
+        if( ferror( in_file ) || feof( in_file ) ) {
+            return( out_buffer );
+        }
         test_char = fgetc( in_file );
-        if( ferror( in_file ) || feof( in_file ) ) return( out_buffer );
+        if( ferror( in_file ) || feof( in_file ) ) {
+            return( out_buffer );
+        }
     }
 
     /* There should always be at least one P-buffer. */

@@ -29,6 +29,10 @@
 *   some logic / ideas adopted from Watcom Script 3.2 IBM S/360 Assembler
 *   as found on http://www.cbttape.org/c249down.htm   files 280 - 288
 *
+*   Several comments in the source files are taken from the existing
+*   documentation files for older versions:
+*       scripttso.txt for SCRIPT control words and system variables
+*       wgmlref.pdf   for WGML tags
 ****************************************************************************/
 
 
@@ -45,7 +49,7 @@
 
 
 /***************************************************************************/
-/*  Usage info                                                             */
+/*  Usage info and end program                                             */
 /***************************************************************************/
 
 static void usage( void )
@@ -303,7 +307,7 @@ static void remove_indentation( void )
         if( offset > 0 ) {
             memset( pb, '\0', offset ); // clear rest
         }
-//        buff2_lg = strnlen_s( buff2, buf_size );
+//        buff2_lg = strlen( buff2 );
 //        if( GlobalFlags.research && GlobalFlags.firstpass ) {
 //            g_info( INF_INDENT_REM, buff2 );
 //        }
@@ -385,6 +389,14 @@ static  bool    test_comment( void )
         ) {
             if( (*(buff2 + 4) == ' ') ||
                 (*(buff2 + 4) == '.')  ) {
+
+                if( ProcFlags.literal ) {   // special
+                    if( li_cnt < LONG_MAX ) {// we decrement, do not wait for .li OFF
+                        if( li_cnt-- <= 0 ) {
+                            ProcFlags.literal = false;
+                        }
+                    }
+                }
                 return( true );
             }
         }
@@ -508,7 +520,13 @@ static  void    proc_input( char * filename )
                 }
                 break;                  // EOF
             }
-
+#if 0
+            if( (buff2_lg < 1) && !ProcFlags.concat) {
+                ProcFlags.empty_doc_el = true;
+                scr_process_break();
+                continue;               // minimal processing for empty line
+            }
+#endif
             remove_indentation();       // ".  .  .  .cw"  becomes ".cw"
 
             if( ProcFlags.goto_active ) {
@@ -552,7 +570,7 @@ static  void    proc_input( char * filename )
             /*  suppress some processing for line to be skipped            */
             /*  and not .if .th .el .do control line                       */
             /*  special handling for define macro inside false branch      */
-            /*  (ignore all up to .dm end)                                */
+            /*  (ignore all up to .dm end)                                 */
             /***************************************************************/
 
             if( !ProcFlags.literal ) {
@@ -800,6 +818,18 @@ int main( int argc, char * argv[] )
 
         fb_start();                     // START :PAUSE & :INIT processing.
 
+        if( (GlobalFlags.inclist || GlobalFlags.statistics ||
+             GlobalFlags.research ) && (lay_files != NULL) ) {
+
+            laystack *lwk = lay_files;
+
+            out_msg( "\nLAYOUT file(s) specified on cmdline:\n" );
+            while( lwk != NULL ) {
+                out_msg( "\t%s\n", lwk->layfn );
+                lwk = lwk->next;
+            }
+        }
+
         for( pass = 1; pass <= passes; pass++ ) {
 
             init_pass();
@@ -808,7 +838,7 @@ int main( int argc, char * argv[] )
             g_info_lm( INF_PASS_1, passnoval->value, passofval->value,
                     GlobalFlags.research ? "research" : "normal" );
 //          if( GlobalFlags.research ) {
-//              g_trmem_prt_list();     // TBD
+//              g_trmem_prt_list();
 //          }
 
             proc_input( master_fname );
@@ -826,12 +856,15 @@ int main( int argc, char * argv[] )
             g_info_lm( INF_PASS_2, passnoval->value, passofval->value,
                     GlobalFlags.research ? "research" : "normal" );
 
-//          if( GlobalFlags.research && (pass < passes) ) { // TBD
+//          if( GlobalFlags.research && (pass < passes) ) {
 //              g_trmem_prt_list();     // show allocated memory at pass end
 //          }
             passcount = pass;
             if( !GlobalFlags.lastpass && (err_count > 0) ) {
                 g_info_lm( inf_error_stop, passes - pass > 1 ? "es" : "" );
+
+                ixdump( index_dict );   // test show unformatted index TBD
+
                 break;                  // errors found stop now
             }
         }
@@ -854,6 +887,7 @@ int main( int argc, char * argv[] )
         print_ref_dict( ref_dict, "HDREF" );
         print_ref_dict( fig_dict, "FIGREF" );
         print_ref_dict( fn_dict, "FNREF" );
+        print_ref_dict( iref_dict, "INDEX" );
 
         if( tag_dict != NULL ) {
             print_tag_dict( tag_dict );
@@ -872,12 +906,12 @@ int main( int argc, char * argv[] )
 
     close_all_pu_files();
 
+    ff_teardown();                      // free memory allocated in findfunc
+    cop_teardown();                     // free memory allocated in copfiles
+
     mem_free( cmdline );
     free_some_mem();
     free_filenames();
-
-    ff_teardown();                      // free memory allocated in findfunc
-    cop_teardown();                     // free memory allocated in copfiles
 
     end_time = clock();                 // get end time
     pass = passcount;

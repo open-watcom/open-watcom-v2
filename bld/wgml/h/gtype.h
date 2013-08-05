@@ -94,7 +94,7 @@
 #define l_q     '\x60'
 
 
-typedef uint32_t    lineno_t;
+typedef uint32_t    line_number;
 
 /***************************************************************************/
 /*  Space units Horiz + Vert              to be redesigned      TBD        */
@@ -215,7 +215,7 @@ typedef struct inp_line {
 typedef struct labelcb {
     struct labelcb  *   prev;
     fpos_t              pos;            // file position for label if file
-    lineno_t            lineno;         // lineno of label
+    line_number         lineno;         // lineno of label
     char                label_name[MAC_NAME_LENGTH + 1];
 } labelcb;
 
@@ -226,7 +226,7 @@ typedef struct labelcb {
 typedef struct mac_entry {
     struct mac_entry    *   next;
     inp_line            *   macline;    // macro definition lines
-    lineno_t                lineno;     // lineno start of macro definition
+    line_number             lineno;     // lineno start of macro definition
     labelcb             *   label_cb;   // controlling label definitions
     char                *   mac_file_name;  // file name macro definition
     char                    name[MAC_NAME_LENGTH + 1];  // macro name
@@ -239,9 +239,9 @@ typedef struct mac_entry {
 
 typedef struct filecb {
     FILE        *   fp;                 // FILE ptr
-    lineno_t        lineno;             // current line number
-    lineno_t        linemin;            // first line number to process
-    lineno_t        linemax;            // last line number to process
+    line_number     lineno;             // current line number
+    line_number     linemin;            // first line number to process
+    line_number     linemax;            // last line number to process
     size_t          usedlen;            // used data of filebuf
     fpos_t          pos;                // position for reopen
     labelcb     *   label_cb;           // controlling label definitions
@@ -265,7 +265,7 @@ typedef struct mac_parms {
 /***************************************************************************/
 
 typedef struct  macrocb {
-    lineno_t            lineno;         // current macro line number
+    line_number         lineno;         // current macro line number
     inp_line        *   macline;        // list of macro lines
     mac_entry       *   mac;            // macro definition entry
     struct gtentry  *   tag;            // tag entry if macro called via tag
@@ -604,22 +604,40 @@ typedef enum {
 
 /***************************************************************************/
 /*  Structures for storing index information from .ix control word         */
+/*  and :Ix :IHx :IREF tags                                                */
 /***************************************************************************/
 
-#define reflen  56                      // max length for pagenos in index
+typedef enum ereftyp {                  // definition order is important
+    pgnone,                             // nothing
+    pgpageno,                           // this is the only value for .ix
 
-typedef struct ix_e_blk {               // entry for pagenos
-    struct ix_e_blk * next;             // next entries (if any)
-    uint32_t        freelen;            // remaining length for refs ..
-    char            refs[reflen];       // .. refs pagenos   3, 5, 8, 9, ...
+    pgmajor,                            // these are
+    pgstart,                            // .. from
+    pgend,                              // .. :I1 - :I3
+                                        // the following values use page_text
+    pgstring,                           // .. pg= attribute
+    pgsee                               // .. see/seeid
+} ereftyp;
+
+typedef struct ix_e_blk {               // index entry for pagenos / text
+    struct ix_e_blk * next;             // next entry
+    struct ix_h_blk * corr;             // corresponding index header entry
+    union {
+        char      * page_text;          // pageno is text
+        uint32_t    page_no;            // pageno is number
+    } u;
+    ereftyp     entry_typ;
 } ix_e_blk;
 
-typedef struct ix_h_blk {               // header with index text
-    struct ix_h_blk * next;             // next ix header blk same level
-    struct ix_h_blk * lower;            // next ix header blk next level
-           ix_e_blk * entry;            // first ix entry blk
-    uint32_t        len;                // header text length
-    char            text[1];            // variable length textfield
+typedef struct ix_h_blk {               // index header with index term text
+    struct ix_h_blk *next;              // next ix header block same level
+    struct ix_h_blk *lower;             // first ix hdr block next lower level
+           ix_e_blk *entry;             // first ix entry block
+    int             ix_lvl;             // index level 1 - 3
+    size_t          ix_term_len;        // index term length
+    char            *ix_term;           // index term
+    size_t          prt_term_len;       // display text length
+    char            *prt_term;          // display text (NULL -> use index term)
 } ix_h_blk;
 
 
@@ -650,7 +668,7 @@ typedef enum ju_enum {                  // for .ju(stify)
 
 /***************************************************************************/
 /*  enums for layout tags with attributes  (and ebanregion)                */
-/*  the order is as shown by :convert output                               */
+/*  the order is as shown by WGML 4.0 :convert output                      */
 /***************************************************************************/
 
 typedef enum lay_sub {
@@ -783,7 +801,7 @@ typedef enum e_tags {
 typedef struct nest_stack {
     struct  nest_stack  * prev;
 
-    lineno_t            lineno;         // lineno of :xl, :HPx :SF call
+    line_number         lineno;         // lineno of :xl, :HPx :SF call
     union {
         char        *   filename;       // file name of :xl, :HPx :SF call
         struct mt {
@@ -837,6 +855,36 @@ typedef struct laystack {
     char    layfn[1];                   // var length file name
 } laystack;
 
+
+/***************************************************************************/
+/*  box column definition for use with control word BX                     */
+/***************************************************************************/
+
+#define BOXCOL_COUNT 16
+
+typedef enum {
+    bx_h_rule,
+    bx_h_start,
+    bx_h_stop,
+} bx_h_ind;
+
+typedef enum {
+    bx_v_down,
+    bx_v_up,
+    bx_v_both,
+} bx_v_ind;
+
+typedef struct {
+            uint32_t        col;
+            bx_h_ind        h_ind;
+            bx_v_ind        v_ind;
+} box_col;
+
+typedef struct {
+            uint32_t        current;
+            uint32_t        length;
+            box_col     *   cols;
+} box_col_set;
 
 /***************************************************************************/
 /*  a single tab stop and an array of tab stops                            */
@@ -893,8 +941,11 @@ typedef struct text_line {
 
 typedef enum {
     el_binc,        // BINCLUDE element
+    el_dbox,        // DBOX element
     el_graph,       // GRAPHIC element
+    el_hline,       // HLINE element
     el_text,        // text element
+    el_vline,       // VLINE element
 } element_type;
 
 // struct oc_element; // Forward declaration (uncomment when needed)
@@ -909,6 +960,13 @@ typedef struct {
 } binclude_element;
 
 typedef struct {
+    uint32_t    h_start;
+    uint32_t    v_start;
+    uint32_t    h_len;
+    uint32_t    v_len;
+} dbox_element;
+
+typedef struct {
     uint32_t    cur_left;
     uint32_t    depth;
     uint32_t    scale;
@@ -921,10 +979,23 @@ typedef struct {
 } graphic_element;
 
 typedef struct {
+    uint32_t    h_start;
+    uint32_t    v_start;
+    uint32_t    h_len;
+} hline_element;
+
+typedef struct {
     uint32_t        spacing;
     text_line   *   first;
     bool            overprint;          // placement avoids padding warning
 } text_element;
+
+typedef struct {
+    uint32_t    h_start;
+    uint32_t    v_start;
+    uint32_t    v_len;
+    bool        twice;
+} vline_element;
 
 typedef struct doc_element {
     struct doc_element  *next;
@@ -933,9 +1004,12 @@ typedef struct doc_element {
     uint32_t            subs_skip;
     uint32_t            top_skip;
     union {
-        text_element        text;
         binclude_element    binc;
+        dbox_element        dbox;
         graphic_element     graph;
+        hline_element       hline;
+        text_element        text;
+        vline_element       vline;
     } element;
     element_type        type;   // placement avoids padding warning
 } doc_element;
@@ -991,18 +1065,35 @@ typedef struct {
 
 /***************************************************************************/
 /*  reference entry for reference dictionaries                             */
-/*   used for :Hx, :FIG, :FN                                               */
+/*   used for :Hx, :FIG, :FN :Ix :IHx :IREF                                */
 /***************************************************************************/
+
+typedef enum {
+    rf_hx           =    1,             // :Hx entry
+    rf_fx           =    2,             // :FN :FIG entry
+    rf_textcap      =    4,             // with text or figcap
+
+    rf_ix           =   16,             // :Ix :IHx created entry
+    rf_dummy        = 0x11111111,       // to get a int32 enum
+} refflags;
+
 typedef struct ref_entry {
-    struct ref_entry    *next;
-    lineno_t            lineno;         // input lineno of :Hx :FIG :FN
-                                        // used for checking duplicate ID
-    uint32_t            pageno;         // output page of :Hx or :FIG
-    uint32_t            number;         // figure or footnote number
-    char                id[ID_LEN+1];   // reference id
-                                        // filled with '\0' up to ID_LEN
-    char                *text_cap;      // text line or figcap text
+    struct ref_entry    *   next;
+    char                    id[ID_LEN+1];   // reference id
+
+    line_number             lineno;     // input lineno for checking duplicate ID
+    refflags                flags;
+    union {
+        struct {
+            uint32_t        pageno;     // output page
+            uint32_t        number;     // figure or footnote number
+            char            *text_cap;  // text line or figcap text
+        } info;
+        struct {
+            ix_h_blk    *   hblk;
+            ix_e_blk    *   eblk;
+        } refb;
+    } u;
 } ref_entry;
 
 #endif                                  // GTYPE_H_INCLUDED
-

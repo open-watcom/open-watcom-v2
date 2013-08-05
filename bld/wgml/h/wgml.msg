@@ -164,3 +164,5 @@ pick( INF_USE_END,     " ", " " )
 
 /* usage msgs start with INF_USE_START and continue thru INF_USE_END */
 
+pick( INF_PROC_START,   "Processing device information\n",
+                        "Processing device information\n")

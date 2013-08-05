@@ -134,12 +134,14 @@ static void split_at_GML_tag( void )
 
         if( (p2 > pchar + 1)
             && ((*p2 == '.') ||
-                (*p2 == ' ') ||
-                (*p2 == '\0' ) ||
-                (*p2 == '\t' ) ||
+                is_space_tab_char( *p2 ) ||
+                (*p2 == '\0') ||
                 (*p2 == GML_char) ) ) { // 'good' tag end
 
             c = *p2;
+            if( ProcFlags.layout && (c == '\t') ) {
+                c = ' ';                // replace tab with space in layout
+            }
             *p2 = '\0';                 // null terminate string
             toklen = p2 - pchar - 1;
 
@@ -161,7 +163,7 @@ static void split_at_GML_tag( void )
                     }
                     if( (rs_loc > 0) || layoutsw ) {
                         p = buff2;
-                        while( *p == ' ' ) {
+                        while( is_space_tab_char( *p ) ) {
                             p++;
                         }
                         if( p == pchar ) {  // only leading blanks
@@ -667,7 +669,7 @@ static  bool    remove_leading_space( void )
         return( false );                // don't change input
     }
     p = buff2;
-    while( *p == ' ' ) {
+    while( is_space_tab_char( *p ) ) {
         p++;
     }
     if( (p != buff2) && (*p == GML_char) ) {

@@ -62,36 +62,52 @@ cop_file_type parse_header( FILE * in_file )
     /* Get the count and ensure it is 0x02. */
 
     count = fgetc( in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( file_error );
+    if( ferror( in_file ) || feof( in_file ) ) {
+        return( file_error );
+    }
 
-    if( count != 0x02 ) return( not_bin_dev );
+    if( count != 0x02 ) {
+        return( not_bin_dev );
+    }
 
     /* Get the version. */
 
     fread( &version, 2, 1, in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( file_error );
+    if( ferror( in_file ) || feof( in_file ) ) {
+        return( file_error );
+    }
 
     /* Check for a same_endian version 4.1 header.
     *  Note: checking 0x0c00 would, presumably, identify a different-endian
     *  version 4.1 header, if that ever becomes necessary.
     */
         
-    if( version != 0x000c ) return( not_se_v4_1 );
+    if( version != 0x000c ) {
+        return( not_se_v4_1 );
+    }
 
     /* Get the text_version_length and ensure it is 0x0b. */
 
     count = fgetc( in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( file_error );
+    if( ferror( in_file ) || feof( in_file ) ) {
+        return( file_error );
+    }
 
-    if( count != 0x0b ) return( not_bin_dev );
+    if( count != 0x0b ) {
+        return( not_bin_dev );
+    }
 
     /* Verify the text_version. */
 
     fread( &text_version, 0x0b, 1, in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( file_error );
+    if( ferror( in_file ) || feof( in_file ) ) {
+        return( file_error );
+    }
 
     text_version[0x0b] = '\0';
-    if( strcmp( text_version, "V4.1 PC/DOS" ) ) return( not_bin_dev );
+    if( strcmp( text_version, "V4.1 PC/DOS" ) ) {
+        return( not_bin_dev );
+    }
 
     /* Get the type. */
 
@@ -99,7 +115,9 @@ cop_file_type parse_header( FILE * in_file )
 
     /* If there is no more data, this is not a valid .COP file. */
     
-    if( ferror( in_file ) || feof( in_file ) ) return( file_error );
+    if( ferror( in_file ) || feof( in_file ) ) {
+        return( file_error );
+    }
     
     /* Valid header, more data exists, determine the file type. */
 

@@ -70,7 +70,7 @@ extern void fb_enterfont( void );
 extern void fb_first_text_line_pass( text_line * out_line );
 extern void fb_graphic_support( graphic_element * in_el );
 extern void fb_init( init_block * in_block );
-extern void fb_line_block( line_block * in_line_block, uint32_t h_start, uint32_t v_start, uint32_t h_len, uint32_t v_len, char * name );
+extern void fb_line_block( line_block * in_line_block, uint32_t h_start, uint32_t v_start, uint32_t h_len, uint32_t v_len, bool twice );
 extern void fb_lineproc_endvalue( void );
 extern void fb_subsequent_text_line_pass( text_line * out_line, uint16_t line_pass );
 #ifdef  __cplusplus

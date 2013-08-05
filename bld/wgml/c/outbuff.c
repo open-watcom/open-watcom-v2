@@ -41,10 +41,9 @@
 *                   binc_buff
 *                   buffout
 *                   translated
-*                   out_file_fb
+*                   out_file_fp
 *                   tr_table
 *               and these local functions:
-*                   buffer_overflow()
 *                   ob_insert_ps_text()
 *                   ob_insert_ps_cmd()
 *                   ob_insert_ps_cmd_ot()
@@ -77,29 +76,10 @@
 static record_buffer    binc_buff   = { 0, 0, NULL };
 static record_buffer    buffout     = { 0, 0, NULL };
 static record_buffer    translated  = { 0, 0, NULL };
-static FILE             *out_file_fb;
+static FILE             *out_file_fp;
 static char             tr_table[0x100]; // .TR-controlled translation table
 
 /* Static function definitions. */
-
-/* Function buffer_overflow().
- * Handles error processing for output buffer overflow. This only occurs when
- * a multi-byte output translation or a PostScript language command is too
- * long to fit into an empty output buffer.
- *
- * Note:
- *      The message shown is, in fact, wgml 4.0 message IO--011.
- */
- 
-static void buffer_overflow( void )
-{
-    out_msg( "Output file's record size is too small for the device '%s'\n", \
-                                                                    dev_name );
-    err_count++;
-    g_suicide();
-
-    return;
-}
 
 /* Function ob_insert_ps_text().
  * This function inserts text for a PostScript device into the output buffer.
@@ -116,16 +96,16 @@ static void buffer_overflow( void )
  *      font contains the number of the font to be used.
  *
  * Notes:
- *      If this is the start of the text element, then the last item was "(" 
+ *      If this is the start of the text element, then the last item was "("
  *          and, if difference = 1, the resulting "(\" is correct for the end
  *          of the output record.
- *      If the text element ends on the last legal position, then inserting "\" 
+ *      If the text element ends on the last legal position, then inserting "\"
  *          and moving the last character in the text element to the next buffer
  *          is correct.
- *      If the text element ends one position before the last legal position, 
+ *      If the text element ends one position before the last legal position,
  *          then the output record will correctly end with the ")" of ") sd"
  *          or ") shwd", as appropriate.
- *      Adjusting text_count as shown avoids a problem where a word was added 
+ *      Adjusting text_count as shown avoids a problem where a word was added
  *          without a final '\', which is not how wgml 4.0 does it and which
  *          produces an extra space when the PS interpreter processes the text.
  *      If a multibyte translation is too large to fit into the buffer, then an
@@ -195,8 +175,9 @@ static void ob_insert_ps_text( char *in_block, size_t count, font_number font )
 
                             /* If it is too large to fit at all, report overflow. */
 
-                            if( cur_trans->count > buffout.length )
-                                buffer_overflow();
+                            if( cur_trans->count > buffout.length ) {
+                                xx_simple_err_c( err_out_rec_size, dev_name );
+                            }
 
                             /* If it won't fit in the current buffer, finalize
                              * and flush the buffer.
@@ -259,9 +240,12 @@ static void ob_insert_ps_text( char *in_block, size_t count, font_number font )
 
 static void ob_insert_ps_cmd( char *in_block, size_t count )
 {
-    size_t      current;
-    size_t      difference;
-    size_t      text_count;
+    size_t      current     = 0;
+    size_t      spc_end     = 0;
+    size_t      tkn_end     = 0;
+    size_t      spc_start   = 0;
+    size_t      tkn_start   = 0;
+    size_t      text_count  = count;
 
     /* If the buffer is full, flush it. */
 
@@ -269,127 +253,54 @@ static void ob_insert_ps_cmd( char *in_block, size_t count )
         ob_flush();
     }
 
-    /* Start at the beginning of text_block. */
+    /* Copy each token in turn. */
 
-    current = 0;
-    text_count = count;
     while( (buffout.current + text_count) > buffout.length ) {
-
-        difference = buffout.length - buffout.current;
 
         /* If the entire text_block will now fit, exit the loop. */
 
-        if( text_count <= difference ) {
+        if( text_count <= buffout.length - buffout.current ) {
             break;
         }
 
-        /* Insert any initial spaces. */
-
-        while( in_block[current] == ' ' ) {
-            if( difference == 0 ) {
-                break;
+        for( current = spc_start; current < count; current++ ) {
+            if( in_block[current] != ' ' ) {
+                break;                  // skip initial spaces
             }
-            buffout.text[buffout.current] = ' ';
-            buffout.current++;
-            current++;
-            text_count--;
-            difference--;
-        } 
-
-        /* If difference is "0", the buffer is full. */
-
-        if( difference == 0 ) {
-            ob_flush();
-            continue;
         }
 
-        /* Adjust difference for any terminal spaces. */
-
-        while( in_block[current + difference] == ' ' ) {
-            if( difference == 0 ) {
-                break;
+        tkn_start = current;
+        for( ; current < count; current++ ) {
+            if( in_block[current] == ' ' ) {
+                break;                  // find end of token
             }
-            difference--;
-        } 
-
-        /* If difference is "0", the buffer is full. */
-
-        if( difference == 0 ) {
-            ob_flush();
-            continue;
         }
 
-        /* Both in_block[current] and in_block[current + difference] now point
-         * at a non-space character. Both conditions prevent looping.
-         */
-
-        while( in_block[current + difference] != ' ' ) {
-            if( difference == 0 ) {
-
-                /* No spaces found. */
-
-                if( buffout.current > 0 ) {
-
-                    /* Flush the buffer, skip any space at text_block[current],
-                     * and exit this loop.
-                     */
-
-                    ob_flush();
-                    if( in_block[current] == ' ' )
-                        current++;
-                    break;
-                } else {
-
-                    /* The buffer is empty: the text just won't fit. */
-
-                    buffer_overflow();
-                }
+        tkn_end = current;
+        for( ; current < count; current++ ) {
+            if( in_block[current] != ' ' ) {
+                break;                  // skip following spaces
             }
+        }
+        spc_end = current;
 
-            difference--;
-        } 
+        if( (buffout.current + spc_end - spc_start ) <= buffout.length ) {
 
-        /* If difference is "0", and we reach this point, then the buffer was
-         * flushed: go to the top of the loop.
-         */
+            /* Copy up the token and any initial space characters. */
 
-        if( difference == 0 ) continue;
-
-        if( (current + difference + 1) >= count ) {
-
-        /* The space following the current token was the last character in
-         * in_block and the token + space will not fit: the buffer is full.
-         */
-
+            memcpy_s( &buffout.text[buffout.current], tkn_end - spc_start,
+                      &in_block[spc_start], tkn_end - spc_start );
+            buffout.current += tkn_end - spc_start;
+            text_count -= tkn_end - spc_start;
+            current = tkn_end;
+            spc_start = current;
+            spc_end = current;
+            tkn_start = current;
         } else {
-
-            /* Copy up to the space character found. */
-
-            memcpy_s( &buffout.text[buffout.current], difference, &in_block[current], difference );
-            buffout.current += difference;
-            current+= difference;
-            text_count -= difference;
-
-            /* Skip the space character and copy any other space characters
-             * up to the size of the buffer.
-             */
-
-            current++;
-            text_count--;
-            while( buffout.current < buffout.length ) {
-                if( in_block[current] != ' ' ) break;
-                    buffout.text[buffout.current] = in_block[current];
-                    buffout.current++;
-                    current++;
-                    text_count--;
-            }
+            ob_flush();
+            current = tkn_start;
+            text_count -= tkn_start - spc_start;
         }
-
-        /* Flush the buffer: full or not, it cannot hold the rest of
-         * the remaining text.
-         */
-
-        ob_flush();
     }
 
     /* Insert any remaining text. */
@@ -441,8 +352,7 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 
     if( font >= wgml_font_cnt )
         font = 0;
-    if( wgml_fonts[font].outtrans != NULL ) cur_table = \
-                                            wgml_fonts[font].outtrans->table;
+    if( wgml_fonts[font].outtrans != NULL ) cur_table = wgml_fonts[font].outtrans->table;
     text_count = count;
     for( i = 0; i < count; i++ ) {
 
@@ -491,16 +401,21 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 
                             /* If it is too large to fit at all, report overflow. */
 
-                            if( cur_trans->count > buffout.length ) buffer_overflow();
+                            if( cur_trans->count > buffout.length ) {
+                                xx_simple_err_c( err_out_rec_size, dev_name );
+                            }
 
                             /* If it won't fit, flush the buffer. */
 
-                            if( (buffout.current + cur_trans->count) > buffout.length ) ob_flush();
+                            if( (buffout.current + cur_trans->count) >
+                                 buffout.length ) {
+                                ob_flush();
+                            }
 
                             /* At this point, it is known that it will fit. */
 
-                            memcpy_s( &buffout.text[buffout.current], \
-                        cur_trans->count, cur_trans->data, cur_trans->count );
+                            memcpy_s( &buffout.text[buffout.current],
+                                cur_trans->count, cur_trans->data, cur_trans->count );
                             buffout.current += cur_trans->count;
                         }
                     }
@@ -517,14 +432,14 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
             /* Process next character, might be another space. */
 
             continue;
-        } 
+        }
 
         /* Get the next token and translate it. */
 
         k = 0;
         for( j = i; j < count; j++ ) {
 
-            /* in_block[i] points to a non-space character. */ 
+            /* in_block[i] points to a non-space character. */
 
             if( in_block[j] == ' ' )
                 break;
@@ -573,8 +488,9 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 
                             /* If it is too large to fit at all, report overflow. */
 
-                            if( cur_trans->count > buffout.length )
-                                buffer_overflow();
+                            if( cur_trans->count > buffout.length ) {
+                                xx_simple_err_c( err_out_rec_size, dev_name );
+                            }
 
                             if( (k + cur_trans->count) >= translated.length ) {
                                 translated.length *= 2;
@@ -619,8 +535,8 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 
         /* Now insert the translated token into the buffer. */
 
-        memcpy_s( &buffout.text[buffout.current], translated.current, \
-                                        translated.text, translated.current );
+        memcpy_s( &buffout.text[buffout.current], translated.current,
+                  translated.text, translated.current );
         buffout.current += translated.current;
         text_count -= translated.current;
     }
@@ -630,8 +546,8 @@ static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font 
 /* Function ob_insert_def().
  * This function inserts a block of bytes into the output buffer. This is done
  * byte-by-byte because the block may include nulls. If the entire block won't
- * fit, as much of it as possible is copied into the buffer, which is then 
- * flushed and the rest of the block processed. No output translation occurs. 
+ * fit, as much of it as possible is copied into the buffer, which is then
+ * flushed and the rest of the block processed. No output translation occurs.
  *
  * Parameter:
  *      in_block contains the bytes to be inserted.
@@ -685,7 +601,7 @@ static void ob_insert_def( char *in_block, size_t count )
  * This function inserts a block of bytes into the output buffer with output
  * translation. This is done byte-by-byte because the block may include nulls.
  * If the entire block won't fit, as much of it as possible is copied into the
- * buffer, which is then flushed and the rest of the block processed. 
+ * buffer, which is then flushed and the rest of the block processed.
  *
  * Parameter:
  *      in_block contains the bytes to be inserted.
@@ -709,8 +625,7 @@ static void ob_insert_def_ot( char *in_block, size_t count, font_number font )
 
     if( font >= wgml_font_cnt )
         font = 0;
-    if( wgml_fonts[font].outtrans != NULL ) cur_table = \
-                                            wgml_fonts[font].outtrans->table;
+    if( wgml_fonts[font].outtrans != NULL ) cur_table = wgml_fonts[font].outtrans->table;
     text_count = count;
 
     for( i = 0; i < count; i++ ) {
@@ -756,18 +671,19 @@ static void ob_insert_def_ot( char *in_block, size_t count, font_number font )
 
                         /* If it is too large to fit at all, report overflow. */
 
-                        if( cur_trans->count > buffout.length ) buffer_overflow();
+                        if( cur_trans->count > buffout.length ) {
+                                xx_simple_err_c( err_out_rec_size, dev_name );
+                        }
 
-                        /* If it won't fit in the current buffer, finalize and
-                         * flush the buffer.
-                         */
+                        /* If it won't fit in the current buffer, flush the buffer. */
 
-                        if( (buffout.current + cur_trans->count) > buffout.length ) ob_flush();
+                        if( (buffout.current + cur_trans->count) > buffout.length ) {
+                            ob_flush();
+                        }
 
                         /* At this point, it is known that it will fit. */
 
-                        memcpy_s( &buffout.text[buffout.current], \
-                        cur_trans->count, cur_trans->data, cur_trans->count );
+                        memcpy_s( &buffout.text[buffout.current], cur_trans->count, cur_trans->data, cur_trans->count );
                         buffout.current += cur_trans->count;
                     }
                 }
@@ -826,8 +742,7 @@ static void set_out_file( void )
         doc_spec[3] = '\0';
         doc_ext = &doc_spec[3];
     } else {
-        _splitpath2( master_fname, doc_spec, &doc_drive, &doc_dir, &doc_fname, \
-                                                                    &doc_ext );
+        _splitpath2( master_fname, doc_spec, &doc_drive, &doc_dir, &doc_fname, &doc_ext );
     }
 
     if( out_file == NULL ) {
@@ -840,8 +755,7 @@ static void set_out_file( void )
         cmd_outfile[3] = '\0';
         cmd_ext = &cmd_outfile[3];
     } else {
-        _splitpath2( out_file, cmd_outfile, &cmd_drive, &cmd_dir, &cmd_fname, \
-                                                                    &cmd_ext );
+        _splitpath2( out_file, cmd_outfile, &cmd_drive, &cmd_dir, &cmd_fname, &cmd_ext );
     }
 
     if( bin_device->output_name == NULL ) {
@@ -854,8 +768,8 @@ static void set_out_file( void )
         dev_outfile[3] = '\0';
         dev_ext = &dev_outfile[3];
     } else {
-        _splitpath2( bin_device->output_name, dev_outfile, &dev_drive, &dev_dir, \
-                                                        &dev_fname, &dev_ext );
+        _splitpath2( bin_device->output_name, dev_outfile, &dev_drive, &dev_dir,
+                     &dev_fname, &dev_ext );
     }
 
     /* Ensure it is possible to tell if a file name was constructed. */
@@ -881,8 +795,8 @@ static void set_out_file( void )
              * extension given in the :DEVICE block.
              */
 
-                _makepath( temp_outfile, cmd_drive, cmd_dir, cmd_fname, \
-                                                bin_device->output_extension );
+                _makepath( temp_outfile, cmd_drive, cmd_dir, cmd_fname,
+                           bin_device->output_extension );
             }
         } else {
             if( *cmd_ext != '\0' ) {
@@ -899,8 +813,8 @@ static void set_out_file( void )
              * extension given in the :DEVICE block.
              */
 
-                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname, \
-                                                bin_device->output_extension );
+                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname,
+                           bin_device->output_extension );
             }
         }
     } else {
@@ -910,8 +824,8 @@ static void set_out_file( void )
              * with no filename or extension.
              */
 
-                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname, \
-                                                bin_device->output_extension );
+                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname,
+                           bin_device->output_extension );
         } else {
 
             /* The situation here is that command-line option OUTPUT was not
@@ -926,16 +840,16 @@ static void set_out_file( void )
                  * name and any extension provided.
                  */
 
-                _makepath( temp_outfile, "", "", bin_device->output_name, \
-                                                bin_device->output_extension );
+                _makepath( temp_outfile, "", "", bin_device->output_name,
+                           bin_device->output_extension );
             } else {
 
                 /* If the :DEVICE block did not specify a file name then use the
                  * document specification name with any extension provided.
                  */
 
-                _makepath( temp_outfile, dev_drive, dev_dir, doc_fname, \
-                                                bin_device->output_extension );
+                _makepath( temp_outfile, dev_drive, dev_dir, doc_fname,
+                           bin_device->output_extension );
             }
         }
     }
@@ -970,7 +884,7 @@ static void set_out_file_attr( void )
     if( out_file_attr == NULL ) {
         if( bin_driver->rec_spec != NULL ) {
             len = strlen( bin_driver->rec_spec );
-            if( (bin_driver->rec_spec[0] != '(') || \
+            if( (bin_driver->rec_spec[0] != '(') ||
                                         (bin_driver->rec_spec[len - 1] != ')')) {
 
                 /* Use default if rec_spec is badly-formed. */
@@ -1078,40 +992,87 @@ void ob_binclude( binclude_element * in_el )
 
     if( search_file_in_dirs( in_el->file, "", "", ds_doc_spec ) ) {
         fb_binclude_support( in_el );
-        fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fb );
+        if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
+            xx_simple_err_c( err_write_out_file, out_file );
+        }
         buffout.current = 0;
-        
+
         if( in_el->has_rec_type ) {
             count = fread( buffout.text, sizeof( uint8_t ), buffout.length, try_fp );
             while( count == buffout.length ) {
                 buffout.current = count;
-                fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fb );
+                if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
+                    xx_simple_err_c( err_write_out_file, out_file );
+                    count = 0;
+                    break;
+                }
                 count = fread( buffout.text, sizeof( uint8_t ), buffout.length, try_fp );
             }
             buffout.current = count;
-            fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fb );
+            if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
+                xx_simple_err_c( err_write_out_file, out_file );
+            }
+            if( ferror( try_fp ) ) {
+                xx_simple_err_cc( err_in_file, "BINCLUDE", try_file_name );
+            }
             buffout.current = 0;
         } else {
             count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.length, try_fp );
             while( count == binc_buff.length ) {
                 binc_buff.current = count;
-                fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fb );
                 ob_flush();
+                if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp )
+                        < binc_buff.current ) {
+                    xx_simple_err_c( err_write_out_file, out_file );
+                    count = 0;
+                    break;
+                }
                 count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.length, try_fp );
             }
             binc_buff.current = count;
-            fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fb );
+            if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp ) < binc_buff.current ) {
+                xx_simple_err_c( err_write_out_file, out_file );
+            }
             if( in_el->depth > 0 ) {
                 ob_flush();
             }
+            if( ferror( try_fp ) ) {
+                xx_simple_err_cc( err_in_file, "BINCLUDE", try_file_name );
+            }
         }
-
     } else {
         xx_tag_err( err_file_not_found, in_el->file );
     }
 
     return;
 }
+
+
+/* Function ob_direct_out().
+ * This function bypasses the output buffer for direct output.
+ */
+
+void ob_direct_out( char * text )       // used from .oc
+{
+    if( fwrite( text, sizeof( uint8_t ), strlen( text ), out_file_fp )
+            < strlen( text ) ) {
+        xx_simple_err_c( err_write_out_file, out_file );
+        return;
+    }
+#ifdef __UNIX__
+    if( fprintf_s( out_file_fp, "\n" ) < strlen( "\n" ) ) {
+        xx_simple_err_c( err_write_out_file, out_file );
+        return;
+    }
+#else
+    if( fprintf_s( out_file_fp, "\r\n" ) < strlen( "\r\n" ) ) {
+        xx_simple_err_c( err_write_out_file, out_file );
+        return;
+    }
+#endif
+    return;
+}
+
 
 /* Function ob_flush().
  * This function actually flushes the output buffer to the output device/file.
@@ -1125,13 +1086,22 @@ void ob_binclude( binclude_element * in_el )
 
 void ob_flush( void )
 {
-    
-    fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fb );
+
+    if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
+        xx_simple_err_c( err_write_out_file, out_file );
+        return;
+    }
     buffout.current = 0;
 #ifdef __UNIX__
-    fprintf_s( out_file_fb, "\n" );
+    if( fprintf_s( out_file_fp, "\n" ) < strlen( "\n" ) ) {
+        xx_simple_err_c( err_write_out_file, out_file );
+        return;
+    }
 #else
-    fprintf_s( out_file_fb, "\r\n" );
+    if( fprintf_s( out_file_fp, "\r\n" ) < strlen( "\r\n" ) ) {
+        xx_simple_err_c( err_write_out_file, out_file );
+        return;
+    }
 #endif
     return;
 }
@@ -1176,11 +1146,19 @@ void ob_graphic( graphic_element * in_el )
         count = fread( buffout.text, sizeof( uint8_t ), buffout.length, try_fp );
         while( count == buffout.length ) {
             buffout.current = count;
-            fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fb );
+            if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
+                    < buffout.current ) {
+                xx_simple_err_c( err_write_out_file, out_file );
+                return;
+            }
             count = fread( buffout.text, sizeof( uint8_t ), buffout.length, try_fp );
         }
         buffout.current = count;
-        fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fb );
+        if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
+                < buffout.current ) {
+            xx_simple_err_c( err_write_out_file, out_file );
+            return;
+        }
         buffout.current = 0;
 
         ps_size = strlen( enddoc );
@@ -1192,7 +1170,9 @@ void ob_graphic( graphic_element * in_el )
         strcpy_s( buffout.text, buffout.length, restore );
         buffout.current = ps_size;
         ob_flush();
-
+        if( ferror( try_fp ) ) {
+            xx_simple_err_cc( err_in_file, "GRAPHIC", try_file_name );
+        }
     } else {
         xx_tag_err( err_file_not_found, in_el->file );
     }
@@ -1216,7 +1196,7 @@ void ob_insert_block( char *in_block, size_t count, bool out_trans, bool out_tex
 {
     /* Select and invoke the proper static function. */
 
-    if( ps_device )  {
+    if( ProcFlags.ps_device )  {
         if( out_text ) {
             ob_insert_ps_text( in_block, count, font );
         } else {
@@ -1271,17 +1251,12 @@ void ob_insert_byte( uint8_t in_char )
 
 void ob_insert_ps_text_end( bool htab_done, font_number font )
 {
-    char    shwd_suffix[]   = "shwd ";
-    char    sd_suffix[]     = "sd ";
+    char    shwd_suffix[]   = " shwd ";
+    char    sd_suffix[]     = " sd ";
     size_t  ps_size;
 
     ob_insert_block( ")", 1, false, false, font );
 
-    if( buffout.current == buffout.length ) {
-        ob_flush();
-    } else {
-    ob_insert_block( " ", 1, false, false, font );
-    }
     if( htab_done ) {
         ps_size = strlen( sd_suffix );
         ob_insert_block( sd_suffix, ps_size, false, false, font );
@@ -1333,21 +1308,11 @@ void ob_setup( void )
     set_out_file();
     set_out_file_attr();
 
-    /* Only record type "t" is currently supported. */
+    /* The record type must be "t"; it must have only one character and be */
+    /* followed by ":".                                                    */
 
-    if( tolower( out_file_attr[0] ) != 't' ) {
-        out_msg( "File type %c is not currently supported\n", out_file_attr[0] );
-        err_count++;
-        g_suicide();
-    }
-
-    /* The record type must have only one character and be followed by ":" */
-
-    if( out_file_attr[1] != ':' ) {
-        out_msg( "File type %c%c is not currently supported\n", \
-                                            out_file_attr[0], out_file_attr[1] );
-        err_count++;
-        g_suicide();
+    if( tolower( (out_file_attr[0] ) != 't') || (out_file_attr[1] != ':') ) {
+        xx_simple_err_c( err_rec_att_not_sup, out_file_attr );
     }
 
     /* The rest of the record type must be numeric. */
@@ -1356,9 +1321,7 @@ void ob_setup( void )
 
     for( i = 2; i < strlen( out_file_attr ); i++ ) {
         if( !isdigit( out_file_attr[i] ) ) {
-            out_msg( "File type %s is not formatted correctly\n", out_file_attr );
-            err_count++;
-            g_suicide();
+            xx_simple_err_c( err_rec_att_bad_fmt, out_file_attr );
         }
         count++;
     }
@@ -1372,9 +1335,7 @@ void ob_setup( void )
     buffout.current = 0;
     buffout.length = strtoul( &out_file_attr[2], NULL, 0 );
     if( errno == ERANGE ) {
-        out_msg( "Output record length is too large, max is %i\n", ULONG_MAX );
-        err_count++;
-        g_suicide();
+        xx_simple_err_i( err_out_rec_size2, ULONG_MAX );
     }
     buffout.text = mem_alloc( buffout.length );
 
@@ -1384,12 +1345,10 @@ void ob_setup( void )
 
     /* Create (truncate) the output file. */
 
-    fopen_s( &out_file_fb, out_file, "uwb" );
+    fopen_s( &out_file_fp, out_file, "uwb" );
 
-    if( out_file_fb == NULL ) {
-        out_msg( "Unable to open out-file %s\n", out_file );
-        err_count++;
-        g_suicide();
+    if( out_file_fp == NULL ) {
+        xx_simple_err_c( err_open_out_file, out_file );
     }
 
     /* Initialize tr_table. */
@@ -1419,14 +1378,16 @@ void ob_teardown( void )
         buffout.text = NULL;
     }
 
-    if(translated.text != NULL ) { 
+    if(translated.text != NULL ) {
         mem_free( translated.text );
         translated.text = NULL;
     }
 
-    if( out_file_fb != NULL ) {
-        fclose( out_file_fb );
-        out_file_fb = NULL;
+    if( out_file_fp != NULL ) {
+        if( fclose( out_file_fp ) ) {
+            xx_simple_err_c( err_close_out_file, out_file );
+        }
+        out_file_fp = NULL;
     }
 
     return;

@@ -80,11 +80,25 @@ static void do_el_list_out( doc_element * array, uint8_t count )
             if( i == 0 ) {      // restrict output to first column, for now
                 switch( cur_el->type ) {
                 case el_binc :
-                    ob_binclude( &cur_el->element.binc );
+                    if( GlobalFlags.lastpass ) {
+                        ob_binclude( &cur_el->element.binc );
+                    }
+                    break;
+                case el_dbox :  // should only be found if DBOX block exists
+                    if( GlobalFlags.lastpass ) {
+                        fb_dbox( &cur_el->element.dbox );
+                    }
                     break;
                 case el_graph :
-                    if( ps_device ) {   // no action for character devices
-                        ob_graphic( &cur_el->element.graph );
+                    if( GlobalFlags.lastpass ) {
+                        if( ProcFlags.ps_device ) {   // only available to PS device
+                            ob_graphic( &cur_el->element.graph );
+                        }
+                    }
+                    break;
+                case el_hline :  // should only be found if HLINE block exists
+                    if( GlobalFlags.lastpass ) {
+                        fb_hline( &cur_el->element.hline );
                     }
                     break;
                 case el_text :
@@ -94,8 +108,13 @@ static void do_el_list_out( doc_element * array, uint8_t count )
                         }
                     }
                     break;
+                case el_vline :  // should only be found if VLINE block exists
+                    if( GlobalFlags.lastpass ) {
+                        fb_vline( &cur_el->element.vline );
+                    }
+                    break;
                 default :
-                    g_err( err_intern, __FILE__, __LINE__ );
+                    internal_err( __FILE__, __LINE__ );
                 }
             }
             save = cur_el->next;
@@ -132,6 +151,7 @@ static void set_v_positions( doc_element * list, uint32_t v_start )
             } else {
                 cur_spacing = cur_el->top_skip;
             }
+            ProcFlags.page_started = true;
         } else {
             cur_spacing += cur_el->subs_skip;
         }
@@ -140,7 +160,6 @@ static void set_v_positions( doc_element * list, uint32_t v_start )
         case el_binc :
             cur_el->element.binc.at_top = !ProcFlags.page_started &&
                                           (t_page.top_banner == NULL);
-            ProcFlags.page_started = true;
             if( bin_driver->y_positive == 0x00 ) {
                 g_cur_v_start -= cur_spacing;
             } else {
@@ -153,10 +172,22 @@ static void set_v_positions( doc_element * list, uint32_t v_start )
                 g_cur_v_start += cur_el->depth;
             }
             break;
+        case el_dbox :
+            if( bin_driver->y_positive == 0x00 ) {
+                g_cur_v_start -= cur_spacing;
+            } else {
+                g_cur_v_start += cur_spacing;
+            }
+            cur_el->element.dbox.v_start = g_cur_v_start;
+            if( bin_driver->y_positive == 0x00 ) {
+                g_cur_v_start -= cur_el->depth;
+            } else {
+                g_cur_v_start += cur_el->depth;
+            }
+            break;
         case el_graph :
             cur_el->element.graph.at_top = !ProcFlags.page_started &&
                                           (t_page.top_banner == NULL);
-            ProcFlags.page_started = true;
             if( bin_driver->y_positive == 0x00 ) {
                 g_cur_v_start -= cur_spacing;
             } else {
@@ -169,19 +200,31 @@ static void set_v_positions( doc_element * list, uint32_t v_start )
                 g_cur_v_start += cur_el->depth;
             }
             break;
+        case el_hline :
+            if( bin_driver->y_positive == 0x00 ) {
+                g_cur_v_start -= cur_spacing;
+            } else {
+                g_cur_v_start += cur_spacing;
+            }
+            cur_el->element.hline.v_start = g_cur_v_start;
+            if( bin_driver->y_positive == 0x00 ) {
+                g_cur_v_start -= cur_el->depth;
+            } else {
+                g_cur_v_start += cur_el->depth;
+            }
+            break;
         case el_text :
             for( cur_line = cur_el->element.text.first; cur_line != NULL;
                                                 cur_line = cur_line->next ) {
                 cur_spacing += cur_line->line_height;
                 if( ProcFlags.page_started ) {          // not first element
-                    if( ProcFlags.overprint ) {
+                    if( cur_el->element.text.overprint ) {
                         cur_spacing -= cur_line->line_height;   // overprint
-                        ProcFlags.overprint = false;
+                        cur_el->element.text.overprint = false;
                     }
                 } else {                                
                     if( t_page.top_ban == NULL ) {      // minimun height
-                        cur_spacing = max( wgml_fonts[0].line_height, cur_spacing );
-                        ProcFlags.page_started = true;
+                        cur_spacing = max( wgml_fonts[g_curr_font].line_height, cur_spacing );
                     }
                 }
                 if( bin_driver->y_positive == 0x00 ) {
@@ -193,8 +236,21 @@ static void set_v_positions( doc_element * list, uint32_t v_start )
                 cur_spacing = cur_el->element.text.spacing;
             }
             break;
+        case el_vline :
+            if( bin_driver->y_positive == 0x00 ) {
+                g_cur_v_start -= cur_spacing;
+            } else {
+                g_cur_v_start += cur_spacing;
+            }
+            cur_el->element.vline.v_start = g_cur_v_start;
+            if( bin_driver->y_positive == 0x00 ) {
+                g_cur_v_start -= cur_el->depth;
+            } else {
+                g_cur_v_start += cur_el->depth;
+            }
+            break;
         default :
-            g_err( err_intern, __FILE__, __LINE__ );
+            internal_err( __FILE__, __LINE__ );
         }
     }
 
@@ -304,81 +360,6 @@ static void do_doc_column_out( doc_column * a_column, uint32_t v_start )
 
 
 /***************************************************************************/
-/*  split one doc_element into two                                         */
-/*  the first doc_element returned will fit in the depth specified         */
-/*  the return value will be false if the doc_element could not be split   */
-/***************************************************************************/
-
-static bool split_element( doc_element * a_element, uint32_t req_depth )
-{
-    bool            splittable;
-    doc_element *   split_el;
-    text_line   *   cur_line;
-    text_line   *   last;
-    uint32_t        count;
-    uint32_t        cur_depth;
-
-    count = 0;
-    cur_depth = 0;
-    last = NULL;
-    splittable = true;
-
-    switch( a_element->type ) {
-    // add code for other element types; FIGs are documented to split only
-    // when they will not fit by themselves on a page
-    case el_binc :  // given how BINCLUDE/GRAPHIC work, this seems reasonable 
-    case el_graph :
-        splittable = false;     
-        break;
-    case el_text :
-        for( cur_line = a_element->element.text.first; cur_line != NULL;
-                                cur_line = cur_line->next ) {
-            if( (cur_depth + cur_line->line_height) > req_depth ) {
-                break;
-            }
-            count++;
-            cur_depth += cur_line->line_height;
-            last = cur_line;
-        }
-
-        if( cur_line != NULL ) {    // at least one more line
-            if( count < g_cur_threshold ) {
-                splittable = false;     // widow criteria failed
-                a_element->blank_lines = 0;
-                break;
-            }
-        }
-
-        if( last == NULL ) {        // all lines fit; unlikely, but seen
-            break;
-        }
-
-        /*  if we get here, a_element is splittable, cur_line is    */
-        /*  the first line of the new element, and last is the last */
-        /*  line that can be left in the original element           */
-
-        split_el = alloc_doc_el( el_text ); // most defaults are correct
-
-        split_el->depth = a_element->depth - cur_depth;
-        split_el->element.text.first = cur_line;
-        last->next = NULL;
-        a_element->depth = cur_depth;
-        if( a_element->next == NULL ) {
-            a_element->next = split_el;
-        } else {
-            split_el->next = a_element->next;
-            a_element->next = split_el;
-        }
-        
-        break;
-    default :
-        g_err( err_intern, __FILE__, __LINE__ );
-    }
-    return( splittable );
-}
-
-
-/***************************************************************************/
 /*  update t_page from the elements in n_page                              */
 /*  n_page.col_main may or may not be empty on return                      */
 /***************************************************************************/
@@ -406,7 +387,7 @@ static void update_t_page( void )
             // add code for FIG when needed
             case el_text :  // all elements should be FIGs
             default :
-                g_err( err_intern, __FILE__, __LINE__ );
+                internal_err( __FILE__, __LINE__ );
             }
         }
     }
@@ -422,7 +403,7 @@ static void update_t_page( void )
             // add code for FIG when needed
             case el_text :  // all elements should be FIGs
             default :
-                g_err( err_intern, __FILE__, __LINE__ );
+                internal_err( __FILE__, __LINE__ );
             }
         } 
     }
@@ -448,7 +429,7 @@ static void update_t_page( void )
         // add code for FIG & entrained footnotes when needed
         case el_text :  // all elements should be FIGs or footnotes
         default :
-            g_err( err_intern, __FILE__, __LINE__ );
+            internal_err( __FILE__, __LINE__ );
         }
     }
 
@@ -461,7 +442,7 @@ static void update_t_page( void )
         // add code for footnotes when needed
         case el_text :  // all elements should be footnotes
         default :
-            g_err( err_intern, __FILE__, __LINE__ );
+            internal_err( __FILE__, __LINE__ );
         }
     }
 
@@ -557,7 +538,7 @@ static void update_t_page( void )
                 t_page.last_col_main->next = NULL;
                 t_page.cur_depth += cur_el->depth;
             } else {
-                if( t_page.main->main == NULL ) { // adapt when FIG/FN done
+                if( (t_page.main == NULL) || (t_page.main->main == NULL) ) { // adapt when FIG/FN done
                     xx_err( err_text_line_too_deep );
                     g_suicide();    // no line will fit on any page
                 }
@@ -600,7 +581,10 @@ void clear_doc_element( doc_element * element )
     for( cur_el = element; cur_el != NULL; cur_el = cur_el->next ) {
         switch( cur_el->type ) {
         case el_binc :
+        case el_dbox :
         case el_graph :
+        case el_hline :
+        case el_vline :
             break;      // should be nothing to do
         case el_text :
             cur_line = cur_el->element.text.first;
@@ -612,7 +596,7 @@ void clear_doc_element( doc_element * element )
             }
             break;
         default :
-            g_err( err_intern, __FILE__, __LINE__ );
+            internal_err( __FILE__, __LINE__ );
         }
     }
 
@@ -928,7 +912,7 @@ void insert_col_main( doc_element * a_element )
             cur_skip = a_element->blank_lines + a_element->subs_skip;
         }
 
-        if( (cur_skip + t_page.cur_depth) >= t_page.max_depth ) {
+        if( (cur_skip + t_page.cur_depth) > t_page.max_depth ) {
             page_full = true;
         }
     }
@@ -1009,7 +993,7 @@ void insert_col_main( doc_element * a_element )
 
 
 /***************************************************************************/
-/*  insert a doc_element into t_page._page_width                           */
+/*  insert a doc_element into t_page.page_width                            */
 /***************************************************************************/
 
 void insert_page_width( doc_element * a_element )
@@ -1047,15 +1031,14 @@ void insert_page_width( doc_element * a_element )
                     t_page.main_top += depth;
                 }
             } else {        // discard second section heading
-                g_err( err_intern, __FILE__, __LINE__ );
+                internal_err( __FILE__, __LINE__ );
             }        
         } else {
             xx_err( err_heading_too_deep );
-            g_suicide();    // it won't fit on any page if not on this
         }
         break;
     default:
-        g_err( err_intern, __FILE__, __LINE__ );
+        internal_err( __FILE__, __LINE__ );
     }
 
     return;
@@ -1116,6 +1099,7 @@ void reset_t_page( void )
     t_page.last_col_main = NULL;
     t_page.last_col_bot = NULL;
     t_page.last_col_fn = NULL;
+    ProcFlags.page_started = false;
 }
 
 
@@ -1176,6 +1160,84 @@ void set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, uint32_t spac
     ProcFlags.skips_valid = true;
 
     return;
+}
+
+
+/***************************************************************************/
+/*  split one doc_element into two                                         */
+/*  the first doc_element returned will fit in the depth specified         */
+/*  the return value will be false if the doc_element could not be split   */
+/***************************************************************************/
+
+bool split_element( doc_element * a_element, uint32_t req_depth )
+{
+    bool            splittable;
+    doc_element *   split_el;
+    text_line   *   cur_line;
+    text_line   *   last;
+    uint32_t        count;
+    uint32_t        cur_depth;
+
+    count = 0;
+    cur_depth = 0;
+    last = NULL;
+    splittable = true;
+
+    switch( a_element->type ) {
+    // add code for other element types; FIGs are documented to split only
+    // when they will not fit by themselves on a page
+    case el_binc :  // given how BINCLUDE/GRAPHIC work, this seems reasonable 
+    case el_dbox :  // splitting boxes/lines is probably best done elsewhere
+    case el_graph :
+    case el_hline :
+    case el_vline :
+        splittable = false;     
+        break;
+    case el_text :
+        for( cur_line = a_element->element.text.first; cur_line != NULL;
+                                cur_line = cur_line->next ) {
+            if( (cur_depth + cur_line->line_height) > req_depth ) {
+                break;
+            }
+            count++;
+            cur_depth += cur_line->line_height;
+            last = cur_line;
+        }
+
+        if( cur_line != NULL ) {    // at least one more line
+            if( count < g_cur_threshold ) {
+                splittable = false;     // widow criteria failed
+                a_element->blank_lines = 0;
+                break;
+            }
+        }
+
+        if( last == NULL ) {        // all lines fit; unlikely, but seen
+            break;
+        }
+
+        /*  if we get here, a_element is splittable, cur_line is    */
+        /*  the first line of the new element, and last is the last */
+        /*  line that can be left in the original element           */
+
+        split_el = alloc_doc_el( el_text ); // most defaults are correct
+
+        split_el->depth = a_element->depth - cur_depth;
+        split_el->element.text.first = cur_line;
+        last->next = NULL;
+        a_element->depth = cur_depth;
+        if( a_element->next == NULL ) {
+            a_element->next = split_el;
+        } else {
+            split_el->next = a_element->next;
+            a_element->next = split_el;
+        }
+        
+        break;
+    default :
+        internal_err( __FILE__, __LINE__ );
+    }
+    return( splittable );
 }
 
 

@@ -47,7 +47,7 @@
   picks( br, scr_br,    cw_break+cw_o_t    )// break
   picks( bs, scr_dummy, cw_o_t             )// backspace
   picks( bt, scr_dummy, 0                  )// bottom title
-  picks( bx, scr_dummy, cw_break+cw_o_t    )// box
+  picks( bx, scr_bx,    cw_break+cw_o_t    )// box
   picks( cb, scr_dummy, cw_break+cw_o_t    )// column begin
   picks( cc, scr_dummy, cw_break+cw_o_t    )// conditional column
   picks( cd, scr_dummy, cw_break+cw_o_t    )// column definition
@@ -112,7 +112,7 @@
   picks( mc, scr_dummy, cw_break+cw_o_t    )// multiple column
   picks( me, scr_me,    0                  )// macro exit
   picks( ms, scr_dummy, 0                  )// macro substitution
-  picks( oc, scr_dummy, cw_o_t             )// output comment
+  picks( oc, scr_oc,    0                  )// output comment
   picks( of, scr_dummy, cw_break+cw_o_t    )// offset
   picks( oj, scr_dummy, cw_break+cw_o_t    )// out justify
   picks( oo, scr_dummy, cw_o_t             )// output overlay

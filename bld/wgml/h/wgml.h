@@ -66,14 +66,14 @@ extern void         cop_setup( void );
 extern void         cop_teardown( void );
 extern uint32_t     cop_text_width( char *text, uint32_t count, font_number font );
 extern void         cop_ti_table( char * p );
-extern void         fb_dbox( uint32_t h_start, uint32_t v_start, uint32_t h_len, uint32_t v_len );
+extern void         fb_dbox( dbox_element * in_dbox );
 extern void         fb_document( void );
 extern void         fb_document_page( void );
 extern void         fb_finish( void );
-extern void         fb_hline( uint32_t h_start, uint32_t v_start, uint32_t h_len );
+extern void         fb_hline( hline_element * in_hline );
 extern void         fb_output_textline( text_line * out_line );
 extern void         fb_start( void );
-extern void         fb_vline( uint32_t h_start, uint32_t v_start, uint32_t v_len );
+extern void         fb_vline( vline_element * in_vline );
 
 
 /* devfuncs.c                           */
@@ -92,6 +92,7 @@ extern  bool        is_function_char( char c );
 extern  bool        is_lay_att_char( char c );
 extern  bool        is_id_char( char c );
 extern  bool        is_macro_char( char c );
+extern  bool        is_space_tab_char( char c );
 extern  bool        is_stop_char( char c );
 extern  bool        is_symbol_char( char c );
 extern  char        parse_char( char * pa, int len );
@@ -102,6 +103,7 @@ extern  void        unquote_if_quoted( char * * a, char * * z );
 extern  void        out_ban_bot( void );
 extern  void        out_ban_top( void );
 extern  void        set_banners( void );
+extern  void        set_headx_banners( int hx_lvl );
 
 
 /* gdata.c                              */
@@ -125,6 +127,7 @@ extern  void            insert_page_width( doc_element * a_element );
 extern  void            last_page_out( void );
 extern  void            reset_t_page( void );
 extern  void            set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip, uint32_t spacing, font_number font );
+extern  bool            split_element( doc_element * a_element, uint32_t req_depth );
 extern  void            text_page_out( void );
 
 
@@ -150,10 +153,12 @@ extern  void    dc_opt_err( const msg_ids num, char * pa );
 extern  void    dc_opt_warn( char * pa );
 extern  void    file_mac_info( void );
 extern  void    file_mac_info_nest( void );
+extern  void    internal_err( char * file, int line );
 extern  void    nottag_err( void );
 extern  void    numb_err( void );
 extern  void    parm_extra_err( char *cw, char *pa );
 extern  void    parm_miss_err( char *cw );
+extern  void    val_parse_err( const char *pa, bool tag );
 extern  void    tag_name_missing_err( void );
 extern  void    tag_text_err( char * tagname );
 extern  void    tag_text_req_err( char * tagname );
@@ -161,6 +166,10 @@ extern  void    xx_err( const msg_ids errid );
 extern  void    xx_line_err( const msg_ids errid, char * pa );
 extern  void    xx_nest_err( const msg_ids errid );
 extern  void    xx_opt_err( char *cw, char *pa );
+extern  void    xx_simple_err( const msg_ids errid );
+extern  void    xx_simple_err_c( const msg_ids errid, const char * arg );
+extern  void    xx_simple_err_i( const msg_ids errid, int arg );
+extern  void    xx_simple_err_cc( const msg_ids errid, const char * arg1, const char * arg2 );
 extern  void    xx_tag_err( const msg_ids errid, char const * cw );
 extern  void    xx_warn( const msg_ids errid );
 extern  void    g_err_tag( char *tagname );
@@ -173,6 +182,14 @@ extern  void    g_err_tag_x_in_y( char *tagname1, char *tagname2 );
 
 /* getnum.c                             */
 extern condcode     getnum( getnum_block * gn );
+
+
+/* gindexut.c                           */
+extern ix_e_blk *   fill_ix_e_blk( ix_e_blk * * anchor, ix_h_blk * ref, ereftyp ptyp, char * text, size_t text_len );
+extern  void        free_index_dict( ix_h_blk ** dict );
+extern  void        free_ix_e_index_dict( ix_h_blk ** dict );
+extern  void        gen_index( void );
+extern  void        ixdump( ix_h_blk * dict );
 
 
 /* glayutil.c                           */
@@ -251,9 +268,10 @@ extern  void        add_ref_entry( ref_entry * * dict, ref_entry * me );
 extern  void        init_ref_dict( ref_entry * * dict );
 extern  void        free_ref_dict( ref_entry * * dict );
 extern  void        print_ref_dict( ref_entry * dict, const char * type );
-extern  ref_entry * find_refid( ref_entry * dict, char const * id );
+extern  ref_entry   *find_refid( ref_entry * dict, char const * id );
 extern  void        init_ref_entry( ref_entry * re, char * id, size_t len );
 extern  void        fill_id( ref_entry * re, char * id, size_t len );
+extern  char        *get_refid_value( char *p );
 
 
 /* gresrch.c                            */
@@ -310,10 +328,6 @@ extern  void    init_tag_att( void );
 extern  void    show_ifcb( char * txt, ifcb * cb );
 
 
-/* gsix.c                               */
-extern  void    free_index_dict( ix_h_blk ** dict );
-
-
 /* gsetvar.c                            */
 extern char *   scan_sym( char * p, symvar * sym, sub_index * subscript );
 
@@ -365,9 +379,6 @@ extern  void        print_tag_dict( gtentry * dict );
 extern  void        print_tag_entry( gtentry * entry );
 extern  gtentry *   find_tag( gtentry * * dict, char const * name );
 
-/* gtagutil.c                           */
-extern  char    *   get_att_value( char * p );
-
 /* gtxtpool.c                           */
 extern  void            add_text_chars_to_pool( text_line * a_line );
 extern  text_chars      *alloc_text_chars( char *p, size_t cnt, font_number font );
@@ -393,24 +404,23 @@ extern  bool        process_tag( gtentry * ge, mac_entry * me );
 
 
 /* gutil.c                              */
+extern  bool        att_val_to_su( su * spaceunit, bool pos );
 extern  int32_t     conv_hor_unit( su * spaceunit );
 extern  int32_t     conv_vert_unit( su * spaceunit, uint8_t spacing );
+extern  bool        cw_val_to_su( char * * scaninput, su * spaceunit );
 extern  char    *   format_num( uint32_t n, char * r, size_t rsize, num_style ns );
+extern  char    *   get_att_value( char * p );
 extern  su      *   greater_su( su * su_a, su * su_b, uint8_t spacing );
 extern  char    *   int_to_roman( uint32_t n, char * r, size_t rsize );
+extern  bool        lay_init_su( const char * p, su * in_su );
 extern  int32_t     len_to_trail_space( char p[] , int32_t len );
-extern  bool        to_internal_SU( char * * scaninput, su * spaceunit );
-extern  bool        att_val_to_SU( su * spaceunit, bool pos );
-extern  void        start_line_with_string( char * text, font_number font );
-
-
-/* gxmp.c                               */
-extern  void    xmp_xline( const gmltag * entry );
+extern  void        start_line_with_string( char * text, font_number font, bool leave1space );
 
 
 /* outbuff.c                            */
 extern void     cop_tr_table( char * p );
 extern void     ob_binclude( binclude_element * in_el );
+extern void     ob_direct_out( char * p );
 extern void     ob_graphic( graphic_element * in_el );
 
 
@@ -423,7 +433,7 @@ extern  int     get_msg( msg_ids resourceid, char *buffer, size_t buflen );
 
 
 /* wgmlsupp.c                           */
-extern  bool    free_resources( int in_errno );
+extern  bool    free_resources( errno_t in_errno );
 extern  void    free_some_mem( void );
 extern  void    free_layout_banner( void );
 extern  void    g_banner( void );

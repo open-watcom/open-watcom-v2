@@ -4,12 +4,12 @@
 
 :CMT. Definition file                 Device name
 :CMT. ------------------------------------------------------
-:CMT. PSSPEC                          psspec
+:CMT. XPSSPEC                         xpsspec
 
 :CMT. Corresponding driver
 :CMT. definition file                 Driver name
 :CMT. ------------------------------------------------------
-:CMT. PSSDRV                          pspecdrv
+:CMT. XPSSDRV                          xpspecdrv
 
 :CMT. Font definition files used      Font name
 :CMT. ------------------------------------------------------
@@ -24,10 +24,10 @@
 :CMT. PSSFON09                        psspecfon09
 
 :DEVICE
-   defined_name          = 'psspec'
-   member_name           = 'psspec'
-   driver_name           = 'psspecdrv'
-   output_suffix         = 'pss'
+   defined_name          = 'xpsspec'
+   member_name           = 'xpsspec'
+   driver_name           = 'xpsspecdrv'
+   output_suffix         = 'psx'
    output_name           = ''
    page_width            = 8000
    page_depth            = 10920
@@ -45,6 +45,8 @@
 :INCLUDE file='dev05.inc'.
 
 :INCLUDE file='dev06ps.inc'.
+
+:INCLUDE file='dev07.inc'.
 
 :INCLUDE file='dev07ps.inc'.
 

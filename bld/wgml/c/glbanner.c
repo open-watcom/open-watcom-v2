@@ -166,7 +166,6 @@ static  banner_lay_tag  *   ref_ban;    // referenced banner for copy values
  
 static  void    init_banner_wk( banner_lay_tag * ban )
 {
-    char    *   p;
     char        z0[2] = "0";
     int         k;
  
@@ -177,12 +176,9 @@ static  void    init_banner_wk( banner_lay_tag * ban )
     ban->ban_right_adjust = 0;
     ban->ban_depth = 0;
  
-    p = z0;
-    to_internal_SU( &p, &(ban->left_adjust) );
-    p = z0;
-    to_internal_SU( &p, &(ban->right_adjust) );
-    p = z0;
-    to_internal_SU( &p, &(ban->depth) );
+    lay_init_su( z0, &(ban->left_adjust) );
+    lay_init_su( z0, &(ban->right_adjust) );
+    lay_init_su( z0, &(ban->depth) );
     ban->place = no_place;
     ban->docsect = no_ban;
  

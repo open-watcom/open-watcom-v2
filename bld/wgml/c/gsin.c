@@ -126,7 +126,7 @@ void    scr_in( void )
         } else {
  
             p = pa;
-            scanerr = to_internal_SU( &p, &indentwork );
+            scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
                 g_err( err_miss_inv_opt_value, cwcurr, pa );
                 err_count++;
@@ -148,7 +148,7 @@ void    scr_in( void )
             p++;
         } else {
             pa = p;
-            scanerr = to_internal_SU( &p, &indentwork );
+            scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
                 g_err( err_miss_inv_opt_value, cwcurr, pa );
                 err_count++;

@@ -140,9 +140,10 @@ condcode    get_lay_sub_and_value( att_args * args )
     p = scan_start;
     rc = no;
 
-    while( *p == ' ' ) {                // over WS to start of name
+    while( is_space_tab_char( *p ) ) {  // over WS to start of name
         p++;
     }
+
     args->start[0] = p;
     args->len[0] = -1;                  // switch for scanning error
     args->len[1] = -1;                  // switch for scanning error
@@ -151,7 +152,7 @@ condcode    get_lay_sub_and_value( att_args * args )
         p++;
     }
     if( *p == '\0' ) {
-        if( p == scan_start ) {
+        if( p == args->start[0] ) {
             rc = omit;                  // nothing found
         }
         return( rc );                   // or parsing error
@@ -164,13 +165,13 @@ condcode    get_lay_sub_and_value( att_args * args )
         return( rc );
     }
 
-    while( *p && *p == ' ' ) {          // over WS to =
+    while( is_space_tab_char( *p ) ) {  // over WS to =
         p++;
     }
 
     if(*p && *p == '=' ) {
         p++;
-        while( *p == ' ' ) {            // over WS to attribute value
+        while( is_space_tab_char( *p ) ) {  // over WS to attribute value
             p++;
         }
     } else {
@@ -180,7 +181,7 @@ condcode    get_lay_sub_and_value( att_args * args )
         return( no );                   // parsing err '=' missing
     }
 
-    args->start[1] = p;
+    args->start[1] = p;                 // delimiters must be included for error checking
 
     if( is_quote_char( *p ) ) {
         quote = *p;
@@ -190,12 +191,15 @@ condcode    get_lay_sub_and_value( att_args * args )
         quote = ' ';
         args->quoted = false;
     }
+
     while( *p && *p != quote ) {
         ++p;
     }
+
     if( args->quoted && is_quote_char( *p ) ) {
         p++;                            // over terminating quote
     }
+
     args->len[1] = p - args->start[1];
 
     if( args->len[1] < 1 ) {            // attribute value length
@@ -205,9 +209,18 @@ condcode    get_lay_sub_and_value( att_args * args )
     } else {
         rc = pos;
     }
-    if( *p == '.' ) {                   // TBD
-        p++;                            // try to get over trailing .
-    }                                   // for doc\gml\nb7x9lay.gml line 331
+
+    if( *p == '.' ) {
+        ProcFlags.tag_end_found = true;
+        p++;
+    }
+
+    val_start = args->start[1];
+    val_len = args->len[1];
+    if( args->quoted) {         // delimiters must be omitted for these externs
+        val_start++;
+        val_len -= 2;
+    }
     scan_start = p;
     return( rc );
 }
@@ -931,8 +944,8 @@ void    o_pouring( FILE * f, lay_att curr, reg_pour * tm )
 /***************************************************************************/
 bool    i_space_unit( char * p, lay_att curr, su * tm )
 {
-    curr = curr;
-    return( to_internal_SU( &p, tm ) );
+    p = p; curr = curr;
+    return( att_val_to_su( tm, true ) );    // no negative values allowed TBD
 }
 
 void    o_space_unit( FILE * f, lay_att curr, su * tm )
@@ -950,37 +963,20 @@ void    o_space_unit( FILE * f, lay_att curr, su * tm )
 
 /***************************************************************************/
 /*  xx_string  for :NOTE and others                                        */
+/*                                                                         */
+/*                                                                         */
 /***************************************************************************/
 bool    i_xx_string( char * p, lay_att curr, xx_str * tm )
 {
     bool        cvterr;
-    int         len;
 
-    curr = curr;
+    p = p; curr = curr;
     cvterr = false;
-    len = strlen( p );
-    if( is_quote_char( *p ) ) {
-        while( len > 1 && *(p + len - 1) == ' ' ) {
-            len--;                      // ignore trailing spaces if quoted
-        }
-        if( *(p + len - 1) == '.' ) {       // allow terminator
-            len--;
-        }
-    }
-    if( *p != *(p + len - 1) ) {
-        cvterr = true;                  // string not terminated
+    if( (val_start != NULL) && (val_len < str_size) ) {
+        memcpy_s( tm, str_size, val_start, val_len );
+        *(tm + val_len) = '\0';
     } else {
-        if( str_size > len - 2 ) {
-            *(p + len - 1) = '\0';
-            strcpy_s( tm, str_size, p + 1 );
-        } else {
-            cvterr = true;              // string too long;
-        }
-    }
-    if( cvterr ) {
-        err_count++;
-        g_err( err_att_val_inv );
-        file_mac_info();
+        cvterr = true;
     }
     return( cvterr );
 }

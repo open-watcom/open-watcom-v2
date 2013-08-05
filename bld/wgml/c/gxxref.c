@@ -142,9 +142,9 @@ void    gml_hdref( const gmltag * entry )
                 *pe = '\0';
                 re = find_refid( ref_dict, strlwr( pa ) );
                 if( re != NULL ) {      // id found in ref dict
-                    idp = mem_alloc( 4 + strlen( re->text_cap ) );
+                    idp = mem_alloc( 4 + strlen( re->u.info.text_cap ) );
                     *idp = '"';         // decorate with quotes
-                    strcpy( idp + 1, re->text_cap );
+                    strcpy( idp + 1, re->u.info.text_cap );
                     strcat( idp, "\"" );
                 } else {
                     if( GlobalFlags.lastpass ) {
@@ -180,8 +180,8 @@ void    gml_hdref( const gmltag * entry )
             process_text( undefid, g_curr_font );
         } else {
             process_text( idp, g_curr_font );
-            if( withpage || (!pageseen && (page != re->pageno)) ) {
-                sprintf_s( buf64, sizeof( buf64 ), "on page %d", re->pageno );
+            if( withpage || (!pageseen && (page != re->u.info.pageno)) ) {
+                sprintf_s( buf64, sizeof( buf64 ), "on page %d", re->u.info.pageno );
                 process_text( buf64, g_curr_font );
             }
             mem_free( idp );

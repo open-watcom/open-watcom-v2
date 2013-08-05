@@ -120,7 +120,9 @@ bool is_fon_file( FILE * in_file)
     /* Get the descriminator. */
 
     fread( &descriminator, 3, 1, in_file );
-    if( ferror( in_file ) || feof( in_file ) ) return( false );
+    if( ferror( in_file ) || feof( in_file ) ) {
+        return( false );
+    }
 
     /* Verify that the descriminator is for a .COP font file. */
 
@@ -198,9 +200,7 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
 
     length = strnlen_s( in_name, TYPE_MAX );
     if( (in_name == NULL) || (length == 0) ) {
-        out_msg( "Defined name missing for desired font\n" );
-        err_count++;
-        g_suicide();
+        return( out_font );
     }
 
     /* Initialize the out_font. */
@@ -324,8 +324,8 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
 
     /* Get the scale_basis. */
 
-    fread( &out_font->scale_basis, sizeof( out_font->scale_basis ), 1, \
-        in_file );
+    fread( &out_font->scale_basis, sizeof( out_font->scale_basis ), 1,
+           in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_font );
         out_font = NULL;
@@ -594,8 +594,8 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
 
             outtrans_data = mem_alloc( data_count );
 
-            fread( outtrans_data, sizeof( *outtrans_data ), data_count, \
-                in_file );
+            fread( outtrans_data, sizeof( *outtrans_data ), data_count,
+                   in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
                 mem_free( outtrans_data );
                 outtrans_data = NULL;

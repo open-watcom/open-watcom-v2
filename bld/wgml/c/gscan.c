@@ -502,6 +502,16 @@ static void     scan_script( void )
                         do_layout_end_processing();
                     }
 #endif
+                    if( !ProcFlags.layout && (scr_tags[k].cwflags & cw_o_t) ) {
+
+                        /********************************************************/
+                        /* this is the first control word which produces output */
+                        /* start the document, the layout is done               */
+                        /* start_doc_sect() calls do_layout_end_processing()    */
+                        /********************************************************/
+
+                        start_doc_sect();
+                    }
                     if( ProcFlags.literal  ) {  // .li active
                         if( !strcmp( token_buf, "li" ) ) {  // .li
                             scan_start = p; // found, process
@@ -740,8 +750,8 @@ void    scan_line( void )
         set_if_then_do( cb );
         cc = test_process( cb );
     } else {
-        if( t_line != NULL ) {
-            if( t_line->first != NULL ) {
+        if( !ProcFlags.ct ) {           // special for .ct .li construct
+            if( (t_line != NULL) && (t_line->first != NULL) ) {
                 scr_process_break();
             }
         }
@@ -774,35 +784,31 @@ void    scan_line( void )
                     start_doc_sect();   // if not already done
                     g_err_tag_rsloc( rs_loc, scan_start );
                 } else {
-                    if( ProcFlags.xmp_active ) {
-                        xmp_xline( NULL );
-                    } else {
-                        process_text( scan_start, g_curr_font );
-                    }
+                    process_text( scan_start, g_curr_font );
                 }
             }
         }
 
         /*******************************************************************/
-        /*  For tags which produce text ( :note, ..) but have no following */
-        /* text on the same inputline and .co off is in effect, ensure the */
-        /* line is output                                                  */
+        /* For .co off or :xmp and the last part of the line just processed*/
+        /* ensure the line is output                                       */
         /*******************************************************************/
-        if( t_line != NULL ) {
-            if( !ProcFlags.concat && t_line->first != NULL ) {
-                if( input_cbs->fmflags & II_eol ) {
-                    scr_process_break();    // TBD
-                }
+        if( !ProcFlags.layout && (input_cbs->fmflags & II_eol) ) {
+            if( !ProcFlags.concat || ProcFlags.xmp_active ) {
+                scr_process_break();
             }
         }
     } else if( input_cbs->fmflags & II_research && GlobalFlags.firstpass ) {
-        g_info_lm( inf_skip_line );
+        g_info_lm( inf_skip_line );     // show skipped line
     }
     if( ProcFlags.literal ) {
         if( li_cnt < LONG_MAX ) {   // we decrement, do not wait for .li OFF
             if( li_cnt-- <= 0 ) {
                 ProcFlags.literal = false;
             }
+        }
+        if( input_cbs->fmflags & II_eol ) {
+            scr_process_break();        // ensure the line is output
         }
     }
 }
