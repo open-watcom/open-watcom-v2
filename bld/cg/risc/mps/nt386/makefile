@@ -1,4 +1,4 @@
-#pmake: build os_nt cpu_386 mips target_mips
+#pmake: nobuild target_mips mips os_nt cpu_386
 
 host_os  = nt
 host_cpu = 386

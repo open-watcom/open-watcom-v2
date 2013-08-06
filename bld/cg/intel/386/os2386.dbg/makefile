@@ -1,4 +1,4 @@
-#pmake: debug os_os2 cpu_386 386 intel target_386
+#pmake: debug target_386 intel 386 os_os2 cpu_386
 
 host_os  = os2
 host_cpu = 386

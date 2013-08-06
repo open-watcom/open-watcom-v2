@@ -1,4 +1,4 @@
-#pmake: build os_linux cpu_386 ppc powerpc target_ppc
+#pmake: build target_ppc powerpc ppc os_linux cpu_386
 
 host_os  = linux
 host_cpu = 386

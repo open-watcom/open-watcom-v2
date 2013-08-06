@@ -1,4 +1,4 @@
-#pmake: os_osi cpu_386 axp alpha target_axp
+#pmake: nobuild target_axp alpha axp os_osi cpu_386
 
 host_os  = osi
 host_cpu = 386

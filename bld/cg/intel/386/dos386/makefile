@@ -1,4 +1,4 @@
-#pmake: build os_dos cpu_386 386 intel target_386
+#pmake: build target_386 intel 386 os_dos cpu_386
 
 host_os  = dos
 host_cpu = 386

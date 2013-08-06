@@ -1,4 +1,4 @@
-#pmake: os_osi cpu_386 ppc powerpc target_ppc
+#pmake: nobuild target_ppc powerpc ppc os_osi cpu_386
 
 host_os  = osi
 host_cpu = 386
