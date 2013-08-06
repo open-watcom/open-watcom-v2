@@ -12,13 +12,23 @@ dwarfw_lib_mps     = $(dwarfw_dir)/osimps/dwarfw.lib
 dwarfw_lib_x64     = $(dwarfw_dir)/osix64/dwarfw.lib
 
 #
-# DWARF run-time DLL used
+# DWARF DLL used
 #
-!ifeq $(proj_name)_rtdll 1
+!ifeq $(proj_name)_dll 1
 dwarfw_lib_os2_386 = $(dwarfw_dir)/os2386.dll/dwarfw.lib
 dwarfw_lib_nt_386  = $(dwarfw_dir)/nt386.dll/dwarfw.lib
 dwarfw_lib_nt_axp  = $(dwarfw_dir)/ntaxp.dll/dwarfw.lib
 dwarfw_lib_nt_x64  = $(dwarfw_dir)/ntx64.dll/dwarfw.lib
+!endif
+
+#
+# DWARF run-time DLL used
+#
+!ifeq $(proj_name)_rtdll 1
+dwarfw_lib_os2_386 = $(dwarfw_dir)/os2386.rtd/dwarfw.lib
+dwarfw_lib_nt_386  = $(dwarfw_dir)/nt386.rtd/dwarfw.lib
+dwarfw_lib_nt_axp  = $(dwarfw_dir)/ntaxp.rtd/dwarfw.lib
+dwarfw_lib_nt_x64  = $(dwarfw_dir)/ntx64.rtd/dwarfw.lib
 !endif
 
 #
