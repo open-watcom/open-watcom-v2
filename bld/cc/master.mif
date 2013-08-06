@@ -58,7 +58,7 @@ extra_cpp_flags = -Dlocal=static
 !ifneq cc_dll 1
 extra_cpp_flags += -DIDE_PGM
 !endif
-!ifeq cg_dll 1
+!ifeq dll_cg 1
 extra_cpp_flags += -D_CGDLL
 !endif
 
@@ -105,6 +105,9 @@ extra_l_flags_dll_os2 = initinstance terminstance option manyautodata, modname='
 # external libraries
 #
 xlibs = $(asminline_lib) $(cg_libs)
+!ifeq dll_cg 1
+xlibs += $(dwarfw_lib)
+!endif
 
 #
 # External dependencies
