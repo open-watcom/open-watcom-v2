@@ -1,4 +1,4 @@
-#pmake: nobuild flat cpu_386 target_axp os_osi
+#pmake: nobuild target_axp flat os_osi cpu_386
 
 host_os  = osi
 host_cpu = 386

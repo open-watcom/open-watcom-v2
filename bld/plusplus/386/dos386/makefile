@@ -1,4 +1,4 @@
-#pmake: build flat cpu_386 target_386 os_dos
+#pmake: build target_386 flat os_dos cpu_386
 
 host_os  = dos
 host_cpu = 386

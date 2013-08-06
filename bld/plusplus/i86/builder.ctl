@@ -29,21 +29,21 @@ set PROJNAME=wpp
     <CCCMD> dos386/wpp.exe          <OWRELROOT>/binw/
     <CCCMD> dos386/wpp.sym          <OWRELROOT>/binw/
     <CCCMD> dos386/wppi8601.int     <OWRELROOT>/binw/
-    <CCCMD> os2386/wpp.exe          <OWRELROOT>/binp/
-    <CCCMD> os2386/wpp.sym          <OWRELROOT>/binp/
-    <CCCMD> os2386/wppdi86.dll      <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/wppdi86.sym      <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/wppi8601.int     <OWRELROOT>/binp/dll/
-    <CCCMD> nt386/wpp.exe           <OWRELROOT>/binnt/
-    <CCCMD> nt386/wpp.sym           <OWRELROOT>/binnt/
-    <CCCMD> nt386/wppdi86.dll       <OWRELROOT>/binnt/
-    <CCCMD> nt386/wppdi86.sym       <OWRELROOT>/binnt/
-    <CCCMD> nt386/wppi8601.int      <OWRELROOT>/binnt/
-    <CCCMD> ntaxp/wpp.exe           <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wpp.sym           <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wppdi86.dll       <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wppdi86.sym       <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wppi8601.int      <OWRELROOT>/axpnt/
+    <CCCMD> os2386.dll/wpp.exe      <OWRELROOT>/binp/
+    <CCCMD> os2386.dll/wpp.sym      <OWRELROOT>/binp/
+    <CCCMD> os2386.dll/wppdi86.dll  <OWRELROOT>/binp/dll/
+    <CCCMD> os2386.dll/wppdi86.sym  <OWRELROOT>/binp/dll/
+    <CCCMD> os2386.dll/wppi8601.int <OWRELROOT>/binp/dll/
+    <CCCMD> nt386.dll/wpp.exe       <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wpp.sym       <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wppdi86.dll   <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wppdi86.sym   <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wppi8601.int  <OWRELROOT>/binnt/
+    <CCCMD> ntaxp.dll/wpp.exe       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wpp.sym       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wppdi86.dll   <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wppdi86.sym   <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wppi8601.int  <OWRELROOT>/axpnt/
     <CCCMD> qnx386/wpp.exe          <OWRELROOT>/qnx/binq/wpp
     <CCCMD> qnx386/wpp.sym          <OWRELROOT>/qnx/sym/
     <CCCMD> qnx386/wppi8601.int     <OWRELROOT>/qnx/binq/
@@ -51,9 +51,9 @@ set PROJNAME=wpp
     <CCCMD> linux386/wpp.sym        <OWRELROOT>/binl/
     <CCCMD> linux386/wppi8601.int   <OWRELROOT>/binl/
 
-    <CCCMD> ntx64/wpp.exe           <OWRELROOT>/binnt64/
-    <CCCMD> ntx64/wppdi86.dll       <OWRELROOT>/binnt64/
-    <CCCMD> ntx64/wppi8601.int      <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/wpp.exe       <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/wppdi86.dll   <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/wppi8601.int  <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

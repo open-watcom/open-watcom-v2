@@ -29,21 +29,21 @@ set PROJNAME=wpp386
     <CCCMD> dos386/wpp386.exe       <OWRELROOT>/binw/
     <CCCMD> dos386/wpp386.sym       <OWRELROOT>/binw/
     <CCCMD> dos386/wpp38601.int     <OWRELROOT>/binw/
-    <CCCMD> os2386/wpp386.exe       <OWRELROOT>/binp/
-    <CCCMD> os2386/wpp386.sym       <OWRELROOT>/binp/
-    <CCCMD> os2386/wppd386.dll      <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/wppd386.sym      <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/wpp38601.int     <OWRELROOT>/binp/dll/
-    <CCCMD> nt386/wpp386.exe        <OWRELROOT>/binnt/
-    <CCCMD> nt386/wpp386.sym        <OWRELROOT>/binnt/
-    <CCCMD> nt386/wppd386.dll       <OWRELROOT>/binnt/
-    <CCCMD> nt386/wppd386.sym       <OWRELROOT>/binnt/
-    <CCCMD> nt386/wpp38601.int      <OWRELROOT>/binnt/
-    <CCCMD> ntaxp/wpp386.exe        <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wpp386.sym        <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wppd386.dll       <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wppd386.sym       <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wpp38601.int      <OWRELROOT>/axpnt/
+    <CCCMD> os2386.dll/wpp386.exe   <OWRELROOT>/binp/
+    <CCCMD> os2386.dll/wpp386.sym   <OWRELROOT>/binp/
+    <CCCMD> os2386.dll/wppd386.dll  <OWRELROOT>/binp/dll/
+    <CCCMD> os2386.dll/wppd386.sym  <OWRELROOT>/binp/dll/
+    <CCCMD> os2386.dll/wpp38601.int <OWRELROOT>/binp/dll/
+    <CCCMD> nt386.dll/wpp386.exe    <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wpp386.sym    <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wppd386.dll   <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wppd386.sym   <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wpp38601.int  <OWRELROOT>/binnt/
+    <CCCMD> ntaxp.dll/wpp386.exe    <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wpp386.sym    <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wppd386.dll   <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wppd386.sym   <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wpp38601.int  <OWRELROOT>/axpnt/
     <CCCMD> qnx386/wpp386.exe       <OWRELROOT>/qnx/binq/wpp386
     <CCCMD> qnx386/wpp386.sym       <OWRELROOT>/qnx/sym/
     <CCCMD> qnx386/wpp38601.int     <OWRELROOT>/qnx/binq/
@@ -51,9 +51,9 @@ set PROJNAME=wpp386
     <CCCMD> linux386/wpp386.sym     <OWRELROOT>/binl/
     <CCCMD> linux386/wpp38601.int   <OWRELROOT>/binl/
 
-    <CCCMD> ntx64/wpp386.exe        <OWRELROOT>/binnt64/
-    <CCCMD> ntx64/wppd386.dll       <OWRELROOT>/binnt64/
-    <CCCMD> ntx64/wpp38601.int      <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/wpp386.exe    <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/wppd386.dll   <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/wpp38601.int  <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

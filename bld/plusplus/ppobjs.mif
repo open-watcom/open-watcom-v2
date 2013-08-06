@@ -206,7 +206,6 @@ common_objs = &
     $(_subdir_)intlload.obj &
 # in-line assembler files
     $(_subdir_)asmalloc.obj &
-# in-line assembler files
     $(_subdir_)asmmsg.obj
 
 !ifeq plusplus_trmem 1

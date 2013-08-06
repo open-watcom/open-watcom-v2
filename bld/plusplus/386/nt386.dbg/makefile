@@ -1,4 +1,4 @@
-#pmake: debug flat cpu_386 target_386 os_nt
+#pmake: debug target_386 flat os_nt cpu_386
 
 host_os  = nt
 host_cpu = 386

@@ -1,4 +1,4 @@
-#pmake: nobuild compiler nomodel cpu_axp target_i86 os_nt
+#pmake: nobuild target_i86 flat os_nt cpu_axp
 
 host_os  = nt
 host_cpu = axp
