@@ -10,10 +10,12 @@
 
 !ifeq bootstrap 1
 obj_dir = $(%OWOBJDIR)
-!else ifeq cg_dll 1
-obj_dir = $(host_os)$(host_cpu).dll
+!else ifeq dll_cg 1
+obj_dir = $(host_os)$(host_cpu).cgd
 !else ifeq $(proj_name)_rtdll 1
 obj_dir = $(host_os)$(host_cpu).rtd
+!else ifeq $(proj_name)_dll 1
+obj_dir = $(host_os)$(host_cpu).dll
 !else ifdef debug_cg
 obj_dir = $(host_os)$(host_cpu).dbg
 !else
@@ -38,7 +40,7 @@ i_path_mps   = -I"$(cg_dir)/risc/mps/h" -I"$(cg_dir)/risc/h"
 
 o_dir  = $(o_dir_$(target_cpu))
 i_path = $(i_path_$(target_cpu)) -I"$(cg_dir)/h"
-!ifeq cg_dll 1
+!ifeq dll_cg 1
 i_path += -I"$(o_dir_$(target_cpu))"
 !endif
 
@@ -57,7 +59,7 @@ use_owl_lib_i86   = 0
 cg_inc_dirs = $(i_path)
 
 cg_objs =
-!ifeq cg_dll 1
+!ifeq dll_cg 1
 cg_libs = $(o_dir)/cgdllcli.lib
 !else ifeq use_owl_lib_$(target_cpu) 1
 !ifeq debug_cg 1

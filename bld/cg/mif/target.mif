@@ -1,31 +1,26 @@
-!include binname.mif
-
 !ifeq host_os linux
 hostcglibname=cg$(target_name)lnx.lib
 !else
 hostcglibname=cg$(target_name)$(host_os).lib
 !endif
 
-!ifndef sys_dll
-
-target : $(pre_obj_deps) cg$(target_name).lib $(hostcglibname) .SYMBOLIC
-        @%null
-
-!else
-
+!ifeq dll_cg 1
 
 libs = cg$(target_name).lib $(hostcglibname) $(dwarfw_lib) $(owl_lib) $(cfloat_lib)
 
-bin_name = cg$(target_name)
-
-target : $(pre_obj_deps) $(bin_path) cgdllcli.lib .SYMBOLIC
+target : $(pre_obj_deps) cg$(target_name).dll cgdllcli.lib .SYMBOLIC
         @%null
 
-$(bin_path) : cgdmain.obj $(libs)
+cg$(target_name).dll : cgdmain.obj $(libs)
         $(linker) $(lflags) name $@ op map file $[@ lib {$(libs)}
 
 cgdllcli.lib : $(cg_client_objs)
         $(librarian) $(libflags) $<
+
+!else
+
+target : $(pre_obj_deps) cg$(target_name).lib $(hostcglibname) .SYMBOLIC
+        @%null
 
 !endif
 
