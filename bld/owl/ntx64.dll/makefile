@@ -1,6 +1,6 @@
-#pmake: nobuild os_nt cpu_axp
+#pmake: build os_nt cpu_x64
 host_os  = nt
-host_cpu = axp
+host_cpu = x64
 
 sys_dll = 1
 

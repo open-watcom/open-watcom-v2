@@ -1,36 +1,43 @@
 # OWL library finder.
 # ~~~~~~~~~~~~~~~~~~
 #
-!ifdef __UNIX__
-__owl_prefix=$(owl_dir)/
-__owl_suffix=/owl.lib
-!else
-__owl_prefix=$(owl_dir)\
-__owl_suffix=\owl.lib
-!endif
+
 #
 # OWL library
 #
-owl_lib_386 = $(__owl_prefix)osi386$(__owl_suffix)
-owl_lib_axp = $(__owl_prefix)osiaxp$(__owl_suffix)
-owl_lib_ppc = $(__owl_prefix)osippc$(__owl_suffix)
-owl_lib_mps = $(__owl_prefix)osimps$(__owl_suffix)
-owl_lib_x64 = $(__owl_prefix)osix64$(__owl_suffix)
+owl_lib_386 = $(owl_dir)/osi386/owl.lib
+owl_lib_axp = $(owl_dir)/osiaxp/owl.lib
+owl_lib_ppc = $(owl_dir)/osippc/owl.lib
+owl_lib_mps = $(owl_dir)/osimps/owl.lib
+owl_lib_x64 = $(owl_dir)/osix64/owl.lib
+
+#
+# OWL DLL used
+#
+!ifeq $(proj_name)_dll 1
+owl_lib_nt_386  = $(owl_dir)/nt386.dll/owl.lib
+owl_lib_nt_axp  = $(owl_dir)/ntaxp.dll/owl.lib
+owl_lib_nt_x64  = $(owl_dir)/ntx64.dll/owl.lib
+owl_lib_os2_386 = $(owl_dir)/os2386.dll/owl.lib
+!endif
 
 #
 # OWL run-time DLL used
 #
 !ifeq $(proj_name)_rtdll 1
-owl_lib_nt_386 = $(__owl_prefix)nt386.dll$(__owl_suffix)
-owl_lib_nt_axp = $(__owl_prefix)ntaxp.dll$(__owl_suffix)
-owl_lib_nt_x64 = $(__owl_prefix)ntx64.dll$(__owl_suffix)
+owl_lib_nt_386  = $(owl_dir)/nt386.rtd/owl.lib
+owl_lib_nt_axp  = $(owl_dir)/ntaxp.rtd/owl.lib
+owl_lib_nt_x64  = $(owl_dir)/ntx64.rtd/owl.lib
+owl_lib_os2_386 = $(owl_dir)/os2386.rtd/owl.lib
 !endif
 
 #
 !ifeq bootstrap 1
-owl_lib = $(__owl_prefix)$(%OWOBJDIR)$(__owl_suffix)
+owl_lib = $(owl_dir)/$(%OWOBJDIR)/owl.lib
 !else ifdef owl_lib_$(host_os)_$(host_cpu)
 owl_lib = $(owl_lib_$(host_os)_$(host_cpu))
 !else
 owl_lib = $(owl_lib_$(host_cpu))
 !endif
+
+owl_inc_dirs = -I"$(owl_dir)/h"
