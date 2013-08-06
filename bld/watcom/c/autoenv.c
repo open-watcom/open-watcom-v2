@@ -40,11 +40,17 @@
 #include "iopath.h"
 #include "autoenv.h"
 
-#if defined( __LINUX__ )
+#if defined( __LINUX__ ) && defined( _M_X64 )
+    #define PRIMARY_PATH    "binl64"
+    #define SECONDARY_PATH  "binl"
+#elif defined( __LINUX__ )
     #define PRIMARY_PATH    "binl"
 #elif defined( __OS2__ )
     #define PRIMARY_PATH    "binp"
     #define SECONDARY_PATH  "binw"
+#elif defined( __NT__ ) && defined( _M_X64 )
+    #define PRIMARY_PATH    "binnt64"
+    #define SECONDARY_PATH  "binnt"
 #elif defined( __NT__ )
     #define PRIMARY_PATH    "binnt"
     #define SECONDARY_PATH  "binw"
