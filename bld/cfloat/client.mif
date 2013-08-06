@@ -4,22 +4,30 @@
 #
 # CFLOAT library
 #
-!ifdef __UNIX__
-cfloat_lib_386 = $(cfloat_dir)/osi386/cf.lib
-cfloat_lib_axp = $(cfloat_dir)/osiaxp/cf.lib
-cfloat_lib_mps = $(cfloat_dir)/osimps/cf.lib
-cfloat_lib_x64 = $(cfloat_dir)/osix64/cf.lib
-!else
-cfloat_lib_386 = $(cfloat_dir)\osi386\cf.lib
-cfloat_lib_axp = $(cfloat_dir)\osiaxp\cf.lib
-cfloat_lib_mps = $(cfloat_dir)\osimps\cf.lib
-cfloat_lib_x64 = $(cfloat_dir)\osix64\cf.lib
+cfloat_lib_386     = $(cfloat_dir)/osi386/cf.lib
+cfloat_lib_axp     = $(cfloat_dir)/osiaxp/cf.lib
+cfloat_lib_ppc     = $(cfloat_dir)/osippc/cf.lib
+cfloat_lib_mps     = $(cfloat_dir)/osimps/cf.lib
+cfloat_lib_x64     = $(cfloat_dir)/osix64/cf.lib
+
+#
+# CFLOAT DLL used
+#
+!ifeq $(proj_name)_dll 1
+cfloat_lib_os2_386 = $(cfloat_dir)/os2386.dll/cf.lib
+cfloat_lib_nt_386  = $(cfloat_dir)/nt386.dll/cf.lib
+cfloat_lib_nt_axp  = $(cfloat_dir)/ntaxp.dll/cf.lib
+cfloat_lib_nt_x64  = $(cfloat_dir)/ntx64.dll/cf.lib
 !endif
 
 #
 # CFLOAT run-time DLL used
 #
 !ifeq $(proj_name)_rtdll 1
+cfloat_lib_os2_386 = $(cfloat_dir)/os2386.rtd/cf.lib
+cfloat_lib_nt_386  = $(cfloat_dir)/nt386.rtd/cf.lib
+cfloat_lib_nt_axp  = $(cfloat_dir)/ntaxp.rtd/cf.lib
+cfloat_lib_nt_x64  = $(cfloat_dir)/ntx64.rtd/cf.lib
 !endif
 
 #
