@@ -123,6 +123,7 @@ extra_c_flags_ppmacro = -fh=$^:pch04.pch
 extra_c_flags_ppmem = -fh=$^:pch04.pch
 extra_c_flags_ppenv = -fh=$^:pch04.pch
 extra_c_flags_trmemcvr = -fh=$^:pch05.pch
+extra_c_flags_pathlist = -fh=$^:pch06.pch
 !endif
 
 !ifdef __WATCOM__
