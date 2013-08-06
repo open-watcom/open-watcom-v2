@@ -29,30 +29,30 @@ set PROJNAME=wrc
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CPCMD> *.uni               <OWRELROOT>/binw/
-    <CPCMD> *.uni               <OWRELROOT>/binl/
+    <CPCMD> *.uni                   <OWRELROOT>/binw/
+    <CPCMD> *.uni                   <OWRELROOT>/binl/
 
-#    <CPCMD> osi386/wrc.exe      <OWRELROOT>/binw/
-    <CCCMD> dos386/wrc.exe      <OWRELROOT>/binw/
-    <CCCMD> dos386/wrc.sym      <OWRELROOT>/binw/
-    <CCCMD> os2386/wrc.exe      <OWRELROOT>/binp/
-    <CCCMD> os2386/wrc.sym      <OWRELROOT>/binp/
-    <CCCMD> os2386/wrcd.dll     <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/wrcd.sym     <OWRELROOT>/binp/dll/
-    <CCCMD> nt386/wrc.exe       <OWRELROOT>/binnt/
-    <CCCMD> nt386/wrc.sym       <OWRELROOT>/binnt/
-    <CCCMD> nt386/wrcd.dll      <OWRELROOT>/binnt/
-    <CCCMD> nt386/wrcd.sym      <OWRELROOT>/binnt/
-    <CCCMD> ntaxp/wrc.exe       <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wrc.sym       <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wrcd.dll      <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wrcd.sym      <OWRELROOT>/axpnt/
-    <CCCMD> linux386/wrc.exe    <OWRELROOT>/binl/wrc
-    <CCCMD> linux386/wrc.sym    <OWRELROOT>/binl/
+#    <CPCMD> osi386/wrc.exe          <OWRELROOT>/binw/
+    <CCCMD> dos386/wrc.exe          <OWRELROOT>/binw/
+    <CCCMD> dos386/wrc.sym          <OWRELROOT>/binw/
+    <CCCMD> os2386.dll/wrc.exe      <OWRELROOT>/binp/
+    <CCCMD> os2386.dll/wrc.sym      <OWRELROOT>/binp/
+    <CCCMD> os2386.dll/wrcd.dll     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386.dll/wrcd.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> nt386.dll/wrc.exe       <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wrc.sym       <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wrcd.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wrcd.sym      <OWRELROOT>/binnt/
+    <CCCMD> ntaxp.dll/wrc.exe       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wrc.sym       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wrcd.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wrcd.sym      <OWRELROOT>/axpnt/
+    <CCCMD> linux386/wrc.exe        <OWRELROOT>/binl/wrc
+    <CCCMD> linux386/wrc.sym        <OWRELROOT>/binl/
 
-    <CCCMD> linuxx64/wrc.exe    <OWRELROOT>/binl64/wrc
-    <CCCMD> ntx64/wrc.exe       <OWRELROOT>/binnt64/
-    <CCCMD> ntx64/wrcd.dll      <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wrc.exe        <OWRELROOT>/binl64/wrc
+    <CCCMD> ntx64.dll/wrc.exe       <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/wrcd.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============
