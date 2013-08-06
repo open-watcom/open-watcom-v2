@@ -36,19 +36,19 @@ set PROJNAME=wlink
     <CCCMD> ovlldr/dosi86/wovl.lib          <OWRELROOT>/lib286/dos/
 #    <CCCMD> ovlldr/dosi86/wmovl.lib         <OWRELROOT>/lib286/dos/
 
-    <CCCMD> os2386/wlink.exe                <OWRELROOT>/binp/
-    <CCCMD> os2386/wlink.sym                <OWRELROOT>/binp/
-    <CCCMD> os2386/wlinkd.dll               <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/wlinkd.sym               <OWRELROOT>/binp/dll/
+    <CCCMD> os2386.dll/wlink.exe            <OWRELROOT>/binp/
+    <CCCMD> os2386.dll/wlink.sym            <OWRELROOT>/binp/
+    <CCCMD> os2386.dll/wlinkd.dll           <OWRELROOT>/binp/dll/
+    <CCCMD> os2386.dll/wlinkd.sym           <OWRELROOT>/binp/dll/
     <CCCMD> ms2wlink/os2i86/ms2wlink.exe    <OWRELROOT>/binp/
     <CCCMD> fcenable/os2i86/fcenable.exe    <OWRELROOT>/binp/
     <CCCMD> exe2bin/os2386/exe2bin.exe      <OWRELROOT>/binp/
     <CCCMD> lnk/os2/wlink.lnk               <OWRELROOT>/binp/
 
-    <CCCMD> nt386/wlink.exe                 <OWRELROOT>/binnt/
-    <CCCMD> nt386/wlink.sym                 <OWRELROOT>/binnt/
-    <CCCMD> nt386/wlinkd.dll                <OWRELROOT>/binnt/
-    <CCCMD> nt386/wlinkd.sym                <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wlink.exe             <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wlink.sym             <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wlinkd.dll            <OWRELROOT>/binnt/
+    <CCCMD> nt386.dll/wlinkd.sym            <OWRELROOT>/binnt/
     <CCCMD> ms2wlink/nt386/ms2wlink.exe     <OWRELROOT>/binnt/
     <CCCMD> fcenable/nt386/fcenable.exe     <OWRELROOT>/binnt/
     <CCCMD> exe2bin/nt386/exe2bin.exe       <OWRELROOT>/binnt/
@@ -61,10 +61,10 @@ set PROJNAME=wlink
     <CCCMD> exe2bin/linux386/exe2bin.exe    <OWRELROOT>/binl/exe2bin
     <CCCMD> lnk/linux386/wlink.lnk          <OWRELROOT>/binl/
 
-    <CCCMD> ntaxp/wlink.exe                 <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wlink.sym                 <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wlinkd.dll                <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wlinkd.sym                <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wlink.exe             <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wlink.sym             <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wlinkd.dll            <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp.dll/wlinkd.sym            <OWRELROOT>/axpnt/
     <CCCMD> exe2bin/ntaxp/exe2bin.exe       <OWRELROOT>/axpnt/
     <CCCMD> lnk/ntaxp/wlink.lnk             <OWRELROOT>/axpnt/
 
@@ -72,8 +72,8 @@ set PROJNAME=wlink
     <CCCMD> qnx386/wlink.sym                <OWRELROOT>/qnx/sym/
     <CCCMD> lnk/qnx/wlink.lnk               <OWRELROOT>/qnx/etc/
 
-    <CCCMD> ntx64/wlink.exe                 <OWRELROOT>/binnt64/
-    <CCCMD> ntx64/wlinkd.dll                <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/wlink.exe             <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.dll/wlinkd.dll            <OWRELROOT>/binnt64/
     <CCCMD> ms2wlink/ntx64/ms2wlink.exe     <OWRELROOT>/binnt64/
     <CCCMD> fcenable/ntx64/fcenable.exe     <OWRELROOT>/binnt64/
     <CCCMD> exe2bin/ntx64/exe2bin.exe       <OWRELROOT>/binnt64/
