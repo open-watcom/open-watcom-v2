@@ -312,7 +312,7 @@ void FTSBarfData( FILE *f )
         for( cmd = fts->cmd_head; cmd != NULL; cmd = cmd->next ) {
             MyFprintf( f, "    %s\n", cmd->data );
         }
-        MyFprintf( f, "endfiletypesource\n\n" );
+        MyFprintf( f, "endfiletypesource\n" );
     }
 
 } /* FTSBarfData */

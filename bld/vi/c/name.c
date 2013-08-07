@@ -33,9 +33,8 @@
 #include "banner.h"
 
 #if defined( __WIN__ )
-char _NEAR BANNER1[] = banner1w( "Text Editor for Windows" STR_BITNEES, _VI_VERSION_ );
+char _NEAR BANNER1[] = banner1w1( "Text Editor for Windows" );
 #else
-char _NEAR BANNER1[] = banner1w( "Vi Text Editor", _VI_VERSION_ );
+char _NEAR BANNER1[] = banner1w1( "Vi Text Editor" );
 #endif
-char _NEAR BANNER2[] = banner2;
-char _NEAR BANNER2A[] = banner2a( "1991" );
+char _NEAR BANNER2[] = banner1w2( _VI_VERSION_ );

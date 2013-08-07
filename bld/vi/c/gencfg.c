@@ -35,6 +35,7 @@
 #include "parsecl.h"
 #include "source.h"
 #include "sstyle.h"
+#include "banner.h"
 #include "fts.h"
 
 #define VBUF_SIZE       8192
@@ -222,7 +223,12 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
     if( buff != NULL ) {
         setvbuf( f, buff, _IOFBF, VBUF_SIZE );
     }
-    MyFprintf( f, "#\n# %s configuration file\n# %s\n#\n", BANNER1, BANNER2 );
+    MyFprintf( f, "#\n# %s configuration file\n# %s\n#\n", 
+#if defined( __WIN__ )
+        banner1w1( "Text Editor for Windows" ), banner1w2( _VI_VERSION_ ) );
+#else
+        banner1w1( "Vi Text Editor" ), banner1w2( _VI_VERSION_ ) );
+#endif
     if( is_cmdline ) {
         GetDateTimeString( token );
         MyFprintf( f, "# File generated on %s\n#\n", token );
