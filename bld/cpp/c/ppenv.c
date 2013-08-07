@@ -11,7 +11,7 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include "preproc.h"
 
 char *PP_GetEnv( const char *name )
 {
