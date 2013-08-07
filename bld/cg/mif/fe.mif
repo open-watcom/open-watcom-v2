@@ -60,7 +60,9 @@ cg_inc_dirs = $(i_path)
 
 cg_objs =
 !ifeq dll_cg 1
-cg_libs = $(o_dir)/cgdllcli.lib
+cg_libs = &
+    $(o_dir)/cgdllcli.lib &
+    $(dwarfw_lib)
 !else ifeq use_owl_lib_$(target_cpu) 1
 !ifeq debug_cg 1
 cg_objs = $(o_dir)/dmpinc.obj $(owl_debug_objs)

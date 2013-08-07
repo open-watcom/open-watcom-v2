@@ -155,9 +155,6 @@ extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)', manya
 # External libraries
 #
 xlibs = $(asminline_lib) $(cg_libs)
-!ifeq dll_cg 1
-xlibs += $(dwarfw_lib)
-!endif
  
 #
 # External dependencies

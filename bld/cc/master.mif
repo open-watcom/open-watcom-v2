@@ -105,9 +105,6 @@ extra_l_flags_dll_os2 = initinstance terminstance option manyautodata, modname='
 # external libraries
 #
 xlibs = $(asminline_lib) $(cg_libs)
-!ifeq dll_cg 1
-xlibs += $(dwarfw_lib)
-!endif
 
 #
 # External dependencies
