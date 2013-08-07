@@ -67,8 +67,6 @@ NODROP          CURSOR  nodrop.cur
 STATMOVE        CURSOR  statmove.cur
 DROPSS          CURSOR  dropss.cur
 
-#include "strbitns.h"
-
 STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
     #define pick(c,e,j)  c, [ e ]

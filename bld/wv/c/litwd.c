@@ -34,7 +34,7 @@
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dui.h"
-#include "strbitns.h"
+#include "banner.h"
 
 #ifdef JAPANESE
   #define pick(c,e,j) LITSTR( c, j )

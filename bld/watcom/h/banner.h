@@ -68,6 +68,20 @@
 #define gui_banner2         "Copyright © 2002-" CURR_YEAR " Open Watcom Contributors. All Rights Reserved."
 #define gui_banner2a        "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
 
+#if defined( _M_I86 )
+#define STR_BITNEES " (16-bit)"
+#elif defined( _M_IX86 )
+#if defined( __WINDOWS__ )
+#define STR_BITNEES " (32-bit extender)"
+#else
+#define STR_BITNEES " (32-bit)"
+#endif
+#elif defined( _M_X64 )
+#define STR_BITNEES " (64-bit)"
+#else
+#define STR_BITNEES
+#endif
+
 // the following macros define the delimeters used by the resource
 // compiler when concatenating strings
 #define _RC_DELIM_LEFT_         [

@@ -5,8 +5,6 @@
 #include "rcstr.gh"
 #include "uistr.gh"
 
-#include "strbitns.h"
-
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) c, [ e ]

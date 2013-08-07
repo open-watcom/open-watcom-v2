@@ -1,6 +1,5 @@
 #include <os2.h>
-#include "strbitns.h"
-
+#include "banner.h"
 #include "wv.rc"
 
 ICON 1 "zapant.ico"

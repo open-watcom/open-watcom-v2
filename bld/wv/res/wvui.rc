@@ -1,8 +1,7 @@
 #include "wresdefn.h"
 #include "wdmsg.h"
 #include "wreslang.h"
-#include "strbitns.h"
-
+#include "banner.h"
 #include "wv.rc"
 
 STRINGTABLE

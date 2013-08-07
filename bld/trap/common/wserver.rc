@@ -2,7 +2,6 @@
 #include "wserver.h"
 #include "servname.h"
 #include "banner.h"
-#include "strbitns.h"
 
 // Use low-color icons for Windows 3.x.
 #ifdef __WINDOWS__

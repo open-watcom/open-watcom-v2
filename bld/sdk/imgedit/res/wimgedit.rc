@@ -103,8 +103,6 @@ BEGIN
     VK_F4, IMGED_TILE, VIRTKEY, SHIFT
 END
 
-#include "strbitns.h"
-
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) c, [ e ]

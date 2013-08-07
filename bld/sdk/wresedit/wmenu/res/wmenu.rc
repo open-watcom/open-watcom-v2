@@ -40,8 +40,6 @@ END
 "InsertSub"     BITMAP "inssub.bmp"
 "InsertNoSub"   BITMAP "insnosub.bmp"
 
-#include "strbitns.h"
-
 STRINGTABLE
 BEGIN
     #define pick(c,e) c, [ e ]

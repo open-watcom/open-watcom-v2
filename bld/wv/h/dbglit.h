@@ -36,7 +36,7 @@
 
 #include "bool.h"
 #include "litdef.h"
-#include "strbitns.h"
+#include "banner.h"
 
 #ifdef JAPANESE
   #define pick(c,e,j) LITSTR( c, j )

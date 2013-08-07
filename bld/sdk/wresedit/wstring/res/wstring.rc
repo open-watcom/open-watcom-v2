@@ -34,8 +34,6 @@ END
 "InsertKey" BITMAP "inskey.bmp"
 "DeleteKey" BITMAP "delkey.bmp"
 
-#include "strbitns.h"
-
 STRINGTABLE
 BEGIN
     #define pick(c,e) c, [ e ]

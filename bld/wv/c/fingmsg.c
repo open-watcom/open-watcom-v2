@@ -34,9 +34,6 @@
 #include "dbgmem.h"
 #include <string.h>
 
-#define _BETASTR_ " Beta "
-#include "banner.h"
-
 char *AboutMessage[] = {
     "", // constructed
     banner2,

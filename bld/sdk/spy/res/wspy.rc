@@ -80,8 +80,6 @@ BEGIN
     END
 END
 
-#include "strbitns.h"
-
 STRINGTABLE
 BEGIN
     #define pick(c,e,j) c, [ e ]

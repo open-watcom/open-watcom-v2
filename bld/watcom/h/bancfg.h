@@ -31,5 +31,5 @@
 
 #define _BANVER     2000
 #define _BETAVER    1
-#define _BANEXTRA   __DATE__ " " __TIME__
+#define _BANEXTRA   __DATE__ " " __TIME__ STR_BITNEES
 #define _BANEXSHORT __DATE__

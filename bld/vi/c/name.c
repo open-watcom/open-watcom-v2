@@ -31,7 +31,6 @@
 
 #include "vi.h"
 #include "banner.h"
-#include "strbitns.h"
 
 #if defined( __WIN__ )
 char _NEAR BANNER1[] = banner1w( "Text Editor for Windows" STR_BITNEES, _VI_VERSION_ );

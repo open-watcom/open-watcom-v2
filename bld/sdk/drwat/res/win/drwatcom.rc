@@ -26,8 +26,6 @@
 #include "menu.rc"
 #undef sp
 
-#include "strbitns.h"
-
 STRINGTABLE
 BEGIN
   #ifdef JAPANESE

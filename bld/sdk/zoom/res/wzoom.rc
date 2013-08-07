@@ -16,8 +16,6 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 #include "menu.rc"
 #undef menupick
 
-#include "strbitns.h"
-
 STRINGTABLE
 BEGIN
   #ifdef JAPANESE

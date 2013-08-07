@@ -30,7 +30,6 @@
 
 
 #include "banner.h"
-#include "strbitns.h"
 
 char *AboutMessage[] = {
     "",

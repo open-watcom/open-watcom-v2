@@ -120,8 +120,6 @@ char _viperInfo[] = { "IDE Information" };
 #pragma warning 438 9
 #endif
 
-#include "strbitns.h"
-
 const char* _viperDesc[] = {
     "",
     banner1w1( "Integrated Development Environment" STR_BITNEES ),

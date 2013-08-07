@@ -36,7 +36,6 @@
 #include "dbgerr.h"
 #include "dbgtoggl.h"
 #include "dbgwind.h"
-#include "dbglit.h"
 #include "dbgmem.h"
 #include "wndregx.h"
 #include "dbgio.h"

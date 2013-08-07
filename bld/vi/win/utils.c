@@ -41,7 +41,6 @@
 #ifdef __NT__
     #include <commctrl.h>
 #endif
-#include "strbitns.h"
 
 static char windowBordersG[] =  {
 #if defined( __UNIX__ )

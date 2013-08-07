@@ -12,8 +12,6 @@
 #include "menu.rc"
 #undef sp
 
-#include "strbitns.h"
-
 STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
   #ifdef JAPANESE
