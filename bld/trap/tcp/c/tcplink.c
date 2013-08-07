@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if defined(__OS2__) && !defined(__386__)
+#if defined( __OS2__ ) && defined( _M_I86 )
 #define OS2
 #define _TCP_ENTRY __cdecl __far
 #define BSD_SELECT
@@ -121,13 +121,43 @@
 
 #define DEFAULT_PORT    0x0DEB  /* 3563 */
 
+#if defined( __RDOS__ )
+    #define INVALID_SOCKET          0
+    #define IS_INVALID_SOCKET(x)    (x==INVALID_SOCKET)
+    #define IS_SOCK_ERROR(x)        (x==0)
+    #define trp_socket              int
+    #define soclose( s )            RdosCloseTcpConnection( s )
+    #define recv(a,b,c,d)           RdosReadTcpConnection(a,b,c)
+    #define send(a,b,c,d)           RdosWriteTcpConnection(a,b,c)
+#elif defined( __NT__ ) || defined( __WINDOWS__ )
+    #define IS_INVALID_SOCKET(x)    (x==INVALID_SOCKET)
+    #define IS_SOCK_ERROR(x)        (x==SOCKET_ERROR)
+    #define trp_socket              SOCKET
+    #define trp_socklen             int
+    #define soclose( s )            closesocket( s )
+#elif defined( __DOS__ )
+    #define IS_INVALID_SOCKET(x)    (x<0)
+    #define IS_SOCK_ERROR(x)        (x==-1)
+    #define trp_socket              int
+    #define trp_socklen             int
+#elif defined( __OS2__ )
+    #define INVALID_SOCKET          -1
+    #define IS_INVALID_SOCKET(x)    (x<0)
+    #define IS_SOCK_ERROR(x)        (x==-1)
+    #define trp_socket              int
+    #define trp_socklen             int
+#else
+    #define INVALID_SOCKET          -1
+    #define IS_INVALID_SOCKET(x)    (x<0)
+    #define IS_SOCK_ERROR(x)        (x==-1)
+    #define trp_socket              int
+    #define trp_socklen             socklen_t
+    #define soclose( s )            close( s )
+#endif
+
 #ifdef __RDOS__
 
     #define SOCKET_BUFFER   0x7000
-
-    static int listen_handle = 0;
-    static int wait_handle = 0;
-    static int socket_handle = 0;
 
 #else
 
@@ -135,128 +165,89 @@
     #define IPPROTO_TCP 6
   #endif
 
-  #if defined( __NT__ ) || defined( __WINDOWS__ )
-    #define IS_SOCK_ERROR(x)    (x==INVALID_SOCKET)
-    #define trp_socket          SOCKET
-    #define trp_socklen         int
-    #define soclose( s )        closesocket( s )
-  #elif defined( __DOS__ )
-    #define IS_SOCK_ERROR(x)    (x<0)
-    #define trp_socket          int
-    #define trp_socklen         int
-  #elif defined( __OS2__ )
-    #define IS_SOCK_ERROR(x)    (x<0)
-    #define INVALID_SOCKET      -1
-    #define trp_socket          int
-    #define trp_socklen         int
-  #else
-    #define IS_SOCK_ERROR(x)    (x<0)
-    #define INVALID_SOCKET      -1
-    #define trp_socket          int
-    #define trp_socklen         socklen_t
-    #define soclose( s )        close( s )
-  #endif
-
   #if !defined( __LINUX__ )
     static struct ifi_info      *get_ifi_info( int family, int doaliases );
     static void                 free_ifi_info( struct ifi_info *ifihead );
   #endif
 
-    static trp_socket           data_socket = INVALID_SOCKET;
     static struct sockaddr_in   socket_address;
-    static bool die = FALSE;
-  #ifdef SERVER
-    static trp_socket           control_socket;
-  #endif
 
 #endif
 
-#if  defined(SERVER)
+#ifdef SERVER
+  #ifdef __RDOS__
+    static int                  listen_handle = 0;
+    static int                  wait_handle = 0;
+  #else
+    static trp_socket           control_socket;
+  #endif
+#endif
+
+static trp_socket           data_socket = INVALID_SOCKET;
+
+#if defined( SERVER )
 extern void     ServMessage( char * );
 #endif
 
 bool Terminate( void )
 {
-#ifndef __RDOS__
+#ifdef __RDOS__
+    RdosPushTcpConnection( data_socket );
+#else
     struct linger       linger;
 
-    die = TRUE;
     linger.l_onoff = 1;
     linger.l_linger = 0;
     setsockopt( data_socket, (int)SOL_SOCKET, SO_LINGER, (void*)&linger, sizeof( linger ) );
+#endif
     soclose( data_socket );
     data_socket = INVALID_SOCKET;
-#endif
     return( TRUE );    
 }
 
-#ifndef __RDOS__
-
-static unsigned FullGet( void *get, unsigned len )
+static int FullGet( void *get, int len )
 {
-    unsigned    rec, got;
+    int     rec, got;
 
     got = len;
     for( ;; ) {
         rec = recv( data_socket, get, len, 0 );
-        if( die || rec == (unsigned)-1 ) return( REQUEST_FAILED );
-  #if defined(__OS2__)
-        /* OS/2 TCP/IP docs say that return value of 0 indicates closed
-         * connection; this is unlike other TCP/IP implementations.
-         */
-        if( rec == 0 ) return( REQUEST_FAILED );
-  #endif
+        if( IS_SOCK_ERROR( rec ) )
+            return( -1 );
+#if !defined( __RDOS__ )
+        if( rec == 0 )  // connection closed
+            return( -1 );
+#endif
         len -= rec;
-        if( len == 0 ) break;
-        get = (unsigned_8 *)get + rec;
+        if( len == 0 )
+            break;
+        get = (char *)get + rec;
     }
     return( got );
 }
 
-#endif
-
 trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     unsigned_16         rec_len;
-#ifdef __RDOS__    
-    int                 size;
-#endif
 
-    _DBG_NET(("RemoteGet\r\n"));
     len = len;
 
+    _DBG_NET(("RemoteGet\r\n"));
+
 #ifdef __RDOS__
-
-    if( socket_handle && !RdosIsTcpConnectionClosed( socket_handle ) ) {
-        size = RdosReadTcpConnection( socket_handle, &rec_len, 2 );
-
-        if( size == 2 ) {
+    if( !IS_INVALID_SOCKET( data_socket ) && !RdosIsTcpConnectionClosed( data_socket ) ) {
+#else
+    if( !IS_INVALID_SOCKET( data_socket ) ) {
+#endif
+        if( FullGet( &rec_len, sizeof( rec_len ) ) == sizeof( rec_len ) ) {
             CONV_LE_16( rec_len );
-
-            if( rec_len ) {
-                size = RdosReadTcpConnection( socket_handle, rec, rec_len );
-
-                if( size == rec_len ) {
-                    _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
-                    return( rec_len );
-                }
+            if( rec_len == 0 || FullGet( rec, rec_len ) == rec_len ) {
+                _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
+                return( rec_len );
             }
         }
-    }   
+    }
     return( REQUEST_FAILED );
-#else
-    if( FullGet( &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) ) {
-        return( REQUEST_FAILED );
-    }
-    CONV_LE_16( rec_len );
-    if( rec_len != 0 ) {
-        if( FullGet( rec, rec_len ) != rec_len ) {
-            return( REQUEST_FAILED );
-        }
-    }
-    _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
-    return( rec_len );
-#endif
 }
 
 trap_retval RemotePut( byte *rec, trap_elen len )
@@ -266,31 +257,23 @@ trap_retval RemotePut( byte *rec, trap_elen len )
     _DBG_NET(("RemotePut\r\n"));
 
 #ifdef __RDOS__
-    if( socket_handle && !RdosIsTcpConnectionClosed( socket_handle ) ) {
+    if( !IS_INVALID_SOCKET( data_socket ) && !RdosIsTcpConnectionClosed( data_socket ) ) {
+#else
+    if( !IS_INVALID_SOCKET( data_socket ) ) {
+#endif
         send_len = len;
         CONV_LE_16( send_len );
-        RdosWriteTcpConnection( socket_handle, &send_len, 2 );
-        RdosWriteTcpConnection( socket_handle, rec, len );
-        RdosPushTcpConnection( socket_handle );
-        _DBG_NET(("RemotePut...OK\r\n"));
-        return( len );
-    } else {
-        return( REQUEST_FAILED );
-    }
-#else
-    send_len = len;
-    CONV_LE_16( send_len );
-    if( die || send( data_socket, (void *)&send_len, sizeof( send_len ), 0 ) == -1 ) {
-        return( REQUEST_FAILED );
-    }
-    if( len != 0 ) {
-        if( die || send( data_socket, (void *)rec, len, 0 ) == -1 ) {
-            return( REQUEST_FAILED );
+        if( !IS_SOCK_ERROR( send( data_socket, (void *)&send_len, sizeof( send_len ), 0 ) ) ) {
+            if( len == 0 || !IS_SOCK_ERROR( send( data_socket, (void *)rec, len, 0 ) ) ) {
+#ifdef __RDOS__
+                 RdosPushTcpConnection( data_socket );
+#endif
+                _DBG_NET(("RemotePut...OK\r\n"));
+                return( len );
+            }
         }
     }
-    _DBG_NET(("RemotePut...OK\r\n"));
-    return( len );
-#endif
+    return( REQUEST_FAILED );
 }
 
 #ifndef __RDOS__
@@ -316,13 +299,12 @@ bool RemoteConnect( void )
     void *obj;
 
     obj = RdosWaitTimeout( wait_handle, 250 );
-
-    if( obj )
-        socket_handle = RdosGetTcpListen( listen_handle );
-
-    if( socket_handle ) {
-        _DBG_NET(("Found a connection\r\n"));
-        return( TRUE );
+    if( obj != NULL ) {
+        data_socket = RdosGetTcpListen( listen_handle );
+        if( !IS_INVALID_SOCKET( data_socket ) ) {
+            _DBG_NET(("Found a connection\r\n"));
+            return( TRUE );
+        }
     }
   #else
     struct          timeval timeout;
@@ -334,9 +316,9 @@ bool RemoteConnect( void )
     FD_SET( control_socket, &ready );
     timeout.tv_sec = 0;
     timeout.tv_usec = 10000;
-    if( select( control_socket+1, &ready, 0, 0, &timeout ) > 0 ) {
+    if( select( control_socket + 1, &ready, 0, 0, &timeout ) > 0 ) {
         data_socket = accept( control_socket, &dummy, &dummy_len );
-        if( !IS_SOCK_ERROR( data_socket ) ) {
+        if( !IS_INVALID_SOCKET( data_socket ) ) {
             nodelay();
             _DBG_NET(("Found a connection\r\n"));
             return( TRUE );
@@ -348,7 +330,7 @@ bool RemoteConnect( void )
     // todo: Add code for connect!
   #else
     data_socket = socket( AF_INET, SOCK_STREAM, 0 );
-    if( !IS_SOCK_ERROR( data_socket ) ) {
+    if( !IS_INVALID_SOCKET( data_socket ) ) {
         if( connect( data_socket, (struct sockaddr TRAPFAR *)&socket_address, sizeof( socket_address ) ) >= 0 ) {
             nodelay();
             return( TRUE );
@@ -363,16 +345,10 @@ void RemoteDisco( void )
 {
     _DBG_NET(("RemoteDisco\r\n"));
 
-#ifdef __RDOS__
-    if( socket_handle ) {
-        RdosCloseTcpConnection( socket_handle );
-        socket_handle = 0;
-    }
-#else
-    if( data_socket != INVALID_SOCKET ) {
+    if( !IS_INVALID_SOCKET( data_socket ) ) {
         soclose( data_socket );
+        data_socket = INVALID_SOCKET;
     }
-#endif
 }
 
 
@@ -403,42 +379,40 @@ char *RemoteLink( char *name, bool server )
             return( TRP_ERR_unable_to_initialize_TCPIP );
         }
     }
-  #endif
-
-  #ifndef __RDOS__
-    control_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if( IS_SOCK_ERROR( control_socket ) ) {
-        return( TRP_ERR_unable_to_open_stream_socket );
-    }
   #endif   
  
     port = 0;
-    if( name == NULL || name[0] == '\0' )
-        name = "tcplink";
-
-  #ifndef __RDOS__
-    sp = getservbyname( name, "tcp" );
-    if( sp != NULL ) {
-        port = sp->s_port;
-    } else
-  #endif 
-    {
-        while( isdigit( *name ) ) {
-            port = port * 10 + (*name - '0');
-            ++name;
-        }
-        if( port == 0 ) port = DEFAULT_PORT;
-
-  #ifndef __RDOS__        
-        port = htons( port );
-  #endif
-    }
-
   #ifdef __RDOS__
+    while( isdigit( *name ) ) {
+        port = port * 10 + (*name - '0');
+        ++name;
+    }
+    if( port == 0 )
+        port = DEFAULT_PORT;
+
     wait_handle = RdosCreateWait( );
     listen_handle = RdosCreateTcpListen( port, 1, SOCKET_BUFFER );
     RdosAddWaitForTcpListen( wait_handle, listen_handle, &listen_handle );
   #else
+    if( name == NULL || name[0] == '\0' )
+        name = "tcplink";
+    sp = getservbyname( name, "tcp" );
+    if( sp != NULL ) {
+        port = sp->s_port;
+    } else {
+        while( isdigit( *name ) ) {
+            port = port * 10 + (*name - '0');
+            ++name;
+        }
+        if( port == 0 )
+            port = DEFAULT_PORT;
+        port = htons( port );
+    }
+
+    control_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if( IS_INVALID_SOCKET( control_socket ) ) {
+        return( TRP_ERR_unable_to_open_stream_socket );
+    }
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
@@ -568,13 +542,7 @@ void RemoteUnLink( void )
     Terminate();
 #endif
 
-#if defined( __RDOS__ )
-    if( socket_handle ) {
-        RdosPushTcpConnection( socket_handle );
-        RdosCloseTcpConnection( socket_handle );
-        socket_handle = 0;
-    }
-#elif defined(__NT__) || defined(__WINDOWS__)
+#if defined(__NT__) || defined(__WINDOWS__)
     WSACleanup();
 #elif defined(__DOS__)
     sock_exit();
@@ -674,7 +642,7 @@ static struct ifi_info * get_ifi_info( int family, int doaliases )
         ifi->ifi_flags = flags;     /* IFF_xxx values */
         ifi->flags     = myflags;   /* IFI_xxx values */
         memcpy( ifi->ifi_name, ifr->ifr_name, IFI_NAME );
-        ifi->ifi_name[IFI_NAME-1] = '\0';
+        ifi->ifi_name[IFI_NAME - 1] = '\0';
 
         switch( ifr->ifr_addr.sa_family ) {
         case AF_INET:
