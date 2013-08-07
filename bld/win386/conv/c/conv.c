@@ -593,12 +593,22 @@ static void emitBYTE( int byte )
 
 static void emitWORD( int word )
 {
-    writeObj( &word, 2 );
+    unsigned short  w;
+
+    w = word;
+    writeObj( &w, 2 );
 }
 
-static void emitDWORD( long dword )
+static void emitDWORD( unsigned long dword )
 {
-    writeObj( &dword, 4 );
+#if defined( _M_I86 )
+    unsigned long   dw;
+#else
+    unsigned        dw;
+#endif
+
+    dw = dword;
+    writeObj( &dw, 4 );
 }
 
 static void emitSTRING( char *data )
@@ -612,13 +622,11 @@ static void emitSTRING( char *data )
 
 static void emitTHEADR( int modindex )
 {
-    int         len;
     char        buff[20];
 
     sprintf( buff,"win%d", modindex );
     emitBYTE( 0x80 );
-    len = 2+strlen( buff );
-    emitWORD( len );
+    emitWORD( 2 + strlen( buff ) );
     emitSTRING( buff );
     emitBYTE( 0 );
 }
@@ -639,11 +647,8 @@ static void emitCOMMENT( void )
 
 static void emitLNAMES( void )
 {
-    int len;
-
     emitBYTE( 0x96 );
-    len = 1 + 1+ strlen( "" ) + 1+ strlen( "_TEXT" ) + 1 + strlen( "CODE" );
-    emitWORD( len );
+    emitWORD( 1 + 1+ strlen( "" ) + 1+ strlen( "_TEXT" ) + 1 + strlen( "CODE" ) );
     emitSTRING( "" );
     emitSTRING( "_TEXT" );
     emitSTRING( "CODE" );
@@ -665,11 +670,8 @@ static void emitSEGDEF( unsigned long segment_length )
 
 static void emitPUBDEF( char *name )
 {
-    int len;
-
     emitBYTE( 0x90 );
-    len = 2 + 1 + strlen( name ) + 6;
-    emitWORD( len );
+    emitWORD( 2 + 1 + strlen( name ) + 6 );
     emitBYTE( 0 );              /* group index */
     emitBYTE( 1 );              /* seg index */
     emitSTRING( name );
@@ -681,11 +683,8 @@ static void emitPUBDEF( char *name )
 
 static void emitEXTDEF( char *func )
 {
-    int         len;
-
     emitBYTE( 0x8c );
-    len = strlen( func ) + 1 + 1 + 1;
-    emitWORD( len );
+    emitWORD( strlen( func ) + 1 + 1 + 1 );
     emitSTRING( func );
     emitBYTE( 0 );                      /* type */
     emitBYTE( 0 );
@@ -704,7 +703,7 @@ static char *getThunkName( fcn *tmpf )
     return( name );
 }
 
-static int sizeofThunkName( fcn *tmpf )
+static unsigned long sizeofThunkName( fcn *tmpf )
 {
     char        *name;
 
@@ -791,14 +790,16 @@ static void cleanupSubParms( struct subparm *p )
 
 static void emitnormalThunk( char *proc, fcn *tmpf, int index )
 {
-    int         size;
-    int         segsize;
-    int         subparmsize;
+    unsigned long   size;
+    unsigned long   segsize;
+    unsigned long   subparmsize;
 
     size = sizeofThunkName( tmpf );
     segsize = size + 29;
-    if( tmpf->need_fpusave )  segsize += 2 * 6;
-    if( tmpf->returntype == RETURN_INT )  segsize += 3;
+    if( tmpf->need_fpusave )
+        segsize += 2 * 6;
+    if( tmpf->returntype == RETURN_INT )
+        segsize += 3;
     subparmsize = sizeofSubParms( tmpf->subparms );
     segsize += subparmsize;
     if( subparmsize != 0 ) {
@@ -905,9 +906,9 @@ static void emitnormalThunk( char *proc, fcn *tmpf, int index )
 
 static void emitspecialThunk( char *proc, fcn *tmpf, int index )
 {
-    int         size;
-    int         segsize;
-    int         offset;
+    unsigned long   size;
+    unsigned long   segsize;
+    int             offset;
 
     switch( tmpf->pcnt ) {
     case 0:     segsize = 18+7; break;
@@ -920,8 +921,10 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
     }
     size = sizeofThunkName( tmpf );
     segsize += size;
-    if( tmpf->need_fpusave )  segsize += 2 * 6;
-    if( tmpf->returntype == RETURN_INT )  segsize += 3;
+    if( tmpf->need_fpusave )
+        segsize += 2 * 6;
+    if( tmpf->returntype == RETURN_INT )
+        segsize += 3;
     emitSEGDEF( segsize );
     emitPUBDEF( proc );
     emitEXTDEF( "_LocalPtr" );
@@ -1028,11 +1031,8 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
 
 static void emitMODEND( void )
 {
-    int len;
-
     emitBYTE( 0x8a );
-    len = 2;
-    emitWORD( len );
+    emitWORD( 2 );
     emitBYTE( 0 ); /* attributes */
     emitBYTE( 0 );
 }
@@ -1132,7 +1132,7 @@ void GenerateCStubs( void )
         ii++;
     }
     if( listfile ) {
-        fp = fopen( "winobjs.lst", "w" );
+        fp = fopen( "winobjs.lbc", "w" );
         for( i = 0; i < ii; ++i ) {
             fprintf( fp, "win%d.obj\n", i );
         }
@@ -1713,15 +1713,15 @@ void GenerateCode( void )
  */
 void AddCommentTrailer( char *tmp )
 {
-    int         i,j;
+    size_t      i, j;
     char        tmp2[81];
 
     i = strlen( tmp );
     if( i < 75 )  {
-        for( j=i;j<=75;j++ ) {
-            tmp2[j-i] = ' ';
+        for( j = i; j <= 75; j++ ) {
+            tmp2[j - i] = ' ';
         }
-        tmp2[j-i] = 0;
+        tmp2[j - i] = 0;
     }
     strcat( tmp, tmp2 );
     strcat( tmp, "***\n" );
@@ -1735,12 +1735,13 @@ int main( int argc, char *argv[] )
     FILE        *f,*pf;
     char        defname[80];
     char        fname[50];
-    int         i,j;
+    size_t      i;
+    int         j, k;
 
     j = argc - 1;
     while( j > 0 ) {
         if( argv[j][0] == '-' ) {
-            for(i=1;i<strlen(argv[j]);i++) {
+            for( i = 1; i < strlen( argv[j] ); i++ ) {
                 switch( argv[j][i] ) {
                 case 'l': listfile = 1; break;
                 case 'q': quiet = 1;    break;
@@ -1753,8 +1754,8 @@ int main( int argc, char *argv[] )
                     break;
                 }
             }
-            for(i=j;i<argc;i++) {
-                argv[i]=argv[i+1];
+            for( k = j; k < argc; k++ ) {
+                argv[k]=argv[k + 1];
             }
             argc--;
         }

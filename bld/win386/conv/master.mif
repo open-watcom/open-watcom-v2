@@ -40,4 +40,4 @@ all : ./conv.exe win386.lib
 
 win386.lib : ./conv.exe $(def_files) ../def/win386 fldenv.obj _call16.obj
     $[@ ../def/win386 ../def -l -s -q
-    $(librarian) $(libflags) +fldenv.obj +_call16.obj @winobjs.lst
+    $(librarian) $(libflags) +fldenv.obj +_call16.obj @winobjs.lbc
