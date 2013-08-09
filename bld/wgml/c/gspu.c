@@ -36,8 +36,21 @@
 #include "wgml.h"
 #include "gvars.h"
 
-static FILE * workfile[9] =           // support for 9 workfiles SYSUSR0x.GML
+static  char    filename[] = "sysusr00" GML_EXT;
+
+static FILE * workfile[9] =           // support for 9 workfiles sysusr0n.gml
     { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+
+/***************************************************************************/
+/*  get workfile n file name                                               */
+/***************************************************************************/
+
+char    *get_pu_file_name( char *buf, size_t buf_size, int n )
+{
+    filename[7] = '0' + n;
+    strcpy_s( buf, buf_size, filename );
+    return( token_buf );
+}
 
 /***************************************************************************/
 /*  close workfile n if open                                               */
@@ -75,7 +88,6 @@ void    close_all_pu_files( void )
 static  errno_t open_pu_file( int n )
 {
     errno_t         erc = 0;
-    static  char    filename[20] = "SYSUSR0x.GML";
 
     if( n > 0 && n < 10 ) {
         if( workfile[n - 1] == NULL ) {   // not yet open

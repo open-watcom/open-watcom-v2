@@ -590,7 +590,7 @@ int verify_device( char * in_path, char * in_name )
 
     strcpy_s( member_name, sizeof( member_name ), in_path );
     strcat_s( member_name, sizeof( member_name ), in_name );
-    strcat_s( member_name, sizeof( member_name ), ".COP" );
+    strcat_s( member_name, sizeof( member_name ), COP_EXT );
 
     /* Open the file. */
 
@@ -848,7 +848,7 @@ int verify_driver( char * in_path, char * in_name )
 
     strcpy_s( member_name, sizeof( member_name ), in_path );
     strcat_s( member_name, sizeof( member_name ), in_name );
-    strcat_s( member_name, sizeof( member_name ), ".COP" );
+    strcat_s( member_name, sizeof( member_name ), COP_EXT );
 
     /* Open the file. */
 
@@ -992,7 +992,7 @@ int verify_font( char * in_path, char * in_name )
 
     strcpy_s( member_name, sizeof( member_name ), in_path );
     strcat_s( member_name, sizeof( member_name ), in_name );
-    strcat_s( member_name, sizeof( member_name ), ".COP" );
+    strcat_s( member_name, sizeof( member_name ), COP_EXT );
 
     /* Open the file. */
 

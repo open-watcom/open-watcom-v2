@@ -319,7 +319,7 @@ static int check_directory( void )
 
         extension = strrchr( dir_entry->d_name, '.' );
         if( extension == NULL) continue;
-        if( stricmp( extension + 1, "pcd" ) ) continue;
+        if( stricmp( extension, PCD_EXT ) ) continue;
 
         /* Open the file. */
 

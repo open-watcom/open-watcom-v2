@@ -75,7 +75,7 @@ extern "C" {    /* Use "C" linkage when in C++ mode. */
 
 extern  void        ff_teardown( void );
 extern  void        ff_setup( void );
-extern  int         search_file_in_dirs( const char * filename, char * defext, char * altext, dirseq seq );
+extern  bool        search_file_in_dirs( const char * filename, char * defext, char * altext, dirseq seq );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */

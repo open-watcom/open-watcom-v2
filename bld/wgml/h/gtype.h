@@ -76,6 +76,9 @@
 #define GML_EXT         ".gml"
 #define LAY_EXT         ".lay"
 #define OPT_EXT         ".opt"
+#define COP_EXT         ".cop"
+#define PCD_EXT         ".pcd"
+#define FON_EXT         ".fon"
 
 #define GML_CHAR_DEFAULT    ':'         // start of GML tag
 #define SCR_CHAR_DEFAULT    '.'         // start of Script keyword
@@ -93,6 +96,11 @@
 #define vbar2   '\xdd'
 #define l_q     '\x60'
 
+#ifdef __UNIX__
+    #define FNAMECMPSTR      strcmp      /* for case sensitive file systems */
+#else
+    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
+#endif
 
 typedef uint32_t    line_number;
 

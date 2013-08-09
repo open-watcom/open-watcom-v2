@@ -343,6 +343,7 @@ extern  void    reset_pe_cb( void );
 
 
 /* gspu.c                               */
+extern  char    *get_pu_file_name( char *buf, size_t buf_len, int numb );
 extern  void    close_pu_file( int numb );
 extern  void    close_all_pu_files( void );
 

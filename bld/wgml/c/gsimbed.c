@@ -37,7 +37,7 @@
 /***************************************************************************/
 /*  .im   processing  IMBED                                                */
 /*         .im filename                                                    */
-/*         .im n         -> SYSUSR0n.GML                                   */
+/*         .im n         -> sysusr0n.gml                                   */
 /*                                                                         */
 /*  For reference the description from script tso is included, but is only */
 /*  partly relevant for the PC.                                            */
@@ -172,11 +172,10 @@ void    scr_im( void )
 
     cc = getnum( &gn );
 
-    if( (cc == pos) && (gn.result < 10) ) { // include SYSUSR0x.GML
+    if( (cc == pos) && (gn.result < 10) ) { // include sysusr0n.gml
 
         close_pu_file( gn.result );     // if still open
-        strcpy_s( token_buf, buf_size, "SYSUSR0" );
-        strcat_s( token_buf, buf_size, gn.resultstr );
+        get_pu_file_name( token_buf, buf_size, gn.result );
 
     } else {
         p = gn.argstart;
