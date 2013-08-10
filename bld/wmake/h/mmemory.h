@@ -79,9 +79,10 @@ extern void IfMemScarce( RET_T (*func)( void ) );
          *( _cmc_ptr )( d ) = *( _cmc_ptr )( s );    \
      }
 
-#if !defined( _M_IX86 )
+#if !defined( USE_FAR )
 #define _fmemcpy memcpy
 #define _fmemcmp memcmp
 #define _fmemset memset
 #endif
+
 #endif  /* !_MEMORY_H */
