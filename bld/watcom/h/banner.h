@@ -69,17 +69,21 @@
 #define gui_banner2a        "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
 
 #if defined( _M_I86 )
-#define STR_BITNEES " (16-bit)"
+  #define STR_BITNEES " (16-bit)"
 #elif defined( _M_IX86 )
 #if defined( __WINDOWS__ )
-#define STR_BITNEES " (32-bit extender)"
+  #define STR_BITNEES " (32-bit extender)"
 #else
-#define STR_BITNEES " (32-bit)"
+  #define STR_BITNEES " (32-bit)"
 #endif
 #elif defined( _M_X64 )
-#define STR_BITNEES " (64-bit)"
+  #define STR_BITNEES " (64-bit)"
+#elif defined(__i386__) || defined(__i386)
+  #define STR_BITNEES " (32-bit)"
+#elif defined( __AMD64__ ) || defined( __amd64 )
+  #define STR_BITNEES " (64-bit)"
 #else
-#define STR_BITNEES
+  #define STR_BITNEES
 #endif
 
 // the following macros define the delimeters used by the resource
