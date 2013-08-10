@@ -80,6 +80,8 @@
 /mathlib/library/*/*/*.def
 /mathlib/rtdll/*/*/*.dll
 #
+/misc/*/unicode*
+#
 /nwlib/*/*.dll
 #
 /os2api/os2286/h/*
@@ -120,6 +122,7 @@
 !/redist/pmodew/*.faq
 #
 /rc/rc/*/*.dll
+/rc/rc/*/*.uni
 /rc/rc/*/ytab2.c
 /rc/rc/*/ytabw.c
 #
