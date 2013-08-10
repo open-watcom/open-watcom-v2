@@ -50,7 +50,7 @@
 #   include "mtarget.h"
 #   include "mupdate.h"
 #   include "mvecstr.h"
-#if defined( _M_IX86 )
+#if defined( __DOS__ )
 #   include "tinyio.h"
 #endif
 #endif
