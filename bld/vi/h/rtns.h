@@ -609,7 +609,7 @@ void    InitMem( void );
 void    FiniMem( void );
 
 /* misc.c */
-long    ExecCmd( char *, char *, char * );
+long    ExecCmd( char *, char *, const char * );
 vi_rc   GetResponse( char *, char * );
 void    ExitWithVerify( void );
 bool    ExitWithPrompt( bool, bool );

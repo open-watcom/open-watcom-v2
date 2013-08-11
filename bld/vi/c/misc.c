@@ -121,7 +121,7 @@ static void postSpawn( long rc )
 // ifdef __NT__
 #include "batcher.h"
 #include <conio.h>
-long ExecCmd( char *file_in, char *file_out, char *cmd )
+long ExecCmd( char *file_in, char *file_out, const char *cmd )
 {
     int                 len;
     unsigned long       stat;
@@ -156,7 +156,7 @@ long ExecCmd( char *file_in, char *file_out, char *cmd )
 #endif
 
 #ifdef __WIN__
-long ExecCmd( char *file_in, char *file_out, char *cmd )
+long ExecCmd( char *file_in, char *file_out, const char *cmd )
 {
     file_in = file_in;
     file_out = file_out;
@@ -186,7 +186,7 @@ static int doRedirect( int original, char * filename, int mode )
 #define MAX_ARGS        128
 
 #ifdef __NT__
-static long doExec( char *std_in, char *std_out, char *cmd )
+static long doExec( char *std_in, char *std_out, const char *cmd )
 {
     HANDLE      cp;
     long        st;
@@ -241,7 +241,7 @@ static long doExec( char *std_in, char *std_out, char *cmd )
     return( st );
 }
 #else
-static long doExec( char *std_in, char *std_out, char *cmd )
+static long doExec( char *std_in, char *std_out, const char *cmd )
 {
     long        st;
     int         save_in, new_in;
@@ -335,7 +335,7 @@ static long doExec( char *std_in, char *std_out, char *cmd )
 #endif
 
 #if defined( __DOS__ )
-long ExecCmd( char *file_in, char *file_out, char *cmd )
+long ExecCmd( char *file_in, char *file_out, const char *cmd )
 {
     if( file_in != NULL || file_out != NULL ) {
         SystemRC = doExec( file_in, file_out, cmd );
@@ -347,7 +347,7 @@ long ExecCmd( char *file_in, char *file_out, char *cmd )
     return( SystemRC );
 }
 #else
-long ExecCmd( char *file_in, char *file_out, char *cmd )
+long ExecCmd( char *file_in, char *file_out, const char *cmd )
 {
     return( doExec( file_in, file_out, cmd ) );
 }
