@@ -60,7 +60,7 @@ WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data )
 /*
  * MySpawn - spawn a windows app
  */
-long MySpawn( char *cmd )
+long MySpawn( const char *cmd )
 {
     FARPROC             proc;
     HANDLE              inst;

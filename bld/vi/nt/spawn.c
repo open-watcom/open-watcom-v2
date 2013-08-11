@@ -46,7 +46,7 @@ void ResetSpawnScreen( void )
 #endif
 }
 
-long MySpawn( char *cmd )
+long MySpawn( const char *cmd )
 {
     char                path[MAX_PATH + 128];
     cmd_struct          cmds;

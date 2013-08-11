@@ -42,7 +42,7 @@ int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char * );
 
 void ResetSpawnScreen( void ) {}
 
-long MySpawn( char *cmd )
+long MySpawn( const char *cmd )
 {
     long rc;
 

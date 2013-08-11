@@ -420,7 +420,7 @@ int     GetAutoIndentAmount( char *, int, bool );
 vi_rc GetSortDir( char *, bool );
 
 /* getspcmd.c */
-void    GetSpawnCommandLine( char *path, char *cmdl, cmd_struct *cmds );
+void    GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds );
 
 /* help.c */
 vi_rc DoHelp( char *data );
@@ -753,7 +753,7 @@ void    SourceError( char *msg );
 void    DeleteResidentScripts( void );
 
 /* spawn.c */
-long    MySpawn( char * );
+long    MySpawn( const char * );
 void    ResetSpawnScreen( void );
 
 /* srcvar.c */

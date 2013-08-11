@@ -35,6 +35,7 @@
 #include <malloc.h>
 #include "ms2wlink.h"
 #include "command.h"
+#include "watcom.h"
 
 static void             (*MultiLine)( void ) = NULL;
 static char *           OptionBuffer;

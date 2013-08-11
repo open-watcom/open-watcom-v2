@@ -38,7 +38,7 @@ extern int ExeExtensionCount;
 extern char _NEAR * _NEAR InternalCommands[];
 extern int InternalCommandCount;
 
-void GetSpawnCommandLine( char *path, char *cmdl, cmd_struct *cmds )
+void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 {
     char        orgcmd[MAX_INPUT_LINE];
     char        cmd[MAX_INPUT_LINE];

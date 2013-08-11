@@ -362,7 +362,7 @@ extern int GetFcb( void *, void * );
         "pop    ds" \
     parm [dx ax] [cx bx] value [ax];
 
-long MySpawn( char *cmd )
+long MySpawn( const char *cmd )
 {
     bool        cp;
     long        rc;
@@ -445,7 +445,7 @@ evil_goto:
     return( rc );
 }
 #else
-int MySpawn( char *cmd )
+int MySpawn( const char *cmd )
 {
     return( system( cmd ) );
 }

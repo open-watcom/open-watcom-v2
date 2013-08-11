@@ -86,7 +86,7 @@ void ResetSpawnScreen( void )
 {
 }
 
-long MySpawn( char *cmd )
+long MySpawn( const char *cmd )
 {
     USHORT              rc;
     RESULTCODES         returncodes;
