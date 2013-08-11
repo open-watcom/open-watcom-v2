@@ -1,0 +1,45 @@
+proj_name = rcsdll_batch
+
+ext_objs_win = bat
+ext_objs_nt  = bat
+ext_objs_os2 = cmd
+ext_objs_dos = bat
+
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .symbolic
+!else ifndef bld64host_$(host_os)
+skip_build: .symbolic
+!endif
+!endif
+!ifndef ext_objs_$(host_os)
+skip_build: .symbolic
+!endif
+
+.EXTENSIONS: .bat .cmd .sp
+
+.sp : ..
+
+template_objs = &
+    gen_co.$(ext_objs) &
+    gen_ci.$(ext_objs) &
+    mks_co.$(ext_objs) &
+    mks_ci.$(ext_objs) &
+    p4_co.$(ext_objs) &
+    p4_ci.$(ext_objs) &
+    pvcs_co.$(ext_objs) &
+    pvcs_ci.$(ext_objs)
+
+ext_objs = $(ext_objs_$(host_os))
+misc_objs = $+$(template_objs)$-
+
+all: $(misc_objs) .symbolic
+
+.sp.bat :
+    wsplice -k $(host_os) -k $(host_cpu) $[@ $@
+
+.sp.cmd :
+    wsplice -k $(host_os) -k $(host_cpu) $[@ $@
+
+clean: .symbolic
+    rm -f *.bat *.cmd

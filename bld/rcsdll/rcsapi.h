@@ -50,8 +50,8 @@ extern "C" {
     #define RCSAPI  WINAPI
 #elif defined( __WINDOWS__ )
     #include <windows.h>
-    typedef const char far *rcsstring;
-    typedef void far *rcsdata;
+    typedef const char __far *rcsstring;
+    typedef void __far *rcsdata;
     #define RCSAPI WINAPI
 #elif defined( __OS2__ )
     #include <os2.h>

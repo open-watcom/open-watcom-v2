@@ -1,6 +1,16 @@
 @echo on
 @echo **********************************************************************
-@echo This is %WATCOM%\binp\gen_co.cmd.
+:segment win | dos
+@echo This is %WATCOM%\binw\gen_co.bat.
+:elsesegment os2
+@echo This is %WATCOM%\binp\gen_co.bat.
+:elsesegment nt & x64
+@echo This is %WATCOM%\binnt64\gen_co.bat.
+:elsesegment nt & 386
+@echo This is %WATCOM%\binnt\gen_co.bat.
+:elsesegment nt & axp
+@echo This is %WATCOM%\axpnt\gen_co.bat.
+:endsegment
 @echo YOU can edit this batchfile to provide checkout ( and lock ) 
 @echo functionality to any generic revision control system.
 @echo **********************************************************************
