@@ -46,14 +46,15 @@
 
 bool            Quiet;
 FILE            *LogFile;
-static ctl_file *CtlList;
+static ctl_file *CtlList = NULL;
        include  *IncludeStk;
 static char     Line[MAX_LINE];
 static char     ProcLine[MAX_LINE];
 static unsigned VerbLevel;
 static bool     UndefWarn;
 static unsigned ParmCount;
-static char     *Product = NULL;
+static ctl_file *Product = NULL;
+static ctl_file *KeyList = NULL;
 
 /* Defaults for all output values */
 static char     *DefType   = NULL;
@@ -68,14 +69,13 @@ static char     *DefDesc   = NULL;
 static char     *DefOld    = NULL;
 static char     *DefPatch  = NULL;
 static char     *DefDstvar = NULL;
+static char     *DefKeys   = NULL;
 
 
-static void AddCtlFile( const char *name )
+static void AddToList( const char *name, ctl_file **owner )
 {
-    ctl_file    **owner;
     ctl_file    *curr;
 
-    owner = &CtlList;
     for( ;; ) {
         curr = *owner;
         if( curr == NULL )
@@ -116,7 +116,11 @@ static void ProcessOptions( char *argv[] )
             switch( tolower( argv[0][1] ) ) {
             case 'c':
                 argv = getvalue( argv, parm_buff );
-                AddCtlFile( parm_buff );
+                AddToList( parm_buff, &CtlList );
+                break;
+            case 'k':
+                argv = getvalue( argv, parm_buff );
+                AddToList( parm_buff, &KeyList );
                 break;
             case 'l':
                 argv = getvalue( argv, parm_buff );
@@ -148,9 +152,9 @@ static void ProcessOptions( char *argv[] )
             putenv( argv[0] );
         } else {
             if( Product != NULL ) {
-                Fatal( "Product already set (was %s, now %s)\n", Product, argv[0] );
+                Fatal( "Product already set (was %s, now %s)\n", Product->name, argv[0] );
             }
-            Product = argv[0];
+            AddToList( argv[0], &Product );
         }
         ++argv;
     }
@@ -358,24 +362,26 @@ static char *NextWord( char *p )
     return( FirstWord( p + strlen( p ) + 1 ) );
 }
 
-static bool ContainsWord( const char *str, const char *word )
+static bool ContainsWord( const char *str, ctl_file *word_list )
 {
-    char    *s_copy;
-    char    *p;
-    bool    result = FALSE;
-    size_t  len;
+    char        *s_copy;
+    char        *p;
+    size_t      len;
+    ctl_file    *w;
 
     len = strlen( str ) + 1;
     s_copy = Alloc( len + 1 ); // extra 1 byte is required for processing by First/NextWord
     memcpy( s_copy, str, len );
     for( p = FirstWord( s_copy ); p != NULL; p = NextWord( p ) ) {
-        if( !strcmp( p, word ) ) {
-            result = TRUE;
-            break;
+        for( w = word_list; w != NULL; w = w->next ) {
+            if( !strcmp( p, w->name ) ) {
+                free( s_copy );
+                return( TRUE );
+            }
         }
     }
     free( s_copy );
-    return( result );
+    return( FALSE );
 }
 
 #define DEFVAL(x)   ((x==NULL)?"":x)
@@ -386,6 +392,7 @@ static void ProcessLine( const char *line )
     char    *line_copy;
     char    *type, *redist, *dir, *usr, *rel, *cond;
     char    *where, *desc, *old, *dstvar;
+    char    *keys;
 //    char    *pack, *patch;
     int     special;
 
@@ -402,6 +409,7 @@ static void ProcessLine( const char *line )
     old = DEFVAL( DefOld );
 //    patch = DEFVAL( DefPatch );
     dstvar = DEFVAL( DefDstvar );
+    keys = DEFVAL( DefKeys );
 
     line_copy = strdup( line );
     p = SkipBlanks( line_copy );
@@ -438,6 +446,8 @@ static void ProcessLine( const char *line )
 //            patch = str;
         } else if( !stricmp( cmd, "dstvar" ) ) {
             dstvar = str;
+        } else if( !stricmp( cmd, "keys" ) ) {
+            keys = str;
         } else {
             printf( "langdat warning: unknown keyword %s\n", cmd );
             printf( "(in file %s)\n", IncludeStk->name );
@@ -445,11 +455,15 @@ static void ProcessLine( const char *line )
         cmd = strtok( NULL, " \t=" );
     } while( cmd != NULL );
     if( !special ) {
+        if( where == NULL ) {
+            where = "";
+        }
+        if( keys == NULL ) {
+            keys = "";
+        }
         /* Check if 'where' matches specified product */
-        if( Product == NULL || where == NULL || ContainsWord( where, Product ) ) {
-            if( where == NULL ) {
-                where = "";
-            }
+        if( ( Product == NULL || *where == '\0' || ContainsWord( where, Product ) )
+          && ( *keys == '\0' || ContainsWord( keys, KeyList ) ) ) {
             Log( TRUE, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, desc );
         }
     }
@@ -474,8 +488,9 @@ static void ProcessDefault( const char *line )
     if( DefOld != NULL ) free( DefOld );
     if( DefPatch != NULL ) free( DefPatch );
     if( DefDstvar != NULL ) free( DefDstvar );
-    DefType = DefRedist = DefDir = DefUsr = DefRel = DefCond
-    = DefPack = DefWhere = DefDesc = DefOld = DefPatch = DefDstvar = NULL;
+    if( DefKeys != NULL ) free( DefKeys );
+    DefType = DefRedist = DefDir = DefUsr = DefRel = DefCond = DefPack
+        = DefWhere = DefDesc = DefOld = DefPatch = DefDstvar = DefKeys = NULL;
 
     /* Process new defaults (if provided) */
     line_copy = strdup( line );
@@ -513,6 +528,8 @@ static void ProcessDefault( const char *line )
                 DefPatch = strdup( str );
             } else if( !stricmp( cmd, "dstvar" ) ) {
                 DefDstvar = strdup( str );
+            } else if( !stricmp( cmd, "keys" ) ) {
+                DefKeys = strdup( str );
             } else {
                 printf( "langdat warning: unknown default %s\n", cmd );
                 printf( "(in file %s)\n", IncludeStk->name );
@@ -716,7 +733,7 @@ int main( int argc, char *argv[] )
                 Fatal( "Can not find '%s'\n", p );
             }
         }
-        AddCtlFile( Line );
+        AddToList( Line, &CtlList );
     }
     while( CtlList != NULL ) {
         ProcessCtlFile( CtlList->name );
