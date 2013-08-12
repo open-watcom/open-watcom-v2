@@ -27,33 +27,39 @@ spawnbefore=%CDDir%\binp\nmpbind.exe q, SrcIsCD IsOS2
 spawnbefore=%CDDir%\binp\batserv.exe q, SrcIsCD IsOS2DosBox
 spawnafter=cmd.exe /c detach %CDDir%\binp\nmpbind.exe, SrcIsCD IsOS2
 spawnafter=cmd.exe /c detach %CDDir%\binp\batserv.exe, SrcIsCD IsOS2DosBox
+autoset=lnx64enabled=false
+autoset=wnt64enabled=true
 autoset=ms=true
 autoset=mm=true
 autoset=mc=true
 autoset=ml=true
 autoset=mh=false
 autoset=doshost=IsDOS
-autoset=os2host=IsOS2
 autoset=dostarg=IsDOS
+autoset=os2host=IsOS2
 autoset=os2targ=IsOS2
 autoset=nlmtarg=false
 autoset=rdoshost=false
 autoset=rdostarg=false
 autoset=lnxhost=IsLinux
 autoset=lnxtarg=IsLinux
+autoset=lnx64host=false
+autoset=lnx64targ=false
 autoset=winhost=IsWin
-autoset=wnthost=IsWin32
 autoset=wintarg=IsWin
+autoset=wnthost=IsWin32
 autoset=wnttarg=IsWin32
+autoset=wnt64host=false
+autoset=wnt64targ=false
 autoset=tools16=IsDos IsOS2 IsWin | |
 autoset=samples=true
 autoset=helpfiles=true
 autoset=win16_helpfiles=helpfiles winhost
-autoset=win32_helpfiles=helpfiles wnthost
+autoset=win32_helpfiles=helpfiles wnthost wnt64host | &
 autoset=htmlhelp_helpfiles=helpfiles IsWin98
 autoset=whelp_helpfiles=helpfiles doshost
 autoset=os2_helpfiles=helpfiles os2host
-autoset=pdf_helpfiles=helpfiles lnxhost
+autoset=pdf_helpfiles=helpfiles lnxhost lnx64host | &
 autoset=rtsource=false
 autoset=3r=true
 autoset=3s=true

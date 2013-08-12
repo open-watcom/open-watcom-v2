@@ -47,6 +47,9 @@ dstdir_linux_x64   = /usr/bin/watcom
 !endif
 dstdir = $(dstdir_$(host_os)_$(host_cpu))
 
+langdat_keys_ntx64    = -k ntx64
+langdat_keys_linuxx64 = -k lx64
+
 !ifdef __UNIX__
 nulldevice = /dev/null
 !else
@@ -63,7 +66,7 @@ skip_build: .symbolic
 all : ../$(installer_c) ../$(installer_f77) .SYMBOLIC
 
 ../$(installer_c) : ../files.dat $(setup_c) .ALWAYS
-    langdat -l filelist -c $[@ c
+    langdat -l filelist $(langdat_keys_$(bld_os)$(bld_cpu)) -c $[@ c
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) c filelist $(%OWRELROOT)
     @rm filelist
@@ -77,7 +80,7 @@ all : ../$(installer_c) ../$(installer_f77) .SYMBOLIC
     @rm setup.zip
 
 ../$(installer_f77) : ../files.dat $(setup_f77) .ALWAYS
-    langdat -l filelist -c $[@ f77
+    langdat -l filelist $(langdat_keys_$(bld_os)$(bld_cpu)) -c $[@ f77
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) f77 filelist $(%OWRELROOT)
     @rm filelist
