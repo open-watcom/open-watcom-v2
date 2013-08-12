@@ -127,6 +127,8 @@
 /rc/rc/*/ytabw.c
 #
 /rcsdll/*/*.dll
+/rcsdll/batch/*/*.bat
+/rcsdll/batch/*/*.cmd
 #
 /sdk/*/*/*.dll
 /sdk/wresedit/*/*/*.dll
