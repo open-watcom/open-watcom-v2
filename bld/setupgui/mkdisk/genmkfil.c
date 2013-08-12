@@ -64,7 +64,7 @@ VERSION_INFO            *VersionList = NULL;
 int AddFile( char *path, char *file, char *rel_file, char *patch )
 //================================================================
 {
-    FILE_INFO           *new, *curr;
+    FILE_INFO           *new, **owner;
 
     new = malloc( sizeof( FILE_INFO ) );
     if( new == NULL ) {
@@ -80,15 +80,11 @@ int AddFile( char *path, char *file, char *rel_file, char *patch )
             return( FALSE );
         }
         new->next = NULL;
-        if( FileList == NULL ) {
-            FileList = new;
-        } else {
-            curr = FileList;
-            while( curr->next != NULL ) {
-                curr = curr->next;
-            }
-            curr->next = new;
+        owner = &FileList;
+        while( *owner != NULL ) {
+            owner = &(*owner)->next;
         }
+        *owner = new;
         return( TRUE );
     }
 }

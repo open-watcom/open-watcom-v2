@@ -605,6 +605,7 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
 {
     int                 path_dir, old_path_dir, target;
     FILE_INFO           *new, *curr;
+    FILE_INFO           **owner;
     long                act_size, cmp_size;
     time_t              time;
     struct stat         stat_buf;
@@ -702,8 +703,7 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
     }
 
     // see if the pack_file has been seen already
-    curr = FileList;
-    while( curr != NULL ) {
+    for( curr = FileList; curr != NULL; curr = curr->next ) {
         if( stricmp( curr->pack, patch ) == 0 ) {
             // this file is already in the current pack file
             curr->num_files++;
@@ -737,7 +737,6 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
             }
             return( TRUE );
         }
-        curr = curr->next;
     }
 
     // add to list
@@ -770,15 +769,11 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
         new->sizes = ns;
         new->cmp_size = cmp_size;
         new->next = NULL;
-        if( FileList == NULL ) {
-            FileList = new;
-        } else {
-            curr = FileList;
-            while( curr->next != NULL ) {
-                curr = curr->next;
-            }
-            curr->next = new;
+        owner = &FileList;
+        while( *owner != NULL ) {
+            owner = &(*owner)->next;
         }
+        *owner = new;
         return( TRUE );
     }
 }
@@ -1127,19 +1122,20 @@ int CheckForDuplicateFiles()
     size_list           *name1,*name2;
     int                 ok = TRUE;
 
-    if( FileList == NULL ) return( TRUE );
-    for( file1 = FileList; file1->next != NULL; file1 = file1->next ) {
-        for( file2 = file1->next; file2 != NULL; file2 = file2->next ) {
-            if( file1->path != file2->path ) continue;
-            if( file1->condition != file2->condition ) continue;
-            for( name1 = file1->sizes; name1 != NULL; name1 = name1->next ) {
-                for( name2 = file2->sizes; name2 != NULL; name2 = name2->next ) {
-                    if( stricmp( name1->name, name2->name ) == 0 ) {
-                        printf( "'%s' is in 2 pack files (%s) (%s)\n",
-                                name1->name,
-                                file1->pack,
-                                file2->pack );
-                        ok = FALSE;
+    if( FileList != NULL ) {
+        for( file1 = FileList; file1->next != NULL; file1 = file1->next ) {
+            for( file2 = file1->next; file2 != NULL; file2 = file2->next ) {
+                if( file1->path != file2->path ) continue;
+                if( file1->condition != file2->condition ) continue;
+                for( name1 = file1->sizes; name1 != NULL; name1 = name1->next ) {
+                    for( name2 = file2->sizes; name2 != NULL; name2 = name2->next ) {
+                        if( stricmp( name1->name, name2->name ) == 0 ) {
+                            printf( "'%s' is in 2 pack files (%s) (%s)\n",
+                                    name1->name,
+                                    file1->pack,
+                                    file2->pack );
+                            ok = FALSE;
+                        }
                     }
                 }
             }
@@ -1456,7 +1452,7 @@ int MakeScript( void )
     inf_size = 0;
     old_size = 0;
     if( !FillFirst ) size = DiskSize;
-    for ( ;; ) {
+    for( ;; ) {
         /* keep creating script until size stabilizes */
         disks = CreateScript( size+inf_size, 0 );
         inf_size = FileSize( "setup.inf" );
