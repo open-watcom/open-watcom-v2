@@ -8,13 +8,8 @@ skip_build: .symbolic
 !endif
 !endif
 
-!ifeq host_os dos
-wlsystem.lnk : ../specs.sp wlink.lnk
-    wsplice -k Pwlsystem $[@ $@
-!endif
-
 wlink.lnk : ../wlink.sp ../specs.sp
     wsplice -k Pwlsystem -k $(host_os) -k $(host_cpu) $< $@
 
 clean : .symbolic
-    rm -f wlink.lnk wlsystem.lnk
+    rm -f *.lnk

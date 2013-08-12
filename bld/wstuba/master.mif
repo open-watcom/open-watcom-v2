@@ -12,8 +12,15 @@ all : wstub.exe wstubq.exe
 
 .asm : ..
 
+!define host_$(host_os)$(host_cpu)
+
+!ifdef host_dosi86
 wstub.exe : wstub.obj
         $(linker) $(lflags) file $[@
 
 wstubq.exe : wstubq.obj
         $(linker) $(lflags) file $[@
+!else
+wstub.exe wstubq.exe :
+        cp ../dosi86/$@ $@
+!endif

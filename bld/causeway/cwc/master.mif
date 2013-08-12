@@ -15,12 +15,15 @@ extra_l_flags = op map
 
 objs = cwc.obj
 
-$(proj_name).exe : copystub.gh decstub.gh $(objs)
+$(proj_name).exe : cwstub.exe copystub.gh decstub.gh $(objs)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(objs) $(ldflags)
 !else
     $(linker) name $@ $(lflags) file {$(objs)}
 !endif
+
+cwstub.exe : ../../cw32/dosi86/cwstub.exe
+    cp $[@ $@
 
 copystub.gh : copystub.asm ./mkcode.exe
     *bwasm -zq -fo=$^&.obj $[@

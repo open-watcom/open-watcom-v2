@@ -31,8 +31,7 @@ set PROJNAME=wlink
     <CCCMD> ms2wlink/dosi86/ms2wlink.exe    <OWRELROOT>/binw/
     <CCCMD> fcenable/dosi86/fcenable.exe    <OWRELROOT>/binw/
     <CCCMD> exe2bin/dosi86/exe2bin.exe      <OWRELROOT>/binw/
-    <CCCMD> lnk/dos/wlsystem.lnk            <OWRELROOT>/binw/
-    <CCCMD> lnk/dos/wlink.lnk               <OWRELROOT>/binw/
+    <CCCMD> lnk/dos386/wlink.lnk            <OWRELROOT>/binw/
     <CCCMD> ovlldr/dosi86/wovl.lib          <OWRELROOT>/lib286/dos/
 #    <CCCMD> ovlldr/dosi86/wmovl.lib         <OWRELROOT>/lib286/dos/
 
@@ -43,7 +42,7 @@ set PROJNAME=wlink
     <CCCMD> ms2wlink/os2i86/ms2wlink.exe    <OWRELROOT>/binp/
     <CCCMD> fcenable/os2i86/fcenable.exe    <OWRELROOT>/binp/
     <CCCMD> exe2bin/os2386/exe2bin.exe      <OWRELROOT>/binp/
-    <CCCMD> lnk/os2/wlink.lnk               <OWRELROOT>/binp/
+    <CCCMD> lnk/os2386/wlink.lnk            <OWRELROOT>/binp/
 
     <CCCMD> nt386.dll/wlink.exe             <OWRELROOT>/binnt/
     <CCCMD> nt386.dll/wlink.sym             <OWRELROOT>/binnt/

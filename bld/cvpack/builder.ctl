@@ -20,6 +20,9 @@ set PROJNAME=cvpack
     <CCCMD> linux386/cvpack.exe  <OWRELROOT>/binl/cvpack
     <CCCMD> ntaxp/cvpack.exe     <OWRELROOT>/axpnt/
 
+#    <CCCMD> linuxx64/cvpack.exe  <OWRELROOT>/binl64/cvpack
+    <CCCMD> ntx64/cvpack.exe     <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

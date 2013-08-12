@@ -14,7 +14,7 @@ exename     = wrc
 dllname     = wrcd
 !endif
 
-additional_cleanup = ytab.* ytab2.* ytabw.*
+additional_cleanup = ytab.* ytab2.* ytabw.* *.uni
 
 !include cproj.mif
 !include defrule.mif
@@ -98,6 +98,15 @@ common_objs = &
     $(_subdir_)pathlist.obj &
     $(_subdir_)rcspawn.obj
 
+misc_objs = &
+    1250.uni &
+    1251.uni &
+    1252.uni &
+    936.uni &
+    949.uni &
+    950.uni &
+    kanji.uni
+
 !ifeq release 0
 !ifeq WRC_USE_TRMEM 1
 rc_trmem_objs += $(_subdir_)trmem.obj
@@ -179,7 +188,7 @@ depends_exe = rcmsg.gh wrc.res ytab2.c ytabw.c keyword2.gh keywordw.gh
 
 !ifdef wrc_dll
 
-$(exename).exe : $(depends_drv) $(dllname).dll $(objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe : $(misc_objs) $(depends_drv) $(dllname).dll $(objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objs_drv) $(dllname).lib $(ldflags)
 !else
@@ -192,7 +201,7 @@ $(exename).exe : $(depends_drv) $(dllname).dll $(objs_drv) $(version_res_exe_$(h
 
 !else
 
-$(exename).exe : $(depends_exe) $(objs_exe) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objs_exe) $(xlibs) $(ldflags)
 !else
@@ -268,6 +277,9 @@ rcmsg.gh : msg.gh
 
 wrc.res : ../rc.rc rcmsg.gh .AUTODEPEND
         $(rc_aui) -ad $(rc_defines) $[@ -fo=$^@
+
+$(misc_objs):
+        cat ../$@ >$@
 
 verrc_exe = $(exename)
 verrc_dll = $(dllname)

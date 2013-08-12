@@ -1,0 +1,22 @@
+proj_name = misc
+
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .symbolic
+!else ifndef bld64host_$(host_os)
+skip_build: .symbolic
+!endif
+!endif
+
+misc_objs = &
+    unicode1.250 &
+    unicode1.252 &
+    unicode.437 &
+    unicode.850 &
+    unicode.852
+
+$(misc_objs):
+    cp ../$@ $@
+
+clean: .symbolic
+    rm -f $(misc_objs)
