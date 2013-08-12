@@ -45,9 +45,20 @@
 #include "source.h"
 #include "sstyle.h"
 #include "fts.h"
-#include "rcscli.h"
+#include "rcs.h"
 
-#if defined( __WINDOWS__ ) && defined( VI_RCS )
+static window_info  *wInfo = NULL;
+static char         strLoad[] = "loaded";
+static char         strCompile[] = "compiled";
+static char         *dataBuff;
+
+static vi_rc        setWDimension( char * );
+static vi_rc        setWHilite( char * );
+static vi_rc        setWText( char * );
+static vi_rc        setWBorder( char * );
+static vi_rc        setSyntaxStyle( syntax_element, char * );
+
+#if defined( VI_RCS ) && defined( __WINDOWS__ )
 static bool isOS2( void )
 {
     union {
@@ -66,17 +77,6 @@ static bool isOS2( void )
     return( FALSE );
 }
 #endif
-
-static window_info  *wInfo = NULL;
-static char         strLoad[] = "loaded";
-static char         strCompile[] = "compiled";
-static char         *dataBuff;
-
-static vi_rc        setWDimension( char * );
-static vi_rc        setWHilite( char * );
-static vi_rc        setWText( char * );
-static vi_rc        setWBorder( char * );
-static vi_rc        setSyntaxStyle( syntax_element, char * );
 
 /*
  * InitCommandLine - initialize command line processing
@@ -877,84 +877,15 @@ vi_rc RunCommandLine( char *cl )
 #ifdef __WINDOWS__
         if( isOS2() ) break; // OS/2 shell returns before checkout finishes
 #endif
-        if( CurrentFile == NULL ) break;
-        if( RCSInit == NULL || RCSRegisterBatchCallback == NULL ||
-            RCSSetPause == NULL || RCSCheckout == NULL || RCSFini == NULL ) {
-        } else {
-            extern int RCSAPI Batcher( char *cmd, void *cookie );
-            linenum row;
-            int     col;
-            rcsdata r;
-#ifdef __WIN__
-            FARPROC fp;
-            r = RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
-            fp = MakeProcInstance( (FARPROC)(&Batcher), InstanceHandle );
-            RCSRegisterBatchCallback( r, (BatchCallback *)fp, NULL );
-#else
-            r = RCSInit( 0, getenv( "WATCOM" ) );
-            RCSRegisterBatchCallback( r, (BatchCallback *)&Batcher, NULL );
-#endif
-            if( RCSQuerySystem( r ) != 0 ) {
-                if( GenericQueryBool( "File is read only, check out?" ) ) {
-                    char full1[FILENAME_MAX];
-
-                    _fullpath( full1, CurrentFile->name, FILENAME_MAX );
-                    RCSSetPause( r, TRUE );
-                    if( RCSCheckout( r, full1, NULL, NULL ) ) {
-                        strcpy( dataBuff, CurrentFile->name );
-                        rc = ERR_NO_ERR;
-                        row = CurrentPos.line;
-                        col = CurrentPos.column;
-                        EditFile( dataBuff, TRUE );
-                        GoToLineNoRelCurs( row );
-                        GoToColumnOnCurrentLine( col );
-                    }
-                }
-            }
-#ifdef __WIN__
-            FreeProcInstance( (FARPROC) fp );
-#endif
-            RCSFini( r );
-            break;
+        if( CurrentFile != NULL ) {
+            rc = ViRCSCheckout( rc );
         }
+        break;
     case PCL_T_CHECKIN:
-        if( CurrentFile == NULL ) break;
-        if( RCSInit == NULL || RCSRegisterBatchCallback == NULL ||
-            RCSSetPause == NULL || RCSCheckin == NULL || RCSFini == NULL ) break;
-        {
-            extern int RCSAPI Batcher( char *cmd, void *cookie );
-            linenum row;
-            int     col;
-            rcsdata r;
-
-#ifdef __WIN__
-            FARPROC fp;
-            r = RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
-            fp = MakeProcInstance( (FARPROC)(&Batcher), InstanceHandle );
-            RCSRegisterBatchCallback( r, (BatchCallback *)fp, NULL );
-#else
-            r = RCSInit( 0, getenv( "WATCOM" ) );
-            RCSRegisterBatchCallback( r, (BatchCallback *)&Batcher, NULL );
-#endif
-            RCSSetPause( r, TRUE );
-            if( CurrentFile->modified ) {
-                FilePromptForSaveChanges( CurrentFile );
-            }
-            if( RCSCheckin( r, CurrentFile->name, NULL, NULL ) ) {
-                rc = ERR_NO_ERR;
-                strcpy( dataBuff, CurrentFile->name );
-                row = CurrentPos.line;
-                col = CurrentPos.column;
-                EditFile( dataBuff, TRUE );
-                GoToLineNoRelCurs( row );
-                GoToColumnOnCurrentLine( col );
-            }
-#ifdef __WIN__
-            FreeProcInstance( (FARPROC) fp );
-#endif
-            RCSFini( r );
-            break;
+        if( CurrentFile != NULL ) {
+            rc = ViRCSCheckin( rc );
         }
+        break;
 #endif
     default:
         if( tkn >= 1000 ) {
@@ -1331,15 +1262,15 @@ static vi_rc setSyntaxStyle( syntax_element style, char *data )
     return( ERR_NO_ERR );
 }
 
-#ifdef VI_RCS
-#ifdef __WIN__
-WINEXPORT int CALLBACK Batcher( char *cmd, void *cookie )
-#else
-int Batcher( char *cmd, void *cookie )
-#endif
+void EditRCSCurrentFile( void )
 {
-    cookie = cookie;
-    if( ExecCmd( NULL, NULL, cmd ) == 0 ) return( 1 );
-    return( 0 );
+    linenum row;
+    int     col;
+
+    strcpy( dataBuff, CurrentFile->name );
+    row = CurrentPos.line;
+    col = CurrentPos.column;
+    EditFile( dataBuff, TRUE );
+    GoToLineNoRelCurs( row );
+    GoToColumnOnCurrentLine( col );
 }
-#endif

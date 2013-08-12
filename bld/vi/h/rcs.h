@@ -29,5 +29,7 @@
 ****************************************************************************/
 
 
-extern bool ViRCSInit( void ); // just stubs for dos
-extern bool ViRCSFini( void );
+extern bool     ViRCSInit( void ); // just stubs for dos
+extern bool     ViRCSFini( void );
+extern vi_rc    ViRCSCheckout( vi_rc rc );
+extern vi_rc    ViRCSCheckin( vi_rc rc );

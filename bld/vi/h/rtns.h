@@ -93,6 +93,7 @@ vi_rc   TryCompileableToken( int token, char *data, bool iscmdline );
 vi_rc   RunCommandLine( char * );
 vi_rc   ProcessWindow( int, char * );
 void    FiniCommandLine( void );
+void    EditRCSCurrentFile( void );
 
 /* cstatus.c */
 void    GetModeString( char * );
