@@ -60,7 +60,7 @@ typedef struct size_list size_list;
 struct size_list {
     size_list   *next;
     long        size;
-    long        stamp;
+    time_t      stamp;
     char        redist;
     char        *dst_var;
     char        name[1];
@@ -91,42 +91,75 @@ enum {
     DELETE_DIR
 };
 
-char                    *Product;
-long                    DiskSize;
-int                     BlockSize;
-char                    *RelRoot;
-char                    *PackDir;
-char                    *Setup;
-FILE_INFO               *FileList = NULL;
-PATH_INFO               *PathList = NULL;
-LIST                    *AppSection = NULL;
-LIST                    *IconList = NULL;
-LIST                    *SupplimentList = NULL;
-LIST                    *IniList = NULL;
-LIST                    *AutoList = NULL;
-LIST                    *CfgList = NULL;
-LIST                    *EnvList = NULL;
-LIST                    *DialogList = NULL;
-LIST                    *BootTextList = NULL;
-LIST                    *ExeList = NULL;
-LIST                    *TargetList = NULL;
-LIST                    *LabelList = NULL;
-LIST                    *UpgradeList = NULL;
-LIST                    *AutoSetList = NULL;
-LIST                    *AfterList = NULL;
-LIST                    *BeforeList = NULL;
-LIST                    *EndList = NULL;
-LIST                    *DeleteList = NULL;
-LIST                    *ForceDLLInstallList = NULL;
-LIST                    *ErrMsgList = NULL;
-LIST                    *SetupErrMsgList = NULL;
-unsigned                DiskNum;
-unsigned                MaxDiskFiles;
-int                     FillFirst = 1;
-int                     Lang = 1;
-int                     Upgrade = FALSE;
-LIST                    *Include = NULL;
-const char              MkdiskInf[] = "mkdisk.inf";
+static char                    *Product;
+static long                    DiskSize;
+static int                     BlockSize;
+static char                    *RelRoot;
+static char                    *PackDir;
+static char                    *Setup;
+static FILE_INFO               *FileList = NULL;
+static PATH_INFO               *PathList = NULL;
+static LIST                    *AppSection = NULL;
+static LIST                    *IconList = NULL;
+static LIST                    *SupplimentList = NULL;
+static LIST                    *IniList = NULL;
+static LIST                    *AutoList = NULL;
+static LIST                    *CfgList = NULL;
+static LIST                    *EnvList = NULL;
+static LIST                    *DialogList = NULL;
+static LIST                    *BootTextList = NULL;
+static LIST                    *ExeList = NULL;
+static LIST                    *TargetList = NULL;
+static LIST                    *LabelList = NULL;
+static LIST                    *UpgradeList = NULL;
+static LIST                    *AutoSetList = NULL;
+static LIST                    *AfterList = NULL;
+static LIST                    *BeforeList = NULL;
+static LIST                    *EndList = NULL;
+static LIST                    *DeleteList = NULL;
+static LIST                    *ForceDLLInstallList = NULL;
+static LIST                    *ErrMsgList = NULL;
+static LIST                    *SetupErrMsgList = NULL;
+static unsigned                DiskNum;
+static unsigned                MaxDiskFiles;
+static int                     FillFirst = 1;
+static int                     Lang = 1;
+static int                     Upgrade = FALSE;
+static LIST                    *Include = NULL;
+//static const char              MkdiskInf[] = "mkdisk.inf";
+static const char               MkdiskInf[] = "mksetup.inf";
+
+
+#define NUM_LINES       23
+#define PRODUCT_LINE    3
+
+
+static char                     *BootText[ NUM_LINES ] =
+{
+"",
+"",
+"    Welcome to",
+"        insert_product_name_here",
+"",
+"",
+"",
+"    from",
+"        WATCOM International Corp.",
+"        415 Phillip Street",
+"        Waterloo, Ontario",
+"        Canada, N2L 3X2",
+"",
+"        (519) 886-3700",
+"        FAX: (519) 747-4971",
+"",
+"",
+"",
+"",
+"    Insert a DOS diskette",
+"    press any key to start DOS...",
+"",
+""
+};
 
 
 static void ConcatDirSep( char *dir )
@@ -155,14 +188,19 @@ static char *mygets( char *buf, unsigned len, FILE *fp )
 
     p = buf;
     for( ;; ) {
-        if( fgets( p, len, fp ) == NULL ) return( NULL );
+        if( fgets( p, len, fp ) == NULL )
+            return( NULL );
         q = p;
-        while( *q == ' ' || *q == '\t' ) ++q;
-        if( p != q ) strcpy( p, q );
+        while( *q == ' ' || *q == '\t' )
+            ++q;
+        if( p != q )
+            strcpy( p, q );
         got = strlen( p );
-        if( got <= 1 ) break;
-        got-=2;
-        if( p[got] != '\\' || p[got+1] != '\n' ) break;
+        if( got <= 1 )
+            break;
+        got -= 2;
+        if( p[got] != '\\' || p[got + 1] != '\n' )
+            break;
         p += got;
         len -= got;
     }
@@ -172,7 +210,7 @@ static char *mygets( char *buf, unsigned len, FILE *fp )
             start = p;
             lang = p[2] - '0';
             if( lang == 0 ) {
-                strcpy( start, start+3 );
+                strcpy( start, start + 3 );
                 continue;
             }
             p += 3;
@@ -193,6 +231,18 @@ static char *mygets( char *buf, unsigned len, FILE *fp )
     return( buf );
 }
 
+
+static void AddToList( LIST *new, LIST **list )
+//=============================================
+
+{
+    while( *list != NULL ) {
+        list = &((*list)->next);
+    }
+    *list = new;
+}
+
+
 long FileSize( char *file )
 //=========================
 
@@ -208,33 +258,153 @@ long FileSize( char *file )
 }
 
 
-int main( int argc, char *argv[] )
-//================================
+void CreateBootFile()
+//===================
 
 {
-    int                 ok;
+    int                 line;
+    LIST                *list;
     FILE                *fp;
 
-    if( !CheckParms( &argc, &argv ) ) {
-        return( 1 );
+    line = PRODUCT_LINE;
+    for( list = BootTextList; list != NULL; list = list->next ) {
+        BootText[ line ] = list->item;
+        ++line;
     }
-    fp = fopen( argv[ 3 ], "r" );
+    fp = fopen( "__boot__", "w" );
     if( fp == NULL ) {
-        printf( "Cannot open '%s'\n", argv[ 3 ] );
-        return( 1 );
+        printf( "Cannot create boot text file '__boot__'\n" );
+    } else {
+        for( line = 0; line < NUM_LINES; ++line ) {
+            fprintf( fp, "%s\n", BootText[ line ] );
+        }
+        fclose( fp );
     }
-    printf( "Reading Info File...\n" );
-    ReadInfFile();
-    ok = ReadList( fp );
-    if( !ok ) return( 1 );
-    printf( "Checking for duplicate files...\n" );
-    ok = CheckForDuplicateFiles();
-    if( !ok ) return( 1 );
-    fclose( fp );
-    printf( "Making script...\n" );
-    MakeScript();
-    CreateDisks();
-    return( 0 );
+}
+
+
+void NewDisk( FILE *fp )
+//======================
+
+{
+    fprintf( fp, "\ncall %%DSDISK%% %2.2u %%1 %%2 %%3 %%4 %%5 %%6\n", ++DiskNum );
+}
+
+
+void EndDisk( FILE *fp )
+//======================
+
+{
+    fprintf( fp, "call %%DEDISK%% %2.2u %%1 %%2 %%3 %%4 %%5 %%6\n", DiskNum );
+}
+
+
+void NextDisk( FILE *fp )
+//=======================
+
+{
+    EndDisk( fp );
+    NewDisk( fp );
+}
+
+void OneFile( FILE *fp, char *dir, char *name, char *dst )
+{
+    fprintf( fp, "call %%DCOPY%% " );
+    if( dir != NULL ) fprintf( fp, "%s\\", dir );
+    fprintf( fp, "%s", name );
+    if( dst != NULL ) {
+        fprintf( fp, "\t%s", dst );
+    }
+    fprintf( fp, "\n" );
+}
+
+void CreateBatch( FILE *fp )
+//=========================================
+
+{
+    int                 i;
+    long                curr_size, this_disk, extra;
+    FILE_INFO           *curr;
+    LIST                *list;
+    char                buff[80];
+    unsigned            nfiles;
+
+    DiskNum = 0;
+    fprintf( fp, "call initmk %%1 %%2 %%3 %%4 %%5 %%6\n" );
+    NewDisk( fp );
+
+    OneFile( fp, NULL, Setup, "setup.exe" );
+    OneFile( fp, NULL, "setup.inf", NULL );
+    for( list = ExeList; list != NULL; list = list->next ) {
+        OneFile( fp, NULL, list->item, NULL );
+    }
+    this_disk = FileSize( Setup ) + FileSize( "setup.inf" );
+    for( list = ExeList; list != NULL; list = list->next ) {
+        this_disk += FileSize( list->item );
+    }
+
+    if( !FillFirst ) this_disk = DiskSize;
+    nfiles = 0;
+    for( curr = FileList; curr != NULL; curr = curr->next ) {
+        if( ++nfiles > MaxDiskFiles ) {
+            nfiles = 0;
+            NextDisk( fp );
+            this_disk = 0;
+        }
+        curr_size = RoundUp( curr->cmp_size, BlockSize );
+        if( this_disk == DiskSize ) {
+            NextDisk( fp );
+            this_disk = 0;
+        }
+        if( this_disk + curr_size > DiskSize ) {
+            // place what will fit onto the current disk
+            extra = DiskSize - this_disk;
+            fprintf( fp, "splitfil %s\\%s %ld %ld\n", PackDir, curr->pack,
+                         extra, DiskSize );
+            sprintf( buff, "%s.1", curr->pack );
+            OneFile( fp, PackDir, buff, NULL );
+            fprintf( fp, "del %s\\%s.1\n", PackDir, curr->pack );
+            // place rest of current file on subsequent disks
+            curr_size -= extra;
+            for( i = 2; ; ++i ) {
+                NextDisk( fp );
+                sprintf( buff, "%s.%d", curr->pack, i );
+                OneFile( fp, PackDir, buff, NULL );
+                fprintf( fp, "del %s\\%s.%d\n", PackDir, curr->pack, i );
+                if( curr_size <= DiskSize ) break;
+                curr_size -= DiskSize;
+            }
+            this_disk = curr_size;
+            nfiles = 1;
+        } else {
+            OneFile( fp, PackDir, curr->pack, NULL );
+            this_disk += curr_size;
+        }
+    }
+    EndDisk( fp );
+    fprintf( fp, "\ncall finimk %%1 %%2 %%3 %%4 %%5 %%6\n" );
+}
+
+
+void CreateDisks()
+//===========================
+
+{
+    FILE                *fp;
+
+    if( BootTextList != NULL ) {
+        CreateBootFile();
+    }
+    // create DODISK.BAT
+    fp = fopen( "dodisk.bat", "w" );
+    if( fp == NULL ) {
+        printf( "Cannot create file 'dodisk.bat'\n" );
+        fp = stdout;
+    }
+    CreateBatch( fp );
+    if( fp != stdout ) {
+        fclose( fp );
+    }
 }
 
 
@@ -324,282 +494,6 @@ int CheckParms( int *pargc, char **pargv[] )
 }
 
 
-int ReadList( FILE *fp )
-//======================
-
-{
-    char        *path;
-    char        *old_path;
-    char        *file;
-    char        *rel_fil;
-    char        *condition;
-    char        *patch;
-    char        *dst_var;
-    char        buf[ 512 ];
-    char        redist;
-    int         no_error;
-
-    printf( "Checking files...\n" );
-    no_error = TRUE;
-    while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
-        buf[ strlen( buf ) - 1 ] = '\0';
-        redist = buf[0];
-        path = strtok( buf + 1, " \t" );
-        if( path == NULL ) {
-            printf( "Invalid list file format - 'path' not found\n" );
-            exit( 2 );
-        }
-        old_path = strtok( NULL, " \t" );
-        if( old_path == NULL ) {
-            printf( "Invalid list file format - 'old path' not found\n" );
-            exit( 2 );
-        }
-        if( stricmp( path, old_path ) == 0 ) old_path = NULL;
-        file = strtok( NULL, " \t" );
-        if( file == NULL ) {
-            printf( "Invalid list file format - 'file' not found\n" );
-            exit( 2 );
-        }
-        rel_fil = strtok( NULL, " \t" );
-        if( rel_fil == NULL ) {
-            printf( "Invalid list file format - 'rel file' not found\n" );
-            exit( 2 );
-        }
-        patch = strtok( NULL, " \t" );
-        if( patch == NULL ) {
-            printf( "Invalid list file format - 'patch' not found\n" );
-            exit( 2 );
-        }
-        dst_var = strtok( NULL, " \t" );
-        if( dst_var == NULL ) {
-            printf( "Invalid list file format - 'destination' not found\n" );
-            exit( 2 );
-        }
-        condition = strtok( NULL, "\0" ); // rest of line
-        if( condition == NULL ) { // no packfile
-            condition = dst_var;
-            dst_var = ".";
-        }
-        while( *condition == ' ' ) ++condition;
-        while( *dst_var == ' ' ) ++dst_var;
-        if( IS_EMPTY( dst_var ) ) {
-            dst_var = NULL;
-        } else {
-            dst_var = strdup( dst_var );
-        }
-        if( !AddFile( path, old_path, redist, file, rel_fil, patch, dst_var, condition ) ) {
-            no_error = FALSE;
-        }
-    }
-    printf( ".\n" );
-    return( no_error );
-}
-
-
-int AddPathTree( char *path, int target )
-/***************************************/
-{
-    int         parent;
-    char        *p;
-
-    if( path == NULL ) return( -1 );
-    parent = AddPath( ".", target, -1 );
-    p = strchr( path, '\\' );
-    while( p != NULL ) {
-        *p = '\0';
-        parent = AddPath( path, target, parent );
-        if( parent == 0 ) return( FALSE );
-        *p = '\\';
-        p = strchr( p + 1, '\\' );
-    }
-    return( AddPath( path, target, parent ) );
-}
-
-
-int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file, char *patch, char *dst_var, char *cond )
-/*******************************************************************************************************************/
-{
-    int                 path_dir, old_path_dir, target;
-    FILE_INFO           *new, *curr;
-    long                act_size, cmp_size;
-    long                time;
-    struct stat         stat_buf;
-    char                *p;
-    char                *root_file;
-    char                src[ _MAX_PATH ], dst[ _MAX_PATH ];
-    size_list           *ns,*sl;
-
-    if( !IS_EMPTY( rel_file ) ) {
-        if( HAS_PATH( rel_file ) ) {
-            strcpy( src, rel_file );
-        } else {
-            strcpy( src, RelRoot );
-            ConcatDirSep( src );
-            strcat( src, rel_file );
-        }
-    } else if( strchr( path, ':' ) != NULL ) {
-        // path is absolute. don't use RelRoot
-        strcpy( src, path );
-        ConcatDirSep( src );
-        strcat( src, file );
-    } else {
-        strcpy( src, RelRoot );
-        ConcatDirSep( src );
-        if( !IS_EMPTY( path ) ) {
-            strcat( src, path );
-            ConcatDirSep( src );
-        }
-        strcat( src, file );
-    }
-    if( stat( src, &stat_buf ) != 0 ) {
-        printf( "\n'%s' does not exist\n", src );
-        return( FALSE );
-    } else {
-        act_size = stat_buf.st_size;
-        time = stat_buf.st_mtime;
-    }
-    strcpy( dst, PackDir );
-    ConcatDirSep( dst );
-    strcat( dst, patch );
-    if( stat( dst, &stat_buf ) != 0 ) {
-        printf( "\n'%s' does not exist\n", dst );
-        return( FALSE );
-    } else {
-        cmp_size = stat_buf.st_size;
-    }
-#if 0
-    printf( "\r%s                              \r", file );
-    fflush( stdout );
-#endif
-    act_size = RoundUp( act_size, 512 );
-    cmp_size = RoundUp( cmp_size, BlockSize );
-
-    // strip target off front of path
-    if( *path == '%' ) {
-        p = strchr( ++path, '%' );
-        if( p == NULL ) {
-            printf( "Invalid path(%s)\n", path );
-            return( 0 );
-        }
-        *p = '\0';
-        target = AddTarget( path );
-        path = p + 1;
-        if( *path == '\0' ) {
-            path = ".";
-        } else if( *path == '\\' ) {
-            ++path;
-        } else {
-            printf( "Invalid path (%s)\n", path );
-            return( 0 );
-        }
-    } else {
-        target = AddTarget( "DstDir" );
-    }
-    if( target == 0 ) {
-        return( 0 );
-    }
-
-    // handle sub-directories in path before full path
-    path_dir = AddPathTree( path, target );
-    old_path_dir = AddPathTree( old_path, target );
-    if( path_dir == 0 ) {
-        return( FALSE );
-    }
-    root_file = p = file;
-    while( *p != '\0' ) {
-        switch( *p ) {
-        case '/':
-        case ':':
-        case '\\':
-            root_file = p + 1;
-            break;
-        }
-        ++p;
-    }
-
-    // see if the pack_file has been seen already
-    curr = FileList;
-    while( curr != NULL ) {
-        if( stricmp( curr->pack, patch ) == 0 ) {
-            // this file is already in the current pack file
-            curr->num_files++;
-            ns = malloc( sizeof( size_list ) + strlen( root_file ) );
-            if( ns == NULL ) {
-                printf( "Out of memory\n" );
-                return( NULL );
-            }
-            strcpy( ns->name, root_file );
-            for( sl = curr->sizes; sl != NULL; sl = sl->next ) {
-                if( stricmp( sl->name, ns->name ) == 0 ) {
-                    printf( "file '%s' included in archive '%s' more than once\n", sl->name, curr->pack );
-                    return( FALSE );
-                }
-            }
-            ns->size = act_size;
-            ns->stamp = time;
-            ns->redist = redist;
-            ns->dst_var = dst_var;
-            ns->next = curr->sizes;
-            curr->sizes = ns;
-            if( curr->path != path_dir ) {
-                printf( "\nPath for archive '%s' changed to '%s'\n", curr->pack, path );
-                return( FALSE );
-            }
-            if( strcmp( curr->condition, cond ) != 0 ) {
-                printf( "\nCondition for archive '%s' changed:\n", curr->pack );
-                printf( "Old: <%s>\n", curr->condition );
-                printf( "New: <%s>\n", cond );
-                return( FALSE );
-            }
-            return( TRUE );
-        }
-        curr = curr->next;
-    }
-
-    // add to list
-    new = malloc( sizeof( FILE_INFO ) );
-    if( new == NULL ) {
-        printf( "Out of memory\n" );
-        return( FALSE );
-    } else {
-        new->file = strdup( file );
-        new->pack = strdup( patch );
-        new->condition = strdup( cond );
-        if( new->file == NULL || new->pack == NULL || new->condition == NULL ) {
-            printf( "Out of memory\n" );
-            return( FALSE );
-        }
-        new->path = path_dir;
-        new->old_path = old_path_dir;
-        new->num_files = 1;
-        ns = malloc( sizeof( size_list ) + strlen( root_file ) );
-        if( ns == NULL ) {
-            printf( "Out of memory\n" );
-            return( NULL );
-        }
-        strcpy( ns->name, root_file );
-        ns->size = act_size;
-        ns->stamp = time;
-        ns->next = NULL;
-        ns->redist = redist;
-        ns->dst_var = dst_var;
-        new->sizes = ns;
-        new->cmp_size = cmp_size;
-        new->next = NULL;
-        if( FileList == NULL ) {
-            FileList = new;
-        } else {
-            curr = FileList;
-            while( curr->next != NULL ) {
-                curr = curr->next;
-            }
-            curr->next = new;
-        }
-        return( TRUE );
-    }
-}
-
-
 int AddTarget( char *target )
 //===========================
 {
@@ -686,14 +580,279 @@ int AddPath( char *path, int target, int parent )
 }
 
 
-static void AddToList( LIST *new, LIST **list )
-//=============================================
+int AddPathTree( char *path, int target )
+/***************************************/
+{
+    int         parent;
+    char        *p;
+
+    if( path == NULL ) return( -1 );
+    parent = AddPath( ".", target, -1 );
+    p = strchr( path, '\\' );
+    while( p != NULL ) {
+        *p = '\0';
+        parent = AddPath( path, target, parent );
+        if( parent == 0 ) return( FALSE );
+        *p = '\\';
+        p = strchr( p + 1, '\\' );
+    }
+    return( AddPath( path, target, parent ) );
+}
+
+
+int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file, char *patch, char *dst_var, char *cond )
+/*******************************************************************************************************************/
+{
+    int                 path_dir, old_path_dir, target;
+    FILE_INFO           *new, *curr;
+    long                act_size, cmp_size;
+    time_t              time;
+    struct stat         stat_buf;
+    char                *p;
+    char                *root_file;
+    char                src[ _MAX_PATH ], dst[ _MAX_PATH ];
+    size_list           *ns,*sl;
+
+    if( !IS_EMPTY( rel_file ) ) {
+        if( HAS_PATH( rel_file ) ) {
+            strcpy( src, rel_file );
+        } else {
+            strcpy( src, RelRoot );
+            ConcatDirSep( src );
+            strcat( src, rel_file );
+        }
+    } else if( HAS_PATH( path ) ) {
+        // path is absolute. don't use RelRoot
+        strcpy( src, path );
+        ConcatDirSep( src );
+        strcat( src, file );
+    } else {
+        strcpy( src, RelRoot );
+        ConcatDirSep( src );
+        if( !IS_EMPTY( path ) ) {
+            strcat( src, path );
+            ConcatDirSep( src );
+        }
+        strcat( src, file );
+    }
+    if( stat( src, &stat_buf ) != 0 ) {
+        printf( "\n'%s' does not exist\n", src );
+        return( FALSE );
+    } else {
+        act_size = stat_buf.st_size;
+        time = stat_buf.st_mtime;
+    }
+    strcpy( dst, PackDir );
+    ConcatDirSep( dst );
+    strcat( dst, patch );
+    if( stat( dst, &stat_buf ) != 0 ) {
+        printf( "\n'%s' does not exist\n", dst );
+        return( FALSE );
+    } else {
+        cmp_size = stat_buf.st_size;
+    }
+#if 0
+    printf( "\r%s                              \r", file );
+    fflush( stdout );
+#endif
+    act_size = RoundUp( act_size, 512 );
+    cmp_size = RoundUp( cmp_size, BlockSize );
+
+    // strip target off front of path
+    if( *path == '%' ) {
+        p = strchr( ++path, '%' );
+        if( p == NULL ) {
+            printf( "Invalid path(%s)\n", path );
+            return( FALSE );
+        }
+        *p = '\0';
+        target = AddTarget( path );
+        path = p + 1;
+        if( *path == '\0' ) {
+            path = ".";
+        } else if( *path == '\\' ) {
+            ++path;
+        } else {
+            printf( "Invalid path (%s)\n", path );
+            return( FALSE );
+        }
+    } else {
+        target = AddTarget( "DstDir" );
+    }
+    if( target == 0 ) {
+        return( FALSE );
+    }
+
+    // handle sub-directories in path before full path
+    path_dir = AddPathTree( path, target );
+    old_path_dir = AddPathTree( old_path, target );
+    if( path_dir == 0 ) {
+        return( FALSE );
+    }
+    root_file = p = file;
+    while( *p != '\0' ) {
+        switch( *p ) {
+        case '/':
+        case ':':
+        case '\\':
+            root_file = p + 1;
+            break;
+        }
+        ++p;
+    }
+
+    // see if the pack_file has been seen already
+    curr = FileList;
+    while( curr != NULL ) {
+        if( stricmp( curr->pack, patch ) == 0 ) {
+            // this file is already in the current pack file
+            curr->num_files++;
+            ns = malloc( sizeof( size_list ) + strlen( root_file ) );
+            if( ns == NULL ) {
+                printf( "Out of memory\n" );
+                return( FALSE );
+            }
+            strcpy( ns->name, root_file );
+            for( sl = curr->sizes; sl != NULL; sl = sl->next ) {
+                if( stricmp( sl->name, ns->name ) == 0 ) {
+                    printf( "file '%s' included in archive '%s' more than once\n", sl->name, curr->pack );
+                    return( FALSE );
+                }
+            }
+            ns->size = act_size;
+            ns->stamp = time;
+            ns->redist = redist;
+            ns->dst_var = dst_var;
+            ns->next = curr->sizes;
+            curr->sizes = ns;
+            if( curr->path != path_dir ) {
+                printf( "\nPath for archive '%s' changed to '%s'\n", curr->pack, path );
+                return( FALSE );
+            }
+            if( strcmp( curr->condition, cond ) != 0 ) {
+                printf( "\nCondition for archive '%s' changed:\n", curr->pack );
+                printf( "Old: <%s>\n", curr->condition );
+                printf( "New: <%s>\n", cond );
+                return( FALSE );
+            }
+            return( TRUE );
+        }
+        curr = curr->next;
+    }
+
+    // add to list
+    new = malloc( sizeof( FILE_INFO ) );
+    if( new == NULL ) {
+        printf( "Out of memory\n" );
+        return( FALSE );
+    } else {
+        new->file = strdup( file );
+        new->pack = strdup( patch );
+        new->condition = strdup( cond );
+        if( new->file == NULL || new->pack == NULL || new->condition == NULL ) {
+            printf( "Out of memory\n" );
+            return( FALSE );
+        }
+        new->path = path_dir;
+        new->old_path = old_path_dir;
+        new->num_files = 1;
+        ns = malloc( sizeof( size_list ) + strlen( root_file ) );
+        if( ns == NULL ) {
+            printf( "Out of memory\n" );
+            return( FALSE );
+        }
+        strcpy( ns->name, root_file );
+        ns->size = act_size;
+        ns->stamp = time;
+        ns->next = NULL;
+        ns->redist = redist;
+        ns->dst_var = dst_var;
+        new->sizes = ns;
+        new->cmp_size = cmp_size;
+        new->next = NULL;
+        if( FileList == NULL ) {
+            FileList = new;
+        } else {
+            curr = FileList;
+            while( curr->next != NULL ) {
+                curr = curr->next;
+            }
+            curr->next = new;
+        }
+        return( TRUE );
+    }
+}
+
+
+int ReadList( FILE *fp )
+//======================
 
 {
-    while( *list != NULL ) {
-        list = &((*list)->next);
+    char        *path;
+    char        *old_path;
+    char        *file;
+    char        *rel_fil;
+    char        *condition;
+    char        *patch;
+    char        *dst_var;
+    char        buf[ 512 ];
+    char        redist;
+    int         no_error;
+
+    printf( "Checking files...\n" );
+    no_error = TRUE;
+    while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
+        buf[ strlen( buf ) - 1 ] = '\0';
+        redist = buf[0];
+        path = strtok( buf + 1, " \t" );
+        if( path == NULL ) {
+            printf( "Invalid list file format - 'path' not found\n" );
+            exit( 2 );
+        }
+        old_path = strtok( NULL, " \t" );
+        if( old_path == NULL ) {
+            printf( "Invalid list file format - 'old path' not found\n" );
+            exit( 2 );
+        }
+        if( stricmp( path, old_path ) == 0 ) old_path = NULL;
+        file = strtok( NULL, " \t" );
+        if( file == NULL ) {
+            printf( "Invalid list file format - 'file' not found\n" );
+            exit( 2 );
+        }
+        rel_fil = strtok( NULL, " \t" );
+        if( rel_fil == NULL ) {
+            printf( "Invalid list file format - 'rel file' not found\n" );
+            exit( 2 );
+        }
+        patch = strtok( NULL, " \t" );
+        if( patch == NULL ) {
+            printf( "Invalid list file format - 'patch' not found\n" );
+            exit( 2 );
+        }
+        dst_var = strtok( NULL, " \t" );
+        if( dst_var == NULL ) {
+            printf( "Invalid list file format - 'destination' not found\n" );
+            exit( 2 );
+        }
+        condition = strtok( NULL, "\0" ); // rest of line
+        if( condition == NULL ) { // no packfile
+            condition = dst_var;
+            dst_var = ".";
+        }
+        while( *condition == ' ' ) ++condition;
+        while( *dst_var == ' ' ) ++dst_var;
+        if( IS_EMPTY( dst_var ) ) {
+            dst_var = NULL;
+        } else {
+            dst_var = strdup( dst_var );
+        }
+        if( !AddFile( path, old_path, redist, file, rel_fil, patch, dst_var, condition ) ) {
+            no_error = FALSE;
+        }
     }
-    *list = new;
+    printf( ".\n" );
+    return( no_error );
 }
 
 
@@ -726,10 +885,11 @@ static void AddToList( LIST *new, LIST **list )
           ( new->item = strdup( buf + sizeof( string ) - 1 ) ) != NULL )
 
 
-static FILE *PathOpen( char *name )
+static FILE *PathOpen( const char *name )
 {
     FILE        *fp;
     char        buf[_MAX_PATH];
+    LIST        *p;
 
     fp = fopen( name, "r" );
     for( p = Include; p != NULL && fp == NULL; p = p->next ) {
@@ -897,14 +1057,14 @@ void ReadSection( FILE *fp, char *section, LIST **list )
 }
 
 
-void ReadInfFile()
-//================
+void ReadInfFile( void )
+//======================
 
 {
     FILE                *fp;
     char                ver_buf[ 80 ];
 
-    fp = PathOpen( MksetupInf );
+    fp = PathOpen( MkdiskInf );
     if( fp == NULL ) {
         printf( "Cannot open '%s'\n", MkdiskInf );
         return;
@@ -941,7 +1101,7 @@ void DumpSizes( FILE *fp, FILE_INFO *curr )
         fput36( fp, csize->size/512 );
         fprintf( fp, "!" );
         if( csize->redist != ' ' ) {
-            fput36( fp, csize->stamp );
+            fput36( fp, (long)( csize->stamp ) );
         }
         fprintf( fp, "!" );
         if( csize->dst_var ) {
@@ -986,6 +1146,41 @@ int CheckForDuplicateFiles()
         }
     }
     return( ok );
+}
+
+
+void DumpFile( FILE *out, char *fname )
+//=====================================
+
+{
+    FILE                *in;
+    char                *buf;
+    size_t              len;
+
+    in = PathOpen( fname );
+    if( in == NULL ) {
+        printf( "Cannot open '%s'\n", fname );
+        return;
+    }
+    buf = malloc( SECTION_BUF_SIZE );
+    if( buf == NULL ) {
+        printf( "Out of memory\n" );
+        return;
+    }
+    for( ;; ) {
+        if( mygets( buf, SECTION_BUF_SIZE, in ) == NULL ) {
+            break;
+        }
+        if( strnicmp( buf, "include=", 8 ) == 0 ) {
+            len = strlen( buf );
+            if( buf[len - 1] == '\n' ) buf[len - 1] = '\0';
+            DumpFile( out, buf+8 );
+        } else {
+            fputs( buf, out );
+        }
+    }
+    free( buf );
+    fclose( in );
 }
 
 
@@ -1231,8 +1426,8 @@ int CreateScript( long init_size, unsigned padding )
 }
 
 
-int MakeScript()
-//==============
+int MakeScript( void )
+//====================
 
 {
     int                 disks;
@@ -1282,218 +1477,32 @@ int MakeScript()
     return( disks );
 }
 
-#define NUM_LINES       23
-#define PRODUCT_LINE    3
 
-
-char                    *BootText[ NUM_LINES ] =
-{
-"",
-"",
-"    Welcome to",
-"        insert_product_name_here",
-"",
-"",
-"",
-"    from",
-"        WATCOM International Corp.",
-"        415 Phillip Street",
-"        Waterloo, Ontario",
-"        Canada, N2L 3X2",
-"",
-"        (519) 886-3700",
-"        FAX: (519) 747-4971",
-"",
-"",
-"",
-"",
-"    Insert a DOS diskette",
-"    press any key to start DOS...",
-"",
-""
-};
-
-
-void CreateBootFile()
-//===================
+int main( int argc, char *argv[] )
+//================================
 
 {
-    int                 line;
-    LIST                *list;
+    int                 ok;
     FILE                *fp;
 
-    line = PRODUCT_LINE;
-    for( list = BootTextList; list != NULL; list = list->next ) {
-        BootText[ line ] = list->item;
-        ++line;
+    if( !CheckParms( &argc, &argv ) ) {
+        return( 1 );
     }
-    fp = fopen( "__boot__", "w" );
+    fp = fopen( argv[ 3 ], "r" );
     if( fp == NULL ) {
-        printf( "Cannot create boot text file '__boot__'\n" );
-    } else {
-        for( line = 0; line < NUM_LINES; ++line ) {
-            fprintf( fp, "%s\n", BootText[ line ] );
-        }
-        fclose( fp );
+        printf( "Cannot open '%s'\n", argv[ 3 ] );
+        return( 1 );
     }
-}
-
-
-void NewDisk( FILE *fp )
-//======================
-
-{
-    fprintf( fp, "\ncall %%DSDISK%% %2.2u %%1 %%2 %%3 %%4 %%5 %%6\n", ++DiskNum );
-}
-
-
-void EndDisk( FILE *fp )
-//======================
-
-{
-    fprintf( fp, "call %%DEDISK%% %2.2u %%1 %%2 %%3 %%4 %%5 %%6\n", DiskNum );
-}
-
-
-void NextDisk( FILE *fp )
-//=======================
-
-{
-    EndDisk( fp );
-    NewDisk( fp );
-}
-
-void OneFile( FILE *fp, char *dir, char *name, char *dst )
-{
-    fprintf( fp, "call %%DCOPY%% " );
-    if( dir != NULL ) fprintf( fp, "%s\\", dir );
-    fprintf( fp, "%s", name );
-    if( dst != NULL ) {
-        fprintf( fp, "\t%s", dst );
-    }
-    fprintf( fp, "\n" );
-}
-
-void CreateBatch( FILE *fp )
-//=========================================
-
-{
-    int                 i;
-    long                curr_size, this_disk, extra;
-    FILE_INFO           *curr;
-    LIST                *list;
-    char                buff[80];
-    unsigned            nfiles;
-
-    DiskNum = 0;
-    fprintf( fp, "call initmk %%1 %%2 %%3 %%4 %%5 %%6\n" );
-    NewDisk( fp );
-
-    OneFile( fp, NULL, Setup, "setup.exe" );
-    OneFile( fp, NULL, "setup.inf", NULL );
-    for( list = ExeList; list != NULL; list = list->next ) {
-        OneFile( fp, NULL, list->item, NULL );
-    }
-    this_disk = FileSize( Setup ) + FileSize( "setup.inf" );
-    for( list = ExeList; list != NULL; list = list->next ) {
-        this_disk += FileSize( list->item );
-    }
-
-    if( !FillFirst ) this_disk = DiskSize;
-    nfiles = 0;
-    for( curr = FileList; curr != NULL; curr = curr->next ) {
-        if( ++nfiles > MaxDiskFiles ) {
-            nfiles = 0;
-            NextDisk( fp );
-            this_disk = 0;
-        }
-        curr_size = RoundUp( curr->cmp_size, BlockSize );
-        if( this_disk == DiskSize ) {
-            NextDisk( fp );
-            this_disk = 0;
-        }
-        if( this_disk + curr_size > DiskSize ) {
-            // place what will fit onto the current disk
-            extra = DiskSize - this_disk;
-            fprintf( fp, "splitfil %s\\%s %ld %ld\n", PackDir, curr->pack,
-                         extra, DiskSize );
-            sprintf( buff, "%s.1", curr->pack );
-            OneFile( fp, PackDir, buff, NULL );
-            fprintf( fp, "del %s\\%s.1\n", PackDir, curr->pack );
-            // place rest of current file on subsequent disks
-            curr_size -= extra;
-            for( i = 2; ; ++i ) {
-                NextDisk( fp );
-                sprintf( buff, "%s.%d", curr->pack, i );
-                OneFile( fp, PackDir, buff, NULL );
-                fprintf( fp, "del %s\\%s.%d\n", PackDir, curr->pack, i );
-                if( curr_size <= DiskSize ) break;
-                curr_size -= DiskSize;
-            }
-            this_disk = curr_size;
-            nfiles = 1;
-        } else {
-            OneFile( fp, PackDir, curr->pack, NULL );
-            this_disk += curr_size;
-        }
-    }
-    EndDisk( fp );
-    fprintf( fp, "\ncall finimk %%1 %%2 %%3 %%4 %%5 %%6\n" );
-}
-
-
-void CreateDisks()
-//===========================
-
-{
-    FILE                *fp;
-
-    if( BootTextList != NULL ) {
-        CreateBootFile();
-    }
-    // create DODISK.BAT
-    fp = fopen( "dodisk.bat", "w" );
-    if( fp == NULL ) {
-        printf( "Cannot create file 'dodisk.bat'\n" );
-        fp = stdout;
-    }
-    CreateBatch( fp );
-    if( fp != stdout ) {
-        fclose( fp );
-    }
-}
-
-
-void DumpFile( FILE *out, char *fname )
-//=====================================
-
-{
-    FILE                *in;
-    char                *buf;
-    int                 len;
-
-    in = PathOpen( fname );
-    if( in == NULL ) {
-        printf( "Cannot open '%s'\n", fname );
-        return;
-    }
-    buf = malloc( SECTION_BUF_SIZE );
-    if( buf == NULL ) {
-        printf( "Out of memory\n" );
-        return;
-    }
-    for( ;; ) {
-        if( mygets( buf, SECTION_BUF_SIZE, in ) == NULL ) {
-            break;
-        }
-        if( strnicmp( buf, "include=", 8 ) == 0 ) {
-            len = strlen( buf );
-            if( buf[len-1] == '\n' ) buf[len-1] = '\0';
-            DumpFile( out, buf+8 );
-        } else {
-            fputs( buf, out );
-        }
-    }
-    free( buf );
-    fclose( in );
+    printf( "Reading Info File...\n" );
+    ReadInfFile();
+    ok = ReadList( fp );
+    if( !ok ) return( 1 );
+    printf( "Checking for duplicate files...\n" );
+    ok = CheckForDuplicateFiles();
+    if( !ok ) return( 1 );
+    fclose( fp );
+    printf( "Making script...\n" );
+    MakeScript();
+    CreateDisks();
+    return( 0 );
 }
