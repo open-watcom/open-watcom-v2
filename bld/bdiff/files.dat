@@ -2,4 +2,4 @@
 type="e" dir="binw"	usr="bpatch.exe"       old="binb"
 type="e" dir="binp"	usr="bpatch.exe"
 type="e" dir="binnt"	usr="bpatch.exe"
-#type="e" dir="binnt64"	usr="bpatch.exe"
+#type="e" dir="binnt64"	usr="bpatch.exe" keys="ntx64"

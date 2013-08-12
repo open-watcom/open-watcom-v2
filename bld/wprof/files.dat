@@ -1,9 +1,8 @@
 # wprof piece of lang11.dat
 [ DEFAULT type="e" ]
-
-dir="binw"	usr="wprof.exe"		cond="doshost"		where="c jc f77 jf77"
-dir="n98bw"	usr="wprof.exe"		cond="doshost nechost"	where="jc jf77"
-dir="binp"	usr="wprof.exe"		cond="os2host"		where="c jc f77 jf77"
-dir="binw"	usr="wprofw.exe"	cond="winhost"		where="c jc f77 jf77"
-dir="binnt"	usr="wprof.exe"		cond="wnthost"		where="c jc f77 jf77 ac"
-dir="axpnt"	usr="wprof.exe"		cond="alphahost"	where="ac"
+dir="binw"      usr="wprof.exe"         cond="doshost"          where="c jc f77 jf77"
+dir="binp"      usr="wprof.exe"         cond="os2host"          where="c jc f77 jf77"
+dir="binw"      usr="wprofw.exe"        cond="winhost"          where="c jc f77 jf77"
+dir="binnt"     usr="wprof.exe"         cond="wnthost"          where="c jc f77 jf77 ac"
+dir="binnt64"   usr="wprof.exe"         cond="wnt64host"        where="c jc f77 jf77" keys="ntx64"
+dir="axpnt"     usr="wprof.exe"         cond="alphahost"        where="ac"

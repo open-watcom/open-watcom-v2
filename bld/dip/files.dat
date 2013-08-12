@@ -1,43 +1,86 @@
 # DIP component of install manifest
-[ DEFAULT ]
 
-#	OS/2
-type="d" usr="codeview.d32"	dir="binp"	cond="os2host"			where="c jc f77 jf77"
-type="d" usr="dwarf.d32"	dir="binp"	cond="os2host"			where="c jc f77 jf77"
-type="d" usr="export.d32"	dir="binp"	cond="os2host"			where="c jc f77 jf77"
-type="d" usr="mapsym.d32"	dir="binp"	cond="os2host"			where="c jc f77 jf77"
-type="d" usr="watcom.d32"	dir="binp"	cond="os2host"			where="c jc f77 jf77"
-#	WINDOWS	
-type="d" usr="codeview.dll"	dir="binw"	cond="winhost wintarg |"	where="c jc f77 jf77"
-type="d" usr="dwarf.dll"	dir="binw"	cond="winhost wintarg |"	where="c jc f77 jf77"
-type="d" usr="export.dll"	dir="binw"	cond="winhost wintarg |"	where="c jc f77 jf77"
-type="d" usr="mapsym.dll"	dir="binw"	cond="winhost wintarg |"	where="c jc f77 jf77"
-type="d" usr="watcom.dll"	dir="binw"	cond="winhost wintarg |"	where="c jc f77 jf77"
-#	DOS	
-type="s" usr="codeview.dip"	dir="binw"	cond="winhost doshost | dostarg |"	where="c jc f77 jf77"
-type="s" usr="dwarf.dip"	dir="binw"	cond="winhost doshost | dostarg |"	where="c jc f77 jf77"
-type="s" usr="export.dip"	dir="binw"	cond="winhost doshost | dostarg |"	where="c jc f77 jf77"
-type="s" usr="mapsym.dip"	dir="binw"	cond="winhost doshost | dostarg |"	where="c jc f77 jf77"
-type="s" usr="watcom.dip"	dir="binw"	cond="winhost doshost | dostarg |"	where="c jc f77 jf77"
-#	NT 
-type="d" usr="codeview.dll"	dir="binnt"	cond="wnthost wnttarg |"	where="c jc f77 jf77 ac"
-type="d" usr="dwarf.dll"	dir="binnt"	cond="wnthost wnttarg |"	where="c jc f77 jf77 ac"
-type="d" usr="export.dll"	dir="binnt"	cond="wnthost wnttarg |"	where="c jc f77 jf77 ac"
-type="d" usr="mapsym.dll"	dir="binnt"	cond="wnthost wnttarg |"	where="c jc f77 jf77 ac"
-type="d" usr="watcom.dll"	dir="binnt"	cond="wnthost wnttarg |"	where="c jc f77 jf77 ac"
-#	Alpha NT
-type="d" usr="codeview.dll"	dir="axpnt"	cond="alphahost alphatarg |"	where="ac"
-type="d" usr="dwarf.dll"	dir="axpnt"	cond="alphahost alphatarg |"	where="ac"
-type="d" usr="export.dll"	dir="axpnt"	cond="alphahost alphatarg |"	where="ac"
-type="d" usr="mapsym.dll"	dir="axpnt"	cond="alphahost alphatarg |"	where="ac"
-type="d" usr="watcom.dll"	dir="axpnt"	cond="alphahost alphatarg |"	where="ac"
-#	Linux x86
-type="s" usr="codeview.dip"	dir="binl"	cond="lnxhost"			where="c jc f77 jf77"
-type="s" usr="dwarf.dip"	dir="binl"	cond="lnxhost"			where="c jc f77 jf77"
-type="s" usr="export.dip"	dir="binl"	cond="lnxhost"			where="c jc f77 jf77"
-type="s" usr="mapsym.dip"	dir="binl"	cond="lnxhost"			where="c jc f77 jf77"
-type="s" usr="watcom.dip"	dir="binl"	cond="lnxhost"			where="c jc f77 jf77"
-#	RDOS 
-type="d" usr="dwarf.dll"	dir="rdos"	cond="rdoshost"			where="c jc f77 jf77 ac"
-type="d" usr="mapsym.dll"	dir="rdos"	cond="rdoshost"			where="c jc f77 jf77 ac"
-type="d" usr="watcom.dll"	dir="rdos"	cond="rdoshost"			where="c jc f77 jf77 ac"
+#######################
+# DOS and Windows 3.x
+#
+[ DEFAULT dir="binw" cond="doshost" where="c jc f77 jf77" ]
+type="s" usr="codeview.dip"
+type="s" usr="dwarf.dip"
+type="s" usr="export.dip"
+type="s" usr="mapsym.dip"
+type="s" usr="watcom.dip"
+
+[ DEFAULT dir="binw" cond="winhost" where="c jc f77 jf77" ]
+type="d" usr="codeview.dll"
+type="d" usr="dwarf.dll"
+type="d" usr="export.dll"
+type="d" usr="mapsym.dll"
+type="d" usr="watcom.dll"
+
+#######################
+# OS/2
+#
+[ DEFAULT dir="binp" cond="os2host" where="c jc f77 jf77" ]
+type="d" usr="codeview.d32"
+type="d" usr="dwarf.d32"
+type="d" usr="export.d32"
+type="d" usr="mapsym.d32"
+type="d" usr="watcom.d32"
+
+#######################
+# Windows NT - 386
+#
+[ DEFAULT dir="binnt" cond="wnthost" where="c jc f77 jf77" ]
+type="d" usr="codeview.dll"
+type="d" usr="dwarf.dll"
+type="d" usr="export.dll"
+type="d" usr="mapsym.dll"
+type="d" usr="watcom.dll"
+
+#######################
+# Windows NT - AXP
+#
+[ DEFAULT dir="axpnt" cond="alphahost" where="ac" ]
+type="d" usr="codeview.dll"
+type="d" usr="dwarf.dll"
+type="d" usr="export.dll"
+type="d" usr="mapsym.dll"
+type="d" usr="watcom.dll"
+
+#######################
+# Windows NT - X64
+#
+[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="ntx64" ]
+type="d" usr="codeview.dll"
+type="d" usr="dwarf.dll"
+type="d" usr="export.dll"
+type="d" usr="mapsym.dll"
+type="d" usr="watcom.dll"
+
+#######################
+# Linux - 386
+#
+[ DEFAULT dir="binl" cond="lnxhost" where="c f77 jc jf77" ]
+type="s" usr="codeview.dip"
+type="s" usr="dwarf.dip"
+type="s" usr="export.dip"
+type="s" usr="mapsym.dip"
+type="s" usr="watcom.dip"
+
+#######################
+# Linux - X64
+#
+[ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="lx64" ]
+type="s" usr="codeview.so"
+type="s" usr="dwarf.so"
+type="s" usr="export.so"
+type="s" usr="mapsym.so"
+type="s" usr="watcom.so"
+
+#######################
+# RDOS
+#
+[ DEFAULT dir="rdos" cond="rdoshost" where="c f77 jc jf77" ]
+type="d" usr="dwarf.dll"
+type="d" usr="mapsym.dll"
+type="d" usr="watcom.dll"

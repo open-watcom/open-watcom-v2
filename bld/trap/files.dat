@@ -1,105 +1,142 @@
-[ DEFAULT ]
-
+#######################
+# DOS and Windows 3.x
+#
+[ DEFAULT dir="binw" where="c f77 jc jf77" ]
 # DOS
-type="s" dir="binw"	usr="cw.trp"		cond="dostarg"				where="c f77"	old="bin"	desc="Debugging trap file for CauseWay"
-type="s" dir="binw"	usr="pls.trp"		cond="dostarg"				where="c f77"	old="bin"	desc="Debugging trap file for Phar Lap"
-type="s" dir="binw"	usr="rsi.trp"		cond="dostarg"				where="c f77"	old="bin"	desc="Debugging trap file for DOS/4GW"
-type="s" dir="binw"	usr="std.trp"		cond="dostarg"				where="c f77"	old="bin"	desc="Debugging trap file for 16-bit DOS debugging"
-type="s" dir="binw"	usr="net.trp"		cond="doshost"				where="c f77"	old="bin"	desc="NETBIOS trap file"
-type="s" dir="binw"	usr="nmp.trp"		cond="doshost os2host |"		where="c f77"	old="bin"
-type="s" dir="binw"	usr="nov.trp"		cond="doshost dostarg |"		where="c f77"	old="bin"
-type="s" dir="binw"	usr="par.trp"		cond="doshost dostarg |"		where="c f77"	old="bin"
-type="s" dir="binw"	usr="ser.trp"		cond="doshost dostarg |"		where="c f77"	old="bin"
-type="s" dir="binw"	usr="win.trp"		cond="doshost dostarg wintarg | |"	where="c f77"	old="bin"
-type="e" dir="binw"	usr="netserv.exe"	cond="dostarg doshost winhost | |"	where="c f77"	old="bin"
-type="e" dir="binw"	usr="nmpserv.exe"	cond="doshost dostarg os2host | |"	where="c f77"	old="bin"
-type="e" dir="binw"	usr="novserv.exe"	cond="dostarg"				where="c f77"	old="bin"
-type="e" dir="binw"	usr="parserv.exe"	cond="dostarg"				where="c f77"	old="bin"
-type="e" dir="binw"	usr="serserv.exe"	cond="dostarg"				where="c f77"	old="bin"
-type="e" dir="binw"	usr="tcpserv.exe"	cond="dostarg"				where="c f77"			desc="TCP/IP trap file"
-type="e" dir="binw"	usr="vdmserv.exe"	cond="dostarg os2host wnthost | |"	where="c f77"	old="bin"
-type="e" dir="binw"	usr="winserv.exe"	cond="dostarg"				where="c f77"	old="bin"
-type="e" dir="binw"	usr="cwhelp.exe"	cond="dostarg"				where="c f77"	old="bin"	desc="Debugger help file for CauseWay"
-type="s" dir="binw"	usr="cwhelp.cfg"	cond="dostarg"				where="c f77"	old="bin"
-#type="e" dir="binw"	usr="plshelp.exp"	cond="dostarg"				where="c f77"	old="bin"	desc="Debugger help file for Phar Lap"
-#type="e" dir="binw"	usr="pedhelp.exp"	cond="dostarg"				where="c f77"	old="bin"
-type="e" dir="binw"	usr="rsihelp.exp"	cond="dostarg"				where="c f77"	old="bin"	desc="Debugger help file for DOS/4GW"
+type="s" usr="net.trp"           cond="doshost"     old="bin"       desc="NETBIOS trap file"
+type="s" usr="nmp.trp"           cond="doshost"     old="bin"
+type="s" usr="nov.trp"           cond="doshost"     old="bin"
+type="s" usr="par.trp"           cond="doshost"     old="bin"
+type="s" usr="ser.trp"           cond="doshost"     old="bin"
+type="s" usr="win.trp"           cond="doshost"     old="bin"
+type="s" usr="cw.trp"            cond="dostarg"     old="bin"       desc="Debugging trap file for CauseWay"
+type="s" usr="pls.trp"           cond="dostarg"     old="bin"       desc="Debugging trap file for Phar Lap"
+type="s" usr="rsi.trp"           cond="dostarg"     old="bin"       desc="Debugging trap file for DOS/4GW"
+type="s" usr="std.trp"           cond="dostarg"     old="bin"       desc="Debugging trap file for 16-bit DOS debugging"
+type="e" usr="netserv.exe"       cond="dostarg"     old="bin"
+type="e" usr="nmpserv.exe"       cond="dostarg"     old="bin"
+type="e" usr="novserv.exe"       cond="dostarg"     old="bin"
+type="e" usr="parserv.exe"       cond="dostarg"     old="bin"
+type="e" usr="serserv.exe"       cond="dostarg"     old="bin"
+type="e" usr="tcpserv.exe"       cond="dostarg"                     desc="TCP/IP trap file"
+type="e" usr="vdmserv.exe"       cond="dostarg"     old="bin"
+type="e" usr="winserv.exe"       cond="dostarg"     old="bin"
+type="e" usr="cwhelp.exe"        cond="dostarg"     old="bin"       desc="Debugger help file for CauseWay"
+type="s" usr="cwhelp.cfg"        cond="dostarg"     old="bin"
+#type="e" usr="plshelp.exp"       cond="dostarg"     old="bin"       desc="Debugger help file for Phar Lap"
+#type="e" usr="pedhelp.exp"       cond="dostarg"     old="bin"
+type="e" usr="rsihelp.exp"       cond="dostarg"     old="bin"       desc="Debugger help file for DOS/4GW"
 
 # Windows 3.x
-type="d" dir="binw"	usr="std.dll"		cond="wintarg"				where="c f77"
-type="d" dir="binw"	usr="net.dll"		cond="winhost"				where="c f77"
-type="d" dir="binw"	usr="nmp.dll"		cond="winhost os2host &"		where="c f77"
-type="d" dir="binw"	usr="nov.dll"		cond="winhost"				where="c f77"
-type="d" dir="binw"	usr="par.dll"		cond="winhost"				where="c f77"
-type="d" dir="binw"	usr="tcp.dll"		cond="winhost"				where="c f77"
-type="d" dir="binw"	usr="wint32.dll"	cond="wintarg"				where="c f77"
-type="e" dir="binw"	usr="novservw.exe"	cond="wintarg"				where="c f77"
-type="e" dir="binw"	usr="netservw.exe"	cond="wintarg"				where="c f77"
-type="e" dir="binw"	usr="parservw.exe"	cond="wintarg"				where="c f77"
-type="e" dir="binw"	usr="tcpservw.exe"	cond="wintarg"				where="c f77"
-type="e" dir="binw"	usr="vdmservw.exe"	cond="wintarg os2host &"		where="c f77"
-type="e" dir="binw"	usr="nmpservw.exe"	cond="wintarg os2host &"		where="c f77"
+type="d" usr="net.dll"           cond="winhost"
+type="d" usr="nmp.dll"           cond="winhost"
+type="d" usr="nov.dll"           cond="winhost"
+type="d" usr="par.dll"           cond="winhost"
+type="d" usr="tcp.dll"           cond="winhost"
+type="d" usr="std.dll"           cond="wintarg"
+type="d" usr="wint32.dll"        cond="wintarg"
+type="e" usr="novservw.exe"      cond="wintarg"
+type="e" usr="netservw.exe"      cond="wintarg"
+type="e" usr="parservw.exe"      cond="wintarg"
+type="e" usr="tcpservw.exe"      cond="wintarg"
+type="e" usr="vdmservw.exe"      cond="wintarg"
+type="e" usr="nmpservw.exe"      cond="wintarg"
 
+#######################
 # OS/2
-type="d" dir="binp"	usr="net.d32"		cond="os2host os2targ |"		where="c f77"
-type="d" dir="binp"	usr="nmp.d32"		cond="os2host os2targ |"		where="c f77"
-#type="d" dir="binp"	usr="nov.d32"		cond="os2host os2targ |"		where="c f77"
-type="d" dir="binp"	usr="par.d32"		cond="os2host os2targ |"		where="c f77"
-type="d" dir="binp"	usr="ser.d32"		cond="os2host os2targ |"		where="c f77"
-type="d" dir="binp"	usr="tcp.d32"		cond="os2host os2targ |"		where="c f77"
-type="d" dir="binp"	usr="vdm.d32"		cond="os2host dostarg &"		where="c f77"
-type="d" dir="binp"	usr="std.d32"		cond="os2targ"				where="c f77"
-type="d" dir="binp/dll"	usr="wdpmhook.dll"	cond="os2targ"				where="c f77"
-type="d" dir="binp/dll"	usr="wdsplice.dll"	cond="os2targ"				where="c f77"
-type="d" dir="binp/dll"	usr="wdio.dll"		cond="os2host os2targ |"		where="c f77"
-type="e" dir="binp"	usr="netserv.exe"	cond="os2targ"				where="c f77"
-type="e" dir="binp"	usr="nmpserv.exe"	cond="os2targ"				where="c f77"
-#type="e" dir="binp"	usr="novserv.exe"	cond="os2targ"				where="c f77"
-type="e" dir="binp"	usr="parserv.exe"	cond="os2targ"				where="c f77"
-type="e" dir="binp"	usr="serserv.exe"	cond="os2targ"				where="c f77"
-type="e" dir="binp"	usr="tcpserv.exe"	cond="os2targ"				where="c f77"
-type="e" dir="binp"	usr="wdpmhelp.exe"	cond="os2host os2targ |"		where="c f77"
-type="e" dir="binp"	usr="nmpbind.exe"	cond="winhost IsOS2DosBox & os2host | MinimalInstall |"				where="c f77"
+#
+[ DEFAULT dir="binp" where="c f77 jc jf77" ]
+type="d" usr="net.d32"                      cond="os2host"
+type="d" usr="nmp.d32"                      cond="os2host"
+#type="d" usr="nov.d32"                      cond="os2host"
+type="d" usr="par.d32"                      cond="os2host"
+type="d" usr="ser.d32"                      cond="os2host"
+type="d" usr="tcp.d32"                      cond="os2host"
+type="d" usr="vdm.d32"                      cond="os2host"
+type="d" usr="std.d32"                      cond="os2targ"
+type="d" usr="wdpmhook.dll" dir="binp/dll"  cond="os2targ"
+type="d" usr="wdsplice.dll" dir="binp/dll"  cond="os2targ"
+type="d" usr="wdio.dll"     dir="binp/dll"  cond="os2targ"
+type="e" usr="netserv.exe"                  cond="os2targ"
+type="e" usr="nmpserv.exe"                  cond="os2targ"
+#type="e" usr="novserv.exe"                  cond="os2targ"
+type="e" usr="parserv.exe"                  cond="os2targ"
+type="e" usr="serserv.exe"                  cond="os2targ"
+type="e" usr="tcpserv.exe"                  cond="os2targ"
+type="e" usr="wdpmhelp.exe"                 cond="os2targ"
+type="e" usr="nmpbind.exe"                  cond="winhost IsOS2DosBox & os2host |"
 
-# Linux 386
-type="e" dir="binl"	usr="std.trp"		cond="lnxtarg"				where="c f77"
-type="e" dir="binl"	usr="tcp.trp"		cond="lnxtarg lnxhost |"		where="c f77"
-type="e" dir="binl"	usr="par.trp"		cond="lnxtarg lnxhost |"		where="c f77"
-type="e" dir="binl"	usr="tcpserv"		cond="lnxtarg"				where="c f77"
-type="e" dir="binl"	usr="parserv"		cond="lnxtarg"				where="c f77"
+#######################
+# Windows NT - 386
+#
+[ DEFAULT dir="binnt" where="c f77 jc jf77" ]
+type="d" usr="nov.dll"          cond="wnthost"
+type="d" usr="par.dll"          cond="wnthost"
+type="d" usr="ser.dll"          cond="wnthost"
+type="d" usr="tcp.dll"          cond="wnthost"
+type="d" usr="vdm.dll"          cond="wnthost"
+type="d" usr="std.dll"          cond="wnttarg"
+type="e" usr="novserv.exe"      cond="wnttarg"
+type="e" usr="parserv.exe"      cond="wnttarg"
+type="e" usr="serserv.exe"      cond="wnttarg"
+type="e" usr="tcpserv.exe"      cond="wnttarg"
+type="e" usr="dbginst.exe"      cond="wnttarg"
+type="e" usr="dbgport.sys"      cond="wnttarg"
 
-# 386 NT
-type="d" dir="binnt"	usr="std.dll"		cond="wnttarg"				where="c ac f77"
-type="d" dir="binnt"	usr="nov.dll"		cond="wnthost wnttarg |"		where="c ac f77"
-type="d" dir="binnt"	usr="par.dll"		cond="wnthost wnttarg |"		where="c ac f77"
-type="d" dir="binnt"	usr="ser.dll"		cond="wnthost wnttarg |"		where="c ac f77"
-type="d" dir="binnt"	usr="tcp.dll"		cond="wnthost wnntarg |"		where="c ac f77"
-type="d" dir="binnt"	usr="vdm.dll"		cond="wnthost"				where="c ac f77"
-type="e" dir="binnt"	usr="novserv.exe"	cond="wnttarg"				where="c ac f77"
-type="e" dir="binnt"	usr="parserv.exe"	cond="wnttarg"				where="c ac f77"
-type="e" dir="binnt"	usr="serserv.exe"	cond="wnttarg"				where="c ac f77"
-type="e" dir="binnt"	usr="tcpserv.exe"	cond="wnttarg"				where="c ac f77"
-type="e" dir="binnt"	usr="dbginst.exe"	cond="wnthost wnttarg |"		where="c ac f77"
-type="e" dir="binnt"	usr="dbgport.sys"	cond="wnthost wnttarg |"		where="c ac f77"
+#######################
+# Windows NT - AXP
+#
+[ DEFAULT dir="axpnt" where="ac" ]
+type="d" usr="tcp.dll"          cond="alphahost"
+type="d" usr="nov.dll"          cond="alphahost"
+type="d" usr="std.dll"          cond="alphatarg"
+type="e" usr="novserv.exe"      cond="alphatarg"
+type="e" usr="tcpserv.exe"      cond="alphatarg"
 
-# Alpha NT
-type="d" dir="axpnt"	usr="std.dll"		cond="alphahost alphatarg |"		where="ac"
-type="d" dir="axpnt"	usr="tcp.dll"		cond="alphahost alphatarg |"		where="ac"
-type="d" dir="axpnt"	usr="nov.dll"		cond="alphahost alphatarg |"		where="ac"
-type="e" dir="axpnt"	usr="novserv.exe"	cond="alphahost alphatarg |"		where="ac"
-type="e" dir="axpnt"	usr="tcpserv.exe"	cond="alphahost alphatarg |"		where="ac"
+#######################
+# Windows NT - X64
+#
+[ DEFAULT dir="binnt64" where="c f77 jc jf77" keys="ntx64" ]
+type="d" usr="nov.dll"          cond="wnt64host"
+type="d" usr="par.dll"          cond="wnt64host"
+type="d" usr="ser.dll"          cond="wnt64host"
+type="d" usr="tcp.dll"          cond="wnt64host"
+#type="d" usr="vdm.dll"          cond="wnt64host"
 
-# NLM stuff
-type="e" dir="nlm"	usr="parserv3.nlm"	cond="nlmtarg"				where="c f77"
-type="e" dir="nlm"	usr="parserv4.nlm"	cond="nlmtarg"				where="c f77"
-type="e" dir="nlm"	usr="serserv3.nlm"	cond="nlmtarg"				where="c f77"
-type="e" dir="nlm"	usr="serserv4.nlm"	cond="nlmtarg"				where="c f77"
-type="e" dir="nlm"	usr="novserv3.nlm"	cond="nlmtarg"				where="c f77"
-type="e" dir="nlm"	usr="novserv4.nlm"	cond="nlmtarg"				where="c f77"
+#######################
+# Linux - 386
+#
+[ DEFAULT dir="binl" where="c f77 jc jf77" ]
+type="e" usr="tcp.trp"          cond="lnxhost"
+type="e" usr="par.trp"          cond="lnxhost"
+type="e" usr="std.trp"          cond="lnxtarg"
+type="e" usr="tcpserv"          cond="lnxtarg"
+type="e" usr="parserv"          cond="lnxtarg"
+
+#######################
+# Linux - X64
+#
+[ DEFAULT dir="binl64" where="c f77 jc jf77" keys="lx64" ]
+type="e" usr="tcp.so"           cond="lnx64host"
+type="e" usr="par.so"           cond="lnx64host"
+
+#######################
+# Novell - 386
+#
+[ DEFAULT dir="nlm" where="c f77 jc jf77" ]
+type="e" usr="parserv3.nlm"     cond="nlmtarg"
+type="e" usr="parserv4.nlm"     cond="nlmtarg"
+type="e" usr="serserv3.nlm"     cond="nlmtarg"
+type="e" usr="serserv4.nlm"     cond="nlmtarg"
+type="e" usr="novserv3.nlm"     cond="nlmtarg"
+type="e" usr="novserv4.nlm"     cond="nlmtarg"
 # Not shipping yet, but added to list as aide memoire
-#type="e" dir="nlm"	usr="tcpserv5.nlm"	cond="nlmtarg"				where="c f77"
+#type="e" usr="tcpserv5.nlm"     cond="nlmtarg"
 
-# RDOS
-type="d" dir="rdos"	usr="std.dll"		cond="rdoshost rdostarg |"		where="c ac f77"
-type="e" dir="rdos"	usr="tcpserv.exe"	cond="rdostarg"				where="c ac f77"
-type="e" dir="rdos"	usr="serserv.exe"	cond="rdostarg"				where="c ac f77"
+#######################
+# RDOS - 386
+#
+[ DEFAULT dir="rdos" where="c f77 jc jf77" ]
+type="d" usr="std.dll"          cond="rdostarg"
+type="e" usr="tcpserv.exe"      cond="rdostarg"
+type="e" usr="serserv.exe"      cond="rdostarg"

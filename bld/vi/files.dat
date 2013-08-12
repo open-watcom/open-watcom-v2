@@ -1,28 +1,69 @@
 # VI component of install manifest
-[ DEFAULT type="e" ]
-    
-usr="vi.exe"    dir="binnt"     cond="wnthost"                          where="c f77 ac"
-usr="viw.exe"   dir="binnt"     cond="wnthost"                          where="c f77 ac"
-usr="vi.exe"    dir="binw"      cond="doshost winhost |"                where="c f77"
-usr="viw.exe"   dir="binw"      cond="winhost"                          where="c f77"
-usr="vi.exe"    dir="axpnt"     cond="alphahost"                        where="ac"
-usr="viw.exe"   dir="axpnt"     cond="alphahost"                        where="ac"
-usr="vi.exe"    dir="binp"      cond="os2host"                          where="c f77"
-usr="vi"        dir="binl"      cond="lnxhost"                          where="c f77"
 
-usr="ctags.exe"         dir="binp"      cond="os2host"                  where="c f77"
-usr="ctags.exe"         dir="binw"      cond="doshost winhost |"        where="c f77"
-usr="ctags.exe"         dir="binnt"     cond="wnthost"                  where="c f77 ac"
-usr="ctags.exe"         dir="axpnt"     cond="alphahost"                where="ac"
-usr="ctags"             dir="binl"      cond="lnxhost"                  where="c f77"
-usr="edbind.exe"        dir="binp"      cond="os2host"                  where="c f77"
-usr="edbind.exe"        dir="binw"      cond="doshost winhost |"        where="c f77"
-usr="edbind.exe"        dir="binnt"     cond="wnthost"                  where="c f77 ac"
-usr="edbind.exe"        dir="axpnt"     cond="alphahost"                where="ac"
-usr="edbind"            dir="binl"      cond="lnxhost"                  where="c f77"
+#######################
+# DOS and Windows 3.x
+#
+[ DEFAULT dir="binw" cond="doshost winhost |" where="c f77 jc jf77" ]
+type="e" usr="vi.exe"
+type="e" usr="viw.exe"      cond="winhost"
+type="e" usr="ctags.exe"
+type="e" usr="edbind.exe"
 
-#.VI scripts
-[ DEFAULT type="s" dir="eddat" where="c f77 ac" ]
+#######################
+# OS/2
+#
+[ DEFAULT dir="binp" cond="os2host" where="c jc f77 jf77" ]
+type="e" usr="vi.exe"
+type="e" usr="ctags.exe"
+type="e" usr="edbind.exe"
+
+#######################
+# Windows NT - 386
+#
+[ DEFAULT dir="binnt" cond="wnthost" where="c f77 jc jf77 ac" ]
+type="e" usr="vi.exe"
+type="e" usr="viw.exe"
+type="e" usr="ctags.exe"
+type="e" usr="edbind.exe"
+
+#######################
+# Windows NT - AXP
+#
+[ DEFAULT dir="axpnt" cond="alphahost" where="ac" ]
+type="e" usr="vi.exe"
+type="e" usr="viw.exe"
+type="e" usr="ctags.exe"
+type="e" usr="edbind.exe"
+
+#######################
+# Windows NT - X64
+#
+[ DEFAULT dir="binnt64" cond="wnt64host" where="c f77 jc jf77" keys="ntx64" ]
+type="e" usr="vi.exe"
+type="e" usr="viw.exe"
+type="e" usr="ctags.exe"
+type="e" usr="edbind.exe"
+
+#######################
+# Linux - 386
+#
+[ DEFAULT dir="binl" cond="lnxhost" where="c f77 jc jf77" ]
+type="e" usr="vi"
+type="e" usr="ctags"
+type="e" usr="edbind"
+
+#######################
+# Linux - X64
+#
+[ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="lx64" ]
+type="e" usr="vi"
+type="e" usr="ctags"
+type="e" usr="edbind"
+
+#######################
+# .VI scripts
+#
+[ DEFAULT type="s" dir="eddat" where="c f77 jc jf77 ac" ]
 
 usr="qall.vi"
 usr="rcs.vi"
@@ -75,8 +116,8 @@ usr="regexp.hlp"
 usr="bindvi.bat"
 usr="bindvi.cmd"
 usr="clibhelp.vi"
-usr="mfchelp.vi"        where="c ac"
-usr="fhelp.vi"          where="f77"
+usr="mfchelp.vi"        where="c jc ac"
+usr="fhelp.vi"          where="f77 jf77"
 usr="awk.dat"
 usr="basic.dat"
 usr="bat.dat"

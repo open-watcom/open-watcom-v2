@@ -1,5 +1,6 @@
-[ DEFAULT type="g" where="c jc f77 jf77" rel="." ]
+[ DEFAULT where="c jc f77 jf77" rel="." ]
 
-dir="lib286/dos"	usr="graph.lib"		cond="tools16 dostarg"
-dir="lib386/dos"	usr="graph.lib"		cond="dostarg"
-dir="lib286/os2"	usr="graphp.obj"	cond="tools16 os2targ" type="s"
+type="l" dir="lib286/dos"    usr="graph.lib"     cond="dostarg tools16"
+type="s" dir="lib286/os2"    usr="graphp.obj"    cond="os2targ tools16"
+
+type="l" dir="lib386/dos"    usr="graph.lib"     cond="dostarg"

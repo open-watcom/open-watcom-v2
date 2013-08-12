@@ -1,11 +1,23 @@
 # Causeway Extender redistributable binaries component of install manifest
 
-[ DEFAULT rel="." where="c jc f77 jf77" ]
-type="e" usr="cwc.exe"    dir="binw"        cond="doshost winhost | dostarg"
-type="e" usr="cwc.exe"    dir="binp"        cond="os2host dostarg"
-type="e" usr="cwc.exe"    dir="binnt"       cond="wnthost dostarg"
-type="e" usr="cwc"        dir="binl"        cond="lnxhost dostarg"
-type="e" usr="cwstub.exe" dir="binw"        cond="doshost winhost wnthost os2host | | | dostarg"
-type="e" usr="cwstub.exe" dir="binl"        cond="lnxhost dostarg"
-type="l" usr="cwdll.lib"  dir="lib386/dos"  cond="dostarg"
-type="s" usr="cwdll.h"    dir="h"           cond="dostarg"
+[ DEFAULT type="e" desc="Causeway executable compressor utility" ]
+dir="binw"      usr="cwc.exe"       cond="doshost winhost | dostarg"    where="c jc f77 jf77"
+dir="binp"      usr="cwc.exe"       cond="os2host dostarg"              where="c jc f77 jf77"
+dir="binnt"     usr="cwc.exe"       cond="wnthost dostarg"              where="c jc f77 jf77 ac"
+dir="binnt64"   usr="cwc.exe"       cond="wnt64host dostarg"            where="c jc f77 jf77" keys="ntx64"
+dir="axpnt"     usr="cwc.exe"       cond="alphahost dostarg"            where="ac"
+dir="binl"      usr="cwc"           cond="lnxhost dostarg"              where="c f77 jc jf77"
+dir="binl64"    usr="cwc"           cond="lnx64host dostarg"            where="c f77 jc jf77" keys="lx64"
+
+[ DEFAULT type="e" desc="Causeway DOS extender stub program" ]
+dir="binw"      usr="cwstub.exe"    cond="doshost winhost | dostarg"    where="c jc f77 jf77"
+dir="binp"      usr="cwstub.exe"    cond="os2host dostarg"              where="c jc f77 jf77"
+dir="binnt"     usr="cwstub.exe"    cond="wnthost dostarg"              where="c jc f77 jf77 ac"
+dir="binnt64"   usr="cwstub.exe"    cond="wnt64host dostarg"            where="c jc f77 jf77" keys="ntx64"
+dir="axpnt"     usr="cwstub.exe"    cond="alphahost dostarg"            where="ac"
+dir="binl"      usr="cwstub.exe"    cond="lnxhost dostarg"              where="c f77 jc jf77"
+dir="binl64"    usr="cwstub.exe"    cond="lnx64host dostarg"            where="c f77 jc jf77" keys="lx64"
+
+[ DEFAULT cond="dostarg" rel="." where="c jc f77 jf77 ac" ]
+type="l" dir="lib386/dos"   usr="cwdll.lib"
+type="s" dir="h"            usr="cwdll.h"

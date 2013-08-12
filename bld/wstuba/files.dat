@@ -1,4 +1,16 @@
-[ DEFAULT desc="WSTUB" where="c jc f77 jf77" ]
-type="e" dir="binw"	usr="wstub.exe"	 cond="dostarg"		old="binb"
-type="e" dir="binw"	usr="wstubq.exe" cond="dostarg"		old="binb"
-type="s" dir="src"	usr="wstub.asm"	 cond="samples"
+[ DEFAULT type="e" desc="DOS4GW stub program" where="c jc f77 jf77" ]
+dir="binw"     usr="wstub.exe"  cond="doshost winhost | dostarg"  old="binb"
+dir="binw"     usr="wstubq.exe" cond="doshost winhost | dostarg"  old="binb"
+dir="binnt"    usr="wstub.exe"  cond="wnthost dostarg"
+dir="binnt"    usr="wstubq.exe" cond="wnthost dostarg"
+dir="binnt64"  usr="wstub.exe"  cond="wnt64host dostarg" keys="ntx64"
+dir="binnt64"  usr="wstubq.exe" cond="wnt64host dostarg" keys="ntx64"
+dir="binp"     usr="wstub.exe"  cond="os2host dostarg"
+dir="binp"     usr="wstubq.exe" cond="os2host dostarg"
+dir="binl"     usr="wstub.exe"  cond="lnxhost dostarg"
+dir="binl"     usr="wstubq.exe" cond="lnxhost dostarg"
+dir="binl64"   usr="wstub.exe"  cond="lnx64host dostarg" keys="lx64"
+dir="binl64"   usr="wstubq.exe" cond="lnx64host dostarg" keys="lx64"
+
+[ DEFAULT desc="DOS4GW stub program source" where="c jc f77 jf77" ]
+type="s" dir="src"      usr="wstub.asm"  cond="samples"

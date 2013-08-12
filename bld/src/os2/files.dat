@@ -1,23 +1,23 @@
-[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/os2" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="samples/os2" ]
 usr="mthread.c"
 usr="shapes.c"
 usr="shapes.cpp"
 
-[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/os2/dll" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="samples/os2/dll" ]
 usr="dllsamp.c"
 usr="dllsamp.lnk"
 usr="dlltest.c"
 
-[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/os2/som" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="samples/os2/som" ]
 usr="readme.txt"
 
-[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/os2/som/animals" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="samples/os2/som/animals" ]
 usr="animals.c"
 usr="animals.idl"
 usr="main.c"
 usr="makefile"
 
-[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/os2/som/classes" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="samples/os2/som/classes" ]
 usr="course.c"
 usr="course.csc"
 usr="graduate.c"
@@ -29,13 +29,13 @@ usr="test.c"
 usr="undgrad.c"
 usr="undgrad.csc"
 
-[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/os2/som/helloc" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="samples/os2/som/helloc" ]
 usr="hello.c"
 usr="hello.idl"
 usr="main.c"
 usr="makefile"
 
-[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/os2/som/wps" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="samples/os2/som/wps" ]
 usr="helper.c"
 usr="helper.h"
 usr="makefile"
@@ -52,13 +52,13 @@ usr="run.cmd"
 usr="setval.cmd"
 usr="welcome.txt"
 
-[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/os2/som/hellocpp" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="samples/os2/som/hellocpp" ]
 usr="hello.cpp"
 usr="hello.idl"
 usr="main.cpp"
 usr="makefile"
 
-[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/os2/pdd" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="samples/os2/pdd" ]
 usr="devaux.h"
 usr="devdefs.h"
 usr="devhdr.h"

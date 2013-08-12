@@ -2,17 +2,17 @@
 
 [ DEFAULT type="l" desc="Math Library" ]
 
-dir="lib286"    usr="mathc.lib"         cond="tools16 mc &" where="c jc"
-dir="lib286"    usr="mathh.lib"         cond="tools16 mh &" where="c jc"
-dir="lib286"    usr="mathl.lib"         cond="tools16 ml &" where="c jc f77 jf77"
-dir="lib286"    usr="mathm.lib"         cond="tools16 mm &" where="c jc f77 jf77"
-dir="lib286"    usr="maths.lib"         cond="tools16 ms &" where="c jc"
+dir="lib286"    usr="mathc.lib"     cond="mc tools16" where="c jc"
+dir="lib286"    usr="mathh.lib"     cond="mh tools16" where="c jc"
+dir="lib286"    usr="mathl.lib"     cond="ml tools16" where="c jc f77 jf77"
+dir="lib286"    usr="mathm.lib"     cond="mm tools16" where="c jc f77 jf77"
+dir="lib286"    usr="maths.lib"     cond="ms tools16" where="c jc"
 
-dir="lib286"    usr="math87c.lib"   cond="tools16 mc &" where="c jc"
-dir="lib286"    usr="math87h.lib"   cond="tools16 mh &" where="c jc"
-dir="lib286"    usr="math87l.lib"   cond="tools16 ml &" where="c jc f77 jf77"
-dir="lib286"    usr="math87m.lib"   cond="tools16 mm &" where="c jc f77 jf77"
-dir="lib286"    usr="math87s.lib"   cond="tools16 ms &" where="c jc"
+dir="lib286"    usr="math87c.lib"   cond="mc tools16" where="c jc"
+dir="lib286"    usr="math87h.lib"   cond="mh tools16" where="c jc"
+dir="lib286"    usr="math87l.lib"   cond="ml tools16" where="c jc f77 jf77"
+dir="lib286"    usr="math87m.lib"   cond="mm tools16" where="c jc f77 jf77"
+dir="lib286"    usr="math87s.lib"   cond="ms tools16" where="c jc"
 
 dir="lib386"    usr="math3r.lib"    cond="3r"   where="c jc f77 jf77 ac"
 dir="lib386"    usr="math3s.lib"    cond="3s"   where="c jc f77 jf77 ac"
@@ -21,10 +21,10 @@ dir="lib386"    usr="math387s.lib"  cond="3s"   where="c jc f77 jf77 ac"
 
 dir="libaxp"    usr="math.lib"          where="ac"
 
-dir="lib286/win"    usr="mathc.lib"         cond="tools16 wintarg mc"   where="c jc"
-dir="lib286/win"    usr="mathl.lib"         cond="tools16 wintarg ml"   where="c jc f77 jf77"
-dir="lib286/win"    usr="math87c.lib"   cond="tools16 wintarg mc"   where="c jc"
-dir="lib286/win"    usr="math87l.lib"   cond="tools16 wintarg ml"   where="c jc f77 jf77"
+dir="lib286/win"    usr="mathc.lib"     cond="wintarg mc tools16"   where="c jc"
+dir="lib286/win"    usr="mathl.lib"     cond="wintarg ml tools16"   where="c jc f77 jf77"
+dir="lib286/win"    usr="math87c.lib"   cond="wintarg mc tools16"   where="c jc"
+dir="lib286/win"    usr="math87l.lib"   cond="wintarg ml tools16"   where="c jc f77 jf77"
 
 # RTDLL import libraries
 dir="lib386/nt" usr="mt7rdll.lib" cond="wnttarg 3r" where="c jc f77 jf77 ac"
@@ -48,7 +48,6 @@ type="d" dir="binnt" usr="mthr20.dll" cond="wnttarg 3r" where="c jc f77 jf77 ac"
 type="s" dir="binnt" usr="mthr20.sym" cond="wnttarg 3r" where="c jc f77 jf77 ac"
 type="d" dir="binnt" usr="mths20.dll" cond="wnttarg 3s" where="c jc f77 jf77 ac"
 type="s" dir="binnt" usr="mths20.sym" cond="wnttarg 3s" where="c jc f77 jf77 ac"
-
 
 type="d" dir="binp/dll" usr="mt7r20.dll" cond="os2targ 3r" where="c jc f77 jf77"
 type="s" dir="binp/dll" usr="mt7r20.sym" cond="os2targ 3r" where="c jc f77 jf77"

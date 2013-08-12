@@ -1,35 +1,32 @@
 # WIPFC component of install manifest
-[ DEFAULT type="e" ]
-    
-usr="wipfc.exe"     dir="binnt"     cond="wnthost os2targ"              where="c f77"
-usr="wipfc.exe"     dir="binw"  cond="doshost winhost | os2targ"        where="c f77"
-usr="wipfc.exe"     dir="axpnt"     cond="alphahost os2targ"            where="ac"
-usr="wipfc.exe"     dir="binp"  cond="os2host os2targ"              where="c f77"
-usr="wipfc"         dir="binl"  cond="lnxhost os2targ"              where="c f77"
 
+[ DEFAULT type="e" desc="OS/2 IPFC help compiler" ]
+dir="binw"      usr="wipfc.exe" cond="doshost winhost |"    where="c f77 jc jf77"
+dir="binp"      usr="wipfc.exe" cond="os2host"              where="c f77 jc jf77"
+dir="binnt"     usr="wipfc.exe" cond="wnthost"              where="c f77 jc jf77 ac"
+dir="binnt64"   usr="wipfc.exe" cond="wnt64host"            where="c f77 jc jf77" keys="ntx64"
+dir="axpnt"     usr="wipfc.exe" cond="alphahost"            where="ac"
+dir="binl"      usr="wipfc"     cond="lnxhost"              where="c f77 jc jf77"
+dir="binl64"    usr="wipfc"     cond="lnx64host"            where="c f77 jc jf77" keys="lx64"
+
+[ DEFAULT type="s" dir="wipfc" where="c f77 jc jf77 ac" desc="OS/2 IPFC help compiler support files" ]
 # WIPFC data files
-[ DEFAULT type="s" dir="wipfc" cond="os2targ"   where="c f77 ac" ]
-
-usr="de_DE.nls"
-usr="en_GB.nls"
-usr="en_US.nls"
-usr="fr_CA.nls"
-usr="fr_FR.nls"
-usr="ja_JA.nls"
-usr="xx_YY.nls"
-usr="entity.txt"
-usr="enti0932.txt"
-usr="enti0934.txt"
-usr="enti0938.txt"
-
+    usr="de_DE.nls"
+    usr="en_GB.nls"
+    usr="en_US.nls"
+    usr="fr_CA.nls"
+    usr="fr_FR.nls"
+    usr="ja_JA.nls"
+    usr="xx_YY.nls"
+    usr="entity.txt"
+    usr="enti0932.txt"
+    usr="enti0934.txt"
+    usr="enti0938.txt"
 #WIPFC UTF-8 data files
-[ DEFAULT type="s" dir="wipfc" cond="wnthost os2host alphahost lnxhost | | | os2targ" where="c f77 ac" ]
-
-usr="deDEUTF8.nls"
-usr="enGBUTF8.nls"
-usr="enUSUTF8.nls"
-usr="frCAUTF8.nls"
-usr="frFRUTF8.nls"
-usr="jaJAUTF8.nls"
-usr="enti0000.txt"
-
+    usr="deDEUTF8.nls"
+    usr="enGBUTF8.nls"
+    usr="enUSUTF8.nls"
+    usr="frCAUTF8.nls"
+    usr="frFRUTF8.nls"
+    usr="jaJAUTF8.nls"
+    usr="enti0000.txt"

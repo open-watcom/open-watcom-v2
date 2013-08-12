@@ -1,8 +1,10 @@
 # WASM component of LANG11.DAT
 [ DEFAULT type="e" ]
-usr="wasm.exe" 	dir="binw" 	cond="doshost winhost |"	where="c jc f77 jf77"
-usr="wasmr.exe"	dir="binw" 	cond="doshost winhost |"	where="c jc f77 jf77"
-usr="wasm.exe" 	dir="binp" 	cond="os2host" 		where="c jc f77 jf77"
-usr="wasm.exe" 	dir="binnt" 	cond="wnthost" 		where="c jc ac f77 jf77"
-usr="wasm.exe" 	dir="axpnt" 	cond="alphahost"	where="ac"
-usr="wasm" 	dir="binl" 	cond="lnxhost" 		where="c jc f77 jf77"
+dir="binw"      usr="wasmr.exe" cond="doshost"              where="c jc f77 jf77"
+dir="binw"      usr="wasm.exe"  cond="doshost winhost |"    where="c jc f77 jf77"
+dir="binp"      usr="wasm.exe"  cond="os2host"              where="c jc f77 jf77"
+dir="binnt"     usr="wasm.exe"  cond="wnthost"              where="c jc f77 jf77 ac"
+dir="binnt64"   usr="wasm.exe"  cond="wnt64host"            where="c jc f77 jf77" keys="ntx64"
+dir="axpnt"     usr="wasm.exe"  cond="alphahost"            where="ac"
+dir="binl"      usr="wasm"      cond="lnxhost"              where="c jc f77 jf77"
+dir="binl64"    usr="wasm"      cond="lnx64host"            where="c jc f77 jf77" keys="lx64"

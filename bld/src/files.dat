@@ -13,7 +13,7 @@
 [ INCLUDE <OWSRCDIR>/src/directx/files.dat ]
 
 # CPPLIB/CONTAIN source code
-[ DEFAULT type="s" dir="src/cpplib/contain" cond="rtsource" where="c f77 ac" ]
+[ DEFAULT type="s" dir="src/cpplib/contain" cond="rtsource" where="c f77 jc jf77 ac" ]
 usr="wchash.cpp"
 usr="wclist.cpp"
 usr="wcskip.cpp"

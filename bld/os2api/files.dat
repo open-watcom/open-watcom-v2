@@ -1,7 +1,7 @@
 #
 # 32-bit OS/2 headers
 #
-[ DEFAULT type="s" dir="h/os2" where="c f77 ac" cond="os2targ" ]
+[ DEFAULT type="s" dir="h/os2" where="c f77 jc jf77 ac" cond="os2targ" ]
 usr="acb.h"
 usr="basemid.h"
 usr="bdcalls.h"
@@ -60,10 +60,10 @@ usr="unidef.h"
 usr="upm.h"
 usr="utils.h"
 
-[ DEFAULT type="s" dir="h/os2/arpa" where="c f77 ac" cond="os2targ" ]
+[ DEFAULT type="s" dir="h/os2/arpa" where="c f77 jc jf77 ac" cond="os2targ" ]
 usr="inet.h"
 
-[ DEFAULT type="s" dir="h/os2/GL" where="c f77 ac" cond="os2targ" ]
+[ DEFAULT type="s" dir="h/os2/GL" where="c f77 jc jf77 ac" cond="os2targ" ]
 usr="gl.h"
 usr="glaux.h"
 usr="glu.h"
@@ -71,18 +71,18 @@ usr="glut.h"
 usr="pgl.h"
 usr="tk.h"
 
-[ DEFAULT type="s" dir="h/os2/machine" where="c f77 ac" cond="os2targ" ]
+[ DEFAULT type="s" dir="h/os2/machine" where="c f77 jc jf77 ac" cond="os2targ" ]
 usr="ansi.h"
 usr="endian.h"
 usr="types.h"
 
-[ DEFAULT type="s" dir="h/os2/net" where="c f77 ac" cond="os2targ" ]
+[ DEFAULT type="s" dir="h/os2/net" where="c f77 jc jf77 ac" cond="os2targ" ]
 usr="if.h"
 usr="if_arp.h"
 usr="if_dl.h"
 usr="route.h"
 
-[ DEFAULT type="s" dir="h/os2/netinet" where="c f77 ac" cond="os2targ" ]
+[ DEFAULT type="s" dir="h/os2/netinet" where="c f77 jc jf77 ac" cond="os2targ" ]
 usr="icmp_var.h"
 usr="if_ether.h"
 usr="in.h"
@@ -95,13 +95,13 @@ usr="tcp_var.h"
 usr="udp.h"
 usr="udp_var.h"
 
-[ DEFAULT type="s" dir="h/os2/protocol" where="c f77 ac" cond="os2targ" ]
+[ DEFAULT type="s" dir="h/os2/protocol" where="c f77 jc jf77 ac" cond="os2targ" ]
 usr="routed.h"
 usr="rwhod.h"
 usr="talkd.h"
 usr="timed.h"
 
-[ DEFAULT type="s" dir="h/os2/sys" where="c f77 ac" cond="os2targ" ]
+[ DEFAULT type="s" dir="h/os2/sys" where="c f77 jc jf77 ac" cond="os2targ" ]
 usr="cdefs.h"
 usr="filio.h"
 usr="ioccom.h"
@@ -120,7 +120,7 @@ usr="un.h"
 #
 # 32-bit OS/2 libraries
 #
-[ DEFAULT type="l" dir="lib386/os2" where="c f77 ac" cond="os2targ" ]
+[ DEFAULT type="l" dir="lib386/os2" where="c f77 jc jf77 ac" cond="os2targ" ]
 usr="ftpapi.lib"
 usr="glut.lib"
 usr="libconv.lib"
@@ -137,7 +137,7 @@ usr="upm32.lib"
 #
 # 16-bit OS/2 headers
 #
-[ DEFAULT type="s" dir="h/os21x" where="c f77 ac" cond="os2targ tools16" ]
+[ DEFAULT type="s" dir="h/os21x" where="c f77 jc jf77 ac" cond="os2targ tools16" ]
 usr="bse.h"
 usr="bsedev.h"
 usr="bsedos.h"
@@ -158,5 +158,5 @@ usr="pmwin.h"
 #
 # 16-bit OS/2 libraries
 #
-[ DEFAULT type="l" dir="lib286/os2" where="c f77 ac" cond="os2targ tools16" ]
+[ DEFAULT type="l" dir="lib286/os2" where="c f77 jc jf77 ac" cond="os2targ tools16" ]
 usr="os2.lib"

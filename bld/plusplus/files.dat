@@ -1,79 +1,105 @@
-
-#   
-# 386 NT hosted compilers
-#   
-[ DEFAULT dir="binnt" ]
-
+#######################
+# DOS and Windows 3.x
+#
+[ DEFAULT dir="binw" cond="doshost winhost | cplusplus" where="c jc" ]
 #  i86 target
-type="e" usr="wpp.exe" 		cond="wnthost tools16" 		where="c jc"
-type="d" usr="wppdi86.dll"	cond="wnthost tools16" 		where="c jc"
-type="s" usr="wppi8601.int"	cond="wnthost tools16" 		where="  jc"
-
+    type="e" usr="wpp.exe"          cond="doshost winhost | cplusplus tools16"
+    type="s" usr="wppi8601.int"     cond="doshost winhost | cplusplus tools16"
 #  386 target
-type="e" usr="wpp386.exe" 	cond="wnthost" 		where="c jc ac"
-type="d" usr="wppd386.dll" 	cond="wnthost" 		where="c jc ac"
-type="s" usr="wpp38601.int" 	cond="wnthost" 		where="  jc   "
-
+    type="e" usr="wpp386.exe"
+    type="s" usr="wpp38601.int"
 #  axp target
-#type="e" usr="wppaxp.exe" 	cond="wnthost" 		where="ac"
-#type="d" usr="wppdaxp.dll" 	cond="wnthost" 		where="ac"
+#    type="e" usr="wppaxp.exe"
+#    type="s" usr="wppaxp01.int"
 
-#   
-# 386 OS/2 hosted compilers
-#   
-[ DEFAULT ]
-
+#######################
+# OS/2
+#
+[ DEFAULT dir="binp" cond="os2host cplusplus" where="c jc" ]
 #  i86 target
-type="e" usr="wpp.exe" 		dir="binp" 	cond="os2host tools16" 		where="c jc"
-type="d" usr="wppdi86.dll"	dir="binp/dll" 	cond="os2host tools16" 		where="c jc"
-type="s" usr="wppi8601.int"	dir="binp/dll" 	cond="os2host tools16" 		where="  jc"
-
+    type="e" usr="wpp.exe"                      cond="os2host cplusplus tools16"
+    type="d" usr="wppdi86.dll"  dir="binp/dll"  cond="os2host cplusplus tools16"
+    type="s" usr="wppi8601.int" dir="binp/dll"  cond="os2host cplusplus tools16"
 #  386 target
-type="e" usr="wpp386.exe" 	dir="binp" 	cond="os2host" 		where="c jc"
-type="d" usr="wppd386.dll" 	dir="binp/dll" 	cond="os2host" 		where="c jc"
-type="s" usr="wpp38601.int" 	dir="binp/dll" 	cond="os2host" 		where="  jc"
-
+    type="e" usr="wpp386.exe"
+    type="d" usr="wppd386.dll"  dir="binp/dll"
+    type="s" usr="wpp38601.int" dir="binp/dll"
 #  axp target
-#type="e" usr="wppaxp.exe" 	dir="binp" 	cond="os2host" 		where=""
-#type="d" usr="wppdaxp.dll" 	dir="binp/dll" 	cond="os2host" 		where=""
+#    type="e" usr="wppaxp.exe"
+#    type="d" usr="wppdaxp.dll"  dir="binp/dll"
+#    type="s" usr="wppaxp01.int" dir="binp/dll"
 
+#######################
+# Windows NT - 386
 #
-# 386 DOS hosted compilers
-#
-[ DEFAULT dir="binw" ]
-
+[ DEFAULT dir="binnt" cond="wnthost cplusplus" where="c jc ac" ]
 #  i86 target
-type="e" usr="wpp.exe" 		cond="doshost winhost | cplusplus tools16" 	where="c jc"
-type="s" usr="wppi8601.int"	cond="doshost winhost | cplusplus tools16" 	where="  jc"
-
+    type="e" usr="wpp.exe"          cond="wnthost cplusplus tools16"
+    type="d" usr="wppdi86.dll"      cond="wnthost cplusplus tools16"
+    type="s" usr="wppi8601.int"     cond="wnthost cplusplus tools16"
 #  386 target
-type="e" usr="wpp386.exe" 	cond="doshost winhost | cplusplus" 		where="c jc"
-type="s" usr="wpp38601.int" 	cond="doshost winhost | cplusplus" 		where="  jc"
-
+    type="e" usr="wpp386.exe"
+    type="d" usr="wppd386.dll"
+    type="s" usr="wpp38601.int"
 #  axp target
-#type="e" usr="wppaxp.exe" 	cond="doshost winhost | cplusplus" 		where=""
+#    type="e" usr="wppaxp.exe"
+#    type="d" usr="wppdaxp.dll"
+#    type="s" usr="wppaxp01.int"
 
+#######################
+# Windows NT - AXP
 #
-# 386 Linux hosted compilers
-#
-[ DEFAULT dir="binl" ]
+[ DEFAULT dir="axpnt" cond="alphahost cplusplus" where="ac" ]
+#  386 target
+    type="e" usr="wpp386.exe"
+    type="d" usr="wppd386.dll"
+    type="s" usr="wpp38601.int"
+#  axp target
+    type="e" usr="wppaxp.exe"
+    type="d" usr="wppdaxp.dll"
+    type="s" usr="wppaxp01.int"
 
+#######################
+# Windows NT - X64
+#
+[ DEFAULT dir="binnt64" cond="wnt64host cplusplus" where="c jc" keys="ntx64" ]
 #  i86 target
-type="e" usr="wpp" 		cond="lnxhost cplusplus tools16"		where="c jc"
-type="s" usr="wppi8601.int"	cond="lnxhost cplusplus tools16"		where="  jc"
-
+    type="e" usr="wpp.exe"          cond="wnt64host cplusplus tools16"
+    type="d" usr="wppdi86.dll"      cond="wnt64host cplusplus tools16"
+    type="s" usr="wppi8601.int"     cond="wnt64host cplusplus tools16"
 #  386 target
-type="e" usr="wpp386"		cond="lnxhost cplusplus"			where="c jc"
-type="s" usr="wpp38601.int" 	cond="lnxhost cplusplus"			where="  jc"
-
+    type="e" usr="wpp386.exe"
+    type="d" usr="wppd386.dll"
+    type="s" usr="wpp38601.int"
 #  axp target
-#type="e" usr="wppaxp"		cond="lnxhost cplusplus"			where=""
+#    type="e" usr="wppaxp.exe"
+#    type="d" usr="wppdaxp.dll"
+#    type="s" usr="wppaxp01.int"
 
+#######################
+# Linux - 386
 #
-# AXP NT compilers
-#
-[ DEFAULT dir="axpnt" ]
-
+[ DEFAULT dir="binl" cond="lnxhost cplusplus" where="c jc" ]
+#  i86 target
+    type="e" usr="wpp"              cond="lnxhost cplusplus tools16"
+    type="s" usr="wppi8601.int"     cond="lnxhost cplusplus tools16"
+#  386 target
+    type="e" usr="wpp386"
+    type="s" usr="wpp38601.int"
 #  axp target
-type="e" usr="wppaxp.exe" 	cond="alphahost" 		where="ac"
-type="e" usr="wpp386.exe" 	cond="alphahost" 		where="ac"
+#    type="e" usr="wppaxp"
+#    type="s" usr="wppaxp01.int"
+
+#######################
+# Linux - X64
+#
+[ DEFAULT dir="binl64" cond="lnx64host cplusplus" where="c jc" keys="lx64" ]
+#  i86 target
+    type="e" usr="wpp"              cond="lnx64host cplusplus tools16"
+    type="s" usr="wppi8601.int"     cond="lnx64host cplusplus tools16"
+#  386 target
+    type="e" usr="wpp386"
+    type="s" usr="wpp38601.int"
+#  axp target
+#    type="e" usr="wppaxp"
+#    type="s" usr="wppaxp01.int"

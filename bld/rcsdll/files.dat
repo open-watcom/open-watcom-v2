@@ -3,8 +3,8 @@
 #######################
 # DOS and Windows 3.x
 #
-[ DEFAULT dir="binw" cond="doshost winhost |" where="c jc" desc="RCSDLL" ]
-type="d" usr="rcsdll.dll" cond="doshost winhost |"   where="c jc f77 jf77"
+[ DEFAULT dir="binw" cond="doshost winhost |" where="c jc f77 jf77" desc="RCSDLL" ]
+type="d" usr="rcsdll.dll"
 type="e" usr="gen_co.bat"
 type="e" usr="gen_ci.bat"
 type="e" usr="mks_co.bat"
@@ -17,8 +17,8 @@ type="e" usr="pvcs_ci.bat"
 #######################
 # OS/2
 #
-[ DEFAULT dir="binp" cond="os2host" where="c jc" desc="RCSDLL" ]
-type="d" dir="binp/dll" usr="rcsdll.dll" cond="os2host"             where="c jc f77 jf77"
+[ DEFAULT dir="binp" cond="os2host" where="c jc f77 jf77" desc="RCSDLL" ]
+type="d" dir="binp/dll" usr="rcsdll.dll"
 type="e" usr="gen_co.cmd"
 type="e" usr="gen_ci.cmd"
 type="e" usr="mks_co.cmd"
@@ -31,8 +31,8 @@ type="e" usr="pvcs_ci.cmd"
 #######################
 # Windows NT - 386
 #
-[ DEFAULT dir="binnt" cond="wnthost" where="c jc" desc="RCSDLL" ]
-type="d" usr="rcsdll.dll" cond="wnthost"             where="c jc f77 jf77"
+[ DEFAULT dir="binnt" cond="wnthost" where="c jc f77 jf77 ac" desc="RCSDLL" ]
+type="d" usr="rcsdll.dll"
 type="e" usr="gen_co.bat"
 type="e" usr="gen_ci.bat"
 type="e" usr="mks_co.bat"
@@ -46,7 +46,7 @@ type="e" usr="pvcs_ci.bat"
 # Windows NT - AXP
 #
 [ DEFAULT dir="axpnt" cond="alphahost" where="ac" desc="RCSDLL" ]
-type="d" usr="rcsdll.dll" cond="alphahost"           where="ac"
+type="d" usr="rcsdll.dll"
 type="e" usr="gen_co.bat"
 type="e" usr="gen_ci.bat"
 type="e" usr="mks_co.bat"
@@ -59,8 +59,8 @@ type="e" usr="pvcs_ci.bat"
 #######################
 # Windows NT - X64
 #
-[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc" desc="RCSDLL" ]
-type="d" usr="rcsdll.dll" cond="wnt64host"           where="c jc f77 jf77"
+[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="ntx64" desc="RCSDLL" ]
+type="d" usr="rcsdll.dll"
 type="e" usr="gen_co.bat"
 type="e" usr="gen_ci.bat"
 type="e" usr="mks_co.bat"

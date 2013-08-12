@@ -1,90 +1,214 @@
-[ DEFAULT where="c f77 ac" desc="Resource tools" ]
-# wrc
-    type="e" dir="binw"	usr="wrc.exe"	cond="wnttarg wintarg | os2targ | winhost doshost | &"	where="c f77"
-    type="e" dir="binp"	usr="wrc.exe"	cond="wnttarg wintarg | os2targ | os2host"
-    type="e" dir="binnt"	usr="wrc.exe"	cond="wnttarg wintarg | os2targ | wnthost"
-    type="e" dir="binl"	usr="wrc"	cond="wnttarg wintarg | os2targ | lnxhost"
-    type="e" dir="axpnt"	usr="wrc.exe"	cond="alphahost" where="ac"
-    type="d" dir="binp/dll" usr="wrcd.dll"   cond="wnttarg wintarg | os2targ | os2host"
-    type="d" dir="binnt"    usr="wrcd.dll"   cond="wnttarg wintarg | os2targ | wnthost"
-
-    type="e" dir="binnt" usr="mkcdpg.exe" cond="wnthost"
-    type="e" dir="axpnt" usr="mkcdpg.exe" cond="alphahost" where="ac"
-
-# DDE spy
-    type="e" dir="binw"	usr="wddespy.exe"	cond="winhost"	where="c f77"
-    type="e" dir="binnt"	usr="wddespy.exe"	cond="wnthost"
-    type="e" dir="axpnt"	usr="wddespy.exe"	cond="alphahost" where="ac"
-
-# Heap walker
-    type="e" dir="binw"	usr="wheapwlk.exe"	cond="winhost" where="c f77"
-
-# wspy
-    type="e" dir="binw"	usr="wspy.exe"		cond="winhost" where="c f77"
-    type="d" dir="binw"	usr="wspyhk.dll"	cond="winhost" where="c f77"
-    type="e" dir="binnt"	usr="wspy.exe"		cond="wnthost"
-    type="d" dir="binnt"	usr="ntspyhk.dll"	cond="wnthost"
-    type="e" dir="axpnt"	usr="wspy.exe"		cond="alphahost" where="ac"
-    type="d" dir="axpnt"	usr="ntspyhk.dll"	cond="alphahost" where="ac"
-
-# Dr. Watcom
-    type="e" dir="binw"	usr="drwatcom.exe"	cond="winhost" where="c f77"
-    type="e" dir="binnt"	usr="drwatcom.exe"	cond="wnthost"
-    type="e" dir="binnt"	usr="_drwin95.exe"	cond="wnthost"
-    type="e" dir="axpnt"	usr="drwatcom.exe"	cond="alphahost" where="ac"
-
-# zoom
-    type="e" dir="binw"	usr="wzoom.exe"		cond="winhost"	where="c f77"
-    type="e" dir="binnt"	usr="wzoom.exe"		cond="wnthost"
-    type="e" dir="axpnt"	usr="wzoom.exe"		cond="alphahost" where="ac"
-
+#######################
+# DOS and Windows 3.x
+#
+[ DEFAULT dir="binw" cond="wnttarg wintarg os2targ | | winhost doshost | &" where="c jc f77 jf77" desc="Resource tools" ]
 # Resource editors:
-
 # Image editor
-    type="e" dir="binw"	usr="wimgedit.exe"	cond="winhost"	where="c f77"
-    type="e" dir="binnt"	usr="wimgedit.exe"	cond="wnthost"
-    type="e" dir="axpnt"	usr="wimgedit.exe"	cond="alphahost" where="ac"
+    type="e" usr="wimgedit.exe"
 # wr
-    type="d" dir="binw"	usr="wr.dll"	cond="winhost"	where="c f77"
-    type="d" dir="binnt"	usr="wr.dll"	cond="wnthost"
-    type="d" dir="axpnt"	usr="wr.dll"	cond="alphahost" where="ac"
+    type="d" usr="wr.dll"
 # wre
-    type="e" dir="binw"	usr="wre.exe"	cond="winhost"	where="c f77"
-    type="e" dir="binnt"	usr="wre.exe"	cond="wnthost"
-    type="e" dir="axpnt"	usr="wre.exe"	cond="alphahost" where="ac"
+    type="e" usr="wre.exe"
 # wde
-    type="e" dir="binw"	usr="wde.exe"	cond="winhost"	where="c f77"
-    type="e" dir="binnt"	usr="wde.exe"	cond="wnthost"
-    type="e" dir="axpnt"	usr="wde.exe"	cond="alphahost" where="ac"
+    type="e" usr="wde.exe"
 # wresedit
-    type="d" dir="binw"	usr="wacc.dll"	cond="winhost"	where="c f77"
-    type="d" dir="binnt"	usr="wacc.dll"	cond="wnthost"
-    type="d" dir="axpnt"	usr="wacc.dll"	cond="alphahost" where="ac"
-
-    type="d" dir="binw"	usr="wmenu.dll"		cond="winhost"	where="c f77"
-    type="d" dir="binnt"	usr="wmenu.dll"		cond="wnthost"
-    type="d" dir="axpnt"	usr="wmenu.dll"		cond="alphahost" where="ac"
-
-    type="d" dir="binw"	usr="wstring.dll"	cond="winhost"	where="c f77"
-    type="d" dir="binnt"	usr="wstring.dll"	cond="wnthost"
-    type="d" dir="axpnt"	usr="wstring.dll"	cond="alphahost" where="ac"
+    type="d" usr="wacc.dll"
+    type="d" usr="wmenu.dll"
+    type="d" usr="wstring.dll"
 # fmedit
-    type="d" dir="binw"	usr="fmedit.dll"	cond="winhost"	where="c f77"
-    type="d" dir="binnt"	usr="fmedit.dll"	cond="wnthost"
-    type="d" dir="axpnt"	usr="fmedit.dll"	cond="alphahost" where="ac"
+    type="d" usr="fmedit.dll"
+# wrc
+    type="e" usr="wrc.exe"
 # .UNI files
-    type="s" dir="binw"	usr="kanji.uni"		where="c f77 ac" old="binb"
-    type="s" dir="binw"	usr="1250.uni"		where="c f77 ac"
-    type="s" dir="binw"	usr="1251.uni"		where="c f77 ac"
-    type="s" dir="binw"	usr="1252.uni"		where="c f77 ac"
-    type="s" dir="binw"	usr="936.uni"		where="c f77 ac"
-    type="s" dir="binw"	usr="949.uni"		where="c f77 ac"
-    type="s" dir="binw"	usr="950.uni"		where="c f77 ac"
-# .UNI files for linux
-    type="s" dir="binl"	usr="kanji.uni"	cond="wnttarg wintarg | os2targ | lnxhost"
-    type="s" dir="binl"	usr="1250.uni"	cond="wnttarg wintarg | os2targ | lnxhost"
-    type="s" dir="binl"	usr="1251.uni"	cond="wnttarg wintarg | os2targ | lnxhost"
-    type="s" dir="binl"	usr="1252.uni"	cond="wnttarg wintarg | os2targ | lnxhost"
-    type="s" dir="binl"	usr="936.uni"	cond="wnttarg wintarg | os2targ | lnxhost"
-    type="s" dir="binl"	usr="949.uni"	cond="wnttarg wintarg | os2targ | lnxhost"
-    type="s" dir="binl"	usr="950.uni"	cond="wnttarg wintarg | os2targ | lnxhost"
+    type="s" usr="kanji.uni"    old="binb"
+    type="s" usr="1250.uni"
+    type="s" usr="1251.uni"
+    type="s" usr="1252.uni"
+    type="s" usr="936.uni"
+    type="s" usr="949.uni"
+    type="s" usr="950.uni"
+[ DEFAULT dir="binw" cond="winhost" where="c jc f77 jf77" desc="GUI tools" ]
+# DDE spy
+    type="e" usr="wddespy.exe"
+# Heap walker
+    type="e" usr="wheapwlk.exe"
+# wspy
+    type="e" usr="wspy.exe"
+    type="d" usr="wspyhk.dll"
+# Dr. Watcom
+    type="e" usr="drwatcom.exe"
+# zoom
+    type="e" usr="wzoom.exe"
+
+#######################
+# OS/2
+#
+[ DEFAULT dir="binp" cond="wnttarg wintarg os2targ | | os2host" where="c jc f77 jf77" desc="Resource tools" ]
+# wrc
+    type="e" usr="wrc.exe"                  
+    type="d" usr="wrcd.dll" dir="binp/dll"
+# .UNI files
+    type="s" usr="kanji.uni"
+    type="s" usr="1250.uni"
+    type="s" usr="1251.uni"
+    type="s" usr="1252.uni"
+    type="s" usr="936.uni"
+    type="s" usr="949.uni"
+    type="s" usr="950.uni"
+
+#######################
+# Windows NT - 386
+#
+[ DEFAULT dir="binnt" cond="wnttarg wintarg os2targ | | wnthost" where="c jc f77 jf77" desc="Resource tools" ]
+# Resource editors:
+# Image editor
+    type="e" usr="wimgedit.exe"
+# wr
+    type="d" usr="wr.dll"
+# wre
+    type="e" usr="wre.exe"
+# wde
+    type="e" usr="wde.exe"
+# wresedit
+    type="d" usr="wacc.dll"
+    type="d" usr="wmenu.dll"
+    type="d" usr="wstring.dll"
+# fmedit
+    type="d" usr="fmedit.dll"
+# wrc
+    type="e" usr="wrc.exe"
+    type="d" usr="wrcd.dll"
+    type="e" usr="mkcdpg.exe"
+# .UNI files
+    type="s" usr="kanji.uni"
+    type="s" usr="1250.uni"
+    type="s" usr="1251.uni"
+    type="s" usr="1252.uni"
+    type="s" usr="936.uni"
+    type="s" usr="949.uni"
+    type="s" usr="950.uni"
+[ DEFAULT dir="binnt" cond="wnthost" where="c jc f77 jf77" desc="GUI tools" ]
+# DDE spy
+    type="e" usr="wddespy.exe"
+# wspy
+    type="e" usr="wspy.exe"
+    type="d" usr="ntspyhk.dll"
+# Dr. Watcom
+    type="e" usr="drwatcom.exe"
+    type="e" usr="_drwin95.exe"
+# zoom
+    type="e" usr="wzoom.exe"
+
+#######################
+# Windows NT - AXP
+#
+[ DEFAULT dir="axpnt" cond="wnttarg wintarg os2targ | | alphahost" where="ac" desc="Resource tools" ]
+# Resource editors:
+# Image editor
+    type="e" usr="wimgedit.exe"
+# wr
+    type="d" usr="wr.dll"
+# wre
+    type="e" usr="wre.exe"
+# wde
+    type="e" usr="wde.exe"
+# wresedit
+    type="d" usr="wacc.dll"
+    type="d" usr="wmenu.dll"
+    type="d" usr="wstring.dll"
+# fmedit
+    type="d" usr="fmedit.dll"
+# wrc
+    type="e" usr="wrc.exe"
+    type="d" usr="wrcd.dll"
+    type="e" usr="mkcdpg.exe"
+# .UNI files
+    type="s" usr="kanji.uni"
+    type="s" usr="1250.uni"
+    type="s" usr="1251.uni"
+    type="s" usr="1252.uni"
+    type="s" usr="936.uni"
+    type="s" usr="949.uni"
+    type="s" usr="950.uni"
+[ DEFAULT dir="axpnt" cond="alphahost" where="ac" desc="GUI tools" ]
+# DDE spy
+    type="e" usr="wddespy.exe"
+# wspy
+    type="e" usr="wspy.exe"
+    type="d" usr="ntspyhk.dll"
+# Dr. Watcom
+    type="e" usr="drwatcom.exe"
+# zoom
+    type="e" usr="wzoom.exe"
+
+#######################
+# Windows NT - X64
+#
+[ DEFAULT dir="binnt64" cond="wnttarg wintarg os2targ | | wnt64host" where="c jc f77 jf77" keys="ntx64" desc="Resource tools" ]
+# Resource editors:
+# Image editor
+    type="e" usr="wimgedit.exe"
+# wr
+    type="d" usr="wr.dll"
+# wre
+    type="e" usr="wre.exe"
+# wde
+    type="e" usr="wde.exe"
+# wresedit
+    type="d" usr="wacc.dll"
+    type="d" usr="wmenu.dll"
+    type="d" usr="wstring.dll"
+# fmedit
+    type="d" usr="fmedit.dll"
+# wrc
+    type="e" usr="wrc.exe"
+    type="d" usr="wrcd.dll"
+    type="e" usr="mkcdpg.exe"
+# .UNI files
+    type="s" usr="kanji.uni"
+    type="s" usr="1250.uni"
+    type="s" usr="1251.uni"
+    type="s" usr="1252.uni"
+    type="s" usr="936.uni"
+    type="s" usr="949.uni"
+    type="s" usr="950.uni"
+[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="ntx64" desc="GUI tools" ]
+# DDE spy
+    type="e" usr="wddespy.exe"
+# wspy
+    type="e" usr="wspy.exe"
+    type="d" usr="ntspyhk.dll"
+# Dr. Watcom
+#    type="e" usr="drwatcom.exe"
+# zoom
+    type="e" usr="wzoom.exe"
+
+#######################
+# Linux - 386
+#
+[ DEFAULT dir="binl" cond="wnttarg wintarg os2targ | | lnxhost" where="c f77 jc jf77" desc="Resource tools" ]
+# wrc
+    type="e" usr="wrc"
+# .UNI files
+    type="s" usr="kanji.uni"
+    type="s" usr="1250.uni"
+    type="s" usr="1251.uni"
+    type="s" usr="1252.uni"
+    type="s" usr="936.uni"
+    type="s" usr="949.uni"
+    type="s" usr="950.uni"
+
+#######################
+# Linux - X64
+#
+[ DEFAULT dir="binl64" cond="wnttarg wintarg os2targ | | lnx64host" where="c f77 jc jf77" keys="lx64" desc="Resource tools" ]
+# wrc
+    type="e" usr="wrc"
+# .UNI files
+    type="s" usr="kanji.uni"
+    type="s" usr="1250.uni"
+    type="s" usr="1251.uni"
+    type="s" usr="1252.uni"
+    type="s" usr="936.uni"
+    type="s" usr="949.uni"
+    type="s" usr="950.uni"

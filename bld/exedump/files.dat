@@ -1,8 +1,10 @@
 # WDUMP component of install manifest
-[ DEFAULT type="e" ]
 
-usr="wdump.exe" 	dir="binw" 	cond="doshost winhost |" where="c f77"
-usr="wdump.exe" 	dir="binp" 	cond="os2host" 		where="c f77"
-usr="wdump.exe" 	dir="binnt" 	cond="wnthost" 		where="c f77 ac"
-usr="wdump.exe" 	dir="axpnt" 	cond="alphahost" 	where="ac"
-usr="wdump" 		dir="binl" 	cond="lnxhost"		where="c f77"
+[ DEFAULT type="e" ]
+dir="binw"      usr="wdump.exe"     cond="doshost winhost |"    where="c f77 jc jf77"
+dir="binp"      usr="wdump.exe"     cond="os2host"              where="c f77 jc jf77"
+dir="binnt"     usr="wdump.exe"     cond="wnthost"              where="c f77 jc jf77 ac"
+dir="binnt64"   usr="wdump.exe"     cond="wnt64host"            where="c f77 jc jf77" keys="ntx64"
+dir="axpnt"     usr="wdump.exe"     cond="alphahost"            where="ac"
+dir="binl"      usr="wdump"         cond="lnxhost"              where="c f77 jc jf77"
+dir="binl64"    usr="wdump"         cond="lnx64host"            where="c f77 jc jf77" keys="lx64"

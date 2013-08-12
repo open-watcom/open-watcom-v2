@@ -1,4 +1,4 @@
-[ DEFAULT dir="axpnt" cond="alphahost" where="ac" type="e" ]
+[ DEFAULT type="e" dir="axpnt" cond="alphahost" where="ac" ]
 usr="cl.exe"
 usr="cvtres.exe"
 usr="lib.exe"
@@ -6,18 +6,18 @@ usr="link.exe"
 usr="nmake.exe"
 usr="rc.exe"
 
-[ DEFAULT dir="axpnt" cond="alphahost wnttarg" where="ac" type="e" ]
+[ DEFAULT type="e" dir="axpnt" cond="alphahost wnttarg" where="ac" ]
 usr="cl386.exe"
 usr="lib386.exe"
 usr="link386.exe"
 
-[ DEFAULT dir="axpnt" cond="alphahost alphatarg" where="ac" type="e" ]
+[ DEFAULT type="e" dir="axpnt" cond="alphahost alphatarg" where="ac" ]
 usr="asaxp.exe"
 usr="claxp.exe"
 usr="libaxp.exe"
 usr="linkaxp.exe"
 
-[ DEFAULT dir="binnt" cond="wnthost" where="c jc ac" type="e" ]
+[ DEFAULT type="e" dir="binnt" cond="wnthost" where="c jc ac" ]
 usr="cl.exe"
 usr="cvtres.exe"
 usr="lib.exe"
@@ -25,12 +25,31 @@ usr="link.exe"
 usr="nmake.exe"
 usr="rc.exe"
 
-[ DEFAULT dir="binnt" cond="wnthost wnttarg" where="c jc ac" type="e" ]
+[ DEFAULT type="e" dir="binnt" cond="wnthost wnttarg" where="c jc ac" ]
 usr="cl386.exe"
 usr="lib386.exe"
 usr="link386.exe"
 
-[ DEFAULT dir="binnt" cond="wnthost alphatarg" where="ac" type="e" ]
+[ DEFAULT type="e" dir="binnt" cond="wnthost alphatarg" where="ac" ]
+usr="asaxp.exe"
+usr="claxp.exe"
+usr="libaxp.exe"
+usr="linkaxp.exe"
+
+[ DEFAULT type="e" dir="binnt64" cond="wnt64host" where="c jc" keys="ntx64" ]
+usr="cl.exe"
+usr="cvtres.exe"
+usr="lib.exe"
+usr="link.exe"
+usr="nmake.exe"
+usr="rc.exe"
+
+[ DEFAULT type="e" dir="binnt64" cond="wnt64host wnttarg" where="c jc" keys="ntx64" ]
+usr="cl386.exe"
+usr="lib386.exe"
+usr="link386.exe"
+
+[ DEFAULT type="e" dir="binnt64" cond="wnt64host alphatarg" where="ac" keys="ntx64" ]
 usr="asaxp.exe"
 usr="claxp.exe"
 usr="libaxp.exe"

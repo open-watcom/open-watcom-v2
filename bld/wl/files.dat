@@ -1,38 +1,73 @@
-# wlink component of install manifest
+#######################
+# DOS and Windows 3.x
+#
+[ DEFAULT type="e" dir="binw" cond="doshost winhost |" where="c jc f77 jf77" ]
+type="e" usr="wlink.exe"        old="bin"
+type="e" usr="ms2wlink.exe"     old="binb"
+type="e" usr="fcenable.exe"     old="binb"
+type="e" usr="exe2bin.exe"
+type="s" usr="wlink.lnk"        old="bin"
 
-# Note: fcenable is only useful on platforms where we may run into 16-bit
-# object files produced by non-Watcom compilers, ie. DOS only. Likewise the
-# ms2wlink tool only makes sense if link scripts for MS LINK need to be
-# processed.
+#######################
+# OS/2
+#
+[ DEFAULT dir="binp" cond="os2host" where="c jc f77 jf77" ]
+type="e" usr="wlink.exe"
+type="d" usr="wlinkd.dll"       dir="binp/dll"
+type="e" usr="ms2wlink.exe"
+type="e" usr="fcenable.exe"
+type="e" usr="exe2bin.exe"
+type="s" usr="wlink.lnk"
 
-[ DEFAULT ]
-type="e" dir="binw"		usr="wlink.exe"		cond="doshost winhost |"	where="c f77"		old="bin"
-type="e" dir="binw"		usr="ms2wlink.exe"	cond="doshost winhost |"	where="c f77"		old="binb"
-type="e" dir="binw"		usr="fcenable.exe"	cond="doshost winhost |"	where="c f77"		old="binb"
-type="e" dir="binw"		usr="exe2bin.exe"	cond="doshost winhost |"	where="c f77"
-type="s" dir="binw"		usr="wlink.lnk"		cond="doshost winhost |"	where="c f77"		old="bin"
-type="s" dir="binw"		usr="wlsystem.lnk"					where="c f77 ac"	old="binb"
+#######################
+# Windows NT - 386
+#
+[ DEFAULT dir="binnt" cond="wnthost" where="c jc f77 jf77 ac" ]
+type="e" usr="wlink.exe"
+type="d" usr="wlinkd.dll"
+type="e" usr="ms2wlink.exe"
+type="e" usr="fcenable.exe"
+type="e" usr="exe2bin.exe"
+type="s" usr="wlink.lnk"
 
-type="e" dir="binp"		usr="wlink.exe"		cond="os2host"			where="c f77"
-type="d" dir="binp/dll"		usr="wlinkd.dll"	cond="os2host"			where="c f77"
-type="e" dir="binp"		usr="exe2bin.exe"	cond="os2host"			where="c f77"
-type="e" dir="binp"		usr="ms2wlink.exe"	cond="os2host"			where="c f77"
-type="e" dir="binp"		usr="fcenable.exe"	cond="os2host"			where="c f77"
-type="s" dir="binp"		usr="wlink.lnk"		cond="os2host"			where="c f77"
+#######################
+# Windows NT - AXP
+#
+[ DEFAULT dir="axpnt" cond="alphahost" where="ac" ]
+type="e" usr="wlink.exe"
+type="d" usr="wlinkd.dll"
+type="e" usr="ms2wlink.exe"
+type="e" usr="fcenable.exe"
+type="e" usr="exe2bin.exe"
+type="s" usr="wlink.lnk"
 
-type="e" dir="binnt"		usr="wlink.exe"		cond="wnthost"			where="c f77 ac"
-type="d" dir="binnt"		usr="wlinkd.dll"	cond="wnthost"			where="c f77 ac"
-type="e" dir="binnt"		usr="exe2bin.exe"	cond="wnthost"			where="c f77 ac"
-type="e" dir="binnt"		usr="ms2wlink.exe"	cond="wnthost"			where="c f77 ac"
-type="s" dir="binnt"		usr="wlink.lnk"		cond="wnthost"			where="c f77 ac"
+#######################
+# Windows NT - X64
+#
+[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="ntx64" ]
+type="e" usr="wlink.exe"
+type="d" usr="wlinkd.dll"
+type="e" usr="ms2wlink.exe"
+type="e" usr="fcenable.exe"
+type="e" usr="exe2bin.exe"
+type="s" usr="wlink.lnk"
 
-type="e" dir="axpnt"		usr="wlink.exe"		cond="alphahost"		where="ac"
-type="d" dir="axpnt"		usr="wlinkd.dll"	cond="alphahost"		where="ac"
-type="e" dir="axpnt"		usr="exe2bin.exe"	cond="alphahost"		where="ac"
-type="s" dir="axpnt"		usr="wlink.lnk"		cond="alphahost"		where="ac"
+#######################
+# Linux - 386
+#
+[ DEFAULT dir="binl" cond="lnxhost" where="c f77 jc jf77" ]
+type="e" usr="wlink"
+type="e" usr="ms2wlink"
+type="e" usr="fcenable"
+type="e" usr="exe2bin"
+type="s" usr="wlink.lnk"
 
-type="e" dir="binl"		usr="wlink"		cond="lnxhost"			where="c f77"
-type="e" dir="binl"		usr="exe2bin"		cond="lnxhost"			where="c f77"
-type="e" dir="binl"		usr="ms2wlink"		cond="lnxhost"			where="c f77"
-type="e" dir="binl"		usr="fcenable"		cond="lnxhost"			where="c f77"
-type="s" dir="binl"		usr="wlink.lnk"		cond="lnxhost"			where="c f77"
+#######################
+# Linux - X64
+#
+[ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="lx64" ]
+type="e" usr="wlink"
+type="e" usr="ms2wlink"
+type="e" usr="fcenable"
+type="e" usr="exe2bin"
+type="s" usr="wlink.lnk"
