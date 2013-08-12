@@ -15,7 +15,11 @@ extra_l_flags = op map
 
 objs = cwc.obj
 
-$(proj_name).exe : cwstub.exe copystub.gh decstub.gh $(objs)
+!ifneq bootstrap 1
+all : cwstub.exe $(proj_name).exe .symbolic
+!endif
+
+$(proj_name).exe : copystub.gh decstub.gh $(objs)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(objs) $(ldflags)
 !else

@@ -203,7 +203,7 @@ static void AddToList( LIST *new, LIST **list )
 /*********************************************/
 {
     while( *list != NULL ) {
-        list = &((*list)->next);
+        list = &(*list)->next;
     }
     *list = new;
 }
@@ -302,7 +302,7 @@ int AddTarget( char *target )
 /***************************/
 {
     int                 count;
-    LIST                *new, *curr;
+    LIST                *new, *curr, **owner;
 
     count = 1;
     for( curr = TargetList; curr != NULL; curr = curr->next ) {
@@ -324,17 +324,12 @@ int AddTarget( char *target )
         }
         new->next = NULL;
         count = 1;
-        if( TargetList == NULL ) {
-            TargetList = new;
-        } else {
-            curr = TargetList;
-            while( curr->next != NULL ) {
-                curr = curr->next;
-                ++count;
-            }
-            curr->next = new;
+        owner = &TargetList;
+        while( *owner != NULL ) {
+            owner = &(*owner)->next;
             ++count;
         }
+        *owner = new;
         return( count );
     }
 }
@@ -369,7 +364,7 @@ int AddPath( char *path, int target, int parent )
 /***********************************************/
 {
     int                 count;
-    PATH_INFO           *new, *curr;
+    PATH_INFO           *new, *curr, **owner;
 
     count = 1;
     for( curr = PathList; curr != NULL; curr = curr->next ) {
@@ -393,17 +388,12 @@ int AddPath( char *path, int target, int parent )
         new->parent = parent;
         new->next = NULL;
         count = 1;
-        if( PathList == NULL ) {
-            PathList = new;
-        } else {
-            curr = PathList;
-            while( curr->next != NULL ) {
-                curr = curr->next;
-                ++count;
-            }
-            curr->next = new;
+        owner = &PathList;
+        while( *owner != NULL ) {
+            owner = &(*owner)->next;
             ++count;
         }
+        *owner = new;
         return( count );
     }
 }
@@ -495,10 +485,10 @@ static int mkdir_nested( char *path )
 }
 
 int AddFile( char *path, char *old_path, char type, char redist, char *file, char *rel_file, char *dst_var, char *cond )
-/***********************************************************************************************************/
+/**********************************************************************************************************************/
 {
     int                 path_dir, old_path_dir, target;
-    FILE_INFO           *new, *curr;
+    FILE_INFO           *new, *curr, **owner;
     long                act_size;
     time_t              time;
     struct stat         stat_buf;
