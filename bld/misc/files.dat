@@ -81,7 +81,8 @@ type="s"                        dir="."         usr="watcom.ico"        cond="os
 #type="s"                       dir="."         usr="wpp386.prf"        cond="wkframe cplusplus"        where="c jc"    desc="Watcom C++ profile for WorkFrame/2"
 
 #type="e"                       dir="binw"      usr="dbglib.rex"        cond="doshost winhost |"        where="c jc f77 jf77"   desc="Rational DOS extender debugging extension"        old="bin"
-type="e"                        dir="binw"      usr="techinfo.exe"              where="c jc f77 jf77"   old="binb"
+type="e"                        dir="binw"      usr="techinfo.exe"      cond="doshost winhost wnthost | |"        where="c jc f77 jf77"   old="binb"
+type="e"                        dir="binp"      usr="techinfo.exe"      cond="os2host"                  where="c jc f77 jf77"   old="binb"
 
 #type="e"       redist="X"      dir="binw"      usr="ftui.dll"          cond="winhost wnthost |"        where="c jc f77 jf77"
 #type="e"       redist="X"      dir="binw"      usr="ftengine.dll"      cond="winhost wnthost |"        where="c jc f77 jf77"

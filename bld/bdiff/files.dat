@@ -1,5 +1,5 @@
 [ DEFAULT rel="." where="c jc f77 jf77 ac" desc="Patch utility" ]
-type="e" dir="binw"	usr="bpatch.exe"       old="binb"
-type="e" dir="binp"	usr="bpatch.exe"
-type="e" dir="binnt"	usr="bpatch.exe"
-#type="e" dir="binnt64"	usr="bpatch.exe" keys="ntx64"
+type="e" dir="binw"	usr="bpatch.exe" cond="doshost winhost |"  old="binb"
+type="e" dir="binp"	usr="bpatch.exe" cond="os2host"
+type="e" dir="binnt"	usr="bpatch.exe" cond="wnthost"
+#type="e" dir="binnt64"	usr="bpatch.exe" cond="wnt64host" keys="ntx64"

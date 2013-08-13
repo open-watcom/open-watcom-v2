@@ -12,7 +12,7 @@ check_box=win32_helpfiles,,\
         //1"Win&32 Hosted Help Files"\
         //2"Win&32 ホスト・ヘルプファイル"\
         //0
-check_box=htmlhelp_helpfiles,,\
+check_box=whtml_helpfiles,,\
         //1"Win32 Hosted &HTML Help Files"\
         //2"Win32 Hosted &HTML Help Files"\
         //0

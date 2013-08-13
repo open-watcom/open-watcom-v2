@@ -98,7 +98,7 @@ type="e" usr="tcpserv.exe"      cond="alphatarg"
 #
 [ DEFAULT dir="binnt64" where="c f77 jc jf77" keys="ntx64" ]
 type="d" usr="nov.dll"          cond="wnt64host"
-type="d" usr="par.dll"          cond="wnt64host"
+#type="d" usr="par.dll"          cond="wnt64host"
 type="d" usr="ser.dll"          cond="wnt64host"
 type="d" usr="tcp.dll"          cond="wnt64host"
 #type="d" usr="vdm.dll"          cond="wnt64host"
