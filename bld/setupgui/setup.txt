@@ -94,13 +94,15 @@ the override file will be cleared (i.e., false).
  doshost         - DOS host tools
  winhost         - Win16 host tools
  wnthost         - Windows NT and 9x host tools
+ wnt64host       - Windows 64-bit host tools
  os2host         - OS/2 host tools
- lnxhost         - Linux host tools
+ lnxhost         - Linux x86 host tools
+ lnx64host       - Linux x64 host tools
  dostarg         - DOS target files
  wintarg         - Win16 target files
  wnttarg         - Win32 target files
  os2targ         - OS/2 target files
- lnxtarg         - Linux target files
+ lnxtarg         - Linux x86 target files
  nlmtarg         - Novell NLM target files
  helpfiles       - install online help (affects xxx_helpfiles variables)
  win16_helpfiles - help files in Win16 .hlp format
@@ -108,6 +110,7 @@ the override file will be cleared (i.e., false).
  whelp_helpfiles - help files in whelp .ihp format
  os2_helpfiles   - help files in OS/2 .hlp/.inf format
  pdf_helpfiles   - documentation in PDF format
+ whtml_helpfiles - help files in whtml .chm format
  rtsource        - run-time library startup source
  samples         - sample source code
 

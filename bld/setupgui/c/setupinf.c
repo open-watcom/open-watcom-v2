@@ -174,6 +174,7 @@ static struct association_info {
     char    *description;
     int     icon_index;
     int     no_open;
+    char    *condition;
 } *AssociationInfo = NULL;
 
 typedef struct a_file_info {
@@ -348,9 +349,13 @@ static int              CharWidth;
     x( IsOS2DosBox, y ) \
     x( IsWin, y ) \
     x( IsWin32, y ) \
+    x( IsWin64, y ) \
     x( IsWin32s, y ) \
     x( IsWin95, y ) \
+    x( IsWin98, y ) \
     x( IsWinNT, y ) \
+    x( IsWinNT40, y ) \
+    x( IsWin2000, y ) \
     x( IsLinux, y ) \
     x( IsAlpha, y ) \
     x( HelpFiles, y ) \
@@ -2209,6 +2214,7 @@ static bool ProcLine( char *line, pass_type pass )
         AssociationInfo[num].icon_index = strtol( line, NULL, 10 );
         line = next; next = NextToken( line, ',' );
         AssociationInfo[num].no_open = strtol( line, NULL, 10 );
+        CompileCondition( next, &AssociationInfo[num].condition );
         break;
 
         /* for now Setup Error Messages, Status line Messages and Misc Messages
@@ -3262,6 +3268,12 @@ extern int SimGetAssociationNoOpen( int parm )
 /********************************************/
 {
     return( AssociationInfo[parm].no_open );
+}
+
+extern bool SimCheckAssociationCondition( int parm )
+/**************************************************/
+{
+    return( EvalCondition( AssociationInfo[parm].condition ) );
 }
 
 /*
@@ -4386,6 +4398,7 @@ static void FreeAssociationInfo( void )
             GUIMemFree( AssociationInfo[i].keyname );
             GUIMemFree( AssociationInfo[i].program );
             GUIMemFree( AssociationInfo[i].description );
+            GUIMemFree( AssociationInfo[i].condition );
         }
         GUIMemFree( AssociationInfo );
         AssociationInfo = NULL;

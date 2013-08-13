@@ -298,6 +298,27 @@ extern vhandle SetVariableByHandle( vhandle var_handle, const char *strval )
     return( DoSetVariable( var_handle, strval, NULL ) );
 }
 
+#if defined( __NT__ )
+typedef BOOL (WINAPI *ISWOW64PROCESS_FN)( HANDLE, PBOOL );
+
+static BOOL isWOW64( void )
+{
+    ISWOW64PROCESS_FN   fn;
+    BOOL                retval;
+    HANDLE              h;
+
+    retval = FALSE;
+    h = GetModuleHandle( "kernel32" );
+    fn = (ISWOW64PROCESS_FN)GetProcAddress( h, "IsWow64Process" );
+    if( fn != NULL ) {
+        if( !fn( GetCurrentProcess(), &retval ) ) {
+            retval = FALSE;
+        }
+    }
+    return( retval );
+}
+#endif
+
 extern void SetDefaultGlobalVarList( void )
 /*****************************************/
 {
@@ -329,32 +350,76 @@ extern void SetDefaultGlobalVarList( void )
     SetVariableByName( "IsOS2", "0" );
 #endif
 
-#if defined( __NT__ )
+#if defined( __NT__ ) && defined( _M_X64 )
+    SetVariableByName( "IsWin64", "1" );
+    SetVariableByName( "IsWin32", "0" );
+    SetVariableByName( "IsWin32s", "0" );
+    SetVariableByName( "IsWinNT", "1" );
+    SetVariableByName( "IsWinNT40", "1" );
+    SetVariableByName( "IsWin2000", "1" );
+    SetVariableByName( "IsWin95", "0" );
+    SetVariableByName( "IsWin98", "0" );
+#elif defined( __NT__ )
     {
         DWORD   version = GetVersion();
-        if( version < 0x80000000 ) {
+        if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && isWOW64() ) {
+            SetVariableByName( "IsWin64", "1" );
+            SetVariableByName( "IsWin32", "0" );
+            SetVariableByName( "IsWin32s", "0" );
             SetVariableByName( "IsWinNT", "1" );
-            SetVariableByName( "IsWin32", "1" );
-            if( LOBYTE( LOWORD( version ) ) >= 4 ) {
-                SetVariableByName( "IsWinNT40", "1" );
-            } else {
-                SetVariableByName( "IsWinNT40", "0" );
-            }
-        } else if( LOBYTE( LOWORD( version ) ) < 4 ) {
-            SetVariableByName( "IsWin32s", "1" );
-        } else {
-            SetVariableByName( "IsWin95", "1" );
-            SetVariableByName( "IsWin32", "1" );
-        }
-        if( LOBYTE( LOWORD( version ) ) >= 5 ) {
-            SetVariableByName( "IsWin98", "1" );
-        } else {
+            SetVariableByName( "IsWinNT40", "1" );
+            SetVariableByName( "IsWin2000", "1" );
+            SetVariableByName( "IsWin95", "0" );
             SetVariableByName( "IsWin98", "0" );
+        } else {
+            SetVariableByName( "IsWin64", "0" );
+            if( version < 0x80000000 ) {
+                SetVariableByName( "IsWinNT", "1" );
+                SetVariableByName( "IsWin32", "1" );
+                SetVariableByName( "IsWin32s", "0" );
+                SetVariableByName( "IsWin95", "0" );
+                SetVariableByName( "IsWin98", "0" );
+                if( LOBYTE( LOWORD( version ) ) < 4 ) {
+                    SetVariableByName( "IsWinNT40", "0" );
+                } else {
+                    SetVariableByName( "IsWinNT40", "1" );
+                    if( LOBYTE( LOWORD( version ) ) < 5 ) {
+                        SetVariableByName( "IsWin2000", "0" );
+                    } else {
+                        SetVariableByName( "IsWin2000", "1" );
+                    }
+                }
+            } else {
+                SetVariableByName( "IsWinNT", "0" );
+                SetVariableByName( "IsWinNT40", "0" );
+                SetVariableByName( "IsWin2000", "0" );
+                if( LOBYTE( LOWORD( version ) ) < 4 ) {
+                    SetVariableByName( "IsWin32", "0" );
+                    SetVariableByName( "IsWin32s", "1" );
+                    SetVariableByName( "IsWin95", "0" );
+                    SetVariableByName( "IsWin98", "0" );
+                } else {
+                    SetVariableByName( "IsWin32", "1" );
+                    SetVariableByName( "IsWin32s", "0" );
+                    SetVariableByName( "IsWin95", "1" );
+                    if( LOBYTE( LOWORD( version ) ) < 5 ) {
+                        SetVariableByName( "IsWin98", "0" );
+                    } else {
+                        SetVariableByName( "IsWin98", "1" );
+                    }
+                }
+            }
         }
     }
 #else
+    SetVariableByName( "IsWin64", "0" );
+    SetVariableByName( "IsWin32", "0" );
+    SetVariableByName( "IsWin32s", "0" );
     SetVariableByName( "IsWinNT", "0" );
+    SetVariableByName( "IsWinNT40", "0" );
+    SetVariableByName( "IsWin2000", "0" );
     SetVariableByName( "IsWin95", "0" );
+    SetVariableByName( "IsWin98", "0" );
 #endif
 #if defined( __WINDOWS__ ) || defined( __NT__ )
     GetSystemDirectory( szBuf, sizeof( szBuf ) );

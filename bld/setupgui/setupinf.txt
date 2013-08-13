@@ -34,14 +34,18 @@ Variables
    PreviousInstall
 
   Nonmagic variables
-   0
+   IsDos
    IsOS2
    IsOS2DosBox
    IsWin
    IsWin32
+   IsWin64
    IsWin32s
    IsWin95
+   IsWin98
    IsWinNT
+   IsWinNT40
+   IsWin2000
    IsLinux
    IsAlpha
    HelpFiles

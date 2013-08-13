@@ -1624,6 +1624,8 @@ extern bool ModifyRegAssoc( bool uninstall )
         }
         num = SimNumAssociations();
         for( i = 0; i < num; i++ ) {
+            if( !SimCheckAssociationCondition( i ) )
+                continue;
             SimGetAssociationExt( i, ext );
             SimGetAssociationKeyName( i, keyname );
             SimGetAssociationProgram( i, program );
