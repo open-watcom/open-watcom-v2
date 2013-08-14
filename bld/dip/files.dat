@@ -30,7 +30,7 @@ type="d" usr="watcom.d32"
 #######################
 # Windows NT - 386
 #
-[ DEFAULT dir="binnt" cond="wnthost" where="c jc f77 jf77" ]
+[ DEFAULT dir="binnt" cond="wnthost wnt64host |" where="c jc f77 jf77" ]
 type="d" usr="codeview.dll"
 type="d" usr="dwarf.dll"
 type="d" usr="export.dll"
@@ -50,7 +50,7 @@ type="d" usr="watcom.dll"
 #######################
 # Windows NT - X64
 #
-[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="ntx64" ]
+[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="no_ntx64" ]
 type="d" usr="codeview.dll"
 type="d" usr="dwarf.dll"
 type="d" usr="export.dll"
@@ -60,7 +60,7 @@ type="d" usr="watcom.dll"
 #######################
 # Linux - 386
 #
-[ DEFAULT dir="binl" cond="lnxhost" where="c f77 jc jf77" ]
+[ DEFAULT dir="binl" cond="lnxhost lnx64host |" where="c f77 jc jf77" ]
 type="s" usr="codeview.dip"
 type="s" usr="dwarf.dip"
 type="s" usr="export.dip"
@@ -70,7 +70,7 @@ type="s" usr="watcom.dip"
 #######################
 # Linux - X64
 #
-[ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="lx64" ]
+[ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
 type="s" usr="codeview.so"
 type="s" usr="dwarf.so"
 type="s" usr="export.so"

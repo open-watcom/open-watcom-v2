@@ -636,9 +636,9 @@ inc_dirs_lang   = $(inc_dirs_lang_osi)
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
 
 !ifdef __WATCOM__
-inc_path        = $(inc_dirs_$(host_os)) $(inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h"
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 !else
-inc_path        = $(inc_dirs_$(host_os)) $(inc_dirs) -I"$(watcom_dir)/h"
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) -I"$(watcom_dir)/h"
 !endif
 
 rc_inc_path     = $(rc_inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h"

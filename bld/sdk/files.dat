@@ -94,7 +94,7 @@
     type="e" usr="wspy.exe"
     type="d" usr="ntspyhk.dll"
 # Dr. Watcom
-    type="e" usr="drwatcom.exe"
+    type="e" usr="drwatcom.exe" cond="wnthost wnt64host |"
     type="e" usr="_drwin95.exe"
 # zoom
     type="e" usr="wzoom.exe"

@@ -456,10 +456,16 @@ extern void SetDefaultGlobalVarList( void )
     SetVariableByName( "IsAlpha", "0" );
 #endif
 
-#if defined( __LINUX__ )
-    SetVariableByName( "IsLinux", "1" );
-#else
-    SetVariableByName( "IsLinux", "0" );
+#if defined( __LINUX__ ) && defined( _M_X64 ) && 0
+    SetVariableByName( "IsLinux64", "1" );
+    SetVariableByName( "IsLinux32", "0" );
+#else 
+    SetVariableByName( "IsLinux64", "0" );
+  if defined( __LINUX__ )
+    SetVariableByName( "IsLinux32", "1" );
+  #else
+    SetVariableByName( "IsLinux32", "0" );
+  #endif
 #endif
 }
 

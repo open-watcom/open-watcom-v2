@@ -129,7 +129,7 @@ usr="zoom.hlp"          where="c f77 jc jf77 ac"
 #-----------------------------------------------------------------------------
 # Win32 HTML Help files
 #-----------------------------------------------------------------------------
-[ DEFAULT type="s" dir="htmlhelp" cond="whtml_helpfiles helpfiles" ]
+[ DEFAULT type="s" dir="binnt/help" cond="whtml_helpfiles helpfiles" ]
 usr="c_readme.chi"      where="c jc ac"            desc="Help file for C/C++ Read Me"
 usr="c_readme.chm"      where="c jc ac"            desc="Help file for C/C++ Read Me"
 usr="cguide.chi"        where="c jc ac"

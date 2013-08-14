@@ -46,7 +46,8 @@ Variables
    IsWinNT
    IsWinNT40
    IsWin2000
-   IsLinux
+   IsLinux32
+   IsLinux64
    IsAlpha
    HelpFiles
    SrcIsCD

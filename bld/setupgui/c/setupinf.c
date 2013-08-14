@@ -356,7 +356,8 @@ static int              CharWidth;
     x( IsWinNT, y ) \
     x( IsWinNT40, y ) \
     x( IsWin2000, y ) \
-    x( IsLinux, y ) \
+    x( IsLinux32, y ) \
+    x( IsLinux64, y ) \
     x( IsAlpha, y ) \
     x( HelpFiles, y ) \
 

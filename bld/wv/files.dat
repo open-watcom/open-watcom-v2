@@ -77,7 +77,7 @@ type="s" usr="c.prs"             descr="Debugger parser file for C"
 #######################
 # Windows NT - 386
 #
-[ DEFAULT dir="binnt" cond="wnthost" where="c jc f77 jf77" ]
+[ DEFAULT dir="binnt" cond="wnthost wnt64host |" where="c jc f77 jf77" ]
 type="e" usr="wd.exe"            descr="Character mode debugger"
 type="e" usr="wdw.exe"           descr="GUI debugger"
 type="s" usr="animate.dbg"       descr="Debugger command file"
@@ -151,7 +151,7 @@ type="s" usr="c.prs"             descr="Debugger parser file for C"
 #######################
 # Windows NT - X64
 #
-[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="ntx64" ]
+[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="no_ntx64" ]
 type="e" usr="wd.exe"            descr="Character mode debugger"
 type="e" usr="wdw.exe"           descr="GUI debugger"
 type="s" usr="animate.dbg"       descr="Debugger command file"
@@ -188,7 +188,7 @@ type="s" usr="c.prs"             descr="Debugger parser file for C"
 #######################
 # Linux - 386
 #
-[ DEFAULT dir="binl" cond="lnxhost" where="c f77 jc jf77" ]
+[ DEFAULT dir="binl" cond="lnxhost lnx64host |" where="c f77 jc jf77" ]
 type="e" usr="wd"                descr="Character-mode debugger"
 type="s" usr="animate.dbg"       descr="Debugger command file"
 type="s" usr="bcnt.dbg"          descr="Debugger command file"
@@ -224,7 +224,7 @@ type="s" usr="c.prs"             descr="Debugger parser file for C"
 #######################
 # Linux - X64
 #
-[ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="lx64" ]
+[ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
 type="e" usr="wd"                descr="Character-mode debugger"
 type="s" usr="animate.dbg"       descr="Debugger command file"
 type="s" usr="bcnt.dbg"          descr="Debugger command file"
