@@ -44,20 +44,23 @@ How it is organized
 
 Under the main directory are number of sub-directories.
 
-.\gml   It is main directory for GML SCRIPT. It contains all GML support files.
+.\gml       It is main directory for GML SCRIPT. It contains all GML support files.
 
-.\doc   Main documentation source directory.
+.\doc       Main documentation source directory.
 
-.\cmds  It contains arbitrary files for creating on-line help version (help compilers etc.).
+.\cmds      It contains arbitrary files for creating on-line help version (help compilers etc.).
 
-.\mif   Contains makefiles for the documentation building system.
+.\mif       Contains makefiles for the documentation building system.
 
 .\dos .\os2 .\win .\nt Here on-line help version are created for each operating system.
 
-.\ps    Here the post script documentation is created.
+.\ps        Here the post script documentation is created.
 
-.\html  Html version of the documentation is there.
+.\html      Html version of the documentation is there.
 
+.\htmlhelp  Windows Html version of the documentation is there.
+
+.\pdf       Here the PDF documentation is created.
 
 
 How to Build Postscript Versions of the Documentation
@@ -84,24 +87,31 @@ where <bn> is one of
         cguideq             C/C++ User's Guide for QNX
         clib                C Library Reference (for all systems except QNX)
         clib_nec            C Library Reference Kanji Functions subset
-        clib_nt             C Library Reference for Win32 (Power++)
-        clib_qnx            C Library Reference for QNX (stale)
-        clib_tst            C Library Reference (for testing a subset of doc)
+        clibnt              C Library Reference for Win32 (Power++)
+        clibqnx             C Library Reference for QNX (stale)
+        clbtst              C Library Reference (for testing a subset of doc)
+        clr                 C Language Reference
         cpplib              C++ Class Library Reference (current)
-        f77graph            F77 Graphics Library Reference
+        cw                  CauseWay User's Guide
+        devguide            Developer's Guide
         f_readme            F77 Read Me First
+        f77graph            F77 Graphics Library Reference
+        f77lr               FORTRAN 77 Language Reference
         fpguide             F77 Programmer's Guide
         ftools              F77 Tools User's Guide
         fuguide             F77 User's Guide
         guitool             Graphical Tools User's Guide
         lguide              Linker User's Guide
         pguide              C/C++ Programmer's Guide
-        rcerrs              Resource Compiler Diagnostic Messages (obsolete)
         tools               C/C++ Tools User's Guide
+        vi                  VI Editor
         wasaxp              AXP Assembler User's Guide (obsolete)
         wd                  Debugger User's Guide
         wgmlref             Watcom Script/GML Tutorial and Reference Manual
-        wlinkerr            Linker Error Messages (obsolete)
+        wipfc               OS/2 Help Compiler Reference Manual
+
+        cgdoc               Code Generator
+        wddoc               Debugger
 
 The output file is of type ".ps". You should be able to send this to
 any PostScript printer or view in GhostScript or convert to PDF or

@@ -108,8 +108,8 @@ any case.
 .np
 The main subdirectories in the Open Watcom root are the following:
 .begnote
-.note bat
-currently contains mostly useless batch files and several useful ones.
+.note build
+contains main builder control files and other useful files.
 One extremely important file lives here:
 .us makeinit.
 This file controls the operation of wmake and is the key to understanding
@@ -118,13 +118,15 @@ of the build process. Since wmake looks for
 along the
 .id PATH,
 the
-.us bat
+.us build
 directory should be placed at or near the start of your
 .id PATH
 environment variable.
-.note bin, binp
-contains miscellaneous binaries used in the build process. The binp directory
-contains OS/2 executables, bin contains DOS or Win32 executables.
+.note build/bin
+contains binaries created during first build phase (bootstrap) and used during 
+main building process (second build phase).
+.note build/mif
+contains all main make files (global).
 .note bld
 is
 .us the

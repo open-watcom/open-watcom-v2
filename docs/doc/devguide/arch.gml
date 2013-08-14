@@ -11,7 +11,7 @@ For those who do not desire a lecture on the preparation and maintenance of
 makefiles, feel free to skip straight to the Executive Summary at the end.
 .np
 Every development and build machine must have the mif project (
-.us bld\build\mif
+.us build\mif
 ) installed. That is taken care of by uncompressing the Open Watcom source
 archive and/or syncing up with Perforce.
 .*
@@ -27,8 +27,6 @@ file with the following defined therein:
 .begnote
 .note mif_dir:
         must point to the directory in which the mif project has been installed
-.note lang_root:
-        the location of the installed (Open) Watcom compiler
 .endnote
 
 For each project with name X you wish to have on the build machine,
@@ -93,12 +91,13 @@ most important of these variables and what they can be used for is
 included below.
 .np
 A makefile should also include
-.us deftarg.mif,
-for definition of the required clean target, and
 .us defrule.mif,
-which has the default build rules for C, C++ and assembly sources. A makefile
-is free to override these defaults as long as it follows the following
-conventions:
+which has the default build rules for C, C++ and assembly sources, and
+.us deftarg.mif,
+for definition of the required clean target.
+.np
+A makefile is free to override these defaults as long as it follows the
+following conventions:
 .np
 .autonote
 .note
@@ -137,10 +136,10 @@ macro, where X is the name of the project.
 .np
 .ix 'build requirements'
 A project should be able to build either a -d2 (if
-.id release_$(proj_name)
+.id $(proj_name)_release
 != 1)
 or releaseable (if
-.id release_$(proj_name)
+.id $(proj_name)_release
 == 1 ) executable providing the following are done:
 .begbull
 .bull
@@ -149,8 +148,6 @@ the project is uptodate and
 is set correctly
 .bull
 the mif project is uptodate and make knows to look for .mif files in there
-.bull
-lang_root is set
 .bull
 all depended upon projects are uptodate and have
 .id $(proj_name)_dir
@@ -174,7 +171,7 @@ in order to get a debuggable version of the executable.
 .np
 There is more than one way to switch between development and release build.
 A
-.id DEBUG_BUILD
+.id OWDEBUGBUILD
 environment variable provides global control. When set to 1, debug builds
 are produced, otherwise release builds are created. When building individual
 projects with wmake, it is also possible to give the
@@ -208,17 +205,14 @@ in along with the project and built as part of the build process (so that
 we don't have to check in zillions of binaries for all supported platforms). An
 important future consideration will be the ability to build on a different
 architecture. Please try and avoid weirdo tools that have no hope of running
-on an Alpha or PPC running NT or on Linux. More general tools (yacc, re2c,
-w32bind) that are likely to be used by several projects should be copied up
-into the bin directories under
-.us bld\build
-&mdash bin for DOS, binp for OS/2, binl for Linux and binnt for some other OS,
-forget which. These tools should be referenced from the makefile as
+on an Alpha or PPC running NT or on Linux. These tools should be referenced 
+from the makefile as
 .id $(bld_dir)\tool.
 If your tool cannot run under a particular OS, you should at least put
 a batchfile in that bin which echoes a message to that effect (to alert
 people to the fact that you've just made their life difficult).
-
+More general tools (yacc, re2c, w32bind) that are likely to be used by several
+projects should be copied up into the build/bin directory.
 
 .section The Runtime DLL Libraries
 .*
@@ -401,7 +395,6 @@ as normal, and then, if creating a windowed app, set
 .id sys_dll
 = 1. Delightfully simple.
 
-
 .section Include Paths
 .*
 .np
@@ -415,8 +408,11 @@ is included. The current structure looks like this:
 .millust begin
 inc_path      = inc_dirs | inc_dirs_$(host_os) | inc_dirs_sys
 inc_dirs_sys  = inc_dirs_lang | inc_dirs_sys_$(host_os)
-inc_dirs_lang = $(lang_root)\h
 .millust end
+$(inc_dirs_lang) contains headers delivered with the compiler.
+.np
+$(inc_dirs_sys_$(host_os)) contains OS specific headers typically delivered by OS vendor.
+.np
 So, a project should put any include directories it needs into
 .us inc_dirs
 &mdash note that this does not include
@@ -506,9 +502,9 @@ Use following to create libraries:
 .note
 In each object file directory, create a makefile which looks like the following:
 .millust begin
-#pmake: build os_X cpu_Y
-host_os  = X
-host_cpu = Y
+#pmake: build os_x cpu_y
+host_os  = x
+host_cpu = y
 !include ../master.mif
 .millust end
 .endnote

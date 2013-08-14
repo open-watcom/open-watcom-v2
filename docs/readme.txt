@@ -23,17 +23,17 @@ For proper operation the Open Watcom compilers require few environment
 variables to be set up correctly. These variables differ slightly depending
 on the host platform (DOS, OS/2, Win32). The common variables are:
 
- - PATH     - points to directories containing Open Watcom executables
- - WATCOM   - points to the directory where Open Watcom is installed
-              and is used by various Open Watcom tools to locate files
- - EDPATH   - points to VI/VIW configuration files
- - INCLUDE  - points to directories containing header files used by the
-              C/C++ compilers
- - LIB      - points to directories containing library files; note that
-              Open Watcom linker is able to locate Open Watcom runtime
-              libraries without this variable
- - WWINHELP - points to the directory on the CDROM drive where help files are
-              located. This may minimize hard disk space requirements
+ - PATH      - points to directories containing Open Watcom executables
+ - WATCOM    - points to the directory where Open Watcom is installed
+               and is used by various Open Watcom tools to locate files
+ - EDPATH    - points to VI/VIW configuration files
+ - INCLUDE   - points to directories containing header files used by the
+               C/C++ compilers
+ - LIB       - points to directories containing library files; note that
+               Open Watcom linker is able to locate Open Watcom runtime
+               libraries without this variable
+ - ...HELP   - points to the directory on the CDROM drive where help files
+               are located. This may minimize hard disk space requirements
 
 DOS specifics
 
@@ -55,6 +55,14 @@ Win32 specifics
  - WWINHELP  - points to the directory on the CDROM drive where help files
                are located. This minimizes hard disk space. Note this is not
                needed if the help files are installed on the hard disk
+
+Win64 specifics
+
+ - PATH      - must point to binnt64 and binnt directories, in that order
+ - WHTMLHELP - points to the directory on the CDROM drive where Windows html
+               help files are located. This minimizes hard disk space.
+               Note this is not needed if the help files are installed on
+               the hard disk.
 
 OS/2 specifics
 
@@ -113,6 +121,17 @@ SET EDPATH=%WATCOM%\EDDAT
 SET INCLUDE=%WATCOM%\H;%WATCOM%\H\NT
 REM SET LIB=
 REM SET WWINHELP=D:\BINW
+---------------------------------------------------------------------------
+
+Win64 BAT file:
+---------------------------------------------------------------------------
+@ECHO OFF
+SET WATCOM=C:\WATCOM
+SET PATH=%WATCOM%\BINNT64;%WATCOM%\BINNT;%PATH%
+SET EDPATH=%WATCOM%\EDDAT
+SET INCLUDE=%WATCOM%\H;%WATCOM%\H\NT
+REM SET LIB=
+REM SET WHTMLHELP=D:\BINNT\HELP
 ---------------------------------------------------------------------------
 
 OS/2 CMD file:
