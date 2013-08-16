@@ -37,23 +37,6 @@
 #define TUNING          6
 
 
-/*  Use PASCAL pragma to define our convention for
-    calling the ScanLeft and ScanRight routines.    */
-
-#if defined ( __386__ )
-    #pragma aux scan_call "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi] value [bx];
-#else
-  #if defined( VERSION2 )
-    //endx now on stack
-    #pragma aux scan_call "*" parm caller [es di] [ax si] [bx] [cx] [dx] value [bx];
-  #else
-    #pragma aux scan_call "*" parm caller [es di] [ax] [bx] [cx] [dx] [si] value [bx];
-  #endif
-#endif
-
-typedef short (near scan_func)( char far *, grcolor, int, int, int, int );
-#pragma aux (scan_call) scan_func;
-
 struct frame {
     short         direction;
     short         left;
@@ -360,7 +343,7 @@ static short PaintLeft( short x, short y, grcolor stop_color, short border_flag 
 
 {
     short               xleft;
-    scan_func           *scan;  /* pointer to scan function */
+    scan_fn             *scan;  /* pointer to scan function */
     gr_device _FARD     *dev_ptr;
     short               len;
 
@@ -395,7 +378,7 @@ static short PaintRight( short x, short y, grcolor stop_color, short border_flag
 
 {
     short               xright;    
-    scan_func           *scan;  /* pointer to scan function */
+    scan_fn             *scan;  /* pointer to scan function */
     gr_device _FARD     *dev_ptr;
     short               len;
 

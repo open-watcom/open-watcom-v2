@@ -32,7 +32,6 @@
 #include "gdefn.h"
 #if !defined( _DEFAULT_WINDOWS )
 #include "gbios.h"
-#include "filldef.h"
 #endif
 
 
@@ -137,7 +136,7 @@ void _PutChar( short row, short col, short ch )
     short far           *screen;
     char _WCI86FAR      *mask;
     gr_device _FARD     *dev_ptr;
-    fill_fn near        *fill;
+    fill_fn             *fill;
 
     if( IsTextMode ) {
         if( _CurrState->vc.mode == _TEXTMONO ) {

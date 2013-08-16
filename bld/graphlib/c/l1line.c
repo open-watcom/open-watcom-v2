@@ -31,7 +31,6 @@
 
 #include "gdefn.h"
 #include "rotate.h"
-#include "dotfunc.h"
 
 
 static void         _L0Line( short, short, short, short, short, unsigned short );
@@ -130,13 +129,13 @@ static void _L0Line( short x1, short y1, short x2, short y2,
     short               delta_x;
     short               delta_y;
     gr_device _FARD     *dev_ptr;
-    void pascal         (near *x_func)();
-    void pascal         (near *y_func)();
-    put_dot_fn near     *plot;
+    move_fn             *x_func;
+    move_fn             *y_func;
+    putdot_fn           *putdot;
 
     _StartDevice();
     dev_ptr = _CurrState->deviceptr;
-    plot = dev_ptr->plot[ _PlotAct ];
+    putdot = dev_ptr->plot[ _PlotAct ];
     ( *dev_ptr->setup )( x1, y1, color );
 
     delta_x = x2 - x1;              /* select the move right or left        */
@@ -157,12 +156,10 @@ static void _L0Line( short x1, short y1, short x2, short y2,
         coordinate is larger than the change in the second coordinate. */
     if( delta_x < delta_y ) {
         _L0DrawLine( _Screen.mem, _Screen.colour, style, _Screen.mask,
-                     delta_y << 1, delta_x << 1, (void (near *)()) y_func,
-                     (void (near *)()) x_func, (void (near *)()) plot );
+                     delta_y << 1, delta_x << 1, y_func, x_func, putdot );
     } else {
         _L0DrawLine( _Screen.mem, _Screen.colour, style, _Screen.mask,
-                     delta_x << 1, delta_y << 1, (void (near *)()) x_func,
-                     (void (near *)()) y_func, (void (near *)()) plot );
+                     delta_x << 1, delta_y << 1, x_func, y_func, putdot );
     }
     _ResetDevice();
 #endif

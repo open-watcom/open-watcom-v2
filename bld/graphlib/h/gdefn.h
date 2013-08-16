@@ -208,8 +208,7 @@ extern short                _SuperVGAType( void );
 
 extern short                _L0BlockClip( short *, short *, short *, short * );
 extern void                 _L0DrawLine( char far *, short, unsigned short, short,
-                                         short, short, void (near *)(),
-                                         void (near *)(), void (near *)() );
+                                         short, short, move_fn *, move_fn *, putdot_fn * );
 extern void                 _L0Ellipse( short, short, short, short, void (*)( short, short, short ) );
 extern short                _L0LineClip( short *, short *, short *, short * );
 

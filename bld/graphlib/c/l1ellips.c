@@ -32,9 +32,6 @@
 #include "gdefn.h"
 #include "ellinfo.h"
 #include "rotate.h"
-#if !defined( _DEFAULT_WINDOWS )
-  #include "dotfunc.h"
-#endif
 
 
 #define _is_odd( q )    ( ( q & 1 ) != 0 )
@@ -204,7 +201,7 @@ static void FastPlot( short x, short y, short q )
 
 {
     void                (*setup )( short, short, grcolor );
-    put_dot_fn near     *putdot;
+    putdot_fn           *putdot;
     gr_device _FARD     *dev_ptr;
 
     dev_ptr = _CurrState->deviceptr;
@@ -237,7 +234,7 @@ static void PutDot( int x, int y, int q )
 
 {
     void                (*setup )( short, short, grcolor );
-    put_dot_fn near     *putdot;
+    putdot_fn           *putdot;
     gr_device _FARD     *dev_ptr;
 
     if( _L1OutCode( x, y ) == 0 ) {     // inside viewport

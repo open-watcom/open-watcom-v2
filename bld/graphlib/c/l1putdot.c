@@ -30,9 +30,6 @@
 
 
 #include "gdefn.h"
-#if !defined( _DEFAULT_WINDOWS )
-#include "dotfunc.h"
-#endif
 
 
 short _L1PutDot( short x, short y )
@@ -49,8 +46,8 @@ short _L1PutDot( short x, short y )
     WPI_PRES            dc;
 #else
     gr_device _FARD     *dev_ptr;
-    get_dot_fn near     *getdot;
-    put_dot_fn near     *putdot;
+    getdot_fn           *getdot;
+    putdot_fn           *putdot;
 
 #endif
 

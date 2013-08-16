@@ -33,7 +33,6 @@
 #include "gdefn.h"
 #include "fontsupp.h"
 #if !defined( _DEFAULT_WINDOWS )
-#include "dotfunc.h"
 
 
 typedef _Packed struct font_entry {
@@ -1100,7 +1099,7 @@ static void _outdot( short x, short y )
 
 {
     gr_device _FARD     *dev_ptr;
-    put_dot_fn near     *putdot;
+    putdot_fn           *putdot;
 
     if( _L1OutCode( x, y ) == 0 ) {             /* check if inside viewport */
         dev_ptr = _CurrState->deviceptr;

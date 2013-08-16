@@ -30,9 +30,6 @@
 
 
 #include "gdefn.h"
-#if !defined( _DEFAULT_WINDOWS )
-#include "dotfunc.h"
-#endif
 
 
 short _L1GetDot( short x, short y )
@@ -46,7 +43,7 @@ short _L1GetDot( short x, short y )
     WPI_COLOUR          RGB_color;
 #else
     gr_device _FARD     *dev_ptr;
-    get_dot_fn near     *getdot;
+    getdot_fn           *getdot;
 #endif
 
     if( _L1OutCode( x, y ) == 0 ) {             /* check if inside viewport */

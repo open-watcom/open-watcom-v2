@@ -69,8 +69,7 @@ typedef void (FUNC_FAR line_fn)( char far *, int, int, int, int, int );
 
 void _L0DrawLine( char far *screen_ptr, short color, unsigned short style,
 /*=============*/ short bit_mask, short majordif, short minordif,
-                  void (near *majorfn)(), void (near *minorfn)(),
-                  void (near *plot)() )
+                  move_fn *majorfn, move_fn *minorfn, putdot_fn *plot )
 
 /*  This function 'compiles' the line drawing routine on the stack.
     The corresponding assembler pseudo-code is:

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Image descriptor and calling convention for bitmap
-*               copy functions.
+* Description:  Image descriptor declaration.
 *
 ****************************************************************************/
 
@@ -38,25 +37,9 @@ struct picture {
     WPI_PRES        buffer;                  /* Handle for image     */
     HBITMAP         bmp;
     HDC             pdc;
-};
 #else
     short           bpp;                    /* # of bits per pixel  */
     char            buffer;                 /* buffer for image     */
-};
-
-    /*  Use PASCAL pragma to define our convention for
-        calling the copy and read functions.    */
-
-    #if defined ( __386__ )
-        #pragma aux PIC_FUNC "*" parm caller [es edi] [esi eax] [ecx] [edx] [ebx] \
-                                 modify [eax];
-    #else
-        #pragma aux PIC_FUNC "*" parm caller [es di] [si ax] [cx] [dx] [bx] \
-                                 modify [ax];
-    #endif
-
-    typedef void pic_fn( char far *, char far *, int, int, int );
-    #pragma aux (PIC_FUNC) pic_fn;
-
 #endif
+};
 #pragma pack (pop);

@@ -29,30 +29,62 @@
 ****************************************************************************/
 
 
+#if defined ( __386__ )
+    #pragma aux PUTDOT_FUNC  "*" parm caller [es edi] [eax] [ecx];
+    #pragma aux GETDOT_FUNC  "*" parm caller [es edi] [ecx];
+    #pragma aux FILL_FUNC    "*" parm caller [es edi] [eax] [ebx] [ecx] [edx];
+    #pragma aux COPY_FUNC    "*" parm caller [es edi] [esi eax] [ecx] [edx] [ebx];
+    #pragma aux SCAN_FUNC    "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi] value [bx];
+#else
+  #if defined( VERSION2 )
+    #pragma aux PUTDOT_FUNC  "*" far parm caller [es di] [dx ax] [cx];
+    #pragma aux GETDOT_FUNC  "*" far parm caller [es di] [cx];
+    #pragma aux FILL_FUNC    "*" parm caller [es di] [si ax] [bx] [cx] [dx];
+    #pragma aux COPY_FUNC    "*" parm caller [es di] [si ax] [cx] [dx] [bx];
+    //endx now on stack
+    #pragma aux SCAN_FUNC    "*" parm caller [es di] [ax si] [bx] [cx] [dx] value [bx];
+  #else
+    #pragma aux PUTDOT_FUNC  "*" far parm caller [es di] [ax] [cx];
+    #pragma aux GETDOT_FUNC  "*" far parm caller [es di] [cx];
+    #pragma aux FILL_FUNC    "*" parm caller [es di] [ax] [bx] [cx] [dx];
+    #pragma aux COPY_FUNC    "*" parm caller [es di] [si ax] [cx] [dx] [bx];
+    #pragma aux SCAN_FUNC    "*" parm caller [es di] [ax] [bx] [cx] [dx] [si] value [bx];
+  #endif
+#endif
+
+typedef grcolor near getdot_fn( char far *, int );
+typedef void    near putdot_fn( char far *, grcolor, int );
+typedef void    near fill_fn( char far *, grcolor, int, int, int );
+typedef void    near copy_fn( char far *, char far *, int, int, int );
+typedef short   near scan_fn( char far *, grcolor, int, int, int, int );
+
+#pragma aux (GETDOT_FUNC)  getdot_fn;
+#pragma aux (PUTDOT_FUNC)  putdot_fn;
+#pragma aux (FILL_FUNC)    fill_fn;
+#pragma aux (COPY_FUNC)    copy_fn;
+#pragma aux (SCAN_FUNC)    scan_fn;
+
+typedef void    setup_fn( short, short, grcolor );
+typedef void    near pascal move_fn( void );
+
 #pragma pack(push, 1);
 typedef struct graphics_device {
-    short           (*init)( short );                           // initialization
-    void            (*finish)( void );                          // finish up device
-    void            (*set)( void );                             // set device
-    void            (*reset)( void );                           // reset device
-    void            (*setup)( short, short, grcolor );          // setup routine
-    void pascal     (near *up)( void );                         // move up routine (ASM)
-    void pascal     (near *left)( void );                       // move left routine
-    void pascal     (near *down)( void );                       // move down routine
-    void pascal     (near *right)( void );                      // move right routine
-    void            (near *plot[4])( char far *, grcolor, int );// plot-replace
-    grcolor         (near *getdot)( char far *, int );          // get pixel color
-    void            (near *zap)( char far *, grcolor,
-                                 int, int, int );               // zap routine
-    void            (near *fill)( char far *, grcolor,
-                                  int, int, int );              // fill style routine
-    void            (near *pixcopy)( char far *, char far *,
-                                     int, int, int );           // copy pixels
-    void            (near *readrow)( char far *, char far *,
-                                     int, int, int );           // read a row of pixels
-    short           (near *scanleft)( char far *, grcolor, int,
-                                      int, int, int );          // left scan in paint
-    short           (near *scanright)( char far *, grcolor, int,
-                                       int, int, int );         // right scan in paint
+    short           (*init)( short );           // initialization
+    void            (*finish)( void );          // finish up device
+    void            (*set)( void );             // set device
+    void            (*reset)( void );           // reset device
+    setup_fn        *setup;                     // setup routine
+    move_fn         *up;                        // move up routine (ASM)
+    move_fn         *left;                      // move left routine
+    move_fn         *down               ;       // move down routine
+    move_fn         *right;                     // move right routine
+    putdot_fn       *plot[4];                   // plot-replace
+    getdot_fn       *getdot;                    // get pixel color
+    fill_fn         *zap;                       // zap routine
+    fill_fn         *fill;                      // fill style routine
+    copy_fn         *pixcopy;                   // copy pixels
+    copy_fn         *readrow;                   // read a row of pixels
+    scan_fn         *scanleft;                  // left scan in paint
+    scan_fn         *scanright;                 // right scan in paint
 } gr_device;
 #pragma pack (pop);

@@ -88,8 +88,8 @@ static void GrShift( short src_y, short dst_y,
     short               prev_action;
     char                *buf;
     gr_device _FARD     *dev_ptr;
-    pic_fn near         *get;
-    pic_fn near         *put;
+    copy_fn             *get;
+    copy_fn             *put;
 
     width = xr - xl + 1;
     size = _RoundUp( _RowLen( width ) );

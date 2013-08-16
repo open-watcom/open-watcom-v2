@@ -30,7 +30,6 @@
 
 
 #include "gdefn.h"
-#include "filldef.h"
 
 
 void _L1Fill( short x, short y, short length )
@@ -38,7 +37,7 @@ void _L1Fill( short x, short y, short length )
 
 {
     gr_device _FARD     *dev_ptr;
-    fill_fn near        *fill;
+    fill_fn             *fill;
 
     if( length <= 0 ) {
         return;
