@@ -63,10 +63,9 @@
 /f77test/*.sav
 /f77test/regress/nist/FOR*
 #
-/graphlib/fix/*/clib.mod
-/graphlib/fix/*/graph.mod
-/graphlib/fix/*/graph.ref
-/graphlib/fix/*/graph.stb
+/graphlib/fix/*/*.mod
+/graphlib/fix/*/*.ref
+/graphlib/fix/*/*.stb
 #
 /ide/cfg/*/*.cfg
 #
