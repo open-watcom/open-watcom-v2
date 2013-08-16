@@ -231,7 +231,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_chartpie( chartenv _WCI86FAR *env,
 
 {
     short               error;
-    short               oldcolor;
+    grcolor             oldcolor;
     fillmap             oldfillmask;
     short               x1, y1;
     short               x2, y2;

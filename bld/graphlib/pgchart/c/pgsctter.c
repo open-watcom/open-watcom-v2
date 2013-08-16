@@ -85,7 +85,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_chartscatterms( chartenv _WCI86FAR *env,
 {
     short               x1, y1;
     short               x2, y2;
-    short               oldcolor;
+    grcolor             oldcolor;
     fillmap             oldfillmask;
     short               error;
 
