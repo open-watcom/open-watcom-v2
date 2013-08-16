@@ -46,8 +46,12 @@ extern      thread_data *__FirstThreadData;
 extern void __InitThreadData( thread_data * );
 extern int __RdosInit( int is_dll, thread_data *tdata, int hdll );
 extern int __RdosFini();
+extern int __RdosAddThread( thread_data * );
 extern int __RdosRemoveThread();
 extern void __FreeInitThreadData( thread_data * );
+
+extern void __InitMultipleThread( void );
+extern unsigned __RdosThreadInit( void );
 
 extern int __stdcall LibMain( int, int, void * );
 extern void __CommonInit( void );
@@ -66,11 +70,16 @@ static int  processes;
 int __LibMain( int hdll, int reason, void *reserved )
 {
     thread_data             *tdata;
-    int                     rc;
+    int                     rc = 0;
 
     switch( reason ) {
     case DLL_THREAD_ATTACH:
-        rc = LibMain( hdll, reason, reserved );
+        tdata = ( thread_data * )RdosAllocateMem( __ThreadDataSize );
+        if( tdata ) {
+            memset( tdata, 0, __ThreadDataSize );
+            tdata->__data_size = __ThreadDataSize;
+            __RdosAddThread( tdata );
+        }       
         break;
     case DLL_PROCESS_ATTACH:
         __InitRtns( INIT_PRIORITY_THREAD );
@@ -83,21 +92,23 @@ int __LibMain( int hdll, int reason, void *reserved )
         __InitRtns( 255 );
         __CommonInit();
         __sig_init_rtn();
+
+        if( __RdosThreadInit() == 0 ) return( -1 );
+        __InitMultipleThread();
+
         rc = LibMain( hdll, reason, reserved );
         if( !rc ) {
             __FiniRtns( 0, 255 );
         }
         break;
     case DLL_THREAD_DETACH:
-        rc = LibMain( hdll, reason, reserved );
+        __RdosRemoveThread();
         break;
     case DLL_PROCESS_DETACH:
         __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
         __RdosRemoveThread();
         RdosFreeMem( __FirstThreadData );
         __FirstThreadData = NULL;
-
-        rc = 0;
         break;
     }
     return( rc );
