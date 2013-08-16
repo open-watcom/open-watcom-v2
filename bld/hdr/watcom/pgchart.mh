@@ -155,7 +155,7 @@ typedef unsigned char   charmap[ 8 ];   /* character bit-map */
 typedef unsigned char   fillmap[ 8 ];   /* pattern bit-map */
 
 typedef struct {                        /* palette entry definition */
-    unsigned short  color;
+    grcolor         color;
     unsigned short  style;
     fillmap         fill;
     char            plotchar;

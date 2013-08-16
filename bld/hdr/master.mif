@@ -102,6 +102,10 @@ options_c_time    = -kCONLY
 options_c_wchar   = -kCONLY
 options_c_wctype  = -kCONLY
 
+#
+# Special case for graph2.h and pgchart2.h headers
+#
+options_c_graph2   = -i../watcom -kVERSION2
 
 dos_clean   =
 linux_clean = arpa/*.h netinet/*.h

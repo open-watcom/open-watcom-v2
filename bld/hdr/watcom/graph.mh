@@ -2,11 +2,11 @@
 :: This file generates two headers.
 ::
 ::   graph.h  : public version.
-::   _graph.h : internal version used for build graphics library.
+::   graph.gh : internal version used for build graphics library.
 ::
 :segment INTERNAL
 /*
- *  _graph.h : internal version used for build graphics library.
+ *  graph.gh : internal version used for build graphics library.
  *
  */
 #ifndef _GRAPH_H_INCLUDED
@@ -29,6 +29,15 @@
 :include cpluspro.sp
 :segment QNX
 
+:segment VERSION2
+#if !defined(__386__)
+ #pragma library (graph2);
+#elif defined(__SW_3S)
+ #pragma library (graph23s);
+#else
+ #pragma library (graph23r);
+#endif
+:elsesegment
 #if !defined(__386__)
  #pragma library (graph);
 #elif defined(__SW_3S)
@@ -36,12 +45,24 @@
 #else
  #pragma library (graph3r);
 #endif
+:endsegment
 :elsesegment DOS
+
+:segment VERSION2
+#pragma library (graph2);
+:elsesegment
 #pragma library (graph);
+:endsegment
 :endsegment
 :endsegment
 
 :include pshpackl.sp
+
+:segment VERSION2
+typedef long    grcolor;
+:elsesegment
+typedef short   grcolor;
+:endsegment
 
 struct xycoord {                /* structure for pixel position */
         short   xcoord;
@@ -63,7 +84,7 @@ struct videoconfig {            /* structure for _getvideoconfig */
         short   numypixels;
         short   numtextcols;
         short   numtextrows;
-        short   numcolors;
+        grcolor numcolors;
         short   bitsperpixel;
         short   numvideopages;
         short   mode;
@@ -242,14 +263,29 @@ _WCRTLINK short
 #define _GRNOOUTPUT             1      /* nothing was done             */
 #define _GRCLIPPED              2      /* output clipped               */
 
-/* Colour Setting and Query Functions */
+:segment VERSION2
+/* Truecolor related extensions */
 
-_WCRTLINK short
+_WCRTLINK grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
-    _WCI86FAR _setcolor( short );
-_WCRTLINK short
+    _WCI86FAR _rgb2pixel(unsigned char r, unsigned char g, unsigned char b);
+_WCRTLINK void
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pixel2rgb(unsigned char *r, unsigned char *g, unsigned char *b, grcolor pix);
+
+:endsegment
+/* Colour Setting and Query Functions */
+
+_WCRTLINK grcolor
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _setcolor( grcolor );
+_WCRTLINK grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -281,6 +317,27 @@ _WCRTLINK short
     _WCI86FAR _selectpalette( short );
 
 :segment DOS | QNX
+:segment VERSION2
+extern grcolor          _coltbl[ 16 ];
+
+#define _BLACK          _coltbl[0]
+#define _BLUE           _coltbl[1]
+#define _GREEN          _coltbl[2]
+#define _CYAN           _coltbl[3]
+#define _RED            _coltbl[4]
+#define _MAGENTA        _coltbl[5]
+#define _BROWN          _coltbl[6]
+#define _WHITE          _coltbl[7]
+#define _GRAY           _coltbl[8]
+#define _LIGHTBLUE      _coltbl[9]
+#define _LIGHTGREEN     _coltbl[10]
+#define _LIGHTCYAN      _coltbl[11]
+#define _LIGHTRED       _coltbl[12]
+#define _LIGHTMAGENTA   _coltbl[13]
+#define _YELLOW         _coltbl[14]
+#define _BRIGHTWHITE    _coltbl[15]
+#define _LIGHTYELLOW    _coltbl[14]
+:elsesegment
 #define _BLACK          0x000000L
 #define _BLUE           0x2a0000L
 #define _GREEN          0x002a00L
@@ -300,6 +357,7 @@ _WCRTLINK short
 #define _LIGHTYELLOW    _YELLOW
 :endsegment
 
+:endsegment
 /* Shape and Curve Drawing Functions */
 
 _WCRTLINK short
@@ -403,28 +461,28 @@ _WCRTLINK short
 :segment INTERNAL
   _CGRAPH
 :endsegment
-    _WCI86FAR _floodfill( short, short, short );
+    _WCI86FAR _floodfill( short, short, grcolor );
 _WCRTLINK short
 :segment INTERNAL
   _CGRAPH
 :endsegment
-    _WCI86FAR _floodfill_w( double, double, short );
-_WCRTLINK short
+    _WCI86FAR _floodfill_w( double, double, grcolor );
+_WCRTLINK grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setpixel( short, short );
-_WCRTLINK short
+_WCRTLINK grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setpixel_w( double, double );
-_WCRTLINK short
+_WCRTLINK grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getpixel( short, short );
-_WCRTLINK short
+_WCRTLINK grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -674,12 +732,12 @@ _WCRTLINK void
   _CGRAPH
 :endsegment
     _WCI86FAR _outtext( char _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
-    _WCI86FAR _settextcolor( short );
-_WCRTLINK short
+    _WCI86FAR _settextcolor( grcolor );
+_WCRTLINK grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -818,7 +876,7 @@ _WCRTLINK struct xycoord
 ::
 :: Undocumented function
 ::  not available in public graph.h header file
-::  it is only in internal _graph.h file
+::  it is only in internal graph.gh file
 ::
 _WCRTLINK short
 :segment INTERNAL
@@ -855,5 +913,4 @@ _WCRTLINK void
 :include cplusepi.sp
 
 :endsegment
-
 #endif

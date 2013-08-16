@@ -171,6 +171,7 @@ fnmatch.h       : ../watcom/fnmatch.mh ../crwat.sp ../readonly.sp ../owrtlink.sp
 fstream.h       : $(fstream_deps)
 generic.h       : ../watcom/generic.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 graph.h         : $(graph_deps)
+graph2.h        : $(graph_deps)
 i86.h           : ../watcom/i86.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
 inttypes.h      : ../watcom/inttypes.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp
 io.h            : ../watcom/io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../maxpath.sp $(extension)
