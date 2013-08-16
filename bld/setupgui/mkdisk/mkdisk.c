@@ -36,6 +36,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "bool.h"
 #include "disksize.h"
 #include "iopath.h"
 
@@ -43,30 +44,25 @@
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
-enum {
-        FALSE, TRUE
-};
-
-
 typedef struct path_info {
+    struct path_info    *next;
     char                *path;
     int                 target;
     int                 parent;
-    struct path_info    *next;
 } PATH_INFO;
 
-typedef struct size_list size_list;
-
-struct size_list {
-    size_list   *next;
-    long        size;
-    time_t      stamp;
-    char        redist;
-    char        *dst_var;
-    char        name[1];
-};
+typedef struct size_list {
+    struct size_list    *next;
+    long                size;
+    time_t              stamp;
+    char                redist;
+    char                remove;
+    char                *dst_var;
+    char                name[1];
+} size_list;
 
 typedef struct file_info {
+    struct file_info    *next;
     char                *file;
     char                *pack;
     char                *condition;
@@ -75,13 +71,12 @@ typedef struct file_info {
     int                 num_files;
     size_list           *sizes;
     long                cmp_size;
-    struct file_info    *next;
 } FILE_INFO;
 
 
 typedef struct list {
-    char                *item;
     struct list         *next;
+    char                *item;
     int                 type;
 } LIST;
 
@@ -179,6 +174,7 @@ static void ConcatDirSep( char *dir )
 
 
 static char *mygets( char *buf, unsigned len, FILE *fp )
+/******************************************************/
 {
     char        *p,*q,*start;
     int         lang;
@@ -498,10 +494,10 @@ int AddTarget( char *target )
 //===========================
 {
     int                 count;
-    LIST                *new, *curr;
+    LIST                *new, *curr, **owner;
 
     count = 1;
-    for( curr = TargetList; curr != NULL; curr = curr->next ) {
+    for( owner = &TargetList; (curr = *owner) != NULL; owner = &(curr->next) ) {
         if( stricmp( target, curr->item ) == 0 ) {
             return( count );
         }
@@ -512,27 +508,15 @@ int AddTarget( char *target )
     if( new == NULL ) {
         printf( "Out of memory\n" );
         return( 0 );
-    } else {
-        new->item = strdup( target );
-        if( new->item == NULL ) {
-            printf( "Out of memory\n" );
-            return( 0 );
-        }
-        new->next = NULL;
-        count = 1;
-        if( TargetList == NULL ) {
-            TargetList = new;
-        } else {
-            curr = TargetList;
-            while( curr->next != NULL ) {
-                curr = curr->next;
-                ++count;
-            }
-            curr->next = new;
-            ++count;
-        }
-        return( count );
     }
+    new->item = strdup( target );
+    if( new->item == NULL ) {
+        printf( "Out of memory\n" );
+        return( 0 );
+    }
+    new->next = NULL;
+    *owner = new;
+    return( count );
 }
 
 
@@ -540,10 +524,10 @@ int AddPath( char *path, int target, int parent )
 //===============================================
 {
     int                 count;
-    PATH_INFO           *new, *curr;
+    PATH_INFO           *new, *curr, **owner;
 
     count = 1;
-    for( curr = PathList; curr != NULL; curr = curr->next ) {
+    for( owner = &PathList; (curr = *owner) != NULL; owner = &(curr->next) ) {
         if( stricmp( path, curr->path ) == 0 && target == curr->target ) {
             return( count );
         }
@@ -554,29 +538,17 @@ int AddPath( char *path, int target, int parent )
     if( new == NULL ) {
         printf( "Out of memory\n" );
         return( 0 );
-    } else {
-        new->path = strdup( path );
-        if( new->path == NULL ) {
-            printf( "Out of memory\n" );
-            return( 0 );
-        }
-        new->target = target;
-        new->parent = parent;
-        new->next = NULL;
-        count = 1;
-        if( PathList == NULL ) {
-            PathList = new;
-        } else {
-            curr = PathList;
-            while( curr->next != NULL ) {
-                curr = curr->next;
-                ++count;
-            }
-            curr->next = new;
-            ++count;
-        }
-        return( count );
     }
+    new->path = strdup( path );
+    if( new->path == NULL ) {
+        printf( "Out of memory\n" );
+        return( 0 );
+    }
+    new->target = target;
+    new->parent = parent;
+    new->next = NULL;
+    *owner = new;
+    return( count );
 }
 
 
@@ -604,8 +576,7 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
 /*******************************************************************************************************************/
 {
     int                 path_dir, old_path_dir, target;
-    FILE_INFO           *new, *curr;
-    FILE_INFO           **owner;
+    FILE_INFO           *new, *curr, **owner;
     long                act_size, cmp_size;
     time_t              time;
     struct stat         stat_buf;
@@ -703,40 +674,40 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
     }
 
     // see if the pack_file has been seen already
-    for( curr = FileList; curr != NULL; curr = curr->next ) {
-        if( stricmp( curr->pack, patch ) == 0 ) {
-            // this file is already in the current pack file
-            curr->num_files++;
-            ns = malloc( sizeof( size_list ) + strlen( root_file ) );
-            if( ns == NULL ) {
-                printf( "Out of memory\n" );
-                return( FALSE );
-            }
-            strcpy( ns->name, root_file );
-            for( sl = curr->sizes; sl != NULL; sl = sl->next ) {
-                if( stricmp( sl->name, ns->name ) == 0 ) {
-                    printf( "file '%s' included in archive '%s' more than once\n", sl->name, curr->pack );
-                    return( FALSE );
-                }
-            }
-            ns->size = act_size;
-            ns->stamp = time;
-            ns->redist = redist;
-            ns->dst_var = dst_var;
-            ns->next = curr->sizes;
-            curr->sizes = ns;
-            if( curr->path != path_dir ) {
-                printf( "\nPath for archive '%s' changed to '%s'\n", curr->pack, path );
-                return( FALSE );
-            }
-            if( strcmp( curr->condition, cond ) != 0 ) {
-                printf( "\nCondition for archive '%s' changed:\n", curr->pack );
-                printf( "Old: <%s>\n", curr->condition );
-                printf( "New: <%s>\n", cond );
-                return( FALSE );
-            }
-            return( TRUE );
+    for( owner = &FileList; (curr = *owner) != NULL; owner = &(curr->next) ) {
+        if( stricmp( curr->pack, patch ) != 0 )
+            continue;
+        // this file is already in the current pack file
+        curr->num_files++;
+        ns = malloc( sizeof( size_list ) + strlen( root_file ) );
+        if( ns == NULL ) {
+            printf( "Out of memory\n" );
+            return( FALSE );
         }
+        strcpy( ns->name, root_file );
+        for( sl = curr->sizes; sl != NULL; sl = sl->next ) {
+            if( stricmp( sl->name, ns->name ) == 0 ) {
+                printf( "file '%s' included in archive '%s' more than once\n", sl->name, curr->pack );
+                return( FALSE );
+            }
+        }
+        ns->size = act_size;
+        ns->stamp = time;
+        ns->redist = redist;
+        ns->dst_var = dst_var;
+        ns->next = curr->sizes;
+        curr->sizes = ns;
+        if( curr->path != path_dir ) {
+            printf( "\nPath for archive '%s' changed to '%s'\n", curr->pack, path );
+            return( FALSE );
+        }
+        if( strcmp( curr->condition, cond ) != 0 ) {
+            printf( "\nCondition for archive '%s' changed:\n", curr->pack );
+            printf( "Old: <%s>\n", curr->condition );
+            printf( "New: <%s>\n", cond );
+            return( FALSE );
+        }
+        return( TRUE );
     }
 
     // add to list
@@ -744,38 +715,33 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
     if( new == NULL ) {
         printf( "Out of memory\n" );
         return( FALSE );
-    } else {
-        new->file = strdup( file );
-        new->pack = strdup( patch );
-        new->condition = strdup( cond );
-        if( new->file == NULL || new->pack == NULL || new->condition == NULL ) {
-            printf( "Out of memory\n" );
-            return( FALSE );
-        }
-        new->path = path_dir;
-        new->old_path = old_path_dir;
-        new->num_files = 1;
-        ns = malloc( sizeof( size_list ) + strlen( root_file ) );
-        if( ns == NULL ) {
-            printf( "Out of memory\n" );
-            return( FALSE );
-        }
-        strcpy( ns->name, root_file );
-        ns->size = act_size;
-        ns->stamp = time;
-        ns->next = NULL;
-        ns->redist = redist;
-        ns->dst_var = dst_var;
-        new->sizes = ns;
-        new->cmp_size = cmp_size;
-        new->next = NULL;
-        owner = &FileList;
-        while( *owner != NULL ) {
-            owner = &(*owner)->next;
-        }
-        *owner = new;
-        return( TRUE );
     }
+    new->file = strdup( file );
+    new->pack = strdup( patch );
+    new->condition = strdup( cond );
+    if( new->file == NULL || new->pack == NULL || new->condition == NULL ) {
+        printf( "Out of memory\n" );
+        return( FALSE );
+    }
+    new->path = path_dir;
+    new->old_path = old_path_dir;
+    new->num_files = 1;
+    ns = malloc( sizeof( size_list ) + strlen( root_file ) );
+    if( ns == NULL ) {
+        printf( "Out of memory\n" );
+        return( FALSE );
+    }
+    strcpy( ns->name, root_file );
+    ns->size = act_size;
+    ns->stamp = time;
+    ns->next = NULL;
+    ns->redist = redist;
+    ns->dst_var = dst_var;
+    new->sizes = ns;
+    new->cmp_size = cmp_size;
+    new->next = NULL;
+    *owner = new;
+    return( TRUE );
 }
 
 
@@ -881,10 +847,11 @@ int ReadList( FILE *fp )
 
 
 static FILE *PathOpen( const char *name )
+/***************************************/
 {
     FILE        *fp;
-    char        buf[_MAX_PATH];
     LIST        *p;
+    char        buf[_MAX_PATH];
 
     fp = fopen( name, "r" );
     for( p = Include; p != NULL && fp == NULL; p = p->next ) {
@@ -899,11 +866,9 @@ static FILE *PathOpen( const char *name )
 }
 
 static char *ReplaceEnv( char *file_name )
-//========================================
-
+/****************************************/
 // if file_name is of the form $env_var$\name, replace with
 // value of the environment variable
-
 {
     char                *p, *q, *e, *var;
     char                buff[ _MAX_PATH ];
@@ -945,11 +910,10 @@ static char *ReplaceEnv( char *file_name )
 
 #define SECTION_BUF_SIZE 8192   // allow long text strings
 
-static char             SectionBuf[ SECTION_BUF_SIZE ];
+static char             SectionBuf[SECTION_BUF_SIZE];
 
 void ReadSection( FILE *fp, char *section, LIST **list )
-//======================================================
-
+/******************************************************/
 {
     LIST                *new;
     int                 file_curr = 0;
@@ -1053,8 +1017,7 @@ void ReadSection( FILE *fp, char *section, LIST **list )
 
 
 void ReadInfFile( void )
-//======================
-
+/**********************/
 {
     FILE                *fp;
     char                ver_buf[ 80 ];
@@ -1071,6 +1034,7 @@ void ReadInfFile( void )
 
 
 static void fput36( FILE *fp, long value )
+/****************************************/
 {
     char        buff[30];
 
@@ -1083,6 +1047,7 @@ static void fput36( FILE *fp, long value )
 }
 
 void DumpSizes( FILE *fp, FILE_INFO *curr )
+/*****************************************/
 {
     size_list   *csize;
 
@@ -1116,7 +1081,8 @@ void DumpSizes( FILE *fp, FILE_INFO *curr )
     }
 }
 
-int CheckForDuplicateFiles()
+int CheckForDuplicateFiles( void )
+/********************************/
 {
     FILE_INFO           *file1,*file2;
     size_list           *name1,*name2;
@@ -1125,8 +1091,8 @@ int CheckForDuplicateFiles()
     if( FileList != NULL ) {
         for( file1 = FileList; file1->next != NULL; file1 = file1->next ) {
             for( file2 = file1->next; file2 != NULL; file2 = file2->next ) {
-                if( file1->path != file2->path ) continue;
-                if( file1->condition != file2->condition ) continue;
+                if( file1->path != file2->path || file1->condition != file2->condition )
+                    continue;
                 for( name1 = file1->sizes; name1 != NULL; name1 = name1->next ) {
                     for( name2 = file2->sizes; name2 != NULL; name2 = name2->next ) {
                         if( stricmp( name1->name, name2->name ) == 0 ) {
@@ -1146,8 +1112,7 @@ int CheckForDuplicateFiles()
 
 
 void DumpFile( FILE *out, char *fname )
-//=====================================
-
+/*************************************/
 {
     FILE                *in;
     char                *buf;
@@ -1169,8 +1134,9 @@ void DumpFile( FILE *out, char *fname )
         }
         if( strnicmp( buf, "include=", 8 ) == 0 ) {
             len = strlen( buf );
-            if( buf[len - 1] == '\n' ) buf[len - 1] = '\0';
-            DumpFile( out, buf+8 );
+            if( buf[len - 1] == '\n' )
+                buf[len - 1] = '\0';
+            DumpFile( out, buf + 8 );
         } else {
             fputs( buf, out );
         }
@@ -1181,8 +1147,7 @@ void DumpFile( FILE *out, char *fname )
 
 
 int CreateScript( long init_size, unsigned padding )
-//==============================================
-
+/**************************************************/
 {
     int                 disk;
     long                curr_size, this_disk, extra;
@@ -1423,8 +1388,7 @@ int CreateScript( long init_size, unsigned padding )
 
 
 int MakeScript( void )
-//====================
-
+/********************/
 {
     int                 disks;
     FILE_INFO           *curr;
