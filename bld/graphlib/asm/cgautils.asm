@@ -71,8 +71,9 @@ include graph.inc
 ;   Plotting primitives
 ;
 ;   Input       ES:_EDI      screen memory
-;               AL          colour
-;               CH          mask
+;            V1 AX           colour
+;            V2 DX:AX/EAX    colour
+;               CH           mask
 ;
 ;=========================================================================
 
@@ -85,17 +86,17 @@ E_CoXor:
         db      E_CoAnd-_CoAnd_
 _CoAnd_:                        ; and in new pixel
         or      al,ch           ; mask on other bits
-        and     es:0[_edi],al    ; do and with memory
+        and     es:0[_edi],al   ; do and with memory
         xor     al,ch           ; restore al
 E_CoAnd:
         ret
 
         db      E_CoRep-_CoRep_
 _CoRep_:                        ; replace pixel
-        mov     ah,es:[_edi]     ; get current byte
+        mov     ah,es:[_edi]    ; get current byte
         and     ah,ch           ; mask out current colour
         or      ah,al           ; OR in new colour
-        mov     es:[_edi],ah     ; replace byte
+        mov     es:[_edi],ah    ; replace byte
 E_CoRep:
         ret
 
@@ -121,7 +122,7 @@ E_CoOr:
 _Move2Right_:                   ; move right in m_edium-res mode
         ror     al,cl           ; shift colour pattern to the right
         ror     ch,cl           ; shift mask to the right
-        sbb     _edi,-1          ; increment di if start of new byte
+        sbb     _edi,-1         ; increment di if start of new byte
 E_Move2Right:
         ret                     ; return
 
@@ -129,7 +130,7 @@ E_Move2Right:
 _Move1Right_:                   ; move right in high-res mode
         ror     al,1            ; shift colour pattern to the right
         ror     ch,1            ; shift mask to the right
-        sbb     _edi,-1          ; move to next byte if it is time
+        sbb     _edi,-1         ; move to next byte if it is time
 E_Move1Right:
         ret                     ; return
 
@@ -137,7 +138,7 @@ E_Move1Right:
 _Move2Left_:                    ; move left in m_edium-res mode
         rol     al,cl           ; shift colour pattern to the left
         rol     ch,cl           ; shift mask to the left
-        adc     _edi,-1          ; decrement di if start of new byte
+        adc     _edi,-1         ; decrement di if start of new byte
 E_Move2Left:
         ret                     ; return
 
@@ -145,14 +146,14 @@ E_Move2Left:
 _Move1Left_:                    ; move left in high-res mode
         rol     al,1            ; shift colour pattern to the left
         rol     ch,1            ; shift mask to the left
-        adc     _edi,-1          ; move to next byte if it is time
+        adc     _edi,-1         ; move to next byte if it is time
 E_Move1Left:
         ret                     ; return
 
         db      E_MoveUp-_MoveUp_
 _MoveUp_:                       ; move up 1 dot
 ifdef __386__                      ; can't use other method since with DOS4GW
-        push    _ebx             ; ... the segment is part of _EDI
+        push    _ebx            ; ... the segment is part of _EDI
         mov     bx,di
         and     bx,8000h        ; keep high bit
         and     di,7fffh
@@ -170,8 +171,8 @@ E_MoveUp:
 
         db      E_MoveDown-_MoveDown_
 _MoveDown_:                     ; move down 1 dot
-ifdef __386__                      ; can't use other method since with DOS4GW
-        push    _ebx             ; ... the segment is part of _EDI
+ifdef __386__                   ; can't use other method since with DOS4GW
+        push    _ebx            ; ... the segment is part of _EDI
         mov     bx,di
         and     bx,8000h        ; keep high bit
         and     di,7fffh
@@ -191,14 +192,22 @@ E_MoveDown:
 ;
 ;   GetDot routines
 ;
-;   Input       ES:_EDI      screen memory
+;   Input       ES:_EDI     screen memory
 ;               CL          bit position
 ;
-;   Output      AX          colour of pixel at location
+;   Output   V1 AX          colour of pixel at location
+;            V2 DX:AX/EAX   colour of pixel at location
 ;
 ;=========================================================================
 
 _Get1Dot_:
+ifdef VERSION2
+ifdef __386__
+        xor     eax,eax
+else
+        xor     dx,dx
+endif
+endif
         mov     al,es:[_edi]     ; get byte
         sub     cl,7            ; shift byte by ( 7 - bit_position )
         neg     cl              ; . . .
@@ -208,6 +217,13 @@ _Get1Dot_:
         ret
 
 _Get2Dot_:
+ifdef VERSION2
+ifdef __386__
+        xor     eax,eax
+else
+        xor     dx,dx
+endif
+endif
         mov     al,es:[_edi]      ; get byte
         sub     cl,6            ; shift byte by ( 6 - bit_position )
         neg     cl              ; . . .
@@ -220,8 +236,8 @@ _Get2Dot_:
 ;
 ;   PixCopy routines
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               SI:_EAX,DL   buffer to copy from
+;   Input       ES:_EDI,DH  screen memory pixel position
+;               SI:_EAX,DL  buffer to copy from
 ;               CX          number of pixels to copy
 ;
 ;=========================================================================
@@ -243,8 +259,8 @@ _Pix1Copy_:
 ;
 ;   ReadRow routines
 ;
-;   Input       ES:_EDI      buffer to copy into
-;               SI:_EAX,DL   screen memory
+;   Input       ES:_EDI     buffer to copy into
+;               SI:_EAX,DL  screen memory pixel position
 ;               CX          number of pixels to copy
 ;
 ;=========================================================================
@@ -286,19 +302,23 @@ endif
 ;
 ;   Zap routines
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               AL          colour (unmasked)
+;   Input       ES:_EDI,DH  screen memory pixel position
+;            V1 AX          colour (unmasked)
+;            V2 SI:AX/EAX   colour (unmasked)
 ;               BX          not used
 ;               CX          number of pixels to fill
+;               DL          not used
 ;
 ;=========================================================================
 ;
 ;   Fill routines
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               AL          colour (unmasked)
+;   Input       ES:_EDI,DH  screen memory pixel position
+;            V1 AX          colour (unmasked)
+;            V2 SI:AX/EAX   colour (unmasked)
 ;               BH,BL       mask offset, fill mask
 ;               CX          number of pixels to fill
+;               DL          not used
 ;
 ;==========================================================================
 
@@ -551,11 +571,13 @@ endif
 ;
 ;   Scan routines
 ;
-;   Input       ES:_EDI      screen memory
-;               AL          colour mask
+;   Input       ES:_EDI     screen memory
+;            V1 AX          colour mask
+;            V2 SI:AX/EAX   colour mask
 ;               CH          mask (CL may be bits per pixel)
 ;               BX          starting x-coordinate
-;               SI          ending x value (viewport boundary)
+;            V1 SI          ending x value (viewport boundary)
+;            V2 stack/SI    ending x value (viewport boundary)
 ;               DL          0 if paint until colour, 1 if paint while
 ;
 ;   Output      BX          updated x-coordinate
@@ -563,6 +585,13 @@ endif
 ;=========================================================================
 
 _CGAScanLeft_:
+ifdef VERSION2
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,[bp+4]         ; get starting byte
+endif
+endif
         mov     ah,dl               ; put the border flag in ah
         inc     _ebx
         not     ch
@@ -589,9 +618,21 @@ _CGAScanLeft_:
           _endif
         _endloop
 done_scanleft:
+ifdef VERSION2
+ifndef __386__
+        pop bp
+endif
+endif
         ret
 
 _CGAScan1Right_:
+ifdef VERSION2
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,[bp+4]         ; get starting byte
+endif
+endif
         not     ch                  ; reverse complement of mask
         mov     dh,ch               ; build an extended right mask for 1st byte
         shl     dh,1
@@ -641,9 +682,21 @@ done_CGAscan1right:
           _quif   le
           inc     _ebx
         _endloop
+ifdef VERSION2
+ifndef __386__
+        pop bp
+endif
+endif
         ret
 
 _CGAScan2Right_:
+ifdef VERSION2
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,[bp+4]         ; get starting byte
+endif
+endif
         mov     ah,al               ; build an extended colour mask for 4 pixels
         rol     ah,cl               ; and keep it in al
         or      al,ah
@@ -677,6 +730,11 @@ _CGAScan2Right_:
           cmp     _ebx,_esi           ; check for clip region
           _if     ge
             mov     _ebx,_esi         ; return edge of clip region
+ifdef VERSION2
+ifndef __386__
+        pop bp
+endif
+endif
             ret
           _endif
           inc     _edi               ; move to next byte
@@ -692,6 +750,11 @@ _CGAScan2Right_:
           _quif   le
           inc     _ebx
         _endloop
+ifdef VERSION2
+ifndef __386__
+        pop bp
+endif
+endif
         ret
 
 ;       extrn   __LineXInc : word

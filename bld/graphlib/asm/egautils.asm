@@ -33,6 +33,10 @@ include graph.inc
 
         extrn   __PlotAct : word
         extrn   __Transparent : word
+ifdef VERSION2
+        extrn   __VGAPage : byte
+        extptr  __SetVGAPage
+endif
 
         modstart egautils,WORD
 
@@ -40,6 +44,10 @@ include graph.inc
         xdefp   _EGAMoveUpLo_
         xdefp   _EGAMoveDownHi_
         xdefp   _EGAMoveDownLo_
+ifdef VERSION2
+        xdefp   _EGAMoveLeftX_
+        xdefp   _EGAMoveRightX_
+endif
         xdefp   _EGAMoveLeft_
         xdefp   _EGAMoveRight_
         xdefp   _EGARep_
@@ -47,21 +55,39 @@ include graph.inc
         xdefp   _EGAGetDotEO_
         xdefp   _EGAGetDotMono_
         xdefp   _EGAZap_
+ifdef VERSION2
+        xdefp   _EGAZapX_
+endif
         xdefp   _EGAZapEO_
         xdefp   _EGAZapMono_
         xdefp   _EGAFill_
+ifdef VERSION2
+        xdefp   _EGAFillX_
+endif
         xdefp   _EGAFillEO_
         xdefp   _EGAFillMono_
         xdefp   _EGAPixCopy_
+ifdef VERSION2
+        xdefp   _EGAPixCopyX_
+endif
         xdefp   _EGAPixCopyEO_
         xdefp   _EGAPixCopyMono_
         xdefp   _EGAReadRow_
+ifdef VERSION2
+        xdefp   _EGAReadRowX_
+endif
         xdefp   _EGAReadRowEO_
         xdefp   _EGAReadRowMono_
         xdefp   _EGAScanLeft_
+ifdef VERSION2
+        xdefp   _EGAScanLeftX_
+endif
         xdefp   _EGAScanLeftEO_
         xdefp   _EGAScanLeftMono_
         xdefp   _EGAScanRight_
+ifdef VERSION2
+        xdefp   _EGAScanRightX_
+endif
         xdefp   _EGAScanRightEO_
         xdefp   _EGAScanRightMono_
 
@@ -139,12 +165,42 @@ _EGAMoveDownLo_:
 E_EGAMoveDownLo:
         ret
 
+ifdef VERSION2
+        db      E_EGAMoveLeftX-_EGAMoveLeftX_
+_EGAMoveLeftX_:                  ; move left 1 pixel
+        rol     ch,1
+        sbb     di,0
+        jnc     E_EGAMoveLeftX
+          push    _eax           ; - move to prev page
+          mov     al,ss:__VGAPage
+          dec     al
+          doicall __SetVGAPage
+          pop     _eax
+E_EGAMoveLeftX:
+        ret
+endif
+
         db      E_EGAMoveLeft-_EGAMoveLeft_
 _EGAMoveLeft_:                  ; move left 1 pixel
         rol     ch,1
         sbb     _edi,0
 E_EGAMoveLeft:
         ret
+
+ifdef VERSION2
+        db      E_EGAMoveRightX-_EGAMoveRightX_
+_EGAMoveRightX_:                  ; move right 1 pixel
+        ror     ch,1
+        adc     di,0
+        jnc     E_EGAMoveRightX
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+E_EGAMoveRightX:
+        ret
+endif
 
         db      E_EGAMoveRight-_EGAMoveRight_
 _EGAMoveRight_:                 ; move right 1 pixel
@@ -157,8 +213,9 @@ E_EGAMoveRight:
 ;
 ;   Plotting primitive
 ;
-;   Input       ES:_EDI      screen memory
-;               AL          colour
+;   Input       ES:_EDI     screen memory
+;            V1 AX          colour
+;            V2 DX:AX/EAX   colour
 ;               CH          mask
 ;
 ;=========================================================================
@@ -181,19 +238,34 @@ E_EGARep:
 ;
 ;   GetDot routines
 ;
-;   Input       ES:_EDI      screen memory
+;   Input       ES:_EDI     screen memory
 ;               CL          bit position
 ;
-;   Output      AX          colour of pixel at location
+;   Output   V1 AX          colour of pixel at location
+;            V2 DX:AX/EAX   colour of pixel at location
 ;
 ;=========================================================================
 
 _EGAGetDotMono_:        ; for mono ega cards with > 64K
+ifdef VERSION2
+ifdef __386__
+        xor     eax,eax
+else
+        xor     dx,dx
+endif
+endif
         push    _ebx
         mov     _ebx,0202h       ; bh = first bit plane, bl = increment
         jmp     GetDotCommon
 
 _EGAGetDotEO_:          ; even/odd modes
+ifdef VERSION2
+ifdef __386__
+        xor     eax,eax
+else
+        xor     dx,dx
+endif
+endif
         push    _ebx
         mov     _ebx,0202h       ; bh = first bit plane, bl = increment
         test    _edi,1           ; if odd plane
@@ -203,6 +275,13 @@ _EGAGetDotEO_:          ; even/odd modes
         jmp     GetDotCommon
 
 _EGAGetDot_:
+ifdef VERSION2
+ifdef __386__
+        xor     eax,eax
+else
+        xor     dx,dx
+endif
+endif
         push    _ebx
         mov     _ebx,0301h       ; bh = first bit plane, bl = increment
 GetDotCommon:
@@ -236,11 +315,119 @@ GetDotCommon:
 ;
 ;   PixCopy routines
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               SI:_EAX,DL   buffer to copy from
+;   Input       ES:_EDI,DH  screen memory
+;               SI:_EAX,DL  buffer to copy from
 ;               CX          number of pixels to copy
 ;
 ;=========================================================================
+
+ifdef VERSION2
+ifndef  __386__
+     _esp equ sp
+     mem equ [bp-2]
+     srcoffs equ [bp-4]
+     srcseg equ [bp-6]
+     idx equ [bp-8]
+     cnt equ [bp-10]
+else
+     _esp equ esp
+     mem equ [ebp-4]
+     srcoffs equ [ebp-8]
+     srcseg equ [ebp-12]
+     idx equ [ebp-16]
+     cnt equ [ebp-20]
+endif
+
+_EGAPixCopyX_:
+        push    _ebp
+        mov     _ebp,_esp
+        push    _edi             ;mem
+        push    _eax             ;srcoffs
+        push    _esi             ;srcseg
+        push    _edx             ;idx
+        push    _ecx             ;cnt
+        _movzx   _esi,di          ; check for end of page
+
+        add     dh,7            ;for rounding up..
+        add     cl,dh
+        adc     ch,0
+        shr     cx,1            ;divide by eight
+        shr     cx,1
+        shr     cx,1
+        add     si,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
+          push    _esi           ; - remember # of pixels for next time
+          _movzx   _ecx,di        ; - calc # left on this line
+          sub     dh,7          ;reverse that add
+          neg     cx            ; - . . . num bytes left in segment
+          shl     cx,1
+          shl     cx,1
+          shl     cx,1          ;nbytes*8=num pixels+idx
+          sub     cl,dh
+          sbb     ch,0          ;num pixels
+          push    _ecx          ;save for later..
+          push    _edi           ; - save offset of screen memory
+          mov     _esi,srcseg    ; restore source seg..
+          call    _EGAPixCopy_      ; - fill remainder of this page
+          pop     _edi           ; - restore offset of screen memory
+          
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+          
+          ;srcoffs+=numbytes
+          _movzx   _ecx,word ptr mem
+          neg     cx
+          add     srcoffs,_ecx     ;new srcoffs
+
+          ;srcidx=(srcidx+npixels)%8
+          mov     _edx,idx
+          pop     _ecx           ;num pixels in first part
+          add     dl,cl
+          and     dl,7
+          mov     idx,_edx
+          
+          xor     di,di         ; - reset lower part of offset to 0
+
+          pop     _ecx           ; - get # of remaining bytes
+          shl     cx,1           ;*8
+          shl     cx,1
+          shl     cx,1
+          add     dh,cnt
+          sub     dh,1
+          and     dh,7           ;final pix idx
+          mov     dl,7
+          sub     dl,dh
+          sub     cl,dl
+          sbb     ch,0           ;num pixels left
+          xor     dh,dh          ;dest idx=0
+          mov     dl,idx         ;src idx
+          mov     _eax,srcoffs
+          call    _EGAPixCopy_        ; fill remaining points
+          pop     _edx             ;idx
+          pop     _ecx             ;cnt
+          pop     _ebx             ;msk
+          pop     _eax             ;col
+          pop     _edi             ;mem
+          pop     _ebp
+          ret
+        _endguess               ; endguess
+
+        mov     _ecx,cnt
+        mov     _edx,idx
+        call    _EGAPixCopy_        ; fill remaining points
+        pop    _edx             ;idx
+        pop    _ecx             ;cnt
+        pop    _ebx             ;msk
+        pop    _eax             ;col
+        pop    _edi             ;mem
+        pop    _ebp
+        ret
+endif
 
 _EGAPixCopyEO_:
         push    _ebp             ; save registers
@@ -457,6 +644,112 @@ finish_put:
 ;
 ;=========================================================================
 
+ifdef VERSION2
+_EGAReadRowX_:
+        push    _ebp
+        mov     _ebp,_esp
+        push    _edi             ;mem
+        push    _eax             ;srcoffs
+        push    _esi             ;srcseg
+        push    _edx             ;idx
+        push    _ecx             ;cnt
+        _movzx   _esi,ax          ; check for end of page
+
+        add     dl,7            ;for rounding up..
+        add     cl,dl
+        adc     ch,0
+        shr     cx,1            ;divide by eight
+        shr     cx,1
+        shr     cx,1
+        add     si,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
+          push    _esi           ; - remember # of bytes for next time
+          _movzx  _ecx,ax        ; - calc # left on this line
+          sub     dl,7          ;reverse that add
+          neg     cx            ; - . . . num bytes left in segment
+          shl     cx,1
+          shl     cx,1
+          shl     cx,1          ;nbytes*8=num pixels+idx
+          sub     cl,dl
+          sbb     ch,0          ;num pixels
+          mov     _esi,srcseg    ; restore source seg..
+          call    _EGAReadRow_      ; - fill remainder of this page
+          
+          ;last dest byte may have overflown, so get last byte of this page and first of next
+          ;and reconstruct last dest byte
+          push    ds
+          push    _ecx
+          push    _ebx
+          push    _esi
+          
+          mov     ds,srcseg       ; restore source seg..
+          mov     _esi,srcoffs    ; restore source offs..
+          xor     si,si
+          dec     si              ;points at last byte now
+          mov     bh,ds:[_esi]
+          
+          ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          
+          xor     si,si          ;points to first byte now..
+          mov     ah,bh
+          mov     al,ds:[_esi]
+          mov     cl,idx
+          shl     _eax,cl        ;dest byte now in ah..
+          mov     es:[_edi-1],ah   ; copy byte in al to es:di... only works because EGAReadRow modifies edi accordingly..
+          pop     _esi
+          pop     _ebx
+          pop     _ecx
+          pop     ds
+          
+
+          mov     _eax,srcoffs  ;get src offset
+          _movzx  _ecx,ax
+          mov     _edi,mem       ; dest offs
+          neg     cx
+          add     _edi,_ecx     ;new dest offs
+          xor     ax,ax         ; - reset lower part of src offset to 0
+
+          pop     _ecx           ; - get # of remaining bytes
+          shl     cx,1           ;*8
+          shl     cx,1
+          shl     cx,1
+          add     dl,cnt
+          sub     dl,1
+          and     dl,7           ;final pix idx
+          mov     dh,7
+          sub     dh,dl
+          sub     cl,dh
+          sbb     ch,0           ;num pixels left
+          mov     _edx,idx       ;restore pixel idx
+          mov     _esi,srcseg    ; restore src seg..
+          call    _EGAReadRow_   ; fill remaining points
+          pop     _ecx
+          pop     _edx
+          pop     _esi
+          pop     _eax
+          pop     _edi
+          pop     _ebp
+          ret
+        _endguess               ; endguess
+
+        mov     _ecx,cnt
+        mov     _edx,idx
+        mov     _esi,srcseg
+        call    _EGAReadRow_   ; fill remaining points
+        pop     _ecx
+        pop     _edx
+        pop     _esi
+        pop     _eax
+        pop     _edi
+        pop     _ebp
+        ret
+endif
+
 _EGAReadRowEO_:
         push    _ebp             ; save registers
         push    ds
@@ -566,12 +859,110 @@ get_bitplane:
 ;
 ;   Zap routines
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               AL          colour (unmasked)
+;   Input       ES:_EDI,DH  screen memory pixel position
+;            V1 AX          colour (unmasked)
+;            V2 SI:AX/EAX   colour (unmasked)
 ;               BX          not used
 ;               CX          number of pixels to fill
+;               DL          not used
 ;
 ;=========================================================================
+
+ifdef VERSION2
+ifndef  __386__
+     _esp equ sp
+     mem equ [bp-2]
+     col equ [bp-4]
+     msk equ [bp-6]
+     cnt equ [bp-8]
+     idx equ [bp-10]
+else
+     _esp equ esp
+     mem equ [ebp-4]
+     col equ [ebp-8]
+     msk equ [ebp-12]
+     cnt equ [ebp-16]
+     idx equ [ebp-20]
+endif
+
+_EGAZapX_:                      ;page-crossing variant...
+        push    _ebp
+        mov     _ebp,_esp
+        push    _edi             ;mem
+        push    _eax             ;col
+        push    _ebx             ;msk
+        push    _ecx             ;cnt
+        push    _edx             ;idx
+        push    _esi             ; save si
+        _movzx   _esi,di          ; check for end of page
+
+        add     dh,7            ;for rounding up..
+        add     cl,dh
+        adc     ch,0
+        shr     cx,1            ;divide by eight
+        shr     cx,1
+        shr     cx,1
+        add     si,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
+          push    _esi           ; - remember # of pixels for next time
+          _movzx   _ecx,di        ; - calc # left on this line
+          sub     dh,7
+          neg     cx            ; - . . .
+          shl     cx,1
+          shl     cx,1
+          shl     cx,1          ;num pixels
+          sub     cl,dh
+          sbb     ch,0
+          push    _edi           ; - save offset of screen memory
+          call    _EGAZap_      ; - fill remainder of this page
+          pop     _edi           ; - restore offset of screen memory
+          xor     di,di         ; - reset lower part of offset to 0
+;          mov     bl,dl         ; - remember updated bit mask
+;          xor     bh,bh         ; - (offset will be 0)
+          pop     _ecx           ; - get # of remaining pixels
+          shl     cx,1           ;*8
+          shl     cx,1
+          shl     cx,1
+          mov     _edx,idx       ;we had rounded up before, so subtract a bit
+          add     dh,cnt
+          sub     dh,1
+          and     dh,7           ;final pix idx
+          mov     dl,7
+          sub     dl,dh
+          sub     cl,dl
+          sbb     ch,0           ;num pixels left
+          xor     _edx,_edx
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+          mov     _eax,col
+          call    _EGAZap_        ; fill remaining points
+          pop     _esi
+          pop     _edx             ;idx
+          pop     _ecx             ;cnt
+          pop     _ebx             ;msk
+          pop     _eax             ;col
+          pop     _edi             ;mem
+          pop     _ebp
+          ret
+        _endguess               ; endguess
+
+        mov     _ecx,cnt
+        mov     _edx,idx
+        call    _EGAZap_        ; fill remaining points
+        pop     _esi
+        pop    _edx             ;idx
+        pop    _ecx             ;cnt
+        pop    _ebx             ;msk
+        pop    _eax             ;col
+        pop    _edi             ;mem
+        pop    _ebp
+        ret
+endif
 
 _EGAZapEO_:
 _EGAZapMono_:
@@ -640,12 +1031,95 @@ zap_bytes:
 ;
 ;   Fill routines
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               AL          colour (unmasked)
+;   Input       ES:_EDI,DH  screen memory pixel position
+;            V1 AX          colour (unmasked)
+;            V2 SI:AX/EAX   colour (unmasked)
 ;               BH,BL       mask offset, fill mask
 ;               CX          number of pixels to fill
+;               DL          not used
 ;
 ;==========================================================================
+
+ifdef VERSION2
+_EGAFillX_:                      ;page-crossing variant...
+        push    _ebp
+        mov     _ebp,_esp
+        push    _edi             ;mem
+        push    _eax             ;col
+        push    _ebx             ;msk
+        push    _ecx             ;cnt
+        push    _edx             ;idx
+        push    _esi             ; save si
+        _movzx   _esi,di          ; check for end of page
+        
+        add     dh,7            ;for rounding up..
+        add     cl,dh
+        adc     ch,0
+        shr     cx,1            ;divide by eight
+        shr     cx,1
+        shr     cx,1
+        add     si,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
+          
+          push    _esi           ; - remember # of pixels for next time
+          _movzx   _ecx,di        ; - calc # left on this line
+          sub     dh,7
+          neg     cx            ; - . . .
+          shl     cx,1
+          shl     cx,1
+          shl     cx,1          ;num pixels
+          sub     cl,dh
+          sbb     ch,0
+          push    _edi           ; - save offset of screen memory
+          call    _EGAFill_      ; - fill remainder of this page
+          pop     _edi           ; - restore offset of screen memory
+          xor     di,di         ; - reset lower part of offset to 0
+;          mov     bl,dl         ; - remember updated bit mask
+;          xor     bh,bh         ; - (offset will be 0)
+          pop     _ecx           ; - get # of remaining pixels
+          shl     cx,1           ;*8
+          shl     cx,1
+          shl     cx,1
+          mov     _edx,idx       ;we had rounded up before, so subtract a bit
+          add     dh,cnt
+          sub     dh,1
+          and     dh,7           ;final pix idx
+          mov     dl,7
+          sub     dl,dh
+          sub     cl,dl
+          sbb     ch,0           ;num pixels left
+          xor     _edx,_edx
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+          mov     _eax,col
+          call    _EGAFill_        ; fill remaining points
+          pop     _esi
+          pop     _edx             ;idx
+          pop     _ecx             ;cnt
+          pop     _ebx             ;msk
+          pop     _eax             ;col
+          pop     _edi             ;mem
+          pop     _ebp
+          ret
+        _endguess               ; endguess
+        
+        mov     _ecx,cnt
+        mov     _edx,idx
+        call    _EGAFill_        ; fill remaining points
+        pop     _esi
+        pop    _edx             ;idx
+        pop    _ecx             ;cnt
+        pop    _ebx             ;msk
+        pop    _eax             ;col
+        pop    _edi             ;mem
+        pop    _ebp
+        ret
+endif
 
 _EGAFillEO_:
 _EGAFillMono_:
@@ -750,18 +1224,81 @@ fill_bytes:
 ;
 ;   Scan routines
 ;
-;   Input       ES:_EDI      screen memory
-;               AL          colour mask
+;   Input       ES:_EDI     screen memory
+;            V1 AX          colour mask
+;            V2 SI:AX/EAX   colour mask
 ;               CH          mask (CL may be bits per pixel)
 ;               BX          starting x-coordinate
-;               SI          ending x value (viewport boundary)
+;            V1 SI          ending x value (viewport boundary)
+;            V2 stack/SI    ending x value (viewport boundary)
 ;               DL          0 if paint until colour, 1 if paint while
 ;
 ;   Output      BX          updated x-coordinate
 ;
 ;=========================================================================
 
+ifdef VERSION2
+EGAScanLeftX:
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,[bp+4]         ; get starting byte
+endif
+        push    _edx             ; save border flag in dl
+        mov     _edx,GRADDR
+        mov     ah,al
+        mov     al,CMPREG
+        out     dx,ax           ; set colour compare register
+        mov     ah,READ_MODE_1+WRITE_MODE_2
+        mov     al,MODEREG
+        out     dx,ax           ; select read mode
+        mov     ah,cl           ; set d_esired planes
+        mov     al,DONTCARE
+        out     dx,ax           ; set colour don't care reg
+        pop     _eax             ; restor border flag in al
+        inc     _ebx
+        mov     ah,es:[_edi]     ; get starting byte
+        _loop
+          test    ah,ch         ; test if pixel is set
+          _if     e             ; bit is not set
+            or      al,al       ; quit loop if paint while
+            jne     short done_EGAscanleftX
+          _else
+            or      al,al       ; quit loop if paint until
+            je      short done_EGAscanleftX
+          _endif
+          dec     _ebx           ; move to next pixel
+          cmp     _esi,_ebx       ; check for viewport boundary
+          _quif   ge
+          rol     ch,1          ; rotate mask for new pixel
+          _if     c
+            sub     di,1         ; look at next byte
+            mov     ah,es:[_edi]
+            jnc    l1_EGAscanleftX
+              push    _eax           ; - move to next page
+              mov     al,ss:__VGAPage
+              dec     al
+              doicall __SetVGAPage
+              pop     _eax
+l1_EGAscanleftX:
+          _endif
+        _endloop
+done_EGAscanleftX:
+ifndef __386__
+        pop bp
+endif
+        ret
+endif
+
+
 _EGAScanLeftEO_:
+ifdef VERSION2
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,[bp+4]         ; get starting byte
+endif
+endif
         mov     cl,dl           ; save border flag in ah into cl
         mov     _edx,GRADDR
         mov     ah,al
@@ -805,6 +1342,11 @@ _EGAScanLeftEO_:
           _endif
         _endloop
 done_EGAEOscanleft:
+ifdef VERSION2
+ifndef __386__
+        pop bp
+endif
+endif
         ret
 
 _EGAScanLeftMono_:
@@ -815,6 +1357,13 @@ _EGAScanLeft_:
         mov     cl,1111B        ; want all planes in compare
 
 EGAScanLeft:
+ifdef VERSION2
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,[bp+4]         ; get starting byte
+endif
+endif
         push    _edx             ; save border flag in dl
         mov     _edx,GRADDR
         mov     ah,al
@@ -848,9 +1397,21 @@ EGAScanLeft:
           _endif
         _endloop
 done_EGAscanleft:
+ifdef VERSION2
+ifndef __386__
+        pop bp
+endif
+endif
         ret
 
 _EGAScanRightEO_:
+ifdef VERSION2
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,[bp+4]         ; get starting byte
+endif
+endif
         mov     cl,dl           ; save border flag in ah into cl
         mov     _edx,GRADDR
         mov     ah,al
@@ -920,6 +1481,13 @@ _EGAScanRight_:
         mov     cl,1111B        ; want all planes in compare
 
 EGAScanRight:
+ifdef VERSION2
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,[bp+4]         ; get starting byte
+endif
+endif
         push    _edx              ; save border flag in dl
         mov     _edx,GRADDR
         mov     ah,al
@@ -978,7 +1546,107 @@ done_EGAscanright:
           _quif   le
           inc     _ebx
         _endloop
+
+ifdef VERSION2
+ifndef __386__
+        pop bp
+endif
+endif
         ret
+
+ifdef VERSION2
+EGAScanRightX:
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,[bp+4]         ; get starting byte
+endif
+        push    _edx              ; save border flag in dl
+        mov     _edx,GRADDR
+        mov     ah,al
+        mov     al,CMPREG
+        out     dx,ax           ; set colour compare register
+        mov     ah,READ_MODE_1+WRITE_MODE_2
+        mov     al,MODEREG
+        out     dx,ax           ; select read mode
+        mov     ah,cl           ; set d_esired planes
+        mov     al,DONTCARE
+        out     dx,ax           ; set colour don't care reg
+        pop     _edx             ; restor border flag in dl
+        mov     dh,ch           ; build an extended right mask for 1st byte
+        shl     dh,1
+        neg     dh              ; example : 00000100 -> 00000111
+        not     dh
+        _loop                   ; line up with byte boundary
+          dec   _ebx
+          shl   ch,1
+        _until  c
+        mov     ah,es:[_edi]     ; load first byte
+        xor     al,al           ; build scan byte mask
+        or      dl,dl           ; if( border_flag != 0 )
+        _if     ne
+          not     ax
+        _endif
+        and     ah,dh               ; border condition true in first byte
+        jne     short done_EGAscanright
+        mov     _ecx,_esi             ; convert the pixel count inside
+        sub     _ecx,_ebx             ; the viewport to a byte count
+        ;;esi right pixel boundary
+        ;;ebx start x coord..on byte boundary here
+        ;;_ecx num pixels
+        dec     _ecx                 ; in order to scan full bytes
+        and     cl,0F8h
+        ;;this gives a ebx end coordinate in pixels, byte aligned..
+        add     _ebx,_ecx
+        shr     _ecx,1
+        shr     _ecx,1
+        shr     _ecx,1
+        ;;number of bytes..
+        jle     short done_EGAscanright   ; less than 8 pixels to scan
+        inc     di
+        jnz   l1_EGAscanrightX
+              push    _eax           ; - move to next page
+              mov     al,ss:__VGAPage
+              inc     al
+              doicall __SetVGAPage
+              pop     _eax
+        l1_EGAscanrightX:
+;        repe    scasb
+        jcxz   l3_EGAscanrightX
+        cmp    al,es:[_edi]
+        pushf ;save zf
+        inc   di
+        jnz   l2_EGAscanrightX
+              push    _eax           ; - move to next page
+              mov     al,ss:__VGAPage
+              inc     al
+              doicall __SetVGAPage
+              pop     _eax
+        l2_EGAscanrightX:
+        dec     _ecx
+        popf ;restore zf
+        jz      l3_EGAscanrightX;match - abort
+        jmp     l1_EGAscanrightX ;repeat
+        l3_EGAscanrightX:
+        shl     _ecx,1
+        shl     _ecx,1
+        shl     _ecx,1
+        sub     _ebx,_ecx
+        sub     di,1
+        jnc   l4_EGAscanrightX
+              push    _eax           ; - move to next page
+              mov     al,ss:__VGAPage
+              dec     al
+              doicall __SetVGAPage
+              pop     _eax
+        l4_EGAscanrightX:
+        mov     ah,es:[_edi]
+        or      dl,dl
+        _if     ne
+          not     ah
+        _endif
+        jmp     short done_EGAscanright   ; less than 8 pixels to scan
+endif
 
 ;       extrn   __LineXInc : word
 ;       extrn   __LineYInc : word

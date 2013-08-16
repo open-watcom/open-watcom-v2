@@ -57,8 +57,9 @@ include graph.inc
 ;
 ;   Plotting primitives
 ;
-;   Input       ES:_EDI      screen memory
-;               AL          colour
+;   Input       ES:_EDI     screen memory
+;            V1 AX          colour
+;            V2 DX:AX/EAX   colour
 ;               CH          mask
 ;
 ;=========================================================================
@@ -79,7 +80,7 @@ E_Rep19:
 ;
 ;   Movement primitives
 ;
-;   Input       ES:_EDI      screen memory
+;   Input       ES:_EDI     screen memory
 ;               AL          colour
 ;               CH          mask
 ;
@@ -115,15 +116,23 @@ E_MoveRight19:
 ;
 ;   GetDot routine
 ;
-;   Input       ES:_EDI      screen memory
+;   Input       ES:_EDI     screen memory
 ;               CL          bit position
 ;
-;   Output      AX          colour of pixel at location
+;   Output   V1 AX          colour of pixel at location
+;            V2 DX:AX/EAX   colour of pixel at location
 ;
 ;=========================================================================
 
 _GetDot19_:
-        mov     al,es:[_edi]     ; get byte
+ifdef VERSION2
+ifdef __386__
+        xor     eax,eax         ; clear dword
+else
+        xor     dx,dx           ; and high word
+endif
+endif
+        mov     al,es:[_edi]    ; get byte
         xor     ah,ah           ; clear high byte
         ret
 
@@ -131,10 +140,12 @@ _GetDot19_:
 ;
 ;   Zap routine
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               AL          colour (unmasked)
+;   Input       ES:_EDI,DH  screen memory pixel position
+;            V1 AX          colour (unmasked)
+;            V2 SI:AX/EAX   colour (unmasked)
 ;               BX          not used
 ;               CX          number of pixels to fill
+;               DL          not used
 ;
 ;=========================================================================
 
@@ -173,10 +184,12 @@ zap_loop:                       ; loop
 ;
 ;   Fill routines
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               AL          colour (unmasked)
+;   Input       ES:_EDI,DH  screen memory pixel position
+;            V1 AX          colour (unmasked)
+;            V2 SI:AX/EAX   colour (unmasked)
 ;               BH,BL       mask offset, fill mask
 ;               CX          number of pixels to fill
+;               DL          not used
 ;
 ;==========================================================================
 
@@ -277,11 +290,13 @@ _PixRead19_:
 ;
 ;   Scan routines
 ;
-;   Input       ES:_EDI      screen memory
-;               AL          colour mask
+;   Input       ES:_EDI     screen memory
+;            V1 AX          colour mask
+;            V2 SI:AX/EAX   colour mask
 ;               CH          mask (CL may be bits per pixel)
 ;               BX          starting x-coordinate
-;               SI          ending x value (viewport boundary)
+;            V1 SI          ending x value (viewport boundary)
+;            V2 stack/SI    ending x value (viewport boundary)
 ;               DL          0 if paint until colour, 1 if paint while
 ;
 ;   Output      BX          updated x-coordinate
@@ -289,6 +304,11 @@ _PixRead19_:
 ;=========================================================================
 
 _ScanLeft19_:
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,ss:[bp+4]
+endif
         mov     _ecx,_ebx
         sub     _ecx,_esi
         inc     _ecx
@@ -313,9 +333,17 @@ _ScanLeft19_:
         cld                     ; clear direction flag
         add     _esi,_ecx
         mov     _ebx,_esi
+ifndef __386__
+        pop bp
+endif
         ret
 
 _ScanRight19_:
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,ss:[bp+4]
+endif
         mov     _ecx,_esi
         sub     _ecx,_ebx
         inc     _ecx
@@ -329,6 +357,9 @@ _ScanRight19_:
         _endif
         sub     _esi,_ecx
         mov     _ebx,_esi
+ifndef __386__
+        pop bp
+endif
         ret
 
         endmod vgautils

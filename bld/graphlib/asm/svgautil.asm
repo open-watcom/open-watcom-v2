@@ -40,6 +40,9 @@ include graph.inc
         extrn   __PlotAct : word
         extrn   __Transparent : word
         extrn   __VGAPage : byte
+ifdef VERSION2
+        extrn   __VGANBytes : word
+endif
         extrn   __VGAStride : word
         extrn   __VGAGran : byte
         extptr  __SetVGAPage
@@ -58,10 +61,51 @@ include graph.inc
         xdefp   _MoveDown800_
         xdefp   _MoveUp1024_
         xdefp   _MoveDown1024_
+ifdef VERSION2
+        xdefp   _MoveUpVESA_
+        xdefp   _MoveDownVESA_
+        xdefp   _MoveLeftVESA_
+        xdefp   _MoveRightVESA_
+endif
 ;;      xdefp   _MoveUp1280_    ; this mode is untested
 ;;      xdefp   _MoveDown1280_
 ;;      xdefp   _MoveLeftWord_
 ;;      xdefp   _MoveRightWord_
+ifdef VERSION2
+        xdefp   _RepWord_
+        xdefp   _XorWord_
+        xdefp   _AndWord_
+        xdefp   _OrWord_
+        xdefp   _RepTByte_
+        xdefp   _XorTByte_
+        xdefp   _AndTByte_
+        xdefp   _OrTByte_
+        xdefp   _RepDWord_
+        xdefp   _XorDWord_
+        xdefp   _AndDWord_
+        xdefp   _OrDWord_
+        xdefp   _GetDotWord_
+        xdefp   _GetDotTByte_
+        xdefp   _GetDotDWord_
+        xdefp   _ZapWord_
+        xdefp   _ZapDWord_
+        xdefp   _ZapTByte_
+        xdefp   _FillWord_
+        xdefp   _FillDWord_
+        xdefp   _FillTByte_
+        xdefp   _PixCopyWord_
+        xdefp   _PixReadWord_
+        xdefp   _PixCopyDWord_
+        xdefp   _PixReadDWord_
+        xdefp   _PixCopyTByte_
+        xdefp   _PixReadTByte_
+        xdefp   _ScanLeftWord_
+        xdefp   _ScanRightWord_
+        xdefp   _ScanLeftDWord_
+        xdefp   _ScanRightDWord_
+        xdefp   _ScanLeftTByte_
+        xdefp   _ScanRightTByte_
+else
 ;;      xdefp   _RepWord_
 ;;      xdefp   _XorWord_
 ;;      xdefp   _AndWord_
@@ -73,6 +117,7 @@ include graph.inc
 ;;      xdefp   _PixReadWord_
 ;;      xdefp   _ScanLeftWord_
 ;;      xdefp   _ScanRightWord_
+endif
         xdefp   _Zap256_
         xdefp   _Fill256_
         xdefp   _PixCopy256_
@@ -491,6 +536,7 @@ E_MoveDown800:
 
         db      E_MoveUp1024-_MoveUp1024_
 _MoveUp1024_:                   ; 1024x768, 256 colour SuperVGA modes
+_MoveUpVESA_:                  ; any colour SuperVGA modes
         sub     di,ss:__VGAStride
         _if     c               ; if < 0
           push    _eax           ; - move to previous page
@@ -504,6 +550,7 @@ E_MoveUp1024:
 
         db      E_MoveDown1024-_MoveDown1024_
 _MoveDown1024_:                  ; 1024x768, 256 colour SuperVGA modes
+_MoveDownVESA_:                  ; any colour SuperVGA modes
         add     di,ss:__VGAStride
         _if     c               ; if < 0
           push    _eax           ; - move to next page
@@ -514,6 +561,34 @@ _MoveDown1024_:                  ; 1024x768, 256 colour SuperVGA modes
         _endif
 E_MoveDown1024:
         ret
+
+ifdef VERSION2
+        db      E_MoveLeftVESA-_MoveLeftVESA_
+_MoveLeftVESA_:                  ; any colour SuperVGA modes
+        sub     di,ss:__VGANBytes
+        _if     c               ; if < 0
+          push    _eax           ; - move to previous page
+          mov     al,ss:__VGAPage
+          dec     al
+          doicall __SetVGAPage
+          pop     _eax
+        _endif
+E_MoveLeftVESA:
+        ret
+
+        db      E_MoveRightVESA-_MoveRightVESA_
+_MoveRightVESA_:                 ; VESA colour SuperVGA modes
+        add     di,ss:__VGANBytes
+        _if     c               ; if < 0
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+        _endif
+E_MoveRightVESA:
+        ret
+endif
 
 ;;        db      E_MoveUp1280-_MoveUp1280_
 ;;_MoveUp1280_:                   ; 640x480, 32768 colour SuperVGA modes
@@ -567,124 +642,426 @@ E_MoveDown1024:
 ;;E_MoveRightWord:
 ;;        ret
 ;;
-;;;=========================================================================
-;;;
-;;;   Plotting primitives
-;;;
-;;;   Input       ES:_EDI      screen memory
-;;;               AL          colour
-;;;               CH          mask
-;;;
-;;;=========================================================================
+;;=========================================================================
 ;;
-;;        db      E_AndWord-_AndWord_
-;;_AndWord_:
-;;        and    word ptr es:0[_edi],ax
-;;E_AndWord:
-;;        ret
+;;   Plotting primitives
 ;;
-;;        db      E_RepWord-_RepWord_
-;;_RepWord_:
-;;        mov    word ptr es:0[_edi],ax     ; replace pixel
-;;E_RepWord:
-;;        ret
+;;   Input       ES:_EDI      screen memory
+;;            V1 AX           colour
+;;            V2 DX:AX/EAX    colour
+;;               CH           mask
 ;;
-;;        db      E_XorWord-_XorWord_
-;;_XorWord_:
-;;        xor    word ptr es:0[_edi],ax     ; replace pixel
-;;E_XorWord:
-;;        ret
-;;
-;;        db      E_OrWord-_OrWord_
-;;_OrWord_:
-;;        or     word ptr es:0[_edi],ax     ; replace pixel
-;;E_OrWord:
-;;        ret
-;;
+;;=========================================================================
+
+ifdef VERSION2
+
+        db      E_AndWord-_AndWord_
+_AndWord_:
+        and    word ptr es:0[_edi],ax
+E_AndWord:
+        ret
+
+        db      E_RepWord-_RepWord_
+_RepWord_:
+        mov    word ptr es:0[_edi],ax     ; replace pixel
+E_RepWord:
+        ret
+
+        db      E_XorWord-_XorWord_
+_XorWord_:
+        xor    word ptr es:0[_edi],ax     ; replace pixel
+E_XorWord:
+        ret
+
+        db      E_OrWord-_OrWord_
+_OrWord_:
+        or     word ptr es:0[_edi],ax     ; replace pixel
+E_OrWord:
+        ret
+
+ifdef __386__
+
+;;PIXEL in EAX
+
+        db      E_AndDWord-_AndDWord_
+_AndDWord_:
+        and    dword ptr es:0[_edi],eax
+E_AndDWord:
+        ret
+
+        db      E_RepDWord-_RepDWord_
+_RepDWord_:
+        mov    dword ptr es:0[_edi],eax     ; replace pixel
+E_RepDWord:
+        ret
+
+        db      E_XorDWord-_XorDWord_
+_XorDWord_:
+        xor    dword ptr es:0[_edi],eax     ; replace pixel
+E_XorDWord:
+        ret
+
+        db      E_OrDWord-_OrDWord_
+_OrDWord_:
+        or     dword ptr es:0[_edi],eax     ; replace pixel
+E_OrDWord:
+        ret
+
+else
+
+;;PIXEL in DX:AX
+        db      E_AndDWord-_AndDWord_
+_AndDWord_:
+        and    word ptr es:0[_edi],ax
+        and    word ptr es:2[_edi],dx
+E_AndDWord:
+        ret
+
+        db      E_RepDWord-_RepDWord_
+_RepDWord_:
+        mov    word ptr es:0[_edi],ax     ; replace pixel
+        mov    word ptr es:2[_edi],dx     ; replace pixel
+E_RepDWord:
+        ret
+
+        db      E_XorDWord-_XorDWord_
+_XorDWord_:
+        xor    word ptr es:0[_edi],ax     ; replace pixel
+        xor    word ptr es:2[_edi],dx     ; replace pixel
+E_XorDWord:
+        ret
+
+        db      E_OrDWord-_OrDWord_
+_OrDWord_:
+        or     word ptr es:0[_edi],ax     ; replace pixel
+        or     word ptr es:2[_edi],dx     ; replace pixel
+E_OrDWord:
+        ret
+
+endif
+
+
+
+byte_op     macro instr, rg
+        instr    byte ptr es:0[_edi],rg
+            endm
+
+next_byte     macro instr, incrmnt
+         instr    di, incrmnt
+        _if     c               ; if < 0
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          ifidn instr,add
+              inc     al
+          else
+              dec     al
+          endif
+          doicall __SetVGAPage
+          pop     _eax
+        _endif
+              endm
+
+
+_up1_:
+        next_byte add, 1
+        _retf
+
+_down2_:
+        next_byte sub, 2
+        _retf
+
+
+tb_op        macro instr
+ifdef __386__
+;;init regs for 386
+        push   edx
+        push   eax
+        pop    dx
+        pop    dx
+endif
+;;pixels are not necessarily aligned...
+        byte_op instr, al
+        doicall _up1_
+;        next_byte add, 1
+        byte_op instr, ah
+        doicall _up1_
+;        next_byte add, 1
+        byte_op instr, dl
+        doicall _down2_
+;        next_byte sub, 2
+ifdef __386__
+;;and restore
+        pop    edx
+endif
+              endm
+
+;;for 3 byte pixels (is that ever used?)
+        db      E_AndTByte-_AndTByte_
+_AndTByte_:
+
+        tb_op and
+
+E_AndTByte:
+
+        ret
+
+        db      E_RepTByte-_RepTByte_
+_RepTByte_:
+        tb_op mov
+        
+E_RepTByte:
+        ret
+
+        db      E_XorTByte-_XorTByte_
+_XorTByte_:
+        tb_op xor
+        
+E_XorTByte:
+        ret
+
+        db      E_OrTByte-_OrTByte_
+_OrTByte_:
+        tb_op or
+        
+E_OrTByte:
+        ret
+
+endif
+
 ;;;=========================================================================
 ;;;
 ;;;   GetDot routine
 ;;;
 ;;;   Input       ES:_EDI      screen memory
-;;;               CL          bit position
+;;;               CL           bit position
 ;;;
-;;;   Output      AX          colour of pixel at location
+;;;   Output   V1 AX           colour of pixel at location
+;;;            V2 DX:AX/EAX    colour of pixel at location
 ;;;
 ;;;=========================================================================
-;;
-;;_GetDotWord_:
-;;        mov     ax, word ptr es:[_edi]     ; get word (colour)
-;;        ret
+
+ifdef VERSION2
+
+_GetDotWord_:
+ifdef __386__
+        xor     eax,eax
+else
+        xor     dx,dx
+endif
+        mov     ax, word ptr es:[_edi]     ; get word (colour)
+        ret
+
+_GetDotTByte_:
+ifdef __386__
+;;init regs for 386
+        push   edx
+endif
+        xor    dx,dx
+;;pixels are not necessarily aligned...
+        mov     al, byte ptr es:[_edi]
+        next_byte add, 1
+        mov     ah, byte ptr es:[_edi]
+        next_byte add, 1
+        mov     dl, byte ptr es:[_edi]
+        next_byte sub, 2
+ifdef __386__
+;;and restore
+        push   dx
+        push   ax
+        pop    eax
+        pop    edx
+endif
+
+        ret
+
+_GetDotDWord_:
+ifdef __386__
+        mov     eax, dword ptr es:[_edi]     ; get dword (colour)
+else
+        mov     ax, word ptr es:[_edi]     ; get word (colour)
+        mov     dx, word ptr es:2[_edi]     ; get word (colour)
+endif
+        ret
+
+endif
 
 ;=========================================================================
 ;
 ;   Zap routine
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               AL          colour (unmasked)
-;               BX          not used
-;               CX          number of pixels to fill
+;   Input       ES:_EDI,DH   screen memory pixel position
+;            V1 AX           colour (unmasked)
+;            V2 SI:AX/EAX    colour (unmasked)
+;               BX           not used, may be fill mask
+;               CX           number of pixels to fill
+;               DL           not used
 ;
 ;=========================================================================
 
-;;func_table    VGAJmp, <_RepWord_,_XorWord_,_AndWord_,_OrWord_>
-;;
-;;_ZapWord_:
-;;        _movzx   _ebx,di          ; check for end of page
-;;      shl     cx, 1           ; - calc bytes = 2 * pix
-;;        add     bx,cx           ; . . .
-;;        _guess                  ; guess : need to do in two parts
-;;          _quif   nc            ; - quif if no overflow
-;;          _quif   e             ; - quif if the result was zero
-;;          push    _ebx           ; - remember # of bytes remaining
-;;          _movzx   _ecx,di        ; - calc # bytes left on this line
-;;          neg     cx            ; - . . .
-;;        shr     cx, 1         ; - convert to # of pix
-;;          push    _edi           ; - save offset of screen memory
-;;          call    zap_word      ; - zap remainder of this page
-;;          pop     _edi           ; - restore offset of screen memory
-;;          xor     di, di         ; - reset lower part of offset to 0
-;;          pop     _ecx           ; - get remaining # of pixels
-;;          push    _eax           ; - move to next page
-;;          mov     al, ss:__VGAPage
-;;          inc     al
-;;          doicall __SetVGAPage
-;;          pop     _eax
-;;        _endguess               ; endguess
-;;      shr     cx, 1           ; calc # of pix, then fall into zap_word
-;;zap_word:
-;;ifdef __386__
-;;        _movzx   _ebx, word ptr ss:__PlotAct
-;;        or      _ebx,_ebx
-;;        _if     e               ; if replace mode
-;;          rep     stosw         ; - do fast fill
-;;        _else
-;;          mov     _ebx, cs:VGAJmp[_ebx*4]  ; load plot routine
-;;else
-;;        mov     bx,ss:__PlotAct
-;;        or      bx,bx
-;;        _if     e               ; if replace mode
-;;          rep     stosw         ; - do fast fill
-;;        _else
-;;          shl     bx, 1
-;;          mov     bx,cs:VGAJmp[bx]      ; load plot routine
-;;endif
-;;zap_loop:                       ; loop
-;;            call    _ebx         ; - call the plot routine
-;;            inc     _edi         ; - move to next pixel on the right
-;;            inc     _edi         ; . . .
-;;          loop    zap_loop      ; until( --count == 0 )
-;;        _endif
-;;        ret
+ifdef VERSION2
 
-_Zap256_:
+ifdef __386__
+    VGAJmp dd _RepWord_, _XorWord_, _AndWord_, _OrWord_
+else
+    VGAJmp dw _RepWord_, _XorWord_, _AndWord_, _OrWord_
+endif
+
+;func_table    VGAJmp, <_RepWord_,_XorWord_,_AndWord_,_OrWord_>
+
+_ZapWord_:
         _movzx   _ebx,di          ; check for end of page
+        shl     cx, 1           ; - calc bytes = 2 * pix
         add     bx,cx           ; . . .
         _guess                  ; guess : need to do in two parts
           _quif   nc            ; - quif if no overflow
           _quif   e             ; - quif if the result was zero
+          push    _ebx           ; - remember # of bytes remaining
+          _movzx   _ecx,di        ; - calc # bytes left on this line
+          neg     cx            ; - . . .
+          shr     cx, 1         ; - convert to # of pix
+          push    _edi           ; - save offset of screen memory
+          call    zap_word      ; - zap remainder of this page
+          pop     _edi           ; - restore offset of screen memory
+          xor     di, di         ; - reset lower part of offset to 0
+          pop     _ecx           ; - get remaining # of pixels
+          push    _eax           ; - move to next page
+          mov     al, ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+        _endguess               ; endguess
+      shr     cx, 1           ; calc # of pix, then fall into zap_word
+zap_word:
+ifdef __386__
+        _movzx   _ebx, word ptr ss:__PlotAct
+        or      _ebx,_ebx
+        _if     e               ; if replace mode
+          rep     stosw         ; - do fast fill
+        _else
+          mov     _ebx, cs:VGAJmp[_ebx*4]  ; load plot routine
+else
+        mov     bx,ss:__PlotAct
+        or      bx,bx
+        _if     e               ; if replace mode
+          rep     stosw         ; - do fast fill
+        _else
+          shl     bx, 1
+          mov     bx,cs:VGAJmp[bx]      ; load plot routine
+endif
+zap_loop:                       ; loop
+            call    _ebx         ; - call the plot routine
+            inc     _edi         ; - move to next pixel on the right
+            inc     _edi         ; . . .
+          loop    zap_loop      ; until( --count == 0 )
+        _endif
+        ret
+
+ifdef __386__
+    VGADWJmp dd _RepDWord_, _XorDWord_, _AndDWord_, _OrDWord_
+else
+    VGADWJmp dw _RepDWord_, _XorDWord_, _AndDWord_, _OrDWord_
+endif
+
+_ZapDWord_:
+        _movzx   _ebx,di          ; check for end of page
+        shl     cx, 1           ; - calc bytes = 2 * pix
+        shl     cx, 1           ; - calc bytes = 2 * pix
+        add     bx,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
+          push    _ebx           ; - remember # of bytes remaining
+          _movzx   _ecx,di        ; - calc # bytes left on this line
+          neg     cx            ; - . . .
+          shr     cx, 1         ; - convert to # of pix
+          shr     cx, 1         ; - convert to # of pix
+          push    _edi           ; - save offset of screen memory
+          call    zap_dword      ; - zap remainder of this page
+          pop     _edi           ; - restore offset of screen memory
+          xor     di, di         ; - reset lower part of offset to 0
+          pop     _ecx           ; - get remaining # of pixels
+          push    _eax           ; - move to next page
+          mov     al, ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+        _endguess               ; endguess
+      shr     cx, 1           ; calc # of pix, then fall into zap_word
+      shr     cx, 1           ; calc # of pix, then fall into zap_word
+zap_dword:
+ifdef __386__
+        _movzx   _ebx, word ptr ss:__PlotAct
+        or      _ebx,_ebx
+        _if     e               ; if replace mode
+          rep     stosd         ; - do fast fill
+          ret
+        _else
+          mov     _ebx, cs:VGADWJmp[_ebx*4]  ; load plot routine
+        _endif
+else
+        mov     bx,ss:__PlotAct
+        shl     bx, 1
+        mov     bx,cs:VGADWJmp[bx]      ; load plot routine
+endif
+
+ifndef __386__
+            push    dx
+            mov     dx,si
+endif
+
+zap_dloop:                       ; loop
+
+            call    _ebx         ; - call the plot routine
+            add     _edi,4         ; - move to next pixel on the right
+            loop    zap_dloop      ; until( --count == 0 )
+
+ifndef __386__
+            pop    dx
+endif
+        ret
+
+ifdef __386__
+    VGATBJmp dd _RepTByte_, _XorTByte_, _AndTByte_, _OrTByte_
+else
+    VGATBJmp dw _RepTByte_, _XorTByte_, _AndTByte_, _OrTByte_
+endif
+
+_ZapTByte_:
+ifdef __386__
+        _movzx   _ebx, word ptr ss:__PlotAct
+        mov     _ebx, cs:VGATBJmp[_ebx*4]  ; load plot routine
+else
+        mov     bx,ss:__PlotAct
+        shl     bx, 1
+        mov     bx,cs:VGATBJmp[bx]      ; load plot routine
+endif
+
+ifndef __386__
+            push    dx
+            mov     dx,si
+endif
+
+zap_tbloop:                       ; loop
+
+            call    _ebx         ; - call the plot routine
+            next_byte add, 3
+            loop    zap_tbloop      ; until( --count == 0 )
+
+ifndef __386__
+            pop    dx
+endif
+        ret
+
+endif
+
+_Zap256_:
+        _movzx   _ebx,di          ; check for end of page
+        add      bx,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
           push    _ebx           ; - remember # of pixels for next time
-          _movzx   _ecx,di        ; - calc # left on this line
+          _movzx  _ecx,di        ; - calc # left on this line
           neg     cx            ; - . . .
           push    _edi           ; - save offset of screen memory
           call    _Zap19_       ; - zap remainder of this page
@@ -703,81 +1080,265 @@ _Zap256_:
 ;
 ;   Fill routines
 ;
-;   Input       ES:_EDI,DH   screen memory
-;               AL          colour (unmasked)
-;               BH,BL       mask offset, fill mask
-;               CX          number of pixels to fill
+;   Input       ES:_EDI,DH   screen memory pixel position
+;            V1 AX           colour (unmasked)
+;            V2 SI:AX/EAX    colour (unmasked)
+;               BH,BL        mask offset, fill mask
+;               CX           number of pixels to fill
+;               DL           not used
 ;
 ;=========================================================================
 
-;;_FillWord_:
-;;        push    _esi             ; save si
-;;        _movzx   _esi,di          ; check for end of page
-;;        shl   cx, 1           ; convert pixels to bytes
-;;        add     si,cx           ; . . .
-;;        _guess                  ; guess : need to do in two parts
-;;          _quif   nc            ; - quif if no overflow
-;;          _quif   e             ; - quif if the result was zero
-;;          push    _esi           ; - remember # of bytes for next time
-;;          _movzx   _ecx,di        ; - calc # of bytes left on this line
-;;          neg     cx            ; - . . .
-;;          shr     cx, 1         ; - convert bytes to pixels
-;;          push    _edi           ; - save offset of screen memory
-;;          call    fill_word     ; - fill remainder of this page
-;;          pop     _edi           ; - restore offset of screen memory
-;;          xor     di,di         ; - reset lower part of offset to 0
-;;          mov     bl,dl         ; - remember updated bit mask
-;;          xor     bh,bh         ; - (offset will be 0)
-;;          pop     _ecx           ; - get # of remaining pixels
-;;          push    _eax           ; - move to next page
-;;          mov     al,ss:__VGAPage
-;;          inc     al
-;;          doicall __SetVGAPage
-;;          pop     _eax
-;;        _endguess               ; endguess
-;;        shr     _ecx, 1                ; convert bytes to pixels
-;;        call    fill_word       ; fill remaining points
-;;        pop     _esi
-;;        ret
-;;fill_word:
-;;        mov     dl,cl               ; save the count
-;;        mov     cl,bh               ; get the fill offset
-;;        rol     bl,cl               ; adjust fill mask
-;;        mov     cl,dl               ; restore the count
-;;        mov     dl,bl               ; get mask in dl
-;;ifdef __386__
-;;        _movzx   _ebx,word ptr ss:__PlotAct
-;;        mov     _ebx,cs:VGAJmp[_ebx*4]; load the appropriate plot routine
-;;else
-;;        mov     bx,ss:__PlotAct     ; load the appropriate plot routine
-;;        shl     bx,1                ; ...
-;;        mov     bx,cs:VGAJmp[bx]    ; ...
-;;endif
-;;        cmp     word ptr ss:__Transparent,0     ; check for transparency
-;;        _if     ne
-;;style_loop:
-;;            rol     dl,1            ; adjust fill style mask
-;;            _if     c
-;;              call    _ebx           ; pixel has to be set
-;;            _endif
-;;            inc     _edi             ; move to next pixel
-;;            inc     _edi             ; . . .
-;;          loop    style_loop
-;;        _else
-;;          mov     si,ax             ; save the colour mask
-;;trans_loop:
-;;            rol     dl,1            ; adjust fill style mask
-;;            _if     c
-;;              mov     ax,si         ; use colour mask
-;;            _else
-;;              xor     ax,ax         ; background color
-;;            _endif
-;;            call    _ebx             ; plot the pixel
-;;            inc     _edi             ; move to next pixel
-;;            inc     _edi             ; . . .
-;;          loop    trans_loop        ; decrement the count
-;;        _endif
-;;        ret
+ifdef VERSION2
+
+_FillWord_:
+        push    _esi             ; save si
+        _movzx   _esi,di          ; check for end of page
+        shl   cx, 1           ; convert pixels to bytes
+        add     si,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
+          push    _esi           ; - remember # of bytes for next time
+          _movzx   _ecx,di        ; - calc # of bytes left on this line
+          neg     cx            ; - . . .
+          shr     cx, 1         ; - convert bytes to pixels
+          push    _edi           ; - save offset of screen memory
+          call    fill_word     ; - fill remainder of this page
+          pop     _edi           ; - restore offset of screen memory
+          xor     di,di         ; - reset lower part of offset to 0
+          mov     bl,dl         ; - remember updated bit mask
+          xor     bh,bh         ; - (offset will be 0)
+          pop     _ecx           ; - get # of remaining bytes
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+        _endguess               ; endguess
+        shr     _ecx, 1                ; convert bytes to pixels
+        call    fill_word       ; fill remaining points
+        pop     _esi
+        ret
+fill_word:
+        mov     dl,cl               ; save the count
+        mov     cl,bh               ; get the fill offset
+        rol     bl,cl               ; adjust fill mask
+        mov     cl,dl               ; restore the count
+        mov     dl,bl               ; get mask in dl
+ifdef __386__
+        _movzx   _ebx,word ptr ss:__PlotAct
+        mov     _ebx,cs:VGAJmp[_ebx*4]; load the appropriate plot routine
+else
+        mov     bx,ss:__PlotAct     ; load the appropriate plot routine
+        shl     bx,1                ; ...
+        mov     bx,cs:VGAJmp[bx]    ; ...
+endif
+        cmp     word ptr ss:__Transparent,0     ; check for transparency
+        _if     ne
+style_loop:
+            rol     dl,1            ; adjust fill style mask
+            _if     c
+              call    _ebx           ; pixel has to be set
+            _endif
+            inc     _edi             ; move to next pixel
+            inc     _edi             ; . . .
+          loop    style_loop
+        _else
+          mov     si,ax             ; save the colour mask
+trans_loop:
+            rol     dl,1            ; adjust fill style mask
+            _if     c
+              mov     ax,si         ; use colour mask
+            _else
+              xor     ax,ax         ; background color
+            _endif
+            call    _ebx             ; plot the pixel
+            inc     _edi             ; move to next pixel
+            inc     _edi             ; . . .
+          loop    trans_loop        ; decrement the count
+        _endif
+        ret
+
+_FillDWord_:
+ifndef __386__
+        push    bp
+        mov     bp,sp
+endif
+        push    _esi             ; save si
+        _movzx   _esi,di          ; check for end of page
+        shl   cx, 1           ; convert pixels to bytes
+        shl   cx, 1           ; convert pixels to bytes
+        add     si,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
+          push    _esi           ; - remember # of bytes for next time
+          _movzx   _ecx,di        ; - calc # of bytes left on this line
+          neg     cx            ; - . . .
+          shr     cx, 1         ; - convert bytes to pixels
+          shr     cx, 1         ; - convert bytes to pixels
+          push    _edi           ; - save offset of screen memory
+ifndef __386__
+          mov    si,[bp-2]       ;get color hi word
+endif
+          call    fill_dword     ; - fill remainder of this page
+          pop     _edi           ; - restore offset of screen memory
+          xor     di,di         ; - reset lower part of offset to 0
+          mov     bl,dl         ; - remember updated bit mask
+          xor     bh,bh         ; - (offset will be 0)
+          pop     _ecx           ; - get # of remaining bytes
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+        _endguess               ; endguess
+        shr     _ecx, 1                ; convert bytes to pixels
+        shr     _ecx, 1                ; convert bytes to pixels
+ifndef __386__
+          mov    si,[bp-2]       ;get color hi word
+endif
+        call    fill_dword       ; fill remaining points
+        pop     _esi
+ifndef __386__
+        pop     bp
+endif
+        ret
+fill_dword:
+        mov     dl,cl               ; save the count
+        mov     cl,bh               ; get the fill offset
+        rol     bl,cl               ; adjust fill mask
+        mov     cl,dl               ; restore the count
+        mov     dl,bl               ; get mask in dl
+ifdef __386__
+        _movzx   _ebx,word ptr ss:__PlotAct
+        mov     _ebx,cs:VGADWJmp[_ebx*4]; load the appropriate plot routine
+else
+        mov     bx,ss:__PlotAct     ; load the appropriate plot routine
+        shl     bx,1                ; ...
+        mov     bx,cs:VGADWJmp[bx]    ; ...
+endif
+        cmp     word ptr ss:__Transparent,0     ; check for transparency
+        _if     ne
+style_loop_dw:
+            rol     dl,1            ; adjust fill style mask
+            _if     c
+ifndef __386__
+            push    _edx
+            mov     _edx,_esi           ; use colour mask hi
+endif
+              call    _ebx           ; pixel has to be set
+ifndef __386__
+            pop    _edx
+endif
+            _endif
+            add     _edi,4           ; move to next pixel
+          loop    style_loop_dw
+        _else
+
+          push _esi  ;;color hi
+          mov  _esi,_eax ;;color lo
+trans_loop_dw:
+            rol     dl,1            ; adjust fill style mask
+ifndef __386__
+            push    _edx
+endif
+            _if     c
+              mov     _eax,_esi           ; use colour mask
+ifndef __386__
+              mov     dx,ss:[bp-2]       ; use colour mask hi
+endif
+            _else
+              xor     _eax,_eax         ; background color
+ifndef __386__
+              xor     _edx,_edx         ; background color
+endif
+            _endif
+            call    _ebx             ; plot the pixel
+            add     _edi,4           ; move to next pixel
+ifndef __386__
+            pop    _edx
+endif
+          loop    trans_loop_dw        ; decrement the count
+          mov _eax,_esi ;;color lo
+          pop _esi  ;;color hi
+        _endif
+        ret
+
+
+_FillTByte_:
+        mov     dl,cl               ; save the count
+        mov     cl,bh               ; get the fill offset
+        rol     bl,cl               ; adjust fill mask
+        mov     cl,dl               ; restore the count
+        mov     dl,bl               ; get mask in dl
+ifdef __386__
+        _movzx   _ebx,word ptr ss:__PlotAct
+        mov     _ebx,cs:VGATBJmp[_ebx*4]; load the appropriate plot routine
+else
+        mov     bx,ss:__PlotAct     ; load the appropriate plot routine
+        shl     bx,1                ; ...
+        mov     bx,cs:VGATBJmp[bx]    ; ...
+endif
+        cmp     word ptr ss:__Transparent,0     ; check for transparency
+        _if     ne
+style_loop_tb:
+            rol     dl,1            ; adjust fill style mask
+            _if     c
+ifndef __386__
+            push    _edx
+            mov     _edx,_esi           ; use colour mask hi
+endif
+              call    _ebx           ; pixel has to be set
+ifndef __386__
+            pop    _edx
+endif
+            _endif
+          next_byte add, 3           ; move to next pixel
+          loop    style_loop_tb
+        _else
+
+          push _esi  ;;color hi
+          mov  _esi,_eax ;;color lo
+ifndef __386__
+          push    bp
+          mov     bp,sp
+endif
+trans_loop_tb:
+            rol     dl,1            ; adjust fill style mask
+ifndef __386__
+            push    _edx
+endif
+            _if     c
+              mov     _eax,_esi           ; use colour mask
+ifndef __386__
+              mov     dx,[bp+2]       ; use colour mask hi
+endif
+            _else
+              xor     _eax,_eax         ; background color
+ifndef __386__
+              xor     _edx,_edx         ; background color
+endif
+            _endif
+            call    _ebx             ; plot the pixel
+            next_byte add, 3           ; move to next pixel
+ifndef __386__
+            pop    _edx
+endif
+          loop    trans_loop_tb        ; decrement the count
+ifndef __386__
+          pop    bp
+endif
+          mov _eax,_esi ;;color lo
+          pop _esi  ;;color hi
+        _endif
+ifndef __386__
+        pop     bp
+endif
+        ret
+
+endif
 
 _Fill256_:
         push    _esi             ; save si
@@ -816,34 +1377,55 @@ _Fill256_:
 ;
 ;=========================================================================
 
-;;_PixCopyWord_:
-;;        push    _ebx
-;;        _movzx   _ebx,di          ; check for end of page
-;;        shl   cx, 1           ; convert pix to # of bytes
-;;        add     bx,cx           ; . . .
-;;        _guess                  ; guess : need to do in two parts
-;;          _quif   nc            ; - quif if no overflow
-;;          _quif   e             ; - quif if the result was zero
-;;          push    _ebx           ; - remember # of bytes for next time
-;;          _movzx   _ecx,di        ; - calc # of bytes left on this line
-;;          neg     cx            ; - . . .
-;;          push    _esi           ; - save segment of buffer
-;;          push    _edi           ; - save offset of screen memory
-;;          call    _PixCopy19_   ; - copy remainder of this page
-;;          pop     _edi           ; - restore offset of screen memory
-;;          xor     di,di         ; - reset lower part of offset to 0
-;;          mov     _eax,_esi       ; - update offset of buffer
-;;          pop     _esi           ; - reload segment of buffer
-;;          pop     _ecx           ; - get remaining # of bytes
-;;          push    _eax           ; - move to next page
-;;          mov     al,ss:__VGAPage
-;;          inc     al
-;;          doicall __SetVGAPage
-;;          pop     _eax
-;;        _endguess               ; endguess
-;;        call    _PixCopy19_     ; copy remaining pixels
-;;        pop     _ebx
-;;        ret
+ifdef VERSION2
+
+_PixCopyTByte_:
+        push cx
+        shl  cx, 1           ; triple the size and treat as byte sized pixels
+ifdef __386__
+        add  cx,ss:[esp]
+        add  esp,2
+else
+        push bp
+        mov  bp,sp
+        add  cx,ss:[bp+2]
+        pop  bp
+        add  sp,2
+endif
+        jmp pcopy_common
+_PixCopyDWord_:
+        shl   cx, 1           ; double the size and treat as word sized pixels
+_PixCopyWord_:
+        shl   cx, 1           ; convert pix to # of bytes
+pcopy_common:
+        push    _ebx
+        _movzx   _ebx,di          ; check for end of page
+        add     bx,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
+          push    _ebx           ; - remember # of bytes for next time
+          _movzx   _ecx,di        ; - calc # of bytes left on this line
+          neg     cx            ; - . . .
+          push    _esi           ; - save segment of buffer
+          push    _edi           ; - save offset of screen memory
+          call    _PixCopy19_   ; - copy remainder of this page
+          pop     _edi           ; - restore offset of screen memory
+          xor     di,di         ; - reset lower part of offset to 0
+          mov     _eax,_esi       ; - update offset of buffer
+          pop     _esi           ; - reload segment of buffer
+          pop     _ecx           ; - get remaining # of bytes
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+        _endguess               ; endguess
+        call    _PixCopy19_     ; copy remaining pixels
+        pop     _ebx
+        ret
+
+endif
 
 _PixCopy256_:
         push    _ebx
@@ -883,33 +1465,54 @@ _PixCopy256_:
 ;
 ;=========================================================================
 
-;;_PixReadWord_:
-;;        push    _ebx
-;;        _movzx   _ebx,ax          ; check for end of page
-;;      shl     cx, 1           ; convert pixels to # of bytes
-;;        add     bx,cx           ; . . .
-;;        _guess                  ; guess : need to do in two parts
-;;          _quif   nc            ; - quif if no overflow
-;;          _quif   e             ; - quif if the result was zero
-;;          push    _ebx           ; - remember # of bytes for next time
-;;          _movzx   _ecx,ax        ; - calc # of bytes left on this line
-;;          neg     cx            ; - . . .
-;;          push    _esi           ; - save segment of screen memory
-;;          push    _eax           ; - save offset of screen memory
-;;          call    _PixRead19_   ; - copy remainder of this page
-;;          pop     _eax           ; - restore offset of screen memory
-;;          xor     ax,ax         ; - reset lower part of offset to 0
-;;          pop     _esi           ; - reload segment of screen memory
-;;          pop     _ecx           ; - get remaining # of bytes
-;;          push    _eax           ; - move to next page
-;;          mov     al,ss:__VGAPage
-;;          inc     al
-;;          doicall __SetVGAPage
-;;          pop     _eax
-;;        _endguess               ; endguess
-;;        call    _PixRead19_     ; copy remaining pixels
-;;        pop     _ebx
-;;        ret
+ifdef VERSION2
+
+_PixReadTByte_:
+        push cx
+        shl  cx, 1           ; triple the size and treat as byte sized pixels
+ifdef __386__
+        add  cx,ss:[esp]
+        add  esp,2
+else
+        push bp
+        mov  bp,sp
+        add  cx,ss:[bp+2]
+        pop  bp
+        add  sp,2
+endif
+        jmp pread_common
+_PixReadDWord_:
+        shl   cx, 1           ; double the size and treat as word sized pixels
+_PixReadWord_:
+        shl   cx, 1           ; convert pixels to # of bytes
+pread_common:
+        push    _ebx
+        _movzx   _ebx,ax          ; check for end of page
+        add     bx,cx           ; . . .
+        _guess                  ; guess : need to do in two parts
+          _quif   nc            ; - quif if no overflow
+          _quif   e             ; - quif if the result was zero
+          push    _ebx           ; - remember # of bytes for next time
+          _movzx   _ecx,ax        ; - calc # of bytes left on this line
+          neg     cx            ; - . . .
+          push    _esi           ; - save segment of screen memory
+          push    _eax           ; - save offset of screen memory
+          call    _PixRead19_   ; - copy remainder of this page
+          pop     _eax           ; - restore offset of screen memory
+          xor     ax,ax         ; - reset lower part of offset to 0
+          pop     _esi           ; - reload segment of screen memory
+          pop     _ecx           ; - get remaining # of bytes
+          push    _eax           ; - move to next page
+          mov     al,ss:__VGAPage
+          inc     al
+          doicall __SetVGAPage
+          pop     _eax
+        _endguess               ; endguess
+        call    _PixRead19_     ; copy remaining pixels
+        pop     _ebx
+        ret
+
+endif
 
 _PixRead256_:
         push    _ebx
@@ -943,43 +1546,162 @@ _PixRead256_:
 ;   Scan routines
 ;
 ;   Input       ES:_EDI      screen memory
-;               AL          colour mask
-;               CH          mask (CL may be bits per pixel)
-;               BX          starting x-coordinate
-;               SI          ending x value (viewport boundary)
-;               DL          0 if paint until colour, 1 if paint while
+;            V1 AX           colour mask
+;            V2 SI:AX/EAX    colour mask
+;               CH           mask (CL may be bits per pixel)
+;               BX           starting x-coordinate
+;            V1 SI           ending x value (viewport boundary)
+;            V2 stack/SI     ending x value (viewport boundary)
+;               DL           0 if paint until colour, 1 if paint while
 ;
 ;   Output      BX          updated x-coordinate
 ;
 ;=========================================================================
 
-;;_ScanLeftWord_:
-;;        inc     _ebx
-;;        _loop
-;;          cmp     ax,word ptr es:[_edi]  ; check for colour
-;;        _if     e                     ; pixel is same as color mask
-;;            or      dl,dl               ; quit loop if paint until
-;;            je      short done_scanleftword
-;;          _else
-;;            or      dl,dl               ; quit loop if paint while
-;;            jne     short done_scanleftword
-;;          _endif
-;;          dec     _ebx                   ; move to next pixel
-;;          cmp     _ebx,_esi               ; check for viewport boundary
-;;          _quif   le
-;;          sub     di,2                  ; move left
-;;          _if     c                     ; if < 0
-;;            push    _eax                 ; - move to previous page
-;;            mov     al,ss:__VGAPage
-;;            dec     al
-;;            doicall __SetVGAPage
-;;            pop     _eax
-;;          _endif
-;;        _endloop
-;;done_scanleftword:
-;;        ret
+ifdef VERSION2
+
+_ScanLeftWord_:
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,ss:[bp+4]         ; get starting byte
+endif
+        inc     _ebx
+        _loop
+          cmp     ax,word ptr es:[_edi]  ; check for colour
+        _if     e                     ; pixel is same as color mask
+            or      dl,dl               ; quit loop if paint until
+            je      short done_scanleftword
+          _else
+            or      dl,dl               ; quit loop if paint while
+            jne     short done_scanleftword
+          _endif
+          dec     _ebx                   ; move to next pixel
+          cmp     _ebx,_esi               ; check for viewport boundary
+          _quif   le
+          sub     di,2                  ; move left
+          _if     c                     ; if < 0
+            push    _eax                 ; - move to previous page
+            mov     al,ss:__VGAPage
+            dec     al
+            doicall __SetVGAPage
+            pop     _eax
+          _endif
+        _endloop
+done_scanleftword:
+ifndef __386__
+        pop  bp
+endif
+        ret
+
+_ScanLeftDWord_:
+ifndef __386__
+        push    bp
+        mov     bp,sp
+endif
+        inc     _ebx
+        _loop
+ifdef  __386__
+          cmp     eax,dword ptr es:[_edi]  ; check for colour
+else
+          cmp     ax,word ptr es:[_edi]  ; check for colour
+          jne sld1
+          cmp     si,word ptr es:[_edi+2]  ; check for colour
+endif
+          jne sld1
+            or      dl,dl               ; quit loop if paint until and equals
+            je      short done_scanleftdword
+          jmp sld2
+          sld1:
+            or      dl,dl               ; quit loop if paint while ad not equal
+            jne     short done_scanleftdword
+          sld2:
+          dec     _ebx                   ; move to next pixel
+ifndef  __386__
+          cmp     _ebx,ss:[bp+4]               ; check for viewport boundary
+else
+          cmp     _ebx,_esi               ; check for viewport boundary
+endif
+          _quif   le
+          sub     di,4                  ; move left
+          _if     c                     ; if < 0
+            push    _eax                 ; - move to previous page
+            mov     al,ss:__VGAPage
+            dec     al
+            doicall __SetVGAPage
+            pop     _eax
+          _endif
+        _endloop
+done_scanleftdword:
+ifndef __386__
+        pop  bp
+endif
+        ret
+
+_ScanLeftTByte_:
+        inc     _ebx
+ifndef __386__
+;;get si lo byte into dh somehow
+        push    bp
+        mov     bp,sp
+        push si
+        mov  dh,ss:[bp-2]
+        pop si
+else
+;;get eax byte 2 into dh
+        push eax
+        mov  dh,ss:[esp+2]
+        pop eax
+endif
+        next_byte add, 3
+        _loop
+          next_byte sub, 1
+          cmp     dh,byte ptr es:[_edi]  ; check for colour
+          jne slt5
+
+          next_byte sub, 1
+          cmp     ah,byte ptr es:[_edi]  ; check for colour
+          jne slt4
+
+          next_byte sub, 1
+          cmp     al,byte ptr es:[_edi]  ; check for colour
+          jne slt3
+
+            or      dl,dl               ; quit loop if paint until and equals
+            je      short done_scanlefttbyte
+          jmp slt2
+          slt5:
+          next_byte sub, 1
+          slt4:
+          next_byte sub, 1
+          slt3:
+            or      dl,dl               ; quit loop if paint while ad not equal
+            jne     short done_scanlefttbyte
+          slt2:
+          dec     _ebx                   ; move to next pixel
+ifndef  __386__
+          cmp     _ebx,ss:[bp+4]               ; check for viewport boundary
+else
+          cmp     _ebx,_esi               ; check for viewport boundary
+endif
+          _quif   le
+        _endloop
+done_scanlefttbyte:
+ifndef __386__
+        pop bp
+endif
+        ret
+
+endif
 
 _ScanLeft256_:
+ifdef VERSION2
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,ss:[bp+4]
+endif
+endif
         inc     _ebx
         _loop
           cmp     al,es:[_edi]       ; check for colour
@@ -1003,35 +1725,157 @@ _ScanLeft256_:
           _endif
         _endloop
 done_scanleft:
+ifdef VERSION2
+ifndef __386__
+        pop bp
+endif
+endif
         ret
 
-;;_ScanRightWord_:
-;;        dec     _ebx
-;;        _loop
-;;          cmp     ax,word ptr es:[_edi]  ; check for colour
-;;          _if     e                     ; pixel is same as color mask
-;;            or      dl,dl               ; quit loop if paint until
-;;            je      done_scanrightword
-;;          _else
-;;            or      dl,dl               ; quit loop if paint while
-;;            jne     done_scanrightword
-;;          _endif
-;;          inc     _ebx                   ; move to next pixel
-;;          cmp     _ebx,_esi               ; check for viewport boundary
-;;          _quif   ge
-;;          add     di,2                  ; move right
-;;          _if     c                     ; if < 0
-;;            push    _eax                 ; - move to next page
-;;            mov     al,ss:__VGAPage
-;;            inc     al
-;;            doicall __SetVGAPage
-;;            pop     _eax
-;;          _endif
-;;        _endloop
-;;done_scanrightword:
-;;        ret
+ifdef VERSION2
+
+_ScanRightWord_:
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,ss:[bp+4]
+endif
+        dec     _ebx
+        _loop
+          cmp     ax,word ptr es:[_edi]  ; check for colour
+          _if     e                     ; pixel is same as color mask
+            or      dl,dl               ; quit loop if paint until
+            je      done_scanrightword
+          _else
+            or      dl,dl               ; quit loop if paint while
+            jne     done_scanrightword
+          _endif
+          inc     _ebx                   ; move to next pixel
+          cmp     _ebx,_esi               ; check for viewport boundary
+          _quif   ge
+          add     di,2                  ; move right
+          _if     c                     ; if < 0
+            push    _eax                 ; - move to next page
+            mov     al,ss:__VGAPage
+            inc     al
+            doicall __SetVGAPage
+            pop     _eax
+          _endif
+        _endloop
+done_scanrightword:
+ifndef __386__
+        pop bp
+endif
+        ret
+
+_ScanRightDWord_:
+ifndef __386__
+        push    bp
+        mov     bp,sp
+endif
+        dec     _ebx
+        _loop
+ifdef  __386__
+          cmp     eax,dword ptr es:[_edi]  ; check for colour
+else
+          cmp     ax,word ptr es:[_edi]  ; check for colour
+          jne srd1
+          cmp     si,word ptr es:[_edi+2]  ; check for colour
+endif
+          jne srd1
+            or      dl,dl               ; quit loop if paint until and equals
+            je      short done_scanrightdword
+          jmp srd2
+          srd1:
+            or      dl,dl               ; quit loop if paint while ad not equal
+            jne     short done_scanrightdword
+          srd2:
+          inc     _ebx                   ; move to next pixel
+ifndef  __386__
+          cmp     _ebx,ss:[bp+4]               ; check for viewport boundary
+else
+          cmp     _ebx,_esi               ; check for viewport boundary
+endif
+          _quif   ge
+          add     di,4                  ; move right
+          _if     c                     ; if < 0
+            push    _eax                 ; - move to previous page
+            mov     al,ss:__VGAPage
+            inc     al
+            doicall __SetVGAPage
+            pop     _eax
+          _endif
+        _endloop
+done_scanrightdword:
+ifndef __386__
+        pop bp
+endif
+        ret
+
+_ScanRighTByte_:
+        inc     _ebx
+ifndef __386__
+;;get si lo byte into dh somehow
+        push    bp
+        mov     bp,sp
+        push si
+        mov  dh,ss:[bp-2]
+        pop si
+else
+;;get eax byte 2 into dh
+        push eax
+        mov  dh,ss:[esp+2]
+        pop eax
+endif
+        _loop
+
+          cmp     al,byte ptr es:[_edi]  ; check for colour
+          jne srt3
+
+          next_byte add, 1
+          cmp     ah,byte ptr es:[_edi]  ; check for colour
+          jne srt4
+
+          next_byte add, 1
+          cmp     dh,byte ptr es:[_edi]  ; check for colour
+          jne srt5
+          next_byte add, 1
+            or      dl,dl               ; quit loop if paint until and equals
+            je      short done_scanrighttbyte
+          jmp srt2
+          srt3:
+          next_byte add, 1
+          srt4:
+          next_byte add, 1
+          srt5:
+          next_byte add, 1
+            or      dl,dl               ; quit loop if paint while ad not equal
+            jne     short done_scanrighttbyte
+          srt2:
+          inc     _ebx                   ; move to next pixel
+ifndef  __386__
+          cmp     _ebx,ss:[bp+4]               ; check for viewport boundary
+else
+          cmp     _ebx,_esi               ; check for viewport boundary
+endif
+          _quif   ge
+        _endloop
+done_scanrighttbyte:
+ifndef __386__
+        pop bp
+endif
+        ret
+
+endif
 
 _ScanRight256_:
+ifdef VERSION2
+ifndef __386__
+        push    bp
+        mov     bp,sp
+        mov     si,ss:[bp+4]
+endif
+endif
         dec     _ebx
         _loop
           cmp     al,es:[_edi]       ; check for colour
@@ -1055,7 +1899,44 @@ _ScanRight256_:
           _endif
         _endloop
 done_scanright:
+ifdef VERSION2
+ifndef __386__
+        pop bp
+endif
+endif
         ret
+
+
+ifdef VERSION2
+
+;      xdefp   _BresLine_
+;; to let wdis come up with the actual byte values...
+;;   for 16 bit case..
+
+;_BresLine_:
+;                push    bp
+;                mov     bp,sp
+;                push    si
+;                mov     si,[bp+6]        ;...cause it's far call..
+;    BL1:         rol     bx,1             ;            ... check line style
+;                jnc     BL2
+;                push    dx               ;.... save ctr
+;                mov     dx,[bp-2]        ;.... get hi color word
+;;    ( L1: )     [ inline code for plot function ]
+;                pop     dx               ;.... restore ctr
+;    BL2:         dec     dx
+;                jl      BL3
+;;                [ inline code for major function ]
+;                sub     si,0x800f
+;                jg      BL1
+;                add     si,0x800f
+;;                [ inline code for minor function ]
+;                jmp     BL1
+;    BL3:        pop     si
+;                pop     bp
+;               retf
+
+endif
 
         endmod svgautil
         end
