@@ -461,7 +461,7 @@ extern void SetDefaultGlobalVarList( void )
     SetVariableByName( "IsLinux32", "0" );
 #else 
     SetVariableByName( "IsLinux64", "0" );
-  if defined( __LINUX__ )
+  #if defined( __LINUX__ )
     SetVariableByName( "IsLinux32", "1" );
   #else
     SetVariableByName( "IsLinux32", "0" );
