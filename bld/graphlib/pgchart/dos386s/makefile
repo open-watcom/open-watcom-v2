@@ -5,7 +5,6 @@
 host_os  = dos
 host_cpu = 386
 
-libname    = chart3s
 convention = stack
 
 !include ../pgchart.mif

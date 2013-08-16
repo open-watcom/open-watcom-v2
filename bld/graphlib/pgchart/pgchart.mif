@@ -3,6 +3,10 @@
 #
 proj_name = pgchart
 
+v2subdir = v2objs
+
+additional_cleanup_subdir = $(v2subdir)
+
 pgchart_autodepends = .AUTODEPEND
 pgchart_distrib_lib = 1
 
@@ -25,31 +29,36 @@ fpu_flags_os2_i86 = -fpc
 fpu_flags_os2_386 = -fpc
 fpu_flags_win_i86 = -fpc
 
-objs = &
-        pgancom.obj &
-        pganms.obj &
-        pganpie.obj &
-        pganscms.obj &
-        pgaxis.obj &
-        pgchart.obj &
-        pgchrdef.obj &
-        pgchrtpi.obj &
-        pgdfault.obj &
-        pghlabel.obj &
-        pginit.obj &
-        pglegend.obj &
-        pgmisc.obj &
-        pgpal.obj &
-        pgscale.obj &
-        pgsctter.obj &
-        pgstyle.obj &
-        pgtitle.obj &
-        pgvars.obj &
-        pgvlabel.obj
+template = &
+    $(_subdir_)pgancom.obj &
+    $(_subdir_)pganms.obj &
+    $(_subdir_)pganpie.obj &
+    $(_subdir_)pganscms.obj &
+    $(_subdir_)pgaxis.obj &
+    $(_subdir_)pgchart.obj &
+    $(_subdir_)pgchrdef.obj &
+    $(_subdir_)pgchrtpi.obj &
+    $(_subdir_)pgdfault.obj &
+    $(_subdir_)pghlabel.obj &
+    $(_subdir_)pginit.obj &
+    $(_subdir_)pglegend.obj &
+    $(_subdir_)pgmisc.obj &
+    $(_subdir_)pgpal.obj &
+    $(_subdir_)pgscale.obj &
+    $(_subdir_)pgsctter.obj &
+    $(_subdir_)pgstyle.obj &
+    $(_subdir_)pgtitle.obj &
+    $(_subdir_)pgvars.obj &
+    $(_subdir_)pgvlabel.obj
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+
+_subdir_ = $(v2subdir)/
+v2_objs = $+$(template)$-
+_subdir_ =
+objs = $+$(template)$-
 
 inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
 
@@ -72,10 +81,19 @@ extra_c_flags_i86 = -nt=GRAPH_TEXT
 
 extra_c_flags_win = -zW
 
-$(libname).lib : _graph.gh _pgchart.gh pgchart.lbc
+all : pgchart.gh chart.lib chart2.lib .symbolic
+
+chart.lib : graph.gh pgchart.lbc
         $(librarian) $(libflags) @pgchart.lbc
 
+chart2.lib : graph2.gh pgchart2.lbc
+        $(librarian) $(libflags) @pgchart2.lbc
+
 pgchart.lbc : $(objs)
+        %create $@
+        @for %i in ($<) do @%append $@ +%i
+
+pgchart2.lbc : $(v2_objs)
         %create $@
         @for %i in ($<) do @%append $@ +%i
 
@@ -84,8 +102,20 @@ wsplice_options_os2 = -kDOS
 wsplice_options_qnx = -kQNX -u
 wsplice_options_win = -kDOS
 
-_pgchart.gh: $(hdr_dir)/watcom/pgchart.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
+pgchart.gh: $(hdr_dir)/watcom/pgchart.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
         wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@
 
-_graph.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
+graph.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
         wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@
+
+graph2.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
+        wsplice -i$(hdr_dir) -kINTERNAL -kVERSION2 $(wsplice_options_$(host_os)) common.sp $[@ $^@
+
+.c{$(v2subdir)}.obj: $($(proj_name)_autodepends)
+    @if not exist $(v2subdir) mkdir $(v2subdir)
+!ifeq verbose 1
+        $(cc) $(cflags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
+!else
+        @echo cc $@
+        @$(cc) $(cflags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
+!endif

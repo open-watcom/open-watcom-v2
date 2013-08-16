@@ -5,6 +5,4 @@
 host_os  = win
 host_cpu = i86
 
-libname = chartw
-
 !include ../pgchart.mif

@@ -30,8 +30,12 @@
 ****************************************************************************/
 
 
-#include "_graph.gh"
-#include "_pgchart.gh"
+#if defined( VERSION2 )
+#include "graph2.gh"
+#else
+#include "graph.gh"
+#endif
+#include "pgchart.gh"
 #include "pgstubs.h"
 
 #if defined ( __386__ )

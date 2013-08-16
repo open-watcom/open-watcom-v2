@@ -5,6 +5,4 @@
 host_os  = dos
 host_cpu = i86
 
-libname = charts
-
 !include ../pgchart.mif

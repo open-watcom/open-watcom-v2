@@ -5,6 +5,4 @@
 host_os  = os2
 host_cpu = 386
 
-libname = charto
-
 !include ../pgchart.mif
