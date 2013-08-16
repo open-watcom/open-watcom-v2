@@ -43,10 +43,15 @@
 #if defined ( __386__ )
     #pragma aux scan_call "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi] value [bx];
 #else
+  #if defined( VERSION2 )
+    //endx now on stack
+    #pragma aux scan_call "*" parm caller [es di] [ax si] [bx] [cx] [dx] value [bx];
+  #else
     #pragma aux scan_call "*" parm caller [es di] [ax] [bx] [cx] [dx] [si] value [bx];
+  #endif
 #endif
 
-typedef short (near scan_func)( char far *, int, int, int, int, int );
+typedef short (near scan_func)( char far *, grcolor, int, int, int, int );
 #pragma aux (scan_call) scan_func;
 
 struct frame {
@@ -58,10 +63,8 @@ struct frame {
 
 
 static char     CheckIfOut( short, short, short );
-static short    PaintLeft( short, short, short, short );
-static short    PaintRight( short, short, short, short );
-static short    ScanLeft( short, short, short, short );
-static short    ScanRight( short, short, short, short );
+static short    PaintLeft( short, short, grcolor, short );
+static short    PaintRight( short, short, grcolor, short );
 static short    AddEntry( short, short, short, short, unsigned, unsigned *, struct frame * );
 static char     NotValidFrame( unsigned, unsigned *, struct frame * );
 static char     StackCompare( struct frame *, unsigned * );
@@ -349,7 +352,7 @@ static char CheckIfOut( short left_edge, short right_edge, short y )
 }
 
 
-static short PaintLeft( short x, short y, short stop_color, short border_flag )
+static short PaintLeft( short x, short y, grcolor stop_color, short border_flag )
 /*=============================================================================
 
     Paint left of starting pixel (x,y) using current color and fill
@@ -383,7 +386,7 @@ static short PaintLeft( short x, short y, short stop_color, short border_flag )
 }
 
 
-static short PaintRight( short x, short y, short stop_color, short border_flag )
+static short PaintRight( short x, short y, grcolor stop_color, short border_flag )
 /*==============================================================================
 
     Paint right of starting pixel (x,y) using current color and fill

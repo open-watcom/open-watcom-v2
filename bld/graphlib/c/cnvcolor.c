@@ -32,12 +32,53 @@
 
 #include "gdefn.h"
 
+#if defined( VERSION2 )
+
+#define __BLACK          0x000000L
+#define __BLUE           0x2a0000L
+#define __GREEN          0x002a00L
+#define __CYAN           0x2a2a00L
+#define __RED            0x00002aL
+#define __MAGENTA        0x2a002aL
+#define __BROWN          0x00152aL
+#define __WHITE          0x2a2a2aL
+#define __GRAY           0x151515L
+#define __LIGHTBLUE      0x3F1515L
+#define __LIGHTGREEN     0x153f15L
+#define __LIGHTCYAN      0x3f3f15L
+#define __LIGHTRED       0x15153fL
+#define __LIGHTMAGENTA   0x3f153fL
+#define __YELLOW         0x153f3fL
+#define __BRIGHTWHITE    0x3f3f3fL
+#define __LIGHTYELLOW    __YELLOW
+
+#else
+
+#define __BLACK          _BLACK
+#define __BLUE           _BLUE
+#define __GREEN          _GREEN
+#define __CYAN           _CYAN
+#define __RED            _RED
+#define __MAGENTA        _MAGENTA
+#define __BROWN          _BROWN
+#define __WHITE          _WHITE
+#define __GRAY           _GRAY
+#define __LIGHTBLUE      _LIGHTBLUE
+#define __LIGHTGREEN     _LIGHTGREEN
+#define __LIGHTCYAN      _LIGHTCYAN
+#define __LIGHTRED       _LIGHTRED
+#define __LIGHTMAGENTA   _LIGHTMAGENTA
+#define __YELLOW         _YELLOW
+#define __BRIGHTWHITE    _BRIGHTWHITE
+#define __LIGHTYELLOW    _YELLOW
+
+#endif
 
 long _VGA_Colours[ 16 ] = {     /* Maps VGA colours to EGA equivalents */
-    _BLACK, _BLUE, _GREEN, _CYAN,
-    _RED, _MAGENTA, _BROWN, _WHITE,
-    _GRAY, _LIGHTBLUE, _LIGHTGREEN, _LIGHTCYAN,
-    _LIGHTRED, _LIGHTMAGENTA, _LIGHTYELLOW, _BRIGHTWHITE
+    __BLACK, __BLUE, __GREEN, __CYAN,
+    __RED, __MAGENTA, __BROWN, __WHITE,
+    __GRAY, __LIGHTBLUE, __LIGHTGREEN, __LIGHTCYAN,
+    __LIGHTRED, __LIGHTMAGENTA, __LIGHTYELLOW, __BRIGHTWHITE
 };
 
 

@@ -41,9 +41,9 @@ short _WCI86FAR _CGRAPH          _arc_w_87( double, double, double, double, doub
 short _WCI86FAR _CGRAPH          _ellipse_w_87( short, double, double, double, double );
 short _WCI86FAR _CGRAPH          _pie_w_87( short, double, double, double, double,
                                        double, double, double, double );
-short _WCI86FAR _CGRAPH          _floodfill_w_87( double, double, short );
-short _WCI86FAR _CGRAPH          _setpixel_w_87( double, double );
-short _WCI86FAR _CGRAPH          _getpixel_w_87( double, double );
+short _WCI86FAR _CGRAPH          _floodfill_w_87( double, double, grcolor );
+grcolor _WCI86FAR _CGRAPH        _setpixel_w_87( double, double );
+grcolor _WCI86FAR _CGRAPH        _getpixel_w_87( double, double );
 struct xycoord _WCI86FAR _CGRAPH  _getviewcoord_w_87( double, double );
 struct _wxycoord _WCI86FAR _CGRAPH _moveto_w_87( double, double );
 short _WCI86FAR _CGRAPH          _setwindow_87( short, double, double, double, double );

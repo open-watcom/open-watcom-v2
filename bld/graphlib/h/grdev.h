@@ -35,24 +35,24 @@ typedef struct graphics_device {
     void            (*finish)( void );                          // finish up device
     void            (*set)( void );                             // set device
     void            (*reset)( void );                           // reset device
-    void            (*setup)( short, short, short );            // setup routine
+    void            (*setup)( short, short, grcolor );          // setup routine
     void pascal     (near *up)( void );                         // move up routine (ASM)
     void pascal     (near *left)( void );                       // move left routine
     void pascal     (near *down)( void );                       // move down routine
     void pascal     (near *right)( void );                      // move right routine
-    void            (near *plot[4])( char far *, int, int );    // plot-replace
-    short           (near *getdot)( char far *, int, int );     // get pixel color
-    void            (near *zap)( char far *, int,
+    void            (near *plot[4])( char far *, grcolor, int );// plot-replace
+    grcolor         (near *getdot)( char far *, int );          // get pixel color
+    void            (near *zap)( char far *, grcolor,
                                  int, int, int );               // zap routine
-    void            (near *fill)( char far *, int,
+    void            (near *fill)( char far *, grcolor,
                                   int, int, int );              // fill style routine
     void            (near *pixcopy)( char far *, char far *,
                                      int, int, int );           // copy pixels
     void            (near *readrow)( char far *, char far *,
                                      int, int, int );           // read a row of pixels
-    short           (near *scanleft)( char far *, int, int,
+    short           (near *scanleft)( char far *, grcolor, int,
                                       int, int, int );          // left scan in paint
-    short           (near *scanright)( char far *, int, int,
+    short           (near *scanright)( char far *, grcolor, int,
                                        int, int, int );         // right scan in paint
 } gr_device;
 #pragma pack (pop);

@@ -30,13 +30,27 @@
 
 
 #if defined ( __386__ )
-    #pragma aux DOT_FUNC "*" parm caller [es edi] [eax] [ecx];
+    #pragma aux PUT_DOT_FUNC "*" parm caller [es edi] [eax] [ecx];
 #else
-    #pragma aux DOT_FUNC "*" far parm caller [es di] [ax] [cx];
+  #if defined( VERSION2 )
+    #pragma aux PUT_DOT_FUNC "*" far parm caller [es di] [dx ax] [cx];
+  #else
+    #pragma aux PUT_DOT_FUNC "*" far parm caller [es di] [ax] [cx];
+  #endif
 #endif
 
-typedef short get_dot_fn( char far *, int, int );
-typedef void  put_dot_fn( char far *, int, int );
+#if defined ( __386__ )
+    #pragma aux GET_DOT_FUNC "*" parm caller [es edi] [ecx];
+#else
+  #if defined( VERSION2 )
+    #pragma aux GET_DOT_FUNC "*" far parm caller [es di] [cx];
+  #else
+    #pragma aux GET_DOT_FUNC "*" far parm caller [es di] [cx];
+  #endif
+#endif
 
-#pragma aux (DOT_FUNC) get_dot_fn;
-#pragma aux (DOT_FUNC) put_dot_fn;
+typedef grcolor get_dot_fn( char far *, int );
+typedef void  put_dot_fn( char far *, grcolor, int );
+
+#pragma aux (GET_DOT_FUNC) get_dot_fn;
+#pragma aux (PUT_DOT_FUNC) put_dot_fn;

@@ -32,7 +32,7 @@
 #include "gdefn.h"
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _gettextcolor( void )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _gettextcolor( void )
 /*======================================
 
    This function queries the current text output colour. */
@@ -48,14 +48,14 @@ _WCRTLINK short _WCI86FAR _CGRAPH _gettextcolor( void )
 Entry( _GETTEXTCOLOR, _gettextcolor ) // alternate entry-point
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _settextcolor( short pixval )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _settextcolor( grcolor pixval )
 /*==============================================
 
    This routine sets the colour for text output by changing the
    attribute.  It returns the previous text colour. */
 
 {
-    short               prev;
+    grcolor             prev;
 
     prev = _gettextcolor();
     if( _GrMode ) {

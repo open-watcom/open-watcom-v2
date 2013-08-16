@@ -60,7 +60,7 @@ short _L1GetDot( short x, short y )
         dev_ptr = _CurrState->deviceptr;
         ( *dev_ptr->setup )( x, y, 0 );
         getdot = dev_ptr->getdot;
-        color = ( *getdot )( _Screen.mem, 0, _Screen.bit_pos );
+        color = ( *getdot )( _Screen.mem, _Screen.bit_pos );
 
         _ResetDevice();
 #endif

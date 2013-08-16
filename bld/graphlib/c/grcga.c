@@ -61,7 +61,7 @@ static void _NoOp( void )
 }
 
 
-static void _Setup6( short x, short y, short colour )
+static void _Setup6( short x, short y, grcolor colour )
 /*===================================================
 
     Calculate screen memory address and associated masks for the
@@ -84,7 +84,7 @@ static void _Setup6( short x, short y, short colour )
 }
 
 
-static void _Setup4( short x, short y, short colour )
+static void _Setup4( short x, short y, grcolor colour )
 /*===================================================
 
     Calculate screen memory address and associated masks for the

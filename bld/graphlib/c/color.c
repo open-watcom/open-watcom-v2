@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _getcolor( void )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _getcolor( void )
 /*==================================
 
    This function returns the current colour. */
@@ -45,7 +45,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getcolor( void )
 Entry( _GETCOLOR, _getcolor ) // alternate entry-point
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _setcolor( short pixval )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _setcolor( grcolor pixval )
 /*==========================================
 
    This routine sets the colour for line drawing and object filling. */
@@ -61,13 +61,13 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setcolor( short pixval )
 Entry( _SETCOLOR, _setcolor ) // alternate entry-point
 
 
-short _WCI86FAR _L2setcolor( short pixval )
+grcolor _WCI86FAR _L2setcolor( grcolor pixval )
 /*====================================
 
    This routine sets the colour for line drawing and object filling. */
 
 {
-    short               prev;
+    grcolor         prev;
 
     prev = _CurrColor;
     _CurrColor = pixval & ( _CurrState->vc.numcolors - 1 );

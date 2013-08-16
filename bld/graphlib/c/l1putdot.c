@@ -71,7 +71,7 @@ short _L1PutDot( short x, short y )
         dev_ptr = _CurrState->deviceptr;
         ( *dev_ptr->setup )( x, y, _CurrColor );
         getdot = dev_ptr->getdot;
-        prev_color = ( *getdot )( _Screen.mem, 0, _Screen.bit_pos );
+        prev_color = ( *getdot )( _Screen.mem, _Screen.bit_pos );
         putdot = dev_ptr->plot[ _PlotAct ];
         ( *putdot )( _Screen.mem, _Screen.colour, _Screen.mask );
         _ResetDevice();

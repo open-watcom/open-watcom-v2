@@ -33,13 +33,13 @@
 #include "gdefn.h"
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _getpixel( short x, short y )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _getpixel( short x, short y )
 /*==============================================
 
    This function queries the color of the pixel at ( x, y ). */
 
 {
-    short           colour;
+    grcolor         colour;
 
     if( _GrProlog() ) {
         colour = _L1GetDot( _VtoPhysX( x ), _VtoPhysY( y ) );
@@ -53,13 +53,13 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getpixel( short x, short y )
 Entry( _GETPIXEL, _getpixel ) // alternate entry-point
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _setpixel( short x, short y )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _setpixel( short x, short y )
 /*==============================================
 
    This routine sets the pixel at the point ( x, y ), in viewport coords.   */
 
 {
-    short           old_colour;
+    grcolor         old_colour;
 
     if( _GrProlog() ) {
         old_colour = _L1PutDot( _VtoPhysX( x ), _VtoPhysY( y ) );

@@ -203,7 +203,7 @@ static void FastPlot( short x, short y, short q )
 // plot the ellipse point (x,y)
 
 {
-    void                (*setup )( short, short, short );
+    void                (*setup )( short, short, grcolor );
     put_dot_fn near     *putdot;
     gr_device _FARD     *dev_ptr;
 
@@ -236,7 +236,7 @@ static void PutDot( int x, int y, int q )
 //=======================================
 
 {
-    void                (*setup )( short, short, short );
+    void                (*setup )( short, short, grcolor );
     put_dot_fn near     *putdot;
     gr_device _FARD     *dev_ptr;
 

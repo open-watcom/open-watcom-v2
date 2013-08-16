@@ -36,7 +36,7 @@
 
 extern void             _EGASet( void );
 extern void             _EGAReset( void );
-extern void             _EGASetup80( short, short, short );
+extern void             _EGASetup80( short, short, grcolor );
 
 
 static short _VGAInit( short mode )
@@ -68,7 +68,7 @@ static void _NoOp( void )
 }
 
 
-static void _Setup17( short x, short y, short colour )
+static void _Setup17( short x, short y, grcolor colour )
 /*====================================================
 
     Calculate screen memory address and associated masks for the
@@ -88,7 +88,7 @@ static void _Setup17( short x, short y, short colour )
 }
 
 
-static void _Setup19( short x, short y, short colour )
+static void _Setup19( short x, short y, grcolor colour )
 /*====================================================
 
     Calculate screen memory address and associated masks for the

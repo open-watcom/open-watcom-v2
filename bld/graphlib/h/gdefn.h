@@ -33,7 +33,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <i86.h>
-#include "_graph.gh"
+#if defined( VERSION2 )
+#include "graph2.gh"
+#else
+#include "graph.gh"
+#endif
 
 #pragma pack(push, 1);
 
@@ -231,7 +235,7 @@ extern void                 _L1TXX( short, short, char _WCI86FAR *,
 extern short _WCI86FAR           _L2arc( short, short, short, short, short, short, short, short );
 extern void _WCI86FAR            _L2clearscreen( short );
 extern short _WCI86FAR           _L2ellipse( short, short, short, short, short );
-extern short _WCI86FAR           _L2floodfill( short, short, short );
+extern short _WCI86FAR           _L2floodfill( short, short, grcolor );
 extern short _WCI86FAR           _L2line( short, short, short, short );
 extern short _WCI86FAR           _L2pie( short, short, short, short, short, short, short, short, short );
 extern short _WCI86FAR           _L2polygon( short, short, struct xycoord _WCI86FAR * );
@@ -242,6 +246,6 @@ extern long _WCI86FAR            _L2imagesize( short, short, short, short );
 extern short _WCI86FAR           _L2grtext( short, short, char _WCI86FAR * );
 extern void _WCI86FAR            _L2setcliprgn( short, short, short, short );
 extern short _WCI86FAR           _L2setclip( short );
-extern short _WCI86FAR           _L2setcolor( short );
+extern grcolor _WCI86FAR         _L2setcolor( grcolor );
 
 #pragma pack (pop);

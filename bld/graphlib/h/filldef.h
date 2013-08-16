@@ -31,10 +31,12 @@
 
 #if defined ( __386__ )
     #pragma aux FILL_FUNC "*" parm caller [es edi] [eax] [ebx] [ecx] [edx];
+#elif defined ( VERSION2 )
+    #pragma aux FILL_FUNC "*" parm caller [es di] [si ax] [bx] [cx] [dx];
 #else
     #pragma aux FILL_FUNC "*" parm caller [es di] [ax] [bx] [cx] [dx];
 #endif
 
-typedef void fill_fn( char far *, int, int, int, int );
+typedef void fill_fn( char far *, grcolor, int, int, int );
 
 #pragma aux (FILL_FUNC) fill_fn;

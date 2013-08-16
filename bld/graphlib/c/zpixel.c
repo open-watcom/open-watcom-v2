@@ -33,14 +33,14 @@
 #include "gdefn.h"
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _getpixel_w( double x, double y )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _getpixel_w( double x, double y )
 /*==================================================
 
    This function queries the color of the pixel at ( x, y ), in
    window coordinates.  */
 
 {
-    short           colour;
+    grcolor         colour;
 
     if( _GrProlog() ) {
         colour = _L1GetDot( _WtoPhysX( x ), _WtoPhysY( y ) );
@@ -54,7 +54,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getpixel_w( double x, double y )
 Entry( _GETPIXEL_W, _getpixel_w ) // alternate entry-point
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _getpixel_w_87( double x, double y )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _getpixel_w_87( double x, double y )
 /*===================================================*/
 
 {
@@ -64,13 +64,13 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getpixel_w_87( double x, double y )
 Entry( _GETPIXEL_W_87, _getpixel_w_87 ) // alternate entry-point
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _setpixel_w( double x, double y )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _setpixel_w( double x, double y )
 /*==================================================
 
    This routine sets the pixel at the point ( x, y ), in window coords. */
 
 {
-    short               old_colour;         /* previous colour at (x,y) */
+    grcolor             old_colour;         /* previous colour at (x,y) */
 
     if( _GrProlog() ) {
         old_colour = _L1PutDot( _WtoPhysX( x ), _WtoPhysY( y ) );
@@ -84,7 +84,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setpixel_w( double x, double y )
 Entry( _SETPIXEL_W, _setpixel_w ) // alternate entry-point
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _setpixel_w_87( double x, double y )
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _setpixel_w_87( double x, double y )
 /*===================================================*/
 
 {

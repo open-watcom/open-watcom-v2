@@ -52,7 +52,7 @@ void _PutChar( short row, short col, short ch )
     short               x, y, x2, y2, outy;
     short               char_height;
     short               font_height;
-    short               colour;
+    grcolor             colour;
     short               prev_action;
     char                temp[2];
     WPI_COLOUR          old_bk, old_text;

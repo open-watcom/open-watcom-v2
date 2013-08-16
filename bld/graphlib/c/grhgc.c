@@ -109,7 +109,7 @@ static void _NoOp( void )
 }
 
 
-static void _HercSetup( short x, short y, short colour )
+static void _HercSetup( short x, short y, grcolor colour )
 /*======================================================
 
     Calculate screen memory address and associated masks for the

@@ -173,7 +173,7 @@ static void _EGAResetEO( void )
 }
 
 
-static void _EGASetup40( short x, short y, short colour )
+static void _EGASetup40( short x, short y, grcolor colour )
 /*=======================================================
 
     Calculate screen memory address and associated masks for the
@@ -191,7 +191,7 @@ static void _EGASetup40( short x, short y, short colour )
 }
 
 
-void _EGASetup80( short x, short y, short colour )
+void _EGASetup80( short x, short y, grcolor colour )
 /*================================================
 
     Calculate screen memory address and associated masks for the
@@ -209,7 +209,7 @@ void _EGASetup80( short x, short y, short colour )
 }
 
 
-static void _EGASetupMono( short x, short y, short colour )
+static void _EGASetupMono( short x, short y, grcolor colour )
 /*=========================================================
 
     Calculate screen memory address and associated masks for the

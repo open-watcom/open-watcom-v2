@@ -430,7 +430,7 @@ static void _SVGAReset16( void )
 }
 
 
-static void _Setup100( short x, short y, short colour )
+static void _Setup100( short x, short y, grcolor colour )
 /*=====================================================
 
     Calculate screen memory address and associated masks for the
@@ -448,7 +448,7 @@ static void _Setup100( short x, short y, short colour )
 }
 
 
-static void _Setup128( short x, short y, short colour )
+static void _Setup128( short x, short y, grcolor colour )
 /*=====================================================
 
     Calculate screen memory address and associated masks for the
@@ -470,7 +470,7 @@ static void _Setup128( short x, short y, short colour )
 }
 
 
-static void _Setup640( short x, short y, short colour )
+static void _Setup640( short x, short y, grcolor colour )
 /*=====================================================
 
     Calculate screen memory address and associated masks for the
@@ -491,7 +491,7 @@ static void _Setup640( short x, short y, short colour )
 }
 
 
-static void _Setup800( short x, short y, short colour )
+static void _Setup800( short x, short y, grcolor colour )
 /*=====================================================
 
     Calculate screen memory address and associated masks for the
@@ -512,7 +512,7 @@ static void _Setup800( short x, short y, short colour )
 }
 
 
-static void _Setup1024( short x, short y, short colour )
+static void _Setup1024( short x, short y, grcolor colour )
 /*=====================================================
 
     Calculate screen memory address and associated masks for the
@@ -534,7 +534,7 @@ static void _Setup1024( short x, short y, short colour )
 
 #if 0
 // This mode is untested
-static void _Setup1280( short x, short y, short colour )
+static void _Setup1280( short x, short y, grcolor colour )
 /*======================================================
 
     Calculate screen memory address and associated masks for the
