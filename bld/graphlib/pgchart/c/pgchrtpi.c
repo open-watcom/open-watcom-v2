@@ -139,11 +139,11 @@ static void _DrawPie( chartenv _WCI86FAR* env,
 /*  Uses shorts to graph the pie.
 
     +-----------+   -circle initially takes up 90% of the datawindow.
-    |    |    |   -space is made ( maxlength ) for percent if needed
-    |  |--  |   -initial vector is ( 1, 0 )
-    | +- |   -percents are printed out so that they either start or
-    |  |  |    end at the bisecting angle of the segment
-    |    |    |   -exploded segments are placed 1/10th of the radius away
+    |    |OO    |   -space is made ( maxlength ) for percent if needed
+    |  OO|OO--  |   -initial vector is ( 1, 0 )
+    | OOOO+-OOO |   -percents are printed out so that they either start or
+    |  OOO|OOO  |    end at the bisecting angle of the segment
+    |    O|O    |   -exploded segments are placed 1/10th of the radius away
     +-----------+    from the center along the bisecting angle of the segment
 */
 

@@ -86,10 +86,10 @@ static void _LineChart( chartenv _WCI86FAR *env, float _WCI86FAR *values,
     the chartenv variable "env".  Restricts output to inside the
     datawindow.
 
-    |   ¿          -screen is divided into "n" sections of equal width
-    |  ÚÙÀ¿  ¿     and is offset by 1/2th of these widths
-    | Ù   À¿ÚÙÀ
-    |       Ù
+    |   o¿          -screen is divided into "n" sections of equal width
+    |  ÚÙÀo¿  o¿     and is offset by 1/2th of these widths
+    | oÙ   À¿ÚÙÀo
+    |       oÙ
     +-------------
 */
 
