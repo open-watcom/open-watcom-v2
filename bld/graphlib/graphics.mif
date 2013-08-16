@@ -1,5 +1,9 @@
 proj_name = graph
 
+v2subdir = v2objs
+
+additional_cleanup_subdir = $(v2subdir)
+
 graph_autodepends = .AUTODEPEND
 
 graph_distrib_lib = 1
@@ -24,136 +28,140 @@ fpu_flags_os2_i86 = -fpc
 fpu_flags_os2_386 = -fpc
 fpu_flags_win_i86 = -fpc
 
-objs = &
-        sqrtf.obj &
-        std.obj &
-        activepg.obj &
-        arc.obj &
-        bkcolor.obj &
-        clearscr.obj &
-        clip.obj &
-        cliprgn.obj &
-        color.obj &
-        cursor.obj &
-        devutils.obj &
-        dispcurs.obj &
-        ellipse.obj &
-        fillmask.obj &
-        floodfll.obj &
-        fontsupp.obj &
-        getconf.obj &
-        getimage.obj &
-        getlogc.obj &
-        getphysc.obj &
-        getpos.obj &
-        global.obj &
-        grstatus.obj &
-        grtext.obj &
-        gtxtext.obj &
-        gtxtset.obj &
-        imagesiz.obj &
-        l1block.obj &
-        l1clip.obj &
-        l1ellips.obj &
-        l1fillar.obj &
-        l1getdot.obj &
-        l1getpic.obj &
-        l1hersh.obj &
-        l1line.obj &
-        l1paint.obj &
-        l1putdot.obj &
-        l1text.obj &
-        lineto.obj &
-        lnstyle.obj &
-        logorg.obj &
-        moveto.obj &
-        outtext.obj &
-        pie.obj &
-        pixel.obj &
-        plotactn.obj &
-        polygon.obj &
-        putchar.obj &
-        putimage.obj &
-        rectangl.obj &
-        remappal.obj &
-        scrollw.obj &
-        setchsiz.obj &
-        setchspc.obj &
-        setrows.obj &
-        settxpth.obj &
-        settxtal.obj &
-        settxtor.obj &
-        setvideo.obj &
-        setviewp.obj &
-        setwind.obj &
-        stylwrap.obj &
-        textcol.obj &
-        textpos.obj &
-        textwind.obj &
-        visualpg.obj &
-        windfunc.obj &
-        wrapon.obj &
-        zarc.obj &
-        zchsize.obj &
-        zellipse.obj &
-        zfloodfl.obj &
-        zgetimag.obj &
-        zgrtext.obj &
-        zimagesi.obj &
-        zlineto.obj &
-        zmoveto.obj &
-        zpie.obj &
-        zpixel.obj &
-        zpolygon.obj &
-        zputimag.obj &
-        zrectang.obj
+common_objs = &
+    $(_subdir_)sqrtf.obj &
+    $(_subdir_)std.obj &
+    $(_subdir_)activepg.obj &
+    $(_subdir_)arc.obj &
+    $(_subdir_)bkcolor.obj &
+    $(_subdir_)clearscr.obj &
+    $(_subdir_)clip.obj &
+    $(_subdir_)cliprgn.obj &
+    $(_subdir_)color.obj &
+    $(_subdir_)cursor.obj &
+    $(_subdir_)devutils.obj &
+    $(_subdir_)dispcurs.obj &
+    $(_subdir_)ellipse.obj &
+    $(_subdir_)fillmask.obj &
+    $(_subdir_)floodfll.obj &
+    $(_subdir_)fontsupp.obj &
+    $(_subdir_)getconf.obj &
+    $(_subdir_)getimage.obj &
+    $(_subdir_)getlogc.obj &
+    $(_subdir_)getphysc.obj &
+    $(_subdir_)getpos.obj &
+    $(_subdir_)global.obj &
+    $(_subdir_)grstatus.obj &
+    $(_subdir_)grtext.obj &
+    $(_subdir_)gtxtext.obj &
+    $(_subdir_)gtxtset.obj &
+    $(_subdir_)imagesiz.obj &
+    $(_subdir_)l1block.obj &
+    $(_subdir_)l1clip.obj &
+    $(_subdir_)l1ellips.obj &
+    $(_subdir_)l1fillar.obj &
+    $(_subdir_)l1getdot.obj &
+    $(_subdir_)l1getpic.obj &
+    $(_subdir_)l1hersh.obj &
+    $(_subdir_)l1line.obj &
+    $(_subdir_)l1paint.obj &
+    $(_subdir_)l1putdot.obj &
+    $(_subdir_)l1text.obj &
+    $(_subdir_)lineto.obj &
+    $(_subdir_)lnstyle.obj &
+    $(_subdir_)logorg.obj &
+    $(_subdir_)moveto.obj &
+    $(_subdir_)outtext.obj &
+    $(_subdir_)pie.obj &
+    $(_subdir_)pixel.obj &
+    $(_subdir_)plotactn.obj &
+    $(_subdir_)polygon.obj &
+    $(_subdir_)putchar.obj &
+    $(_subdir_)putimage.obj &
+    $(_subdir_)rectangl.obj &
+    $(_subdir_)remappal.obj &
+    $(_subdir_)scrollw.obj &
+    $(_subdir_)setchsiz.obj &
+    $(_subdir_)setchspc.obj &
+    $(_subdir_)setrows.obj &
+    $(_subdir_)settxpth.obj &
+    $(_subdir_)settxtal.obj &
+    $(_subdir_)settxtor.obj &
+    $(_subdir_)setvideo.obj &
+    $(_subdir_)setviewp.obj &
+    $(_subdir_)setwind.obj &
+    $(_subdir_)stylwrap.obj &
+    $(_subdir_)textcol.obj &
+    $(_subdir_)textpos.obj &
+    $(_subdir_)textwind.obj &
+    $(_subdir_)visualpg.obj &
+    $(_subdir_)windfunc.obj &
+    $(_subdir_)wrapon.obj &
+    $(_subdir_)zarc.obj &
+    $(_subdir_)zchsize.obj &
+    $(_subdir_)zellipse.obj &
+    $(_subdir_)zfloodfl.obj &
+    $(_subdir_)zgetimag.obj &
+    $(_subdir_)zgrtext.obj &
+    $(_subdir_)zimagesi.obj &
+    $(_subdir_)zlineto.obj &
+    $(_subdir_)zmoveto.obj &
+    $(_subdir_)zpie.obj &
+    $(_subdir_)zpixel.obj &
+    $(_subdir_)zpolygon.obj &
+    $(_subdir_)zputimag.obj &
+    $(_subdir_)zrectang.obj
 
 eng_nonwin_objs = &
-        8x8font.obj &
-        bit.obj &
-        gstklow.obj &
-        l0drwlin.obj &
-        l0ellips.obj &
-        l1fill.obj &
-        l1putpic.obj &
-        lineutil.obj &
-        seginit.obj &
-        transpar.obj &
-        visit.obj &
+    $(_subdir_)8x8font.obj &
+    $(_subdir_)bit.obj &
+    $(_subdir_)gstklow.obj &
+    $(_subdir_)l0drwlin.obj &
+    $(_subdir_)l0ellips.obj &
+    $(_subdir_)l1fill.obj &
+    $(_subdir_)l1putpic.obj &
+    $(_subdir_)lineutil.obj &
+    $(_subdir_)seginit.obj &
+    $(_subdir_)transpar.obj &
+    $(_subdir_)visit.obj &
 
 english_objs = &
-        cgautils.obj &
-        cnvcolor.obj &
-        egautils.obj &
-        fast256.obj &
-        hercfont.obj &
-        hgcutils.obj &
-        svgautil.obj &
-        vgautils.obj &
-        grcga.obj &
-        grega.obj &
-        grhgc.obj &
-        grsvga.obj &
-        grvga.obj &
-        selpal.obj &
-        setmode.obj &
-        svgainfo.obj &
-        sysmtype.obj
+    $(_subdir_)cgautils.obj &
+    $(_subdir_)cnvcolor.obj &
+    $(_subdir_)egautils.obj &
+    $(_subdir_)fast256.obj &
+    $(_subdir_)hercfont.obj &
+    $(_subdir_)hgcutils.obj &
+    $(_subdir_)svgautil.obj &
+    $(_subdir_)vgautils.obj &
+    $(_subdir_)grcga.obj &
+    $(_subdir_)grega.obj &
+    $(_subdir_)grhgc.obj &
+    $(_subdir_)grsvga.obj &
+    $(_subdir_)grvga.obj &
+    $(_subdir_)selpal.obj &
+    $(_subdir_)setmode.obj &
+    $(_subdir_)svgainfo.obj &
+    $(_subdir_)sysmtype.obj
 
 win_objs = &
-        gphmain.obj &
-        winutil.obj &
+    $(_subdir_)gphmain.obj &
+    $(_subdir_)winutil.obj &
 
 special_objs = &
-        fsmath.obj &
-        dummy.obj
+    fsmath.obj &
+    dummy.obj
 
 !ifeq host_os win
-objs += $(win_objs)
+grlib_template = $(common_objs) $(win_objs)
 !else
-objs += $(eng_nonwin_objs)
-objs += $(english_objs)
+grlib_template = $(common_objs) $(eng_nonwin_objs) $(english_objs)
 !endif
+
+_subdir_ = $(v2subdir)/
+v2_objs = $+$(grlib_template)$-
+_subdir_ =
+objs = $+$(grlib_template)$-
 
 !include cproj.mif
 !include defrule.mif
@@ -204,13 +212,41 @@ extra_a_flags_386 = $(extra_a_flags_386_$(convention))
 
 extra_a_flags_qnx = -D_QNX
 
-$(libname).lib : _graph.gh $(special_objs) $(objs)
+all: graphi.lib graphi2.lib .symbolic
+
+graphi.lib : graph.gh $(special_objs) $(objs)
         %create $^&.lbc
         @for %i in ($(objs)) do @%append $^&.lbc +%i
+        $(librarian) $(libflags) @$^&.lbc
+
+graphi2.lib : graph2.gh $(special_objs) $(v2_objs)
+        %create $^&.lbc
+        @for %i in ($(v2_objs)) do @%append $^&.lbc +%i
         $(librarian) $(libflags) @$^&.lbc
 
 wsplice_options_dos = -kDOS
 wsplice_options_qnx = -kQNX -u
 
-_graph.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
+graph.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
         wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@
+
+graph2.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
+        wsplice -i$(hdr_dir) -kINTERNAL -kVERSION2 $(wsplice_options_$(host_os)) common.sp $[@ $^@
+
+.c{$(v2subdir)}.obj: $($(proj_name)_autodepends)
+    @if not exist $(v2subdir) mkdir $(v2subdir)
+!ifeq verbose 1
+        $(cc) $(cflags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
+!else
+        @echo cc $@
+        @$(cc) $(cflags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
+!endif
+
+.asm{$(v2subdir)}.obj: $($(proj_name)_autodepends)
+    @if not exist $(v2subdir) mkdir $(v2subdir)
+!ifeq verbose 1
+        $(as) $(aflags) -dVERSION2 $(extra_a_flags_$[&) $(inc_path) $[@
+!else
+        @echo as $@
+        @$(as) $(aflags) -dVERSION2 $(extra_a_flags_$[&) $(inc_path) $[@
+!endif

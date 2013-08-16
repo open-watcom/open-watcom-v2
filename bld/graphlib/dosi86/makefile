@@ -3,6 +3,4 @@
 host_os  = dos
 host_cpu = i86
 
-libname = graphs
-
 !include $(graphics_prefix)../graphics.mif
