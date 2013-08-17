@@ -71,9 +71,9 @@ typedef void    near pascal move_fn( void );
 /* C code device functions calling convention declarations */
 
 typedef short   init_fn( short );
-typedef void    finish_fn)( void );
+typedef void    finish_fn( void );
 typedef void    set_fn( void );
-typedef void    reset_fn)( void );
+typedef void    reset_fn( void );
 typedef void    setup_fn( short, short, grcolor );
 
 
