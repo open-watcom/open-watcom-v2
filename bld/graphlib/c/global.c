@@ -48,7 +48,11 @@ short                   _Tx_Row_Max;
 short                   _Tx_Col_Max;
 
 struct rccoord          _TextPos;                   // dummy text postion
+#if defined( VERSION2 )
+grcolor                 _CharAttr = _DEFAULT_ATTR;  // current text attribute
+#else
 char                    _CharAttr = _DEFAULT_ATTR;  // current text attribute
+#endif
 short                   _Wrap = _GWRAPON;           // text wrap flag
 short                   _CursState = _GCURSORON;    // cursor state flag
 short                   _CursorShape;               // cursor shape
@@ -95,8 +99,15 @@ SCREEN_DESC             _Screen;                    // screen description
 unsigned char           _IsDBCS;                    // is this a DBCS system
 dbcs_pair               _DBCSPairs[ 5 ];            // range of DBCS chars
 
+#if defined( VERSION2 )
+long                    _coltbl[16];                // EGA colors for TC modes
+#endif
+
 #if defined( _SUPERVGA )
 unsigned char           _VGAPage;                   // SuperVGA page number
+#if defined( VERSION2 )
+unsigned short          _VGABytesPerPixel;          // SuperVGA num bytes per pixel
+#endif
 unsigned char           _VGAGran;                   // SuperVGA page granularity
 short                   _SVGAType;                  // type of SuperVGA
 void                    ( _FARC *_SetVGAPage )( short );  // function to set SVGA page

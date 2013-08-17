@@ -171,7 +171,11 @@ void _PutChar( short row, short col, short ch )
         if( space > 0 ) {
             y += space / 2;
         }
+#if defined( VERSION2 )
+        if( ( _CharAttr & 0x80 ) && _CurrState->vc.numcolors < 256 ) {
+#else
         if( ( _CharAttr & 0x80 ) && _CurrState->vc.numcolors != 256 ) {
+#endif
             prev_action = _setplotaction( _GXOR );
         } else {
             _GrClear( x, y, x + _FONT_WIDTH - 1, y + char_height - 1 );
@@ -180,7 +184,11 @@ void _PutChar( short row, short col, short ch )
         dev_ptr = _CurrState->deviceptr;
         fill = dev_ptr->fill;
         setup = dev_ptr->setup;
+#if defined( VERSION2 )
+        colour = _CharAttr & _CurrState->pixel_mask;
+#else
         colour = _CharAttr & ( _CurrState->vc.numcolors - 1 );
+#endif
         if( space == 2 ) {      // duplicate top row
             ( *setup )( x, y - 1, colour );
             ( *fill )( _Screen.mem, colour, *mask, _FONT_WIDTH, 0 );
@@ -194,7 +202,11 @@ void _PutChar( short row, short col, short ch )
             ( *fill )( _Screen.mem, colour, *(mask-1), _FONT_WIDTH, 0 );
         }
         _ResetDevice();
+#if defined( VERSION2 )
+        if( ( _CharAttr & 0x80 ) && _CurrState->vc.numcolors < 256 ) {
+#else
         if( ( _CharAttr & 0x80 ) && _CurrState->vc.numcolors != 256 ) {
+#endif
             _setplotaction( prev_action );
         }
     }

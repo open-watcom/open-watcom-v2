@@ -244,7 +244,7 @@
 #pragma aux _RomOff "_*";
 
 #pragma aux _coltbl "_*";
-#pragma aux _VGANBytes "_*";
+#pragma aux _VGABytesPerPixel "_*";
 
 #if defined( __QNX__ )
 #pragma aux _CompileSeg "_*";

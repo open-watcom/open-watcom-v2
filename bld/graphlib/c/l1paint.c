@@ -225,7 +225,11 @@ short _L1Paint( grcolor stop_color, short x, short y )
         }
         border_flag = 1;                /* paint inside while same color    */
     } else {
+#if defined( VERSION2 )
+        stop_color &= _CurrState->pixel_mask;
+#else
         stop_color &= _CurrState->vc.numcolors - 1;
+#endif
         if( stop_color == _L1GetDot( x, y ) ) {     /* on border of region */
             _ErrorStatus = _GRINVALIDPARAMETER;
             return( FALSE );

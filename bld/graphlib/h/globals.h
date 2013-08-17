@@ -44,7 +44,11 @@ extern short            _Tx_Row_Max;
 extern short            _Tx_Col_Max;
 
 extern struct rccoord   _TextPos;                   // dummy text postion
+#if defined( VERSION2 )
+extern grcolor          _CharAttr;                  // current text attribute
+#else
 extern char             _CharAttr;                  // current text attribute
+#endif
 extern short            _Wrap;                      // text wrap flag
 extern short            _CursState;                 // cursor state flag
 extern short            _CursorShape;               // cursor shape
@@ -79,11 +83,13 @@ extern struct _wxycoord _CurrPos_w;                 // current window position
 extern struct window_def _Window;                   // default window def'n
 extern SCREEN_DESC      _Screen;                    // screen description
 extern long             _VGA_Colours[ 16 ];         // VGA to EGA mapping
+extern long             _coltbl[ 16 ];              // EGA colors for TC modes
 
 extern unsigned char    _IsDBCS;                    // is this a DBCS system
 extern dbcs_pair        _DBCSPairs[];               // range of DBCS chars
 
 extern unsigned char    _VGAPage;                   // SuperVGA page number
+extern unsigned short   _VGABytesPerPixel;          // SuperVGA number of bytes per pixel
 extern unsigned char    _VGAGran;                   // SuperVGA page granularity
 extern short            _SVGAType;                  // type of SuperVGA
 extern void             ( _FARC *_SetVGAPage )( short );  // function to set SVGA page

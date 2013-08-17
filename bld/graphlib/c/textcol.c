@@ -33,7 +33,7 @@
 
 
 _WCRTLINK grcolor _WCI86FAR _CGRAPH _gettextcolor( void )
-/*======================================
+/*=======================================================
 
    This function queries the current text output colour. */
 
@@ -49,18 +49,22 @@ Entry( _GETTEXTCOLOR, _gettextcolor ) // alternate entry-point
 
 
 _WCRTLINK grcolor _WCI86FAR _CGRAPH _settextcolor( grcolor pixval )
-/*==============================================
+/*=================================================================
 
    This routine sets the colour for text output by changing the
    attribute.  It returns the previous text colour. */
 
 {
-    grcolor             prev;
+    grcolor     prev;
 
     prev = _gettextcolor();
     if( _GrMode ) {
         _CursorOff();                        // keep XOR bit in colour
+#if defined( VERSION2 )
+        _CharAttr = pixval & ( _CurrState->pixel_mask | ( ( _CurrState->vc.numcolors <= 256 ) ? 0x80 : 0 ) );
+#else
         _CharAttr = pixval & ( ( _CurrState->vc.numcolors - 1 ) | 0x80 );
+#endif
         _GrEpilog();            // cause the cursor to change to new colour
     } else {
         _CharAttr &= 0x70;          // eliminate old colour

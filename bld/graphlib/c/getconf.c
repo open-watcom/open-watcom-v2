@@ -58,9 +58,9 @@ static short            _MemoryTab[ 8 ] = {
 
 #endif
 
-_WCRTLINK struct videoconfig _WCI86FAR * _WCI86FAR _CGRAPH
-/*===================*/ _getvideoconfig( struct videoconfig _WCI86FAR *config )
-
+_WCRTLINK struct videoconfig _WCI86FAR *_WCI86FAR _CGRAPH
+        _getvideoconfig( struct videoconfig _WCI86FAR *config )
+/*=================================================================*/ 
 /* This function returns a structure containing information about the
    current video mode. */
 
@@ -233,18 +233,24 @@ void _InitState( void )
 }
 
 
-void _GrInit( short x, short y, short stride, short col, short bpp,
+void _GrInit( short x, short y, short stride, grcolor col, short bpp,
               short pag, short seg, int off, short siz, short mis )
 //=================================================================
 
 //  Initialize fields of the videoinfo structure for a graphics mode.
 
 {
+#if defined( VERSION2 )
+    int i;
+#endif
     _GrMode = TRUE;
     _GetState();    // initialize text mode fields
     _CurrState->vc.numxpixels    = x;
     _CurrState->vc.numypixels    = y;
     _CurrState->vc.numcolors     = col;
+#if defined( VERSION2 )
+    _CurrState->pixel_mask       = col - 1;
+#endif
     _CurrState->vc.bitsperpixel  = bpp;
     _CurrState->vc.numvideopages = pag;
     _CurrState->screen_seg_base  = seg;
@@ -254,4 +260,9 @@ void _GrInit( short x, short y, short stride, short col, short bpp,
     _CurrState->screen_seg       = seg;     /* page 0 screen segment */
     _CurrState->screen_off       = off;     /* page 0 screen offset */
     _CurrState->stride           = stride;
+#if defined( VERSION2 )
+    for( i = 0; i < 16; i++ ) {
+        _coltbl[i] = _VGA_Colours[i];
+    }
+#endif
 }

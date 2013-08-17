@@ -79,32 +79,36 @@ static void HScrollRestore()
     #undef GLOBALHANDLE
     #include "win.h"
     #include <stdarg.h>
-    #if defined( __OS2__ )
-        #include "pmmenu.h"
-    #endif
+  #if defined( __OS2__ )
+    #include "pmmenu.h"
+  #endif
 
     WPI_PRES            _Mem_dc = NULL;
     HDC                 _Hdc;
     HBITMAP             _Mem_bmp = NULL;
     HWND                _CurrWin = NULL;
     extern HWND         _MainWindow;
-    #if !defined( __OS2__ )
-        extern HMENU    _SubMenuWindows;
-    #else
-        extern HWND     _GetWinMenuHandle();
-    #endif
+  #if !defined( __OS2__ )
+    extern HMENU        _SubMenuWindows;
+  #else
+    extern HWND         _GetWinMenuHandle();
+  #endif
     extern void         _GetWindowNameAndCoords( char*, char*, int*, int*, int*, int*   );
-    static LPWDATA _NewGphWindow( HWND hwnd, ... );
-    static short _registergphclass( WPI_INST );
+    static LPWDATA      _NewGphWindow( HWND hwnd, ... );
+    static short        _registergphclass( WPI_INST );
 
 #else
 
-extern gr_device _FARD  _TextDevice, _GrCGA_4, _GrCGA_6, _GrHGC_11,
-                        _GrEGA_13, _GrEGA_14, _GrEGA_15, _GrEGA_16,
-                        _GrVGA_17, _GrVGA_18, _GrVGA_19;
+    extern gr_device _FARD  _TextDevice, _GrCGA_4, _GrCGA_6, _GrHGC_11,
+                            _GrEGA_13, _GrEGA_14, _GrEGA_15, _GrEGA_16,
+                            _GrVGA_17, _GrVGA_18, _GrVGA_19;
   #if defined( _SUPERVGA )
-extern gr_device _FARD  _GrSVGA_100, _GrSVGA_102, _GrSVGA_103,
-                        _GrSVGA_104, _GrSVGA_105;
+    extern gr_device _FARD  _GrSVGA_100, _GrSVGA_102, _GrSVGA_103,
+                            _GrSVGA_104, _GrSVGA_105;
+  #endif
+
+  #if defined( _SUPERVGA ) && defined( VERSION2 )
+    extern gr_device _FARD  _GrVESA;
   #endif
 
 
@@ -139,7 +143,11 @@ static SUPP_MODE        VideoModes[] = {
     0x104,              &_GrSVGA_104,
     0x105,              &_GrSVGA_105,
   #endif
+  #if defined( _SUPERVGA ) && defined( VERSION2 )
+    -1,                 &_GrVESA
+  #else
     -1,                 NULL
+  #endif
 };
 
 
@@ -216,6 +224,12 @@ static void _InitVariables( void )
 
     _CharAttr = _DEFAULT_ATTR;
     _CurrColor = ( _CurrState->vc.numcolors - 1 ) & 15;
+#if defined( VERSION2 )
+    if( _CurrState->vc.numcolors > 256 ) {
+        _CharAttr = _WHITE;                     // white
+        _CurrColor = _CurrState->pixel_mask;    // brightwhite
+    }
+#endif
     _CurrBkColor = 0;
     _CurrActivePage = _CurrVisualPage = 0;
     _CurrState->screen_seg = _CurrState->screen_seg_base;/* pg 0 scrn segment */
@@ -463,8 +477,18 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     }
     for( tab = VideoModes; ; ++tab ) {
         if( tab->mode == -1 ) {
+#if defined( VERSION2 )
+            if( ( mode > 0x105 ) && ( mode < 0x120 ) ) {
+                dev_ptr=tab->dev;
+                break;
+            } else {
+                _ErrorStatus = _GRINVALIDPARAMETER;
+                return( 0 );
+            }
+#else
             _ErrorStatus = _GRINVALIDPARAMETER;
             return( 0 );
+#endif
         } else if( tab->mode == mode ) {
             dev_ptr = tab->dev;
             break;
@@ -852,7 +876,11 @@ void _PaletteInit( void )
             _remappalette( 1, _LIGHTCYAN );
             _remappalette( 2, _LIGHTMAGENTA );
             _remappalette( 3, _BRIGHTWHITE );
+#if defined( VERSION2 )
+        } else if( ( _CurrState->vc.numcolors >= 16 ) && ( _CurrState->vc.numcolors <= 256 ) ) {
+#else
         } else if( _CurrState->vc.numcolors >= 16 ) {
+#endif
             _RemapNum( _VGA_Colours, 16 );
 //          for( i = 0; i < 16; ++i ) {
 //              _remappalette( i, _VGA_Colours[ i ] );

@@ -124,6 +124,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
 //#if !defined( __QNX__ )
     case _SV_VESA:
         #if defined( __386__ ) && !defined(__QNX__)
+//            assert(256>=sizeof(struct VbeModeInfo));//large enough?
             if( !_RMAlloc( 256, &mem ) ) {
                 return( FALSE );
             }
@@ -136,6 +137,9 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
             val = _RMInterrupt( 0x10, 0x4f01, 0, mode, 0, mem.rm_seg, 0 );
             if( val == 0x004f ) {
                 rbuf = mem.pm_ptr;
+#if defined( VERSION2 )
+                _fmemmove(&(_CurrState->mi),rbuf,sizeof(struct VbeModeInfo ));
+#endif
                 for( i = 2; i <= 8; ++i ) {
                     buf[ i ] = rbuf[ i ];
                 }
@@ -148,6 +152,9 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
             if( GetVESAInfo( 0x4f01, mode, &buf ) != 0x004f ) {
                 return( FALSE );
             }
+#if defined( VERSION2 )
+            _fmemmove(&(_CurrState->mi),buf,sizeof(struct VbeModeInfo));
+#endif
         #endif
         #if !defined( __QNX__ )
         if( buf[ 3 ] != 64 || buf[ 4 ] != 0xa000 ) {    // need 64k pages
@@ -281,6 +288,219 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     return( TRUE );
 }
 
+#if defined( VERSION2 )
+
+struct gfx_parm
+{
+    int xres,yres;
+    grcolor ncolors;
+};
+
+#define CTXT 0
+#define C256 256
+#define C16 16
+#define C32K 32768
+#define C64K 65536
+#define CTRUE 16777216
+static struct gfx_parm parmtbl[32]=
+{
+    { 640,  400,  256},
+    { 640,  480,  256},
+    { 800,  600,  16},
+    { 800,  600,  256},
+    { 1024, 768,  16},
+    { 1024, 768,  256},
+    { 1280, 1024, 16},
+    { 1280, 1024, 256},
+    { 80,   60,   0},
+    { 132,  25,   0},
+    { 132,  43,   0},
+    { 132,  50,   0},
+    { 132,  60,   0},
+    { 320,  200,  C32K},
+    { 320,  200,  C64K},
+    { 320,  200,  CTRUE},
+    { 640,  480,  C32K},
+    { 640,  480,  C64K},
+    { 640,  480,  CTRUE},
+    { 800,  600,  C32K},
+    { 800,  600,  C64K},
+    { 800,  600,  CTRUE},
+    { 1024, 768,  C32K},
+    { 1024, 768,  C64K},
+    { 1024, 768,  CTRUE},
+    { 1280, 1024, C32K},
+    { 1280, 1024, C64K},
+    { 1280, 1024, CTRUE},
+    { 1600, 1200, 256},
+    { 1600, 1200, C32K},
+    { 1600, 1200, C64K},
+    { 1600, 1200, CTRUE}
+};
+
+#if 0
+static void printModeCaps(struct VbeModeInfo * ModeInfo)
+{
+   char * model_strings[]={
+   "TEXTMODE",
+   "CGA",
+   "HERCULES",
+   "PLANAR",
+   "PACKED",
+   "MODEX",
+   "RGB",
+   "YUV"
+   };
+   int i;
+   char * p;
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_AVAILABLE)    printf("Mode is available\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_EXTINFO)    printf("Extended info\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_TTYOUTPUT)    printf("TTY(Bios) output is available\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_COLORMODE)    printf("Color video mode\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_GRAPHMODE)    printf("Graphics mode\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_NONVGA)    printf("Non-VGA mode\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_NONBANKED)    printf("Banked frame buffer not supported\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_LINEAR)    printf("Linear frame buffer is supported\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_DOUBLESCAN)    printf("Double scan mode available\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_INTERLACED)    printf("Interlaced Mode Available\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_TRIPLEBUF)    printf("Triple Buffering supported\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_STEREO)    printf("Stereoscopic display supported\n");
+   if(ModeInfo->ModeAttributes&VBEMODE_CAPS_DUALDISP)    printf("dual display start address support\n");
+   
+   i=ModeInfo->MemoryModel;
+   if(i>(sizeof(model_strings)/sizeof(*model_strings)))
+     p="invalid";
+   else
+     p=model_strings[i];
+   printf("Memory mode: %s\n",p);
+   return;
+}
+#endif
+
+static void _SetupVESA( short x, short y, long colour );
+static void _Setup128( short x, short y, long colour );
+static void _NoOp( void );
+static void _SVGAReset( void );
+static void _SVGAReset16( void );
+gr_device _FARD         _GrVESA;
+
+static void _setup_grvesa(void)
+//======================================
+
+// Sets the VESA specific device function pointers and some data
+{
+    _CurrState->bytes_per_pixel = _CurrState->mi.BytesPerScanLine / _CurrState->mi.XResolution;
+    _VGABytesPerPixel = _CurrState->mi.BytesPerScanLine / _CurrState->mi.XResolution;
+    _GrVESA.setup = _SetupVESA;
+    _GrVESA.set = _NoOp;
+    _GrVESA.reset = _SVGAReset;
+    _GrVESA.left = _MoveLeftVESA;
+    _GrVESA.right = _MoveRightVESA;
+//    printf("_VGABytesPerPixel: %d\n",_VGABytesPerPixel);
+//    printModeCaps(&(_CurrState->mi));
+    /*
+    _SuperVGAInit, _NoOp,
+    _EGASet, _SVGAReset16,
+    _Setup128,
+    _MoveUp128,_EGAMoveLeft,_MoveDown128,_EGAMoveRight,
+    _EGARep,_EGARep,_EGARep,_EGARep,
+    _EGAGetDot,_EGAZap,_EGAFill,_EGAPixCopy,_EGAReadRow,
+    _EGAScanLeft,_EGAScanRight
+    */
+    switch( _VGABytesPerPixel ) {
+    case 0:
+        _GrVESA.set=_EGASet;
+        _GrVESA.reset=_SVGAReset16;
+        _GrVESA.setup=_Setup128;
+        _GrVESA.left=_EGAMoveLeftX;
+        _GrVESA.right=_EGAMoveRightX;
+        _GrVESA.plot[0]=_EGARep;
+        _GrVESA.plot[1]=_EGARep;
+        _GrVESA.plot[2]=_EGARep;
+        _GrVESA.plot[3]=_EGARep;
+        _GrVESA.getdot=_EGAGetDot;
+        _GrVESA.zap=_EGAZapX;
+        _GrVESA.fill=_EGAFillX;
+        _GrVESA.pixcopy=_EGAPixCopyX;
+        _GrVESA.readrow=_EGAReadRowX;
+        _GrVESA.scanleft=_EGAScanLeftX;
+        _GrVESA.scanright=_EGAScanRightX;
+        return;//we are palettized
+    case 1:
+        _GrVESA.plot[0]=_Rep19;
+        _GrVESA.plot[1]=_CoXor;
+        _GrVESA.plot[2]=_And19;
+        _GrVESA.plot[3]=_CoOr;
+        _GrVESA.getdot=_GetDot19;
+        _GrVESA.zap=_Zap256;
+        _GrVESA.fill=_Fill256;
+        _GrVESA.pixcopy=_PixCopy256;
+        _GrVESA.readrow=_PixRead256;
+        _GrVESA.scanleft=_ScanLeft256;
+        _GrVESA.scanright=_ScanRight256;
+        return;//we are palettized
+    case 2:
+        _GrVESA.plot[0]=_RepWord;
+        _GrVESA.plot[1]=_XorWord;
+        _GrVESA.plot[2]=_AndWord;
+        _GrVESA.plot[3]=_OrWord;
+        _GrVESA.getdot=_GetDotWord;
+        _GrVESA.zap=_ZapWord;
+        _GrVESA.fill=_FillWord;
+        _GrVESA.pixcopy=_PixCopyWord;
+        _GrVESA.readrow=_PixReadWord;
+        _GrVESA.scanleft=_ScanLeftWord;
+        _GrVESA.scanright=_ScanRightWord;
+        break;
+    case 3:
+        _GrVESA.plot[0]=_RepTByte;
+        _GrVESA.plot[1]=_XorTByte;
+        _GrVESA.plot[2]=_AndTByte;
+        _GrVESA.plot[3]=_OrTByte;
+        _GrVESA.getdot=_GetDotTByte;
+        _GrVESA.zap=_ZapTByte;
+        _GrVESA.fill=_FillTByte;
+        _GrVESA.pixcopy=_PixCopyTByte;
+        _GrVESA.readrow=_PixReadTByte;
+        _GrVESA.scanleft=_ScanLeftTByte;
+        _GrVESA.scanright=_ScanRightTByte;
+        break;
+    case 4:
+        _GrVESA.plot[0]=_RepDWord;
+        _GrVESA.plot[1]=_XorDWord;
+        _GrVESA.plot[2]=_AndDWord;
+        _GrVESA.plot[3]=_OrDWord;
+        _GrVESA.getdot=_GetDotDWord;
+        _GrVESA.zap=_ZapDWord;
+        _GrVESA.fill=_FillDWord;
+        _GrVESA.pixcopy=_PixCopyDWord;
+        _GrVESA.readrow=_PixReadDWord;
+        _GrVESA.scanleft=_ScanLeftDWord;
+        _GrVESA.scanright=_ScanRightDWord;
+        break;
+    }
+    _CurrState->pixel_mask = _rgb2pixel( 255, 255, 255 );
+
+    //                        r    g    b
+    _coltbl[0]  = _rgb2pixel( 0,   0,   0   );
+    _coltbl[1]  = _rgb2pixel( 0,   0,   170 );
+    _coltbl[2]  = _rgb2pixel( 0,   170, 0   );
+    _coltbl[3]  = _rgb2pixel( 0,   170, 170 );
+    _coltbl[4]  = _rgb2pixel( 170, 0,   0   );
+    _coltbl[5]  = _rgb2pixel( 170, 0,   170 );
+    _coltbl[6]  = _rgb2pixel( 170, 85,  0   );
+    _coltbl[7]  = _rgb2pixel( 170, 170, 170 );
+    _coltbl[8]  = _rgb2pixel( 85,  85,  85  );
+    _coltbl[9]  = _rgb2pixel( 85,  85,  255 );
+    _coltbl[10] = _rgb2pixel( 85,  255, 85  );
+    _coltbl[11] = _rgb2pixel( 85,  255, 255 );
+    _coltbl[12] = _rgb2pixel( 255, 85,  85  );
+    _coltbl[13] = _rgb2pixel( 255, 85,  255 );
+    _coltbl[14] = _rgb2pixel( 255, 255, 85  );
+    _coltbl[15] = _rgb2pixel( 255, 255, 255 );
+}
+
+#endif
 
 static short _SuperVGAInit( short mode )
 //======================================
@@ -346,29 +566,64 @@ static short _SuperVGAInit( short mode )
     case 0x104:
         _GrInit( 1024, 768,  128,  16,   4,   1, _EgaSeg, _EgaOff,   0, PLANAR + NO_BIOS );
         _CurrState->vc.numtextcols = 128;
+#if defined( VERSION2 )
+        //actually 64(12 pixel) and 96(8 pixel) would work well, too.. but 48 seems to be what the BIOS uses (reading the appropriate byte gives 47)
+        _CurrState->vc.numtextrows = 48;
+#else
         _CurrState->vc.numtextrows = 50;
+#endif
         break;
     case 0x105:
-        _GrInit( 1024, 768, 1024, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
+        _GrInit( 1024, 768, 1024, 256, 8, 1, _EgaSeg, _EgaOff, 0, NO_BIOS );
         _CurrState->vc.numtextcols = 128;
+#if defined( VERSION2 )
+        _CurrState->vc.numtextrows = 48;
+#else
         _CurrState->vc.numtextrows = 50;
+#endif
         break;
 #if 0
-// This mode is untested
+// This mode is untested. 
     case 0x110:
-        _GrInit(  640, 480, 1280, 32768,16,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
+        _GrInit( 640, 480, 1280, 32768, 16, 1, _EgaSeg, _EgaOff, 0, NO_BIOS );
         _CurrState->vc.numtextcols = 80;
         _CurrState->vc.numtextrows = 30;
         break;
 #endif
-    }
-
+    default:
+#if defined( VERSION2 )
+//    printf("default: adapter: %d, mode: %d, bpp: %d\n",adapter,mode,_CurrState->mi.BitsPerPixel);
+        if( ( adapter == _SV_VESA ) && ( mode >= 0x100 ) && ( mode <= 0x11F ) ) {       //mode info is valid
+            struct gfx_parm p = parmtbl[mode - 0x100];
+//            printf("p.ncolors: %d\n",p.ncolors);
+            _GrInit( p.xres, p.yres, _CurrState->mi.BytesPerScanLine, p.ncolors, _CurrState->mi.BitsPerPixel,
+                     1, _EgaSeg, _EgaOff, 0,
+                     (( p.ncolors != 0 ) ? NO_BIOS : 0) + (( _CurrState->mi.MemoryModel == VBEMODE_MODEL_PLANAR ) ? PLANAR : 0) );
+            if( p.ncolors == 0 ) {      //textmode
+                _CurrState->vc.numtextcols = p.xres;
+                _CurrState->vc.numtextrows = p.yres;
+            } else {
+                _CurrState->vc.numtextcols = p.xres / 8;
+                if( p.yres < 480 ) {
+                    _CurrState->vc.numtextrows = p.yres / 8;
+                } else if( p.yres == 600 ) {
+                    _CurrState->vc.numtextrows = 40;
+                } else {
+                    _CurrState->vc.numtextrows = p.yres / 16;
+                }
+            }
+            _setup_grvesa();
+        } else {
+            return( FALSE );
+        }
+#endif
+        break;
+    }       
     _CurrState->vc.mode = mode;         // _GrInit fills in bios_mode
     _CurrState->vc.adapter = _SVGA;
     if( stride )
         _CurrState->stride = stride;    // Override default stride if necessary
     _VGAStride = _CurrState->stride;
-
     return( TRUE );
 }
 
@@ -469,6 +724,7 @@ static void _Setup128( short x, short y, grcolor colour )
     _Screen.colour = colour;
 }
 
+#if !defined( VERSION2 )
 
 static void _Setup640( short x, short y, grcolor colour )
 /*=====================================================
@@ -511,12 +767,13 @@ static void _Setup800( short x, short y, grcolor colour )
     _Screen.colour = colour;
 }
 
+#endif
 
 static void _Setup1024( short x, short y, grcolor colour )
-/*=====================================================
+/*======================================================
 
     Calculate screen memory address and associated masks for the
-    position (x,y) in 1024 x 768, 256 colour mode. */
+    position (x,y) in 1byte modes. */
 
 {
     short               page_num;
@@ -528,9 +785,33 @@ static void _Setup1024( short x, short y, grcolor colour )
     _SetPage( page_num );
     _Screen.mem = MK_FP( _CurrState->screen_seg,
                          _CurrState->screen_off + pixel_offset );
-    _Screen.bit_pos = 0;        // position of pixel in byte
+    _Screen.bit_pos = 0;        // position of pixel in word
     _Screen.colour = colour;
 }
+
+#if defined( VERSION2 )
+
+static void _SetupVESA( short x, short y, grcolor colour )
+/*======================================================
+
+    Calculate screen memory address and associated masks for the
+    position (x,y) in arbitrary byte modes modes. */
+
+{
+    short               page_num;
+    unsigned long       pixel_offset;
+
+    pixel_offset = (long) y * _CurrState->stride + x * _CurrState->bytes_per_pixel;
+    page_num = pixel_offset / 0x10000;
+    pixel_offset &= 0xffff;
+    _SetPage( page_num );
+    _Screen.mem = MK_FP( _CurrState->screen_seg,
+                         _CurrState->screen_off + pixel_offset );
+    _Screen.bit_pos = 0;        // position of pixel in word
+    _Screen.colour = colour;
+}
+
+#endif
 
 #if 0
 // This mode is untested
@@ -538,7 +819,7 @@ static void _Setup1280( short x, short y, grcolor colour )
 /*======================================================
 
     Calculate screen memory address and associated masks for the
-    position (x,y) in 640 x 480, 32768 colour mode. */
+    position (x,y) in 2byte modes. */
 
 {
     short               page_num;
@@ -558,7 +839,11 @@ static void _Setup1280( short x, short y, grcolor colour )
 gr_device _FARD         _GrSVGA_100 = {     // 640 x 400, 256 colours
     _SuperVGAInit, _NoOp,                   // 640 x 480, 256 colours
     _NoOp, _SVGAReset,
+#if defined( VERSION2 )
+    _Setup1024,
+#else
     _Setup640,
+#endif
     _MoveUp640,_MoveLeft256,_MoveDown640,_MoveRight256,
     _Rep19,_CoXor,_And19,_CoOr,
     _GetDot19,_Zap256,_Fill256,_PixCopy256,_PixRead256,
@@ -580,7 +865,11 @@ gr_device _FARD         _GrSVGA_102 = {     // 800 x 600, 16 colours
 gr_device _FARD         _GrSVGA_103 = {     // 800 x 600, 256 colours
     _SuperVGAInit, _NoOp,
     _NoOp, _SVGAReset,
+#if defined( VERSION2 )
+    _Setup1024,
+#else
     _Setup800,
+#endif
     _MoveUp800,_MoveLeft256,_MoveDown800,_MoveRight256,
     _Rep19,_CoXor,_And19,_CoOr,
     _GetDot19,_Zap256,_Fill256,_PixCopy256,_PixRead256,
@@ -620,4 +909,18 @@ gr_device _FARD         _GrSVGA_110 = {     // 640 x 480, 32768 colours
     _GetDotWord,_ZapWord,_FillWord,_PixCopyWord,_PixReadWord,
     _ScanLeftWord,_ScanRightWord
 };
+#endif
+
+#if defined( VERSION2 )
+
+gr_device _FARD         _GrVESA={     // various
+    _SuperVGAInit, _NoOp,
+    _NoOp, _SVGAReset,
+    _SetupVESA,
+    _MoveUpVESA,_MoveLeftVESA,_MoveDownVESA,_MoveRightVESA,
+    _Rep19,_CoXor,_And19,_CoOr,
+    _GetDot19,_Zap19,_Fill19,_PixCopy19,_PixRead19,
+    _ScanLeft19,_ScanRight19
+};
+
 #endif

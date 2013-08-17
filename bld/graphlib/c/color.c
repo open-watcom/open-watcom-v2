@@ -60,6 +60,46 @@ _WCRTLINK grcolor _WCI86FAR _CGRAPH _setcolor( grcolor pixval )
 
 Entry( _SETCOLOR, _setcolor ) // alternate entry-point
 
+#if defined( VERSION2 )
+
+#define r_shift (8-_CurrState->mi.RedMaskSize)
+#define g_shift (8-_CurrState->mi.GreenMaskSize)
+#define b_shift (8-_CurrState->mi.BlueMaskSize)
+
+#define r_pos (_CurrState->mi.RedFieldPosition)
+#define g_pos (_CurrState->mi.GreenFieldPosition)
+#define b_pos (_CurrState->mi.BlueFieldPosition)
+
+_WCRTLINK grcolor _WCI86FAR _CGRAPH _rgb2pixel(unsigned char r, unsigned char g, unsigned char b)
+/*=========================================================================
+
+   This routine generates pixels for hi- and truecolor modes. rgb values are in range 0-255. */
+{
+    return (((grcolor)(r>>r_shift))<<r_pos)|
+    (((grcolor)(g>>g_shift))<<g_pos)|
+    (((grcolor)(b>>b_shift))<<b_pos);
+}
+
+_WCRTLINK void _WCI86FAR _CGRAPH _pixel2rgb(unsigned char *r, unsigned char *g, unsigned char *b, grcolor pix)
+/*=========================================================================================
+
+   This routine extracts rgb values from hi-and truecolor pixels. rgb values will be in 0-255 range. 
+   There may be loss of precision. */
+{
+    *r=((pix>>r_pos)<<r_shift)&0xff;
+    *g=((pix>>g_pos)<<g_shift)&0xff;
+    *b=((pix>>b_pos)<<b_shift)&0xff;
+}
+
+#undef r_pos
+#undef g_pos
+#undef b_pos
+
+#undef r_shift
+#undef g_shift
+#undef b_shift
+
+#endif
 
 grcolor _WCI86FAR _L2setcolor( grcolor pixval )
 /*====================================
@@ -70,6 +110,10 @@ grcolor _WCI86FAR _L2setcolor( grcolor pixval )
     grcolor         prev;
 
     prev = _CurrColor;
+#if defined( VERSION2 )
+    _CurrColor = pixval & _CurrState->pixel_mask;
+#else
     _CurrColor = pixval & ( _CurrState->vc.numcolors - 1 );
+#endif
     return( prev );
 }

@@ -92,7 +92,15 @@ short _RowLen( short pixels )
     if( _CurrState->misc_info & PLANAR ) {
         size = ( ( pixels + 7 ) / 8 ) * _CurrState->vc.bitsperpixel;
     } else {
+#if defined( VERSION2 )
+        if( _CurrState->vc.bitsperpixel == 15 ) {
+            size = ( ( pixels * 16 + 7 ) / 8 );
+        } else {
+            size = ( ( pixels * _CurrState->vc.bitsperpixel + 7 ) / 8 );
+        }
+#else
         size = ( ( pixels * _CurrState->vc.bitsperpixel + 7 ) / 8 );
+#endif
     }
     return( size );
 }

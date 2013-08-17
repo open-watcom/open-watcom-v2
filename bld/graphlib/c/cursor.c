@@ -119,7 +119,14 @@ static void GraphCursor( void )
     // set up the plotaction and color
     prev_pltact = _setplotaction( _GXOR );
     prev_color = _CurrColor;
+#if defined( VERSION2 )
+    _CurrColor = _CurrState->pixel_mask;
+    if( _CurrState->vc.numcolors <= 256 ) {
+        _CurrColor &= 15;
+    }
+#else
     _CurrColor = ( _CurrState->vc.numcolors - 1 ) & 15;
+#endif
     font_width = _CurrState->vc.numxpixels / _CurrState->vc.numtextcols;
     font_height = _CurrState->vc.numypixels / _CurrState->vc.numtextrows;
 
