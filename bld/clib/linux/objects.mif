@@ -16,6 +16,7 @@
 !inject fchmod.obj                                                                              l32 lpc lmp
 !inject fchown.obj                                                                              l32 lpc lmp
 !inject fcntl.obj                                                                               l32 lpc lmp
+!inject fdatsync.obj                                                                            l32 lpc lmp
 !inject fork.obj                                                                                l32 lpc lmp
 !inject fstat.obj                                                                               l32 lpc lmp
 !inject fstat64.obj                                                                             l32     lmp
