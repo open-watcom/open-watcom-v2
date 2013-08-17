@@ -130,13 +130,15 @@ void _PutChar( short row, short col, short ch )
     short               x, y;
     short               char_height;
     short               font_height;
-    short               colour, space;
+    grcolor             colour;
+    short               space;
     short               prev_action;
     char far            *p;
     short far           *screen;
     char _WCI86FAR      *mask;
     gr_device _FARD     *dev_ptr;
     fill_fn             *fill;
+    setup_fn		    *setup;
 
     if( IsTextMode ) {
         if( _CurrState->vc.mode == _TEXTMONO ) {
@@ -177,17 +179,18 @@ void _PutChar( short row, short col, short ch )
         _StartDevice();
         dev_ptr = _CurrState->deviceptr;
         fill = dev_ptr->fill;
+        setup = dev_ptr->setup;
         colour = _CharAttr & ( _CurrState->vc.numcolors - 1 );
         if( space == 2 ) {      // duplicate top row
-            ( *dev_ptr->setup )( x, y - 1, colour );
+            ( *setup )( x, y - 1, colour );
             ( *fill )( _Screen.mem, colour, *mask, _FONT_WIDTH, 0 );
         }
         for( row = 0; row < font_height; ++row, ++mask, ++y ) {
-            ( *dev_ptr->setup )( x, y, colour );
+            ( *setup )( x, y, colour );
             ( *fill )( _Screen.mem, colour, *mask, _FONT_WIDTH, 0 );
         }
         if( space == 2 ) {      // duplicate bottom row also
-            ( *dev_ptr->setup )( x, y, colour );
+            ( *setup )( x, y, colour );
             ( *fill )( _Screen.mem, colour, *(mask-1), _FONT_WIDTH, 0 );
         }
         _ResetDevice();

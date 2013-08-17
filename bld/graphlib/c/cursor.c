@@ -110,7 +110,7 @@ static void GraphCursor( void )
 //=============================
 {
     short               prev_pltact;
-    short               prev_color;
+    grcolor             prev_color;
     short               font_width;
     short               font_height;
     int                 x1, x2;

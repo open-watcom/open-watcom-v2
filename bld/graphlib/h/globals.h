@@ -56,7 +56,7 @@ extern short            _DefMode;                   // default video mode
 extern short            _DefTextRows;               // default # of text rows
 
 extern long             _CurrBkColor;               // current background colour
-extern short            _CurrColor;                 // current colour number
+extern grcolor          _CurrColor;                 // current colour number
 extern short            _Palette;                   // current palette number
 
 extern unsigned char    _FillMask[];                // current fill mask

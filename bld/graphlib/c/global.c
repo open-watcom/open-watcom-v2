@@ -60,7 +60,7 @@ short                   _DefMode;                   // default video mode
 short                   _DefTextRows;               // default # of text rows
 
 long                    _CurrBkColor = 0;           // current background colour
-short                   _CurrColor = 0;             // current colour number
+grcolor                 _CurrColor = 0;             // current colour number
 short                   _Palette = 3;               // current palette number
 
 unsigned char           _FillMask[ MASK_LEN ] =     // current fill mask

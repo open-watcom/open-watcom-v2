@@ -32,15 +32,15 @@
 #include "gdefn.h"
 
 
-short _L1PutDot( short x, short y )
-/*=================================
+grcolor _L1PutDot( short x, short y )
+/*===================================
 
     This function writes a pixel to the screen and returns the previous
     pixel value at that position, or -1 if the pixel is outside the
     viewport.   */
 
 {
-    short               prev_color;
+    grcolor             prev_color;
 #if defined( _DEFAULT_WINDOWS )
     WPI_COLOUR          color, RGB_Old;
     WPI_PRES            dc;

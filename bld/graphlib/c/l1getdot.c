@@ -32,13 +32,13 @@
 #include "gdefn.h"
 
 
-short _L1GetDot( short x, short y )
-/*=================================
+grcolor _L1GetDot( short x, short y )
+/*===================================
 
     This function returns the color of the screen pixel at (x,y)    */
 
 {
-    short               color;
+    grcolor             color;
 #if defined( _DEFAULT_WINDOWS )
     WPI_COLOUR          RGB_color;
 #else

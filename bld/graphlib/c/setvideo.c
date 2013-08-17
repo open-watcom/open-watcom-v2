@@ -681,7 +681,7 @@ void _PaletteInit( void )
     short               i, j;
     short               r, g, b;
 #if defined( __WINDOWS__ )
-    long                rgb;
+    WPI_COLOUR          rgb;
 
     _wpi_setrop2( _Mem_dc, R2_XORPEN );
 #endif

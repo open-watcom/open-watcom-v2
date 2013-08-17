@@ -33,61 +33,8 @@
 #include "rotate.h"
 
 
-static void         _L0Line( short, short, short, short, short, unsigned short );
-
-
-void _L1SLine( short x1, short y1, short x2, short y2 )
-/*=====================================================
-
-    Draw a clipped solid line using the given color.    */
-
-/*  REMINDER: For default windows, this function DOES NOT update the window.
-              If you call this function you have to update the window with
-              the UpdateWindow yourself.*/
-{
-    if( _L0LineClip( &x1, &y1, &x2, &y2 ) == 0 ) {
-        _L0Line( x1, y1, x2, y2, _CurrColor, SOLID_LINE );
-    }
-}
-
-short _L1Line( short x1, short y1, short x2, short y2 )
-/*===================================================*/
-
-/*  Draw a clipped line using the given color and style.    */
-
-/*  REMINDER: For default windows, this function DOES NOT update the window.
-              If you call this function you have to update the window with
-              the UpdateWindow yourself.*/
-{
-    short               init_x;
-    short               init_y;
-    short               dx;
-    short               dy;
-    unsigned short      style;
-
-    init_x = x1;
-    init_y = y1;
-    style = _LineStyle;
-    if( _L0LineClip( &x1, &y1, &x2, &y2 ) == 0 ) {
-        // if the initial point of a non-solid line was clipped,
-        // rotate the mask accordingly
-        if( style != SOLID_LINE && ( x1 != init_x || y1 != init_y ) ) {
-            dx = abs( x1 - init_x );
-            dy = abs( y1 - init_y );
-            if( dx < dy ) {
-                dx = dy;        // set dx to max of the two
-            }
-            style = _wrol( style, dx & 15 );    // rotate mask left
-        }
-        _L0Line( x1, y1, x2, y2, _CurrColor, style );
-        return( TRUE );
-    } else {
-        return( FALSE );
-    }
-}
-
-static void _L0Line( short x1, short y1, short x2, short y2,
-/*================*/ short color, unsigned short style )
+static void _L0Line( short x1, short y1, short x2, short y2, grcolor color, unsigned short style )
+/*==============================================================================================*/
 
 /*  Implement the line drawing alogorithm.  */
 
@@ -163,4 +110,55 @@ static void _L0Line( short x1, short y1, short x2, short y2,
     }
     _ResetDevice();
 #endif
+}
+
+
+void _L1SLine( short x1, short y1, short x2, short y2 )
+/*=====================================================
+
+    Draw a clipped solid line using the given color.    */
+
+/*  REMINDER: For default windows, this function DOES NOT update the window.
+              If you call this function you have to update the window with
+              the UpdateWindow yourself.*/
+{
+    if( _L0LineClip( &x1, &y1, &x2, &y2 ) == 0 ) {
+        _L0Line( x1, y1, x2, y2, _CurrColor, SOLID_LINE );
+    }
+}
+
+short _L1Line( short x1, short y1, short x2, short y2 )
+/*===================================================*/
+
+/*  Draw a clipped line using the given color and style.    */
+
+/*  REMINDER: For default windows, this function DOES NOT update the window.
+              If you call this function you have to update the window with
+              the UpdateWindow yourself.*/
+{
+    short               init_x;
+    short               init_y;
+    short               dx;
+    short               dy;
+    unsigned short      style;
+
+    init_x = x1;
+    init_y = y1;
+    style = _LineStyle;
+    if( _L0LineClip( &x1, &y1, &x2, &y2 ) == 0 ) {
+        // if the initial point of a non-solid line was clipped,
+        // rotate the mask accordingly
+        if( style != SOLID_LINE && ( x1 != init_x || y1 != init_y ) ) {
+            dx = abs( x1 - init_x );
+            dy = abs( y1 - init_y );
+            if( dx < dy ) {
+                dx = dy;        // set dx to max of the two
+            }
+            style = _wrol( style, dx & 15 );    // rotate mask left
+        }
+        _L0Line( x1, y1, x2, y2, _CurrColor, style );
+        return( TRUE );
+    } else {
+        return( FALSE );
+    }
 }

@@ -90,6 +90,7 @@ static void GrShift( short src_y, short dst_y,
     gr_device _FARD     *dev_ptr;
     copy_fn             *get;
     copy_fn             *put;
+    setup_fn            *setup;
 
     width = xr - xl + 1;
     size = _RoundUp( _RowLen( width ) );
@@ -106,13 +107,15 @@ static void GrShift( short src_y, short dst_y,
     dev_ptr = _CurrState->deviceptr;
     get = dev_ptr->readrow;
     put = dev_ptr->pixcopy;
+    setup = dev_ptr->setup;
+
     plane_len = size / _CurrState->vc.bitsperpixel;
 
     while( rows != 0 ) {
-        ( *dev_ptr->setup )( xl, src_y, 0 );
-        ( *get )( (char far *)buf, _Screen.mem, width, _Screen.bit_pos, 0 );
-        ( *dev_ptr->setup )( xl, dst_y, 0 );
-        ( *put )( _Screen.mem, (char far *)buf, width, _Screen.bit_pos << 8, plane_len );
+        ( *setup )( xl, src_y, 0 );
+        ( *get )( buf, _Screen.mem, width, _Screen.bit_pos, 0 );
+        ( *setup )( xl, dst_y, 0 );
+        ( *put )( _Screen.mem, buf, width, _Screen.bit_pos << 8, plane_len );
         src_y += dir;
         dst_y += dir;
         --rows;

@@ -70,8 +70,8 @@ extern void     _flood_visit( short, short, short );
 
 
 #if defined( _DEFAULT_WINDOWS )
-static short _L0Paint( short stop_color, short x, short y )
-/*=========================================================
+static short _L0Paint( grcolor stop_color, short x, short y )
+/*===========================================================
   This function does the filling. */
 {
     WORD                fill_style;
@@ -158,16 +158,14 @@ static short _L0Paint( short stop_color, short x, short y )
     t = _BitBlt_Coord.ycoord;
   #endif
     inst = _GetInst();
-    _wpi_offsetrect( inst, &temp_rect,
-                     -_BitBlt_Coord.xcoord,
-                     -t );
+    _wpi_offsetrect( inst, &temp_rect, -_BitBlt_Coord.xcoord, -t );
     _wpi_invalidaterect( _CurrWin, &temp_rect, 0 );
     return ( rc );
 }
 #endif
 
 
-short _L1Paint( short stop_color, short x, short y )
+short _L1Paint( grcolor stop_color, short x, short y )
 /*==================================================
 
     Paint a region on the screen starting at the point (x,y). If the

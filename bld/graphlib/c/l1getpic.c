@@ -65,6 +65,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
     gr_device _FARD     *dev_ptr;       /* pointer to _CurrState->deviceptr */
     char _WCI86HUGE     *pic;           /* buffer to store image            */
     copy_fn             *copy;          /* pointer to copy routine          */
+    setup_fn            *setup;
 #endif
 
     if( x1 > x2 ) {         // ensure x1 < x2
@@ -117,8 +118,9 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
     copy = dev_ptr->readrow;
     pic = &image->buffer;
     tmp = NULL;
+    setup = dev_ptr->setup;
     for( ; y1 <= y2; ++y1 ) {               /* copy screen image to buffer  */
-        ( *dev_ptr->setup )( x1, y1, 0 );
+        ( *setup )( x1, y1, 0 );
   #if !defined( __386__ )
         // check whether the entire row will fit in the buffer
         new_off = FP_OFF( pic ) + line_len - 1;
@@ -129,8 +131,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
                 }
             }
             if( tmp != NULL ) {
-                ( *copy )( (char far *) tmp, (char far *) _Screen.mem,
-                       dx, _Screen.bit_pos, 0 );
+                ( *copy )( tmp, _Screen.mem, dx, _Screen.bit_pos, 0 );
                 for( t = 0; t < line_len; ++t ) {
                     *pic = tmp[ t ];
                     ++pic;      // the PIA function will handle this properly
@@ -141,8 +142,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
             }
         } else {
   #endif
-            ( *copy )( (char far *) pic, (char far *) _Screen.mem,
-                   dx, _Screen.bit_pos, 0 );
+            ( *copy )( pic, _Screen.mem, dx, _Screen.bit_pos, 0 );
             pic += line_len;
   #if !defined( __386__ )
         }

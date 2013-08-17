@@ -64,6 +64,7 @@ void _L1PutPic( short px, short py, short line_len,
     gr_device _FARD     *dev_ptr;       /* pointer to _CurrState->deviceptr */
     char _WCI86HUGE     *pic;           /* buffer to store image            */
     copy_fn             *copy;          /* pointer to copy routine          */
+    setup_fn            *setup;
 
     x1 = px;                            /* new rectangle for restoring image*/
     y1 = py;
@@ -99,8 +100,9 @@ void _L1PutPic( short px, short py, short line_len,
     copy = dev_ptr->pixcopy;
     dx = x2 - x1 + 1;
     tmp = NULL;
+    setup = dev_ptr->setup;
     for( ; y1 <= y2; ++y1 ) {               /* copy image buffer to screen  */
-        ( *dev_ptr->setup )( x1, y1, 0 );
+        ( *setup )( x1, y1, 0 );
 #if !defined( __386__ )
         // check whether the entire row will fit in the buffer
         new_off = FP_OFF( pic ) + line_len - 1;
@@ -115,16 +117,14 @@ void _L1PutPic( short px, short py, short line_len,
                     tmp[ t ] = *pic;
                     ++pic;      // the PIA function will handle this properly
                 }
-                ( *copy )( (char far *) _Screen.mem, (char far *) tmp, dx,
-                       ( _Screen.bit_pos << 8 ) + bit_offset, plane_len );
+                ( *copy )( _Screen.mem, tmp, dx, ( _Screen.bit_pos << 8 ) + bit_offset, plane_len );
             } else {
                 _ErrorStatus = _GRINSUFFICIENTMEMORY;
                 pic += line_len;
             }
         } else {
 #endif
-            ( *copy )( (char far *) _Screen.mem, (char far *) pic, dx,
-                       ( _Screen.bit_pos << 8 ) + bit_offset, plane_len );
+            ( *copy )( _Screen.mem, pic, dx, ( _Screen.bit_pos << 8 ) + bit_offset, plane_len );
             pic += line_len;
 #if !defined( __386__ )
         }

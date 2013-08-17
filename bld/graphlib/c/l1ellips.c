@@ -200,7 +200,7 @@ static void FastPlot( short x, short y, short q )
 // plot the ellipse point (x,y)
 
 {
-    void                (*setup )( short, short, grcolor );
+    setup_fn            *setup;
     putdot_fn           *putdot;
     gr_device _FARD     *dev_ptr;
 
@@ -233,16 +233,14 @@ static void PutDot( int x, int y, int q )
 //=======================================
 
 {
-    void                (*setup )( short, short, grcolor );
     putdot_fn           *putdot;
     gr_device _FARD     *dev_ptr;
 
     if( _L1OutCode( x, y ) == 0 ) {     // inside viewport
         if( EllInfo.line_mask[ q ] & 1 ) {  // check for line style
             dev_ptr = _CurrState->deviceptr;
-            setup = dev_ptr->setup;
             putdot = dev_ptr->plot[ _PlotAct ];
-            ( *setup )( x, y, _CurrColor );
+            ( *dev_ptr->setup )( x, y, _CurrColor );
             ( *putdot )( _Screen.mem, _Screen.colour, _Screen.mask );
         }
     }
