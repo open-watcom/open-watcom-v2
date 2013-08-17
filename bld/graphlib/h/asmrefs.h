@@ -143,11 +143,13 @@
 #pragma aux _XorDWord "*_";
 #pragma aux _OrDWord "*_";
 #pragma aux _GetDotDWord "*_";
+#pragma aux _ZapDWord "*_";
 #pragma aux _RepTByte "*_";
 #pragma aux _AndTByte "*_";
 #pragma aux _XorTByte "*_";
 #pragma aux _OrTByte "*_";
 #pragma aux _GetDotTByte "*_";
+#pragma aux _ZapTByte "*_";
 #pragma aux _FillWord "*_";
 #pragma aux _FillDWord "*_";
 #pragma aux _FillTByte "*_";
@@ -402,16 +404,16 @@ extern void             near _MoveRightWord( void );
 #endif
 
 
-extern void             _FARC _PageVESA( short );
-extern void             _FARC _PageVideo7( short );
-extern void             _FARC _PageParadise( short );
-extern void             _FARC _PageATI( short );
-extern void             _FARC _PageTseng3( short );
-extern void             _FARC _PageTseng4( short );
-extern void             _FARC _PageOak( short );
-extern void             _FARC _PageTrident( short );
-extern void             _FARC _PageChips( short );
-extern void             _FARC _PageGenoa( short );
-extern void             _FARC _PageS3( short );
-extern void             _FARC _PageCirrus( short );
-extern void             _FARC _PageViper( short );
+extern void pascal      _FARC _PageVESA( short );
+extern void pascal      _FARC _PageVideo7( short );
+extern void pascal      _FARC _PageParadise( short );
+extern void pascal      _FARC _PageATI( short );
+extern void pascal      _FARC _PageTseng3( short );
+extern void pascal      _FARC _PageTseng4( short );
+extern void pascal      _FARC _PageOak( short );
+extern void pascal      _FARC _PageTrident( short );
+extern void pascal      _FARC _PageChips( short );
+extern void pascal      _FARC _PageGenoa( short );
+extern void pascal      _FARC _PageS3( short );
+extern void pascal      _FARC _PageCirrus( short );
+extern void pascal      _FARC _PageViper( short );

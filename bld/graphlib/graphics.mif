@@ -168,17 +168,12 @@ objs = $+$(grlib_template)$-
 !include deftarg.mif
 
 inc_dirs = -I. -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h"
-!ifeq host_os qnx
-inc_dirs += -I"$(hdr_dir)/qnx"
-!else ifeq host_os win
-inc_dirs += -I"$(hdr_dir)/dos" -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
-!else
-inc_dirs += -I"$(hdr_dir)/dos"
+!ifeq host_os win
+inc_dirs += -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
 !endif
 
 !ifeq host_cpu 386
-.asm: $(graphlib_dir)/386asm #;$(graphlib_dir)/asm
-!else
+.asm: $(graphlib_dir)/386asm
 !endif
 .asm: $(graphlib_dir)/asm
 
@@ -200,8 +195,6 @@ extra_c_flags_386_ms_qnx = -r
 extra_c_flags_386_register = -3r
 extra_c_flags_386_stack = -3s
 extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os))
-
-extra_c_flags_qnx = -bt=dos # ?????
 
 extra_a_flags = -ms -i"../inc" $(extra_a_flags_$(machine)) -fo=$@
 

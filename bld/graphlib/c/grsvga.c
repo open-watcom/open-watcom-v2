@@ -42,18 +42,6 @@ extern void             _EGASet( void );
 extern void             _EGAReset( void );
 
 
-/*  Use PASCAL pragma to define our convention for
-    calling the SVGA page number routine.    */
-
-#define PAGE_FUNC pascal        // make sure page # gets passed in ax
-
-#if defined ( __386__ )
-    #pragma aux pascal "*" parm caller [eax];
-#else
-    #pragma aux pascal "*" far parm caller [ax];
-#endif
-
-
 static short            _SuperVGAModes[ _SV_MAX-2 ][ 6 ] = {
 //                      100h    101h    102h    103h    104h    105h
 //                      ====    ====    ====    ====    ====    ====
@@ -72,37 +60,32 @@ static short            _SuperVGAModes[ _SV_MAX-2 ][ 6 ] = {
 };
 
 
-// The page setting functions are defined as FARC pointers.
-// This is _WCI86FAR for 16-bit, and nothing for 32-bit flat model.
-// QNX 32-bit uses small model, and FARC is defined as _WCI86FAR.
-// For QNX 32-bit, we still want only near pointers in the table though,
-// to avoid segment relocations in the executable.
-// The assignment to _SetVGAPage provides the CS value at runtime.
-#if defined(__QNX__) && defined(__386__)
-    #pragma aux cs = "mov ax,cs" value [ax] modify []
-    extern unsigned short cs(void);
-    #define INIT_FARC
-    #define MAKE_VGA_PG_PTR( x )        MK_FP( cs(), x )
-#else
-    #define INIT_FARC   _FARC
-    #define MAKE_VGA_PG_PTR( x )        x
-#endif
-static void INIT_FARC * _VGAPageFunc[ _SV_MAX-1 ] = {
-    _PageVESA,
-    _PageVideo7,
-    _PageParadise,
-    _PageATI,
-    _PageTseng3,
-    _PageTseng4,
-    _PageOak,
-    _PageTrident,
-    _PageChips,
-    _PageGenoa,
-    _PageS3,
-    _PageCirrus,
-    _PageViper,
+static vgapage_fn _WCI86FAR *_VGAPageFunc[ _SV_MAX-1 ] = {
+    (vgapage_fn _WCI86FAR *)_PageVESA,
+    (vgapage_fn _WCI86FAR *)_PageVideo7,
+    (vgapage_fn _WCI86FAR *)_PageParadise,
+    (vgapage_fn _WCI86FAR *)_PageATI,
+    (vgapage_fn _WCI86FAR *)_PageTseng3,
+    (vgapage_fn _WCI86FAR *)_PageTseng4,
+    (vgapage_fn _WCI86FAR *)_PageOak,
+    (vgapage_fn _WCI86FAR *)_PageTrident,
+    (vgapage_fn _WCI86FAR *)_PageChips,
+    (vgapage_fn _WCI86FAR *)_PageGenoa,
+    (vgapage_fn _WCI86FAR *)_PageS3,
+    (vgapage_fn _WCI86FAR *)_PageCirrus,
+    (vgapage_fn _WCI86FAR *)_PageViper,
 };
 
+#if defined( __386__ ) && !defined(__QNX__)
+static void mymemcpy( char *d, char far *s, int len )
+{
+    while( len-- > 0 ) {
+        *d++ = *s++;
+    }
+}
+#endif
+
+#define U16(p,o)    *((unsigned short *)p + o)
 
 static short SuperVGASetMode( short adapter, short mode, short *stride )
 //======================================================================
@@ -111,10 +94,10 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     short               val;
 //#if !defined( __QNX__ )
     short               granule;
-    unsigned short      buf[ 128 ];     // 256 bytes
+    char                buf[ 256 ];
 #if defined( __386__ ) && !defined(__QNX__)
-    short               i;
-    short far           *rbuf;
+//    short               i;
+    char far            *rbuf;
     RM_ALLOC            mem;
 #endif
 //#endif
@@ -123,47 +106,45 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     switch( adapter ) {
 //#if !defined( __QNX__ )
     case _SV_VESA:
-        #if defined( __386__ ) && !defined(__QNX__)
+#if defined( __386__ ) && !defined(__QNX__)
 //            assert(256>=sizeof(struct VbeModeInfo));//large enough?
-            if( !_RMAlloc( 256, &mem ) ) {
-                return( FALSE );
-            }
-            /*
-                AH=0x4F is a VESA BIOS call AL=0x01 VESA return SVGA Mode info
-                CX=desired mode
-                ES:DI=address of information block
-                return value AL=0x4F AH=0x00
-            */
-            val = _RMInterrupt( 0x10, 0x4f01, 0, mode, 0, mem.rm_seg, 0 );
-            if( val == 0x004f ) {
-                rbuf = mem.pm_ptr;
-#if defined( VERSION2 )
-                _fmemmove(&(_CurrState->mi),rbuf,sizeof(struct VbeModeInfo ));
+        if( !_RMAlloc( 256, &mem ) ) {
+            return( FALSE );
+        }
+        /*
+            AH=0x4F is a VESA BIOS call AL=0x01 VESA return SVGA Mode info
+            CX=desired mode
+            ES:DI=address of information block
+            return value AL=0x4F AH=0x00
+        */
+        val = _RMInterrupt( 0x10, 0x4f01, 0, mode, 0, mem.rm_seg, 0 );
+        if( val == 0x004f ) {
+            rbuf = mem.pm_ptr;
+    #if defined( VERSION2 )
+            mymemcpy( (char *)&(_CurrState->mi), rbuf, sizeof( struct VbeModeInfo ) );
+    #endif
+            mymemcpy( buf, rbuf, 16 );
+        }
+        _RMFree( &mem );
+        if( val != 0x004f ) {
+            return( FALSE );
+        }
+#else
+        if( GetVESAInfo( 0x4f01, mode, &buf ) != 0x004f ) {
+            return( FALSE );
+        }
+    #if defined( VERSION2 )
+        memcpy( &(_CurrState->mi), buf, sizeof( struct VbeModeInfo ) );
+    #endif
 #endif
-                for( i = 2; i <= 8; ++i ) {
-                    buf[ i ] = rbuf[ i ];
-                }
-            }
-            _RMFree( &mem );
-            if( val != 0x004f ) {
-                return( FALSE );
-            }
-        #else
-            if( GetVESAInfo( 0x4f01, mode, &buf ) != 0x004f ) {
-                return( FALSE );
-            }
-#if defined( VERSION2 )
-            _fmemmove(&(_CurrState->mi),buf,sizeof(struct VbeModeInfo));
+#if !defined( __QNX__ )
+        if( U16( buf, 3 ) != 64 || U16( buf, 4 ) != 0xa000 ) {    // need 64k pages
+#else
+        if( U16( buf, 3 ) != 64 ) {    // need 64k pages
 #endif
-        #endif
-        #if !defined( __QNX__ )
-        if( buf[ 3 ] != 64 || buf[ 4 ] != 0xa000 ) {    // need 64k pages
-        #else
-        if( buf[ 3 ] != 64 ) {    // need 64k pages
-        #endif
             return( FALSE );                            // starting at A000
         }
-        *stride = buf[ 8 ];
+        *stride = U16( buf, 8 );
         /*
             AH=0x4F is a VESA BIOS call AL=0x02 VESA set SVGA Display Mode
             BX=desired mode
@@ -172,7 +153,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
         if( VideoInt( 0x4f02, mode, 0, 0 ) != 0x004f ) {   // set mode
             return( FALSE );
         }
-        granule = 64 / buf[ 2 ];
+        granule = 64 / U16( buf, 2 );
         _VGAGran = 0;
         while( granule > 1 ) {
             granule >>= 1;
@@ -645,10 +626,7 @@ static void _SetPage( short page_num )
 //  the argument to be passed in [E]AX.
 
 {
-    void PAGE_FUNC      ( _FARC *page_func )( short );
-
-    page_func = (void PAGE_FUNC _FARC *) _SetVGAPage;
-    (*page_func)( page_num );
+    ( *_SetVGAPage )( page_num );
 }
 
 

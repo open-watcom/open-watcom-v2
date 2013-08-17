@@ -41,7 +41,7 @@ include graph.inc
         extrn   __Transparent : word
         extrn   __VGAPage : byte
 ifdef VERSION2
-        extrn   __VGANBytes : word
+        extrn   __VGABytesPerPixel : word
 endif
         extrn   __VGAStride : word
         extrn   __VGAGran : byte
@@ -565,7 +565,7 @@ E_MoveDown1024:
 ifdef VERSION2
         db      E_MoveLeftVESA-_MoveLeftVESA_
 _MoveLeftVESA_:                  ; any colour SuperVGA modes
-        sub     di,ss:__VGANBytes
+        sub     di,ss:__VGABytesPerPixel
         _if     c               ; if < 0
           push    _eax           ; - move to previous page
           mov     al,ss:__VGAPage
@@ -578,7 +578,7 @@ E_MoveLeftVESA:
 
         db      E_MoveRightVESA-_MoveRightVESA_
 _MoveRightVESA_:                 ; VESA colour SuperVGA modes
-        add     di,ss:__VGANBytes
+        add     di,ss:__VGABytesPerPixel
         _if     c               ; if < 0
           push    _eax           ; - move to next page
           mov     al,ss:__VGAPage

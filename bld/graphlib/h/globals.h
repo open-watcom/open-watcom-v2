@@ -74,8 +74,8 @@ extern short            _StyleWrap;                 // flag for continuous style
 extern short            _PlotAct;                   // plotting action
 
 extern struct textsettings _TextSettings;           // default text settings
-extern font_def _WCI86FAR    _StdFont;                   // standard font
-extern font_def _WCI86FAR    *_CurrFont;                 // current font
+extern font_def _WCI86FAR    _StdFont;              // standard font
+extern font_def _WCI86FAR    *_CurrFont;            // current font
 
 extern struct arcinfo   _ArcInfo;                   // arc information
 
@@ -92,7 +92,7 @@ extern unsigned char    _VGAPage;                   // SuperVGA page number
 extern unsigned short   _VGABytesPerPixel;          // SuperVGA number of bytes per pixel
 extern unsigned char    _VGAGran;                   // SuperVGA page granularity
 extern short            _SVGAType;                  // type of SuperVGA
-extern void             ( _FARC *_SetVGAPage )( short );  // function to set SVGA page
+extern vgapage_fn       _FARC *_SetVGAPage;         // function to set SVGA page
 extern short            _VGAStride;                 // SuperVGA mode stride
 
 extern unsigned short   _BiosSeg;                   // seg of BIOS data area
