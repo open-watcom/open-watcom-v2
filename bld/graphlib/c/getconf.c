@@ -70,7 +70,7 @@ _WCRTLINK struct videoconfig _WCI86FAR *_WCI86FAR _CGRAPH
     return( config );
 }
 
-Entry( _GETVIDEOCONFIG, _getvideoconfig ) // alternate entry-point
+Entry1( _GETVIDEOCONFIG, _getvideoconfig ) // alternate entry-point
 
 
 void _CalcNumPages( void )

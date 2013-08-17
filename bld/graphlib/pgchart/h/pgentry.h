@@ -36,7 +36,22 @@
 // perform a jump to the appropriate function.
 
 
-#if !defined( __386__ )         // 16-bit version only
+#if defined( VERSION2 )
+  #define _PGCHART_ALT_ENABLED  0
+#elif defined( __386__ )
+  #define _PGCHART_ALT_ENABLED  0       // not necessary for 32-bit
+#else
+  #define _PGCHART_ALT_ENABLED  1
+#endif
+
+#if _PGCHART_ALT_ENABLED
+  #define Entry2( f1, f2 )      void f1( void ) { JMP ## f2(); }
+#else
+  #define Entry2( f1, f2 )
+#endif
+
+#if _PGCHART_ALT_ENABLED
+
 void JMP_pg_analyzechart();
 void JMP_pg_analyzechartms();
 void JMP_pg_analyzepie();
@@ -105,4 +120,5 @@ void JMP_pg_vlabelchart();
 #pragma aux _PG_SETPALETTE "*";
 #pragma aux _PG_SETSTYLESET "*";
 #pragma aux _PG_VLABELCHART "*";
+
 #endif

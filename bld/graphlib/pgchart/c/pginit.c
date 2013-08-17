@@ -51,4 +51,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_initchart( void )
     return( 0 );
 }
 
-Entry( _PG_INITCHART, _pg_initchart ) // alternate entry-point
+Entry2( _PG_INITCHART, _pg_initchart ) // alternate entry-point

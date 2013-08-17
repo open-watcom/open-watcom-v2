@@ -47,4 +47,4 @@ _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getphyscoord( short x, short y )
     return( rel );
 }
 
-Entry( _GETPHYSCOORD, _getphyscoord ) // alternate entry-point
+Entry1( _GETPHYSCOORD, _getphyscoord ) // alternate entry-point

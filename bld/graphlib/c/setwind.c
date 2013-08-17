@@ -76,7 +76,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setwindow( short invert, double left, double 
     return( 1 );
 }
 
-Entry( _SETWINDOW, _setwindow ) // alternate entry-point
+Entry1( _SETWINDOW, _setwindow ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _setwindow_87( short invert, double left, double top,
@@ -86,4 +86,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setwindow_87( short invert, double left, doub
     return( _setwindow( invert, left, top, right, bottom ) );
 }
 
-Entry( _SETWINDOW_87, _setwindow_87 ) // alternate entry-point
+Entry1( _SETWINDOW_87, _setwindow_87 ) // alternate entry-point

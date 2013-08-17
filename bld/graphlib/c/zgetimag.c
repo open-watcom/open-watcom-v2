@@ -47,7 +47,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _getimage_w( double x1, double y1, double x2, d
     }
 }
 
-Entry( _GETIMAGE_W, _getimage_w ) // alternate entry-point
+Entry1( _GETIMAGE_W, _getimage_w ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _getimage_wxy( struct _wxycoord _WCI86FAR * p1,
@@ -61,7 +61,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _getimage_wxy( struct _wxycoord _WCI86FAR * p1,
     _getimage_w( p1->wx, p1->wy, p2->wx, p2->wy, image );
 }
 
-Entry( _GETIMAGE_WXY, _getimage_wxy ) // alternate entry-point
+Entry1( _GETIMAGE_WXY, _getimage_wxy ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _getimage_w_87( double x1, double y1, double x2, double y2,
@@ -71,4 +71,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _getimage_w_87( double x1, double y1, double x2
     _getimage_w( x1, y1, x2, y2, image );
 }
 
-Entry( _GETIMAGE_W_87, _getimage_w_87 ) // alternate entry-point
+Entry1( _GETIMAGE_W_87, _getimage_w_87 ) // alternate entry-point

@@ -56,7 +56,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _lineto_w( double x, double y )
     return( success );
 }
 
-Entry( _LINETO_W, _lineto_w ) // alternate entry-point
+Entry1( _LINETO_W, _lineto_w ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _lineto_w_87( double x, double y )
@@ -66,4 +66,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _lineto_w_87( double x, double y )
     return( _lineto_w( x, y ) );
 }
 
-Entry( _LINETO_W_87, _lineto_w_87 ) // alternate entry-point
+Entry1( _LINETO_W_87, _lineto_w_87 ) // alternate entry-point

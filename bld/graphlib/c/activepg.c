@@ -42,7 +42,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getactivepage( void )
     return( _CurrActivePage );
 }
 
-Entry( _GETACTIVEPAGE, _getactivepage ) // alternate entry-point
+Entry1( _GETACTIVEPAGE, _getactivepage ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
@@ -81,4 +81,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
     return( prev );
 }
 
-Entry( _SETACTIVEPAGE, _setactivepage ) // alternate entry-point
+Entry1( _SETACTIVEPAGE, _setactivepage ) // alternate entry-point

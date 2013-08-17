@@ -42,7 +42,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setcharsize_w( double height, double width )
     _setcharsize( _WtoScaleY( height ), _WtoScaleX( width ) );
 }
 
-Entry( _SETCHARSIZE_W, _setcharsize_w ) // alternate entry-point
+Entry1( _SETCHARSIZE_W, _setcharsize_w ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _setcharsize_w_87( double height, double width )
@@ -52,7 +52,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setcharsize_w_87( double height, double width 
     _setcharsize_w( height, width );
 }
 
-Entry( _SETCHARSIZE_W_87, _setcharsize_w_87 ) // alternate entry-point
+Entry1( _SETCHARSIZE_W_87, _setcharsize_w_87 ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _setcharspacing_w( double space )
@@ -64,7 +64,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setcharspacing_w( double space )
     _setcharspacing( _WtoScaleX( space ) );
 }
 
-Entry( _SETCHARSPACING_W, _setcharspacing_w ) // alternate entry-point
+Entry1( _SETCHARSPACING_W, _setcharspacing_w ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _setcharspacing_w_87( double space )
@@ -74,4 +74,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setcharspacing_w_87( double space )
     _setcharspacing_w( space );
 }
 
-Entry( _SETCHARSPACING_W_87, _setcharspacing_w_87 ) // alternate entry-point
+Entry1( _SETCHARSPACING_W_87, _setcharspacing_w_87 ) // alternate entry-point

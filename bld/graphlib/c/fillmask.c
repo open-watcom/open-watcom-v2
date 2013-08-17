@@ -56,7 +56,7 @@ _WCRTLINK unsigned char _WCI86FAR * _WCI86FAR _CGRAPH _getfillmask( unsigned cha
     }
 }
 
-Entry( _GETFILLMASK, _getfillmask ) // alternate entry-point
+Entry1( _GETFILLMASK, _getfillmask ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _setfillmask( unsigned char _WCI86FAR * mask )
@@ -78,4 +78,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setfillmask( unsigned char _WCI86FAR * mask )
     }
 }
 
-Entry( _SETFILLMASK, _setfillmask ) // alternate entry-point
+Entry1( _SETFILLMASK, _setfillmask ) // alternate entry-point

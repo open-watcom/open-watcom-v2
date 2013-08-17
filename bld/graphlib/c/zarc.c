@@ -58,7 +58,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _arc_w( double x1, double y1, double x2, doubl
     return( success );
 }
 
-Entry( _ARC_W, _arc_w ) // alternate entry-point
+Entry1( _ARC_W, _arc_w ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _arc_wxy( struct _wxycoord _WCI86FAR * p1,
@@ -77,7 +77,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _arc_wxy( struct _wxycoord _WCI86FAR * p1,
                     p3->wx, p3->wy, p4->wx, p4->wy ) );
 }
 
-Entry( _ARC_WXY, _arc_wxy ) // alternate entry-point
+Entry1( _ARC_WXY, _arc_wxy ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _arc_w_87( double x1, double y1, double x2, double y2,
@@ -87,4 +87,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _arc_w_87( double x1, double y1, double x2, do
     return( _arc_w( x1, y1, x2, y2, x3, y3, x4, y4 ) );
 }
 
-Entry( _ARC_W_87, _arc_w_87 ) // alternate entry-point
+Entry1( _ARC_W_87, _arc_w_87 ) // alternate entry-point

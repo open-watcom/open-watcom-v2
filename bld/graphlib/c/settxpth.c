@@ -42,4 +42,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _settextpath( short path )
     _TextSettings.txpath = path;
 }
 
-Entry( _SETTEXTPATH, _settextpath ) // alternate entry-point
+Entry1( _SETTEXTPATH, _settextpath ) // alternate entry-point

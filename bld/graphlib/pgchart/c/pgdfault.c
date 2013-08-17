@@ -148,4 +148,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_defaultchart( chartenv _WCI86FAR *env,
     return( 0 );
 }
 
-Entry( _PG_DEFAULTCHART, _pg_defaultchart ) // alternate entry-point
+Entry2( _PG_DEFAULTCHART, _pg_defaultchart ) // alternate entry-point

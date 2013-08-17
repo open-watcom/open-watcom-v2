@@ -47,4 +47,4 @@ _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getlogcoord( short x, short y )
     return( rel );
 }
 
-Entry( _GETLOGCOORD, _getlogcoord ) // alternate entry-point
+Entry1( _GETLOGCOORD, _getlogcoord ) // alternate entry-point

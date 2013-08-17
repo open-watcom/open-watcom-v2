@@ -47,4 +47,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setstylewrap( short wrap )
     return( prev );
 }
 
-Entry( _SETSTYLEWRAP, _setstylewrap ) // alternate entry-point
+Entry1( _SETSTYLEWRAP, _setstylewrap ) // alternate entry-point

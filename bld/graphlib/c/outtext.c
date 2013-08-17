@@ -141,7 +141,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outtext( char _WCI86FAR *text )
     _GrEpilog();
 }
 
-Entry( _OUTTEXT, _outtext ) // alternate entry-point
+Entry1( _OUTTEXT, _outtext ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _outmem( unsigned char _WCI86FAR * text, short length )
@@ -157,7 +157,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outmem( unsigned char _WCI86FAR * text, short 
     _GrEpilog();
 }
 
-Entry( _OUTMEM, _outmem ) // alternate entry-point
+Entry1( _OUTMEM, _outmem ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _scrolltextwindow( short rows )
@@ -187,7 +187,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _scrolltextwindow( short rows )
     _GrEpilog();
 }
 
-Entry( _SCROLLTEXTWINDOW, _scrolltextwindow ) // alternate entry-point
+Entry1( _SCROLLTEXTWINDOW, _scrolltextwindow ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _gettextcursor( void )
@@ -200,7 +200,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _gettextcursor( void )
     return( _CursorShape );
 }
 
-Entry( _GETTEXTCURSOR, _gettextcursor ) // alternate entry-point
+Entry1( _GETTEXTCURSOR, _gettextcursor ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _settextcursor( short shape )
@@ -236,5 +236,5 @@ _WCRTLINK short _WCI86FAR _CGRAPH _settextcursor( short shape )
 #endif
 }
 
-Entry( _SETTEXTCURSOR, _settextcursor ) // alternate entry-point
+Entry1( _SETTEXTCURSOR, _settextcursor ) // alternate entry-point
 

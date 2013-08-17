@@ -51,7 +51,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pie( short fill, short x1, short y1, short x2
     return( success );
 }
 
-Entry( _PIE, _pie ) // alternate entry-point
+Entry1( _PIE, _pie ) // alternate entry-point
 
 
 short _WCI86FAR _L2pie( short fill, short x1, short y1, short x2, short y2,

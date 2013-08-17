@@ -46,7 +46,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _gettextwindow( short _WCI86FAR * row_top, shor
     *col_right = _Tx_Col_Max + 1;
 }
 
-Entry( _GETTEXTWINDOW, _gettextwindow ) // alternate entry-point
+Entry1( _GETTEXTWINDOW, _gettextwindow ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _settextwindow( short row1, short col1,
@@ -91,4 +91,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _settextwindow( short row1, short col1,
     _settextposition( 1, 1 );
 }
 
-Entry( _SETTEXTWINDOW, _settextwindow ) // alternate entry-point
+Entry1( _SETTEXTWINDOW, _settextwindow ) // alternate entry-point

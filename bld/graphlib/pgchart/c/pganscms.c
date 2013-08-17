@@ -56,7 +56,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_analyzescatterms( chartenv _WCI86FAR *env,
     return( error );
 }
 
-Entry( _PG_ANALYZESCATTERMS, _pg_analyzescatterms ) // alternate entry-point
+Entry2( _PG_ANALYZESCATTERMS, _pg_analyzescatterms ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _pg_analyzescatter( chartenv _WCI86FAR *env,
@@ -81,4 +81,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_analyzescatter( chartenv _WCI86FAR *env,
     return( error );
 }
 
-Entry( _PG_ANALYZESCATTER, _pg_analyzescatter ) // alternate entry-point
+Entry2( _PG_ANALYZESCATTER, _pg_analyzescatter ) // alternate entry-point

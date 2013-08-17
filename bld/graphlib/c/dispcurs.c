@@ -47,4 +47,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _displaycursor( short mode )
     return( prev );
 }
 
-Entry( _DISPLAYCURSOR, _displaycursor ) // alternate entry-point
+Entry1( _DISPLAYCURSOR, _displaycursor ) // alternate entry-point

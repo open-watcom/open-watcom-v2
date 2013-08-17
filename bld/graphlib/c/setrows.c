@@ -342,7 +342,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _settextrows( short rows )
     return( set_rows );
 }
 
-Entry( _SETTEXTROWS, _settextrows ) // alternate entry-point
+Entry1( _SETTEXTROWS, _settextrows ) // alternate entry-point
 
 
 
@@ -360,4 +360,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomoderows( short mode, short rows )
     return( 0 );
 }
 
-Entry( _SETVIDEOMODEROWS, _setvideomoderows ) // alternate entry-point
+Entry1( _SETVIDEOMODEROWS, _setvideomoderows ) // alternate entry-point

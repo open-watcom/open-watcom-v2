@@ -98,7 +98,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _clearscreen( short area )
     _GrEpilog();
 }
 
-Entry( _CLEARSCREEN, _clearscreen ) // alternate entry-point
+Entry1( _CLEARSCREEN, _clearscreen ) // alternate entry-point
 
 
 void _GrClear( short x1, short y1, short x2, short y2 )

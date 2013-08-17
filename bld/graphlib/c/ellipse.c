@@ -52,7 +52,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _ellipse( short fill, short x1, short y1, shor
     return( success );
 }
 
-Entry( _ELLIPSE, _ellipse ) // alternate entry-point
+Entry1( _ELLIPSE, _ellipse ) // alternate entry-point
 
 
 short _WCI86FAR _L2ellipse( short fill, short x1, short y1, short x2, short y2 )

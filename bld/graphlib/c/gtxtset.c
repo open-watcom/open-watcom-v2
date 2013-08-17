@@ -43,4 +43,4 @@ _WCRTLINK struct textsettings _WCI86FAR * _WCI86FAR _CGRAPH _gettextsettings(
     return( info );
 }
 
-Entry( _GETTEXTSETTINGS, _gettextsettings ) // alternate entry-point
+Entry1( _GETTEXTSETTINGS, _gettextsettings ) // alternate entry-point

@@ -70,7 +70,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_getchardef( short charnum,
     }
 }
 
-Entry( _PG_GETCHARDEF, _pg_getchardef ) // alternate entry-point
+Entry2( _PG_GETCHARDEF, _pg_getchardef ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _pg_setchardef( short charnum,
@@ -92,4 +92,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_setchardef( short charnum,
     }
 }
 
-Entry( _PG_SETCHARDEF, _pg_setchardef ) // alternate entry-point
+Entry2( _PG_SETCHARDEF, _pg_setchardef ) // alternate entry-point

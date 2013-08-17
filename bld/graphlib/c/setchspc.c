@@ -42,4 +42,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setcharspacing( short space )
     _TextSettings.spacing = space;
 }
 
-Entry( _SETCHARSPACING, _setcharspacing ) // alternate entry-point
+Entry1( _SETCHARSPACING, _setcharspacing ) // alternate entry-point

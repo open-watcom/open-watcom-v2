@@ -495,7 +495,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
     return( count );
 }
 
-Entry( _REGISTERFONTS, _registerfonts ) // alternate entry-point
+Entry1( _REGISTERFONTS, _registerfonts ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
@@ -519,7 +519,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
     _FontList = NULL;
 }
 
-Entry( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
+Entry1( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
 
 
 static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
@@ -655,7 +655,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
     return( 1 );
 }
 
-Entry( _REGISTERFONTS, _registerfonts ) // alternate entry-point
+Entry1( _REGISTERFONTS, _registerfonts ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
@@ -664,7 +664,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
 {
 }
 
-Entry( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
+Entry1( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
 
 #endif
 
@@ -924,7 +924,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
 #endif
 }
 
-Entry( _SETFONT, _setfont ) // alternate entry-point
+Entry1( _SETFONT, _setfont ) // alternate entry-point
 
 
 #if !defined( _DEFAULT_WINDOWS )
@@ -1003,7 +1003,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getfontinfo( struct _fontinfo _WCI86FAR *font
 #endif
 }
 
-Entry( _GETFONTINFO, _getfontinfo ) // alternate entry-point
+Entry1( _GETFONTINFO, _getfontinfo ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _getgtextextent( char _WCI86FAR *text )
@@ -1033,7 +1033,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getgtextextent( char _WCI86FAR *text )
     return( width );
 }
 
-Entry( _GETGTEXTEXTENT, _getgtextextent ) // alternate entry-point
+Entry1( _GETGTEXTEXTENT, _getgtextextent ) // alternate entry-point
 
 
 _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getgtextvector( void )
@@ -1047,7 +1047,7 @@ _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getgtextvector( void )
     return( temp );
 }
 
-Entry( _GETGTEXTVECTOR, _getgtextvector ) // alternate entry-point
+Entry1( _GETGTEXTVECTOR, _getgtextvector ) // alternate entry-point
 
 
 _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _setgtextvector( short x, short y )
@@ -1076,7 +1076,7 @@ _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _setgtextvector( short x, short y )
     return( prev );
 }
 
-Entry( _SETGTEXTVECTOR, _setgtextvector ) // alternate entry-point
+Entry1( _SETGTEXTVECTOR, _setgtextvector ) // alternate entry-point
 
 
 #if defined( __WINDOWS__ )
@@ -1366,4 +1366,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
 #endif
 }
 
-Entry( _OUTGTEXT, _outgtext ) // alternate entry-point
+Entry1( _OUTGTEXT, _outgtext ) // alternate entry-point

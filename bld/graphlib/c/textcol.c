@@ -45,7 +45,7 @@ _WCRTLINK grcolor _WCI86FAR _CGRAPH _gettextcolor( void )
     }
 }
 
-Entry( _GETTEXTCOLOR, _gettextcolor ) // alternate entry-point
+Entry1( _GETTEXTCOLOR, _gettextcolor ) // alternate entry-point
 
 
 _WCRTLINK grcolor _WCI86FAR _CGRAPH _settextcolor( grcolor pixval )
@@ -73,4 +73,4 @@ _WCRTLINK grcolor _WCI86FAR _CGRAPH _settextcolor( grcolor pixval )
     return( prev );
 }
 
-Entry( _SETTEXTCOLOR, _settextcolor ) // alternate entry-point
+Entry1( _SETTEXTCOLOR, _settextcolor ) // alternate entry-point

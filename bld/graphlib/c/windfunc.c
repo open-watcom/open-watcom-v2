@@ -118,7 +118,7 @@ _WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _getwindowcoord( short x, short y )
     return( pt );
 }
 
-Entry( _GETWINDOWCOORD, _getwindowcoord ) // alternate entry-point
+Entry1( _GETWINDOWCOORD, _getwindowcoord ) // alternate entry-point
 
 
 _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w( double x, double y )
@@ -139,7 +139,7 @@ _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w( double x, double y )
     return( pt );
 }
 
-Entry( _GETVIEWCOORD_W, _getviewcoord_w ) // alternate entry-point
+Entry1( _GETVIEWCOORD_W, _getviewcoord_w ) // alternate entry-point
 
 
 _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w_87( double x, double y )
@@ -149,7 +149,7 @@ _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w_87( double x, double 
     return( _getviewcoord_w( x, y ) );
 }
 
-Entry( _GETVIEWCOORD_W_87, _getviewcoord_w_87 ) // alternate entry-point
+Entry1( _GETVIEWCOORD_W_87, _getviewcoord_w_87 ) // alternate entry-point
 
 
 _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getviewcoord_wxy( struct _wxycoord _WCI86FAR * pt )
@@ -161,7 +161,7 @@ _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getviewcoord_wxy( struct _wxycoord _
     return( _getviewcoord_w( pt->wx, pt->wy ) );
 }
 
-Entry( _GETVIEWCOORD_WXY, _getviewcoord_wxy ) // alternate entry-point
+Entry1( _GETVIEWCOORD_WXY, _getviewcoord_wxy ) // alternate entry-point
 
 
 _WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _getcurrentposition_w( void )
@@ -173,7 +173,7 @@ _WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _getcurrentposition_w( void )
     return( _CurrPos_w );
 }
 
-Entry( _GETCURRENTPOSITION_W, _getcurrentposition_w ) // alternate entry-point
+Entry1( _GETCURRENTPOSITION_W, _getcurrentposition_w ) // alternate entry-point
 
 
 void _resetscalefactor( void )

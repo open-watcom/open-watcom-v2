@@ -57,4 +57,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_vlabelchart( chartenv _WCI86FAR *env,
     return( 0 );
 }
 
-Entry( _PG_VLABELCHART, _pg_vlabelchart ) // alternate entry-point
+Entry2( _PG_VLABELCHART, _pg_vlabelchart ) // alternate entry-point

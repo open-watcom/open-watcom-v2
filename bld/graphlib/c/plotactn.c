@@ -53,7 +53,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getplotaction( void )
     }
 }
 
-Entry( _GETPLOTACTION, _getplotaction ) // alternate entry-point
+Entry1( _GETPLOTACTION, _getplotaction ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _setplotaction( short action )
@@ -87,4 +87,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setplotaction( short action )
     return( prev );
 }
 
-Entry( _SETPLOTACTION, _setplotaction ) // alternate entry-point
+Entry1( _SETPLOTACTION, _setplotaction ) // alternate entry-point

@@ -61,7 +61,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _arc( short x1, short y1, short x2, short y2,
     return( success );
 }
 
-Entry( _ARC, _arc ) // alternate entry-point
+Entry1( _ARC, _arc ) // alternate entry-point
 
 
 #define sgn( x )    ( x == 0 ? 0 : ( x < 0 ? -1 : 1 ) )
@@ -113,7 +113,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getarcinfo( struct xycoord _WCI86FAR *start,
     return( success );
 }
 
-Entry( _GETARCINFO, _getarcinfo ) // alternate entry-point
+Entry1( _GETARCINFO, _getarcinfo ) // alternate entry-point
 
 
 short _WCI86FAR _L2arc( short x1, short y1, short x2, short y2,

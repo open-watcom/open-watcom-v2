@@ -46,4 +46,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _settransparency( short trans )
     return( prev );
 }
 
-Entry( _SETTRANSPARENCY, _settransparency ) // alternate entry-point
+Entry1( _SETTRANSPARENCY, _settransparency ) // alternate entry-point

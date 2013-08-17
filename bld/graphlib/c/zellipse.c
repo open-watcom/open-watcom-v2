@@ -53,7 +53,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _ellipse_w( short fill, double x1, double y1,
     return( success );
 }
 
-Entry( _ELLIPSE_W, _ellipse_w ) // alternate entry-point
+Entry1( _ELLIPSE_W, _ellipse_w ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _ellipse_wxy( short fill, struct _wxycoord _WCI86FAR * p1,
@@ -66,7 +66,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _ellipse_wxy( short fill, struct _wxycoord _WC
     return( _ellipse_w( fill, p1->wx, p1->wy, p2->wx, p2->wy ) );
 }
 
-Entry( _ELLIPSE_WXY, _ellipse_wxy ) // alternate entry-point
+Entry1( _ELLIPSE_WXY, _ellipse_wxy ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _ellipse_w_87( short fill, double x1, double y1,
@@ -76,4 +76,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _ellipse_w_87( short fill, double x1, double y
     return( _ellipse_w( fill, x1, y1, x2, y2 ) );
 }
 
-Entry( _ELLIPSE_W_87, _ellipse_w_87 ) // alternate entry-point
+Entry1( _ELLIPSE_W_87, _ellipse_w_87 ) // alternate entry-point

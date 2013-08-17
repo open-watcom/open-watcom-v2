@@ -58,4 +58,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _gettextextent( short x, short y, char _WCI86FA
     concat->ycoord = _GetLogY( concat->ycoord );
 }
 
-Entry( _GETTEXTEXTENT, _gettextextent ) // alternate entry-point
+Entry1( _GETTEXTEXTENT, _gettextextent ) // alternate entry-point

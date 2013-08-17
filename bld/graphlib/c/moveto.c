@@ -49,4 +49,4 @@ _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _moveto( short x, short y )
     return( prev );
 }
 
-Entry( _MOVETO, _moveto ) // alternate entry-point
+Entry1( _MOVETO, _moveto ) // alternate entry-point

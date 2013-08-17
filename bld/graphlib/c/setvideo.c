@@ -544,7 +544,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     return( _CurrState->vc.numtextrows );
 }
 
-Entry( _SETVIDEOMODE, _setvideomode ) // alternate entry-point
+Entry1( _SETVIDEOMODE, _setvideomode ) // alternate entry-point
 
 
 #if !defined( _DEFAULT_WINDOWS )

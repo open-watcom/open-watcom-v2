@@ -43,4 +43,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _grstatus( void )
     return( _ErrorStatus );
 }
 
-Entry( _GRSTATUS, _grstatus ) // alternate entry-point
+Entry1( _GRSTATUS, _grstatus ) // alternate entry-point

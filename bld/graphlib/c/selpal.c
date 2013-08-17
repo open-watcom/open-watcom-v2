@@ -67,4 +67,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _selectpalette( short palnum )
     return( prev );
 }
 
-Entry( _SELECTPALETTE, _selectpalette ) // alternate entry-point
+Entry1( _SELECTPALETTE, _selectpalette ) // alternate entry-point

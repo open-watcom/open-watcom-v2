@@ -51,7 +51,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _floodfill_w( double x, double y, grcolor stop
     return( success );
 }
 
-Entry( _FLOODFILL_W, _floodfill_w ) // alternate entry-point
+Entry1( _FLOODFILL_W, _floodfill_w ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _floodfill_w_87( double x, double y, grcolor stop_color )
@@ -61,4 +61,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _floodfill_w_87( double x, double y, grcolor s
     return( _floodfill_w( x, y, stop_color ) );
 }
 
-Entry( _FLOODFILL_W_87, _floodfill_w_87 ) // alternate entry-point
+Entry1( _FLOODFILL_W_87, _floodfill_w_87 ) // alternate entry-point

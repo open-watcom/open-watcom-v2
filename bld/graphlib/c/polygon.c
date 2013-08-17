@@ -58,7 +58,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _polygon( short fill, short numpts,
     return( success );
 }
 
-Entry( _POLYGON, _polygon ) // alternate entry-point
+Entry1( _POLYGON, _polygon ) // alternate entry-point
 
 
 short _WCI86FAR _L2polygon( short fill, short numpts,

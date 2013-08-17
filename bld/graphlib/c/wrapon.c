@@ -46,4 +46,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _wrapon( short newwrap )
     return( prev );
 }
 
-Entry( _WRAPON, _wrapon ) // alternate entry-point
+Entry1( _WRAPON, _wrapon ) // alternate entry-point

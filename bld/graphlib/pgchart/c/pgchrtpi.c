@@ -258,4 +258,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_chartpie( chartenv _WCI86FAR *env,
     return( error );
 }
 
-Entry( _PG_CHARTPIE, _pg_chartpie ) // alternate entry-point
+Entry2( _PG_CHARTPIE, _pg_chartpie ) // alternate entry-point

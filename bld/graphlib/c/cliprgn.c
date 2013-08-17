@@ -44,7 +44,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setcliprgn( short x1, short y1, short x2, shor
     }
 }
 
-Entry( _SETCLIPRGN, _setcliprgn ) // alternate entry-point
+Entry1( _SETCLIPRGN, _setcliprgn ) // alternate entry-point
 
 
 void _WCI86FAR _L2setcliprgn( short x1, short y1, short x2, short y2 )
@@ -121,4 +121,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _getcliprgn( short _WCI86FAR *xmin, short _WCI8
 #endif
 }
 
-Entry( _GETCLIPRGN, _getcliprgn ) // alternate entry-point
+Entry1( _GETCLIPRGN, _getcliprgn ) // alternate entry-point

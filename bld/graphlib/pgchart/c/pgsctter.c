@@ -111,7 +111,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_chartscatterms( chartenv _WCI86FAR *env,
     return( error );
 }
 
-Entry( _PG_CHARTSCATTERMS, _pg_chartscatterms ) // alternate entry-point
+Entry2( _PG_CHARTSCATTERMS, _pg_chartscatterms ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _pg_chartscatter( chartenv _WCI86FAR *env,
@@ -131,4 +131,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_chartscatter( chartenv _WCI86FAR *env,
     return( error );
 }
 
-Entry( _PG_CHARTSCATTER, _pg_chartscatter ) // alternate entry-point
+Entry2( _PG_CHARTSCATTER, _pg_chartscatter ) // alternate entry-point

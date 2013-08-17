@@ -42,4 +42,4 @@ _WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getcurrentposition( void )
     return( _CurrPos );
 }
 
-Entry( _GETCURRENTPOSITION, _getcurrentposition ) // alternate entry-point
+Entry1( _GETCURRENTPOSITION, _getcurrentposition ) // alternate entry-point

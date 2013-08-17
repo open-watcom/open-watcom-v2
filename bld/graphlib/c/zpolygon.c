@@ -97,7 +97,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _polygon_wxy( short fill, short numpts,
     return( success );
 }
 
-Entry( _POLYGON_WXY, _polygon_wxy ) // alternate entry-point
+Entry1( _POLYGON_WXY, _polygon_wxy ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _polygon_w( short fill, short numpts,
@@ -107,4 +107,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _polygon_w( short fill, short numpts,
     return( _polygon_wxy( fill, numpts, (struct _wxycoord _WCI86FAR *) points ) );
 }
 
-Entry( _POLYGON_W, _polygon_w ) // alternate entry-point
+Entry1( _POLYGON_W, _polygon_w ) // alternate entry-point

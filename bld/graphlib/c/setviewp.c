@@ -46,4 +46,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setviewport( short x1, short y1, short x2, sho
     _setlogorg( x1, y1 );
 }
 
-Entry( _SETVIEWPORT, _setviewport ) // alternate entry-point
+Entry1( _SETVIEWPORT, _setviewport ) // alternate entry-point

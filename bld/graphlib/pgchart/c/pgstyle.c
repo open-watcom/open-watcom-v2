@@ -51,7 +51,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _pg_resetstyleset( void )
     memcpy( _Style, _DefaultStyle, sizeof( styleset ) );
 }
 
-Entry( _PG_RESETSTYLESET, _pg_resetstyleset ) // alternate entry-point
+Entry2( _PG_RESETSTYLESET, _pg_resetstyleset ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _pg_getstyleset( unsigned short _WCI86FAR *style )
@@ -63,7 +63,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _pg_getstyleset( unsigned short _WCI86FAR *styl
     MemoryCopy( style, _Style, sizeof( styleset ) );
 }
 
-Entry( _PG_GETSTYLESET, _pg_getstyleset ) // alternate entry-point
+Entry2( _PG_GETSTYLESET, _pg_getstyleset ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _pg_setstyleset( unsigned short _WCI86FAR *style )
@@ -75,4 +75,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _pg_setstyleset( unsigned short _WCI86FAR *styl
     MemoryCopy( _Style, style, sizeof( styleset ) );
 }
 
-Entry( _PG_SETSTYLESET, _pg_setstyleset ) // alternate entry-point
+Entry2( _PG_SETSTYLESET, _pg_setstyleset ) // alternate entry-point

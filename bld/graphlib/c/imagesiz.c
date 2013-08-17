@@ -50,7 +50,7 @@ _WCRTLINK long _WCI86FAR _CGRAPH _imagesize( short x1, short y1, short x2, short
     }
 }
 
-Entry( _IMAGESIZE, _imagesize ) // alternate entry-point
+Entry1( _IMAGESIZE, _imagesize ) // alternate entry-point
 
 
 long _WCI86FAR _L2imagesize( short x1, short y1, short x2, short y2 )

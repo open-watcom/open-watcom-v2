@@ -48,7 +48,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _putimage( short x, short y, char _WCI86HUGE * 
     }
 }
 
-Entry( _PUTIMAGE, _putimage ) // alternate entry-point
+Entry1( _PUTIMAGE, _putimage ) // alternate entry-point
 
 
 #if defined( _DEFAULT_WINDOWS )

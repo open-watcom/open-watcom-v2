@@ -50,7 +50,7 @@ _WCRTLINK grcolor _WCI86FAR _CGRAPH _getpixel( short x, short y )
     return( colour );
 }
 
-Entry( _GETPIXEL, _getpixel ) // alternate entry-point
+Entry1( _GETPIXEL, _getpixel ) // alternate entry-point
 
 
 _WCRTLINK grcolor _WCI86FAR _CGRAPH _setpixel( short x, short y )
@@ -70,4 +70,4 @@ _WCRTLINK grcolor _WCI86FAR _CGRAPH _setpixel( short x, short y )
     return( old_colour );
 }
 
-Entry( _SETPIXEL, _setpixel ) // alternate entry-point
+Entry1( _SETPIXEL, _setpixel ) // alternate entry-point

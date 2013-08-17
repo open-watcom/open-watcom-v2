@@ -51,7 +51,7 @@ _WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _moveto_w( double x, double y )
     return( prev );
 }
 
-Entry( _MOVETO_W, _moveto_w ) // alternate entry-point
+Entry1( _MOVETO_W, _moveto_w ) // alternate entry-point
 
 
 _WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _moveto_w_87( double x, double y )
@@ -61,4 +61,4 @@ _WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _moveto_w_87( double x, double y )
     return( _moveto_w( x, y ) );
 }
 
-Entry( _MOVETO_W_87, _moveto_w_87 ) // alternate entry-point
+Entry1( _MOVETO_W_87, _moveto_w_87 ) // alternate entry-point

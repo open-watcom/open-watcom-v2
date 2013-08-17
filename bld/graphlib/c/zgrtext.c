@@ -51,7 +51,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _grtext_w( double x, double y, char _WCI86FAR 
     return( success );
 }
 
-Entry( _GRTEXT_W, _grtext_w ) // alternate entry-point
+Entry1( _GRTEXT_W, _grtext_w ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _grtext_w_87( double x, double y, char _WCI86FAR *string )
@@ -61,4 +61,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _grtext_w_87( double x, double y, char _WCI86F
     return( _grtext_w( x, y, string ) );
 }
 
-Entry( _GRTEXT_W_87, _grtext_w_87 ) // alternate entry-point
+Entry1( _GRTEXT_W_87, _grtext_w_87 ) // alternate entry-point

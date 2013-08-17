@@ -47,7 +47,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _putimage_w( double x, double y, char _WCI86HUG
     }
 }
 
-Entry( _PUTIMAGE_W, _putimage_w ) // alternate entry-point
+Entry1( _PUTIMAGE_W, _putimage_w ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _putimage_w_87( double x, double y, char _WCI86HUGE *image,
@@ -57,4 +57,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _putimage_w_87( double x, double y, char _WCI86
     _putimage_w( x, y, image, dispmode );
 }
 
-Entry( _PUTIMAGE_W_87, _putimage_w_87 ) // alternate entry-point
+Entry1( _PUTIMAGE_W_87, _putimage_w_87 ) // alternate entry-point

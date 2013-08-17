@@ -51,7 +51,7 @@ _WCRTLINK grcolor _WCI86FAR _CGRAPH _getpixel_w( double x, double y )
     return( colour );
 }
 
-Entry( _GETPIXEL_W, _getpixel_w ) // alternate entry-point
+Entry1( _GETPIXEL_W, _getpixel_w ) // alternate entry-point
 
 
 _WCRTLINK grcolor _WCI86FAR _CGRAPH _getpixel_w_87( double x, double y )
@@ -61,7 +61,7 @@ _WCRTLINK grcolor _WCI86FAR _CGRAPH _getpixel_w_87( double x, double y )
     return( _getpixel_w( x, y ) );
 }
 
-Entry( _GETPIXEL_W_87, _getpixel_w_87 ) // alternate entry-point
+Entry1( _GETPIXEL_W_87, _getpixel_w_87 ) // alternate entry-point
 
 
 _WCRTLINK grcolor _WCI86FAR _CGRAPH _setpixel_w( double x, double y )
@@ -81,7 +81,7 @@ _WCRTLINK grcolor _WCI86FAR _CGRAPH _setpixel_w( double x, double y )
     return( old_colour );
 }
 
-Entry( _SETPIXEL_W, _setpixel_w ) // alternate entry-point
+Entry1( _SETPIXEL_W, _setpixel_w ) // alternate entry-point
 
 
 _WCRTLINK grcolor _WCI86FAR _CGRAPH _setpixel_w_87( double x, double y )
@@ -91,4 +91,4 @@ _WCRTLINK grcolor _WCI86FAR _CGRAPH _setpixel_w_87( double x, double y )
     return( _setpixel_w( x, y ) );
 }
 
-Entry( _SETPIXEL_W_87, _setpixel_w_87 ) // alternate entry-point
+Entry1( _SETPIXEL_W_87, _setpixel_w_87 ) // alternate entry-point

@@ -103,7 +103,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_resetpalette( void )
     return( 0 );
 }
 
-Entry( _PG_RESETPALETTE, _pg_resetpalette ) // alternate entry-point
+Entry2( _PG_RESETPALETTE, _pg_resetpalette ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _pg_getpalette( paletteentry _WCI86FAR *palette )
@@ -117,7 +117,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_getpalette( paletteentry _WCI86FAR *palett
     return( 0 );
 }
 
-Entry( _PG_GETPALETTE, _pg_getpalette ) // alternate entry-point
+Entry2( _PG_GETPALETTE, _pg_getpalette ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _pg_setpalette( paletteentry _WCI86FAR *palette )
@@ -131,4 +131,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_setpalette( paletteentry _WCI86FAR *palett
     return( 0 );
 }
 
-Entry( _PG_SETPALETTE, _pg_setpalette ) // alternate entry-point
+Entry2( _PG_SETPALETTE, _pg_setpalette ) // alternate entry-point

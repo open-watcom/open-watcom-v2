@@ -58,4 +58,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setclip( short mode )
     return( prev );
 }
 
-Entry( _SETCLIP, _setclip ) // alternate entry-point
+Entry1( _SETCLIP, _setclip ) // alternate entry-point

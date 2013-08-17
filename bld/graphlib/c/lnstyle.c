@@ -42,7 +42,7 @@ _WCRTLINK unsigned short _WCI86FAR _CGRAPH _getlinestyle( void )
     return( _LineStyle );
 }
 
-Entry( _GETLINESTYLE, _getlinestyle ) // alternate entry-point
+Entry1( _GETLINESTYLE, _getlinestyle ) // alternate entry-point
 
 
 _WCRTLINK void _WCI86FAR _CGRAPH _setlinestyle( unsigned short style )
@@ -54,4 +54,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setlinestyle( unsigned short style )
     _LineStyle = style;
 }
 
-Entry( _SETLINESTYLE, _setlinestyle ) // alternate entry-point
+Entry1( _SETLINESTYLE, _setlinestyle ) // alternate entry-point

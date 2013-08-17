@@ -47,4 +47,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _settextorient( short vecx, short vecy )
     }
 }
 
-Entry( _SETTEXTORIENT, _settextorient ) // alternate entry-point
+Entry1( _SETTEXTORIENT, _settextorient ) // alternate entry-point

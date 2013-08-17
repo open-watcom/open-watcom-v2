@@ -43,4 +43,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _settextalign( short horiz, short vert )
     _TextSettings.vertalign = vert;
 }
 
-Entry( _SETTEXTALIGN, _settextalign ) // alternate entry-point
+Entry1( _SETTEXTALIGN, _settextalign ) // alternate entry-point

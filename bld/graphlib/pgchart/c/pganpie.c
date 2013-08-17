@@ -75,4 +75,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pg_analyzepie( chartenv _WCI86FAR *env,
     return( error );
 }
 
-Entry( _PG_ANALYZEPIE, _pg_analyzepie ) // alternate entry-point
+Entry2( _PG_ANALYZEPIE, _pg_analyzepie ) // alternate entry-point

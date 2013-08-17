@@ -43,4 +43,4 @@ _WCRTLINK void _WCI86FAR _CGRAPH _setcharsize( short height, short width )
     _TextSettings.width = abs( width );
 }
 
-Entry( _SETCHARSIZE, _setcharsize ) // alternate entry-point
+Entry1( _SETCHARSIZE, _setcharsize ) // alternate entry-point

@@ -48,7 +48,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _getimage( short x1, short y1, short x2, short 
     }
 }
 
-Entry( _GETIMAGE, _getimage ) // alternate entry-point
+Entry1( _GETIMAGE, _getimage ) // alternate entry-point
 
 
 void _WCI86FAR _L2getimage( short x1, short y1, short x2, short y2,

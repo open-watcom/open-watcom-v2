@@ -44,7 +44,7 @@ _WCRTLINK long _WCI86FAR _CGRAPH _getbkcolor( void )
     return( _CurrBkColor );
 }
 
-Entry( _GETBKCOLOR, _getbkcolor ) // alternate entry-point
+Entry1( _GETBKCOLOR, _getbkcolor ) // alternate entry-point
 
 
 _WCRTLINK long _WCI86FAR _CGRAPH _setbkcolor( long pixval )
@@ -81,4 +81,4 @@ _WCRTLINK long _WCI86FAR _CGRAPH _setbkcolor( long pixval )
     return( prev );
 }
 
-Entry( _SETBKCOLOR, _setbkcolor ) // alternate entry-point
+Entry1( _SETBKCOLOR, _setbkcolor ) // alternate entry-point

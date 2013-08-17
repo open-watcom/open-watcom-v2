@@ -67,7 +67,7 @@ _WCRTLINK long _WCI86FAR _CGRAPH _remappalette( short pixval, long colour )
     return( prev );
 }
 
-Entry( _REMAPPALETTE, _remappalette ) // alternate entry-point
+Entry1( _REMAPPALETTE, _remappalette ) // alternate entry-point
 
 
 void _RemapNum( long _WCI86FAR *colours, short num )
@@ -112,7 +112,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _remapallpalette( long _WCI86FAR *colours )
     return( -1 );
 }
 
-Entry( _REMAPALLPALETTE, _remapallpalette ) // alternate entry-point
+Entry1( _REMAPALLPALETTE, _remapallpalette ) // alternate entry-point
 
 
 #if defined( _DEFAULT_WINDOWS )

@@ -56,7 +56,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pie_w( short fill, double x1, double y1,
     return( success );
 }
 
-Entry( _PIE_W, _pie_w ) // alternate entry-point
+Entry1( _PIE_W, _pie_w ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _pie_wxy( short fill, struct _wxycoord _WCI86FAR * p1,
@@ -69,7 +69,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pie_wxy( short fill, struct _wxycoord _WCI86F
                           p3->wx, p3->wy, p4->wx, p4->wy ) );
 }
 
-Entry( _PIE_WXY, _pie_wxy ) // alternate entry-point
+Entry1( _PIE_WXY, _pie_wxy ) // alternate entry-point
 
 
 _WCRTLINK short _WCI86FAR _CGRAPH _pie_w_87( short fill, double x1, double y1,
@@ -81,4 +81,4 @@ _WCRTLINK short _WCI86FAR _CGRAPH _pie_w_87( short fill, double x1, double y1,
     return( _pie_w( fill, x1, y1, x2, y2, x3, y3, x4, y4 ) );
 }
 
-Entry( _PIE_W_87, _pie_w_87 ) // alternate entry-point
+Entry1( _PIE_W_87, _pie_w_87 ) // alternate entry-point

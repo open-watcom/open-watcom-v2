@@ -49,7 +49,7 @@ _WCRTLINK long _WCI86FAR _CGRAPH _imagesize_w( double x1, double y1, double x2, 
     }
 }
 
-Entry( _IMAGESIZE_W, _imagesize_w ) // alternate entry-point
+Entry1( _IMAGESIZE_W, _imagesize_w ) // alternate entry-point
 
 
 _WCRTLINK long _WCI86FAR _CGRAPH _imagesize_wxy( struct _wxycoord _WCI86FAR * p1,
@@ -62,7 +62,7 @@ _WCRTLINK long _WCI86FAR _CGRAPH _imagesize_wxy( struct _wxycoord _WCI86FAR * p1
     return( _imagesize_w( p1->wx, p1->wy, p2->wx, p2->wy ) );
 }
 
-Entry( _IMAGESIZE_WXY, _imagesize_wxy ) // alternate entry-point
+Entry1( _IMAGESIZE_WXY, _imagesize_wxy ) // alternate entry-point
 
 
 _WCRTLINK long _WCI86FAR _CGRAPH _imagesize_w_87( double x1, double y1, double x2, double y2 )
@@ -72,4 +72,4 @@ _WCRTLINK long _WCI86FAR _CGRAPH _imagesize_w_87( double x1, double y1, double x
     return( _imagesize_w( x1, y1, x2, y2 ) );
 }
 
-Entry( _IMAGESIZE_W_87, _imagesize_w_87 ) // alternate entry-point
+Entry1( _IMAGESIZE_W_87, _imagesize_w_87 ) // alternate entry-point

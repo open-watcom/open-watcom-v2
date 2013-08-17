@@ -52,7 +52,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _rectangle( short fill, short x1, short y1,
     return( success );
 }
 
-Entry( _RECTANGLE, _rectangle ) // alternate entry-point
+Entry1( _RECTANGLE, _rectangle ) // alternate entry-point
 
 
 short _WCI86FAR _L2rectangle( short fill, short x1, short y1,

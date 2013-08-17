@@ -48,7 +48,7 @@ _WCRTLINK struct rccoord _WCI86FAR _CGRAPH _gettextposition( void )
     return( pos );
 }
 
-Entry( _GETTEXTPOSITION, _gettextposition ) // alternate entry-point
+Entry1( _GETTEXTPOSITION, _gettextposition ) // alternate entry-point
 
 
 _WCRTLINK struct rccoord _WCI86FAR _CGRAPH _settextposition( short row, short col )
@@ -84,4 +84,4 @@ _WCRTLINK struct rccoord _WCI86FAR _CGRAPH _settextposition( short row, short co
     return( prev );
 }
 
-Entry( _SETTEXTPOSITION, _settextposition ) // alternate entry-point
+Entry1( _SETTEXTPOSITION, _settextposition ) // alternate entry-point

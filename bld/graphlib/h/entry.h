@@ -32,23 +32,21 @@
 // Functions are in uppercase, do not have underscores on the end, and
 // perform a jump to the appropriate function.
 
-#if defined( __386__ )
-  #define _ALT_ENABLED  0       // not necessary for 32-bit
+#if defined( VERSION2 )
+  #define _GRAPH_ALT_ENABLED    0
+#elif defined( __386__ )
+  #define _GRAPH_ALT_ENABLED    0       // not necessary for 32-bit
 #else
-  #define _ALT_ENABLED  0       // disabled (currently WATFOR-77 doesn't have
-#endif                          // enough memory to load the graphics library)
+  #define _GRAPH_ALT_ENABLED    0       // disabled (currently WATFOR-77 doesn't have
+#endif                                  // enough memory to load the graphics library)
 
-
-#if _ALT_ENABLED
-  #define Entry( f1, f2 )       void f1( void ) {  \
-                                   JMP ## f2();    \
-                                }
+#if _GRAPH_ALT_ENABLED
+  #define Entry1( f1, f2 )      void f1( void ) { JMP ## f2(); }
 #else
-  #define Entry( f1, f2 )
+  #define Entry1( f1, f2 )
 #endif
 
-
-#if _ALT_ENABLED
+#if _GRAPH_ALT_ENABLED
 
 void JMP_arc();
 void JMP_arc_w();
