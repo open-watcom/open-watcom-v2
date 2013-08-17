@@ -108,7 +108,7 @@ void _GrClear( short x1, short y1, short x2, short y2 )
 
 {
     unsigned char       prev_mask[ MASK_LEN ];
-    short               prev_colour;
+    grcolor             prev_colour;
     short               prev_action;
 
     prev_action = _setplotaction( _GPSET );

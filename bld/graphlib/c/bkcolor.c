@@ -56,7 +56,6 @@ _WCRTLINK long _WCI86FAR _CGRAPH _setbkcolor( long pixval )
    colour.  The routine returns the previous background colour. */
 
 {
-    short               color;
     long                prev;
 
     prev = _CurrBkColor;
@@ -64,7 +63,6 @@ _WCRTLINK long _WCI86FAR _CGRAPH _setbkcolor( long pixval )
 
 #if defined( _DEFAULT_WINDOWS )
     _remappalette( 0, pixval );
-    color = color;
 #else
     if( _GrMode ) {     // in graphics modes, remap colour 0
         if( _CurrState->vc.adapter == _CGA && _CurrState->vc.mode != _HRESBW ) {
@@ -73,6 +71,8 @@ _WCRTLINK long _WCI86FAR _CGRAPH _setbkcolor( long pixval )
             _remappalette( 0, pixval );
         }
     } else {            // in text modes, set _CharAttr
+        short   color;
+
         color = _CnvColour( pixval ) & 7;   // keep only 3 background bits
         _CharAttr &= 0x8F;                  // eliminate old colour
         _CharAttr |= color << 4;            // insert new colour

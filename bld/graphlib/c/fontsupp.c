@@ -1241,8 +1241,8 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
     HFONT               original_font;
     int                 width;
     int                 height;
-    long                old_color;
-    long                old_bkcolor;
+    WPI_COLOUR          old_color;
+    WPI_COLOUR          old_bkcolor;
     int                 x1, y1, x2, y2, outy;
     WPI_TEXTMETRIC      fmet;
   #if defined( __OS2__ )

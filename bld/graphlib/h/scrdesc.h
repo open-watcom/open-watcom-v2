@@ -34,7 +34,7 @@
 typedef struct screen_description
 {
     char far    *mem;
-    short       colour;
+    grcolor     colour;
     short       mask;
     short       bit_pos;
 } SCREEN_DESC;
