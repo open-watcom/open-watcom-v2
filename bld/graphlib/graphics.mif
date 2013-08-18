@@ -10,6 +10,8 @@ graph_distrib_lib = 1
 
 suppress_zc = 1
 
+supervga_support = -D_SUPERVGA
+
 memory_model_i86 = s
 !ifeq host_os dos
 memory_model_386 = s
@@ -132,16 +134,13 @@ english_objs = &
     $(_subdir_)fast256.obj &
     $(_subdir_)hercfont.obj &
     $(_subdir_)hgcutils.obj &
-    $(_subdir_)svgautil.obj &
     $(_subdir_)vgautils.obj &
     $(_subdir_)grcga.obj &
     $(_subdir_)grega.obj &
     $(_subdir_)grhgc.obj &
-    $(_subdir_)grsvga.obj &
     $(_subdir_)grvga.obj &
     $(_subdir_)selpal.obj &
     $(_subdir_)setmode.obj &
-    $(_subdir_)svgainfo.obj &
     $(_subdir_)sysmtype.obj
 
 win_objs = &
@@ -152,10 +151,17 @@ special_objs = &
     fsmath.obj &
     dummy.obj
 
+!ifdef supervga_support
+svga_english_objs = &
+    $(_subdir_)grsvga.obj &
+    $(_subdir_)svgautil.obj &
+    $(_subdir_)svgainfo.obj
+!endif
+
 !ifeq host_os win
 grlib_template = $(common_objs) $(win_objs)
 !else
-grlib_template = $(common_objs) $(eng_nonwin_objs) $(english_objs)
+grlib_template = $(common_objs) $(eng_nonwin_objs) $(english_objs) $(svga_english_objs)
 !endif
 
 _subdir_ = $(v2subdir)/
@@ -179,7 +185,7 @@ inc_dirs += -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"
 
 .c: ../c
 
-extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_SUPERVGA -D_FARD=
+extra_cpp_flags = -D_ENABLE_AUTODEPEND $(supervga_support) -D_FARD=
 
 extra_cpp_flags_i86 = -D_CGRAPH=_loadds
 extra_cpp_flags_386 = -D_CGRAPH=
@@ -196,7 +202,7 @@ extra_c_flags_386_register = -3r
 extra_c_flags_386_stack = -3s
 extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os))
 
-extra_a_flags = -ms -i"../inc" $(extra_a_flags_$(machine)) -fo=$@
+extra_a_flags = $(supervga_support) -ms -i"../inc" $(extra_a_flags_$(machine)) -fo=$@
 
 extra_a_flags_i86 = -D_TEXT=GRAPH_TEXT
 extra_a_flags_386_register = -3r
@@ -238,8 +244,8 @@ graph2.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl
 .asm{$(v2subdir)}.obj: $($(proj_name)_autodepends)
     @if not exist $(v2subdir) mkdir $(v2subdir)
 !ifeq verbose 1
-        $(as) $(aflags) -dVERSION2 $(extra_a_flags_$[&) $(inc_path) $[@
+        $(as) $(aflags) -DVERSION2 $(extra_a_flags_$[&) $(inc_path) $[@
 !else
         @echo as $@
-        @$(as) $(aflags) -dVERSION2 $(extra_a_flags_$[&) $(inc_path) $[@
+        @$(as) $(aflags) -DVERSION2 $(extra_a_flags_$[&) $(inc_path) $[@
 !endif

@@ -100,18 +100,19 @@ unsigned char           _IsDBCS;                    // is this a DBCS system
 dbcs_pair               _DBCSPairs[ 5 ];            // range of DBCS chars
 
 #if defined( VERSION2 )
-long                    _coltbl[16];                // EGA colors for TC modes
+long                    _coltbl[16];                // EGA colors for TrueColor modes
 #endif
 
 #if defined( _SUPERVGA )
 unsigned char           _VGAPage;                   // SuperVGA page number
-#if defined( VERSION2 )
-unsigned short          _VGABytesPerPixel;          // SuperVGA num bytes per pixel
-#endif
 unsigned char           _VGAGran;                   // SuperVGA page granularity
 short                   _SVGAType;                  // type of SuperVGA
 vgapage_fn              _FARC *_SetVGAPage;         // function to set SVGA page
 short                   _VGAStride;                 // SuperVGA mode stride
+#endif
+
+#if defined( _SUPERVGA ) && defined( VERSION2 )
+unsigned short          _VGABytesPerPixel;          // SuperVGA num bytes per pixel
 #endif
 
 // segments of screen memory and BIOS and ROM BIOS data area

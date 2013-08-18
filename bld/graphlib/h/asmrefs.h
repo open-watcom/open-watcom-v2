@@ -62,35 +62,27 @@
 #pragma aux _EGAMoveDownHi "*_";
 #pragma aux _EGAMoveDownLo "*_";
 #pragma aux _EGAMoveLeft "*_";
-#pragma aux _EGAMoveLeftX "*_";
 #pragma aux _EGAMoveRight "*_";
-#pragma aux _EGAMoveRightX "*_";
 #pragma aux _EGARep "*_";
 #pragma aux _EGAGetDot "*_";
 #pragma aux _EGAGetDotEO "*_";
 #pragma aux _EGAGetDotMono "*_";
 #pragma aux _EGAZap "*_";
-#pragma aux _EGAZapX "*_";
 #pragma aux _EGAZapEO "*_";
 #pragma aux _EGAZapMono "*_";
 #pragma aux _EGAFill "*_";
-#pragma aux _EGAFillX "*_";
 #pragma aux _EGAFillEO "*_";
 #pragma aux _EGAFillMono "*_";
 #pragma aux _EGAPixCopy "*_";
-#pragma aux _EGAPixCopyX "*_";
 #pragma aux _EGAPixCopyEO "*_";
 #pragma aux _EGAPixCopyMono "*_";
 #pragma aux _EGAReadRow "*_";
-#pragma aux _EGAReadRowX "*_";
 #pragma aux _EGAReadRowEO "*_";
 #pragma aux _EGAReadRowMono "*_";
 #pragma aux _EGAScanLeft "*_";
-#pragma aux _EGAScanLeftX "*_";
 #pragma aux _EGAScanLeftEO "*_";
 #pragma aux _EGAScanLeftMono "*_";
 #pragma aux _EGAScanRight "*_";
-#pragma aux _EGAScanRightX "*_";
 #pragma aux _EGAScanRightEO "*_";
 #pragma aux _EGAScanRightMono "*_";
 #pragma aux _HercMoveUp "*_";
@@ -126,6 +118,8 @@
 #pragma aux _PixRead256 "*_";
 #pragma aux _ScanLeft256 "*_";
 #pragma aux _ScanRight256 "*_";
+
+#if defined( _SUPERVGA )
 
 #pragma aux _MoveUpVESA "*_";
 #pragma aux _MoveDownVESA "*_";
@@ -165,6 +159,16 @@
 #pragma aux _ScanRightDWord "*_";
 #pragma aux _ScanLeftTByte "*_";
 #pragma aux _ScanRightTByte "*_";
+
+#pragma aux _MoveLeftEGAX "*_";
+#pragma aux _MoveRightEGAX "*_";
+#pragma aux _ZapEGAX "*_";
+#pragma aux _FillEGAX "*_";
+#pragma aux _PixCopyEGAX "*_";
+#pragma aux _PixReadRowEGAX "*_";
+#pragma aux _ScanLeftEGAX "*_";
+#pragma aux _ScanRightEGAX "*_";
+
 #if 0
 // This mode is untested
 #pragma aux _MoveUp1280 "*_";
@@ -183,6 +187,8 @@
 #pragma aux _PageS3 "*_";
 #pragma aux _PageCirrus "*_";
 #pragma aux _PageViper "*_";
+
+#endif
 
 /* Variables */
 
@@ -232,10 +238,10 @@
 #pragma aux _DBCSPairs "_*";
 #pragma aux _CurrState "_*";
 #pragma aux _ConfigBuffer "_*";
+
 #pragma aux _StackSeg "_*";
 #pragma aux _BiosSeg "_*";
 #pragma aux _BiosOff "_*";
-
 #pragma aux _MonoSeg "_*";
 #pragma aux _CgaSeg "_*";
 #pragma aux _EgaSeg "_*";
@@ -245,12 +251,17 @@
 #pragma aux _EgaOff "_*";
 #pragma aux _RomOff "_*";
 
-#pragma aux _coltbl "_*";
-#pragma aux _VGABytesPerPixel "_*";
-
 #if defined( __QNX__ )
 #pragma aux _CompileSeg "_*";
-#pragma aux _ShadowSeg "_*";
+//#pragma aux _ShadowSeg "_*";
+#endif
+
+#if defined( VERSION2 )
+#pragma aux _coltbl "_*";
+#endif
+
+#if defined( _SUPERVGA ) && defined( VERSION2 )
+#pragma aux _VGABytesPerPixel "_*";
 #endif
 
 #if defined( _SUPERVGA )
@@ -327,37 +338,41 @@ extern short            near _EGAScanRightX( char far *, grcolor, int, int, int,
 extern short            near _EGAScanRightEO( char far *, grcolor, int, int, int, int );
 extern short            near _EGAScanRightMono( char far *, grcolor, int, int, int, int );
 
-// SVGA
+// VGA
 extern void pascal      near _MoveUp19( void );
+extern void pascal      near _MoveLeft19( void );
+extern void pascal      near _MoveDown19( void );
+extern void pascal      near _MoveRight19( void );
+extern void             near _And19( char far *, grcolor, int );
+extern void             near _Rep19( char far *, grcolor, int );
+extern grcolor          near _GetDot19( char far *, int );
+extern void             near _Fill19( char far *, grcolor, int, int, int );
+extern void             near _Zap19( char far *, grcolor, int, int, int );
+extern void             near _PixCopy19( char far *, char far *, int, int, int );
+extern void             near _PixRead19( char far *, char far *, int, int, int );
+extern short            near _ScanLeft19( char far *, grcolor, int, int, int, int );
+extern short            near _ScanRight19( char far *, grcolor, int, int, int, int );
+
+#if defined( _SUPERVGA )
+
+// SVGA
 extern void pascal      near _MoveUp100( void );
 extern void pascal      near _MoveUp128( void );
 extern void pascal      near _MoveUp640( void );
 extern void pascal      near _MoveUp800( void );
 extern void pascal      near _MoveUp1024( void );
-extern void pascal      near _MoveLeft19( void );
 extern void pascal      near _MoveLeft256( void );
-extern void pascal      near _MoveDown19( void );
 extern void pascal      near _MoveDown100( void );
 extern void pascal      near _MoveDown128( void );
 extern void pascal      near _MoveDown640( void );
 extern void pascal      near _MoveDown800( void );
 extern void pascal      near _MoveDown1024( void );
-extern void pascal      near _MoveRight19( void );
 extern void pascal      near _MoveRight256( void );
-extern void             near _Rep19( char far *, grcolor, int );
-extern void             near _And19( char far *, grcolor, int );
-extern grcolor          near _GetDot19( char far *, int );
-extern void             near _Zap19( char far *, grcolor, int, int, int );
 extern void             near _Zap256( char far *, grcolor, int, int, int );
-extern void             near _Fill19( char far *, grcolor, int, int, int );
 extern void             near _Fill256( char far *, grcolor, int, int, int );
-extern void             near _PixCopy19( char far *, char far *, int, int, int );
 extern void             near _PixCopy256( char far *, char far *, int, int, int );
-extern void             near _PixRead19( char far *, char far *, int, int, int );
 extern void             near _PixRead256( char far *, char far *, int, int, int );
 extern short            near _ScanLeft256( char far *, grcolor, int, int, int, int );
-extern short            near _ScanLeft19( char far *, grcolor, int, int, int, int );
-extern short            near _ScanRight19( char far *, grcolor, int, int, int, int );
 extern short            near _ScanRight256( char far *, grcolor, int, int, int, int );
 extern void pascal      near _MoveUpVESA( void );
 extern void pascal      near _MoveDownVESA( void );
@@ -396,13 +411,22 @@ extern short            near _ScanLeftDWord( char far *, long, int, int, int, in
 extern short            near _ScanRightDWord( char far *, long, int, int, int, int );
 extern short            near _ScanLeftTByte( char far *, long, int, int, int, int );
 extern short            near _ScanRightTByte( char far *, long, int, int, int, int );
+
+extern void pascal      near _MoveLeftEGAX( void );
+extern void pascal      near _MoveRightEGAX( void );
+extern void             near _ZapEGAX( char far *, grcolor, int, int, int );
+extern void             near _FillEGAX( char far *, grcolor, int, int, int );
+extern void             near _PixCopyEGAX( char far *, char far *, int, int, int );
+extern void             near _PixReadRowEGAX( char far *, char far *, int, int, int );
+extern short            near _ScanLeftEGAX( char far *, long, int, int, int, int );
+extern short            near _ScanRightEGAX( char far *, long, int, int, int, int );
+
 #if 0 // This mode is untested
 extern void             near _MoveUp1280( void );
 extern void             near _MoveDown1280( void );
 extern void             near _MoveLeftWord( void );
 extern void             near _MoveRightWord( void );
 #endif
-
 
 extern void pascal      _FARC _PageVESA( short );
 extern void pascal      _FARC _PageVideo7( short );
@@ -417,3 +441,5 @@ extern void pascal      _FARC _PageGenoa( short );
 extern void pascal      _FARC _PageS3( short );
 extern void pascal      _FARC _PageCirrus( short );
 extern void pascal      _FARC _PageViper( short );
+
+#endif

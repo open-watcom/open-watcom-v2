@@ -41,6 +41,8 @@
 extern void             _EGASet( void );
 extern void             _EGAReset( void );
 
+extern unsigned short   cs( void );
+#pragma aux cs = "mov ax,cs" value [ax] modify []
 
 static short            _SuperVGAModes[ _SV_MAX-2 ][ 6 ] = {
 //                      100h    101h    102h    103h    104h    105h
@@ -393,19 +395,19 @@ static void _setup_grvesa(void)
         _GrVESA.set=_EGASet;
         _GrVESA.reset=_SVGAReset16;
         _GrVESA.setup=_Setup128;
-        _GrVESA.left=_EGAMoveLeftX;
-        _GrVESA.right=_EGAMoveRightX;
+        _GrVESA.left=_MoveLeftEGAX;
+        _GrVESA.right=_MoveRightEGAX;
         _GrVESA.plot[0]=_EGARep;
         _GrVESA.plot[1]=_EGARep;
         _GrVESA.plot[2]=_EGARep;
         _GrVESA.plot[3]=_EGARep;
         _GrVESA.getdot=_EGAGetDot;
-        _GrVESA.zap=_EGAZapX;
-        _GrVESA.fill=_EGAFillX;
-        _GrVESA.pixcopy=_EGAPixCopyX;
-        _GrVESA.readrow=_EGAReadRowX;
-        _GrVESA.scanleft=_EGAScanLeftX;
-        _GrVESA.scanright=_EGAScanRightX;
+        _GrVESA.zap=_ZapEGAX;
+        _GrVESA.fill=_FillEGAX;
+        _GrVESA.pixcopy=_PixCopyEGAX;
+        _GrVESA.readrow=_PixReadRowEGAX;
+        _GrVESA.scanleft=_ScanLeftEGAX;
+        _GrVESA.scanright=_ScanRightEGAX;
         return;//we are palettized
     case 1:
         _GrVESA.plot[0]=_Rep19;
@@ -520,7 +522,18 @@ static short _SuperVGAInit( short mode )
     }
 
     _VGAPage = 0xff;
-    _SetVGAPage = MAKE_VGA_PG_PTR( _VGAPageFunc[ adapter - 1 ] );
+
+// The page setting functions are defined as FARC pointers.
+// This is _WCI86FAR for 16-bit, and nothing for 32-bit flat model.
+// QNX 32-bit uses small model, and FARC is defined as _WCI86FAR.
+// For QNX 32-bit, we still want only near pointers in the table though,
+// to avoid segment relocations in the executable.
+// The assignment to _SetVGAPage provides the CS value at runtime.
+#if defined( __QNX__ ) && defined( __386__ )
+    _SetVGAPage = MK_FP( cs(), _VGAPageFunc[ adapter - 1 ] );
+#else
+    _SetVGAPage = _VGAPageFunc[ adapter - 1 ];
+#endif
 
     //              x,   y, strd, col, bpp, pag, seg,     off,    siz, mis
     switch( mode ) {
@@ -618,18 +631,6 @@ static void _NoOp( void )
 }
 
 
-static void _SetPage( short page_num )
-//====================================
-
-//  Do an indirect call to the _SetVGAPage function.
-//  Done here so that we can use the PAGE_FUNC pragma to cause
-//  the argument to be passed in [E]AX.
-
-{
-    ( *_SetVGAPage )( page_num );
-}
-
-
 static void _SVGAReset( void )
 //============================
 
@@ -649,7 +650,7 @@ static void _SVGAReset( void )
 
     J.B.Schueler
 
-    _SetPage( 0 );    // reset to page 0
+    ( *_SetVGAPage )( 0 );    // reset to page 0
 */
 }
 
@@ -694,9 +695,8 @@ static void _Setup128( short x, short y, grcolor colour )
     pixel_offset = (long) y * _CurrState->stride + ( x >> 3 );
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
-    _SetPage( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
-                         _CurrState->screen_off + pixel_offset );
+    ( *_SetVGAPage )( page_num );
+    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = x & 7;            // position of pixel in byte
     _Screen.mask = ( 0x80 >> _Screen.bit_pos ) << 8;
     _Screen.colour = colour;
@@ -717,9 +717,8 @@ static void _Setup640( short x, short y, grcolor colour )
     pixel_offset = (long) y * _CurrState->stride + x;
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
-    _SetPage( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
-                         _CurrState->screen_off + pixel_offset );
+    ( *_SetVGAPage )( page_num );
+    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in byte
     _Screen.colour = colour;
 }
@@ -738,9 +737,8 @@ static void _Setup800( short x, short y, grcolor colour )
     pixel_offset = (long) y * _CurrState->stride + x;
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
-    _SetPage( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
-                         _CurrState->screen_off + pixel_offset );
+    ( *_SetVGAPage )( page_num );
+    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in byte
     _Screen.colour = colour;
 }
@@ -760,9 +758,8 @@ static void _Setup1024( short x, short y, grcolor colour )
     pixel_offset = (long) y * _CurrState->stride + x;
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
-    _SetPage( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
-                         _CurrState->screen_off + pixel_offset );
+    ( *_SetVGAPage )( page_num );
+    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in word
     _Screen.colour = colour;
 }
@@ -782,9 +779,8 @@ static void _SetupVESA( short x, short y, grcolor colour )
     pixel_offset = (long) y * _CurrState->stride + x * _CurrState->bytes_per_pixel;
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
-    _SetPage( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
-                         _CurrState->screen_off + pixel_offset );
+    ( *_SetVGAPage )( page_num );
+    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in word
     _Screen.colour = colour;
 }
@@ -806,9 +802,8 @@ static void _Setup1280( short x, short y, grcolor colour )
     pixel_offset = (long) y * _CurrState->stride + (x << 1);
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
-    _SetPage( page_num );
-    _Screen.mem = MK_FP( _CurrState->screen_seg,
-                         _CurrState->screen_off + pixel_offset );
+    ( *_SetVGAPage )( page_num );
+    _Screen.mem = MK_FP( _CurrState->screen_seg, _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = 0;        // position of pixel in word
     _Screen.colour = colour;
 }

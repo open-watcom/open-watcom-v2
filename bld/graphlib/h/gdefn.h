@@ -80,14 +80,6 @@
 // to avoid segment relocations in the executable.
 // The assignment to _SetVGAPage provides the CS value at runtime.
 
-#if defined( __QNX__ ) && defined( __386__ )
-    #pragma aux cs = "mov ax,cs" value [ax] modify []
-    extern unsigned short cs(void);
-    #define MAKE_VGA_PG_PTR( x )        MK_FP( cs(), x )
-#else
-    #define MAKE_VGA_PG_PTR( x )        x
-#endif
-
 #if defined( __QNX__ ) || !defined( __386__ )
     #define _FARC       __far
 #else

@@ -83,17 +83,25 @@ extern struct _wxycoord _CurrPos_w;                 // current window position
 extern struct window_def _Window;                   // default window def'n
 extern SCREEN_DESC      _Screen;                    // screen description
 extern long             _VGA_Colours[ 16 ];         // VGA to EGA mapping
-extern long             _coltbl[ 16 ];              // EGA colors for TC modes
 
-extern unsigned char    _IsDBCS;                    // is this a DBCS system
-extern dbcs_pair        _DBCSPairs[];               // range of DBCS chars
+#if defined( VERSION2 )
+extern long             _coltbl[ 16 ];              // EGA colors for TrueColor modes
+#endif
 
+#if defined( _SUPERVGA )
 extern unsigned char    _VGAPage;                   // SuperVGA page number
-extern unsigned short   _VGABytesPerPixel;          // SuperVGA number of bytes per pixel
 extern unsigned char    _VGAGran;                   // SuperVGA page granularity
 extern short            _SVGAType;                  // type of SuperVGA
 extern vgapage_fn       _FARC *_SetVGAPage;         // function to set SVGA page
 extern short            _VGAStride;                 // SuperVGA mode stride
+#endif
+
+#if defined( _SUPERVGA ) && defined( VERSION2 )
+extern unsigned short   _VGABytesPerPixel;          // SuperVGA number of bytes per pixel
+#endif
+
+extern unsigned char    _IsDBCS;                    // is this a DBCS system
+extern dbcs_pair        _DBCSPairs[];               // range of DBCS chars
 
 extern unsigned short   _BiosSeg;                   // seg of BIOS data area
 extern unsigned short   _MonoSeg;                   // seg of MONO screen

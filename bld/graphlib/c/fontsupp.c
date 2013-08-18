@@ -123,14 +123,12 @@ static short            _YVecDir = 0;
 #if defined( __386__ )
     #define MemCpy( dst, src, len )     memcpy( dst, src, len )
     #define MemSet( s, c, len )         memset( s, c, len )
-    #define StrNICmp( s1, s2, len )     strnicmp( s1, s2, len )
     #define StrCpy( dst, src )          strcpy( dst, src )
     #define StrCmp( dst, src )          strcmp( dst, src )
     #define StrLen( s )                 strlen( s )
 #else
     #define MemCpy( dst, src, len )     _fmemcpy( dst, src, len )
     #define MemSet( s, c, len )         _fmemset( s, c, len )
-    #define StrNICmp( s1, s2, len )     _fstrnicmp( s1, s2, len )
     #define StrCpy( dst, src )          _fstrcpy( dst, src )
     #define StrCmp( dst, src )          _fstrcmp( dst, src )
     #define StrLen( s )                 _fstrlen( s )
@@ -578,10 +576,31 @@ static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
     return( 0 );    // success
 }
 
+static int mystrnicmp( const char _WCI86FAR *s1, const char *s2, size_t n )
+{
+    char   c1;
+    char   c2;
+
+    for( ; n > 0; --n ) {
+        c1 = *s1;
+        c2 = *s2;
+        if( c1 >= 'A'  &&  c1 <= 'Z' )
+            c1 += 'a' - 'A';
+        if( c2 >= 'A'  &&  c2 <= 'Z' )
+            c2 += 'a' - 'A';
+        if( c1 != c2 )
+            return( c1 - c2 );
+        if( c1 == '\0' )
+            break;
+        ++s1;
+        ++s2;
+    }
+    return( 0 );
+}
 
 static short error_func( short font_type, short height, char *facename,
-/*====================*/ short width, short spacing, FONT_ENTRY _WCI86FAR *curr )
-
+                         short width, short spacing, FONT_ENTRY _WCI86FAR *curr )
+/*=============================================================================*/
 {
     short               error = 0;
     short               len;
@@ -605,7 +624,7 @@ static short error_func( short font_type, short height, char *facename,
         }
     }
     if( len != 0 ) {
-        if( StrNICmp( curr->facename, facename, len ) != 0 ) {
+        if( mystrnicmp( curr->facename, facename, len ) != 0 ) {
             error += 500;
         }
     }
