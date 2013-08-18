@@ -136,7 +136,7 @@ env=EDPATH=%OWDir%/eddat,                       IsLinux32 IsLinux64
 env=WWINHELP=%HDir%\BINW,                       IsDOS IsWin IsWin32 | | MinimalInstall helpfiles ! SrcIsCD & |
 env=WHTMLHELP=%OWDir%\BINNT\HELP,               IsWin32 IsWin64 |
 env=WIPFC=%OWDir%\WIPFC,                        IsOS2 IsOS2DosBox IsDOS IsWin IsWin32 IsWin64 | | | | |
-env=WIPFC=%OWDir%/wipfc,                        IsLinux32 IsWin64 |
+env=WIPFC=%OWDir%/wipfc,                        IsLinux32 IsLinux64 |
 icon=view.exe, %HDir%\binp\help\c_readme.inf, Getting Started,,, IsOS2 DoCreateHelpIcons IsFortranInstall !
 icon=view.exe, %HDir%\binp\help\f_readme.inf, Getting Started,,, IsOS2 DoCreateHelpIcons IsFortranInstall
 icon=e.exe, %OWDir%\readme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall ! IsJapanese !
