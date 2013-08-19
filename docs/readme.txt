@@ -76,6 +76,10 @@ OS/2 specifics
  - BOOKSHELF - points to binp\help to allow the IPF viewer (VIEW.EXE) locate
                Open Watcom online manuals
 
+Linux 32-bit specifics
+
+ - PATH      - must point to binl directory
+
 These environment variables can be either set up in your startup files (which
 is the most convenient method if Open Watcom is the only compiler you use)
 or you can use simple batch files to set these variables (useful if you
@@ -145,4 +149,13 @@ SET INCLUDE=%WATCOM%\H;%WATCOM%\H\OS2
 REM SET LIB=
 SET HELP=%WATCOM%\BINP\HELP;%HELP%
 SET BOOKSHELF=%WATCOM%\BINP\HELP;%BOOKSHELF%
+---------------------------------------------------------------------------
+
+Linux 32-bit shell script:
+---------------------------------------------------------------------------
+export WATCOM=/usr/bin/watcom
+export PATH=$WATCOM/binl:$PATH
+export EDPATH=$WATCOM/eddat
+export INCLUDE=$WATCOM/lh
+#export LIB=
 ---------------------------------------------------------------------------
