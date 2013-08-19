@@ -75,7 +75,7 @@ Build process consists from two phases.
 First one creates minimal set of OW tools which are sufficient to build full OW.
 Second one build full OW by minimal set of pre-build OW tools from phase 1.
 
-Overall build process are handled by following two scipts:
+Overall build process are handled by two scipts.
 
 buil.bat/build.cmd/build.sh 
         Build all software. It builds minimal set of tools necessary for 
@@ -88,14 +88,14 @@ clean.bat/clean.cmd/clean.sh
 
 Bellow is list of supported compilers.
 
-			OW for 16/32-bit hosts	OW for 64-bit hosts
-build OS		supported compilers	supported compilers
-DOS			Open Watcom		-
-OS/2			Open Watcom		-
-Windows 32-bit		Open Watcom, Visual C++	-
-Windows 64-bit		Visual C++		Visual C++ (for x64 target)
-Linux x86 32-bit	Open Watcom, GCC	-
-Linux x64 64-bit	GCC			GCC (for x64 target)
+                        OW for 16/32-bit hosts  OW for 64-bit hosts
+build OS                supported compilers     supported compilers
+DOS                     Open Watcom             -
+OS/2                    Open Watcom             -
+Windows 32-bit          Open Watcom, Visual C++ -
+Windows 64-bit          Visual C++              Visual C++ (for x64 target)
+Linux x86 32-bit        Open Watcom, GCC        -
+Linux x64 64-bit        GCC                     GCC (for x64 target)
 
 Note: OW for 64-bit hosts can be build only on appropriate build OS, 
     because it uses native 64-bit compilers (OW doesn't support 64-bit targets)
@@ -132,10 +132,10 @@ builder boot      - first build phase (bootstrap), create all tools necessary
 builder bootclean - erase objects and tools, created during first build phase
 
 builder build     - second build phase, build the software
-builder rel       - second build phase, build the software, and copy it into the 
-                    "rel" release tree
+builder rel       - second build phase, build the software, and copy it into
+                    the "rel" release tree
 builder cprel     - copy software into the "rel" release tree
-builder clean     - erase object files, exe's, etc. created during second build 
+builder clean     - erase object files, exe's, etc. created during second build
                     phase so you can do second build phase from scratch
 
 builder docs      - build all documentation
