@@ -57,17 +57,6 @@ d:\
    reflect your setup. See comments within the file for additional
    information.
 
-    Your path should look something like this if you are on NT:
-
-    PATH=C:\WINNT\system32;
-    C:\WINNT;
-    d:\bat;
-    d:\lang\binnt;
-    d:\lang\binw;
-    d:\bin;
-    d:\tools;
-    d:\bld\build\binnt
-
   WARNING: Some platforms (notably Windows 9x) require DOS style line endings
   in batch files. If source files were moved from a UNIX platform. as is the
   case with ow_daily.tar.bz2, you must make sure that line endings are
@@ -85,6 +74,17 @@ Under 64-bit Windows, DOSBOX need to be installed.
 Build process consists from two phases.
 First one creates minimal set of OW tools which are sufficient to build full OW.
 Second one build full OW by minimal set of pre-build OW tools from phase 1.
+
+Overall build process are handled by following two scipts:
+
+buil.bat/build.cmd/build.sh 
+        Build all software. It builds minimal set of tools necessary for 
+        building system (wmake, builder and rm tools). 
+        Next run first and second build phase.
+
+clean.bat/clean.cmd/clean.sh
+        Erase all object files, exe's, etc. created by any part of build 
+        process so you can build everything from scratch
 
 Bellow is list of supported compilers.
 
@@ -125,12 +125,24 @@ wrong).
 Results are logged to "build.log" in the current project directory (or d:\bld),
 the previous build.log file is copied to build.lo1.
 
-Common commands:
+Common builder commands:
 
-builder build - build the software
-builder rel   - build the software, and copy it into the "rel" release tree
-builder cprel - copy software into the "rel" release tree
-builder clean - erase object files, exe's, etc. so you can build from scratch
+builder boot      - first build phase (bootstrap), create all tools necessary 
+                    for building OW (phase two)
+builder bootclean - erase objects and tools, created during first build phase
+
+builder build     - second build phase, build the software
+builder rel       - second build phase, build the software, and copy it into the 
+                    "rel" release tree
+builder cprel     - copy software into the "rel" release tree
+builder clean     - erase object files, exe's, etc. created during second build 
+                    phase so you can do second build phase from scratch
+
+builder docs      - build all documentation
+builder docsclean - erase all objects, etc. created during documentation build
+                    so you can start documentation build from scratch
+
+builder test      - run all automated tests
 
 Many of the projects use the "pmake" features of builder (see builder.doc).
 To determine what to build, pmake source is in \bld\pmake.
