@@ -58,8 +58,13 @@
 
 .gitattributes text
 .gitignore text
-bootmake text
+binmake text
+gnumake text
 makefile text
+makeinit text
+nmake text
+posmake text
+wmake text
 
 # Declare files that will always have LF line endings on checkout.
 
