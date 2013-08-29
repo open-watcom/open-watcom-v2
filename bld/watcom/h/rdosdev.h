@@ -28,7 +28,7 @@ extern "C" {
 #define DLL_HANDLE32       0x26DF
 #define SPRITE_HANDLE      0x2CF5
 #define CRC_HANDLE         0x367A
-#define FILE_HANDLE 	   0x3AB6
+#define FILE_HANDLE        0x3AB6
 #define PROCESS_HANDLE     0x43AF
 #define SERIAL_HANDLE      0x5A45
 #define ENV_HANDLE         0x5FAE
@@ -37,21 +37,21 @@ extern "C" {
 #define USB_REQ_HANDLE     0x6B8E
 #define SYSLOG_HANDLE      0x703A
 #define SECTION_HANDLE     0x7A87
-#define IPC_HANDLE  	   0x7B5A
+#define IPC_HANDLE         0x7B5A
 #define TCP_LISTEN_HANDLE  0x7FAE
 #define TCP_SOCKET_HANDLE  0x847F
-#define FONT_HANDLE 	   0x9AF4
-#define DIR_HANDLE  	   0xA765
-#define XMS_HANDLE  	   0xA560
+#define FONT_HANDLE        0x9AF4
+#define DIR_HANDLE         0xA765
+#define XMS_HANDLE         0xA560
 #define SIGNAL_HANDLE      0xADEF
 #define PRINTER_HANDLE     0xB63A
-#define MEMMAP_HANDLE 	   0xBA54
+#define MEMMAP_HANDLE      0xBA54
 #define FM_HANDLE          0xBCAF
 #define MODULE_HANDLE      0xC3AF
 #define AUDIO_OUT_HANDLE   0xCEDA
 #define HID_HANDLE         0xD736
-#define BITMAP_HANDLE 	   0xDB57
-#define INI_HANDLE 	       0xEAF3
+#define BITMAP_HANDLE      0xDB57
+#define INI_HANDLE         0xEAF3
 #define USB_PIPE_HANDLE    0xFA3E
 
 // special user-mode gates
@@ -1039,33 +1039,24 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
 
 #pragma aux RdosCreateCallGateSelector = \
     "push ds" \
-    "push eax" \
-    "mov eax,cs" \
-    "mov ds,eax" \
-    "pop eax" \
+    "mov ds,edx" \
     OsGate_create_call_gate_sel32  \
     "pop ds" \
-    parm [ebx] [esi] [ecx];
+    parm [ebx] [edx esi] [ecx];
 
 #pragma aux RdosCreateIntGateSelector = \
     "push ds" \
-    "push eax" \
-    "mov eax,cs" \
-    "mov ds,eax" \
-    "pop eax" \
+    "mov ds,edx" \
     OsGate_setup_int_gate  \
     "pop ds" \
-    parm [eax] [ebx] [esi];
+    parm [eax] [ebx] [edx esi];
 
 #pragma aux RdosCreateTrapGateSelector = \
     "push ds" \
-    "push eax" \
-    "mov eax,cs" \
-    "mov ds,eax" \
-    "pop eax" \
+    "mov ds,edx" \
     OsGate_setup_trap_gate  \
     "pop ds" \
-    parm [eax] [ebx] [esi];
+    parm [eax] [ebx] [edx esi];
 
 #pragma aux RdosGetPhysicalPage = \
     OsGate_get_physical_page  \
