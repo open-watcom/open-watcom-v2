@@ -105,7 +105,7 @@ env=++PATH=%CDDir%\BINNT,                       IsWin32 IsWin64 | MinimalInstall
 env=++PATH=%DstDir%\BINNT,                      IsWin32 IsWin64 |
 env=++PATH=%CDDir%\BINNT64,                     IsWin64 MinimalInstall
 env=++PATH=%DstDir%\BINNT64,                    IsWin64
-env=++PATH=%DstDir%/binl,                       IsLinux32
+env=++PATH=%DstDir%/binl,                       IsLinux32 IsLinux64 |
 env=++PATH=%DstDir%/binl64,                     IsLinux64
 env=++LIBPATH=%CDDir%\BINP\DLL,                 IsOS2 IsOS2DosBox | MinimalInstall
 env=++LIBPATH=%DstDir%\BINP\DLL,                IsOS2 IsOS2DosBox |
@@ -132,7 +132,7 @@ env=++FINCLUDE=%CDDir%\SRC\FORTRAN,             IsOS2 IsOS2DosBox IsDOS IsWin Is
 env=++FINCLUDE=%DstDir%\SRC\FORTRAN,            IsOS2 IsOS2DosBox IsDOS IsWin IsWin32 IsWin64 | | | | | ?%DstDir%\binw\wfc386.exe
 env=WATCOM=%OWDir%,                             IsOS2 IsOS2DosBox IsDOS IsWin IsWin32 IsWin64 IsLinux32 IsLinux64 | | | | | | |
 env=EDPATH=%OWDir%\EDDAT,                       IsOS2 IsOS2DosBox IsDOS IsWin IsWin32 IsWin64 | | | | |
-env=EDPATH=%OWDir%/eddat,                       IsLinux32 IsLinux64
+env=EDPATH=%OWDir%/eddat,                       IsLinux32 IsLinux64 |
 env=WWINHELP=%HDir%\BINW,                       IsDOS IsWin IsWin32 | | MinimalInstall helpfiles ! SrcIsCD & |
 env=WHTMLHELP=%OWDir%\BINNT\HELP,               IsWin32 IsWin64 |
 env=WIPFC=%OWDir%\WIPFC,                        IsOS2 IsOS2DosBox IsDOS IsWin IsWin32 IsWin64 | | | | |
