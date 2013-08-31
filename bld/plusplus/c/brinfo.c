@@ -293,7 +293,7 @@ void _dbgScope
             VbufFree( &vbuf );
             break;
           case SCOPE_BLOCK :
-            printf( "%s: Block Scope: %x %d\n"
+            printf( "%s: Block Scope: %x %u\n"
                   , text
                   , scope
                   , scope->owner.index );
