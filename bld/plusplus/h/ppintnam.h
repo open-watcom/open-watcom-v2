@@ -76,7 +76,7 @@
 #define IN_TEMPARG_POSITIVE_INT 'Z'     // positive int template arg
 #define IN_TEMPARG_NEGATIVE_INT 'Y'     // negative int template arg
                                         // 0-9 a-t encode the number in base-32
-#define IN_TEMPARG_TYPE         'L'     // template type argument
+#define IN_TEMPARG_TYPE         '1'     // template type argument
 
 // basic types:
 // 'K', 'O' are still available
