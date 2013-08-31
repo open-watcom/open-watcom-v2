@@ -216,6 +216,32 @@ static char *utoa_zz( unsigned value, char *buffer )
     return( buffer );
 }
 
+static char *xtoa( unsigned long value, char *p, unsigned base )
+{
+    unsigned    rem;
+
+    rem = value % base;
+    value = value / base;
+    if( value != 0 ) {
+        p = xtoa( value, p, base );
+    }
+    *p++ = __Alphabet36[rem];
+    return( p );
+}
+
+static char *my_ultoa( unsigned long value, char *buffer, unsigned base )
+{
+    char        *p = buffer;
+
+    if( value == 0 ) {
+        *p++ = '0';
+    } else {
+        p = xtoa( value, p, base );
+    }
+    *p++ = '\0';
+    return( buffer );
+}
+
 static void appendStrWithLen(   // APPEND A STRING FOR LENGTH CHARS
     char *str,                  // - the string
     unsigned len )              // - how many chars to concatenate
@@ -233,12 +259,12 @@ static void appendInt(          // APPEND AN INTEGER
     VbufConcDecimal( &mangled_name, val );
 }
 
-static void appendBase36Int(    // APPEND A BASE 36 INTEGER
+static void appendBase36UInt(   // APPEND A BASE 36 INTEGER
     unsigned val )              // - value
 {
     char sbuf[16];              // - buffer
 
-    ultoa( val, sbuf, 36 );
+    my_ultoa( val, sbuf, 36 );
     appendStr( sbuf );
 }
 
@@ -609,7 +635,7 @@ static void appendBase32UInt(   // CONCATENATE A BASE 32 TARGET UNSIGNED LONG
 {
     char buff[16];
 
-    ultoa( number, buff, 32 );
+    my_ultoa( number, buff, 32 );
     appendStr( buff );
 }
 
@@ -619,7 +645,7 @@ static void appendDelta(        // CONCATENATE A DELTA OPERATION
     char buff[16];
 
     buff[0] = 'O';
-    ultoa( offset, &buff[1], 31 );
+    my_ultoa( offset, buff + 1, 31 );
     appendStr( buff );
 }
 
@@ -679,7 +705,7 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
             break;
         case SCOPE_BLOCK:
             buff[0] = '.';
-            ultoa( (unsigned long) ScopeIndex( scope ), &buff[1], 31 );
+            my_ultoa( ScopeIndex( scope ), buff + 1, 31 );
             appendChar( IN_CLASS_DELIM );
             appendStr( buff );
             appendStr( IN_NAME_SUFFIX );
@@ -1044,12 +1070,12 @@ NAME CppNameUniqueNS(           // NAME OF UNIQUE NAMESPACE
 
     // this can change in a patch since it is an externally unique name
     save = setMangling( IN_NAME_UNNAMED );
-    appendBase36Int( NameNextDummyIndex() );
+    appendBase36UInt( NameNextDummyIndex() );
     appendChar( '_' );
     // we now have enough to ensure an unique internal name
     // but we have to try to create an unique external name...
     h = TimeOfCompilation();
-    appendBase36Int( h );
+    appendBase36UInt( h );
     src = locn->src_file;
     h ^= SrcFileTimeStamp( src );
     h ^= locn->line;
@@ -1059,7 +1085,7 @@ NAME CppNameUniqueNS(           // NAME OF UNIQUE NAMESPACE
         h ^= SrcFileTimeStamp( primary );
     }
     h = objNameHash( h, SrcFileFullName( primary ) );
-    appendBase36Int( h );
+    appendBase36UInt( h );
     return( retMangling( save ) );
 }
 

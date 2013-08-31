@@ -30,15 +30,15 @@
 Modified        By              Reason
 --------        --              ------
 93/01/14        Greg Bentz      ground out with sweat and blood.
-93/04/14	A.F.Scian	added truncated mangled names
-93/07/23	A.F.Scian	reserved names for operator new [] and
-    				operator delete [] (recently passed by ANSI)
-94/08/19	A.F.Scian	added bool basic type
+93/04/14        A.F.Scian       added truncated mangled names
+93/07/23        A.F.Scian       reserved names for operator new [] and
+                                operator delete [] (recently passed by ANSI)
+94/08/19        A.F.Scian       added bool basic type
 ******************************************************************************/
 
-%token	ignore-stuff
+%token  ignore-stuff
 
-%start	full-mangled-name
+%start  full-mangled-name
 
 %%
 
@@ -163,38 +163,38 @@ relational-function
     ;
 
 operator-function
-    : 'O' 'A'	/* >> */
-    | 'O' 'B'	/* << */
-    | 'O' 'C'	/* ! */
-    | 'O' 'D'	/* [] */
-    | 'O' 'E'	/* -> */
-    | 'O' 'F'	/* * */
-    | 'O' 'G'	/* ++ */
-    | 'O' 'H'	/* -- */
-    | 'O' 'I'	/* - */
-    | 'O' 'J'	/* + */
-    | 'O' 'K'	/* & */
-    | 'O' 'L'	/* ->* */
-    | 'O' 'M'	/* / */
-    | 'O' 'N'	/* % */
-    | 'O' 'O'	/* , */
-    | 'O' 'P'	/* () */
-    | 'O' 'Q'	/* ~ */
-    | 'O' 'R'	/* ^ */
-    | 'O' 'S'	/* | */
-    | 'O' 'T'	/* && */
-    | 'O' 'U'	/* || */
+    : 'O' 'A'   /* >> */
+    | 'O' 'B'   /* << */
+    | 'O' 'C'   /* ! */
+    | 'O' 'D'   /* [] */
+    | 'O' 'E'   /* -> */
+    | 'O' 'F'   /* * */
+    | 'O' 'G'   /* ++ */
+    | 'O' 'H'   /* -- */
+    | 'O' 'I'   /* - */
+    | 'O' 'J'   /* + */
+    | 'O' 'K'   /* & */
+    | 'O' 'L'   /* ->* */
+    | 'O' 'M'   /* / */
+    | 'O' 'N'   /* % */
+    | 'O' 'O'   /* , */
+    | 'O' 'P'   /* () */
+    | 'O' 'Q'   /* ~ */
+    | 'O' 'R'   /* ^ */
+    | 'O' 'S'   /* | */
+    | 'O' 'T'   /* && */
+    | 'O' 'U'   /* || */
     ;
 
 special-type-names
-    : 'T' 'E'	/* anonymous enum type */
+    : 'T' 'E'   /* anonymous enum type */
     ;
 
 watcom-object
     : 'W' alpha alpha zz-len ignore-stuff '$'
     ;
 
-zz-len	/* zz == 1296, reserved for future use */
+zz-len  /* zz == 1296, reserved for future use */
     : base-36 base-36
     ;
 
@@ -219,8 +219,8 @@ template-arg-list
     ;
 
 template-arg
-    : '0' base-32-num 'y'
-    | '0' base-32-num 'z'
+    : '0' base-32-num 'Y'   /* negative number */
+    | '0' base-32-num 'Z'   /* positive number */
     | '1' type-encoding
     | embedded-mangled-name
     ;
@@ -236,14 +236,14 @@ modifier-list
     ;
 
 modifier
-    : 'F'	/*far*/
-    | 'G'	/*far16*/
-    | 'H'	/*huge*/
-    | 'J' based-encoding /*based*/
-    | 'N'	/*near*/
-    | 'U'	/*unsigned*/
-    | 'X'	/*const*/
-    | 'Y'	/*volatile*/
+    : 'F'                   /* far */
+    | 'G'                   /* far16 */
+    | 'H'                   /* huge */
+    | 'J' based-encoding    /* based */
+    | 'N'                   /* near */
+    | 'U'                   /* unsigned */
+    | 'X'                   /* const */
+    | 'Y'                   /* volatile */
     ;
 
 based-encoding
@@ -286,25 +286,25 @@ dimension
     ;
 
 pointer
-    : 'M' '$' scoped-name	/* member pointer */
-    | 'P'	/* pointer */
-    | 'R'	/* reference */
+    : 'M' '$' scoped-name   /* member pointer */
+    | 'P'                   /* pointer */
+    | 'R'                   /* reference */
     ;
 
 basic-type
-    : 'A'	/* char */
-    | 'B'	/* float */
-    | 'C'	/* signed char (unsigned char if preceeded by 'unsigned' */
-    | 'D'	/* double */
-    | 'E'	/* ... */
-    | 'I'	/* int */
-    | 'L'	/* long */
-    | 'Q'	/* bool */
-    | 'S'	/* short */
-    | 'T'	/* long double */
-    | 'V'	/* void */
-    | 'W'	/* wchar_t */
-    | '_'	/* <no type> for CTOR/DTOR return type */
+    : 'A'       /* char */
+    | 'B'       /* float */
+    | 'C'       /* signed char (unsigned char if preceeded by 'unsigned' */
+    | 'D'       /* double */
+    | 'E'       /* ... */
+    | 'I'       /* int */
+    | 'L'       /* long */
+    | 'Q'       /* bool */
+    | 'S'       /* short */
+    | 'T'       /* long double */
+    | 'V'       /* void */
+    | 'W'       /* wchar_t */
+    | '_'       /* <no type> for CTOR/DTOR return type */
     ;
 
 alpha

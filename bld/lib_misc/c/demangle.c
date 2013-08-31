@@ -1541,10 +1541,8 @@ static void do_demangle( output_desc *data )
 {
 #if 0 || defined( TEST )
     char const *input = data->input;
-#endif
 
     if( !full_mangled_name( data ) ) {
-#if 0 || defined( TEST )
         if( ! no_errors ) {
             ++errors;
             printf( "ERROR: full_mangled_name failed\n" );
@@ -1553,16 +1551,16 @@ static void do_demangle( output_desc *data )
             terminateOutput( data );
             printf( "output:-->%s<--\n", data->output );
         }
-#endif
     } else {
-#if 0 || defined( TEST )
         if( currChar( data ) != NULL_CHAR ) {
             ++errors;
             printf( "ERROR: full_mangled_name failed to consume all\n" );
             printf( "-->%s<--\n", input );
         }
-#endif
     }
+#else
+    full_mangled_name( data );
+#endif
 }
 
 static void do_copy( output_desc *data )
@@ -1646,13 +1644,15 @@ static size_t demangle_recursive( char const *input, char *output, size_t size )
     save_reallocator = user_realloc;
     user_realloc = NULL;
     init_descriptor( &data, &demangleEmit, &data, input, 0, output, size );
-    if( !mangled_name( &data ) ) {
 #if 0 || defined( TEST )
+    if( !mangled_name( &data ) ) {
         ++errors;
         printf( "ERROR: mangled_name failed\n" );
         printf( "-->%s<--\n", input );
-#endif
     }
+#else
+    mangled_name( &data );
+#endif
     terminateOutput( &data );
     user_realloc = save_reallocator;
     return( data.input - input );
@@ -2325,8 +2325,8 @@ void testEmit( void **cookie, dm_pts dp, size_t value, char const *ptr )
         if( **argc > 1 ) {
             printf( names[dp], value );
         }
-    } else {
 #if 0 || defined( TEST )
+    } else {
         ++errors;
         printf( "ERROR: testEmit unknown dm_pts(%d)\n", dp );
 #endif
