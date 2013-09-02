@@ -28,12 +28,14 @@
 *                           different structs
 *
 *               add_ban_col_to_pool     prepare reuse of ban_column instance(s)
+*               add_box_col_set_to_pool prepare reuse of box_col_set instance(s)
 *               add_doc_col_to_pool     prepare reuse of doc_column instance(s)
 *               add_doc_el_to_pool      prepare reuse of doc_element instance(s)
 *               add_tag_cb_to_pool      add nested tag cb
 *               add_text_chars_to_pool  prepare reuse of text_chars instance(s)
 *               add_text_line_to_pool   prepare reuse of a text_line instance(s)
 *               alloc_ban_col           create a ban_column instance
+*               alloc_box_col_set       create a box_col_set instance
 *               alloc_doc_col           create a doc_column instance
 *               alloc_doc_el            create a doc_element instance
 *               alloc_tag_cb            nested tag cb
@@ -223,6 +225,57 @@ void add_ban_col_to_pool( ban_column * a_column )
 
     a_column->next = ban_col_pool;
     ban_col_pool = a_column;
+}
+
+
+/***************************************************************************/
+/*  allocate / reuse a box_col_set instance                                */
+/***************************************************************************/
+
+box_col_set * alloc_box_col_set( void )
+{
+    box_col_set *   curr;
+    int             k;
+
+    if( box_col_set_pool == NULL ) {                // pool is empty
+        box_col_set_pool = mem_alloc( sizeof( *curr ) );
+        curr = box_col_set_pool;
+        curr->current = 0;
+        curr->length = BOXCOL_COUNT;
+        curr->cols = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
+        for( k = 0; k < 10; k++ ) {     // alloc 10 box_col_sets if pool empty
+            curr->next = mem_alloc( sizeof( *curr ) );
+            curr = curr->next;
+            curr->current = 0;
+            curr->length = BOXCOL_COUNT;
+            curr->cols = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
+        }
+        curr->next = NULL;
+    }
+    curr = box_col_set_pool;
+    box_col_set_pool = curr->next;
+    curr->next = NULL;
+    curr->current = 0;                  // clear before returning
+
+    return( curr );
+}
+
+
+/***************************************************************************/
+/*  add a linked list of box_col_set instances to free pool for reuse      */
+/***************************************************************************/
+
+void    add_box_col_set_to_pool( box_col_set * a_set )
+{
+    box_col_set * tw;
+
+    if( a_set == NULL ) {
+        return;
+    }
+
+    for( tw = a_set; tw->next != NULL; tw = tw->next ); //empty
+    tw->next = box_col_set_pool;
+    box_col_set_pool = a_set;
 }
 
 
@@ -449,6 +502,15 @@ void    free_pool_storage( void )
         v = wv;
     }
 
+    for( v = box_col_set_pool; v != NULL; ) {
+        if( ((box_col_set *) v)->cols != NULL ) {
+            mem_free( ((box_col_set *) v)->cols );
+        }
+        wv = ( (box_col_set *) v)->next;
+        mem_free( v );
+        v = wv;
+    }
+
     for( v = doc_col_pool; v != NULL; ) {
         wv = ( (doc_column *) v)->next;
         mem_free( v );
@@ -467,4 +529,5 @@ void    free_pool_storage( void )
         v = wv;
     }
 }
+
 

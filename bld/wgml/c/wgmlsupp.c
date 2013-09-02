@@ -284,14 +284,14 @@ void    free_some_mem( void )
     if( workbuf != NULL ) {
         mem_free( workbuf );
     }
-    if( box_line.cols != NULL ) {
-        mem_free( box_line.cols );
+    if( box_line != NULL ) {
+        add_box_col_set_to_pool( box_line );
     }
-    if( cur_line.cols != NULL ) {
-        mem_free( cur_line.cols );
+    if( cur_line != NULL ) {
+        add_box_col_set_to_pool( cur_line );
     }
-    if( prev_line.cols != NULL ) {
-        mem_free( prev_line.cols );
+    if( prev_line != NULL ) {
+        add_box_col_set_to_pool( prev_line );
     }
     if( t_line != NULL ) {
         add_text_chars_to_pool( t_line );

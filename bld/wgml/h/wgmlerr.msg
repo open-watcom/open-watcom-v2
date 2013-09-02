@@ -675,6 +675,12 @@ pick( ERR_PATH_MAX,             "Directory path is too long and will not be used
 
 /* BX/FIG/IXHEAD error messages */
 
+pick( ERR_BOX_BAD_ORDER,        "Box positions not in ascending order",
+                                "Box positions not in ascending order")
+
+pick( ERR_INV_BOX_POS,          "Invalid box position",
+                                "Invalid box position")
+
 pick( ERR_SPC_NOT_VALID,        "Space value is not valid",
                                 "Space value is not valid")
 

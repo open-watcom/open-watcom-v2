@@ -871,12 +871,6 @@ typedef struct laystack {
 #define BOXCOL_COUNT 16
 
 typedef enum {
-    bx_h_rule,
-    bx_h_start,
-    bx_h_stop,
-} bx_h_ind;
-
-typedef enum {
     bx_v_down,
     bx_v_up,
     bx_v_both,
@@ -884,11 +878,11 @@ typedef enum {
 
 typedef struct {
             uint32_t        col;
-            bx_h_ind        h_ind;
             bx_v_ind        v_ind;
 } box_col;
 
-typedef struct {
+typedef struct box_col_set {
+    struct  box_col_set *   next;
             uint32_t        current;
             uint32_t        length;
             box_col     *   cols;

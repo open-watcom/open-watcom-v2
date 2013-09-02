@@ -113,15 +113,10 @@ void init_global_vars( void )
     in_esc              = ' ';
     tab_char            = 0x09;
 
-    box_line.current    = 0;
-    box_line.length     = BOXCOL_COUNT;
-    box_line.cols       = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
-    cur_line.current    = 0;
-    cur_line.length     = BOXCOL_COUNT;
-    cur_line.cols       = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
-    prev_line.current   = 0;
-    prev_line.length    = BOXCOL_COUNT;
-    prev_line.cols      = (box_col *) mem_alloc( BOXCOL_COUNT * sizeof( box_col ));
+    box_col_set_pool    = NULL;
+    box_line            = NULL;
+    cur_line            = NULL;
+    prev_line           = NULL;
 
     c_stop              = NULL;
 
