@@ -225,19 +225,16 @@ static void box_blank_lines( uint32_t lines )
                 if( (cur_hline->cols[i_b].v_ind == bx_v_both)
                         || (cur_hline->cols[i_b].v_ind == bx_v_up) ) {  // ascender needed
                     if( cur_blank->first == NULL ) {
-                        cur_chars = alloc_text_chars( &bin_device->box.vertical_line, 1,
-                                                  g_curr_font_num );
+                        cur_chars = alloc_text_chars( &bin_device->box.vertical_line, 1, g_curr_font );
                         cur_blank->first = cur_chars;
                     } else {
-                        cur_chars->next = alloc_text_chars(
-                                &bin_device->box.vertical_line, 1, g_curr_font_num );
+                        cur_chars->next = alloc_text_chars( &bin_device->box.vertical_line, 1, g_curr_font );
                         cur_chars->next->prev = cur_chars;
                         cur_chars = cur_chars->next;
                     }
                     cur_chars->x_address = cur_hline->cols[i_b].col + g_page_left -
                                                                        box_col_width;
-                    cur_chars->width = cop_text_width( cur_chars->text, cur_chars->count,
-                                                               g_curr_font_num );
+                    cur_chars->width = cop_text_width( cur_chars->text, cur_chars->count, g_curr_font );
                 }
                 cur_blank->last = cur_chars;
             }
@@ -351,11 +348,10 @@ static void  do_char_device( bx_op cur_op )
         /* Create the text_element for the current box line */
 
         if( cur_chars == NULL ) {
-            cur_chars = alloc_text_chars( NULL, len, bin_device->box.font_number );
+            cur_chars = alloc_text_chars( NULL, len, bin_device->box.font );
             box_el->element.text.first->first = cur_chars;
         } else {
-            cur_chars->next = alloc_text_chars( NULL, len,
-                                                    bin_device->box.font_number );
+            cur_chars->next = alloc_text_chars( NULL, len, bin_device->box.font );
             cur_chars->next->prev = cur_chars;
             cur_chars = cur_chars->next;
         } 
@@ -407,8 +403,7 @@ static void  do_char_device( bx_op cur_op )
 
         /* text is known to contain no tabs */
 
-        cur_chars->width = cop_text_width( cur_chars->text, cur_chars->count,
-                                                    bin_device->box.font_number );
+        cur_chars->width = cop_text_width( cur_chars->text, cur_chars->count, bin_device->box.font );
     }
 
     /* process any accumulated doc_elements */
