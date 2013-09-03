@@ -23,17 +23,17 @@ For proper operation the Open Watcom compilers require few environment
 variables to be set up correctly. These variables differ slightly depending
 on the host platform (DOS, OS/2, Win32). The common variables are:
 
- - PATH     - points to directories containing Open Watcom executables
- - WATCOM   - points to the directory where Open Watcom is installed
-              and is used by various Open Watcom tools to locate files
- - EDPATH   - points to VI/VIW configuration files
- - FINCLUDE - points to directories containing header files used by the
-              FORTRAN compilers
- - LIB      - points to directories containing library files; note that
-              Open Watcom linker is able to locate Open Watcom runtime
-              libraries without this variable
- - WWINHELP - points to the directory on the CDROM drive where help files are
-              located. This may minimize hard disk space requirements
+ - PATH      - points to directories containing Open Watcom executables
+ - WATCOM    - points to the directory where Open Watcom is installed
+               and is used by various Open Watcom tools to locate files
+ - EDPATH    - points to VI/VIW configuration files
+ - FINCLUDE  - points to directories containing header files used by the
+               FORTRAN compilers
+ - LIB       - points to directories containing library files; note that
+               Open Watcom linker is able to locate Open Watcom runtime
+               libraries without this variable
+ - ...HELP   - points to the directory on the CDROM drive where help files
+               are located. This may minimize hard disk space requirements
 
 DOS specifics
 
@@ -56,6 +56,14 @@ Win32 specifics
                are located. This minimizes hard disk space. Note this is not
                needed if the help files are installed on the hard disk
 
+Win64 specifics
+
+ - PATH      - must point to binnt64 and binnt directories, in that order
+ - WHTMLHELP - points to the directory on the CDROM drive where Windows html
+               help files are located. This minimizes hard disk space.
+               Note this is not needed if the help files are installed on
+               the hard disk.
+
 OS/2 specifics
 
  - PATH      - must point to binp and binw directories, in that order
@@ -67,6 +75,10 @@ OS/2 specifics
                help files
  - BOOKSHELF - points to binp\help to allow the IPF viewer (VIEW.EXE) locate
                Open Watcom online manuals
+
+Linux 32-bit specifics
+
+ - PATH      - must point to binl directory
 
 These environment variables can be either set up in your startup files (which
 is the most convenient method if Open Watcom is the only compiler you use)
@@ -110,6 +122,16 @@ REM SET LIB=
 REM SET WWINHELP=D:\BINW
 ---------------------------------------------------------------------------
 
+Win64 BAT file:
+---------------------------------------------------------------------------
+@ECHO OFF
+SET WATCOM=C:\WATCOM
+SET PATH=%WATCOM%\BINNT64;%WATCOM%\BINNT;%PATH%
+SET EDPATH=%WATCOM%\EDDAT
+REM SET LIB=
+REM SET WHTMLHELP=D:\BINNT\HELP
+---------------------------------------------------------------------------
+
 OS/2 CMD file:
 ---------------------------------------------------------------------------
 @ECHO OFF
@@ -120,4 +142,12 @@ SET EDPATH=%WATCOM%\EDDAT
 REM SET LIB=
 SET HELP=%WATCOM%\BINP\HELP;%HELP%
 SET BOOKSHELF=%WATCOM%\BINP\HELP;%BOOKSHELF%
+---------------------------------------------------------------------------
+
+Linux 32-bit shell script:
+---------------------------------------------------------------------------
+export WATCOM=/usr/bin/watcom
+export PATH=$WATCOM/binl:$PATH
+export EDPATH=$WATCOM/eddat
+#export LIB=
 ---------------------------------------------------------------------------
