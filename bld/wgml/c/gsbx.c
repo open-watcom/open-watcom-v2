@@ -471,38 +471,31 @@ static void  do_char_device( bx_op cur_op )
                         if( (cur_hline->cols[i_b].v_ind == bx_v_both) || 
                             (cur_hline->cols[i_b].v_ind == bx_v_up) ) {  // ascender needed
                             h_done = false;
-                            cur_pos = cur_hline->cols[i_b].col + 
-                                                        g_page_left - box_col_width;
-                            while( cur_chars != NULL ) {
+                            cur_pos = cur_hline->cols[i_b].col + g_page_left - box_col_width;
+                            for( ; cur_chars != NULL; cur_chars = cur_chars->next ) {
                                 if( cur_chars == cur_text->first ) {    // first text_chars
                                     last_pos = g_page_left - 1;
                                 } else {
-                                    last_pos = cur_chars->prev->x_address +
-                                                            cur_chars->prev->width;
+                                    last_pos = cur_chars->prev->x_address + cur_chars->prev->width;
                                 }
-                                if( (cur_pos > last_pos) &&
-                                        (cur_chars->x_address > cur_pos) ) {
+                                if( (cur_pos > last_pos) && (cur_chars->x_address > cur_pos) ) {
 
                                     /* box col position is not inside any text_chars */
 
-                                    new_chars = alloc_text_chars(
-                                            &bin_device->box.vertical_line,
-                                            1, g_curr_font );
-                                new_chars->x_address = cur_pos;
-                                new_chars->width = cop_text_width( new_chars->text,
-                                                new_chars->count, g_curr_font );
-                                if( cur_chars->prev == NULL ) { // first text_chars in cur_text
-                                    cur_text->first = new_chars;
-                                } else {
-                                    new_chars->prev = cur_chars->prev;
-                                    cur_chars->prev->next = new_chars;
+                                    new_chars = alloc_text_chars( &bin_device->box.vertical_line, 1, g_curr_font );
+                                    new_chars->x_address = cur_pos;
+                                    new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
+                                    if( cur_chars->prev == NULL ) { // first text_chars in cur_text
+                                        cur_text->first = new_chars;
+                                    } else {
+                                        new_chars->prev = cur_chars->prev;
+                                        cur_chars->prev->next = new_chars;
+                                    }
+                                    new_chars->next = cur_chars;
+                                    cur_chars->prev = new_chars;
+                                    h_done = true;
+                                    break;
                                 }
-                                new_chars->next = cur_chars;
-                                cur_chars->prev = new_chars;
-                                h_done = true;
-                                break;
-                                }
-                                cur_chars = cur_chars->next;
                             }
                             if( h_done ) {      // process next box column
                                 continue;
@@ -521,23 +514,23 @@ static void  do_char_device( bx_op cur_op )
                                     new_chars = alloc_text_chars(
                                         &bin_device->box.vertical_line,
                                         1, g_curr_font );
-                                new_chars->prev = new_chars;
-                                new_chars->x_address = cur_pos;
-                                new_chars->width = cop_text_width( new_chars->text,
-                                                new_chars->count, g_curr_font );
-                                cur_text->first = new_chars;
-                                cur_text->last = new_chars;
-                            } else {
-                                new_chars = cur_text->last;
-                                new_chars->next = alloc_text_chars(
-                                                  &bin_device->box.vertical_line,
-                                                  1, g_curr_font );
-                                new_chars->next->prev = new_chars;
-                                new_chars->next->x_address = cur_pos;
-                                new_chars->width = cop_text_width( new_chars->text,
-                                                new_chars->count, g_curr_font );
-                                cur_text->last = new_chars->next;
-                            }
+                                    new_chars->prev = new_chars;
+                                    new_chars->x_address = cur_pos;
+                                    new_chars->width = cop_text_width( new_chars->text,
+                                                    new_chars->count, g_curr_font );
+                                    cur_text->first = new_chars;
+                                    cur_text->last = new_chars;
+                                } else {
+                                    new_chars = cur_text->last;
+                                    new_chars->next = alloc_text_chars(
+                                                      &bin_device->box.vertical_line,
+                                                      1, g_curr_font );
+                                    new_chars->next->prev = new_chars;
+                                    new_chars->next->x_address = cur_pos;
+                                    new_chars->width = cop_text_width( new_chars->text,
+                                                    new_chars->count, g_curr_font );
+                                    cur_text->last = new_chars->next;
+                                }
                             }
                         }
                     }
@@ -694,11 +687,9 @@ static void do_line_device( bx_op cur_op )
             // iterate over all horizontal lines
             for( cur_hline = box_line; cur_hline != NULL; cur_hline = cur_hline->next ) {
                 if( cur_hline == box_line ) {
-                    box_draw_vlines( cur_hline, box_depth, max_depth - hl_depth, 0,
-                                                        box_depth == 0, st_none );
+                    box_draw_vlines( cur_hline, box_depth, max_depth - hl_depth, 0, box_depth == 0, st_none );
                 } else {
-                    box_draw_vlines( cur_hline, box_depth, 0, 0, box_depth == 0,
-                                                                        st_none );
+                    box_draw_vlines( cur_hline, box_depth, 0, 0, box_depth == 0, st_none );
                 }
             }
             do_page_out();
@@ -1400,4 +1391,3 @@ void scr_bx( void )
 
     return;
 }
-
