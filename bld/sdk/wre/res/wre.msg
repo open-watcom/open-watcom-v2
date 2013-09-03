@@ -346,8 +346,8 @@ pick(   WRE_INVALIDINPUTFILE,
         "Invalid input file.",
         "Invalid input file." )
 pick(   WRE_ABOUT_NAME,
-        "Open Watcom Resource Editor for Windows" STR_BITNEES,
-        "Open Watcom Resource Editor for Windows" STR_BITNEES )
+        "Open Watcom Resource Editor for Windows" STR_BITNESS,
+        "Open Watcom Resource Editor for Windows" STR_BITNESS )
 pick(   WRE_ABOUT_VERSION,
         banner1p2( _RESEDIT_VERSION_ ),
         banner1p2( _RESEDIT_VERSION_ ) )

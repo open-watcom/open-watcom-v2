@@ -183,8 +183,8 @@ pick(   W_UPDATEMODIFIEDSYM,
         "The symbols have been modified.\nSave?",
         "The symbols have been modified.\nSave?" )
 pick(   W_ABOUT_NAME,
-        "Open Watcom Accelerator Editor for Windows" STR_BITNEES,
-        "Open Watcom Accelerator Editor for Windows" STR_BITNEES )
+        "Open Watcom Accelerator Editor for Windows" STR_BITNESS,
+        "Open Watcom Accelerator Editor for Windows" STR_BITNESS )
 pick(   W_ABOUT_VERSION,
         banner1p2( _RESEDIT_VERSION_ ),
         banner1p2( _RESEDIT_VERSION_ ) )

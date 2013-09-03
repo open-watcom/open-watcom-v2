@@ -555,8 +555,8 @@ pick(   WIE_NEIMAGENOTCREATED,
         "New image not created",
         "New image not created" )
 pick(   WIE_ABOUTTEXT,
-        "Open Watcom Image Editor for Windows" STR_BITNEES,
-        "Open Watcom Image Editor for Windows" STR_BITNEES )
+        "Open Watcom Image Editor for Windows" STR_BITNESS,
+        "Open Watcom Image Editor for Windows" STR_BITNESS )
 pick(   WIE_ABOUTVERSION,
         banner1p2( _RESEDIT_VERSION_ ),
         banner1p2( _RESEDIT_VERSION_ ) )

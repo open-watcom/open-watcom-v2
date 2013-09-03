@@ -210,8 +210,8 @@ pick(   STR_APP_NAME,
         "Open Watcom DDE Spy",
         "Open Watcom DDE Spy" )
 pick(   STR_ABOUT_NAME,
-        "Open Watcom DDE Spy for Windows" STR_BITNEES,
-        "Open Watcom DDE Spy Windows”Å" STR_BITNEES )
+        "Open Watcom DDE Spy for Windows" STR_BITNESS,
+        "Open Watcom DDE Spy Windows”Å" STR_BITNESS )
 pick(   STR_ABOUT_VERSION,
         banner1p2( _DDESPY_VERSION_ ),
         banner1p2( _DDESPY_VERSION_ ) )

@@ -383,12 +383,12 @@ pick( STR_DRNT_STARTED,
     "%s started" )
 #if defined( CHICAGO )
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows 9x" STR_BITNEES,
-    "Dr. Watcom for Windows 9x" STR_BITNEES )
+    "Dr. Watcom for Windows 9x" STR_BITNESS,
+    "Dr. Watcom for Windows 9x" STR_BITNESS )
 #else
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows" STR_BITNEES,
-    "Dr. Watcom for Windows" STR_BITNEES )
+    "Dr. Watcom for Windows" STR_BITNESS,
+    "Dr. Watcom for Windows" STR_BITNESS )
 #endif
 pick( STR_ABOUT_VERSION,
     banner1p2( _DRNT_VERSION_ ),

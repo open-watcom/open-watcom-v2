@@ -122,7 +122,7 @@ char _viperInfo[] = { "IDE Information" };
 
 const char* _viperDesc[] = {
     "",
-    banner1w1( "Integrated Development Environment" STR_BITNEES ),
+    banner1w1( "Integrated Development Environment" STR_BITNESS ),
     banner1w2( _VIPER_VERSION_ ),
     banner2,
     banner2a( "1993" ),

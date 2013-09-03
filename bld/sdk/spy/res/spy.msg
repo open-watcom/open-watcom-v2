@@ -56,8 +56,8 @@ pick(   STR_1_NAMED_WIN_TITLE,
         "%s - hWnd %0*x (%s)",
         "%s - hWnd %0*x (%s)" )
 pick(   STR_ABOUT_NAME,
-        "Open Watcom Spy for Windows" STR_BITNEES,
-        "Open Watcom Spy for Windows" STR_BITNEES )
+        "Open Watcom Spy for Windows" STR_BITNESS,
+        "Open Watcom Spy for Windows" STR_BITNESS )
 pick(   STR_ABOUT_VERSION,
         banner1p2( _SPY_VERSION_ ),
         banner1p2( _SPY_VERSION_ ) )

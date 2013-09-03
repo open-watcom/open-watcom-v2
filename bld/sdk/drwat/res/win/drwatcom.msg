@@ -35,8 +35,8 @@ pick( STR_ERASE_LOG,
     "Erase Log File: %s",
     "Erase Log File: %s" )
 pick( STR_ABOUT_NAME,
-    "Dr. Watcom for Windows" STR_BITNEES,
-    "Dr. Watcom for Windows" STR_BITNEES )
+    "Dr. Watcom for Windows" STR_BITNESS,
+    "Dr. Watcom for Windows" STR_BITNESS )
 pick( STR_ABOUT_VERSION,
     banner1p2( _DRWATCOM_VERSION_ ),
     banner1p2( _DRWATCOM_VERSION_ ) )

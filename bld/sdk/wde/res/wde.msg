@@ -452,8 +452,8 @@ pick(   WDE_INPUTFILENOTFOUND,
         "Input file not found.",
         "Input file not found." )
 pick(   WDE_ABOUT_NAME,
-        "Open Watcom Dialog Editor for Windows" STR_BITNEES,
-        "Open Watcom Dialog Editor for Windows" STR_BITNEES )
+        "Open Watcom Dialog Editor for Windows" STR_BITNESS,
+        "Open Watcom Dialog Editor for Windows" STR_BITNESS )
 pick(   WDE_ABOUT_VERSION,
         banner1p2( _RESEDIT_VERSION_ ),
         banner1p2( _RESEDIT_VERSION_ ) )
