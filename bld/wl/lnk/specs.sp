@@ -866,7 +866,7 @@ system begin rdos_dev32
     CPP wpp386 -bt=rdosdev -zu
     AS  wasm
 :elsesegment Pwlsystem
-    option osname='RDOS'
+    option osname='32-bit RDOS Device driver'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdosdev
     format rdos dev32 ^
@@ -874,10 +874,11 @@ system begin rdos_dev32
 end
 system begin rdos_dev16
 :segment Pspecs
-    CC  wcc386 -bt=rdos_dev16
-    CPP wpp386 -bt=rdos_dev16
+    CC  wcc -bt=rdos_dev16
+    CPP wpp -bt=rdos_dev16
     AS  wasm
 :elsesegment Pwlsystem
+    option osname='16-bit RDOS Device driver'
     format rdos dev16 ^
 :endsegment
 end
@@ -887,7 +888,7 @@ system begin rdosdev
     CPP wpp386 -bt=rdosdev -zu
     AS  wasm
 :elsesegment Pwlsystem
-    option osname='RDOS'
+    option osname='32-bit RDOS Device driver'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdosdev
     format rdos dev32 ^
@@ -899,7 +900,7 @@ system begin rdos_bin32
     CPP wpp386 -bt=rdos_bin32
     AS  wasm
 :elsesegment Pwlsystem
-    option osname='RDOS'
+    option osname='32-bit RDOS Binary'
     libpath %WATCOM%/lib386
     format rdos bin32 ^
 :endsegment
@@ -910,15 +911,27 @@ system begin rdos_bin16
     CPP wpp -bt=rdos_bin16
     AS  wasm
 :elsesegment Pwlsystem
+    option osname='16-bit RDOS Binary'
     format rdos bin16 ^
 :endsegment
 end
 system begin rdos_mboot
 :segment Pspecs
-    CC  wcc386 -bt=rdos_mboot
-    CPP wpp386 -bt=rdos_mboot
+    CC  wcc -bt=rdos_mboot
+    CPP wpp -bt=rdos_mboot
     AS  wasm
 :elsesegment Pwlsystem
+    option osname='RDOS Multiboot Stub'
     format rdos mboot ^
 :endsegment
 end
+:segment Pwlsystem
+system begin rawbin
+    option osname='RAW Binary Image'
+    format raw bin
+end
+system begin rawhex
+    option osname='RAW Intel Hex Image'
+    format raw hex
+end
+:endsegment

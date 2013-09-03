@@ -61,8 +61,6 @@ extern bool ProcRawBIN( void )
 {
     Extension = E_BIN;
     FmtData.raw_hex_output = 0;
-    if( FmtData.osname == NULL )
-        FmtData.osname = "RAW Binary Image";
     return( TRUE );
 }
 
@@ -71,7 +69,5 @@ extern bool ProcRawHEX( void )
 {
     Extension = E_HEX;
     FmtData.raw_hex_output = 1;
-    if( FmtData.osname == NULL )
-        FmtData.osname = "RAW Intel Hex Image";
     return( TRUE );
 }

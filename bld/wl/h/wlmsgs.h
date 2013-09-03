@@ -250,9 +250,12 @@
 #define    MSG_FILE_TYPES_15                    267 + MSG_BASE
 #define    MSG_FILE_TYPES_16                    268 + MSG_BASE
 #define    MSG_FILE_TYPES_17                    269 + MSG_BASE
-#define    MSG_CREATE_TYPE_DLL                  270 + MSG_BASE
-#define    MSG_CREATE_TYPE_EXE                  271 + MSG_BASE
-#define    MSG_IS_A_EXE                         272 + MSG_BASE
+#define    MSG_FILE_TYPES_18                    270 + MSG_BASE
+#define    MSG_FILE_TYPES_19                    271 + MSG_BASE
+#define    MSG_FILE_TYPES_20                    272 + MSG_BASE
+#define    MSG_CREATE_TYPE_DLL                  273 + MSG_BASE
+#define    MSG_CREATE_TYPE_EXE                  274 + MSG_BASE
+#define    MSG_IS_A_EXE                         275 + MSG_BASE
 
 #define    MSG_MAP_BOX_GROUP                    276 + MSG_BASE
 #define    MSG_MAP_TITLE_GROUP_0                277 + MSG_BASE

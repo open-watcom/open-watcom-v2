@@ -80,6 +80,12 @@ pick(    MSG_FILE_TYPES_16, "Windows VxD" ,
                 "Windows VxD" )
 pick(    MSG_FILE_TYPES_17, "DOS/16M" ,
                 "DOS/16M" )
+pick(    MSG_FILE_TYPES_18, "ZDOS" ,
+                "ZDOS" )
+pick(    MSG_FILE_TYPES_19, "RAW Binary Image" ,
+                "Raw" )
+pick(    MSG_FILE_TYPES_20, "RDOS" ,
+                "RDOS" )
 pick(    MSG_CREATE_TYPE_DLL,   "dynamic link library" ,
                 "ダイナミック・リンク・ライブラリ" )
 pick(    MSG_CREATE_TYPE_EXE,   "executable" ,
