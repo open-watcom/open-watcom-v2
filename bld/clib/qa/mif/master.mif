@@ -229,7 +229,7 @@ rdos_3s.exe : $(srcfile)
 
 rdosdev_3r.exe : $(srcfile)
     $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3r -bt=rdosdev $(c_dbg_flags)
-    wlink SYSTEM rdos dev32 $(link_opts) $(link_i86) FILE $^*.obj
+    wlink SYSTEM rdosdev $(link_opts) $(link_i86) FILE $^*.obj
     @rm *.obj
 
 d4g_3s.exe : $(srcfile)

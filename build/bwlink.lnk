@@ -309,5 +309,5 @@ system begin rdosdev
     libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
     libpath %OWSRCDIR%/cpplib/generic.386/ms_r
     libpath %OWSRCDIR%/fpuemu/386/stub386
-    format windows pe rdos ^
+    format rdos dev32
 end
