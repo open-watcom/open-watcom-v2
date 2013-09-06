@@ -50,6 +50,14 @@ const char * const DotNames[] = {
 void LexFini( void )
 /*************************/
 {
+    if( targ_path != NULL ) {
+        FreeSafe( targ_path );
+        targ_path = NULL;
+    }
+    if( dep_path != NULL ) {
+        FreeSafe( dep_path );
+        dep_path  = NULL;
+    }
     PreProcFini();
 }
 

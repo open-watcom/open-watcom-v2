@@ -111,7 +111,7 @@ TOKEN_T LexPath( STRM_T s )
 
     for( ;; ) {                     /* get first valid character */
         if( s == EOL || s == STRM_END ) {
-                /* now we pass this to LexParser() so that it can reset */
+            /* now we pass this to LexParser() so that it can reset */
             return( LexParser( s ) );
         }
 
@@ -352,8 +352,14 @@ STATIC TOKEN_T lexDotName( void )
 
     pos  = 0;
 
-    dep_path  = NULL;
-    targ_path = NULL;
+    if( targ_path != NULL ) {
+        FreeSafe( targ_path );
+        targ_path = NULL;
+    }
+    if( dep_path != NULL ) {
+        FreeSafe( dep_path );
+        dep_path  = NULL;
+    }
     dep_path = getCurlPath();
     s = PreGetCH();
     if( s != DOT ) {

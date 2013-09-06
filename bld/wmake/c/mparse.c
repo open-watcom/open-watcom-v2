@@ -139,7 +139,7 @@ STATIC void setSColon( const TLIST *tlist, BOOLEAN scolon )
  * coerced to double colon, and print an error message.
  */
 {
-                                /* set up scolon or dcolon */
+    /* set up scolon or dcolon */
     for( ; tlist != NULL; tlist = tlist->next ) {
         TARGET * const  curtarg = tlist->target;
 
@@ -172,7 +172,7 @@ STATIC void linkDepend( const TLIST *tlist, DEPEND *dep, TATTR attr )
         curtarg = tlist->target;            /* alias for tlist->target */
 
         if( curtarg->special ) {            /* handle special targets */
-            if( !(curtarg->depend) ) {
+            if( curtarg->depend == NULL ) {
                 // we want to be able to append later to the clist
                 // if it is a special target
                 curtarg->depend = NewDepend();  /* no tlist on these */
@@ -200,7 +200,7 @@ STATIC void linkDepend( const TLIST *tlist, DEPEND *dep, TATTR attr )
              * the link to targdep easily.
              */
             if( targdep != NULL ) {
-                    /* find last depend in list */
+                /* find last depend in list */
                 while( targdep->next != NULL ) {
                     lastnext = &targdep->next;
                     targdep = targdep->next;
@@ -333,18 +333,17 @@ STATIC void checkFirstTarget( void )
         /* Go through all the targets to see check if still OK */
         current = head;
         while( current != NULL ) {
-            if( !current->target->attr.explicit &&
-                !current->target->special ) {
+            if( !current->target->attr.explicit && !current->target->special ) {
                 /* still valid targets */
                 temp = okayList;
                 okayList = current;
-                current  = current->next;
+                current = current->next;
                 okayList->next = temp;
             } else {
                 /* probably a '::' rule that changed to .explicit */
                 temp = notOkayList;
                 notOkayList = current;
-                current  = current->next;
+                current = current->next;
                 notOkayList->next = temp;
             }
         }
@@ -381,12 +380,11 @@ STATIC void parseTargWarning( const TLIST *walk )
  * we check if any targets are not special, and print a warning if so
  */
 {
-    while( walk != NULL ) {
+    for( ; walk != NULL; walk = walk->next ) {
         if( !walk->target->special ) {
             PrtMsg( DBG | INF | LOC | ASSUMING_SYMBOLIC, walk->target->node.name );
             break;
         }
-        walk = walk->next;
     }
 }
 
@@ -469,7 +467,7 @@ STATIC void parseExtensions( void )
              * if microsoft option is set we put it in anyway don't
              * care whether or not it exists
              */
-            } else if( Glob.compat_nmake | Glob.compat_unix ) {
+            } else if( Glob.compat_nmake || Glob.compat_unix ) {
                 FreeSafe( CurAttr.ptr );
             } else {
                 PrtMsg( ERR | LOC | REDEF_OF_SUFFIX, CurAttr.ptr );
@@ -492,8 +490,8 @@ STATIC void parseDotName( TOKEN_T t, TLIST **btlist )
  */
 {
     if( IsDotWithCmds( CurAttr.u.dotname ) ) {
-            parseTargDep( TOK_DOTNAME, btlist );
-            return;
+        parseTargDep( TOK_DOTNAME, btlist );
+        return;
     }
     if( CurAttr.u.dotname == DOT_EXTENSIONS || CurAttr.u.dotname == DOT_SUFFIXES ) {
         parseExtensions();
@@ -619,7 +617,7 @@ STATIC void linkCList( TLIST *btlist, CLIST *bclist, const char *cur_target_path
         if( curtarg->scolon ) {
             /* check if it's an scolon, and attempt more than one clist */
             if( clisthead != NULL && (*walk)->clist != NULL ) {
-                if( Glob.compat_nmake | Glob.compat_unix ) {
+                if( Glob.compat_nmake || Glob.compat_unix ) {
                     PrtMsg( WRN | LOC | MORE_THAN_ONE_CLIST, curtarg->node.name );
                 } else {
                     PrtMsg( ERR | LOC | MORE_THAN_ONE_CLIST, curtarg->node.name );
@@ -1038,7 +1036,7 @@ TLIST *Parse( void )
          * when the actual filenames are resolved
          */
         if( btlist != NULL ) {
-            ImplicitDeMacro = (Glob.compat_nmake | Glob.compat_unix) && btlist->target->sufsuf;
+            ImplicitDeMacro = (Glob.compat_nmake || Glob.compat_unix) && btlist->target->sufsuf;
         }
         t = LexToken( LEX_PARSER );
         ImplicitDeMacro = FALSE;
@@ -1057,7 +1055,7 @@ TLIST *Parse( void )
                 }
                 cur_target_path = NULL;
                 cur_depend_path = NULL;
-                if( (Glob.compat_nmake | Glob.compat_unix) && token_filename == TRUE ) {
+                if( (Glob.compat_nmake || Glob.compat_unix) && token_filename == TRUE ) {
                     exPop();
                     token_filename = FALSE;
                 }
@@ -1095,8 +1093,7 @@ TLIST *Parse( void )
                      *       rule we must deMacro the text the same
                      *       way as wmake does for microsoft option
                      */
-                    ImplicitDeMacro = (Glob.compat_nmake | Glob.compat_unix) &&
-                        btlist->target->sufsuf;
+                    ImplicitDeMacro = (Glob.compat_nmake || Glob.compat_unix) && btlist->target->sufsuf;
                     newclist->inlineHead = GetInlineFile( &(newclist->text) );
                     ImplicitDeMacro = FALSE;
                     bclist = newclist;
@@ -1115,7 +1112,7 @@ TLIST *Parse( void )
             break;
         case TOK_FILENAME:
             parseTargDep( t, &btlist );
-            if( (Glob.compat_nmake | Glob.compat_unix) && btlist != NULL ) {
+            if( (Glob.compat_nmake || Glob.compat_unix) && btlist != NULL ) {
                 if( btlist->target != NULL && btlist->target->depend != NULL ) {
                     exPush( btlist->target, btlist->target->depend, NULL );
                     token_filename = TRUE;

@@ -277,7 +277,7 @@ STATIC SLIST *DupSList( const SLIST *old )
     head = NewSList();
     head->targ_path = StrDupSafe( old->targ_path );
     head->dep_path  = StrDupSafe( old->dep_path );
-    head->clist     = DupCList  ( old->clist );
+    head->clist     = DupCList( old->clist );
 
     cur = head;
     old = old->next;
@@ -285,7 +285,7 @@ STATIC SLIST *DupSList( const SLIST *old )
         new = NewSList();
         new->targ_path  = StrDupSafe( old->targ_path );
         new->dep_path   = StrDupSafe( old->dep_path );
-        new->clist      = DupCList  ( old->clist );
+        new->clist      = DupCList( old->clist );
         cur->next = new;
         cur = new;
         old = old->next;
@@ -647,7 +647,7 @@ STATIC BOOLEAN printTarg( void *node, void *ptr )
         PrintTargFlags( targ );
         PrtMsg( INF | NEWLINE );
     }
-    if( targ->depend ) {
+    if( targ->depend != NULL ) {
         curdep = targ->depend;
         while( curdep != NULL ) {
             if( curdep->targs != NULL ) {
@@ -658,7 +658,7 @@ STATIC BOOLEAN printTarg( void *node, void *ptr )
                         curtlist->target->node.name );
                 }
             }
-            if( curdep->clist ) {
+            if( curdep->clist != NULL ) {
                 PrtMsg( INF | PTARG_WOULD_EXECUTE_CMDS );
                 PrintCList( curdep->clist );
             }
@@ -758,7 +758,7 @@ STATIC BOOLEAN noCmds( void *trg, void *ptr )
     TARGET  *targ = trg;
 
     (void)ptr; // Unused
-    if( targ->depend && targ->depend->clist == NULL ) {
+    if( targ->depend != NULL && targ->depend->clist == NULL ) {
         targ->allow_nocmd = TRUE;
     }
     return( FALSE );

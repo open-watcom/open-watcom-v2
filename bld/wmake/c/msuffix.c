@@ -200,8 +200,7 @@ BOOLEAN SufBothExist( const char *sufsuf )   /* .src.dest */
 {
     char const  *ptr;
 
-    assert( sufsuf != NULL && sufsuf[0] == DOT &&
-        strchr( sufsuf + 1, DOT ) != NULL );
+    assert( sufsuf != NULL && sufsuf[0] == DOT && strchr( sufsuf + 1, DOT ) != NULL );
 
     if( findSuffixNode( sufsuf, &ptr ) == NULL ) {
         return( FALSE );
@@ -329,7 +328,7 @@ STATIC CREATOR *newCreator( void )
 
 
 void AddCreator( const char *sufsuf )
-/*******************************************
+/************************************
  * add the creation .src.dest
  */
 {
@@ -339,8 +338,7 @@ void AddCreator( const char *sufsuf )
     CREATOR     *new;
     CREATOR     **cur;
 
-    assert( sufsuf != NULL && sufsuf[0] == DOT &&
-        strchr( sufsuf + 1, DOT ) != NULL );
+    assert( sufsuf != NULL && sufsuf[0] == DOT && strchr( sufsuf + 1, DOT ) != NULL );
 
     src = findSuffixNode( sufsuf, &ptr );
     dest = FindSuffix( ptr );
@@ -350,12 +348,10 @@ void AddCreator( const char *sufsuf )
     if( !Glob.compat_nmake && !Glob.compat_posix && src->id < dest->id ) {
         PrtMsg( ERR | LOC | EXTENSIONS_REVERSED );
     }
-    cur = &dest->creator;
-    while( *cur != NULL ) {
+    for( cur = &dest->creator; *cur != NULL; cur = &(*cur)->next ) {
         if( src->id <= (*cur)->suffix->id ) {
             break;
         }
-        cur = &(*cur)->next;
     }
 
     if( *cur != NULL && src->id == (*cur)->suffix->id ) {
@@ -524,32 +520,23 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg,
     ret = RET_ERROR;
 
     if( suffix == NULL || suffix->pathring == NULL ) {
-            /* no suffix info - use %PATH */
         if( tryenv ) {
+            /* no suffix info - use %PATH */
             env = getenv( "PATH" );
-        } else {
-            /*
-             *  This is an incredible kludge so that Brian could build
-             *  the header project from one makefile without making
-             *  many changes to the makefile.   Some people are soooo
-             *  lazy :)  DJG
-             */
-            env = getenv( "__SEARCH_PATH__" );
-        }
-        if( env != NULL ) {
-            envpath = NULL;
-            ringPath( &envpath, env );
+            if( env != NULL ) {
+                envpath = NULL;
+                ringPath( &envpath, env );
 
-            Glob.cachedir = FALSE;      /* never cache %path */
-            ret = tryPathRing( &envpath, buffer, pg.dir, pg.fname, pg.ext,
-                chktarg );
-            Glob.cachedir = TRUE;
+                /* never cache %path */
+                Glob.cachedir = FALSE;
+                ret = tryPathRing( &envpath, buffer, pg.dir, pg.fname, pg.ext, chktarg );
+                Glob.cachedir = TRUE;
 
-            freePathRing( envpath );
+                freePathRing( envpath );
+            }
         }
     } else {
-        ret = tryPathRing( &suffix->pathring, buffer, pg.dir, pg.fname,
-            pg.ext, chktarg );
+        ret = tryPathRing( &suffix->pathring, buffer, pg.dir, pg.fname, pg.ext, chktarg );
     }
 
     return( ret );

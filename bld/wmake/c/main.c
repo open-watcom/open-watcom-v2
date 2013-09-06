@@ -84,7 +84,7 @@ STATIC void doBuiltIns( const char *makeopts )
         InsString( cpy, FALSE );
         list = Parse();
         FreeTList( list );
-        if( Glob.compat_nmake | Glob.compat_unix ) {
+        if( Glob.compat_nmake || Glob.compat_unix ) {
             // suffixes must be parsed before builtins
             const char  *suffices = MSSuffixList;
             const char  *builtins = MSBuiltIn;

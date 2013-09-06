@@ -379,7 +379,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, time_t max_time )
     ret = carryOut( targ, clist, findMaxTime( targ, dep, max_time ) );
     exPop();
     if( dep->slistCmd != NULL ) {
-        FreeCList(clist);
+        FreeCList( clist );
     }
     if( ret == RET_ERROR ) {
         exit( ExitSafe( EXIT_ERROR ) );
@@ -796,7 +796,7 @@ STATIC void ExpandWildCards( TARGET *targ, DEPEND *depend )
            currentEnd = temp;
            /* find the current end */
            while( currentEnd->next != NULL ) {
-               currentEnd = currentEnd -> next;
+               currentEnd = currentEnd->next;
            }
        }
    }
@@ -814,7 +814,6 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
  */
 {
     TLIST       *tlist;
-    TARGET      *curtarg;
     RET_T       tmp;
     BOOLEAN     outofdate;
     BOOLEAN     exec_cmds;
@@ -853,13 +852,10 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
 
     getDate( targ );
 
+    /* check if out of date with deps */
     outofdate = FALSE;
-    tlist = depend->targs;
-    while( tlist != NULL ) {    /* check if out of date with deps */
-        curtarg = tlist->target;
-        tlist = tlist->next;    /* advance the tlist */
-
-        if( isOutOfDate( targ, curtarg, &outofdate ) == RET_ERROR ) {
+    for( tlist = depend->targs; tlist != NULL; tlist = tlist->next ) {
+        if( isOutOfDate( targ, tlist->target, &outofdate ) == RET_ERROR ) {
             return( RET_ERROR );
         }
     }
@@ -934,14 +930,12 @@ RET_T Update( TARGET *targ )
         }
     } else if( targ->scolon == FALSE ) {    /* double colon */
         PrtMsg( DBG | INF | M_EXPLICIT_RULE, M_DCOLON );
-        curdep = targ->depend;
-        while( curdep != NULL ) {
+        for( curdep = targ->depend; curdep != NULL; curdep = curdep->next ) {
             if( resolve( targ, curdep ) != RET_SUCCESS ) {
                 targ->busy = FALSE;
                 targ->error = TRUE;
                 return( RET_ERROR );
             }
-            curdep = curdep->next;
         }
         if( !Glob.compat_nmake ) {
             if( tryImply( targ, FALSE ) == RET_ERROR ) {
@@ -1082,8 +1076,7 @@ char *GetCurDeps( BOOLEAN younger, BOOLEAN isMacInf )
     vec = StartVec();
     written = FALSE;
 
-    walk = cur.dep->targs;
-    while( walk != NULL ) {
+    for( walk = cur.dep->targs; walk != NULL; walk = walk->next ) {
         targ = walk->target;
         if( !younger || dateCmp( cur.targ->date, targ->date ) < 0 ) {
             if( written ) {
@@ -1093,7 +1086,6 @@ char *GetCurDeps( BOOLEAN younger, BOOLEAN isMacInf )
             WriteVec( vec, formattedString );
             written = TRUE;
         }
-        walk = walk->next;
     }
     ret = FinishVec( vec );
 
@@ -1156,10 +1148,7 @@ void UpdateInit( void )
 {
     /* according to ANSI standard... this should be true */
 
-    assert(     doneBefore == FALSE
-            &&  cListCount == 0ul
-            &&  exStackP == 0
-    );
+    assert( doneBefore == FALSE && cListCount == 0ul && exStackP == 0 );
     DoingUpdate = TRUE;
 }
 
