@@ -48,7 +48,6 @@
 #define P_WAIT 0
 #endif
 #define stricmp strcasecmp
-#define strcmpi strcasecmp
 #define strnicmp strncasecmp
 #define _MAX_PATH   (PATH_MAX+1)
 #define _MAX_DRIVE  3

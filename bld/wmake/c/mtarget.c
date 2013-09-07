@@ -514,11 +514,11 @@ STATIC TARGET *findOrNewTarget( const char *tname, BOOLEAN mentioned )
         targ = NewTarget( name );
         if( name[0] == DOT && isextc( name[1] ) ) {
             targ->special = TRUE;
-            if( strcmpi( name + 1, BEFORE_S ) == 0 ||
-                strcmpi( name + 1, AFTER_S )  == 0 ) {
+            if( stricmp( name + 1, BEFORE_S ) == 0 ||
+                stricmp( name + 1, AFTER_S )  == 0 ) {
                 targ->before_after = TRUE;
             }
-            if( strcmpi( name + 1, DEFAULT_S ) == 0 ) {
+            if( stricmp( name + 1, DEFAULT_S ) == 0 ) {
                 targ->dot_default = TRUE;
             }
         }

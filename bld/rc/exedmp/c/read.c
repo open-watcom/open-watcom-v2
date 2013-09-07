@@ -170,7 +170,7 @@ bool findResourceObject( ExeFile *exeFile )
             fseek( exeFile->file, prevPos, SEEK_SET );
             return( false );
         }
-        if( strcmpi( exeFile->resObj.name, RESOURCE_OBJECT_NAME ) == 0 ) {
+        if( stricmp( exeFile->resObj.name, RESOURCE_OBJECT_NAME ) == 0 ) {
             fseek( exeFile->file, prevPos, SEEK_SET );
             return( true );
         }

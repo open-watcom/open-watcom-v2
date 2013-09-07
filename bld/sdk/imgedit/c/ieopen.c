@@ -957,15 +957,15 @@ void OpenFileOnStart( char *fname )
     namelen = strlen( fname );
     strcpy( ext, &fname[namelen - 3] );
 
-    if( strcmpi( ext, "bmp" ) == 0 ) {
+    if( stricmp( ext, "bmp" ) == 0 ) {
         if( !readInBitmapFile( fname ) ) {
             return;
         }
-    } else if( strcmpi( ext, "ico" ) == 0 ) {
+    } else if( stricmp( ext, "ico" ) == 0 ) {
         if( !readInIconFile( fname ) ) {
             return;
         }
-    } else if( strcmpi( ext, "cur" ) == 0 ) {
+    } else if( stricmp( ext, "cur" ) == 0 ) {
         if( !readInCursorFile( fname ) ) {
             return;
         }

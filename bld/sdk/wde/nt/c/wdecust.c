@@ -342,7 +342,7 @@ void WdeFindClassInAllCustLibs( char *class, LIST **list )
         for( llist = WdeCustomLibList; llist != NULL; llist = ListNext( llist ) ) {
             if( (lib = (WdeCustLib *)ListElement( llist )) != NULL ) {
                 for( i = 0; i < lib->num_classes; i++ ) {
-                    if( !strcmpi( class, lib->lpcci[i].szClass ) ) {
+                    if( !stricmp( class, lib->lpcci[i].szClass ) ) {
                         ListAddElt( list, (void *)&lib->lpcci[i] );
                     }
                 }

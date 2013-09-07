@@ -619,7 +619,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
              * note the path of the current target must match the
              * path as specified in the slist
              */
-            if( strcmpi( buf, curslist->targ_path ) == 0 ) {
+            if( stricmp( buf, curslist->targ_path ) == 0 ) {
                 /* build filename for implied target */
                 _makepath( buf, NULL, curslist->dep_path,
                            fname, cursuf->node.name );

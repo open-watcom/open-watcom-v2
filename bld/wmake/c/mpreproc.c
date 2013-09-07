@@ -221,7 +221,7 @@ STATIC directiveTok getPreTok( void )
         // similar for other types of if preprocessor directives
         if( pos == 4 ) {
             tok[pos] = NULLCHAR;
-            if( strcmpi( directives[D_ELSE], tok ) == 0 ) {
+            if( stricmp( directives[D_ELSE], tok ) == 0 ) {
                 break;
             }
         }
@@ -1392,7 +1392,7 @@ STATIC BOOLEAN name2function( TOKEN_TYPE const *current, char const *criterion,
     BOOLEAN (*action)( const char * ) , BOOLEAN (**pquestion)( const char * ) )
 /*****************************************************************************/
 {
-    if( strcmpi( current->data.string, criterion ) != 0 ) {
+    if( stricmp( current->data.string, criterion ) != 0 ) {
         return( FALSE );
     }
     *pquestion = action;

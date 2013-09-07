@@ -121,7 +121,7 @@ bool loadParam( Parameters *param, int count, char *params[] )
                     return( false );
                 } else {
                     for( j = 0; resTypes[j] != NULL; j++ ) {
-                        if( strcmpi( resTypes[j], &params[i][2] ) == 0 ) {
+                        if( stricmp( resTypes[j], &params[i][2] ) == 0 ) {
                             param->specificType = true;
                             param->specificTypeID = j;
                             break;

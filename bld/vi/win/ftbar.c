@@ -294,7 +294,7 @@ static void initHwnds( HWND hwndDlg )
     hwndPick = GetDlgItem( hwndDlg, FT_FTPICK );
     hwndSizeEdit = GetWindow( hwndSize, GW_CHILD );
     GetClassName( hwndSizeEdit, tmp, 5 );
-    if( strcmpi( tmp, "edit" ) != 0 ) {
+    if( stricmp( tmp, "edit" ) != 0 ) {
         hwndSizeEdit = GetWindow( hwndSizeEdit, GW_HWNDNEXT );
     }
 
