@@ -56,11 +56,13 @@ extra_c_flags_wpdriver = -DTRMEM
 
 extra_link_res_qnx = usage.u
 
+extra_l_flags = op map
+
 extra_l_flags_nt        = op stack=100k
 extra_l_flags_os2       = op stack=32k
 extra_l_flags_qnx       = op stack=32k, offset=36k, priv=3, res=$(extra_link_res_qnx)
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
-extra_l_flags_dos       = op map,stack=20k #export DOS4GOPTIONS=_DOS4GOPTIONS
+extra_l_flags_dos       = op stack=20k #export DOS4GOPTIONS=_DOS4GOPTIONS
 
 wprof_libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 
@@ -102,7 +104,7 @@ $(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs
 !ifndef __WATCOM__
     $(cl) $(clflags) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) finger.obj $(wprof_libs) $(sys_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) op map file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(wprof_libs) $(sys_libs)}
+    $(linker) name $^@ $(lflags) file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(wprof_libs) $(sys_libs)}
 !endif
 !ifneq sys_windowed 1
     @%make bind_version_res_exe

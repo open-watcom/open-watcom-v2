@@ -80,7 +80,7 @@ $(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$
 !ifndef __WATCOM__
     $(cl) $(clflags) $(objs) verimp.obj $(library_files) $(ldflags)
 !else
-    $(linker) $(lflags) name $^@ file {$(objs) verimp.obj}
+    $(linker) name $^@ $(lflags) file {$(objs) verimp.obj}
 !endif
     $(rc) -k $(name).res $(name).dll $(bind_version_res_dll_add)
 

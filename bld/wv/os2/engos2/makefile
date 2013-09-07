@@ -18,5 +18,5 @@ sysobjs = os22flio.obj os2cmd.obj os22ini.obj os2chk.obj autoenv.obj
 !include ../../master.mif
 
 dve.exe : $(resfile) stubdb.obj wd.lib $(__MAKEFILES__)
-        $(linker) sys os2v2 name $^@ debug all op symf,map file stubdb.obj lib wd.lib
+        $(linker) name $^@ sys os2v2 debug all op symf,map file stubdb.obj lib wd.lib
         $(rc) $(resfile) dve.exe

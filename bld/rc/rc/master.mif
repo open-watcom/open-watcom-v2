@@ -20,6 +20,7 @@ additional_cleanup = ytab.* ytab2.* ytabw.* *.uni
 !include defrule.mif
 !include dllrule.mif
 !include deftarg.mif
+!include osi.mif
 
 !include wres.mif
 !include $(cpp_dir)/client.mif
@@ -208,13 +209,8 @@ $(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(version_res_
         @%write exe.lnk $(lflags)
         @for %i in ($(objs_exe)) do @%append exe.lnk file %i
         @for %i in ($(xlibs)) do @%append exe.lnk lib %i
-!ifeq host_os osi
-        $(linker) name $^&.rex @exe.lnk
-        $(w32bind) $^&.rex $@ $(os2ldr)
-        @rm -f $^&e.rex
-!else
-        $(linker) name $@ @exe.lnk
-!endif
+        $(linker) name $(lname) @exe.lnk
+        @%make bind_osildr
 !endif
         @%make bind_version_res_exe
 !ifneq bootstrap 1

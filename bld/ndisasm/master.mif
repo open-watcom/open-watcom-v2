@@ -15,6 +15,7 @@ additional_cleanup = *.u
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include osi.mif
 
 !include $(orl_dir)/client.mif
 !include wres.mif
@@ -77,13 +78,8 @@ $(exe_name) : msg.gh $(dis_prereq) $(disasm_objs) $(xlibs) $(proj_name).res $(ve
 !ifndef __WATCOM__
         $(cl) $(clflags) $(disasm_objs) $(xlibs) $(ldflags)
 !else
-!ifeq host_os osi
-        $(linker) name $^&.rex $(lflags) file {$(disasm_objs)} lib {$(xlibs)}
-        $(w32bind) $^&.rex $@ $(os2ldr)
-        rm -f $^&.rex
-!else
-        $(linker) name $@ $(lflags) file {$(disasm_objs)} lib {$(xlibs)}
-!endif
+        $(linker) name $(lname) $(lflags) file {$(disasm_objs)} lib {$(xlibs)}
+        @%make bind_osildr
 !endif
         @%make bind_version_res_exe
         $(wstrip) -q -a -r $@ . $^&.res

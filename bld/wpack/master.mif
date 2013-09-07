@@ -30,7 +30,7 @@ objs += wildargv.obj
 extra_l_flags = op map
 
 $(proj_name).exe : $(objs)
-        $(linker) $(lflags) name $^@ file { $< }
+        $(linker) name $^@ $(lflags) file { $< }
 
 dtparse.obj : msg.gh
 

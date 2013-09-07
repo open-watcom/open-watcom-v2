@@ -36,7 +36,7 @@ emu387.lib: emu387.obj 386inite.obj
 !else ifeq host_os qnx
 
 emu387: usage.u qnxemu87.obj emu387.obj fpeqnx.obj
-    $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,quiet,res=usage.u
+    $(linker) name $^@ $(lflags) opt priv=0,map,long,quiet,res=usage.u file {$<}
 
 usage.u : ../../usage.sp
     wsplice -u $< $@

@@ -17,11 +17,13 @@ inc_dirs = -I"../h" $(idelib_inc_dirs) $(wclass_inc_dirs)
 
 .cpp: ../cpp
 
+extra_l_flags = opt map
+
 libs = $(idelib_lib) $(wclass_lib)
 
 $(proj_name).exe : $(objs) $(libs)
 !ifndef __WATCOM__
     $(cl) $(clflags) $< $(ldflags)
 !else
-    $(linker) option quiet $(lflags) option map name $^@ file { $(objs) } lib {$(libs)}
+    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif

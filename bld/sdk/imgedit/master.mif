@@ -90,7 +90,7 @@ $(name).exe : $(name).res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cp
         %create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk file { $(objs) }
-        $(linker)  name $^@ @$^&.lnk
+        $(linker) name $^@ @$^&.lnk
 !endif
         $(rc) -k $^&.res $^@ $(bind_version_res_exe_add)
 

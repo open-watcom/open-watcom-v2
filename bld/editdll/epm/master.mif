@@ -26,19 +26,19 @@ extra_l_flags_dll_os2 += op map
 all: epmlink.dll wedit.lib .SYMBOLIC
 
 epmlink.dll: epmlink.obj dll.lnk
-    $(linker) name $@ @$]@ file $[@
+    $(linker) name $@ @$]@ file {$[@}
 
 wedit.dll: epmlink.obj dll.lnk
-    $(linker) name $@ @$]@ file $[@
+    $(linker) name $@ @$]@ file {$[@}
     
 wedit.lib: wedit.dll
     $(librarian) $(libflags) +$<
 
 epmtest.exe : epmtest.obj wedit.lib
-    $(linker) d a op st=32k, case sys os2v2_pm file epmtest.obj lib wedit.lib
+    $(linker) name $@ sys os2v2_pm debug all op st=32k file {epmtest.obj} lib {wedit.lib}
 
 epmspy.exe : epmspy.obj
-    $(linker) sys os2v2_pm file epmspy.obj
+    $(linker) name $@ sys os2v2_pm file {epmspy.obj}
     
 dll.lnk : $(__MAKEFILES__)
     @%write  $@ $(lflags)

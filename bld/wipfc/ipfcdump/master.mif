@@ -17,5 +17,5 @@ objs =  ipfcdump.obj bitmap.obj cells.obj child.obj controls.obj dict.obj&
         index.obj nls.obj panel.obj strings.obj toc.obj
 
 ipfcdump.exe : $(objs)
-    $(linker) $(lflags) name $@ file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}
 

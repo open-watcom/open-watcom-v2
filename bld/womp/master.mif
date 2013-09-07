@@ -62,7 +62,7 @@ extra_c_flags_memory += -dTRACK -of+
 !endif
 
 $(proj_name).exe : wmpmsg.gh $(proj_name).res $(objs)
-        $(linker) option quiet $(lflags) name $^. file { $(objs) } lib $(wres_lib)
+        $(linker) name $^@ $(lflags) file { $(objs) } lib $(wres_lib)
         $(wstrip) -q -a -r $@ . $(proj_name).res
 
 wmpmsg.gh : $(womp_dir)/womp.msg

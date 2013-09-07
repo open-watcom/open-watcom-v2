@@ -7,6 +7,7 @@ wfc_autodepends = .AUTODEPEND
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include osi.mif
 
 !include $(cg_dir)/mif/fe.mif
 !include $(as_dir)/client.mif
@@ -72,15 +73,8 @@ $(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(flibs) $(version_res
     %create $^&.lnk
     @for %i in ($(fobjs)) do @%append $^&.lnk file %i
     @for %i in ($(flibs)) do @%append $^&.lnk lib %i
-!ifeq host_os osi
-    @%append $^&.lnk name $^&.rex
-    $(linker) $(lflags) @$^&.lnk
-    $(w32bind) $^&.rex $@ $(os2ldr)
-    @rm -f $^&.rex
-!else    
-    @%append $^&.lnk name $@
-    $(linker) $(lflags) @$^&.lnk
-!endif
+    $(linker) name $(lname) $(lflags) @$^&.lnk
+    @%make bind_osildr
 !endif
     @%make bind_version_res_exe
     $(wstrip) -q -a -r $@ . errmsg.res

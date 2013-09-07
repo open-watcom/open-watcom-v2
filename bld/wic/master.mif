@@ -17,6 +17,7 @@ wic_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include osi.mif
 
 !include trmem.mif
 
@@ -43,13 +44,7 @@ inc_dirs = -I"../h"
 
 ##############################################################################
 
-!ifeq host_os osi
-extra_stuff = $(os2ldr)
-!endif
-
-##############################################################################
-
-$(name).exe : $(objs) $(extra_stuff) wic.res $(wres_lib)
+$(name).exe : $(objs) $(osildr) wic.res $(wres_lib)
     %create $^&.lnk
     @%append $^&.lnk option map, quiet
     @%append $^&.lnk debug all
@@ -58,15 +53,8 @@ $(name).exe : $(objs) $(extra_stuff) wic.res $(wres_lib)
 !endif
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(objs)) do @@%append $^&.lnk file %i
-!ifeq host_os osi
-    @%append $^&.lnk name $^&.rex
-    $(linker) $(lflags) @$^&.lnk
-    $(w32bind) $^&.rex $@ $(os2ldr)
-    @rm -f $^&.rex
-!else
-    @%append $^&.lnk name $@
-    $(linker) $(lflags) @$^&.lnk
-!endif
+    $(linker) name $(lname) $(lflags) @$^&.lnk
+    @%make bind_osildr
     $(wstrip) -a -r -q $@ . wic.res
 
 ##############################################################################

@@ -48,9 +48,3 @@ w32bind         = w32bind
 wbind           = bwbind
 wstrip          = bwstrip
 yacc            = yacc
-
-!ifdef __UNIX__
-os2ldr          = $(%OWBINDIR)/os2ldr.exe
-!else
-os2ldr          = $(%OWBINDIR)\os2ldr.exe
-!endif

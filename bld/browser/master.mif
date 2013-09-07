@@ -45,15 +45,15 @@ to_os_path=/=\
 .rc: ../res
 
 ext = obj
-OBJECTS = $+$(template)$-
+objs = $+$(template)$-
 
 !ifeq release 0
-OBJECTS += debuglog.obj
+objs += debuglog.obj
 !endif
 !ifeq browse_trmem 1
-OBJECTS += dmem.obj trmem.obj
+objs += dmem.obj trmem.obj
 !else
-OBJECTS += mem.obj
+objs += mem.obj
 !endif
 
 !ifdef gen_browse_file
@@ -105,9 +105,9 @@ res_file_os2 = wbrwpm.res
 res_file     = $(res_file_$(host_os))
 
 #linker
-LIBS_dos = $(ui_lib)
+libs_dos = $(ui_lib)
 
-LIBS     = $(gui_lib) $(LIBS_$(host_os)) $(dwarfr_lib) $(wclass_lib)
+libs     = $(gui_lib) $(libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
 
 lflags_win_i86  = sys windows font mem op stack=16k
 lflags_dos_386  = sys pharlap
@@ -124,21 +124,14 @@ extra_l_flags_nt_axp = op undefsok
 extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu)) op stack=100k
 extra_l_flags_os2 =
 
-exe_ext_osi = .rex
-!ifdef exe_ext_$(host_os)
-exe_ext = $(exe_ext_$(host_os))
-!else
-exe_ext = exe
-!endif
-
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
 all: $(wbrw_h_$(host_os)) $(name).exe .SYMBOLIC
 
-$(name).exe : $(OBJECTS) $(LIBS) $(res_file) $(version_res_exe_$(host_os)_$(host_cpu))
-    $(linker) $(lflags) name $(name).$(exe_ext) file {$(OBJECTS)} lib {$(LIBS)}
+$(name).exe : $(objs) $(libs) $(res_file) $(version_res_exe_$(host_os)_$(host_cpu))
+    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
     $(rc) $(rc2_flags_$(host_os)) $(res_file) $^@ $(bind_version_res_exe_add)
 !ifdef gen_browse_file
     @%create browser.wbr

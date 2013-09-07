@@ -18,16 +18,16 @@ targets += msg.exe
 all: $(targets)  .SYMBOLIC
 
 div0.exe : div0.obj
-        $(linker) $(lflags) name $^. file { $< }
+        $(linker) name $^@ $(lflags) file { $< }
 
 gp.exe : gp.obj
-        $(linker) $(lflags) name $^. file { $< }
+        $(linker) name $^@ $(lflags) file { $< }
 
 invins.exe : invins.obj
-        $(linker) $(lflags) name $^. file { $< }
+        $(linker) name $^@ $(lflags) file { $< }
 
 msg.exe : msg.obj
-        $(linker) $(lflags) name $^. file { $< }
+        $(linker) name $^@ $(lflags) file { $< }
 
 stack.exe : stack.obj
-        $(linker) $(lflags) name $^. file { $< }
+        $(linker) name $^@ $(lflags) file { $< }

@@ -51,7 +51,7 @@ test_cflags_386 += -we -w0 -zq -fh -D_CONSOLE $(inc_dirs_sys) -I"../nt"
 
 .obj.$(exe):
     @set error_msg=failure to link $^@
-    $(linker) @test.lnk $(opt_link_$^*) NAME $@ FILE $[@
+    $(linker) name $^@ @test.lnk $(opt_link_$^*) file $[@
     @set error_msg=failure to execute $^@
     @%append exec.out PASS executing $^@
     $(run) $(exec_prefix)$@ >>exec.out
@@ -71,7 +71,7 @@ test : .symbolic start_test $(test_exes) ./chk_exec.exe
 
 string04.$(exe) : string04.obj string04.res
     @set error_msg=failure to link $^@
-    $(linker) @test.lnk NAME $@ FILE $[@
+    $(linker) name $^@ @test.lnk file $[@
     @set error_msg=failure to add resources to $^@
     wrc -q $]@
     @set error_msg=failure to execute $^@

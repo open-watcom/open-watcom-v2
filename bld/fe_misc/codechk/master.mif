@@ -17,7 +17,7 @@ jobjs =  j_main.obj   &
 all: c_codech.exe j_codech.exe
 
 c_codech.exe : $(cobjs)
-        $(linker) option quiet $(lflags) name $^. file { $< }
+        $(linker) name $^. $(lflags) file { $< }
 
 j_codech.exe : $(jobjs)
-        $(linker) option quiet $(lflags) name $^. file { $< }
+        $(linker) name $^. $(lflags) file { $< }

@@ -51,7 +51,7 @@ objs += inthdlrs.obj
 !endif
 
 rfx.exe : $(objs)
-        $(linker) $(lflags) name $^@ file { $(objs) }
+        $(linker) name $^@ $(lflags) file { $(objs) }
 
 .str: $(wv_dir)/h
 

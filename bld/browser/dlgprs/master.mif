@@ -52,7 +52,7 @@ dlgprs.exe : prsdlg.gh prsbnd.gh $(c_objs)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(c_objs) $(ldflags)
 !else
-    $(linker) $(lflags) name $^@ file {$(c_objs)}
+    $(linker) name $^@ $(lflags) file {$(c_objs)}
 !endif
 
 prsdlg.gh prsdlg.gc : ../y/prsdlg.y ../cpp/yydriver.cpp

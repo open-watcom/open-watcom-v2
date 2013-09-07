@@ -14,17 +14,16 @@ all: wcc386p.exe wccx.exe wfcp.exe wfc386p.exe wlinkp.exe
 
 wcc386p.exe: execpgm.c
         $(cc) $[@ -ox -dPGM_NAME="wcc386.exe" -fo=.obj
-        $(linker) system dos name $^@ file $[&.obj
+        $(linker) name $@ system dos file $[&.obj
 wfc386p.exe: execpgm.c
         $(cc) $[@ -ox -dPGM_NAME="wfc386.exe" -fo=.obj
-        $(linker) system dos name $^@ file $[&.obj
+        $(linker) name $@ system dos file $[&.obj
 wccx.exe: execpgm.c
         $(cc) $[@ -ox -dPGM_NAME="wcc.exe" -fo=.obj
-        $(linker) system dos name $^@ file $[&.obj
+        $(linker) name $@ system dos file $[&.obj
 wfcp.exe: execpgm.c
         $(cc) $[@ -ox -dPGM_NAME="wfc.exe" -fo=.obj
-        $(linker) system dos name $^@ file $[&.obj
+        $(linker) name $@ system dos file $[&.obj
 wlinkp.exe: execpgm.c
         $(cc) $[@ -ox -dPGM_NAME="wlink.exe" -fo=.obj
-        $(linker) system dos name $^@ file $[&.obj
-
+        $(linker) name $@ system dos file $[&.obj

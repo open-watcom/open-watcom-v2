@@ -28,7 +28,7 @@ $(proj_name).exe : msg.gh $(objs) $(libs) $(proj_name).res $(version_res_exe_$(h
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        $(linker) option quiet $(lflags) name $^@ file { $(objs) } lib {$(libs)}
+        $(linker) name $^@ $(lflags) file { $(objs) } lib {$(libs)}
 !endif
         @%make bind_version_res_exe
         $(wstrip) -q -a -r $(proj_name).exe . $(proj_name).res

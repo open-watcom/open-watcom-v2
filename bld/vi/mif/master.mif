@@ -64,7 +64,7 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objsroot) $(start_flags) $(objinit) $(more_flags) $(objs) $(libs) $(final_flags) $(rcsdll) $(ldflags)
 !else
-        $(linker) $(lflags) name $(lname) file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
+        $(linker) name $(lname) $(lflags) file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
 !endif
 !ifeq sys_windowed 1
 !ifdef win386_bind

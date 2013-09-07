@@ -17,4 +17,4 @@ fscopy_autodepends = .AUTODEPEND
 extra_l_flags = op map
 
 wfscopy.exe : fscopy.obj
-        $(linker) $(lflags) name $^@ file $[@
+        $(linker) name $^@ $(lflags) file $[@

@@ -29,7 +29,7 @@ extra_l_flags_dos = op stack=20k
 
 $(name).exe : $(objs)
 !ifdef __WATCOM__
-        $(linker) $(lflags) name $@ file {$(objs)}
+        $(linker) name $@ $(lflags) file {$(objs)}
 !else
         $(cl) $(clflags) $< $(ldflags)
 !endif

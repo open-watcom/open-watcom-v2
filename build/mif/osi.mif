@@ -1,0 +1,19 @@
+!ifeq host_os osi
+lname = $^&.rex
+!else
+lname = $^@
+!endif
+
+!ifeq host_os osi
+!ifdef __UNIX__
+osildr = $(%OWSRCDIR)/w32loadr/os2ldr/os2ldr.exe
+!else
+osildr = $(%OWSRCDIR)\w32loadr\os2ldr\os2ldr.exe
+!endif
+!endif
+
+bind_osildr: .procedure .explicit
+!ifeq host_os osi
+        $(w32bind) $^&.rex $^@ $(osildr)
+        @rm -f $^&.rex
+!endif

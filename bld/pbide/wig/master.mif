@@ -66,7 +66,7 @@ $(xname) : sruparse.gh ytab.gh $(objs) $(__MAKEFILES__)
         @%create $(lnk)
         @for %i in ($(libs)) do @@%append $(lnk) library %i
         @for %i in ($(objs)) do @@%append $(lnk) file %i
-        $(linker) $(lflags) name $^@ @$(lnk)
+        $(linker) name $^@ $(lflags) @$(lnk)
 
 sruparse.gh ytab.gh: sruparse.y ../c/yydriver.c
         @wtouch $^@

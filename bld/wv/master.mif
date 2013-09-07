@@ -353,12 +353,12 @@ $(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) $(sysobjs) fingmsg.
 !endif
 !endif
         @for %i in ($(objs)) do @%append $^&.lnk file %i
-        $(linker) $(lflags) name $^@ @$^&.lnk $(endsect)
+        $(linker) name $^@ $(lflags) @$^&.lnk $(endsect)
 !if 0
 !ifdef ovl_dos
         copy $^&.map $(lnk2)
         vi -d -q -s ..\mapfix.vi $(lnk2)
-        $(linker) $(lflags) name $^@ @$(lnk) @$(lnk2) $(endsect)
+        $(linker) name $^@ $(lflags) @$(lnk) @$(lnk2) $(endsect)
 !endif
 !endif
 !endif

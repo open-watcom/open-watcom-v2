@@ -41,7 +41,7 @@ $(proj_name).exe : $(objs) $(proj_name).res
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        $(linker) $(lflags) name $^. file { $(objs) } lib { $(libs) }
+        $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif
 	$(rc) $(proj_name).res
 

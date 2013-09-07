@@ -17,11 +17,11 @@ extra_l_flags = op map, verbose, statics
 all : cwstub.exe cwdstub.exe .symbolic
 
 cwstub.exe : cw32.obj
-    $(linker) $(lflags) name cw32.exe disable 1080 file cw32.obj
+    $(linker) name cw32.exe $(lflags) disable 1080 file cw32.obj
     $(cwc) cw32.exe cwstub.exe
 
 cwdstub.exe : cwdstub.obj
-    $(linker) $(lflags) name $@ disable 1014 file $[@
+    $(linker) name $@ $(lflags) disable 1014 file $[@
 
 !else ifeq host_cpu 386
 

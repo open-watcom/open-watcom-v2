@@ -10,10 +10,9 @@ inc_dirs = -I..
 
 .c: ..
 
-objs =               &
-        resdump.obj  &
+objs =  resdump.obj  &
         loadchar.obj &
         loadtype.obj
 
 $(proj_name).exe : $(objs)
-        $(linker) $(lflags) name $^. file { $< }
+        $(linker) name $^@ $(lflags) file {$(objs)}

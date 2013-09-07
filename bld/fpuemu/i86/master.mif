@@ -63,11 +63,11 @@ objs_win = initemuw.obj
 all: emu86_$(cpu_size) emu86
 
 emu86 : usage.u qemu87.obj
-    $(linker) $(lflags) name $^@ file { $< } opt map,res=usage.u
+    $(linker) name $^@ $(lflags) opt map,res=usage.u file {$<}
 !endif
 
 emu86_$(cpu_size): usage.u qnxemu87.obj emu8087.obj fpeqnx.obj
-    $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,res=usage.u
+    $(linker) name $^@ $(lflags) opt priv=0,map,long,res=usage.u file {$<}
 
 usage.u : ../../usage.sp
     wsplice -u $< $@

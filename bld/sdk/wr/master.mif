@@ -88,7 +88,7 @@ $(name).dll: ytabw.gh rcmsg.gh $(object) $(xlibs) $(name).res $(version_res_dll_
 !ifndef __WATCOM__
         $(cl) $(clflags) $(object) $(xlibs) $(ldflags)
 !else
-        $(linker) $(lflags) name $^@ file {$(object)} lib {$(xlibs)}
+        $(linker) name $^@ $(lflags) file {$(object)} lib {$(xlibs)}
 !endif
         $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
@@ -102,7 +102,7 @@ test_lflags = system $(test_system) name test debug all libpath $(watcom_dir)/li
 test_lflags += option quiet, map, elim, v, static
 
 test.exe: $(name).lib $(TESTLNK) test.obj
-        $(linker) $(test_lflags) library $(name) file test
+        $(linker) name $^@ $(test_lflags) file {test.obj} library {$(name).lib}
 
 rcmsg.gh: wrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@

@@ -17,5 +17,5 @@ sysobjs = ntstub.obj ntfilio.obj winlkup.obj winchk.obj ntcmd.obj ntfinfo.obj
 !include ../../master.mif
 
 wdb.exe : $(resfile) wdbstub.obj wd.lib $(__MAKEFILES__)
-        $(linker) sys nt name $^@ debug all op symf,map file wdbstub.obj lib wd.lib
+        $(linker) name $^@ sys nt debug all op symf,map file wdbstub.obj lib wd.lib
         $(rc) -k $(resfile) wdb.exe

@@ -31,5 +31,5 @@ dwdump$(exe) : $(test_objs) $(orl_lib)
 !ifeq bootstrap 1
         $(cc) -o $^@ $(test_objs) $(orl_lib) $(clib_dir)/$(%OWOBJDIR)/libwatcom.a
 !else
-        $(linker) $(lflags) name $@ file { $(test_objs) }
+        $(linker) name $@ $(lflags) file {$(test_objs)}
 !endif

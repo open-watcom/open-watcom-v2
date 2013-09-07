@@ -31,10 +31,10 @@ w : nmpbind.exe .symbolic
 d : dnmpbind.exe .symbolic
 
 nmpbind.exe : _err.gh _jerr.gh $(objs)
-    $(linker) $(lflags) file { $objs } name $^@
+    $(linker) name $^@ $(lflags) file { $objs }
 
 dnmpbind.exe : _err.gh _jerr.gh $(objs)
-    $(linker) $(lflags) file { $objs } name $^@
+    $(linker) name $^@ $(lflags) file { $objs }
 
 .c: ../c
 

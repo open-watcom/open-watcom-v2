@@ -16,10 +16,10 @@ all : wstub.exe wstubq.exe
 
 !ifdef host_dosi86
 wstub.exe : wstub.obj
-        $(linker) $(lflags) file $[@
+        $(linker) name $^@ $(lflags) file $[@
 
 wstubq.exe : wstubq.obj
-        $(linker) $(lflags) file $[@
+        $(linker) name $^@ $(lflags) file $[@
 !else
 wstub.exe wstubq.exe :
         cp ../dosi86/$@ $@

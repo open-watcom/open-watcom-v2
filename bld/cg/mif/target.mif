@@ -6,13 +6,15 @@ hostcglibname=cg$(target_name)$(host_os).lib
 
 !ifeq dll_cg 1
 
+extra_l_flags = op map
+
 libs = cg$(target_name).lib $(hostcglibname) $(dwarfw_lib) $(owl_lib) $(cfloat_lib)
 
 target : $(pre_obj_deps) cg$(target_name).dll cgdllcli.lib .SYMBOLIC
         @%null
 
 cg$(target_name).dll : cgdmain.obj $(libs)
-        $(linker) $(lflags) name $@ op map file $[@ lib {$(libs)}
+        $(linker) name $@ $(lflags) file {$[@} lib {$(libs)}
 
 cgdllcli.lib : $(cg_client_objs)
         $(librarian) $(libflags) $<

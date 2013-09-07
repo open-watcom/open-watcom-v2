@@ -6,16 +6,16 @@ idebatch_autodepend = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+extra_l_flags = op map
+
 !ifeq host_os os2
 
 .c: ../os2;../c
 
-extra_l_flags = op map
-
 all: batserv.exe tst.exe .symbolic
 
 batserv.exe : batserv.obj
-        $(linker) $(lflags) file batserv.obj op stack=16k
+        $(linker) name $@ $(lflags) op stack=16k file {batserv.obj}
 
 batcli.obj : batcli.c
         $(cc_i86) -zq -w8-we -bt=dos -oaxt -fo=.obj -d1 $(inc_dirs_lang_osi) $<
@@ -37,14 +37,14 @@ batserv.exe : batserv.obj batpipe.obj
 !ifndef __WATCOM__
         $(cl) $(clflags) batserv.obj batpipe.obj $(ldflags)
 !else
-        $(linker) $(lflags) file batserv.obj,batpipe.obj op stack=32K
+        $(linker) name $@ $(lflags) op stack=32K file {batserv.obj batpipe.obj}
 !endif
 
 tst.exe : tst.obj batcli.obj batpipe.obj
 !ifndef __WATCOM__
         $(cl) $(clflags) tst.obj batcli.obj batpipe.obj $(ldflags)
 !else
-        $(linker) $(lflags) file tst.obj,batcli.obj,batpipe.obj
+        $(linker) name $@ $(lflags) file {tst.obj batcli.obj batpipe.obj}
 !endif
 
 !else ifeq host_os dos
@@ -59,7 +59,7 @@ extra_l_flags = op map
 objs = $(name).obj link.obj int21.obj
 
 $(name).exe : $(objs)
-       $(linker) $(lflags) option stack=1500 name $(name) file {$(objs)}
+       $(linker) name $@ $(lflags) op stack=1500 file {$(objs)}
 
 !else ifeq host_os win
 
@@ -81,11 +81,11 @@ all : $(name).exe $(name)e.exe .SYMBOLIC
     @%null
 
 $(name).exe : $(objs) $(lnk) $(name).res
-    $(linker) $(lflags) @$(lnk) op map name $(name) file { $(objs) }
+    $(linker) name $@ $(lflags) @$(lnk) file { $(objs) }
     $(rc) $(name).res $^@
 
 $(name)e.exe : $(objse) $(lnk) $(name).res
-    $(linker) $(lflags) @$(lnk) op map name $(name)e file { $(objse) }
+    $(linker) name $@ $(lflags) @$(lnk) file { $(objse) }
     $(rc) $(name).res $^@
 
 $(name).res : ../$(name).rc

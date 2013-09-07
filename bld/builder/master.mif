@@ -49,6 +49,8 @@ extra_cpp_flags = -DSTANDALONE_RX
 
 extra_c_flags_genverrc = -D_VERSION=$(bld_ver)
 
+extra_l_flags = op map
+
 sweep.exe :   $(sweep_objs)
 wsplice.exe : $(wsplice_objs)
 diff.exe :    $(diff_objs)
@@ -58,7 +60,7 @@ rm.exe: $(rm_objs)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(rm_objs) $(ldflags)
 !else
-        $(linker) op map name $@ $(lflags) file {$(rm_objs)}
+        $(linker) name $@ $(lflags) file {$(rm_objs)}
 !endif
 !if "$(host_os)" == "$(bld_os)"         # Don't copy unless host_os=build_os
 !ifndef %LOGFNAME                       # Don't copy unless build outside builder
@@ -74,7 +76,7 @@ builder.exe : $(builder_objs)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(builder_objs) $(ldflags)
 !else
-        $(linker) op map name $@ $(lflags) file {$(builder_objs)}
+        $(linker) name $@ $(lflags) file {$(builder_objs)}
 !endif
 !if "$(host_os)" == "$(bld_os)"         # Don't copy unless host_os=build_os
 !ifndef %LOGFNAME                       # Don't copy unless build outside builder
@@ -90,5 +92,5 @@ builder.exe : $(builder_objs)
 !ifndef __WATCOM__
         $(cl) $(clflags) $< $(ldflags)
 !else
-        $(linker) op map name $@ $(lflags) file {$<}
+        $(linker) name $@ $(lflags) file {$<}
 !endif

@@ -28,11 +28,13 @@ inc_dirs = -I"../h"
 extra_c_flags_mem      = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
 
+extra_l_flags = op map
+
 extra_l_flags_os2 = op stack=8k
 
 ms2wlink.exe : $(objs)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objs) $(ldflags)
 !else
-        $(linker) $(lflags) name $^@ op map file {$(objs)}
+        $(linker) name $^@ $(lflags) file {$(objs)}
 !endif

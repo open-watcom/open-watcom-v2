@@ -27,4 +27,4 @@ inc_dirs = -I"../h" -I"$(dig_dir)/h"
 .c: ../c
 
 wdsplice.dll : $(objs)
-    $(linker) $(lflags) name $@ file { $< }
+    $(linker) name $@ $(lflags) file {$<}

@@ -12,5 +12,5 @@ asaxp.exe : $(asaxp_hdrs) $(asaxp_objs)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(asaxp_objs) $(ldflags)
 !else
-        $(linker) $(lflags) name $^@ file {$(asaxp_objs)}
+        $(linker) name $@ $(lflags) file {$(asaxp_objs)}
 !endif

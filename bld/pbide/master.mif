@@ -6,13 +6,15 @@ pbide_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-dlldbg.exe : dlldbg.obj dlldbg.res
-        $(linker) op map $(lflags) name $^. file dlldbg.obj
-        $(rc) -k dlldbg.res $^@
-
 .c: ..
 
 extra_c_flags_win =-zW
+
+extra_l_flags = op map
+
+dlldbg.exe : dlldbg.obj dlldbg.res
+        $(linker) name $^@ $(lflags) file {dlldbg.obj}
+        $(rc) -k dlldbg.res $^@
 
 dlldbg.res : ../dlldbg.rc ../debugger.ico
         $(rc) $(rc_flags) $[@ -fo=$@

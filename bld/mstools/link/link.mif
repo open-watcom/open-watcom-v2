@@ -38,7 +38,7 @@ linkx.exe :  $(linkstub_objs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
         $(cl) $(clflags) $(linkstub_objs) $(ldflags)
 !else
-        $(linker) $(lflags) name $^@ file {$(linkstub_objs)}
+        $(linker) name $^@ $(lflags) file {$(linkstub_objs)}
 !endif
         @%make bind_version_res_exe
 
@@ -46,7 +46,7 @@ link386.exe :  $(link_hdrs) $(link386_objs) $(lib_common_libs) $(ver386_res_exe_
 !ifndef __WATCOM__
         $(cl) $(clflags) $(link386_objs) $(link_common_libs) $(ldflags)
 !else
-        $(linker) $(lflags) name $^@ file {$(link386_objs)} library {$(link_common_libs)}
+        $(linker) name $^@ $(lflags) file {$(link386_objs)} library {$(link_common_libs)}
 !endif
         @%make bind_ver386_res_exe
 
@@ -54,7 +54,7 @@ linkaxp.exe :  $(link_hdrs) $(linkaxp_objs) $(lib_common_libs) $(veraxp_res_exe_
 !ifndef __WATCOM__
         $(cl) $(clflags) $(linkaxp_objs) $(link_common_libs) $(ldflags)
 !else
-        $(linker) $(lflags) name $^@ file {$(linkaxp_objs)} library {$(link_common_libs)}
+        $(linker) name $^@ $(lflags) file {$(linkaxp_objs)} library {$(link_common_libs)}
 !endif
         @%make bind_veraxp_res_exe
 
@@ -62,6 +62,6 @@ linkppc.exe :  $(link_hdrs) $(linkppc_objs) $(lib_common_libs) $(verppc_res_exe_
 !ifndef __WATCOM__
         $(cl) $(clflags) $(linkppc_objs) $(link_common_libs) $(ldflags)
 !else
-        $(linker) $(lflags) name $^@ file {$(linkppc_objs)} library {$(link_common_libs)}
+        $(linker) name $^@ $(lflags) file {$(linkppc_objs)} library {$(link_common_libs)}
 !endif
         @%make bind_verppc_res_exe

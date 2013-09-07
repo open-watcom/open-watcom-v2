@@ -22,4 +22,4 @@ sys_dll = 1
 !include ../os2io.mif
 
 wdio.dll: wdio.obj
-    $(linker) sys os2 dll op map,protmode name $@ f $< $(extra_linker)
+    $(linker) name $@ sys os2 dll op map,protmode file {$<} $(extra_linker)

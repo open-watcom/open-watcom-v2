@@ -15,7 +15,7 @@ bdiff_autodepend = .AUTODEPENDS
 
 inc_dirs = -I"../h"
 
-extra_l_flags = name $^@ op map
+extra_l_flags = op map
 
 .ERASE
 
@@ -34,7 +34,7 @@ wcpatch.exe : $(wobjs) $(wres_lib) $(__MAKEFILES__)
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
         @for %i in ($(wobjs)) do @%append $^&.lnk file %i
-        $(linker) @$^&.lnk
+        $(linker) name $^@ @$^&.lnk
 !endif
 
 #
@@ -50,7 +50,7 @@ wpatch.exe : $(yobjs) $(wres_lib) $(__MAKEFILES__)
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
         @for %i in ($(yobjs)) do @%append $^&.lnk file %i
-        $(linker) @$^&.lnk
+        $(linker) name $^@ @$^&.lnk
 !endif
 
 #
@@ -66,7 +66,7 @@ bpatch.exe : bpatch.res $(objs) $(wres_lib) $(__MAKEFILES__)
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
         @for %i in ($(objs)) do @%append $^&.lnk file %i
-        $(linker) @$^&.lnk
+        $(linker) name $^@ @$^&.lnk
 !endif
         $(wstrip) -q -a -r $^@ . bpatch.res
 
@@ -83,7 +83,7 @@ bdump.exe : bpatch.res $(xobjs) $(wres_lib) $(__MAKEFILES__)
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
         @for %i in ($(xobjs)) do @%append $^&.lnk file %i
-        $(linker) @$^&.lnk
+        $(linker) name $^@ @$^&.lnk
 !endif
         $(wstrip) -q -a -r $^@ . bpatch.res
 
@@ -100,7 +100,7 @@ bdiff.exe : $(dobjs) bdiff.res $(wres_lib) $(__MAKEFILES__)
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk lib $(wres_lib)
         @for %i in ($(dobjs)) do @%append $^&.lnk file %i
-        $(linker) @$^&.lnk
+        $(linker) name $^@ @$^&.lnk
 !endif
         $(wstrip) -q -a -r $^@ . bdiff.res
 
@@ -113,7 +113,7 @@ bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(bpcmt_objs) $(ldflags)
 !else
-        $(linker) $(lflags) file { $(bpcmt_objs) }
+        $(linker) name $^@ $(lflags) file {$(bpcmt_objs)}
 !endif
 
 #
@@ -125,7 +125,7 @@ bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(bplevel_objs) $(ldflags)
 !else
-        $(linker) $(lflags) file { $(bplevel_objs) }
+        $(linker) name $^@ $(lflags) file { $(bplevel_objs) }
 !endif
 
 # resources

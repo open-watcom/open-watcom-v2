@@ -5,6 +5,7 @@ merge_autodepends = .autodepend
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include osi.mif
 
 .c: ../cpp;$(trmem_dir)
 .cpp: ../cpp;$(browse_dir)/cpp;$(trmem_dir)
@@ -71,10 +72,5 @@ extra_l_flags        = op stack=16k, map
 extra_l_flags_nt_axp = op undefsok
 
 $(name).exe : $(OBJECTS)
-!ifeq host_os osi
-    $(linker) $(lflags) name $^&.rex file {$(OBJECTS)}
-    $(w32bind) $^&.rex $@ $(os2ldr)
-    @rm -f $^&.rex
-!else    
-    $(linker) $(lflags) name $@ file {$(OBJECTS)}
-!endif
+    $(linker) name $(lname) $(lflags) file {$(OBJECTS)}
+    @%make bind_osildr

@@ -32,4 +32,4 @@ extra_l_flags_dll_win += segment CLASS 'BSS' PRELOAD FIXED
 .asm : ../asm
 
 wint32.dll: $(objs)
-       $(linker) $(lflags) name $^@ file {$(objs)}
+       $(linker) name $^@ $(lflags) file {$(objs)}

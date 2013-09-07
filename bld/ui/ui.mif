@@ -111,6 +111,6 @@ sample.exe : samplew.obj sampdial.obj swap.obj $(name).lib
         wlink @sample.lnk
 !else
 sample.exe : sample.obj sampdial.obj $(name).lib
-        $(linker) $(lflags) op q,m,st=32k library $(name).lib n sample f sample, sampdial
+        $(linker) name $@ $(lflags) op map, st=32k file {sample.obj sampdial.obj} lib {$(name).lib}
 !endif
 
