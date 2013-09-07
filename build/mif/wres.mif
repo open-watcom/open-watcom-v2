@@ -29,13 +29,13 @@ name_i86_l = $(wres_dir)/dosi86/ml/wres.lib
 !endif
 name_i86_h = $(wres_dir)/dosi86/mh/wres.lib
 
-name_386_dos      = $(wres_dir)/small386/$(name_model_conv)
-name_386_zdos     = $(wres_dir)/small386/$(name_model_conv)
-name_386_rdos     = $(wres_dir)/flat386/$(name_model_conv)
-name_386_osi      = $(wres_dir)/small386/$(name_model_conv)
-name_386_nov      = $(wres_dir)/small386/$(name_model_conv)
+name_386_dos      = $(wres_dir)/dos386/$(name_model_conv)
+name_386_zdos     = $(wres_dir)/osi386/$(name_model_conv)
+name_386_osi      = $(wres_dir)/osi386/$(name_model_conv)
+name_386_nov      = $(wres_dir)/osi386/$(name_model_conv)
 name_386_qnx      = $(wres_dir)/qnx386/$(name_model_conv)
 name_386_linux    = $(wres_dir)/linux386/$(name_model_conv)
+name_386_rdos     = $(wres_dir)/flat386/$(name_model_conv)
 name_386_os2      = $(wres_dir)/flat386/$(name_model_conv)
 name_386_win      = $(wres_dir)/flat386/$(name_model_conv)
 !ifeq $(proj_name)_rtdll 1
