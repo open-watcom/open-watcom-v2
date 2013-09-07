@@ -26,11 +26,11 @@ command.obj
 command.exe : $(objs) wlink.res
         @%create tmp.lnk
         @for %i in ($(objs)) do @%append tmp.lnk file %i
-        $(linker) debug all sys pharlap option undefsok,map libpath $(wres_dir)/lib lib wresf name command @tmp.lnk
+        $(linker) name command debug all sys pharlap option undefsok,map libpath $(wres_dir)/lib lib wresf @tmp.lnk
 !ifndef new_pharlap
         $(pharlap)bind386 $(pharlap)run386b.exe command -exe $^@
 !else
-        copy/b $(pharlap)stub386.exe+command.exp $^@
+        copy /b $(pharlap)stub386.exe+command.exp $^@
 !endif
         $(wstrip) -q -a -r command.exe . wlink.res
 
