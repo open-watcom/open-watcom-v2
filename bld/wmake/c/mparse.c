@@ -236,7 +236,7 @@ STATIC void linkDepend( const TLIST *tlist, DEPEND *dep, TATTR attr )
                 dep = DupDepend( dep );
             }
         }
-        TargOrAttr( curtarg, attr );
+        TargAttrOrAttr( &curtarg->attr, attr );
     }
     FreeDepend( dep );      /* we'll always make one too many copies */
 }

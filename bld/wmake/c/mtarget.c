@@ -722,17 +722,17 @@ void TargInitAttr( TATTR *attr )
 }
 
 
-void TargOrAttr( TARGET *targ, TATTR attr )
-/*****************************************/
+void TargAttrOrAttr( TATTR *tattr, TATTR attr )
+/*********************************************/
 {
-    targ->attr.prec       |= attr.prec;
-    targ->attr.symb       |= attr.symb;
-    targ->attr.multi      |= attr.multi;
-    targ->attr.explicit   |= attr.explicit;
-    targ->attr.always     |= attr.always;
-    targ->attr.auto_dep   |= attr.auto_dep;
-    targ->attr.existsonly |= attr.existsonly;
-    targ->attr.recheck    |= attr.recheck;
+    tattr->prec       |= attr.prec;
+    tattr->symb       |= attr.symb;
+    tattr->multi      |= attr.multi;
+    tattr->explicit   |= attr.explicit;
+    tattr->always     |= attr.always;
+    tattr->auto_dep   |= attr.auto_dep;
+    tattr->existsonly |= attr.existsonly;
+    tattr->recheck    |= attr.recheck;
 }
 
 

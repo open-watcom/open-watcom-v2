@@ -216,7 +216,7 @@ extern void     CheckNoCmds( void );
 extern RET_T    WildTList( TLIST **stack, const char *base, BOOLEAN mentioned,
                 BOOLEAN expandWildCardPath );
 extern void     TargInitAttr( TATTR *attr );
-extern void     TargOrAttr( TARGET *targ, TATTR attr );
+extern void     TargAttrOrAttr( TATTR *tattr, TATTR attr );
 
 #endif  /* !_MTARGET_H */
 

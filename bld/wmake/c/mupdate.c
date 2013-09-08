@@ -538,7 +538,7 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg,
         newdep->slistCmd = slistCmd;
 
         /* handle implied attributes (.symb/.prec/.multi) */
-        TargOrAttr( targ, cretarg->attr );
+        TargAttrOrAttr( &targ->attr, cretarg->attr );
 
         ret = perform( targ, newdep, max_time );
         FreeDepend( newdep );           /* don't need depend any more */
