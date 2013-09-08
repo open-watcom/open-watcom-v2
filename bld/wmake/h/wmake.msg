@@ -230,6 +230,8 @@ pick( PSUF_MADE_FROM,                "    Can be made from extension (.%s):",
                                 "    拡張子 (.%s) から作られます" )
 pick( PSUF_USING_CMDS,                "    Using these commands:",
                                 "    これらのコマンドを使っています" )
+pick( PSUF_OUTPUT_DIR,          "    Output directory:",
+                                "    Output directory:" )
 pick( PMAC_NAME_HAS_VALUE,        "$%E has the value (%L)",
                                 "$%E の値は (%L) です" )
 pick( UPDATING_TARGET,                "Updating %E:",
