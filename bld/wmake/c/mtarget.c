@@ -603,25 +603,25 @@ void PrintCList( const CLIST *clist )
 }
 
 
-void PrintTargFlags( const TARGET *targ )
+void PrintTargFlags( const TATTR *tattr )
 /***************************************/
 {
-    if( targ->attr.prec ) {
+    if( tattr->prec ) {
         PrtMsg( INF | NEOL | PTARG_DOTNAME, DotNames[DOT_PRECIOUS] );
     }
-    if( targ->attr.symb ) {
+    if( tattr->symb ) {
         PrtMsg( INF | NEOL | PTARG_DOTNAME, DotNames[DOT_SYMBOLIC] );
     }
-    if( targ->attr.multi ) {
+    if( tattr->multi ) {
         PrtMsg( INF | NEOL | PTARG_DOTNAME, DotNames[DOT_MULTIPLE] );
     }
-    if( targ->attr.explicit ) {
+    if( tattr->explicit ) {
         PrtMsg( INF | NEOL | PTARG_DOTNAME, DotNames[DOT_EXPLICIT] );
     }
-    if( targ->attr.always ) {
+    if( tattr->always ) {
         PrtMsg( INF | NEOL | PTARG_DOTNAME, DotNames[DOT_ALWAYS] );
     }
-    if( targ->attr.auto_dep ) {
+    if( tattr->auto_dep ) {
         PrtMsg( INF | NEOL | PTARG_DOTNAME, DotNames[DOT_AUTO_DEPEND] );
     }
 }
@@ -644,7 +644,7 @@ STATIC BOOLEAN printTarg( void *node, void *ptr )
             PrtMsg( INF | NEOL | PTARG_IS_TYPE_M, targ->node.name,
                 targ->scolon ? M_SCOLON : M_DCOLON );
         }
-        PrintTargFlags( targ );
+        PrintTargFlags( &targ->attr );
         PrtMsg( INF | NEWLINE );
     }
     if( targ->depend != NULL ) {

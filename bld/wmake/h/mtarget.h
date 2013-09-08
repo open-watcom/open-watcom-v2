@@ -208,7 +208,7 @@ extern void     KillTarget( const char *name );
 extern void     RenameTarget( TARGET *targ, const char *newname );
 extern TARGET   *FindTarget( const char *name );
 extern void     PrintCList( const CLIST *list );
-extern void     PrintTargFlags( const TARGET *targ );
+extern void     PrintTargFlags( const TATTR *tattr );
 extern void     PrintTargets( void );
 extern CLIST    *DotCList( DotName dot );
 extern void     ResetExecuted( void );

@@ -400,7 +400,7 @@ STATIC BOOLEAN printSuf( void *node, void *ptr )
     while( cur != NULL ) {
         PrtMsg( INF | NEOL | PSUF_MADE_FROM, cur->suffix->node.name );
         targ = cur->cretarg;
-        PrintTargFlags( targ );
+        PrintTargFlags( &targ->attr );
         PrtMsg( INF | NEWLINE );
         cmds = targ->depend->clist;
         if( cmds != NULL ) {
