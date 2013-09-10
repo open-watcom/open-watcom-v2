@@ -30,6 +30,11 @@ host_os=$(rtdll_host_os_$(system))
 
 !include $(rtdll_dir)/dllname.mif
 !include $(rtdll_dir)/dllbase.mif
+
+verrc_dll_skel = ../verinfo.rc
+verrc_dll      = $(dllname)
+!include verrc.mif
+
 !include ../objs.mif
 
 version_res_dll_nt_386 = version.res
@@ -92,7 +97,3 @@ $(dllname).dll : $(version_res_dll_$(host_os)_$(host_cpu)) $(dll_objs) $(dll_lib
     @%append $(dllname).lnk $(lnk_alias)
     $(linker) name $(dllname).dll @$(dllname).lnk
     @%make bind_version_res_dll
-
-verrc_dll_skel = ../verinfo.rc
-verrc_dll      = $(dllname)
-!include verrc.mif

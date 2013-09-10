@@ -13,6 +13,8 @@ sys_windowed = 1
 
 !include $(commonui_dir)/client.mif
 
+!include verrc.mif
+
 objs =  zoom.obj zmglob.obj zmproc.obj zmscreen.obj zmconfig.obj
 
 extra_cpp_flags_nt = -DNOUSE3D
@@ -58,5 +60,3 @@ $(name).res : ../res/wzoom.rc .AUTODEPEND
 
 $(name)j.res : ../res/wzoom.rc .AUTODEPEND
         $(rc) $(rc_flags) -DJAPANESE -ad -zk0 -I"../res/kanji" $(rc_inc_path) $[@ -fo=$^@
-
-!include verrc.mif

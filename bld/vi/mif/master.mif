@@ -8,32 +8,16 @@ vi_autodepends = .AUTODEPEND
 
 vi_trmem = 1
 
-!ifeq host_os win
-!ifeq host_cpu 386
-win386_bind = $(wbind)
-!endif
-!endif
-
 .EXTENSIONS: .ch .dh
 .EXTENSIONS: .ctl .dyn
 .EXTENSIONS: .vi .dat
-
-!ifdef win386_bind
-lname = $(name).rex
-!else
-lname = $(name).exe
-!endif
 
 additional_cleanup = *.dh *.ch $(bind_compiled)
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
-!include trmem.mif
-!include $(commonui_dir)/client.mif
-!include $(wpi_dir)/client.mif
-!include $(ui_dir)/client.mif
+!include win386.mif
 
 !include ../mif/rcsdll.mif
 !include ../mif/include.mif
@@ -42,6 +26,13 @@ additional_cleanup = *.dh *.ch $(bind_compiled)
 !include ../mif/special.mif
 !include ../mif/link.mif
 !include ../mif/bind.mif
+
+!include $(commonui_dir)/client.mif
+!include $(wpi_dir)/client.mif
+!include $(ui_dir)/client.mif
+
+!include verrc.mif
+!include trmem.mif
 
 .h : $(vi_dir)/h
 .dat : $(vi_dir)/dat
@@ -64,14 +55,19 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objsroot) $(start_flags) $(objinit) $(more_flags) $(objs) $(libs) $(final_flags) $(rcsdll) $(ldflags)
 !else
-        $(linker) name $(lname) $(lflags) file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
+        %create $^&.lnk
+!ifeq sys_windowed 1
+!ifeq host_os nt
+        @%append $^&.lnk alias _WinMain='_WinMain@16'
+!endif
+!endif
+        @for %l in ($(libs)) do @%append $^&.lnk lib %l
+        $(linker) name $(lname) $(lflags) file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) @$^&.lnk
 !endif
 !ifeq sys_windowed 1
-!ifdef win386_bind
-        $(win386_bind) $(lname) -s $(win386_dir)/ext/win386.ext -R -q $(name).res $(name).exe
-        rm $(lname)
-!else
-        $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
+        %make bind_win386
+!ifndef win386
+        $(rc) -k $^&.res $^@ $(bind_version_res_exe_add)
 !endif
 !else
         @%make bind_version_res_exe
@@ -105,9 +101,6 @@ rcstr.gh : rcstrmsg.gh
 
 rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles)
         $(cpp) $(rc_aui_flags) -I"$(sdk_misc_dir)" $[@ >$^@
-
-#verrc_exe_skel = ../exever.rc
-!include verrc.mif
 
 !ifeq host_os win
 !ifeq host_cpu i86

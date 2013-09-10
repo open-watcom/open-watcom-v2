@@ -4,6 +4,12 @@ proj_name = wfc
 wfc_autodepends = .AUTODEPEND
 !endif
 
+exename_i86 = wfc
+exename_386 = wfc386
+exename_axp = wfcaxp
+exename_ppc = wfcppc
+target_exe  = $(exename_$(target_cpu))
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -14,6 +20,10 @@ wfc_autodepends = .AUTODEPEND
 !include $(wasm_dir)/client.mif
 
 !include wres.mif
+
+verrc_exe = $(target_exe)
+verrc_exe_skel = ../../exever.rc
+!include verrc.mif
 
 !include ../../files.mif
 
@@ -44,12 +54,6 @@ extra_a_flags = -oc
 extra_c_flags_fmemmgr = -DTRMEM -I"$(trmem_dir)"
 fobjs += trmem.obj trmemcvr.obj
 !endif
-
-exename_i86 = wfc
-exename_386 = wfc386
-exename_axp = wfcaxp
-exename_ppc = wfcppc
-target_exe  = $(exename_$(target_cpu))
 
 extra_c_flags_trmem = -DTRMEM -of+
 extra_c_flags_trmemcvr = -DTRMEM -of+
@@ -98,7 +102,3 @@ asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
 
 msg.gh : $(wasm_dir)/h/asmshare.msg
     awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
-
-verrc_exe = $(target_exe)
-verrc_exe_skel = ../../exever.rc
-!include verrc.mif

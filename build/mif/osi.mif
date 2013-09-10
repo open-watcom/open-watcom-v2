@@ -12,7 +12,7 @@ osildr = $(%OWSRCDIR)\w32loadr\os2ldr\os2ldr.exe
 !endif
 !endif
 
-bind_osildr: .procedure .explicit
+bind_osildr: .PROCEDURE .EXPLICIT
 !ifeq host_os osi
         $(w32bind) $^&.rex $^@ $(osildr)
         @rm -f $^&.rex

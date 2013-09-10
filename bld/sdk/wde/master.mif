@@ -17,12 +17,15 @@ memory_model_i86 = l
 !include defrule.mif
 !include deftarg.mif
 
-WINDOWS=1
-!include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
+
+WINDOWS=1
+!include wres.mif
+
+!include verrc.mif
 
 extra_cpp_flags   = -DWIN_GUI
 
@@ -117,5 +120,3 @@ rcstrmsg.gh : ../res/wde.msg
 
 $(name).res: ../res/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$^@
-
-!include verrc.mif

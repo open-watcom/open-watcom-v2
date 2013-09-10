@@ -25,7 +25,12 @@ additional_cleanup_subdir = $(stand_subdir)
 
 !include $(owl_dir)/client.mif
 !include $(cpp_dir)/client.mif
+!ifdef test_inline_as
+!include $(as_dir)/client.mif
+!endif
+
 !include wres.mif
+!include verrc.mif
 
 # yacc
 #########################
@@ -157,10 +162,9 @@ inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" $(
 
 !ifdef test_inline_as
 
-!include $(as_dir)/client.mif
-
 asinline.exe : $(asi_test_objs) $(asminline_lib)
         $(cl) $(clflags) $(asi_test_objs) $(asminline_lib) $(ldflags)
+
 !endif
 
 # systems where version resource must be added to .EXE
@@ -192,8 +196,6 @@ $(name).res : $(as_dir)/h/as.rc msg.gh
 
 asinline.lib : asi_msg.gh $(asi_objs)
         $(librarian) $(libflags) $(asi_objs)
-
-!include verrc.mif
 
 msg.gh : $(as_dir)/h/as.msg
         $(cpp) $(rc_aui_flags) $(cppflags) -D_STANDALONE_ $[@ > msg.tmp

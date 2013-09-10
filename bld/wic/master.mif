@@ -19,11 +19,11 @@ wic_trmem = 1
 !include deftarg.mif
 !include osi.mif
 
+!include wres.mif
+
 !include trmem.mif
 
 !include ../objsdef.mif                #   get objs macro
-
-!include wres.mif
 
 ##############################################################################
 

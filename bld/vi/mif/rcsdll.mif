@@ -14,5 +14,5 @@ rcsdll_win_386 = wini86
 rcsdll_nt_386 = nt386
 
 !ifdef rcsdll_$(host_os)_$(host_cpu)
-rcsdll = lib $(rcsdll_dir)/$(rcsdll_$(host_os)_$(host_cpu))/rcsdll
+rcsdll_lib = $(rcsdll_dir)/$(rcsdll_$(host_os)_$(host_cpu))/rcsdll.lib
 !endif

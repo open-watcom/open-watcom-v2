@@ -37,6 +37,9 @@ to_os_path=/=\
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
+verrc_exe = $(name)
+!include verrc.mif
+
 !include ../template.mif
 
 .c: ../cpp;../merge/c;$(posix_dir)/misc;$(lib_misc_dir)/c
@@ -153,6 +156,3 @@ curr_dir=$+$(%cwd)$-
 
 .rc.res:
     $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
-
-verrc_exe = $(name)
-!include verrc.mif

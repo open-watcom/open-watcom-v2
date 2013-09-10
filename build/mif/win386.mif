@@ -1,0 +1,17 @@
+!ifeq host_os win
+!ifeq host_cpu 386
+!define win386
+!endif
+!endif
+
+!ifdef win386
+lname = $^&.rex
+!else
+lname = $^@
+!endif
+
+bind_win386: .PROCEDURE .EXPLICIT
+!ifdef win386
+    $(wbind) $(lname) -s $(win386_dir)/ext/win386.ext -R -q $^&.res $^@
+    @rm -f $(lname)
+!endif

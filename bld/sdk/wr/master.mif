@@ -19,10 +19,13 @@ wr_trmem = 1
 
 .EXTENSIONS: .msg .res .rc
 
-WINDOWS = 1
-!include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(cpp_dir)/client.mif
+
+WINDOWS = 1
+!include wres.mif
+
+!include verrc.mif
 
 !include trmem.mif
 
@@ -118,5 +121,3 @@ ytabw.gh : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h
 
 $(name).res: ../res/wr.rc .AUTODEPEND
         $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
-
-!include verrc.mif

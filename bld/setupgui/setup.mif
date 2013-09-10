@@ -1,4 +1,4 @@
-proj_name = setupgui
+proj_name = setup
 
 setupgui_autodepends = .AUTODEPEND
 
@@ -11,12 +11,15 @@ additional_cleanup = *.i *.rex setup.inf
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include win386.mif
 
-!include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
+
+!include wres.mif
+!include verrc.mif
 
 # objects
 ##########
@@ -66,12 +69,6 @@ objs += &
 !else
 objs += &
     setupio.obj
-!endif
-
-!ifeq host_os win
-!ifeq host_cpu 386
-win386_bind = $(wbind)
-!endif
 !endif
 
 !ifeq sys_windowed 1
@@ -185,11 +182,11 @@ all : virgin.exe csetup.exe f77setup.exe .SYMBOLIC
 !ifeq host_os win
 
 virgin.exe: $(gendeps) dosstub.exe
-!ifdef win386_bind
-    $(linker) name virgin.rex @setup.lnk
-    $(win386_bind) -q -n virgin.rex
+!ifdef win386
+    $(linker) name $(lname) @setup.lnk
+    $(wbind) -q -n $(lname)
 !else
-    $(linker) name $^@ op stub=dosstub.exe @setup.lnk
+    $(linker) name $(lname) op stub=dosstub.exe @setup.lnk
 !endif
 
 !else
@@ -283,6 +280,3 @@ csetup.exe f77setup.exe jcsetup.exe jfsetup.exe :
     cp $]@ $^@
     cp $]&.sym $^&.sym
     $(rc_out) $[@ $^@ $(bind_version_res_exe_add)
-
-verrc_exe = setup
-!include verrc.mif

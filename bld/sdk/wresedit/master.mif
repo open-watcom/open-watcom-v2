@@ -17,12 +17,15 @@ memory_model_i86 = l
 !include defrule.mif
 !include deftarg.mif
 
-WINDOWS = 1
-!include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
+
+WINDOWS = 1
+!include wres.mif
+
+!include verrc.mif
 
 objs = $(sys_object)
 objs +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
@@ -89,5 +92,3 @@ rcstr.gh: rcstrmsg.gh
 
 rcstrmsg.gh: ../res/$(name).msg
         $(cpp) $(rc_aui_flags) -I"../../res" $[@ >$^@
-
-!include verrc.mif

@@ -11,10 +11,6 @@ additional_cleanup = *.u
 
 wv_trmem = 1
 
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
 dig_os_os2_386 = os2v2
 dig_os_dos_386 = dsx
 !ifndef dig_os_$(host_os)_$(host_cpu)
@@ -22,6 +18,10 @@ dig_os = $(host_os)
 !else
 dig_os = $(dig_os_$(host_os)_$(host_cpu))
 !endif
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
 
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
@@ -32,6 +32,14 @@ dig_os = $(dig_os_$(host_os)_$(host_cpu))
 !include $(ui_dir)/client.mif
 
 !include wres.mif
+
+!ifeq sys_windowed 1
+verrc_exe = wdw
+!else
+verrc_exe = wd
+!endif
+!include verrc.mif
+
 !include trmem.mif
 
 engine_objs = &
@@ -597,13 +605,6 @@ wvpm.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
 
 wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
         $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
-
-!ifeq sys_windowed 1
-verrc_exe = wdw
-!else
-verrc_exe = wd
-!endif
-!include verrc.mif
 
 ####################
 

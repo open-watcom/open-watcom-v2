@@ -2,8 +2,6 @@ proj_name       = ncurses
 
 ncurses_autodepends = .AUTODEPEND
 
-inc_dirs        = -I"../h"
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -28,6 +26,7 @@ ncurses_objs = &
     lib_ttyf.obj &
     read_ent.obj
 
+inc_dirs        = -I"../h"
 
 ncurses.lib : $(ncurses_objs) $(__MAKEFILES__)
     $(librarian) $(libflags) $(ncurses_objs)

@@ -37,6 +37,9 @@ additional_cleanup = *.d32 *.mad
 
 !include $(disasm_dir)/dis.mif
 
+verrc_dll = $(name)
+!include verrc.mif
+
 # cflags stuff
 ###############
 extra_cpp_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
@@ -103,6 +106,3 @@ distbls.gh : ./disbuild.exe
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
     $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
-
-verrc_dll = $(name)
-!include verrc.mif

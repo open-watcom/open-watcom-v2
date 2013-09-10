@@ -7,6 +7,7 @@ wtouch_autodepends = .AUTODEPEND
 !include deftarg.mif
 
 !include wres.mif
+!include verrc.mif
 
 .EXTENSIONS: .msg .vi .rc .sp
 
@@ -48,5 +49,3 @@ usagej.gh : usage.sp
 
 msg.gh : $(proj_name).msg
         awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
-
-!include verrc.mif

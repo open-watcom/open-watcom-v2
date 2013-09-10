@@ -8,10 +8,10 @@ whelp_trmem = 1
 !include defrule.mif
 !include deftarg.mif
 
-!include trmem.mif
-
 !include $(ui_dir)/client.mif
 !include ../help.mif
+
+!include trmem.mif
 
 objs =  main.obj filelist.obj
 objs += $(help_objs)

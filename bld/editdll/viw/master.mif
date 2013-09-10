@@ -9,6 +9,9 @@ sys_dll = 1
 !include defrule.mif
 !include deftarg.mif
 
+verrc_dll = weditviw
+!include verrc.mif
+
 .c: ..
 
 inc_dirs = -I.. -I"../.."
@@ -55,6 +58,3 @@ weditviw.dll : weditviw.obj $(cl_objs) dll.lnk $(version_res_dll_$(host_os)_$(ho
 dll.lnk : $(__MAKEFILES__)
         @%write $@ $(lflags)
         @%append $@ option description 'Open Watcom Editor DLL for VIW'
-
-verrc_dll = weditviw
-!include verrc.mif

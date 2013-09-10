@@ -13,15 +13,18 @@ memory_model_i86 = l
 !include defrule.mif
 !include deftarg.mif
 
-.EXTENSIONS: .dlg .res .rc
-
-WINDOWS=1
-!include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif
 
+WINDOWS=1
+!include wres.mif
+
+!include verrc.mif
+
 .JUST_ENOUGH
+
+.EXTENSIONS: .dlg .res .rc
 
 .c : c;../c
 
@@ -111,5 +114,3 @@ rcstrmsg.gh : ../res/wimgedit.msg
 
 rcstr.gh : rcstrmsg.gh
         awk -f $(build_dir)/msgtoh.awk $[@ > $^@
-
-!include verrc.mif

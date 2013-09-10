@@ -19,8 +19,8 @@ wgml_trmem = 1
 !include defrule.mif
 !include deftarg.mif
 
-!include trmem.mif
 !include wres.mif
+!include trmem.mif
 
 !include ../wgmlobjs.mif
 

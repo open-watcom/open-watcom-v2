@@ -37,6 +37,9 @@ objs = dipimp.obj $(imp_objs)
 !include defrule.mif
 !include deftarg.mif
 
+verrc_dll = $(name)
+!include verrc.mif
+
 .c: ../c;../../c;$(extra_srcs)
 
 extra_cpp_flags = -D__DIP__ $(extra_cppflags)
@@ -100,6 +103,3 @@ $(xname) : $(objs) $(imp_libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAK
 !endif
 !endif
         @%make bind_version_res_dll
-
-verrc_dll = $(name)
-!include verrc.mif

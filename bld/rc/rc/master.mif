@@ -22,8 +22,13 @@ additional_cleanup = ytab.* ytab2.* ytabw.* *.uni
 !include deftarg.mif
 !include osi.mif
 
-!include wres.mif
 !include $(cpp_dir)/client.mif
+
+!include wres.mif
+
+verrc_exe = $(exename)
+verrc_dll = $(dllname)
+!include verrc.mif
 
 .EXTENSIONS : .y .key .gh .res .rc
 
@@ -276,7 +281,3 @@ wrc.res : ../rc.rc rcmsg.gh .AUTODEPEND
 
 $(misc_objs):
         cat ../$@ >$@
-
-verrc_exe = $(exename)
-verrc_dll = $(dllname)
-!include verrc.mif

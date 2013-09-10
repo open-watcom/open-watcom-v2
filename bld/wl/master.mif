@@ -33,8 +33,13 @@ suppress_zc = 1
 !include deftarg.mif
 
 !include $(orl_dir)/client.mif
-!include wres.mif
 !include $(dwarfw_dir)/client.mif
+
+!include wres.mif
+
+verrc_exe = $(exename)
+verrc_dll = $(dllname)
+!include verrc.mif
 
 !include trmem.mif
 
@@ -152,10 +157,6 @@ $(dllname).dll : wlink.res $(comp_objs_dll) $(xlibs) $(version_res_dll_$(host_os
 
 #################
 # auxiliary rules
-
-verrc_exe = $(exename)
-verrc_dll = $(dllname)
-!include verrc.mif
 
 wlink.res : rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg ../h/wlink.rc
     $(rc_aui) -I"$(wrc_dir)/h" $]@ -fo=$^@

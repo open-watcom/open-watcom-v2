@@ -10,8 +10,9 @@ wgml_research_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-!include ../../wgmlobjs.mif
 !include wres.mif
+
+!include ../../wgmlobjs.mif
 
 inc_dirs = -I. -I"../h" -I"../../h" $(wres_inc_dirs)
 

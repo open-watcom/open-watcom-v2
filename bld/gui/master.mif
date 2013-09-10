@@ -15,11 +15,12 @@ gui_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-!include trmem.mif
-!include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(ui_dir)/client.mif
+
+!include wres.mif
+!include trmem.mif
 
 wv_objs = &
        guicreat.obj   &

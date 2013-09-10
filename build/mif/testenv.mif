@@ -71,19 +71,19 @@
 
 watcom_root = $(%WATCOM)
 
-.extensions:
-.extensions: .exp .exe .dis .dib .dum .ls1 .lst .obj .ser .mer .err .i .i0 .i1 .p .gc .c .cc .cpp .for .asm .mif
+.EXTENSIONS:
+.EXTENSIONS: .exp .exe .dis .dib .dum .ls1 .lst .obj .ser .mer .err .i .i0 .i1 .p .gc .c .cc .cpp .for .asm .mif
 .mif: ..;$(mif_path)
 
 !ifndef no_continue
-.continue
+.CONTINUE
 !else ifneq no_continue yes
-.continue
+.CONTINUE
 !endif
 
-.erase
+.ERASE
 
-.error
+.ERROR
     @%append $(%ERROR_FILE) $(%ERROR_MSG)
 
 !ifdef __OS2__
@@ -884,10 +884,10 @@ librarian = wlib $(lib_any) -n -b
 !  endif
 !endif
 
-first_target : .symbolic start test
+first_target : .SYMBOLIC start test
     @%null
 
-start : .symbolic
+start : .SYMBOLIC
 !ifdef dll_loaded
 !  ifdef wasmtest_name
 !  else ifdef ctest_name
@@ -982,7 +982,7 @@ test.lnk : $(__MAKEFILES__)
     $(%EMP_CHECK)
     @%append $(%ERROR_FILE) PASS decoding $[@
 
-.obj.dum: .symbolic
+.obj.dum: .SYMBOLIC
     @set ERROR_MSG=failure to decode $[@
     @%append $(%ERROR_FILE) PASS decoding $[@
 
@@ -1032,7 +1032,6 @@ test.lnk : $(__MAKEFILES__)
 ./catfile.exe: $(watcom_dir)/c/catfile.c
     $(bld_cl) $(bld_cl_opts) $<
 
-common_clean : .procedure
+common_clean : .PROCEDURE
     -rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
     -rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
-

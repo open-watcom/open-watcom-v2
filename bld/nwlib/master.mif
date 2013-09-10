@@ -27,14 +27,18 @@ wlib_nosymfile = 1
 !include deftarg.mif
 !include osi.mif
 
-!include trmem.mif
-
 !ifeq bootstrap 1
 !include $(orl_dir)/orlobjs.mif
 !else
 !include wres.mif
 !include $(orl_dir)/client.mif
 !endif
+
+!include trmem.mif
+
+verrc_exe = $(exename)
+verrc_dll = $(dllname)
+!include verrc.mif
 
 ##########
 # objects
@@ -206,7 +210,3 @@ wlibmsg.gh : ../wlib.msg
 
 wlib.res : ../wlib.rc ../wlib.msg msg.gh
     $(rc_aui) $[@ -fo=$@
-
-verrc_exe = $(exename)
-verrc_dll = $(dllname)
-!include verrc.mif

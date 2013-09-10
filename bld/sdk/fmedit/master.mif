@@ -16,6 +16,8 @@ suppress_bd = 1
 !include defrule.mif
 !include deftarg.mif
 
+!include verrc.mif
+
 .extensions: .res .dlg .rc .cur .ico
 
 .ERASE
@@ -86,5 +88,3 @@ $(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$
 
 $(name).res: ../res/$(name).rc .AUTODEPEND
     $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
-
-!include verrc.mif

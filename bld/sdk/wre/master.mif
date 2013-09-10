@@ -15,12 +15,15 @@ memory_model_i86 = l
 
 .EXTENSIONS: .res .rc
 
-WINDOWS = 1
-!include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
+
+WINDOWS = 1
+!include wres.mif
+
+!include verrc.mif
 
 !ifeq wre_trmem 1
 TRMEM           = -DTRMEM
@@ -100,5 +103,3 @@ rcstr.gh: rcstrmsg.gh
 
 $(name).res: ../res/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
-
-!include verrc.mif

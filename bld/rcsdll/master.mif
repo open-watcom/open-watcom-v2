@@ -10,6 +10,8 @@ suppress_zc = 1
 !include defrule.mif
 !include deftarg.mif
 
+!include verrc.mif
+
 objs = rcsdll.obj inifile.obj $(extra_objs)
 !ifeq host_os nt
 objs += mkssi.obj
@@ -61,5 +63,3 @@ rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu))
     $(linker) name $@ $(lflags) file {$(objs)}
 !endif
     @%make bind_version_res_dll
-
-!include verrc.mif

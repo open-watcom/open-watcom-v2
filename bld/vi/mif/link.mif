@@ -1,33 +1,18 @@
 extra_l_flags = option map, symfile
 
-libs = $(commonui_lib) $(wpi_lib) $(ui_lib)
-!ifdef commonui_lib
-extra_l_flags += lib {$(commonui_lib)}
-!endif
-!ifdef wpi_lib
-extra_l_flags += lib {$(wpi_lib)}
-!endif
-!ifdef ui_lib
-extra_l_flags += lib {$(ui_lib)}
-!endif
+libs = $(commonui_lib) $(wpi_lib) $(ui_lib) $(rcsdll_lib)
 
 extra_l_flags_os2_386 = op newfiles,stack=20k
 extra_l_flags_os2_i86 = op newfiles,stack=1k
 extra_l_flags_os2 = $(extra_l_flags_$(host_cpu))
 
-lflags_win_i86 += font mem
-extra_l_flags_win_i86 = op nocache,symfile,rwr lib windows,commdlg,toolhelp,ddeml,shell op stack=16000,heaps=1k
-extra_l_flags_win_386 = lib win386$(BETA),clib3r op stack=40k
+extra_l_flags_win_i86 = font mem op nocache,symfile,rwr lib windows,commdlg,toolhelp,ddeml,shell op stack=16000,heaps=1k
+extra_l_flags_win_386 = lib win386,clib3r op stack=40k
 extra_l_flags_win = $(extra_l_flags_win_$(host_cpu))
 
 !ifeq sys_windowed 1
 ! ifeq host_cpu 386
 extra_l_flags_nt = op stack=100k,heap=8k commit heap=4k
-!ifdef __LINUX__
-extra_l_flags_nt += alias "_WinMain='_WinMain@16'"
-!else
-extra_l_flags_nt += alias _WinMain='_WinMain@16'
-!endif
 ! else
 extra_l_flags_nt = op stack=40k,heap=8k commit heap=4k
 ! endif

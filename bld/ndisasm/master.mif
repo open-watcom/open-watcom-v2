@@ -18,13 +18,13 @@ additional_cleanup = *.u
 !include osi.mif
 
 !include $(orl_dir)/client.mif
-!include wres.mif
-
-xlibs = $(orl_lib) $(wres_lib)
-
 !include ../dis.mif
 
+!include wres.mif
+!include verrc.mif
 !include trmem.mif
+
+xlibs = $(orl_lib) $(wres_lib)
 
 extra_cpp_flags = -D__DISASM__
 
@@ -111,5 +111,3 @@ usagej.gh : ../stand/options.gml
         optencod -l 1 -q $]@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
         %append usagej.tmp "."
         awk -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk usagej.tmp > $^@
-
-!include verrc.mif

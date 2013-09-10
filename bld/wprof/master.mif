@@ -18,8 +18,9 @@ exe = exe
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
-!include trmem.mif
 !include wres.mif
+!include verrc.mif
+!include trmem.mif
 
 !include ../wprofobj.mif
 
@@ -121,5 +122,3 @@ wprofui.res : ../res/wprofui.rc .AUTODEPEND
 
 usage.u : ../h/usage.sp
     wsplice -u $< $@
-
-!include verrc.mif

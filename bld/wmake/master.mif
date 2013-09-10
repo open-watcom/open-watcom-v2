@@ -22,6 +22,13 @@ wmake_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+!include $(orl_dir)/client.mif
+
+!include wres.mif
+!include verrc.mif
+
+!include ../wmkobjs.mif                     #   get our objs macro
+
 .h      : ../h
 .h      : $(watcom_dir)/h
 .h      : $(trmem_dir)
@@ -30,9 +37,6 @@ wmake_autodepends = .AUTODEPEND
 .c      : $(trmem_dir)
 .inc    : .
 .inc    : ../h
-
-!include $(orl_dir)/client.mif
-!include wres.mif
 
 echo    = echo
 
@@ -52,8 +56,6 @@ extra_cpp_flags_dos_386 = -DCAUSEWAY
 !endif
 
 extra_c_flags_i86 = -zt32
-
-!include ../wmkobjs.mif                     #   get our objs macro
 
 ##############################################################################
 
@@ -122,8 +124,6 @@ usageend.gh : usage.gh
 #       wsplice -k$(OS) -kENGLISH -f "%s"..\h\usage.sp -o "%n%n%n%n%n%n%n%n%n%n" usage.h
 #       wsplice -f "#define USAGE_LN_%# (MSG_USAGE_BASE+%#)%+" usage.h usage.h
 #       wsplice -f "%s%+"usage.h -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)" usage.h
-
-!include verrc.mif
 
 ##############################################################################
 # special case targets

@@ -10,6 +10,9 @@ sys_dll = 1
 !include defrule.mif
 !include deftarg.mif
 
+verrc_dll = weditcw
+!include verrc.mif
+
 .c: ..
 
 inc_dirs = -I"../.."
@@ -45,6 +48,3 @@ wedit.lib : wedit.dll
 dll.lnk : $(__MAKEFILES__)
     @%write  $@ $(lflags)
     @%append $@ option description 'Open Watcom Editor DLL for Codewright'
-
-verrc_dll = weditcw
-!include verrc.mif

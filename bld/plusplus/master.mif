@@ -35,6 +35,12 @@ additional_cleanup = *.u *.int y.out ytab.c *.mbr
  
 !include trmem.mif
  
+verrc_dll = $(dllname)
+verrc_exe = $(exename)
+verrc_dll_skel = ../../version.rc
+verrc_exe_skel = ../../exever.rc
+!include verrc.mif
+ 
 !include ../../ppobjs.mif
 
 pre_obj_deps = &
@@ -293,12 +299,6 @@ asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
  
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok asmops.gh
     $[@ $(wasm_dir)/inlnops.tok $@
- 
-verrc_dll = $(dllname)
-verrc_exe = $(exename)
-verrc_dll_skel = ../../version.rc
-verrc_exe_skel = ../../exever.rc
-!include verrc.mif
  
 !ifeq target_cpu axp
  

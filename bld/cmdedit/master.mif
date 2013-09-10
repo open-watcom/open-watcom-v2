@@ -4,8 +4,6 @@ cmdedit_autodepends = .AUTODEPEND
 
 additional_cleanup_subdir = cobjs
 
-.mif: $(mif_path)
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

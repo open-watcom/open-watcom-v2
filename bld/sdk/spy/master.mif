@@ -15,6 +15,8 @@ sys_windowed = 1
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 
+!include verrc.mif
+
 .EXTENSIONS: .res .rc
 
 !ifeq host_os nt
@@ -100,5 +102,3 @@ rcstrmsg.gh : ../res/spy.msg
 
 $(name).res: ../res/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
-
-!include verrc.mif

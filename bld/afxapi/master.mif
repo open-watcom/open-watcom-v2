@@ -4,9 +4,34 @@ proj_name = afxapi
 
 afxapi_autodepends  = .autodepend
 
+!ifeq unicode 1
+!ifeq debug 1
+dllname = owf$(bld_ver)ud
+intname = owfi$(bld_ver)ud
+statname = owfs$(bld_ver)ud
+!else
+dllname = owf$(bld_ver)u
+intname = owfi$(bld_ver)u
+statname = owfs$(bld_ver)u
+!endif
+!else
+!ifeq debug 1
+dllname = owf$(bld_ver)d
+intname = owfi$(bld_ver)d
+statname = owfs$(bld_ver)d
+!else
+dllname = owf$(bld_ver)
+intname = owfi$(bld_ver)
+statname = owfs$(bld_ver)
+!endif
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+
+verrc_dll = $(dllname)
+!include verrc.mif
 
 inc_path += -I"../$(host_os)"
 
@@ -52,28 +77,6 @@ headers =               &
         afxwin3.inl     &
         afxwin4.inl     &
         afxwin5.inl
-
-!ifeq unicode 1
-!ifeq debug 1
-dllname = owf$(bld_ver)ud
-intname = owfi$(bld_ver)ud
-statname = owfs$(bld_ver)ud
-!else
-dllname = owf$(bld_ver)u
-intname = owfi$(bld_ver)u
-statname = owfs$(bld_ver)u
-!endif
-!else
-!ifeq debug 1
-dllname = owf$(bld_ver)d
-intname = owfi$(bld_ver)d
-statname = owfs$(bld_ver)d
-!else
-dllname = owf$(bld_ver)
-intname = owfi$(bld_ver)
-statname = owfs$(bld_ver)
-!endif
-!endif
 
 dlls =                  &
         $(dllname).dll  &
@@ -359,6 +362,3 @@ $(statname).lib: $(static_objs)
 
 owf.res: ../lib/owf.rc .AUTODEPEND
     $(rc) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$^@
-
-verrc_dll = $(dllname)
-!include verrc.mif
