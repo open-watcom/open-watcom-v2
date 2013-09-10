@@ -336,12 +336,13 @@ STATIC TOKEN_T lexDotName( void )
  * possible, and check if it is a TOK_DOTNAME, TOK_SUF, or TOK_SUFSUF
  * Special cases to look for: "."{dirc}; ".."{dirc}; ".."{extc}+;
  * and "."{extc}+"."
- * recognizes:  "."{extc}*              TOK_SUF
- *              "."{extc}*{extc}*       TOK_SUFSUF
- *              "."{dot-name}           TOK_DOTNAME
- *              "."{dirc}               passes to lexFileName()
- *              ".."{dirc}              passes to lexFileName()
- *              "."{extc}*"{"path"}""."{extc}
+ * recognizes:
+ *   "."{extc}*                                 TOK_SUF
+ *   "."{extc}*"."{extc}*                       TOK_SUFSUF
+ *   "{"path"}""."{extc}*"{"path"}""."{extc}    TOK_SUFSUF
+ *   "."{dot-name}                              TOK_DOTNAME
+ *   "."{dirc}                                  passes to lexFileName()
+ *   ".."{dirc}                                 passes to lexFileName()
  */
 {
     char        ext[MAX_SUFFIX];
