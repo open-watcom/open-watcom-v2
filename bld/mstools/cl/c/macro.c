@@ -47,24 +47,20 @@
 #define PURGE_PURGED    0x0001
 #define PURGE_SKIPPED   0x0002
 
-static int      purge_from_list( int purgeOnly, const char *name );
-static void     append_list( struct ListElem *elem );
-static void     delete_item( struct ListElem *elem );
-static char *   validate_define_str( const char *str );
-
-
-/*
- * Define the ListElem and UndefItem structures.
- */
-struct ListElem {
+typedef struct ListElem {
     int                 type;       /* DEFINE or UNDEFINE */
-    char *              name;       /* the macro's name */
-    char *              value;      /* NULL if no expansion */
-    struct ListElem *   next;       /* next macro in the list */
-};
+    char                *name;      /* the macro's name */
+    char                *value;     /* NULL if no expansion */
+    struct ListElem     *next;      /* next macro in the list */
+} ListElem;
 
-static struct ListElem *macroList;
 
+static int      purge_from_list( int purgeOnly, const char *name );
+static void     append_list( ListElem *elem );
+static void     delete_item( ListElem *elem );
+static char     *validate_define_str( const char *str );
+
+static ListElem *macroList;
 
 /*
  * Initialize the macro list.
@@ -83,7 +79,7 @@ void InitMacro( void )
 int DefineMacro( const char *defineStr )
 /**************************************/
 {
-    struct ListElem *   newElem;
+    ListElem            *newElem;
     const char *        p;
     char *              name;
     char *              value;
@@ -119,7 +115,7 @@ int DefineMacro( const char *defineStr )
     }
 
     /*** Initialize a new list element ***/
-    newElem = AllocMem( sizeof(struct ListElem) );
+    newElem = AllocMem( sizeof( ListElem ) );
     newElem->type = DEFINE;
     newElem->name = name;
     newElem->value = value;
@@ -140,11 +136,11 @@ int DefineMacro( const char *defineStr )
 void UndefineMacro( const char *name )
 /************************************/
 {
-    struct ListElem *   newElem;
+    ListElem    *newElem;
 
     /*** Add an undefine directive if needed ***/
     if( purge_from_list( PURGE_DEFINE, name )  ==  PURGE_NOACTION ) {
-        newElem = AllocMem( sizeof(struct ListElem) );
+        newElem = AllocMem( sizeof( ListElem ) );
         newElem->type = UNDEFINE;
         newElem->name = (char*)name;
         newElem->value = NULL;
@@ -160,9 +156,9 @@ void UndefineMacro( const char *name )
 char *GetNextDefineMacro( void )
 /******************************/
 {
-    struct ListElem *   curElem = macroList;
-    char *              str;
-    size_t              len;
+    ListElem    *curElem = macroList;
+    char        *str;
+    size_t      len;
 
     while( curElem != NULL ) {
         if( curElem->type == DEFINE ) {
@@ -199,9 +195,9 @@ char *GetNextDefineMacro( void )
 char *GetNextUndefineMacro( void )
 /********************************/
 {
-    struct ListElem *   curElem = macroList;
-    char *              str;
-    size_t              len;
+    ListElem    *curElem = macroList;
+    char        *str;
+    size_t      len;
 
     while( curElem != NULL ) {
         if( curElem->type == UNDEFINE ) {
@@ -230,8 +226,8 @@ char *GetNextUndefineMacro( void )
 static int purge_from_list( int purgeOnly, const char *name )
 /***********************************************************/
 {
-    struct ListElem *   curElem = macroList;
-    int                 retcode = PURGE_NOACTION;
+    ListElem    *curElem = macroList;
+    int         retcode = PURGE_NOACTION;
 
     /*** Try to find the item ***/
     while( curElem != NULL ) {
@@ -257,11 +253,11 @@ static int purge_from_list( int purgeOnly, const char *name )
 /*
  * Append an item to the list.
  */
-void append_list( struct ListElem *elem )
+void append_list( ListElem *elem )
 /***************************************/
 {
-    struct ListElem *   curElem = macroList;
-    struct ListElem *   prevElem = NULL;
+    ListElem    *curElem = macroList;
+    ListElem    *prevElem = NULL;
 
     while( curElem != NULL ) {
         prevElem = curElem;
@@ -279,11 +275,11 @@ void append_list( struct ListElem *elem )
 /*
  * Remove the specified item from the list, and free all its memory.
  */
-static void delete_item( struct ListElem *elem )
-/**********************************************/
+static void delete_item( ListElem *elem )
+/***************************************/
 {
-    struct ListElem *   curElem = macroList;
-    struct ListElem *   prevElem = NULL;
+    ListElem    *curElem = macroList;
+    ListElem    *prevElem = NULL;
 
     while( curElem != NULL ) {
         if( curElem == elem ) {

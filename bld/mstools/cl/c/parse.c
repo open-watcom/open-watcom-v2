@@ -44,8 +44,9 @@
 #include "parse.h"
 #include "system.h"
 
-
+#ifdef __WATCOMC__
 #pragma disable_message (202);
+#endif
 
 /*
  * Initialize the OPT_STORAGE structure.
@@ -146,6 +147,7 @@ static int parse_D( OPT_STRING **p )
     char *              str;
     char *              eq;
 
+    p = p;
     CmdScanWhitespace();
     str = CmdScanString();
     if( str == NULL ) {
@@ -458,6 +460,7 @@ static int parse_U( OPT_STRING **p )
 {
     char *              str;
 
+    p = p;
     CmdScanWhitespace();
     str = CmdScanString();
     if( str == NULL ) {
@@ -477,6 +480,7 @@ static int parse_V( OPT_STRING **p )
 {
     char *              str;
 
+    p = p;
     CmdScanWhitespace();
     str = CmdScanString();
     if( str == NULL ) {
@@ -548,10 +552,12 @@ static void handle_arch_i86( OPT_STORAGE *cmdOpts, int x )
 /********************************************************/
 {
     static int          hasBeenCalled;
-    static int          prevValue;
+    static unsigned     prevValue;
     char                oldCpu, newCpu;
 
     x = x;
+    oldCpu = 0;
+    newCpu = 0;
     if( hasBeenCalled ) {
         if( prevValue != cmdOpts->arch_i86 ) {
             switch( prevValue ) {           /* what is the old CPU? */
@@ -736,7 +742,7 @@ static void handle_inlining_level( OPT_STORAGE *cmdOpts, int x )
 /**************************************************************/
 {
     static int          hasBeenCalled;
-    static int          prevValue;
+    static unsigned     prevValue;
 
     x = x;
     if( hasBeenCalled ) {
@@ -861,10 +867,12 @@ static void handle_threads_linking( OPT_STORAGE *cmdOpts, int x )
 /***************************************************************/
 {
     static int          hasBeenCalled;
-    static int          prevValue;
+    static unsigned     prevValue;
     char                oldType, newType;
 
     x = x;
+    oldType = 0;
+    newType = 0;
     if( hasBeenCalled ) {
         if( prevValue != cmdOpts->threads_linking ) {
             switch( prevValue ) {                   /* what's the old type? */
@@ -910,7 +918,7 @@ static void handle_warn_level( OPT_STORAGE *cmdOpts, int x )
 {
     static int          hasBeenCalled;
     static int          prevType;
-    static int          prevLevel;
+    static unsigned     prevLevel;
 
     x = x;
     if( hasBeenCalled ) {
@@ -1210,7 +1218,7 @@ static int OPT_GET_NUMBER( unsigned *p )
 static int OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned value )
 /**************************************************************/
 {
-    char ch;
+    int ch;
 
     *p = value;
     ch = GetCharContext();
@@ -1233,7 +1241,7 @@ static int OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned value )
 static int OPT_END( void )
 /************************/
 {
-    char ch;
+    int ch;
 
     ch = GetCharContext();
     if( ch == '\0' )  return( 1 );

@@ -174,6 +174,7 @@ static void c_plus_plus_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
                               CmdLine *compCmdLine )
 /**************************************************************************/
 {
+    status = status;
     AppendCmdLine( compCmdLine, CL_C_CPP_OPTS_SECTION, "-xs" );
     if( cmdOpts->_10x ) {
         AppendCmdLine( compCmdLine, CL_C_CPP_OPTS_SECTION, "-zo" );
@@ -262,6 +263,7 @@ static void precomp_header_opts( struct XlatStatus *status,
 {
     char *              newpath;
 
+    status = status;
     if( cmdOpts->Fp ) {
         newpath = PathConvert( cmdOpts->Fp_value->data, '"' );
         AppendFmtCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-fhq=%s", newpath );
@@ -678,6 +680,7 @@ static void default_opts(struct XlatStatus *status, OPT_STORAGE *cmdOpts,
 {
     OPT_STRING *curr;
 
+    status = status;
     /*** Emit default options if so desired ***/
     if (!cmdOpts->nowopts)
     {

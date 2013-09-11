@@ -1,6 +1,6 @@
-done: asaxp.exe
-
 target_cpu = axp
+
+!include ../../master.mif
 
 extra_cpp_flags = $(targdef)
 

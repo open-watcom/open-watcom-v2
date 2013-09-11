@@ -4,6 +4,10 @@ name = lib
 !   error Unknown OS.
 !endif
 
+!include ../../master.mif
+
+!include $(orl_dir)/client.mif
+
 #
 # Define the name(s) of the program(s) to build.
 #
@@ -12,10 +16,6 @@ name = lib
 !else
 !   define lib_stub
 !endif
-
-done: $(lib_stub) lib386.exe libaxp.exe libppc.exe
-
-!include $(orl_dir)/client.mif
 
 libstub_objs        = libstub.obj $(mstools_stub_obj) $(mstools_objs)
 lib_common_objs     = demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
@@ -29,6 +29,8 @@ lib_common_libs     = $(orl_lib)
 .h :  ../h;../../h;$(lib_misc_dir)/h;$(orl_dir)/h
 
 inc_dirs +=  -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
+
+all: $(lib_stub) lib386.exe libaxp.exe libppc.exe
 
 #
 # Instructions for building the executable.

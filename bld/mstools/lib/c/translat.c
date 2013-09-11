@@ -85,25 +85,25 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
 
     /*** Build a string listing all unsupported options that were used ***/
     opts[0] = '\0';
-    if( cmdOpts->debugtype   )  append_unsupported( opts, "DEBUGTYPE"   );
-    if( cmdOpts->import      )  append_unsupported( opts, "IMPORT"      );
-    if( cmdOpts->include     )  append_unsupported( opts, "INCLUDE"     );
-    if( cmdOpts->mac         )  append_unsupported( opts, "MAC"         );
-    if( cmdOpts->nodefaultlib)  append_unsupported( opts, "NODEFAULTLIB");
-    if( cmdOpts->subsystem   )  append_unsupported( opts, "SUBSYSTEM"   );
-    if( cmdOpts->verbose     )  append_unsupported( opts, "VERBOSE"     );
+    if( cmdOpts->debugtype    ) append_unsupported( opts, "DEBUGTYPE"   );
+    if( cmdOpts->import       ) append_unsupported( opts, "IMPORT"      );
+    if( cmdOpts->include      ) append_unsupported( opts, "INCLUDE"     );
+    if( cmdOpts->mac          ) append_unsupported( opts, "MAC"         );
+    if( cmdOpts->nodefaultlib ) append_unsupported( opts, "NODEFAULTLIB");
+    if( cmdOpts->subsystem    ) append_unsupported( opts, "SUBSYSTEM"   );
+    if( cmdOpts->verbose      ) append_unsupported( opts, "VERBOSE"     );
 
     /*** If an unsupported option was used, give a warning ***/
     if( opts[0] != '\0' ) {
         UnsupportedOptsMessage( opts );
     }
 
-    if (cmdOpts->machine) {
-        if ( (stricmp("IX86",cmdOpts->machine_value->data)!=0) &&
-             (stricmp("I386",cmdOpts->machine_value->data)!=0) &&
-             (stricmp("APX",cmdOpts->machine_value->data)!=0) &&
-             (stricmp("ALPHA",cmdOpts->machine_value->data)!=0) ) {
-            Warning("%s target platform is not supported",cmdOpts->machine_value->data);
+    if( cmdOpts->machine ) {
+        if( ( stricmp( "IX86", cmdOpts->machine_value->data ) != 0 ) &&
+             ( stricmp( "I386", cmdOpts->machine_value->data ) != 0 ) &&
+             ( stricmp( "APX", cmdOpts->machine_value->data ) != 0 ) &&
+             ( stricmp( "ALPHA", cmdOpts->machine_value->data ) != 0 ) ) {
+            Warning( "%s target platform is not supported", cmdOpts->machine_value->data );
         }
     }
 }
@@ -119,7 +119,7 @@ static void add_string( OPT_STRING **p, char *str )
     OPT_STRING *        curElem;
 
     /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + strlen(str) );
+    buf = AllocMem( sizeof( OPT_STRING ) + strlen( str ) );
     strcpy( buf->data, str );
     buf->next = NULL;
 
@@ -144,16 +144,15 @@ static void def_file_opts( OPT_STORAGE *cmdOpts )
     StringList *        strList;
 
     if( cmdOpts->def ) {
-        #ifdef __TARGET_AXP__
-            info = ParseDefFile( cmdOpts->def_value->data,
-                                 !cmdOpts->nofuzzy );
-        #else
-            info = ParseDefFile( cmdOpts->def_value->data );
-        #endif
+#ifdef __TARGET_AXP__
+        info = ParseDefFile( cmdOpts->def_value->data, !cmdOpts->nofuzzy );
+#else
+        info = ParseDefFile( cmdOpts->def_value->data );
+#endif
         if( info != NULL ) {
             strList = info->exports;
             while( strList != NULL ) {
-                cmdOpts->export=1;
+                cmdOpts->export = 1;
                 add_string( &cmdOpts->export_value, strList->str );
                 strList = strList->next;
             }
@@ -218,10 +217,10 @@ static void get_library(OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 
     filename = GetNextFile( &fileType, TYPE_LIB_FILE, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
     if( filename != NULL ) {
-        if (fileType==TYPE_OBJ_FILE){
-            if ((cmdOpts->list) || (cmdOpts->extract)) {
-                for (;;) {
-                    if( stristr( filename, ".obj" )  ==  NULL ) {
+        if( fileType == TYPE_OBJ_FILE ) {
+            if( (cmdOpts->list) || (cmdOpts->extract) ) {
+                for( ;; ) {
+                    if( stristr( filename, ".obj" ) == NULL ) {
                         AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", filename );
                         FreeMem(filename);
                         break;
@@ -229,25 +228,28 @@ static void get_library(OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
                         FreeMem(filename);
                         filename = GetNextFile( &fileType, TYPE_LIB_FILE, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
                     }
-                    if (filename==NULL) FatalError("no library or object files specified!");
+                    if( filename == NULL ) {
+                        FatalError("no library or object files specified!");
+                    }
                 }
             } else {
                 /*** Strip quotes from filename  and the extension ***/
-                filecopy=DupStrMem(filename);
-                newfilename = ReallocMem( filename, strlen(filename)+4 );
+                filecopy = DupStrMem( filename );
+                newfilename = ReallocMem( filename, strlen( filename ) + 4 );
                 if( *newfilename == '"' ) {
                     tempfilename = newfilename + 1;                     /* skip leading " */
-                    quotes_found=1;
+                    quotes_found = 1;
                 } else {
                     tempfilename = newfilename;
                 }
-                if (strchr(tempfilename,'.')==NULL) Zoinks();
-                *strchr(tempfilename,'.') = '\0';
+                if( strchr( tempfilename, '.' ) == NULL )
+                    Zoinks();
+                *strchr( tempfilename, '.' ) = '\0';
                 /*** Append '.lib' at the end of filename and add quotes if needed ***/
-                if (quotes_found) {
-                    tempfilename = DupQuoteStrMem(strcat(tempfilename,".lib"),'"');
+                if( quotes_found ) {
+                    tempfilename = DupQuoteStrMem( strcat( tempfilename, ".lib" ), '"' );
                 } else {
-                    tempfilename = DupStrMem(strcat(tempfilename,".lib"));
+                    tempfilename = DupStrMem( strcat( tempfilename, ".lib" ) );
                 }
                 FreeMem( newfilename );
                 AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", tempfilename );
@@ -276,16 +278,17 @@ static void get_files(CmdLine *cmdLine )
 
     for( ;; ) {
         filename = GetNextFile( &fileType, TYPE_LIB_FILE, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
-        if( filename == NULL ) break;
+        if( filename == NULL )
+            break;
         AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "-+%s", filename );
         FreeMem( filename );
     }
 
     /*** Ignore all '.rbj', '.rs', and '.res' files ***/
     for( ;; ) {
-        filename = GetNextFile( &fileType, TYPE_RES_FILE, TYPE_RBJ_FILE,
-                                TYPE_RS_FILE, TYPE_INVALID_FILE );
-        if( filename == NULL )  break;
+        filename = GetNextFile( &fileType, TYPE_RES_FILE, TYPE_RBJ_FILE, TYPE_RS_FILE, TYPE_INVALID_FILE );
+        if( filename == NULL )
+            break;
         Warning( "Ignoring resource file '%s'", filename );
         FreeMem( filename );
     }
@@ -304,21 +307,21 @@ static char *VerifyDot( char *filename )
     int                 quotes_found=0;
 
     filecopy = DupStrMem(filename);
-    if (strchr(filename,'.')==NULL) {
+    if( strchr( filename, '.' ) == NULL ) {
         /*** Strip quotes from filename ***/
-        newfilename = ReallocMem( filecopy, strlen(filecopy)+2 );
+        newfilename = ReallocMem( filecopy, strlen( filecopy ) + 2 );
         if( *newfilename == '"' ) {
             tempfilename = newfilename + 1;                     /* skip leading " */
-            tempfilename[ strlen(tempfilename)-1 ] = '\0';      /* smite trailing " */
+            tempfilename[strlen( tempfilename ) - 1] = '\0';    /* smite trailing " */
             quotes_found=1;
         } else {
             tempfilename = newfilename;
         }
         /*** Append '.' at the end of filename and add quotes if needed ***/
-        if (quotes_found) {
-            filecopy = DupQuoteStrMem(strcat(tempfilename,"."),'"');
+        if( quotes_found ) {
+            filecopy = DupQuoteStrMem( strcat( tempfilename, "." ), '"' );
         } else {
-            filecopy = DupStrMem(strcat(tempfilename,"."));
+            filecopy = DupStrMem( strcat( tempfilename, "." ) );
         }
         FreeMem( newfilename );
     }
@@ -352,10 +355,11 @@ static void init_fuzzy( void )
 
     /*** Get the object file names into an array ***/
     count = 0;
-    objsvector = AllocMem( (count+1) * sizeof(char*) );
+    objsvector = AllocMem( (count+1) * sizeof( char * ) );
     for( ;; ) {
         filename = GetNextFile( NULL, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
-        if( filename == NULL )  break;
+        if( filename == NULL )
+            break;
         newstr = PathConvert( filename, '\'' );
 
         /*** Skip .res files ***/
@@ -367,12 +371,12 @@ static void init_fuzzy( void )
 
         objsvector[count] = newstr;
         count++;
-        objsvector = ReallocMem( objsvector, (count+1) * sizeof(char*) );
+        objsvector = ReallocMem( objsvector, ( count + 1 ) * sizeof( char * ) );
     }
     objsvector[count] = NULL;
 
     /*** Ok, now tell the fuzzy module to initialize itself ***/
-    InitFuzzy( (const char**)objsvector, NULL, NULL, fuzzy_init_callback );
+    InitFuzzy( (const char **)objsvector, NULL, NULL, fuzzy_init_callback );
     FreeMem( objsvector );
 }
 
@@ -425,9 +429,9 @@ void CreateExp( OPT_STORAGE *cmdOpts, char * name )
     del_string(&comment); // don't need it any more
 
     if( cmdOpts->name ) {
-        if( (*cmdOpts->name_value->data == '\'') ) {
-            tmp = cmdOpts->name_value->data + 1; /* skip leading ' */
-            tmp[ strlen(tmp)-1 ] = '\0';         /* smite trailing ' */
+        if( *cmdOpts->name_value->data == '\'' ) {
+            tmp = cmdOpts->name_value->data + 1;    /* skip leading ' */
+            tmp[strlen( tmp ) - 1] = '\0';          /* smite trailing ' */
         } else {
             tmp = cmdOpts->name_value->data;
         }
@@ -475,9 +479,9 @@ void CreateExp( OPT_STORAGE *cmdOpts, char * name )
     del_string(&internaldllname); // don't need it any more
 
     if( stub ) {
-        if( (*stub->data == '\'') ) {
+        if( *stub->data == '\'' ) {
             tmp = stub->data + 1;             /* skip leading ' */
-            tmp[ strlen(tmp)-1 ] = '\0';      /* smite trailing ' */
+            tmp[strlen( tmp ) - 1] = '\0';    /* smite trailing ' */
         } else {
             tmp = stub->data;
         }
@@ -500,49 +504,50 @@ void CreateExp( OPT_STORAGE *cmdOpts, char * name )
 static char *ImportEntry( char *export, char *dll_name )
 /*******************************************************/
 {
-    char *              internal_name=NULL;
-    char *              ordinal=NULL;
-    char *              the_rest=NULL;
-    char *              entry_name=NULL;
+    char *              internal_name = NULL;
+    char *              ordinal = NULL;
+    char *              the_rest = NULL;
+    char *              entry_name = NULL;
     char *              export_copy;
-    char *              p=NULL;
-    int                 len=9; /* 7 is for all the '.' and '+' required +1 */
+    char *              p = NULL;
+    size_t              len = 9; /* 7 is for all the '.' and '+' required +1 */
 
-    len+=strlen(dll_name);
-    export_copy = DupStrMem(export);
-    p=strchr(export_copy+1,'\'');
-    if (export_copy[0]!='\'' || p==NULL) Zoinks(); // the entry_name must be in quotes
+    len += strlen( dll_name );
+    export_copy = DupStrMem( export );
+    p = strchr( export_copy + 1, '\'' );
+    if( export_copy[0] != '\'' || p == NULL )
+        Zoinks();       // the entry_name must be in quotes
     p++;
-    if (*p!='\0') { /* there is something after the entry_name */
+    if( *p != '\0' ) { /* there is something after the entry_name */
         entry_name = p; // char after the entry_name
         p=strchr(p,'=');
-        if (p!=NULL) { /* internal_name found */
+        if( p != NULL ) { /* internal_name found */
             *p='\0';
             internal_name=(p+1);
             p=strchr(internal_name,' ');
-            if (p!=NULL) { /* there is something after the internal_name */
+            if( p != NULL ) { /* there is something after the internal_name */
                 *p='\0';
                 the_rest=(p+1);
             }
         }
 
         p=strchr(entry_name,'.');
-        if (p!=NULL) { /* ordinal found */
+        if( p != NULL ) { /* ordinal found */
             *p='\0';
             ordinal=(p+1);
-            if (internal_name==NULL) {
+            if( internal_name==NULL ) {
                 p=strchr(ordinal,' ');
-                if (p!=NULL) { /* there is something after the ordinal */
+                if( p!=NULL ) { /* there is something after the ordinal */
                     *p='\0';
                     the_rest=(p+1);
                 }
             }
-            len+=strlen(ordinal);
+            len += strlen( ordinal );
         }
 
-        if ((internal_name==NULL) && (ordinal==NULL)) {
+        if( (internal_name==NULL) && (ordinal==NULL) ) {
             p=strchr(entry_name,' ');
-            if (p!=NULL) { /* there is something after the entry_name */
+            if( p!=NULL ) { /* there is something after the entry_name */
                 *p='\0';
                 the_rest=(p+1);
             }
@@ -558,18 +563,18 @@ static char *ImportEntry( char *export, char *dll_name )
         internal_name = MatchFuzzy( internal_name );
     }
 
-    if (the_rest) {
+    if( the_rest ) {
         strupr( the_rest);
     }
 
     /***  do the '.exp'  file entry  ***/
     if( internal_name != NULL ) {
         fprintf( exp_file, "EXPORT %s", entry_name );
-        if (ordinal) {
+        if( ordinal ) {
             fprintf( exp_file, ".%s", ordinal );
         }
         fprintf( exp_file, "=%s", internal_name );
-        if (the_rest) {
+        if( the_rest ) {
             fprintf( exp_file, " %s", the_rest );
         }
         fprintf( exp_file, "\n");
@@ -580,35 +585,35 @@ static char *ImportEntry( char *export, char *dll_name )
 
     /***  do the import library entry ***/
 
-    if (the_rest && strstr(the_rest,"PRIVATE")) {
+    if( the_rest && strstr( the_rest, "PRIVATE" ) ) {
         FreeMem( export_copy );
         return NULL;
     }
 
-    len+=strlen(entry_name);
+    len += strlen( entry_name );
 
-    if (internal_name!=NULL) {
-        len+=strlen(internal_name);
+    if( internal_name != NULL ) {
+        len += strlen( internal_name );
     }
 
-    p = AllocMem(len);
+    p = AllocMem( len );
     *p = '\0';
-    strcat (p,"++");
-    if (internal_name!=NULL) {
-        strcat(p, internal_name);
+    strcat( p, "++" );
+    if( internal_name != NULL ) {
+        strcat( p, internal_name );
     } else {
-        strcat(p, entry_name);
+        strcat( p, entry_name );
     }
     strcat( p, ".'" );
     strcat( p, dll_name );
     strcat( p, "'" );
-    if (internal_name!=NULL) {
+    if( internal_name!=NULL ) {
         strcat( p, ".." );
-        strcat(p, entry_name);
+        strcat( p, entry_name );
     }
-    if (ordinal!=NULL) {
+    if( ordinal!=NULL ) {
         strcat( p, "." );
-        strcat(p,ordinal);
+        strcat( p, ordinal );
     }
     FreeMem( export_copy );
     return p;
@@ -631,32 +636,33 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     char                dir[_MAX_DIR];
     char                fname[_MAX_FNAME];
 
-    if ( cmdOpts->def ) {
-        if ( cmdOpts->out ) {
+    if( cmdOpts->def ) {
+        if( cmdOpts->out ) {
             newstr = VerifyDot(cmdOpts->out_value->data);
         } else {
             newstr = VerifyDot(cmdOpts->def_value->data);
-            newstr = ReallocMem( newstr, strlen(newstr)+4 );
-            if (strchr(newstr,'.')==NULL) Zoinks();
-            strcpy(strchr(newstr,'.'),".lib");
+            newstr = ReallocMem( newstr, strlen( newstr ) + 4 );
+            if( strchr( newstr, '.' ) == NULL )
+                Zoinks();
+            strcpy( strchr( newstr, '.' ), ".lib" );
         }
         AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", newstr );
         CreateExp( cmdOpts, newstr );
         _splitpath( newstr, drive, dir, fname, NULL );  /* .dll extension */
         _makepath( dllfilename, drive, dir, fname, ".dll" );
-        if (cmdOpts->export) {
+        if( cmdOpts->export ) {
             init_fuzzy();
             optStr = cmdOpts->export_value;
             while( optStr != NULL ) {
                 p = ImportEntry( optStr->data, dllfilename );
-                if (p) {
+                if( p ) {
                     AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", p);
                     FreeMem(p);
                 }
                 optStr = optStr->next;
             }
 
-            if (exp_file) fclose(exp_file);
+            if( exp_file) fclose(exp_file);
             FiniFuzzy();
         }else {
             FatalError( "/EXPORT option not specified!" );
@@ -667,9 +673,9 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
             AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "/l=%s", newstr );
         }
         get_library(cmdOpts, cmdLine);
-    } else if ( cmdOpts->extract ) {
+    } else if( cmdOpts->extract ) {
         get_library(cmdOpts, cmdLine);
-        if( cmdOpts->out) {
+        if( cmdOpts->out ) {
             Warning( "Ignoring unsupported option /OUT following /EXTRACT." );
             Warning( "'%s' will be used as output name.",cmdOpts->extract_value->data );
             cmdOpts->out=0;
@@ -678,7 +684,7 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "*%s", newstr );
 
     } else {
-        if ( cmdOpts->out ) {
+        if( cmdOpts->out ) {
             newstr = VerifyDot(cmdOpts->out_value->data);
             AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", newstr );
         } else {
@@ -693,7 +699,7 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         }
 
     }
-    if (newstr!=NULL) FreeMem(newstr);
+    if( newstr!=NULL) FreeMem(newstr);
 
 }
 
@@ -738,7 +744,8 @@ static char *stristr( const char *str, const char *substr )
     char                ch;
 
     substrLen = strlen( substr );
-    if( substrLen == 0 )  return( (char*)str );
+    if( substrLen == 0 )
+        return( (char *)str );
 
     strLen = strlen( str );
     maxi = strLen - substrLen + 1;
@@ -746,8 +753,8 @@ static char *stristr( const char *str, const char *substr )
 
     for( i=0; i<maxi; i++ ) {
         if( str[i] == ch ) {
-            if( !strnicmp( str+i, substr, substrLen ) ) {
-                return( (char*)str+i );
+            if( !strnicmp( str + i, substr, substrLen ) ) {
+                return( (char *)( str + i ) );
             }
         }
     }

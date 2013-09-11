@@ -88,18 +88,22 @@ typedef struct {
  */
 static IDEBool __stdcall print_message( IDECBHdl hdl, const char *text )
 {
+    hdl = hdl; text = text;
     return( 1 );
 }
 static IDEBool __stdcall print_message_crlf( IDECBHdl hdl, const char *text )
 {
+    hdl = hdl; text = text;
     return( 1 );
 }
 static IDEBool __stdcall print_with_info2( IDECBHdl hdl, IDEMsgInfo2 *info )
 {
+    hdl = hdl; info = info;
     return( 1 );
 }
 static IDEBool __stdcall print_with_info( IDECBHdl hdl, IDEMsgInfo *info )
 {
+    hdl = hdl; info = info;
     return( 1 );
 }
 

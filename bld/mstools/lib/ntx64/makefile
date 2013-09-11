@@ -3,6 +3,4 @@
 host_os  = nt
 host_cpu = x64
 
-target_mif = ../lib.mif
-
-!include ../../master.mif
+!include ../lib.mif

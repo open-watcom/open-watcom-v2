@@ -65,8 +65,8 @@ extern void     UngetCharContext( void );
 
 extern void     MarkPosContext( void );
 extern void     GoToMarkContext( void );
-extern int      GetPosContext( void );
-extern void     SetPosContext( int pos );
+extern long     GetPosContext( void );
+extern void     SetPosContext( long pos );
 
 
 #endif

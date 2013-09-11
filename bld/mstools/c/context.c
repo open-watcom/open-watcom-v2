@@ -50,7 +50,7 @@ struct Context {
     FILE *              fp;             /* for parsing data on disk */
     char *              data;           /* for parsing data in memory */
     char *              dataStart;      /* for parsing data in memory */
-    unsigned            dataLen;        /* for parsing data in memory */
+    size_t              dataLen;        /* for parsing data in memory */
     long                markPos;        /* position of the context's mark */
 };
 
@@ -200,25 +200,26 @@ void PopContext( void )
 int GetCharContext( void )
 /************************/
 {
-    int                 ch;
+    int     ch;
 
-    if( !curContextInitialized )  Zoinks();
+    ch = '\0';
+    if( !curContextInitialized )
+        Zoinks();
     switch( curContext.type ) {
-      case COMMAND_LINE_CONTEXT:
+    case COMMAND_LINE_CONTEXT:
         /* fall through */
-      case ENVIRON_VAR_CONTEXT:
-        if( curContext.data - curContext.dataStart  <  curContext.dataLen ) {
+    case ENVIRON_VAR_CONTEXT:
+        if( (size_t)( curContext.data - curContext.dataStart ) < curContext.dataLen ) {
             ch = *curContext.data;
-        } else {
-            ch = '\0';
         }
         curContext.data++;
         break;
-      case COMMAND_FILE_CONTEXT:
+    case COMMAND_FILE_CONTEXT:
         ch = fgetc( curContext.fp );
-        if( ch == EOF )  ch = '\0';
+        if( ch == EOF )
+            ch = '\0';
         break;
-      default:
+    default:
         Zoinks();
     }
     return( ch );
@@ -264,15 +265,15 @@ void GoToMarkContext( void )
 /*
  * Get the current position within the current context.
  */
-int GetPosContext( void )
-/***********************/
+long GetPosContext( void )
+/************************/
 {
     if( !curContextInitialized )  Zoinks();
     switch( curContext.type ) {
       case COMMAND_LINE_CONTEXT:
         /* fall through */
       case ENVIRON_VAR_CONTEXT:
-        return( curContext.data - curContext.dataStart );
+        return( (long)( curContext.data - curContext.dataStart ) );
         break;
       case COMMAND_FILE_CONTEXT:
         return( ftell( curContext.fp ) );
@@ -287,8 +288,8 @@ int GetPosContext( void )
 /*
  * Set the current position within the current context.
  */
-void SetPosContext( int pos )
-/***************************/
+void SetPosContext( long pos )
+/****************************/
 {
     if( !curContextInitialized )  Zoinks();
     if( pos < 0 )  Zoinks();

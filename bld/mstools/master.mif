@@ -32,8 +32,6 @@ targdef = -D__TARGET_386__
 !include defrule.mif
 !include deftarg.mif
 
-!include $(target_mif)
-
 verrc_exe = $(name)
 verrc386_exe = $(name)386
 verrcaxp_exe = $(name)axp
@@ -62,14 +60,14 @@ veraxp_res_exe_nt_x64 = veraxp.res
 verppc_res_exe_nt_386 = verppc.res
 verppc_res_exe_nt_x64 = verppc.res
 
-optp386c.gh optp386h.gh : ../gml/ms.gml
+optp386c.gh optp386h.gh : ../gml/ms.gml .EXPLICIT
         optencod -n -q $]@ optp386h.gh optp386c.gh usage386.gh i86
 
-optpaxpc.gh optpaxph.gh : ../gml/ms.gml
+optpaxpc.gh optpaxph.gh : ../gml/ms.gml .EXPLICIT
         optencod -n -q $]@ optpaxph.gh optpaxpc.gh usageaxp.gh axp
 
-optpppcc.gh optpppch.gh : ../gml/ms.gml
+optpppcc.gh optpppch.gh : ../gml/ms.gml .EXPLICIT
         optencod -n -q $]@ optpppch.gh optpppcc.gh usageppc.gh ppc
 
-optparsc.gh optparsh.gh : ../gml/ms.gml
+optparsc.gh optparsh.gh : ../gml/ms.gml .EXPLICIT
         optencod -n -q $]@ optparsh.gh optparsc.gh usagemsg.gh i86

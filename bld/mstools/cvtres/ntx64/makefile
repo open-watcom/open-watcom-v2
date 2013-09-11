@@ -3,6 +3,4 @@
 host_os  = nt
 host_cpu = x64
 
-target_mif = ../cvtres.mif
-
-!include ../../master.mif
+!include ../cvtres.mif

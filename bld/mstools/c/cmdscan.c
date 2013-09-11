@@ -36,7 +36,7 @@
 #include "pathconv.h"
 
 
-static char *   got_char( char *buf, size_t *bufsize, size_t offset, char ch );
+static char *   got_char( char *buf, size_t *bufsize, size_t offset, int ch );
 
 int Quoted = 0;
 
@@ -274,8 +274,8 @@ int CmdScanNumber( unsigned *num )
  * buffer size if necessary.  Returns a pointer to a buffer containing the
  * new data.
  */
-static char *got_char( char *buf, size_t *bufsize, size_t offset, char ch )
-/*************************************************************************/
+static char *got_char( char *buf, size_t *bufsize, size_t offset, int ch )
+/************************************************************************/
 {
     const size_t        blocksize = 64;
 

@@ -174,7 +174,7 @@ static unsigned hash_symbol_name( const void *symbol )
  * Used by ORL.
  */
 static void *obj_read( void *hdl, size_t len )
-/*****************************************/
+/********************************************/
 {
     ListElem *          newelem;
 

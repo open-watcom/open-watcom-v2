@@ -1,13 +1,6 @@
 name = cl
 
-#
-# Define the name(s) of the program(s) to build.
-#
-!ifeq host_os nt
-all: clx.exe cl386.exe claxp.exe clppc.exe
-!else
-all: cl386.exe claxp.exe clppc.exe
-!endif
+!include ../../master.mif
 
 clstub_objs     = clstub.obj $(mstools_stub_obj) $(mstools_objs)
 cl_common_objs  = macro.obj $(mstools_objs)
@@ -17,6 +10,15 @@ clppc_objs      = clppc.obj mesgppc.obj parseppc.obj xlateppc.obj $(cl_common_ob
 cl386_hdrs      = optp386h.gh
 claxp_hdrs      = optpaxph.gh
 clppc_hdrs      = optpppch.gh
+
+#
+# Define the name(s) of the program(s) to build.
+#
+!ifeq host_os nt
+all: clx.exe cl386.exe claxp.exe clppc.exe
+!else
+all: cl386.exe claxp.exe clppc.exe
+!endif
 
 #
 # Instructions for building the executables.

@@ -1,6 +1,6 @@
 name = cvtres
 
-done: cvtres.exe
+!include ../../master.mif
 
 common_objs = parse.obj $(mstools_objs)
 cvtres_objs = cvtres.obj message.obj $(common_objs)

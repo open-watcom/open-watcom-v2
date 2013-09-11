@@ -193,34 +193,35 @@ static void add_string( StringList **p, char *str )
     int                 alive = TRUE;
     int                 error = FALSE;
     int                 state = STATE_CLEAR;
-    int                 mergeNow;
+    int                 mergeNow = FALSE;
     int                 mergeNow2;
-    int                 mergeType;
+    int                 mergeType = STATE_CLEAR;
     int                 foundNewLine;
-    char *              exportsEntryName;
+    char *              exportsEntryName = NULL;
     int                 exportsGotEntryName;
-    char *              exportsInternalName;
+    char *              exportsInternalName = NULL;
     int                 exportsGotInternalName;
-    char *              exportsOrdinal;
+    char *              exportsOrdinal = NULL;
     int                 exportsGotOrdinal;
     int                 exportsGotPrivate;
     int                 exportsGotResident;
-    char *              stackReserve;
+    char *              stackReserve = NULL;
     int                 stackGotReserve;
-    char *              stackCommit;
+    char *              stackCommit = NULL;
     int                 stackGotCommit;
     int                 stubGotFile;
-    char *              heapReserve;
+    char *              heapReserve = NULL;
     int                 heapGotReserve;
-    char *              heapCommit;
+    char *              heapCommit = NULL;
     int                 heapGotCommit;
-    char *              versionMajor;
+    char *              versionMajor = NULL;
     int                 versionGotMajor;
-    char *              versionMinor;
+    char *              versionMinor = NULL;
     int                 versionGotMinor;
-    int                 len;
+    size_t              len;
     char *              str;
 
+    CLEAR_GOT_FLAGS;            /* initialize locals */
     /*** Initialize ***/
     strip_quotes( newfilename );
     if( OpenFileContext( newfilename ) ) {
@@ -747,12 +748,12 @@ static void add_string( StringList **p, char *str )
 static int next_token( int state, int *newCmd, int *newLine, int fileCharsOk, int atCharsOk )
 /*******************************************************************************************/
 {
-    int                 ch;
+    int                 ch = 0;
     int                 start;
     int                 len = 0;
     int                 alive = 1;
     int                 quoteUsed = 0;
-    int                 usingQuote;
+    int                 usingQuote = 0;
     int                 count;
     int                 retcode;
     int                 gotNewLine = 0;
@@ -797,7 +798,7 @@ static int next_token( int state, int *newCmd, int *newLine, int fileCharsOk, in
             }
             break;
           case '"':
-            if( quoteUsed  &&  usingQuote == '"' ) {
+            if( quoteUsed && usingQuote == '"' ) {
                 usingQuote = '\0';
                 alive = 0;
             } else if( !quoteUsed ) {
@@ -925,9 +926,9 @@ static int next_token( int state, int *newCmd, int *newLine, int fileCharsOk, in
 static void strip_quotes( char *str )
 /***********************************/
 {
-    int                 count;
-    int                 diff;
-    int                 len;
+    size_t              count;
+    size_t              diff;
+    size_t              len;
     char                *p;
 
     len = strlen( str );
@@ -940,8 +941,8 @@ static void strip_quotes( char *str )
     while( *p == '"'  ||  isspace( *p ) )  p++;
     if( p != str ) {
         diff = p - str;
-        for( count=0; count+diff<=len; count++ ) {
-            str[count] = str[count+diff];
+        for( count=0; count + diff <= len; count++ ) {
+            str[count] = str[count + diff];
         }
     }
 }
@@ -952,7 +953,7 @@ static void strip_quotes( char *str )
  * first non-whitespace character.
  */
 static void ScanWhitespace( int *newLine )
-/**********************************/
+/****************************************/
 {
     int                 ch;
 
@@ -1006,13 +1007,13 @@ static char *string_convert( const char *str )
     char *              out;
     char *              outStart;
     int                 gotQuote = 0;
-    char                quoteType;
+    char                quoteType = '\0';
 
     outStart = AllocMem( 2 * strlen( str ) + 1 );
     out = outStart;
     while( *p != '\0' ) {
         if( *p == '"'  ||  *p == '\'' ) {
-            if( !gotQuote ) {
+            if( gotQuote == '\0' ) {
                 gotQuote = 1;
                 quoteType = *p;
                 *out++ = *p++;

@@ -1,6 +1,6 @@
 name = nmake
 
-done: nmake.exe
+!include ../../master.mif
 
 common_objs = parse.obj $(mstools_objs)
 nmake_objs  = nmake.obj message.obj translat.obj $(common_objs)

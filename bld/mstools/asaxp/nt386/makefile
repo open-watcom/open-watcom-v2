@@ -3,6 +3,4 @@
 host_os  = nt
 host_cpu = 386
 
-target_mif = ../asaxp.mif
-
-!include ../../master.mif
+!include ../asaxp.mif

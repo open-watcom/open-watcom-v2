@@ -3,6 +3,4 @@
 host_os  = nt
 host_cpu = 386
 
-target_mif = ../link.mif
-
-!include ../../master.mif
+!include ../link.mif

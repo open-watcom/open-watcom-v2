@@ -114,10 +114,10 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
 /********************************************************************/
 {
     CmdLine *           cloneCmdLine;
-    char **             args;
+    char **             args = NULL;
     char *              filename;
     int                 fileType;
-    char *              compiler;
+    char *              compiler = NULL;
     int                 rc;
     int                 alive = 1;
     int                 numCompiled = 0;
@@ -222,6 +222,7 @@ static int link( const OPT_STORAGE *cmdOpts, CmdLine *linkCmdLine )
     char *              defFile;
     char *              prevDefFile = NULL;
 
+    cmdOpts = cmdOpts;
     /*** Process all object and library file names ***/
     for( numFiles=0; ; numFiles++ ) {
         filename = GetNextFile( &fileType, TYPE_OBJ_FILE, TYPE_LIB_FILE, TYPE_RES_FILE, TYPE_INVALID_FILE );

@@ -4,18 +4,15 @@ name = link
 !   error Unknown OS.
 !endif
 
-#
-# Define the name(s) of the program(s) to build.
-#
+!include ../../master.mif
+
+!include $(orl_dir)/client.mif
+
 !ifeq      host_os nt
 !   define link_stub linkx.exe
 !else
 !   define link_stub
 !endif
-
-done: $(link_stub) link386.exe linkaxp.exe linkppc.exe
-
-!include $(orl_dir)/client.mif
 
 linkstub_objs       = linkstub.obj $(mstools_stub_obj) $(mstools_objs)
 link_common_objs    = demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
@@ -29,6 +26,11 @@ link_common_libs    = $(orl_lib)
 .h :  ../h;../../h;$(lib_misc_dir)/h;$(orl_dir)/h
 
 inc_dirs += -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
+
+#
+# Define the name(s) of the program(s) to build.
+#
+all: $(link_stub) link386.exe linkaxp.exe linkppc.exe
 
 #
 # Instructions for building the executables.

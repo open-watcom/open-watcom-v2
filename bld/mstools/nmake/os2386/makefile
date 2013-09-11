@@ -3,6 +3,5 @@
 host_os  = os2
 host_cpu = 386
 
-target_mif = ../nmake.mif
+!include ../nmake.mif
 
-!include ../../master.mif

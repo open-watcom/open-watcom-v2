@@ -84,7 +84,7 @@ char *DupQuoteStrMem( const char *str, char quote )
 /*************************************************/
 {
     char *              p;
-    int                 len;
+    size_t              len;
     int                 add_quote = 0;
 
     len = strlen( str );
