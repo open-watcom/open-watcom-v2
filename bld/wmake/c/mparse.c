@@ -103,13 +103,14 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
         case TOK_END:
             return( t );
         case TOK_SUFSUF:
-            if( !SufBothExist( CurAttr.ptr ) ) {
-                PrtMsg( ERR | LOC | SUFFIX_DOESNT_EXIST, CurAttr.ptr );
+            if( !SufBothExist( CurAttr.u.ptr.p1 ) ) {
+                PrtMsg( ERR | LOC | SUFFIX_DOESNT_EXIST, CurAttr.u.ptr.p1 );
             } else {
-                AddCreator( CurAttr.ptr );
-                WildTList( dest, CurAttr.ptr, TRUE, TRUE);
+                AddCreator( CurAttr.u.ptr.p1 );
+                WildTList( dest, CurAttr.u.ptr.p1, TRUE, TRUE);
             }
-            FreeSafe( CurAttr.ptr );
+            FreeSafe( CurAttr.u.ptr.p2 );
+            FreeSafe( CurAttr.u.ptr.p1 );
             break;
         case TOK_DOTNAME:
             if( !IsDotWithCmds( CurAttr.u.dotname ) ) {
@@ -120,8 +121,8 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
             }
             break;
         case TOK_FILENAME:
-            WildTList( dest, CurAttr.ptr, TRUE, TRUE);
-            FreeSafe( CurAttr.ptr );
+            WildTList( dest, CurAttr.u.ptr.p1, TRUE, TRUE);
+            FreeSafe( CurAttr.u.ptr.p1 );
             break;
         default:
             ignoring( t, TRUE );
@@ -300,8 +301,8 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
             }
             break;
         case TOK_FILENAME:
-            WildTList( list, CurAttr.ptr, TRUE, FALSE );
-            FreeSafe( CurAttr.ptr );        /* not needed any more */
+            WildTList( list, CurAttr.u.ptr.p1, TRUE, FALSE );
+            FreeSafe( CurAttr.u.ptr.p1 );        /* not needed any more */
             while( *list != NULL ) {        /* find tail again */
                 list = &(*list)->next;
             }
@@ -461,17 +462,17 @@ STATIC void parseExtensions( void )
             break;
         }
         if( t == TOK_SUF ) {
-            if( !SufExists( CurAttr.ptr ) ) {
-                AddSuffix( CurAttr.ptr );   /* we lose CurAttr.ptr */
+            if( !SufExists( CurAttr.u.ptr.p1 ) ) {
+                AddSuffix( CurAttr.u.ptr.p1 );   /* we lose CurAttr.u.ptr.p1 */
             /*
              * if microsoft option is set we put it in anyway don't
              * care whether or not it exists
              */
             } else if( Glob.compat_nmake || Glob.compat_unix ) {
-                FreeSafe( CurAttr.ptr );
+                FreeSafe( CurAttr.u.ptr.p1 );
             } else {
-                PrtMsg( ERR | LOC | REDEF_OF_SUFFIX, CurAttr.ptr );
-                FreeSafe( CurAttr.ptr );
+                PrtMsg( ERR | LOC | REDEF_OF_SUFFIX, CurAttr.u.ptr.p1 );
+                FreeSafe( CurAttr.u.ptr.p1 );
             }
             any = TRUE;
         } else {
@@ -665,12 +666,12 @@ STATIC void parseSuf( void )
             break;
         }
         if( t == TOK_SUF ) {
-            if( !SufExists( CurAttr.ptr ) ) {
-                PrtMsg( ERR | LOC | SUFFIX_DOESNT_EXIST, CurAttr.ptr );
-                FreeSafe( CurAttr.ptr );
+            if( !SufExists( CurAttr.u.ptr.p1 ) ) {
+                PrtMsg( ERR | LOC | SUFFIX_DOESNT_EXIST, CurAttr.u.ptr.p1 );
+                FreeSafe( CurAttr.u.ptr.p1 );
             } else {
                 cur = MallocSafe( sizeof( *cur ) );
-                cur->name = CurAttr.ptr;
+                cur->name = CurAttr.u.ptr.p1;
                 cur->next = head;
                 head = cur;
             }
@@ -689,7 +690,7 @@ STATIC void parseSuf( void )
         if( t == TOK_END || t == TOK_EOL ) {
             path = NULL;
         } else {
-            path = CurAttr.ptr;
+            path = CurAttr.u.ptr.p1;
             t = LexToken( LEX_PATH ); /* prefetch next token */
         }
     }
@@ -710,7 +711,7 @@ STATIC void parseSuf( void )
         FreeSafe( cur );
     }
     if( path != NULL ) {
-        FreeSafe( path );               /* from CurAttr.ptr */
+        FreeSafe( path );               /* from CurAttr.u.ptr.p1 */
     }
 }
 
@@ -1050,19 +1051,19 @@ TLIST *Parse( void )
         case TOK_EOL:
             break;
         case TOK_CMD:
-            if( *CurAttr.ptr == NULLCHAR ) {
+            if( *CurAttr.u.ptr.p1 == NULLCHAR ) {
                 /* discard blank lines */
-                FreeSafe( CurAttr.ptr );
+                FreeSafe( CurAttr.u.ptr.p1 );
             } else {
                 if( btlist == NULL ) {
                     if( !clist_warning_given ) {
                         PrtMsg( WRN | LOC | CLIST_HAS_NO_OWNER );
                         clist_warning_given = TRUE;
                     }
-                    FreeSafe( CurAttr.ptr );
+                    FreeSafe( CurAttr.u.ptr.p1 );
                 } else {
                     newclist = NewCList();
-                    newclist->text       = CurAttr.ptr;
+                    newclist->text       = CurAttr.u.ptr.p1;
                     /* stack in reverse order */
                     newclist->next       = bclist;
                     /* look at the command text to see if we need

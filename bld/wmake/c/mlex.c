@@ -96,21 +96,23 @@ TOKEN_T LexToken( enum LexMode mode )
 
 void LexMaybeFree( TOKEN_T tok )
 /**************************************
- * remarks: Some tokens set CurAttr.ptr to a memory region.  This routine
+ * remarks: Some tokens set CurAttr.u.ptr.p1 to a memory region.  This routine
  *          FreeSafes the region if tok is one of these token types.
  */
 {
     switch( tok ) {         /* fall through intentional */
+    case TOK_SUFSUF:
+        FreeSafe( CurAttr.u.ptr.p2 );
+        // fall through
     case TOK_FILENAME:
     case TOK_CMD:
     case TOK_SUF:
-    case TOK_SUFSUF:
     case TOK_PATH:
     case MAC_WS:
     case MAC_NAME:
     case MAC_PUNC:
     case MAC_TEXT:
-        FreeSafe( CurAttr.ptr );
+        FreeSafe( CurAttr.u.ptr.p1 );
         break;
     }
 }

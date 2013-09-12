@@ -89,7 +89,7 @@ STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
         UnGetCH( s );
     }
 
-    CurAttr.ptr = StrDupSafe( file );
+    CurAttr.u.ptr.p1 = StrDupSafe( file );
     return( tok );
 }
 
@@ -201,7 +201,7 @@ TOKEN_T LexPath( STRM_T s )
     }
     UnGetCH( s );
 
-    CurAttr.ptr = FinishVec( vec );
+    CurAttr.u.ptr.p1 = FinishVec( vec );
 
     return( TOK_PATH );
 }
@@ -258,7 +258,7 @@ STATIC TOKEN_T lexFileName( STRM_T s )
         UnGetCH( COLON );           /* push back the colon */
     }
 
-    CurAttr.ptr = StrDupSafe( file );
+    CurAttr.u.ptr.p1 = StrDupSafe( file );
     return( TOK_FILENAME );
 }
 #ifdef __WATCOMC__
@@ -292,8 +292,8 @@ STATIC BOOLEAN checkDotName( const char *str )
     return( TRUE );
 }
 
-STATIC char *getCurlPath( void )
-/*******************************
+STATIC char *getCurlPath( char **p )
+/***********************************
  * get the path between  { and }
  */
 {
@@ -306,10 +306,15 @@ STATIC char *getCurlPath( void )
     s = PreGetCH();
 
     if( s == L_CURL_PAREN ) {
+        *(*p)++ = '{';
         s = PreGetCH();
         while( s != R_CURL_PAREN && s != EOL && pos < _MAX_PATH ) {
             path[pos++] = s;
+            *(*p)++ = s;
             s = PreGetCH();
+        }
+        if( s == R_CURL_PAREN ) {
+            *(*p)++ = '}';
         }
         path[pos] = NULLCHAR;
         if( s == EOL ) {
@@ -346,6 +351,8 @@ STATIC TOKEN_T lexDotName( void )
  */
 {
     char        ext[MAX_SUFFIX];
+    char        fullext[2 * _MAX_PATH + MAX_SUFFIX + 1];
+    char        *p;
     unsigned    pos;
     STRM_T      s;
     STRM_T      s2;
@@ -361,13 +368,15 @@ STATIC TOKEN_T lexDotName( void )
         FreeSafe( dep_path );
         dep_path = "";
     }
-    dep_path = getCurlPath();
+    p = fullext;
+    dep_path = getCurlPath( &p );
     s = PreGetCH();
     if( s != DOT ) {
         PrtMsg( ERR | LOC | INVALID_SUFSUF );
         return( TOK_NULL );
     } else {
         ext[pos++] = DOT;
+        *p++ = DOT;
         s = PreGetCH();
     }
 
@@ -392,6 +401,7 @@ STATIC TOKEN_T lexDotName( void )
     } else {    /* get string {extc}+ */
         while( pos < MAX_SUFFIX && isextc( s ) && s != L_CURL_PAREN ) {
             ext[pos++] = s;
+            *p++ = s;
             s = PreGetCH();
         }
         if( pos == MAX_SUFFIX ) {
@@ -403,15 +413,17 @@ STATIC TOKEN_T lexDotName( void )
 
     UnGetCH( s );
 
-    targ_path = getCurlPath();
+    targ_path = getCurlPath( &p );
 
     s = PreGetCH();         /* next char */
 
     if( s == DOT ) {        /* maybe of form "."{extc}*"."{extc}* */
         ext[pos++] = DOT;
+        *p++ = DOT;
         s = PreGetCH();     /* next char */
         while( pos < MAX_SUFFIX && isextc( s ) ) {
             ext[pos++] = s;
+            *p++ = s;
             s = PreGetCH();
         }
         if( pos == MAX_SUFFIX ) {
@@ -433,8 +445,11 @@ STATIC TOKEN_T lexDotName( void )
     } else if( ret == TOK_SUF && checkDotName( ext ) ) {
         return( TOK_DOTNAME );
     }
-
-    CurAttr.ptr = StrDupSafe( ext );
+    if( ret == TOK_SUFSUF ) {
+        *p = NULLCHAR;
+        CurAttr.u.ptr.p2 = StrDupSafe( fullext );
+    }
+    CurAttr.u.ptr.p1 = StrDupSafe( ext );
     return( ret );
 }
 #ifdef __WATCOMC__
@@ -447,7 +462,7 @@ STATIC TOKEN_T lexCmd( void )
  * returns: {ws}+?*"\n"         TOK_CMD
  */
 {
-    CurAttr.ptr = PartDeMacro( ForceDeMacro() );
+    CurAttr.u.ptr.p1 = PartDeMacro( ForceDeMacro() );
     return( TOK_CMD );
 }
 
