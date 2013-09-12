@@ -50,13 +50,13 @@ const char * const DotNames[] = {
 void LexFini( void )
 /*************************/
 {
-    if( targ_path != NULL ) {
+    if( *targ_path != NULLCHAR ) {
         FreeSafe( targ_path );
-        targ_path = NULL;
+        targ_path = "";
     }
-    if( dep_path != NULL ) {
+    if( *dep_path != NULLCHAR ) {
         FreeSafe( dep_path );
-        dep_path  = NULL;
+        dep_path = "";
     }
     PreProcFini();
 }
@@ -67,8 +67,8 @@ void LexInit( void )
 {
     PreProcInit();
     LexParser( EOL );    /* sync parser to start of line */
-    targ_path = NULL;
-    dep_path  = NULL;
+    targ_path = "";
+    dep_path  = "";
 }
 
 

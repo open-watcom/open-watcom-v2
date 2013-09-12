@@ -377,7 +377,7 @@ STATIC BOOLEAN printSuf( void *node, void *ptr )
     SUFFIX      *suf = node;
     CREATOR     *cur;
     PATHRING    *pring;
-    TARGET      *targ;
+    SLIST       *slist;
     CLIST       *cmds;
     BOOLEAN     printed;
 
@@ -398,14 +398,26 @@ STATIC BOOLEAN printSuf( void *node, void *ptr )
         PrtMsg( INF | NEWLINE );
     }
     while( cur != NULL ) {
-        PrtMsg( INF | NEOL | PSUF_MADE_FROM, cur->suffix->node.name );
-        targ = cur->cretarg;
-        PrintTargFlags( &targ->attr );
-        PrtMsg( INF | NEWLINE );
-        cmds = targ->depend->clist;
-        if( cmds != NULL ) {
-            PrtMsg( INF | PSUF_USING_CMDS );
-            PrintCList( cmds );
+        slist = cur->cretarg->depend->slist;
+        while( slist != NULL ) {
+            PrtMsg( INF | NEOL | PSUF_MADE_FROM, cur->suffix->node.name );
+            PrintTargFlags( &cur->cretarg->attr );
+            PrtMsg( INF | NEWLINE );
+            if( *slist->targ_path != NULLCHAR ) {
+                PrtMsg( INF | PSUF_OUTPUT_DIR, slist->targ_path );
+            }
+            if( *slist->dep_path != NULLCHAR ) {
+                PrtMsg( INF | PSUF_SOURCE_DIR, slist->dep_path );
+            }
+            cmds = slist->clist;
+            if( cmds != NULL ) {
+                PrtMsg( INF | PSUF_USING_CMDS );
+                PrintCList( cmds );
+            }
+            slist = slist->next;
+            if( slist != NULL ) {
+                PrtMsg( INF | NEWLINE );
+            }
         }
         cur = cur->next;
         if( cur != NULL ) {

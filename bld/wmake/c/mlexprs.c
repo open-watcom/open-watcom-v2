@@ -322,7 +322,7 @@ STATIC char *getCurlPath( void )
 
     } else {
         UnGetCH( s );
-        return( NULL );
+        return( "" );
     }
 }
 
@@ -353,13 +353,13 @@ STATIC TOKEN_T lexDotName( void )
 
     pos  = 0;
 
-    if( targ_path != NULL ) {
+    if( *targ_path != NULLCHAR ) {
         FreeSafe( targ_path );
-        targ_path = NULL;
+        targ_path = "";
     }
-    if( dep_path != NULL ) {
+    if( *dep_path != NULLCHAR ) {
         FreeSafe( dep_path );
-        dep_path  = NULL;
+        dep_path = "";
     }
     dep_path = getCurlPath();
     s = PreGetCH();
@@ -373,7 +373,7 @@ STATIC TOKEN_T lexDotName( void )
 
     if( isdirc( s ) || s == PATH_SPLIT || s == ';' ) {  // check for "."{dirc}
         UnGetCH( s );
-        if( dep_path != NULL ) {
+        if( *dep_path != NULLCHAR ) {
             PrtMsg( ERR | LOC | INVALID_SUFSUF );
         }
         return( lexFileName( DOT ) );
@@ -384,7 +384,7 @@ STATIC TOKEN_T lexDotName( void )
         UnGetCH( s2 );
         if( isdirc( s2 ) || s2 == PATH_SPLIT || s2 == ';' ) {   // is ".."{dirc}
             UnGetCH( s );
-            if( dep_path != NULL ) {
+            if( *dep_path != NULLCHAR ) {
                 PrtMsg( ERR | LOC | INVALID_SUFSUF );
             }
             return( lexFileName( DOT ) );
@@ -421,14 +421,14 @@ STATIC TOKEN_T lexDotName( void )
 
         ret = TOK_SUFSUF;
     } else {
-        if( targ_path != NULL && dep_path != NULL ) {
+        if( *targ_path != NULLCHAR && *dep_path != NULLCHAR ) {
             PrtMsg( ERR | LOC | INVALID_SUFSUF );
         }
         ret = TOK_SUF;
     }
     UnGetCH( s );           /* put back what we don't need */
 
-    if( targ_path != NULL && dep_path != NULL && ret == TOK_SUF ) {
+    if( *targ_path != NULLCHAR && *dep_path != NULLCHAR && ret == TOK_SUF ) {
         PrtMsg( ERR | LOC | INVALID_SUFSUF );
     } else if( ret == TOK_SUF && checkDotName( ext ) ) {
         return( TOK_DOTNAME );
