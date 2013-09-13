@@ -16,13 +16,11 @@ blib       += -q
 
 # use native tools for x64 cpu
 # skip build for unsupported platforms
-!ifneq bootstrap 1
 !ifeq host_cpu x64
 !ifneq bld_cpu x64
 skip_build: .SYMBOLIC
 !else ifndef bld64host_$(host_os)
 skip_build: .SYMBOLIC
-!endif
 !endif
 !endif
 
