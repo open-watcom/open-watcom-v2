@@ -369,7 +369,7 @@ STATIC TOKEN_T lexDotName( void )
         dep_path = "";
     }
     p = fullext;
-    dep_path = getCurlPath( &p );
+    dep_path = FixName( getCurlPath( &p ) );
     s = PreGetCH();
     if( s != DOT ) {
         PrtMsg( ERR | LOC | INVALID_SUFSUF );
@@ -413,7 +413,7 @@ STATIC TOKEN_T lexDotName( void )
 
     UnGetCH( s );
 
-    targ_path = getCurlPath( &p );
+    targ_path = FixName( getCurlPath( &p ) );
 
     s = PreGetCH();         /* next char */
 
