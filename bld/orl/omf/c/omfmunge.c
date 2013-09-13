@@ -204,7 +204,6 @@ static omf_symbol_handle newSymbol( omf_file_handle ofh, orl_symbol_type typ, ch
 
     assert( ofh );
     assert( buffer );
-    assert( len >= 0 );
 
     sym = _ClientAlloc( ofh, sizeof( omf_symbol_handle_struct ) + len );
     if( sym != NULL ) {

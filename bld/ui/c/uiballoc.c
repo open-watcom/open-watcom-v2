@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include "uidef.h"
+#include "clibext.h"
 
 
 void intern bframe( BUFFER *bptr )

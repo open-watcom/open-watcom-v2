@@ -30,12 +30,13 @@
 
 
 #include "guiwind.h"
-#include "wio.h"
 #include <stdlib.h>
+#include "wio.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
 #include "guimem.h"
+#include "clibext.h"
 
 #ifdef TRMEM
 _trmem_hdl  GUIMemHandle;

@@ -36,7 +36,7 @@
 
 static char buffer[ 10 ];
 
-extern char *RegName( reg r ) {
+char *AsRegName( reg r ) {
 
     char        *s;
 

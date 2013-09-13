@@ -283,7 +283,9 @@ void DWENTRY DWLocConstU(
     dw_uconst                   value )
 {
     uint_8                      buf[ MAX_LEB128 ];
-//    uint_8                      *end;
+#ifndef NDEBUG
+    uint_8                      *end;
+#endif
     loc_op                      *op;
 
     _Validate( loc != NULL );
@@ -301,8 +303,12 @@ void DWENTRY DWLocConstU(
         ADD_ADDR( cli, loc, sizeof( uint_16 ) );
     } else if( value < ( 1ul << 21 ) ) {
         /* will only take 3 bytes to encode in ULEB128 form */
-        /* end = */ ULEB128( buf, value );
+#ifndef NDEBUG
+        end = ULEB128( buf, value );
         _Assert( end - buf == 3 );
+#else
+        ULEB128( buf, value );
+#endif
         op = nextOp( cli, loc, DW_OP_constu, 3 );
         op->data[0] = buf[0];
         op->data[1] = buf[1];

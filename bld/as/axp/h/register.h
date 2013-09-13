@@ -48,4 +48,4 @@ typedef enum {
 // $28 is the assembler temp reg in Alpha
 #define AT_REG          ( MakeReg( RC_GPR, 28 ) )
 
-extern char *RegName( reg );
+extern char *AsRegName( reg );

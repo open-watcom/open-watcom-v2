@@ -241,11 +241,11 @@ extern void DumpOperand( ins_operand *op )
             printf( "*strange-constant*" );
         }
         if( op->type == OP_REG_INDIRECT ) {
-            printf( "(%s)", RegName( op->reg ) );
+            printf( "(%s)", AsRegName( op->reg ) );
         }
         break;
     default:
-        printf( "%s", RegName( op->reg ) );
+        printf( "%s", AsRegName( op->reg ) );
         break;
     }
 }

@@ -1082,12 +1082,12 @@ dosib:  mov     bl,[esi]                ; get sib byte in bl           ssiiibbb
 ifndef NDEBUG
 badop   proc    near
       if _OS eq _PLDT
-        lea     edx,illopmsg
+        mov     edx,offset illopmsg
         mov     ah,9H
         int     21H
         ret
       else
-        lea     eax,illopmsg
+        mov     eax,offset illopmsg
         jmp     puts_
       endif
 badop   endp
@@ -1104,14 +1104,14 @@ prtnyi  proc    near
       if _OS eq _PLDT
         mov     ah,9H
         int     21H
-        lea     edx,nyimsg
+        mov     edx,offset nyimsg
         mov     ah,9H
         int     21H
         ret
       else
         mov     eax,edx
         call    puts_
-        lea     eax,nyimsg
+        mov     eax,offset nyimsg
         jmp     puts_
       endif
 prtnyi  endp
@@ -1121,7 +1121,7 @@ nyi     macro   string
         startdata
 msg     db      '&string',NC
         enddata
-        lea     edx,msg
+        mov     edx,offset msg
         call    prtnyi
         endm
 else

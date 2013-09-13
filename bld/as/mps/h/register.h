@@ -47,4 +47,4 @@ typedef enum {
 // $1 is the assembler temp reg in MIPS
 #define AT_REG          ( MakeReg( RC_GPR, 1 ) )
 
-extern char *RegName( reg );
+extern char *AsRegName( reg );

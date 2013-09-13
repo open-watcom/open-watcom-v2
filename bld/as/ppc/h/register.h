@@ -49,5 +49,5 @@ typedef enum {
 //#define AT_REG                ( MakeReg( RC_GPR, ?? ) )
 #define AT_REG          NULL_REG
 
-extern char *RegName( reg );
+extern char *AsRegName( reg );
 extern uint RegCrfToBI( reg r );

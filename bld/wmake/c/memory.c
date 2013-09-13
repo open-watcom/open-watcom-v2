@@ -65,11 +65,11 @@ STATIC struct scarce {
 
 #ifdef TRACK
 
-#include <malloc.h>
-#include <unistd.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+    #include <malloc.h>
+#endif
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "wio.h"
 #include "trmem.h"
 
 STATIC _trmem_hdl   Handle;

@@ -32,6 +32,7 @@
 #include "wio.h"
 #include "trmem.h"
 #include "memfuncs.h"
+#include "clibext.h"
 
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle;
