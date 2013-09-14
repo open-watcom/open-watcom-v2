@@ -166,7 +166,7 @@ inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_d
     @$(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) $[@
 !endif
 
-.cpp{$(x_subdir)}.obj : .autodepend
+.cpp{$(x_subdir)/}.obj : .autodepend
     @if not exist $(x_subdir) mkdir $(x_subdir)
 !ifeq verbose 1
     $(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) $[@
