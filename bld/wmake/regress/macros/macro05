@@ -6,7 +6,15 @@
 all: hello.obj
 
 .c.obj:
-     echo $@ $* $** $? $< $(**D) $(@B) $(@F) $(@R):
+     @echo $@
+     @echo $*
+     @echo $**
+     @echo $?
+     @echo $<
+     @echo $(**D)
+     @echo $(@B)
+     @echo $(@F)
+     @echo $(@R)
      
 hello.obj: ..\MACROS\hello.tmp hello.c hello.boo
 

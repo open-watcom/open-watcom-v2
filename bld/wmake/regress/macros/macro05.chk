@@ -1,2 +1,9 @@
-echo hello.obj hello ..\MACROS\hello.tmp hello.c hello.boo ..\MACROS\hello.tmp hello.c hello.boo hello.c ..\MACROS . . hello hello.obj hello:
-hello.obj hello ..\MACROS\hello.tmp hello.c hello.boo ..\MACROS\hello.tmp hello.c hello.boo hello.c ..\MACROS . . hello hello.obj hello:
+hello.obj
+hello
+..\MACROS\hello.tmp hello.c hello.boo
+..\MACROS\hello.tmp hello.c hello.boo
+hello.c
+..\MACROS . .
+hello
+hello.obj
+hello
