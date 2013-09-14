@@ -17,6 +17,8 @@ wmake_autodepends = .AUTODEPEND
 #!endif
 #!endif
 
+wmake_trmem = 1
+
 !include idedlls.mif
 !include cproj.mif
 !include defrule.mif
@@ -26,6 +28,8 @@ wmake_autodepends = .AUTODEPEND
 
 !include wres.mif
 !include verrc.mif
+
+!include trmem.mif
 
 !include ../wmkobjs.mif                     #   get our objs macro
 
@@ -42,7 +46,7 @@ echo    = echo
 
 # Compiler Flags
 
-inc_dirs = -I. -I"$(wmake_dir)/h" -I"$(orl_dir)/h" -I"$(trmem_dir)"
+inc_dirs = -I. -I"$(wmake_dir)/h" -I"$(orl_dir)/h"
 
 extra_cpp_flags =
 !ifdef DLLS_IMPLEMENTED
@@ -56,6 +60,9 @@ extra_cpp_flags_dos_386 = -DCAUSEWAY
 !endif
 
 extra_c_flags_i86 = -zt32
+
+extra_c_flags_trmem = $(trmem_cflags)
+extra_c_flags_memory = $(trmem_cover_cflags)
 
 ##############################################################################
 

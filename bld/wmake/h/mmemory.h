@@ -34,14 +34,6 @@
 
 #include <string.h>
 
-#ifdef TRACK
-#define TRMEM_ENV_VAR   "TRMEM_CODE"
-enum {
-    TRMEM_DO_NOT_PRINT  = 0x0001,
-    TRMEM_IGNORE_ERROR  = 0x0002
-};
-#endif
-
 
 extern void *MallocUnSafe( size_t size );
 extern void *MallocSafe( size_t size );

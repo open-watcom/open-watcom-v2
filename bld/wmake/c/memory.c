@@ -63,7 +63,7 @@ STATIC struct scarce {
 
 #endif
 
-#ifdef TRACK
+#ifdef TRMEM
 
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <malloc.h>
@@ -71,6 +71,12 @@ STATIC struct scarce {
 #include <sys/types.h>
 #include "wio.h"
 #include "trmem.h"
+
+#define TRMEM_ENV_VAR   "TRMEM_CODE"
+enum {
+    TRMEM_DO_NOT_PRINT  = 0x0001,
+    TRMEM_IGNORE_ERROR  = 0x0002
+};
 
 STATIC _trmem_hdl   Handle;
 STATIC int          trmemCode;
@@ -107,18 +113,18 @@ STATIC void MemCheck( void )
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsg( FTL | HEAP_IS_DAMAGED, "NEAR" );
+            PrtMsg( FTL | PRNTSTR, "Near heap is damaged!" );
         case _HEAPBADNODE:
-            PrtMsg( FTL | BAD_NODE_IN_HEAP, "NEAR" );
+            PrtMsg( FTL | PRNTSTR, "Bad node in Near heap!" );
         }
         switch( _fheapchk() ) {
         case _HEAPOK:
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsg( FTL | HEAP_IS_DAMAGED, "FAR" );
+            PrtMsg( FTL | PRNTSTR, "Far heap is damaged!" );
         case _HEAPBADNODE:
-            PrtMsg( FTL | BAD_NODE_IN_HEAP, "FAR" );
+            PrtMsg( FTL | PRNTSTR, "Bad node in Far heap!" );
         }
 #else
         switch( _heapchk() ) {
@@ -126,16 +132,16 @@ STATIC void MemCheck( void )
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsg( FTL | HEAP_IS_DAMAGED, "" );
+            PrtMsg( FTL | PRNTSTR, "Heap is damaged!" );
         case _HEAPBADNODE:
-            PrtMsg( FTL | BAD_NODE_IN_HEAP, "" );
+            PrtMsg( FTL | PRNTSTR, "Bad node in Heap!" );
         }
 #endif
         busy = FALSE;
     }
 #endif
 }
-#endif  /* TRACK */
+#endif  /* TRMEM */
 
 #ifdef USE_SCARCE
 void IfMemScarce( RET_T (*func)( void ) )
@@ -183,10 +189,10 @@ void MemFini( void )
  * post:    As much memory as possible is freed.
  */
 {
-#ifdef TRACK
+#ifdef TRMEM
     char    *trmemCodeStr;
 #endif
-#if defined( DEVELOPMENT ) || defined( TRACK )
+#if defined( DEVELOPMENT ) || defined( TRMEM )
 
 #ifdef USE_SCARCE
     struct scarce *cur;
@@ -204,7 +210,7 @@ void MemFini( void )
 #ifdef DEVELOPMENT
     PutEnvFini();
 #endif
-#ifdef TRACK
+#ifdef TRMEM
     if( !Glob.erroryet ) { /* No error diagnostics yet? */
         trmemCodeStr = getenv( TRMEM_ENV_VAR );
         if( trmemCodeStr == NULL ) {
@@ -253,17 +259,17 @@ void MemInit( void )
 /*************************/
 {
     memGrow();
-#ifdef TRACK
+#ifdef TRMEM
     Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, NULL,
                           NULL, printLine, _TRMEM_CLOSE_CHECK_FREE );
     if( Handle == NULL ) {
-        PrtMsg( FTL | UNABLE_TO_TRACK );
+        PrtMsg( FTL | PRNTSTR, "Unable to track memory!" );
     }
 #endif
 }
 
 
-#ifdef TRACK
+#ifdef TRMEM
 STATIC void *doAlloc( size_t size, void (* ra)(void) )
 #else
 STATIC void *doAlloc( size_t size )
@@ -279,7 +285,7 @@ STATIC void *doAlloc( size_t size )
 #ifdef USE_SCARCE
 
     for( ;; ) {
-#ifdef TRACK
+#ifdef TRMEM
         ptr = _trmem_alloc( size, ra, Handle );
 #else
         ptr = malloc( size );
@@ -294,7 +300,7 @@ STATIC void *doAlloc( size_t size )
 
 #else
 
-#ifdef TRACK
+#ifdef TRMEM
     ptr = _trmem_alloc( size, ra, Handle );
 #else
     ptr = malloc( size );
@@ -309,7 +315,7 @@ void *MallocUnSafe( size_t size )
 /**************************************/
 {
     void *ptr;
-#ifdef TRACK
+#ifdef TRMEM
     ptr = doAlloc( size, _trmem_guess_who() );
 #else
     ptr = doAlloc( size );
@@ -327,7 +333,7 @@ void *MallocSafe( size_t size )
 {
     void    *ptr;
 
-#ifdef TRACK
+#ifdef TRMEM
     ptr = doAlloc( size, _trmem_guess_who() );
 #else
     ptr = doAlloc( size );
@@ -348,7 +354,7 @@ void *CallocSafe( size_t size )
 {
     void    *ptr;
 
-#ifdef TRACK        /* so we can track ret address */
+#ifdef TRMEM        /* so we can track ret address */
     ptr = doAlloc( size, _trmem_guess_who() );
 
     if( ptr == NULL ) {
@@ -371,7 +377,7 @@ void FreeSafe( void *ptr )
  * remarks: Guaranteed to work in low memory situations (scarce).
  */
 {
-#ifdef TRACK
+#ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), Handle );
 #else
     free( ptr );
@@ -390,7 +396,7 @@ char *StrDupSafe( const char *str )
 
     len = strlen( str ) + 1;
 
-#ifdef TRACK
+#ifdef TRMEM
     p = doAlloc( len, _trmem_guess_who() );
     if( p == NULL ) {
         PrtMsg( FTL | OUT_OF_MEMORY );

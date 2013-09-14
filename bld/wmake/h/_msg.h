@@ -54,12 +54,6 @@ pick( BANNER = END_OF_RESOURCE_MSG, \
 pick( ASSERTION_FAILED,         "Assertion %E in %s(%d) failed" )
 #endif
 
-#ifdef TRACK
-pick( UNABLE_TO_TRACK,          "Unable to track memory!" )
-pick( HEAP_IS_DAMAGED,          "%s heap is damaged" )
-pick( BAD_NODE_IN_HEAP,         "Bad node in %s heap" )
-#endif
-
 #ifdef DEVELOPMENT
 pick( INVALID_TOKEN_IN,         "Invalid token 0x%x in %s" )
 pick( INTERPRETING,             "Interpreting %s" )
