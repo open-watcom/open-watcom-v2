@@ -217,24 +217,20 @@ STATIC void linkDepend( const TLIST *tlist, DEPEND *dep, TATTR attr )
                     while( *endlist != NULL ) {
                         endlist = &(*endlist)->next;
                     }
-                    tmpdep = dep;   /* make a copy of before we hack it up */
-                    dep = DupDepend( tmpdep );
+                    tmpdep = DupDepend( dep );  /* make a copy of before we hack it up */
                     *endlist = tmpdep->targs;   /* attach new deps to end */
                     tmpdep->targs = NULL;       /* free useless dep */
                     FreeDepend( tmpdep );
                 } else if( targdep->clist != NULL || targdep->targs != NULL ) {
                     /* target isn't a place holder, link new one in */
-                    targdep->next = dep;
-                    dep = DupDepend( dep );
+                    targdep->next = DupDepend( dep );
                 } else {
                     /* target is a place holder, free it, and link  */
                     FreeDepend( targdep );
-                    *lastnext = dep;
-                    dep = DupDepend( dep );
+                    *lastnext = DupDepend( dep );
                 }
             } else {
-                *lastnext = dep;
-                dep = DupDepend( dep );
+                *lastnext = DupDepend( dep );
             }
         }
         TargAttrOrAttr( &curtarg->attr, attr );
@@ -577,8 +573,7 @@ STATIC void linkCList( TLIST *btlist, CLIST *bclist )
                 }
             } else if( clisthead != NULL ) {
                 /* this is the first clist for this scolon */
-                (*walk)->clist = clisthead;
-                clisthead = DupCList( clisthead );
+                (*walk)->clist = DupCList( clisthead );
             }
         } else if( curtarg->sufsuf ) {
             /* special processing is needed for sufsuf */
@@ -599,15 +594,14 @@ STATIC void linkCList( TLIST *btlist, CLIST *bclist )
                     while( (*walkClist) != NULL ) {
                         walkClist = &(*walkClist)->next;
                     }
-                    *walkClist = clisthead;
+                    *walkClist = DupCList( clisthead );
                 } else {
                     FreeCList( *walkClist );
                     *walkClist = NULL;
                 }
             } else {
-                (*walk)->clist = clisthead;
+                (*walk)->clist = DupCList( clisthead );
             }
-            clisthead = DupCList( clisthead );
         }
     }
 

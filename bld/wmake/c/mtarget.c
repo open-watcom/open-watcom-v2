@@ -276,14 +276,14 @@ CLIST *DupCList( const CLIST *old )
 
     head = NewCList();
     head->text       = StrDupSafe( old->text );
-    head->inlineHead = DupFList  ( old->inlineHead );
+    head->inlineHead = DupFList( old->inlineHead );
 
     cur = head;
     old = old->next;
     while( old != NULL ) {
         new = NewCList();
         new->text       = StrDupSafe( old->text );
-        new->inlineHead = DupFList  ( old->inlineHead );
+        new->inlineHead = DupFList( old->inlineHead );
         cur->next = new;
 
         cur = new;
@@ -333,8 +333,8 @@ DEPEND *DupDepend( const DEPEND *old )
     }
 
     new = NewDepend();
-    new->targs    = DupTList( old->targs );
-    new->clist    = DupCList( old->clist );
+    new->targs = DupTList( old->targs );
+    new->clist = DupCList( old->clist );
 
     return( new );
 }
