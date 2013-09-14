@@ -74,19 +74,17 @@ STATIC BOOLEAN freeSuffix( void *node, void *ptr )
 /************************************************/
 {
     SUFFIX  *suf = node;
-    CREATOR *ccur;
-    CREATOR *cwalk;
+    CREATOR *creator;
+    CREATOR *creator_next;
 
     (void)ptr; // Unused
     FreeSafe( suf->node.name );
     freePathRing( suf->first );
 
-    cwalk = suf->creator;
-    while( cwalk != NULL ) {
-        ccur = cwalk;
-        cwalk = cwalk->next;
-        KillTarget( ccur->cretarg->node.name );
-        FreeSafe( ccur );
+    for( creator = suf->creator; creator != NULL; creator = creator_next ) {
+        creator_next = creator->next;
+        FreeSList( creator->slist );
+        FreeSafe( creator );
     }
 
     FreeSafe( suf );
@@ -327,8 +325,8 @@ STATIC CREATOR *newCreator( void )
 }
 
 
-void AddCreator( const char *sufsuf )
-/************************************
+void AddCreator( const char *sufsuf, const char *fullsufsuf )
+/************************************************************
  * add the creation .src.dest
  */
 {
@@ -337,6 +335,8 @@ void AddCreator( const char *sufsuf )
     char const  *ptr;
     CREATOR     *new;
     CREATOR     **cur;
+    SLIST       *slist;
+    SLIST       **sl;
 
     assert( sufsuf != NULL && sufsuf[0] == DOT && strchr( sufsuf + 1, DOT ) != NULL );
 
@@ -354,20 +354,37 @@ void AddCreator( const char *sufsuf )
         }
     }
 
+    sl = NULL;
     if( *cur != NULL && src->id == (*cur)->suffix->id ) {
-        return;
+        for( slist = (*cur)->slist; ; slist = slist->next ) {
+            if( stricmp( slist->targ_path, targ_path ) == 0 && stricmp( slist->dep_path, dep_path ) == 0 ) {
+                return;
+            }
+            if( slist->next == NULL ) {
+                sl = &slist->next;
+                break;
+            }
+        }
+    }
+    if( sl == NULL ) {
+        new = newCreator();
+        new->suffix = src;
+        new->slist = NULL;
+        sl = &new->slist;
+
+        new->next = *cur;
+        *cur = new;
     }
 
-    new = newCreator();
-    new->suffix = src;
-    new->cretarg = NewTarget( sufsuf );
-    new->cretarg->special = TRUE;
-    new->cretarg->sufsuf  = TRUE;
-
-    new->next = *cur;
-    *cur = new;
-
-    return;
+    slist = NewSList();
+    slist->targ_path = StrDupSafe( targ_path );
+    slist->dep_path = StrDupSafe( dep_path );
+    slist->cretarg = NewTarget( fullsufsuf );
+    slist->cretarg->special = TRUE;
+    slist->cretarg->sufsuf  = TRUE;
+    slist->cretarg->depend = NewDepend();
+    slist->next = *sl;
+    *sl = slist;
 }
 
 
@@ -398,10 +415,10 @@ STATIC BOOLEAN printSuf( void *node, void *ptr )
         PrtMsg( INF | NEWLINE );
     }
     while( cur != NULL ) {
-        slist = cur->cretarg->depend->slist;
+        slist = cur->slist;
         while( slist != NULL ) {
             PrtMsg( INF | NEOL | PSUF_MADE_FROM, cur->suffix->node.name );
-            PrintTargFlags( &cur->cretarg->attr );
+            PrintTargFlags( &slist->cretarg->attr );
             PrtMsg( INF | NEWLINE );
             if( *slist->targ_path != NULLCHAR ) {
                 PrtMsg( INF | PSUF_OUTPUT_DIR, slist->targ_path );
@@ -409,7 +426,7 @@ STATIC BOOLEAN printSuf( void *node, void *ptr )
             if( *slist->dep_path != NULLCHAR ) {
                 PrtMsg( INF | PSUF_SOURCE_DIR, slist->dep_path );
             }
-            cmds = slist->clist;
+            cmds = slist->cretarg->depend->clist;
             if( cmds != NULL ) {
                 PrtMsg( INF | PSUF_USING_CMDS );
                 PrintCList( cmds );

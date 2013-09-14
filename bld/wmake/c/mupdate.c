@@ -299,8 +299,8 @@ STATIC time_t findMaxTime( TARGET *targ, DEPEND *imp_dep, time_t max_time )
 }
 
 
-STATIC RET_T perform( TARGET *targ, DEPEND *dep, time_t max_time )
-/****************************************************************/
+STATIC RET_T perform( TARGET *targ, DEPEND *dep, SLIST *slist, time_t max_time )
+/******************************************************************************/
 {
     CLIST   *clist;
     CLIST   *before;
@@ -331,12 +331,12 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, time_t max_time )
     }
 
     /* means that this is a sufsuf made implicit rule */
-    if( dep->slistCmd == NULL ) {
+    if( slist == NULL ) {
         clist = dep->clist;
         depend = dep;
         impliedDepend = NULL;
     } else {
-        clist = DupCList( dep->slistCmd->clist );
+        clist = DupCList( slist->cretarg->depend->clist );
         depend = targ->depend;
         impliedDepend = dep;
     }
@@ -378,7 +378,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, time_t max_time )
     exPush( targ, depend, impliedDepend );
     ret = carryOut( targ, clist, findMaxTime( targ, dep, max_time ) );
     exPop();
-    if( dep->slistCmd != NULL ) {
+    if( slist != NULL ) {
         FreeCList( clist );
     }
     if( ret == RET_ERROR ) {
@@ -491,14 +491,13 @@ STATIC RET_T isOutOfDate( TARGET *targ, TARGET *deptarg, BOOLEAN *outofdate )
 }
 
 
-STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg,
-    TARGET *cretarg, BOOLEAN must, SLIST *slistCmd )
-/*************************************************************
+STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, SLIST *slist, BOOLEAN must )
+/******************************************************************************************
  * perform cmds if targ is older than imptarg || must
  *
  * targ     is the target to be updated
  * imptarg  is the dependent for target (ie: "targ : imptarg" )
- * cretarg  is the implicit rule to use
+ * slist    is the implicit rule to use
  * must     must we do it?
  */
 {
@@ -512,7 +511,7 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg,
         /* there was an error making imptarg before, so just abort */
         return( RET_ERROR );
     }
-    if( cretarg->attr.always ) {
+    if( slist->cretarg->attr.always ) {
         must = TRUE;
     }
 
@@ -520,27 +519,25 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg,
         return( RET_ERROR );
     }
 
-    if( !must && USE_AUTO_DEP( cretarg ) ) {
+    if( !must && USE_AUTO_DEP( slist->cretarg ) ) {
         if( autoOutOfDate( targ, &max_time ) ) {
             must = TRUE;
         }
     }
 
     if( must ) {
-        assert( cretarg->depend != NULL );
 
         /* construct a depend for perform */
 
-        newdep           = DupDepend( cretarg->depend );
+        newdep           = DupDepend( slist->cretarg->depend );
         newtlist         = NewTList();
         newtlist->target = imptarg;
         newdep->targs    = newtlist;
-        newdep->slistCmd = slistCmd;
 
         /* handle implied attributes (.symb/.prec/.multi) */
-        TargAttrOrAttr( &targ->attr, cretarg->attr );
+        TargAttrOrAttr( &targ->attr, slist->cretarg->attr );
 
-        ret = perform( targ, newdep, max_time );
+        ret = perform( targ, newdep, slist, max_time );
         FreeDepend( newdep );           /* don't need depend any more */
 
         if( ret != RET_SUCCESS ) {
@@ -581,7 +578,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
     UINT32      startcount;
     char        *buf;
     SLIST       *curslist;
-    SLIST       *slistCmd;  // Slist chosen for sufsuf
+    SLIST       *slist;     // Slist chosen for sufsuf
     SLIST       *slistDef;  // Slist that has dependent path = ""
     SLIST       *slistEmptyTargDepPath;
     BOOLEAN     UseDefaultSList;
@@ -600,33 +597,31 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
 
         /* allocate a buffer */
         buf = MallocSafe( _MAX_PATH );
-        slistCmd = NULL;
+        slist = NULL;
         slistDef = NULL;
         slistEmptyTargDepPath = NULL;
-
-        assert( cur->cretarg         != NULL );
-        assert( cur->cretarg->depend != NULL );
-        curslist = cur->cretarg->depend->slist;
 
         ret = RET_ERROR;
 
         UseDefaultSList = TRUE;
-        slistCount = 0;
         /* find path in SLIST */
-        while( curslist != NULL && ret != RET_SUCCESS ) {
+        for( slistCount = 0, curslist = cur->slist;
+            curslist != NULL && ret != RET_SUCCESS;
+            ++slistCount, curslist = curslist->next )
+        {
             _makepath( buf, drive, dir, NULL, NULL );
+            FixName( buf );
             /*
              * note the path of the current target must match the
              * path as specified in the slist
              */
             if( stricmp( buf, curslist->targ_path ) == 0 ) {
                 /* build filename for implied target */
-                _makepath( buf, NULL, curslist->dep_path,
-                           fname, cursuf->node.name );
+                _makepath( buf, NULL, curslist->dep_path, fname, cursuf->node.name );
                 /* try to find this file on path or in targets */
                 ret = TrySufPath( buf, buf, &imptarg, FALSE );
                 if( ret == RET_SUCCESS ) {
-                    slistCmd = curslist;
+                    slist = curslist;
                 /* later on we need to check if implied target does not */
                 /* exist we need to create it on the first directory we */
                 /* see on the SLIST since                               */
@@ -636,19 +631,16 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
                     slistDef = curslist;
                 }
             }
-            if( curslist->targ_path[0] == NULLCHAR &&
-                curslist->dep_path[0]  == NULLCHAR ) {
+            if( curslist->targ_path[0] == NULLCHAR && curslist->dep_path[0] == NULLCHAR ) {
                 slistEmptyTargDepPath = curslist;
             }
 
             if( slistCount > 0 && slistEmptyTargDepPath != NULL ) {
                 UseDefaultSList = FALSE;
             }
-            curslist = curslist->next ;
-            ++slistCount;
         }
 
-        if( UseDefaultSList && slistCmd  == NULL && !Glob.compat_nmake ) {
+        if( UseDefaultSList && slist == NULL && !Glob.compat_nmake ) {
             _makepath( buf, NULL, NULL, fname, cursuf->node.name );
             /* try to find this file on path or in targets */
             ret = TrySufPath( buf, buf, &imptarg, FALSE );
@@ -661,31 +653,29 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
                 }
                 break;
             case RET_SUCCESS:
-                slistCmd = slistEmptyTargDepPath;
+                slist = slistEmptyTargDepPath;
                 break;
             }
         }
 
+        if( ret == RET_ERROR && slistDef == NULL ) {
+            /*
+             * No Default Slist found so must continue and find
+             * another slist
+             */
+            FreeSafe( buf );
+            continue;
+        }
 
         if( (ret == RET_SUCCESS && imptarg == NULL) || ret == RET_ERROR ) {
             /* Either file doesn't exist, or it exists and we don't already
              * have a target for it.  Either way, we create a new target.
              */
             if( ret == RET_ERROR ) {
-                /*
-                 * No Default Slist found so must continue and find
-                 * another slist
-                 */
-                if( slistDef == NULL ) {
-                    FreeSafe( buf );
-                    continue;
-                } else {
-                    slistCmd = slistDef;
-                }
-                    /* file doesn't exist, assume in directory */
-                    /* pointed to by the slistDef              */
-                _makepath( buf, NULL, slistCmd->dep_path,
-                           fname, cursuf->node.name );
+                slist = slistDef;
+                /* file doesn't exist, assume in directory */
+                /* pointed to by the slistDef              */
+                _makepath( buf, NULL, slist->dep_path, fname, cursuf->node.name );
 
             }
             newtarg = TRUE;
@@ -693,9 +683,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             FreeSafe( buf );        /* don't need any more */
             getStats( imptarg );
             imptarg->busy = TRUE;   /* protect against recursion */
-            if( imply( imptarg, NULL, slistCmd->dep_path,
-                        fname, cursuf->node.name, FALSE ) ==
-                RET_ERROR ) {
+            if( imply( imptarg, NULL, slist->dep_path, fname, cursuf->node.name, FALSE ) == RET_ERROR ) {
                 imptarg->error = TRUE;
             }
             if( startcount != cListCount && (Glob.noexec || Glob.query) ) {
@@ -717,8 +705,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
          */
         if( targExists( imptarg ) ) {
             /* it exists - now we perform the implicit cmd list, and return */
-            ret = implyMaybePerform( targ, imptarg, cur->cretarg, must,
-                slistCmd );
+            ret = implyMaybePerform( targ, imptarg, slist, must );
             if( newtarg && !Glob.noexec ) {
                 /* destroy the implied target, because the info in the target
                  * structure is nicely stored on disk (unless Glob.noexec)
@@ -843,7 +830,7 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
             }
         }
         if( exec_cmds ) {
-            return( perform( targ, depend, max_time ) );
+            return( perform( targ, depend, NULL, max_time ) );
         }
         return( RET_SUCCESS );
     }
@@ -872,12 +859,12 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
          * and at least one of the deps is newer than targ, so we perform
          */
         if( depend->clist != NULL ) {
-            return( perform( targ, depend, max_time ) );
+            return( perform( targ, depend, NULL, max_time ) );
         } else {
             tmp = tryImply( targ, TRUE );
             if( tmp == RET_WARN ) {
                 /* couldn't imply - will do DEFAULT cmds */
-                return( perform( targ, depend, max_time ) );
+                return( perform( targ, depend, NULL, max_time ) );
             }
             return( tmp );
         }

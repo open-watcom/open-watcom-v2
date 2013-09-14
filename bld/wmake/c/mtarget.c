@@ -263,38 +263,6 @@ STATIC FLIST *DupFList( const FLIST *old )
 }
 
 
-STATIC SLIST *DupSList( const SLIST *old )
-/****************************************/
-{
-    SLIST   *new;
-    SLIST   *cur;
-    SLIST   *head;
-
-    if( old == NULL ) {
-        return( NULL );
-    }
-
-    head = NewSList();
-    head->targ_path = StrDupSafe( old->targ_path );
-    head->dep_path  = StrDupSafe( old->dep_path );
-    head->clist     = DupCList( old->clist );
-
-    cur = head;
-    old = old->next;
-    while( old != NULL ) {
-        new = NewSList();
-        new->targ_path  = StrDupSafe( old->targ_path );
-        new->dep_path   = StrDupSafe( old->dep_path );
-        new->clist      = DupCList( old->clist );
-        cur->next = new;
-        cur = new;
-        old = old->next;
-    }
-
-    return( head );
-}
-
-
 CLIST *DupCList( const CLIST *old )
 /*********************************/
 {
@@ -367,8 +335,6 @@ DEPEND *DupDepend( const DEPEND *old )
     new = NewDepend();
     new->targs    = DupTList( old->targs );
     new->clist    = DupCList( old->clist );
-    new->slist    = DupSList( old->slist );
-    new->slistCmd = old->slistCmd;
 
     return( new );
 }
@@ -414,7 +380,7 @@ void FreeSList( SLIST *slist )   /* non-recursive */
         cur = slist;
         FreeSafe( cur->targ_path );
         FreeSafe( cur->dep_path );
-        FreeCList( cur->clist );
+        KillTarget( cur->cretarg->node.name );
         slist = slist->next;
         cur->next = freeSLists;
         freeSLists = cur;
@@ -468,7 +434,6 @@ void FreeDepend( DEPEND *dep )
         dep = dep->next;
         FreeTList( cur->targs );
         FreeCList( cur->clist );
-        FreeSList( cur->slist );
         cur->next = freeDepends;
         freeDepends = cur;
     }

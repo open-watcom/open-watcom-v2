@@ -135,9 +135,6 @@ struct Depend {
     DEPEND  *next;      /* next dependent for dcolon targets    */
     TLIST   *targs;     /* list of dependent targets            */
     CLIST   *clist;     /* list of commands to execute          */
-    SLIST   *slist;     /* list of suffixes with paths associated   */
-    SLIST   *slistCmd;  /* pointer to the slist which contains the command */
-                        /* list for implied targets */
 };
 
 struct fileStruct {
@@ -173,10 +170,10 @@ struct TargList {
 };
 
 struct sufsufList {
+    SLIST   *next;
     char    *targ_path;
     char    *dep_path;
-    CLIST   *clist;
-    SLIST   *next;
+    TARGET  *cretarg;   /* target node for creation target  */
 };
 
 

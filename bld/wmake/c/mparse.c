@@ -106,8 +106,8 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
             if( !SufBothExist( CurAttr.u.ptr.p1 ) ) {
                 PrtMsg( ERR | LOC | SUFFIX_DOESNT_EXIST, CurAttr.u.ptr.p1 );
             } else {
-                AddCreator( CurAttr.u.ptr.p1 );
-                WildTList( dest, CurAttr.u.ptr.p1, TRUE, TRUE);
+                AddCreator( CurAttr.u.ptr.p1, CurAttr.u.ptr.p2 );
+                WildTList( dest, CurAttr.u.ptr.p2, TRUE, TRUE);
             }
             FreeSafe( CurAttr.u.ptr.p2 );
             FreeSafe( CurAttr.u.ptr.p1 );
@@ -527,37 +527,8 @@ STATIC void parseDotName( TOKEN_T t, TLIST **btlist )
 }
 
 
-/* links the clist to the sufsuf target */
-STATIC void linkClistSufsuf( const TARGET *curtarg, const CLIST *clist,
-    const char *cur_targ_path, const char *cur_dep_path )
-/*********************************************************************/
-{
-    DEPEND  *walk;
-    SLIST   *slist;
-
-    assert( curtarg != NULL && curtarg->depend != NULL );
-
-    walk = curtarg->depend;
-    while( walk->next != NULL ) {
-        walk = walk->next;
-    }
-
-
-    slist = NewSList ();
-    slist->targ_path = StrDupSafe( cur_targ_path );
-    slist->dep_path  = StrDupSafe( cur_dep_path );
-    slist->clist     = DupCList ( clist );
-    if( walk->slist == NULL ) {
-        slist->next      = NULL;
-    } else {
-        slist->next      = walk->slist;
-    }
-    walk->slist = slist;
-}
-
-STATIC void linkCList( TLIST *btlist, CLIST *bclist, const char *cur_targ_path,
-    const char *cur_dep_path)
-/********************************************************************************
+STATIC void linkCList( TLIST *btlist, CLIST *bclist )
+/****************************************************
  * attach bclist to each target in btlist
  */
 {
@@ -611,7 +582,7 @@ STATIC void linkCList( TLIST *btlist, CLIST *bclist, const char *cur_targ_path,
             }
         } else if( curtarg->sufsuf ) {
             /* special processing is needed for sufsuf */
-            linkClistSufsuf( curtarg, clisthead, cur_targ_path, cur_dep_path );
+            curtarg->depend->clist = DupCList( clisthead );
         } else {
             /* we walk the dependents to find the last one */
             while( (*walk)->next != NULL ) {
@@ -941,49 +912,6 @@ STATIC FLIST *GetInlineFile( char **commandIn )
     return( head );
 }
 
-STATIC char *formatPathName( const char *inPath )
-/***********************************************/
-{
-    char    buf[_MAX_PATH];
-
-    if( *inPath != NULLCHAR ) {
-        _makepath( buf, NULL, inPath, NULL, NULL );
-        return( StrDupSafe( buf ) );
-    } else {
-        return( "" );
-    }
-}
-
-
-STATIC void getCurTargDepPath( char **cur_targ_path, char **cur_dep_path )
-/*************************************************************************
- * this is to get the current target path and dependent path
- * when sufsuf is created
- */
-{
-    if( **cur_targ_path != NULLCHAR ) {
-        FreeSafe( *cur_targ_path );
-    }
-    if( **cur_dep_path != NULLCHAR ) {
-        FreeSafe( *cur_dep_path );
-    }
-    if( *targ_path != NULLCHAR ) {
-        *cur_targ_path = formatPathName( targ_path );
-        FreeSafe( targ_path );
-        targ_path = "";
-    } else {
-        *cur_targ_path = "";
-    }
-    if( *dep_path != NULLCHAR ) {
-        *cur_dep_path  = formatPathName( dep_path );
-        FreeSafe( dep_path );
-        dep_path = "";
-    } else {
-        *cur_dep_path = "";
-    }
-}
-
-
 TLIST *Parse( void )
 /*******************
  * Call LexToken, and dispatch to appropriate routine
@@ -995,16 +923,11 @@ TLIST *Parse( void )
     TLIST   *btlist;
     BOOLEAN clist_warning_given;
     BOOLEAN token_filename;
-    char    *cur_dep_path;
-    char    *cur_targ_path;
 
     firstTarget = NULL;
 
     bclist = NULL;
     btlist = NULL;
-
-    cur_dep_path = "";
-    cur_targ_path = "";
 
     clist_warning_given = FALSE;
     token_filename      = FALSE;
@@ -1024,17 +947,9 @@ TLIST *Parse( void )
         if( t != TOK_CMD && t != TOK_EOL ) {
             if( btlist != NULL ) {
                 /* link the commands to the targets */
-                linkCList( btlist, bclist, cur_targ_path, cur_dep_path );
+                linkCList( btlist, bclist );
                 bclist = NULL;
                 btlist = NULL;
-                if( *cur_dep_path != NULLCHAR ) {
-                    FreeSafe( cur_dep_path );
-                    cur_dep_path = "";
-                }
-                if( *cur_targ_path != NULLCHAR ) {
-                    FreeSafe( cur_targ_path );
-                    cur_targ_path = "";
-                }
                 if( (Glob.compat_nmake || Glob.compat_unix) && token_filename == TRUE ) {
                     exPop();
                     token_filename = FALSE;
@@ -1084,11 +999,7 @@ TLIST *Parse( void )
             parseSuf();
             break;
         case TOK_SUFSUF:
-            getCurTargDepPath( &cur_targ_path, &cur_dep_path );
             parseTargDep( t, &btlist );
-            if( btlist != NULL ) {
-                btlist->target->sufsuf = TRUE;
-            }
             break;
         case TOK_FILENAME:
             parseTargDep( t, &btlist );

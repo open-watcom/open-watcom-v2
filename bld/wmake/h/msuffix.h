@@ -66,10 +66,8 @@ struct Suffix {
 struct Creator {
     CREATOR     *next;          /* next creator for this suffix     */
     SUFFIX      *suffix;        /* suffix node for this creation    */
-    TARGET      *cretarg;       /* target node for creation target  */
+    SLIST       *slist;
 };
-
-
 
 extern void     SuffixInit( void );
 extern void     SuffixFini( void );
@@ -79,11 +77,10 @@ extern BOOLEAN  SufExists( const char *suf );
 extern BOOLEAN  SufBothExist( const char *sufsuf );
 extern void     AddSuffix( char *name );
 extern void     SetSufPath( const char *name, const char *path );
-extern void     AddCreator( const char *sufsuf );
+extern void     AddCreator( const char *sufsuf, const char *fullsufsuf );
 extern void     PrintSuffixes( void );
 extern SUFFIX   *FindSuffix( const char *name );
-extern RET_T    TrySufPath( char *buffer, const char *filename,
-    TARGET **chktarg, BOOLEAN tryenv );
+extern RET_T    TrySufPath( char *buffer, const char *filename, TARGET **chktarg, BOOLEAN tryenv );
 
 #endif
 

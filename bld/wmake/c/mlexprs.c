@@ -447,7 +447,7 @@ STATIC TOKEN_T lexDotName( void )
     }
     if( ret == TOK_SUFSUF ) {
         *p = NULLCHAR;
-        CurAttr.u.ptr.p2 = StrDupSafe( fullext );
+        CurAttr.u.ptr.p2 = StrDupSafe( FixName( fullext ) );
     }
     CurAttr.u.ptr.p1 = StrDupSafe( ext );
     return( ret );
