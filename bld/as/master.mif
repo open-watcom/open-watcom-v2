@@ -238,7 +238,7 @@ $(lex_out).c : $(lex_in)
 $(asi_lex_out).c : $(asi_lex_in)
         $(re2c) $(lex_flags) $[@ > $@
 
-.c{$(stand_subdir)}.obj: $($(proj_name)_autodepends)
+.c{$(stand_subdir)/}.obj: $($(proj_name)_autodepends)
         @if not exist $(stand_subdir) mkdir $(stand_subdir)
 !ifeq verbose 1
         $(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
