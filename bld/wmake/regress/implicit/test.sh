@@ -37,7 +37,7 @@ echo \# ===========================
 TEST=1
 print_header
 rm -f err1.out
-$1 -h -f makefile.unx -l err1.out > tst1.out
+$1 -h -l err1.out > tst1.out
 do_check
 
 TEST=2A
@@ -66,12 +66,12 @@ do_check
 
 # Won't work with non-OW compilers, which may not be available on UNIX
 #
-#TEST=2D
-#print_header
-#rm -f hello.obj
-#$1 -f imp02d -h > tst1.out
-#sed "s:of .*[\\/]:of :" tst1.out | diff imp02d.chk -
-#do_check
+TEST=2D
+print_header
+rm -f hello.obj
+$1 -f imp02d -h > tst1.out
+sed "s:of .*[\\/]:of :" tst1.out | diff imp02d.chk -
+do_check
 
 # hello.* hello?.* uses OW and Linux rm compatible wildcards. hello* no go
 rm -f *.obj err1.out tst1.out tst2.out app.lnk app.exe hello.* hello?.*

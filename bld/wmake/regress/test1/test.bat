@@ -11,10 +11,13 @@ echo # ---------------------------
 rm -f err1.out
 echo. >err1.out
 %1 -h -f maketst1 -l err1.out > tst1.out
-diff -b tst1.out tst1.chk
-if errorlevel 1 goto tst1err
 diff -b err1.out err1.chk
 if errorlevel 1 goto tst1err
+diff -b tst1.out tst1.chk > nul
+if not errorlevel 1 goto testok
+diff -b tst1.out tst1a.chk > nul
+if errorlevel 1 goto tst1err
+:testok
     echo # Multiple Dependents Test successful
     goto done
 :tst1err

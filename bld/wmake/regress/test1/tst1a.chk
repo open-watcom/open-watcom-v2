@@ -1,0 +1,63 @@
+cc main.obj
+main.c
+cc foo0001.obj
+foo0001.c
+cc foo0002.obj
+foo0002.c
+cc foo0003.obj
+foo0003.c
+cc foo0004.obj
+foo0004.c
+cc foo0005.obj
+foo0005.c
+cc foo0006.obj
+foo0006.c
+cc foo0007.obj
+foo0007.c
+cc foo0008.obj
+foo0008.c
+cc foo0009.obj
+foo0009.c
+cc foo0010.obj
+foo0010.c
+cc foo0011.obj
+foo0011.c
+cc foo0012.obj
+foo0012.c
+cc foo0013.obj
+foo0013.c
+cc foo0014.obj
+foo0014.c
+cc foo0015.obj
+foo0015.c
+cc foo0016.obj
+foo0016.c
+cc foo0017.obj
+foo0017.c
+cc foo0018.obj
+foo0018.c
+cc foo0019.obj
+foo0019.c
+cc foo0020.obj
+foo0020.c
+cc foo0021.obj
+foo0021.c
+cc foo0022.obj
+foo0022.c
+cc foo0023.obj
+foo0023.c
+cc foo0024.obj
+foo0024.c
+cc foo0025.obj
+foo0025.c
+cc foo0026.obj
+foo0026.c
+cc foo0027.obj
+foo0027.c
+cc foo0028.obj
+foo0028.c
+cc foo0029.obj
+foo0029.c
+cc foo0030.obj
+foo0030.c
+link main

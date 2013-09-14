@@ -1,23 +1,23 @@
-wcc386 -zq -fo=hello.obj hello.c
-wcl386 -zq -fe=hello.exe hello.obj
+compile hello.obj from hello.c
+link hello.exe from hello.obj
 sleep 2
 sleep 2
-%append hello0.h
+change hello0.h
 hello.obj will be built because of hello0.h
-wcc386 -zq -fo=hello.obj hello.c
+compile hello.obj from hello.c
 hello.exe will be built because of hello.obj
-wcl386 -zq -fe=hello.exe hello.obj
+link hello.exe from hello.obj
 sleep 2
-%append hello1.h
+change hello1.h
 hello.obj will be built because of hello1.h
-wcc386 -zq -fo=hello.obj hello.c
+compile hello.obj from hello.c
 hello.exe will be built because of hello.obj
-wcl386 -zq -fe=hello.exe hello.obj
+link hello.exe from hello.obj
 sleep 2
-%append hello0.h
-%append hello1.h
+change hello0.h
+change hello1.h
 hello.obj will be built because of hello0.h
 hello.obj will be built because of hello1.h
-wcc386 -zq -fo=hello.obj hello.c
+compile hello.obj from hello.c
 hello.exe will be built because of hello.obj
-wcl386 -zq -fe=hello.exe hello.obj
+link hello.exe from hello.obj

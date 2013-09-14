@@ -1,29 +1,43 @@
+# it is necessary to use OW compiler
+# for checking .autodepend feature
 .c.obj : .autodepend
-        wcc386 -zq -fo=$@ $<
+        @echo compile $@ from $<
+!ifeq bld_cpu 386
+        @bwcc386 -zq -fo=$@ $<
+!else ifeq bld_cpu x64
+        @bwcc386 -zq -fo=$@ $<
+!else ifeq bld_cpu axp
+        @bwccaxp -zq -fo=$@ $<
+!else ifeq bld_cpu ppc
+        @bwccppc -zq -fo=$@ $<
+!else ifeq bld_cpu mps
+        @bwccmps -zq -fo=$@ $<
+!endif
 
 all: hello.exe .symbolic
         sleep 2
         @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
         sleep 2
         @%append hello0.h
-        @echo %append hello0.h
+        @echo change hello0.h
         @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
         sleep 2
         @%append hello1.h
-        @echo %append hello1.h
+        @echo change hello1.h
         @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
         sleep 2
         @%append hello0.h
-        @echo %append hello0.h
+        @echo change hello0.h
         @%append hello1.h
-        @echo %append hello1.h
+        @echo change hello1.h
         @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
 
 hello.exe : hello.obj
-        wcl386 -zq -fe=$@ $<
+        @echo link $@ from $<
+        @%write $@ bwcl386 -zq -fe=$@ $<
 
 hello.c : $(__MAKEFILES__)
-        @%write  hello0.h $#include <stdio.h>
+        @%write  hello0.h extern void puts( const char * );
         @%write  hello1.h static void hello( void )
         @%append hello1.h {
         @%append hello1.h     puts( "Hello! Universe." );
