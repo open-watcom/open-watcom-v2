@@ -18,11 +18,11 @@ set PROJNAME=wres library
     <CCCMD> flat386/mf_r/wres.lib   <OWRELROOT>/lib386/wresf.lib
     <CCCMD> flat386/mf_s/wres.lib   <OWRELROOT>/lib386/wresfs.lib
 # OSI 32-bit version
-#    <CCCMD> small386/ms_r/wres.lib  <OWRELROOT>/lib386/osi/wresf.lib
-#    <CCCMD> small386/ms_s/wres.lib  <OWRELROOT>/lib386/osi/wresfs.lib
+#    <CCCMD> osi386/ms_r/wres.lib    <OWRELROOT>/lib386/osi/wresf.lib
+#    <CCCMD> osi386/ms_s/wres.lib    <OWRELROOT>/lib386/osi/wresfs.lib
 # DOS 32-bit version
-    <CCCMD> small386/ms_r/wres.lib  <OWRELROOT>/lib386/dos/wresf.lib
-    <CCCMD> small386/ms_s/wres.lib  <OWRELROOT>/lib386/dos/wresfs.lib
+    <CCCMD> dos386/ms_r/wres.lib    <OWRELROOT>/lib386/dos/wresf.lib
+    <CCCMD> dos386/ms_s/wres.lib    <OWRELROOT>/lib386/dos/wresfs.lib
 # AXP version
 #    <CCCMD> ntaxp/_s/wres.lib       <OWRELROOT>/libaxp/
 # LINUX version
@@ -40,6 +40,10 @@ set PROJNAME=wres library
 #    <CCCMD> dosi86/mh/wres.lib      <OWRELROOT>/lib286/wresh.lib
 # OS2 16-bit version
 #    <CCCMD> os2i86/ml/wres.lib      <OWRELROOT>/lib286/os2/wresl.lib
+
+# Netware version
+    <CCCMD> osi386/ms_r/wres.lib    <OWRELROOT>/lib386/netware/wresf.lib
+    <CCCMD> osi386/ms_s/wres.lib    <OWRELROOT>/lib386/netware/wresfs.lib
 
 [ BLOCK . . ]
 #============
