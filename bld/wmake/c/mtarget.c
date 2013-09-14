@@ -606,10 +606,10 @@ void PrintCList( const CLIST *clist )
 void PrintTargFlags( const TATTR *tattr )
 /***************************************/
 {
-    if( tattr->prec ) {
+    if( tattr->precious ) {
         PrtMsg( INF | NEOL | PTARG_DOTNAME, DotNames[DOT_PRECIOUS] );
     }
-    if( tattr->symb ) {
+    if( tattr->symbolic ) {
         PrtMsg( INF | NEOL | PTARG_DOTNAME, DotNames[DOT_SYMBOLIC] );
     }
     if( tattr->multi ) {
@@ -711,8 +711,8 @@ void PrintTargets( void )
 void TargInitAttr( TATTR *attr )
 /******************************/
 {
-    attr->prec       = FALSE;
-    attr->symb       = FALSE;
+    attr->precious   = FALSE;
+    attr->symbolic   = FALSE;
     attr->multi      = FALSE;
     attr->explicit   = FALSE;
     attr->always     = FALSE;
@@ -725,8 +725,8 @@ void TargInitAttr( TATTR *attr )
 void TargAttrOrAttr( TATTR *tattr, TATTR attr )
 /*********************************************/
 {
-    tattr->prec       |= attr.prec;
-    tattr->symb       |= attr.symb;
+    tattr->precious   |= attr.precious;
+    tattr->symbolic   |= attr.symbolic;
     tattr->multi      |= attr.multi;
     tattr->explicit   |= attr.explicit;
     tattr->always     |= attr.always;

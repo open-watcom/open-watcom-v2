@@ -57,8 +57,8 @@ typedef struct sufsufList   SLIST;
  */
 struct TargAttr {
     BIT     multi       : 1;    /* .multiple flag                       */
-    BIT     prec        : 1;    /* .precious flag                       */
-    BIT     symb        : 1;    /* .symbolic flag                       */
+    BIT     precious    : 1;    /* .precious flag                       */
+    BIT     symbolic    : 1;    /* .symbolic flag                       */
     BIT     explicit    : 1;    /* .explicit flag                       */
     BIT     always      : 1;    /* .always flag                         */
     BIT     auto_dep    : 1;    /* .auto_depend flag                    */

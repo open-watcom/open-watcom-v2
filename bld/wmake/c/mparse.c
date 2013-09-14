@@ -275,7 +275,7 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
                 pattr->auto_dep = TRUE;
                 break;
             case DOT_PRECIOUS:
-                pattr->prec = TRUE;
+                pattr->precious = TRUE;
                 break;
             case DOT_MULTIPLE:
                 pattr->multi= TRUE;
@@ -284,7 +284,7 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
                 pattr->multi= TRUE;
                 // fall through
             case DOT_SYMBOLIC:
-                pattr->symb = TRUE;
+                pattr->symbolic = TRUE;
                 break;
             case DOT_EXPLICIT:
                 pattr->explicit = TRUE;
@@ -425,7 +425,7 @@ STATIC void parseTargDep( TOKEN_T t, TLIST **btlist )
 
         dep = NewDepend();
         TargInitAttr( &attr );
-        attr.symb = TRUE;
+        attr.symbolic = TRUE;
     }
 
     /* now we attach this depend to each target */

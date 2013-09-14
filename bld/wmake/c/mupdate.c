@@ -124,7 +124,7 @@ STATIC void getStats( TARGET *targ )
         if( targ->touched ) {           /* used with symbolic, -t, -n, -q */
             targ->date = YOUNGEST_DATE;
             targ->existing = TRUE;
-        } else if( targ->attr.symb ) {
+        } else if( targ->attr.symbolic ) {
             targ->existing = FALSE;
             targ->date = OLDEST_DATE;
         } else if( CacheTime( targ->node.name, &targ->date ) != RET_SUCCESS ) {
@@ -151,7 +151,7 @@ STATIC BOOLEAN targExists( TARGET *targ )
     if( targ->existing ) {
         return( TRUE );
     }
-    if( targ->attr.symb ) {
+    if( targ->attr.symbolic ) {
         return( FALSE );
     }
 
@@ -251,7 +251,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
         if( ExecCList( err ) != RET_SUCCESS ) {
             PrtMsg( FTL | S_COMMAND_RET_BAD, DotNames[DOT_ERROR] );
         }
-    } else if( !(targ->attr.prec || targ->attr.symb) ) {
+    } else if( !(targ->attr.precious || targ->attr.symbolic) ) {
         if( !Glob.hold && targExists( targ ) ) {
             if( Glob.erase || GetYes( SHOULD_FILE_BE_DELETED ) ) {
                 if( unlink( targ->node.name ) != 0 ) {
@@ -319,7 +319,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, time_t max_time )
     if( Glob.touch ) {
         ++cListCount;
         ResetExecuted();
-        if( targ->attr.symb == FALSE ) {
+        if( targ->attr.symbolic == FALSE ) {
             CacheRelease();
             if( TouchFile( targ->node.name ) != RET_SUCCESS ) {
                 PrtMsg( ERR | COULD_NOT_TOUCH, targ->node.name );
@@ -349,13 +349,13 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, time_t max_time )
                 targ->cmds_done = TRUE;
                 return( RET_SUCCESS );
             }
-            if( targ->attr.symb != FALSE ) {    /* 13-Dec-90 DJG */
+            if( targ->attr.symbolic != FALSE ) {    /* 13-Dec-90 DJG */
                 targ->cmds_done = TRUE;
                 return( RET_SUCCESS );
             }
             if( targ->allow_nocmd ) {
                 /* for UNIX folks: make target symbolic */
-                targ->attr.symb = TRUE;
+                targ->attr.symbolic = TRUE;
                 return( RET_SUCCESS );
             }
             PrtMsg( FTL | NO_DEF_CMDS_FOR_MAKE,
@@ -830,7 +830,7 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
         if( !targ->scolon || !targ->existing ) {
             exec_cmds = TRUE;
         }
-        if( targ->attr.symb || targ->attr.always ) {
+        if( targ->attr.symbolic || targ->attr.always ) {
             exec_cmds = TRUE;
         }
         /* 11-sep-92 AFS if all targets must be made, so should this one */
@@ -953,7 +953,7 @@ RET_T Update( TARGET *targ )
         }
     }
 
-    if( (targ->attr.symb || Glob.noexec || Glob.query)
+    if( (targ->attr.symbolic || Glob.noexec || Glob.query)
         && startcount != cListCount ) {
         targ->existing = TRUE;
         targ->touched = TRUE;
@@ -962,7 +962,7 @@ RET_T Update( TARGET *targ )
     }
 
     target_exists = targExists( targ );                         /* 18-nov-91 */
-    if( target_exists || targ->attr.symb || Glob.ignore ) {
+    if( target_exists || targ->attr.symbolic || Glob.ignore ) {
         // Target exists or it is symbolic or we're ignoring errors,
         // therefore everyone's happy and we can charge forward
         PrtMsg( DBG | INF | TARGET_IS_UPDATED, targ->node.name );
@@ -1028,7 +1028,7 @@ static struct exStack exGetCurVars( void )
         }
         if( buf.targ == NULL ) {
             curtarg = exStack[walk].targ;
-            if( curtarg != NULL && ! curtarg->attr.symb ) {
+            if( curtarg != NULL && ! curtarg->attr.symbolic ) {
                 /* we want non-NULL and non-SYMBOLIC! (30-jan-92 AFS) */
                 buf.targ = curtarg;
             }
