@@ -77,7 +77,7 @@ extern BOOLEAN  SufExists( const char *suf );
 extern BOOLEAN  SufBothExist( const char *sufsuf );
 extern void     AddSuffix( char *name );
 extern void     SetSufPath( const char *name, const char *path );
-extern void     AddCreator( const char *sufsuf, const char *fullsufsuf );
+extern char     *AddCreator( const char *sufsuf );
 extern void     PrintSuffixes( void );
 extern SUFFIX   *FindSuffix( const char *name );
 extern RET_T    TrySufPath( char *buffer, const char *filename, TARGET **chktarg, BOOLEAN tryenv );

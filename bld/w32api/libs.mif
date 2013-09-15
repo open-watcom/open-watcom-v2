@@ -166,16 +166,16 @@ all : $(dirs) $(libs) .SYMBOLIC
 .obj.lib:
     $(librarian) $(libflags) $<
 
-{ddk/}.def{ddk/}.lbc:
+{ddk}.def{ddk}.lbc:
     awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
 
-{ddk/}.lbc{ddk/}.lib:
+{ddk}.lbc{ddk}.lib:
     $(librarian) $(libflags) @$<
 
-{ddk/}.obj{ddk/}.lib:
+{ddk}.obj{ddk}.lib:
     $(librarian) $(libflags) $<
 
-{directx/}.c{directx/}.lib: $(w32api_autodepends)
+{directx}.c{directx}.lib: $(w32api_autodepends)
 !ifeq verbose 1
     $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
 !else
@@ -183,13 +183,13 @@ all : $(dirs) $(libs) .SYMBOLIC
     @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
 !endif
 
-{directx/}.def{directx/}.lbc:
+{directx}.def{directx}.lbc:
     awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
 
-{directx/}.lbc{directx/}.lib:
+{directx}.lbc{directx}.lib:
     $(librarian) $(libflags) @$<
 
-{directx/}.obj{directx/}.lib:
+{directx}.obj{directx}.lib:
     $(librarian) $(libflags) $<
 
 vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj

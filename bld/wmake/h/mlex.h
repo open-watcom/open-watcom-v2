@@ -245,10 +245,7 @@ typedef enum {
 extern const char * const   DotNames[];
 extern union CurAttrUnion {
     union {
-        struct ptrs {
-            char    *p1;
-            char    *p2;
-        } ptr;
+        char            *ptr;
         FormQualifiers  form;
         DotName         dotname;
     } u;

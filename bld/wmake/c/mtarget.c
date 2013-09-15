@@ -378,8 +378,12 @@ void FreeSList( SLIST *slist )   /* non-recursive */
 
     while( slist != NULL ) {
         cur = slist;
-        FreeSafe( cur->targ_path );
-        FreeSafe( cur->dep_path );
+        if( *cur->targ_path != NULLCHAR ) {
+            FreeSafe( cur->targ_path );
+        }
+        if( *cur->dep_path != NULLCHAR ) {
+            FreeSafe( cur->dep_path );
+        }
         KillTarget( cur->cretarg->node.name );
         slist = slist->next;
         cur->next = freeSLists;

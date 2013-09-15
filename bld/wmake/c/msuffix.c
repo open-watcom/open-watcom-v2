@@ -39,8 +39,9 @@
 #include "pathgrp.h"
 #include "mrcmsg.h"
 #include "msg.h"
-#include "msuffix.h"
 #include "mtarget.h"
+#include "mvecstr.h"
+#include "msuffix.h"
 
 
 #define HASH_PRIME  13
@@ -325,8 +326,32 @@ STATIC CREATOR *newCreator( void )
 }
 
 
-void AddCreator( const char *sufsuf, const char *fullsufsuf )
-/************************************************************
+STATIC char *getFullSufSuf( const SUFFIX *deps, const char *dep, const SUFFIX *targs, const char *targ )
+/******************************************************************************************************/
+{
+    VECSTR      fullsufsuf;
+
+    fullsufsuf = StartVec();
+    if( *dep != NULLCHAR ) {
+        WriteNVec( fullsufsuf, "{", 1 );
+        WriteVec( fullsufsuf, dep );
+        WriteNVec( fullsufsuf, "}", 1 );
+    }
+    WriteNVec( fullsufsuf, ".", 1 );
+    WriteVec( fullsufsuf, deps->node.name );
+    if( *targ != NULLCHAR ) {
+        WriteNVec( fullsufsuf, "{", 1 );
+        WriteVec( fullsufsuf, targ );
+        WriteNVec( fullsufsuf, "}", 1 );
+    }
+    WriteNVec( fullsufsuf, ".", 1 );
+    WriteVec( fullsufsuf, targs->node.name );
+    return( FinishVec( fullsufsuf ) );
+}
+
+
+char *AddCreator( const char *sufsuf )
+/*************************************
  * add the creation .src.dest
  */
 {
@@ -337,6 +362,10 @@ void AddCreator( const char *sufsuf, const char *fullsufsuf )
     CREATOR     **cur;
     SLIST       *slist;
     SLIST       **sl;
+    char        *fullsufsuf;
+    char        *cur_targ_path;
+    char        *cur_dep_path;
+    char        buf[_MAX_PATH];
 
     assert( sufsuf != NULL && sufsuf[0] == DOT && strchr( sufsuf + 1, DOT ) != NULL );
 
@@ -354,11 +383,28 @@ void AddCreator( const char *sufsuf, const char *fullsufsuf )
         }
     }
 
+    cur_targ_path = targ_path;
+    if( *targ_path != NULLCHAR ) {
+        _makepath( buf, NULL, targ_path, NULL, NULL );
+        cur_targ_path = StrDupSafe( FixName( buf ) );
+    }
+    cur_dep_path = dep_path;
+    if( *dep_path != NULLCHAR ) {
+        _makepath( buf, NULL, dep_path, NULL, NULL );
+        cur_dep_path = StrDupSafe( FixName( buf ) );
+    }
+
     sl = NULL;
     if( *cur != NULL && src->id == (*cur)->suffix->id ) {
         for( slist = (*cur)->slist; ; slist = slist->next ) {
-            if( stricmp( slist->targ_path, targ_path ) == 0 && stricmp( slist->dep_path, dep_path ) == 0 ) {
-                return;
+            if( stricmp( slist->targ_path, cur_targ_path ) == 0 && stricmp( slist->dep_path, cur_dep_path ) == 0 ) {
+                if( *cur_targ_path != NULLCHAR ) {
+                    FreeSafe( cur_targ_path );
+                }
+                if( *cur_dep_path != NULLCHAR ) {
+                    FreeSafe( cur_dep_path );
+                }
+                return( StrDupSafe( slist->cretarg->node.name ) );
             }
             if( slist->next == NULL ) {
                 sl = &slist->next;
@@ -376,15 +422,18 @@ void AddCreator( const char *sufsuf, const char *fullsufsuf )
         *cur = new;
     }
 
+    fullsufsuf = getFullSufSuf( src, cur_dep_path, dest, cur_targ_path );
+
     slist = NewSList();
-    slist->targ_path = StrDupSafe( targ_path );
-    slist->dep_path = StrDupSafe( dep_path );
+    slist->targ_path = cur_targ_path;
+    slist->dep_path = cur_dep_path;
     slist->cretarg = NewTarget( fullsufsuf );
     slist->cretarg->special = TRUE;
     slist->cretarg->sufsuf  = TRUE;
     slist->cretarg->depend = NewDepend();
     slist->next = *sl;
     *sl = slist;
+    return( fullsufsuf );
 }
 
 

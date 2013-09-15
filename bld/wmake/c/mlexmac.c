@@ -171,7 +171,7 @@ TOKEN_T LexMSDollar( STRM_T s )
             temp[2] = NULLCHAR;
         }
 
-        CurAttr.u.ptr.p1 = CatModifier( temp, FALSE );
+        CurAttr.u.ptr = CatModifier( temp, FALSE );
         return( MAC_NAME );
 
     } else {
@@ -296,7 +296,7 @@ STATIC TOKEN_T lexSubString( STRM_T s )
     text[pos] = NULLCHAR;
     WriteVec( vec, text );
 
-    CurAttr.u.ptr.p1 = FinishVec( vec );
+    CurAttr.u.ptr = FinishVec( vec );
     return( state );
 }
 #ifdef __WATCOMC__
@@ -381,7 +381,7 @@ TOKEN_T LexMacDef( STRM_T s )
     UnGetCH( s );
 
     *cur = NULLCHAR;
-    CurAttr.u.ptr.p1 = StrDupSafe( text );
+    CurAttr.u.ptr = StrDupSafe( text );
 
     if( onlyws ) {
         return( MAC_WS );

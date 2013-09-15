@@ -433,13 +433,13 @@ all : $(dirs) $(headers) .SYMBOLIC
 .mh.h:
     $(splice)
 
-{ddk/}.mh{ddk/}.h:
+{ddk}.mh{ddk}.h:
     $(splice)
 
-{directx/}.mh{directx/}.h:
+{directx}.mh{directx}.h:
     $(splice)
 
-{GL/}.mh{GL/}.h:
+{GL}.mh{GL}.h:
     $(splice)
 
 .mh.rh:

@@ -824,8 +824,8 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
     case MAC_NAME:                      /* fall through */
     case MAC_WS:
     case MAC_PUNC:
-        p = CurAttr.u.ptr.p1;
-        CurAttr.u.ptr.p1  = NULL;
+        p = CurAttr.u.ptr;
+        CurAttr.u.ptr  = NULL;
         return( p );
 
     default:
@@ -876,7 +876,7 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
 
         if( t == MAC_CLOSE && end2 != MAC_CLOSE ) {
             t = MAC_PUNC;
-            CurAttr.u.ptr.p1 = StrDupSafe( ")" );
+            CurAttr.u.ptr = StrDupSafe( ")" );
         }
 
         if(     t == TOK_END               /* always stops at these */
@@ -900,7 +900,7 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
     switch( t ) {
     case MAC_PUNC:
     case MAC_WS:
-        InsString( CurAttr.u.ptr.p1, TRUE );
+        InsString( CurAttr.u.ptr, TRUE );
         break;
     case TOK_EOL:       /* fall through */
         UnGetCH( EOL );
@@ -1086,9 +1086,9 @@ STATIC char *PartDeMacroProcess( void )
                 if( wsvec == NULL ) {
                     wsvec = StartVec();
                 }
-                WriteVec( wsvec, CurAttr.u.ptr.p1 );
+                WriteVec( wsvec, CurAttr.u.ptr );
             }
-            FreeSafe( CurAttr.u.ptr.p1 );
+            FreeSafe( CurAttr.u.ptr );
             break;
         case MAC_TEXT:
             if( wsvec != NULL && !leadingws ) {
@@ -1096,8 +1096,8 @@ STATIC char *PartDeMacroProcess( void )
                 wsvec = NULL;
             }
             leadingws = FALSE;
-            WriteVec( vec, CurAttr.u.ptr.p1 );
-            FreeSafe( CurAttr.u.ptr.p1 );
+            WriteVec( vec, CurAttr.u.ptr );
+            FreeSafe( CurAttr.u.ptr );
             break;
         default:
 #ifdef DEVELOPMENT

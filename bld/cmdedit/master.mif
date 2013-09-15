@@ -43,11 +43,11 @@ extra_a_flags_os2 = -D_OS=_OS2
 .c.obj:
         $(cc) $< -w3 $(extra_c_flags_$(host_os)) -d1 -fo=$@ $(inc_dirs_sys)
 
-.c{$(dll_subdir)/}.obj:
+.c{$(dll_subdir)}.obj:
         @if not exist $(dll_subdir) mkdir $(dll_subdir)
         $(cc) $< -w3 -oxs -d1 -fo=$@ -zu $(inc_dirs_sys)
 
-.c{cobjs/}.obj:
+.c{cobjs}.obj:
         @if not exist cobjs mkdir cobjs
         $(cc) $< -w3 -oxs -d1 -fo=$@ -D__CMDSHELL__ $(inc_dirs_sys)
 

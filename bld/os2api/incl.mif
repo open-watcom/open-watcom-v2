@@ -156,25 +156,25 @@ all : $(dirs) $(headers) .SYMBOLIC
 .mh.h:
         $(splice)
 
-{arpa/}.mh{arpa/}.h:
+{arpa}.mh{arpa}.h:
         $(splice)
 
-{GL/}.mh{GL/}.h:
+{GL}.mh{GL}.h:
         $(splice)
 
-{machine/}.mh{machine/}.h:
+{machine}.mh{machine}.h:
         $(splice)
 
-{net/}.mh{net/}.h:
+{net}.mh{net}.h:
         $(splice)
 
-{netinet/}.mh{netinet/}.h:
+{netinet}.mh{netinet}.h:
         $(splice)
 
-{protocol/}.mh{protocol/}.h:
+{protocol}.mh{protocol}.h:
         $(splice)
 
-{sys/}.mh{sys/}.h:
+{sys}.mh{sys}.h:
         $(splice)
 
 !ifeq host_cpu 386
