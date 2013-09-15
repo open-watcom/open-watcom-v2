@@ -299,8 +299,8 @@ STATIC time_t findMaxTime( TARGET *targ, DEPEND *imp_dep, time_t max_time )
 }
 
 
-STATIC RET_T perform( TARGET *targ, DEPEND *dep, SLIST *slist, time_t max_time )
-/******************************************************************************/
+STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_time )
+/*********************************************************************************/
 {
     CLIST   *clist;
     CLIST   *before;
@@ -331,12 +331,12 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, SLIST *slist, time_t max_time )
     }
 
     /* means that this is a sufsuf made implicit rule */
-    if( slist == NULL ) {
+    if( impldep == NULL ) {
         clist = dep->clist;
         depend = dep;
         impliedDepend = NULL;
     } else {
-        clist = DupCList( slist->cretarg->depend->clist );
+        clist = impldep->clist;
         depend = targ->depend;
         impliedDepend = dep;
     }
@@ -358,8 +358,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, SLIST *slist, time_t max_time )
                 targ->attr.symbolic = TRUE;
                 return( RET_SUCCESS );
             }
-            PrtMsg( FTL | NO_DEF_CMDS_FOR_MAKE,
-                DotNames[DOT_DEFAULT], targ->node.name );
+            PrtMsg( FTL | NO_DEF_CMDS_FOR_MAKE, DotNames[DOT_DEFAULT], targ->node.name );
         }
     }
     if( !Glob.noexec ) {
@@ -378,9 +377,6 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, SLIST *slist, time_t max_time )
     exPush( targ, depend, impliedDepend );
     ret = carryOut( targ, clist, findMaxTime( targ, dep, max_time ) );
     exPop();
-    if( slist != NULL ) {
-        FreeCList( clist );
-    }
     if( ret == RET_ERROR ) {
         exit( ExitSafe( EXIT_ERROR ) );
     }
@@ -491,19 +487,18 @@ STATIC RET_T isOutOfDate( TARGET *targ, TARGET *deptarg, BOOLEAN *outofdate )
 }
 
 
-STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, SLIST *slist, BOOLEAN must )
-/******************************************************************************************
+STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, TARGET *cretarg, BOOLEAN must )
+/**********************************************************************************************
  * perform cmds if targ is older than imptarg || must
  *
  * targ     is the target to be updated
  * imptarg  is the dependent for target (ie: "targ : imptarg" )
- * slist    is the implicit rule to use
+ * cretarg  is the implicit rule to use
  * must     must we do it?
  */
 {
     RET_T   ret;
     DEPEND  *newdep;
-    TLIST   *newtlist;
     time_t  max_time;
 
     max_time = OLDEST_DATE;
@@ -511,7 +506,7 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, SLIST *slist, BOO
         /* there was an error making imptarg before, so just abort */
         return( RET_ERROR );
     }
-    if( slist->cretarg->attr.always ) {
+    if( cretarg->attr.always ) {
         must = TRUE;
     }
 
@@ -519,7 +514,7 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, SLIST *slist, BOO
         return( RET_ERROR );
     }
 
-    if( !must && USE_AUTO_DEP( slist->cretarg ) ) {
+    if( !must && USE_AUTO_DEP( cretarg ) ) {
         if( autoOutOfDate( targ, &max_time ) ) {
             must = TRUE;
         }
@@ -529,15 +524,14 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, SLIST *slist, BOO
 
         /* construct a depend for perform */
 
-        newdep           = DupDepend( slist->cretarg->depend );
-        newtlist         = NewTList();
-        newtlist->target = imptarg;
-        newdep->targs    = newtlist;
+        newdep                = DupDepend( cretarg->depend );
+        newdep->targs         = NewTList();
+        newdep->targs->target = imptarg;
 
         /* handle implied attributes (.symb/.prec/.multi) */
-        TargAttrOrAttr( &targ->attr, slist->cretarg->attr );
+        TargAttrOrAttr( &targ->attr, cretarg->attr );
 
-        ret = perform( targ, newdep, slist, max_time );
+        ret = perform( targ, newdep, newdep, max_time );
         FreeDepend( newdep );           /* don't need depend any more */
 
         if( ret != RET_SUCCESS ) {
@@ -631,7 +625,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
                     slistDef = curslist;
                 }
             }
-            if( curslist->targ_path[0] == NULLCHAR && curslist->dep_path[0] == NULLCHAR ) {
+            if( *curslist->targ_path == NULLCHAR && *curslist->dep_path == NULLCHAR ) {
                 slistEmptyTargDepPath = curslist;
             }
 
@@ -705,7 +699,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
          */
         if( targExists( imptarg ) ) {
             /* it exists - now we perform the implicit cmd list, and return */
-            ret = implyMaybePerform( targ, imptarg, slist, must );
+            ret = implyMaybePerform( targ, imptarg, slist->cretarg, must );
             if( newtarg && !Glob.noexec ) {
                 /* destroy the implied target, because the info in the target
                  * structure is nicely stored on disk (unless Glob.noexec)
