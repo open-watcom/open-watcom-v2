@@ -6,7 +6,6 @@
 
 /htmlhelp/*
 !/htmlhelp/makefile
-/htmlhelp/*/*
 
 /nt/*
 !/nt/makefile
@@ -16,7 +15,6 @@
 
 /pdf/*
 !/pdf/makefile
-/pdf/tmp/*
 
 /ps/*
 !/ps/makefile
