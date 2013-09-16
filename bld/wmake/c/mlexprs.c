@@ -306,10 +306,8 @@ STATIC char *getCurlPath( void )
     s = PreGetCH();
 
     if( s == L_CURL_PAREN ) {
-        s = PreGetCH();
-        while( s != R_CURL_PAREN && s != EOL && pos < _MAX_PATH ) {
+        for( s = PreGetCH(); s != R_CURL_PAREN && s != EOL && pos < _MAX_PATH; s = PreGetCH() ) {
             path[pos++] = s;
-            s = PreGetCH();
         }
         path[pos] = NULLCHAR;
         if( s == EOL ) {
@@ -408,11 +406,9 @@ STATIC TOKEN_T lexDotName( void )
     s = PreGetCH();         /* next char */
 
     if( s == DOT ) {        /* maybe of form "."{extc}*"."{extc}* */
-        ext[pos++] = DOT;
-        s = PreGetCH();     /* next char */
-        while( pos < MAX_SUFFIX && isextc( s ) ) {
+        ext[pos++] = s;
+        for( s = PreGetCH(); pos < MAX_SUFFIX && isextc( s ); s = PreGetCH() ) {
             ext[pos++] = s;
-            s = PreGetCH();
         }
         if( pos == MAX_SUFFIX ) {
             PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 ); //NOTREACHED
@@ -535,11 +531,9 @@ STATIC char *DeMacroDoubleQuote( BOOLEAN IsDoubleQuote )
     if( s == STRM_TMP_LEX_START ) {
         PreGetCH();  /* Eat STRM_TMP_LEX_START */
         pos = 0;
-        s = PreGetCH();
-        while( s != STRM_MAGIC && pos < _MAX_PATH ) {
+        for( s = PreGetCH(); s != STRM_MAGIC && pos < _MAX_PATH; s = PreGetCH() ) {
             assert( s != EOL || s != STRM_END );
             buffer[pos++] = s;
-            s = PreGetCH();
         }
 
         if( pos >= _MAX_PATH ) {
@@ -554,34 +548,29 @@ STATIC char *DeMacroDoubleQuote( BOOLEAN IsDoubleQuote )
 
     StartDoubleQuote = IsDoubleQuote;
 
-    current = p;
-    while( *current != NULLCHAR ) {
-        /* Found the start of a Double Quoted String */
-        if( *current == DOUBLEQUOTE && !IsDoubleQuote ) {
-            if( current != p ) {
-                UnGetCH( STRM_MAGIC );
-                InsString( StrDupSafe( current ), TRUE );
-                UnGetCH( STRM_TMP_LEX_START );
-                *current = NULLCHAR;
-                return( p );
-            }
-            IsDoubleQuote = TRUE;
-            ++current;
-            continue;
-        }
-        /* Found the end of the Double Quoted String */
-        if( *current == DOUBLEQUOTE && IsDoubleQuote ) {
-            if( *(current + 1) != NULLCHAR) {
-                UnGetCH( STRM_MAGIC );
-                InsString( StrDupSafe( current + 1 ), TRUE );
-                UnGetCH( STRM_TMP_LEX_START );
-                *(current + 1) = NULLCHAR;
-                return( p );
+    for( current = p; *current != NULLCHAR; ++current ) {
+        if( *current == DOUBLEQUOTE ) {
+            if( !IsDoubleQuote ) {
+                /* Found the start of a Double Quoted String */
+                if( current != p ) {
+                    UnGetCH( STRM_MAGIC );
+                    InsString( StrDupSafe( current ), TRUE );
+                    UnGetCH( STRM_TMP_LEX_START );
+                    *current = NULLCHAR;
+                    return( p );
+                }
+                IsDoubleQuote = TRUE;
             } else {
+                /* Found the end of the Double Quoted String */
+                if( *(current + 1) != NULLCHAR) {
+                    UnGetCH( STRM_MAGIC );
+                    InsString( StrDupSafe( current + 1 ), TRUE );
+                    UnGetCH( STRM_TMP_LEX_START );
+                    *(current + 1) = NULLCHAR;
+                }
                 return( p );
             }
         }
-        ++current;
     }
 
     if( !StartDoubleQuote && !IsDoubleQuote ) {

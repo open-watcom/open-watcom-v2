@@ -243,8 +243,7 @@ STATIC FLIST *DupFList( const FLIST *old )
     head->keep     = old->keep;
 
     cur = head;
-    old = old->next;
-    while( old != NULL ) {
+    for( old = old->next; old != NULL; old = old->next ) {
         new = NewFList();
         new->fileName = StrDupSafe( old->fileName );
         if( old->body != NULL ) {
@@ -256,7 +255,6 @@ STATIC FLIST *DupFList( const FLIST *old )
         cur->next     = new;
 
         cur = new;
-        old = old->next;
     }
 
     return( head );
@@ -279,15 +277,13 @@ CLIST *DupCList( const CLIST *old )
     head->inlineHead = DupFList( old->inlineHead );
 
     cur = head;
-    old = old->next;
-    while( old != NULL ) {
+    for( old = old->next; old != NULL; old = old->next ) {
         new = NewCList();
         new->text       = StrDupSafe( old->text );
         new->inlineHead = DupFList( old->inlineHead );
         cur->next = new;
 
         cur = new;
-        old = old->next;
     }
 
     return( head );
@@ -308,13 +304,10 @@ TLIST *DupTList( const TLIST * old )
         new = NewTList();
         new ->target = old->target;
         currentNew = new;
-        currentOld = old->next;
-        while( currentOld != NULL ) {
+        for( currentOld = old->next; currentOld != NULL; currentOld = currentOld->next ) {
             currentNew->next = NewTList();
             currentNew->next->target = currentOld->target;
             currentNew = currentNew->next;
-            currentOld = currentOld->next;
-
         }
     }
     return( new );

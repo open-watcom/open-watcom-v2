@@ -441,12 +441,10 @@ RET_T GetFileLine( const char **pname, UINT16 *pline )
 {
     SENT    *cur;
 
-    cur = headSent;
-    while( cur != NULL ) {
+    for( cur = headSent; cur != NULL; cur = cur->next ) {
         if( cur->type == SENT_FILE ) {
             break;
         }
-        cur = cur->next;
     }
 
     if( cur == NULL ) {
@@ -489,8 +487,7 @@ void dispSENT( void )
 
     if( headSent ) {
         PrtMsg( INF | PRNTSTR, "\n[stream contents:]" );
-        cur = headSent;
-        while( cur ) {
+        for( cur = headSent; cur != NULL; cur = cur->next ) {
             pos = FmtStr( buf, "[type %d, ", cur->type );
             switch( cur->type ) {
             case SENT_FILE:
@@ -520,7 +517,6 @@ void dispSENT( void )
                 PrtMsg( INF | PRNTSTR, buf );
                 break;
             }
-            cur = cur->next;
         }
     } else {
         PrtMsg( INF | PRNTSTR, "[stream empty]" );

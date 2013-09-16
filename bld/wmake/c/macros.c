@@ -624,12 +624,11 @@ char *DeMacroSpecial( char *InString)
     int     pos;
 
     assert( InString != NULL );
-    current = InString;
     old     = InString;
 
     outString = StartVec();
 
-    while( *current != NULLCHAR ) {
+    for( current = InString; *current != NULLCHAR; ++current ) {
         if( *current == SPECIAL_TMP_DOL_C ) {
             CatNStrToVec( outString, old, current - old );
             pos = 0;
@@ -652,7 +651,6 @@ char *DeMacroSpecial( char *InString)
             CatStrToVec( outString, tempString );
             FreeSafe( tempString);
         }
-        ++current;
     }
     CatNStrToVec( outString, old, current - old + 1 );
     return( FinishVec( outString ) );

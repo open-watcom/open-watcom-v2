@@ -65,7 +65,7 @@ STATIC void doBuiltIns( const char *makeopts )
  * perform the builtin commands
  */
 {
-    TLIST   *list;
+    TLIST   *tlist;
     char    buf[2048];
     char    *cpy;
 
@@ -75,15 +75,15 @@ STATIC void doBuiltIns( const char *makeopts )
         cpy = MallocSafe( 2048 + strlen( makeopts ) );
         FmtStr( cpy, buf, makeopts );
         InsString( cpy, FALSE );
-        list = Parse();
-        FreeTList( list );
+        tlist = Parse();
+        FreeTList( tlist );
         strcpy(cpy, "MAKE=" );
         if( _cmdname( cpy + sizeof "MAKE=" - 1 ) == NULL ) {
             strcat( cpy, "wmake" );
         }
         InsString( cpy, FALSE );
-        list = Parse();
-        FreeTList( list );
+        tlist = Parse();
+        FreeTList( tlist );
         if( Glob.compat_nmake || Glob.compat_unix ) {
             // suffixes must be parsed before builtins
             const char  *suffices = MSSuffixList;
@@ -91,8 +91,8 @@ STATIC void doBuiltIns( const char *makeopts )
 
             FmtStr( cpy, "%%MAKEFLAGS=$(%%MAKEFLAGS) %F", makeopts );
             InsString( cpy, FALSE );
-            list = Parse();
-            FreeTList( list );
+            tlist = Parse();
+            FreeTList( tlist );
             if( Glob.compat_posix ) {
                 suffices = POSIXSuffixList;
                 builtins = POSIXBuiltIn;
@@ -102,16 +102,16 @@ STATIC void doBuiltIns( const char *makeopts )
             }
             FmtStr( cpy, "%F", suffices );
             InsString( cpy, FALSE );
-            list = Parse();
-            FreeTList( list );
+            tlist = Parse();
+            FreeTList( tlist );
             FmtStr( buf, "%F", builtins );
         } else {
             FmtStr( buf, "%F", SuffixList );
         }
         FmtStr( cpy, buf, makeopts );
         InsString( cpy, FALSE );
-        list = Parse();
-        FreeTList( list );
+        tlist = Parse();
+        FreeTList( tlist );
         FreeSafe( cpy );
         DoingBuiltIn = FALSE;
     }
@@ -124,7 +124,7 @@ static void setFirstTarget( TLIST *potential_first )
 /**************************************************/
 {
     if( firstTargFound != NULL || potential_first == NULL ) {
-        if( potential_first ) {
+        if( potential_first != NULL ) {
             FreeTList( potential_first );
         }
         return;
@@ -483,15 +483,11 @@ STATIC void print( void )
     PrintTargets();
 }
 
-STATIC void ignoreNoCommands( const TLIST *targ )
+STATIC void ignoreNoCommands( const TLIST *tlist )
 {
-    TLIST const     *current;
-
-    current = targ;
     // set targets to be OK if there are no commands to update it
-    while( current != NULL ) {
-        current->target->allow_nocmd = TRUE;
-        current = current->next;
+    for( ; tlist != NULL; tlist = tlist->next ) {
+        tlist->target->allow_nocmd = TRUE;
     }
 }
 

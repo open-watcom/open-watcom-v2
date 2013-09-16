@@ -346,9 +346,9 @@ STATIC RET_T processInlineFile( int handle, const char *body,
     int         currentSent;
     BOOLEAN     firstTime;
     VECSTR      outText;
+    char        c;
 
     firstTime = TRUE;
-    index       = 0;
     currentSent = 0;
     ret         = RET_SUCCESS;
 
@@ -356,11 +356,11 @@ STATIC RET_T processInlineFile( int handle, const char *body,
 
     // we will push the whole body back into the stream to be fully
     // deMacroed
-    while( body [index] != NULLCHAR ) {
-        if( body[index] == EOL ) {
-            InsString( body+currentSent, FALSE );
+    for( index = 0; (c = body[index++]) != NULLCHAR; ) {
+        if( c == EOL ) {
+            InsString( body + currentSent, FALSE );
             DeMacroBody = ignoreWSDeMacro( FALSE, ForceDeMacro() );
-            currentSent = index + 1;
+            currentSent = index;
             if( writeToFile ) {
                 size_t bytes = strlen( DeMacroBody );
 
@@ -394,7 +394,6 @@ STATIC RET_T processInlineFile( int handle, const char *body,
             }
             FreeSafe( DeMacroBody );
         }
-        index++;
     }
     return( ret );
 }
@@ -414,21 +413,17 @@ STATIC char *RemoveBackSlash( const char *inString )
     char    buffer[_MAX_PATH];
     char    *current;
     int     pos;
+    char    c;
 
     assert( inString != NULL );
-    current = (char *)inString;
-    pos = 0;
 
-    while( *current != NULLCHAR && pos < _MAX_PATH - 1 ) {
-        if( *current == BACKSLASH ) {
-            if( *(current + 1) == DOUBLEQUOTE ) {
-                buffer[pos++] = DOUBLEQUOTE;
-                current = current + 2;
-                continue;
+    for( pos = 0, current = (char *)inString; (c = *current++) != NULLCHAR && pos < _MAX_PATH - 1; ) {
+        if( c == BACKSLASH ) {
+            if( *current == DOUBLEQUOTE ) {
+                c = *current++;
             }
         }
-        buffer[pos++] = *( current ++ );
-
+        buffer[pos++] = c;
     }
     buffer[pos] = NULLCHAR;
 
@@ -442,11 +437,9 @@ STATIC RET_T VerbosePrintTempFile( const FLIST *head )
     FLIST const *current;
     RET_T       ret = RET_SUCCESS; // success if list empty
 
-    current = head;
-    while( current != NULL ) {
+    for( current = head; current != NULL; current = current->next ) {
         assert( current->fileName != NULL );
         ret = processInlineFile( 0, current->body, current->fileName, FALSE );
-        current = current->next;
     }
     return( ret );
 }
@@ -531,10 +524,11 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
     WriteVec( newCommand, "" );
     index      = 0;
     start      = index;
-    current    = head;
 
-    while( current != NULL && ret == RET_SUCCESS &&
-           cmdText[index] != NULLCHAR ) {
+    for( current = head;
+        current != NULL && ret == RET_SUCCESS && cmdText[index] != NULLCHAR;
+        current = current->next )
+    {
         // if the filename is the inline symbol then we need change
         // the filename into a temp filename
         if( strcmp( current->fileName, INLINE_SYMBOL ) == 0 ) {
@@ -571,7 +565,6 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
                 noKeepList     = temp;
             }
         }
-        current = current->next;
     }
     CatNStrToVec( newCommand, cmdText+start, strlen( cmdText ) - start );
     FreeSafe( cmdText );
@@ -590,29 +583,23 @@ STATIC int findInternal( const char *cmd )
 {
     char * const    *key;
     size_t          len;
-    char            buff[COM_MAX_LEN];
+    char            buff[COM_MAX_LEN + 1];
 
     assert( cmd != NULL );
     /* test if of form x: */
     if( isalpha( *cmd ) && cmd[1] == ':' && cmd[2] == NULLCHAR ) {
         return( CNUM );
     }
-    for( ;; ) {
-        key = bsearch( &cmd, dosInternals, CNUM, sizeof( char * ), KWCompare );
-        if( key != NULL ) {
-            break;
-        }
+    while( (key = bsearch( &cmd, dosInternals, CNUM, sizeof( char * ), KWCompare )) == NULL ) {
         len = strlen( cmd );
-        if( len > 1 && len < COM_MAX_LEN ) {
-            if( cmd[len - 1] == '.' ) {
-                // should work if buff == cmd (i.e., cd..)
-                strcpy( buff, cmd );
-                buff[len - 1] = '\0';
-                cmd = buff;
-                continue;
-            }
+        // should work if buff == cmd (i.e., cd..)
+        if( len < 2 || len > COM_MAX_LEN || cmd[len - 1] != '.' ) {
+            return( -1 );
         }
-        return( -1 );
+        // remove '.' from the command end
+        strcpy( buff, cmd );
+        buff[len - 1] = '\0';
+        cmd = buff;
     }
     return( (int)( key - (char **)dosInternals ) );
 }
@@ -642,17 +629,12 @@ STATIC RET_T percentMake( char *arg )
             break;
         }
         more_targets = FALSE;
-        finish = start;
-        for( ;; ) {
-            if( *finish == NULLCHAR ) {
-                break;
-            }
+        for( finish = start; *finish != NULLCHAR; ++finish ) {
             if( isws( *finish ) ) {
                 more_targets = TRUE;
                 *finish = NULLCHAR;
                 break;
             }
-            ++finish;
         }
 
         /* try to find this file on path or in targets */
@@ -1327,16 +1309,12 @@ STATIC const char *nextVar( const char *str, const char *var, size_t varlen )
 
     assert( str != NULL && var != NULL && *var == '%' );
 
-    p = strchr( str, '%' );
-    for( ;; ) {
-        if( p == NULL ) {
-            return( NULL );
-        }
+    for( p = strchr( str, '%' ); p != NULL; p = strchr( p + 1, '%' ) ) {
         if( strncmp( p, var, varlen ) == 0 ) {
-            return( p );
+            break;
         }
-        p = strchr( p+1, '%' );
     }
+    return( p );
 }
 
 
@@ -1654,9 +1632,10 @@ STATIC RET_T handleRM( char *cmd )
     if( Glob.noexec )
         return RET_SUCCESS;
         
-    rt = getRMArgs( cmd, &flags, &pfname );
-
-    while( RET_SUCCESS == rt ) {
+    for( rt = getRMArgs( cmd, &flags, &pfname ); 
+        rt == RET_SUCCESS;
+        rt = getRMArgs( NULL, NULL, &pfname ) ) 
+    {
         RemoveDoubleQuotes( (char *)pfname, strlen( pfname ) + 1, pfname );
 
         if( strpbrk( pfname, WILD_METAS ) == NULL ) {
@@ -1677,10 +1656,9 @@ STATIC RET_T handleRM( char *cmd )
                 } while( (dfile = DoWildCard( NULL )) != NULL );
             }
         }
-        rt = getRMArgs( NULL, NULL, &pfname );
     }
 
-    if( RET_WARN == rt ) {
+    if( rt == RET_WARN ) {
         rt = RET_SUCCESS;
     }
 
@@ -1699,14 +1677,12 @@ STATIC BOOLEAN hasMetas( const char *cmd )
 #elif defined( __OS2__ ) || defined( __UNIX__ )
     const char  *p;
 
-    p = cmd;
-    while( *p != NULLCHAR ) {
+    for( p = cmd; *p != NULLCHAR; ++p ) {
         if( *p == SHELL_ESC && p[1] != NULLCHAR ) {
             ++p;
         } else if( strchr( SHELL_METAS, *p ) != NULL ) {
             return( TRUE );
         }
-        ++p;
     }
     return( FALSE );
 
@@ -1722,7 +1698,7 @@ static void dumpCommand( char *cmd )
 
     // trim trailing white space before printing
     z = cmd;
-    for( p = cmd; *p; ++p ) {
+    for( p = cmd; *p != NULLCHAR; ++p ) {
         if( !isws( *p ) ) {
             z = p;
         }
@@ -2077,7 +2053,7 @@ RET_T ExecCList( CLIST *clist )
 
     assert( clist != NULL );
 
-    while( clist != NULL ) {
+    for( ; clist != NULL; clist = clist->next ) {
         ret = writeInlineFiles( clist->inlineHead, &(clist->text) );
         currentFlist = clist->inlineHead;
         if( ret == RET_SUCCESS ) {
@@ -2097,8 +2073,6 @@ RET_T ExecCList( CLIST *clist )
             closeCurrentFile();
             return( ret );
         }
-
-        clist = clist->next;
     }
     closeCurrentFile();
     return( ret );
@@ -2114,8 +2088,7 @@ STATIC void destroyNKList( void )
     VECSTR          outText;
     char            *tempstr;
 
-    temp = noKeepList;
-    while( temp != NULL ) {
+    for( temp = noKeepList; temp != NULL; temp = temp->next ) {
         if( Glob.noexec ) {
             if( !Glob.noheader ) {
                 PrtMsg( INF | NEOL | JUST_A_TAB );
@@ -2128,7 +2101,6 @@ STATIC void destroyNKList( void )
             FreeSafe( tempstr );
         }
         remove( temp->fileName );
-        temp = temp->next;
     }
     FreeNKList( noKeepList );
 }

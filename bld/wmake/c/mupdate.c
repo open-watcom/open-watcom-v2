@@ -391,9 +391,8 @@ RET_T MakeList( TLIST *tlist )
     TARGET  *targ;
 
     ret = RET_SUCCESS;
-    while( tlist != NULL ) {
+    for( ; tlist != NULL; tlist = tlist->next ) {
         targ = tlist->target;
-        tlist = tlist->next;
         if( targ->mentioned == FALSE ) {
             PrtMsg( WRN | TARGET_NOT_MENTIONED, targ->node.name );
             targ->mentioned = TRUE;
@@ -752,9 +751,8 @@ STATIC void ExpandWildCards( TARGET *targ, DEPEND *depend )
 
    assert( depend != NULL );
 
-   tlist = depend->targs;
    currentEnd = outTList = NULL;
-   while( tlist != NULL ) {
+   for( tlist = depend->targs; tlist != NULL; tlist = tlist->next ) {
        temp = NULL;
        // In Microsoft it is possible to have macros in the dependency.
        if( Glob.compat_nmake ) {
@@ -766,7 +764,6 @@ STATIC void ExpandWildCards( TARGET *targ, DEPEND *depend )
        } else {
            WildTList( &temp, tlist->target->node.name, TRUE, TRUE );
        }
-       tlist = tlist->next;
        if( outTList != NULL ) {
            currentEnd->next = temp;
        } else {
@@ -1029,7 +1026,7 @@ static struct exStack exGetCurVars( void )
 char *GetCurDeps( BOOLEAN younger, BOOLEAN isMacInf )
 /**********************************************************/
 {
-    TLIST           *walk;
+    TLIST           *tlist;
     VECSTR          vec;
     BOOLEAN         written;
     TARGET          *targ;
@@ -1057,8 +1054,8 @@ char *GetCurDeps( BOOLEAN younger, BOOLEAN isMacInf )
     vec = StartVec();
     written = FALSE;
 
-    for( walk = cur.dep->targs; walk != NULL; walk = walk->next ) {
-        targ = walk->target;
+    for( tlist = cur.dep->targs; tlist != NULL; tlist = tlist->next ) {
+        targ = tlist->target;
         if( !younger || dateCmp( cur.targ->date, targ->date ) < 0 ) {
             if( written ) {
                 WriteVec( vec, " " );
@@ -1107,18 +1104,18 @@ const char *GetLastDep( void )
 /***********************************/
 {
     struct exStack  cur;
-    TLIST           *walk;
+    TLIST           *tlist;
 
     cur = exGetCurVars();
     if( cur.impDep != NULL ) {
         cur.dep = cur.impDep;
     }
     if( cur.dep != NULL && cur.dep->targs != NULL ) {
-        walk = cur.dep->targs;
-        while( walk->next != NULL ) {
-            walk = walk->next;
+        tlist = cur.dep->targs;
+        while( tlist->next != NULL ) {
+            tlist = tlist->next;
         }
-        return( walk->target->node.name );
+        return( tlist->target->node.name );
     }
     return( NULL );
 }

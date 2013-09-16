@@ -555,10 +555,8 @@ STATIC void linkCList( TLIST *btlist, CLIST *bclist )
      * Attach cmds to the targets.  Assumes that for each of the targets,
      * the last depend in the list target->depend is the owner of this clist.
      */
-    tlist = btlist;
-    while( tlist != NULL ) {
+    for( tlist = btlist; tlist != NULL; tlist = tlist->next ) {
         curtarg = tlist->target;
-        tlist = tlist->next;            /* advance to next in tlist */
 
         assert( curtarg->depend != NULL );  /* linkDepend() assures this */
         walk = &curtarg->depend;
@@ -852,7 +850,6 @@ STATIC FLIST *GetInlineFile( char **commandIn )
 
     newCommand = StartVec();
 
-    index = 0;
     start = 0;
     /*
      * check for << in the cmdText if found then substitute this
@@ -863,7 +860,7 @@ STATIC FLIST *GetInlineFile( char **commandIn )
      * this part will remove the << from the command text if the inline file
      * is explicitly defined
      */
-    while( cmdText[index] != NULLCHAR ) {
+    for( index = 0; cmdText[index] != NULLCHAR; ++index ) {
         if( cmdText[index] == LESSTHAN ) {
             if( cmdText[index + 1] == LESSTHAN ) {
                 // Add the current vector into the new command
@@ -897,7 +894,6 @@ STATIC FLIST *GetInlineFile( char **commandIn )
                 start = index + 2;
             }
         }
-        ++index;
     }
     WriteNVec( newCommand, cmdText + start, index - start );
     FreeSafe( cmdText );

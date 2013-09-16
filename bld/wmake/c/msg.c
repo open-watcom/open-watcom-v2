@@ -242,13 +242,10 @@ STATIC char *strDec5( char *dest, UINT16 num )
 
     assert( dest != NULL );
 
-
-    temp = dest + 4;
     res.quot = num;
-    while( temp >= dest ) {
+    for( temp = dest + 4; temp >= dest; --temp ) {
         res = div( res.quot, 10 );
         *temp = res.rem + '0';
-        --temp;
     }
     return( dest + 5 );
 }
