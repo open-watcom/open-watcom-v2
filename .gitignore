@@ -49,8 +49,8 @@ binbuild
 
 /distrib/ow/open-watcom-*
 /distrib/ow/filelist
-/distrib/ow/*/filelist
-/distrib/ow/*/setup.*
+/distrib/ow/*/*
+!/distrib/ow/*/makefile
 
 /rel/
 /pass/
