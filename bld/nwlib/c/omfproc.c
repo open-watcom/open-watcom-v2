@@ -34,7 +34,7 @@
 struct lname {
     struct lname        *next;
     char                local;
-    char                len;
+    unsigned char       len;
     char                name[ 1 ];
 };
 
@@ -279,7 +279,7 @@ static void getcomdat( void )
     if( ln->local )
         return;
     memcpy( NameBuff, ln->name, ln->len );
-    NameBuff[ (int)ln->len ] = '\0';
+    NameBuff[ ln->len ] = '\0';
     AddOMFSymbol( S_COMDAT );
 }
 
