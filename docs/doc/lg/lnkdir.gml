@@ -154,6 +154,7 @@
 .dir incremental        opincrem.gml    elf os2 pharlap qnx win16 win32
 .dir internalrelocs     opintern.gml    os2
 .dir language           ldlangua.gml    all
+.dir largeaddressaware  oplargaw.gml    win32
 .dir libfile            ldlibfil.gml    all
 .dir libpath            ldlibpat.gml    all
 .dir library            ldlibrar.gml    all
@@ -184,6 +185,7 @@
 .if '&overlay' eq 'yes' .do begin
 .dir noindirect         opnoindi.gml    dos
 .do end
+.* .dir nolargeaddressaware oplargaw.gml    win64
 .dir norelocs           opnorelo.gml    qnx win32
 .dir nostdcall          opnostdc.gml    win32
 .dir nostub             opnostub.gml    os2 win16 win32

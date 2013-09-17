@@ -1056,6 +1056,7 @@ objs_lg = &
 ../doc/lg/opimplib.gml &
 ../doc/lg/opincrem.gml &
 ../doc/lg/opintern.gml &
+../doc/lg/oplargaw.gml &
 ../doc/lg/oplinear.gml &
 ../doc/lg/oplnkver.gml &
 ../doc/lg/oplongli.gml &
@@ -1075,6 +1076,7 @@ objs_lg = &
 ../doc/lg/opnodefa.gml &
 ../doc/lg/opnoexte.gml &
 ../doc/lg/opnoindi.gml &
+../doc/lg/opnolarg.gml &
 ../doc/lg/opnorelo.gml &
 ../doc/lg/opnostdc.gml &
 ../doc/lg/opobjali.gml &
