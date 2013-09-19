@@ -32,7 +32,6 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include "wio.h"
 #include "wrglbl.h"
 #include "wrmemi.h"
@@ -59,7 +58,7 @@ void WRMemOpen( void )
 {
 #ifdef TRMEM
     TRFileHandle = STDERR_FILENO;
-    TRMemHandle = _trmem_open( malloc, free, realloc, _expand,
+    TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
                                &TRFileHandle, TRPrintLine,
                                _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
                                _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );

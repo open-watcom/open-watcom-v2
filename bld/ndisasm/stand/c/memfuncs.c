@@ -40,13 +40,6 @@ static int          TRFileHandle;   /* stream to put output on */
 static void     MemPrintLine( void *, const char * buff, size_t len );
 #endif
 
-#if defined( NLM ) || !defined( __WATCOMC__ )
-    /* There is no equivalent expand function in NetWare or non-Watcom libs. */
-    #define _expand NULL
-#else
-    #include <malloc.h>
-#endif
-
 void MemOpen( void )
 {
 #ifdef TRMEM
@@ -55,7 +48,7 @@ void MemOpen( void )
     #else
         TRFileHandle = STDERR_FILENO;
     #endif
-    TRMemHandle = _trmem_open( malloc, free, realloc, _expand,
+    TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
             &TRFileHandle, MemPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );

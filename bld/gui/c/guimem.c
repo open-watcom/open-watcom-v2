@@ -32,11 +32,11 @@
 #include "guiwind.h"
 #include <stdlib.h>
 #include "wio.h"
+#include "guimem.h"
 #ifdef TRMEM
     #include "trmem.h"
+    #include "clibext.h"
 #endif
-#include "guimem.h"
-#include "clibext.h"
 
 #ifdef TRMEM
 _trmem_hdl  GUIMemHandle;
@@ -45,13 +45,6 @@ static void GUIMemPrintLine( void *, const char * buff, size_t len );
 
 static int  GUIMemOpened = 0;
 
-#endif
-
-#if defined( NLM ) || !defined( __WATCOMC__ )
-    /* There is no equivalent expand function in NetWare or non-Watcom libs. */
-    #define _expand NULL
-#else
-    #include <malloc.h>
 #endif
 
 extern void GUIMemRedirect( int handle )
@@ -75,7 +68,7 @@ extern void GUIMemOpen( void )
 #else
         GUIMemFileHandle = STDERR_FILENO;
 #endif
-        GUIMemHandle = _trmem_open( malloc, free, realloc, _expand,
+        GUIMemHandle = _trmem_open( malloc, free, realloc, NULL,
             &GUIMemFileHandle, GUIMemPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );

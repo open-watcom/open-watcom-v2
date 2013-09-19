@@ -36,7 +36,7 @@
 
 #ifdef TRMEM
 #include "trmem.h"
-#include <malloc.h>
+#include "clibext.h"
 
 _trmem_hdl  UIMemHandle;
 static int  UIMemFileHandle;   /* stream to put output on */
