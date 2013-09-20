@@ -1297,7 +1297,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
         }
     case T_TIMES_EQUAL:
-    case T_DIVIDE_EQUAL:
+    case T_DIV_EQUAL:
         result_type = op1_type;
         break;
     default:

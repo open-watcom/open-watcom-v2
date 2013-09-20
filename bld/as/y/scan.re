@@ -419,7 +419,7 @@ string                  {
 "+"                     { return( T_PLUS ); }
 "-"                     { return( T_MINUS ); }
 "*"                     { return( T_TIMES ); }
-"/"                     { return( T_DIVIDE ); }
+"/"                     { return( T_DIV ); }
 "%"                     { return( T_MOD ); }
 "~"                     { return( T_NOT ); }
 

@@ -71,8 +71,8 @@ pick( T_MINUS_EQUAL,            "-=",                   TC_ASSIGN_OP,     OPR_MI
 pick( T_MINUS_MINUS,            "--",                   TC_POSTINC,       OPR_POSTDEC )
 pick( T_TIMES,                  "*",                    TC_MUL_OP,        OPR_MUL )
 pick( T_TIMES_EQUAL,            "*=",                   TC_ASSIGN_OP,     OPR_TIMES_EQUAL )
-pick( T_DIVIDE,                 "/",                    TC_MUL_OP,        OPR_DIV )
-pick( T_DIVIDE_EQUAL,           "/=",                   TC_ASSIGN_OP,     OPR_DIV_EQUAL )
+pick( T_DIV,                    "/",                    TC_MUL_OP,        OPR_DIV )
+pick( T_DIV_EQUAL,              "/=",                   TC_ASSIGN_OP,     OPR_DIV_EQUAL )
 pick( T_PERCENT,                "%",                    TC_MUL_OP,        OPR_MOD )
 pick( T_PERCENT_EQUAL,          "%=",                   TC_ASSIGN_OP,     OPR_MOD_EQUAL )
 

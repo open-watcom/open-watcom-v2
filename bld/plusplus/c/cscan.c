@@ -1320,7 +1320,7 @@ static TOKEN scanSlash( int expanding ) // /, /=, // comment, or /*comment*/
     Buffer[0] = '/';
     nc = NextChar();
     Buffer[1] = nc;
-    tok = T_DIVIDE;
+    tok = T_DIV;
     token_len = 1;
     if( nc == '=' ) {
         ++tok;

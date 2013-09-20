@@ -45,7 +45,7 @@ typedef enum {
     ET_FIRST_BINARY,
         ET_TIMES = ET_FIRST_BINARY,
         ET_MOD,
-        ET_DIVIDE,
+        ET_DIV,
         ET_PLUS,
         ET_MINUS,
         ET_SHIFT_L,

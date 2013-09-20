@@ -211,7 +211,7 @@ static expr_tree *binaryFold( expr_tree *tree ) {
             case ET_TIMES:
                 result = l_val * r_val;
                 break;
-            case ET_DIVIDE:
+            case ET_DIV:
                 result = l_val / r_val;
                 break;
             case ET_MOD:
@@ -261,7 +261,7 @@ static expr_tree *binaryFold( expr_tree *tree ) {
             case ET_TIMES:
                 result = l_val * r_val;
                 break;
-            case ET_DIVIDE:
+            case ET_DIV:
                 result = l_val / r_val;
                 break;
             case ET_MOD:
@@ -375,7 +375,7 @@ extern expr_tree *ETBurn( expr_tree *tree ) {
         break;
     case ET_TIMES:
     case ET_MOD:
-    case ET_DIVIDE:
+    case ET_DIV:
     case ET_SHIFT_L:
     case ET_SHIFT_R:
     case ET_AND:
@@ -407,7 +407,7 @@ extern void ETFree( expr_tree *tree ) {
     case ET_MINUS:
     case ET_TIMES:
     case ET_MOD:
-    case ET_DIVIDE:
+    case ET_DIV:
     case ET_SHIFT_L:
     case ET_SHIFT_R:
     case ET_AND:
@@ -432,7 +432,7 @@ static char *nodeNames[] = {
     "Unary Minus",      /* ET_UNARY_MINUS */
     "Times",            /* ET_TIMES */
     "Mod",              /* ET_MOD */
-    "Divide",           /* ET_DIVIDE */
+    "Divide",           /* ET_DIV */
     "Plus",             /* ET_PLUS */
     "Minus",            /* ET_MINUS */
     "Shift_l",          /* ET_SHIFT_L */

@@ -198,7 +198,7 @@ EQ|DUP| T_PLUS,         /* 2B +  */
         T_COMMA,        /* 2C ,  */
 EQ|DUP| T_MINUS,        /* 2D -  */
         T_DOT,          /* 2E .  */
-EQ|     T_DIVIDE,       /* 2F /  */
+EQ|     T_DIV,          /* 2F /  */
         W_0,            /* 30 0  */
         W_1,            /* 31 1  */
         W_2,            /* 32 2  */

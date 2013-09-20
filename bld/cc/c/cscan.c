@@ -969,7 +969,7 @@ static TOKEN ScanSlash( void )
         Buffer[ 0 ] = '/';
         Buffer[ 1 ] = '=';
         Buffer[ 2 ] = '\0';
-        return( T_DIVIDE_EQUAL );
+        return( T_DIV_EQUAL );
     } else if( c == '/' && !CompFlags.strict_ANSI ) {   /* if C++ // style comment */
         if( CompFlags.cpp_output ) {
             CppComment( '/' );
@@ -1005,7 +1005,7 @@ static TOKEN ScanSlash( void )
     } else {
         Buffer[ 0 ] = '/';
         Buffer[ 1 ] = '\0';
-        return( T_DIVIDE );
+        return( T_DIV );
     }
 }
 

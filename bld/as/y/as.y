@@ -83,7 +83,7 @@
 %left   <tree>  T_AND
 %left   <tree>  T_SHIFT_LEFT T_SHIFT_RIGHT
 %left   <tree>  T_PLUS T_MINUS
-%left   <tree>  T_TIMES T_DIVIDE T_MOD
+%left   <tree>  T_TIMES T_DIV T_MOD
 %nonassoc <tree> T_UNARY_MINUS T_NOT T_UNARY_PLUS
 
 :segment _STANDALONE_
@@ -198,7 +198,7 @@ dir_op          : num_expr                                      { DirAddOperand(
                 ;
 
 num_expr        : num_expr T_TIMES num_expr                     { $$ = ETBinary( ET_TIMES, $1, $3 ); }
-                | num_expr T_DIVIDE num_expr                    { $$ = ETBinary( ET_DIVIDE, $1, $3 ); }
+                | num_expr T_DIV num_expr                       { $$ = ETBinary( ET_DIV, $1, $3 ); }
                 | num_expr T_MOD num_expr                       { $$ = ETBinary( ET_MOD, $1, $3 ); }
                 | num_expr T_PLUS num_expr                      { $$ = ETBinary( ET_PLUS, $1, $3 ); }
                 | num_expr T_MINUS num_expr                     { $$ = ETBinary( ET_MINUS, $1, $3 ); }
@@ -262,7 +262,7 @@ reg_indirect    : T_LEFT_PAREN T_REGISTER T_RIGHT_PAREN         { $$ = $2; }
                 ;
                 
 expression      : expression T_TIMES expression                 { $$ = ETBinary( ET_TIMES, $1, $3 ); }
-                | expression T_DIVIDE expression                { $$ = ETBinary( ET_DIVIDE, $1, $3 ); }
+                | expression T_DIV expression                   { $$ = ETBinary( ET_DIV, $1, $3 ); }
                 | expression T_MOD expression                   { $$ = ETBinary( ET_MOD, $1, $3 ); }
                 | expression T_PLUS expression                  { $$ = ETBinary( ET_PLUS, $1, $3 ); }
                 | expression T_MINUS expression                 { $$ = ETBinary( ET_MINUS, $1, $3 ); }

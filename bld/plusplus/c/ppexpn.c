@@ -907,7 +907,7 @@ static boolean CMultiplicative( void )  // reduce a/b or a*b
           case T_TIMES :
             U64MulEq( e1, e2 );
             break;
-          case T_DIVIDE :
+          case T_DIV :
             if( U64Zero( e2 ) ) {
                 U64SetZero( e1 );
             } else if( e1.no_sign || e2.no_sign ) {

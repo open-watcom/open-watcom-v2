@@ -211,8 +211,8 @@ Modified        By              Reason
 %token Y_MINUS_MINUS
 %token Y_TIMES
 %token Y_TIMES_EQUAL
-%token Y_DIVIDE
-%token Y_DIVIDE_EQUAL
+%token Y_DIV
+%token Y_DIV_EQUAL
 %token Y_PERCENT
 %token Y_PERCENT_EQUAL
 %token Y_DOT
@@ -1122,7 +1122,7 @@ multiplicative-expression
     : pm-expression
     | multiplicative-expression Y_TIMES pm-expression
     { $$ = setLocation( PTreeBinary( CO_TIMES, $1, $3 ), &yylp[2] ); }
-    | multiplicative-expression Y_DIVIDE pm-expression
+    | multiplicative-expression Y_DIV pm-expression
     { $$ = setLocation( PTreeBinary( CO_DIVIDE, $1, $3 ), &yylp[2] ); }
     | multiplicative-expression Y_PERCENT pm-expression
     { $$ = setLocation( PTreeBinary( CO_PERCENT, $1, $3 ), &yylp[2] ); }
@@ -1225,7 +1225,7 @@ assignment-operator
     { $$ = setLocation( PTreeBinary( CO_EQUAL, NULL, NULL ), &yylp[1] ); }
     | Y_TIMES_EQUAL
     { $$ = setLocation( PTreeBinary( CO_TIMES_EQUAL, NULL, NULL ), &yylp[1] ); }
-    | Y_DIVIDE_EQUAL
+    | Y_DIV_EQUAL
     { $$ = setLocation( PTreeBinary( CO_DIVIDE_EQUAL, NULL, NULL ), &yylp[1] ); }
     | Y_PERCENT_EQUAL
     { $$ = setLocation( PTreeBinary( CO_PERCENT_EQUAL, NULL, NULL ), &yylp[1] ); }
@@ -2881,7 +2881,7 @@ operator
     { $$ = CO_MINUS; }
     | Y_TIMES
     { $$ = CO_TIMES; }
-    | Y_DIVIDE
+    | Y_DIV
     { $$ = CO_DIVIDE; }
     | Y_PERCENT
     { $$ = CO_PERCENT; }
@@ -2899,7 +2899,7 @@ operator
     { $$ = CO_EQUAL; }
     | Y_TIMES_EQUAL
     { $$ = CO_TIMES_EQUAL; }
-    | Y_DIVIDE_EQUAL
+    | Y_DIV_EQUAL
     { $$ = CO_DIVIDE_EQUAL; }
     | Y_PERCENT_EQUAL
     { $$ = CO_PERCENT_EQUAL; }

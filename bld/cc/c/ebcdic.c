@@ -197,7 +197,7 @@ EQ|     T_TIMES,        /* 5C *  */
 EQ|     T_XOR,          /* 5F ª  */
 
 EQ|DUP| T_MINUS,        /* 60 -  */
-EQ|     T_DIVIDE,       /* 61 /  */
+EQ|     T_DIV,          /* 61 /  */
         0,              /* 62   */
         0,              /* 63   */
         0,              /* 64   */

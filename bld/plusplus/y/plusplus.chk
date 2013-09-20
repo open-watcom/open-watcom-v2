@@ -1242,28 +1242,28 @@ Sample sentence(s) for reduce of rule 129:
   Will never shift token 'Y_TIMES_EQUAL' in this context
 ---
 
-r/r conflict in state 936 on Y_DIVIDE:
+r/r conflict in state 936 on Y_DIV:
 130 (082): new-initializer-opt <-
 129 (081): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 130:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
-Y_DIVIDE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
+Y_DIV Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
-Y_DIVIDE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
+Y_DIV Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 936 on Y_DIVIDE_EQUAL:
+r/r conflict in state 936 on Y_DIV_EQUAL:
 130 (082): new-initializer-opt <-
 129 (081): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 130:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIVIDE_EQUAL
-  Will never shift token 'Y_DIVIDE_EQUAL' in this context
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIV_EQUAL
+  Will never shift token 'Y_DIV_EQUAL' in this context
 Sample sentence(s) for reduce of rule 129:
-  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIVIDE_EQUAL
-  Will never shift token 'Y_DIVIDE_EQUAL' in this context
+  Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIV_EQUAL
+  Will never shift token 'Y_DIV_EQUAL' in this context
 ---
 
 r/r conflict in state 936 on Y_PERCENT:
@@ -1924,32 +1924,32 @@ Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_TIMES_EQU
   Will never shift token 'Y_TIMES_EQUAL' in this context
 ---
 
-r/r conflict in state 989 on Y_DIVIDE:
+r/r conflict in state 989 on Y_DIV:
 130 (082): new-initializer-opt <-
 129 (081): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 130:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
-Y_DIVIDE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
+Y_DIV Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
-Y_DIVIDE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
+Y_DIV Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 989 on Y_DIVIDE_EQUAL:
+r/r conflict in state 989 on Y_DIV_EQUAL:
 130 (082): new-initializer-opt <-
 129 (081): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
 Sample sentence(s) for reduce of rule 130:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIVIDE_EQUAL
-  Will never shift token 'Y_DIVIDE_EQUAL' in this context
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIV_EQUAL
+  Will never shift token 'Y_DIV_EQUAL' in this context
 Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
-Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIVIDE_EQUAL
-  Will never shift token 'Y_DIVIDE_EQUAL' in this context
+Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIV_EQUAL
+  Will never shift token 'Y_DIV_EQUAL' in this context
 ---
 
 r/r conflict in state 989 on Y_PERCENT:

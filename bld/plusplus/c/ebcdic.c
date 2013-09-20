@@ -198,7 +198,7 @@ unsigned char TokValue[]  = {            /* EBCDIC */
         T_XOR,          /* 5F ª  */
 
         T_MINUS,        /* 60 -  */
-        T_DIVIDE,       /* 61 /  */
+        T_DIV,          /* 61 /  */
         0,              /* 62   */
         0,              /* 63   */
         0,              /* 64   */
