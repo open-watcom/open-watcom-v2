@@ -11,12 +11,12 @@ cd $OWOBJDIR
 rm -f $OWBINDIR/wmake
 if [ "$OWUSENATIVETOOLS" -eq "1" ]; then
     ux = `uname`
-    case $ux in
+    case "$ux" in
         FreeBSD)
             make -f ../posmake clean
             make -f ../posmake TARGETDEF=-D__BSD__
             ;;
-        Linux)
+#        Linux)
         *)
             make -f ../posmake clean
             make -f ../posmake TARGETDEF=-D__LINUX__
