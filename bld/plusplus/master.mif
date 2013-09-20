@@ -21,7 +21,7 @@ exename     +=$(target_cpu)
 plusplus_nosymfile = 1
  
 # Extra files to delete on clean
-additional_cleanup = *.u *.int y.out ytab.c *.mbr
+additional_cleanup = *.u *.int y.out ytab.c *.mbr $(dll_subdir)/*.mbr
  
 !include cproj.mif
 !include defrule.mif
