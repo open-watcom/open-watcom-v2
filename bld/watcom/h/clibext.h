@@ -100,11 +100,13 @@
 #define __va_list  va_list
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
 
+#ifndef __cplusplus
 #ifndef max 
 #define max(x,y) (((x)>(y))?(x):(y))
 #endif
 #ifndef min
 #define min(x,y) (((x)<(y))?(x):(y))
+#endif
 #endif
 
 #ifdef __cplusplus

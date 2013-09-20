@@ -46,7 +46,7 @@
 #endif
 
 extern "C" {
-    #include <malloc.h>
+    #include <stdlib.h>
     #if defined( __WINDOWS__ ) || defined( __NT__ )
         #include <windows.h>    //temporary ?
     #endif

@@ -52,6 +52,17 @@ bld_os = linux
 !else ifdef __LINUXPPC__
 bld_cpu = ppc
 bld_os = linux
+!else ifdef __BSD386__
+bld_cpu = 386
+bld_os = bsd
+!else ifdef __BSDX64__
+bld_cpu = x64
+bld_os = bsd
+bld64host_bsd = 1
+bld64host_osi = 1
+!else ifdef __BSDPPC__
+bld_cpu = ppc
+bld_os = bsd
 !endif
 
 !ifdef nulldevice_$(bld_os)

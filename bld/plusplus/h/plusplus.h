@@ -47,7 +47,7 @@
 #include "wcpp.h"
 #include "target.h"
 #if defined( __WATCOMC__ ) && !defined( NDEBUG )
-#include "trap.h"
+#include "wtrap.h"
 #endif
 
 #define ARRAY_SIZE( array ) ( sizeof( array ) / sizeof( array[0] ) )
@@ -126,7 +126,6 @@ typedef unsigned MSG_NUM;           // - message number
 #define NULL_CGREFNO    (0)
 typedef unsigned        CGLABEL;
 typedef unsigned        CGREFNO;
-typedef union  cgvalue  CGVALUE;    // value in intermediate instr.
 typedef unsigned        RTF;        // type for run-time function code
 typedef unsigned        LINE_NO;    // a line number
 typedef unsigned        COLUMN_NO;  // a column number

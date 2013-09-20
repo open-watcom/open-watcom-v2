@@ -32,8 +32,8 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <malloc.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#include <malloc.h>
 #include <process.h>
 #endif
 #include "global.h"

@@ -68,6 +68,7 @@ typedef unsigned_8      sbit;
 #define OS_AIX                  0
 #define OS_DECUNIX              0
 #define OS_LINUX                0
+#define OS_BSD                  0
 
 #if defined( __DOS__ )
     #undef  OS_DOS
@@ -85,6 +86,9 @@ typedef unsigned_8      sbit;
 #elif defined( __LINUX__ )
     #undef  OS_LINUX
     #define OS_LINUX            1
+#elif defined( __BSD__ )
+    #undef OS_BSD
+    #define OS_BSD              1           
 #elif defined( __OS2__ )
     #undef  OS_OS2
     #define OS_OS2              1
@@ -128,7 +132,7 @@ typedef unsigned_8      sbit;
     #define OS_HPUX             1
 #elif defined( _AIX )
     #undef OS_AIX
-    #define OS_AIX             1
+    #define OS_AIX              1
 #elif defined(__DECC) || defined(__DECCXX)
     #if defined(__unix__)
         #undef OS_DECUNIX

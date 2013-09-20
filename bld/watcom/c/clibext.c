@@ -1246,7 +1246,25 @@ char *_cmdname( char *name )
     return( name );
 }
 
-#elif defined __UNIX__
+#elif defined( __BSD__ )
+
+#include <sys/sysctl.h>
+
+char *_cmdname( char *name )
+{
+    int     mib[4];
+    size_t  cb;
+
+    mib[0] = CTL_KERN;
+    mib[1] = KERN_PROC;
+    mib[2] = KERN_PROC_PATHNAME;
+    mib[3] = -1;
+    cb = PATH_MAX;
+    sysctl( mib, 4, name, &cb, NULL, 0 );
+    return( name );
+}
+
+#elif defined( __UNIX__ )
 
 char *_cmdname( char *name )
 {

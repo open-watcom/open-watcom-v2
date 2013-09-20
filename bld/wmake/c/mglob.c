@@ -119,6 +119,19 @@ const char FAR *BuiltIns = {
         #error Unknown CPU architecture
     #endif
 
+#elif defined( __BSD__ ) || defined( __freeBSD__ )
+    "__BSD__=\n"
+    "__UNIX__=\n"
+    #if defined( _M_X64 ) || defined( __AMD64__ ) || defined( __amd64 )
+        "__BSDX64__=\n"
+    #elif defined(_M_IX86) || defined(__i386__) || defined(__i386)
+        "__BSD386__=\n"
+    #elif defined(__PPC__) || defined(__ppc__) || defined(__powerpc__)
+        "__BSDPPC__=\n"
+    #else
+        #error Unknown CPU architecture
+    #endif
+
 #endif
 };
 

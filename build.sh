@@ -10,8 +10,18 @@ if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
 rm -f $OWBINDIR/wmake
 if [ "$OWUSENATIVETOOLS" -eq "1" ]; then
-    make -f ../posmake clean
-    make -f ../posmake
+    ux = `uname`
+    case $ux in
+        FreeBSD)
+            make -f ../posmake clean
+            make -f ../posmake TARGETDEF=-D__BSD__
+            ;;
+        Linux)
+        *)
+            make -f ../posmake clean
+            make -f ../posmake TARGETDEF=-D__LINUX__
+            ;;
+    esac
 else
     wmake -f ../wmake clean
     wmake -f ../wmake

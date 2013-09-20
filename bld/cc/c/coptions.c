@@ -281,6 +281,8 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
         _SetConstTarg( "nt" );
     #elif defined( __DOS__ )
         _SetConstTarg( "dos" );
+    #elif defined( __BSD__ )
+        _SetConstTarg( "bsd" );
     #else
         #error "Target OS not defined"
     #endif

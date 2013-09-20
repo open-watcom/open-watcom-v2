@@ -30,7 +30,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include "linkstd.h"
 #include "msg.h"
 #include "fileio.h"

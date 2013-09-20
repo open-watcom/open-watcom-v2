@@ -1,4 +1,4 @@
-
+wclass_inc_dirs_bsd   = -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
 wclass_inc_dirs_dos   = -I"$(wclass_dir)/dos/hpp" -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
 wclass_inc_dirs_os2   = -I"$(wclass_dir)/pm/hpp" -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
 wclass_inc_dirs_nt    = -I"$(wclass_dir)/win/hpp" -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"

@@ -221,6 +221,8 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         SetTargetLiteral( &target_name, "NT" );
 #elif defined( __DOS__ )
         SetTargetLiteral( &target_name, "DOS" );
+#elif defined( __BSD__ )
+        SetTargetLiteral( &target_name, "BSD" );
 #else
         #error "Target System not defined"
 #endif

@@ -34,7 +34,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include <malloc.h>
 #include "wio.h"
 #include "watcom.h"
 #include "banner.h"

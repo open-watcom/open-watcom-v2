@@ -3,11 +3,10 @@
 # tabs, too!
 
 INCS = -I../h -I../../watcom/h -I../../lib_misc/h -I. $(DEFS)
-DEFS = -D__LINUX__ -D__UNIX__ -DUNIX -Uunix -DBOOTSTRAP
+DEFS = $(TARGETDEF) -D__UNIX__ -DUNIX -Uunix -DBOOTSTRAP
 CFLAGS = -g -O2 $(INCS)
 
 all: $(OWBINDIR)/wmake
-
 
 # Unfortunately there appears to be no portable way of specifying source
 # directories. So we use brute force - it's just this one makefile, once we
