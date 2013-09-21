@@ -30,6 +30,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if defined( __WATCOMC__ )
+#include <malloc.h>
+#endif
 #include "linkstd.h"
 #include "msg.h"
 #include "fileio.h"
