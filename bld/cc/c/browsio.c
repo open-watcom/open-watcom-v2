@@ -105,15 +105,15 @@ Elf32_Ehdr elf_header = {
 #define STR_DBG_REF         ".WATCOM_references\0"
 #define STR_DBG_LINE        ".debug_line\0"
 #define STR_DBG_MACINFO     ".debug_macinfo\0"
-#define OFF_NAME0           (0)
-#define OFF_SHSTRTAB        (OFF_NAME0 + sizeof( STR_NAME0 ) - 1)
-#define OFF_DBG_ABBREV      (OFF_SHSTRTAB + sizeof( STR_SHSTRTAB ) - 1)
-#define OFF_DBG_INFO        (OFF_DBG_ABBREV + sizeof( STR_DBG_ABBREV ) - 1)
-#define OFF_DBG_REF         (OFF_DBG_INFO + sizeof( STR_DBG_INFO ) - 1)
-#define OFF_DBG_LINE        (OFF_DBG_REF + sizeof( STR_DBG_REF ) - 1)
-#define OFF_DBG_MACINFO     (OFF_DBG_LINE + sizeof( STR_DBG_LINE ) - 1)
-#define OFF_MAX             (OFF_DBG_MACINFO + sizeof( STR_DBG_MACINFO ) - 1)
-char string_table[OFF_MAX + 1] = {
+#define OFF_STR_NAME0       (0)
+#define OFF_STR_SHSTRTAB    (OFF_STR_NAME0 + sizeof( STR_NAME0 ) - 1)
+#define OFF_STR_DBG_ABBREV  (OFF_STR_SHSTRTAB + sizeof( STR_SHSTRTAB ) - 1)
+#define OFF_STR_DBG_INFO    (OFF_STR_DBG_ABBREV + sizeof( STR_DBG_ABBREV ) - 1)
+#define OFF_STR_DBG_REF     (OFF_STR_DBG_INFO + sizeof( STR_DBG_INFO ) - 1)
+#define OFF_STR_DBG_LINE    (OFF_STR_DBG_REF + sizeof( STR_DBG_REF ) - 1)
+#define OFF_STR_DBG_MACINFO (OFF_STR_DBG_LINE + sizeof( STR_DBG_LINE ) - 1)
+#define OFF_STR_MAX         (OFF_STR_DBG_MACINFO + sizeof( STR_DBG_MACINFO ) - 1)
+char string_table[OFF_STR_MAX + 1] = {
     STR_NAME0
     STR_SHSTRTAB
     STR_DBG_ABBREV
@@ -123,11 +123,11 @@ char string_table[OFF_MAX + 1] = {
     STR_DBG_MACINFO
 };
 unsigned string_table_offsets[] = {
-    OFF_DBG_ABBREV,
-    OFF_DBG_INFO,
-    OFF_DBG_REF,
-    OFF_DBG_LINE,
-    OFF_DBG_MACINFO
+    OFF_STR_DBG_ABBREV,
+    OFF_STR_DBG_INFO,
+    OFF_STR_DBG_REF,
+    OFF_STR_DBG_LINE,
+    OFF_STR_DBG_MACINFO
 };
 
 Elf32_Shdr section_header_index0 = {
@@ -135,7 +135,7 @@ Elf32_Shdr section_header_index0 = {
 };
 
 Elf32_Shdr section_header_string_table = {
-    OFF_SHSTRTAB,
+    OFF_STR_SHSTRTAB,
     SHT_STRTAB,
     0,
     0,

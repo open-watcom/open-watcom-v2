@@ -200,7 +200,7 @@ static struct tri_graph triGraphs[] = {
     { '\0','\0'}
 };
 
-#define _FIND_ACTUAL( curr ) for( ; curr->alias; curr = curr->sister );
+#define _FIND_ACTUAL( curr ) for( ; curr->alias; curr = curr->sister )
 
 #ifndef NDEBUG
 static OPEN_FILE *activeSrc( void )

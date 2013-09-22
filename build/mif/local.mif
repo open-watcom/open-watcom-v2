@@ -207,6 +207,158 @@ incl_file_opts = -include
 
 ##############################################################################
 #
+# definitions for BSD gcc native compiler
+#
+##############################################################################
+#
+# until freeBSD will be using gcc as system compiler
+# it is necessary to install uptodate gcc version and configure
+# following macros to appropriate values
+# now it is default for gcc 4.7.x
+#
+##############################################################################
+
+!else ifdef __BSD__
+
+!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
+
+# common settings
+############################
+common_cppflags_bsd = -D__BSD__ -D__UNIX__ -D__FLAT__
+
+common_cppflags_386   = -D_M_IX86 -D__386__ -D__BSD_386__
+common_cppflags_x64   = -D_M_X64 -D__BSD_X64__
+common_cppflags_ppc   = -D__PPC__
+
+# common release/debug flags
+common_flags_rel = -O -g
+common_flags_dbg = -g
+!ifeq release 1
+common_flags = $(common_flags_rel)
+!else
+common_flags = $(common_flags_dbg)
+!endif
+
+# Warning flags: all enabled except the ones that have no use besides annoy people
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+common_cflags = $(common_cflags_wng)
+
+common_ldflags_rel =
+common_ldflags_dbg =
+!ifeq release 1
+common_ldflags = $(common_ldflags_rel)
+!else
+common_ldflags = $(common_ldflags_dbg)
+!endif
+
+# Flags for building DLLs
+common_cflags_lib_shared  = -fPIC
+common_clflags_lib_shared = -shared
+
+# DLL/shared library file extension
+ext_lib_shared = .so
+
+# extra objects for linking via cl
+cl_objs_gen =
+cl_objs_dll =
+cl_libs_gen = $(watcom_dir)/$(%OWOBJDIR)/clibext.lib
+cl_libs_dll = $(watcom_dir)/$(%OWOBJDIR)/clibexts.lib
+
+!ifeq sys_dll 1
+cl_objs = $(cl_objs_dll)
+cl_libs = $(cl_libs_dll)
+!else
+cl_objs = $(cl_objs_gen)
+cl_libs = $(cl_libs_gen)
+!endif
+
+# bld settings
+############################
+bcc  = gcc47 -pipe -c
+bcxx = g++47 -pipe -c
+bcl  = gcc47 -pipe
+
+blib      = ar
+
+bld_cc_sys = -fno-asm -fno-common -fsigned-char
+bld_cl_sys =
+
+bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
+
+bld_cppflags = $(common_cppflags_bsd) $(common_cppflags_$(bld_cpu))
+
+bld_cflags   = $(common_cflags) $(common_flags) -o $@
+
+bld_cxxflags = -std=c++11
+
+# options for linking
+bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map -lstdc++
+
+bld_ldflags  = $(bld_extra_ldflags)
+
+# options for linking via cl
+bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
+
+bld_libflags = crs $^@
+
+!ifndef __WATCOM__
+
+# standard settings
+############################
+cc   = gcc47 -pipe -c
+cxx  = g++47 -pipe -c
+cl   = gcc47 -pipe
+
+librarian = ar
+
+cppflags_bsd   = $(common_cppflags_bsd)
+cppflags_osi   = $(common_cppflags_bsd)
+cppflags_386   = $(common_cppflags_386)
+cppflags_ppc   = $(common_cppflags_ppc)
+cppflags_x64   = $(common_cppflags_x64)
+
+cxxflags = -std=c++11
+
+cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
+cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -o $@
+cflags_wind = $(cflags_gen)
+
+# options for linking
+ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map -lstdc++
+
+ldflags_gen  = $(cl_libs_gen) $(extra_ldflags)
+ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll)
+ldflags_wind = $(ldflags_gen)
+
+!ifeq sys_dll 1
+ldflags = $(ldflags_dll)
+!else ifeq sys_windowed 1
+ldflags = $(ldflags_wind)
+!else
+ldflags = $(ldflags_gen)
+!endif
+
+# options for single source utility compilations
+clflags_gen  = $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
+clflags_dll  = $(common_clflags_lib_shared) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
+clflags_wind = $(clflags_gen)
+
+libflags = crs $^@
+
+# options used for setup source code Japanese DBCS character set
+c_japan_charset = -finput-charset=CP932
+
+# options for preprocessing source code
+preproc_opts  = -x c -E
+
+# options for include source code file
+incl_file_opts = -include
+
+!endif
+!endif
+
+##############################################################################
+#
 # definitions for NT native compiler
 #
 ##############################################################################
