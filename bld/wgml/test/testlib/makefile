@@ -68,6 +68,12 @@ gendevcmd = $(%OWROOT)\docs\gml\dos\gendev
 #-------------------------------------------------------
 use_dosemu = dosemu
 
+!else ifeq bld_os bsd
+#-------------------------------------------------------
+# set up to use dosbox to run gendev under freeBSD
+#-------------------------------------------------------
+use_dosemu = dosbox
+
 !else
 !error Unsupported building platform !!!!!!
 !endif

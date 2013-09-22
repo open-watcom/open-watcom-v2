@@ -102,6 +102,9 @@ WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
 !else ifeq bld_os linux
 WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) "$(book_src) ( file $(optfile_wgml)"
 use_dosemu = dosemu
+!else ifeq bld_os bsd
+WGMLCMD = dosbox -c "mount c $(%OWROOT)/docs" -c "mount d ." -c "mount e $(%OWSRCDIR)" -c "d:$(dosemu_wgml_batch)" -noconsole
+use_dosemu = dosbox
 !else
 !error Unsupported building platform !!!!!!
 !endif
@@ -446,7 +449,7 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
     @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
     @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe "$(book_src) ( file $(optfile_wgml)"
-    @%append $(dosemu_wgml_batch) exit
+#    @%append $(dosemu_wgml_batch) exit
 !endif
     @%create $(optfile_wgml)
 !ifeq hbook cpplib
