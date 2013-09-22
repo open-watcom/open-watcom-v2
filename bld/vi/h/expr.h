@@ -41,7 +41,7 @@ typedef enum {
     T_PLUS,
     T_MINUS,
     T_TIMES,
-    T_DIVIDE,
+    T_DIV,
     T_LEFT_PAREN,
     T_RIGHT_PAREN,
     T_EQ,

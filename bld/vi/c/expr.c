@@ -223,7 +223,7 @@ static token _nextToken( void )
         if( ch == '/' ) {
             if( tokenBuffCnt == 0 ) {
                 nextChar();
-                return( T_DIVIDE );
+                return( T_DIV );
             }
             break;
         }
@@ -614,7 +614,7 @@ static long _NEAR cExpr10( void )
         if( currToken == T_TIMES ) {
             nextToken();
             value *= cExpr11();
-        } else if( currToken == T_DIVIDE ) {
+        } else if( currToken == T_DIV ) {
             nextToken();
             temp = cExpr11();
             if( temp == 0 ) {
