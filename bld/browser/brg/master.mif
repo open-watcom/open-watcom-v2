@@ -38,11 +38,11 @@ OBJECTS = &
     util.obj     &
     wtime.obj
 
-!ifdef DBG
+!ifndef NDEBUG
 OBJECTS += debuglog.obj
 !endif
 
-!ifeq browse_trmem 1
+!ifeq merge_trmem 1
 OBJECTS += dmem.obj trmem.obj trmemcpp.obj
 !else
 OBJECTS += mem.obj
@@ -55,7 +55,7 @@ mem_flags = -of+
 !endif
 
 extra_cpp_flags     = -DSTANDALONE_RX=1 -DSTANDALONE_MERGER
-!ifdef DBG
+!ifndef NDEBUG
 extra_cpp_flags     += -DDEBUG=1 -DINSTRUMENTS=1
 !else
 extra_cpp_flags     += -DDEBUG=0 -DINSTRUMENTS=0

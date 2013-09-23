@@ -1,8 +1,8 @@
-#pmake: os_nt cpu_386
+#pmake: nobuild os_nt cpu_386
 
 host_os  = nt
 host_cpu = 386
 
-DBG=1
+merge_release = 0
 
 !include ../master.mif
