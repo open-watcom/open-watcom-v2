@@ -20,6 +20,7 @@ clean : .procedure
  @if exist *.hh rm -f *.hh
  @if exist *.err rm -f *.err
  @if exist *.PTF rm -f *.PTF
+ @if exist *.ptf rm -f *.ptf
  @if exist *.idx rm -f *.idx
  @if exist *.tbl rm -f *.tbl
  @if exist *.kw rm -f *.kw

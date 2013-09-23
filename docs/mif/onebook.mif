@@ -412,7 +412,6 @@ prepare_whpcvt_opts : .PROCEDURE
 !endif
     @%append $(optfile_whpcvt) -hn
     @%append $(optfile_whpcvt) -i
-    @%append $(optfile_whpcvt) $(tmpfile_wgml)
 
 
 ####################################################
@@ -453,7 +452,7 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
     @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
     @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe "$(book_src) ( file $(optfile_wgml)"
-#    @%append $(dosemu_wgml_batch) exit
+    @%append $(dosemu_wgml_batch) exit
 !endif
     @%create $(optfile_wgml)
 !ifeq hbook cpplib
@@ -578,17 +577,21 @@ compile_gml_to_xxx : .PROCEDURE
     @set OWGMLINC=.;$(whelp_incs);$(gml_lib);$(hlp_incs);$(book_incs);$(gml_incs);
     @%make prepare_wgml_opts
     -$(WGMLCMD)
+    @if exist $*.ptf @%erase $*.ptf
+    @$(RENCMD) $(tmpfile_wgml) $*.ptf
     @%make prepare_whpcvt_opts
-    whpcvt -@ $(optfile_whpcvt)
+    whpcvt -@ $(optfile_whpcvt) $*.ptf
     @%create SYSUSR02.GML
     -$(WGMLCMD)
+    @if exist $*.ptf @%erase $*.ptf
+    @$(RENCMD) $(tmpfile_wgml) $*.ptf
     @if exist $*.cn1 @%erase $*.cn1
     @$(RENCMD) SYSUSR03.GML $*.cn1
     @if exist $*.h @%erase $*.h
     @$(RENCMD) SYSUSR02.GML $*.h
     @if exist $*.mix @%erase $*.mix
     @$(RENCMD) SYSUSR01.GML $*.mix
-    whpcvt -h -@ $(optfile_whpcvt)
+    whpcvt -h -@ $(optfile_whpcvt) $*.ptf
 
 ####################################################
 compile_hpj_win : .PROCEDURE
