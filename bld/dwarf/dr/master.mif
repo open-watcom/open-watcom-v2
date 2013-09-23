@@ -62,6 +62,4 @@ extra_c_flags_drutils  = -I"$(lib_misc_dir)/h"
 extra_c_flags_drsearch = -I"$(posix_dir)/h"
 
 dwarfr.lib : $(objs)
-    @%create dr.lbc
-    @for %i in ($(objs)) do @%append dr.lbc %i
-    $(librarian) $(libflags) @dr.lbc
+    $(librarian) $(libflags) $(objs)
