@@ -85,15 +85,15 @@ use_dosemu = dosbox
 .fon.cop:
         @%make gencop1
 
-wgmlst.cop : .EXPLICIT
-        @%make gencopall
-
 default : wgmlst.cop test01.cop test02.cop pstest.cop psspec.cop tdrv01.cop &
         tdrv02.cop pstdrv.cop pssdrv.cop pssfon00.cop pssfon01.cop &
         pssfon02.cop pssfon03.cop pssfon04.cop pssfon05.cop pssfon06.cop &
         pssfon07.cop pssfon08.cop pssfon09.cop tfon00.cop tfon01.cop &
         tfon02.cop tfon03.cop tfon04.cop tfon05.cop tfon06.cop tfon07.cop &
         tfon08.cop tfon09.cop .SYMBOLIC
+
+wgmlst.cop :
+        @%make gencopall
 
 test01.cop : test01.pcd $(dev_common) $(dev_core)
         @%make gencop1

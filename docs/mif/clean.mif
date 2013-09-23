@@ -19,14 +19,14 @@ clean : .procedure
  @if exist *.ph rm -f *.ph
  @if exist *.hh rm -f *.hh
  @if exist *.err rm -f *.err
- @if exist *.ptf rm -f *.ptf
+ @if exist *.PTF rm -f *.PTF
  @if exist *.idx rm -f *.idx
  @if exist *.tbl rm -f *.tbl
  @if exist *.kw rm -f *.kw
  @if exist *.mix rm -f *.mix
  @if exist *.cn1 rm -f *.cn1
- @if exist *.gml rm -f *.gml
- @if exist *.lay rm -f *.lay
+ @if exist *.GML rm -f *.GML
+ @if exist *.LAY rm -f *.LAY
  @if exist *.tim rm -f *.tim
  @if exist *.dat rm -f *.dat
 
@@ -41,7 +41,7 @@ clean : .procedure
  @if exist *.gid @attrib -h *.gid
  @if exist *.gid rm -f *.gid
  
-# delete generated DOSEMU batch file
+# delete generated DOS Emulator batch files
  @if exist *.bat rm -f *.bat
 
 !ifeq dotarget htmlhelp
