@@ -64,15 +64,8 @@ extra_c_flags_fmedit = -bd
 
 extra_rc_flags_win = -30
 
+extra_l_flags_dll     = op implib
 extra_l_flags_dll_win = op rwr
-
-#
-# Dependencies
-#
-!ifdef __WATCOM__
-$(name).lib: $(name).dll
-    $(librarian) $(libflags) +$(name).dll +verimp.obj
-!endif
 
 # systems where version resource must be added to .DLL
 version_res_dll_nt_386 = version.res

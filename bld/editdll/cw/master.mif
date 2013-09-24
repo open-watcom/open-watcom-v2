@@ -32,19 +32,16 @@ extra_l_flags_dll_win += export WEP RESIDENT
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
 
-all: weditcw.dll wedit.lib .SYMBOLIC
+all: weditcw.dll wedit.dll .SYMBOLIC
 
 weditcw.dll : weditcw.obj dll.lnk $(version_res_dll_$(host_os)_$(host_cpu))
     $(linker) name $^@ @dll.lnk file $[@
     @%make bind_version_res_dll
 
 wedit.dll : weditcw.obj dll.lnk $(version_res_dll_$(host_os)_$(host_cpu))
-    $(linker) name $^@ @dll.lnk file $[@
+    $(linker) name $^@ op implib @dll.lnk file $[@
     @%make bind_version_res_dll
 
-wedit.lib : wedit.dll
-    $(librarian) $(libflags) +$[@
-    
 dll.lnk : $(__MAKEFILES__)
     @%write  $@ $(lflags)
     @%append $@ option description 'Open Watcom Editor DLL for Codewright'

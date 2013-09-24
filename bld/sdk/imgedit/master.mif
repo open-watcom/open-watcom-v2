@@ -69,13 +69,12 @@ libs += $(wr_lib)
 
 extra_l_flags     = option map lib { $(libs) }
 
-extra_l_flags_win = option rwr option stack=16k option heapsize=2k lib ddeml.lib
+extra_l_flags_win = option rwr, stack=16k, heapsize=2k lib ddeml.lib
 extra_l_flags_nt  = option stack=100k
 !ifeq host_cpu 386
 extra_l_flags_nt += alias '_WinMain'='_WinMain@16'
 !endif
-extra_l_flags_os2 = option stack=12k option heapsize=2k &
-                    option symfile=$(name).sym
+extra_l_flags_os2 = option stack=12k, heapsize=2k
 
 inc_dirs  = -I. -Ih -I"../h" $(wres_inc_dirs) $(wr_inc_dirs) $(commonui_inc_dirs)
 inc_dirs += -I"$(sdk_misc_dir)" $(wpi_inc_dirs)

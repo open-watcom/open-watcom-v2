@@ -28,24 +28,15 @@ extra_l_flags_dll_nt = initinstance terminstance op stack=40k
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
 
-!ifndef __WATCOM__
 all: weditviw.dll wedit.dll .SYMBOLIC
-!else
-all: weditviw.dll wedit.lib .SYMBOLIC
-!endif
 
 wedit.dll : weditviw.obj $(cl_objs) dll.lnk $(version_res_dll_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
         $(cl) $(clflags) $[@ $(cl_objs) $(ldflags)
 !else
-        $(linker) name $^@ @dll.lnk file $[@
+        $(linker) name $^@ op implib @dll.lnk file $[@
 !endif
         @%make bind_version_res_dll
-
-!ifdef __WATCOM__
-wedit.lib : wedit.dll
-        $(librarian) $(libflags) +$[@
-!endif
 
 weditviw.dll : weditviw.obj $(cl_objs) dll.lnk $(version_res_dll_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__

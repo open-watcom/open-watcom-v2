@@ -23,17 +23,14 @@ extra_l_flags_dll_os2 += op map
 
 .c : ..
 
-all: epmlink.dll wedit.lib .SYMBOLIC
+all: epmlink.dll wedit.dll .SYMBOLIC
 
 epmlink.dll: epmlink.obj dll.lnk
     $(linker) name $@ @$]@ file {$[@}
 
 wedit.dll: epmlink.obj dll.lnk
-    $(linker) name $@ @$]@ file {$[@}
+    $(linker) name $@ op implib @$]@ file {$[@}
     
-wedit.lib: wedit.dll
-    $(librarian) $(libflags) +$<
-
 epmtest.exe : epmtest.obj wedit.lib
     $(linker) name $@ sys os2v2_pm debug all op st=32k file {epmtest.obj} lib {wedit.lib}
 

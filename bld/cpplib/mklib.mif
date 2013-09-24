@@ -53,11 +53,7 @@ lib_flags = -b-c-n-pa
 lib_flags += -s-t-zld
 !endif
 
-!ifdef target_lib_x
 libs : .symbolic $(target_lib) $(target_lib_x) $(files)
-!else
-libs : .symbolic $(target_lib) $(files)
-!endif
     @%null
 
 $(target_lib) : $(target_objs) $(__MAKEFILES__)

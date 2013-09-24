@@ -82,13 +82,13 @@ extra_c_flags_mem        = $(trmem_cover_cflags)
 
 extra_link_res_qnx = usage.u
 
-extra_l_flags     = op map, noredefs
+extra_l_flags     = op map
 extra_l_flags_qnx = op res=$(extra_link_res_qnx), st=24k, off=32k
 
 #####################
 # linker .DLL options
 
-extra_l_flags_dll     = op map, noredefs
+extra_l_flags_dll     = option implib, map
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll', offset=0x69c00000
 extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)'
 
@@ -147,7 +147,6 @@ $(dllname).dll : wlink.res $(comp_objs_dll) $(xlibs) $(version_res_dll_$(host_os
     $(cl) $(clflags_dll) $(comp_objs_dll) $(xlibs) $(ldflags)
 !else
     @%write dll.lnk $(lflags_dll)
-    @%append dll.lnk op implib
     @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
     @for %i in ($(xlibs)) do @%append dll.lnk lib %i
     $(linker) name $@ @dll.lnk

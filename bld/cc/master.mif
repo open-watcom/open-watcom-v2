@@ -20,8 +20,6 @@ cc_autodepends = .autodepend
 
 additional_cleanup = *.int *.u
 
-cc_nosymfile = 1
-
 !include cproj.mif
 !include defrule.mif
 !include dllrule.mif
@@ -94,7 +92,7 @@ extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 extra_link_res_qnx = usage.u
 
-extra_l_flags     = option map, symfile
+extra_l_flags     = option map
 
 # NOTE: "op off=?" must be 8K bigger than the stack size in wlink_sys_qnx_f
 extra_l_flags_qnx = option stack=16k,offset=24k, res=$(extra_link_res_qnx), priv=3
@@ -104,7 +102,7 @@ extra_l_flags_dos = option stack=32k
 #
 # WLINK .DLL options
 #
-extra_l_flags_dll     = option map, symfile
+extra_l_flags_dll     = option implib, map
 extra_l_flags_dll_nt  = initinstance terminstance option offset=0x69400000, modname='$(dllname).dll'
 extra_l_flags_dll_os2 = initinstance terminstance option manyautodata, modname='$(dllname)'
 
@@ -176,7 +174,6 @@ $(dllname).dll : $(depends_dll) $(comp_objs_dll) $(version_res_dll_$(host_os)_$(
         $(cl) $(clflags_dll) $(comp_objs_dll) $(xlibs) $(libs) $(ldflags)
 !else
         @%write dll.lnk $(lflags_dll)
-        @%append dll.lnk op implib
         @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
         @for %i in ($(xlibs)) do @%append dll.lnk lib %i
         $(linker) name $@ @dll.lnk

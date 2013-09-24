@@ -49,7 +49,7 @@ extra_c_flags_asmmatch = -I"$(cg_dir)/intel/h"
 
 extra_link_res_qnx = usage.u
 
-extra_l_flags = option map,symfile
+extra_l_flags = option map
 extra_l_flags += lib $(wres_lib)
 extra_l_flags_qnx = option offset=16k, res=$(extra_link_res_qnx), stack=12k
 extra_l_flags_dos_i86 = option stack=6k

@@ -124,7 +124,7 @@ extra_c_flags_i86 = -zc
 
 # lflags
 #########
-extra_l_flags = op map op symfile
+extra_l_flags = op map
 
 # rc flags
 ###########

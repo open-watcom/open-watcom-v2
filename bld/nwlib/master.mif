@@ -19,8 +19,6 @@ dllname     = wlibd
 wlib_trmem = 1
 !endif
 
-wlib_nosymfile = 1
-
 !include cproj.mif
 !include defrule.mif
 !include dllrule.mif
@@ -103,15 +101,15 @@ extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 ###################
 # linker flags .EXE
 
-extra_l_flags = op map, symfile
+extra_l_flags = op map
 
 extra_l_flags_qnx = op offset=64k, stack=60k
 
 ###################
 # linker flags .DLL
 
-extra_l_flags_dll = op map, symfile
-extra_l_flags_dll_nt = initinstance terminstance op modname='$(dllname).dll', offset=0x6A000000
+extra_l_flags_dll     = option implib, map
+extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll', offset=0x6A000000
 extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op modname='$(dllname)'
 
 ###################
@@ -189,7 +187,6 @@ $(dllname).dll: $(depends_dll) $(xlibs) $(dll_objs) $(version_res_dll_$(host_os)
     $(cl) $(clflags_dll) $(dll_objs) $(xlibs) $(ldflags)
 !else 
     @%write dll.lnk $(lflags_dll)
-    @%append dll.lnk op implib
     @for %i in ($(dll_objs)) do @%append dll.lnk file %i
     @for %i in ($(xlibs)) do @%append dll.lnk lib %i
     $(linker) name $@ @dll.lnk

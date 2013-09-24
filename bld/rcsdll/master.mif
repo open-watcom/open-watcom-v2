@@ -34,27 +34,15 @@ extra_cpp_flags = -D_RCSDLL_
 
 extra_c_flags_win = -zw-zu
 
-extra_l_flags = op map
-
-extra_l_flags_dll = op map
+extra_l_flags_dll = op implib, map
 extra_l_flags_dll_win = op rwr
 extra_l_flags_dll_os2 = initinstance terminstance pm op manyautodata
-
-!ifdef sys_dll
-!ifdef __WATCOM__
-rcsdll.lib: rcsdll.dll
-    $(librarian) $(libflags) +$[@
-!endif
-!else
-rcsdll.lib: $(objs)
-    @%create $^&.lbc
-    @for %f in ($(objs)) do @%append $^&.lbc %f
-    $(librarian) $(libflags) @$^&.lbc
-!endif
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
+
+!ifdef sys_dll
 
 rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
@@ -63,3 +51,10 @@ rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu))
     $(linker) name $@ $(lflags) file {$(objs)}
 !endif
     @%make bind_version_res_dll
+
+!else
+
+rcsdll.lib: $(objs)
+    $(librarian) $(libflags) $(objs)
+
+!endif

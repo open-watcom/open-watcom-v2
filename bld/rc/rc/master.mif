@@ -156,11 +156,11 @@ extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 # lflags stuff
 ###############
-extra_l_flags = option map, symfile
+extra_l_flags = option map
 
 # DLL lflags stuff
 ##################
-extra_l_flags_dll = option map, symfile
+extra_l_flags_dll     = option implib, map
 
 extra_l_flags_dll_nt  += option modname='$(dllname).dll', offset=0x69800000
 extra_l_flags_dll_os2 += option modname='$(dllname)'
@@ -229,7 +229,6 @@ $(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(version_res_dll_$(host_os
         $(cl) $(clflags_dll) $(objs_dll) $(xlibs) $(ldflags)
 !else
         @%write dll.lnk $(lflags_dll)
-        @%append dll.lnk op implib
         @for %i in ($(objs_dll)) do @%append dll.lnk file %i
         @for %i in ($(xlibs)) do @%append dll.lnk lib %i
         $(linker) name $@ @dll.lnk

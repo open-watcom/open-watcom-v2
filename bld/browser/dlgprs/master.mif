@@ -38,14 +38,6 @@ extra_c_flags_mempool = -I"$(browse_dir)/h"
 
 extra_l_flags=op map
 
-#Note that this project need to include windows.h for styles.cpp on every platform
-extra_c_flags_styles_dos   = $(inc_dirs_sys_win)
-extra_c_flags_styles_os2   = $(inc_dirs_sys_win)
-extra_c_flags_styles_linux = $(inc_dirs_sys_win)
-!ifdef extra_c_flags_styles_$(host_os)
-extra_c_flags_styles = $(extra_c_flags_styles_$(host_os))
-!endif
-
 inc_dirs = -I. -I"../h"
 
 dlgprs.exe : prsdlg.gh prsbnd.gh $(c_objs)

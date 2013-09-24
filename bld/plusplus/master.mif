@@ -18,8 +18,6 @@ exename     +=$(target_cpu)
 # Important! The C++ compiler modifies string literals
 #suppress_zc = 1
  
-plusplus_nosymfile = 1
- 
 # Extra files to delete on clean
 additional_cleanup = *.u *.int y.out ytab.c *.mbr $(dll_subdir)/*.mbr
  
@@ -138,7 +136,7 @@ extra_c_flags_memmgr   = $(extra_c_flags_memmgr_$(host_cpu))
 
 extra_link_res_qnx = usage.u
 
-extra_l_flags     = OPTION map, symfile
+extra_l_flags     = OPTION map
  
 extra_l_flags_osi = OPTION stack=64k
 extra_l_flags_dos = OPTION stack=64k
@@ -149,8 +147,8 @@ extra_l_flags_nt  = OPTION stack=0x10000k COMMIT stack=32k
 #
 # wlink .DLL options
 #
-extra_l_flags_dll     = OPTION map, symfile
- 
+extra_l_flags_dll     = option implib, map
+
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll', offset=0x69000000
 extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)', manyautodata
  
@@ -225,7 +223,6 @@ $(dllname).dll : $(depends_dll) $(comp_objs_dll) $(version_res_dll_$(host_os)_$(
     $(cl) $(clflags_dll) $(comp_objs_dll) $(xlibs) $(libs) $(ldflags)
 !else
     @%write dll.lnk $(lflags_dll)
-    @%append dll.lnk op implib
     @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
     @for %i in ($(xlibs)) do @%append dll.lnk library %i
     $(linker) name $@ @dll.lnk

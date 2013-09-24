@@ -57,7 +57,7 @@ inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs) -I"$(sdk_misc_dir)"
 
 rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 
-extra_l_flags_dll = op map
+extra_l_flags_dll = op implib, map
 extra_l_flags_dll_nt = op stack=16k,heap=16k commit heap=8k
 extra_l_flags_dll_win = library commdlg op stack=8k,rwr export WEP RESIDENT
 
@@ -66,11 +66,6 @@ version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
 
 xlibs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
-
-!ifdef __WATCOM__
-$(name).lib: $(name).dll
-        $(librarian) $(libflags) +$[@
-!endif
 
 $(name).dll: rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
