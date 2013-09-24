@@ -795,7 +795,7 @@ int IdeDrvPrintError            // UNLOAD THE DLL
         }
         fprintf( errout, "ERROR with dll: %s\n    %s", inf->dll_name, msg );
         if( inf->dll_status != 0 ) {
-            fprintf( errout, "    return code: %ld", inf->dll_status );
+            fprintf( errout, "    return code: %d", inf->dll_status );
         }
         fputc( '\n', errout );
         fflush( errout );

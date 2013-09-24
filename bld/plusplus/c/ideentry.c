@@ -264,8 +264,8 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     dllinfo.cmd_line = (char*)opts;
     fillInputOutput( input, output );
     WppCompile( &dllinfo, input, output );
-    *fatal_error = CompFlags.fatal_error;
-    return CompFlags.compile_failed;
+    *fatal_error = (IDEBool)CompFlags.fatal_error;
+    return( (IDEBool)CompFlags.compile_failed );
 }
 
 
@@ -288,8 +288,8 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     dllinfo.argv = argv;
     fillInputOutput( input, output );
     WppCompile( &dllinfo, input, output );
-    *fatal_error = CompFlags.fatal_error;
-    return CompFlags.compile_failed;
+    *fatal_error = (IDEBool)CompFlags.fatal_error;
+    return( (IDEBool)CompFlags.compile_failed );
 }
 
 void IDEAPI IDEStopRunning( void )

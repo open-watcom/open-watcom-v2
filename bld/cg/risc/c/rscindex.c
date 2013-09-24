@@ -40,7 +40,7 @@
 #include <assert.h>
 #include "makeins.h"
 
-extern  opcode_defs         String[];
+extern  opcode_entry    String[];
 
 extern  void            SuffixIns(instruction*,instruction*);
 extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);

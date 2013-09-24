@@ -50,7 +50,7 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
     ideHdl = hdl;
     ideCb = cb;
     *info = NULL;
-    return( InitSubSystems() );
+    return( InitSubSystems() != 0 );
 }
 
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
@@ -69,7 +69,7 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fataler
     argv[ 0 ] = "";
     argv[ 1 ] = (char *)opts;
     argv[ 2 ] = NULL;
-    return( WlibMainLine( argv ) );
+    return( WlibMainLine( argv ) != 0 );
 }
 
 IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
@@ -78,9 +78,9 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     char **argv,                // - argument vector
     IDEBool* fatal_error )      // - addr[ fatality indication ]
 {
-    hdl = hdl;
+    hdl = hdl; argc = argc;
     *fatal_error = FALSE;
-    return( WlibMainLine( argv ) );
+    return( WlibMainLine( argv ) != 0 );
 }
 
 void IDEAPI IDEStopRunning( void )

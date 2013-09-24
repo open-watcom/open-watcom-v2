@@ -219,7 +219,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     char        infile[ _MAX_PATH + 2 ];  // +2 for quotes
     char        outfile[ _MAX_PATH + 6 ]; // +6 for -fo="" or -fe=""
     bool        pass1;
-    unsigned    i;
+    int         i;
     int         rc;
 
     curBufPos = formatBuffer;
@@ -347,7 +347,7 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fataler
     rc = RCMainLine( opts, 0, NULL );
     if( rc == -1 && fatalerr != NULL )
         *fatalerr = TRUE;
-    return( rc );
+    return( rc != 0 );
 }
 
 IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool* fatalerr )
@@ -366,7 +366,7 @@ IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool
     rc = RCMainLine( NULL, argc, argv );
     if( rc == -1 && fatalerr != NULL )
         *fatalerr = TRUE;
-    return( rc );
+    return( rc != 0 );
 }
 
 void IDEAPI IDEFreeHeap( void )

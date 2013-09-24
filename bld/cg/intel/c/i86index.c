@@ -37,7 +37,7 @@
 #include "feprotos.h"
 #include "makeins.h"
 
-extern  opcode_defs         String[];
+extern  opcode_entry    String[];
 
 extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
 extern  bool            SegOver(name*);
@@ -130,7 +130,7 @@ extern  bool    IndexOkay( instruction *ins, name *index ) {
         is_temp_index = FALSE;
     }
     name = index->i.index;
-    if( ins->table == (struct opcode_entry *)String ) return( TRUE );
+    if( ins->table == String ) return( TRUE );
     if( name->n.class == N_REGISTER ) {
         return( IsIndexReg( name->r.reg, name->n.name_class, is_temp_index ) );
     }

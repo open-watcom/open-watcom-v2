@@ -66,13 +66,13 @@ __IDEDRV
 } IDEDRV_STATUS;
 
 typedef struct {                // IDEDRV structure
-    char const *dll_name;       // * dll name
-    char const *ent_name;       // * NULL or entry name
-    void *ide_handle;           // # handle, when WATCOM IDE
-    unsigned long drv_status;   // # status: from IDEDRV (IDEDRV_STATUS)
-    unsigned long dll_status;   // # status: from DLL
-    void *dll_handle;           // $ handle for a loaded DLL
-    unsigned loaded         :1; // # TRUE ==> dll is loaded
+    char const  *dll_name;      // * dll name
+    char const  *ent_name;      // * NULL or entry name
+    void        *ide_handle;    // # handle, when WATCOM IDE
+    int         drv_status;     // # status: from IDEDRV (IDEDRV_STATUS)
+    int         dll_status;     // # status: from DLL
+    void        *dll_handle;    // $ handle for a loaded DLL
+    unsigned    loaded      :1; // # TRUE ==> dll is loaded
 
                                 // * filled in by caller
                                 // # filled in by IDEDRV (public)
