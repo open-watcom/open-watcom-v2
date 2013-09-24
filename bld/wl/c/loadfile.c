@@ -743,12 +743,12 @@ static void ExecWlib( void )
     namelen = strlen(ImpLib.fname);
     impnamelen = strlen(FmtData.implibname);
 /*
- * in the following: +15 for options, +2 for spaces, +1 for @, +4 for quotes
+ * in the following: +19 for options, +2 for spaces, +1 for @, +4 for quotes
  *                  and +1 for nullchar
-*/
-    _ChkAlloc( cmdline, namelen + impnamelen +15 +2 +1 +4 +1 );
-    memcpy( cmdline, "-c -b -n -q -ii \"", 17 );
-    temp = cmdline + 14;
+ */
+    _ChkAlloc( cmdline, namelen + impnamelen +19 +2 +1 +4 +1 );
+    memcpy( cmdline, "-c -b -n -q -pa -ii \"", 19 + 2 );
+    temp = cmdline + 19 - 1;
     if( LinkState & HAVE_ALPHA_CODE ) {
         *temp = 'a';
     } else if( LinkState & HAVE_PPC_CODE ) {
@@ -790,7 +790,7 @@ static void ExecWlib( void )
     } else {
         libtype = "-ii";
     }
-    retval = spawnlp( P_WAIT, WLIB_EXE, WLIB_EXE, "-c", "-b", "-n", "-q",
+    retval = spawnlp( P_WAIT, WLIB_EXE, WLIB_EXE, "-c", "-b", "-n", "-q", "-pa",
                   libtype, FmtData.implibname, atfname, NULL );
     if( retval == -1 ) {
         PrintIOError( ERR+MSG_CANT_EXECUTE, "12", WLIB_EXE );
