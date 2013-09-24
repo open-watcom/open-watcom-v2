@@ -17,9 +17,9 @@ inc_dirs = -I.. -I"../.."
 
 extra_cpp_flags = -DWEDITDLL
 
-extra_l_flags_dll_os2 = initinstance terminstance pm
-extra_l_flags_dll_os2 += op manyautodata
-extra_l_flags_dll_os2 += op map
+extra_l_flags_dll = op map, elim
+
+extra_l_flags_dll_os2 = initinstance terminstance pm op manyautodata
 
 .c : ..
 

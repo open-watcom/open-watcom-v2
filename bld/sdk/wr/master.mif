@@ -69,7 +69,7 @@ rc_inc_dirs = #$(cpp_inc_dirs) $(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_
 xlibs = $(wres_lib) $(commonui_lib)
 
 #------------- LINK
-extra_l_flags_dll = op implib, map libpath $(sdk_misc_dir)
+extra_l_flags_dll = op implib, map
 extra_l_flags_dll_nt = op stack=32k,heap=16k commit heap=8k
 extra_l_flags_dll_nt += option offset=0x69900000
 extra_l_flags_dll_win = op rwr,stack=16k export WEP RESIDENT

@@ -5,9 +5,9 @@ LNK=sample.lnk
 source_dir = $(gui_dir)\sample\c
 name = sample
 !ifeq type win
-rcopt += -i=$(gui_dir)\$(type);$(sdk_misc_dir)
+rcopt += -i=$(gui_dir)\$(type)
 !else
-rcopt += -i=$(gui_dir)\$(type);$(sdk_misc_dir);$(gui_dir)\win
+rcopt += -i=$(gui_dir)\$(type);$(gui_dir)\win
 !endif
 
 .before
@@ -111,7 +111,6 @@ $(LNK): $(__makefiles__)
 !ifdef watcomlib
         @%append $(LNK) libpath $(watcomlib)
 !endif
-        @%append $(LNK) libpath $(sdk_misc_dir)
         @%append $(LNK) library $(guilib)
 !ifeq type ui
         @%append $(LNK) library $(uilib)
@@ -186,7 +185,7 @@ $(rcname).res : ../$(rcname).rc ../$(rcname).dlg
         @set oinc=$(%include)
         #set include=$(watcom_dir)\os220_h;$(%include)
         set include=$(watcom_os220_h);$(%include)
-        copy $(sdk_misc_dir)\closebmp.bmp
+        copy $(commonui_dir)\closebmp.bmp
         wcc -p -i..;..\h;$(gui_dir)\$(type) ..\$(rcname).rc -fo=tmp.rc
         @%write $(rcname).rc $#include <os2.h>
         copy $(rcname).rc+tmp.rc

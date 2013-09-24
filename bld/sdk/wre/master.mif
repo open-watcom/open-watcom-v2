@@ -64,7 +64,7 @@ objs += trmem.tbj trmemcvr.tbj
 
 inc_dirs  = -I. -I"../h" -I"$(wresedit_dir)/h" $(wr_inc_dirs)
 inc_dirs += -I"$(trmem_dir)" $(wres_inc_dirs) $(cpp_inc_dirs)
-inc_dirs += -I"$(sdk_misc_dir)" $(commonui_inc_dirs) $(wpi_inc_dirs)
+inc_dirs += $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs)
 

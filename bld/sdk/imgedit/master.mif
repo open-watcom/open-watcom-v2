@@ -76,8 +76,7 @@ extra_l_flags_nt += alias '_WinMain'='_WinMain@16'
 !endif
 extra_l_flags_os2 = option stack=12k, heapsize=2k
 
-inc_dirs  = -I. -Ih -I"../h" $(wres_inc_dirs) $(wr_inc_dirs) $(commonui_inc_dirs)
-inc_dirs += -I"$(sdk_misc_dir)" $(wpi_inc_dirs)
+inc_dirs  = -I. -Ih -I"../h" $(wres_inc_dirs) $(wr_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 rc_inc_dirs = -I"../res" $(commonui_inc_dirs) -Ih
 

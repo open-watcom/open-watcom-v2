@@ -46,9 +46,6 @@ wrc_dir         = $(src_dir)/rc/rc
 !ifndef wr_dir
 wr_dir          = $(src_dir)/sdk/wr
 !endif
-!ifndef sdk_misc_dir
-sdk_misc_dir    = $(src_dir)/sdk/misc
-!endif
 !ifndef wheapwlk_dir
 wheapwlk_dir    = $(src_dir)/sdk/heapwalk
 !endif

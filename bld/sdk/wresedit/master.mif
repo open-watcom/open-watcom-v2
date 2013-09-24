@@ -50,10 +50,10 @@ extra_c_flags_ppmacro = -zm
 extra_c_flags_ppenv   = -zm
 !endif
 
-.c: ../c;../../c;$(sdk_misc_dir);$(cpp_c_dirs);$(watcom_dir)/c
+.c: ../c;../../c;$(cpp_c_dirs);$(watcom_dir)/c
 
 inc_dirs = -I. -I"../h" -I"../../h" $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs)
-inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs) -I"$(sdk_misc_dir)"
+inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs)
 
 rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 

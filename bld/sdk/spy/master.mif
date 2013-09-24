@@ -63,7 +63,7 @@ extra_l_flags_dll = option implib, map
 extra_l_flags_dll_win = font mem option rwr segment CLASS 'CODE' PRELOAD FIXED export WEP RESIDENT
 extra_l_flags_dll_nt  = initglobal
 
-.c: ../c;$(sdk_misc_dir)
+.c: ../c
 
 inc_dirs = -I. -I"../h" $(commonui_inc_dirs) $(wpi_inc_dirs)
 
