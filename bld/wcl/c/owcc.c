@@ -563,8 +563,6 @@ static  int  ParseArgs( int argc, char **argv )
     int         c;
     int         i;
     list        *new_item;
-    stack       *stk;
-    stack       *s;
 
     initialize_Flags();
     DebugFlag          = 1;
@@ -881,9 +879,11 @@ static  int  ParseArgs( int argc, char **argv )
         case 'l':
             new_item = MemAlloc( sizeof( list ) );
             new_item->next = NULL;
-            new_item->item = MemAlloc( strlen( OptArg ) + 2 + 1 );
-            strcpy( new_item->item, OptArg );
-            strcat( new_item->item, ".a" );
+            p = MemAlloc( strlen( OptArg ) + 2 + 1 );
+            strcpy( p, OptArg );
+            strcat( p, ".a" );
+            new_item->item = strfdup( p );
+            MemFree( p );
             ListAppend( &Libs_List, new_item );
             wcc_option = 0;
             break;
@@ -1011,7 +1011,7 @@ static  int  ParseArgs( int argc, char **argv )
             continue;
         new_item = MemAlloc( sizeof( list ) );
         new_item->next = NULL;
-        new_item->item = MemStrDup( Word );
+        new_item->item = strfdup( Word );
         if( FileExtension( Word, ".lib" ) || FileExtension( Word, ".a" ) ) {
             ListAppend( &Libs_List, new_item );
         } else {
@@ -1019,13 +1019,6 @@ static  int  ParseArgs( int argc, char **argv )
         }
     }
     MemFree( cpp_linewrap );
-    while( stk != NULL ) {
-        s = stk->next;
-        MemFree( stk->argv );
-        MemFree( stk->cmdbuf );
-        MemFree( stk );
-        stk = s;
-    }
     return( 0 );
 }
 
