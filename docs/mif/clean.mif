@@ -27,7 +27,9 @@ clean : .procedure
  @if exist *.mix rm -f *.mix
  @if exist *.cn1 rm -f *.cn1
  @if exist *.GML rm -f *.GML
+ @if exist *.gml rm -f *.gml
  @if exist *.LAY rm -f *.LAY
+ @if exist *.lay rm -f *.lay
  @if exist *.tim rm -f *.tim
  @if exist *.dat rm -f *.dat
 

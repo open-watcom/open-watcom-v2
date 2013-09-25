@@ -33,9 +33,12 @@ doc_verbose = 0
 
 company=Open Watcom
 
-optfile_wgml=wgmlopts.tmp
-tmpfile_wgml=TMP.PTF
-optfile_whpcvt=whpcopts.tmp
+wgml_optfile=wgmlopts.tmp
+wgml_tmpfile=TMP.PTF
+wgml_sysfile_01=SYSUSR01.GML
+wgml_sysfile_02=SYSUSR02.GML
+wgml_sysfile_03=SYSUSR03.GML
+whpcvt_optfile=whpcopts.tmp
 gml_lib=../gml/syslib
 dosemu_wgml_batch=wgml.bat
 wine_hc_batch=winehc.bat
@@ -90,19 +93,23 @@ dep_pdf = $(hbook).pdf
 # There should be settings for supported building platforms
 #
 !ifeq bld_os dos
-WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
+WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(wgml_optfile)"
 !else ifeq bld_os os2
-WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
+WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(wgml_optfile)"
 !else ifeq bld_os nt
 !ifdef %OWDOSBOX
 WGMLCMD = $(%OWDOSBOX) -c "mount c $(%OWROOT)\docs" -c "mount d ." -c "mount e $(%OWSRCDIR)" -c "d:$(dosemu_wgml_batch)" -noconsole
 use_dosemu = dosbox
 !else
-WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
+WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(wgml_optfile)"
 !endif
 !else ifeq bld_os linux
-WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) "$(book_src) ( file $(optfile_wgml)"
+WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) "$(book_src) ( file $(wgml_optfile)"
 use_dosemu = dosemu
+wgml_tmpfile=tmp.ptf
+wgml_sysfile_01=sysusr01.gml
+wgml_sysfile_02=sysusr02.gml
+wgml_sysfile_03=sysusr03.gml
 !else ifeq bld_os bsd
 WGMLCMD = dosbox -c "mount c $(%OWROOT)/docs" -c "mount d ." -c "mount e $(%OWSRCDIR)" -c "d:$(dosemu_wgml_batch)" -noconsole
 use_dosemu = dosbox
@@ -342,7 +349,7 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
     %make prepare_wgml_opts
     -$(WGMLCMD)
     @if exist $@ @%erase $@
-    @$(RENCMD) $(tmpfile_wgml) $@
+    @$(RENCMD) $(wgml_tmpfile) $@
 
 .bmp: $(book_bmroot)
 .ps: tmp
@@ -376,42 +383,42 @@ $(hbook).h $(hbook).htm : $(book_objs) $(proj_objs)
 #
 ####################################################
 prepare_whpcvt_opts : .PROCEDURE
-    @%create $(optfile_whpcvt)
+    @%create $(whpcvt_optfile)
 !ifeq wgml_target os2
-    @%append $(optfile_whpcvt) -ipf
-    @%append $(optfile_whpcvt) -tl
-    @%append $(optfile_whpcvt) $(book_title)
+    @%append $(whpcvt_optfile) -ipf
+    @%append $(whpcvt_optfile) -tl
+    @%append $(whpcvt_optfile) $(book_title)
 !else ifeq wgml_target dos
-    @%append $(optfile_whpcvt) -ib
-    @%append $(optfile_whpcvt) -dt
-    @%append $(optfile_whpcvt) Table of Contents
-    @%append $(optfile_whpcvt) -ds
-    @%append $(optfile_whpcvt) $(book_title)
-    @%append $(optfile_whpcvt) -t
-    @%append $(optfile_whpcvt) -e
-    @%append $(optfile_whpcvt) -lk
-    @%append $(optfile_whpcvt) -kw
-    @%append $(optfile_whpcvt) -ix
-    @%append $(optfile_whpcvt) -tc
-    @%append $(optfile_whpcvt) -br
-    @%append $(optfile_whpcvt) -kb
-    @%append $(optfile_whpcvt) -up
+    @%append $(whpcvt_optfile) -ib
+    @%append $(whpcvt_optfile) -dt
+    @%append $(whpcvt_optfile) Table of Contents
+    @%append $(whpcvt_optfile) -ds
+    @%append $(whpcvt_optfile) $(book_title)
+    @%append $(whpcvt_optfile) -t
+    @%append $(whpcvt_optfile) -e
+    @%append $(whpcvt_optfile) -lk
+    @%append $(whpcvt_optfile) -kw
+    @%append $(whpcvt_optfile) -ix
+    @%append $(whpcvt_optfile) -tc
+    @%append $(whpcvt_optfile) -br
+    @%append $(whpcvt_optfile) -kb
+    @%append $(whpcvt_optfile) -up
 !else ifeq wgml_target html
-    @%append $(optfile_whpcvt) -html
-    @%append $(optfile_whpcvt) -tl
-    @%append $(optfile_whpcvt) $(book_title)
+    @%append $(whpcvt_optfile) -html
+    @%append $(whpcvt_optfile) -tl
+    @%append $(whpcvt_optfile) $(book_title)
 !else
-    @%append $(optfile_whpcvt) -rtf
-    @%append $(optfile_whpcvt) -t
-    @%append $(optfile_whpcvt) -e
-    @%append $(optfile_whpcvt) -lk
-    @%append $(optfile_whpcvt) -b
-    @%append $(optfile_whpcvt) -hh
-    @%append $(optfile_whpcvt) -k
-    @%append $(optfile_whpcvt) -up
+    @%append $(whpcvt_optfile) -rtf
+    @%append $(whpcvt_optfile) -t
+    @%append $(whpcvt_optfile) -e
+    @%append $(whpcvt_optfile) -lk
+    @%append $(whpcvt_optfile) -b
+    @%append $(whpcvt_optfile) -hh
+    @%append $(whpcvt_optfile) -k
+    @%append $(whpcvt_optfile) -up
 !endif
-    @%append $(optfile_whpcvt) -hn
-    @%append $(optfile_whpcvt) -i
+    @%append $(whpcvt_optfile) -hn
+    @%append $(whpcvt_optfile) -i
 
 
 ####################################################
@@ -441,7 +448,7 @@ prepare_wgml_opts : .PROCEDURE
     @%create $(dosemu_wgml_batch)
     @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
     @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
-    @%append $(dosemu_wgml_batch) ..\gml\dos\wgml.exe "$(book_src) ( file $(optfile_wgml)"
+    @%append $(dosemu_wgml_batch) ..\gml\dos\wgml.exe "$(book_src) ( file $(wgml_optfile)"
     @%append $(dosemu_wgml_batch) exitemu
 !else ifeq use_dosemu dosbox
 #-------------------------------------------------------
@@ -451,14 +458,14 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(dosemu_wgml_batch) d:
     @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
     @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
-    @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe "$(book_src) ( file $(optfile_wgml)"
+    @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe "$(book_src) ( file $(wgml_optfile)"
     @%append $(dosemu_wgml_batch) exit
 !endif
-    @%create $(optfile_wgml)
+    @%create $(wgml_optfile)
 !ifeq hbook cpplib
-    @%append $(optfile_wgml) ( setsymbol target DOS
+    @%append $(wgml_optfile) ( setsymbol target DOS
 !else ifeq hbook guitool
-    @%append $(optfile_wgml) ( setsymbol allinone 1
+    @%append $(wgml_optfile) ( setsymbol allinone 1
 !endif
 #---------------------------------------
 # settings for Post Script documentation
@@ -468,56 +475,56 @@ prepare_wgml_opts : .PROCEDURE
 # layout setting
 #
 !ifeq hbook f77lr
-    @%append $(optfile_wgml) ( file nbpsshad
+    @%append $(wgml_optfile) ( file nbpsshad
 !else ifeq hbook clr
-    @%append $(optfile_wgml) ( file nbpsshad
+    @%append $(wgml_optfile) ( file nbpsshad
 !else ifeq hbook wgmlref
-    @%append $(optfile_wgml) ( file wbrfman
+    @%append $(wgml_optfile) ( file wbrfman
 !else
-    @%append $(optfile_wgml) ( file nb7x9ps
+    @%append $(wgml_optfile) ( file nb7x9ps
 !endif
 #
 # change output format to 8.5x11i
 # remove it if you want old 7x9i format
 #
-    @%append $(optfile_wgml) ( lay to85x11
+    @%append $(wgml_optfile) ( lay to85x11
 #
 # number of passes
 #
 !ifeq hbook c_readme
-    @%append $(optfile_wgml) ( passes 3
+    @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook cguideq
-    @%append $(optfile_wgml) ( passes 3
+    @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook guitool
-    @%append $(optfile_wgml) ( passes 3
+    @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook wd
-    @%append $(optfile_wgml) ( passes 3
+    @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook trap
-    @%append $(optfile_wgml) ( passes 3
+    @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook lguide
-    @%append $(optfile_wgml) ( passes 3
+    @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook vi
-    @%append $(optfile_wgml) ( passes 3
+    @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook wgmlref
-    @%append $(optfile_wgml) ( passes 3
+    @%append $(wgml_optfile) ( passes 3
 !else
-    @%append $(optfile_wgml) ( passes 2
+    @%append $(wgml_optfile) ( passes 2
 !endif
 #
 # output format
 #
-    @%append $(optfile_wgml) ( output (t:100)$(tmpfile_wgml)
+    @%append $(wgml_optfile) ( output (t:100)$(wgml_tmpfile)
 #
 # common setting
 #
-    @%append $(optfile_wgml) ( cpinch 10
-    @%append $(optfile_wgml) ( index
-    @%append $(optfile_wgml) ( setsymbol dotarget $(wgml_target)
-    @%append $(optfile_wgml) ( setsymbol book_ver $(%BLD_VER_STR)
+    @%append $(wgml_optfile) ( cpinch 10
+    @%append $(wgml_optfile) ( index
+    @%append $(wgml_optfile) ( setsymbol dotarget $(wgml_target)
+    @%append $(wgml_optfile) ( setsymbol book_ver $(%BLD_VER_STR)
 # add default windowing for NT
-#    @%append $(optfile_wgml) ( setsymbol defwinnt 1
+#    @%append $(wgml_optfile) ( setsymbol defwinnt 1
 # add default windowing for OS/2
-#    @%append $(optfile_wgml) ( setsymbol defwinos2 1
+#    @%append $(wgml_optfile) ( setsymbol defwinos2 1
 #
 #--------------------------------------
 # settings for on-line help processing
@@ -526,25 +533,25 @@ prepare_wgml_opts : .PROCEDURE
 #
 # common setting
 #
-    @%append $(optfile_wgml) ( file whelp
-    @%append $(optfile_wgml) ( passes 2
-    @%append $(optfile_wgml) ( setsymbol dohelp 1
-    @%append $(optfile_wgml) ( output (t:2200)$(tmpfile_wgml)
-    @%append $(optfile_wgml) ( setsymbol dotarget $(wgml_target)
+    @%append $(wgml_optfile) ( file whelp
+    @%append $(wgml_optfile) ( passes 2
+    @%append $(wgml_optfile) ( setsymbol dohelp 1
+    @%append $(wgml_optfile) ( output (t:2200)$(wgml_tmpfile)
+    @%append $(wgml_optfile) ( setsymbol dotarget $(wgml_target)
 # add default windowing for NT
-#    @%append $(optfile_wgml) ( setsymbol defwinnt 1
+#    @%append $(wgml_optfile) ( setsymbol defwinnt 1
 # add default windowing for OS/2
-#    @%append $(optfile_wgml) ( setsymbol defwinos2 1
-    @%append $(optfile_wgml) ( setsymbol book $(hbook)
+#    @%append $(wgml_optfile) ( setsymbol defwinos2 1
+    @%append $(wgml_optfile) ( setsymbol book $(hbook)
 !endif
 #
 # details about wgml processing
 #
 !ifeq doc_verbose 1
-    @%append $(optfile_wgml) ( verbose
-    @%append $(optfile_wgml) ( statistics
+    @%append $(wgml_optfile) ( verbose
+    @%append $(wgml_optfile) ( statistics
 !else
-    @%append $(optfile_wgml) ( nowarning
+    @%append $(wgml_optfile) ( nowarning
 !endif
 
 ####################################################
@@ -578,20 +585,20 @@ compile_gml_to_xxx : .PROCEDURE
     @%make prepare_wgml_opts
     -$(WGMLCMD)
     @if exist $*.ptf @%erase $*.ptf
-    @$(RENCMD) $(tmpfile_wgml) $*.ptf
+    @$(RENCMD) $(wgml_tmpfile) $*.ptf
     @%make prepare_whpcvt_opts
-    whpcvt -@ $(optfile_whpcvt) $*.ptf
-    @%create SYSUSR02.GML
+    whpcvt -@ $(whpcvt_optfile) $*.ptf
+    @%create $(wgml_sysfile_02)
     -$(WGMLCMD)
     @if exist $*.ptf @%erase $*.ptf
-    @$(RENCMD) $(tmpfile_wgml) $*.ptf
-    @if exist $*.cn1 @%erase $*.cn1
-    @$(RENCMD) SYSUSR03.GML $*.cn1
-    @if exist $*.h @%erase $*.h
-    @$(RENCMD) SYSUSR02.GML $*.h
+    @$(RENCMD) $(wgml_tmpfile) $*.ptf
     @if exist $*.mix @%erase $*.mix
-    @$(RENCMD) SYSUSR01.GML $*.mix
-    whpcvt -h -@ $(optfile_whpcvt) $*.ptf
+    @$(RENCMD) $(wgml_sysfile_01) $*.mix
+    @if exist $*.h @%erase $*.h
+    @$(RENCMD) $(wgml_sysfile_02) $*.h
+    @if exist $*.cn1 @%erase $*.cn1
+    @$(RENCMD) $(wgml_sysfile_03) $*.cn1
+    whpcvt -h -@ $(whpcvt_optfile) $*.ptf
 
 ####################################################
 compile_hpj_win : .PROCEDURE
