@@ -48,14 +48,22 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
+#include "clibext.h"
 
 
 // Extension of a .HLP file.
 static char const   HlpExt[] = ".hlp";
 
 
-int main( int argc, char *[] )
+int main( int argc, char *argv[] )
 {
+#ifndef __WATCOMC__
+    _argv = argv;
+    _argc = argc;
+#else
+    argv = argv;
+#endif
+
     if( argc < 2 || argc > 3 ) {
         HCWarning( USAGE );
         return( -1 );
