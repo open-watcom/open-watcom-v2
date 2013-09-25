@@ -471,6 +471,7 @@ static int ProcessCtlFile( const char *name )
     char        *log_name;
     int         res;
     bool        logit;
+    bool        pmake;
     int         rc;
 
     rc = 0;
@@ -535,13 +536,14 @@ static int ProcessCtlFile( const char *name )
                     Log( FALSE, "+++<%s>+++\n", p );
                 }
                 strcpy( Line, p );
+                pmake = ( strnicmp( p, "PMAKE", 5 ) == 0 && p[5] == ' ' );
                 res = RunIt( p, IgnoreErrors );
                 if( res != 0 ) {
-                    if( !logit ) {
-                        Log( FALSE, "<%s> => ", Line );
-                    }
-                    Log( FALSE, "non-zero return: %d\n", res );
-                    if( !IgnoreErrors ) {
+                    if( !pmake || !IgnoreErrors ) {
+                        if( !logit ) {
+                            Log( FALSE, "<%s> => ", Line );
+                        }
+                        Log( FALSE, "non-zero return: %d\n", res );
                         Fatal( "Build failed\n" );
                     }
                     rc = res;
