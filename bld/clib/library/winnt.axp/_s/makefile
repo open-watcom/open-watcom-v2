@@ -3,6 +3,5 @@ processor=axp
 subdir=_s
 system=winnt
 linkage=static
-!include $(clib_dir)/master.mif
-!include ../libs.mif
+
 !include $(clib_dir)/mrglib.mif

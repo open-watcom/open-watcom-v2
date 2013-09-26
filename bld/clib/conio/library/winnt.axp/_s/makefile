@@ -2,6 +2,5 @@
 processor=axp
 system=winnt
 linkage=static
-!include ../../../objects.mif
-!include $(clib_dir)/master.mif
+
 !include $(clib_dir)/mklib.mif

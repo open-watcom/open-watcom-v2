@@ -1,3 +1,6 @@
+!include ../../../objects.mif
+!include $(clib_dir)/master.mif
+
 all : $(objfiles) $(libname).lib .symbolic
     @%null
 

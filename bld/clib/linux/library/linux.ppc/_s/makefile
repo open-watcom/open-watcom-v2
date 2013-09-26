@@ -4,6 +4,4 @@ processor  = ppc
 system     = linux
 linkage    = static
 
-!include ../../../objects.mif
-!include $(clib_dir)/master.mif
 !include $(clib_dir)/mklib.mif

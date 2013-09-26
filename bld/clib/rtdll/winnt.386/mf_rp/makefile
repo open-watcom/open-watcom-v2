@@ -1,4 +1,4 @@
-#pmake/150: build flat register 32bit winnt iX86 rtdll os_nt cpu_386 profile
+#pmake/150: build flat register 32bit winnt ix86 rtdll os_nt cpu_386 profile
 
 component  = clib
 processor  = 386

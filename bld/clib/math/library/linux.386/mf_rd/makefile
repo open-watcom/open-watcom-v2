@@ -8,6 +8,4 @@ linkage    = static
 
 clib_release = 0
 
-!include ../../../objects.mif
-!include $(clib_dir)/master.mif
 !include $(clib_dir)/mklib.mif

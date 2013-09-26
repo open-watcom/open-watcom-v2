@@ -1,11 +1,10 @@
-#pmake: build flat stack 32bit linux threading file iX86 static os_linux cpu_386
+#pmake: build flat stack 32bit linux threading file ix86 static os_linux cpu_386
 processor=386
 model=mf
 system=linux
 linkage=static
 convention=stack
-!include ../../../objects.mif
-!include $(clib_dir)/master.mif
+
 !include $(clib_dir)/mklib.mif
 !include ../../../deps.mif
 

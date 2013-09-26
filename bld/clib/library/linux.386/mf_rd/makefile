@@ -9,6 +9,4 @@ subdir     = mf_rd
 
 clib_release = 0
 
-!include $(clib_dir)/master.mif
-!include ../libs.mif
 !include $(clib_dir)/mrglib.mif

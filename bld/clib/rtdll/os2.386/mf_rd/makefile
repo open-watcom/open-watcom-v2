@@ -1,4 +1,4 @@
-#pmake/150: build debug flat register 32bit os2 iX86 rtdll os_os2 cpu_386
+#pmake/150: build debug flat register 32bit os2 ix86 rtdll os_os2 cpu_386
 
 component  = clib
 processor  = 386
