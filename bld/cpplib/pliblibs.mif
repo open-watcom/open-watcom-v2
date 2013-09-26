@@ -10,11 +10,11 @@ libs += $(cpplib_dir)/contain/$(system).$(processor)/$(subdir)/$(cont_n)$(suffix
 
 prefix_x = $(plib_x)
 
-libx =
-libx += $(cpplib_dir)/runtime/$(system).$(processor)/$(subdir)/$(plib_x)$(suffix).lib
-libx += $(cpplib_dir)/iostream/$(system).$(processor)/$(subdir)/$(iost_x)$(suffix).lib
-libx += $(cpplib_dir)/string/$(system).$(processor)/$(subdir)/$(strg_x)$(suffix).lib
-libx += $(cpplib_dir)/contain/$(system).$(processor)/$(subdir)/$(cont_x)$(suffix).lib
+libsx =
+libsx += $(cpplib_dir)/runtime/$(system).$(processor)/$(subdir)/$(plib_x)$(suffix).lib
+libsx += $(cpplib_dir)/iostream/$(system).$(processor)/$(subdir)/$(iost_x)$(suffix).lib
+libsx += $(cpplib_dir)/string/$(system).$(processor)/$(subdir)/$(strg_x)$(suffix).lib
+libsx += $(cpplib_dir)/contain/$(system).$(processor)/$(subdir)/$(cont_x)$(suffix).lib
 
 target_lib = $(prefix)$(suffix).lib
 target_lib_x = $(prefix_x)$(suffix).lib

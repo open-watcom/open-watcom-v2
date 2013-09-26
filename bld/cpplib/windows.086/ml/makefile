@@ -5,5 +5,4 @@ model      = ml
 linkage    = static
 subdir     = ml
 
-define_library_include = $(cpplib_dir)/pliblibs.mif
 !include $(cpplib_dir)/mrglib.mif

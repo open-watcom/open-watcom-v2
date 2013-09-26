@@ -7,5 +7,4 @@ linkage    = static
 mthreaded  = 1
 subdir     = ml_mt
 
-define_library_include = $(cpplib_dir)/pliblibs.mif
 !include $(cpplib_dir)/mrglib.mif

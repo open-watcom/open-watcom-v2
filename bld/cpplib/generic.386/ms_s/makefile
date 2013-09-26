@@ -6,5 +6,4 @@ convention = stack
 linkage    = static
 subdir     = ms_s
 
-define_library_include = $(cpplib_dir)/pliblibs.mif
 !include $(cpplib_dir)/mrglib.mif
