@@ -411,7 +411,7 @@ extern  void    LayLeaRegOp( instruction *ins )
 {
     name        *left;
     name        *right;
-    int         shift;
+    int         shift = 0;
     int         neg;
     signed_32   disp;
 

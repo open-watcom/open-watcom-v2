@@ -201,7 +201,7 @@ void DumpInfix( TREEPTR node )
         printf( "%s L%u ", _Ops[ node->op.opr ], node->op.u2.label_index );
         break;
     case OPR_CASE:
-        printf( "%s %u (L%u)", _Ops[ node->op.opr ], 
+        printf( "%s %lu (L%u)", _Ops[ node->op.opr ], 
                 node->op.u2.case_info->value, node->op.u2.case_info->label );
         break;
     case OPR_INDEX:
@@ -333,8 +333,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
     }
     switch( dq->type ) {
     case QDT_STATIC:
-        printf( "%6lu bytes (QDT_STATIC): segment %d\n",
-                0, sym.u.var.segment );
+        printf( "%6lu bytes (QDT_STATIC): segment %d\n", 0UL, sym.u.var.segment );
         *psize = 0;
         break;
     case QDT_CHAR:
@@ -344,11 +343,11 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         printf( "%6lu byte char (%s): %d\n",
                 amount, dq->type == QDT_CHAR ? "QDT_CHAR" :
                 dq->type == QDT_UCHAR ? "QDT_UCHAR" : "QDT_BOOL",
-                dq->u.long_values[0] );
+                (int)dq->u.long_values[0] );
         *psize += amount;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            printf( "%6lu byte second char: %d\n",
-                    dq->u.long_values[1] );
+            printf( "%6lu byte second char: %d\n", amount,
+                    (int)dq->u.long_values[1] );
             *psize += amount;
         }
         break;
@@ -357,11 +356,11 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         amount = TARGET_SHORT;
         printf( "%6lu byte short (%s): %d\n",
                 amount, dq->type == QDT_SHORT ? "QDT_SHORT" :
-                "QDT_UINT", dq->u.long_values[0] );
+                "QDT_UINT", (int)dq->u.long_values[0] );
         *psize += amount;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            printf( "%6lu byte second short: %d\n",
-                    dq->u.long_values[1] );
+            printf( "%6lu byte second short: %d\n", amount,
+                    (int)dq->u.long_values[1] );
             *psize += amount;
         }
         break;
@@ -370,23 +369,23 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         amount = TARGET_INT;
         printf( "%6lu byte int (%s): %d\n",
                 amount, dq->type == QDT_INT ? "QDT_INT" :
-                "QDT_UINT", dq->u.long_values[0] );
+                "QDT_UINT", (int)dq->u.long_values[0] );
         *psize += amount;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            printf( "%6lu byte second int: %d\n",
-                    dq->u.long_values[1] );
+            printf( "%6lu byte second int: %d\n", amount,
+                    (int)dq->u.long_values[1] );
             *psize += amount;
         }
         break;
     case QDT_LONG:
     case QDT_ULONG:
         amount = TARGET_LONG;
-        printf( "%6lu byte long (%s): %d\n",
+        printf( "%6lu byte long (%s): %ld\n",
                 amount, dq->type == QDT_LONG ? "QDT_LONG" :
                 "QDT_ULONG", dq->u.long_values[0] );
         *psize += amount;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            printf( "%6lu byte second long: %d\n",
+            printf( "%6lu byte second long: %ld\n", amount,
                     dq->u.long_values[1] );
             *psize += amount;
         }
@@ -432,7 +431,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
     case QDT_POINTER:
     case QDT_ID:
         amount = size_of_item;
-        printf( "%6lu byte pointer (%s): offset %x\n",
+        printf( "%6lu byte pointer (%s): offset %lx\n",
                 amount, dq->type == QDT_POINTER ? "QDT_POINTER" :
                 "QDT_ID", dq->u.var.offset );
         *psize += amount;

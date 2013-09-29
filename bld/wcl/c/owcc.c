@@ -1045,11 +1045,11 @@ static  int  Parse( int argc, char **argv )
             argv[argc] = old_argv[i];
         }
         argv[argc] = NULL;        // last element of the array must be NULL
-    }
-    ret = ParseArgs( argc, argv );
-    if( env != NULL ) {
+        ret = ParseArgs( argc, argv );
         MemFree( argv );
         MemFree( cmdbuf );
+    } else {
+        ret = ParseArgs( argc, argv );
     }
     return( ret );
 }

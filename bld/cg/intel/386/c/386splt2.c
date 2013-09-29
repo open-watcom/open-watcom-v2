@@ -88,7 +88,7 @@ extern    type_class_def        Unsigned[];
 extern  name    *LowPart( name *tosplit, type_class_def class )
 /*************************************************************/
 {
-    name                *new;
+    name                *new = NULL;
     signed_8            s8;
     unsigned_8          u8;
     signed_16           s16;
@@ -246,7 +246,7 @@ extern  name    *SegmentPart( name *tosplit )
 extern  name    *HighPart( name *tosplit, type_class_def class )
 /**************************************************************/
 {
-    name                *new;
+    name                *new = NULL;
     signed_8            s8;
     unsigned_8          u8;
     signed_16           s16;

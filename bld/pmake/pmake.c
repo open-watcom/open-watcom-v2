@@ -436,8 +436,9 @@ static void ProcessDirectoryQueue( void )
                 if( dp->d_attr & _A_SUBDIR ) {
 #endif
                     if( dp->d_name[0] == '.' ) {
-                        if( dp->d_name[1] == '.' || dp->d_name[1] == '\0' )
+                        if( dp->d_name[1] == '\0' || dp->d_name[1] == '.' && dp->d_name[2] == '\0' ) {
                             continue;
+                        }
                     }
                     EnQueue( dp->d_name );
                 } else if( stricmp( dp->d_name, makefile ) == 0 ) {

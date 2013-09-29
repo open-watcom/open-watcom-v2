@@ -590,7 +590,7 @@ extern  an      AddrShift( an l_addr, an r_addr, type_def *tipe ) {
 extern  name    *GetValue( an addr, name *suggest ) {
 /***************************************************/
 
-    name        *op;
+    name        *op = NULL;
     instruction *ins;
 
     InsToAddr( addr );

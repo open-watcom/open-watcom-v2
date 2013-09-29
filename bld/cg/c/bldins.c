@@ -671,7 +671,7 @@ extern  an      BGConvert( an left, type_def *tipe ) {
 extern  bn      BGFlow( cg_op op, bn left, bn rite ) {
 /****************************************************/
 
-    bn                  new;
+    bn                  new = NULL;
     label_handle        temp;
 
     if( op == O_FLOW_NOT ) {

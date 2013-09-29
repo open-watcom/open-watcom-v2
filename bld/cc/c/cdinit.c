@@ -259,7 +259,7 @@ local void GenDataQuad( DATA_QUAD *dq, unsigned long size )
         dql->next = NULL;
     }
     dql->size = size;
-    memcpy( &dql->dq, dq, sizeof(DATA_QUAD) );
+    memcpy( &dql->dq, dq, sizeof( DATA_QUAD ) );
     CurDataQuad = dql;
 }
 
@@ -322,12 +322,12 @@ local void StoreIValue( DATA_TYPE dtype, unsigned long value,
     if( LastCurDataQuad == CurDataQuad ) {
         dq_ptr = &CurDataQuad->dq;
     }
-    if( dq_ptr->type == dtype  &&             /* 06-apr-92 */
-        dq_ptr->flags == (Q_DATA | Q_REPEATED_DATA)  &&
+    if( (DATA_TYPE)dq_ptr->type == dtype &&
+        dq_ptr->flags == (Q_DATA | Q_REPEATED_DATA) &&
         dq_ptr->u.long_values[0] == value ) {
         dq_ptr->u.long_values[1]++;             /* increment repeat count */
         CurDataQuad->size += size;
-    } else if( dq_ptr->type == dtype  &&  dq_ptr->flags == Q_DATA ) {
+    } else if( (DATA_TYPE)dq_ptr->type == dtype && dq_ptr->flags == Q_DATA ) {
         if( dq_ptr->u.long_values[0] == value ) {
             dq_ptr->flags |= Q_REPEATED_DATA;
             dq_ptr->u.long_values[1] = 2;       /* repeat count */
@@ -358,12 +358,10 @@ local void StoreIValue( DATA_TYPE dtype, unsigned long value,
 
 local void StoreIValue64( DATA_TYPE dtype, uint64 value )
 {
-    DATA_QUAD           *dq_ptr;
     DATA_QUAD           dq;
 
     dq.type = dtype;
     dq.flags = Q_DATA;
-    dq_ptr = &dq;
     dq.u.long64 = value;
     CompFlags.non_zero_data = 1;
     GenDataQuad( &dq, TARGET_LONG64 );
