@@ -80,7 +80,9 @@ extern type_class_def   Unsigned[];
 #define TOC_REG         2
 #define VOLATILE_REG    12
 
+#ifdef __WATCOMC__
 #pragma off (unreferenced);
+#endif
 
 #define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
 #define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }
@@ -317,7 +319,6 @@ static  void    doCall( instruction *ins )
     ppc_ins         encoding;
     code_lbl        *lbl;
 
-    code = code;
     sym = ins->operands[CALL_OP_ADDR]->v.symbol;
     code = FEAuxInfo( sym, CALL_BYTES );
     if( code != NULL ) {

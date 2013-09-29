@@ -34,6 +34,7 @@
 #include "coderep.h"
 #include "score.h"
 
+#if 0
 static  void    RegDelete( score *sc, int index ) {
 /*************************************************/
 
@@ -62,7 +63,7 @@ static  void    RegDelete( score *sc, int index ) {
         RegDelete( sc, half );
     }
 }
-
+#endif
 
 extern  void    RegInsert( score *sc, int dst_idx, int src_idx ) {
 /****************************************************************/

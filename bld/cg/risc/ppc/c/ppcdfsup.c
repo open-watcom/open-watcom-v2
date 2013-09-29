@@ -50,6 +50,10 @@
 #include "ppcregn.h"
 #include "dwarf.h"
 #include "dfdbg.h"
+
+
+#define MapRegN2dw(r)   ((dw_regs)r)
+
 typedef enum {
     #define DW_REG( __n  )   DW_AXP_##__n,
     #include "dwregppc.h"
@@ -80,7 +84,7 @@ extern  void   DFOutReg( dw_loc_id locid, name *reg ) {
 
     dw_regs     regnum;
 
-    regnum = PpcRegN( reg );
+    regnum = MapRegN2dw( PpcRegN( reg ) );
     DWLocReg( Client, locid, regnum );
 }
 
@@ -89,7 +93,7 @@ extern  void   DFOutRegInd( dw_loc_id locid, name *reg ) {
 
     dw_regs     regnum;
 
-    regnum = PpcRegN( reg );
+    regnum = MapRegN2dw( PpcRegN( reg ) );
     DWLocOp( Client,locid,DW_LOC_breg, regnum, 0 );
 }
 

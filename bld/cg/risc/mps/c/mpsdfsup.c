@@ -50,6 +50,9 @@
 #include "dwarf.h"
 #include "dfdbg.h"
 
+
+#define MapRegN2dw(r)   ((dw_regs)r)
+
 typedef enum {
     #define DW_REG( __n  )   DW_MIPS_##__n,
     #include "dwregmps.h"
@@ -79,7 +82,7 @@ extern  void   DFOutReg( dw_loc_id locid, name *reg )
 {
     dw_regs     regnum;
 
-    regnum = MIPSRegN( reg );
+    regnum = MapRegN2dw( MIPSRegN( reg ) );
     DWLocReg( Client, locid, regnum );
 }
 
@@ -89,7 +92,7 @@ extern  void DFOutRegInd( dw_loc_id locid, name *reg )
 {
     dw_regs     regnum;
 
-    regnum = MIPSRegN( reg );
+    regnum = MapRegN2dw( MIPSRegN( reg ) );
     DWLocOp( Client, locid, DW_LOC_breg, regnum, 0 );
 }
 
