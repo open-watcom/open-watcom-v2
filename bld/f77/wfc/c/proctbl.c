@@ -119,14 +119,8 @@ extern  void            CpAllocate( void );
 extern  void            CpDeAllocate( void );
 extern  void            CpVolatile( void );
 
-#ifdef pick
-#undef pick
-#endif
-
-#define pick(id,text,proc,flags) proc,
-
 void    (* const __FAR ProcTable[])( void ) = {
-
-#include "stmtdefn.h"
-
+    #define pick(id,text,proc,flags) proc,
+    #include "stmtdefn.h"
+    #undef pick
 };

@@ -115,21 +115,16 @@ static  segment_id      CurrSegId;
 static  segment_id      CurrImpSegId;
 static  cg_type         UserType;
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,type,dbgtype,cgtype,typnam) dbgtype,
-
 static  dbg_type        DBGTypes[] = {
-#include "ptypdefn.h"
+    #define pick(id,type,dbgtype,cgtype,typnam) dbgtype,
+    #include "ptypdefn.h"
+    #undef pick
 };
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,type,dbgtype,cgtype,typnam) typnam,
 static  char * DBGNames[] = {
-#include "ptypdefn.h"
+    #define pick(id,type,dbgtype,cgtype,typnam) typnam,
+    #include "ptypdefn.h"
+    #undef pick
 };
 
 

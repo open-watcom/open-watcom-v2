@@ -40,13 +40,10 @@
 // DownScan codes:
 // ================
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(tok_id,dsopn_id,opn_proc) dsopn_id,
-
 typedef enum {
-#include "tokdsopn.h"
+    #define pick(tok_id,dsopn_id,opn_proc) dsopn_id,
+    #include "tokdsopn.h"
+    #undef pick
 } DSOPN;
 
 // UpScan codes:

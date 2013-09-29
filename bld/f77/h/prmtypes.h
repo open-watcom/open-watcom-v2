@@ -43,15 +43,12 @@
 //       ( routines rely on them being sequential )
 //
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,type,dbgtype,cgtype,typnam) id,
-
 enum PARAM_TYPES {
-#include "ptypdefn.h"
+    #define pick(id,type,dbgtype,cgtype,typnam) id,
+    #include "ptypdefn.h"
+    #undef pick
 
-  VAR_LEN_CHAR = 0x80
+    VAR_LEN_CHAR = 0x80
 };
 
 typedef enum PARAM_TYPES PTYPE;

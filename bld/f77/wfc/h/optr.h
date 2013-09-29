@@ -29,13 +29,10 @@
 ****************************************************************************/
 
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,const,gener) id,
-
 typedef enum {
-#include "optrdefn.h"
+    #define pick(id,const,gener) id,
+    #include "optrdefn.h"
+    #undef pick
 } OPTR;
 
 #define OPTR_FIRST          OPTR_EQV

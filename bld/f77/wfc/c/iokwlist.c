@@ -36,11 +36,8 @@
 
 #include "ftnstd.h"
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,text) text,
-
 char    *IOKeywords[] = {
-#include "iodefn.h"
+    #define pick(id,text) text,
+    #include "iodefn.h"
+    #undef pick
 };

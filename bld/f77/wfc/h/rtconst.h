@@ -30,13 +30,10 @@
 ****************************************************************************/
 
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,name,sym,aux,typ) id,
-
 typedef enum {
-#include "rtdefn.h"
+    #define pick(id,name,sym,aux,typ) id,
+    #include "rtdefn.h"
+    #undef pick
 } RTCODE;
 
 #define RT_C_DOUBLE        (RT_C16MUL - RT_C8MUL)

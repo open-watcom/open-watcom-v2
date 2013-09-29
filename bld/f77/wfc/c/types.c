@@ -41,14 +41,10 @@ typedef struct type_info {
     PTYPE   ptyp;
 } type_info;
 
-#ifdef pick
-#undef pick
-#endif
-
-#define pick(id,text,size,ptype) {text,size,ptype},
-
 static type_info TypeInfo[] = {
-#include "symdefn.h"
+    #define pick(id,text,size,ptype) {text,size,ptype},
+    #include "symdefn.h"
+    #undef pick
 };
 
 uint            TypeSize( TYPE typ ) {

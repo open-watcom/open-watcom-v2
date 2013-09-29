@@ -315,18 +315,14 @@ extern  void            DtFieldSubstring(void);
 extern  void            DtPushSCBLen(void);
 
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,code_proc,data_proc) code_proc,
-
 void    (* __FAR FCJmpTab[])(void) = {
-#include "fcdefn.h"
+    #define pick(id,code_proc,data_proc) code_proc,
+    #include "fcdefn.h"
+    #undef pick
 };
 
-#undef pick
-#define pick(id,code_proc,data_proc) data_proc,
-
 void    (* __FAR DataJmpTab[])(void) = {
-#include "fcdefn.h"
+    #define pick(id,code_proc,data_proc) data_proc,
+    #include "fcdefn.h"
+    #undef pick
 };

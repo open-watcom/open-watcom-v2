@@ -89,13 +89,10 @@ static  void    StructInitItem( sym_id fd );
 
 #define CONST_TYPES     9
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,type,dbgtype,cgtype, typnam) type,
-
 static  TYPE    MapType[] = {
-#include "ptypdefn.h"
+    #define pick(id,type,dbgtype,cgtype, typnam) type,
+    #include "ptypdefn.h"
+    #undef pick
 };
 
 #define DT_NO_MORE_CONSTS       0x01

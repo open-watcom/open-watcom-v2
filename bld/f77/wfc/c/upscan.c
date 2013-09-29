@@ -131,13 +131,10 @@ void    AddConst( itnode *node );
 
 
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,opr_index,proc_index) proc_index,
-
 static const OPTR __FAR OprNum[] = {
-#include "oprdefn.h"
+    #define pick(id,opr_index,proc_index) proc_index,
+    #include "oprdefn.h"
+    #undef pick
 };
 
 // Constants below used in UPSCAN for operator sequence table and are
@@ -170,11 +167,10 @@ enum {
     OPRI_FLD          //  %,.
 };
 
-#undef pick
-#define pick(id,proc) id,
-
 typedef enum {
-#include "rtntable.h"
+    #define pick(id,proc) id,
+    #include "rtntable.h"
+    #undef pick
 } move;
 
 static  const move    __FAR OprSeqMat[] = {
@@ -280,11 +276,10 @@ NOT, NOT, IPLMIN,IPLMIN,IPLMIN, PLMIN, PLMIN, PLMIN, PLMIN, PLMIN, PLMIN,  NONE,
 };
 
 
-#undef pick
-#define pick(id,opr_index,proc_index) opr_index,
-
 static const byte __FAR OprIndex[] = {
-#include "oprdefn.h"
+    #define pick(id,opr_index,proc_index) opr_index,
+    #include "oprdefn.h"
+    #undef pick
 };
 
 
@@ -1356,11 +1351,10 @@ static  void    InlineCnvt( void ) {
 }
 
 
-#undef pick
-#define pick(id,proc) proc,
-
 static  const void (* const __FAR RtnTable[])(void) = {
-#include "rtntable.h"
+    #define pick(id,proc) proc,
+    #include "rtntable.h"
+    #undef pick
 };
 
 void    UpScan( void ) {

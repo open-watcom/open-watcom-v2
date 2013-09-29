@@ -65,21 +65,17 @@ typedef struct iff_data {
 #define IF_GENERIC      0x20
 #define IF_NOT_GEN      0x00
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,text,next,res,arg,flags) text,
-
 static char __FAR *IFNames[] = {
-#include "ifdefn.h"
+    #define pick(id,text,next,res,arg,flags) text,
+    #include "ifdefn.h"
+    #undef pick
     NULL
 };
 
-#undef pick
-#define pick( id, text, next, res, arg, flags) {next, res, arg, flags},
-
 static iff_data __FAR IFFlags[] = {
-#include "ifdefn.h"
+    #define pick( id, text, next, res, arg, flags) {next, res, arg, flags},
+    #include "ifdefn.h"
+    #undef pick
 };
 
 int     IFIndex( char *name ) {

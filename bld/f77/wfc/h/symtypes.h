@@ -34,14 +34,10 @@
 // TYPES
 // =====
 
-#ifdef pick
-#undef pick
-#endif
-
-#define pick(id,text,size,ptype) id,
-
 typedef enum {
-#include "symdefn.h"
+    #define pick(id,text,size,ptype) id,
+    #include "symdefn.h"
+    #undef pick
 } TYPE;
 
 #define FT_FIRST    FT_LOGICAL_1

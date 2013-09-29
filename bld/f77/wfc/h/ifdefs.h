@@ -32,15 +32,10 @@
 #ifndef _IFDEFS_H_INCLUDED
 #define _IFDEFS_H_INCLUDED
 
-#ifdef pick
-#undef pick
-#endif
-
-#define pick(id,text,next,res,arg,flags) id,
-
 typedef enum {
-
-#include "ifdefn.h"
+    #define pick(id,text,next,res,arg,flags) id,
+    #include "ifdefn.h"
+    #undef pick
 
     IF_NAME_COUNT,
 

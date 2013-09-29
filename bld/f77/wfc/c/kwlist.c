@@ -38,14 +38,8 @@
 // Note: The keyword DO is contained in DOUBLEPRECISION; any time this is
 //       the case, the smaller keyword must come first to enforce a match.
 
-#ifdef pick
-#undef pick
-#endif
-
-#define pick(id,text,proc,flags) text,
-
 char    *StmtKeywords[] = {
-
-#include "stmtdefn.h"
-
+    #define pick(id,text,proc,flags) text,
+    #include "stmtdefn.h"
+    #undef pick
 };

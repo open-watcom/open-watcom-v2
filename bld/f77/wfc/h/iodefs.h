@@ -30,17 +30,14 @@
 ****************************************************************************/
 
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,text) id,
-
 typedef enum {
-#include "iodefn.h"
+    #define pick(id,text) id,
+    #include "iodefn.h"
+    #undef pick
 
-  IO_LIST_DIR,          // fmt=*
-  IO_INTERNAL,          // internal file
-  IO_NAMELIST           // NAMELIST-directed
+    IO_LIST_DIR,        // fmt=*
+    IO_INTERNAL,        // internal file
+    IO_NAMELIST         // NAMELIST-directed
 } IOKW;
 
 #define  IO_KW_MAX     (IO_LIST_DIR - 1)

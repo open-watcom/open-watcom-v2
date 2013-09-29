@@ -32,13 +32,10 @@
 #ifndef _OPR_H_INCLUDED
 #define _OPR_H_INCLUDED
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,opr_index,proc_index) id,
-
 typedef enum {
-#include "oprdefn.h"
+    #define pick(id,opr_index,proc_index) id,
+    #include "oprdefn.h"
+    #undef pick
 } OPR;
 
 //  operator group ranges

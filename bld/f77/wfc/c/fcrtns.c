@@ -69,13 +69,10 @@ typedef struct rt_rtn {
     byte        typ;
 } rt_rtn;
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,name,sym,aux,typ) {name,sym,aux,typ},
-
 static rt_rtn  __FAR RtnTab[] = {
-#include "rtdefn.h"
+    #define pick(id,name,sym,aux,typ) {name,sym,aux,typ},
+    #include "rtdefn.h"
+    #undef pick
 };
 
 #define MAX_RT_INDEX    ((sizeof( RtnTab ) / sizeof( RtnTab[0] ))-1)

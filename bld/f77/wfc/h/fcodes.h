@@ -32,13 +32,10 @@
 #ifndef _FCODES_H_INCLUDED
 #define _FCODES_H_INCLUDED
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,code_proc,data_proc) id,
-
 typedef enum {
-#include "fcdefn.h"
+    #define pick(id,code_proc,data_proc) id,
+    #include "fcdefn.h"
+    #undef pick
 } FCODE;
 
 #define FC_BITOPS           FC_BIT_EQUIV

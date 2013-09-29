@@ -241,11 +241,8 @@ void    ConstCat( int size ) {
     FMemFree( string );
 }
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,const,gener) const,
-
 void    (* const __FAR ConstTable[])(TYPE, TYPE, OPTR) = {
-#include "optrdefn.h"
+    #define pick(id,const,gener) const,
+    #include "optrdefn.h"
+    #undef pick
 };

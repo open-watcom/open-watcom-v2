@@ -33,14 +33,10 @@
 // Note : If you wish to add a new statement processor there are five files
 //        that need changing: PRDEFN.H, KWLIST.C, PROCTBL.C, CFTABLE.C
 
-#ifdef pick
-#undef pick
-#endif
-
-#define pick(id,text,proc,flags) id,
-
 typedef enum {
-#include "stmtdefn.h"
+    #define pick(id,text,proc,flags) id,
+    #include "stmtdefn.h"
+    #undef pick
 } STMT;
 
 #define PR_KW_MAX       PR_WRITE

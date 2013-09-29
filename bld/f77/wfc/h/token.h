@@ -30,13 +30,10 @@
 ****************************************************************************/
 
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(tok_id,dsopn_id,opn_proc) tok_id,
-
 typedef enum {
-#include "tokdsopn.h"
+    #define pick(tok_id,dsopn_id,opn_proc) tok_id,
+    #include "tokdsopn.h"
+    #undef pick
 } TOKCLASS;
 
 typedef enum {

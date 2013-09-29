@@ -86,16 +86,10 @@
 // NOT_IN_MAP        - used to flag those specification statements which cannot
 //                     appear in a map definition
 
-#ifdef pick
-#undef pick
-#endif
-
-#define pick(id,text,proc,flags) flags,
-
 const unsigned_16 __FAR CFTable[] = {
-
-#include "stmtdefn.h"
-
+    #define pick(id,text,proc,flags) flags,
+    #include "stmtdefn.h"
+    #undef pick
 };
 
 

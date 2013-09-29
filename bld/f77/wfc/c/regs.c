@@ -54,20 +54,16 @@ hw_reg_set              StackParms[] = { HW_D( HW_EMPTY ) };
 static  pass_by         IFArgValue = { NULL, PASS_BY_VALUE };
 static  pass_by         IFArgDescriptor = { NULL, PASS_BY_DESCRIPTOR };
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(text,regset) text,
-
 char    *RegNames[] = {
-#include "regsdefn.h"
+    #define pick(text,regset) text,
+    #include "regsdefn.h"
+    #undef pick
 };
 
-#undef pick
-#define pick(text,regset) regset,
-
 hw_reg_set  RegValue[] = {
-#include "regsdefn.h"
+    #define pick(text,regset) regset,
+    #include "regsdefn.h"
+    #undef pick
 };
 
 byte            MaxReg = { sizeof( RegNames ) / sizeof( RegNames[0] ) - 1 };
