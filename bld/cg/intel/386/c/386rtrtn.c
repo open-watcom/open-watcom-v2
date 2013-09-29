@@ -161,9 +161,8 @@ extern  bool    RTLeaveOp2( instruction *ins )
 }
 
 
-extern  name    *ScanCall( tbl_control *table, name *value,
-                           type_class_def tipe )
-/**********************************************************
+extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class )
+/*********************************************************************************
     generates a fake call to a rutime routine that looks up "value" in a table
     and jumps to the appropriate case, using either a pointer or index
     returned by the "routine". The "routine" will be generated inline later.
@@ -177,7 +176,7 @@ extern  name    *ScanCall( tbl_control *table, name *value,
     name        *label;
     hw_reg_set  tmp;
 
-    switch( tipe ) {
+    switch( class ) {
     case U1:
         RoutineNum = RT_SCAN1;
         break;
@@ -190,7 +189,7 @@ extern  name    *ScanCall( tbl_control *table, name *value,
     }
 
     reg_name = AllocRegName( FirstReg( RTInfo[  RoutineNum  ].left ) );
-    new_ins = MakeConvert( value, reg_name, tipe, value->n.name_class );
+    new_ins = MakeConvert( value, reg_name, class, value->n.name_class );
     AddIns( new_ins );
 
     reg_name = AllocRegName( HW_ECX );
@@ -219,7 +218,7 @@ extern  name    *ScanCall( tbl_control *table, name *value,
     AddIns( new_ins );
 
     result = AllocMemory( table, 0, CG_TBL, U4 ); /* so table gets freed!*/
-    if( tipe == U4 ) {
+    if( class == U4 ) {
         HW_CAsgn( tmp, HW_ECX );
         HW_CTurnOn( tmp, HW_EDI );
         new_ins->zap = &AllocRegName( tmp )->r;

@@ -339,11 +339,9 @@ extern  instruction     *rMAKECALL( instruction *ins )
             /* If I knew how to turn a register list index into a type class,
                I'd do that, and avoid this if */
             if( info->right == RL_SI ) {
-                new_ins = MakeMove( ins->operands[ 1 ], AllocRegName( regs ),
-                                        U2 );
+                new_ins = MakeMove( ins->operands[ 1 ], AllocRegName( regs ), U2 );
             } else {
-                new_ins = MakeMove( ins->operands[ 1 ], AllocRegName( regs ),
-                                        info->operand_class );
+                new_ins = MakeMove( ins->operands[ 1 ], AllocRegName( regs ), info->operand_class );
             }
             ins->operands[ 1 ] = new_ins->result;
             MoveSegOp( ins, new_ins, 0 );
@@ -389,8 +387,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
     } else {
         new_ins->operands[ CALL_OP_USED2 ] = reg_name;
     }
-    new_ins->operands[ CALL_OP_ADDR ]= AllocMemory( lbl, 0, CG_LBL,
-                                                    ins->type_class );
+    new_ins->operands[ CALL_OP_ADDR ]= AllocMemory( lbl, 0, CG_LBL, ins->type_class );
     new_ins->result = NULL;
     new_ins->num_operands = 2;         /* special case for OP_CALL*/
     new_ins->zap = &AllocRegName( all_regs )->r;/* all parm regs could be zapped*/
@@ -421,9 +418,8 @@ extern  instruction     *rMAKECALL( instruction *ins )
 }
 
 
-extern  name    *ScanCall( tbl_control *table, name *value,
-                           type_class_def tipe )
-/**********************************************************
+extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class )
+/*********************************************************************************
     generates a fake call to a rutime routine that looks up "value" in a table
     and jumps to the appropriate case, using either a pointer or index
     returned by the "routine". The "routine" will be generated inline later.
@@ -438,7 +434,7 @@ extern  name    *ScanCall( tbl_control *table, name *value,
     hw_reg_set  tmp;
     name        *temp_result;
 
-    switch( tipe ) {
+    switch( class ) {
     case U1:
         RoutineNum = RT_SCAN1;
         break;
@@ -453,7 +449,7 @@ extern  name    *ScanCall( tbl_control *table, name *value,
     }
 
     reg_name = AllocRegName( FirstReg( RTInfo[  RoutineNum  ].left ) );
-    new_ins = MakeConvert( value, reg_name, tipe, value->n.name_class );
+    new_ins = MakeConvert( value, reg_name, class, value->n.name_class );
     AddIns( new_ins );
 
     reg_name = AllocRegName( HW_CX );
@@ -465,7 +461,7 @@ extern  name    *ScanCall( tbl_control *table, name *value,
     AddIns( new_ins );
 
     reg_name = AllocRegName( HW_DI );
-    if( tipe == U4 ) {
+    if( class == U4 ) {
         label = AllocMemory( table, -2, CG_VTB, U2 );
     } else {
         label = AllocMemory( table, 0, CG_VTB, U2 );
@@ -491,7 +487,7 @@ extern  name    *ScanCall( tbl_control *table, name *value,
     AddIns( new_ins );
 
     result = AllocMemory( table, 0, CG_TBL, U2 ); /* so table gets freed!*/
-    if( tipe == U2 ) {
+    if( class == U2 ) {
         result = AllocRegName( HW_ES_DI );
         result = AllocIndex( result, NULL, ( table->size - 1 )*2, U2 );
     } else {
@@ -531,8 +527,7 @@ extern  instruction     *rMAKEFNEG( instruction *ins )
     lbl = RTLabel( RoutineNum );
     info = &RTInfo[  RoutineNum  ];
     reg_name = AllocRegName( FirstReg( info->left ) );
-    left_ins = MakeMove( ins->operands[ 0 ], reg_name,
-                          info->operand_class );
+    left_ins = MakeMove( ins->operands[ 0 ], reg_name, info->operand_class );
     ins->operands[ 0 ] = left_ins->result;
     MoveSegOp( ins, left_ins, 0 );
     PrefixIns( ins, left_ins );

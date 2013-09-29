@@ -103,9 +103,9 @@ extern  name_def        *SelIdx( tbl_control *table, an node ) {
     return( NULL );
 }
 
-extern name *ScanCall( tbl_control* tbl, name* tmp, type_class_def class) {
-/**********************************************/
-
+extern name *ScanCall( tbl_control* tbl, name* tmp, type_class_def class )
+/************************************************************************/
+{
     tbl = tbl;
     tmp = tmp;
     class = class;
@@ -139,23 +139,23 @@ extern  type_def        *SelNodeType( an node, bool is_signed ) {
     return( TypeAddress( is_signed ? signed_t : unsigned_t ) );
 }
 
-extern  void    MkSelOp( name *idx, cg_type tipe ) {
-/**************************************************/
-
+extern  void    MkSelOp( name *idx, type_class_def class )
+/********************************************************/
+{
     instruction         *ins;
 
     ins = NewIns( 2 );
     ins->head.opcode = OP_ADD;
     ins->type_class = WD;
-    ins->operands[ 0 ] = idx->i.index;
-    ins->operands[ 1 ] = idx->i.index;
+    ins->operands[0] = idx->i.index;
+    ins->operands[1] = idx->i.index;
     ins->result = idx->i.index;
     AddIns( ins );
     ins = NewIns( 1 );
-    ins->operands[ 0 ] = idx;
+    ins->operands[0] = idx;
     ins->result = idx->i.index;
     ins->head.opcode = OP_SELECT;
-    ins->type_class = tipe;
+    ins->type_class = class;
     ins->ins_flags |= INS_CC_USED;
     AddIns( ins );
 }

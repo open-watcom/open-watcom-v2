@@ -136,13 +136,11 @@ extern  signed_32       ScanCost( select_node *s_node ) {
         list = list->next;
     }
     tipe = SelType( hi - lo );
-    if( ( tipe == TY_UINT_4 && values < MIN_LVALUES ) ||
-         ( tipe != TY_UINT_4 && values < MIN_SVALUES ) ) {
+    if( ( tipe == TY_UINT_4 && values < MIN_LVALUES ) || ( tipe != TY_UINT_4 && values < MIN_SVALUES ) ) {
         cost = MAX_COST;
     } else {
         type_length = TypeAddress( tipe )->length;
-        cost = Balance( MIN_SCAN_SETUP + values * ( WORD_SIZE + type_length ),
-                        values / 2 );
+        cost = Balance( MIN_SCAN_SETUP + values * ( WORD_SIZE + type_length ), values / 2 );
     }
     return( cost );
 }
@@ -437,15 +435,15 @@ extern  type_def        *SelNodeType( an node, bool is_signed ) {
 }
 
 
-extern  void    MkSelOp( name *idx, cg_type tipe ) {
-/**************************************************/
-
+extern  void    MkSelOp( name *idx, type_class_def class )
+/********************************************************/
+{
     instruction         *ins;
 
     ins = NewIns( 1 );
     ins->operands[ 0 ] = idx;
     ins->head.opcode = OP_SELECT;
-    ins->type_class = tipe;
+    ins->type_class = class;
     ins->result = NULL;
     AddIns( ins );
 }

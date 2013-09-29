@@ -51,20 +51,16 @@ extern  void            Generate(bool);
 extern  signed_32       ScanCost(select_node*);
 extern  void            GenBlock( block_class, int );
 extern  name            *GenIns(an);
-extern  tbl_control     *MakeScanTab(select_list*,signed_32,
-                                     label_handle,cg_type,cg_type);
-extern  tbl_control     *MakeJmpTab(select_list*,signed_32,signed_32,
-                                    label_handle);
+extern  tbl_control     *MakeScanTab(select_list*,signed_32,label_handle,cg_type,cg_type);
+extern  tbl_control     *MakeJmpTab(select_list*,signed_32,signed_32,label_handle);
 extern  name_def        *SelIdx(tbl_control*,an);
 extern  type_def        *SelNodeType(an,bool);
 extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
-extern  void            MkSelOp( name *idx, cg_type tipe );
+extern  void            MkSelOp( name *idx, type_class_def class );
 
 /* forward declarations */
-extern  void    BGSelRange( select_node *s_node, signed_32 lo,
-                            signed_32 hi, label_handle label );
-static  void    ScanBlock( tbl_control *table, an node, cg_type tipe,
-                           label_handle other );
+extern  void    BGSelRange( select_node *s_node, signed_32 lo, signed_32 hi, label_handle label );
+static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other );
 static  void    SelectBlock( tbl_control *table, an node, label_handle other );
 
 static  select_list *NewCase( signed_32 lo, signed_32 hi, label_handle label ) {
@@ -276,18 +272,15 @@ static  an      GenScanTable( an node, select_node *s_node, type_def *tipe){
     value_type = SelType( s_node->upper - s_node->lower );
     real_type = tipe->refno;
     if( real_type != value_type ) {
-        node = BGBinary( O_MINUS, node,
-                          BGInteger( s_node->lower, tipe ), tipe, TRUE );
+        node = BGBinary( O_MINUS, node, BGInteger( s_node->lower, tipe ), tipe, TRUE );
         if( s_node->other_wise != NULL ) {
-            lt = BGCompare( O_LE, BGDuplicate(node),
-                            BGInteger( s_node->upper - s_node->lower, tipe ),
+            lt = BGCompare( O_LE, BGDuplicate(node), BGInteger( s_node->upper - s_node->lower, tipe ),
                             NULL, UnSignedIntTipe( tipe ) );
             BGControl( O_IF_FALSE, lt, s_node->other_wise );
         }
     }
-    ScanBlock( MakeScanTab( s_node->list, s_node->upper, s_node->other_wise,
-                            value_type, real_type ), node, value_type,
-                            s_node->other_wise );
+    ScanBlock( MakeScanTab( s_node->list, s_node->upper, s_node->other_wise, value_type, real_type ),
+	       node, (type_class_def)value_type, s_node->other_wise );
     return( node );
 }
 
@@ -457,19 +450,18 @@ extern  signed_32       NumValues( select_list *list, signed_32 hi ) {
     return( cases );
 }
 
-static  void    ScanBlock( tbl_control *table, an node, cg_type tipe,
-                           label_handle other ) {
-/*******************************************************************/
-
+static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other )
+/************************************************************************************************/
+{
     uint                i;
     uint                targets;
     name                *value;
 
     value = GenIns( node );
-    MkSelOp( ScanCall( table, value, tipe ), tipe );
+    MkSelOp( ScanCall( table, value, class ), class );
     i = 0;
     targets = 0;
-    for(;;) {
+    for( ;; ) {
         if( table->cases[ i ] != other ) {
             ++targets;
         }
@@ -480,7 +472,7 @@ static  void    ScanBlock( tbl_control *table, an node, cg_type tipe,
     }
     GenBlock( SELECT, targets );
     i = 0;
-    for(;;) {
+    for( ;; ) {
         if( table->cases[ i ] != other ) {
             AddTarget( table->cases[ i ], FALSE );
         }
@@ -500,7 +492,7 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other ) {
     uint                i;
     uint                targets;
 
-    MkSelOp( (name *) SelIdx( table, node ), TY_UINT_2 );
+    MkSelOp( (name *)SelIdx( table, node ), U2 );
     i = 0;
     targets = 0;
     for(;;) {
