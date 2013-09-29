@@ -130,12 +130,9 @@ extern  void    BGProcDecl( sym_handle sym, type_def *tipe ) {
 }
 
 
-extern  type_def        *PassParmType( sym_handle func, type_def* tipe, call_class class ) {
-/******************************************************************************************/
-
-    type_class_def      cl;
-
-    cl = cl;
+extern  type_def        *PassParmType( sym_handle func, type_def* tipe, call_class class )
+/****************************************************************************************/
+{
     class = class;
     tipe = QParmType( func, NULL, tipe );
     return( tipe );
