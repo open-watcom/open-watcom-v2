@@ -18,7 +18,7 @@
 #define SQL_SPEC_MINOR                  80
 #define SQL_SPEC_STRING                 "03.80"
 #define SQL_SQLSTATE_SIZE               5
-#define SQL_MAX_SDN_LENGTH              32
+#define SQL_MAX_DSN_LENGTH              32
 #define SQL_MAX_OPTION_STRING_LENGTH    256
 
 /* ODBC primitive data types */
