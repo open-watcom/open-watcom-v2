@@ -158,7 +158,7 @@ static  void    DumpInv( name *name ) {
 /***************************************/
 
     while( name != NULL ) {
-        if( name->v.block_usage & INVARIANT ) {
+        if( name->v.block_usage & VU_INVARIANT ) {
             DumpOperand( name );
             DumpLiteral( " " );
         }

@@ -369,7 +369,7 @@ extern  memory_name     *SAllocMemory( pointer symbol, type_length offset,
             new_m->m.same_sym = other;
         }
         other->m.same_sym = new_m;
-        new_m->v.usage  = USE_MEMORY | NEEDS_MEMORY;
+        new_m->v.usage = USE_MEMORY | NEEDS_MEMORY;
     } else {
         new_m->v.usage = NEEDS_MEMORY;
         new_m->m.same_sym = NULL;
@@ -377,7 +377,7 @@ extern  memory_name     *SAllocMemory( pointer symbol, type_length offset,
     if( class == CG_FE && _IsModel( NO_OPTIMIZATION ) ) {
         new_m->v.usage |= USE_MEMORY;
     }
-    new_m->v.block_usage = EMPTY;
+    new_m->v.block_usage = 0;
     new_m->v.conflict = NULL;
     if( class == CG_LBL || class == CG_CLB ) {
         new_m->v.usage |= USE_MEMORY; /* so not put in conflict graph*/
@@ -428,7 +428,7 @@ extern  name    *STempOffset( name *temp, type_length offset,
     new_t->v.symbol = temp->v.symbol;
     new_t->v.offset = offset;
     new_t->v.usage = temp->v.usage;
-    new_t->v.block_usage = EMPTY;
+    new_t->v.block_usage = 0;
     new_t->v.conflict = temp->v.conflict;
     new_t->t.u.block_id = temp->t.u.block_id;
     new_t->t.alias = temp->t.alias;
@@ -451,11 +451,11 @@ extern  name    *SAllocTemp( type_class_def class, type_length size ) {
 
     class = OneClass[  class  ];
     new_t = AllocName( N_TEMP, class, size );
-    new_t->t.v.id = ++ TempId;
+    new_t->t.v.id = ++TempId;
     new_t->v.symbol = NULL;
     new_t->v.offset = 0;
-    new_t->v.usage  = EMPTY;
-    new_t->v.block_usage = EMPTY;
+    new_t->v.usage = 0;
+    new_t->v.block_usage = 0;
     new_t->v.conflict = NULL;
     new_t->t.u.block_id = NO_BLOCK_ID;
     new_t->t.location = NO_LOCATION;
@@ -617,7 +617,7 @@ extern  void    InitNames() {
     class = N_CONSTANT;
     for(;;) {
         InitFrl( &FrlHead[  class  ] );
-        if( ++ class > N_INDEXED ) break;
+        if( ++class > N_INDEXED ) break;
     }
     InitFrl( &ConstDefnFrl );
     for( class = U1; class <= XX; ++class ) {
@@ -641,7 +641,7 @@ extern  void    ReInitNames() {
     class = N_CONSTANT;
     for(;;) {
         Names[ class ] = NULL;
-        if( ++ class > N_INDEXED ) break;
+        if( ++class > N_INDEXED ) break;
     }
 }
 
@@ -662,7 +662,7 @@ extern  void    FreeNames() {
             temp = temp->n.next_name;
             FreeAName( junk );
         }
-        if( ++ class > N_INDEXED ) break;
+        if( ++class > N_INDEXED ) break;
     }
 }
 

@@ -60,8 +60,7 @@ static  void    Use( name *op, block *blk, var_usage usage )
     } else {
         op->v.block_usage |= USE_IN_ANOTHER_BLOCK;
         if( op->v.conflict != NULL ) {
-            _GBitTurnOn( blk->dataflow->use,
-                    op->v.conflict->id.out_of_block );
+            _GBitTurnOn( blk->dataflow->use, op->v.conflict->id.out_of_block );
         }
     }
     op->v.block_usage |= usage;
@@ -141,7 +140,7 @@ static  void    UseDefGlobals( block *blk )
             Use( conf->name, blk, EMPTY );
             Define( conf->name, blk );
             _GBitTurnOn( blk->dataflow->def, conf->id.out_of_block );
-            if( ( usage & DEF_WITHIN_BLOCK ) == EMPTY ) {
+            if( ( usage & DEF_WITHIN_BLOCK ) == 0 ) {
                 _GBitTurnOn( blk->dataflow->use, conf->id.out_of_block );
             }
         }
@@ -159,7 +158,7 @@ static void TransferBlockUsage( name *op )
     if( op->v.usage & USE_IN_ANOTHER_BLOCK ) {
         op->v.usage &= ~ USE_WITHIN_BLOCK;
     }
-    op->v.block_usage = EMPTY;
+    op->v.block_usage = 0;
 }
 
 
@@ -275,7 +274,7 @@ static void TransferOneTempFlag( name *t )
     if( t->n.class == N_TEMP ) {
         t = DeAlias( t );
         alias = t;
-        usage = EMPTY;
+        usage = 0;
         do {
             usage |= alias->v.usage;
             alias = alias->t.alias;

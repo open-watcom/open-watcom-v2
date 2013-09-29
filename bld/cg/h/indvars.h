@@ -76,15 +76,15 @@ typedef struct induction {              /* an induction variable is */
 } induction;
 
 typedef enum {
-        USED_AS_INVARIANT,
-        UNUSED,
-        USED_AS_INDEX,
-        USED_AS_OPERAND
+        IVU_UNUSED,
+        IVU_USED_AS_INVARIANT,
+        IVU_USED_AS_INDEX,
+        IVU_USED_AS_OPERAND
 } iv_usage;
 
 typedef enum {
-        VARIANT                 = 0x01,
-        INVARIANT               = 0x02,
-        INVARIANT_ADDRESS       = 0x04,
-        VARIED_ONCE             = 0x08
+        VU_VARIANT              = 0x01,
+        VU_INVARIANT            = 0x02,
+        VU_INVARIANT_ADDRESS    = 0x04,
+        VU_VARIED_ONCE          = 0x08
 } variance;
