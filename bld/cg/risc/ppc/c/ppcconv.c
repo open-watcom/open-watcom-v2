@@ -149,7 +149,10 @@ _Un(    ANY,    ANY,    NONE ),         V_NO,           R_MAKECALL,     RG_FLOAT
     RT_MAP( DTOI4, RT_DTOI4 )
 
 typedef enum {
-    OK = XX,            // last typeclass from typclass.h
+    #define pick(e) C##e,
+    #include "typcldef.h"
+    #undef pick
+    OK,
     #define CVT_MAP(a) a,
     CVTFUNC_MAPS
     #undef CVT_MAP

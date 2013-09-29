@@ -29,41 +29,16 @@
 ****************************************************************************/
 
 
-typedef enum {
-    #define pick(e) e,
-    #include "typcldef.h"
-    #undef pick
-    XX,
-    X8,
-/*  following included for use only by GENTYPE.WSL */
-    ER
-} type_class_def;
-
-#define _IsI64( c ) ( (c) >= U8 && (c) <= I8 )
-#define _IsFloating( c ) ( (c) >= FS && (c) <= FL )
-#define _IsPointer( c ) ( (c) == PT || (c) == CP )
-#define _IsIntegral( c ) ( (c) >= U1 && (c) <= PT )
-
-#include "targsys.h"
-
-#if _TARGET & _TARG_80386
-    typedef signed_32     type_length;
-    #define MAX_TYPE_LENGTH 0x7fffffff
-#elif _TARGET & _TARG_IAPX86
-    typedef signed_16     type_length;
-    #define MAX_TYPE_LENGTH 0x7fff
-#elif _TARGET & _TARG_370
-    typedef signed_32     type_length;
-    #define MAX_TYPE_LENGTH 0x7fffffff
-#elif _TARGET & _TARG_PPC
-    typedef signed_32     type_length;
-    #define MAX_TYPE_LENGTH 0x7fffffff
-#elif _TARGET & _TARG_AXP
-    typedef signed_32     type_length;
-    #define MAX_TYPE_LENGTH 0x7fffffff
-#elif _TARGET & _TARG_MIPS
-    typedef signed_32     type_length;
-    #define MAX_TYPE_LENGTH 0x7fffffff
-#else
-    #error Unknown target
-#endif
+pick( U1 )
+pick( I1 )
+pick( U2 )
+pick( I2 )
+pick( U4 )
+pick( I4 )
+pick( U8 )
+pick( I8 )
+pick( CP )
+pick( PT )
+pick( FS )
+pick( FD )
+pick( FL )

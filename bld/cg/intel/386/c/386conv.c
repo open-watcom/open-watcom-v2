@@ -273,19 +273,9 @@ _Un( ANY,  ANY,  NONE ),     V_NO,           R_MAKECALL,     RG_,   FU_NO,
     RT_MAP( C7D_U8, RT_FDU87 )
 
 typedef enum {
-    CU1,
-    CI1,
-    CU2,
-    CI2,
-    CU4,
-    CI4,
-    CU8,
-    CI8,
-    CCP,
-    CPT,
-    CFS,
-    CFD,
-    CFL,
+    #define pick(e) C##e,
+    #include "typcldef.h"
+    #undef pick
     OK,
     #define CVT_MAP(a) a,
     CVTFUNC_MAPS

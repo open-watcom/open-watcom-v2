@@ -174,7 +174,10 @@ _Un(    ANY,    ANY,    NONE ),         V_NO,           R_CLRHI_4,      RG_,    
     _C_( FDTOI8 )
 
 typedef enum {
-    OK = XX,            // last typeclass from typclass.h
+    #define pick(e) C##e,
+    #include "typcldef.h"
+    #undef pick
+    OK,
     #define _C_( a )    a,
     CONVERSIONS
     #undef _C_
