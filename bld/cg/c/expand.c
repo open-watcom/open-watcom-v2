@@ -63,7 +63,7 @@ static  instruction     *DoReduce( instruction *ins, opcode_entry *try,
     if( try == NULL ) return( ins );
     if( try->generate == G_NO ) return( ins );
     if( try->generate >= FIRST_REDUCT ) return( Reduce( ins ) );
-    zap = RegSets[  RegList[  try->reg_set  ].zap  ];
+    zap = RegSets[RegList[try->reg_set].zap];
     zap_all = ins->zap->reg;
     while( !HW_CEqual( *zap, HW_EMPTY ) ) {
         HW_TurnOn( zap_all, *zap );
@@ -95,7 +95,7 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
     reg_set_index       special_index;
 
     try = ins->u.gen_table;
-    need = &RegList[  try->reg_set  ];
+    need = &RegList[try->reg_set];
     result_index = RL_;
     name = ins->result;
     if( ( ops & R_R ) == 0 ) {
@@ -107,7 +107,7 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
             result_index = need->result;
         } else if( !_Any( try->op_type, RESULT_MUL ) ) {
             regs = name->r.reg;
-            possible = RegSets[  need->result  ];
+            possible = RegSets[need->result];
             for(;;) {
                 if( HW_CEqual( *possible, HW_EMPTY ) ) return( FALSE );
                 if( HW_Equal( *possible, regs ) ) break;
@@ -121,12 +121,12 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
             left_index = need->left;
         }
     } else if( need->left != RL_ ) {
-        name = ins->operands[ 0 ];
+        name = ins->operands[0];
         if( name->n.class != N_REGISTER ) {
             left_index = need->left;
         } else if( !_Any( try->op_type, OP1_MUL ) ) {
             regs = name->r.reg;
-            possible = RegSets[  need->left  ];
+            possible = RegSets[need->left];
             for(;;) {
                 if( HW_CEqual( *possible, HW_EMPTY ) ) return( FALSE );
                 if( HW_Equal( *possible, regs ) ) break;
@@ -140,12 +140,12 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
             right_index = need->right;
         }
     } else if( need->right != RL_ ) {
-        name = ins->operands[ 1 ];
+        name = ins->operands[1];
         if( name->n.class != N_REGISTER ) {
             right_index = need->right;
         } else if( !_Any( try->op_type, OP2_MUL ) ) {
             regs = name->r.reg;
-            possible = RegSets[  need->right  ];
+            possible = RegSets[need->right];
             for(;;) {
                 if( HW_CEqual( *possible, HW_EMPTY ) ) return( FALSE );
                 if( HW_Equal( *possible, regs ) ) break;
@@ -161,10 +161,10 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
             MarkPossible( ins, ins->result, result_index );
         }
         if( left_index != RL_ ) {
-            MarkPossible( ins, ins->operands[ 0 ], left_index );
+            MarkPossible( ins, ins->operands[0], left_index );
         }
         if( right_index != RL_ ) {
-            MarkPossible( ins, ins->operands[ 1 ], right_index );
+            MarkPossible( ins, ins->operands[1], right_index );
         }
     }
     return( TRUE );
@@ -183,11 +183,11 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
     ops = NONE;
     name = ins->result;
     if( name != NULL && num_operands != 0 ) {
-        if( ins->operands[ 0 ] == name ) {
+        if( ins->operands[0] == name ) {
             ops &= EQ_R1;
         }
         if( num_operands != 1 ) {
-            if( ins->operands[ 1 ] == name ) {
+            if( ins->operands[1] == name ) {
                 ops &= EQ_R2;
             }
         }
@@ -215,7 +215,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
         }
     }
     if( num_operands != 0 ) {
-        name = ins->operands[ 0 ];
+        name = ins->operands[0];
         switch( name->n.class ) {
         case N_CONSTANT:
             ops |= C_1;
@@ -241,7 +241,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
         }
     }
     if( num_operands > 1 ) {
-        name = ins->operands[ 1 ];
+        name = ins->operands[1];
         switch( name->n.class ) {
         case N_CONSTANT:
             ops |= C_2;
@@ -266,7 +266,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
             break;
         }
         if( num_operands > 2 ) {
-            name = ins->operands[ 2 ];
+            name = ins->operands[2];
             if( name->n.class == N_INDEXED ) {
                 *has_index = TRUE;
             }

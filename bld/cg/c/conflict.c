@@ -325,7 +325,7 @@ extern  reg_set_index   MarkIndex( instruction *ins,
     possible_for_alias  *aposs;
 
     conf = NameConflict( ins, opnd );
-    if( conf == NULL ) return( RG_ );
+    if( conf == NULL ) return( RL_ );
     class = opnd->n.name_class;
     if( opnd->n.class == N_TEMP && ( opnd->t.temp_flags & ALIAS ) ) {
         aposs = MakePossibleForAlias( conf, opnd );

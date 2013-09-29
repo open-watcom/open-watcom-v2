@@ -204,12 +204,9 @@ extern  type_class_def  DoubleClass[];
 
 
 instruction *(*ReduceTab[])( instruction * ) = {
-/**************************************/
-
-#undef _R_
-#define _R_( x, f )     f
-#include "r.h"
-
+    #define _R_( x, f )     f
+    #include "r.h"
+    #undef _R_
 };
 
 

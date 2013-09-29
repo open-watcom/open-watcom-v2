@@ -31,21 +31,16 @@
 
 
 typedef enum {
-        #define RL(a,b,c,d) b
-        #include "rl.h"
-        RL_NUMBER_OF_SETS
+    #define RL(a,b,c,d) b
+    #include "rl.h"
+    #undef RL
+    RL_NUMBER_OF_SETS
 } reg_set_index;
 
 typedef struct op_regs {
-        reg_set_index           left;
-        reg_set_index           right;
-        reg_set_index           result;
-        reg_set_index           zap;
-        reg_set_index           need;
+    reg_set_index       left;
+    reg_set_index       right;
+    reg_set_index       result;
+    reg_set_index       zap;
+    reg_set_index       need;
 } op_regs;
-
-typedef enum {
-        #define RG( a,b,c,d,e,f ) f
-        #include "rg.h"
-        RG_NUMBER_OF_REGS
-} reg_index;

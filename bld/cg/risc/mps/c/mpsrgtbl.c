@@ -332,17 +332,16 @@ static  hw_reg_set      ReturnD[] = {
 };
 
 hw_reg_set      *RegSets[] = {
-    #undef RL
     #define RL(a,b,c,d) a
     #include "rl.h"
+    #undef RL
     NULL
 };
 
 op_regs RegList[] = {
-    #undef RG
-    #define RG( a,b,c,d,e,f ) a,b,c,d,e
+    #define RG( a,b,c,d,e,f ) {a,b,c,d,e}
     #include "rg.h"
-    RL_
+    #undef RG
 };
 
 static  reg_set_index   IsSets[] = {
@@ -363,12 +362,13 @@ static  reg_set_index   IsSets[] = {
 };
 
 
-/*       Information for register set intersections*/
-/*       if sets are of different classes*/
-/*               intersection is empty*/
-/*       } else {*/
-/*               intersection given in square matrix for class*/
-/*       }*/
+/*      Information for register set intersections
+ *      if sets are of different classes {
+ *          intersection is empty
+ *      } else {
+ *          intersection given in square matrix for class
+ *      }
+ */
 
 #define _Combine( a, b )        ((a) * RL_NUMBER_OF_SETS + (b))
 

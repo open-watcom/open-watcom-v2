@@ -33,6 +33,7 @@
 #include "coderep.h"
 #include "conflict.h"
 #include "regset.h"
+#include "regsetop.h"
 #include "freelist.h"
 #include "zoiks.h"
 

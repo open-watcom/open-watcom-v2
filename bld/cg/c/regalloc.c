@@ -249,7 +249,7 @@ static  void    InitChoices( void )
             blk = blk->next_block;
         }
     } else {
-        opnd = Names[ N_TEMP ];
+        opnd = Names[N_TEMP];
         while( opnd != NULL ) {
             opnd->t.possible = RL_NUMBER_OF_SETS;
             opnd = opnd->n.next_name;
@@ -356,7 +356,7 @@ extern  void    NullConflicts( var_usage off ) {
 
     name        *temp;
 
-    temp = Names[ N_TEMP ];
+    temp = Names[N_TEMP];
     while( temp != NULL ) {
         temp->v.conflict = NULL;
         temp->v.usage &= (USE_IN_ANOTHER_BLOCK+USE_MEMORY+USE_ADDRESS+VAR_VOLATILE+NEEDS_MEMORY+HAS_MEMORY);
@@ -497,7 +497,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                 op1 = NULL;
                 op2 = NULL;
                 if( ins->num_operands != 0 ) {
-                    op1 = ins->operands[ 0 ];
+                    op1 = ins->operands[0];
                     switch( ins->head.opcode ) {
                     case OP_ADD:
                     case OP_EXT_ADD:
@@ -505,7 +505,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                     case OP_AND:
                     case OP_OR:
                     case OP_XOR:
-                        op2 = ins->operands[ 1 ];
+                        op2 = ins->operands[1];
                         break;
                     }
                 }
@@ -531,7 +531,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
 /* 88-Dec-23*/
             #endif
             } else {
-                op1 = ins->operands[ 0 ];
+                op1 = ins->operands[0];
                 res = ins->result;
                 if( ( ( op1 == tree->temp || op1 == tree->alt )
                      && ( res == reg_name || ( idx && Idx( res ) ) ) )
@@ -594,8 +594,8 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                 if( ins->head.opcode == OP_MOV ) {
                     other_opnd = NULL;
                     if( ins->result == conf->name ) {
-                        other_opnd = ins->operands[ 0 ];
-                    } else if( ins->operands[ 0 ] == conf->name ) {
+                        other_opnd = ins->operands[0];
+                    } else if( ins->operands[0] == conf->name ) {
                         other_opnd = ins->result;
                     }
                     if( other_opnd == NULL ) continue;
@@ -652,11 +652,11 @@ static  bool    StealsSeg( instruction *ins,
     i = ins->num_operands;
     --i;
     if( i < NumOperands( ins ) ) return( FALSE );
-    op = ins->operands[ i ];
+    op = ins->operands[i];
     new_conf = NameConflict( ins, op );
     if( new_conf == NULL ) return( FALSE );
     if( ( op == actual_op ) && IsSegReg( reg ) ) return( FALSE );
-    index_needs = RegSets[  SegIndex()  ];
+    index_needs = RegSets[SegIndex()];
     if( HW_CEqual( *index_needs, HW_EMPTY ) ) return( FALSE );
     for(;;) {
         if( !HW_Ovlap( *index_needs, except ) ) return( FALSE );
@@ -683,7 +683,7 @@ static  bool    StealsIdx( instruction *ins,
     i = ins->num_operands;
     is_result = FALSE;
     while( --i >= 0 ) {
-        op = ins->operands[ i ];
+        op = ins->operands[i];
         if( op->n.class == N_INDEXED ) {
             new_conf = NameConflict( ins, op->i.index ); // oops
             if( new_conf == NULL || actual_op == op->i.index ) return( FALSE );
@@ -697,7 +697,7 @@ static  bool    StealsIdx( instruction *ins,
             is_result = TRUE;
         }
     }
-    index_needs = RegSets[  ins->t.index_needs  ];
+    index_needs = RegSets[ins->t.index_needs];
     if( HW_CEqual( *index_needs, HW_EMPTY ) ) return( FALSE );
     for(;;) {
         if( !HW_Ovlap( *index_needs, except ) ) {
@@ -749,25 +749,25 @@ static  bool            TooGreedy( conflict_node *conf,
     instruction         *last;
     hw_reg_set          *ins_needs;
     bool                rc;
-    reg_set_index       needs;
+    op_reg_set_index    needs;
 
     blk = conf->start_block;
     ins = conf->ins_range.first;
     if( conf->name->n.class == N_TEMP
-     && _Is( conf, ( INDEX_SPLIT | SEGMENT_SPLIT ) ) ) {
+      && _Is( conf, ( INDEX_SPLIT | SEGMENT_SPLIT ) ) ) {
         ins = conf->ins_range.last;
     }
     last = conf->ins_range.last;
     rc = FALSE;
     for(;;) {
         if( ins->u.gen_table == NULL ) { /* just created instruction*/
-            needs = RL_;
+            needs = RG_;
         } else {
             needs = ins->u.gen_table->reg_set;
         }
-        ins_needs = RegSets[  RegList[  needs  ].need  ];
+        ins_needs = RegSets[RegList[needs].need];
         if( HW_CEqual( *ins_needs, HW_EMPTY ) || _Is( conf, NEVER_TOO_GREEDY )
-         || UnaryOpGetsReg( ins, reg, op ) ) {
+          || UnaryOpGetsReg( ins, reg, op ) ) {
             rc = CheckIndecies( ins, reg, HW_EMPTY, op );
         } else { /* can the instruction and indecies still get needed regs?*/
             rc = TRUE;
@@ -859,12 +859,12 @@ static  void    NeighboursUse( conflict_node *conf ) {
                     if( dst == conf->name ) {
                         _NameSetInit( no_conflict );
                     }
-                } else if( ins->operands[ 0 ] == conf->name ) {
+                } else if( ins->operands[0] == conf->name ) {
                     NowAlive( dst, FindConflictNode( dst, blk, ins ),
                                     &no_conflict, blk );
                 } else if( dst == conf->name ) {
                     _NameSetInit( no_conflict );
-                    definition = ins->operands[ 0 ];
+                    definition = ins->operands[0];
                     NowAlive( definition,
                               FindConflictNode( definition, blk, ins ),
                               &no_conflict, blk );

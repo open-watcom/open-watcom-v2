@@ -34,34 +34,32 @@
 #include "coderep.h"
 #include "pattern.h"
 #include "vergen.h"
-#include "regset.h"
 #include "dump.h"
 
 extern  void            DumpPadString(char *,int);
 extern  void            DumpNL();
 
 static char * RegTab[] = {
-#undef RG
-#define RG( a,b,c,d,e,f ) #f
-#include "rg.h"
-        ""
+    #define RG( a,b,c,d,e,f ) #f
+    #include "rg.h"
+    #undef RG
 };
 
 static char * VerTab[] = {
-#undef _V_
-#define _V_( x ) #x
-#include "v.h"
+    #define _V_( x ) #x
+    #include "v.h"
+    #undef _V_
     ""
 };
 
 static char * GenTab[] = {
-#undef _G_
-#define _G_( x ) #x
-#include "g.h"
-#undef _R_
-#define _R_( x, f ) #x
-#include "r.h"
-        ""
+    #define _G_( x ) #x
+    #include "g.h"
+    #undef _G_
+    #define _R_( x, f ) #x
+    #include "r.h"
+    #undef _R_
+    ""
 };
 
 
@@ -123,7 +121,7 @@ static  void    PrtOps( operand_types ops ) {
 extern  void    DumpGen( opcode_entry *try ) {
 /********************************************/
 
-    DumpPadString( GenTab[ try->generate ], 15 );
+    DumpPadString( GenTab[try->generate], 15 );
 }
 
 extern  void    DumpTab( opcode_entry *try ) {
@@ -137,10 +135,10 @@ extern  void    DumpTab( opcode_entry *try ) {
         DumpLiteral( "NVI+" );
         verify &= ~NOT_VOLATILE;
     }
-    DumpPadString( VerTab[ verify ], 10 );
+    DumpPadString( VerTab[verify], 10 );
     DumpLiteral( "," );
     DumpGen( try );
     DumpLiteral( "," );
-    DumpPadString( RegTab[ try->reg_set ], 10 );
+    DumpPadString( RegTab[try->reg_set], 10 );
     DumpNL();
 }

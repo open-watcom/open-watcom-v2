@@ -31,27 +31,24 @@
 
 
 typedef enum {
-
-#define _V_( x ) x
-#include "v.h"
-
-        V_LAST
+    #define _V_( x ) x
+    #include "v.h"
+    #undef _V_
+    V_LAST
 } vertype;
 
 #define NOT_VOLATILE 0x80
 
 #define NVI( v ) NOT_VOLATILE+(v)
 
-
 typedef enum {
-
-#define _G_( x ) x
-#include "g.h"
-
-#define _R_( x, f ) x
-#include "r.h"
-
-        R_END
+    #define _G_( x ) x
+    #include "g.h"
+    #undef _G_
+    #define _R_( x, f ) x
+    #include "r.h"
+    #undef _R_
+    R_END
 } gentype;
 
 #include "vg.h"

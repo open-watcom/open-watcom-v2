@@ -146,11 +146,10 @@ extern  void            HalfType( instruction * );
 extern  bool            SameThing( name *, name * );
 
 
-extern instruction *(* ReduceTab[])() = {
-/***************************************/
-#undef _R_
-#define _R_( x, f )     f
-#include "r.h"
+instruction *(* ReduceTab[])() = {
+    #define _R_( x, f )     f
+    #include "r.h"
+    #undef _R_
 };
 
 static instruction      *PromoteOperand( instruction *ins ) {

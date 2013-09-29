@@ -24,22 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Prototypes for i86call.c
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern  an      BGCall( cn call, bool use_return, bool in_line );
-extern  void    BGProcDecl( sym_handle sym, type_def *tipe );
-extern  name    *StReturn( an retval, type_def *tipe, instruction **pins );
-extern  reg_set_index   CallIPossible( instruction *ins );
-extern  void    InitTargProc( void );
-extern  void    SaveToTargProc( void );
-extern  void    RestoreFromTargProc( void );
-extern  void    PushInSameBlock( instruction *ins );
-extern  instruction     *PushOneParm( instruction *ins, name *curr,
-                                      type_class_def class, type_length offset,
-                                      call_state *state );
-extern  void    PreCall( cn call );
-extern  void    PostCall( cn call );
-extern  type_def        *PassParmType( sym_handle func, type_def *tipe, call_class class );
+typedef enum {
+    #define RG( a,b,c,d,e,f ) f
+    #include "rg.h"
+    #undef RG
+} op_reg_set_index;

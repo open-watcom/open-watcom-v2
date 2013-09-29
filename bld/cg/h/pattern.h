@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include "regsetop.h"
+
 #define C               0x01u /*  constant */
 #define R               0x02u /*  register */
 #define M               0x04u /*  memory */
@@ -133,6 +135,6 @@ typedef struct opcode_entry {
         operand_types           op_type;
         byte                    verify;         /*  verification routine */
         byte                    generate;       /*  generation routine */
-        byte                    reg_set;
+        op_reg_set_index        reg_set;
         byte                    func_unit;      /*  functional unit info */
 } opcode_entry;

@@ -50,302 +50,329 @@ extern  int             Max87Stk;
  */
 
 static  hw_reg_set      Reg64Order[] = {
-                HW_D_1( HW_EAX ),
-                HW_D_1( HW_EBX ),
-                HW_D_1( HW_ESI ),
-                HW_D_1( HW_EDI ),
-                HW_D_1( HW_EDX ),
-                HW_D_1( HW_ECX ),
-                HW_D_1( HW_BP ),
-                HW_D_1( HW_SP ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EAX ),
+    HW_D_1( HW_EBX ),
+    HW_D_1( HW_ESI ),
+    HW_D_1( HW_EDI ),
+    HW_D_1( HW_EDX ),
+    HW_D_1( HW_ECX ),
+    HW_D_1( HW_BP ),
+    HW_D_1( HW_SP ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      Empty[] = {
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      ALReg[] = {
-                HW_D_1( HW_AL ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_AL ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      AHReg[] = {
-                HW_D_1( HW_AH ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_AH ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      AXReg[] = {
-                HW_D_1( HW_AX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_AX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      EAXReg[] = {
-                HW_D_1( HW_EAX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EAX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      ECXReg[] = {
-                HW_D_1( HW_ECX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_ECX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      CLReg[] = {
-                HW_D_1( HW_CL ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_CL ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      CXReg[] = {
-                HW_D_1( HW_CX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_CX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      DXReg[] = {
-                HW_D_1( HW_DX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_DX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      EDXReg[] = {
-                HW_D_1( HW_EDX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EDX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      DXAXReg[] = {
-                HW_D_2( HW_DX, HW_AX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_2( HW_DX, HW_AX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      DXEAXReg[] = {
-                HW_D_2( HW_DX, HW_EAX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_2( HW_DX, HW_EAX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      EDXEAXReg[] = {
-                HW_D_2( HW_EDX, HW_EAX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_2( HW_EDX, HW_EAX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      FPParm2Reg[] = {
-                HW_D_1( HW_EMPTY ),         /* filled in by InitRegTbl */
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EMPTY ),         /* filled in by InitRegTbl */
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      ByteRegs[] = {
-                HW_D_1( HW_AL ),
-                HW_D_1( HW_AH ),
-                HW_D_1( HW_DL ),
-                HW_D_1( HW_DH ),
-                HW_D_1( HW_BL ),
-                HW_D_1( HW_BH ),
-                HW_D_1( HW_CL ),
-                HW_D_1( HW_CH ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_AL ),
+    HW_D_1( HW_AH ),
+    HW_D_1( HW_DL ),
+    HW_D_1( HW_DH ),
+    HW_D_1( HW_BL ),
+    HW_D_1( HW_BH ),
+    HW_D_1( HW_CL ),
+    HW_D_1( HW_CH ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      WordOrSegReg[] = {
-                HW_D_1( HW_AX ),
-                HW_D_1( HW_DX ),
-                HW_D_1( HW_BX ),
-                HW_D_1( HW_CX ),
-                HW_D_1( HW_SI ),
-                HW_D_1( HW_DI ),
-                HW_D_1( HW_DS ),
-                HW_D_1( HW_ES ),
-                HW_D_1( HW_FS ),
-                HW_D_1( HW_GS ),
-                HW_D_1( HW_CS ),
-                HW_D_1( HW_SS ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_AX ),
+    HW_D_1( HW_DX ),
+    HW_D_1( HW_BX ),
+    HW_D_1( HW_CX ),
+    HW_D_1( HW_SI ),
+    HW_D_1( HW_DI ),
+    HW_D_1( HW_DS ),
+    HW_D_1( HW_ES ),
+    HW_D_1( HW_FS ),
+    HW_D_1( HW_GS ),
+    HW_D_1( HW_CS ),
+    HW_D_1( HW_SS ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      WordRegs[] = {
-                HW_D_1( HW_AX ),
-                HW_D_1( HW_DX ),
-                HW_D_1( HW_BX ),
-                HW_D_1( HW_CX ),
-                HW_D_1( HW_SI ),
-                HW_D_1( HW_DI ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_AX ),
+    HW_D_1( HW_DX ),
+    HW_D_1( HW_BX ),
+    HW_D_1( HW_CX ),
+    HW_D_1( HW_SI ),
+    HW_D_1( HW_DI ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      TwoByteRegs[] = {
-                HW_D_1( HW_AX ),
-                HW_D_1( HW_DX ),
-                HW_D_1( HW_BX ),
-                HW_D_1( HW_CX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_AX ),
+    HW_D_1( HW_DX ),
+    HW_D_1( HW_BX ),
+    HW_D_1( HW_CX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      SegRegs[] = {
-                HW_D_1( HW_DS ),
-                HW_D_1( HW_ES ),
-                HW_D_1( HW_FS ),
-                HW_D_1( HW_GS ),
-                HW_D_1( HW_CS ),
-                HW_D_1( HW_SS ),
-                HW_D_1( HW_EMPTY ) };
-
+    HW_D_1( HW_DS ),
+    HW_D_1( HW_ES ),
+    HW_D_1( HW_FS ),
+    HW_D_1( HW_GS ),
+    HW_D_1( HW_CS ),
+    HW_D_1( HW_SS ),
+    HW_D_1( HW_EMPTY )
+};
 static hw_reg_set       FarPointerRegs[] = {
 
-                HW_D_2( HW_DX, HW_EAX ),
-                HW_D_2( HW_CX, HW_EBX ),
-                HW_D_2( HW_CX, HW_EAX ),
-                HW_D_2( HW_CX, HW_ESI ),
-                HW_D_2( HW_DX, HW_EBX ),
-                HW_D_2( HW_DI, HW_EAX ),
-                HW_D_2( HW_CX, HW_EDI ),
-                HW_D_2( HW_DX, HW_ESI ),
-                HW_D_2( HW_DI, HW_EBX ),
-                HW_D_2( HW_SI, HW_EAX ),
-                HW_D_2( HW_CX, HW_EDX ),
-                HW_D_2( HW_DX, HW_EDI ),
-                HW_D_2( HW_DI, HW_ESI ),
-                HW_D_2( HW_SI, HW_EBX ),
-                HW_D_2( HW_BX, HW_EAX ),
+    HW_D_2( HW_DX, HW_EAX ),
+    HW_D_2( HW_CX, HW_EBX ),
+    HW_D_2( HW_CX, HW_EAX ),
+    HW_D_2( HW_CX, HW_ESI ),
+    HW_D_2( HW_DX, HW_EBX ),
+    HW_D_2( HW_DI, HW_EAX ),
+    HW_D_2( HW_CX, HW_EDI ),
+    HW_D_2( HW_DX, HW_ESI ),
+    HW_D_2( HW_DI, HW_EBX ),
+    HW_D_2( HW_SI, HW_EAX ),
+    HW_D_2( HW_CX, HW_EDX ),
+    HW_D_2( HW_DX, HW_EDI ),
+    HW_D_2( HW_DI, HW_ESI ),
+    HW_D_2( HW_SI, HW_EBX ),
+    HW_D_2( HW_BX, HW_EAX ),
 
-                HW_D_2( HW_DS, HW_EAX ),
-                HW_D_2( HW_DS, HW_EDX ),
-                HW_D_2( HW_DS, HW_EBX ),
-                HW_D_2( HW_DS, HW_ECX ),
-                HW_D_2( HW_DS, HW_ESI ),
-                HW_D_2( HW_DS, HW_EDI ),
-                HW_D_2( HW_DS, HW_BP ),
+    HW_D_2( HW_DS, HW_EAX ),
+    HW_D_2( HW_DS, HW_EDX ),
+    HW_D_2( HW_DS, HW_EBX ),
+    HW_D_2( HW_DS, HW_ECX ),
+    HW_D_2( HW_DS, HW_ESI ),
+    HW_D_2( HW_DS, HW_EDI ),
+    HW_D_2( HW_DS, HW_BP ),
 
-                HW_D_2( HW_ES, HW_EAX ),
-                HW_D_2( HW_ES, HW_EDX ),
-                HW_D_2( HW_ES, HW_EBX ),
-                HW_D_2( HW_ES, HW_ECX ),
-                HW_D_2( HW_ES, HW_ESI ),
-                HW_D_2( HW_ES, HW_EDI ),
-                HW_D_2( HW_ES, HW_BP ),
+    HW_D_2( HW_ES, HW_EAX ),
+    HW_D_2( HW_ES, HW_EDX ),
+    HW_D_2( HW_ES, HW_EBX ),
+    HW_D_2( HW_ES, HW_ECX ),
+    HW_D_2( HW_ES, HW_ESI ),
+    HW_D_2( HW_ES, HW_EDI ),
+    HW_D_2( HW_ES, HW_BP ),
 
-                HW_D_2( HW_FS, HW_EAX ),
-                HW_D_2( HW_FS, HW_EDX ),
-                HW_D_2( HW_FS, HW_EBX ),
-                HW_D_2( HW_FS, HW_ECX ),
-                HW_D_2( HW_FS, HW_ESI ),
-                HW_D_2( HW_FS, HW_EDI ),
-                HW_D_2( HW_FS, HW_BP ),
+    HW_D_2( HW_FS, HW_EAX ),
+    HW_D_2( HW_FS, HW_EDX ),
+    HW_D_2( HW_FS, HW_EBX ),
+    HW_D_2( HW_FS, HW_ECX ),
+    HW_D_2( HW_FS, HW_ESI ),
+    HW_D_2( HW_FS, HW_EDI ),
+    HW_D_2( HW_FS, HW_BP ),
 
-                HW_D_2( HW_GS, HW_EAX ),
-                HW_D_2( HW_GS, HW_EDX ),
-                HW_D_2( HW_GS, HW_EBX ),
-                HW_D_2( HW_GS, HW_ECX ),
-                HW_D_2( HW_GS, HW_ESI ),
-                HW_D_2( HW_GS, HW_EDI ),
-                HW_D_2( HW_GS, HW_BP ),
+    HW_D_2( HW_GS, HW_EAX ),
+    HW_D_2( HW_GS, HW_EDX ),
+    HW_D_2( HW_GS, HW_EBX ),
+    HW_D_2( HW_GS, HW_ECX ),
+    HW_D_2( HW_GS, HW_ESI ),
+    HW_D_2( HW_GS, HW_EDI ),
+    HW_D_2( HW_GS, HW_BP ),
 
-                HW_D_2( HW_SS, HW_EAX ),
-                HW_D_2( HW_SS, HW_EDX ),
-                HW_D_2( HW_SS, HW_EBX ),
-                HW_D_2( HW_SS, HW_ECX ),
-                HW_D_2( HW_SS, HW_ESI ),
-                HW_D_2( HW_SS, HW_EDI ),
-                HW_D_2( HW_SS, HW_BP ),
+    HW_D_2( HW_SS, HW_EAX ),
+    HW_D_2( HW_SS, HW_EDX ),
+    HW_D_2( HW_SS, HW_EBX ),
+    HW_D_2( HW_SS, HW_ECX ),
+    HW_D_2( HW_SS, HW_ESI ),
+    HW_D_2( HW_SS, HW_EDI ),
+    HW_D_2( HW_SS, HW_BP ),
 
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      LongIndexRegs[] = {
-                HW_D_2( HW_DS, HW_EAX ),
-                HW_D_2( HW_DS, HW_EDX ),
-                HW_D_2( HW_DS, HW_EBX ),
-                HW_D_2( HW_DS, HW_ECX ),
-                HW_D_2( HW_DS, HW_ESI ),
-                HW_D_2( HW_DS, HW_EDI ),
-                HW_D_2( HW_DS, HW_BP ),
+    HW_D_2( HW_DS, HW_EAX ),
+    HW_D_2( HW_DS, HW_EDX ),
+    HW_D_2( HW_DS, HW_EBX ),
+    HW_D_2( HW_DS, HW_ECX ),
+    HW_D_2( HW_DS, HW_ESI ),
+    HW_D_2( HW_DS, HW_EDI ),
+    HW_D_2( HW_DS, HW_BP ),
 
-                HW_D_2( HW_ES, HW_EAX ),
-                HW_D_2( HW_ES, HW_EDX ),
-                HW_D_2( HW_ES, HW_EBX ),
-                HW_D_2( HW_ES, HW_ECX ),
-                HW_D_2( HW_ES, HW_ESI ),
-                HW_D_2( HW_ES, HW_EDI ),
-                HW_D_2( HW_ES, HW_BP ),
+    HW_D_2( HW_ES, HW_EAX ),
+    HW_D_2( HW_ES, HW_EDX ),
+    HW_D_2( HW_ES, HW_EBX ),
+    HW_D_2( HW_ES, HW_ECX ),
+    HW_D_2( HW_ES, HW_ESI ),
+    HW_D_2( HW_ES, HW_EDI ),
+    HW_D_2( HW_ES, HW_BP ),
 
-                HW_D_2( HW_FS, HW_EAX ),
-                HW_D_2( HW_FS, HW_EDX ),
-                HW_D_2( HW_FS, HW_EBX ),
-                HW_D_2( HW_FS, HW_ECX ),
-                HW_D_2( HW_FS, HW_ESI ),
-                HW_D_2( HW_FS, HW_EDI ),
-                HW_D_2( HW_FS, HW_BP ),
+    HW_D_2( HW_FS, HW_EAX ),
+    HW_D_2( HW_FS, HW_EDX ),
+    HW_D_2( HW_FS, HW_EBX ),
+    HW_D_2( HW_FS, HW_ECX ),
+    HW_D_2( HW_FS, HW_ESI ),
+    HW_D_2( HW_FS, HW_EDI ),
+    HW_D_2( HW_FS, HW_BP ),
 
-                HW_D_2( HW_GS, HW_EAX ),
-                HW_D_2( HW_GS, HW_EDX ),
-                HW_D_2( HW_GS, HW_EBX ),
-                HW_D_2( HW_GS, HW_ECX ),
-                HW_D_2( HW_GS, HW_ESI ),
-                HW_D_2( HW_GS, HW_EDI ),
-                HW_D_2( HW_GS, HW_BP ),
+    HW_D_2( HW_GS, HW_EAX ),
+    HW_D_2( HW_GS, HW_EDX ),
+    HW_D_2( HW_GS, HW_EBX ),
+    HW_D_2( HW_GS, HW_ECX ),
+    HW_D_2( HW_GS, HW_ESI ),
+    HW_D_2( HW_GS, HW_EDI ),
+    HW_D_2( HW_GS, HW_BP ),
 
-                HW_D_2( HW_SS, HW_EAX ),
-                HW_D_2( HW_SS, HW_EDX ),
-                HW_D_2( HW_SS, HW_EBX ),
-                HW_D_2( HW_SS, HW_ECX ),
-                HW_D_2( HW_SS, HW_ESI ),
-                HW_D_2( HW_SS, HW_EDI ),
-                HW_D_2( HW_SS, HW_BP ),
+    HW_D_2( HW_SS, HW_EAX ),
+    HW_D_2( HW_SS, HW_EDX ),
+    HW_D_2( HW_SS, HW_EBX ),
+    HW_D_2( HW_SS, HW_ECX ),
+    HW_D_2( HW_SS, HW_ESI ),
+    HW_D_2( HW_SS, HW_EDI ),
+    HW_D_2( HW_SS, HW_BP ),
 
-                HW_D_2( HW_CS, HW_EAX ),
-                HW_D_2( HW_CS, HW_EDX ),
-                HW_D_2( HW_CS, HW_EBX ),
-                HW_D_2( HW_CS, HW_ECX ),
-                HW_D_2( HW_CS, HW_ESI ),
-                HW_D_2( HW_CS, HW_EDI ),
-                HW_D_2( HW_CS, HW_BP ),
+    HW_D_2( HW_CS, HW_EAX ),
+    HW_D_2( HW_CS, HW_EDX ),
+    HW_D_2( HW_CS, HW_EBX ),
+    HW_D_2( HW_CS, HW_ECX ),
+    HW_D_2( HW_CS, HW_ESI ),
+    HW_D_2( HW_CS, HW_EDI ),
+    HW_D_2( HW_CS, HW_BP ),
 
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      ABCDRegs[] = {
-                HW_D_1( HW_EAX ),
-                HW_D_1( HW_EDX ),
-                HW_D_1( HW_EBX ),
-                HW_D_1( HW_ECX ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EAX ),
+    HW_D_1( HW_EDX ),
+    HW_D_1( HW_EBX ),
+    HW_D_1( HW_ECX ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      DoubleRegs[] = {
-                HW_D_1( HW_EAX ),
-                HW_D_1( HW_EDX ),
-                HW_D_1( HW_ECX ),
-                HW_D_1( HW_EBX ),
-                HW_D_1( HW_ESI ),
-                HW_D_1( HW_EDI ),
-                HW_D_1( HW_BP ),
-                HW_D_1( HW_SP ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EAX ),
+    HW_D_1( HW_EDX ),
+    HW_D_1( HW_ECX ),
+    HW_D_1( HW_EBX ),
+    HW_D_1( HW_ESI ),
+    HW_D_1( HW_EDI ),
+    HW_D_1( HW_BP ),
+    HW_D_1( HW_SP ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      DoubleParmRegs[] = {
-                HW_D_1( HW_EAX ),
-                HW_D_1( HW_EDX ),
-                HW_D_1( HW_EBX ),
-                HW_D_1( HW_ECX ),
-                HW_D_1( HW_ESI ),
-                HW_D_1( HW_EDI ),
-                HW_D_1( HW_BP ),
-                HW_D_1( HW_SP ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EAX ),
+    HW_D_1( HW_EDX ),
+    HW_D_1( HW_EBX ),
+    HW_D_1( HW_ECX ),
+    HW_D_1( HW_ESI ),
+    HW_D_1( HW_EDI ),
+    HW_D_1( HW_BP ),
+    HW_D_1( HW_SP ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      QuadReg[] = {
-                HW_D_2( HW_EDX, HW_EAX ),
-                HW_D_2( HW_ECX, HW_EBX ),
-                HW_D_2( HW_ECX, HW_EAX ),
-                HW_D_2( HW_ECX, HW_ESI ),
-                HW_D_2( HW_EDX, HW_EBX ),
-                HW_D_2( HW_EDI, HW_EAX ),
-                HW_D_2( HW_ECX, HW_EDI ),
-                HW_D_2( HW_EDX, HW_ESI ),
-                HW_D_2( HW_EDI, HW_EBX ),
-                HW_D_2( HW_ESI, HW_EAX ),
-                HW_D_2( HW_ECX, HW_EDX ),
-                HW_D_2( HW_EDX, HW_EDI ),
-                HW_D_2( HW_EDI, HW_ESI ),
-                HW_D_2( HW_ESI, HW_EBX ),
-                HW_D_2( HW_EBX, HW_EAX ),
-                HW_D_2( HW_BP,  HW_EAX ),
-                HW_D_2( HW_BP,  HW_EDX ),
-                HW_D_2( HW_BP,  HW_EBX ),
-                HW_D_2( HW_BP,  HW_ECX ),
-                HW_D_2( HW_BP,  HW_ESI ),
-                HW_D_2( HW_BP,  HW_EDI ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_2( HW_EDX, HW_EAX ),
+    HW_D_2( HW_ECX, HW_EBX ),
+    HW_D_2( HW_ECX, HW_EAX ),
+    HW_D_2( HW_ECX, HW_ESI ),
+    HW_D_2( HW_EDX, HW_EBX ),
+    HW_D_2( HW_EDI, HW_EAX ),
+    HW_D_2( HW_ECX, HW_EDI ),
+    HW_D_2( HW_EDX, HW_ESI ),
+    HW_D_2( HW_EDI, HW_EBX ),
+    HW_D_2( HW_ESI, HW_EAX ),
+    HW_D_2( HW_ECX, HW_EDX ),
+    HW_D_2( HW_EDX, HW_EDI ),
+    HW_D_2( HW_EDI, HW_ESI ),
+    HW_D_2( HW_ESI, HW_EBX ),
+    HW_D_2( HW_EBX, HW_EAX ),
+    HW_D_2( HW_BP,  HW_EAX ),
+    HW_D_2( HW_BP,  HW_EDX ),
+    HW_D_2( HW_BP,  HW_EBX ),
+    HW_D_2( HW_BP,  HW_ECX ),
+    HW_D_2( HW_BP,  HW_ESI ),
+    HW_D_2( HW_BP,  HW_EDI ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      ST0Reg[] = {
-                HW_D_1( HW_ST0 ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_ST0 ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      STIReg[] = {
-                HW_D_1( HW_ST1 ),
-                HW_D_1( HW_ST2 ),
-                HW_D_1( HW_ST3 ),
-                HW_D_1( HW_ST4 ),
-                HW_D_1( HW_ST5 ),
-                HW_D_1( HW_ST6 ),
-                HW_D_1( HW_ST7 ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_ST1 ),
+    HW_D_1( HW_ST2 ),
+    HW_D_1( HW_ST3 ),
+    HW_D_1( HW_ST4 ),
+    HW_D_1( HW_ST5 ),
+    HW_D_1( HW_ST6 ),
+    HW_D_1( HW_ST7 ),
+    HW_D_1( HW_EMPTY )
+};
 static  hw_reg_set      STParmReg[] = {
-                HW_D_1( HW_ST1 ),
-                HW_D_1( HW_ST2 ),
-                HW_D_1( HW_ST3 ),
-                HW_D_1( HW_ST4 ),
-                HW_D_1( HW_ST5 ),
-                HW_D_1( HW_ST6 ),
-                HW_D_1( HW_ST7 ),
-                HW_D_1( HW_EMPTY ),
-                HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_ST1 ),
+    HW_D_1( HW_ST2 ),
+    HW_D_1( HW_ST3 ),
+    HW_D_1( HW_ST4 ),
+    HW_D_1( HW_ST5 ),
+    HW_D_1( HW_ST6 ),
+    HW_D_1( HW_ST7 ),
+    HW_D_1( HW_EMPTY ),
+    HW_D_1( HW_EMPTY )
+};
 
 hw_reg_set      *RegSets[] = {
 /*****************************
     define the possible register lists
 */
-        #undef RL
-        #define RL(a,b,c,d) a
-        #include "rl.h"
-        NULL
+    #define RL(a,b,c,d) a
+    #include "rl.h"
+    #undef RL
+    NULL
 };
 
 op_regs RegList[] = {
 /********************
     define the possible combinations of register lists for operands/results
 */
-        #undef RG
-        #define RG( a,b,c,d,e,f ) a,b,c,d,e
-        #include "rg.h"
-        RL_
+    #define RG( a,b,c,d,e,f ) {a,b,c,d,e}
+    #include "rg.h"
+    #undef RG
 };
 
 static  reg_set_index   ClassSets[] = {
@@ -354,183 +381,190 @@ static  reg_set_index   ClassSets[] = {
        RL_ indicates that the class is already identified
        (e.g. I1 already identified as U1)
 */
-/**/
-        RL_BYTE,                /* U1*/
-        RL_,                    /* I1*/
-        RL_WORD,                /* U2*/
-        RL_SEG,                 /* I2*//*(put segs here so their size is OK)*/
-        RL_DOUBLE,              /* U4*/
-        RL_DX_AX,               /* I4*//* for IDIV instructions */
-        RL_8,                   /* U8*/
-        RL_8,                   /* I8*/
-        RL_FAR_POINTER,         /* CP*/
-        RL_,                    /* PT*/
-        RL_,                    /* FS*/
-        RL_8,                   /* FD*/
-        RL_8,                   /* FL*/ // FIXME - long double
-        RL_ };                  /* XX*/
+    RL_BYTE,                /* U1 */
+    RL_,                    /* I1 */
+    RL_WORD,                /* U2 */
+    RL_SEG,                 /* I2 */ /* (put segs here so their size is OK) */
+    RL_DOUBLE,              /* U4 */
+    RL_DX_AX,               /* I4 */ /* for IDIV instructions */
+    RL_8,                   /* U8 */
+    RL_8,                   /* I8 */
+    RL_FAR_POINTER,         /* CP */
+    RL_,                    /* PT */
+    RL_,                    /* FS */
+    RL_8,                   /* FD */
+    RL_8,                   /* FL */ // FIXME - long double
+    RL_                     /* XX */
+};
 
 static  hw_reg_set      *ParmSets[] = {
 /**************************************
     define the set of register that a parameter of a given class could use
 */
-        ByteRegs,               /* U1*/
-        ByteRegs,               /* I1*/
-        WordRegs,               /* U2*/
-        WordRegs,               /* I2*/
-        DoubleParmRegs,         /* U4*/
-        DoubleParmRegs,         /* I4*/
-        QuadReg,                /* U8*/
-        QuadReg,                /* I8*/
-        FarPointerRegs,         /* CP*/
-        FarPointerRegs,         /* PT*/
-        DoubleParmRegs,         /* FS*/
-        QuadReg,                /* FD*/
-        Empty,                  /* FL*/
-        Empty };                /* XX*/
+    ByteRegs,               /* U1 */
+    ByteRegs,               /* I1 */
+    WordRegs,               /* U2 */
+    WordRegs,               /* I2 */
+    DoubleParmRegs,         /* U4 */
+    DoubleParmRegs,         /* I4 */
+    QuadReg,                /* U8 */
+    QuadReg,                /* I8 */
+    FarPointerRegs,         /* CP */
+    FarPointerRegs,         /* PT */
+    DoubleParmRegs,         /* FS */
+    QuadReg,                /* FD */
+    Empty,                  /* FL */
+    Empty                   /* XX */
+};
 
 static  hw_reg_set      *ParmSets8087[] = {
 /******************************************
     define the set of register that a parameter of a given class could use
     when generating 8087 code
 */
-        ByteRegs,               /* U1*/
-        ByteRegs,               /* I1*/
-        WordRegs,               /* U2*/
-        WordRegs,               /* I2*/
-        DoubleParmRegs,         /* U4*/
-        DoubleParmRegs,         /* I4*/
-        QuadReg,                /* U8*/
-        QuadReg,                /* I8*/
-        FarPointerRegs,         /* CP*/
-        FarPointerRegs,         /* PT*/
-        STParmReg,              /* FS*/
-        STParmReg,              /* FD*/
-        STParmReg,              /* FL*/
-        Empty };                /* XX*/
+    ByteRegs,               /* U1 */
+    ByteRegs,               /* I1 */
+    WordRegs,               /* U2 */
+    WordRegs,               /* I2 */
+    DoubleParmRegs,         /* U4 */
+    DoubleParmRegs,         /* I4 */
+    QuadReg,                /* U8 */
+    QuadReg,                /* I8 */
+    FarPointerRegs,         /* CP */
+    FarPointerRegs,         /* PT */
+    STParmReg,              /* FS */
+    STParmReg,              /* FD */
+    STParmReg,              /* FL */
+    Empty                   /* XX */
+};
 
 static  reg_set_index   IsSets[] = {
 /***********************************
     define the normal register list associated with a given class
 */
-        RL_BYTE,                /* U1*/
-        RL_BYTE,                /* I1*/
-        RL_WORD,                /* U2*/
-        RL_WORD,                /* I2*/
-        RL_DOUBLE,              /* U4*/
-        RL_DOUBLE,              /* I4*/
-        RL_8,                   /* U8*/
-        RL_8,                   /* I8*/
-        RL_FAR_POINTER,         /* CP*/
-        RL_FAR_POINTER,         /* PT*/
-        RL_DOUBLE,              /* FS*/
-        RL_8,                   /* FD*/
-        RL_,                    /* FL*/
-        RL_ };                  /* XX*/
+    RL_BYTE,                /* U1 */
+    RL_BYTE,                /* I1 */
+    RL_WORD,                /* U2 */
+    RL_WORD,                /* I2 */
+    RL_DOUBLE,              /* U4 */
+    RL_DOUBLE,              /* I4 */
+    RL_8,                   /* U8 */
+    RL_8,                   /* I8 */
+    RL_FAR_POINTER,         /* CP */
+    RL_FAR_POINTER,         /* PT */
+    RL_DOUBLE,              /* FS */
+    RL_8,                   /* FD */
+    RL_,                    /* FL */
+    RL_                     /* XX */
+};
 
 static  reg_set_index   ReturnSets[] = {
 /***************************************
     define the set a register normally used to return a given class
 */
-        RL_AL,                  /* U1*/
-        RL_AL,                  /* I1*/
-        RL_AX,                  /* U2*/
-        RL_AX,                  /* I2*/
-        RL_EAX,                 /* U4*/
-        RL_EAX,                 /* I4*/
-        RL_EDX_EAX,             /* U8*/
-        RL_EDX_EAX,             /* I8*/
-        RL_DX_EAX,              /* CP*/
-        RL_,                    /* PT*/
-        RL_EAX,                 /* FS*/
-        RL_EDX_EAX,             /* FD*/
-        RL_,                    /* FL*/
-        RL_ };                  /* XX*/
+    RL_AL,                  /* U1 */
+    RL_AL,                  /* I1 */
+    RL_AX,                  /* U2 */
+    RL_AX,                  /* I2 */
+    RL_EAX,                 /* U4 */
+    RL_EAX,                 /* I4 */
+    RL_EDX_EAX,             /* U8 */
+    RL_EDX_EAX,             /* I8 */
+    RL_DX_EAX,              /* CP */
+    RL_,                    /* PT */
+    RL_EAX,                 /* FS */
+    RL_EDX_EAX,             /* FD */
+    RL_,                    /* FL */
+    RL_                     /* XX */
+};
 
 static  reg_set_index   Return8087[] = {
 /***************************************
     define the set a register normally used to return a given class with 8087
 */
-        RL_AL,                  /* U1*/
-        RL_AL,                  /* I1*/
-        RL_AX,                  /* U2*/
-        RL_AX,                  /* I2*/
-        RL_EAX,                 /* U4*/
-        RL_EAX,                 /* I4*/
-        RL_EDX_EAX,             /* U8*/
-        RL_EDX_EAX,             /* I8*/
-        RL_DX_EAX,              /* CP*/
-        RL_,                    /* PT*/
-        RL_ST0,                 /* FS*/
-        RL_ST0,                 /* FD*/
-        RL_ST0,                 /* FL*/
-        RL_ };                  /* XX*/
+    RL_AL,                  /* U1 */
+    RL_AL,                  /* I1 */
+    RL_AX,                  /* U2 */
+    RL_AX,                  /* I2 */
+    RL_EAX,                 /* U4 */
+    RL_EAX,                 /* I4 */
+    RL_EDX_EAX,             /* U8 */
+    RL_EDX_EAX,             /* I8 */
+    RL_DX_EAX,              /* CP */
+    RL_,                    /* PT */
+    RL_ST0,                 /* FS */
+    RL_ST0,                 /* FD */
+    RL_ST0,                 /* FL */
+    RL_                     /* XX */
+};
 
 static  reg_set_index   IndexSets[] = {
 /**************************************
     define the sets of index registers of a given class
 */
-        RL_,                    /* U1*/
-        RL_,                    /* I1*/
-        RL_,                    /* U2*/
-        RL_,                    /* I2*/
-        RL_DOUBLE,              /* U4*/
-        RL_DOUBLE,              /* I4*/
-        RL_,                    /* U8*/
-        RL_,                    /* I8*/
-        RL_LONG_INDEX,          /* CP*/
-        RL_LONG_INDEX,          /* PT*/
-        RL_,                    /* FS*/
-        RL_,                    /* FD*/
-        RL_,
-        RL_ };                  /* XX*/
+    RL_,                    /* U1 */
+    RL_,                    /* I1 */
+    RL_,                    /* U2 */
+    RL_,                    /* I2 */
+    RL_DOUBLE,              /* U4 */
+    RL_DOUBLE,              /* I4 */
+    RL_,                    /* U8 */
+    RL_,                    /* I8 */
+    RL_LONG_INDEX,          /* CP */
+    RL_LONG_INDEX,          /* PT */
+    RL_,                    /* FS */
+    RL_,                    /* FD */
+    RL_,                    /* FL */
+    RL_                     /* XX */
+};
 
 /*
-       Information for register set intersections
+   Information for register set intersections
        if sets are of different classes
-               intersection is empty
+            intersection is empty
        else
-               intersection given in square matrix for class
-*/
+            intersection given in square matrix for class
+ */
 
 typedef enum {
-        ONE_BYTE,
-        TWO_BYTE,
-        FOUR_BYTE,
-        SIX_BYTE,
-        EIGHT_BYTE,
-        FLOATING,
-        OTHER
+    ONE_BYTE,
+    TWO_BYTE,
+    FOUR_BYTE,
+    SIX_BYTE,
+    EIGHT_BYTE,
+    FLOATING,
+    OTHER
 } intersect_class;
 
 
 typedef struct reg_class {
-        intersect_class class;
-        byte            index;
+    intersect_class class;
+    byte            index;
 } reg_class;
 
 static  reg_class       IntersectInfo[] = {
-        #undef RL
-        #define RL(a,b,c,d) c,d
-        #include "rl.h"
-        OTHER,          0 };    /* RL_NUMBER_OF_SETS*/
-
+    #define RL(a,b,c,d) {c,d}
+    #include "rl.h"
+    #undef RL
+    {OTHER, 0}          /* RL_NUMBER_OF_SETS */
+};
 
 static  byte    Width[] = {
-        4,              /* ONE_BYTE */
-        7,              /* TWO_BYTE */
-        6,              /* FOUR_BYTE */
-        3,              /* SIX_BYTE */
-        3,              /* EIGHT_BYTE */
-        2,              /* FLOATING */
-        0 };            /* OTHER */
+    4,              /* ONE_BYTE   */
+    7,              /* TWO_BYTE   */
+    6,              /* FOUR_BYTE  */
+    3,              /* SIX_BYTE   */
+    3,              /* EIGHT_BYTE */
+    2,              /* FLOATING   */
+    0               /* OTHER      */
+};
 
 static  reg_set_index   OneByteInter[] = {
-/*      AL      AH      CL      BYTE                 */
-        RL_AL,  RL_,    RL_,    RL_AL,          /* AL*/
-        RL_,    RL_AH,  RL_,    RL_AH,          /* AH*/
-        RL_,    RL_,    RL_CL,  RL_CL,          /* CL*/
-        RL_AL,  RL_AH,  RL_CL,  RL_BYTE         /* BYTE*/
+/*  AL      AH      CL      BYTE                */
+    RL_AL,  RL_,    RL_,    RL_AL,      /* AL   */
+    RL_,    RL_AH,  RL_,    RL_AH,      /* AH   */
+    RL_,    RL_,    RL_CL,  RL_CL,      /* CL   */
+    RL_AL,  RL_AH,  RL_CL,  RL_BYTE     /* BYTE */
 };
 
 
@@ -541,58 +575,60 @@ static  reg_set_index   OneByteInter[] = {
 /* - RL_SG == RL_SEG*/
 
 static  reg_set_index   TwoByteInter[] = {
-/*AX   CX     DX     WD     2B     SG     WS*/
-RL_AX, RL_,   RL_,   RL_AX, RL_AX, RL_,   RL_AX,  /* AX*/
-RL_,   RL_CX, RL_,   RL_CX, RL_CX, RL_,   RL_CX,  /* CX*/
-RL_,   RL_,   RL_DX, RL_DX, RL_DX, RL_,   RL_DX,  /* DX*/
-RL_AX, RL_CX, RL_DX, RL_WD, RL_2B, RL_,   RL_WD,  /* WD*/
-RL_AX, RL_CX, RL_CX, RL_2B, RL_2B, RL_,   RL_2B,  /* 2B*/
-RL_,   RL_,   RL_,   RL_,   RL_,   RL_SG, RL_SG,  /* SG*/
-RL_AX, RL_CX, RL_DX, RL_WD, RL_2B, RL_SG, RL_WS,  /* WS*/
-RL_ };
+/*  AX     CX     DX     WD     2B     SG     WS            */
+    RL_AX, RL_,   RL_,   RL_AX, RL_AX, RL_,   RL_AX,  /* AX */
+    RL_,   RL_CX, RL_,   RL_CX, RL_CX, RL_,   RL_CX,  /* CX */
+    RL_,   RL_,   RL_DX, RL_DX, RL_DX, RL_,   RL_DX,  /* DX */
+    RL_AX, RL_CX, RL_DX, RL_WD, RL_2B, RL_,   RL_WD,  /* WD */
+    RL_AX, RL_CX, RL_CX, RL_2B, RL_2B, RL_,   RL_2B,  /* 2B */
+    RL_,   RL_,   RL_,   RL_,   RL_,   RL_SG, RL_SG,  /* SG */
+    RL_AX, RL_CX, RL_DX, RL_WD, RL_2B, RL_SG, RL_WS   /* WS */
+};
 
 static  reg_set_index   FourByteInter[] = {
-/* RL_EAX  RL_EDX      RL_DX_AX    RL_DOUBLE   RL_ABCD  RL_ECX */
-RL_EAX,    RL_,        RL_,        RL_EAX,     RL_EAX,  RL_,   /* RL_EAX     */
-RL_,       RL_EDX,     RL_,        RL_EDX,     RL_EDX,  RL_,   /* RL_EDX     */
-RL_,       RL_,        RL_DX_AX,   RL_,        RL_,     RL_,   /* RL_DX_AX   */
-RL_EAX,    RL_EDX,     RL_,        RL_DOUBLE,  RL_ABCD, RL_,   /* RL_DOUBLE  */
-RL_EAX,    RL_EDX,     RL_,        RL_ABCD,    RL_ABCD, RL_,   /* RL_ABCD    */
-RL_,       RL_,        RL_,        RL_,        RL_,     RL_ECX /* RL_ECX     */
+/*  RL_EAX     RL_EDX      RL_DX_AX    RL_DOUBLE   RL_ABCD  RL_ECX              */
+    RL_EAX,    RL_,        RL_,        RL_EAX,     RL_EAX,  RL_,   /* RL_EAX    */
+    RL_,       RL_EDX,     RL_,        RL_EDX,     RL_EDX,  RL_,   /* RL_EDX    */
+    RL_,       RL_,        RL_DX_AX,   RL_,        RL_,     RL_,   /* RL_DX_AX  */
+    RL_EAX,    RL_EDX,     RL_,        RL_DOUBLE,  RL_ABCD, RL_,   /* RL_DOUBLE */
+    RL_EAX,    RL_EDX,     RL_,        RL_ABCD,    RL_ABCD, RL_,   /* RL_ABCD   */
+    RL_,       RL_,        RL_,        RL_,        RL_,     RL_ECX /* RL_ECX    */
 };
 
 static  reg_set_index   SixByteInter[] = {
-/* RL_DX_EAX    RL_LONG_INDEX     RL_FAR_POINTER */
-   RL_DX_EAX,   RL_,              RL_DX_EAX,      /* RL_DX_EAX */
-   RL_,         RL_LONG_INDEX,    RL_LONG_INDEX,  /* RL_LONG_INDEX */
-   RL_DX_EAX,   RL_LONG_INDEX,    RL_FAR_POINTER  /* RL_FAR_POINTER */
+/*  RL_DX_EAX    RL_LONG_INDEX     RL_FAR_POINTER                    */
+    RL_DX_EAX,   RL_,              RL_DX_EAX,      /* RL_DX_EAX      */
+    RL_,         RL_LONG_INDEX,    RL_LONG_INDEX,  /* RL_LONG_INDEX  */
+    RL_DX_EAX,   RL_LONG_INDEX,    RL_FAR_POINTER  /* RL_FAR_POINTER */
 };
 
 
 static  reg_set_index   EightByteInter[] = {
-/* RL_EDX_EAX   RL_FPPARM2      RL_8 */
-RL_EDX_EAX,     RL_,            RL_EDX_EAX,     /* RL_EDX_EAX */
-RL_,            RL_FPPARM2,     RL_FPPARM2,     /* RL_FPPARM2 */
-RL_EDX_EAX,     RL_FPPARM2,     RL_8            /* RL_8 */
+/*  RL_EDX_EAX      RL_FPPARM2      RL_8                      */
+    RL_EDX_EAX,     RL_,            RL_EDX_EAX, /* RL_EDX_EAX */
+    RL_,            RL_FPPARM2,     RL_FPPARM2, /* RL_FPPARM2 */
+    RL_EDX_EAX,     RL_FPPARM2,     RL_8        /* RL_8       */
 };
 
 static  reg_set_index   FloatingInter[] = {
-/*      RL_ST0  RL_STI                  */
-        RL_ST0, RL_,      /*  RL_ST0    */
-        RL_,    RL_STI }; /*  RL_STI    */
+/*  RL_ST0  RL_STI               */
+    RL_ST0, RL_,      /*  RL_ST0 */
+    RL_,    RL_STI    /*  RL_STI */
+};
 
 static  reg_set_index   OtherInter[] = {
-        RL_ };
+    RL_
+};
 
 static  reg_set_index   *InterTable[] = {
-        OneByteInter,           /* ONE_BYTE*/
-        TwoByteInter,           /* TWO_BYTE*/
-        FourByteInter,          /* FOUR_BYTE*/
-        SixByteInter,           /* SIX_BYTE*/
-        EightByteInter,         /* EIGHT_BYTE*/
-        FloatingInter,          /* FLOATING*/
-        OtherInter };           /* others*/
-
+    OneByteInter,           /* ONE_BYTE   */
+    TwoByteInter,           /* TWO_BYTE   */
+    FourByteInter,          /* FOUR_BYTE  */
+    SixByteInter,           /* SIX_BYTE   */
+    EightByteInter,         /* EIGHT_BYTE */
+    FloatingInter,          /* FLOATING   */
+    OtherInter              /* others     */
+};
 
 extern  void            InitRegTbl( void )
 /*****************************************

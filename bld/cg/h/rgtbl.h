@@ -27,9 +27,7 @@
 * Description:  Prototypes for *rgtbl.c
 *
 ****************************************************************************/
-#ifndef RG
-#include "regset.h"
-#endif
+
 
 extern  void    InitRegTbl( void );
 extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 );
