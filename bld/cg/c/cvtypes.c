@@ -267,7 +267,7 @@ static void PutFldSized( cv_out *out, int size, unsigned_32 val )
     }
 }
 
-static void PutLFInt( cv_out *out, enum cv_psize size, unsigned_32 val )
+static void PutLFInt( cv_out *out, cv_psize size, unsigned_32 val )
 /**********************************************************************/
 {
     switch( size ) {
@@ -1012,11 +1012,11 @@ extern  dbg_type    CVSubRange( signed_32 lo, signed_32 hi,
     return( ArrayDimL( lo, hi ) );
 }
 
-static  enum cv_ptrtype   PtrClass( cg_type ptr_type )
+static  cv_ptrtype  PtrClass( cg_type ptr_type )
 /****************************************************/
 {
     type_def        *tipe_addr;
-    enum cv_ptrtype ret;
+    cv_ptrtype      ret;
 
     tipe_addr = TypeAddress( ptr_type );
     switch( tipe_addr->refno ) {
@@ -1043,8 +1043,8 @@ static  enum cv_ptrtype   PtrClass( cg_type ptr_type )
     return( ret );
 }
 
-static  dbg_type    MkPtr( cg_type ptr_type, dbg_type base, enum cv_ptrmode mode )
-/********************************************************************************/
+static  dbg_type    MkPtr( cg_type ptr_type, dbg_type base, cv_ptrmode mode )
+/***************************************************************************/
 {
     cv_out      out[1];
     dbg_type    ret;
@@ -1114,7 +1114,7 @@ static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
     cv_out          out[1];
     dbg_type        ret;
     ct_pointer      *cvptr;
-    enum cv_ptrtype ptype;
+    cv_ptrtype      ptype;
     void            *ptr1;
     void            *ptr2;
 
@@ -1360,9 +1360,9 @@ static void MkBits( field_any *field )
     }
 }
 
-static enum cv_access WVCVAccess( uint attr )
+static cv_access WVCVAccess( uint attr )
 {
-    enum cv_access ret;
+    cv_access ret;
 
     switch( attr ){
     case FIELD_PUBLIC:
@@ -1378,9 +1378,9 @@ static enum cv_access WVCVAccess( uint attr )
     return( ret );
 }
 
-static enum cv_mprop WVCVMProp( uint kind )
+static cv_mprop WVCVMProp( uint kind )
 {
-    enum cv_mprop ret;
+    cv_mprop ret;
 
     switch( kind ){
     case METHOD_VANILLA:
@@ -1403,7 +1403,7 @@ static   cv_vtshape   CVVTShape( cg_type ptr_type )
 /*************************************************/
 {
     type_def        *tipe_addr;
-    enum cv_ptrtype ret;
+    cv_ptrtype      ret;
 
     tipe_addr = TypeAddress( ptr_type );
     switch( tipe_addr->refno ) {

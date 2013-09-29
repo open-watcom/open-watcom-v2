@@ -32,35 +32,36 @@
 
 #include "pushpck1.h"
 
-enum cv_ptype {
-        CV_SPECIAL      =0x00,
-        CV_SIGNED       =0x01,
-        CV_UNSIGNED     =0x02,
-        CV_BOOL         =0x03,
-        CV_REAL         =0x04,
-        CV_COMPLEX      =0x05,
-        CV_SPECIAL2     =0x06,
-        CV_REALLYINT    =0x07,     /* flag or'd in to make debugger say int */
-};
+typedef enum {
+    CV_SPECIAL      =0x00,
+    CV_SIGNED       =0x01,
+    CV_UNSIGNED     =0x02,
+    CV_BOOL         =0x03,
+    CV_REAL         =0x04,
+    CV_COMPLEX      =0x05,
+    CV_SPECIAL2     =0x06,
+    CV_REALLYINT    =0x07,     /* flag or'd in to make debugger say int */
+} cv_ptype;
 
-enum cv_psize {
-        CV_IB1          =0x00,
-        CV_IB2          =0x01,
-        CV_IB4          =0x02,
-        CV_IB8          =0x03,
-        CV_VOID         =0x03,
-        CV_RC32         =0x00,
-        CV_RC64         =0x01,
-};
-enum cv_pmode {
-        CV_DIRECT       =0x00,
-        CV_NEARP        =0x01,
-        CV_FARP         =0x02,
-        CV_HUGEP        =0x03,
-        CV_NEAR32P      =0x04,
-        CV_FAR32P       =0x05,
-        CV_NEAR64P      =0x06,
-};
+typedef enum {
+    CV_IB1          =0x00,
+    CV_IB2          =0x01,
+    CV_IB4          =0x02,
+    CV_IB8          =0x03,
+    CV_VOID         =0x03,
+    CV_RC32         =0x00,
+    CV_RC64         =0x01,
+} cv_psize;
+
+typedef enum {
+    CV_DIRECT       =0x00,
+    CV_NEARP        =0x01,
+    CV_FARP         =0x02,
+    CV_HUGEP        =0x03,
+    CV_NEAR32P      =0x04,
+    CV_FAR32P       =0x05,
+    CV_NEAR64P      =0x06,
+} cv_pmode;
 
 typedef union cv_primitive{
     struct {
@@ -71,9 +72,9 @@ typedef union cv_primitive{
         u2      :5;
     }f;
     u2 s;
-}cv_primitive;
+} cv_primitive;
 
-enum cv_ptrtype {
+typedef enum {
     CV_NEAR             = 0,
     CV_FAR              = 1,
     CV_HUGE             = 2,
@@ -86,15 +87,15 @@ enum cv_ptrtype {
     CV_BASESELF         = 9,
     CV_NEAR32           = 10,
     CV_FAR32            = 11,
-};
+} cv_ptrtype;
 
 
-enum cv_ptrmode  {
+typedef enum {
     CV_PTR              = 0,
     CV_REF              = 1,
     CV_PTRTOMEMBER      = 2,
     CV_PTRTOMETHOD      = 3,
-};
+} cv_ptrmode;
 
 typedef enum { /* 16 - 16bit 32 - 32bit, VB - virtual base class       */
     CV_DM16             = 0,    /*DM - data member no virual functions */
@@ -111,54 +112,54 @@ typedef enum { /* 16 - 16bit 32 - 32bit, VB - virtual base class       */
     CV_MF32             = 11,
     CV_MFMA32           = 12,
     CV_MFVB32           = 13
-}cv_data_mem;
+} cv_data_mem;
 
 typedef struct { /* 16 virtual base class */
     u2 mdisp;
     u2 pdisp;
     u2 vdisp;
-}cv_vb16;
+} cv_vb16;
 
 typedef struct { /* 32 virtual base class */
     u4 mdisp;
     u4 pdisp;
     u4 vdisp;
-}cv_vb32;
+} cv_vb32;
 
 typedef struct { /* far 16 mem func addr */
     u2 off;
     u2 seg;
-}cv_fmf16;
+} cv_fmf16;
 
 typedef struct {
     u2 off;
     u2 disp;
-}cv_mfma16;
+} cv_mfma16;
 
 typedef struct {
     u2        mf;
     cv_vb16   vb;
-}cv_mfvb16;
+} cv_mfvb16;
 
 typedef struct {
     cv_fmf16  mf;
     u2        disp;
-}cv_fmfma16;
+} cv_fmfma16;
 
 typedef struct {
     cv_fmf16  mf;
     u2        disp;
-}cv_fmfvb16;
+} cv_fmfvb16;
 
 typedef struct {
     u4        mf;
     u4        disp;
-}cv_mfma32;
+} cv_mfma32;
 
 typedef struct {
     u4        mf;
     cv_vb32   vb;
-}cv_mfvb32;
+} cv_mfvb32;
 
 typedef struct{
     u2  class_idx;
@@ -179,7 +180,7 @@ typedef struct{
         cv_mfma32   mfma32;
         cv_mfvb32   mfvb32;
     }p;
-}cv_ptr_data_member;
+} cv_ptr_data_member;
 
 typedef union cv_attrib{
     struct {
@@ -189,7 +190,7 @@ typedef union cv_attrib{
         u2 unused  :13;
     }f;
     u2 s;
-}cv_attrib;
+} cv_attrib;
 
 typedef union cv_ptrattr {
     struct {
@@ -202,16 +203,16 @@ typedef union cv_ptrattr {
         u2 unused    :4;
     }f;
     u2 s;
-}cv_ptrattr;
+} cv_ptrattr;
 
-enum cv_access {
+typedef enum {
     CV_NOPROTECT    = 0,
     CV_PRIVATE      = 1,
     CV_PROTECTED    = 2,
     CV_PUBLIC       = 3,
-};
+} cv_access;
 
-enum cv_mprop {
+typedef enum {
     CV_VANILLA          = 0,
     CV_VIRTUAL          = 1,
     CV_STATIC           = 2,
@@ -219,7 +220,7 @@ enum cv_mprop {
     CV_INTROVIRT        = 4,
     CV_PUREVIRT         = 5,
     CV_PUREINTROVIRT    = 6,
-};
+} cv_mprop;
 
 typedef union cv_fldattr {
     struct {
@@ -231,22 +232,22 @@ typedef union cv_fldattr {
         u2               :8;
     }f;
     u2  s;
-}cv_fldattr;
+} cv_fldattr;
 
 typedef struct {
     cv_attrib   attr;
     u2          index;
-}ct_modifier;
+} ct_modifier;
 
 typedef struct {
     cv_ptrattr  attr;
     u2          type;
-}ct_pointer;
+} ct_pointer;
 
 typedef struct {
     u2          elemtype;
     u2          idxtype;
-}ct_array;
+} ct_array;
 
 typedef union cv_sprop{
     struct {
@@ -262,7 +263,7 @@ typedef union cv_sprop{
         u2               :7;
     }f;
     u2  s;
-}cv_sprop;
+} cv_sprop;
 
 typedef struct {  /* struct or class */
     u2          count;
@@ -270,7 +271,7 @@ typedef struct {  /* struct or class */
     cv_sprop    property;
     u2          dList;
     u2          vshape;
-}ct_class;
+} ct_class;
 
 typedef ct_class ct_structure;
 
@@ -278,14 +279,14 @@ typedef struct {
     u2          count;
     u2          field;
     cv_sprop    property;
-}ct_union;
+} ct_union;
 
 typedef struct {
     u2          count;
     u2          type;
     u2          fList;
     cv_sprop    property;
-}ct_enum;
+} ct_enum;
 
 typedef enum {
     CV_NEARC        =0,
@@ -302,8 +303,7 @@ typedef enum {
     CV_MIPS         =12,
     CV_GENERIC      =13,
     CV_AXP          =14,    // Guessed from what MS puts out
-
-}cv_calls;
+} cv_calls;
 
 typedef struct {
     u2          rvtype;
@@ -311,7 +311,7 @@ typedef struct {
     u1          res;
     u2          parms;
     u2          arglist;
-}ct_procedure;
+} ct_procedure;
 
 typedef enum { /* vtshape bits */
     CV_VTNEAR    = 0,
@@ -321,7 +321,7 @@ typedef enum { /* vtshape bits */
     CV_VTFPMETA  = 4,
     CV_VTNEAR32  = 5,
     CV_VTFAR32   = 6,
-}cv_vtshape;
+} cv_vtshape;
 
 typedef struct {
     u2          rvtype;
@@ -332,162 +332,162 @@ typedef struct {
     u2          parms;
     u2          arglist;
     u4          thisadjust;
-}ct_mfunction;
+} ct_mfunction;
 
 typedef struct {
     u2          count;
-}ct_vtshape;
+} ct_vtshape;
 
 typedef struct {
     u2          parent;
-}ct_cobol0;
+} ct_cobol0;
 
 typedef struct {
     u2          parent;
-}ct_cobol1;
+} ct_cobol1;
 
 typedef struct {
     u2          type;
-}ct_barray;
+} ct_barray;
 
 typedef struct {
     u2          mode;
-}ct_label;
+} ct_label;
 
 typedef struct {
     u2          utype;
     u2          diminfo;
-}ct_dimarray;
+} ct_dimarray;
 
 typedef struct {
     u2          count;
-}ct_vftpath;
+} ct_vftpath;
 
 typedef struct {
     u2          start;
     u2          count;
     u4          signature;
-}ct_precomp;
+} ct_precomp;
 
 typedef struct {
     u4          signature;
-}ct_endprecomp;
+} ct_endprecomp;
 
 typedef struct {
     u2          oem;
     u2          recoem;
     u2          count;
-}ct_oem;
+} ct_oem;
 
 typedef struct {
     u2          index;
-}ct_skip;
+} ct_skip;
 
 typedef struct {
     u2          argcount;
-}ct_arglist;
+} ct_arglist;
 
 typedef struct {
     u2          index;
-}ct_defarg;
+} ct_defarg;
 
 typedef struct {
     u2          count;
-}ct_derived;
+} ct_derived;
 
 typedef struct {
     u1          length;
     u1          position;
     u2          type;
-}ct_bitfield;
+} ct_bitfield;
 
 typedef struct {
     cv_fldattr  attr;
     u2          type;
     u4          vtab;
-}cv_mlist;
+} cv_mlist;
 
 typedef struct {
     u2          rank;
     u2          index;
-}ct_dimconu;
+} ct_dimconu;
 
 typedef struct {
     u2          rank;
     u2          index;
-}ct_dimconlu;
+} ct_dimconlu;
 
 typedef struct {
     u2          rank;
     u2          index;
-}ct_dimvaru;
+} ct_dimvaru;
 
 typedef struct {
     u2          rank;
     u2          index;
-}ct_dimvarlu;
+} ct_dimvarlu;
 
 typedef struct {
     u2          type;
     cv_fldattr  attr;
-}ct_bclass;
+} ct_bclass;
 
 typedef struct { /*direct & indirect */
     u2          btype;
     u2          vtype;
     cv_fldattr  attr;
-}ct_vbclass;
+} ct_vbclass;
 
 typedef ct_vbclass ct_ivbclass;
 
 typedef struct {
     cv_fldattr  attr;
-}ct_enumerate;
+} ct_enumerate;
 
 typedef struct {
     u2          type;
-}ct_friendfcn;
+} ct_friendfcn;
 
 typedef struct {
     u2          index;
-}ct_index;
+} ct_index;
 
 typedef struct {
     u2          type;
     cv_fldattr  attr;
-}ct_member;
+} ct_member;
 
 typedef struct {
     u2          type;
     cv_fldattr  attr;
-}ct_stmember;
+} ct_stmember;
 
 typedef struct {
     u2          count;
     u2          mList;
-}ct_method;
+} ct_method;
 
 typedef struct {
     u2          index;
-}ct_nestedtype;
+} ct_nestedtype;
 
 typedef struct {
     u2          type;
-}ct_vfunctab;
+} ct_vfunctab;
 
 typedef struct {
     u2          type;
-}ct_friendcls;
+} ct_friendcls;
 
 typedef struct {
     cv_fldattr  attr;
     u2          type;
-}ct_onemethod;
+} ct_onemethod;
 
 typedef struct {
     u2          type;
     u4          offset;
-}ct_vfuncoff;
+} ct_vfuncoff;
 
 
 typedef enum {
@@ -498,19 +498,19 @@ typedef enum {
     LANG_PASCAL      =4,
     LANG_BASIC       =5,
     LANG_COBOL       =6,
-}cv_lang;
+} cv_lang;
 
 typedef enum {
     AMBIENT_NEAR    =0,
     AMBIENT_FAR     =1,
     AMBIENT_HUGE    =2,
-}cv_ambient;
+} cv_ambient;
 
 typedef enum {
     FLOAT_PACKAGE_HARDWARE  =0,
     FLOAT_PACKAGE_EMULATOR  =1,
     FLOAT_PACKAGE_ALTMATH   =2,
-}cv_float_package;
+} cv_float_package;
 
 typedef enum {
     MACH_INTEL_8080     = 0x00,
@@ -526,7 +526,7 @@ typedef enum {
     MACH_MC68030        = 0x23,
     MACH_MC68040        = 0x24,
     MACH_DECALPHA       = 0x30,
-}cv_machine_class;
+} cv_machine_class;
 
 typedef union {
     struct {
@@ -539,7 +539,7 @@ typedef union {
         u2          Reserved:4;
     }f;
     u2 s;
-}cv_compile;
+} cv_compile;
 
 typedef struct {
     u1          machine;
@@ -646,7 +646,7 @@ typedef union cv_proc{
         u1 unused       :4;
     }f;
     u1 s;
-}cv_proc;
+} cv_proc;
 
 typedef struct {
     u4          pParent;
@@ -667,7 +667,7 @@ typedef enum {
     ADJUSTOR   = 1,
     VCALL      = 2,
     PCODE      = 3,
-}cv_ordinal;
+} cv_ordinal;
 
 typedef union {
     struct {
@@ -679,7 +679,7 @@ typedef union {
         u2 offset;
         u2 segment;
     }pcode;
-}cv_ord_variant;
+} cv_ord_variant;
 
 typedef struct {
     u4          pParent;
