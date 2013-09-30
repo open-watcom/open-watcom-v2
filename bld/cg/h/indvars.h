@@ -42,10 +42,13 @@ typedef enum {
         IV_NOREPLACE    = 0x0100, /* can't be replaced due to aliases */
 } ind_var_state;
 
-#define _IsV( var, bits )               (((var)->state & (bits) ) != EMPTY)
-#define _IsntV( var, bits )             (((var)->state & (bits) ) == EMPTY)
+#define _IsV( var, bits )               (((var)->state & (bits) ) != 0 )
+#define _IsntV( var, bits )             (((var)->state & (bits) ) == 0 )
 #define _SetV( var, bits )              (var)->state |= (bits);
 #define _ClrV( var, bits )              (var)->state &= ~(bits);
+
+#define _ChkLoopUsage(x,b)              (((x)->v.block_usage & (var_usage)(b)) != 0)
+#define _SetLoopUsage(x,b)              ((x)->v.block_usage = (var_usage)(b))
 
 typedef signed_16       invar_id;
 typedef struct invariant {              /*  an invariant list is */

@@ -426,10 +426,10 @@ extern  void    UnMarkInvariants( void )
     name        *op;
 
     for( op = Names[ N_TEMP ]; op != NULL; op = op->n.next_name ) {
-        op->v.block_usage = 0;
+        _SetLoopUsage( op, 0 );
     }
     for( op = Names[ N_MEMORY ]; op != NULL; op = op->n.next_name ) {
-        op->v.block_usage = 0;
+        _SetLoopUsage( op, 0 );
     }
 }
 
@@ -459,10 +459,10 @@ static  void    ZapTemp( name *op )
     alias = op;
     for( ;; ) {
         if( TempsOverlap( alias, op ) ) {
-            if( alias->v.block_usage & VU_INVARIANT ) {
-                alias->v.block_usage = VU_VARIANT | VU_VARIED_ONCE;
+            if( _ChkLoopUsage( alias, VU_INVARIANT ) ) {
+                _SetLoopUsage( alias, VU_VARIANT | VU_VARIED_ONCE );
             } else {
-                alias->v.block_usage = VU_VARIANT;
+                _SetLoopUsage( alias, VU_VARIANT );
             }
             // if temp is defined once within multiple loops, we want to make
             // sure MULT_DEFINITION gets set (so that we don't assume ONE_DEFINITION
@@ -487,10 +487,10 @@ static  void    ZapMemory( name *op )
 
     for( other = Names[N_MEMORY]; other != NULL; other=other->n.next_name ) {
         if( other->v.symbol == op->v.symbol ) {
-            if( other->v.block_usage & VU_INVARIANT ) {
-                other->v.block_usage = VU_VARIANT | VU_VARIED_ONCE;
+            if( _ChkLoopUsage( other, VU_INVARIANT ) ) {
+                _SetLoopUsage( other, VU_VARIANT | VU_VARIED_ONCE );
             } else {
-                other->v.block_usage = VU_VARIANT;
+                _SetLoopUsage( other, VU_VARIANT );
             }
         }
     }
@@ -518,16 +518,16 @@ extern  void    MarkInvariants( void )
 
     for( op = Names[ N_TEMP ]; op != NULL; op = op->n.next_name ) {
         if( op->v.usage & VAR_VOLATILE ) {
-            op->v.block_usage = 0;
+            _SetLoopUsage( op, 0 );
         } else {
-            op->v.block_usage = VU_INVARIANT;
+            _SetLoopUsage( op, VU_INVARIANT );
         }
     }
     for( op = Names[ N_MEMORY ]; op != NULL; op = op->n.next_name ) {
         if( op->v.usage & VAR_VOLATILE ) {
-            op->v.block_usage = 0;
+            _SetLoopUsage( op, 0 );
         } else {
-            op->v.block_usage = VU_INVARIANT;
+            _SetLoopUsage( op, VU_INVARIANT );
         }
     }
     for( op = Names[ N_REGISTER ]; op != NULL; op = op->n.next_name ) {
@@ -587,11 +587,13 @@ extern  void    MarkInvariants( void )
         if( _IsntModel( FORTRAN_ALIASING ) ) {
             for( op = Names[ N_TEMP ]; op != NULL; op = op->n.next_name ) {
                 if( op->v.usage & USE_ADDRESS ) {
-                    op->v.block_usage = VU_VARIANT;
+                    _SetLoopUsage( op, VU_VARIANT );
                 }
             }
             for( op = Names[ N_MEMORY ]; op != NULL; op = op->n.next_name ) {
-                if( !NameIsConstant( op ) ) op->v.block_usage = VU_VARIANT;
+                if( !NameIsConstant( op ) ) {
+                    _SetLoopUsage( op, VU_VARIANT );
+                }
             }
         } else { /* could only be have_call */
             for( op = Names[ N_MEMORY ]; op != NULL; op = op->n.next_name ) {
@@ -599,7 +601,7 @@ extern  void    MarkInvariants( void )
                 switch( op->m.memory_type ) {
                 case CG_FE:
                     if( FEAttr( op->v.symbol ) & FE_VISIBLE ) {
-                        op->v.block_usage = VU_VARIANT;
+                        _SetLoopUsage( op, VU_VARIANT );
                     }
                     break;
                 case CG_BACK:
@@ -607,7 +609,7 @@ extern  void    MarkInvariants( void )
                 case CG_TBL:
                     break;
                 default:
-                    op->v.block_usage = VU_VARIANT;
+                    _SetLoopUsage( op, VU_VARIANT );
                     break;
                 }
             }
@@ -635,7 +637,7 @@ extern  bool    InvariantOp( name *op )
         return( TRUE );
     case N_MEMORY:
     case N_TEMP:
-        return( (op->v.block_usage & VU_INVARIANT) != 0 );
+        return( _ChkLoopUsage( op, VU_INVARIANT ) );
     case N_INDEXED:
         if( op->i.index_flags & X_VOLATILE ) return( FALSE );
         if( !InvariantOp( op->i.index ) ) return( FALSE );
@@ -2989,14 +2991,14 @@ static  bool    FindInvariants( void )
                 ins->head.prev->head.next = next;
                 op = ins->result;
                 if( ( op->n.class == N_TEMP || op->n.class == N_MEMORY )
-                 && ( op->v.block_usage & VU_VARIED_ONCE )
+                 && ( _ChkLoopUsage( op, VU_VARIED_ONCE )  )
                  && !( op->v.usage & USE_IN_ANOTHER_BLOCK )
                  && !BlockByBlock ) {
                     SuffixPreHeader( ins );
                     if( op->n.class == N_TEMP ) {
                         op->t.temp_flags |= ( CROSSES_BLOCKS | ONE_DEFINITION );
                     }
-                    op->v.block_usage = VU_INVARIANT;
+                    _SetLoopUsage( op, VU_INVARIANT );
                     FPNotStack( op );
                 } else {
                     temp = AllocTemp( op->n.name_class );
