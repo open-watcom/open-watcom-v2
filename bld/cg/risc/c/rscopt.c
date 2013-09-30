@@ -210,7 +210,7 @@ static bool ConvertIfPossible( name *temp )
     Convert temp to an integer if we can.
 */
 {
-    if( ( temp->v.usage & USE_ADDRESS+USE_MEMORY+VAR_VOLATILE+NEEDS_MEMORY ) ) {
+    if( ( temp->v.usage & USE_ADDRESS|USE_MEMORY|VAR_VOLATILE|NEEDS_MEMORY ) ) {
         return( FALSE );
     }
     if( temp->t.temp_flags & ALIAS ) return( FALSE );

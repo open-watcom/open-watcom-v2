@@ -99,7 +99,7 @@ static  void    Far16Parms( cn call ) {
         parm_size += (( parm->name->tipe->length ) + 1) & ~1;
     }
     parmlist = SAllocTemp( XX, parm_size );
-    parmlist->v.usage |= NEEDS_MEMORY+USE_IN_ANOTHER_BLOCK+USE_ADDRESS;
+    parmlist->v.usage |= NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
     offset = 0;
     for( parm = call->parms; parm != NULL; parm = parm->next ) {
         parm->name->u.ins->result = STempOffset( parmlist, offset,

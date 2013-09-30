@@ -966,7 +966,7 @@ static  void    ExpCompare ( instruction *ins,
     if( !_CPULevel( CPU_386 ) ) {
         if( FPStatWord == NULL && ( !_CPULevel(CPU_286) || _IsEmulation() ) ) {
             FPStatWord = AllocTemp( U2 );
-            FPStatWord->v.usage |= VAR_VOLATILE+USE_ADDRESS; /* so that it really gets allocd */
+            FPStatWord->v.usage |= VAR_VOLATILE|USE_ADDRESS; /* so that it really gets allocd */
             AllocALocal( FPStatWord );
         }
     }

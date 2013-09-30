@@ -59,7 +59,7 @@ typedef enum {
     #include "dwregaxp.h"
     DW_REG( MAX )
     #undef DW_REG
-}dw_regs;
+} dw_regs;
 
 extern  void            DBLocFini( dbg_loc loc );
 extern  hw_reg_set      StackReg(void);

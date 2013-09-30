@@ -262,9 +262,9 @@ static  type_def        *UnSignedIntTipe( type_def *tipe ) {
 }
 
 
-static  an      GenScanTable( an node, select_node *s_node, type_def *tipe){
+static  an      GenScanTable( an node, select_node *s_node, type_def *tipe )
 /**************************************************************************/
-
+{
     bn          lt;
     cg_type     value_type;
     cg_type     real_type;

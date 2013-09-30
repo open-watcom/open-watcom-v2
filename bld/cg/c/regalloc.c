@@ -359,8 +359,8 @@ extern  void    NullConflicts( var_usage off ) {
     temp = Names[N_TEMP];
     while( temp != NULL ) {
         temp->v.conflict = NULL;
-        temp->v.usage &= (USE_IN_ANOTHER_BLOCK+USE_MEMORY+USE_ADDRESS+VAR_VOLATILE+NEEDS_MEMORY+HAS_MEMORY);
-        if( ( temp->v.usage & (USE_MEMORY+USE_ADDRESS+VAR_VOLATILE+NEEDS_MEMORY) ) == 0 ) {
+        temp->v.usage &= (USE_IN_ANOTHER_BLOCK|USE_MEMORY|USE_ADDRESS|VAR_VOLATILE|NEEDS_MEMORY|HAS_MEMORY);
+        if( ( temp->v.usage & (USE_MEMORY|USE_ADDRESS|VAR_VOLATILE|NEEDS_MEMORY) ) == 0 ) {
             temp->v.usage &= ~off;
         }
         temp->v.block_usage = 0;

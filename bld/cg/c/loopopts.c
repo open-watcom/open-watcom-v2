@@ -1461,15 +1461,11 @@ static  void    MarkSurvivors( void )
             MarkUses( ins );
         }
     }
-    next = IndVarList;
-    for(;;) {
-        var = next;
-        if( var == NULL ) break;
+    for( var = IndVarList; var != NULL; var = next ) {
         next = var->next;
         if( _IsntV( var, IV_DEAD ) ) {
             _SetV( var, IV_SURVIVED );
         }
-        var = next;
     }
 }
 
@@ -3079,16 +3075,13 @@ static  void    ElimIndVars( void )
     induction   *var;
     induction   *replacement;
 
-    var = IndVarList;
-    while( var != NULL ) {
+    for( var = IndVarList; var != NULL; var = next ) {
         next = var->next;
         if( _IsntV( var, IV_BASIC | IV_INTRODUCED ) ) {
             _SetV( var, IV_DEAD );
         }
-        var = next;
     }
-    var = IndVarList;
-    while( var != NULL ) {
+    for( var = IndVarList; var != NULL; var = next ) {
         next = var->next;
         if( _IsntV( var, IV_NOREPLACE ) &&
             _IsntV( var, IV_DEAD ) && _IsV( var, IV_BASIC ) ) {
@@ -3097,7 +3090,6 @@ static  void    ElimIndVars( void )
                 Replace( var, replacement );
             }
         }
-        var = next;
     }
 }
 
@@ -3176,11 +3168,9 @@ static  bool    ReduceInStrength( void )
     induction   *var;
     bool        change;
 
-    var = IndVarList;
     change = FALSE;
-    while( var != NULL ) {
+    for( var = IndVarList; var != NULL; var = var->next ) {
         change |= ReduceVar( var );
-        var = var->next;
     }
     return( change );
 }
