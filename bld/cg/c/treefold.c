@@ -1197,7 +1197,7 @@ extern  tn      FoldFlAnd( tn left, tn rite )
             BurnTree( rite );
         } else {
             // ( expr && 0 ) -> ( expr, 0 )
-            fold = TGNode( TN_COMMA, OP_NOP, left, IntToType( 0, TypeInteger ), TypeInteger );
+            fold = TGNode( TN_COMMA, O_NOP, left, IntToType( 0, TypeInteger ), TypeInteger );
             BurnTree( rite );
         }
     }
@@ -1225,7 +1225,7 @@ extern  tn      FoldFlOr( tn left, tn rite )
     } else if( rite->class == TN_CONS ) {
         if( CFTest( rite->u.name->c.value ) ) {
             // ( expr || 1 ) -> ( expr, TRUE )
-            fold = TGNode( TN_COMMA, OP_NOP, left, IntToType( FETrue(), TypeInteger ), TypeInteger );
+            fold = TGNode( TN_COMMA, O_NOP, left, IntToType( FETrue(), TypeInteger ), TypeInteger );
             BurnTree( rite );
         } else {
             // ( expr || 0 ) -> ( expr )
@@ -1360,9 +1360,8 @@ static bool IsObjectAddr( tn tree )
     return( FALSE );
 }
 
-extern  tn      FoldCompare( cg_op op, tn left,
-                             tn rite, type_def *tipe )
-/****************************************************/
+extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
+/*******************************************************************/
 {
     int         compare;
     tn          temp;
@@ -1492,9 +1491,9 @@ extern  tn      FoldCompare( cg_op op, tn left,
         left->class = TN_COMPARE;
         left->tipe = TypeBoolean;
         if( op == O_EQ ) {
-            left->op = OP_BIT_TEST_FALSE;
+            left->op = (cg_op)OP_BIT_TEST_FALSE;
         } else {
-            left->op = OP_BIT_TEST_TRUE;
+            left->op = (cg_op)OP_BIT_TEST_TRUE;
         }
         return( left );
     } else {

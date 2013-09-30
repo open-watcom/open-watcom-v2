@@ -167,8 +167,7 @@ extern dbg_loc  _CGAPI DBLocSym( dbg_loc loc,   sym_handle sym ) {
     } else {
         loc = LocCreate( loc, LOC_BP_OFFSET );
         tmp = DeAlias( AllocUserTemp( sym, XX ) );
-        tmp->v.usage |=
-                VAR_VOLATILE+NEEDS_MEMORY+USE_IN_ANOTHER_BLOCK+USE_ADDRESS;
+        tmp->v.usage |= VAR_VOLATILE|NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
         loc->u.be_sym = tmp;
     }
     return( loc );
@@ -185,8 +184,7 @@ extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle sym ) {
 #endif
     loc = LocCreate( loc, LOC_BP_OFFSET );
     tmp = DeAlias( sym );
-    tmp->v.usage |=
-            VAR_VOLATILE+NEEDS_MEMORY+USE_IN_ANOTHER_BLOCK+USE_ADDRESS;
+    tmp->v.usage |= VAR_VOLATILE|NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
     loc->u.be_sym = tmp;
 #ifndef NDEBUG
     EchoAPI( " -> %i\n", loc );
@@ -200,8 +198,7 @@ extern void             DBSetSymLoc(  sym_handle sym, long off ) {
     name        *tmp;
 
     tmp = DeAlias( AllocUserTemp( sym, XX ) );
-    tmp->v.usage |=
-            VAR_VOLATILE+NEEDS_MEMORY+USE_IN_ANOTHER_BLOCK+USE_ADDRESS;
+    tmp->v.usage |= VAR_VOLATILE|NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
     tmp->t.location = off;
 }
 

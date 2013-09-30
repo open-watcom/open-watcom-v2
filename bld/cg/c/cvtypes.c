@@ -1403,7 +1403,7 @@ static   cv_vtshape   CVVTShape( cg_type ptr_type )
 /*************************************************/
 {
     type_def        *tipe_addr;
-    cv_ptrtype      ret;
+    cv_vtshape      ret;
 
     tipe_addr = TypeAddress( ptr_type );
     switch( tipe_addr->refno ) {

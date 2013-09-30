@@ -39,7 +39,7 @@
 extern  void            DumpPadString(char *,int);
 extern  void            DumpNL();
 
-static char * RegTab[] = {
+static char *opRegTab[] = {
     #define RG( a,b,c,d,e,f ) #f
     #include "rg.h"
     #undef RG
@@ -139,6 +139,6 @@ extern  void    DumpTab( opcode_entry *try ) {
     DumpLiteral( "," );
     DumpGen( try );
     DumpLiteral( "," );
-    DumpPadString( RegTab[try->reg_set], 10 );
+    DumpPadString( opRegTab[try->reg_set], 10 );
     DumpNL();
 }
