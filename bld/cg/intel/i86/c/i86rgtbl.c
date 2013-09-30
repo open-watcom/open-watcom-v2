@@ -480,12 +480,12 @@ static  reg_class       IntersectInfo[] = {
 };
 
 static  byte    Width[] = {
-    5,              /* ONE_BYTE*/
-    9,              /* TWO_BYTE*/
-    6,              /* FOUR_BYTE*/
-    1,              /* EIGHT_BYTE*/
-    2,              /* FLOATING*/
-    0               /* OTHER*/
+    5,              /* ONE_BYTE   */
+    9,              /* TWO_BYTE   */
+    6,              /* FOUR_BYTE  */
+    1,              /* EIGHT_BYTE */
+    2,              /* FLOATING   */
+    0               /* OTHER      */
 };
 static  reg_set_index   OneByteInter[] = {
 /*   AL      AH      CL      BYTE        LOWBYTE  */
@@ -545,12 +545,12 @@ static  reg_set_index   OtherInter[] = {
 };
 
 static  reg_set_index   *InterTable[] = {
-    OneByteInter,       /* ONE_BYTE */
-    TwoByteInter,       /* TWO_BYTE */
-    FourByteInter,      /* FOUR_BYTE */
+    OneByteInter,       /* ONE_BYTE   */
+    TwoByteInter,       /* TWO_BYTE   */
+    FourByteInter,      /* FOUR_BYTE  */
     EightByteInter,     /* EIGHT_BYTE */
-    FloatingInter,      /* FLOATING */
-    OtherInter          /* others */
+    FloatingInter,      /* FLOATING   */
+    OtherInter          /* others     */
 };
 
 extern  void            InitRegTbl( void )

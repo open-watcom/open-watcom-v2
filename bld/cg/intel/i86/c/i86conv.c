@@ -212,38 +212,38 @@ static  rt_class        RTRoutineTable[] = {
 
 static  conv_method     CvtTable[] = {
 /*                               from*/
-/*U1    I1     U2     I2     U4     I4     U8     I8     CP     PT     FS     FD    FL       to*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C4TO1, C4TO1, CU4,   CU4,   CU4,   CU4,  CU4,     /* U1*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C4TO1, C4TO1, CU4,   CU4,   CI4,   CI4,  CI4,     /* I1*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C4TO2, C4TO2, CU4,   CU4,   CU4,   CU4,  CU4,     /* U2*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C4TO2, C4TO2, CU4,   CU4,   CI4,   CI4,  CI4,     /* I2*/
-CU2,   CI2,   Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,    OK,    C_S_U, C_D_U,C_D_U,   /* U4*/
-CU2,   CI2,   Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,    OK,    C_S_4, C_D_4,C_D_4,   /* I4*/
-CU4,   CI4,   CU4,   CI4,   Z4TO8, S4TO8, OK,    OK,    Z4TO8, Z4TO8, C_S_U8,C_D_U8,C_D_U8, /* U8*/
-CU4,   CI4,   CU4,   CI4,   Z4TO8, S4TO8, OK,    OK,    Z4TO8, Z4TO8, C_S_I8,C_D_I8,C_D_I8, /* I8*/
-CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    __x__, __x__,__x__,   /* CP*/
-CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    __x__, __x__,__x__,   /* PT*/
-CU4,   CI4,   CU4,   CI4,   C_U4_S,C_I4_S,C_U8_S,C_I8_S,__x__, __x__, OK,    C_D_S,C_D_S,   /* FS*/
-CU4,   CI4,   CU4,   CI4,   C_U4_D,C_I4_D,C_U8_D,C_I8_D,__x__, __x__, C_S_D, OK,   OK,      /* FD*/
-CU4,   CI4,   CU4,   CI4,   C_U4_D,C_I4_D,C_U8_D,C_I8_D,__x__, __x__, C_S_D, OK,   OK,      /* FL*/
+/*U1    I1     U2      I2     U4      I4      U8      I8      CP     PT     FS      FD      FL        to */
+OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CU4,    CU4,    CU4,    /* U1 */
+OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CI4,    CI4,    CI4,    /* I1 */
+Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CU4,    CU4,    CU4,    /* U2 */
+Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CI4,    CI4,    CI4,    /* I2 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_U,  C_D_U,  C_D_U,  /* U4 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_4,  C_D_4,  C_D_4,  /* I4 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_U8, C_D_U8, C_D_U8, /* U8 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_I8, C_D_I8, C_D_I8, /* I8 */
+CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* CP */
+CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* PT */
+CU4,   CI4,   CU4,    CI4,   C_U4_S, C_I4_S, C_U8_S, C_I8_S, __x__, __x__, OK,     C_D_S,  C_D_S,  /* FS */
+CU4,   CI4,   CU4,    CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__, __x__, C_S_D,  OK,     OK,     /* FD */
+CU4,   CI4,   CU4,    CI4,   C_U4_D, C_I4_D, C_U8_D, C_I8_D, __x__, __x__, C_S_D,  OK,     OK,     /* FL */
 };
 
 static  conv_method     FPCvtTable[] = {
 /*                               from*/
-/*U1    I1     U2     I2     U4     I4     U8     I8     CP     PT     FS     FD    FL       to*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C4TO1, C4TO1, CU4,   CU4,   CI2,   CI2,   CI2,     /* U1*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C4TO1, C4TO1, CU4,   CU4,   CI2,   CI2,   CI2,     /* I1*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C4TO2, C4TO2, CU4,   CU4,   CI4,   CI4,   CI4,     /* U2*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C4TO2, C4TO2, CU4,   CU4,   FPOK,  FPOK,  FPOK,    /* I2*/
-CU2,   CI2,   Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,    OK,    FPOK,  FPOK,  FPOK,    /* U4*/
-CU2,   CI2,   Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,    OK,    FPOK,  FPOK,  FPOK,    /* I4*/
-CU4,   CI4,   CU4,   CI4,   Z4TO8, S4TO8, OK,    OK,    Z4TO8, Z4TO8, C7S_U8,C7D_U8,C7D_U8,  /* U8*/
-CU4,   CI4,   CU4,   CI4,   Z4TO8, S4TO8, OK,    OK,    Z4TO8, Z4TO8, FPOK,  FPOK,  FPOK,    /* I8*/
-CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    __x__, __x__, __x__,   /* CP*/
-CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    __x__, __x__, PT,      /* PT*/
-CI2,   CI2,   CI4,   FPOK,  FPOK,  FPOK,  C7U8_S,FPOK,  __x__, __x__, FPOK,  FPOK,  FPOK,    /* FS*/
-CI2,   CI2,   CI4,   FPOK,  FPOK,  FPOK,  C7U8_D,FPOK,  __x__, __x__, FPOK,  FPOK,  FPOK,    /* FD*/
-CI2,   CI2,   CI4,   FPOK,  FPOK,  FPOK,  C7U8_D,FPOK,  __x__, __x__, FPOK,  FPOK,  FPOK,    /* FL*/
+/*U1    I1     U2      I2     U4      I4      U8      I8      CP     PT     FS      FD      FL        to */
+OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CI2,    CI2,    CI2,    /* U1 */
+OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CI2,    CI2,    CI2,    /* I1 */
+Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CI4,    CI4,    CI4,    /* U2 */
+Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   FPOK,   FPOK,   FPOK,   /* I2 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    FPOK,   FPOK,   FPOK,   /* U4 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    FPOK,   FPOK,   FPOK,   /* I4 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C7S_U8, C7D_U8, C7D_U8, /* U8 */
+CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, FPOK,   FPOK,   FPOK,   /* I8 */
+CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* CP */
+CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  CPT,    /* PT */
+CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_S, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FS */
+CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_D, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FD */
+CI2,   CI2,   CI4,    FPOK,  FPOK,   FPOK,   C7U8_D, FPOK,   __x__, __x__, FPOK,   FPOK,   FPOK,   /* FL */
 };
 
 static  conv_method     AskHow( type_class_def fr, type_class_def to )
@@ -266,13 +266,29 @@ extern  bool    CvtOk( type_class_def fr, type_class_def to )
     return( FALSE );
 }
 
+static instruction *doConversion( instruction *ins, type_class_def class )
+/************************************************************************/
+{
+    name            *temp;
+    instruction     *new_ins;
+
+    temp = AllocTemp( class );
+    new_ins = MakeUnary( ins->head.opcode, ins->operands[0], temp, class );
+    new_ins->base_type_class = ins->base_type_class;
+    new_ins->type_class = class;
+    ins->base_type_class = class;
+    ins->table = NULL;
+    ins->operands[0] = temp;
+    MoveSegOp( ins, new_ins, 0 );
+    PrefixIns( ins, new_ins );
+    return( new_ins );
+}
 
 extern  instruction     *rDOCVT( instruction *ins )
 /*************************************************/
 {
     name        *src;
     name        *dst;
-    name        *name;
     instruction *new_ins;
     conv_method how;
 
@@ -289,15 +305,7 @@ extern  instruction     *rDOCVT( instruction *ins )
         how = AskHow( ins->base_type_class, ins->type_class );
     }
     if( how < OK ) {
-        name = AllocTemp( how );
-        new_ins = MakeUnary( ins->head.opcode, src, name, how );
-        new_ins->base_type_class = ins->base_type_class;
-        new_ins->type_class = how;
-        ins->base_type_class = how;
-        ins->table = NULL;
-        ins->operands[ 0 ] = name;
-        MoveSegOp(ins,new_ins,0);
-        PrefixIns( ins, new_ins );
+        new_ins = doConversion( ins, (type_class_def)how );
     } else if( how == FPOK ) {
         ins->head.opcode = OP_MOV;
         ins->table = NULL;
@@ -315,7 +323,7 @@ extern  instruction     *rDOCVT( instruction *ins )
         new_ins = ins;
     } else {
         new_ins = MakeMove( src, dst, ins->type_class );
-        DupSeg(ins,new_ins);
+        DupSeg( ins, new_ins );
         ReplIns( ins, new_ins );
         if( how != OK ) {
             _Zoiks( ZOIKS_092 );

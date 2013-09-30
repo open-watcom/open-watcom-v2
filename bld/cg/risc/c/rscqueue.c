@@ -116,6 +116,7 @@ static  void    doInfo( any_oc *oc ) {
     oc_class            base;
     offset              lc;
 
+    lc = 0;
     base = oc->oc_entry.class & INFO_MASK;
     switch( base ) {
     case INFO_LDONE:

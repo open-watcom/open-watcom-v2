@@ -194,20 +194,20 @@ static opcode_entry     *CvtAddr[] = {
 
 static  conv_method         CvtTable[] = {
 /*                               from*/
-/*U1   I1     U2     I2     U4     I4     U8     I8      CP     PT     FS     FD      FL         to*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1,  C4TO1, C4TO1, U4,    U4,     U4,     /* U1*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1,  C4TO1, C4TO1, I4,    I4,     I4,     /* I1*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2,  C4TO2, C4TO2, U4,    U4,     U4,     /* U2*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2,  C4TO2, C4TO2, I4,    I4,     I4,     /* I2*/
-Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4,  OK,    OK,    FD,    __x__,  __x__,  /* U4*/
-Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4,  OK,    OK,    FD,    FDTOI4, __x__,  /* I4*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,     S4TO8, S4TO8, __x__, __x__,  __x__,  /* U8*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,     S4TO8, S4TO8, FD,    FDTOI8, __x__,  /* I8*/
-__x__, __x__, __x__, __x__, OK,    OK,    __x__, __x__,  OK,    OK,    __x__, __x__,  __x__,  /* CP*/
-__x__, __x__, __x__, __x__, OK,    OK,    __x__, __x__,  OK,    OK,    __x__, __x__,  __x__,  /* PT*/
-I8,    I8,    I8,    I8,    I8,    I8,    __x__, FD,     __x__, __x__, OK,    FDTOS,  FDTOS,  /* FS*/
-I8,    I8,    I8,    I8,    I8,    I8,    __x__, FI8TOD, __x__, __x__, FSTOD, OK,     OK,     /* FD*/
-I8,    I8,    I8,    I8,    I8,    I8,    __x__, FI8TOD, __x__, __x__, FSTOD, OK,     OK,     /* FL*/
+/*U1   I1     U2     I2     U4     I4     U8     I8      CP     PT     FS     FD      FL         to */
+OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1,  C4TO1, C4TO1, CU4,   CU4,    CU4,    /* U1 */
+OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1,  C4TO1, C4TO1, CI4,   CI4,    CI4,    /* I1 */
+Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2,  C4TO2, C4TO2, CU4,   CU4,    CU4,    /* U2 */
+Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2,  C4TO2, C4TO2, CI4,   CI4,    CI4,    /* I2 */
+Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4,  OK,    OK,    CFD,   __x__,  __x__,  /* U4 */
+Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4,  OK,    OK,    CFD,   FDTOI4, __x__,  /* I4 */
+Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,     S4TO8, S4TO8, __x__, __x__,  __x__,  /* U8 */
+Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,     S4TO8, S4TO8, CFD,   FDTOI8, __x__,  /* I8 */
+__x__, __x__, __x__, __x__, OK,    OK,    __x__, __x__,  OK,    OK,    __x__, __x__,  __x__,  /* CP */
+__x__, __x__, __x__, __x__, OK,    OK,    __x__, __x__,  OK,    OK,    __x__, __x__,  __x__,  /* PT */
+CI8,   CI8,   CI8,   CI8,   CI8,   CI8,   __x__, CFD,    __x__, __x__, OK,    FDTOS,  FDTOS,  /* FS */
+CI8,   CI8,   CI8,   CI8,   CI8,   CI8,   __x__, FI8TOD, __x__, __x__, FSTOD, OK,     OK,     /* FD */
+CI8,   CI8,   CI8,   CI8,   CI8,   CI8,   __x__, FI8TOD, __x__, __x__, FSTOD, OK,     OK,     /* FL */
 };
 
 static conv_method AskHow( type_class_def fr, type_class_def to )
@@ -232,12 +232,27 @@ extern bool CvtOk( type_class_def fr, type_class_def to )
     return( FALSE );
 }
 
+static instruction *doConversion( instruction *ins, type_class_def class )
+/************************************************************************/
+{
+    name            *temp;
+    instruction     *new_ins;
+
+    temp = AllocTemp( class );
+    new_ins = MakeConvert( ins->operands[0], temp, class, ins->base_type_class );
+    new_ins->table = NULL;
+    ins->operands[ 0 ] = temp;
+    ins->base_type_class = class;
+    PrefixIns( ins, new_ins );
+    UpdateLive( new_ins, ins );
+    return( new_ins );
+}
+
 extern instruction *rDOCVT( instruction *ins )
 /********************************************/
 {
     name        *src;
     name        *dst;
-    name        *temp;
     instruction *new_ins;
     conv_method how;
 
@@ -255,13 +270,7 @@ extern instruction *rDOCVT( instruction *ins )
         how = AskHow( ins->base_type_class, ins->type_class );
     }
     if( how < OK ) {
-        temp = AllocTemp( how );
-        new_ins = MakeConvert( src, temp, how, ins->base_type_class );
-        ins->operands[0] = temp;
-        ins->base_type_class = how;
-        new_ins->table = NULL;
-        PrefixIns( ins, new_ins );
-        UpdateLive( new_ins, ins );
+        new_ins = doConversion( ins, (type_class_def)how );
     } else if( how < BAD && how > OK ) {
         ins->table = CvtAddr[how - ( OK + 1 )];
         new_ins = ins;
