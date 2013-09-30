@@ -121,11 +121,10 @@ static void outMsg( FILE *fp, msg_type mtype, int resource_id, va_list *arglist 
     fputs( leadingMessage( mtype, AsResBuffer ), fp );
     AsMsgGet( resource_id, AsResBuffer );
     if( arglist ) {
-        vfprintf( fp, AsResBuffer, *arglist );
+        vfprintf( fp, "%s\n", AsResBuffer, *arglist );
     } else {
-        fprintf( fp, AsResBuffer );
+        fprintf( fp, "%s\n", AsResBuffer );
     }
-    fputc( '\n', fp );
 }
 
 static void abortMsg( void ) {
