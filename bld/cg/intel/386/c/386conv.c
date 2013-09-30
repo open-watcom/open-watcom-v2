@@ -302,7 +302,7 @@ static  rt_class        RTRoutineTable[] = {
 #define __x__   BAD
 
 static  conv_method     CvtTable[] = {
-/*                               from*/
+/*                               from                                                                    */
 /*U1    I1     U2     I2     U4      I4      U8      I8      CP      PT     FS      FD      FL        to */
 OK,    OK,    C2TO1, C2TO1, C4TO1,  C4TO1,  C8TO2,  C8TO2,  CU4,    __x__, CU4,    CU4,    CU4,    /* U1 */
 OK,    OK,    C2TO1, C2TO1, C4TO1,  C4TO1,  C8TO2,  C8TO2,  CU4,    __x__, CI4,    CI4,    CI4,    /* I1 */
@@ -320,7 +320,7 @@ CU4,   CI4,   CU4,   CI4,   C_U4_D, C_I4_D, C_U8_D, C_U8_D, __x__,  __x__, C_S_D
 };
 
 static  conv_method     FPCvtTable[] = {
-/*                               from*/
+/*                               from                                                                    */
 /*U1    I1     U2     I2     U4      I4      U8      I8      CP      PT     FS      FD      FL        to */
 OK,    OK,    C2TO1, C2TO1, C4TO1,  C4TO1,  C8TO2,  C8TO2,  CU4,    __x__, CU4,    CU4,    CU4,    /* U1 */
 OK,    OK,    C2TO1, C2TO1, C4TO1,  C4TO1,  C8TO2,  C8TO2,  CU4,    __x__, CI4,    CI4,    CI4,    /* I1 */
@@ -346,9 +346,9 @@ static  conv_method     AskHow( type_class_def fr, type_class_def to )
         return( BAD );
     }
     if( _FPULevel( FPU_87 ) ) {
-        return( FPCvtTable[  fr + to * XX  ] );
+        return( FPCvtTable[fr + to * XX] );
     } else {
-        return( CvtTable[  fr + to * XX  ] );
+        return( CvtTable[fr + to * XX] );
     }
 }
 
@@ -393,7 +393,7 @@ extern  instruction     *rDOCVT( instruction *ins )
     instruction *new_ins;
     conv_method how;
 
-    src = ins->operands[ 0 ];
+    src = ins->operands[0];
     dst = ins->result;
     if( src->n.name_class != XX && ins->base_type_class == XX ) {
         ins->base_type_class = src->n.name_class;
@@ -419,7 +419,7 @@ extern  instruction     *rDOCVT( instruction *ins )
             ins->type_class = ins->base_type_class;
         }
     } else if( how > OK && how < FPOK ) {
-        ins->table = CvtAddr[  how - ( OK + 1 )  ];
+        ins->table = CvtAddr[how - ( OK + 1 )];
         new_ins = ins;
     } else if( how > BAD ) {
         ins->table = CRtn;

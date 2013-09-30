@@ -186,7 +186,7 @@ static opcode_entry     *CvtAddr[] = {
 #define __x__   BAD
 
 static  conv_method         CvtTable[] = {
-/*                               from*/
+/*                               from                                                                */
 /*U1    I1     U2     I2     U4     I4     U8     I8      CP     PT     FS     FD      FL         to */
 OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1,  C4TO1, C4TO1, CU4,   CU4,    CU4,     /* U1 */
 OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1,  C4TO1, C4TO1, CI4,   CI4,    CI4,     /* I1 */
@@ -211,7 +211,7 @@ static  conv_method      AskHow( type_class_def fr, type_class_def to ) {
     if( to == XX || fr == XX ) {
         return( BAD );
     }
-    return( CvtTable[  fr + to * XX  ] );
+    return( CvtTable[fr + to * XX] );
 }
 
 extern  bool    CvtOk( type_class_def fr, type_class_def to ) {
@@ -234,7 +234,7 @@ static instruction *doConversion( instruction *ins, type_class_def class )
     temp = AllocTemp( class );
     new_ins = MakeConvert( ins->operands[0], temp, class, ins->base_type_class );
     new_ins->table = NULL;
-    ins->operands[ 0 ] = temp;
+    ins->operands[0] = temp;
     ins->base_type_class = class;
     PrefixIns( ins, new_ins );
     UpdateLive( new_ins, ins );
@@ -249,7 +249,7 @@ extern  instruction     *rDOCVT( instruction *ins ) {
     instruction *new_ins;
     conv_method how;
 
-    src = ins->operands[ 0 ];
+    src = ins->operands[0];
     dst = ins->result;
     if( src->n.name_class != XX && ins->base_type_class == XX ) {
         ins->base_type_class = src->n.name_class;
