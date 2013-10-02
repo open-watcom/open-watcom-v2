@@ -59,14 +59,11 @@ extern void GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
 extern void             ObjBytes( char *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
-extern void             OutLabel( label_handle );
 extern void             OutReloc( label_handle, axp_reloc, unsigned );
 extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( code_lbl * );
-extern  offset          AskLocation();
-extern  void            OutLineNum( unsigned_16 line, bool label_line );
 extern void             EmitDbgInfo(instruction*);
 extern  void            ObjEmitSeq( byte_seq * );
 extern  void            InputOC( any_oc * );

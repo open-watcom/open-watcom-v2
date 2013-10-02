@@ -37,6 +37,7 @@
 #include "makeins.h"
 #include "data.h"
 #include "rtrtn.h"
+#include "objout.h"
 
 extern  name            *GenFloat( name *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
@@ -57,7 +58,6 @@ extern  void            AddIns( instruction * );
 extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  seg_id          AskBackSeg( void );
 extern  instruction     *rMAKECALL( instruction * );
 extern  hw_reg_set      FirstReg( reg_set_index );
 

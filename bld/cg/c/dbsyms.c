@@ -46,14 +46,13 @@
 #include "makeins.h"
 #include "feprotos.h"
 #include "cgprotos.h"
+#include "objout.h"
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
 
 extern  void            AddIns(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
-extern  seg_id          SetOP(seg_id);
-extern  seg_id          AskCodeSeg(void);
 extern  void            EmptyQueue(void);
 extern  void            InputOC(any_oc *);
 extern  bool            DBNested( bool nested );
@@ -859,7 +858,7 @@ extern  void    EmitRtnEnd() {
 /****************************/
 
 
-    seg_id      old;
+    segment_id      old;
 
     EmitDbg( INFO_DBG_RTN_END, CurrProc->targ.debug );
     old = SetOP( AskCodeSeg() );

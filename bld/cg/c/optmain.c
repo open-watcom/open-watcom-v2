@@ -31,9 +31,8 @@
 
 #include "optwif.h"
 #include "freelist.h"
+#include "objout.h"
 
-extern  seg_id          SetOP( seg_id );
-extern  seg_id          AskCodeSeg( void );
 extern  void            FreePendingDeletes( void );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  void            OutputOC( any_oc *, any_oc * );
@@ -230,7 +229,7 @@ extern  void    EmptyQueue( void )
 extern  void    FlushQueue( void )
 /********************************/
 {
-    seg_id      old;
+    segment_id      old;
 
   optbegin
     old = SetOP( AskCodeSeg() );

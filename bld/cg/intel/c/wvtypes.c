@@ -41,13 +41,11 @@
 #include "data.h"
 #include "types.h"
 #include "dbgstrct.h"
+#include "objout.h"
 
 extern  uint            BuffLoc(void);
 extern  void            BuffByte(byte);
 extern  void            BuffWSLString(char*);
-extern  seg_id          SetOP(seg_id);
-extern  offset          AskLocation( void );
-extern  void            SetLocation(offset);
 extern  void            ChkDbgSegSize( offset, bool );
 extern  void            DataInt(short_offset);
 extern  void            DataLong(long);
@@ -60,7 +58,7 @@ extern  void            BuffValue(unsigned_32,uint);
 extern  void            BuffWord(uint);
 extern  void            BuffDWord(unsigned_32);
 extern  void            BuffStart(temp_buff*,uint);
-extern  void            BuffEnd(seg_id);
+extern  void            BuffEnd(segment_id);
 extern  void            LocDump( dbg_loc );
 extern  dbg_loc         LocDupl( dbg_loc );
 
@@ -204,7 +202,7 @@ extern  void    WVDumpName( name_entry *name, dbg_type tipe ) {
 extern void WVBackRefType( name_entry *name, dbg_type tipe ){
 /******************************************************/
     offset      here;
-    seg_id      old;
+    segment_id  old;
 
     old = SetOP( name->patch.segment );
     here = AskLocation();
@@ -639,7 +637,7 @@ extern void WVDmpCueInfo( long_offset where ){
     cue_blk    *blk;
     cue_state  *curr;
     cue_state  *end;
-    seg_id      old;
+    segment_id old;
     offset      here;
 
 

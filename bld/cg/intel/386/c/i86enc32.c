@@ -37,7 +37,7 @@
 #include "vergen.h"
 #include "pccode.h"
 #include "system.h"
-#include "escape.h"
+//#include "escape.h"
 #include "ocentry.h"
 #include "pcencode.h"
 #include "objrep.h"
@@ -49,6 +49,7 @@
 #include "p5prof.h"
 #include "data.h"
 #include "feprotos.h"
+#include "objout.h"
 #include "i86obj.h"
 
 
@@ -64,7 +65,7 @@ extern  void            AddByte( byte );
 extern  void            LayRMRegOp( name * );
 extern  void            LayOpbyte( opcode );
 extern  void            LayRegRM( hw_reg_set );
-extern  void            DoSegRef( seg_id );
+extern  void            DoSegRef( segment_id );
 extern  void            GenSeg( hw_reg_set );
 extern  void            LayW( type_class_def );
 extern  void            AddWCons( name *, type_class_def );
@@ -82,8 +83,7 @@ extern  int             GetLog2( unsigned_32 );
 extern  unsigned        UseRepForm( unsigned );
 extern  void            DoNothing( instruction * );
 extern  bool            BaseIsSP( name * );
-extern  seg_id          AskCode16Seg( void );
-extern  void            DoLblRef( label_handle, seg_id, offset, escape_class );
+extern  segment_id      AskCode16Seg( void );
 extern  bool            GetEnvVar( char *, char *, int );
 extern  int             CountIns( block *blk );
 
@@ -97,12 +97,9 @@ extern  void            OutDataLong(long);
 extern  void            OutDBytes(unsigned_32,byte*);
 extern  void            OutRTImport( rt_class, fix_class );
 extern  void            TellKeepLabel( label_handle );
-extern  void            OutReloc( seg_id, fix_class, bool );
+extern  void            OutReloc( segment_id, fix_class, bool );
 extern  void            TellByPassOver( void );
-extern  seg_id          SetOP( seg_id );
-extern  seg_id          AskCodeSeg( void );
 extern  void            OutLblPatch( label_handle, fix_class, offset );
-extern  void            OutLabel( label_handle );
 
 extern  template        Temp;   /* template for oc_entries*/
 extern  byte            Inst[];  /* template for instructions*/
@@ -646,7 +643,7 @@ extern  void    GenLeaSP( long offset )
 extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms )
 /***************************************************************************************/
 {
-    seg_id      old;
+    segment_id  old;
     pointer     code_32;
 
     old = SetOP( AskCode16Seg() );
@@ -689,8 +686,8 @@ void    GenProfilingCode( char *fe_name, label_handle *data, bool prolog )
 segment_id GenP5ProfileData( char *fe_name, label_handle *data, label_handle *stack )
 /***********************************************************************************/
 {
-    seg_id          old;
-    segment_id      data_seg = (pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+    segment_id      old;
+    segment_id      data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
 
     old = SetOP( data_seg );
     TellOptimizerByPassed();
@@ -733,7 +730,7 @@ void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
     _Code;
     LayOpbyte( 0x68 );
     ILen += 4;
-    DoLblRef( *data, (pointer_int)FEAuxInfo( NULL, P5_PROF_SEG ), 0, OFST);
+    DoLblRef( *data, (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG ), 0, OFST);
     _Emit;
     RTCall( prolog ? RT_PROFILE_ON : RT_PROFILE_OFF, ATTR_POP );
 }
@@ -752,7 +749,7 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         bck = (bck_info *)FEAuxInfo( AskForLblSym( label ), P5_PROF_DATA );
         if( bck == NULL ) return;
         data_lbl = bck->lbl;
-        data_seg = (pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+        data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
         TellKeepLabel( data_lbl );
         _Code;
         if( prolog ) {
@@ -953,13 +950,13 @@ extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
 void StartBlockProfiling( block *blk )
 /************************************/
 {
-    seg_id              old;
+    segment_id          old;
     segment_id          data_seg;
     label_handle        data;
 
     if( !_IsTargetModel( NEW_P5_PROFILING ) ) return;
     if( !_IsTargetModel( STATEMENT_COUNTING ) ) return;
-    data_seg = (pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
+    data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
     if( blk->label == NULL ) return;
     TellKeepLabel( blk->label );
     old = SetOP( data_seg );

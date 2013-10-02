@@ -134,7 +134,7 @@ void SetNextSymHandle( unsigned val )
     NextSymHandle = val;
 }
 
-SYM_HANDLE SegSymbol( char *name, int segment )             /* 15-mar-92 */
+SYM_HANDLE SegSymbol( char *name, segment_id segment )
 {
     SYM_ENTRY       sym;
     SYM_HANDLE      handle;
@@ -147,7 +147,7 @@ SYM_HANDLE SegSymbol( char *name, int segment )             /* 15-mar-92 */
     sym.attribs.stg_class = SC_STATIC;
     sym.level = 1;  // make invisible
     SymReplace( &sym, handle );
-    if( segment ) {
+    if( segment != 0 ) {
         SetSegSymHandle( handle, segment );
     }
     return( handle );

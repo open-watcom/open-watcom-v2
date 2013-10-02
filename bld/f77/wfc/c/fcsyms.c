@@ -208,9 +208,9 @@ static  segment_id      LocalData( sym_id sym, unsigned_32 size ) {
     segment_id  old_seg;
 
     if( sym->ns.flags & SY_DATA_INIT ) {
-        seg = WF77_LDATA;
+        seg = SEG_LDATA;
     } else {
-        seg = WF77_UDATA;
+        seg = SEG_UDATA;
     }
     old_seg = BESetSeg( seg );
     DGAlign( SymAlign( sym ) );
@@ -253,7 +253,7 @@ static  void    DumpSCB( back_handle scb, back_handle data, int len,
 
     segment_id  old_seg;
 
-    old_seg = BESetSeg( WF77_LDATA );
+    old_seg = BESetSeg( SEG_LDATA );
     DGAlign( ALIGN_DWORD );
     DGLabel( scb );
     if( data == NULL ) {
@@ -530,10 +530,10 @@ static  void    SetConstDataSeg( void ) {
     if( ( CGOpts & CGOPT_CONST_CODE ) && ( _BigDataModel( CGOpts ) ) ) {
         BESetSeg( CurrCodeSegId );
     } else {
-        BESetSeg( WF77_CDATA );
+        BESetSeg( SEG_CDATA );
     }
 #else
-    BESetSeg( WF77_CDATA );
+    BESetSeg( SEG_CDATA );
 #endif
 }
 
@@ -550,7 +550,7 @@ void    GenLocalSyms( void ) {
     cg_type     cgtyp;
 
     SFSymId = NULL; // for building statement function chain
-    BESetSeg( WF77_LDATA );
+    BESetSeg( SEG_LDATA );
     sp_class = SubProgId->ns.flags & SY_SUBPROG_TYPE;
     if( sp_class != SY_BLOCK_DATA ) {
         if( CommonEntry != NULL ) {
@@ -669,19 +669,19 @@ void    GenLocalSyms( void ) {
             if( ModuleName == NULL ) {
                 // can't go in code segment since
                 // there may be multiple code segments
-                BESetSeg( WF77_CDATA );
+                BESetSeg( SEG_CDATA );
                 ModuleName = BENewBack( NULL );
                 MakeName( SDFName( SrcName ), SrcExtn, TokenBuff );
                 DGLabel( ModuleName );
                 DGString( TokenBuff, strlen( TokenBuff ) );
                 DGIBytes( 1, NULLCHAR );
             }
-            BESetSeg( WF77_LDATA );
+            BESetSeg( SEG_LDATA );
             TraceEntry = BENewBack( NULL );
             DGLabel( TraceEntry );
             DGIBytes( BETypeLength( TY_POINTER ), 0 );
             DGInteger( 0, TY_INTEGER );
-            DGBackPtr( ModuleName, WF77_CDATA, 0, TY_POINTER );
+            DGBackPtr( ModuleName, SEG_CDATA, 0, TY_POINTER );
         }
     }
 }

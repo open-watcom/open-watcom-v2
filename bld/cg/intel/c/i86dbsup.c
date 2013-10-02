@@ -46,12 +46,10 @@
 #include "wvdbg.h"
 #include "feprotos.h"
 #include "cgprotos.h"
+#include "objout.h"
 
-extern  seg_id          AskOP(void);
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
-extern  seg_id          SetOP(seg_id);
-extern  offset          AskLocation(void);
 extern  void            DataInt(short_offset);
 #if _TARGET & _TARG_IAPX86
 extern  hw_reg_set      Low32Reg(hw_reg_set);
@@ -63,10 +61,9 @@ extern  void            DoBigBckPtr(back_handle,offset);
 extern  type_length     NewBase(name*);
 extern  int             ParmsAtPrologue( void ) ;
 extern  void            DBLocFini( dbg_loc loc );
-extern  void            FEPtr(sym_handle,type_def *,offset);
 
 
-static    temp_buff     *CurrBuff;
+static  temp_buff       *CurrBuff;
 
 
 
@@ -82,10 +79,10 @@ extern  void    BuffStart( temp_buff *temp, uint def ) {
 
 
 
-extern  void    BuffEnd( seg_id seg ) {
-/*************************************/
+extern  void    BuffEnd( segment_id seg ) {
+/*****************************************/
 
-    seg_id              old;
+    segment_id          old;
     byte                *buff;
     type_def            *ptr_type;
     dbg_patch_handle    *save;

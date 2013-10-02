@@ -39,10 +39,9 @@
 #include "data.h"
 #include "feprotos.h"
 #include "rtrtn.h"
+#include "objout.h"
 
 extern  uint_32         CountBits( uint_32 );
-extern  seg_id          SetOP( seg_id );
-extern  seg_id          AskCodeSeg( void );
 extern  unsigned        DepthAlign( unsigned );
 extern  void            CodeLabelLinenum( label_handle, unsigned, cg_linenum );
 extern  hw_reg_set      *GPRegs( void );
@@ -596,7 +595,7 @@ static  void emitEpilog( stack_map *map )
 extern  void GenProlog( void )
 /****************************/
 {
-    seg_id              old;
+    segment_id          old;
     label_handle        label;
 
     old = SetOP( AskCodeSeg() );
@@ -628,7 +627,7 @@ extern  void GenProlog( void )
 extern  void GenEpilog( void )
 /****************************/
 {
-    seg_id              old;
+    segment_id          old;
 
     old = SetOP( AskCodeSeg() );
     EmitEpiBeg();

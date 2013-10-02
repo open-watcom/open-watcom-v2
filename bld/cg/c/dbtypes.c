@@ -130,7 +130,6 @@ extern  dbg_type        CVDereference( cg_type ptr_type, dbg_type base );
 extern  dbg_type        CVPtr( cg_type ptr_type, dbg_type base );
 extern  dbg_type        CVBasedPtr( cg_type ptr_type, dbg_type base,
                                         dbg_loc loc_segment );
-//extern  void            CVBegStruct( struct_list  *st );
 extern  dbg_type        CVEndStruct( struct_list  *st );
 extern  dbg_type        CVEndEnum( enum_list *en );
 extern  dbg_type        CVEndProc( proc_list  *pr );

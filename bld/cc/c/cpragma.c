@@ -889,7 +889,7 @@ static void PragDataSeg( void )                       /* 22-oct-92 */
 /*****************************/
 {
     char        *segname;
-    int         segment;
+    segment_id  segment;
 
     if( CurToken == T_LEFT_PAREN ) {
         PPCTL_ENABLE_MACROS();

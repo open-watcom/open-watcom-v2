@@ -41,6 +41,7 @@
 #include "cgprotos.h"
 #include "types.h"
 #include "makeins.h"
+#include "objout.h"
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
 #define MIN_LVALUES     5            /* to make it worth while for long sca*/
@@ -63,7 +64,6 @@
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
 extern  cg_type         SelType(unsigned_32);
-extern  seg_id          SetOP(seg_id);
 extern  an              BGDuplicate(an);
 extern  void            Gen4ByteValue(unsigned_32);
 extern  an              TreeGen(tn);
@@ -77,7 +77,6 @@ extern  name            *GenIns(an);
 extern  void            Gen2ByteValue(unsigned_16);
 extern  void            BGDone(an);
 extern  void            Gen1ByteValue(byte);
-extern  seg_id          AskCodeSeg(void);
 extern  signed_32       NumValues(select_list*,signed_32);
 extern  int             SelCompare(signed_32,signed_32);
 extern  void            AddIns(instruction*);
@@ -232,7 +231,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     unsigned_32         cases;
     signed_32           lo;
     signed_32           to_sub;
-    seg_id              old;
+    segment_id          old;
     select_list         *scan;
     signed_32           curr;
 
@@ -363,7 +362,7 @@ extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
     tbl_control         *table;
     label_handle        *tab_ptr;
     unsigned_32         cases;
-    seg_id              old;
+    segment_id          old;
 
     cases = hi - lo + 1;
     table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );

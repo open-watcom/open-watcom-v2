@@ -35,7 +35,7 @@ typedef struct section_def section_def;
 
 struct section_def {
     section_def         *next;
-    seg_id              id;
+    segment_id          id;
     owl_func_handle     func;
     int                 line;
     int                 start;
@@ -49,6 +49,6 @@ struct section_def {
 #define COFF_DRECTVE_HEAP   "-heap"
 #define COFF_DRECTVE_EXPORT "-export"
 
-extern section_def *FindSection( seg_id id );
-extern section_def *AddSection( seg_id id );
+extern section_def *FindSection( segment_id id );
+extern section_def *AddSection( segment_id id );
 extern owl_section_handle DbgSectDefComdat( char *str );

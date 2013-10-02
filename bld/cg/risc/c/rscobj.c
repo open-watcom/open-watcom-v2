@@ -50,6 +50,7 @@
 #include "feprotos.h"
 #include "rtrtn.h"
 #include "utils.h"
+#include "objout.h"
 
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)(x + 1))
 #define OWL_TO_HANDLE(x)    ((pointer_int)x - 1)
@@ -73,7 +74,7 @@ extern  void            EmitInsReloc( axp_ins, pointer, owl_reloc_type );
 /* DF interface */
 extern  void            DFObjInitInfo( void );
 extern  void            DFObjLineInitInfo( void );
-extern  void            DFBegCCU( seg_id code, long sym );
+extern  void            DFBegCCU( segment_id code, long sym );
 extern  void            DFDefSegs( void );
 extern  void            DFObjFiniDbgInfo( offset codesize );
 extern  void            DFObjLineFiniDbgInfo( void );
@@ -96,9 +97,9 @@ static  owl_section_handle      globalPdata;
 static  owl_handle              owlHandle;
 static  owl_file_handle         owlFile;
 
-static  seg_id                  codeSection;
-static  seg_id                  dataSection;
-static  seg_id                  backSectIdx;
+static  segment_id              codeSection;
+static  segment_id              dataSection;
+static  segment_id              backSectIdx;
 
 static  section_def             *currSection;
 
@@ -109,8 +110,8 @@ static  section_def             *sectionDefs[ N_SECTIONS ];
 extern  int                     ObjFile;
 static  short                   CurrFNo;
 
-extern section_def *FindSection( seg_id id )
-/******************************************/
+extern section_def *FindSection( segment_id id )
+/**********************************************/
 {
     section_def         *curr;
 
@@ -122,8 +123,8 @@ extern section_def *FindSection( seg_id id )
     return( curr );
 }
 
-extern section_def *AddSection( seg_id id )
-/*****************************************/
+extern section_def *AddSection( segment_id id )
+/*********************************************/
 {
     section_def         *new;
     unsigned            bucket;
@@ -498,8 +499,8 @@ extern  void    InitSegDefs( void )
 }
 
 
-extern  void    DefSegment( seg_id id, seg_attr attr, char *str, uint align, bool use_16 )
-/****************************************************************************************/
+extern  void    DefSegment( segment_id id, seg_attr attr, char *str, uint align, bool use_16 )
+/********************************************************************************************/
 {
     section_def         *new;
     owl_section_type    type;
@@ -635,11 +636,11 @@ extern char GetMemModel( void )
     return( model );
 }
 
-extern seg_id DbgSegDef( char *str )
-/**********************************/
+extern segment_id DbgSegDef( char *str )
+/**************************************/
 {
     section_def         *new;
-    seg_id              id;
+    segment_id          id;
 
     id = --backSectIdx;
     new = AddSection( id );
@@ -653,27 +654,27 @@ extern  bool    HaveCodeSeg( void )
     return( codeSection != BACKSEGS );
 }
 
-extern  seg_id  AskCodeSeg( void )
-/********************************/
+extern  segment_id  AskCodeSeg( void )
+/************************************/
 {
      return( codeSection );
 }
 
-extern  seg_id  AskAltCodeSeg( void )
-/***********************************/
+extern  segment_id  AskAltCodeSeg( void )
+/***************************************/
 {
     return( codeSection );
 }
 
-extern  seg_id  AskBackSeg( void )
-/********************************/
+extern  segment_id  AskBackSeg( void )
+/************************************/
 {
      return( dataSection );
 }
 
 
-extern  seg_id  AskOP( void )
-/***************************/
+extern  segment_id  AskOP( void )
+/*******************************/
 {
     assert( currSection != NULL );
      return( currSection->id );
@@ -692,7 +693,7 @@ static  bool            InlineFunction( pointer hdl )
     return( (*(call_class *)FEAuxInfo( aux, CALL_CLASS ) & MAKE_CALL_INLINE) != 0 );
 }
 
-extern  seg_id      AskSegID( pointer hdl, cg_class class )
+extern  segment_id  AskSegID( pointer hdl, cg_class class )
 /*********************************************************/
 {
     switch( class ) {
@@ -720,8 +721,8 @@ extern  void    ObjBytes( char *buffer, unsigned size )
     OWLEmitData( currSection->owl_handle, buffer, size );
 }
 
-extern  bool    AskSegBlank( seg_id id )
-/**************************************/
+extern  bool    AskSegBlank( segment_id id )
+/******************************************/
 {
     section_def         *sect;
     owl_section_type    tipe;
@@ -761,19 +762,19 @@ extern  void    AlignObject( unsigned align )
 }
 
 
-extern  seg_id  SetOP( seg_id seg )
-/*********************************/
+extern  segment_id  SetOP( segment_id seg )
+/*****************************************/
 {
-    seg_id      old;
+    segment_id  old;
     section_def *new;
 
 
     if( currSection == NULL ) {
-        old = (seg_id)-1;
+        old = -1;
     } else {
         old = currSection->id;
     }
-    if( seg == (seg_id)-1 ) {
+    if( seg == -1 ) {
         currSection = NULL;
     } else {
         new = FindSection( seg );
@@ -783,11 +784,11 @@ extern  seg_id  SetOP( seg_id seg )
 }
 
 
-extern  void    FlushOP( seg_id id )
-/**********************************/
+extern  void    FlushOP( segment_id id )
+/**************************************/
 {
     section_def         *sect;
-    seg_id              old;
+    segment_id          old;
     owl_section_type    tipe;
 
     sect = FindSection( id );
@@ -918,8 +919,8 @@ extern  void    OutReloc( code_lbl *label, owl_reloc_type tipe, unsigned offset 
         labelOwlSym( label ), tipe );
 }
 
-extern  void    OutSegReloc( code_lbl *label, seg_id seg )
-/********************************************************/
+extern  void    OutSegReloc( code_lbl *label, segment_id seg )
+/************************************************************/
 {
     section_def             *sect;
 
@@ -1062,8 +1063,8 @@ extern  void    *InitPatch( void )
     return( NULL );
 }
 
-extern  void    AbsPatch( void * patch, offset lc )
-/*************************************************/
+extern  void    AbsPatch( abspatch_handle patch, offset lc )
+/**********************************************************/
 {
     patch = patch;
     lc = lc;
@@ -1109,10 +1110,10 @@ extern  void    IncLocation( offset by )
     OWLEmitData( currSection->owl_handle, NULL, by );
 }
 
-extern  bool    AskNameROM( name *n )
-/***********************************/
+extern  bool    AskNameROM( pointer hdl, cg_class class )
+/*******************************************************/
 {
-    n = n;
+    hdl = hdl; class = class;
     return( FALSE );
 }
 

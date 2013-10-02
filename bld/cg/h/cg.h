@@ -86,7 +86,7 @@ typedef void *          patch_handle;   /*  used to stuff patchable ints into tr
 
 typedef void            (*cg_callback)( callback_handle );
 
-typedef int             segment_id;     /*  parm to BESetSeg() */
+typedef short           segment_id;     /*  must be signed */
 
 typedef unsigned_32     dbg_type;       /*  symbolic debugging type handle */
 typedef void            *dbg_struct;

@@ -60,7 +60,7 @@ extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
 
 
-extern  seg_id          DbgSegDef( char *, char *, int  );
+extern  segment_id      DbgSegDef( char *, char *, int  );
 extern  hw_reg_set      StackReg(void);
 extern  hw_reg_set      DisplayReg(void);
 extern  void            OutBckExport( char *name, bool is_export );
@@ -87,7 +87,7 @@ static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
 };
 
 
-extern struct sect_info DwarfSegs[ DW_DEBUG_MAX ];
+extern sect_info DwarfSegs[ DW_DEBUG_MAX ];
 
 
 

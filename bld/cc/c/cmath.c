@@ -1533,8 +1533,8 @@ int FuncPtr( TYPEPTR typ )
 bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
 {
     bool                is_safe = TRUE;
-    enum segments       new_seg;
-    enum segments       old_seg;
+    segment_id          new_seg;
+    segment_id          old_seg;
     type_modifiers      new_flags;
     type_modifiers      old_flags;
 

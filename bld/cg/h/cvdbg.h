@@ -38,7 +38,7 @@
 typedef struct cv_out {
     byte        *beg;  /* where to start writing from */
     byte        *ptr;  /* end of data */
-    seg_id      seg;   /* segment to write to */
+    segment_id  seg;   /* segment to write to */
     byte        buff[CV_MAX_REC];  /* buffer to use */
 }cv_out;
 
@@ -205,5 +205,5 @@ typedef enum {
     BASED_VALUE,
 }cv_based_kind;
 
-extern seg_id        CVSyms;
-extern seg_id        CVTypes;
+extern segment_id    CVSyms;
+extern segment_id    CVTypes;

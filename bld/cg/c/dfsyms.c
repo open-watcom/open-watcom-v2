@@ -51,26 +51,10 @@
 #include "types.h"
 #include "cgprotos.h"
 #include "feprotos.h"
+#include "objout.h"
 
-extern  void            FEPtr(sym_handle,type_def *,offset);
-extern  void            FEPtrBase(sym_handle);
-extern  seg_id          AskOP(void);
-extern  void            BackPtr( bck_info*, seg_id, offset, type_def* );
-extern  void            BackBigOffset( bck_info *, seg_id, offset );
-extern  void            BackPtrBase( bck_info *, seg_id );
-extern  void            OutLabel(label_handle);
 extern  void            DoBigBckPtr(back_handle,offset);
 extern  name            *DeAlias(name*);
-extern  seg_id          SetOP(seg_id);
-extern  seg_id          AskCodeSeg(void);
-extern  segment_id      AskSegID(pointer,cg_class);
-extern  offset          AskLocation(void);
-extern  void            SetLocation(offset);
-extern  offset          AskMaxSize(void);
-extern  void            SetBigLocation( long_offset loc );
-extern  long_offset     AskBigLocation(void);
-extern  long_offset     AskBigMaxSize(void);
-extern  bool            NeedBaseSet(void);
 extern  void            DataInt(short_offset);
 extern  void            DataLong( long );
 extern  void            DataBytes(unsigned_32,byte*);
@@ -98,17 +82,18 @@ static short               CurrFNo;
 static bool                CcuDef;
 
 
-struct sect_info DwarfSegs[ DW_DEBUG_MAX ];
+sect_info DwarfSegs[ DW_DEBUG_MAX ];
 
 static bck_info  *Pc_High;
 static bck_info  *Pc_Low;
 static bck_info  *Comp_High;
 static bck_info  *ARange;
 
-static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size ) {
-/******************************************************************/
-    struct sect_info   *curr;
-    seg_id              old;
+static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size )
+/************************************************************************/
+{
+    sect_info           *curr;
+    segment_id          old;
     long_offset         off;
 
     curr = &DwarfSegs[sect];
@@ -120,9 +105,9 @@ static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size ) {
 
 static long CLITell( dw_sectnum sect ) {
 /*********************************/
-    struct sect_info   *curr;
+    sect_info           *curr;
     long_offset         off;
-    seg_id              old;
+    segment_id          old;
 
    curr = &DwarfSegs[sect];
    old = SetOP( curr->seg );
@@ -133,9 +118,9 @@ static long CLITell( dw_sectnum sect ) {
 
 static void CLISeek( dw_sectnum sect, long offs, uint type ) {
 /******************************************************/
-    struct sect_info   *curr;
+    sect_info           *curr;
     long_offset         from;
-    seg_id              old;
+    segment_id          old;
 
     curr = &DwarfSegs[sect];
     old = SetOP( curr->seg );
@@ -172,8 +157,8 @@ static void DoSegReloc( dw_sym_handle sym ){
 
 static void DoLblReloc( bck_info *bck, long disp ){
 /**********************************/
-    type_def            *ptr_type;
-    seg_id              id;
+    type_def        *ptr_type;
+    segment_id      id;
 
     id = AskSegID( bck, CG_BACK );
     ptr_type = TypeAddress( TY_NEAR_POINTER );
@@ -182,7 +167,7 @@ static void DoLblReloc( bck_info *bck, long disp ){
 
 static void DoSegLblReloc( bck_info *bck ){
 /**********************************/
-    seg_id              id;
+    segment_id      id;
 
     id = AskSegID( bck, CG_BACK );
     BackPtrBase( bck, id );
@@ -192,7 +177,7 @@ static void DoSectOffset( dw_sectnum section  ){
 /**********************************/
     bck_info    *bck;
     uint_32     pos;
-    seg_id      id;
+    segment_id  id;
 
     pos = CLITell( section );
     bck = DwarfSegs[section].bck;
@@ -202,7 +187,7 @@ static void DoSectOffset( dw_sectnum section  ){
 }
 
 typedef struct {
-    unsigned    segment;
+    segment_id  segment;
     long_offset offset;
 } big_patch_handle;
 
@@ -215,16 +200,16 @@ typedef struct {
 
 static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ){
 /******************************************************/
-    static uint_32              const zero  = 0;
-    struct sect_info           *curr;
-    dw_sym_handle               sym;
-    dw_sym_handle               bck;
-    loc_range                   *low;
-    loc_range                   *high;
-    dw_sectnum                  section;
-    va_list                     args;
-    seg_id                      old;
-    long_offset                 off;
+    static uint_32 const    zero  = 0;
+    sect_info               *curr;
+    dw_sym_handle           sym;
+    dw_sym_handle           bck;
+    loc_range               *low;
+    loc_range               *high;
+    dw_sectnum              section;
+    va_list                 args;
+    segment_id              old;
+    long_offset             off;
 
     va_start( args, reloc_type );
     curr = &DwarfSegs[sect];
@@ -364,8 +349,8 @@ static int SetLang( void ){
 
 static  void    InitSegBck( void ){
 /*********************************/
-    dw_sectnum   i;
-    seg_id       old;
+    dw_sectnum  i;
+    segment_id  old;
     bck_info    *bck;
 
     for( i = DW_DEBUG_INFO; i < DW_DEBUG_MAX; ++i ){
@@ -380,7 +365,7 @@ static  void    InitSegBck( void ){
 
 static  void    InitLineSegBck( void ){
 /*************************************/
-    seg_id       old;
+    segment_id  old;
     bck_info    *bck;
 
     old = SetOP( DwarfSegs[DW_DEBUG_LINE].seg );
@@ -448,18 +433,19 @@ extern  void    DFSegRange( void ){
     }
 }
 
-extern  void    DFBegCCU( seg_id code, dw_sym_handle dbg_pch ){
-/**************************************/
+extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
+/****************************************************************/
 // Call when codeseg hase been defined
-    dw_cu_info          cu;
-    bck_info           *bck;
-    seg_id              old;
-    type_def           *tipe_addr;
+{
+    dw_cu_info      cu;
+    bck_info        *bck;
+    segment_id      old;
+    type_def        *tipe_addr;
 
-    if( !_IsModel( DBG_LOCALS | DBG_TYPES ) ){
+    if( !_IsModel( DBG_LOCALS | DBG_TYPES ) ) {
         return;
     }
-    if( CcuDef ){
+    if( CcuDef ) {
         cu.source_filename = FEAuxInfo( NULL, SOURCE_NAME );
         cu.directory = "";
         cu.dbg_pch   = dbg_pch;
@@ -481,7 +467,7 @@ extern  void    DFBegCCU( seg_id code, dw_sym_handle dbg_pch ){
             // the linker.
             cu.flags = FALSE;
             cu.segment_size = 0;
-        }else{
+        } else {
             cu.flags = FALSE;
             Pc_Low = NULL;
             Pc_High = NULL;
@@ -499,7 +485,7 @@ extern  void    DFBegCCU( seg_id code, dw_sym_handle dbg_pch ){
         Comp_High = Pc_High;
         tipe_addr = TypeAddress( TY_NEAR_POINTER );
         cu.offset_size = tipe_addr->length;
-        switch( GetMemModel() ){
+        switch( GetMemModel() ) {
             case 'h':
                 cu.model = DW_MODEL_HUGE;
                 break;
@@ -517,10 +503,10 @@ extern  void    DFBegCCU( seg_id code, dw_sym_handle dbg_pch ){
                 break;
         }
         DWBeginCompileUnit( Client, &cu );
-        if( cu.flags ){
+        if( cu.flags ) {
             BEFreeBack( bck );
         }
-    }else{
+    } else {
         CcuDef = TRUE;
     }
 }
@@ -559,8 +545,8 @@ extern  void    DFObjInitInfo( void ) {
             if( (attr & FE_IMPORT) ) {
                 info.compiler_options |= DW_CM_ABBREV_PRE;
             }else{
-                bck_info *bck;
-                seg_id    old;
+                bck_info    *bck;
+                segment_id  old;
 
                 info.compiler_options |= DW_CM_ABBREV_GEN;
                 bck = FEBack( abbrev_sym ); // dump out export label
@@ -574,8 +560,8 @@ extern  void    DFObjInitInfo( void ) {
         if( debug_pch != NULL ){
             attr = FEAttr( debug_pch );
             if( !(attr & FE_IMPORT) ) {
-                bck_info *bck;
-                seg_id    old;
+                bck_info    *bck;
+                segment_id  old;
 
                 bck = FEBack( debug_pch );
                 bck->seg = DwarfSegs[DW_DEBUG_INFO].seg;
@@ -687,9 +673,9 @@ extern  void    DFFiniDbgInfo() {
 
 extern  void    DFObjFiniDbgInfo( offset codesize ) {
 /******************************/
-    seg_id              old;
-    offset              here;
-    bck_info           *bck;
+    segment_id      old;
+    offset          here;
+    bck_info        *bck;
 
     if( !_IsModel( DBG_LOCALS | DBG_TYPES ) )return;
     bck = Comp_High;

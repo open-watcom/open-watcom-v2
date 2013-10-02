@@ -53,7 +53,7 @@ gbl_defn obj_ptr                DtConstList;    // DATA statement constants
 gbl_defn PTYPE                  DtConstType;    // type of DATA constant
 gbl_defn intstar4               DtRepCount;     // repitition count
 gbl_defn sym_id                 DtConst;        // DATA constant
-gbl_defn int                    DtSegment;      // DATA initialization segment
+gbl_defn segment_id             DtSegment;      // DATA initialization segment
 gbl_defn seg_offset             DtSegOffset;    // offset in DATA initialized
                                                 // segment
 gbl_defn intstar4               DtOffset;       // offset relative to variable

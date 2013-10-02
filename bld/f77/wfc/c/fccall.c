@@ -136,7 +136,7 @@ void    FCPrologue( void ) {
     sym = GetPtr();
     sp_type = sym->ns.flags & SY_SUBPROG_TYPE;
     SubCodeSeg();
-    BESetSeg( WF77_LDATA );
+    BESetSeg( SEG_LDATA );
     DGSeek( LDSegOffset );
     if( sp_type == SY_BLOCK_DATA ) {
         if( ( sym->ns.flags & SY_UNNAMED ) == 0 ) {
@@ -177,7 +177,7 @@ void    FCPrologue( void ) {
         CGControl( O_LABEL, NULL, main_entry_label );
         BEFiniLabel( main_entry_label );
     }
-    BESetSeg( WF77_LDATA );
+    BESetSeg( SEG_LDATA );
     LDSegOffset = DGTell();
 }
 

@@ -42,6 +42,7 @@
 #include "makeins.h"
 #include "foldins.h"
 #include "rtrtn.h"
+#include "objout.h"
 
 
 extern  void            FreeAName( name * );
@@ -100,8 +101,6 @@ extern  void            MergeIndex( void );
 extern  void            ScoreInit( void );
 extern  void            ScoreFini( void );
 extern  type_class_def  TypeClass( type_def * );
-extern  void            ObjInit( void );
-extern  void            ObjFini( void );
 extern  void            AbortObj( void );
 extern  void            FlushOpt( void );
 extern  hw_reg_set      AllCacheRegs( void );

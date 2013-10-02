@@ -46,6 +46,7 @@
 #include "types.h"
 #include "bldins.h"
 #include "utils.h"
+#include "objout.h"
 
 #ifndef NDEBUG
 #include "echoapi.h"
@@ -54,13 +55,10 @@
 #include <assert.h>
 #endif
 
-extern  void            FEPtr(sym_handle,type_def*,offset);
-extern  seg_id          AskOP(void);
 extern  void            InitBlip(void);
 extern  void            FiniBlip(void);
 extern  void            InitWeights(uint);
 extern  void            CGMemInit(void);
-extern  void            InitSegDefs(void);
 extern  void            InitDbgInfo(void);
 extern  void            TInit(void);
 extern  bool            CGOpenf(void);
@@ -71,13 +69,7 @@ extern  void            AbortCG(void);
 extern  void            FiniDbgInfo(void);
 extern  void            TFini(void);
 extern  void            CGMemFini(void);
-extern  seg_id          SetOP(seg_id);
-extern  void            FlushOP(seg_id);
-extern  bool            AskSegROM(segment_id);
-extern  void            DefSegment(seg_id,seg_attr,char*,uint,bool);
 extern  void            BGFiniLabel(label_handle);
-extern  seg_id          AskBackSeg(void);
-extern  bool            AskSegBlank(seg_id);
 extern  void            TellNoSymbol(label_handle);
 extern  void            BGProcDecl(sym_handle,type_def*);
 extern  void            BGParmDecl(sym_handle,type_def*);
@@ -119,26 +111,18 @@ extern  tn              TGAttr( tn, cg_sym_attr );
 extern  tn              TGAlign( tn, uint );
 extern  void            DGBlip(void);
 extern  void            DataLabel(label_handle);
-extern  void            BackPtr(bck_info*,seg_id,offset,type_def*);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            DataBytes(unsigned_32,byte*);
 extern  void            IterBytes(offset,byte);
-extern  void            SetLocation(offset);
-extern  void            IncLocation(offset);
-extern  offset          AskLocation(void);
-extern  seg_id          AskCodeSeg(void);
-extern  seg_id          AskAltCodeSeg(void);
 extern  bool            BGInInline(void);
 extern  void            BGParmInline(sym_handle,type_def*);
 extern  void            BGRetInline(an,type_def*);
 extern  void            BGProcInline(sym_handle,type_def*);
-extern  void            TellObjNewProc(sym_handle);
 extern  tn              TGCallback( cg_callback, callback_handle );
 extern  patch_handle    BGNewPatch(void);
 extern  cg_name         BGPatchNode( patch_handle, type_def * );
 extern  void            BGPatchInteger( patch_handle, signed_32 );
 extern  void            BGFiniPatch( patch_handle );
-extern  bool            AskSegBlank( seg_id );
 extern  an              MakeConst( cfloat *, type_def * );
 extern  void            DataAlign( unsigned_32 );
 extern  pointer         SafeRecurse( pointer (* rtn)( pointer ), pointer arg );
@@ -194,17 +178,17 @@ extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
 
     OptForSize = optsize;
     CGProcessorVersion = proc; /* so _CPULevel works */
-    #if  _TARGET & _TARG_80386
-        if( !_CPULevel( CPU_386 ) ) {
-            SET_CPU( proc, CPU_386 );
-        }
-        proc &= ~FPU_EMU;   /* don't need funny fixups for 386 */
-    #elif _TARGET & _TARG_IAPX86
-        /* if it ain't a 386 or better, FS and GS aren't there */
-        if( !_CPULevel( CPU_386 ) ) {
-            switches &= ~(FLOATING_FS | FLOATING_GS);
-        }
-    #endif
+#if  _TARGET & _TARG_80386
+    if( !_CPULevel( CPU_386 ) ) {
+        SET_CPU( proc, CPU_386 );
+    }
+    proc &= ~FPU_EMU;   /* don't need funny fixups for 386 */
+#elif _TARGET & _TARG_IAPX86
+    /* if it ain't a 386 or better, FS and GS aren't there */
+    if( !_CPULevel( CPU_386 ) ) {
+        switches &= ~(FLOATING_FS | FLOATING_GS);
+    }
+#endif
     Model = switches;
     TargetModel = platform;
 #ifdef QNX_FLAKEY
@@ -224,7 +208,7 @@ extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
     if( !CGOpenf() ) {
         info.success = 0;
     } else {
-    info.success = 1;
+        info.success = 1;
         info.version.is_large = TRUE;
 #if _TARGET & _TARG_80386
         info.version.target = II_TARG_80386;

@@ -38,6 +38,7 @@
 #include "convins.h"
 #include "data.h"
 #include "rtrtn.h"
+#include "objout.h"
 
 
 extern    hw_reg_set      *RegSets[];
@@ -64,7 +65,6 @@ extern  void            AddIns( instruction * );
 extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  seg_id          AskCodeSeg( void );
 extern  hw_reg_set      ReturnReg( type_class_def, bool );
 
 /*

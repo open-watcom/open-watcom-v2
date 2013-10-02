@@ -45,16 +45,11 @@
 #include "types.h"
 #include "feprotos.h"
 #include "cgprotos.h"
+#include "objout.h"
 
-extern  seg_id          AskOP(void);
 extern  bck_info        *BENewBack(sym_handle);
 extern  void            BEFreeBack(bck_info*);
-extern  void            OutLabel(label_handle);
 extern  void            SetUpObj(bool);
-extern  seg_id          SetOP(seg_id);
-extern  offset          AskLocation(void);
-extern  bool            NeedBaseSet( void );
-extern  void            SetLocation(offset);
 extern  void            DataInt(short_offset);
 extern  void            BuffIndex(uint);
 extern  void            BuffForward(dbg_patch_handle*);
@@ -65,7 +60,7 @@ extern  void            BuffOffset( offset );
 extern  void            BuffAddr( pointer );
 extern  void            BuffWSLString( char * );
 extern  void            BuffStart(temp_buff*,uint);
-extern  void            BuffEnd(seg_id);
+extern  void            BuffEnd(segment_id);
 extern  void            LocDump(dbg_loc);
 extern  dbg_loc         LocDupl(dbg_loc);
 extern  sym_handle      LocSimpStatic(dbg_loc);
@@ -193,7 +188,7 @@ extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
     sym_handle          sym;
     dbg_type            tipe;
     offset              off;
-    seg_id              old;
+    segment_id          old;
 
     off = 0;
     if( rtn->obj_type != DBG_NIL_TYPE ) {
@@ -257,7 +252,7 @@ static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
 
     block_patch *patch;
     offset      off;
-    seg_id      old;
+    segment_id  old;
 
     old = SetOP( -1 );
     while( blk->patches != NULL ) {

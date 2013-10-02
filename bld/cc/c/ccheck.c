@@ -717,7 +717,8 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 
 static bool IsPtrtoFunc( TYPEPTR typ )
 {
-    int ret;
+    bool    ret;
+
     ret = FALSE;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYPE_POINTER ) {

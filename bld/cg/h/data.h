@@ -67,8 +67,8 @@ extern  type_def                *TypeHugeInteger;
 extern  hw_reg_set              GivenRegisters;
 extern  bool                    BlocksUnTrimmed;
 extern  an                      AddrList;
-extern  seg_id                  DbgLocals;
-extern  seg_id                  DbgTypes;
+extern  segment_id              DbgLocals;
+extern  segment_id              DbgTypes;
 extern  unsigned_16             TypeIdx;      // uint ???
 extern  byte                    OptForSize;
 extern  bool                    HaveLiveInfo;

@@ -38,7 +38,7 @@
 #include "vergen.h"
 #include "pccode.h"
 #include "system.h"
-#include "escape.h"
+//#include "escape.h"
 #include "pcencode.h"
 #include "objrep.h"
 #include "zoiks.h"
@@ -52,12 +52,14 @@
 #include "rtrtn.h"
 #include "feprotos.h"
 #include "utils.h"
+#include "i86obj.h"
+#include "objout.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
 extern  void            DoFunnyRef(int);
 extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  hw_reg_set      Low32Reg(hw_reg_set);
-extern  void            DoSegRef(seg_id);
+extern  void            DoSegRef(segment_id);
 extern  hw_reg_set      CalcSegment(sym_handle,cg_class);
 extern  void            EmitDbgInfo(instruction*);
 extern  void            DoCall(label_handle,bool,bool,oc_class);
@@ -94,9 +96,6 @@ extern  hw_reg_set      FullReg(hw_reg_set);
 extern  bool            BaseIsSP(name*);
 extern  type_length     TmpLoc(name*,name*);
 extern  name            *DeAlias(name*);
-extern  seg_id          AskBackSeg( void );
-extern  seg_id          AskCodeSeg( void );
-extern  void            DoLblRef(label_handle,seg_id,offset,escape_class);
 extern  void            AddWData(signed_32,type_class_def );
 extern  name            *LowPart(name *,type_class_def);
 extern  name            *HighPart(name *,type_class_def);
@@ -272,13 +271,13 @@ extern  void    EmitPtr( pointer p ) {
     ICur += sizeof( pointer );
 }
 
-extern  void    EmitSegId( seg_id seg ) {
-/****************************************
-    Plop a seg_id into Inst[]
+extern  void    EmitSegId( segment_id seg ) {
+/********************************************
+    Plop a segment_id into Inst[]
 */
 
-    *(seg_id *)(Inst + ICur) = seg;
-    ICur += sizeof( seg_id );
+    *(segment_id *)(Inst + ICur) = seg;
+    ICur += sizeof( segment_id );
 }
 
 extern  void    EmitOffset( offset i ) {

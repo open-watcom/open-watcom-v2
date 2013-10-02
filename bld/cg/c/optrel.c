@@ -30,6 +30,7 @@
 
 
 #include "optwif.h"
+#include "objout.h"
 
 extern  void            TryScrapLabel(code_lbl*);
 extern  byte            ReverseCondition(byte);
@@ -38,7 +39,6 @@ extern  code_lbl        *AddNewLabel(ins_entry*,int);
 extern  ins_entry       *PrevIns(ins_entry*);
 extern  void            ChgLblRef(ins_entry*,code_lbl*);
 extern  ins_entry       *NextIns(ins_entry*);
-extern  offset          AskLocation(void);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 
 static    code_lbl      *Handle;

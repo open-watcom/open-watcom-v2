@@ -57,7 +57,7 @@ extern  void            AddByte( byte );
 extern  void            LayRMRegOp( name * );
 extern  void            LayOpbyte( opcode );
 extern  void            LayRegRM( hw_reg_set );
-extern  void            DoSegRef( seg_id );
+extern  void            DoSegRef( segment_id );
 extern  void            GenSeg( hw_reg_set );
 extern  void            LayW( type_class_def );
 extern  void            AddWCons( name *, type_class_def );

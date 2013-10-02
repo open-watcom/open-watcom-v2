@@ -39,14 +39,13 @@
 #include "model.h"
 #include "zoiks.h"
 #include "utils.h"
+#include "addrname.h"
+#include "objout.h"
 
-extern  void    OutLabel( label_handle );
 extern  void    ObjBytes( const char *, unsigned );
 extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
-extern  offset  AskLocation( void );
 extern  void    DoAlignment( offset );
 extern  void    DbgSetBase( void );
-extern  void    OutLineNum( cg_linenum, bool );
 extern  void    TellScrapLabel( code_lbl * );
 extern  void    OutFuncStart( code_lbl *, offset, cg_linenum );
 extern  void    OutFuncEnd( offset );

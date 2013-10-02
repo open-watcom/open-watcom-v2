@@ -227,14 +227,14 @@ void    InitSegs( void ) {
 
 // Define segments.
 
-    CurrSegId = WF77_FREE_SEG;
+    CurrSegId = SEG_FREE;
 #if _CPU == _AXP || _CPU == _PPC
-    BEDefSeg( WF77_TDATA, EXEC|GLOBAL|GIVEN_NAME, TS_SEG_CODE, ALIGN_DWORD );
-    CurrCodeSegId = WF77_TDATA;
+    BEDefSeg( SEG_TDATA, EXEC|GLOBAL|GIVEN_NAME, TS_SEG_CODE, ALIGN_DWORD );
+    CurrCodeSegId = SEG_TDATA;
 #endif
-    BEDefSeg( WF77_CDATA, BACK | INIT | ROM, TS_SEG_CONST, ALIGN_SEGMENT );
-    BEDefSeg( WF77_LDATA, INIT, TS_SEG_DATA, ALIGN_SEGMENT );
-    BEDefSeg( WF77_UDATA, 0, TS_SEG_BSS, ALIGN_SEGMENT );
+    BEDefSeg( SEG_CDATA, BACK | INIT | ROM, TS_SEG_CONST, ALIGN_SEGMENT );
+    BEDefSeg( SEG_LDATA, INIT, TS_SEG_DATA, ALIGN_SEGMENT );
+    BEDefSeg( SEG_UDATA, 0, TS_SEG_BSS, ALIGN_SEGMENT );
     DefineGlobalSegs();
     DefineCommonSegs();
     LDSegOffset = 0;
@@ -358,11 +358,9 @@ static  void    DefineCommonSegs( void ) {
 
         sym->ns.si.cb.seg_id = AllocSegId();
         if( CGOpts & CGOPT_ALIGN ) {
-            BEDefSeg( sym->ns.si.cb.seg_id, COMMON | private, cb_name,
-                      ALIGN_SEGMENT );
+            BEDefSeg( sym->ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_SEGMENT );
         } else {
-            BEDefSeg( sym->ns.si.cb.seg_id, COMMON | private, cb_name,
-                      ALIGN_BYTE );
+            BEDefSeg( sym->ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_BYTE );
         }
         seg_count = 0;
         cb_name[ cb_len ] = '@';
@@ -373,11 +371,9 @@ static  void    DefineCommonSegs( void ) {
             seg_count++;
             itoa( seg_count, &cb_name[ cb_len + 1 ], 10 );
             if( CGOpts & CGOPT_ALIGN ) {
-                BEDefSeg( AllocSegId(), COMMON | private , cb_name,
-                          ALIGN_SEGMENT );
+                BEDefSeg( AllocSegId(), COMMON | private , cb_name, ALIGN_SEGMENT );
             } else {
-                BEDefSeg( AllocSegId(), COMMON | private , cb_name,
-                          ALIGN_BYTE );
+                BEDefSeg( AllocSegId(), COMMON | private , cb_name, ALIGN_BYTE );
             }
         }
     }
@@ -403,7 +399,7 @@ static  void    AllocComBlk( sym_id cb ) {
 
 // Allocate a common block.
 
-    int         segment;
+    segment_id  segment;
     unsigned_32 size;
 
     segment = cb->ns.si.cb.seg_id;
@@ -542,7 +538,7 @@ void    DtInit( segment_id seg, seg_offset offset ) {
 
 
 struct {
-    int         seg;
+    segment_id  seg;
     seg_offset  offset;
     uint        size;
     char        byte_value;
@@ -586,7 +582,7 @@ static  void    UndefBytes( unsigned long size, byte *data ) {
 static  void    FlushCurrDt( void ) {
 //=============================
 
-    if( CurrDt.seg != WF77_NULLSEGID ) {
+    if( CurrDt.seg != SEG_NULL ) {
         BESetSeg( CurrDt.seg );
         DGSeek( CurrDt.offset );
         InitBytes( CurrDt.size, CurrDt.byte_value );
@@ -597,7 +593,7 @@ static  void    FlushCurrDt( void ) {
 static  void    InitCurrDt( void ) {
 //============================
 
-    CurrDt.seg = WF77_NULLSEGID;
+    CurrDt.seg = SEG_NULL;
     CurrDt.offset = 0;
     CurrDt.byte_value = 0;
     CurrDt.size = 0;
@@ -706,7 +702,7 @@ segment_id      GetComSeg( sym_id sym, unsigned_32 offset ) {
 
 // Get segment id of common block for variable in common.
 
-    int segment;
+    segment_id  segment;
 
     offset += sym->ns.si.va.vi.ec_ext->offset;
     segment = sym->ns.si.va.vi.ec_ext->com_blk->ns.si.cb.seg_id;
@@ -749,9 +745,9 @@ segment_id      GetDataSegId( sym_id sym ) {
     } else if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
         id = sym->ns.si.va.vi.seg_id;
     } else if( sym->ns.flags & SY_DATA_INIT ) {
-        id = WF77_LDATA;
+        id = SEG_LDATA;
     } else {
-        id = WF77_UDATA;
+        id = SEG_UDATA;
     }
     return( id );
 }
@@ -1103,7 +1099,7 @@ segment_id      FESegID( sym_id sym ) {
     unsigned_16 sp_type;
 
     _UnShadow( sym );
-    id = WF77_LDATA;
+    id = SEG_LDATA;
     flags = sym->ns.flags;
     if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
         if( ( flags & SY_SUB_PARM ) == 0 ) {

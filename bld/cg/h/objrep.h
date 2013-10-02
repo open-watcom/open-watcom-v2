@@ -66,19 +66,6 @@ typedef struct temp_patch {
         label_handle            lbl;
 } temp_patch;
 
-typedef enum {
-        AP_HAVE_VALUE           = 0x01,
-        AP_HAVE_OFFSET          = 0x02
-} abspatch_flags;
-
-typedef struct abspatch {
-        struct patch            pat;
-        struct object           *obj;
-        struct abspatch         *link;
-        long_offset             value;
-        abspatch_flags          flags;
-} abspatch;
-
 typedef struct object {
         struct array_control    data;
         struct array_control    fixes;

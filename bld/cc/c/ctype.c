@@ -259,9 +259,9 @@ TYPEPTR DupType( TYPEPTR typ, enum type_state flags, bool force_duplicate )
             next = CTypeHash[ typ->decl_type ];
         }
         for( ; next; next = next->next_type ) {
-            if( next->decl_type  == typ->decl_type  &&
-                next->object     == typ->object     &&
-                next->u.tag      == typ->u.tag      &&
+            if( next->decl_type == typ->decl_type &&
+                next->object == typ->object &&
+                next->u.tag == typ->u.tag &&
                 next->type_flags == flags ) {
                 return( next );
             }
@@ -768,7 +768,7 @@ local FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     }
     if( new_field->name[0] == '\0' ) {
         /* allow nameless structs and unions;  15-sep-90 */
-        if( (typ->decl_type != TYPE_STRUCT      &&
+        if( (typ->decl_type != TYPE_STRUCT &&
              typ->decl_type != TYPE_UNION) ||
              ! CompFlags.extensions_enabled ) {
             CErr1( ERR_INVALID_DECLARATOR );
@@ -778,7 +778,7 @@ local FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
         CErr1( ERR_STRUCT_OR_UNION_INSIDE_ITSELF );
     } else if( SizeOfArg( typ ) == 0 ) {   /* was TypeSize(typ) 15-may-90*/
         /* can't have an array of incomplete type   24-aug-90 */
-        if( (typ->decl_type == TYPE_ARRAY  &&
+        if( (typ->decl_type == TYPE_ARRAY &&
         (SizeOfArg( typ->object ) == 0 || !CompFlags.extensions_enabled ) )
         ||      typ->decl_type != TYPE_ARRAY ) { /* JFD 15-jun-90 */
             CErr2p( ERR_INCOMPLETE_TYPE, new_field->name );
@@ -1050,7 +1050,7 @@ local unsigned long GetFields( TYPEPTR decl )
                 CheckBitfieldType( typ );
                 NextToken();
                 width = ConstExpr();
-                if( width == 0  &&      field != NULL ) {
+                if( width == 0 && field != NULL ) {
                     CErr1( ERR_WIDTH_0 );
                 }
                 if( width > TARGET_BITS || width > bits_total ) {
@@ -1427,19 +1427,19 @@ TYPEPTR ArrayNode( TYPEPTR the_object )
 
 
 local TYPEPTR MkPtrNode( TYPEPTR typ, type_modifiers flags,
-        int segid, SYM_HANDLE base, BASED_KIND based_kind )
+    segment_id segid, SYM_HANDLE base, BASED_KIND based_kind )
 {
     TYPEPTR     ptrtyp;
 
     if( typ != NULL ) {
         ptrtyp = PtrTypeHash[ typ->decl_type ];
         for( ; ptrtyp; ptrtyp = ptrtyp->next_type ) {
-            if( ptrtyp->decl_type   == TYPE_POINTER &&
-                ptrtyp->object  == typ          &&
-                ptrtyp->u.p.segment == segid    &&
-                ptrtyp->u.p.based_sym == base   &&
-                ptrtyp->u.p.based_kind == based_kind   &&
-                ptrtyp->u.p.decl_flags  == flags ) {
+            if( ptrtyp->decl_type == TYPE_POINTER &&
+                ptrtyp->object == typ &&
+                ptrtyp->u.p.segment == segid &&
+                ptrtyp->u.p.based_sym == base &&
+                ptrtyp->u.p.based_kind == based_kind &&
+                ptrtyp->u.p.decl_flags == flags ) {
                 return( ptrtyp );
             }
         }
@@ -1452,13 +1452,12 @@ local TYPEPTR MkPtrNode( TYPEPTR typ, type_modifiers flags,
     return( ptrtyp );
 }
 
-TYPEPTR PtrNode( TYPEPTR typ, type_modifiers flags, int segid )
+TYPEPTR PtrNode( TYPEPTR typ, type_modifiers flags, segment_id segid )
 {
     return( MkPtrNode( typ, flags, segid, 0, BASED_NONE ) );
 }
 
-TYPEPTR BPtrNode( TYPEPTR typ, type_modifiers flags, int segid,
-                  SYM_HANDLE base, BASED_KIND kind )
+TYPEPTR BPtrNode( TYPEPTR typ, type_modifiers flags, segment_id segid, SYM_HANDLE base, BASED_KIND kind )
 {
     return( MkPtrNode( typ, flags, segid, base, kind ) );
 }
@@ -1486,9 +1485,9 @@ TYPEPTR FuncNode( TYPEPTR return_typ, type_modifiers flag, TYPEPTR *parm_types )
     index = FuncHeadIndex( parm_types );
     if( return_typ != NULL ) {
         for( typ = FuncTypeHead[ index ]; typ; typ = typ->next_type ) {
-            if( typ->object          == return_typ &&
-                typ->u.fn.decl_flags == flag       &&
-                typ->u.fn.parms      == parm_types ) {
+            if( typ->object == return_typ &&
+                typ->u.fn.decl_flags == flag &&
+                typ->u.fn.parms == parm_types ) {
                 return( typ );
             }
         }

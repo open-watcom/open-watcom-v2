@@ -49,21 +49,12 @@
 #include "types.h"
 #include "feprotos.h"
 #include "cgprotos.h"
+#include "objout.h"
 
-extern  void            FEPtrBaseOffset(sym_handle,offset);
-extern  seg_id          AskOP(void);
 extern  bck_info        *BENewBack(sym_handle);
 extern  void            BEFreeBack(bck_info*);
-extern  void            OutLabel(label_handle);
 extern  void            SetUpObj(bool);
-extern  void            BackPtr( bck_info*, seg_id, offset, type_def* );
 extern  name            *DeAlias(name*);
-extern  seg_id          SetOP(seg_id);
-extern  seg_id          AskCodeSeg();
-extern  segment_id      AskSegID(pointer,cg_class);
-extern  void            SetBigLocation( long_offset loc );
-extern  long_offset     AskBigLocation(void);
-extern  offset          AskMaxSize(void);
 extern  void            DataInt(short_offset);
 extern  void            DataLong( long );
 extern  char            GetMemModel( void );
@@ -84,10 +75,10 @@ extern  sym_handle      LocSimpStatic(dbg_loc);
 extern  type_length     NewBase(name*);
 
 // global variables
-seg_id                  CVSyms;
-seg_id                  CVTypes;
+segment_id              CVSyms;
+segment_id              CVTypes;
 
-static  void             DumpLocals( dbg_local *local );
+static  void            DumpLocals( dbg_local *local );
 
 typedef struct block_patch {
     struct block_patch  *link;
@@ -105,32 +96,32 @@ static struct sf_info SInfo[SG_LAST] = {
     #undef SLMAC
 };
 
-static  void    NewBuff( cv_out *out, seg_id seg )
-/************************************************/
+static  void    NewBuff( cv_out *out, segment_id seg )
+/****************************************************/
 {
     out->ptr = &out->buff[0];
     out->beg = &out->buff[0];
     out->seg = seg;
 }
 
-static void BuffPatchSet( seg_id seg, dbg_patch_handle *patch )
-/*************************************************************/
+static void BuffPatchSet( segment_id seg, dbg_patch_handle *patch )
+/*****************************************************************/
 {
     long_offset         off;
-    seg_id              old;
+    segment_id          old;
 
-   old = SetOP(seg );
-   off = AskBigLocation();
-   SetOP( old );
-   patch->segment = seg;
-   patch->offset = off;
+    old = SetOP(seg );
+    off = AskBigLocation();
+    SetOP( old );
+    patch->segment = seg;
+    patch->offset = off;
 }
 
 static  void    BuffWrite( cv_out *out, void *to )
 /************************************************/
 {
-    int     len;
-    seg_id  old;
+    int         len;
+    segment_id  old;
 
     len = (byte *)to - out->beg;
     old = SetOP( out->seg );
@@ -145,11 +136,11 @@ static  void   BuffSkip( cv_out *out, void *to )
     out->beg = to;
 }
 
-static  void    BuffEnd( cv_out *out )
+static  void    buffEnd( cv_out *out )
 /************************************/
 {
-    int     len;
-    seg_id  old;
+    int         len;
+    segment_id  old;
 
     len = out->ptr - out->beg;
     old = SetOP( out->seg );
@@ -230,7 +221,7 @@ static int SetLang( void )
 static  void    InitSegBck( void )
 /********************************/
 {
-    seg_id       old;
+    segment_id  old;
 
     if( _IsModel( DBG_LOCALS ) ) {
         old = SetOP( CVSyms );
@@ -261,7 +252,7 @@ extern  void    CVObjInitInfo( void )
         name =  FEAuxInfo( NULL, OBJECT_FILE_NAME );
         CVPutStr( out, name );
         EndSym( out );
-        BuffEnd( out );
+        buffEnd( out );
         NewBuff( out, CVSyms );
         cptr = StartSym(  out, SG_COMPILE );
         cptr->language  = SetLang();
@@ -304,7 +295,7 @@ extern  void    CVObjInitInfo( void )
         }
         CVPutStr( out, "WATCOM CV 10.5   " );
         EndSym( out );
-        BuffEnd( out );
+        buffEnd( out );
     }
 }
 
@@ -322,22 +313,22 @@ extern  void    CVObjFiniDbgInfo( void )
 
 
 
-static  void    SymReloc(  seg_id seg,  sym_handle sym, offset lc )
-/*****************************************************************/
+static  void    SymReloc( segment_id seg, sym_handle sym, offset lc )
+/*******************************************************************/
 {
-    seg_id      old;
+    segment_id  old;
 
     old = SetOP( seg );
     FEPtrBaseOffset( sym, lc );
     SetOP( old );
 }
 
-static void LabelReloc( seg_id seg, bck_info *bck, long disp )
-/************************************************************/
+static void LabelReloc( segment_id seg, bck_info *bck, long disp )
+/****************************************************************/
 {
-    type_def   *ptr_type;
-    seg_id      id;
-    seg_id      old;
+    type_def    *ptr_type;
+    segment_id  id;
+    segment_id  old;
 
     old = SetOP( seg );
     id = AskSegID( bck, CG_BACK );
@@ -365,7 +356,7 @@ extern  void    CVOutBck( cv_out *out, bck_info *bck, offset add, dbg_type tipe 
     BuffWrite( out, &ptr->offset );
     LabelReloc( out->seg, bck, add );
     BuffSkip( out, &ptr->type );
-    BuffEnd( out );
+    buffEnd( out );
 }
 
 static  void FrameVar( cv_out  *out,  char        *nm,
@@ -461,7 +452,7 @@ extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem )
     } else {
         /*TODO:can't handle locs */
     }
-    BuffEnd( out );
+    buffEnd( out );
 }
 
 
@@ -476,7 +467,7 @@ extern  void    CVTypedef( char *nm, dbg_type tipe )
     ptr->type = tipe;
     CVPutStr( out, nm );
     EndSym( out );
-    BuffEnd( out );
+    buffEnd( out );
 }
 
 extern  void    CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe )
@@ -494,7 +485,7 @@ extern  void    CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe )
     EndSym( out );
     out->beg = ptr1;
     CVEndType( out );
-    BuffEnd( out );
+    buffEnd( out );
 }
 
 extern  void    CVSymIConst( char *nm, long val, dbg_type tipe )
@@ -509,7 +500,7 @@ extern  void    CVSymIConst( char *nm, long val, dbg_type tipe )
     CVPutINum( out, val );
     CVPutStr( out, nm );
     EndSym( out );
-    BuffEnd( out );
+    buffEnd( out );
 
 }
 
@@ -525,7 +516,7 @@ extern  void    CVSymIConst64( char *nm, signed_64 val, dbg_type tipe )
     CVPutINum64( out, val );
     CVPutStr( out, nm );
     EndSym( out );
-    BuffEnd( out );
+    buffEnd( out );
 
 }
 
@@ -595,7 +586,7 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
                     offset = NewBase( t );
                     NewBuff( out, CVSyms );
                     FrameVar( out, FEName( alt->sym ), tipe, offset );
-                    BuffEnd( out );
+                    buffEnd( out );
                 }else{
                     CVGenStatic( alt->sym, alt->loc, FALSE );
                 }
@@ -613,7 +604,7 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
     NewBuff( out, CVSyms );
     StartSym(  out, SG_ENDARG );
     EndSym( out );
-    BuffEnd( out );
+    buffEnd( out );
 #endif
 }
 
@@ -665,7 +656,7 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     BuffWrite( out, &ptr->offset );
     SymReloc( CVSyms, sym, 0 );
     BuffSkip( out, &ptr->proctype );
-    BuffEnd( out );
+    buffEnd( out );
     DBLocFini( rtn->reeturn );
     DBLocFini( rtn->obj_loc );
     if( rtn->parms != NULL ){
@@ -705,7 +696,7 @@ extern  void    CVBlkBeg( dbg_block *blk, offset lc )
     start = lc - CurrProc->targ.debug->blk->start;
     SymReloc( CVSyms, sym, start );
     BuffSkip( out, nm );      /* skip addr */
-    BuffEnd( out );
+    buffEnd( out );
     DumpLocals( blk->locals );
 }
 
@@ -714,8 +705,8 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc )
 {
     fsize               length;
     long_offset         here;
-    seg_id              old;
-    dbg_patch_handle   *handle;
+    segment_id          old;
+    dbg_patch_handle    *handle;
     cv_out              out[1];
 
     handle = &((block_patch *)(blk->patches))->handle;
@@ -729,7 +720,7 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc )
     NewBuff( out, CVSyms );
     StartSym(  out, SG_END );
     EndSym( out );
-    BuffEnd( out );
+    buffEnd( out );
    CGFree( blk->patches );
 }
 
@@ -746,9 +737,9 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )
     cv_out              out[1];
     fsize               proc_length;
     fsize               debug_end;
-    dbg_patch_handle   *handle;
+    dbg_patch_handle    *handle;
     long_offset         here;
-    seg_id              old;
+    segment_id          old;
 
     handle = RtnPatch;
     old = SetOP( handle->segment );
@@ -764,7 +755,7 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )
     NewBuff( out, CVSyms );
     StartSym(  out, SG_END );
     EndSym( out );
-    BuffEnd( out );
+    buffEnd( out );
 }
 
 
@@ -786,7 +777,7 @@ static  void    DumpLocals( dbg_local *local )
                 offset = NewBase( t );
                 NewBuff( out, CVSyms );
                 FrameVar( out, FEName( local->sym ), tipe, offset );
-                BuffEnd( out );
+                buffEnd( out );
             }else{
                 CVGenStatic( local->sym, local->loc, FALSE );
             }
@@ -820,5 +811,5 @@ extern  void    CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe )
     FrameVar( out, "__bck", tipe, offset+disp );
     out->beg = ptr1;
     CVEndType( out );
-    BuffEnd( out );
+    buffEnd( out );
 }

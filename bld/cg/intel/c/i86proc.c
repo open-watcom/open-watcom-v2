@@ -43,6 +43,7 @@
 #include "display.h"
 #include "rtrtn.h"
 #include "utils.h"
+#include "objout.h"
 
 extern  void        OutDLLExport(uint,sym_handle);
 extern  void        GenLeaSP(long);
@@ -80,11 +81,8 @@ extern  void        QuickSave(hw_reg_set,opcode_defs);
 extern  void        CodeLabel(label_handle,unsigned);
 extern  void        EmitRtnBeg( void );
 extern  void        CodeLineNum( cg_linenum,bool);
-extern  seg_id      SetOP(seg_id);
-extern  seg_id      AskCodeSeg( void );
 extern  void        Gpusha( void );
 extern  void        Gpopa( void );
-extern  void        AbsPatch(abspatch_handle,offset);
 extern  unsigned    DepthAlign( unsigned );
 extern  void        EyeCatchBytes(byte*,byte_seq_len);
 extern  void        GenSelEntry(bool);
@@ -587,12 +585,12 @@ static  void    UnloadDS( void ) {
 extern  void    GenProlog( void ) {
 /***************************/
 
-    seg_id  old;
+    segment_id  old;
     hw_reg_set  to_push;
     unsigned    ret_size;
-    pointer label;
-    pointer origlabel; // Original label for generated __far16 thunks
-    fe_attr attr;
+    pointer     label;
+    pointer     origlabel; // Original label for generated __far16 thunks
+    fe_attr     attr;
 
     ScanInstructions();       /* Do These 2 calls before using DO_WINDOWS_CRAP! */
     FindIfExported();

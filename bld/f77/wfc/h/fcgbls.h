@@ -31,4 +31,5 @@
 
 
 #define gbl_defn extern
-#include <fcdata.h>
+#include "cg.h"
+#include "fcdata.h"

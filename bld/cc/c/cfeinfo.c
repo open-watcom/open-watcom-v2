@@ -164,7 +164,7 @@ int VarParm( SYMPTR sym )
 int VarFunc( SYMPTR sym )
 {
     int         hash;
-    int         len;
+    size_t      len;
     char        *p;
 
     if( sym == NULL )
@@ -173,12 +173,10 @@ int VarFunc( SYMPTR sym )
     if( sym->flags & SYM_FUNCTION ) {
         p = sym->name;
         len = strlen( p );
-        hash = (len + VarFuncWeights[ p[0] - 'a' ]
-                 + VarFuncWeights[ p[len-1] -'a' ]) & 31;
+        hash = (len + VarFuncWeights[ p[0] - 'a' ] + VarFuncWeights[ p[len - 1] -'a' ]) & 31;
 
         if( strcmp( p, VarParmFuncs[ hash ] ) == 0 
-            && ( CompFlags.extensions_enabled
-                 || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
+            && ( CompFlags.extensions_enabled || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
             return( 1 );
 
         return( VarParm( sym ) );
@@ -534,14 +532,14 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
                 cclass |= CALLER_POPS | HAS_VARARGS;
             }
         }
+#if ( _CPU == 8086 ) || ( _CPU == 386 )
+        if( sym.flags & SYM_FUNC_NEEDS_THUNK ) {
+            cclass |= THUNK_PROLOG;
+        }
+#endif
     }
 #ifdef REVERSE
     cclass &= ~ REVERSE_PARMS;               /* 28-may-89 */
-#endif
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
-    if( sym_handle != 0 && sym.flags & SYM_FUNC_NEEDS_THUNK ) {
-        cclass |= THUNK_PROLOG;
-    }
 #endif
 #ifdef PROLOG_HOOKS
     if( CompFlags.ep_switch_used != 0 ) {
@@ -1064,7 +1062,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     case OBJECT_FILE_NAME:
         return( (VOIDPTR)ObjFileName() );
     case REVISION_NUMBER:
-        return( (VOIDPTR)II_REVISION );
+        return( (VOIDPTR)(pointer_int)II_REVISION );
     case AUX_LOOKUP:
         return( (VOIDPTR)sym_handle );
     case PROEPI_DATA_SIZE:
@@ -1083,7 +1081,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
             return( Alignment );
         }
     case CLASS_NAME:
-        return( SegClassName( (pointer_int)sym_handle ) );
+        return( SegClassName( (segment_id)(pointer_int)sym_handle ) );
     case USED_8087:
         CompFlags.pgm_used_8087 = 1;
         return( NULL );
@@ -1110,19 +1108,19 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
         return( NULL );
     case NEXT_LIBRARY:
     case LIBRARY_NAME:
-        return( NextLibrary( (pointer_int)sym_handle, request ) );
+        return( NextLibrary( (int)(pointer_int)sym_handle, request ) );
     case NEXT_IMPORT:
     case IMPORT_NAME:
-        return( NextImport( (pointer_int)sym_handle, request ) );
+        return( NextImport( (int)(pointer_int)sym_handle, request ) );
     case NEXT_IMPORT_S:
     case IMPORT_NAME_S:
-        return( NextImportS( (pointer_int)sym_handle, request ) );
+        return( NextImportS( (int)(pointer_int)sym_handle, request ) );
     case NEXT_ALIAS:
     case ALIAS_NAME:
     case ALIAS_SYMBOL:
     case ALIAS_SUBST_NAME:
     case ALIAS_SUBST_SYMBOL:
-        return( NextAlias( (pointer_int)sym_handle, request ) );
+        return( NextAlias( (int)(pointer_int)sym_handle, request ) );
     case TEMP_LOC_NAME:
         return( (char *)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL:
@@ -1136,7 +1134,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     case DEPENDENCY_NAME:
         return( FNameFullPath( (FNAMEPTR)cgsym_handle ) );
     case PEGGED_REGISTER:
-        return( SegPeggedReg( (pointer_int)cgsym_handle ) );
+        return( SegPeggedReg( (segment_id)(pointer_int)cgsym_handle ) );
     default:
         break;
     }
@@ -1217,9 +1215,9 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
     case OBJECT_FILE_NAME:
         return( (VOIDPTR)ObjFileName() );
     case REVISION_NUMBER:
-        return( (VOIDPTR)II_REVISION );
+        return( (VOIDPTR)(pointer_int)II_REVISION );
     case AUX_LOOKUP:
-        return( (VOIDPTR)sym_handle );
+        return( (VOIDPTR)(pointer_int)sym_handle );
     case SOURCE_NAME:
         if( SrcFName == ModuleName ) {
             return( FNameFullPath( FNames ) );
@@ -1235,19 +1233,19 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
         }
     case NEXT_LIBRARY:
     case LIBRARY_NAME:
-        return( NextLibrary( (int)sym_handle, request ) );
+        return( NextLibrary( (int)(pointer_int)sym_handle, request ) );
     case NEXT_IMPORT:
     case IMPORT_NAME:
-        return( NextImport( (int)sym_handle, request ) );
+        return( NextImport( (int)(pointer_int)sym_handle, request ) );
     case NEXT_IMPORT_S:
     case IMPORT_NAME_S:
-        return( NextImportS( (int)sym_handle, request ) );
+        return( NextImportS( (int)(pointer_int)sym_handle, request ) );
     case NEXT_ALIAS:
     case ALIAS_NAME:
     case ALIAS_SYMBOL:
     case ALIAS_SUBST_NAME:
     case ALIAS_SUBST_SYMBOL:
-        return( NextAlias( (int)sym_handle, request ) );
+        return( NextAlias( (int)(pointer_int)sym_handle, request ) );
     case FREE_SEGMENT:
         return( NULL );
     case TEMP_LOC_NAME:

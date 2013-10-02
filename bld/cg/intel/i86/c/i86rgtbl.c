@@ -514,18 +514,17 @@ RL_AX, RL_CX, RL_CX, RL_2B, RL_2B, RL_,   RL_,   RL_,   RL_2B,  /* 2B */
 RL_,   RL_,   RL_,   RL_IX, RL_,   RL_IX, RL_,   RL_TI, RL_IX,  /* IX */
 RL_,   RL_,   RL_,   RL_,   RL_,   RL_,   RL_SG, RL_,   RL_SG,  /* SG */
 RL_,   RL_,   RL_,   RL_TI, RL_,   RL_TI, RL_,   RL_TI, RL_TI,  /* TI */
-RL_AX, RL_CX, RL_DX, RL_WD, RL_2B, RL_IX, RL_SG, RL_TI, RL_WS,  /* WS */
-RL_
+RL_AX, RL_CX, RL_DX, RL_WD, RL_2B, RL_IX, RL_SG, RL_TI, RL_WS   /* WS */
 };
 
 static  reg_set_index   FourByteInter[] = {
-/* DX_AX     ES_BX       CX_BX       LONG_INDEX      DOUBLE      DBL_OR_PTR              */
-RL_DX_AX,   RL_,        RL_,        RL_,            RL_DX_AX,   RL_DX_AX,       /* DX_AX */
-RL_,        RL_ES_BX,   RL_,        RL_ES_BX,       RL_,        RL_ES_BX,       /* ES_BX */
-RL_,        RL_,        RL_CX_BX,   RL_,            RL_CX_BX,   RL_CX_BX,       /* CX_BX */
-RL_,        RL_ES_BX,   RL_,        RL_LONG_INDEX,  RL_,        RL_LONG_INDEX,  /* LINDEX */
-RL_DX_AX,   RL_,        RL_CX_BX,   RL_,            RL_DOUBLE,  RL_DOUBLE,      /* DOUBLE */
-RL_DX_AX,   RL_ES_BX,   RL_CX_BX,   RL_LONG_INDEX,  RL_DOUBLE,  RL_DBL_OR_PTR   /* DBLPTR */
+/* DX_AX     ES_BX       CX_BX       LONG_INDEX      DOUBLE      DBL_OR_PTR                   */
+RL_DX_AX,   RL_,        RL_,        RL_,            RL_DX_AX,   RL_DX_AX,       /* DX_AX      */
+RL_,        RL_ES_BX,   RL_,        RL_ES_BX,       RL_,        RL_ES_BX,       /* ES_BX      */
+RL_,        RL_,        RL_CX_BX,   RL_,            RL_CX_BX,   RL_CX_BX,       /* CX_BX      */
+RL_,        RL_ES_BX,   RL_,        RL_LONG_INDEX,  RL_,        RL_LONG_INDEX,  /* LONG_INDEX */
+RL_DX_AX,   RL_,        RL_CX_BX,   RL_,            RL_DOUBLE,  RL_DOUBLE,      /* DOUBLE     */
+RL_DX_AX,   RL_ES_BX,   RL_CX_BX,   RL_LONG_INDEX,  RL_DOUBLE,  RL_DBL_OR_PTR   /* DBL_OR_PTR */
 };
 
 

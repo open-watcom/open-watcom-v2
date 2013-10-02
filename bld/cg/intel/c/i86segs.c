@@ -37,16 +37,14 @@
 #include "cgdefs.h"
 #include "data.h"
 #include "feprotos.h"
+#include "objout.h"
 
-extern  seg_id          AskCodeSeg( void );
-extern  seg_id          AskBackSeg( void );
 extern  name            *SegmentPart(name*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
 extern  bool            HaveCodeGroup( void );
 extern  bool            AskSegPrivate(segment_id);
 extern  bool            AskSegNear(segment_id);
-extern  segment_id      AskSegID(pointer,cg_class);
 extern  bool            AskNameCode(pointer,cg_class);
 
 extern  bool    IsFarFunc( sym_handle sym )

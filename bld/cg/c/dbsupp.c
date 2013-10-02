@@ -45,15 +45,13 @@
 #include "types.h"
 #include "dbgstrct.h"
 #include "feprotos.h"
+#include "objout.h"
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
 
-extern  seg_id          AskOP(void);
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
-extern  seg_id          SetOP(seg_id);
-extern  offset          AskLocation();
 extern  void            DataInt(short_offset);
 #if _TARGET & _TARG_IAPX86
 extern  hw_reg_set      Low32Reg(hw_reg_set);

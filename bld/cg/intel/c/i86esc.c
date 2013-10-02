@@ -35,7 +35,7 @@
 #include "coderep.h"
 #include "symdbg.h"
 #include "ocentry.h"
-#include "escape.h"
+//#include "escape.h"
 #include "objrep.h"
 #include "system.h"
 #include "model.h"
@@ -45,9 +45,10 @@
 #include "feprotos.h"
 #include "rtclass.h"
 #include "i86obj.h"
+#include "addrname.h"
+#include "objout.h"
 
 extern  void            DbgSetBase( void );
-extern  void            OutAbsPatch(abspatch*,patch_attr);
 extern  void            OutFPPatch(fp_patches);
 extern  void            OutImport(sym_handle,fix_class,bool);
 extern  void            OutRTImport(rt_class,fix_class);
@@ -60,26 +61,21 @@ extern  void            DbgEpiBeg(dbg_rtn *,offset);
 extern  void            DbgProEnd(dbg_rtn *,offset);
 extern  void            DbgBlkBeg(dbg_block *,offset);
 extern  void            DbgRtnBeg(dbg_rtn *,offset);
-extern  offset          AskLocation( void );
 extern  void            TellScrapLabel(label_handle);
-extern  void            OutLineNum( cg_linenum,bool);
 extern  void            GenKillLabel(pointer);
 extern  void            TellKeepLabel(label_handle);
 extern  void            OutDataInt(int);
 extern  void            OutDataLong(long);
 extern  void            OutPatch(label_handle,patch_attr);
-extern  void            OutReloc(seg_id,fix_class,bool);
-extern  seg_id          AskOP( void );
-extern  void            OutLabel(label_handle);
+extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutDataByte(byte);
 extern  void            OutDBytes(unsigned_32,byte*);
 extern  void            SetUpObj(bool);
-extern  segment_id      AskSegID(pointer,cg_class);
 extern  void            EmitOffset(offset);
 extern  void            EmitPtr(pointer);
-extern  abspatch        *NewAbsPatch( void );
+extern  abspatch_handle NewAbsPatch( void );
 extern  void            EmitByte(byte);
-extern  void            EmitSegId(seg_id);
+extern  void            EmitSegId(segment_id);
 extern  void            InsertByte(byte);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern bool             IsFarFunc(sym_handle);
@@ -87,13 +83,9 @@ extern  unsigned        SavePendingLine(unsigned);
 extern bool             UseImportForm(fe_attr);
 extern void             OutSpecialCommon(import_handle,fix_class,bool);
 
-extern void             DoLblRef( label_handle lbl, seg_id seg, offset val,
-                                                            escape_class kind );
-static void             DoRelocRef( sym_handle sym, cg_class class, seg_id seg,
-                                                offset val, escape_class kind );
+static void             DoRelocRef( sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
 static  void            OutShortDisp( label_handle lbl );
-static  void            OutCodeDisp( label_handle lbl, fix_class f, bool rel,
-                                                            oc_class class );
+static  void            OutCodeDisp( label_handle lbl, fix_class f, bool rel, oc_class class );
 
 extern byte             *NopLists[];
 
@@ -195,8 +187,7 @@ extern  void  DoFESymRef( sym_handle sym, cg_class class, offset val,
         } else if( attr & FE_GLOBAL ) {
             DoRelocRef( sym, CG_FE, AskSegID( sym, CG_FE ), val, kind );
         } else {
-            DoRelocRef( AskForSymLabel( sym, CG_FE ), CG_LBL,
-                        AskSegID( sym, CG_FE ), val, kind );
+            DoRelocRef( AskForSymLabel( sym, CG_FE ), CG_LBL, AskSegID( sym, CG_FE ), val, kind );
         }
     } else {                                /* CG_TBL, CG_LBL or CG_BCK*/
         DoRelocRef( sym, class, AskSegID( sym, class ), val, kind );
@@ -212,8 +203,8 @@ extern  void    DoSymRef( name *opnd, offset val, bool base ) {
 }
 
 
-extern  void    DoSegRef( seg_id seg ) {
-/**************************************/
+extern  void    DoSegRef( segment_id seg ) {
+/******************************************/
 
     EmitByte( ESC );
     EmitByte( REL | BASE | OFST );
@@ -222,8 +213,8 @@ extern  void    DoSegRef( seg_id seg ) {
 }
 
 static  void    DoRelocRef( sym_handle sym, cg_class class,
-                      seg_id seg, offset val, escape_class kind )
-/***************************************************************/
+                    segment_id seg, offset val, escape_class kind )
+/*****************************************************************/
 {
     offset              addr;
     label_handle        lbl;
@@ -255,7 +246,7 @@ static  void    DoRelocRef( sym_handle sym, cg_class class,
     }
 }
 
-extern  void    DoLblRef( label_handle lbl, seg_id seg,
+extern  void    DoLblRef( label_handle lbl, segment_id seg,
                         offset val, escape_class kind )
 /*****************************************************/
 {
@@ -445,7 +436,7 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
     label_handle        lbl;
     sym_handle          sym;
     offset              val = 0;
-    seg_id              seg;
+    segment_id          seg;
     fix_class           class;
     bool                rel;
     int                 len;
@@ -487,8 +478,8 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
         }
         switch( key & ~MASK ) {
         case REL:
-            seg = *(seg_id *)cur;
-            cur += sizeof( seg_id );
+            seg = *(segment_id *)cur;
+            cur += sizeof( segment_id );
             OutReloc( seg, class, rel );
             val = 0;
             break;
@@ -508,8 +499,8 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
             OutReloc( AskSegID( sym, CG_FE ), class, rel );
             break;
         case LBL:          /* never BASE*/
-            seg = *(seg_id *)cur;
-            cur += sizeof( seg_id );
+            seg = *(segment_id *)cur;
+            cur += sizeof( segment_id );
             lbl = *(pointer *)cur;
             cur += sizeof( pointer );
             if( AskIfRTLabel( lbl ) ) {

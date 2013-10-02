@@ -33,6 +33,7 @@
 /* aligned */
 #include "pcobj.h"
 #include "targsys.h"
+#include "escape.h"
 
 #define BUFFSIZE        256     /*  size of object code buffer */
 #define TOLERANCE       64
@@ -140,7 +141,7 @@ typedef struct index_rec {
         unsigned                exec                    : 1;
         unsigned                start_data_in_code      : 1;
         unsigned                prefix_comdat_state     : 2;
-        seg_id                  seg;    /*  front-end i.d. */
+        segment_id              seg;    /*  front-end i.d. */
         base_type               btype;
         byte                    attr;
         byte                    data_prefix_size;
@@ -167,3 +168,18 @@ typedef enum {
 
 #define F_CLASS(c)  (c & F_MASK)
 
+typedef enum {
+        AP_HAVE_VALUE           = 0x01,
+        AP_HAVE_OFFSET          = 0x02
+} abspatch_flags;
+
+typedef struct abspatch {
+        struct abspatch         *link;
+        object                  *obj;
+        patch                   pat;
+        long_offset             value;
+        abspatch_flags          flags;
+} abspatch;
+
+extern void             OutAbsPatch(abspatch *,patch_attr);
+extern void             DoLblRef( label_handle lbl, segment_id seg, offset val, escape_class kind );

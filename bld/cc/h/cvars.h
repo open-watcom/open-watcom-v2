@@ -187,7 +187,7 @@ global  FIELDPTR ErrSym;
 
 #if _CPU == 386
 global  void     *FunctionProfileBlock; /* handle for profiling data block */
-global  int      FunctionProfileSegment; /* segment for profiling data block */
+global  segment_id FunctionProfileSegment; /* segment for profiling data block */
 #endif
 
 global  int         MacroDepth;
@@ -226,8 +226,8 @@ global  int     LitPoolSize;
 global  unsigned MacroSize;
 global  struct  comp_flags             CompFlags;
 global  struct  global_comp_flags      GlobalCompFlags;
-global  int     SegmentNum;     /* next PRIVATE segment number to use */
-global  int     FarStringSegment;
+global  segment_id SegmentNum;     /* next PRIVATE segment number to use */
+global  segment_id FarStringSegment;
 
 global  jmp_buf *Environment;   /* var for Suicide() */
 
@@ -240,8 +240,8 @@ global  token_class Class[ MAX_LEVEL ];
 global  int         Level;
 
 global  segment_list *SegListHead;
-global  int     SegImport;              /* next segment # for import sym */
-global  int     SegData;                /* data segment # for -nd option */
+global  segment_id   SegImport;              /* next segment # for import sym */
+global  segment_id   SegData;                /* data segment # for -nd option */
 
 global TREEPTR  FirstStmt;              /* root of expression tree */
 
@@ -269,7 +269,7 @@ global  unsigned char   *MsgFlags;      /* Bit mask of disabled messages */
 
 global  struct macro_seg_list {
     struct macro_seg_list *next;
-    MACADDR_T segment;
+    MACADDR_T             macro_seg;
 } *MacSegList;                  /* pointer to list of macro segments */
 
 global  MACADDR_T MacroSegment; /* segment for macro definitions */
@@ -385,7 +385,7 @@ global  TYPEPTR PrevProtoType;          /* prev func prototype */
 
 global  unsigned SegAlignment[FIRST_PRIVATE_SEGMENT];
 global  unsigned TargSys;
-global  unsigned DefDataSegment;  /* #pragma data_seg("segname","class") */
+global  segment_id DefDataSegment;  /* #pragma data_seg("segname","class") */
 global  textsegment *DefCodeSegment; /* #pragma code_seg("seg","c") */
 
 global  unsigned        UnrollCount;    /* #pragma unroll(#); */
@@ -515,7 +515,7 @@ extern  TYPEPTR *MakeParmList( parm_list *, int, int );
 
 // cinfo.c
 extern  segment_id SymSegId( SYMPTR sym );
-extern  void    SetSegSymHandle( SYM_HANDLE sym_handle, int segment );
+extern  void    SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segment );
 
 extern  void    InitDataQuads(void);            /* cdinit */
 extern  void    FreeDataQuads(void);            /* cdinit */
@@ -620,17 +620,17 @@ extern  void    CloseSrcFile(FCB *);            /* cgetch */
 
 // cinfo.c
 extern  void    SegInit(void);
-extern  int     AddSegName(char *,char *,int);
-extern  int     DefThreadSeg( void );
+extern  segment_id AddSegName(char *,char *,int);
+extern  segment_id DefThreadSeg( void );
 extern  void    EmitSegLabels(void);
 extern  void    FiniSegLabels(void);
 extern  void    FiniSegBacks(void);
 extern  void    SetSegs(void);
-extern  SYM_HANDLE SegSymHandle(int);
-extern  void    SetFuncSegment(SYMPTR,int);
+extern  SYM_HANDLE SegSymHandle(segment_id);
+extern  void    SetFuncSegment(SYMPTR,segment_id);
 extern  void    SetFarHuge(SYMPTR,int);
-extern  char    *SegClassName(unsigned);
-extern  hw_reg_set *SegPeggedReg(unsigned);
+extern  char    *SegClassName(segment_id);
+extern  hw_reg_set *SegPeggedReg(segment_id);
 extern  void    SetSegment(SYMPTR);
 extern  void    SetSegAlign(SYMPTR);
 extern  void    AssignSeg(SYMPTR);
@@ -788,7 +788,7 @@ extern  void    SymInit(void);                  /* csym */
 extern  void    SpcSymInit(void);               /* csym */
 extern  void    SymFini(void);                  /* csym */
 extern  void    SymCreate(SYMPTR,char *);       /* csym */
-extern  SYM_HANDLE SegSymbol(char *,int);       /* csym */
+extern  SYM_HANDLE SegSymbol(char *,segment_id);/* csym */
 extern  SYM_HANDLE SpcSymbol(char *,int);       /* csym */
 extern  SYM_HANDLE SymAdd(int,SYMPTR);          /* csym */
 extern  SYM_HANDLE SymAddL0(int,SYMPTR);        /* csym */
@@ -820,8 +820,8 @@ extern  TYPEPTR GetType(DATA_TYPE);
 extern  TYPEPTR ArrayNode(TYPEPTR);
 extern  TYPEPTR FuncNode(TYPEPTR, type_modifiers, TYPEPTR *);
 extern  TYPEPTR TypeDefault(void);
-extern  TYPEPTR PtrNode(TYPEPTR,type_modifiers,int);
-extern  TYPEPTR BPtrNode(TYPEPTR,type_modifiers,int,SYM_HANDLE, BASED_KIND);
+extern  TYPEPTR PtrNode(TYPEPTR,type_modifiers,segment_id);
+extern  TYPEPTR BPtrNode(TYPEPTR,type_modifiers,segment_id,SYM_HANDLE, BASED_KIND);
 extern  TYPEPTR TypeNode(DATA_TYPE,TYPEPTR);
 extern  int     TypeQualifier(void);
 extern  void    TypeSpecifier( decl_info *info );

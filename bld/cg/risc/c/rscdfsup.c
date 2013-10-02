@@ -51,7 +51,7 @@
 #include "dfdbg.h"
 #include "cgprotos.h"
 
-extern  seg_id          DbgSegDef( char *name );
+extern  segment_id      DbgSegDef( char *name );
 extern  void            OutBckExport( char *name, bool is_export );
 
 
@@ -74,7 +74,7 @@ static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
 };
 
 
-extern struct sect_info DwarfSegs[ DW_DEBUG_MAX ];
+extern sect_info DwarfSegs[ DW_DEBUG_MAX ];
 
 
 
@@ -87,9 +87,9 @@ extern  void    DFDefSegs( void ){
             DwarfSegs[i].seg = DbgSegDef( DwarfSegNames[i].seg_name );
             DwarfSegs[i].bck = NULL;
         }
-    }else if( _IsModel( NUMBERS ) ){
-            DwarfSegs[DW_DEBUG_LINE].seg = DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name );
-            DwarfSegs[DW_DEBUG_LINE].bck = NULL;
+    } else if( _IsModel( NUMBERS ) ) {
+        DwarfSegs[DW_DEBUG_LINE].seg = DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name );
+        DwarfSegs[DW_DEBUG_LINE].bck = NULL;
     }
 }
 

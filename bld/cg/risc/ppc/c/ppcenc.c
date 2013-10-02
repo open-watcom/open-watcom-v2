@@ -42,6 +42,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include "data.h"
+#include "objout.h"
 
 extern void DumpInsOnly( instruction * );
 extern void DumpString( char * );
@@ -54,7 +55,6 @@ extern void GenCondJump( instruction * );
 
 extern void             ObjBytes( char *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
-extern void             OutLabel( label_handle );
 extern void             OutReloc( label_handle, ppc_reloc, unsigned );
 extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
@@ -62,8 +62,6 @@ extern name             *DeAlias( name * );
 extern void             TryScrapLabel( code_lbl * );
 extern void             DbgBlkBeg( dbg_block *blk, offset lc );
 extern void             DbgBlkEnd( dbg_block *blk, offset lc );
-extern offset           AskLocation( void );
-extern void             OutLineNum( unsigned_16 line, bool label_line );
 extern void             EmitDbgInfo( instruction * );
 extern pointer          FEAuxInfo( pointer *, aux_class );
 extern code_lbl         *GetWeirdPPCDotDotLabel( code_lbl * );

@@ -47,18 +47,16 @@
 #include "cvdbg.h"
 #include "dbcue.h"
 
-extern  seg_id          DbgSegDef( char *, char *, int  );
+extern  segment_id  DbgSegDef( char *, char *, int  );
 
 
 extern  void    CVDefSegs( void ){
 /**************************/
     if( _IsModel( DBG_LOCALS ) ) {
-        CVSyms = DbgSegDef( "$$SYMBOLS", "DEBSYM",
-                             SEG_COMB_PRIVATE+SEG_USE_32  );
+        CVSyms = DbgSegDef( "$$SYMBOLS", "DEBSYM", SEG_COMB_PRIVATE+SEG_USE_32 );
     }
     if( _IsModel( DBG_TYPES ) ) {
-        CVTypes = DbgSegDef( "$$TYPES", "DEBTYP",
-                             SEG_COMB_PRIVATE+SEG_USE_32  );
+        CVTypes = DbgSegDef( "$$TYPES", "DEBTYP", SEG_COMB_PRIVATE+SEG_USE_32 );
     }
 }
 

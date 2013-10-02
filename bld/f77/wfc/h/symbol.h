@@ -34,21 +34,22 @@
 #include "symtypes.h"
 #include "symacc.h"
 #include "ifdefs.h"
+#include "cg.h"
 
-#define WF77_NULLSEGID  0       // NULL segment id
+#define SEG_NULL        0       // NULL segment id
 #if _CPU == 8086 || _CPU == 386
-  #define WF77_LDATA    1       // local data segment for initialized data
-  #define WF77_UDATA    2       // local data segment for uninitialized data
-  #define WF77_CDATA    3       // constant and literal data segment
+  #define SEG_LDATA     1       // local data segment for initialized data
+  #define SEG_UDATA     2       // local data segment for uninitialized data
+  #define SEG_CDATA     3       // constant and literal data segment
                                 // (also BACK segment)
-  #define WF77_FREE_SEG 4       // first free segment id
+  #define SEG_FREE      4       // first free segment id
 #else
-  #define WF77_TDATA    1       // Text (code) segment
-  #define WF77_LDATA    2       // local data segment for initialized data
-  #define WF77_UDATA    3       // local data segment for uninitialized data
-  #define WF77_CDATA    4       // constant and literal data segment
+  #define SEG_TDATA     1       // Text (code) segment
+  #define SEG_LDATA     2       // local data segment for initialized data
+  #define SEG_UDATA     3       // local data segment for uninitialized data
+  #define SEG_CDATA     4       // constant and literal data segment
                                 // (also BACK segment)
-  #define WF77_FREE_SEG 5       // first free segment id
+  #define SEG_FREE      5       // first free segment id
 #endif
 
 
@@ -71,7 +72,7 @@ typedef unsigned_32     db_handle;
 
 typedef union vi {
     struct com_eq       *ec_ext;        // common/equivalence extension
-    int                 seg_id;         //   variables not in common/equivalence
+    segment_id          seg_id;         //   variables not in common/equivalence
     void                *alt_scb;       // SCB for character arguments
     unsigned short      cg_typ;         // cg-type for local character
 } vi;
@@ -89,7 +90,7 @@ typedef struct var {
 
 typedef struct common_block {
     sym_id      first;                  // first symbol in common list
-    int         seg_id;                 // segment id of common block
+    segment_id  seg_id;                 // segment id of common block
 } common_block;
 
 // symbol table information for parameter constants:

@@ -1442,7 +1442,7 @@ void DoCompile( void )
 local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     TYPEPTR             typ;
-    int                 segment;
+    segment_id          segment;
     unsigned long       size;
 
     typ = sym->sym_type;
@@ -1537,7 +1537,7 @@ local int DoFuncDefn( SYM_HANDLE funcsym_handle )
 #if _CPU == 386
     if( TargetSwitches & P5_PROFILING ) {
         char *fn_name = FEName( funcsym_handle );
-        size_t len = strlen( fn_name )+1;
+        size_t len = strlen( fn_name ) + 1;
         segment_id old_segment;
 
         old_segment = BESetSeg( FunctionProfileSegment );
@@ -1889,7 +1889,7 @@ extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
 }
 
 
-local int StringSegment( STR_HANDLE strlit )
+local segment_id StringSegment( STR_HANDLE strlit )
 {
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
     if( strlit->flags & FLAG_FAR )
@@ -1904,8 +1904,7 @@ void EmitStrPtr( STR_HANDLE str_handle, int pointer_type )
 {
     str_handle->ref_count++;
     Emit1String( str_handle );
-    DGBackPtr( str_handle->cg_back_handle, StringSegment( str_handle ),
-                    0, pointer_type );
+    DGBackPtr( str_handle->cg_back_handle, StringSegment( str_handle ), 0, pointer_type );
 }
 
 

@@ -40,7 +40,7 @@ static  void        AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ );
 local   void        FreeParmList( void );
 local   void        GetFuncParmList( void );
 
-static int          ThreadSeg;
+static segment_id   ThreadSeg;
 
 
 void Chk_Struct_Union_Enum( TYPEPTR typ )
@@ -899,7 +899,7 @@ local type_modifiers GetModifiers( void )
 }
 
 struct mod_info {
-    int              segment;
+    segment_id       segment;
     type_modifiers   modifier;  // const, vol flags
     BASED_KIND       based_kind;
     SYM_HANDLE       based_sym;

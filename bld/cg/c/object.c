@@ -36,9 +36,8 @@
 #include "zoiks.h"
 #include "data.h"
 #include "feprotos.h"
+#include "objout.h"
 
-extern  seg_id          AskCodeSeg( void );
-extern  seg_id          SetOP(seg_id);
 extern  void            CodeLabel(label_handle,unsigned);
 extern  void            GenObjCode(instruction*);
 extern  void            GenJumpLabel(pointer);
@@ -91,7 +90,7 @@ extern  void    GenObject( void )
     source_line_number  last_line;
     int                 targets;
     int                 i;
-    seg_id              old;
+    segment_id          old;
     label_handle        lbl;
     unsigned            align;
     fe_attr             attr;

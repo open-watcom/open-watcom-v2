@@ -35,8 +35,7 @@ typedef pointer         sym_handle;
 typedef pointer         targ_handle;
 typedef int             import_handle;
 typedef pointer         abspatch_handle;
-typedef unsigned_16     seg_id;
-#define BACKSEGS        (seg_id)32767
+#define BACKSEGS        (segment_id)32767
 
 #define ADDR_UNKNOWN    ((offset)(-1))
 #define NOT_IMPORTED    0
@@ -45,13 +44,13 @@ typedef struct bck_info {
         import_handle   imp;
         import_handle   imp_alt;
         label_handle    lbl;
-        int             seg;
+        segment_id      seg;
 } bck_info;
 
 typedef struct segdef {
         struct segdef   *next;
         char            *str;
-        seg_id          id;
+        segment_id      id;
         byte            align;
         seg_attr        attr;
 } segdef;

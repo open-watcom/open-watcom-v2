@@ -80,6 +80,7 @@ static  void    CnI2I( itnode *it, uint size ) {
 static  void    CnR2I( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.intstar4 = it->value.single;
 }
 
@@ -87,6 +88,7 @@ static  void    CnR2I( itnode *it, uint dummy ) {
 static  void    CnD2I( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.intstar4 = it->value.dble;
 }
 
@@ -94,6 +96,7 @@ static  void    CnD2I( itnode *it, uint dummy ) {
 static  void    CnE2I( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.intstar4 = it->value.extended;
 }
 
@@ -101,6 +104,7 @@ static  void    CnE2I( itnode *it, uint dummy ) {
 static  void    CnI2R( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.single = it->value.intstar4;
 }
 
@@ -108,6 +112,7 @@ static  void    CnI2R( itnode *it, uint dummy ) {
 static  void    CnD2R( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.single = it->value.dble;
 }
 
@@ -115,6 +120,7 @@ static  void    CnD2R( itnode *it, uint dummy ) {
 static  void    CnE2R( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.single = it->value.extended;
 }
 
@@ -122,6 +128,7 @@ static  void    CnE2R( itnode *it, uint dummy ) {
 static  void    CnI2D( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.dble = it->value.intstar4;
 }
 
@@ -129,6 +136,7 @@ static  void    CnI2D( itnode *it, uint dummy ) {
 static  void    CnR2D( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.dble = it->value.single;
 }
 
@@ -136,6 +144,7 @@ static  void    CnR2D( itnode *it, uint dummy ) {
 static  void    CnE2D( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.dble = it->value.extended;
 }
 
@@ -143,6 +152,7 @@ static  void    CnE2D( itnode *it, uint dummy ) {
 static  void    CnI2E( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.extended = it->value.intstar4;
 }
 
@@ -150,6 +160,7 @@ static  void    CnI2E( itnode *it, uint dummy ) {
 static  void    CnR2E( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.extended = it->value.single;
 }
 
@@ -157,6 +168,7 @@ static  void    CnR2E( itnode *it, uint dummy ) {
 static  void    CnD2E( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.extended = it->value.dble;
 }
 
@@ -164,6 +176,7 @@ static  void    CnD2E( itnode *it, uint dummy ) {
 static  void    CnI2C( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.complex.realpart = it->value.intstar4;
     it->value.complex.imagpart = 0;
 }
@@ -172,6 +185,7 @@ static  void    CnI2C( itnode *it, uint dummy ) {
 static  void    CnR2C( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.complex.imagpart = 0;
 }
 
@@ -179,6 +193,7 @@ static  void    CnR2C( itnode *it, uint dummy ) {
 static  void    CnD2C( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.complex.realpart = it->value.dble;
     it->value.complex.imagpart = 0;
 }
@@ -187,6 +202,7 @@ static  void    CnD2C( itnode *it, uint dummy ) {
 static  void    CnE2C( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.complex.realpart = it->value.extended;
     it->value.complex.imagpart = 0;
 }
@@ -195,6 +211,7 @@ static  void    CnE2C( itnode *it, uint dummy ) {
 static  void    CnQ2C( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.dcomplex.realpart = it->value.complex.realpart;
     it->value.dcomplex.imagpart = it->value.complex.imagpart;
 }
@@ -203,6 +220,7 @@ static  void    CnQ2C( itnode *it, uint dummy ) {
 static  void    CnX2C( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.dcomplex.realpart = it->value.xcomplex.realpart;
     it->value.dcomplex.imagpart = it->value.xcomplex.imagpart;
 }
@@ -211,6 +229,7 @@ static  void    CnX2C( itnode *it, uint dummy ) {
 static  void    CnI2Q( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.dcomplex.realpart = it->value.intstar4;
     it->value.dcomplex.imagpart = 0;
 }
@@ -219,6 +238,7 @@ static  void    CnI2Q( itnode *it, uint dummy ) {
 static  void    CnR2Q( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.dcomplex.realpart = it->value.single;
     it->value.dcomplex.imagpart = 0;
 }
@@ -227,6 +247,7 @@ static  void    CnR2Q( itnode *it, uint dummy ) {
 static  void    CnD2Q( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.dcomplex.imagpart = 0;
 }
 
@@ -234,6 +255,7 @@ static  void    CnD2Q( itnode *it, uint dummy ) {
 static  void    CnE2Q( itnode *it, uint dummy ) {
 //===================================
 
+    dummy = dummy;
     it->value.dcomplex.realpart = it->value.extended;
     it->value.dcomplex.imagpart = 0;
 }
@@ -242,6 +264,7 @@ static  void    CnE2Q( itnode *it, uint dummy ) {
 static  void    CnC2Q( itnode *it, uint dummy ) {
 //====================================
 
+    dummy = dummy;
     it->value.dcomplex.imagpart = it->value.complex.imagpart;
     it->value.dcomplex.realpart = it->value.complex.realpart;
 }
@@ -250,6 +273,7 @@ static  void    CnC2Q( itnode *it, uint dummy ) {
 static  void    CnX2Q( itnode *it, uint dummy ) {
 //====================================
 
+    dummy = dummy;
     it->value.dcomplex.imagpart = it->value.xcomplex.imagpart;
     it->value.dcomplex.realpart = it->value.xcomplex.realpart;
 }
@@ -258,6 +282,7 @@ static  void    CnX2Q( itnode *it, uint dummy ) {
 static  void    CnI2X( itnode *it, uint dummy ) {
 //====================================
 
+    dummy = dummy;
     it->value.xcomplex.imagpart = it->value.intstar4;
     it->value.xcomplex.imagpart = 0;
 }
@@ -266,6 +291,7 @@ static  void    CnI2X( itnode *it, uint dummy ) {
 static  void    CnR2X( itnode *it, uint dummy ) {
 //====================================
 
+    dummy = dummy;
     it->value.xcomplex.imagpart = it->value.single;
     it->value.xcomplex.imagpart = 0;
 }
@@ -274,6 +300,7 @@ static  void    CnR2X( itnode *it, uint dummy ) {
 static  void    CnD2X( itnode *it, uint dummy ) {
 //====================================
 
+    dummy = dummy;
     it->value.xcomplex.imagpart = it->value.dble;
     it->value.xcomplex.imagpart = 0;
 }
@@ -282,6 +309,7 @@ static  void    CnD2X( itnode *it, uint dummy ) {
 static  void    CnE2X( itnode *it, uint dummy ) {
 //====================================
 
+    dummy = dummy;
     it->value.xcomplex.imagpart = it->value.extended;
     it->value.xcomplex.imagpart = 0;
 }
@@ -290,6 +318,7 @@ static  void    CnE2X( itnode *it, uint dummy ) {
 static  void    CnC2X( itnode *it, uint dummy ) {
 //====================================
 
+    dummy = dummy;
     it->value.xcomplex.imagpart = it->value.complex.imagpart;
     it->value.xcomplex.realpart = it->value.complex.realpart;
 }
@@ -298,6 +327,7 @@ static  void    CnC2X( itnode *it, uint dummy ) {
 static  void    CnQ2X( itnode *it, uint dummy ) {
 //====================================
 
+    dummy = dummy;
     it->value.xcomplex.imagpart = it->value.dcomplex.imagpart;
     it->value.xcomplex.realpart = it->value.dcomplex.realpart;
 }
@@ -306,6 +336,8 @@ static  void    CnQ2X( itnode *it, uint dummy ) {
 static  void    NullRtn( itnode *dummy, uint dumy ) {
 //===============================
 
+    dummy = dummy;
+    dumy = dumy;
 }
 
 //

@@ -356,7 +356,7 @@ static  reg_set_index   IsSets[] = {
  *      }
  */
 
-#define _Combine( a, b )        ((a)*RL_MAX_INDEX+(b))
+#define _Combine( a, b )        ((a) * RL_NUMBER_OF_SETS + (b))
 
 extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 /************************************************************************/

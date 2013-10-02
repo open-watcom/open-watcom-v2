@@ -34,7 +34,7 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
-#include "escape.h"
+//#include "escape.h"
 #include "objrep.h"
 #include "system.h"
 #include "jumps.h"
@@ -44,18 +44,16 @@
 #include "data.h"
 #include "feprotos.h"
 #include "utils.h"
+#include "objout.h"
 
 extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  void            OutPatch(label_handle,patch_attr);
 extern  void            TellKeepLabel(label_handle);
-extern  void            OutReloc(seg_id,fix_class,bool);
+extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutImport(sym_handle,fix_class,bool);
 extern  void            OutBckImport( char *name, bck_info  *bck, fix_class class );
-extern  void            OutLabel(label_handle);
 extern  void            CodeBytes(byte*,uint);
 extern  void            CodeLabel(label_handle, unsigned);
-extern  seg_id          SetOP(seg_id);
-extern  seg_id          AskBackSeg( void );
 extern  void            OutIBytes(byte,offset);
 extern  void            OutDataLong(long);
 extern  void            OutDataInt(int);
@@ -64,20 +62,15 @@ extern  void            SetUpObj(bool);
 extern  void            TellObjNewLabel( sym_handle );
 extern  void            TellOptimizerByPassed( void );
 extern  void            TellByPassOver( void );
-extern  seg_id          AskOP(void);
-extern  seg_id          AskCodeSeg(void);
 extern  bool            IsFarFunc(sym_handle);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            GenSelEntry(bool);
 extern  void            EmptyQueue( void );
 extern  bool            UseImportForm( fe_attr );
-extern  offset          AskLocation(void);
-extern  void            IncLocation(offset);
-extern  bool            AskSegBlank(segment_id);
 extern  void            IterBytes( offset len, byte pat );
 
 extern  void            OutLblPatch( label_handle lbl, fix_class class, offset plus );
-static  void            DoLblPtr( label_handle lbl, seg_id seg, fix_class class, offset plus );
+static  void            DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus );
 
 
 extern  void    DataAlign( unsigned_32 align ) {
@@ -148,8 +141,8 @@ extern  void    DoBigBckPtr( bck_info *bck, offset off ) {
     TellByPassOver();
 }
 
-static  void    DoLblPtr( label_handle lbl, seg_id seg, fix_class class, offset plus )
-/************************************************************************************/
+static  void    DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus )
+/****************************************************************************************/
 {
     SetUpObj( TRUE );
     TellKeepLabel( lbl );
@@ -288,8 +281,8 @@ extern  void    FEPtrBase( sym_handle sym ) {
 }
 
 
-extern  void    BackPtr( bck_info *bck, seg_id seg, offset plus, type_def *tipe )
-/*******************************************************************************/
+extern  void    BackPtr( bck_info *bck, segment_id seg, offset plus, type_def *tipe )
+/***********************************************************************************/
 {
     TellOptimizerByPassed();
     if( tipe->length != WORD_SIZE ) {
@@ -300,17 +293,17 @@ extern  void    BackPtr( bck_info *bck, seg_id seg, offset plus, type_def *tipe 
     TellByPassOver();
 }
 
-extern  void    BackBigOffset( bck_info *bck, seg_id seg, offset plus )
-/*********************************************************************/
+extern  void    BackBigOffset( bck_info *bck, segment_id seg, offset plus )
+/*************************************************************************/
 {
     TellOptimizerByPassed();
     DoLblPtr( bck->lbl, seg, F_BIG_OFFSET, plus );
     TellByPassOver();
 }
 
-extern  void    BackPtrBase( bck_info *bck, seg_id seg ) {
-/********************************************************/
-
+extern  void    BackPtrBase( bck_info *bck, segment_id seg )
+/**********************************************************/
+{
     TellOptimizerByPassed();
     DoLblPtr( bck->lbl, seg, F_BASE, 0 );
     TellByPassOver();
@@ -335,7 +328,7 @@ static  cg_class ConstDataClass( void ) {
 extern  name    *GenConstData( byte *buffer, type_class_def class ) {
 /*******************************************************************/
 
-    seg_id              old;
+    segment_id          old;
     cg_class            cgclass;
     name                *result;
     label_handle        label;

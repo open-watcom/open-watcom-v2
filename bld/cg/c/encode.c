@@ -39,15 +39,14 @@
 #include "objrep.h"
 #include "encode.h"
 #include "data.h"
+#include "objout.h"
 
 
 extern  void            GenSetCC( instruction * );
 extern  byte            CondCode( instruction * );
 extern  void            InputOC(any_oc*);
-extern  seg_id          AskCodeSeg( void );
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern  void            FlipCond(instruction*);
-extern  seg_id          SetOP(seg_id);
 extern  void            DumpString( char * );
 extern  void            DumpPtr( pointer );
 extern  void            DumpInt( int );
@@ -257,7 +256,7 @@ extern  void    GenKillLabel( pointer label ) {
     out of the queue.
 */
 
-    seg_id      old;
+    segment_id      old;
 
     old = SetOP( AskCodeSeg() );
     CodeHandle( OC_LDONE, 0, label );

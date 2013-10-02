@@ -84,7 +84,7 @@ static  void    NewGlobalSeg( void ) {
     global_seg  *new_seg;
 
     new_seg = FMemAlloc( sizeof( global_seg ) );
-    new_seg->segment = WF77_NULLSEGID;
+    new_seg->segment = SEG_NULL;
     new_seg->link = NULL;
     if( CurrGSeg == NULL ) {
         GlobalSeg = new_seg;
@@ -102,7 +102,7 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init ) {
     segment_id  seg;
     bool        first_seg;
 
-    if( ProgSw & PS_ERROR ) return( WF77_FREE_SEG );
+    if( ProgSw & PS_ERROR ) return( SEG_FREE );
     if( ( CurrGSeg != NULL ) && ( CurrGSeg->size + g_size <= MaxSegSize ) ) {
 
         // object will fit in current segment

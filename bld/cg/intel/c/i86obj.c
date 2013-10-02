@@ -46,6 +46,7 @@
 #include "rtrtn.h"
 #include "i86obj.h"
 #include "utils.h"
+#include "objout.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
     #define _OMF_32
@@ -122,7 +123,7 @@ typedef struct virt_func_ref_list {
 } virt_func_ref_list;
 
 typedef struct dbg_seg_info {
-    seg_id      *id;
+    segment_id  *id;
     char        *seg_name;
     char        *class_name;
 } dbg_seg_info;
@@ -143,7 +144,7 @@ extern  void            DoOutObjectName(sym_handle,void(*)(char*,void*),void*,im
 /* DF interface */
 extern  void            DFObjInitInfo( void );
 extern  void            DFObjLineInitInfo( void );
-extern  void            DFBegCCU( seg_id code, long dbg_pch );
+extern  void            DFBegCCU( segment_id code, long dbg_pch );
 extern  void            DFDefSegs( void );
 extern  void            DFObjFiniDbgInfo( offset codesize );
 extern  void            DFObjLineFiniDbgInfo( void );
@@ -170,8 +171,8 @@ static  omf_idx         ImportHdl;
 static  array_control   *Imports;
 static  array_control   *SegInfo;
 static  abspatch        *AbsPatches;
-static  seg_id          CodeSeg = BACKSEGS;
-static  seg_id          BackSeg;
+static  segment_id      CodeSeg = BACKSEGS;
+static  segment_id      BackSeg;
 static  segdef          *SegDefs;
 static  long_offset     CodeSize;
 static  long_offset     DataSize;
@@ -188,7 +189,7 @@ static  char            CodeGroup[80];
 static  char            DataGroup[80];
 static  offset          SelStart;
 static  omf_idx         SelIdx;
-static  seg_id          BackSegIdx = BACKSEGS;
+static  segment_id      BackSegIdx = BACKSEGS;
 static  omf_idx         FPPatchImp[FPP_NUMBER_OF_TYPES];
 static  int             SegsDefd;
 static  bool            NoDGroup;
@@ -320,21 +321,20 @@ bool FreeObjCache( void )
 }
 
 
-static  index_rec       *AskSegIndex( seg_id seg )
+static  index_rec   *AskSegIndex( segment_id seg )
 /************************************************/
 {
     index_rec   *rec;
     int         i;
 
-    i = 0;
     rec = SegInfo->array;
-    for( ;; ) {
-        if( ++i > SegInfo->used )
-            return( NULL );
-        if( rec->seg == seg )
+    for( i = 0; i < SegInfo->used; ++i ) {
+        if( rec->seg == seg ) {
             return( rec );
+        }
         ++rec;
     }
+    return( NULL );
 }
 
 
@@ -411,7 +411,7 @@ static  void    SegmentClass( index_rec *rec )
 {
     char        *class_name;
 
-    class_name = FEAuxInfo( (pointer)(size_t)rec->seg, CLASS_NAME );
+    class_name = FEAuxInfo( (pointer)(pointer_int)rec->seg, CLASS_NAME );
     if( class_name != NULL ) {
         rec->cidx = GetNameIdx( class_name, "", TRUE );
     }
@@ -636,7 +636,7 @@ static  index_rec   *AllocNewSegRec( void )
 /*****************************************/
 {
     index_rec   *rec;
-    seg_id      old = 0;
+    segment_id  old = 0;
     int         need;
 
     if( CurrSeg != NULL ) {
@@ -765,12 +765,12 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
 }
 
 
-extern  void    DefSegment( seg_id id, seg_attr attr, char *str, uint align, bool use_16 )
-/****************************************************************************************/
+extern  void    DefSegment( segment_id id, seg_attr attr, char *str, uint align, bool use_16 )
+/********************************************************************************************/
 {
     segdef              *new;
     segdef              **owner;
-    seg_id              first_code;
+    segment_id          first_code;
 
     new = CGAlloc( sizeof( segdef ) );
     new->id = id;
@@ -912,8 +912,8 @@ static void OutModel( array_control *dest )
     OutString( model, dest );
 }
 
-extern seg_id DbgSegDef( char *seg_name, char *seg_class, int seg_modifier )
-/**************************************************************************/
+extern segment_id DbgSegDef( char *seg_name, char *seg_class, int seg_modifier )
+/******************************************************************************/
 {
     index_rec   *rec;
 
@@ -991,12 +991,10 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
         dgroup_idx = GetNameIdx( "DGROUP", "", TRUE );
     }
     OutIdx( dgroup_idx, dgroup_def );
-    seg = SegDefs;
     SegInfo = InitArray( sizeof( index_rec ), MODEST_INFO, INCREMENT_INFO );
-    while( seg != NULL ) {
+    for( seg = SegDefs; seg != NULL; seg = next ) {
         next = seg->next;
         DoSegment( seg, dgroup_def, tgroup_def, FALSE );
-        seg = next;
     }
     SegDefs = NULL;
     if( _IsModel( DBG_DF ) ) {
@@ -1149,17 +1147,17 @@ extern  void    ObjInit( void )
 }
 
 
-extern  seg_id  SetOP( seg_id seg )
-/*********************************/
+extern  segment_id  SetOP( segment_id seg )
+/*****************************************/
 {
-    seg_id      old;
+    segment_id  old;
 
     if( CurrSeg == NULL ) {
-        old = (seg_id)-1;
+        old = -1;
     } else {
         old = CurrSeg->seg;
     }
-    if( seg == (seg_id)-1 ) {
+    if( seg == -1 ) {
         CurrSeg = NULL;
     } else {
         CurrSeg = AskSegIndex( seg );
@@ -1177,7 +1175,7 @@ extern void ChkDbgSegSize( offset max, bool typing )
 /**************************************************/
 {
     dbg_seg_info    *info;
-    seg_id          old;
+    segment_id      old;
     long_offset     curr;
 
     info = &DbgSegs[typing ? 1 : 0];
@@ -1257,15 +1255,15 @@ extern  bool    AskSegROM( segment_id id )
 }
 
 
-extern  seg_id  AskBackSeg( void )
-/********************************/
+extern  segment_id  AskBackSeg( void )
+/************************************/
 {
     return( BackSeg );
 }
 
 
-extern  seg_id  AskCodeSeg( void )
-/********************************/
+extern  segment_id  AskCodeSeg( void )
+/************************************/
 {
     return( CodeSeg );
 }
@@ -1278,16 +1276,16 @@ extern  bool    HaveCodeSeg( void )
 }
 
 
-extern  seg_id  AskAltCodeSeg( void )
-/***********************************/
+extern  segment_id  AskAltCodeSeg( void )
+/***************************************/
 {
     return( CodeSeg );
 }
 
-static  seg_id  Code16Seg = 0;
+static  segment_id  Code16Seg = 0;
 
-extern  seg_id  AskCode16Seg( void )
-/**********************************/
+extern  segment_id  AskCode16Seg( void )
+/**************************************/
 {
     if( Code16Seg == 0 ) {
         Code16Seg = --BackSegIdx;
@@ -1700,11 +1698,11 @@ static  index_rec       *AskIndexRec( unsigned_16 sidx )
     index_rec   *rec;
     int         i;
 
-    i = 0;
     rec = SegInfo->array;
-    while( ++i <= SegInfo->used ) {
-        if( rec->sidx == sidx )
+    for( i = 0; i < SegInfo->used; ++i ) {
+        if( rec->sidx == sidx ) {
             break;
+        }
         rec++;
     }
     return( rec );
@@ -1764,10 +1762,10 @@ static  void    FiniTarg( void )
     CGFree( obj );
 }
 
-extern  void    FlushOP( seg_id id )
-/**********************************/
+extern  void    FlushOP( segment_id id )
+/**************************************/
 {
-    seg_id      old;
+    segment_id  old;
     index_rec   *rec;
 
     old = SetOP( id );
@@ -1790,7 +1788,7 @@ extern  void    FlushOP( seg_id id )
 static void FiniWVTypes( void )
 /*****************************/
 {
-    seg_id       old;
+    segment_id   old;
     long_offset  curr;
     dbg_seg_info *info;
 
@@ -1841,7 +1839,7 @@ static  void    NormalData( void )
 static void DoSegARange( offset *codesize, index_rec *rec )
 /*********************************************************/
 {
-    seg_id  old;
+    segment_id  old;
 
     if( rec->exec || rec->cidx == _NIDX_DATA ||rec->cidx == _NIDX_BSS ) {
         if( rec->max_size != 0 ) {
@@ -1943,9 +1941,8 @@ extern  void    ObjFini( void )
             offset  codesize;
 
             codesize = 0;
-            i = 0;
             rec = SegInfo->array;
-            while( ++i <= SegInfo->used ) {
+            for( i = 0; i < SegInfo->used; ++i ) {
                 if( rec->obj != NULL ) {
                     DoSegARange( &codesize, rec );
                 }
@@ -1964,9 +1961,8 @@ extern  void    ObjFini( void )
             FiniWVTypes();
         }
     }
-    i = 0;
     rec = SegInfo->array;
-    while( ++i <= SegInfo->used ) {
+    for( i = 0; i < SegInfo->used; ++i ) {
         if( rec->obj != NULL ) {
             CurrSeg = rec;
             FiniTarg();
@@ -2381,9 +2377,10 @@ extern  void    OutLabel( label_handle lbl )
 }
 
 
-extern  void    AbsPatch( abspatch *patch, offset lc )
-/****************************************************/
+extern  void    AbsPatch( abspatch_handle patch_handle, offset lc )
+/*****************************************************************/
 {
+    abspatch *patch = (abspatch *)patch_handle;
     if( patch->flags & AP_HAVE_OFFSET ) {
         DoPatch( &patch->pat, lc );
         FreeAbsPatch( patch );
@@ -2394,8 +2391,8 @@ extern  void    AbsPatch( abspatch *patch, offset lc )
 }
 
 
-extern  array_control   *InitPatch( void )
-/****************************************/
+extern  void    *InitPatch( void )
+/********************************/
 {
     return( InitArray( sizeof( patch ),  MODEST_PAT, INCREMENT_PAT ) );
 }
@@ -2904,8 +2901,8 @@ static void DumpImportResolve( sym_handle sym, omf_idx idx )
 }
 
 
-extern  void    OutReloc( seg_id seg, fix_class class, bool rel )
-/***************************************************************/
+extern  void    OutReloc( segment_id seg, fix_class class, bool rel )
+/*******************************************************************/
 {
     index_rec   *rec;
 
@@ -3173,8 +3170,8 @@ extern  void    OutIBytes( byte pat, offset len )
 }
 
 
-extern  seg_id  AskOP( void )
-/***************************/
+extern  segment_id  AskOP( void )
+/*******************************/
 {
     return( CurrSeg->seg );
 }
@@ -3243,7 +3240,7 @@ extern  void    TellObjNewLabel( sym_handle lbl )
 extern  void    TellObjNewProc( sym_handle proc )
 /***********************************************/
 {
-    seg_id      old;
+    segment_id  old;
     segment_id  proc_id;
 
 
@@ -3291,7 +3288,7 @@ extern  void    TellObjNewProc( sym_handle proc )
 extern void     TellObjVirtFuncRef( void *cookie )
 /************************************************/
 {
-    seg_id              old;
+    segment_id          old;
     virt_func_ref_list  *new;
 
     old = SetOP( CodeSeg );
@@ -3353,8 +3350,8 @@ extern  bool            AskNameCode( pointer hdl, cg_class class )
     return( FALSE );
 }
 
-extern  bool            AskNameROM( pointer hdl, cg_class class )
-/***************************************************************/
+extern  bool    AskNameROM( pointer hdl, cg_class class )
+/*******************************************************/
 {
     return( AskSegROM( AskSegID( hdl, class ) ) );
 }

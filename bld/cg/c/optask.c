@@ -34,8 +34,8 @@
 #include "optwif.h"
 #include "targsys.h"
 #include "feprotos.h"
+#include "objout.h"
 
-extern  array_control   *InitPatch( void );
 
 static  code_lbl    *DoAskForLabel( sym_handle sym )
 /**************************************************/

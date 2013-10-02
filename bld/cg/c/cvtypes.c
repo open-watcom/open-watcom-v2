@@ -44,6 +44,7 @@
 #include "feprotos.h"
 #include "cgprotos.h"
 #include "utils.h"
+#include "objout.h"
 
 struct lf_info {
      char       size;
@@ -56,12 +57,8 @@ static struct lf_info LFInfo[LFG_LAST] = {
     #undef _LFMAC
 };
 
-extern  void        FEPtrBase(sym_handle);
 extern  void        BuffWSLString(char*);
 extern  byte        *Copy(void*,void*,uint);
-extern  seg_id      SetOP(seg_id);
-extern  void        SetBigLocation( long_offset loc );
-extern  long_offset AskBigLocation( void );
 extern  void        ChkDbgSegSize( offset, bool );
 extern  void        DataInt(short_offset);
 extern  void        LocDump( dbg_loc );
@@ -76,14 +73,14 @@ extern  void        CVOutSym( cv_out *out, sym_handle sym );
 extern  void        CVOutBck( cv_out *out, bck_info *bck, offset add,  dbg_type tipe );
 extern  void        CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe );
 
-extern  seg_id      CVTypes;
+extern  segment_id  CVTypes;
 
 
 static  void    BuffWrite( cv_out *out, void *to )
 /************************************************/
 {
-    int     len;
-    seg_id  old;
+    int         len;
+    segment_id  old;
 
     len = (byte *)to - out->beg;
     old = SetOP( out->seg );
@@ -98,11 +95,11 @@ static  void   BuffSkip( cv_out *out, void *to )
     out->beg = to;
 }
 
-static  void    BuffEnd( cv_out *out )
+static  void    buffEnd( cv_out *out )
 /************************************/
 {
-    int     len;
-    seg_id  old;
+    int         len;
+    segment_id  old;
 
     len = out->ptr - out->beg;
     old = SetOP( out->seg );
@@ -140,10 +137,10 @@ static  void  *AlignBuff( cv_out *out )
 }
 
 
-static  void    SegReloc( seg_id seg,  sym_handle sym )
-/*****************************************************/
+static  void    SegReloc( segment_id seg,  sym_handle sym )
+/*********************************************************/
 {
-    seg_id      old;
+    segment_id  old;
 
     old = SetOP( seg );
     FEPtrBase( sym );
@@ -183,7 +180,7 @@ static  int  EndSub( cv_out *out )
 /* reset buff to start **/
 {
     int             len;
-    seg_id          old;
+    segment_id      old;
     long_offset     here;
 
     AlignBuff( out );
@@ -201,7 +198,7 @@ static  int  EndSub( cv_out *out )
 static  long_offset   EndTypeString( cv_out *out )
 /************************************************/
 {
-    seg_id          old;
+    segment_id      old;
     int             len;
     long_offset     here;
 
@@ -231,7 +228,7 @@ static  void    PatchLen( long_offset where, u2 what )
 /********** back patch field list length ************/
 {
     long_offset         here;
-    seg_id              old;
+    segment_id          old;
 
     old = SetOP( CVTypes );
     here = AskBigLocation();
@@ -569,7 +566,7 @@ extern void CVBackRefType( name_entry *name, dbg_type tipe )
 /**********************************************************/
 {
     long_offset     here;
-    seg_id          old;
+    segment_id      old;
 
     old = SetOP( name->patch.segment );
     here = AskBigLocation();
@@ -1157,7 +1154,7 @@ static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
         CVEndType( out );
         break;
     }
-    BuffEnd( out );
+    buffEnd( out );
     return( ret );
 }
 

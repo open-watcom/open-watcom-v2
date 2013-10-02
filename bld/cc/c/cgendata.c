@@ -87,7 +87,7 @@ static void EmitDQuad( DATA_QUAD *dq )
     unsigned long       amount;
     auto SYM_ENTRY      sym;
 
-    static int          segment;
+    static segment_id    segment;
     static unsigned long size = 0;
 
     if( dq->flags & Q_NEAR_POINTER ) {

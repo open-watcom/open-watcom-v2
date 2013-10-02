@@ -672,7 +672,7 @@ static TREEPTR AddrOp( TREEPTR tree )
     TYPEPTR         typ;
     TREEPTR         leaf;
     type_modifiers  modifiers;
-    int             segid;
+    segment_id      segid;
     SYM_HANDLE      based_sym;
     SYM_ENTRY       sym;
 
@@ -802,7 +802,7 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
     TREEPTR     based_sym;
     SYM_HANDLE  sym_handle;
     SYMPTR      sym;
-    int         segid;
+    segment_id  segid;
 
     sym_handle = ptrtyp->u.p.based_sym;
     segid =  ptrtyp->u.p.segment;

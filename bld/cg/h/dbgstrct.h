@@ -31,7 +31,7 @@
 
 
 typedef struct {
-    unsigned    segment;
+    segment_id  segment;
     unsigned    offset;
 } dbg_patch_handle;
 

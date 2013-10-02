@@ -89,7 +89,7 @@ void AllocMacroSegment( unsigned minimum )
         CSuicide();
     }
     msl = CMemAlloc( sizeof( struct macro_seg_list ) );
-    msl->segment = MacroSegment;
+    msl->macro_seg = MacroSegment;
     msl->next = MacSegList;
     MacSegList = msl;
 }
@@ -100,7 +100,7 @@ void FreeMacroSegments( void )
     struct macro_seg_list *msl;
 
     for( ; (msl = MacSegList) != NULL; ) {
-        FEfree( (void *)(msl->segment) );
+        FEfree( (void *)(msl->macro_seg) );
         MacSegList = msl->next;
         CMemFree( msl );
     }

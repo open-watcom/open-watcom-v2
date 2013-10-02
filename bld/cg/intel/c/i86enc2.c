@@ -50,6 +50,7 @@
 #include "types.h"
 #include "feprotos.h"
 #include "utils.h"
+#include "objout.h"
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            EjectInst( void );
@@ -58,8 +59,6 @@ extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  void            LayOpbyte(opcode);
 extern  void            Format(oc_class);
 extern  void            TellScrapLabel(label_handle);
-extern  seg_id          SetOP(seg_id);
-extern  seg_id          AskCodeSeg( void );
 extern  void            LayRegRM(hw_reg_set);
 extern  void            LayRMRegOp(name*);
 extern  void            LayModRM(name*);
@@ -77,7 +76,6 @@ extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
 extern  void            EmitOffset(offset);
-extern  seg_id          AskCodeSeg( void );
 
 extern  void            CodeBytes( byte *src, byte_seq_len len );
 extern  void            GenReturn( int pop, bool is_long, bool iret );

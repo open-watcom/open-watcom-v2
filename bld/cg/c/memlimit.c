@@ -35,6 +35,7 @@
 #include "data.h"
 #include "feprotos.h"
 #include "cfloat.h"
+#include "objout.h"
 
 static    pointer_int   MemLimit;
 static    bool          IckyWicky;
@@ -52,9 +53,6 @@ extern  bool            RegTreeFrlFree( void );
 extern  bool            AddrFrlFree( void );
 extern  bool            SchedFrlFree( void );
 extern  bool            ShrinkQueue( pointer_int );
-extern  seg_id          SetOP( seg_id );
-extern  seg_id          AskCodeSeg( void );
-extern  bool            HaveCodeSeg( void );
 extern  pointer_int     MemInUse( void );
 extern  pointer_int     MemSize( void );
 extern  bool            TreeFrlFree( void );
@@ -64,7 +62,7 @@ extern  bool            FreeObjCache( void );
 static  bool    FlushSomeOpt( pointer_int size )
 /**********************************************/
 {
-    seg_id      old;
+    segment_id  old;
     bool        freed;
 
     if( InOptimizer == 0 && HaveCodeSeg() ) {

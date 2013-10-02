@@ -37,10 +37,9 @@
 #include "ppcparm.h"
 #include "ppcgen.h"
 #include "data.h"
+#include "objout.h"
 
 extern  uint_32         CountBits( uint_32 );
-extern  seg_id          SetOP( seg_id );
-extern  seg_id          AskCodeSeg( void );
 extern  unsigned        DepthAlign( unsigned );
 extern  void            CodeLabel( label_handle, unsigned );
 extern  hw_reg_set      *GPRegs( void );
@@ -52,7 +51,6 @@ extern  void            DbgRtnBeg( dbg_rtn *rtn,  offset lc );
 extern  void            DbgProEnd( dbg_rtn *rtn, offset lc );
 extern  void            DbgEpiBeg( dbg_rtn *rtn, offset lc );
 extern  void            DbgRtnEnd( dbg_rtn *rtn, offset lc );
-extern  offset          AskLocation( void );
 extern  void            OutFuncStart( label_handle label, offset start, int line );
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
@@ -474,7 +472,7 @@ static  void    emitEpilog( stack_map *map )
 extern  void    GenProlog( void )
 /*******************************/
 {
-    seg_id              old;
+    segment_id          old;
     label_handle        label;
     offset              lc;
 
@@ -515,7 +513,7 @@ extern  void    GenProlog( void )
 extern  void    GenEpilog( void )
 /*******************************/
 {
-    seg_id              old;
+    segment_id          old;
     offset              lc;
 
     old = SetOP( AskCodeSeg() );

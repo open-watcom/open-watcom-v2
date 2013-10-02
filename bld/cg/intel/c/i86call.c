@@ -41,6 +41,7 @@
 #include "display.h"
 #include "cgprotos.h"
 #include "rtrtn.h"
+#include "objout.h"
 
 extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
 extern  name            *AddrConst(name*,segment_id,constant_class);
@@ -49,8 +50,6 @@ extern  name            *AllocTemp(type_class_def);
 extern  name            *NearSegment(void);
 extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
 extern  name            *SAllocTemp(type_class_def,type_length);
-extern  seg_id          AskBackSeg(void);
-extern  seg_id          SetOP(seg_id);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            AddIns(instruction*);
 extern  void            DataLabel(label_handle);
@@ -283,7 +282,7 @@ extern  void    BGProcDecl( sym_handle sym, type_def *tipe ) {
     hw_reg_set          reg;
     name                *temp;
     type_class_def      class;
-    seg_id              old;
+    segment_id          old;
     label_handle        lbl;
 
     SaveTargetModel = TargetModel;

@@ -37,10 +37,10 @@
 #include "model.h"
 #include "cgdefs.h"
 #include "feprotos.h"
+#include "objout.h"
 
 extern  hw_reg_set      DisplayReg(void);
 extern  name            *DeAlias(name*);
-extern  bool            AskNameROM(pointer,cg_class);
 
 extern bool ReDefinedBy( instruction *, name * );
 static bool ZapsIndexed( name *, name * );

@@ -132,8 +132,8 @@ static  instruction *CmpRelocZero( instruction *ins, int c, int r ) {
     if( cons->c.const_type != CONS_ABSOLUTE ) return( NULL );
     if( CFTest( cons->c.value ) != 0 ) return( NULL );
     rel = ins->operands[ r ];
-    if( rel->c.const_type ==  CONS_OFFSET
-     && !AskSegNear( rel->c.int_value ) ) return( NULL );
+    if( rel->c.const_type == CONS_OFFSET && !AskSegNear( rel->c.int_value ) )
+        return( NULL );
     switch( ins->head.opcode ) {
     case OP_BIT_TEST_FALSE:
     case OP_CMP_EQUAL:
