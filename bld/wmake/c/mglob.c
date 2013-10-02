@@ -79,11 +79,11 @@ const char FAR *BuiltIns = {
 
 #elif defined( __NT__ )
     "__NT__=\n"
-    #if defined( _M_X64 ) || defined( __AMD64__ ) || defined( __amd64 )
+    #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
         "__NTX64__=\n"
-    #elif defined(_M_IX86)
+    #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )
         "__NT386__=\n"
-    #elif defined(__AXP__)
+    #elif defined( __AXP__ )
         "__NTAXP__=\n"
     #else
         #error Unknown CPU architecture
@@ -107,26 +107,26 @@ const char FAR *BuiltIns = {
 #elif defined( __LINUX__ ) || defined( __linux__ )
     "__LINUX__=\n"
     "__UNIX__=\n"
-    #if defined( _M_X64 ) || defined( __AMD64__ ) || defined( __amd64 )
+    #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
         "__LINUXX64__=\n"
-    #elif defined(_M_IX86) || defined(__i386__) || defined(__i386)
+    #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )
         "__LINUX386__=\n"
-    #elif defined(__PPC__) || defined(__ppc__) || defined(__powerpc__)
+    #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
         "__LINUXPPC__=\n"
-    #elif defined(__MIPS__) || defined(__mips__)
+    #elif defined( __MIPS__ ) || defined( __mips__ )
         "__LINUXMIPS__=\n"
     #else
         #error Unknown CPU architecture
     #endif
 
-#elif defined( __BSD__ ) || defined( __freeBSD__ )
+#elif defined( __BSD__ ) || defined( __FreeBSD__ )
     "__BSD__=\n"
     "__UNIX__=\n"
-    #if defined( _M_X64 ) || defined( __AMD64__ ) || defined( __amd64 )
+    #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
         "__BSDX64__=\n"
-    #elif defined(_M_IX86) || defined(__i386__) || defined(__i386)
+    #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )
         "__BSD386__=\n"
-    #elif defined(__PPC__) || defined(__ppc__) || defined(__powerpc__)
+    #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
         "__BSDPPC__=\n"
     #else
         #error Unknown CPU architecture
