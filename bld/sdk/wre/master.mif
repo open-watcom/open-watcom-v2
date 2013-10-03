@@ -40,10 +40,12 @@ extra_c_flags     = -s -fh
 
 extra_c_flags_win = -zu-zw-zc
 
+!ifdef __WATCOM__
 extra_c_flags_preproc = -zm -fh=preproc.pch
 extra_c_flags_ppexpr  = -zm -fh=preproc.pch
 extra_c_flags_ppmacro = -zm -fh=preproc.pch
 extra_c_flags_ppenv   = -zm -fh=preproc.pch
+!endif
 
 objs =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
         wregetfn.obj wrestrdp.obj wreselft.obj wreres.obj wrehints.obj &
