@@ -51,7 +51,7 @@ static int      GetAliasInfo();
 static byte_seq *AuxCodeDup( byte_seq *code );
 static int      GetByteSeq( void );
 
-static  hw_reg_set          asmRegsSaved = { HW_D( HW_FULL ) };
+static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
 
 #define WCPP_ASM            // enable assembler
 

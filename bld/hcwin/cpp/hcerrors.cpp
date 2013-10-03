@@ -56,7 +56,7 @@ void ErrorPrint( FILE *fp, ErrString format, va_list values )
                 case 'S':
                 case 's':
                     string = va_arg( values, ErrString );
-                    fprintf( fp, string );
+                    fprintf( fp, "%s", string );
                     break;
 
                 case 'D':

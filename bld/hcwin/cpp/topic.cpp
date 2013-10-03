@@ -34,6 +34,7 @@
 
 #define COMP_PAGE_SIZE 4096
 
+#define NULLVAL32	((uint_32)-1L)
 
 //
 //  TextAttr    --Structure to record changes to text.
@@ -253,7 +254,7 @@ GenericNode::GenericNode( uint_32 prev )
     : _topicSize( GENERIC_NODE_SIZE ),
       _dataSize( 0 ),
       _prevNode( prev ),
-      _nextNode( ~0UL ),
+      _nextNode( NULLVAL32 ),
       _size( GENERIC_NODE_SIZE )
 {
     // empty
@@ -273,12 +274,12 @@ void GenericNode::dumpTo( TopicLink *dest )
 
 TopicHeader::TopicHeader( uint_32 tnum )
     : _totalSize( 0 ),
-      _nextBrowse( ~0UL ),
-      _prevBrowse( ~0UL ),
+      _nextBrowse( NULLVAL32 ),
+      _prevBrowse( NULLVAL32 ),
       _topicNum( tnum ),
-      _startNonScroll( ~0UL ),
-      _startScroll( ~0UL ),
-      _nextTopic( ~0UL ),
+      _startNonScroll( NULLVAL32 ),
+      _startScroll( NULLVAL32 ),
+      _nextTopic( NULLVAL32 ),
       _size( TOPIC_HEADER_SIZE )
 {
     // empty
@@ -450,7 +451,7 @@ int TextHeader::setPar( ParFlags type, int val )
                 trueval |= 0x1;
                 _parAttrSize += 2;
             }
-    
+
             if( _numStops == 0 ) {
                 _parAttrSize += 1;
             } else if( _numStops == _maxStops ) {
@@ -735,7 +736,7 @@ void TextHeader::dumpTo( TopicLink *dest )
     for( i = 0; i < _numAttribs; i++ ) {
         *location++ = _attrBits[ _attribs[i]._type ];
         switch( _attribs[i]._type ) {
-    
+
             // deliberate fall-through
         case TOP_NEW_LINE:
         case TOP_NEW_PAR:
@@ -744,7 +745,7 @@ void TextHeader::dumpTo( TopicLink *dest )
         case TOP_END:
             // No argument for these flags.
             break;
-    
+
         case TOP_CENT_BITMAP:
         case TOP_LEFT_BITMAP:
         case TOP_RIGHT_BITMAP:
@@ -756,12 +757,12 @@ void TextHeader::dumpTo( TopicLink *dest )
             *((uint_16*) location) = (uint_16) _attribs[i]._data;
             location += sizeof( uint_16 );
             break;
-    
+
         case TOP_FONT_CHANGE:
             *((uint_16*) location) = (uint_16) _attribs[i]._data;
             location += sizeof( uint_16 );
             break;
-    
+
             // more fall-through
         case TOP_POPUP_LINK:
         case TOP_JUMP_LINK:
@@ -770,7 +771,7 @@ void TextHeader::dumpTo( TopicLink *dest )
             *((uint_32*) location) = _attribs[i]._data;
             location += sizeof( uint_32 );
             break;
-    
+
         case TOP_MACRO_LINK:
         case TOP_MACRO_INVIS:
             length = (uint_16) (_attribs[i]._size-3);
@@ -779,7 +780,7 @@ void TextHeader::dumpTo( TopicLink *dest )
             memcpy( location, _attribs[i]._stringDat, length );
             location += length;
             break;
-    
+
         default:
             length = (uint_16) (_attribs[i]._size-_attrSizes[_attribs[i]._type]);
             *((uint_16*) location) = (uint_16) (length+4);
@@ -838,8 +839,8 @@ HFTopic::HFTopic( HFSDirectory * d_file, HFPhrases *ph )
       _lastHeader( NULL ),
       _curOffset( PAGE_HEADER_SIZE ),
       _curCharOffset( 0 ),
-      _lastTopic( ~0UL ),
-      _lastLink( ~0UL ),
+      _lastTopic( NULLVAL32 ),
+      _lastLink( NULLVAL32 ),
       _haveCleanedUp( 0 )
 {
     _size = PAGE_HEADER_SIZE;
@@ -859,7 +860,7 @@ HFTopic::HFTopic( HFSDirectory * d_file, HFPhrases *ph )
     }
 
     // Create an initial linked-list node to work with.
-    _curNode = new GenericNode( ~0UL );
+    _curNode = new GenericNode( NULLVAL32 );
     _curNode->_recordType = TOP_HEADER;
     _curTopic = new TopicHeader( _numTopics++ );
     _curText = new TextHolder;
@@ -960,16 +961,16 @@ int HFTopic::dump( OutFile * dest )
         if( _myWriter ) delete _myWriter;
             _myWriter = temp;
         }
-    
+
         TopicLink       *current = _head;
         PageHeader      *cur_page = _phead->_next;
         dest->write( _phead->_pageNums, sizeof( uint_32 ), 3 );
         uint_32     page_size = PAGE_HEADER_SIZE;
-    
+
         // Write the linked list nodes in order.
         int i;
         while( current != NULL ) {
-    
+
         // At the start of a page, flush the compressor and
         // write a page header.
         if( current->_isFirstLink ) {
@@ -1034,7 +1035,7 @@ void HFTopic::startScroll()
 {
     _lastHeader->_startScroll = _curOffset;
     if( _lastHeader->_startNonScroll == _curOffset ) {
-    _lastHeader->_startNonScroll = ~0UL;
+        _lastHeader->_startNonScroll = NULLVAL32;
     }
 }
 
@@ -1111,14 +1112,14 @@ void HFTopic::dumpBrowse()
         seqlen = colonpos - current->_string + 1;
         if( colonpos == NULL ) {
             if( lastlocal != NULL ) {
-                lastlocal->nextBrowse() = ~0UL;
+                lastlocal->nextBrowse() = NULLVAL32;
             }
             lastlocal = NULL;
             if( lastglobal != NULL ) {
                 lastglobal->nextBrowse() = current->_charOffset;
                 current->prevBrowse() = lastglobal->_charOffset;
             } else {
-                current->prevBrowse() = ~0UL;
+                current->prevBrowse() = NULLVAL32;
             }
             lastglobal = current;
         } else {
@@ -1127,22 +1128,22 @@ void HFTopic::dumpBrowse()
                     lastlocal->nextBrowse() = current->_charOffset;
                     current->prevBrowse() = lastlocal->_charOffset;
                 } else {
-                    lastlocal->nextBrowse() = ~0UL;
-                    current->prevBrowse() = ~0UL;
+                    lastlocal->nextBrowse() = NULLVAL32;
+                    current->prevBrowse() = NULLVAL32;
                 }
             } else {
-                current->prevBrowse() = ~0UL;
+                current->prevBrowse() = NULLVAL32;
             }
             lastlocal = current;
         }
-    
+
         current = current->_next;
     }
     if( lastlocal != NULL ) {
-        lastlocal->nextBrowse() = ~0UL;
+        lastlocal->nextBrowse() = NULLVAL32;
     }
     if( lastglobal != NULL ) {
-        lastglobal->nextBrowse() = ~0UL;
+        lastglobal->nextBrowse() = NULLVAL32;
     }
 }
 
@@ -1212,10 +1213,10 @@ void HFTopic::newNode( int is_new_topic )
             }
         }
         _curNode->_dataSize = _curText->_uncompSize;
-    
+
         // Create memory for the current node.
         TopicLink   *first, *second, *third;
-    
+
         first = new TopicLink( _curNode->_size );
         _curNode->_myLink = first;
         if( _curNode->_recordType == TOP_HEADER ) {
@@ -1227,12 +1228,12 @@ void HFTopic::newNode( int is_new_topic )
         }
         third = new TopicLink( _curText->_size );
         _curText->dumpTo( third );
-    
+
         // Update a few more size and linked list variables.
         _curNode->_topicSize = first->_size + second->_size + third->_size;
         _curNode->_dataOffset = first->_size + second->_size;
         _curTopic->_totalSize += first->_size + second->_size + third->_size;
-    
+
         // See if the current page can hold this node.
         if( _useCompress ) {
             if( _curNode->_recordType == TOP_HEADER ) {
@@ -1245,7 +1246,7 @@ void HFTopic::newNode( int is_new_topic )
         } else {
             _size += first->_size + second->_size + third->_size;
         }
-    
+
         // Create a new page, if necessary.
         if( _size >= _numPages * COMP_PAGE_SIZE ) {
             _ptail->_next = new PageHeader;
@@ -1279,10 +1280,10 @@ void HFTopic::newNode( int is_new_topic )
             }
             first->_isFirstLink = 1;
         }
-    
+
         // Update linked list pointers in old nodes we've been saving,
         // and dump them at last.
-    
+
         _lastLink = _curOffset;
         if( _lastNode != NULL ) {
             _lastNode->_nextNode = _curOffset;
@@ -1299,13 +1300,13 @@ void HFTopic::newNode( int is_new_topic )
             }
             _lastHeader = _curTopic;
         }
-    
+
         // Increment the 'current location' counters.
         _curOffset += first->_size + second->_size + third->_size;
         if( _curNode->_recordType != TOP_HEADER ) {
             _curCharOffset += third->_size;
         }
-    
+
         // Add the new data blocks to the linked list of such blocks.
         if( _tail != NULL ) {
             _tail->_next = first;
