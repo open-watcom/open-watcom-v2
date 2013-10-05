@@ -142,10 +142,10 @@ static  bool    UnTangle1( ins_entry *jmp, ins_entry **instr )
 #endif
         /* conditional jump around a jump*/
         _JmpCond( c_jmp ) = ReverseCondition( _JmpCond( c_jmp ) );
-        cl = jmp->oc.oc_entry.op.class;
-        jmp->oc.oc_entry.op.class = OC_DEAD_JMP; /* to stop dead code removal*/
+        cl = jmp->oc.oc_header.class;
+        jmp->oc.oc_header.class = OC_DEAD_JMP; /* to stop dead code removal*/
         ChgLblRef( c_jmp, _Label( jmp ) );
-        jmp->oc.oc_entry.op.class = cl;
+        jmp->oc.oc_header.class = cl;
         *instr = DelInstr( jmp );
         return( TRUE );
     } else if( _Label( c_jmp ) == _Label( jmp ) ) {

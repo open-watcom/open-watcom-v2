@@ -82,66 +82,66 @@ typedef struct oc_header {
 } oc_header;
 
 typedef struct oc_entry {
-        oc_header               op;
+        oc_header               hdr;
         byte                    data[ 1 ];
 } oc_entry;
 
 typedef struct oc_handle {
-        oc_header               op;
-        pointer                 ref;
-        label_handle            handle;
+        oc_header               hdr;
+        struct ins_entry        *ref;       // must be at this position, code rely on this (see also _LblRef macro in optmac.h)
+        code_lbl                *handle;    // must be at this position, code rely on this (see also _Label macro in optmac.h)
 #if _TARGET & _TARG_RISC
         cg_linenum              line;
 #endif
 } oc_handle;
 
 typedef struct oc_debug {
-        oc_header               op;
+        oc_header               hdr;
         pointer                 ptr;
 } oc_debug;
 
 typedef struct oc_select {
-        oc_header               op;
+        oc_header               hdr;
         bool                    starts;
 } oc_select;
 
 typedef struct oc_jcond {
-        oc_header               op;
-        pointer                 ref;
-        label_handle            handle;
+        oc_header               hdr;
+        struct ins_entry        *ref;       // must be at this position, code rely on this (see also _LblRef macro in optmac.h)
+        code_lbl                *handle;    // must be at this position, code rely on this (see also _Label macro in optmac.h)
         cond_no                 cond;
 #if _TARGET & _TARG_RISC
         int                     index;
-        int                     index2; // MIPS can do reg/reg cond branches
+        int                     index2;     // MIPS can do reg/reg cond branches
 #endif
 } oc_jcond;
 
 typedef struct oc_ret {
-        oc_header               op;
-        pointer                 ref;
+        oc_header               hdr;
+        struct ins_entry        *ref;       // must be at this position, code rely on this (see also _LblRef macro in optmac.h)
         uint                    pops;
 } oc_ret;
 
 typedef struct oc_idata {
-        oc_header               op;
+        oc_header               hdr;
         byte                    pat;
 } oc_idata;
 
 typedef struct oc_linenum {
-        oc_header               op;
+        oc_header               hdr;
         unsigned_32             line;
         bool                    label_line;
 } oc_linenum;
 
 typedef struct oc_riscins {
-        oc_header               op;
+        oc_header               hdr;
         unsigned_32             opcode;
         pointer                 sym;            // symbol to which there is reloc (if any)
         unsigned_32             reloc;          // type of reloc (owl_reloc_type)
 } oc_riscins;
 
 typedef struct oc_func_start {
-        oc_header               op;
+        oc_header               hdr;
         pointer                 lbl;
         cg_linenum              line;
 } oc_func_start;
@@ -154,18 +154,18 @@ typedef struct ins_link {
 } ins_link;
 
 typedef union any_oc {
-        struct oc_linenum   oc_linenum;
-        struct oc_idata     oc_idata;
-        struct oc_ret       oc_ret;
-        struct oc_jcond     oc_jcond;
-        struct oc_select    oc_select;
-        struct oc_debug     oc_debug;
-        struct oc_handle    oc_handle;
-        struct oc_header    oc_header;
-        struct oc_entry     oc_entry;
+        struct oc_linenum       oc_linenum;
+        struct oc_idata         oc_idata;
+        struct oc_ret           oc_ret;
+        struct oc_jcond         oc_jcond;
+        struct oc_select        oc_select;
+        struct oc_debug         oc_debug;
+        struct oc_handle        oc_handle;
+        struct oc_header        oc_header;
+        struct oc_entry         oc_entry;
 #if _TARGET & _TARG_RISC
-        struct oc_riscins   oc_rins;
-        struct oc_func_start oc_func;
+        struct oc_riscins       oc_rins;
+        struct oc_func_start    oc_func;
 #endif
 } any_oc;
 

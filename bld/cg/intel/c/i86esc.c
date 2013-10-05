@@ -111,8 +111,8 @@ extern  bool    CodeHasAbsPatch( oc_entry *code ) {
     byte        *curr;
     byte        *final;
 
-    curr = &code->data[0];
-    final = curr + code->op.reclen - sizeof( oc_header );
+    curr = code->data;
+    final = curr + code->hdr.reclen - offsetof( oc_entry, data );
     while( curr < final ) {
         if( *curr++ == ESC ) {
             if( *curr++ == ABS ) {
@@ -311,18 +311,18 @@ static void DoAlignment( int len ) {
 }
 
 
-static  void    ExpandCJ( any_oc *oc ) {
-/**************************************/
-
-    label_handle        lbl;
+static  void    ExpandCJ( any_oc *oc )
+/************************************/
+{
     oc_class            class;
     fix_class           f;
     bool                rel;
+    obj_length          objlen;
 
-    lbl = oc->oc_handle.handle;
-    class = oc->oc_entry.op.class;
+    class = oc->oc_header.class;
+    objlen = oc->oc_header.objlen;
     if( (class & GET_BASE) == OC_JCOND ) {
-        if( oc->oc_entry.op.objlen == OptInsSize( OC_JCOND, OC_DEST_NEAR ) ) {
+        if( objlen == OptInsSize( OC_JCOND, OC_DEST_NEAR ) ) {
             if( _CPULevel( CPU_386 ) ) {
                 _OutJCondNear( oc->oc_jcond.cond );
             } else {
@@ -330,21 +330,20 @@ static  void    ExpandCJ( any_oc *oc ) {
                 OutDataByte( OptInsSize( OC_JMP, OC_DEST_NEAR ) );
                 _OutJNear;
             }
-            OutCodeDisp( lbl, F_OFFSET, TRUE, class );
+            OutCodeDisp( oc->oc_jcond.handle, F_OFFSET, TRUE, class );
         } else {
             _OutJCond( oc->oc_jcond.cond );
-            OutShortDisp( lbl );
+            OutShortDisp( oc->oc_jcond.handle );
         }
-    } else if( (class & GET_BASE) == OC_JMP
-         && oc->oc_entry.op.objlen == OptInsSize( OC_JMP, OC_DEST_SHORT ) ) {
+    } else if( (class & GET_BASE) == OC_JMP && objlen == OptInsSize( OC_JMP, OC_DEST_SHORT ) ) {
         _OutJShort;
-        OutShortDisp( lbl );
+        OutShortDisp( oc->oc_handle.handle );
     } else {
         if( class & ATTR_FAR ) {
             f = F_PTR;
             rel = FALSE;
             if( ( class & GET_BASE ) == OC_CALL ) {
-                if( oc->oc_entry.op.objlen == OptInsSize(OC_CALL, OC_DEST_CHEAP) ) {
+                if( objlen == OptInsSize( OC_CALL, OC_DEST_CHEAP ) ) {
                     f = F_OFFSET;
                     rel = TRUE;
                     class &= ~ ATTR_FAR;
@@ -364,7 +363,7 @@ static  void    ExpandCJ( any_oc *oc ) {
                 _OutJNear;
             }
         }
-        OutCodeDisp( lbl, f, rel, class );
+        OutCodeDisp( oc->oc_handle.handle, f, rel, class );
     }
 }
 
@@ -558,9 +557,9 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
     return( lbl );
 }
 
-extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
-/********************************************************/
-
+extern  void    OutputOC( any_oc *oc, any_oc *next_lbl )
+/******************************************************/
+{
     label_handle        lbl;
     sym_handle          sym;
     oc_class            base;
@@ -568,7 +567,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
     offset              lc;
     byte                *ptr;
 
-    base = oc->oc_entry.op.class & GET_BASE;
+    base = oc->oc_header.class & GET_BASE;
     if( base != OC_LABEL ) {
         DumpSavedDebug();
     }
@@ -576,30 +575,30 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
     switch( base ) {
     case OC_CODE:
     case OC_DATA:
-        ExpandObj( oc->oc_entry.data, oc->oc_entry.op.reclen - sizeof( oc_header ) );
+        ExpandObj( oc->oc_entry.data, oc->oc_entry.hdr.reclen - offsetof( oc_entry, data ) );
         break;
     case OC_IDATA:
         if( next_lbl != NULL ) { /* cause next_lbl to need no alignment */
-            len = -( AskLocation() + oc->oc_entry.op.objlen );
-            len &= next_lbl->oc_entry.op.objlen;
+            len = -( AskLocation() + oc->oc_entry.hdr.objlen );
+            len &= next_lbl->oc_entry.hdr.objlen;
             DoAlignment( len );
         }
         OutSelect( TRUE );
-        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.op.objlen );
+        SendBytes( oc->oc_entry.data, oc->oc_entry.hdr.objlen );
         OutSelect( FALSE );
         break;
     case OC_BDATA:
-        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.op.objlen );
+        SendBytes( oc->oc_entry.data, oc->oc_entry.hdr.objlen );
         break;
     case OC_LABEL:
         /* figure out number of bytes to pad */
         lc = AskLocation();
-        len = -lc & oc->oc_entry.op.objlen;
+        len = -lc & oc->oc_handle.hdr.objlen;
         if( AskIfUniqueLabel( oc->oc_handle.handle ) ) {
             if( (lc == LastUnique) && (len == 0) ) {
                 /* Two unique labels have ended up next to each other.
                    Pad out to next label alignment boundry. */
-                len = oc->oc_entry.op.objlen + 1;
+                len = oc->oc_handle.hdr.objlen + 1;
             }
             LastUnique = lc + len;
         }
@@ -654,7 +653,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
             *ptr |= B_IND_RMR_JMP;
         }
         OutDataByte( *ptr++ );
-        lbl = ExpandObj( ptr, oc->oc_entry.op.reclen - sizeof( oc_header ) - 1 - len );
+        lbl = ExpandObj( ptr, oc->oc_entry.hdr.reclen - offsetof( oc_entry, data ) - 1 - len );
         if( lbl != NULL && base == OC_JMPI ) {
             TellKeepLabel( lbl ); /* make sure label comes out*/
             GenKillLabel( lbl );  /* but kill it when it does*/
@@ -668,13 +667,14 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
     case OC_RET:
         _OutOpndSize;
         len = M_RET;
-        if( oc->oc_entry.op.class & ATTR_FAR ) {
+        base = oc->oc_header.class;
+        if( base & ATTR_FAR ) {
             len |= B_RET_LONG;
         }
-        if( oc->oc_entry.op.class & ATTR_IRET ) {
+        if( base & ATTR_IRET ) {
             len |= B_RET_IRET;
         }
-        if( oc->oc_entry.op.class & ATTR_POP ) {
+        if( base & ATTR_POP ) {
             OutDataByte( len );
             OutDataInt( oc->oc_ret.pops );
         } else {
@@ -682,7 +682,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
         }
         break;
     case OC_INFO:
-        base = oc->oc_entry.op.class & INFO_MASK;
+        base = oc->oc_header.class & INFO_MASK;
         switch( base ) {
         case INFO_LINE:
             OutLineNum( oc->oc_linenum.line, oc->oc_linenum.label_line );
@@ -719,4 +719,3 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
         break;
     }
 }
-

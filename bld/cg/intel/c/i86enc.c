@@ -192,9 +192,9 @@ extern  void    Format( oc_class class ) {
 */
 
     FPPatchType = FPP_NONE;
-    Temp.oc.class = class;
-    Temp.oc.objlen = 0;
-    Temp.oc.reclen = sizeof( oc_header );
+    Temp.hdr.class = class;
+    Temp.hdr.objlen = 0;
+    Temp.hdr.reclen = offsetof( template, data );
     ICur = 0;
     ILen = 0;
     IEsc = 0;
@@ -205,7 +205,7 @@ extern  void    ReFormat( oc_class class ) {
     Change the class of Temp
 */
 
-    Temp.oc.class = class;
+    Temp.hdr.class = class;
 }
 
 extern  void    AddByte( byte b ) {
@@ -226,10 +226,10 @@ extern  void    AddToTemp( byte b ) {
 */
 
     if( b == ESC ) {
-        Temp.data[Temp.oc.reclen++ - sizeof( oc_header )] = b;
+        Temp.data[Temp.hdr.reclen++ - offsetof( template, data )] = b;
     }
-    Temp.data[Temp.oc.reclen++ - sizeof( oc_header )] = b;
-    Temp.oc.objlen++;
+    Temp.data[Temp.hdr.reclen++ - offsetof( template, data )] = b;
+    Temp.hdr.objlen++;
 }
 
 extern  void    InsertByte( byte b ) {
@@ -241,7 +241,7 @@ extern  void    InsertByte( byte b ) {
     byte        *src;
     byte        *dst;
 
-    i = Temp.oc.reclen - sizeof( oc_header );
+    i = Temp.hdr.reclen - offsetof( template, data );
     dst = &Temp.data[i];
     src = &Temp.data[i - 1];
     while( --i >= 0 ) {
@@ -250,7 +250,7 @@ extern  void    InsertByte( byte b ) {
         --src;
     }
     Temp.data[0] = b;
-    Temp.oc.reclen++;
+    Temp.hdr.reclen++;
 }
 
 
@@ -309,17 +309,17 @@ static  void    TransferIns( void ) {
     int j;
 
     i = 0;
-    j = Temp.oc.reclen - sizeof( oc_header );
+    j = Temp.hdr.reclen - offsetof( template, data );
     while( i < IEsc ) {
         if( Inst[i] == ESC ) {
             Temp.data[j++] = ESC;
-            Temp.oc.reclen++;
+            Temp.hdr.reclen++;
         }
         Temp.data[j++] = Inst[i++];
     }
     Copy( &Inst[i], &Temp.data[j], ICur - i );
-    Temp.oc.reclen += ICur;
-    Temp.oc.objlen += ILen;
+    Temp.hdr.reclen += ICur;
+    Temp.hdr.objlen += ILen;
 }
 
 extern  void    Finalize( void ) {
@@ -332,8 +332,8 @@ extern  void    Finalize( void ) {
         DoFunnyRef( FPPatchType );
         FPPatchType = FPP_NONE;
     }
-    if( Temp.oc.objlen != 0 ) {
-        InputOC( (any_oc *)&Temp.oc );
+    if( Temp.hdr.objlen != 0 ) {
+        InputOC( (any_oc *)&Temp );
     }
 }
 
@@ -586,18 +586,18 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     int                 ins_key;
     label_handle        lbl;
     label_handle        lbl_2;
-    oc_jcond            temp;
+    any_oc              oc;
 
     lbl = AskForNewLabel();
     lbl_2 = AskForNewLabel();
 
-    temp.op.class = OC_JCOND | ATTR_SHORT;
-    temp.op.reclen = sizeof( oc_jcond );
-    temp.op.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
-    temp.ref = NULL;
-    temp.cond = 4;
-    temp.handle = lbl;
-    InputOC( (any_oc *)&temp );
+    oc.oc_jcond.hdr.class = OC_JCOND | ATTR_SHORT;
+    oc.oc_jcond.hdr.reclen = sizeof( oc_jcond );
+    oc.oc_jcond.hdr.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
+    oc.oc_jcond.ref = NULL;
+    oc.oc_jcond.cond = 4;
+    oc.oc_jcond.handle = lbl;
+    InputOC( &oc );
     i = FPRegTrans( ins->operands[0]->r.reg );
     reverse = FALSE;
     pop = FALSE;
@@ -666,7 +666,7 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
 static  void    DoP5MemoryDivide( instruction *ins ) {
 /****************************************************/
 
-    oc_jcond            temp;
+    any_oc              oc;
     int                 rtindex;
     label_handle        lbl;
     label_handle        lbl_2;
@@ -681,13 +681,13 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     lbl = AskForNewLabel();
     lbl_2 = AskForNewLabel();
 
-    temp.op.class = OC_JCOND | ATTR_SHORT;
-    temp.op.reclen = sizeof( oc_jcond );
-    temp.op.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
-    temp.ref = NULL;
-    temp.cond = 4;
-    temp.handle = lbl;
-    InputOC( (any_oc *)&temp );
+    oc.oc_jcond.hdr.class = OC_JCOND | ATTR_SHORT;
+    oc.oc_jcond.hdr.reclen = sizeof( oc_jcond );
+    oc.oc_jcond.hdr.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
+    oc.oc_jcond.ref = NULL;
+    oc.oc_jcond.cond = 4;
+    oc.oc_jcond.handle = lbl;
+    InputOC( &oc );
 
     seg = NULL;
     if( ins->num_operands > NumOperands( ins ) ) {

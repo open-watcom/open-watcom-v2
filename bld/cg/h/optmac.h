@@ -35,24 +35,23 @@
 #define optreturn( x )  { --InOptimizer; return( x ); }
 #define optreturnvoid   { --InOptimizer; return; }
 
-extern  int     InOptimizer;
-
 #define _Class( var )      (((ins_entry *)(var))->oc.oc_header.class & GET_BASE)
 #define _Attr( var )       (((ins_entry *)(var))->oc.oc_header.class &~GET_BASE)
 #define _SetAttr( v1, v2 ) ((ins_entry *)(v1))->oc.oc_header.class |= v2
-#define _ChgClass( v1,v2 ) ((ins_entry *)(v1))->oc.oc_header.class = \
-                            _Attr( v1 ) | v2
+#define _ChgClass( v1,v2 ) ((ins_entry *)(v1))->oc.oc_header.class = _Attr( v1 ) | v2
 #define _SetClass( v1,v2 ) ((ins_entry *)(v1))->oc.oc_header.class = v2
 
-#define _TransferClass( var ) ( ( var & GET_BASE ) >= OC_JMP )
+#define _TransferClass( var ) ( (var) >= OC_JMP )
 
-#define _Label( var )      (*(code_lbl **)&((ins_entry*)(var))->oc.oc_handle.handle)
+#define _Label( var )      (((ins_entry *)(var))->oc.oc_handle.handle)
 #define _LblRef( var )     (((ins_entry *)(var))->oc.oc_handle.ref)
-#define _LblLine( var )     (((ins_entry *)(var))->oc.oc_handle.line)
+#define _LblLine( var )    (((ins_entry *)(var))->oc.oc_handle.line)
 #define _JmpCond( var )    (((ins_entry *)(var))->oc.oc_jcond.cond)
 #define _RetPop( var )     (((ins_entry *)(var))->oc.oc_ret.pops)
 #define _ObjLen( var )     (((ins_entry *)(var))->oc.oc_header.objlen)
 #define _InsLen( var )     (((ins_entry *)(var))->oc.oc_header.reclen)
 
 /*  the next size seems to cover almost all optimizer entries that get allocated */
-#define INSTR_FRLSIZE ( sizeof( ins_link ) + sizeof( any_oc ) )
+#define INSTR_FRLSIZE ( sizeof( ins_entry ) )
+
+extern  int     InOptimizer;

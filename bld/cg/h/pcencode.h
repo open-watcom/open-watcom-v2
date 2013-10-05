@@ -118,6 +118,6 @@ extern void     Format(oc_class);
 #define INSSIZE         128
 
 typedef struct template {
-        oc_header       oc;
+        oc_header       hdr;
         byte            data[ INSSIZE ];
 } template;

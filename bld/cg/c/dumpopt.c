@@ -45,9 +45,9 @@ static  void            DoLabel( oc_handle *instr );
 static  void            DoRef( oc_handle *instr );
 
 static char * CNames[] = {
-#define pick_class(x) #x ,
-#include "occlasss.h"
-#undef pick_class
+    #define pick_class(x) #x ,
+    #include "occlasss.h"
+    #undef pick_class
     ""
 };
 
@@ -142,7 +142,7 @@ static  void    CheckAttr( oc_class cl ) {
 static  void    DoInfo( any_oc *oc ) {
 /**************************************/
 
-    switch( oc->oc_entry.op.class & INFO_MASK ) {
+    switch( oc->oc_header.class & INFO_MASK ) {
     case INFO_LINE:
         DumpLiteral( "LINE " );
         DumpInt( oc->oc_linenum.line );
@@ -206,7 +206,7 @@ extern  void    DumpOc( ins_entry *ins ) {
     DumpString(  CNames[ _Class( ins ) ] );
     DumpLiteral( " " );
     if( _Class( ins ) != OC_INFO ) {
-        CheckAttr( ins->oc.oc_entry.op.class );
+        CheckAttr( ins->oc.oc_header.class );
     }
     switch( _Class( ins ) ) {
     case OC_INFO:
@@ -282,7 +282,7 @@ static  void    DoData( oc_entry *instr ) {
     uint        len;
 
     len = 0;
-    while( len < instr->op.reclen - sizeof( oc_header ) ) {
+    while( len < instr->hdr.reclen - offsetof( oc_entry, data ) ) {
         DumpByte( instr->data[ len ] );
         DumpLiteral( " " );
         ++len;
@@ -297,7 +297,7 @@ static  void    DoLabel( oc_handle *instr ) {
 
     lbl = instr->handle;
     DumpLiteral( "align=<" );
-    DumpByte( instr->op.objlen+1 );
+    DumpByte( instr->hdr.objlen + 1 );
     DumpLiteral( "> " );
     for(;;) {
         if( LblName( lbl ) == FALSE ) break;
@@ -414,12 +414,12 @@ extern  void    UpOpt( ins_entry *ins, uint last ) {
         if( ins == NULL ) break;
         --size;
     }
-    DownOpt( ins, last+1 );
+    DownOpt( ins, last + 1 );
 }
 
 
-extern  void    DumpOpt() {
-/*************************/
+extern  void    DumpOpt( void ) {
+/*******************************/
 
     DownOpt( FirstIns, -1 );
 }

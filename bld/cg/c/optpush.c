@@ -51,26 +51,31 @@ extern  void    RetAftrCall( ins_entry *ret_instr ) {
     oc_class    ret_attr;
 
   optbegin
-    if( _IsTargetModel( NO_CALL_RET_TRANSFORM ) ) optreturnvoid;
+    if( _IsTargetModel( NO_CALL_RET_TRANSFORM ) )
+        optreturnvoid;
     call_instr = ret_instr;
     while( PrevClass( call_instr ) == OC_LABEL ) {
         call_instr = PrevIns( call_instr );
     }
-    if( PrevClass( call_instr ) != OC_CALL ) optreturnvoid;
+    if( PrevClass( call_instr ) != OC_CALL )
+        optreturnvoid;
     call_instr = PrevIns( call_instr );
     call_attr = _Attr( call_instr );
-    if( (call_attr & ATTR_POP) != 0 ) optreturnvoid;
+    if( (call_attr & ATTR_POP) != 0 )
+        optreturnvoid;
     ret_attr = _Attr( ret_instr );
-    if( (ret_attr & ATTR_POP) != 0 ) optreturnvoid;
+    if( (ret_attr & ATTR_POP) != 0 )
+        optreturnvoid;
 #if( OPTIONS & SEGMENTED )
-    if( ( (call_attr & ATTR_FAR) ^ (ret_attr & ATTR_FAR) ) != 0 ) optreturnvoid;
+    if( ( (call_attr & ATTR_FAR) ^ (ret_attr & ATTR_FAR) ) != 0 )
+        optreturnvoid;
 #endif
     InsDelete = TRUE;
     _ChgClass( call_instr, OC_JMP );
     /* NB! this code assumes that we aren't making the instruction longer */
     if( _ObjLen( call_instr ) == OptInsSize( OC_CALL, OC_DEST_CHEAP ) ) {
         _ObjLen( call_instr ) = OptInsSize( OC_JMP, OC_DEST_NEAR );
-        call_instr->oc.oc_entry.op.class &= ~ATTR_FAR;
+        call_instr->oc.oc_header.class &= ~ATTR_FAR;
     } else if( _ObjLen( call_instr ) == OptInsSize( OC_CALL, OC_DEST_FAR ) ) {
         _ObjLen( call_instr ) = OptInsSize( OC_JMP, OC_DEST_FAR );
     } else {
@@ -133,12 +138,12 @@ extern  void    MultiLineNums( ins_entry *ins ) {
     ins_entry   *prev;
 
   optbegin
-    if( ins->oc.oc_entry.op.class == OC_LINENUM ) {
+    if( ins->oc.oc_header.class == OC_LINENUM ) {
         prev = ins->ins.prev;
         for(;;) {
             if( prev == NULL ) break;
             if( _Class( prev ) != OC_INFO ) break;
-            if( prev->oc.oc_entry.op.class == OC_LINENUM ) {
+            if( prev->oc.oc_header.class == OC_LINENUM ) {
                 ins = prev->ins.next;
                 UnLinkInstr( prev );
                 _SetClass( prev, OC_DEAD );

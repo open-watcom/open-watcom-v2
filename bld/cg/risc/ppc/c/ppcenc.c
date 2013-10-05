@@ -53,7 +53,7 @@ extern void DumpGen( struct opcode_entry * );
 extern void DumpPtr( void *ptr );
 extern void GenCondJump( instruction * );
 
-extern void             ObjBytes( char *buffer, int size );
+extern void             ObjBytes( const void *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
 extern void             OutReloc( label_handle, ppc_reloc, unsigned );
 extern hw_reg_set       StackReg( void );
@@ -71,7 +71,7 @@ extern type_class_def   Unsigned[];
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 #define _IsSigned( type )               ( Unsigned[type] != type )
-#define _Emit( ins )                    ObjBytes( (char *)&(ins), sizeof( ppc_ins ) )
+#define _EmitIns( ins )                 ObjBytes( &(ins), sizeof( ppc_ins ) )
 
 #define ZERO_SINK       0
 #define STACK_REG       1
@@ -184,7 +184,7 @@ extern  void    GenFPOPINS( opcode op1, opcode op2, reg_idx a, reg_idx c, reg_id
     ppc_ins             encoding;
 
     encoding = _Op1( op1 ) | _A( a ) | _C( c ) | _D( d ) | _Op2( op2 );
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
@@ -194,7 +194,7 @@ extern  void    GenOPINS( opcode op1, opcode op2, reg_idx a, reg_idx b, reg_idx 
     ppc_ins             encoding;
 
     encoding = _Op1( op1 ) | _A( a ) | _B( b ) | _S( s ) | _Op2( op2 );
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
@@ -204,7 +204,7 @@ extern  void    GenOPIMM( opcode op1, reg_idx d, reg_idx a, signed_16 immed )
     ppc_ins             encoding;
 
     encoding = _Op1( op1 ) | _D( d ) | _A( a ) | _SignedImmed( immed );
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
@@ -218,7 +218,7 @@ extern  void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
         encoding = _Op1( 31 ) | _Op2( 339 );
     }
     encoding |= _D( d ) | _SPR( spr );
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
@@ -228,7 +228,7 @@ extern  void    GenMEMINS( opcode op, reg_idx d, reg_idx i, signed_16 displaceme
     ppc_ins             encoding;
 
     encoding = _Op1( op ) | _D( d ) | _A( i ) | _SignedImmed( displacement );
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
@@ -241,7 +241,7 @@ extern  void    GenBRANCH( opcode op, pointer label, bool link, bool absolute )
     loc = AskLocation();
     encoding = _Op1( op ) | _AA( absolute ) | _LK( link ) | _BranchImmed( -loc );
     OutReloc( label, PPC_RELOC_BRANCH, 0 );
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
@@ -252,7 +252,7 @@ extern  void    GenCONDBR( opcode op, opcode bo, opcode bi, pointer label )
 
     encoding = _Op1( op ) | _S( bo ) | _A( bi );
     OutReloc( label, PPC_RELOC_BRANCH_COND, 0 );
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
@@ -262,7 +262,7 @@ extern  void    GenCMP( opcode op, opcode op2, reg_idx a, reg_idx b )
     ppc_ins             encoding;
 
     encoding = _Op1( op ) | _A( a ) | _B( b ) | _Op2( op2 );
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
@@ -272,14 +272,14 @@ extern  void    GenCMPIMM( opcode op, reg_idx a, signed_16 imm )
     ppc_ins             encoding;
 
     encoding = _Op1( op ) | _A( a ) | _SignedImmed( imm );
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
-extern  void    GenRAWINS( uint_32 encoding )
+extern  void    GenRAWINS( ppc_ins encoding )
 /*******************************************/
 {
-    _Emit( encoding );
+    _EmitIns( encoding );
 }
 
 
@@ -327,7 +327,7 @@ static  void    doCall( instruction *ins )
         GenBRANCH( 18, lbl, TRUE, FALSE );
         encoding = 0x60000000;  // ..znop for linker thunk
         OutReloc( lbl, PPC_RELOC_GLUE, 0 );
-        ObjBytes( (char *)&encoding, sizeof( ppc_ins ) );
+        _EmitIns( encoding );
     }
 }
 
@@ -539,7 +539,7 @@ extern  void    GenRET( void )
    ppc_ins      encoding;
 
    encoding = 0x4e800020;       // FIXME - need linkage docs
-   _Emit( encoding );
+   _EmitIns( encoding );
 }
 
 
@@ -795,7 +795,7 @@ extern  void    GenObjCode( instruction *ins )
 
 #define MAX_ALIGNMENT   16
 
-static char Zeros[MAX_ALIGNMENT];
+static byte Zeros[MAX_ALIGNMENT];
 
 extern  void    CodeLabel( label_handle label, unsigned alignment )
 /*****************************************************************/
@@ -807,7 +807,7 @@ extern  void    CodeLabel( label_handle label, unsigned alignment )
     loc = AskLocation();
     modulus = loc % alignment;
     if( modulus != 0 ) {
-        ObjBytes( &Zeros[0], alignment - modulus );
+        ObjBytes( Zeros, alignment - modulus );
     }
     OutLabel( label );
 #ifndef NDEBUG
@@ -959,15 +959,15 @@ extern  void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
 #if 0
 
     // copy & paste from AXP cg
-    oc_riscins          oc;
+    any_oc      oc;
 
-    oc.op.objlen = 4;
-    oc.op.class = OC_RCODE;
-    oc.op.reclen = sizeof( oc_riscins );
-    oc.opcode = ins;
-    oc.sym = sym;
-    oc.reloc = type;
-    InputOC( (any_oc *)&oc );
+    oc.oc_rins.op.class = OC_RCODE;
+    oc.oc_rins.op.reclen = sizeof( oc_riscins );
+    oc.oc_rins.op.objlen = 4;
+    oc.oc_rins.opcode = ins;
+    oc.oc_rins.sym = sym;
+    oc.oc_rins.reloc = type;
+    InputOC( &oc );
 #else
     _Zoiks( ZOIKS_091 );
 #endif

@@ -137,17 +137,12 @@ static  void    TransformJumps( ins_entry *ins, ins_entry *first )
 static  bool    CommonInstr( ins_entry *old, ins_entry *add )
 /***********************************************************/
 {
-    oc_entry    *oc_add;
-    oc_entry    *oc_old;
-
   optbegin
     if( _IsModel( NO_OPTIMIZATION ) )
         optreturn( FALSE );
-    oc_add = &add->oc.oc_entry;
-    oc_old = &old->oc.oc_entry;
-    if( oc_add->op.class != oc_old->op.class )
+    if( add->oc.oc_header.class != old->oc.oc_header.class )
         optreturn( FALSE );
-    if( oc_add->op.reclen != oc_old->op.reclen )
+    if( add->oc.oc_header.reclen != old->oc.oc_header.reclen )
         optreturn( FALSE );
     switch( _Class( old ) ) {
     case OC_BDATA:
@@ -182,7 +177,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
             optreturn( FALSE );
         break;
     default:
-        if( Equal( oc_add, oc_old, oc_add->op.reclen ) == FALSE )
+        if( Equal( &add->oc.oc_header, &old->oc.oc_header, add->oc.oc_header.reclen ) == FALSE )
             optreturn( FALSE );
         break;
     }

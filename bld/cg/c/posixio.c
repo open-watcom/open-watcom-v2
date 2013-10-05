@@ -195,8 +195,8 @@ static  objhandle   Offset( objoffset offset )
 }
 
 
-static  void    PutStream( handle h, byte *b, uint len )
-/******************************************************/
+static  void    PutStream( handle h, const byte *b, uint len )
+/************************************************************/
 {
 #if 0
     int         retc;
@@ -320,8 +320,8 @@ objhandle       AskObjHandle( void )
     return( Offset( ObjOffset ) );
 }
 
-void    PutObjBytes( byte *buff, uint len )
-/*****************************************/
+void    PutObjBytes( const void *buff, uint len )
+/***********************************************/
 {
     if( NeedSeek ) {
         SeekStream( ObjFile, ObjOffset );

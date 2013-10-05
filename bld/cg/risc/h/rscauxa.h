@@ -45,5 +45,5 @@ typedef struct byte_seq_reloc {
 typedef struct byte_seq {
     byte_seq_len        length;
     byte_seq_reloc      *relocs;
-    char                data[];
+    byte                data[];
 } byte_seq;

@@ -42,7 +42,7 @@
 #include "addrname.h"
 #include "objout.h"
 
-extern  void    ObjBytes( const char *, unsigned );
+extern  void    ObjBytes( const void *, unsigned );
 extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
 extern  void    DoAlignment( offset );
 extern  void    DbgSetBase( void );
@@ -73,10 +73,10 @@ static  code_lbl *procLabel;
 static  void    saveDebug( any_oc *oc ) {
 /***************************************/
 
-    if( ( debugOC.oc_entry.op.class & GET_BASE ) != OC_DEAD ) {
+    if( ( debugOC.oc_header.class & GET_BASE ) != OC_DEAD ) {
         _Zoiks( ZOIKS_103 );
     }
-    Copy( oc, &debugOC, oc->oc_entry.op.reclen );
+    Copy( oc, &debugOC, oc->oc_header.reclen );
 }
 
 static  void    dumpDebug( void ) {
@@ -85,7 +85,7 @@ static  void    dumpDebug( void ) {
     offset              loc;
     oc_class            class;
 
-    class = debugOC.oc_entry.op.class;
+    class = debugOC.oc_header.class;
     if( ( class & GET_BASE ) != OC_INFO ) return;
     loc = AskLocation();
     switch( class & INFO_MASK ) {
@@ -106,7 +106,7 @@ static  void    dumpDebug( void ) {
         DbgBlkBeg( debugOC.oc_debug.ptr, loc );
         break;
     }
-    debugOC.oc_entry.op.class = OC_DEAD;
+    debugOC.oc_header.class = OC_DEAD;
 }
 
 static  void    doInfo( any_oc *oc ) {
@@ -116,7 +116,7 @@ static  void    doInfo( any_oc *oc ) {
     offset              lc;
 
     lc = 0;
-    base = oc->oc_entry.op.class & INFO_MASK;
+    base = oc->oc_header.class & INFO_MASK;
     switch( base ) {
     case INFO_LDONE:
         TellScrapLabel( oc->oc_handle.handle );
@@ -166,7 +166,7 @@ extern  void    OutputOC( any_oc *oc ) {
     offset              len;
     code_lbl            *lbl;
 
-    base = oc->oc_entry.op.class & GET_BASE;
+    base = oc->oc_header.class & GET_BASE;
     if( base != OC_LABEL ) {
         dumpDebug();
     }
@@ -181,13 +181,13 @@ extern  void    OutputOC( any_oc *oc ) {
                 }
             }
         }
-        ObjBytes( (char *)&oc->oc_rins.opcode, oc->oc_entry.op.objlen );
+        ObjBytes( &oc->oc_rins.opcode, oc->oc_rins.hdr.objlen );
         break;
     case OC_CODE:
     case OC_DATA:
     case OC_BDATA:
     case OC_IDATA:
-        ObjBytes( (char *)&oc->oc_entry.data[ 0 ], oc->oc_entry.op.objlen );
+        ObjBytes( oc->oc_entry.data, oc->oc_entry.hdr.objlen );
         break;
     case OC_RET:
         EncodeRet( &oc->oc_ret );
@@ -204,13 +204,13 @@ extern  void    OutputOC( any_oc *oc ) {
     case OC_LABEL:
         /* figure out number of bytes to pad */
         lc = AskLocation();
-        len = -lc & oc->oc_entry.op.objlen;
+        len = -lc & oc->oc_handle.hdr.objlen;
         lbl = oc->oc_handle.handle;
         if( AskIfUniqueLabel( lbl ) ) {
             if( (lc == LastUnique) && (len == 0) ) {
                 /* Two unique labels have ended up next to each other.
                    Pad out to next label alignment boundry. */
-                len = oc->oc_entry.op.objlen + 1;
+                len = oc->oc_handle.hdr.objlen + 1;
             }
             LastUnique = lc + len;
         }

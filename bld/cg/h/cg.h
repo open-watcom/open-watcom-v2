@@ -75,20 +75,20 @@ typedef enum {
 typedef void *          cg_name;        /* retval for CGName(),CGUnary()*/
 typedef void *          call_handle;    /* retval for CGInitCall(), etc. */
 typedef void *          cg_sym_handle;
-typedef void *          label_handle;   /*  2nd parm to CGName for CG_LBL */
-typedef void *          sel_handle;     /*  return value for CGSelInit() */
-typedef struct bck_info *back_handle;    /*  return value for BENewBack() */
-typedef void *          aux_handle;     /*  first parm to FEAuxInfo (sometimes) */
-typedef void *          temp_handle;    /*  first parm to FEAuxInfo (sometimes) */
-typedef void *          float_handle;   /*  for the BF... routines */
-typedef void *          callback_handle;/*  passed to rtn from callback node */
-typedef void *          patch_handle;   /*  used to stuff patchable ints into tree */
+typedef void *          label_handle;   /* 2nd parm to CGName for CG_LBL */
+typedef void *          sel_handle;     /* return value for CGSelInit() */
+typedef struct bck_info *back_handle;   /* return value for BENewBack() */
+typedef void *          aux_handle;     /* first parm to FEAuxInfo (sometimes) */
+typedef void *          temp_handle;    /* first parm to FEAuxInfo (sometimes) */
+typedef void *          float_handle;   /* for the BF... routines */
+typedef void *          callback_handle;/* passed to rtn from callback node */
+typedef void *          patch_handle;   /* used to stuff patchable ints into tree */
 
 typedef void            (*cg_callback)( callback_handle );
 
-typedef short           segment_id;     /*  must be signed */
+typedef short           segment_id;     /* must be signed */
 
-typedef unsigned_32     dbg_type;       /*  symbolic debugging type handle */
+typedef unsigned_32     dbg_type;       /* symbolic debugging type handle */
 typedef void            *dbg_struct;
 typedef void            *dbg_array;
 typedef void            *dbg_enum;

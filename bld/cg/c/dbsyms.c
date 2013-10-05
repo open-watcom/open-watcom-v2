@@ -867,17 +867,16 @@ extern  void    EmitRtnEnd() {
 }
 
 
-static  void    EmitDbg( byte class, pointer ptr ) {
-/**************************************************/
+static  void    EmitDbg( byte class, pointer ptr )
+/************************************************/
+{
+    any_oc      oc;
 
-
-    any_oc      temp;
-
-    temp.oc_debug.op.class = OC_INFO + class;
-    temp.oc_debug.op.reclen = sizeof( oc_debug );
-    temp.oc_debug.op.objlen = 0;
-    temp.oc_debug.ptr = ptr;
-    InputOC( &temp );
+    oc.oc_debug.hdr.class = OC_INFO + class;
+    oc.oc_debug.hdr.reclen = sizeof( oc_debug );
+    oc.oc_debug.hdr.objlen = 0;
+    oc.oc_debug.ptr = ptr;
+    InputOC( &oc );
 }
 
 

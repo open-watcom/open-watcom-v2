@@ -280,7 +280,7 @@ extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
         rtn( ins );
         _Next;
         LayOpword( M_LOOP );
-        Inst[DATALO] = - ( -3 + 2 + Temp.oc.objlen );
+        Inst[DATALO] = - ( -3 + 2 + Temp.hdr.objlen );
     } else {
         LayOpbyte( 0xe3 );    /* JCXZ*/
         AddByte( 0 );        /* to be patched*/
@@ -288,7 +288,7 @@ extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
         rtn( ins );
         _Next;
         LayOpword( M_LOOP );
-        Inst[DATALO] = - ( -2 + 2 + Temp.oc.objlen );
+        Inst[DATALO] = - ( -2 + 2 + Temp.hdr.objlen );
         Temp.data[1] = -Inst[DATALO];
     }
 }

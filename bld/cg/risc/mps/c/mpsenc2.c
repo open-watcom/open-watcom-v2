@@ -37,7 +37,7 @@
 #include "mipsenc.h"
 #include "reloc.h"
 
-extern void ObjBytes( const char *, unsigned );
+extern void ObjBytes( const void *, unsigned );
 extern void OutReloc( pointer, owl_reloc_type, unsigned );
 
 
@@ -49,10 +49,10 @@ void EncodeRet( oc_ret *oc )
     oc = oc;
     // 'jr ra'
     encoding = _Opcode( 0 ) | _Rs( MIPS_RETURN_ADDR ) | _Function( 0x08 );
-    ObjBytes( (char *)&encoding, sizeof( encoding ) );
+    ObjBytes( &encoding, sizeof( encoding ) );
     // TODO: Handle delay slot better
     encoding = MIPS_NOP;
-    ObjBytes( (char *)&encoding, sizeof( encoding ) );
+    ObjBytes( &encoding, sizeof( encoding ) );
 }
 
 
@@ -61,10 +61,10 @@ static void doBranch( mips_ins opcode, uint_8 cc, pointer lbl, uint reg1, uint r
 {
     opcode = _Opcode( opcode ) | _Rs( reg1 ) | _Rt( reg2 ) | _Rt( cc );
     OutReloc( lbl, OWL_RELOC_BRANCH_REL, 0 );
-    ObjBytes( (char *)&opcode, sizeof( opcode ) );
+    ObjBytes( &opcode, sizeof( opcode ) );
     // TODO: Handle delay slot better
     opcode = MIPS_NOP;
-    ObjBytes( (char *)&opcode, sizeof( opcode ) );
+    ObjBytes( &opcode, sizeof( opcode ) );
 }
 
 
@@ -76,14 +76,14 @@ static void doCopBranch( mips_ins opcode, uint_8 cc, pointer lbl )
     // TODO: This is lame - there must be at least one instruction
     // between a FP comparison instruction and a branch testing the result
     nop_code = MIPS_NOP;
-    ObjBytes( (char *)&nop_code, sizeof( nop_code ) );
+    ObjBytes( &nop_code, sizeof( nop_code ) );
 
     opcode = _Opcode( 0x11 ) | _Rs( opcode ) | _Rt( cc );
     OutReloc( lbl, OWL_RELOC_BRANCH_REL, 0 );
-    ObjBytes( (char *)&opcode, sizeof( opcode ) );
+    ObjBytes( &opcode, sizeof( opcode ) );
     // TODO: Handle delay slot better
     opcode = MIPS_NOP;
-    ObjBytes( (char *)&opcode, sizeof( opcode ) );
+    ObjBytes( &opcode, sizeof( opcode ) );
 }
 
 
@@ -105,10 +105,10 @@ void EncodeCall( oc_handle *oc )
     // 'jal target'
     encoding = _Opcode( 0x03 );
     OutReloc( oc->handle, OWL_RELOC_JUMP_ABS, 0 );
-    ObjBytes( (char *)&encoding, sizeof( encoding ) );
+    ObjBytes( &encoding, sizeof( encoding ) );
     // TODO: Handle delay slot better
     encoding = MIPS_NOP;
-    ObjBytes( (char *)&encoding, sizeof( encoding ) );
+    ObjBytes( &encoding, sizeof( encoding ) );
 }
 
 
@@ -130,7 +130,7 @@ void EncodeCond( oc_jcond *oc )
     uint        reg2;
 
     floating = 0;
-    if( oc->op.class & ATTR_FLOAT ) {
+    if( oc->hdr.class & ATTR_FLOAT ) {
         floating = 1;
     }
     reg2 = oc->index2 == -1 ? 0 : oc->index2;

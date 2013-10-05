@@ -57,7 +57,7 @@
 
 extern  void            CloseObj( void );
 extern  void            OpenObj( void );
-extern  void            PutObjBytes( const char *, uint );
+extern  void            PutObjBytes( const void *, uint );
 extern  char            *AskRTName( rt_class );
 extern  void            TryScrapLabel( code_lbl * );
 extern  void            DoOutObjectName(sym_handle,void(*)(char*,void*),void*,import_type);
@@ -382,7 +382,7 @@ extern  void    ObjFini( void )
 }
 
 
-static  int PutBytes( void *handle, const char *buffer, unsigned len )
+static  int PutBytes( void *handle, const void *buffer, unsigned len )
 /********************************************************************/
 {
     handle = handle;
@@ -714,8 +714,8 @@ extern  segment_id  AskSegID( pointer hdl, cg_class class )
     }
 }
 
-extern  void    ObjBytes( char *buffer, unsigned size )
-/*****************************************************/
+extern  void    ObjBytes( const void *buffer, unsigned size )
+/***********************************************************/
 {
     assert( currSection != NULL );
     OWLEmitData( currSection->owl_handle, buffer, size );
@@ -1163,7 +1163,7 @@ extern  void    ObjEmitSeq( byte_seq *code )
 
     assert( code->length % 4 == 0 );
     curr = SortList( code->relocs, offsetof( byte_seq_reloc, next ), relocBefore );
-    code_ptr = (axp_ins *)&code->data[ 0 ];
+    code_ptr = (axp_ins *)code->data;
     for( i = 0; i < code->length; i += 4 ) {
         opcode = *code_ptr++;
         reloc_type = 0;

@@ -38,7 +38,7 @@
 #include "axpencod.h"
 #include "reloc.h"
 
-extern void ObjBytes( const char *, unsigned );
+extern void ObjBytes( const void *, unsigned );
 extern void OutReloc( pointer, owl_reloc_type, unsigned );
 
 void EncodeRet( oc_ret *oc ) {
@@ -47,14 +47,14 @@ void EncodeRet( oc_ret *oc ) {
 
     oc = oc;
     encoding = 0x6bfa8001;      // this is a little cheesy - ret ra(r26)
-    ObjBytes( (char *)&encoding, sizeof( encoding ) );
+    ObjBytes( &encoding, sizeof( encoding ) );
 }
 
 static void doBranch( axp_ins opcode, pointer lbl, uint reg ) {
 
     opcode = _Opcode( opcode ) | _A( reg );
     OutReloc( lbl, OWL_RELOC_BRANCH_REL, 0 );
-    ObjBytes( (char *)&opcode, sizeof( opcode ) );
+    ObjBytes( &opcode, sizeof( opcode ) );
 }
 
 void EncodeJump( oc_handle *oc ) {
@@ -82,7 +82,7 @@ void EncodeCond( oc_jcond *oc ) {
     int         floating;
 
     floating = 0;
-    if( oc->op.class & ATTR_FLOAT ) {
+    if( oc->hdr.class & ATTR_FLOAT ) {
         floating = 1;
     }
     opcode = BranchOpcodes[ oc->cond - FIRST_COMPARISON ][ floating  ];

@@ -115,33 +115,31 @@ static  type_class_def  FindMaxClass( name *cons, int *prefs ) {
             ins = ins->head.next;
         }
     }
-    if( class == -1 ) return( XX );
+    if( class == -1 )
+        class = XX;
     // return( Unsigned[ class ] );
     // why? BBB - June 28, 1995
     return( class );
 }
 
 
-static  bool            ReplaceConst( name *cons,
-                                      name *temp, type_class_def tmp_class ) {
-/*****************************************************************************
+static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
+/*******************************************************************************
 
      Replace all occurences of "cons" with "temp".  As a hack, we
      never replace the operands of a shift, since it's always
      better to do a shift by a constant on both the 370 and x86
      architectures.
 */
-
+{
     block               *blk;
     instruction         *ins;
     int                 i;
-    int                 class;
-    int                 ins_class;
+    type_class_def      ins_class;
     bool                change;
     int                 num_operands;
 
     tmp_class = tmp_class;
-    class = -1;
     change = FALSE;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
         ins = blk->ins.hd.next;
@@ -154,12 +152,12 @@ static  bool            ReplaceConst( name *cons,
                         ins->operands[i] = temp;
                         change = TRUE;
                     } else {
-                        #if !( _TARGET & _TARG_AXP ) && ( _TARG_MEMORY & _TARG_LOW_FIRST )
-                            if( _IsIntegral(ins_class) && _IsIntegral(tmp_class) ) {
-                                ins->operands[i] = TempOffset( temp, 0, ins_class );
-                                change = TRUE;
-                            }
-                        #endif
+#if !( _TARGET & _TARG_AXP ) && ( _TARG_MEMORY & _TARG_LOW_FIRST )
+                        if( _IsIntegral( ins_class ) && _IsIntegral( tmp_class ) ) {
+                            ins->operands[i] = TempOffset( temp, 0, ins_class );
+                            change = TRUE;
+                        }
+#endif
                     }
                 }
             }

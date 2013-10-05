@@ -69,16 +69,17 @@ static  label_handle    LocateLabel( instruction *ins, int index ) {
 extern  void    CodeLabelLinenum( label_handle label, unsigned align, cg_linenum line ) {
 /***************************************************************************************/
 
-    oc_handle   temp;
+    any_oc      oc;
 
-    if( OptForSize > 50 || align == 0 ) align = 1;
-    temp.op.class = OC_LABEL;
-    temp.op.reclen = sizeof( oc_handle );
-    temp.op.objlen = align - 1;
-    temp.ref = NULL;
-    temp.handle = label;
-    temp.line = line;
-    InputOC( (any_oc *)&temp );
+    if( OptForSize > 50 || align == 0 )
+        align = 1;
+    oc.oc_handle.hdr.class = OC_LABEL;
+    oc.oc_handle.hdr.reclen = sizeof( oc_handle );
+    oc.oc_handle.hdr.objlen = align - 1;
+    oc.oc_handle.ref = NULL;
+    oc.oc_handle.handle = label;
+    oc.oc_handle.line = line;
+    InputOC( &oc );
 
 }
 #endif
@@ -106,14 +107,14 @@ extern  void    CodeLineNum( cg_linenum line, bool label_line ) {
     Dump a line number into the queue
 */
 
-    oc_linenum  temp;
+    any_oc      oc;
 
     if( line != 0 ) {
-        temp.op.class = OC_LINENUM;
-        temp.op.reclen = sizeof( oc_linenum );
-        temp.op.objlen = 0;
-        temp.label_line = label_line;
-        temp.line = line;
+        oc.oc_linenum.hdr.class = OC_LINENUM;
+        oc.oc_linenum.hdr.reclen = sizeof( oc_linenum );
+        oc.oc_linenum.hdr.objlen = 0;
+        oc.oc_linenum.label_line = label_line;
+        oc.oc_linenum.line = line;
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
         if( _IsTargetModel( ASM_OUTPUT ) ) {
@@ -123,7 +124,7 @@ extern  void    CodeLineNum( cg_linenum line, bool label_line ) {
         }
 #endif
 #endif
-        InputOC( (any_oc *)&temp );
+        InputOC( &oc );
     }
 }
 
@@ -134,17 +135,17 @@ extern  void    CodeHandle( oc_class class, int len, label_handle handle ) {
     into the queue.  Len is the code space taken.
 */
 
-    oc_handle   temp;
+    any_oc      oc;
 
-    temp.op.class = class;
-    temp.op.reclen = sizeof( oc_handle );
-    temp.op.objlen = len;
-    temp.ref = NULL;
-    temp.handle = handle;
+    oc.oc_handle.hdr.class = class;
+    oc.oc_handle.hdr.reclen = sizeof( oc_handle );
+    oc.oc_handle.hdr.objlen = len;
+    oc.oc_handle.ref = NULL;
+    oc.oc_handle.handle = handle;
 #if _TARGET & _TARG_RISC
-    temp.line = 0;
+    oc.oc_handle.line = 0;
 #endif
-    InputOC( (any_oc *)&temp );
+    InputOC( &oc );
 }
 
 static  void    DoCondJump( instruction *cond ) {
@@ -152,7 +153,7 @@ static  void    DoCondJump( instruction *cond ) {
     Generate a conditional branch
 */
 
-    oc_jcond            temp;
+    any_oc              oc;
     label_handle        dest_true;
     label_handle        dest_false;
     label_handle        dest_next;
@@ -177,32 +178,32 @@ static  void    DoCondJump( instruction *cond ) {
     }
     if( dest_true != NULL && dest_false != dest_true &&
         ( dest_true != dest_next || dest_false == NULL ) ) {
-        temp.op.class = OC_JCOND;
+        oc.oc_jcond.hdr.class = OC_JCOND;
 #if _TARGET & _TARG_INTEL
         if( !_CPULevel( CPU_386 ) ) {
-            temp.op.class |= ATTR_SHORT;
+            oc.oc_jcond.hdr.class |= ATTR_SHORT;
         }
 #endif
 #if _TARGET & _TARG_RISC
         if( _IsFloating( cond->type_class ) ) {
-            temp.op.class |= ATTR_FLOAT;
+            oc.oc_jcond.hdr.class |= ATTR_FLOAT;
         }
 #endif
-        temp.op.reclen = sizeof( oc_jcond );
-        temp.op.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
-        temp.ref = NULL;
-        temp.cond = CondCode( cond );
-        temp.handle = dest_true;
+        oc.oc_jcond.hdr.reclen = sizeof( oc_jcond );
+        oc.oc_jcond.hdr.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
+        oc.oc_jcond.ref = NULL;
+        oc.oc_jcond.cond = CondCode( cond );
+        oc.oc_jcond.handle = dest_true;
 #if _TARGET & _TARG_RISC
         assert( cond->operands[ 0 ]->n.class == N_REGISTER );
-        temp.index = cond->operands[ 0 ]->r.arch_index;
+        oc.oc_jcond.index = cond->operands[ 0 ]->r.arch_index;
         if( cond->operands[1]->n.class == N_REGISTER ) {
-            temp.index2 = cond->operands[1]->r.arch_index;
+            oc.oc_jcond.index2 = cond->operands[1]->r.arch_index;
         } else {
-            temp.index2 = -1;
+            oc.oc_jcond.index2 = -1;
         }
 #endif
-        InputOC( (any_oc *)&temp );
+        InputOC( &oc );
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
         if( _IsTargetModel( ASM_OUTPUT ) ) {

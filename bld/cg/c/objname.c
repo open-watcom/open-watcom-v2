@@ -32,19 +32,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
-#include "cgstd.h"
 #include "cgdefs.h"
-#include "cg.h"
-#include "bckdef.h"
-#include "cgaux.h"
-#include "objrep.h"
-#include "system.h"
-#include "model.h"
-#include "symdbg.h"
-#include "ocentry.h"
 #include "import.h"
+#include "cgaux.h"
+#include "coderep.h"
 #include "feprotos.h"
-#include "targsys.h"
 #include "utils.h"
 
 #include "langenvd.h"

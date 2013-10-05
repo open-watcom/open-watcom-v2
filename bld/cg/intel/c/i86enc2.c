@@ -471,13 +471,13 @@ extern  void    GenSelEntry( bool starts ) {
     the code segment queue.
 */
 
-    oc_select   temp;
+    any_oc      oc;
 
-    temp.op.class = OC_INFO + INFO_SELECT;
-    temp.op.reclen = sizeof( oc_select );
-    temp.op.objlen = 0;
-    temp.starts = starts;
-    InputOC( (any_oc *)&temp );
+    oc.oc_select.hdr.class = OC_INFO + INFO_SELECT;
+    oc.oc_select.hdr.reclen = sizeof( oc_select );
+    oc.oc_select.hdr.objlen = 0;
+    oc.oc_select.starts = starts;
+    InputOC( &oc );
 }
 
 
@@ -549,26 +549,26 @@ extern  void    GenReturn( int pop, bool is_long, bool iret ) {
     Generate a return instruction
 */
 
-    oc_ret      oc;
+    any_oc      oc;
 
-    oc.op.class = OC_RET;
+    oc.oc_ret.hdr.class = OC_RET;
     if( pop != 0 ) {
-        oc.op.class |= ATTR_POP;
+        oc.oc_ret.hdr.class |= ATTR_POP;
     }
     if( is_long ) {
-        oc.op.class |= ATTR_FAR;
+        oc.oc_ret.hdr.class |= ATTR_FAR;
     }
     if( iret ) {
-        oc.op.class |= ATTR_IRET;
+        oc.oc_ret.hdr.class |= ATTR_IRET;
     }
-    oc.op.reclen = sizeof( oc_ret );
-    oc.op.objlen = 1;
+    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
+    oc.oc_ret.hdr.objlen = 1;
     if( pop != 0 ) {
-        oc.op.objlen += 2;
+        oc.oc_ret.hdr.objlen += 2;
     }
-    oc.ref = NULL;
-    oc.pops = pop;
-    InputOC( (any_oc *)&oc );
+    oc.oc_ret.ref = NULL;
+    oc.oc_ret.pops = pop;
+    InputOC( &oc );
 }
 
 extern  void    GenMJmp( instruction *ins ) {
@@ -640,25 +640,23 @@ static  void    DoCodeBytes( byte *src, byte_seq_len len, oc_class class ) {
     Dump bytes "src" directly into the queue, for length "len".
 */
 
-    oc_entry    *temp;
+    any_oc    *oc;
 
-    temp = CGAlloc( sizeof( oc_header ) + MAX_OBJ_LEN );
-    temp->op.class = class;
-    temp->op.objlen = len;
-    temp->op.reclen = sizeof( oc_header ) + len;
+    oc = CGAlloc( offsetof( oc_entry, data ) + MAX_OBJ_LEN );
+    oc->oc_entry.hdr.class = class;
+    oc->oc_entry.hdr.reclen = offsetof( oc_entry, data ) + MAX_OBJ_LEN;
+    oc->oc_entry.hdr.objlen = MAX_OBJ_LEN;
     while( len > MAX_OBJ_LEN ) {
-        temp->op.objlen = MAX_OBJ_LEN;
-        temp->op.reclen = sizeof( oc_header ) + MAX_OBJ_LEN;
-        Copy( src, &temp->data[0], MAX_OBJ_LEN );
-        InputOC( (any_oc *)temp );
+        Copy( src, oc->oc_entry.data, MAX_OBJ_LEN );
+        InputOC( oc );
         src += MAX_OBJ_LEN;
         len -= MAX_OBJ_LEN;
     }
-    temp->op.objlen = len;
-    temp->op.reclen = sizeof( oc_header ) + len;
-    Copy( src, &temp->data[0], len );
-    InputOC( (any_oc *)temp );
-    CGFree( temp );
+    oc->oc_entry.hdr.reclen = offsetof( oc_entry, data ) + len;
+    oc->oc_entry.hdr.objlen = len;
+    Copy( src, oc->oc_entry.data, len );
+    InputOC( oc );
+    CGFree( oc );
 }
 
 extern  void    CodeBytes( byte *src, byte_seq_len len ) {

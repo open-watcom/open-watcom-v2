@@ -57,7 +57,7 @@ extern void DumpGen(struct opcode_entry*);
 extern void DumpPtr( void *ptr );
 extern void GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
-extern void             ObjBytes( char *buffer, int size );
+extern void             ObjBytes( const char *buffer, unsigned size );
 extern uint_8           RegTrans( hw_reg_set );
 extern void             OutReloc( label_handle, axp_reloc, unsigned );
 extern hw_reg_set       StackReg( void );
@@ -203,15 +203,15 @@ static  uint_8  ScratchOpcodes[2];
 extern  void EmitInsReloc( axp_ins ins, pointer sym, owl_reloc_type type ) {
 /**************************************************************************/
 
-    oc_riscins          oc;
+    any_oc          oc;
 
-    oc.op.objlen = 4;
-    oc.op.class = OC_RCODE;
-    oc.op.reclen = sizeof( oc_riscins );
-    oc.opcode = ins;
-    oc.sym = sym;
-    oc.reloc = type;
-    InputOC( (any_oc *)&oc );
+    oc.oc_rins.hdr.class = OC_RCODE;
+    oc.oc_rins.hdr.reclen = sizeof( oc_riscins );
+    oc.oc_rins.hdr.objlen = 4;
+    oc.oc_rins.opcode = ins;
+    oc.oc_rins.sym = sym;
+    oc.oc_rins.reloc = type;
+    InputOC( &oc );
 }
 
 static  void EmitIns( axp_ins ins ) {
@@ -296,6 +296,7 @@ static  uint_8  *FindOpcodes( instruction *ins ) {
             opcodes[ 1 ] |= AlphaByteInsSizeBits[ ins->base_type_class ];
         }
     } else {
+        opcodes = NULL;
         assert( 0 );
     }
     return( opcodes );
@@ -312,6 +313,7 @@ static  uint_16 FindFloatingOpcodes( instruction *ins ) {
     } else if( _OpIsSet( ins->head.opcode ) ) {
         opcode = FloatingSetOpcodes[ ins->head.opcode - FIRST_SET_OP ][ 0 ];
     } else {
+        opcode = NULL;
         assert( 0 );
     }
     return( opcode );
@@ -387,14 +389,14 @@ extern  void    GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set sr
 extern  void    GenRET( void )
 /****************************/
 {
-    oc_ret      oc;
+    any_oc      oc;
 
-    oc.op.class = OC_RET;
-    oc.op.reclen = sizeof( oc_ret );
-    oc.op.objlen = 4;
-    oc.ref = NULL;
-    oc.pops = FALSE;            /* not used */
-    InputOC( (any_oc *)&oc );
+    oc.oc_ret.hdr.class = OC_RET;
+    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
+    oc.oc_ret.hdr.objlen = 4;
+    oc.oc_ret.ref = NULL;
+    oc.oc_ret.pops = FALSE;            /* not used */
+    InputOC( &oc );
 }
 
 static  pointer symLabel( name *mem ) {

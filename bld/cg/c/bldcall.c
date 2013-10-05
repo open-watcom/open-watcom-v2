@@ -728,8 +728,8 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
 
 #if _TARGET & _TARG_RISC
 
-static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using ) {
-/******************************************************************************/
+static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_class ) {
+/************************************************************************************/
 
     pn                  curr;
     pn                  last;
@@ -739,7 +739,7 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using ) {
     name                *temp;
     instruction         *ins;
 
-    size = TypeClassSize[ using ];
+    size = TypeClassSize[using_class];
     len = _RoundUp( parm->name->tipe->length, size );
     offset = len - size;
     temp = AllocTemp( from );
@@ -749,10 +749,10 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using ) {
     while( offset >= 0 ) {
         // create a parm node for this part of the struct
         curr = CGAlloc( sizeof( parm_node ) );
-        ins = MakeMove( STempOffset( temp, offset, using, size ), NULL, using );
+        ins = MakeMove( STempOffset( temp, offset, using_class, size ), NULL, using_class );
         AddIns( ins );
         curr->next = last;
-        curr->name = InsName( ins, ClassType( using ) );
+        curr->name = InsName( ins, ClassType( using_class ) );
         curr->name->flags = parm->name->flags;
         curr->alignment = 4;
         last = curr;
