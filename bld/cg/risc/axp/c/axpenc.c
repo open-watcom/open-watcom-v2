@@ -313,7 +313,7 @@ static  uint_16 FindFloatingOpcodes( instruction *ins ) {
     } else if( _OpIsSet( ins->head.opcode ) ) {
         opcode = FloatingSetOpcodes[ ins->head.opcode - FIRST_SET_OP ][ 0 ];
     } else {
-        opcode = NULL;
+        opcode = 0;
         assert( 0 );
     }
     return( opcode );

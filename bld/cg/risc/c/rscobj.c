@@ -382,7 +382,7 @@ extern  void    ObjFini( void )
 }
 
 
-static  int PutBytes( void *handle, const void *buffer, unsigned len )
+static  int PutBytes( void *handle, const char *buffer, unsigned len )
 /********************************************************************/
 {
     handle = handle;
