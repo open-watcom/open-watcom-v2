@@ -145,9 +145,9 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
         optreturn( FALSE );
     oc_add = &add->oc.oc_entry;
     oc_old = &old->oc.oc_entry;
-    if( oc_add->class != oc_old->class )
+    if( oc_add->op.class != oc_old->op.class )
         optreturn( FALSE );
-    if( oc_add->reclen != oc_old->reclen )
+    if( oc_add->op.reclen != oc_old->op.reclen )
         optreturn( FALSE );
     switch( _Class( old ) ) {
     case OC_BDATA:
@@ -182,7 +182,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
             optreturn( FALSE );
         break;
     default:
-        if( Equal( oc_add, oc_old, oc_add->reclen ) == FALSE )
+        if( Equal( oc_add, oc_old, oc_add->op.reclen ) == FALSE )
             optreturn( FALSE );
         break;
     }

@@ -552,12 +552,8 @@ extern  void    GenReturn( int pop, bool is_long, bool iret ) {
     oc_ret      oc;
 
     oc.op.class = OC_RET;
-    oc.op.reclen = sizeof( oc_ret );
-    oc.op.objlen = 1;
-    oc.pops = pop;
     if( pop != 0 ) {
         oc.op.class |= ATTR_POP;
-        oc.op.objlen += 2;
     }
     if( is_long ) {
         oc.op.class |= ATTR_FAR;
@@ -565,6 +561,13 @@ extern  void    GenReturn( int pop, bool is_long, bool iret ) {
     if( iret ) {
         oc.op.class |= ATTR_IRET;
     }
+    oc.op.reclen = sizeof( oc_ret );
+    oc.op.objlen = 1;
+    if( pop != 0 ) {
+        oc.op.objlen += 2;
+    }
+    oc.ref = NULL;
+    oc.pops = pop;
     InputOC( (any_oc *)&oc );
 }
 
@@ -640,19 +643,19 @@ static  void    DoCodeBytes( byte *src, byte_seq_len len, oc_class class ) {
     oc_entry    *temp;
 
     temp = CGAlloc( sizeof( oc_header ) + MAX_OBJ_LEN );
-    temp->class = class;
-    temp->objlen = len;
-    temp->reclen = sizeof( oc_header ) + len;
+    temp->op.class = class;
+    temp->op.objlen = len;
+    temp->op.reclen = sizeof( oc_header ) + len;
     while( len > MAX_OBJ_LEN ) {
-        temp->objlen = MAX_OBJ_LEN;
-        temp->reclen = sizeof( oc_header ) + MAX_OBJ_LEN;
+        temp->op.objlen = MAX_OBJ_LEN;
+        temp->op.reclen = sizeof( oc_header ) + MAX_OBJ_LEN;
         Copy( src, &temp->data[0], MAX_OBJ_LEN );
         InputOC( (any_oc *)temp );
         src += MAX_OBJ_LEN;
         len -= MAX_OBJ_LEN;
     }
-    temp->objlen = len;
-    temp->reclen = sizeof( oc_header ) + len;
+    temp->op.objlen = len;
+    temp->op.reclen = sizeof( oc_header ) + len;
     Copy( src, &temp->data[0], len );
     InputOC( (any_oc *)temp );
     CGFree( temp );

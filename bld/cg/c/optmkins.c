@@ -46,15 +46,15 @@ extern  ins_entry       *NewInstr( any_oc *oc )
     oc_length   len;
 
   optbegin
-    len = oc->oc_entry.reclen + sizeof( ins_link );
+    len = oc->oc_entry.op.reclen + sizeof( ins_link );
     if( len <= INSTR_FRLSIZE ) {
         instr = AllocFrl( &InstrFrl, INSTR_FRLSIZE );
     } else {
-        instr = CGAlloc( oc->oc_entry.reclen + sizeof( ins_link ) );
+        instr = CGAlloc( oc->oc_entry.op.reclen + sizeof( ins_link ) );
     }
     instr->ins.prev = NULL;
     instr->ins.next = NULL;
-    Copy( oc, &instr->oc, oc->oc_entry.reclen );
+    Copy( oc, &instr->oc, oc->oc_entry.op.reclen );
     optreturn( instr );
 }
 
@@ -64,7 +64,7 @@ extern  void    FreeInstr( ins_entry *instr )
 {
     oc_length   len;
 
-    len = instr->oc.oc_entry.reclen + sizeof( ins_link );
+    len = instr->oc.oc_entry.op.reclen + sizeof( ins_link );
     if( len <= INSTR_FRLSIZE ) {
         FrlFreeSize( &InstrFrl, (pointer *)instr, INSTR_FRLSIZE );
     } else {
@@ -91,9 +91,10 @@ extern  code_lbl        *AddNewLabel( ins_entry *new, int align )
         optreturn( _Label( NextIns( new ) ) );
     if( new != NULL && _Class( new ) == OC_LABEL )
         optreturn( _Label( new ) );
-    lbl_oc.oc_entry.class = OC_LABEL;
-    lbl_oc.oc_entry.objlen = align;
-    lbl_oc.oc_entry.reclen = sizeof( oc_handle );
+    lbl_oc.oc_entry.op.class = OC_LABEL;
+    lbl_oc.oc_entry.op.objlen = align;
+    lbl_oc.oc_entry.op.reclen = sizeof( oc_handle );
+    lbl_oc.oc_handle.ref = NULL;
     lbl = AskForNewLabel();
     lbl_oc.oc_handle.handle = lbl;
 #if _TARGET & _TARG_RISC
@@ -114,6 +115,7 @@ extern  void    AddNewJump( ins_entry *new, code_lbl *lbl )
     jmp_oc.oc_header.class = OC_JMP;
     jmp_oc.oc_header.objlen = OptInsSize( OC_JMP, OC_DEST_NEAR );
     jmp_oc.oc_header.reclen = sizeof( oc_handle );
+    jmp_oc.oc_handle.ref = NULL;
     jmp_oc.oc_handle.handle = lbl;
     AddInstr( NewInstr( &jmp_oc ), new );
   optend

@@ -70,7 +70,7 @@ extern  void    RetAftrCall( ins_entry *ret_instr ) {
     /* NB! this code assumes that we aren't making the instruction longer */
     if( _ObjLen( call_instr ) == OptInsSize( OC_CALL, OC_DEST_CHEAP ) ) {
         _ObjLen( call_instr ) = OptInsSize( OC_JMP, OC_DEST_NEAR );
-        call_instr->oc.oc_entry.class &= ~ATTR_FAR;
+        call_instr->oc.oc_entry.op.class &= ~ATTR_FAR;
     } else if( _ObjLen( call_instr ) == OptInsSize( OC_CALL, OC_DEST_FAR ) ) {
         _ObjLen( call_instr ) = OptInsSize( OC_JMP, OC_DEST_FAR );
     } else {
@@ -133,12 +133,12 @@ extern  void    MultiLineNums( ins_entry *ins ) {
     ins_entry   *prev;
 
   optbegin
-    if( ins->oc.oc_entry.class == OC_LINENUM ) {
+    if( ins->oc.oc_entry.op.class == OC_LINENUM ) {
         prev = ins->ins.prev;
         for(;;) {
             if( prev == NULL ) break;
             if( _Class( prev ) != OC_INFO ) break;
-            if( prev->oc.oc_entry.class == OC_LINENUM ) {
+            if( prev->oc.oc_entry.op.class == OC_LINENUM ) {
                 ins = prev->ins.next;
                 UnLinkInstr( prev );
                 _SetClass( prev, OC_DEAD );

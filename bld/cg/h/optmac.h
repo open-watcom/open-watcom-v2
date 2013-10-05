@@ -55,4 +55,4 @@ extern  int     InOptimizer;
 #define _InsLen( var )     (((ins_entry *)(var))->oc.oc_header.reclen)
 
 /*  the next size seems to cover almost all optimizer entries that get allocated */
-#define INSTR_FRLSIZE ( 12 + sizeof( ins_link ) + sizeof( oc_header ) )
+#define INSTR_FRLSIZE ( sizeof( ins_link ) + sizeof( any_oc ) )

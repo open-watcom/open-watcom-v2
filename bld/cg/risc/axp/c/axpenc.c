@@ -392,6 +392,7 @@ extern  void    GenRET( void )
     oc.op.class = OC_RET;
     oc.op.reclen = sizeof( oc_ret );
     oc.op.objlen = 4;
+    oc.ref = NULL;
     oc.pops = FALSE;            /* not used */
     InputOC( (any_oc *)&oc );
 }

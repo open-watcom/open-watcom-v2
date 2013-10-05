@@ -75,6 +75,7 @@ extern  void    CodeLabelLinenum( label_handle label, unsigned align, cg_linenum
     temp.op.class = OC_LABEL;
     temp.op.reclen = sizeof( oc_handle );
     temp.op.objlen = align - 1;
+    temp.ref = NULL;
     temp.handle = label;
     temp.line = line;
     InputOC( (any_oc *)&temp );
@@ -138,6 +139,7 @@ extern  void    CodeHandle( oc_class class, int len, label_handle handle ) {
     temp.op.class = class;
     temp.op.reclen = sizeof( oc_handle );
     temp.op.objlen = len;
+    temp.ref = NULL;
     temp.handle = handle;
 #if _TARGET & _TARG_RISC
     temp.line = 0;
@@ -180,21 +182,26 @@ static  void    DoCondJump( instruction *cond ) {
         if( !_CPULevel( CPU_386 ) ) {
             temp.op.class |= ATTR_SHORT;
         }
-#else
-        assert( cond->operands[ 0 ]->n.class == N_REGISTER );
-        temp.index = cond->operands[ 0 ]->r.arch_index;
-        if( cond->operands[1]->n.class == N_REGISTER )
-            temp.index2 = cond->operands[1]->r.arch_index;
-        else
-            temp.index2 = -1;
+#endif
+#if _TARGET & _TARG_RISC
         if( _IsFloating( cond->type_class ) ) {
             temp.op.class |= ATTR_FLOAT;
         }
 #endif
-        temp.op.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
         temp.op.reclen = sizeof( oc_jcond );
+        temp.op.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
+        temp.ref = NULL;
         temp.cond = CondCode( cond );
         temp.handle = dest_true;
+#if _TARGET & _TARG_RISC
+        assert( cond->operands[ 0 ]->n.class == N_REGISTER );
+        temp.index = cond->operands[ 0 ]->r.arch_index;
+        if( cond->operands[1]->n.class == N_REGISTER ) {
+            temp.index2 = cond->operands[1]->r.arch_index;
+        } else {
+            temp.index2 = -1;
+        }
+#endif
         InputOC( (any_oc *)&temp );
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG

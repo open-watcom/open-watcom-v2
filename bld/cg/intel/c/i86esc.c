@@ -112,7 +112,7 @@ extern  bool    CodeHasAbsPatch( oc_entry *code ) {
     byte        *final;
 
     curr = &code->data[0];
-    final = curr + code->reclen - sizeof( oc_header );
+    final = curr + code->op.reclen - sizeof( oc_header );
     while( curr < final ) {
         if( *curr++ == ESC ) {
             if( *curr++ == ABS ) {
@@ -320,9 +320,9 @@ static  void    ExpandCJ( any_oc *oc ) {
     bool                rel;
 
     lbl = oc->oc_handle.handle;
-    class = oc->oc_entry.class;
+    class = oc->oc_entry.op.class;
     if( (class & GET_BASE) == OC_JCOND ) {
-        if( oc->oc_entry.objlen == OptInsSize( OC_JCOND, OC_DEST_NEAR ) ) {
+        if( oc->oc_entry.op.objlen == OptInsSize( OC_JCOND, OC_DEST_NEAR ) ) {
             if( _CPULevel( CPU_386 ) ) {
                 _OutJCondNear( oc->oc_jcond.cond );
             } else {
@@ -336,7 +336,7 @@ static  void    ExpandCJ( any_oc *oc ) {
             OutShortDisp( lbl );
         }
     } else if( (class & GET_BASE) == OC_JMP
-         && oc->oc_entry.objlen == OptInsSize( OC_JMP, OC_DEST_SHORT ) ) {
+         && oc->oc_entry.op.objlen == OptInsSize( OC_JMP, OC_DEST_SHORT ) ) {
         _OutJShort;
         OutShortDisp( lbl );
     } else {
@@ -344,7 +344,7 @@ static  void    ExpandCJ( any_oc *oc ) {
             f = F_PTR;
             rel = FALSE;
             if( ( class & GET_BASE ) == OC_CALL ) {
-                if( oc->oc_entry.objlen == OptInsSize(OC_CALL, OC_DEST_CHEAP) ) {
+                if( oc->oc_entry.op.objlen == OptInsSize(OC_CALL, OC_DEST_CHEAP) ) {
                     f = F_OFFSET;
                     rel = TRUE;
                     class &= ~ ATTR_FAR;
@@ -568,7 +568,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
     offset              lc;
     byte                *ptr;
 
-    base = oc->oc_entry.class & GET_BASE;
+    base = oc->oc_entry.op.class & GET_BASE;
     if( base != OC_LABEL ) {
         DumpSavedDebug();
     }
@@ -576,30 +576,30 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
     switch( base ) {
     case OC_CODE:
     case OC_DATA:
-        ExpandObj( oc->oc_entry.data, oc->oc_entry.reclen - sizeof( oc_header ) );
+        ExpandObj( oc->oc_entry.data, oc->oc_entry.op.reclen - sizeof( oc_header ) );
         break;
     case OC_IDATA:
         if( next_lbl != NULL ) { /* cause next_lbl to need no alignment */
-            len = -( AskLocation() + oc->oc_entry.objlen );
-            len &= next_lbl->oc_entry.objlen;
+            len = -( AskLocation() + oc->oc_entry.op.objlen );
+            len &= next_lbl->oc_entry.op.objlen;
             DoAlignment( len );
         }
         OutSelect( TRUE );
-        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.objlen );
+        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.op.objlen );
         OutSelect( FALSE );
         break;
     case OC_BDATA:
-        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.objlen );
+        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.op.objlen );
         break;
     case OC_LABEL:
         /* figure out number of bytes to pad */
         lc = AskLocation();
-        len = -lc & oc->oc_entry.objlen;
+        len = -lc & oc->oc_entry.op.objlen;
         if( AskIfUniqueLabel( oc->oc_handle.handle ) ) {
             if( (lc == LastUnique) && (len == 0) ) {
                 /* Two unique labels have ended up next to each other.
                    Pad out to next label alignment boundry. */
-                len = oc->oc_entry.objlen + 1;
+                len = oc->oc_entry.op.objlen + 1;
             }
             LastUnique = lc + len;
         }
@@ -654,7 +654,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
             *ptr |= B_IND_RMR_JMP;
         }
         OutDataByte( *ptr++ );
-        lbl = ExpandObj( ptr, oc->oc_entry.reclen - sizeof( oc_header ) - 1 - len );
+        lbl = ExpandObj( ptr, oc->oc_entry.op.reclen - sizeof( oc_header ) - 1 - len );
         if( lbl != NULL && base == OC_JMPI ) {
             TellKeepLabel( lbl ); /* make sure label comes out*/
             GenKillLabel( lbl );  /* but kill it when it does*/
@@ -668,13 +668,13 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
     case OC_RET:
         _OutOpndSize;
         len = M_RET;
-        if( oc->oc_entry.class & ATTR_FAR ) {
+        if( oc->oc_entry.op.class & ATTR_FAR ) {
             len |= B_RET_LONG;
         }
-        if( oc->oc_entry.class & ATTR_IRET ) {
+        if( oc->oc_entry.op.class & ATTR_IRET ) {
             len |= B_RET_IRET;
         }
-        if( oc->oc_entry.class & ATTR_POP ) {
+        if( oc->oc_entry.op.class & ATTR_POP ) {
             OutDataByte( len );
             OutDataInt( oc->oc_ret.pops );
         } else {
@@ -682,7 +682,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
         }
         break;
     case OC_INFO:
-        base = oc->oc_entry.class & INFO_MASK;
+        base = oc->oc_entry.op.class & INFO_MASK;
         switch( base ) {
         case INFO_LINE:
             OutLineNum( oc->oc_linenum.line, oc->oc_linenum.label_line );

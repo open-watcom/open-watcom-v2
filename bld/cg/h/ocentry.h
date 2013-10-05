@@ -75,7 +75,6 @@ typedef byte                    cond_no;
 #define NULL_COND               16
 #define MAX_OBJ_LEN             128
 
-#include "pushpck1.h"
 typedef struct oc_header {
         obj_length              objlen;
         oc_class                class;
@@ -83,12 +82,9 @@ typedef struct oc_header {
 } oc_header;
 
 typedef struct oc_entry {
-        obj_length              objlen;
-        oc_class                class;
-        oc_length               reclen;
+        oc_header               op;
         byte                    data[ 1 ];
 } oc_entry;
-#include "poppck.h"
 
 typedef struct oc_handle {
         oc_header               op;

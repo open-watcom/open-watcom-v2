@@ -591,10 +591,10 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     lbl = AskForNewLabel();
     lbl_2 = AskForNewLabel();
 
-    temp.op.class = OC_JCOND;
-    temp.op.class |= ATTR_SHORT;
-    temp.op.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
+    temp.op.class = OC_JCOND | ATTR_SHORT;
     temp.op.reclen = sizeof( oc_jcond );
+    temp.op.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
+    temp.ref = NULL;
     temp.cond = 4;
     temp.handle = lbl;
     InputOC( (any_oc *)&temp );
@@ -681,10 +681,10 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     lbl = AskForNewLabel();
     lbl_2 = AskForNewLabel();
 
-    temp.op.class = OC_JCOND;
-    temp.op.class |= ATTR_SHORT;
-    temp.op.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
+    temp.op.class = OC_JCOND | ATTR_SHORT;
     temp.op.reclen = sizeof( oc_jcond );
+    temp.op.objlen = OptInsSize( OC_JCOND, OC_DEST_NEAR );
+    temp.ref = NULL;
     temp.cond = 4;
     temp.handle = lbl;
     InputOC( (any_oc *)&temp );

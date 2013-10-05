@@ -142,7 +142,7 @@ static  void    CheckAttr( oc_class cl ) {
 static  void    DoInfo( any_oc *oc ) {
 /**************************************/
 
-    switch( oc->oc_entry.class & INFO_MASK ) {
+    switch( oc->oc_entry.op.class & INFO_MASK ) {
     case INFO_LINE:
         DumpLiteral( "LINE " );
         DumpInt( oc->oc_linenum.line );
@@ -206,7 +206,7 @@ extern  void    DumpOc( ins_entry *ins ) {
     DumpString(  CNames[ _Class( ins ) ] );
     DumpLiteral( " " );
     if( _Class( ins ) != OC_INFO ) {
-        CheckAttr( ins->oc.oc_entry.class );
+        CheckAttr( ins->oc.oc_entry.op.class );
     }
     switch( _Class( ins ) ) {
     case OC_INFO:
@@ -282,7 +282,7 @@ static  void    DoData( oc_entry *instr ) {
     uint        len;
 
     len = 0;
-    while( len < instr->reclen - sizeof( oc_header ) ) {
+    while( len < instr->op.reclen - sizeof( oc_header ) ) {
         DumpByte( instr->data[ len ] );
         DumpLiteral( " " );
         ++len;

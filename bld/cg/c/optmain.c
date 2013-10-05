@@ -69,7 +69,7 @@ static  void    PullQueue( void )
         if( _Class( FirstIns ) == OC_LABEL ) {
             if( UniqueLabel( _Label( FirstIns ) ) ) {
                 /* take off extra byte added when the ins went into queue */
-                FirstIns->oc.oc_entry.objlen--;
+                FirstIns->oc.oc_entry.op.objlen--;
             }
             /*
                 We want to order the alias list so that the labels with
@@ -131,7 +131,7 @@ static  bool    LDone( any_oc *oc )
     code_lbl    *lbl;
 
   optbegin
-    if( oc->oc_entry.class != OC_LDONE )
+    if( oc->oc_entry.op.class != OC_LDONE )
         optreturn( FALSE );
     lbl = oc->oc_handle.handle;
     _ValidLbl( lbl );
@@ -148,8 +148,8 @@ extern  void    InputOC( any_oc *oc )
   optbegin
     PSBlip();
     if( LDone( oc ) == FALSE ) {
-        if( (oc->oc_entry.class & GET_BASE) != OC_INFO
-         && (oc->oc_entry.class & GET_BASE) != OC_LABEL
+        if( (oc->oc_entry.op.class & GET_BASE) != OC_INFO
+         && (oc->oc_entry.op.class & GET_BASE) != OC_LABEL
          && _TransferClass( PrevClass( NULL ) ) )
             optreturnvoid; /*dead code*/
         while( QCount >= Q_MAX ) {
@@ -160,7 +160,7 @@ extern  void    InputOC( any_oc *oc )
         case OC_LABEL:
             if( _TstStatus( _Label( LastIns ), UNIQUE ) ) {
                 /* Unique labels might need an addition byte of spacing */
-                LastIns->oc.oc_entry.objlen++;
+                LastIns->oc.oc_entry.op.objlen++;
             }
             /* fall through */
         case OC_LREF:
