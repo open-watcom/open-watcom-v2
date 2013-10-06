@@ -442,17 +442,19 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
 /**************************************************************/
 
     instruction *new;
-    int         size;
+//    int         size;
 
     state = state;
     offset = offset;
     new = MakeUnary( OP_PUSH, curr, NULL, class );
     SuffixIns( ins, new );
+#if 0
     if( curr->n.class == N_CONSTANT ) {
         size = TypeClassSize[ class ];
     } else {
         size = curr->n.size;
     }
+#endif
     return( new );
 }
 

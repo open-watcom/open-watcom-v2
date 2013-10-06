@@ -34,21 +34,23 @@ typedef enum {
     #define _V_( x ) x
     #include "v.h"
     #undef _V_
-    V_LAST
+    V_LAST,
+    NOT_VOLATILE = 0x80
 } vertype;
 
-#define NOT_VOLATILE 0x80
-
-#define NVI( v ) NOT_VOLATILE+(v)
+#define NVI( v ) (NOT_VOLATILE | (v))
 
 typedef enum {
     #define _G_( x ) x
     #include "g.h"
     #undef _G_
+    G_UNKNOWN,
     #define _R_( x, f ) x
     #include "r.h"
     #undef _R_
-    R_END
+    LAST_REDUCT
 } gentype;
+
+#define FIRST_REDUCT    (G_UNKNOWN + 1)
 
 #include "vg.h"

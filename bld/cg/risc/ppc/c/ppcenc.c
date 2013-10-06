@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "reloc.h"
 #include "zoiks.h"
 #include "coff.h"

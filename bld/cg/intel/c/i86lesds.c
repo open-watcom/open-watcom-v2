@@ -34,8 +34,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "vergen.h"
-#include "funits.h"
 #include "data.h"
 #include "makeins.h"
 

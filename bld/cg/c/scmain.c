@@ -212,7 +212,7 @@ static  void    ScoreRoutine( void )
 /**********************************/
 {
     block       *blk;
-    bool        change;
+//    bool        change;
 
     ScoreCalcList();
     if( ScoreCount != 0 ) {
@@ -224,7 +224,7 @@ static  void    ScoreRoutine( void )
         }
         MakeLiveInfo();
         blk = HeadBlock;
-        change = FALSE;
+//        change = FALSE;
         while( blk != NULL ) {
             if( !( blk->class & BLOCK_VISITED ) ) {
                 blk->cc = ScAlloc(ScoreCount*(sizeof( score )

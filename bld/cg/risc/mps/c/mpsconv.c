@@ -32,8 +32,6 @@
 #include "cgstd.h"
 #include "pattern.h"
 #include "coderep.h"
-#include "funits.h"
-#include "vergen.h"
 #include "zoiks.h"
 #include "makeins.h"
 #include "convins.h"

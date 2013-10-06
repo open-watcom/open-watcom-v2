@@ -35,7 +35,6 @@
 #include "coderep.h"
 #include "tables.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "zoiks.h"
 #include "feprotos.h"
 

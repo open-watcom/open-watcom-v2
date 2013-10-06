@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "gen8087.h"
 #include "data.h"
 

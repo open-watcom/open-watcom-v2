@@ -1247,6 +1247,7 @@ extern  tn  TGFlow( cg_op op, tn left, tn rite )
         result = FoldFlNot( left );
         break;
     default:
+        result = NULL;
         _Zoiks( ZOIKS_056 );
         break;
     }
@@ -1612,6 +1613,7 @@ an  TNFlow( tn node )
     an      left;
     an      rite;
 
+    rite = NULL;
     left = NotAddrGen( node->u.left );
     if( node->rite != NULL ) {
         rite = NotAddrGen( node->rite );
@@ -1655,6 +1657,7 @@ static  an  TNBitShift( an retv, btn node, bool already_masked )
         tipes = TypeAddress( TY_INT_8 );
         break;
     default:
+        tipes = NULL;
         _Zoiks( ZOIKS_092 );
         break;
     }
@@ -1665,12 +1668,8 @@ static  an  TNBitShift( an retv, btn node, bool already_masked )
             retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, TRUE );
         }
     } else {
-        retv = BGBinary( O_LSHIFT, retv,
-                 Int( 8*tipeu->length - node->len - node->start ),
-                 tipeu, TRUE );
-        retv = BGBinary( O_RSHIFT, retv,
-                 Int( 8*tipeu->length - node->len ),
-                 node->is_signed ? tipes : tipeu, TRUE );
+        retv = BGBinary( O_LSHIFT, retv, Int( 8*tipeu->length - node->len - node->start ), tipeu, TRUE );
+        retv = BGBinary( O_RSHIFT, retv, Int( 8*tipeu->length - node->len ), node->is_signed ? tipes : tipeu, TRUE );
     }
 #else
     if( node->is_signed ) {
@@ -1881,6 +1880,7 @@ an  TNPreGets( tn node )
     if( node->u.left->class == TN_BIT_LVALUE ) {
         retv = TNBitOpGets( node, node->optipe, FALSE );
     } else {
+        retv = NULL;
         left = AddrGen( node->u.left );
         rite = NotAddrGen( node->rite );
         if( node->class == TN_LV_PRE_GETS ) {
@@ -1950,6 +1950,7 @@ an  TNAssign( tn node )
     if( node->u.left->class == TN_BIT_LVALUE ) {
         retv = TNBitAssign( node );
     } else {
+        retv = NULL;
         rite = NotAddrGen( node->rite );
         left = AddrGen( node->u.left );
         if( node->class == TN_LV_ASSIGN ) {
@@ -2536,6 +2537,7 @@ static  pointer  DoTreeGen( pointer nod )
         retv = TNPatch( node );
         break;
     default:
+        retv = NULL;
         _Zoiks( ZOIKS_057 );
     }
     FreeTreeNode( node );

@@ -362,14 +362,14 @@ static  pointer  LinkReturns( void )
 {
     block               *blk;
     int                 i;
-    bool                found;
+//    bool                found;
     label_handle        link_to;
     label_handle        to_search;
 
     link_to = LinkReturnsParms[ 0 ];
     to_search = LinkReturnsParms[ 1 ];
     blk = FindBlockWithLbl( to_search );
-    found = FALSE;
+//    found = FALSE;
     if( blk == NULL ) return( (pointer)FALSE );
     if( blk->class & BLOCK_VISITED ) return( (pointer)TRUE );
     if( blk->class & LABEL_RETURN ) {
@@ -383,7 +383,7 @@ static  pointer  LinkReturns( void )
                 break; /* kick out ... already linked */
             }
         }
-        found = TRUE;
+//        found = TRUE;
     } else {
         blk->class |= BLOCK_VISITED;
         if( blk->class & CALL_LABEL ) {

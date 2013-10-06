@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "score.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "data.h"
 
 extern  name            *AllocRegName(hw_reg_set);

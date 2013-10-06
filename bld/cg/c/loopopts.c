@@ -1232,12 +1232,14 @@ static  void    CheckNonBasic( instruction *ins, induction *var,
     name        *ivtimes;
     invar_id    lasttimes;
 
-    if( var == NULL ) return;
-    if( _IsV( var, IV_DEAD ) ) return;
-    if( ins->result->n.class != N_TEMP
-     && ins->result->n.class != N_MEMORY ) return;
-    if( reverse
-     && ( ins->head.opcode == OP_DIV || ins->head.opcode == OP_LSHIFT ) ) return;
+    if( var == NULL )
+        return;
+    if( _IsV( var, IV_DEAD ) )
+        return;
+    if( ins->result->n.class != N_TEMP && ins->result->n.class != N_MEMORY )
+        return;
+    if( reverse && ( ins->head.opcode == OP_DIV || ins->head.opcode == OP_LSHIFT ) )
+        return;
     if( _IsV( var, IV_BASIC ) ) {
         plus = 0;
         plus2 = 0;
@@ -1246,11 +1248,14 @@ static  void    CheckNonBasic( instruction *ins, induction *var,
         plus2 = var->plus2;
         plus = var->plus;
         times = var->times;
-        if( BasicNotRedefined( var, ins ) == FALSE ) return;
+        if( BasicNotRedefined( var, ins ) == FALSE ) {
+            return;
+        }
     }
     invar = var->invar;
     ivtimes = var->ivtimes;
     lasttimes = var->lasttimes;
+    c = 0;
     if( cons != NULL ) {
         c = cons->c.int_value;
     }
@@ -2349,22 +2354,28 @@ static  induction       *FindReplacement( induction *var ) {
     type_class_def      varclass;
     type_class_def      othclass;
 
-    if( var->ivtimes != NULL ) return( NULL );
+    if( var->ivtimes != NULL )
+        return( NULL );
     replacement = NULL;
     varclass = Unsigned[ var->name->n.name_class ];
-    if( Unsigned[ var->ins->type_class ] != varclass ) return( NULL );
+    if( Unsigned[ var->ins->type_class ] != varclass )
+        return( NULL );
+    log2rep = 0;
     for( other = IndVarList; other != NULL; other = other->next ) {
-        if( _IsV( other, IV_DEAD ) ) continue;
-        if( _IsntV( other, ( IV_INTRODUCED | EMPTY ) ) ) continue;
-        if( other == var ) continue;
-        if( other->ivtimes != NULL ) continue;
-        if( other->basic != var ) continue;
+        if( _IsV( other, IV_DEAD ) )
+            continue;
+        if( _IsntV( other, ( IV_INTRODUCED | EMPTY ) ) )
+            continue;
+        if( other == var )
+            continue;
+        if( other->ivtimes != NULL )
+            continue;
+        if( other->basic != var )
+            continue;
         othclass = Unsigned[ other->name->n.name_class ];
-        if( othclass == varclass
-        || ( othclass == WD && varclass == CP )
+        if( othclass == varclass || ( othclass == WD && varclass == CP )
 #ifndef _TARG_IS_SEGMENTED
-        || ( othclass == WD && varclass == PT )
-        || ( othclass == PT && varclass == WD )
+          || ( othclass == WD && varclass == PT ) || ( othclass == PT && varclass == WD )
 #endif
         ) {
             log2oth = GetLog2( other->times );

@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "score.h"
 #include "makeins.h"
 #include "utils.h"

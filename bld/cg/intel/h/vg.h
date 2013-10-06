@@ -41,7 +41,5 @@
 #define G_GROUP9        G_MFLD
 #define G_OTHER         G_REPOP
 
-#define FIRST_REDUCT    (G_UNKNOWN+1)
-
 #define _GenIs8087( g )  ( ( (g) >= FIRST_8087_1 && (g) <= LAST_8087_1 ) \
                         || ( (g) >= FIRST_8087_2 && (g) <= LAST_8087_2 ) )

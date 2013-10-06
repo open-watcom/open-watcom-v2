@@ -140,9 +140,9 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
   optbegin
     if( _IsModel( NO_OPTIMIZATION ) )
         optreturn( FALSE );
-    if( add->oc.oc_header.class != old->oc.oc_header.class )
+    if( _ClassInfo( add ) != _ClassInfo( old ) )
         optreturn( FALSE );
-    if( add->oc.oc_header.reclen != old->oc.oc_header.reclen )
+    if( _InsLen( add ) != _InsLen( old ) )
         optreturn( FALSE );
     switch( _Class( old ) ) {
     case OC_BDATA:
@@ -177,7 +177,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
             optreturn( FALSE );
         break;
     default:
-        if( Equal( &add->oc.oc_header, &old->oc.oc_header, add->oc.oc_header.reclen ) == FALSE )
+        if( Equal( &add->oc.oc_header, &old->oc.oc_header, _InsLen( add ) ) == FALSE )
             optreturn( FALSE );
         break;
     }
@@ -227,6 +227,7 @@ extern  bool    ComTail( ins_entry *list, ins_entry *ins )
   optbegin
     align = (_Class( list ) == OC_LABEL) ? _ObjLen( list ) : 0;
     try = list;
+    first = NULL;
     max.save = 0;
     for( ;; ) {
         if( try != ins ) {

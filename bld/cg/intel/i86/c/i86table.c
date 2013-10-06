@@ -35,9 +35,7 @@
 #include "pattern.h"
 #include "regset.h"
 #include "model.h"
-#include "vergen.h"
 #include "tables.h"
-#include "funits.h"
 
 extern    opcode_entry  Cmp87[];
 extern    opcode_entry  Un87[];

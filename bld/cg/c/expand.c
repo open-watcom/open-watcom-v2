@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "memcheck.h"
 #include "zoiks.h"
 #include "data.h"
@@ -290,7 +289,7 @@ extern  opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
 {
     opcode_entry        *try;
     operand_types       ops;
-    unsigned            verify;
+    vertype             verify;
 
     ins->head.state = INS_READY;
     try = ins->table;

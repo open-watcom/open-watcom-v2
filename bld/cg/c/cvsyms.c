@@ -63,7 +63,7 @@ extern  hw_reg_set      Low32Reg(hw_reg_set);
 #elif _TARGET & _TARG_80386
 extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
-extern  void            DataBytes(unsigned_32,byte*);
+extern  void            DataBytes(unsigned,const void *);
 extern  void            DoBigLblPtr(sym_handle);
 extern  void            DBLocFini( dbg_loc loc );
 extern  void            CVPutStr( cv_out *, char * );
@@ -117,10 +117,10 @@ static void BuffPatchSet( segment_id seg, dbg_patch_handle *patch )
     patch->offset = off;
 }
 
-static  void    BuffWrite( cv_out *out, void *to )
-/************************************************/
+static  void    BuffWrite( cv_out *out, const void *to )
+/******************************************************/
 {
-    int         len;
+    unsigned    len;
     segment_id  old;
 
     len = (byte *)to - out->beg;
@@ -139,7 +139,7 @@ static  void   BuffSkip( cv_out *out, void *to )
 static  void    buffEnd( cv_out *out )
 /************************************/
 {
-    int         len;
+    unsigned    len;
     segment_id  old;
 
     len = out->ptr - out->beg;
@@ -714,7 +714,7 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc )
     here = AskBigLocation();
     SetBigLocation( handle->offset + offsetof( s_block, f.length ) );
     length = lc - blk->start;
-    DataBytes( sizeof( fsize ), (byte *)&length );
+    DataBytes( sizeof( length ), &length );
     SetBigLocation( here );
     SetOP( old );
     NewBuff( out, CVSyms );
@@ -746,10 +746,10 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )
     here = AskBigLocation();
     SetBigLocation( handle->offset + offsetof( s_gproc, f.proc_length ) );
     proc_length = lc - rtn->rtn_blk->start;
-    DataBytes( sizeof( fsize ), (byte *)&proc_length );
+    DataBytes( sizeof( proc_length ), &proc_length );
     SetBigLocation( handle->offset+ offsetof( s_gproc, f.debug_end ) );
     debug_end   = rtn->epi_start - rtn->rtn_blk->start;
-    DataBytes( sizeof( fsize ), (byte *)&debug_end );
+    DataBytes( sizeof( debug_end ), &debug_end );
     SetBigLocation( here );
     SetOP( old );
     NewBuff( out, CVSyms );

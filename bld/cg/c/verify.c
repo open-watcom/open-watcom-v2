@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "vergen.h"
 #include "pattern.h"
 #include "cfloat.h"
 #include "zoiks.h"

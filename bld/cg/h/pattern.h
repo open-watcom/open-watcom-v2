@@ -31,20 +31,20 @@
 
 
 #include "regsetop.h"
+#include "vergen.h"
+#include "funits.h"
 
 #define C               0x01u /*  constant */
 #define R               0x02u /*  register */
 #define M               0x04u /*  memory */
 #define U               0x08u /*  unknown whether reg or memory */
-#define NEED_INDEX      0x10u
-#define BASE_TEMP       0x20u
+#define OP__MUL         0x10u
 
 #define RESULT_MUL      1u
 #define C_R     C
 #define R_R     R
 #define M_R     M
 #define U_R     U
-#define OP__MUL NEED_INDEX
 #define OP1_MUL OP__MUL
 #define C_1     (C * OP1_MUL)
 #define R_1     (R * OP1_MUL)
@@ -133,8 +133,8 @@ typedef unsigned_32     operand_types;
 
 typedef struct opcode_entry {
         operand_types           op_type;
-        byte                    verify;         /*  verification routine */
-        byte                    generate;       /*  generation routine */
+        vertype                 verify;         /*  verification routine */
+        gentype                 generate;       /*  generation routine */
         op_reg_set_index        reg_set;
-        byte                    func_unit;      /*  functional unit info */
+        futype                  func_unit;      /*  functional unit info */
 } opcode_entry;

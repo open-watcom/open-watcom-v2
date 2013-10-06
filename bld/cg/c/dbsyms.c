@@ -416,7 +416,7 @@ static void SourceCueFini( cue_ctl *ctl ){
 
 extern  void    InitDbgInfo() {
 /******************************/
-    cue_idx     idx;
+//    cue_idx     idx;
     char        *fname;
     uint        fno;
 
@@ -425,7 +425,8 @@ extern  void    InitDbgInfo() {
     SourceCueInit( &LineInfo );
     fname = FEAuxInfo( NULL, SOURCE_NAME );
     fno = DBSrcFile( fname );
-    idx = CueAdd( fno, 1, 1 );
+//    idx = CueAdd( fno, 1, 1 );
+    CueAdd( fno, 1, 1 );
     SrcLine = 1;
     if( _IsModel( DBG_DF ) ) {
         DFInitDbgInfo();

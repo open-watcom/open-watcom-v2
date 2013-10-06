@@ -1326,14 +1326,12 @@ static  bool    PropOpnd( instruction *ins, name **op,
     opnd = *op;
     change = FALSE;
     while( definition != NULL ) {
-        if( WhichIsAncestor( definition, ins ) == definition &&
-            UnOpsLiveFrom( definition, ins ) ) {
+        if( WhichIsAncestor( definition, ins ) == definition && UnOpsLiveFrom( definition, ins ) ) {
             defop = definition->operands[ 0 ];
             defres = definition->result;
             if( backward ) {
                 if( defop == opnd && defres->n.class == N_TEMP && is_opnd ) {
-                    if( ( _IsFloating( definition->type_class )
-                       == _IsFloating( _OpClass( ins ) ) )
+                    if( ( _IsFloating( definition->type_class ) == _IsFloating( _OpClass( ins ) ) )
                      && CanCrossBlocks( definition, ins, defres )
                      && !FPStackOp( defres ) ) {
                         UseInOther( definition, ins, defres );
@@ -1353,8 +1351,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                             change = TRUE;
                         }
                     }
-                } else if( opnd->n.class == N_INDEXED
-                      && definition->result->n.class == N_TEMP ) {
+                } else if( opnd->n.class == N_INDEXED && definition->result->n.class == N_TEMP ) {
                     if( defop->n.class == N_TEMP
                           && defop->n.name_class==opnd->i.index->n.name_class
                           && CanCrossBlocks( definition, ins, defop ) ) {
@@ -1366,6 +1363,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                         change = TRUE;
                     } else if( defop->n.class == N_CONSTANT
                             && ins->head.opcode != OP_SELECT ) {
+                        disp = 0;
                         base = NULL;
                         switch( defop->c.const_type ) {
                         case CONS_ABSOLUTE:

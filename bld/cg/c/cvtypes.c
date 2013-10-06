@@ -65,7 +65,7 @@ extern  void        LocDump( dbg_loc );
 extern  dbg_loc     LocDupl( dbg_loc );
 extern  void        DBLocFini( dbg_loc loc );
 extern  offset      LocSimpField( dbg_loc );
-extern  void        DataBytes(unsigned_32,byte*);
+extern  void        DataBytes(unsigned,const void *);
 extern  void        CVSymIConst( char *nm, long val, dbg_type tipe );
 extern  void        CVSymIConst64( char *nm, signed_64 val, dbg_type tipe );
 extern  void        CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe );
@@ -79,7 +79,7 @@ extern  segment_id  CVTypes;
 static  void    BuffWrite( cv_out *out, void *to )
 /************************************************/
 {
-    int         len;
+    unsigned    len;
     segment_id  old;
 
     len = (byte *)to - out->beg;
@@ -98,7 +98,7 @@ static  void   BuffSkip( cv_out *out, void *to )
 static  void    buffEnd( cv_out *out )
 /************************************/
 {
-    int         len;
+    unsigned    len;
     segment_id  old;
 
     len = out->ptr - out->beg;
@@ -179,15 +179,15 @@ static  int  EndSub( cv_out *out )
 /* return length so it can be backpatched to list head       ***/
 /* reset buff to start **/
 {
-    int             len;
+    unsigned        len;
     segment_id      old;
-    long_offset     here;
+//    long_offset     here;
 
     AlignBuff( out );
     len = out->ptr - out->buff;
     if( _IsModel( DBG_TYPES ) ) {
         old = SetOP( CVTypes );
-        here = AskBigLocation();
+//        here = AskBigLocation();
         DataBytes( len, out->buff );
         SetOP( old );
     }
@@ -199,13 +199,13 @@ static  long_offset   EndTypeString( cv_out *out )
 /************************************************/
 {
     segment_id      old;
-    int             len;
+    unsigned        len;
     long_offset     here;
 
     if( _IsModel( DBG_TYPES ) ) {
         AlignBuff( out );
         len = out->ptr - out->buff;
-        *((u2 *)&out->buff[0]) = len-sizeof( u2 );  /* set type rec len*/
+        *((u2 *)&out->buff[0]) = len - sizeof( u2 );  /* set type rec len*/
         old = SetOP( CVTypes );
         here = AskBigLocation();
         DataBytes( len, out->buff );

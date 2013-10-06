@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "score.h"
-#include "vergen.h"
 #include "pattern.h"
 #include "makeins.h"
 #include "data.h"
@@ -328,6 +327,7 @@ extern  bool    ScoreMove( score *sc, instruction *ins ) {
 
     src = ins->operands[ 0 ];
     dst = ins->result;
+    src_index = 0;
     if( src->n.class == N_REGISTER ) {
         src_index = src->r.reg_index;
     }

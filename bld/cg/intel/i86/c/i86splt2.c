@@ -34,7 +34,6 @@
 #include "pattern.h"
 #include "regset.h"
 #include "model.h"
-#include "vergen.h"
 #include "system.h"
 #include "zoiks.h"
 #include "cfloat.h"

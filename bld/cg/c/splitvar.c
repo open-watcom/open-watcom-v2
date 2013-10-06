@@ -122,10 +122,10 @@ static  void    ReplaceInstances( name *of, name *with )
     block       *blk;
     instruction *ins;
     int         i;
-    block       *replaced;
+//    block       *replaced;
 
     blk = HeadBlock;
-    replaced = NULL;
+//    replaced = NULL;
     while( blk != NULL ) {
         if( blk->id == Instance ) {
             ins = blk->ins.hd.next;

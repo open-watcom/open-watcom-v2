@@ -33,7 +33,6 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "ocentry.h"
 #include "axpencod.h"
 #include "reloc.h"

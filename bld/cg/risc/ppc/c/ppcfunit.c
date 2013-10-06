@@ -35,7 +35,6 @@
 #include "indvars.h"
 #include "model.h"
 #include "sched.h"
-#include "funits.h"
 #include "pattern.h"
 
 enum {

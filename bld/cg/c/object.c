@@ -351,12 +351,12 @@ static  int     OpcodeHeuristic( block *blk, instruction *cond ) {
 /****************************************************************/
 
     int                 prediction;
-    name                *op1;
+//    name                *op1;
     name                *op2;
 
     blk = blk;
     prediction = DNA;
-    op1 = cond->operands[ 0 ];
+//    op1 = cond->operands[ 0 ];
     op2 = cond->operands[ 1 ];
     switch( cond->head.opcode ) {
     case OP_CMP_NOT_EQUAL:
@@ -797,7 +797,7 @@ extern  void    SortBlocks( void )
     block_queue placed;
     block       *curr;
     block       *next;
-    block       *ret_block;
+//    block       *ret_block;
 
     ClearBlockBits( BLOCK_VISITED );
     BlocksSortedBy( GenId );
@@ -820,7 +820,7 @@ extern  void    SortBlocks( void )
             // block
             _MarkPlaced( curr );
         }
-        ret_block = curr;
+//        ret_block = curr;
     }
     while( !BQEmpty( &unplaced ) ) {
         curr = BQRemove( &unplaced, NULL );

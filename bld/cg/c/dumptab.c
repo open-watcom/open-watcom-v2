@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "dump.h"
 
 extern  void            DumpPadString(char *,int);
@@ -56,6 +55,7 @@ static char * GenTab[] = {
     #define _G_( x ) #x
     #include "g.h"
     #undef _G_
+    "G_UNKNOWN",
     #define _R_( x, f ) #x
     #include "r.h"
     #undef _R_
@@ -126,7 +126,7 @@ extern  void    DumpGen( opcode_entry *try ) {
 
 extern  void    DumpTab( opcode_entry *try ) {
 /********************************************/
-    unsigned    verify;
+    vertype     verify;
 
     PrtOps( try->op_type );
     DumpLiteral( "," );

@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "pattern.h"
 #include "cgmem.h"
-#include "vergen.h"
 #include "data.h"
 
 

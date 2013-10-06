@@ -141,4 +141,3 @@ _G_( G_FXCH ),
 #define LAST_8087_2       G_FXCH
 _G_( G_SLACK_8 ),
 _G_( G_SLACK_9 ),
-_G_( G_UNKNOWN ),

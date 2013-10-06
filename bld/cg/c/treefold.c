@@ -159,6 +159,7 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, cfloat *val )
         rel = REL_LE;
         break;
     default:
+        rel = 0;
         _Zoiks( ZOIKS_112 );
     }
     /* Determine type range */
@@ -846,6 +847,7 @@ extern  tn      FoldLShift( tn left, tn rite, type_def *tipe )
     signed_32   ri;
 
     fold = NULL;
+    ri = 0;
     if( rite->class == TN_CONS ) {
         rv = rite->u.name->c.value;
         if( CFIs32( rv ) ) {
@@ -1523,7 +1525,7 @@ static  bool    SimpleLeaf( tn tree )
 extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe )
 /*******************************************************************************/
 {
-    tn          compare;
+//    tn          compare;
     tn          temp;
     signed_32   ri;
     signed_32   li;
@@ -1531,7 +1533,7 @@ extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe 
     cfloat      *rv;
     cfloat      *lv;
 
-    compare = NULL;
+///    compare = NULL;
     if( left->class == TN_CONS ) {
         temp = left;
         left = rite;

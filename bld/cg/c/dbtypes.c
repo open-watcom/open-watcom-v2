@@ -721,9 +721,9 @@ bool _CGAPI DBNested( bool nested ){
     ret = Nested;
     Nested = nested;
 #ifndef NDEBUG
-    EchoAPI( " -> %i\n", nested );
+    EchoAPI( " -> %i\n", ret );
 #endif
-    return( nested );
+    return( ret );
 }
 
 struct_list * _CGAPI DBBegNameStruct( const char *nm, cg_type tipe, bool is_struct ) {

@@ -86,7 +86,7 @@ static  bool    FindFlowOut( block *blk ) {
     instruction         *ins;
     instruction         *ins0;
     instruction         *ins1;
-    instruction         *prev;
+//    instruction         *prev;
     block               *true;
     block               *false;
     block               *join;
@@ -102,7 +102,7 @@ static  bool    FindFlowOut( block *blk ) {
     while( !_OpIsCondition( ins->head.opcode ) ) {
         ins = ins->head.prev;
     }
-    prev = ins->head.prev;
+//    prev = ins->head.prev;
     if( TypeClassSize[ ins->type_class ] > WORD_SIZE ) return( FALSE );
     true = blk->edge[ _TrueIndex( ins ) ].destination;
     if( true->inputs != 1 ) return( FALSE );

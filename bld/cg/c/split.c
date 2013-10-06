@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "pattern.h"
 #include "regset.h"
-#include "vergen.h"
 #include "conflict.h"
 #include "cfloat.h"
 #include "makeins.h"
@@ -458,19 +457,22 @@ extern instruction      *rCHANGESHIFT( instruction *ins )
 extern instruction      *rFIXSHIFT( instruction *ins )
 /****************************************************/
 {
-    signed_32           shift_count;
     instruction         *new_ins;
+#ifndef NDEBUG
+    signed_32           shift_count;
+#endif
 
     /* Fix up shift instructions that try to shift by too large amounts. This
      * can happen when optimizer merges adjacent shift instructions. Arithmetic
      * rights shifts must never exceed (REGISTER_BITS - 1), logical shifts can
      * be replaced with loads of zero constant.
      */
+#ifndef NDEBUG
     assert( ins->operands[1]->n.class == N_CONSTANT );
     shift_count = ins->operands[1]->c.int_value;
     assert( shift_count >= REG_SIZE * 8 );
-    if( ins->head.opcode == OP_RSHIFT
-        && Signed[ins->type_class] == ins->type_class ) {
+#endif
+    if( ins->head.opcode == OP_RSHIFT && Signed[ins->type_class] == ins->type_class ) {
         ins->operands[1] = AllocS32Const( REG_SIZE * 8 - 1 );
         return( ins );
     } else {
@@ -551,6 +553,7 @@ extern instruction      *rCLRHI_R( instruction *ins )
     if( new_ins != NULL ) {
         PrefixIns( ins, new_ins );
     } else {
+        value = 0;
         switch( class ) {
         case U1:
         case I1:
@@ -567,8 +570,7 @@ extern instruction      *rCLRHI_R( instruction *ins )
         new_ins->zap = (register_name *) AllocRegName( high );
         SuffixIns( ins, new_ins ); // don't cause high part to be live on entry
 
-        and_ins = MakeBinary( OP_AND, res, AllocS32Const( value ),
-                                res, ins->type_class );
+        and_ins = MakeBinary( OP_AND, res, AllocS32Const( value ), res, ins->type_class );
         SuffixIns( new_ins, and_ins );
         new_ins = ins;
     }

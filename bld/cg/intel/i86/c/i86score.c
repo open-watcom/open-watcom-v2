@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "score.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "data.h"
 #include "makeins.h"
 

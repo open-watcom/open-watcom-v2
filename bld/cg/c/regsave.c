@@ -126,6 +126,8 @@ extern  void    CalcSavings( conflict_node *conf ) {
     save_def            save;
 #include "savcache.h"
 
+    final_def = final_def;
+
     if( ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK )
      && ( conf->name->v.usage & ( NEEDS_MEMORY | USE_ADDRESS ) ) ) {
         CalcLoadStore( conf );

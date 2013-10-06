@@ -34,8 +34,6 @@
 #include "model.h"
 #include "pattern.h"
 #include "regset.h"
-#include "vergen.h"
-#include "funits.h"
 
 
 opcode_entry    Move87L[] = {

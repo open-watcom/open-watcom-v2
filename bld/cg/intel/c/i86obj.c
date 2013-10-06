@@ -3087,8 +3087,8 @@ static  void    OutConcat( char *name1, char *name2, array_control *dest )
 #endif
 
 
-extern  void    OutDBytes( unsigned_32 len, byte *src )
-/*****************************************************/
+extern  void    OutDBytes( unsigned len, const byte *src )
+/********************************************************/
 {
     int         i;
     unsigned    max;

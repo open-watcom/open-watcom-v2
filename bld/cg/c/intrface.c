@@ -112,7 +112,7 @@ extern  tn              TGAlign( tn, uint );
 extern  void            DGBlip(void);
 extern  void            DataLabel(label_handle);
 extern  type_class_def  TypeClass(type_def*);
-extern  void            DataBytes(unsigned_32,byte*);
+extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes(offset,byte);
 extern  bool            BGInInline(void);
 extern  void            BGParmInline(sym_handle,type_def*);
@@ -1538,7 +1538,6 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
 /********************************************************************/
 {
     type_length len;
-    int         i;
     union{
         unsigned_32 vall;
         unsigned_64 val;
@@ -1546,7 +1545,6 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
     } data;
     byte        *form;
 
-    i = 0;
 #if !( _TARG_MEMORY & _TARG_LOW_FIRST) == defined( __BIG_ENDIAN__ )
     data.val = value;
 #else
@@ -1555,10 +1553,10 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
             unsigned_64 val;
             byte        buff[8];
         }temp;
+        int  i;
         temp.val = value;
-        while( i <= 7 ) {
-            data.buff[i] = temp.buff[7-i];
-            ++i;
+        for( i = 0; i <= 7; ++i ) {
+            data.buff[i] = temp.buff[7 - i];
         }
     }
 #endif

@@ -39,7 +39,6 @@
 #include "freelist.h"
 #include "sched.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "zoiks.h"
 #include "data.h"
 #include "x87.h"

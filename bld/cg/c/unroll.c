@@ -557,7 +557,7 @@ static  bool    TractableCond( loop_condition *cond )
     bool        ok;
     induction   *tmp;
     signed_32   plus;
-    bool        exit_true;
+//    bool        exit_true;
     byte        opcode;
     name        *n;
     instruction *ins;
@@ -567,7 +567,7 @@ static  bool    TractableCond( loop_condition *cond )
     ins = cond->compare_ins;
     blk = cond->compare_block;
     ok = FALSE;
-    exit_true = FALSE;
+//    exit_true = FALSE;
     MarkInvariants();
     if( !InvariantOp( ins->operands[ 1 ] ) ) {
         n = ins->operands[ 0 ];

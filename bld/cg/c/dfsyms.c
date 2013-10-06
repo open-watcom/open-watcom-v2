@@ -57,7 +57,7 @@ extern  void            DoBigBckPtr(back_handle,offset);
 extern  name            *DeAlias(name*);
 extern  void            DataInt(short_offset);
 extern  void            DataLong( long );
-extern  void            DataBytes(unsigned_32,byte*);
+extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes( offset len, byte pat );
 extern  void            DataLabel( label_handle );
 extern  void            DoBigLblPtr(sym_handle);
@@ -94,12 +94,12 @@ static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size )
 {
     sect_info           *curr;
     segment_id          old;
-    long_offset         off;
+//    long_offset         off;
 
     curr = &DwarfSegs[sect];
     old = SetOP( curr->seg );
-    off = AskBigLocation();
-    DataBytes( size, (byte*)block );
+//    off = AskBigLocation();
+    DataBytes( size, block );
     SetOP( old );
 }
 
@@ -122,6 +122,7 @@ static void CLISeek( dw_sectnum sect, long offs, uint type ) {
     long_offset         from;
     segment_id          old;
 
+    from = 0;
     curr = &DwarfSegs[sect];
     old = SetOP( curr->seg );
     switch( type ) {
@@ -209,12 +210,12 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ){
     dw_sectnum              section;
     va_list                 args;
     segment_id              old;
-    long_offset             off;
+//    long_offset             off;
 
     va_start( args, reloc_type );
     curr = &DwarfSegs[sect];
     old = SetOP( curr->seg );
-    off = AskBigLocation();
+//    off = AskBigLocation();
     switch( reloc_type ) {
     case DW_W_LOW_PC:
         if( Pc_Low != NULL ){
@@ -265,7 +266,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ){
     case DW_W_UNIT_SIZE:
         UnitSize->segment = curr->seg;
         UnitSize->offset =  AskBigLocation();
-        DataBytes( sizeof( uint_32 ), (byte *)&zero );
+        DataBytes( sizeof( zero ), &zero );
         break;
     case DW_W_SECTION_POS:
         section = va_arg( args, uint );
@@ -468,6 +469,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
             cu.flags = FALSE;
             cu.segment_size = 0;
         } else {
+	        bck = NULL;
             cu.flags = FALSE;
             Pc_Low = NULL;
             Pc_High = NULL;
@@ -808,16 +810,16 @@ static  void    GenRetSym( dbg_loc loc, dbg_type tipe ) {
 static void    SymParm( sym_handle sym, dw_loc_handle loc,
                                         dw_loc_handle entry ) {
 /*******************************************************************/
-    fe_attr         attr;
+//    fe_attr         attr;
     char           *name;
-    dw_handle       obj;
+//    dw_handle       obj;
     dbg_type        dbtype;
 
-    attr = FEAttr( sym );
+//    attr = FEAttr( sym );
     dbtype = FEDbgType( sym ); /* causes FEName side effects */
     name = FEName( sym );
-    obj = DWFormalParameter( Client, dbtype, loc,
-                entry,  name, DW_DEFAULT_NONE );
+//    obj = DWFormalParameter( Client, dbtype, loc, entry,  name, DW_DEFAULT_NONE );
+    DWFormalParameter( Client, dbtype, loc, entry,  name, DW_DEFAULT_NONE );
 }
 
 /**/

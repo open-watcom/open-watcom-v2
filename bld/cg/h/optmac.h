@@ -50,6 +50,7 @@
 #define _RetPop( var )     (((ins_entry *)(var))->oc.oc_ret.pops)
 #define _ObjLen( var )     (((ins_entry *)(var))->oc.oc_header.objlen)
 #define _InsLen( var )     (((ins_entry *)(var))->oc.oc_header.reclen)
+#define _ClassInfo( var )  (((ins_entry *)(var))->oc.oc_header.class)
 
 /*  the next size seems to cover almost all optimizer entries that get allocated */
 #define INSTR_FRLSIZE ( sizeof( ins_entry ) )

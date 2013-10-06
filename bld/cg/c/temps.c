@@ -501,12 +501,12 @@ extern  void    AssignOtherLocals( void )
     name        **owner;
     name        *rest;
 
+    rest = NULL;
     if( LastTemp != NULL ) {
         rest = LastTemp->n.next_name;
         LastTemp->n.next_name = NULL;
     }
-    Names[ N_TEMP ] = SortList( Names[ N_TEMP ], offsetof( name, n.next_name ),
-                                TempAllocBefore );
+    Names[ N_TEMP ] = SortList( Names[ N_TEMP ], offsetof( name, n.next_name ), TempAllocBefore );
     if( LastTemp != NULL ) {
         owner = &Names[ N_TEMP ];
         while( *owner != NULL ) {

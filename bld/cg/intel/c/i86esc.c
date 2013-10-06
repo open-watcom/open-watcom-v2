@@ -35,7 +35,6 @@
 #include "coderep.h"
 #include "symdbg.h"
 #include "ocentry.h"
-//#include "escape.h"
 #include "objrep.h"
 #include "system.h"
 #include "model.h"
@@ -69,7 +68,7 @@ extern  void            OutDataLong(long);
 extern  void            OutPatch(label_handle,patch_attr);
 extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutDataByte(byte);
-extern  void            OutDBytes(unsigned_32,byte*);
+extern  void            OutDBytes(unsigned,const byte*);
 extern  void            SetUpObj(bool);
 extern  void            EmitOffset(offset);
 extern  void            EmitPtr(pointer);
@@ -259,8 +258,8 @@ extern  void    DoLblRef( label_handle lbl, segment_id seg,
     }
 }
 
-static void SendBytes( byte *ptr, unsigned len )
-/**********************************************/
+static void SendBytes( const void *ptr, unsigned len )
+/****************************************************/
 {
     if( len != 0 ) {
         OutDBytes( len, ptr );
@@ -438,7 +437,7 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
     segment_id          seg;
     fix_class           class;
     bool                rel;
-    int                 len;
+    unsigned            len;
 
     lbl = NULL;
     fini = cur + explen;

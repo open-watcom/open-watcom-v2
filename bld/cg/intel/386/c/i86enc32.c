@@ -34,10 +34,8 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "pccode.h"
 #include "system.h"
-//#include "escape.h"
 #include "ocentry.h"
 #include "pcencode.h"
 #include "objrep.h"
@@ -94,7 +92,6 @@ extern  void            SetUpObj( bool );
 extern  void            OutDataByte( byte );
 extern  void            OutDataInt( int );
 extern  void            OutDataLong(long);
-extern  void            OutDBytes(unsigned_32,byte*);
 extern  void            OutRTImport( rt_class, fix_class );
 extern  void            TellKeepLabel( label_handle );
 extern  void            OutReloc( segment_id, fix_class, bool );

@@ -34,7 +34,6 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
-//#include "escape.h"
 #include "objrep.h"
 #include "system.h"
 #include "jumps.h"
@@ -57,7 +56,7 @@ extern  void            CodeLabel(label_handle, unsigned);
 extern  void            OutIBytes(byte,offset);
 extern  void            OutDataLong(long);
 extern  void            OutDataInt(int);
-extern  void            OutDBytes(unsigned_32,byte*);
+extern  void            OutDBytes(unsigned,const byte*);
 extern  void            SetUpObj(bool);
 extern  void            TellObjNewLabel( sym_handle );
 extern  void            TellOptimizerByPassed( void );
@@ -90,8 +89,8 @@ extern  void    DataAlign( unsigned_32 align ) {
     }
 }
 
-extern  void    DataBytes( unsigned_32 len, byte *src ) {
-/*******************************************************/
+extern  void    DataBytes( unsigned len, const void *src ) {
+/**********************************************************/
 
     if( len != 0 ){
         TellOptimizerByPassed();

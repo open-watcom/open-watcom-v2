@@ -32,10 +32,8 @@
 
 #include "cgstd.h"
 #include "pattern.h"
-#include "vergen.h"
 #include "hwreg.h"
 #include "regset.h"
-#include "funits.h"
 
 opcode_entry    DbgInfo[] = {
 /***************************/

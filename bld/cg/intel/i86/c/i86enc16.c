@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "pattern.h"
 #include "ocentry.h"
-#include "vergen.h"
 #include "pccode.h"
 #include "system.h"
 #include "escape.h"

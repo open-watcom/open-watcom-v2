@@ -35,9 +35,7 @@
 #include "pattern.h"
 #include "regset.h"
 #include "model.h"
-#include "vergen.h"
 #include "tables.h"
-#include "funits.h"
 
 opcode_entry    StubUnary[] = {
 /*************************/
