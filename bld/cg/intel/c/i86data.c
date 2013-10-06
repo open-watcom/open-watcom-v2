@@ -46,13 +46,13 @@
 #include "objout.h"
 
 extern  constant_defn   *GetFloat(name*,type_class_def);
-extern  void            OutPatch(label_handle,patch_attr);
-extern  void            TellKeepLabel(label_handle);
+extern  void            OutPatch(code_lbl *,patch_attr);
+extern  void            TellKeepLabel(code_lbl *);
 extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutImport(sym_handle,fix_class,bool);
 extern  void            OutBckImport( char *name, bck_info  *bck, fix_class class );
 extern  void            CodeBytes(byte*,uint);
-extern  void            CodeLabel(label_handle, unsigned);
+extern  void            CodeLabel(code_lbl *, unsigned);
 extern  void            OutIBytes(byte,offset);
 extern  void            OutDataLong(long);
 extern  void            OutDataInt(int);
@@ -68,8 +68,8 @@ extern  void            EmptyQueue( void );
 extern  bool            UseImportForm( fe_attr );
 extern  void            IterBytes( offset len, byte pat );
 
-extern  void            OutLblPatch( label_handle lbl, fix_class class, offset plus );
-static  void            DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus );
+extern  void            OutLblPatch( code_lbl *lbl, fix_class class, offset plus );
+static  void            DoLblPtr( code_lbl *lbl, segment_id seg, fix_class class, offset plus );
 
 
 extern  void    DataAlign( unsigned_32 align ) {
@@ -140,7 +140,7 @@ extern  void    DoBigBckPtr( bck_info *bck, offset off ) {
     TellByPassOver();
 }
 
-static  void    DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus )
+static  void    DoLblPtr( code_lbl *lbl, segment_id seg, fix_class class, offset plus )
 /****************************************************************************************/
 {
     SetUpObj( TRUE );
@@ -191,7 +191,7 @@ extern  void    BackImpPtr( char *nm, bck_info *bck, offset plus ) {
     }
 }
 
-extern  void    OutLblPatch( label_handle lbl, fix_class class, offset plus ) {
+extern  void    OutLblPatch( code_lbl *lbl, fix_class class, offset plus ) {
 /*****************************************************************************/
 
     offset      val;
@@ -330,7 +330,7 @@ extern  name    *GenConstData( byte *buffer, type_class_def class ) {
     segment_id          old;
     cg_class            cgclass;
     name                *result;
-    label_handle        label;
+    code_lbl            *label;
     type_length         size;
 
     TellOptimizerByPassed();
@@ -375,7 +375,7 @@ extern  name    *GenFloat( name *cons, type_class_def class ) {
 }
 
 
-extern  void    DataLabel( label_handle lbl ) {
+extern  void    DataLabel( code_lbl *lbl ) {
 /*********************************************/
 
     TellObjNewLabel( AskForLblSym( lbl ) );

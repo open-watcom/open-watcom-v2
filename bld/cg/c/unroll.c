@@ -44,7 +44,7 @@
 #include "data.h"
 #include "makeins.h"
 
-extern  block           *MakeBlock(label_handle,block_num);
+extern  block           *MakeBlock(code_lbl *,block_num);
 extern  instruction     *DupInstrs(instruction*,instruction*,instruction*,induction*,signed_32);
 extern  void            MoveEdge(block_edge*,block*);
 extern  void            PointEdge(block_edge*,block*);
@@ -61,7 +61,7 @@ extern  bool            InvariantOp(name *);
 extern  induction       *FindIndVar( name *);
 extern  void            RemoveInputEdge( block_edge * );
 extern  void            SuffixPreHeader( instruction * );
-extern  block           *NewBlock( label_handle, bool );
+extern  block           *NewBlock( code_lbl *, bool );
 extern  void            MarkLoop( void );
 extern  void            UnMarkLoop( void );
 extern  void            MarkInvariants( void );
@@ -72,7 +72,7 @@ extern  void            FlipCond( instruction * );
 extern  void            RevCond( instruction * );
 extern  int             CountIns( block *);
 extern  void            MoveDownLoop( block * );
-extern  block           *ReGenBlock( block *, label_handle );
+extern  block           *ReGenBlock( block *, code_lbl * );
 extern  void            MakeJumpBlock( block *, block_edge * );
 extern  void            URBlip( void );
 
@@ -223,7 +223,7 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
         if( ( blk->class & IGNORE ) != EMPTY ) continue;
         copy = COPY_PTR( blk );
         for( i = 0; i < blk->targets; i++ ) {
-            dest = blk->edge[ i ].destination;
+            dest = blk->edge[ i ].destination.u.blk;
             if( ( dest->class & IN_LOOP ) != EMPTY ) {
                 if( dest != old_header ) {
                     dest = COPY_PTR( dest );
@@ -253,7 +253,7 @@ static  void    MarkHeaderEdges( block *loop, block *head )
     for( blk = loop; blk != NULL; blk = blk->u.loop ) {
         for( i = 0; i < blk->targets; i++ ) {
             edge = &blk->edge[ i ];
-            if( edge->destination == head ) {
+            if( edge->destination.u.blk == head ) {
                 edge->flags |= DEST_IS_HEADER;
             }
         }
@@ -456,7 +456,7 @@ extern  void    DumpLoop( block *loop )
         DumpNL();
         DumpString( "\tDest: " );
         for( edge = &loop->edge[ 0 ], i = 0; i < loop->targets; i++, edge++ ) {
-            DumpPtr( edge->destination );
+            DumpPtr( edge->destination.u.blk );
             DumpString( " " );
         }
         DumpNL();
@@ -586,17 +586,17 @@ static  bool    TractableCond( loop_condition *cond )
     UnMarkInvariants();
     if( !ok ) return( FALSE );
     if( _IsV( cond->induction, IV_DEAD ) ) return( FALSE );
-    if( ( blk->edge[ 0 ].destination->class & IN_LOOP ) != EMPTY ) {
-        cond->exit_edge = blk->edge[ 1 ].destination;
-        cond->loop_edge = blk->edge[ 0 ].destination;
+    if( ( blk->edge[ 0 ].destination.u.blk->class & IN_LOOP ) != EMPTY ) {
+        cond->exit_edge = blk->edge[ 1 ].destination.u.blk;
+        cond->loop_edge = blk->edge[ 0 ].destination.u.blk;
         if( _TrueIndex( ins ) == 1 ) {
             // want loop to continue executing if condition TRUE
             FlipCond( ins );
             _SetBlockIndex( ins, 0, 1 );
         }
     } else {
-        cond->exit_edge = blk->edge[ 0 ].destination;
-        cond->loop_edge = blk->edge[ 1 ].destination;
+        cond->exit_edge = blk->edge[ 0 ].destination.u.blk;
+        cond->loop_edge = blk->edge[ 1 ].destination.u.blk;
         if( _TrueIndex( ins ) == 0 ) {
             // want loop to continue executing if condition TRUE
             FlipCond( ins );
@@ -693,7 +693,7 @@ static  block   *MakeNonConditional( block *butt, block_edge *edge )
         blk->prev_block = butt;
         butt->next_block = blk;
         blk->loop_head = Head;
-        PointEdge( &blk->edge[ 0 ], edge->destination );
+        PointEdge( &blk->edge[ 0 ], edge->destination.u.blk );
         MoveEdge( edge, blk );
         UnMarkLoop();
         MarkLoop();
@@ -739,7 +739,7 @@ extern  bool    CanHoist( block *head )
     while( curr != NULL ) {
         if( curr->class & LOOP_EXIT ) return( ExitEdges( head ) == 1 );
         if( curr->targets > 1 ) break;
-        curr = curr->edge[ 0 ].destination;
+        curr = curr->edge[ 0 ].destination.u.blk;
         if( curr == head ) break;
     }
     return( FALSE );
@@ -766,7 +766,7 @@ extern  void    HoistCondition( block *head )
         }
     }
 
-    for( blk = head; blk != NULL; blk = blk->edge[ 0 ].destination ) {
+    for( blk = head; blk != NULL; blk = blk->edge[ 0 ].destination.u.blk ) {
         ins = blk->ins.hd.next;
         while( ins->head.opcode != OP_BLOCK ) {
             if( _OpIsCondition( ins->head.opcode ) ) {
@@ -992,7 +992,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         MarkHeaderEdges( loop, Head );
         RedirectHeaderEdges( loop, cond->exit_edge );
         edge = &Head->edge[ 0 ];
-        if( ( edge->destination->class & IN_LOOP ) == EMPTY ) {
+        if( ( edge->destination.u.blk->class & IN_LOOP ) == EMPTY ) {
             edge = &Head->edge[ 1 ];
         }
         FreeIns( ins );
@@ -1007,15 +1007,15 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
             MoveEdge( &Head->edge[ 1 ], cleanup_copy->head );
         }
         if( ( loop->class & JUMP ) != EMPTY ) {
-            if( loop->edge[ 0 ].destination == Head ) {
+            if( loop->edge[ 0 ].destination.u.blk == Head ) {
                 block   *blk;
 
                 Head->class &= ~LOOP_HEADER;
                 blk = DupBlock( Head );
                 AddBlocks( loop, blk );
                 MoveEdge( &loop->edge[ 0 ], blk );
-                PointEdge( &blk->edge[ 0 ], Head->edge[ 0 ].destination );
-                PointEdge( &blk->edge[ 1 ], Head->edge[ 1 ].destination );
+                PointEdge( &blk->edge[ 0 ], Head->edge[ 0 ].destination.u.blk );
+                PointEdge( &blk->edge[ 1 ], Head->edge[ 1 ].destination.u.blk );
                 blk->u.loop = loop;
                 for( ;; ) {
                     if( loop->u.loop == Head ) {

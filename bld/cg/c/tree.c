@@ -72,7 +72,7 @@
 #endif
 
 static  void    FreeTreeNode( tn node );
-static  void    Control( cg_op op, tn node, label_handle lbl, bool gen );
+static  void    Control( cg_op op, tn node, code_lbl *lbl, bool gen );
 
 static  pointer *TreeFrl;
 
@@ -221,7 +221,7 @@ extern  tn  TGNode( tn_class class, cg_op op,
 
 
 
-extern  tn  TGWarp( tn before, label_handle label, tn after )
+extern  tn  TGWarp( tn before, code_lbl *label, tn after )
 /************************************************************
     evaluate "before", call label "label" and yield value "after".
 */
@@ -1347,8 +1347,8 @@ static  an  NotAddrGen( tn node )
 }
 
 
-extern  void    TG3WayControl( tn node, label_handle lt,
-                   label_handle eq, label_handle gt )
+extern  void    TG3WayControl( tn node, code_lbl *lt,
+                   code_lbl *eq, code_lbl *gt )
 /*******************************************************
     for FORTRAN if( x ) 10,20,30
 */
@@ -1357,7 +1357,7 @@ extern  void    TG3WayControl( tn node, label_handle lt,
 }
 
 
-extern  void    TGControl( cg_op op, tn node, label_handle lbl )
+extern  void    TGControl( cg_op op, tn node, code_lbl *lbl )
 /***************************************************************
     generate a simple flow of control. The tree must be complete when this is called.
 */
@@ -1380,7 +1380,7 @@ extern  void    TGControl( cg_op op, tn node, label_handle lbl )
 }
 
 
-static  void    Control( cg_op op, tn node, label_handle lbl, bool gen )
+static  void    Control( cg_op op, tn node, code_lbl *lbl, bool gen )
 /***********************************************************************
     see TGControl ^
 */
@@ -1975,7 +1975,7 @@ an  TNCompare( tn node )
     an              retv;
     an              left;
     an              rite;
-    label_handle    entry;
+    code_lbl        *entry;
 
     entry = BGGetEntry();
     retv = FoldConsCompare( node->op, node->u.left,
@@ -2135,7 +2135,7 @@ static  an  TNWarp( tn node )
     if( node->u.left->rite != NULL ) {
         BGDone( NotAddrGen( node->u.left->rite ) );
     }
-    BGControl( O_INVOKE_LABEL, NULL, node->u.left->u.left );
+    BGControl( O_INVOKE_LABEL, NULL, node->u.left->u.handle );
     FreeTreeNode( node->u.left );
     dst = MakeTempAddr( BGNewTemp( node->tipe ), node->tipe );
     src = NotAddrGen( node->rite );
@@ -2152,8 +2152,8 @@ static  an  TNQuestion( tn node )
     its result field filled in yet.
 */
 {
-    label_handle    false_lbl;
-    label_handle    around_lbl;
+    code_lbl        *false_lbl;
+    code_lbl        *around_lbl;
     an              retv;
     an              temp;
     name            *temp_var;

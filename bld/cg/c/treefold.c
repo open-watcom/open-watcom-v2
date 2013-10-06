@@ -1587,16 +1587,16 @@ extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe 
 static  an Flip( an name, bool op_false, bool op_true )
 /*****************************************************/
 {
-    label_handle        temp;
+    code_lbl        **temp;
 
     if( op_false ) {
         if( op_true ) {
             FlowOff( (bn)name );
             name = BGInteger( FETrue(), TypeInteger );
         } else {
-            temp = (*(bn *)&name)->f;
-            (*(bn *)&name)->f = (*(bn *)&name)->t;
-            (*(bn *)&name)->t = temp;
+            temp = ((bn)name)->f;
+            ((bn)name)->f = ((bn)name)->t;
+            ((bn)name)->t = temp;
         }
     } else {
         if( op_true ) {
@@ -1682,7 +1682,7 @@ extern  an FoldConsCompare( cg_op op, tn left,
 }
 
 
-extern  bool    FoldIfTrue( tn left, label_handle lbl )
+extern  bool    FoldIfTrue( tn left, code_lbl *lbl )
 /*****************************************************/
 {
     bool        folded;
@@ -1699,7 +1699,7 @@ extern  bool    FoldIfTrue( tn left, label_handle lbl )
 }
 
 
-extern  bool    FoldIfFalse( tn left, label_handle lbl )
+extern  bool    FoldIfFalse( tn left, code_lbl *lbl )
 /******************************************************/
 {
     bool        folded;

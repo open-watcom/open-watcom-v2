@@ -58,7 +58,7 @@ extern  void            LayRegAC(hw_reg_set);
 extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  void            LayOpbyte(opcode);
 extern  void            Format(oc_class);
-extern  void            TellScrapLabel(label_handle);
+extern  void            TellScrapLabel(code_lbl *);
 extern  void            LayRegRM(hw_reg_set);
 extern  void            LayRMRegOp(name*);
 extern  void            LayModRM(name*);
@@ -222,7 +222,7 @@ extern  byte    ReverseCondition( byte cond ) {
     return( RevCond[cond] );
 }
 
-extern  void    DoCall( label_handle lbl, bool imported,
+extern  void    DoCall( code_lbl *lbl, bool imported,
                         bool big, oc_class pop_bit ) {
 /*****************************************************
     call routine "lbl".
@@ -354,7 +354,7 @@ extern  void    GenCall( instruction *ins ) {
     oc_class            pop_bit;
     call_class          cclass;
     byte_seq            *code;
-    label_handle        lbl;
+    code_lbl            *lbl;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
@@ -576,7 +576,7 @@ extern  void    GenMJmp( instruction *ins ) {
     Generate a jump indirect through memory instruction.
 */
 
-    label_handle        lbl;
+    code_lbl            *lbl;
     name                *base;
 
     if( ins->head.opcode != OP_SELECT && _IsTargetModel( BIG_CODE ) ) {

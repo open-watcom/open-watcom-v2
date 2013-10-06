@@ -209,7 +209,7 @@ static  block           *EdgeBlock( block_edge *edge, bool forward )
 /******************************************************************/
 {
     if( forward ) {
-        return( edge->destination );
+        return( edge->destination.u.blk );
     } else {
         return( edge->source );
     }
@@ -357,7 +357,7 @@ extern  void            FloodDown( block *blk, block_class bits )
         }
         if( Empty( stk ) ) break;
         edge = Pop( stk );
-        blk = edge->destination;
+        blk = edge->destination.u.blk;
     }
     FiniStack( stk );
 }
@@ -384,11 +384,11 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
     block_edge          *edge;
 
     if( cmp_result == TRUE ) {
-        taken = blk->edge[ _TrueIndex( cmp ) ].destination;
-        elim = blk->edge[ _FalseIndex( cmp ) ].destination;
+        taken = blk->edge[ _TrueIndex( cmp ) ].destination.u.blk;
+        elim = blk->edge[ _FalseIndex( cmp ) ].destination.u.blk;
     } else {
-        taken = blk->edge[ _FalseIndex( cmp ) ].destination;
-        elim = blk->edge[ _TrueIndex( cmp ) ].destination;
+        taken = blk->edge[ _FalseIndex( cmp ) ].destination.u.blk;
+        elim = blk->edge[ _TrueIndex( cmp ) ].destination.u.blk;
     }
     ClearBlockBits( BLOCK_VISITED );
     FloodDown( taken, BLOCK_VISITED );
@@ -414,7 +414,7 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
         }
         if( Empty( stk ) ) break;
         edge = Pop( stk );
-        elim = edge->destination;
+        elim = edge->destination.u.blk;
     }
     FiniStack( stk );
     ClearBlockBits( BLOCK_VISITED );

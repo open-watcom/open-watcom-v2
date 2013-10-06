@@ -38,7 +38,7 @@
 #include "data.h"
 
 extern  instruction_id  Renumber( void );
-extern  block           *NewBlock(label_handle,bool);
+extern  block           *NewBlock(code_lbl *,bool);
 extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
 
 static  void            NewInterval( block *blk, int level );
@@ -92,12 +92,12 @@ static  void    NoBlocksToSelf( void )
                     new_blk->next_block->prev_block = new_blk;
                 }
                 /* retarget edge to point to new block*/
-                edge->destination = new_blk;
+                edge->destination.u.blk = new_blk;
                 edge->flags &= ~DEST_LABEL_DIES;
                 /* set new block to jump from new_blk to blk*/
                 new_edge = &new_blk->edge[ 0 ];
                 new_edge->flags |= DEST_IS_BLOCK;
-                new_edge->destination = blk;
+                new_edge->destination.u.blk = blk;
                 new_edge->source = new_blk;
                 /* replace edge with new_edge in blk's input edge list*/
                 owner = &blk->input_edges;
@@ -157,8 +157,8 @@ static  pointer MarkVisited( pointer bl )
 
     blk->class |= BLOCK_VISITED;
     for( i = 0; i < blk->targets; ++i ) {
-        if( blk->edge[ i ].destination->class & BLOCK_VISITED ) continue;
-        SafeRecurse( MarkVisited, blk->edge[ i ].destination );
+        if( blk->edge[ i ].destination.u.blk->class & BLOCK_VISITED ) continue;
+        SafeRecurse( MarkVisited, blk->edge[ i ].destination.u.blk );
     }
     blk->prev_block = BlockList;
     BlockList = blk;
@@ -430,7 +430,7 @@ static  void    NestingDepth( void )
             i = blk->targets;
             while( --i >= 0 ) {
                 edge = &blk->edge[ i ];
-                target = edge->destination;
+                target = edge->destination.u.blk;
                 if( target->id <= blk->id ) {     /* if back edge*/
                     if( edge->join_level == level ) {
                         blk->next_block = target;
@@ -454,7 +454,7 @@ static  void    NestingDepth( void )
                     while( --i >= 0 ) {
                         edge = & blk->edge[ i ];
                         if( edge->join_level <= level ) {
-                            target = edge->destination->next_block;
+                            target = edge->destination.u.blk->next_block;
                             if( target != NULL ) {
                                 blk->depth ++;
                                 blk->next_block = target;  /* store head in node*/

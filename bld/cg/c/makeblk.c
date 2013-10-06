@@ -57,7 +57,7 @@ extern  void            RestoreFromTargProc(void);
 extern  void            InitTargProc(void);
 
 
-extern  block   *MakeBlock( label_handle label, block_num edges )
+extern  block   *MakeBlock( code_lbl *label, block_num edges )
 /***************************************************************/
 {
     block       *blk;
@@ -95,7 +95,7 @@ extern  block   *MakeBlock( label_handle label, block_num edges )
 }
 
 
-extern  block   *NewBlock( label_handle label, bool label_dies )
+extern  block   *NewBlock( code_lbl *label, bool label_dies )
 /**************************************************************/
 {
     block       *blk;
@@ -134,7 +134,7 @@ extern  void    FreeBlock( void )
 }
 
 
-extern  void    EnLink( label_handle label, bool label_dies )
+extern  void    EnLink( code_lbl *label, bool label_dies )
 /***********************************************************/
 {
     block       *blk;
@@ -218,7 +218,7 @@ extern  void    GenBlock( block_class class, int targets )
         }
         edge = new->input_edges;
         while( edge != NULL ) {
-            edge->destination = new;
+            edge->destination.u.blk = new;
             edge = edge->next_source;
         }
         CGFree( CurrBlock );
@@ -232,7 +232,7 @@ extern  void    GenBlock( block_class class, int targets )
 }
 
 
-extern  block   *ReGenBlock( block *blk, label_handle lbl )
+extern  block   *ReGenBlock( block *blk, code_lbl *lbl )
 /*********************************************************/
 {
     block       *new;
@@ -242,7 +242,7 @@ extern  block   *ReGenBlock( block *blk, label_handle lbl )
     targets = blk->targets + 1;
     new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
     Copy( blk, new, sizeof( block ) + ( targets - 2 ) * sizeof( block_edge ) );
-    new->edge[ targets-1 ].destination = lbl;
+    new->edge[ targets-1 ].destination.u.lbl = lbl;
     new->edge[ targets-1 ].flags = 0;
     new->targets = targets;
 
@@ -273,7 +273,7 @@ extern  block   *ReGenBlock( block *blk, label_handle lbl )
     }
     edge = new->input_edges;
     while( edge != NULL ) {
-        edge->destination = new;
+        edge->destination.u.blk = new;
         edge = edge->next_source;
     }
     FreeABlock( blk );
@@ -296,7 +296,7 @@ extern  type_class_def  InitCallState( type_def *tipe )
 }
 
 
-extern  void    AddTarget( label_handle dest, bool dest_label_dies )
+extern  void    AddTarget( code_lbl *dest, bool dest_label_dies )
 /******************************************************************/
 /*   Don't handle expression jumps yet*/
 {
@@ -304,7 +304,7 @@ extern  void    AddTarget( label_handle dest, bool dest_label_dies )
 
     edge = &CurrBlock->edge[  CurrBlock->targets++  ];
     edge->source = CurrBlock;
-    edge->destination = dest;
+    edge->destination.u.lbl = dest;
     edge->next_source = NULL;
     if( dest_label_dies ) {
         edge->flags |= DEST_LABEL_DIES;
@@ -312,7 +312,7 @@ extern  void    AddTarget( label_handle dest, bool dest_label_dies )
 }
 
 
-extern  block   *FindBlockWithLbl( label_handle label )
+extern  block   *FindBlockWithLbl( code_lbl *label )
 /*****************************************************/
 {
     block       *blk;
@@ -340,13 +340,13 @@ extern  void    FixEdges( void )
         if( ( blk->class & BIG_JUMP ) == 0 ) {
             while( --targets >= 0 ) {
               edge = &blk->edge[  targets  ];
-              dest = FindBlockWithLbl( edge->destination );
+              dest = FindBlockWithLbl( edge->destination.u.lbl );
               if( dest != NULL ) {
                   edge->flags |= DEST_IS_BLOCK;
-                  edge->destination = dest;
-                  edge->next_source = edge->destination->input_edges;
-                  edge->destination->input_edges = edge;
-                  edge->destination->inputs++;
+                  edge->destination.u.blk = dest;
+                  edge->next_source = edge->destination.u.blk->input_edges;
+                  edge->destination.u.blk->input_edges = edge;
+                  edge->destination.u.blk->inputs++;
               }
             }
         }
@@ -355,7 +355,7 @@ extern  void    FixEdges( void )
 }
 
 
-static label_handle LinkReturnsParms[ 2 ];
+static code_lbl *LinkReturnsParms[ 2 ];
 
 static  pointer  LinkReturns( void )
 /**********************************/
@@ -363,8 +363,8 @@ static  pointer  LinkReturns( void )
     block               *blk;
     int                 i;
 //    bool                found;
-    label_handle        link_to;
-    label_handle        to_search;
+    code_lbl            *link_to;
+    code_lbl            *to_search;
 
     link_to = LinkReturnsParms[ 0 ];
     to_search = LinkReturnsParms[ 1 ];
@@ -379,7 +379,7 @@ static  pointer  LinkReturns( void )
                 blk = ReGenBlock( blk, link_to );
                 break;
             }
-            if( blk->edge[ i ].destination == link_to ) {
+            if( blk->edge[ i ].destination.u.lbl == link_to ) {
                 break; /* kick out ... already linked */
             }
         }
@@ -397,7 +397,7 @@ static  pointer  LinkReturns( void )
             i = blk->targets;
             while( --i >= 0 ) {
                 LinkReturnsParms[ 0 ] = link_to;
-                LinkReturnsParms[ 1 ] = blk->edge[ i ].destination;
+                LinkReturnsParms[ 1 ] = blk->edge[ i ].destination.u.lbl;
                 if( SafeRecurse( LinkReturns, NULL ) == (pointer)FALSE ) {
                     return( (pointer)FALSE );
                 }
@@ -422,7 +422,7 @@ extern  bool        FixReturns( void )
             if( blk->next_block == NULL ) return( FALSE );
             blk->next_block->class |= RETURNED_TO;
             LinkReturnsParms[ 0 ] = blk->next_block->label;
-            LinkReturnsParms[ 1 ] = blk->edge[ 0 ].destination;
+            LinkReturnsParms[ 1 ] = blk->edge[ 0 ].destination.u.lbl;
             if( !LinkReturns() ) {
                 return( FALSE );
             }
@@ -453,7 +453,7 @@ extern  void    UnFixEdges( void )
                 edge = &blk->edge[  targets  ];
                 if( edge->flags & DEST_IS_BLOCK ) {
                     RemoveInputEdge( edge );
-                    edge->destination = edge->destination->label;
+                    edge->destination.u.lbl = edge->destination.u.blk->label;
                     edge->flags &= ~DEST_IS_BLOCK;
                 }
             }
@@ -478,7 +478,7 @@ extern  void    AddAnIns( block *blk, instruction *ins )
 extern  bool    BlkTooBig( void )
 /*******************************/
 {
-    label_handle        blk;
+    code_lbl        *blk;
 
     if( !HaveCurrBlock ) return( FALSE );
     if( CurrBlock == NULL ) return( FALSE );

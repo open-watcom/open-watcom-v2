@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern pointer  MemAlloc( uint );
+extern pointer  MemAlloc( size_t );
 extern void     MemFree( pointer );
 extern void     MemInit( void );
 extern void     MemFini( void );

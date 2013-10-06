@@ -69,8 +69,8 @@ extern  void            AbortCG(void);
 extern  void            FiniDbgInfo(void);
 extern  void            TFini(void);
 extern  void            CGMemFini(void);
-extern  void            BGFiniLabel(label_handle);
-extern  void            TellNoSymbol(label_handle);
+extern  void            BGFiniLabel(code_lbl *);
+extern  void            TellNoSymbol(code_lbl *);
 extern  void            BGProcDecl(sym_handle,type_def*);
 extern  void            BGParmDecl(sym_handle,type_def*);
 extern  void            BGAutoDecl(sym_handle,type_def*);
@@ -92,13 +92,13 @@ extern  tn              TGCall(tn);
 extern  tn              TGCompare(cg_op,tn,tn,type_def*);
 extern  tn              TGFlow(cg_op,tn,tn);
 extern  tn              TGQuestion(tn,tn,tn,type_def*);
-extern  tn              TGWarp(tn,label_handle,tn);
-extern  void            TGControl(cg_op,tn,label_handle);
-extern  void            TG3WayControl(tn,label_handle,label_handle,label_handle);
+extern  tn              TGWarp(tn,code_lbl *,tn);
+extern  void            TGControl(cg_op,tn,code_lbl *);
+extern  void            TG3WayControl(tn,code_lbl *,code_lbl *,code_lbl *);
 extern  select_node     *BGSelInit(void);
-extern  void            BGSelCase(select_node*,label_handle,signed_32);
-extern  void            BGSelRange(select_node*,signed_32,signed_32,label_handle);
-extern  void            BGSelOther(select_node*,label_handle);
+extern  void            BGSelCase(select_node*,code_lbl *,signed_32);
+extern  void            BGSelRange(select_node*,signed_32,signed_32,code_lbl *);
+extern  void            BGSelOther(select_node*,code_lbl *);
 extern  an              TGen(tn,type_def*);
 extern  void            BGSelect(select_node*,an,cg_switch_type);
 extern  an              TGReturn(tn,type_def*);
@@ -110,7 +110,7 @@ extern  tn              TGVolatile(tn);
 extern  tn              TGAttr( tn, cg_sym_attr );
 extern  tn              TGAlign( tn, uint );
 extern  void            DGBlip(void);
-extern  void            DataLabel(label_handle);
+extern  void            DataLabel(code_lbl *);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes(offset,byte);
@@ -357,7 +357,7 @@ extern  label_handle _CGAPI BENewLabel( void )
 /********************************************/
 {
 #ifndef NDEBUG
-    label_handle retn;
+    code_lbl *retn;
 
     EchoAPI( "BENewLabel()" );
     retn = AskForNewLabel();
@@ -676,7 +676,7 @@ extern  void _CGAPI     CGParmDecl( pointer name, cg_type tipe )
 extern label_handle _CGAPI CGLastParm( void )
 /*******************************************/
 {
-    label_handle        top;
+    code_lbl        *top;
 
 #ifndef NDEBUG
     EchoAPI( "CGLastParm()\n" );
@@ -1224,13 +1224,13 @@ extern  void _CGAPI     CGBigLabel( back_handle value )
     BGBigLabel( value );
 }
 
-extern  void _CGAPI     CGBigGoto( label_handle value, int level )
-/****************************************************************/
+extern  void _CGAPI     CGBigGoto( label_handle lbl, int level )
+/**************************************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "CGBigLabel( %L, %i )\n", value, level );
+    EchoAPI( "CGBigLabel( %L, %i )\n", lbl, level );
 #endif
-    BGBigGoto( value, level );
+    BGBigGoto( lbl, level );
 }
 
 extern  sel_handle _CGAPI       CGSelInit( void )
@@ -1256,7 +1256,6 @@ extern  void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, signed_32 val
     hdlExists( SEL_HANDLE, s );
     hdlExists( LABEL_HANDLE, lbl );
 #endif
-
     BGSelCase( s, lbl, val );
 }
 

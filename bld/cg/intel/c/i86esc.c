@@ -60,12 +60,12 @@ extern  void            DbgEpiBeg(dbg_rtn *,offset);
 extern  void            DbgProEnd(dbg_rtn *,offset);
 extern  void            DbgBlkBeg(dbg_block *,offset);
 extern  void            DbgRtnBeg(dbg_rtn *,offset);
-extern  void            TellScrapLabel(label_handle);
-extern  void            GenKillLabel(pointer);
-extern  void            TellKeepLabel(label_handle);
+extern  void            TellScrapLabel(code_lbl *);
+extern  void            GenKillLabel(code_lbl *);
+extern  void            TellKeepLabel(code_lbl *);
 extern  void            OutDataInt(int);
 extern  void            OutDataLong(long);
-extern  void            OutPatch(label_handle,patch_attr);
+extern  void            OutPatch(code_lbl *,patch_attr);
 extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutDataByte(byte);
 extern  void            OutDBytes(unsigned,const byte*);
@@ -83,8 +83,8 @@ extern bool             UseImportForm(fe_attr);
 extern void             OutSpecialCommon(import_handle,fix_class,bool);
 
 static void             DoRelocRef( sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
-static  void            OutShortDisp( label_handle lbl );
-static  void            OutCodeDisp( label_handle lbl, fix_class f, bool rel, oc_class class );
+static  void            OutShortDisp( code_lbl *lbl );
+static  void            OutCodeDisp( code_lbl *lbl, fix_class f, bool rel, oc_class class );
 
 extern byte             *NopLists[];
 
@@ -216,7 +216,7 @@ static  void    DoRelocRef( sym_handle sym, cg_class class,
 /*****************************************************************/
 {
     offset              addr;
-    label_handle        lbl;
+    code_lbl            *lbl;
 
     if( kind & BASE ) {                       /* don't need offset*/
         EmitByte( ESC );
@@ -245,7 +245,7 @@ static  void    DoRelocRef( sym_handle sym, cg_class class,
     }
 }
 
-extern  void    DoLblRef( label_handle lbl, segment_id seg,
+extern  void    DoLblRef( code_lbl *lbl, segment_id seg,
                         offset val, escape_class kind )
 /*****************************************************/
 {
@@ -367,7 +367,7 @@ static  void    ExpandCJ( any_oc *oc )
 }
 
 
-static  void    OutShortDisp( label_handle lbl ) {
+static  void    OutShortDisp( code_lbl *lbl ) {
 /************************************************/
 
     offset              addr;
@@ -381,7 +381,7 @@ static  void    OutShortDisp( label_handle lbl ) {
 }
 
 
-static  void    OutCodeDisp( label_handle lbl, fix_class f,
+static  void    OutCodeDisp( code_lbl *lbl, fix_class f,
                              bool rel, oc_class class ) {
 /********************************************************/
 
@@ -426,12 +426,12 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
 }
 
 
-static  label_handle    ExpandObj( byte *cur, int explen ) {
+static  code_lbl    *ExpandObj( byte *cur, int explen ) {
 /**********************************************************/
 
     byte                *fini;
     escape_class        key;
-    label_handle        lbl;
+    code_lbl            *lbl;
     sym_handle          sym;
     offset              val = 0;
     segment_id          seg;
@@ -559,7 +559,7 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
 extern  void    OutputOC( any_oc *oc, any_oc *next_lbl )
 /******************************************************/
 {
-    label_handle        lbl;
+    code_lbl            *lbl;
     sym_handle          sym;
     oc_class            base;
     int                 len;

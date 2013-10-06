@@ -73,12 +73,12 @@ extern  void        DbgRetOffset(type_length);
 extern  void        RelocParms( void );
 extern  type_length AdjustBase( void );
 extern  hw_reg_set  SaveRegs( void );
-extern  void        DoCall(label_handle,bool,bool,oc_class);
+extern  void        DoCall(code_lbl *,bool,bool,oc_class);
 extern  void        GenUnkPush(pointer);
 extern  void        GenPushC(signed_32);
 extern  void        GenUnkMov(hw_reg_set,pointer);
 extern  void        QuickSave(hw_reg_set,opcode_defs);
-extern  void        CodeLabel(label_handle,unsigned);
+extern  void        CodeLabel(code_lbl *,unsigned);
 extern  void        EmitRtnBeg( void );
 extern  void        CodeLineNum( cg_linenum,bool);
 extern  void        Gpusha( void );
@@ -86,14 +86,14 @@ extern  void        Gpopa( void );
 extern  unsigned    DepthAlign( unsigned );
 extern  void        EyeCatchBytes(byte*,byte_seq_len);
 extern  void        GenSelEntry(bool);
-extern  void        TellKeepLabel(label_handle);
-extern  void        GenKillLabel(label_handle);
+extern  void        TellKeepLabel(code_lbl *);
+extern  void        GenKillLabel(code_lbl *);
 extern  void        GFstpM(pointer);
 extern  void        GenTouchStack( bool );
 extern  void        GenLoadDS(void);
-extern  label_handle    GenFar16Thunk( label_handle, unsigned_16, bool );
-extern  void        GenP5ProfilingProlog( label_handle );
-extern  void        GenP5ProfilingEpilog( label_handle );
+extern  code_lbl    *GenFar16Thunk( code_lbl *, unsigned_16, bool );
+extern  void        GenP5ProfilingProlog( code_lbl * );
+extern  void        GenP5ProfilingEpilog( code_lbl * );
 extern  bool        SymIsExported( sym_handle );
 extern  void        FlowSave( hw_reg_set * );
 extern  void        FlowRestore( hw_reg_set * );
@@ -287,7 +287,7 @@ static  block   *ScanForLabelReturn( block *blk ) {
     if( blk->class & LABEL_RETURN )
         return( blk );
     for( i = 0; i < blk->targets; ++i ) {
-        son = blk->edge[i].destination;
+        son = blk->edge[i].destination.u.blk;
         if( son->edge[0].flags & DOWN_ONE_CALL )
             continue;
         if( SafeRecurse( (void *(*)(void *))ScanForLabelReturn, son ) == NULL )
@@ -313,7 +313,7 @@ static  bool    ScanLabelCalls( void ) {
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( !( blk->class & CALL_LABEL ) )
             continue;
-        if( ScanForLabelReturn( blk->edge[0].destination ) == NULL ) {
+        if( ScanForLabelReturn( blk->edge[0].destination.u.blk ) == NULL ) {
             return( FALSE );
         }
     }
@@ -474,7 +474,7 @@ static  void    EmitNameInCode( void ) {
     char            *name;
     char            *endname;
     char            b[128];
-    label_handle    lbl;
+    code_lbl        *lbl;
 
     sym = AskForLblSym( CurrProc->label );
     if( sym == NULL )

@@ -467,12 +467,12 @@ extern  void    DumpCond( instruction *ins, block *blk ) {
         i = _TrueIndex( ins );
         if( i != NO_JUMP ) {
             DumpLiteral( " then " );
-            DumpBlkId( blk->edge[  i  ].destination );
+            DumpBlkId( blk->edge[  i  ].destination.u.blk );
         }
         i = _FalseIndex( ins );
         if( i != NO_JUMP ) {
             DumpLiteral( " else " );
-            DumpBlkId( blk->edge[  i  ].destination );
+            DumpBlkId( blk->edge[  i  ].destination.u.blk );
         }
     }
 }

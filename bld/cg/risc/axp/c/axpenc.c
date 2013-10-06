@@ -58,7 +58,7 @@ extern void GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
 extern void             ObjBytes( const char *buffer, unsigned size );
 extern uint_8           RegTrans( hw_reg_set );
-extern void             OutReloc( label_handle, axp_reloc, unsigned );
+extern void             OutReloc( code_lbl *, axp_reloc, unsigned );
 extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
@@ -643,7 +643,7 @@ static  bool    encodeThreadDataRef( instruction *ins ) {
 /*******************************************************/
 
     name                *op;
-    label_handle        tls_index;
+    code_lbl            *tls_index;
 
     op = ins->operands[ 0 ];
     if( op->n.class != N_MEMORY ) return( FALSE );

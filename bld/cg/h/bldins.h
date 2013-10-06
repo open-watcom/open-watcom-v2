@@ -35,29 +35,25 @@ extern  an      BGInt64( signed_64 value, type_def *tipe );
 extern  an      BGFloat( char *value, type_def *tipe );
 extern  an      BGName( cg_class cl, pointer sym, type_def *tipe );
 extern  an      BGTempName( name *temp, type_def *tipe );
-extern  bool    FiniLabel( label_handle lbl, block *blk );
-extern  void    BGFiniLabel( label_handle lbl );
+extern  bool    FiniLabel( code_lbl *lbl, block *blk );
+extern  void    BGFiniLabel( code_lbl *lbl );
 extern  bool    NeedConvert( type_def *from, type_def *to );
 extern  name    *BGNewTemp( type_def *tipe );
 extern  temp_name       *BGGlobalTemp( type_def *tipe );
 extern  an      Arithmetic( an name, type_def *tipe );
-extern  bn      BGCompare( cg_op op, an left, an rite,
-                           label_handle entry, type_def *tipe );
-extern  bn      Boolean( an node, label_handle entry );
-extern  label_handle    BGGetEntry( void );
-extern  void    BG3WayControl( an node, label_handle lt,
-                               label_handle eq, label_handle gt );
-extern  void    BGControl( cg_op op, bn expr, label_handle lbl );
-extern  void    BGGenCtrl( cg_op op, bn expr, label_handle lbl, bool gen );
+extern  bn      BGCompare( cg_op op, an left, an rite, code_lbl *entry, type_def *tipe );
+extern  bn      Boolean( an node, code_lbl *entry );
+extern  code_lbl *BGGetEntry( void );
+extern  void    BG3WayControl( an node, code_lbl *lt, code_lbl *eq, code_lbl *gt );
+extern  void    BGControl( cg_op op, bn expr, code_lbl *lbl );
+extern  void    BGGenCtrl( cg_op op, bn expr, code_lbl *lbl, bool gen );
 extern  void    BGBigLabel( bck_info *bck );
-extern  void    BGBigGoto( label_handle lbl, int level );
+extern  void    BGBigGoto( code_lbl *lbl, int level );
 extern  unsigned_32 BGUnrollCount( unsigned_32 unroll_count );
 extern  unsigned_32 BGUnrollCount( unsigned_32 unroll_count );
 extern  an      BGUnary( cg_op op, an left, type_def *tipe );
-extern  an      BGBinary( cg_op op, an left,
-                          an rite, type_def *tipe, bool fold_addr );
-extern  an      BGOpGets( cg_op op, an left, an rite,
-                          type_def *tipe, type_def *optipe );
+extern  an      BGBinary( cg_op op, an left, an rite, type_def *tipe, bool fold_addr );
+extern  an      BGOpGets( cg_op op, an left, an rite, type_def *tipe, type_def *optipe );
 extern  an      BGConvert( an left, type_def *tipe );
 extern  bn      BGFlow( cg_op op, bn left, bn rite );
 extern  an      BGAssign( an dst, an src, type_def *tipe );

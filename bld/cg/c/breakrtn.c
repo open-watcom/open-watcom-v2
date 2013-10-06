@@ -37,11 +37,11 @@
 typedef struct  edge_list {
         block_edge              *edge;
         struct edge_list        *next;
-        label_handle            lbl;
+        code_lbl                *lbl;
         block_num               gen_id;
 } edge_list;
 
-extern  block           *NewBlock(label_handle,bool);
+extern  block           *NewBlock(code_lbl *,bool);
 extern  void            RemoveInputEdge(block_edge*);
 extern  bool            FixReturns( void );
 extern  void            FixEdges( void );
@@ -122,8 +122,8 @@ extern  bool            CreateBreak( void )
         while( --targets >= 0 ) {
             if( edge->flags & DEST_IS_BLOCK ) {
                 if( edge->flags & DEST_LABEL_DIES ) {
-                    if( edge->destination->class & BLOCK_VISITED ) {
-                        edge->destination->class &= ~BLOCK_VISITED;
+                    if( edge->destination.u.blk->class & BLOCK_VISITED ) {
+                        edge->destination.u.blk->class &= ~BLOCK_VISITED;
                         if( --pending == 0 ) {
                             back_break_blk = blk->next_block;
                         }
@@ -182,7 +182,7 @@ extern  bool            CreateBreak( void )
         edge = &blk->edge[ 0 ];
         while( --targets >= 0 ) {
             if( !( edge->flags & DEST_IS_BLOCK )
-               || edge->destination->gen_id >= break_blk->gen_id ) {
+               || edge->destination.u.blk->gen_id >= break_blk->gen_id ) {
                 exit_edge = CGAlloc( sizeof( edge_list ) );
                 exit_edge->edge = edge;
                 exit_edge->next = BranchOuts;
@@ -203,12 +203,12 @@ extern  bool            CreateBreak( void )
     while( exit_edge != NULL ) {
         edge = exit_edge->edge;
         if( edge->flags & DEST_IS_BLOCK ) {
-            exit_edge->lbl = edge->destination->label;
+            exit_edge->lbl = edge->destination.u.blk->label;
             RemoveInputEdge( edge );
         } else {
-            exit_edge->lbl = edge->destination;
+            exit_edge->lbl = edge->destination.u.lbl;
         }
-        edge->destination = exit_blk;
+        edge->destination.u.blk = exit_blk;
         edge->flags |= DEST_IS_BLOCK;
         edge->next_source = exit_blk->input_edges;
         exit_blk->input_edges = edge;
@@ -235,7 +235,7 @@ extern  bool            CreateBreak( void )
         next_edge = edge->next_source;
         if( edge->source->gen_id >= break_blk->gen_id ) {
             RemoveInputEdge( edge );
-            edge->destination = edge->destination->label;
+            edge->destination.u.lbl = edge->destination.u.blk->label;
             edge->flags &= ~DEST_IS_BLOCK;
         }
         edge = next_edge;
@@ -260,7 +260,7 @@ extern  bool            CreateBreak( void )
     HeadBlock->class &= ~BIG_LABEL;
     edge = &blk->edge[ 0 ];
     edge->flags = DEST_IS_BLOCK;
-    edge->destination = HeadBlock;
+    edge->destination.u.blk = HeadBlock;
     edge->source = blk;
     edge->next_source = HeadBlock->input_edges;
     HeadBlock->input_edges = edge;
@@ -297,7 +297,7 @@ extern  void            FixBreak( void )
         while( blk != NULL ) {
             if( blk->gen_id == exit_edge->gen_id ) {
                 RemoveInputEdge( exit_edge->edge );
-                exit_edge->edge->destination = exit_edge->lbl;
+                exit_edge->edge->destination.u.lbl = exit_edge->lbl;
                 exit_edge->edge->flags &= ~DEST_IS_BLOCK;
                 break;
             }

@@ -34,7 +34,7 @@
 #include "cgmem.h"
 #include "utils.h"
 
-extern  block           *MakeBlock(label_handle,block_num);
+extern  block           *MakeBlock(code_lbl *,block_num);
 extern  void            SuffixIns(instruction *,instruction *);
 extern  void            RemoveIns(instruction *);
 extern  byte            *Copy( void *, void *, uint );
@@ -50,7 +50,7 @@ extern  void    PointEdge( block_edge *edge, block *new_dest )
     new_dest->input_edges = edge;
     new_dest->inputs++;
     /* point edge at new block*/
-    edge->destination = new_dest;
+    edge->destination.u.blk = new_dest;
     edge->flags = DEST_IS_BLOCK;
     edge->source->targets++;
 }
@@ -65,14 +65,14 @@ extern  void    RemoveEdge( block_edge *edge )
 
     /* unhook edge from its old destination's input list*/
     if( edge->flags & DEST_IS_BLOCK ) {
-        owner = &edge->destination->input_edges;
+        owner = &edge->destination.u.blk->input_edges;
         for(;;) {
             curr = *owner;
             if( curr == edge ) break;
             owner = &(*owner)->next_source;
         }
         *owner = curr->next_source;
-        edge->destination->inputs--;
+        edge->destination.u.blk->inputs--;
     }
     edge->source->targets--;
 }
@@ -104,8 +104,7 @@ extern  block   *SplitBlock( block *blk, instruction *ins )
     new_blk->prev_block = blk;
     blk->next_block = new_blk;
     new_blk->next_block->prev_block = new_blk;
-    blk->class = blk->class & ~( CONDITIONAL | RETURN | SELECT |
-                                 LOOP_EXIT | UNKNOWN_DESTINATION );
+    blk->class = blk->class & ~( CONDITIONAL | RETURN | SELECT | LOOP_EXIT | UNKNOWN_DESTINATION );
     blk->class |= JUMP;
     blk->targets = 1;
     new_blk->class = new_blk->class & ~( LOOP_HEADER );

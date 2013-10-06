@@ -310,7 +310,7 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
             if( ( blk->class & BIG_JUMP ) == EMPTY ) {
                 i = blk->targets;
                 while( --i >= 0 ) {
-                    target = blk->edge[ i ].destination;
+                    target = blk->edge[ i ].destination.u.blk;
 
                     /*   new OUT = union of successors' IN*/
 

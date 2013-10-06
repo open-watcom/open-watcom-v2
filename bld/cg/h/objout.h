@@ -18,7 +18,7 @@ extern offset      AskMaxSize( void );
 extern long_offset AskBigMaxSize( void );
 extern void        SetLocation( offset loc );
 extern void        SetBigLocation( long_offset loc );
-extern void        OutLabel( label_handle label );
+extern void        OutLabel( code_lbl *label );
 extern void        *InitPatch( void );
 extern void        AbsPatch( abspatch_handle patch, offset lc );
 extern void        TellObjNewProc( sym_handle proc );

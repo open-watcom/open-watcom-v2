@@ -59,7 +59,7 @@ extern  void            DataInt(short_offset);
 extern  void            DataLong( long );
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes( offset len, byte pat );
-extern  void            DataLabel( label_handle );
+extern  void            DataLabel( code_lbl * );
 extern  void            DoBigLblPtr(sym_handle);
 extern  void            DoBigBckPtr(back_handle,offset);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
@@ -469,7 +469,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
             cu.flags = FALSE;
             cu.segment_size = 0;
         } else {
-	        bck = NULL;
+            bck = NULL;
             cu.flags = FALSE;
             Pc_Low = NULL;
             Pc_High = NULL;

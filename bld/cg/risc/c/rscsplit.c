@@ -231,6 +231,7 @@ extern instruction      *rSIMPCMP( instruction *ins )
     bool                reverse;
 
     reverse = FALSE;
+    opcode = 0;
     assert( ins->result == NULL );
     switch( ins->head.opcode ) {
     case OP_CMP_NOT_EQUAL:
@@ -449,7 +450,7 @@ extern  instruction     *rMOVEXX( instruction *ins ) {
     instruction         *new_ins;
     name                *len;
     name                *reg_name;
-    label_handle        lbl;
+    code_lbl            *lbl;
     hw_reg_set          all_regs;
     hw_reg_set          reg;
 
@@ -642,6 +643,7 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     unsigned_32         u32;
     constant_defn       *floatval;
 
+    new = NULL;
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
@@ -671,8 +673,7 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value,
-                                   tosplit->c.int_value, CONS_OFFSET );
+            new = AddrConst( tosplit->c.value, tosplit->c.int_value, CONS_OFFSET );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
@@ -727,6 +728,7 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
     unsigned_32         u32;
     constant_defn       *floatval;
 
+    new = NULL;
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
@@ -756,8 +758,7 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value,
-                                   tosplit->c.int_value, CONS_SEGMENT );
+            new = AddrConst( tosplit->c.value, tosplit->c.int_value, CONS_SEGMENT );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );

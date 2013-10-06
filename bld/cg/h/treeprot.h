@@ -31,7 +31,7 @@ extern  tn      TGLeaf( an addr );
 extern  btn     TGBitMask( tn left, byte start, byte len, type_def *tipe );
 extern  tn      TGNode( tn_class class, cg_op op, tn left, tn rite,
                         type_def *tipe );
-extern  tn      TGWarp( tn before, label_handle label, tn after );
+extern  tn      TGWarp( tn before, code_lbl *label, tn after );
 extern  tn      TGHandle( void *ptr );
 extern  tn      TGCallback( cg_callback rtn, callback_handle ptr );
 extern  tn      TGCompare( cg_op op, tn left, tn rite, type_def *tipe );
@@ -62,9 +62,8 @@ extern  tn      TGTrash( tn node );
 extern  tn      TGAttr( tn node, cg_sym_attr attr );
 extern  tn      TGAlign( tn node, uint align );
 extern  tn      TGVolatile( tn node );
-extern  void    TG3WayControl( tn node, label_handle lt, label_handle eq,
-                               label_handle gt );
-extern  void    TGControl( cg_op op, tn node, label_handle lbl );
+extern  void    TG3WayControl( tn node, code_lbl *lt, code_lbl *eq, code_lbl *gt );
+extern  void    TGControl( cg_op op, tn node, code_lbl *lbl );
 extern  an      TGen( tn node, type_def *tipe );
 extern  an      TGReturn( tn node, type_def *tipe );
 extern  an      TNFlow( tn node );

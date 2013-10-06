@@ -48,11 +48,11 @@
 extern  an              MakeConst(pointer,type_def*);
 extern  an              MakeAddrName(cg_class,sym_handle,type_def*);
 extern  an              MakeTypeTempAddr(name*,type_def*);
-extern  void            GenKillLabel(pointer);
+extern  void            GenKillLabel(code_lbl *);
 extern  void            GenBlock( block_class, int );
-extern  void            AddTarget(label_handle,bool);
+extern  void            AddTarget(code_lbl *,bool);
 extern  void            Generate(bool);
-extern  void            EnLink(label_handle,bool);
+extern  void            EnLink(code_lbl *,bool);
 extern  void            AddIns(instruction*);
 extern  bool            TGIsAddress( void );
 extern  name            *GenIns(an);
@@ -154,14 +154,14 @@ extern  an      BGTempName( name *temp, type_def *tipe ) {
 }
 
 
-extern  bool    FiniLabel( label_handle lbl, block *blk ) {
+extern  bool    FiniLabel( code_lbl *lbl, block *blk ) {
 /*********************************************************/
 
     int         i;
 
     i = blk->targets;
     while( --i >= 0 ) {
-        if( blk->edge[ i ].destination == lbl ) {
+        if( blk->edge[ i ].destination.u.lbl == lbl ) {
             blk->edge[ i ].flags |= DEST_LABEL_DIES;
             return( TRUE );
         }
@@ -173,7 +173,7 @@ extern  bool    FiniLabel( label_handle lbl, block *blk ) {
     return( FALSE );
 }
 
-extern  void    BGFiniLabel( label_handle lbl ) {
+extern  void    BGFiniLabel( code_lbl *lbl ) {
 /***********************************************/
 
     block       *blk;
@@ -259,7 +259,7 @@ static  an      FlowOut( bn node, type_def *tipe ) {
 /**************************************************/
 
     name                *temp;
-    label_handle        lbl;
+    code_lbl            *lbl;
 
     lbl = AskForNewLabel();
     temp = BGNewTemp( tipe );
@@ -296,7 +296,7 @@ extern  an      Arithmetic( an name, type_def *tipe ) {
 }
 
 extern  bn      BGCompare( cg_op op, an left, an rite,
-                           label_handle entry, type_def *tipe ) {
+                           code_lbl *entry, type_def *tipe ) {
 /*****************************************************************************/
 
     bn                  new;
@@ -318,39 +318,39 @@ extern  bn      BGCompare( cg_op op, an left, an rite,
     AddTarget( NULL, FALSE );
     new->format = NF_BOOL;
     new->e = entry;
-    new->t = &CurrBlock->edge[ 0 ].destination;
-    new->f = &CurrBlock->edge[ 1 ].destination;
+    new->t = &CurrBlock->edge[ 0 ].destination.u.lbl;
+    new->f = &CurrBlock->edge[ 1 ].destination.u.lbl;
     EnLink( AskForNewLabel(), TRUE );
     return( new );
 }
 
 
 
-extern  bn      Boolean( an node, label_handle entry ) {
+extern  bn      Boolean( an node, code_lbl *entry ) {
 /******************************************************/
 
     if( node->format != NF_BOOL ) {
         node = (an) BGCompare( O_NE, node, BGInteger( 0, node->tipe ),
                            entry, node->tipe );
     }
-    return( (bn) node );
+    return( (bn)node );
 }
 
 
-extern  label_handle    BGGetEntry( void ) {
+extern  code_lbl    *BGGetEntry( void ) {
 /************************************/
 
     return( CurrBlock->label );
 }
 
 
-extern  void    BG3WayControl( an node, label_handle lt,
-                               label_handle eq, label_handle gt ) {
+extern  void    BG3WayControl( an node, code_lbl *lt,
+                               code_lbl *eq, code_lbl *gt ) {
 /*****************************************************************/
 
     instruction         *ins;
     name                *op;
-    label_handle        lbl;
+    code_lbl            *lbl;
     type_class_def      class;
 
     node = Arithmetic( node, node->tipe );
@@ -391,14 +391,14 @@ extern  void    BG3WayControl( an node, label_handle lt,
 }
 
 
-extern  void    BGControl( cg_op op, bn expr, label_handle lbl ) {
+extern  void    BGControl( cg_op op, bn expr, code_lbl *lbl ) {
 /****************************************************************/
 
     BGGenCtrl( op, expr, lbl, FALSE );
 }
 
 
-extern  void    BGGenCtrl( cg_op op, bn expr, label_handle lbl, bool gen ) {
+extern  void    BGGenCtrl( cg_op op, bn expr, code_lbl *lbl, bool gen ) {
 /**************************************************************************/
 
     switch( op ) {
@@ -486,7 +486,7 @@ extern  void    BGBigLabel( bck_info *bck ) {
 }
 
 
-extern  void    BGBigGoto( label_handle lbl, int level ) {
+extern  void    BGBigGoto( code_lbl *lbl, int level ) {
 /********************************************************/
 
     GenBlock( BIG_JUMP, 1 ); // No longer supported!
@@ -672,7 +672,7 @@ extern  bn      BGFlow( cg_op op, bn left, bn rite ) {
 /****************************************************/
 
     bn                  new = NULL;
-    label_handle        temp;
+    code_lbl            **temp;
 
     if( op == O_FLOW_NOT ) {
         temp = left->t;
@@ -687,7 +687,7 @@ extern  bn      BGFlow( cg_op op, bn left, bn rite ) {
             *(rite->f) = CurrBlock->label;
             GenBlock( JUMP, 1 );
             AddTarget( NULL, FALSE );
-            left->f = &CurrBlock->edge[ 0 ].destination;
+            left->f = &CurrBlock->edge[ 0 ].destination.u.lbl;
             left->t = rite->t;
             new = left;
             BoolFree( rite );
@@ -699,7 +699,7 @@ extern  bn      BGFlow( cg_op op, bn left, bn rite ) {
             *(rite->t) = CurrBlock->label;
             GenBlock( JUMP, 1 );
             AddTarget( NULL, FALSE );
-            left->t = &CurrBlock->edge[ 0 ].destination;
+            left->t = &CurrBlock->edge[ 0 ].destination.u.lbl;
             left->f = rite->f;
             new = left;
             BoolFree( rite );
@@ -742,7 +742,7 @@ extern  void    BGDone( an node ) {
 /*********************************/
 
     if( node->format == NF_BOOL ) {
-        FlowOff( (bn) node );
+        FlowOff( (bn)node );
     } else {
         AddrFree( node );
     }
@@ -778,7 +778,7 @@ extern  void    FlowOff( bn name ) {
 extern  void    BGStartBlock( void ) {
 /************************************/
 
-    label_handle        lbl;
+    code_lbl        *lbl;
 
     if( _MemLow ) { /* break the block here and generate code*/
         lbl = AskForNewLabel();

@@ -160,10 +160,9 @@ static  pointer    ScoreDescendants( pointer bl )
 
     i = blk->targets;
     while( --i >= 0 ) {
-        son = blk->edge[ i ].destination;
+        son = blk->edge[ i ].destination.u.blk;
         if( ( son->inputs == 1 ) && !( son->class & BLOCK_VISITED ) ) {
-            son->cc = ScAlloc(ScoreCount*(sizeof( score )+sizeof( list_head ))
-                                                         +sizeof( list_head ));
+            son->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
             ScoreClear( son->cc );
             for(;;) {
                 ScoreCopy( blk->cc, son->cc );
@@ -174,15 +173,14 @@ static  pointer    ScoreDescendants( pointer bl )
             son->class |= BLOCK_VISITED | BLOCK_MARKED;
             SafeRecurse( ScoreDescendants, son );
             FreeScoreBoard( son->cc );
-            ScFree( son->cc, ScoreCount *(sizeof( score )+sizeof( list_head ))
-                                                         +sizeof( list_head ));
+            ScFree( son->cc );
             son->cc = NULL;
         }
     }
     HW_CAsgn( regs, HW_EMPTY );
     i = blk->targets;
     while( --i >= 0 ) {
-        son = blk->edge[ i ].destination;
+        son = blk->edge[ i ].destination.u.blk;
         if( son->class & BLOCK_MARKED ) {
             HW_TurnOn( regs, son->ins.hd.next->head.live.regs );
             son->class &= ~BLOCK_MARKED;
@@ -227,8 +225,7 @@ static  void    ScoreRoutine( void )
 //        change = FALSE;
         while( blk != NULL ) {
             if( !( blk->class & BLOCK_VISITED ) ) {
-                blk->cc = ScAlloc(ScoreCount*(sizeof( score )
-                                  +sizeof( list_head ))+sizeof( list_head ));
+                blk->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
                 ScoreClear( blk->cc );
                 for( ;; ) {
                     FreeScoreBoard( blk->cc );
@@ -239,8 +236,7 @@ static  void    ScoreRoutine( void )
                 blk->class |= BLOCK_VISITED;
                 ScoreDescendants( blk );
                 FreeScoreBoard( blk->cc );
-                ScFree( blk->cc, ScoreCount *(sizeof( score )
-                                 +sizeof( list_head ))+sizeof( list_head ));
+                ScFree( blk->cc );
                 blk->cc = NULL;
             }
             blk = blk->next_block;
@@ -257,13 +253,12 @@ static  void    CleanUp( void )
     blk = HeadBlock;
     while( blk != NULL ) {
         FreeScoreBoard( blk->cc );
-        ScFree( blk->cc, ScoreCount *(sizeof( score )+sizeof( list_head ))
-                                                     +sizeof( list_head ));
+        ScFree( blk->cc );
         blk->cc = NULL;
         blk = blk->next_block;
     }
-    ScFree( ScoreList, ScoreCount * ( sizeof( pointer ) + sizeof(score_reg) ) );
-    ScFree( ScZero, sizeof( score_info ) );
+    ScFree( ScoreList );
+    ScFree( ScZero );
 }
 
 

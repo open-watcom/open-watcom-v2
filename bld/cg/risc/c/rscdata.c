@@ -44,8 +44,8 @@
 extern  void            ObjBytes( const void *, unsigned );
 extern  constant_defn   *GetFloat( name *, type_class_def );
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
-extern  void            OutReloc( label_handle, owl_reloc_type, unsigned );
-extern  void            OutSegReloc( label_handle *label, segment_id section );
+extern  void            OutReloc( code_lbl *, owl_reloc_type, unsigned );
+extern  void            OutSegReloc( code_lbl *label, segment_id section );
 extern  void            AlignObject( unsigned );
 extern  void            TellOptimizerByPassed( void );
 extern  void            TellByPassOver( void );
@@ -160,14 +160,14 @@ extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
 extern  void    FEPtrBaseOffset( sym_handle sym,  offset plus ) {
 /***************************************************************/
     bck_info            *bck;
-    segment_id          seg;
+//    segment_id          seg;
 
     TellOptimizerByPassed();
     bck = FEBack( sym );
-    seg = FESegID( sym );
+//    seg = FESegID( sym );
     OutReloc( bck->lbl, OWL_RELOC_SECTION_INDEX, 0 );
     ObjBytes( &plus, 4 );
-//  OutSegReloc( bck->lbl, seg );
+//    OutSegReloc( bck->lbl, seg );
     OutReloc( bck->lbl, OWL_RELOC_SECTION_OFFSET, 0 );
     ObjBytes( "\0\0", 2 );
     TellByPassOver();
@@ -187,7 +187,7 @@ extern  void    FEPtrBase( sym_handle sym ) {
 }
 
 
-extern  void    DataLabel( label_handle lbl ) {
+extern  void    DataLabel( code_lbl *lbl ) {
 /*********************************************/
     TellOptimizerByPassed();
     OutLabel( lbl );

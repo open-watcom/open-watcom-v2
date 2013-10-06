@@ -70,7 +70,7 @@ extern  int     IfCost( select_node *s_node ) {
 
 
 extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
-                                      label_handle other, cg_type tipe,
+                                      code_lbl *other, cg_type tipe,
                                       cg_type real_tipe ) {
 /*****************************************************************/
 
@@ -84,7 +84,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
 
 
 extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
-                                     signed_32 hi, label_handle other ) {
+                                     signed_32 hi, code_lbl *other ) {
 /*****************************************************************/
 
     list = list;

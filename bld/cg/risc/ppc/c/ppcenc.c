@@ -54,7 +54,7 @@ extern void GenCondJump( instruction * );
 
 extern void             ObjBytes( const void *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
-extern void             OutReloc( label_handle, ppc_reloc, unsigned );
+extern void             OutReloc( code_lbl *, ppc_reloc, unsigned );
 extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
@@ -796,7 +796,7 @@ extern  void    GenObjCode( instruction *ins )
 
 static byte Zeros[MAX_ALIGNMENT];
 
-extern  void    CodeLabel( label_handle label, unsigned alignment )
+extern  void    CodeLabel( code_lbl *label, unsigned alignment )
 /*****************************************************************/
 {
     offset      loc;
@@ -834,8 +834,8 @@ extern  void    CodeLineNum( cg_linenum line, bool label )
 }
 
 
-extern  void    GenJumpLabel( pointer label )
-/*******************************************/
+extern  void    GenJumpLabel( code_lbl *label )
+/*********************************************/
 {
     GenBRANCH( 18, label, FALSE, FALSE );
 #ifndef NDEBUG
@@ -911,7 +911,7 @@ extern  byte    ReverseCondition( byte cond )
 }
 
 
-extern  label_handle    LocateLabel( instruction *ins, int index )
+extern  code_lbl    *LocateLabel( instruction *ins, int index )
 /****************************************************************/
 {
     if( index == NO_JUMP ) return( NULL );
@@ -919,7 +919,7 @@ extern  label_handle    LocateLabel( instruction *ins, int index )
         ins = ins->head.next;
         if( ins->head.opcode == OP_BLOCK ) break;
     }
-    return( _BLOCK( ins )->edge[index].destination );
+    return( _BLOCK( ins )->edge[index].destination.u.lbl );
 }
 
 
@@ -936,8 +936,8 @@ static  block   *InsBlock( instruction *ins )
 extern  void    GenCondJump( instruction *cond )
 /**********************************************/
 {
-    label_handle        dest_false;
-    label_handle        dest_true;
+    code_lbl            *dest_false;
+    code_lbl            *dest_true;
     block               *blk;
 
     dest_false = LocateLabel( cond, _FalseIndex( cond ) );

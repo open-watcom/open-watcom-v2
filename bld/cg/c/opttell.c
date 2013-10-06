@@ -33,7 +33,7 @@
 #include "optwif.h"
 #include "zoiks.h"
 
-extern  void            GenKillLabel(pointer);
+extern  void            GenKillLabel(code_lbl *);
 
 
 extern  void    TellOptimizerByPassed( void )

@@ -52,7 +52,7 @@ extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type
 extern  name            *SAllocTemp(type_class_def,type_length);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            AddIns(instruction*);
-extern  void            DataLabel(label_handle);
+extern  void            DataLabel(code_lbl *);
 extern  name            *GenIns(an);
 extern  name            *AllocS32Const(signed_32);
 extern  an              MakeTempAddr(name*,type_def*);
@@ -85,7 +85,7 @@ static  void    Far16Parms( cn call ) {
     name                *eax;
     name                *ecx;
     name                *esi;
-    label_handle        lbl;
+    code_lbl            *lbl;
     type_length         offset;
     name                *parmlist;
     call_state          *state;
@@ -283,7 +283,7 @@ extern  void    BGProcDecl( sym_handle sym, type_def *tipe ) {
     name                *temp;
     type_class_def      class;
     segment_id          old;
-    label_handle        lbl;
+    code_lbl            *lbl;
 
     SaveTargetModel = TargetModel;
     class = AddCallBlock( sym, tipe );
@@ -294,9 +294,7 @@ extern  void    BGProcDecl( sym_handle sym, type_def *tipe ) {
                 lbl = AskForNewLabel();
                 DataLabel( lbl );
                 DGUBytes( tipe->length );
-                CurrProc->targ.return_points = SAllocMemory( lbl, 0, CG_LBL,
-                                                        TypeClass( tipe ),
-                                                        tipe->length );
+                CurrProc->targ.return_points = SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
                 SetOP( old );
             } else {
                 reg = CurrProc->state.return_reg;

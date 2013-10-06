@@ -226,7 +226,7 @@ static instruction *CheapCall( instruction *ins, rt_class rt_call, name *p1, nam
     instruction         *call;
     hw_reg_set          reg;
     name                *reg_name;
-    label_handle        lbl;
+    code_lbl            *lbl;
 
     reg = HW_EMPTY;
     lbl = RTLabel( rt_call );
@@ -344,6 +344,7 @@ extern instruction      *rM_SIMPCMP( instruction *ins )
     bool                reverse;
 
     reverse = FALSE;
+    opcode = 0;
     assert( ins->result == NULL );
     switch( ins->head.opcode ) {
     case OP_CMP_NOT_EQUAL:

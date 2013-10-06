@@ -379,6 +379,7 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
 */
 
     name                *reg_name;
+#define _InRegAssgn
 #include "savcache.h"
 
     reg_name = AllocRegName( reg );
@@ -391,7 +392,6 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
         DBAllocReg( reg_name, opnd );
     }
 
-#define _InRegAssgn
 #include "savcode.h"
 
     if( _LBitEmpty( conf->id.within_block )

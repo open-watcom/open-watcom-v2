@@ -124,7 +124,7 @@ static void DoFix( block *blk )
     blk->stack_depth += WORD_SIZE;
     blk->class |= BLOCK_VISITED;
     for( i = 0; i < blk->targets; i++ ) {
-        DoFix( blk->edge[ i ].destination );
+        DoFix( blk->edge[ i ].destination.u.blk );
     }
 }
 
@@ -145,7 +145,7 @@ static void FixStackDepth( block *save, block *restore )
     if( save != restore ) {
         restore->stack_depth += WORD_SIZE;
         for( i = 0; i < save->targets; i++ ) {
-            DoFix( save->edge[ i ].destination );
+            DoFix( save->edge[ i ].destination.u.blk );
         }
     }
 }

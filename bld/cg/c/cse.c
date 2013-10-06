@@ -195,14 +195,14 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
             }
             if( _OpIsCondition( new_ins->head.opcode ) ) {
                 if( _TrueIndex( new_ins ) == _FalseIndex( new_ins ) ) {
-                    new_dest_blk = blk->edge[ _TrueIndex( new_ins ) ].destination;
+                    new_dest_blk = blk->edge[ _TrueIndex( new_ins ) ].destination.u.blk;
                     if( new_dest_blk != blk ) {
                         jump_edge = &input->edge[ 0 ];
                         RemoveInputEdge( jump_edge );
                         new_dest_blk->inputs++;
                         jump_edge->next_source = new_dest_blk->input_edges;
                         new_dest_blk->input_edges = jump_edge;
-                        jump_edge->destination = new_dest_blk;
+                        jump_edge->destination.u.blk = new_dest_blk;
                         if( input->depth < blk->depth ) {
                             MoveHead( blk, new_dest_blk );
                         }
@@ -346,7 +346,7 @@ static  void    FindPartition( void )
         edge = &blk->edge[ 0 ];
         while( --i >= 0 ) {
             if( edge->flags & DEST_IS_BLOCK ) {
-                oth = edge->destination;
+                oth = edge->destination.u.blk;
                 if( !( oth->class & PARTITION_ROOT ) && oth->inputs == 1 ) {
                     temp = oth->u.partition;
                     oth->u.partition = blk->u.partition;

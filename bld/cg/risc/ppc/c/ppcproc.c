@@ -41,7 +41,7 @@
 
 extern  uint_32         CountBits( uint_32 );
 extern  unsigned        DepthAlign( unsigned );
-extern  void            CodeLabel( label_handle, unsigned );
+extern  void            CodeLabel( code_lbl *, unsigned );
 extern  hw_reg_set      *GPRegs( void );
 extern  hw_reg_set      *FPRegs( void );
 extern  hw_reg_set      SaveRegs( void );
@@ -51,12 +51,12 @@ extern  void            DbgRtnBeg( dbg_rtn *rtn,  offset lc );
 extern  void            DbgProEnd( dbg_rtn *rtn, offset lc );
 extern  void            DbgEpiBeg( dbg_rtn *rtn, offset lc );
 extern  void            DbgRtnEnd( dbg_rtn *rtn, offset lc );
-extern  void            OutFuncStart( label_handle label, offset start, int line );
+extern  void            OutFuncStart( code_lbl *label, offset start, int line );
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
-extern  void            OutPDataRec( label_handle label, uint_32 pro_size, uint_32 proc_end );
+extern  void            OutPDataRec( code_lbl *label, uint_32 pro_size, uint_32 proc_end );
 extern  uint_8          RegTrans( hw_reg_set );
-extern  void            OutTOCRec( label_handle lbl );
+extern  void            OutTOCRec( code_lbl *lbl );
 extern  type_length     TempLocation( name * );
 
 
@@ -473,7 +473,7 @@ extern  void    GenProlog( void )
 /*******************************/
 {
     segment_id          old;
-    label_handle        label;
+    code_lbl            *label;
     offset              lc;
 
     old = SetOP( AskCodeSeg() );

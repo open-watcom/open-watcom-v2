@@ -98,13 +98,11 @@ typedef enum {
 } base_type;
 
 #include "pushpck1.h"
-
 typedef struct fixup {
         byte                    locatof;
         byte                    fset;
         byte                    fixdat;
 } fixup;
-
 #include "poppck.h"
 
 /* Data Structures used internally in object file generation */
@@ -148,7 +146,7 @@ typedef struct index_rec {
         unsigned_32             comdat_size;
         unsigned_32             total_comdat_size;
         sym_handle              comdat_symbol;
-        label_handle            comdat_label;
+        code_lbl                *comdat_label;
         omf_idx                 comdat_nidx;
         void                    *virt_func_refs;
         omf_idx                 comdat_prefix_import;
@@ -182,4 +180,4 @@ typedef struct abspatch {
 } abspatch;
 
 extern void             OutAbsPatch(abspatch *,patch_attr);
-extern void             DoLblRef( label_handle lbl, segment_id seg, offset val, escape_class kind );
+extern void             DoLblRef( code_lbl *lbl, segment_id seg, offset val, escape_class kind );

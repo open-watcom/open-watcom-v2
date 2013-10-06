@@ -180,7 +180,7 @@ static void DoTrans( block *blk, instruction *call_ins )
     }
 
     // make blk jump to the block after the prologue
-    target = HeadBlock->edge[ 0 ].destination;
+    target = HeadBlock->edge[ 0 ].destination.u.blk;
     blk->class = ( blk->class | JUMP ) & ~( CONDITIONAL | RETURN | SELECT );
 
     // remove blk from the input lists of any blocks which it might have
@@ -238,7 +238,7 @@ static pointer SafeBlock( block *blk )
     if( SafePath( blk->ins.hd.next ) ) {
         safe = blk;
         for( i = 0; i < blk->targets; i++ ) {
-            dest = blk->edge[ i ].destination;
+            dest = blk->edge[ i ].destination.u.blk;
             if( SafeRecurse( SafeBlock, dest ) == NULL ) {
                 safe = NULL;
                 break;
@@ -335,7 +335,7 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
             SafePath( call_ins->head.next ) ) {
         ok = TRUE;
         for( i = 0; i < blk->targets; i++ ) {
-            dest = blk->edge[ i ].destination;
+            dest = blk->edge[ i ].destination.u.blk;
             if( SafeBlock( dest ) == NULL ) {
                 ok = FALSE;
                 break;

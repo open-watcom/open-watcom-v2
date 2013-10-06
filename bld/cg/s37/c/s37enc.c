@@ -1010,7 +1010,7 @@ extern  label_handle    LocateLabel( instruction *ins, int index ) {
         ins = ins->head.next;
         if( ins->head.opcode == OP_BLOCK ) break;
     }
-    return( _BLOCK( ins )->edge[  index  ].destination );
+    return( _BLOCK( ins )->edge[  index  ].destination.u.lbl );
 }
 
 

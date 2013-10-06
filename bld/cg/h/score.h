@@ -125,8 +125,8 @@ void    RegAdd( score *sc, int dst_idx, int src_idx );
 bool    RegThrash( block *blk );
 
 // scutil.c
-pointer ScAlloc( int size );
-void    ScFree( pointer chunk, int size );
+pointer ScAlloc( size_t size );
+void    ScFree( pointer chunk );
 void    ScoreCalcList( void );
 void    ScoreClear( score *p );
 void    FreeScListEntry( score_list *list );

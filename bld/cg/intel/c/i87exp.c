@@ -935,7 +935,7 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
         if( ins->head.opcode == OP_BLOCK ) {
             i = blk->targets;
             while( --i >= 0 ) {
-                target = blk->edge[ i ].destination;
+                target = blk->edge[ i ].destination.u.blk;
                 if( ( target->class & BLOCK_VISITED ) == EMPTY ) {
                     RevOtherCond( target, (instruction *)&target->ins );
                 }

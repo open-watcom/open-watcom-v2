@@ -805,11 +805,11 @@ static  void    CacheTemps( block *blk ) {
     Exit = NULL;
     if( blk->class & LOOP_HEADER
         && blk->inputs == 2 && blk->targets == 2 ) {
-        if( blk->edge[0].destination == blk ) {
-            Exit = blk->edge[1].destination;
+        if( blk->edge[0].destination.u.blk == blk ) {
+            Exit = blk->edge[1].destination.u.blk;
             exit_edge = &blk->edge[1];
-        } else if( blk->edge[1].destination == blk ) {
-            Exit = blk->edge[0].destination;
+        } else if( blk->edge[1].destination.u.blk == blk ) {
+            Exit = blk->edge[0].destination.u.blk;
             exit_edge = &blk->edge[0];
         } else {
             Exit = NULL;

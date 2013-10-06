@@ -35,7 +35,7 @@
 #include "data.h"
 #include "makeins.h"
 
-extern  void            TellScrapLabel( label_handle );
+extern  void            TellScrapLabel( code_lbl * );
 extern  void            FreeABlock( block * );
 extern  instruction_id  Renumber( void );
 extern  void            RemoveEdge( block_edge * );
@@ -92,7 +92,7 @@ static  void    MarkReachableBlocks( void )
                 blk->class |= BLOCK_VISITED;
                 i = blk->targets;
                 while( --i >= 0 ) {
-                    son = blk->edge[ i ].destination;
+                    son = blk->edge[ i ].destination.u.blk;
                     if( ( son->class & BLOCK_VISITED ) == EMPTY ) {
                         son->class |= BLOCK_VISITED;
                         change = TRUE;
@@ -154,7 +154,7 @@ extern  void    RemoveBlock( block *blk )
     i = 0;
     while( i < blk->targets ) {
         /* block may have already been removed by dead code removal*/
-        if( FindBlock( blk->edge[ i ].destination ) ) {
+        if( FindBlock( blk->edge[ i ].destination.u.blk ) ) {
             RemoveInputEdge( & blk->edge[ i ] );
         }
         ++ i;
@@ -213,7 +213,7 @@ extern  void    RemoveInputEdge( block_edge *edge )
     block_edge  *prev;
 
     if( ( edge->flags & DEST_IS_BLOCK ) == EMPTY ) return;
-    dest = edge->destination;
+    dest = edge->destination.u.blk;
     dest->inputs --;
     prev = dest->input_edges;
     if( prev == edge ) {
@@ -259,7 +259,7 @@ static  bool    Retarget( block *blk )
     bool        success;
 
     success = TRUE;                    /* assume can get rid of block*/
-    target = blk->edge[ 0 ].destination;
+    target = blk->edge[ 0 ].destination.u.blk;
     edge = blk->input_edges;
     blk->input_edges = NULL;
     while( edge != NULL ) {
@@ -269,7 +269,7 @@ static  bool    Retarget( block *blk )
             edge->next_source = blk->input_edges;
             blk->input_edges = edge;
         } else {
-            edge->destination = target;
+            edge->destination.u.blk = target;
             edge->next_source = target->input_edges;
             target->input_edges = edge;
             target->inputs++;
@@ -290,7 +290,7 @@ static  void    JoinBlocks( block *jump, block *target )
 {
     block_edge          *edge;
     source_line_number  line_num;
-    label_handle        label;
+    code_lbl            *label;
     instruction         *nop;
 
     /*  To get here, 'target' is only entered from 'jump'*/
@@ -311,7 +311,7 @@ static  void    JoinBlocks( block *jump, block *target )
     edge = jump->input_edges;
     target->input_edges = edge;
     while( edge != NULL ) {
-        edge->destination = target;    /* was 'jump' before*/
+        edge->destination.u.blk = target;    /* was 'jump' before*/
         edge = edge->next_source;
     }
 
@@ -355,8 +355,8 @@ static  bool    SameTarget( block *blk )
     instruction *ins;
     block       *targ1, *targ2;
 
-    targ1 = blk->edge[ 0 ].destination;
-    targ2 = blk->edge[ 1 ].destination;
+    targ1 = blk->edge[ 0 ].destination.u.blk;
+    targ2 = blk->edge[ 1 ].destination.u.blk;
     if( targ1 != targ2 ) return( FALSE );
     if( ( targ1->class | targ2->class ) & UNKNOWN_DESTINATION ) return( FALSE );
     blk->class &= ~CONDITIONAL;
@@ -396,7 +396,7 @@ static  bool    DoBlockTrim( void )
             } else if( blk->class & CONDITIONAL ) {
                 change |= SameTarget( blk );
             } else if( blk->class & JUMP ) {
-                target = blk->edge[ 0 ].destination;
+                target = blk->edge[ 0 ].destination.u.blk;
                 if( target != blk && !(target->class & UNKNOWN_DESTINATION) ) {
                     ins = blk->ins.hd.next;
                     while( ins->head.opcode == OP_NOP ) {
@@ -453,11 +453,11 @@ extern void KillCondBlk( block *blk, instruction *ins, int dest )
     blk->class &= ~CONDITIONAL;
     blk->class |= JUMP;
     blk->targets = 1;
-    dest_blk = blk->edge[dest].destination;
+    dest_blk = blk->edge[dest].destination.u.blk;
     edge = &blk->edge[0];
     edge->flags = blk->edge[dest].flags;
     edge->source = blk;
-    edge->destination = dest_blk;
+    edge->destination.u.blk = dest_blk;
     edge->next_source = dest_blk->input_edges;
     dest_blk->input_edges = edge;
     dest_blk->inputs++;

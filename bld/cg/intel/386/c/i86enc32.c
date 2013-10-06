@@ -85,7 +85,7 @@ extern  segment_id      AskCode16Seg( void );
 extern  bool            GetEnvVar( char *, char *, int );
 extern  int             CountIns( block *blk );
 
-extern  void            CodeLabel( label_handle, unsigned );
+extern  void            CodeLabel( code_lbl *, unsigned );
 extern  unsigned        DepthAlign( unsigned );
 extern  void            TellOptimizerByPassed( void );
 extern  void            SetUpObj( bool );
@@ -93,10 +93,10 @@ extern  void            OutDataByte( byte );
 extern  void            OutDataInt( int );
 extern  void            OutDataLong(long);
 extern  void            OutRTImport( rt_class, fix_class );
-extern  void            TellKeepLabel( label_handle );
+extern  void            TellKeepLabel( code_lbl * );
 extern  void            OutReloc( segment_id, fix_class, bool );
 extern  void            TellByPassOver( void );
-extern  void            OutLblPatch( label_handle, fix_class, offset );
+extern  void            OutLblPatch( code_lbl *, fix_class, offset );
 
 extern  template        Temp;   /* template for oc_entries*/
 extern  byte            Inst[];  /* template for instructions*/
@@ -107,8 +107,7 @@ extern  void            DoRelocConst( name *op, type_class_def kind );
 extern  void            DoMAddr( name *op );
 static  void            Add32Displacement( signed_32 val );
 static  void            LayIdxModRM( name *op );
-        void            doProfilingCode( char *fe_name, label_handle *data,
-                                         bool prolog );
+        void            doProfilingCode( char *fe_name, code_lbl **data, bool prolog );
 
 #define RMR_MOD_IND     0x80
 #define RMR_MOD_DIR     5
@@ -672,7 +671,7 @@ extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remov
     return( code_32 );
 }
 
-void    GenProfilingCode( char *fe_name, label_handle *data, bool prolog )
+void    GenProfilingCode( char *fe_name, code_lbl **data, bool prolog )
 /************************************************************************/
 {
     if( _IsTargetModel( NEW_P5_PROFILING ) ) {
@@ -680,7 +679,7 @@ void    GenProfilingCode( char *fe_name, label_handle *data, bool prolog )
     }
 }
 
-segment_id GenP5ProfileData( char *fe_name, label_handle *data, label_handle *stack )
+segment_id GenP5ProfileData( char *fe_name, code_lbl **data, code_lbl **stack )
 /***********************************************************************************/
 {
     segment_id      old;
@@ -720,7 +719,7 @@ segment_id GenP5ProfileData( char *fe_name, label_handle *data, label_handle *st
 }
 
 
-void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
+void    doProfilingCode( char *fe_name, code_lbl **data, bool prolog )
 /***********************************************************************/
 {
     if( prolog ) GenP5ProfileData( fe_name, data, NULL );
@@ -733,14 +732,14 @@ void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
 }
 
 
-static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
+static  void    doProfilingPrologEpilog( code_lbl *label, bool prolog )
 /************************************************************************/
 {
     if( _IsTargetModel( NEW_P5_PROFILING ) ) {
         doProfilingCode( "", &CurrProc->targ.routine_profile_data, prolog );
     } else {
         bck_info        *bck;
-        label_handle    data_lbl;
+        code_lbl        *data_lbl;
         segment_id      data_seg;
 
         bck = (bck_info *)FEAuxInfo( AskForLblSym( label ), P5_PROF_DATA );
@@ -804,14 +803,14 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
 }
 
 
-extern  void    GenP5ProfilingProlog( label_handle label )
+extern  void    GenP5ProfilingProlog( code_lbl *label )
 /********************************************************/
 {
     doProfilingPrologEpilog( label, TRUE );
 }
 
 
-extern  void    GenP5ProfilingEpilog( label_handle label )
+extern  void    GenP5ProfilingEpilog( code_lbl *label )
 /********************************************************/
 {
     doProfilingPrologEpilog( label, FALSE );
@@ -949,7 +948,7 @@ void StartBlockProfiling( block *blk )
 {
     segment_id          old;
     segment_id          data_seg;
-    label_handle        data;
+    code_lbl            *data;
 
     if( !_IsTargetModel( NEW_P5_PROFILING ) ) return;
     if( !_IsTargetModel( STATEMENT_COUNTING ) ) return;

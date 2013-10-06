@@ -64,7 +64,7 @@ extern  int             GetLog2(unsigned_32);
 extern  name            *AllocTemp(type_class_def);
 extern  name            *AllocConst(pointer);
 extern  name            *AllocS32Const(signed_32);
-extern  block           *NewBlock(label_handle,bool);
+extern  block           *NewBlock(code_lbl *,bool);
 extern  bool            SameThing(name*,name*);
 extern  void            RevCond(instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
@@ -78,7 +78,7 @@ extern  void            FlipCond(instruction*);
 extern  name            *DeAlias(name*);
 extern  void            LPBlip(void);
 extern  void            RemoveInputEdge(block_edge*);
-extern  block           *ReGenBlock(block*,label_handle);
+extern  block           *ReGenBlock(block*,code_lbl *);
 extern  bool            NameIsConstant(name*);
 extern  void            ConstToTemp(block*,block*,block*(*)(block*));
 extern  bool            SideEffect(instruction*);
@@ -202,7 +202,7 @@ extern  block   *AddPreBlock( block *postblk )
     /* make preblk go to postblk*/
     preblk->targets++;
     edge = &preblk->edge[ 0 ];
-    edge->destination = postblk;
+    edge->destination.u.blk = postblk;
     edge->source = preblk;
     edge->flags = SOURCE_IS_PREHEADER | DEST_IS_BLOCK;
     edge->next_source = postblk->input_edges;
@@ -226,14 +226,14 @@ static  bool    IsPreHeader( block *test ) {
 
     /* check that test only goes to the loop head*/
     if( test->targets != 1 ) return( FALSE );
-    if( test->edge[ 0 ].destination != Head ) return( FALSE );
+    if( test->edge[ 0 ].destination.u.blk != Head ) return( FALSE );
     if( ( test->class & IN_LOOP ) != EMPTY ) return( FALSE );
     /* check that no other block outside the loop branches into the loop*/
     for( other = HeadBlock; other != NULL; other = other->next_block ) {
         if( other != test && ( other->class & IN_LOOP ) == EMPTY ) {
             i = other->targets;
             while( --i >= 0 ) {
-                if( other->edge[ i ].destination->class & IN_LOOP ) {
+                if( other->edge[ i ].destination.u.blk->class & IN_LOOP ) {
                     return( FALSE );
                 }
             }
@@ -313,7 +313,7 @@ extern  void    MarkLoop( void )
         targets = other_blk->targets;
         edge = &other_blk->edge[ 0 ];
         while( --targets >= 0 ) {
-            if( ( edge->destination->class & IN_LOOP ) == EMPTY ) {
+            if( ( edge->destination.u.blk->class & IN_LOOP ) == EMPTY ) {
                 other_blk->class |= LOOP_EXIT;
             }
             ++edge;
@@ -366,10 +366,10 @@ extern  void            MakeJumpBlock( block *cond_blk, block_edge *exit_edge )
     edge = &cond_blk->edge[0];
     edge->flags = exit_edge->flags;
     edge->source = cond_blk;
-    edge->destination = exit_edge->destination;
-    edge->next_source = exit_edge->destination->input_edges;
-    exit_edge->destination->input_edges = edge;
-    exit_edge->destination->inputs++;
+    edge->destination.u.blk = exit_edge->destination.u.blk;
+    edge->next_source = exit_edge->destination.u.blk->input_edges;
+    exit_edge->destination.u.blk->input_edges = edge;
+    exit_edge->destination.u.blk->inputs++;
 }
 
 
@@ -1941,7 +1941,7 @@ static  pointer MarkDown( pointer bl ) {
     if( !( blk->class & BLOCK_WILL_EXECUTE ) ) return NULL;
     blk->class &= ~BLOCK_WILL_EXECUTE;
     for( i = blk->targets-1; i >= 0; --i ) {
-        SafeRecurse( MarkDown, blk->edge[i].destination );
+        SafeRecurse( MarkDown, blk->edge[i].destination.u.blk );
     }
     return NULL;
 }
@@ -1970,7 +1970,7 @@ static  void    LabelDown( instruction *frum,
     edge = &blk->edge[ 0 ];
     i = blk->targets;
     while( --i >= 0 ) {
-        blk = edge->destination;
+        blk = edge->destination.u.blk;
         if( ( go_around || blk != Head ) && ( blk->class & IN_LOOP ) ) {
             ins = blk->ins.hd.next;
             if( ins->head.opcode == OP_BLOCK
@@ -2060,15 +2060,15 @@ static  void    MarkWillExecBlocks( void )
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         if( !( blk->class & LOOP_EXIT ) ) continue;
         for( i = blk->targets-1; i >= 0; --i ) {
-            MarkDown( blk->edge[i].destination );
+            MarkDown( blk->edge[i].destination.u.blk );
         }
     }
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         if( blk->targets <= 1 ) continue;
         for( i = blk->targets-1; i >= 0; --i ) {
-            if( blk->edge[i].destination->inputs == 1 ) {
-                blk->edge[i].destination->class &= ~BLOCK_WILL_EXECUTE;
+            if( blk->edge[i].destination.u.blk->inputs == 1 ) {
+                blk->edge[i].destination.u.blk->class &= ~BLOCK_WILL_EXECUTE;
             }
         }
     }
@@ -2126,7 +2126,7 @@ static  bool    InstructionWillExec( instruction *ins ) {
 static  void    NewTarget( block_edge *edge, block *blk ) {
 /*********************************************************/
 
-    edge->destination = blk;
+    edge->destination.u.blk = blk;
     edge->next_source = blk->input_edges;
     blk->input_edges = edge;
     blk->inputs++;
@@ -2173,7 +2173,7 @@ extern  void    MoveDownLoop( block *cond ) {
     i = cond->targets;
     while( --i >= 0 ) {
         cond->edge[ i ].flags &= ~DEST_LABEL_DIES;
-        cond->edge[ i ].destination->edge[ 0 ].flags &= ~BLOCK_LABEL_DIES;
+        cond->edge[ i ].destination.u.blk->edge[ 0 ].flags &= ~BLOCK_LABEL_DIES;
     }
 }
 
@@ -2407,7 +2407,7 @@ extern  bool    AnalyseLoop( induction *var, bool *ponecond,
     *pcond = NULL;
     *pcond_blk = NULL;
     can_replace = TRUE;
-    first_blk = PreHead->edge[0].destination;
+    first_blk = PreHead->edge[0].destination.u.blk;
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( var == NULL || ins != var->ins ) {
@@ -2538,7 +2538,7 @@ extern  bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         ins->operands[ 1 ] = temp;
         RevCond( ins );
     }
-    if( blk->edge[  _TrueIndex( ins )  ].destination->class & IN_LOOP ) {
+    if( blk->edge[  _TrueIndex( ins )  ].destination.u.blk->class & IN_LOOP ) {
         _SetBlockIndex( ins, _FalseIndex( ins ), _TrueIndex( ins ) );
         FlipCond( ins );
     }
@@ -2619,7 +2619,7 @@ static  bool    FinalValue( instruction *ins, block *blk, induction *var ) {
     if( !CalcFinalValue( var, blk, ins, &final, &initial ) ) {
         return( FALSE );
     }
-    dest = blk->edge[  _TrueIndex( ins )  ].destination;
+    dest = blk->edge[  _TrueIndex( ins )  ].destination.u.blk;
     if( dest->class & UNKNOWN_DESTINATION ) return( FALSE );
     if( dest->class & LOOP_HEADER ) return( FALSE );
     // class = var->name->n.name_class;
@@ -3248,7 +3248,7 @@ static  bool    TwistLoop( block_list *header_list, bool unroll ) {
     }
     loop_edge = &cond_blk->edge[ 0 ];
     exit_edge = &cond_blk->edge[ 1 ];
-    if( !( loop_edge->destination->class & IN_LOOP ) ) {
+    if( !( loop_edge->destination.u.blk->class & IN_LOOP ) ) {
         loop_edge = &cond_blk->edge[ 1 ];
         exit_edge = &cond_blk->edge[ 0 ];
     }
@@ -3281,7 +3281,7 @@ static  bool    TwistLoop( block_list *header_list, bool unroll ) {
     }
     do_the_twist = TRUE;
     edge = &PreHead->edge[ 0 ];
-    if( edge->destination != cond_blk ) {
+    if( edge->destination.u.blk != cond_blk ) {
         do_the_twist = FALSE;
     }
 #if 1
@@ -3293,9 +3293,9 @@ static  bool    TwistLoop( block_list *header_list, bool unroll ) {
         new_head = NULL;
         if( know_bounds ) {
             RemoveInputEdge( edge );
-            NewTarget( edge, loop_edge->destination );
+            NewTarget( edge, loop_edge->destination.u.blk );
             MoveDownLoop( cond_blk );
-            new_head = loop_edge->destination;
+            new_head = loop_edge->destination.u.blk;
             // DupNoncondInstrs( cond_blk, cond, PreHead );
         } else if( OptForSize < 50 && PreHead->gen_id < cond_blk->gen_id ) {
             RemoveInputEdge( edge );
@@ -3316,12 +3316,12 @@ static  bool    TwistLoop( block_list *header_list, bool unroll ) {
                                      cond->operands[1], _TrueIndex( cond ),
                                      _FalseIndex( cond ), cond->type_class );
             SuffixPreHeader( dupcond );
-            NewTarget( &PreHead->edge[ 0 ], cond_blk->edge[ 0 ].destination );
-            NewTarget( &PreHead->edge[ 1 ], cond_blk->edge[ 1 ].destination );
+            NewTarget( &PreHead->edge[ 0 ], cond_blk->edge[ 0 ].destination.u.blk );
+            NewTarget( &PreHead->edge[ 1 ], cond_blk->edge[ 1 ].destination.u.blk );
             PreHead->edge[ 0 ].flags = DEST_IS_BLOCK;
             PreHead->edge[ 1 ].flags = DEST_IS_BLOCK;
             MoveDownLoop( cond_blk );
-            new_head = loop_edge->destination;
+            new_head = loop_edge->destination.u.blk;
         }
         if( new_head != NULL && new_head != Head ) {
             for( blk = Loop; blk != NULL; blk = blk->u.loop ) {

@@ -84,7 +84,12 @@ typedef enum {
 typedef struct block            *block_pointer;
 
 typedef struct block_edge {
-        block_pointer           destination;    /* target */
+        struct destination {
+            union {
+                block_pointer   blk;
+                code_lbl        *lbl;
+            } u;
+        }                       destination;    /* target */
         struct block            *source;        /* source of edge */
         struct block_edge       *next_source;   /* next source to same target */
         interval_depth          join_level;     /* interval levels joined */
@@ -137,7 +142,7 @@ typedef struct block {
             struct block        *alter_ego;     /* used in loop unrolling */
             struct block        *next;          /* used for CALL_LABEL kludge */
         } v;
-        label_handle            label;          /* front end identification */
+        code_lbl                *label;         /* front end identification */
         local_bit_set           available_bit;
         interval_depth          depth;          /* loop nesting depth */
         block_num               id;             /* internal identification */

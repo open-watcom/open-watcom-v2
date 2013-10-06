@@ -104,16 +104,16 @@ static  bool    FindFlowOut( block *blk ) {
     }
 //    prev = ins->head.prev;
     if( TypeClassSize[ ins->type_class ] > WORD_SIZE ) return( FALSE );
-    true = blk->edge[ _TrueIndex( ins ) ].destination;
+    true = blk->edge[ _TrueIndex( ins ) ].destination.u.blk;
     if( true->inputs != 1 ) return( FALSE );
     if( true->targets != 1 ) return( FALSE );
 
-    false = blk->edge[ _FalseIndex( ins ) ].destination;
+    false = blk->edge[ _FalseIndex( ins ) ].destination.u.blk;
     if( false->inputs != 1 ) return( FALSE );
     if( false->targets != 1 ) return( FALSE );
 
-    join = false->edge[ 0 ].destination;
-    if( join != true->edge[ 0 ].destination ) return( FALSE );
+    join = false->edge[ 0 ].destination.u.blk;
+    if( join != true->edge[ 0 ].destination.u.blk ) return( FALSE );
     if( join->inputs != 2 ) return( FALSE );
     if( join->class & UNKNOWN_DESTINATION ) return( FALSE );
 
@@ -166,7 +166,7 @@ static  bool    FindFlowOut( block *blk ) {
 
     blk->targets = 1;
     new_edge = &blk->edge[ 0 ];
-    new_edge->destination = join;
+    new_edge->destination.u.blk = join;
     new_edge->next_source = NULL;
     join->input_edges = new_edge;
     join->inputs = 1;

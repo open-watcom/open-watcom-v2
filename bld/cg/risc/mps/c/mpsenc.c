@@ -709,7 +709,7 @@ static  bool    encodeThreadDataRef( instruction *ins )
 /*****************************************************/
 {
     name                *op;
-//    label_handle        tls_index;
+//    code_lbl            *tls_index;
 
     op = ins->operands[0];
     if( op->n.class != N_MEMORY ) return( FALSE );

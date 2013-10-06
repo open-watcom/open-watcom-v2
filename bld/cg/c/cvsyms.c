@@ -117,8 +117,8 @@ static void BuffPatchSet( segment_id seg, dbg_patch_handle *patch )
     patch->offset = off;
 }
 
-static  void    BuffWrite( cv_out *out, const void *to )
-/******************************************************/
+static  void    BuffWrite( cv_out *out, void *to )
+/************************************************/
 {
     unsigned    len;
     segment_id  old;
@@ -226,9 +226,10 @@ static  void    InitSegBck( void )
     if( _IsModel( DBG_LOCALS ) ) {
         old = SetOP( CVSyms );
         DataLong( CV_OMF_SIG );
+        SetOP( old );
     }
     if( _IsModel( DBG_TYPES ) ) {
-        SetOP( CVTypes );
+        old = SetOP( CVTypes );
         DataLong( CV_OMF_SIG );
         SetOP( old );
     }

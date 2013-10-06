@@ -63,7 +63,7 @@ extern  void            DbgRetLoc(void);
 extern  void            GenBlock( block_class, int );
 extern  void            Generate(bool);
 extern  void            PGBlip(char*);
-extern  void            EnLink(label_handle,bool);
+extern  void            EnLink(code_lbl *,bool);
 extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
 extern  void            NewProc(int);
 extern  name            *StReturn(an,type_def*,instruction**);
@@ -89,12 +89,12 @@ extern  void            SuffixIns( instruction *, instruction * );
 
 extern  bool            BlipsOn;
 
-extern  type_class_def  AddCallBlock( sym_handle sym, type_def *tipe ) {
-/***********************************************************************
+extern  type_class_def  AddCallBlock( sym_handle sym, type_def *tipe )
+/*********************************************************************
     create the initial basic block for routine "sym", and call some
     other initialization routines.
 */
-
+{
     type_class_def      class;
 
     if( BlipsOn ) {
@@ -648,9 +648,9 @@ extern  void    BGZapBase( name *base, type_def *tipe ) {
     if( _IsntModel( FORTRAN_ALIASING ) ) return;
     if( !( tipe->attr & TYPE_POINTER ) ) return;
     ins = MakeNop();
-    if( DummyIndex == NULL ) DummyIndex = AllocTemp( WD );
-    ins->result = ScaleIndex( DummyIndex, base, 0, XX, tipe->length,
-                              0, X_FAKE_BASE );
+    if( DummyIndex == NULL )
+        DummyIndex = AllocTemp( WD );
+    ins->result = ScaleIndex( DummyIndex, base, 0, XX, tipe->length, 0, X_FAKE_BASE );
     ins->flags.nop_flags |= NOP_ZAP_INFO;
     AddIns( ins );
 }
@@ -675,8 +675,7 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
     if( retval != NULL ) {
         class = TypeClass( tipe );
         aclass = ReturnClass( tipe, CurrProc->state.attr );
-        UpdateReturn( & CurrProc->state, tipe, aclass,
-                       FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
+        UpdateReturn( & CurrProc->state, tipe, aclass, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
         if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
             DbgRetLoc();
         }
@@ -695,11 +694,9 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
             } else {
 #endif
                 if( tipe->length == name->n.size ) {
-                    ret_ins = MakeMove( GenIns( retval ),
-                                        name, name->n.name_class );
+                    ret_ins = MakeMove( GenIns( retval ), name, name->n.name_class );
                 } else {
-                    ret_ins = MakeConvert( GenIns( retval ), name,
-                                           name->n.name_class, class );
+                    ret_ins = MakeConvert( GenIns( retval ), name, name->n.name_class, class );
                 }
                 // BBB - we can get a situation where we are returning
                 // a float in eax (when compiling -3s) and we don't want
@@ -717,7 +714,8 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
         ins->flags.nop_flags |= NOP_ZAP_INFO;
     }
     AddIns( ins );
-    if( last_ins != NULL ) AddIns( last_ins );
+    if( last_ins != NULL )
+        AddIns( last_ins );
     GenBlock( RETURN, 0 );
     if( AddrList != NULL ) {
         _Zoiks( ZOIKS_003 );
@@ -728,9 +726,9 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
 
 #if _TARGET & _TARG_RISC
 
-static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_class ) {
-/************************************************************************************/
-
+static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_class )
+/**********************************************************************************/
+{
     pn                  curr;
     pn                  last;
     type_length         len;
@@ -739,6 +737,7 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_cla
     name                *temp;
     instruction         *ins;
 
+    curr = NULL;
     size = TypeClassSize[using_class];
     len = _RoundUp( parm->name->tipe->length, size );
     offset = len - size;
@@ -763,12 +762,12 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_cla
     return( curr );
 }
 
-static void SplitStructParms( pn *parm_list, call_state *state ) {
-/*****************************************************************
+static void SplitStructParms( pn *parm_list, call_state *state )
+/***************************************************************
     Split up any structures being passed as parms into
     smaller, independant chunks (system dependant).
 */
-
+{
     pn                  parm;
     pn                  *last_parm;
     an                  name;
@@ -776,7 +775,8 @@ static void SplitStructParms( pn *parm_list, call_state *state ) {
     type_class_def      class;
 
 #if _TARGET & _TARG_PPC
-    if( _IsTargetModel( CG_OS2_CC ) ) return;
+    if( _IsTargetModel( CG_OS2_CC ) )
+        return;
     tipe = U4;
 #elif _TARGET & _TARG_AXP
     state = state;
@@ -787,16 +787,15 @@ static void SplitStructParms( pn *parm_list, call_state *state ) {
     #error Unknown RISC CPU
 #endif
     last_parm = parm_list;
-    parm = *last_parm;
-    while( parm != NULL ) {
+    for( parm = *last_parm; parm != NULL; parm = parm->next ) {
         name = parm->name;
         parm->alignment = ParmAlignment( name->tipe );
         class = TypeClass( name->tipe );
-        if( class == XX
 #if _TARGET & _TARG_PPC
-                || ( ( class == FD ) && ( state->attr & ROUTINE_HAS_VARARGS ) )
+        if( class == XX || ( class == FD ) && (state->attr & ROUTINE_HAS_VARARGS) ) {
+#else
+        if( class == XX ) {
 #endif
-        ) {
             if( ( class == FD ) || ( name->tipe->length > 7 ) ) {
                 parm->alignment = 8;
             }
@@ -807,7 +806,6 @@ static void SplitStructParms( pn *parm_list, call_state *state ) {
             parm = *last_parm;
         }
         last_parm = &parm->next;
-        parm = parm->next;
     }
 }
 #endif

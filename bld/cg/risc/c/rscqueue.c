@@ -43,7 +43,7 @@
 #include "objout.h"
 
 extern  void    ObjBytes( const void *, unsigned );
-extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
+extern  void    OutReloc( code_lbl *, owl_reloc_type, unsigned );
 extern  void    DoAlignment( offset );
 extern  void    DbgSetBase( void );
 extern  void    TellScrapLabel( code_lbl * );

@@ -42,8 +42,8 @@ extern  name            *AllocRegName(hw_reg_set);
 extern  hw_reg_set      HighOffsetReg(hw_reg_set);
 
 
-extern  pointer ScAlloc( int size )
-/*********************************/
+extern  pointer ScAlloc( size_t size )
+/************************************/
 {
     pointer     chunk;
 
@@ -51,10 +51,9 @@ extern  pointer ScAlloc( int size )
     return( chunk );
 }
 
-extern  void    ScFree( pointer chunk, int size )
-/***********************************************/
+extern  void    ScFree( pointer chunk )
+/*************************************/
 {
-    size = size;
     if( chunk != NULL ) {
         CGFree( chunk );
     }
@@ -92,7 +91,7 @@ extern  void    ScoreCalcList( void )
         reg_name = reg_name->n.next_name;
     }
     if( ScoreCount != 0 ) {
-        ScoreList = ScAlloc( ScoreCount * ( sizeof(pointer)+sizeof(score_reg) ) );
+        ScoreList = ScAlloc( ScoreCount * ( sizeof( pointer ) + sizeof( score_reg ) ) );
         curr = (score_reg *)&ScoreList[  ScoreCount  ];
         reg_name = Names[ N_REGISTER ];
         i = 0;

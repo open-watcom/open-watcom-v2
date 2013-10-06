@@ -377,8 +377,7 @@ extern  void    ObjFini( void )
     OWLFini( owlHandle );
     DeleteSections();
     CloseObj();
-    FEMessage( MSG_CODE_SIZE, (pointer)code_size );
-//    FEMessage( MSG_DATA_SIZE, (pointer)data_size );
+    FEMessage( MSG_CODE_SIZE, (pointer)(pointer_int)code_size );
 }
 
 
@@ -421,7 +420,7 @@ static  char            *LabelName( code_lbl *label )
 
     sym = AskForLblSym( label );
     if( AskIfRTLabel( label ) ) {
-        name = AskRTName( (rt_class)(int)sym );
+        name = AskRTName( (rt_class)(pointer_int)sym );
         if( _TstStatus( label, WEIRD_PPC_ALIAS ) ) {
             objName[ 0 ] = '.';
             objName[ 1 ] = '.';
@@ -886,7 +885,7 @@ static void DumpImportResolve( code_lbl *label )
         def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
         if( def_resolve != NULL && def_resolve != sym ) {
             bck =  FEBack( def_resolve);
-            type = (int) FEAuxInfo( sym, IMPORT_TYPE );
+            type = (pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
             switch( type ) {
             case IMPORT_IS_LAZY:
                 OWLWeakExt( owlFile, labelOwlSym( label ), labelOwlSym( bck->lbl ), OWL_WKSYM_LAZY );
@@ -931,7 +930,7 @@ extern  void    OutSegReloc( code_lbl *label, segment_id seg )
         sect->owl_handle, OWL_RELOC_SECTION_INDEX );
 }
 
-extern  owl_sym_linkage labelLinkage( label_handle label )
+extern  owl_sym_linkage labelLinkage( code_lbl *label )
 /********************************************************/
 {
     sym_handle          sym;
@@ -949,7 +948,7 @@ extern  owl_sym_linkage labelLinkage( label_handle label )
     return( linkage );
 }
 
-extern  void    OutLabel( label_handle label )
+extern  void    OutLabel( code_lbl *label )
 /********************************************/
 {
     sym_handle          sym;

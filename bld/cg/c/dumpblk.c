@@ -322,10 +322,10 @@ static  void    DumpGotos( block *b, bool all )
             DumpLiteral( "(kills) " );
         }
         if( b->edge[ 0 ].flags & DEST_IS_BLOCK ) {
-            DumpBlkId( b->edge[ 0 ].destination );
+            DumpBlkId( b->edge[ 0 ].destination.u.blk );
         } else {
             DumpLiteral( "L" );
-            DumpPtr( b->edge[ 0 ].destination );
+            DumpPtr( b->edge[ 0 ].destination.u.lbl );
         }
         i = 0;
         while( ++i < b->targets ) {
@@ -334,10 +334,10 @@ static  void    DumpGotos( block *b, bool all )
                 DumpLiteral( "(kills) " );
             }
             if( b->edge[ i ].flags & DEST_IS_BLOCK ) {
-                DumpBlkId( b->edge[ i ].destination );
+                DumpBlkId( b->edge[ i ].destination.u.blk );
             } else {
                 DumpLiteral( "L" );
-                DumpPtr( b->edge[ i ].destination );
+                DumpPtr( b->edge[ i ].destination.u.lbl );
             }
         }
     }

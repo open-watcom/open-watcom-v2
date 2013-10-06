@@ -53,7 +53,7 @@ static  name    *RTMemRef( rt_class rt_index )
     create a memory_name to reference the given runtime label.
 */
 {
-    label_handle        hdl;
+    code_lbl        *hdl;
 
     hdl = RTLabel( rt_index );
     return( AllocMemory( hdl, 0, CG_LBL, WD ) );

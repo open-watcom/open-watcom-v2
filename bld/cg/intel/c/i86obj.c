@@ -132,12 +132,12 @@ typedef struct dbg_seg_info {
 extern  char            *AskRTName(rt_class);
 extern  void            TellImportHandle(sym_handle,import_handle);
 extern  import_handle   AskImportHandle(sym_handle);
-extern  void            TellDonePatch(label_handle);
-extern  void            TellAddress(label_handle,offset);
+extern  void            TellDonePatch(code_lbl *);
+extern  void            TellAddress(code_lbl *,offset);
 extern  void            FatalError(char *);
 extern  void            PutObjRec(byte,byte*,uint);
 extern  void            EmptyQueue( void );
-extern  void            TellCommonLabel(label_handle,import_handle);
+extern  void            TellCommonLabel(code_lbl *,import_handle);
 extern  void            TellUnreachLabels(void);
 extern  void            KillLblRedirects( void );
 extern  void            DoOutObjectName(sym_handle,void(*)(char*,void*),void*,import_type);
@@ -2194,7 +2194,7 @@ static  omf_idx     GenImportComdat( void )
     return( ImportHdl++ );
 }
 
-static  void    ComdatData( label_handle lbl, sym_handle sym )
+static  void    ComdatData( code_lbl *lbl, sym_handle sym )
 /************************************************************/
 {
     FlushData();
@@ -2269,7 +2269,7 @@ extern  void    OutDLLExport( uint words, sym_handle sym )
 }
 
 
-extern  void    OutLabel( label_handle lbl )
+extern  void    OutLabel( code_lbl *lbl )
 /******************************************/
 {
     temp_patch          **owner;
@@ -2618,7 +2618,7 @@ extern  void    OutFPPatch( fp_patches i )
 }
 
 
-extern  void    OutPatch( label_handle lbl, patch_attr attr )
+extern  void    OutPatch( code_lbl *lbl, patch_attr attr )
 /***********************************************************/
 {
     temp_patch  *pat;

@@ -38,21 +38,21 @@
 #include "feprotos.h"
 #include "objout.h"
 
-extern  void            CodeLabel(label_handle,unsigned);
+extern  void            CodeLabel(code_lbl *,unsigned);
 extern  void            GenObjCode(instruction*);
-extern  void            GenJumpLabel(pointer);
+extern  void            GenJumpLabel(code_lbl *);
 extern  void            GenEpilog( void );
 extern  void            GenCallLabel(pointer);
 extern  void            GenLabelReturn( void );
-extern  void            TellCondemnedLabel(label_handle);
+extern  void            TellCondemnedLabel(code_lbl *);
 extern  void            FreeBlock( void );
 extern  void            CodeLineNum(cg_linenum,bool);
 extern  void            InitZeroPage( void );
 extern  void            FiniZeroPage( void );
-extern  void            TellReachedLabel(label_handle);
+extern  void            TellReachedLabel(code_lbl *);
 extern  unsigned        DepthAlign( unsigned );
 extern  void            InitStackDepth(block*);
-extern  block           *FindBlockWithLbl( label_handle label );
+extern  block           *FindBlockWithLbl( code_lbl *label );
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );
 extern  bool            ReDefinedBy( instruction *, name * );
@@ -91,7 +91,7 @@ extern  void    GenObject( void )
     int                 targets;
     int                 i;
     segment_id          old;
-    label_handle        lbl;
+    code_lbl            *lbl;
     unsigned            align;
     fe_attr             attr;
 
@@ -144,17 +144,17 @@ extern  void    GenObject( void )
         if( blk->class & ( JUMP | BIG_JUMP ) ) {
             if( BlockByBlock
              || next_blk == NULL
-             || blk->edge[ 0 ].destination != next_blk->label ) {
+             || blk->edge[ 0 ].destination.u.lbl != next_blk->label ) {
                 // watch out for orphan blocks (no inputs/targets)
                 if( blk->targets > 0 ) {
-                    GenJumpLabel( blk->edge[ 0 ].destination );
+                    GenJumpLabel( blk->edge[ 0 ].destination.u.lbl );
                 }
             }
         } else if( blk->class & RETURN ) {
             FiniZeroPage();
             GenEpilog();
         } else if( blk->class & CALL_LABEL ) {
-            GenCallLabel( blk->edge[ 0 ].destination );
+            GenCallLabel( blk->edge[ 0 ].destination.u.blk );
             if( BlockByBlock ) {
                 if( next_blk == NULL ) {
                     GenJumpLabel( blk->v.next->label );
@@ -168,14 +168,14 @@ extern  void    GenObject( void )
         if( !( blk->class & LABEL_RETURN ) ) { /* maybe pointer to dead label */
             targets = blk->targets;
             while( --targets >= 0 ) {
-                lbl = blk->edge[ targets ].destination;
+                lbl = blk->edge[ targets ].destination.u.lbl;
                 TellReachedLabel( lbl );
                 if( ( blk->edge[ targets ].flags & DEST_LABEL_DIES ) != 0
                   && BlocksUnTrimmed ) {
                     TellCondemnedLabel( lbl );
                     i = targets;
                     while( --i >= 0 ) {
-                        if( blk->edge[ i ].destination == lbl ) {
+                        if( blk->edge[ i ].destination.u.lbl == lbl ) {
                             blk->edge[ i ].flags &= ~DEST_LABEL_DIES;
                         }
                     }
@@ -301,8 +301,8 @@ static  block_edge *FindLoopBackEdge( block *blk ) {
 
     for( i = 0; i < blk->targets; i++ ) {
         edge = &blk->edge[ i ];
-        if( edge->destination == blk->loop_head ) return( edge );
-        if( edge->destination == blk ) return( edge );
+        if( edge->destination.u.blk == blk->loop_head ) return( edge );
+        if( edge->destination.u.blk == blk ) return( edge );
     }
     return( NULL );
 }
@@ -466,7 +466,7 @@ static  void    FloodDown( block *from, flood_func func, void *parm ) {
     from->class |= FLOODED;
     while( !EdgeStackEmpty( stack ) ) {
         edge = EdgeStackPop( stack );
-        dest = edge->destination;
+        dest = edge->destination.u.blk;
         if( ( dest->class & FLOODED ) != EMPTY ) continue;
         decision = func( dest, parm );
         if( decision == ABORT ) continue;
@@ -522,12 +522,12 @@ static  int     CallHeuristic( block *blk, instruction *cond ) {
     int         prediction;
 
     prediction = DNA;
-    if( CallApplies( blk, blk->edge[ 0 ].destination ) ) {
-        if( !CallApplies( blk, blk->edge[ 1 ].destination ) ) {
+    if( CallApplies( blk, blk->edge[ 0 ].destination.u.blk ) ) {
+        if( !CallApplies( blk, blk->edge[ 1 ].destination.u.blk ) ) {
             prediction = Want( cond, 1 );
         }
     } else {
-        if( CallApplies( blk, blk->edge[ 1 ].destination ) ) {
+        if( CallApplies( blk, blk->edge[ 1 ].destination.u.blk ) ) {
             prediction = Want( cond, 0 );
         }
     }
@@ -539,7 +539,7 @@ static  bool    LoopApplies( block *blk ) {
 
     if( ( blk->class & LOOP_HEADER ) != EMPTY ) return( TRUE );
     if( ( blk->class & JUMP ) != EMPTY ) {
-        if( ( blk->edge[ 0 ].destination->class & LOOP_HEADER ) != EMPTY ) {
+        if( ( blk->edge[ 0 ].destination.u.blk->class & LOOP_HEADER ) != EMPTY ) {
             return( TRUE );
         }
     }
@@ -552,12 +552,12 @@ static  int     LoopHeuristic( block *blk, instruction *cond ) {
     int         prediction;
 
     prediction = DNA;
-    if( LoopApplies( blk->edge[ 0 ].destination ) ) {
-        if( !LoopApplies( blk->edge[ 1 ].destination ) ) {
+    if( LoopApplies( blk->edge[ 0 ].destination.u.blk ) ) {
+        if( !LoopApplies( blk->edge[ 1 ].destination.u.blk ) ) {
             prediction = Want( cond, 0 );
         }
     } else {
-        if( LoopApplies( blk->edge[ 1 ].destination ) ) {
+        if( LoopApplies( blk->edge[ 1 ].destination.u.blk ) ) {
             prediction = Want( cond, 1 );
         }
     }
@@ -590,12 +590,12 @@ static  int     TryGuard( block *blk, instruction *cond, name *reg ) {
     int         prediction;
 
     prediction = DNA;
-    if( GuardApplies( blk, blk->edge[ 0 ].destination, reg ) ) {
-        if( !GuardApplies( blk, blk->edge[ 1 ].destination, reg ) ) {
+    if( GuardApplies( blk, blk->edge[ 0 ].destination.u.blk, reg ) ) {
+        if( !GuardApplies( blk, blk->edge[ 1 ].destination.u.blk, reg ) ) {
             prediction = Want( cond, 0 );
         }
     } else {
-        if( GuardApplies( blk, blk->edge[ 1 ].destination, reg ) ) {
+        if( GuardApplies( blk, blk->edge[ 1 ].destination.u.blk, reg ) ) {
             prediction = Want( cond, 1 );
         }
     }
@@ -647,12 +647,12 @@ static  int     StoreHeuristic( block *blk, instruction *cond ) {
     int         prediction;
 
     prediction = DNA;
-    if( StoreApplies( blk, blk->edge[ 0 ].destination ) ) {
-        if( !StoreApplies( blk, blk->edge[ 1 ].destination ) ) {
+    if( StoreApplies( blk, blk->edge[ 0 ].destination.u.blk ) ) {
+        if( !StoreApplies( blk, blk->edge[ 1 ].destination.u.blk ) ) {
             prediction = Want( cond, 1 );
         }
     } else {
-        if( StoreApplies( blk, blk->edge[ 1 ].destination ) ) {
+        if( StoreApplies( blk, blk->edge[ 1 ].destination.u.blk ) ) {
             prediction = Want( cond, 0 );
         }
     }
@@ -664,7 +664,7 @@ static  bool    ReturnApplies( block *blk ) {
 
     if( ( blk->class & RETURN ) != EMPTY ) return( TRUE );
     if( ( blk->class & JUMP ) != EMPTY ) {
-        if( ( blk->edge[ 0 ].destination->class & RETURN ) != EMPTY ) {
+        if( ( blk->edge[ 0 ].destination.u.blk->class & RETURN ) != EMPTY ) {
             return( TRUE );
         }
     }
@@ -677,12 +677,12 @@ static  int     ReturnHeuristic( block *blk, instruction *cond ) {
     int         prediction;
 
     prediction = DNA;
-    if( ReturnApplies( blk->edge[ 0 ].destination ) ) {
-        if( !ReturnApplies( blk->edge[ 1 ].destination ) ) {
+    if( ReturnApplies( blk->edge[ 0 ].destination.u.blk ) ) {
+        if( !ReturnApplies( blk->edge[ 1 ].destination.u.blk ) ) {
             prediction = Want( cond, 1 );
         }
     } else {
-        if( ReturnApplies( blk->edge[ 1 ].destination ) ) {
+        if( ReturnApplies( blk->edge[ 1 ].destination.u.blk ) ) {
             prediction = Want( cond, 0 );
         }
     }
@@ -720,14 +720,14 @@ static  block   *Predictor( block *blk ) {
             prediction = ptr( blk, cond );
             switch( prediction ) {
             case TAKEN:
-                return( blk->edge[ _TrueIndex( cond ) ].destination );
+                return( blk->edge[ _TrueIndex( cond ) ].destination.u.blk );
             case NOT_TAKEN:
-                return( blk->edge[ _FalseIndex( cond ) ].destination );
+                return( blk->edge[ _FalseIndex( cond ) ].destination.u.blk );
             }
         }
     }
     /* what the hell, pick one at random */
-    return( blk->edge[ 0 ].destination );
+    return( blk->edge[ 0 ].destination.u.blk );
 }
 
 #define _Placed( x )    (((x)->class&BLOCK_VISITED)!=EMPTY)
@@ -746,7 +746,7 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
     case JUMP:
     case SELECT:
         for( i = 0; i < blk->targets; i++ ) {
-            best = blk->edge[ i ].destination;
+            best = blk->edge[ i ].destination.u.blk;
             if( !_Placed( best ) ) return( best );
         }
         best = NULL;
@@ -759,17 +759,16 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
          * if both have been placed.
          */
         #define _Munge( a, b )  ( ( (a) << 8 ) + (b) )
-        switch( _Munge( _Placed( blk->edge[ 0 ].destination ),
-                        _Placed( blk->edge[ 1 ].destination ) ) ) {
+        switch( _Munge( _Placed( blk->edge[ 0 ].destination.u.blk ), _Placed( blk->edge[ 1 ].destination.u.blk ) ) ) {
         case _Munge( 0, 0 ):
             /* get some branch prediction going here */
             best = Predictor( blk );
             break;
         case _Munge( 1, 0 ):
-            best = blk->edge[ 1 ].destination;
+            best = blk->edge[ 1 ].destination.u.blk;
             break;
         case _Munge( 0, 1 ):
-            best = blk->edge[ 0 ].destination;
+            best = blk->edge[ 0 ].destination.u.blk;
             break;
         case _Munge( 1, 1 ):
             best = NULL;

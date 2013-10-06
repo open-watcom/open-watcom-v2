@@ -124,9 +124,8 @@ extern  void    CalcSavings( conflict_node *conf ) {
     save_def            block_cost;
     save_def            cost;
     save_def            save;
+#undef   _InRegAssgn
 #include "savcache.h"
-
-    final_defn = final_defn;
 
     if( ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK )
      && ( conf->name->v.usage & ( NEEDS_MEMORY | USE_ADDRESS ) ) ) {
@@ -146,7 +145,6 @@ extern  void    CalcSavings( conflict_node *conf ) {
         block_save = 0;
         opnd = conf->name;
 
-#undef   _InRegAssgn
 #include "savcode.h"
 
         if( save <= cost ) {

@@ -106,7 +106,7 @@ static  void    DumpAnAddr( an node ) {
     }
 }
 
-static  void    DumpLbl( label_handle *what ) {
+static  void    DumpLbl( code_lbl **what ) {
 /*****************************************************/
 
     block       *blk;
@@ -121,11 +121,11 @@ static  void    DumpLbl( label_handle *what ) {
         }
         i = blk->targets;
         while( --i >= 0 ) {
-            if( (void *)what == (void *)&blk->edge[ i ].destination ) {
+            if( what == &blk->edge[ i ].destination.u.lbl ) {
                 DumpLiteral( "Target " );
                 DumpPtr( blk );
                 DumpLiteral( "(" );
-                DumpInt( i+1 );
+                DumpInt( i + 1 );
                 DumpLiteral( ") " );
                 return;
             }
@@ -138,9 +138,9 @@ static  void    DumpAnBool( bn node ) {
 /*************************************/
 
     DumpLiteral( "TRUE " );
-    DumpLbl( (void **)node->t );
+    DumpLbl( node->t );
     DumpLiteral( " FALSE " );
-    DumpLbl( (void **)node->f );
+    DumpLbl( node->f );
     DumpLiteral( " ENTRY L" );
     DumpPtr( node->e );
 }

@@ -63,7 +63,7 @@ static pointer doFloodForward( void *fp ) {
     new_parms = *p;
     n = p->blk->targets;
     for( i = 0; i < n; i++ ) {
-        next = p->blk->edge[ i ].destination;
+        next = p->blk->edge[ i ].destination.u.blk;
         if( _Visited( next ) ) continue;
         if( p->func( next, p->parm ) == FALSE ) break;
         _MarkVisited( next );

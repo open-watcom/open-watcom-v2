@@ -215,9 +215,9 @@ static  pointer MarkInstance( pointer bl )
         i = blk->targets;
         edge = &blk->edge[ 0 ];
         while( --i >= 0 ) {
-            bitp = &edge->destination->dataflow->in;
+            bitp = &edge->destination.u.blk->dataflow->in;
             if( _GBitOverlap( *bitp, Id ) ) {
-                SafeRecurse( MarkInstance, edge->destination );
+                SafeRecurse( MarkInstance, edge->destination.u.blk );
             }
             ++edge;
         }
