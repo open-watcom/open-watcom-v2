@@ -462,7 +462,7 @@ extern  void    DumpEdge( block_num i, block_edge *edge )
     DumpLiteral( "(" );
     DumpPtr( edge );
     DumpLiteral( ")\n\t\tDestination:\t" );
-    DumpPtr( edge->destination );
+    DumpPtr( edge->destination.u.blk );
     DumpLiteral( "\n\t\tSource:\t" );
     DumpPtr( edge->source );
     DumpLiteral( "\n\t\tNext Source:\t" );
