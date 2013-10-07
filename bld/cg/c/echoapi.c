@@ -235,7 +235,7 @@ void EchoAPI              // EchoAPI ROUTINE
                 ++text;
                 switch( *text ) {
                   case 'B' : {
-                    EchoAPIHandle( (int)va_arg( args, back_handle ), "bh" );
+                    EchoAPIHandle( (int)(pointer_int)va_arg( args, back_handle ), "bh" );
                     break;
                   }
                   case 'c' : {
@@ -244,7 +244,7 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'C' : {
-                    EchoAPIHandle( (int)va_arg( args, call_handle ), "ch" );
+                    EchoAPIHandle( (int)(pointer_int)va_arg( args, call_handle ), "ch" );
                     break;
                   }
                   case 'i' : {
@@ -254,7 +254,7 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'L' : {
-                    EchoAPIHandle( (int)va_arg( args, label_handle ), "lh" );
+                    EchoAPIHandle( (int)(pointer_int)va_arg( args, label_handle ), "lh" );
                     break;
                   }
                   case 'o' : {
@@ -278,28 +278,28 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'n' : {
-                    EchoAPIHandle( (int)va_arg( args, cg_name ), "cg" );
+                    EchoAPIHandle( (int)(pointer_int)va_arg( args, cg_name ), "cg" );
                     break;
                   }
                   case 'P' : {
-                    EchoAPIHandle( (int)va_arg( args, patch_handle ), "ph" );
+                    EchoAPIHandle( (int)(pointer_int)va_arg( args, patch_handle ), "ph" );
                     break;
                   }
                   case 's' : {
                     cg_sym_handle handle = va_arg( args, cg_sym_handle );
                     EchoAPIString( FEName( handle ) );
                     EchoAPIChar( '[' );
-                    itoa( (int)handle, buffer, 16 );
+                    itoa( (int)(pointer_int)handle, buffer, 16 );
                     EchoAPIString( buffer );
                     EchoAPIChar( ']' );
                     break;
                   }
                   case 'S' : {
-                    EchoAPIHandle( (int)va_arg( args, sel_handle ), "sh" );
+                    EchoAPIHandle( (int)(pointer_int)va_arg( args, sel_handle ), "sh" );
                     break;
                   }
                   case 'T' : {
-                    EchoAPIHandle( (int)va_arg( args, temp_handle ), "th" );
+                    EchoAPIHandle( (int)(pointer_int)va_arg( args, temp_handle ), "th" );
                     break;
                   }
                   case 't' : {

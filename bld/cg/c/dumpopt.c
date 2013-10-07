@@ -108,10 +108,10 @@ static  bool    LblName( code_lbl *lbl ) {
     if( lbl->lbl.sym == NULL ) return( TRUE );
     DumpLiteral( "(" );
     if( AskIfRTLabel( lbl ) ) {
-        DumpXString( AskRTName( (rt_class)(int)lbl->lbl.sym ) );
+        DumpXString( AskRTName( (rt_class)(pointer_int)lbl->lbl.sym ) );
     } else if( AskIfCommonLabel( lbl ) ) {
         DumpLiteral( "Common import => [" );
-        DumpInt( (int)lbl->lbl.sym );
+        DumpInt( (int)(pointer_int)lbl->lbl.sym );
         DumpLiteral( "] " );
     } else {
         DumpXString( FEName( lbl->lbl.sym ) );

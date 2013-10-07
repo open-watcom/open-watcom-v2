@@ -317,13 +317,10 @@ extern  void    DumpRegName( hw_reg_set regname ) {
 }
 
 
-static  void    DumpRgSet( hw_reg_set *possible ) {
+static  void    DumpRgSet( hw_reg_set *possible )
 /**************************************************/
-
-    int i;
-
+{
     if( possible != NULL ) {
-        i = 0;
         DumpLiteral( " Choices " );
         while( !HW_CEqual( *possible, HW_EMPTY ) ) {
             DumpRegName( *possible );

@@ -202,5 +202,5 @@ extern  void    DumpId( unsigned id ) {
 extern  void    DumpPtr( pointer ptr ) {
 /**************************************/
 
-    Dump8h( (unsigned_32)ptr );
+    Dump8h( (unsigned_32)(pointer_int)ptr );
 }
