@@ -421,18 +421,17 @@ PTREE PTreeInt64Constant( signed_64 v, type_id id )
     return new_tree;
 }
 
-static CPP_FLOAT *makeFPRep( char *buff, unsigned len )
+static CPP_FLOAT *makeFPRep( const char *buff )
 {
-    DbgAssert( buff[len] == '\0' );
-    return BFCnvSF( buff, buff + len );
+    return BFCnvSF( buff );
 }
 
-PTREE PTreeFloatingConstantStr( char *buff, unsigned len, type_id id )
-/********************************************************************/
+PTREE PTreeFloatingConstantStr( const char *buff, type_id id )
+/************************************************************/
 {
     CPP_FLOAT *fp_rep;
 
-    fp_rep = makeFPRep( buff, len );
+    fp_rep = makeFPRep( buff );
     return PTreeFloatingConstant( fp_rep, id );
 }
 
@@ -1939,7 +1938,7 @@ pch_status PCHReadPTrees( void )
             len = PCHGetUInt( r->u.floating_constant );
             PCHRead( buff, len );
             DbgAssert( len > 1 );
-            r->u.floating_constant = makeFPRep( buff, len - 1 );
+            r->u.floating_constant = makeFPRep( buff );
             break;
         case PT_ID:
             r->u.id.name = NameMapIndex( r->u.id.name );

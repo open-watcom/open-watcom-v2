@@ -132,10 +132,10 @@ extern  an      BGInt64( signed_64 value, type_def *tipe ) {
     return( AddrName( cname, tipe ) );
 }
 
-extern  an      BGFloat( char *value, type_def *tipe ) {
+extern  an  BGFloat( const char *value, type_def *tipe ) {
 /********************************************************/
 
-    return( MakeConst( CFCnvSF( value, value + Length( value ) ), tipe ) );
+    return( MakeConst( CFCnvSF( value ), tipe ) );
 }
 
 

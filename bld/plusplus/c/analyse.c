@@ -1882,7 +1882,7 @@ static PTREE convertCtor(       // CONVERT CTOR EXPRESSION
                 case TYP_FLOAT :
                 case TYP_DOUBLE :
                 case TYP_LONG_DOUBLE :
-                    expr = PTreeFloatingConstantStr( "0", 1, underlying->id );
+                    expr = PTreeFloatingConstantStr( "0", underlying->id );
                     break;
                 case TYP_MEMBER_POINTER:
                     expr = MembPtrZero( type );

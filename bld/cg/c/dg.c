@@ -201,8 +201,8 @@ extern  void    DGCFloat( pointer f, cg_type t ) {
     Put( " %s%n", Tipe(t) );
     Locs[ CurSeg ] += TypeAddress( t )->length;
 }
-extern  void    DGFloat( char *f, cg_type t ) {
-//=============================================
+extern  void    DGFloat( const char *f, cg_type t ) {
+//===================================================
 
     Action( "DGFloat" );
     VerTipe( t,FloatTypes );

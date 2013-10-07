@@ -453,8 +453,8 @@ extern  char            *BFCnvFS( float_handle cf, char *buff, int buff_len ) {
     return( buff );
 }
 
-extern  float_handle    BFCnvSF( char *start, char *end ) {
-/*********************************************************/
+extern  float_handle    BFCnvSF( const char *start ) {
+/****************************************************/
     Action( "BFCnvSF(): %s%n", start );
     return( NULL );
 }

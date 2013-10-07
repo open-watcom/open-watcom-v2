@@ -32,7 +32,7 @@ extern  an      BGVarargsBasePtr( type_def *tipe );
 extern  an      BGStackValue( type_def *tipe );
 extern  an      BGInteger( signed_32 value, type_def *tipe );
 extern  an      BGInt64( signed_64 value, type_def *tipe );
-extern  an      BGFloat( char *value, type_def *tipe );
+extern  an      BGFloat( const char *value, type_def *tipe );
 extern  an      BGName( cg_class cl, pointer sym, type_def *tipe );
 extern  an      BGTempName( name *temp, type_def *tipe );
 extern  bool    FiniLabel( code_lbl *lbl, block *blk );

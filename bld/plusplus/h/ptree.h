@@ -228,7 +228,7 @@ extern PTREE PTreeBoolConstant( int );
 extern PTREE PTreeIntConstant( signed long, type_id );
 extern PTREE PTreeInt64Constant( signed_64, type_id );
 //extern PTREE PTreeUIntConstant( unsigned long, type_id );
-extern PTREE PTreeFloatingConstantStr( char *, unsigned, type_id );
+extern PTREE PTreeFloatingConstantStr( const char *, type_id );
 extern PTREE PTreeFloatingConstant( CPP_FLOAT *, type_id );
 extern PTREE PTreeId( NAME );
 extern PTREE PTreeIdSym( SYMBOL );

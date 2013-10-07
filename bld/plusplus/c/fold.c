@@ -45,11 +45,9 @@
 
 #define TWOTO32_STRING "4294967296"
 
-static float_handle TwoTo32
-    ( void )
+static float_handle TwoTo32( void )
 {
-    char *p = { TWOTO32_STRING };
-    return( BFCnvSF( p, p + sizeof( TWOTO32_STRING ) - 1 ) );
+    return( BFCnvSF( TWOTO32_STRING ) );
 }
 
 static

@@ -571,8 +571,8 @@ extern  n       *CGPatchNode( pointer p, cg_type t ) {
     Action( "( %p, %s ) -> %t%n", p, Tipe( t ), l );
     return( l );
 }
-extern  n       *CGFloat(char *s,cg_type t) {
-/*******************************************/
+extern  n       *CGFloat(const char *s,cg_type t) {
+/*************************************************/
 
     n   *l;
 

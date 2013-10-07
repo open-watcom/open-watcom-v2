@@ -584,12 +584,8 @@ static  tn      Halve( tn left, type_def *tipe )
 /**********************************************/
 {
 #define ONE_HALF "0.5"
-    char        *value;
 
-    value = ONE_HALF;
-    return( TGBinary( O_TIMES, left,
-                      TGConst( CFCnvSF( value, value + sizeof( ONE_HALF ) - 1 ), tipe ),
-                      tipe ) );
+    return( TGBinary( O_TIMES, left, TGConst( CFCnvSF( ONE_HALF ), tipe ), tipe ) );
 }
 
 extern  tn      FoldPow( tn left, tn rite, type_def *tipe )

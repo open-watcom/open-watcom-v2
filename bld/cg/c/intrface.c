@@ -782,8 +782,8 @@ extern  cg_name _CGAPI CGInt64( signed_64 val, cg_type tipe )
 #endif
 }
 
-extern  cg_name _CGAPI CGFloat( char *num, cg_type tipe )
-/*******************************************************/
+extern  cg_name _CGAPI CGFloat( const char *num, cg_type tipe )
+/*************************************************************/
 {
 #ifndef NDEBUG
     tn      retn;
@@ -1571,8 +1571,8 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
     DGBytes( len, form );
 }
 
-extern  void _CGAPI     DGFloat( char *value, cg_type tipe )
-/**********************************************************/
+extern  void _CGAPI     DGFloat( const char *value, cg_type tipe )
+/****************************************************************/
 {
     pointer     cf;
     flt         buff;
@@ -1580,7 +1580,7 @@ extern  void _CGAPI     DGFloat( char *value, cg_type tipe )
 #ifndef NDEBUG
     EchoAPI( "DGFloat( %c, %t )\n", value, tipe );
 #endif
-    cf = CFCnvSF( value, value + Length( value ) );
+    cf = CFCnvSF( value );
     CFCnvTarget( cf, &buff, TypeLength( tipe ) );
     CFFree( cf );
     DGBytes( TypeLength( tipe ), &buff );
@@ -1816,10 +1816,10 @@ extern  char * _CGAPI             BFCnvFS( float_handle cf, char *buff, int buff
     return( CFCnvFS( (cfloat *)cf, buff, buff_len ) );
 }
 
-extern  float_handle _CGAPI     BFCnvSF( char *start, char *end )
-/***************************************************************/
+extern  float_handle _CGAPI     BFCnvSF( const char *start )
+/**********************************************************/
 {
-    return( CFCnvSF( start, end ) );
+    return( CFCnvSF( start ) );
 }
 
 extern  float_handle _CGAPI     BFMul( float_handle c1, float_handle c2 )

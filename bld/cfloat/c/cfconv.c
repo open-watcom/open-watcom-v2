@@ -43,7 +43,7 @@ extern  unsigned_32     U32ModDiv(unsigned_32*,unsigned_32);
 
 #define _IsDigit( ch ) ( ch >= '0' && ch <= '9' )
 
-extern  signed_64       CFGetDec64( char *bstart ) {
+extern  signed_64   CFGetDec64( const char *bstart ) {
 /**************************************************/
 
     signed_64   number;
@@ -60,7 +60,7 @@ extern  signed_64       CFGetDec64( char *bstart ) {
     return( number );
 }
 
-extern  signed_32       CFGetDec32( char *bstart ) {
+extern  signed_32   CFGetDec32( const char *bstart ) {
 /**************************************************/
 
     signed_32   number;
@@ -72,7 +72,7 @@ extern  signed_32       CFGetDec32( char *bstart ) {
     return( number );
 }
 
-static  signed_16       CFGetDec16( char *bstart ) {
+static  signed_16   CFGetDec16( const char *bstart ) {
 /**************************************************/
 
     signed_16   number;
@@ -117,8 +117,8 @@ extern  char    *CFCnvFS( cfloat *f, char *buffer, unsigned maxlen ) {
     return( buffer );
 }
 
-static  void            DoConvert( cfloat *number, char *bstart ) {
-/*****************************************************************/
+static  void    DoConvert( cfloat *number, const char *bstart ) {
+/***************************************************************/
 
 
     int         len;
@@ -182,8 +182,8 @@ static  void            DoConvert( cfloat *number, char *bstart ) {
 }
 
 
-extern  cfloat  *CFCnvSF( char *bstart, char *bend ) {
-/****************************************************/
+extern  cfloat  *CFCnvSF( const char *bstart ) {
+/**********************************************/
 
 /* Syntax accepted by this converter:*/
 /**/
@@ -193,17 +193,9 @@ extern  cfloat  *CFCnvSF( char *bstart, char *bend ) {
 /*               < E | e < - | + > { at least 1 digit } >*/
 
     cfloat      *number;
-    char        saved;
 
-    saved = *bend;
-    if( saved != NULLCHAR ) {
-        *bend = NULLCHAR;                  /* KLUGE!!!*/
-    }
-    number = CFAlloc( bend - bstart );
+    number = CFAlloc( strlen( bstart ) );
     DoConvert( number, bstart );
-    if( saved != NULLCHAR ) {
-        *bend = saved;                     /* un-KLUGE*/
-    }
     return( number );
 }
 

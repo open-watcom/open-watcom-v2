@@ -1061,7 +1061,7 @@ static int yylex( PARSE_STACK *state )
         case TYP_FLOAT:
         case TYP_DOUBLE:
         case TYP_LONG_DOUBLE:
-            tree = PTreeFloatingConstantStr( Buffer, TokenLen, ConstType );
+            tree = PTreeFloatingConstantStr( Buffer, ConstType );
             break;
         case TYP_SLONG64 :
         case TYP_ULONG64 :
