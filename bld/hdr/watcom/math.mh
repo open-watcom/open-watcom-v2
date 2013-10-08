@@ -123,6 +123,16 @@ _WMRTDATA extern const float    __f_posqnan;
 #define INFINITY   __f_infinity
 #define NAN        __f_posqnan
 
+#define FE_TONEAREST    0
+#define FE_DOWNWARD     1
+#define FE_TOWARDZERO   2
+#define FE_UPWARD       3
+
+/* The sign of the gamma function as returned by 
+ * lgamma
+ */
+_WMRTDATA extern int signgam;
+
 :segment CNAME
 namespace std {
 

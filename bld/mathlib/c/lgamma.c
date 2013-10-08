@@ -352,6 +352,5 @@ static double __ieee754_lgamma_r(double x, int *signgamp)
 
 _WMRTLINK double lgamma(double x)
 {
-    int signgam = 0;
     return __ieee754_gamma_r(x,&signgam);
 } 
