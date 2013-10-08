@@ -116,9 +116,9 @@ static  bool    FindFlowOut( block *blk )
     instruction         *ins;
     instruction         *ins0;
     instruction         *ins1;
-    block               *true;
-    block               *false;
-    block               *join;
+    block               *true_blk;
+    block               *false_blk;
+    block               *join_blk;
     block_edge          *new_edge;
     bool                reverse;
     name                *u4temp;
@@ -135,30 +135,30 @@ static  bool    FindFlowOut( block *blk )
         return( FALSE );
     if( TypeClassSize[ ins->type_class ] > WORD_SIZE )
         return( FALSE );
-    true = blk->edge[ _TrueIndex( ins ) ].destination.u.blk;
-    if( true->inputs != 1 )
+    true_blk = blk->edge[ _TrueIndex( ins ) ].destination.u.blk;
+    if( true_blk->inputs != 1 )
         return( FALSE );
-    if( true->targets != 1 )
-        return( FALSE );
-
-    false = blk->edge[ _FalseIndex( ins ) ].destination.u.blk;
-    if( false->inputs != 1 )
-        return( FALSE );
-    if( false->targets != 1 )
+    if( true_blk->targets != 1 )
         return( FALSE );
 
-    join = false->edge[0].destination.u.blk;
-    if( join != true->edge[0].destination.u.blk )
+    false_blk = blk->edge[ _FalseIndex( ins ) ].destination.u.blk;
+    if( false_blk->inputs != 1 )
         return( FALSE );
-    if( join->inputs != 2 )
-        return( FALSE );
-    if( join->class & UNKNOWN_DESTINATION )
+    if( false_blk->targets != 1 )
         return( FALSE );
 
-    ins0 = SetToConst( false, &false_cons );
+    join_blk = false_blk->edge[0].destination.u.blk;
+    if( join_blk != true_blk->edge[0].destination.u.blk )
+        return( FALSE );
+    if( join_blk->inputs != 2 )
+        return( FALSE );
+    if( join_blk->class & UNKNOWN_DESTINATION )
+        return( FALSE );
+
+    ins0 = SetToConst( false_blk, &false_cons );
     if( ins0 == NULL )
         return( FALSE );
-    ins1 = SetToConst( true, &true_cons );
+    ins1 = SetToConst( true_blk, &true_cons );
     if( ins1 == NULL )
         return( FALSE );
     if( true_cons - false_cons == -1 ) {
@@ -218,21 +218,21 @@ static  bool    FindFlowOut( block *blk )
     }
     SuffixIns( ins, ins1 );
 
-    RemoveInputEdge( join->input_edges );
-    RemoveInputEdge( join->input_edges );
-    RemoveInputEdge( true->input_edges );
-    RemoveInputEdge( false->input_edges );
-    true->targets = 0;
-    false->targets = 0;
-    RemoveBlock( true );
-    RemoveBlock( false );
+    RemoveInputEdge( join_blk->input_edges );
+    RemoveInputEdge( join_blk->input_edges );
+    RemoveInputEdge( true_blk->input_edges );
+    RemoveInputEdge( false_blk->input_edges );
+    true_blk->targets = 0;
+    false_blk->targets = 0;
+    RemoveBlock( true_blk );
+    RemoveBlock( false_blk );
 
     blk->targets = 1;
     new_edge = &blk->edge[0];
-    new_edge->destination.u.blk = join;
+    new_edge->destination.u.blk = join_blk;
     new_edge->next_source = NULL;
-    join->input_edges = new_edge;
-    join->inputs = 1;
+    join_blk->input_edges = new_edge;
+    join_blk->inputs = 1;
     blk->class &= ~CONDITIONAL;
     blk->class |= JUMP;
     return( TRUE );
