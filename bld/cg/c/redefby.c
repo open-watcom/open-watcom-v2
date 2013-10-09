@@ -42,8 +42,8 @@
 extern  hw_reg_set      DisplayReg(void);
 extern  name            *DeAlias(name*);
 
-extern ret_maybe    ReDefinedBy( instruction *, name * );
-static ret_maybe    ZapsIndexed( name *, name * );
+extern bool_maybe   ReDefinedBy( instruction *, name * );
+static bool_maybe   ZapsIndexed( name *, name * );
 
 extern  bool    TempsOverlap( name *name1, name *name2 ) {
 /*********************************************************
@@ -133,7 +133,7 @@ static  bool    ZapsTemp( name *result, name *op, bool for_index ) {
 }
 
 
-static ret_maybe    ZapsTheOp( name *result, name *op )
+static bool_maybe   ZapsTheOp( name *result, name *op )
 /*****************************************************/
 {
     if( result == NULL )
@@ -164,7 +164,7 @@ static ret_maybe    ZapsTheOp( name *result, name *op )
 }
 
 
-static  ret_maybe   ZapsIndexed( name *result, name *op )
+static  bool_maybe  ZapsIndexed( name *result, name *op )
 /********************************************************
     Could redefining "result" redefine N_INDEXED name "op"?
 */
@@ -233,7 +233,7 @@ extern  bool    NameIsConstant( name *op ) {
     return( AskNameROM( op->v.symbol, op->m.memory_type ) );
 }
 
-extern  ret_maybe   VisibleToCall( instruction *ins, name *op, bool modifies )
+extern  bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )
 /*****************************************************************************
     Is the operand 'op' visible to the code in invoked by the call 'ins'?
     The 'modifies' flag means we only care if the routine can modify 'op'.
@@ -329,12 +329,12 @@ static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
     return( FALSE );
 }
 
-extern  ret_maybe   ReDefinedBy( instruction *ins, name *op ) {
+extern  bool_maybe  ReDefinedBy( instruction *ins, name *op ) {
 /**************************************************************
     Is it possible that operand "op" could be redefined by instruction "ins"?
 */
 
-    ret_maybe   zaps;
+    bool_maybe  zaps;
 
     if( op->n.class == N_REGISTER ) {
         if( HW_Ovlap( ins->zap->reg, op->r.reg ) ) {

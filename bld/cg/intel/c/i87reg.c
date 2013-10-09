@@ -54,7 +54,7 @@ extern  bool            AssignARegister(conflict_node*,hw_reg_set);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            LiveInfoUpdate(void);
 extern  int             NumOperands(instruction *);
-extern  ret_maybe       ReDefinedBy(instruction*,name*);
+extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  bool            DoesSomething(instruction*);
 

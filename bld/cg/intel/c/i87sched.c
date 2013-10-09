@@ -52,7 +52,7 @@ extern  int             FPRegNum(name*);
 extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
 extern  void            DoNothing(instruction*);
 extern  int             Count87Regs(hw_reg_set);
-extern  ret_maybe       ReDefinedBy(instruction*,name*);
+extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  name            *DeAlias(name*);
 extern  void            MoveEdge( block_edge *edge, block *new_dest );
 extern  block           *AddPreBlock( block *postblk );

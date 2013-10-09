@@ -711,7 +711,7 @@ static  bool    StealsIdx( instruction *ins,
 }
 
 
-extern  ret_maybe       CheckIndecies( instruction *ins,
+extern  bool_maybe      CheckIndecies( instruction *ins,
                                        hw_reg_set reg, hw_reg_set except,
                                        name *op ) {
 /***************************************************************************
@@ -726,7 +726,7 @@ extern  ret_maybe       CheckIndecies( instruction *ins,
 }
 
 
-static  ret_maybe       TooGreedy( conflict_node *conf,
+static  bool_maybe      TooGreedy( conflict_node *conf,
                                    hw_reg_set reg, name *op ) {
 /*************************************************************************
     This routine decides whether giving register "reg" to conflict
@@ -748,7 +748,7 @@ static  ret_maybe       TooGreedy( conflict_node *conf,
     instruction         *ins;
     instruction         *last;
     hw_reg_set          *ins_needs;
-    ret_maybe           rc;
+    bool_maybe          rc;
     op_reg_set_index    needs;
 
     blk = conf->start_block;
@@ -975,7 +975,7 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
     hw_reg_set  given;
     hw_reg_set  gave_hi;
     hw_reg_set  gave_lo;
-    ret_maybe   greed;
+    bool_maybe  greed;
     bool        all_TRUE;
     bool        failed;
 

@@ -155,5 +155,5 @@ typedef struct instruction {
 
 #define _INS_NOT_BLOCK( ins )        if ( (ins)->head.opcode == OP_BLOCK ) Zoiks( ZOIKS_142 )
 
-typedef unsigned char   ret_maybe;
-#define MAYBE           ((ret_maybe)2)
+typedef unsigned char   bool_maybe;
+#define MAYBE           ((bool_maybe)2)
