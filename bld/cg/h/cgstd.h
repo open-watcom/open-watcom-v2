@@ -37,23 +37,14 @@
 #include <stddef.h>
 #include <assert.h>
 #include "cgapi.h"
-
-typedef char *char_ptr;
+#include "bool.h"
 
 #if !defined(BY_FORTRAN_FRONT_END)
 
     #define NULLCHAR        '\0'
-    #if !defined(TRUE)
-        #define TRUE            ((bool)1)
-        #define FALSE           ((bool)0)
-        #define MAYBE           ((bool)2)
-    #endif
 
     #include "watcom.h"
 
-#ifndef __cplusplus
-    typedef unsigned        char    bool;
-#endif
     typedef unsigned        char    byte;
     typedef void            *pointer;
     typedef float           real;
@@ -70,7 +61,5 @@ typedef char *char_ptr;
 #else
 #define _AlignmentCheck( ptr, size )    {}
 #endif
-
-typedef unsigned_32     cg_linenum;
 
 #endif

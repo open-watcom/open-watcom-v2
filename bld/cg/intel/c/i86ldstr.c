@@ -56,7 +56,7 @@ extern  bool            DoesSomething( instruction* );
 extern  name            *HighPart( name *, type_class_def );
 extern  name            *LowPart( name *, type_class_def );
 extern  hw_reg_set      FullReg( hw_reg_set );
-extern  bool            ReDefinedBy( instruction *, name * );
+extern  ret_maybe       ReDefinedBy( instruction *, name * );
 extern  void            MoveSegRes( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  int             NumOperands( instruction * );

@@ -49,7 +49,7 @@ extern  int             FPRegNum(name*);
 extern  void            DoNothing(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  void            BGDone(an);
-extern  bool            ReDefinedBy(instruction*,name*);
+extern  ret_maybe       ReDefinedBy(instruction*,name*);
 extern  void            AddIns(instruction*);
 extern  name            *BGNewTemp(type_def*);
 extern  type_class_def  TypeClass(type_def*);

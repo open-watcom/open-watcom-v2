@@ -36,12 +36,12 @@
 #include "cgdefs.h"
 #include "data.h"
 
-extern bool PeepOptBlock(block *, bool);
-extern void SuffixIns(instruction *,instruction *);
-extern bool SameThing(name *,name *);
-extern name *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
-extern bool ReDefinedBy(instruction *,name *);
-extern void RemoveIns( instruction *);
+extern bool         PeepOptBlock(block *, bool);
+extern void         SuffixIns(instruction *,instruction *);
+extern bool         SameThing(name *,name *);
+extern name         *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
+extern ret_maybe    ReDefinedBy(instruction *,name *);
+extern void         RemoveIns( instruction *);
 
 static  byte    OpRefs( name *op, name *ref ) {
 /*********************************************/

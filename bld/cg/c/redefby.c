@@ -42,8 +42,8 @@
 extern  hw_reg_set      DisplayReg(void);
 extern  name            *DeAlias(name*);
 
-extern bool ReDefinedBy( instruction *, name * );
-static bool ZapsIndexed( name *, name * );
+extern ret_maybe    ReDefinedBy( instruction *, name * );
+static ret_maybe    ZapsIndexed( name *, name * );
 
 extern  bool    TempsOverlap( name *name1, name *name2 ) {
 /*********************************************************
@@ -133,23 +133,27 @@ static  bool    ZapsTemp( name *result, name *op, bool for_index ) {
 }
 
 
-static bool ZapsTheOp( name *result, name *op )
-/*********************************************/
+static ret_maybe    ZapsTheOp( name *result, name *op )
+/*****************************************************/
 {
-    if( result == NULL ) return( FALSE );
+    if( result == NULL )
+        return( FALSE );
     switch( op->n.class ) {
     case N_MEMORY:
-        if( op->v.usage & VAR_VOLATILE ) return( TRUE );
+        if( op->v.usage & VAR_VOLATILE )
+            return( TRUE );
         return( ZapsMemory( result, op, FALSE ) );
     case N_INDEXED:
-        if( op->i.index_flags & X_VOLATILE ) return( TRUE );
+        if( op->i.index_flags & X_VOLATILE )
+            return( TRUE );
         return( ZapsIndexed( result, op ) );
     case N_TEMP:
-        if( op->v.usage & VAR_VOLATILE ) return( TRUE );
+        if( op->v.usage & VAR_VOLATILE )
+            return( TRUE );
         return( ZapsTemp( result, op, FALSE ) );
     case N_REGISTER:
-        if( result->n.class == N_REGISTER
-            && HW_Ovlap( result->r.reg, op->r.reg ) ) return( TRUE );
+        if( result->n.class == N_REGISTER && HW_Ovlap( result->r.reg, op->r.reg ) )
+            return( TRUE );
         return( FALSE );
     case N_CONSTANT:
         return( FALSE );
@@ -160,11 +164,11 @@ static bool ZapsTheOp( name *result, name *op )
 }
 
 
-static  bool    ZapsIndexed( name *result, name *op ) {
-/******************************************************
+static  ret_maybe   ZapsIndexed( name *result, name *op )
+/********************************************************
     Could redefining "result" redefine N_INDEXED name "op"?
 */
-
+{
     switch( result->n.class ) {
     case N_TEMP:
         result = DeAlias( result );
@@ -229,16 +233,16 @@ extern  bool    NameIsConstant( name *op ) {
     return( AskNameROM( op->v.symbol, op->m.memory_type ) );
 }
 
-extern  bool    VisibleToCall( instruction *ins, name *op, bool modifies ) {
-/***************************************************************************
+extern  ret_maybe   VisibleToCall( instruction *ins, name *op, bool modifies )
+/*****************************************************************************
     Is the operand 'op' visible to the code in invoked by the call 'ins'?
     The 'modifies' flag means we only care if the routine can modify 'op'.
 */
-
+{
     switch( op->n.class ) {
     case N_MEMORY:
-        if( modifies &&
-            ins->flags.call_flags & CALL_WRITES_NO_MEMORY ) return( FALSE );
+        if( modifies && (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) )
+            return( FALSE );
         if( _IsModel( FORTRAN_ALIASING ) ) {
             switch( op->m.memory_type ) {
             case CG_FE:
@@ -256,10 +260,12 @@ extern  bool    VisibleToCall( instruction *ins, name *op, bool modifies ) {
         }
         return( TRUE );
     case N_INDEXED:
-        if( op->i.base == NULL ) return( TRUE );
+        if( op->i.base == NULL )
+            return( TRUE );
         return( ReDefinedBy( ins, op->i.base ) );
     case N_TEMP:
-        if( op->v.usage & USE_ADDRESS ) return( TRUE );
+        if( op->v.usage & USE_ADDRESS )
+            return( TRUE );
         return( FALSE );
 #if _TARGET & _TARG_AXP
     case N_REGISTER:
@@ -267,7 +273,8 @@ extern  bool    VisibleToCall( instruction *ins, name *op, bool modifies ) {
         // does a partial restore of the register-state, we do not
         // schedule any instructions past a call which has the
         // CALL_IS_SETJMP flag set
-        if( ins->flags.call_flags & CALL_IS_SETJMP ) return( TRUE );
+        if( ins->flags.call_flags & CALL_IS_SETJMP )
+            return( TRUE );
         return( FALSE );
 #endif
     }
@@ -281,7 +288,8 @@ static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
     name        *base_1;
     name        *base_2;
 
-    if( ins->head.opcode != OP_STORE_UNALIGNED ) return( FALSE );
+    if( ins->head.opcode != OP_STORE_UNALIGNED )
+        return( FALSE );
     switch( op->n.class ) {
     case N_MEMORY:
     case N_INDEXED:
@@ -321,21 +329,27 @@ static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
     return( FALSE );
 }
 
-extern  bool    ReDefinedBy( instruction *ins, name *op ) {
-/**********************************************************
+extern  ret_maybe   ReDefinedBy( instruction *ins, name *op ) {
+/**************************************************************
     Is it possible that operand "op" could be redefined by instruction "ins"?
 */
 
-    bool        zaps;
+    ret_maybe   zaps;
 
     if( op->n.class == N_REGISTER ) {
-        if( HW_Ovlap( ins->zap->reg, op->r.reg ) ) return( TRUE );
+        if( HW_Ovlap( ins->zap->reg, op->r.reg ) ) {
+            return( TRUE );
+        }
     }
-    if( NameIsConstant( op ) ) return( FALSE );
-    if( ZappedBySTQ_U( ins, op ) ) return( TRUE );
+    if( NameIsConstant( op ) )
+        return( FALSE );
+    if( ZappedBySTQ_U( ins, op ) )
+        return( TRUE );
     zaps = ZapsTheOp( ins->result, op );
-    if( zaps ) return( zaps );
-    if( !_OpIsCall( ins->head.opcode ) ) return( FALSE );
+    if( zaps )
+        return( zaps );
+    if( !_OpIsCall( ins->head.opcode ) )
+        return( FALSE );
     return( VisibleToCall( ins, op, TRUE ) );
 }
 

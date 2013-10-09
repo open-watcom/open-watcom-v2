@@ -75,7 +75,7 @@ extern  void            RemoveInputEdge(block_edge*);
 extern  byte            *Copy(void*,void*,uint);
 extern  bool            DivIsADog(type_class_def);
 extern  bool            IsVolatile(name*);
-extern  bool            ReDefinedBy(instruction*,name*);
+extern  ret_maybe       ReDefinedBy(instruction*,name*);
 extern  bool            Inducable(block*,instruction*);
 extern  void            MoveHead(block*,block*);
 extern  void            MakeFlowGraph(void);

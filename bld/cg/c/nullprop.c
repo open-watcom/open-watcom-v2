@@ -36,7 +36,7 @@
 #include "cgdefs.h"
 #include "data.h"
 
-extern  bool            ReDefinedBy( instruction *, name * );
+extern  ret_maybe       ReDefinedBy( instruction *, name * );
 extern  name            *AllocS32Const( signed_32 );
 extern void             KillCondBlk( block *blk, instruction *ins, int dest );
 extern  bool            SideEffect( instruction * );

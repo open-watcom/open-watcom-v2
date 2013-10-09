@@ -59,7 +59,7 @@ typedef struct block_list {
 extern    type_class_def        Unsigned[];
 
 extern  name            *AllocS64Const(signed_32,signed_32);
-extern  bool            ReDefinedBy(instruction*,name*);
+extern  ret_maybe       ReDefinedBy(instruction*,name*);
 extern  int             GetLog2(unsigned_32);
 extern  name            *AllocTemp(type_class_def);
 extern  name            *AllocConst(pointer);
@@ -945,9 +945,10 @@ extern  void    CommonInvariant( void )
 }
 
 
-static  bool    DifferentIV( induction *alias, induction *new ) {
-/****************************************************************
+static  ret_maybe   DifferentIV( induction *alias, induction *new )
+/******************************************************************
 */
+{
     if( alias->basic != new->basic ) return( TRUE );
     if( alias->plus2 != new->plus2 ) return( TRUE );
     if( alias->times != new->times ) return( TRUE );

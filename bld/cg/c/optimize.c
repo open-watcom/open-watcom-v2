@@ -47,7 +47,7 @@ extern  void            NullConflicts(var_usage);
 extern  void            FindReferences(void);
 extern  void            MakeConflicts(void);
 extern  void            MakeLiveInfo(void);
-extern  bool            ReDefinedBy(instruction*,name*);
+extern  ret_maybe       ReDefinedBy(instruction*,name*);
 extern  void            FreeJunk(block*);
 
 typedef enum {

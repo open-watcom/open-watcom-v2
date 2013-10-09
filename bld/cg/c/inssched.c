@@ -47,7 +47,7 @@
 extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
 extern  pointer         SafeRecurse(pointer(*)(),pointer);
-extern  bool            ReDefinedBy(instruction *, name *);
+extern  ret_maybe       ReDefinedBy(instruction *, name *);
 extern  instruction_id  Renumber(void);
 extern  hw_reg_set      StackReg(void);
 extern  FU_entry        *FUEntry(instruction *);
@@ -221,7 +221,7 @@ static  bool    ReallyDefinedBy( instruction *ins_i, instruction *ins_j,
                                  name *op, bool ins_linked )
 /**********************************************************************/
 {
-    bool        redefd;
+    ret_maybe   redefd;
     instruction *ins;
 
     redefd = ReDefinedBy( ins_i, op );

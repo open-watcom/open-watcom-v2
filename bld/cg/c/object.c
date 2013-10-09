@@ -55,7 +55,7 @@ extern  void            InitStackDepth(block*);
 extern  block           *FindBlockWithLbl( code_lbl *label );
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );
-extern  bool            ReDefinedBy( instruction *, name * );
+extern  ret_maybe       ReDefinedBy( instruction *, name * );
 extern  pointer         FindAuxInfo( name *, aux_class );
 extern  void            StartBlockProfiling( block *blk );
 extern  void            EndBlockProfiling( void );

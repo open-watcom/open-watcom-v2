@@ -45,7 +45,7 @@
 extern  name                    *AllocS32Const(signed_32);
 extern  bool                    IsVolatile(name*);
 extern  bool                    InsOrderDependant(instruction*,instruction*);
-extern  bool                    ReDefinedBy( instruction *, name * );
+extern  ret_maybe               ReDefinedBy( instruction *, name * );
 extern  bool                    SameThing( name *, name * );
 extern  bool                    SideEffect( instruction * );
 extern  bool                    ChangeIns(instruction *,name *,name **,change_type);
