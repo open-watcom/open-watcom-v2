@@ -56,13 +56,13 @@ extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            EjectInst( void );
 extern  void            LayRegAC(hw_reg_set);
 extern  hw_reg_set      High32Reg(hw_reg_set);
-extern  void            LayOpbyte(opcode);
+extern  void            LayOpbyte(gen_opcode);
 extern  void            Format(oc_class);
 extern  void            TellScrapLabel(code_lbl *);
 extern  void            LayRegRM(hw_reg_set);
 extern  void            LayRMRegOp(name*);
 extern  void            LayModRM(name*);
-extern  void            LayOpword(opcode);
+extern  void            LayOpword(gen_opcode);
 extern  void            ReFormat(oc_class);
 extern  void            Finalize( void );
 extern  pointer         FindAuxInfo(name*,aux_class);
@@ -404,7 +404,7 @@ extern  void    GenICall( instruction *ins ) {
 */
 
     oc_class    entry;
-    unsigned    opcode;
+    gen_opcode  opcode;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();

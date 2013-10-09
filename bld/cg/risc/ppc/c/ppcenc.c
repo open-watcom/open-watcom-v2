@@ -84,7 +84,7 @@ extern type_class_def   Unsigned[];
 #define _BinaryOpcode( a, b )           { { a, b }, { a, b } }
 #define _SignedOpcode( a, b, c, d )     { { a, b }, { c, d } }
 
-// Our table for opcode values is really a list of pairs of
+// Our table for gen_opcode values is really a list of pairs of
 // primary opcode / function code pairs. Their is two entries
 // for each opcode in case the sign of the instruction matters;
 // for example, for OP_RSHIFT we need to generate either srw or
@@ -92,7 +92,7 @@ extern type_class_def   Unsigned[];
 // matter, we can just use the _BinaryOpcode macro to create
 // identical cases, otherwise we give each pair explicitly.
 
-static  opcode  BinaryOpcodes[][2][2] = {
+static  gen_opcode  BinaryOpcodes[][2][2] = {
         _BinaryOpcode( 31, 266 ),                       /* OP_ADD */
         _BinaryOpcode( 31, 266 ),                       /* OP_EXT_ADD */
         _BinaryOpcode( 31, 8 ),                         /* OP_SUB */
@@ -111,7 +111,7 @@ static  opcode  BinaryOpcodes[][2][2] = {
         _BinaryOpcode( 0, 0 ),                          /* OP_FMOD */
 };
 
-static  opcode  FPOpcodes[][2] = {
+static  gen_opcode  FPOpcodes[][2] = {
         { 63, 21 },                                     /* OP_ADD */
         { 63, 21 },                                     /* OP_EXT_ADD */
         { 63, 20 },                                     /* OP_SUB */
@@ -130,7 +130,7 @@ static  opcode  FPOpcodes[][2] = {
         { 0, 0 },                                       /* OP_FMOD */
 };
 
-static  opcode  BinaryImmedOpcodes[] = {
+static  gen_opcode  BinaryImmedOpcodes[] = {
         14,                     /* OP_ADD */
         14,                     /* OP_EXT_ADD */
         8,                      /* OP_SUB */
@@ -150,10 +150,10 @@ static  opcode  BinaryImmedOpcodes[] = {
 };
 
 
-static  opcode  *FindOpcodes( instruction *ins )
-/**********************************************/
+static  gen_opcode  *FindOpcodes( instruction *ins )
+/**************************************************/
 {
-    opcode      *opcodes;
+    gen_opcode      *opcodes;
 
     if( _IsFloating( ins->type_class ) ) {
         opcodes = &FPOpcodes[ins->head.opcode - FIRST_BINARY_OP][0];
@@ -164,10 +164,10 @@ static  opcode  *FindOpcodes( instruction *ins )
 }
 
 
-static  opcode  *FindImmedOpcodes( instruction *ins )
-/***************************************************/
+static  gen_opcode  *FindImmedOpcodes( instruction *ins )
+/*******************************************************/
 {
-    opcode      *opcodes;
+    gen_opcode      *opcodes;
 
     opcodes = &BinaryImmedOpcodes[ins->head.opcode - FIRST_BINARY_OP];
     if( *opcodes == 0 ) {
@@ -177,8 +177,8 @@ static  opcode  *FindImmedOpcodes( instruction *ins )
 }
 
 
-extern  void    GenFPOPINS( opcode op1, opcode op2, reg_idx a, reg_idx c, reg_idx d )
-//***********************************************************************************
+extern  void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c, reg_idx d )
+//*******************************************************************************************
 {
     ppc_ins             encoding;
 
@@ -187,8 +187,8 @@ extern  void    GenFPOPINS( opcode op1, opcode op2, reg_idx a, reg_idx c, reg_id
 }
 
 
-extern  void    GenOPINS( opcode op1, opcode op2, reg_idx a, reg_idx b, reg_idx s )
-//*********************************************************************************
+extern  void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, reg_idx s )
+//*****************************************************************************************
 {
     ppc_ins             encoding;
 
@@ -197,8 +197,8 @@ extern  void    GenOPINS( opcode op1, opcode op2, reg_idx a, reg_idx b, reg_idx 
 }
 
 
-extern  void    GenOPIMM( opcode op1, reg_idx d, reg_idx a, signed_16 immed )
-//***************************************************************************
+extern  void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed )
+//*******************************************************************************
 {
     ppc_ins             encoding;
 
@@ -221,8 +221,8 @@ extern  void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
 }
 
 
-extern  void    GenMEMINS( opcode op, reg_idx d, reg_idx i, signed_16 displacement )
-/**********************************************************************************/
+extern  void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displacement )
+/**************************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -231,8 +231,8 @@ extern  void    GenMEMINS( opcode op, reg_idx d, reg_idx i, signed_16 displaceme
 }
 
 
-extern  void    GenBRANCH( opcode op, pointer label, bool link, bool absolute )
-/*****************************************************************************/
+extern  void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute )
+/*********************************************************************************/
 {
     ppc_ins             encoding;
     int_32              loc;
@@ -244,8 +244,8 @@ extern  void    GenBRANCH( opcode op, pointer label, bool link, bool absolute )
 }
 
 
-extern  void    GenCONDBR( opcode op, opcode bo, opcode bi, pointer label )
-/*************************************************************************/
+extern  void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
+/*************************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -255,8 +255,8 @@ extern  void    GenCONDBR( opcode op, opcode bo, opcode bi, pointer label )
 }
 
 
-extern  void    GenCMP( opcode op, opcode op2, reg_idx a, reg_idx b )
-/*******************************************************************/
+extern  void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
+/***************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -265,8 +265,8 @@ extern  void    GenCMP( opcode op, opcode op2, reg_idx a, reg_idx b )
 }
 
 
-extern  void    GenCMPIMM( opcode op, reg_idx a, signed_16 imm )
-/**************************************************************/
+extern  void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
+/******************************************************************/
 {
     ppc_ins             encoding;
 
@@ -357,7 +357,7 @@ static  void    getMemEncoding( name *mem, reg_idx *index, int_16 *offset )
 }
 
 
-static  opcode  loadOpcodes[] = {
+static  gen_opcode  loadOpcodes[] = {
     34,                 /* U1 */
     34,                 /* I1 */
     40,                 /* U2 */
@@ -373,7 +373,7 @@ static  opcode  loadOpcodes[] = {
     50,                 /* FL */
 };
 
-static  opcode  storeOpcodes[] = {
+static  gen_opcode  storeOpcodes[] = {
     38,                 /* U1 */
     38,                 /* I1 */
     44,                 /* U2 */
@@ -395,7 +395,7 @@ static  void    doLoadStore( instruction *ins, bool load )
 {
     name        *mem;
     name        *reg;
-    opcode      op;
+    gen_opcode  op;
     reg_idx     index;
     int_16      offset;
 
@@ -463,8 +463,8 @@ static  void    GenCallIndirect( instruction *call )
     reg_idx     mem_index;
     int_16      mem_offset;
     name        *addr;
-    opcode      ldw;
-    opcode      stw;
+    gen_opcode  ldw;
+    gen_opcode  stw;
 
     reg = VOLATILE_REG; /* use the volatile scratch reg if possible */
     src = VOLATILE_REG;
@@ -493,9 +493,9 @@ static  void    GenCallIndirect( instruction *call )
 static  void    GenVaStart( instruction *ins )
 /********************************************/
 {
-    opcode      stb;
-    opcode      stw;
-    opcode      li;
+    gen_opcode  stb;
+    gen_opcode  stw;
+    gen_opcode  li;
     reg_idx     reg;
     reg_idx     tmp;
     reg_idx     stack;
@@ -549,9 +549,9 @@ static  void    Encode( instruction *ins )
     reg_idx             b;
     reg_idx             s;
     reg_idx             temp;
-    opcode              op1;
-    opcode              op2;
-    opcode              *ops;
+    gen_opcode          op1;
+    gen_opcode          op2;
+    gen_opcode          *ops;
     signed_16           mem_offset;
     reg_idx             mem_index;
 
@@ -854,7 +854,7 @@ extern  void    GenJumpLabel( code_lbl *label )
 #define NORMAL  0x0C
 #define INVERT  0x04
 
-static  opcode  BranchOpcodes[][2] = {
+static  gen_opcode  BranchOpcodes[][2] = {
     // page 3-68 for a real description
     // BO     BI
     { NORMAL, EQ },                     /* OP_CMP_EQUAL */
@@ -868,7 +868,7 @@ static  opcode  BranchOpcodes[][2] = {
 extern  void    GenJumpIf( instruction *ins, pointer label )
 /**********************************************************/
 {
-    opcode      *ops;
+    gen_opcode  *ops;
 
     ops = &BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][0]; // fixme - floating point
     GenCONDBR( 16, ops[0], ops[1], label );

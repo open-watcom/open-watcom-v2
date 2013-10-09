@@ -214,8 +214,8 @@ static void GetRegUsage( reg_flow_info *info )
 {
     block       *blk;
 
-    _DBitInit( info->dom_usage, ~0 );
-    _DBitInit( info->post_dom_usage, ~0 );
+    _DBitInit( info->dom_usage, ~0U );
+    _DBitInit( info->post_dom_usage, ~0U );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( BlockUses( blk, info->reg ) ) {
             _DBitIntersect( info->dom_usage, blk->dom.dominator );

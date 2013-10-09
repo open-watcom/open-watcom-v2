@@ -28,11 +28,11 @@
 *
 ****************************************************************************/
 
-typedef uint_32         opcode;
+typedef uint_32         gen_opcode;
 typedef uint_32         reg_idx;
 
-extern  void            GenMEMINS( opcode, reg_idx, reg_idx, signed_16 );
-extern  void            GenOPINS( opcode, opcode, reg_idx, reg_idx, reg_idx );
-extern  void            GenOPIMM( opcode, reg_idx, reg_idx, signed_16 );
+extern  void            GenMEMINS( gen_opcode, reg_idx, reg_idx, signed_16 );
+extern  void            GenOPINS( gen_opcode, gen_opcode, reg_idx, reg_idx, reg_idx );
+extern  void            GenOPIMM( gen_opcode, reg_idx, reg_idx, signed_16 );
 extern  void            GenMTSPR( reg_idx, uint_32, bool );
 extern  void            GenRET( void );

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-typedef unsigned_16             opcode;
+typedef unsigned_16     gen_opcode;
 
 typedef enum {
         BYTE_OPCODE     = 0x01,
@@ -43,7 +43,7 @@ typedef enum {
 typedef struct pccode_def {
         gentype         low_gen;
         gentype         width;
-        opcode          *opcode_table;
+        gen_opcode      *gen_opcode_table;
         opcode_defs     *opcode_list;
         code_flags      flags;
 } pccode_def;

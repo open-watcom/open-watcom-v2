@@ -103,8 +103,8 @@ extern  void            GenJumpLabel( code_lbl * );
 extern  void            GenKillLabel( code_lbl * );
 extern  segment_id      GenP5ProfileData( char *fe_name, code_lbl **data, code_lbl **stack );
 extern  void            EndBlockProfiling( void );
-extern  void            LayOpbyte( opcode op );
-extern  void            LayOpword( opcode op );
+extern  void            LayOpbyte( gen_opcode op );
+extern  void            LayOpword( gen_opcode op );
 extern  void            LayW( type_class_def class );
 extern  void            GenSeg( hw_reg_set regs );
 extern  void            GenLoadDS(void);
@@ -377,9 +377,9 @@ static  void    LayInitial( instruction *ins, gentype gen ) {
 #endif
     }
     if( table->flags & BYTE_OPCODE ) {
-        LayOpbyte( table->opcode_table[index] );
+        LayOpbyte( table->gen_opcode_table[index] );
     } else {
-        LayOpword( table->opcode_table[index] );
+        LayOpword( table->gen_opcode_table[index] );
     }
     if( table->flags & BYTE_WORD ) {
         LayW( ins->type_class );
@@ -1491,8 +1491,8 @@ static  void    SetCC(void) {
 
 /* Lay Routines*/
 
-extern  void    LayOpbyte( opcode op ) {
-/***************************************
+extern  void    LayOpbyte( gen_opcode op ) {
+/*******************************************
     Add a one byte opcode to Inst[]
 */
 
@@ -1502,8 +1502,8 @@ extern  void    LayOpbyte( opcode op ) {
     IEsc = 1;
 }
 
-extern  void    LayOpword( opcode op ) {
-/***************************************
+extern  void    LayOpword( gen_opcode op ) {
+/*******************************************
     Add a 2 byte opcode to Inst[]
 */
 
@@ -1918,9 +1918,9 @@ static  void    AddSCons( name *op, type_class_def kind ) {
 }
 
 
-static  void    GenRegOp( hw_reg_set dst, type_length value, unsigned op ) {
+static  void    GenRegOp( hw_reg_set dst, type_length value, gen_opcode op )
 /**************************************************************************/
-
+{
     type_class_def      kind;
 
     _Code;
@@ -2382,8 +2382,8 @@ extern  void    GenLoadDS( void )
 }
 
 
-static  void    OutputFP( opcode op ) {
-/**************************************
+static  void    OutputFP( gen_opcode op ) {
+/******************************************
 */
 
     GCondFwait();

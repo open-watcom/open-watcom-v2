@@ -85,7 +85,7 @@ extern  block   *MakeBlock( code_lbl *label, block_num edges )
     blk->unroll_count = 0;
     blk->stack_depth = 0;
     blk->depth = 0;
-    _DBitInit( blk->dom.id, 0 );
+    _DBitInit( blk->dom.id, 0U );
     for( i = 0; i < edges; i++ ) {
         edge = &blk->edge[ i ];
         edge->source = blk;

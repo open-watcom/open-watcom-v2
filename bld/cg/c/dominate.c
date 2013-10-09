@@ -83,7 +83,7 @@ bool CalcDominatorInfo( void )
     have_info = FALSE;
     if( AssignDominatorBits() ) {
         have_info = TRUE;
-        _DBitInit( full_set, ~0 );
+        _DBitInit( full_set, ~0U );
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             _DBitAssign( blk->dom.dominator,      full_set );
             _DBitAssign( blk->dom.post_dominator, full_set );
