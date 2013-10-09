@@ -48,7 +48,7 @@
 #include "dump.h"
 #include "feprotos.h"
 
-extern  void            FatalError(char *);
+extern  void            FatalError(const char *);
 extern  bool            GetEnvVar(char*,char*,int);
 extern  int             BGInlineDepth( void );
 

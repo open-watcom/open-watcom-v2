@@ -1,7 +1,7 @@
 extern void        ObjInit( void );
 extern void        ObjFini( void );
 extern void        InitSegDefs( void );
-extern void        DefSegment( segment_id id, seg_attr attr, char *str, uint align, bool use_16 );
+extern void        DefSegment( segment_id id, seg_attr attr, const char *str, uint align, bool use_16 );
 extern bool        HaveCodeSeg( void );
 extern segment_id  AskCodeSeg( void );
 extern segment_id  AskAltCodeSeg( void );

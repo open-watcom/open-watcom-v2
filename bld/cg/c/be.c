@@ -53,7 +53,7 @@
 extern  int             TempId;
 extern  unsigned_16     TypeIdx;
 
-extern  char            *ACopyOf(char *);
+extern  char            *ACopyOf(const char *);
 extern  char            *Tipe(cg_type );
 extern  char            *Label(l *);
 extern  void            Action(char *,... );
@@ -403,8 +403,8 @@ extern  void    BEFlushSeg( segment_id seg ) {
     StaticList = NULL;
 }
 
-extern  void    BEDefSeg( segment_id id, seg_attr attr, char *str, uint algn ) {
-//=============================================================================
+extern  void    BEDefSeg( segment_id id, seg_attr attr, const char *str, uint algn ) {
+//====================================================================================
 
     segdef      *new;
 
@@ -423,8 +423,7 @@ extern  void    BEDefSeg( segment_id id, seg_attr attr, char *str, uint algn ) {
         if( Files[ id ].hdl != 0 ) {
             FShut( Files[ id ].hdl );
         }
-        CGError( "BEDefSeg called twice (id %d) with no intervening BEFlushSeg%n",
-                id );
+        CGError( "BEDefSeg called twice (id %d) with no intervening BEFlushSeg%n", id );
     }
     Files[ id ].name = new->str;
     Files[ id ].hdl = 0;

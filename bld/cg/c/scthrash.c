@@ -41,7 +41,6 @@ extern  void            ReplIns(instruction*,instruction*);
 extern  opcode_entry    *FindGenEntry(instruction*,bool*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  bool            IndexRegOk(hw_reg_set,bool);
-extern  byte            *Copy(void*,void*,uint);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
@@ -161,7 +160,7 @@ static  bool    CantChange( instruction **pins, name *frm, name *to ) {
 
     i = (*pins)->num_operands;
     new_ins = NewIns( i );
-    Copy( *pins, new_ins, sizeof( instruction ) + (i-1)*sizeof( pointer ) );
+    Copy( *pins, new_ins, sizeof( instruction ) + ( i - 1 ) * sizeof( pointer ) );
     if( CanChange( pins, frm, to, new_ins ) ) return( FALSE );
     new_ins->head.next = new_ins;
     new_ins->head.prev = new_ins;

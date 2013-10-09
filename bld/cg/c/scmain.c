@@ -39,7 +39,6 @@
 #include "data.h"
 #include "utils.h"
 
-extern  byte            *Copy(void*,void*,uint);
 extern  void            MakeLiveInfo(void);
 extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);

@@ -53,7 +53,7 @@
 
 extern  unsigned_16     TypeIdx;
 
-extern  char            *ACopyOf(char *);
+extern  char            *ACopyOf(const char *);
 extern  void            VerTipe(cg_type ,cg_type *);
 extern  char            *Tipe(cg_type );
 extern  char            *FtnTipe(dbg_ftn_type );
@@ -162,13 +162,14 @@ extern  void    DGBackPtr( b *bk, segment_id s, signed_32 o, cg_type t ) {
     Put( ") + %l (seg %d) %s%n",o,s,Tipe(t) );
     Locs[ CurSeg ] += TypeAddress( t )->length;
 }
-extern  void    DGBytes( unsigned_32 len, byte *bp ) {
+extern  void    DGBytes( unsigned_32 len, const void *bp ) {
 //============================================
 
+    const byte *p = bp;
     Action( "DGBytes( %l, ... )%n", len );
     Put( "        " );
     while( len != 0 ) {
-        Put( "%h ",*bp++ );
+        Put( "%h ",*p++ );
         --len;
     }
     Put( "%n" );
@@ -201,9 +202,9 @@ extern  void    DGCFloat( pointer f, cg_type t ) {
     Put( " %s%n", Tipe(t) );
     Locs[ CurSeg ] += TypeAddress( t )->length;
 }
-extern  void    DGFloat( const char *f, cg_type t ) {
-//===================================================
-
+extern  void    DGFloat( cchar_ptr f, cg_type t )
+//===============================================
+{
     Action( "DGFloat" );
     VerTipe( t,FloatTypes );
     Put( "        F(%s) %s%n", f, Tipe(t) );
@@ -217,9 +218,9 @@ extern  void    DGChar( char c ) {
     Put( "        C(%c)%n",c );
     Locs[ CurSeg ] += sizeof( char );
 }
-extern  void    DGString( char *s, uint len ) {
-//============================================
-
+extern  void    DGString( cchar_ptr s, uint len )
+//===============================================
+{
     Action( "DGString( ..., %d )%n", len );
     Locs[ CurSeg ] += len;
     Put( "        S(" );
@@ -470,8 +471,9 @@ static  void    DBSrcFileFini( void ){
     SrcFiles = NULL;
 }
 
-extern  uint    DBSrcFile( char *fname ){
-/****************************************/
+extern  uint    DBSrcFile( cchar_ptr fname )
+/******************************************/
+{
     int          index;
     int          len;
     fname_lst   *curr, **lnk;
@@ -495,14 +497,11 @@ found:
     return( index );
 }
 
-extern  void    InitDbgInfo() {
-/******************************/
-    char       *fname;
-    uint        fno;
-
+extern  void    InitDbgInfo( void )
+/*********************************/
+{
     SrcFileNoInit();
-    fname = FEAuxInfo( NULL, SOURCE_NAME );
-    fno = DBSrcFile( fname );
+    DBSrcFile( FEAuxInfo( NULL, SOURCE_NAME ) );
 }
 
 
@@ -550,8 +549,9 @@ extern  void    DBLocalSym( pointer sym, cg_type tipe ) {
                 Tipe(tipe));
     }
 }
-extern  void            DBTypeDef( char *nm, dbg_type  tipe ){
-/********************************************************/
+extern  void    DBTypeDef( cchar_ptr nm, dbg_type  tipe )
+/*******************************************************/
+{
     Action( "DBTypeDef( %s, %l ) ==>", nm, tipe );
 }
 
@@ -579,35 +579,35 @@ extern  void    DBEndBlock() {
     Action( "DBEndBlock()%n" );
     SymDbg( "DBEndBlock%n" );
 }
-extern  dbg_type        DBFtnType( char *nm, dbg_ftn_type tipe ) {
-//================================================================
-
+extern  dbg_type        DBFtnType( cchar_ptr nm, dbg_ftn_type tipe )
+//==================================================================
+{
     Action( "DBFtnType" );
     Action( "( %s, %d )", nm, tipe );
     TypDbg( "(%d) Fortran '%s' == %s%n", ++TypeIdx, nm, FtnTipe( tipe ) );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-extern  dbg_type        DBScalar( char *nm, cg_type tipe ) {
-//==========================================================
-
+extern  dbg_type        DBScalar( cchar_ptr nm, cg_type tipe )
+//============================================================
+{
     Action( "DBScalar" );
     Action( "( %s, %s )", nm, Tipe( tipe ) );
     TypDbg( "(%d) Scalar '%s' == %s%n", ++TypeIdx, nm, Tipe( tipe ) );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-extern  dbg_type        DBScope( char *nm ) {
-//===========================================
-
+extern  dbg_type        DBScope( cchar_ptr nm )
+//=============================================
+{
     Action( "DBScope( %s )", nm );
     TypDbg( "(%d) Scope Name '%s'%n", ++TypeIdx, nm );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-extern  dbg_name        DBBegName( const char *nm, dbg_type scope ) {
-//===================================================================
-
+extern  dbg_name        DBBegName( cchar_ptr nm, dbg_type scope )
+//===============================================================
+{
     name_entry  *name;
 
     Action( "DBBegName( %s, %d )", nm, scope );
@@ -834,8 +834,9 @@ extern  dbg_type        DBPtr( cg_type ptr_tipe, dbg_type base ) {
     return( TypeIdx );
 }
 
-struct_list     *DBBegNameStruct( const char *nm, cg_type tipe, bool is_struct ) {
-/********************************************************************************/
+struct_list     *DBBegNameStruct( cchar_ptr nm, cg_type tipe, bool is_struct )
+/****************************************************************************/
+{
     struct_list *st;
 
     is_struct = is_struct;
@@ -865,9 +866,10 @@ struct_list     *DBBegStruct( cg_type tipe, bool is_struct ) {
     return( st );
 }
 
-static  field_member     *CreateMember( char *nm, byte strt, byte len,
-                                        dbg_type base, uint attr ) {
+static  field_member     *CreateMember( const char *nm, byte strt,
+                                byte len, dbg_type base, uint attr )
 /******************************************************************/
+{
     uint          n_len;
     field_member *field;
 
@@ -899,7 +901,10 @@ static  void    AddField( struct_list *st, field_any *field ){
     st->num++;
 }
 
-extern  void    DBAddBitField(struct_list *st,unsigned_32 off,byte strt,byte len,char *nm,dbg_type base) {
+extern  void    DBAddBitField( struct_list *st, unsigned_32 off, byte strt,
+                                     byte len, cchar_ptr nm, dbg_type base)
+/*************************************************************************/
+{
     field_member *field;
 
     Action( "DBAddBitField( %p, %l, %d, %d, %s, %d )%n",
@@ -910,8 +915,9 @@ extern  void    DBAddBitField(struct_list *st,unsigned_32 off,byte strt,byte len
     AddField( st, field );
 }
 extern  void    DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
-                            byte strt, byte len, char *nm, dbg_type base ) {
-/******************************************************************/
+                     byte strt, byte len, cchar_ptr nm, dbg_type base )
+/*********************************************************************/
+{
     field_member *field;
 
     Action( "DBAddLocField( %p, %s, %d, %d, %d, %s, %d )%n",
@@ -923,9 +929,9 @@ extern  void    DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
 }
 
 
-extern void DBAddField(struct_list *st,unsigned_32 off,char *nm,dbg_type base) {
-//==============================================================================
-
+extern void DBAddField(struct_list *st,unsigned_32 off,cchar_ptr nm,dbg_type base)
+//================================================================================
+{
     field_member *field;
 
     Action( "DBAddField( %p, %l, %s, %d )%n", st, off, nm, base );
@@ -935,10 +941,10 @@ extern void DBAddField(struct_list *st,unsigned_32 off,char *nm,dbg_type base) {
     AddField( st, field );
 }
 
-extern  void    DBAddStField( struct_list *st, dbg_loc loc, char *nm, uint attr,
-                                             dbg_type base ) {
-/*************************************************************/
-
+extern  void    DBAddStField( struct_list *st, dbg_loc loc, cchar_ptr nm,
+                                               uint attr, dbg_type base )
+/***********************************************************************/
+{
     uint          n_len;
     field_stfield *field;
 
@@ -953,11 +959,10 @@ extern  void    DBAddStField( struct_list *st, dbg_loc loc, char *nm, uint attr,
     AddField( st, field );
 }
 
-extern  void    DBAddMethod( struct_list *st, dbg_loc loc,
-                             uint attr, uint kind,
-                             char *nm, dbg_type base ) {
-/******************************************************************/
-
+extern  void    DBAddMethod( struct_list *st, dbg_loc loc, uint attr,
+                             uint kind, cchar_ptr nm, dbg_type base )
+/*******************************************************************/
+{
     uint          n_len;
     field_method *field;
 
@@ -975,15 +980,13 @@ extern  void    DBAddMethod( struct_list *st, dbg_loc loc,
     AddField( st, field );
 }
 
-extern  void    DBAddNestedType( struct_list *st, char *nm,
-                                                  dbg_type base ) {
-/******************************************************************/
-
+extern  void    DBAddNestedType( struct_list *st, cchar_ptr nm, dbg_type base )
+/*****************************************************************************/
+{
     uint          n_len;
     field_nested *field;
 
-    Action( "DBAddNestedType( %p, %s, %d )%n",
-                  st, nm, base );
+    Action( "DBAddNestedType( %p, %s, %d )%n", st, nm, base );
     n_len = strlen( nm );
     field = CGAlloc( sizeof( field_nested ) + n_len );
     strcpy( field->name, nm );
@@ -1108,9 +1111,9 @@ extern  enum_list       *DBBegEnum( cg_type tipe ) {
     return( en );
 }
 
-void    DBAddConst( enum_list *en, const char *nm, signed_32 val ) {
-//====================================================================
-
+void    DBAddConst( enum_list *en, cchar_ptr nm, signed_32 val )
+//==============================================================
+{
     const_entry *cons;
 
     Action( "DBAddConst( %p, %s, %l )%n", en, nm, val );

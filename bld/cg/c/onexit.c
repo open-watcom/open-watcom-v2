@@ -99,11 +99,11 @@ void CauseTBreak( void )
 }
 
 
-void FatalError( char * str )
-/***************************/
+void FatalError( const char *str )
+/********************************/
 {
      ReleTimer();
      BrkFini();
      ScratchObj();
-     FEMessage( MSG_FATAL, str );
+     FEMessage( MSG_FATAL, (pointer)str );
 }

@@ -57,11 +57,11 @@ void CauseTBreak( void )
     *_BreakFlagPtr = 1;
 }
 
-void FatalError( char * str )
-/***************************/
+void FatalError( const char * str )
+/*********************************/
 {
      ScratchObj();
-     FEMessage( MSG_FATAL, str );
+     FEMessage( MSG_FATAL, (pointer)str );
 }
 
 unsigned GetTickCnt( void )

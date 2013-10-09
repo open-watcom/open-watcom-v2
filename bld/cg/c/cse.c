@@ -72,7 +72,6 @@ extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def)
 extern  name            *AllocIntConst(int);
 extern  bool            DeadBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);
-extern  byte            *Copy(void*,void*,uint);
 extern  bool            DivIsADog(type_class_def);
 extern  bool            IsVolatile(name*);
 extern  bool_maybe      ReDefinedBy(instruction*,name*);
@@ -184,8 +183,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
                 if( other_input != NULL ) break;
             }
             new_cond = NewIns( 2 );
-            Copy( cond, new_cond,
-                  sizeof(instruction)+(MAX_OPS_PER_INS-1)*sizeof(name*) );
+            Copy( cond, new_cond, sizeof( instruction ) + ( MAX_OPS_PER_INS - 1 ) * sizeof( name * ) );
             new_cond->head.prev = new_cond;
             new_cond->head.next = new_cond;
             new_cond->operands[ i ] = prev->operands[ 0 ];

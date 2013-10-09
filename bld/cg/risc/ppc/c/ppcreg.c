@@ -35,18 +35,16 @@
 #include "cgmem.h"
 #include "data.h"
 #include "utils.h"
+#include "feprotos.h"
 
 
 extern  hw_reg_set      ReturnReg(type_class_def);
 extern  hw_reg_set      *ParmRegs( void );
 extern type_class_def   ReturnClass(type_def*,call_attributes);
-extern  byte            *Copy(void*,void*,uint);
 extern  hw_reg_set      FixedRegs( void );
 extern  hw_reg_set      StackReg( void );
 extern  hw_reg_set      DisplayReg( void );
 extern  int             SizeDisplayReg( void );
-extern  void            FEMessage(msg_class,pointer);
-extern  pointer         FEAuxInfo(pointer*,aux_class);
 extern  hw_reg_set      ReturnAddrReg(void);
 extern  void            InitPPCParmState( call_state * );
 extern  void            UpdateReturn( call_state *, type_def *, type_class_def, aux_handle );
@@ -129,7 +127,7 @@ extern  type_class_def  CallState( aux_handle aux,
     }
     i++;
     state->parm.table = CGAlloc( i*sizeof( hw_reg_set ) );
-    Copy( parms, state->parm.table, i*sizeof( hw_reg_set ) );
+    Copy( parms, state->parm.table, i * sizeof( hw_reg_set ) );
     HW_CAsgn( state->parm.used, HW_EMPTY );
     state->parm.curr_entry = state->parm.table;
     state->parm.offset  = 0;

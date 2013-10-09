@@ -45,7 +45,7 @@
 
     #include "watcom.h"
 
-    typedef unsigned        char    byte;
+    typedef unsigned char   byte;
     typedef void            *pointer;
     typedef float           real;
     typedef double          reallong;

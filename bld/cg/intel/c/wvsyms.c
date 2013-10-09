@@ -58,7 +58,7 @@ extern  void            BuffWord(uint);
 extern  void            BuffByte( byte );
 extern  void            BuffOffset( offset );
 extern  void            BuffAddr( pointer );
-extern  void            BuffWSLString( char * );
+extern  void            BuffWSLString( const char * );
 extern  void            BuffStart(temp_buff*,uint);
 extern  void            BuffEnd(segment_id);
 extern  void            LocDump(dbg_loc);

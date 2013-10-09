@@ -67,22 +67,6 @@ static fe_interface FERtnTable = {
     #undef  CGCALLBACKDEF
 };
 
-char *defaultDLLName =
-#if _TARGET & _TARG_80386
-"cg386.dll"
-#elif _TARGET & _TARG_IAPX86
-"cgi86.dll"
-#elif _TARGET & _TARG_AXP
-"cgaxp.dll"
-#elif _TARGET & _TARG_PPC
-"cgppc.dll"
-#elif _TARGET & _TARG_MIPS
-"cgmps.dll"
-#else
-#error Unknown target.
-#endif
-;
-
 cg_interface *CGFuncTable;
 
 #ifdef __OS2__
@@ -91,8 +75,8 @@ static HMODULE  dllHandle;
 static HANDLE   dllHandle;
 #endif
 
-bool _CGAPI BELoad( char *dll_name )
-/**********************************/
+bool _CGAPI BELoad( cchar_ptr dll_name )
+/**************************************/
 {
 #ifdef __OS2__
 #define SIZE 32
@@ -101,7 +85,19 @@ bool _CGAPI BELoad( char *dll_name )
     bool retval;
 
     if( dll_name == NULL ) {
-        dll_name = defaultDLLName;
+#if _TARGET & _TARG_80386
+        dll_name = "cg386.dll";
+#elif _TARGET & _TARG_IAPX86
+        dll_name = "cgi86.dll";
+#elif _TARGET & _TARG_AXP
+        dll_name = "cgaxp.dll";
+#elif _TARGET & _TARG_PPC
+        dll_name = "cgppc.dll";
+#elif _TARGET & _TARG_MIPS
+        dll_name = "cgmps.dll";
+#else
+#error Unknown target.
+#endif
     }
     CGFuncTable = NULL;
 #ifdef __OS2__
@@ -153,8 +149,8 @@ void _CGAPI BEUnload( void )
 #include "bool.h"
 #include "cgcli.h"
 
-bool _CGAPI BELoad( char *name )
-/******************************/
+bool _CGAPI BELoad( const char *name )
+/************************************/
 {
     name = name;
     return( TRUE );

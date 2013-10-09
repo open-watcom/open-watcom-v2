@@ -31,5 +31,5 @@
 
 #include "cgapi.h"
 
-extern bool     _CGAPI BELoad( char * );
+extern bool     _CGAPI BELoad( const char * );
 extern void     _CGAPI BEUnload( void );

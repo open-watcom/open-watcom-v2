@@ -44,7 +44,7 @@ extern  int             OSCall(void);
  static void OSCall(void){}
 #endif
 
-extern  void            FatalError(char *);
+extern  void            FatalError(const char *);
 extern  void            Blip(unsigned_16,char);
 extern  void            BlipInit( void );
 extern  bool            GetEnvVar(char*,char*,int);

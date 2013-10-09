@@ -3,8 +3,6 @@ extra_cpp_flags   = -DBY_CG
 extra_cpp_flags  += -D_CGDLL
 !endif
 
-extra_c_flags_386 = -zp4
-
 track_flags_i86 = -D_TRACK -of+
 track_flags_386 = -D_TRACK -of+
 track_flags_axp = -D_TRACK

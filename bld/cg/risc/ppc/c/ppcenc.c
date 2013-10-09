@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include "data.h"
 #include "objout.h"
+#include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
 extern void DumpString( char * );
@@ -62,7 +63,6 @@ extern void             TryScrapLabel( code_lbl * );
 extern void             DbgBlkBeg( dbg_block *blk, offset lc );
 extern void             DbgBlkEnd( dbg_block *blk, offset lc );
 extern void             EmitDbgInfo( instruction * );
-extern pointer          FEAuxInfo( pointer *, aux_class );
 extern code_lbl         *GetWeirdPPCDotDotLabel( code_lbl * );
 extern  void            GenCondJump( instruction *cond );
 

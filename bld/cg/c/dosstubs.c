@@ -109,8 +109,8 @@ extern  void    DGBlip() {
 /************************/
 }
 
-void FatalError( char * str ) {
-/*****************************/
+void FatalError( const char * str ) {
+/***********************************/
 
-    FEMessage( MSG_FATAL, str );
+    FEMessage( MSG_FATAL, (pointer)str );
 }

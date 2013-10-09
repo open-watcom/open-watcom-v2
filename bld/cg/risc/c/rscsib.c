@@ -172,7 +172,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
 #endif
         }
         curr_sib = CGAlloc( sizeof( sib_info ) );
-        Copy( (byte *)&sib, (byte *)curr_sib, sizeof( sib_info ) );
+        Copy( &sib, curr_sib, sizeof( sib_info ) );
         curr_sib->next = sib_head;
         sib_head = curr_sib;
     } while( !dies && !modifies );

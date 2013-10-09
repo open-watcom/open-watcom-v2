@@ -329,7 +329,7 @@ extern  segment_id _CGAPI       BESetSeg( segment_id seg )
 #endif
 }
 
-extern  void _CGAPI     BEDefSeg( segment_id id, seg_attr attr, char *str, uint algn )
+extern  void _CGAPI BEDefSeg( segment_id id, seg_attr attr, cchar_ptr str, uint algn )
 /************************************************************************************/
 {
 #ifndef NDEBUG
@@ -782,8 +782,8 @@ extern  cg_name _CGAPI CGInt64( signed_64 val, cg_type tipe )
 #endif
 }
 
-extern  cg_name _CGAPI CGFloat( const char *num, cg_type tipe )
-/*************************************************************/
+extern  cg_name _CGAPI CGFloat( cchar_ptr num, cg_type tipe )
+/***********************************************************/
 {
 #ifndef NDEBUG
     tn      retn;
@@ -1491,8 +1491,8 @@ extern  void _CGAPI DGFEPtr( cg_sym_handle sym, cg_type tipe, signed_32 offset )
     FEPtr( sym, TypeAddress( tipe ), offset );
 }
 
-extern  void _CGAPI     DGBytes( unsigned_32 len, void *src )
-/***********************************************************/
+extern  void _CGAPI     DGBytes( unsigned_32 len, const void *src )
+/*****************************************************************/
 {
 #ifndef NDEBUG
     EchoAPI( "DGBytes( %x, %x )\n", len, src );
@@ -1571,8 +1571,8 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
     DGBytes( len, form );
 }
 
-extern  void _CGAPI     DGFloat( const char *value, cg_type tipe )
-/****************************************************************/
+extern  void _CGAPI     DGFloat( cchar_ptr value, cg_type tipe )
+/**************************************************************/
 {
     pointer     cf;
     flt         buff;
@@ -1605,7 +1605,7 @@ extern  void _CGAPI     DGChar( char value )
     DGIBytes( 1, value );
 }
 
-extern  void _CGAPI     DGString( char *value, uint len )
+extern  void _CGAPI DGString( cchar_ptr value, uint len )
 /*******************************************************/
 {
 #ifndef NDEBUG
@@ -1613,7 +1613,7 @@ extern  void _CGAPI     DGString( char *value, uint len )
     unsigned    slen = len;
     char        *d = data;
     char        *dt = &data[sizeof(data)-1];
-    char        *s = value;
+    const char  *s = value;
     char        *hex = "0123456789abcdef";
     char        c;
 
@@ -1810,14 +1810,14 @@ extern  void    TellImportHandle( sym_handle sym, import_handle imp )
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 
-extern  char * _CGAPI             BFCnvFS( float_handle cf, char *buff, int buff_len )
-/************************************************************************************/
+extern  char * _CGAPI           BFCnvFS( float_handle cf, char_ptr buff, int buff_len )
+/*************************************************************************************/
 {
     return( CFCnvFS( (cfloat *)cf, buff, buff_len ) );
 }
 
-extern  float_handle _CGAPI     BFCnvSF( const char *start )
-/**********************************************************/
+extern  float_handle _CGAPI     BFCnvSF( cchar_ptr start )
+/********************************************************/
 {
     return( CFCnvSF( start ) );
 }
@@ -1909,16 +1909,3 @@ extern  pointer _CGAPI CGSafeRecurse( pointer rtn, pointer arg )
 extern  void _CGAPI     DBSrcCue( uint fno, uint line, uint col );
 extern  void _CGAPI     DBBegBlock( void );
 extern  void _CGAPI     DBEndBlock( void );
-
-#ifndef _CGDLL
-extern  int _CGAPI              BEDLLLoad( char *name )
-/*****************************************************/
-{
-    name = name;
-    return( TRUE );
-}
-
-extern  void _CGAPI             BEDLLUnload() {
-/*********************************************/
-}
-#endif

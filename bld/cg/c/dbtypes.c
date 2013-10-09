@@ -54,9 +54,9 @@ extern  offset          LocSimpField( dbg_loc );
 
 /* WV interface */
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-extern  dbg_type        WVFtnType( char *name, dbg_ftn_type tipe );
-extern  dbg_type        WVScalar( char *name, cg_type tipe );
-extern  dbg_type        WVScope( char *name );
+extern  dbg_type        WVFtnType( const char *name, dbg_ftn_type tipe );
+extern  dbg_type        WVScalar( const char *name, cg_type tipe );
+extern  dbg_type        WVScope( const char *name );
 extern  void            WVDumpName( name_entry *name, dbg_type tipe );
 extern  void            WVBackRefType( name_entry *name, dbg_type tipe );
 extern  dbg_type        WVCharBlock( unsigned_32 len );
@@ -80,13 +80,13 @@ extern  dbg_type        WVEndEnum( enum_list *en );
 extern  dbg_type        WVEndProc( proc_list  *pr );
 #endif
 /* DF interface */
-extern  dbg_type        DFFtnType( char *name, dbg_ftn_type tipe );
-extern  dbg_type        DFScalar( char *name, cg_type tipe );
-extern  dbg_type        DFScope( char *name );
+extern  dbg_type        DFFtnType( const char *name, dbg_ftn_type tipe );
+extern  dbg_type        DFScalar( const char *name, cg_type tipe );
+extern  dbg_type        DFScope( const char *name );
 extern  void            DFDumpName( name_entry *name, dbg_type tipe );
 extern  void            DFBackRefType( name_entry *name, dbg_type tipe );
 extern  dbg_type        DFCharBlock( unsigned_32 len );
-extern  dbg_type        DFCharBlockNamed( char * name, unsigned_32 len );
+extern  dbg_type        DFCharBlockNamed( const char *name, unsigned_32 len );
 extern  dbg_type        DFIndCharBlock( back_handle len, cg_type len_type,
                                         int off );
 extern  dbg_type        DFLocCharBlock( dbg_loc loc, cg_type len_type );
@@ -108,9 +108,9 @@ extern  dbg_type        DFEndEnum( enum_list *en );
 extern  dbg_type        DFEndProc( proc_list  *pr );
 
 /* DF interface */
-extern  dbg_type        CVFtnType( char *name, dbg_ftn_type tipe );
-extern  dbg_type        CVScalar( char *name, cg_type tipe );
-extern  dbg_type        CVScope( char *name );
+extern  dbg_type        CVFtnType( const char *name, dbg_ftn_type tipe );
+extern  dbg_type        CVScalar( const char *name, cg_type tipe );
+extern  dbg_type        CVScope( const char *name );
 extern  void            CVDumpName( name_entry *name, dbg_type tipe );
 extern  void            CVBackRefType( name_entry *name, dbg_type tipe );
 extern  dbg_type        CVCharBlock( unsigned_32 len );
@@ -142,8 +142,8 @@ static bool Nested;     /* set when types are nested by others */
   by any format WV, DW and CV.
   figure how fundamental types are done
 */
-extern  dbg_type _CGAPI DBFtnType( char *name, dbg_ftn_type tipe )
-/****************************************************************/
+extern  dbg_type _CGAPI DBFtnType( cchar_ptr name, dbg_ftn_type tipe )
+/********************************************************************/
 {
     dbg_type ret;
 
@@ -168,8 +168,8 @@ extern  dbg_type _CGAPI DBFtnType( char *name, dbg_ftn_type tipe )
 }
 
 
-extern  dbg_type _CGAPI DBScalar( char *name, cg_type tipe )
-/**********************************************************/
+extern  dbg_type _CGAPI DBScalar( cchar_ptr name, cg_type tipe )
+/**************************************************************/
 {
     dbg_type ret;
 
@@ -195,8 +195,8 @@ extern  dbg_type _CGAPI DBScalar( char *name, cg_type tipe )
 
 
 
-extern  dbg_type _CGAPI DBScope( char *name )
-/*******************************************/
+extern  dbg_type _CGAPI DBScope( cchar_ptr name )
+/***********************************************/
 {
     dbg_type ret;
 
@@ -222,9 +222,9 @@ extern  dbg_type _CGAPI DBScope( char *name )
 
 
 
-extern  name_entry * _CGAPI DBBegName( const char *nm, dbg_type scope ) {
-/***********************************************************************/
-
+extern  name_entry * _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
+/*******************************************************************/
+{
     name_entry  *name;
     uint        len;
 
@@ -328,9 +328,9 @@ extern  dbg_type _CGAPI DBCharBlock( unsigned_32 len ) {
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBCharBlockNamed( char * name, unsigned_32 len ) {
-/******************************************************/
-
+extern  dbg_type _CGAPI DBCharBlockNamed( cchar_ptr name, unsigned_32 len )
+/*************************************************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -732,9 +732,9 @@ bool _CGAPI DBNested( bool nested ){
     return( ret );
 }
 
-struct_list * _CGAPI DBBegNameStruct( const char *nm, cg_type tipe, bool is_struct ) {
-/************************************************************************************/
-
+struct_list * _CGAPI DBBegNameStruct( cchar_ptr nm, cg_type tipe, bool is_struct )
+/********************************************************************************/
+{
     uint      n_len;
     struct_list *st;
 
@@ -786,8 +786,8 @@ struct_list * _CGAPI DBBegStruct( cg_type tipe, bool is_struct ) {
     return( st );
 }
 
-static  field_member     *CreateMember( char *nm, byte strt, byte len,
-                                        dbg_type base, uint attr ) {
+static  field_member     *CreateMember( const char *nm, byte strt,
+                              byte len, dbg_type base, uint attr ) {
 /******************************************************************/
     uint          n_len;
     field_member *field;
@@ -814,9 +814,9 @@ static  void    AddField( struct_list *st, field_any *field )
 
 
 extern  void _CGAPI DBAddBitField( struct_list *st, unsigned_32 off, byte strt,
-                               byte len, char *nm, dbg_type base ) {
-/******************************************************************/
-
+                                        byte len, cchar_ptr nm, dbg_type base )
+/*****************************************************************************/
+{
     field_member *field;
 
 #ifndef NDEBUG
@@ -830,9 +830,9 @@ extern  void _CGAPI DBAddBitField( struct_list *st, unsigned_32 off, byte strt,
 
 
 extern  void _CGAPI DBAddField( struct_list *st, unsigned_32 off,
-                            char *nm, dbg_type  base ) {
-/******************************************************/
-
+                                   cchar_ptr nm, dbg_type  base )
+/***************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DBAddField( %i, %i,%c,%i)\n", st, off, nm, base );
 #endif
@@ -841,9 +841,9 @@ extern  void _CGAPI DBAddField( struct_list *st, unsigned_32 off,
 
 
 extern  void _CGAPI DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
-                            byte strt, byte len, char *nm, dbg_type base ) {
-/******************************************************************/
-
+                         byte strt, byte len, cchar_ptr nm, dbg_type base )
+/*************************************************************************/
+{
     field_member *field;
     offset      off;
 
@@ -862,10 +862,10 @@ extern  void _CGAPI DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddStField( struct_list *st, dbg_loc loc, char *nm, uint attr,
-                                             dbg_type base ) {
-/*************************************************************/
-
+extern  void _CGAPI DBAddStField( struct_list *st, dbg_loc loc, cchar_ptr nm,
+                                                   uint attr, dbg_type base )
+/***************************************************************************/
+{
     uint          n_len;
     field_stfield *field;
 
@@ -882,11 +882,10 @@ extern  void _CGAPI DBAddStField( struct_list *st, dbg_loc loc, char *nm, uint a
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddMethod( struct_list *st, dbg_loc loc,
-                             uint  attr, uint     kind,
-                             char *nm,   dbg_type base ) {
-/******************************************************************/
-
+extern  void _CGAPI DBAddMethod( struct_list *st, dbg_loc loc, uint attr,
+                                 uint kind, cchar_ptr nm, dbg_type base )
+/***********************************************************************/
+{
     uint          n_len;
     field_method *field;
 
@@ -905,10 +904,9 @@ extern  void _CGAPI DBAddMethod( struct_list *st, dbg_loc loc,
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddNestedType( struct_list *st, char *nm,
-                                                  dbg_type base ) {
-/******************************************************************/
-
+extern  void _CGAPI DBAddNestedType( struct_list *st, cchar_ptr nm, dbg_type base )
+/*********************************************************************************/
+{
     uint          n_len;
     field_nested *field;
 
@@ -1028,9 +1026,9 @@ extern  enum_list * _CGAPI DBBegEnum( cg_type  tipe ) {
     return( en );
 }
 
-void _CGAPI DBAddConst( enum_list *en, const char *nm, signed_32 val ) {
-/**********************************************************************/
-
+void _CGAPI DBAddConst( enum_list *en, cchar_ptr nm, signed_32 val )
+/******************************************************************/
+{
     const_entry *cons;
     uint        len;
 
@@ -1047,9 +1045,9 @@ void _CGAPI DBAddConst( enum_list *en, const char *nm, signed_32 val ) {
     en->num++;
 }
 
-void _CGAPI DBAddConst64( enum_list *en, const char *nm, signed_64  val ) {
-/*************************************************************************/
-
+void _CGAPI DBAddConst64( enum_list *en, cchar_ptr nm, signed_64  val )
+/*********************************************************************/
+{
     const_entry *cons;
     uint        len;
 

@@ -45,11 +45,11 @@
 
 extern  uint            BuffLoc(void);
 extern  void            BuffByte(byte);
-extern  void            BuffWSLString(char*);
+extern  void            BuffWSLString(const char *);
 extern  void            ChkDbgSegSize( offset, bool );
 extern  void            DataInt(short_offset);
 extern  void            DataLong(long);
-extern  void            DataBytes(unsigned_32,byte*);
+extern  void            DataBytes(unsigned_32,const void *);
 extern  void            BuffIndex(uint);
 extern  void            BuffForward(dbg_patch_handle *);
 extern  void            BuffBack(back_handle, offset);
@@ -142,8 +142,8 @@ extern  void    WVTypesEof( void ) {
     EndType( FALSE );
 }
 
-extern  dbg_type        WVFtnType( char *name, dbg_ftn_type tipe ) {
-/*****************************************************************/
+extern  dbg_type        WVFtnType( const char *name, dbg_ftn_type tipe ) {
+/************************************************************************/
 
     temp_buff   temp;
 
@@ -155,8 +155,8 @@ extern  dbg_type        WVFtnType( char *name, dbg_ftn_type tipe ) {
 }
 
 
-extern  dbg_type        WVScalar( char *name, cg_type tipe ) {
-/************************************************************/
+extern  dbg_type        WVScalar( const char *name, cg_type tipe ) {
+/******************************************************************/
 
     temp_buff   temp;
 
@@ -168,8 +168,8 @@ extern  dbg_type        WVScalar( char *name, cg_type tipe ) {
 }
 
 
-extern  dbg_type        WVScope( char *name ) {
-/*********************************************/
+extern  dbg_type        WVScope( const char *name ) {
+/***************************************************/
 
     temp_buff   temp;
 
@@ -624,7 +624,7 @@ static void DmpFileInfo( void ){
     }
     lst = DBFiles.lst;
     while( lst != NULL ){
-        DataBytes( lst->len, (byte *)lst->fname );
+        DataBytes( lst->len, lst->fname );
         lst = lst->next;
     }
 }

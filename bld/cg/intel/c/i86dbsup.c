@@ -233,8 +233,8 @@ extern  void    BuffForward( dbg_patch_handle *handle ) {
 }
 
 
-extern  void    BuffWSLString( char *str ) {
-/******************************************/
+extern  void    BuffWSLString( const char *str ) {
+/************************************************/
 
     while( *str != NULLCHAR ) {
         BuffByte( *str );

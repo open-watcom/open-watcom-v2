@@ -52,7 +52,7 @@
 #endif
 
 extern  void            CalcMemLimit( void );
-extern  void            FatalError(char *);
+extern  void            FatalError(const char *);
 extern  bool            GetEnvVar(char*,char*,int);
 
 

@@ -57,7 +57,6 @@ extern  name            *AllocS32Const(signed_32);
 extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
 extern  name            *AllocTemp(type_class_def);
 extern  void            AllocALocal(name*);
-extern  byte            *Copy(void*,void*,uint);
 extern  void            BGDone(an);
 extern  cg_type         NamePtrType( name *op );
 extern  name            *AllocRegName( hw_reg_set );

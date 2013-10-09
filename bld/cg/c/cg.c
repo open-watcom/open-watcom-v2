@@ -52,7 +52,7 @@ extern  int             TempId;
 
 extern  void            DumpTree(n *);
 
-extern  char            *ACopyOf(char *);
+extern  char            *ACopyOf(const char *);
 extern  void            VerTipe(cg_type ,cg_type *);
 extern  n               *Binary(cg_op ,n *,n *,cg_type );
 extern  char            *Tipe(cg_type );

@@ -693,8 +693,7 @@ extern  void    GenProlog( void ) {
                         // upon entry to routine, or unalterable.
                         if( HW_COvlap( CurrProc->state.unalterable, HW_AX ) ||
                             HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
-                            FEMessage( MSG_ERROR,
-                            "exported routine with AX live on entry" );
+                            FEMessage( MSG_ERROR, "exported routine with AX live on entry" );
                         }
 #endif
                         GenWindowsProlog();

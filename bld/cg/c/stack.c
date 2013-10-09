@@ -54,7 +54,7 @@ pointer SafeRecurse( pointer (* rtn)( pointer ), pointer arg )
     #define SAVE_SIZE   512     /* this must be smaller than the stack */
 
     extern  mem_out_action  SetMemOut(mem_out_action);
-    extern  void            FatalError(char*);
+    extern  void            FatalError(const char *);
 
     pointer             savearea;
     pointer             retval;

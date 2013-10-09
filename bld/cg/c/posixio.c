@@ -54,7 +54,7 @@ typedef objhandle       objoffset;
 
 enum stdfd { HStdIn=0, HStdOut =1, HStdErr = 2 };
 
-extern  void            FatalError( char * );
+extern  void            FatalError( const char * );
 
 
 static  objoffset       ObjOffset;
@@ -121,8 +121,8 @@ static void cleanupLastBuffer( struct buf *pbuf )
 }
 
 
-static  void    ObjError( int    errcode )
-/****************************************/
+static  void    ObjError( int errcode )
+/*************************************/
 {
     FatalError( strerror(  errcode ) );
 }

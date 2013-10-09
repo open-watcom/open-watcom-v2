@@ -542,8 +542,7 @@ extern  an      BGUnary( cg_op op, an left, type_def *tipe ) {
     case O_PTR_TO_NATIVE:
         // no large model runtime libraries
         if( left->tipe->length != WORD_SIZE ) {
-            FEMessage( MSG_ERROR,
-                "runtime call cannot be made when DS not pegged" );
+            FEMessage( MSG_ERROR, "runtime call cannot be made when DS not pegged" );
             left = Unary( O_CONVERT, left, TypeAddress( TY_NEAR_POINTER ) );
         }
 #endif

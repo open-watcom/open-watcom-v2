@@ -843,8 +843,7 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
             parm->regs = ParmInLineReg( &state->parm );
             if( HW_CEqual( parm->regs, HW_EMPTY ) ) {
                 if( !HW_CEqual( *(state->parm.curr_entry), HW_EMPTY ) ) {
-                    FEMessage( MSG_ERROR,
-                    "More parameters than registers in pragma" );
+                    FEMessage( MSG_ERROR, "More parameters than registers in pragma" );
                 } else {
                     parm->offset = ParmMem( parm->name->tipe->length, ParmAlignment( parm->name->tipe ), state );
                     push_no_pop = TRUE;

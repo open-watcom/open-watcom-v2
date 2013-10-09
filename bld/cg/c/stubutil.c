@@ -545,8 +545,8 @@ extern  void    Find( char *msg, pointer *list, pointer nd ) {
     }
     CGError( "Unknown %s %p", msg, nd );
 }
-extern  char    *ACopyOf( char *s ) {
-//===================================
+extern  char    *ACopyOf( const char *s ) {
+//=========================================
 
     char        *c;
     c = CGAlloc( Length( s ) + 1 );

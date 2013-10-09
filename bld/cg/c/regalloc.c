@@ -711,13 +711,12 @@ static  bool    StealsIdx( instruction *ins,
 }
 
 
-extern  bool_maybe      CheckIndecies( instruction *ins,
-                                       hw_reg_set reg, hw_reg_set except,
-                                       name *op ) {
-/***************************************************************************
+extern  bool_maybe  CheckIndecies( instruction *ins, hw_reg_set reg,
+                                       hw_reg_set except, name *op )
+/*******************************************************************
     Used by TooGreedy
 */
-
+{
     HW_TurnOn( except, ins->head.live.regs );
     HW_TurnOn( except, reg );
     if( StealsIdx( ins, except, op ) ) return( MAYBE );
@@ -726,9 +725,8 @@ extern  bool_maybe      CheckIndecies( instruction *ins,
 }
 
 
-static  bool_maybe      TooGreedy( conflict_node *conf,
-                                   hw_reg_set reg, name *op ) {
-/*************************************************************************
+static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
+/****************************************************************************
     This routine decides whether giving register "reg" to conflict
     "conf" would be too greedy.  Too greedy means that it would use the
     last index registers across an instruction that still needed one, or
@@ -743,7 +741,7 @@ static  bool_maybe      TooGreedy( conflict_node *conf,
     memory/memory operations. Notice that all three of these requirements
     must be satisfied. An instruction could be reserving 3 registers.
 */
-
+{
     block               *blk;
     instruction         *ins;
     instruction         *last;

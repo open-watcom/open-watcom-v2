@@ -48,7 +48,6 @@ extern  void            ReInitNames(void);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  type_class_def  TypeClass(type_def*);
-extern  byte            *Copy(void*,void*,uint);
 extern  void            NamesCrossBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);
 extern  pointer         SafeRecurse( pointer (* rtn)(), pointer arg );

@@ -61,7 +61,7 @@ bool                    BlipsOn;
 // static HANDLE                blipHandle;
 // static file_mapping  *fileMapping;
 
-extern  void            FatalError( char * );
+extern  void            FatalError( const char * );
 extern  bool            TBreak();
 
 extern  void    InitBlip() {

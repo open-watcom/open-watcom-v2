@@ -36,22 +36,22 @@
 
 #include "cypfunc.h"
 
-extern  byte    *Copy( void *x, void *y, uint len ) {
-/***************************************************/
+extern  byte    *Copy( const void *x, void *y, uint len ) {
+/*********************************************************/
 
     return( CypCopy( x, y, len ) );
 }
 
-extern  bool    Equal( void *src, void *dst, int length ) {
-/*********************************************************/
+extern  bool    Equal( const void *src, const void *dst, int length ) {
+/*********************************************************************/
 
     return( CypEqual( src, dst, length ) );
 }
 
-extern  char    *CopyStr( char *src, char *dst ) {
-/************************************************/
+extern  char    *CopyStr( const char *src, char *dst ) {
+/******************************************************/
 
-    return( (char *)CypCopy( (byte *)src, (byte *)dst, CypLength( src ) + 1 ) - 1 );
+    return( (char *)CypCopy( src, dst, CypLength( src ) + 1 ) - 1 );
 }
 
 extern  uint    Length( const char *string ) {
@@ -64,26 +64,26 @@ extern  uint    Length( const char *string ) {
 
 #include <string.h>
 
-extern  byte    *Copy( void *x, void *y, uint len ) {
-/***************************************************/
+extern  byte    *Copy( const void *x, void *y, uint len ) {
+/*********************************************************/
 
     return( memcpy( y, x, len ) );
 }
 
-extern  char    *Fill( char *start, uint len, byte filler ) {
+extern  char    *Fill( void *start, uint len, byte filler ) {
 /***********************************************************/
 
     return( memset( start,  filler, len  ) );
 }
 
-extern  bool    Equal( void *src, void *dst, int length ) {
-/*********************************************************/
+extern  bool    Equal( const void *src, const void *dst, int length ) {
+/*********************************************************************/
 
     return( memcmp( src, dst, length ) == 0 );
 }
 
-extern  char    *CopyStr( char *src, char *dst ) {
-/************************************************/
+extern  char    *CopyStr( const char *src, char *dst ) {
+/******************************************************/
 
     strcpy( dst, src );
     return( dst + strlen( dst ) );

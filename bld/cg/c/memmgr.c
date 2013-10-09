@@ -122,8 +122,8 @@ extern      short   __psp;
 
 typedef pointer_int     tag;
 
-extern bool     GetEnvVar( char*, char*, int );
-extern void     FatalError( char* );
+extern bool     GetEnvVar( char *, char *, int );
+extern void     FatalError( const char * );
 
 
 #define _1K             1024L

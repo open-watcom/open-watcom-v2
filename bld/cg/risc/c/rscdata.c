@@ -68,8 +68,8 @@ extern  void    DataAlign( unsigned_32 align ) {
     }
 }
 
-extern  void    DataBytes( unsigned_32 len, byte *src ) {
-/*******************************************************/
+extern  void    DataBytes( unsigned_32 len, const void *src ) {
+/*************************************************************/
 
     TellOptimizerByPassed();
     ObjBytes( src, len );
@@ -77,7 +77,7 @@ extern  void    DataBytes( unsigned_32 len, byte *src ) {
 }
 
 extern  void    DataInt( short_offset val ) {
-/*************************************/
+/*******************************************/
 
     TellOptimizerByPassed();
     ObjBytes( &val, sizeof( val ) );
@@ -227,7 +227,7 @@ extern  name    *GenFloat( name *cons, type_class_def class ) {
         AlignObject( 8 );
         assert( ( AskLocation() & 0x07 ) == 0 );
         OutLabel( defn->label );
-        DataBytes( TypeClassSize[ class ], (byte *)&defn->value );
+        DataBytes( TypeClassSize[ class ], &defn->value );
         SetOP( old );
 
     }

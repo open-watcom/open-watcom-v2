@@ -37,7 +37,6 @@
 extern  block           *MakeBlock(code_lbl *,block_num);
 extern  void            SuffixIns(instruction *,instruction *);
 extern  void            RemoveIns(instruction *);
-extern  byte            *Copy( void *, void *, uint );
 extern  void            FixBlockIds(void);
 
 extern  void    PointEdge( block_edge *edge, block *new_dest )
@@ -99,7 +98,7 @@ extern  block   *SplitBlock( block *blk, instruction *ins )
     block_num   i;
 
     new_blk = MakeBlock( AskForNewLabel(), blk->targets );
-    Copy( blk, new_blk, sizeof(block)+(sizeof(block_edge)*(blk->targets-1)) );
+    Copy( blk, new_blk, sizeof( block ) + ( sizeof( block_edge ) * ( blk->targets - 1 ) ) );
     new_blk->next_block = blk->next_block;
     new_blk->prev_block = blk;
     blk->next_block = new_blk;

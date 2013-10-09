@@ -84,7 +84,6 @@ extern  void            ConstToTemp(block*,block*,block*(*)(block*));
 extern  bool            SideEffect(instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  int             CountIns(block*);
-extern  byte            *Copy(void*,void*,uint);
 extern  void            PropIndexes(block*);
 extern  void            FixBlockIds(void);
 extern  bool            UnRoll(void);
@@ -2206,7 +2205,7 @@ extern  instruction     *DupIns( instruction *blk_end, instruction *ins,
     int         i;
 
     new = NewIns( ins->num_operands );
-    Copy( ins, new, sizeof(instruction)+(ins->num_operands)*sizeof(name*) );
+    Copy( ins, new, sizeof( instruction ) + ins->num_operands * sizeof( name * ) );
     for( i = 0; i < new->num_operands; ++i ) {
         AdjustOp( blk_end, &new->operands[i], var, adjust );
     }

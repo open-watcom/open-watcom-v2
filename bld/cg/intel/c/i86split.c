@@ -96,7 +96,6 @@ extern  void            RevCond(instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
-extern  byte            *Copy(void*,void*,uint);
 
 extern  instruction             *rCHANGESHIFT(instruction*);
 extern  instruction             *rFIXSHIFT(instruction *);

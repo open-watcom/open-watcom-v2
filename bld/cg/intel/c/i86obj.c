@@ -134,13 +134,13 @@ extern  void            TellImportHandle(sym_handle,import_handle);
 extern  import_handle   AskImportHandle(sym_handle);
 extern  void            TellDonePatch(code_lbl *);
 extern  void            TellAddress(code_lbl *,offset);
-extern  void            FatalError(char *);
+extern  void            FatalError(const char *);
 extern  void            PutObjRec(byte,byte*,uint);
 extern  void            EmptyQueue( void );
 extern  void            TellCommonLabel(code_lbl *,import_handle);
 extern  void            TellUnreachLabels(void);
 extern  void            KillLblRedirects( void );
-extern  void            DoOutObjectName(sym_handle,void(*)(char*,void*),void*,import_type);
+extern  void            DoOutObjectName(sym_handle,void(*)(const char*,void*),void*,import_type);
 /* DF interface */
 extern  void            DFObjInitInfo( void );
 extern  void            DFObjLineInitInfo( void );
@@ -240,8 +240,8 @@ extern  void    InitSegDefs( void )
     BackSegIdx = BACKSEGS;
 }
 
-static omf_idx GetNameIdx( char *name, char *suff, bool alloc )
-/*************************************************************/
+static omf_idx GetNameIdx( const char *name, const char *suff, bool alloc )
+/*************************************************************************/
 {
     lname_cache         **owner;
     lname_cache         *curr;
@@ -518,8 +518,8 @@ static  void    OutIdx( omf_idx value, array_control *dest )
     OutByte( value, dest );
 }
 
-static  void    OutBuffer( void *name, unsigned len, array_control *dest )
-/************************************************************************/
+static  void    OutBuffer( const void *name, unsigned len, array_control *dest )
+/******************************************************************************/
 {
     int     need;
 
@@ -765,8 +765,8 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
 }
 
 
-extern  void    DefSegment( segment_id id, seg_attr attr, char *str, uint align, bool use_16 )
-/********************************************************************************************/
+extern  void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, bool use_16 )
+/**************************************************************************************************/
 {
     segdef              *new;
     segdef              **owner;
@@ -824,8 +824,8 @@ static  void    InitFPPatches( void )
     }
 }
 
-static  void    OutName( char *name, void *dst )
-/**********************************************/
+static  void    OutName( const char *name, void *dst )
+/****************************************************/
 {
     int             len;
     array_control   *dest = dst;
@@ -833,9 +833,8 @@ static  void    OutName( char *name, void *dst )
     len = Length( name );
     if( len >= 256 ) {
         len = 255;
-        FEMessage( MSG_INFO_PROC, "Code generator truncated name, its length "
-            "exceeds allowed maximum." );
-        FEMessage( MSG_INFO_PROC, name );
+        FEMessage( MSG_INFO_PROC, "Code generator truncated name, its length exceeds allowed maximum." );
+        FEMessage( MSG_INFO_PROC, (pointer)name );
     }
     OutByte( len, dest );
     OutBuffer( name, len, dest );
@@ -847,8 +846,8 @@ static  void    OutObjectName( sym_handle sym, array_control *dest )
     DoOutObjectName( sym, OutName, dest, NORMAL );
 }
 
-static  void    OutString( char *name, array_control *dest )
-/**********************************************************/
+static  void    OutString( const char *name, array_control *dest )
+/****************************************************************/
 {
     int len;
 
@@ -1399,8 +1398,8 @@ static void     EjectLEData( void )
 }
 
 
-static void GetSymLName( char *name, void *nidx )
-/***********************************************/
+static void GetSymLName( const char *name, void *nidx )
+/*****************************************************/
 {
     *(omf_idx *)nidx = GetNameIdx( name, "", TRUE );
 }
@@ -2969,8 +2968,8 @@ extern  void    OutRTImport( rt_class rtindex, fix_class class )
     OutRTImportRel( rtindex, class, ( F_CLASS( class ) == F_OFFSET || F_CLASS( class ) == F_LDR_OFFSET ) );
 }
 
-extern  void    OutBckExport( char *name, bool is_export )
-/********************************************************/
+extern  void    OutBckExport( const char *name, bool is_export )
+/**************************************************************/
 {
     array_control       *exp;
     object              *obj;
@@ -3014,8 +3013,8 @@ extern  void    OutBckExport( char *name, bool is_export )
     OutIdx( 0, exp );                       /* type index*/
 }
 
-extern  void    OutBckImport( char *name, bck_info *bck, fix_class class )
-/************************************************************************/
+extern  void    OutBckImport( const char *name, bck_info *bck, fix_class class )
+/******************************************************************************/
 {
     omf_idx     idx;
 

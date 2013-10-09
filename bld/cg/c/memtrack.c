@@ -122,7 +122,7 @@ extern  int     TrValidate( void *, void (*ra)(), tracker * );
 extern  int     TrFree( void *, tracker * );
 extern  int     TrFreeSize( void *, unsigned, tracker * );
 
-static char *CopyStr( char *src, char *dest )
+static char *CopyStr( const char *src, char *dest )
 {
     while( (*dest = *src) != '\0' ) {
         ++src;
@@ -241,7 +241,7 @@ static  void    FreeTrk( TRPTR  entry, tracker *trk )
 
 static  void    Fill( void *start, unsigned len, unsigned char filler )
 {
-    char    *ptr;
+    unsigned char   *ptr;
 
     ptr = start;
     while( len != 0 ) {

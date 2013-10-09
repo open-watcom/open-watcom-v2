@@ -45,9 +45,9 @@
 #include "dbgstrct.h"
 #include "dbcue.h"
 
-extern  uint    DBSrcFile( char *fname ){
-/***************************************/
-
+extern  uint    DBSrcFile( const char *fname )
+/********************************************/
+{
     fname = fname;
     return( 0 );
 }

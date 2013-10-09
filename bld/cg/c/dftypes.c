@@ -50,7 +50,6 @@
 #include "cgprotos.h"
 #include "utils.h"
 
-extern  byte            *Copy(void*,void*,uint);
 extern  type_length     NewBase(name*);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
 extern  void            DBLocFini( dbg_loc loc );
@@ -61,8 +60,8 @@ extern  void            DFOutRegInd( dw_loc_id locid, name *reg );
 
 extern  dw_client       Client;
 
-extern  dbg_type        DFFtnType( char *name, dbg_ftn_type tipe ) {
-/*****************************************************************/
+extern  dbg_type        DFFtnType( const char *name, dbg_ftn_type tipe ) {
+/************************************************************************/
 
     dbg_type    ret;
     unsigned    size;
@@ -73,8 +72,8 @@ extern  dbg_type        DFFtnType( char *name, dbg_ftn_type tipe ) {
 }
 
 
-extern  dbg_type        DFScalar( char *name, cg_type tipe ) {
-/************************************************************/
+extern  dbg_type        DFScalar( const char *name, cg_type tipe ) {
+/******************************************************************/
     type_def    *tipe_addr;
     int          class;
     dbg_type     ret;
@@ -122,8 +121,8 @@ extern char const *DFScopeName( dbg_type scope ){
     return( ScopeNames[scope] );
 }
 
-extern  dbg_type        DFScope( char *name ) {
-/*********************************************/
+extern  dbg_type        DFScope( const char *name ) {
+/***************************************************/
 
     enum scope_name index;
 
@@ -159,8 +158,8 @@ extern  dbg_type        DFCharBlock( unsigned_32 len ) {
     return( ret );
 }
 
-extern  dbg_type        DFCharBlockNamed( char * name, unsigned_32 len ) {
-/******************************************************/
+extern  dbg_type    DFCharBlockNamed( const char *name, unsigned_32 len ) {
+/*************************************************************************/
 
     dbg_type    ret;
 

@@ -66,9 +66,9 @@ void CauseTBreak() {
     /* cause TBreak to return TRUE */
 }
 
-void FatalError( char * str ) {
-/*****************************/
+void FatalError( const char * str ) {
+/***********************************/
 
-     FEMessage( MSG_FATAL, str );
+     FEMessage( MSG_FATAL, (pointer)str );
 }
 

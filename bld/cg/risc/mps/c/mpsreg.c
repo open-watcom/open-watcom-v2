@@ -41,7 +41,6 @@
 extern  hw_reg_set      ReturnReg( type_class_def );
 extern  hw_reg_set      *ParmRegs( void );
 extern  type_class_def  ReturnClass( type_def *, call_attributes );
-extern  byte            *Copy( void *, void *, uint );
 extern  hw_reg_set      FixedRegs( void );
 extern  hw_reg_set      StackReg( void );
 extern  hw_reg_set      DisplayReg( void );

@@ -57,8 +57,6 @@ static struct lf_info LFInfo[LFG_LAST] = {
     #undef _LFMAC
 };
 
-extern  void        BuffWSLString(char*);
-extern  byte        *Copy(void*,void*,uint);
 extern  void        ChkDbgSegSize( offset, bool );
 extern  void        DataInt(short_offset);
 extern  void        LocDump( dbg_loc );
@@ -409,8 +407,8 @@ static  lf_values    LFSignedRange( signed_32 lo, signed_32 hi )
     return( index.s );
 }
 
-extern  dbg_type    CVFtnType( char *name, dbg_ftn_type tipe )
-/************************************************************/
+extern  dbg_type    CVFtnType( const char *name, dbg_ftn_type tipe )
+/******************************************************************/
 {
     unsigned        size;
     cv_primitive    index;
@@ -439,8 +437,8 @@ static char const RealNames[MAX_REAL_NAME][17] = {
     "signed __int64",
 };
 
-extern  dbg_type    CVScalar( char *name, cg_type tipe )
-/******************************************************/
+extern  dbg_type    CVScalar( const char *name, cg_type tipe )
+/************************************************************/
 {
     type_def          *tipe_addr;
     int                length;
@@ -525,8 +523,8 @@ extern char const *CVScopeName( dbg_type scope )
     return( ScopeNames[scope] );
 }
 
-extern  dbg_type    CVScope( char *name )
-/***************************************/
+extern  dbg_type    CVScope( const char *name )
+/*********************************************/
 {
     enum scope_name index;
 

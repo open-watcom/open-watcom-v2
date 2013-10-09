@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-extern  byte            *CypCopy(byte*,byte*,uint);
-extern  char            *CypFill(byte*,uint,byte);
-extern  uint            CypLength(const char*);
-extern  bool            CypEqual(byte*,byte*,uint);
+extern  byte            *CypCopy( const void *, void *, uint );
+extern  char            *CypFill( void *, uint, byte );
+extern  uint            CypLength( const char *);
+extern  bool            CypEqual( const void *,const void *, uint );
 
 #if defined(__WATCOMC__) && defined( _M_IX86 )
 

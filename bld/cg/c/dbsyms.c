@@ -78,7 +78,7 @@ extern  void    DFObjInitInfo( void );
 extern  void    DFFiniDbgInfo( void );
 extern  void    DFObjFiniDbgInfo( void );
 extern  void    DFGenStatic( sym_handle sym, dbg_loc loc );
-extern  void    DFTypedef( char *nm, dbg_type tipe );
+extern  void    DFTypedef( const char *nm, dbg_type tipe );
 extern  void    DFProEnd( dbg_rtn *rtn, offset lc );
 extern  void    DFBlkBeg( dbg_block *blk, offset lc );
 extern  void    DFBlkEnd( dbg_block *blk, offset lc );
@@ -91,7 +91,7 @@ extern  void    CVObjInitInfo( void );
 extern  void    CVFiniDbgInfo( void );
 extern  void    CVObjFiniDbgInfo( void );
 extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem );
-extern  void    CVTypedef( char *nm, dbg_type tipe );
+extern  void    CVTypedef( const char *nm, dbg_type tipe );
 extern  void    CVSetBase( void );
 extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc );
 extern  void    CVProEnd( dbg_rtn *rtn, offset lc );
@@ -128,8 +128,9 @@ static  void    DBSrcFileFini( void ){
     DBFiles.lst = NULL;
 }
 
-extern  uint    _CGAPI DBSrcFile( char *fname ) {
-/***********************************************/
+extern  uint    _CGAPI DBSrcFile( cchar_ptr fname )
+/*************************************************/
+{
     int          index;
     int          len;
     fname_lst   *curr, **lnk;
@@ -417,14 +418,12 @@ static void SourceCueFini( cue_ctl *ctl ){
 extern  void    InitDbgInfo() {
 /******************************/
 //    cue_idx     idx;
-    char        *fname;
     uint        fno;
 
     SrcFileNoInit();
     DBNested( FALSE ); /* set nesting */
     SourceCueInit( &LineInfo );
-    fname = FEAuxInfo( NULL, SOURCE_NAME );
-    fno = DBSrcFile( fname );
+    fno = DBSrcFile( FEAuxInfo( NULL, SOURCE_NAME ) );
 //    idx = CueAdd( fno, 1, 1 );
     CueAdd( fno, 1, 1 );
     SrcLine = 1;
@@ -610,17 +609,18 @@ extern  void    DBAllocReg( name *reg, name *temp ) {
     reg = reg;
 }
 
-extern void _CGAPI DBTypeDef( char *nm, dbg_type tipe ){
-/******************************************************/
+extern void _CGAPI DBTypeDef( cchar_ptr nm, dbg_type tipe )
+/*********************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DBTypeDef( %c, %t )\n", nm, tipe );
 #endif
     if( _IsModel( DBG_DF ) ) {
-         DFTypedef( nm, tipe );
+        DFTypedef( nm, tipe );
     }else if( _IsModel( DBG_CV ) ) {
         CVTypedef( nm, tipe );
     }else{
-     }
+    }
 }
 
 extern  void    _CGAPI DBLocalSym( sym_handle sym, cg_type indirect ) {

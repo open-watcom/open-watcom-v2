@@ -55,17 +55,17 @@ extern  void    DBEndBlock()
 {
 }
 
-extern  dbg_type        DBFtnType( char *nm, dbg_ftn_type tipe )
+extern  dbg_type        DBFtnType( const char *nm, dbg_ftn_type tipe )
 {
     return( 0 );
 }
 
-extern  dbg_type        DBScalar( char *nm, cg_type tipe )
+extern  dbg_type        DBScalar( const char *nm, cg_type tipe )
 {
     return( 0 );
 }
 
-extern  dbg_type        DBScope( char *nm )
+extern  dbg_type        DBScope( const char *nm )
 {
     return( 0 );
 }

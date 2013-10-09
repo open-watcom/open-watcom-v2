@@ -498,8 +498,8 @@ extern  void    InitSegDefs( void )
 }
 
 
-extern  void    DefSegment( segment_id id, seg_attr attr, char *str, uint align, bool use_16 )
-/********************************************************************************************/
+extern  void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, bool use_16 )
+/**************************************************************************************************/
 {
     section_def         *new;
     owl_section_type    type;
