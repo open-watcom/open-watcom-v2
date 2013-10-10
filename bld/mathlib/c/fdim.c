@@ -30,7 +30,7 @@
 
 #include <math.h>
 
-_WMRTLINK double fmin(double x, double y)
+_WMRTLINK double fdim(double x, double y)
 {
 double r;
 

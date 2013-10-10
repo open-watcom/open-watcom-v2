@@ -31,7 +31,7 @@
 
 #include <math.h>
 
-_WMRTLINK double fmin(double a, double b, double c)
+_WMRTLINK double fma(double a, double b, double c)
 {
     return (double)(((long double)a)*((long double)b) + (long double)c);
 }

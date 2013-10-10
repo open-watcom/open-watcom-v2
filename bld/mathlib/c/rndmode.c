@@ -32,12 +32,12 @@
 
 _WMRTDATA extern int _libm_roundmode = 0;
 
-int fegetround()
+_WMRTLINK int fegetround()
 {
     return _libm_roundmode;
 }
 
-int fesetround(int mode)
+_WMRTLINK int fesetround(int mode)
 {
     _libm_roundmode = mode;
 }
