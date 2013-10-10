@@ -299,8 +299,8 @@ extern  opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
     }
     if( try == NULL ) return( try );
     ops = ClassifyOps( ins, has_index );
-    for( ;; ++ try ) {
-        if( ( ops & try->op_type ) != ops ) continue;
+    for( ;; ++try ) {
+        if( ( try->op_type & ops ) != ops ) continue;
         verify = try->verify;
         if( verify != V_NO ) {
             if( !DoVerify( verify & ~NOT_VOLATILE, ins ) ) continue;
@@ -340,9 +340,9 @@ extern  instruction     *PostExpandIns( instruction *ins )
 /********************************************************/
 {
     opcode_entry        *try;
-    bool                has_index;
+    bool                dummy;
 
-    try = FindGenEntry( ins, &has_index );
+    try = FindGenEntry( ins, &dummy );
     if( try == NULL ) return( ins );
     if( try->generate == G_NO ) return( ins );
     if( try->generate >= FIRST_REDUCT ) return( Reduce( ins ) );
@@ -357,6 +357,7 @@ extern  instruction     *ExpandIns( instruction *ins )
     bool                has_index;
 
     try = FindGenEntry( ins, &has_index );
+    if( try == NULL ) return( ins );
     return( DoReduce( ins, try, has_index ) );
 }
 

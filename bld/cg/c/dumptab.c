@@ -110,7 +110,7 @@ static  void    PrtOps( operand_types ops ) {
         DumpLiteral( "NONE" );
     } else if( ( ops & NONE ) == 0 ) {
         DumpLiteral( "BOTH_EQ" );
-    } else if( ops & NE_R1 ) {
+    } else if( ops & EQ_R2 ) {
         DumpLiteral( "EQ_R2" );
     } else {
         DumpLiteral( "EQ_R1" );

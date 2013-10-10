@@ -128,8 +128,8 @@ extern  void    DumpITab( instruction *ins ) {
 }
 
 
-static char * Types[] = {
-/***********************/
+static char * ClassNames[] = {
+/****************************/
 
     " U1 ",
     " I1 ",
@@ -152,7 +152,7 @@ static char * Types[] = {
 extern  void    DumpClass( type_class_def tipe ) {
 /***********************************************/
 
-    DumpString( Types[ tipe ] );
+    DumpString( ClassNames[ tipe ] );
 }
 
 

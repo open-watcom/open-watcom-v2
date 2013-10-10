@@ -70,15 +70,15 @@ static  void            GetToTopOfStack( instruction *ins, int virtual_reg );
 static  void            PopVirtualStack( instruction *ins );
 
 
-static  opcode_entry    RFST    = { PRESERVE, 0, G_RFST,   0, 0 };
-static  opcode_entry    RFSTNP  = { PRESERVE, 0, G_RFSTNP, 0, 0 };
-static  opcode_entry    RFLD    = { PRESERVE, 0, G_RFLD,   0, 0 };
-static  opcode_entry    RCOMP   = { PRESERVE, 0, G_RCOMP,  0, 0 };
-static  opcode_entry    FCOMPP  = { PRESERVE, 0, G_FCOMPP, 0, 0 };
-static  opcode_entry    RRFBIN  = { PRESERVE, 0, G_RRFBIN, 0, 0 };
-static  opcode_entry    RNFBIN  = { PRESERVE, 0, G_RNFBIN, 0, 0 };
-static  opcode_entry    RRFBINP = { PRESERVE, 0, G_RRFBINP,0, 0 };
-static  opcode_entry    RNFBINP = { PRESERVE, 0, G_RNFBINP,0, 0 };
+static  opcode_entry    RFST    = { PRESERVE, V_NO, G_RFST,   RG_, FU_NO };
+static  opcode_entry    RFSTNP  = { PRESERVE, V_NO, G_RFSTNP, RG_, FU_NO };
+static  opcode_entry    RFLD    = { PRESERVE, V_NO, G_RFLD,   RG_, FU_NO };
+static  opcode_entry    RCOMP   = { PRESERVE, V_NO, G_RCOMP,  RG_, FU_NO };
+static  opcode_entry    FCOMPP  = { PRESERVE, V_NO, G_FCOMPP, RG_, FU_NO };
+static  opcode_entry    RRFBIN  = { PRESERVE, V_NO, G_RRFBIN, RG_, FU_NO };
+static  opcode_entry    RNFBIN  = { PRESERVE, V_NO, G_RNFBIN, RG_, FU_NO };
+static  opcode_entry    RRFBINP = { PRESERVE, V_NO, G_RRFBINP,RG_, FU_NO };
+static  opcode_entry    RNFBINP = { PRESERVE, V_NO, G_RNFBINP,RG_, FU_NO };
 
 static  block   *Entry;
 static  block   *Exit;

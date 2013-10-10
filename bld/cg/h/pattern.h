@@ -34,46 +34,40 @@
 #include "vergen.h"
 #include "funits.h"
 
-#define C               0x01u /*  constant */
-#define R               0x02u /*  register */
-#define M               0x04u /*  memory */
-#define U               0x08u /*  unknown whether reg or memory */
-#define OP__MUL         0x10u
+#define C           0x01u /*  constant */
+#define R           0x02u /*  register */
+#define M           0x04u /*  memory */
+#define U           0x08u /*  unknown whether reg or memory */
+#define ANY         (C | R | M | U)
+#define OP__MUL     0x10u
 
-#define RESULT_MUL      1u
-#define C_R     C
-#define R_R     R
-#define M_R     M
-#define U_R     U
-#define OP1_MUL OP__MUL
-#define C_1     (C * OP1_MUL)
-#define R_1     (R * OP1_MUL)
-#define M_1     (M * OP1_MUL)
-#define U_1     (U * OP1_MUL)
-#define OP2_MUL (OP1_MUL * OP__MUL)
-#define C_2     (C * OP2_MUL)
-#define R_2     (R * OP2_MUL)
-#define M_2     (M * OP2_MUL)
-#define U_2     (U * OP2_MUL)
+#define RESULT_MUL  1u
+#define C_R         C
+#define R_R         R
+#define M_R         M
+#define U_R         U
+#define OP1_MUL     OP__MUL
+#define C_1         (C * OP1_MUL)
+#define R_1         (R * OP1_MUL)
+#define M_1         (M * OP1_MUL)
+#define U_1         (U * OP1_MUL)
+#define OP2_MUL     (OP1_MUL * OP__MUL)
+#define C_2         (C * OP2_MUL)
+#define R_2         (R * OP2_MUL)
+#define M_2         (M * OP2_MUL)
+#define U_2         (U * OP2_MUL)
 
-#define NE_1    0x01u
-#define NE_2    0x02u
-#define CC_1    0x04u
-#define CC_2    0x08u
+#define OTHER_MUL   (OP2_MUL * OP__MUL)
+#define EQ_R1       (R * OTHER_MUL)
+#define EQ_R2       (C * OTHER_MUL)
+#define NONE        (EQ_R1 | EQ_R2)
+#define SETS_SC     (M * OTHER_MUL)
+#define PRESERVE    (U * OTHER_MUL)
+#define SETS_CC     (SETS_SC | PRESERVE)
 
-#define OTHER_MUL       (OP2_MUL * OP__MUL)
-#define NE_R1           (NE_1 * OTHER_MUL)
-#define NE_R2           (NE_2 * OTHER_MUL)
-#define ANY             (C | R | M | U)
-#define NONE            (NE_R1 | NE_R2)
-#define EQ_R1           (NONE - NE_R1)
-#define EQ_R2           (NONE - NE_R2)
-#define BOTH_EQ         0
-#define NO_CC           0
-#define SETS_SC         (CC_1 * OTHER_MUL)
-#define PRESERVE        (CC_2 * OTHER_MUL)
-#define SETS_CC         ((CC_1 + CC_2) * OTHER_MUL)
-#define MASK_CC         (SETS_CC)
+#define BOTH_EQ     0
+#define NO_CC       0
+#define MASK_CC     (SETS_CC)
 
 typedef unsigned_32     operand_types;
 
@@ -99,35 +93,35 @@ typedef unsigned_32     operand_types;
 
 #define _Side( op1, op2 )       \
         ( (op1)*OP1_MUL | (op2)*OP2_MUL | \
-        NONE | ANY*RESULT_MUL )
+        ANY*RESULT_MUL | NONE )
 
 #define _SidCC( op1, op2 )      \
         ( (op1)*OP1_MUL | (op2)*OP2_MUL | \
-        NONE | ANY*RESULT_MUL | SETS_CC )
+        ANY*RESULT_MUL | NONE | SETS_CC )
 
 #define _SidSC( op1, op2 )      \
         ( (op1)*OP1_MUL | (op2)*OP2_MUL | \
-        NONE | ANY*RESULT_MUL | SETS_SC )
+        ANY*RESULT_MUL | NONE | SETS_SC )
 
 #define _SidPP( op1, op2 )      \
         ( (op1)*OP1_MUL | (op2)*OP2_MUL | \
-        NONE | ANY*RESULT_MUL | PRESERVE )
+        ANY*RESULT_MUL | NONE | PRESERVE )
 
 #define _Un( op, res, match )   \
-        ( (op)*OP1_MUL | (res)*RESULT_MUL | \
-        (match) )
+        ( (op)*OP1_MUL | ANY*OP2_MUL | \
+        (res)*RESULT_MUL | (match) )
 
 #define _UnCC( op, res, match ) \
-        ( (op)*OP1_MUL | (res)*RESULT_MUL | \
-        (match) | SETS_CC )
+        ( (op)*OP1_MUL | ANY*OP2_MUL | \
+        (res)*RESULT_MUL | (match) | SETS_CC )
 
 #define _UnSC( op, res, match ) \
-        ( (op)*OP1_MUL | (res)*RESULT_MUL | \
-        (match) | SETS_SC )
+        ( (op)*OP1_MUL | ANY*OP2_MUL | \
+        (res)*RESULT_MUL | (match) | SETS_SC )
 
 #define _UnPP( op, res, match ) \
-        ( (op)*OP1_MUL | (res)*RESULT_MUL | \
-        (match) | PRESERVE )
+        ( (op)*OP1_MUL | ANY*OP2_MUL | \
+        (res)*RESULT_MUL | (match) | PRESERVE )
 
 #define _None() NONE
 

@@ -58,8 +58,10 @@
 #define LAST_TARG_AUX_ATTRIBUTE        ( 0x01000000LL << _TARG_AUX_SHIFT )
 
 #if LAST_TARG_AUX_ATTRIBUTE == 0
-    #error Overflowed a long
+    #error Overflowed a long long
 #endif
+
+typedef unsigned long long      call_class;
 
 #define FLOATING_FIXUP_BYTE     0xFF
 

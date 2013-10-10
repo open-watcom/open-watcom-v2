@@ -94,7 +94,5 @@ typedef enum  {
     #error too many attributes
 #endif
 
-typedef unsigned long long call_class;
-
 #define _CG_AUX_INCLUDED
 #endif

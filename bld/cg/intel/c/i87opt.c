@@ -411,7 +411,7 @@ extern  void    FPOptimize( void ) {
 
 #define G(x)    (x)->u.gen_table->generate
 
-static  opcode_entry    FSINCOS = { PRESERVE, 0, G_FSINCOS, 0, FU_TRIG };
+static  opcode_entry    FSINCOS = { PRESERVE, V_NO, G_FSINCOS, RG_, FU_TRIG };
 
 #define _OTHER( x ) ( (x) == OP_SIN ? OP_COS : OP_SIN )
 

@@ -48,7 +48,7 @@ extern  hw_reg_set      Low16Reg( hw_reg_set regs );
 extern  hw_reg_set      High16Reg( hw_reg_set regs );
 extern  hw_reg_set      FullReg( hw_reg_set regs );
 
-static opcode_entry LDSES = { 0, 0, G_LDSES, 0, FU_NO };
+static opcode_entry LDSES = { NO_CC, V_NO, G_LDSES, RG_, FU_NO };
 
 
 static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )

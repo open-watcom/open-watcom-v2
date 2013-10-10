@@ -41,7 +41,6 @@
 extern  hw_reg_set      *RegSets[];
 
 extern  type_class_def  RegClass(hw_reg_set);
-extern  opcode_entry    *FindGenEntry(instruction*,bool*);
 extern  instruction     *PostExpandIns(instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);

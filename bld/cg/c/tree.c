@@ -299,7 +299,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
         rtipe = TypeInteger;
     }
     if( tipe->refno == TY_DEFAULT ) {
-        return( ClassType( mat[ TypeClass(ltipe)*XX + TypeClass(rtipe) ] ));
+        return( ClassType( mat[TypeClass( ltipe ) * XX + TypeClass( rtipe )] ));
     }
 #if _TARGET & 0
     return( tipe );

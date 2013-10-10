@@ -64,9 +64,9 @@ typedef enum {
 
 #define INFO_MASK               0xf0
 
-#define OC_LINENUM              (INFO_LINE+OC_INFO)
-#define OC_LDONE                (INFO_LDONE+OC_INFO)
-#define OC_DEAD_JMP             (INFO_DEAD_JMP+OC_INFO)
+#define OC_LINENUM              (OC_INFO + INFO_LINE)
+#define OC_LDONE                (OC_INFO + INFO_LDONE)
+#define OC_DEAD_JMP             (OC_INFO + INFO_DEAD_JMP)
 
 typedef byte                    oc_length;
 typedef byte                    obj_length;

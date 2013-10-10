@@ -80,75 +80,75 @@ static  void            RevOtherCond( block *blk, instruction *ins );
 
 
 //NYI: probably need more opcode entries for more resolution with func. units
-static  opcode_entry    FNOP    = { SETS_CC,  0, G_NO, 0, FU_FOP };
+static  opcode_entry    FNOP    = { SETS_CC,  V_NO, G_NO,      RG_, FU_FOP };
 
 
 static opcode_entry    RRFBIN[]  = {
-                                  { PRESERVE, 0, G_RRFBIN, 0, FU_FADD },
-                                  { PRESERVE, 0, G_RRFBIN, 0, FU_FMUL },
-                                  { PRESERVE, 0, G_RRFBIN, 0, FU_FDIV },
+                                  { PRESERVE, V_NO, G_RRFBIN,  RG_, FU_FADD },
+                                  { PRESERVE, V_NO, G_RRFBIN,  RG_, FU_FMUL },
+                                  { PRESERVE, V_NO, G_RRFBIN,  RG_, FU_FDIV },
 };
 static opcode_entry    RNFBIN[]  = {
-                                  { PRESERVE, 0, G_RNFBIN, 0, FU_FADD },
-                                  { PRESERVE, 0, G_RNFBIN, 0, FU_FMUL },
-                                  { PRESERVE, 0, G_RNFBIN, 0, FU_FDIV },
+                                  { PRESERVE, V_NO, G_RNFBIN,  RG_, FU_FADD },
+                                  { PRESERVE, V_NO, G_RNFBIN,  RG_, FU_FMUL },
+                                  { PRESERVE, V_NO, G_RNFBIN,  RG_, FU_FDIV },
 };
 static opcode_entry    RRFBINP[] = {
-                                  { PRESERVE, 0, G_RRFBINP, 0, FU_FADD },
-                                  { PRESERVE, 0, G_RRFBINP, 0, FU_FMUL },
-                                  { PRESERVE, 0, G_RRFBINP, 0, FU_FDIV },
+                                  { PRESERVE, V_NO, G_RRFBINP, RG_, FU_FADD },
+                                  { PRESERVE, V_NO, G_RRFBINP, RG_, FU_FMUL },
+                                  { PRESERVE, V_NO, G_RRFBINP, RG_, FU_FDIV },
 };
 static opcode_entry    RNFBINP[] = {
-                                  { PRESERVE, 0, G_RNFBINP, 0, FU_FADD },
-                                  { PRESERVE, 0, G_RNFBINP, 0, FU_FMUL },
-                                  { PRESERVE, 0, G_RNFBINP, 0, FU_FDIV },
+                                  { PRESERVE, V_NO, G_RNFBINP, RG_, FU_FADD },
+                                  { PRESERVE, V_NO, G_RNFBINP, RG_, FU_FMUL },
+                                  { PRESERVE, V_NO, G_RNFBINP, RG_, FU_FDIV },
 };
 static opcode_entry    RRFBIND[] = {
-                                  { PRESERVE, 0, G_RRFBIND, 0, FU_FADD },
-                                  { PRESERVE, 0, G_RRFBIND, 0, FU_FMUL },
-                                  { PRESERVE, 0, G_RRFBIND, 0, FU_FDIV },
+                                  { PRESERVE, V_NO, G_RRFBIND, RG_, FU_FADD },
+                                  { PRESERVE, V_NO, G_RRFBIND, RG_, FU_FMUL },
+                                  { PRESERVE, V_NO, G_RRFBIND, RG_, FU_FDIV },
 };
 static opcode_entry    RNFBIND[] = {
-                                  { PRESERVE, 0, G_RNFBIND, 0, FU_FADD },
-                                  { PRESERVE, 0, G_RNFBIND, 0, FU_FMUL },
-                                  { PRESERVE, 0, G_RNFBIND, 0, FU_FDIV },
+                                  { PRESERVE, V_NO, G_RNFBIND, RG_, FU_FADD },
+                                  { PRESERVE, V_NO, G_RNFBIND, RG_, FU_FMUL },
+                                  { PRESERVE, V_NO, G_RNFBIND, RG_, FU_FDIV },
 };
 static opcode_entry    MRFBIN[]  = {
-                                  { PRESERVE, 0, G_MRFBIN, 0, FU_FADD },
-                                  { PRESERVE, 0, G_MRFBIN, 0, FU_FMUL },
-                                  { PRESERVE, 0, G_MRFBIN, 0, FU_FDIV },
+                                  { PRESERVE, V_NO, G_MRFBIN,  RG_, FU_FADD },
+                                  { PRESERVE, V_NO, G_MRFBIN,  RG_, FU_FMUL },
+                                  { PRESERVE, V_NO, G_MRFBIN,  RG_, FU_FDIV },
 };
 static opcode_entry    MNFBIN[]  = {
-                                  { PRESERVE, 0, G_MNFBIN, 0, FU_FADD },
-                                  { PRESERVE, 0, G_MNFBIN, 0, FU_FMUL },
-                                  { PRESERVE, 0, G_MNFBIN, 0, FU_FDIV },
+                                  { PRESERVE, V_NO, G_MNFBIN,  RG_, FU_FADD },
+                                  { PRESERVE, V_NO, G_MNFBIN,  RG_, FU_FMUL },
+                                  { PRESERVE, V_NO, G_MNFBIN,  RG_, FU_FDIV },
 };
 
-static  opcode_entry    MFLD    = { PRESERVE, 0, G_MFLD, 0, FU_FOP };
-static  opcode_entry    RFLD    = { PRESERVE, 0, G_RFLD, 0, FU_FOP };
-static  opcode_entry    MFST    = { PRESERVE, 0, G_MFST, 0, FU_FOP };
+static  opcode_entry    MFLD    = { PRESERVE, V_NO, G_MFLD,    RG_, FU_FOP };
+static  opcode_entry    RFLD    = { PRESERVE, V_NO, G_RFLD,    RG_, FU_FOP };
+static  opcode_entry    MFST    = { PRESERVE, V_NO, G_MFST,    RG_, FU_FOP };
 #if _TARGET & _TARG_80386
-static  opcode_entry    MFSTRND = { PRESERVE, 0, G_MFSTRND, 0, FU_FOP };
+static  opcode_entry    MFSTRND = { PRESERVE, V_NO, G_MFSTRND, RG_, FU_FOP };
 #endif
-static  opcode_entry    MFST2   = { PRESERVE, 0, G_MFST, 0, FU_FOP };
-static  opcode_entry    RFST    = { PRESERVE, 0, G_RFST, 0, FU_FOP };
-static  opcode_entry    FCHS    = { PRESERVE, 0, G_FCHS, 0, FU_FOP };
-static  opcode_entry    FMATH   = { PRESERVE, 0, G_FMATH, 0, FU_TRIG };
-static  opcode_entry    IFUNC   = { NO_CC,    0, G_IFUNC, 0, FU_TRIG };
-static  opcode_entry    FCHOP   = { PRESERVE, 0, G_FCHOP, 0, FU_FOP };
-static  opcode_entry    FLDZ    = { PRESERVE, 0, G_FLDZ, 0, FU_FOP };
-static  opcode_entry    FLD1    = { PRESERVE, 0, G_FLD1, 0, FU_FOP };
-static  opcode_entry    FCOMPP  = { SETS_CC,  0, G_FCOMPP, 0, FU_FOP };
-static  opcode_entry    MCOMP   = { SETS_CC,  0, G_MCOMP, 0, FU_FOP };
-static  opcode_entry    RCOMP   = { SETS_CC,  0, G_RCOMP, 0, FU_FOP };
-static  opcode_entry    MFSTNP  = { PRESERVE, 0, G_MFSTNP, 0, FU_FOP };
-static  opcode_entry    RFSTNP  = { PRESERVE, 0, G_RFSTNP, 0, FU_FOP };
-static  opcode_entry    FWAIT   = { PRESERVE, 0, G_FWAIT, 0, FU_FOP };//NYI:??
-static  opcode_entry    FXCH    = { PRESERVE, 0, G_FXCH, 0, FU_FOP };
-static  opcode_entry    RC      = { PRESERVE, 0, G_RC, 0, FU_FOP };
+static  opcode_entry    MFST2   = { PRESERVE, V_NO, G_MFST,    RG_, FU_FOP };
+static  opcode_entry    RFST    = { PRESERVE, V_NO, G_RFST,    RG_, FU_FOP };
+static  opcode_entry    FCHS    = { PRESERVE, V_NO, G_FCHS,    RG_, FU_FOP };
+static  opcode_entry    FMATH   = { PRESERVE, V_NO, G_FMATH,   RG_, FU_TRIG };
+static  opcode_entry    IFUNC   = { NO_CC,    V_NO, G_IFUNC,   RG_, FU_TRIG };
+static  opcode_entry    FCHOP   = { PRESERVE, V_NO, G_FCHOP,   RG_, FU_FOP };
+static  opcode_entry    FLDZ    = { PRESERVE, V_NO, G_FLDZ,    RG_, FU_FOP };
+static  opcode_entry    FLD1    = { PRESERVE, V_NO, G_FLD1,    RG_, FU_FOP };
+static  opcode_entry    FCOMPP  = { SETS_CC,  V_NO, G_FCOMPP,  RG_, FU_FOP };
+static  opcode_entry    MCOMP   = { SETS_CC,  V_NO, G_MCOMP,   RG_, FU_FOP };
+static  opcode_entry    RCOMP   = { SETS_CC,  V_NO, G_RCOMP,   RG_, FU_FOP };
+static  opcode_entry    MFSTNP  = { PRESERVE, V_NO, G_MFSTNP,  RG_, FU_FOP };
+static  opcode_entry    RFSTNP  = { PRESERVE, V_NO, G_RFSTNP,  RG_, FU_FOP };
+static  opcode_entry    FWAIT   = { PRESERVE, V_NO, G_FWAIT,   RG_, FU_FOP };//NYI:??
+static  opcode_entry    FXCH    = { PRESERVE, V_NO, G_FXCH,    RG_, FU_FOP };
+static  opcode_entry    RC      = { PRESERVE, V_NO, G_RC,      RG_, FU_FOP };
 #if _TARGET & _TARG_IAPX86
-static  opcode_entry    RR1     = { PRESERVE, 0, G_RR1, 0, FU_FOP };
-static  opcode_entry    WORDR1  = { PRESERVE, 0, G_WORDR1, 0, FU_FOP };
+static  opcode_entry    RR1     = { PRESERVE, V_NO, G_RR1,     RG_, FU_FOP };
+static  opcode_entry    WORDR1  = { PRESERVE, V_NO, G_WORDR1,  RG_, FU_FOP };
 #endif
 
 static  name    *ST0;
