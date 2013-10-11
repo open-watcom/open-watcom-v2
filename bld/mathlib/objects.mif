@@ -117,7 +117,7 @@
 !inject ldi4386.obj            d32c      n32c
 !inject ldi8086.obj  d16c                          wnc
 !inject ldi8386.obj            d32c      n32c
-!inject lgamma.obj             d32c      n32c              axp ntp op lpc lmp
+!inject lgamma.obj   d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject log.obj      d16c      d32c      n32c      wnc     axp ntp op
 !inject log10.obj    d16c      d32c      n32c      wnc     axp ntp op
 !inject log1p.obj              d32c d32i n32c n32i         axp ntp op lpc lmp
