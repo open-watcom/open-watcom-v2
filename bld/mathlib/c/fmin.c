@@ -32,8 +32,6 @@
 
 _WMRTLINK double fmin(double x, double y)
 {
-double r;
-
     if(x <= y)
         return x;
     else

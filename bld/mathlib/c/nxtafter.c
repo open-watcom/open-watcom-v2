@@ -47,6 +47,9 @@ _WMRTLINK double nextafter(double x, double y)
 	int	hx,hy,ix,iy;
 	unsigned lx,ly;
     
+    float_double fdx;
+    float_double fdy;
+    
     fdx.u.value = x;
     fdy.u.value = y;
 

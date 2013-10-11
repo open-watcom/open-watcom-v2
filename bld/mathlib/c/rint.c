@@ -40,7 +40,6 @@
 _WMRTLINK double rint(double x)
 {
 int roundmode;
-double y;
 
     roundmode = fegetround();
     switch(roundmode) {

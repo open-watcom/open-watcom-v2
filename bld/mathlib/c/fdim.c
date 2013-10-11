@@ -32,7 +32,5 @@
 
 _WMRTLINK double fdim(double x, double y)
 {
-double r;
-
     return fmax(x-y, 0.0);
 }

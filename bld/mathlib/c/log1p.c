@@ -56,7 +56,7 @@ static double zero = 0.0;
 
 _WMRTLINK double log1p(double x)
 {
-	double hfsq,f,c,s,z,R,u;
+	double hfsq,f,c,s,z,R;
 	int k,hx,hu,ax;
 
     float_double fdx;

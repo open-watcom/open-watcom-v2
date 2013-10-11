@@ -29,6 +29,8 @@
 *
 ****************************************************************************/
 
+#include <math.h>
+
 _WMRTDATA extern const float    __f_posqnan;
 _WMRTDATA extern const double   __d_posqnan;
 

@@ -30,6 +30,8 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
+
 _WMRTDATA extern int _libm_roundmode = 0;
 
 _WMRTLINK int fegetround()
@@ -37,7 +39,7 @@ _WMRTLINK int fegetround()
     return _libm_roundmode;
 }
 
-_WMRTLINK int fesetround(int mode)
+_WMRTLINK void fesetround(int mode)
 {
     _libm_roundmode = mode;
 }

@@ -30,8 +30,10 @@
 *
 ****************************************************************************/
 
+/* #include "variety.h" */
+
 /* The last sign during a call to lgamma.  C99 insists this exists. */
-_WMRTDATA int signgam = 1;
+int signgam = 1;
 
 /* The current rounding mode, accessed via fegetround and fesetround */
-_WMRTDATA int _libm_roundmode = 0;
+int _libm_roundmode = 0;
