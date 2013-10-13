@@ -45,6 +45,7 @@
 #include "vfun.h"
 #include "symdbg.h"
 #include "dbgsupp.h"
+#include "stacksr.h"
 
 typedef struct fwd_info FWD_INFO;
 struct fwd_info {
@@ -74,7 +75,6 @@ static unsigned vb_FieldTypeSize;
 // prototypes
 static dbg_loc symbolicDebugSetSegment( dbg_loc dl, SYMBOL sym );
 static dbg_loc symbolicDebugSetCodeSegment( dbg_loc dl );
-static dbg_type symbolicDebugClassType( TYPE type );
 static void doSymbolicDebugFundamentalType( TYPE type, void *data );
 static void symbolicDebugFundamentalType( void );
 static void doSymbolicDebugNamedType( TYPE type, void *data );
@@ -631,23 +631,22 @@ static dbg_type symCVDebugClassType( TYPE type )
     return( dt );
 }
 
-static dbg_type symbolicDebugClassType( TYPE type )
-/*************************************************/
+static void *symbolicDebugClassType( void *type )
+/************************************************/
 {
     dbg_type ret;
 
     if( GenSwitches & DBG_CV ) {
         ret = symCVDebugClassType( type );
-    }else{
+    } else {
         ret = symWVDebugClassType( type );
     }
-    return( ret );
+    return( (void *)(pointer_int)ret );
 }
 
-static dbg_type basedPointerType( TYPE       type,
-                                  TYPE       base,
-                                  SD_CONTROL control ){
-/*****************************************************/
+static dbg_type basedPointerType( TYPE type, TYPE base, SD_CONTROL control )
+/**************************************************************************/
+{
     TYPE btype;
     dbg_loc dl;
     dbg_type dt;
@@ -897,7 +896,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
             prevFwdInfo = fwd_info;
             {
                 // from code generator
-                dt = (dbg_type)(pointer_int)CGSafeRecurse( &symbolicDebugClassType, type );
+                dt = (dbg_type)(pointer_int)SafeRecurseCpp( &symbolicDebugClassType, type );
             }
             if( fwd_info->dn != NULL ) {
                 dt = DBEndName( fwd_info->dn, dt );

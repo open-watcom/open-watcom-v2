@@ -179,6 +179,7 @@ common_objs = &
     $(_subdir_)srcfile.obj &
     $(_subdir_)specfuns.obj &
     $(_subdir_)stack.obj &
+    $(_subdir_)stacksr.obj &
     $(_subdir_)stats.obj &
     $(_subdir_)stringl.obj &
     $(_subdir_)symbol.obj &
