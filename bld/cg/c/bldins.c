@@ -157,10 +157,9 @@ extern  an      BGTempName( name *temp, type_def *tipe ) {
 extern  bool    FiniLabel( code_lbl *lbl, block *blk ) {
 /*********************************************************/
 
-    int         i;
+    block_num   i;
 
-    i = blk->targets;
-    while( --i >= 0 ) {
+    for( i = blk->targets; i-- > 0; ) {
         if( blk->edge[ i ].destination.u.lbl == lbl ) {
             blk->edge[ i ].flags |= DEST_LABEL_DIES;
             return( TRUE );

@@ -31,14 +31,12 @@
 
 
 #include "dominate.h"
+#include "blocknum.h"
 
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
 
-typedef unsigned_32             block_num;
 typedef unsigned_32             interval_depth;
-
-#define NO_BLOCK_ID             65535U
 
 typedef unsigned_32             block_flags;
 

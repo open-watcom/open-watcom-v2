@@ -152,13 +152,12 @@ static  void    ScoreCopy( score *other_sc, score *sc )
 static  pointer    ScoreDescendants( pointer bl )
 /***********************************************/
 {
-    int         i;
+    block_num   i;
     block       *son;
     hw_reg_set  regs;
     block       *blk = bl;
 
-    i = blk->targets;
-    while( --i >= 0 ) {
+    for( i = blk->targets; i-- > 0; ) {
         son = blk->edge[ i ].destination.u.blk;
         if( ( son->inputs == 1 ) && !( son->class & BLOCK_VISITED ) ) {
             son->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
@@ -177,8 +176,7 @@ static  pointer    ScoreDescendants( pointer bl )
         }
     }
     HW_CAsgn( regs, HW_EMPTY );
-    i = blk->targets;
-    while( --i >= 0 ) {
+    for( i = blk->targets; i-- > 0; ) {
         son = blk->edge[ i ].destination.u.blk;
         if( son->class & BLOCK_MARKED ) {
             HW_TurnOn( regs, son->ins.hd.next->head.live.regs );

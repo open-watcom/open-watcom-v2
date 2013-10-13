@@ -70,7 +70,7 @@ bool CalcDominatorInfo( void )
 {
     block       *blk;
     block_edge  *edge;
-    int         i;
+    block_num   i;
 
     dom_bit_set predecessors;
     dom_bit_set successors;
@@ -108,10 +108,12 @@ bool CalcDominatorInfo( void )
                 if( blk != ReturnBlock ) {
                     _DBitAssign( old_dominator, blk->dom.post_dominator );
                     _DBitAssign( successors, full_set );
-                    for( i = 0, edge = &blk->edge[ 0 ]; i < blk->targets; i++, edge++ ) {
+                    edge = &blk->edge[ 0 ];
+                    for( i = 0; i < blk->targets; i++ ) {
                         _DBitAssign( temp_bits, full_set );
                         _DBitTurnOff( temp_bits, edge->destination.u.blk->dom.post_dominator );
                         _DBitTurnOff( successors, temp_bits );
+                        edge++;
                     }
                     _DBitTurnOn( successors, blk->dom.id );
                     _DBitAssign( blk->dom.post_dominator, successors );

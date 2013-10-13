@@ -82,7 +82,7 @@ static  void    MarkReachableBlocks( void )
     block       *blk;
     block       *son;
     bool        change;
-    int         i;
+    block_num   i;
 
     for( ;; ) {
         change = FALSE;
@@ -90,8 +90,7 @@ static  void    MarkReachableBlocks( void )
         while( blk != NULL ) {
             if( blk->class & ( BIG_LABEL | BLOCK_VISITED | SELECT ) ) {
                 blk->class |= BLOCK_VISITED;
-                i = blk->targets;
-                while( --i >= 0 ) {
+                for( i = blk->targets; i-- > 0; ) {
                     son = blk->edge[ i ].destination.u.blk;
                     if( ( son->class & BLOCK_VISITED ) == EMPTY ) {
                         son->class |= BLOCK_VISITED;
@@ -139,7 +138,7 @@ static  bool    FindBlock( block *target )
 extern  void    RemoveBlock( block *blk )
 /***************************************/
 {
-    int         i;
+    block_num   i;
     unsigned    last_line;
     block       *chk;
     block       *next;
@@ -151,13 +150,11 @@ extern  void    RemoveBlock( block *blk )
     if( blk->next_block != NULL ) {
         blk->next_block->prev_block = blk->prev_block;
     }
-    i = 0;
-    while( i < blk->targets ) {
+    for( i = 0; i < blk->targets; ++i ) {
         /* block may have already been removed by dead code removal*/
         if( FindBlock( blk->edge[ i ].destination.u.blk ) ) {
             RemoveInputEdge( & blk->edge[ i ] );
         }
-        ++ i;
     }
     last_line = blk->ins.hd.line_num;
     for( ;; ) {

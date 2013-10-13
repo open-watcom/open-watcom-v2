@@ -283,7 +283,7 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
     block               *target;
     data_flow_def       *data;
     global_bit_set      new;
-    int                 i;
+    block_num           i;
     bool                change;
 
 
@@ -308,8 +308,7 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
                 _GBitInit( new, EMPTY );
             }
             if( ( blk->class & BIG_JUMP ) == EMPTY ) {
-                i = blk->targets;
-                while( --i >= 0 ) {
+                for( i = blk->targets; i-- > 0; ) {
                     target = blk->edge[ i ].destination.u.blk;
 
                     /*   new OUT = union of successors' IN*/

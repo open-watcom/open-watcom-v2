@@ -327,7 +327,7 @@ static  void    FindPartition( void )
     block       *oth;
     block       *temp;
     block_edge  *edge;
-    int         i;
+    block_num   i;
 
     blk = HeadBlock;
     while( blk != NULL ) {
@@ -340,9 +340,8 @@ static  void    FindPartition( void )
     }
     blk = HeadBlock;
     while( blk != NULL ) {
-        i = blk->targets;
         edge = &blk->edge[ 0 ];
-        while( --i >= 0 ) {
+        for( i = blk->targets; i-- > 0; ) {
             if( edge->flags & DEST_IS_BLOCK ) {
                 oth = edge->destination.u.blk;
                 if( !( oth->class & PARTITION_ROOT ) && oth->inputs == 1 ) {

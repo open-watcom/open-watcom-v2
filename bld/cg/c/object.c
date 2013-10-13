@@ -88,8 +88,8 @@ extern  void    GenObject( void )
     block               *next_blk;
     instruction         *ins;
     source_line_number  last_line;
-    int                 targets;
-    int                 i;
+    block_num           targets;
+    block_num           i;
     segment_id          old;
     code_lbl            *lbl;
     unsigned            align;
@@ -166,15 +166,13 @@ extern  void    GenObject( void )
             GenLabelReturn();
         }
         if( !( blk->class & LABEL_RETURN ) ) { /* maybe pointer to dead label */
-            targets = blk->targets;
-            while( --targets >= 0 ) {
+            for( targets = blk->targets; targets-- > 0; ) {
                 lbl = blk->edge[ targets ].destination.u.lbl;
                 TellReachedLabel( lbl );
                 if( ( blk->edge[ targets ].flags & DEST_LABEL_DIES ) != 0
                   && BlocksUnTrimmed ) {
                     TellCondemnedLabel( lbl );
-                    i = targets;
-                    while( --i >= 0 ) {
+                    for( i = targets; i-- > 0; ) {
                         if( blk->edge[ i ].destination.u.lbl == lbl ) {
                             blk->edge[ i ].flags &= ~DEST_LABEL_DIES;
                         }

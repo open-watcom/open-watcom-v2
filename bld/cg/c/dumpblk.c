@@ -313,7 +313,7 @@ static  void    DumpDataFlo( block *b )
 static  void    DumpGotos( block *b, bool all )
 /*********************************************/
 {
-    int         i;
+    block_num   i;
 
     DumpPtr( &b->edge[ 0 ] );
     DumpLiteral( "           Destinations: " );
@@ -327,8 +327,7 @@ static  void    DumpGotos( block *b, bool all )
             DumpLiteral( "L" );
             DumpPtr( b->edge[ 0 ].destination.u.lbl );
         }
-        i = 0;
-        while( ++i < b->targets ) {
+        for( i = 1; i < b->targets; ++i ) {
             DumpLiteral( ", " );
             if( ( b->edge[ i ].flags & DEST_LABEL_DIES ) && all ) {
                 DumpLiteral( "(kills) " );

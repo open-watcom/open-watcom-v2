@@ -110,7 +110,7 @@ static  void    DumpLbl( code_lbl **what ) {
 /*****************************************************/
 
     block       *blk;
-    int         i;
+    block_num   i;
 
     blk = HeadBlock;
     for(;;) {
@@ -119,8 +119,7 @@ static  void    DumpLbl( code_lbl **what ) {
             DumpPtr( what );
             return;
         }
-        i = blk->targets;
-        while( --i >= 0 ) {
+        for( i = blk->targets; i-- > 0; ) {
             if( what == &blk->edge[ i ].destination.u.lbl ) {
                 DumpLiteral( "Target " );
                 DumpPtr( blk );

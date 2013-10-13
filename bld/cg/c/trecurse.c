@@ -163,7 +163,7 @@ static void DoTrans( block *blk, instruction *call_ins )
     instruction *next;
     instruction *decl_ins;
     block       *target;
-    int         i;
+    block_num   i;
     block_edge  *edge;
 
     decl_ins = _PROC_LINK( CurrProc );
@@ -228,7 +228,7 @@ static void *SafeBlock( void *_blk )
     what SafeRecurseCG wants.
 */
 {
-    int         i;
+    block_num   i;
     block       *dest;
     block       *safe;
     block       *blk = _blk;
@@ -304,7 +304,7 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
 {
     sym_handle  label;
     block       *dest;
-    int         i;
+    block_num   i;
     instruction *parm;
     instruction *ins;
     bool        ok;

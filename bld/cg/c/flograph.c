@@ -152,8 +152,8 @@ static  void    ReturnsToBottom( void )
 static  pointer MarkVisited( pointer bl )
 /***************************************/
 {
-    int         i;
-    block      *blk = bl;
+    block_num   i;
+    block       *blk = bl;
 
     blk->class |= BLOCK_VISITED;
     for( i = 0; i < blk->targets; ++i ) {
@@ -206,7 +206,7 @@ static  void    FixLinks( void )
 {
     block       *blk;
     block       *prev;
-    int         id;
+    block_num   id;
 
     blk = BlockList;
     HeadBlock = blk;
@@ -215,7 +215,7 @@ static  void    FixLinks( void )
     for( ;; ) {
         blk->next_block = blk->prev_block;
         blk->prev_block = prev;
-        blk->id = ++ id;
+        blk->id = ++id;
         prev = blk;
         blk = blk->next_block;
         if( blk == NULL ) break;
@@ -418,7 +418,7 @@ static  void    NestingDepth( void )
     interval_def        *interval;
     block_edge          *edge;
     block               *target;
-    int                 i;
+    block_num           i;
     bool                change;
 
     interval = BlockList->u.interval->parent;
@@ -427,8 +427,7 @@ static  void    NestingDepth( void )
         blk = BlockList;               /* borrow 'next_block'*/
         for( ;; ) {                         /* identify all back edges at this level*/
             blk->next_block = NULL;
-            i = blk->targets;
-            while( --i >= 0 ) {
+            for( i = blk->targets; i-- > 0; ) {
                 edge = &blk->edge[ i ];
                 target = edge->destination.u.blk;
                 if( target->id <= blk->id ) {     /* if back edge*/
@@ -437,7 +436,7 @@ static  void    NestingDepth( void )
                         if( blk->loop_head == NULL ) {
                             blk->loop_head = target;
                         }
-                        blk->depth ++;
+                        blk->depth++;
                         break;
                     }
                 }
@@ -450,8 +449,7 @@ static  void    NestingDepth( void )
             blk = BlockList;
             for( ;; ) {
                 if( blk->next_block == NULL ) {
-                    i = blk->targets;
-                    while( --i >= 0 ) {
+                    for( i = blk->targets; i-- > 0; ) {
                         edge = & blk->edge[ i ];
                         if( edge->join_level <= level ) {
                             target = edge->destination.u.blk->next_block;

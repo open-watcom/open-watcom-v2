@@ -926,15 +926,14 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
     up in RevFPCond.
 */
 
-    int         i;
+    block_num   i;
     block       *target;
 
     blk->class |= BLOCK_VISITED;
     for( ;; ) {
         ins = ins->head.next;
         if( ins->head.opcode == OP_BLOCK ) {
-            i = blk->targets;
-            while( --i >= 0 ) {
+            for( i = blk->targets; i-- > 0; ) {
                 target = blk->edge[ i ].destination.u.blk;
                 if( ( target->class & BLOCK_VISITED ) == EMPTY ) {
                     RevOtherCond( target, (instruction *)&target->ins );

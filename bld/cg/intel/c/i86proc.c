@@ -278,9 +278,9 @@ static  void    ScanForFDOps( void )
 static  void *ScanForLabelReturn( void *_blk ) {
 /**********************************************/
 
-    block   *son;
-    int     i;
-    block   *blk = _blk;
+    block       *son;
+    block_num   i;
+    block       *blk = _blk;
 
     if( blk->class & (RETURN|CALL_LABEL) )
         return( NULL );

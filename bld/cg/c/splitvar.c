@@ -191,7 +191,7 @@ static  pointer MarkInstance( pointer bl )
 /****************************************/
 {
     block_edge          *edge;
-    int                 i;
+    block_num           i;
     data_flow_def       *flow;
     global_bit_set      *bitp;
     block               *blk = bl;
@@ -211,9 +211,8 @@ static  pointer MarkInstance( pointer bl )
         }
     }
     if( _GBitOverlap( flow->out, Id ) ) {
-        i = blk->targets;
         edge = &blk->edge[ 0 ];
-        while( --i >= 0 ) {
+        for( i = blk->targets; i-- > 0; ) {
             bitp = &edge->destination.u.blk->dataflow->in;
             if( _GBitOverlap( *bitp, Id ) ) {
                 SafeRecurseCG( MarkInstance, edge->destination.u.blk );

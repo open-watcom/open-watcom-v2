@@ -220,7 +220,7 @@ static  bool    IsPreHeader( block *test ) {
     that is not in the loop may branch into the loop.
 */
 
-    int         i;
+    block_num   i;
     block       *other;
 
     /* check that test only goes to the loop head*/
@@ -230,8 +230,7 @@ static  bool    IsPreHeader( block *test ) {
     /* check that no other block outside the loop branches into the loop*/
     for( other = HeadBlock; other != NULL; other = other->next_block ) {
         if( other != test && ( other->class & IN_LOOP ) == EMPTY ) {
-            i = other->targets;
-            while( --i >= 0 ) {
+            for( i = other->targets; i-- > 0; ) {
                 if( other->edge[ i ].destination.u.blk->class & IN_LOOP ) {
                     return( FALSE );
                 }
@@ -297,7 +296,7 @@ extern  void    MarkLoop( void )
 */
 {
     block       *other_blk;
-    int         targets;
+    block_num   targets;
     block_edge  *edge;
 
     Loop = NULL;
@@ -309,9 +308,8 @@ extern  void    MarkLoop( void )
         }
     }
     for( other_blk = Loop; other_blk != NULL; other_blk = other_blk->u.loop ) {
-        targets = other_blk->targets;
         edge = &other_blk->edge[ 0 ];
-        while( --targets >= 0 ) {
+        for( targets = other_blk->targets; targets-- > 0; ) {
             if( ( edge->destination.u.blk->class & IN_LOOP ) == EMPTY ) {
                 other_blk->class |= LOOP_EXIT;
             }
@@ -382,12 +380,12 @@ static  bool    KillOneTrippers( void )
     block       *loop_head;
     instruction *ins;
     instruction *next;
-    int         i;
+    block_num   i;
     bool        change;
 
     change = FALSE;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( i = blk->targets - 1; i >= 0; --i ) {
+        for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[i].flags & ONE_ITER_EXIT ) {
                 for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                     next = ins->head.next;
@@ -1933,14 +1931,14 @@ static  void    IncAndInit( induction *var, name *iv, type_class_def class ) {
 static  pointer MarkDown( pointer bl ) {
 /**************************************/
 
-    int         i;
-    block      *blk = bl;
+    block_num   i;
+    block       *blk = bl;
 
     if( !( blk->class & IN_LOOP ) ) return NULL;
     if( blk == Head ) return NULL;
     if( !( blk->class & BLOCK_WILL_EXECUTE ) ) return NULL;
     blk->class &= ~BLOCK_WILL_EXECUTE;
-    for( i = blk->targets-1; i >= 0; --i ) {
+    for( i = blk->targets; i-- > 0; ) {
         SafeRecurseCG( MarkDown, blk->edge[i].destination.u.blk );
     }
     return NULL;
@@ -1956,7 +1954,7 @@ static  void    LabelDown( instruction *frum,
 */
 
     block       *blk;
-    int         i;
+    block_num   i;
     block_edge  *edge;
     instruction *ins;
 
@@ -1968,8 +1966,7 @@ static  void    LabelDown( instruction *frum,
     if( frum == avoiding ) return;
     blk = _BLOCK( frum );
     edge = &blk->edge[ 0 ];
-    i = blk->targets;
-    while( --i >= 0 ) {
+    for( i = blk->targets; i-- > 0; ) {
         blk = edge->destination.u.blk;
         if( ( go_around || blk != Head ) && ( blk->class & IN_LOOP ) ) {
             ins = blk->ins.hd.next;
@@ -2048,7 +2045,7 @@ static  void    MarkWillExecBlocks( void )
 /****************************************/
 {
     block       *blk;
-    int         i;
+    block_num   i;
     instruction *nop;
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
@@ -2059,14 +2056,14 @@ static  void    MarkWillExecBlocks( void )
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         if( !( blk->class & LOOP_EXIT ) ) continue;
-        for( i = blk->targets-1; i >= 0; --i ) {
+        for( i = blk->targets; i-- > 0; ) {
             MarkDown( blk->edge[i].destination.u.blk );
         }
     }
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         if( blk->targets <= 1 ) continue;
-        for( i = blk->targets-1; i >= 0; --i ) {
+        for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[i].destination.u.blk->inputs == 1 ) {
                 blk->edge[i].destination.u.blk->class &= ~BLOCK_WILL_EXECUTE;
             }
@@ -2145,7 +2142,7 @@ extern  void    MoveDownLoop( block *cond ) {
     block       *blk;
     block_edge  *edge;
     block       *after;
-    int         i;
+    block_num   i;
 
     edge = cond->input_edges;
     after = edge->source;
@@ -2170,8 +2167,7 @@ extern  void    MoveDownLoop( block *cond ) {
         edge->flags &= ~DEST_LABEL_DIES;
         edge = edge->next_source;
     }
-    i = cond->targets;
-    while( --i >= 0 ) {
+    for( i = cond->targets; i-- > 0; ) {
         cond->edge[ i ].flags &= ~DEST_LABEL_DIES;
         cond->edge[ i ].destination.u.blk->edge[ 0 ].flags &= ~BLOCK_LABEL_DIES;
     }

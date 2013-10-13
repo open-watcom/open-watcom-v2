@@ -454,9 +454,11 @@ extern  void    DumpLoop( block *loop )
         }
         DumpNL();
         DumpString( "\tDest: " );
-        for( edge = &loop->edge[ 0 ], i = 0; i < loop->targets; i++, edge++ ) {
+        edge = &loop->edge[ 0 ];
+        for( i = 0; i < loop->targets; i++ ) {
             DumpPtr( edge->destination.u.blk );
             DumpString( " " );
+            edge++;
         }
         DumpNL();
         loop = loop->u.loop;

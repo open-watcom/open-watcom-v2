@@ -112,11 +112,9 @@ extern  block   *SplitBlock( block *blk, instruction *ins )
     new_blk->id = NO_BLOCK_ID;
     PointEdge( &blk->edge[ 0 ], new_blk );
     edge = &new_blk->edge[ 0 ];
-    i = 0;
-    while( i < new_blk->targets ) {
+    for( i = 0; i < new_blk->targets; ++i ) {
         edge->source = new_blk;
         edge++;
-        i++;
     }
     while( ins->head.opcode != OP_BLOCK ) {
         old = ins;

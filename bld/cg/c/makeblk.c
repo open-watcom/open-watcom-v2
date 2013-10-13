@@ -236,7 +236,7 @@ extern  block   *ReGenBlock( block *blk, code_lbl *lbl )
 {
     block       *new;
     block_edge  *edge;
-    int         targets;
+    block_num   targets;
 
     targets = blk->targets + 1;
     new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
@@ -254,7 +254,7 @@ extern  block   *ReGenBlock( block *blk, code_lbl *lbl )
         blk->ins.hd.next->head.prev = (instruction *)&new->ins;
         blk->ins.hd.prev->head.next = (instruction *)&new->ins;
     }
-    while( --targets >= 0 ) {
+    while( targets-- > 0 ) {
         new->edge[ targets ].source = new;
     }
     new->ins.blk = new;
@@ -330,23 +330,22 @@ extern  void    FixEdges( void )
 {
     block       *blk;
     block       *dest;
-    int         targets;
+    block_num   targets;
     block_edge  *edge;
 
     blk = HeadBlock;
     while( blk != NULL ) {
-        targets = blk->targets;
         if( ( blk->class & BIG_JUMP ) == 0 ) {
-            while( --targets >= 0 ) {
-              edge = &blk->edge[  targets  ];
-              dest = FindBlockWithLbl( edge->destination.u.lbl );
-              if( dest != NULL ) {
-                  edge->flags |= DEST_IS_BLOCK;
-                  edge->destination.u.blk = dest;
-                  edge->next_source = edge->destination.u.blk->input_edges;
-                  edge->destination.u.blk->input_edges = edge;
-                  edge->destination.u.blk->inputs++;
-              }
+            for( targets = blk->targets; targets-- > 0; ) {
+                edge = &blk->edge[  targets  ];
+                dest = FindBlockWithLbl( edge->destination.u.lbl );
+                if( dest != NULL ) {
+                    edge->flags |= DEST_IS_BLOCK;
+                    edge->destination.u.blk = dest;
+                    edge->next_source = edge->destination.u.blk->input_edges;
+                    edge->destination.u.blk->input_edges = edge;
+                    edge->destination.u.blk->inputs++;
+                }
             }
         }
         blk = blk->next_block;
@@ -360,11 +359,12 @@ static void *LinkReturns( void *arg )
 /***********************************/
 {
     block               *blk;
-    int                 i;
+    block_num           i;
 //    bool                found;
     code_lbl            *link_to;
     code_lbl            *to_search;
 
+    arg = arg;
     link_to = LinkReturnsParms[ 0 ];
     to_search = LinkReturnsParms[ 1 ];
     blk = FindBlockWithLbl( to_search );
@@ -372,16 +372,13 @@ static void *LinkReturns( void *arg )
     if( blk == NULL ) return( (void *)FALSE );
     if( blk->class & BLOCK_VISITED ) return( (void *)TRUE );
     if( blk->class & LABEL_RETURN ) {
-        i = blk->targets;
-        for( ;; ) {
-            if( --i < 0 ) {
-                blk = ReGenBlock( blk, link_to );
-                break;
-            }
+        for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[ i ].destination.u.lbl == link_to ) {
-                break; /* kick out ... already linked */
+                /* kick out ... already linked */
+                return( (void *)TRUE );
             }
         }
+        blk = ReGenBlock( blk, link_to );
 //        found = TRUE;
     } else {
         blk->class |= BLOCK_VISITED;
@@ -393,8 +390,7 @@ static void *LinkReturns( void *arg )
                 return( (void *)FALSE );
             }
         } else {
-            i = blk->targets;
-            while( --i >= 0 ) {
+            for( i = blk->targets; i-- > 0; ) {
                 LinkReturnsParms[ 0 ] = link_to;
                 LinkReturnsParms[ 1 ] = blk->edge[ i ].destination.u.lbl;
                 if( SafeRecurseCG( LinkReturns, NULL ) == (void *)FALSE ) {
@@ -441,14 +437,13 @@ extern  void    UnFixEdges( void )
 /********************************/
 {
     block       *blk;
-    int         targets;
+    block_num   targets;
     block_edge  *edge;
 
     blk = HeadBlock;
     while( blk != NULL ) {
         if( ( blk->class & BIG_JUMP ) == EMPTY ) {
-            targets = blk->targets;
-            while( --targets >= 0 ) {
+            for( targets = blk->targets; targets-- > 0; ) {
                 edge = &blk->edge[  targets  ];
                 if( edge->flags & DEST_IS_BLOCK ) {
                     RemoveInputEdge( edge );

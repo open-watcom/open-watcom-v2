@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include "blocknum.h"
+
 /* aligned */
 typedef enum {
         N_CONSTANT,
@@ -169,7 +171,7 @@ typedef struct temp_name {
             type_length         alt_location;
         } v;
         union {
-            unsigned_16         block_id;       /* AKA block_num */
+            block_num           block_id;       /* AKA block_num */
             unsigned_16         ref_count;      /* for counting references */
         } u;
         t_flags                 temp_flags;

@@ -79,7 +79,7 @@ extern  bool            CreateBreak( void )
     block       *exit_blk;
     block_edge  *edge;
     block_edge  *next_edge;
-    int         targets;
+    block_num   targets;
     int         pending;
     edge_list   *exit_edge;
 
@@ -117,9 +117,8 @@ extern  bool            CreateBreak( void )
         } else if( pending == 0 ) {
             break_blk = blk;
         }
-        targets = blk->targets;
         edge = &blk->edge[ 0 ];
-        while( --targets >= 0 ) {
+        for( targets = blk->targets; targets-- > 0; ) {
             if( edge->flags & DEST_IS_BLOCK ) {
                 if( edge->flags & DEST_LABEL_DIES ) {
                     if( edge->destination.u.blk->class & BLOCK_VISITED ) {
@@ -178,9 +177,8 @@ extern  bool            CreateBreak( void )
 */
     blk = HeadBlock;
     while( blk != NULL ) {
-        targets = blk->targets;
         edge = &blk->edge[ 0 ];
-        while( --targets >= 0 ) {
+        for( targets = blk->targets; targets-- > 0; ) {
             if( !( edge->flags & DEST_IS_BLOCK )
                || edge->destination.u.blk->gen_id >= break_blk->gen_id ) {
                 exit_edge = CGAlloc( sizeof( edge_list ) );

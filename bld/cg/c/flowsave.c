@@ -117,7 +117,7 @@ static bool     InLoop( block *blk )
 static void DoFix( block *blk )
 /*****************************/
 {
-    int         i;
+    block_num   i;
 
     if( ( blk->class & BLOCK_VISITED ) != EMPTY ) return;
     if( ( blk->class & RETURN ) != EMPTY ) _Zoiks( ZOIKS_140 );
@@ -137,7 +137,7 @@ static void FixStackDepth( block *save, block *restore )
     since AdjustStackDepth will take care of that.
 */
 {
-    int         i;
+    block_num   i;
 
     ClearBlockBits( BLOCK_VISITED );
     restore->class |= BLOCK_VISITED;
