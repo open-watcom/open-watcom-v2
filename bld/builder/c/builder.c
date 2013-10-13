@@ -539,11 +539,13 @@ static int ProcessCtlFile( const char *name )
                 pmake = ( strnicmp( p, "PMAKE", 5 ) == 0 && p[5] == ' ' );
                 res = RunIt( p, IgnoreErrors );
                 if( res != 0 ) {
-                    if( !pmake || !IgnoreErrors ) {
+                    if( !IgnoreErrors || !pmake ) {
                         if( !logit ) {
                             Log( FALSE, "<%s> => ", Line );
                         }
                         Log( FALSE, "non-zero return: %d\n", res );
+                    }
+                    if( !IgnoreErrors ) {
                         Fatal( "Build failed\n" );
                     }
                     rc = res;
