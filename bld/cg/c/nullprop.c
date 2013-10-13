@@ -35,12 +35,12 @@
 #include "cgmem.h"
 #include "cgdefs.h"
 #include "data.h"
+#include "stack.h"
 
 extern  bool_maybe      ReDefinedBy( instruction *, name * );
 extern  name            *AllocS32Const( signed_32 );
 extern void             KillCondBlk( block *blk, instruction *ins, int dest );
 extern  bool            SideEffect( instruction * );
-extern  pointer         SafeRecurse( pointer (* rtn)( pointer ), pointer arg );
 extern  bool            BlockTrim( void );
 
 extern  void            ClearBlockBits( block_class mask )
@@ -239,7 +239,7 @@ typedef struct goofy_struct_so_we_can_use_saferecurse {
     bool        forward;
 } parm_struct;
 
-static  void            *DominatingDeref( parm_struct * );
+static  void            *DominatingDeref( void * );
 
 static  int             BlockSearch( block *blk, instruction *ins, name *op, bool forward )
 /******************************************************************************************
@@ -268,7 +268,7 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
                 parms.ins = curr;
                 parms.op = curr->result;
                 parms.forward = TRUE;
-                if( SafeRecurse( DominatingDeref, &parms ) != (void *)FALSE ) {
+                if( SafeRecurseCG( DominatingDeref, &parms ) != (void *)FALSE ) {
                     return( BLOCK_DEREFS );
                 }
             }
@@ -282,8 +282,8 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
     return( BLOCK_NOTHING );
 }
 
-static  void            *DominatingDeref( parm_struct *parms )
-/************************************************************
+static  void            *DominatingDeref( void *_parms )
+/*******************************************************
     Return TRUE if the given instruction is dominated by a dereference of op. This is not a true
     dominator in the sense of the dragon book, but a dominator in the sense that every path from
     the instruction given to the return encounters a dereference of op (if forward) or every
@@ -296,6 +296,7 @@ static  void            *DominatingDeref( parm_struct *parms )
     int                 result;
     bool                dominated;
     block               *blk;
+    parm_struct         *parms = _parms;
 
 
     // check instructions from ins to end of block
@@ -453,7 +454,7 @@ static  bool            NullProp( block *blk )
     parms.op = *ptr;
     parms.forward = TRUE;
     ClearBlockBits( BLOCK_VISITED );
-    if( DominatingDeref( &parms ) ) {
+    if( DominatingDeref( &parms ) != (void *)FALSE ) {
         if( !EdgeHasSideEffect( blk, cmp, cmp->head.opcode == OP_CMP_NOT_EQUAL ) ) {
             // only nuke the edge if the code we are removing
             // does not have a side effect or if the dominators are before the compare
@@ -463,7 +464,7 @@ static  bool            NullProp( block *blk )
     }
     parms.forward = FALSE;
     ClearBlockBits( BLOCK_VISITED );
-    if( DominatingDeref( &parms ) ) {
+    if( DominatingDeref( &parms ) != (void *)FALSE ) {
         KillCondBlk( blk, cmp, dest_index );
         return( TRUE );
     }

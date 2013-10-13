@@ -125,7 +125,6 @@ extern  void            BGPatchInteger( patch_handle, signed_32 );
 extern  void            BGFiniPatch( patch_handle );
 extern  an              MakeConst( cfloat *, type_def * );
 extern  void            DataAlign( unsigned_32 );
-extern  pointer         SafeRecurse( pointer (* rtn)( pointer ), pointer arg );
 
 #ifdef QNX_FLAKEY
 unsigned long   OrigModel;
@@ -1898,12 +1897,6 @@ extern  void _CGAPI             BFFree( float_handle cf )
 /*******************************************************/
 {
     CFFree( (cfloat *)cf );
-}
-
-extern  pointer _CGAPI CGSafeRecurse( pointer rtn, pointer arg )
-/**************************************************************/
-{
-    return( SafeRecurse( (pointer(*)(pointer))rtn, arg ) );
 }
 
 extern  void _CGAPI     DBSrcCue( uint fno, uint line, uint col );

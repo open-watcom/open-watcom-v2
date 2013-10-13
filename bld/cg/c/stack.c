@@ -30,38 +30,41 @@
 
 
 #include "cgstd.h"
+#include "stack.h"
 
-#if defined( __AXP__ ) || defined( __MIPS__ ) || defined( __NT__ ) || !defined( __WATCOMC__ )
+#if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
 
-pointer SafeRecurse( pointer (* rtn)( pointer ), pointer arg )
-/************************************************************/
-{
-    return( rtn( arg ) );
-}
-
-#else
-
-#include <malloc.h>
-#include "stackok.h"
+#include "walloca.h"
 #include "cgmem.h"
-#include "cypfunc.h"
 #include "memout.h"
-#include "cg.h"
+#include "cypfunc.h"
 
-pointer SafeRecurse( pointer (* rtn)( pointer ), pointer arg )
-/************************************************************/
+extern char near        *bp( void );
+#pragma aux bp = 0x89 0xe8 value [ eax ];
+
+extern char near        *sp( void );
+#pragma aux sp = value [ esp ];
+
+extern void             setsp( void near * );
+#pragma aux setsp = 0x89 0xc4 parm [ eax ] modify [ esp ];
+
+extern void             setbp( void near * );
+#pragma aux setbp = 0x89 0xc5 parm [ eax ];
+
+extern  mem_out_action  SetMemOut(mem_out_action);
+extern  void            FatalError(const char *);
+
+void    *SafeRecurseCG( func_sr rtn, void *arg )
+/**********************************************/
+/* This code assumes NO parameters on the stack! */
 {
     #define SAVE_SIZE   512     /* this must be smaller than the stack */
 
-    extern  mem_out_action  SetMemOut(mem_out_action);
-    extern  void            FatalError(const char *);
-
-    pointer             savearea;
-    pointer             retval;
+    void                *savearea;
+    void                *retval;
     mem_out_action      old_action;
 
     if( stackavail() < 0x2000 ) { /* stack getting low! */
-/*      This code assumes NO parameters on the stack! */
         old_action = SetMemOut( MO_OK );
         savearea = CGAlloc( SAVE_SIZE );
         if( savearea == NULL ) {
@@ -84,7 +87,16 @@ pointer SafeRecurse( pointer (* rtn)( pointer ), pointer arg )
     }
 }
 
+#else
+
+void    *SafeRecurseCG( func_sr rtn, void *arg )
+/**********************************************/
+{
+    return( rtn( arg ) );
+}
+
 #endif
+
 
 #if 0
 #ifndef __AXP__

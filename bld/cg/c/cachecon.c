@@ -32,7 +32,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "stackok.h"
+#include "stack.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "convins.h"
@@ -256,5 +256,5 @@ extern  void            MemConstTemp( conflict_node *conf ) {
             ins = ins->head.next;
         }
     }
-    SafeRecurse( InMemory, other->v.conflict );
+    SafeRecurseCG( InMemory, other->v.conflict );
 }

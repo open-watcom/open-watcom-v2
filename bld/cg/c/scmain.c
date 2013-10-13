@@ -38,12 +38,12 @@
 #include "memout.h"
 #include "data.h"
 #include "utils.h"
+#include "stack.h"
 
 extern  void            MakeLiveInfo(void);
 extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
 extern  void            UpdateLive(instruction*,instruction*);
-extern  pointer         SafeRecurse( pointer (* rtn)(), pointer arg );
 
 
 extern  void    ScoreInit( void )
@@ -170,7 +170,7 @@ static  pointer    ScoreDescendants( pointer bl )
                 UpdateLive( son->ins.hd.next, son->ins.hd.prev );
             }
             son->class |= BLOCK_VISITED | BLOCK_MARKED;
-            SafeRecurse( ScoreDescendants, son );
+            SafeRecurseCG( ScoreDescendants, son );
             FreeScoreBoard( son->cc );
             ScFree( son->cc );
             son->cc = NULL;

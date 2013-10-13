@@ -42,11 +42,11 @@
 #include "zoiks.h"
 #include "data.h"
 #include "x87.h"
+#include "stack.h"
 
 
 extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
-extern  pointer         SafeRecurse(pointer(*)(),pointer);
 extern  bool_maybe      ReDefinedBy(instruction *, name *);
 extern  instruction_id  Renumber(void);
 extern  hw_reg_set      StackReg(void);
@@ -561,8 +561,8 @@ static void BuildDag( void )
     }
 }
 
-static pointer AnnointADag( data_dag *dag )
-/******************************************
+static void *AnnointADag( void *_dag )
+/*************************************
     Find out how many ancestors an instruction has, and what the longest
     amount of time it will take to execute all the instructions this one
     depends on (height).
@@ -571,17 +571,18 @@ static pointer AnnointADag( data_dag *dag )
     unsigned        max_cycle_count;
     data_dag        *pred;
     dep_list_entry  *dep;
+    data_dag        *dag = _dag;
 
     max_cycle_count = 0;
     dag->visited = TRUE;
     for( dep = dag->deps; dep != NULL; dep = dep->next ) {
         pred = dep->dep;
         pred->anc_count++;
-        if( !pred->visited ) SafeRecurse( AnnointADag, pred );
+        if( !pred->visited ) SafeRecurseCG( AnnointADag, pred );
         if( pred->height > max_cycle_count ) max_cycle_count = pred->height;
     }
     dag->height = max_cycle_count + FUEntry( dag->ins )->opnd_stall;
-    /* return a pointer to satisfy SafeRecurse */
+    /* return a pointer to satisfy SafeRecurseCG */
     return( NULL );
 }
 

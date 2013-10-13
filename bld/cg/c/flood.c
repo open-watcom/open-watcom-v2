@@ -36,6 +36,7 @@
 #include "conflict.h"
 #include "cgdefs.h"
 #include "model.h"
+#include "stack.h"
 
 typedef bool (*flood_func)( block *, void * );
 
@@ -50,7 +51,6 @@ typedef struct stupid_struct_so_I_can_use_safe_recurse {
 #define _MarkVisited( blk )     ( (blk)->class |=  BLOCK_VISITED )
 
 extern  void    ClearBlockBits( block_class );
-extern  pointer SafeRecurse(pointer(*)(),pointer);
 
 static pointer doFloodForward( void *fp ) {
 
@@ -68,7 +68,7 @@ static pointer doFloodForward( void *fp ) {
         if( p->func( next, p->parm ) == FALSE ) break;
         _MarkVisited( next );
         new_parms.blk = next;
-        SafeRecurse( doFloodForward, &new_parms );
+        SafeRecurseCG( doFloodForward, &new_parms );
     }
     return NULL;
 }
@@ -97,7 +97,7 @@ static pointer doFloodBackward( pointer fp ) {
         if( p->func( next, p->parm ) == FALSE ) break;
         _MarkVisited( next );
         new_parms.blk = next;
-        SafeRecurse( doFloodBackward, &new_parms );
+        SafeRecurseCG( doFloodBackward, &new_parms );
     }
     return NULL;
 }

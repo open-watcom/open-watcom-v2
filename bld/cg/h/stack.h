@@ -27,4 +27,18 @@
 * Description:  Prototype for stack.h
 *
 ****************************************************************************/
-extern  pointer SafeRecurse( pointer (*rtn)(pointer), pointer arg );
+
+
+typedef void    *(*func_sr)(void *);
+
+#if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
+
+#pragma aux SafeRecurseCG parm caller [ eax ebx ecx edx ]; /* just to be sure! must not put any parametr on the stack */
+
+#else
+
+// nothing special
+
+#endif
+
+extern  void    *SafeRecurseCG( func_sr rtn, void *arg );

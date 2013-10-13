@@ -36,7 +36,7 @@
 #include "ocentry.h"
 #include "gen8087.h"
 #include "cgaux.h"
-#include "stackok.h"
+#include "stack.h"
 #include "zoiks.h"
 #include "data.h"
 #include "feprotos.h"
@@ -275,11 +275,12 @@ static  void    ScanForFDOps( void )
 
 
 #if _TARGET & _TARG_80386
-static  block   *ScanForLabelReturn( block *blk ) {
-/*********************************************/
+static  void *ScanForLabelReturn( void *_blk ) {
+/**********************************************/
 
     block   *son;
     int     i;
+    block   *blk = _blk;
 
     if( blk->class & (RETURN|CALL_LABEL) )
         return( NULL );
@@ -290,7 +291,7 @@ static  block   *ScanForLabelReturn( block *blk ) {
         son = blk->edge[i].destination.u.blk;
         if( son->edge[0].flags & DOWN_ONE_CALL )
             continue;
-        if( SafeRecurse( (void *(*)(void *))ScanForLabelReturn, son ) == NULL )
+        if( SafeRecurseCG( ScanForLabelReturn, son ) == NULL )
             return( NULL );
     }
     return( blk );

@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
-#include "stackok.h"
+#include "stack.h"
 #include "data.h"
 
 extern  instruction_id  Renumber( void );
@@ -158,7 +158,7 @@ static  pointer MarkVisited( pointer bl )
     blk->class |= BLOCK_VISITED;
     for( i = 0; i < blk->targets; ++i ) {
         if( blk->edge[ i ].destination.u.blk->class & BLOCK_VISITED ) continue;
-        SafeRecurse( MarkVisited, blk->edge[ i ].destination.u.blk );
+        SafeRecurseCG( MarkVisited, blk->edge[ i ].destination.u.blk );
     }
     blk->prev_block = BlockList;
     BlockList = blk;

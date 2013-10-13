@@ -47,6 +47,7 @@
 #include "feprotos.h"
 #include "cgmem.h"
 #include "utils.h"
+#include "stack.h"
 
 #include "stubdata.h"
 
@@ -54,7 +55,6 @@ extern  void            DumpTree(n *);
 extern  void            BECloseFiles();
 extern  void            exit(int);
 extern  void            Action(char * str, ... );
-extern  pointer         SafeRecurse(pointer(*)(),pointer);
 
 extern  char    *EnvVar( char *env ) {
 //====================================
@@ -836,8 +836,8 @@ extern  char   *CFCnvFS( cfloat *f, char *buffer, int maxlen ) {
     return( buffer );
 }
 
-pointer SafeRecurse( pointer (* rtn)(), pointer arg ) {
-/*****************************************************/
+void *SafeRecurseCG( func_sr rtn, void *arg ) {
+/*********************************************/
 
     return( rtn( arg ) );
 }

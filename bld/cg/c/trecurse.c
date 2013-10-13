@@ -34,9 +34,9 @@
 #include "dump.h"
 #include "data.h"
 #include "makeins.h"
+#include "stack.h"
 
 extern  bool            SideEffect(instruction*);
-extern  pointer         SafeRecurse(pointer(*)(),pointer);
 extern  name            *AllocTemp(type_class_def );
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction *,instruction *);
@@ -220,17 +220,18 @@ static bool SafePath( instruction *ins )
     return( TRUE );
 }
 
-static pointer SafeBlock( block *blk )
-/*********************************************************
+static void *SafeBlock( void *_blk )
+/***********************************
     Return blk if the given block, and all reachable blocks,
     are safe to ignore for purposes of eliminating tail recursion,
     We abuse a pointer as a boolean variable because that is
-    what SafeRecurse wants.
+    what SafeRecurseCG wants.
 */
 {
     int         i;
     block       *dest;
     block       *safe;
+    block       *blk = _blk;
 
     if( blk->class & BLOCK_MARKED ) return( NULL );
     blk->class |= BLOCK_MARKED;
@@ -239,7 +240,7 @@ static pointer SafeBlock( block *blk )
         safe = blk;
         for( i = 0; i < blk->targets; i++ ) {
             dest = blk->edge[ i ].destination.u.blk;
-            if( SafeRecurse( SafeBlock, dest ) == NULL ) {
+            if( SafeRecurseCG( SafeBlock, dest ) == NULL ) {
                 safe = NULL;
                 break;
             }

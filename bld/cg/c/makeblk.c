@@ -40,6 +40,7 @@
 #include "data.h"
 #include "feprotos.h"
 #include "utils.h"
+#include "stack.h"
 
 extern  void            TellBeginExecutions(void);
 extern  void            FreeNames(void);
@@ -50,7 +51,6 @@ extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def
 extern  type_class_def  TypeClass(type_def*);
 extern  void            NamesCrossBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);
-extern  pointer         SafeRecurse( pointer (* rtn)(), pointer arg );
 extern  void            SaveToTargProc(void);
 extern  void            RestoreFromTargProc(void);
 extern  void            InitTargProc(void);
@@ -356,8 +356,8 @@ extern  void    FixEdges( void )
 
 static code_lbl *LinkReturnsParms[ 2 ];
 
-static  pointer  LinkReturns( void )
-/**********************************/
+static void *LinkReturns( void *arg )
+/***********************************/
 {
     block               *blk;
     int                 i;
@@ -369,8 +369,8 @@ static  pointer  LinkReturns( void )
     to_search = LinkReturnsParms[ 1 ];
     blk = FindBlockWithLbl( to_search );
 //    found = FALSE;
-    if( blk == NULL ) return( (pointer)FALSE );
-    if( blk->class & BLOCK_VISITED ) return( (pointer)TRUE );
+    if( blk == NULL ) return( (void *)FALSE );
+    if( blk->class & BLOCK_VISITED ) return( (void *)TRUE );
     if( blk->class & LABEL_RETURN ) {
         i = blk->targets;
         for( ;; ) {
@@ -389,21 +389,21 @@ static  pointer  LinkReturns( void )
             if( blk->next_block == NULL ) return( (pointer)FALSE );
             LinkReturnsParms[ 0 ] = link_to;
             LinkReturnsParms[ 1 ] = blk->next_block->label;
-            if( SafeRecurse( LinkReturns, NULL ) == (pointer)FALSE ) {
-                return( (pointer)FALSE );
+            if( SafeRecurseCG( LinkReturns, NULL ) == (void *)FALSE ) {
+                return( (void *)FALSE );
             }
         } else {
             i = blk->targets;
             while( --i >= 0 ) {
                 LinkReturnsParms[ 0 ] = link_to;
                 LinkReturnsParms[ 1 ] = blk->edge[ i ].destination.u.lbl;
-                if( SafeRecurse( LinkReturns, NULL ) == (pointer)FALSE ) {
-                    return( (pointer)FALSE );
+                if( SafeRecurseCG( LinkReturns, NULL ) == (void *)FALSE ) {
+                    return( (void *)FALSE );
                 }
             }
         }
     }
-    return( (pointer)TRUE );
+    return( (void *)TRUE );
 }
 
 extern  bool        FixReturns( void )
@@ -422,7 +422,7 @@ extern  bool        FixReturns( void )
             blk->next_block->class |= RETURNED_TO;
             LinkReturnsParms[ 0 ] = blk->next_block->label;
             LinkReturnsParms[ 1 ] = blk->edge[ 0 ].destination.u.lbl;
-            if( !LinkReturns() ) {
+            if( !LinkReturns( NULL ) ) {
                 return( FALSE );
             }
             other_blk = HeadBlock;

@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "stackok.h"
 #include "zoiks.h"
 #include "data.h"
 

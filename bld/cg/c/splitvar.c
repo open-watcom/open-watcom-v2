@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "stackok.h"
 #include "stack.h"
 #include "data.h"
 
@@ -206,7 +205,7 @@ static  pointer MarkInstance( pointer bl )
         while( edge != NULL ) {
             bitp = &edge->source->dataflow->out;
             if( _GBitOverlap( *bitp, Id ) ) {
-                SafeRecurse( MarkInstance, edge->source );
+                SafeRecurseCG( MarkInstance, edge->source );
             }
             edge = edge->next_source;
         }
@@ -217,7 +216,7 @@ static  pointer MarkInstance( pointer bl )
         while( --i >= 0 ) {
             bitp = &edge->destination.u.blk->dataflow->in;
             if( _GBitOverlap( *bitp, Id ) ) {
-                SafeRecurse( MarkInstance, edge->destination.u.blk );
+                SafeRecurseCG( MarkInstance, edge->destination.u.blk );
             }
             ++edge;
         }

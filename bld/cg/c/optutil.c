@@ -30,7 +30,7 @@
 
 
 #include "optwif.h"
-#include "stackok.h"
+#include "stack.h"
 
 extern  void            MultiLineNums(ins_entry*);
 extern  void            DelLblRef(ins_entry*);
@@ -235,7 +235,7 @@ extern  ins_entry       *DelInstr( ins_entry *old ) {
 /***************************************************/
 
     if( _Class( old ) != OC_DEAD ) {
-        return( SafeRecurse( DelInstr_Helper, old ) );
+        return( SafeRecurseCG( DelInstr_Helper, old ) );
     }
     return( ValidIns( old->ins.next ) );
 }

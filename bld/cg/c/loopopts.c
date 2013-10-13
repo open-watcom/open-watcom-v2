@@ -35,7 +35,7 @@
 #include "indvars.h"
 #include "cgmem.h"
 #include "cfloat.h"
-#include "stackok.h"
+#include "stack.h"
 #include "zoiks.h"
 #include "i64.h"
 #include "data.h"
@@ -834,7 +834,7 @@ static  pointer CopyInvariant( pointer invari )
         new->name = invar->name;
         new->times = invar->times;
         new->id = invar->id;
-        new->next = SafeRecurse( CopyInvariant, invar->next );
+        new->next = SafeRecurseCG( CopyInvariant, invar->next );
     }
     return( new );
 }
@@ -1941,7 +1941,7 @@ static  pointer MarkDown( pointer bl ) {
     if( !( blk->class & BLOCK_WILL_EXECUTE ) ) return NULL;
     blk->class &= ~BLOCK_WILL_EXECUTE;
     for( i = blk->targets-1; i >= 0; --i ) {
-        SafeRecurse( MarkDown, blk->edge[i].destination.u.blk );
+        SafeRecurseCG( MarkDown, blk->edge[i].destination.u.blk );
     }
     return NULL;
 }

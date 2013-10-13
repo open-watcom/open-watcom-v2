@@ -38,7 +38,6 @@
 #include "indvars.h"
 #include "cgmem.h"
 #include "cfloat.h"
-#include "stackok.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "data.h"
