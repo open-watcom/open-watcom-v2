@@ -20,12 +20,12 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-testftor.$(exe) : testftor.obj assert.obj
-
-test : .symbolic clean start_test test.lnk testftor.$(exe)
-    diff exec.out jam.chk
+test : .symbolic start clean start_test test.lnk testftor.$(exe)
+    diff $(%ERROR_FILE) jam.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
+
+testftor.$(exe) : testftor.obj assert.obj
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

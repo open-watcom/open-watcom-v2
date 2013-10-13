@@ -66,7 +66,7 @@ stack_i86 = opt stack=12k
 .c: source
 .p: source
 
-test : .symbolic clean start_test $(positive_exes) ./chk_exec.exe
+test : .symbolic start clean start_test $(positive_exes) ./chk_exec.exe
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
     %write $(%ERROR_FILE) OK

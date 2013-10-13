@@ -22,13 +22,13 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-bitset.$(exe) : bitset.obj tbitset.obj
-    
-test : .symbolic clean start_test test.lnk bitset.$(exe)
-    diff exec.out bitset.chk
+test : .symbolic start clean start_test test.lnk bitset.$(exe)
+    diff $(%ERROR_FILE) bitset.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
+bitset.$(exe) : bitset.obj tbitset.obj
+    
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
     @set ERROR_FILE=exec.out

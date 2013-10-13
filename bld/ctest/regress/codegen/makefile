@@ -78,7 +78,7 @@ test_flags_386 += $(add_br_$(no_br_$^*))
 
 .c: source
 
-test : .symbolic clean start_test $(codegen_exes) ./chk_exec.exe
+test : .symbolic start clean start_test $(codegen_exes) ./chk_exec.exe
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
     %write $(%ERROR_FILE) OK
@@ -89,8 +89,8 @@ test : .symbolic clean start_test $(codegen_exes) ./chk_exec.exe
 
 start_test : .symbolic test.lnk
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-    %create exec.out
-    @set error_file=exec.out
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav

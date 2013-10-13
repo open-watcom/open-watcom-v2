@@ -33,16 +33,16 @@ extra_run_demo = <demo.in
 # don't use it for i86 target
 #
 
-demo.$(exe) : demo.obj tempbuf.obj
-
 !ifeq arch i86
-test : .symbolic clean start_test
+test : .symbolic start clean start_test
 !else
-test : .symbolic clean start_test test.lnk demo.$(exe)
-    diff exec.out demo.chk
+test : .symbolic start clean start_test test.lnk demo.$(exe)
+    diff $(%ERROR_FILE) demo.chk
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
+
+demo.$(exe) : demo.obj tempbuf.obj
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm -f s$(arch)_$(alt_error).sav

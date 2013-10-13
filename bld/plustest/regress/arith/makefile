@@ -56,16 +56,8 @@ exes = &
     rsa.$(exe)      &
     waste.$(exe)
 
-dmc.$(exe) : dmc.obj
-    $(linker) @test.lnk NAME $@ FILE $[@
-    @%append exec.out --------$^*--------
-    tr -d "\r" <dmc.cpp >dmctest.out
-    $(run) $(exec_prefix)$@ c dmctest.out dmc.out >>exec.out
-    $(run) $(exec_prefix)$@ d dmc.out cpp.out >>exec.out
-    diff -b cpp.out dmctest.out >>exec.out
-
-test : .symbolic clean start_test test.lnk $(exes)
-    diff exec.out test.chk
+test : .symbolic start clean start_test test.lnk $(exes)
+    diff $(%ERROR_FILE) test.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
@@ -73,6 +65,14 @@ start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
     @set ERROR_FILE=exec.out
     %create $(%ERROR_FILE)
+
+dmc.$(exe) : dmc.obj
+    $(linker) @test.lnk NAME $@ FILE $[@
+    @%append $(%ERROR_FILE) --------$^*--------
+    tr -d "\r" <dmc.cpp >dmctest.out
+    $(run) $(exec_prefix)$@ c dmctest.out dmc.out >>$(%ERROR_FILE)
+    $(run) $(exec_prefix)$@ d dmc.out cpp.out >>$(%ERROR_FILE)
+    diff -b cpp.out dmctest.out >>$(%ERROR_FILE)
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav

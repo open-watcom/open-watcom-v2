@@ -56,8 +56,8 @@ opt_link = LIBRARY ../cool.lib
 
 .c : .;..
 
-test : .symbolic clean start_test ../cool.lib test.lnk $(exes)
-    diff exec.out exec.chk
+test : .symbolic start clean start_test ../cool.lib test.lnk $(exes)
+    diff $(%ERROR_FILE) exec.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

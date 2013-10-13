@@ -41,14 +41,14 @@ exes = &
     justify.$(exe) &
     spltest.$(exe)
 
+test : .symbolic start clean start_test test.lnk $(exes)
+    diff $(%ERROR_FILE) exec.chk
+    %append $(log_file) PASS $(%__CWD__)
+    @%make clean
+
 spltest.$(exe) : spltest.obj splash.obj regex.obj
 splassoc.$(exe) : splassoc.obj splash.obj regex.obj
 justify.$(exe) : justify.obj splash.obj regex.obj
-
-test : .symbolic clean start_test test.lnk $(exes)
-    diff exec.out exec.chk
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

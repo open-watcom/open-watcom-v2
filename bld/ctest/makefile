@@ -26,7 +26,9 @@ inline_tests   = $(gr3)
 
 !include testenv.mif
 
-test : .symbolic clean start_test cd_regress $(test_grp_list) cd_back ./chktest.exe
+test : .symbolic start clean start_test cd_regress $(test_grp_list) cd_back ./chktest.exe
+    @set ERROR_FILE=error.out
+    @set ERROR_MSG=
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     @%append $(log_file) TEST

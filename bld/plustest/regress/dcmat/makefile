@@ -32,8 +32,8 @@ opt_link = LIBRARY matrix.lib
 
 exes = test.$(exe) tmatrix.$(exe)
 
-test : .symbolic clean start_test matrix.lib test.lnk $(exes)
-    diff exec.out test.chk
+test : .symbolic start clean start_test matrix.lib test.lnk $(exes)
+    diff $(%ERROR_FILE) test.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

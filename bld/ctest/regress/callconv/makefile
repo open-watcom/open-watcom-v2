@@ -61,7 +61,7 @@ test_flags_386 += $(add_br_$(no_br_$^*))
 
 .c: source
 
-test : .symbolic clean start_test $(callconv_exes) ./chk_exec.exe
+test : .symbolic start clean start_test $(callconv_exes) ./chk_exec.exe
     @set ERROR_MSG=symbol name failure
     diff -b $(%RUN_FILE) sym$(arch)$(alt_error).chk
     @set ERROR_FILE=error.out

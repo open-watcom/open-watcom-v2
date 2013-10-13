@@ -6,7 +6,9 @@ all_tests = test1 test2 test3 ideal diag
 
 !include testenv.mif
 
-test : .symbolic clean start_test $(all_tests) ./chktest.exe
+test : .symbolic start clean start_test $(all_tests) ./chktest.exe
+    @set ERROR_FILE=error.out
+    @set ERROR_MSG=
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     %append $(log_file) TEST

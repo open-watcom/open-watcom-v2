@@ -28,8 +28,8 @@ stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
-test : .symbolic clean start_test test.lnk $(exes)
-    diff exec.out nullptr.chk
+test : .symbolic start clean start_test test.lnk $(exes)
+    diff $(%ERROR_FILE) nullptr.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

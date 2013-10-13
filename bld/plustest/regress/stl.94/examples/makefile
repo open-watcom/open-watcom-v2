@@ -31,11 +31,11 @@ opt_link = FILE tempbuf.obj, random.obj
 
 !include stl_test.mif
 
-test : .symbolic clean start_test test.lnk tempbuf.obj random.obj $(tests)
+test : .symbolic start clean start_test test.lnk tempbuf.obj random.obj $(tests)
 !ifeq arch i86
-    diff exec.out execi86.chk
+    diff $(%ERROR_FILE) execi86.chk
 !else
-    diff exec.out exec.chk
+    diff $(%ERROR_FILE) exec.chk
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean

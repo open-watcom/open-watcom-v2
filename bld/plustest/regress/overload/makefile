@@ -122,7 +122,7 @@ stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
-test : .symbolic clean start_test test.lnk $(exes)
+test : .symbolic start clean start_test test.lnk $(exes)
 !ifeq arch i86
     # There are certain unavoidable differences between 16-bit and
     # 32-bit platforms, causing slightly different (but valid) results

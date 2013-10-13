@@ -56,14 +56,19 @@ extra_run_wordcnt = <test/wordcnt.cpp
 .c : test;base;io
 .cpp : test;base;io
 
+test : .symbolic start clean start_test base.lib io.lib test.lnk $(exes)
+    diff $(%ERROR_FILE) test.chk
+    %append $(log_file) PASS $(%__CWD__)
+    @%make clean
+
 dkbtrtst.$(exe) : dkbtrtst.obj
     @set ERROR_MSG=*** failure to link $^&
     $(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    $(run) $(exec_prefix)$@ >>exec.out
+    $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
-    $(run) $(exec_prefix)$@ >>exec.out
+    $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
 
 perstest.$(exe) : perstest.obj
@@ -71,15 +76,10 @@ perstest.$(exe) : perstest.obj
     $(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    $(run) $(exec_prefix)$@ >>exec.out
+    $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
-    $(run) $(exec_prefix)$@ >>exec.out
+    $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
-
-test : .symbolic clean start_test base.lib io.lib test.lnk $(exes)
-    diff exec.out test.chk
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

@@ -68,11 +68,11 @@ opt_link = LIBRARY ../cool.lib
 
 .c : .;..
 
-test : .symbolic clean start_test ../cool.lib test.lnk $(exes)
+test : .symbolic start clean start_test ../cool.lib test.lnk $(exes)
 !ifeq arch i86
-    diff exec.out testi86.chk
+    diff $(%ERROR_FILE) testi86.chk
 !else
-    diff exec.out test.chk
+    diff $(%ERROR_FILE) test.chk
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean

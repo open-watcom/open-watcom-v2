@@ -88,6 +88,15 @@ stack_i86 = op stack=12k
 
 .c: source
 
+test : .symbolic start clean start_test test.lnk $(positive_exes) ./chk_exec.exe
+    @set ERROR_FILE=error.out
+    @set ERROR_MSG=failure to complete test stream
+    %write $(%ERROR_FILE) OK
+    $]@ exec.out >>$(%ERROR_FILE)
+    diff -b $(%ERROR_FILE) error.chk
+    %append $(log_file) PASS $(%__CWD__)
+    @%make clean
+
 link3.exe : link3.obj link3b.obj
 link4.exe : link4.obj link4b.obj
 link5.exe : link5.obj link5b.obj
@@ -102,15 +111,6 @@ fnstat1.exe : fnstat1.obj fnstat1b.obj
 exc01.exe : exc01.obj exc01b.obj
 cltemp21.exe : cltemp21.obj cltmp21b.obj
 friend4.exe : friend4.obj friend4b.obj
-
-test : .symbolic clean start_test test.lnk $(positive_exes) ./chk_exec.exe
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=failure to complete test stream
-    %write $(%ERROR_FILE) OK
-    $]@ exec.out >>$(%ERROR_FILE)
-    diff -b $(%ERROR_FILE) error.chk
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

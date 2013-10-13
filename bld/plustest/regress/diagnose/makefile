@@ -31,7 +31,7 @@ dosystest = testsys
     -$(wpp_$(arch)) $[@ $(diagnose_opts) -na $(opt_$^&) $(archdep_opts) -fo=.obj
     @if not exist $^&.ser %write $^&.ser I did not generate errors for $^&
 
-test : .symbolic clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special
+test : .symbolic start clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

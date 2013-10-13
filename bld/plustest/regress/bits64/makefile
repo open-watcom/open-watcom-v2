@@ -26,8 +26,8 @@ stack_axp=opt stack=8k
 
 .cpp: ../bits
 
-test : .symbolic clean start_test test.lnk tbits.$(exe)
-    diff exec.out ../bits/tbits.chk
+test : .symbolic start clean start_test test.lnk tbits.$(exe)
+    diff $(%ERROR_FILE) ../bits/tbits.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

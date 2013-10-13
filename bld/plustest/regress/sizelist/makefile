@@ -20,8 +20,8 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-test : .symbolic clean start_test test.lnk psfistt.$(exe)
-    diff exec.out psfistt.chk
+test : .symbolic start clean start_test test.lnk psfistt.$(exe)
+    diff $(%ERROR_FILE) psfistt.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

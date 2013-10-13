@@ -27,15 +27,15 @@ exes = &
     perlasso.$(exe) &
     tstio.$(exe)
 
+test : .symbolic start clean start_test test.lnk $(exes)
+    cat t2.out >>$(%ERROR_FILE)
+    diff $(%ERROR_FILE) exec.chk
+    %append $(log_file) PASS $(%__CWD__)
+    @%make clean
+
 perltest.$(exe) : perltest.obj perlclas.obj regex.obj
 perlasso.$(exe) : perlasso.obj perlclas.obj regex.obj
 tstio.$(exe) : tstio.obj perlclas.obj regex.obj
-
-test : .symbolic clean start_test test.lnk $(exes)
-    cat t2.out >>exec.out
-    diff exec.out exec.chk
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

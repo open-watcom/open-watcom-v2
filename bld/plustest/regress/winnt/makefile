@@ -21,19 +21,19 @@ test_flags += -w0 -I"$(%WATCOM)/h/nt"
 stack_386 = op stack=128k
 
 !ifndef __NT__
-test : .symbolic clean start_test
+test : .symbolic start clean start_test
 !else ifeq arch i86
-test : .symbolic clean start_test
+test : .symbolic start clean start_test
 !else ifeq targ_env_386 wnt386
-test : .symbolic clean start_test tomdll.dll test.lnk tomexe.$(exe)
-    cat tomexe.out >>exec.out
-    diff exec.out exec.chk
+test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe)
+    cat tomexe.out >>$(%ERROR_FILE)
+    diff $(%ERROR_FILE) exec.chk
 !else ifdef __NT386__
-test : .symbolic clean start_test
+test : .symbolic start clean start_test
 !else
-test : .symbolic clean start_test tomdll.dll test.lnk tomexe.$(exe)
-    cat tomexe.out >>exec.out
-    diff exec.out exec.chk
+test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe)
+    cat tomexe.out >>$(%ERROR_FILE)
+    diff $(%ERROR_FILE) exec.chk
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean

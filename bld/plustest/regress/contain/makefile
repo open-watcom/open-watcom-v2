@@ -218,7 +218,7 @@ exes = $(wc_list_template) $(wc_vect_template) $(wc_hash_template) &
 
 .cpp : source
 
-test : .symbolic clean start_test memchk.obj test.lnk $(exes)
+test : .symbolic start clean start_test memchk.obj test.lnk $(exes)
     @set ERROR_MSG=*** output differences
     diff $(%ERROR_FILE) exec.chk
     %append $(log_file) PASS $(%__CWD__)

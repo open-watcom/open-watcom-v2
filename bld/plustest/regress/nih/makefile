@@ -59,7 +59,7 @@ test_flags_386 = -mf
 test_flags_i86 = -ml
 test_flags_axp =
 
-test : .symbolic clean start_test $(objs)
+test : .symbolic start clean start_test $(objs)
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

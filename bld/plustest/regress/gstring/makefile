@@ -20,12 +20,12 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-strtest.$(exe) : strtest.obj string.obj strngrep.obj
-
-test : .symbolic clean start_test test.lnk strtest.$(exe)
+test : .symbolic start clean start_test test.lnk strtest.$(exe)
     diff $(%ERROR_FILE) strtest.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
+
+strtest.$(exe) : strtest.obj string.obj strngrep.obj
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

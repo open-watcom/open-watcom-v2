@@ -8,22 +8,22 @@ alt_error=00
 testcomp =  $(wpp_$(arch))
 
 .c.i:
-    %append exec.out @@@ $^@ @@@
+    %append $(%ERROR_FILE) @@@ $^@ @@@
     $(testcomp) $[@ -w0 -pl -fo=.i -na
-    cat exec.out $^@ >tmp_exec.out
-    cp tmp_exec.out exec.out
+    cat $(%ERROR_FILE) $^@ >tmp_exec.out
+    cp tmp_exec.out $(%ERROR_FILE)
 
 .c.i1:
-    %append exec.out @@@ $^@ @@@
+    %append $(%ERROR_FILE) @@@ $^@ @@@
     $(testcomp) $[@ -w0 -plc -fo=.i1 -na
-    cat exec.out $^@ >tmp_exec.out
-    cp tmp_exec.out exec.out
+    cat $(%ERROR_FILE) $^@ >tmp_exec.out
+    cp tmp_exec.out $(%ERROR_FILE)
 
 .c.i0:
-    %append exec.out @@@ $^@ @@@
+    %append $(%ERROR_FILE) @@@ $^@ @@@
     $(testcomp) $[@ -w0 -pl -pw=0 -fo=.i0 -na
-    cat exec.out $^@ >tmp_exec.out
-    cp tmp_exec.out exec.out
+    cat $(%ERROR_FILE) $^@ >tmp_exec.out
+    cp tmp_exec.out $(%ERROR_FILE)
 
 all_tests = &
     pp01.i &
@@ -46,8 +46,8 @@ all_tests = &
     pp17.i1 &
 
 
-test : .symbolic clean start_test $(all_tests)
-    diff exec.out exec.chk
+test : .symbolic start clean start_test $(all_tests)
+    diff $(%ERROR_FILE) exec.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

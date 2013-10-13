@@ -38,14 +38,14 @@ extra_run_test3 = 1000 1000
 
 exes = test1.$(exe) test2.$(exe) test3.$(exe)
 
+test : .symbolic start clean start_test test.lnk $(exes)
+    diff $(%ERROR_FILE) test.chk
+    %append $(log_file) PASS $(%__CWD__)
+    @%make clean
+
 test1.$(exe) : test1.obj field.obj
 test2.$(exe) : test2.obj field.obj
 test3.$(exe) : test3.obj field.obj
-
-test : .symbolic clean start_test test.lnk $(exes)
-    diff exec.out test.chk
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

@@ -68,15 +68,15 @@ wmsgdlg.obj &
 wwinmain.obj
 
 !ifeq arch i86
-test : .symbolic clean start_test test.$(exe)
+test : .symbolic start clean start_test test.$(exe)
 !else ifeq arch 386
 !ifeq targ_env_386 wnt386
-test : .symbolic clean start_test test.$(exe)
+test : .symbolic start clean start_test test.$(exe)
 !else
-test : .symbolic clean start_test
+test : .symbolic start clean start_test
 !endif
 !else
-test : .symbolic clean start_test
+test : .symbolic start clean start_test
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean

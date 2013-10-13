@@ -1,10 +1,10 @@
 ctest_name = regress
 
-all : .symbolic test
-
 !include testenv.mif
 
 test : .symbolic ./chktest.exe
+    @set ERROR_FILE=error.out
+    @set ERROR_MSG=
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     %make clean

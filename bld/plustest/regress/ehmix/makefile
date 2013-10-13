@@ -40,10 +40,10 @@ stack_axp=opt stack=64k
 # ehmix.c requires more than 64kB memory for code
 #
 !ifeq arch i86
-test : .symbolic clean start_test
+test : .symbolic start clean start_test
 !else
-test : .symbolic clean start_test test.lnk ehmix.$(exe)
-    diff exec.out $(check_file)
+test : .symbolic start clean start_test test.lnk ehmix.$(exe)
+    diff $(%ERROR_FILE) $(check_file)
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean

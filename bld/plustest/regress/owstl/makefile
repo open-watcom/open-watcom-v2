@@ -96,6 +96,17 @@ opt_mmwindef += -3
 
 test_flags = -e1000
 
+# the main target to run the test suite
+
+!ifeq arch i86
+test : .symbolic start clean start_test
+!else
+test : .symbolic start clean start_test test.lnk $(exes)
+    diff $(%ERROR_FILE) test.chk
+!endif
+    %append $(log_file) PASS $(%__CWD__)
+    @%make clean
+
 # this is my laziness bit...
 $(names) : test.lnk .symbolic
     @%make $^*.obj
@@ -105,19 +116,8 @@ $(names) : test.lnk .symbolic
 
 !ifdef __OS2__
 mmwindef.$(exe): .symbolic
-    @%append exec.out ----------$^*----------
+    @%append $(%ERROR_FILE) ----------$^*----------
 !endif
-
-# the main target environment.mif calls to run the test suite
-
-!ifeq arch i86
-test : .symbolic clean start_test
-!else
-test : .symbolic clean start_test test.lnk $(exes)
-    diff exec.out test.chk
-!endif
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

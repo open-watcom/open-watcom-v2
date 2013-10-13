@@ -79,8 +79,8 @@ stderr_check_386 = 2>>stderr.out
 !endif
 stderr_check_axp = 2>>stderr.out
 
-test : .symbolic clean start_test $(batch_sym) test.lnk $(exes)
-    diff exec.out exec.chk
+test : .symbolic start clean start_test $(batch_sym) test.lnk $(exes)
+    diff $(%ERROR_FILE) exec.chk
 !ifdef stderr_check_$(arch)
     diff stderr.out stderr.chk
 !endif

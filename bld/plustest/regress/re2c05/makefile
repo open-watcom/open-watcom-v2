@@ -20,13 +20,13 @@ stack_axp=opt stack=16k
 
 extra_run_re2c = -b scanner.re
 
-re2c.$(exe) : re2c.obj code.obj dfa.obj memchk.obj parser.obj scanner.obj substr.obj translat.obj actions.obj
-
-test : .symbolic clean start_test test.lnk re2c.$(exe)
-    diff exec.out debug.chk | wc >wc.out
+test : .symbolic start clean start_test test.lnk re2c.$(exe)
+    diff $(%ERROR_FILE) debug.chk | wc >wc.out
     diff -b wc.out wc.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
+
+re2c.$(exe) : re2c.obj code.obj dfa.obj memchk.obj parser.obj scanner.obj substr.obj translat.obj actions.obj
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

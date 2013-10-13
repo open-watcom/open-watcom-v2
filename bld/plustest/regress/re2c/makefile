@@ -20,14 +20,14 @@ stack_axp=opt stack=16k
 
 extra_run_re2c = -d plusplus.lex
 
-re2c.$(exe) : re2c.obj code.obj dfa.obj parser.obj scanner.obj useful.obj asc2ebc.obj ebc2asc.obj getopt.obj
-
-test : .symbolic clean start_test test.lnk re2c.$(exe)
-    diff exec.out exec.chk
+test : .symbolic start clean start_test test.lnk re2c.$(exe)
+    diff $(%ERROR_FILE) exec.chk
     diff debug.out debug.chk | wc >wc.out
     diff -b wc.out wc.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
+
+re2c.$(exe) : re2c.obj code.obj dfa.obj parser.obj scanner.obj useful.obj asc2ebc.obj ebc2asc.obj getopt.obj
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

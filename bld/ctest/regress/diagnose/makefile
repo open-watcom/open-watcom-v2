@@ -16,7 +16,9 @@ alt_error=00
     -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
     @if not exist $@ %write $@ I did not generate errors for $^&
 
-test : .symbolic clean start_test diag0000.out
+test : .symbolic start clean start_test diag0000.out
+    @set ERROR_FILE=error.out
+    @set ERROR_MSG=
     -diff -b diag0000.out diag0000.chk >diff0000.out
     diff -b diff0000.out diff0000.chk
     %append $(log_file) PASS $(%__CWD__)

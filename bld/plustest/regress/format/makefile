@@ -20,13 +20,13 @@ stack_axp=opt stack=16k
 
 exes = testi.$(exe) testf.$(exe)
 
-testi.$(exe) : testi.obj iformat.obj
-testf.$(exe) : testf.obj fformat.obj
-
-test : .symbolic clean start_test test.lnk $(exes)
-    diff exec.out exec.chk
+test : .symbolic start clean start_test test.lnk $(exes)
+    diff $(%ERROR_FILE) exec.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
+
+testi.$(exe) : testi.obj iformat.obj
+testf.$(exe) : testf.obj fformat.obj
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

@@ -61,12 +61,12 @@ fflags_axp += -INCPath=source #-we-w0
 
 .for: source
 
-test : .symbolic clean start_test test.lnk $(positive_exes) ./chk_exec.exe
+test : .symbolic start clean start_test test.lnk $(positive_exes) ./chk_exec.exe
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
-    echo OK > error.out
-    $]@ exec.out >> error.out
-    diff -b error.out error.chk
+    echo OK > $(%ERROR_FILE)
+    $]@ exec.out >> $(%ERROR_FILE)
+    diff -b $(%ERROR_FILE) error.chk
     %append $(log_file) PASS $(%__CWD__)
     %make clean
 

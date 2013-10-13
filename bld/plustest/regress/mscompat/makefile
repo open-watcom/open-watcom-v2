@@ -24,11 +24,11 @@ udcnv17$(ext)
 
 .cpp.exe :
     e:\cmds\mclauto.cmd $[* 
-    $(run) $(exec_prefix)$[*.exe >> exec.out
+    $(run) $(exec_prefix)$[*.exe >> $(%ERROR_FILE)
     
 .cpp.mer :
     e:\cmds\mclauto.cmd $[* /c
-    type $[*.mer >> exec.out
+    type $[*.mer >> $(%ERROR_FILE)
 
 ext=.mer
 err_out = $+ $(files_err) $-
@@ -36,8 +36,8 @@ err_out = $+ $(files_err) $-
 ext=.exe
 comp_out = $+ $(files_comp) $-
 
-test : .symbolic clean start_test $(comp_out) $(err_out)
-    diff exec.out mscompat.chk
+test : .symbolic start clean start_test $(comp_out) $(err_out)
+    diff $(%ERROR_FILE) mscompat.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

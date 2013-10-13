@@ -884,10 +884,7 @@ librarian = wlib $(lib_any) -n -b
 !  endif
 !endif
 
-first_target : .SYMBOLIC start test
-    @%null
-
-start : .SYMBOLIC
+start : .SYMBOLIC .EXPLICIT
 !ifdef dll_loaded
 !  ifdef wasmtest_name
 !  else ifdef ctest_name
@@ -902,7 +899,7 @@ start : .SYMBOLIC
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     %append $(log_file) TEST $(arch)/$(alt_error)
 
-test.lnk : $(__MAKEFILES__)
+test.lnk : $(__MAKEFILES__) .EXPLICIT
     %create $@
     @%append $@ $(targ_ldb_$(targ_env_$(arch)))
     @%append $@ $(targ_lnk_$(targ_env_$(arch)))
@@ -1023,15 +1020,15 @@ test.lnk : $(__MAKEFILES__)
     diff $*.out expected/$*.chk >> exec.out
 !endif
 
-./chk_exec.exe : $(watcom_dir)/c/chk_exec.c
+./chk_exec.exe : $(watcom_dir)/c/chk_exec.c .EXPLICIT
     $(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<
 
-./chktest.exe : $(watcom_dir)/c/chktest.c
+./chktest.exe : $(watcom_dir)/c/chktest.c .EXPLICIT
     $(bld_cl) $(bld_cl_opts) $<
 
-./catfile.exe: $(watcom_dir)/c/catfile.c
+./catfile.exe: $(watcom_dir)/c/catfile.c .EXPLICIT
     $(bld_cl) $(bld_cl_opts) $<
 
-common_clean : .PROCEDURE
+common_clean : .PROCEDURE .EXPLICIT
     -rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
     -rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res

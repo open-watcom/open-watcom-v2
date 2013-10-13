@@ -18,7 +18,7 @@ objs = &
     getlongo.obj &
     readme.obj
 
-test : .symbolic clean start_test ./opt.$(exe)
+test : .symbolic start clean start_test ./opt.$(exe)
     diff $(%ERROR_FILE) opt.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean

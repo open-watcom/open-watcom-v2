@@ -22,8 +22,8 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-test : .symbolic clean start_test test.lnk tbits.$(exe)
-    diff exec.out tbits.chk
+test : .symbolic start clean start_test test.lnk tbits.$(exe)
+    diff $(%ERROR_FILE) tbits.chk
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 

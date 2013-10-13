@@ -38,10 +38,10 @@ exes = $(oopacks) $(stepanovs)
 # "too fast" and finish at "zero" execution time.
 
 !ifeq arch i86
-test : .symbolic clean start_test
+test : .symbolic start clean start_test
 !else
-test : .symbolic clean start_test test.lnk $(exes)
-    diff exec.out stepanov.chk
+test : .symbolic start clean start_test test.lnk $(exes)
+    diff $(%ERROR_FILE) stepanov.chk
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean

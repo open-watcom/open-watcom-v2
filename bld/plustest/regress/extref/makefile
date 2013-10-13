@@ -51,9 +51,7 @@ opt_link_er03 = LIB er03.lib
 
 exes = er01.$(exe) er02.$(exe) er03.$(exe)
 
-er02.$(exe) : er02.obj er02b.obj
-
-test : .symbolic clean start_test test.lnk er01.lib er03.lib $(exes) ./chk_exec.exe
+test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) ./chk_exec.exe
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
     %write $(%ERROR_FILE) OK
@@ -61,6 +59,8 @@ test : .symbolic clean start_test test.lnk er01.lib er03.lib $(exes) ./chk_exec.
     diff -b $(%ERROR_FILE) error.chk
     %append $(log_file) PASS $(%__CWD__)
     %make clean
+
+er02.$(exe) : er02.obj er02b.obj
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
