@@ -122,7 +122,7 @@
 #define EPS      2.22E-16
 #define FRTBIG   2.25E76
 
-_WMRTLINK double lgamma(double x)
+_WMRTLINK double lgamma_r(double x, int *sign)
 {
 double y;
 double res;
@@ -245,7 +245,13 @@ double xden, xnum;
         res = XINF;
 
     /* Set the sign parameter before leaving */
-    signgam = signbit(sin(-PI*x)) == 0 ? 1 : -1;
+    if(sign != NULL)
+	*sign = signbit(sin(-PI*x)) == 0 ? 1 : -1;
     
     return res;
+}
+
+_WMRTLINK double lgamma(double x)
+{
+    return lgamma_r(x, &signgam);
 }
