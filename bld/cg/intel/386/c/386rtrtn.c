@@ -74,53 +74,53 @@ rtn_info RTInfo[] = {
 
 static call_class       rt_cclass = 0;
 
-static  byte_seq Scn1 = {
-                        2, FALSE,
-                       {0xF2,                   /*       repne     */
-                        0xAE}                   /*       scasb     */
-                        };
+static  struct STRUCT_byte_seq( 2 ) Scn1 = {
+     2, FALSE,
+    {0xF2,           /*       repne     */
+     0xAE}           /*       scasb     */
+};
 
-static  byte_seq Scn1ES = {
-                        6, FALSE,
-                       {0x06,                   /*      push    es */
-                        0x0e,                   /*      push    cs */
-                        0x07,                   /*      pop     es */
-                        0xF2,                   /*      repne      */
-                        0xAE,                   /*      scasb      */
-                        0x07}                   /*      pop     es */
-                        };
+static  struct STRUCT_byte_seq( 6 ) Scn1ES = {
+     6, FALSE,
+    {0x06,          /*      push    es  */
+     0x0e,          /*      push    cs  */
+     0x07,          /*      pop     es  */
+     0xF2,          /*      repne       */
+     0xAE,          /*      scasb       */
+     0x07}          /*      pop     es  */
+};
 
-static  byte_seq Scn2 = {            /* or Scn4 in USE16 */
-                        3, FALSE,
-                       {0xF2,                   /*       repne     */
-                        0x66, 0xAF}             /*       scasw     */
-                        };
+static  struct STRUCT_byte_seq( 3 ) Scn2 = {    /* or Scn4 in USE16 */
+     3, FALSE,
+    {0xF2,          /*      repne       */
+     0x66, 0xAF}    /*      scasw       */
+};
 
-static  byte_seq Scn2ES = {          /* or Scn4 in USE16 */
-                        7, FALSE,
-                       {0x06,                   /*      push    es */
-                        0x0e,                   /*      push    cs */
-                        0x07,                   /*      pop     es */
-                        0xF2,                   /*      repne      */
-                        0x66, 0xAF,             /*      scasw      */
-                        0x07}                   /*      pop     es */
-                        };
+static  struct STRUCT_byte_seq( 7 ) Scn2ES = {  /* or Scn4 in USE16 */
+     7, FALSE,
+    {0x06,          /*      push    es  */
+     0x0e,          /*      push    cs  */
+     0x07,          /*      pop     es  */
+     0xF2,          /*      repne       */
+     0x66, 0xAF,    /*      scasw       */
+     0x07}          /*      pop     es  */
+};
 
-static  byte_seq Scn4 = {            /* or Scn2 in USE16 */
-                        2, FALSE,
-                       {0xF2,                   /*       repne     */
-                        0xAF}                   /*       scasd     */
-                        };
+static  struct STRUCT_byte_seq( 2 ) Scn4 = {    /* or Scn2 in USE16 */
+     2, FALSE,
+    {0xF2,          /*      repne       */
+     0xAF}          /*      scasd       */
+};
 
-static  byte_seq Scn4ES = {          /* or Scn2 in USE16 */
-                        6, FALSE,
-                       {0x06,                   /*      push    es */
-                        0x0e,                   /*      push    cs */
-                        0x07,                   /*      pop     es */
-                        0xF2,                   /*      repne      */
-                        0xAF,                   /*      scasd      */
-                        0x07}                   /*      pop     es */
-                        };
+static  struct STRUCT_byte_seq( 6 ) Scn4ES = {  /* or Scn2 in USE16 */
+     6, FALSE,
+    {0x06,          /*      push    es  */
+     0x0e,          /*      push    cs  */
+     0x07,          /*      pop     es  */
+     0xF2,          /*      repne       */
+     0xAF,          /*      scasd       */
+     0x07}          /*      pop     es  */
+};
 
 
 extern  char    *AskRTName( rt_class rtindex )

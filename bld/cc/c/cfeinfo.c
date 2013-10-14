@@ -114,7 +114,7 @@ static char *VarParmFuncs[] = {
 
 extern byte_seq     *FlatAlternates[];
 
-static byte_seq FinallyCode = { 
+static struct STRUCT_byte_seq( 1 ) FinallyCode = { 
     1, FALSE, { 0xc3 }   /* ret */
 };
 
@@ -123,7 +123,7 @@ static hw_reg_set TryFiniParms[] = {
     HW_D( HW_EMPTY )
 };
 
-static byte_seq TryFiniCode = { 
+static struct STRUCT_byte_seq( 6 ) TryFiniCode = { 
     6, FALSE, { 0x64, 0xA3, 0, 0, 0, 0 }  /* mov fs:[0],eax */
 };
 
@@ -417,12 +417,12 @@ aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
         return( &STOSBInfo );
     } else if( sym_handle == SymFinally ) {
         InlineInfo = WatcallInfo;
-        InlineInfo.code = &FinallyCode;
+        InlineInfo.code = (byte_seq *)&FinallyCode;
         return( &InlineInfo );
     } else if( sym_handle == SymTryFini ) {
         InlineInfo = WatcallInfo;
         InlineInfo.parms = TryFiniParms;
-        InlineInfo.code = &TryFiniCode;
+        InlineInfo.code = (byte_seq *)&TryFiniCode;
         return( &InlineInfo );
     }
 #endif

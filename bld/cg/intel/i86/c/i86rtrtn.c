@@ -85,34 +85,34 @@ rtn_info RTInfo[] = {
 
 static  call_class     rt_cclass = 0;
 
-static  byte_seq Scn1 = {
-                        6, FALSE,
-                       {0xF2,                   /*       repne*/
-                        0xAE,                   /*       scasb*/
-                        0xD1, 0xE1,             /*       shl     cx,1*/
-                        0x89, 0xCF}             /*       mov     di,cx*/
-                        };
+static  struct STRUCT_byte_seq( 6 ) Scn1 = {
+     6, FALSE,
+    {0xF2,              /*      repne           */
+     0xAE,              /*      scasb           */
+     0xD1, 0xE1,        /*      shl     cx,1    */
+     0x89, 0xCF}        /*      mov     di,cx   */
+};
 
-static  byte_seq Scn2 = {
-                        2, FALSE,
-                       {0xF2,                   /*       repne*/
-                        0xAF}                   /*       scasw*/
-                        };
+static  struct STRUCT_byte_seq( 2 ) Scn2 = {
+     2, FALSE,
+    {0xF2,              /*      repne           */
+     0xAF}              /*      scasw           */
+};
 
-static  byte_seq Scn4 = {
-                        18, FALSE,
-                       {0x83, 0xC7, 0x02,       /* L1:   add     d1,2*/
-                        0x49,                   /* L2:   dec     cx*/
-                        0x74, 0x08,             /*       je      L3*/
-                        0xAF,                   /*       scasw*/
-                        0x75, 0xF7,             /*       jne     L1*/
-                        0x92,                   /*       xchg    dx,ax*/
-                        0xAF,                   /*       scasw*/
-                        0x92,                   /*       xchg    dx,ax*/
-                        0x75, 0xF5,             /*       jne     L2*/
-                        0xD1, 0xE1,             /* L3:   shl     cx,1*/
-                        0x89, 0xCF}             /*       mov     di,cx*/
-                        };
+static  struct STRUCT_byte_seq( 18 ) Scn4 = {
+     18, FALSE,
+    {0x83, 0xC7, 0x02,  /* L1:  add     d1,2    */
+     0x49,              /* L2:  dec     cx      */
+     0x74, 0x08,        /*      je      L3      */
+     0xAF,              /*      scasw           */
+     0x75, 0xF7,        /*      jne     L1      */
+     0x92,              /*      xchg    dx,ax   */
+     0xAF,              /*      scasw           */
+     0x92,              /*      xchg    dx,ax   */
+     0x75, 0xF5,        /*      jne     L2      */
+     0xD1, 0xE1,        /* L3:  shl     cx,1    */
+     0x89, 0xCF}        /*      mov     di,cx   */
+};
 
 
 extern  char    *AskRTName( rt_class rtindex )

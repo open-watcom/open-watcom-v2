@@ -42,8 +42,11 @@ typedef struct byte_seq_reloc {
     owl_reloc_type          type;
 } byte_seq_reloc;
 
-typedef struct byte_seq {
-    byte_seq_len        length;
-    byte_seq_reloc      *relocs;
-    byte                data[];
-} byte_seq;
+#define STRUCT_byte_seq( x ) \
+{ \
+    byte_seq_len    length; \
+    byte_seq_reloc  *relocs; \
+    byte            data[x]; \
+}
+
+typedef struct byte_seq STRUCT_byte_seq( 1 ) byte_seq;
