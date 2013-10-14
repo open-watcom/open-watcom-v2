@@ -114,7 +114,7 @@ static char *VarParmFuncs[] = {
 
 extern byte_seq     *FlatAlternates[];
 
-static struct STRUCT_byte_seq( 1 ) FinallyCode = { 
+static struct STRUCT_byte_seq() FinallyCode = { 
     1, FALSE, { 0xc3 }   /* ret */
 };
 
@@ -123,7 +123,7 @@ static hw_reg_set TryFiniParms[] = {
     HW_D( HW_EMPTY )
 };
 
-static struct STRUCT_byte_seq( 6 ) TryFiniCode = { 
+static struct STRUCT_byte_seq() TryFiniCode = { 
     6, FALSE, { 0x64, 0xA3, 0, 0, 0, 0 }  /* mov fs:[0],eax */
 };
 
@@ -314,20 +314,20 @@ static aux_info *LangInfo( type_modifiers flags, aux_info *inf )
     return( GetLangInfo( flags ) );
 }
 
-int ParmsToBeReversed( int flags, aux_info *inf )
+bool ParmsToBeReversed( int flags, aux_info *inf )
 {
 #ifdef REVERSE
     inf = LangInfo( flags, inf );
     if( inf != NULL ) {
         if( inf->cclass & REVERSE_PARMS ) {
-            return( 1 );
+            return( TRUE );
         }
     }
 #else
     flags = flags;
     inf = inf;
 #endif
-    return( 0 );
+    return( FALSE );
 }
 
 aux_info *InfoLookup( SYMPTR sym )

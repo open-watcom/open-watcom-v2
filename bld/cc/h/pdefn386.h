@@ -350,15 +350,15 @@ static hw_reg_set P_8087[]         = {
 
 
 byte_seq *FlatAlternates[] = {
-        (byte_seq *)&S_memset,   (byte_seq *)&FS_memset,
-        (byte_seq *)&C_memset,   (byte_seq *)&FC_memset,
-        (byte_seq *)&S_memcpy,   (byte_seq *)&FS_memcpy,
-        (byte_seq *)&C_memcpy,   (byte_seq *)&FC_memcpy,
-        (byte_seq *)&C_memcmp,   (byte_seq *)&FC_memcmp,
-        (byte_seq *)&C_memchr,   (byte_seq *)&FC_memchr,
-        (byte_seq *)&C_strlen,   (byte_seq *)&FC_strlen,
-        (byte_seq *)&C_strcat,   (byte_seq *)&FC_strcat,
-        NULL,       NULL
+    (byte_seq *)&S_memset,   (byte_seq *)&FS_memset,
+    (byte_seq *)&C_memset,   (byte_seq *)&FC_memset,
+    (byte_seq *)&S_memcpy,   (byte_seq *)&FS_memcpy,
+    (byte_seq *)&C_memcpy,   (byte_seq *)&FC_memcpy,
+    (byte_seq *)&C_memcmp,   (byte_seq *)&FC_memcmp,
+    (byte_seq *)&C_memchr,   (byte_seq *)&FC_memchr,
+    (byte_seq *)&C_strlen,   (byte_seq *)&FC_strlen,
+    (byte_seq *)&C_strcat,   (byte_seq *)&FC_strcat,
+    NULL,       NULL
 };
 
 /* these must also work in FLAT model */

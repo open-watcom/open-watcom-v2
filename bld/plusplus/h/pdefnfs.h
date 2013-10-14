@@ -38,7 +38,8 @@
 #define fs_push_ret     HW_D( HW_EMPTY )
 #define fs_push_parms   P_EAX
 #define fs_push_saves   HW_NotD( HW_EMPTY )
-static struct STRUCT_byte_seq( 15 ) fs_push = {
+
+static struct STRUCT_byte_seq() fs_push = {
     15, FALSE,
     {
         0x64,0xff,0x35,0x00,0x00,0x00,0x00,     // push fs:0
@@ -51,7 +52,8 @@ static struct STRUCT_byte_seq( 15 ) fs_push = {
 #define fs_pop_ret      HW_D( HW_EMPTY )
 #define fs_pop_parms    P_EAX
 #define fs_pop_saves    HW_NotD( HW_EAX )
-static struct STRUCT_byte_seq( 6 ) fs_pop = {
+
+static struct STRUCT_byte_seq() fs_pop = {
     6, FALSE,
     { 0x64,0xa3,0x00,0x00,0x00,0x00 }           // mov fs:0,eax
 };
@@ -60,5 +62,5 @@ static struct STRUCT_byte_seq( 6 ) fs_pop = {
 inline_funcs Fs_Functions[] =
 {   { ".FsPush", (byte_seq *)&fs_push, fs_push_parms, fs_push_ret, fs_push_saves }
 ,   { ".FsPop",  (byte_seq *)&fs_pop,  fs_pop_parms,  fs_pop_ret,  fs_pop_saves  }
-,   { NULL                                                          }
+,   { NULL                                                                       }
 };
