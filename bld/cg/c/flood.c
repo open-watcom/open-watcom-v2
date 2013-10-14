@@ -52,23 +52,22 @@ typedef struct stupid_struct_so_I_can_use_safe_recurse {
 
 extern  void    ClearBlockBits( block_class );
 
-static pointer doFloodForward( void *fp ) {
+static void *doFloodForward( flood_parms *fp ) {
 
     block       *next;
     block_num   i;
     block_num   n;
     flood_parms new_parms;
-    flood_parms *p = fp;
 
-    new_parms = *p;
-    n = p->blk->targets;
+    new_parms = *fp;
+    n = fp->blk->targets;
     for( i = 0; i < n; i++ ) {
-        next = p->blk->edge[ i ].destination.u.blk;
+        next = fp->blk->edge[ i ].destination.u.blk;
         if( _Visited( next ) ) continue;
-        if( p->func( next, p->parm ) == FALSE ) break;
+        if( fp->func( next, fp->parm ) == FALSE ) break;
         _MarkVisited( next );
         new_parms.blk = next;
-        SafeRecurseCG( doFloodForward, &new_parms );
+        SafeRecurseCG( (func_sr)doFloodForward, &new_parms );
     }
     return NULL;
 }
@@ -83,21 +82,20 @@ extern void FloodForward( block *blk, flood_func func, void *parm ) {
     doFloodForward( &parms );
 }
 
-static pointer doFloodBackward( pointer fp ) {
+static void *doFloodBackward( flood_parms *fp ) {
 
     block       *next;
     block_edge  *edge;
     flood_parms new_parms;
-    flood_parms *p = fp;
 
-    new_parms = *p;
-    for( edge = p->blk->input_edges; edge != NULL; edge = edge->next_source ) {
+    new_parms = *fp;
+    for( edge = fp->blk->input_edges; edge != NULL; edge = edge->next_source ) {
         next = edge->source;
         if( _Visited( next ) ) continue;
-        if( p->func( next, p->parm ) == FALSE ) break;
+        if( fp->func( next, fp->parm ) == FALSE ) break;
         _MarkVisited( next );
         new_parms.blk = next;
-        SafeRecurseCG( doFloodBackward, &new_parms );
+        SafeRecurseCG( (func_sr)doFloodBackward, &new_parms );
     }
     return NULL;
 }

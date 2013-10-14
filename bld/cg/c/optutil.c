@@ -183,10 +183,9 @@ extern  void    UnLinkInstr( ins_entry *old ) {
 }
 
 
-static  pointer DelInstr_Helper( pointer olde ) {
-/***********************************************/
+static  ins_entry *DelInstr_Helper( ins_entry *old ) {
+/****************************************************/
 
-    ins_entry   *old = olde;
     ins_entry   *next;
 
     UnLinkInstr( old );
@@ -235,7 +234,7 @@ extern  ins_entry       *DelInstr( ins_entry *old ) {
 /***************************************************/
 
     if( _Class( old ) != OC_DEAD ) {
-        return( SafeRecurseCG( DelInstr_Helper, old ) );
+        return( SafeRecurseCG( (func_sr)DelInstr_Helper, old ) );
     }
     return( ValidIns( old->ins.next ) );
 }

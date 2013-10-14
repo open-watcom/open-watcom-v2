@@ -1427,7 +1427,7 @@ static  name    *TNGetLeafName( tn node )
 }
 
 
-static  void    *TNFindBase( void *_node )
+static  name *TNFindBase( tn node )
 /*****************************************
     Given "node", return the "name" which is the base of the expression.
     For example, the base of x[i+j] is x.  We use this base for aliasing
@@ -1441,7 +1441,6 @@ static  void    *TNFindBase( void *_node )
 */
 {
     name    *op;
-    tn      node = _node;
 
     if( node == NULL ) return( NULL );
     if( node->base != NULL ) return( node->base );
@@ -1451,7 +1450,7 @@ static  void    *TNFindBase( void *_node )
     case TN_COMMA:
     case TN_SIDE_EFFECT:
         if( !( node->tipe->attr & TYPE_POINTER ) ) return( NULL );
-        op = SafeRecurseCG( TNFindBase, ( node->class == TN_COMMA ) ? node->u.left : node->rite );
+        op = SafeRecurseCG( (func_sr)TNFindBase, ( node->class == TN_COMMA ) ? node->u.left : node->rite );
         if( op != NULL ) return( op );
     /* fall through */
     case TN_BINARY:
@@ -1461,18 +1460,18 @@ static  void    *TNFindBase( void *_node )
     case TN_LV_ASSIGN:
     case TN_LV_PRE_GETS:
         if( !( node->tipe->attr & TYPE_POINTER ) ) return( NULL );
-        op = SafeRecurseCG( TNFindBase, node->rite );
+        op = SafeRecurseCG( (func_sr)TNFindBase, node->rite );
         if( op != NULL ) return( op );
         if( node->op == O_CONVERT ) return( NULL );
         if( node->class != TN_BINARY ) return( NULL );
-        return( SafeRecurseCG( TNFindBase, node->u.left ) );
+        return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left ) );
     case TN_UNARY:
         if( !( node->tipe->attr & TYPE_POINTER ) ) return( NULL );
         switch( node->op ) {
         case O_PTR_TO_NATIVE:
         case O_PTR_TO_FOREIGN:
         case O_CONVERT:
-            return( SafeRecurseCG( TNFindBase, node->u.left ) );
+            return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left ) );
         default:
             break;
         }
@@ -1480,12 +1479,12 @@ static  void    *TNFindBase( void *_node )
         if( node->op != O_POINTS ) return( NULL );
         switch( node->u.left->class ) {
         case TN_SIDE_EFFECT:
-            return( SafeRecurseCG( TNFindBase, node->u.left->rite ) );
+            return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left->rite ) );
         case TN_COMMA:
-            return( SafeRecurseCG( TNFindBase, node->u.left->u.left ) );
+            return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left->u.left ) );
         case TN_LV_ASSIGN:
         case TN_LV_PRE_GETS:
-            return( SafeRecurseCG( TNFindBase, node->u.left->rite ) );
+            return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left->rite ) );
         default:
             break;
         }
@@ -2471,11 +2470,10 @@ extern  void    TFini( void )
 }
 
 
-static  pointer  DoTreeGen( pointer nod )
-/***************************************/
+static  an DoTreeGen( tn node )
+/*****************************/
 {
     an          retv;
-    tn          node = nod;
 
     switch( node->class ) {
     case TN_LEAF:
@@ -2550,5 +2548,5 @@ extern  an  TreeGen( tn node )
     generate tree node "node"
 */
 {
-    return( SafeRecurseCG( DoTreeGen, node ) );
+    return( SafeRecurseCG( (func_sr)DoTreeGen, node ) );
 }

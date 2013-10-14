@@ -817,13 +817,12 @@ extern  induction       *FindIndVar( name *op )
 }
 
 
-static  pointer CopyInvariant( pointer invari )
-/**********************************************
+static  invariant *CopyInvariant( invariant *invar )
+/***************************************************
     Return a copy of invariant list "invar"
 */
 {
     invariant   *new;
-    invariant   *invar = invari;
 
     if( invar == NULL ) {
         new = NULL;
@@ -832,7 +831,7 @@ static  pointer CopyInvariant( pointer invari )
         new->name = invar->name;
         new->times = invar->times;
         new->id = invar->id;
-        new->next = SafeRecurseCG( CopyInvariant, invar->next );
+        new->next = SafeRecurseCG( (func_sr)CopyInvariant, invar->next );
     }
     return( new );
 }
@@ -1928,18 +1927,17 @@ static  void    IncAndInit( induction *var, name *iv, type_class_def class ) {
 }
 
 
-static  pointer MarkDown( pointer bl ) {
-/**************************************/
+static  void *MarkDown( block *blk ) {
+/************************************/
 
     block_num   i;
-    block       *blk = bl;
 
     if( !( blk->class & IN_LOOP ) ) return NULL;
     if( blk == Head ) return NULL;
     if( !( blk->class & BLOCK_WILL_EXECUTE ) ) return NULL;
     blk->class &= ~BLOCK_WILL_EXECUTE;
     for( i = blk->targets; i-- > 0; ) {
-        SafeRecurseCG( MarkDown, blk->edge[i].destination.u.blk );
+        SafeRecurseCG( (func_sr)MarkDown, blk->edge[i].destination.u.blk );
     }
     return NULL;
 }

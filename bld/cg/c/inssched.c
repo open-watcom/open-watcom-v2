@@ -561,8 +561,8 @@ static void BuildDag( void )
     }
 }
 
-static void *AnnointADag( void *_dag )
-/*************************************
+static void *AnnointADag( data_dag *dag )
+/****************************************
     Find out how many ancestors an instruction has, and what the longest
     amount of time it will take to execute all the instructions this one
     depends on (height).
@@ -571,14 +571,14 @@ static void *AnnointADag( void *_dag )
     unsigned        max_cycle_count;
     data_dag        *pred;
     dep_list_entry  *dep;
-    data_dag        *dag = _dag;
 
     max_cycle_count = 0;
     dag->visited = TRUE;
     for( dep = dag->deps; dep != NULL; dep = dep->next ) {
         pred = dep->dep;
         pred->anc_count++;
-        if( !pred->visited ) SafeRecurseCG( AnnointADag, pred );
+        if( !pred->visited )
+            SafeRecurseCG( (func_sr)AnnointADag, pred );
         if( pred->height > max_cycle_count ) max_cycle_count = pred->height;
     }
     dag->height = max_cycle_count + FUEntry( dag->ins )->opnd_stall;
@@ -594,7 +594,9 @@ static void AnnointDag( void )
     data_dag    *dag;
 
     for( dag = DataDag; dag != NULL; dag = dag->prev ) {
-        if( !dag->visited ) AnnointADag( dag );
+        if( !dag->visited ) {
+            AnnointADag( dag );
+        }
     }
 }
 

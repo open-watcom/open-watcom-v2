@@ -149,16 +149,15 @@ static  void    ReturnsToBottom( void )
     BlockList = last;
 }
 
-static  pointer MarkVisited( pointer bl )
-/***************************************/
+static  void *MarkVisited( block *blk )
+/*************************************/
 {
     block_num   i;
-    block       *blk = bl;
 
     blk->class |= BLOCK_VISITED;
     for( i = 0; i < blk->targets; ++i ) {
         if( blk->edge[ i ].destination.u.blk->class & BLOCK_VISITED ) continue;
-        SafeRecurseCG( MarkVisited, blk->edge[ i ].destination.u.blk );
+        SafeRecurseCG( (func_sr)MarkVisited, blk->edge[ i ].destination.u.blk );
     }
     blk->prev_block = BlockList;
     BlockList = blk;

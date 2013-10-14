@@ -47,7 +47,7 @@ extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,
 
 static  block_num       Instance;
 static  global_bit_set  Id;
-static  pointer         MarkInstance(pointer);
+static  void            *MarkInstance(block *blk);
 
 static  block   *FindUnMarkedInstance( void )
 /*******************************************/
@@ -187,14 +187,13 @@ static  void    CleanUp( void )
 }
 
 
-static  pointer MarkInstance( pointer bl )
-/****************************************/
+static  void *MarkInstance( block *blk )
+/**************************************/
 {
     block_edge          *edge;
     block_num           i;
     data_flow_def       *flow;
     global_bit_set      *bitp;
-    block               *blk = bl;
 
     if( blk->class & BLOCK_VISITED ) return NULL;
     blk->class |= BLOCK_VISITED;
@@ -205,7 +204,7 @@ static  pointer MarkInstance( pointer bl )
         while( edge != NULL ) {
             bitp = &edge->source->dataflow->out;
             if( _GBitOverlap( *bitp, Id ) ) {
-                SafeRecurseCG( MarkInstance, edge->source );
+                SafeRecurseCG( (func_sr)MarkInstance, edge->source );
             }
             edge = edge->next_source;
         }
@@ -215,12 +214,12 @@ static  pointer MarkInstance( pointer bl )
         for( i = blk->targets; i-- > 0; ) {
             bitp = &edge->destination.u.blk->dataflow->in;
             if( _GBitOverlap( *bitp, Id ) ) {
-                SafeRecurseCG( MarkInstance, edge->destination.u.blk );
+                SafeRecurseCG( (func_sr)MarkInstance, edge->destination.u.blk );
             }
             ++edge;
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 

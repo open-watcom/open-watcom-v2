@@ -149,13 +149,12 @@ static  void    ScoreCopy( score *other_sc, score *sc )
 }
 
 
-static  pointer    ScoreDescendants( pointer bl )
-/***********************************************/
+static  void *ScoreDescendants( block *blk )
+/******************************************/
 {
     block_num   i;
     block       *son;
     hw_reg_set  regs;
-    block       *blk = bl;
 
     for( i = blk->targets; i-- > 0; ) {
         son = blk->edge[ i ].destination.u.blk;
@@ -169,7 +168,7 @@ static  pointer    ScoreDescendants( pointer bl )
                 UpdateLive( son->ins.hd.next, son->ins.hd.prev );
             }
             son->class |= BLOCK_VISITED | BLOCK_MARKED;
-            SafeRecurseCG( ScoreDescendants, son );
+            SafeRecurseCG( (func_sr)ScoreDescendants, son );
             FreeScoreBoard( son->cc );
             ScFree( son->cc );
             son->cc = NULL;
@@ -185,7 +184,7 @@ static  pointer    ScoreDescendants( pointer bl )
     }
     HW_TurnOn( blk->ins.hd.live.regs, regs );
     UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
-    return NULL;
+    return( NULL );
 }
 
 
