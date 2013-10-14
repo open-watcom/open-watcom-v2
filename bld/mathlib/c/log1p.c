@@ -24,13 +24,8 @@
 *
 *  ========================================================================
 *
-*    Based on FDLIBM
-*    Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
-*
-*    Developed at SunSoft, a Sun Microsystems, Inc. business.
-*    Permission to use, copy, modify, and distribute this
-*    software is freely granted, provided that this notice 
-*    is preserved.
+*    Translated from Fortran and based on slatec
+*    http://www.netlib.org/slatec/fnlib/alnrel.f
 *
 *  ========================================================================
 *
@@ -38,125 +33,68 @@
 *
 ****************************************************************************/
 
-#include "xfloat.h"
+#define XINF    1.79E308
 
-static const double
-ln2_hi  =  6.93147180369123816490e-01,	/* 3fe62e42 fee00000 */
-ln2_lo  =  1.90821492927058770002e-10,	/* 3dea39ef 35793c76 */
-two54   =  1.80143985094819840000e+16,  /* 43500000 00000000 */
-Lp1 = 6.666666666666735130e-01,  /* 3FE55555 55555593 */
-Lp2 = 3.999999999940941908e-01,  /* 3FD99999 9997FA04 */
-Lp3 = 2.857142874366239149e-01,  /* 3FD24924 94229359 */
-Lp4 = 2.222219843214978396e-01,  /* 3FCC71C5 1D8E78AF */
-Lp5 = 1.818357216161805012e-01,  /* 3FC74664 96CB03DE */
-Lp6 = 1.531383769920937332e-01,  /* 3FC39A09 D078C69F */
-Lp7 = 1.479819860511658591e-01;  /* 3FC2F112 DF3E5244 */
+#define ALNRCS1   1.0378693562743770E0
+#define ALNRCS2   -.13364301504908918E0 
+#define ALNRCS3    .019408249135520563E0
+#define ALNRCS4   -.003010755112753577E0
+#define ALNRCS5    .000486946147971548E0
+#define ALNRCS6   -.000081054881893175E0
+#define ALNRCS7    .000013778847799559E0
+#define ALNRCS8   -.000002380221089435E0
+#define ALNRCS9    .000000416404162138E0
+#define ALNRCS10  -.000000073595828378E0
+#define ALNRCS11   .000000013117611876E0
+#define ALNRCS12  -.000000002354670931E0
+#define ALNRCS13   .000000000425227732E0
+#define ALNRCS14  -.000000000077190894E0
+#define ALNRCS15   .000000000014075746E0
+#define ALNRCS16  -.000000000002576907E0
+#define ALNRCS17   .000000000000473424E0
+#define ALNRCS18  -.000000000000087249E0
+#define ALNRCS19   .000000000000016124E0
+#define ALNRCS20  -.000000000000002987E0
+#define ALNRCS21   .000000000000000554E0
+#define ALNRCS22  -.000000000000000103E0
+#define ALNRCS23   .000000000000000019E0
 
-static double zero = 0.0;
+#include <math.h>
+
+static double _Chebyshev_Evaluate(double x, double *array, double n)
+{
+double b0, b1, b2, twox;
+int i, ni;
+
+    b0 = 0.0;
+    b1 = 0.0;
+    twox = 2.0*x;
+
+    for(i=(n-1); i>=0; i--)
+    {
+        b2 = b1;
+        b1 = b0;
+        b0 = twox*b1 - b2 + array[i];
+    }
+    
+    return 0.5*(b0-b2);
+}
 
 _WMRTLINK double log1p(double x)
 {
-	double hfsq,f,c,s,z,R;
-	int k,hx,hu,ax;
+double array[] = {ALNRCS1,  ALNRCS2,  ALNRCS3,  ALNRCS4,  ALNRCS5,
+                  ALNRCS6,  ALNRCS7,  ALNRCS8,  ALNRCS9,  ALNRCS10,
+                  ALNRCS11, ALNRCS12, ALNRCS13, ALNRCS14, ALNRCS15,
+                  ALNRCS16, ALNRCS17, ALNRCS18, ALNRCS19, ALNRCS20,
+                  ALNRCS21, ALNRCS22, ALNRCS23};
 
-    float_double fdx;
-    float_double fdu;
-
-    fdx.u.value = x;
-
-	hx = fdx.u.word[1];		        /* high word of x */
-	ax = hx&0x7fffffff;
-
-	k = 1;
-	if (hx < 0x3FDA827A) 			/* x < 0.41422  */
-    {
-	    if(ax>=0x3ff00000)  		/* x <= -1.0 */
-        {
-		    if(x==-1.0)             /* log1p(-1)=+inf */
-                return -two54/zero; 
-		    else 	                /* log1p(x<-1)=NaN */
-                return (x-x)/(x-x);
-	    }
+    if(x == -1.0)
+        return XINF;
+    else if(x < -1.0)
+        return nan("ignore");
         
-	    if(ax<0x3e200000) 			/* |x| < 2**-29 */
-        {
-		    if(two54+x>zero && ax<0x3c900000)			/* raise inexact */ /* |x| < 2**-54 */
-                return x;
-		    else
-		        return x - x*x*0.5;
-	    }
-        
-	    if(hx>0||hx<=((int)0xbfd2bec3))                 /* -0.2929<x<0.41422 */
-        {
-            k=0;
-            f=x;
-            hu=1;
-        }	
-	} 
-    
-	if (hx >= 0x7ff00000) 
-        return x+x;
-	
-    if(k != 0) 
-    {
-	    if(hx<0x43400000) 
-        {
-		    fdu.u.value  = 1.0 + x;
-            hu = fdu.u.word[1];
-	        k  = (hu >> 20) - 1023;
-	        c  = (k>0) ? 1.0-(fdu.u.value-x) : x-(fdu.u.value-1.0);   /* correction term */
-		    c /= fdu.u.value;
-	    }
-        else
-        {
-		    fdu.u.value  = x;
-            hu = fdu.u.word[1];
-	        k  = (hu>>20) - 1023;
-		    c  = 0;
-	    }
-	    
-        fdu.u.word[1] &= 0x000fffff;
-	    
-        if(fdu.u.word[1] < 0x6a09e) 
-        {
-	        fdu.u.word[1] = hu|0x3ff00000;	/* normalize u */
-	    }
-        else
-        {
-	        k += 1; 
-	        fdu.u.word[1] = hu|0x3fe00000;	/* normalize u/2 */
-	        hu = (0x00100000-hu)>>2;
-	    }
-	    f = fdu.u.value-1.0;
-	}
-    
-	hfsq=0.5*f*f;
-	if(hu==0)                   /* |f| < 2**-20 */
-    {	
-	    if(f==zero) 
-        {
-            if(k==0) 
-                return zero;  
-			else 
-            {
-                c += k*ln2_lo; 
-                return k*ln2_hi+c;
-            }
-        }
-	    
-        R = hfsq*(1.0-0.66666666666666666*f);
-	    
-        if(k==0) 
-            return f-R; 
-        else
-            return k*ln2_hi-((R-(k*ln2_lo+c))-f);
-	}
-    
- 	s = f/(2.0+f); 
-	z = s*s;
-	R = z*(Lp1+z*(Lp2+z*(Lp3+z*(Lp4+z*(Lp5+z*(Lp6+z*Lp7))))));
-	if(k==0) 
-        return f-(hfsq-s*(hfsq+R)); 
+    if(fabs(x) <= 0.375) 
+        return x * (1.0 - x*_Chebyshev_Evaluate(x/0.375, array, 23));
     else
-	    return k*ln2_hi-((hfsq-(s*(hfsq+R)+(k*ln2_lo+c)))-f);
+        return log(1.0 + x);
 }
