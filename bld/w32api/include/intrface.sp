@@ -2,8 +2,9 @@
  * CINTERFACE to have these macros expand in C++ code as if they were in C code.
  * Define CONST_VTABLE to have constant vtables in C.
  */
-#define interface   struct
 #if defined( __cplusplus ) && !defined( CINTERFACE )
+    #define __STRUCT__                              struct
+    #define interface                               __STRUCT__
     #define STDMETHOD( f )                          virtual HRESULT STDMETHODCALLTYPE f
     #define STDMETHOD_( x, f )                      virtual x STDMETHODCALLTYPE f
     #define STDMETHODV( f )                         virtual HRESULT STDMETHODVCALLTYPE f
@@ -14,6 +15,7 @@
     #define DECLARE_INTERFACE( x )                  interface x
     #define DECLARE_INTERFACE_( x, p )              interface x : public p
 #else
+    #define interface                               struct
     #define STDMETHOD( f )                          HRESULT (STDMETHODCALLTYPE *f)
     #define STDMETHOD_( x, f )                      x (STDMETHODCALLTYPE *f)
     #define STDMETHODV( f )                         HRESULT (STDMETHODVCALLTYPE *f)
