@@ -710,8 +710,7 @@ static  void    DumpNameLists( void ) {
             nl_info = 0;
             _SetNMLType( nl_info, ParmType( sym->ns.u1.s.typ, sym->ns.xt.size ) );
             if( sym->ns.flags & SY_SUBSCRIPTED ) {
-                _SetNMLSubScrs( nl_info,
-                                _DimCount( sym->ns.si.va.u.dim_ext->dim_flags ) );
+                _SetNMLSubScrs( nl_info, _DimCount( sym->ns.si.va.u.dim_ext->dim_flags ) );
                 DGInteger( nl_info, TY_UINT_1 );
                 DGInteger( sym->ns.si.va.u.dim_ext->num_elts, TY_UINT_4 );
                 DumpStaticAdv( sym, FALSE ); // we do not want a name ptr dumped

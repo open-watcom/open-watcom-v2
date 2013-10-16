@@ -346,8 +346,7 @@ static  void    DbSubscript( sym_id arr ) {
         CGAddParm( call, subscripts[ dims_no - i ], TY_INT_4 );
     }
     CGAddParm( call, GetAdv( arr ), TY_LOCAL_POINTER );
-    CGAddParm( call, CGInteger( _DimCount( dim_ptr->dim_flags ), TY_INTEGER ),
-               TY_INTEGER );
+    CGAddParm( call, CGInteger( _DimCount( dim_ptr->dim_flags ), TY_INTEGER ), TY_INTEGER );
     offset = CGUnary( O_POINTS, CGCall( call ), TY_INT_4 );
     Index( arr, offset );
 }

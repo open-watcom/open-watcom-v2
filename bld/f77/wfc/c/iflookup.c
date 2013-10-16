@@ -246,11 +246,17 @@ void    IFCntPrms( IFF func, int actual_cnt ) {
 
     need = IFFlags[ func ].flags & IF_COUNT_MASK;
     if( need == TWO_OR_MORE ) {
-        if( actual_cnt >= 2 ) return;
+        if( actual_cnt >= 2 ) {
+            return;
+        }
     } else if( need == ONE_OR_TWO ) {
-        if( actual_cnt <= 2 ) return;
+        if( actual_cnt == 1 || actual_cnt == 2 ) {
+            return;
+        }
     } else {
-        if( need == actual_cnt ) return;
+        if( need == actual_cnt ) {
+            return;
+        }
     }
     Error( AR_BAD_COUNT, IFNames[ func ] );
 }

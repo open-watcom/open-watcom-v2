@@ -95,8 +95,7 @@ static void Unary( TYPE typ, OPTR opr ) {
                ( CITNode->link->size < sizeof( intstar4 ) ) ) {
         // convert INTEGER*1 or INTEGER*2 to INTEGER*4
         EmitOp( FC_CONVERT );
-        DumpTypes( CITNode->link->typ, CITNode->link->size,
-                             FT_INTEGER, sizeof( intstar4 ) );
+        DumpTypes( CITNode->link->typ, CITNode->link->size, FT_INTEGER, sizeof( intstar4 ) );
     }
     SetOpn( CITNode, USOPN_SAFE );
 }

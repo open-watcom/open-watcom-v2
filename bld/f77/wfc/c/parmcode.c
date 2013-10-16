@@ -41,7 +41,7 @@
 #include "utility.h"
 
 
-int     ParmClass( itnode *arg ) {
+PCODE   ParmClass( itnode *arg ) {
 //===============================
 
 // Return the argument class.
@@ -94,7 +94,7 @@ int     ParmClass( itnode *arg ) {
 }
 
 
-int     ParmCode( itnode *arg ) {
+PCODE   ParmCode( itnode *arg ) {
 //===============================
 
 // Return the argument code.

@@ -399,15 +399,13 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
                     arg_type = TY_POINTER;
                 } else if( arg->id->ns.u1.s.typ == FT_CHAR ) {
                     arg_type = TY_POINTER;
-                } else if( ( arg_aux != NULL ) &&
-                           ( arg_aux->info & PASS_BY_VALUE ) ) {
+                } else if( ( arg_aux != NULL ) && ( arg_aux->info & PASS_BY_VALUE ) ) {
                     arg_type = F772CGType( arg->id );
                 } else {
                     arg_type = TY_POINTER;
                 }
                 if( InArgList( ep_called, arg->id ) ) {
-                    cg = CGUnary( O_POINTS, CGFEName( arg->id, arg_type ),
-                                  arg_type );
+                    cg = CGUnary( O_POINTS, CGFEName( arg->id, arg_type ), arg_type );
                     if( arg->id->ns.u1.s.typ == FT_CHAR ) {
                         CGAddParm( call, cg, PromoteToBaseType( arg_type ) );
                         if( NeedShadowArg( arg_aux ) ) {
@@ -419,8 +417,7 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
                         CGAddParm( call, cg, PromoteToBaseType( arg_type ) );
                     }
                 } else {
-                    CGAddParm( call, CGInteger( 0, arg_type ),
-                                                PromoteToBaseType( arg_type ) );
+                    CGAddParm( call, CGInteger( 0, arg_type ), PromoteToBaseType( arg_type ) );
                     if( arg->id->ns.u1.s.typ == FT_CHAR ) {
                         if( NeedShadowArg( arg_aux ) ) {
                             CGAddParm( call, CGInteger( 0, TY_INTEGER ), TY_INTEGER );
@@ -449,9 +446,7 @@ static  cg_name     ArgAddr( PTYPE arg_type ) {
     arg = XPop();
     cg_typ = GetType( arg_type );
     if( !TypePointer( CGType( arg ) ) ) {
-        if( ( arg_type == PT_CPLX_8 )
-          || ( arg_type == PT_CPLX_16 )
-          || ( arg_type == PT_CPLX_32 ) ) {
+        if( ( arg_type == PT_CPLX_8 ) || ( arg_type == PT_CPLX_16 ) || ( arg_type == PT_CPLX_32 ) ) {
             arg = CmplxAddr( arg, XPop() );
         } else {
             arg = TmpPtr( MkTmp( arg, cg_typ ), cg_typ );
@@ -545,6 +540,9 @@ void    FCCall( void ) {
     bool        pass_scb;
     bool        pass_len;
     cg_name     *arg_vec;
+#if _CPU == 386 || _CPU == 8086
+    bool        arg_proc_far16;
+#endif
 
     sp = GetPtr();
     sp_type = SPType( sp );
@@ -583,15 +581,18 @@ void    FCCall( void ) {
     idx = 0;
     while( num_args != 0 ) {
         arg_info = GetU16();
-        arg_type = arg_info & 0x00ff;
-        arg_code = (arg_info >> 8) & 0x7f;
+        arg_type = _GetTypeInfo2( arg_info );
+        arg_code = _GetTypeInfo1( arg_info );
+#if _CPU == 386 || _CPU == 8086
+        arg_proc_far16 = ( (arg_code & PC_PROC_FAR16) != 0 );
+        arg_code &= ~PC_PROC_FAR16;
+#endif
         chk_foreign = TRUE;
-        if( (arg_code == PC_PROCEDURE) || (arg_code == PC_FN_OR_SUB) ) {
+        if( arg_code == PC_PROCEDURE || arg_code == PC_FN_OR_SUB ) {
             arg = XPop();
             cg_typ = TY_CODE_PTR;
 #if _CPU == 386 || _CPU == 8086
-            if( (aux->cclass & FAR16_CALL) &&
-                ((arg_info >> 8) & PC_PROC_FAR16) ) {
+            if( (aux->cclass & FAR16_CALL) && arg_proc_far16 ) {
                 chk_foreign = FALSE;
             } else if( arg_aux != NULL ) {
                 if( arg_aux->info & ARG_FAR ) {
@@ -645,12 +646,12 @@ void    FCCall( void ) {
         } else if( arg_code == PC_ARRAY_NAME ) {
             arg = XPop();
             cg_typ = ArgPtrType( arg );
-            if( (arg_aux != NULL) &&
-                (arg_aux->info & PASS_BY_REFERENCE) &&
-                (arg_aux->info & ARG_FAR) ) {
-                cg_typ = TY_LONG_POINTER;
-                arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
-                chk_foreign = FALSE;
+            if( arg_aux != NULL ) {
+                if( (arg_aux->info & PASS_BY_REFERENCE) && (arg_aux->info & ARG_FAR) ) {
+                    cg_typ = TY_LONG_POINTER;
+                    arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
+                    chk_foreign = FALSE;
+                }
             }
         } else if( (arg_aux != NULL) && (arg_aux->info & PASS_BY_VALUE) ) {
             chk_foreign = FALSE;
@@ -682,8 +683,7 @@ void    FCCall( void ) {
                     } else if( arg_aux->info & ARG_SIZE_4 ) {
                         new_typ = TY_INT_4;
                     }
-                } else if( ( arg_type == PT_LOG_1 ) ||
-                           ( arg_type == PT_LOG_4 ) ) {
+                } else if( ( arg_type == PT_LOG_1 ) || ( arg_type == PT_LOG_4 ) ) {
                     if( arg_aux->info & ARG_SIZE_1 ) {
                         new_typ = TY_UINT_1;
                     } else if( arg_aux->info & ARG_SIZE_2 ) {
@@ -719,12 +719,12 @@ void    FCCall( void ) {
         } else {
             arg = ArgAddr( arg_type );
             cg_typ = ArgPtrType( arg );
-            if( (arg_aux != NULL) &&
-                (arg_aux->info & PASS_BY_REFERENCE) &&
-                (arg_aux->info & ARG_FAR) ) {
-                cg_typ = TY_LONG_POINTER;
-                arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
-                chk_foreign = FALSE;
+            if( arg_aux != NULL ) {
+                if( (arg_aux->info & PASS_BY_REFERENCE) && (arg_aux->info & ARG_FAR) ) {
+                    cg_typ = TY_LONG_POINTER;
+                    arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
+                    chk_foreign = FALSE;
+                }
             }
         }
 #if _CPU == 386 || _CPU == 8086
@@ -760,11 +760,9 @@ void    FCCall( void ) {
 #endif
                 CGAddParm( call, arg, TY_POINTER );
             }
-            XPush( CGBinary( O_COMMA, CGCall( call ), CGFEName( scb, TY_CHAR ),
-                             TY_LOCAL_POINTER ) );
+            XPush( CGBinary( O_COMMA, CGCall( call ), CGFEName( scb, TY_CHAR ), TY_LOCAL_POINTER ) );
         } else {
-            if( (sp_type == TY_COMPLEX) || (sp_type == TY_DCOMPLEX) ||
-                        (sp_type == TY_XCOMPLEX) ) {
+            if( (sp_type == TY_COMPLEX) || (sp_type == TY_DCOMPLEX) || (sp_type == TY_XCOMPLEX) ) {
                 SplitCmplx( CGCall( call ), sp_type );
             } else if( sp_type >= TY_USER_DEFINED ) { // structure
                 XPush( CGCall( call ) );
@@ -838,8 +836,7 @@ void    FCDArgInit( void ) {
     if( !(Options & OPT_DESCRIPTOR) ) {
         if( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
             if( sym->ns.u1.s.typ == FT_CHAR ) {
-                arg = CGUnary( O_POINTS,
-                               CGFEName( ReturnValue, TY_POINTER ), TY_POINTER );
+                arg = CGUnary( O_POINTS, CGFEName( ReturnValue, TY_POINTER ), TY_POINTER );
                 if( Options & OPT_DESCRIPTOR ) {
                     arg = SCBLength( arg );
                 } else {
@@ -849,8 +846,7 @@ void    FCDArgInit( void ) {
                     dst = SCBPtrAddr( SubAltSCB( sym ) );
                     CGDone( CGAssign( dst, arg, TY_POINTER ) );
                     arg = CGUnary( O_POINTS,
-                             CGFEName( FindArgShadow( ReturnValue ), TY_INTEGER ),
-                             TY_INTEGER );
+                             CGFEName( FindArgShadow( ReturnValue ), TY_INTEGER ), TY_INTEGER );
                 }
                 dst = SCBLenAddr( SubAltSCB( sym ) );
                 CGDone( CGAssign( dst, arg, TY_INTEGER ) );
@@ -964,8 +960,7 @@ void    FCAssignAltRet( void ) {
 
     alt_ret = GetTypedValue();
     if( EntryWithAltRets() ) {
-        CGDone( CGAssign( CGFEName( ReturnValue, TY_INTEGER ), alt_ret,
-                          TY_INTEGER ) );
+        CGDone( CGAssign( CGFEName( ReturnValue, TY_INTEGER ), alt_ret, TY_INTEGER ) );
     } else {
         CGDone( alt_ret );
     }

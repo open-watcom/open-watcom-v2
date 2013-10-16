@@ -137,11 +137,19 @@ static  char    *StmtName( char *buff ) {
     if( StmtSw & SS_DATA_INIT ) {
         stmt = PR_DATA;
     }
-    if( (stmt == PR_ASNMNT) || (stmt == PR_ARIF) || (stmt == PR_STMTFUNC) ) {
-        MsgBuffer( (uint)StmtKeywords[ stmt ], buff );
+    switch( stmt ) {
+    case PR_ASNMNT:
+        MsgBuffer( MS_ASSIGN, buff );
         return( &buff[1] );     // skip leading blank
+    case PR_ARIF:
+        MsgBuffer( MS_ARITH_IF, buff );
+        return( &buff[1] );     // skip leading blank
+    case PR_STMTFUNC:
+        MsgBuffer( MS_STMT_FUNC_DEFN, buff );
+        return( &buff[1] );     // skip leading blank
+    default:
+        return( StmtKeywords[ stmt ] );
     }
-    return( StmtKeywords[ stmt ] );
 }
 
 

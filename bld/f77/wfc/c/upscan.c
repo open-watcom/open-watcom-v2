@@ -64,7 +64,7 @@ extern  void            AdvError(int);
 extern  void            EndExpr(void);
 extern  sym_id          STConst(void *,TYPE,uint);
 extern  sym_id          STLit(byte *,int);
-extern  byte            ParmCode(itnode *);
+extern  PCODE           ParmCode(itnode *);
 extern  void            FiniCat(void);
 extern  void            CatBack(void);
 extern  void            CatAxeParens(void);

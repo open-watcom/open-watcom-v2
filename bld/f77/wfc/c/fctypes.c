@@ -74,7 +74,7 @@ static  byte            MapCGTypes[] = {
 };
 
 static  cg_type         CGTypesMap[] = {
-    #define pick(id,type,dbgtype,cgtype,typnam) cgtype,
+    #define pick(id,type,dbgtype,cgtype,inpfun,outfun,typnam) cgtype,
     #include "ptypdefn.h"
     #undef pick
 };
@@ -91,21 +91,21 @@ cg_type MkCGType( PTYPE typ ) {
 cg_type         GetType( unsigned_16 typ_info ) {
 //===============================================
 
-    return( MkCGType( typ_info ) );
+    return( MkCGType( _GetTypeInfo2( typ_info ) ) );
 }
 
 
 cg_type         GetType1( unsigned_16 typ_info ) {
 //================================================
 
-    return( MkCGType( ( typ_info & 0xff00 ) >> 8 ) );
+    return( MkCGType( _GetTypeInfo1( typ_info ) ) );
 }
 
 
 cg_type         GetType2( unsigned_16 typ_info ) {
 //================================================
 
-    return( MkCGType( typ_info & 0x00ff ) );
+    return( MkCGType( _GetTypeInfo2( typ_info ) ) );
 }
 
 

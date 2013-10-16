@@ -43,12 +43,14 @@
 //       ( routines rely on them being sequential )
 //
 
-enum PARAM_TYPES {
-    #define pick(id,type,dbgtype,cgtype,typnam) id,
+typedef enum PARAM_TYPES {
+    #define pick(id,type,dbgtype,cgtype,inpfun,outfun,typnam) id,
     #include "ptypdefn.h"
     #undef pick
 
     VAR_LEN_CHAR = 0x80
-};
+} PTYPE;
 
-typedef enum PARAM_TYPES PTYPE;
+#define _GetTypeInfo1(x)    (((x) >> 8) & 0xff)
+#define _GetTypeInfo2(x)    ((x) & 0xff)
+#define _SetTypeInfo(d1,d2) ((((d1) & 0xff) << 8) | ((d2) & 0xff))

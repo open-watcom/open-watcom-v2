@@ -91,8 +91,7 @@ act_dim_list    *STSubsList( act_dim_list *subs_ptr ) {
     int             size;
     act_dim_list    *ste_ptr;
 
-    size = sizeof( dim_list ) +
-           ( 2*sizeof( intstar4 ) ) * _DimCount( subs_ptr->dim_flags );
+    size = sizeof( dim_list ) + ( 2 * sizeof( intstar4 ) ) * _DimCount( subs_ptr->dim_flags );
     ste_ptr = FMemAlloc( size );
     memcpy( ste_ptr, subs_ptr, size );
     return( ste_ptr );

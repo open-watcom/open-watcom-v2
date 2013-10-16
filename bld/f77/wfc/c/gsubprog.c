@@ -56,7 +56,7 @@ extern  sym_id          SymLookup(char *,int);
 extern  char            *STGetName(sym_id,char *);
 extern  sym_id          GTempString(uint);
 extern  void            FreeLabel(label_id);
-extern  int             ParmClass(itnode *);
+extern  PCODE           ParmClass(itnode *);
 extern  aux_info        *AuxLookup(sym_id);
 extern  aux_info        *AuxLookupName(char *,int);
 extern  aux_info        *AuxLookupAdd(char *,int);
@@ -237,8 +237,7 @@ static  int     DumpArgInfo( itnode *node ) {
                     }
                 }
 #endif
-                arg_info = parm_type & 0xff;
-                arg_info |= parm_code << 8;
+                arg_info = _SetTypeInfo( parm_code, parm_type );
                 OutU16( arg_info );
                 ++num_args;
             }

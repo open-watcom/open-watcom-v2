@@ -47,7 +47,7 @@ void            DumpType( TYPE typ, uint size ) {
 
 // Emit a single type.
 
-    OutU16( ParmType( typ, size ) );
+    OutU16( _SetTypeInfo( 0, ParmType( typ, size ) ) );
 }
 
 
@@ -56,7 +56,7 @@ void            DumpTypes( TYPE typ1, uint size1, TYPE typ2, uint size2 ) {
 
 // Emit 2 types.
 
-    OutU16( ( ParmType( typ1, size1 ) << 8 ) + ParmType( typ2, size2 ) );
+    OutU16( _SetTypeInfo( ParmType( typ1, size1 ), ParmType( typ2, size2 ) ) );
 }
 
 
@@ -65,7 +65,7 @@ void            GenType( itnode *op ) {
 
 // Emit a single type.
 
-    OutU16( ParmType( op->typ, op->size ) );
+    OutU16( _SetTypeInfo( 0, ParmType( op->typ, op->size ) ) );
 }
 
 
@@ -74,6 +74,5 @@ void            GenTypes( itnode *op1, itnode *op2 ) {
 
 // Emit 2 types.
 
-    OutU16( ( ParmType( op1->typ, op1->size ) << 8 ) +
-              ParmType( op2->typ, op2->size ) );
+    OutU16( _SetTypeInfo( ParmType( op1->typ, op1->size ), ParmType( op2->typ, op2->size ) ) );
 }

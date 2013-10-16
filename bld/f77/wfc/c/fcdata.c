@@ -90,7 +90,7 @@ static  void    StructInitItem( sym_id fd );
 #define CONST_TYPES     9
 
 static  TYPE    MapType[] = {
-    #define pick(id,type,dbgtype,cgtype, typnam) type,
+    #define pick(id,type,dbgtype,cgtype,inpfun,outfun,typnam) type,
     #include "ptypdefn.h"
     #undef pick
 };
@@ -937,8 +937,7 @@ static  void    AsnVal( PTYPE var_type ) {
         ( Numeric( var_type ) && Numeric( DtConstType ) ) ) {
         DoDataInit( var_type );
     } else {
-        TypeNameTypeErr( DA_TYPE_MISMATCH, MapType[ var_type ], InitVar,
-                                       MapType[ DtConstType ] );
+        TypeNameTypeErr( DA_TYPE_MISMATCH, MapType[ var_type ], InitVar, MapType[ DtConstType ] );
     }
 }
 

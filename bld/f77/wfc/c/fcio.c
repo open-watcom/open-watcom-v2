@@ -623,39 +623,21 @@ void    FCEndIO( void ) {
     }
 }
 
-
 static  void            (*OutRtn[])(void) = {
-        NULL,
-        &FCOutLOG1,
-        &FCOutLOG4,
-        &FCOutINT1,
-        &FCOutINT2,
-        &FCOutINT4,
-        &FCOutREAL,
-        &FCOutDBLE,
-        &FCOutXTND,
-        &FCOutCPLX,
-        &FCOutDBCX,
-        &FCOutXTCX,
-        &OutString
+    #define ONLY_BASE_TYPES
+    #define pick(id,type,dbgtype,cgtype,inpfun,outfun,typnam) outfun,
+    #include "ptypdefn.h"
+    #undef pick
+    #undef ONLY_BASE_TYPES
 };
 
 static  void            (*InpRtn[])(void) = {
-        NULL,
-        &FCInpLOG1,
-        &FCInpLOG4,
-        &FCInpINT1,
-        &FCInpINT2,
-        &FCInpINT4,
-        &FCInpREAL,
-        &FCInpDBLE,
-        &FCInpXTND,
-        &FCInpCPLX,
-        &FCInpDBCX,
-        &FCInpXTCX,
-        &InpString
+    #define ONLY_BASE_TYPES
+    #define pick(id,type,dbgtype,cgtype,inpfun,outfun,typnam) inpfun,
+    #include "ptypdefn.h"
+    #undef pick
+    #undef ONLY_BASE_TYPES
 };
-
 
 void    FCOutStruct( void ) {
 //=====================
@@ -836,8 +818,7 @@ void    FCSetFmt( void ) {
     call_handle handle;
 
     handle = InitCall( RT_SET_FMT );
-    CGAddParm( handle, CGBackName( GetStmtLabel( GetPtr() ), TY_POINTER ),
-               TY_POINTER );
+    CGAddParm( handle, CGBackName( GetStmtLabel( GetPtr() ), TY_POINTER ), TY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -850,8 +831,7 @@ void    FCPassLabel( void ) {
     call_handle handle;
 
     handle = InitCall( GetU16() );
-    CGAddParm( handle, CGBackName( GetLabel( GetU16() ), TY_POINTER ),
-               TY_POINTER );
+    CGAddParm( handle, CGBackName( GetLabel( GetU16() ), TY_POINTER ), TY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -867,9 +847,7 @@ void    FCFmtAssign( void ) {
     call_handle handle;
 
     handle = InitCall( RT_SET_FMT );
-    CGAddParm( handle,
-               CGUnary( O_POINTS, SymAddr( GetPtr() ), TY_POINTER ),
-               TY_POINTER );
+    CGAddParm( handle, CGUnary( O_POINTS, SymAddr( GetPtr() ), TY_POINTER ), TY_POINTER );
     CGDone( CGCall( handle ) );
 }
 

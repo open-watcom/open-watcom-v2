@@ -201,10 +201,8 @@ void    FCCharNMove( void ) {
         CGAddParm( call, CGInteger( src_len, TY_INTEGER ), TY_INTEGER );
     } else {
         // Special but common case, so we optimize it.
-        CGAddParm( call, CGInteger( src_len & TAIL_MASK, TY_INTEGER ),
-                        TY_INTEGER );
-        CGAddParm( call, CGInteger( src_len >> TAIL_SHIFT, TY_INTEGER ),
-                        TY_INTEGER );
+        CGAddParm( call, CGInteger( src_len & TAIL_MASK, TY_INTEGER ), TY_INTEGER );
+        CGAddParm( call, CGInteger( src_len >> TAIL_SHIFT, TY_INTEGER ), TY_INTEGER );
     }
 
     CGAddParm( call, SCBPointer( XPop() ), TY_LOCAL_POINTER );

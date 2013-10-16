@@ -1621,73 +1621,73 @@ static  void    GetArgList( void ) {
 
     pass_by     *arg;
     pass_by     **curr_arg;
-    unsigned_16 pass_info;
+    pass_info   arg_pass_info;
 
     FreeArgList( CurrAux );
     if( RecToken( ")" ) )
         return;
     curr_arg = &CurrAux->arg_info;
     for(;;) {
-        pass_info = 0;
+        arg_pass_info = 0;
         if( RecToken( "VALUE" ) ) {
-            pass_info |= PASS_BY_VALUE;
+            arg_pass_info |= PASS_BY_VALUE;
             if( RecToken( "*" ) ) {
                 if( RecToken( "1" ) ) {
-                    pass_info |= ARG_SIZE_1;
+                    arg_pass_info |= ARG_SIZE_1;
                 } else if( RecToken( "2" ) ) {
-                    pass_info |= ARG_SIZE_2;
+                    arg_pass_info |= ARG_SIZE_2;
                 } else if( RecToken( "4" ) ) {
-                    pass_info |= ARG_SIZE_4;
+                    arg_pass_info |= ARG_SIZE_4;
                 } else if( RecToken( "8" ) ) {
-                    pass_info |= ARG_SIZE_8;
+                    arg_pass_info |= ARG_SIZE_8;
                 } else {
                     Error( PR_BAD_PARM_SIZE );
                     CSuicide();
                 }
 #if _INTEL_CPU
             } else if( RecToken( "FAR" ) ) {
-                pass_info |= ARG_FAR;
+                arg_pass_info |= ARG_FAR;
     #if ( _CPU == 8086 )
-                pass_info |= ARG_SIZE_2;
+                arg_pass_info |= ARG_SIZE_2;
     #else
-                pass_info |= ARG_SIZE_4;
+                arg_pass_info |= ARG_SIZE_4;
     #endif
             } else if( RecToken( "NEAR" ) ) {
-                pass_info |= ARG_NEAR;
+                arg_pass_info |= ARG_NEAR;
     #if ( _CPU == 8086 )
-                pass_info |= ARG_SIZE_2;
+                arg_pass_info |= ARG_SIZE_2;
     #else
-                pass_info |= ARG_SIZE_4;
+                arg_pass_info |= ARG_SIZE_4;
     #endif
             } else {
     #if ( _CPU == 8086 )
-                pass_info |= ARG_SIZE_2;
+                arg_pass_info |= ARG_SIZE_2;
     #else
-                pass_info |= ARG_SIZE_4;
+                arg_pass_info |= ARG_SIZE_4;
     #endif
 #endif
             }
         } else if( RecToken( "REFERENCE" ) ) {
-            pass_info |= PASS_BY_REFERENCE;
+            arg_pass_info |= PASS_BY_REFERENCE;
 #if _INTEL_CPU
             if( RecToken( "FAR" ) ) {
-                pass_info |= ARG_FAR;
+                arg_pass_info |= ARG_FAR;
             } else if( RecToken( "NEAR" ) ) {
-                pass_info |= ARG_NEAR;
+                arg_pass_info |= ARG_NEAR;
             }
 #endif
             if( RecToken( "DESCRIPTOR" ) ) {
-                pass_info |= PASS_BY_DESCRIPTOR;
+                arg_pass_info |= PASS_BY_DESCRIPTOR;
             } else if( RecToken( "NODESCRIPTOR" ) ) {
-                pass_info |= PASS_BY_NODESCRIPTOR;
+                arg_pass_info |= PASS_BY_NODESCRIPTOR;
             }
         } else if( RecToken( "DATA_REFERENCE" ) ) {
-            pass_info |= PASS_BY_DATA | PASS_BY_REFERENCE;
+            arg_pass_info |= PASS_BY_DATA | PASS_BY_REFERENCE;
 #if _INTEL_CPU
             if( RecToken( "FAR" ) ) {
-                pass_info |= ARG_FAR;
+                arg_pass_info |= ARG_FAR;
             } else if( RecToken( "NEAR" ) ) {
-                pass_info |= ARG_NEAR;
+                arg_pass_info |= ARG_NEAR;
             }
 #endif
         } else {
@@ -1696,7 +1696,7 @@ static  void    GetArgList( void ) {
         }
         arg = FMemAlloc( sizeof( pass_by ) );
         arg->link = NULL;
-        arg->info = pass_info;
+        arg->info = arg_pass_info;
         *curr_arg = arg;
         curr_arg = &arg->link;
         if( !RecToken( "," ) ) {

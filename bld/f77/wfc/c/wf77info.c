@@ -116,15 +116,19 @@ static  segment_id      CurrImpSegId;
 static  cg_type         UserType;
 
 static  dbg_type        DBGTypes[] = {
-    #define pick(id,type,dbgtype,cgtype,typnam) dbgtype,
+    #define ONLY_BASE_TYPES
+    #define pick(id,type,dbgtype,cgtype,inpfun,outfun,typnam) dbgtype,
     #include "ptypdefn.h"
     #undef pick
+    #undef ONLY_BASE_TYPES
 };
 
 static  char * DBGNames[] = {
-    #define pick(id,type,dbgtype,cgtype,typnam) typnam,
+    #define ONLY_BASE_TYPES
+    #define pick(id,type,dbgtype,cgtype,inpfun,outfun,typnam) typnam,
     #include "ptypdefn.h"
     #undef pick
+    #undef ONLY_BASE_TYPES
 };
 
 
@@ -1295,8 +1299,8 @@ cg_type FEParmType( sym_id fn, sym_id parm, cg_type tipe ) {
 }
 
 
-int     FEMoreMem( int size ) {
-//=============================
+int     FEMoreMem( unsigned size ) {
+//==================================
 
 // We can't free any memory for use by the back end.
 

@@ -134,11 +134,8 @@ void            FCAllocate( void ) {
         if( arr == NULL ) break;
         if( arr->ns.flags & SY_SUBSCRIPTED ) {
             dim = arr->ns.si.va.u.dim_ext;
-            CGAddParm( handle, CGInteger( _SymSize( arr ), TY_INT_4 ),
-                       TY_INT_4 );
-            CGAddParm( handle, CGInteger( _DimCount( dim->dim_flags ),
-                                          TY_INTEGER ),
-                       TY_INTEGER );
+            CGAddParm( handle, CGInteger( _SymSize( arr ), TY_INT_4 ), TY_INT_4 );
+            CGAddParm( handle, CGInteger( _DimCount( dim->dim_flags ), TY_INTEGER ), TY_INTEGER );
             CGAddParm( handle, GetAdv( arr ), TY_LOCAL_POINTER );
         }
         CGAddParm( handle, CGFEName( arr, TY_POINTER ), TY_POINTER );

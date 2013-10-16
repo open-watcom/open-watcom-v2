@@ -42,23 +42,23 @@
 // NOTE: These constants should stay in the following order.
 //       ( routines rely on them being sequential )
 
-//    id              type          dbgtype       cgtype
-pick( PT_NOTYPE,      FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED  , ""  ) // type of statement #'s and subroutine return values
-pick( PT_LOG_1,       FT_LOGICAL_1, DBG_NIL_TYPE, TY_UINT_1        , "LOGICAL*1" ) // LOGICAL*1
-pick( PT_LOG_4,       FT_LOGICAL,   DBG_NIL_TYPE, TY_UINT_4        , "LOGICAL*4" ) // LOGICAL*4
-pick( PT_INT_1,       FT_INTEGER_1, DBG_NIL_TYPE, TY_INT_1         , "INTEGER*1" ) // INTEGER*1
-pick( PT_INT_2,       FT_INTEGER_2, DBG_NIL_TYPE, TY_INT_2         , "INTEGER*2" ) // INTEGER*2
-pick( PT_INT_4,       FT_INTEGER,   DBG_NIL_TYPE, TY_INT_4         , "INTEGER*4" ) // INTEGER*4
-pick( PT_REAL_4,      FT_REAL,      DBG_NIL_TYPE, TY_SINGLE        , "REAL*4"    ) // REAL*4
-pick( PT_REAL_8,      FT_DOUBLE,    DBG_NIL_TYPE, TY_DOUBLE        , "REAL*8"    ) // REAL*8
-pick( PT_REAL_16,     FT_EXTENDED,  DBG_NIL_TYPE, TY_LONGDOUBLE    , "REAL*16"   ) // REAL*16
-pick( PT_CPLX_8,      FT_COMPLEX,   DBG_NIL_TYPE, TY_COMPLEX       , "COMPLEX*8" ) // COMPLEX*8
-pick( PT_CPLX_16,     FT_DCOMPLEX,  DBG_NIL_TYPE, TY_DCOMPLEX      , "COMPLEX*16") // COMPLEX*16
-pick( PT_CPLX_32,     FT_XCOMPLEX,  DBG_NIL_TYPE, TY_XCOMPLEX      , "COMPLEX*32") // COMPLEX*32
-pick( PT_CHAR,        FT_CHAR,      DBG_NIL_TYPE, TY_LOCAL_POINTER , "CHARACTER" ) // CHARACTER
-pick( PT_STRUCT,      FT_STRUCTURE, DBG_NIL_TYPE, TY_USER_DEFINED  , "STRUCTURE" ) // STRUCTURE
-pick( PT_ARRAY,       FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED  , "ARRAY"     ) // ARRAY
-pick( PT_END_DATASET, FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED  , ""          ) // indicates the end of a data set in DATA statement
-pick( PT_NOT_STARTED, FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED  , ""          ) // IOCB->typ is initialized to this for i/o statements
-                                                                                  // so that the i/o list may be flushed in halt when an
-                                                                                  // error occurs
+//    id              type          dbgtype       cgtype            inpfun      outfun      desc
+pick( PT_NOTYPE,      FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED,  NULL,       NULL,       ""  ) // type of statement #'s and subroutine return values
+pick( PT_LOG_1,       FT_LOGICAL_1, DBG_NIL_TYPE, TY_UINT_1,        &FCInpLOG1, &FCOutLOG1, "LOGICAL*1" ) // LOGICAL*1
+pick( PT_LOG_4,       FT_LOGICAL,   DBG_NIL_TYPE, TY_UINT_4,        &FCInpLOG4, &FCOutLOG4, "LOGICAL*4" ) // LOGICAL*4
+pick( PT_INT_1,       FT_INTEGER_1, DBG_NIL_TYPE, TY_INT_1,         &FCInpINT1, &FCOutINT1, "INTEGER*1" ) // INTEGER*1
+pick( PT_INT_2,       FT_INTEGER_2, DBG_NIL_TYPE, TY_INT_2,         &FCInpINT2, &FCOutINT2, "INTEGER*2" ) // INTEGER*2
+pick( PT_INT_4,       FT_INTEGER,   DBG_NIL_TYPE, TY_INT_4,         &FCInpINT4, &FCOutINT4, "INTEGER*4" ) // INTEGER*4
+pick( PT_REAL_4,      FT_REAL,      DBG_NIL_TYPE, TY_SINGLE,        &FCInpREAL, &FCOutREAL, "REAL*4"    ) // REAL*4
+pick( PT_REAL_8,      FT_DOUBLE,    DBG_NIL_TYPE, TY_DOUBLE,        &FCInpDBLE, &FCOutDBLE, "REAL*8"    ) // REAL*8
+pick( PT_REAL_16,     FT_EXTENDED,  DBG_NIL_TYPE, TY_LONGDOUBLE,    &FCInpXTND, &FCOutXTND, "REAL*16"   ) // REAL*16
+pick( PT_CPLX_8,      FT_COMPLEX,   DBG_NIL_TYPE, TY_COMPLEX,       &FCInpCPLX, &FCOutCPLX, "COMPLEX*8" ) // COMPLEX*8
+pick( PT_CPLX_16,     FT_DCOMPLEX,  DBG_NIL_TYPE, TY_DCOMPLEX,      &FCInpDBCX, &FCOutDBCX, "COMPLEX*16") // COMPLEX*16
+pick( PT_CPLX_32,     FT_XCOMPLEX,  DBG_NIL_TYPE, TY_XCOMPLEX,      &FCInpXTCX, &FCOutXTCX, "COMPLEX*32") // COMPLEX*32
+pick( PT_CHAR,        FT_CHAR,      DBG_NIL_TYPE, TY_LOCAL_POINTER, &InpString, &OutString, "CHARACTER" ) // CHARACTER
+#ifndef ONLY_BASE_TYPES
+pick( PT_STRUCT,      FT_STRUCTURE, DBG_NIL_TYPE, TY_USER_DEFINED,  NULL,       NULL,       "STRUCTURE" ) // STRUCTURE
+pick( PT_ARRAY,       FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED,  NULL,       NULL,       "ARRAY"     ) // ARRAY
+pick( PT_END_DATASET, FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED,  NULL,       NULL,       ""          ) // indicates the end of a data set in DATA statement
+pick( PT_NOT_STARTED, FT_NO_TYPE,   DBG_NIL_TYPE, TY_USER_DEFINED,  NULL,       NULL,       ""          ) // IOCB->typ is initialized to this for i/o statements
+#endif
