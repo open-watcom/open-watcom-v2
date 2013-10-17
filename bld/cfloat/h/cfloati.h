@@ -24,22 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  The cfloat library internals.
 *
 ****************************************************************************/
 
 
-#include "cfloati.h"
+#include "cfloat.h"
 
-cfloat  *CFInverse( cfloat *op ) {
-/********************************/
+#define NULLCHAR        '\0'
 
-    cfloat      *one;
-    cfloat      *result;
+#define CF_MAX_PREC     32
+#define CF_ERR_EXP      INT_MAX
 
-    one = CFCnvI32F( 1 );
-    result = CFDiv( one, op );
-    CFFree( one );
-    return( result );
-}
+#define MAX_SIG_DIGITS  17
+
+#define _IsDigit( ch )  ( ch >= '0' && ch <= '9' )
+
+extern  unsigned_32     U32ModDiv( unsigned_32 *, unsigned_32 );
+extern  int             CFOrder( cfloat *float1, cfloat *float2 );
+extern  int             CFAccess( cfloat *f, int index );
+extern  void            CFDeposit( cfloat *f, int index, int data );
+extern  void            CFClean( cfloat *f );

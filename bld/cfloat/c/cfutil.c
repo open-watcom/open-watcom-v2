@@ -30,16 +30,14 @@
 ****************************************************************************/
 
 
-#include "cfloat.h"
-
-extern  double  CFToF(cfloat*);
+#include "cfloati.h"
 
 /*
  * For now we can just cheese out - if we ever port to a non IEEE machine
  * this will have to be abstracted.
  */
-extern  void    CFCnvTarget( cfloat *f, flt *buffer, int size ) {
-/****************************************************************/
+void    CFCnvTarget( cfloat *f, flt *buffer, int size ) {
+/*******************************************************/
 
     switch( size ) {
     case 4:

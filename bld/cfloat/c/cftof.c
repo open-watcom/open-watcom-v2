@@ -30,23 +30,19 @@
 ****************************************************************************/
 
 
-#include "cfloat.h"
-
-#define MAX_SIG_DIGITS  17
-
 #include <stdlib.h>
-
+#include "cfloati.h"
 
 /*
  * Stand IEEE floating point conversion - if not running on an IEEE host
  * or not targetting an IEEE target, this must be replaced.
  */
 
-extern      double        CFToF( cfloat *f ) {
-/********************************************/
+double        CFToF( cfloat *f ) {
+/********************************/
 
-    char    buff[ MAX_SIG_DIGITS+10 ];
+    char    buff[MAX_SIG_DIGITS + 10];
 
-    CFCnvFS( f, buff, MAX_SIG_DIGITS+10 );  /* NYI */
+    CFCnvFS( f, buff, MAX_SIG_DIGITS + 10 );  /* NYI */
     return( atof( buff ) );
 }

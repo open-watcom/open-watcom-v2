@@ -32,19 +32,12 @@
 
 #include <string.h>
 #include <stddef.h>
-#include "watcom.h"
-#include "cfloat.h"
+#include "cfloati.h"
 #include "machine.h"
 #include "i64.h"
 
-#define NULLCHAR        '\0'
-
-extern  unsigned_32     U32ModDiv(unsigned_32*,unsigned_32);
-
-#define _IsDigit( ch ) ( ch >= '0' && ch <= '9' )
-
-extern  signed_64   CFGetDec64( const char *bstart ) {
-/**************************************************/
+static  signed_64   CFGetDec64( const char *bstart ) {
+/****************************************************/
 
     signed_64   number;
     signed_64   ten;
@@ -60,8 +53,8 @@ extern  signed_64   CFGetDec64( const char *bstart ) {
     return( number );
 }
 
-extern  signed_32   CFGetDec32( const char *bstart ) {
-/**************************************************/
+static  signed_32   CFGetDec32( const char *bstart ) {
+/****************************************************/
 
     signed_32   number;
 
@@ -84,10 +77,10 @@ static  signed_16   CFGetDec16( const char *bstart ) {
     return( number );
 }
 
-extern  char    *CFCnvFS( cfloat *f, char *buffer, unsigned maxlen ) {
-/********************************************************************/
+char    *CFCnvFS( cfloat *f, char *buffer, int maxlen ) {
+/*******************************************************/
 
-    unsigned    len;
+    int         len;
 
     len = f->len - 1;
     if( len + 5 + I16DIGITS > maxlen ) {
@@ -111,7 +104,7 @@ extern  char    *CFCnvFS( cfloat *f, char *buffer, unsigned maxlen ) {
     len /= 10;
     buffer[ 1 ] = len % 10 + '0';
     len /= 10;
-    buffer[ 0 ] = len + '0';
+    buffer[ 0 ] = (char)len + '0';
     buffer[ 3 ] = NULLCHAR;
     buffer += 3;
     return( buffer );
@@ -123,7 +116,7 @@ static  void    DoConvert( cfloat *number, const char *bstart ) {
 
     int         len;
     char        *fptr;
-    int         sgn;
+    signed char sgn;
     int         expon;
 
     for(;;) {
@@ -156,6 +149,7 @@ static  void    DoConvert( cfloat *number, const char *bstart ) {
             }
         }
     } else {
+        *fptr = NULLCHAR;
         if( *bstart != '.' ) return;
         ++bstart;
         if( !_IsDigit( *bstart ) ) return;
@@ -175,6 +169,7 @@ static  void    DoConvert( cfloat *number, const char *bstart ) {
             expon += CFGetDec16( bstart );
         }
     }
+    *fptr = NULLCHAR;
     number->sign = sgn;
     number->len = len;             /* fill in length*/
     number->exp = expon;
@@ -182,8 +177,8 @@ static  void    DoConvert( cfloat *number, const char *bstart ) {
 }
 
 
-extern  cfloat  *CFCnvSF( const char *bstart ) {
-/**********************************************/
+cfloat  *CFCnvSF( const char *bstart ) {
+/**************************************/
 
 /* Syntax accepted by this converter:*/
 /**/
@@ -199,8 +194,8 @@ extern  cfloat  *CFCnvSF( const char *bstart ) {
     return( number );
 }
 
-extern  cfloat  *CFCopy( cfloat *old ) {
-/***************************************/
+cfloat  *CFCopy( cfloat *old ) {
+/******************************/
 
     cfloat      *new;
 
@@ -209,11 +204,11 @@ extern  cfloat  *CFCopy( cfloat *old ) {
     return( new );
 }
 
-extern  cfloat  *CFTrunc( cfloat *f ) {
-/*************************************/
+cfloat  *CFTrunc( cfloat *f ) {
+/*****************************/
 
     cfloat      *new;
-    unsigned    len;
+    int         len;
 
     if( f->exp <= 0 )
         return( CFAlloc( 1 ) );
@@ -226,13 +221,13 @@ extern  cfloat  *CFTrunc( cfloat *f ) {
     return( new );
 }
 
-extern  cfloat  *CFRound( cfloat *f ) {
-/*************************************/
+cfloat  *CFRound( cfloat *f ) {
+/*****************************/
 
     cfloat      *trim;
     cfloat      *addto;
     cfloat      *new;
-    unsigned    len;
+    int         len;
 
     if( f->exp < 0 ) return( CFAlloc( 1 ) );
     len = f->exp;
@@ -249,21 +244,20 @@ extern  cfloat  *CFRound( cfloat *f ) {
     return( new );
 }
 
-static  cfloat  *CFCnvLongToF( signed_32 data, cf_bool is_signed ) {
+static  cfloat  *CFCnvLongToF( signed_32 data, bool is_signed ) {
 /******************************************************************/
 
     cfloat              *new;
-    unsigned            len;
+    int                 len;
     signed_8            sign;
     char                *digit;
     unsigned_32         dividend;
     char                mant[I32DIGITS+1];
 
     if( data == 0 ) return( CFAlloc( 0 ) );
-    if( is_signed != CF_FALSE && -data == data ) {
+    if( is_signed != FALSE && -data == data ) {
         /* Aha! It's  -MaxNegI32 */
         new = CFCopy( (cfloat *)&MaxNegI32 );
-        new->sign = -1;
         return( new );
     }
     sign = 1;
@@ -276,7 +270,7 @@ static  cfloat  *CFCnvLongToF( signed_32 data, cf_bool is_signed ) {
     *digit = NULLCHAR;
     dividend = data;
     while( dividend != 0 ) {
-        *--digit = U32ModDiv( &dividend, 10 ) + '0';
+        *--digit = (char)U32ModDiv( &dividend, 10 ) + '0';
         ++len;
     }
     if( len > I16DIGITS ) {
@@ -292,20 +286,20 @@ static  cfloat  *CFCnvLongToF( signed_32 data, cf_bool is_signed ) {
     return( new );
 }
 
-extern  cfloat  *CFCnvI32F( signed_32 data ) {
-/********************************************/
+cfloat  *CFCnvI32F( signed_32 data ) {
+/************************************/
 
-    return( CFCnvLongToF( data, CF_TRUE ) );
+    return( CFCnvLongToF( data, TRUE ) );
 }
 
-extern  cfloat  *CFCnvU32F( unsigned_32 data ) {
-/**********************************************/
+cfloat  *CFCnvU32F( unsigned_32 data ) {
+/**************************************/
 
-    return( CFCnvLongToF( data, CF_FALSE ) );
+    return( CFCnvLongToF( data, FALSE ) );
 }
 
-extern  cfloat  *CFCnvU64F( unsigned_32 low, unsigned_32 high ) {
-/***************************************************************/
+cfloat  *CFCnvU64F( unsigned_32 low, unsigned_32 high ) {
+/*******************************************************/
 
     cfloat      *temp;
     cfloat      *lo;
@@ -324,16 +318,16 @@ extern  cfloat  *CFCnvU64F( unsigned_32 low, unsigned_32 high ) {
 
 #define _HiBitOn( x )   ( ( (x) & 0x80000000 ) != 0 )
 
-extern  cfloat  *CFCnvI64F( unsigned_32 lo, unsigned_32 hi ) {
-/************************************************************/
+cfloat  *CFCnvI64F( unsigned_32 lo, unsigned_32 hi ) {
+/****************************************************/
 
-    cf_bool     neg;
+    bool     neg;
     cfloat      *result;
 
-    neg = CF_FALSE;
+    neg = FALSE;
     if( _HiBitOn( hi ) ) {
         // take the two's complement
-        neg = CF_TRUE;
+        neg = TRUE;
         lo = ~lo;
         hi = ~hi;
         lo++;
@@ -348,165 +342,165 @@ extern  cfloat  *CFCnvI64F( unsigned_32 lo, unsigned_32 hi ) {
     return( result );
 }
 
-extern  cfloat  *CFCnvIF( int data ) {
-/*************************************/
+cfloat  *CFCnvIF( int data ) {
+/****************************/
 
-    return( CFCnvLongToF( data, CF_TRUE ) );
+    return( CFCnvLongToF( data, TRUE ) );
 }
 
 
-extern  cfloat  *CFCnvUF( uint data ) {
-/*************************************/
+cfloat  *CFCnvUF( uint data ) {
+/*****************************/
 
-    return( CFCnvLongToF( data, CF_FALSE ) );
+    return( CFCnvLongToF( data, FALSE ) );
 }
 
-static  cf_bool CFIsType( cfloat *f, cfloat *maxval ) {
+static  bool CFIsType( cfloat *f, cfloat *maxval ) {
 /*****************************************************/
 // Assume 2-complement
 // if signed maxval is magnitude of smallest negative number
     int         ord;
 
-    if( f->exp <= 0 || f->exp > maxval->exp ) return( CF_FALSE );/* < 1 or > maxval*/
-    if( f->sign == -1 && maxval->sign == 1 ) return( CF_FALSE ); /* signedness*/
-    if( f->exp < f->len ) return( CF_FALSE );                 /* has decimal pt*/
+    if( f->exp <= 0 || f->exp > maxval->exp ) return( FALSE );/* < 1 or > maxval*/
+    if( f->sign == -1 && maxval->sign == 1 ) return( FALSE ); /* signedness*/
+    if( f->exp < f->len ) return( FALSE );                 /* has decimal pt*/
     ord = CFOrder( f, maxval);                                /* compare mag*/
-    if( ord == 1 ) return( CF_FALSE );                        /* too big*/
+    if( ord == 1 ) return( FALSE );                        /* too big*/
     /* can't have pos number equal to maxval if signed */
-    if( ord == 0 && f->sign == 1 && maxval->sign == -1 ) return( CF_FALSE );
-    return( CF_TRUE );
+    if( ord == 0 && f->sign == 1 && maxval->sign == -1 ) return( FALSE );
+    return( TRUE );
 }
 
-extern  cf_bool CFIsI8( cfloat *f ) {
-/***********************************/
+bool CFIsI8( cfloat *f ) {
+/************************/
 
     return( CFIsType( f, (cfloat *)&MaxI8 ) );
 }
 
-extern  cf_bool CFIsI16( cfloat *f ) {
-/***********************************/
+bool CFIsI16( cfloat *f ) {
+/*************************/
 
     return( CFIsType( f, (cfloat *)&MaxNegI16 ) );
 }
 
-extern  cf_bool CFIsI32( cfloat *f ) {
-/***********************************/
+bool CFIsI32( cfloat *f ) {
+/*************************/
 
     return( CFIsType( f, (cfloat *)&MaxNegI32 ) );
 }
 
-extern  cf_bool CFIsI64( cfloat *f ) {
-/************************************/
+bool CFIsI64( cfloat *f ) {
+/*************************/
 
     return( CFIsType( f, (cfloat *)&MaxNegI64 ) );
 }
 
-extern  cf_bool CFIsU8( cfloat *f ) {
-/***********************************/
+bool CFIsU8( cfloat *f ) {
+/************************/
 
     return( CFIsType( f, (cfloat *)&MaxU8 ) );
 }
 
-extern  cf_bool CFIsU16( cfloat *f ) {
-/***********************************/
+bool CFIsU16( cfloat *f ) {
+/*************************/
 
     return( CFIsType( f, (cfloat *)&MaxU16 ) );
 }
 
-extern  cf_bool CFIsU32( cfloat *f ) {
-/***********************************/
+bool CFIsU32( cfloat *f ) {
+/*************************/
 
     return( CFIsType( f, (cfloat *)&MaxU32 ) );
 }
 
-extern  cf_bool CFIsU64( cfloat *f ) {
-/************************************/
+bool CFIsU64( cfloat *f ) {
+/*************************/
 
     return( CFIsType( f, (cfloat *)&MaxU64 ) );
 }
 
-extern  cf_bool CFIs32( cfloat * cf ) {
+bool CFIs32( cfloat * cf ) {
+/**************************/
+
+    if( CFIsI32( cf ) ) return( TRUE );
+    if( CFIsU32( cf ) ) return( TRUE );
+    return( FALSE );
+}
+
+bool CFIs64( cfloat * cf ) {
+/**************************/
+
+    if( CFIsI64( cf ) ) return( TRUE );
+    if( CFIsU64( cf ) ) return( TRUE );
+    return( FALSE );
+}
+
+bool CFIsSize( cfloat *f, uint size ) {
 /*************************************/
 
-    if( CFIsI32( cf ) ) return( CF_TRUE );
-    if( CFIsU32( cf ) ) return( CF_TRUE );
-    return( CF_FALSE );
+    switch( size ) {
+    case 1:
+        if( CFIsU8( f ) ) return( TRUE );
+        if( CFIsI8( f ) ) return( TRUE );
+        break;
+    case 2:
+        if( CFIsU16( f ) ) return( TRUE );
+        if( CFIsI16( f ) ) return( TRUE );
+        break;
+    case 4:
+        if( CFIsU32( f ) ) return( TRUE );
+        if( CFIsI32( f ) ) return( TRUE );
+        break;
+    case 8:
+        if( CFIsU64( f ) ) return( TRUE );
+        if( CFIsI64( f ) ) return( TRUE );
+    }
+    return( FALSE );
 }
 
-extern  cf_bool CFIs64( cfloat * cf ) {
+
+bool CFSignedSize( cfloat *f, uint size ) {
+/*****************************************/
+
+    switch( size ) {
+    case 1:
+        if( CFIsI8( f ) ) return( TRUE );
+        break;
+    case 2:
+        if( CFIsI16( f ) ) return( TRUE );
+        break;
+    case 4:
+        if( CFIsI32( f ) ) return( TRUE );
+        break;
+    case 8:
+        if( CFIsI64( f ) ) return( TRUE );
+    }
+    return( FALSE );
+}
+
+bool CFUnSignedSize( cfloat *f, uint size ) {
+/*******************************************/
+
+    switch( size ) {
+    case 1:
+        if( CFIsU8( f ) ) return( TRUE );
+        break;
+    case 2:
+        if( CFIsU16( f ) ) return( TRUE );
+        break;
+    case 4:
+        if( CFIsU32( f ) ) return( TRUE );
+        break;
+    case 8:
+        if( CFIsU64( f ) ) return( TRUE );
+        break;
+    }
+    return( FALSE );
+}
+
+
+signed_16       CFCnvF16( cfloat *f ) {
 /*************************************/
-
-    if( CFIsI64( cf ) ) return( CF_TRUE );
-    if( CFIsU64( cf ) ) return( CF_TRUE );
-    return( CF_FALSE );
-}
-
-extern  cf_bool CFIsSize( cfloat *f, uint size ) {
-/************************************************/
-
-    switch( size ) {
-    case 1:
-        if( CFIsU8( f ) ) return( CF_TRUE );
-        if( CFIsI8( f ) ) return( CF_TRUE );
-        break;
-    case 2:
-        if( CFIsU16( f ) ) return( CF_TRUE );
-        if( CFIsI16( f ) ) return( CF_TRUE );
-        break;
-    case 4:
-        if( CFIsU32( f ) ) return( CF_TRUE );
-        if( CFIsI32( f ) ) return( CF_TRUE );
-        break;
-    case 8:
-        if( CFIsU64( f ) ) return( CF_TRUE );
-        if( CFIsI64( f ) ) return( CF_TRUE );
-    }
-    return( CF_FALSE );
-}
-
-
-extern  cf_bool CFSignedSize( cfloat *f, uint size ) {
-/****************************************************/
-
-    switch( size ) {
-    case 1:
-        if( CFIsI8( f ) ) return( CF_TRUE );
-        break;
-    case 2:
-        if( CFIsI16( f ) ) return( CF_TRUE );
-        break;
-    case 4:
-        if( CFIsI32( f ) ) return( CF_TRUE );
-        break;
-    case 8:
-        if( CFIsI64( f ) ) return( CF_TRUE );
-    }
-    return( CF_FALSE );
-}
-
-extern  cf_bool CFUnSignedSize( cfloat *f, uint size ) {
-/************************************************/
-
-    switch( size ) {
-    case 1:
-        if( CFIsU8( f ) ) return( CF_TRUE );
-        break;
-    case 2:
-        if( CFIsU16( f ) ) return( CF_TRUE );
-        break;
-    case 4:
-        if( CFIsU32( f ) ) return( CF_TRUE );
-        break;
-    case 8:
-        if( CFIsU64( f ) ) return( CF_TRUE );
-        break;
-    }
-    return( CF_FALSE );
-}
-
-
-extern  signed_16       CFCnvF16( cfloat *f ) {
-/*********************************************/
 
     signed_16   data;
     signed_16   exp;
@@ -514,7 +508,7 @@ extern  signed_16       CFCnvF16( cfloat *f ) {
     data = 0;
     if( CFIsI16( f ) || CFIsU16( f ) ) {
         data = CFGetDec16( f->mant );
-        exp = f->exp - f->len;
+        exp = (signed_16)( f->exp - f->len );
         while( exp > 0 ) {
             data *= 10;
             exp--;
@@ -530,8 +524,8 @@ extern  signed_16       CFCnvF16( cfloat *f ) {
     return( data );
 }
 
-extern  signed_32       CFCnvF32( cfloat *f ) {
-/*********************************************/
+signed_32       CFCnvF32( cfloat *f ) {
+/*************************************/
 
     signed_32   data;
     int         exp;
@@ -555,8 +549,8 @@ extern  signed_32       CFCnvF32( cfloat *f ) {
     return( data );
 }
 
-extern  signed_64       CFCnvF64( cfloat *f ) {
-/*********************************************/
+signed_64       CFCnvF64( cfloat *f ) {
+/*************************************/
 
     signed_64           data;
     signed_64           ten;

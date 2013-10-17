@@ -30,11 +30,12 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 #include <limits.h>
 
-#include "watcom.h"
-#include "cfloat.h"
+#include "cfloati.h"
 
 
 static void efInit( char ue[] )
@@ -42,25 +43,25 @@ static void efInit( char ue[] )
     int     i;
 
     for( i = 0; i < CF_MAX_PREC; i++ ) {
-        ue[ i ] = 0;
+        ue[i] = 0;
     }
 }
 
 static int efGet( cfloat *u, char ue[], int i )
 {
     if( i >= u->len ) {
-        return( ue[ i - u->len ] );
+        return( ue[i - u->len] );
     } else {
-        return( u->mant[ i ] - '0' );
+        return( u->mant[i] - '0' );
     }
 }
 
 static void efSet( cfloat *u, char ue[], int i, int val )
 {
     if( i >= u->len ) {
-        ue[ i - u->len ] = val;
+        ue[i - u->len] = (char)val;
     } else {
-        u->mant[ i ] = val + '0';
+        u->mant[i] = (char)val + '0';
     }
 }
 
@@ -68,7 +69,7 @@ static cfloat *scalarMultiply( cfloat *f, int s )
 {
     cfloat      *res;
     div_t       d;
-    unsigned    i;
+    int         i;
 
     res = CFAlloc( f->len + 1 );
 
@@ -86,29 +87,21 @@ static cfloat *scalarMultiply( cfloat *f, int s )
     return( res );
 }
 
-static void expandCF( cfloat **f, unsigned scale )
+static void expandCF( cfloat **f, int scale )
 {
     cfloat      *new;
-    unsigned    l;
+    int         new_len;
+    int         old_len;
 
-    new = CFAlloc( scale + (*f)->len );
-
-    l   = (*f)->len;
-    while( l > 0 ) {
-        l--;
-        new->mant[ l ] = (*f)->mant[ l ];
+    old_len = (*f)->len;
+    new_len = old_len + scale;
+    new = CFAlloc( new_len );
+    memcpy( new, *f, offsetof( cfloat, mant ) + old_len );
+    while( old_len < new_len ) {
+        new->mant[old_len++] = '0';
     }
-
-    l = scale + (*f)->len;
-    while( (*f)->len < l ) {
-        new->mant[ (*f)->len ] = '0';
-        (*f)->len++;
-    }
-
-    new->mant[ (*f)->len ] = '\0';
-    new->sign = (*f)->sign;
-    new->exp  = (*f)->exp;
-    new->len  = l;
+    new->mant[old_len] = NULLCHAR;
+    new->len  = new_len;
 
     CFFree( *f );
 
@@ -120,28 +113,29 @@ static void roundupCF( cfloat *f )
     int     i;
 
     for( i = f->len - 1; i >= 0; i-- ) {
-        if( f->mant[ i ] == '9' ) {
-            f->mant[ i ] = '0';
+        if( f->mant[i] == '9' ) {
+            f->mant[i] = '0';
         } else {
-            f->mant[ i ] += 1;
+            f->mant[i] += 1;
             return;
         }
     }
 
-    f->mant[ 0 ] = '1';
+    f->mant[0] = '1';
     f->exp += 1;
 }
 
 /*
  * CFDiv:  Computes  op1 / op2
  */
-extern  cfloat  *CFDiv( cfloat *op1, cfloat *op2 ) {
+cfloat  *CFDiv( cfloat *op1, cfloat *op2 )
+{
     cfloat         *result;
     cfloat         *u, *v;
     int             i, qa, ua, va, v1, cy, scale;
-    unsigned        j;
+    int             j;
     div_t           d;
-    char            ue[ CF_MAX_PREC ];
+    char            ue[CF_MAX_PREC];
 
     if( ! op2->sign ) {                         // Attempt to divide by zero.
         result = CFAlloc( 1 );
@@ -171,7 +165,7 @@ extern  cfloat  *CFDiv( cfloat *op1, cfloat *op2 ) {
     if( v->len < 3 ) {                          // Divisor must have at least
         expandCF( &v, 1 );                      // two digits (ignore leading 0)
     }
-    if( u->len <= v->len ) {                    // Dividend must have more
+    if( v->len >= u->len ) {                    // Dividend must have more
         expandCF( &u, v->len - u->len + 1 );    // digits than divisor.
     }
 

@@ -31,97 +31,83 @@
 
 #include <sys/types.h>
 #include "watcom.h"
+#include "bool.h"
+
+/* aligned */
+#define STRUCT_cfloat( x ) \
+{ \
+    int             exp; \
+    int             len; \
+    size_t          alloc; \
+    signed char     sign; \
+    char            mant[ x ]; \
+}
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define  CF_MAX_PREC    32
-#define  CF_ERR_EXP     INT_MAX
-
-/* aligned */
-#define STRUCT_cfloat( x ) \
-{ \
-        int             exp; \
-        unsigned        len; \
-        unsigned        alloc; \
-        signed_8        sign; \
-        char            mant[ x ]; \
-}
-
 typedef struct cfloat STRUCT_cfloat( 1 ) cfloat;
 
 typedef struct cf_callbacks {
-    void * (*alloc)( size_t );
-    void   (*free)( void * );
+    void            *(*alloc)( size_t );
+    void            (*free)( void * );
 } cf_callbacks;
 
-typedef enum {
-    CF_FALSE = 0,
-    CF_TRUE
-} cf_bool;
-
 typedef union flt {
-        float           sngl;
-        double          dble;
-        double          ldble;  // FIXME - need long double support
+    float           sngl;
+    double          dble;
+    double          ldble;  // FIXME - need long double support
 } flt;
 
-extern  void            CFCnvTarget( cfloat *f, flt *buffer, int class );
-extern  signed_64       CFGetDec64( const char *bstart );
-extern  signed_32       CFGetDec32( const char *bstart );
-extern  char            *CFCnvFS( cfloat *f, char *buffer, unsigned maxlen );
-extern  cfloat          *CFCnvSF( const char *bstart );
-extern  cfloat          *CFCopy( cfloat *old );
-extern  cfloat          *CFTrunc( cfloat *f );
-extern  cfloat          *CFRound( cfloat *f );
-extern  cfloat          *CFCnvI32F( signed_32 data );
-extern  cfloat          *CFCnvU32F( unsigned_32 data );
-extern  cfloat          *CFCnvU64F( unsigned_32 low, unsigned_32 high );
-extern  cfloat          *CFCnvI64F( unsigned_32 lo, unsigned_32 hi );
-extern  cfloat          *CFCnvIF( int data );
-extern  cfloat          *CFCnvUF( uint data );
+extern  void        CFCnvTarget( cfloat *f, flt *buffer, int class );
+extern  char        *CFCnvFS( cfloat *f, char *buffer, int maxlen );
+extern  cfloat      *CFCnvSF( const char *bstart );
+extern  cfloat      *CFCopy( cfloat *old );
+extern  cfloat      *CFTrunc( cfloat *f );
+extern  cfloat      *CFRound( cfloat *f );
+extern  cfloat      *CFCnvI32F( signed_32 data );
+extern  cfloat      *CFCnvU32F( unsigned_32 data );
+extern  cfloat      *CFCnvU64F( unsigned_32 low, unsigned_32 high );
+extern  cfloat      *CFCnvI64F( unsigned_32 lo, unsigned_32 hi );
+extern  cfloat      *CFCnvIF( int data );
+extern  cfloat      *CFCnvUF( uint data );
 
-extern  cf_bool         CFIsI8( cfloat *f );
-extern  cf_bool         CFIsI16( cfloat *f );
-extern  cf_bool         CFIsI32( cfloat *f );
-extern  cf_bool         CFIsI64( cfloat *f );
-extern  cf_bool         CFIsU8( cfloat *f );
-extern  cf_bool         CFIsU16( cfloat *f );
-extern  cf_bool         CFIsU32( cfloat *f );
-extern  cf_bool         CFIsU64( cfloat *f );
-extern  cf_bool         CFIs32( cfloat * cf );
-extern  cf_bool         CFIs64( cfloat * cf );
+extern  bool        CFIsI8( cfloat *f );
+extern  bool        CFIsI16( cfloat *f );
+extern  bool        CFIsI32( cfloat *f );
+extern  bool        CFIsI64( cfloat *f );
+extern  bool        CFIsU8( cfloat *f );
+extern  bool        CFIsU16( cfloat *f );
+extern  bool        CFIsU32( cfloat *f );
+extern  bool        CFIsU64( cfloat *f );
+extern  bool        CFIs32( cfloat * cf );
+extern  bool        CFIs64( cfloat * cf );
 
-extern  cf_bool         CFIsSize( cfloat *f, uint size );
-extern  cf_bool         CFSignedSize( cfloat *f, uint size );
-extern  cf_bool         CFUnSignedSize( cfloat *f, uint size );
+extern  bool        CFIsSize( cfloat *f, uint size );
+extern  bool        CFSignedSize( cfloat *f, uint size );
+extern  bool        CFUnSignedSize( cfloat *f, uint size );
 
-extern  signed_16       CFCnvF16( cfloat *f );
-extern  signed_32       CFCnvF32( cfloat *f );
-extern  signed_64       CFCnvF64( cfloat *f );
-extern  double          CFToF( cfloat *f );
+extern  signed_16   CFCnvF16( cfloat *f );
+extern  signed_32   CFCnvF32( cfloat *f );
+extern  signed_64   CFCnvF64( cfloat *f );
+extern  double      CFToF( cfloat *f );
 
-extern  cfloat          *CFAlloc(unsigned);
-extern  void            CFFree(cfloat*);
-extern  cfloat          *CFCopy(cfloat*);
+extern  cfloat      *CFAlloc(size_t);
+extern  void        CFFree(cfloat*);
+extern  bool        CFFrlFree( void );
 
-extern  cfloat          *CFMul( cfloat *op1, cfloat *op2 );
-extern  cfloat          *CFDiv( cfloat *op1, cfloat *op2 );
-extern  cfloat          *CFInverse( cfloat *op );
-extern  int             CFOrder( cfloat *float1, cfloat *float2 );
-extern  cfloat          *CFAdd( cfloat *op1, cfloat *op2 );
-extern  cfloat          *CFSub( cfloat *op1, cfloat *op2 );
-extern  void            CFNegate( cfloat *f );
-extern  int             CFCompare( cfloat *op1, cfloat *op2 );
-extern  int             CFTest( cfloat *f );
-extern  int             CFAccess( cfloat *f, unsigned index );
-extern  void            CFDeposit( cfloat *f, unsigned index, int data );
-extern  void            CFClean( cfloat *f );
+extern  cfloat      *CFMul( cfloat *op1, cfloat *op2 );
+extern  cfloat      *CFDiv( cfloat *op1, cfloat *op2 );
+extern  cfloat      *CFInverse( cfloat *op );
+extern  cfloat      *CFAdd( cfloat *op1, cfloat *op2 );
+extern  cfloat      *CFSub( cfloat *op1, cfloat *op2 );
+extern  void        CFNegate( cfloat *f );
+extern  int         CFCompare( cfloat *op1, cfloat *op2 );
+extern  int         CFTest( cfloat *f );
 
-extern  void            CFInit( cf_callbacks * );
-extern  void            CFFini( void );
-extern  cf_bool         CFFrlFree( void );
+extern  void        CFInit( cf_callbacks * );
+extern  void        CFFini( void );
 
 #ifdef __cplusplus
 };

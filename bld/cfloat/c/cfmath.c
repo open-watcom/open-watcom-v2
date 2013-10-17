@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
-#include "cfloat.h"
+#include "cfloati.h"
 
 static  int     Adder( int a, int b ) {
 /*************************************/
@@ -50,7 +50,7 @@ static  int     Suber( int a, int b ) {
 int     CFOrder( cfloat *float1, cfloat *float2 ) {
 /*************************************************/
 
-    unsigned    index;
+    int         index;
     int         diff;
 
     if( float1->exp > float2->exp ) return( 1 );
@@ -88,7 +88,7 @@ static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
 {
     int         carry;
     int         pos;
-    unsigned    length;
+    int         length;
     int         op1left;
     int         op2left;
     int         farleft;
@@ -229,36 +229,37 @@ int     CFTest( cfloat *f ) {
     return( f->sign );
 }
 
-int     CFAccess( cfloat *f, unsigned index ) {
-/*********************************************/
+int     CFAccess( cfloat *f, int index ) {
+/****************************************/
 
     return( f->mant[index] - '0' );
 }
 
-void    CFDeposit( cfloat *f, unsigned index, int data ) {
-/********************************************************/
+void    CFDeposit( cfloat *f, int index, int data ) {
+/***************************************************/
 
-    f->mant[index] = data + '0';
+    f->mant[index] = (char)data + '0';
 }
 
 void    CFClean( cfloat *f ) {
 /****************************/
 
-    unsigned    headindex;
-    unsigned    tailindex;
+    int         headindex;
     char        *head;
+    int         new_len;
 
-    tailindex = f->len - 1;
-    while( f->mant[tailindex] == '0' ) {
-        if( tailindex == 0 ) { /* it's zero!*/
+    for( new_len = f->len; new_len > 0; --new_len ) {
+        if( f->mant[new_len - 1] != '0' )
+            break;
+        if( new_len == 1 ) { /* it's zero!*/
             f->exp = 1;
             f->sign = 0;
             f->len = 1;
-            f->mant[1] = 0;
+            f->mant[1] = NULLCHAR;
             return;
         }
-        tailindex--;
     }
+    f->mant[new_len] = NULLCHAR;
     headindex = 0;
     head = f->mant;
     while( *head == '0' ) {
@@ -266,13 +267,13 @@ void    CFClean( cfloat *f ) {
         headindex++;
     }
     if( headindex > 0 ) {
-        tailindex -= headindex;
-        memmove( f->mant, head, tailindex + 1 );
+        new_len -= headindex;
+        memmove( f->mant, head, new_len );
         f->exp -= headindex;
     }
-    if( tailindex > CF_MAX_PREC ) {
-        tailindex = CF_MAX_PREC;
+    if( new_len > CF_MAX_PREC ) {
+        new_len = CF_MAX_PREC;
     }
-    f->len = tailindex + 1;
-    f->mant[tailindex + 1] = 0;
+    f->len = new_len;
+    f->mant[new_len] = NULLCHAR;
 }

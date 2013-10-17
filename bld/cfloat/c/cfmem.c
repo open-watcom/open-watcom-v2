@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include "watcom.h"
-#include "cfloat.h"
+#include "cfloati.h"
 
 #define DOUBLE_DIGITS   17
 #define FRLSIZE         ( DOUBLE_DIGITS + offsetof( cfloat, mant ) + 1 )
@@ -89,16 +89,16 @@ static  void    miniFrlFini( mini_frl *frl_ptr ) {
     frl_ptr->head = NULL;
 }
 
-extern  void    CFInit( cf_callbacks *table ) {
-/*********************************************/
+void    CFInit( cf_callbacks *table ) {
+/*************************************/
 
     cfRtns = *table;
     miniFrlInit( &cfFrlList );
 }
 
 
-extern  cfloat  *CFAlloc( unsigned size ) {
-/*****************************************/
+cfloat  *CFAlloc( size_t size ) {
+/*******************************/
 
     cfloat      *number;
 
@@ -106,7 +106,7 @@ extern  cfloat  *CFAlloc( unsigned size ) {
         size = FRLSIZE;
         number = (cfloat *)miniFrlAlloc( &cfFrlList );
     } else {
-        size += offsetof( cfloat, mant ) + 1 + 1;
+        size += offsetof( cfloat, mant ) + 1;
         number = cfRtns.alloc( size );
     }
     number->sign = 0;
@@ -114,13 +114,13 @@ extern  cfloat  *CFAlloc( unsigned size ) {
     number->len = 1;
     number->alloc = size;
     number->mant[0] = '0';
-    number->mant[1] = '\0';
+    number->mant[1] = NULLCHAR;
     return( number );
 }
 
 
-extern  void    CFFree( cfloat *f ) {
-/***********************************/
+void    CFFree( cfloat *f ) {
+/***************************/
 
     if( f->alloc == FRLSIZE ) {
         miniFrlFree( &cfFrlList, (pointer)f );
@@ -130,18 +130,18 @@ extern  void    CFFree( cfloat *f ) {
 }
 
 
-extern  cf_bool CFFrlFree( void ) {
-/***************************/
+bool CFFrlFree( void ) {
+/**********************/
 
     if( cfFrlList.head != NULL ) {
         miniFrlFini( &cfFrlList );
-        return( CF_TRUE );
+        return( TRUE );
     }
-    return( CF_FALSE );
+    return( FALSE );
 }
 
-extern  void    CFFini( void ) {
-/************************/
+void    CFFini( void ) {
+/**********************/
 
     miniFrlFini( &cfFrlList );
 }

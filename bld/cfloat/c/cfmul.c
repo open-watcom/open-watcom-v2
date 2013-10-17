@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "cfloat.h"
+#include "cfloati.h"
 
 
 static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left, int op1exp, int byexp ) {
@@ -40,7 +40,7 @@ static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left, int op1exp, int bye
     int         exp;
     cfloat      *result;
     int         resexp;
-    unsigned    respos;
+    int         respos;
 
     sum = 0;
     exp = op1exp;
@@ -61,8 +61,8 @@ static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left, int op1exp, int bye
     return( result );
 }
 
-extern  cfloat  *CFMul( cfloat *op1, cfloat *op2 ) {
-/**************************************************/
+cfloat  *CFMul( cfloat *op1, cfloat *op2 ) {
+/******************************************/
 
     cfloat      *result;
     cfloat      *temp;
@@ -71,7 +71,7 @@ extern  cfloat  *CFMul( cfloat *op1, cfloat *op2 ) {
     int         op1exp;
     int         op2exp;
     int         op2ptr;
-    int         sgn;
+    signed char sgn;
 
     sgn = op1->sign * op2->sign;
     result = CFAlloc( 1 );
