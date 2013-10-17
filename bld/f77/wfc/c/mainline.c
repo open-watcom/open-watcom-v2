@@ -42,10 +42,14 @@
 #endif
 #include <string.h>
 
+#if defined( __INCL_ERRMSGS__ )
+extern  void            __InitError(void);
+#else
+extern  void            __InitResource(void);
+#endif
 extern  bool            MainCmdLine(char **,char **,char **,char *);
 extern  char            *SDSrcExtn(char *);
 extern  void            InitPredefinedMacros(void);
-
 
 static  char            CmdBuff[2*128];
 
@@ -69,22 +73,24 @@ int     main( int argc, char *argv[] ) {
     int         ret_code;
     char        *opts[MAX_OPTIONS+1];
     char        *p;
+#if !defined( __INCL_ERRMSGS__ )
+    char        imageName[_MAX_PATH];
+#endif
 
-    argc = argc; argv = argv;
-#if defined( __INCL_ERRMSGS__ )
-    {
-        extern  void    __InitError(void);
-
-        __InitError();
-        __ErrorInit( NULL );
-    }
+#if !defined( __WATCOMC__ )
+    _argc = argc;
+    _argv = argv;
 #else
-    {
-        extern  void    __InitResource(void);
-
-        __InitResource();
-        __ErrorInit( argv[0] );
-    }
+    argc = argc;
+    argv = argv;
+#endif
+#if defined( __INCL_ERRMSGS__ )
+    __InitError();
+    __ErrorInit( NULL );
+#else
+    _cmdname( imageName );
+    __InitResource();
+    __ErrorInit( imageName );
 #endif
 #if defined( _M_IX86 )
     _real87 = _8087 = 0;
