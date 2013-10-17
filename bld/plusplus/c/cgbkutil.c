@@ -35,7 +35,7 @@
 #include "cgback.h"
 #include "codegen.h"
 #include "cgaux.h"
-#include "cginfo.h"
+#include "feprotos.h"
 #include "rtfuncod.h"
 #include "cgbackut.h"
 #include "objmodel.h"

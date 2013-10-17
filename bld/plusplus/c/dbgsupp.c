@@ -35,7 +35,7 @@
 #include "cgback.h"
 #include "codegen.h"
 #include "pragdefn.h"
-#include "cginfo.h"
+#include "feprotos.h"
 #include "segment.h"
 #include "initdefs.h"
 #include "dbgsupp.h"

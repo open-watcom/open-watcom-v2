@@ -43,7 +43,6 @@
 #include "vbuf.h"
 #include "memmgr.h"
 #include "pragdefn.h"
-#include "cginfo.h"
 #include "pcheader.h"
 #include "dbgsupp.h"
 #include "initdefs.h"

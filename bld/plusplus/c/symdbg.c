@@ -38,7 +38,6 @@
 #include "cgback.h"
 #include "codegen.h"
 #include "pragdefn.h"
-#include "cginfo.h"
 #include "carve.h"
 #include "ppops.h"
 #include "ring.h"

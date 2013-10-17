@@ -41,7 +41,7 @@
 #include "cgbackut.h"
 #include "cppdwarf.h"
 #include "cgaux.h"
-#include "cginfo.h"
+#include "feprotos.h"
 #include "ring.h"
 #include "stringl.h"
 #include "rtfuncod.h"

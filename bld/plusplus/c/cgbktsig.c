@@ -36,6 +36,7 @@
 
 #include "cgback.h"
 #include "cgbackut.h"
+#include "feprotos.h"
 #include "typesig.h"
 #include "ctexcept.h"
 #include "carve.h"

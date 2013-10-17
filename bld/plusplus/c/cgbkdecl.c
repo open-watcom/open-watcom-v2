@@ -36,7 +36,6 @@
 #include "codegen.h"
 #include "cgbackut.h"
 #include "cgaux.h"
-#include "cginfo.h"
 #include "symdbg.h"
 #include "dwarfdbg.h"
 #include "vstk.h"

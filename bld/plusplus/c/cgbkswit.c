@@ -35,7 +35,6 @@
 #include "codegen.h"
 #include "cgbackut.h"
 #include "cgaux.h"
-#include "cginfo.h"
 #include "vstk.h"
 #include "initdefs.h"
 

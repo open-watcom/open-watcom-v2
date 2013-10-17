@@ -39,7 +39,7 @@
 #include "codegen.h"
 #include "cgbackut.h"
 #include "cgaux.h"
-#include "cginfo.h"
+#include "feprotos.h"
 #include "ring.h"
 #include "conpool.h"
 #include "stringl.h"
@@ -3422,12 +3422,13 @@ void CgBackEnd(                 // BACK-END CONTROLLER
 
 
 void FEGenProc(                 // INLINE SUPPORT
-    SYMBOL sym,                 // - function to be in-lined
+    cg_sym_handle _sym,         // - function to be in-lined
     call_handle handle )        // - handle of called function
 {
     CGFILE *file_ctl;           // - file control info
     FN_CTL* fctl;               // - file-gen info. for caller
     SE* curr;                   // - current state entry for caller
+    SYMBOL sym = _sym;          // - function to be in-lined
 
                                 // - CGFILE information stacked
     CGIOBUFF *buffering;        // - - buffering control

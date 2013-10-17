@@ -45,7 +45,6 @@
 #include "pdefn2.h"
 #include "iosupp.h"
 #include "segment.h"
-#include "cginfo.h"
 #include "cgback.h"
 #include "rtfuns.h"
 #include "rtfuncod.h"
@@ -66,6 +65,7 @@
 #include "pragdefn.h"
 #include "specfuns.h"
 #include "autodept.h"
+#include "feprotos.h"
 
 #if _INTEL_CPU && ( _CPU != 8086 )
     extern inline_funcs Fs_Functions[];   // FS PRAGMAS
@@ -98,9 +98,10 @@ static void init(               // MODULE INITIALIZATION
 INITDEFN( cg_info, init, InitFiniStub )
 
 char *FEName(                   // RETURN THE SYMBOL'S NAME
-    SYMBOL sym )
+    cg_sym_handle _sym )
 {
     char *sym_name;             // - symbol's name
+    SYMBOL sym = _sym;
 
     if( sym == NULL || sym->name == NULL ) {
         sym_name = "!NULL!";
@@ -112,10 +113,10 @@ char *FEName(                   // RETURN THE SYMBOL'S NAME
 
 
 void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
-    msg_class class,            // - message class
-    void *parm )                // - parameter
+    int class,                  // - message class
+    pointer parm )              // - parameter
 {
-    switch( class ) {
+    switch( (msg_class)class ) {
     case MSG_SYMBOL_TOO_LONG:
         CErr2p( WARN_MANGLED_NAME_TOO_LONG, (SYMBOL)parm );
         break;
@@ -244,7 +245,7 @@ static fe_attr basic_attributes(// GET BASIC ATTRIBUTES
 }
 
 fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
-    SYMBOL sym )                // - symbol
+    cg_sym_handle _sym )        // - symbol
 {
     fe_attr attr;               // - attribute
     fe_attr mask;               // - remove these attributes
@@ -254,6 +255,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
     TYPE unmod_type;            // - type for symbol
     type_flag mod_flags;        // - modifier flags
     scf_mask scf_info;          // - sym comdat function info
+    SYMBOL sym = _sym;
 
     attr = 0;
     mask = 0;
@@ -375,25 +377,27 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
 
 
 segment_id FESegID(             // GET SEGMENT ID FOR SYMBOL
-    SYMBOL sym )                // - symbol
+    cg_sym_handle sym )         // - symbol
 {
     return( CgSegId( sym ) );
 }
 
 
 int FELexLevel(                 // GET LEXICAL LEVEL OF SYMBOL
-    SYMBOL sym )                // - the symbol
+    cg_sym_handle sym )         // - the symbol
 {
     sym = sym;
     return( 0 );
 }
 
 
-cg_type FEParmType(                 // ARGUMENT PROMOTION ?
-    SYMBOL func,                // function being called
-    SYMBOL parm,                // parameter being passed
+cg_type FEParmType(             // ARGUMENT PROMOTION ?
+    cg_sym_handle _func,        // function being called
+    cg_sym_handle parm,         // parameter being passed
     cg_type type )              // - original type
 {
+    SYMBOL func = _func;
+
     func = func;
     parm = parm;
     switch( type ) {
@@ -436,9 +440,10 @@ cg_type FEParmType(                 // ARGUMENT PROMOTION ?
 
 
 int FEStackChk(                 // STACK CHECKING ?
-    SYMBOL sym )                // - the symbol
+    cg_sym_handle _sym )        // - the symbol
 {
     TYPE fn_type;
+    SYMBOL sym = _sym;
 
     fn_type = FunctionDeclarationType( sym->sym_type );
     return(( fn_type->flag & TF1_STACK_CHECK ) != 0 );
@@ -699,20 +704,20 @@ static char *GetNamePattern(           // MANGLE SYMBOL NAME
     return( patbuff );
 }
 
-const char *FEExtName( SYMBOL sym, int request ) {
-//******************************************
+char *FEExtName( cg_sym_handle sym, int request ) {
+//**************************************************
 
 // Return symbol name related info for object file.
 
     switch( request ) {
     case EXTN_BASENAME:
-        return( GetMangledName( sym ) );
+        return( (char *)GetMangledName( sym ) );
     case EXTN_PATTERN:
         return( GetNamePattern( sym ) );
     case EXTN_PRMSIZE:
-        return( (const char *)GetParmsSize( sym ) );
+        return( (char *)GetParmsSize( sym ) );
     case EXTN_CALLBACKNAME:
-        return( CallbackName( sym ) );
+        return( (char *)CallbackName( sym ) );
     default:
         return( NULL );
     }
@@ -1144,14 +1149,15 @@ static void addDefaultImports( void )
 
 
 void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
-        SYMBOL sym,             // - symbol
-        aux_class request )     // - request
+        cg_sym_handle _sym,     // - symbol
+        int request )           // - request
 {
     AUX_INFO *inf;              // - auxilary info
     void *retn = NULL;          // - return value
     static char *buf = NULL;    // - temporary buffer
     static SYMBOL dtor_sym;     // - symbol to be DTOR'ed
     static EXTRF res_info;      // - external-symbol resolution information
+    SYMBOL sym = _sym;
 #ifndef NDEBUG
     boolean isSym = TRUE;       // DEBUGGING: TRUE ==> "sym" is SYMBOL
     boolean isRetn = TRUE;      // DEBUGGING: TRUE ==> "retn" is SYMBOL
@@ -1159,7 +1165,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 
     if( buf != NULL ) CMemFreePtr( &buf );
     inf = &DefaultInfo;
-    switch( request ) {
+    switch( (aux_class)request ) {
 #if _INTEL_CPU
     case P5_CHIP_BUG_SYM:
         DbgNotSym();
@@ -1531,9 +1537,10 @@ boolean IsPragmaAborts(         // TEST IF FUNCTION NEVER RETURNS
 
 
 dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL
-    SYMBOL sym )                // - symbol
+    cg_sym_handle _sym )        // - symbol
 {
     dbg_type ret;
+    SYMBOL sym = _sym;
 
     if( GenSwitches & DBG_DF ){
         ret = DwarfDebugSym( sym );
@@ -1544,10 +1551,11 @@ dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL
 }
 
 dbg_type FEDbgRetType(           // GET DEBUG RETURN TYPE FOR SYMBOL
-    SYMBOL sym )                // - symbol (stubbed in at monent)
+    cg_sym_handle _sym )         // - symbol (stubbed in at monent)
 {
     TYPE type;
     dbg_type ret;
+    SYMBOL sym = _sym;
 
     type = FunctionDeclarationType( sym->sym_type );
     if( type == NULL ) {
@@ -1570,8 +1578,9 @@ char *FEGetEnv(                 // GET VALUE FOR ENV-VAR
     return CppGetEnv( name );
 }
 
-int FEMoreMem( void )
-/*******************/
+int FEMoreMem( unsigned size )
+/****************************/
 {
+    size = size;
     return( 0 );
 }

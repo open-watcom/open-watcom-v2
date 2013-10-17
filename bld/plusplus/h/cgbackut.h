@@ -40,7 +40,6 @@
 #include "typesig.h"
 #include "codegen.h"
 #include "cgaux.h"
-#include "cginfo.h"
 #include "conpool.h"
 #include "cgio.h"
 #include "vstk.h"

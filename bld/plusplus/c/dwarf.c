@@ -40,7 +40,6 @@
 #include "template.h"
 #include "codegen.h"
 #include "pragdefn.h"
-#include "cginfo.h"
 #include "cgback.h"
 #include "ring.h"
 #include "dbg.h"
