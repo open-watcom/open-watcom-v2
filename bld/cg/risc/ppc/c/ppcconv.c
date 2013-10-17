@@ -46,34 +46,37 @@ extern  void            UpdateLive(instruction*,instruction*);
 
 static  opcode_entry    ctable_FSTOD[] = {
 /****************************************/
-/*    from  to    eq       verify        gen             reg             fu*/
-_Un( R,    R,   NONE ),   V_NO,         G_MOVE_FP,      RG_FLOAT,       FU_NO,
-_Un( C,    ANY, NONE ),   V_NO,         R_FORCEOP1CMEM, RG_FLOAT,       FU_NO,
-_Un( M,    ANY, NONE ),   V_NO,         R_MOVOP1TEMP,   RG_FLOAT,       FU_NO,
-_Un( ANY,  M,   NONE ),   V_NO,         R_MOVRESTEMP,   RG_FLOAT,       FU_NO,
-_Un( ANY,  ANY, NONE ),   V_NO,         G_UNKNOWN,      RG_FLOAT_NEED,  FU_NO,
+/*        from  to    eq       verify        reg           gen             fu  */
+_OE( _Un( R,    R,    NONE ),  V_NO,         RG_FLOAT,     G_MOVE_FP,      FU_NO ),
+_OE( _Un( C,    ANY,  NONE ),  V_NO,         RG_FLOAT,     R_FORCEOP1CMEM, FU_NO ),
+_OE( _Un( M,    ANY,  NONE ),  V_NO,         RG_FLOAT,     R_MOVOP1TEMP,   FU_NO ),
+_OE( _Un( ANY,  M,    NONE ),  V_NO,         RG_FLOAT,     R_MOVRESTEMP,   FU_NO ),
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_FLOAT_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 #if 0
 static  opcode_entry    ctable_FDToI4[] = {
 /*****************************************/
-/*    from  to    eq       verify        gen             reg             fu*/
-_Un( R,    M,   NONE ),   V_NO,         G_FREGTOMI4,    RG_FLOAT,       FU_NO,
-_Un( M|C,  M,   NONE ),   V_NO,         R_MOVOP1TEMP,   RG_FLOAT,       FU_NO,
-_Un( ANY,  R,   NONE ),   V_NO,         R_MOVRESTEMP,   RG_FD,          FU_NO,
-_Un( R,    U,   NONE ),   V_NO,         R_FORCERESMEM,  RG_,            FU_NO,
-_Un( ANY,  ANY, NONE ),   V_NO,         G_UNKNOWN,      RG_FLOAT_NEED,  FU_NO,
+/*        from  to    eq       verify        reg           gen             fu  */
+_OE( _Un( R,    M,    NONE ),  V_NO,         RG_FLOAT,     G_FREGTOMI4,    FU_NO ),
+_OE( _Un( M|C,  M,    NONE ),  V_NO,         RG_FLOAT,     R_MOVOP1TEMP,   FU_NO ),
+_OE( _Un( ANY,  R,    NONE ),  V_NO,         RG_FD,        R_MOVRESTEMP,   FU_NO ),
+_OE( _Un( R,    U,    NONE ),  V_NO,         RG_,          R_FORCERESMEM,  FU_NO ),
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_FLOAT_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          G_UNKNOWN,      FU_NO ),
 };
 #endif
 
-#define CONVERT_ROUTINE( x, gen, reg )                                                           \
-static  opcode_entry    ctable_##x[] = {                                                         \
-/**************************************/                                                         \
-/*      from    to      eq              verify          gen             reg       fu */          \
-_Un(    R,      R,      NONE ),         V_NO,           gen,            RG_##reg,        FU_ALU, \
-_Un(    R,      M,      NONE ),         V_NO,           R_MOVRESTEMP,   RG_##reg,        FU_ALU, \
-_Un(    M,      ANY,    NONE ),         V_NO,           R_MOVOP1TEMP,   RG_##reg,        FU_ALU, \
-_Un(    ANY,    ANY,    NONE ),         V_NO,           G_UNKNOWN,      RG_##reg##_NEED, FU_ALU, \
+#define CONVERT_ROUTINE( x, gen, reg )                                               \
+static  opcode_entry    ctable_##x[] = {                                             \
+/**************************************/                                             \
+/*        from  to    eq       verify        reg           gen             fu  */    \
+_OE( _Un( R,    R,    NONE ),  V_NO,         RG_##reg,     gen,            FU_ALU ), \
+_OE( _Un( R,    M,    NONE ),  V_NO,         RG_##reg,     R_MOVRESTEMP,   FU_ALU ), \
+_OE( _Un( M,    ANY,  NONE ),  V_NO,         RG_##reg,     R_MOVOP1TEMP,   FU_ALU ), \
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_##reg##_NEED,G_UNKNOWN,    FU_ALU ), \
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          G_UNKNOWN,      FU_NO ),  \
 };
 
 CONVERT_ROUTINE( Z1TO2, G_ZERO, BW );
@@ -96,27 +99,28 @@ CONVERT_ROUTINE( C2TO1, G_MOVE, WB );
 
 static opcode_entry ctable_C8TO4[] = {
 /************************************/
-/*      from    to      eq              verify          gen             reg       fu */
-_Un(    ANY,    ANY,    NONE ),         V_NO,           R_MOVELOW,      RG_,      FU_NO,
+/*        from  to    eq       verify        reg           gen             fu  */
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_MOVELOW,      FU_NO ),
 };
 
 static opcode_entry ctable_S4TO8[] = {
 /************************************/
-/*      from    to      eq              verify          gen             reg       fu */
-_Un(    ANY,    ANY,    NONE ),         V_NO,           R_SEX_4TO8,     RG_,      FU_NO,
+/*        from  to    eq       verify        reg           gen             fu  */
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_SEX_4TO8,     FU_NO ),
 };
 
 static opcode_entry ctable_Z4TO8[] = {
 /************************************/
-/*      from    to      eq              verify          gen             reg       fu */
-_Un(    ANY,    ANY,    NONE ),         V_NO,           R_CLRHI_4,      RG_,      FU_NO,
+/*        from  to    eq       verify        reg           gen             fu  */
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_CLRHI_4,      FU_NO ),
 };
 
 //FIXME: this is way too inefficient (and guaranteed to show up on a benchmark)
 static  opcode_entry    CRtn[] = {
 /********************************/
-/*      from    to      eq              verify          gen             reg       fu */
-_Un(    ANY,    ANY,    NONE ),         V_NO,           R_MAKECALL,     RG_FLOAT,   FU_NO,
+/*        from  to    eq       verify        reg           gen             fu  */
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_FLOAT,     R_MAKECALL,     FU_NO ),
+_OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 #define CVTFUNC_MAPS \

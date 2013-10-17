@@ -125,6 +125,8 @@ typedef unsigned_32     operand_types;
 
 #define _None() NONE
 
+#define _OE(t,v,r,g,f) { t, v, g, r, f }
+
 typedef struct opcode_entry {
         operand_types           op_type;
         vertype                 verify;         /*  verification routine */

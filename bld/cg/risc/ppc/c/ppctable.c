@@ -39,31 +39,35 @@
 
 opcode_entry    StubUnary[] = {
 /*************************/
-/*       op1   op2   res           verify          gen           reg      fu */
-_Un(    ANY,  ANY,  NONE ),        V_NO,           G_NO,         RG_DWORD, FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD,     G_NO,           FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 
 opcode_entry    StubBinary[] = {
 /************************/
-/*       op1   op2   res   eq      verify          gen           reg      fu */
-_Bin(   ANY,  ANY,  ANY,  NONE ),  V_NO,           G_NO,         RG_DWORD, FU_NO,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_DWORD,     G_NO,           FU_NO ),
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    StubSide[] = {
 /******************************/
-/*       op1   op2                 verify          gen           reg      fu */
-_Side(  ANY,  ANY ),               V_NO,           G_NO,         RG_DWORD, FU_NO,
+/*           op1   op2                 verify          reg           gen             fu  */
+_OE( _Side(  ANY,  ANY ),              V_NO,           RG_DWORD,     G_NO,           FU_NO ),
+_OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 #define LOAD_TABLE( name, reg ) \
-static  opcode_entry    name[] = {                                                      \
-/********************************/                                                      \
-/*       op    res   eq          verify          gen             reg fu*/               \
-_UnPP(  M,    R,    NONE ),     V_NO,           G_LOAD_ADDR,    RG_##reg,FU_ALU,                \
-_Un(    M,    M,    NONE ),     V_NO,           R_MOVRESTEMP,   RG_##reg,FU_NO,         \
-_Un(    M,    ANY,  NONE ),     V_NO,           G_UNKNOWN,      RG_##reg##_NEED,FU_NO,  \
-_Un(    ANY,  ANY,  NONE ),     V_NO,           R_FORCEOP1MEM,  RG_##reg,FU_NO,         \
+static  opcode_entry    name[] = {                                                             \
+/********************************/                                                             \
+/*           from  to    eq            verify          reg           gen             fu  */    \
+_OE( _UnPP(  M,    R,    NONE ),       V_NO,           RG_##reg,     G_LOAD_ADDR,    FU_ALU ), \
+_OE( _Un(    M,    M,    NONE ),       V_NO,           RG_##reg,     R_MOVRESTEMP,   FU_NO ),  \
+_OE( _Un(    M,    ANY,  NONE ),       V_NO,           RG_##reg##_NEED,G_UNKNOWN,    FU_NO ),  \
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_##reg,     R_FORCEOP1MEM,  FU_NO ),  \
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),  \
 };
 
 LOAD_TABLE( LoadAddr2, WORD );
@@ -71,57 +75,60 @@ LOAD_TABLE( LoadAddr8, QWORD );
 
 static  opcode_entry    LoadAddr4[] = {
 /*************************************/
-/*       op    res   eq          verify          gen             reg fu*/
-_Un(    M,    ANY,  NONE ),     V_OFFSETZERO,   R_MOVEINDEX,    RG_DWORD,FU_NO,
-_UnPP(  M,    R,    NONE ),     V_NO,           G_LOAD_ADDR,    RG_DWORD,FU_ALU,
-_Un(    M,    M,    NONE ),     V_NO,           R_MOVRESTEMP,   RG_DWORD,FU_NO,
-_Un(    M,    ANY,  NONE ),     V_NO,           G_UNKNOWN,      RG_DWORD_NEED,FU_NO,
-_Un(    ANY,  ANY,  NONE ),     V_NO,           R_FORCEOP1MEM,  RG_DWORD,FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    M,    ANY,  NONE ),       V_OFFSETZERO,   RG_DWORD,     R_MOVEINDEX,    FU_NO ),
+_OE( _UnPP(  M,    R,    NONE ),       V_NO,           RG_DWORD,     G_LOAD_ADDR,    FU_ALU ),
+_OE( _Un(    M,    M,    NONE ),       V_NO,           RG_DWORD,     R_MOVRESTEMP,   FU_NO ),
+_OE( _Un(    M,    ANY,  NONE ),       V_NO,           RG_DWORD_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD,     R_FORCEOP1MEM,  FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    Conv[] = {
 /************************/
-/*       op1   res  eq             verify          gen           reg      fu */
-_Un(     ANY,  ANY, NONE ),        V_NO,           R_DOCVT,      RG_,     FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    ANY,  ANY, NONE ),        V_NO,           RG_,          R_DOCVT,        FU_NO ),
 };
 
 opcode_entry    NegF[] = {
 /************************/
-/*       op1   res   eq            verify          gen           reg      fu */
-_Un(    R,    R,    NONE ),        V_NO,           G_UNARY,      RG_FLOAT,FU_NO,
-_Un(    C|M,  ANY,  NONE ),        V_NO,           R_MOVOP1TEMP, RG_FLOAT,FU_NO,
-_Un(    ANY,  M,    NONE ),        V_NO,           R_MOVRESTEMP, RG_FLOAT,FU_NO,
-_Un(    ANY,  ANY,  NONE ),        V_NO,           G_UNKNOWN,    RG_FLOAT_NEED, FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    R,    R,    NONE ),       V_NO,           RG_FLOAT,     G_UNARY,        FU_NO ),
+_OE( _Un(    C|M,  ANY,  NONE ),       V_NO,           RG_FLOAT,     R_MOVOP1TEMP,   FU_NO ),
+_OE( _Un(    ANY,  M,    NONE ),       V_NO,           RG_FLOAT,     R_MOVRESTEMP,   FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_FLOAT_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    MoveXX[] = {
 /**************************/
-/*       op    res   eq            verify          gen           reg      fu*/
-_Un(    ANY,  ANY,  NONE  ),       V_REG_SIZE,     R_CHANGETYPE, RG_,     FU_NO,
-_Un(    M|U,  M|U,  EQ_R1 ),       NVI(V_NO),      G_NO,         RG_,     FU_NO,
-_UnPP(  M,    M,    NONE  ),       NVI(V_SAME_LOCN),G_NO,        RG_,     FU_NO,
-_Un(    U,    ANY,  NONE ),        V_NO,           R_FORCEOP1MEM,RG_,     FU_NO,
-_Un(    ANY,  U,    NONE ),        V_NO,           R_FORCERESMEM,RG_,     FU_NO,
-_Un(    ANY,  ANY,  NONE ),        V_OP1_RES_AL4,  R_MOVEXX_4,   RG_DWORD_NEED,FU_NO,
-_Un(    ANY,  ANY,  NONE ),        V_NO,           R_MOVEXX,     RG_,     FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    ANY,  ANY,  NONE  ),      V_REG_SIZE,     RG_,          R_CHANGETYPE,   FU_NO ),
+_OE( _Un(    M|U,  M|U,  EQ_R1 ),      NVI(V_NO),      RG_,          G_NO,           FU_NO ),
+_OE( _UnPP(  M,    M,    NONE  ),      NVI(V_SAME_LOCN),RG_,         G_NO,           FU_NO ),
+_OE( _Un(    U,    ANY,  NONE ),       V_NO,           RG_,          R_FORCEOP1MEM,  FU_NO ),
+_OE( _Un(    ANY,  U,    NONE ),       V_NO,           RG_,          R_FORCERESMEM,  FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_OP1_RES_AL4,  RG_DWORD_NEED,R_MOVEXX_4,     FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          R_MOVEXX,       FU_NO ),
 };
 
 #define MOVE_TABLE( t_name, reg, load, store ) \
-opcode_entry    t_name[] = {                                                            \
-/**************************/                                                            \
-/*       op1   res   eq            verify          gen           reg      fu */         \
-_Un(     ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      G_NO,         RG_,     FU_NO,        \
-_UnPP(   M,    M,    NONE  ),      NVI(V_SAME_LOCN),G_NO,         RG_,     FU_NO,       \
-_Un(     R,    R,    NONE ),       V_NO,           G_MOVE,       RG_##reg,FU_NO,        \
-_Un(     R,    M,    NONE ),       V_NO,           store,        RG_##reg,FU_MEM,       \
-_Un(     C,    M,    NONE ),       V_NO,           R_MOVOP1TEMP, RG_##reg,FU_NO,        \
-_Un(     M,    R,    NONE ),       V_NO,           load,         RG_##reg,FU_MEM,       \
-_Un(     C,    R,    NONE ),       V_OP1HIGHADDR,  G_LEA_HIGH,   RG_##reg,FU_NO,        \
-_Un(     C,    R,    NONE ),       V_HALFWORDCONST1,G_LEA,       RG_##reg,FU_NO,        \
-_Un(     C,    R,    NONE ),       V_UHALFWORDCONST1,G_MOVE_UI,  RG_##reg,FU_NO,        \
-_Un(     C,    R,    NONE ),       V_NO,           R_CONSTLOAD,  RG_##reg,FU_NO,        \
-_Un(     M,    M,    NONE ),       V_NO,           R_MOVOP1TEMP, RG_,     FU_NO,        \
-_Un(     ANY,  ANY,  NONE ),       V_NO,           G_UNKNOWN,    RG_##reg##_NEED,FU_NO, \
+opcode_entry    t_name[] = {                                                                   \
+/**************************/                                                                   \
+/*           from  to    eq            verify          reg           gen             fu  */    \
+_OE( _Un(    ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      RG_,          G_NO,           FU_NO ),  \
+_OE( _UnPP(  M,    M,    NONE  ),      NVI(V_SAME_LOCN),RG_,         G_NO,           FU_NO ),  \
+_OE( _Un(    R,    R,    NONE ),       V_NO,           RG_##reg,     G_MOVE,         FU_NO ),  \
+_OE( _Un(    R,    M,    NONE ),       V_NO,           RG_##reg,     store,          FU_MEM ), \
+_OE( _Un(    C,    M,    NONE ),       V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Un(    M,    R,    NONE ),       V_NO,           RG_##reg,     load,           FU_MEM ), \
+_OE( _Un(    C,    R,    NONE ),       V_OP1HIGHADDR,  RG_##reg,     G_LEA_HIGH,     FU_NO ),  \
+_OE( _Un(    C,    R,    NONE ),       V_HALFWORDCONST1,RG_##reg,    G_LEA,          FU_NO ),  \
+_OE( _Un(    C,    R,    NONE ),       V_UHALFWORDCONST1,RG_##reg,   G_MOVE_UI,      FU_NO ),  \
+_OE( _Un(    C,    R,    NONE ),       V_NO,           RG_##reg,     R_CONSTLOAD,    FU_NO ),  \
+_OE( _Un(    M,    M,    NONE ),       V_NO,           RG_,          R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_##reg##_NEED,G_UNKNOWN,    FU_NO ),  \
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),  \
 };
 
 MOVE_TABLE( Move1, BYTE,  G_LOAD, G_STORE );
@@ -130,26 +137,27 @@ MOVE_TABLE( Move4, DWORD, G_LOAD, G_STORE );
 
 opcode_entry    Move8[] = {
 /**************************/
-/*       op1   res   eq            verify          gen           reg      fu */
-_Un(     ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      G_NO,         RG_,     FU_NO,
-_UnPP(   M,    M,    NONE  ),      NVI(V_SAME_LOCN),G_NO,        RG_,     FU_NO,
-_Un(     ANY,  ANY,  NONE ),       V_NO,           R_SPLITMOVE,  RG_,     FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      RG_,          G_NO,           FU_NO ),
+_OE( _UnPP(  M,    M,    NONE  ),      NVI(V_SAME_LOCN),RG_,         G_NO,           FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          R_SPLITMOVE,    FU_NO ),
 };
 
 #define BINARY_TABLE( name, reg ) \
-opcode_entry    name[] = {                                                              \
-/***************************/                                                           \
-/*       op1   op2   res   eq      verify          gen           reg      fu */         \
-_Bin(    R,    R,    R,    NONE ), V_NO,           G_BINARY,     RG_##reg, FU_ALU,      \
-_Bin(    R,    C,    R,    NONE ), V_HALFWORDCONST2,G_BINARY_IMM, RG_##reg, FU_ALU,     \
-_Bin(    R,    C,    R,    NONE ), V_NO,           R_MOVOP2TEMP, RG_##reg, FU_NO,       \
-_Bin(    C,    C,    R,    NONE ), V_NO,           R_MOVOP1TEMP, RG_##reg, FU_NO,       \
-_Bin(    C,    ANY,  R,    NONE ), V_SYMMETRIC,    R_SWAPOPS,    RG_##reg, FU_NO,       \
-_Bin(    C,    ANY,  R,    NONE ), V_NO,           R_MOVOP1TEMP, RG_##reg, FU_NO,       \
-_Bin(    M,    ANY,  ANY,  NONE ), V_NO,           R_MOVOP1TEMP, RG_##reg, FU_NO,       \
-_Bin(    ANY,  M,    ANY,  NONE ), V_NO,           R_MOVOP2TEMP, RG_##reg, FU_NO,       \
-_Bin(    ANY,  ANY,  M,    NONE ), V_NO,           R_MOVRESTEMP, RG_##reg, FU_NO,       \
-_Bin(    ANY,  ANY,  ANY,  NONE ), V_NO,           G_UNKNOWN,    RG_##reg##_NEED, FU_NO,\
+opcode_entry    name[] = {                                                                     \
+/***************************/                                                                  \
+/*           op1   op2   res   eq      verify          reg           gen             fu  */    \
+_OE( _Bin(   R,    R,    R,    NONE ), V_NO,           RG_##reg,     G_BINARY,       FU_ALU ), \
+_OE( _Bin(   R,    C,    R,    NONE ), V_HALFWORDCONST2,RG_##reg,    G_BINARY_IMM,   FU_ALU ), \
+_OE( _Bin(   R,    C,    R,    NONE ), V_NO,           RG_##reg,     R_MOVOP2TEMP,   FU_NO ),  \
+_OE( _Bin(   C,    C,    R,    NONE ), V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Bin(   C,    ANY,  R,    NONE ), V_SYMMETRIC,    RG_##reg,     R_SWAPOPS,      FU_NO ),  \
+_OE( _Bin(   C,    ANY,  R,    NONE ), V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Bin(   M,    ANY,  ANY,  NONE ), V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Bin(   ANY,  M,    ANY,  NONE ), V_NO,           RG_##reg,     R_MOVOP2TEMP,   FU_NO ),  \
+_OE( _Bin(   ANY,  ANY,  M,    NONE ), V_NO,           RG_##reg,     R_MOVRESTEMP,   FU_NO ),  \
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_##reg##_NEED,G_UNKNOWN,    FU_NO ),  \
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),  \
 };
 
 BINARY_TABLE( Binary1, BYTE  );
@@ -157,19 +165,20 @@ BINARY_TABLE( Binary2, WORD  );
 BINARY_TABLE( Binary4, DWORD );
 
 #define U_BINARY_TABLE( name, reg ) \
-opcode_entry    name[] = {                                                              \
-/***************************/                                                           \
-/*       op1   op2   res   eq      verify          gen           reg      fu */         \
-_Bin(    R,    R,    R,    NONE ), V_NO,           G_BINARYS,    RG_##reg, FU_ALU,      \
-_Bin(    R,    C,    R,    NONE ), V_UHALFWORDCONST2,G_BINARYS_IMM,RG_##reg, FU_ALU,    \
-_Bin(    R,    C,    R,    NONE ), V_NO,           R_MOVOP2TEMP, RG_##reg, FU_NO,       \
-_Bin(    C,    C,    R,    NONE ), V_NO,           R_MOVOP1TEMP, RG_##reg, FU_NO,       \
-_Bin(    C,    ANY,  R,    NONE ), V_SYMMETRIC,    R_SWAPOPS,    RG_##reg, FU_NO,       \
-_Bin(    C,    ANY,  R,    NONE ), V_NO,           R_MOVOP1TEMP, RG_##reg, FU_NO,       \
-_Bin(    M,    ANY,  ANY,  NONE ), V_NO,           R_MOVOP1TEMP, RG_##reg, FU_NO,       \
-_Bin(    ANY,  M,    ANY,  NONE ), V_NO,           R_MOVOP2TEMP, RG_##reg, FU_NO,       \
-_Bin(    ANY,  ANY,  M,    NONE ), V_NO,           R_MOVRESTEMP, RG_##reg, FU_NO,       \
-_Bin(    ANY,  ANY,  ANY,  NONE ), V_NO,           G_UNKNOWN,    RG_##reg##_NEED, FU_NO,\
+opcode_entry    name[] = {                                                                     \
+/***************************/                                                                  \
+/*           op1   op2   res   eq      verify          reg           gen             fu  */    \
+_OE( _Bin(   R,    R,    R,    NONE ), V_NO,           RG_##reg,     G_BINARYS,      FU_ALU ), \
+_OE( _Bin(   R,    C,    R,    NONE ), V_UHALFWORDCONST2,RG_##reg,   G_BINARYS_IMM,  FU_ALU ), \
+_OE( _Bin(   R,    C,    R,    NONE ), V_NO,           RG_##reg,     R_MOVOP2TEMP,   FU_NO ),  \
+_OE( _Bin(   C,    C,    R,    NONE ), V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Bin(   C,    ANY,  R,    NONE ), V_SYMMETRIC,    RG_##reg,     R_SWAPOPS,      FU_NO ),  \
+_OE( _Bin(   C,    ANY,  R,    NONE ), V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Bin(   M,    ANY,  ANY,  NONE ), V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Bin(   ANY,  M,    ANY,  NONE ), V_NO,           RG_##reg,     R_MOVOP2TEMP,   FU_NO ),  \
+_OE( _Bin(   ANY,  ANY,  M,    NONE ), V_NO,           RG_##reg,     R_MOVRESTEMP,   FU_NO ),  \
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_##reg##_NEED,G_UNKNOWN,    FU_NO ),  \
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),  \
 };
 
 U_BINARY_TABLE( UBinary1, BYTE  );
@@ -177,18 +186,19 @@ U_BINARY_TABLE( UBinary2, WORD  );
 U_BINARY_TABLE( UBinary4, DWORD );
 
 #define N_BINARY_TABLE( name, reg ) \
-opcode_entry    name[] = {                                                              \
-/***************************/                                                           \
-/*       op1   op2   res   eq      verify          gen           reg      fu */         \
-_Bin(    R,    R,    R,    NONE ), V_NO,           G_BINARY,     RG_##reg, FU_ALU,      \
-_Bin(    R,    C,    R,    NONE ), V_NO,           R_MOVOP2TEMP, RG_##reg, FU_NO,       \
-_Bin(    C,    C,    R,    NONE ), V_NO,           R_MOVOP1TEMP, RG_##reg, FU_NO,       \
-_Bin(    C,    ANY,  R,    NONE ), V_SYMMETRIC,    R_SWAPOPS,    RG_##reg, FU_NO,       \
-_Bin(    C,    ANY,  R,    NONE ), V_NO,           R_MOVOP1TEMP, RG_##reg, FU_NO,       \
-_Bin(    M,    ANY,  ANY,  NONE ), V_NO,           R_MOVOP1TEMP, RG_##reg, FU_NO,       \
-_Bin(    ANY,  M,    ANY,  NONE ), V_NO,           R_MOVOP2TEMP, RG_##reg, FU_NO,       \
-_Bin(    ANY,  ANY,  M,    NONE ), V_NO,           R_MOVRESTEMP, RG_##reg, FU_NO,       \
-_Bin(    ANY,  ANY,  ANY,  NONE ), V_NO,           G_UNKNOWN,    RG_##reg##_NEED, FU_NO,\
+opcode_entry    name[] = {                                                                     \
+/***************************/                                                                  \
+/*           op1   op2   res   eq      verify          reg           gen             fu  */    \
+_OE( _Bin(   R,    R,    R,    NONE ), V_NO,           RG_##reg,     G_BINARY,       FU_ALU ), \
+_OE( _Bin(   R,    C,    R,    NONE ), V_NO,           RG_##reg,     R_MOVOP2TEMP,   FU_NO ),  \
+_OE( _Bin(   C,    C,    R,    NONE ), V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Bin(   C,    ANY,  R,    NONE ), V_SYMMETRIC,    RG_##reg,     R_SWAPOPS,      FU_NO ),  \
+_OE( _Bin(   C,    ANY,  R,    NONE ), V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Bin(   M,    ANY,  ANY,  NONE ), V_NO,           RG_##reg,     R_MOVOP1TEMP,   FU_NO ),  \
+_OE( _Bin(   ANY,  M,    ANY,  NONE ), V_NO,           RG_##reg,     R_MOVOP2TEMP,   FU_NO ),  \
+_OE( _Bin(   ANY,  ANY,  M,    NONE ), V_NO,           RG_##reg,     R_MOVRESTEMP,   FU_NO ),  \
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_##reg##_NEED,G_UNKNOWN,    FU_NO ),  \
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),  \
 };
 
 N_BINARY_TABLE( NBinary1, BYTE  );
@@ -197,153 +207,164 @@ N_BINARY_TABLE( NBinary4, DWORD );
 
 static  opcode_entry    Binary8[] = {
 /***********************************/
-/*       op1   op2   res  eq      verify      gen           reg         fu*/
-_Bin(   ANY,  ANY,  ANY, NONE ),  V_NO,       R_SPLITOP,    RG_QWORD,   FU_NO,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   ANY,  ANY,  ANY, NONE ),  V_NO,           RG_QWORD,     R_SPLITOP,      FU_NO ),
+_OE( _Bin(   ANY,  ANY,  ANY, NONE ),  V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    Push[] = {
 /************************/
-/*       op1   op2   res           verify          gen           reg      fu */
-_Un(     ANY,  ANY,  NONE ),       V_NO,           R_PUSHTOMOV,  RG_DWORD, FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD,     R_PUSHTOMOV,    FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    Pop[] = {
 /***********************/
-/*       op1   op2   res           verify          gen           reg      fu */
-_Un(     ANY,  ANY,  NONE ),       V_NO,           R_POPTOMOV,   RG_DWORD, FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD,     R_POPTOMOV,     FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    Un1[] = {
 /***********************/
-/*      op1   res   eq             verify          gen           reg           fu */
-_Un(    R,    R,    NONE ),        V_NO,           G_UNARY,      RG_BYTE,      FU_ALU,
-_Un(    C|M,  ANY,  NONE ),        V_NO,           R_MOVOP1TEMP, RG_BYTE,      FU_NO,
-_Un(    ANY,  M,    NONE ),        V_NO,           R_MOVRESTEMP, RG_BYTE,      FU_NO,
-_Un(    ANY,  ANY,  NONE ),        V_NO,           G_UNKNOWN,    RG_BYTE_NEED, FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    R,    R,    NONE ),       V_NO,           RG_BYTE,      G_UNARY,        FU_ALU ),
+_OE( _Un(    C|M,  ANY,  NONE ),       V_NO,           RG_BYTE,      R_MOVOP1TEMP,   FU_NO ),
+_OE( _Un(    ANY,  M,    NONE ),       V_NO,           RG_BYTE,      R_MOVRESTEMP,   FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_BYTE_NEED, G_UNKNOWN,      FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    Un2[] = {
 /***********************/
-/*      op1   res   eq             verify          gen           reg           fu */
-_Un(    R,    R,    NONE ),        V_NO,           G_UNARY,      RG_WORD,      FU_ALU,
-_Un(    C|M,  ANY,  NONE ),        V_NO,           R_MOVOP1TEMP, RG_WORD,      FU_NO,
-_Un(    ANY,  M,    NONE ),        V_NO,           R_MOVRESTEMP, RG_WORD,      FU_NO,
-_Un(    ANY,  ANY,  NONE ),        V_NO,           G_UNKNOWN,    RG_WORD_NEED, FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    R,    R,    NONE ),       V_NO,           RG_WORD,      G_UNARY,        FU_ALU ),
+_OE( _Un(    C|M,  ANY,  NONE ),       V_NO,           RG_WORD,      R_MOVOP1TEMP,   FU_NO ),
+_OE( _Un(    ANY,  M,    NONE ),       V_NO,           RG_WORD,      R_MOVRESTEMP,   FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_WORD_NEED, G_UNKNOWN,      FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    Un4[] = {
 /***********************/
-/*      op1   res   eq             verify          gen           reg           fu */
-_Un(    R,    R,    NONE ),        V_NO,           G_UNARY,      RG_DWORD,      FU_ALU,
-_Un(    C|M,  ANY,  NONE ),        V_NO,           R_MOVOP1TEMP, RG_DWORD,      FU_NO,
-_Un(    ANY,  M,    NONE ),        V_NO,           R_MOVRESTEMP, RG_DWORD,      FU_NO,
-_Un(    ANY,  ANY,  NONE ),        V_NO,           G_UNKNOWN,    RG_DWORD_NEED, FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    R,    R,    NONE ),       V_NO,           RG_DWORD,     G_UNARY,        FU_ALU ),
+_OE( _Un(    C|M,  ANY,  NONE ),       V_NO,           RG_DWORD,     R_MOVOP1TEMP,   FU_NO ),
+_OE( _Un(    ANY,  M,    NONE ),       V_NO,           RG_DWORD,     R_MOVRESTEMP,   FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    VaStart[] = {
 /***************************/
-/*      op1   res   eq             verify          gen           reg           fu */
-_Un(    R,    ANY,  NONE ),        V_NO,           G_VASTART,    RG_DWORD,      FU_ALU,
-_Un(    M,    ANY,  NONE ),        V_NO,           R_MOVOP1TEMP, RG_DWORD,      FU_ALU,
-_Un(    ANY,  ANY,  NONE ),        V_NO,           G_UNKNOWN,    RG_DWORD_NEED, FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    R,    ANY,  NONE ),       V_NO,           RG_DWORD,     G_VASTART,      FU_ALU ),
+_OE( _Un(    M,    ANY,  NONE ),       V_NO,           RG_DWORD,     R_MOVOP1TEMP,   FU_ALU ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DWORD_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    MoveF[] = {
 /*************************/
-/*       op1   res   eq            verify          gen           reg      fu */
-_Un(     ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      G_NO,         RG_,     FU_NO,
-_Un(     M,    M,    NONE ),       V_SAME_LOCN,    G_NO,         RG_,     FU_NO,
-_Un(     R,    R,    NONE ),       V_NO,           G_MOVE_FP,    RG_FLOAT,FU_NO,
-_Un(     R,    M,    NONE ),       V_NO,           G_STORE,      RG_FLOAT,FU_NO,
-_Un(     M,    R,    NONE ),       V_NO,           G_LOAD,       RG_FLOAT,FU_NO,
-_Un(     C,    ANY,  NONE ),       V_NO,           R_FORCEOP1CMEM,RG_,    FU_NO,
-_Un(     M,    M,    NONE ),       V_NO,           R_MOVOP1TEMP, RG_,     FU_NO,
-_Un(     ANY,  ANY,  NONE ),       V_NO,           G_UNKNOWN,    RG_FLOAT_NEED,FU_NO,
+/*           from  to    eq            verify          reg           gen             fu  */
+_OE( _Un(    ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      RG_,          G_NO,           FU_NO ),
+_OE( _Un(    M,    M,    NONE ),       V_SAME_LOCN,    RG_,          G_NO,           FU_NO ),
+_OE( _Un(    R,    R,    NONE ),       V_NO,           RG_FLOAT,     G_MOVE_FP,      FU_NO ),
+_OE( _Un(    R,    M,    NONE ),       V_NO,           RG_FLOAT,     G_STORE,        FU_NO ),
+_OE( _Un(    M,    R,    NONE ),       V_NO,           RG_FLOAT,     G_LOAD,         FU_NO ),
+_OE( _Un(    C,    ANY,  NONE ),       V_NO,           RG_,          R_FORCEOP1CMEM, FU_NO ),
+_OE( _Un(    M,    M,    NONE ),       V_NO,           RG_,          R_MOVOP1TEMP,   FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_FLOAT_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    FloatBinary[] = {
 /*******************************/
-/*       op1   op2   res   eq      verify          gen           reg      fu */
-_Bin(    R,    R,    R,    NONE ), V_NO,           G_BINARY_FP,  RG_FLOAT,FU_ALU,
-_Bin(    C,    ANY,  ANY,  NONE ), V_NO,           R_FORCEOP1CMEM,RG_FLOAT, FU_NO,
-_Bin(    ANY,  C,    ANY,  NONE ), V_NO,           R_FORCEOP2CMEM,RG_FLOAT, FU_NO,
-_Bin(    M,    ANY,  ANY,  NONE ), V_NO,           R_MOVOP1TEMP, RG_FLOAT, FU_NO,
-_Bin(    ANY,  M,    ANY,  NONE ), V_NO,           R_MOVOP2TEMP, RG_FLOAT, FU_NO,
-_Bin(    ANY,  ANY,  M,    NONE ), V_NO,           R_MOVRESTEMP, RG_FLOAT, FU_NO,
-_Bin(    ANY,  ANY,  ANY,  NONE ), V_NO,           G_UNKNOWN,    RG_FLOAT_NEED, FU_NO,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   R,    R,    R,    NONE ), V_NO,           RG_FLOAT,     G_BINARY_FP,    FU_ALU ),
+_OE( _Bin(   C,    ANY,  ANY,  NONE ), V_NO,           RG_FLOAT,     R_FORCEOP1CMEM, FU_NO ),
+_OE( _Bin(   ANY,  C,    ANY,  NONE ), V_NO,           RG_FLOAT,     R_FORCEOP2CMEM, FU_NO ),
+_OE( _Bin(   M,    ANY,  ANY,  NONE ), V_NO,           RG_FLOAT,     R_MOVOP1TEMP,   FU_NO ),
+_OE( _Bin(   ANY,  M,    ANY,  NONE ), V_NO,           RG_FLOAT,     R_MOVOP2TEMP,   FU_NO ),
+_OE( _Bin(   ANY,  ANY,  M,    NONE ), V_NO,           RG_FLOAT,     R_MOVRESTEMP,   FU_NO ),
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_FLOAT_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 
 opcode_entry    DoNop[] = {
 /*************************/
-/*       op1   op2   res   eq      verify          gen           reg      fu */
-_BinPP( ANY,  ANY,  ANY,  NONE ),  V_NO,           G_NO,         RG_,     FU_NO,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _BinPP( ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_NO,           FU_NO ),
 };
 
 opcode_entry    Set4[] = {
 /************************/
-/*       op1   op2   res   eq      verify          gen           reg      fu */
-_Bin(    ANY,  ANY,  ANY,  NONE ), V_NO,           R_DOSET,      RG_,     FU_ALU,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_DOSET,        FU_ALU ),
 };
 
 opcode_entry    Test4[] = {
 /*************************/
-/*       op1   op2   res   eq      verify          gen           reg      fu */
-_Bin(    ANY,  ANY,  ANY,  NONE ), V_NO,           R_DOTEST,     RG_,     FU_ALU,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_DOTEST,       FU_ALU ),
 };
 
 opcode_entry    Cmp4[] = {
 /************************/
-/*       op1   op2       verify          gen             reg fu*/
-_Side(  R,    R ),      V_NO,           G_CMP,          RG_DWORD,FU_NO,
-_Side(  R,    C ),      V_HALFWORDCONST2,G_CMP_I,       RG_DWORD,FU_NO,
-_Side(  R,    C ),      V_NO,           R_MOVOP2TEMP,   RG_DWORD,FU_NO,
-_Side(  C,    C ),      V_NO,           R_MOVOP1TEMP,   RG_DWORD,FU_NO,
-_Side(  C,    R ),      V_NO,           R_SWAPCMP,      RG_DWORD,FU_NO,
-_Side(  M,    ANY ),    V_NO,           R_MOVOP1TEMP,   RG_DWORD,FU_NO,
-_Side(  ANY,  M ),      V_NO,           R_MOVOP2TEMP,   RG_DWORD,FU_NO,
-_Side(  ANY,  ANY ),    V_NO,           G_UNKNOWN,      RG_DWORD_NEED,FU_NO,
+/*           op1   op2                 verify          reg           gen             fu  */
+_OE( _Side(  R,    R ),                V_NO,           RG_DWORD,     G_CMP,          FU_NO ),
+_OE( _Side(  R,    C ),                V_HALFWORDCONST2,RG_DWORD,    G_CMP_I,        FU_NO ),
+_OE( _Side(  R,    C ),                V_NO,           RG_DWORD,     R_MOVOP2TEMP,   FU_NO ),
+_OE( _Side(  C,    C ),                V_NO,           RG_DWORD,     R_MOVOP1TEMP,   FU_NO ),
+_OE( _Side(  C,    R ),                V_NO,           RG_DWORD,     R_SWAPCMP,      FU_NO ),
+_OE( _Side(  M,    ANY ),              V_NO,           RG_DWORD,     R_MOVOP1TEMP,   FU_NO ),
+_OE( _Side(  ANY,  M ),                V_NO,           RG_DWORD,     R_MOVOP2TEMP,   FU_NO ),
+_OE( _Side(  ANY,  ANY ),              V_NO,           RG_DWORD_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    CmpF[] = {
 /************************/
-/*       op1   op2       verify          gen             reg fu*/
-_Side(  R,    R ),      V_NO,           G_CMP_FP,       RG_FLOAT,FU_NO,
-_Side(  R,    C ),      V_NO,           R_FORCEOP2CMEM, RG_FLOAT,FU_NO,
-_Side(  C,    R ),      V_NO,           R_SWAPCMP,      RG_FLOAT,FU_NO,
-_Side(  M,    ANY ),    V_NO,           R_MOVOP1TEMP,   RG_FLOAT,FU_NO,
-_Side(  ANY,  M ),      V_NO,           R_MOVOP2TEMP,   RG_FLOAT,FU_NO,
-_Side(  ANY,  ANY ),    V_NO,           G_UNKNOWN,      RG_FLOAT_NEED,FU_NO,
+/*           op1   op2                 verify          reg           gen             fu  */
+_OE( _Side(  R,    R ),                V_NO,           RG_FLOAT,     G_CMP_FP,       FU_NO ),
+_OE( _Side(  R,    C ),                V_NO,           RG_FLOAT,     R_FORCEOP2CMEM, FU_NO ),
+_OE( _Side(  C,    R ),                V_NO,           RG_FLOAT,     R_SWAPCMP,      FU_NO ),
+_OE( _Side(  M,    ANY ),              V_NO,           RG_FLOAT,     R_MOVOP1TEMP,   FU_NO ),
+_OE( _Side(  ANY,  M ),                V_NO,           RG_FLOAT,     R_MOVOP2TEMP,   FU_NO ),
+_OE( _Side(  ANY,  ANY ),              V_NO,           RG_FLOAT_NEED,G_UNKNOWN,      FU_NO ),
+_OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 opcode_entry    Call[] = {
 /************************/
-/*       op    op2,  res   eq          verify          gen             reg fu*/
-_Bin(   ANY,  ANY,  ANY,  NONE ),     V_NO,            G_CALL,         RG_,FU_NO,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_CALL,         FU_NO ),
 };
 
 opcode_entry    CallI[] = {
 /*************************/
-/*       op    op2,  res   eq          verify          gen             reg fu*/
-_Bin(   ANY,  ANY,  ANY,  NONE ),     V_NO,            G_CALLI,        RG_,FU_NO,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_CALLI,        FU_NO ),
 };
 
 opcode_entry    Rtn[] = {
 /***********************/
-/*       op    op2,  res   eq          verify          gen             reg fu*/
-_Bin(   ANY,  ANY,  ANY,  NONE ),     V_NO,            R_MAKECALL,      RG_,FU_NO,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_MAKECALL,     FU_NO ),
 };
 
 opcode_entry    Promote[] = {
 /***************************/
-/*       op    op2,  res   eq          verify          gen             reg fu*/
-_Bin(   ANY,  ANY,  ANY,  NONE ),     V_NO,            R_BIN2INT,      RG_,FU_NO,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_BIN2INT,      FU_NO ),
 };
 
 opcode_entry    Mod4[] = {
 /************************/
-/*       op    op2,  res   eq          verify          gen             reg fu*/
-_Bin(   ANY,  ANY,  ANY,  NONE ),     V_NO,            R_MOD2DIV,      RG_,FU_NO,
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_MOD2DIV,      FU_NO ),
 };
 
 

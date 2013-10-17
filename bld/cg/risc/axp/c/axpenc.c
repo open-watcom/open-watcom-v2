@@ -897,6 +897,7 @@ static  void    Encode( instruction *ins ) {
         break;
     default:
         _Zoiks( ZOIKS_028 );
+        break;
     }
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {

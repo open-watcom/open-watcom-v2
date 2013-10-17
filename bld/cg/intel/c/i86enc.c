@@ -1430,6 +1430,9 @@ extern  void    GenObjCode( instruction *ins ) {
             LayRegOp( result );
             AddToTemp( M_SECONDARY );
             break;
+        case G_UNKNOWN:
+            _Zoiks( ZOIKS_097 );
+            break;
         default:
             _Zoiks( ZOIKS_028 );
             break;

@@ -760,14 +760,15 @@ static  void    Encode( instruction *ins )
         break;
     case G_NO:
         return;
-    case G_UNKNOWN:
-        _Zoiks( ZOIKS_097 );
-        break;
     case G_DEBUG:
         DbgBlkInfo( ins );
         break;
+    case G_UNKNOWN:
+        _Zoiks( ZOIKS_097 );
+        break;
     default:
         _Zoiks( ZOIKS_028 );
+        break;
     }
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {

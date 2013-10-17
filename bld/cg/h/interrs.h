@@ -127,7 +127,7 @@ typedef enum {
     ZOIKS_094,  /*  No dominator found */
     ZOIKS_095,  /*  Made Windows prolog for a routine which had AX live on entry */
     ZOIKS_096,  /*  ALPHA - comparison of short or byte found */
-    ZOIKS_097,  /*  ALPHA - instruction with G_UNKNOWN encoding being emitted */
+    ZOIKS_097,  /*  The instruction with G_UNKNOWN encoding being emitted */
     ZOIKS_098,  /*  Invalid alignment found on addr node in Points */
     ZOIKS_099,  /*  Frame size too large in AXP GenProlog */
     ZOIKS_100,  /*  64-bit operation unsupported on PPC */
