@@ -465,7 +465,7 @@ static bool IsStruct( TYPEPTR typ )
     return( FALSE );
 }
 
-int IsLValue( TREEPTR tree )
+bool IsLValue( TREEPTR tree )
 {
     switch( tree->op.opr ) {
     case OPR_ERROR:
@@ -473,7 +473,7 @@ int IsLValue( TREEPTR tree )
     case OPR_INDEX:
     case OPR_PUSHADDR:
     case OPR_POINTS:
-        return( 1 );
+        return( TRUE );
     case OPR_DOT:
         while( tree->op.opr == OPR_DOT )
             tree = tree->left;
@@ -484,17 +484,17 @@ int IsLValue( TREEPTR tree )
             // These are not lvalues
             break;
         default:
-            return( 1 );
+            return( TRUE );
             break;
         }
         break;
     }
-    return( 0 );
+    return( FALSE );
 }
 
 static bool IsCallValue( TREEPTR tree )
 {
-    int ret;
+    bool ret;
 
     while( tree->op.opr == OPR_DOT || tree->op.opr == OPR_INDEX ) {
         tree = tree->left;

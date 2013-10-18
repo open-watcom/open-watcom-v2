@@ -496,8 +496,7 @@ local void AddParms( void )
     typ = CurFunc->sym_type;
     // TODO not following my scheme
     CurFunc->sym_type = FuncNode( typ->object, FLAG_NONE,
-        MakeParmList( parmlist, parm_count,
-        ParmsToBeReversed( CurFunc->mods, NULL ) ) );
+        MakeParmList( parmlist, parm_count, ParmsToBeReversed( CurFunc->mods, NULL ) ) );
 
     if( PrevProtoType != NULL ) {                       /* 12-may-91 */
         ChkProtoType();

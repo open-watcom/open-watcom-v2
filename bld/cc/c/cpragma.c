@@ -128,12 +128,12 @@ local void EndOfPragma( void )
 }
 
 
-int SetToggleFlag( char const *name, int const value )
-/****************************************************/
+bool SetToggleFlag( char const *name, int const value )
+/*****************************************************/
 {
     int     i;
-    char   *pnt;
-    int     ret;
+    char    *pnt;
+    bool    ret;
 
     ret = FALSE;
     for( i = 0; (pnt = ToggleNames[ i ].name) != NULL; ++i ) {
@@ -1209,7 +1209,7 @@ static void PragAlias( void )
 void CPragma( void )
 /******************/
 {
-    int     check_end = TRUE;
+    bool    check_end = TRUE;
 
     /* Note that the include_alias pragma must always be processed
      * because it's intended for the preprocessor, not the compiler.

@@ -1120,7 +1120,7 @@ static char *FixupIncAliasList( char *p, unsigned list_count )
     return( p );
 }
 
-static int VerifyIncludes( const char *filename )
+static bool VerifyIncludes( const char *filename )
 {
     FNAMEPTR    flist;
     time_t      mtime;

@@ -391,8 +391,8 @@ enum sym_type AsmQueryType( void *handle )
     return( AsmType( sym.sym_type, sym.mods ) );
 }
 
-static int InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code )
-/*******************************************************************************/
+static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code )
+/********************************************************************************/
 {
                         /* additional slop in buffer to simplify the code */
     unsigned char       temp[MAXIMUM_BYTESEQ + 1 + 2 * sizeof( long )];
@@ -412,13 +412,13 @@ static int InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code 
     char                *name;
     unsigned            skip;
     int                 mutate_to_segment;
-    int                 uses_auto;
+    bool                uses_auto;
 #if _CPU == 8086
     int                 fixup_padding;
 #endif
 
     sym_handle = 0;
-    uses_auto = 0;
+    uses_auto = FALSE;
     perform_fixups = FALSE;
     head = FixupHead;
     if( head != NULL ) {
@@ -458,7 +458,7 @@ static int InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code 
                     case SC_AUTO:
                         sym.flags |= SYM_USED_IN_PRAGMA;
                         CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
-                        uses_auto = 1;
+                        uses_auto = TRUE;
                         break;
                     }
                     SymReplace( &sym, sym_handle );
@@ -638,14 +638,14 @@ void AsmSysLine( char *buff )
 #endif
 }
 
-local int GetByteSeq( byte_seq **code )
-/*************************************/
+local bool GetByteSeq( byte_seq **code )
+/**************************************/
 {
     unsigned char       buff[MAXIMUM_BYTESEQ + 32];
     char                *name;
     unsigned long       offset;
     fix_words           fixword;
-    int                 uses_auto;
+    bool                uses_auto;
     char                too_many_bytes;
 #if _CPU == 8086
     bool                use_fpu_emu = FALSE;
@@ -655,7 +655,7 @@ local int GetByteSeq( byte_seq **code )
     PPCTL_ENABLE_MACROS();
     NextToken();
     too_many_bytes = 0;
-    uses_auto = 0;
+    uses_auto = FALSE;
     offset = 0;
     name = NULL;
     for( ;; ) {
@@ -748,7 +748,7 @@ local int GetByteSeq( byte_seq **code )
     }
     PPCTL_DISABLE_MACROS();
     if( too_many_bytes ) {
-        uses_auto = 0;
+        uses_auto = FALSE;
     } else {
         uses_auto = InsertFixups( buff, AsmCodeAddress, code );
     }
@@ -1041,7 +1041,7 @@ void AsmSysMakeInlineAsmFunc( int code_ovrflw )
     int                 code_length;
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
-    int                 uses_auto;
+    bool                uses_auto;
     char                name[8];
 
     code_ovrflw = code_ovrflw;

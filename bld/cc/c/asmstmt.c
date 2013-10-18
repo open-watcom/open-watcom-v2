@@ -35,8 +35,8 @@
 
 #define MAX_ASM_LINE_LEN 511
 
-static int EndOfAsmStmt( void )
-/*****************************/
+static bool EndOfAsmStmt( void )
+/******************************/
 {
     if( CurToken == T_SEMI_COLON ) {
         // ; .ASM comment

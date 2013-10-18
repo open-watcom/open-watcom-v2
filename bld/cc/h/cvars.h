@@ -585,7 +585,7 @@ extern  TREEPTR LongLeaf(target_long);
 extern  TREEPTR UIntLeaf(target_uint);
 extern  TREEPTR VarLeaf(SYMPTR,SYM_HANDLE);
 extern  TREEPTR BasedPtrNode(TYPEPTR,TREEPTR);
-extern  int     IsLValue(TREEPTR);
+extern  bool    IsLValue(TREEPTR);
 extern  op_flags OpFlags( type_modifiers  flags );
 extern  type_modifiers FlagOps( op_flags ops );
 extern  FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned long *field_offset, char *name );
@@ -718,7 +718,7 @@ extern  void    MergeInclude(void);             /* coptions */
 
 extern  void    CPragmaInit( void );            /* cpragma */
 extern  void    CPragmaFini( void );            /* cpragma */
-extern  int     SetToggleFlag( char const *name, int const value ); /* cpragma */
+extern  bool    SetToggleFlag( char const *name, int const value ); /* cpragma */
 extern  void    CPragma(void);                  /* cpragma */
 extern  textsegment *LkSegName(char *,char *);   /* cpragma */
 extern  textsegment *NewTextSeg(char *,char *,char *);

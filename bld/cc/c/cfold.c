@@ -1315,5 +1315,5 @@ bool BoolConstExpr( void )
     const_val   val;
 
     ConstExprAndType( &val );
-    return( U64Test( &val.value ) );
+    return( U64Test( &val.value ) != 0 );
 }

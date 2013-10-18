@@ -35,8 +35,8 @@ extern  unsigned SymTypedef;
 
 extern FIELDPTR FieldCreate( char *name );
 
-local TYPEPTR StructDecl(int,int);
-//local TYPEPTR ComplexDecl(int,int);
+local TYPEPTR StructDecl(int,bool);
+//local TYPEPTR ComplexDecl(int,bool);
 static void SetPlainCharType( int char_type );
 local void CheckBitfieldType( TYPEPTR typ );
 
@@ -418,7 +418,7 @@ static void DeclSpecifiers( char *plain_int, decl_info *info )
     int                 bmask;
     int                 bit;
     type_modifiers      flags;
-    int                 packed;
+    bool                packed;
     SYM_HANDLE          sym_handle;
     stg_classes         stg_class;
     stg_classes         specified_stg_class;
@@ -505,13 +505,13 @@ static void DeclSpecifiers( char *plain_int, decl_info *info )
             if( typ != NULL )
                 CErr1( ERR_INV_TYPE );
             typ = StructDecl( TYPE_STRUCT, packed );
-            packed = 0;
+            packed = FALSE;
             continue;
         case T_UNION:
             if( typ != NULL )
                 CErr1( ERR_INV_TYPE );
             typ = StructDecl( TYPE_UNION, packed );
-            packed = 0;
+            packed = FALSE;
             continue;
         case T_ENUM:
             if( typ != NULL )
@@ -1118,7 +1118,7 @@ local unsigned long GetFields( TYPEPTR decl )
 }
 
 
-local TYPEPTR StructDecl( int decl_typ, int packed )
+local TYPEPTR StructDecl( int decl_typ, bool packed )
 {
     TYPEPTR     typ;
     TAGPTR      tag;
@@ -1255,7 +1255,7 @@ local unsigned long GetComplexFields( TYPEPTR decl )
 }
 
 
-local TYPEPTR ComplexDecl( int decl_typ, int packed )
+local TYPEPTR ComplexDecl( int decl_typ, bool packed )
 {
     TYPEPTR     typ;
     TAGPTR      tag;

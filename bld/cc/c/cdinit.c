@@ -87,8 +87,8 @@ static int             DataQuadSegIndex;
 static int             DataQuadIndex;
 
 local   DATA_QUAD_LIST  *NewDataQuad( void );
-local   int             CharArray( TYPEPTR typ );
-local   int             WCharArray( TYPEPTR typ );
+local   bool            CharArray( TYPEPTR typ );
+local   bool            WCharArray( TYPEPTR typ );
 local   void            InitCharArray( TYPEPTR typ );
 local   void            InitWCharArray( TYPEPTR typ );
 local   void            StoreFloat( DATA_TYPE dtype, unsigned long size );
@@ -1011,7 +1011,7 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
 }
 
 
-local int CharArray( TYPEPTR typ )
+local bool CharArray( TYPEPTR typ )
 {
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
@@ -1023,15 +1023,15 @@ local int CharArray( TYPEPTR typ )
 }
 
 
-local int WCharArray( TYPEPTR typ )
+local bool WCharArray( TYPEPTR typ )
 {
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_SHORT || typ->decl_type == TYPE_USHORT ) {
-            return( 1 );
+            return( TRUE );
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
 local void InitCharArray( TYPEPTR typ )

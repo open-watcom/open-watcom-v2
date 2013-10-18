@@ -73,14 +73,14 @@ bool    PrintWhiteSpace;     // also refered from cmac2.c
 static  void        DoCCompile( char **cmdline );
 static  void        DelErrFile( void );
 static  void        MakePgmName( void );
-static  int         OpenFCB( FILE *fp, const char *filename );
+static  bool        OpenFCB( FILE *fp, const char *filename );
 static  bool        IsFNameOnce( char const *filename );
 static  bool        TryOpen( const char *path, const char *filename );
 static  void        ParseInit( void );
 static  void        CPP_Parse( void );
-static  int         FCB_Alloc( FILE *fp, const char *filename );
+static  bool        FCB_Alloc( FILE *fp, const char *filename );
 local   void        Parse( void );
-static  int         OpenPgmFile( void );
+static  bool        OpenPgmFile( void );
 static  void        DelDepFile( void );
 static  const char  *IncludeAlias( const char *filename, bool is_lib );
 
@@ -468,7 +468,7 @@ local void CantOpenFile( char *name )
     ConsErrMsgVerbatim( msgbuf );
 }
 
-static int OpenPgmFile( void )
+static bool OpenPgmFile( void )
 {
     if( IsStdIn ) {
         if( OpenFCB( stdin, "stdin" ) ) {
@@ -835,7 +835,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
         CErr2p( ERR_CANT_OPEN_FILE, filename );
     }
     CompFlags.cpp_output = save;
-    return( CompFlags.ignore_fnf );
+    return( CompFlags.ignore_fnf != 0 );
 }
 
 void CClose( FILE *fp )
@@ -895,7 +895,7 @@ void CloseSrcFile( FCB *srcfcb )
     CMemFree( srcfcb );
 }
 
-static int OpenFCB( FILE *fp, const char *filename )
+static bool OpenFCB( FILE *fp, const char *filename )
 {
     if( CompFlags.track_includes ) {
         // Don't track the top level file (any semi-intelligent user should
@@ -1212,7 +1212,7 @@ void SrcFileIncludeAlias( const char *alias_name, const char *real_name, bool is
     AddIAlias( alias_name, real_name, is_lib );
 }
 
-static int FCB_Alloc( FILE *fp, const char *filename )
+static bool FCB_Alloc( FILE *fp, const char *filename )
 {
     int             i;
     FCB             *srcfcb;

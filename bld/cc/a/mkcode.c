@@ -88,9 +88,9 @@ int main(int argc, char *argv[])
             if( *p == '\0' ) break;
         }
         p = Xptr(cb->burst);
-        len = *p;
-        fprintf( fp, "static struct STRUCT_byte_seq() %s = { %d, FALSE, {\n    ", 
-            Xptr(cb->name), *p++ );
+        len = *p++;
+        fprintf( fp, "static struct STRUCT_byte_seq( %d ) %s = { %d, FALSE, {\n    ", 
+            len, Xptr(cb->name), len );
         i = 0;
         for(;;) {
             fprintf( fp, "0x%2.2X", *p++ );
