@@ -116,9 +116,11 @@
 #define PI       3.1415926535897932384626434
 #define PNT68    0.6796875E0
 
+_WMRTDATA extern const double __d_infinity;
+
 #define XBIG     2.55E305
 #define XMININ   2.23E-308
-#define XINF     _INFINITY
+#define XINF     __d_infinity
 #define EPS      2.22E-16
 #define FRTBIG   2.25E76
 
@@ -245,7 +247,7 @@ double xden, xnum;
         res = XINF;
 
     /* Set the sign parameter before leaving */
-    if(sign != NULL)
+    if(sign != (int *)0)
 	*sign = signbit(sin(-PI*x)) == 0 ? 1 : -1;
     
     return res;

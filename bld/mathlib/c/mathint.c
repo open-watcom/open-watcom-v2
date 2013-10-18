@@ -35,5 +35,3 @@
 /* The last sign during a call to lgamma.  C99 insists this exists. */
 int signgam = 1;
 
-/* The current rounding mode, accessed via fegetround and fesetround */
-int _libm_roundmode = 0;

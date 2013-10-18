@@ -32,7 +32,7 @@
 
 #include "variety.h"
 
-_WMRTDATA extern int _libm_roundmode = 0;
+static int _libm_roundmode = 0;
 
 _WMRTLINK int fegetround()
 {

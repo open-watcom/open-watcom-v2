@@ -49,14 +49,14 @@
 !inject divc8.obj    d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
 !inject efcvt.obj    d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
 !inject efgfmt.obj   d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
-!inject erf.obj                d32c d32i n32c n32i         axp ntp op lpc lmp
+!inject erf.obj      d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject evalpoly.obj d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
 !inject exp.obj      d16c      d32c      n32c      wnc     axp ntp op
 !inject exp87.obj         d16i      d32i      n32i     wni
 !inject exp087_.obj  d16c                          wnc
 !inject exp387_.obj            d32c      n32c
 !inject exp2.obj     d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
-!inject expm1.obj              d32c d32i n32c n32i         axp ntp op lpc lmp
+!inject expm1.obj    d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject fabs.obj     d16c      d32c      n32c      wnc     axp ntp op
 !inject fabs87.obj        d16i      d32i      n32i     wni
 !inject fchop87.obj       d16i      d32i      n32i     wni
@@ -120,7 +120,7 @@
 !inject lgamma.obj   d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject log.obj      d16c      d32c      n32c      wnc     axp ntp op
 !inject log10.obj    d16c      d32c      n32c      wnc     axp ntp op
-!inject log1p.obj              d32c d32i n32c n32i         axp ntp op lpc lmp
+!inject log1p.obj    d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject log2.obj     d16c      d32c      n32c      wnc     axp ntp op
 !inject log87.obj         d16i      d32i      n32i     wni
 !inject log087_.obj  d16c                          wnc
@@ -158,7 +158,7 @@
 !inject qmatherr.obj d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
 !inject rint.obj     d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject rmnder.obj   d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
-!inject rndmode.obj  d16c      d32c      n32c      wnc     axp ntp op lpc lmp
+!inject rndmode.obj  d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject round.obj    d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject scalbn.obj             d32c d32i n32c n32i         axp ntp op lpc lmp
 !inject sgn.obj      d16c d16i d32c d32i n32c n32i wnc wni axp ntp op

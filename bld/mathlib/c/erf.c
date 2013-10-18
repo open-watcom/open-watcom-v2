@@ -91,13 +91,12 @@
 #define Q4      6.05183413124413191E-2
 #define Q5      2.33520497626869185E-3
 
-static double calerf(double arg, int jint)
+static double calerf(double x, int jint)
 {
-double x, y, ysq;
+double y, ysq;
 double xnum, xden, result;
 double del;
 
-    x = arg
     y = fabs(x);
     
     /* Evaluate  erf  for  |X| <= 0.46875 */

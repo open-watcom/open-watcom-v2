@@ -33,7 +33,12 @@
 *
 ****************************************************************************/
 
-#define XINF    1.79E308
+#include <math.h>
+#include "variety.h"
+
+_WMRTDATA extern const double __d_infinity;
+
+#define XINF    __d_infinity
 
 #define ALNRCS1   1.0378693562743770E0
 #define ALNRCS2   -.13364301504908918E0 
@@ -59,12 +64,10 @@
 #define ALNRCS22  -.000000000000000103E0
 #define ALNRCS23   .000000000000000019E0
 
-#include <math.h>
-
 static double _Chebyshev_Evaluate(double x, double *array, double n)
 {
 double b0, b1, b2, twox;
-int i, ni;
+int i;
 
     b0 = 0.0;
     b1 = 0.0;
