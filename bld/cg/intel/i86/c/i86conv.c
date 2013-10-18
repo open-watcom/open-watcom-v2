@@ -167,10 +167,10 @@ _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_MAKECALL,     FU_NO
     RT_MAP( C_U4_D, RT_U4FD ) \
     RT_MAP( C_I4_D, RT_I4FD ) \
     RT_MAP( C_S_D,  RT_FSFD ) \
-    RT_MAP( C_S_4,  RT_FSI4 ) \
-    RT_MAP( C_S_U,  RT_FSU4 ) \
-    RT_MAP( C_D_4,  RT_FDI4 ) \
-    RT_MAP( C_D_U,  RT_FDU4 ) \
+    RT_MAP( C_S_I4, RT_FSI4 ) \
+    RT_MAP( C_S_U4, RT_FSU4 ) \
+    RT_MAP( C_D_I4, RT_FDI4 ) \
+    RT_MAP( C_D_U4, RT_FDU4 ) \
     RT_MAP( C_D_S,  RT_FDFS ) \
     RT_MAP( C_U8_S, RT_U8FS ) \
     RT_MAP( C_I8_S, RT_I8FS ) \
@@ -221,8 +221,8 @@ OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CU4, 
 OK,    OK,    C2TO1,  C2TO1, C4TO1,  C4TO1,  C4TO1,  C4TO1,  CU4,   CU4,   CI4,    CI4,    CI4,    /* I1 */
 Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CU4,    CU4,    CU4,    /* U2 */
 Z1TO2, S1TO2, OK,     OK,    C4TO2,  C4TO2,  C4TO2,  C4TO2,  CU4,   CU4,   CI4,    CI4,    CI4,    /* I2 */
-CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_U,  C_D_U,  C_D_U,  /* U4 */
-CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_4,  C_D_4,  C_D_4,  /* I4 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_U4, C_D_U4, C_D_U4, /* U4 */
+CU2,   CI2,   Z2TO4,  S2TO4, OK,     OK,     C8TO4,  C8TO4,  OK,    OK,    C_S_I4, C_D_I4, C_D_I4, /* I4 */
 CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_U8, C_D_U8, C_D_U8, /* U8 */
 CU4,   CI4,   CU4,    CI4,   Z4TO8,  S4TO8,  OK,     OK,     Z4TO8, Z4TO8, C_S_I8, C_D_I8, C_D_I8, /* I8 */
 CU4,   CI4,   EXT_PT, CI4,   OK,     OK,     OK,     OK,     OK,    OK,    __x__,  __x__,  __x__,  /* CP */
