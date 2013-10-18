@@ -788,12 +788,13 @@ seg_offset      GetComOffset( unsigned_32 offset ) {
 }
 
 
-struct bck_info *FEBack( sym_id sym ) {
-//=====================================
+struct bck_info *FEBack( cg_sym_handle _sym ) {
+//=============================================
 
 // Return the back handle for the given symbol.
 
     void        *back_handle;
+    sym_id      sym = _sym;
 
     if( ( sym->ns.flags & SY_CLASS ) == SY_COMMON ) {
         back_handle = sym->ns.u3.address;
@@ -999,8 +1000,8 @@ int     FETrue( void ) {
 }
 
 
-fe_attr FEAttr( sym_id sym ) {
-//============================
+fe_attr FEAttr( cg_sym_handle _sym ) {
+//====================================
 
 // Return the front end attributes for the given symbol.
 
@@ -1011,6 +1012,7 @@ fe_attr FEAttr( sym_id sym ) {
 
     unsigned_16 flags;
     fe_attr     attr;
+    sym_id      sym = _sym;
 
     _UnShadow( sym );
     if( ( sym == EPValue ) || ( sym == ReturnValue ) ) return( 0 );
@@ -1086,21 +1088,22 @@ fe_attr FEAttr( sym_id sym ) {
 }
 
 
-void    FEGenProc( sym_id sym, call_handle handle) {
-//==================================================
+void    FEGenProc( cg_sym_handle sym, call_handle handle) {
+//=========================================================
 
     sym = sym;
 }
 
 
-segment_id      FESegID( sym_id sym ) {
-//=====================================
+segment_id      FESegID( cg_sym_handle _sym ) {
+//=============================================
 
 // Return identifier of the segment that the given symbol is defined in.
 
     segment_id  id;
     unsigned_16 flags;
     unsigned_16 sp_type;
+    sym_id      sym = _sym;
 
     _UnShadow( sym );
     id = SEG_LDATA;
@@ -1216,10 +1219,12 @@ static int GetParmsSize( sym_id sym )
     return( args_size );
 }
 
-extern char *FEExtName( sym_id sym, int request ) {
-//=================================================
+extern char *FEExtName( cg_sym_handle _sym, int request ) {
+//=========================================================
 
 // Return symbol name related info for object file.
+
+    sym_id      sym = _sym;
 
     switch( request ) {
     case EXTN_BASENAME:
@@ -1233,10 +1238,12 @@ extern char *FEExtName( sym_id sym, int request ) {
     }
 }
 
-char    *FEName( sym_id sym ) {
-//=============================
+char    *FEName( cg_sym_handle _sym ) {
+//=====================================
 
 // Return pointer to the name of the given symbol.
+
+    sym_id      sym = _sym;
 
     _UnShadow( sym );
     if( sym == NULL ) return( "*NULL*" );
@@ -1256,21 +1263,25 @@ void    *ConstBack( sym_id c_ptr ) {
 }
 
 
-int     FELexLevel( sym_id sym ) {
-//================================
+int     FELexLevel( cg_sym_handle _sym ) {
+//========================================
 
 // Return scoping level of given symbol.
+
+    sym_id      sym = _sym;
 
     _UnShadow( sym );
     return( 0 );
 }
 
 
-cg_type FEParmType( sym_id fn, sym_id parm, cg_type tipe ) {
-//==========================================================
+cg_type FEParmType( cg_sym_handle _fn, cg_sym_handle parm, cg_type tipe ) {
+//=========================================================================
 
 // Return the type that an argument of the given type should be converted
 // to.
+
+    sym_id      fn = _fn;
 
     parm = parm;
     switch( tipe ) {
@@ -1309,11 +1320,13 @@ int     FEMoreMem( unsigned size ) {
 }
 
 
-int     FEStackChk( sym_id sym ) {
-//================================
+int     FEStackChk( cg_sym_handle _sym ) {
+//========================================
 
 // Do we want to generate stack overflow checking in the prologue for the
 // given symbol?
+
+    sym_id      sym = _sym;
 
     _UnShadow( sym );
     return( ( CGOpts & CGOPT_STACK_CHK ) != 0 );
@@ -1715,10 +1728,12 @@ static  void    InitDBGTypes( void ) {
 }
 
 
-dbg_type        FEDbgRetType( sym_id sym ) {
-//==========================================
+dbg_type        FEDbgRetType( cg_sym_handle _sym ) {
+//==================================================
 
 // Return the debug type handle for a subprogram.
+
+    sym_id      sym = _sym;
 
     _UnShadow( sym );
     InitDBGTypes();
@@ -1770,13 +1785,14 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
 }
 
 
-dbg_type        FEDbgType( sym_id sym ) {
-//=======================================
+dbg_type        FEDbgType( cg_sym_handle _sym ) {
+//===============================================
 
 // Return the debug type handle for the given symbol.
 
     dbg_type            db_type;
     act_dim_list        *dim_ptr;
+    sym_id              sym = _sym;
 
     _UnShadow( sym );
     InitDBGTypes();
