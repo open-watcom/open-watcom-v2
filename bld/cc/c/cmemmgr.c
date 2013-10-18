@@ -389,7 +389,7 @@ void FEfree( void *p )
 }
 
 
-int FEMoreMem( int size )
+int FEMoreMem( unsigned size )
 {
     size = size;
     return( 0 );
