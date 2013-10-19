@@ -47,10 +47,8 @@ static  void    BitsOff( void )
 {
     block               *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= ~( CONTAINS_CALL | REAL_REFERENCE | NO_LOAD_STORE );
-        blk = blk->next_block;
     }
 }
 
@@ -83,10 +81,8 @@ static  void    CheckRefs( conflict_node *conf, block *blk )
         blk->class |= REAL_REFERENCE;
         return;
     }
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
-        i = ins->num_operands;
-        while( --i >= 0 ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( i = ins->num_operands; i-- > 0; ) {
             if( SameConf( ins->operands[ i ], ins, conf ) ) {
                 blk->class |= REAL_REFERENCE;
                 return;
@@ -103,7 +99,6 @@ static  void    CheckRefs( conflict_node *conf, block *blk )
                ( ins->flags.call_flags & CALL_READS_NO_MEMORY ) ) ) {
             blk->class |= CONTAINS_CALL;
         }
-        ins = ins->head.next;
     }
 }
 
@@ -123,15 +118,13 @@ static  void    LoadStoreIfCall( global_bit_set *id )
     block               *blk;
     data_flow_def       *flow;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if(( blk->class & CONTAINS_CALL ) && !( blk->class & REAL_REFERENCE )) {
             flow = blk->dataflow;
             _GBitTurnOn( flow->need_load, *id );
             _GBitTurnOn( flow->need_store, *id );
             _GBitTurnOn( flow->call_exempt, *id );
         }
-        blk = blk->next_block;
     }
 }
 
@@ -145,17 +138,14 @@ static  void    TurnOffLoadStoreBits( global_bit_set *id )
     block               *blk;
     data_flow_def       *flow;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( !( blk->class & REAL_REFERENCE ) ) {
             flow = blk->dataflow;
-            if( _GBitOverlap( flow->need_load, *id )
-             && _GBitOverlap( flow->need_store, *id ) ) {
+            if( _GBitOverlap( flow->need_load, *id ) && _GBitOverlap( flow->need_store, *id ) ) {
                 _GBitTurnOff( flow->need_load, *id );
                 _GBitTurnOff( flow->need_store, *id );
             }
         }
-        blk = blk->next_block;
     }
 }
 
@@ -175,11 +165,9 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
 
     for( ;; ) {
         change = FALSE;
-        blk = start;
-        while( blk != NULL ) {
+        for( blk = start; blk != NULL; blk = blk->next_block ) {
             blk_dat = blk->dataflow;
-            edge = blk->input_edges;
-            while( edge != NULL ) {
+            for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
                 source_dat = edge->source->dataflow;
                 if( _GBitOverlap( source_dat->out, *id ) &&
                     _GBitOverlap( blk_dat->in, *id ) ) {
@@ -197,9 +185,7 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
                         _GBitTurnOn( blk_dat->need_load, *id );
                     }
                 }
-                edge = edge->next_source;
             }
-            blk = blk->next_block;
         }
         if( change == FALSE ) break;
     }
@@ -280,12 +266,10 @@ static  void    CalculateLoadStore( conflict_node *conf )
     PropagateLoadStoreBits( conf->start_block, &id );
     TurnOffLoadStoreBits( &id );
     if( NameIsConstant( conf->name ) ) {
-        blk = HeadBlock;
         id = conf->id.out_of_block;
-        while( blk != NULL ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             flow = blk->dataflow;
             _GBitTurnOff( flow->need_store, id );
-            blk = blk->next_block;
         }
     }
     BitsOff();

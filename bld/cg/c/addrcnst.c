@@ -48,10 +48,8 @@ extern  void    MakeMovAddrConsts( void ) {
     instruction *ins;
     name        *op;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_LA ) {
                 op = ins->operands[ 0 ];
                 if( op->n.class == N_TEMP ) {
@@ -61,9 +59,7 @@ extern  void    MakeMovAddrConsts( void ) {
                     ins->operands[ 0 ] = op;
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -79,15 +75,11 @@ extern  void    KillMovAddrConsts( void ) {
     type_class_def      class;
     int                 i;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
                 op = ins->operands[ i ];
-                if( op->n.class == N_CONSTANT
-                 && op->c.const_type == CONS_TEMP_ADDR ) {
+                if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
                     class = _OpClass( ins );
                     new_op = AllocTemp( class );
                     new_ins = MakeUnary( OP_LA, op->c.value, new_op, class );
@@ -95,8 +87,6 @@ extern  void    KillMovAddrConsts( void ) {
                     PrefixIns( ins, new_ins );
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }

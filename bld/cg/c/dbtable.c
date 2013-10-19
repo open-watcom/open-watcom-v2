@@ -37,6 +37,6 @@
 
 opcode_entry    DbgInfo[] = {
 /***************************/
-/*       op1   op2    res   eq        verify       gen      reg     fu*/
-_None(                            ), V_NO,      G_DEBUG,    RG_,    FU_NO
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _None(                         ), V_NO,           RG_,          G_DEBUG,        FU_NO )
 };

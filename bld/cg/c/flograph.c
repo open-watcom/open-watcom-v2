@@ -70,10 +70,8 @@ static  void    NoBlocksToSelf( void )
     block_edge  **owner;
     block_edge  *next;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        edge = blk->input_edges;
-        while( edge != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( edge = blk->input_edges; edge != NULL; edge = next ) {
             next = edge->next_source;
             if( edge->source == blk ) {
                 new_blk = NewBlock( AskForNewLabel(), TRUE );
@@ -111,9 +109,7 @@ static  void    NoBlocksToSelf( void )
                 /* edge is now the only input to new_blk*/
                 edge->next_source = NULL;
             }
-            edge = next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -131,8 +127,7 @@ static  void    ReturnsToBottom( void )
         curr = curr->next_block;
     }
     last = curr;
-    curr = curr->prev_block;
-    while( curr != NULL ) {
+    for( curr = curr->prev_block; curr != NULL; curr = prev ) {
         prev = curr->prev_block;
         if( curr->class & RETURN ) {
             if( prev != NULL ) {
@@ -144,7 +139,6 @@ static  void    ReturnsToBottom( void )
             curr->next_block = NULL;
             last = curr;
         }
-        curr = prev;
     }
     BlockList = last;
 }
@@ -370,8 +364,7 @@ static  void    EdgeLevels( void )
 
     blk = HeadBlock;
     for( ;; ) {
-        edge = blk->input_edges;
-        while( edge != NULL ) {
+        for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
             id = edge->source->id;
             interval = blk->u.interval;
             for( ;; ) {
@@ -381,7 +374,6 @@ static  void    EdgeLevels( void )
                 interval = interval->parent;
                 if( interval == NULL ) break;
             }
-            edge = edge->next_source;
         }
         blk = blk->next_block;
         if( blk == NULL ) break;
@@ -420,8 +412,7 @@ static  void    NestingDepth( void )
     block_num           i;
     bool                change;
 
-    interval = BlockList->u.interval->parent;
-    while( interval->parent != NULL ) {
+    for( interval = BlockList->u.interval->parent; interval->parent != NULL; interval = interval->parent ) {
         level = interval->level - 1;
         blk = BlockList;               /* borrow 'next_block'*/
         for( ;; ) {                         /* identify all back edges at this level*/
@@ -470,7 +461,6 @@ static  void    NestingDepth( void )
             }
             if( change == FALSE ) break;
         }
-        interval = interval->parent;
     }
 
 /*   Restore 'next_block'*/
@@ -496,10 +486,8 @@ static  void    KillIntervals( void )
         Intervals = Intervals->link;
         CGFree( junk );
     }
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->u.interval = NULL;
-        blk = blk->next_block;
     }
 }
 

@@ -73,8 +73,7 @@ extern void     ReplaceOperand( instruction *ins, name *old, name *new ) {
 
     int                 i;
 
-    i = ins->num_operands;
-    while( --i >= 0 ) {
+    for( i = ins->num_operands; i-- > 0; ) {
         if( ins->operands[ i ] == old ) {
             ins->operands[ i ] = new;
         }
@@ -128,13 +127,11 @@ extern  name    *FindIndex( instruction *ins ) {
     name        *index;
     int         i;
 
-    i = 0;
-    while( i < ins->num_operands ) {
+    for( i = 0; i < ins->num_operands; ++i ) {
         index = ins->operands[ i ];
         if( index->n.class == N_INDEXED && !IndexOkay( ins, index ) ) {
             return( index );
         }
-        ++ i;
     }
     index = ins->result;
     if( index == NULL ) return( NULL );
@@ -154,17 +151,14 @@ extern  void    NoMemIndex( instruction *ins ) {
     name        *bad_index;
 
     for( ;; ) {
-        i = ins->num_operands;
         bad_index = NULL;
-        while( --i >= 0 ) {
-            if( ins->operands[ i ]->n.class == N_INDEXED
-             && ins->operands[ i ]->i.index->n.class == N_MEMORY ) {
+        for( i = ins->num_operands; i-- > 0; ) {
+            if( ins->operands[ i ]->n.class == N_INDEXED && ins->operands[ i ]->i.index->n.class == N_MEMORY ) {
                 bad_index = ins->operands[ i ];
             }
         }
         if( ins->result != NULL ) {
-            if( ins->result->n.class == N_INDEXED
-             && ins->result->i.index->n.class == N_MEMORY ) {
+            if( ins->result->n.class == N_INDEXED && ins->result->i.index->n.class == N_MEMORY ) {
                 bad_index = ins->result;
             }
         }
@@ -349,17 +343,11 @@ extern  void    FixIndex() {
     block       *blk;
     instruction *ins;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            if( ins->type_class != XX
-             && ins->head.opcode != OP_LA
-             && ins->head.opcode != OP_CAREFUL_LA ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            if( ins->type_class != XX && ins->head.opcode != OP_LA && ins->head.opcode != OP_CAREFUL_LA ) {
                 ins = OneMemRef( ins );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }

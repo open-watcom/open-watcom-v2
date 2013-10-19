@@ -67,10 +67,8 @@ static  void    UnMarkBlocks( void )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= ~BLOCK_VISITED;
-        blk = blk->next_block;
     }
 }
 
@@ -86,8 +84,7 @@ static  void    MarkReachableBlocks( void )
 
     for( ;; ) {
         change = FALSE;
-        blk = HeadBlock;
-        while( blk != NULL ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( blk->class & ( BIG_LABEL | BLOCK_VISITED | SELECT ) ) {
                 blk->class |= BLOCK_VISITED;
                 for( i = blk->targets; i-- > 0; ) {
@@ -98,7 +95,6 @@ static  void    MarkReachableBlocks( void )
                     }
                 }
             }
-            blk = blk->next_block;
         }
         if( change == FALSE ) break;
     }
@@ -112,10 +108,8 @@ extern  int     CountIns( block *blk )
     instruction *ins;
 
     num_instrs = 0;
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         num_instrs++;
-        ins = ins->head.next;
     }
     return( num_instrs );
 }
@@ -126,10 +120,10 @@ static  bool    FindBlock( block *target )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        if( blk == target ) return( TRUE );
-        blk = blk->next_block;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        if( blk == target ) {
+            return( TRUE );
+        }
     }
     return( FALSE );
 }
@@ -307,9 +301,8 @@ static  void    JoinBlocks( block *jump, block *target )
     target->inputs = jump->inputs;
     edge = jump->input_edges;
     target->input_edges = edge;
-    while( edge != NULL ) {
+    for( ; edge != NULL; edge = edge->next_source ) {
         edge->destination.u.blk = target;    /* was 'jump' before*/
-        edge = edge->next_source;
     }
 
     /*  Now join the instruction streams*/
@@ -381,8 +374,7 @@ static  bool    DoBlockTrim( void )
     for( ;; ) {
         change = FALSE;
         MarkReachableBlocks();
-        blk = HeadBlock->next_block;
-        while( blk != NULL ) {
+        for( blk = HeadBlock->next_block; blk != NULL; blk = next ) {
             next = blk->next_block;
             if( !( blk->class & ( UNKNOWN_DESTINATION | BLOCK_VISITED ) ) ) {
                 while( blk->input_edges != NULL ) {
@@ -395,10 +387,10 @@ static  bool    DoBlockTrim( void )
             } else if( blk->class & JUMP ) {
                 target = blk->edge[ 0 ].destination.u.blk;
                 if( target != blk && !(target->class & UNKNOWN_DESTINATION) ) {
-                    ins = blk->ins.hd.next;
-                    while( ins->head.opcode == OP_NOP ) {
-                        if( ins->flags.nop_flags & (NOP_DBGINFO|NOP_DBGINFO_START) ) break;
-                        ins = ins->head.next;
+                    for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
+                        if( ins->flags.nop_flags & (NOP_DBGINFO|NOP_DBGINFO_START) ) {
+                            break;
+                        }
                     }
                     if( ins->head.opcode == OP_BLOCK ) { /* was an empty block*/
                         if( ( blk->class & BIG_LABEL ) == 0 ) {
@@ -416,7 +408,6 @@ static  bool    DoBlockTrim( void )
                     }
                 }
             }
-            blk = next;
         }
         UnMarkBlocks();
         if( change == FALSE ) break;

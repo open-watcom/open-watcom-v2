@@ -58,14 +58,12 @@ static  bool            HaveBreak = { FALSE };
 static  void            FreeBranchOuts( void )
 /********************************************/
 {
-    edge_list   *junk;
+    edge_list   *next;
     edge_list   *curr;
 
-    curr = BranchOuts;
-    while( curr != NULL ) {
-        junk = curr;
-        curr = curr->next;
-        CGFree( junk );
+    for( curr = BranchOuts; curr != NULL; curr = next ) {
+        next = curr->next;
+        CGFree( curr );
     }
 }
 
@@ -93,10 +91,8 @@ extern  bool            CreateBreak( void )
         return( FALSE );
     }
     FixEdges();
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= ~BLOCK_VISITED;
-        blk = blk->next_block;
     }
 /*
     Run through the blocks and find a place (break_blk) where no previous
@@ -108,9 +104,9 @@ extern  bool            CreateBreak( void )
     back_break_blk = NULL;
     pending = 0;
     BranchOuts = NULL;
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        if( AskIfReachedLabel( blk->label ) && blk != HeadBlock ) break;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        if( AskIfReachedLabel( blk->label ) && blk != HeadBlock )
+            break;
         if( !( blk->edge[ 0 ].flags & BLOCK_LABEL_DIES ) && blk != HeadBlock ) {
             blk->class |= BLOCK_VISITED;
             ++pending;
@@ -131,13 +127,10 @@ extern  bool            CreateBreak( void )
             }
             ++edge;
         }
-        blk = blk->next_block;
     }
     /* clean up the BLOCK_VISITED flags */
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= ~BLOCK_VISITED;
-        blk = blk->next_block;
     }
     if( back_break_blk != NULL ) {
         break_blk = back_break_blk; /* always better to break on a back edge */
@@ -175,12 +168,10 @@ extern  bool            CreateBreak( void )
     run throuch all the blocks before break_blk, and create a 'BranchOut' for
     and edge that goes to a block after break_blk
 */
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         edge = &blk->edge[ 0 ];
         for( targets = blk->targets; targets-- > 0; ) {
-            if( !( edge->flags & DEST_IS_BLOCK )
-               || edge->destination.u.blk->gen_id >= break_blk->gen_id ) {
+            if( !( edge->flags & DEST_IS_BLOCK ) || edge->destination.u.blk->gen_id >= break_blk->gen_id ) {
                 exit_edge = CGAlloc( sizeof( edge_list ) );
                 exit_edge->edge = edge;
                 exit_edge->next = BranchOuts;
@@ -189,7 +180,6 @@ extern  bool            CreateBreak( void )
             }
             ++edge;
         }
-        blk = blk->next_block;
     }
 
 /*
@@ -197,8 +187,7 @@ extern  bool            CreateBreak( void )
     labels in the 'lbl' field of the exit_list
 */
 
-    exit_edge = BranchOuts;
-    while( exit_edge != NULL ) {
+    for( exit_edge = BranchOuts; exit_edge != NULL; exit_edge = exit_edge->next ) {
         edge = exit_edge->edge;
         if( edge->flags & DEST_IS_BLOCK ) {
             exit_edge->lbl = edge->destination.u.blk->label;
@@ -211,7 +200,6 @@ extern  bool            CreateBreak( void )
         edge->next_source = exit_blk->input_edges;
         exit_blk->input_edges = edge;
         exit_blk->inputs++;
-        exit_edge = exit_edge->next;
     }
 
     if( exit_blk->inputs == 0 ) {
@@ -289,19 +277,15 @@ extern  void            FixBreak( void )
     block       *blk;
     edge_list   *exit_edge;
 
-    exit_edge = BranchOuts;
-    while( exit_edge != NULL ) {
-        blk = HeadBlock;
-        while( blk != NULL ) {
+    for( exit_edge = BranchOuts; exit_edge != NULL; exit_edge = exit_edge->next ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( blk->gen_id == exit_edge->gen_id ) {
                 RemoveInputEdge( exit_edge->edge );
                 exit_edge->edge->destination.u.lbl = exit_edge->lbl;
                 exit_edge->edge->flags &= ~DEST_IS_BLOCK;
                 break;
             }
-            blk = blk->next_block;
         }
-        exit_edge = exit_edge->next;
     }
     UnFixEdges();
     FreeBranchOuts();
