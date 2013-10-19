@@ -71,10 +71,6 @@
 
 typedef unsigned_32     operand_types;
 
-#define _Optype( op1, op2, res, match ) \
-        ( (op1)*OP1_MUL | (op2)*OP2_MUL | \
-        (res)*RESULT_MUL | (match) )
-
 #define _Bin( op1, op2, res, match )    \
         ( (op1)*OP1_MUL | (op2)*OP2_MUL | \
         (res)*RESULT_MUL | (match) )
