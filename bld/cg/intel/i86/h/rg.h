@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+/*  left       right      result     zap         need      id  */
 RG( RL_,       RL_,       RL_,       RL_,        RL_,      RG_ ),
 RG( RL_DX_AX,  RL_CX_BX,  RL_DX_AX,  RL_,        RL_,      RG_4CRTN ),
 RG( RL_8,      RL_8,      RL_8,      RL_,        RL_,      RG_8 ),

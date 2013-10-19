@@ -29,7 +29,7 @@
 *
 ****************************************************************************/
 
-
+/*  left       right      result     zap     need      id  */
 RG( RL_,       RL_,       RL_,       RL_,    RL_,      RG_ ),
 RG( RL_EAX,    RL_EDX,    RL_EAX,    RL_,    RL_,      RG_4CRTN ),
 RG( RL_EDX_EAX,RL_FPPARM2,RL_EDX_EAX,RL_,    RL_,      RG_8CRTN ),
