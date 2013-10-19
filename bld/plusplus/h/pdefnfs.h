@@ -39,7 +39,7 @@
 #define fs_push_parms   P_EAX
 #define fs_push_saves   HW_NotD( HW_EMPTY )
 
-static struct STRUCT_byte_seq() fs_push = {
+static struct STRUCT_byte_seq( 15 ) fs_push = {
     15, FALSE,
     {
         0x64,0xff,0x35,0x00,0x00,0x00,0x00,     // push fs:0
@@ -53,7 +53,7 @@ static struct STRUCT_byte_seq() fs_push = {
 #define fs_pop_parms    P_EAX
 #define fs_pop_saves    HW_NotD( HW_EAX )
 
-static struct STRUCT_byte_seq() fs_pop = {
+static struct STRUCT_byte_seq( 6 ) fs_pop = {
     6, FALSE,
     { 0x64,0xa3,0x00,0x00,0x00,0x00 }           // mov fs:0,eax
 };

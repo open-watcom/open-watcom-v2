@@ -85,7 +85,7 @@ rtn_info RTInfo[] = {
 
 static  call_class     rt_cclass = 0;
 
-static  struct STRUCT_byte_seq() Scn1 = {
+static  struct STRUCT_byte_seq( 6 ) Scn1 = {
      6, FALSE,
     {0xF2,              /*      repne           */
      0xAE,              /*      scasb           */
@@ -93,13 +93,13 @@ static  struct STRUCT_byte_seq() Scn1 = {
      0x89, 0xCF}        /*      mov     di,cx   */
 };
 
-static  struct STRUCT_byte_seq() Scn2 = {
+static  struct STRUCT_byte_seq( 2 ) Scn2 = {
      2, FALSE,
     {0xF2,              /*      repne           */
      0xAF}              /*      scasw           */
 };
 
-static  struct STRUCT_byte_seq() Scn4 = {
+static  struct STRUCT_byte_seq( 18 ) Scn4 = {
      18, FALSE,
     {0x83, 0xC7, 0x02,  /* L1:  add     d1,2    */
      0x49,              /* L2:  dec     cx      */
