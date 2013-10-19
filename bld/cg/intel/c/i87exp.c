@@ -80,75 +80,152 @@ static  void            RevOtherCond( block *blk, instruction *ins );
 
 
 //NYI: probably need more opcode entries for more resolution with func. units
-static  opcode_entry    FNOP    = { SETS_CC,  V_NO, G_NO,      RG_, FU_FOP };
+static  opcode_entry    FNOP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                          SETS_CC, V_NO,           RG_,          G_NO,           FU_FOP )
+};
 
 
 static opcode_entry    RRFBIN[]  = {
-                                  { PRESERVE, V_NO, G_RRFBIN,  RG_, FU_FADD },
-                                  { PRESERVE, V_NO, G_RRFBIN,  RG_, FU_FMUL },
-                                  { PRESERVE, V_NO, G_RRFBIN,  RG_, FU_FDIV },
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIN,       FU_FADD ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIN,       FU_FMUL ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIN,       FU_FDIV ),
 };
 static opcode_entry    RNFBIN[]  = {
-                                  { PRESERVE, V_NO, G_RNFBIN,  RG_, FU_FADD },
-                                  { PRESERVE, V_NO, G_RNFBIN,  RG_, FU_FMUL },
-                                  { PRESERVE, V_NO, G_RNFBIN,  RG_, FU_FDIV },
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIN,       FU_FADD ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIN,       FU_FMUL ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIN,       FU_FDIV ),
 };
 static opcode_entry    RRFBINP[] = {
-                                  { PRESERVE, V_NO, G_RRFBINP, RG_, FU_FADD },
-                                  { PRESERVE, V_NO, G_RRFBINP, RG_, FU_FMUL },
-                                  { PRESERVE, V_NO, G_RRFBINP, RG_, FU_FDIV },
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBINP,      FU_FADD ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBINP,      FU_FMUL ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBINP,      FU_FDIV ),
 };
 static opcode_entry    RNFBINP[] = {
-                                  { PRESERVE, V_NO, G_RNFBINP, RG_, FU_FADD },
-                                  { PRESERVE, V_NO, G_RNFBINP, RG_, FU_FMUL },
-                                  { PRESERVE, V_NO, G_RNFBINP, RG_, FU_FDIV },
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBINP,      FU_FADD ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBINP,      FU_FMUL ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBINP,      FU_FDIV ),
 };
 static opcode_entry    RRFBIND[] = {
-                                  { PRESERVE, V_NO, G_RRFBIND, RG_, FU_FADD },
-                                  { PRESERVE, V_NO, G_RRFBIND, RG_, FU_FMUL },
-                                  { PRESERVE, V_NO, G_RRFBIND, RG_, FU_FDIV },
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIND,      FU_FADD ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIND,      FU_FMUL ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIND,      FU_FDIV ),
 };
 static opcode_entry    RNFBIND[] = {
-                                  { PRESERVE, V_NO, G_RNFBIND, RG_, FU_FADD },
-                                  { PRESERVE, V_NO, G_RNFBIND, RG_, FU_FMUL },
-                                  { PRESERVE, V_NO, G_RNFBIND, RG_, FU_FDIV },
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIND,      FU_FADD ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIND,      FU_FMUL ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIND,      FU_FDIV ),
 };
 static opcode_entry    MRFBIN[]  = {
-                                  { PRESERVE, V_NO, G_MRFBIN,  RG_, FU_FADD },
-                                  { PRESERVE, V_NO, G_MRFBIN,  RG_, FU_FMUL },
-                                  { PRESERVE, V_NO, G_MRFBIN,  RG_, FU_FDIV },
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_MRFBIN,       FU_FADD ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_MRFBIN,       FU_FMUL ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_MRFBIN,       FU_FDIV ),
 };
 static opcode_entry    MNFBIN[]  = {
-                                  { PRESERVE, V_NO, G_MNFBIN,  RG_, FU_FADD },
-                                  { PRESERVE, V_NO, G_MNFBIN,  RG_, FU_FMUL },
-                                  { PRESERVE, V_NO, G_MNFBIN,  RG_, FU_FDIV },
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_MNFBIN,       FU_FADD ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_MNFBIN,       FU_FMUL ),
+_OE(                         PRESERVE, V_NO,           RG_,          G_MNFBIN,       FU_FDIV ),
 };
 
-static  opcode_entry    MFLD    = { PRESERVE, V_NO, G_MFLD,    RG_, FU_FOP };
-static  opcode_entry    RFLD    = { PRESERVE, V_NO, G_RFLD,    RG_, FU_FOP };
-static  opcode_entry    MFST    = { PRESERVE, V_NO, G_MFST,    RG_, FU_FOP };
+static  opcode_entry    MFLD[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_MFLD,         FU_FOP )
+};
+static  opcode_entry    RFLD[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RFLD,         FU_FOP )
+};
+static  opcode_entry    MFST[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_MFST,         FU_FOP )
+};
 #if _TARGET & _TARG_80386
-static  opcode_entry    MFSTRND = { PRESERVE, V_NO, G_MFSTRND, RG_, FU_FOP };
+static  opcode_entry    MFSTRND[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_MFSTRND,      FU_FOP )
+};
 #endif
-static  opcode_entry    MFST2   = { PRESERVE, V_NO, G_MFST,    RG_, FU_FOP };
-static  opcode_entry    RFST    = { PRESERVE, V_NO, G_RFST,    RG_, FU_FOP };
-static  opcode_entry    FCHS    = { PRESERVE, V_NO, G_FCHS,    RG_, FU_FOP };
-static  opcode_entry    FMATH   = { PRESERVE, V_NO, G_FMATH,   RG_, FU_TRIG };
-static  opcode_entry    IFUNC   = { NO_CC,    V_NO, G_IFUNC,   RG_, FU_TRIG };
-static  opcode_entry    FCHOP   = { PRESERVE, V_NO, G_FCHOP,   RG_, FU_FOP };
-static  opcode_entry    FLDZ    = { PRESERVE, V_NO, G_FLDZ,    RG_, FU_FOP };
-static  opcode_entry    FLD1    = { PRESERVE, V_NO, G_FLD1,    RG_, FU_FOP };
-static  opcode_entry    FCOMPP  = { SETS_CC,  V_NO, G_FCOMPP,  RG_, FU_FOP };
-static  opcode_entry    MCOMP   = { SETS_CC,  V_NO, G_MCOMP,   RG_, FU_FOP };
-static  opcode_entry    RCOMP   = { SETS_CC,  V_NO, G_RCOMP,   RG_, FU_FOP };
-static  opcode_entry    MFSTNP  = { PRESERVE, V_NO, G_MFSTNP,  RG_, FU_FOP };
-static  opcode_entry    RFSTNP  = { PRESERVE, V_NO, G_RFSTNP,  RG_, FU_FOP };
-static  opcode_entry    FWAIT   = { PRESERVE, V_NO, G_FWAIT,   RG_, FU_FOP };//NYI:??
-static  opcode_entry    FXCH    = { PRESERVE, V_NO, G_FXCH,    RG_, FU_FOP };
-static  opcode_entry    RC      = { PRESERVE, V_NO, G_RC,      RG_, FU_FOP };
+static  opcode_entry    MFST2[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_MFST,         FU_FOP )
+};
+static  opcode_entry    RFST[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RFST,         FU_FOP )
+};
+static  opcode_entry    FCHS[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_FCHS,         FU_FOP )
+};
+static  opcode_entry    FMATH[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_FMATH,        FU_TRIG )
+};
+static  opcode_entry    IFUNC[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                            NO_CC, V_NO,           RG_,          G_IFUNC,        FU_TRIG )
+};
+static  opcode_entry    FCHOP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_FCHOP,        FU_FOP )
+};
+static  opcode_entry    FLDZ[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_FLDZ,         FU_FOP )
+};
+static  opcode_entry    FLD1[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_FLD1,         FU_FOP )
+};
+static  opcode_entry    FCOMPP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                          SETS_CC, V_NO,           RG_,          G_FCOMPP,       FU_FOP )
+};
+static  opcode_entry    MCOMP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                          SETS_CC, V_NO,           RG_,          G_MCOMP,        FU_FOP )
+};
+static  opcode_entry    RCOMP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                          SETS_CC, V_NO,           RG_,          G_RCOMP,        FU_FOP )
+};
+static  opcode_entry    MFSTNP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_MFSTNP,       FU_FOP )
+};
+static  opcode_entry    RFSTNP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RFSTNP,       FU_FOP )
+};
+static  opcode_entry    FWAIT[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_FWAIT,        FU_FOP )
+};//NYI:??
+static  opcode_entry    FXCH[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_FXCH,         FU_FOP )
+};
+static  opcode_entry    RC[1]   = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RC,           FU_FOP )
+};
 #if _TARGET & _TARG_IAPX86
-static  opcode_entry    RR1     = { PRESERVE, V_NO, G_RR1,     RG_, FU_FOP };
-static  opcode_entry    WORDR1  = { PRESERVE, V_NO, G_WORDR1,  RG_, FU_FOP };
+static  opcode_entry    RR1[1]  = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RR1,          FU_FOP )
+};
+static  opcode_entry    WORDR1[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_WORDR1,       FU_FOP )
+};
 #endif
 
 static  name    *ST0;
@@ -221,19 +298,19 @@ extern  instruction     *PrefFLDOp( instruction *ins,
     case OP_STK0:
     case OP_STKI:
         new_ins = MakeUnary( OP_MOV, opnd, ST0, FD );
-        new_ins->u.gen_table = &RFLD;
+        new_ins->u.gen_table = RFLD;
         break;
     case OP_MEM:
         new_ins = MakeUnary( OP_MOV, opnd, ST0, FD );
-        new_ins->u.gen_table = &MFLD;
+        new_ins->u.gen_table = MFLD;
         MoveSegOp( ins, new_ins, 0 );
         break;
     case OP_CONS:
         new_ins = MakeUnary( OP_MOV, opnd, ST0, FD );
         if( CFTest( opnd->c.value ) ) {
-            new_ins->u.gen_table = &FLD1;
+            new_ins->u.gen_table = FLD1;
         } else {
-            new_ins->u.gen_table = &FLDZ;
+            new_ins->u.gen_table = FLDZ;
         }
         break;
     }
@@ -264,7 +341,7 @@ static  void    PrefixFLDOp( instruction *ins, operand_type op, int i ) {
 extern  bool            FPResultNotNeeded( instruction *ins ) {
 /*************************************************************/
 
-    return( ins->u.gen_table == &MFST2 );
+    return( ins->u.gen_table == MFST2 );
 }
 
 
@@ -276,11 +353,11 @@ extern  instruction     *SuffFSTPRes( instruction *ins,
 
     new_ins = MakeUnary( OP_MOV, ST0, opnd, FD );
     if( res == RES_STKI ) {
-        new_ins->u.gen_table = &RFST;
+        new_ins->u.gen_table = RFST;
     } else if( res == RES_MEM_THROWAWAY ) {
-        new_ins->u.gen_table = &MFST2; // so we can turn it into fstp st(0) later
+        new_ins->u.gen_table = MFST2; // so we can turn it into fstp st(0) later
     } else {
-        new_ins->u.gen_table = &MFST;
+        new_ins->u.gen_table = MFST;
     }
     if( ins->head.opcode != OP_BLOCK ) {
         MoveSegRes( ins, new_ins );
@@ -313,7 +390,7 @@ extern  instruction     *SuffFXCH( instruction *ins, int i ) {
     instruction *new_ins;
 
     new_ins = MakeUnary( OP_MOV, ST0, ST(i), FD );
-    new_ins->u.gen_table = &FXCH;
+    new_ins->u.gen_table = FXCH;
     SuffixIns( ins, new_ins );
     new_ins->stk_exit = new_ins->stk_entry;
     return( new_ins );
@@ -327,7 +404,7 @@ extern  instruction     *PrefFXCH( instruction *ins, int i ) {
     instruction *new_ins;
 
     new_ins = MakeUnary( OP_MOV, ST0, ST(i), FD );
-    new_ins->u.gen_table = &FXCH;
+    new_ins->u.gen_table = FXCH;
     PrefixIns( ins, new_ins );
     new_ins->stk_exit = new_ins->stk_entry;
     return( new_ins );
@@ -345,7 +422,7 @@ static  void    PrefixChop( instruction *ins ) {
     if( ins->head.opcode == OP_ROUND ) return;
     if( _IsFloating( ins->result->n.name_class ) ) return;
     new_ins = MakeUnary( OP_MOV, ST0, ST0, FD );
-    new_ins->u.gen_table = &FCHOP;
+    new_ins->u.gen_table = FCHOP;
     PrefixIns( ins, new_ins );
     new_ins->stk_exit = ins->stk_entry;
 }
@@ -403,7 +480,7 @@ static  instruction     *ExpCall( instruction *ins ) {
      && HW_CEqual( ins->result->r.reg, HW_ST0 ) ) {
         if( ins->flags.call_flags & CALL_IGNORES_RETURN ) {
             new_ins = SuffixFSTPRes( ins );
-            new_ins->u.gen_table = &RFST;
+            new_ins->u.gen_table = RFST;
         }
     }
     return( new_ins );
@@ -434,7 +511,7 @@ static  instruction     *ExpMove( instruction *ins,
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
             if( WantsChop( ins ) )
-                ins->u.gen_table = &MFSTRND;
+                ins->u.gen_table = MFSTRND;
         }
         else if( _IsModel( FPU_ROUNDING_OMIT ) ) {
             DoNothing( ins );
@@ -462,33 +539,33 @@ static  instruction     *ExpMove( instruction *ins,
 #if _TARGET & _TARG_80386
         if( _IsModel( FPU_ROUNDING_INLINE ) ) {
             if( WantsChop( ins ) )
-                ins->u.gen_table = &MFSTRND;
+                ins->u.gen_table = MFSTRND;
             else
-                ins->u.gen_table = &MFST;
+                ins->u.gen_table = MFST;
         }
         else if( _IsModel( FPU_ROUNDING_OMIT ) ) {
-            ins->u.gen_table = &MFST;
+            ins->u.gen_table = MFST;
         } else {
             PrefixChop( ins );
-            ins->u.gen_table = &MFST;
+            ins->u.gen_table = MFST;
         }
 #else
         if( _IsModel( FPU_ROUNDING_OMIT ) ) {
-            ins->u.gen_table = &MFST;
+            ins->u.gen_table = MFST;
         } else {
             PrefixChop( ins );
-            ins->u.gen_table = &MFST;
+            ins->u.gen_table = MFST;
         }
 #endif
         break;
     case _Move( OP_MEM , RES_STK0 ):
-        ins->u.gen_table = &MFLD;
+        ins->u.gen_table = MFLD;
         break;
     case _Move( OP_CONS, RES_STK0 ):
         if( CFTest( ins->operands[ 0 ]->c.value ) != 0 ) {
-            ins->u.gen_table = &FLD1;
+            ins->u.gen_table = FLD1;
         } else {
-            ins->u.gen_table = &FLDZ;
+            ins->u.gen_table = FLDZ;
         }
         ins->result = ST0;
         break;
@@ -522,7 +599,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
     sp = AllocRegName( HW_SP );
     size = TypeClassSize[ ins->type_class ];
     new_ins = MakeBinary( OP_SUB, sp, AllocIntConst( size ), sp, WD );
-    new_ins->u.gen_table = &RC;
+    new_ins->u.gen_table = RC;
     PrefixIns( ins, new_ins );
     #if _TARGET & _TARG_IAPX86
     {
@@ -551,7 +628,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
         index = AllocRegName( avail_index );
         if( !HW_CEqual( avail_index, HW_BP ) ) {
             new_ins = MakeMove( sp, index, WD );
-            new_ins->u.gen_table = &RR1;
+            new_ins->u.gen_table = RR1;
             PrefixIns( ins, new_ins );
             index = AllocIndex( index, NULL, 0, ins->type_class );
             new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
@@ -560,14 +637,14 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
 
        } else {
             new_ins = MakeUnary( OP_PUSH, index, NULL, WD );
-            new_ins->u.gen_table = &WORDR1;
+            new_ins->u.gen_table = WORDR1;
             PrefixIns( ins, new_ins );
             pop_ins = MakeUnary( OP_POP, NULL, index, WD );
             pop_ins->num_operands = 0;
-            pop_ins->u.gen_table = &WORDR1;
+            pop_ins->u.gen_table = WORDR1;
             SuffixIns( ins, pop_ins );
             new_ins = MakeMove( sp, index, WD );
-            new_ins->u.gen_table = &RR1;
+            new_ins->u.gen_table = RR1;
             PrefixIns( ins, new_ins );
             index = AllocIndex( index, NULL, 2, ins->type_class );
             new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
@@ -633,10 +710,10 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
             ins = ExpPush( ins, op1 );
             break;
         case OP_NEGATE:
-            ins = ExpUnary( ins, op1, res, &FCHS );
+            ins = ExpUnary( ins, op1, res, FCHS );
             break;
         case OP_FABS:
-            ins = ExpUnary( ins, op1, res, &FMATH );
+            ins = ExpUnary( ins, op1, res, FMATH );
             break;
         case OP_COS:
         case OP_SIN:
@@ -645,9 +722,9 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_ATAN:
             if( _FPULevel( FPU_387 ) && _IsTargetModel( I_MATH_INLINE ) &&
                 _IsntTargetModel( P5_DIVIDE_CHECK ) ) {
-                ins = ExpUnary( ins, op1, res, &FMATH );
+                ins = ExpUnary( ins, op1, res, FMATH );
             } else {
-                ins = ExpUnary( ins, op1, res, &IFUNC );
+                ins = ExpUnary( ins, op1, res, IFUNC );
             }
             break;
         case OP_LOG:
@@ -655,9 +732,9 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_EXP:
             if( _FPULevel( FPU_387 ) && _IsTargetModel( I_MATH_INLINE ) &&
                 _IsntTargetModel( P5_DIVIDE_CHECK ) && OptForSize <= 50 ) {
-                ins = ExpUnary( ins, op1, res, &FMATH );
+                ins = ExpUnary( ins, op1, res, FMATH );
             } else {
-                ins = ExpUnary( ins, op1, res, &IFUNC );
+                ins = ExpUnary( ins, op1, res, IFUNC );
             }
             break;
         case OP_ACOS:
@@ -665,7 +742,7 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_COSH:
         case OP_SINH:
         case OP_TANH:
-            ins = ExpUnary( ins, op1, res, &IFUNC );
+            ins = ExpUnary( ins, op1, res, IFUNC );
             break;
         case OP_MOV:
         case OP_CONVERT:
@@ -673,7 +750,7 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
             if( ins->result->n.class == N_REGISTER
              && HW_CEqual( ins->result->r.reg, HW_EMPTY ) ) {
                 ins->result = ST0;
-                ins->u.gen_table = &RFST;
+                ins->u.gen_table = RFST;
             } else {
                 ins = ExpMove( ins, op1, res );
             }
@@ -701,27 +778,26 @@ static  instruction     *DoExpand( instruction *ins ) {
     operand_type        op2_type = OP_NONE;
     result_type         res_type;
 
-    i = NumOperands( ins );
     op1_type = OP_NONE;
-    while( --i >= 0 ) {
+    for( i = NumOperands( ins ); i-- > 0; ) {
         op2_type = op1_type;
         reg_num = FPRegNum( ins->operands[ i ] );
         if( reg_num != -1 ) {
             if( reg_num == 0 ) {
                 op1_type = OP_STK0;
-           } else {
+            } else {
                 op1_type = ins->stk_entry - reg_num;
                 ins->operands[ i ] = ST( ins->stk_entry - reg_num );
             }
-       } else if( ins->operands[ i ]->n.class == N_CONSTANT ) {
+        } else if( ins->operands[ i ]->n.class == N_CONSTANT ) {
             op1_type = OP_CONS;
-       } else {
+        } else {
             op1_type = OP_MEM;
         }
     }
     if( _OpIsCondition( ins->head.opcode ) ) {
         res_type = RES_NONE;
-   } else {
+    } else {
         reg_num = FPRegNum( ins->result );
         res_type = RES_NONE;
         if( reg_num != -1 ) {
@@ -745,10 +821,8 @@ static  void    Expand( void ) {
     block       *blk;
     instruction *ins;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( DoesSomething( ins ) ) {
                 if( _OpIsCall( ins->head.opcode ) ) {
                     ins = ExpCall( ins );
@@ -756,9 +830,7 @@ static  void    Expand( void ) {
                     ins = DoExpand( ins );
                 }
             }
-           ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -807,7 +879,7 @@ static  void    ExpBinFunc( instruction *ins,
         _Zoiks( ZOIKS_011 );
         break;
     }
-    ins->u.gen_table = &IFUNC;
+    ins->u.gen_table = IFUNC;
 }
 
 
@@ -902,10 +974,8 @@ static  void    RevFPCond( instruction *ins ) {
     instruction         *other;
     block               *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= ~BLOCK_VISITED;
-        blk = blk->next_block;
     }
     other = ins;
     while( other->head.opcode != OP_BLOCK ) {
@@ -945,8 +1015,8 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
         if( _OpIsCondition( ins->head.opcode )
           && ins->table == DoNop ) { /* used cond codes of original ins */
             RevCond( ins );
-            ins->table = &FNOP;
-            ins->u.gen_table = &FNOP;
+            ins->table = FNOP;
+            ins->u.gen_table = FNOP;
         }
     }
 }
@@ -978,41 +1048,41 @@ static  void    ExpCompare ( instruction *ins,
         _Zoiks( ZOIKS_012 );
         break;
     case _OPS( OP_STK0, OP_STK0 ):
-        ins->u.gen_table = &RCOMP;
+        ins->u.gen_table = RCOMP;
         break;
     case _OPS( OP_STK1, OP_STK0 ):
-        ins->u.gen_table = &FCOMPP;
+        ins->u.gen_table = FCOMPP;
         RevFPCond( ins );
         break;
     case _OPS( OP_MEM , OP_STK0 ):
-        ins->u.gen_table = &MCOMP;
+        ins->u.gen_table = MCOMP;
         RevFPCond( ins );
         break;
     case _OPS( OP_CONS, OP_STK0 ):
         PrefixFLDOp( ins, op1, 0 );
-        ins->u.gen_table = &FCOMPP;
+        ins->u.gen_table = FCOMPP;
         break;
     case _OPS( OP_STK0, OP_STK1 ):
-        ins->u.gen_table = &FCOMPP;
+        ins->u.gen_table = FCOMPP;
         break;
     case _OPS( OP_STK0, OP_MEM  ):
-        ins->u.gen_table = &MCOMP;
+        ins->u.gen_table = MCOMP;
         ExchangeOps( ins );
         break;
     case _OPS( OP_MEM , OP_MEM  ):
     case _OPS( OP_CONS, OP_MEM  ):
         PrefixFLDOp( ins, op1, 0 );
-        ins->u.gen_table = &MCOMP;
+        ins->u.gen_table = MCOMP;
         ExchangeOps( ins );
         break;
     case _OPS( OP_STK0, OP_CONS ):
         PrefixFLDOp( ins, op2, 1 );
-        ins->u.gen_table = &FCOMPP;
+        ins->u.gen_table = FCOMPP;
         RevFPCond( ins );
         break;
     case _OPS( OP_MEM , OP_CONS ):
         PrefixFLDOp( ins, op2, 1 );
-        ins->u.gen_table = &MCOMP;
+        ins->u.gen_table = MCOMP;
         RevFPCond( ins );
         break;
     default:
@@ -1112,7 +1182,7 @@ extern  void    ToRFld( instruction *ins ) {
     Turn an FLD x into an FLD ST(i)
 */
 
-    ins->u.gen_table = &RFLD;
+    ins->u.gen_table = RFLD;
 }
 
 
@@ -1121,7 +1191,7 @@ extern  void    ToRFstp( instruction *ins ) {
     Turn an FLD x into an FLD ST(i)
 */
 
-    ins->u.gen_table = &RFST;
+    ins->u.gen_table = RFST;
 }
 
 
@@ -1131,10 +1201,10 @@ extern  void    NoPop( instruction *ins ) {
 */
 
     if( ins->u.gen_table->generate == G_MFST ) {
-        ins->u.gen_table = &MFSTNP;
+        ins->u.gen_table = MFSTNP;
         ins->stk_exit++;
     } else if( ins->u.gen_table->generate == G_RFST ) {
-        ins->u.gen_table = &RFSTNP;
+        ins->u.gen_table = RFSTNP;
         ins->stk_exit++;
     }
 }
@@ -1160,7 +1230,7 @@ extern  instruction     *MakeWait( void ) {
     instruction *new_ins;
 
     new_ins = MakeUnary( OP_MOV, ST0, ST0, FD );
-    new_ins->u.gen_table = &FWAIT;
+    new_ins->u.gen_table = FWAIT;
     return( new_ins );
 }
 

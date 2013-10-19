@@ -411,7 +411,10 @@ extern  void    FPOptimize( void ) {
 
 #define G(x)    (x)->u.gen_table->generate
 
-static  opcode_entry    FSINCOS = { PRESERVE, V_NO, G_FSINCOS, RG_, FU_TRIG };
+static  opcode_entry    FSINCOS[] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_FSINCOS,      FU_TRIG )
+};
 
 #define _OTHER( x ) ( (x) == OP_SIN ? OP_COS : OP_SIN )
 
@@ -472,7 +475,7 @@ static  bool    FSinCos( instruction *ins1 ) {
     } else {
         return( FALSE );
     }
-    ins2->u.gen_table = &FSINCOS;
+    ins2->u.gen_table = FSINCOS;
     if( ins2->head.opcode != OP_SIN ) {
         PrefFXCH( ins3, 1 );
     }

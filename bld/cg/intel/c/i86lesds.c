@@ -48,7 +48,10 @@ extern  hw_reg_set      Low16Reg( hw_reg_set regs );
 extern  hw_reg_set      High16Reg( hw_reg_set regs );
 extern  hw_reg_set      FullReg( hw_reg_set regs );
 
-static opcode_entry LDSES = { NO_CC, V_NO, G_LDSES, RG_, FU_NO };
+static opcode_entry LDSES[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                           NO_CC,  V_NO,           RG_,          G_LDSES,        FU_NO )
+};
 
 
 static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )
@@ -280,7 +283,7 @@ static  void    CheckLDSES( instruction *seg, instruction *reg,
             if( HW_Ovlap( seg->operands[0]->i.index->r.reg, reg->result->r.reg ) ) return;
         }
     }
-    reg->u.gen_table = &LDSES;
+    reg->u.gen_table = LDSES;
     tmp = reg->result->r.reg;
     HW_TurnOn( tmp, seg->result->r.reg );
     reg->result = AllocRegName( tmp );

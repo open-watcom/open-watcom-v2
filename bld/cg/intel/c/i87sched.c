@@ -70,15 +70,42 @@ static  void            GetToTopOfStack( instruction *ins, int virtual_reg );
 static  void            PopVirtualStack( instruction *ins );
 
 
-static  opcode_entry    RFST    = { PRESERVE, V_NO, G_RFST,   RG_, FU_NO };
-static  opcode_entry    RFSTNP  = { PRESERVE, V_NO, G_RFSTNP, RG_, FU_NO };
-static  opcode_entry    RFLD    = { PRESERVE, V_NO, G_RFLD,   RG_, FU_NO };
-static  opcode_entry    RCOMP   = { PRESERVE, V_NO, G_RCOMP,  RG_, FU_NO };
-static  opcode_entry    FCOMPP  = { PRESERVE, V_NO, G_FCOMPP, RG_, FU_NO };
-static  opcode_entry    RRFBIN  = { PRESERVE, V_NO, G_RRFBIN, RG_, FU_NO };
-static  opcode_entry    RNFBIN  = { PRESERVE, V_NO, G_RNFBIN, RG_, FU_NO };
-static  opcode_entry    RRFBINP = { PRESERVE, V_NO, G_RRFBINP,RG_, FU_NO };
-static  opcode_entry    RNFBINP = { PRESERVE, V_NO, G_RNFBINP,RG_, FU_NO };
+static  opcode_entry    RFST[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RFST,         FU_NO )
+};
+static  opcode_entry    RFSTNP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RFSTNP,       FU_NO )
+};
+static  opcode_entry    RFLD[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RFLD,         FU_NO )
+};
+static  opcode_entry    RCOMP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RCOMP,        FU_NO )
+};
+static  opcode_entry    FCOMPP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_FCOMPP,       FU_NO )
+};
+static  opcode_entry    RRFBIN[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBIN,       FU_NO )
+};
+static  opcode_entry    RNFBIN[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBIN,       FU_NO )
+};
+static  opcode_entry    RRFBINP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RRFBINP,      FU_NO )
+};
+static  opcode_entry    RNFBINP[1] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE(                         PRESERVE, V_NO,           RG_,          G_RNFBINP,      FU_NO )
+};
 
 static  block   *Entry;
 static  block   *Exit;
@@ -260,13 +287,13 @@ static  opcode_entry    *RegAction( instruction *ins ) {
 
     switch( ins->u.gen_table->generate ) {
     case G_MFLD:
-        return( &RFLD );
+        return( RFLD );
     case G_MCOMP:
-        return( &RCOMP );
+        return( RCOMP );
     case G_MRFBIN:
-        return( &RRFBIN );
+        return( RRFBIN );
     case G_MNFBIN:
-        return( &RNFBIN );
+        return( RNFBIN );
     default:
         return( NULL );
     }
@@ -284,9 +311,9 @@ static  fp_attr ResultToReg( instruction *ins, temp_entry *temp, fp_attr attr ){
     } else {
         GetToTopOfStack( ins, VIRTUAL_0 );
         if( ins->u.gen_table->generate == G_MFST ) {
-            ins->u.gen_table = &RFST;
+            ins->u.gen_table = RFST;
         } else {
-            ins->u.gen_table = &RFSTNP;
+            ins->u.gen_table = RFSTNP;
         }
         ins->result = ST( temp->actual_locn );
     }
@@ -348,16 +375,16 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
                 PrefFXCH( ins, temp->actual_locn );
                 RevCond( ins );
             }
-            ins->u.gen_table = &FCOMPP;
+            ins->u.gen_table = FCOMPP;
             PopStack( ins );
             PopStack( ins );
             break;
         case G_MNFBIN:
         case G_MRFBIN:
             if( ins->u.gen_table->generate == G_MRFBIN ) {
-                ins->u.gen_table = &RNFBINP;
+                ins->u.gen_table = RNFBINP;
             } else {
-                ins->u.gen_table = &RRFBINP;
+                ins->u.gen_table = RRFBINP;
             }
             ins->operands[ 0 ] = ST( temp->actual_locn );
             ins->result = ins->operands[ 0 ];
@@ -803,7 +830,7 @@ static  void    CacheTemps( block *blk ) {
 
     Entry = NULL;
     Exit = NULL;
-    if( blk->class & LOOP_HEADER
+    if( (blk->class & LOOP_HEADER)
         && blk->inputs == 2 && blk->targets == 2 ) {
         if( blk->edge[0].destination.u.blk == blk ) {
             Exit = blk->edge[1].destination.u.blk;

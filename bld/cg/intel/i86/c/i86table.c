@@ -803,7 +803,7 @@ _OE( _Side(  M,    M ),                V_NO,           RG_BYTE,      R_MOVOP1REG
 _OE( _Side(  ANY,  R|C ),              V_NO,           RG_BYTE,      G_UNKNOWN,      FU_NO ),
 _OE( _Side(  R|C,  ANY ),              V_NO,           RG_BYTE,      G_UNKNOWN,      FU_NO ),
 _OE( _Side(  ANY,  ANY ),              V_NO,           RG_BYTE_NEED, G_UNKNOWN,      FU_NO ),
-_OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
+_OE( _Side(  ANY,  ANY ),              V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
 
