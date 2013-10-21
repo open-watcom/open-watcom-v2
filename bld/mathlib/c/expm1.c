@@ -43,7 +43,6 @@
 
 _WMRTLINK double expm1(double x)
 {
-double sign;
 double y;
 double last, ret;
 int i;
