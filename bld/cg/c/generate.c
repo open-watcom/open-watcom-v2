@@ -369,8 +369,7 @@ static  void    ForceTempsMemory( void )
     name        *next;
 
     ParmPropagate();
-    op = Names[  N_TEMP  ];
-    while( op != LastTemp ) {
+    for( op = Names[N_TEMP]; op != LastTemp; op = next ) {
         next = op->n.next_name;
         if( ( op->v.usage & USE_IN_ANOTHER_BLOCK ) || _FrontEndTmp( op ) ) {
             op = DeAlias( op );
@@ -379,17 +378,14 @@ static  void    ForceTempsMemory( void )
                 FreeAConflict( op->v.conflict );
             }
         }
-        op = next;
     }
     AssignOtherLocals();
-    op = Names[  N_MEMORY  ];
-    while( op != NULL ) {
+    for( op = Names[N_MEMORY]; op != NULL; op = op->n.next_name ) {
         op->v.usage |= USE_IN_ANOTHER_BLOCK | USE_MEMORY;
         if( op->v.conflict != NULL ) {
             FreeAConflict( op->v.conflict );
             op->v.conflict = NULL;
         }
-        op = op->n.next_name;
     }
     LastTemp = Names[ N_TEMP ];
 }
@@ -534,15 +530,13 @@ static  void    FlushBlocks( bool partly_done )
     }
     curr = CurrBlock;
     BlockByBlock = TRUE;
-    blk = HeadBlock;
     classes = EMPTY;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = next ) {
         next = blk->next_block;
         classes |= blk->class;
         CurrBlock = blk;
         BlockToCode( partly_done );
         FlushOpt();
-        blk = next;
     }
     CurrBlock = curr;
     HeadBlock = NULL;
@@ -555,7 +549,7 @@ static  void    FreeExtraSyms( name *last )
 {
     name        **owner;
     name        *temp;
-    name        *junk;
+    name        *next;
 
     owner = &Names[ N_TEMP ];
     for(;;) {
@@ -569,18 +563,14 @@ static  void    FreeExtraSyms( name *last )
             owner = &temp->n.next_name;
         }
     }
-    temp = Names[ N_CONSTANT ];
-    while( temp != NULL ) {
-        junk = temp;
-        temp = temp->n.next_name;
-        FreeAName( junk );
+    for( temp = Names[N_CONSTANT]; temp != NULL; temp = next ) {
+        next = temp->n.next_name;
+        FreeAName( temp );
     }
     Names[ N_CONSTANT ] = NULL;
-    temp = Names[ N_INDEXED ];
-    while( temp != NULL ) {
-        junk = temp;
-        temp = temp->n.next_name;
-        FreeAName( junk );
+    for( temp = Names[N_INDEXED]; temp != NULL; temp = next ) {
+        next = temp->n.next_name;
+        FreeAName( temp );
     }
     Names[ N_INDEXED ] = NULL;
 }
@@ -593,8 +583,7 @@ static  void    FinishIndex( void )
     instruction *ins;
     instruction *old;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         ins = blk->ins.hd.next;
         while( ins->head.opcode != OP_BLOCK ) {
             old = ins;
@@ -603,7 +592,6 @@ static  void    FinishIndex( void )
                 ins = ins->head.next;
             }
         }
-        blk = blk->next_block;
     }
 }
 

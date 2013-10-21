@@ -387,10 +387,9 @@ extern void DumpInsOnly( instruction *ins ) {
     DumpIInfo( ins );
     if( ins->num_operands != 0 ) {
         DumpOperand( ins->operands[ 0 ] );
-        i = 0;
-        while( ++i < ins->num_operands ) {
+        for( i = 1; i < ins->num_operands; ++i ) {
             DumpLiteral( ", " );
-            DumpOperand( ins->operands[ i ] );
+            DumpOperand( ins->operands[i] );
         }
     }
     if( ins->result != NULL ) {
@@ -449,10 +448,8 @@ extern void DumpInstrsOnly( block *blk ) {
 
     instruction *ins;
 
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         DumpIns( ins );
-        ins = ins->head.next;
     }
 }
 
@@ -603,10 +600,10 @@ extern  void    DumpTempWId( int id ) {
     name        *sym;
 
     DumpNL();
-    sym = Names[ N_TEMP ];
-    while( sym != NULL ) {
-        if( sym->t.v.id == id ) DumpSym( sym );
-        sym = sym->n.next_name;
+    for( sym = Names[ N_TEMP ]; sym != NULL; sym = sym->n.next_name ) {
+        if( sym->t.v.id == id ) {
+            DumpSym( sym );
+        }
     }
 }
 
@@ -615,9 +612,8 @@ extern  void    DumpSymList( name *sym ) {
 /****************************************/
 
     DumpNL();
-    while( sym != NULL ) {
+    for( ; sym != NULL; sym = sym->n.next_name ) {
         DumpSym( sym );
-        sym = sym->n.next_name;
     }
 }
 
@@ -662,14 +658,12 @@ extern  void    DumpInsList( block *blk ) {
 
     instruction *ins;
 
-    ins = blk->ins.hd.next;
-    for(;;) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         DumpInOut( ins );
-        if( ins->head.opcode == OP_BLOCK ) break;
         DumpInsNoNL( ins );
         DumpLiteral( " " );
         DumpCond( ins, blk );
         DumpNL();
-        ins = ins->head.next;
     }
+    DumpInOut( ins );
 }

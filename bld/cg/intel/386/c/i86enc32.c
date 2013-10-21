@@ -215,11 +215,11 @@ static  byte    Displacement( signed_32 val, hw_reg_set regs )
 static  byte    DoIndex( hw_reg_set regs )
 /****************************************/
 {
-    int i;
+    byte i;
 
     i = 0;
     while( i < INDICES ) {
-        if( HW_Equal( regs, IndexTab[  i  ] ) ) break;
+        if( HW_Equal( regs, IndexTab[i] ) ) break;
         i++;
     }
     if( i >= INDICES ) {
@@ -300,14 +300,11 @@ static  void    EA( hw_reg_set base, hw_reg_set index,
     if( HW_CEqual( index, HW_SP ) ) _Zoiks( ZOIKS_079 );
     if( HW_CEqual( base, HW_EMPTY ) ) {
         if( HW_CEqual( index, HW_EMPTY ) ) {
-
             // [d32]
             if( scale != 0 || val != 0 ) _Zoiks( ZOIKS_079 );
             Inst[ RMR ] |= DoMDisp( mem_loc, TRUE );
-
         } else {
             if( scale != 0 ) {
-
                 // [d32+scale_index]
                 Inst[ RMR ] |= DoScaleIndex( HW_BP, index, scale );
                 Inst[ RMR ] |= D0;
@@ -317,13 +314,10 @@ static  void    EA( hw_reg_set base, hw_reg_set index,
                 } else {
                     Add32Displacement( val );
                 }
-
             } else {
-
                 // [(d0|d8|d32)+index]
                 Inst[ RMR ] |= DoIndex( index );
                 Inst[ RMR ] |= DoDisp( val, index, mem_loc );
-
             }
         }
     } else {
@@ -395,7 +389,6 @@ static  signed_32  GetNextAddConstant( instruction *ins )
         DoNothing( next );
         break;
     }
-
     return( disp );
 }
 

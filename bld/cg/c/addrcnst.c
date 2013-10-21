@@ -78,12 +78,12 @@ extern  void    KillMovAddrConsts( void ) {
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
-                op = ins->operands[ i ];
+                op = ins->operands[i];
                 if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
                     class = _OpClass( ins );
                     new_op = AllocTemp( class );
                     new_ins = MakeUnary( OP_LA, op->c.value, new_op, class );
-                    ins->operands[ i ] = new_op;
+                    ins->operands[i] = new_op;
                     PrefixIns( ins, new_ins );
                 }
             }

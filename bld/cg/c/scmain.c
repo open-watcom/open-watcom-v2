@@ -211,15 +211,12 @@ static  void    ScoreRoutine( void )
     ScoreCalcList();
     if( ScoreCount != 0 ) {
         InitZero();
-        blk = HeadBlock;
-        while( blk != NULL ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             blk->class &= ~BLOCK_VISITED;
-            blk = blk->next_block;
         }
         MakeLiveInfo();
-        blk = HeadBlock;
 //        change = FALSE;
-        while( blk != NULL ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( !( blk->class & BLOCK_VISITED ) ) {
                 blk->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
                 ScoreClear( blk->cc );
@@ -235,7 +232,6 @@ static  void    ScoreRoutine( void )
                 ScFree( blk->cc );
                 blk->cc = NULL;
             }
-            blk = blk->next_block;
         }
     }
 }
@@ -246,12 +242,10 @@ static  void    CleanUp( void )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         FreeScoreBoard( blk->cc );
         ScFree( blk->cc );
         blk->cc = NULL;
-        blk = blk->next_block;
     }
     ScFree( ScoreList );
     ScFree( ScZero );
@@ -263,8 +257,7 @@ static  void    ConstSizes( void )
 {
     name        *cons;
 
-    cons = Names[ N_CONSTANT ];
-    while( cons != NULL ) {
+    for( cons = Names[N_CONSTANT]; cons != NULL; cons = cons->n.next_name ) {
         if( cons->c.const_type == CONS_ABSOLUTE ) {
             if ( CFIsU16( cons->c.value ) ) {
                 cons->n.size = 2;
@@ -272,7 +265,6 @@ static  void    ConstSizes( void )
                 cons->n.size = 4;
             }
         }
-        cons = cons->n.next_name;
     }
 }
 
@@ -287,10 +279,8 @@ extern  void    Score( void )
     old_memout = SetMemOut( MO_SUICIDE );
     ScZero = NULL;               /* in case of Suicide*/
     ScoreList = NULL;
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->cc = NULL;
-        blk = blk->next_block;
     }
     if( Spawn( &ScoreRoutine ) != 0 ) {
         ProcMessage( MSG_SCOREBOARD_DIED );

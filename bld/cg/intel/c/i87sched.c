@@ -742,8 +742,7 @@ extern  void    InitTempEntries( block *blk ) {
     int         i;
 
     TempList = NULL;
-    for( ins = blk->ins.hd.next;
-         ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->ins_flags & FP_INS_INTRODUCED ) continue;
         for( i = 0; i < ins->num_operands; ++i ) {
             CheckTemp( ins, ins->operands[i], FALSE );
@@ -920,10 +919,8 @@ extern  void    FPPreSched( block *blk ) {
     int         depth;
 
     MaxSeq = 0;
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->sequence > MaxSeq ) MaxSeq = ins->sequence;
-        ins = ins->head.next;
     }
     ++MaxSeq;
     InitTempEntries( blk );
@@ -951,8 +948,7 @@ extern  void    FPPreSched( block *blk ) {
             SeqCurDepth[ i ] = 0;
         }
     }
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         /*
          * We do this here in order to not be faked out by inheriting bogus values
          * when we prefix an instruction to another FP instruction. This would screw
@@ -967,7 +963,6 @@ extern  void    FPPreSched( block *blk ) {
         if( depth > SeqMaxDepth[ ins->sequence ] ) {
             SeqMaxDepth[ ins->sequence ] = depth;
         }
-        ins = ins->head.next;
     }
 }
 
@@ -1069,8 +1064,7 @@ extern  void    FPPostSched( block *blk ) {
     InitTempEntries( blk );
     CacheTemps( blk );
     InitGlobalTemps();
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next->head.next ) {
         next = ins;
         if( !( ins->ins_flags & FP_INS_INTRODUCED ) ) {
             attr = FPAttr( ins );
@@ -1107,7 +1101,6 @@ extern  void    FPPostSched( block *blk ) {
                 PopStack( ins );
             }
         }
-        ins = next->head.next;
     }
     FiniGlobalTemps();
     FiniStackLocations();

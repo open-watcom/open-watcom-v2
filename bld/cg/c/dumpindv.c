@@ -157,12 +157,11 @@ extern  void    DumpIVList() {
 static  void    DumpInv( name *name ) {
 /***************************************/
 
-    while( name != NULL ) {
+    for( ; name != NULL; name = name->n.next_name ) {
         if( _ChkLoopUsage( name, VU_INVARIANT ) ) {
             DumpOperand( name );
             DumpLiteral( " " );
         }
-        name = name->n.next_name;
     }
     DumpNL();
 }
@@ -187,20 +186,17 @@ extern  void    DumpCurrLoop() {
     DumpNL();
     DumpLiteral( "============" );
     DumpNL();
-    blk = HeadBlock;
     depth = MAX_INTERVAL_DEPTH;
     header = NULL;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->class & IN_LOOP ) {
             if( blk->depth < depth ) {
                 header = blk;
                 depth = header->depth;
             }
         }
-        blk = blk->next_block;
     }
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         DumpBlkId( blk );
         if( blk->class & IN_LOOP ) {
             if( blk == header ) {
@@ -213,6 +209,5 @@ extern  void    DumpCurrLoop() {
             }
         }
         DumpNL();
-        blk = blk->next_block;
     }
 }

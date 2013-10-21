@@ -211,8 +211,7 @@ static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp )
                 DoNothing( ins );
             }
         } else {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
+            for( i = ins->num_operands; i-- > 0; ) {
                 if( SetLastUse( ins->operands[i], temp, new, ins ) ) return;
             }
             if( ins->result != NULL ) {
@@ -230,12 +229,7 @@ static  void    ScanForFirstDefn( block *blk, stack_temp *new, name *temp )
     instruction *ins;
     int         i;
 
-    ins = blk->ins.hd.next;
-    for(;;) {
-        if( ins->head.opcode == OP_BLOCK ) {
-            new->first = FIRST_INS_ID;
-            return;
-        }
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->result != NULL ) {
             if( ins->result->n.class == N_TEMP ) {
                 if( DeAlias( ins->result ) == temp ) {
@@ -244,17 +238,16 @@ static  void    ScanForFirstDefn( block *blk, stack_temp *new, name *temp )
                 }
              }
         }
-        i = ins->num_operands;
-        while( --i >= 0 ) {
+        for( i = ins->num_operands; i-- > 0; ) {
             if( ins->operands[i]->n.class == N_TEMP ) {
-                if( DeAlias( ins->operands[ i ] ) == temp ) {
+                if( DeAlias( ins->operands[i] ) == temp ) {
                     new->first = ins->id;
                     return;
                 }
             }
         }
-        ins = ins->head.next;
     }
+    new->first = FIRST_INS_ID;
 }
 
 
@@ -314,14 +307,11 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
         return( NULL );
     }
     *any_references = TRUE;
-    blk = HeadBlock;
     onlyins = NULL;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                if( In( ins->operands[ i ], name ) ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                if( In( ins->operands[i], name ) ) {
                     if( onlyins != NULL ) return( NULL );
                     onlyins = ins;
                 }
@@ -332,9 +322,7 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
                     onlyins = ins;
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     if( onlyins == NULL ) {
         *any_references = FALSE;
@@ -476,20 +464,15 @@ static  void    CalcNumberOfUses( void )
             temp->v.block_usage = USED_NEVER;
         }
     }
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
                 MarkUsage( ins->operands[i] );
             }
             if( ins->result != NULL ) {
                 MarkUsage( ins->result );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -553,20 +536,15 @@ extern  void    ParmPropagate( void )
     block       *blk;
     int         i;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                PropAParm( ins->operands[ i ] );
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                PropAParm( ins->operands[i] );
             }
             if( ins->result != NULL ) {
                 PropAParm( ins->result );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -639,20 +617,15 @@ extern  void    AssgnMoreTemps( block_num curr_id )
     block       *blk;
     int         i;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                AssgnATemp( ins->operands[ i ], curr_id );
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                AssgnATemp( ins->operands[i], curr_id );
             }
             if( ins->result != NULL ) {
                 AssgnATemp( ins->result, curr_id );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     if( curr_id == NO_BLOCK_ID ) {
         FiniStackMap();
@@ -674,14 +647,11 @@ extern  void            CountTempRefs( void )
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
         temp->t.u.ref_count = 0;
     }
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                if( ins->operands[ i ]->n.class == N_TEMP ) {
-                    ins->operands[ i ]->t.u.ref_count++;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                if( ins->operands[i]->n.class == N_TEMP ) {
+                    ins->operands[i]->t.u.ref_count++;
                 }
             }
             if( ins->result != NULL ) {
@@ -689,9 +659,7 @@ extern  void            CountTempRefs( void )
                     ins->result->t.u.ref_count++;
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 

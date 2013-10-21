@@ -152,13 +152,10 @@ extern  void    RelocParms( void ) {
 
     name        *name;
 
-    name = Names[ N_TEMP ];
-    while( name != NULL ) {
-        if( ( name->v.usage & HAS_MEMORY )
-         && ( name->t.temp_flags & STACK_PARM ) ) {
+    for( name = Names[ N_TEMP ]; name != NULL; name = name->n.next_name ) {
+        if( ( name->v.usage & HAS_MEMORY ) && ( name->t.temp_flags & STACK_PARM ) ) {
             name->t.location += CurrProc->parms.base;
         }
-        name = name->n.next_name;
     }
 }
 

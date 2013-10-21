@@ -113,8 +113,7 @@ extern  void    FixBlockIds( void )
             temp->t.temp_flags &= ~VISITED;
         }
     }
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         ++id;
         for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
             if( temp->t.temp_flags & VISITED ) continue;
@@ -123,7 +122,6 @@ extern  void    FixBlockIds( void )
             temp->t.u.block_id = id;
         }
         blk->id = id;
-        blk = blk->next_block;
     }
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
         temp->t.temp_flags &= ~VISITED;
@@ -148,8 +146,7 @@ extern  block   *DupBlock( block *blk )
     copy->ins.hd.line_num = 0;
     copy->next_block = NULL;
     copy->prev_block = NULL;
-    DupInstrs( (instruction *)&copy->ins,
-                blk->ins.hd.next, blk->ins.hd.prev, NULL, 0 );
+    DupInstrs( (instruction *)&copy->ins, blk->ins.hd.next, blk->ins.hd.prev, NULL, 0 );
     return( copy );
 }
 
@@ -413,8 +410,7 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
         new_ins = MakeBinary( OP_ADD, var, AllocS32Const( adjust ),
                             temp, temp->n.name_class );
         for( blk = loop; blk != NULL; blk = blk->u.loop ) {
-            ins = blk->ins.hd.next;
-            for( ; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 ReplaceName( &ins->result, var, temp );
                 for( i = 0; i < ins->num_operands; i++ ) {
                     ReplaceName( &ins->operands[i], var, temp );
@@ -768,8 +764,7 @@ extern  void    HoistCondition( block *head )
     }
 
     for( blk = head; blk != NULL; blk = blk->edge[ 0 ].destination.u.blk ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             if( _OpIsCondition( ins->head.opcode ) ) {
                 RemoveIns( ins );
                 SuffixIns( head->ins.hd.prev, ins );
@@ -780,7 +775,6 @@ extern  void    HoistCondition( block *head )
             }
             next = ins->head.next;
             FreeIns( ins );
-            ins = next;
         }
     }
     // should never reach here because we must have a conditional statement
@@ -822,9 +816,8 @@ extern  void    HoistCondition( block **head, block *prehead )
     // the new head should have an input from prehead and one from the butt
     // any more and we have to bail out
     if( blk->inputs > 2 ) return( FALSE );
-    ins = blk->ins.hd.next;
     // transfer all instructions to prehead/butt
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         if( _OpIsCondition( ins->head.opcode ) ) {
             return( ( blk->class & LOOP_EXIT ) != EMPTY );
         }
@@ -833,7 +826,6 @@ extern  void    HoistCondition( block **head, block *prehead )
         RemoveIns( ins );
         SuffixIns( prehead_ins, ins );
         prehead_ins = ins;
-        ins = next;
     }
     return( FALSE );
 }

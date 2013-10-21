@@ -281,11 +281,9 @@ static  void    DoData( oc_entry *instr ) {
 
     uint        len;
 
-    len = 0;
-    while( len < instr->hdr.reclen - offsetof( oc_entry, data ) ) {
+    for( len = 0; len < instr->hdr.reclen - offsetof( oc_entry, data ); ++len ) {
         DumpByte( instr->data[ len ] );
         DumpLiteral( " " );
-        ++len;
     }
 }
 

@@ -144,6 +144,8 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
         optreturn( FALSE );
     if( _InsLen( add ) != _InsLen( old ) )
         optreturn( FALSE );
+    if( _ObjLen( add ) != _ObjLen( old ) )
+        optreturn( FALSE );
     switch( _Class( old ) ) {
     case OC_BDATA:
         /* User may be doing stupid stuff like stringing together a bunch
@@ -177,7 +179,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
             optreturn( FALSE );
         break;
     default:
-        if( Equal( &add->oc.oc_header, &old->oc.oc_header, _InsLen( add ) ) == FALSE )
+        if( Equal( &add->oc.oc_entry.data, &old->oc.oc_entry.data, _InsLen( add ) - offsetof( oc_entry, data ) ) == FALSE )
             optreturn( FALSE );
         break;
     }

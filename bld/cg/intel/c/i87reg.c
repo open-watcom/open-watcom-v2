@@ -234,19 +234,18 @@ static  void    AssignFPOps( instruction *ins, int *stk_level ) {
 
     /* Now check operands ... bump down stack level for each*/
     /* top of stack operand that will be popped (may be more than one)*/
-    i = ins->num_operands;
     if( _OpIsCall( ins->head.opcode ) ) {
         *stk_level -= Count87Regs( ins->operands[ CALL_OP_USED ]->r.reg );
     } else {
         old_level = *stk_level;
-        while( --i >= 0 ) {
-            op = ins->operands[ i ];
+        for( i = ins->num_operands; i-- > 0; ) {
+            op = ins->operands[i];
             if( op->n.class == N_REGISTER && ( HW_COvlap( op->r.reg, HW_FLTS ) ) ) {
                  --*stk_level;
             }
         }
         if( ins->num_operands < 2 ) return;
-        if( ins->operands[ 0 ] != ins->operands[ 1 ] ) return;
+        if( ins->operands[0] != ins->operands[1] ) return;
         if( old_level == *stk_level ) return;
         ++*stk_level;
     }
@@ -358,10 +357,8 @@ static  void    FPConvert( void ) {
     instruction *ins;
     instruction *next;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             if( ins->head.opcode == OP_CONVERT ) {
                 if( _Is87Ins( ins ) ) {
@@ -369,9 +366,7 @@ static  void    FPConvert( void ) {
                     CnvResult( ins );
                 }
             }
-            ins = next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -552,10 +547,9 @@ extern  bool    FPSideEffect( instruction *ins ) {
     /* calls require a clean stack */
     if( _OpIsCall( ins->head.opcode ) ) return( TRUE );
     if( !_Is87Ins( ins ) ) return( FALSE );
-    i = ins->num_operands;
     has_fp_reg = FALSE;
-    while( --i >= 0 ) {
-        if( ins->operands[ i ]->n.class == N_REGISTER ) {
+    for( i = ins->num_operands; i-- > 0; ) {
+        if( ins->operands[i]->n.class == N_REGISTER ) {
             if( HW_COvlap( ins->operands[i]->r.reg, HW_FLTS ) ) {
                 has_fp_reg = TRUE;
             }
@@ -666,20 +660,15 @@ static  void    NoStackAcrossCalls( void ) {
     instruction *ins;
     int         i;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
                 CheckForStack( ins->operands[i] );
             }
             if( ins->result != NULL ) {
                 CheckForStack( ins->result );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -764,18 +753,14 @@ static  void    FSinCos( void ) {
     block       *blk;
     instruction *ins;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_SIN ) {
                 FindSinCos( ins, OP_COS );
             } else if( ins->head.opcode == OP_COS ) {
                 FindSinCos( ins, OP_SIN );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 

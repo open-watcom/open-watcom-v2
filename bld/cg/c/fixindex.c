@@ -74,8 +74,8 @@ extern void     ReplaceOperand( instruction *ins, name *old, name *new ) {
     int                 i;
 
     for( i = ins->num_operands; i-- > 0; ) {
-        if( ins->operands[ i ] == old ) {
-            ins->operands[ i ] = new;
+        if( ins->operands[i] == old ) {
+            ins->operands[i] = new;
         }
     }
     if( ins->result == old ) {
@@ -128,7 +128,7 @@ extern  name    *FindIndex( instruction *ins ) {
     int         i;
 
     for( i = 0; i < ins->num_operands; ++i ) {
-        index = ins->operands[ i ];
+        index = ins->operands[i];
         if( index->n.class == N_INDEXED && !IndexOkay( ins, index ) ) {
             return( index );
         }
@@ -153,8 +153,8 @@ extern  void    NoMemIndex( instruction *ins ) {
     for( ;; ) {
         bad_index = NULL;
         for( i = ins->num_operands; i-- > 0; ) {
-            if( ins->operands[ i ]->n.class == N_INDEXED && ins->operands[ i ]->i.index->n.class == N_MEMORY ) {
-                bad_index = ins->operands[ i ];
+            if( ins->operands[i]->n.class == N_INDEXED && ins->operands[i]->i.index->n.class == N_MEMORY ) {
+                bad_index = ins->operands[i];
             }
         }
         if( ins->result != NULL ) {
@@ -179,10 +179,10 @@ static  name    *OpTemp( instruction *ins, uint i, uint j ) {
 
     class = FPInsClass( ins );
     if( class == XX ) {
-        if( ins->operands[ i ]->n.name_class == XX ) {
+        if( ins->operands[i]->n.name_class == XX ) {
             class = ins->type_class;
         } else {
-            class = ins->operands[ i ]->n.name_class;
+            class = ins->operands[i]->n.name_class;
         }
     }
 #if _TARGET & _TARG_AXP
@@ -192,8 +192,8 @@ static  name    *OpTemp( instruction *ins, uint i, uint j ) {
 #endif
     temp = AllocTemp( class );
     FPSetStack( temp );
-    new_ins = MakeMove( ins->operands[ i ], temp, class );
-    ins->operands[ i ] = temp;
+    new_ins = MakeMove( ins->operands[i], temp, class );
+    ins->operands[i] = temp;
     ins->operands[ j ] = temp;
     PrefixIns( ins, new_ins );
     return( temp );

@@ -586,7 +586,7 @@ static bool ReferencedBy( instruction *ins, name *op ) {
     }
     // this should only be called for index names and USE_ADDRESS temps
     for( i = 0; i < ins->num_operands; i++ ) {
-        curr = ins->operands[ i ];
+        curr = ins->operands[i];
         // assume anything which looks at memory uses op
         if( curr->n.class == N_INDEXED ||
             curr->n.class == N_MEMORY ) return( TRUE );

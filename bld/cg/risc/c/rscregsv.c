@@ -141,8 +141,7 @@ extern  void            ConstSavings() {
     instruction         *ins;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next;
-             ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode != OP_MOV ) continue;
             if( !_ConstTemp(ins->operands[0]) ) continue;
             if( !_ConstTemp(ins->result) ) continue;

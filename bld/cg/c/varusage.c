@@ -200,16 +200,13 @@ static void TransferTempBlockUsage( block *blk )
     instruction *ins;
     int         i;
 
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
-        i = ins->num_operands;
-        while( --i >= 0 ) {
-            TransferOneTempBlockUsage( ins->operands[ i ] );
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( i = ins->num_operands; i-- > 0; ) {
+            TransferOneTempBlockUsage( ins->operands[i] );
         }
         if( ins->result != NULL ) {
             TransferOneTempBlockUsage( ins->result );
         }
-        ins = ins->head.next;
     }
 }
 
@@ -251,16 +248,13 @@ static  void    TransferMemBlockUsage( block *blk )
     instruction *ins;
     int         i;
 
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
-        i = ins->num_operands;
-        while( --i >= 0 ) {
-            TransferOneMemBlockUsage( ins->operands[ i ] );
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( i = ins->num_operands; i-- > 0; ) {
+            TransferOneMemBlockUsage( ins->operands[i] );
         }
         if( ins->result != NULL ) {
             TransferOneMemBlockUsage( ins->result );
         }
-        ins = ins->head.next;
     }
 }
 
@@ -306,25 +300,18 @@ extern  void    TransferTempFlags( void )
     instruction *ins;
     int         i;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                TransferOneTempFlag( ins->operands[ i ] );
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                TransferOneTempFlag( ins->operands[i] );
             }
             if( ins->result != NULL ) {
                 TransferOneTempFlag( ins->result );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         TransferTempBlockUsage( blk );
-        blk = blk->next_block;
     }
 }
 
@@ -339,14 +326,11 @@ static  void    TransferMemoryFlags( void )
     name        *same_sym;
     var_usage   usage;
 
-    m = Names[  N_MEMORY  ];
-    while( m != NULL ) {
+    for( m = Names[N_MEMORY]; m != NULL; m = m->n.next_name ) {
         m->m.memory_flags = MF_EMPTY;
-        m = m->n.next_name;
     }
 
-    m = Names[  N_MEMORY  ];
-    while( m != NULL ) {
+    for( m = Names[N_MEMORY]; m != NULL; m = m->n.next_name ) {
         if( ( m->m.memory_flags & MF_VISITED ) == 0 ) {
             if( m->m.same_sym != NULL ) {
                 // union together mem flags from all symbols that
@@ -367,7 +351,6 @@ static  void    TransferMemoryFlags( void )
             }
             m->m.memory_flags |= MF_VISITED;
         }
-        m = m->n.next_name;
     }
 }
 
@@ -386,8 +369,7 @@ static  void    SearchDefUse( void )
     blk = HeadBlock;
     for( ;; ) {
         touched_non_op = FALSE;
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ( ins->head.opcode == OP_CALL
                || ins->head.opcode == OP_CALL_INDIRECT )
              && ( ( ins->flags.call_flags & CALL_READS_NO_MEMORY ) == 0
@@ -395,9 +377,8 @@ static  void    SearchDefUse( void )
                 UseDefGlobals( blk );
                 touched_non_op = TRUE;
             }
-            i = ins->num_operands;
-            while( -- i >= 0 ) {
-                name = ins->operands[ i ];
+            for( i = ins->num_operands; i-- > 0; ) {
+                name = ins->operands[i];
                 if( name->n.class == N_INDEXED ) {
                     Use( name->i.index, blk, EMPTY );
                     if( HasTrueBase( name ) ) {
@@ -428,7 +409,6 @@ static  void    SearchDefUse( void )
                     Define( name, blk );
                 }
             }
-            ins = ins->head.next;
         }
         /* in/out/def/use ignored if BlockByBlock so don't worry about it */
         if( touched_non_op && !BlockByBlock ) {
@@ -460,8 +440,7 @@ extern  void    FindReferences( void )
 {
     block       *curr;
 
-    curr = HeadBlock;
-    while( curr != NULL ) {
+    for( curr = HeadBlock; curr != NULL; curr = curr->next_block ) {
         if( curr->dataflow == NULL ) {
             curr->dataflow = CGAlloc( sizeof( data_flow_def ) );
         }
@@ -472,7 +451,6 @@ extern  void    FindReferences( void )
         _GBitInit( curr->dataflow->call_exempt , EMPTY );
         _GBitInit( curr->dataflow->need_load   , EMPTY );
         _GBitInit( curr->dataflow->need_store  , EMPTY );
-        curr = curr->next_block;
     }
     SearchDefUse();
 }

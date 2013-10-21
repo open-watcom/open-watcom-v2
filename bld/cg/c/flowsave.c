@@ -95,7 +95,7 @@ static bool BlockUses( block *blk, hw_reg_set reg )
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = 0; i < ins->num_operands; i++ ) {
-            if( OpRefsReg( ins->operands[ i ], reg ) ) return( TRUE );
+            if( OpRefsReg( ins->operands[i], reg ) ) return( TRUE );
         }
         if( ins->result != NULL && ins->head.opcode != OP_NOP ) {
             if( OpRefsReg( ins->result, reg ) ) return( TRUE );
@@ -157,7 +157,10 @@ static int CountBlocks( void )
     block               *blk;
     int                 i;
 
-    for( i = 0, blk = HeadBlock; blk != NULL; blk = blk->next_block, i++ );
+    i = 0;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        i++;
+    }
     return( i );
 }
 
@@ -182,8 +185,9 @@ static void InitBlockArray( void )
     block               *blk;
     int                 i;
 
-    for( i = 0, blk = HeadBlock; blk != NULL; blk = blk->next_block, i++ ) {
-        blockArray[ i ] = blk;
+    i = 0;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        blockArray[ i++ ] = blk;
     }
 }
 

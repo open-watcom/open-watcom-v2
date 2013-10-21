@@ -60,13 +60,13 @@
 
 #define _ReplaceOpnd( tree, ins, i, reg_name, _1 ) \
              DelSegOp( ins, i ); \
-             ins->operands[ i ] \
-                = FindReg( tree, ins->operands[ i ], reg_name ); \
+             ins->operands[i] \
+                = FindReg( tree, ins->operands[i], reg_name ); \
              FixGenEntry( ins );
 
 #define _ReplaceIdxOpnd( tree, ins, i, reg_name ) \
-             ins->operands[ i ] = \
-                ReplIndex(ins,tree,ins->operands[ i ],reg_name); \
+             ins->operands[i] = \
+                ReplIndex(ins,tree,ins->operands[i],reg_name); \
              ins->head.state = INS_NEEDS_WORK
 
 #define _ReplaceResult( tree, ins, reg_name, _1 ) \
@@ -192,15 +192,14 @@
                     first_use = ins;
                 }
             }
-            i = ins->num_operands;
-            while( -- i >= 0 ) {
-                if( _Equal( ins->operands[ i ], opnd ) ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                if( _Equal( ins->operands[i], opnd ) ) {
                     if( first_use == NULL ) {
                         first_use = ins;
                     }
                     _ReplaceOpnd( tree, ins, i, reg_name, class );
-                } else if( ins->operands[ i ]->n.class == N_INDEXED
-                     && _Equal( ins->operands[ i ]->i.index, opnd ) ) {
+                } else if( ins->operands[i]->n.class == N_INDEXED
+                     && _Equal( ins->operands[i]->i.index, opnd ) ) {
                     if( first_use == NULL ) {
                         first_use = ins;
                     }

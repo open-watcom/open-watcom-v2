@@ -186,11 +186,9 @@ static  bool    ScanInstructions( void )
     if( BlockByBlock )
         return( FALSE );
     CurrProc->contains_call = FALSE;
-    blk = HeadBlock;
     sp_constant = TRUE;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ins->head.opcode == OP_CALL_INDIRECT ) {
                     CurrProc->contains_call = TRUE;
@@ -207,9 +205,7 @@ static  bool    ScanInstructions( void )
                     sp_constant = FALSE;
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     return( sp_constant );
 }
@@ -252,35 +248,29 @@ static  void    ScanForFDOps( void )
     CurrProc->contains_call = FALSE;
     if( BlockByBlock )
         return;
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         depth = blk->depth;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->type_class == FD || ins->type_class == FL ) {
-                i = ins->num_operands;
-                while( --i >= 0 ) {
+                for( i = ins->num_operands; i-- > 0; ) {
                     ChkFDOp( ins->operands[i], depth );
                 }
                 if( ins->result != NULL ) {
                     ChkFDOp( ins->result, depth );
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 #endif
 
 
 #if _TARGET & _TARG_80386
-static  void *ScanForLabelReturn( void *_blk ) {
-/**********************************************/
+static  block *ScanForLabelReturn( block *blk ) {
+/***********************************************/
 
     block       *son;
     block_num   i;
-    block       *blk = _blk;
 
     if( blk->class & (RETURN|CALL_LABEL) )
         return( NULL );
@@ -291,8 +281,9 @@ static  void *ScanForLabelReturn( void *_blk ) {
         son = blk->edge[i].destination.u.blk;
         if( son->edge[0].flags & DOWN_ONE_CALL )
             continue;
-        if( SafeRecurseCG( ScanForLabelReturn, son ) == NULL )
+        if( SafeRecurseCG( (func_sr)ScanForLabelReturn, son ) == NULL ) {
             return( NULL );
+        }
     }
     return( blk );
 }
@@ -370,16 +361,11 @@ static  void    AdjustPushLocals( void ) {
 
     instruction *ins;
 
-    ins = HeadBlock->ins.hd.next;
-    for(;;) {
-        if( DoesSomething( ins ) )
-            break;
-        if( ins->head.opcode == OP_MOV
-         && ins->head.state == OPERANDS_NEED_WORK ) {
+    for( ins = HeadBlock->ins.hd.next; !DoesSomething( ins ); ins = ins->head.next ) {
+        if( ins->head.opcode == OP_MOV && ins->head.state == OPERANDS_NEED_WORK ) {
             QuickSave( ins->operands[ 0 ]->r.reg, OP_PUSH );
             AdjustPushLocal( ins->result );
         }
-        ins = ins->head.next;
     }
 }
 
@@ -970,10 +956,8 @@ static  void    CalcUsedRegs( void ) {
     hw_reg_set  used;
 
     HW_CAsgn( used, HW_EMPTY );
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             result = ins->result;
             if( result != NULL && result->n.class == N_REGISTER ) {
                 HW_TurnOn( used, result->r.reg );
@@ -985,9 +969,7 @@ static  void    CalcUsedRegs( void ) {
                     CurrProc->prolog_state |= GENERATE_RESET_SP;
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     if( !CurrProc->targ.sp_frame || CurrProc->targ.sp_align ) {
         HW_CTurnOff( used, HW_BP );

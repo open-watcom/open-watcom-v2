@@ -86,9 +86,8 @@ extern  type_length     AdjustBase( void ) {
     SortTemps();
     best_bp = 0;
     best_savings = CalcBaseSave( best_bp, Names[ N_TEMP ] );
-    temp = Names[ N_TEMP ];
     last_location = NO_LOCATION;
-    while( temp != NULL ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.v.alt_location != last_location &&
             temp->t.v.alt_location != NO_LOCATION ) {
             bp = ( temp->t.v.alt_location-(MAX_SHORT_POS-1) ) & ~1;
@@ -99,7 +98,6 @@ extern  type_length     AdjustBase( void ) {
             }
             last_location = temp->t.v.alt_location;
         }
-        temp = temp->n.next_name;
     }
     if( best_bp >= -MAX_SHORT_NEG && best_bp <= MAX_SHORT_POS ) {
         if( best_savings*SHORT_SAVINGS <= SHORT_COST ) return( 0 );
@@ -119,12 +117,11 @@ static  int             CalcBaseSave( type_length bp, name *temp ) {
     int         savings;
 
     savings = 0;
-    while( temp != NULL ) {
+    for( ; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.v.alt_location != NO_LOCATION ) {
             if( temp->t.v.alt_location < bp-MAX_SHORT_NEG ) break;
             savings += temp->t.u.ref_count;
         }
-        temp = temp->n.next_name;
     }
     return( savings );
 }

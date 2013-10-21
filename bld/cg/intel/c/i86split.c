@@ -558,13 +558,13 @@ static  instruction     *LoadStringOps( instruction *ins,
             PrefixIns( ins, load_op1 );
             load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( SI ), WD );
             PrefixIns( ins, load_op2 );
-            load_op2 = MakeMove( ins->operands[ ins->num_operands-1 ],
+            load_op2 = MakeMove( ins->operands[ins->num_operands - 1],
                                   AllocRegName( HW_DS ), U2 );
             PrefixIns( ins, load_op2 );
             es_needs_save = SegmentFloats( *op2 );
             ds_needs_save = TRUE;
         } else {
-            load_op1 = MakeMove( ins->operands[ ins->num_operands-1 ],
+            load_op1 = MakeMove( ins->operands[ins->num_operands - 1],
                                   AllocRegName( HW_ES ), U2 );
             PrefixIns( ins, load_op1 );
             load_op2 = MakeUnary( OP_LA, *op2, AllocRegName( DI ), WD );
@@ -1041,8 +1041,7 @@ extern  instruction     *rTEMP2CONST( instruction *ins ) {
      */
     new = NewIns( ins->num_operands );
     Copy( ins, new, sizeof( instruction ) );  // without operands
-    i = ins->num_operands;
-    while ( --i >= 0 ) {
+    for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
         if ( _ConstTemp( op ) ) {
             new->operands[i] = op->v.symbol;

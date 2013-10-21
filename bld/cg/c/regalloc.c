@@ -233,26 +233,19 @@ static  void    InitChoices( void )
 #if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
     if( BlockByBlock ) {
         /* this is WAY faster for BlockByBlock */
-        blk = HeadBlock;
-        while( blk != NULL ) {
-            ins = blk->ins.hd.next;
-            while( ins->head.opcode != OP_BLOCK ) {
-                i = ins->num_operands;
-                while( --i >= 0 ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+                for( i = ins->num_operands; i-- > 0; ) {
                     InitAChoice( ins->operands[i] );
                 }
                 if( ins->result != NULL ) {
                     InitAChoice( ins->result );
                 }
-                ins = ins->head.next;
             }
-            blk = blk->next_block;
         }
     } else {
-        opnd = Names[N_TEMP];
-        while( opnd != NULL ) {
+        for( opnd = Names[N_TEMP]; opnd != NULL; opnd = opnd->n.next_name ) {
             opnd->t.possible = RL_NUMBER_OF_SETS;
-            opnd = opnd->n.next_name;
         }
     }
 #endif
@@ -356,15 +349,13 @@ extern  void    NullConflicts( var_usage off ) {
 
     name        *temp;
 
-    temp = Names[N_TEMP];
-    while( temp != NULL ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         temp->v.conflict = NULL;
         temp->v.usage &= (USE_IN_ANOTHER_BLOCK|USE_MEMORY|USE_ADDRESS|VAR_VOLATILE|NEEDS_MEMORY|HAS_MEMORY);
         if( ( temp->v.usage & (USE_MEMORY|USE_ADDRESS|VAR_VOLATILE|NEEDS_MEMORY) ) == 0 ) {
             temp->v.usage &= ~off;
         }
         temp->v.block_usage = 0;
-        temp = temp->n.next_name;
     }
 }
 
@@ -587,9 +578,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
         if( !HW_Ovlap( saved_regs, reg ) ) count += 2;
         count <<= levels;
         if( count != 0 || levels == 0 ) return( count );
-        blk = HeadBlock;
-        while( blk != NULL ) {
-            ins = blk->ins.hd.next;
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_MOV ) {
                     other_opnd = NULL;
@@ -616,7 +605,6 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                     }
                 }
             }
-            blk = blk->next_block;
         }
         return( 0 );
     }
@@ -649,8 +637,7 @@ static  bool    StealsSeg( instruction *ins,
     conflict_node       *new_conf;
     int                 i;
 
-    i = ins->num_operands;
-    --i;
+    i = ins->num_operands - 1;
     if( i < NumOperands( ins ) ) return( FALSE );
     op = ins->operands[i];
     new_conf = NameConflict( ins, op );
@@ -680,9 +667,8 @@ static  bool    StealsIdx( instruction *ins,
     int                 i;
     bool                is_result;
 
-    i = ins->num_operands;
     is_result = FALSE;
-    while( --i >= 0 ) {
+    for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
         if( op->n.class == N_INDEXED ) {
             new_conf = NameConflict( ins, op->i.index ); // oops
@@ -780,10 +766,8 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
             }
         }
         if( ins == last ) break;
-        ins = ins->head.next;
-        while( ins->head.opcode == OP_BLOCK ) {
+        for( ins = ins->head.next; ins->head.opcode == OP_BLOCK; ins = blk->ins.hd.next ) {
             blk = blk->next_block;
-            ins = blk->ins.hd.next;
         }
         if( rc != FALSE ) break;
     }

@@ -301,11 +301,9 @@ extern  void    OptSegs( void )
     instruction *tmp;
 
     do {
-        blk = HeadBlock;
         redo = FALSE;
-        while( blk != NULL ) {
-            ins = blk->ins.hd.next;
-            while( ins->head.opcode != OP_BLOCK ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( NotByteMove( ins ) && NotByteMove( next ) ) {
                     if( IsLESDS( ins, next ) ) {
@@ -336,7 +334,7 @@ extern  void    OptSegs( void )
                         next = tmp;
                     }
                 }
-    #if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
                 /* The scoreboarder may split "and ax,imm" into
                    "xor ah,ah; and al,imm". This is sometimes useful
                    (ah can be eliminated for
@@ -379,10 +377,8 @@ extern  void    OptSegs( void )
                         }
                     }
                 }
-    #endif
-                ins = next;
+#endif
             }
-            blk = blk->next_block;
         }
     } while( redo );
 }

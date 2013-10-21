@@ -82,13 +82,11 @@ static  void calcUsedRegs( void )
 
     CurrProc->targ.leaf = TRUE;
     HW_CAsgn( used, HW_EMPTY );
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( ( blk->class & CALL_LABEL ) != EMPTY ) {
             HW_TurnOn( used, ReturnAddrReg() );
         }
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             result = ins->result;
             if( result != NULL && result->n.class == N_REGISTER ) {
                 HW_TurnOn( used, result->r.reg );
@@ -101,9 +99,7 @@ static  void calcUsedRegs( void )
                 ins->head.opcode == OP_CALL_INDIRECT ) {
                 CurrProc->targ.leaf = FALSE;
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     if( FEAttr( AskForLblSym( CurrProc->label ) ) & FE_VARARGS ) {
         HW_TurnOn( used, VarargsHomePtr() );

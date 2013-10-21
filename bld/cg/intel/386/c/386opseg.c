@@ -86,21 +86,16 @@ static  void    AddGlobalIndex( void )
     int         i;
     name        *gblreg;
 
-    blk = HeadBlock;
     gblreg = AllocRegName( HW_EBX );
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                CheckName( &ins->operands[ i ], gblreg );
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                CheckName( &ins->operands[i], gblreg );
             }
             if( ins->result != NULL ) {
                 CheckName( &ins->result, gblreg );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 

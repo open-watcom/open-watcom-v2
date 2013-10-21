@@ -115,8 +115,7 @@ extern  void    AddRegs( void )
             PtrRegs[i][j] = NULL;
         }
     }
-    reg_name = Names[N_REGISTER];
-    while( reg_name != NULL ) {
+    for( reg_name = Names[N_REGISTER]; reg_name != NULL; reg_name = reg_name->n.next_name ) {
         if( IsIndexReg( reg_name->r.reg, CP, FALSE ) ) {
             if( HW_COvlap( reg_name->r.reg, HW_DS )
              || HW_COvlap( reg_name->r.reg, HW_ES )
@@ -137,7 +136,6 @@ extern  void    AddRegs( void )
                 }
             }
         }
-        reg_name = reg_name->n.next_name;
     }
 /*      89-01-03*/
 }

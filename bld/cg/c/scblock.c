@@ -51,8 +51,7 @@ extern  void    FreeJunk( block *blk )
     instruction *ins;
     instruction *next;
 
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         if( DoesSomething( ins ) == FALSE
          && SideEffect( ins ) == FALSE
@@ -60,7 +59,6 @@ extern  void    FreeJunk( block *blk )
          && ins->head.opcode != OP_NOP ) { /*% there for zap info*/
             FreeIns( ins );
         }
-        ins = next;
     }
 }
 
@@ -105,12 +103,11 @@ static  bool    RemDeadCode( block *blk )
     bool        change;
     name        *result;
     instruction *ins;
-    instruction *next_ins;
+    instruction *next;
 
-    ins = blk->ins.hd.next;
     change = FALSE;
-    while( ins->head.opcode != OP_BLOCK ) {
-        next_ins = ins->head.next;
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+        next = ins->head.next;
         result = ins->result;
         /* if result is a register and it dies after this instruction*/
         if( !_OpIsCall( ins->head.opcode )
@@ -123,7 +120,6 @@ static  bool    RemDeadCode( block *blk )
             FreeIns( ins );
             change = TRUE;
         }
-        ins = next_ins;
     }
     return( change );
 }
@@ -136,7 +132,7 @@ extern  bool    DoScore( block *blk )
     with register references.
 */
 {
-    instruction *next_ins;
+    instruction *next;
     score       *scoreboard;
     name        *dst;
     bool        change;
@@ -156,9 +152,8 @@ extern  bool    DoScore( block *blk )
         change = TRUE;
     }
     scoreboard = blk->cc;
-    ins = blk->ins.hd.next;
     had_condition = FALSE;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         ScoreSegments( scoreboard );
         /* May all intel designers rot in hell forever and ever, amen*/
         if( _OpIsCondition( ins->head.opcode ) && ins->result == NULL ) {
@@ -173,7 +168,7 @@ extern  bool    DoScore( block *blk )
         }
         if( ins->head.opcode == OP_BLOCK ) break;
         /* ScoreZero freed the last instr!*/
-        next_ins = ins->head.next;
+        next = ins->head.next;
         dst = ins->result;
         if( UnChangeable( ins ) ) {
             if( dst != NULL ) {
@@ -201,7 +196,7 @@ extern  bool    DoScore( block *blk )
                         change = TRUE;
                         UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                     }
-                    if( next_ins->head.prev == ins ) {
+                    if( next->head.prev == ins ) {
                         RegKill( scoreboard, ins->zap->reg );
                     }
                 } else if( ins->head.opcode == OP_LA && had_condition == FALSE ) {
@@ -209,7 +204,7 @@ extern  bool    DoScore( block *blk )
                         change = TRUE;
                         UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                     }
-                    if( next_ins->head.prev == ins ) {
+                    if( next->head.prev == ins ) {
                         RegKill( scoreboard, ins->zap->reg );
                     }
                 } else if( dst == NULL ) {
@@ -238,7 +233,6 @@ extern  bool    DoScore( block *blk )
             }
             RegKill( scoreboard, ins->zap->reg );
         }
-        ins = next_ins;
     }
     return( change );
 }

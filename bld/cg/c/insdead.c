@@ -53,13 +53,10 @@ static  void    InitVisitedTemps( void )
     name        *op;
     name        *alias;
 
-    op = Names[ N_TEMP ];
-    while( op != NULL ) {
+    for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
         op->t.temp_flags &= ~VISITED;
-        op = op->n.next_name;
     }
-    op = Names[ N_TEMP ];
-    while( op != NULL ) {
+    for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
         if( op->v.usage & (USE_ADDRESS|VAR_VOLATILE) ) {
             alias = op;
             do {
@@ -67,24 +64,19 @@ static  void    InitVisitedTemps( void )
                 alias = alias->t.alias;
             } while( alias != op );
         }
-        op = op->n.next_name;
     }
     if( _IsModel( NO_OPTIMIZATION ) ) {
-        op = Names[ N_TEMP ];
-        while( op != NULL ) {
+        for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
             if( _FrontEndTmp( op ) ) {
                 op->t.temp_flags |= VISITED;
             }
-            op = op->n.next_name;
         }
     }
     if( BlockByBlock || _IsModel ( NO_OPTIMIZATION ) ) {
-        op = Names[ N_TEMP ];
-        while( op != NULL ) {
+        for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
             if( op->v.usage & USE_IN_ANOTHER_BLOCK ) {
                 op->t.temp_flags |= VISITED;
             }
-            op = op->n.next_name;
         }
     }
 }
@@ -166,9 +158,8 @@ extern  bool            VolatileIns(instruction *ins)
 {
     int         i;
 
-    i = ins->num_operands;
-    while( --i >= 0 ) {
-        if( IsVolatile( ins->operands[ i ] ) ) return( TRUE );
+    for( i = ins->num_operands; i-- > 0; ) {
+        if( IsVolatile( ins->operands[i] ) ) return( TRUE );
     }
     if( ins->result != NULL ) {
         if( IsVolatile( ins->result ) ) return( TRUE );
@@ -237,9 +228,8 @@ static  bool    MarkOpsUseful( instruction *ins )
 
     change = FALSE;
     ins->ins_flags |= INS_VISITED;
-    i = ins->num_operands;
-    while( --i >= 0 ) {
-        change |= MarkUseful( ins->operands[ i ] );
+    for( i = ins->num_operands; i-- > 0; ) {
+        change |= MarkUseful( ins->operands[i] );
     }
     return( change );
 }

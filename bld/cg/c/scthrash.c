@@ -105,11 +105,10 @@ static  bool    CanChange( instruction **pins,
         if( opnd == NULL ) return( FALSE );
         ins->operands[0] = opnd;
     } else {
-        i = new_ins->num_operands;
-        while( --i >= 0 ) {
-            opnd = new_ins->operands[ i ];
+        for( i = new_ins->num_operands; i-- > 0; ) {
+            opnd = new_ins->operands[i];
             if( opnd == frm ) {
-                new_ins->operands[ i ] = to;
+                new_ins->operands[i] = to;
                 opnd = to;
             } else if( opnd->n.class == N_REGISTER ) {
                 // If operand overlaps with but wasn't identical to 'from'
@@ -128,7 +127,7 @@ static  bool    CanChange( instruction **pins,
                          }
                     }
                     if( !IndexRegOk( to->r.reg, temp_index ) ) return( FALSE );
-                    new_ins->operands[ i ] = ScaleIndex( to, opnd->i.base,
+                    new_ins->operands[i] = ScaleIndex( to, opnd->i.base,
                                                          opnd->i.constant,
                                                          opnd->n.name_class,
                                                          opnd->n.size,
@@ -160,7 +159,7 @@ static  bool    CantChange( instruction **pins, name *frm, name *to ) {
 
     i = (*pins)->num_operands;
     new_ins = NewIns( i );
-    Copy( *pins, new_ins, sizeof( instruction ) + ( i - 1 ) * sizeof( pointer ) );
+    Copy( *pins, new_ins, offsetof( instruction, operands ) + i * sizeof( name * ) );
     if( CanChange( pins, frm, to, new_ins ) ) return( FALSE );
     new_ins->head.next = new_ins;
     new_ins->head.prev = new_ins;
@@ -238,9 +237,8 @@ static  bool    ThrashDown( instruction *ins ) {
         if( HW_Ovlap( oth_ins->zap->reg, Z->r.reg ) ) return( FALSE );
         if( oth_ins->result == Y ) break;
         if( Modifies( Y, Z, oth_ins->result ) ) return( FALSE );
-        i = oth_ins->num_operands;
-        while( --i >= 0 ) {
-            if( UsedIn( oth_ins->operands[ i ],Y ) ) return( FALSE );
+        for( i = oth_ins->num_operands; i-- > 0; ) {
+            if( UsedIn( oth_ins->operands[i], Y ) ) return( FALSE );
         }
         if( oth_ins->result != NULL ) {
             if( UsedIn( oth_ins->result, Y ) ) return( FALSE );
@@ -295,9 +293,8 @@ static  bool    ThrashUp( instruction *ins ) {
         if( HW_Ovlap( oth_ins->zap->reg, Z->r.reg ) ) return( FALSE );
         if( oth_ins->result == Z ) break;
         if( Modifies( Y, Z, oth_ins->result ) ) return( FALSE );
-        i = oth_ins->num_operands;
-        while( --i >= 0 ) {
-            if( UsedIn( oth_ins->operands[ i ],Z ) ) return( FALSE );
+        for( i = oth_ins->num_operands; i-- > 0; ) {
+            if( UsedIn( oth_ins->operands[i], Z ) ) return( FALSE );
         }
         if( oth_ins->result != NULL ) {
             if( UsedIn( oth_ins->result, Z ) ) return( FALSE );
@@ -330,8 +327,7 @@ extern  bool    RegThrash( block *blk ) {
     instruction *ins;
     instruction *next;
 
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         if( ins->head.opcode == OP_MOV
          && UnChangeable( ins ) == FALSE
@@ -344,7 +340,6 @@ extern  bool    RegThrash( block *blk ) {
                 return( TRUE );
             }
         }
-        ins = next;
     }
     return( FALSE );
 }

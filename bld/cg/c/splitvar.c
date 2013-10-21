@@ -72,11 +72,9 @@ static  void    NotVisited( void )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= ~BLOCK_VISITED;
         blk->id = 0;
-        blk = blk->next_block;
     }
 }
 
@@ -123,23 +121,18 @@ static  void    ReplaceInstances( name *of, name *with )
     int         i;
 //    block       *replaced;
 
-    blk = HeadBlock;
 //    replaced = NULL;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->id == Instance ) {
-            ins = blk->ins.hd.next;
-            while( ins->head.opcode != OP_BLOCK ) {
-                i = ins->num_operands;
-                while( --i >= 0 ) {
-                    RepOp( &ins->operands[ i ], of, with );
+            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+                for( i = ins->num_operands; i-- > 0; ) {
+                    RepOp( &ins->operands[i], of, with );
                 }
                 if( ins->result != NULL ) {
                     RepOp( &ins->result, of, with );
                 }
-                ins = ins->head.next;
             }
         }
-        blk = blk->next_block;
     }
 }
 
@@ -177,12 +170,10 @@ static  void    CleanUp( void )
     block       *blk;
     block_num   id;
 
-    blk = HeadBlock;
     id = 0;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= ~BLOCK_VISITED;
         blk->id = ++id;
-        blk = blk->next_block;
     }
 }
 

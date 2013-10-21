@@ -69,8 +69,7 @@ extern  void    ScoreCalcList( void )
 
     ScoreCount = 0;
     AddRegs();
-    reg_name = Names[ N_REGISTER ];
-    while( reg_name != NULL ) {
+    for( reg_name = Names[N_REGISTER]; reg_name != NULL; reg_name = reg_name->n.next_name ) {
         if( ScRealRegister( reg_name ) ) {
             reg = HighOffsetReg( reg_name->r.reg );
             if( !HW_CEqual( reg, HW_EMPTY ) ) {
@@ -81,21 +80,17 @@ extern  void    ScoreCalcList( void )
                 AllocRegName( reg );
             }
         }
-        reg_name = reg_name->n.next_name;
     }
-    reg_name = Names[ N_REGISTER ];
-    while( reg_name != NULL ) {
+    for( reg_name = Names[N_REGISTER]; reg_name != NULL; reg_name = reg_name->n.next_name ) {
         if( ScRealRegister( reg_name ) ) {
             ++ ScoreCount;
         }
-        reg_name = reg_name->n.next_name;
     }
     if( ScoreCount != 0 ) {
         ScoreList = ScAlloc( ScoreCount * ( sizeof( pointer ) + sizeof( score_reg ) ) );
         curr = (score_reg *)&ScoreList[  ScoreCount  ];
-        reg_name = Names[ N_REGISTER ];
         i = 0;
-        while( reg_name != NULL ) {
+        for( reg_name = Names[N_REGISTER]; reg_name != NULL; reg_name = reg_name->n.next_name ) {
             if( ScRealRegister( reg_name ) ) {
                 curr->reg_name = reg_name;
                 curr->reg = reg_name->r.reg;
@@ -108,7 +103,6 @@ extern  void    ScoreCalcList( void )
                 ++curr;
                 ++i;
             }
-            reg_name = reg_name->n.next_name;
         }
         i = ScoreCount;
         while( curr != ScoreList[ 0 ] ) {

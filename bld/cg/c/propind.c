@@ -65,7 +65,7 @@ static  byte    NumRefs( instruction *ins, name *op ) {
 
     refs = 0;
     for( i = 0; i < ins->num_operands; i++ ) {
-        refs += OpRefs( ins->operands[ i ], op );
+        refs += OpRefs( ins->operands[i], op );
     }
     if( ins->result != NULL ) {
         refs += OpRefs( ins->result, op );
@@ -98,7 +98,7 @@ static  bool    AdjustIndex( instruction *ins, name *res, signed_32 c ) {
 
     if( NumRefs( ins, res ) != 1 ) return( FALSE );
     for( i = 0; i < ins->num_operands; i++ ) {
-        if( Adjusted( &ins->operands[ i ], res, c ) ) return( TRUE );
+        if( Adjusted( &ins->operands[i], res, c ) ) return( TRUE );
     }
     if( ins->result != NULL ) {
         if( Adjusted( &ins->result, res, c ) ) return( TRUE );
@@ -116,8 +116,7 @@ static  bool    DoProp( block *blk ) {
     instruction *next;
     name        *op;
 
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->head.opcode == OP_ADD || ins->head.opcode == OP_SUB ) {
             op = ins->operands[ 1 ];
 
@@ -163,7 +162,6 @@ static  bool    DoProp( block *blk ) {
                 }
             }
         }
-        ins = ins->head.next;
     }
     return( FALSE );
 }

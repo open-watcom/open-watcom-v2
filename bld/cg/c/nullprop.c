@@ -155,7 +155,7 @@ static  bool            DereferencedBy( instruction *ins, name *ptr )
                 }
             }
         }
-        op = ins->operands[ i ];
+        op = ins->operands[i];
     }
     return( FALSE );
 }
@@ -239,7 +239,7 @@ typedef struct goofy_struct_so_we_can_use_saferecurse {
     bool        forward;
 } parm_struct;
 
-static  void            *DominatingDeref( void * );
+static  void            *DominatingDeref( parm_struct *parms );
 
 static  int             BlockSearch( block *blk, instruction *ins, name *op, bool forward )
 /******************************************************************************************
@@ -261,6 +261,7 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
             if( curr->head.opcode == OP_MOV &&
                 curr->operands[ 0 ] == op &&
                 curr->result != op ) {
+                parm_struct parms;
                 // we see mov t1 -> t2, and are trying to see if t1 has dominating
                 // derefs from this path on - this is true if t2 has dominating
                 // derefs from this path on - so we recurse (Yikes!)
@@ -268,7 +269,7 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
                 parms.ins = curr;
                 parms.op = curr->result;
                 parms.forward = TRUE;
-                if( SafeRecurseCG( DominatingDeref, &parms ) != (void *)FALSE ) {
+                if( SafeRecurseCG( (func_sr)DominatingDeref, &parms ) != NULL ) {
                     return( BLOCK_DEREFS );
                 }
             }
@@ -282,8 +283,8 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
     return( BLOCK_NOTHING );
 }
 
-static  void            *DominatingDeref( void *_parms )
-/*******************************************************
+static  void            *DominatingDeref( parm_struct *parms )
+/*************************************************************
     Return TRUE if the given instruction is dominated by a dereference of op. This is not a true
     dominator in the sense of the dragon book, but a dominator in the sense that every path from
     the instruction given to the return encounters a dereference of op (if forward) or every
@@ -296,7 +297,6 @@ static  void            *DominatingDeref( void *_parms )
     int                 result;
     bool                dominated;
     block               *blk;
-    parm_struct         *parms = _parms;
 
 
     // check instructions from ins to end of block
@@ -304,12 +304,12 @@ static  void            *DominatingDeref( void *_parms )
     result = BlockSearch( parms->blk, NextIns( parms->ins, parms->forward ), parms->op, parms->forward );
     switch( result ) {
     case BLOCK_DEREFS:
-        return( (void *)TRUE );
+        return( NOT_NULL );
     case BLOCK_REDEFS:
-        return( (void *)FALSE );
+        return( NULL );
     }
     if( LastBlock( parms->blk, parms->forward ) ||
-        ( parms->op->v.usage & USE_IN_ANOTHER_BLOCK ) == EMPTY ) return( (void *)FALSE );
+        ( parms->op->v.usage & USE_IN_ANOTHER_BLOCK ) == EMPTY ) return( NULL );
     stk = InitStack();
     PushTargets( stk, parms->blk, parms->forward );
     dominated = TRUE;
@@ -341,7 +341,7 @@ static  void            *DominatingDeref( void *_parms )
         blk->class |= BLOCK_VISITED;
     }
     FiniStack( stk );
-    return( dominated ? (void *)TRUE : (void *)FALSE );
+    return( dominated ? NOT_NULL : NULL );
 }
 
 extern  void            FloodDown( block *blk, block_class bits )
@@ -454,7 +454,7 @@ static  bool            NullProp( block *blk )
     parms.op = *ptr;
     parms.forward = TRUE;
     ClearBlockBits( BLOCK_VISITED );
-    if( DominatingDeref( &parms ) != (void *)FALSE ) {
+    if( DominatingDeref( &parms ) != NULL ) {
         if( !EdgeHasSideEffect( blk, cmp, cmp->head.opcode == OP_CMP_NOT_EQUAL ) ) {
             // only nuke the edge if the code we are removing
             // does not have a side effect or if the dominators are before the compare
@@ -464,7 +464,7 @@ static  bool            NullProp( block *blk )
     }
     parms.forward = FALSE;
     ClearBlockBits( BLOCK_VISITED );
-    if( DominatingDeref( &parms ) != (void *)FALSE ) {
+    if( DominatingDeref( &parms ) != NULL ) {
         KillCondBlk( blk, cmp, dest_index );
         return( TRUE );
     }
@@ -483,10 +483,8 @@ extern  void            PropNullInfo( void )
     if( _IsModel( NO_OPTIMIZATION ) ) return;
     if( _IsModel( NULL_DEREF_OK ) ) return;
     change = FALSE;
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         change |= NullProp( blk );
-        blk = blk->next_block;
     }
     ClearBlockBits( BLOCK_VISITED );
     if( change ){

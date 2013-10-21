@@ -105,9 +105,8 @@ extern  void    FPParms( void ) {
         while( --i >= 0 ) {
             Parm8087[ i ] = NULL;
         }
-        ins = HeadBlock->ins.hd.next;
         i = 0;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_PARM_DEF ) {
                 if( FPRegNum( ins->result ) == 0 ) {
                     next = ins->head.next;
@@ -123,7 +122,6 @@ extern  void    FPParms( void ) {
                     ++i;
                 }
             }
-            ins = ins->head.next;
         }
     }
 }
@@ -247,9 +245,8 @@ static bool PushDelayedIfStackOperand( instruction *ins, pn parm, call_state *st
 
     addr = parm->name;
     ins = addr->u.ins;
-    i = ins->num_operands;
-    while( --i >= 0 ) {
-        if( FPIsStack( ins->operands[ i ] ) ) {
+    for( i = ins->num_operands; i-- > 0; ) {
+        if( FPIsStack( ins->operands[i] ) ) {
             parm->ins = PushDelayed( ins, addr, state );
             // CGFree( parm );
             return( TRUE );
@@ -273,9 +270,8 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
     next = ins->head.next;
     for(;;) {
         while( next->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                if( ReDefinedBy( next, ins->operands[ i ] ) ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                if( ReDefinedBy( next, ins->operands[i] ) ) {
                     parm->ins = PushDelayed( ins, parm->name, state );
                     // CGFree( parm );
                     return( TRUE );
@@ -607,7 +603,6 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
     instruction         *third;
     instruction         *ret;
     type_class_def      class;
-    int                 num_ops;
 
     next = Next87Ins( ins );
     ret = ins->head.next;
@@ -666,12 +661,9 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                 /* FLD X, FxxP ST(1) ==> Fxx X */
 
                 next->result = ST( 0 );
-                next->operands[ 0 ] = ins->operands[ 0 ];
-                num_ops = NumOperands( ins );
-                if( ins->num_operands > num_ops
-                 && next->num_operands <= NumOperands( next ) ) {
-                    next->operands[ next->num_operands ]
-                                     = ins->operands[ num_ops ];
+                next->operands[0] = ins->operands[0];
+                if( ins->num_operands > NumOperands( ins ) && next->num_operands <= NumOperands( next ) ) {
+                    next->operands[next->num_operands] = ins->operands[NumOperands( ins )];
                     next->num_operands++;
                 }
                 FreeIns( ins );
@@ -843,30 +835,25 @@ extern  void    Opt8087( void ) {
     instruction *ins;
     int         i;
     bool        again;
+    instruction *next;
 
     blk = HeadBlock;
     while( blk != NULL ) {
         i = 0;
-        for( ins = blk->ins.hd.next;
-             ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins->sequence = ++i;
         }
-        ins = blk->ins.hd.next;
         again = FALSE;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+            next = ins->head.next;
             if( _GenIs8087( ins->u.gen_table->generate ) ) {
                 if( !FSinCos( ins ) ) {
-                    ins = Opt87Sequence( ins, &again );
-                } else {
-                    ins = ins->head.next;
+                    next = Opt87Sequence( ins, &again );
                 }
-            } else {
-                ins = ins->head.next;
             }
         }
         if( !again ) {
-            for( ins = blk->ins.hd.next;
-                 ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( FPResultNotNeeded( ins ) ) {
                     ins->result = ST( 0 );
                     ToRFstp( ins );

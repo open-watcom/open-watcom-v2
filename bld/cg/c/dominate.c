@@ -50,9 +50,8 @@ static bool             AssignDominatorBits( void )
     dom_bit_set id;
 
     ReturnBlock = NULL;
-    blk = HeadBlock;
     _DBitFirst( id );
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( ( blk->class & RETURN ) != EMPTY ) {
             if( ReturnBlock != NULL ) return( FALSE );
             ReturnBlock = blk;
@@ -60,7 +59,6 @@ static bool             AssignDominatorBits( void )
         _DBitAssign( blk->dom.id, id );
         if( _DBitEmpty( id ) ) return( FALSE );
         _DBitNext( &id );
-        blk = blk->next_block;
     }
     return( ReturnBlock != NULL );
 }

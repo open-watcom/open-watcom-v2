@@ -83,7 +83,7 @@ static  void    CheckRefs( conflict_node *conf, block *blk )
     }
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = ins->num_operands; i-- > 0; ) {
-            if( SameConf( ins->operands[ i ], ins, conf ) ) {
+            if( SameConf( ins->operands[i], ins, conf ) ) {
                 blk->class |= REAL_REFERENCE;
                 return;
             }

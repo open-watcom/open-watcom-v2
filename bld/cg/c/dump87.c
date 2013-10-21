@@ -125,7 +125,6 @@ static  void    DumpOpcode( instruction *ins ) {
 extern  bool    DumpFPUIns( instruction *ins ) {
 /*********************************************/
 
-    int         j;
     int         i;
 
     if( ins->u.gen_table == NULL || ins->table == NULL ) return( FALSE );
@@ -239,16 +238,12 @@ extern  bool    DumpFPUIns( instruction *ins ) {
         return( FALSE );
     }
     DumpLiteral( " [" );
-    i = 0;
-    j = 0;
-    for(;;) {
-        j++;
-        if( j > ins->num_operands ) break;
-        DumpOperand( ins->operands[ i ] );
-        if( j != ins->num_operands ) {
+    if( ins->num_operands != 0 ) {
+        DumpOperand( ins->operands[0] );
+        for( i = 1; i < ins->num_operands; ++i ) {
             DumpLiteral( "," );
+            DumpOperand( ins->operands[i] );
         }
-        i++;
     }
     if( ins->result != NULL ) {
         DumpLiteral( " ==> " );

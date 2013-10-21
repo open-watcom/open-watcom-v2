@@ -982,8 +982,8 @@ static  void  CnvOpToInt( instruction * ins, int op )
 static bool IndexOverlaps( instruction *ins, int i )
 /**************************************************/
 {
-    if( ins->operands[ i ]->n.class != N_INDEXED ) return( FALSE );
-    if( SameThing( ins->operands[ i ]->i.index, ins->result ) ) return( TRUE );
+    if( ins->operands[i]->n.class != N_INDEXED ) return( FALSE );
+    if( SameThing( ins->operands[i]->i.index, ins->result ) ) return( TRUE );
     return( FALSE );
 }
 

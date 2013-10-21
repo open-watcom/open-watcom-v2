@@ -87,8 +87,7 @@ static void ConvertOtherOperands( instruction *ins, name *temp )
     int         i;
 
     ins->table = NULL;
-    i = ins->num_operands;
-    while( --i >= 0 ) {
+    for( i = ins->num_operands; i-- > 0; ) {
         if( ins->operands[i] != temp &&
             ins->operands[i]->n.class != N_CONSTANT ) {
             new_ins = MakeConvert( ins->operands[i], AllocTemp( SW ),
@@ -129,8 +128,7 @@ static bool ConvertInsToInt( instruction *ins, name *temp )
             return( TRUE );
         }
     } else {
-        i = ins->num_operands;
-        while( --i >= 0 ) {
+        for( i = ins->num_operands; i > 0; ) {
             if( ins->operands[i] == temp ) {
                 ins->type_class = SW;
                 ConvertOtherOperands( ins, temp );
@@ -158,18 +156,14 @@ static void FixConverts( void )
     block       *blk;
     instruction *ins;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_CONVERT ) {
                 if( ins->type_class == ins->base_type_class ) {
                     ins->head.opcode = OP_MOV;
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -184,21 +178,17 @@ static bool ConvertToInt( name *temp )
     type_class_def      class;
     bool                change;
 
-    blk = HeadBlock;
     change = FALSE;
     temp->n.name_class = SW;
     temp->n.size = 4;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
              class = ins->type_class;
              change |= ConvertInsToInt( ins, temp );
              if( ins->result == temp ) {
                  ins = AndResult( ins, class );
              }
-             ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     return( change );
 }

@@ -539,17 +539,17 @@ extern  bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe ) {
 }
 
 
-static        bool    ShiftToTypeLength( type_length x, unsigned_16 y ) {
-/**********************************************/
+static  bool    ShiftToTypeLength( type_length x, unsigned_16 y ) {
+/*****************************************************************/
 
     signed_32 lx;
 
     lx = x;
     x <<= y; lx <<= y;
     if( lx != x ) return( FALSE );
-    #if _TARGET & _TARG_370
-        if( lx < 0 || lx >= 4096 ) return( FALSE );
-    #endif
+#if _TARGET & _TARG_370
+    if( lx < 0 || lx >= 4096 ) return( FALSE );
+#endif
     return( TRUE );
 }
 

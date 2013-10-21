@@ -244,9 +244,8 @@ static  bool    FindIntervals( void )
     bool                add;
 
     num = 0;
-    blk = HeadBlock;
-    for( ;; ) {
-        ++ num;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        ++num;
         curr = CGAlloc( sizeof( interval_def ) );
         curr->link = Intervals;
         Intervals = curr;
@@ -258,8 +257,6 @@ static  bool    FindIntervals( void )
         curr->level = 0;
         blk->depth = 0;
         blk->u.interval = curr;
-        blk = blk->next_block;
-        if( blk == NULL ) break;
     }
     level = 1;
     for( ;; ) {
@@ -362,8 +359,7 @@ static  void    EdgeLevels( void )
     interval_def        *interval;
     block_num           id;
 
-    blk = HeadBlock;
-    for( ;; ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
             id = edge->source->id;
             interval = blk->u.interval;
@@ -375,8 +371,6 @@ static  void    EdgeLevels( void )
                 if( interval == NULL ) break;
             }
         }
-        blk = blk->next_block;
-        if( blk == NULL ) break;
     }
 }
 

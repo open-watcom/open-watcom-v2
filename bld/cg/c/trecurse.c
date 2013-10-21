@@ -207,7 +207,7 @@ static bool SafePath( instruction *ins )
         if( SideEffect( ins ) ) return( FALSE );
         if( _OpIsCall( ins->head.opcode ) ) return( FALSE );
         for( i = 0; i < ins->num_operands; i++ ) {
-            if( !SafeOp( ins->operands[ i ], FALSE ) ) return( FALSE );
+            if( !SafeOp( ins->operands[i], FALSE ) ) return( FALSE );
         }
         if( ins->result == ReturnValue ) {
             // check to see if this value we are writing into the
@@ -220,8 +220,8 @@ static bool SafePath( instruction *ins )
     return( TRUE );
 }
 
-static void *SafeBlock( void *_blk )
-/***********************************
+static block *SafeBlock( block *blk )
+/************************************
     Return blk if the given block, and all reachable blocks,
     are safe to ignore for purposes of eliminating tail recursion,
     We abuse a pointer as a boolean variable because that is
@@ -231,7 +231,6 @@ static void *SafeBlock( void *_blk )
     block_num   i;
     block       *dest;
     block       *safe;
-    block       *blk = _blk;
 
     if( blk->class & BLOCK_MARKED ) return( NULL );
     blk->class |= BLOCK_MARKED;
@@ -240,7 +239,7 @@ static void *SafeBlock( void *_blk )
         safe = blk;
         for( i = 0; i < blk->targets; i++ ) {
             dest = blk->edge[ i ].destination.u.blk;
-            if( SafeRecurseCG( SafeBlock, dest ) == NULL ) {
+            if( SafeRecurseCG( (func_sr)SafeBlock, dest ) == NULL ) {
                 safe = NULL;
                 break;
             }
@@ -278,17 +277,13 @@ static bool ScaryConditions( void )
     instruction *ins;
     int         i;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; i++ ) {
-                if( ScaryOperand( ins->operands[ i ] ) ) return( TRUE );
+                if( ScaryOperand( ins->operands[i] ) ) return( TRUE );
             }
             if( ScaryOperand( ins->result ) ) return( TRUE );
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     return( FALSE );
 }
@@ -393,10 +388,8 @@ extern bool     TailRecursion( void )
     changed = FALSE;
     if( _IsntModel( NO_OPTIMIZATION ) &&
         !ScaryConditions() && !BlockByBlock ) {
-        blk = HeadBlock;
-        while( blk != NULL ) {
-            ins = blk->ins.hd.next;
-            while( ins->head.opcode != OP_BLOCK ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_CALL ) {
                     if( OkayToTransCall( blk, ins ) ) {
                         DoTrans( blk, ins );
@@ -404,20 +397,14 @@ extern bool     TailRecursion( void )
                         break;
                     }
                 }
-                ins = ins->head.next;
             }
-            blk = blk->next_block;
         }
     }
     // now reset our links and flags
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             _TR_LINK( ins ) = NULL;
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     for( ins = _PROC_LINK( CurrProc ); ins != NULL; ins = next ) {
         next = _TR_LINK( ins );

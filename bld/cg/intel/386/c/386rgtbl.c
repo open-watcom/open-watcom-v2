@@ -776,9 +776,10 @@ extern  bool    IsIndexReg( hw_reg_set reg, type_class_def class,
     hw_reg_set  *list;
 
     is_temp_index = is_temp_index;
-    list = RegSets[  IndexSets[  class  ]  ];
+    list = RegSets[IndexSets[class]];
     while( !HW_CEqual( *list, HW_EMPTY ) ) {
-        if( HW_Equal( *list, reg ) ) break;
+        if( HW_Equal( *list, reg ) )
+            break;
         ++ list;
     }
     return( HW_Equal( *list, reg ) );
@@ -790,19 +791,19 @@ static  type_class_def  NotFloatRegClass( hw_reg_set regs )
     hw_reg_set          *possible;
     type_class_def      class;
 
-    class = U1;
-    for( ;; ) {
-        possible = RegSets[  ClassSets[  class  ]  ];
+    for( class = U1; class < XX; ++class ) {
+        possible = RegSets[ClassSets[class]];
         while( !HW_CEqual( *possible, HW_EMPTY ) ) {
-            if( HW_Equal( *possible, regs ) ) return( class );
+            if( HW_Equal( *possible, regs ) )
+                return( class );
             ++ possible;
         }
-        ++ class;
-        if( class == XX ) break;
     }
     if( HW_COvlap( regs, HW_SEGS ) ) { // a kludge to get GS:[EAX+EDX]
         HW_CTurnOff( regs, HW_SEGS );
-        if( NotFloatRegClass( regs ) == FD ) return( CP );
+        if( NotFloatRegClass( regs ) == FD ) {
+            return( CP );
+        }
     }
     return( XX );
 }
@@ -815,10 +816,12 @@ extern  type_class_def  RegClass( hw_reg_set regs )
     hw_reg_set          *possible;
 
     if( HW_COvlap( regs, HW_FLTS ) ) {
-        if( HW_CEqual( regs, HW_ST0 ) ) return( FD );
+        if( HW_CEqual( regs, HW_ST0 ) )
+            return( FD );
         possible = STIReg;
         while( !HW_CEqual( *possible, HW_EMPTY ) ) {
-            if( HW_Equal( regs, *possible ) ) return( FD );
+            if( HW_Equal( regs, *possible ) )
+                return( FD );
             ++possible;
         }
         return( XX );
@@ -843,7 +846,8 @@ extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
         list = RegSets[ RL_LONG_INDEX ];
     }
     while( !HW_CEqual( *list, HW_EMPTY ) ) {
-        if( HW_Equal( *list, reg ) ) break;
+        if( HW_Equal( *list, reg ) )
+            break;
         ++ list;
     }
     return( HW_Equal( *list, reg ) );

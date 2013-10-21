@@ -316,12 +316,12 @@ extern  block   *FindBlockWithLbl( code_lbl *label )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    for( ;; ) {
-        if( blk == NULL ) return( NULL );
-        if( blk->label == label ) return( blk );
-        blk = blk->next_block;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        if( blk->label == label ) {
+            break;
+        }
     }
+    return( blk );
 }
 
 
@@ -333,8 +333,7 @@ extern  void    FixEdges( void )
     block_num   targets;
     block_edge  *edge;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( ( blk->class & BIG_JUMP ) == 0 ) {
             for( targets = blk->targets; targets-- > 0; ) {
                 edge = &blk->edge[  targets  ];
@@ -348,7 +347,6 @@ extern  void    FixEdges( void )
                 }
             }
         }
-        blk = blk->next_block;
     }
 }
 
@@ -369,13 +367,13 @@ static void *LinkReturns( void *arg )
     to_search = LinkReturnsParms[ 1 ];
     blk = FindBlockWithLbl( to_search );
 //    found = FALSE;
-    if( blk == NULL ) return( (void *)FALSE );
-    if( blk->class & BLOCK_VISITED ) return( (void *)TRUE );
+    if( blk == NULL ) return( NULL );
+    if( blk->class & BLOCK_VISITED ) return( NOT_NULL );
     if( blk->class & LABEL_RETURN ) {
         for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[ i ].destination.u.lbl == link_to ) {
                 /* kick out ... already linked */
-                return( (void *)TRUE );
+                return( NOT_NULL );
             }
         }
         blk = ReGenBlock( blk, link_to );
@@ -386,20 +384,20 @@ static void *LinkReturns( void *arg )
             if( blk->next_block == NULL ) return( (pointer)FALSE );
             LinkReturnsParms[ 0 ] = link_to;
             LinkReturnsParms[ 1 ] = blk->next_block->label;
-            if( SafeRecurseCG( LinkReturns, NULL ) == (void *)FALSE ) {
-                return( (void *)FALSE );
+            if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
+                return( NULL );
             }
         } else {
             for( i = blk->targets; i-- > 0; ) {
                 LinkReturnsParms[ 0 ] = link_to;
                 LinkReturnsParms[ 1 ] = blk->edge[ i ].destination.u.lbl;
-                if( SafeRecurseCG( LinkReturns, NULL ) == (void *)FALSE ) {
-                    return( (void *)FALSE );
+                if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
+                    return( NULL );
                 }
             }
         }
     }
-    return( (void *)TRUE );
+    return( NOT_NULL );
 }
 
 extern  bool        FixReturns( void )
@@ -410,8 +408,7 @@ extern  bool        FixReturns( void )
     block       *blk;
     block       *other_blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->class & CALL_LABEL ) {
             blk->class |= BLOCK_VISITED;
             if( blk->next_block == NULL ) return( FALSE );
@@ -427,7 +424,6 @@ extern  bool        FixReturns( void )
                 other_blk = other_blk->next_block;
             }
         }
-        blk = blk->next_block;
     }
     return( TRUE );
 }
@@ -440,9 +436,8 @@ extern  void    UnFixEdges( void )
     block_num   targets;
     block_edge  *edge;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        if( ( blk->class & BIG_JUMP ) == EMPTY ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        if( ( blk->class & BIG_JUMP ) == 0 ) {
             for( targets = blk->targets; targets-- > 0; ) {
                 edge = &blk->edge[  targets  ];
                 if( edge->flags & DEST_IS_BLOCK ) {
@@ -452,7 +447,6 @@ extern  void    UnFixEdges( void )
                 }
             }
         }
-        blk = blk->next_block;
     }
 }
 

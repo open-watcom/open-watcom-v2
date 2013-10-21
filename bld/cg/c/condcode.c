@@ -146,9 +146,8 @@ static  bool    Traverse( block *blk, name *zero )
     change = FALSE;
     cc = blk->cc;
     cc->ins = NULL;
-    ins = blk->ins.hd.next;
     jumps = 0;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( _OpIsJump( ins->head.opcode ) ) {
             ++jumps;
         }
@@ -242,7 +241,6 @@ static  bool    Traverse( block *blk, name *zero )
                 }
             }
         }
-        ins = ins->head.next;
     }
     if( jumps > 1 ) {
         cc->state = UNKNOWN_STATE;
@@ -323,11 +321,9 @@ static  void    FlowConditions( void )
     zero = AllocIntConst( 0 );
     change = TRUE;
     for( ;; ) {
-        blk = HeadBlock;
-        while( blk != NULL ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             GatherSources( blk );
             change |= Traverse( blk, zero );
-            blk = blk->next_block;
         }
         if( change == FALSE ) break;
         change = FALSE;
@@ -358,8 +354,7 @@ extern  void    Conditions( void )
     block       *blk;
     cc_control  *cc;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         cc = CGAlloc( sizeof( cc_control ) );
         cc->state = UNKNOWN_STATE;
         cc->left_op = NULL;
@@ -369,12 +364,9 @@ extern  void    Conditions( void )
         cc->op_type = XX;
         blk->cc = cc;
         blk->class &= ~BLOCK_VISITED;
-        blk = blk->next_block;
     }
     FlowConditions();
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         CGFree( blk->cc );
-        blk = blk->next_block;
     }
 }

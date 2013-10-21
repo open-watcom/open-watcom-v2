@@ -137,25 +137,18 @@ static  int     CountSegOvers( void )
     int         overs;
 
     overs = 0;
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = NumOperands( ins );
-            if( i == ins->num_operands
-             && ( ZPageType == ZP_USES_DS
-               || ( ins->u.gen_table->generate != G_MOVAM
-                 && ins->u.gen_table->generate != G_MOVMA ) ) ) {
-                while( --i >= 0 ) {
-                    overs += Overs( ins->operands[ i ] );
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            if( NumOperands( ins ) == ins->num_operands && ( ZPageType == ZP_USES_DS
+               || ( ins->u.gen_table->generate != G_MOVAM && ins->u.gen_table->generate != G_MOVMA ) ) ) {
+                for( i = NumOperands( ins ); i-- > 0; ) {
+                    overs += Overs( ins->operands[i] );
                 }
                 if( ins->result != NULL ) {
                     overs += Overs( ins->result );
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     return( overs );
 }

@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#define NOT_NULL    ((void *)TRUE)
+
 typedef void    *(*func_sr)(void *);
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )

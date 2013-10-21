@@ -245,13 +245,11 @@ extern  bool    SetOnCondition( void )
     block       *blk;
     bool        change;
 
-    blk = HeadBlock;
     change = FALSE;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->class & CONDITIONAL ) {
             change |= FindFlowOut( blk );
         }
-        blk = blk->next_block;
     }
     return( change );
 }

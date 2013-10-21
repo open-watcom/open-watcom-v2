@@ -483,7 +483,7 @@ static  bool    NeedOpndSize( instruction *ins ) {
     default:
         return( TRUE );
     }
-    for( i = ins->num_operands-1; i >= 0; --i ) {
+    for( i = ins->num_operands; i-- > 0; ) {
         /* Could be smarter here and allow N_MEMORY,N_INDEXED if
            they're in DGROUP */
         switch( ins->operands[i]->n.class ) {
@@ -919,8 +919,7 @@ extern  void    GenObjCode( instruction *ins ) {
 
         _Code;
         LayInitial( ins, gen );
-        i = ins->num_operands;
-        --i;
+        i = ins->num_operands - 1;
         if( i >= NumOperands( ins ) ) {
             if( ins->operands[i]->n.class == N_REGISTER ) {
                 GenSeg( ins->operands[i]->r.reg );

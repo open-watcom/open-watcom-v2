@@ -138,9 +138,8 @@ static  void    FindAllConflicts( instruction *ins,
 
     int         i;
 
-    i = ins->num_operands;
-    while( --i >= 0 ) {
-        FindNameConf( ins->operands[ i ], ins, other, for_which );
+    for( i = ins->num_operands; i-- > 0; ) {
+        FindNameConf( ins->operands[i], ins, other, for_which );
     }
     if( ins->result != NULL ) {
         FindNameConf( ins->result, ins, other, for_which );
@@ -442,10 +441,8 @@ extern  instruction_id  Renumber( void )
     unsigned_32         number_instrs;
 
     number_instrs = 0;
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         number_instrs += CountIns( blk );
-        blk = blk->next_block;
     }
     if( number_instrs == 0 ) {
         increment = 1;
@@ -456,15 +453,11 @@ extern  instruction_id  Renumber( void )
         increment = 10; // BBB - tired of stupid looking ins id's
     }
     id = 0;
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins->id = id;
             id += increment;
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     return( id );
 }

@@ -68,21 +68,17 @@ extern  void    BuildIndex( void )
     instruction *next;
     bool        change;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         do {
-            ins = blk->ins.hd.next;
             change = FALSE;
-            while( ins->head.opcode != OP_BLOCK ) {
+            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( InsIsCandidate( ins ) && FoldIntoIndex( ins ) ) {
                     UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                     change = TRUE;
                 }
-                ins = next;
             }
         } while( change );
-        blk = blk->next_block;
     }
 }
 
@@ -190,9 +186,8 @@ extern  instruction     *SIBPossibleIndex( instruction *ins, name *reg,
         if we find an operand which uses the register, but not as an index
         we're outa here! NB: assumes only one unique index per instruction
 */
-        i = next->num_operands;
-        while( --i >= 0 ) {
-            if( BadUse( reg, next->operands[ i ], pindex, pbase ) ) {
+        for( i = next->num_operands; i-- > 0; ) {
+            if( BadUse( reg, next->operands[i], pindex, pbase ) ) {
                 return( NULL );
             }
         }

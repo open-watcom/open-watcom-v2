@@ -112,13 +112,7 @@ static  void    DumpLbl( code_lbl **what ) {
     block       *blk;
     block_num   i;
 
-    blk = HeadBlock;
-    for(;;) {
-        if( blk == NULL ) {
-            DumpLiteral( "Target ????" );
-            DumpPtr( what );
-            return;
-        }
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( i = blk->targets; i-- > 0; ) {
             if( what == &blk->edge[ i ].destination.u.lbl ) {
                 DumpLiteral( "Target " );
@@ -129,8 +123,9 @@ static  void    DumpLbl( code_lbl **what ) {
                 return;
             }
         }
-        blk = blk->next_block;
     }
+    DumpLiteral( "Target ????" );
+    DumpPtr( what );
 }
 
 static  void    DumpAnBool( bn node ) {

@@ -368,11 +368,10 @@ extern  instruction    *FoldIns( instruction *ins ) {
     bool        have_const;
 
     if( ins->ins_flags & INS_CC_USED ) return( NULL );
-    i = ins->num_operands;
     have_const = FALSE;
-    while( --i >= 0 ) {
-        if( ins->operands[ i ]->n.class == N_CONSTANT ) {
-            if( ins->operands[ i ]->c.const_type == CONS_ABSOLUTE ) {
+    for( i = ins->num_operands; i-- > 0; ) {
+        if( ins->operands[i]->n.class == N_CONSTANT ) {
+            if( ins->operands[i]->c.const_type == CONS_ABSOLUTE ) {
                 return( FoldAbsolute( ins ) );
             }
             have_const = TRUE;
@@ -412,11 +411,11 @@ extern  bool    ConstFold( block *root ) {
     change = FALSE;
     blk = root;
     for( ;; ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
-            if( FoldIns( ins ) != NULL ) change = TRUE;
-            ins = next;
+            if( FoldIns( ins ) != NULL ) {
+                change = TRUE;
+            }
         }
         blk = blk->u.partition;
         if( blk == root ) break;

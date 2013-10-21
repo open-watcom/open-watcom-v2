@@ -554,6 +554,7 @@ extern  void    BGSelect( select_node *s_node, an node, cg_switch_type allowed )
         _Zoiks( ZOIKS_090 );
         allowed = CG_SWITCH_ALL;
     }
+    kind = 0;
     node = Arithmetic( node, TypeInteger );
     if( s_node->num_cases != 0 ) {
         best = 0x7FFFFFFF;

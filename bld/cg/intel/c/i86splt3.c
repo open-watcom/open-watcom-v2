@@ -54,8 +54,7 @@ extern  void    DupSeg( instruction *ins, instruction *new_ins ) {
     if( ins->head.opcode == OP_BLOCK ) return;
     if( ins->num_operands <= NumOperands( ins ) ) return;
     if( new_ins->num_operands > NumOperands( new_ins ) ) return;
-    new_ins->operands[ new_ins->num_operands++ ] =
-            ins->operands[ ins->num_operands-1 ];
+    new_ins->operands[new_ins->num_operands++] = ins->operands[ins->num_operands - 1];
     new_ins->t.index_needs = ins->t.index_needs;
 }
 
@@ -64,7 +63,7 @@ extern  void    DupSegOp( instruction *ins, instruction *new_ins, int i ) {
 /*************************************************************************/
 
 
-    MoveSeg( ins, new_ins, new_ins->operands[ i ], TRUE );
+    MoveSeg( ins, new_ins, new_ins->operands[i], TRUE );
 }
 
 
@@ -80,7 +79,7 @@ extern  void    MoveSegOp( instruction *ins, instruction *new_ins, int i ) {
 /**************************************************************************/
 
 
-    MoveSeg( ins, new_ins, new_ins->operands[ i ], FALSE );
+    MoveSeg( ins, new_ins, new_ins->operands[i], FALSE );
 }
 
 
@@ -117,9 +116,8 @@ extern  void    DelSegRes( instruction *ins ) {
 
     if( ins->num_operands <= NumOperands( ins ) ) return;
     if( !SegMemLoc( ins->result ) ) return;
-    i = ins->num_operands;
-    while( --i >= 0 ) {
-        if( ins->result == ins->operands[ i ] ) return;
+    for( i = ins->num_operands; i-- > 0; ) {
+        if( ins->result == ins->operands[i] ) return;
     }
     DelSeg( ins );
 }
@@ -131,12 +129,11 @@ extern  void    DelSegOp( instruction *ins, int i ) {
     int         j;
 
     if( ins->num_operands <= NumOperands( ins ) ) return;
-    if( !SegMemLoc( ins->operands[ i ] ) ) return;
-    if( ins->result == ins->operands[ i ] ) return;
-    j = ins->num_operands;
-    while( --j >= 0 ) {
+    if( !SegMemLoc( ins->operands[i] ) ) return;
+    if( ins->result == ins->operands[i] ) return;
+    for( j = ins->num_operands; j-- > 0; ) {
         if( i != j ) {
-            if( ins->operands[ j ] == ins->operands[ i ] ) return;
+            if( ins->operands[j] == ins->operands[i] ) return;
         }
     }
     DelSeg( ins );
@@ -154,9 +151,8 @@ static  void    MoveSeg( instruction *ins, instruction *new_ins,
     if( !SegMemLoc( op ) ) return;
     DupSeg( ins, new_ins );
     if( save_old ) return;
-    i = ins->num_operands;
-    while( --i >= 0 ) {
-        if( op == ins->operands[ i ] ) return;
+    for( i = ins->num_operands; i-- > 0; ) {
+        if( op == ins->operands[i] ) return;
     }
     if( op == ins->result ) return;
     DelSeg( ins );

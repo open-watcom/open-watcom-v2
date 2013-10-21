@@ -203,13 +203,11 @@ extern  name    *AllocAddrConst( name *value, int seg,
 
     name        *new_c;
 
-    new_c = Names[  N_CONSTANT  ];
-    while( new_c != NULL ) {
+    for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == class
          && new_c->c.value == value
          && new_c->n.name_class == name_class
          && new_c->c.int_value == seg ) return( new_c );
-        new_c = new_c->n.next_name;
     }
     new_c = AllocName( N_CONSTANT, name_class, 0 );
     new_c->c.value = value;
@@ -331,10 +329,9 @@ extern  memory_name     *SAllocMemory( pointer symbol, type_length offset,
     name        *other;
     name        *xx;
 
-    new_m = Names[  N_MEMORY  ];
     other = NULL;
     xx = NULL;
-    while( new_m != NULL ) {
+    for( new_m = Names[N_MEMORY]; new_m != NULL; new_m = new_m->n.next_name ) {
         if( new_m->v.symbol == symbol && new_m->m.memory_type == class ) {
             if( new_m->v.offset != offset ) {
                 other = new_m;
@@ -351,7 +348,6 @@ extern  memory_name     *SAllocMemory( pointer symbol, type_length offset,
                 new_m->v.usage |= USE_MEMORY | NEEDS_MEMORY;
             }
         }
-        new_m = new_m->n.next_name;
     }
     if( xx != NULL ) {
         ZapXX( xx, nclass, size );
@@ -535,10 +531,10 @@ extern  name    *AllocRegName( hw_reg_set regs ) {
         }
         return( NullReg );
     }
-    new_r = Names[  N_REGISTER  ];
-    while( new_r != NULL ) {
-        if( HW_Equal( new_r->r.reg, regs ) ) return( new_r );
-        new_r = new_r->n.next_name;
+    for( new_r = Names[N_REGISTER]; new_r != NULL; new_r = new_r->n.next_name ) {
+        if( HW_Equal( new_r->r.reg, regs ) ) {
+            return( new_r );
+        }
     }
     new_r = AllocName( N_REGISTER, RegClass( regs ), 0 );
     new_r->r.reg = regs;
@@ -558,8 +554,7 @@ extern  name    *ScaleIndex( name *index, name *base, type_length offset,
     name        *new_x;
 
     class = OneClass[  class  ];
-    new_x = Names[  N_INDEXED  ];
-    while( new_x != NULL ) {
+    for( new_x = Names[N_INDEXED]; new_x != NULL; new_x = new_x->n.next_name ) {
         if( new_x->i.base == base
          && new_x->i.index == index
          && new_x->i.constant == offset
@@ -578,7 +573,6 @@ extern  name    *ScaleIndex( name *index, name *base, type_length offset,
             }
             return( new_x );
         }
-        new_x = new_x->n.next_name;
     }
     new_x = AllocName( N_INDEXED, class, size );
     new_x->i.index = index;
@@ -638,10 +632,8 @@ extern  void    ReInitNames() {
     ConstZero = NULL;
     LastTemp = NULL;
     DummyIndex = NULL;
-    class = N_CONSTANT;
-    for(;;) {
-        Names[ class ] = NULL;
-        if( ++class > N_INDEXED ) break;
+    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+        Names[class] = NULL;
     }
 }
 
@@ -651,18 +643,15 @@ extern  void    FreeNames() {
 
     int         class;
     name        *temp;
-    name        *junk;
+    name        *next;
 
-    class = N_CONSTANT;
-    for(;;) {
-        temp = Names[ class ];
-        Names[ class ] = NULL;
-        while( temp != NULL ) {
-            junk = temp;
-            temp = temp->n.next_name;
-            FreeAName( junk );
+    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+        temp = Names[class];
+        Names[class] = NULL;
+        for( ; temp != NULL; temp = next ) {
+            next = temp->n.next_name;
+            FreeAName( temp );
         }
-        if( ++class > N_INDEXED ) break;
     }
 }
 

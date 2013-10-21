@@ -46,7 +46,7 @@ extern  void            SuffixIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  name            *DeAlias(name*);
 extern  void            DoNothing(instruction*);
-extern  pointer         InMemory(pointer);
+extern  conflict_node   *InMemory(conflict_node *);
 extern  bool            IsStackReg(name*);
 
 static  block           *Head;
@@ -101,8 +101,7 @@ static  type_class_def  FindMaxClass( name *cons, int *prefs ) {
     class = -1;
     *prefs = 0;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             num_operands = CountOps( ins, cons );
             for( i = 0; i < num_operands; ++i ) {
                 if( ins->operands[i] == cons ) {
@@ -112,7 +111,6 @@ static  type_class_def  FindMaxClass( name *cons, int *prefs ) {
                     }
                 }
             }
-            ins = ins->head.next;
         }
     }
     if( class == -1 )
@@ -142,8 +140,7 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
     tmp_class = tmp_class;
     change = FALSE;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins_class = Unsigned[ _OpClass( ins ) ];
             num_operands = CountOps( ins, cons );
             for( i = 0; i < num_operands; ++i ) {
@@ -161,7 +158,6 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
                     }
                 }
             }
-            ins = ins->head.next;
         }
     }
     return( change );
@@ -216,8 +212,7 @@ extern  void            MemConstTemp( conflict_node *conf ) {
     temp = conf->name;
     other = NULL;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
                 if( ins->operands[i]->n.class != N_TEMP ) continue;
                 if( DeAlias( ins->operands[i] ) != temp ) continue;
@@ -240,21 +235,18 @@ extern  void            MemConstTemp( conflict_node *conf ) {
             if( folded != NULL ) {
                 ins = folded;
             }
-            ins = ins->head.next;
         }
     }
     if( other == NULL ) return;
     if( !_ConstTemp( other ) ) return;
     if( other->v.conflict == NULL ) return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
                 if( ins->operands[i]->n.class != N_TEMP ) continue;
                 if( DeAlias( ins->operands[i] ) == other ) return;
             }
-            ins = ins->head.next;
         }
     }
-    SafeRecurseCG( InMemory, other->v.conflict );
+    SafeRecurseCG( (func_sr)InMemory, other->v.conflict );
 }

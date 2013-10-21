@@ -247,7 +247,7 @@ extern  void    ExpandThreadDataRef( instruction *ins )
     int                 i;
 
     for( i = 0; i < ins->num_operands; i++ ) {
-        ExpandTlsOp( ins, &ins->operands[ i ] );
+        ExpandTlsOp( ins, &ins->operands[i] );
     }
     if( ins->result != NULL ) {
         ExpandTlsOp( ins, &ins->result );

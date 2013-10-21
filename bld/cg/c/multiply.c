@@ -231,8 +231,7 @@ extern  void    MulToShiftAdd( void )
     name        *op;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next;
-            ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode != OP_MUL ) continue;
             if( ins->operands[0]->n.class == N_CONSTANT ) {
                 op = ins->operands[0];

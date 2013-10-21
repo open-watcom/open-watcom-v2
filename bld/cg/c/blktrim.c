@@ -51,8 +51,7 @@ static  instruction     *FindOneCond( block *blk )
     instruction *cond;
 
     cond = NULL;
-    for( ins = blk->ins.hd.next;
-         ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
          if( _OpIsCondition( ins->head.opcode ) ) {
              if( cond != NULL ) return( NULL );
              cond = ins;
@@ -370,6 +369,7 @@ static  bool    DoBlockTrim( void )
     instruction *ins;
     bool        change;
     bool        any_change = FALSE;
+    block_num   block_id;
 
     for( ;; ) {
         change = FALSE;
@@ -414,15 +414,9 @@ static  bool    DoBlockTrim( void )
         BlocksUnTrimmed = FALSE;
         any_change = TRUE;
     }
-    if( HeadBlock != NULL ) {
-        HeadBlock->id = 1;
-        blk = HeadBlock;
-        for( ;; ) {
-            next = blk->next_block;
-            if( next == NULL ) break;
-            next->id = blk->id + 1;
-            blk = next;
-        }
+    block_id = 1;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        blk->id = block_id++;
     }
     return( any_change );
 }

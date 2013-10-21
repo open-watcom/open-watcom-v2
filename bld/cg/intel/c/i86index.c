@@ -80,7 +80,7 @@ extern  instruction     *NeedIndex( instruction *ins ) {
     name                *name;
 
     if( ins->num_operands > NumOperands( ins ) ) {
-        name = ins->operands[ ins->num_operands-1 ];
+        name = ins->operands[ins->num_operands - 1];
         conf = NameConflict( ins, name );
         if( conf != NULL && _Isnt( conf, NEEDS_SEGMENT_SPLIT ) ) {
             _SetTrue( conf, NEEDS_SEGMENT );
@@ -91,7 +91,7 @@ extern  instruction     *NeedIndex( instruction *ins ) {
                 _SetTrue( conf, WAS_SEGMENT );
             }
             temp = AllocTemp( U2 );
-            ins->operands[ ins->num_operands-1 ] = temp;
+            ins->operands[ins->num_operands - 1] = temp;
             PrefixIns( ins, MakeMove( name, temp, U2 ) );
             MarkSegment( ins, temp );
             _SetTrue( NameConflict( ins, temp ), SEGMENT_SPLIT );
@@ -190,10 +190,9 @@ static  name    *FindSegment( instruction *ins ) {
             if( ins->operands[ 0 ]->n.size > 4*WORD_SIZE ) return( NULL );
         }
     }
-    i = ins->num_operands;
     if( ins->head.opcode != OP_LA && ins->head.opcode != OP_CAREFUL_LA ) {
-        while( --i >= 0 ) {
-            index = ins->operands[ i ];
+        for( i = ins->num_operands; i-- > 0; ) {
+            index = ins->operands[i];
             if( SegOver( index ) ) return( index );
         }
     }
@@ -220,7 +219,7 @@ extern  void    AddSegment( instruction *ins ) {
     index = FindSegment( ins );
     conf = NULL;
     if( index != NULL ) {
-        seg_ptr = &ins->operands[ ins->num_operands ];
+        seg_ptr = &ins->operands[ins->num_operands];
         if( SegIsBase( &index ) ) {
             if( index != NULL ) {
                 seg = GetSegment( index );
@@ -254,10 +253,9 @@ extern  void    AddSegment( instruction *ins ) {
             if( ins->result == index ) {
                 ins->result = new_index;
             }
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                if( ins->operands[ i ] == index ) {
-                    ins->operands[ i ] = new_index;
+            for( i = ins->num_operands; i-- > 0; ) {
+                if( ins->operands[i] == index ) {
+                    ins->operands[i] = new_index;
                 }
             }
             *seg_ptr = SegmentPart( index->i.index );
@@ -282,17 +280,13 @@ extern  void    FixMemRefs( void ) {
     block       *blk;
     instruction *ins;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-        #if _TARGET & _TARG_80386
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+#if _TARGET & _TARG_80386
             ExpandThreadDataRef( ins );
-        #endif
+#endif
             NoMemIndex( ins );
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -306,10 +300,8 @@ extern  void    FixSegments( void ) {
     block       *blk;
     instruction *ins;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             AddSegment( ins );
             /* Generate an error if segment override is requested and all segment
              * registers are pegged. However we do NOT want to generate an error
@@ -319,19 +311,17 @@ extern  void    FixSegments( void ) {
 #define ANY_FLOATING (FLOATING_DS|FLOATING_ES|FLOATING_FS|FLOATING_GS)
             if( _IsntTargetModel( ANY_FLOATING ) &&
                 ins->num_operands > NumOperands( ins )
-            #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
                  && !(_IsTargetModel( FLAT_MODEL ) &&
-                (ins->operands[ ins->num_operands-1 ]->n.class == N_REGISTER) &&
-                HW_CEqual( ins->operands[ ins->num_operands-1 ]->r.reg, HW_CS ))
-            #endif
+                (ins->operands[ins->num_operands - 1]->n.class == N_REGISTER) &&
+                HW_CEqual( ins->operands[ins->num_operands - 1]->r.reg, HW_CS ))
+#endif
             ) {
                 /* throw away override */
                 ins->num_operands--;
                 FEMessage( MSG_NO_SEG_REGS, AskForLblSym( CurrProc->label ) );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -360,15 +350,12 @@ extern  void    MergeIndex( void ) {
     name        **name;
     bool        dec;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = NumOperands( ins );
-            if( i < ins->num_operands ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            if( NumOperands( ins ) < ins->num_operands ) {
                 dec = FALSE;
-                while( --i >= 0 ) {
-                    name = &ins->operands[ i ];
+                for( i = NumOperands( ins ); i-- > 0; ) {
+                    name = &ins->operands[i];
                     if( (*name)->n.class == N_INDEXED ) {
                         Merge( name, ins );
                         dec = TRUE;
@@ -385,9 +372,7 @@ extern  void    MergeIndex( void ) {
                     ins->num_operands--;
                 }
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -402,7 +387,7 @@ static  void    Merge( name **pname, instruction *ins ) {
 
     index = *pname;
     tmp = index->i.index->r.reg;
-    HW_TurnOn( tmp, ins->operands[ ins->num_operands-1 ]->r.reg );
+    HW_TurnOn( tmp, ins->operands[ins->num_operands - 1]->r.reg );
     reg = AllocRegName( tmp );
     *pname = ScaleIndex( reg, index->i.base, index->i.constant,
                          index->n.name_class, index->n.size,
@@ -475,8 +460,7 @@ static  void    PropSegments( void ) {
     }
     for(;;) {
         change = FALSE;
-        blk = HeadBlock;
-        while( blk != NULL ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             ins = blk->ins.hd.prev;
             while( ins->head.opcode != OP_BLOCK ) {
                 if( ins->head.opcode == OP_MOV ) {
@@ -491,7 +475,6 @@ static  void    PropSegments( void ) {
                 }
                 ins = ins->head.prev;
             }
-            blk = blk->next_block;
         }
         if( change == FALSE ) break;
     }
@@ -513,9 +496,8 @@ extern  void    FixFPConsts( instruction *ins ) {
     if( !FPCInCode() && (_IsTargetModel( FLOATING_SS ) && _IsTargetModel( FLOATING_DS )) ) {
         class = FltClass( ins );
         if( class != XX ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                ins->operands[ i ] = Addressable( ins->operands[ i ], class );
+            for( i = ins->num_operands; i-- > 0; ) {
+                ins->operands[i] = Addressable( ins->operands[i], class );
             }
         }
     }

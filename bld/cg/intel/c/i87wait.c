@@ -93,9 +93,8 @@ static  bool    NeedWait( name *op, name *res, instruction *ins_86 ) {
     } else {
         if( !DoesSomething( ins_86 ) ) return( FALSE );
         need_wait = OpsCollide( res, ins_86->result );
-        i = ins_86->num_operands;
-        while( --i >= 0 ) {
-            need_wait |= OpsCollide( res, ins_86->operands[ i ] );
+        for( i = ins_86->num_operands; i-- > 0; ) {
+            need_wait |= OpsCollide( res, ins_86->operands[i] );
         }
     }
     return( need_wait );
@@ -119,8 +118,7 @@ extern  void    Wait8087( void ) {
      */
     if( _CPULevel( CPU_386 ) && _IsntTargetModel( GEN_FWAIT_386 ) ) return;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         ins = blk->ins.hd.next;
         last_fpins = NULL;
         past_jump = FALSE;
@@ -180,6 +178,5 @@ extern  void    Wait8087( void ) {
                 SuffixIns( last_fpins, MakeWait() );
             }
         }
-        blk = blk->next_block;
     }
 }

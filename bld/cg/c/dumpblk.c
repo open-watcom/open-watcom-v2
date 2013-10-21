@@ -141,26 +141,23 @@ extern  void    DumpRefs( name *op )
     int         dsize;
     int         i;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             dsize = 0;
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                if( ins->operands[ i ] == op ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                if( ins->operands[i] == op ) {
                     DumpLiteral( "OP(" );
                     DumpInt( i + 1 );
                     DumpLiteral( ") " );
                     dsize += 6;
-                } else if( ins->operands[ i ]->n.class == N_INDEXED ) {
-                    if( ins->operands[ i ]->i.index == op ) {
+                } else if( ins->operands[i]->n.class == N_INDEXED ) {
+                    if( ins->operands[i]->i.index == op ) {
                         DumpLiteral( "IX(" );
                         DumpInt( i + 1 );
                         DumpLiteral( ") " );
                         dsize += 6;
-                    } else if( ins->operands[ i ]->i.base == op ) {
-                        if( ins->operands[ i ]->i.index_flags & X_FAKE_BASE ) {
+                    } else if( ins->operands[i]->i.base == op ) {
+                        if( ins->operands[i]->i.index_flags & X_FAKE_BASE ) {
                             DumpLiteral( "FB(" );
                         } else {
                             DumpLiteral( "BA(" );
@@ -197,9 +194,7 @@ extern  void    DumpRefs( name *op )
                 }
                 DumpIns( ins );
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -224,12 +219,12 @@ static  bool    FindBlock( block *b )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    for( ;; ) {
-        if( blk == NULL ) return( FALSE );
-        if( blk == b ) return( TRUE );
-        blk = blk->next_block;
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        if( blk == b ) {
+            return( TRUE );
+        }
     }
+    return( FALSE );
 }
 
 extern  void    DumpBlkId( block *b )
@@ -349,8 +344,7 @@ extern  void    DumpLoops( void )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         DumpBlkId( blk );
         if( blk->class & LOOP_HEADER ) {
             DumpLiteral( " Is loop header." );
@@ -362,7 +356,6 @@ extern  void    DumpLoops( void )
             DumpBlkId( blk->loop_head );
         }
         DumpNL();
-        blk = blk->next_block;
     }
 }
 
@@ -501,8 +494,7 @@ static  void    DumpBlkI( void )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         DumpBlkFlags( blk );
         DumpLineNum( (instruction *)&blk->ins );
         DumpPtr( blk );
@@ -527,7 +519,6 @@ static  void    DumpBlkI( void )
         DumpInputs( blk );
         DumpInstrsOnly( blk );
         DumpGotos( blk, FALSE );
-        blk = blk->next_block;
     }
 }
 

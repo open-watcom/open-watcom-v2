@@ -116,8 +116,7 @@ static  void    RoughSortTemps( void )
         }
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next;
-             ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
                 AddTempSave( ins->operands[i], blk );
             }
@@ -140,14 +139,13 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
     name                *actual_name;
     name                *opnd;
 
-    opnd = Names[ list ];
     if( list == N_TEMP ) {
         _GBitInit( all_used, EMPTY );
         if( !MoreUseInOtherTemps ) return( all_used );
         MoreUseInOtherTemps = FALSE;
     }
     _GBitInit( all_used, EMPTY );
-    while( opnd != NULL ) {
+    for( opnd = Names[ list ]; opnd != NULL; opnd = opnd->n.next_name ) {
         if( ( opnd->v.usage & ( USE_MEMORY | USE_ADDRESS ) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
@@ -174,7 +172,6 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
                 }
             }
         }
-        opnd = opnd->n.next_name;
     }
     return( all_used );
 }
@@ -187,8 +184,7 @@ static  void    CheckGlobals( void )
 
 #define FORCE_MEM (USE_MEMORY|USE_ADDRESS)
     if( _IsntModel( RELAX_ALIAS ) ) {
-        op = Names[ N_MEMORY ];
-        while( op != NULL ) {
+        for( op = Names[N_MEMORY]; op != NULL; op = op->n.next_name ) {
             if( op->m.memory_type == CG_FE ) {
                 if( ( op->v.usage & FORCE_MEM ) != FORCE_MEM ) {
                     if( FEAttr( op->v.symbol ) & ( FE_VISIBLE | FE_GLOBAL ) ) {
@@ -196,7 +192,6 @@ static  void    CheckGlobals( void )
                     }
                 }
             }
-            op = op->n.next_name;
         }
     }
 }
@@ -250,11 +245,8 @@ static  void    PropagateConflicts( void )
     if( BlockByBlock == FALSE ) {
         LiveAnalysis( HeadBlock, MemoryBits );
     }
-    blk = HeadBlock;
-    for( ;; ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         SetInOut( blk );
-        blk = blk->next_block;
-        if( blk == NULL ) break;
     }
 }
 

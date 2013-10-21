@@ -267,7 +267,7 @@ static  void    FlowConflicts( instruction *first,
         }
         if( opcode != OP_BLOCK ) {
             while( i < ins->num_operands ) {
-                opnd = ins->operands[ i ];
+                opnd = ins->operands[i];
                 if( opnd->n.class == N_INDEXED ) {
                     opnd = opnd->i.index;
                 }
@@ -326,9 +326,8 @@ static  void    FlowConflicts( instruction *first,
                  */
                 result_forced_alive = FALSE;
 
-                i = ins->num_operands;
-                while( --i >= 0 ) {
-                    if( IsVolatile( ins->operands[ i ] ) ) {
+                for( i = ins->num_operands; i-- > 0; ) {
+                    if( IsVolatile( ins->operands[i] ) ) {
                         result_forced_alive = TRUE;
                         break;
                     }
@@ -366,8 +365,7 @@ extern  void    MakeLiveInfo( void )
     HaveLiveInfo = havelive;
     Renumber();
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        FlowConflicts( (instruction *)&blk->ins,
-                       (instruction *)&blk->ins, blk );
+        FlowConflicts( (instruction *)&blk->ins, (instruction *)&blk->ins, blk );
         ExtendConflicts( blk, first_global );
     }
 }
@@ -378,14 +376,10 @@ extern  void    LiveInfoUpdate( void )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    for( ;; ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->ins.hd.next != (instruction *)&blk->ins ) {
-            FlowConflicts( (instruction *)&blk->ins,
-                           (instruction *)&blk->ins, blk );
+            FlowConflicts( (instruction *)&blk->ins, (instruction *)&blk->ins, blk );
         }
-        blk = blk->next_block;
-        if( blk == NULL ) break;
     }
 }
 

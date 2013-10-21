@@ -289,10 +289,11 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         {
             int                 i;
 
-            for( i = ins->num_operands-1; i >= 0; --i ) {
+            for( i = ins->num_operands; i-- > 0; ) {
                 op1 = ins->operands[i];
-                if( op1->n.class == N_TEMP
-                    && (op1->t.temp_flags & CONST_TEMP ) ) return( TRUE );
+                if( op1->n.class == N_TEMP && (op1->t.temp_flags & CONST_TEMP ) ) {
+                    return( TRUE );
+                }
             }
             return( FALSE );
         }

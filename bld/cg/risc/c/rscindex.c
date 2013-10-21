@@ -196,10 +196,8 @@ extern  void    FixMemRefs() {
     name        **op;
     unsigned    i;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             op = &ins->result;
             for( i = 0; i <= ins->num_operands; i++ ) {
                 if( *op != NULL ) {
@@ -212,12 +210,9 @@ extern  void    FixMemRefs() {
                         break;
                     }
                 }
-                op = &ins->operands[ i ];
+                op = &ins->operands[i];
             }
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
-
 }
 

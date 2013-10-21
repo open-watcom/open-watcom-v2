@@ -116,9 +116,8 @@ extern  void    GenObject( void )
         }
         StartBlockProfiling( blk );
         InitStackDepth( blk );
-        ins = blk->ins.hd.next;
         next_blk = blk->next_block;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_NOP
               &&( (ins->flags.nop_flags & NOP_SOURCE_QUEUE )
                 ||(ins->flags.nop_flags == NOP_DBGINFO   ))) // an end block
@@ -138,7 +137,6 @@ extern  void    GenObject( void )
             } else {
                 GenObjCode( ins );
             }
-            ins = ins->head.next;
         }
         EndBlockProfiling();
         if( blk->class & ( JUMP | BIG_JUMP ) ) {
@@ -571,7 +569,7 @@ static  bool    GuardApplies( block *blk, block *dst, name *reg ) {
     for( ins = dst->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = 0; i < ins->num_operands; i++ ) {
             // this could be beefed up to take into account aggragates
-            if( ins->operands[ i ] == reg ) {
+            if( ins->operands[i] == reg ) {
                 return( !PostDominates( dst, blk ) );
             }
             if( ReDefinedBy( ins, reg ) ) {

@@ -134,14 +134,10 @@ static  bool    LoadAddr( void )
     bool        change;
 
     change = FALSE;
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             change |= LoadAToMove( ins );
-            ins = ins->head.next;
         }
-        blk = blk->next_block;
     }
     return( change );
 }
@@ -163,7 +159,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
     bool        change;
 
     change = FALSE;
-    op = cond->operands[ i ];
+    op = cond->operands[i];
     for( edge = blk->input_edges; edge != NULL; edge = next_source ) {
         next_source = edge->next_source;
         input = edge->source;
@@ -186,7 +182,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
             Copy( cond, new_cond, sizeof( instruction ) + ( MAX_OPS_PER_INS - 1 ) * sizeof( name * ) );
             new_cond->head.prev = new_cond;
             new_cond->head.next = new_cond;
-            new_cond->operands[ i ] = prev->operands[ 0 ];
+            new_cond->operands[i] = prev->operands[ 0 ];
             new_ins = FoldIns( new_cond );
             if( new_ins == NULL ) {
                 new_ins = new_cond;
@@ -235,7 +231,7 @@ static  bool    StretchABlock( block *blk )
         i = 0;
     }
     if( op->n.class != N_CONSTANT ) return( FALSE );
-    if( IsVolatile( ins->operands[ i ] ) ) return( FALSE );
+    if( IsVolatile( ins->operands[i] ) ) return( FALSE );
     return( FindDefnBlocks( blk, ins, i ) );
 }
 
@@ -284,8 +280,7 @@ extern  bool    PropRegsOne( void )
 
     change = FALSE;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK;
-                                     ins = ins->head.next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode != OP_MOV ) continue;
             reg = ins->operands[ 0 ];
             if( FPSideEffect( ins ) ) continue;
@@ -298,7 +293,7 @@ extern  bool    PropRegsOne( void )
             if( next->num_operands != 1 ) {
                 if( next->num_operands <= NumOperands( next ) ) continue;
                 if( !IsSegReg( reg->r.reg ) ) continue;
-                opp = &next->operands[ next->num_operands-1 ];
+                opp = &next->operands[next->num_operands - 1];
             } else {
                 if( _IsConvert( next ) ) continue;
                 opp = &next->operands[ 0 ];
@@ -329,17 +324,14 @@ static  void    FindPartition( void )
     block_edge  *edge;
     block_num   i;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( ( blk->class & BIG_LABEL ) != 0 || blk->inputs != 1 ) {
             blk->class |= PARTITION_ROOT;
         }
         blk->u.partition = blk;
         _BLKBITS( blk ) = EMPTY;
-        blk = blk->next_block;
     }
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         edge = &blk->edge[ 0 ];
         for( i = blk->targets; i-- > 0; ) {
             if( edge->flags & DEST_IS_BLOCK ) {
@@ -352,14 +344,11 @@ static  void    FindPartition( void )
             }
             ++edge;
         }
-        blk = blk->next_block;
     }
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->class & PARTITION_ROOT ) {
             TreeBits( blk );
         }
-        blk = blk->next_block;
     }
 }
 
@@ -406,10 +395,8 @@ static  void    TreeBits( block *root )
     owner = &root->u.partition;
     for( ;; ) {
         blk = *owner;
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             _INSBITS( ins ) = _BLKBITS( blk );
-            ins = ins->head.next;
         }
         if( _BLKBITS( blk ) == EMPTY ) {
             *owner = blk->u.partition;
@@ -502,11 +489,9 @@ static  void    CleanPartition( void )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= ~PARTITION_ROOT;
         blk->u.partition = NULL;
-        blk = blk->next_block;
     }
 }
 
@@ -678,10 +663,10 @@ static  instruction     *ProcessExpr( instruction *ins1,
         }
     }
     if( ins1->operands[ 0 ] != ins2->operands[ 0 ] ||
-        ins1->operands[ i ] != ins2->operands[ i ] ) {
+        ins1->operands[i] != ins2->operands[i] ) {
           if( !_OpCommutes( ins1->head.opcode ) ) return( NULL );
-          if( ins1->operands[ 0 ] != ins2->operands[ i ] ||
-              ins1->operands[ i ] != ins2->operands[ 0 ] ) return( NULL );
+          if( ins1->operands[ 0 ] != ins2->operands[i] ||
+              ins1->operands[i] != ins2->operands[ 0 ] ) return( NULL );
     }
     first = WhichIsAncestor( ins1, ins2 );
     if( first == ins2 ) {
@@ -691,7 +676,7 @@ static  instruction     *ProcessExpr( instruction *ins1,
     if( first == ins1 ) { /* or used to be ins2*/
         if( ( ins1->ins_flags & INS_DEFINES_OWN_OPERAND ) == EMPTY ) {
             killed = BinOpsLiveFrom( ins1, ins2, ins1->operands[ 0 ],
-                                      ins1->operands[ i ], ins1->result );
+                                      ins1->operands[i], ins1->result );
             if( killed != OP_DIES ) {
                 class = ins1->result->n.name_class;
                 if( killed == RESULT_DIES
@@ -713,12 +698,12 @@ static  instruction     *ProcessExpr( instruction *ins1,
         }
     } else if( first != NULL ) { /* we calculated a hoist point*/
         if( ins1->operands[ 0 ]->n.class != N_INDEXED
-         && ins1->operands[ i ]->n.class != N_INDEXED
+         && ins1->operands[i]->n.class != N_INDEXED
          && Hoistable( ins1, NULL )
          && BinOpsLiveFrom( first->head.next, ins1, ins1->operands[ 0 ],
-                            ins1->operands[ i ], NULL ) == ALL_LIVE
+                            ins1->operands[i], NULL ) == ALL_LIVE
          && BinOpsLiveFrom( first->head.next, ins2, ins2->operands[ 0 ],
-                            ins2->operands[ i ], NULL ) == ALL_LIVE
+                            ins2->operands[i], NULL ) == ALL_LIVE
          && HoistLooksGood( first, ins1 )
          && HoistLooksGood( first, ins2 ) ) {
             class = ins1->type_class;
@@ -944,10 +929,8 @@ static  bool    DoArithOps( block *root )
     }
     blk = root;
     for( ;; ) {
-        ins = blk->ins.hd.next;
-        for( ;; ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             opcode = ins->head.opcode;
-            if( opcode == OP_BLOCK ) break;
             if( _OpIsCSE( opcode )
              && !( LeaveIndVars && Inducable( blk, ins ) )
              && ins->operands[     0     ]->n.class != N_REGISTER
@@ -966,7 +949,6 @@ static  bool    DoArithOps( block *root )
                 _INSLINK( ins ) = ExprHeads[ opcode ];
                 ExprHeads[ opcode ] = ins;
             }
-            ins = ins->head.next;
         }
         blk = blk->u.partition;
         if( blk == root ) break;
@@ -993,13 +975,11 @@ static  bool    PropagateExprs( void )
     block       *blk;
 
     change = FALSE;
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         SXBlip();
         if( blk->class & PARTITION_ROOT ) {
             change |= DoArithOps( blk );
         }
-        blk = blk->next_block;
     }
     return( change );
 }
@@ -1072,8 +1052,7 @@ static  bool    FixStructRet( block *root )
     change = FALSE;
     blk = root;
     for( ;; ) {
-        for( ins = blk->ins.hd.next;
-                ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ins->result != NULL &&
                    ins->result->n.class == N_TEMP &&
@@ -1196,8 +1175,7 @@ static  void    LinkMoves( block *root )
 
     blk = root;
     for( ;; ) {
-        for( ins = blk->ins.hd.next;
-             ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( LinkableMove( ins ) ) {
                 CreateLink( ins, ins->result );
             }
@@ -1219,8 +1197,7 @@ static  void    LinkMemMoves( block *root )
 
     blk = root;
     for(;;) {
-        for( ins = blk->ins.hd.next;
-             ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( !MoveIns( ins ) ) continue;
             if( !CanLinkMove( ins ) ) continue;
             if( ins->operands[ 0 ]->n.class != N_MEMORY &&
@@ -1265,16 +1242,13 @@ static  void    CleanMoves( block *root )
 
     blk = root;
     for( ;; ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                NullNameLink( ins->operands[ i ] );
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+            for( i = ins->num_operands; i-- > 0; ) {
+                NullNameLink( ins->operands[i] );
             }
             if( ins->result != NULL ) {
                 NullNameLink( ins->result );
             }
-            ins = ins->head.next;
         }
         blk = blk->u.partition;
         if( blk == root ) break;
@@ -1293,10 +1267,8 @@ static  void    CleanTableEntries( block *root )
 
     blk = root;
     for( ;; ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             _INSLINK( ins ) = NULL;
-            ins = ins->head.next;
         }
         blk = blk->u.partition;
         if( blk == root ) break;
@@ -1435,8 +1407,7 @@ static  bool    PropMoves( block *root, bool backward )
     change = FALSE;
     blk = root;
     for( ;; ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode != OP_LA
              && ins->head.opcode != OP_CAREFUL_LA
              && ins->head.opcode != OP_EXT_ADD
@@ -1444,19 +1415,17 @@ static  bool    PropMoves( block *root, bool backward )
              && ins->head.opcode != OP_CALL_INDIRECT
              && ins->head.opcode != OP_LOAD_UNALIGNED
              && ins->head.opcode != OP_STORE_UNALIGNED ) {
-                i = NumOperands( ins );
-                while( --i >= 0 ) {
-                    switch( ins->operands[ i ]->n.class ) {
+                for( i = NumOperands( ins ); i-- > 0; ) {
+                    switch( ins->operands[i]->n.class ) {
                     case N_INDEXED:
-                        idx = ins->operands[ i ]->i.index;
+                        idx = ins->operands[i]->i.index;
                         switch( idx->n.class ) {
                         case N_REGISTER:
                         case N_CONSTANT:
                             break;
                         default:
-                            change |= PropOpnd( ins, &ins->operands[ i ],
-                                                _NAMELINK( idx ), backward,
-                                                TRUE );
+                            change |= PropOpnd( ins, &ins->operands[i],
+                                          _NAMELINK( idx ), backward, TRUE );
                             break;
                         }
                         break;
@@ -1464,9 +1433,8 @@ static  bool    PropMoves( block *root, bool backward )
                     case N_REGISTER:
                         break;
                     default:
-                        change |= PropOpnd( ins, &ins->operands[ i ],
-                                        _NAMELINK( ins->operands[ i ] ),
-                                        backward, TRUE );
+                        change |= PropOpnd( ins, &ins->operands[i],
+                            _NAMELINK( ins->operands[i] ), backward, TRUE );
                         break;
                     }
                 }
@@ -1485,7 +1453,6 @@ static  bool    PropMoves( block *root, bool backward )
                     }
                 }
             }
-            ins = ins->head.next;
         }
         blk = blk->u.partition;
         if( blk == root ) break;
@@ -1512,8 +1479,7 @@ static  bool    DoPropagateMoves( void )
     block       *blk;
 
     change = FALSE;
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         SXBlip();
         if( blk->class & PARTITION_ROOT ) {
             do {
@@ -1544,7 +1510,6 @@ static  bool    DoPropagateMoves( void )
                 CleanMoves( blk );
             } while( block_changed );
         }
-        blk = blk->next_block;
     }
     return( change );
 }

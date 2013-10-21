@@ -119,10 +119,12 @@ static  void  *AlignBuff( cv_out *out )
 /*** round out->ptr up to align size ***/
 {
     int     len;
+//    int     len4;
     byte    *ptr;
 
     ptr = out->ptr;
     len = ptr - out->buff;
+//    len4 = ((len+CV_ALIGN-1)& -CV_ALIGN);
     len = ( ( len + CV_ALIGN - 1 ) & -CV_ALIGN ) - len;
     for( ; len > 0; --len ) {
         *ptr = (LF_PAD0 | len);

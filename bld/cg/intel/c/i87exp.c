@@ -329,12 +329,12 @@ static  void    PrefixFLDOp( instruction *ins, operand_type op, int i ) {
     name        *opnd;
     instruction *new_ins;
 
-    opnd = ins->operands[ i ];
-    ins->operands[ i ] = ST0;
+    opnd = ins->operands[i];
+    ins->operands[i] = ST0;
     new_ins = PrefFLDOp( ins, op, opnd );
     new_ins->stk_exit = new_ins->stk_entry + 1;
     ins->stk_entry++;
-    ins->operands[ i ] = ST0;
+    ins->operands[i] = ST0;
 }
 
 
@@ -781,15 +781,15 @@ static  instruction     *DoExpand( instruction *ins ) {
     op1_type = OP_NONE;
     for( i = NumOperands( ins ); i-- > 0; ) {
         op2_type = op1_type;
-        reg_num = FPRegNum( ins->operands[ i ] );
+        reg_num = FPRegNum( ins->operands[i] );
         if( reg_num != -1 ) {
             if( reg_num == 0 ) {
                 op1_type = OP_STK0;
             } else {
                 op1_type = ins->stk_entry - reg_num;
-                ins->operands[ i ] = ST( ins->stk_entry - reg_num );
+                ins->operands[i] = ST( ins->stk_entry - reg_num );
             }
-        } else if( ins->operands[ i ]->n.class == N_CONSTANT ) {
+        } else if( ins->operands[i]->n.class == N_CONSTANT ) {
             op1_type = OP_CONS;
         } else {
             op1_type = OP_MEM;

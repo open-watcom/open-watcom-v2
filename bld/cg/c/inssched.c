@@ -120,7 +120,7 @@ static unsigned InsStallable( instruction *ins )
     int i;
 
     stallable = 0;
-    for( i = ins->num_operands - 1; i >= 0; --i ) {
+    for( i = ins->num_operands; i-- > 0; ) {
         switch( ins->operands[i]->n.class ) {
         case N_INDEXED:
             stallable += 3;
@@ -150,8 +150,7 @@ static void InitDag( void )
     instruction *ins;
 
     head = NULL;
-    for( ins = SBlock->ins.hd.next; ins->head.opcode != OP_BLOCK;
-         ins = ins->head.next ) {
+    for( ins = SBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         ins->ins_flags &= ~INS_INDEX_ADJUST;
         switch( ins->head.opcode ) {
         case OP_ADD:
@@ -204,7 +203,7 @@ static bool StackOp( instruction *ins )
         return( TRUE );
     }
     sp = StackReg();
-    for( i = ins->num_operands-1; i >= 0; --i ) {
+    for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
         if( op->n.class == N_INDEXED ) op = op->i.index;
         if(op->n.class == N_REGISTER && HW_Ovlap(sp,op->r.reg)) return( TRUE );
@@ -256,7 +255,7 @@ static bool OkToSlide( instruction *ins, name *op )
     #if  _TARGET & (_TARG_80386 | _TARG_IAPX86 )
         /* bad news to add a displacement on an instruction that also
            has a constant operand (takes an extra clock) */
-        for( i = ins->num_operands-1; i >= 0; --i ) {
+        for( i = ins->num_operands; i-- > 0; ) {
             if( ins->operands[i]->n.class == N_CONSTANT ) return( FALSE );
         }
     #endif
@@ -281,7 +280,7 @@ static bool HiddenDependancy( instruction *ins, name *op )
         if( op == NULL ) continue;
         if( op->n.class != N_REGISTER ) continue;
         if( HW_Ovlap( full, op->r.reg ) ) return( TRUE );
-        op = ins->operands[ i ];
+        op = ins->operands[i];
     }
     return( FALSE );
 }
@@ -325,7 +324,7 @@ static dep_type DataDependant( instruction *ins_i,
     dep_type        ret;
 
     ret = DEP_NONE;
-    for( k = ins_j->num_operands-1; k >= 0; --k ) {
+    for( k = ins_j->num_operands; k-- > 0; ) {
         /* first operand of OP_LA can't be dependant unless N_INDEXED */
         if( k == 0
             && ins_j->head.opcode == OP_LA
@@ -380,7 +379,7 @@ static bool ImplicitDependancy( instruction *imp, instruction *ins )
     if( op->n.class != N_REGISTER ) return( FALSE );
     if( !IsSegReg( op->r.reg ) ) return( FALSE );
     if( _OpIsCall( ins->head.opcode ) ) return( TRUE );
-    for( i = ins->num_operands-1; i >= 0; --i ) {
+    for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
         switch( op->n.class ) {
         case N_MEMORY:
@@ -726,7 +725,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
         } else {
             if( chk->id < adj->id ) continue;
         }
-        for( i = chk->num_operands-1; i >= 0; --i ) {
+        for( i = chk->num_operands; i-- > 0; ) {
             op = chk->operands[i];
             scale = ScaleAdjust( op, reg );
             if( scale >= 0 ) {

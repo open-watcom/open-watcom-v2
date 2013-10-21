@@ -104,7 +104,7 @@ static  name    **Enregister( instruction *ins )
     /* only RISCify CMPs, TESTs, and MOVs when optimizing for size */
     if( PreferSize && !_OpIsCondition( ins->head.opcode ) )
         return( FALSE );
-    for( i = ins->num_operands-1; i >= 0; --i ) {
+    for( i = ins->num_operands; i-- > 0; ) {
         switch( ins->operands[i]->n.class ) {
         case N_INDEXED:
         case N_MEMORY:
@@ -369,7 +369,7 @@ static  bool    FixMem16Moves( void )
         return( FALSE );
     changed = FALSE;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins=blk->ins.hd.next; ins->head.opcode!=OP_BLOCK; ins=next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;      /* list is shifting underneath us */
             if( ins->head.opcode == OP_MOV && TypeClassSize[ins->type_class] == 2 ) {
                 switch( ins->operands[0]->n.class ) {
@@ -450,7 +450,7 @@ extern  bool    LdStAlloc( void )
 
     changed = FALSE;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        for( ins=blk->ins.hd.next; ins->head.opcode!=OP_BLOCK; ins=next ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;      /* list is shifting underneath us */
             if( LoadStoreIns( ins ) ) {
                 UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
@@ -655,10 +655,8 @@ extern  void    LdStCompress( void )
 
     CompressMem16Moves();
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             CompressIns( ins );
-            ins = ins->head.next;
         }
     }
     DeadInstructions();

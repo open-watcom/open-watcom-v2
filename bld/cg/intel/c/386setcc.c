@@ -182,13 +182,11 @@ extern  bool    SetOnCondition( void ) {
     bool        change;
 
     if( !_CPULevel( CPU_386 ) ) return( FALSE );
-    blk = HeadBlock;
     change = FALSE;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->class & CONDITIONAL ) {
             change |= FindFlowOut( blk );
         }
-        blk = blk->next_block;
     }
     return( change );
 }

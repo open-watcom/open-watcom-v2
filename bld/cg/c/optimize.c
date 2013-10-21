@@ -82,10 +82,9 @@ static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
 
     int         i;
 
-    i = of->num_operands;
-    while( --i >= 0 ) {
-        if( of->operands[ i ]->n.class == N_REGISTER ) return( TRUE );
-        if( ReDefinedBy( ins, of->operands[ i ] ) ) return( TRUE );
+    for( i = of->num_operands; i-- > 0; ) {
+        if( of->operands[i]->n.class == N_REGISTER ) return( TRUE );
+        if( ReDefinedBy( ins, of->operands[i] ) ) return( TRUE );
     }
     if( of->result != NULL ) {
         if( of->result->n.class == N_REGISTER ) return( TRUE );
@@ -206,10 +205,8 @@ extern  void    DeadTemps() {
     instruction *ins;
     instruction *next;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             if( SideEffect( ins ) == FALSE
              && _IsntIns( ins, SIDE_EFFECT )
@@ -218,9 +215,7 @@ extern  void    DeadTemps() {
              && ( ins->result->v.usage & (USE_ADDRESS|HAS_MEMORY|USE_WITHIN_BLOCK|USE_IN_ANOTHER_BLOCK) ) == 0 ) {
                 FreeIns( ins );
             }
-            ins = next;
         }
-        blk = blk->next_block;
     }
 }
 
@@ -278,10 +273,8 @@ extern  void    AxeDeadCode() {
     for(;;) {
         kill = NULL;
         change = FALSE;
-        blk = HeadBlock;
-        while( blk != NULL ) {
-            ins = blk->ins.hd.next;
-            while( ins->head.opcode != OP_BLOCK ) {
+        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+            for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( IsDeadIns( blk, ins, next ) ) {
                     ins->result = NULL;
@@ -298,9 +291,7 @@ extern  void    AxeDeadCode() {
                         _SetBlockIndex( ins, NO_JUMP, NO_JUMP );
                     }
                 }
-                ins = next;
             }
-            blk = blk->next_block;
         }
         if( change == FALSE ) break;
         FreeConflicts();
@@ -326,10 +317,8 @@ extern  void    DeadInstructions() {
 
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         FreeJunk( blk );
-        blk = blk->next_block;
     }
 }
 
@@ -354,10 +343,8 @@ extern  void    PushPostOps() {
 
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         PushInsForward( blk );
-        blk = blk->next_block;
     }
     PropagateMoves();
     Renumber();

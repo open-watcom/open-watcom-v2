@@ -370,8 +370,7 @@ extern  int     ExpandOps( bool keep_on_truckin )
     int         unknowns;
 
     unknowns = 0;
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         EXBlip();
         ins = blk->ins.hd.next;
         while( ins->head.opcode != OP_BLOCK ) {
@@ -390,7 +389,6 @@ extern  int     ExpandOps( bool keep_on_truckin )
             }
         }
         if( unknowns == -1 ) break;
-        blk = blk->next_block;
     }
     return( unknowns );
 }

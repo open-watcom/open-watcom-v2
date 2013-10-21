@@ -61,8 +61,7 @@ static  bool    CheckIns( instruction **pins ) {
     ins = *pins;
     ok = TRUE;
     if( ins != NULL ) {
-        i = ins->num_operands;
-        while( --i >= 0 ) {
+        for( i = ins->num_operands; i-- > 0; ) {
             if( ins->operands[i]->n.class == N_REGISTER &&
                 ins->operands[i]->r.reg_index == -1 ) {
                 ok = FALSE;

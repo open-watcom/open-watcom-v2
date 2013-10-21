@@ -107,16 +107,14 @@ extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type fl
     if( to->n.class != N_CONSTANT ) {
         if( TypeClassSize[ class ] != to->n.size ) return( FALSE );
     }
-    i = ins->num_operands;
-    while( --i >= 0 ) {
-        save_ops[ i ] = ins->operands[ i ];
+    for( i = ins->num_operands; i-- > 0; ) {
+        save_ops[i] = ins->operands[i];
     }
     save_result = ins->result;
     if( ( flags & CHANGE_ALL ) || to->n.class == N_INDEXED ) {
-        i = ins->num_operands;
-        while( --i >= 0 ) {
-            if( ins->operands[ i ] == old_op ) {
-                ins->operands[ i ] = to;
+        for( i = ins->num_operands; i-- > 0; ) {
+            if( ins->operands[i] == old_op ) {
+                ins->operands[i] = to;
             }
         }
         if( ins->result == old_op ) {
@@ -141,9 +139,8 @@ extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type fl
     if( ( ok == FALSE ) || ( flags & CHANGE_CHECK ) ) {
         // if we failed or we were just checking then
         // restore the original instruction
-        i = ins->num_operands;
-        while( --i >= 0 ) {
-            ins->operands[ i ] = save_ops[ i ];
+        for( i = ins->num_operands; i-- > 0; ) {
+            ins->operands[i] = save_ops[i];
         }
         ins->result = save_result;
         ins->table = table;
@@ -268,10 +265,9 @@ extern  bool    FindRegOpnd( score *sc, instruction *ins ) {
     bool        change;
 
     if( IsStackReg( ins->result ) ) return( FALSE );
-    i = NumOperands( ins );
     change = FALSE;
-    while( --i >= 0 ) {
-        if( TryRegOp( sc, ins, &ins->operands[ i ] ) ) {
+    for( i = NumOperands( ins ); i-- > 0; ) {
+        if( TryRegOp( sc, ins, &ins->operands[i] ) ) {
             change = TRUE;
         }
     }
