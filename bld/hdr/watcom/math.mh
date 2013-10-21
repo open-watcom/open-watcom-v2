@@ -85,8 +85,6 @@ using std::nan;
 using std::nanf;
 using std::nanl;
 
-using std::fegetround;
-using std::fesetround;
 :include extepi.sp
 
 #else /* __cplusplus not defined */
@@ -165,7 +163,7 @@ _WMRTLINK extern void fesetround( int __mode );
 /* The sign of the gamma function as returned by 
  * lgamma
  */
-_WMRTDATA extern int signgam;
+extern int signgam;
 
 :segment CNAME
 namespace std {

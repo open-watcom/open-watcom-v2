@@ -61,16 +61,16 @@ _WMRTLINK double scalbn (double x, int n)
 	lx = fdx.u.word[0];
     
     /* extract exponent */
-    k = (hx & 0x7ff00000) >> 20;
+    k = (hx & ((u4)0x7ff00000)) >> 20;
     
     if (k==0) 				/* 0 or subnormal x */
     {
-        if ((lx|(hx&0x7fffffff))==0) /* +-0 */
+        if ((lx|(hx&((u4)0x7fffffff)))==0) /* +-0 */
             return x; 
         x *= two54; 
         fdx.u.value = x;
         hx = fdx.u.word[1];
-        k = ((hx & 0x7ff00000) >> 20) - 54;
+        k = ((hx & ((u4)0x7ff00000)) >> 20) - 54;
         if (n< -50000) 
             return tiny*x; 	/*underflow*/
     }
@@ -83,7 +83,7 @@ _WMRTLINK double scalbn (double x, int n)
         
     if (k > 0) 				/* normal result */
     {
-        fdx.u.word[1] = (hx & 0x800fffff) | (k<<20);
+        fdx.u.word[1] = (hx & ((u4)0x800fffff)) | (k<<20);
         return fdx.u.value;
     }
     
@@ -97,7 +97,7 @@ _WMRTLINK double scalbn (double x, int n)
     
     k += 54;				/* subnormal result */
     
-    fdx.u.word[1] = (hx & 0x800fffff) | (k << 20);
+    fdx.u.word[1] = (hx & ((u4)0x800fffff)) | (k << 20);
     
     return fdx.u.value*twom54;
 }

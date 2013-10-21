@@ -44,18 +44,18 @@
 
 _WMRTLINK int ilogb(double x)
 {
-	int hx,lx,ix;
+	u4 hx,lx,ix;
     
     float_double fdx;
     
     fdx.u.value = x;
 
-	hx  = (fdx.u.word[1]) & 0x7fffffff;	    /* high word of x */
+	hx  = (fdx.u.word[1]) & ((u4)0x7fffffff);	    /* high word of x */
 	if(hx<0x00100000) {
 	    lx = fdx.u.word[0];
         
 	    if((hx|lx)==0) 
-		    return 0x80000001;	/* ilogb(0) = 0x80000001 */
+		    return (int)((u4)0x80000001);	/* ilogb(0) = 0x80000001 */
 	    else			/* subnormal x */
         {
 		    if(hx==0) 
@@ -67,8 +67,8 @@ _WMRTLINK int ilogb(double x)
         }
 	    return ix;
 	}
-	else if (hx<0x7ff00000) 
+	else if (hx < ((u4)0x7ff00000)) 
         return (hx>>20)-1023;
 	else 
-        return 0x7fffffff;
+        return (int)((u4)0x7fffffff);
 }

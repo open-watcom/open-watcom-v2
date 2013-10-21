@@ -52,6 +52,8 @@
                             printf( "FAIL: %s, line %d\n",#expr,__LINE__ )
 #define MYABS( a )      ((a) < 0 ? -(a) : (a) )
 
+#define SQRTPI  1.7724538509055160273
+
 #ifdef __FPI__
 volatile int    sig_count = 0;
 double          a = 1.0;
@@ -321,11 +323,227 @@ void test_fp_classification( void )
 #endif
 }
 
+void test_fp_gamma( void )
+{
+int s;
+#if __STDC_VERSION__ >= 199901L
+    printf( "Testing C99 Gamma functions...\n" );
+
+    /* tgamma first */
+    VERIFY( CompDbl( tgamma( 1.0 ), 1.0 ) );
+    VERIFY( CompDbl( tgamma( 2.0 ), 1.0 ) );
+    VERIFY( CompDbl( tgamma( 4.0 ), 6.0 ) );
+    VERIFY( CompDbl( tgamma( 0.5 ), SQRTPI ) );
+    VERIFY( CompDbl( tgamma( -0.5 ), -2.0*SQRTPI ) );
+    VERIFY( CompDbl( tgamma( NAN ), NAN ) );
+    VERIFY( CompDbl( tgamma( INFINITY ), INFINITY ) );
+    VERIFY( CompDbl( tgamma( -INFINITY ), NAN ) );
+    
+    /* lgamma testing */
+    VERIFY( CompDbl( lgamma( 1.0 ), 0.0 ) );
+    VERIFY( signgam > 0 );
+    VERIFY( CompDbl( lgamma( 2.0 ), 0.0 ) );
+    VERIFY( signgam > 0 );
+    VERIFY( CompDbl( lgamma( -0.5 ), 1.837877066 ) );
+    VERIFY( signgam < 0 );
+    VERIFY( CompDbl( lgamma( NAN ), NAN ) );
+    VERIFY( CompDbl( lgamma( INFINITY ), INFINITY ) );
+    VERIFY( CompDbl( lgamma( -INFINITY ), INFINITY ) );
+    
+    /* lgamma_r testing */
+    VERIFY( CompDbl( lgamma_r( 1.0, &s ), 0.0 ) );
+    VERIFY( s > 0 );
+    VERIFY( CompDbl( lgamma_r( 2.0, &s ), 0.0 ) );
+    VERIFY( s > 0 );
+    VERIFY( CompDbl( lgamma_r( -0.5, &s ), 1.837877066 ) );
+    VERIFY( s < 0 );
+#endif
+}
+
+void test_fp_erf( void )
+{
+#if __STDC_VERSION__ >= 199901L
+    printf( "Testing C99 error functions...\n" );
+
+    VERIFY( CompDbl( erf( 0.0 ), 0.0 ) );
+    VERIFY( CompDbl( erf( 1.0 ), 0.8427008 ) );
+    VERIFY( CompDbl( erf( 2.0 ), 0.9953223 ) );
+    VERIFY( CompDbl( erf( -1.0 ), -0.8427008 ) );
+    VERIFY( CompDbl( erf( -2.0 ), -0.9953223 ) );
+    
+    VERIFY( CompDbl( erfc( 0.0 ), 1.0 ) );
+    VERIFY( CompDbl( erfc( 1.0 ), 0.1572992 ) );
+    VERIFY( CompDbl( erfc( 2.0 ), 0.0046777 ) );
+    VERIFY( CompDbl( erfc( -1.0 ), -0.1572992 ) );
+    VERIFY( CompDbl( erfc( -2.0 ), -0.0046777 ) );
+#endif
+}
+
+void test_fp_cbrt( void )
+{
+#if __STDC_VERSION__ >= 199901L
+    printf( "Testing C99 cube root function...\n" );
+
+    VERIFY( CompDbl( cbrt( 0.0 ), 0.0 ) );
+    VERIFY( CompDbl( cbrt( 27.0 ), 3.0 ) );
+    VERIFY( CompDbl( cbrt( -27.0 ), 3.0 ) );
+    
+    VERIFY( CompDbl( cbrt( NAN ), NAN ) );
+    VERIFY( CompDbl( cbrt( INFINITY ), INFINITY ) );
+    VERIFY( CompDbl( cbrt( -INFINITY ), -INFINITY ) );
+#endif
+}
+
+void test_fp_exp( void )
+{
+#if __STDC_VERSION__ >= 199901L
+    printf( "Testing C99 exponential/logarithm functions...\n" );
+
+    /* Small test values taken from SPECFUN tests */
+    VERIFY( CompDbl( expm1( 0.0 ), 0.0 ) );
+    VERIFY( CompDbl( expm1( 1.0 ), E-1.0 ) );
+    VERIFY( CompDbl( expm1( 1.0E-3 ), 1.00050016670834166E-3 ) );
+    VERIFY( CompDbl( expm1( 1.0E-9 ), 1.00000000050000000e-9 ) );
+    VERIFY( CompDbl( expm1( -1.0E-3 ), -9.9950016662500833194E-4 ) );
+    VERIFY( CompDbl( expm1( -1.0E-9 ), -9.9999999950000000016e-10 ) );
+
+    VERIFY( CompDbl( log1p( 0.02 ), 0.019803 ) );
+    VERIFY( CompDbl( log1p( 0.03 ), 0.029559 ) );
+    VERIFY( CompDbl( log1p( 0.10 ), 0.095310 ) );
+    
+    /* logb/ilogb tests */
+    VERIFY( CompDbl( logb( 0.0 ), 0.0 ) );
+    VERIFY( CompDbl( logb( 1024.0 ), 10.0 ) );
+    VERIFY( CompDbl( logb( 1025.0 ), 10.0 ) );
+    VERIFY( CompDbl( logb( 1.0/1024.0 ), -10.0 ) );
+    VERIFY( CompDbl( logb( -1025.0 ), 10.0 ) );
+    
+    VERIFY( ilogb( 0.0) == 0 );
+    VERIFY( ilogb( 1024.0 ) == 10 );
+    VERIFY( ilogb( 1025.0 ) == 10 );
+    VERIFY( ilogb( 1.0/1024.0 ) == -10 );
+    VERIFY( ilogb( -1025.0 ) == 10 );
+#endif
+}
+
+void test_fp_utilities( void )
+{
+#if __STDC_VERSION__ >= 199901L
+    printf( "Testing C99 miscellaneous functions...\n" );
+
+    VERIFY( CompDbl( copysign( -2.0, 1.0), 2.0 ) );
+    VERIFY( CompDbl( copysign( -2.0, -1.0), -2.0 ) );
+    VERIFY( CompDbl( copysign( 2.0, -1.0), -2.0 ) );
+    VERIFY( CompDbl( copysign( 2.0, 1.0), 2.0 ) );
+    
+    VERIFY( CompDbl( fmax( 2.0, 1.0), 2.0 ) );
+    VERIFY( CompDbl( fmax( -2.0, -1.0), -1.0 ) );
+    VERIFY( CompDbl( fmin( 2.0, 1.0), 1.0 ) );
+    VERIFY( CompDbl( fmin( -2.0, -1.0), -2.0 ) );
+    
+    VERIFY( CompDbl( fma( 2.0, 3.0, 4.0), 10.0 ) );
+    VERIFY( CompDbl( fma( 2.0, 3.0, -4.0), 2.0 ) );
+    VERIFY( CompDbl( fma( -2.0, 3.0, 4.0), -2.0 ) );
+    VERIFY( CompDbl( fma( -2.0, -3.0, 4.0), 10.0 ) );
+    
+    VERIFY( CompDbl( fdim( 3.0, 2.0), 1.0 ) );
+    VERIFY( CompDbl( fdim( 2.0, 3.0), 0.0 ) );
+    
+    VERIFY( CompDbl( nextafter( 1.0, 2.0), 1.0+1.0E-16 ) );
+    VERIFY( CompDbl( nextafter( 1.0, 0.0), 1.0-1.0E-16 ) );
+    
+    VERIFY( CompDbl( scalbn( 1.0, 3.0), 8.0 ) );
+    VERIFY( CompDbl( scalbn( 4.0, 3.0), 32.0 ) );
+#endif
+}
+
+void test_fp_remainder( void )
+{
+#if __STDC_VERSION__ >= 199901L
+    printf( "Testing C99 remainder function...\n" );
+
+    VERIFY( CompDbl( remainder( 2.01, 1.0 ), 0.01 ) );
+    VERIFY( CompDbl( remainder( 4.99, 2.0 ), 0.99 ) );
+#endif
+}
+
+void test_fp_rounding( void )
+{
+#if __STDC_VERSION__ >= 199901L
+    printf( "Testing C99 rounding functions...\n" );
+    
+    VERIFY( CompDbl( trunc( -2.01), -2.0 ) );
+    VERIFY( CompDbl( trunc( 2.01), 2.0 ) );
+    VERIFY( CompDbl( trunc( -2.9), -2.0 ) );
+    VERIFY( CompDbl( trunc( 2.9), 2.0 ) );
+    
+    fesetround(FE_TONEAREST);
+    VERIFY( CompDbl( rint( 2.9), 3.0 ) );
+    VERIFY( CompDbl( rint( 3.1), 3.0 ) );
+    VERIFY( CompDbl( rint( -3.1), -3.0 ) );
+    VERIFY( CompDbl( rint( -2.9), -3.0 ) );
+    VERIFY( CompDbl( nearbyint( 2.9), 3.0 ) );
+    VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
+    VERIFY( CompDbl( nearbyint( -3.1), -3.0 ) );
+    VERIFY( CompDbl( nearbyint( -2.9), -3.0 ) );
+    
+    /* Should round to nearest even integer... */
+    VERIFY( CompDbl( rint( 2.5 ), 2.0 ) );
+    VERIFY( CompDbl( rint( 3.5 ), 4.0 ) );
+
+    fesetround(FE_DOWNWARD);
+    VERIFY( CompDbl( rint( 2.9), 2.0 ) );
+    VERIFY( CompDbl( rint( 3.1), 3.0 ) );
+    VERIFY( CompDbl( rint( -3.1), -4.0 ) );
+    VERIFY( CompDbl( rint( -2.9), -3.0 ) );
+    VERIFY( CompDbl( nearbyint( 2.9), 2.0 ) );
+    VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
+    VERIFY( CompDbl( nearbyint( -3.1), -4.0 ) );
+    VERIFY( CompDbl( nearbyint( -2.9), -3.0 ) );
+
+    fesetround(FE_UPWARD);
+    VERIFY( CompDbl( rint( 2.9), 3.0 ) );
+    VERIFY( CompDbl( rint( 3.1), 4.0 ) );
+    VERIFY( CompDbl( rint( -3.1), -3.0 ) );
+    VERIFY( CompDbl( rint( -2.9), -2.0 ) );
+    VERIFY( CompDbl( nearbyint( 2.9), 3.0 ) );
+    VERIFY( CompDbl( nearbyint( 3.1), 4.0 ) );
+    VERIFY( CompDbl( nearbyint( -3.1), -3.0 ) );
+    VERIFY( CompDbl( nearbyint( -2.9), -2.0 ) );
+
+    fesetround(FE_TOWARDZERO);
+    VERIFY( CompDbl( rint( 2.9), 2.0 ) );
+    VERIFY( CompDbl( rint( 3.1), 3.0 ) );
+    VERIFY( CompDbl( rint( -3.1), -3.0 ) );
+    VERIFY( CompDbl( rint( -2.9), -2.0 ) );
+    VERIFY( CompDbl( nearbyint( 2.9), 2.0 ) );
+    VERIFY( CompDbl( nearbyint( 3.1), 3.0 ) );
+    VERIFY( CompDbl( nearbyint( -3.1), -3.0 ) );
+    VERIFY( CompDbl( nearbyint( -2.9), -2.0 ) );
+
+    VERIFY( CompDbl( round( 2.9), 3.0 ) );
+    VERIFY( CompDbl( round( 3.1), 3.0 ) );
+    VERIFY( CompDbl( round( 3.5), 4.0 ) );
+    VERIFY( CompDbl( round( -3.1), -3.0 ) );
+    VERIFY( CompDbl( round( -2.9), -3.0 ) );
+    VERIFY( CompDbl( round( -3.5), -4.0 ) );
+
+#endif
+}
+
 void main( void )
 {
     test_complex_math();
     test_trig();
     test_fp_classification();
     test_fp_and_80x87_math();
+    test_fp_gamma();
+    test_fp_erf();
+    test_fp_exp();
+    test_fp_cbrt();
+    test_fp_utilities();
+    test_fp_remainder();
+    test_fp_rounding();
+    
     printf( "Tests completed.\n" );
 }
