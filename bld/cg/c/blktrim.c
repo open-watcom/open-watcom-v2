@@ -252,7 +252,7 @@ static  bool    Retarget( block *blk )
     target = blk->edge[ 0 ].destination.u.blk;
     edge = blk->input_edges;
     blk->input_edges = NULL;
-    while( edge != NULL ) {
+    for( ; edge != NULL; edge = next ) {
         next = edge->next_source;
         if( edge->source->class & ( SELECT | LABEL_RETURN ) ) {
             success = FALSE;   /* let the optimizer do it later on*/
@@ -265,7 +265,6 @@ static  bool    Retarget( block *blk )
             target->inputs++;
             blk->inputs--;
         }
-        edge = next;
     }
     if( success ) {
         MoveHead( blk, target );

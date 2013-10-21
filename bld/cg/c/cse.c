@@ -164,17 +164,15 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
         next_source = edge->next_source;
         input = edge->source;
         if( !( input->class & JUMP ) ) continue;
-        for( prev = input->ins.hd.prev;
-             prev->head.opcode != OP_BLOCK; prev = prev->head.prev ) {
+        for( prev = input->ins.hd.prev; prev->head.opcode != OP_BLOCK; prev = prev->head.prev ) {
             if( !ReDefinedBy( prev, op ) ) continue;
             if( prev->head.opcode != OP_MOV ) break;
             if( prev->result != op ) break;
             if( input->depth < blk->depth ) { // don't make 2 entries into loop
-                other_input = blk->input_edges;
-                while( other_input != NULL ) {
-                    if( other_input->source->depth < blk->depth &&
-                        other_input->source != input ) break;
-                    other_input = other_input->next_source;
+                for( other_input = blk->input_edges; other_input != NULL; other_input = other_input->next_source ) {
+                    if( other_input->source->depth < blk->depth && other_input->source != input ) {
+                        break;
+                    }
                 }
                 if( other_input != NULL ) break;
             }
@@ -467,15 +465,16 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
         while( _BLKBITS( blk ) != bits1 ) {
             blk = blk->u.partition;
         }
-        first = blk->ins.hd.prev;
-        while( first->head.opcode == OP_NOP ) {
-            if( first->flags.nop_flags & NOP_ZAP_INFO ) break;
-            first = first->head.prev;
+        for( first = blk->ins.hd.prev; first->head.opcode == OP_NOP; first = first->head.prev ) {
+            if( first->flags.nop_flags & NOP_ZAP_INFO ) {
+                break;
+            }
         }
-        for( ;; ) { /* scan back over all the conditional branches at the end of block*/
-            if( ( first->head.opcode != OP_SELECT )
-                && !_OpIsCondition( first->head.opcode ) ) break;
-            first = first->head.prev;
+        /* scan back over all the conditional branches at the end of block*/
+        for( ; ; first = first->head.prev ) {
+            if( ( first->head.opcode != OP_SELECT ) && !_OpIsCondition( first->head.opcode ) ) {
+                break;
+            }
         }
     }
     return( first );
@@ -536,15 +535,13 @@ static  bool    UnOpsLiveFrom( instruction *first, instruction *last )
 {
     instruction *ins;
 
-    ins = last->head.prev;
-    for( ;; ) {
+    for( ins = last->head.prev; ; ins = ins->head.prev ) {
         while( ins->head.opcode == OP_BLOCK ) {
             ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
         }
         if( ins == first ) break;
         if( ReDefinedBy( ins, first->operands[ 0 ] ) ) return( FALSE );
         if( ReDefinedBy( ins, first->result ) ) return( FALSE );
-        ins = ins->head.prev;
     }
     return( TRUE );
 }
@@ -561,21 +558,18 @@ static  who_dies BinOpsLiveFrom( instruction *first,
     instruction *ins;
     bool        result_dies;
 
-    ins = last->head.prev;
     if( result == NULL ) {
-        for( ;; ) {
+        for( ins = last->head.prev; ; ins = ins->head.prev ) {
             while( ins->head.opcode == OP_BLOCK ) {
                 ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
             }
             if( ins == first ) break;
             if( ReDefinedBy( ins, op1 ) ) return( OP_DIES );
             if( ReDefinedBy( ins, op2 ) ) return( OP_DIES );
-            ins = ins->head.prev;
         }
-        return( ALL_LIVE );
     } else {
         result_dies = FALSE;
-        for( ;; ) {
+        for( ins = last->head.prev; ; ins = ins->head.prev ) {
             while( ins->head.opcode == OP_BLOCK ) { /* 89-09-05 */
                 ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
             }
@@ -585,11 +579,10 @@ static  who_dies BinOpsLiveFrom( instruction *first,
             if( ReDefinedBy( ins, result ) ) {
                 result_dies = TRUE;
             }
-            ins = ins->head.prev;
         }
         if( result_dies ) return( RESULT_DIES );
-        return( ALL_LIVE );
     }
+    return( ALL_LIVE );
 }
 
 static  bool            HoistLooksGood( instruction *target, instruction *orig )

@@ -418,8 +418,7 @@ extern  void    DumpSymTab( void )
 {
     int         class;
 
-    class = N_CONSTANT;
-    for( ;; ) {
+    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
         if( Names[ class ] != NULL ) {
             DumpNL();
             switch( class ) {
@@ -442,7 +441,6 @@ extern  void    DumpSymTab( void )
             DumpSymList( Names[ class ] );
             DumpNL();
         }
-        if( ++ class > N_INDEXED ) break;
     }
 }
 

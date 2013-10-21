@@ -178,10 +178,8 @@ extern  void    BGFiniLabel( code_lbl *lbl ) {
     block       *blk;
 
     if( HaveCurrBlock && FiniLabel( lbl, CurrBlock ) ) return;
-    blk = BlockList;
-    while( blk != NULL ) {
+    for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
         if( FiniLabel( lbl, blk ) ) return;
-        blk = blk->prev_block;
     }
     GenKillLabel( lbl );
 }

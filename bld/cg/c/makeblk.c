@@ -215,10 +215,8 @@ extern  void    GenBlock( block_class class, int targets )
         if( new->next_block != NULL ) {
             new->next_block->prev_block = new;
         }
-        edge = new->input_edges;
-        while( edge != NULL ) {
+        for( edge = new->input_edges; edge != NULL; edge = edge->next_source ) {
             edge->destination.u.blk = new;
-            edge = edge->next_source;
         }
         CGFree( CurrBlock );
         CurrBlock = new;
@@ -270,10 +268,8 @@ extern  block   *ReGenBlock( block *blk, code_lbl *lbl )
     if( new->next_block != NULL ) {
         new->next_block->prev_block = new;
     }
-    edge = new->input_edges;
-    while( edge != NULL ) {
+    for( edge = new->input_edges; edge != NULL; edge = edge->next_source ) {
         edge->destination.u.blk = new;
-        edge = edge->next_source;
     }
     FreeABlock( blk );
     return( new );

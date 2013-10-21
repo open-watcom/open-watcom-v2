@@ -250,20 +250,18 @@ static  block   *FindPreHeader( void )
     block       *preheader;
     block_edge  *edge;
 
-    edge = Head->input_edges;
-    for( ;; ) {
-        if( edge == NULL ) { /* maybe there is a 'user defined' preheader*/
-            for( preheader = HeadBlock; preheader != NULL; preheader = preheader->next_block ) {
-                if( IsPreHeader( preheader ) ) {
-                    return( preheader );
-                }
-            }
-            return( NULL );
+    for( edge = Head->input_edges; edge != NULL; edge = edge->next_source ) {
+        if( edge->flags & SOURCE_IS_PREHEADER ) {
+            return( edge->source );
         }
-        if( edge->flags & SOURCE_IS_PREHEADER ) break;
-        edge = edge->next_source;
     }
-    return( edge->source );
+    /* maybe there is a 'user defined' preheader*/
+    for( preheader = HeadBlock; preheader != NULL; preheader = preheader->next_block ) {
+        if( IsPreHeader( preheader ) ) {
+            return( preheader );
+        }
+    }
+    return( NULL );
 }
 
 
@@ -1825,10 +1823,10 @@ extern  void    SuffixPreHeader( instruction *ins ) {
 
     instruction *last;
 
-    last = PreHead->ins.hd.prev;
-    while( last->head.opcode == OP_NOP ) {
-        if( last->flags.nop_flags & NOP_ZAP_INFO ) break;
-        last = last->head.prev;
+    for( last = PreHead->ins.hd.prev; last->head.opcode == OP_NOP; last = last->head.prev ) {
+        if( last->flags.nop_flags & NOP_ZAP_INFO ) {
+            break;
+        }
     }
     SuffixIns( last, ins );
 }
@@ -2134,13 +2132,11 @@ extern  void    MoveDownLoop( block *cond ) {
     block       *after;
     block_num   i;
 
-    edge = cond->input_edges;
-    after = edge->source;
-    while( edge != NULL ) {
+    after = cond->input_edges->source;
+    for( edge = cond->input_edges; edge != NULL; edge = edge->next_source ) {
         if( edge->source->gen_id > after->gen_id ) {
             after = edge->source;
         }
-        edge = edge->next_source;
     }
     if( cond->gen_id > after->gen_id ) return;
     cond_id = cond->gen_id;
@@ -2152,10 +2148,8 @@ extern  void    MoveDownLoop( block *cond ) {
     }
     cond->gen_id = after_id;
     cond->edge[ 0 ].flags &= ~BLOCK_LABEL_DIES;
-    edge = cond->input_edges;
-    while( edge != NULL ) {
+    for( edge = cond->input_edges; edge != NULL; edge = edge->next_source ) {
         edge->flags &= ~DEST_LABEL_DIES;
-        edge = edge->next_source;
     }
     for( i = cond->targets; i-- > 0; ) {
         cond->edge[ i ].flags &= ~DEST_LABEL_DIES;

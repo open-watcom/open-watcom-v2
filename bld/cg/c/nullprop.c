@@ -171,10 +171,8 @@ static  void            PushTargets( edge_stack *stk, block *blk, bool forward )
             Push( stk, &blk->edge[ i ] );
         }
     } else {
-        edge = blk->input_edges;
-        while( edge != NULL ) {
+        for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
             Push( stk, edge );
-            edge = edge->next_source;
         }
     }
 }

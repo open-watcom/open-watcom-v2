@@ -800,10 +800,8 @@ extern  void    HoistCondition( block **head, block *prehead )
     instruction *prehead_ins;
     block       *blk;
 
-    butt_edge = (*head)->input_edges;
-    while( butt_edge != NULL ) {
+    for( butt_edge = (*head)->input_edges; butt_edge != NULL; butt_edge = butt_edge->next_source ) {
         if( butt_edge->source != prehead ) break;
-        butt_edge = butt_edge->next_source;
     }
     if( butt_edge == NULL ) return( FALSE );
     butt = MakeNonConditional( butt_edge->source, butt_edge );

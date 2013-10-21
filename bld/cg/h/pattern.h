@@ -42,34 +42,36 @@
 #define OP__MUL     0x10u
 
 #define RESULT_MUL  1u
-#define C_R         C
-#define R_R         R
-#define M_R         M
-#define U_R         U
 #define OP1_MUL     OP__MUL
-#define C_1         (C * OP1_MUL)
-#define R_1         (R * OP1_MUL)
-#define M_1         (M * OP1_MUL)
-#define U_1         (U * OP1_MUL)
 #define OP2_MUL     (OP1_MUL * OP__MUL)
-#define C_2         (C * OP2_MUL)
-#define R_2         (R * OP2_MUL)
-#define M_2         (M * OP2_MUL)
-#define U_2         (U * OP2_MUL)
-
 #define OTHER_MUL   (OP2_MUL * OP__MUL)
-#define EQ_R1       (R * OTHER_MUL)
-#define EQ_R2       (C * OTHER_MUL)
-#define NONE        (EQ_R1 | EQ_R2)
-#define SETS_SC     (M * OTHER_MUL)
-#define PRESERVE    (U * OTHER_MUL)
-#define SETS_CC     (SETS_SC | PRESERVE)
 
 #define BOTH_EQ     0
 #define NO_CC       0
 #define MASK_CC     (SETS_CC)
 
-typedef unsigned_32     operand_types;
+typedef enum {
+    C_R         = C,
+    R_R         = R,
+    M_R         = M,
+    U_R         = U,
+    C_1         = (C * OP1_MUL),
+    R_1         = (R * OP1_MUL),
+    M_1         = (M * OP1_MUL),
+    U_1         = (U * OP1_MUL),
+    C_2         = (C * OP2_MUL),
+    R_2         = (R * OP2_MUL),
+    M_2         = (M * OP2_MUL),
+    U_2         = (U * OP2_MUL),
+
+    EQ_R1       = (R * OTHER_MUL),
+    EQ_R2       = (C * OTHER_MUL),
+    NONE        = (EQ_R1 | EQ_R2),
+    SETS_SC     = (M * OTHER_MUL),
+    PRESERVE    = (U * OTHER_MUL),
+    SETS_CC     = (SETS_SC | PRESERVE),
+
+} operand_types;
 
 #define _Bin( op1, op2, res, match )    \
         ( (op1)*OP1_MUL | (op2)*OP2_MUL | \

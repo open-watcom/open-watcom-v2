@@ -608,14 +608,12 @@ extern  void    InitNames() {
 
     int                 class;
 
-    class = N_CONSTANT;
-    for(;;) {
-        InitFrl( &FrlHead[  class  ] );
-        if( ++class > N_INDEXED ) break;
+    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+        InitFrl( &FrlHead[class] );
     }
     InitFrl( &ConstDefnFrl );
     for( class = U1; class <= XX; ++class ) {
-        TypeClassSize[ class ] = ClassType( class )->length;
+        TypeClassSize[class] = ClassType( class )->length;
     }
     ReInitNames();
 }
@@ -646,12 +644,11 @@ extern  void    FreeNames() {
     name        *next;
 
     for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
-        temp = Names[class];
-        Names[class] = NULL;
-        for( ; temp != NULL; temp = next ) {
+        for( temp = Names[class]; temp != NULL; temp = next ) {
             next = temp->n.next_name;
             FreeAName( temp );
         }
+        Names[class] = NULL;
     }
 }
 
@@ -702,11 +699,9 @@ extern  bool    NameFrlFree() {
     bool        freed;
     int         class;
 
-    class = N_CONSTANT;
     freed = FALSE;
-    for(;;) {
-        freed |= FrlFreeAll( &FrlHead[  class  ], Size[  class  ] );
-        if( ++class > N_INDEXED ) break;
+    for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
+        freed |= FrlFreeAll( &FrlHead[class], Size[class] );
     }
     freed |= FrlFreeAll( &ConstDefnFrl, sizeof( constant_defn ) );
     return( freed );

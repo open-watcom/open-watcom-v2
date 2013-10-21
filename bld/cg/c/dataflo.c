@@ -287,8 +287,7 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
     }
     for( ;; ) {
         change = FALSE;
-        blk = tail;
-        for(;;) {
+        for( blk = tail; blk != NULL; blk = blk->prev_block ) {
             data = blk->dataflow;
 
             /*   The OUT set of a return block includes any globals*/
@@ -321,8 +320,6 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
                 _GBitAssign( data->in, new );
                 change = TRUE;
             }
-            blk = blk->prev_block;
-            if( blk == NULL ) break;
         }
         if( change == FALSE ) break;
     }

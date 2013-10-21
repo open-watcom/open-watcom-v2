@@ -345,12 +345,12 @@ extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
         parm_name->v.usage |= NEEDS_MEMORY | HAS_MEMORY | USE_MEMORY;
     } else {
         parm_name = AllocRegName( ActualParmReg( reg ) );
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
         if( CurrProc->state.attr & ROUTINE_STACK_RESERVE ) {
             // Just make sure we are taking up some space
             ParmMem( ptipe->length, ParmAlignment( ptipe ), &CurrProc->state );
         }
-    #endif
+#endif
     }
     if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
         if( sym != NULL ) {
@@ -365,8 +365,8 @@ extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
         TRDeclareParm( ins );
         if( temp->n.class == N_TEMP && parm_name->n.class == N_TEMP ) {
             temp->t.location = parm_name->t.location;
+#if (_TARGET & _TARG_PPC) || (_TARGET & _TARG_MIPS)
         } else {
-        #if (_TARGET & _TARG_PPC) || (_TARGET & _TARG_MIPS)
             // for PowerPC varargs routines, ensure that taking the address
             // of a parm coming in in a register will force that parm into the
             // correct home location in the caller's frame (yes - it sucks)
@@ -376,7 +376,7 @@ extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
             // that doesn't use stdarg.h properly would work - we have some
             // in our own clib ;-)
             temp->t.location = CurrProc->state.parm.offset - ptipe->length;
-        #endif
+#endif
         }
     }
     MaxStack = 0;
@@ -403,16 +403,14 @@ static  void    LinkParms( instruction *call_ins, pn *owner ) {
     pn          next;
     pn          parm;
 
-    parm = *owner;
-    *owner = NULL;
-    while( parm != NULL ) {
+    for( parm = *owner; parm != NULL; parm = next ) {
+        next = parm->next;
         // because of FPPushParms and delayed stuff
         // if( parm->ins == NULL ) _Zoiks( ZOIKS_XXX );
         TRAddParm( call_ins, parm->ins );
-        next = parm->next;
         CGFree( parm );
-        parm = next;
     }
+    *owner = NULL;
 }
 
 extern  void    AddCallIns( instruction *ins, cn call ) {
@@ -432,28 +430,28 @@ extern  void    AddCallIns( instruction *ins, cn call ) {
         attr = 0;
         if( call_name->m.memory_type == CG_FE ) {
             attr = FEAttr( call_name->v.symbol );
-            #if _TARGET & _TARG_RISC
+#if _TARGET & _TARG_RISC
             // in case the inline assembly code references a local variable
             if( FEAuxInfo( call_name->v.symbol, CALL_BYTES ) != NULL ) {
                 CurrProc->targ.base_is_fp = TRUE;
             }
-            #endif
+#endif
         }
         // don't do this for far16 functions since they are handled
         // in a weird manner by Far16Parms and will not call data labels
-        if( ( ( attr & FE_PROC ) == 0 )
-        #if _TARGET & (_TARG_80386|_TARG_IAPX86)
-            && ( ( ins->flags.call_flags & CALL_FAR16 ) == 0 )
-        #endif
-            ) {
+#if _TARGET & (_TARG_80386 | _TARG_IAPX86)
+        if( (attr & FE_PROC) == 0 && (ins->flags.call_flags & CALL_FAR16) == 0 ) {
+#else
+        if( (attr & FE_PROC) == 0 ) {
+#endif
             // indirect since calling data labels directly
             // screws up the back end
             addr_type = WD;
-        #if _TARGET & (_TARG_80386|_TARG_IAPX86)
+#if _TARGET & (_TARG_80386|_TARG_IAPX86)
             if( *(call_class *)FindAuxInfo( call_name, CALL_CLASS ) & FAR_CALL ) {
                 addr_type = CP;
             }
-        #endif
+#endif
             temp = AllocTemp( addr_type );
             new_ins = MakeUnary( OP_LA, call_name, temp, addr_type );
             AddIns( new_ins );
@@ -481,11 +479,10 @@ extern  void    ReverseParmNodeList( pn *owner ) {
 
     parm = *owner;
     *owner = NULL;
-    while( parm != NULL ) {
+    for( ; parm != NULL; parm = next ) {
         next = parm->next;
         parm->next = *owner;
         *owner = parm;
-        parm = next;
     }
 }
 
@@ -503,39 +500,33 @@ extern  void            PushParms( pn parm, call_state *state ) {
     an                  addr;
     pn                  next;
 
-    while( parm != NULL ) {
+    for( ; parm != NULL; parm = next ) {
         next = parm->next;
-        if( parm->ins != NULL ) {
-            parm = next;
-            continue;
-        }
-        if( HW_CEqual( parm->regs, HW_EMPTY ) ) {
-            addr = parm->name;
-            if( addr->format != NF_INS ) {
-                _Zoiks( ZOIKS_043 );
-            }
-            ins = addr->u.ins;
-            PushInSameBlock( ins );
-            if( ins->head.opcode == OP_MOV && !IsVolatile( ins->operands[0] ) &&
-               !( addr->flags & FL_VOLATILE ) ) {
-                push_ins = PushOneParm( ins, ins->operands[0],
-                                   ins->type_class, parm->offset, state );
-                // ins->result = ins->operands[0]; -- was this useful? BBB
-                FreeIns( ins );
-            } else {
-                ins->result = BGNewTemp( addr->tipe );
-                FPNotStack( ins->result );
-                if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
-                    ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
+        if( parm->ins == NULL ) {
+            if( HW_CEqual( parm->regs, HW_EMPTY ) ) {
+                addr = parm->name;
+                if( addr->format != NF_INS ) {
+                    _Zoiks( ZOIKS_043 );
                 }
-                push_ins = PushOneParm( ins, ins->result,
-                                   ins->result->n.name_class, parm->offset, state );
+                ins = addr->u.ins;
+                PushInSameBlock( ins );
+                if( ins->head.opcode == OP_MOV && !IsVolatile( ins->operands[0] ) && !( addr->flags & FL_VOLATILE ) ) {
+                    push_ins = PushOneParm( ins, ins->operands[0], ins->type_class, parm->offset, state );
+                    // ins->result = ins->operands[0]; -- was this useful? BBB
+                    FreeIns( ins );
+                } else {
+                    ins->result = BGNewTemp( addr->tipe );
+                    FPNotStack( ins->result );
+                    if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
+                        ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
+                    }
+                    push_ins = PushOneParm( ins, ins->result, ins->result->n.name_class, parm->offset, state );
+                }
+                addr->format = NF_ADDR;
+                BGDone( addr );
+                parm->ins = push_ins;
             }
-            addr->format = NF_ADDR;
-            BGDone( addr );
-            parm->ins = push_ins;
         }
-        parm = next;
     }
 }
 
@@ -583,54 +574,51 @@ extern  void    ParmIns( pn parm, call_state *state ) {
     instruction         *ins;
     an                  addr;
 
-    while( parm != NULL ) {
-        if( parm->ins != NULL ) {
-            parm = parm->next;
-            continue;
-        }
-        addr = parm->name;
-        if( addr->format != NF_INS ) {
-            _Zoiks( ZOIKS_043 );
-        }
-        reg = AllocRegName( ActualParmReg( parm->regs ) );
-        ins = addr->u.ins;
-        ins->result = BGNewTemp( addr->tipe );
-        if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
-            ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
-        }
-        curr = ins->result;
+    for( ; parm != NULL; parm = parm->next ) {
+        if( parm->ins == NULL ) {
+            addr = parm->name;
+            if( addr->format != NF_INS ) {
+                _Zoiks( ZOIKS_043 );
+            }
+            reg = AllocRegName( ActualParmReg( parm->regs ) );
+            ins = addr->u.ins;
+            ins->result = BGNewTemp( addr->tipe );
+            if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
+                ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
+            }
+            curr = ins->result;
 #if _TARGET & _TARG_AXP
-        ins = MakeMove( curr, reg, TypeClass( addr->tipe ) );
-        AddIns( ins );
-#else
-        if( addr->tipe->length == reg->n.size ) {
             ins = MakeMove( curr, reg, TypeClass( addr->tipe ) );
             AddIns( ins );
-        } else if( !CvtOk( TypeClass(addr->tipe), reg->n.name_class ) ) {
-            ins = NULL;
-            FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)parm->num );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-        } else if( HW_CEqual( reg->r.reg, HW_ABCD ) ) {
-            ins = NULL;
-            FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)parm->num );
-#endif
-        } else {
-            ins = MakeConvert( curr, reg, reg->n.name_class, TypeClass( addr->tipe ) );
-            AddIns( ins );
-        }
-#endif
-        addr->format = NF_ADDR;
-#if _TARGET & _TARG_80386
-        if( state->attr & ROUTINE_STACK_RESERVE ) {
-            // this is for the stupid OS/2 _Optlink calling convention
-            ReserveStack( state, ins, addr->tipe->length );
-        }
 #else
-        state = state;
+            if( addr->tipe->length == reg->n.size ) {
+                ins = MakeMove( curr, reg, TypeClass( addr->tipe ) );
+                AddIns( ins );
+            } else if( !CvtOk( TypeClass( addr->tipe ), reg->n.name_class ) ) {
+                ins = NULL;
+                FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)parm->num );
+  #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+            } else if( HW_CEqual( reg->r.reg, HW_ABCD ) ) {
+                ins = NULL;
+                FEMessage( MSG_BAD_PARM_REGISTER, (pointer)(pointer_int)parm->num );
+  #endif
+            } else {
+                ins = MakeConvert( curr, reg, reg->n.name_class, TypeClass( addr->tipe ) );
+                AddIns( ins );
+            }
 #endif
-        BGDone( addr );
-        parm->ins = ins;
-        parm = parm->next;
+            addr->format = NF_ADDR;
+#if _TARGET & _TARG_80386
+            if( state->attr & ROUTINE_STACK_RESERVE ) {
+                // this is for the stupid OS/2 _Optlink calling convention
+                ReserveStack( state, ins, addr->tipe->length );
+            }
+#else
+            state = state;
+#endif
+            BGDone( addr );
+            parm->ins = ins;
+        }
     }
 }
 
@@ -838,7 +826,7 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
     SplitStructParms( &call->parms, state );
     parm = call->parms;
 #endif
-    while( parm != NULL ) {
+    for( ; parm != NULL; parm = parm->next ) {
         if( in_line ) {
             parm->regs = ParmInLineReg( &state->parm );
             if( HW_CEqual( parm->regs, HW_EMPTY ) ) {
@@ -873,7 +861,6 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
         ++parms;
         parm->num = parms;
         parm->ins = NULL;
-        parm = parm->next;
     }
     ReverseParmNodeList( &call->parms );
     PushParms( call->parms, state );
@@ -882,8 +869,8 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
     ReverseParmNodeList( &call->parms );
     LinkParms( call_ins, &call->parms );
     if( call_ins->head.opcode == OP_CALL ) {
-        call_ins->num_operands = 2;  /* special case for call so we*/
-                                          /* ignore address in dataflow*/
+        /* special case for call so we ignore address in dataflow */
+        call_ins->num_operands = 2;
         call_ins->operands[CALL_OP_USED] = AllocRegName( state->parm.used );
     } else {
         call_ins->operands[CALL_OP_USED] = AllocRegName( state->parm.used );

@@ -96,16 +96,13 @@ static  bool            FreeUselessIns( block *tail, bool just_the_loop,
     bool        change;
 
     change = FALSE;
-    blk = tail;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.prev;
+    for( blk = tail; blk != NULL; blk = blk->prev_block ) {
         if( just_the_loop && !( blk->class & IN_LOOP ) ) {
-            while( ins->head.opcode != OP_BLOCK ) {
+            for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                 ins->ins_flags &= ~INS_VISITED;
-                ins = ins->head.prev;
             }
         } else {
-            while( ins->head.opcode != OP_BLOCK ) {
+            for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = prev ) {
                 prev = ins->head.prev;
                 if( ( ins->ins_flags & INS_VISITED ) == 0 ) {
                     change = TRUE;
@@ -117,10 +114,8 @@ static  bool            FreeUselessIns( block *tail, bool just_the_loop,
                 } else {
                     ins->ins_flags &= ~INS_VISITED;
                 }
-                ins = prev;
             }
         }
-        blk = blk->prev_block;
     }
     return( change );
 }
@@ -309,33 +304,27 @@ static  void            FindUsefulIns( block * tail, bool just_the_loop,
     instruction *ins;
 
     if( just_the_loop ) {
-        blk = tail;
-        while( blk != NULL ) {
+        for( blk = tail; blk != NULL; blk = blk->prev_block ) {
             if( !( blk->class & IN_LOOP ) ) {
-                ins = blk->ins.hd.prev;
-                while( ins->head.opcode != OP_BLOCK ) {
+                for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                     MarkOpsUseful( ins );
-                    if( ins->result != NULL ) MarkUseful( ins->result );
-                    ins = ins->head.prev;
+                    if( ins->result != NULL ) {
+                        MarkUseful( ins->result );
+                    }
                 }
             }
-            blk = blk->prev_block;
         }
     }
     do {
         change = FALSE;
-        blk = tail;
-        while( blk != NULL ) {
+        for( blk = tail; blk != NULL; blk = blk->prev_block ) {
             if( !just_the_loop || ( blk->class & IN_LOOP ) ) {
-                ins = blk->ins.hd.prev;
-                while( ins->head.opcode != OP_BLOCK ) {
+                for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                     if( !in_regalloc || DoesSomething( ins ) ) {
                         change |= CheckUseful( ins );
                     }
-                    ins = ins->head.prev;
                 }
             }
-            blk = blk->prev_block;
         }
     } while( change );
 }

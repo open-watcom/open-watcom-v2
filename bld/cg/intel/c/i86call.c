@@ -107,9 +107,9 @@ static  void    Far16Parms( cn call ) {
         offset += (( parm->name->tipe->length ) + 1) & ~1;
     }
     for( parm = call->parms; parm != NULL; parm = next ) {
+        next = parm->next;
         parm->name->format = NF_ADDR;
         BGDone( parm->name );
-        next = parm->next;
         CGFree( parm );
     }
     eax = AllocRegName( HW_EAX );

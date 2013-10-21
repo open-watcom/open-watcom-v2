@@ -101,9 +101,8 @@ extern  void    FPParms( void ) {
     int         i;
 
     if( CurrProc->label == HeadBlock->label ) {
-        i = MAX_8087_REG + 1;
-        while( --i >= 0 ) {
-            Parm8087[ i ] = NULL;
+        for( i = MAX_8087_REG + 1; i-- > 0; ) {
+            Parm8087[i] = NULL;
         }
         i = 0;
         for( ins = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -113,9 +112,9 @@ extern  void    FPParms( void ) {
                     if( next->head.opcode == OP_BLOCK
                      || (instruction *)ins->operands[ 2 ] != next /* not associated*/
                      || (instruction *)next->operands[ 2 ] != ins ) {
-                        Parm8087[ i ] = (name *)CurrProc; /* klude - means parm ignored*/
+                        Parm8087[i] = (name *)CurrProc; /* klude - means parm ignored*/
                     } else {
-                        Parm8087[ i ] = next->result;
+                        Parm8087[i] = next->result;
                         DoNothing( next );
                         ins = next;
                     }
@@ -137,26 +136,26 @@ static  bool    CanPushImmed( pn parm, int *num_parms ) {
     instruction *ins;
     an          addr;
 
-    while( parm != NULL ) {
-        if( parm->ins != NULL ) {
-            parm = parm->next;
-            continue;
-        }
-        addr = parm->name;
-        if( addr->tipe->attr & TYPE_FLOAT ) {
-            ++*num_parms;
-            ins = addr->u.ins;
-            next = ins->head.next;
-            while( next->head.opcode != OP_BLOCK ) {
-                if( _OpIsCall( next->head.opcode ) ) return( FALSE );
-                if( _OpIsIFunc( next->head.opcode ) ) {
-                    if( FPStkReq( next ) != 0 ) return( FALSE );
+    for( ; parm != NULL; parm = parm->next ) {
+        if( parm->ins == NULL ) {
+            addr = parm->name;
+            if( addr->tipe->attr & TYPE_FLOAT ) {
+                ++*num_parms;
+                ins = addr->u.ins;
+                for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
+                    if( _OpIsCall( next->head.opcode ) )
+                        return( FALSE );
+                    if( _OpIsIFunc( next->head.opcode ) ) {
+                        if( FPStkReq( next ) != 0 ) {
+                            return( FALSE );
+                        }
+                    }
                 }
-                next = next->head.next;
+                if( _BLOCK( next ) != CurrBlock ) {
+                    return( FALSE );
+                }
             }
-            if( _BLOCK( next ) != CurrBlock ) return( FALSE );
         }
-        parm = parm->next;
     }
     return( TRUE );
 }
@@ -183,25 +182,22 @@ static  int     FPPushImmed( pn parm ) {
     int         parms;
 
     parms = 0;
-    while( parm != NULL ) {
-        if( parm->ins != NULL ) {
-            parm = parm->next;
-            continue;
-        }
+    for( ; parm != NULL; parm = next ) {
         next = parm->next;
-        addr = parm->name;
-        if( addr->tipe->attr & TYPE_FLOAT && HW_COvlap( parm->regs,HW_FLTS ) ){
-            if( addr->format != NF_INS ) {
-                _Zoiks( ZOIKS_043 );
+        if( parm->ins == NULL ) {
+            addr = parm->name;
+            if( (addr->tipe->attr & TYPE_FLOAT) && HW_COvlap( parm->regs,HW_FLTS ) ){
+                if( addr->format != NF_INS ) {
+                    _Zoiks( ZOIKS_043 );
+                }
+                addr->u.ins->result = AllocRegName( HW_ST0 );
+                Pushes( addr->u.ins );
+                parm->ins = addr->u.ins;
+                addr->format = NF_ADDR;
+                BGDone( addr );
+                ++parms;
             }
-            addr->u.ins->result = AllocRegName( HW_ST0 );
-            Pushes( addr->u.ins );
-            parm->ins = addr->u.ins;
-            addr->format = NF_ADDR;
-            BGDone( addr );
-            ++parms;
         }
-        parm = next;
     }
     return( parms );
 }
@@ -269,7 +265,7 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
 
     next = ins->head.next;
     for(;;) {
-        while( next->head.opcode != OP_BLOCK ) {
+        for( ; next->head.opcode != OP_BLOCK; next = next->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 if( ReDefinedBy( next, ins->operands[i] ) ) {
                     parm->ins = PushDelayed( ins, parm->name, state );
@@ -277,9 +273,9 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
                     return( TRUE );
                 }
             }
-            next = next->head.next;
         }
-        if( _BLOCK( next ) == CurrBlock ) break;
+        if( _BLOCK( next ) == CurrBlock )
+            break;
         if( _BLOCK( next )->next_block == NULL ) {
             next = CurrBlock->ins.hd.next;
         } else {
@@ -324,35 +320,40 @@ static  int     FPPushDelay( pn parm, call_state *state ) {
     parms = 0;
     for( ; parm != NULL; parm = next_parm ) {
         next_parm = parm->next;
-        if( parm->ins != NULL ) continue;
-        addr = parm->name;
-        if( addr->tipe->attr & TYPE_FLOAT && HW_COvlap( parm->regs,HW_FLTS ) ){
-            ++parms;
-            if( addr->format != NF_INS ) {
-                _Zoiks( ZOIKS_043 );
-            }
-            ins = addr->u.ins;
-            if( PushDelayedIfStackOperand( ins, parm, state ) ) continue;
-            if( PushDelayedIfRedefinition( ins, parm, state ) ) continue;
-            /* we can push it just before the CALL */
-            if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
-                UseInOther( ins->operands[0] );
-                if( ins->num_operands > 1 ) UseInOther( ins->operands[1] );
-            }
-            new_ins = MakeNary( ins->head.opcode, ins->operands[ 0 ],
-                                ins->operands[ 1 ], AllocRegName( HW_ST0 ),
-                                ins->type_class, ins->base_type_class,
-                                ins->num_operands );
-            Pushes( new_ins );
-            new_ins->num_operands = ins->num_operands;
-            AddIns( new_ins );
+        if( parm->ins == NULL ) {
+            addr = parm->name;
+            if( (addr->tipe->attr & TYPE_FLOAT) && HW_COvlap( parm->regs,HW_FLTS ) ) {
+                ++parms;
+                if( addr->format != NF_INS ) {
+                    _Zoiks( ZOIKS_043 );
+                }
+                ins = addr->u.ins;
+                if( PushDelayedIfStackOperand( ins, parm, state ) )
+                    continue;
+                if( PushDelayedIfRedefinition( ins, parm, state ) )
+                    continue;
+                /* we can push it just before the CALL */
+                if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
+                    UseInOther( ins->operands[0] );
+                    if( ins->num_operands > 1 ) {
+                        UseInOther( ins->operands[1] );
+                    }
+                }
+                new_ins = MakeNary( ins->head.opcode, ins->operands[ 0 ],
+                                    ins->operands[ 1 ], AllocRegName( HW_ST0 ),
+                                    ins->type_class, ins->base_type_class,
+                                    ins->num_operands );
+                Pushes( new_ins );
+                new_ins->num_operands = ins->num_operands;
+                AddIns( new_ins );
 #if _TARGET & _TARG_80386
-            if( state->attr & ROUTINE_STACK_RESERVE ) {
-                ReserveStack( state, new_ins, addr->tipe->length );
-            }
+                if( state->attr & ROUTINE_STACK_RESERVE ) {
+                    ReserveStack( state, new_ins, addr->tipe->length );
+                }
 #endif
-            BGDone( addr ); /* so ins DOES get freed*/
-            parm->ins = new_ins;
+                BGDone( addr ); /* so ins DOES get freed*/
+                parm->ins = new_ins;
+            }
         }
     }
     return( parms );
@@ -486,13 +487,12 @@ static  instruction     *Next87Ins( instruction *ins ) {
 
     instruction *next;
 
-    next = ins->head.next;
-    for( ;; ) {
-        if( next->head.opcode == OP_BLOCK ) return( ins );
-        if( DoesSomething( next ) ) break;
-        next = next->head.next;
+    for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
+        if( DoesSomething( next ) ) {
+            return( next );
+        }
     }
-    return( next );
+    return( ins );
 }
 
 static  bool    RedundantStore( instruction *ins ) {
@@ -501,8 +501,7 @@ static  bool    RedundantStore( instruction *ins ) {
 
     instruction         *next;
 
-    for( next = ins->head.next;
-         next->head.opcode != OP_BLOCK; next = next->head.next ) {
+    for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
         if( next->result == ins->result ) {
             if( G( next ) == G_MFSTNP || G( next ) == G_MFST ) {
                 return( TRUE );

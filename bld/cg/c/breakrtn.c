@@ -215,16 +215,13 @@ extern  bool            CreateBreak( void )
     change any branches to HeadBlock from a block after break_blk into
     a label (~DEST_IS_BLOCK) branch.
 */
-    edge = HeadBlock->input_edges;
-    for( ;; ) {
-        if( edge == NULL ) break;
+    for( edge = HeadBlock->input_edges; edge != NULL; edge = next_edge ) {
         next_edge = edge->next_source;
         if( edge->source->gen_id >= break_blk->gen_id ) {
             RemoveInputEdge( edge );
             edge->destination.u.lbl = edge->destination.u.blk->label;
             edge->flags &= ~DEST_IS_BLOCK;
         }
-        edge = next_edge;
     }
 /*
     Now, set up a new HeadBlock, and redirect all unknowns branches to it.

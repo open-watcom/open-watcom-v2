@@ -910,8 +910,7 @@ static void ScheduleIns( void )
        adjustment being moved before the use of the index register was
        handled when we scheduled the INS_INDEX_ADJUST instruction.
     */
-    for( top = SBlock->ins.hd.prev; top->head.opcode != OP_BLOCK;
-                top = top->head.prev ) {
+    for( top = SBlock->ins.hd.prev; top->head.opcode != OP_BLOCK; top = top->head.prev ) {
         if( top->ins_flags & INS_INDEX_ADJUST ) {
             FixIndexAdjust( top, FALSE );
         }

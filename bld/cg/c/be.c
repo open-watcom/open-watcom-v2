@@ -123,15 +123,13 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
     SegDefs = NULL;
     CGState = S_INIT;
     InProc = NULL;
-    i = 0;
     FilesOpen = 0;
-    while( i < MAX_SEG ) {
+    for( i = 0; i < MAX_SEG; ++i ) {
         Locs[ i ] = 0;
         Files[ i ].hdl = 0;
         Files[ i ].name = NULL;
         Files[ i ].exists = FALSE;
         SegOk[ i ] = FALSE;
-        i++;
     }
     CurSeg = 0;
     Out = Files[ CurSeg ].hdl;
@@ -166,12 +164,10 @@ extern  void    BECloseFiles()
     if( TypDebug != 0 ) {
         FShut( TypDebug );
     }
-    i = 0;
-    while( i < MAX_SEG ) {
+    for( i = 0; i < MAX_SEG; ++i ) {
         if( Files[ i ].hdl != 0 ) {
             FShut( Files[ i ].hdl );
         }
-        ++i;
     }
 }
 extern  void    BEFini() {

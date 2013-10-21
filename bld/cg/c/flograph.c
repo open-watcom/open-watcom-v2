@@ -201,18 +201,15 @@ static  void    FixLinks( void )
     block       *prev;
     block_num   id;
 
-    blk = BlockList;
-    HeadBlock = blk;
     prev = NULL;
     id = 0;
-    for( ;; ) {
+    for( blk = BlockList; blk != NULL; blk = blk->next_block ) {
         blk->next_block = blk->prev_block;
         blk->prev_block = prev;
         blk->id = ++id;
         prev = blk;
-        blk = blk->next_block;
-        if( blk == NULL ) break;
     }
+    HeadBlock = BlockList;
     BlockList = prev;
 }
 
@@ -408,8 +405,9 @@ static  void    NestingDepth( void )
 
     for( interval = BlockList->u.interval->parent; interval->parent != NULL; interval = interval->parent ) {
         level = interval->level - 1;
-        blk = BlockList;               /* borrow 'next_block'*/
-        for( ;; ) {                         /* identify all back edges at this level*/
+        /* borrow 'next_block'*/
+        /* identify all back edges at this level*/
+        for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
             blk->next_block = NULL;
             for( i = blk->targets; i-- > 0; ) {
                 edge = &blk->edge[ i ];
@@ -425,13 +423,10 @@ static  void    NestingDepth( void )
                     }
                 }
             }
-            blk = blk->prev_block;
-            if( blk == NULL ) break;
         }
         for( ;; ) {
             change = FALSE;
-            blk = BlockList;
-            for( ;; ) {
+            for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
                 if( blk->next_block == NULL ) {
                     for( i = blk->targets; i-- > 0; ) {
                         edge = & blk->edge[ i ];
@@ -450,8 +445,6 @@ static  void    NestingDepth( void )
                         }
                     }
                 }
-                blk = blk->prev_block;
-                if( blk == NULL ) break;
             }
             if( change == FALSE ) break;
         }
@@ -459,13 +452,10 @@ static  void    NestingDepth( void )
 
 /*   Restore 'next_block'*/
 
-    blk = BlockList;
     HeadBlock = NULL;
-    for( ;; ) {
+    for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
         blk->next_block = HeadBlock;
         HeadBlock = blk;
-        blk = blk->prev_block;
-        if( blk == NULL ) break;
     }
 }
 

@@ -65,10 +65,10 @@ static instruction *FindPreviousIns( instruction *curr )
     prev = curr->head.prev;
     if( prev->head.opcode == OP_BLOCK ) {
         blk = _BLOCK( prev );
-        edge = blk->input_edges;
-        while( edge != NULL ) {
-            if( edge->source->class & BLOCK_MARKED ) break;
-            edge = edge->next_source;
+        for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
+            if( edge->source->class & BLOCK_MARKED ) {
+                break;
+            }
         }
         prev = edge->source->ins.hd.prev;
     }
@@ -386,8 +386,7 @@ extern bool     TailRecursion( void )
     bool        changed;
 
     changed = FALSE;
-    if( _IsntModel( NO_OPTIMIZATION ) &&
-        !ScaryConditions() && !BlockByBlock ) {
+    if( _IsntModel( NO_OPTIMIZATION ) && !ScaryConditions() && !BlockByBlock ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_CALL ) {
