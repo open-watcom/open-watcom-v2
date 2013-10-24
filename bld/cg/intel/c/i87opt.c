@@ -177,13 +177,11 @@ static  int     FPPushImmed( pn parm ) {
     the result of each instruction to ST(0)).
 */
 
-    pn          next;
     an          addr;
     int         parms;
 
     parms = 0;
-    for( ; parm != NULL; parm = next ) {
-        next = parm->next;
+    for( ; parm != NULL; parm = parm->next ) {
         if( parm->ins == NULL ) {
             addr = parm->name;
             if( (addr->tipe->attr & TYPE_FLOAT) && HW_COvlap( parm->regs,HW_FLTS ) ){
@@ -313,13 +311,11 @@ static  int     FPPushDelay( pn parm, call_state *state ) {
     instruction *ins;
     instruction *new_ins;
     an          addr;
-    pn          next_parm;
     int         parms;
 
 
     parms = 0;
-    for( ; parm != NULL; parm = next_parm ) {
-        next_parm = parm->next;
+    for( ; parm != NULL; parm = parm->next ) {
         if( parm->ins == NULL ) {
             addr = parm->name;
             if( (addr->tipe->attr & TYPE_FLOAT) && HW_COvlap( parm->regs,HW_FLTS ) ) {

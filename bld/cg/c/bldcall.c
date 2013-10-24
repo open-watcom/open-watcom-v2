@@ -498,10 +498,8 @@ extern  void            PushParms( pn parm, call_state *state ) {
     instruction         *ins;
     instruction         *push_ins;
     an                  addr;
-    pn                  next;
 
-    for( ; parm != NULL; parm = next ) {
-        next = parm->next;
+    for( ; parm != NULL; parm = parm->next ) {
         if( parm->ins == NULL ) {
             if( HW_CEqual( parm->regs, HW_EMPTY ) ) {
                 addr = parm->name;
