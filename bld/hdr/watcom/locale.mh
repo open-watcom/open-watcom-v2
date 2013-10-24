@@ -68,6 +68,9 @@ using std::localeconv;
 #define LC_MESSAGES     5
 #define LC_ALL          6
 
+#define LC_MIN  LC_CTYPE
+#define LC_MAX  LC_ALL
+
 :segment CNAME
 namespace std {
 
