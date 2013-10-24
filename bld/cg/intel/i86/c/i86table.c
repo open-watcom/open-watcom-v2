@@ -973,18 +973,16 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_BYTE_NEED, G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-static  opcode_entry    Move2CC[] = {
-/***************************/
+static opcode_entry    Move2CC[] = {
+/**********************************/
 
 /* optimizing reductions*/
 
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    C,    R,    NONE ),       V_OP1ZERO,      RG_WORD,      R_MAKEXORRR,    FU_NO ),
 
-/* fall through into move2 table*/
-/**** NB. Move2 points here ****/
-/* opcode_entry    Move2[]; */
-/*************************/
+/* Move2 points here */
+#define Move2   &Move2CC[1]
 
 /* optimizing reductions*/
 
@@ -1021,21 +1019,17 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_ANYWORD_NEED,G_UNKNOWN
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-/* Point at where Move2 used to start */
-/*************************/
-opcode_entry   *Move2 = &Move2CC[1]; /* used from intel/c/i86split.c */
+static opcode_entry     Move4op[] = {
+/***********************************/
 
-static opcode_entry    Move4op[] = {
-/*************************/
+/* Move4 points here */
+#define Move4   &Move4op[0]
+
 /*           from  to    eq            verify          reg           gen             fu  */
 //_OE( _Un(    C,    ANY,  NONE ),       NVI(V_HIGHEQLOW),RG_DOUBLE,   R_HIGHLOWMOVE,  FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DOUBLE,    R_SPLITMOVE,    FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
-
-/* Pointer to Move4 table (required for symmetry with 386table.c) */
-/*************************/
-opcode_entry    *Move4 = Move4op; /* used from intel/c/i86split.c */
 
 static  opcode_entry    Move8[] = {
 /*************************/
@@ -1428,4 +1422,11 @@ extern  opcode_entry    *OpcodeTable( table_def i )
     } else {
         return( OpcodeList[ i ] );
     }
+}
+
+
+extern  opcode_entry    *GetMoveNoCCEntry( void )
+/***********************************************/
+{
+    return( Move2 );    /* ensure it doesn't set the condition codes */
 }

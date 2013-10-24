@@ -96,6 +96,7 @@ extern  void            RevCond(instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
+extern  opcode_entry    *GetMoveNoCCEntry( void );
 
 extern  instruction             *rCHANGESHIFT(instruction*);
 extern  instruction             *rFIXSHIFT(instruction *);
@@ -196,8 +197,6 @@ extern  instruction             *rMOVI8PT( instruction * );
 extern  void                    CnvOpToInt( instruction * ins, int op );
 
 extern  opcode_entry    String[];
-extern  opcode_entry    *Move2;
-extern  opcode_entry    *Move4;
 extern  type_class_def  DoubleClass[];
 
 
@@ -879,11 +878,7 @@ extern  void    CheckCC( instruction *ins, instruction *new_ins ) {
 
 
     if( ins->head.opcode == OP_EXT_ADD || ins->head.opcode == OP_EXT_SUB ) {
-    #if _TARGET & _TARG_80386
-        new_ins->table = Move4; /* ensure it doesn't set the condition codes */
-    #else
-        new_ins->table = Move2; /* ensure it doesn't set the condition codes */
-    #endif
+        new_ins->table = GetMoveNoCCEntry(); /* ensure it doesn't set the condition codes */
         new_ins->ins_flags |= INS_CC_USED;
     }
 }

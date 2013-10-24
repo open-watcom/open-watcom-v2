@@ -1131,18 +1131,16 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_BYTE_NEED, G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-static  opcode_entry    Move2CC[] = {
-/***************************/
+static opcode_entry    Move2CC[] = {
+/**********************************/
 
 /* optimizing reductions*/
 
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    C,    R,    NONE ),       V_OP1ZERO,      RG_WORD,      R_MAKEXORRR,    FU_NO ),
 
-/* fall through into move2 table*/
-/**** NB. Move2 points here ****/
-/* opcode_entry    Move2[]; */
-/*************************/
+/* Move2 points here */
+#define Move2   &Move2CC[1]
 
 /* optimizing reductions*/
 
@@ -1179,32 +1177,24 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_ANYWORD_NEED,G_UNKNOWN
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-/* Point at where Move2 used to start */
-/*************************/
-opcode_entry   *Move2 = &Move2CC[1]; /* used from intel/c/i86split.c */
-
-static  opcode_entry    MoveFS[] = {
-/**************************/
+static opcode_entry    MoveFS[] = {
+/*********************************/
 
 /* optimizing reductions*/
 
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    C,    ANY,  NONE ),       V_NO,           RG_DBL,       R_MAKEU4CONS,   FU_NO ),
 
-/* fall through into move4 table*/
-/**** NB. Move4CC points here ****/
-/* static  opcode_entry    Move4CC[] */
-/***************************/
+/* Move4CC points here */
+#define Move4CC &MoveFS[1]
 
 /* optimizing reductions*/
 
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _Un(    C,    R,    NONE ),       V_OP1ZERO,      RG_DBL,       R_MAKEXORRR,    FU_NO ),
 
-/* fall through into move4 table*/
-/**** NB. Move4 points here ****/
-/* opcode_entry    Move4[] = { */
-/*************************/
+/* Move4 points here */
+#define Move4   &MoveFS[2]
 
 /* optimizing reductions*/
 
@@ -1232,11 +1222,6 @@ _OE( _Un(    R,    ANY,  NONE ),       V_NO,           RG_DBL,       G_UNKNOWN, 
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DBL_NEED,  G_UNKNOWN,      FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
-
-/* Point Move4CC and Move4 to where they used to be */
-/*************************/
-#define Move4CC &MoveFS[1]
-opcode_entry   *Move4 = &MoveFS[2]; /* used from intel/c/i86split.c */
 
 static  opcode_entry    MoveCP[] = {
 /*************************/
@@ -1508,16 +1493,14 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN, 
 };
 
 
-static  opcode_entry    PushFS[] = {
-/**************************/
+static opcode_entry     PushFS[] = {
+/**********************************/
 /*           op1   op2   eq            verify          reg           gen             fu  */
 _OE( _UnPP(  C,    ANY,  NONE ),       V_NO,           RG_DBL,       R_MAKEU4CONS,   FU_NO ),
-_OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
-};
 
+/* Push4 points here */
+#define Push4   &PushFS[1]
 
-static  opcode_entry    Push4[] = {
-/*************************/
 /*           op1   op2   eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R,    ANY,  NONE ),       V_NO,           RG_DBL,       G_WORDR1,       FU_ALUX ),
 _OE( _UnPP(  M,    ANY,  NONE ),       V_NO,           RG_,          G_M1,           FU_ALU1 ),
@@ -1646,4 +1629,10 @@ extern  opcode_entry    *OpcodeTable( table_def i )
     } else {
         return( OpcodeList[ i ] );
     }
+}
+
+extern  opcode_entry    *GetMoveNoCCEntry( void )
+/***********************************************/
+{
+    return( Move4 );    /* ensure it doesn't set the condition codes */
 }
