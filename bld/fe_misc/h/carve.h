@@ -91,7 +91,7 @@ extern void CarveFree( carve_t cv, void *elm );
 
 #define MK_INDEX( b, o )        (((b)<<CV_SHIFT)|((o)&((1<<CV_SHIFT)-1)))
 #define GET_BLOCK( i )          (((i)>>CV_SHIFT))
-#define GET_OFFSET( i )         ((i)&CV_MASK)
+#define GET_OFFSET( i )         ((i)&((1<<CV_SHIFT)-1))
 
 typedef unsigned_32 cv_index; // type to use for carve indices
 
