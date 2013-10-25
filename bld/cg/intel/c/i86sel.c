@@ -391,8 +391,8 @@ extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
 }
 
 
-extern  name_def        *SelIdx( tbl_control *table, an node ) {
-/**************************************************************/
+extern  name        *SelIdx( tbl_control *table, an node ) {
+/**********************************************************/
 
     an          idxan;
     name        *idx;
@@ -402,7 +402,7 @@ extern  name_def        *SelIdx( tbl_control *table, an node ) {
                                 TGLeaf( BGInteger( WORD_SIZE, TypeAddress( TY_WORD ) ) ), TypeAddress( TY_WORD ) ) );
     idx = GenIns( idxan );
     BGDone( idxan );
-    return( &AllocIndex( idx, AllocMemory( table, 0, CG_TBL, WD ), 0, WD )->n );
+    return( AllocIndex( idx, AllocMemory( table, 0, CG_TBL, WD ), 0, WD ) );
 }
 
 

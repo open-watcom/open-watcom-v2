@@ -58,8 +58,8 @@ extern  bool    InsFrlFree( void ) {
     Free up the "instruction" free list.
 */
 
-    return( FrlFreeAll( &InsFrl, sizeof( instruction )
-                               + ( MAX_OPS_PER_INS-1 ) * sizeof( pointer ) ) );
+    return( FrlFreeAll( &InsFrl, offsetof( instruction, operands )
+                               + MAX_OPS_PER_INS * sizeof( name * ) ) );
 }
 
 
@@ -86,8 +86,8 @@ extern  void    FreeIns( instruction *ins ) {
 
     ins->head.prev->head.next = next;
     next->head.prev = ins->head.prev;
-    FrlFreeSize( &InsFrl, (pointer *)ins, sizeof( instruction )
-                             + (MAX_OPS_PER_INS-1) * sizeof( pointer ) );
+    FrlFreeSize( &InsFrl, (pointer *)ins, offsetof( instruction, operands )
+                               + MAX_OPS_PER_INS * sizeof( name * ) );
 }
 
 
@@ -102,8 +102,8 @@ extern  instruction     *NewIns( int num ) {
     if( num > MAX_OPS_PER_INS ) {
         _Zoiks( ZOIKS_026 );
     }
-    new = AllocFrl( &InsFrl, sizeof( instruction ) /* contains one operand*/
-                           + ( MAX_OPS_PER_INS-1 ) * sizeof( pointer ) );
+    new = AllocFrl( &InsFrl, offsetof( instruction, operands )
+                           + MAX_OPS_PER_INS * sizeof( pointer ) );
     new->head.state = INS_NEEDS_WORK;
     new->t.index_needs = RL_;
     new->num_operands = num;

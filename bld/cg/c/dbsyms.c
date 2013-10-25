@@ -760,21 +760,21 @@ extern  void    DbgSetBase( void )
 }
 
 
-extern  void    DbgParmLoc( name_def *parm, sym_handle sym )
-/**********************************************************/
+extern  void    DbgParmLoc( name *parm, sym_handle sym )
+/******************************************************/
 // sym is NULL if no front end sym
 {
     dbg_local           *lcl;
     dbg_loc             loc;
 
     if( _IsntModel( DBG_DF ) ) {
-        if( parm->class != N_REGISTER  ) {
+        if( parm->n.class != N_REGISTER  ) {
             return;
         }
     }
     lcl = CGAlloc( sizeof( dbg_local ) );
     loc = DBLocInit();
-    loc = LocParm( loc, (name *)parm );
+    loc = LocParm( loc, parm );
     lcl->loc = loc;
     lcl->sym = sym;
     lcl->kind = DBG_SYM_VAR;

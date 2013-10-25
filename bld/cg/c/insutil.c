@@ -52,7 +52,7 @@ extern  name            *DeAlias(name*);
 extern  int             CountIns(block*);
 extern  instruction_id  Renumber( void );
 
-#define MAX_CONF_INFO   (2*( MAX_OPS_PER_INS+1 )+1)
+#define MAX_CONF_INFO   ( 2 * ( MAX_OPS_PER_INS + 1 ) + 1 )
 static  int             CurrInfo;
 static  conflict_info   ConflictInfo[ MAX_CONF_INFO ];
 
@@ -69,11 +69,10 @@ static void RenumFrom( instruction *ins ) {
         id = ins->id;
         ins = ins->head.next;
         for( ;; ) {
-            while( ins->head.opcode != OP_BLOCK ) {
+            for( ; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 ++id;
                 if( ins->id > id ) return;
                 ins->id = id;
-                ins = ins->head.next;
             }
             blk = _BLOCK( ins )->next_block;
             if( blk == NULL ) break;
@@ -89,12 +88,13 @@ static  conflict_info   *AddConfInfo( conflict_node *conf ) {
     conflict_info       *info;
 
     if( conf->state & CONF_VISITED ) {
-        info = &ConflictInfo[ 0 ];
-        for( info = &ConflictInfo[ 0 ];; ++info ) {
-            if( info->conf == conf ) return( info );
+        for( info = ConflictInfo; ; ++info ) {
+            if( info->conf == conf ) {
+                break;
+            }
         }
     } else {
-        info = &ConflictInfo[ CurrInfo++ ];
+        info = &ConflictInfo[CurrInfo++];
         info->conf = conf;
         conf->state |= CONF_VISITED;
     }
@@ -103,11 +103,10 @@ static  conflict_info   *AddConfInfo( conflict_node *conf ) {
 
 
 static  void    FindNameConf( name *name, instruction *ins,
-                              instruction *other, conflict_bits for_which ) {
-/***********************************************************************/
-
+                    instruction *other, conflict_bits for_which )
+/***************************************************************/
+{
     conflict_node       *conf;
-    conflict_info       *info;
 
     if( name->n.class == N_INDEXED ) {
         name = name->i.index;
@@ -117,17 +116,14 @@ static  void    FindNameConf( name *name, instruction *ins,
     } else if( name->n.class != N_MEMORY ) {
         return;
     }
-    conf = name->v.conflict;
-    info = NULL;
-    while( conf != NULL && info == NULL ) {
+    for( conf = name->v.conflict; conf != NULL; conf = conf->next_for_name ) {
         if( conf->ins_range.first == ins
          || conf->ins_range.first == other
          || conf->ins_range.last == ins
          || conf->ins_range.last == other ) {
-            info = AddConfInfo( conf );
-            info->flags |= for_which;
+            AddConfInfo( conf )->flags |= for_which;
+            break;
         }
-        conf = conf->next_for_name;
     }
 }
 

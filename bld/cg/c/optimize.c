@@ -58,7 +58,7 @@ typedef enum {
     PUSHABLE        = 0x08
 } opcode_attr;
 
-static  opcode_attr OpAttrs[LAST_OP-FIRST_OP+1] = {
+static  opcode_attr OpAttrs[LAST_OP - FIRST_OP + 1] = {
 /********************************
     define the attributes of any given opcode
 */
@@ -70,7 +70,7 @@ static  opcode_attr OpAttrs[LAST_OP-FIRST_OP+1] = {
 };
 
 
-#define _IsIns( ins, attr )        ( OpAttrs[ ins->head.opcode ] & attr )
+#define _IsIns( ins, attr )        ( OpAttrs[ins->head.opcode] & attr )
 #define _IsntIns( ins, attr )      ( _IsIns( ins, attr ) == FALSE )
 
 
@@ -114,16 +114,13 @@ static  instruction     *CanMoveAfter( instruction *ins ) {
     instruction *next;
 
     if( _IsntIns( ins, PUSHABLE ) ) return( NULL );
-    if( ins->operands[ 0 ] != ins->result ) return( NULL );
-    if( ins->operands[ 1 ]->n.class != N_CONSTANT ) return( NULL );
+    if( ins->operands[0] != ins->result ) return( NULL );
+    if( ins->operands[1]->n.class != N_CONSTANT ) return( NULL );
     if( _IsFloating( ins->type_class ) ) return( NULL );
     if( _IsFloating( ins->base_type_class ) ) return( NULL );
-    next = ins->head.next;
-    for(;;) {
+    for( next = ins->head.next; next != NULL; next = next->head.next ) {
         if( _IsntIns( next, SWAPABLE ) ) break;
         if( CanReorder( ins, next ) == FALSE ) break;
-        next = next->head.next;
-        if( next == NULL ) break;
     }
     if( next == ins->head.next ) return( NULL );
     return( next );
@@ -139,9 +136,8 @@ static  void    PushInsForward( block *blk ) {
     instruction *prev;
     instruction *next;
 
-    ins = blk->ins.hd.prev;            /* move backwards through instructions*/
-    for(;;) {
-        if( ins->head.opcode == OP_BLOCK ) break;
+    /* move backwards through instructions*/
+    for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = prev ) {
         prev = ins->head.prev;
 
         next = CanMoveAfter( ins );
@@ -159,20 +155,19 @@ static  void    PushInsForward( block *blk ) {
             ins->head.prev->head.next = ins;
             ins->head.next = next;
         }
-        ins = prev;
     }
 }
 
 
-extern  bool    SameThing( name *x, name *y ) {
-/**********************************************
+extern  bool    SameThing( name *x, name *y )
+/********************************************
     returns TRUE if "x" and "y" are the same thing. IE: N_MEMORY
     names which are associated with the same front end symbol or
     N_TEMP names which are aliases of each other. Two temporaries
     which are "stackable" are considered to be the same thing
     since they may (probably will) both end up on the 8087 stack.
 */
-
+{
     if( x == y ) return( TRUE );
     if( x == NULL || y == NULL ) return( FALSE );
     if( FPIsStack( x ) && FPIsStack( y ) ) return( TRUE );
@@ -189,8 +184,8 @@ extern  bool    SameThing( name *x, name *y ) {
 }
 
 
-extern  void    DeadTemps() {
-/****************************
+extern  void    DeadTemps( void )
+/********************************
     Using the information contained in each N_TEMP, delete any instruction
     whose result is a temporary that isnt used again. This is only a very
     crude hack of dead code, since it only gets temporaries which are local
@@ -200,7 +195,7 @@ extern  void    DeadTemps() {
         MOV     [y] => [x]
         MOV     [x] => temp     <- this usually doesn't get used later
 */
-
+{
     block       *blk;
     instruction *ins;
     instruction *next;
@@ -220,12 +215,12 @@ extern  void    DeadTemps() {
 }
 
 
-static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next ) {
+static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next )
 /*****************************************************************************
     returns TRUE if an instruction is assigning to a name which is not
     live immediately following instruction "ins".
 */
-
+{
     conflict_node       *conf;
     name                *op;
 
@@ -250,17 +245,16 @@ static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next ) {
 }
 
 
-extern  void    AxeDeadCode() {
+extern  void    AxeDeadCode( void )
 /******************************
     This is like DeadTemps, but it uses the live information in order
     to discover whether an instruction is assigning to a variable that
     dies immediately following. If we change anything here, we redo
     the live information (that's not very expensive).
-*/
 
-/* delete instructions which assign to temporaries which will not be*/
-/* used again before they are reassigned (ie: are not live after the instruction*/
-
+    delete instructions which assign to temporaries which will not be
+    used again before they are reassigned (ie: are not live after the instruction */
+{
     block               *blk;
     instruction         *ins;
     instruction         *next;
@@ -309,12 +303,12 @@ extern  void    AxeDeadCode() {
 }
 
 
-extern  void    DeadInstructions() {
+extern  void    DeadInstructions( void )
 /***********************************
     This is called after register allocation. It frees up any
     instructions whose generate table says G_NO (don't generate me).
 */
-
+{
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -323,8 +317,8 @@ extern  void    DeadInstructions() {
 }
 
 
-extern  void    PushPostOps() {
-/******************************
+extern  void    PushPostOps( void )
+/**********************************
     This routine tries to push add and subtract instructions
     forward in the basic block. The reason for this is that
     it untangles post increment code allowing for copy propagation
@@ -337,10 +331,9 @@ extern  void    PushPostOps() {
     ADD x, 1 => x               MOV [t2] => [t1]        MOV [y] => [x]
     ADD y, 1 => y               ADD x,1 => x            ADD x,1 => x
     MOV [t2] => [t1]            ADD y,1 => y            ADD y,1 => y
-*/
 
-/*    Perform instruction optimizations*/
-
+    Perform instruction optimizations */
+{
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

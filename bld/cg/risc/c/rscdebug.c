@@ -172,8 +172,8 @@ extern  dbg_type        DBEndProc( void *pr )
     return( 0 );
 }
 
-extern  void    DbgParmLoc( name_def *parm ) {
-/**********************************************/
+extern  void    DbgParmLoc( name *parm ) {
+/****************************************/
 
 }
 

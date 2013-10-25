@@ -95,8 +95,8 @@ extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
 }
 
 
-extern  name_def        *SelIdx( tbl_control *table, an node ) {
-/**************************************************************/
+extern  name        *SelIdx( tbl_control *table, an node ) {
+/**********************************************************/
 
     node = node;
     table = table;

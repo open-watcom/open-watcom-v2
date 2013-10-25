@@ -58,7 +58,7 @@ extern  type_length     PushSize(type_length);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
 extern  type_class_def  InitCallState(type_def*);
 extern  type_class_def  TypeClass(type_def*);
-extern  void            DbgParmLoc(name_def*, sym_handle);
+extern  void            DbgParmLoc(name*, sym_handle);
 extern  void            DbgRetLoc(void);
 extern  void            GenBlock( block_class, int );
 extern  void            Generate(bool);
@@ -110,8 +110,8 @@ extern  type_class_def  AddCallBlock( sym_handle sym, type_def *tipe )
 }
 
 
-extern  void    FreeCallNode( cn call )
-/**************************************
+extern  void    BGFiniCall( cn call )
+/************************************
     free up a call node
 */
 {
@@ -354,7 +354,7 @@ extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
     }
     if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
         if( sym != NULL ) {
-            DbgParmLoc( &(parm_name->n), sym );
+            DbgParmLoc( parm_name, sym );
         }
     }
     parm_def = DoParmDef( parm_name, class );

@@ -28,7 +28,7 @@
 *
 ****************************************************************************/
 extern  type_class_def  AddCallBlock( sym_handle sym, type_def *tipe );
-extern  void    FreeCallNode( cn call );
+extern  void    BGFiniCall( cn call );
 extern  cn      BGInitCall( an node, type_def *tipe, aux_handle aux );
 extern  void    BGAddParm( cn call, an parm );
 extern  void    BGAutoDecl( sym_handle sym, type_def *tipe );

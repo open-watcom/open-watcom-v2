@@ -177,7 +177,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
                 if( other_input != NULL ) break;
             }
             new_cond = NewIns( 2 );
-            Copy( cond, new_cond, sizeof( instruction ) + ( MAX_OPS_PER_INS - 1 ) * sizeof( name * ) );
+            Copy( cond, new_cond, offsetof( instruction, operands ) + MAX_OPS_PER_INS * sizeof( name * ) );
             new_cond->head.prev = new_cond;
             new_cond->head.next = new_cond;
             new_cond->operands[i] = prev->operands[ 0 ];
@@ -1069,7 +1069,7 @@ static  block   *NextBlock( block *blk, block *parm )
     return( blk->u.partition );
 }
 
-static  bool    MoveIns( instruction *ins )
+static  bool    isMoveIns( instruction *ins )
 /******************************************
     Is "ins" a move type instruction?
 */
@@ -1143,7 +1143,7 @@ static  bool    LinkableMove( instruction *ins )
     moves associated with it's result.
 */
 {
-    if( !MoveIns( ins ) ) return( FALSE );
+    if( !isMoveIns( ins ) ) return( FALSE );
     if( !CanLinkMove( ins ) ) return( FALSE );
     if( ins->operands[ 0 ]->n.class == N_MEMORY ) return( FALSE );
     if( ins->operands[ 0 ]->n.class == N_INDEXED ) return( FALSE );
@@ -1191,7 +1191,7 @@ static  void    LinkMemMoves( block *root )
     blk = root;
     for(;;) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( !MoveIns( ins ) ) continue;
+            if( !isMoveIns( ins ) ) continue;
             if( !CanLinkMove( ins ) ) continue;
             if( ins->operands[ 0 ]->n.class != N_MEMORY &&
                 ins->operands[ 0 ]->n.class != N_INDEXED ) continue;

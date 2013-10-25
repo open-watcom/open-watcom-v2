@@ -188,7 +188,7 @@ static  omf_idx         CodeGroupNIdx;
 static  char            CodeGroup[80];
 static  char            DataGroup[80];
 static  offset          SelStart;
-static  omf_idx         SelIdx;
+static  omf_idx         selIdx;
 static  segment_id      BackSegIdx = BACKSEGS;
 static  omf_idx         FPPatchImp[FPP_NUMBER_OF_TYPES];
 static  int             SegsDefd;
@@ -1421,9 +1421,9 @@ extern  void    OutSelect( bool starts )
     object      *obj;
 
     if( starts ) {
-        SelIdx = CurrSeg->sidx;
+        selIdx = CurrSeg->sidx;
         SelStart = (offset)CurrSeg->location;
-    } else if( SelIdx != 0 ) {
+    } else if( selIdx != 0 ) {
         if( !CurrSeg->start_data_in_code ) {
             EjectLEData();
             obj = CurrSeg->obj;
@@ -1438,14 +1438,14 @@ extern  void    OutSelect( bool starts )
                 OutIdx( 0, &obj->data );
                 OutIdx( NeedComdatNidx( NORMAL ), &obj->data );
             } else {
-                OutIdx( SelIdx, &obj->data );
+                OutIdx( selIdx, &obj->data );
             }
             OutOffset( SelStart, &obj->data );
             OutOffset( (offset)CurrSeg->location, &obj->data );
             PutObjRec( CMD_COMENT, obj->data.array, obj->data.used );
             obj->data.used = 0;
         }
-        SelIdx = 0;
+        selIdx = 0;
     }
     CurrSeg->start_data_in_code = FALSE;
 }
@@ -1805,7 +1805,7 @@ static void FiniWVTypes( void )
 static void FlushSelect( void )
 /*****************************/
 {
-    if( SelIdx != 0 ) {
+    if( selIdx != 0 ) {
         OutSelect( FALSE );
     }
 }

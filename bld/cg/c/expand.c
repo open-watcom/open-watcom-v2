@@ -59,16 +59,16 @@ static  instruction     *DoReduce( instruction *ins, opcode_entry *try,
     hw_reg_set  *zap;
     hw_reg_set  zap_all;
 
-    if( try == NULL ) return( ins );
     if( try->generate == G_NO ) return( ins );
-    if( try->generate >= FIRST_REDUCT ) return( Reduce( ins ) );
+    if( try->generate >= FIRST_REDUCT )
+        return( Reduce( ins ) );
     zap = RegSets[RegList[try->reg_set].zap];
     zap_all = ins->zap->reg;
     while( !HW_CEqual( *zap, HW_EMPTY ) ) {
         HW_TurnOn( zap_all, *zap );
         ++zap;
     }
-    ins->zap = (register_name *) AllocRegName( zap_all );
+    ins->zap = (register_name *)AllocRegName( zap_all );
     if( has_index || ins->num_operands > NumOperands( ins ) ) {
         ins = NeedIndex( ins );
     } else {
@@ -372,23 +372,20 @@ extern  int     ExpandOps( bool keep_on_truckin )
     unknowns = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         EXBlip();
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ) {
             if( keep_on_truckin == FALSE && _MemLow ) {
-                unknowns = -1;
-                break;
+                return( -1 );
             }
             ins = ExpandIns( ins );
             if( ins->head.state == INS_NEEDS_WORK ) {
                 ins = ExpandIns( ins );
             } else {
                 if( ins->head.state == OPERANDS_NEED_WORK ) {
-                    ++ unknowns;
+                    ++unknowns;
                 }
                 ins = ins->head.next;
             }
         }
-        if( unknowns == -1 ) break;
     }
     return( unknowns );
 }

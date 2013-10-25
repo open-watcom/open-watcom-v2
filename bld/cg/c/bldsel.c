@@ -53,7 +53,7 @@ extern  void            GenBlock( block_class, int );
 extern  name            *GenIns(an);
 extern  tbl_control     *MakeScanTab(select_list*,signed_32,code_lbl *,cg_type,cg_type);
 extern  tbl_control     *MakeJmpTab(select_list*,signed_32,signed_32,code_lbl *);
-extern  name_def        *SelIdx(tbl_control*,an);
+extern  name            *SelIdx(tbl_control*,an);
 extern  type_def        *SelNodeType(an,bool);
 extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
 extern  void            MkSelOp( name *idx, type_class_def class );
@@ -492,7 +492,7 @@ static  void    SelectBlock( tbl_control *table, an node, code_lbl *other ) {
     uint                i;
     uint                targets;
 
-    MkSelOp( (name *)SelIdx( table, node ), U2 );
+    MkSelOp( SelIdx( table, node ), U2 );
     i = 0;
     targets = 0;
     for(;;) {

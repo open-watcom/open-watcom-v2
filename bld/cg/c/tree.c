@@ -2352,7 +2352,7 @@ static  an  TNCall( tn what, bool ignore_return )
         NodesToZap = what->rite;
         retv = BGCall( call, ( what->flags & TF_USED ) != 0, in_line );
         retv->flags |= FL_STACKABLE;
-        FreeCallNode( call );
+        BGFiniCall( call );
     }
     return( retv );
 }
