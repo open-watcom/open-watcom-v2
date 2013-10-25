@@ -412,8 +412,7 @@ extern  void    FixChoices( void ) {
 #endif
 
     PropSegments();
-    conf = ConfList;
-    while( conf != NULL ) {
+    for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         if( _Isnt( conf, VALID_SEGMENT ) ) {
             conf->possible = NoSegments( conf->possible );
 #if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
@@ -434,7 +433,6 @@ extern  void    FixChoices( void ) {
             }
 #endif
         }
-        conf = conf->next_conflict;
     }
 }
 
@@ -451,12 +449,10 @@ static  void    PropSegments( void ) {
     conflict_node       *dst;
     bool                change;
 
-    src = ConfList;
-    while( src != NULL ) {
+    for( src = ConfList; src != NULL; src = src->next_conflict ) {
         if( _Is( src, VALID_SEGMENT ) ) {
             _SetTrue( src, WAS_SEGMENT );
         }
-        src = src->next_conflict;
     }
     for(;;) {
         change = FALSE;

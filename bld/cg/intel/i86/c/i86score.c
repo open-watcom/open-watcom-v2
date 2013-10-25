@@ -154,8 +154,7 @@ extern  void    ScoreSegments( score *sc )
     name        *src;
 
     ds = &sc[ DS->r.reg_index ];
-    xs = ds->next_reg;
-    while( xs != ds ) {
+    for( xs = ds->next_reg; xs != ds; xs = xs->next_reg ) {
         if( xs->index == SS->r.reg_index ) {
             i = I_MAX;
             while( --i >= 0 ) {
@@ -179,7 +178,6 @@ extern  void    ScoreSegments( score *sc )
                 }
             }
         }
-        xs = xs->next_reg;
     }
 }
 

@@ -133,8 +133,7 @@ static  void    UseDefGlobals( block *blk )
     conflict_node       *conf;
     var_usage           usage;
 
-    conf = ConfList;
-    while( conf != NULL ) {
+    for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         if( conf->name->n.class == N_MEMORY ) {
             usage = conf->name->v.block_usage;
             Use( conf->name, blk, EMPTY );
@@ -144,7 +143,6 @@ static  void    UseDefGlobals( block *blk )
                 _GBitTurnOn( blk->dataflow->use, conf->id.out_of_block );
             }
         }
-        conf = conf->next_conflict;
     }
 }
 

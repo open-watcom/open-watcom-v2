@@ -52,7 +52,6 @@ extern  void            PrefixIns( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  name            *AllocRegName( hw_reg_set );
 extern  conflict_node   *NameConflict( instruction *, name * );
-extern  int             NumOperands( instruction * );
 extern  void            AddIns( instruction * );
 extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );

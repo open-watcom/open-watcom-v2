@@ -99,21 +99,17 @@ static  void    CopyList( score *frm, score *to,
         to[ i ].list = *sc_heads;
         *sc_heads = (list_head *)**sc_heads;
         *to[i].list = NULL;
-        next = to[ i ].next_reg;
-        while( next->list == NULL ) {
+        for( next = to[ i ].next_reg; next->list == NULL; next = next->next_reg ) {
             next->list = next->prev_reg->list;
-            next = next->next_reg;
         }
     }
     if( *to[i].list == NULL ) {
         next = to[ i ].next_reg;
-        first = *frm[i].list;
-        while( first != NULL ) {
+        for( first = *frm[i].list; first != NULL; first = first->next ) {
             new = NewScListEntry();
             Copy( &first->info, &new->info, sizeof( score_info ) );
             new->next = *next->list;
             *next->list = new;
-            first = first->next;
         }
     }
 }

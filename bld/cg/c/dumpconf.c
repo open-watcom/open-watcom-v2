@@ -440,12 +440,10 @@ extern  void    DumpConflicts() {
 
     DumpLiteral( "Conflict graph" );
     DumpNL();
-    conf = ConfList;
-    while( conf != NULL ) {
+    for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         DumpPtr( conf );
         DumpLiteral( " " );
         DumpAConf( conf );
-        conf = conf->next_conflict;
     }
     DumpNL();
 }

@@ -117,19 +117,15 @@ extern  void    DumpSc( score *sc ) {
         DumpInt( entry->low );
         DumpLiteral( " high " );
         DumpInt( entry->high );
-        reg = sc->next_reg;
-        while( reg != sc ) {
+        for( reg = sc->next_reg; reg != sc; reg = reg->next_reg ) {
             DumpLiteral( "==" );
             DumpRegName( ScoreList[ reg->index ]->reg );
-            reg = reg->next_reg;
         }
         DumpLiteral( " generation " );
         DumpInt( sc->generation );
         DumpNL();
-        curr = *sc->list;
-        while( curr != NULL ) {
+        for( curr = *sc->list; curr != NULL; curr = curr->next ) {
             DumpScList( curr );
-            curr = curr->next;
         }
         ++ sc;
         ++ i;

@@ -173,10 +173,8 @@ static  void    AssignMoreBits( void )
 {
     conflict_node       *conf;
 
-    conf = ConfList;
-    while( conf != NULL ) {
+    for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         conf->state &= ~CONFLICT_ON_HOLD;
-        conf = conf->next_conflict;
     }
     if( MoreConflicts() ) {
         MakeLiveInfo();
@@ -224,11 +222,9 @@ static  void    InitChoices( void )
     int                 i;
 #endif
 
-    conf = ConfList;
-    while( conf != NULL ) {
+    for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         conf->possible = RL_NUMBER_OF_SETS;
         FreePossibleForAlias( conf );  /* 2007-07-10 RomanT */
-        conf = conf->next_conflict;
     }
 #if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
     if( BlockByBlock ) {
@@ -314,11 +310,9 @@ static  bool    SplitConflicts( void )
     bool                change;
 
     change = FALSE;
-    conf = ConfList;
-    while( conf != NULL ) {
+    for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         BuildNameTree( conf );
-        if( conf->tree != NULL
-         && conf->tree->idx == RL_NUMBER_OF_SETS ) {
+        if( conf->tree != NULL && conf->tree->idx == RL_NUMBER_OF_SETS ) {
             change = TRUE;
             ReAlias( conf->tree );
             if( conf->tree->temp != NULL ) {
@@ -330,7 +324,6 @@ static  bool    SplitConflicts( void )
         }
         BurnNameTree( conf->tree );
         conf->tree = NULL;
-        conf = conf->next_conflict;
     }
     return( change );
 }
@@ -1134,15 +1127,12 @@ extern  conflict_node   *InMemory( conflict_node *conf ) {
     conflict_node       *next;
     conflict_node       *conf_list;
 
-    conf_list = conf->name->v.conflict;
-    while( conf_list != NULL ) {
+    for( conf_list = conf->name->v.conflict; conf_list != NULL; conf_list = next ) {
+        next = conf_list->next_for_name;
         if( conf != conf_list ){
             PutInMemory( conf_list );
             next = conf_list->next_for_name;
             FreeAConflict( conf_list );
-            conf_list = next;
-        }else{
-            conf_list = conf_list->next_for_name;
         }
     }
     PutInMemory( conf );
@@ -1223,8 +1213,7 @@ static  void    SortConflicts( void )
     Sort the conflicts in order of descending savings.
 */
 {
-    ConfList = SortList( ConfList, offsetof( conflict_node, next_conflict ),
-                         ConfBefore );
+    ConfList = SortList( ConfList, offsetof( conflict_node, next_conflict ), ConfBefore );
 }
 
 
@@ -1242,8 +1231,7 @@ static  enum allocation_state    AssignConflicts( void )
     name                        *opnd;
     bool                        only_const_temps;
 
-    conf = ConfList;
-    while( conf != NULL ) {
+    for( conf = ConfList; conf != NULL; conf = next ) {
         next = conf->next_conflict;
         if( conf->start_block == NULL ) {
             FreeAConflict( conf );
@@ -1258,7 +1246,6 @@ static  enum allocation_state    AssignConflicts( void )
             }
             _SetFalse( conf, NEEDS_INDEX_SPLIT | NEEDS_SEGMENT_SPLIT );
         }
-        conf = next;
     }
     ConstSavings();
 
@@ -1272,18 +1259,17 @@ static  enum allocation_state    AssignConflicts( void )
     } else {
         only_const_temps = FALSE;
     }
-    for( ;;  ) {
-        if( conf == NULL ) break;
-        opnd = conf->name;
+    for( ; conf != NULL; conf = next ) {
         next = conf->next_conflict;
+        opnd = conf->name;
         if( _Isnt( conf, CONFLICT_ON_HOLD ) ) {
             /*
                 We stop register allocating on the first CONST_TEMP we see
                 so that any CONST_TEMP's that aren't needed can get cleaned
                 up and their live information regenerated.
             */
-            if( !only_const_temps && opnd->n.class == N_TEMP
-                && (opnd->t.temp_flags & CONST_TEMP) ) return( ALLOC_CONST_TEMP );
+            if( !only_const_temps && opnd->n.class == N_TEMP && (opnd->t.temp_flags & CONST_TEMP) )
+                return( ALLOC_CONST_TEMP );
             if( conf->savings == 0 || IsUncacheableMemory( conf->name ) ) {
                 next = InMemory( conf );
             } else {
@@ -1293,7 +1279,6 @@ static  enum allocation_state    AssignConflicts( void )
                 state = ALLOC_DONE;
             }
         }
-        conf = next;
     }
     return( state );
 }

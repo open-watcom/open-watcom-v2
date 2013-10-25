@@ -53,22 +53,22 @@ extern  opcode_entry    *ResetGenEntry( instruction *ins ) {
     bool                dummy;
 
     try = FindGenEntry( ins, &dummy );
-    #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
-        /*
-         * Real architectures are orthogonal and don't need to swap
-         * op's. BBB
-         */
-        switch( try->generate ) {
-        case R_SWAPOPS:
-            rSWAPOPS( ins );
-            try = FindGenEntry( ins, &dummy );
-            break;
-        case R_SWAPCMP:
-            rSWAPCMP( ins );
-            try = FindGenEntry( ins, &dummy );
-            break;
-        }
-    #endif
+#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+    /*
+     * Real architectures are orthogonal and don't need to swap
+     * op's. BBB
+     */
+    switch( try->generate ) {
+    case R_SWAPOPS:
+        rSWAPOPS( ins );
+        try = FindGenEntry( ins, &dummy );
+        break;
+    case R_SWAPCMP:
+        rSWAPCMP( ins );
+        try = FindGenEntry( ins, &dummy );
+        break;
+    }
+#endif
     return( try );
 }
 
@@ -167,8 +167,7 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
     if( op->i.index->n.class != N_REGISTER ) return( FALSE );
     if( op->i.index->r.reg_index == NO_INDEX ) return( FALSE );
     this_reg = &sc[ op->i.index->r.reg_index  ];
-    curr_reg = this_reg->next_reg;
-    while( curr_reg != this_reg ) {
+    for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
         if( curr_reg->generation < this_reg->generation ) {
             reg_name = ScoreList[ curr_reg->index ]->reg_name;
             // OOPS! what about "op [edx] -> [edx]" which zaps edx...
@@ -185,7 +184,6 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
                  && ChangeIns( ins, index, opp, CHANGE_NORMAL ) ) return( TRUE );
             }
         }
-        curr_reg = curr_reg->next_reg;
     }
     return( FALSE );
 }
@@ -210,23 +208,21 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
         live = ins->head.next->head.live.regs;
         this_reg = &sc[ op->r.reg_index ];
         if( !HW_Ovlap( live, op->r.reg ) ) {
-            curr_reg = this_reg->next_reg;
-            while( curr_reg != this_reg ) {
+            for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
                 if( HW_Ovlap( live, ScoreList[  curr_reg->index  ]->reg )
                 && curr_reg->generation < this_reg->generation
                 && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
-                              opp, CHANGE_GEN ) )
+                              opp, CHANGE_GEN ) ) {
                      return( TRUE );
-                curr_reg = curr_reg->next_reg;
+                }
             }
         }
-        curr_reg = this_reg->next_reg;
-        while( curr_reg != this_reg ) {
+        for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
             if( curr_reg->generation < this_reg->generation
              && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
-                           opp, CHANGE_GEN ) )
+                           opp, CHANGE_GEN ) ) {
                 return( TRUE );
-            curr_reg = curr_reg->next_reg;
+            }
         }
         return( FALSE );
     } else {

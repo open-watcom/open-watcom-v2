@@ -187,7 +187,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     See below.
 */
     instruction *new_ins;
-    int         i;
+    int         num_operands;
     name        *result;
     tn          fold;
     type_def    *tipe;
@@ -202,12 +202,12 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
 
     tipe = ClassType( ins->type_class );
     left_tipe = ClassType( _OpClass( ins ) );
-    i = NumOperands( ins );
+    num_operands = NumOperands( ins );
     left = NULL;
     rite = NULL;
-    if( i != 0 ) {
+    if( num_operands != 0 ) {
         left = TName( ins->operands[ 0 ], left_tipe );
-        if( i > 1 ) {
+        if( num_operands > 1 ) {
             if( ins->operands[ 1 ]->n.name_class == XX ) {
                 rite_tipe = tipe;
             } else {

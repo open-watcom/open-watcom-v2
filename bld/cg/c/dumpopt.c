@@ -258,7 +258,7 @@ extern  void    DumpOc( ins_entry *ins ) {
         break;
 #if _TARGET & _TARG_RISC
     case OC_RCODE:
-        DumpPtr( (pointer)ins->oc.oc_rins.opcode );
+        DumpPtr( (pointer)(pointer_int)ins->oc.oc_rins.opcode );
         if( _HasReloc( &ins->oc.oc_rins ) ) {
             DumpLiteral( " [ " );
             LblName( ins->oc.oc_rins.sym );

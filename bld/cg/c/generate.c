@@ -603,13 +603,10 @@ static  void    ForceConflictsMemory( void )
     conflict_node       *next;
 
     ParmPropagate();
-    conf = ConfList;
-    while( conf != NULL ) {
+    for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         _SetFalse( conf, ( NEEDS_INDEX_SPLIT | NEEDS_SEGMENT_SPLIT ) );
-        conf = conf->next_conflict;
     }
-    conf = ConfList;
-    while( conf != NULL ) {
+    for( conf = ConfList; conf != NULL; conf = next ) {
         next = conf->next_conflict;
         if( !_GBitEmpty( conf->id.out_of_block )
          || ( conf->name->n.class == N_TEMP && _FrontEndTmp( conf->name ) )
@@ -617,7 +614,6 @@ static  void    ForceConflictsMemory( void )
          || ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) != EMPTY ) {
             next = InMemory( conf );
         }
-        conf = next;
     }
 }
 

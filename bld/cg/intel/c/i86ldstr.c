@@ -548,7 +548,7 @@ static void     CompressIns( instruction *ins )
     name        **preplace;
     name        *replacement;
     int         i;
-    int         num_op;
+    int         num_operands;
 
     if( !(ins->ins_flags & INS_RISCIFIED) )
         return;
@@ -608,8 +608,8 @@ static void     CompressIns( instruction *ins )
         // Do not use ins->num_operands here, otherwise we'll falsely trigger
         // compression for segment operand of instruction which we shouldn't.
         // (bug #442)
-        num_op = NumOperands( ins );
-        for( i = 0; i < num_op; ++i ) {
+        num_operands = NumOperands( ins );
+        for( i = 0; i < num_operands; ++i ) {
             if( prev->result == ins->operands[i] ) {
                 popnd = &ins->operands[i];
             }

@@ -72,7 +72,7 @@ extern  void    FreeIns( instruction *ins ) {
 #if 0  /* Debugging code for integrity of conflict edges */
     conflict_node       *conf;
 
-    for (conf = ConfList; conf; conf = conf->next_conflict) {
+    for (conf = ConfList; conf != NULL; conf = conf->next_conflict) {
         if (conf->ins_range.first == ins || conf->ins_range.last == ins) {
             Zoiks(ZOIKS_050);
         }
