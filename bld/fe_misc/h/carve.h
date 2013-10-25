@@ -88,10 +88,8 @@ extern void CarveFree( carve_t cv, void *elm );
 #else
 #define CV_SHIFT		16
 #endif
-#define CV_MASK		        ((1<<CV_SHIFT)-1)
 
-
-#define MK_INDEX( b, o )        (((b)<<CV_SHIFT)|((o)&CV_MASK))
+#define MK_INDEX( b, o )        (((b)<<CV_SHIFT)|((o)&((1<<CV_SHIFT)-1)))
 #define GET_BLOCK( i )          (((i)>>CV_SHIFT))
 #define GET_OFFSET( i )         ((i)&CV_MASK)
 
