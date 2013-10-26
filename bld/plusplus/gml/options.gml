@@ -1140,6 +1140,11 @@
 :usage. enable some features of the upcoming ISO C++0x standard
 :jusage.
 
+:option. zam
+:target. any
+:usage. disable all predefined non-ISO extension macros
+:jusage. disable all predefined non-ISO extension macros
+
 :option. zat
 :target. any
 :usage. disable alternative tokens (e.g. and, or, not)

@@ -221,7 +221,7 @@ static void FreeUndefNames( void )
 }
 
 
-static void Define_Extensions( void )
+static void Define_Macros_Extension( void )
 {
     PreDefine_Macro( "_far16=__far16" );
     PreDefine_Macro( "near=__near" );
@@ -270,10 +270,11 @@ void MiscMacroDefs( void )
     if( CompFlags.inline_functions ) {
         Define_Macro( "__INLINE_FUNCTIONS__" );
     }
-    if( ! CompFlags.extensions_enabled ) {
+    if( CompFlags.oldmacros_enabled ) {
+        Define_Macros_Extension();
+    }
+    if( !CompFlags.extensions_enabled ) {
         Define_Macro( "NO_EXT_KEYS" );
-    } else {
-        Define_Extensions();
     }
     if( CompFlags.signed_char ) {
         Define_Macro( "__CHAR_SIGNED__" );
@@ -326,6 +327,7 @@ void InitModInfo( void )
     CompFlags.bss_segment_used      = 0;
     CompFlags.undefine_all_macros   = 0;
     CompFlags.extensions_enabled    = 1;
+    CompFlags.oldmacros_enabled     = 1;
     CompFlags.unix_ext              = 0;
     CompFlags.slack_byte_warning    = 0;
     CompFlags.errfile_written       = 0;

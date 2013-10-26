@@ -58,7 +58,7 @@ typedef enum {                  // flags to control memory model settings
 #define DEF_SWITCHES_ALL        ( MEMORY_LOW_FAILS )
 #endif
 
-#if _CPU != 386
+#if _CPU == 8086
     #define DEF_TARGET_SWITCHES CHEAP_POINTER
     #define DEF_SWITCHES 0
     #define DEFAULT_CPU CPU_86
@@ -70,10 +70,10 @@ typedef enum {                  // flags to control memory model settings
     #define DEFAULT_FPU FPU_387
 #endif
 
-#if _CPU == 386
-#define MM_ARCH "386"
-#else
+#if _CPU == 8086
 #define MM_ARCH "I86"
+#else
+#define MM_ARCH "386"
 #endif
 
 void CmdSysInit( void )
@@ -105,10 +105,10 @@ void CmdSysFini( void )
 char *CmdSysEnvVar( void )
 /************************/
 {
-#if _CPU == 386
-    return( "WPP386" );
-#else
+#if _CPU == 8086
     return( "WPP" );
+#else
+    return( "WPP386" );
 #endif
 }
 
@@ -144,10 +144,10 @@ static void defineM_IX86Macro( void )
     char buff[32];
 
     strcpy( buff, "_M_IX86=" );
-#if _CPU == 386
-    cpu = 3;
-#else
+#if _CPU == 8086
     cpu = 0;
+#else
+    cpu = 3;
 #endif
     switch( GET_CPU( CpuSwitches ) ) {
     case CPU_86:        cpu = 0; break;
@@ -164,15 +164,15 @@ static void defineM_IX86Macro( void )
 
 static void setWindowsSystem( void )
 {
-#if _CPU == 386
-    PreDefineStringMacro( "__WINDOWS_386__" );
-    TargetSwitches |= FLOATING_FS;
-    SET_FPU_INLINE( CpuSwitches );
-#else
+#if _CPU == 8086
     PreDefineStringMacro( "__WINDOWS__" );
     PreDefineStringMacro( "_WINDOWS" );
     TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
     TargetSwitches &= ~ FLOATING_DS;
+#else
+    PreDefineStringMacro( "__WINDOWS_386__" );
+    TargetSwitches |= FLOATING_FS;
+    SET_FPU_INLINE( CpuSwitches );
 #endif
 }
 
@@ -182,14 +182,19 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     char buff[128];
 
     TargetSystem = TS_OTHER;
-#if _CPU == 386
-    PreDefineStringMacro( "M_I386" );
-    PreDefineStringMacro( "_M_I386" );
-    PreDefineStringMacro( "__386__" );
+    if( CompFlags.oldmacros_enabled ) {
+#if _CPU == 8086
+        PreDefineStringMacro( "M_I86" );
 #else
-    PreDefineStringMacro( "M_I86" );
+        PreDefineStringMacro( "M_I386" );
+#endif
+    }
+#if _CPU == 8086
     PreDefineStringMacro( "_M_I86" );
     PreDefineStringMacro( "__I86__" );
+#else
+    PreDefineStringMacro( "_M_I386" );
+    PreDefineStringMacro( "__386__" );
 #endif
     PreDefineStringMacro( "__X86__" );
     PreDefineStringMacro( "_X86_" );
@@ -229,7 +234,9 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     }
     if( 0 == strcmp( target_name, "DOS" ) ) {
         TargetSystem = TS_DOS;
-        PreDefineStringMacro( "MSDOS" );
+        if( CompFlags.oldmacros_enabled ) {
+            PreDefineStringMacro( "MSDOS" );
+        }
         PreDefineStringMacro( "__DOS__" );
         PreDefineStringMacro( "_DOS" );
 #if _CPU == 386
@@ -307,10 +314,10 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     unsigned long bit;
 
     if( data->mem_model == OPT_mem_model_default ) {
-#if _CPU == 386
-        data->mem_model = OPT_mem_model_mf;
-#else
+#if _CPU == 8086
         data->mem_model = OPT_mem_model_ms;
+#else
+        data->mem_model = OPT_mem_model_mf;
 #endif
     }
 #if _CPU == 386
@@ -319,12 +326,39 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     }
 #endif
     bit = 0;
+    if( CompFlags.oldmacros_enabled ) {
+        switch( data->mem_model ) {
+        case OPT_mem_model_ms:
+            PreDefineStringMacro( "M_" MM_ARCH "SM" );
+            break;
+        case OPT_mem_model_mm:
+            PreDefineStringMacro( "M_" MM_ARCH "MM" );
+            break;
+        case OPT_mem_model_ml:
+            PreDefineStringMacro( "M_" MM_ARCH "LM" );
+            break;
+        case OPT_mem_model_mc:
+            PreDefineStringMacro( "M_" MM_ARCH "CM" );
+            break;
+#if _CPU == 8086
+        case OPT_mem_model_mh:
+            PreDefineStringMacro( "M_" MM_ARCH "HM" );
+            break;
+#else
+        case OPT_mem_model_mfi:
+        case OPT_mem_model_mf:
+            PreDefineStringMacro( "M_" MM_ARCH "FM" );
+            break;
+#endif
+        default:
+            break;
+        }
+    }
     switch( data->mem_model ) {
     case OPT_mem_model_ms:
         model = 's';
         DataPtrSize = TARGET_POINTER;
         CodePtrSize = TARGET_POINTER;
-        PreDefineStringMacro( "M_" MM_ARCH "SM" );
         PreDefineStringMacro( "_M_" MM_ARCH "SM" );
         PreDefineStringMacro( "__SMALL__" );
         CompFlags.strings_in_code_segment = 0;
@@ -336,7 +370,6 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         WatcallInfo.cclass |= FAR_CALL;
         DataPtrSize = TARGET_POINTER;
         CodePtrSize = TARGET_FAR_POINTER;
-        PreDefineStringMacro( "M_" MM_ARCH "MM" );
         PreDefineStringMacro( "_M_" MM_ARCH "MM" );
         PreDefineStringMacro( "__MEDIUM__" );
         CompFlags.strings_in_code_segment = 0;
@@ -345,7 +378,6 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         break;
     case OPT_mem_model_ml:
         model = 'l';
-        PreDefineStringMacro( "M_" MM_ARCH "LM" );
         PreDefineStringMacro( "_M_" MM_ARCH "LM" );
         PreDefineStringMacro( "__LARGE__" );
         WatcallInfo.cclass |= FAR_CALL;
@@ -355,14 +387,23 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         break;
     case OPT_mem_model_mc:
         model = 'c';
-        PreDefineStringMacro( "M_" MM_ARCH "CM" );
         PreDefineStringMacro( "_M_" MM_ARCH "CM" );
         PreDefineStringMacro( "__COMPACT__" );
         CodePtrSize = TARGET_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= BIG_DATA | CHEAP_POINTER;
         break;
-#if _CPU == 386
+#if _CPU == 8086
+    case OPT_mem_model_mh:
+        model = 'h';
+        PreDefineStringMacro( "_M_" MM_ARCH "HM" );
+        PreDefineStringMacro( "__HUGE__" );
+        WatcallInfo.cclass |= FAR_CALL;
+        CodePtrSize = TARGET_FAR_POINTER;
+        DataPtrSize = TARGET_FAR_POINTER;
+        bit |= BIG_CODE | BIG_DATA;
+        break;
+#else
     case OPT_mem_model_mfi:
         CompFlags.mfi_switch_used = 1;
         /* fall thru */
@@ -370,21 +411,9 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         model = 's';
         DataPtrSize = TARGET_POINTER;
         CodePtrSize = TARGET_POINTER;
-        PreDefineStringMacro( "M_" MM_ARCH "FM" );
         PreDefineStringMacro( "_M_" MM_ARCH "FM" );
         PreDefineStringMacro( "__FLAT__" );
         bit |= FLAT_MODEL | CHEAP_POINTER;
-        break;
-#else
-    case OPT_mem_model_mh:
-        model = 'h';
-        PreDefineStringMacro( "M_" MM_ARCH "HM" );
-        PreDefineStringMacro( "_M_" MM_ARCH "HM" );
-        PreDefineStringMacro( "__HUGE__" );
-        WatcallInfo.cclass |= FAR_CALL;
-        CodePtrSize = TARGET_FAR_POINTER;
-        DataPtrSize = TARGET_FAR_POINTER;
-        bit |= BIG_CODE | BIG_DATA;
         break;
 #endif
     default:
@@ -418,8 +447,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     } else {
         TargetSwitches &= ~ FLOATING_GS;
     }
-    TargetSwitches &= ~( FLAT_MODEL | BIG_CODE | BIG_DATA | CHEAP_POINTER
-                    | FLOATING_ES);
+    TargetSwitches &= ~( FLAT_MODEL | BIG_CODE | BIG_DATA | CHEAP_POINTER | FLOATING_ES );
     TargetSwitches |= bit;
 #if _CPU == 8086
     if( data->bm ) { // .DLL
@@ -585,7 +613,32 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
 
 static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
 {
-#if _CPU == 386
+#if _CPU == 8086
+    control = control;
+    switch( data->arch_i86 ) {
+    case OPT_arch_i86__0:
+        SET_CPU( CpuSwitches, CPU_86 );
+        break;
+    case OPT_arch_i86__1:
+        SET_CPU( CpuSwitches, CPU_186 );
+        break;
+    case OPT_arch_i86__2:
+        SET_CPU( CpuSwitches, CPU_286 );
+        break;
+    case OPT_arch_i86__3:
+        SET_CPU( CpuSwitches, CPU_386 );
+        break;
+    case OPT_arch_i86__4:
+        SET_CPU( CpuSwitches, CPU_486 );
+        break;
+    case OPT_arch_i86__5:
+        SET_CPU( CpuSwitches, CPU_586 );
+        break;
+    case OPT_arch_i86__6:
+        SET_CPU( CpuSwitches, CPU_686 );
+        break;
+    }
+#else
     switch( data->arch_386 ) {
     case OPT_arch_386__3s:
         CompFlags.register_conventions = 0;
@@ -623,31 +676,6 @@ static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
     if( control & MMC_NETWARE ) {
         CompFlags.register_conventions = 0;
     }
-#else
-    control = control;
-    switch( data->arch_i86 ) {
-    case OPT_arch_i86__0:
-        SET_CPU( CpuSwitches, CPU_86 );
-        break;
-    case OPT_arch_i86__1:
-        SET_CPU( CpuSwitches, CPU_186 );
-        break;
-    case OPT_arch_i86__2:
-        SET_CPU( CpuSwitches, CPU_286 );
-        break;
-    case OPT_arch_i86__3:
-        SET_CPU( CpuSwitches, CPU_386 );
-        break;
-    case OPT_arch_i86__4:
-        SET_CPU( CpuSwitches, CPU_486 );
-        break;
-    case OPT_arch_i86__5:
-        SET_CPU( CpuSwitches, CPU_586 );
-        break;
-    case OPT_arch_i86__6:
-        SET_CPU( CpuSwitches, CPU_686 );
-        break;
-    }
 #endif
     defineM_IX86Macro();
 }
@@ -659,8 +687,7 @@ static void defineFSRegistration( void )
     }
     CompFlags.rw_registration = TRUE;
 #if _CPU == 386
-    if( TargetSystem == TS_NT
-     || TargetSystem == TS_OS2 ) {
+    if( TargetSystem == TS_NT || TargetSystem == TS_OS2 ) {
         CompFlags.fs_registration = TRUE;
     }
 #endif
@@ -890,23 +917,21 @@ static void macroDefs( void )
     if( CompFlags.op_switch_used ) {
         DefSwitchMacro( "OP" );
     }
+    PreDefineStringMacro( "_INTEGRAL_MAX_BITS=64" );
 #if _CPU == 386
     PreDefineStringMacro( "_STDCALL_SUPPORTED" );
-    PreDefineStringMacro( "_INTEGRAL_MAX_BITS=64" );
-    if( CompFlags.extensions_enabled ) {
-        PreDefineStringMacro( "SOMLINK=_Syscall" );
-        PreDefineStringMacro( "SOMDLINK=_Syscall" );
-    }
 #endif
+    if( CompFlags.oldmacros_enabled ) {
 #if _CPU == 8086
-    PreDefineStringMacro( "_INTEGRAL_MAX_BITS=64" );
-    if( CompFlags.extensions_enabled ) {
         if( TargetSwitches & WINDOWS ) {
             PreDefineStringMacro( "SOMLINK=__cdecl" );
             PreDefineStringMacro( "SOMDLINK=__far" );
         }
-    }
+#else
+        PreDefineStringMacro( "SOMLINK=_Syscall" );
+        PreDefineStringMacro( "SOMDLINK=_Syscall" );
 #endif
+    }
 }
 
 static void miscAnalysis( OPT_STORAGE *data )
@@ -990,7 +1015,11 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zfw ) {
         TargetSwitches |= GEN_FWAIT_386;
     }
-#if _CPU == 386
+#if _CPU == 8086
+    if( data->zro ) {
+        GenSwitches |= FPU_ROUNDING_OMIT;
+    }
+#else
     if( data->zro && data->zri ) {
 //        DbgDefault( "invalid fp rounding flags - ignored" );
         data->zro = data->zri = 0;
@@ -998,10 +1027,6 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zri ) {
         GenSwitches |= FPU_ROUNDING_INLINE;
     } else if( data->zro ) {
-        GenSwitches |= FPU_ROUNDING_OMIT;
-    }
-#else
-    if( data->zro ) {
         GenSwitches |= FPU_ROUNDING_OMIT;
     }
 #endif
@@ -1198,7 +1223,11 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zt ) {
         DataThreshold = data->zt_value;
     }
-#if _CPU == 386
+#if _CPU == 8086
+    if( data->xgls ) {
+        TargetSwitches |= NULL_SELECTOR_BAD;
+    }
+#else
     if( data->vcap ) {
         CompFlags.vc_alloca_parm = 1;
     }
@@ -1229,16 +1258,11 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zz ) {
         CompFlags.use_stdcall_at_number = 0;
     }
-#else
-    if( data->xgls ) {
-        TargetSwitches |= NULL_SELECTOR_BAD;
-    }
 #endif
     if( data->iso == OPT_iso_za ) {
         TargetSwitches &= ~I_MATH_INLINE;
     }
     switch( data->intel_call_conv ) {
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
     case OPT_intel_call_conv_ecc:
         DftCallConv = &CdeclInfo;
         break;
@@ -1261,7 +1285,6 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         DftCallConv = &FortranInfo;
         break;
     case OPT_intel_call_conv_ecw:
-#endif
     case OPT_intel_call_conv_default:
     default:
         DftCallConv = &WatcallInfo;

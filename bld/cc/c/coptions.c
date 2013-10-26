@@ -209,37 +209,46 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
 {
     char        buff[128];
 
+    if( CompFlags.oldmacros_enabled ) {
 #if _CPU == _AXP
-    PreDefine_Macro( "M_ALPHA" );
+        PreDefine_Macro( "M_ALPHA" );
+#elif _CPU == _SPARC
+        PreDefine_Macro( "M_SPARC" );
+#elif _CPU == _PPC
+        PreDefine_Macro( "M_PPC" );
+#elif _CPU == _MIPS
+        PreDefine_Macro( "M_MRX000" );
+#elif _CPU == 386
+        PreDefine_Macro( "M_I386" );
+#elif _CPU == 8086
+        PreDefine_Macro( "M_I86" );
+#endif
+    }
+#if _CPU == _AXP
     PreDefine_Macro( "_M_ALPHA" );
     PreDefine_Macro( "__ALPHA__" );
     PreDefine_Macro( "_ALPHA_" );
     PreDefine_Macro( "__AXP__" );
     PreDefine_Macro( "_STDCALL_SUPPORTED" );
 #elif _CPU == _SPARC
-    PreDefine_Macro( "M_SPARC" );
     PreDefine_Macro( "_M_SPARC" );
     PreDefine_Macro( "__SPARC__" );
     PreDefine_Macro( "_SPARC_" );
 #elif _CPU == _PPC
-    PreDefine_Macro( "M_PPC" );
     PreDefine_Macro( "_M_PPC" );
     PreDefine_Macro( "__POWERPC__" );
     PreDefine_Macro( "__PPC__" );
     PreDefine_Macro( "_PPC_" );
 #elif _CPU == _MIPS
-    PreDefine_Macro( "M_MRX000" );
     PreDefine_Macro( "_M_MRX000" );
     PreDefine_Macro( "__MIPS__" );
 #elif _CPU == 386
-    PreDefine_Macro( "M_I386" );                    /* 03-jul-91 */
     PreDefine_Macro( "_M_I386" );
     PreDefine_Macro( "__386__" );
     PreDefine_Macro( "__X86__" );
     PreDefine_Macro( "_X86_" );
     PreDefine_Macro( "_STDCALL_SUPPORTED" );
 #elif _CPU == 8086
-    PreDefine_Macro( "M_I86" );
     PreDefine_Macro( "_M_I86" );
     PreDefine_Macro( "__I86__" );
     PreDefine_Macro( "__X86__" );
@@ -318,7 +327,9 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
 
     switch( TargSys ) {
     case TS_DOS:
-        PreDefine_Macro( "MSDOS" );
+        if( CompFlags.oldmacros_enabled ) {
+            PreDefine_Macro( "MSDOS" );
+        }
         PreDefine_Macro( "_DOS" );
         break;
 
@@ -502,6 +513,28 @@ static void MacroDefs( void )
         Define_Macro( "__SW_OM" );
     }
 #if _CPU == 8086 || _CPU == 386
+    if( CompFlags.oldmacros_enabled ) {
+        switch( SwData.mem ) {
+        case SW_MS:
+            Define_Macro( "M_I86SM" );
+            break;
+        case SW_MM:
+            Define_Macro( "M_I86MM" );
+            break;
+        case SW_MC:
+            Define_Macro( "M_I86CM" );
+            break;
+        case SW_ML:
+            Define_Macro( "M_I86LM" );
+            break;
+        case SW_MH:
+            Define_Macro( "M_I86HM" );
+            break;
+        case SW_MF:
+        default:
+            break;
+        }
+    }
   #if _CPU == 8086
     #define X86 "_M_I86"
   #else
@@ -511,25 +544,31 @@ static void MacroDefs( void )
     case SW_MS:
         Define_Macro( "__SW_MS" );
         Define_Macro( X86 "SM" );
+        Define_Macro( "__SMALL__" );
         break;
     case SW_MM:
         Define_Macro( "__SW_MM" );
         Define_Macro( X86 "MM" );
+        Define_Macro( "__MEDIUM__" );
         break;
     case SW_MC:
         Define_Macro( "__SW_MC" );
         Define_Macro( X86 "CM" );
+        Define_Macro( "__COMPACT__" );
         break;
     case SW_ML:
         Define_Macro( "__SW_ML" );
         Define_Macro( X86 "LM" );
+        Define_Macro( "__LARGE__" );
         break;
     case SW_MH:
         Define_Macro( "__SW_MH" );
         Define_Macro( X86 "HM" );
+        Define_Macro( "__HUGE__" );
         break;
     case SW_MF:
         Define_Macro( "__SW_MF" );
+        Define_Macro( "__FLAT__" );
         break;
     default:
         break;
@@ -1207,6 +1246,7 @@ static void Set_ZA99( void )
 static void Set_ZA( void )
 {
     CompFlags.extensions_enabled = 0;
+    CompFlags.oldmacros_enabled = 0;
     CompFlags.unique_functions = 1;
     TargetSwitches &= ~I_MATH_INLINE;
 }
@@ -1215,6 +1255,11 @@ static void SetStrictANSI( void )
 {
     CompFlags.strict_ANSI = 1;
     Set_ZA();
+}
+
+static void Set_ZAM( void )
+{
+    CompFlags.oldmacros_enabled = 0;
 }
 
 #if _CPU == 8086 || _CPU == 386
@@ -1232,7 +1277,11 @@ static void Set_ZFP( void )         { SwData.peg_fs_used = 1; SwData.peg_fs_on =
 static void Set_ZGF( void )         { SwData.peg_gs_used = 1; SwData.peg_gs_on = 0; }
 static void Set_ZGP( void )         { SwData.peg_gs_used = 1; SwData.peg_gs_on = 1; }
 #endif
-static void Set_ZE( void )          { CompFlags.extensions_enabled = 1; }
+static void Set_ZE( void )
+{
+    CompFlags.extensions_enabled = 1;
+    CompFlags.oldmacros_enabled = 1;
+}
 static void Set_ZG( void )
 {
     CompFlags.generate_prototypes = 1;
@@ -1670,6 +1719,7 @@ static struct option const CFE_Options[] = {
 #endif
     { "xx",     0,              Set_XX },
     { "za99",   0,              Set_ZA99 },
+    { "zam",    0,              Set_ZAM },
     { "zA",     0,              SetStrictANSI },
     { "za",     0,              Set_ZA },
 #if _CPU == 8086 || _CPU == 386
@@ -2047,46 +2097,39 @@ local void Define_Memory_Model( void )
     DataPtrSize = TARGET_POINTER;
     CodePtrSize = TARGET_POINTER;
 #if _CPU == 8086 || _CPU == 386
-    switch( TargetSwitches & (BIG_CODE|BIG_DATA) ) {
-    case 0:                     /* -ms */
+    switch( SwData.mem ) {
+    case SW_MF:
         model = 's';
-        if( TargetSwitches & FLAT_MODEL ) {     /* 06-apr-89 */
-            Define_Macro( "__FLAT__" );
-        } else {
-            Define_Macro( "M_I86SM" );
-            Define_Macro( "__SMALL__" );
-            CompFlags.strings_in_code_segment = 0;      /* 01-sep-89 */
-        }
         TargetSwitches &= ~CONST_IN_CODE;
         break;
-    case BIG_CODE:                      /* -mm */
+    case SW_MS:
+        model = 's';
+        CompFlags.strings_in_code_segment = 0;
+        TargetSwitches &= ~CONST_IN_CODE;
+        break;
+    case SW_MM:
         model = 'm';
         WatcallInfo.cclass |= FAR_CALL;
-        CodePtrSize = TARGET_FAR_POINTER;
-        Define_Macro( "M_I86MM" );
-        Define_Macro( "__MEDIUM__" );
-        CompFlags.strings_in_code_segment = 0;  /* 01-sep-89 */
+        CompFlags.strings_in_code_segment = 0;
         TargetSwitches &= ~CONST_IN_CODE;
         break;
-    case BIG_DATA:                      /* -mc */
+    case SW_MC:
         model = 'c';
-        Define_Macro( "M_I86CM" );
-        Define_Macro( "__COMPACT__" );
-        DataPtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
+        DataPtrSize = TARGET_FAR_POINTER;
         break;
-    case BIG_CODE | BIG_DATA:
+    case SW_ML:
+        model = 'l';
         WatcallInfo.cclass |= FAR_CALL;
-        CodePtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
-        if( TargetSwitches & CHEAP_POINTER ) {
-            model = 'l';
-            Define_Macro( "M_I86LM" );      /* -ml */
-            Define_Macro( "__LARGE__" );
-        } else {
-            model = 'h';
-            Define_Macro( "M_I86HM" );      /* -mh */
-            Define_Macro( "__HUGE__" );
-        }
-        DataPtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
+        CodePtrSize = TARGET_FAR_POINTER;
+        DataPtrSize = TARGET_FAR_POINTER;
+        break;
+    case SW_MH:
+        model = 'h';
+        WatcallInfo.cclass |= FAR_CALL;
+        CodePtrSize = TARGET_FAR_POINTER;
+        DataPtrSize = TARGET_FAR_POINTER;
+        break;
+    default:
         break;
     }
 #endif

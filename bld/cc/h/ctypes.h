@@ -643,6 +643,7 @@ struct comp_flags {
     unsigned cpp_ignore_env         : 1;    /* ignore *INCLUDE env var(s) */
     unsigned ignore_default_dirs    : 1;    /* ignore default directories for file search .,../h,../c, etc. */
     unsigned pragma_library         : 1;    /* pragma library simulate -zlf option */
+    unsigned oldmacros_enabled      : 1;    /* enable old predefined macros (non-ISO compatible) */
 };
 
 struct global_comp_flags {  // things that live across compiles

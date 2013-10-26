@@ -214,19 +214,9 @@ static void defineKeywordMacros(   // PREDEFINE KEYWORD MACROS
     };
 
     char **mac;                 // - current macro
-    char *m;
 
     for( mac = mac_table; *mac != NULL; ++ mac ) {
-        m = *mac;
-        if( ! CompFlags.extensions_enabled ) {
-            // only allow ISO names through
-            if( !( m[0] == '_' && ( m[1] == '_' || (isalpha( m[1] ) && isupper( m[1] ) ) ) ) ) {
-                m = NULL;
-            }
-        }
-        if( m != NULL ) {
-            PreDefineStringMacro( m );
-        }
+        PreDefineStringMacro( *mac );
     }
 }
 
@@ -272,10 +262,12 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
         // (6) code for fn will be generated inline
         defineStringMacro( "__INLINE_FUNCTIONS__" );
     }
-    if( ! CompFlags.extensions_enabled ) {  /* 21-jul-88 */
+    if( !CompFlags.extensions_enabled ) {
         defineStringMacro( "NO_EXT_KEYS" );
     }
-    defineKeywordMacros();
+    if( CompFlags.oldmacros_enabled ) {
+        defineKeywordMacros();
+    }
     defineStringMacro( "_WCHAR_T_DEFINED" );
     defineStringMacro( "_STDWCHAR_T_DEFINED" );
     if( CompFlags.signed_char ) {
@@ -320,6 +312,7 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     WngLevel = 1;
     /* set CompFlags defaults */
     CompFlags.extensions_enabled = 1;
+    CompFlags.oldmacros_enabled = 1;
     CompFlags.emit_library_names = 1;
     CompFlags.emit_dependencies = 1;
     CompFlags.emit_targimp_symbols = 1;

@@ -994,6 +994,11 @@
 :usage. disable extensions (i.e., accept only ISO/ANSI C99)
 :jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI C99のみ受け付けます)
 
+:option. zam
+:target. any
+:usage. disable all predefined non-ISO extension macros
+:jusage. disable all predefined non-ISO extension macros
+
 :option. zc
 :target. i86 386
 :usage. place const data into the code segment

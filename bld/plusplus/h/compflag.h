@@ -286,6 +286,7 @@ typedef struct comp_flags {
     unsigned disable_ialias         : 1;
     unsigned cpp_ignore_env         : 1;    // ignore include path env vars
     unsigned ignore_default_dirs    : 1;    // ignore all default dirs for file search (., ../h, ../c, ...)
+    unsigned oldmacros_enabled      : 1;    // enable old predefined macros (non-ISO compatible)
 } COMP_FLAGS;
 
 #ifdef OPT_BR
