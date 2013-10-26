@@ -2112,6 +2112,7 @@ local void Define_Memory_Model( void )
         WatcallInfo.cclass |= FAR_CALL;
         CompFlags.strings_in_code_segment = 0;
         TargetSwitches &= ~CONST_IN_CODE;
+        CodePtrSize = TARGET_FAR_POINTER;
         break;
     case SW_MC:
         model = 'c';
