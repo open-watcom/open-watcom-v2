@@ -33,9 +33,9 @@
 #include "variety.h"
 #include <dos.h>
 
-int pascal _clib_int86( int , union REGS *, union REGS * );
-int pascal _clib_int86x( int, union REGS *, union REGS *, struct SREGS * );
-void pascal _clib_intr( int, union REGPACK * );
+extern int __pascal _clib_int86( int , union REGS *, union REGS * );
+extern int __pascal _clib_int86x( int, union REGS *, union REGS *, struct SREGS * );
+extern void __pascal _clib_intr( int, union REGPACK * );
 
 _WCRTLINK int int86( int no, union REGS *in, union REGS * out )
 {

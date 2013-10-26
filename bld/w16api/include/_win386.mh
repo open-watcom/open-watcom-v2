@@ -731,9 +731,9 @@ CALLBACKPTR GetCallbackRoutine( PROCPTR, ... );
 void        ReleaseCallbackRoutine( CALLBACKPTR );
 
 /* Functions implemented with inline assembly code */
-extern void far *MK_LOCAL32( void * );
-extern void far *MK_FP32( void * );
-extern DWORD    MK_FP16( void far * );
+extern void __far *MK_LOCAL32( void * );
+extern void __far *MK_FP32( void * );
+extern DWORD    MK_FP16( void __far * );
 
 /* Inline assembly implementation of functions defined above */
 #pragma aux MK_LOCAL32 "*_" \
@@ -828,7 +828,7 @@ typedef void        *HINDIR;
 #define FreeAlias16( a )
 #define AllocHugeAlias16( a, b )    ((DWORD)(LPSTR)(a))
 #define FreeHugeAlias16( a, b )
-#define MK_LOCAL32( a )             ((void far *) a)
+#define MK_LOCAL32( a )             ((void __far *) a)
 #define MK_FP32( a )                (a)
 #define MK_FP16( a )                (a)
 #define GetProc16( a, b )           (a)

@@ -257,7 +257,7 @@ typedef struct {
 #ifdef KERNEL
     extern D16INFO  _d16info;
 #else
-    extern D16INFO  _far _d16info;
+    extern D16INFO  __far _d16info;
 #endif
 
 #define D16MoveStack(new_sp, context)       (*_d16info.D16MStkP)(new_sp, context)

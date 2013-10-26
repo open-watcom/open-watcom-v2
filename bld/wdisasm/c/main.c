@@ -72,7 +72,7 @@ int  main()
     char                *cmd;
     void               (*parse_object)( void );
 
-#if defined( M_I86SM ) || defined( M_I86MM )
+#if defined( _M_I86SM ) || defined( _M_I86MM )
     _heapgrow();    /* grow the near heap */
 #endif
     if( !MsgInit() ) return( EXIT_FAILURE );

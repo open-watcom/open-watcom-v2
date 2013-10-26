@@ -33,7 +33,8 @@
 #include "variety.h"
 #include <dos.h>
 
-void pascal _clib_delay( unsigned );
+extern void __pascal _clib_delay( unsigned );
+
 _WCRTLINK void delay( unsigned ms )
 {
         _clib_delay( ms );

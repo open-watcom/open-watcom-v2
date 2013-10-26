@@ -41,7 +41,7 @@
 #include <stdlib.h>
 
 
-void    fortran FEXIT( intstar4 *rc ) {
+void    __fortran FEXIT( intstar4 *rc ) {
 //=====================================
 
     exit( *rc );

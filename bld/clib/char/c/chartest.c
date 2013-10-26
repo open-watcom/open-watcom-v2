@@ -78,7 +78,7 @@ struct CtypeBits WideFunctResults[TEST_ARRAY_SIZE_WIDE];
 char    ProgramName[_MAX_PATH];                 /* executable filename */
 int     NumErrors = 0;                          /* number of errors */
 
-int far far_data = 0;
+int __far far_data = 0;
 
 void TestClassifyMacro( void )
 /****************************/

@@ -34,11 +34,11 @@
 #undef  __INLINE_FUNCTIONS__
 #include <bios.h>
 
-extern unsigned short pascal _clib_bios_equiplist(void);
-extern unsigned short pascal _clib_bios_keybrd(unsigned __cmd);
-extern unsigned short pascal _clib_bios_memsize(void);
-extern unsigned short pascal _clib_bios_printer(unsigned __cmd,unsigned __port,unsigned __data);
-extern unsigned short pascal _clib_bios_serialcom(unsigned __cmd,unsigned __port,unsigned __data);
+extern unsigned short __pascal _clib_bios_equiplist(void);
+extern unsigned short __pascal _clib_bios_keybrd(unsigned __cmd);
+extern unsigned short __pascal _clib_bios_memsize(void);
+extern unsigned short __pascal _clib_bios_printer(unsigned __cmd,unsigned __port,unsigned __data);
+extern unsigned short __pascal _clib_bios_serialcom(unsigned __cmd,unsigned __port,unsigned __data);
 
 _WCRTLINK unsigned short _bios_equiplist(void) {
         return( _clib_bios_equiplist() );

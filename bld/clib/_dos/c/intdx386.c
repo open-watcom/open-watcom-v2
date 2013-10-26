@@ -82,7 +82,7 @@ extern  int                     DoDosxCall( void *in, void *out, void *sr );
         modify          [ebx ecx edx esi edi];
 #else
 #include <stddef.h>
-extern int pascal _clib_intdosx( union REGS *, union REGS *, struct SREGS * );
+extern int __pascal _clib_intdosx( union REGS *, union REGS *, struct SREGS * );
 #endif
 
 

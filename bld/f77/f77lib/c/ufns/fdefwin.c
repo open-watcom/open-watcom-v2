@@ -49,10 +49,10 @@
   #undef __SW_BW
 #endif
 
-intstar2        fortran SYSHANDLE( intstar4 *unit );
+intstar2        __fortran SYSHANDLE( intstar4 *unit );
 
 
-intstar4        fortran DWFSETAPPTITLE( string PGM *title ) {
+intstar4        __fortran DWFSETAPPTITLE( string PGM *title ) {
 //===========================================================
 
     char        *ttl;
@@ -67,7 +67,7 @@ intstar4        fortran DWFSETAPPTITLE( string PGM *title ) {
 }
 
 
-intstar4        fortran DWFSETABOUTDLG( string PGM *title, string PGM *text) {
+intstar4        __fortran DWFSETABOUTDLG( string PGM *title, string PGM *text) {
 //============================================================================
 
     char        *ttl;
@@ -90,7 +90,7 @@ intstar4        fortran DWFSETABOUTDLG( string PGM *title, string PGM *text) {
 }
 
 
-intstar4        fortran DWFSETCONTITLE( intstar4 *unit, string PGM *title ) {
+intstar4        __fortran DWFSETCONTITLE( intstar4 *unit, string PGM *title ) {
 //===========================================================================
 
     char        *ttl;
@@ -108,7 +108,7 @@ intstar4        fortran DWFSETCONTITLE( intstar4 *unit, string PGM *title ) {
 }
 
 
-intstar4        fortran DWFDELETEONCLOSE( intstar4 *unit ) {
+intstar4        __fortran DWFDELETEONCLOSE( intstar4 *unit ) {
 //==========================================================
 
     int         fh;
@@ -119,14 +119,14 @@ intstar4        fortran DWFDELETEONCLOSE( intstar4 *unit ) {
 }
 
 
-intstar4        fortran DWFYIELD( void ) {
+intstar4        __fortran DWFYIELD( void ) {
 //========================================
 
     return( _dwYield() );
 }
 
 
-intstar4        fortran DWFSHUTDOWN( void ) {
+intstar4        __fortran DWFSHUTDOWN( void ) {
 //===========================================
 
     return( _dwShutDown() );

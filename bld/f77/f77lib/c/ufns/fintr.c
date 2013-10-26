@@ -42,7 +42,7 @@
 
 #if defined( __386__ ) && !defined( __WINDOWS__ )
 
-void    fortran FINTR( intstar4 *int_no, intstar4 *regs ) {
+void    __fortran FINTR( intstar4 *int_no, intstar4 *regs ) {
 //=========================================================
 
     union REGPACK       _regs;
@@ -75,7 +75,7 @@ void    fortran FINTR( intstar4 *int_no, intstar4 *regs ) {
 
 #else
 
-void    fortran FINTR( intstar4 *int_no, intstar4 *regs ) {
+void    __fortran FINTR( intstar4 *int_no, intstar4 *regs ) {
 //=========================================================
 
     union REGPACK       _regs;

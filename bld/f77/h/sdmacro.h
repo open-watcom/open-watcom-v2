@@ -38,7 +38,7 @@
 #if !defined( _M_I86 ) || defined( __MEDIUM__ )
 #define HPGM            // defines a huge pointer to program data
 #else
-#define HPGM    huge    // defines a huge pointer to program data
+#define HPGM    __huge  // defines a huge pointer to program data
 #endif
 
 #define _LogValue( X ) X

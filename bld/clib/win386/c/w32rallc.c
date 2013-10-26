@@ -32,7 +32,7 @@
 
 #include "alloc.h"
 
-int pascal Win32Realloc( DWORD newsize )
+int __pascal Win32Realloc( DWORD newsize )
 {
     WORD        rc;
 

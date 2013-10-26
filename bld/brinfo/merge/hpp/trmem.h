@@ -204,7 +204,7 @@ _trmem_who  _trmem_whoami( void );
         value               [eax] \
         modify exact        [eax];
 
-#elif defined( M_I86SM ) || defined( M_I86CM )
+#elif defined( _M_I86SM ) || defined( _M_I86CM )
     #pragma aux _trmem_guess_who = \
         0x8b 0x46 0x02      /*      mov     ax,+2[bp]           */ \
         parm caller         [] \
@@ -218,7 +218,7 @@ _trmem_who  _trmem_whoami( void );
         value               [ax] \
         modify exact        [ax];
 
-#elif defined( M_I86LM ) || defined( M_I86MM ) || defined( M_I86HM )
+#elif defined( _M_I86LM ) || defined( _M_I86MM ) || defined( _M_I86HM )
     #pragma aux _trmem_guess_who = \
         0x8b 0x56 0x04      /*      mov     dx,+4[bp]           */ \
         0x8b 0x46 0x02      /*      mov     ax,+2[bp]           */ \

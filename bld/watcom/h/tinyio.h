@@ -517,7 +517,7 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyDPMISetDescriptor   _TinyDPMISetDescriptor
 
 /* handle small/large data models */
-#if defined( M_I86SM ) || defined( M_I86MM ) || defined( __386__ )
+#if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( __386__ )
 #define TinyAccess              _nTinyAccess
 #define TinyBufferedInput       _nTinyBufferedInput
 #define TinyOpen                _nTinyOpen
@@ -865,7 +865,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
  #define _MOV_AX_W      _MOV_AX
 
- #if defined( M_I86SM ) || defined( M_I86MM ) || defined( ZDP ) || defined( __WINDOWS__ )
+ #if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( ZDP ) || defined( __WINDOWS__ )
   #define _SET_DS_DGROUP
   #define _SET_DS_DGROUP_SAFE
   #define _RST_DS_DGROUP
@@ -2459,7 +2459,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         value           [dx ax] \
         modify exact    [ax dx si];     /* note es di not modified */
 
-#if defined( M_I86MM ) || defined( M_I86SM ) || defined( ZDP )
+#if defined( _M_I86MM ) || defined( _M_I86SM ) || defined( ZDP )
 #pragma aux _fTinyFCBPrsFname = \
         _PUSH_DS        \
         _MOV_DS_DX      \

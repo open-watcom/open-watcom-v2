@@ -96,7 +96,7 @@ void RdosSpawnBase();
 
 void RdosBlit( int SrcHandle, int DestHandle, int width, int height, int SrcX, int SrcY, int DestX, int DestY )
 {
-    _asm {
+    __asm {
         mov esi,SrcX
         mov eax,SrcY
         shl eax,16
@@ -115,7 +115,7 @@ void RdosBlit( int SrcHandle, int DestHandle, int width, int height, int SrcX, i
 
 void RdosDrawMask( int handle, void *mask, int RowSize, int width, int height, int SrcX, int SrcY, int DestX, int DestY )
 {
-    _asm {
+    __asm {
         mov ebx,handle
         mov edi,mask
         mov eax,RowSize
@@ -137,11 +137,11 @@ void RdosDrawMask( int handle, void *mask, int RowSize, int width, int height, i
 
 void RdosGetBitmapInfo( int handle, int *BitPerPixel, int *width, int *height, int *linesize, void **buffer )
 {
-    _asm {
+    __asm {
         mov ebx,handle
     }
     RdosGetBitmapInfoBase();
-    _asm {
+    __asm {
         mov ebx,BitPerPixel
         movzx eax,al
         mov [ebx],eax
@@ -163,14 +163,14 @@ int RdosReadDir( int Handle, int EntryNr, int MaxNameSize, char *PathName, long 
 {
     int val;
     
-    _asm {
+    __asm {
         mov ebx,Handle
         mov edx,EntryNr
         mov ecx,MaxNameSize
         mov edi,PathName
     }
     RdosReadDirBase();
-    _asm {
+    __asm {
         mov esi,FileSize
         mov [esi],ecx
         movzx ebx,bx
@@ -199,20 +199,20 @@ int RdosReadResource( int handle, int ID, char *Buf, int Size )
     unsigned short int high;
     
     if( handle == 0 ) {
-        _asm {
+        __asm {
             mov eax,fs:[0x24]
             mov handle,eax
         }
     }
 
-    _asm {
+    __asm {
         push ds
         mov ebx,handle
         mov eax,ID
         mov edx,6
     }
     RdosGetModuleResourceBase();
-    _asm {
+    __asm {
         pop ds
         mov RcSize,ecx
         mov RcPtr,esi
@@ -301,20 +301,20 @@ int RdosReadBinaryResource( int handle, int ID, char *Buf, int Size )
     int ok;
     
     if( handle == 0 ) {
-        _asm {
+        __asm {
             mov eax,fs:[0x24]
             mov handle,eax
         }
     }
 
-    _asm {
+    __asm {
         push ds
         mov ebx,handle
         mov eax,ID
         mov edx,10
     }
     RdosGetModuleResourceBase();
-    _asm {
+    __asm {
         pop ds
         mov RcSize,ecx
         mov RcPtr,esi
@@ -341,7 +341,7 @@ int RdosSpawn( const char *prog, const char *param, const char *startdir, const 
     int threadid = 0;
     int handle = 0;
 
-    _asm {
+    __asm {
         mov eax,ds
         mov flatdata,eax
     }
@@ -384,20 +384,20 @@ int RdosSpawn( const char *prog, const char *param, const char *startdir, const 
 
     pp = &p; 
 
-    _asm {
+    __asm {
         mov esi,prog
         mov edi,pp
         xor edx,edx
     }
     RdosSpawnBase();
-    _asm {
+    __asm {
         movzx eax,ax
         mov threadid,eax
         movzx edx,dx
         mov handle,edx
     }
     RdosCarryToBool();
-    _asm {
+    __asm {
         mov ok,eax
     }    
 
@@ -418,7 +418,7 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     int threadid = 0;
     int handle = 0;
 
-    _asm {
+    __asm {
         mov eax,ds
         mov flatdata,eax
     }
@@ -461,20 +461,20 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
 
     pp = &p; 
 
-    _asm {
+    __asm {
         mov esi,prog
         mov edi,pp
         mov edx,fs:[0x24]
     }
     RdosSpawnBase();
-    _asm {
+    __asm {
         movzx eax,ax
         mov threadid,eax
         movzx edx,dx
         mov handle,edx
     }
     RdosCarryToBool();
-    _asm {
+    __asm {
         mov ok,eax
     }    
 

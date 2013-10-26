@@ -51,7 +51,7 @@ extern void _setrealvect(char,unsigned long);
                 parm [cl] [ebx] \
                 modify exact [ax]
 
-extern void _setvectp(unsigned short,void (interrupt far *)(void));
+extern void _setvectp(unsigned short,void (__interrupt __far *)(void));
 #pragma aux _setvectp = \
                 "push   ds" \
                 "mov    ds,cx" \
@@ -77,7 +77,7 @@ void    _dos_setrealvect( int intnum, unsigned long func ) {
 }
 
 
-void    _dos_setvectp( int intnum, void (interrupt far *func)(void) ) {
+void    _dos_setvectp( int intnum, void (__interrupt __far *func)(void) ) {
 //=================================================================
 
     _setvectp( intnum, func );

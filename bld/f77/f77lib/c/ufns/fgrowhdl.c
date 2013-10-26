@@ -41,7 +41,7 @@
 extern  int             _grow_handles(int);
 
 
-intstar4        fortran GROWHANDLES( intstar4 *handles ) {
+intstar4        __fortran GROWHANDLES( intstar4 *handles ) {
 //========================================================
 
     return( _grow_handles( *handles ) );

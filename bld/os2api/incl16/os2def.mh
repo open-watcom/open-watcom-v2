@@ -10,12 +10,12 @@
 
 :include null.sp
 
-#define FAR     _far
-#define NEAR    _near
-#define PASCAL  _pascal
+#define FAR     __far
+#define NEAR    __near
+#define PASCAL  __pascal
 #define VOID    void
 
-#define EXPENTRY  PASCAL FAR _loadds
+#define EXPENTRY  PASCAL FAR __loadds
 #define APIENTRY  PASCAL FAR
 #define CALLBACK  EXPENTRY
 

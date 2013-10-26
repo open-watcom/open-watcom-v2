@@ -42,14 +42,14 @@ extern  int             ___Argc;        // argument count
 extern  char            **___Argv;      // argument vector
 
 
-intstar4        fortran IARGC( void ) {
+intstar4        __fortran IARGC( void ) {
 //=====================================
 
     return( ___Argc );
 }
 
 
-intstar4        fortran IGETARG( intstar4 *arg, string *dst ) {
+intstar4        __fortran IGETARG( intstar4 *arg, string *dst ) {
 //=============================================================
 
     int         dst_len;

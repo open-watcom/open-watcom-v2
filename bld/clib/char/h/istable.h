@@ -38,7 +38,7 @@ extern int IsWhat( int );
         "and eax,0xff" \
         "mov al,_IsTable+0x1[eax]" \
         parm loadds [eax]
-#elif defined(M_I86HM)
+#elif defined(_M_I86HM)
 extern int IsWhat( int );
 #pragma aux IsWhat = \
         "push bx" \

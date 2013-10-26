@@ -43,7 +43,7 @@
 #include <pgmacc.h>
 
 
-intstar4        fortran FSPAWN( string PGM *cmd, string PGM *args ) {
+intstar4        __fortran FSPAWN( string PGM *cmd, string PGM *args ) {
 //===================================================================
 
     int         len;

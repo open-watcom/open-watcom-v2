@@ -27,7 +27,7 @@
 
 /* Calling conventions */
 #ifdef _M_I386
-    #define FASTCALL    _fastcall
+    #define FASTCALL    __fastcall
 #else
     #define FASTCALL
 #endif

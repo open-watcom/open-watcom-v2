@@ -33,7 +33,7 @@
 #include "mbqnx.h"
 
 const utf_table
-#if defined(M_I86HM)
+#if defined( _M_I86HM )
     __far
 #else
     __near

@@ -79,7 +79,7 @@ static void *_allocate( unsigned amount )
 {
     void *p;
 #if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
-    void near *np;
+    void __near *np;
 #endif
 
 #if defined(__386__) || defined(__AXP__) || defined(__PPC__)

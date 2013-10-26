@@ -362,7 +362,7 @@ unsigned_32 GetVariable( void )
 
 
 #if defined(__WATCOMC__)
-    #if defined( M_I86SM ) || defined( M_I86MM )
+    #if defined( _M_I86SM ) || defined( _M_I86MM )
         extern byte docksum( byte *buf, unsigned_16 len );
         #pragma aux docksum = \
             0x30 0xd2       /* xor dl,dl */ \

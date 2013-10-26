@@ -43,7 +43,7 @@
 extern  uint            __getctime(struct tm *);
 
 
-void    fortran GETDAT( intstar2 *year, intstar2 *month, intstar2 *day ) {
+void    __fortran GETDAT( intstar2 *year, intstar2 *month, intstar2 *day ) {
 //========================================================================
 
     struct tm   tod;

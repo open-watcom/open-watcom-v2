@@ -32,7 +32,7 @@
 #include "ftextvar.h"
 #include "cioconst.h"
 
-void        fortran FTRACEBACK( void ) {
+void        __fortran FTRACEBACK( void ) {
 //======================================
 
     char        buffer[ERR_BUFF_SIZE+1];

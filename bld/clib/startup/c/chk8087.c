@@ -45,6 +45,10 @@
 #include "rtdata.h"
 #include "exitwmsg.h"
 
+#if defined( __WINDOWS_386__ )
+extern void __pascal _FloatingPoint( void );
+#endif
+
 extern void __GrabFP87( void );
 
 extern unsigned short __8087cw;
@@ -324,7 +328,6 @@ void __chk8087( void )
                                      /* when we have an emulator */
     if( GetWinFlags() & WF_80x87 ) { /* if a coprocessor is present then we */
   #if defined( __386__ )
-        extern void pascal _FloatingPoint( void );
         _FloatingPoint();
   #endif
         _RWD_real87 = __x87id();     /* initialize even when NO87 is defined */

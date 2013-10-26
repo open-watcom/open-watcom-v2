@@ -42,7 +42,7 @@
 extern  uint            __getctime(struct tm *);
 
 
-void    fortran GETTIM( intstar2 *hrs, intstar2 *mins,
+void    __fortran GETTIM( intstar2 *hrs, intstar2 *mins,
                         intstar2 *secs, intstar2 *tics ) {
 //========================================================
 

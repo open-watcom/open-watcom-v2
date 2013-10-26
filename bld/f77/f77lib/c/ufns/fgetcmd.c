@@ -44,7 +44,7 @@
 #include <pgmacc.h>
 
 
-intstar4        fortran FGETCMD( string PGM *args ) {
+intstar4        __fortran FGETCMD( string PGM *args ) {
 //===================================================
 
     int         len;

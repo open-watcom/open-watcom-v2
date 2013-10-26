@@ -43,7 +43,7 @@
 static PFNSIGHANDLER handler = 0;
 static USHORT        action;
 
-static void _WCFAR pascal break_handler( USHORT sigarg, USHORT signum )
+static void _WCFAR __pascal break_handler( USHORT sigarg, USHORT signum )
 {
     if( __int23_exit != __null_int23_exit ) {
         raise( SIGINT );

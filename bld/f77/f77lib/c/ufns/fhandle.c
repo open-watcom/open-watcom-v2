@@ -51,7 +51,7 @@ extern  int             Errorf(a_file *);
 extern  void            Closef(a_file *);
 
 
-intstar2        fortran SYSHANDLE( intstar4 *unit ) {
+intstar2        __fortran SYSHANDLE( intstar4 *unit ) {
 //===================================================
 
     ftnfile     *fcb;
@@ -78,7 +78,7 @@ intstar2        fortran SYSHANDLE( intstar4 *unit ) {
 }
 
 
-intstar4        fortran SETSYSHANDLE( intstar4 *unit, intstar2 *handle ) {
+intstar4        __fortran SETSYSHANDLE( intstar4 *unit, intstar2 *handle ) {
 //========================================================================
 
     ftnfile     *fcb;

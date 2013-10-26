@@ -43,7 +43,7 @@
 #include <pgmacc.h>
 
 
-intstar4        fortran FGETENV( string PGM *env_var, string PGM *value ) {
+intstar4        __fortran FGETENV( string PGM *env_var, string PGM *value ) {
 //=========================================================================
 
     char        *buff;

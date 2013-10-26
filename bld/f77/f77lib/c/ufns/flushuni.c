@@ -43,7 +43,7 @@
 extern  int             FlushBuffer(file_handle);
 
 
-intstar4        fortran FLUSHUNIT( intstar4 *unit ) {
+intstar4        __fortran FLUSHUNIT( intstar4 *unit ) {
 //===================================================
 
     ftnfile     *fcb;

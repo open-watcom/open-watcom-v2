@@ -44,7 +44,7 @@ typedef struct libent {
 
 #define MAX_DLL_ENTRIES 512
 
-extern  DWORD far *_DLLEntryAddr;
+extern  DWORD __far *_DLLEntryAddr;
 libent  *__DLLEntries[MAX_DLL_ENTRIES]; // DLL entry points
 
 /*

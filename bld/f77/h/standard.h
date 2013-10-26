@@ -49,7 +49,7 @@ typedef double          reallong;
 #endif
 
 #ifdef _M_I86
-#define __FAR far
+#define __FAR __far
 #else
 #define __FAR
 #endif

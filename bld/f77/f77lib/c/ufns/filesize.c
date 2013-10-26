@@ -44,7 +44,7 @@
 #include <fcntl.h>
 
 
-intstar4        fortran FILESIZE( intstar4 *unit ) {
+intstar4        __fortran FILESIZE( intstar4 *unit ) {
 //==================================================
 
     ftnfile     *fcb;

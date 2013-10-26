@@ -38,7 +38,7 @@
 _WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )
 {
     __exit( retcode );
-    _asm int 3
+    __asm int 3
 }
 
 _WCRTLINK void __fatal_runtime_error( char *msg, unsigned retcode )

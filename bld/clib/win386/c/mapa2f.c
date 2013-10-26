@@ -43,7 +43,7 @@ void *MapAliasToFlat( DWORD alias )
 
     memset( &r, 0, sizeof( r ) );
     r.x.ax = 0x06;
-    r.x.bx = FP_SEG( (void far *) &r );
+    r.x.bx = FP_SEG( (void __far *) &r );
     intr( 0x31, &r );
     base_32 = (r.x.cx << 16L) + (DWORD) r.x.dx;
     r.x.ax = 0x06;

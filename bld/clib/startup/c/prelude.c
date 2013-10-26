@@ -69,7 +69,7 @@ extern int                  _TerminateNLM( void *, void *, int );
 extern int                  _SetupArgv( int (*)( int, char ** ) );
 extern long                 _StartNLM( void *, void *, unsigned char *,
                                        unsigned char *, long, long,
-                                       long cdecl (*)(), long, long, void **,
+                                       long __cdecl (*)(), long, long, void **,
                                        int (*)() );
 static void                 InitStackLow( void );
 
@@ -297,7 +297,7 @@ extern long _Prelude( void *NLMHandle, void *initializationErrorScreenID,
                       unsigned char *cmdLineP,
                       unsigned char *loadDirectoryPath,
                       long uninitializedDataLength, long NLMfileHandle,
-                      long cdecl ( *readRoutineP )(), long customDataOffset,
+                      long __cdecl ( *readRoutineP )(), long customDataOffset,
                       long customDataSize )
 {
     /* make sure that the BSS is set to zero. This overwrites our data too!*/

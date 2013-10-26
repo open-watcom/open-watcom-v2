@@ -293,7 +293,7 @@ int main( int argc, char **argv )
     _nheapgrow();
 #endif
 #if !defined(__386__) && !defined(__AXP__) && !defined(__WINDOWS__)
-    if( sbrk( 0 ) < (void near *) ~0x0f ) {
+    if( sbrk( 0 ) < (void __near *) ~0x0f ) {
         printf( "FAIL: line %d\n", __LINE__ );
         return( EXIT_FAILURE );
     }

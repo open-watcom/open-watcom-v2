@@ -180,7 +180,7 @@ char *malloc();
 #define NO_REVSEARCH
 #define CONST const
 #define ALLOCTYPE void
-#ifdef M_I86SM
+#ifdef _M_I86SM
 #define SMALLMODEL        /* compiled in small model */
 #endif
 #define setbinary(fp)    setmode(fileno((fp)), O_BINARY)
@@ -234,7 +234,7 @@ char *malloc();
 #define CONST
 #define SIGTYPE int           /* xenix defines this as pointer to int */
                               /* for the return from a signal         */
-#ifdef M_I286
+#ifdef _M_I286
 #define MAXSEG_64K
 #endif
 #define NO_SETVBUF            /* evidently xenix chokes on the large buff*/

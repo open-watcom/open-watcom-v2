@@ -153,7 +153,7 @@ int  FInitDataThread( void *td ) {
 // User-callable thread functions:
 // -------------------------------
 
-int     fortran BEGINTHREAD( void (*rtn)(void *), unsigned long *stk_size ) {
+int     __fortran BEGINTHREAD( void (*rtn)(void *), unsigned long *stk_size ) {
 //===========================================================================
 
 #ifdef __NT__
@@ -164,14 +164,14 @@ int     fortran BEGINTHREAD( void (*rtn)(void *), unsigned long *stk_size ) {
 }
 
 
-void    fortran ENDTHREAD( void ) {
+void    __fortran ENDTHREAD( void ) {
 //===========================
 
     _endthread();
 }
 
 
-unsigned        fortran THREADID( void ) {
+unsigned        __fortran THREADID( void ) {
 //==================================
 
     return( *__threadid() );

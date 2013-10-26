@@ -52,7 +52,7 @@ typedef unsigned        uint;
 /*
     _PtrCmp( a, op, b ) compares two pointer as in ( a ) op ( b )
 */
-#if defined( M_I86CM ) || defined( M_I86LM ) || defined( M_I86HM )
+#if defined( _M_I86CM ) || defined( _M_I86LM ) || defined( _M_I86HM )
     #define _PtrAdd( p, i ) ((void *)((char __huge *)(p) + i))
     #define _PtrSub( p, i ) ((void *)((char __huge *)(p) - i))
     #define _PtrCmp(a,op,b) ((void __huge *)(a) op (void __huge *)(b))
@@ -77,16 +77,16 @@ msg(NOT_IN_ALLOCATION,  "%W %D not in any allocation" );
 msg(OVERRUN_2,          "%W %D+%T overruns allocation %D+%T" );
 msg(PRT_USAGE,          "Current usage: %Z bytes; Peak usage: %Z bytes" );
 msg(MIN_ALLOC,          "%W allocation of %T less than minimum size" );
-#if defined( M_I86SM )
+#if defined( _M_I86SM )
     msg(PRT_LIST_1,     "Who  Addr Size   Call   Contents" );
     msg(PRT_LIST_2,     "==== ==== ==== ======== ===========================================" );
-#elif defined( M_I86MM )
+#elif defined( _M_I86MM )
     msg(PRT_LIST_1,     "   Who    Addr Size   Call   Contents" );
     msg(PRT_LIST_2,     "========= ==== ==== ======== ===========================================" );
-#elif defined( M_I86CM )
+#elif defined( _M_I86CM )
     msg(PRT_LIST_1,     "Who    Addr    Size   Call   Contents" );
     msg(PRT_LIST_2,     "==== ========= ==== ======== ===========================================" );
-#elif defined( M_I86LM ) || defined( M_I86HM )
+#elif defined( _M_I86LM ) || defined( _M_I86HM )
     msg(PRT_LIST_1,     "   Who      Addr    Size   Call   Contents" );
     msg(PRT_LIST_2,     "========= ========= ==== ======== ===========================================" );
 #else
@@ -181,7 +181,7 @@ static char *formHex( char *ptr, memsize data, uint size )
     return( ptr );
 }
 
-#if defined(M_I86LM) || defined(M_I86HM) || defined(M_I86MM) || defined(M_I86CM)
+#if defined(_M_I86LM) || defined(_M_I86HM) || defined(_M_I86MM) || defined(_M_I86CM)
 static char * formFarPtr( char *ptr, void far *data )
 /***************************************************/
 {
@@ -217,7 +217,7 @@ static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
 #else
     hdl = hdl;
 #endif
-#if defined( M_I86LM ) || defined( M_I86HM ) || defined( M_I86MM )
+#if defined( _M_I86LM ) || defined( _M_I86HM ) || defined( _M_I86MM )
     return formFarPtr( ptr, who );
 #else
     return formHex( ptr, (memsize)who, sizeof( who ) );
@@ -264,7 +264,7 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
                 break;
             case 'D':   /* data pointer */
                 dp = va_arg( args, void * );
-#if defined( M_I86LM ) || defined( M_I86HM ) || defined( M_I86CM )
+#if defined( _M_I86LM ) || defined( _M_I86HM ) || defined( _M_I86CM )
                 ptr = formFarPtr( ptr, dp );
 #else
                 ptr = formHex( ptr, (memsize)dp, sizeof( dp ) );

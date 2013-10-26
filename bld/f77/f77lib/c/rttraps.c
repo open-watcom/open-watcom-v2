@@ -58,9 +58,9 @@
 #endif
 
 #if defined( __OS2_286__ )
-  #define       _handler        interrupt __pascal __far
+  #define       _handler        __interrupt __pascal __far
 #elif defined( __DOS__ ) || defined( __WINDOWS__ )
-  #define       _handler        interrupt
+  #define       _handler        __interrupt
 #else
   #define       _handler
 #endif
@@ -104,7 +104,7 @@ typedef void            (*fsig_func)( intstar4 );
 
   extern unsigned long _dos_getrealvect(int);
   extern void          _dos_setrealvect(int,unsigned long);
-  extern void          _dos_setvectp(int,void (interrupt far *)(void));
+  extern void          _dos_setvectp(int,void (__interrupt __far *)(void));
 #endif
 
 

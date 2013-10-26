@@ -44,7 +44,7 @@ static  intstar4        m = { -2147483648 };
 static  intstar4        c = { 453816693 };
 
 
-single  fortran URAND( intstar4 *xn ) {
+single  __fortran URAND( intstar4 *xn ) {
 //=====================================
 
 // Uniform random number generator based on techniques described

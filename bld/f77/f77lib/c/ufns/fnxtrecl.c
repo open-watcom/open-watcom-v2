@@ -41,7 +41,7 @@
 extern  void            IOOk(b_file *);
 extern  unsigned_32     FGetVarRecLen(b_file *);
 
-intstar4        fortran FNEXTRECL( intstar4 *unit ) {
+intstar4        __fortran FNEXTRECL( intstar4 *unit ) {
 //===================================================
 
     ftnfile     *fcb;

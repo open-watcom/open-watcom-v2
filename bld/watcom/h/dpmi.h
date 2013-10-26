@@ -202,7 +202,7 @@ typedef long dpmi_watch_handle;
 #define DPMISaveStateSize                       _DPMISaveStateSize
 #define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
 
-#if defined( M_I86SM ) || defined( M_I86MM ) || defined( __386__ )
+#if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( __386__ )
 #if defined(__386__)
 #define DPMIGetVersion                          _DPMIGetVersion
 #else

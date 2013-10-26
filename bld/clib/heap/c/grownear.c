@@ -54,7 +54,7 @@
  #include <rdos.h>
 #endif
 #if defined(__WINDOWS_386__)
- extern void * pascal DPMIAlloc( unsigned long );
+ extern void * __pascal DPMIAlloc( unsigned long );
 #endif
 
 static frlptr __LinkUpNewMHeap( mheapptr );

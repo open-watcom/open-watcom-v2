@@ -54,7 +54,7 @@
 #define STDOUT  1
 #define STDERR  2
 
-#if ( defined( M_I86SM ) || defined( M_I86MM ) ) && defined( _M_I86 )
+#if ( defined( _M_I86SM ) || defined( _M_I86MM ) ) && defined( _M_I86 )
   #error This code can only be compiled for a large data model
 #endif
 

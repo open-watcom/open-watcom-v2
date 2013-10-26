@@ -91,7 +91,7 @@ void RdosCreatePrioThread( void (*Start)(void *Param), int Prio, const char *Nam
 
 void RdosBlit( int SrcHandle, int DestHandle, int width, int height, int SrcX, int SrcY, int DestX, int DestY )
 {
-    _asm {
+    __asm {
         mov esi,SrcX
         mov eax,SrcY
         shl eax,16
@@ -110,7 +110,7 @@ void RdosBlit( int SrcHandle, int DestHandle, int width, int height, int SrcX, i
 
 void RdosDrawMask( int handle, void *mask, int RowSize, int width, int height, int SrcX, int SrcY, int DestX, int DestY )
 {
-    _asm {
+    __asm {
         mov ebx,handle
         les edi,mask
         mov eax,RowSize
@@ -132,11 +132,11 @@ void RdosDrawMask( int handle, void *mask, int RowSize, int width, int height, i
 
 void RdosGetBitmapInfo( int handle, int *BitPerPixel, int *width, int *height, int *linesize, void **buffer )
 {
-    _asm {
+    __asm {
         mov ebx,handle
     }
     RdosGetBitmapInfoBase();
-    _asm {
+    __asm {
         push ds
         lds ebx,BitPerPixel
         movzx eax,al
@@ -161,14 +161,14 @@ int RdosReadDir( int Handle, int EntryNr, int MaxNameSize, char *PathName, long 
 {
     int val;
     
-    _asm {
+    __asm {
         mov ebx,Handle
         mov edx,EntryNr
         mov ecx,MaxNameSize
         les edi,PathName
     }
     RdosReadDirBase();
-    _asm {
+    __asm {
         push ds
         lds esi,FileSize
         mov [esi],ecx

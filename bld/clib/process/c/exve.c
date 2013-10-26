@@ -51,7 +51,7 @@
 #include "_int23.h"
 
 extern  int     (*__Exec_addr)();
-extern  void    _WCFAR cdecl _doexec(char _WCNEAR *,char _WCNEAR *,
+extern  void    _WCFAR __cdecl _doexec(char _WCNEAR *,char _WCNEAR *,
                                 int,unsigned,unsigned,unsigned,unsigned );
 
 #define TRUE            1

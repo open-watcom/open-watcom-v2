@@ -49,7 +49,7 @@ extern  unsigned                _curbrk;
 extern  unsigned                _STACKTOP;
 
 #ifdef __WINDOWS_386__
- extern void * pascal DPMIAlloc( unsigned long );
+ extern void * __pascal DPMIAlloc( unsigned long );
 #else
 
 extern  int                     SetBlock( unsigned short selector, int size );

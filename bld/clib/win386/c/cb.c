@@ -39,16 +39,16 @@
 DWORD               _CBJumpTable[MAX_CB_JUMPTABLE]; /* Callback jump table */
 BYTE                _CBRefsTable[MAX_CB_JUMPTABLE]; /* Callback reference counts */
 extern  CALLBACKPTR __16BitCallBackAddr;
-extern  void        (far * far *__32BitCallBackAddr)( void );
-extern  void        far __32BitCallBack( void );
+extern  void        (__far * __far *__32BitCallBackAddr)( void );
+extern  void        __far __32BitCallBack( void );
 
 #pragma aux _CBJumpTable        "*";
 #pragma aux __16BitCallBackAddr "*";
 #pragma aux __32BitCallBackAddr "*";
 #pragma aux __32BitCallBack     "*";
 
-extern DWORD far *_CodeSelectorBaseAddr;
-extern DWORD far *_DataSelectorBaseAddr;
+extern DWORD __far *_CodeSelectorBaseAddr;
+extern DWORD __far *_DataSelectorBaseAddr;
 
 static int              emitOffset;
 static char             *emitWhere;
@@ -228,7 +228,7 @@ static CALLBACKPTR DoEmitCode( int argcnt, int bytecnt, char *array,
                                         + *_CodeSelectorBaseAddr;
     _CBRefsTable[i]++;  /* increase reference count */
     if( i > MaxCBIndex )  MaxCBIndex = i;
-    *__32BitCallBackAddr = (void (far *)(void))&__32BitCallBack;
+    *__32BitCallBackAddr = (void (__far *)(void))&__32BitCallBack;
     return( (char *)__16BitCallBackAddr - (i+1) * CB_CODE_SIZE );
 
 } /* DoEmitCode */
