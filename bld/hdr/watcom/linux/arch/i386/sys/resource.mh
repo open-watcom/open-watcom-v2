@@ -1,0 +1,7 @@
+/*
+ *  arch/i386/sys/resource.h
+ *
+:include crwatcnt.sp
+ */
+
+

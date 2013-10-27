@@ -268,6 +268,26 @@
 !inject wchiter.h              hcpp
 !inject wsample.h                   hdos hlnx hqnx
 
+#                                noext cpp  dos  lnx  qnx
+#----------------------------------------------------------
+!inject arch/i386/err_no.h                       hlnx
+!inject arch/i386/fcntl.h                        hlnx
+!inject arch/i386/signal.h                       hlnx
+!inject arch/i386/sigposix.h                     hlnx
+!inject arch/i386/sys/ioctl.h                    hlnx
+!inject arch/i386/sys/resource.h                 hlnx
+!inject arch/i386/sys/socket.h                   hlnx
+!inject arch/i386/sys/stat.h                     hlnx
+!inject arch/i386/sys/types.h                    hlnx
+!inject arch/mips/err_no.h                       hlnx
+!inject arch/mips/fcntl.h                        hlnx
+!inject arch/mips/signal.h                       hlnx
+!inject arch/mips/sigposix.h                     hlnx
+!inject arch/mips/sys/ioctl.h                    hlnx
+!inject arch/mips/sys/resource.h                 hlnx
+!inject arch/mips/sys/socket.h                   hlnx
+!inject arch/mips/sys/stat.h                     hlnx
+!inject arch/mips/sys/types.h                    hlnx
 
 dos_files   = $(hcpp) $(hdos)
 linux_files = $(hcpp) $(hlnx)

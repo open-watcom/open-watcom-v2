@@ -14,58 +14,58 @@ cplus     = ../cpluspro.sp ../cplusepi.sp
 # These dependency lists are used for both standard name.h and cname
 # headers. This is only relevant for headers in the C++ standard library.
 
-assert_deps = ../watcom/assert.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(extension)
-ctype_deps  = ../watcom/ctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(extension) $(c99ext)
-errno_deps  = ../watcom/errno.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp
-float_deps  = ../watcom/float.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(extension)
-iso646_deps = ../watcom/iso646.mh ../crwat.sp ../readonly.sp
-limits_deps = ../watcom/limits.mh ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../mbmax.sp $(unixext) $(extension)
-locale_deps = ../watcom/locale.mh ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(packll) ../wchar_t.sp ../null.sp
-math_deps   = ../watcom/math.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) $(packll)
-setjmp_deps = ../watcom/setjmp.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) $(unixext) $(packll)
-signal_deps = ../watcom/signal.mh ../crwatqnx.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../incdir.sp $(posixext) $(unixext) $(packll)
-stdarg_deps = ../watcom/stdarg.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../valist.sp $(extension)
-stddef_deps = ../watcom/stddef.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../ptrdiff.sp $(saferc) $(extension)
-stdint_deps = ../watcom/stdint.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(saferc) ../exactint.sp
-stdio_deps  = ../watcom/stdio.mh ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../valist.sp ../wchar_t.sp ../wctypet.sp $(saferc)
-stdlib_deps = ../watcom/stdlib.mh ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp
-string_deps = ../watcom/string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp
-time_deps   = ../watcom/time.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp ../null.sp ../timet.sp ../clockt.sp $(saferc) $(unixext) $(extension)
-wchar_deps  = ../watcom/wchar.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp
-wctype_deps = ../watcom/wctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp
+assert_deps = assert.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(extension)
+ctype_deps  = ctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(extension) $(c99ext)
+errno_deps  = errno.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp
+float_deps  = float.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(extension)
+iso646_deps = iso646.mh ../crwat.sp ../readonly.sp
+limits_deps = limits.mh ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../mbmax.sp $(unixext) $(extension)
+locale_deps = locale.mh ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(packll) ../wchar_t.sp ../null.sp
+math_deps   = math.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) $(packll)
+setjmp_deps = setjmp.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) $(unixext) $(packll)
+signal_deps = signal.mh ../crwatqnx.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../incdir.sp $(posixext) $(unixext) $(packll)
+stdarg_deps = stdarg.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../valist.sp $(extension)
+stddef_deps = stddef.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../ptrdiff.sp $(saferc) $(extension)
+stdint_deps = stdint.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(saferc) ../exactint.sp
+stdio_deps  = stdio.mh ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../valist.sp ../wchar_t.sp ../wctypet.sp $(saferc)
+stdlib_deps = stdlib.mh ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp
+string_deps = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp
+time_deps   = time.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp ../null.sp ../timet.sp ../clockt.sp $(saferc) $(unixext) $(extension)
+wchar_deps  = wchar.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp
+wctype_deps = wctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp
 
-cassert      : ../watcom/cassert.mh $(assert_deps)
-cctype       : ../watcom/cctype.mh $(ctype_deps)
-cerrno       : ../watcom/cerrno.mh $(errno_deps)
-cfloat       : ../watcom/cfloat.mh $(float_deps)
-ciso646      : ../watcom/ciso646.mh $(iso646_deps)
-climits      : ../watcom/climits.mh $(limits_deps)
-clocale      : ../watcom/clocale.mh $(locale_deps)
-cmath        : ../watcom/cmath.mh $(math_deps)
-csetjmp      : ../watcom/csetjmp.mh $(setjmp_deps)
-csignal      : ../watcom/csignal.mh $(signal_deps)
-cstdarg      : ../watcom/cstdarg.mh $(stdarg_deps)
-cstddef      : ../watcom/cstddef.mh $(stddef_deps)
-cstdint      : ../watcom/cstdint.mh $(stdint_deps)
-cstdio       : ../watcom/cstdio.mh $(stdio_deps)
-cstdlib      : ../watcom/cstdlib.mh $(stdlib_deps)
-cstring      : ../watcom/cstring.mh $(string_deps)
-ctime        : ../watcom/ctime.mh $(time_deps)
-cwchar       : ../watcom/cwchar.mh $(wchar_deps)
-cwctype      : ../watcom/cwctype.mh $(wctype_deps)
+cassert      : cassert.mh $(assert_deps)
+cctype       : cctype.mh $(ctype_deps)
+cerrno       : cerrno.mh $(errno_deps)
+cfloat       : cfloat.mh $(float_deps)
+ciso646      : ciso646.mh $(iso646_deps)
+climits      : climits.mh $(limits_deps)
+clocale      : clocale.mh $(locale_deps)
+cmath        : cmath.mh $(math_deps)
+csetjmp      : csetjmp.mh $(setjmp_deps)
+csignal      : csignal.mh $(signal_deps)
+cstdarg      : cstdarg.mh $(stdarg_deps)
+cstddef      : cstddef.mh $(stddef_deps)
+cstdint      : cstdint.mh $(stdint_deps)
+cstdio       : cstdio.mh $(stdio_deps)
+cstdlib      : cstdlib.mh $(stdlib_deps)
+cstring      : cstring.mh $(string_deps)
+ctime        : ctime.mh $(time_deps)
+cwchar       : cwchar.mh $(wchar_deps)
+cwctype      : cwctype.mh $(wctype_deps)
 
 # These dependency lists are for the IOStreams headers.
 
-fstream_deps = ../watcom/fstream.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp $(packll)
-iomanip_deps = ../watcom/iomanip.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp $(packll)
-ios_deps = ../watcom/ios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../watexc.sp ../cpplock.sp $(packll)
-iosfwd_deps = ../watcom/iosfwd.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp
-iostream_deps = ../watcom/iostream.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp
-istream_deps = ../watcom/istream.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp $(packll)
-ostream_deps = ../watcom/ostream.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp $(packll)
-sstream_deps = ../watcom/sstream.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-streambu_deps = ../watcom/streambu.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../cpplock.sp $(packll)
-strstrea_deps = ../watcom/strstrea.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(packll)
+fstream_deps = fstream.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp $(packll)
+iomanip_deps = iomanip.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp $(packll)
+ios_deps = ios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../watexc.sp ../cpplock.sp $(packll)
+iosfwd_deps = iosfwd.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp
+iostream_deps = iostream.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp
+istream_deps = istream.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp $(packll)
+ostream_deps = ostream.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp $(packll)
+sstream_deps = sstream.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+streambu_deps = streambu.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../cpplock.sp $(packll)
+strstrea_deps = strstrea.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(packll)
 
 fstream      : $(fstream_deps)
 iomanip      : $(iomanip_deps)
@@ -80,30 +80,30 @@ strstrea     : $(strstrea_deps)
 
 # These dependency lists are for other C++ library headers.
 
-algorith_deps  = ../watcom/algorith.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-bitset_deps    = ../watcom/bitset.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-complex_deps   = ../watcom/complex.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(packll)
-deque_deps     = ../watcom/deque.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-exception_deps = ../watcom/exceptio.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp ../watexc.sp ../throws.sp
-function_deps  = ../watcom/function.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-iterator_deps  = ../watcom/iterator.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-list_deps      = ../watcom/list.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-map_deps       = ../watcom/map.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-memory_deps    = ../watcom/memory.mh ../crwat.sp ../readonly.sp ../crwatcnt.sp ../cpponly.sp ../throws.sp
-new_deps       = ../watcom/new.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp
-numeric_deps   = ../watcom/numeric.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-queue_deps     = ../watcom/queue.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-random_deps    = ../watcom/random.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-set_deps       = ../watcom/set.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-slist_deps     = ../watcom/slist.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-stack_deps     = ../watcom/stack.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-stdexcept_deps = ../watcom/stdexcep.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp
-typeinfo_deps  = ../watcom/typeinfo.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp
-type_tra_deps  = ../watcom/type_tra.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-unordere_deps  = ../watcom/unordere.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-utility_deps   = ../watcom/utility.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-valarray_deps  = ../watcom/valarray.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-vector_deps    = ../watcom/vector.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+algorith_deps  = algorith.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+bitset_deps    = bitset.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+complex_deps   = complex.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(packll)
+deque_deps     = deque.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+exception_deps = exceptio.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp ../watexc.sp ../throws.sp
+function_deps  = function.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+iterator_deps  = iterator.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+list_deps      = list.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+map_deps       = map.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+memory_deps    = memory.mh ../crwat.sp ../readonly.sp ../crwatcnt.sp ../cpponly.sp ../throws.sp
+new_deps       = new.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp
+numeric_deps   = numeric.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+queue_deps     = queue.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+random_deps    = random.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+set_deps       = set.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+slist_deps     = slist.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+stack_deps     = stack.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+stdexcept_deps = stdexcep.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp
+typeinfo_deps  = typeinfo.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp
+type_tra_deps  = type_tra.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+unordere_deps  = unordere.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+utility_deps   = utility.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+valarray_deps  = valarray.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+vector_deps    = vector.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 
 algorith     : $(algorith_deps)
 bitset       : $(bitset_deps)
@@ -135,164 +135,187 @@ vector       : $(vector_deps)
 
 # The follow describe the dependences for the various *.h files.
 
-graph_deps     = ../watcom/graph.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
-pgchart_deps   = ../watcom/pgchart.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
+graph_deps     = graph.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
+pgchart_deps   = pgchart.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
 
-_algmut.h       : ../watcom/_algmut.mh ../crwatcnt.sp ../readonly.sp
-_algnmod.h      : ../watcom/_algnmod.mh ../crwatcnt.sp ../readonly.sp
-_algsort.h      : ../watcom/_algsort.mh ../crwatcnt.sp ../readonly.sp
-_comdef.h       : ../watcom/_comdef.mh ../crwat.sp ../readonly.sp
-_hash.h         : ../watcom/_hash.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-_ialias.h       : ../watcom/_ialias.mh ../crwatcnt.sp ../readonly.sp
-_meta.h         : ../watcom/_meta.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-_rbtree.h       : ../watcom/_rbtree.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-_strdef.h       : ../watcom/_strdef.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-alloca.h        : ../watcom/alloca.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../sizet.sp ../null.sp $(cplus) ../alloca.sp
+_algmut.h       : _algmut.mh ../crwatcnt.sp ../readonly.sp
+_algnmod.h      : _algnmod.mh ../crwatcnt.sp ../readonly.sp
+_algsort.h      : _algsort.mh ../crwatcnt.sp ../readonly.sp
+_comdef.h       : _comdef.mh ../crwat.sp ../readonly.sp
+_hash.h         : _hash.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+_ialias.h       : _ialias.mh ../crwatcnt.sp ../readonly.sp
+_meta.h         : _meta.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+_rbtree.h       : _rbtree.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+_strdef.h       : _strdef.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
+alloca.h        : alloca.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../sizet.sp ../null.sp $(cplus) ../alloca.sp
 assert.h        : $(assert_deps)
-bios.h          : ../watcom/bios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(extension)
-bios98.h        : ../watcom/bios98.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(extension)
-common.cnv      : ../watcom/common.mh ../crwat.sp
+bios.h          : bios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(extension)
+bios98.h        : bios98.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(extension)
+common.cnv      : common.mh ../crwat.sp
 complex.h       : $(complex_deps)
-conio.h         : ../watcom/conio.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../valist.sp
-crtdbg.h        : ../watcom/crtdbg.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+conio.h         : conio.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../valist.sp
+crtdbg.h        : crtdbg.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 ctype.h         : $(ctype_deps)
-direct.h        : ../watcom/direct.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../namemax.sp ../dskfreet.sp
-dos.h           : ../watcom/dos.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../namemax.sp ../dskfreet.sp
-dosfunc.h       : ../watcom/dosfunc.mh ../crwat.sp ../readonly.sp
-eh.h            : ../watcom/eh.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-env.h           : ../watcom/env.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(posixext)
+direct.h        : direct.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../namemax.sp ../dskfreet.sp
+dos.h           : dos.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../namemax.sp ../dskfreet.sp
+dosfunc.h       : dosfunc.mh ../crwat.sp ../readonly.sp
+eh.h            : eh.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+env.h           : env.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(posixext)
 errno.h         : $(errno_deps)
-except.h        : ../watcom/except.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp ../watexc.sp
+except.h        : except.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp ../watexc.sp
 exceptio.h      : $(exception_deps)
-excpt.h         : ../watcom/excpt.mh ../crwat.sp ../readonly.sp $(cplus)
-fenv.h          : ../watcom/fenv.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(packll)
+excpt.h         : excpt.mh ../crwat.sp ../readonly.sp $(cplus)
+fenv.h          : fenv.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(packll)
 float.h         : $(float_deps)
-fnmatch.h       : ../watcom/fnmatch.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(extension) $(cplus)
+fnmatch.h       : fnmatch.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(extension) $(cplus)
 fstream.h       : $(fstream_deps)
-generic.h       : ../watcom/generic.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+generic.h       : generic.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 graph.h         : $(graph_deps)
 graph2.h        : $(graph_deps)
-i86.h           : ../watcom/i86.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
-inttypes.h      : ../watcom/inttypes.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp
-io.h            : ../watcom/io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../maxpath.sp $(extension)
+i86.h           : i86.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
+inttypes.h      : inttypes.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp
+io.h            : io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../maxpath.sp $(extension)
 iomanip.h       : $(iomanip_deps)
 ios.h           : $(ios_deps)
 iosfwd.h        : $(iosfwd_deps)
 iostream.h      : $(iostream_deps)
 iso646.h        : $(iso646_deps)
 istream.h       : $(istream_deps)
-jctype.h        : ../watcom/jctype.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
-jstring.h       : ../watcom/jstring.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../null.sp
-jtime.h         : ../watcom/jtime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
-libgen.h        : ../watcom/libgen.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+jctype.h        : jctype.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+jstring.h       : jstring.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../null.sp
+jtime.h         : jtime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+libgen.h        : libgen.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 limits.h        : $(limits_deps)
 locale.h        : $(locale_deps)
-malloc.h        : ../watcom/malloc.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../alloca.sp
+malloc.h        : malloc.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../alloca.sp
 math.h          : $(math_deps)
-mbctype.h       : ../watcom/mbctype.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../null.sp ../mbmax.sp
-mbstring.h      : ../watcom/mbstring.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../nlserror.sp ../mbmax.sp $(extension)
-mem.h           : ../watcom/mem.mh ../crwat.sp ../readonly.sp ../ptrdiff.sp
+mbctype.h       : mbctype.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../null.sp ../mbmax.sp
+mbstring.h      : mbstring.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../nlserror.sp ../mbmax.sp $(extension)
+mem.h           : mem.mh ../crwat.sp ../readonly.sp ../ptrdiff.sp
 memory.h        : $(memory_deps)
-mmintrin.h      : ../watcom/mmintrin.mh ../crwat.sp ../readonly.sp $(cplus)
+mmintrin.h      : mmintrin.mh ../crwat.sp ../readonly.sp $(cplus)
 new.h           : $(new_deps)
 ostream.h       : $(ostream_deps)
 pgchart.h       : $(pgchart_deps)
-search.h        : ../watcom/search.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+search.h        : search.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 setjmp.h        : $(setjmp_deps)
-setjmpex.h      : ../watcom/setjmpex.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus)
-share.h         : ../watcom/share.mh ../crwat.sp ../readonly.sp $(extension)
+setjmpex.h      : setjmpex.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus)
+share.h         : share.mh ../crwat.sp ../readonly.sp $(extension)
 signal.h        : $(signal_deps)
 sstream.h       : $(sstream_deps)
 stdarg.h        : $(stdarg_deps)
-stdbool.h       : ../watcom/stdbool.mh ../crwat.sp ../readonly.sp
+stdbool.h       : stdbool.mh ../crwat.sp ../readonly.sp
 stddef.h        : $(stddef_deps)
 stdexcep.h      : $(stdexcept_deps)
 stdint.h        : $(stdint_deps)
 stdio.h         : $(stdio_deps)
-stdiobuf.h      : ../watcom/stdiobuf.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(packll)
+stdiobuf.h      : stdiobuf.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(packll)
 stdlib.h        : $(stdlib_deps)
 streambu.h      : $(streambu_deps)
 string.h        : $(string_deps)
-string.hpp      : ../watcom/string.mhp ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp
-strings.h       : ../watcom/strings.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp
+string.hpp      : string.mhp ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp
+strings.h       : strings.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp
 strstrea.h      : $(strstrea_deps)
-sys/locking.h   : ../watcom/locking.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
-sys/timeb.h     : ../watcom/timeb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp $(packll)
-sys/types.h     : ../watcom/types.mh ../crqnx.sp ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp ../sizet.sp ../ssizet.sp ../incdir.sp $(extension) ../exactint.sp
-sys/utime.h     : ../watcom/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../utime.sp
-tchar.h         : ../watcom/tchar.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../null.sp $(cplus) $(extension)
+tchar.h         : tchar.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../null.sp $(cplus) $(extension)
 time.h          : $(time_deps)
 typeinfo.h      : $(typeinfo_deps)
-utime.h         : ../watcom/utime.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../utime.sp
-varargs.h       : ../watcom/varargs.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
-wcdefs.h        : ../watcom/wcdefs.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../sizet.sp
-wcexcept.h      : ../watcom/wcexcept.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(packll)
+utime.h         : utime.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../utime.sp
+varargs.h       : varargs.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+wcdefs.h        : wcdefs.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../sizet.sp
+wcexcept.h      : wcexcept.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(packll)
 wchar.h         : $(wchar_deps)
-wchash.h        : ../watcom/wchash.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
-wchbase.h       : ../watcom/wchbase.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
-wchiter.h       : ../watcom/wchiter.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-wclbase.h       : ../watcom/wclbase.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
-wclcom.h        : ../watcom/wclcom.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-wclibase.h      : ../watcom/wclibase.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-wclist.h        : ../watcom/wclist.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-wclistit.h      : ../watcom/wclistit.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-wcqueue.h       : ../watcom/wcqueue.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-wcsbase.h       : ../watcom/wcsbase.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
-wcsibase.h      : ../watcom/wcsibase.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-wcskip.h        : ../watcom/wcskip.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-wcskipit.h      : ../watcom/wcskipit.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-wcstack.h       : ../watcom/wcstack.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wchash.h        : wchash.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
+wchbase.h       : wchbase.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
+wchiter.h       : wchiter.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wclbase.h       : wclbase.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
+wclcom.h        : wclcom.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wclibase.h      : wclibase.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wclist.h        : wclist.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wclistit.h      : wclistit.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wcqueue.h       : wcqueue.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wcsbase.h       : wcsbase.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
+wcsibase.h      : wcsibase.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wcskip.h        : wcskip.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wcskipit.h      : wcskipit.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+wcstack.h       : wcstack.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 wctype.h        : $(wctype_deps)
-wcvbase.h       : ../watcom/wcvbase.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
-wcvector.h      : ../watcom/wcvector.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
-wdefwin.h       : ../watcom/wdefwin.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
-wsample.h       : ../watcom/wsample.mh ../crwat.sp ../readonly.sp $(cplus)
+wcvbase.h       : wcvbase.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
+wcvector.h      : wcvector.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
+wdefwin.h       : wdefwin.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+wsample.h       : wsample.mh ../crwat.sp ../readonly.sp $(cplus)
+
+sys/locking.h   : sys/locking.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+sys/timeb.h     : sys/timeb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp $(packll)
+sys/types.h     : sys/types.mh ../crqnx.sp ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp ../sizet.sp ../ssizet.sp ../incdir.sp $(extension) ../exactint.sp
+sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../utime.sp
 
 # The follow describe the system specific dependencies
 
 !ifeq system dos
 
-fcntl.h         : ../watcom/fcntl.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
-process.h       : ../watcom/process.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) ../wchar_t.sp $(extension)
-sys/stat.h      : ../watcom/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
-sys/time.h      : ../watcom/sys_time.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
-unistd.h        : ../watcom/unistd.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension)
+fcntl.h         : fcntl.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
+process.h       : process.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) ../wchar_t.sp $(extension)
+unistd.h        : unistd.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension)
+
+sys/_lfndos.h   : dos/sys/_lfndos.mh ../crwatcnt.sp ../readonly.sp
+sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
+sys/time.h      : sys/time.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
 
 !else ifeq system linux
 
-arpa/inet.h     : ../watcom/linux/inet.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
-dirent.h        : ../watcom/linux/dirent.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
-fcntl.h         : ../watcom/fcntl.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packlnxk) ../incdir.sp $(extension)
-grp.h           : ../watcom/grp.mh ../crwatqnx.sp ../readonly.sp ../systypes.sp $(cplus) $(packll)
-netdb.h         : ../watcom/linux/netdb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-netinet/in.h    : ../watcom/linux/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
-netinet/tcp.h   : ../watcom/linux/tcp.mh ../crwat.sp ../readonly.sp $(cplus) $(packlnxk)
-process.h       : ../watcom/process.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension)
-pwd.h           : ../watcom/pwd.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
-sched.h         : ../watcom/sched.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus)
-sys/ioctl.h     : ../watcom/linux/ioctl.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp
-sys/mman.h      : ../watcom/linux/mman.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
-sys/mount.h     : ../watcom/linux/mount.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-sys/ptrace.h    : ../watcom/linux/ptrace.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-sys/resource.h  : ../watcom/linux/resource.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-sys/socket.h    : ../watcom/linux/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp
-sys/stat.h      : ../watcom/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk) ../incdir.sp $(posixext)
-sys/sysmips.h   : ../watcom/linux/sysmips.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
-sys/time.h      : ../watcom/sys_time.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-sys/times.h     : ../watcom/linux/times.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-sys/un.h        : ../watcom/linux/un.mh ../crwat.sp ../readonly.sp $(cplus) $(packlnxk)
-sys/utsname.h   : ../watcom/linux/utsname.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-sys/wait.h      : ../watcom/linux/wait.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-termios.h       : ../watcom/linux/termios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-unistd.h        : ../watcom/unistd.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension)
+dirent.h        : linux/dirent.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
+fcntl.h         : fcntl.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packlnxk) ../incdir.sp $(extension)
+grp.h           : grp.mh ../crwatqnx.sp ../readonly.sp ../systypes.sp $(cplus) $(packll)
+netdb.h         : linux/netdb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+process.h       : process.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension)
+pwd.h           : pwd.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
+sched.h         : sched.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus)
+termios.h       : linux/termios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+unistd.h        : unistd.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension)
+
+arpa/inet.h     : linux/arpa/inet.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
+netinet/in.h    : linux/netinet/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
+netinet/tcp.h   : linux/netinet/tcp.mh ../crwat.sp ../readonly.sp $(cplus) $(packlnxk)
+sys/ioctl.h     : linux/sys/ioctl.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp
+sys/mman.h      : linux/sys/mman.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
+sys/mount.h     : linux/sys/mount.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+sys/ptrace.h    : linux/sys/ptrace.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+sys/resource.h  : linux/sys/resource.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+sys/socket.h    : linux/sys/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp
+sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk) ../incdir.sp $(posixext)
+sys/sysmips.h   : linux/sys/sysmips.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+sys/time.h      : sys/time.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+sys/times.h     : linux/sys/times.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+sys/un.h        : linux/sys/un.mh ../crwat.sp ../readonly.sp $(cplus) $(packlnxk)
+sys/utsname.h   : linux/sys/utsname.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+sys/wait.h      : linux/sys/wait.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
+
+arch/i386/err_no.h       : linux/arch/i386/err_no.mh ../crwatcnt.sp
+arch/i386/fcntl.h        : linux/arch/i386/fcntl.mh ../crwatcnt.sp
+arch/i386/signal.h       : linux/arch/i386/signal.mh ../crwatcnt.sp
+arch/i386/sigposix.h     : linux/arch/i386/sigposix.mh ../crwatcnt.sp
+arch/i386/sys/ioctl.h    : linux/arch/i386/sys/ioctl.mh ../crwatcnt.sp
+arch/i386/sys/resource.h : linux/arch/i386/sys/resource.mh ../crwatcnt.sp
+arch/i386/sys/socket.h   : linux/arch/i386/sys/socket.mh ../crwatcnt.sp
+arch/i386/sys/stat.h     : linux/arch/i386/sys/stat.mh ../crwatcnt.sp
+arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh ../crwatcnt.sp
+arch/mips/err_no.h       : linux/arch/mips/err_no.mh ../crwatcnt.sp
+arch/mips/fcntl.h        : linux/arch/mips/fcntl.mh ../crwatcnt.sp
+arch/mips/signal.h       : linux/arch/mips/signal.mh ../crwatcnt.sp
+arch/mips/sigposix.h     : linux/arch/mips/sigposix.mh ../crwatcnt.sp
+arch/mips/sys/ioctl.h    : linux/arch/mips/sys/ioctl.mh ../crwatcnt.sp
+arch/mips/sys/resource.h : linux/arch/mips/sys/resource.mh ../crwatcnt.sp
+arch/mips/sys/socket.h   : linux/arch/mips/sys/socket.mh ../crwatcnt.sp
+arch/mips/sys/stat.h     : linux/arch/mips/sys/stat.mh ../crwatcnt.sp
+arch/mips/sys/types.h    : linux/arch/mips/sys/types.mh ../crwatcnt.sp
 
 !else ifeq system qnx
 
 dirent.h        : ../quantum/dirent.mh $(packll)
 cdrom.h         : ../quantum/cdrom.mh $(packll)
-fcntl.h         : ../watcom/fcntl.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
+fcntl.h         : fcntl.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
 grp.h           : ../quantum/grp.mh $(packll)
-process.h       : ../watcom/process.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension)
+process.h       : process.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension)
 pwd.h           : ../quantum/pwd.mh $(packll)
 regex.h         : ../quantum/regex.mh $(packll)
 sgtty.h         : ../quantum/sgtty.mh $(packll)
@@ -332,6 +355,7 @@ sys/stat.h      : ../quantum/stat.mh $(packll)
 sys/statfs.h    : ../quantum/statfs.mh $(packll)
 sys/sys_msg.h   : ../quantum/sys_msg.mh $(packll)
 sys/termio.h    : ../quantum/termio.mh $(packll)
+sys/time.h      : ../quantum/sys_time.mh $(packll)
 sys/timers.h    : ../quantum/timers.mh $(packll)
 sys/times.h     : ../quantum/times.mh $(packll)
 sys/trace.h     : ../quantum/trace.mh $(packll)

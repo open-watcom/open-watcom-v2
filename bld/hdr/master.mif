@@ -10,15 +10,19 @@ splice = wsplice -i.. $($(system)_options) ../common.sp $[@ $^@
 psplice = wsplice -i.. $($(system)_options) $(options_$^&) ../common.sp $[@ $^@
 csplice = wsplice -i.. $($(system)_options) $(options_c_$^&) ../common.sp $[@ $^@
 
+dos_dirs   = sys
+linux_dirs = arch/mips/sys arch/mips arch/i386/sys arch/i386 arch sys netinet arpa
+qnx_dirs   = sys
+
+dos_path   = ../watcom
+linux_path = ../watcom
+qnx_path   = ../quantum;../watcom
+
 .EXTENSIONS
 .EXTENSIONS : . .h .hpp .cnv .mh .mhp
 
-all : $($(system)_files) .symbolic
+all : $($(system)_dirs) $($(system)_files) .symbolic
     @%null
-
-dos_path   = ../watcom/dos
-linux_path = ../watcom/linux
-qnx_path   = ../quantum
 
 .mh:  $($(system)_path);../watcom
 .mhp: $($(system)_path);../watcom
@@ -29,6 +33,39 @@ qnx_path   = ../quantum
 .mh.h:
         $(csplice)
 
+{dos}.mh.h:
+        $(splice)
+
+{linux}.mh.h:
+        $(splice)
+
+{sys}.mh{sys}.h:
+        $(splice)
+
+{dos/sys}.mh{sys}.h:
+        $(splice)
+
+{linux/sys}.mh{sys}.h:
+        $(splice)
+
+{linux/arpa}.mh{arpa}.h:
+        $(splice)
+
+{linux/netinet}.mh{netinet}.h:
+        $(splice)
+
+{linux/arch/i386}.mh{arch/i386}.h:
+        $(splice)
+
+{linux/arch/i386/sys}.mh{arch/i386/sys}.h:
+        $(splice)
+
+{linux/arch/mips}.mh{arch/mips}.h:
+        $(splice)
+
+{linux/arch/mips/sys}.mh{arch/mips/sys}.h:
+        $(splice)
+
 .mh.cnv:
         $(splice)
 
@@ -37,30 +74,6 @@ qnx_path   = ../quantum
 #
 .mh.:
         $(psplice)
-
-#
-# Special case for sys/time.h since there is also a time.h
-#
-!ifeq system qnx
-sys/time.h : ../quantum/sys_time.mh $(packll)
-        $(splice)
-!endif
-!ifeq system linux
-sys/time.h : sys_time.mh ../crwatcnt.sp ../readonly.sp $(cplus) $(packlnxk)
-        $(splice)
-!endif
-#
-# Special case for sys/utime.h since there is also a utime.h
-#
-!ifeq system dos
-sys/utime.h : dos/sys_utim.mh ../crwat.sp ../readonly.sp
-        $(splice)
-
-sys/time.h : sys_time.mh ../crwatcnt.sp ../readonly.sp $(cplus) $(packll)
-        $(splice)
-!endif
-
-!include ../deps.mif
 
 #
 # Special case for cname style headers
@@ -107,10 +120,14 @@ options_c_wctype  = -kCONLY
 #
 options_c_graph2   = -i../watcom -kVERSION2
 
-dos_clean   =
-linux_clean = arpa/*.h netinet/*.h
-qnx_clean   =
+!ifneq $(system)_dirs
+$($(system)_dirs):
+    @if not exist $@ mkdir $@
+!endif
+
+!include ../deps.mif
 
 clean: .SYMBOLIC
-      rm -f *.h sys/*.h *.hpp common.cnv $($(system)_clean)
-      rm -f $(noext)
+    rm -f *.h *.hpp common.cnv
+    rm -f $(noext)
+    !rm -rf $($(system)_dirs)

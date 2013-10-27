@@ -3,7 +3,6 @@
  *
 :include crwatcnt.sp
  */
-
 #ifndef _SCHED_H_INCLUDED
 #define _SCHED_H_INCLUDED
 

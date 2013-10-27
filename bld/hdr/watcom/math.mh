@@ -26,7 +26,7 @@
 #include <cmath>
 #undef  _INCLUDED_FROM_MATH_H
 
-// C99 functions in math.h
+// functions in math.h
 using std::acos;
 using std::asin;
 using std::atan;

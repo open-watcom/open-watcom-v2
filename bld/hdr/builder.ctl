@@ -16,7 +16,7 @@ set PROJNAME=Standard header files
 #======================
     <CPCMD> dos/*.h*           <OWRELROOT>/h/
     <CPCMD> dos/*.cnv          <OWRELROOT>/h/
-    <CPCMD> dos/sys/*.h        <OWRELROOT>/h/sys/
+    <CPCMD> dos/sys/*          <OWRELROOT>/h/sys/
     <CPCMD> dos/algorith       <OWRELROOT>/h/
     <CPCMD> dos/bitset         <OWRELROOT>/h/
     <CPCMD> dos/cassert        <OWRELROOT>/h/
@@ -75,9 +75,9 @@ set PROJNAME=Standard header files
     <CPCMD> dos/vector         <OWRELROOT>/h/
 
     <CPCMD> linux/*.h*         <OWRELROOT>/lh/
-    <CPCMD> linux/arpa/*.h     <OWRELROOT>/lh/arpa/
-    <CPCMD> linux/sys/*.h      <OWRELROOT>/lh/sys/
-    <CPCMD> linux/netinet/*.h  <OWRELROOT>/lh/netinet/
+    <CPCMD> linux/arpa/*       <OWRELROOT>/lh/arpa/
+    <CPCMD> linux/sys/*        <OWRELROOT>/lh/sys/
+    <CPCMD> linux/netinet/*    <OWRELROOT>/lh/netinet/
     <CPCMD> linux/algorith     <OWRELROOT>/lh/
     <CPCMD> linux/bitset       <OWRELROOT>/lh/
     <CPCMD> linux/cassert      <OWRELROOT>/lh/
@@ -135,13 +135,13 @@ set PROJNAME=Standard header files
     <CPCMD> linux/valarray     <OWRELROOT>/lh/
     <CPCMD> linux/vector       <OWRELROOT>/lh/
 
-    <CPCMD> linux/arch/i386/*.h       <OWRELROOT>/lh/arch/i386/
-    <CPCMD> linux/arch/i386/sys/*.h   <OWRELROOT>/lh/arch/i386/sys/
-    <CPCMD> linux/arch/mips/*.h       <OWRELROOT>/lh/arch/mips/
-    <CPCMD> linux/arch/mips/sys/*.h   <OWRELROOT>/lh/arch/mips/sys/
+    <CPCMD> linux/arch/i386/*       <OWRELROOT>/lh/arch/i386/
+    <CPCMD> linux/arch/i386/sys/*   <OWRELROOT>/lh/arch/i386/sys/
+    <CPCMD> linux/arch/mips/*       <OWRELROOT>/lh/arch/mips/
+    <CPCMD> linux/arch/mips/sys/*   <OWRELROOT>/lh/arch/mips/sys/
 
     <CCCMD> qnx/*.h*           <OWRELROOT>/qh/
-    <CCCMD> qnx/sys/*.h        <OWRELROOT>/qh/sys/
+    <CCCMD> qnx/sys/*          <OWRELROOT>/qh/sys/
 
 [ BLOCK . . ]
 #============

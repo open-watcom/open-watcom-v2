@@ -22,7 +22,6 @@
 ::
 ::
 :: NB: bld/lib_misc/h/variety.h needs to be kept in sync with this file
-
 #ifndef __COMDEF_H_INCLUDED
 #define __COMDEF_H_INCLUDED
 

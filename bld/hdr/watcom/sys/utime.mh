@@ -1,0 +1,27 @@
+/*
+ *  sys/utime.h utimbuf structure and prototypes
+ *
+:include crwatqnx.sp
+ */
+#ifndef _SYS_UTIME_H_INCLUDED
+#define _SYS_UTIME_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+:include pshpackl.sp
+
+:include timet.sp
+
+:include wchar_t.sp
+
+:include utime.sp
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif
