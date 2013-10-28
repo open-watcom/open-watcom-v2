@@ -48,7 +48,7 @@ extern void             setsp( void __near * );
 extern void             setbp( void __near * );
 #pragma aux setbp = 0x89 0xc5 parm [ eax ];
 
-void *SafeRecurseCpp( sr_func rtn, void *arg )
+void *SafeRecurseCpp( func_sr rtn, void *arg )
 /********************************************/
 /* This code assumes NO parameters on the stack! */
 {
@@ -78,7 +78,7 @@ void *SafeRecurseCpp( sr_func rtn, void *arg )
 
 #else
 
-void    *SafeRecurseCpp( sr_func rtn, void *arg )
+void    *SafeRecurseCpp( func_sr rtn, void *arg )
 /***********************************************/
 {
     return( rtn( arg ) );

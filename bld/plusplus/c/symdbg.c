@@ -630,8 +630,8 @@ static dbg_type symCVDebugClassType( TYPE type )
     return( dt );
 }
 
-static void *symbolicDebugClassType( void *type )
-/************************************************/
+static dbg_type symbolicDebugClassType( TYPE type )
+/*************************************************/
 {
     dbg_type ret;
 
@@ -640,7 +640,7 @@ static void *symbolicDebugClassType( void *type )
     } else {
         ret = symWVDebugClassType( type );
     }
-    return( (void *)(pointer_int)ret );
+    return( ret );
 }
 
 static dbg_type basedPointerType( TYPE type, TYPE base, SD_CONTROL control )
@@ -895,7 +895,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
             prevFwdInfo = fwd_info;
             {
                 // from code generator
-                dt = (dbg_type)(pointer_int)SafeRecurseCpp( &symbolicDebugClassType, type );
+                dt = (dbg_type)SafeRecurseCpp( (func_sr)symbolicDebugClassType, type );
             }
             if( fwd_info->dn != NULL ) {
                 dt = DBEndName( fwd_info->dn, dt );

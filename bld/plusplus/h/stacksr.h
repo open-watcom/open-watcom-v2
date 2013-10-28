@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-typedef void *(*sr_func)(void *);
+typedef void *(*func_sr)(void *);
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
 
@@ -41,4 +41,4 @@ typedef void *(*sr_func)(void *);
 
 #endif
 
-extern  void *SafeRecurseCpp( sr_func rtn, void *arg );
+extern  void *SafeRecurseCpp( func_sr rtn, void *arg );
