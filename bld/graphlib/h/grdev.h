@@ -54,13 +54,13 @@
   #endif
 #endif
 
-typedef grcolor near getdot_fn( char far *, int );
-typedef void    near putdot_fn( char far *, grcolor, int );
-typedef void    near fill_fn( char far *, grcolor, int, int, int );
-typedef void    near copy_fn( char far *, char far *, int, int, int );
-typedef short   near scan_fn( char far *, grcolor, int, int, int, int );
+typedef grcolor __near getdot_fn( char __far *, int );
+typedef void    __near putdot_fn( char __far *, grcolor, int );
+typedef void    __near fill_fn( char __far *, grcolor, int, int, int );
+typedef void    __near copy_fn( char __far *, char __far *, int, int, int );
+typedef short   __near scan_fn( char __far *, grcolor, int, int, int, int );
 
-typedef void    near pascal move_fn( void );
+typedef void    __near __pascal move_fn( void );
 
 #pragma aux (GETDOT_FUNC)  getdot_fn;
 #pragma aux (PUTDOT_FUNC)  putdot_fn;

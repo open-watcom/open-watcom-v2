@@ -52,14 +52,14 @@ enum {
 
 
 #if !defined ( __386__ )
-extern short            GetVESAInfo( short, short, void far * );
+extern short            GetVESAInfo( short, short, void __far * );
 #pragma aux             GetVESAInfo = \
                         "push bp" \
                         "int 10h"  \
                         "pop bp"  \
                         parm caller [ax] [cx] [es di] value [ax];
 #elif defined( __QNX__ )
-extern short            GetVESAInfo( short, short, void far * );
+extern short            GetVESAInfo( short, short, void __far * );
 #pragma aux             GetVESAInfo = \
                         "push bp" \
                         "int 10h"  \

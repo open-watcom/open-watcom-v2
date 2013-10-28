@@ -47,14 +47,14 @@ struct rgb {
 
 
 #if defined( __386__ )
-extern void             VideoIntDAC( short, short, short, void far * );
+extern void             VideoIntDAC( short, short, short, void __far * );
 #pragma aux             VideoIntDAC = \
                         "push    bp   ", \
                         "int     10h  ", \
                         "pop     bp   ", \
                         parm caller [ax] [bx] [cx] [es edx];
 #else
-extern void             VideoIntDAC( short, short, short, void far * );
+extern void             VideoIntDAC( short, short, short, void __far * );
 #pragma aux             VideoIntDAC = \
                         "push    bp   ", \
                         "int     10h  ", \
@@ -102,7 +102,7 @@ short _FastMap( long _WCI86FAR *colours, short num )
 {
     short               i;
     long                colour;
-    struct rgb far      *rgb;
+    struct rgb __far    *rgb;
     RM_ALLOC            mem;
 
     if( _RMAlloc( num * sizeof( struct rgb ), &mem ) ) {
@@ -193,7 +193,7 @@ extern void             PharlapFree( short );
                         "int  21h     ", \
                         parm [cx];
 
-extern short            PharlapRMI( void far *parms, short bx, short cx, short di );
+extern short            PharlapRMI( void __far *parms, short bx, short cx, short di );
 #pragma aux             PharlapRMI = \
                         "push ds      ", \
                         "push fs      ", \
@@ -203,7 +203,7 @@ extern short            PharlapRMI( void far *parms, short bx, short cx, short d
                         "pop  ds      ", \
                         parm caller [fs edx] [ebx] [ecx] [edi] value [ax];
 
-extern long             PharlapRMI2( void far *parms );
+extern long             PharlapRMI2( void __far *parms );
 #pragma aux             PharlapRMI2 = \
                         "push ds      ", \
                         "push esi     ", \

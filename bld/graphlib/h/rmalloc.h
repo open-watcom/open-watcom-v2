@@ -36,7 +36,7 @@
 
 typedef struct rm_alloc {
     unsigned short      rm_seg;
-    void far            *pm_ptr;
+    void __far            *pm_ptr;
 } RM_ALLOC;
 
 

@@ -66,7 +66,7 @@ inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"
 
 extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_FARD=
 
-extra_cpp_flags_i86 = -D_CGRAPH=_loadds
+extra_cpp_flags_i86 = -D_CGRAPH=__loadds
 extra_cpp_flags_386 = -D_CGRAPH=
 !ifeq convention stack
 extra_cpp_flags_386 += -D__STACK

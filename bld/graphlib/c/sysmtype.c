@@ -77,7 +77,7 @@ short _SysMonType( void )
     char            info;
     char            active_type;
     char            alternate_type;
-//  char far *      p;
+//    char __far *    p;
 
     dcc = VideoInt( _BIOS_VIDEO_DCC, 0, 0, 0 ) & 0x00ff;
     if( dcc == ( _BIOS_VIDEO_DCC >> 8 ) ) {       /* DCC function supported */
@@ -93,7 +93,7 @@ short _SysMonType( void )
             }
             if( active_type == MT_EGA_COLOUR ||
                 alternate_type == MT_EGA_COLOUR ) {
-                info = *(char far *)_BIOS_data( INFO_3 ) & 0x0F;
+                info = *(char __far *)_BIOS_data( INFO_3 ) & 0x0F;
                 if( info == 3 ) {
                     alternate_type = MT_EGA_ENHANCED;
                 }
@@ -149,7 +149,7 @@ static short DCCEmulate( void )
             alternate_type = CheckMONO();
         } else {
             if( ega_color == 0 ) {                          /* EGA colour   */
-                info = *(char far *)_BIOS_data( INFO_3 ) & 0x0F;
+                info = *(char __far *)_BIOS_data( INFO_3 ) & 0x0F;
                 if( info == 3 || info == 9 ) {
                     active_type = MT_EGA_ENHANCED;
                 } else {

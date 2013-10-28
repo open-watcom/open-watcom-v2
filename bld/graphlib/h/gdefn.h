@@ -92,7 +92,7 @@
     #pragma aux VGAPAGE_FUNC "*" parm caller [ax];
 #endif
 
-typedef void pascal vgapage_fn( short );
+typedef void __pascal vgapage_fn( short );
 
 #pragma aux (VGAPAGE_FUNC) vgapage_fn;
 
@@ -323,7 +323,7 @@ extern short            _SysMonType( void );
 extern short            _SuperVGAType( void );
 
 extern short            _L0BlockClip( short *, short *, short *, short * );
-extern void             _L0DrawLine( char far *, grcolor, unsigned short, short,
+extern void             _L0DrawLine( char __far *, grcolor, unsigned short, short,
                                          short, short, move_fn *, move_fn *, putdot_fn * );
 extern void             _L0Ellipse( short, short, short, short, void (*)( short, short, short ) );
 extern short            _L0LineClip( short *, short *, short *, short * );

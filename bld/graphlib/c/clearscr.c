@@ -136,7 +136,7 @@ void _TxtClear( short r1, short c1, short r2, short c2 )
     short               i;
     unsigned short      seg;
     unsigned int        offset;
-    short far           *p;
+    short __far         *p;
     short               blank;
 
     if( _CurrState->vc.mode == _TEXTMONO ) {
@@ -147,7 +147,7 @@ void _TxtClear( short r1, short c1, short r2, short c2 )
         offset = _CgaOff;
     }
     offset += 2 * ( r1 * _CurrState->vc.numtextcols + c1 ) +
-                    _CurrActivePage * *(short far *)_BIOS_data( CRT_LEN );
+                    _CurrActivePage * *(short __far *)_BIOS_data( CRT_LEN );
     len = c2 - c1 + 1;
     blank = ( _CharAttr << 8 ) + ' ';
     for( ; r1 <= r2; ++r1 ) {

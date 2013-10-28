@@ -133,8 +133,8 @@ void _PutChar( short row, short col, short ch )
     grcolor             colour;
     short               space;
     short               prev_action;
-    char far            *p;
-    short far           *screen;
+    char __far          *p;
+    short __far         *screen;
     char _WCI86FAR      *mask;
     gr_device _FARD     *dev_ptr;
     fill_fn             *fill;
@@ -146,8 +146,8 @@ void _PutChar( short row, short col, short ch )
         } else {
             p = MK_FP( _CgaSeg, _CgaOff );
         }
-        p += _CurrActivePage * *(short far *)_BIOS_data( CRT_LEN );
-        screen = (short far *) p;
+        p += _CurrActivePage * *(short __far *)_BIOS_data( CRT_LEN );
+        screen = (short __far *) p;
         screen += row * _CurrState->vc.numtextcols + col;
         *screen = ( _CharAttr << 8 ) + ch;
     } else if( _IsDBCS ) {      // use BIOS for DBCS

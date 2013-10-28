@@ -60,7 +60,7 @@ static int TestForVESA( void )
 {
     short               val;
 #if defined( __386__ ) && !defined( __QNX__ )
-    char far            *buf;
+    char __far          *buf;
     RM_ALLOC            mem;
     int                 is_vesa;
 #else
@@ -96,8 +96,8 @@ short _SuperVGAType( void )
 
 {
     char                dcc;
-    unsigned char far   *p;
-    unsigned char far   *s;
+    unsigned char __far *p;
+    unsigned char __far *s;
     short               len;
     short               val;
     char                id;
@@ -179,7 +179,7 @@ short _SuperVGAType( void )
 
 //  test for Genoa
     p = MK_FP( _RomSeg, _RomOff + 0x0037 );
-    val = *(short far *) p;
+    val = *(short __far *)p;
 #if defined( __QNX__ )
     seg_len = LoadSegLimit( _RomSeg );
     if( _RomOff + val <= seg_len - 3 ) {

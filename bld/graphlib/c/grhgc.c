@@ -59,7 +59,7 @@ static void GraphicsMode( void )
 {
     short           i;
 
-    *(char far *)_BIOS_data( EQUIP_FLAGS ) |= 0x30; // turn on monochrome bits
+    *(char __far *)_BIOS_data( EQUIP_FLAGS ) |= 0x30; // turn on monochrome bits
     outp( CRT_CONFIG, HERC_HALF );                  // enable half support
     outp( CRT_CNTRL, 2 );                           // set graphics mode (with screen off)
     for( i = 0; i < 12; i++ ) {                     // load CRT registers
@@ -68,10 +68,10 @@ static void GraphicsMode( void )
     _fmemset( MK_FP( _MonoSeg, _MonoOff ), 0, 0x8000 );   // clear screen
     outp( CRT_CNTRL, 0x0A );                        // turn screen back on
 
-    *(char far *)_BIOS_data( CRT_MODE ) = _HERCMONO;// set mode
-    *(char far *)_BIOS_data( CRT_COLS ) = 90;       // set # of columns to 90
-    *(char far *)_BIOS_data( ROWS ) = 25 - 1;       // set # of rows to 25
-    *(short far *)_BIOS_data( CURSOR_POSN ) = 0;    // set cursor to (0,0)
+    *(char __far *)_BIOS_data( CRT_MODE ) = _HERCMONO;// set mode
+    *(char __far *)_BIOS_data( CRT_COLS ) = 90;       // set # of columns to 90
+    *(char __far *)_BIOS_data( ROWS ) = 25 - 1;       // set # of rows to 25
+    *(short __far *)_BIOS_data( CURSOR_POSN ) = 0;    // set cursor to (0,0)
 }
 
 

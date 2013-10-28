@@ -77,7 +77,7 @@ void _CursorOff( void )
             TextCursor( 0 );
         } else {
             // if cursor is not where we think it is (printf), assume it is off
-            cursor = *(short far *)_BIOS_data( CURSOR_POSN + 2 * _CurrActivePage );
+            cursor = *(short __far *)_BIOS_data( CURSOR_POSN + 2 * _CurrActivePage );
             if( cursor == ( ( _TextPos.row << 8 ) + _TextPos.col ) ) {
                 GraphCursor();
             }

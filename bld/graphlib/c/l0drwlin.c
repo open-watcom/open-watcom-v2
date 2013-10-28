@@ -36,8 +36,8 @@
 
 
 #if defined( __QNX__ )
-    #define COMP_FAR    _far            // compile into another segment
-    #define FUNC_FAR    _far            // code segment is always far for QNX
+    #define COMP_FAR    __far           // compile into another segment
+    #define FUNC_FAR    __far           // code segment is always far for QNX
 #else
     #define COMP_FAR                    // compile onto the stack
     #define FUNC_FAR    _WCI86FAR       // near for 32-bit/far for 16-bit
@@ -72,13 +72,13 @@
   #endif
 #endif
 
-typedef void (FUNC_FAR line_fn)( char far *, grcolor, int, int, int, int );
+typedef void (FUNC_FAR line_fn)( char __far *, grcolor, int, int, int, int );
 #pragma aux (LINE_FUNC) line_fn;
 
 #define OutByte( p )    *stack++ = p
 #define OutInt( p )     *(unsigned int COMP_FAR *)stack = p; p += sizeof( int )
 
-void _L0DrawLine( char far *screen_ptr, grcolor color, unsigned short style,
+void _L0DrawLine( char __far *screen_ptr, grcolor color, unsigned short style,
                   short bit_mask, short majordif, short minordif,
                   move_fn *majorfn, move_fn *minorfn, putdot_fn *plot )
 /*========================================================================*/

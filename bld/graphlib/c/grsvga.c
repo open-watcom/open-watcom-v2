@@ -79,7 +79,7 @@ static vgapage_fn _WCI86FAR *_VGAPageFunc[ _SV_MAX-1 ] = {
 };
 
 #if defined( __386__ ) && !defined(__QNX__)
-static void mymemcpy( char *d, char far *s, int len )
+static void mymemcpy( char *d, char __far *s, int len )
 {
     while( len-- > 0 ) {
         *d++ = *s++;
@@ -99,7 +99,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     char                buf[ 256 ];
 #if defined( __386__ ) && !defined(__QNX__)
 //    short               i;
-    char far            *rbuf;
+    char __far          *rbuf;
     RM_ALLOC            mem;
 #endif
 //#endif

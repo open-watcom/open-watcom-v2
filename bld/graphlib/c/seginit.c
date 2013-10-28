@@ -126,10 +126,10 @@ void _InitSegments( void )
 #else
 typedef unsigned short USHORT;
 typedef unsigned long ULONG;
-typedef unsigned short far * PSEL;
-extern void far pascal DosMapRealSeg( USHORT, ULONG, PSEL );
-extern void far pascal DosGetBIOSSeg( PSEL );
-extern void far pascal DosCreateCSAlias( USHORT, PSEL );
+typedef unsigned short __far * PSEL;
+extern void __far __pascal DosMapRealSeg( USHORT, ULONG, PSEL );
+extern void __far __pascal DosGetBIOSSeg( PSEL );
+extern void __far __pascal DosCreateCSAlias( USHORT, PSEL );
 #endif
 
 #define NUM_SELECTORS   4
@@ -184,7 +184,7 @@ extern short  os_version( void );
         "pop bx"        \
         value           [ax];   /* al=major ah=minor */
 
-extern dbcs_pair far *  dbcs_vector_table( void );
+extern dbcs_pair __far *  dbcs_vector_table( void );
 #pragma aux             dbcs_vector_table = \
         "push ds"       \
         "push si"       \
@@ -205,7 +205,7 @@ void _InitSegments( void )
     unsigned short      seg;
     unsigned char       os_major;
     dbcs_pair           *p;
-    dbcs_pair far       *s;
+    dbcs_pair __far     *s;
 
     _StackSeg = FP_SEG( &seg );         // point to stack segment
 #if defined( __386__ )

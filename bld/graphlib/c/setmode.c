@@ -117,7 +117,7 @@ short _SetMode( short mode )
     This function sets the video mode on IBM PC family. */
 
 {
-    char far *          p;
+    char __far          *p;
 
     if( _ValidMode( mode ) ) {
         p = _BIOS_data( EQUIP_FLAGS );        // equipment flags

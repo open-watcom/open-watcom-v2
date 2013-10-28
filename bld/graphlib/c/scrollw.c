@@ -131,9 +131,9 @@ static void TxtShift( short src_y, short dst_y,
 //===============================================================
 
 {
-    char far            *p;
-    short far           *src;
-    short far           *dst;
+    char __far          *p;
+    short __far         *src;
+    short __far         *dst;
     short               width;
 
     if( _CurrState->vc.mode == _TEXTMONO ) {
@@ -141,10 +141,10 @@ static void TxtShift( short src_y, short dst_y,
     } else {
         p = MK_FP( _CgaSeg, _CgaOff );
     }
-    p += _CurrActivePage * *(short far *)_BIOS_data( CRT_LEN );
-    src = (short far *) p;
+    p += _CurrActivePage * *(short __far *)_BIOS_data( CRT_LEN );
+    src = (short __far *) p;
     src += src_y * _CurrState->vc.numtextcols + xl;
-    dst = (short far *) p;
+    dst = (short __far *) p;
     dst += dst_y * _CurrState->vc.numtextcols + xl;
 
     dir *= _CurrState->vc.numtextcols;

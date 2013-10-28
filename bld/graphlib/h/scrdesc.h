@@ -33,7 +33,7 @@
 #pragma pack(push, 1);
 typedef struct screen_description
 {
-    char far    *mem;
+    char __far    *mem;
     grcolor     colour;
     short       mask;
     short       bit_pos;
