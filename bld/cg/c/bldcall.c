@@ -768,6 +768,7 @@ static void SplitStructParms( pn *parm_list, call_state *state )
     state = state;
     tipe = U8;
 #elif _TARGET & _TARG_MIPS
+    state = state;
     tipe = U4;
 #else
     #error Unknown RISC CPU

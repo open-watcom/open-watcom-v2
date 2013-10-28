@@ -35,8 +35,6 @@
 #include "cfloat.h"
 
 
-extern  reallong        CFToF(cfloat*);
-
 extern  void    CFCnvTarget( cfloat *f, flt *buffer, int class ) {
 /****************************************************************************/
 

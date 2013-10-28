@@ -360,7 +360,7 @@ aux_info *MagicKeyword( char *name )
         }
     }
     for( i = 0; MagicWords[ i ].name != NULL; ++i ) {
-        if( strcmp( name, MagicWords[ i ].name ) == 0 ) {
+        if( strcmp( name, MagicWords[ i ].name + 2 ) == 0 ) {
             break;
         }
     }

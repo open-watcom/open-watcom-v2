@@ -1228,7 +1228,7 @@ static int lookupMagicKeyword(  // LOOKUP A MAGIC KEYWORD
         }
     }
     for( i = 0; i < sizeof( magicWords ) / sizeof( magicWords[0] ) - 1; i++ ) {
-        if( strcmp( magicWords[i].name, name ) == 0 ) break;
+        if( strcmp( magicWords[i].name + 2, name ) == 0 ) break;
     }
     return( i );
 }
