@@ -36,16 +36,16 @@
 
 #include "walloca.h"
 
-extern char near        *bp( void );
+extern char __near      *bp( void );
 #pragma aux bp = 0x89 0xe8 value [ eax ];
 
-extern char near        *sp( void );
+extern char __near      *sp( void );
 #pragma aux sp = value [ esp ];
 
-extern void             setsp( void near * );
+extern void             setsp( void __near * );
 #pragma aux setsp = 0x89 0xc4 parm [ eax ] modify [ esp ];
 
-extern void             setbp( void near * );
+extern void             setbp( void __near * );
 #pragma aux setbp = 0x89 0xc5 parm [ eax ];
 
 void *SafeRecurseCpp( sr_func rtn, void *arg )

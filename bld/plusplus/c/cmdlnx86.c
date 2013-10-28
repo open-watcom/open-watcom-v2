@@ -354,11 +354,11 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
             break;
         }
     }
+    DataPtrSize = TARGET_POINTER;
+    CodePtrSize = TARGET_POINTER;
     switch( data->mem_model ) {
     case OPT_mem_model_ms:
         model = 's';
-        DataPtrSize = TARGET_POINTER;
-        CodePtrSize = TARGET_POINTER;
         PreDefineStringMacro( "_M_" MM_ARCH "SM" );
         PreDefineStringMacro( "__SMALL__" );
         CompFlags.strings_in_code_segment = 0;
@@ -368,13 +368,19 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     case OPT_mem_model_mm:
         model = 'm';
         WatcallInfo.cclass |= FAR_CALL;
-        DataPtrSize = TARGET_POINTER;
         CodePtrSize = TARGET_FAR_POINTER;
         PreDefineStringMacro( "_M_" MM_ARCH "MM" );
         PreDefineStringMacro( "__MEDIUM__" );
         CompFlags.strings_in_code_segment = 0;
         TargetSwitches &= ~CONST_IN_CODE;
         bit |= BIG_CODE | CHEAP_POINTER;
+        break;
+    case OPT_mem_model_mc:
+        model = 'c';
+        PreDefineStringMacro( "_M_" MM_ARCH "CM" );
+        PreDefineStringMacro( "__COMPACT__" );
+        DataPtrSize = TARGET_FAR_POINTER;
+        bit |= BIG_DATA | CHEAP_POINTER;
         break;
     case OPT_mem_model_ml:
         model = 'l';
@@ -384,14 +390,6 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= BIG_CODE | BIG_DATA | CHEAP_POINTER;
-        break;
-    case OPT_mem_model_mc:
-        model = 'c';
-        PreDefineStringMacro( "_M_" MM_ARCH "CM" );
-        PreDefineStringMacro( "__COMPACT__" );
-        CodePtrSize = TARGET_POINTER;
-        DataPtrSize = TARGET_FAR_POINTER;
-        bit |= BIG_DATA | CHEAP_POINTER;
         break;
 #if _CPU == 8086
     case OPT_mem_model_mh:
@@ -409,8 +407,6 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         /* fall thru */
     case OPT_mem_model_mf:
         model = 's';
-        DataPtrSize = TARGET_POINTER;
-        CodePtrSize = TARGET_POINTER;
         PreDefineStringMacro( "_M_" MM_ARCH "FM" );
         PreDefineStringMacro( "__FLAT__" );
         bit |= FLAT_MODEL | CHEAP_POINTER;

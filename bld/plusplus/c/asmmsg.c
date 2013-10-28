@@ -34,6 +34,12 @@
 
 #if _INTEL_CPU
 
+#ifdef _M_I86
+#define ASMFAR __far
+#else
+#define ASMFAR
+#endif
+
 #define asmerr(code,msg)   msg
 #include "asmerr.h"
 

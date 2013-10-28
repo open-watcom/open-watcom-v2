@@ -32,8 +32,13 @@
 #include <string.h>
 #include "cvars.h"
 
-//extern void CErr2p(int,char*);
-#if ( _CPU == 8086 ) || ( _CPU == 386 )
+#if _INTEL_CPU
+
+#ifdef _M_I86
+#define ASMFAR __far
+#else
+#define ASMFAR
+#endif
 
 #define asmerr(code,msg)   msg
 #include "asmerr.h"

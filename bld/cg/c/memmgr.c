@@ -289,7 +289,7 @@ static  void    CalcMemSize( void )
                     }
                 }
             } else {
-                memory_available = *(char * far *)MK_FP( __psp, 0x60 ) - memstart;
+                memory_available = *(char * __far *)MK_FP( __psp, 0x60 ) - memstart;
             }
             if( memory_available < _1M ) memory_available = _1M;
         }

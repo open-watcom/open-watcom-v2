@@ -31,22 +31,19 @@
 
 #include <stddef.h>
 #include <stdarg.h>
+#include "bool.h"
 
 #define ALLOC_BYTE      0xA5    /* the fill value for allocated memory */
 #define FREED_BYTE      0xBD    /* the fill value for freed memory */
 #define TRACK_SIZE      0xFF0
 
-enum { FALSE = 0==1, TRUE = 0==0 };
-
-#ifndef FAR
-    #ifdef _EXTRA_MEM
-        #define FAR far
-    #else
-        #define FAR
-    #endif
+#ifdef _EXTRA_MEM
+    #define _FAR    __far
+#else
+    #define _FAR
 #endif
 
-typedef struct track_entry FAR * TRPTR;
+typedef struct track_entry _FAR * TRPTR;
 
 typedef struct tracker {
         TRPTR           allocated_list;
@@ -74,7 +71,7 @@ extern  void            *MemOtherOk( void );
 
 #ifdef _EXTRA_MEM
 
-extern  void FAR *      ExtMemAlloc(unsigned int);
+extern  void _FAR *      ExtMemAlloc(unsigned int);
 #pragma aux ExtMemAlloc = \
         0xB4 0x48       /*      mov     ax,048H */ \
         0xCD 0x21       /*      int     21H */ \
@@ -94,7 +91,7 @@ extern  unsigned int    ExtMemAvail();
         value [ bx ] \
         ;
 
-extern  void            ExtMemFree(void FAR *);
+extern  void            ExtMemFree(void _FAR *);
 #pragma aux ExtMemFree = \
         0x06            /*      push    es */ \
         0x8E 0xC2       /*      mov     es,dx */ \
@@ -266,7 +263,7 @@ extern  tracker *TrMemInit( char *name,
 #ifdef _EXTRA_MEM
     if( ExtMem == 0 ) {
         ExtMem = ExtMemAlloc( TRACK_SIZE );
-        if( ExtMem == (void FAR *)0 ) {
+        if( ExtMem == (void _FAR *)0 ) {
             ExtMem = ExtMemAlloc( ExtMemAvail() );
         }
         TrkFrl = 0;

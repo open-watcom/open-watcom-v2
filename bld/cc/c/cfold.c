@@ -652,7 +652,7 @@ void MakeBinaryFloat( TREEPTR opnd )
 }
 
 
-int FltCmp( long_double near *ld1, long_double near *ld2 )
+int FltCmp( ld_arg ld1, ld_arg ld2 )
 {
 #ifdef _LONG_DOUBLE_
     return( __FLDC( ld1, ld2 ) );
@@ -689,7 +689,7 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
 
     switch( tree->op.opr ) {
     case OPR_CMP:
-        cond = FltCmp( (long_double near *)&ld1, (long_double near *)&ld2 );
+        cond = FltCmp( &ld1, &ld2 );
         switch( tree->op.u1.cc ) {
         case CC_EQ:
             value = (cond == 0);
