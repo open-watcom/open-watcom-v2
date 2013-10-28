@@ -143,7 +143,7 @@ extern void                     GUIFiniMouse( void );
 extern void                     GUIInitGraphicsMouse( gui_window_styles );
 extern bool                     UserScreen( void );
 
-extern void                     far *video_buffer( void far * );
+extern void                     __far *video_buffer( void __far * );
 
 extern screen_state             ScrnState;
 extern flip_types               FlipMech = 0;
@@ -173,7 +173,7 @@ static addr32_off               PgmMouse;
 static addr32_off               DbgMouse;
 static display_configuration    HWDisplay;
 static unsigned_8               *RegenSave;
-static void                     far *VirtScreen;
+static void                     __far *VirtScreen;
 static int_8                    ColourAdapters[] = {
                                     ADAPTER_NONE,     /* NONE              */
                                     ADAPTER_MONO,     /* MONOCHROME        */

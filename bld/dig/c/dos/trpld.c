@@ -55,7 +55,7 @@ extern unsigned_32      GetSystemHandle( int );
 extern int              PathOpen(char *,unsigned,char *);
 extern unsigned         FileClose( int );
 
-static trap_header      far *TrapCode = NULL;
+static trap_header      __far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
 static char *ReadInTrap( tiny_handle_t fh )
@@ -66,9 +66,9 @@ static char *ReadInTrap( tiny_handle_t fh )
     struct {
         unsigned_16     off;
         unsigned_16     seg;
-    }                   buff[ NUM_BUFF_RELOCS ], far *p;
+    }                   buff[ NUM_BUFF_RELOCS ], __far *p;
     unsigned_16         start_seg;
-    unsigned_16         far *fixup;
+    unsigned_16         __far *fixup;
     tiny_ret_t          ret;
     unsigned            relocs;
 

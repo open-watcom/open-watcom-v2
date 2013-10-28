@@ -149,8 +149,8 @@ typedef struct  {
 #define XCPT_GPAF       8
 #define XCPT_1X_PARITY  9
 
-extern unsigned int CallDosDebug( dos_debug far *ptr );
-ULONG MakeLocalPtrFlat( void far *ptr );
+extern unsigned int CallDosDebug( dos_debug __far *ptr );
+extern ULONG MakeLocalPtrFlat( void __far *ptr );
 extern ULONG MakeFlatPointer( PVOID ptr );
 int IsFlatSeg( USHORT seg );
 

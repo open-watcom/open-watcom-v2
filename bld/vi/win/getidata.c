@@ -38,13 +38,13 @@
     #define FAR     __far
 #endif
 
-int FAR __pascal GetInstanceData( unsigned short, char near *, short );
+int FAR __pascal GetInstanceData( unsigned short, char __near *, short );
 
 /*
  * MyGetInstanceData - The header file defn for GetInstanceData is WRONG,
  *                     so we do it here
  */
-int MyGetInstanceData( unsigned short p1, char near *p2, short p3 )
+int MyGetInstanceData( unsigned short p1, char __near *p2, short p3 )
 {
     return( GetInstanceData( p1, p2, p3 ) );
 }

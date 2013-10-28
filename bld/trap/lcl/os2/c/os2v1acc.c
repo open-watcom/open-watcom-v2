@@ -49,7 +49,7 @@ typedef void (*excfn)();
 
 extern  void    BreakPoint( ULONG );
 #pragma aux     BreakPoint = 0xCC parm [ dx ax ] aborts;
-extern  void    far *Automagic( unsigned short );
+extern  void    __far *Automagic( unsigned short );
 #pragma aux     Automagic = 0x29 0xc4 /* sub sp,ax */\
                             0x89 0xe0 /* mov ax,sp */\
                             0x8c 0xd2 /* mov dx,ss */\
@@ -70,7 +70,7 @@ extern char             UtilBuff[BUFF_SIZE];
 extern HFILE            SaveStdIn;
 extern HFILE            SaveStdOut;
 extern bool             CanExecTask;
-extern USHORT           far *ModHandles;
+extern USHORT           __far *ModHandles;
 extern USHORT           NumModHandles;
 extern int              CurrModHandle;
 extern int              ExceptNum;
@@ -79,7 +79,7 @@ extern scrtype          Screen;
 
 static TRACEBUF         Buff;
 static USHORT           SessionType;
-__GINFOSEG              far *GblInfo;
+__GINFOSEG              __far *GblInfo;
 char                    OS2ExtList[] = { ".exe\0" };
 
 
@@ -93,7 +93,7 @@ watch   WatchPoints[ MAX_WP ];
 short   WatchCount = 0;
 
 #if 0
-static void Out( char far *str )
+static void Out( char __far *str )
 {
     USHORT      written;
 
@@ -108,7 +108,7 @@ static void OutNL()
 static void OutNum( unsigned i )
 {
     char numbuff[10];
-    char far *ptr;
+    char __far *ptr;
 
     ptr = numbuff+10;
     *--ptr = '\0';
@@ -120,7 +120,7 @@ static void OutNum( unsigned i )
 }
 
 
-static void OutBuff( TRACEBUF far *buf )
+static void OutBuff( TRACEBUF __far *buf )
 {
     Out( "pid   = " ); OutNum( buf->pid ); Out( "\r\n" );
     Out( "tid   = " ); OutNum( buf->tid ); Out( "\r\n" );
@@ -134,21 +134,21 @@ static void OutBuff( TRACEBUF far *buf )
 
 
 
-static USHORT WriteRegs( TRACEBUF far *buff )
+static USHORT WriteRegs( TRACEBUF __far *buff )
 {
     buff->cmd = PT_CMD_WRITE_REGS;
     return( DosPTrace( buff ) );
 }
 
 
-static USHORT ReadRegs( TRACEBUF far *buff )
+static USHORT ReadRegs( TRACEBUF __far *buff )
 {
     buff->cmd = PT_CMD_READ_REGS;
     return( DosPTrace( buff ) );
 }
 
 
-static USHORT WriteBuffer( byte far *data, USHORT segv, USHORT offv, USHORT size )
+static USHORT WriteBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT size )
 {
     USHORT  length;
 
@@ -189,7 +189,7 @@ static USHORT WriteBuffer( byte far *data, USHORT segv, USHORT offv, USHORT size
 }
 
 
-static USHORT ReadBuffer( byte far *data, USHORT segv, USHORT offv, USHORT size )
+static USHORT ReadBuffer( byte __far *data, USHORT segv, USHORT offv, USHORT size )
 {
     USHORT      length;
 
@@ -233,7 +233,7 @@ static void RecordModHandle( USHORT value )
 }
 
 
-static void ExecuteCode( TRACEBUF far *buff )
+static void ExecuteCode( TRACEBUF __far *buff )
 {
     for( ;; ) {
         buff->cmd = PT_CMD_GO;
@@ -275,7 +275,7 @@ static void DoDupFile( HFILE old, HFILE new )
 }
 
 #pragma aux DoWritePgmScrn parm [dx ax] [ bx ];
-static void DoWritePgmScrn( char far *buff, USHORT len )
+static void DoWritePgmScrn( char __far *buff, USHORT len )
 {
     USHORT  written;
 
@@ -310,9 +310,9 @@ static long TaskExecute( excfn rtn )
 }
 
 
-long TaskOpenFile( char far *name, int mode, int flags ) {
+long TaskOpenFile( char __far *name, int mode, int flags ) {
 
-    WriteBuffer( (byte far *)name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), strlen( name ) + 1 );
+    WriteBuffer( (byte __far *)name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), strlen( name ) + 1 );
     Buff.u.r.DX = FP_SEG( UtilBuff );
     Buff.u.r.AX = FP_OFF( UtilBuff );
     Buff.u.r.BX = mode;
@@ -671,7 +671,7 @@ USHORT LibLoadPTrace( TRACEBUF *buff )
 #define EXE_IS_PM               0x0300
 
 
-static bool GetExeInfo( USHORT far *pCS, USHORT far *pIP, USHORT far *pExeType, char far *name )
+static bool GetExeInfo( USHORT __far *pCS, USHORT __far *pIP, USHORT __far *pExeType, char __far *name )
 {
     long        open_rc;
     HFILE       handle;
@@ -742,7 +742,7 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
     byte        savecode[LOAD_THIS_DLL_SIZE];
     USHORT      codesize;
     USHORT      len;
-    loadstack_t far *loadstack;
+    loadstack_t __far *loadstack;
     USHORT      dll_name_len;
     char        this_dll[BUFF_SIZE];
 
@@ -760,7 +760,7 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
         return( FALSE );
 
     /* write the routine LoadThisDLL into program's code */
-    len = WriteBuffer( (byte far *)LoadThisDLL, startCS, startIP, codesize );
+    len = WriteBuffer( (byte __far *)LoadThisDLL, startCS, startIP, codesize );
     if( len != codesize )
         return( FALSE );
 
@@ -776,7 +776,7 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
     loadstack->mod_name[1] = Buff.u.r.SS;
     loadstack->phmod[0] = Buff.u.r.SP + offsetof( loadstack_t, hmod );
     loadstack->phmod[1] = Buff.u.r.SS;
-    len = WriteBuffer( (byte far *)loadstack, Buff.u.r.SS, Buff.u.r.SP, sizeof( loadstack_t ) + dll_name_len );
+    len = WriteBuffer( (byte __far *)loadstack, Buff.u.r.SS, Buff.u.r.SP, sizeof( loadstack_t ) + dll_name_len );
     if( len != sizeof( loadstack_t ) + dll_name_len )
         return( FALSE );
 
@@ -984,7 +984,7 @@ trap_retval ReqSet_watch( void )
     if( WatchCount < MAX_WP ) { // nyi - artificial limit (32 should be lots)
         WatchPoints[ WatchCount ].addr.segment = wp->watch_addr.segment;
         WatchPoints[ WatchCount ].addr.offset = wp->watch_addr.offset;
-        ReadBuffer( (byte far *)&buff, wp->watch_addr.segment, wp->watch_addr.offset, sizeof( dword ) );
+        ReadBuffer( (byte __far *)&buff, wp->watch_addr.segment, wp->watch_addr.offset, sizeof( dword ) );
         WatchPoints[ WatchCount ].value = buff;
         ++WatchCount;
     } else {
@@ -1016,7 +1016,7 @@ trap_retval ReqClear_watch( void )
 
 static volatile bool     BrkPending;
 
-static void pascal far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
+static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
     PFNSIGHANDLER   prev_hdl;
     USHORT          prev_act;
@@ -1344,7 +1344,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, unsigned_8 remote )
     trap_version        ver;
     USHORT              os2ver;
     SEL                 li,gi;
-    __LINFOSEG          far *linfo;
+    __LINFOSEG          __far *linfo;
 
     parm = parm;
     Remote = remote;

@@ -42,13 +42,13 @@
 
 #define msgpick( a, b, c, d, e, f )     { a, b, c, d, e, f }
 
-message near MessageArray[] =  {
+message __near MessageArray[] =  {
     #include "spyarray.h"
 };
 
 #define MESSAGEARRAYSIZE            (sizeof( MessageArray )/sizeof( message ))
 
-static message near EditMessageArray[] = {
+static message __near EditMessageArray[] = {
     msgpick( 1, 0, EM_GETSEL,               "EM_GETSEL",                MC_CONTROL, 0L ),
     msgpick( 1, 0, EM_SETSEL,               "EM_SETSEL",                MC_CONTROL, 0L ),
     msgpick( 1, 0, EM_GETRECT,              "EM_GETRECT",               MC_CONTROL, 0L ),
@@ -99,7 +99,7 @@ static message near EditMessageArray[] = {
 
 #define EDITMESSAGEARRAYSIZE        (sizeof( EditMessageArray )/sizeof( message ))
 
-static message near ButtonMessageArray[] = {
+static message __near ButtonMessageArray[] = {
     msgpick( 1, 0, BM_GETCHECK,     "BM_GETCHECK",      MC_CONTROL, 0L ),
     msgpick( 1, 0, BM_SETCHECK,     "BM_SETCHECK",      MC_CONTROL, 0L ),
     msgpick( 1, 0, BM_GETSTATE,     "BM_GETSTATE",      MC_CONTROL, 0L ),
@@ -115,7 +115,7 @@ static message near ButtonMessageArray[] = {
 
 #define BUTTONMESSAGEARRAYSIZE      (sizeof( ButtonMessageArray )/sizeof( message ))
 
-static message near StaticMessageArray[] = {
+static message __near StaticMessageArray[] = {
     msgpick( 1, 0, STM_SETICON,     "STM_SETICON",  MC_CONTROL, 0L ),
     msgpick( 1, 0, STM_GETICON,     "STM_GETICON",  MC_CONTROL, 0L ),
 #ifdef NT_MSGS
@@ -127,7 +127,7 @@ static message near StaticMessageArray[] = {
 
 #define STATICMESSAGEARRAYSIZE      (sizeof( StaticMessageArray )/sizeof( message ))
 
-static message near ListBoxMessageArray[] = {
+static message __near ListBoxMessageArray[] = {
     msgpick( 1, 0, LB_ADDSTRING,            "LB_ADDSTRING",             MC_CONTROL, 0L ),
     msgpick( 1, 0, LB_INSERTSTRING,         "LB_INSERTSTRING",          MC_CONTROL, 0L ),
     msgpick( 1, 0, LB_DELETESTRING,         "LB_DELETESTRING",          MC_CONTROL, 0L ),
@@ -220,7 +220,7 @@ static message near ListBoxMessageArray[] = {
     msgpick( 1, 0, CB_INITSTORAGE,          "CB_INITSTORAGE",           MC_CONTROL, 0L ), \
     msgpick( 1, 0, CB_GETCOMBOBOXINFO,      "CB_GETCOMBOBOXINFO",       MC_CONTROL, 0L ),
 
-static message near ComboBoxMessageArray[] = {
+static message __near ComboBoxMessageArray[] = {
     combobox_messages_old()
 #ifdef NT_MSGS
     combobox_messages_new()
@@ -230,7 +230,7 @@ static message near ComboBoxMessageArray[] = {
 #define COMBOBOXMESSAGEARRAYSIZE    (sizeof( ComboBoxMessageArray )/sizeof( message ))
 
 #ifdef NT_MSGS
-static message near ScrollBarMessageArray[] = {
+static message __near ScrollBarMessageArray[] = {
     msgpick( 1, 0, SBM_SETPOS,              "SBM_SETPOS",           MC_CONTROL, 0L ),
     msgpick( 1, 0, SBM_GETPOS,              "SBM_GETPOS",           MC_CONTROL, 0L ),
     msgpick( 1, 0, SBM_SETRANGE,            "SBM_SETRANGE",         MC_CONTROL, 0L ),
@@ -244,7 +244,7 @@ static message near ScrollBarMessageArray[] = {
 
 #define SCROLLBARMESSAGEARRAYSIZE   (sizeof( ScrollBarMessageArray )/sizeof( message ))
 
-static message near HeaderMessageArray[] = {
+static message __near HeaderMessageArray[] = {
     msgpick( 1, 0, HDM_GETITEMCOUNT,        "HDM_GETITEMCOUNT",         MC_CONTROL, 0L ),
     msgpick( 1, 0, HDM_INSERTITEMA,         "HDM_INSERTITEM",           MC_CONTROL, 0L ),
     msgpick( 1, 0, HDM_DELETEITEM,          "HDM_DELETEITEM",           MC_CONTROL, 0L ),
@@ -276,7 +276,7 @@ static message near HeaderMessageArray[] = {
 
 #define HEADERMESSAGEARRAYSIZE      (sizeof( HeaderMessageArray )/sizeof( message ))
 
-static message near ToolbarMessageArray[] = {
+static message __near ToolbarMessageArray[] = {
     msgpick( 1, 0, TB_ENABLEBUTTON,         "TB_ENABLEBUTTON",          MC_CONTROL, 0L ),
     msgpick( 1, 0, TB_CHECKBUTTON,          "TB_CHECKBUTTON",           MC_CONTROL, 0L ),
     msgpick( 1, 0, TB_PRESSBUTTON,          "TB_PRESSBUTTON",           MC_CONTROL, 0L ),
@@ -371,7 +371,7 @@ static message near ToolbarMessageArray[] = {
 
 #define TOOLBARMESSAGEARRAYSIZE     (sizeof( ToolbarMessageArray )/sizeof( message ))
 
-static message near RebarMessageArray[] = {
+static message __near RebarMessageArray[] = {
     msgpick( 1, 0, RB_INSERTBANDA,      "RB_INSERTBAND",        MC_CONTROL, 0L ),
     msgpick( 1, 0, RB_DELETEBAND,       "RB_DELETEBAND",        MC_CONTROL, 0L ),
     msgpick( 1, 0, RB_GETBARINFO,       "RB_GETBARINFO",        MC_CONTROL, 0L ),
@@ -416,7 +416,7 @@ static message near RebarMessageArray[] = {
 
 #define REBARMESSAGEARRAYSIZE       (sizeof( RebarMessageArray )/sizeof( message ))
 
-static message near ToolTipsMessageArray[] = {
+static message __near ToolTipsMessageArray[] = {
     msgpick( 1, 0, TTM_ACTIVATE,        "TTM_ACTIVATE",         MC_CONTROL, 0L ),
     msgpick( 1, 0, TTM_SETDELAYTIME,    "TTM_SETDELAYTIME",     MC_CONTROL, 0L ),
     msgpick( 1, 0, TTM_ADDTOOLA,        "TTM_ADDTOOL",          MC_CONTROL, 0L ),
@@ -465,7 +465,7 @@ static message near ToolTipsMessageArray[] = {
 
 #define TOOLTIPSMESSAGEARRAYSIZE    (sizeof( ToolTipsMessageArray )/sizeof( message ))
 
-static message near StatusBarMessageArray[] = {
+static message __near StatusBarMessageArray[] = {
     msgpick( 1, 0, SB_SETTEXTA,         "SB_SETTEXT",       MC_CONTROL, 0L ),
     msgpick( 1, 0, SB_GETTEXTA,         "SB_GETTEXT",       MC_CONTROL, 0L ),
     msgpick( 1, 0, SB_GETTEXTLENGTHA,   "SB_GETTEXTLENGTH", MC_CONTROL, 0L ),
@@ -489,7 +489,7 @@ static message near StatusBarMessageArray[] = {
 
 #define STATUSBARMESSAGEARRAYSIZE   (sizeof( StatusBarMessageArray )/sizeof( message ))
 
-static message near TrackBarMessageArray[] = {
+static message __near TrackBarMessageArray[] = {
     msgpick( 1, 0, TBM_GETPOS,          "TBM_GETPOS",           MC_CONTROL, 0L ),
     msgpick( 1, 0, TBM_GETRANGEMIN,     "TBM_GETRANGEMIN",      MC_CONTROL, 0L ),
     msgpick( 1, 0, TBM_GETRANGEMAX,     "TBM_GETRANGEMAX",      MC_CONTROL, 0L ),
@@ -527,7 +527,7 @@ static message near TrackBarMessageArray[] = {
 
 #define TRACKBARMESSAGEARRAYSIZE    (sizeof( TrackBarMessageArray )/sizeof( message ))
 
-static message near UpDownMessageArray[] = {
+static message __near UpDownMessageArray[] = {
     msgpick( 1, 0, UDM_SETRANGE,    "UDM_SETRANGE",     MC_CONTROL, 0L ),
     msgpick( 1, 0, UDM_GETRANGE,    "UDM_GETRANGE",     MC_CONTROL, 0L ),
     msgpick( 1, 0, UDM_SETPOS,      "UDM_SETPOS",       MC_CONTROL, 0L ),
@@ -546,7 +546,7 @@ static message near UpDownMessageArray[] = {
 
 #define UPDOWNMESSAGEARRAYSIZE      (sizeof( UpDownMessageArray )/sizeof( message ))
 
-static message near ProgressBarMessageArray[] = {
+static message __near ProgressBarMessageArray[] = {
     msgpick( 1, 0, PBM_SETRANGE,    "PBM_SETRANGE",     MC_CONTROL, 0L ),
     msgpick( 1, 0, PBM_SETPOS,      "PBM_SETPOS",       MC_CONTROL, 0L ),
     msgpick( 1, 0, PBM_DELTAPOS,    "PBM_DELTAPOS",     MC_CONTROL, 0L ),
@@ -566,7 +566,7 @@ static message near ProgressBarMessageArray[] = {
 
 #define PROGRESSBARMESSAGEARRAYSIZE (sizeof( ProgressBarMessageArray )/sizeof( message ))
 
-static message near HotKeyMessageArray[] = {
+static message __near HotKeyMessageArray[] = {
     msgpick( 1, 0, HKM_SETHOTKEY,   "HKM_SETHOTKEY",    MC_CONTROL, 0L ),
     msgpick( 1, 0, HKM_GETHOTKEY,   "HKM_GETHOTKEY",    MC_CONTROL, 0L ),
     msgpick( 1, 0, HKM_SETRULES,    "HKM_SETRULES",     MC_CONTROL, 0L )
@@ -574,7 +574,7 @@ static message near HotKeyMessageArray[] = {
 
 #define HOTKEYMESSAGEARRAYSIZE      (sizeof( HotKeyMessageArray )/sizeof( message ))
 
-static message near ListViewMessageArray[] = {
+static message __near ListViewMessageArray[] = {
     msgpick( 1, 0, LVM_GETBKCOLOR,          "LVM_GETBKCOLOR",           MC_CONTROL, 0L ),
     msgpick( 1, 0, LVM_SETBKCOLOR,          "LVM_SETBKCOLOR",           MC_CONTROL, 0L ),
     msgpick( 1, 0, LVM_GETIMAGELIST,        "LVM_GETIMAGELIST",         MC_CONTROL, 0L ),
@@ -717,7 +717,7 @@ static message near ListViewMessageArray[] = {
 
 #define LISTVIEWMESSAGEARRAYSIZE    (sizeof( ListViewMessageArray )/sizeof( message ))
 
-static message near TreeViewMessageArray[] = {
+static message __near TreeViewMessageArray[] = {
     msgpick( 1, 0, TVM_INSERTITEMA,         "TVM_INSERTITEM",           MC_CONTROL, 0L ),
     msgpick( 1, 0, TVM_DELETEITEM,          "TVM_DELETEITEM",           MC_CONTROL, 0L ),
     msgpick( 1, 0, TVM_EXPAND,              "TVM_EXPAND",               MC_CONTROL, 0L ),
@@ -774,7 +774,7 @@ static message near TreeViewMessageArray[] = {
 
 #define TREEVIEWMESSAGEARRAYSIZE    (sizeof( TreeViewMessageArray )/sizeof( message ))
 
-static message near ComboBoxExMessageArray[] = {
+static message __near ComboBoxExMessageArray[] = {
     combobox_messages_old()
     combobox_messages_new()
     msgpick( 1, 0, CBEM_INSERTITEMA,        "CBEM_INSERTITEM",          MC_CONTROL, 0L ),
@@ -795,7 +795,7 @@ static message near ComboBoxExMessageArray[] = {
 
 #define COMBOBOXEXMESSAGEARRAYSIZE  (sizeof( ComboBoxExMessageArray )/sizeof( message ))
 
-static message near TabControlMessageArray[] = {
+static message __near TabControlMessageArray[] = {
     msgpick( 1, 0, TCM_GETIMAGELIST,        "TCM_GETIMAGELIST",     MC_CONTROL, 0L ),
     msgpick( 1, 0, TCM_SETIMAGELIST,        "TCM_SETIMAGELIST",     MC_CONTROL, 0L ),
     msgpick( 1, 0, TCM_GETITEMCOUNT,        "TCM_GETITEMCOUNT",     MC_CONTROL, 0L ),
@@ -830,7 +830,7 @@ static message near TabControlMessageArray[] = {
 
 #define TABCONTROLMESSAGEARRAYSIZE  (sizeof( TabControlMessageArray )/sizeof( message ))
 
-static message near AnimateMessageArray[] = {
+static message __near AnimateMessageArray[] = {
     msgpick( 1, 0, ACM_OPENA,       "ACM_OPEN",         MC_CONTROL, 0L ),
     msgpick( 1, 0, ACM_PLAY,        "ACM_PLAY",         MC_CONTROL, 0L ),
     msgpick( 1, 0, ACM_STOP,        "ACM_STOP",         MC_CONTROL, 0L ),
@@ -840,7 +840,7 @@ static message near AnimateMessageArray[] = {
 
 #define ANIMATEMESSAGEARRAYSIZE     (sizeof( AnimateMessageArray )/sizeof( message ))
 
-static message near MonthCalMessageArray[] = {
+static message __near MonthCalMessageArray[] = {
     msgpick( 1, 0, MCM_GETCURSEL,           "MCM_GETCURSEL",            MC_CONTROL, 0L ),
     msgpick( 1, 0, MCM_SETCURSEL,           "MCM_SETCURSEL",            MC_CONTROL, 0L ),
     msgpick( 1, 0, MCM_GETMAXSELCOUNT,      "MCM_GETMAXSELCOUNT",       MC_CONTROL, 0L ),
@@ -875,7 +875,7 @@ static message near MonthCalMessageArray[] = {
 
 #define MONTHCALMESSAGEARRAYSIZE    (sizeof( MonthCalMessageArray )/sizeof( message ))
 
-static message near DateTimeMessageArray[] = {
+static message __near DateTimeMessageArray[] = {
     msgpick( 1, 0, DTM_GETSYSTEMTIME,   "DTM_GETSYSTEMTIME",    MC_CONTROL, 0L ),
     msgpick( 1, 0, DTM_SETSYSTEMTIME,   "DTM_SETSYSTEMTIME",    MC_CONTROL, 0L ),
     msgpick( 1, 0, DTM_GETRANGE,        "DTM_GETRANGE",         MC_CONTROL, 0L ),
@@ -898,7 +898,7 @@ static message near DateTimeMessageArray[] = {
 
 #endif
 
-class_messages near ClassMessages[] = {
+class_messages __near ClassMessages[] = {
     { "",                   MessageArray,               MESSAGEARRAYSIZE               },
     { "edit",               EditMessageArray,           EDITMESSAGEARRAYSIZE           },
     { "button",             ButtonMessageArray,         BUTTONMESSAGEARRAYSIZE         },

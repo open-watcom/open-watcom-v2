@@ -53,7 +53,7 @@ extern unsigned RemoteGetLibName( unsigned long lib_hdl, void *ptr, unsigned buf
 extern void ReadDbgRegs();
 extern void WriteDbgRegs();
 extern bool KillProgOvlay();
-extern void TellHandles( void far *hab, void far *hwnd );
+extern void TellHandles( void __far *hab, void __far *hwnd );
 extern int printf(char*,...);
 
 
@@ -99,7 +99,7 @@ void DbgFree( void * chunk )
     free( chunk );
 }
 
-InitIt( char *trp, void far *hab, void far *hwnd )
+InitIt( char *trp, void __far *hab, void __far *hwnd )
 {
     TxtBuff = DbgAlloc( 512 );
     TrpFile = DbgAlloc( 512 );

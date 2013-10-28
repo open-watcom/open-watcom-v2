@@ -376,6 +376,7 @@ Tool RDEBUG "Remote Debugging"
 ::
 :segment !C_FOR_PB
 ::
+
 Tool WSAMPLE "Sampler"
   Family Sampler
     CSwitch 0, ????s, "", "!Error Sampler cannot run under Win-OS/2$", ON
@@ -771,7 +772,6 @@ Tool CPPCOMP "C++ Compiler"
     CSwitch 1, ?????, "Check for truncated filenames", -ft, OFF
     CSwitch 1, ?????, "Do NOT check for truncated filenames", -fx, OFF
 
-
 Tool WCC "C Compiler"
   IncludeTool WLANG
   IncludeTool CCOMP
@@ -787,10 +787,10 @@ Tool WPP "C++ Compiler"
     CSwitch 0, ??6??, "", "wpp $@", ON
     CSwitch 0, ??2??, "", "wpp386 $@", ON
     CSwitch 0, ??a??, "", "wppaxp $@", ON
-
 ::
 :segment !C_FOR_PB
 ::
+
 Tool WFOR "Fortran Compiler"
   Family Compiler
     CSwitch 0, ??6??, "", "wfc $@", ON
@@ -1254,10 +1254,10 @@ rem     RSwitch  0, x??d?, "DGROUP is shared", "op one", OFF
     CSwitch  0, wa?e?, "Eliminate dead code", "op el", ON, OFF
     CSwitch  0, ?????, "Eliminate dead code", "op el", OFF
 :endsegment
-
 ::
 :segment !C_FOR_PB
 ::
+
 Tool WLIB "Library Manager"
   Family Basic
     CSwitch  0, ?????, "", "wlib", ON
@@ -1340,10 +1340,10 @@ Tool WRC2 "Resource Compiler (pass 2)"
         RSwitch 1, w????, "No fastload section", -s0, ON
         RSwitch 1, w????, "Preload only", -s1, OFF
         RSwitch 1, w????, "Preload/Data/Non-discardable", -s2, OFF
-
 ::
 :segment !C_FOR_PB
 ::
+
 Tool ORC "OS/2 Resource Compiler"
   Family Resource
     CSwitch 0, ?????, "", rc, ON
@@ -1409,8 +1409,10 @@ Tool IMAGEEDIT "Image Editor"
     CSwitch 0, ????a, " run", "$(%watcom)\\axpnt\\wimgedit /n", ON
     CSwitch 0, ????9, " run", "$(%watcom)\\binnt\\wimgedit /n", ON
     CSwitch 0, ?????, " run", "$(%watcom)\\binw\\wimgedit /n", ON
-
+::
 :segment !C_FOR_PB
+::
+
 Tool WINHC "Windows Help Compiler"
   Family Compiler
     RGroup "Help Compiler"
@@ -1451,10 +1453,10 @@ Rule COBJ, WCC, ?????
   Autodepend
   BrowseSwitch -db
   Command " *$<#>"
-
 ::
 :segment !C_FOR_PB
 ::
+
 Rule FOROBJ, WFOR, ?????
   Source *.for
   Target *.obj
@@ -1518,10 +1520,10 @@ Rule SMAKEABLES
     HotKey PLAIN F3
     Command "!Make $<#> -a $@"
     Hint "Make the result file"
-
 ::
 :segment !C_FOR_PB
 ::
+
 Rule SBROWSEABLE
   Target *.obj, *.o
   Action &Browse
@@ -1815,10 +1817,10 @@ Rule WPBDLL, WLINK, wp6d?
   Command " wfscopy $@ $(%watcom)\\binw\\$."
 :endsegment
 :endsegment
-
 ::
 :segment !C_FOR_PB
 ::
+
 Rule WDLL, WLINK, w??d?
   Target *.dll
   Autodepend
@@ -1962,14 +1964,17 @@ Rule LIB, WLIB, ???s?
 ::
 :endsegment
 ::
+
 Rule TMAKEABLES
   Target *.exe *.exp *.com *.rdv *.nlm *. *.elf *.dll *.a *.so *.lib *.hlp *.inf
   Action &Make WMAKE OKFORMASK
     HotKey PLAIN F4
     Command "!Make $<#> $@"
     Hint "Make the target"
-
+::
 :segment !C_FOR_PB
+::
+
 Rule TBROWSEABLE
   Target *.exe *.exp *. *.elf *.dll *.a *.so *.lib
   Action &Browse
@@ -1977,7 +1982,9 @@ Rule TBROWSEABLE
     Hint "Invoke the program browser on the target browser database"
 :endsegment
 
+::
 :segment FOR_NT
+::
 Rule PBDLL, , np2d?
 :elsesegment
 Rule PBDLL, , wp6d?
@@ -2021,7 +2028,6 @@ Rule NLMS, , l?2e?
   Action Pro&file WPROFILE
     Command "$<#>"
     Hint "Profile the target executable"
-
 ::
 :endsegment
 ::

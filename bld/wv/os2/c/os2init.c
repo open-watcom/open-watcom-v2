@@ -52,7 +52,7 @@ extern unsigned EnvLkup( char *, char *, unsigned );
 static char             *CmdStart;
 static volatile bool    BrkPending;
 
-static void pascal far BrkHandler( USHORT sig_arg, USHORT sig_num )
+static void __pascal __far BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
     PFNSIGHANDLER   prev_hdl;
     USHORT          prev_act;

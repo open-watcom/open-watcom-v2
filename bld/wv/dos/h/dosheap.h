@@ -39,10 +39,10 @@
 
 typedef unsigned int            tag;
 typedef struct freelistp        frl;
-typedef struct freelistp near   *frlptr;
-typedef struct freelist far     *farfrlptr;
-typedef unsigned char near      *PTR;
-typedef unsigned char far       *FARPTR;
+typedef struct freelistp __near *frlptr;
+typedef struct freelist __far   *farfrlptr;
+typedef unsigned char __near    *PTR;
+typedef unsigned char __far     *FARPTR;
 
 struct freelist {
     tag                 len;    /* length of block in free list */

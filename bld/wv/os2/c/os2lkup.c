@@ -39,7 +39,7 @@
 
 unsigned EnvLkup( char *name, char *buff, unsigned max_len )
 {
-    char    far *env;
+    char    __far *env;
     unsigned    len;
     int         output = 0;
     char        c;

@@ -80,8 +80,8 @@ bool intern initmonitor( void )
 }
 
 
-//static void (far __pascal *HookFunc)(void far *) = NULL;
-extern void far HookRtn( unsigned , unsigned );
+//static void (__far __pascal *HookFunc)(void __far *) = NULL;
+extern void __far HookRtn( unsigned , unsigned );
 
 int intern initbios( void )
 /*************************/

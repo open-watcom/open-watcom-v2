@@ -93,18 +93,18 @@ void FarFree( void *ptr )
 /*
  * FarAlloc - allocate from far heap
  */
-void far *FarAlloc( size_t size )
+void __far *FarAlloc( size_t size )
 {
-    void        far *tmp;
+    void        __far *tmp;
 
     tmp = _fmalloc( size );
-    if( tmp == (void far *) NULL ) {
-        return( (void far *) NULL );
+    if( tmp == (void __far *)NULL ) {
+        return( (void __far *)NULL );
     }
 
-    if( FP_SEG( tmp ) == FP_SEG( (void far *) &tmp ) ) {
+    if( FP_SEG( tmp ) == FP_SEG( (void __far *)&tmp ) ) {
         _ffree( tmp );
-        return( (void far *) NULL );
+        return( (void __far *)NULL );
     }
 
     far_allocs++;
@@ -115,7 +115,7 @@ void far *FarAlloc( size_t size )
 /*
  * FarFree - free some far memory
  */
-void FarFree( void far *ptr )
+void FarFree( void __far *ptr )
 {
     _ffree( ptr );
     far_allocs--;

@@ -92,11 +92,11 @@ typedef struct epsp_t {
     void            *resource;
     void            *mcbHead;
     void            *mcbMaxAlloc;
-    char            far *DTA;
+    char            __far *DTA;
     selector        TransProt;
     segment         TransReal;
     unsigned_32     TransSize;
-    void            far *SSESP;
+    void            __far *SSESP;
     void            *INTMem;
     selector        DPMIMem;
     unsigned_32     MemBase;

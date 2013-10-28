@@ -39,8 +39,8 @@
 
 bool intern installed( int num )
 {
-    unsigned short far          *vector;
-    char far                    *intrtn;
+    unsigned short __far        *vector;
+    char __far                  *intrtn;
 
     vector = firstmeg( 0, num * 4 );
     intrtn = firstmeg( vector[ 1 ], vector[ 0 ] );

@@ -50,7 +50,7 @@
 #include "trptypes.h"
 #include "trperr.h"
 
-dos_debug far           *DebugReqBuff;
+dos_debug __far         *DebugReqBuff;
 unsigned int            DebugReqResult;
 ULONG                   DebugReqSem;
 ULONG                   DebugDoneSem;
@@ -66,7 +66,7 @@ extern HWND             HwndDebugger;
 static byte     stack[STACK_SIZE];
 static byte     stack2[STACK_SIZE];
 
-extern unsigned int Call32BitDosDebug( dos_debug far *buff );
+extern unsigned int Call32BitDosDebug( dos_debug __far *buff );
 extern void WakeThreads( PID );
 extern void WakeOneThread( PID, TID );
 extern void SetBrkPending( void );
@@ -93,7 +93,7 @@ static void CantDoIt( void )
 }
 
 
-unsigned int CallDosDebug( dos_debug far *buff )
+unsigned int CallDosDebug( dos_debug __far *buff )
 {
     QMSG        qmsg;
     int         num_paints;

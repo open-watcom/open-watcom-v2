@@ -72,14 +72,14 @@ enum {
 };
 
 struct device {
-    struct device far   *next;
+    struct device __far   *next;
     unsigned short      attr;
     unsigned short      strategy_entry;
     unsigned short      interrupt_entry;
     char                name[8];
 };
 
-void far *__first_pid( void );
+void __far *__first_pid( void );
 #ifdef _M_I86
 #pragma aux __first_pid = \
         /* 0xb4 0x52    */ "mov ah,52h" \
@@ -97,8 +97,8 @@ void far *__first_pid( void );
 
 static void do_dev( void )
 {
-    void far *first_pid;
-    struct device far *device_chain;
+    void __far *first_pid;
+    struct device __far *device_chain;
     unsigned blocks;
     int i;
 

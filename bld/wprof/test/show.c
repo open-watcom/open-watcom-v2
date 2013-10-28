@@ -37,7 +37,7 @@
 void f0( void )
 {
     void *p;
-    void near *q;
+    void __near *q;
 
     q = _nmalloc( 20 );
     p = malloc( 10 );
@@ -59,7 +59,7 @@ void f4( void )
 void f5( void )
 {
     void *p;
-    void near *q;
+    void __near *q;
 
     q = _nmalloc( 20 );
     p = malloc( 10 );

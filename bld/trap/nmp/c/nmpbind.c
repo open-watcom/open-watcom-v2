@@ -159,7 +159,7 @@ void JoinPipeThread( void FAR * _thread )
     link = thread->link;
     rc = DosGetInfoSeg( &global, &local );
     rc = DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL,
-                     0, ((LINFOSEG far *)MK_FP( local, 0 ))->tidCurrent );
+                     0, ((LINFOSEG FAR *)MK_FP( local, 0 ))->tidCurrent );
     while( me->connected && him->connected ) {
         rc = DosRead( me->write_hdl, buff, BUFF_LEN, &bytes_read );
         if( rc != 0 || bytes_read == 0 ) break;

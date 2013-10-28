@@ -35,14 +35,14 @@
 #include <i86.h>
 #include "fcbmem.h"
 
-char near *near ExeExtensions[] = {""};
-int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char near * );
+char __near * __near ExeExtensions[] = {""};
+int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char __near * );
 
-char near *near InternalCommands[] = {
+char __near * __near InternalCommands[] = {
     ""
 };
 
-int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char near * );
+int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char __near * );
 
 void ResetSpawnScreen( void )
 {

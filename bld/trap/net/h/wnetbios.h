@@ -118,13 +118,13 @@ typedef struct _NCB {
     unsigned char   ncb_retcode;            /* return code                    */
     unsigned char   ncb_lsn;                /* local session number           */
     unsigned char   ncb_num;                /* number of our network name     */
-    unsigned char   far *ncb_buffer;        /* address of message buffer      */
+    unsigned char   _FAR *ncb_buffer;       /* address of message buffer      */
     unsigned short  ncb_length;             /* size of message buffer         */
     unsigned char   ncb_callname[NCBNAMSZ]; /* blank-padded name of remote    */
     unsigned char   ncb_name[NCBNAMSZ];     /* our blank-padded netname       */
     unsigned char   ncb_rto;                /* rcv timeout/retry count        */
     unsigned char   ncb_sto;                /* send timeout/sys timeout       */
-    void (far *ncb_post)( struct _NCB * );  /* POST routine address           */
+    void (_FAR *ncb_post)( struct _NCB * ); /* POST routine address           */
     unsigned char   ncb_lana_num;           /* lana (adapter) number          */
     unsigned char   ncb_cmd_cplt;           /* 0xff => commmand pending       */
     unsigned char   ncb_reserve[14];        /* reserved, used by BIOS         */
@@ -136,13 +136,13 @@ typedef struct {
     unsigned char           ret_code;
     unsigned char           lsn;
     unsigned char           name_num;
-    void                    far *buff;
+    void                    _FAR *buff;
     unsigned short          length;
     char                    call_name[NCBNAMSZ];
     char                    name[NCBNAMSZ];
     unsigned char           r_timeout;
     unsigned char           s_timeout;
-    void                    (far *post)();
+    void                    (_FAR *post)();
     unsigned char           lana_num;
     volatile unsigned char  cmd_cmplt;
     char                    reserved[14];

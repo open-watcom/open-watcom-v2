@@ -46,8 +46,8 @@ static int _a = 0, _b = 2;
 
 void Blip( int *a, int *b, char a1 )
 {
-    char far *s1 = (char far *)0xb8000000;
-    char far *s2 = (char far *)0xb0000000;
+    char __far *s1 = (char __far *)0xb8000000;
+    char __far *s2 = (char __far *)0xb0000000;
     int c;
 
     s1[*a] = a1;

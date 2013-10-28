@@ -135,7 +135,7 @@
     #define HAS_FP                              /* i.e. HighC, Watcom386   */
     extern FARPTR _watt_dosFp;
 
-    #define DOSMEM(s,o,t) *(t _far*)(_watt_dosFp + (DWORD)((o)|(s)<<4))
+    #define DOSMEM(s,o,t) *(t _far *)(_watt_dosFp + (DWORD)((o)|(s)<<4))
     #define peekb(s,o)    DOSMEM(s,o,BYTE)
     #define peekw(s,o)    DOSMEM(s,o,WORD)
     #define peekl(s,o)    DOSMEM(s,o,DWORD)
@@ -203,16 +203,16 @@
   #define  BOOL           int
 
   #if defined(__WATCOMC__)
-    #define peekb(s,o)    (*((BYTE  __far*)MK_FP((s),(o))))
-    #define peekw(s,o)    (*((WORD  __far*)MK_FP((s),(o))))
-    #define peekl(s,o)    (*((DWORD __far*)MK_FP((s),(o))))
-    #define pokeb(s,o,x)  (*((BYTE  __far*)MK_FP((s),(o))) = (BYTE)(x))
-    #define pokew(s,o,x)  (*((WORD  __far*)MK_FP((s),(o))) = (WORD)(x))
-    #define pokel(s,o,x)  (*((DWORD __far*)MK_FP((s),(o))) = (DWORD)(x))
+    #define peekb(s,o)    (*((BYTE  __far *)MK_FP((s),(o))))
+    #define peekw(s,o)    (*((WORD  __far *)MK_FP((s),(o))))
+    #define peekl(s,o)    (*((DWORD __far *)MK_FP((s),(o))))
+    #define pokeb(s,o,x)  (*((BYTE  __far *)MK_FP((s),(o))) = (BYTE)(x))
+    #define pokew(s,o,x)  (*((WORD  __far *)MK_FP((s),(o))) = (WORD)(x))
+    #define pokel(s,o,x)  (*((DWORD __far *)MK_FP((s),(o))) = (DWORD)(x))
   #else
     #define peekw(s,o)    (WORD)peek(s,o)
     #define pokew(s,o,x)  poke (s,o,x)
-    #define peekl(s,o)    (*((DWORD far*)MK_FP((s),(o))))
+    #define peekl(s,o)    (*((DWORD far *)MK_FP((s),(o))))
   #endif
 #endif
 
@@ -262,9 +262,9 @@
   #define getvect(a)      _dos_getvect(a)
   #define setvect(a,b)    _dos_setvect(a,b)
   #define movmem(s,d,n)   memmove(d,s,n)
-  #define MK_FP(s,o)      (void _far*) (((DWORD)(s) << 16) + (DWORD)(o))
-  #define peek(s,o)       (*((WORD _far*)MK_FP((s),(o))))
-  #define poke(s,o,x)     (*((WORD _far*)MK_FP((s),(o))) = (DWORD)(x))
+  #define MK_FP(s,o)      (void _far *)(((DWORD)(s) << 16) + (DWORD)(o))
+  #define peek(s,o)       (*((WORD _far *)MK_FP((s),(o))))
+  #define poke(s,o,x)     (*((WORD _far *)MK_FP((s),(o))) = (DWORD)(x))
 #endif
 
 #if defined(__TURBOC__) || defined(__BORLANDC__)
@@ -307,6 +307,17 @@
   #include <string.h>
   #pragma intrinsic(strcmp,memset)
   #pragma warning(disable:120)
+
+  #undef  interrupt
+  #define interrupt       __interrupt
+  #undef  far
+  #undef  _far
+  #define far             __far
+  #define _far            __far
+  #undef  cdecl
+  #undef  _cdecl
+  #define cdecl           __cdecl
+  #define _cdecl          __cdecl
 
   #define movmem(s,d,n)   memmove(d,s,n)
   #define getvect(a)      _dos_getvect(a)

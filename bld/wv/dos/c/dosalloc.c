@@ -48,8 +48,8 @@ unsigned __AllocSeg( unsigned int amount )
     {
         unsigned n;             /* number of paragraphs desired   */
         short seg;
-        struct heapstart far *p;
-        tag far *last_tag;
+        struct heapstart __far *p;
+        tag __far *last_tag;
         tiny_ret_t rc;
 
         /*               heapinfo + frl + frl,       end tags */
@@ -81,7 +81,7 @@ unsigned __AllocSeg( unsigned int amount )
         } else {
             LastSeg = MK_FP( seg, 0 );
         }
-        p = (struct heapstart far *)MK_FP( seg, 0 );
+        p = (struct heapstart __far *)MK_FP( seg, 0 );
         p->h.heaplen = n << 4;
         p->h.prevseg = 0;
         p->h.nextseg = 0;

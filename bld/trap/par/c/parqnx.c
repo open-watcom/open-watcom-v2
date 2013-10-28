@@ -38,11 +38,11 @@
 #define INFO_SEG    0x40
 #define PAR_BASE    0x08
 
-static struct _timesel                  __far *SysTime;
+static struct _timesel  __far *SysTime;
 
 int NumPrinters()
 {
-    unsigned short  far *par;
+    unsigned short  __far *par;
     int i;
 
     par = MK_FP( INFO_SEG, PAR_BASE );
@@ -57,7 +57,7 @@ int NumPrinters()
 unsigned PrnAddress( int printer )
 #pragma on(unreferenced);
 {
-    unsigned short  far *par;
+    unsigned short  __far *par;
 
     par = MK_FP( INFO_SEG, PAR_BASE );
     return( par[printer] );

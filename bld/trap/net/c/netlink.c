@@ -34,10 +34,12 @@
 #include <dos.h>
 #if defined( __OS2__ )
     #define INCL_DOSMODULEMGR
-#include <os2.h>
-    #if defined( __386__ )
-    #define far
-    #endif
+    #include <os2.h>
+  #if defined( _M_I86 )
+    #define _FAR    __far
+  #else
+    #define _FAR
+  #endif
 #elif defined( __NT__ )
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
@@ -46,8 +48,10 @@
     /* Don't actually include nb30.h because of conflicting definitions. */
     #pragma library( "netapi32.lib" )
   #endif
+    #define _FAR
 #else
     #include "tinyio.h"
+    #define _FAR    __far
 #endif
 #include "trptypes.h"
 #include "trperr.h"
@@ -58,11 +62,11 @@
   #if defined( __386__ )
     unsigned short _System (*NetBiosSubmit)( unsigned short, unsigned short, NCB * );
   #else
-    int pascal (far *NetBiosSubmit)( int, int, NCB far * );
+    int __pascal (_FAR *NetBiosSubmit)( int, int, NCB _FAR * );
   #endif
     #define NetBIOS( x ) (NetBiosSubmit)( 0, 0, (x) )
 
-    extern unsigned char pascal far NetBiosOpen( char far *, char far *, unsigned, int far *);
+    extern byte __pascal _FAR NetBiosOpen( char _FAR *, char _FAR *, unsigned, int _FAR *);
 
 #elif defined( __NT__ )
     #include <nb30.h>
@@ -77,14 +81,14 @@
 
     #define NetBIOS( x ) NetBIOSCall( x )
 
-    extern unsigned char far NetBIOSCall( NCB far * );
+    extern byte _FAR NetBIOSCall( NCB _FAR * );
     #pragma aux NetBIOSCall "^" parm [es bx] value [al];
 
 #else
     #include "wnetbios.h"
 
     #define NET_BIOS_INT    0x5c
-    extern unsigned char NetBIOS( NCB far * );
+    extern byte NetBIOS( NCB _FAR * );
     #pragma aux NetBIOS = 0xcd NET_BIOS_INT parm [es bx] value [al];
 
     extern tiny_dos_version GetTrueDOSVersion( void );
@@ -96,7 +100,7 @@
 #endif
 
 NCB             NetCtlBlk;
-unsigned char   LanaNum;
+byte            LanaNum;
 int             SkipEnum;
 
 /* On traditional NetBIOS 3.0 implementations, only lana numbers 0 and 1 are
@@ -110,13 +114,13 @@ int             SkipEnum;
  * but having their own DOS client blow up when the ENUM NCB is submitted on
  * plain DOS. Sigh. We detect running under NT and behave accordingly.
  */
-unsigned char GetLanaNum( void )
+byte GetLanaNum( void )
 {
     LANA_ENUM   l_enum;
 
     if( !SkipEnum ) {
         memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
-        NetCtlBlk.ncb_buffer = (unsigned char far *)&l_enum;
+        NetCtlBlk.ncb_buffer = (byte _FAR *)&l_enum;
         NetCtlBlk.ncb_length = sizeof( l_enum );
         NetCtlBlk.ncb_command = NCBENUM;
         NetBIOS( &NetCtlBlk );
@@ -221,7 +225,7 @@ char *RemoteLink( char *name, bool server )
   #endif
 #elif !defined( __WINDOWS__ ) && !defined( __NT__ )
     {
-        unsigned    char    *net_bios;
+        byte                *net_bios;
         tiny_dos_version    dos_ver;
         int                 is_nt = 0;
 
@@ -287,7 +291,7 @@ void RemoteUnLink( void )
 
     if( NetCtlBlk.ncb_cmd_cplt == 0xff ) {
         cancel.ncb_command = NCBCANCEL;
-        cancel.ncb_buffer = (unsigned char far *)&NetCtlBlk;
+        cancel.ncb_buffer = (byte _FAR *)&NetCtlBlk;
         cancel.ncb_lana_num = LanaNum;
         cancel.ncb_post = 0;
         NetBIOS( &cancel );

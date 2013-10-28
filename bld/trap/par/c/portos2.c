@@ -35,12 +35,12 @@
 #endif
 #include <conio.h>
 
-unsigned far output_port( unsigned port, unsigned value )
+unsigned __far output_port( unsigned port, unsigned value )
 {
     return( outp( port, value ) );
 }
 
-unsigned far input_port( unsigned port )
+unsigned __far input_port( unsigned port )
 {
     return( inp( port ) );
 }

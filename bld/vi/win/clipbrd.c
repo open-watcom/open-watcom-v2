@@ -68,7 +68,7 @@
  * getHugePointer - given a 16-bit far pointer and an offset, return the
  *                  far pointer
  */
-void far *getHugePointer( void far *ptr, unsigned off )
+void __far *getHugePointer( void __far *ptr, unsigned off )
 {
     DWORD       poff;
     WORD        pseg;

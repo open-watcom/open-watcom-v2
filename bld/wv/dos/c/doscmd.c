@@ -160,7 +160,7 @@ bool ProcSysOption( char *start, unsigned len )
 
 void ProcSysOptInit()
 {
-    char        far *ptr;
+    char        __far *ptr;
     unsigned    len;
 
     CheckSize = 0;
@@ -175,13 +175,13 @@ void ProcSysOptInit()
 }
 
 
-char far *GetCmdArg( int num )
+char __far *GetCmdArg( int num )
 {
     if( num != 0 || CmdStart == 0 ) return( NULL );
     return( MK_FP( _psp, CmdStart ) );
 }
 
-void SetCmdArgStart( int num, char far *ptr )
+void SetCmdArgStart( int num, char __far *ptr )
 {
     num = num; /* must be zero */
     CmdStart = FP_OFF( ptr );

@@ -91,19 +91,19 @@ typedef struct RMBuff {
     #define _DBG_ExitFunc( s )
 
   #if defined(DOS4G)
-    extern void             far *RMLinToPM( unsigned long linear_addr, int pool );
+    extern void             __far *RMLinToPM( unsigned long linear_addr, int pool );
   #else
     static unsigned short   Meg1;
     #define RMLinToPM(x,y)  MK_FP(Meg1,x)
   #endif
-    #define GetDosByte(x)   (*(byte far *)RMLinToPM(x,1))
-    #define GetDosLong(x)   (*(unsigned long far *)RMLinToPM(x,1))
-    #define PutDosByte(x,d) (*(byte far *)RMLinToPM(x,1)=d)
-    #define PutDosLong(x,d) (*(unsigned long far *)RMLinToPM(x,1)=d)
+    #define GetDosByte(x)   (*(byte __far *)RMLinToPM(x,1))
+    #define GetDosLong(x)   (*(unsigned long __far *)RMLinToPM(x,1))
+    #define PutDosByte(x,d) (*(byte __far *)RMLinToPM(x,1)=d)
+    #define PutDosLong(x,d) (*(unsigned long __far *)RMLinToPM(x,1)=d)
     extern void             CallRealMode( unsigned long dos_addr );
 
     static unsigned long    RMProcAddr;
-    static RMBuff           far *RMBuffPtr;
+    static RMBuff           __far *RMBuffPtr;
 
   #if defined(CAUSEWAY)
     int                     XVersion;
@@ -123,7 +123,7 @@ typedef struct RMBuff {
 
     static void BackToProtMode( void );
 
-    #define MK_LINEAR( p )    ( ( (long)FP_SEG( (void far *)(p) ) << 4 ) + FP_OFF( (void far *)(p) ) )
+    #define MK_LINEAR( p )    ( ( (long)FP_SEG( (void __far *)(p) ) << 4 ) + FP_OFF( (void __far *)(p) ) )
 
     static jmp_buf      RealModeState;
     static jmp_buf      ProtModeState;
@@ -135,7 +135,7 @@ typedef struct RMBuff {
     extern short        DbgPSP( void );
     extern short        GetPSP( void );
     extern void         SetPSP( short );
-    extern int          _fork( char far *pgm, char far *cmdl );
+    extern int          _fork( char __far *pgm, char __far *cmdl );
 
     extern void doskludge( void );
     #pragma aux doskludge = \
@@ -144,7 +144,7 @@ typedef struct RMBuff {
         "int  21h" \
         parm caller [ ax ] modify [ sp cx dx ];
 
-    extern const char   far *DOSEnvFind( char * );
+    extern const char   __far *DOSEnvFind( char * );
 
 #endif
 
@@ -213,7 +213,7 @@ trap_retval RemotePut( byte *snd, trap_elen len )
 
 #ifdef SERVER
 
-char far *GetScreenPointer( void )
+char __far *GetScreenPointer( void )
 {
 #if defined( ACAD )
     return( MK_FP( Meg1, 0xB0000 ) );
@@ -237,7 +237,7 @@ void BackToProtMode( void )
     _DBG_Writeln( "RETURNED FROM PROTECTED MODE" );
 }
 
-void far BackFromProtMode( void )
+void __far BackFromProtMode( void )
 {
     BeenToProtMode = 1;
     if( setjmp( ProtModeState ) == 0 ) {
@@ -248,7 +248,7 @@ void far BackFromProtMode( void )
     SetPSP( OldPSP );
 }
 
-static char *CopyStr( const char far *src, char *dst )
+static char *CopyStr( const char __far *src, char *dst )
 {
     while( *dst = *src ) {
         dst++;
@@ -257,7 +257,7 @@ static char *CopyStr( const char far *src, char *dst )
     return( dst );
 }
 
-static char *SearchPath( const char far *env, const char *file, char *buff, char **pendname )
+static char *SearchPath( const char __far *env, const char *file, char *buff, char **pendname )
 {
     char        *endname;
     char        *name;
@@ -295,7 +295,7 @@ static char *SearchPath( const char far *env, const char *file, char *buff, char
     return( name );
 }
 
-static char *CheckPath( const char far *path, char *fullpath, char **endname )
+static char *CheckPath( const char __far *path, char *fullpath, char **endname )
 {
     const char  *namep;
     char        *name;
@@ -313,7 +313,7 @@ static char *FindExtender( char *fullpath, char **endname )
 {
 #if defined(DOS4G)
     char        *name;
-    const char  far *d4gname;
+    const char  __far *d4gname;
     unsigned    len;
 
     d4gname = DOSEnvFind( "DOS4GPATH" );
@@ -323,7 +323,7 @@ _DBG_Write(d4gname);
 _DBG_Writeln(">");
         len = _fstrlen( d4gname );
         if( len > 4 ) {
-            const char far *ext = d4gname + len - 4;
+            const char __far *ext = d4gname + len - 4;
             if( ext[0] == '.'
                 && LOW( ext[1] ) == 'e'
                 && LOW( ext[2] ) == 'x'
@@ -439,8 +439,8 @@ char *RemoteLink( char *parm, bool server )
     char            *name;
     char            *buffp;
     char            *endparm;
-    void            far *link[4];
-    void            far * far * link_ptr;
+    void            __far *link[4];
+    void            __far * __far * link_ptr;
     unsigned        len;
   #if defined(PHARLAP)
     char            *exe_name;
@@ -448,12 +448,12 @@ char *RemoteLink( char *parm, bool server )
 
     _DBG_EnterFunc( "RemoteLink()" );
     BackFromFork = 0;
-    link_ptr = (void far *)(LINK_VECTOR * 4);
+    link_ptr = (void __far *)(LINK_VECTOR * 4);
     link[ 3 ] = *link_ptr;
     link[ 2 ] = MK_FP( GetCS(), (unsigned )BackFromProtMode );
-    link[ 1 ] = (void far *)MK_LINEAR( &Buff );
-    link[ 0 ] = (void far *)LINK_SIGNATURE;
-    *link_ptr = (void far *)MK_LINEAR( &link );
+    link[ 1 ] = (void __far *)MK_LINEAR( &Buff );
+    link[ 0 ] = (void __far *)LINK_SIGNATURE;
+    *link_ptr = (void __far *)MK_LINEAR( &link );
     if( parm == NULL )
         parm = "\0\0";
     while( *parm == ' ' )

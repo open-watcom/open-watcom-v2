@@ -80,24 +80,24 @@ typedef struct {
 /*
  * globals
  */
-extern volatile WORD            near WaitForFirst;
-extern volatile WORD            near IsSecondOK;
-extern HWND                     near MainWindowHandle;
-extern HWND                     near OutputWindow;
+extern volatile WORD            __near WaitForFirst;
+extern volatile WORD            __near IsSecondOK;
+extern HWND                     __near MainWindowHandle;
+extern HWND                     __near OutputWindow;
 extern HANDLE                   InstanceHandle,PrevInstance;
-extern samp_save                far * near SampSave;
-extern shared_data              far * near SharedMemory;
+extern samp_save                __far * __near SampSave;
+extern shared_data              __far * __near SharedMemory;
 extern WORD                     SleepTime;
 extern DWORD                    TotalTime;
 extern HANDLE                   SampledProg;
 extern BOOL                     WDebug386;
-extern interrupt_struct         near IntData;
+extern interrupt_struct         __near IntData;
 extern seg_offset               CommonAddr;
 extern HANDLE                   WaitForInt3;
 extern HANDLE                   WaitForInt1;
 
 /* somewhere in the common part of the sampler */
-extern int sample_main( char far * );
+extern int sample_main( char __far * );
 extern void REPORT_TYPE report( void );
 extern void             SaveSamples( void );
 extern int              SampWrite( void FAR_PTR *, unsigned );
@@ -115,7 +115,7 @@ extern void Usage( void );
 extern void FAR_PTR * alloc( int );
 
 /* getidata.c */
-int GetIData( HINSTANCE inst, void near *data, unsigned int size );
+int GetIData( HINSTANCE inst, void __near *data, unsigned int size );
 
 /* inth.asm */
 void FAR PASCAL IntHandler( void );

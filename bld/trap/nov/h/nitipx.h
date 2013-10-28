@@ -97,15 +97,15 @@ typedef struct SIP {            /* Service Identification Packet */
 } SIP;
 
 typedef struct ECBFragment {
-        void    far *address;
+        void    __far *address;
         WORD    size;                   /* low-high */
 } ECBFragment;
 
 
 typedef struct ECB
 {
-        void            far *linkAddress;
-        void            (far *ESRAddress)();
+        void            __far *linkAddress;
+        void            (__far *ESRAddress)();
         BYTE            volatile inUseFlag;
         BYTE            completionCode;
         WORD            socketNumber;           /* high-low */
@@ -166,9 +166,9 @@ extern int _SPXGetConnectionStatus(WORD,CSB*);
     extern BYTE SPXInitialize(BYTE*,BYTE*,WORD*,WORD*);
     #define _SPXInitialize(a,b,c,d,e,f) \
                     SPXInitialize(c,d,e,f)
-    extern void far SAPWaitESR( void );
-    extern void far SAPBroadESR( void );
-    extern void far ServRespESR( void );
+    extern void __far SAPWaitESR( void );
+    extern void __far SAPBroadESR( void );
+    extern void __far ServRespESR( void );
 #else
 
     extern void __far __pascal SAPWaitESR( void );
@@ -248,7 +248,7 @@ enum {
 
 #ifdef __WINDOWS__
     extern HANDLE Instance;
-    #define _ESR( r1 )      (void far *)MakeProcInstance( (FARPROC)(r1), Instance )
+    #define _ESR( r1 )      (void __far *)MakeProcInstance( (FARPROC)(r1), Instance )
 #else
     #define _ESR( r1 )      &(r1##ESR)
 #endif

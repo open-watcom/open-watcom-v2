@@ -89,8 +89,8 @@ extern void SetSP( char _NEAR * );
         _nheapshrink(); \
     }
 
-static char near    *stackptr, near *stackptr2;
-static char near    *sp;
+static char __near  *stackptr, __near *stackptr2;
+static char __near  *sp;
 
 extern unsigned _STACKLOW;
 extern unsigned _STACKTOP;

@@ -374,7 +374,7 @@ unsigned_32 GetVariable( void )
             modify          [ax dl];
         #define SPECIAL_CHKSUM
     #elif defined( _M_I86 )
-        extern byte docksum( byte far *buf, unsigned_16 len );
+        extern byte docksum( byte __far *buf, unsigned_16 len );
         #pragma aux docksum = \
             0x1e            /* push ds */ \
             0x8e 0xda       /* mov ds,dx */ \

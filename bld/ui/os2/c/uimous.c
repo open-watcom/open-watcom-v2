@@ -83,7 +83,7 @@ extern void MouseInt2( unsigned, unsigned, unsigned, unsigned, unsigned );
                         0x36 0x89 0x4c 0x02 \
                         0x36 0x89 0x54 0x04 \
                         parm [ax] [si] modify [bx cx dx];
-extern void MouseState( unsigned, struct mouse_data near * );
+extern void MouseState( unsigned, struct mouse_data __near * );
 
 extern unsigned long uiclock( void );
 
@@ -145,7 +145,7 @@ void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
     if( _osmode == DOS_MODE ) {
         struct  mouse_data state;
 
-        MouseState( 3, (void near *)&state );
+        MouseState( 3, (void __near *)&state );
         *pstatus = state.bx;
         *prow  = state.dx / MOUSE_SCALE;
         *pcol  = state.cx / MOUSE_SCALE;
@@ -180,8 +180,8 @@ void uimousespeed( unsigned speed )
 
 static bool mouse_installed( void )
 {
-    unsigned short far          *vector;
-    char far                    *intrtn;
+    unsigned short __far        *vector;
+    char __far                  *intrtn;
     // 91/05/15 DEN - major kludge to fix code gen bug
     int                         zero = 0;
 
@@ -255,7 +255,7 @@ static void OS2_initmouse( int install )
 #else
             SEL                 gbl;
             SEL                 lcl;
-            __LINFOSEG          far *linfo;
+            __LINFOSEG          __far *linfo;
 
             DosGetInfoSeg( &gbl, &lcl );
             linfo = MK_FP( lcl, 0 );

@@ -42,8 +42,8 @@
 #include "winscrn.h"
 #include "swap.h"
 
-extern void far HookRtn( unsigned event, unsigned info );
-extern void (far __pascal *HookFunc)( void far (*)( unsigned, unsigned ) );
+extern void __far HookRtn( unsigned event, unsigned info );
+extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
 extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
 

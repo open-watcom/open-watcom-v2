@@ -44,7 +44,7 @@ _dword __ConvId;
 
 static char linkName[128];
 
-void _farstrcpy( char far *dest, const char far *src )
+void _farstrcpy( char __far *dest, const char __far *src )
 {
     while( *dest++ = *src++ );
 }
@@ -52,7 +52,7 @@ void _farstrcpy( char far *dest, const char far *src )
 /*
  * VxDPresent - check if WGOD is present
  */
-int pascal VxDPresent( void )
+int __pascal VxDPresent( void )
 {
     if( CheckWin386Debug() != WGOD_VERSION ) {
         return( 0 );
@@ -85,7 +85,7 @@ static void messageLoop( void )
 /*
  * VxDRaiseInterrupt - raise an interrupt in the client VM
  */
-void pascal VxDRaiseInterrupt( unsigned intr )
+void __pascal VxDRaiseInterrupt( unsigned intr )
 {
     RaiseInterruptInVM( __ConvId, intr );
 
@@ -95,7 +95,7 @@ void pascal VxDRaiseInterrupt( unsigned intr )
 /*
  * VxDGet - get some data from a client/server
  */
-unsigned pascal VxDGet( void far *rec, unsigned len )
+unsigned __pascal VxDGet( void __far *rec, unsigned len )
 {
     _dword      rc;
 
@@ -118,7 +118,7 @@ unsigned pascal VxDGet( void far *rec, unsigned len )
 /*
  * VxDPutPending - tests if a server is trying to put to us
  */
-int pascal VxDPutPending( void )
+int __pascal VxDPutPending( void )
 {
     return( ConvPutPending() );
 
@@ -127,7 +127,7 @@ int pascal VxDPutPending( void )
 /*
  * VxDPut - put some data to client/server
  */
-void pascal VxDPut( const void far *rec, unsigned len )
+void __pascal VxDPut( const void __far *rec, unsigned len )
 {
 #ifdef __WINDOWS__
     int rc;
@@ -150,7 +150,7 @@ void pascal VxDPut( const void far *rec, unsigned len )
 /*
  * VxDConnect - connect to a client/server
  */
-char pascal VxDConnect( void )
+char __pascal VxDConnect( void )
 {
     int rc;
 #ifdef SERVER
@@ -184,7 +184,7 @@ char pascal VxDConnect( void )
 /*
  * VxDDisconnect - stop a conversation with a server
  */
-int pascal VxDDisconnect( void )
+int __pascal VxDDisconnect( void )
 {
 #ifndef SERVER
     return( EndConv( __ConvId ) );
@@ -197,7 +197,7 @@ int pascal VxDDisconnect( void )
 /*
  * VxDLink - start a lnk
  */
-const char * pascal VxDLink( const char far *name )
+const char * __pascal VxDLink( const char __far *name )
 {
     int rc;
 
@@ -220,7 +220,7 @@ const char * pascal VxDLink( const char far *name )
 /*
  * VxDUnLink - terminate link
  */
-int pascal VxDUnLink( void )
+int __pascal VxDUnLink( void )
 {
 #ifdef SERVER
 #ifdef __WINDOWS__

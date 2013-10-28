@@ -54,7 +54,7 @@ static map  Mappings_pool[] = {
 static int  Loser = 0;
 static long dummy = 0;
 
-void far *RMLinToPM( unsigned long linear_addr, int pool )
+void __far *RMLinToPM( unsigned long linear_addr, int pool )
 /********************************************************/
 {
     int         i;
@@ -103,7 +103,7 @@ void CallRealMode( unsigned long dos_addr )
 
     regs.ds = regs.es = FP_SEG( dos_addr ); /* the trap file runs tiny -zu */
     _DBG_Writeln( "Calling RealMode" );
-    rsi_rm_far_call( (void far *)( dos_addr ), &regs, &regs );
+    rsi_rm_far_call( (void __far *)( dos_addr ), &regs, &regs );
     _DBG_Writeln( "Back from RealMode" );
 }
 
@@ -111,7 +111,7 @@ void CallRealMode( unsigned long dos_addr )
 
 #include "dpmi.h"
 
-extern int _CallRealMode( rm_call_struct far *regs );
+extern int _CallRealMode( rm_call_struct __far *regs );
 #pragma aux _CallRealMode = \
         "mov    ax,0ff02h" \
         "int    0x31" \

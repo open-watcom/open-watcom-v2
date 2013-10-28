@@ -34,18 +34,18 @@
 #include "smpstuff.h"
 #include "sampwin.h"
 
-volatile WORD           near WaitForFirst=0;
-volatile WORD           near IsSecondOK=0;
-HWND                    near MainWindowHandle;
-HWND                    near OutputWindow;
+volatile WORD           __near WaitForFirst=0;
+volatile WORD           __near IsSecondOK=0;
+HWND                    __near MainWindowHandle;
+HWND                    __near OutputWindow;
 HANDLE                  InstanceHandle,PrevInstance;
-samp_save               far * near SampSave;
-shared_data             far * near SharedMemory;
+samp_save               __far * __near SampSave;
+shared_data             __far * __near SharedMemory;
 WORD                    SleepTime;
 DWORD                   TotalTime;
 HANDLE                  SampledProg;
 BOOL                    WDebug386;
-interrupt_struct        near IntData;
+interrupt_struct        __near IntData;
 seg_offset              CommonAddr = { 0, 0 };
 HANDLE                  WaitForInt3;
 HANDLE                  WaitForInt1;

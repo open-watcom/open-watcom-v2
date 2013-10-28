@@ -33,7 +33,7 @@
 
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int cmdshow)
 {
-    char far *a= (char far *) 0L;
+    char __far *a= (char __far *) 0L;
 /*
  * This is a comment
  * in a

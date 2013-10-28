@@ -121,12 +121,12 @@ typedef enum {
 #define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | FLG_I | FLG_D | FLG_O)
 
 extern addr_seg         DbgPSP(void);
-extern tiny_ret_t       DOSLoadProg(char far *, pblock far *);
+extern tiny_ret_t       DOSLoadProg(char __far *, pblock __far *);
 extern addr_seg         DOSTaskPSP(void);
 extern void             EndUser(void);
 extern unsigned_8       RunProg(trap_cpu_regs *, trap_cpu_regs *);
-extern void             SetWatch386( unsigned, watch far * );
-extern void             SetWatchPnt(unsigned, watch far *);
+extern void             SetWatch386( unsigned, watch __far * );
+extern void             SetWatchPnt(unsigned, watch __far *);
 extern void             SetSingleStep(void);
 extern void             SetSingle386(void);
 extern void             InitVectors(void);
@@ -137,10 +137,10 @@ extern void             SetIntVecs(void);
 extern void             DoRemInt(trap_cpu_regs *, unsigned);
 extern char             Have87Emu(void);
 extern void             Null87Emu( void );
-extern void             Read87EmuState( void far * );
-extern void             Write87EmuState( void far * );
+extern void             Read87EmuState( void __far * );
+extern void             Write87EmuState( void __far * );
 extern unsigned         StringToFullPath( char * );
-extern int              far NoOvlsHdlr( int, void * );
+extern int              __far NoOvlsHdlr( int, void * );
 extern bool             CheckOvl( addr32_ptr );
 extern int              NullOvlHdlr(void);
 
@@ -248,7 +248,7 @@ trap_retval ReqMap_addr( void )
 {
     word            seg;
     int             count;
-    word            far *segment;
+    word            __far *segment;
     map_addr_req    *acc;
     map_addr_ret    *ret;
 
@@ -304,7 +304,7 @@ trap_retval ReqMachine_data( void )
 
 trap_retval ReqChecksum_mem( void )
 {
-    unsigned_8          far *ptr;
+    unsigned_8          __far *ptr;
     unsigned long       sum = 0;
     unsigned            len;
     checksum_mem_req    *acc;
@@ -394,13 +394,13 @@ trap_retval ReqRead_io( void )
     acc = GetInPtr(0);
     data = GetOutPtr(0);
     if( acc->len == 1 ) {
-       *( (byte far *)data ) = In_b( acc->IO_offset );
+       *( (byte __far *)data ) = In_b( acc->IO_offset );
        len = 1;
     } else if( acc->len == 2 ) {
-       *( (word far *)data ) = In_w( acc->IO_offset );
+       *( (word __far *)data ) = In_w( acc->IO_offset );
        len = 2;
     } else if( Flags.Is386 ) {
-       *( (dword far *)data ) = In_d( acc->IO_offset );
+       *( (dword __far *)data ) = In_d( acc->IO_offset );
        len = 4;
     } else {
        len = 0;
@@ -421,13 +421,13 @@ trap_retval ReqWrite_io( void )
     len = GetTotalSize() - sizeof( *acc );
     ret = GetOutPtr(0);
     if( len == 1 ) {
-        Out_b( acc->IO_offset, *( (byte far *)data ) );
+        Out_b( acc->IO_offset, *( (byte __far *)data ) );
         ret->len = 1;
     } else if( len == 2 ) {
-        Out_w( acc->IO_offset, *( (word far *)data ) );
+        Out_w( acc->IO_offset, *( (word __far *)data ) );
         ret->len = 2;
     } else if ( Flags.Is386 ) {
-        Out_d( acc->IO_offset, *( (dword far *)data ) );
+        Out_d( acc->IO_offset, *( (dword __far *)data ) );
         ret->len = 4;
     } else {
         ret->len = 0;
@@ -450,7 +450,7 @@ trap_retval ReqRead_cpu( void )
 //OBSOLETE - use ReqRead_regs
 trap_retval ReqRead_fpu( void )
 {
-    void    far *regs;
+    void    __far *regs;
 
     regs = GetOutPtr(0);
     if( Have87Emu() ) {
@@ -476,7 +476,7 @@ trap_retval ReqWrite_cpu( void )
 //OBSOLETE - use ReqWrite_regs
 trap_retval ReqWrite_fpu( void )
 {
-    void    far *regs;
+    void    __far *regs;
 
     regs = GetInPtr(sizeof(write_fpu_req));
     if( Have87Emu() ) {
@@ -588,7 +588,7 @@ trap_retval ReqProg_load( void )
     tiny_ret_t      rc;
     char            *parm;
     char            *name;
-    char            far *dst;
+    char            __far *dst;
     char            exe_name[128];
     char            ch;
     EXE_TYPE        exe;
@@ -621,7 +621,7 @@ trap_retval ReqProg_load( void )
         *dst++ = ch;
     }
     *dst = '\r';
-    *(byte far *)MK_FP( psp, CMD_OFFSET ) = FP_OFF( dst ) - ( CMD_OFFSET + 1 );
+    *(byte __far *)MK_FP( psp, CMD_OFFSET ) = FP_OFF( dst ) - ( CMD_OFFSET + 1 );
     parmblock.envstring = 0;
     parmblock.commandln.segment = psp;
     parmblock.commandln.offset =  CMD_OFFSET;
@@ -666,7 +666,7 @@ trap_retval ReqProg_load( void )
     if( TINY_OK( rc ) ) {
         if( Flags.NoOvlMgr || !CheckOvl( parmblock.startcsip ) ) {
             if( exe == EXE_OS2 ) {
-                byte    far *pbyte;
+                byte    __far *pbyte;
 
                 BoundAppLoading = TRUE;
                 RunProg( &TaskRegs, &TaskRegs );
@@ -734,7 +734,7 @@ trap_retval ReqSet_watch( void )
         curr = WatchPoints + WatchCount;
         curr->addr.segment = wp->watch_addr.segment;
         curr->addr.offset = wp->watch_addr.offset;
-        curr->value = *(dword far *)MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
+        curr->value = *(dword __far *)MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
         curr->linear = ( (unsigned long)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
         curr->len = wp->size;
         curr->linear &= ~(curr->len-1);
@@ -762,7 +762,7 @@ trap_retval ReqClear_watch( void )
 
 trap_retval ReqSet_break( void )
 {
-    byte            far *loc;
+    byte            __far *loc;
     set_break_req   *acc;
     set_break_ret   *ret;
 
@@ -785,7 +785,7 @@ trap_retval ReqClear_break( void )
     clear_break_req     *bp;
 
     bp = GetInPtr( 0 );
-    *(char far *)MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
+    *(char __far *)MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
     GotABadBreak = FALSE;
     return( 0 );
 }

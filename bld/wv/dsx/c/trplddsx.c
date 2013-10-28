@@ -398,7 +398,7 @@ static bool CallTrapInit( char *parm, char *errmsg, trap_version *trap_ver )
     callstruct = (void __far *)PMData->parmarea;
     callstruct->remote = trap_ver->remote;
     if( parm == NULL ) parm = "";
-    _fstrcpy( (char _far *)&callstruct[1], parm );
+    _fstrcpy( (char __far *)&callstruct[1], parm );
     callstruct->errmsg_off = sizeof( *callstruct ) + strlen( parm ) + 1;
     GoToRealMode( RMTrapInit );
     *trap_ver = callstruct->version;

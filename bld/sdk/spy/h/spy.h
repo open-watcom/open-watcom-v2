@@ -70,6 +70,7 @@
 #include "peekwin.h"
 #include "spymenu.h"
 #include "ctl3dcvr.h"
+#include "watcom.h"
 #ifdef USE_SNAP_WINDOW
     #include "desknt.h"
     #define SNAP_MODE   TRUE
@@ -181,7 +182,7 @@ extern char             *TitleBar;
 extern char             *TitleBarULine;
 extern int              TitleBarLen;
 extern spystate         SpyState;
-extern char             near SpyPickClass[];
+extern char             __near SpyPickClass[];
 extern HWND             SpyListBox;
 extern HWND             SpyListBoxTitle;
 extern BOOL             SpyMessagesPaused;
@@ -190,9 +191,9 @@ extern HANDLE           MyTask;
 extern HANDLE           Instance;
 extern HANDLE           ResInstance;
 extern WORD             MessageArraySize;
-extern message          near MessageArray[];
+extern message          __near MessageArray[];
 extern WORD             ClassMessagesSize;
-extern class_messages   near ClassMessages[];
+extern class_messages   __near ClassMessages[];
 extern BOOL             SpyMessagesAutoScroll;
 extern BOOL             AutoSaveConfig;
 extern WORD             WindowCount;

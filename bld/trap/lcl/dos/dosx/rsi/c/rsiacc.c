@@ -103,7 +103,7 @@ void SetDbgTask( void )
 {
 }
 
-static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void far *,unsigned int), addr48_ptr *addr, byte far *data, unsigned short req )
+static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void FarPtr,unsigned int), addr48_ptr *addr, byte FarPtr data, unsigned short req )
 {
     unsigned short  len;
 
@@ -132,12 +132,12 @@ static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void far *,unsig
     return( len );
 }
 
-static unsigned short ReadMemory( addr48_ptr *addr, void far *data, unsigned short len )
+static unsigned short ReadMemory( addr48_ptr *addr, void FarPtr data, unsigned short len )
 {
     return( ReadWrite( D32DebugRead, addr, data, len ) );
 }
 
-static unsigned short WriteMemory( addr48_ptr *addr, void far *data, unsigned short len )
+static unsigned short WriteMemory( addr48_ptr *addr, void FarPtr data, unsigned short len )
 {
     return( ReadWrite( D32DebugWrite, addr, data, len ) );
 }
@@ -288,7 +288,7 @@ trap_retval ReqChecksum_mem( void )
 trap_retval ReqRead_mem( void )
 {
     read_mem_req        *acc;
-    void                far *buff;
+    void                FarPtr buff;
     trap_elen           len;
 
     _DBG_Writeln( "ReadMem" );
@@ -639,7 +639,7 @@ trap_retval ReqSet_break( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, &Break, (byte far *)&ret->old );
+    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, &Break, (byte FarPtr)&ret->old );
     return( sizeof( *ret ) );
 }
 
@@ -652,7 +652,7 @@ trap_retval ReqClear_break( void )
     acc = GetInPtr( 0 );
     _DBG_Writeln( "AccRestoreBreak" );
     /* assume all breaks removed at same time */
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, (byte far *)&acc->old, &dummy );
+    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, (byte FarPtr)&acc->old, &dummy );
     return( 0 );
 }
 

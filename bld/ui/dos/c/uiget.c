@@ -49,7 +49,7 @@ void global uiflush( void )
 
 unsigned long uiclock( void )
 {
-    return( *(unsigned long far *)firstmeg( BIOS_PAGE, SYSTEM_CLOCK ) );
+    return( *(unsigned long __far *)firstmeg( BIOS_PAGE, SYSTEM_CLOCK ) );
 }
 
 EVENT global uieventsource( int update )

@@ -54,7 +54,7 @@ char            *CmdData;
 static volatile bool    BrkPending;
 
 #if 0
-static void pascal far BrkHandler( USHORT sig_arg, USHORT sig_num )
+static void __pascal __far BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
     PFNSIGHANDLER   prev_hdl;
     USHORT          prev_act;

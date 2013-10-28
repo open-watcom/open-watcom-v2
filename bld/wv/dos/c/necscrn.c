@@ -254,10 +254,10 @@ void InitScreen()
     Initialize program and debugger screen.
 ************************************************************************/
 {
-    char            far *vect;
+    char            __far *vect;
 
     /* check for Microsoft mouse */
-    vect = *((char far * far *)MK_FP( 0, 4*0x33 ));
+    vect = *((char __far * __far *)MK_FP( 0, 4*0x33 ));
     if( vect == NULL || *vect == IRET ) _SwitchOff( SW_USE_MOUSE );
 
     PageSize =  ( UIData->height == 25 ) ? 4096 :

@@ -34,7 +34,7 @@
 
 #include "dosequip.h"
 
-static  unsigned long far *BiosTime;
+static  unsigned long __far *BiosTime;
 
 char *InitSys()
 {
@@ -62,7 +62,7 @@ int NumPrinters()
 
 unsigned PrnAddress( int printer )
 {
-    return( *(unsigned far *) MK_FP( BIOS_SEG, PRINTER_BASE + printer*2 ) );
+    return( *(unsigned __far *) MK_FP( BIOS_SEG, PRINTER_BASE + printer*2 ) );
 }
 
 #pragma off(unreferenced);

@@ -38,7 +38,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-FILE    near __iob[2];
+FILE    __near __iob[2];
 
 static int File2Hdl( FILE *f )
 {

@@ -60,7 +60,7 @@ unsigned long global uiclock( void )
         DosQuerySysInfo(QSV_MS_COUNT, QSV_MS_COUNT, &ulTime, sizeof(ulTime));
         return ulTime;
     #else
-        static unsigned long  far *clock;
+        static unsigned long  __far *clock;
         SEL gbl;
         SEL lcl;
 

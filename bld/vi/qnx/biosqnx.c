@@ -187,7 +187,7 @@ static struct map events[] = {
 };
 
 #pragma off (unreferenced);
-void BIOSGetColorPalette( void far *a ) {}
+void BIOSGetColorPalette( void __far *a ) {}
 long BIOSGetColorRegister( short a ) { return( 0 ); }
 void BIOSSetNoBlinkAttr() {}
 void BIOSSetBlinkAttr() {}

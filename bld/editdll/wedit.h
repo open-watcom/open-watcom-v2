@@ -39,7 +39,7 @@ extern "C" {
 #if defined( __NT__ )
     typedef char *editstring;
 #elif defined( __WINDOWS__ )
-    typedef char far *editstring;
+    typedef char __far *editstring;
 #elif defined( __OS2__ )
     typedef char *editstring;
 #else

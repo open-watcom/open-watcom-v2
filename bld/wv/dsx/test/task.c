@@ -42,7 +42,7 @@
 #define _debug( s )     { cputs( s ); cputs( "\n\rPress a key\n\r" ); getch(); }
 #define NB_VECTORS      256
 
-static void             far *SavePMVTable[ NB_VECTORS ];
+static void             __far *SavePMVTable[ NB_VECTORS ];
 static unsigned         SaveRMVTable[ NB_VECTORS ];
 static unsigned         NewPMVTable[ NB_VECTORS ];
 static unsigned         NewRMVTable[ NB_VECTORS ];
@@ -77,7 +77,7 @@ extern void STI( void );
     modify exact [];
 
 
-static void save_vects( unsigned *rmvtable, void far **pmvtable )
+static void save_vects( unsigned *rmvtable, void __far **pmvtable )
 {
     int         intnb;
 
@@ -92,7 +92,7 @@ static void save_vects( unsigned *rmvtable, void far **pmvtable )
     }
 }
 
-static void restore_vects( unsigned *rmvtable, void far **pmvtable )
+static void restore_vects( unsigned *rmvtable, void __far **pmvtable )
 {
     int         intnb;
 

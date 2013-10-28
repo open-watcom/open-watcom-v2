@@ -57,8 +57,8 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     char        savecode[LOAD_THIS_DLL_SIZE];
     USHORT      codesize;
     USHORT      len;
-    loadstack_t far *loadstack;
-    void        far *ptr;
+    loadstack_t __far *loadstack;
+    void        __far *ptr;
     USHORT      dll_name_len;
     USHORT      size;
     char        this_dll[BUFF_SIZE];
@@ -74,7 +74,7 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     if( codesize > LOAD_THIS_DLL_SIZE ) return( FALSE );
     ReadLinear( savecode, startLinear, codesize );
     if( Buff.Cmd != DBG_N_Success ) return( FALSE );
-    WriteLinear( (byte far *)LoadThisDLL, startLinear, codesize );
+    WriteLinear( (byte __far *)LoadThisDLL, startLinear, codesize );
 
     /*
      * set up the stack for the routine LoadThisDLL
@@ -92,7 +92,7 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     ptr = MakeItSegmentedNumberOne( Buff.SS, Buff.ESP + offsetof( loadstack_t, hmod ) );
     loadstack->phmod[0] = FP_OFF( ptr );
     loadstack->phmod[1] = FP_SEG( ptr );
-    len = WriteBuffer( (byte far *)loadstack, Buff.SS, Buff.ESP, size );
+    len = WriteBuffer( (byte __far *)loadstack, Buff.SS, Buff.ESP, size );
     if( len != size ) return( FALSE );
 
     /*
@@ -119,7 +119,7 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     return( rc );
 }
 
-void DoOpen( char far *name, int mode, int flags )
+void DoOpen( char __far *name, int mode, int flags )
 {
     BreakPoint( OpenFile( name, mode, flags ) );
 }
@@ -173,7 +173,7 @@ long TaskExecute( excfn rtn )
 }
 
 
-static void saveRegs( dos_debug far *save )
+static void saveRegs( dos_debug __far *save )
 {
     save->Pid = Pid;
     save->Tid = 0;
@@ -181,13 +181,13 @@ static void saveRegs( dos_debug far *save )
 }
 
 
-long TaskOpenFile( char far *name, int mode, int flags )
+long TaskOpenFile( char __far *name, int mode, int flags )
 {
     dos_debug   save;
     long        rc;
 
     saveRegs( &save );
-    WriteBuffer( (byte far *)name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), strlen( name ) + 1 );
+    WriteBuffer( (byte __far *)name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), strlen( name ) + 1 );
     Buff.EDX = FP_SEG( UtilBuff );
     Buff.EAX = FP_OFF( UtilBuff );
     Buff.EBX = mode;
@@ -227,7 +227,7 @@ extern void DoReadWord( void );
 extern void DoWriteWord( void );
 
 
-bool TaskReadWord( USHORT seg, ULONG off, USHORT far *data )
+bool TaskReadWord( USHORT seg, ULONG off, USHORT __far *data )
 {
     dos_debug   save;
     bool        rc;
@@ -271,7 +271,7 @@ bool TaskWriteWord( USHORT seg, ULONG off, USHORT data )
 
 }
 
-void TaskPrint( byte far *ptr, unsigned len )
+void TaskPrint( byte __far *ptr, unsigned len )
 {
     dos_debug   save;
 

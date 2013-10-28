@@ -34,7 +34,7 @@
 
 WndConfigInfo   SpyMainWndInfo;
 char            *SpyName;
-char            near SpyPickClass[] = "WatSpyPickClass";
+char            __near SpyPickClass[] = "WatSpyPickClass";
 char            *TitleBar;
 char            *TitleBarULine;
 int             TitleBarLen;

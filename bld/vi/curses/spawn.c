@@ -54,9 +54,9 @@ typedef enum {
 
 typedef struct {
     unsigned short      envp;
-    void                far *cmdline;
-    void                far *fcb1;
-    void                far *fcb2;
+    void                __far *cmdline;
+    void                __far *fcb1;
+    void                __far *fcb2;
 } exec_block;
 
 typedef char _fcb[16];

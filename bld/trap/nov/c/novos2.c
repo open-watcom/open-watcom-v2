@@ -436,7 +436,7 @@ volatile enum {
 
 char    RespondStack[ STACKSIZE ];
 
-static void far Respond( void )
+static void __far Respond( void )
 {
     char        dummy;
 
@@ -463,7 +463,7 @@ char    BroadcastStack[ STACKSIZE ];
 ULONG   BroadCastStop = 0;
 ULONG   BroadCastStart = 0;
 
-static void far Broadcast( void )
+static void __far Broadcast( void )
 {
     _INITIPXECB( SAP );
     FillArray( SAPHead.destNode, 0xff );

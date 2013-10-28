@@ -42,7 +42,7 @@
 window_id       Root;
 window_id       EditContainer;
 HINSTANCE       InstanceHandle;
-char            near EditorName[] = "Open Watcom Text Editor";
+char            __near EditorName[] = "Open Watcom Text Editor";
 static int      showHow;
 
 extern BOOL RegisterMainWindow( HANDLE );
@@ -130,7 +130,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
     if( prev != NULL && !HasShare() ) {
         MessageBox( NULLHANDLE, "SHARE.EXE must be loaded before starting Windows in order to run multiple instances of the editor",
                     EditorName, MB_OK );
-        MyGetInstanceData( (unsigned short) prev, (void near *) &Root, sizeof( Root ) );
+        MyGetInstanceData( (unsigned short)prev, (void __near *)&Root, sizeof( Root ) );
         SetFocus( Root );
         return( 0 );
     }

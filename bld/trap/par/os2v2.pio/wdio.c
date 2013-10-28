@@ -35,12 +35,12 @@
 #endif
 #include <conio.h>
 
-unsigned far __pascal outport( unsigned port, unsigned value )
+unsigned __far __pascal outport( unsigned port, unsigned value )
 {
     return( outp( port, value ) );
 }
 
-unsigned far __pascal inport( unsigned port )
+unsigned __far __pascal inport( unsigned port )
 {
     return( inp( port ) );
 }

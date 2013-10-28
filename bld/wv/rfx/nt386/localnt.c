@@ -271,7 +271,7 @@ unsigned LocalFindNext( void *info, unsigned info_len )
 static volatile int interruptOccurred;
 
 #if 0
-static void pascal far doInterrupt( USHORT signal_argument, USHORT signal_num )
+static void __pascal __far doInterrupt( USHORT signal_argument, USHORT signal_num )
 {
     PFNSIGHANDLER handler;
     USHORT action;

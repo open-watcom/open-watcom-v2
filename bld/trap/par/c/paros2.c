@@ -36,20 +36,20 @@
 #include "i86.h"
 
 
-extern unsigned far output_port( unsigned, unsigned );
-extern unsigned far input_port( unsigned );
+extern unsigned __far output_port( unsigned, unsigned );
+extern unsigned __far input_port( unsigned );
 
-extern unsigned pascal far DosDevConfig( char far *, unsigned short,
+extern unsigned pascal __far DosDevConfig( char __far *, unsigned short,
                                          unsigned short );
 
-extern unsigned short pascal far DosPortAccess( unsigned short reserverd,
+extern unsigned short __pascal __far DosPortAccess( unsigned short reserverd,
                                                 unsigned short req_release,
                                                 unsigned short first_port,
                                                 unsigned short last_port );
 
 #define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
 
-GINFOSEG                                far *GInfoSeg;
+GINFOSEG                                __far *GInfoSeg;
 
 unsigned short PortTest[] = {
         0x378, 0x3bc, 0x278

@@ -127,7 +127,7 @@ void    CloseStartupDialog( void );
 void    UsageDialog( char **, char *, int );
 char    *GetInitialFileName( void );
 int     HasShare( void );
-int     MyGetInstanceData( unsigned short p1, char near *p2, short p3 );
+int     MyGetInstanceData( unsigned short p1, char __near *p2, short p3 );
 int     PickATag( int clist, char **list, char *tagname );
 
 // clrpick.c

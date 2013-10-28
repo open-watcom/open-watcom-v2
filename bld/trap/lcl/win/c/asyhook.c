@@ -34,7 +34,7 @@
 #include "stdwin.h"
 
 /* don't call this directly */
-extern void far AsynchHook( void );     // from myhook.asm
+extern void __far AsynchHook( void );     // from myhook.asm
 
 /* these are referenced in myhook.asm */
 FARPROC  OldHook = NULL;

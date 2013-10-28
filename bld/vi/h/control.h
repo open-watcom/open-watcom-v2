@@ -75,7 +75,7 @@
 #endif
 
 #if defined( _M_I86 )
-  #define _NEAR near
+  #define _NEAR __near
 #else
   #define _NEAR
 #endif

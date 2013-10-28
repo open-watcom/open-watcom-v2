@@ -167,7 +167,7 @@ static HWND ShowMenuHeapItem( heap_list *hl, HWND parent ) {
 
     HWND        hdl;
     HMENU       menu;
-    void far    *ptr;
+    void __far  *ptr;
     ResInfo     *info;
 
     info = MemAlloc( sizeof( ResInfo ) );

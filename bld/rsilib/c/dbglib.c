@@ -363,7 +363,7 @@ unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hNext, TS
     int     eip_mod = 0;
     char    in_debuggee;
 
-    _asm    cld;        /* CLD to be safe */
+    __asm   cld;        /* CLD to be safe */
 
     in_debuggee = debugging;
 #ifdef TIMER

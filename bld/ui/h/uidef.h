@@ -66,11 +66,11 @@
     #define _IND_INT( X )       ind_xfer_int( X )
     #define _IND_SAREA( X )     ind_xfer_sarea( X )
 
-    void far *                  (*ind_xfer( void (far* rtn)() ) )();
-    EVENT                       (*ind_xfer_event( EVENT (far* rtn)() ) )();
-    long                        (*ind_xfer_long( long (far* rtn)() ) )();
-    int                         (*ind_xfer_int( int (far* rtn)() ) )();
-    SAREA                       (*ind_xfer_sarea( SAREA (far* rtn)() ) )();
+    void __far *                (*ind_xfer( void (__far *rtn)() ) )();
+    EVENT                       (*ind_xfer_event( EVENT (__far *rtn)() ) )();
+    long                        (*ind_xfer_long( long (__far *rtn)() ) )();
+    int                         (*ind_xfer_int( int (__far *rtn)() ) )();
+    SAREA                       (*ind_xfer_sarea( SAREA (__far *rtn)() ) )();
 
 #else
 

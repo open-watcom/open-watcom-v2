@@ -42,10 +42,10 @@
 #include "common.h"
 #include "wdebug.h"
 
-extern void far *far OldInt21;
-extern void far TrapInt21( void );
+extern void __far * __far OldInt21;
+extern void __far TrapInt21( void );
 
-void far        *OldInt1B;
+void __far      *OldInt1B;
 char            **NameList;
 int             NameCount;
 int             RealNameStrLen = sizeof( GET_REAL_NAME );

@@ -349,7 +349,7 @@ void HookOutQueue( void )
 }
 #endif
 
-extern void far pascal SetEventHook( LPVOID );
+extern void __far __pascal SetEventHook( LPVOID );
 
 bool intern initkeyboard( void )
 /******************************/

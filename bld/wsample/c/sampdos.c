@@ -64,15 +64,15 @@ typedef struct pblock {
 } pblock;
 
 typedef struct {
-    void far    *addr;
+    void __far  *addr;
     uint_16     sect;
 } ovl_addr;
 
 typedef void __based( __segname( "_CODE" ) ) (*report_fn_ptr)( void );
 
-extern seg_offset far SysCallerAddr;
-extern unsigned char far SysCaught;
-extern unsigned char far SysNoDOS;
+extern seg_offset __far SysCallerAddr;
+extern unsigned char __far SysCaught;
+extern unsigned char __far SysNoDOS;
 
 extern void StartTimer( void );
 extern void InstallDOSIntercepts( void );
@@ -152,7 +152,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
 {
     struct  SREGS       segs;
     seg_offset          ovl_tbl;
-    struct ovl_header   far *ovl;
+    struct ovl_header   __far *ovl;
     pblock              parms;
     overlay_record_t FAR_PTR *ovl_struct;
 

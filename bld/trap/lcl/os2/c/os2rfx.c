@@ -239,7 +239,7 @@ trap_retval ReqRfx_setdatetime( void )
     *(USHORT *)&info.ftimeLastAccess = time;
     *(USHORT *)&info.fdateLastWrite = date;
     *(USHORT *)&info.ftimeLastWrite = time;
-    DosSetFileInfo( acc->handle, 1, (byte far *)&info, sizeof( info ) );
+    DosSetFileInfo( acc->handle, 1, (byte __far *)&info, sizeof( info ) );
     return( 0 );
 }
 
@@ -300,10 +300,10 @@ trap_retval ReqRfx_getcwd( void )
 static void MoveDirInfo( FILEFINDBUF *os2, trap_dta FAR *dos )
 {
     dos->dos.dir_entry_num = *(USHORT *)&os2->fdateLastWrite;
-    dos->dos.cluster = *(USHORT far *)&os2->ftimeLastWrite;
+    dos->dos.cluster = *(USHORT __far *)&os2->ftimeLastWrite;
     dos->attr = os2->attrFile;
-    dos->time = *(USHORT far *)&os2->ftimeLastWrite;
-    dos->date = *(USHORT far *)&os2->fdateLastWrite;
+    dos->time = *(USHORT __far *)&os2->ftimeLastWrite;
+    dos->date = *(USHORT __far *)&os2->fdateLastWrite;
     dos->size = os2->cbFile;
     strcpy( dos->name, os2->achName );
 }

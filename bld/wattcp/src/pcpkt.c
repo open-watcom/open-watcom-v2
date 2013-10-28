@@ -1506,7 +1506,7 @@ BOOL pkt_eth_init (eth_address *eth)
 
     for (vector = first; vector < first+num; vector++)
     {
-      char _far *addr = (char _far*) getvect(vector);
+      char _far *addr = (char _far *)getvect(vector);
 
       if (addr && !_fmemcmp (addr+3, &pkt_sign, sizeof(pkt_sign)))
          return (vector);

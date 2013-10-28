@@ -67,7 +67,7 @@ unsigned                Envseg;
 DTreg                   GDT;
 unsigned                LDT;
 DTreg                   IDT;
-void                    far *OldPMHandler;
+void                    __far *OldPMHandler;
 char                    PMProcCalled = 0;
 
 static struct SREGS     RMRegs;
@@ -76,23 +76,23 @@ static struct SREGS     SaveRegs;
 static unsigned         StateSize;
 static char             RMStateMem[ MAX_STATE_SIZE ];
 static char             RMStack[ RM_STACK_SIZE ];
-static void             far *OldRMStackPtr;
-static void             far *OldRMHandler;
-static void             far *SavePMState;
-static void             far *RawRMtoPMAddr;
-static void             far *RawPMtoRMAddr;
-static void             far *RMVTable[ NB_VECTORS ];
-static void             far *PMVTable[ NB_VECTORS ];
+static void             __far *OldRMStackPtr;
+static void             __far *OldRMHandler;
+static void             __far *SavePMState;
+static void             __far *RawRMtoPMAddr;
+static void             __far *RawPMtoRMAddr;
+static void             __far *RMVTable[ NB_VECTORS ];
+static void             __far *PMVTable[ NB_VECTORS ];
 
 extern void             StoreDTs( DTreg *, unsigned *, DTreg * );
 extern int              _fork( char *, unsigned );
-extern void far         *GetPModeAddr( unsigned * );
-extern int              EnterPMode( void far *, unsigned );
-extern int              GetRawAddrs( void far **, void far ** );
+extern void __far       *GetPModeAddr( unsigned * );
+extern int              EnterPMode( void __far *, unsigned );
+extern int              GetRawAddrs( void __far **, void __far ** );
 extern void interrupt   PM66Handler( void );
 extern void             PMProc( void );
-extern void             SaveState( unsigned, void *, void far * );
-extern void             DoRawSwitch( void far *, void far *, unsigned,
+extern void             SaveState( unsigned, void *, void __far * );
+extern void             DoRawSwitch( void __far *, void __far *, unsigned,
                                      struct SREGS * );
 
 #pragma aux DoRawSwitch \
@@ -103,7 +103,7 @@ extern void             DoRawSwitch( void far *, void far *, unsigned,
     parm [ax] [di] [cx bx] \
     modify exact [ax bx cx di];
 
-extern void far *SwitchStacks( void far *, void far ** );
+extern void __far *SwitchStacks( void __far *, void __far ** );
 #pragma aux SwitchStacks = \
     "test bx, bx    ",  \
     "jz   L1        ",  \
@@ -132,13 +132,13 @@ extern void DPMIFini( void );
     modify exact [ax];
 
 
-static void save_vects( void far **rmvtable, void far **pmvtable )
+static void save_vects( void __far **rmvtable, void __far **pmvtable )
 {
     int                 fhandle;
     int                 intnb;
 
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
-        rmvtable[ intnb ] = (void far *)TinyDPMIGetRealVect( intnb );
+        rmvtable[ intnb ] = (void __far *)TinyDPMIGetRealVect( intnb );
         pmvtable[ intnb ] = TinyDPMIGetProtectVect( intnb );
     }
     fhandle = open( "vtable", O_BINARY | O_CREAT | O_TRUNC | O_WRONLY,
@@ -154,7 +154,7 @@ static void save_vects( void far **rmvtable, void far **pmvtable )
     }
 }
 
-static void restore_vects( void far **rmvtable, void far **pmvtable )
+static void restore_vects( void __far **rmvtable, void __far **pmvtable )
 {
     int                 intnb;
 
@@ -185,8 +185,8 @@ static void interrupt rm_66_handler( unsigned pmcs, unsigned pmds )
     SwitchStacks( OldRMStackPtr, NULLFAR );
 }
 
-static void hook_vects( void far *pmaddr, void far *rmaddr,
-                        void far **oldpmaddr, void far **oldrmaddr )
+static void hook_vects( void __far *pmaddr, void __far *rmaddr,
+                        void __far **oldpmaddr, void __far **oldrmaddr )
 {
     if( oldpmaddr ) {
         *oldpmaddr = TinyDPMIGetProtectVect( 0x66 );
@@ -195,7 +195,7 @@ static void hook_vects( void far *pmaddr, void far *rmaddr,
         _debug( "error hooking protected mode vector 0x66" );
     }
     if( oldrmaddr ) {
-        *oldrmaddr = (void far *)TinyDPMIGetRealVect( 0x66 );
+        *oldrmaddr = (void __far *)TinyDPMIGetRealVect( 0x66 );
     }
     if( TinyDPMISetRealVect( 0x66, FP_SEG( rmaddr ), FP_OFF( rmaddr ) ) ) {
         _debug( "error hooking real mode vector 0x66" );
@@ -218,8 +218,8 @@ static void start_shell( void )
 static int getaddrs( void )
 {
     RawPMtoRMAddr = TinyDPMIRawPMtoRMAddr();
-    RawRMtoPMAddr = (void far *)TinyDPMIRawRMtoPMAddr();
-    SavePMState = (void far *)TinyDPMISavePMStateAddr();
+    RawRMtoPMAddr = (void __far *)TinyDPMIRawRMtoPMAddr();
+    SavePMState = (void __far *)TinyDPMISavePMStateAddr();
     StateSize = TinyDPMISaveStateSize();
     return( ( RawPMtoRMAddr != NULLFAR ) && ( RawRMtoPMAddr != NULLFAR ) &&
             ( SavePMState != NULLFAR ) );
@@ -230,10 +230,10 @@ extern void main( void )
     unsigned            dpmisize;
     void                *dpmimem;
     unsigned            dpmiseg;
-    void                far *switchaddr;
+    void                __far *switchaddr;
 
     segread( &RMRegs );
-    Envseg = *(unsigned far *)MK_FP( _psp, 0x2c );
+    Envseg = *(unsigned __far *)MK_FP( _psp, 0x2c );
     switchaddr = GetPModeAddr( &dpmisize );
     dpmimem = malloc( dpmisize + 15 );
     dpmiseg = FP_SEG( dpmimem ) + ( FP_OFF( dpmimem ) + 15 ) / 16;

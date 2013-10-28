@@ -235,7 +235,7 @@ typedef struct lclwndinfo {
 typedef struct resinfo {
     WORD        type;
     HANDLE      hdl;
-    char far    *res;
+    char __far  *res;
     HWND        menu_const;     /* used for menu items only */
 } ResInfo;
 

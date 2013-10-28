@@ -263,7 +263,7 @@ _DBG_IPX(( "ServRespESR responding\r\n" ));
 }
 
 
-static void cdecl Ticker( struct TimerDataStructure *time )
+static void __cdecl Ticker( struct TimerDataStructure *time )
 {
     ++Tick;
     time->TCallBackWaitTime = 1;
@@ -271,7 +271,7 @@ static void cdecl Ticker( struct TimerDataStructure *time )
 }
 
 
-static void cdecl Advertiser( struct TimerDataStructure *time )
+static void __cdecl Advertiser( struct TimerDataStructure *time )
 {
     CIPXSendPacket( &SAPStruct.AS_ECB );
     time->TCallBackWaitTime = 60 * TICKS_PER_SEC;

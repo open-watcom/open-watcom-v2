@@ -42,8 +42,8 @@
 
 int                                     CurrentBaud;
 long                                    MSecsAtZero;
-GINFOSEG                                far *GInfoSeg;
-LINFOSEG                                far *LInfoSeg;
+GINFOSEG                                __far *GInfoSeg;
+LINFOSEG                                __far *LInfoSeg;
 HFILE                                   ComPort = 0;
 
 #define BSIZE   1024                    /* must be power of 2 */
@@ -132,7 +132,7 @@ void StopBlockTrans( void )
     }
 }
 
-void far Reader( void )
+void __far Reader( void )
 {
     int         data;
     USHORT      read;

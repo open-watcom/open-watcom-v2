@@ -44,8 +44,8 @@ static trap_elen            OvlStateSize;
 static ovl_dbg_req_func     *OvlRequest;
 static ovl_dbg_req_func     NoOvlsHdlr;
 
-static int far NoOvlsHdlr( int req, void far *data )
-/**************************************************/
+static int __far NoOvlsHdlr( int req, void __far *data )
+/******************************************************/
 {
     return( 0 );
 }
@@ -59,7 +59,7 @@ void NullOvlHdlr( void )
 bool CheckOvl( addr32_ptr start )
 /*******************************/
 {
-    struct ovl_header   far *hdr;
+    struct ovl_header   __far *hdr;
 
     hdr = MK_FP( start.segment, start.offset );
     if( hdr->signature == OVL_SIGNATURE ) {

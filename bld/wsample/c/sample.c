@@ -540,7 +540,7 @@ void AllocSamples( unsigned tid )
 }
 
 #if defined( __WINDOWS__ )
-int sample_main( char far *win_cmd )
+int sample_main( char __far *win_cmd )
 #else
 int main( int argc, char **argv )
 #endif

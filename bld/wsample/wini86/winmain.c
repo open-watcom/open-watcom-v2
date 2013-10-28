@@ -347,8 +347,8 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
                                us before starting the timer */
         cmddat.always2= 2;
         parm.wEnvSeg = 0;
-        parm.lpCmdLine = (char far *) "";
-        parm.lpCmdShow = (void far *) &cmddat;
+        parm.lpCmdLine = (char __far *)"";
+        parm.lpCmdShow = (void __far *)&cmddat;
         parm.dwReserved = 0;
         newinst = LoadModule( "wsamplew.exe", (LPVOID) &parm );
         if( (UINT)newinst < 32 ) {
@@ -361,7 +361,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
          * then we must die too
          */
         do {
-            GetIData( newinst, (void near *)&IsSecondOK, sizeof( IsSecondOK ) );
+            GetIData( newinst, (void __near *)&IsSecondOK, sizeof( IsSecondOK ) );
             MessageLoop();
         } while( !IsSecondOK );
         if( IsSecondOK == NOT_OK ) {
@@ -402,10 +402,10 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
         }
         IsSecondOK = A_OK;
         do {
-            GetIData( previnst, (void near *)&WaitForFirst, sizeof( WaitForFirst ) );
+            GetIData( previnst, (void __near *)&WaitForFirst, sizeof( WaitForFirst ) );
             MessageLoop();
         } while( WaitForFirst );
-        GetIData( previnst, (void near *) &Samples, sizeof( Samples ) );
+        GetIData( previnst, (void __near *)&Samples, sizeof( Samples ) );
         GetIData( previnst, &SharedMemory, sizeof( SharedMemory ) );
         KillTimer( MainWindowHandle, TIMER_ID );
         SetTimer( MainWindowHandle, TIMER_ID, 4500, 0L); /* 4.5 seconds */

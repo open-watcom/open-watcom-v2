@@ -52,7 +52,7 @@ bool IsTrapFilePumpingMessageQueue()
     return( InfoFunc != NULL );
 }
 
-void TellHandles( void far *hab, void far *hwnd )
+void TellHandles( void __far *hab, void __far *hwnd )
 {
     if( InfoFunc == NULL ) return;
     InfoFunc( hab, hwnd );

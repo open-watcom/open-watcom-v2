@@ -32,7 +32,7 @@
 #define _MISCX87_H_INCLUDED
 
 #ifdef _M_I86
-#define VOIDPTR   void far *
+#define VOIDPTR   void __far *
 #else
 #define VOIDPTR   void *
 #endif

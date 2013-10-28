@@ -66,7 +66,7 @@ static int              NewSession;
 static seg_offset       CommonAddr;
 
 #define STACK_SIZE 4096
-static char near        Stack[STACK_SIZE];
+static char __near      Stack[STACK_SIZE];
 
 unsigned NextThread( unsigned tid )
 {
@@ -434,7 +434,7 @@ static void LoadProg( char *cmd, char *cmd_tail )
         start.IconFile = NULL;
         start.PgmHandle = 0;
         start.PgmControl = 0;
-        if( DosStartSession( (void far *)&start, &SID, &Pid ) != 0 ) {
+        if( DosStartSession( (void __far *)&start, &SID, &Pid ) != 0 ) {
             InternalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
         }
     } else {

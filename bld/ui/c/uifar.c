@@ -41,9 +41,9 @@
 
 #if defined( _M_I86 )
 
-extern PIXEL far *_snowput( PIXEL far *, PIXEL );
-extern PIXEL _snowget( PIXEL far * );
-extern void _snowcopy( PIXEL far *, PIXEL far *, int );
+extern PIXEL __far *_snowput( PIXEL __far *, PIXEL );
+extern PIXEL _snowget( PIXEL __far * );
+extern void _snowcopy( PIXEL __far *, PIXEL __far *, int );
 extern void _forward(void);
 extern void _backward(void);
 

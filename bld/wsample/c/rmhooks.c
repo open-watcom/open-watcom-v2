@@ -47,46 +47,46 @@
 */
     /*  FAR_PTR pointer stored at n-th interrupt vector location */
 
-#define INT_LOCATE( nr )    ( *((void interrupt (* FAR_PTR *)())  \
+#define INT_LOCATE( nr )    ( *((void __interrupt (* FAR_PTR *)())  \
                                ((unsigned long)(unsigned)nr*4)) )
 #define MX_INTXX        8
 
-void interrupt                  (*old_int03)();
+void __interrupt                (*old_int03)();
 
 /*
     located in INTRC.ASM
 */
-extern void interrupt   int28_handler( union INTPACK r );
-extern void interrupt   int21_handler( union INTPACK r );
-extern void interrupt   int13_handler( union INTPACK r );
-extern void interrupt   int03_handler( union INTPACK r );
+extern void __interrupt int28_handler( union INTPACK r );
+extern void __interrupt int21_handler( union INTPACK r );
+extern void __interrupt int13_handler( union INTPACK r );
+extern void __interrupt int03_handler( union INTPACK r );
 
-extern void interrupt   (* FAR_PTR old_int13)();
-extern void interrupt   (* FAR_PTR old_int21)();
-extern void interrupt   (* FAR_PTR old_int28)();
+extern void __interrupt (* FAR_PTR old_int13)();
+extern void __interrupt (* FAR_PTR old_int21)();
+extern void __interrupt (* FAR_PTR old_int28)();
 
-extern void interrupt   intx0_handler( union INTPACK r );
-extern void interrupt   intx1_handler( union INTPACK r );
-extern void interrupt   intx2_handler( union INTPACK r );
-extern void interrupt   intx3_handler( union INTPACK r );
-extern void interrupt   intx4_handler( union INTPACK r );
-extern void interrupt   intx5_handler( union INTPACK r );
-extern void interrupt   intx6_handler( union INTPACK r );
-extern void interrupt   intx7_handler( union INTPACK r );
+extern void __interrupt intx0_handler( union INTPACK r );
+extern void __interrupt intx1_handler( union INTPACK r );
+extern void __interrupt intx2_handler( union INTPACK r );
+extern void __interrupt intx3_handler( union INTPACK r );
+extern void __interrupt intx4_handler( union INTPACK r );
+extern void __interrupt intx5_handler( union INTPACK r );
+extern void __interrupt intx6_handler( union INTPACK r );
+extern void __interrupt intx7_handler( union INTPACK r );
 
-extern void interrupt   (* FAR_PTR old_intx0)();
-extern void interrupt   (* FAR_PTR old_intx1)();
-extern void interrupt   (* FAR_PTR old_intx2)();
-extern void interrupt   (* FAR_PTR old_intx3)();
-extern void interrupt   (* FAR_PTR old_intx4)();
-extern void interrupt   (* FAR_PTR old_intx5)();
-extern void interrupt   (* FAR_PTR old_intx6)();
-extern void interrupt   (* FAR_PTR old_intx7)();
+extern void __interrupt (* FAR_PTR old_intx0)();
+extern void __interrupt (* FAR_PTR old_intx1)();
+extern void __interrupt (* FAR_PTR old_intx2)();
+extern void __interrupt (* FAR_PTR old_intx3)();
+extern void __interrupt (* FAR_PTR old_intx4)();
+extern void __interrupt (* FAR_PTR old_intx5)();
+extern void __interrupt (* FAR_PTR old_intx6)();
+extern void __interrupt (* FAR_PTR old_intx7)();
 
-static void interrupt   (* intxx_handlers[MX_INTXX])() =
+static void __interrupt (* intxx_handlers[MX_INTXX])() =
 { intx0_handler, intx1_handler, intx2_handler, intx3_handler,
   intx4_handler, intx5_handler, intx6_handler, intx7_handler };
-static void interrupt   (* FAR_PTR * old_intxx_handlers[MX_INTXX])() =
+static void __interrupt (* FAR_PTR * old_intxx_handlers[MX_INTXX])() =
 { &old_intx0, &old_intx1, &old_intx2, &old_intx3,
   &old_intx4, &old_intx5, &old_intx6, &old_intx7 };
 

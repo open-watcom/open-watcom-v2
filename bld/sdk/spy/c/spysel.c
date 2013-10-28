@@ -34,7 +34,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "spy.h"
-#include "clibext.h"
 
 static HWND     *tmpWndList;
 static WORD     tmpWndCnt;

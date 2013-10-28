@@ -70,11 +70,11 @@
 
 /* IMPORTANT: must have ^$\\ FIRST */
 
-char
 #ifdef __WATCOMC__
-near
+char __near META[] = "^$\\.[()|?+*~@";
+#else
+char    META[] = "^$\\.[()|?+*~@";
 #endif
-META[] = "^$\\.[()|?+*~@";
 
 #if !defined( REALTABS )
 #define REALTABS        RealTabs

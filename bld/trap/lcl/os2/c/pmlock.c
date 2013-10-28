@@ -76,7 +76,7 @@ static int SpawnLocker( HFILE inh, HFILE outh )
     start.Environment = NULL;
     start.InheritOpt = 1;
     start.SessionType = SSF_TYPE_PM;
-    return( DosStartSession( (void far *) &start, &SID, &pid ) );
+    return( DosStartSession( (void __far *) &start, &SID, &pid ) );
 }
 
 static void PmHelp( int command )
@@ -90,7 +90,7 @@ static void PmHelp( int command )
 }
 
 
-static VOID far SwitchBack( VOID )
+static VOID __far SwitchBack( VOID )
 {
     USHORT      rc;
     pmhelp_packet       data;

@@ -272,8 +272,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     cdata.always2= 2;
     cdata.nCmdShow = SW_NORMAL;
     pdata.wEnvSeg = 0;
-    pdata.lpCmdLine = (char far *) full_args;   /* Must be < 120 chars according to SDK */
-    pdata.lpCmdShow = (void far *) &cdata;
+    pdata.lpCmdLine = (char __far *)full_args;   /* Must be < 120 chars according to SDK */
+    pdata.lpCmdShow = (void __far *)&cdata;
     pdata.dwReserved = 0;
 
     SampledProg = LoadModule( prog, (LPVOID) &pdata );

@@ -186,9 +186,9 @@ mad_status      MADInit( void )
         const char      *file;
         const char      *desc;
     } list[] = {
-#define pick_mad(enum,file,desc) {enum,file,desc},
-#include "madarch.h"
-#undef pick_mad
+        #define pick_mad(enum,file,desc) {enum,file,desc},
+        #include "madarch.h"
+        #undef pick_mad
     };
 
     mad_status  ms;

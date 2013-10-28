@@ -49,12 +49,12 @@ unsigned __GrowSeg( unsigned short seg, unsigned int amount )
         unsigned n;             /* number of paragraphs desired   */
         unsigned int old_heaplen;
         unsigned int old_heap_paras;
-        struct heapblk far *p;
-        struct freelist far *pfree;
-        struct freelist far *pnew;
-        tag far *last_tag;
+        struct heapblk __far *p;
+        struct freelist __far *pfree;
+        struct freelist __far *pnew;
+        tag __far *last_tag;
 
-        p = (struct heapblk far *)MK_FP( seg, 0 );
+        p = (struct heapblk __far *)MK_FP( seg, 0 );
         old_heaplen = p->heaplen;
         if( old_heaplen != 0 ) {                /* if not already 64K */
             amount += sizeof(tag);                      /* 25-feb-91 */

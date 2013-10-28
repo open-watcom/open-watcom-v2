@@ -33,7 +33,7 @@
 #include <stddef.h>
 #include <dos.h>
 
-static  unsigned long far *BiosTime;
+static  unsigned long __far *BiosTime;
 
 char *InitSys()
 {
@@ -53,7 +53,7 @@ unsigned long Ticks()
 
 int NumPrinters()
 {
-    unsigned short far *pp;
+    unsigned short __far *pp;
 
     pp = MK_FP(0x40,8);
     if( pp[0] == 0 ) return( 0 );
@@ -67,7 +67,7 @@ int NumPrinters()
 unsigned PrnAddress( int printer )
 #pragma on(unreferenced);
 {
-    unsigned short far *pp;
+    unsigned short __far *pp;
     #ifdef SERVER
     {
         extern int CurrentPort;

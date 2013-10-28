@@ -58,7 +58,7 @@ extern dos_debug        Buff;
 extern unsigned short   ThisDLLModHandle;
 extern ULONG            ExceptNum;
 
-extern unsigned short pascal far Dos16SelToFlat();
+extern unsigned short __pascal __far Dos16SelToFlat();
 
 extern long CallDosSelToFlat( long );
 #pragma aux CallDosSelToFlat = \
@@ -70,14 +70,14 @@ extern long CallDosSelToFlat( long );
  0x66 0xc1 0xea 0x10                    /* shr     edx,10H */ \
  parm[dx ax] value [dx ax];
 
-ULONG MakeLocalPtrFlat( void far *ptr );
+ULONG MakeLocalPtrFlat( void __far *ptr );
 
 USHORT  (APIENTRY *DebugFunc)( PVOID );
 USHORT  FlatCS,FlatDS;
 static ULONG    _retaddr;
-extern void far *DoReturn();
+extern void __far *DoReturn();
 
-extern USHORT   DoCall( void far*, ULONG, ULONG );
+extern USHORT   DoCall( void __far *, ULONG, ULONG );
 #pragma aux DoCall parm [dx ax] [cx bx] [di si] modify [ax bx cx dx si di es];
 
 extern void bp( void );
@@ -85,7 +85,7 @@ extern void bp( void );
 
 #define LOCATOR     "OS2V2HLP.EXE"
 
-unsigned int Call32BitDosDebug( dos_debug far *buff )
+unsigned int Call32BitDosDebug( dos_debug __far *buff )
 {
     return( DoCall( DebugFunc, MakeLocalPtrFlat( buff ), _retaddr ) );
 }
@@ -93,7 +93,7 @@ unsigned int Call32BitDosDebug( dos_debug far *buff )
 /*
  * get the address of Dos32Debug, and get the flat selectors, too.
  */
-int GetDos32Debug( char far *err )
+int GetDos32Debug( char __far *err )
 {
     char        buff[256];
     RESULTCODES resc;
@@ -146,18 +146,18 @@ int GetDos32Debug( char far *err )
         StrCopy( TRP_OS2_no_help, err );
         return( FALSE );
     }
-    DebugFunc = (void far *) data.dos_debug;
+    DebugFunc = (void __far *)data.dos_debug;
     FlatCS = (USHORT) data.cs;
     FlatDS = (USHORT) data.ds;
 
-    _retaddr = MakeLocalPtrFlat( (void far *) DoReturn );
+    _retaddr = MakeLocalPtrFlat( (void __far *)DoReturn );
     return( TRUE );
 }
 
 /*
  * MakeSegmentedPointer - create a 16:16 ptr from a 0:32 ptr
  */
-void far *MakeSegmentedPointer( ULONG val )
+void __far *MakeSegmentedPointer( ULONG val )
 {
     dos_debug   buff;
 
@@ -172,7 +172,7 @@ void far *MakeSegmentedPointer( ULONG val )
 /*
  * MakeLocalPtrFlat - create a 0:32 ptr from a 16:16 ptr
  */
-ULONG MakeLocalPtrFlat( void far *ptr )
+ULONG MakeLocalPtrFlat( void __far *ptr )
 {
     return( CallDosSelToFlat( (long) ptr ) );
 
@@ -231,7 +231,7 @@ ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset )
 /*
  * MakeItSegmentedNumberOne - make a (sel,offset) into a 16:16 pointer
  */
-void far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
+void __far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
 {
     if( !IsFlatSeg( seg ) ) return( MK_FP( seg, (USHORT) offset ) );
     return( MakeSegmentedPointer( offset ) );
@@ -242,9 +242,9 @@ void far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset )
 /*
  * GetExceptionText - return text for last exception
  */
-char far *GetExceptionText( void )
+char __far *GetExceptionText( void )
 {
-    char        far *str;
+    char        __far *str;
 
     switch( ExceptNum ) {
     case XCPT_DATATYPE_MISALIGNMENT:

@@ -461,7 +461,7 @@ typedef unsigned char   ATTR;
             char            ch;
             ATTR            attr;
     } PIXEL;
-    #define __FAR far
+    #define __FAR __far
     #define HAVE_FAR
 #else
     #error pixel structure not configured for system

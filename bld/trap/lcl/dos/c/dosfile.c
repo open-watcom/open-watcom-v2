@@ -39,7 +39,7 @@
 extern bool             CheckPointMem( unsigned, char * );
 extern void             CheckPointRestore( void );
 extern tiny_ret_t       Fork(char *, unsigned);
-extern const char       far *DOSEnvFind( char * );
+extern const char       __far *DOSEnvFind( char * );
 extern char             *GetExeExtensions(void);
 
 trap_retval ReqFile_get_config( void )
@@ -195,7 +195,7 @@ static tiny_ret_t TryPath( char *name, char *end, char *ext_list )
 
 long FindFilePath( char *pgm, char *buffer, char *ext_list )
 {
-    const char  far *path;
+    const char  __far *path;
     char        *p2;
     char        *p3;
     tiny_ret_t  rc;

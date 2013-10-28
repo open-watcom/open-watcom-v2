@@ -205,13 +205,13 @@
     #if defined(__386__)
         #define inp input_port
         #define outp output_port
-        extern unsigned short __far16 _pascal outp(unsigned short, unsigned short);
-        extern unsigned short __far16 _pascal inp(unsigned short);
+        extern unsigned short __far16 __pascal outp(unsigned short, unsigned short);
+        extern unsigned short __far16 __pascal inp(unsigned short);
     #else
         #define inp input_port
         #define outp output_port
-        extern unsigned far outp( unsigned, unsigned );
-        extern unsigned far inp( unsigned );
+        extern unsigned __far outp( unsigned, unsigned );
+        extern unsigned __far inp( unsigned );
     #endif
 #elif defined(__NETWARE__)
     #pragma aux inp =                                   \

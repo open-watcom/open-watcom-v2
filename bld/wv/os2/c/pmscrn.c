@@ -51,13 +51,13 @@ extern BOOL APIENTRY WinThreadAssocQueue( HAB, HMQ );
 
 extern HMQ              GUIPMmq;
 
-extern void     far *ExtraAlloc( unsigned );
-extern void     ExtraFree( void far * );
+extern void     __far *ExtraAlloc( unsigned );
+extern void     ExtraFree( void __far * );
 extern void     StartupErr( char * );
 extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
-extern void     TellHandles( void far *hab, void far *hwnd );
-extern void far *GUIGetHAB();
+extern void     TellHandles( void __far *hab, void __far *hwnd );
+extern void __far *GUIGetHAB();
 extern HWND     GUIGetSysHandle(gui_window*);
 extern void     SaveMainScreen(char*);
 extern void     RestoreMainScreen(char*);
@@ -259,13 +259,13 @@ void FiniScreen()
  *                                                                           *
 \*****************************************************************************/
 
-void far *uifaralloc( unsigned size )
+void __far *uifaralloc( unsigned size )
 {
     return( ExtraAlloc( size ) );
 }
 
 
-void uifarfree( void far *ptr )
+void uifarfree( void __far *ptr )
 {
     ExtraFree( ptr );
 }

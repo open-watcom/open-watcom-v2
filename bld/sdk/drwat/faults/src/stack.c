@@ -34,7 +34,7 @@
 int     Cnt;
 
 void crash( void ) {
-    char far *a= (char far *) 0L;
+    char __far *a= (char __far *)0L;
 
     a[0] = 'a';
 }

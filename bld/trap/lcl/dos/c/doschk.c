@@ -90,7 +90,7 @@ bool CheckPointMem( unsigned max, char *f_buff )
     *f_buff++ = TinyGetCurrDrive() + 'A';
     *f_buff++ = ':';
     *f_buff++ = '\\';
-    rc = TinyFarGetCWDir( (char far *)f_buff, 0 );
+    rc = TinyFarGetCWDir( (char __far *)f_buff, 0 );
     if( TINY_ERROR( rc ) )
         return( FALSE );
     while( *f_buff != 0 ) ++f_buff;

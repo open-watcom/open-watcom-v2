@@ -58,11 +58,11 @@ static void Cleanup()
 
 bool CheckPointMem( unsigned max, char *f_buff )
 {
-    dos_mem_block   far *mem;
-    dos_mem_block   far *start;
-    dos_mem_block   far *end;
-    dos_mem_block   far *next;
-    dos_mem_block   far *chk;
+    dos_mem_block   __far *mem;
+    dos_mem_block   __far *start;
+    dos_mem_block   __far *end;
+    dos_mem_block   __far *next;
+    dos_mem_block   __far *chk;
     tiny_ret_t      ret;
     tiny_handle_t   hdl;
     unsigned        size;
@@ -93,7 +93,7 @@ bool CheckPointMem( unsigned max, char *f_buff )
     *f_buff++ = TinyGetCurrDrive() + 'A';
     *f_buff++ = ':';
     *f_buff++ = '\\';
-    ret = TinyFarGetCWDir( (char far *)f_buff, 0 );
+    ret = TinyFarGetCWDir( (char __far *)f_buff, 0 );
     if( ret < 0 ) return( FALSE );
     while( *f_buff != 0 ) ++f_buff;
     if( f_buff[-1] == '\\' ) {
@@ -143,7 +143,7 @@ bool CheckPointMem( unsigned max, char *f_buff )
 
 void CheckPointRestore()
 {
-    dos_mem_block   far *chk;
+    dos_mem_block   __far *chk;
     tiny_ret_t      ret;
     tiny_handle_t   hdl;
 

@@ -102,7 +102,7 @@ extern void BIOSGraphOff();
         parm    [dx] \
         modify [ ah cx ];
 
-extern void DoRingBell( char far * s );
+extern void DoRingBell( char __far * s );
 
 #define RING_BELL_ DoRingBell( "\007" );
 

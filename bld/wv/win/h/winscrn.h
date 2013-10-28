@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-extern void far         *ExtraAlloc( unsigned );
-extern void             ExtraFree( void far * );
+extern void __far       *ExtraAlloc( unsigned );
+extern void             ExtraFree( void __far * );
 extern void             win_uisetcolor( int );
 extern void             win_uisetmono( void );
 extern void             WindowsMessageLoop( int );

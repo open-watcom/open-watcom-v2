@@ -213,7 +213,7 @@ static drive_info       Drives[32];
 
 #if defined( __DOS__ )
 
-int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned far *devhdr )
+int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
 /*****************************************************************************************/
 {
     deverr = deverr;
@@ -222,7 +222,7 @@ int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned fa
     return( _HARDERR_FAIL );
 }
 
-typedef __far (HANDLER)( unsigned deverr, unsigned errcode, unsigned far *devhdr );
+typedef __far (HANDLER)( unsigned deverr, unsigned errcode, unsigned __far *devhdr );
 
 #endif
 

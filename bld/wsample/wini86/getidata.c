@@ -32,7 +32,7 @@
 
 #include <windows.h>
 
-int GetIData( HINSTANCE inst, void near *data, unsigned int size )
+int GetIData( HINSTANCE inst, void __near *data, unsigned int size )
 {
     return( GetInstanceData( inst, data, size ) );
 }

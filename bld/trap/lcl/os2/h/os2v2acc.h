@@ -32,19 +32,19 @@
 
 typedef void (*excfn)();
 
-void WriteRegs( dos_debug far * );
-void ReadRegs( dos_debug far * );
+void WriteRegs( dos_debug __far * );
+void ReadRegs( dos_debug __far * );
 void RecordModHandle( ULONG value );
-void WriteLinear( void far *data, ULONG lin, USHORT size );
-void ReadLinear( void far *data, ULONG lin, USHORT size );
-USHORT WriteBuffer( byte far *data, USHORT segv, ULONG offv, USHORT size );
-char far *GetExceptionText( void );
+void WriteLinear( void __far *data, ULONG lin, USHORT size );
+void ReadLinear( void __far *data, ULONG lin, USHORT size );
+USHORT WriteBuffer( byte __far *data, USHORT segv, ULONG offv, USHORT size );
+char __far *GetExceptionText( void );
 ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset );
-void far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset );
-void far *MakeSegmentedPointer( ULONG val );
-int GetDos32Debug( char far *err );
+void __far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset );
+void __far *MakeSegmentedPointer( ULONG val );
+int GetDos32Debug( char __far *err );
 void SetTaskDirectories( void );
-bool DebugExecute( dos_debug far *buff, ULONG cmd, bool );
+bool DebugExecute( dos_debug __far *buff, ULONG cmd, bool );
 int IsUnknownGDTSeg( USHORT seg );
 
 extern  void    LoadThisDLL( void );
@@ -54,7 +54,7 @@ extern  void    BreakPoint( ULONG );
 #pragma aux     BreakPoint = 0xCC parm [ dx ax ] aborts;
 extern void     bp( void );
 #pragma aux     bp = 0xCC;
-extern  void far *Automagic( unsigned short );
+extern  void __far *Automagic( unsigned short );
 #pragma aux     Automagic = 0x29 0xc4 /* sub sp,ax */\
                             0x89 0xe0 /* mov ax,sp */\
                             0x8c 0xd2 /* mov dx,ss */\
@@ -71,7 +71,7 @@ typedef struct {
         CHAR    load_name[2];
 } loadstack_t;
 
-#pragma aux intrface far modify [];
+#pragma aux intrface __far modify [];
 #pragma aux (intrface) TrapInit;
 #pragma aux (intrface) TrapAccess;
 #pragma aux (intrface) TrapFini;
@@ -94,7 +94,7 @@ extern char             UtilBuff[BUFF_SIZE];
 extern HFILE            SaveStdIn;
 extern HFILE            SaveStdOut;
 extern bool             CanExecTask;
-extern ULONG            far *ModHandles;
+extern ULONG            __far *ModHandles;
 extern USHORT           NumModHandles;
 extern int              CurrModHandle;
 extern ULONG            ExceptNum;
@@ -129,16 +129,16 @@ extern USHORT           FlatCS,FlatDS;
 bool CausePgmToLoadThisDLL( ULONG startLinear );
 long TaskExecute( excfn rtn );
 #pragma aux DoOpen parm [ dx ax ] [ bx ] [ cx ];
-void DoOpen( char far *name, int mode, int flags );
+void DoOpen( char __far *name, int mode, int flags );
 #pragma aux DoClose parm [ ax ];
 static void DoClose( HFILE hdl );
 #pragma aux DoDupFile parm [ ax ] [ dx ];
 void DoDupFile( HFILE old, HFILE new );
 #pragma aux DoWritePgmScrn parm [dx ax] [ bx ];
-void DoWritePgmScrn( char far *buff, USHORT len );
-bool TaskReadWord( USHORT seg, ULONG off, USHORT far *data );
+void DoWritePgmScrn( char __far *buff, USHORT len );
+bool TaskReadWord( USHORT seg, ULONG off, USHORT __far *data );
 bool TaskWriteWord( USHORT seg, ULONG off, USHORT data );
-void TaskPrint( byte far *data, unsigned len );
+void TaskPrint( byte __far *data, unsigned len );
 
 //#define DEBUG_OUT
 

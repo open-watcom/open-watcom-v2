@@ -39,7 +39,7 @@
 unsigned            OvlAreaSize;
 
 extern void StartupErr(char *);
-extern void far _ovl_addarea( unsigned, unsigned );
+extern void __far _ovl_addarea( unsigned, unsigned );
 
 extern addr_seg     _psp;
 extern unsigned     _STACKTOP;

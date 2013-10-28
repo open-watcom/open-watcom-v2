@@ -72,14 +72,14 @@ enum {
 };
 
 struct device {
-    struct device far   *next;
+    struct device __far *next;
     unsigned short      attr;
     unsigned short      strategy_entry;
     unsigned short      interrupt_entry;
     char                name[8];
 };
 
-void far *__first_pid( void );
+void __far *__first_pid( void );
 #ifdef _M_I86
 #pragma aux __first_pid = \
         /* 0xb4 0x52    */ "mov ah,52h" \
@@ -95,12 +95,12 @@ void far *__first_pid( void );
         value [ax ebx];
 #endif
 
-segment_t far *envp;
+segment_t __far *envp;
 
 void printCommand( unsigned seg )
 {
-    segment_t far       *env_seg;
-    unsigned char far   *p;
+    segment_t __far     *env_seg;
+    unsigned char __far *p;
 
     if( _osmajor < 3 ) {
         putchar( '\n' );
@@ -141,8 +141,8 @@ void printCommand( unsigned seg )
 
 void do_ps( void )
 {
-    struct memblk far *p;
-    segment_t far *pid;
+    struct memblk __far *p;
+    segment_t __far *pid;
     segment_t seg;
 
     envp = MK_FP( _psp, 0x2c );

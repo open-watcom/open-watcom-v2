@@ -1441,7 +1441,7 @@ char *GetCmdArg( int num )
     return( CmdData );
 }
 
-void SetCmdArgStart( int num, char far *ptr )
+void SetCmdArgStart( int num, char __far *ptr )
 {
     num = num;
     CmdData = ptr;

@@ -43,7 +43,7 @@
 
 #ifdef DEBUG
 
-void putstring( char far *str )
+void putstring( char __far *str )
 {
     unsigned bytes;
     extern unsigned _dos_write( int handle, void __far *buffer, unsigned count, unsigned *bytes );
@@ -178,7 +178,7 @@ IPXHeader       RespHead;
 ECB             RespECB;
 char            ServDummy;
 
-typedef void    (far *ESRAddr)();
+typedef void    (__far *ESRAddr)();
 #ifdef __WINDOWS__
 #define ESRFUNC __export __far __pascal
 DWORD           IPXTaskID;
@@ -565,7 +565,7 @@ char *RemoteLink( char *name, bool server )
         GetIPXAddr( SPXSendSequencedPacket );
         GetIPXAddr( SPXTerminateConnection );
         IPXTaskID = 0x00000000L;
-        if( IPXInitialize( (DWORD far *)&IPXTaskID, 20, 576 ) != 0 ) {
+        if( IPXInitialize( (DWORD __far *)&IPXTaskID, 20, 576 ) != 0 ) {
             return( TRP_ERR_IPX_not_initialized );
         }
     }

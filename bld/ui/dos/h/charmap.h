@@ -34,10 +34,10 @@
 
 #ifndef poke
 
-#define _poke(a,b,c)     (*((int  far*)firstmeg(a,b)) = (int)(c))
-#define _pokeb(a,b,c)    (*((char far*)firstmeg(a,b)) = (char)(c))
-#define _peek(a,b)       (*((int  far*)firstmeg(a,b)))
-#define _peekb(a,b)      (*((char far*)firstmeg(a,b)))
+#define _poke(a,b,c)     (*((int __far *)firstmeg(a,b)) = (int)(c))
+#define _pokeb(a,b,c)    (*((char __far *)firstmeg(a,b)) = (char)(c))
+#define _peek(a,b)       (*((int __far *)firstmeg(a,b)))
+#define _peekb(a,b)      (*((char __far *)firstmeg(a,b)))
 
 #endif
 

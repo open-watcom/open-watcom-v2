@@ -43,7 +43,7 @@
 
 extern char SrchIgnoreMagic[];
 #ifdef __WATCOMC__
-extern char near SrchMetaChars[];
+extern char __near SrchMetaChars[];
 #else
 extern char SrchMetaChars[];
 #endif

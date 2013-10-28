@@ -35,7 +35,7 @@
 
 int NumPrinters()
 {
-    equip_list far *equip;
+    equip_list __far *equip;
 
     equip = MK_FP( 0x60, BIOS_SEG*16 + EQUIPMENT );
     return( equip->num_printers );
@@ -44,7 +44,7 @@ int NumPrinters()
 
 unsigned PrnAddress( int printer )
 {
-    unsigned short far *addr;
+    unsigned short __far *addr;
 
     addr = MK_FP( 0x60, BIOS_SEG*16 + 2*printer + PRINTER_BASE );
     return( *addr );

@@ -37,19 +37,19 @@
 #include "win.h"
 #include "pragmas.h"
 #if defined( __4G__ )
-    #define _FAR_   far
+    #define _FAR_   __far
 #else
     #define _FAR_
 #endif
 
 #if defined( _M_I86 ) || defined( __4G__ )
-static void (interrupt _FAR_ *oldInt1c)();
-static void (interrupt _FAR_ *oldInt1b)();
-static void (interrupt _FAR_ *oldInt23)();
-static void (interrupt _FAR_ *oldInt24)();
+static void (__interrupt _FAR_ *oldInt1c)();
+static void (__interrupt _FAR_ *oldInt1b)();
+static void (__interrupt _FAR_ *oldInt23)();
+static void (__interrupt _FAR_ *oldInt24)();
 #else
 typedef struct {
-    void far    *prot;
+    void __far  *prot;
     void        *real;
 } int_vect_32;
 
@@ -99,7 +99,7 @@ static void drawClock( void )
 /*
  * handleInt1c - int 0x1c handler (clock timer)
  */
-static void interrupt handleInt1c()
+static void __interrupt handleInt1c()
 {
     ClockTicks++;
     cTick1--;
@@ -153,7 +153,7 @@ static void interrupt handleInt1c()
 /*
  * handleInt1b_23
  */
-static void interrupt handleInt1b_23()
+static void __interrupt handleInt1b_23()
 {
     if( EditFlags.WatchForBreak ) {
         EditFlags.BreakPressed = TRUE;
@@ -240,7 +240,7 @@ static void getIntVect( int vect, int_vect_32 *vinfo )
 /*
  * newIntVect - set a new 32-bit interrupt vector
  */
-static void newIntVect( int vect, void far *rtn )
+static void newIntVect( int vect, void __far *rtn )
 {
     union REGS          inregs, outregs;
     struct SREGS        segregs;
@@ -255,7 +255,7 @@ static void newIntVect( int vect, void far *rtn )
 
 } /* newIntVect */
 
-extern void LockMemory( void far *, long size );
+extern void LockMemory( void __far *, long size );
 #pragma aux LockMemory = \
         "push   es" \
         "mov    ax, gs" \

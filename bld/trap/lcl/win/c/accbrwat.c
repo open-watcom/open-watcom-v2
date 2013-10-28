@@ -48,7 +48,7 @@
  * Under Windows 3.1, it seems bloody unlikely that segments move, so
  * maintaining a breakpoint list is unnecessary.
  */
-static break_point      huge *brkList;
+static break_point      __huge *brkList;
 static WORD             numBreaks;
 static HGLOBAL          brkHandle;
 
@@ -105,7 +105,7 @@ void ResetBreakpoints( WORD sel )
 
 } /* ResetBreakpoints */
 
-break_point far * findBrkEntry( void )
+break_point __far * findBrkEntry( void )
 {
     int         i;
     int         old_num;
@@ -125,7 +125,7 @@ break_point far * findBrkEntry( void )
         brkHandle = GlobalReAlloc( brkHandle,
                                    numBreaks*sizeof( brkList[0] ), GMEM_FLAGS );
     }
-    brkList = (break_point huge *)GlobalLock( brkHandle );
+    brkList = (break_point __huge *)GlobalLock( brkHandle );
     return( &brkList[old_num] );
 }
 

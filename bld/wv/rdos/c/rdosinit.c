@@ -118,7 +118,7 @@ void RestoreHandlers()
 {
 }
 
-long _fork( char far *cmd, unsigned len )
+long _fork( char *cmd, unsigned len )
 {
     cmd = cmd; len = len;
     return( 0 );

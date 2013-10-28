@@ -39,7 +39,7 @@
 #include "xmem.h"
 #include "fcbmem.h"
 
-extern void interrupt XMemIntHandler( void );
+extern void __interrupt XMemIntHandler( void );
 
 static descriptor GDT[] = {
     { 0, 0, 0 },    /* dummy segment */

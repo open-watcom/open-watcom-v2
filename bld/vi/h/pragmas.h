@@ -39,8 +39,8 @@ extern void             Out61( unsigned char );
 extern void             Out43( unsigned char );
 extern void             Out42( unsigned char );
 
-extern void (interrupt _FAR *DosGetVect( char ))( void );
-extern void DosSetVect( char, void (interrupt *)( void ) );
+extern void (__interrupt _FAR *DosGetVect( char ))( void );
+extern void DosSetVect( char, void (__interrupt *)( void ) );
 
 extern unsigned short _BIOSGetKeyboard( char );
 extern unsigned short _BIOSKeyboardHit( char );

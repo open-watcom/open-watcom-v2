@@ -93,7 +93,7 @@ unsigned NextThread( unsigned tid )
     and things start making sense.
 */
 
-void interrupt far timer_handler( union INTPACK r )
+void __interrupt __far timer_handler( union INTPACK r )
 {
     if( --TimerMod == 0 )
     {

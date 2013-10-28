@@ -415,7 +415,7 @@ void ReadRegs( dos_debug *buff )
     CallDosDebug( buff );
 }
 
-void ReadLinear( void far *data, ULONG lin, USHORT size )
+void ReadLinear( void __far *data, ULONG lin, USHORT size )
 {
     Buff.Cmd = DBG_C_ReadMemBuf;
     Buff.Addr = lin;
@@ -424,7 +424,7 @@ void ReadLinear( void far *data, ULONG lin, USHORT size )
     CallDosDebug( &Buff );
 }
 
-void WriteLinear( void far *data, ULONG lin, USHORT size )
+void WriteLinear( void __far *data, ULONG lin, USHORT size )
 {
     Buff.Cmd = DBG_C_WriteMemBuf;
     Buff.Addr = lin;
@@ -433,7 +433,7 @@ void WriteLinear( void far *data, ULONG lin, USHORT size )
     CallDosDebug( &Buff );
 }
 
-USHORT WriteBuffer( byte far *data, USHORT segv, ULONG offv, USHORT size )
+USHORT WriteBuffer( byte __far *data, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
     bool        iugs;
@@ -508,7 +508,7 @@ USHORT WriteBuffer( byte far *data, USHORT segv, ULONG offv, USHORT size )
 }
 
 
-static USHORT ReadBuffer( byte far *data, USHORT segv, ULONG offv, USHORT size )
+static USHORT ReadBuffer( byte __far *data, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
     bool        iugs;
@@ -1259,7 +1259,7 @@ void SetBrkPending( void )
     BrkPending = TRUE;
 }
 
-static void pascal far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
+static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
     PFNSIGHANDLER   prev_hdl;
     USHORT          prev_act;

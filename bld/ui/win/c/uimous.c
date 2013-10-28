@@ -56,7 +56,7 @@ extern void MouseInt2( unsigned, unsigned, unsigned, unsigned, unsigned );
     "int 33h"           \
     parm [ax] [cx] [dx] [si] [di];
 
-//extern void MouseState( unsigned, struct mouse_data near * );
+//extern void MouseState( unsigned, struct mouse_data __near * );
 extern void MouseState( unsigned, md_stk_ptr );
 #pragma aux MouseState =    \
     "int 33h"               \

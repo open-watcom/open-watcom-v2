@@ -67,7 +67,7 @@ static          MONITOR                 ui_data         =       {
 unsigned    BIOSVidPage;
 
 #ifdef __386__
-void far *firstmeg( unsigned segment, unsigned offset )
+void __far *firstmeg( unsigned segment, unsigned offset )
 {
 #if defined(__OSI__) || __WATCOMC__ >= 1000
     return( MK_FP( _ExtenderRealModeSelector, (unsigned) (segment << 4) + offset ) );
@@ -142,7 +142,7 @@ extern unsigned char DOS_int( unsigned short, unsigned short, unsigned short );
     (Get Video Buffer: int 10h, AH=FEh)
 */
 
-void far * global video_buffer( void far *vbuff )
+void __far * global video_buffer( void __far *vbuff )
 /***********************************************/
 {
 #ifdef __386__
@@ -169,7 +169,7 @@ void far * global video_buffer( void far *vbuff )
     }
     return( vbuff );
 #else
-extern void far *       get_video_buffer( void far * );
+extern void __far *get_video_buffer( void __far * );
 #pragma aux             get_video_buffer = \
         0xb4 0xfe       /* mov ah,0xfe */ \
         0xcd 0x10       /* int 0x10 */ \
@@ -193,7 +193,7 @@ typedef struct {
  */
 #ifndef __386__
 
-extern dbcs_pair far *  dos_dbcs_vector_table( void );
+extern dbcs_pair __far *dos_dbcs_vector_table( void );
 #pragma aux             dos_dbcs_vector_table = \
         "push ds"       \
         "xor ax,ax"     /* pre-set DS:SI to zero */ \
@@ -206,11 +206,11 @@ extern dbcs_pair far *  dos_dbcs_vector_table( void );
         value           [di si] \
         modify          [ax];
 
-dbcs_pair far * intern dbcs_vector_table( void )
+dbcs_pair __far *intern dbcs_vector_table( void )
 /***************************************************/
 {
     static dbcs_pair    dbcs_dummy = { 0, 0 };
-    dbcs_pair far       *dbcs_table;
+    dbcs_pair __far     *dbcs_table;
 
     if( UIData->colour == M_MONO ) return( &dbcs_dummy );
     dbcs_table = dos_dbcs_vector_table();
@@ -219,7 +219,7 @@ dbcs_pair far * intern dbcs_vector_table( void )
 
 #else
 
-dbcs_pair far * intern dbcs_vector_table( void )
+dbcs_pair __far *intern dbcs_vector_table( void )
 /***************************************************/
 {
     union       REGPACK                 regs;
@@ -263,7 +263,7 @@ static int              Init;
 void intern initdbcs( void )
 {
     dbcs_pair           *p;
-    dbcs_pair           far *s;
+    dbcs_pair           __far *s;
 
     s = dbcs_vector_table();
     p = Pairs;
@@ -418,7 +418,7 @@ int intern initbios( void )
 /*************************/
 {
     int                                 initialized;
-    unsigned short far                  *poffset;
+    unsigned short __far                *poffset;
     LPPIXEL                             old_origin;
 
     initialized = FALSE;
@@ -434,12 +434,12 @@ int intern initbios( void )
         }
         if( UIData->desqview ) {
             UIData->screen.origin =
-             (PIXEL far *)video_buffer( UIData->screen.origin );
+             (PIXEL __far *)video_buffer( UIData->screen.origin );
         }
         if( uiisdbcs() ) {
             old_origin = UIData->screen.origin;
             UIData->screen.origin =
-             (PIXEL far *)video_buffer( UIData->screen.origin );
+             (PIXEL __far *)video_buffer( UIData->screen.origin );
             if( old_origin != UIData->screen.origin ) {
                 UIData->desqview = TRUE;
             }

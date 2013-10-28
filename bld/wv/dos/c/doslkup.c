@@ -39,12 +39,12 @@
 
 extern  addr_seg    _psp;
 
-char far *DOSEnvFind( char far *src )
+char __far *DOSEnvFind( char __far *src )
 {
-    char        far *env;
-    char        far *p;
+    char        __far *env;
+    char        __far *p;
 
-    env = MK_FP( *((unsigned far *)MK_FP( _psp, DOSEnv )), 0 );
+    env = MK_FP( *((unsigned __far *)MK_FP( _psp, DOSEnv )), 0 );
     do {
         p = src;
         do {
@@ -62,7 +62,7 @@ char far *DOSEnvFind( char far *src )
 
 unsigned EnvLkup( char *src, char *buff, unsigned max_len )
 {
-    char        far *env;
+    char        __far *env;
     unsigned    len;
     int         output = 0;
     char        c;

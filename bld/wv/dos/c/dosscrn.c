@@ -818,10 +818,10 @@ static void AllocSave()
 void InitScreen()
 {
     unsigned    scan_lines;
-    char        far *vect;
+    char        __far *vect;
 
     /* check for Microsoft mouse */
-    vect = *((char far * far *)MK_FP( 0, 4*0x33 ));
+    vect = *((char __far * __far *)MK_FP( 0, 4*0x33 ));
     if( vect == NULL || *vect == IRET ) _SwitchOff( SW_USE_MOUSE );
 
     AllocSave();
@@ -1142,11 +1142,11 @@ void uimouse( int func )
                 modify [ax dx];
 extern void vertsync();
 
-static char far *RegenPos( unsigned row, unsigned col )
+static char __far *RegenPos( unsigned row, unsigned col )
 {
-    char        far *pos;
+    char        __far *pos;
 
-    pos = (char far *)UIData->screen.origin + (row*UIData->screen.increment+col)*2 + 1;
+    pos = (char __far *)UIData->screen.origin + (row*UIData->screen.increment+col)*2 + 1;
     if( UIData->colour == M_CGA && _IsOff( SW_NOSNOW ) ) {
         /* wait for vertical retrace */
         vertsync();
@@ -1156,8 +1156,8 @@ static char far *RegenPos( unsigned row, unsigned col )
 
 void uisetmouse( ORD row, ORD col )
 {
-    char        far *old;
-    char        far *new;
+    char        __far *old;
+    char        __far *new;
 
     if( OldMouseRow == row && OldMouseCol == col ) return;
     if( OldMouseCol != OFF_SCREEN ) {

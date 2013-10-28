@@ -46,7 +46,7 @@ void global uiflush( void )
 
 unsigned long uiclock( void )
 {
-    unsigned    long far*               clock;
+    unsigned    long __far              *clock;
 
 #ifdef __386__
     clock = MK_FP( 0x60, ( BIOS_PAGE << 4 ) + SYSTEM_CLOCK );

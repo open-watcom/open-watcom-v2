@@ -110,7 +110,7 @@ char *GetCmdArg( int num )
     return( CmdData );
 }
 
-void SetCmdArgStart( int num, char far *ptr )
+void SetCmdArgStart( int num, char *ptr )
 {
     num = num;
     CmdData = ptr;
@@ -129,7 +129,7 @@ void RestoreHandlers()
 {
 }
 
-long _fork( char far *cmd, unsigned len )
+long _fork( char *cmd, unsigned len )
 {
     //NYI: check out WinExec
     cmd = cmd; len = len;

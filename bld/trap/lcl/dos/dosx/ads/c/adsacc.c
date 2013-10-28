@@ -130,7 +130,7 @@ int _cnt;
 static int _line=0;
 
 extern void InitMeg1();
-char far *GetScreenPointer( void )
+char __far *GetScreenPointer( void )
 {
     extern      short           Meg1;
     InitMeg1();
@@ -141,7 +141,7 @@ void MyClearScreen()
 {
     int i;
 
-    char far *scrn=GetScreenPointer();
+    char __far *scrn = GetScreenPointer();
 
     for( i=0;i<80*25;i++ ) {
         scrn[i*2] = ' ';
@@ -152,8 +152,8 @@ void MyClearScreen()
 void RawOut( char *str )
 {
     int         len,i;
-    char        far*scr;
-    char        far*scrn=GetScreenPointer();
+    char        __far *scr;
+    char        __far *scrn = GetScreenPointer();
 
     len = strlen( str );
     scr = &scrn[_line*80*2];

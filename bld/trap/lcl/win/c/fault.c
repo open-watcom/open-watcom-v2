@@ -105,19 +105,19 @@ typedef struct {
 extern const unsigned short __based(__segname("_CONST")) win386sig[];
 extern const unsigned short __based(__segname("_CONST")) win386sig2[];
 
-extern WORD     far NewAX;
-extern WORD     far NewCS;
-extern WORD     far NewIP;
-extern WORD     far NewFLAGS;
-extern WORD     far OldretCS;
-extern WORD     far OldretIP;
-extern WORD     far Oldintnumber;
-extern WORD     far Oldhandle;
+extern WORD     __far NewAX;
+extern WORD     __far NewCS;
+extern WORD     __far NewIP;
+extern WORD     __far NewFLAGS;
+extern WORD     __far OldretCS;
+extern WORD     __far OldretIP;
+extern WORD     __far Oldintnumber;
+extern WORD     __far Oldhandle;
 
-extern WORD     far NewSS;
-extern DWORD    far NewESP;
+extern WORD     __far NewSS;
+extern DWORD    __far NewESP;
 
-extern WORD     far RetHow;
+extern WORD     __far RetHow;
 
 #define EXCESS_CRAP_ON_STACK    (sizeof( int_frame ) )
 
@@ -161,7 +161,7 @@ static void saveState( volatile fault_frame *ff )
  */
 static void restoreState( volatile fault_frame *ff )
 {
-    WORD        far *wptr;
+    WORD        __far *wptr;
 
     /*
      * we save all this stuff in our own code segment (see int.asm)
@@ -220,8 +220,8 @@ static void restoreState( volatile fault_frame *ff )
  */
 static void newStack( WORD SS, DWORD ESP )
 {
-    WORD        far *wptr;
-    DWORD       far *dwptr;
+    WORD        __far *wptr;
+    DWORD       __far *dwptr;
 
     wptr = MK_FP( CSAlias, FP_OFF( &NewSS ) );
     dwptr = MK_FP( CSAlias, FP_OFF( &NewESP ) );
@@ -240,7 +240,7 @@ static void newStack( WORD SS, DWORD ESP )
  */
 static void setRetHow( WORD rc )
 {
-    WORD        far *wptr;
+    WORD        __far *wptr;
 
     wptr = MK_FP( CSAlias, FP_OFF( &RetHow ) );
 

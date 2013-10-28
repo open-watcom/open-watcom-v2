@@ -103,7 +103,7 @@ extern int      CurrMouseStatus;
 extern int      CurrMouseCol;
 extern int      CurrMouseRow;
 
-void BIOSGetColorPalette( void far *a )
+void BIOSGetColorPalette( void *a )
 {
     a = a;
 }
