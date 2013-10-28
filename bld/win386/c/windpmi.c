@@ -100,7 +100,7 @@ static void removeFromSelList( WORD sel )
  * DPMIGetAliases - get alias descriptors for some memory
  */
 #pragma aux DPMIGetAliases parm[dx ax] [es si] [cx] value[ax];
-WORD DPMIGetAliases( DWORD offset, DWORD far *res, WORD cnt)
+WORD DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
 {
     long                rc;
     WORD                sel,i;
@@ -213,7 +213,7 @@ void DPMIFreeAlias( WORD sel )
 
 } /* DPMIFreeAlias */
 
-WORD DPMIGetHugeAlias( DWORD offset, DWORD far *res, DWORD size )
+WORD DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size )
 {
     DWORD       no64k;
 
@@ -242,7 +242,7 @@ void DPMIFreeHugeAlias( DWORD desc, DWORD size )
 /*
  * __DPMI fns are the ones called by the 32-bit application
  */
-WORD FAR PASCAL __DPMIGetAlias( DWORD offset, DWORD far *res )
+WORD FAR PASCAL __DPMIGetAlias( DWORD offset, DWORD __far *res )
 {
     return( DPMIGetAliases( offset, res, 1 ) );
 }
@@ -251,7 +251,7 @@ void PASCAL FAR __DPMIFreeAlias( DWORD desc )
     DPMIFreeAlias( desc >> 16 );
 }
 
-WORD FAR PASCAL __DPMIGetHugeAlias( DWORD offset, DWORD far *res, DWORD size )
+WORD FAR PASCAL __DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size )
 {
     return( DPMIGetHugeAlias( offset, res, size ) );
 }

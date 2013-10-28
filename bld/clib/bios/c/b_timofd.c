@@ -31,8 +31,7 @@
 
 #include "variety.h"
 #include <bios.h>
-
-extern int __pascal _clib_bios_timeofday(int __cmd, long *__timeval );
+#include "clibxw32.h"
 
 _WCRTLINK unsigned short _bios_timeofday( unsigned __cmd, long *__timeval ){
         return( _clib_bios_timeofday( __cmd, __timeval ) );

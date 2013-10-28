@@ -32,13 +32,13 @@
 
 #undef _FAR
 #ifdef DLL32
-    #define _FAR far
+    #define _FAR __far
 #else
     #define _FAR
 #endif
 
 typedef struct {
-    void (far *rtn)();
+    void (__far *rtn)();
 } rtns;
 
 typedef struct {
@@ -72,7 +72,7 @@ extern rtns Glue[];
 extern char MsgTitle[];
 void DPMIFreeAlias( WORD seg );
 #pragma aux DPMIGetAliases parm[dx ax] [es si] [cx] value[ax];
-WORD DPMIGetAliases( DWORD offset, DWORD far *res, WORD cnt );
+WORD DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt );
 extern WORD DPMIGet32( DWORD _FAR *, DWORD );
 extern void DPMIFree32( DWORD );
 extern int  InitSelectorCache( void );

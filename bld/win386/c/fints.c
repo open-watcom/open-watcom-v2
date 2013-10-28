@@ -30,15 +30,11 @@
 
 
 #include <dos.h>
+#include "fints.h"
 
-int     _fintdos( union REGS far *, union REGS far * );
-int     _fintdosx( union REGS far *, union REGS far *, struct SREGS far * );
-int     _fint86( int, union REGS far *, union REGS far * );
-int     _fint86x( int, union REGS far *, union REGS far *, struct SREGS far * );
-void    _fintr( int, union REGPACK far * );
 
-extern  int                     BDDoDosCall( union REGS far *, union REGS far * );
-extern  int                     BDDoDosxCall( union REGS far *, union REGS far *, struct SREGS far * );
+extern  int                     BDDoDosCall( union REGS __far *, union REGS __far * );
+extern  int                     BDDoDosxCall( union REGS __far *, union REGS __far *, struct SREGS __far * );
 extern  int                     _dosretax( int, int );
 
 #pragma aux               BDDoDosCall =                         \
@@ -118,15 +114,15 @@ extern  int                     _dosretax( int, int );
         value [ ax ]                                 \
         modify [ di es ];
 
-extern  void            _DoINTR( int, union REGPACK far * );
+extern  void            _DoINTR( int, union REGPACK __far * );
 #pragma aux             _DoINTR parm [bx] [ax dx] modify [cx si di es];
 
-void _fintr( int intno, union REGPACK far *regs )
+void _fintr( int intno, union REGPACK __far *regs )
 {
     _DoINTR( intno, regs );
 }
 
-int _fintdos( union REGS far *inregs, union REGS far *outregs )
+int _fintdos( union REGS __far *inregs, union REGS __far *outregs )
 {
     int             status;
 
@@ -136,7 +132,7 @@ int _fintdos( union REGS far *inregs, union REGS far *outregs )
     return( outregs->x.ax );
 }
 
-int _fintdosx( union REGS far *inregs, union REGS far *outregs, struct SREGS far *segregs )
+int _fintdosx( union REGS __far *inregs, union REGS __far *outregs, struct SREGS __far *segregs )
 {
     int             status;
 
@@ -146,7 +142,7 @@ int _fintdosx( union REGS far *inregs, union REGS far *outregs, struct SREGS far
     return( outregs->x.ax );
 }
 
-int _fint86x( int intno, union REGS far *inr, union REGS far *outr, struct SREGS far *sr )
+int _fint86x( int intno, union REGS __far *inr, union REGS __far *outr, struct SREGS __far *sr )
 {
     union REGPACK r;
 
@@ -158,7 +154,7 @@ int _fint86x( int intno, union REGS far *inr, union REGS far *outr, struct SREGS
     r.x.di = inr->x.di;
     r.x.ds = sr->ds;
     r.x.es = sr->es;
-    _fintr( intno, (union REGPACK far *) &r );
+    _fintr( intno, (union REGPACK __far *) &r );
     outr->x.ax = r.x.ax;
     outr->x.bx = r.x.bx;
     outr->x.cx = r.x.cx;
@@ -171,7 +167,7 @@ int _fint86x( int intno, union REGS far *inr, union REGS far *outr, struct SREGS
     return( r.x.ax );
 }
 
-int _fint86( int intno, union REGS far *inr, union REGS far *outr )
+int _fint86( int intno, union REGS __far *inr, union REGS __far *outr )
 {
 #ifdef DLL32
     static struct SREGS sr;
@@ -180,5 +176,5 @@ int _fint86( int intno, union REGS far *inr, union REGS far *outr )
 #endif
 
     segread( &sr );
-    return( _fint86x( intno, inr, outr, (struct SREGS far *) &sr ) );
+    return( _fint86x( intno, inr, outr, (struct SREGS __far *) &sr ) );
 }

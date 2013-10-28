@@ -65,12 +65,12 @@ static UINT (FAR PASCAL *mmsystemwaveOutWrite)(HWAVEOUT hWaveOut, LPWAVEHDR lpWa
 
 
 typedef struct mminfo_list {
-    struct mminfo_list          far *next;
+    struct mminfo_list          __far *next;
     HMMIO                       handle;
     DWORD                       size;
     DWORD                       alias;
 } mminfo_list;
-typedef mminfo_list far *LPMMINFOLIST;
+typedef mminfo_list __far *LPMMINFOLIST;
 
 static LPMMINFOLIST     mminfoListHead;
 static LPMMINFOLIST     mminfoListTail;

@@ -39,12 +39,9 @@
 #include <malloc.h>
 #include <string.h>
 #include <time.h>
+#include "fints.h"
+#include "clibxw32.h"
 
-int     _fintdos(union REGS far *, union REGS far *);
-int     _fintdosx(union REGS far *, union REGS far *, struct SREGS far *);
-int     _fint86( int, union REGS far *, union REGS far * );
-int     _fint86x( int, union REGS far *, union REGS far *, struct SREGS far * );
-void    _fintr( int, union REGPACK far * );
 
 #ifdef DLL32
 #define STATIC static
@@ -56,31 +53,31 @@ void    _fintr( int, union REGPACK far * );
  * here lie all interrupt functions
  */
 
-int far pascal _clib_intdos( union REGS far *in_regs,
-                             union REGS far *out_regs )
+int __far __pascal _clib_intdos( union REGS __far *in_regs,
+                             union REGS __far *out_regs )
 {
     return( _fintdos( in_regs, out_regs ) );
 }
 
-int far pascal _clib_intdosx( union REGS far *in_regs, union REGS far *out_regs,
-                              struct SREGS far *seg_regs ) {
+int __far __pascal _clib_intdosx( union REGS __far *in_regs, union REGS __far *out_regs,
+                              struct SREGS __far *seg_regs ) {
         return( _fintdosx( in_regs, out_regs, seg_regs ) );
 }
 
-int far pascal _clib_int86( int inter_no, union REGS far *in_regs,
-                            union REGS far *out_regs )
+int __far __pascal _clib_int86( int inter_no, union REGS __far *in_regs,
+                            union REGS __far *out_regs )
 {
     return( _fint86( inter_no, in_regs, out_regs ) );
 }
 
-int far pascal _clib_int86x( int inter_no, union REGS far *in_regs,
-                            union REGS far *out_regs,
-                            struct SREGS far *seg_regs )
+int __far __pascal _clib_int86x( int inter_no, union REGS __far *in_regs,
+                            union REGS __far *out_regs,
+                            struct SREGS __far *seg_regs )
 {
     return( _fint86x( inter_no, in_regs, out_regs, seg_regs ) );
 }
 
-void far pascal _clib_intr( int inter_no, union REGPACK far *regs )
+void __far __pascal _clib_intr( int inter_no, union REGPACK __far *regs )
 {
     _fintr( inter_no, regs );
 }
@@ -91,8 +88,8 @@ void far pascal _clib_intr( int inter_no, union REGPACK far *regs )
  * bit application
  */
 
-unsigned far pascal _clib_dos_findfirst( char far *__path,unsigned __attr,
-                                struct find_t far *__buf )
+unsigned __far __pascal _clib_dos_findfirst( char __far *__path,unsigned __attr,
+                                struct find_t __far *__buf )
 {
 #if 1
     return 0;
@@ -114,7 +111,7 @@ unsigned far pascal _clib_dos_findfirst( char far *__path,unsigned __attr,
 
 } /* _clib_dos_findfirst */
 
-unsigned far pascal _clib_dos_findnext( struct find_t far *__buf )
+unsigned __far __pascal _clib_dos_findnext( struct find_t __far *__buf )
 {
 #if 1
     return 0;
@@ -131,7 +128,7 @@ unsigned far pascal _clib_dos_findnext( struct find_t far *__buf )
 } /* _clib_dos_findnext */
 
 
-unsigned far pascal _clib_dos_read( int __handle, void far *__buf, unsigned __count, unsigned long far *__bytes  )
+unsigned __far __pascal _clib_dos_read( int __handle, void __far *__buf, unsigned __count, unsigned long __far *__bytes  )
 {
     unsigned            rc;
     STATIC unsigned     bytes;
@@ -142,7 +139,7 @@ unsigned far pascal _clib_dos_read( int __handle, void far *__buf, unsigned __co
 
 } /* _clib_dos_read */
 
-unsigned far pascal _clib_dos_write( int __handle, void __far *__buf, unsigned __count, unsigned long far *__bytes  )
+unsigned __far __pascal _clib_dos_write( int __handle, void __far *__buf, unsigned __count, unsigned long __far *__bytes  )
 {
     unsigned            rc;
     STATIC unsigned     bytes;
@@ -156,7 +153,7 @@ unsigned far pascal _clib_dos_write( int __handle, void __far *__buf, unsigned _
 /*
  * BIOS functions here
  */
-unsigned short far pascal _clib_bios_disk( unsigned __cmd, struct diskinfo_t far *__diskinfo )
+unsigned short __far __pascal _clib_bios_disk( unsigned __cmd, struct diskinfo_t __far *__diskinfo )
 {
     STATIC struct diskinfo_t    diskinfo;
     unsigned short              rc;
@@ -166,35 +163,35 @@ unsigned short far pascal _clib_bios_disk( unsigned __cmd, struct diskinfo_t far
     return( rc );
 }
 
-unsigned short far pascal _clib_bios_equiplist(void)
+unsigned short __far __pascal _clib_bios_equiplist(void)
 {
         return( _bios_equiplist() );
 }
 
-unsigned short far pascal _clib_bios_keybrd( unsigned __cmd )
+unsigned short __far __pascal _clib_bios_keybrd( unsigned __cmd )
 {
     return( _bios_keybrd( __cmd ) );
 }
 
-unsigned short far pascal _clib_bios_memsize( void )
+unsigned short __far __pascal _clib_bios_memsize( void )
 {
     return( _bios_memsize() );
 }
 
-unsigned short far pascal _clib_bios_printer( unsigned __cmd, unsigned __port, unsigned __data )
+unsigned short __far __pascal _clib_bios_printer( unsigned __cmd, unsigned __port, unsigned __data )
 {
     return( _bios_printer( __cmd, __port, __data ) );
 }
 
-unsigned short far pascal _clib_bios_serialcom( unsigned __cmd, unsigned __port, unsigned __data )
+unsigned short __far __pascal _clib_bios_serialcom( unsigned __cmd, unsigned __port, unsigned __data )
 {
     return( _bios_serialcom( __cmd, __port, __data ) );
 }
 
-int far pascal _clib_bios_timeofday( int __cmd, long far *__timeval )
+unsigned short __far __pascal _clib_bios_timeofday( unsigned __cmd, long __far *__timeval )
 {
-    STATIC long timeval;
-    int         rc;
+    STATIC long     timeval;
+    unsigned short  rc;
 
     if( __cmd == _TIME_GETCLOCK ) {
         rc = _bios_timeofday( __cmd, &timeval );
@@ -209,11 +206,11 @@ int far pascal _clib_bios_timeofday( int __cmd, long far *__timeval )
 /*
  * various and sundry clib functions here
  */
-clock_t far pascal  _clib_clock( void )
+clock_t __far __pascal  _clib_clock( void )
 {
     return( clock() );
 }
-void far pascal _clib_delay( unsigned long ms )
+void __far __pascal _clib_delay( unsigned long ms )
 {
     while( ms > 0xFFFFL ) {
         delay( 0xFFFFL );
@@ -222,7 +219,7 @@ void far pascal _clib_delay( unsigned long ms )
     delay( ms );
 }
 
-int far pascal _clib_errno( void )
+int __far __pascal _clib_errno( void )
 {
     return( errno );
 }

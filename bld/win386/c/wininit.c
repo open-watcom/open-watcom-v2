@@ -104,7 +104,7 @@ struct wstart_vars {
     addr_48     gluertns[5];
 };
 
-extern DWORD far deadbeef;
+extern DWORD __far deadbeef;
 extern WORD     InDebugger;
 extern WORD     _A000H;
 extern WORD     _B000H;
@@ -135,7 +135,7 @@ extern WORD     DPL,Has87,HasWGod;
 extern void     FAR __CallBack( void );
 void GetDataSelectorInfo( void );
 WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len );
-void CodeRelocate( DWORD far *reloc, WORD cnt );
+void CodeRelocate( DWORD __far *reloc, WORD cnt );
 
 #define Align4K( x ) (((x)+0xfffL) & ~0xfffL )
 
@@ -172,10 +172,10 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     tiny_ret_t          rc;
     DWORD               size,currsize,curroff,minmem,maxmem;
     DWORD               relsize,exelen;
-    struct wstart_vars  far *dataptr;
-    void                far *aliasptr;
-    DWORD               far *relptr;
-    struct fpu_area     far *fpuptr;
+    struct wstart_vars  __far *dataptr;
+    void                __far *aliasptr;
+    DWORD               __far *relptr;
+    struct fpu_area     __far *fpuptr;
     rex_exe             exe;
     exe_data            exedat;
     char                file[128];
@@ -374,7 +374,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     EDataAddr = curroff;                        // 03-jan-95
 
     DPMISetSegmentBaseAddress( sel, DataSelectorBase );
-    relptr = (DWORD far *)aliasptr;             // point to 32-bit stack area
+    relptr = (DWORD __far *)aliasptr;             // point to 32-bit stack area
     /*
      * get and apply relocation table
      */
@@ -412,7 +412,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
 
     /* initialize emulator 8087 save area 20-oct-94 */
 
-    fpuptr = (struct fpu_area far *)((char far *)aliasptr + FPU_AREA);
+    fpuptr = (struct fpu_area __far *)((char __far *)aliasptr + FPU_AREA);
     _fmemset( fpuptr, 0, sizeof(struct fpu_area) );
     fpuptr->control_word = 0x033F;
     fpuptr->tag_word = 0xFFFF;
@@ -512,7 +512,7 @@ extern void RelocateWORD( short, long, short );
 /*
  * CodeRelocate - relocate a given chunk of code
  */
-void CodeRelocate( DWORD far *reloc, WORD cnt )
+void CodeRelocate( DWORD __far *reloc, WORD cnt )
 {
     WORD        i;
     DWORD       tmp;

@@ -32,10 +32,7 @@
 
 #include "variety.h"
 #include <dos.h>
-
-extern int __pascal _clib_int86( int , union REGS *, union REGS * );
-extern int __pascal _clib_int86x( int, union REGS *, union REGS *, struct SREGS * );
-extern void __pascal _clib_intr( int, union REGPACK * );
+#include "clibxw32.h"
 
 _WCRTLINK int int86( int no, union REGS *in, union REGS * out )
 {

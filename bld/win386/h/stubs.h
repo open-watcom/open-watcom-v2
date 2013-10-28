@@ -31,15 +31,15 @@
 
 
 #ifdef DLL32
-typedef LPVOID far *LPLPVOID;
+typedef LPVOID __far *LPLPVOID;
 #else
 typedef LPVOID *LPLPVOID;
 #endif
 
 void DPMIFreeAlias( WORD seg );
 #pragma aux DPMIGetAliases parm[dx ax] [es si] [cx] value[ax];
-WORD DPMIGetAliases( DWORD offset, DWORD far *res, WORD cnt );
-extern WORD DPMIGetHugeAlias( DWORD, DWORD far *, DWORD );
+WORD DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt );
+extern WORD DPMIGetHugeAlias( DWORD, DWORD __far *, DWORD );
 extern void DPMIFreeHugeAlias( DWORD , DWORD );
 extern WORD DataSelector;
 extern WORD MyDataSelector;

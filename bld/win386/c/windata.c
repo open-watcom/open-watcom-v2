@@ -61,15 +61,15 @@ addr_48 _32BitCallBackAddr = {0L, 0};
  * conv subdirectory).
  */
 
-extern void far Invoke16BitFunction();
-extern void far __Int21();
-extern void far __Win16Thunk1();
-extern void far __Win16Thunk2();
-extern void far __Win16Thunk3();
-extern void far __Win16Thunk4();
-extern void far __Win16Thunk5();
-extern void far __Win16Thunk6();
-extern void far __Call16();
+extern void __far Invoke16BitFunction();
+extern void __far __Int21();
+extern void __far __Win16Thunk1();
+extern void __far __Win16Thunk2();
+extern void __far __Win16Thunk3();
+extern void __far __Win16Thunk4();
+extern void __far __Win16Thunk5();
+extern void __far __Win16Thunk6();
+extern void __far __Call16();
 
 rtns Glue[] = {
     { Invoke16BitFunction },

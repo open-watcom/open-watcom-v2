@@ -32,8 +32,7 @@
 
 #include "variety.h"
 #include <bios.h>
-
-extern unsigned short __pascal _clib_bios_disk( unsigned, struct diskinfo_t * );
+#include "clibxw32.h"
 
 _WCRTLINK unsigned short _bios_disk(unsigned __cmd,struct diskinfo_t *__diskinfo)
 {

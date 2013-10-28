@@ -65,7 +65,7 @@ extern  int                     DoDosCall( void *in, void *out );
 
 #else
 #include <stddef.h>
-extern int __pascal _clib_intdos( union REGS *, union REGS * );
+#include "clibxw32.h"
 #endif
 
 _WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )

@@ -18,4 +18,3 @@
 !inject tmofd386.obj     d32
 
 !include ../../../../objlist.mif
-

@@ -32,10 +32,9 @@
 
 #include "variety.h"
 #include <dos.h>
-
-extern void __pascal _clib_delay( unsigned );
+#include "clibxw32.h"
 
 _WCRTLINK void delay( unsigned ms )
 {
-        _clib_delay( ms );
+    _clib_delay( ms );
 }
