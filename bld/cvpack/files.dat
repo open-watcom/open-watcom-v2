@@ -5,5 +5,5 @@ dir="binp"      usr="cvpack.exe"    cond="os2host"              where="c jc f77 
 dir="binnt"     usr="cvpack.exe"    cond="wnthost"              where="c jc f77 jf77 ac"
 #dir="binnt64"   usr="cvpack.exe"    cond="wnt64host"            where="c jc f77 jf77" keys="ntx64"
 dir="axpnt"     usr="cvpack.exe"    cond="alphahost"            where="ac"
-#dir="binl"      usr="cvpack"        cond="lnxhost"              where="c f77 jc jf77"
+dir="binl"      usr="cvpack"        cond="lnxhost"              where="c f77 jc jf77"
 #dir="binl64"    usr="cvpack"        cond="lnx64host"            where="c f77 jc jf77" keys="lx64"
