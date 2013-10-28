@@ -10,8 +10,6 @@ inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h" -I"$(dig_dir)/h"
 
 extra_cpp_flags = -DMD_x86
 
-extra_c_flags = -Zp1
-
 .cpp: ../c
 
 objs =            &

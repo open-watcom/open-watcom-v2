@@ -39,9 +39,6 @@ extra_cpp_flags = -D_USE_RESOURCES_
 extra_cpp_flags += -D_CGDLL
 !endif
 
-extra_c_flags_i86 = -zp1
-extra_c_flags_386 = -zp1
-
 .h: ..;../../h;../../../h
 .c: ..;../../c;../../../c;$(asminline_c);$(trmem_dir);$(watcom_dir)/c
 

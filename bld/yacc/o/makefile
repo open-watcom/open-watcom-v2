@@ -28,7 +28,7 @@ nt_386_lnk = SYSTEM nt OPTION offset=64k
 
 .c: ..\c
 .c.obj:
-    $(cc_386) $[* -oaxlt -s -d1 -mf -w4 -zq -zp4
+    $(cc_386) $[* -oaxlt -s -d1 -mf -w4 -zq
 
 !ifdef __dos__
 default_yacc = yacc.exe

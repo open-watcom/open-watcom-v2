@@ -66,8 +66,6 @@ extra_cpp_flags += -DIDE_PGM
 extra_cpp_flags += -DTRMEM
 !endif
 
-extra_c_flags = -zp4
-
 extra_c_flags_idedrv     = -DCHAIN_CALLBACK
 extra_c_flags_ideentry   = -DCHAIN_CALLBACK
 extra_c_flags_maindrv    = -DDLL_NAME=$(dllname)
