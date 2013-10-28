@@ -1,6 +1,6 @@
 File: source\diag0077.c
 (22,17): Error! E541: pointers to class members reference different object types
-  source conversion type is 'int stdcall (x379::S::* )( int )'
+  source conversion type is 'int __stdcall (x379::S::* )( int )'
   target conversion type is 'int (x379::S::* )( int )'
 (30,26): Error! E607: #pragma aux must reference a "C" linkage function '__brk0'
   definition: 'void __brk0( int )'
