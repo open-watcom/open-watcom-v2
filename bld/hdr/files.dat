@@ -374,6 +374,7 @@ usr="locking.h"
 usr="mman.h"
 usr="mount.h"
 usr="ptrace.h"
+usr="resource.h"
 usr="socket.h"
 usr="stat.h"
 usr="time.h"
@@ -406,7 +407,6 @@ usr="types.h"
 
 # MIPS headers. Not currently used.
 [ DEFAULT type="s" dir="lh/sys" where="mc" cond="lnxtarg" ]
-usr="resource.h"
 usr="sysmips.h"
 
 [ DEFAULT type="s" dir="lh/arch/mips" where="mc" cond="lnxtarg" ]
