@@ -71,8 +71,8 @@ enum { FALSE, TRUE };
 #else
 
 #pragma aux pascal "*" parm routine reverse [];
-#define pasrtn int far pascal
-#define PASPTR far
+#define pasrtn int __far __pascal
+#define PASPTR __far
 
 #endif
 
@@ -275,7 +275,7 @@ enum {
 #define _null( ch )  ( ( ch ) == '\0' )
 #define _white_or_null( ch ) ( _white( ch ) || _null( ch ) )
 
-extern char far * FindAlias( char * word, char * endword, char far * far *start );
+extern char __far * FindAlias( char * word, char * endword, char __far * __far *start );
 
 #ifdef DOS
 
@@ -299,8 +299,8 @@ extern char far * FindAlias( char * word, char * endword, char far * far *start 
 #define DosChDir( b, z ) DDosChDir( b )
 #define DosAllocSeg( a,b,f ) DDosAllocSeg( a,b )
 extern int      DosFreeEnv( void );
-extern pasrtn   DosRead( USHORT, char far *, USHORT, USHORT PASPTR *);
-extern pasrtn   DosWrite( USHORT, char far *, USHORT, USHORT PASPTR *);
+extern pasrtn   DosRead( USHORT, char __far *, USHORT, USHORT PASPTR *);
+extern pasrtn   DosWrite( USHORT, char __far *, USHORT, USHORT PASPTR *);
 extern int      DDosAllocSeg( unsigned, int PASPTR * );
 extern pasrtn   DosGetEnv( USHORT PASPTR *, USHORT PASPTR * );
 extern int      DVioReadCellStr( char PASPTR *, USHORT PASPTR *, USHORT, USHORT );

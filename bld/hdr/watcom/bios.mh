@@ -102,15 +102,12 @@ struct  _ibm_diskinfo_t {       /* disk parameters */
 #define _TIME_SETCLOCK  1       /* set current clock count */
 
 
-_WCRTLINK extern unsigned short _bios_disk(unsigned __cmd,
-                                           struct diskinfo_t *__diskinfo);
+_WCRTLINK extern unsigned short _bios_disk(unsigned __cmd, struct diskinfo_t *__diskinfo);
 _WCRTLINK extern unsigned short _bios_equiplist(void);
 _WCRTLINK extern unsigned short _bios_keybrd(unsigned __cmd);
 _WCRTLINK extern unsigned short _bios_memsize(void);
-_WCRTLINK extern unsigned short _bios_printer(unsigned __cmd,unsigned __port,
-                                              unsigned __data);
-_WCRTLINK extern unsigned short _bios_serialcom(unsigned __cmd,unsigned __port,
-                                                unsigned __data);
+_WCRTLINK extern unsigned short _bios_printer(unsigned __cmd,unsigned __port, unsigned __data);
+_WCRTLINK extern unsigned short _bios_serialcom(unsigned __cmd,unsigned __port, unsigned __data);
 _WCRTLINK extern unsigned short _bios_timeofday(unsigned __cmd,long *__timeval);
 
 :include poppack.sp

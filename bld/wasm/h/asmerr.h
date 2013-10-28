@@ -36,12 +36,6 @@
     #include "asminput.h"
 #endif
 
-#ifdef _M_I86
-    #define ASMFAR far
-#else
-    #define ASMFAR
-#endif
-
 #ifdef DEBUG_OUT
     extern void DoDebugMsg( const char *format, ... );
     #define DebugMsg( x ) DoDebugMsg x

@@ -150,7 +150,7 @@ extern void SetTextPointerType( short, short, short );
         "int 33h" \
     parm [bx] [cx] [dx] modify [ax bx cx dx];
 
-extern void SetUserDefinedMouseEventHandler( short, void far * );
+extern void SetUserDefinedMouseEventHandler( short, void __far * );
 #pragma aux SetUserDefinedMouseEventHandler = \
         "mov ax, 0ch" \
         "int 33h" \

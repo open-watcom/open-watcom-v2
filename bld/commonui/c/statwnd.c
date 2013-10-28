@@ -69,20 +69,6 @@ static BOOL                     classRegistered;
 static WPI_INST                 classHandle;
 static statwnd                  *currentStatWnd;
 
-#if 0
-#if defined( __WINDOWS_386__ )
-    #define CB      LONG FAR PASCAL
-#elif defined( __WINDOWS__ )
-    #define CB      LONG __export FAR PASCAL
-#elif defined( __NT__ )
-    #define CB      LONG __export __stdcall
-#elif defined( __OS2_PM__ )
-    #define CB      MRESULT EXPENTRY
-#else
-    #error CB return type not configured
-#endif
-#endif
-
 /*
  * getRect - get a rectangle
  */

@@ -32,16 +32,6 @@
 #ifndef ASMINS_H
 #define ASMINS_H
 
-#ifdef _M_I86
-
-#define ASMFAR far
-
-#else
-
-#define ASMFAR
-
-#endif
-
 #include "asmopnds.h"
 #include "asmsym.h"
 #include "asmops.h"

@@ -35,6 +35,7 @@
 #ifdef NOFAR
 #define FarPtr  *
 #define HugePtr *
+#define NearPtr *
 #define cdecl
 #define Near
 #define far
@@ -46,9 +47,9 @@
 #define Near    __near
 #endif
 
-#if defined( __I86__ ) || defined( _M_I86 )
+#if defined( _M_I86 )
   #define FAR16 __far
-#elif defined( __386__ )
+#elif defined( _M_IX86 )
   #define FAR16
 #else
   #error Unsupported target platform!

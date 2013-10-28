@@ -91,7 +91,7 @@ static int new_sample;
     #define GET_MSECS   (GetLong( SysTimeSel, offsetof( struct _timesel, nsec ) ) / 1000000 \
                        + GetLong( SysTimeSel, offsetof( struct _timesel, seconds ) ) * 1000)
 #else
-    #define _SysTime    ((struct _timesel far *) MK_FP( SysTimeSel, 0 ))
+    #define _SysTime    ((struct _timesel __far *) MK_FP( SysTimeSel, 0 ))
     #define GET_MSECS   (_SysTime->nsec / 1000000 + (_SysTime->seconds) * 1000)
 #endif
 

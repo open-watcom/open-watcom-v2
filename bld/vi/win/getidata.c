@@ -30,7 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef __NT__
+#ifdef __WINDOWS__
+
 #ifdef __WINDOWS_386__
     #define FAR
 #else
@@ -47,4 +48,5 @@ int MyGetInstanceData( unsigned short p1, char near *p2, short p3 )
 {
     return( GetInstanceData( p1, p2, p3 ) );
 }
+
 #endif

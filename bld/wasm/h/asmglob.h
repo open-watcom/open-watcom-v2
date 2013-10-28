@@ -40,6 +40,12 @@
 #include "watcom.h"
 #include "bool.h"
 
+#ifdef _M_I86
+#define ASMFAR __far
+#else
+#define ASMFAR
+#endif
+
 #define ERROR                   -1
 #define NOT_ERROR               1
 #define EMPTY                   -2

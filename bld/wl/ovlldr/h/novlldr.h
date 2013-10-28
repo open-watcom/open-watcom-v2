@@ -40,24 +40,24 @@
 /*
     NOVLLDR specific routines
 */
-extern  int      near __OVLFIXCALLCHAIN__( unsigned old, unsigned new );
-extern  void     near __OVLBUILDRETTRAP__( unsigned old_handle, unsigned rt_seg );
-extern  unsigned near __OVLSCANCALLCHAIN__( void );
-extern  void     far  __OVLRETTRAP__( void );
+extern  int      __near __OVLFIXCALLCHAIN__( unsigned old, unsigned new );
+extern  void     __near __OVLBUILDRETTRAP__( unsigned old_handle, unsigned rt_seg );
+extern  unsigned __near __OVLSCANCALLCHAIN__( void );
+extern  void     __far  __OVLRETTRAP__( void );
 
 #ifdef OVL_MULTITHREAD
 
-extern  unsigned near __OVLUNDORETTRAP__( unsigned rt_seg,
+extern  unsigned __near __OVLUNDORETTRAP__( unsigned rt_seg,
                                                 unsigned new_handle );
 #else
 
-extern  void     near __OVLUNDORETTRAP__( unsigned stack_trap, unsigned ret_offset,
+extern  void     __near __OVLUNDORETTRAP__( unsigned stack_trap, unsigned ret_offset,
                                 unsigned ret_list, unsigned new_handle );
 #endif
 
-extern  void     near __NOVLLDR__( void );
-extern  unsigned near __WhichArea__( unsigned seg );
-extern  void     near __OVLINITAREA__( unsigned seg, unsigned size );
+extern  void     __near __NOVLLDR__( void );
+extern  unsigned __near __WhichArea__( unsigned seg );
+extern  void     __near __OVLINITAREA__( unsigned seg, unsigned size );
 
 /*
     NOVLLDR data
@@ -128,7 +128,7 @@ extern  unsigned_16     _CODE_BASED __OVLSTARTPARA__;
     These structures are also defined in novlldr.inc.
 */
 typedef unsigned_16     desc;
-typedef desc far        *desc_ptr;
+typedef desc __far      *desc_ptr;
 #define BLOCK_IS_FREE 0xFFFF
 #define NULL_SEG 0
 
@@ -139,7 +139,7 @@ typedef struct {
     unsigned_16 prev;       /* paragraph of previous free block in the list */
     unsigned_16 num_paras;  /* number of free paras in this block */
 } free_block;
-typedef free_block far *free_block_ptr;
+typedef free_block __far *free_block_ptr;
 
 typedef struct {
     free_block  fblk;           /* area has fake free_block with num_paras ==0*/
@@ -147,7 +147,7 @@ typedef struct {
     unsigned_16 size;           /* number of paragraphs in this area */
     unsigned_16 free_paras;     /* total size of all free blocks in area */
 } area_list;
-typedef area_list far *area_list_ptr;
+typedef area_list __far *area_list_ptr;
 
 /************************** return trapping info **************************/
 
@@ -269,7 +269,7 @@ typedef struct {
 } ret_trap;
 #endif
 
-typedef ret_trap far *ret_trap_ptr;
+typedef ret_trap __far *ret_trap_ptr;
 
 #define CALL_FAR_INSTRUCTION    0x9a
 

@@ -34,17 +34,17 @@
 #include <string.h>
 #include "ovlstd.h"
 
-extern void near __OvlMsg__( unsigned msg )
+extern void __near __OvlMsg__( unsigned msg )
 //=========================================
 // Write message.
 {
-    char far    *ptr;
+    char __far  *ptr;
 
     ptr = __OVLMSGS__[ msg ];
     TinyFarWrite( TIO_STDERR_FILENO, ptr + sizeof( char ), *ptr );
 }
 
-extern void near __OvlExit__( unsigned msg )
+extern void __near __OvlExit__( unsigned msg )
 //==========================================
 // Terminate execution.
 {
@@ -52,7 +52,7 @@ extern void near __OvlExit__( unsigned msg )
     TinyTerminateProcess( -1 );
 }
 
-void near __OvlCodeLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
+void __near __OvlCodeLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
 //=================================================================
 // Load code portion of section.
 {
@@ -76,16 +76,16 @@ void near __OvlCodeLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
 
 #define RELOC_CAPACITY 32
 
-int near __OvlRelocLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
+int __near __OvlRelocLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
 //=================================================================
 // Relocate section code; returns 1 if section is self-referential.
 {
     unsigned        buffered_relocs;
     unsigned        num_relocs;
     int             self_ref = 0;
-    dos_addr far    *relocs;
+    dos_addr __far  *relocs;
     dos_addr        reloc_buffer[ RELOC_CAPACITY ];
-    unsigned far    *fixup;
+    unsigned __far  *fixup;
     tiny_ret_t      status;
 
     for( num_relocs = ovl->relocs; num_relocs > 0; ) {
@@ -117,7 +117,7 @@ int near __OvlRelocLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
 #define FNMAX 80
 
 #ifdef OVL_DEBUG
-extern void near __OvlNum__( unsigned ovl_num )
+extern void __near __OvlNum__( unsigned ovl_num )
 //=============================================
 // Write overlay number.
 {
@@ -135,13 +135,13 @@ extern void near __OvlNum__( unsigned ovl_num )
 }
 #endif
 
-static char far *getpathenv( void )
+static char __far *getpathenv( void )
 /*********************************/
 /* get the PATH environment variable */
 {
-    char far    *ptr;
+    char __far  *ptr;
 
-    for( ptr = MK_FP( *(unsigned far *)MK_FP( __OVLPSP__, 0x2c ), 0 ); *ptr; ++ptr ) {
+    for( ptr = MK_FP( *(unsigned __far *)MK_FP( __OVLPSP__, 0x2c ), 0 ); *ptr; ++ptr ) {
         if(    ptr[0] == 'P'
             && ptr[1] == 'A'
             && ptr[2] == 'T'
@@ -155,7 +155,7 @@ static char far *getpathenv( void )
     return( __OVLNULLSTR__ );
 }
 
-extern void far __CloseOvl__( void )
+extern void __far __CloseOvl__( void )
 //==================================
 {
     if( __OVLFILEPREV__ != 0xFFFF ) {
@@ -165,16 +165,16 @@ extern void far __CloseOvl__( void )
 }
 
 
-extern tiny_ret_t near __OpenOvl__( unsigned offset )
+extern tiny_ret_t __near __OpenOvl__( unsigned offset )
 //===================================================
 // Open section file.
 {
-    char far    *fname;
-    char far    *cmd;
+    char __far  *fname;
+    char __far  *cmd;
     char        chr;
-    char far    *lastslash;
-    char far    *fnstart;
-    char far    *path;
+    char __far  *lastslash;
+    char __far  *fnstart;
+    char __far  *path;
     char        buf[ FNMAX ];
     tiny_ret_t  status;
     unsigned    isexe;
@@ -186,7 +186,7 @@ extern tiny_ret_t near __OpenOvl__( unsigned offset )
         __OVLFILEPREV__ = offset;
         isexe = offset & OVE_EXE_FILENAME;
         offset &= ~OVE_EXE_FILENAME;
-        fname = ((char far *)&__OVLTAB__) + offset;
+        fname = ((char __far *)&__OVLTAB__) + offset;
         // strip drive/directory from fname
         for( fnstart = fname; *fnstart != '\0'; ++fnstart ) {
             switch( *fnstart ) {
@@ -199,7 +199,7 @@ extern tiny_ret_t near __OpenOvl__( unsigned offset )
         }
         if( __OVLFLAGS__ & OVL_DOS3 ) {
             // go through environment to find path of .EXE file.
-            for( cmd = MK_FP( *(unsigned far *)MK_FP( __OVLPSP__, 0x2c ), 0 ); cmd[ 0 ] | cmd[ 1 ]; )
+            for( cmd = MK_FP( *(unsigned __far *)MK_FP( __OVLPSP__, 0x2c ), 0 ); cmd[ 0 ] | cmd[ 1 ]; )
                 ++cmd;
             cmd += 4;
             // now replace executable name with fname.

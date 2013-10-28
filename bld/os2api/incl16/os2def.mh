@@ -63,7 +63,7 @@ typedef BOOL FAR        *PBOOL;
 #define SELECTOROF(p)    (((PUSHORT)&(p))[1])
 #define OFFSETOF(p)      (((PUSHORT)&(p))[0])
 
-#define MAKETYPE(v, type) (*((type far *)&v))
+#define MAKETYPE(v, type) (*((type FAR *)&v))
 
 #define FIELDOFFSET(type, field) ((SHORT)&(((type *)0)->field))
 

@@ -64,7 +64,7 @@ extern WORD _IsValidSelector( WORD );
 /*
  * WDebug386 must be defined in a program using these procedures
  */
-extern BOOL             near WDebug386;
+extern BOOL             WDebug386;
 
 DWORD GetASelectorLimit( WORD sel )
 {

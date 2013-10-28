@@ -34,9 +34,9 @@
 #include <stddef.h>
 #include "ovlstd.h"
 
-extern void near        NAME( OVLLDR )( void );
-extern void near        NAME( OVLMUNGE )( void * );
-extern void near        NAME( CHPOVLLDR )( void );
+extern void __near      NAME( OVLLDR )( void );
+extern void __near      NAME( OVLMUNGE )( void * );
+extern void __near      NAME( CHPOVLLDR )( void );
 #define LOADOVERLAY     NAME( LoadOverlay )
 
 static void MungeVectors( unsigned ovl_num )
@@ -130,7 +130,7 @@ static void ClearInMemFlags( ovltab_entry_ptr loaded_ovl )
     }
 }
 
-int near LOADOVERLAY( unsigned ovl_num )
+int __near LOADOVERLAY( unsigned ovl_num )
 //======================================
 // Load specified overlay.
 {
@@ -170,7 +170,7 @@ int near LOADOVERLAY( unsigned ovl_num )
     return( loaded_something );
 }
 
-void near NAME( OVLLOAD )( unsigned ovl_num )
+void __near NAME( OVLLOAD )( unsigned ovl_num )
 //===========================================
 // Load overlay.
 {
@@ -179,7 +179,7 @@ void near NAME( OVLLOAD )( unsigned ovl_num )
     }
 }
 
-dos_addr near NAME( OVLTINIT )( void )
+dos_addr __near NAME( OVLTINIT )( void )
 //====================================
 // Overlay initialization.
 {

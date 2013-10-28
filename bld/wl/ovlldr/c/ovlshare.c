@@ -35,7 +35,7 @@
 
 #define SHARE_SHIFT     4
 
-extern unsigned far _ovl_openflags( unsigned share )
+extern unsigned __far _ovl_openflags( unsigned share )
 /**************************************************/
 {
     unsigned    old;

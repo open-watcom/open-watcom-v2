@@ -194,9 +194,9 @@ void outi( unsigned i )
 #define outi(i)
 #endif
 
-static TSF32 far *find_user_code( TSF32 far *client )
+static TSF32 FarPtr find_user_code( TSF32 FarPtr client )
 {
-    TSF32 far *curr_tsf = client;
+    TSF32 FarPtr curr_tsf = client;
 
     /*  The first TSF on the chain will always be in the DOS/16M
         passup code, for the hotkey interrupt.  We will break there
@@ -232,7 +232,7 @@ static unsigned char hotkey_opcode;
 static unsigned char hotkey_hit;
 static int  hotkey_int = INT_RM_PASSUP;
 
-static void set_hotkey_break( TSF32 far *client )
+static void set_hotkey_break( TSF32 FarPtr client )
 {
     client = find_user_code( client );
     D32DebugBreakOp( &hotkey_opcode );
@@ -244,7 +244,7 @@ static void set_hotkey_break( TSF32 far *client )
 }
 
 
-static void check_hotkey( int eip_mod, TSF32 far *client )
+static void check_hotkey( int eip_mod, TSF32 FarPtr client )
 {
     if( hotkey_hit ) {
         hotkey_hit = 0;
@@ -258,7 +258,7 @@ static void check_hotkey( int eip_mod, TSF32 far *client )
     }
 }
 
-static int fix_fpe_fault( unsigned short opcodew, TSF32 far *client )
+static int fix_fpe_fault( unsigned short opcodew, TSF32 FarPtr client )
 {
     static unsigned char imm8, val8;
     static unsigned short imm16;
@@ -299,7 +299,7 @@ static int fix_fpe_fault( unsigned short opcodew, TSF32 far *client )
     return( 1 );
 }
 
-static int fixcrash( TSF32 far *client )
+static int fixcrash( TSF32 FarPtr client )
 {
     static unsigned char opcode;
     static unsigned short opcodew;
@@ -358,7 +358,7 @@ coverup:
 /* INT 21 exit function 4c: catch and back ip up 2, set int_id = -3 */
 /* NOTE: this handler may be called with SS != DS */
 
-unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hNext, TSF32 far *client )
+unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hNext, TSF32 FarPtr client )
 {
     int     eip_mod = 0;
     char    in_debuggee;
@@ -493,7 +493,7 @@ analyze:
     return( 0 );
 }
 
-static USHORT my_package_bind( char *package, char *action, PACKAGE far **bound_package, ACTION **bound_action )
+static USHORT my_package_bind( char *package, char *action, PACKAGE FarPtr *bound_package, ACTION **bound_action )
 {
     ACTION      *a;
 
@@ -516,7 +516,7 @@ static USHORT my_package_bind( char *package, char *action, PACKAGE far **bound_
 static int hook_debug_interrupts( void )
 {
     int         i;
-    PACKAGE far *package = NULL;
+    PACKAGE FarPtr package = NULL;
 
     if( my_package_bind( DOS4G_KERNEL_PACKAGE_NAME, DOS4G_DEBUG_HOOK_ENTRY, &package, (ACTION **)&debug_hook ) )
         return( 1 );
@@ -590,7 +590,7 @@ void D32DebugBreakOp( unsigned char *Int_3 )
 }
 
 typedef union {
-    void        far *pv;
+    void        FarPtr pv;
     INTVECT     w;                  /* treat as selector/offset */
 } farptr16;
 
@@ -601,7 +601,7 @@ static void FarPtr  save_int23;
 
 /* Returns 0 for success, 1 for failure
 */
-int D32DebugInit( TSF32 far *process_regs, int hkey )
+int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
 {
     farptr16    lowmem_cs;
     farptr16    org15p;
@@ -704,7 +704,7 @@ void D32DebugTerm( void )
     }
 }
 
-void D32DebugRun( TSF32 far *process_regs )
+void D32DebugRun( TSF32 FarPtr process_regs )
 {
     static char need_fixtrap;
 

@@ -36,8 +36,8 @@ static BOOL     doneExec;
 static HMODULE  moduleHandle;
 static HMODULE  instanceHandle;
 
-#define MODULE_FROM_TASK( t )   (*((WORD far *) MK_FP( (t), 0x1e )))
-#define INSTANCE_FROM_TASK( t ) (*((WORD far *) MK_FP( (t), 0x1c )))
+#define MODULE_FROM_TASK( t )   (*((WORD __far *)MK_FP( (t), 0x1e )))
+#define INSTANCE_FROM_TASK( t ) (*((WORD __far *)MK_FP( (t), 0x1c )))
 
 WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data )
 {

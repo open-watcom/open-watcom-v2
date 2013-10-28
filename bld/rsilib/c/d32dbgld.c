@@ -98,8 +98,8 @@ static void set_program_name( char *filename )
 /* change name of current program (in environment) */
 {
     union {
-        char far *cip;
-        int far *ip;
+        char FarPtr cip;
+        int FarPtr  ip;
         struct {
             unsigned off;
             unsigned sel;
@@ -111,7 +111,7 @@ static void set_program_name( char *filename )
     unsigned    maxp;
     int         i;
     int         blocksize;
-    MCB far     *blockp;
+    MCB FarPtr  blockp;
     unsigned    newenv;
     int         oldstrat;
     descriptor  g;
@@ -248,7 +248,7 @@ static char *loader_entry_names[] = {
     The names after the first seven are optional in a loader but
     are also filled in by this function if they exist.
 */
-static int loader_bind_util( PACKAGE far *p, LOADER_VECTOR *lv )
+static int loader_bind_util( PACKAGE FarPtr p, LOADER_VECTOR *lv )
 {
     ACTION  *a;
     int i;
@@ -265,7 +265,7 @@ static int loader_bind_util( PACKAGE far *p, LOADER_VECTOR *lv )
 
 static int loader_for( FDORNAME filename, ULONG start_pos, LOADER_VECTOR *lv )
 {
-    PACKAGE far *p;
+    PACKAGE FarPtr p;
 
     /*** NEEDWORK: should check name before attempting binding */
     for( p = _d16info.package_info_p; p != NULL; p = PackageNext( p ) ) {
@@ -289,7 +289,7 @@ void D32SetCurrentObject( long cookie )
 
 /* Load an executable
 */
-int D32DebugLoad( char *filename, char far *cmdtail, TSF32 far *tspv )
+int D32DebugLoad( char *filename, char FarPtr cmdtail, TSF32 FarPtr tspv )
 {
     int             result;
     char            cmdline[129];
@@ -317,7 +317,7 @@ int D32DebugLoad( char *filename, char far *cmdtail, TSF32 far *tspv )
     if( D32NullPtrCheck != NULL_PTR )   /* Disable NULLP checking, if possible */
         D32NullPtrCheck( 1 );
 
-    result = LOADER_LOAD( &lv_temp )( (FDORNAME)filename, (ULONG)0L, tspv, (void far *)&main_cookie, (char far *)cmdline );
+    result = LOADER_LOAD( &lv_temp )( (FDORNAME)filename, (ULONG)0L, tspv, (void FarPtr)&main_cookie, (char FarPtr)cmdline );
 
     if( D32NullPtrCheck != NULL_PTR )   /* Disable NULLP checking, if possible */
         nullp_checks = D32NullPtrCheck( 0 );
@@ -328,7 +328,7 @@ int D32DebugLoad( char *filename, char far *cmdtail, TSF32 far *tspv )
     /* Loader bug - it's ignoring the 'cmdline' parm */
     {
         unsigned        len;
-        unsigned char   far *dst;
+        unsigned char   FarPtr dst;
 
         len = _fstrlen( cmdtail );
         dst = MK_FP( (SELECTOR)tspv->es, 0x80 );
@@ -370,7 +370,7 @@ int D32DebugLoad( char *filename, char far *cmdtail, TSF32 far *tspv )
 /* Unload a loaded executable -- not yet used anywhere */
 int D32DebugUnLoad( void )
 {
-    if( LOADER_UNLOAD( &lv_curr )( (void far *)&current_cookie ) )
+    if( LOADER_UNLOAD( &lv_curr )( (void FarPtr)&current_cookie ) )
         return( -1 );
     return( 0 );
 }

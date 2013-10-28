@@ -46,10 +46,10 @@
 
 typedef WORD            HANDLE;
 
-extern  HANDLE          __far pascal GlobalReAlloc(HANDLE,DWORD,WORD);
-extern  HANDLE          __far pascal LocalReAlloc(HANDLE,WORD,WORD);
-extern  HANDLE          __far pascal LockSegment(WORD);
-extern  HANDLE          __far pascal UnLockSegment(WORD);
+extern  HANDLE          __far __pascal GlobalReAlloc(HANDLE,DWORD,WORD);
+extern  HANDLE          __far __pascal LocalReAlloc(HANDLE,WORD,WORD);
+extern  HANDLE          __far __pascal LockSegment(WORD);
+extern  HANDLE          __far __pascal UnLockSegment(WORD);
 
 
 HANDLE          GlobalDiscard( HANDLE h ) {

@@ -108,17 +108,17 @@ enum {
     Common overlay routines
 */
 #pragma aux __OvlExit__ aborts;
-extern  void        near __OvlExit__( unsigned );
-extern  tiny_ret_t  near __OvlSeek__( tiny_handle_t, unsigned long );
-extern  tiny_ret_t  near __OvlRead__( tiny_handle_t, void far *, unsigned );
-extern  void        near __OvlCodeLoad__( ovltab_entry_ptr, tiny_handle_t );
-extern  int         near __OvlRelocLoad__( ovltab_entry_ptr, tiny_handle_t );
-extern  void        near __OvlNum__( unsigned );
-extern  void        near __OvlMsg__( unsigned );
-extern  tiny_ret_t  near __OpenOvl__( unsigned );
-extern  tiny_ret_t  near __OvlOpen__( char far *fname );
-extern  void        far  __CloseOvl__( void );
-extern  void        near __OvlClose__( tiny_handle_t hdl );
+extern  void        __near __OvlExit__( unsigned );
+extern  tiny_ret_t  __near __OvlSeek__( tiny_handle_t, unsigned long );
+extern  tiny_ret_t  __near __OvlRead__( tiny_handle_t, void __far *, unsigned );
+extern  void        __near __OvlCodeLoad__( ovltab_entry_ptr, tiny_handle_t );
+extern  int         __near __OvlRelocLoad__( ovltab_entry_ptr, tiny_handle_t );
+extern  void        __near __OvlNum__( unsigned );
+extern  void        __near __OvlMsg__( unsigned );
+extern  tiny_ret_t  __near __OpenOvl__( unsigned );
+extern  tiny_ret_t  __near __OvlOpen__( char __far *fname );
+extern  void        __far  __CloseOvl__( void );
+extern  void        __near __OvlClose__( tiny_handle_t hdl );
 
 /*
     Common overlay data
@@ -128,8 +128,8 @@ extern  tiny_ret_t      _CODE_BASED __OVLHDLPREV__;
 extern  ovl_table       _CODE_BASED __OVLTAB__;
 extern  ovltab_entry    _CODE_BASED __OVLTABEND__[];
 extern  unsigned        _CODE_BASED __OVLPSP__;
-extern  char far        *_CODE_BASED __OVLMSGS__[];
-extern  void far        *_CODE_BASED __OVLCAUSE__;
+extern  char __far      *_CODE_BASED __OVLMSGS__[];
+extern  void __far      *_CODE_BASED __OVLCAUSE__;
 extern  char            _CODE_BASED __OVLISRET__;
 extern  char            _CODE_BASED __OVLDOPAR__;
 extern  vector          _CODE_BASED __OVLSTARTVEC__[];
@@ -141,7 +141,7 @@ extern  unsigned_16     _CODE_BASED __OVLFLAGS__;
 
 extern ovl_dbg_hook_func *_CODE_BASED GNAME( DBG_HOOK );
 extern ovl_dbg_req_func GNAME( DBG_HANDLER );
-extern int  near GNAME( CheckRetAddr )( void far * );
+extern int  __near GNAME( CheckRetAddr )( void __far * );
 
 /*
     Global symbols used by linker

@@ -65,7 +65,7 @@ extern  void DoFastCopyPara( unsigned dst, unsigned src, unsigned len_in_paras )
 
 #endif
 
-static void near AllocSeg( unsigned seg, unsigned amount, unsigned area_seg )
+static void __near AllocSeg( unsigned seg, unsigned amount, unsigned area_seg )
 /***************************************************************************/
 /* Allocate amount paras from seg in area_seg */
 {
@@ -97,7 +97,7 @@ static void near AllocSeg( unsigned seg, unsigned amount, unsigned area_seg )
 }
 
 
-static unsigned near AllocFromArea( unsigned amount, unsigned area_seg )
+static unsigned __near AllocFromArea( unsigned amount, unsigned area_seg )
 /**********************************************************************/
 /* Allocate amount paras from area. */
 {
@@ -119,7 +119,7 @@ static unsigned near AllocFromArea( unsigned amount, unsigned area_seg )
 }
 
 
-static unsigned near Allocate( unsigned amount )
+static unsigned __near Allocate( unsigned amount )
 /**********************************************/
 /* Allocate amount paragraphs from any area */
 {
@@ -140,7 +140,7 @@ static unsigned near Allocate( unsigned amount )
 }
 
 
-static void near FreeWithNext( unsigned seg, unsigned num_paras,
+static void __near FreeWithNext( unsigned seg, unsigned num_paras,
                                         unsigned area_seg, unsigned next_seg )
 /****************************************************************************/
 /* Put seg of size num_paras onto the free list in area_seg.  next_seg must be
@@ -184,7 +184,7 @@ static void near FreeWithNext( unsigned seg, unsigned num_paras,
 }
 
 
-static void near FreeSeg( unsigned seg, unsigned num_paras, unsigned area_seg )
+static void __near FreeSeg( unsigned seg, unsigned num_paras, unsigned area_seg )
 /*****************************************************************************/
 /* Add the seg of size num_paras to the free list in area_seg. */
 {
@@ -204,7 +204,7 @@ static void near FreeSeg( unsigned seg, unsigned num_paras, unsigned area_seg )
 }
 
 
-static void near DeMungeVectors( unsigned tab_off, unsigned sec_num,
+static void __near DeMungeVectors( unsigned tab_off, unsigned sec_num,
                                                                 unsigned seg )
 /****************************************************************************/
 /* overlay not in memory any more, so demunge vectors.
@@ -227,7 +227,7 @@ static void near DeMungeVectors( unsigned tab_off, unsigned sec_num,
 }
 
 
-static unsigned near UnloadSection( ovltab_entry_ptr ovl, unsigned ovl_num )
+static unsigned __near UnloadSection( ovltab_entry_ptr ovl, unsigned ovl_num )
 /**************************************************************************/
 /* Unload a section.  Assumes that __OVLSCANCALLCHAIN__ has been called.
  * Returns the area that the section was in. */
@@ -265,7 +265,7 @@ static unsigned near UnloadSection( ovltab_entry_ptr ovl, unsigned ovl_num )
 }
 
 
-static unsigned near UnloadNonChained( unsigned amount, unsigned start_ovl )
+static unsigned __near UnloadNonChained( unsigned amount, unsigned start_ovl )
 /**************************************************************************/
 /* Toss overlays that are not in call chain.  Assumes __OVLSCANCALLCHAIN__
  * has been called.  Returns NULL_SEG if it was unable to make enough room in
@@ -303,7 +303,7 @@ static unsigned near UnloadNonChained( unsigned amount, unsigned start_ovl )
 }
 
 
-static int near UnloadChained( unsigned amount, unsigned_16 far *call_chain )
+static int __near UnloadChained( unsigned amount, unsigned_16 __far *call_chain )
 /****************************************************************************/
 /* Unload sections that are in the call chain.  We also unlink the sections
  * from the call_chain linked list.  Returns NULL_SEG if it didn't make enough
@@ -339,7 +339,7 @@ static int near UnloadChained( unsigned amount, unsigned_16 far *call_chain )
 }
 
 
-static void near redoRelocs( ovltab_entry_ptr ovl, unsigned startseg )
+static void __near redoRelocs( ovltab_entry_ptr ovl, unsigned startseg )
 /********************************************************************/
 /* Relocate self-referential code. Assumes that ovl->code_handle points
  * to new location of code. */
@@ -369,7 +369,7 @@ static void near redoRelocs( ovltab_entry_ptr ovl, unsigned startseg )
 }
 
 
-static void near MoveSection( unsigned destseg, ovltab_entry_ptr ovl )
+static void __near MoveSection( unsigned destseg, ovltab_entry_ptr ovl )
 /********************************************************************/
 /* this moves a section to the address in destseg, and fixes the vectors.
  * note this assumes that destseg is less than the current address.
@@ -398,10 +398,10 @@ static void near MoveSection( unsigned destseg, ovltab_entry_ptr ovl )
 }
 
 
-static void near MoveRetTrap( unsigned to_seg, ovltab_entry_ptr ovl )
+static void __near MoveRetTrap( unsigned to_seg, ovltab_entry_ptr ovl )
 /*******************************************************************/
 {
-    unsigned_16                 far *stkptr;
+    unsigned_16                 __far *stkptr;
     ret_trap_ptr                rt;
     ret_trap_ptr                rt_new;
 #ifdef OVL_MULTITHREAD
@@ -440,7 +440,7 @@ static void near MoveRetTrap( unsigned to_seg, ovltab_entry_ptr ovl )
 }
 
 
-static unsigned near DefragmentMem( unsigned amount, unsigned area_seg )
+static unsigned __near DefragmentMem( unsigned amount, unsigned area_seg )
 /**********************************************************************/
 /* Try to defragment an area of memory.  We assume that the area has
  * free_paras >= amount. If this assumption is met, this routine is
@@ -506,7 +506,7 @@ static unsigned near DefragmentMem( unsigned amount, unsigned area_seg )
 }
 
 
-static unsigned near ForceAllocate( unsigned amount )
+static unsigned __near ForceAllocate( unsigned amount )
 /***************************************************/
 /* Always returns a segment of size amount... throws out anything necessary
  * to do so. */
@@ -553,7 +553,7 @@ static unsigned near ForceAllocate( unsigned amount )
 }
 
 
-void near __LoadSectionCode__( ovltab_entry_ptr ovl )
+void __near __LoadSectionCode__( ovltab_entry_ptr ovl )
 /**************************************************/
 /* Load the code & do the relocations for a specified overlay.  Loads code
  * into ovl->code_handle.  Caller is responsible for putting the overlay
@@ -581,7 +581,7 @@ void near __LoadSectionCode__( ovltab_entry_ptr ovl )
 }
 
 
-unsigned near __LoadNewOverlay__( unsigned ovl_num )
+unsigned __near __LoadNewOverlay__( unsigned ovl_num )
 /**************************************************/
 /* Load the overlay into memory.  Removes the return trap if one exists. */
 {
@@ -657,7 +657,7 @@ unsigned near __LoadNewOverlay__( unsigned ovl_num )
 }
 
 
-unsigned near __WOVLLDR__( lvector_ptr vect )
+unsigned __near __WOVLLDR__( lvector_ptr vect )
 /******************************************/
 // Load overlay.
 {
@@ -675,7 +675,7 @@ unsigned near __WOVLLDR__( lvector_ptr vect )
 }
 
 
-void near __OVLINITAREA__( unsigned start, unsigned size )
+void __near __OVLINITAREA__( unsigned start, unsigned size )
 /*********************************************************/
 /* initialize an overlay area */
 {
@@ -702,7 +702,7 @@ void near __OVLINITAREA__( unsigned start, unsigned size )
 }
 
 
-dos_addr near __NOVLTINIT__( void )
+dos_addr __near __NOVLTINIT__( void )
 /*********************************/
 // Overlay initialization.
 {
@@ -744,7 +744,7 @@ dos_addr near __NOVLTINIT__( void )
 
 /* these two routines are for the C setjmp/longjmp support */
 
-extern unsigned long far __FINDOVLADDR__( unsigned unused, unsigned segment )
+extern unsigned long __far __FINDOVLADDR__( unsigned unused, unsigned segment )
 /***************************************************************************/
 /* find the overlay number corresponding to the given segment, and turn the
  * segment into a relative offset from the beginning of the section */
@@ -762,9 +762,9 @@ extern unsigned long far __FINDOVLADDR__( unsigned unused, unsigned segment )
 
 
 #ifdef OVL_MULTITHREAD
-extern unsigned_32 near __OVLLONGJMP__( unsigned ovl_num, unsigned segment )
+extern unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment )
 #else
-extern unsigned_32 near __OVLLONGJMP__( unsigned ovl_num, unsigned segment,
+extern unsigned_32 __near __OVLLONGJMP__( unsigned ovl_num, unsigned segment,
                                                             unsigned bp_chain )
 #endif
 /*****************************************************************************/
@@ -827,7 +827,7 @@ extern unsigned_32 near __OVLLONGJMP__( unsigned ovl_num, unsigned segment,
 
 #define CRLF "\r\n"
 
-extern void far __NOVLDUMP__( void )
+extern void __far __NOVLDUMP__( void )
 /**********************************/
 {
     ovltab_entry_ptr    ovl;
@@ -859,12 +859,12 @@ extern void far __NOVLDUMP__( void )
             ovl->relocs, ovl->start_para, ovl->code_handle );
         fn_off = ovl->fname & ~OVE_EXE_FILENAME;
         cprintf( "  num_paras=%04xh, fname=%04xh(%s), disk_addr=%08lxh" CRLF,
-            ovl->num_paras, ovl->fname, (char far *)&__OVLTAB__ + fn_off,
+            ovl->num_paras, ovl->fname, (char __far *)&__OVLTAB__ + fn_off,
             ovl->disk_addr );
         if( ovl->flags_anc & FLAG_RET_TRAP ) {
             ret_trap_ptr        rt;
             unsigned_16         ret;
-            unsigned_16 far     *stk_ptr;
+            unsigned_16 __far   *stk_ptr;
 #ifdef OVL_MULTITHREAD
             int                 i;
 #endif

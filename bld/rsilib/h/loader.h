@@ -23,10 +23,10 @@
 #define LOADER_GETLOADNAME(lv)  ((lv)->loader_actions[8])
 
 typedef struct loader_vector {
-    PACKAGE far *loader_package;
-    ACTION      *loader_actions[9];
+    PACKAGE FarPtr  loader_package;
+    ACTION          *loader_actions[9];
 } LOADER_VECTOR;
 
 typedef long LoaderCookie;
 
-extern int  loader_bind( char far *package_name, LOADER_VECTOR *lv );
+extern int  loader_bind( char FarPtr package_name, LOADER_VECTOR *lv );

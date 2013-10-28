@@ -45,8 +45,7 @@
 
 #if defined( __DOS__ )
 
-int __far critical_error_handler( unsigned deverr, unsigned errcode,
-    unsigned far *devhdr )
+int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
 {
     deverr = deverr; errcode = errcode; devhdr = devhdr;
     return( _HARDERR_FAIL );
@@ -92,8 +91,8 @@ int SwitchChar( void )
 #if defined( __DOS__ ) && defined ( _M_I86 )
 /* see page 90-91 of "Undocumented DOS" */
 
-//extern void far *       _DOS_list_of_lists( void );
-void far *       _DOS_list_of_lists( void );
+//extern void __far *       _DOS_list_of_lists( void );
+void __far *       _DOS_list_of_lists( void );
 #pragma aux             _DOS_list_of_lists = \
         "mov ax,5200h"  \
         "int 21h"       \
@@ -108,8 +107,8 @@ int OSCorrupted( void )
         UINT8   id;
         UINT16  owner;
         UINT16  len;
-    } far *chain;
-    UINT16 far  *first_MCB;
+    } __far *chain;
+    UINT16 __far  *first_MCB;
     UINT16      chain_seg;
     UINT16      new_chain_seg;
 

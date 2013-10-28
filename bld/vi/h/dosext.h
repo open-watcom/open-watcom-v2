@@ -76,7 +76,7 @@ typedef struct InterruptData {
 void    InterruptCPU( void );
 
 #ifndef __WATCOMC__
-    #define MK_FP(__s, __o) ((void far *) (((unsigned long)(__s) << 16) | (unsigned) (__o)))
+    #define MK_FP(__s, __o) ((void __far *) (((unsigned long)(__s) << 16) | (unsigned) (__o)))
 #endif
 
 #endif

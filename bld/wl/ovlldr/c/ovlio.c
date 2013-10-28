@@ -32,7 +32,7 @@
 
 #include "ovlstd.h"
 
-extern tiny_ret_t near __OvlOpen__( char far *fname )
+extern tiny_ret_t __near __OvlOpen__( char __far *fname )
 /***************************************************/
 {
     open_attr   openmode;
@@ -44,19 +44,19 @@ extern tiny_ret_t near __OvlOpen__( char far *fname )
     return( TinyFarOpen( fname, __OVLSHARE__ | openmode ) );
 }
 
-extern tiny_ret_t near __OvlSeek__( tiny_handle_t hdl, unsigned long pos )
+extern tiny_ret_t __near __OvlSeek__( tiny_handle_t hdl, unsigned long pos )
 /************************************************************************/
 {
     return( TinySeek( hdl, pos, TIO_SEEK_START ) );
 }
 
-extern tiny_ret_t near __OvlRead__(tiny_handle_t hdl, void far *buff, unsigned len)
+extern tiny_ret_t __near __OvlRead__(tiny_handle_t hdl, void __far *buff, unsigned len)
 /*********************************************************************************/
 {
     return( TinyFarRead( hdl, buff, len ) );
 }
 
-extern void near __OvlClose__( tiny_handle_t hdl )
+extern void __near __OvlClose__( tiny_handle_t hdl )
 /************************************************/
 {
     TinyClose( hdl );

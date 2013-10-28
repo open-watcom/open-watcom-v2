@@ -64,7 +64,7 @@
 #if defined( _M_I86 )
 # define USE_FAR            1       /* use far memory for some things       */
 # define USE_SCARCE         1       /* use scarce memory management         */
-# define FAR                _far
+# define FAR                __far
 # define FILE_BUFFER_SIZE   512     /* amount to read() at a time           */
 #else
 # define FAR

@@ -87,16 +87,18 @@ volatile short int_tick[NUM_INTS] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 
-#if defined(__386__)
-#define FAR
+#if defined( _M_I86 )
+#define _FAR        __far
+#define _INTERRUPT  __interrupt __far
 #else
-#define FAR __far
+#define _FAR
+#define _INTERRUPT  __interrupt
 #endif
 
-void (__interrupt FAR *prev_int[NUM_INTS])();
+void (_INTERRUPT *prev_int[NUM_INTS])();
 
 #define intx( N )                                   \
-    void __interrupt FAR int_rtn_##N()              \
+    void _INTERRUPT int_rtn_##N()             \
     {                                               \
         if( Sample_On ) ++int_tick[N];              \
         if( prev_int[N] != NULL )                   \
@@ -104,7 +106,7 @@ void (__interrupt FAR *prev_int[NUM_INTS])();
     }
 
 #define intx2( N )                                  \
-    void __interrupt FAR int_rtn_##N()              \
+    void _INTERRUPT int_rtn_##N()             \
     {                                               \
         if( Sample_On ) ++int_tick[N];              \
         __fstenv();                                 \
@@ -241,7 +243,7 @@ intx( 0x7D )
 intx( 0x7E )
 intx( 0x7F )
 
-void (__interrupt FAR *new_int[NUM_INTS])() = {
+void (_INTERRUPT *new_int[NUM_INTS])() = {
     int_rtn_0x00, int_rtn_0x01, int_rtn_0x02, int_rtn_0x03,
     int_rtn_0x04, int_rtn_0x05, int_rtn_0x06, int_rtn_0x07,
     int_rtn_0x08, int_rtn_0x09, int_rtn_0x0A, int_rtn_0x0B,

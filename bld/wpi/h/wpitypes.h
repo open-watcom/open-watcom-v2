@@ -673,9 +673,9 @@ typedef struct {
     int         bottom;
 } RECT;
 
-        #define WPI_LPCHOOSEFONT        WPI_CHOOSEFONT far *
-        #define CHOOSEFONT              WPI_CHOOSEFONT
-        #define LPCHOOSEFONT            WPI_CHOOSEFONT far *
+#define WPI_LPCHOOSEFONT        WPI_CHOOSEFONT FAR *
+#define CHOOSEFONT              WPI_CHOOSEFONT
+#define LPCHOOSEFONT            WPI_CHOOSEFONT FAR *
 
 
 typedef struct {

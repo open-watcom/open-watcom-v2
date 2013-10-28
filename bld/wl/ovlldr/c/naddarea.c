@@ -33,7 +33,7 @@
 
 /* this can be called by the app. to add overlay areas */
 
-extern void far _ovl_addarea( unsigned segment, unsigned size )
+extern void __far _ovl_addarea( unsigned segment, unsigned size )
 /**************************************************************/
 /* add another area to the overlay manager's list of areas */
 {

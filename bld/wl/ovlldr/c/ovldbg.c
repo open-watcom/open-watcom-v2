@@ -49,10 +49,10 @@
 typedef unsigned char byte;
 
 #if defined( OVL_WHOOSH )
-extern int  near __LoadNewOverlay__( unsigned );
-extern int  near __LoadSectionCode__( ovltab_entry_ptr );
+extern int  __near __LoadNewOverlay__( unsigned );
+extern int  __near __LoadSectionCode__( ovltab_entry_ptr );
 #else
-extern int  near NAME( LoadOverlay )( unsigned );
+extern int  __near NAME( LoadOverlay )( unsigned );
 #endif
 
 #ifdef OVL_WHOOSH
@@ -81,7 +81,7 @@ static int GetSizeOverlays( void )
     return( ( ( number + 7 ) / 8 ) + sizeof( unsigned ) + 1 );
 }
 
-static int GetSectionData( ovl_address far *data )
+static int GetSectionData( ovl_address __far *data )
 /************************************************/
 {
     unsigned            number;
@@ -101,7 +101,7 @@ static int GetSectionData( ovl_address far *data )
     return( TRUE );
 }
 
-static int SaveOvlState( char far *data )
+static int SaveOvlState( char __far *data )
 /***************************************/
 // this fills a bit array with the status of the overlays
 // 1 means overlay in memory, 0 means overlay on disk
@@ -109,7 +109,7 @@ static int SaveOvlState( char far *data )
     ovltab_entry_ptr    ovl;
     unsigned char       mask;
     unsigned char       loaded;
-    char far            *savedata;
+    char __far          *savedata;
 
     savedata = data;
     mask = 1;
@@ -141,7 +141,7 @@ static int SaveOvlState( char far *data )
     return( TRUE );
 }
 
-static int RestoreOvlState( char far *data )
+static int RestoreOvlState( char __far *data )
 /******************************************/
 // set the overlay state to match the given vector.
 {
@@ -221,7 +221,7 @@ static int RestoreOvlState( char far *data )
     return( TRUE );
 }
 
-static int CheckVecAddr( ovl_address far *data )
+static int CheckVecAddr( ovl_address __far *data )
 /**********************************************/
 // check if the address stored in data is a vector, returning TRUE if it is.
 {
@@ -276,7 +276,7 @@ static int CheckVecAddr( ovl_address far *data )
 
 #ifdef OVL_WHOOSH
 
-static int GetChangedSections( ovl_address far *data )
+static int GetChangedSections( ovl_address __far *data )
 /*************************************************/
 /* return TRUE if a section changed. return the section number and the new
  * segment in that memory pointed to by data */
@@ -317,7 +317,7 @@ static int GetChangedSections( ovl_address far *data )
     return( FALSE );
 }
 
-unsigned near __OVLMAXSECT__( void )
+unsigned __near __OVLMAXSECT__( void )
 /***********************************/
 // This returns the size of the largest overlay section.
 {
@@ -334,7 +334,7 @@ unsigned near __OVLMAXSECT__( void )
 }
 #endif
 
-int far GNAME( DBG_HANDLER )( int service, void far *data )
+int __far GNAME( DBG_HANDLER )( int service, void __far *data )
 /*********************************************************/
 {
     int ret;
@@ -357,7 +357,7 @@ int far GNAME( DBG_HANDLER )( int service, void far *data )
         ret = GNAME( CheckRetAddr )( data );
         break;
     case OVLDBG_GET_OVL_TBL_ADDR:
-        *(void far *far *)data = &__OVLTAB__;
+        *(void __far *__far *)data = &__OVLTAB__;
         break;
 #ifdef OVL_WHOOSH
     case OVLDBG_GET_MOVED_SECTION:

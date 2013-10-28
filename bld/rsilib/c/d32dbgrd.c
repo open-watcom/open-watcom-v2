@@ -17,7 +17,7 @@
 
 /* Return value: not used.
 */
-int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void far *to, unsigned n )
+int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, unsigned n )
 {
     Fptr32      fp;
     OFFSET32    new_n;
@@ -56,11 +56,11 @@ int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void far *to, unsig
             page_fault = 0;
 
             if( n == 1 ) {
-                *(unsigned char far *)to = 0xFF;
+                *(unsigned char FarPtr)to = 0xFF;
             } else {
                 check = ( n >> 1 );
                 D32DebugRead( off, sel, 0, to, check );
-                D32DebugRead( off + check, sel, 0, (unsigned char far *)to + check, n - check );
+                D32DebugRead( off + check, sel, 0, (unsigned char FarPtr)to + check, n - check );
             }
         }
     }
