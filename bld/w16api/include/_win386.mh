@@ -653,7 +653,7 @@ BOOL WINAPI _Cover_NotifyRegister( HTASK, LPFNNOTIFYCALLBACK, WORD );
 #undef __far
 #undef __huge
 #undef FAR
-#define FAR far
+#define FAR __far
 
 /* Primitive data types */
 typedef unsigned int    PROCPTR;

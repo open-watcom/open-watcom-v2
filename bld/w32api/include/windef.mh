@@ -28,7 +28,6 @@
 /* Override default compiler behavior for these keywords. */
 #define far
 #define near
-#define pascal  __stdcall
 
 /* Calling conventions */
 #undef pascal

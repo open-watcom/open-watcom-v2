@@ -26,8 +26,8 @@ typedef unsigned short          WORD;
 typedef unsigned int            UINT;
 typedef signed long             LONG;
 typedef unsigned long           DWORD;
-typedef char far                *LPSTR;
-typedef const char far          *LPCSTR;
+typedef char __far              *LPSTR;
+typedef const char __far        *LPCSTR;
 typedef int                     HFILE;
 #define OFSTRUCT                void
 #define LOWORD( l )             ((WORD)(l))
