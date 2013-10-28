@@ -3,7 +3,7 @@
  *
 :include crwatqnx.sp
  */
-#ifndef _SYS_UTIME_H_INCLUDED
+#if !defined( _SYS_UTIME_H_INCLUDED ) && !defined( _UTIME_H_INCLUDED )
 #define _SYS_UTIME_H_INCLUDED
 
 :include readonly.sp
