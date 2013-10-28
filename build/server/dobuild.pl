@@ -68,7 +68,11 @@ if ($^O eq 'MSWin32') {
     $OStype = 'UNIX';
     $ext    = 'sh';
     $setenv = 'export';
-    $build_platform = 'linux-x86';
+    if ($Config{archname} =~ /64/) {
+        $build_platform = 'linux-x64';
+    } else {
+        $build_platform = 'linux-x86';
+    }
 } elsif ($^O eq 'os2') {
     $OStype = 'OS2';
     $ext    = 'cmd';
@@ -146,7 +150,11 @@ sub batch_output_set_test_env
         print BATCH "$setenv BEGINLIBPATH=%WATCOM%\\binp\\dll;%BEGINLIBPATH%";
     } elsif ($^O eq 'linux') {
         print BATCH "$setenv INCLUDE=\$WATCOM/lh";
-        print BATCH "$setenv PATH=\$WATCOM/binl:\$PATH";
+        if ($Config{archname} =~ /64/) {
+            print BATCH "$setenv PATH=\$WATCOM/binl64:\$WATCOM/binl:\$PATH";
+        } else {
+            print BATCH "$setenv PATH=\$WATCOM/binl:\$PATH";
+        }
     }
 }
 

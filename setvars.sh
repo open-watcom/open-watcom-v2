@@ -25,6 +25,7 @@ if [ "$OWUSENATIVETOOLS" -ne "1" ]; then
     export WATCOM=/home/ow/ow19
     export INCLUDE=$WATCOM/lh
     export PATH=$WATCOM/binl:$PATH
+    export OWUSENATIVETOOLS
 fi
 
 # Documentation related variables
