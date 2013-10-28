@@ -1762,14 +1762,14 @@ File: source\diag0233.c
 (45,23): Warning! W728: class modifiers for 'X39' conflict with class modifiers for 'X41'
 (59,24): Warning! W728: class modifiers for 'x49::B1' conflict with class modifiers for 'x49::B2'
 (60,37): Error! E884: virtual function 'B1::foo' has a different calling convention
-  definition: 'void cdecl x49::B1::foo( int, int )'
+  definition: 'void __cdecl x49::B1::foo( int, int )'
 (62,24): Warning! W728: class modifiers for 'x49::B3' conflict with class modifiers for 'x49::B1'
 (63,37): Error! E884: virtual function 'B1::foo' has a different calling convention
-  definition: 'void cdecl x49::B1::foo( int, int )'
+  definition: 'void __cdecl x49::B1::foo( int, int )'
 (66,37): Error! E884: virtual function 'B3::foo' has a different calling convention
   definition: 'void x49::B3::foo( int, int )'
 (69,37): Error! E884: virtual function 'B2::foo' has a different calling convention
-  definition: 'void pascal x49::B2::foo( int, int )'
+  definition: 'void __pascal x49::B2::foo( int, int )'
 (91,20): Error! E913: 'B' does not have a return type specified
 (101,12): Error! E729: invalid hexadecimal constant
 (107,24): Warning! W130: arithmetic overflow in a constant expression
@@ -3440,7 +3440,7 @@ File: source\diag0292.c
 (204,37): Error! E884: virtual function 'B::foo' has a different calling convention
   definition: 'void x198::x1::B::foo( int, int )'
 (220,29): Error! E884: virtual function 'B::foo' has a different calling convention
-  definition: 'void cdecl x198::x7::B::foo( int, int )'
+  definition: 'void __cdecl x198::x7::B::foo( int, int )'
 (232,11): Error! E498: syntax error before 'x232'; probable cause: incorrectly spelled type name
 (248,33): Warning! W248: using default arguments would be overload ambiguous with 'A::f2'
   definition: 'void x244::A::f2( int )'
