@@ -122,7 +122,11 @@ options_c_graph2   = -i../watcom -kVERSION2
 
 !ifneq $(system)_dirs
 $($(system)_dirs):
+!ifdef __UNIX__
+    @if not exist $@ mkdir -p $@
+!else
     @if not exist $@ mkdir $@
+!endif
 !endif
 
 !include ../deps.mif
