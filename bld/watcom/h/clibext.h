@@ -33,7 +33,6 @@
 #define _WCI86FAR
 #define _WCNEAR
 #define __near
-#define near
 #define __based(x)
 
 #if defined( __UNIX__ )

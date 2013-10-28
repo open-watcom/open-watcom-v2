@@ -45,8 +45,8 @@ enum ovldbg_service {
     OVLDBG_GET_SECTION_DATA
 };
 
-typedef void    far ovl_dbg_hook_func( unsigned, char, void far * );
-typedef int     far ovl_dbg_req_func( int, void far * );
+typedef void    __far ovl_dbg_hook_func( unsigned, char, void __far * );
+typedef int     __far ovl_dbg_req_func( int, void __far * );
 
 #include "pushpck1.h"               /* make sure no structures are padded. */
 

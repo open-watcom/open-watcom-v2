@@ -110,7 +110,7 @@ typedef enum {                  /* values for .cmd field */
 #define PT_RET_ALIAS_FREE       ((USHORT)(-13))   /* segment alias freed */
 #define PT_RET_WATCH            ((USHORT)(-100))  /* THIS is a fake. It is never returned */
 
-USHORT APIENTRY DosPTrace( TRACEBUF far * );
+USHORT APIENTRY DosPTrace( TRACEBUF __far * );
 
 struct thd_state {
     unsigned char   dbg_state;
