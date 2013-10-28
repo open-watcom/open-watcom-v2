@@ -140,16 +140,16 @@ typedef struct {
 #define WORD_RANGE      0x31
 #define LONG_RANGE      0x32
 
-#define NEAR            0x40
-#define FAR             0x41
-#define HUGE            0x42
-#define NEAR_DEREF      0x43
-#define FAR_DEREF       0x44
-#define HUGE_DEREF      0x45
-#define NEAR386         0x46
-#define FAR386          0x47
-#define NEAR386_DEREF   0x48
-#define FAR386_DEREF    0x49
+#define PTR_NEAR            0x40
+#define PTR_FAR             0x41
+#define PTR_HUGE            0x42
+#define PTR_NEAR_DEREF      0x43
+#define PTR_FAR_DEREF       0x44
+#define PTR_HUGE_DEREF      0x45
+#define PTR_NEAR386         0x46
+#define PTR_FAR386          0x47
+#define PTR_NEAR386_DEREF   0x48
+#define PTR_FAR386_DEREF    0x49
 
 #define CLIST           0x50
 #define CONST_BYTE      0x51

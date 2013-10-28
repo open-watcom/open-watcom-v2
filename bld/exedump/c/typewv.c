@@ -426,52 +426,52 @@ void Dmp_type( int cnt, unsigned_32 *offs )
                 StartType( "LONG_RANGE", ++curr_index);
                 range( ptr, 4 );
                 break;
-            case NEAR:
+            case PTR_NEAR:
                 StartType( "NEAR PTR", ++curr_index);
                 Wdputs( "       " );
                 near_ptr( buff );
                 break;
-            case FAR:
+            case PTR_FAR:
                 StartType( "FAR PTR", ++curr_index);
                 Wdputs( "       " );
                 base_type_index( ptr );
                 break;
-            case HUGE:
+            case PTR_HUGE:
                 StartType( "HUGE PTR", ++curr_index);
                 Wdputs( "       " );
                 base_type_index( ptr );
                 break;
-            case NEAR_DEREF:
+            case PTR_NEAR_DEREF:
                 StartType( "NEAR_DEREF PTR", ++curr_index);
                 Wdputs( "       " );
                 near_ptr( buff );
                 break;
-            case FAR_DEREF:
+            case PTR_FAR_DEREF:
                 StartType( "FAR_DEREF PTR", ++curr_index);
                 Wdputs( "       " );
                 base_type_index( ptr );
                 break;
-            case HUGE_DEREF:
+            case PTR_HUGE_DEREF:
                 StartType( "HUGE_DEREF PTR", ++curr_index);
                 Wdputs( "       " );
                 base_type_index( ptr );
                 break;
-            case NEAR386:
+            case PTR_NEAR386:
                 StartType( "NEAR386 PTR", ++curr_index);
                 Wdputs( "       " );
                 near_ptr( buff );
                 break;
-            case FAR386:
+            case PTR_FAR386:
                 StartType( "FAR386 PTR", ++curr_index);
                 Wdputs( "       " );
                 base_type_index( ptr );
                 break;
-            case NEAR386_DEREF:
+            case PTR_NEAR386_DEREF:
                 StartType( "NEAR386_DEREF PTR", ++curr_index);
                 Wdputs( "       " );
                 near_ptr( buff );
                 break;
-            case FAR386_DEREF:
+            case PTR_FAR386_DEREF:
                 StartType( "FAR386_DEREF PTR", ++curr_index);
                 Wdputs( "\n       " );
                 base_type_index( ptr );
