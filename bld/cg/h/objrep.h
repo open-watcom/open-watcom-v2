@@ -48,10 +48,10 @@ typedef enum {
 
 typedef struct array_control {
         pointer         array;  /*  pointer to allocated array */
-        int             alloc;  /*  number of elements allocated */
-        int             used;   /*  index of first unused element */
-        int             entry;  /*  size in bytes of each array element */
-        int             inc;    /*  number of elements to increment by */
+        unsigned        alloc;  /*  number of elements allocated */
+        unsigned        used;   /*  index of first unused element */
+        unsigned        entry;  /*  size in bytes of each array element */
+        unsigned        inc;    /*  number of elements to increment by */
 } array_control;
 
 typedef struct patch {

@@ -66,7 +66,7 @@ extern  hw_reg_set      Low64Reg(hw_reg_set);
 extern  void            DataBytes(unsigned,const void *);
 extern  void            DoBigLblPtr(sym_handle);
 extern  void            DBLocFini( dbg_loc loc );
-extern  void            CVPutStr( cv_out *, char * );
+extern  void            CVPutStr( cv_out *, const char * );
 extern  void            CVPutINum( cv_out *out, signed_32 num );
 extern  void            CVPutINum64( cv_out *out, signed_64 num );
 extern  void            CVPutNullStr( cv_out * );
@@ -360,9 +360,8 @@ extern  void    CVOutBck( cv_out *out, bck_info *bck, offset add, dbg_type tipe 
     buffEnd( out );
 }
 
-static  void FrameVar( cv_out  *out,  char        *nm,
-                       dbg_type tipe, long        disp )
-/***  local rel to  frame  ****************************/
+static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, long disp )
+/***  local rel to  frame  **************************************************/
 #if 1     // it seems like BPREL works for AXP so I'll give it a try
 {
 //#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
@@ -457,8 +456,8 @@ extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem )
 }
 
 
-extern  void    CVTypedef( char *nm, dbg_type tipe )
-/*** emit UDT**************************************/
+extern  void    CVTypedef( const char *nm, dbg_type tipe )
+/*** emit UDT********************************************/
 {
     cv_out      out[1];
     cs_udt       *ptr;
@@ -471,8 +470,8 @@ extern  void    CVTypedef( char *nm, dbg_type tipe )
     buffEnd( out );
 }
 
-extern  void    CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe )
-/*** Put a const sym to out**************************************************/
+extern  void    CVOutSymICon( cv_out *out, const char *nm, long val, dbg_type tipe )
+/*** Put a const sym to out********************************************************/
 {
     cs_constant *ptr;
     void        *ptr1;
@@ -489,8 +488,8 @@ extern  void    CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe )
     buffEnd( out );
 }
 
-extern  void    CVSymIConst( char *nm, long val, dbg_type tipe )
-/*** emit UDT**************************************************/
+extern  void    CVSymIConst( const char *nm, long val, dbg_type tipe )
+/*** emit UDT********************************************************/
 {
     cv_out      out[1];
     cs_constant *ptr;
@@ -505,8 +504,8 @@ extern  void    CVSymIConst( char *nm, long val, dbg_type tipe )
 
 }
 
-extern  void    CVSymIConst64( char *nm, signed_64 val, dbg_type tipe )
-/*** emit UDT*********************************************************/
+extern  void    CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe )
+/*** emit UDT***************************************************************/
 {
     cv_out      out[1];
     cs_constant *ptr;

@@ -67,19 +67,19 @@ static  void    AssignPushLocals( void ) {
     turn out to be push locals, eliminates the SUP SP,n instruction as well
 */
 
-    instruction *move;
+    instruction *ins;
     name        *src;
     name        *dst;
     type_length curr_offset;
 
     curr_offset = 0;
-    for( move = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; move = move->head.next ) {
+    for( ins = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( CurrProc->prolog_state & GENERATED_PROLOG ) break;
-        if( DoesSomething( move ) ) {
-            if( move->head.opcode != OP_MOV ) break;
-            if( UnChangeable( move ) ) break;
-            src = move->operands[ 0 ];
-            dst = move->result;
+        if( DoesSomething( ins ) ) {
+            if( ins->head.opcode != OP_MOV ) break;
+            if( UnChangeable( ins ) ) break;
+            src = ins->operands[ 0 ];
+            dst = ins->result;
             if( src->n.class != N_REGISTER ) break;
             if( _IsFloating( src->n.name_class ) ) break; /*90-Dec-17*/
             if( dst->n.class != N_TEMP ) break;
@@ -98,8 +98,8 @@ static  void    AssignPushLocals( void ) {
                 dst->v.usage |= HAS_MEMORY;
                 PropLocal( dst );
             }
-            move->head.state = OPERANDS_NEED_WORK;
-            DoNothing( move );
+            ins->head.state = OPERANDS_NEED_WORK;
+            DoNothing( ins );
         }
     }
 }

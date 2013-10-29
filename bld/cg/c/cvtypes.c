@@ -64,9 +64,9 @@ extern  dbg_loc     LocDupl( dbg_loc );
 extern  void        DBLocFini( dbg_loc loc );
 extern  offset      LocSimpField( dbg_loc );
 extern  void        DataBytes(unsigned,const void *);
-extern  void        CVSymIConst( char *nm, long val, dbg_type tipe );
-extern  void        CVSymIConst64( char *nm, signed_64 val, dbg_type tipe );
-extern  void        CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe );
+extern  void        CVSymIConst( const char *nm, long val, dbg_type tipe );
+extern  void        CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe );
+extern  void        CVOutSymICon( cv_out *out, const char *nm, long val, dbg_type tipe );
 extern  void        CVOutSym( cv_out *out, sym_handle sym );
 extern  void        CVOutBck( cv_out *out, bck_info *bck, offset add,  dbg_type tipe );
 extern  void        CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe );
@@ -352,15 +352,15 @@ extern  void        CVPutINum64( cv_out *out, signed_64 val )
     }
 #undef LC
 }
-extern  void        CVPutStr( cv_out *out, char *str )
-/****************************************************/
+extern  void        CVPutStr( cv_out *out, const char *str )
+/**********************************************************/
 {
-    int     len;
+    size_t      len;
 
     len = strlen( str );
-    len &= 0xff;
-    *((char*)out->ptr) = len;
-    out->ptr += sizeof( char );
+    if( len > 255 )
+        len = 255;
+    *(out->ptr++) = len;
     memcpy( out->ptr, str, len );
     out->ptr += len;
 }
@@ -368,8 +368,7 @@ extern  void        CVPutStr( cv_out *out, char *str )
 extern  void        CVPutNullStr( cv_out *out )
 /*********************************************/
 {
-    *((char*)out->ptr) = 0;
-    out->ptr += sizeof( char );
+    *(out->ptr++) = 0;
 }
 
 
@@ -1557,7 +1556,7 @@ static int  MkFlist( struct_list *st )
             break;
         case FIELD_LOC:
             disp = LocSimpField( field->member.u.loc );
-            if( disp != (offset)-1 ){
+            if( disp != NO_OFFSET ){
                 ++count;
                 fld.a_member = StartType( out, LFG_MEMBER );
                 fld.a_member->type = field->member.base;
@@ -1608,7 +1607,7 @@ static int  MkFlist( struct_list *st )
                     if( field->method.u.loc->class == LOC_CONST_1 ) {
                         disp = field->method.u.loc->u.val;
                     } else {
-                        disp = -1;
+                        disp = NO_OFFSET;
                     }
                     PutLFInt( out, CV_IB4, disp );
                 }
@@ -1694,7 +1693,7 @@ static int  FlistCount( field_any *field )
             break;
         case FIELD_LOC:
             disp = LocSimpField( field->member.u.loc );
-            if( disp != (offset)-1 ){
+            if( disp != NO_OFFSET ){
                 ++count;
             }
             break;

@@ -852,7 +852,7 @@ extern  void _CGAPI DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
 #endif
     field = CreateMember( nm, strt, len, base, attr );
     off = LocSimpField( loc );
-    if( off != (offset)-1 && (attr==FIELD_ATTR_NONE || attr==FIELD_ATTR_PUBLIC) ) {
+    if( off != NO_OFFSET && (attr==FIELD_ATTR_NONE || attr==FIELD_ATTR_PUBLIC) ) {
         field->entry.field_type = FIELD_OFFSET;
         field->u.off= off;
     } else {

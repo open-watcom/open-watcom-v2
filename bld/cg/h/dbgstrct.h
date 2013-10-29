@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#define NO_OFFSET   ((offset)-1)
+
 typedef struct {
     segment_id  segment;
     unsigned    offset;

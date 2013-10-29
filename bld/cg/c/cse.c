@@ -457,12 +457,10 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
         first = ins2;
     } else { /* find a hoist point*/
         bits1 &= bits2;
-        ins = ins1;
-        while( ins->head.opcode != OP_BLOCK ) {
+        for( ins = ins1; ins->head.opcode != OP_BLOCK; ) {
             ins = ins->head.next;
         }
-        blk = _BLOCK( ins );
-        while( _BLKBITS( blk ) != bits1 ) {
+        for( blk = _BLOCK( ins ); _BLKBITS( blk ) != bits1; ) {
             blk = blk->u.partition;
         }
         for( first = blk->ins.hd.prev; first->head.opcode == OP_NOP; first = first->head.prev ) {
@@ -599,11 +597,11 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
 
     if( OptForSize > 50 ) return( TRUE );
     for( ins = target; ins->head.opcode != OP_BLOCK; ) {
-        ins = ins->head.next
+        ins = ins->head.next;
     }
     target_blk = _BLOCK( ins );
     for( ins = orig; ins->head.opcode != OP_BLOCK; ) {
-        ins = ins->head.next
+        ins = ins->head.next;
     }
     blk = _BLOCK( ins );
     if( blk == target_blk ) return( TRUE );

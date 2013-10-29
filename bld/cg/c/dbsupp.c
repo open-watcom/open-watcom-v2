@@ -111,8 +111,6 @@ extern  dbg_loc         LocDupl( dbg_loc loc ) {
     return( first );
 }
 
-#define NO_OFFSET (-1)
-
 extern  offset          LocSimpField( dbg_loc loc ) {
 /***************************************************/
 

@@ -325,7 +325,7 @@ static  index_rec   *AskSegIndex( segment_id seg )
 /************************************************/
 {
     index_rec   *rec;
-    int         i;
+    unsigned    i;
 
     rec = SegInfo->array;
     for( i = 0; i < SegInfo->used; ++i ) {
@@ -338,8 +338,8 @@ static  index_rec   *AskSegIndex( segment_id seg )
 }
 
 
-static  void    ReallocArray( array_control *arr, int need )
-/**********************************************************/
+static  void    ReallocArray( array_control *arr, unsigned need )
+/***************************************************************/
 {
     byte        *p;
     unsigned    new;
@@ -419,8 +419,8 @@ static  void    SegmentClass( index_rec *rec )
 
 /* Array Control Routines*/
 
-static void FillArray( array_control *res, int size, int starting, int increment )
-/********************************************************************************/
+static void FillArray( array_control *res, unsigned size, unsigned starting, unsigned increment )
+/***********************************************************************************************/
 {
     res->array = CGAlloc( starting * size );
     res->alloc = starting;
@@ -431,8 +431,8 @@ static void FillArray( array_control *res, int size, int starting, int increment
 
 /* DO NOT call InitArray with size or starting value zero*/
 
-static array_control *InitArray( int size, int starting, int increment )
-/**********************************************************************/
+static array_control *InitArray( unsigned size, unsigned starting, unsigned increment )
+/*************************************************************************************/
 {
     array_control       *res;
 
@@ -445,9 +445,9 @@ static array_control *InitArray( int size, int starting, int increment )
 static  void    OutByte( byte value, array_control *dest )
 /********************************************************/
 {
-    int     need;
+    unsigned    need;
 
-    need = dest->used + sizeof( byte );
+    need = dest->used + 1;
     if( need > dest->alloc ) {
         ReallocArray( dest, need );
     }
@@ -458,7 +458,7 @@ static  void    OutByte( byte value, array_control *dest )
 static  void    OutInt( int value, array_control *dest )
 /******************************************************/
 {
-    int     need;
+    unsigned    need;
 
     need = dest->used + sizeof( unsigned_16 );
     if( need > dest->alloc ) {
@@ -471,7 +471,7 @@ static  void    OutInt( int value, array_control *dest )
 static  void    OutLongInt( long value, array_control *dest )
 /***********************************************************/
 {
-    int     need;
+    unsigned    need;
 
     need = dest->used + sizeof( unsigned_32 );
     if( need > dest->alloc ) {
@@ -484,7 +484,7 @@ static  void    OutLongInt( long value, array_control *dest )
 static  void    OutOffset( offset value, array_control *dest )
 /************************************************************/
 {
-    int     need;
+    unsigned    need;
 
     need = dest->used + sizeof( offset );
     if( need > dest->alloc ) {
@@ -498,7 +498,7 @@ static  void    OutOffset( offset value, array_control *dest )
 static  void    OutLongOffset( long_offset value, array_control *dest )
 /*********************************************************************/
 {
-    int     need;
+    unsigned    need;
 
     need = dest->used + sizeof( long_offset );
     if( need > dest->alloc ) {
@@ -521,7 +521,7 @@ static  void    OutIdx( omf_idx value, array_control *dest )
 static  void    OutBuffer( const void *name, unsigned len, array_control *dest )
 /******************************************************************************/
 {
-    int     need;
+    unsigned    need;
 
     need = dest->used + len;
     if( need > dest->alloc ) {
@@ -637,7 +637,7 @@ static  index_rec   *AllocNewSegRec( void )
 {
     index_rec   *rec;
     segment_id  old = 0;
-    int         need;
+    unsigned    need;
 
     if( CurrSeg != NULL ) {
         old = CurrSeg->seg;
@@ -1318,7 +1318,7 @@ static  void    SetPatches( void )
     temp_patch          *junk;
     array_control       *ctl;
     patch               *pat;
-    int                 need;
+    unsigned            need;
 
     curr_pat = CurrSeg->obj->patches;
     while( curr_pat != NULL ) {
@@ -2275,7 +2275,7 @@ extern  void    OutLabel( code_lbl *lbl )
     temp_patch          *curr_pat;
     array_control       *ctl;
     patch               *pat;
-    int                 i;
+    unsigned            i;
     pointer             patptr;
     object              *obj;
     offset              lc;
@@ -2325,10 +2325,9 @@ extern  void    OutLabel( code_lbl *lbl )
         }
         TellCommonLabel( lbl, CurrSeg->comdat_prefix_import );
     }
-    i = SegInfo->used;
     lc = (offset)CurrSeg->location;
     TellAddress( lbl, lc );
-    while( --i >= 0 ) {
+    for( i = SegInfo->used; i-- > 0; ) {
         obj = _ARRAYOF( SegInfo, index_rec )[i].obj;
         if( obj != NULL ) { /* twas flushed and not redefined*/
             owner = &obj->patches;
@@ -2364,12 +2363,10 @@ extern  void    OutLabel( code_lbl *lbl )
         }
     }
     ctl = AskLblPatch( lbl );
-    i = ctl->used;
     pat = ctl->array;
-    while( i > 0 ) {
+    for( i = ctl->used; i-- > 0; ) {
         DoPatch( pat, lc );
         pat++;
-        i--;
     }
     KillArray( ctl );
     TellDonePatch( lbl );
