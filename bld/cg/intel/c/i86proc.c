@@ -361,7 +361,9 @@ static  void    AdjustPushLocals( void ) {
 
     instruction *ins;
 
-    for( ins = HeadBlock->ins.hd.next; !DoesSomething( ins ); ins = ins->head.next ) {
+    for( ins = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        if( DoesSomething( ins ) )
+            break;
         if( ins->head.opcode == OP_MOV && ins->head.state == OPERANDS_NEED_WORK ) {
             QuickSave( ins->operands[ 0 ]->r.reg, OP_PUSH );
             AdjustPushLocal( ins->result );

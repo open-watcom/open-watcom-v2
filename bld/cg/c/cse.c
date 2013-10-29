@@ -598,9 +598,13 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
     block               *blk;
 
     if( OptForSize > 50 ) return( TRUE );
-    for( ins = target; ins->head.opcode != OP_BLOCK; ins = ins->head.next );
+    for( ins = target; ins->head.opcode != OP_BLOCK; ) {
+        ins = ins->head.next
+    }
     target_blk = _BLOCK( ins );
-    for( ins = orig; ins->head.opcode != OP_BLOCK; ins = ins->head.next );
+    for( ins = orig; ins->head.opcode != OP_BLOCK; ) {
+        ins = ins->head.next
+    }
     blk = _BLOCK( ins );
     if( blk == target_blk ) return( TRUE );
     while( blk != NULL ) {

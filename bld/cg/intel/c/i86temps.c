@@ -72,9 +72,8 @@ static  void    AssignPushLocals( void ) {
     name        *dst;
     type_length curr_offset;
 
-    move = HeadBlock->ins.hd.next;
     curr_offset = 0;
-    for(;;) {
+    for( move = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; move = move->head.next ) {
         if( CurrProc->prolog_state & GENERATED_PROLOG ) break;
         if( DoesSomething( move ) ) {
             if( move->head.opcode != OP_MOV ) break;
@@ -84,11 +83,11 @@ static  void    AssignPushLocals( void ) {
             if( src->n.class != N_REGISTER ) break;
             if( _IsFloating( src->n.name_class ) ) break; /*90-Dec-17*/
             if( dst->n.class != N_TEMP ) break;
-        #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
             if( dst->n.size != 4 ) break;
-        #else
+#else
             if( dst->n.size != 2 && dst->n.size != 4 ) break;
-        #endif
+#endif
             curr_offset -= PushSize( dst->n.size );/* assume it will be pushed*/
             if( DeAlias( dst ) != dst ) break;
             if( dst->v.usage & HAS_MEMORY ) {
@@ -102,7 +101,6 @@ static  void    AssignPushLocals( void ) {
             move->head.state = OPERANDS_NEED_WORK;
             DoNothing( move );
         }
-        move = move->head.next;
     }
 }
 

@@ -581,15 +581,13 @@ static  void    FinishIndex( void )
 {
     block       *blk;
     instruction *ins;
-    instruction *old;
+    instruction *next;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            old = ins;
-            ins = NeedIndex( ins );
-            if( ins == old ) {
-                ins = ins->head.next;
+        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
+            next = NeedIndex( ins );
+            if( next == ins ) {
+                next = ins->head.next;
             }
         }
     }

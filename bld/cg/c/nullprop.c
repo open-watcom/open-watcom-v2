@@ -60,10 +60,10 @@ static  instruction     *CompareIns( block *blk )
     instruction         *last;
 
     if( blk->class & CONDITIONAL ) {
-        last = blk->ins.hd.prev;
-        while( last->head.opcode != OP_BLOCK ) {
-            if( _OpIsCompare( last->head.opcode ) ) return( last );
-            last = last->head.prev;
+        for( last = blk->ins.hd.prev; last->head.opcode != OP_BLOCK; last = last->head.prev ) {
+            if( _OpIsCompare( last->head.opcode ) ) {
+                return( last );
+            }
         }
     }
     return( NULL );
@@ -248,8 +248,7 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
     instruction         *curr;
 
     blk = blk;
-    curr = ins;
-    while( curr->head.opcode != OP_BLOCK ) {
+    for( curr = ins; curr->head.opcode != OP_BLOCK; curr = NextIns( curr, forward ) ) {
         // if we are going forward, the dereferences take precedence over the
         // redefinitions, the reverse is true when backpeddling
         if( forward ) {
@@ -276,7 +275,6 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
             if( ReDefinedBy( curr, op ) ) return( BLOCK_REDEFS );
             if( DereferencedBy( curr, op ) ) return( BLOCK_DEREFS );
         }
-        curr = NextIns( curr, forward );
     }
     return( BLOCK_NOTHING );
 }

@@ -56,7 +56,6 @@ extern  void            LiveInfoUpdate(void);
 extern  int             NumOperands(instruction *);
 extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            UpdateLive(instruction*,instruction*);
-extern  bool            DoesSomething(instruction*);
 
 /* forward declarations */
 static  void            CnvOperand( instruction *ins );

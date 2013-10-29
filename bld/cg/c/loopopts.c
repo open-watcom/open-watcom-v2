@@ -1167,16 +1167,16 @@ static  bool    BasicNotRedefined( induction *var, instruction *ins ) {
 */
 
 
-    instruction *other_ins;
+    instruction *other;
 
-    other_ins = var->ins->head.next;
-    for(;;) {
-        if( other_ins->head.opcode == OP_BLOCK ) return( FALSE );
-        if( other_ins == ins ) break;
-        if( ReDefinedBy( other_ins, var->basic->name ) ) return( FALSE );
-        other_ins = other_ins->head.next;
+    for( other = var->ins->head.next; other->head.opcode != OP_BLOCK; other = other->head.next ) {
+        if( other == ins )
+            return( TRUE );
+        if( ReDefinedBy( other, var->basic->name ) ) {
+            break;
+        }
     }
-    return( TRUE );
+    return( FALSE );
 }
 
 
@@ -1513,21 +1513,20 @@ static  void    MergeVars( void )
         if( _IsntV( var, IV_TOP ) ) continue;
         if( _IsV( var, IV_DEAD ) ) continue;
         if( _IsV( var , IV_BASIC | IV_ALIAS ) ) continue;
-        ins = var->ins;
-        while( ins->head.opcode != OP_BLOCK )
+        for( ins = var->ins; ins->head.opcode != OP_BLOCK; ) {
             ins = ins->head.next;
+        }
         varblock = _BLOCK( ins );
-        for( other = var->next; ; other = other->next ) {
-            if( other == NULL ) break;
+        for( other = var->next; other != NULL; other = other->next ) {
             if( _IsntV( other, IV_TOP ) ) continue;
             if( _IsV( other, IV_DEAD ) ) continue;
             if( _IsV( other , IV_BASIC | IV_ALIAS ) ) continue;
             if( DifferentIV( var, other ) != MAYBE ) continue;
             if( _IsV( other, IV_USED ) ) continue;
             if( _IsntV( other, IV_INDEXED ) ) continue;
-            ins = other->ins;
-            while( ins->head.opcode != OP_BLOCK )
+            for( ins = other->ins; ins->head.opcode != OP_BLOCK; ) {
                 ins = ins->head.next;
+            }
             if( _BLOCK( ins ) != varblock ) continue;
             _INS_NOT_BLOCK( var->ins );
             _INS_NOT_BLOCK( other->ins );
@@ -1948,10 +1947,9 @@ static  void    LabelDown( instruction *frum,
     block_edge  *edge;
     instruction *ins;
 
-    while( frum->head.opcode != OP_BLOCK ) {
+    for( ; frum->head.opcode != OP_BLOCK; frum = frum->head.next ) {
         if( frum == avoiding ) return;
         frum->ins_flags |= INS_VISITED;
-        frum = frum->head.next;
     }
     if( frum == avoiding ) return;
     blk = _BLOCK( frum );

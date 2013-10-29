@@ -76,7 +76,6 @@ extern  void    DoNothing( instruction *ins ) {
 extern  bool    DoesSomething( instruction *ins ) {
 /*************************************************/
 
-    if( ins->head.opcode == OP_BLOCK ) return( TRUE );
     if( ins->u.gen_table == NULL ) return( TRUE );
     if( ins->u.gen_table->generate != G_NO ) return( TRUE );
     return( FALSE );

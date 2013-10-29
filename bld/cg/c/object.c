@@ -308,15 +308,13 @@ static  instruction     *FindCondition( block *blk ) {
 
     instruction         *cond;
 
-    cond = blk->ins.hd.prev;
-    while( !_OpIsCondition( cond->head.opcode ) ) {
-        if( cond->head.opcode == OP_BLOCK ) {
-            // _Zoiks( ZOIKS_XXX );
-            return( NULL );
+    for( cond = blk->ins.hd.prev; cond->head.opcode != OP_BLOCK; cond = cond->head.prev ) {
+        if( _OpIsCondition( cond->head.opcode ) ) {
+            return( cond );
         }
-        cond = cond->head.prev;
     }
-    return( cond );
+    // _Zoiks( ZOIKS_XXX );
+    return( NULL );
 }
 
 #define NOT_TAKEN       -1

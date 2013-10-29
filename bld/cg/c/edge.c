@@ -94,7 +94,7 @@ extern  block   *SplitBlock( block *blk, instruction *ins )
 {
     block       *new_blk;
     block_edge  *edge;
-    instruction *old;
+    instruction *next;
     block_num   i;
 
     new_blk = MakeBlock( AskForNewLabel(), blk->targets );
@@ -116,11 +116,10 @@ extern  block   *SplitBlock( block *blk, instruction *ins )
         edge->source = new_blk;
         edge++;
     }
-    while( ins->head.opcode != OP_BLOCK ) {
-        old = ins;
-        ins = ins->head.next;
-        RemoveIns( old );
-        SuffixIns( new_blk->ins.hd.prev, old );
+    for( ; ins->head.opcode != OP_BLOCK; ins = next ) {
+        next = ins->head.next;
+        RemoveIns( ins );
+        SuffixIns( new_blk->ins.hd.prev, ins );
     };
     FixBlockIds();
     return( new_blk );

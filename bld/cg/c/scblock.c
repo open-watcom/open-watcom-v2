@@ -53,8 +53,7 @@ extern  void    FreeJunk( block *blk )
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
-        if( DoesSomething( ins ) == FALSE
-         && SideEffect( ins ) == FALSE
+        if( !DoesSomething( ins ) && !SideEffect( ins )
          && ins->head.opcode < FIRST_OP_WITH_LABEL
          && ins->head.opcode != OP_NOP ) { /*% there for zap info*/
             FreeIns( ins );
@@ -177,8 +176,7 @@ extern  bool    DoScore( block *blk )
                 RegKill( scoreboard, ins->zap->reg );
             }
         } else if( DoesSomething( ins ) ) {
-            if( ins->head.opcode == OP_CALL
-                            || ins->head.opcode == OP_CALL_INDIRECT ) {
+            if( ins->head.opcode == OP_CALL || ins->head.opcode == OP_CALL_INDIRECT ) {
                 MemChanged( scoreboard,
                     ( ins->flags.call_flags & CALL_WRITES_NO_MEMORY ) == 0 );
                 RegKill( scoreboard, ins->zap->reg );
