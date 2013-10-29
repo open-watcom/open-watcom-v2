@@ -791,8 +791,9 @@ extern  void    DFGenStatic( sym_handle sym, dbg_loc loc ) {
     }
 }
 
-extern  void    DFTypedef( char *nm, dbg_type tipe ){
-/*** emit a user typedef ***************************/
+extern  void    DFTypedef( const char *nm, dbg_type tipe )
+/*** emit a user typedef ********************************/
+{
      DWTypedef( Client, tipe, nm, 0, 0 );
 }
 

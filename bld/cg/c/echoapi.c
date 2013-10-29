@@ -45,11 +45,11 @@
 #include "model.h"
 #include "cgmem.h"
 #include "useinfo.h"
-#include "dump.h"
+#include "dumpio.h"
 #include "feprotos.h"
 
 extern  void            FatalError(const char *);
-extern  bool            GetEnvVar(char*,char*,int);
+extern  bool            GetEnvVar(const char *,char *,int);
 extern  int             BGInlineDepth( void );
 
 #define hdlSetUsed( handle, value ) ( ((use_info *)handle)->used = value )
@@ -113,14 +113,14 @@ static  void    EchoAPIString( char const *s )
 static void errMsg              // PRINT ERROR MESSAGE
     ( char const *msg )         // - message
 {
-    DumpString( "\n**** CgDbg Failure: " );
+    DumpLiteral( "\n**** CgDbg Failure: " );
     DumpString( msg );
     DumpChar( '\n' );
 }
 
 static void handleFailure( void )
 {
-    DumpString( "Aborted after CgDbg Failure" );
+    DumpLiteral( "Aborted after CgDbg Failure" );
     EchoAPIUnredirect();
     FatalError( "CGDbg Failure\n" );
 }
@@ -129,22 +129,22 @@ static void printName( handle_type hdltype )
 {
     switch( hdltype ) {
     case NO_HANDLE :
-        DumpString("uninitialized");
+        DumpLiteral("uninitialized");
         break;
     case CG_NAMES :
-        DumpString("cg_name");
+        DumpLiteral("cg_name");
         break;
     case LABEL_HANDLE :
-        DumpString("label_handle");
+        DumpLiteral("label_handle");
         break;
     case PATCH_HANDLE :
-        DumpString("patch_handle");
+        DumpLiteral("patch_handle");
         break;
     case SEL_HANDLE :
-        DumpString("sel_handle");
+        DumpLiteral("sel_handle");
         break;
     default :
-        DumpString("default");
+        DumpLiteral("default");
         break;
     }
 }
@@ -154,20 +154,20 @@ static void handleMsg             // PRINT ERROR FOR RING
       char const* msg )         // - message
 {
     errMsg( msg );
-    DumpString( "\n**** CgDbg Failure: for " );
+    DumpLiteral( "\n**** CgDbg Failure: for " );
     printName( hdltype );
-    DumpChar('\n');
+    DumpChar( '\n' );
     handleFailure();
 }
 
 static void ErrExpectFound( handle_type expect, handle_type found )
 {
-    DumpString( "\n**** CgDbg Failure: " );
-    DumpString( "\n\texpecting type ");
+    DumpLiteral( "\n**** CgDbg Failure: " );
+    DumpLiteral( "\n\texpecting type ");
     printName(expect);
     DumpChar( '\n' );
 
-    DumpString( "\n\tfound type ");
+    DumpLiteral( "\n\tfound type ");
     printName(found);
     DumpChar( '\n' );
     handleFailure();

@@ -38,10 +38,8 @@
 #include "procdef.h"
 #include "freelist.h"
 #include "sched.h"
-#include "dump.h"
+#include "dumpio.h"
 
-extern  void            DumpPtr(pointer);
-extern  void            DumpInt(int);
 extern  void            DumpIns(instruction *);
 extern  int             CountIns( block * );
 
@@ -77,7 +75,7 @@ void DumpADataDag( data_dag *dag )
             DumpLiteral( "     " );
             i = 0;
         }
-        DumpLiteral( " " );
+        DumpChar( ' ' );
         DumpPtr( dep->dep );
     }
     DumpNL();

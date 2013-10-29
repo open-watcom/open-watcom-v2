@@ -119,19 +119,17 @@ extern  type_class_def  CallState( aux_handle aux,
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
     i = 0;
-    parm_src = ParmRegs();
     parm_dst = &parms[ 0 ];
-    for(;;) {
+    for( parm_src = ParmRegs(); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
         *parm_dst = *parm_src;
-        if( HW_CEqual( *parm_dst, HW_EMPTY ) ) break;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {
             FEMessage( MSG_BAD_SAVE, aux );
         }
         HW_CTurnOff( *parm_dst, HW_UNUSED );
         parm_dst++;
-        parm_src++;
         i++;
     }
+    *parm_dst = *parm_src;
     i++;
     state->parm.table = CGAlloc( i*sizeof( hw_reg_set ) );
     Copy( parms, state->parm.table, i*sizeof( hw_reg_set ) );

@@ -56,12 +56,12 @@ static bool HasSegRegs( reg_tree *tree )
     hw_reg_set  *regs;
 
     regs = tree->regs;
-    if( regs == NULL ) return( FALSE );
-    for(;;) {
-        if( HW_CEqual( *regs, HW_EMPTY ) ) return( FALSE );
-        if( HW_COvlap( *regs, HW_SEGS ) ) return( TRUE );
-        ++regs;
+    if( regs != NULL ) {
+        for( ; !HW_CEqual( *regs, HW_EMPTY ); ++regs ) {
+            if( HW_COvlap( *regs, HW_SEGS ) ) return( TRUE );
+        }
     }
+    return( FALSE );
 }
 #endif
 
@@ -91,10 +91,9 @@ static  hw_reg_set      *AllocRegSet( void )
     hw_reg_set  *regs;
     hw_reg_set  *curr;
 
-    regs = AllocFrl( &RegFrl, SET_SIZE*sizeof( hw_reg_set ) );
-    i = SET_SIZE;
+    regs = AllocFrl( &RegFrl, SET_SIZE * sizeof( hw_reg_set ) );
     curr = regs;
-    while( --i >= 0 ) {
+    for( i = SET_SIZE; i-- > 0; ) {
         HW_CAsgn( *curr, HW_EMPTY );
         ++curr;
     }
@@ -177,14 +176,11 @@ static  void    BuildPossible( reg_tree *tree )
         BuildPossible( tree->hi );
         if( tree->idx != RL_NUMBER_OF_SETS ) {
             tree->regs = AllocRegSet();
-            src = RegSets[  tree->idx  ];
             dst = tree->regs;
-            for(;;) {
-                *dst = *src;
-                if( HW_CEqual( *dst, HW_EMPTY ) ) break;
-                ++src;
-                ++dst;
+            for( src = RegSets[tree->idx]; !HW_CEqual( *src, HW_EMPTY ); ++src ) {
+                *dst++ = *src;
             }
+            *dst = *src;
 #ifndef NDEBUG
             if ( dst - tree->regs >= SET_SIZE ) { /* '>=' 'coz no increment before 'break' */
                 Zoiks( ZOIKS_143 );
@@ -361,11 +357,9 @@ static  void    CompressSets( reg_tree *tree )
         if( tree->regs != NULL ) {
             dst = tree->regs;
             src = dst;
-            i = SET_SIZE;
-            while( --i >= 0 ) {
+            for( i = SET_SIZE; i-- > 0; ) {
                 if( !HW_CEqual( *src, HW_EMPTY ) ) {
-                    *dst = *src;
-                    ++dst;
+                    *dst++ = *src;
                 }
                 ++src;
             }
@@ -399,10 +393,9 @@ static  bool    PartIntersect( reg_tree *part,
 
             part->regs = AllocRegSet();
             part->idx = RL_;
-            i = SET_SIZE;
             src = whole->regs;
             dst = part->regs;
-            while( --i >= 0 ) {
+            for( i = SET_SIZE; i-- > 0; ) {
                 *dst = rtn( *src );
                 ++dst;
                 ++src;
@@ -412,14 +405,12 @@ static  bool    PartIntersect( reg_tree *part,
         /* check that all Hi/Lo parts of whole are contained in part*/
 
         src = whole->regs;
-        i = SET_SIZE;
-        while( --i >= 0 ) {
+        for( i = SET_SIZE; i-- > 0; ) {
             if( !HW_CEqual( *src, HW_EMPTY ) ) {
                 curr = rtn( *src );
                 if( !HW_CEqual( curr, HW_EMPTY ) ) {
-                    j = SET_SIZE;
                     dst = part->regs;
-                    while( --j >= 0 ) {
+                    for( j = SET_SIZE; j-- > 0; ) {
                         if( HW_Equal( *dst, curr ) ) break;
                         ++dst;
                     }
@@ -438,13 +429,11 @@ static  bool    PartIntersect( reg_tree *part,
         /* check that each reg in part is a Hi/Lo part in whole*/
 
         src = part->regs;
-        i = SET_SIZE;
-        while( --i >= 0 ) {
+        for( i = SET_SIZE; i-- > 0; ) {
             curr = *src;
             if( !HW_CEqual( curr, HW_EMPTY ) ) {
-                j = SET_SIZE;
                 dst = whole->regs;
-                while( --j >= 0 ) {
+                for( j = SET_SIZE; j-- > 0; ) {
                     if( !HW_CEqual( *dst, HW_EMPTY ) ) {
                         tmp = rtn( *dst );
                         if( HW_Equal( curr, tmp ) ) break;

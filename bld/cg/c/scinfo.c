@@ -360,8 +360,7 @@ extern  void    ScoreKillInfo( score *scoreboard, name *op,
 
     last_offset = info->offset + op->n.size;
     entry = ScoreList[ 0 ];
-    i = ScoreCount;
-    while( -- i >= 0 ) {
+    for( i = ScoreCount; i-- > 0; ) {
         if( !HW_Subset( except, entry->reg ) ) {
             owner = scoreboard->list;
             for(;;) {

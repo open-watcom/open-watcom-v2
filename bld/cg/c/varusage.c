@@ -82,24 +82,20 @@ static  bool    CoveringDefinitions( name *op )
     bool        covered[MAX_POSSIBLE_REG+1];
 
     if( op->n.size > MAX_POSSIBLE_REG ) return( FALSE );
-    i = op->n.size;
-    while( --i >= 0 ) {
+    for( i = op->n.size; i-- > 0; ) {
         covered[ i ] = FALSE;
     }
-    alias = op->t.alias;
-    while( alias != op ) {
+    for( alias = op->t.alias; alias != op; alias = alias->t.alias ) {
         if( alias->v.block_usage & DEF_WITHIN_BLOCK ) {
             loc = alias->v.offset - op->v.offset;
-            i = alias->n.size;
-            while( --i >= 0 ) {
-                if( loc < sizeof( covered ) ) covered[ loc ] = TRUE;
+            for( i = alias->n.size; i-- > 0; ) {
+                if( loc < sizeof( covered ) )
+                    covered[ loc ] = TRUE;
                 ++loc;
             }
         }
-        alias = alias->t.alias;
     }
-    i = op->n.size;
-    while( --i >= 0 ) {
+    for( i = op->n.size; i-- > 0; ) {
         if( covered[ i ] == FALSE ) return( FALSE );
     }
     return( TRUE );

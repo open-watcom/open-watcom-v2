@@ -60,11 +60,11 @@ extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
 
 
-extern  segment_id      DbgSegDef( char *, char *, int  );
+extern  segment_id      DbgSegDef( const char *, const char *, int  );
 extern  hw_reg_set      StackReg(void);
 extern  hw_reg_set      DisplayReg(void);
-extern  void            OutBckExport( char *name, bool is_export );
-extern  void            BackImpPtr( char *nm, bck_info *bck, offset plus );
+extern  void            OutBckExport( const char *name, bool is_export );
+extern  void            BackImpPtr( const char *nm, bck_info *bck, offset plus );
 
 
 extern  dw_client       Client;

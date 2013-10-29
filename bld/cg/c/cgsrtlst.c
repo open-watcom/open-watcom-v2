@@ -112,9 +112,8 @@ static  void            *DoSortList( void *list, unsigned next_offset,
     if( array == NULL ) {
         mid = length / 2;
         if( mid == 0 ) return( list ); /* FATAL ERROR! */
-        i = mid;
         list2 = list;
-        while( --i >= 0 ) {
+        for( i = mid; i-- > 0; ) {
             list2 = _NEXT( list2, next_offset );
         }
         list = DoSortList( list, next_offset, before, mid );
@@ -123,8 +122,7 @@ static  void            *DoSortList( void *list, unsigned next_offset,
     } else {
         list2 = list;
         parray = array;
-        i = length;
-        while( --i >= 0 ) {
+        for( i = length; i-- > 0; ) {
             *parray = list2;
             ++parray;
             list2 = _NEXT( list2, next_offset );

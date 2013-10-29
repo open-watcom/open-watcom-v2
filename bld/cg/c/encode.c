@@ -40,6 +40,7 @@
 #include "encode.h"
 #include "data.h"
 #include "objout.h"
+#include "dumpio.h"
 
 
 extern  void            GenSetCC( instruction * );
@@ -47,10 +48,6 @@ extern  byte            CondCode( instruction * );
 extern  void            InputOC(any_oc*);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern  void            FlipCond(instruction*);
-extern  void            DumpString( char * );
-extern  void            DumpPtr( pointer );
-extern  void            DumpInt( int );
-extern  void            DumpNL( void );
 
 static  code_lbl    *LocateLabel( instruction *ins, int index ) {
 /*******************************************************************
@@ -93,9 +90,9 @@ extern  void    CodeLabel( code_lbl *label, unsigned align ) {
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
-        DumpString( "L" );
+        DumpChar( 'L' );
         DumpPtr( label );
-        DumpString( ":" );
+        DumpChar( ':' );
         DumpNL();
     }
 #endif
@@ -118,7 +115,7 @@ extern  void    CodeLineNum( cg_linenum line, bool label_line ) {
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
         if( _IsTargetModel( ASM_OUTPUT ) ) {
-            DumpString( "Source Line: " );
+            DumpLiteral( "Source Line: " );
             DumpInt( line );
             DumpNL();
         }
@@ -207,7 +204,7 @@ static  void    DoCondJump( instruction *cond ) {
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
         if( _IsTargetModel( ASM_OUTPUT ) ) {
-            DumpString( "Jcc L" );
+            DumpLiteral( "Jcc L" );
             DumpPtr( dest_true );
             DumpNL();
         }
@@ -250,7 +247,7 @@ extern  void    GenJumpLabel( code_lbl *label ) {
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
-        DumpString( "JMP L" );
+        DumpLiteral( "JMP L" );
         DumpPtr( label );
         DumpNL();
     }

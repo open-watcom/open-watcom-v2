@@ -31,14 +31,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "dump.h"
+#include "dumpio.h"
 #include "data.h"
 
-extern  void            DumpNL();
 extern  void            DumpOperand(name*);
-extern  void            DumpInt(int);
-extern  void            DumpLong(signed_32);
-extern  void            DumpPtr(pointer);
 extern  void            DumpIns(instruction*);
 
 static char *Classes[] = {
@@ -70,7 +66,7 @@ static  void    DumpAnAddr( an node ) {
 /*************************************/
 
     DumpString( Classes[ node->class ] );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     switch( node->class ) {
     case CL_VALUE2:
     case CL_VALUE4:
@@ -78,30 +74,30 @@ static  void    DumpAnAddr( an node ) {
         break;
     case CL_TEMP_OFFSET:
         DumpOperand( node->u.name );
-        DumpLiteral( "+" );
+        DumpChar( '+' );
         DumpLong( node->offset );
         break;
     case CL_ADDR_GLOBAL:
     case CL_ADDR_TEMP:
-        DumpLiteral( "&" );
+        DumpChar( '&' );
         DumpOperand( node->u.name );
         break;
     case CL_POINTER:
     case CL_GLOBAL_INDEX:
     case CL_TEMP_INDEX:
         if( node->class == CL_POINTER ) {
-            DumpLiteral( "&" );
+            DumpChar( '&' );
         }
         if( node->u.name != NULL ) {
             DumpOperand( node->u.name );
         }
-        DumpLiteral( "[" );
+        DumpChar( '[' );
         if( node->index != NULL ) {
             DumpOperand( node->index );
         }
-        DumpLiteral( "+" );
+        DumpChar( '+' );
         DumpLong( node->offset );
-        DumpLiteral( "]" );
+        DumpChar( ']' );
         break;
     }
 }
@@ -117,7 +113,7 @@ static  void    DumpLbl( code_lbl **what ) {
             if( what == &blk->edge[ i ].destination.u.lbl ) {
                 DumpLiteral( "Target " );
                 DumpPtr( blk );
-                DumpLiteral( "(" );
+                DumpChar( '(' );
                 DumpInt( i + 1 );
                 DumpLiteral( ") " );
                 return;
@@ -161,7 +157,7 @@ extern  void    Dumpan( an node ) {
 /*********************************/
 
     DumpString( Formats[ node->format ] );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     switch( node->format ) {
     case NF_ADDR:
         DumpAnAddr( node );

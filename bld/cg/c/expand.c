@@ -62,11 +62,9 @@ static  instruction     *DoReduce( instruction *ins, opcode_entry *try,
     if( try->generate == G_NO ) return( ins );
     if( try->generate >= FIRST_REDUCT )
         return( Reduce( ins ) );
-    zap = RegSets[RegList[try->reg_set].zap];
     zap_all = ins->zap->reg;
-    while( !HW_CEqual( *zap, HW_EMPTY ) ) {
+    for( zap = RegSets[RegList[try->reg_set].zap]; !HW_CEqual( *zap, HW_EMPTY ); ++zap ) {
         HW_TurnOn( zap_all, *zap );
-        ++zap;
     }
     ins->zap = (register_name *)AllocRegName( zap_all );
     if( has_index || ins->num_operands > NumOperands( ins ) ) {
@@ -106,11 +104,9 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
             result_index = need->result;
         } else if( !_Any( try->op_type, RESULT_MUL ) ) {
             regs = name->r.reg;
-            possible = RegSets[need->result];
-            for(;;) {
+            for( possible = RegSets[need->result]; ; ++possible ) {
                 if( HW_CEqual( *possible, HW_EMPTY ) ) return( FALSE );
                 if( HW_Equal( *possible, regs ) ) break;
-                ++ possible;
             }
         }
     }
@@ -125,11 +121,9 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
             left_index = need->left;
         } else if( !_Any( try->op_type, OP1_MUL ) ) {
             regs = name->r.reg;
-            possible = RegSets[need->left];
-            for(;;) {
+            for( possible = RegSets[need->left]; ; ++possible ) {
                 if( HW_CEqual( *possible, HW_EMPTY ) ) return( FALSE );
                 if( HW_Equal( *possible, regs ) ) break;
-                ++ possible;
             }
         }
     }
@@ -144,11 +138,9 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
             right_index = need->right;
         } else if( !_Any( try->op_type, OP2_MUL ) ) {
             regs = name->r.reg;
-            possible = RegSets[need->right];
-            for(;;) {
+            for( possible = RegSets[need->right]; ; ++possible ) {
                 if( HW_CEqual( *possible, HW_EMPTY ) ) return( FALSE );
                 if( HW_Equal( *possible, regs ) ) break;
-                ++ possible;
             }
         }
     }

@@ -51,8 +51,8 @@
 #include "dfdbg.h"
 #include "cgprotos.h"
 
-extern  segment_id      DbgSegDef( char *name );
-extern  void            OutBckExport( char *name, bool is_export );
+extern  segment_id      DbgSegDef( const char *name );
+extern  void            OutBckExport( const char *name, bool is_export );
 
 
 extern  dw_client       Client;

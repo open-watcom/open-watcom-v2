@@ -157,8 +157,8 @@ static void DeleteSections( void )
     }
 }
 
-extern owl_section_handle DbgSectDefComdat( char *str )
-/*****************************************************/
+extern owl_section_handle DbgSectDefComdat( const char *str )
+/***********************************************************/
 {
     owl_section_handle  owl_handle;
 
@@ -635,8 +635,8 @@ extern char GetMemModel( void )
     return( model );
 }
 
-extern segment_id DbgSegDef( char *str )
-/**************************************/
+extern segment_id DbgSegDef( const char *str )
+/********************************************/
 {
     section_def         *new;
     segment_id          id;

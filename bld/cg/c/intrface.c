@@ -1044,20 +1044,19 @@ extern  cg_name _CGAPI CGIndex( cg_name name, cg_name by,
 /* Routine calling*/
 /**/
 
-extern  call_handle _CGAPI      CGInitCall( cg_name name, cg_type tipe,
-                                            sym_handle aux_info )
-/*********************************************************************/
+extern  call_handle _CGAPI  CGInitCall( cg_name name, cg_type tipe, sym_handle sym )
+/**********************************************************************************/
 {
 #ifndef NDEBUG
     tn      retn;
 
-    EchoAPI( "CGInitCall( %n, %t, %s )", name, tipe, aux_info );
+    EchoAPI( "CGInitCall( %n, %t, %s )", name, tipe, sym );
     hdlUseOnce( CG_NAMES, name );
-    retn = TGInitCall( name, TypeAddress( tipe ), aux_info );
+    retn = TGInitCall( name, TypeAddress( tipe ), sym );
     hdlAddUnary( CG_NAMES, retn, name );
     return EchoAPICallHandleReturn( retn );
 #else
-    return( TGInitCall( name, TypeAddress( tipe ), aux_info ) );
+    return( TGInitCall( name, TypeAddress( tipe ), sym ) );
 #endif
 }
 

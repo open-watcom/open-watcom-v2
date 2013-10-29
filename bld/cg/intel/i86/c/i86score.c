@@ -108,10 +108,8 @@ extern  void    AddRegs( void )
     SS = AllocRegName( HW_SS );
 /*      89-01-03*/
     ES = AllocRegName( HW_ES );
-    i = S_MAX;
-    while( --i >= 0 ) {
-        j = I_MAX;
-        while( --j >= 0 ) {
+    for( i = S_MAX; i-- > 0; ) {
+        for( j = I_MAX; j-- > 0; ) {
             PtrRegs[i][j] = NULL;
         }
     }
@@ -156,8 +154,7 @@ extern  void    ScoreSegments( score *sc )
     ds = &sc[ DS->r.reg_index ];
     for( xs = ds->next_reg; xs != ds; xs = xs->next_reg ) {
         if( xs->index == SS->r.reg_index ) {
-            i = I_MAX;
-            while( --i >= 0 ) {
+            for( i = I_MAX; i-- > 0; ) {
                 dst = PtrRegs[S_SS][i];
                 src = PtrRegs[S_DS][i];
                 if( dst != NULL && src != NULL ) {
@@ -167,8 +164,7 @@ extern  void    ScoreSegments( score *sc )
                 }
             }
         } else if( xs->index == ES->r.reg_index ) {
-            i = I_MAX;
-            while( --i >= 0 ) {
+            for( i = I_MAX; i-- > 0; ) {
                 dst = PtrRegs[S_ES][i];
                 src = PtrRegs[S_DS][i];
                 if( dst != NULL && src != NULL ) {

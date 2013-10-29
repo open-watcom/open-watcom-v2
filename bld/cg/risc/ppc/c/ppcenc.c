@@ -42,15 +42,11 @@
 #include <stdio.h>
 #include "data.h"
 #include "objout.h"
+#include "dumpio.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
-extern void DumpString( char * );
-extern void DumpPtr( pointer );
-extern void DumpInt( int );
-extern void DumpNL( void );
 extern void DumpGen( struct opcode_entry * );
-extern void DumpPtr( void *ptr );
 extern void GenCondJump( instruction * );
 
 extern void             ObjBytes( const void *buffer, int size );
@@ -772,9 +768,9 @@ static  void    Encode( instruction *ins )
     }
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
-        DumpString( "        " );
+        DumpLiteral( "        " );
         DumpGen( ins->u.gen_table );
-        DumpString( " - " );
+        DumpLiteral( " - " );
         DumpInsOnly( ins );
         DumpNL();
     }
@@ -812,9 +808,9 @@ extern  void    CodeLabel( code_lbl *label, unsigned alignment )
     OutLabel( label );
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
-        DumpString( "L" );
+        DumpChar( 'L' );
         DumpPtr( label );
-        DumpString( ":" );
+        DumpChar( ':' );
         DumpNL();
     }
 #endif
@@ -826,7 +822,7 @@ extern  void    CodeLineNum( cg_linenum line, bool label )
 {
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
-        DumpString( "Source Line: " );
+        DumpLiteral( "Source Line: " );
         DumpInt( line );
         DumpNL();
     }
@@ -841,7 +837,7 @@ extern  void    GenJumpLabel( code_lbl *label )
     GenBRANCH( 18, label, FALSE, FALSE );
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
-        DumpString( "JMP L" );
+        DumpLiteral( "JMP L" );
         DumpPtr( label );
         DumpNL();
     }
@@ -875,7 +871,7 @@ extern  void    GenJumpIf( instruction *ins, pointer label )
     GenCONDBR( 16, ops[0], ops[1], label );
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
-        DumpString( "Jcc L" );
+        DumpLiteral( "Jcc L" );
         DumpPtr( label );
         DumpNL();
     }

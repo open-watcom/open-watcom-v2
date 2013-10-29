@@ -34,11 +34,8 @@
 #include "conflict.h"
 #include "regset.h"
 #include "regsetop.h"
-#include "dump.h"
+#include "dumpio.h"
 
-extern  void            DumpNL();
-extern  void            DumpInt(int);
-extern  void            DumpPtr(pointer);
 extern  void            DumpSym(name*);
 extern  void            DumpRegName(hw_reg_set);
 
@@ -48,7 +45,7 @@ static  void    DumpIndent( int i ) {
 /***********************************/
 
     while( --i >= 0 ) {
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
 }
 
@@ -60,11 +57,10 @@ static  void    DumpRegs( hw_reg_set *regs ) {
 
     DumpLiteral( "Choices " );
     if( regs != NULL ) {
-        i = SET_SIZE;
-        while( --i >= 0 ) {
+        for( i = SET_SIZE; i-- > 0; ) {
             if( !HW_CEqual( *regs, HW_EMPTY ) ) {
                 DumpRegName( *regs );
-                DumpLiteral( "," );
+                DumpChar( ',' );
             }
             ++regs;
         }
@@ -88,7 +84,7 @@ static  void    DoDump( reg_tree *tree, int indent ) {
         DumpIndent( indent );
         DumpLiteral( "name " );
         DumpPtr( tree->temp );
-        DumpLiteral( " " );
+        DumpChar( ' ' );
         DumpSym( tree->temp );
         DumpNL();
     }
@@ -96,7 +92,7 @@ static  void    DoDump( reg_tree *tree, int indent ) {
         DumpIndent( indent );
         DumpLiteral( "alt  " );
         DumpPtr( tree->alt  );
-        DumpLiteral( " " );
+        DumpChar( ' ' );
         DumpSym( tree->alt );
         DumpNL();
     }

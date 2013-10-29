@@ -325,8 +325,7 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
 
     mid = lo + ( hi - lo ) / 2;
     mid_list = list;
-    num = mid;
-    while( --num >= 0 ) {
+    for( num = mid; num-- > 0; ) {
         mid_list = mid_list->next;
     }
     if( lo == hi ) {

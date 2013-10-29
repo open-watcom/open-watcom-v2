@@ -50,7 +50,7 @@ extern  void            OutPatch(code_lbl *,patch_attr);
 extern  void            TellKeepLabel(code_lbl *);
 extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutImport(sym_handle,fix_class,bool);
-extern  void            OutBckImport( char *name, bck_info  *bck, fix_class class );
+extern  void            OutBckImport( const char *name, bck_info  *bck, fix_class class );
 extern  void            CodeBytes(byte*,uint);
 extern  void            CodeLabel(code_lbl *, unsigned);
 extern  void            OutIBytes(byte,offset);
@@ -175,8 +175,8 @@ static  void    DoImpPtr( sym_handle sym, fix_class class, offset plus ) {
     }
 }
 
-extern  void    BackImpPtr( char *nm, bck_info *bck, offset plus ) {
-/******************************************************************/
+extern  void    BackImpPtr( const char *nm, bck_info *bck, offset plus ) {
+/************************************************************************/
     fix_class const class = F_OFFSET;
 
     SetUpObj( TRUE );

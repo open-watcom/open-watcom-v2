@@ -39,6 +39,7 @@
 #include "memout.h"
 #include "cgmem.h"
 #include "optmac.h"
+#include "dumpio.h"
 
 /*  memory tracking levels */
 #define   _NO_TRACKING     0
@@ -62,8 +63,6 @@ static          mem_out_action  MemOut;
 
 #include "trmem.h"
 
-extern  void            DumpChar(char);
-extern  void            DumpNL(void);
 _trmem_hdl              Handle;
 
 static void Prt( void *handle, const char *buff, size_t len )

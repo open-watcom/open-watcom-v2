@@ -38,8 +38,8 @@
 #include "utils.h"
 
 
-extern  bool    GetEnvVar( char *what, char *buff, int len ) {
-/*************************************************************/
+extern  bool    GetEnvVar( const char *what, char *buff, int len ) {
+/******************************************************************/
 
     char        *envvar;
 

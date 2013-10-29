@@ -181,9 +181,8 @@ extern  void    RegKill( score *scoreboard, hw_reg_set regs ) {
 
     if( !HW_CEqual( regs, HW_EMPTY ) ) {
         entry = *ScoreList;
-        i = ScoreCount;
         free_heads = (list_head **)&scoreboard[ ScoreCount ];
-        while( -- i >= 0 ) {
+        for( i = ScoreCount; i-- > 0; ) {
             if( HW_Ovlap( entry->reg, regs ) ) {
                 if( scoreboard->list != NULL ) {
                     if( scoreboard->next_reg == scoreboard ) {

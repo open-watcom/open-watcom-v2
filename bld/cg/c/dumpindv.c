@@ -32,18 +32,14 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
-#include "dump.h"
+#include "dumpio.h"
 #include "data.h"
 
 extern  induction       *IndVarList;
 
 extern  void            DumpOperand(name*);
-extern  void            DumpInt(int);
-extern  void            DumpLong(signed_32);
 extern  void            DumpBlkId(block*);
-extern  void            DumpPtr(pointer);
 extern  void            DumpIns(instruction*);
-extern  void            DumpNL();
 
 extern  void    DumpIV( induction *var ) {
 /****************************************/
@@ -114,7 +110,7 @@ extern  void    DumpIV( induction *var ) {
     DumpNL();
     DumpLiteral( "        Uses: " );
     DumpInt( var->use_count );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     if( _IsV( var, IV_BASIC ) ) {
         DumpLiteral( " Basic" );
     }
@@ -160,7 +156,7 @@ static  void    DumpInv( name *name ) {
     for( ; name != NULL; name = name->n.next_name ) {
         if( _ChkLoopUsage( name, VU_INVARIANT ) ) {
             DumpOperand( name );
-            DumpLiteral( " " );
+            DumpChar( ' ' );
         }
     }
     DumpNL();

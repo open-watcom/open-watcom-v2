@@ -1633,8 +1633,8 @@ static int  MkFlist( struct_list *st )
     return( count );
 }
 
-static  field_any  *UnLinkMethod( field_any **owner, char *name )
-/*** UnLink method with name  **********************************/
+static  field_any  *UnLinkMethod( field_any **owner, const char *name )
+/*** UnLink method with name  ****************************************/
 {
     field_any    *curr;
 

@@ -32,7 +32,7 @@
 
 #include "cgstd.h"
 #include "opcodes.h"
-#include "dump.h"
+#include "dumpio.h"
 
 static char * OpcodeList[LAST_OP - FIRST_OP + 1] = {
     #define PICK(e,i,d1,d2,ot,pnum,attr)  ot,
@@ -49,6 +49,6 @@ extern  void    DumpOpcodeName( int opcode ) {
         DumpLiteral( "??????" );
     } else {
         DumpString( OpcodeList[ opcode ] );
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
 }

@@ -274,12 +274,11 @@ static  void    saveRegSet( uint_32 index_reg,
 
     index = sizeof( reg_set ) * 8 - 1;
     high_bit = 1 << index;
-    while( reg_set != 0 ) {
+    for( ; reg_set != 0; reg_set <<= 1 ) {
         if( reg_set & high_bit ) {
             offset -= 8;
             saveReg( index_reg, index, offset, fp );
         }
-        reg_set <<= 1;
         index -= 1;
     }
 }
@@ -292,13 +291,12 @@ static  void    loadRegSet( uint_32 index_reg,
     uint_32     index;
 
     index = 0;
-    while( reg_set != 0 ) {
+    for( ; reg_set != 0; reg_set >>= 1 ) {
         if( reg_set & 1 ) {
             loadReg( index_reg, index, offset, fp );
             offset += 8;
         }
         index++;
-        reg_set >>= 1;
     }
 }
 

@@ -66,7 +66,7 @@ extern  void            Put(char *,... );
 extern  void            SymDbg(char *,... );
 extern  void            VerBack(b *);
 extern  char            *LToS(signed_32 );
-extern  void            CGError(char *, ... );
+extern  void            CGError(const char *, ... );
 extern  void            DDefLabel(l *);
 extern  void            DRefLabel(l *);
 extern  void            Find(char *,pointer *,pointer );

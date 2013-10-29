@@ -46,14 +46,10 @@
 #include <assert.h>
 #include <stdio.h>
 #include "rtrtn.h"
+#include "dumpio.h"
 
 extern void DumpInsOnly( instruction * );
-extern void DumpString( char * );
-extern void DumpPtr( pointer );
-extern void DumpInt( int );
-extern void DumpNL(void);
 extern void DumpGen(struct opcode_entry*);
-extern void DumpPtr( void *ptr );
 extern void GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
 extern void             ObjBytes( const char *buffer, unsigned size );
@@ -901,9 +897,9 @@ static  void    Encode( instruction *ins ) {
     }
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
-        DumpString( "        " );
+        DumpLiteral( "        " );
         DumpGen( ins->u.gen_table );
-        DumpString( " - " );
+        DumpLiteral( " - " );
         DumpInsOnly( ins );
         DumpNL();
     }
@@ -925,7 +921,7 @@ extern  void    GenJumpIf( instruction *ins, pointer label ) {
                 _NameReg( ins->operands[ 0 ] ), label );
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
-        DumpString( "Jcc L" );
+        DumpLiteral( "Jcc L" );
         DumpPtr( label );
         DumpNL();
     }

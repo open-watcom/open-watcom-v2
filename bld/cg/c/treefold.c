@@ -379,9 +379,8 @@ extern  tn      FoldTimes( tn left, tn rite, type_def *tipe )
     }
     if( left->class==TN_BINARY && left->op==O_LSHIFT && tipe==left->tipe ) {
         if( !HasBigConst( tipe ) && left->rite->class == TN_CONS ) {
-            log = left->rite->u.name->c.int_value;
             li = 1;
-            while( --log >= 0 ) {
+            for( log = left->rite->u.name->c.int_value; log-- > 0; ) {
                 li <<= 1;
             }
             BurnTree( left->rite );

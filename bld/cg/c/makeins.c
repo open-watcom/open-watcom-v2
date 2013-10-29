@@ -115,9 +115,8 @@ extern  instruction     *NewIns( int num ) {
     new->stk_entry = 0;
     new->stk_exit = 0;
     new->s.stk_extra = 0;
-    num = MAX_OPS_PER_INS;
-    while( -- num >= 0 ) {
-        new->operands[  num  ] = NULL;
+    for( num = MAX_OPS_PER_INS; num-- > 0; ) {
+        new->operands[num] = NULL;
     }
     new->table = NULL;
     new->u.gen_table = NULL;

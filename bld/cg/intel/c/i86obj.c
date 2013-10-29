@@ -818,8 +818,7 @@ static  void    InitFPPatches( void )
 {
     int i;
 
-    i = FPP_NUMBER_OF_TYPES;
-    while( --i >= 0 ) {
+    for( i = FPP_NUMBER_OF_TYPES; i-- > 0; ) {
         FPPatchImp[i] = NOT_IMPORTED;
     }
 }
@@ -911,7 +910,7 @@ static void OutModel( array_control *dest )
     OutString( model, dest );
 }
 
-extern segment_id DbgSegDef( char *seg_name, char *seg_class, int seg_modifier )
+extern segment_id DbgSegDef( const char *seg_name, const char *seg_class, int seg_modifier )
 /******************************************************************************/
 {
     index_rec   *rec;

@@ -47,8 +47,7 @@
 #include "owl.h"
 #include "rscobj.h"
 
-extern  segment_id          DbgSegDef( char *name );
-extern  owl_section_handle  DbgSectDefComdat( char *str );
+extern  segment_id          DbgSegDef( const char *name );
 
 static  section_def         *CVSymMain;
 static  owl_section_handle  owlCVSym; //.debug$s for non-comdats .text

@@ -42,6 +42,7 @@
 #include "cgaux.h"
 #include "data.h"
 #include "makeins.h"
+#include "dumpio.h"
 
 extern  block           *MakeBlock(code_lbl *,block_num);
 extern  instruction     *DupInstrs(instruction*,instruction*,instruction*,induction*,signed_32);
@@ -424,36 +425,32 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
     }
 }
 
-extern  void    DumpPtr( void * );
-extern  void    DumpString( char * );
-extern  void    DumpNL( void );
-
 extern  void    DumpLoop( block *loop )
 {
     block_edge  *edge;
     block_num   i;
 
-    DumpString( "Block\t\tBlock->u.loop\tBlock->loop_head" );
+    DumpLiteral( "Block\t\tBlock->u.loop\tBlock->loop_head" );
     DumpNL();
     DumpNL();
     while( loop != NULL ) {
         DumpPtr( loop );
-        DumpString( "\t\t" );
+        DumpLiteral( "\t\t" );
         DumpPtr( loop->u.loop );
-        DumpString( "\t\t" );
+        DumpLiteral( "\t\t" );
         DumpPtr( loop->loop_head );
         DumpNL();
-        DumpString( "\tInputs: " );
+        DumpLiteral( "\tInputs: " );
         for( edge = loop->input_edges; edge != NULL; edge = edge->next_source ) {
             DumpPtr( edge->source );
-            DumpString( " " );
+            DumpChar( ' ' );
         }
         DumpNL();
-        DumpString( "\tDest: " );
+        DumpLiteral( "\tDest: " );
         edge = &loop->edge[ 0 ];
         for( i = 0; i < loop->targets; i++ ) {
             DumpPtr( edge->destination.u.blk );
-            DumpString( " " );
+            DumpChar( ' ' );
             edge++;
         }
         DumpNL();

@@ -31,7 +31,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "dump.h"
+#include "dumpio.h"
 #include "data.h"
 #include "makeins.h"
 #include "stack.h"

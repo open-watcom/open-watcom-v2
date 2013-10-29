@@ -34,37 +34,30 @@
 #include "coderep.h"
 #include "pattern.h"
 #include "cfloat.h"
-#include "dump.h"
+#include "dumpio.h"
 #include "data.h"
 #include "feprotos.h"
 
 extern  void            DumpRegName(hw_reg_set);
 extern  bool            DumpFPUIns(instruction*);
-extern  void            DumpNL();
-extern  void            DumpPtr(pointer);
-extern  void            DumpId(unsigned);
 extern  void            DumpOpcodeName(int);
 extern  void            DumpBlkId(block*);
-extern  void            DumpInt(int);
-extern  void            DumpLong(signed_32);
 extern  void            DumpPossible(byte);
 extern  void            DumpTab(opcode_entry*);
 extern  name            *DeAlias(name*);
 extern  char            *AskName(pointer,cg_class);
-extern  void            Dump8h(unsigned_32);
-extern  void            DumpChar(char);
 extern  hw_reg_set      HighReg(hw_reg_set);
 extern  hw_reg_set      LowReg(hw_reg_set);
 extern  void            DumpGBit(global_bit_set*);
 extern  void            DumpLBit(local_bit_set*);
-extern  void            DumpByte( byte n );
 extern  type_length     FlagsToAlignment( i_flags );
 
 
-static  void    DoOffset( char *str, unsigned_32 o ) {
-/****************************************************/
+#define DO_DUMPOFFSET(str,off) DumpLiteral( str ); DoOffset( (off) )
 
-    DumpString( str );
+static  void    DoOffset( unsigned_32 o ) {
+/*****************************************/
+
     DumpChar( '\t' );
     Dump8h( o );
     DumpNL();
@@ -74,34 +67,34 @@ static  void    DoOffset( char *str, unsigned_32 o ) {
 extern  void    DumpInsOffsets() {
 /********************************/
 
-    DoOffset( "head.prev", offsetof( instruction, head.prev ) );
-    DoOffset( "head.next", offsetof( instruction, head.next ) );
-    DoOffset( "head.live", offsetof( instruction, head.live ) );
-    DoOffset( "head.line_num", offsetof( instruction, head.line_num ) );
-    DoOffset( "head.opcode", offsetof( instruction, head.opcode ) );
-    DoOffset( "head.state", offsetof( instruction, head.state ) );
-    DoOffset( "table\t", offsetof( instruction, table ) );
-    DoOffset( "u.gen_table", offsetof( instruction, u.gen_table ) );
-    DoOffset( "u2.cse_link", offsetof( instruction, u2.cse_link ) );
-    DoOffset( "u2.parm_list", offsetof( instruction, u2.parm_list ) );
-    DoOffset( "zap\t", offsetof( instruction, zap ) );
-    DoOffset( "result\t", offsetof( instruction, result ) );
-    DoOffset( "id\t", offsetof( instruction, id ) );
-    DoOffset( "type_class", offsetof( instruction, type_class ) );
-    DoOffset( "base_type_class", offsetof( instruction, base_type_class ) );
-    DoOffset( "sequence", offsetof( instruction, sequence ) );
-    DoOffset( "flags.byte", offsetof( instruction, flags.byte ) );
-    DoOffset( "flags.bool", offsetof( instruction, flags.bool ) );
-    DoOffset( "flags.call_flag", offsetof( instruction, flags.call_flags ) );
-    DoOffset( "flags.nop_flags", offsetof( instruction, flags.nop_flags ) );
-    DoOffset( "t.index_needs", offsetof( instruction, t.index_needs ) );
-    DoOffset( "t.stk_max", offsetof( instruction, t.stk_max ) );
-    DoOffset( "stk_entry", offsetof( instruction, stk_entry ) );
-    DoOffset( "num_operands", offsetof( instruction, num_operands ) );
-    DoOffset( "ins_flags", offsetof( instruction, ins_flags ) );
-    DoOffset( "stk_exit", offsetof( instruction, stk_exit ) );
-    DoOffset( "s.stk_extra", offsetof( instruction, s.stk_extra ) );
-    DoOffset( "operands[ 0 ]", offsetof( instruction, operands[ 0 ] ) );
+    DO_DUMPOFFSET( "head.prev", offsetof( instruction, head.prev ) );
+    DO_DUMPOFFSET( "head.next", offsetof( instruction, head.next ) );
+    DO_DUMPOFFSET( "head.live", offsetof( instruction, head.live ) );
+    DO_DUMPOFFSET( "head.line_num", offsetof( instruction, head.line_num ) );
+    DO_DUMPOFFSET( "head.opcode", offsetof( instruction, head.opcode ) );
+    DO_DUMPOFFSET( "head.state", offsetof( instruction, head.state ) );
+    DO_DUMPOFFSET( "table\t", offsetof( instruction, table ) );
+    DO_DUMPOFFSET( "u.gen_table", offsetof( instruction, u.gen_table ) );
+    DO_DUMPOFFSET( "u2.cse_link", offsetof( instruction, u2.cse_link ) );
+    DO_DUMPOFFSET( "u2.parm_list", offsetof( instruction, u2.parm_list ) );
+    DO_DUMPOFFSET( "zap\t", offsetof( instruction, zap ) );
+    DO_DUMPOFFSET( "result\t", offsetof( instruction, result ) );
+    DO_DUMPOFFSET( "id\t", offsetof( instruction, id ) );
+    DO_DUMPOFFSET( "type_class", offsetof( instruction, type_class ) );
+    DO_DUMPOFFSET( "base_type_class", offsetof( instruction, base_type_class ) );
+    DO_DUMPOFFSET( "sequence", offsetof( instruction, sequence ) );
+    DO_DUMPOFFSET( "flags.byte", offsetof( instruction, flags.byte ) );
+    DO_DUMPOFFSET( "flags.bool", offsetof( instruction, flags.bool ) );
+    DO_DUMPOFFSET( "flags.call_flag", offsetof( instruction, flags.call_flags ) );
+    DO_DUMPOFFSET( "flags.nop_flags", offsetof( instruction, flags.nop_flags ) );
+    DO_DUMPOFFSET( "t.index_needs", offsetof( instruction, t.index_needs ) );
+    DO_DUMPOFFSET( "t.stk_max", offsetof( instruction, t.stk_max ) );
+    DO_DUMPOFFSET( "stk_entry", offsetof( instruction, stk_entry ) );
+    DO_DUMPOFFSET( "num_operands", offsetof( instruction, num_operands ) );
+    DO_DUMPOFFSET( "ins_flags", offsetof( instruction, ins_flags ) );
+    DO_DUMPOFFSET( "stk_exit", offsetof( instruction, stk_exit ) );
+    DO_DUMPOFFSET( "s.stk_extra", offsetof( instruction, s.stk_extra ) );
+    DO_DUMPOFFSET( "operands[ 0 ]", offsetof( instruction, operands[ 0 ] ) );
 }
 
 
@@ -110,7 +103,7 @@ extern  void    DumpInOut( instruction *ins ) {
 
     DumpLiteral( "     " );
     DumpGBit( &ins->head.live.out_of_block );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     DumpLBit( &ins->head.live.within_block );
     if( !HW_CEqual( ins->head.live.regs, HW_EMPTY ) &&
         !HW_COvlap( ins->head.live.regs, HW_UNUSED ) ) {
@@ -171,14 +164,14 @@ extern  void    DumpOperand( name *operand ) {
                 }
                 DumpOperand( operand->i.base );
                 if( operand->i.constant > 0 ) {
-                    DumpLiteral( "+" );
+                    DumpChar( '+' );
                 }
             }
         }
         if( operand->i.constant != 0 ) {
             DumpLong( operand->i.constant );
         }
-        DumpLiteral( "[" );
+        DumpChar( '[' );
         if( operand->i.index_flags & X_BASE ) {
             reg = operand->i.index->r.reg;
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
@@ -189,35 +182,35 @@ extern  void    DumpOperand( name *operand ) {
                 tmp = reg;
                 HW_COnlyOn( tmp, HW_SEGS );
                 DumpRegName( tmp );
-                DumpLiteral( ":" );
+                DumpChar( ':' );
                 HW_CTurnOff( reg, HW_SEGS );
             }
 #endif
             if( operand->i.index_flags & X_HIGH_BASE ) {
                 DumpRegName( HighReg( reg ) );
-                DumpLiteral( "+" );
+                DumpChar( '+' );
                 DumpRegName( LowReg( reg ) );
             } else {
                 DumpRegName( LowReg( reg ) );
-                DumpLiteral( "+" );
+                DumpChar( '+' );
                 DumpRegName( HighReg( reg ) );
             }
         } else {
             DumpOperand( operand->i.index );
         }
         if( operand->i.scale != 0 ) {
-            DumpLiteral( "*" );
+            DumpChar( '*' );
             DumpInt( 1 << operand->i.scale );
         }
         if( operand->i.index_flags & ( X_ALIGNED_1 | X_ALIGNED_2 | X_ALIGNED_4 | X_ALIGNED_8 ) ) {
-            DumpLiteral( "$" );
+            DumpChar( '$' );
             DumpInt( FlagsToAlignment( operand->i.index_flags ) );
         }
-        DumpLiteral( "]" );
+        DumpChar( ']' );
         base = operand->i.base;
         if( base != NULL ) {
             if( operand->i.index_flags & X_FAKE_BASE ) {
-                DumpLiteral( "{" );
+                DumpChar( '{' );
                 if( base->n.class == N_MEMORY ) {
                     DumpXString( AskName(base->v.symbol, base->m.memory_type) );
                 } else if( base->n.class == N_TEMP ) {
@@ -227,7 +220,7 @@ extern  void    DumpOperand( name *operand ) {
                         DumpOperand( base );
                     }
                 }
-                DumpLiteral( "}" );
+                DumpChar( '}' );
             }
         }
     } else if( operand->n.class == N_CONSTANT ) {
@@ -274,7 +267,7 @@ extern  void    DumpOperand( name *operand ) {
                     }
                 }
             }
-            DumpLiteral( ")" );
+            DumpChar( ')' );
         }
     } else if( operand->n.class == N_MEMORY ) {
         DumpXString( AskName( operand->v.symbol, operand->m.memory_type ) );
@@ -282,28 +275,28 @@ extern  void    DumpOperand( name *operand ) {
             DumpPtr( operand->v.symbol );
         }
         if( operand->v.offset > 0 ) {
-            DumpLiteral( "+" );
+            DumpChar( '+' );
             DumpLong( operand->v.offset );
         } else if( operand->v.offset < 0 ) {
             DumpLong( operand->v.offset );
         }
     } else if( operand->n.class == N_TEMP ) {
-        DumpLiteral( "t" );
+        DumpChar( 't' );
         DumpInt( operand->t.v.id );
         if( operand->v.offset > 0 ) {
-            DumpLiteral( "+" );
+            DumpChar( '+' );
             DumpLong( operand->v.offset );
         } else if( operand->v.offset < 0 ) {
             DumpLong( operand->v.offset );
         }
         if( _FrontEndTmp( operand ) ) {
-            DumpLiteral( "(" );
+            DumpChar( '(' );
             DumpXString( FEName( operand->v.symbol ) );
-            DumpLiteral( ")" );
+            DumpChar( ')' );
         } else if( operand->v.symbol != NULL ) {
-            DumpLiteral( "(" );
+            DumpChar( '(' );
             DumpOperand( (name *)operand->v.symbol );
-            DumpLiteral( ")" );
+            DumpChar( ')' );
         }
     } else if( operand->n.class == N_REGISTER ) {
         DumpRegName( operand->r.reg );
@@ -318,19 +311,19 @@ extern  void DoDumpIInfo( instruction *ins, bool fp ) {
 /*****************************************************/
 
     if( ins->ins_flags & INS_DEMOTED ) {
-        DumpLiteral( "d" );
+        DumpChar( 'd' );
     } else {
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
     if( ins->ins_flags & INS_PROMOTED ) {
-        DumpLiteral( "p" );
+        DumpChar( 'p' );
     } else {
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
     if( ins->ins_flags & INS_RISCIFIED ) {
-        DumpLiteral( "r" );
+        DumpChar( 'r' );
     } else {
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
     if( _OpIsIFunc( ins->head.opcode ) || _OpIsCall( ins->head.opcode ) || fp ) {
         DumpByte( ins->sequence );
@@ -342,12 +335,12 @@ extern  void DoDumpIInfo( instruction *ins, bool fp ) {
         DumpLiteral( "     " );
     }
     if( ins->ins_flags & INS_CC_USED ) {
-        DumpLiteral( "c" );
+        DumpChar( 'c' );
     } else {
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
     if( ins->head.opcode == OP_CALL ) {
-        DumpLiteral( " " );
+        DumpChar( ' ' );
         DumpOperand( ins->operands[ CALL_OP_ADDR ] );
     }
     DumpClass( ins->type_class );
@@ -415,7 +408,7 @@ extern  void    DumpInsNoNL( instruction *ins ) {
 
     DumpLineNum( ins );
     DumpPtr( ins );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     if( ins->head.opcode == OP_BLOCK ) {
         DumpId( 9999 );
         DumpLiteral( ":  " );
@@ -423,9 +416,10 @@ extern  void    DumpInsNoNL( instruction *ins ) {
     } else {
         DumpId( ins->id );
         DumpLiteral( ":  " );
-        #if _TARGET & (_TARG_80386|_TARG_IAPX86)
-            if( DumpFPUIns( ins ) ) return;
-        #endif
+#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+        if( DumpFPUIns( ins ) )
+            return;
+#endif
         DumpInsOnly( ins );
         if( !HW_CEqual( ins->zap->reg, HW_EMPTY ) ) {
             DumpLiteral( "           zaps " );
@@ -522,7 +516,7 @@ extern  void    DumpSym( name *sym ) {
 /************************************/
 
     DumpPtr( sym );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     DumpOperand( sym );
     DumpClass( sym->n.name_class );
     if( sym->n.name_class == XX ) {
@@ -661,7 +655,7 @@ extern  void    DumpInsList( block *blk ) {
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         DumpInOut( ins );
         DumpInsNoNL( ins );
-        DumpLiteral( " " );
+        DumpChar( ' ' );
         DumpCond( ins, blk );
         DumpNL();
     }

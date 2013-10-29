@@ -47,7 +47,7 @@
 #include "cvdbg.h"
 #include "dbcue.h"
 
-extern  segment_id  DbgSegDef( char *, char *, int  );
+extern  segment_id  DbgSegDef( const char *, const char *, int  );
 
 
 extern  void    CVDefSegs( void ){

@@ -201,15 +201,13 @@ extern bool FoldIntoIndex( instruction *ins )
         sib_head = curr_sib;
     } while( !dies && !modifies );
     if( dies && curr_sib != NULL ) {
-        curr_sib = sib_head;
-        while( curr_sib != NULL ) {
+        for( curr_sib = sib_head; curr_sib != NULL; curr_sib = curr_sib->next ) {
             new_x = ScaleIndex( curr_sib->reg, curr_sib->index->i.base,
                                 curr_sib->index->i.constant + curr_sib->offset,
                                 curr_sib->index->n.name_class,
                                 curr_sib->index->n.size, curr_sib->scale,
                                 curr_sib->flags );
             ReplaceOperand( curr_sib->ins, curr_sib->index, new_x );
-            curr_sib = curr_sib->next;
         }
         FreeIns( ins );
     } else {

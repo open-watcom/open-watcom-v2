@@ -991,12 +991,10 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
         best = HW_EMPTY;
         best_saves = -1;
         all_TRUE = TRUE;
-        possible = tree->regs;
-        for(;;) {
+        for( possible = tree->regs; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
             reg = *possible;
-            if( HW_CEqual( reg, HW_EMPTY ) ) break;
             if( !HW_Ovlap( reg, conf->with.regs )
-             && !HW_Ovlap( reg, except ) ) {
+              && !HW_Ovlap( reg, except ) ) {
                 greed = TooGreedy( conf, reg, tree->temp );
                 if( greed == FALSE ) {
                     saves = CountRegMoves( conf, reg, conf->tree, 3 );
@@ -1012,7 +1010,6 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
                     all_TRUE = FALSE;
                 }
             }
-            ++ possible;
         }
         if( all_TRUE ) {
             HW_CAsgn( given, HW_EMPTY );

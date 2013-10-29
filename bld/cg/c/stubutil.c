@@ -135,7 +135,7 @@ extern  char    *DoIToS( char * buff, int buff_len, signed_32 i ) {
     return( p );
 }
 
-extern  void    PutFmt( int out, char * str, va_list list ) {
+extern  void    PutFmt( int out, const char *str, va_list list ) {
 
     char        *str2;
     char        buff[80];
@@ -257,13 +257,13 @@ extern  void    SymDbg(char * str, ... ) {
     va_end( list );
 }
 
-extern  void    PutError( int out, char * str, va_list list ) {
+extern  void    PutError( int out, const char *str, va_list list ) {
 
     FPut( out, "\nError! ", 8 );
     PutFmt( out, str, list );
     FPut( out, "\n", 1 );
 }
-extern  void    CGError(char * str, ... ) {
+extern  void    CGError(const char *str, ... ) {
 
     va_list     list;
     int         old;

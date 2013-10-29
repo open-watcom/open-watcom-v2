@@ -445,11 +445,10 @@ extern  type_class_def  RegClass( hw_reg_set regs )
         return( U2 );
     // 64-bit registers are really pairs of registers; we must explicitly
     // check to see if we match a valid pair
-    possible = QWordRegs;
-    while( !HW_CEqual( *possible, HW_EMPTY ) ) {
-        if( HW_Equal( *possible, regs ) )
+    for( possible = QWordRegs; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
+        if( HW_Equal( *possible, regs ) ) {
             return( U8 );
-        ++possible;
+        }
     }
     return( U4 );
 }
@@ -487,11 +486,10 @@ extern  bool    IsIndexReg( hw_reg_set reg, type_class_def class,
 
     is_temp_index = is_temp_index;
     class = class;
-    dregs = &DWordRegs[0];
-    while( !HW_CEqual( *dregs, HW_EMPTY ) ) {
-        if( HW_Equal( *dregs, reg ) )
+    for( dregs = &DWordRegs[0]; !HW_CEqual( *dregs, HW_EMPTY ); ++dregs ) {
+        if( HW_Equal( *dregs, reg ) ) {
             return( TRUE );
-        ++dregs;
+        }
     }
     return( FALSE );
 }
@@ -637,11 +635,10 @@ extern  bool    IsRegClass( hw_reg_set regs, type_class_def class )
 {
     hw_reg_set  *list;
 
-    list = RegSets[ IsSets[ class ] ];
-    while( !HW_CEqual( *list, HW_EMPTY ) ) {
-        if( HW_Equal( *list, regs ) )
+    for( list = RegSets[IsSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
+        if( HW_Equal( *list, regs ) ) {
             return( TRUE );
-        ++list;
+        }
     }
     return( FALSE );
 }

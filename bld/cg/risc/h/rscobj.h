@@ -51,4 +51,4 @@ struct section_def {
 
 extern section_def *FindSection( segment_id id );
 extern section_def *AddSection( segment_id id );
-extern owl_section_handle DbgSectDefComdat( char *str );
+extern owl_section_handle DbgSectDefComdat( const char *str );

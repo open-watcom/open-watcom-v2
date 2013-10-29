@@ -238,8 +238,7 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
                 return( FALSE );
             }
         }
-        i = ScoreCount;
-        while( -- i >= 0 ) {
+        for( i = ScoreCount; i-- > 0; ) {
             if( ScoreEqual( sc, i, &info )
              && ChangeIns( ins, ScoreList[ i ]->reg_name, opp, CHANGE_GEN ) )
                 return( TRUE );

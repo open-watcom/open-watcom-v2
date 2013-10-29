@@ -51,14 +51,12 @@ static  instruction     *SetToConst( block *blk, signed_64 *pcons ) {
     instruction *next;
     name        *op;
 
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode == OP_NOP ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ) {
         ins = ins->head.next;
     }
     if( ins->head.opcode != OP_MOV ) return( NULL );
     if( _IsFloating( ins->type_class ) ) return( NULL );
-    next = ins->head.next;
-    while( next->head.opcode == OP_NOP ) {
+    for( next = ins->head.next; next->head.opcode == OP_NOP; ) {
         next = next->head.next;
     }
     if( next->head.opcode != OP_BLOCK ) return( NULL );
@@ -98,8 +96,7 @@ static  bool    FindFlowOut( block *blk ) {
     name                *konst;
     type_class_def      class;
 
-    ins = blk->ins.hd.prev;
-    while( !_OpIsCondition( ins->head.opcode ) ) {
+    for( ins = blk->ins.hd.prev; !_OpIsCondition( ins->head.opcode ); ) {
         ins = ins->head.prev;
     }
 //    prev = ins->head.prev;

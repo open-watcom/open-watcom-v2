@@ -24,46 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Data dumping prototypes.
 *
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "utils.h"
+#define DumpLiteral( x )        { \
+                                    static char __x[] = x; \
+                                    DumpString( __x );\
+                                }
 
-extern  char            *_Envptr;
-extern  int             memicmp(char *,char *,uint);
 
-char *EnvLook( char *name, char *p )
-{
-    int         name_len;
-    int         env_len;
-
-    name_len = Length( name );
-    while( *p ) {
-        env_len = Length( p );
-        if( env_len > name_len ) {
-            if( memicmp( name, p, name_len ) == 0 ) {
-                if( p[ name_len ] == '=' ) {
-                    return( p+name_len+1 );
-                }
-            }
-        }
-        p += env_len + 1;
-    }
-    return( NULL );             /* not found */
-}
-
-extern  bool    GetEnvVar( char *what, char *buff, int len ) {
-/*************************************************************/
-
-    char        *envvar;
-
-    len = len;
-    envvar = EnvLook( what, _Envptr );
-    if( envvar == NULL ) return( FALSE );
-    CopyStr( envvar, buff );
-    return( TRUE );
-}
+extern  void    DumpPadString( const char *, int );
+extern  void    DumpString( const char * );
+extern  void    DumpXString( const char * );
+extern  void    DumpChar( char );
+extern  void    DumpNL( void );
+extern  void    DumpPtr( void *ptr );
+extern  void    DumpInt( int );
+extern  void    DumpLong( signed_32 );
+extern  void    DumpLLong( signed_32, int );
+extern  void    Dump8h( unsigned_32 );
+extern  void    DumpByte( byte n );
+extern  void    DumpId( unsigned );

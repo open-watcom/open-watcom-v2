@@ -776,11 +776,10 @@ extern  bool    IsIndexReg( hw_reg_set reg, type_class_def class,
     hw_reg_set  *list;
 
     is_temp_index = is_temp_index;
-    list = RegSets[IndexSets[class]];
-    while( !HW_CEqual( *list, HW_EMPTY ) ) {
-        if( HW_Equal( *list, reg ) )
+    for( list = RegSets[IndexSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
+        if( HW_Equal( *list, reg ) ) {
             break;
-        ++ list;
+        }
     }
     return( HW_Equal( *list, reg ) );
 }
@@ -792,11 +791,10 @@ static  type_class_def  NotFloatRegClass( hw_reg_set regs )
     type_class_def      class;
 
     for( class = U1; class < XX; ++class ) {
-        possible = RegSets[ClassSets[class]];
-        while( !HW_CEqual( *possible, HW_EMPTY ) ) {
-            if( HW_Equal( *possible, regs ) )
+        for( possible = RegSets[ClassSets[class]]; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
+            if( HW_Equal( *possible, regs ) ) {
                 return( class );
-            ++ possible;
+            }
         }
     }
     if( HW_COvlap( regs, HW_SEGS ) ) { // a kludge to get GS:[EAX+EDX]
@@ -818,11 +816,10 @@ extern  type_class_def  RegClass( hw_reg_set regs )
     if( HW_COvlap( regs, HW_FLTS ) ) {
         if( HW_CEqual( regs, HW_ST0 ) )
             return( FD );
-        possible = STIReg;
-        while( !HW_CEqual( *possible, HW_EMPTY ) ) {
-            if( HW_Equal( regs, *possible ) )
+        for( possible = STIReg; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
+            if( HW_Equal( regs, *possible ) ) {
                 return( FD );
-            ++possible;
+            }
         }
         return( XX );
     } else {
@@ -845,10 +842,10 @@ extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
     } else {
         list = RegSets[ RL_LONG_INDEX ];
     }
-    while( !HW_CEqual( *list, HW_EMPTY ) ) {
-        if( HW_Equal( *list, reg ) )
+    for( ; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
+        if( HW_Equal( *list, reg ) ) {
             break;
-        ++ list;
+        }
     }
     return( HW_Equal( *list, reg ) );
 }
@@ -1078,10 +1075,10 @@ extern  bool    IsRegClass( hw_reg_set regs, type_class_def class )
 {
     hw_reg_set  *list;
 
-    list = RegSets[  IsSets[  class  ]  ];
-    while( !HW_Equal( *list, HW_EMPTY ) ) {
-        if( HW_Equal( *list, regs ) ) break;
-        ++ list;
+    for( list = RegSets[IsSets[class]]; !HW_Equal( *list, HW_EMPTY ); ++list ) {
+        if( HW_Equal( *list, regs ) ) {
+            break;
+        }
     }
     return( !HW_Equal( *list, HW_EMPTY ) );
 }

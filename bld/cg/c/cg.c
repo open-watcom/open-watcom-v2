@@ -67,7 +67,7 @@ extern  void            VerNode(n *);
 extern  char            *Name(pointer );
 extern  char            *Op(cg_op );
 extern  void            NotDefault(cg_type );
-extern  void            CGError(char *,... );
+extern  void            CGError(const char *,... );
 extern  void            VerBack(b *);
 extern  char            *LToS(signed_32 );
 extern  void            DumpT(n *);

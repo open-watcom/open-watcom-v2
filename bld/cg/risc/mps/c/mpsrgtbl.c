@@ -522,10 +522,8 @@ extern  bool IsIndexReg( hw_reg_set reg, type_class_def class,
 
     is_temp_index = is_temp_index;
     class = class;
-    dregs = &DWordRegs[0];
-    while( !HW_CEqual( *dregs, HW_EMPTY ) ) {
+    for( dregs = &DWordRegs[0]; !HW_CEqual( *dregs, HW_EMPTY ); ++dregs ) {
         if( HW_Equal( *dregs, reg ) ) return( TRUE );
-        dregs++;
     }
     return( FALSE );
 }
@@ -564,11 +562,10 @@ extern  type_class_def RegClass( hw_reg_set regs )
         return( U2 );
     // 64-bit registers are really pairs of registers; we must explicitly
     // check to see if we match a valid pair
-    possible = QWordRegs;
-    while( !HW_CEqual( *possible, HW_EMPTY ) ) {
-        if( HW_Equal( *possible, regs ) )
+    for( possible = QWordRegs; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
+        if( HW_Equal( *possible, regs ) ) {
             return( U8 );
-        ++possible;
+        }
     }
     return( U4 );   // would be different for MIPS64
 }
@@ -632,10 +629,8 @@ extern  hw_reg_set Low64Reg( hw_reg_set regs )
 
     if( HW_CEqual( regs, HW_EMPTY ) )
         return( HW_EMPTY );
-    order = Reg64Order;
-    for( ;; ) {
+    for( order = Reg64Order; ; ++order ) {
         if( HW_Ovlap( *order, regs ) ) break;
-        ++order;
     }
     low = regs;
     HW_OnlyOn( low, *order );
@@ -703,10 +698,8 @@ extern  bool IsRegClass( hw_reg_set regs, type_class_def class )
 {
     hw_reg_set  *list;
 
-    list = RegSets[ IsSets[class] ];
-    while( !HW_CEqual( *list, HW_EMPTY ) ) {
+    for( list = RegSets[IsSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, regs ) ) return( TRUE );
-        ++ list;
     }
     return( FALSE );
 }

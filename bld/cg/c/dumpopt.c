@@ -30,14 +30,9 @@
 
 
 #include "optwif.h"
-#include "dump.h"
+#include "dumpio.h"
 #include "feprotos.h"
 
-extern  void            DumpNL();
-extern  void            DumpPtr(pointer);
-extern  void            Dump8h(unsigned_32);
-extern  void            DumpInt(int);
-extern  void            DumpByte(byte);
 extern  char            *AskRTName( rt_class );
 
 static  void            DoData( oc_entry *instr );
@@ -103,10 +98,10 @@ static  bool    LblName( code_lbl *lbl ) {
 
 
     if( ValidLbl( lbl ) == FALSE ) return( FALSE );
-    DumpLiteral( "L" );
+    DumpChar( 'L' );
     DumpPtr( lbl );
     if( lbl->lbl.sym == NULL ) return( TRUE );
-    DumpLiteral( "(" );
+    DumpChar( '(' );
     if( AskIfRTLabel( lbl ) ) {
         DumpXString( AskRTName( (rt_class)(pointer_int)lbl->lbl.sym ) );
     } else if( AskIfCommonLabel( lbl ) ) {
@@ -116,7 +111,7 @@ static  bool    LblName( code_lbl *lbl ) {
     } else {
         DumpXString( FEName( lbl->lbl.sym ) );
     }
-    DumpLiteral( ")" );
+    DumpChar( ')' );
     return( TRUE );
 }
 
@@ -202,9 +197,9 @@ extern  void    DumpOc( ins_entry *ins ) {
 /****************************************/
 
     DumpPtr( ins );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     DumpString(  CNames[ _Class( ins ) ] );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     if( _Class( ins ) != OC_INFO ) {
         CheckAttr( ins->oc.oc_header.class );
     }
@@ -262,7 +257,7 @@ extern  void    DumpOc( ins_entry *ins ) {
         if( _HasReloc( &ins->oc.oc_rins ) ) {
             DumpLiteral( " [ " );
             LblName( ins->oc.oc_rins.sym );
-            DumpLiteral( "," );
+            DumpChar( ',' );
             DumpInt( ins->oc.oc_rins.reloc );
             DumpLiteral( " ] " );
         }
@@ -283,7 +278,7 @@ static  void    DoData( oc_entry *instr ) {
 
     for( len = 0; len < instr->hdr.reclen - offsetof( oc_entry, data ); ++len ) {
         DumpByte( instr->data[ len ] );
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
 }
 
@@ -301,7 +296,7 @@ static  void    DoLabel( oc_handle *instr ) {
         if( LblName( lbl ) == FALSE ) break;
         lbl = lbl->alias;
         if( lbl == NULL ) break;
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
 #if _TARGET & _TARG_RISC
     if( instr->line != 0 ) {
@@ -327,7 +322,7 @@ extern  void    DumpLbl( code_lbl *lbl ) {
 
     if( _ValidLbl( lbl ) == FALSE ) return;
     if( lbl->lbl.sym != NULL ) {
-        DumpLiteral( "(" );
+        DumpChar( '(' );
         DumpXString( FEName( lbl->lbl.sym ) );
         DumpLiteral( ") " );
     }
@@ -335,7 +330,7 @@ extern  void    DumpLbl( code_lbl *lbl ) {
     Dump8h( lbl->lbl.address );
     DumpLiteral( ", patch==" );
     DumpPtr( lbl->lbl.patch );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     if( _TstStatus( lbl, CODELABEL ) ) {
         DumpLiteral( "CODE " );
     }
@@ -364,12 +359,12 @@ extern  void    DumpLbl( code_lbl *lbl ) {
     if( lbl->ins != NULL ) {
         DumpLiteral( "ins==" );
         DumpPtr( lbl->ins );
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
     if( lbl->redirect != NULL ) {
         DumpLiteral( "redir==" );
         DumpPtr( lbl->redirect );
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
     ref = lbl->refs;
     if( ref != NULL ) {

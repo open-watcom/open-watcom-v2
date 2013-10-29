@@ -33,10 +33,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "dump.h"
-
-extern  void            DumpPadString(char *,int);
-extern  void            DumpNL();
+#include "dumpio.h"
 
 static char *opRegTab[] = {
     #define RG( a,b,c,d,e,f ) #f
@@ -66,46 +63,46 @@ static char * GenTab[] = {
 static  void    PrtOps( operand_types ops ) {
 /*******************************************/
 
-    DumpLiteral( "," );
+    DumpChar( ',' );
     if( ops & R_1 ) {
-        DumpLiteral( "R" );
+        DumpChar( 'R' );
     }
     if( ops & M_1 ) {
-        DumpLiteral( "M" );
+        DumpChar( 'M' );
     }
     if( ops & U_1 ) {
-        DumpLiteral( "U" );
+        DumpChar( 'U' );
     }
     if( ops & C_1 ) {
-        DumpLiteral( "C" );
+        DumpChar( 'C' );
     }
-    DumpLiteral( "," );
+    DumpChar( ',' );
     if( ops & R_2 ) {
-        DumpLiteral( "R" );
+        DumpChar( 'R' );
     }
     if( ops & M_2 ) {
-        DumpLiteral( "M" );
+        DumpChar( 'M' );
     }
     if( ops & U_2 ) {
-        DumpLiteral( "U" );
+        DumpChar( 'U' );
     }
     if( ops & C_2 ) {
-        DumpLiteral( "C" );
+        DumpChar( 'C' );
     }
-    DumpLiteral( "," );
+    DumpChar( ',' );
     if( ops & R_R ) {
-        DumpLiteral( "R" );
+        DumpChar( 'R' );
     }
     if( ops & M_R ) {
-        DumpLiteral( "M" );
+        DumpChar( 'M' );
     }
     if( ops & U_R ) {
-        DumpLiteral( "U" );
+        DumpChar( 'U' );
     }
     if( ops & C_R ) {
-        DumpLiteral( "C" );
+        DumpChar( 'C' );
     }
-    DumpLiteral( "," );
+    DumpChar( ',' );
     if( ( ops & NONE ) == NONE ) {
         DumpLiteral( "NONE" );
     } else if( ( ops & NONE ) == 0 ) {
@@ -115,7 +112,7 @@ static  void    PrtOps( operand_types ops ) {
     } else {
         DumpLiteral( "EQ_R1" );
     }
-    DumpLiteral( ")" );
+    DumpChar( ')' );
 }
 
 extern  void    DumpGen( opcode_entry *try ) {
@@ -129,16 +126,16 @@ extern  void    DumpTab( opcode_entry *try ) {
     vertype     verify;
 
     PrtOps( try->op_type );
-    DumpLiteral( "," );
+    DumpChar( ',' );
     verify = try->verify;
     if( verify & NOT_VOLATILE ) {
         DumpLiteral( "NVI+" );
         verify &= ~NOT_VOLATILE;
     }
     DumpPadString( VerTab[verify], 10 );
-    DumpLiteral( "," );
+    DumpChar( ',' );
     DumpGen( try );
-    DumpLiteral( "," );
+    DumpChar( ',' );
     DumpPadString( opRegTab[try->reg_set], 10 );
     DumpNL();
 }

@@ -59,7 +59,7 @@ extern  char            *Label(l *);
 extern  void            Action(char *,... );
 extern  void            Code(char *,... );
 extern  segment_id      SetFile(segment_id );
-extern  void            CGError(char *,... );
+extern  void            CGError(const char *,... );
 extern  void            VerBack(b *);
 extern  int             FCreate(char *);
 extern  void            FShut(int);

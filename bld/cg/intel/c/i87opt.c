@@ -379,7 +379,7 @@ extern  void    FPPushParms( pn parm, call_state *state ) {
             }
         }
         HW_CTurnOff( state->parm.used, HW_FLTS );
-        while( --parms >= 0 ) {
+        while( parms-- > 0 ) {
             HW_TurnOn( state->parm.used, FPRegs[ parms ] );
         }
     }

@@ -242,7 +242,7 @@ extern  void    InsertByte( byte b ) {
     i = Temp.hdr.reclen - offsetof( template, data );
     dst = &Temp.data[i];
     src = &Temp.data[i - 1];
-    while( --i >= 0 ) {
+    for( ; i-- > 0; ) {
         *dst = *src;
         --dst;
         --src;
@@ -405,11 +405,10 @@ static  byte    SegTrans( hw_reg_set regs ) {
     int i;
 
     HW_COnlyOn( regs, HW_SEGS );
-    i = 0;
-    while( i < SEGS ) {
-        if( HW_Equal( regs, SegTab[i] ) )
+    for( i = 0; i < SEGS; ++i ) {
+        if( HW_Equal( regs, SegTab[i] ) ) {
             break;
-        i++;
+        }
     }
     if( i >= SEGS ) {
         _Zoiks( ZOIKS_032 );
@@ -425,11 +424,10 @@ static  byte    RegTrans( hw_reg_set regs ) {
     int i;
 
     HW_CTurnOff( regs, HW_SEGS );
-    i = 0;
-    while( i < REGS ) {
-        if( HW_Equal( regs, RegTab[i] ) )
+    for( i = 0; i < REGS; ++i ) {
+        if( HW_Equal( regs, RegTab[i] ) ) {
             break;
-        i++;
+        }
     }
     if( i >= REGS ) {
         _Zoiks( ZOIKS_031 );
@@ -1680,11 +1678,10 @@ extern  void    GenSeg( hw_reg_set regs ) {
         AddToTemp( M_SEGOVER | ( SegTrans( regs ) << S_KEY_SR ) );
     }
     if( _IsEmulation() ) {
-        i = 0;
-        while( i < SEGS ) {
-            if( HW_Equal( segreg, SegTab[i] ) )
+        for( i = 0; i < SEGS; ++i ) {
+            if( HW_Equal( segreg, SegTab[i] ) ) {
                 break;
-            i++;
+            }
         }
         if( FPPatchType != FPP_NONE ) {
             FPPatchType = SegPatchTab[i];

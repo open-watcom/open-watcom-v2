@@ -31,20 +31,16 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "dump.h"
+#include "dumpio.h"
 #include "data.h"
 
-extern  void            DumpNL(void);
-extern  void            DumpPtr(pointer);
 extern  void            DumpIns(instruction*);
 extern  void            DumpLineNum(instruction*);
-extern  void            DumpInt(int);
 extern  void            DumpInsList(block*);
 extern  void            DumpInstrsOnly(block*);
-extern  char            *AskName(pointer,cg_class);
 extern  void            DumpSymList(name*);
-extern  void            Dump8h(unsigned_32);
 
+extern  char            *AskName(pointer,cg_class);
 
 static void DumpBlkFlags( block *blk )
 /************************************/
@@ -190,7 +186,7 @@ extern  void    DumpRefs( name *op )
             }
             if( dsize ) {
                 while( ++dsize < 23 ) {
-                    DumpLiteral( " " );
+                    DumpChar( ' ' );
                 }
                 DumpIns( ins );
             }
@@ -205,7 +201,7 @@ static  void    DumpBlkLabel( block *b )
     if( b->label != NULL ) {
         DumpLiteral( " L" );
         DumpPtr( b->label );
-        DumpLiteral( " " );
+        DumpChar( ' ' );
         DumpXString( AskName( AskForLblSym( b->label ), CG_FE ) );
         if( b->edge[ 0 ].flags & BLOCK_LABEL_DIES ) {
             DumpLiteral( " label dies" );
@@ -232,9 +228,9 @@ extern  void    DumpBlkId( block *b )
 {
     DumpLiteral( "Block " );
     DumpInt( b->id );
-    DumpLiteral( "(" );
+    DumpChar( '(' );
     DumpInt( b->gen_id );
-    DumpLiteral( ")" );
+    DumpChar( ')' );
 }
 
 static  void    DumpInputs( block *b )
@@ -252,7 +248,7 @@ static  void    DumpInputs( block *b )
             if( FindBlock( edge->source ) ) {
                 DumpBlkId( edge->source );
             } else {
-                DumpLiteral( "?" );
+                DumpChar( '?' );
             }
             edge = edge->next_source;
             if( edge == NULL ) break;
@@ -319,7 +315,7 @@ static  void    DumpGotos( block *b, bool all )
         if( b->edge[ 0 ].flags & DEST_IS_BLOCK ) {
             DumpBlkId( b->edge[ 0 ].destination.u.blk );
         } else {
-            DumpLiteral( "L" );
+            DumpChar( 'L' );
             DumpPtr( b->edge[ 0 ].destination.u.lbl );
         }
         for( i = 1; i < b->targets; ++i ) {
@@ -330,7 +326,7 @@ static  void    DumpGotos( block *b, bool all )
             if( b->edge[ i ].flags & DEST_IS_BLOCK ) {
                 DumpBlkId( b->edge[ i ].destination.u.blk );
             } else {
-                DumpLiteral( "L" );
+                DumpChar( 'L' );
                 DumpPtr( b->edge[ i ].destination.u.lbl );
             }
         }
@@ -449,7 +445,7 @@ extern  void    DumpEdge( block_num i, block_edge *edge )
 {
     DumpLiteral( "\n\tEdge " );
     DumpInt( i );
-    DumpLiteral( "(" );
+    DumpChar( '(' );
     DumpPtr( edge );
     DumpLiteral( ")\n\t\tDestination:\t" );
     DumpPtr( edge->destination.u.blk );
@@ -496,7 +492,7 @@ static  void    DumpBlkI( void )
         DumpBlkFlags( blk );
         DumpLineNum( (instruction *)&blk->ins );
         DumpPtr( blk );
-        DumpLiteral( " " );
+        DumpChar( ' ' );
         DumpBlkId( blk );
         if( blk->label != NULL ) {
             DumpLiteral( " L:" );
@@ -532,7 +528,7 @@ extern  void    DumpABlk( block *b )
 /**********************************/
 {
     DumpPtr( b );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     DumpBlkId( b );
     DumpBlkLabel( b );
     DumpLiteral( " Depth " );

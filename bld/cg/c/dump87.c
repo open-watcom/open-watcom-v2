@@ -31,7 +31,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "dump.h"
+#include "dumpio.h"
 
 #if ( _TARGET & ( _TARG_IAPX86 | _TARG_80386 ) )
 
@@ -41,7 +41,6 @@
 
 extern  void            DumpOperand(name*);
 extern  void            DumpFPInfo(instruction*);
-extern  void            DumpInt(int);
 extern  void            DumpInsNoNL(instruction*);
 
 extern  void    DumpSeqs()
@@ -79,10 +78,11 @@ extern  void    DumpSeqs()
         DumpOperand( temp->op );
         DumpNL();
         DumpLiteral( "Location: " );
-        DumpChar( temp->actual_locn==ACTUAL_NONE?'X':temp->actual_locn+'0' );
+        DumpChar( temp->actual_locn == ACTUAL_NONE ? 'X': temp->actual_locn + '0' );
         DumpLiteral( " Savings: " );
         DumpInt( temp->savings );
-        if( temp->cached ) DumpLiteral( " CACHED" );
+        if( temp->cached )
+            DumpLiteral( " CACHED" );
         DumpNL();
         DumpLiteral( "First: " );
         if( temp->first ) {
@@ -241,7 +241,7 @@ extern  bool    DumpFPUIns( instruction *ins ) {
     if( ins->num_operands != 0 ) {
         DumpOperand( ins->operands[0] );
         for( i = 1; i < ins->num_operands; ++i ) {
-            DumpLiteral( "," );
+            DumpChar( ',' );
             DumpOperand( ins->operands[i] );
         }
     }
@@ -249,7 +249,7 @@ extern  bool    DumpFPUIns( instruction *ins ) {
         DumpLiteral( " ==> " );
         DumpOperand( ins->result );
     }
-    DumpLiteral( "]" );
+    DumpChar( ']' );
     return( TRUE );
 }
 

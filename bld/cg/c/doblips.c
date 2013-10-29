@@ -47,7 +47,7 @@ extern  int             OSCall(void);
 extern  void            FatalError(const char *);
 extern  void            Blip(unsigned_16,char);
 extern  void            BlipInit( void );
-extern  bool            GetEnvVar(char*,char*,int);
+extern  bool            GetEnvVar(const char *,char *,int);
 extern  bool            TBreak( void );
 extern  uint            GetTickCnt( void );
 

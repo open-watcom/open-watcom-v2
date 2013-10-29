@@ -33,13 +33,10 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "score.h"
-#include "dump.h"
+#include "dumpio.h"
 #include "feprotos.h"
 
-extern  void            DumpInt(int);
-extern  void            DumpLong(signed_32);
 extern  void            DumpRegName(hw_reg_set);
-extern  void            DumpNL();
 extern  void            DumpOperand(name *);
 
 extern  int             ScoreCount;
@@ -51,11 +48,11 @@ static  void    DumpScList( score_list *curr ) {
     DumpLiteral( "    " );
     switch( curr->info.class ) {
     case N_CONSTANT:
-        DumpLiteral( "&" );
+        DumpChar( '&' );
         DumpLong( curr->info.offset );
         break;
     case N_TEMP:
-        DumpLiteral( "t" );
+        DumpChar( 't' );
         DumpInt( curr->info.symbol.t->v.id );
         DumpLiteral( " offset " );
         DumpLong( curr->info.offset );
@@ -69,22 +66,22 @@ static  void    DumpScList( score_list *curr ) {
         if( curr->info.base == NULL ) {
             ;
         } else if( curr->info.base->n.class == N_TEMP ) {
-            DumpLiteral( "t" );
+            DumpChar( 't' );
             DumpInt( curr->info.base->t.v.id );
-            DumpLiteral( "+" );
+            DumpChar( '+' );
         } else {
             DumpXString( FEName( curr->info.base->v.symbol ) );
-            DumpLiteral( "+" );
+            DumpChar( '+' );
         }
         DumpLong( curr->info.offset );
-        DumpLiteral( "[" );
+        DumpChar( '[' );
         DumpRegName( ScoreList[ curr->info.index_reg ]->reg );
-        DumpLiteral( "]" );
+        DumpChar( ']' );
         break;
     case N_INITIAL:
         DumpLiteral( "INITIAL(" );
         DumpLong( curr->info.offset );
-        DumpLiteral( ")" );
+        DumpChar( ')' );
         break;
     case N_VOLATILE:
         DumpLiteral( "VOLATILE - Oh No!" );
@@ -92,7 +89,7 @@ static  void    DumpScList( score_list *curr ) {
     case N_ADDRESS:
         DumpLiteral( "ADDRESS(" );
         DumpOperand(curr->info.symbol.p);
-        DumpLiteral( ")" );
+        DumpChar( ')' );
         break;
     }
     DumpNL();

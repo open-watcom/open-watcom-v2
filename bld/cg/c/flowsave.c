@@ -170,11 +170,11 @@ static int CountRegs( hw_reg_set regs )
     hw_reg_set          *curr;
     int                 count;
 
-    curr = PushRegs;
     count = 0;
-    while( !HW_CEqual( *curr, HW_EMPTY ) ) {
-        if( HW_Ovlap( *curr, regs ) ) count++;
-        curr++;
+    for( curr = PushRegs; !HW_CEqual( *curr, HW_EMPTY ); ++curr ) {
+        if( HW_Ovlap( *curr, regs ) ) {
+            count++;
+        }
     }
     return( count );
 }

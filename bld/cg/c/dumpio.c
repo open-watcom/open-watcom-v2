@@ -32,23 +32,20 @@
 
 #include <stdio.h>
 #include "cgstd.h"
-#include "dump.h"
+#include "dumpio.h"
 
-extern  void    DumpChar(char);
-extern  void    DumpNL();
-
-static  char    *dumpFileName = "\\tmp\\cgdump.tmp";
+static  char    *dumpFileName = "cgdump.tmp";
 static  FILE    *dumpFile;
 
-extern  void    DumpRedirect() {
-/******************************/
+extern  void    DumpRedirect( void ) {
+/************************************/
 
     if( dumpFile != NULL ) return;
     dumpFile = fopen( dumpFileName, "wt" );
 }
 
-extern  void    DumpUnredirect() {
-/********************************/
+extern  void    DumpUnredirect( void ) {
+/**************************************/
 
     if( dumpFile == NULL ) return;
     fclose( dumpFile );
@@ -65,8 +62,8 @@ extern  void    DumpChar( char c ) {
     }
 }
 
-extern  void    DumpNL() {
-/************************/
+extern  void    DumpNL( void ) {
+/******************************/
 
     FILE        *fp;
 
@@ -76,10 +73,10 @@ extern  void    DumpNL() {
     fflush( fp );
 }
 
-extern  void    DumpPadString( char *s, int i ) {
-/***********************************************/
+extern  void    DumpPadString( const char *s, int i ) {
+/*****************************************************/
 
-    while( *s ) {
+    while( *s != '\0' ) {
         DumpChar( *s );
         ++s;
         --i;
@@ -90,10 +87,10 @@ extern  void    DumpPadString( char *s, int i ) {
 }
 
 
-extern  void    DumpString( char const *s ) {
-/*************************************/
+extern  void    DumpString( const char *s ) {
+/*******************************************/
 
-    while( *s ) {
+    while( *s != '\0' ) {
         DumpChar( *s );
         s++;
     }
@@ -101,7 +98,7 @@ extern  void    DumpString( char const *s ) {
 
 
 extern  void    DumpXString( char const *s ) {
-/**************************************/
+/********************************************/
 
     DumpString( s );
 }
@@ -141,7 +138,7 @@ extern  void    Dump8h( unsigned_32 n ) {
 
 
 extern  void    DumpLLong(  signed_32 n,  int  len ) {
-/******************************************************/
+/****************************************************/
 
     char        b[30];
     char        *bp;
@@ -199,8 +196,8 @@ extern  void    DumpId( unsigned id ) {
     DumpChar( ')' );
 }
 
-extern  void    DumpPtr( pointer ptr ) {
-/**************************************/
+extern  void    DumpPtr( void *ptr ) {
+/************************************/
 
     Dump8h( (unsigned_32)(pointer_int)ptr );
 }

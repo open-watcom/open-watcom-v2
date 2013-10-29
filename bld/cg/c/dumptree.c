@@ -36,15 +36,13 @@
 #include "cgdefs.h"
 #include "procdef.h"
 #include "tree.h"
-#include "dump.h"
+#include "dumpio.h"
 
-extern  void            DumpNL();
 extern  void            DumpOperand(name*);
-extern  void            DumpInt(int);
 extern  void            Dumpan(an);
 extern  void            DumpClass(type_class_def);
+
 extern  type_class_def  TypeClass(type_def*);
-extern  void            DumpPtr( pointer );
 
 static  void            DumpSubTree( tn node, int indent );
 
@@ -67,18 +65,18 @@ static  void    DumpIndent( int i ) {
 /***********************************/
 
     while( --i >= 0 ) {
-        DumpLiteral( " " );
+        DumpChar( ' ' );
     }
 }
 
 
-static  void    DumpStrType(tn node, char *s1, char *s2, int indent) {
-/********************************************************************/
+static  void    DumpStrType(tn node, const char *s1, const char *s2, int indent) {
+/********************************************************************************/
 
     DumpIndent( indent );
     DumpString( s1 );
     DumpString( s2 );
-    DumpLiteral( " " );
+    DumpChar( ' ' );
     DumpClass( TypeClass( node->tipe ) );
     DumpNL();
 }
