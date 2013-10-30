@@ -119,12 +119,10 @@ extern  void    Wait8087( void ) {
     if( _CPULevel( CPU_386 ) && _IsntTargetModel( GEN_FWAIT_386 ) ) return;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        ins = blk->ins.hd.next;
         last_fpins = NULL;
         past_jump = FALSE;
-        for(;;) {
-            for(;;) {
-                if( ins->head.opcode == OP_BLOCK ) break;
+        for( ins = blk->ins.hd.next; ; ins = ins->head.next ) {
+            for( ; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( _OpIsCall( ins->head.opcode ) ) break;
                 gen = ins->u.gen_table->generate;
                 if( _GenIs8087( gen ) ) {
@@ -154,24 +152,21 @@ extern  void    Wait8087( void ) {
                     } else {
                         last_non_fpins = ins;
                         if( last_fpins != NULL
-                         && NeedWait( last_fpop, last_fpres, ins ) ) {
+                          && NeedWait( last_fpop, last_fpres, ins ) ) {
                             PrefixIns( ins, MakeWait() );
                             last_fpins = NULL;
                         }
                     }
                 }
-                ins = ins->head.next;
             }
             if( ins->head.opcode == OP_BLOCK ) break;
-            if( last_fpins != NULL
-             && CallNeedsWait( last_fpop, last_fpres ) ) {
+            if( last_fpins != NULL && CallNeedsWait( last_fpop, last_fpres ) ) {
                 PrefixIns( ins, MakeWait() );
                 last_fpins = NULL;
             }
-            ins = ins->head.next;
         }
         if( last_fpins != NULL
-        && ( ( last_fpres != NULL ) || ( last_fpop != NULL ) ) ) {
+          && ( ( last_fpres != NULL ) || ( last_fpop != NULL ) ) ) {
             if( last_non_fpins != NULL ) {
                 SuffixIns( last_non_fpins, MakeWait() );
             } else {

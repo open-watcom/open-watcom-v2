@@ -912,9 +912,8 @@ extern  code_lbl    *LocateLabel( instruction *ins, int index )
 /****************************************************************/
 {
     if( index == NO_JUMP ) return( NULL );
-    for( ;; ) {
+    for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
-        if( ins->head.opcode == OP_BLOCK ) break;
     }
     return( _BLOCK( ins )->edge[index].destination.u.lbl );
 }

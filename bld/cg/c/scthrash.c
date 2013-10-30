@@ -223,8 +223,7 @@ static  bool    ThrashDown( instruction *ins ) {
 
     Y = ins->operands[ 0 ];
     Z = ins->result;
-    oth_ins = ins->head.prev;
-    for(;;) {
+    for( oth_ins = ins->head.prev; ; oth_ins = oth_ins->head.prev ) {
         if( oth_ins->head.opcode == OP_BLOCK ) return( FALSE );
         if( _OpIsCall( oth_ins->head.opcode ) ) return( FALSE );
         if( HW_Ovlap( oth_ins->head.next->head.live.regs, Z->r.reg) ) {
@@ -243,7 +242,6 @@ static  bool    ThrashDown( instruction *ins ) {
         if( oth_ins->result != NULL ) {
             if( UsedIn( oth_ins->result, Y ) ) return( FALSE );
         }
-        oth_ins = oth_ins->head.prev;
     }
     if( HW_Ovlap( oth_ins->head.live.regs, Z->r.reg ) ) {
         if( !ChangeIns(oth_ins,Z,&oth_ins->result,CHANGE_GEN) ) return(FALSE);
@@ -285,8 +283,7 @@ static  bool    ThrashUp( instruction *ins ) {
 
     Y = ins->operands[ 0 ];
     Z = ins->result;
-    oth_ins = ins->head.next;
-    for(;;) {
+    for( oth_ins = ins->head.next; ; oth_ins = oth_ins->head.next ) {
         if( oth_ins->head.opcode == OP_BLOCK ) return( FALSE );
         if( _OpIsCall( oth_ins->head.opcode ) ) return( FALSE );
         if( HW_Ovlap( oth_ins->zap->reg, Y->r.reg ) ) return( FALSE );
@@ -299,10 +296,8 @@ static  bool    ThrashUp( instruction *ins ) {
         if( oth_ins->result != NULL ) {
             if( UsedIn( oth_ins->result, Z ) ) return( FALSE );
         }
-        oth_ins = oth_ins->head.next;
     }
-    thrsh_ins = oth_ins->head.next;
-    for(;;) {
+    for( thrsh_ins = oth_ins->head.next; ; thrsh_ins = thrsh_ins->head.next ) {
         if( thrsh_ins->head.opcode == OP_BLOCK ) return( FALSE );
         if( HW_Ovlap( thrsh_ins->zap->reg, Y->r.reg ) ) return( FALSE );
         if( HW_Ovlap( thrsh_ins->zap->reg, Z->r.reg ) ) return( FALSE );
@@ -310,7 +305,6 @@ static  bool    ThrashUp( instruction *ins ) {
             && (thrsh_ins->operands[ 0 ] == Z)
             && (thrsh_ins->result        == Y) ) break;
         if( Modifies( Y, Z, oth_ins->result ) ) return( FALSE );
-        thrsh_ins = thrsh_ins->head.next;
     }
     if( CantChange( &oth_ins, Z, Y ) ) return( FALSE );
     FreeIns( thrsh_ins );

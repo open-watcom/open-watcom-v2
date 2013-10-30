@@ -196,14 +196,9 @@ static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp )
     instruction *ins;
     int         i;
 
-    ins = blk->ins.hd.prev;
-    for( ;; ) {
-        if( ins->head.opcode == OP_BLOCK ) {
-            new->last = new->first;
-            return;
-        }
+    for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
         if( ins->result != NULL && ins->result->n.class == N_TEMP
-         && DeAlias( ins->result ) == temp ) {
+          && DeAlias( ins->result ) == temp ) {
             if( SideEffect( ins ) ) {
                 new->last = new->first + 1;
                 return;
@@ -218,8 +213,8 @@ static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp )
                 if( SetLastUse( ins->result, temp, new, ins ) ) return;
             }
         }
-        ins = ins->head.prev;
     }
+    new->last = new->first;
 }
 
 
@@ -256,8 +251,7 @@ static  void    CalcRange( stack_temp *new, name *temp )
 {
     block       *blk;
 
-    blk = HeadBlock;
-    while( blk->id != temp->t.u.block_id ) {
+    for( blk = HeadBlock; blk->id != temp->t.u.block_id; ) {
         blk = blk->next_block;
     }
     ScanForFirstDefn( blk, new, temp );
@@ -336,11 +330,9 @@ extern  void    PropLocal( name *temp )
 {
     name        *scan;
 
-    scan = temp->t.alias;
-    while( scan != temp ) {
+    for( scan = temp->t.alias; scan != temp; scan = scan->t.alias ) {
         scan->t.location = temp->t.location;
         scan->v.usage |= HAS_MEMORY;
-        scan = scan->t.alias;
     }
 }
 

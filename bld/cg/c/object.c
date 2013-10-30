@@ -99,8 +99,7 @@ extern  void    GenObject( void )
     InitZeroPage();
     last_line = 0;
     attr = FEAttr( AskForLblSym( CurrProc->label ) );
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; blk = next_blk ) {
         if( blk->label != CurrProc->label && blk->label != NULL ) {
             last_line = DumpLineNum( blk->ins.hd.line_num, last_line, TRUE );
             if( ( blk->class & ITERATIONS_KNOWN ) && blk->iterations >= 10 ) {
@@ -179,12 +178,11 @@ extern  void    GenObject( void )
             }
         }
         if( BlocksUnTrimmed == FALSE
-         && blk->label != CurrProc->label && blk->label != NULL ) {
+          && blk->label != CurrProc->label && blk->label != NULL ) {
             TellCondemnedLabel( blk->label );
         }
         CurrBlock = blk;
         FreeBlock();
-        blk = next_blk;
     }
     HeadBlock = blk;
     BlockList = blk;
@@ -199,19 +197,18 @@ static  bool    GenId( block *blk, block *next ) {
 }
 
 
-extern  void    BlocksSortedBy( bool (*bigger)( block *, block * ) ) {
-/********************************************************************/
+extern  void    BlocksSortedBy( bool (*bigger)( block *, block * ) )
+/******************************************************************/
+{
     block       *blk;
+    block       *first;
     block       *next;
     bool        change;
 
-    for(;;) {
-        blk = HeadBlock->next_block;
-        if( blk == NULL ) break;
+    first = HeadBlock->next_block;
+    for( change = ( first != NULL ); change; ) {
         change = FALSE;
-        for(;;) {
-            next = blk->next_block;
-            if( next == NULL ) break;
+        for( blk = first; (next = blk->next_block) != NULL; blk = next ) {
             if( bigger( blk, next ) ) {
                 blk->prev_block->next_block = next;
                 if( next->next_block != NULL ) {
@@ -229,9 +226,7 @@ extern  void    BlocksSortedBy( bool (*bigger)( block *, block * ) ) {
                 }
                 change = TRUE;
             }
-            blk = next;
         }
-        if( change == FALSE ) break;
     }
 }
 

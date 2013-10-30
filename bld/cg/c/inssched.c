@@ -343,9 +343,7 @@ static dep_type DataDependant( instruction *ins_i,
             variables which might have been modified by the call (for FORTRAN).
             Therefore, they must be made dependant on the call.
         */
-        for( ;; ) {
-            ins_j = ins_j->head.next;
-            if( ins_j->head.opcode == OP_BLOCK ) break;
+        for( ins_j = ins_j->head.next; ins_j->head.opcode != OP_BLOCK; ins_j = ins_j->head.next ) {
             if( _OpIsCall( ins_j->head.opcode ) ) break;
             if( ins_j->head.opcode == OP_NOP && ins_j->result != NULL ) {
                 ret = DataDependant( ins_i, ins_j, ins_linked );

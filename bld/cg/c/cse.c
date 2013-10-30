@@ -251,7 +251,9 @@ static  bool    StretchEdges( void )
 
     change = FALSE;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( StretchABlock( blk ) ) change = TRUE;
+        if( StretchABlock( blk ) ) {
+            change = TRUE;
+        }
     }
     return( change );
 }

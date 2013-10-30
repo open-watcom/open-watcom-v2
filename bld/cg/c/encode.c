@@ -55,9 +55,8 @@ static  code_lbl    *LocateLabel( instruction *ins, int index ) {
 */
 
     if( index == NO_JUMP ) return( NULL );
-    for(;;) {
+    for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
-        if( ins->head.opcode == OP_BLOCK ) break;
     }
     return( _BLOCK( ins )->edge[  index  ].destination.u.lbl );
 }
@@ -156,8 +155,7 @@ static  void    DoCondJump( instruction *cond ) {
     code_lbl            *dest_next;
     instruction         *next;
 
-    next = cond->head.next;
-    while( next->head.opcode != OP_BLOCK ) {
+    for( next = cond->head.next; next->head.opcode != OP_BLOCK; ) {
         next = next->head.next;
     }
     dest_next = NULL;

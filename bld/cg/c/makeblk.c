@@ -527,9 +527,7 @@ extern  void    FreeProc( void )
 {
     proc_def    *oldproc;
 
-    for( ;; ) {
-        CurrBlock = HeadBlock;
-        if( CurrBlock == NULL ) break;
+    for( CurrBlock = HeadBlock; CurrBlock != NULL; CurrBlock = HeadBlock ) {
         HeadBlock = CurrBlock->next_block;
         FreeBlock();
     }

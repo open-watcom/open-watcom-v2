@@ -254,7 +254,7 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
         if( forward ) {
             if( DereferencedBy( curr, op ) ) return( BLOCK_DEREFS );
             if( ReDefinedBy( curr, op ) ) return( BLOCK_REDEFS );
-        #if 0
+#if 0
             if( curr->head.opcode == OP_MOV &&
                 curr->operands[ 0 ] == op &&
                 curr->result != op ) {
@@ -270,7 +270,7 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
                     return( BLOCK_DEREFS );
                 }
             }
-        #endif
+#endif
         } else {
             if( ReDefinedBy( curr, op ) ) return( BLOCK_REDEFS );
             if( DereferencedBy( curr, op ) ) return( BLOCK_DEREFS );

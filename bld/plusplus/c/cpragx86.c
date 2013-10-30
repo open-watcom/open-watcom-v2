@@ -111,7 +111,7 @@ static void pragmaFini(         // FINISH PRAGMAS
         next = curr->next;
         info = curr->info;
         if( info != NULL ) {
-            if( info->use != 1 ) {
+            if( info->use > 1 ) {
                 info->use--;
             } else {
                 freeInfo( info );

@@ -545,9 +545,8 @@ extern  void    DumpABlk( block *b )
 extern  void    DumpBlock( block *b )
 /***********************************/
 {
-    while( b != NULL ) {
+    for( ; b != NULL; b = b->next_block ) {
         DumpABlk( b );
-        b = b->next_block;
     }
     DumpLiteral( "-------------------------------" );
     DumpNL();

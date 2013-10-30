@@ -635,8 +635,9 @@ extern  block   *AddBlocks( block *insertion_point, block *block_list )
 {
     block       *last;
 
-    last = block_list;
-    while( last->next_block != NULL ) last = last->next_block;
+    for( last = block_list; last->next_block != NULL; ) {
+        last = last->next_block;
+    }
     last->next_block = insertion_point->next_block;
     if( last->next_block != NULL ) {
         last->next_block->prev_block = last;

@@ -360,8 +360,7 @@ static  void    SearchDefUse( void )
     int         i;
     bool        touched_non_op;
 
-    blk = HeadBlock;
-    for( ;; ) {
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         touched_non_op = FALSE;
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ( ins->head.opcode == OP_CALL
@@ -411,8 +410,6 @@ static  void    SearchDefUse( void )
             TransferMemBlockUsage( blk );
         }
         TransferTempBlockUsage( blk );
-        blk = blk->next_block;
-        if( blk == NULL ) break;
     }
     TransferTempFlags();
     TransferMemoryFlags();

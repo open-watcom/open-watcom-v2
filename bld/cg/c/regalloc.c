@@ -415,12 +415,13 @@ static  void    BitOff( conflict_node *conf ) {
 
     block       *blk;
     instruction *ins;
+    instruction *last;
 
     blk = conf->start_block;
-    ins = conf->ins_range.first;
     if( blk != NULL ) {
-        for(;;) {
-            if( ins == conf->ins_range.last ) break;
+        ins = conf->ins_range.first;
+        last = conf->ins_range.last;
+        while( ins != last ) {
             if( ins->head.opcode == OP_BLOCK ) {
                 blk = blk->next_block;
                 ins = (instruction *)&blk->ins;
@@ -446,6 +447,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
 
     block               *blk;
     instruction         *ins;
+    instruction         *last;
     signed_32           count;
     int                 half;
     name                *reg_name;
@@ -462,22 +464,22 @@ static  signed_32     CountRegMoves( conflict_node *conf,
     if( tree == NULL ) return( 0 );
     reg_name = AllocRegName( reg );
     count = 0;
-    blk = conf->start_block;
-    ins = conf->ins_range.first;
     if( tree->temp != NULL ) {
         idx = IsIndexReg( reg, tree->temp->n.name_class, FALSE );
     } else {
         idx = FALSE;
     }
     half = tree->size / 2;
-    for(;;) {
+    blk = conf->start_block;
+    ins = conf->ins_range.first;
+    last = conf->ins_range.last;
+    for( ;; ) {
         if( ins->head.opcode == OP_BLOCK ) {
             blk = blk->next_block;
             ins = blk->ins.hd.next;
         } else {
             if( ins->head.opcode != OP_MOV ) {
-/* 88-Dec-23*/
-            #if _TARGET & (_TARG_80386|_TARG_IAPX86|_TARG_370)
+#if _TARGET & (_TARG_80386|_TARG_IAPX86|_TARG_370)
                 op1 = NULL;
                 op2 = NULL;
                 if( ins->num_operands != 0 ) {
@@ -512,8 +514,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                         count += half;  /* Or just a quarter? */
                     }
                 }
-/* 88-Dec-23*/
-            #endif
+#endif
             } else {
                 op1 = ins->operands[0];
                 res = ins->result;
@@ -541,7 +542,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                     count += half;
                 }
             }
-            if( ins == conf->ins_range.last ) break;
+            if( ins == last ) break;
             ins = ins->head.next;
         }
     }
@@ -730,13 +731,12 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
 
     blk = conf->start_block;
     ins = conf->ins_range.first;
-    if( conf->name->n.class == N_TEMP
-      && _Is( conf, ( INDEX_SPLIT | SEGMENT_SPLIT ) ) ) {
-        ins = conf->ins_range.last;
-    }
     last = conf->ins_range.last;
+    if( conf->name->n.class == N_TEMP && _Is( conf, (INDEX_SPLIT | SEGMENT_SPLIT) ) ) {
+        ins = last;
+    }
     rc = FALSE;
-    for(;;) {
+    for( ;; ) {
         if( ins->u.gen_table == NULL ) { /* just created instruction*/
             needs = RG_;
         } else {
@@ -827,8 +827,7 @@ static  void    NeighboursUse( conflict_node *conf ) {
 
                 dst = ins->result;
                 if( dst != NULL ) {
-                    NowDead( dst, FindConflictNode( dst, blk, ins ),
-                                &no_conflict, blk );
+                    NowDead( dst, FindConflictNode( dst, blk, ins ), &no_conflict, blk );
                 }
                 if( ins->head.opcode != OP_MOV ) {
                     if( dst == conf->name ) {
@@ -872,10 +871,8 @@ static  void    NeighboursUse( conflict_node *conf ) {
                     CheckIndexZap( conf, blk, ins );
                 }
             }
-            if( _GBitOverlap( ins->head.live.out_of_block,
-                              conf->id.out_of_block )
-             || _LBitOverlap( ins->head.live.within_block,
-                              conf->id.within_block )
+            if( _GBitOverlap( ins->head.live.out_of_block, conf->id.out_of_block )
+             || _LBitOverlap( ins->head.live.within_block, conf->id.within_block )
              || ( _LBitEmpty( conf->id.within_block )
                && _GBitEmpty( conf->id.out_of_block ) ) ) {
                 tmp = ins->head.live.regs;
@@ -1065,6 +1062,8 @@ static  void    PutInMemory( conflict_node *conf ) {
 
     block       *blk;
     instruction *ins;
+    instruction *first;
+    instruction *last;
     name        *opnd;
 
     IMBlip();
@@ -1083,14 +1082,16 @@ static  void    PutInMemory( conflict_node *conf ) {
         opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
     }
     blk = conf->start_block;
-    ins = conf->ins_range.first;
     if( blk != NULL ) {
+        first = conf->ins_range.first;
+        last = conf->ins_range.last;
+        ins = first;
         for(;;) {
             if( ins->head.opcode != OP_BLOCK &&
                 ins->head.state == OPERANDS_NEED_WORK ) {
                 ins->head.state = INS_NEEDS_WORK;
             }
-            if( ins->id == conf->ins_range.last->id ) break;
+            if( ins->id == last->id ) break;
             if( ins->head.opcode == OP_BLOCK ) {
                 if( blk->next_block == NULL ) {
                     Zoiks( ZOIKS_141 );
@@ -1103,11 +1104,9 @@ static  void    PutInMemory( conflict_node *conf ) {
             _GBitTurnOff( ins->head.live.out_of_block, conf->id.out_of_block );
             _LBitTurnOff( ins->head.live.within_block, conf->id.within_block );
         }
-        if( conf->ins_range.first == conf->ins_range.last
-         && conf->name->n.class == N_TEMP
-         && ( conf->name->v.usage & USE_ADDRESS ) == 0
-         && SideEffect( conf->ins_range.first ) == FALSE ) {
-            DoNothing( conf->ins_range.first );
+        if( first == last && conf->name->n.class == N_TEMP
+          && (conf->name->v.usage & USE_ADDRESS) == 0 && !SideEffect( first ) ) {
+            DoNothing( first );
         }
     }
 }

@@ -122,12 +122,10 @@ static  void    ReturnsToBottom( void )
     block       *prev;
     block       *last;
 
-    curr = HeadBlock;
-    while( curr->next_block != NULL ) {
-        curr = curr->next_block;
+    for( last = HeadBlock; last->next_block != NULL; ) {
+        last = last->next_block;
     }
-    last = curr;
-    for( curr = curr->prev_block; curr != NULL; curr = prev ) {
+    for( curr = last->prev_block; curr != NULL; curr = prev ) {
         prev = curr->prev_block;
         if( curr->class & RETURN ) {
             if( prev != NULL ) {
@@ -260,10 +258,7 @@ static  bool    FindIntervals( void )
         prev_num = num;
         num = 1;                       /* at least one node at new level*/
         NewInterval( HeadBlock, level );
-        blk = HeadBlock;
-        for( ;; ) {
-            blk = blk->next_block;
-            if( blk == NULL ) break;
+        for( blk = HeadBlock->next_block; blk != NULL; blk = blk->next_block ) {
             curr = IntervalNo( blk, level - 1 );
             if( curr->parent == NULL ) {
                 prev_int = NULL;

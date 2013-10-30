@@ -218,10 +218,10 @@ extern  int     FPStackExit( block *blk ) {
 */
     instruction *curr;
 
-    curr = blk->ins.hd.prev;
-    while( curr->head.opcode != OP_BLOCK ) {
-        if( FPStackIns( curr ) ) return( curr->stk_exit );
-        curr = curr->head.prev;
+    for( curr = blk->ins.hd.prev; curr->head.opcode != OP_BLOCK; curr = curr->head.prev ) {
+        if( FPStackIns( curr ) ) {
+            return( curr->stk_exit );
+        }
     }
     return( 0 );
 }
@@ -808,15 +808,16 @@ static  bool    OKToCache( temp_entry *temp ) {
     name                *seg;
 
     ins = temp->first;
-    if( ins->num_operands <= NumOperands( ins ) ) return( TRUE );
+    if( ins->num_operands <= NumOperands( ins ) )
+        return( TRUE );
     seg = ins->operands[ ins->num_operands - 1 ];
-    ins = ins->head.prev;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = ins->head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
         /*
          * Might be a segment load or some other sort of nonsense here.
          */
-        if( ReDefinedBy( ins, seg ) ) return( FALSE );
-        ins = ins->head.prev;
+        if( ReDefinedBy( ins, seg ) ) {
+            return( FALSE );
+        }
     }
     return( _BLOCK( ins ) == Entry );
 }
@@ -934,14 +935,12 @@ extern  void    FPPreSched( block *blk ) {
         SeqCurDepth[ i ] = SEQ_INIT_VALUE;
         SeqMaxDepth[ i ] = 0;
     }
-    ins = blk->ins.hd.prev;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
         if( SeqCurDepth[ ins->sequence ] == SEQ_INIT_VALUE ) {
             if( FPStackIns( ins ) ) {
                 SeqCurDepth[ ins->sequence ] = ins->stk_exit;
             }
         }
-        ins = ins->head.prev;
     }
     for( i = 0; i < MaxSeq; ++i ) {
         if( SeqCurDepth[ i ] == SEQ_INIT_VALUE ) {

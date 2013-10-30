@@ -74,8 +74,6 @@ static void FreeAuxInfo( aux_info *info )
 
 void PragmaAuxInit( void )
 {
-    WatcallInfo.use = 2;        /* so they don't get freed */
-
     CdeclInfo   = WatcallInfo;
     PascalInfo  = WatcallInfo;
     SyscallInfo = WatcallInfo;
@@ -98,7 +96,7 @@ void PragmaAuxFini( void )
     while( AuxList != NULL ) {
         junk = AuxList;
         if( AuxList->info != NULL ) {
-            if( AuxList->info->use != 1 ) {
+            if( AuxList->info->use > 1 ) {
                 AuxList->info->use--;
             } else {
                 FreeAuxInfo( AuxList->info );

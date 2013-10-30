@@ -977,8 +977,7 @@ static  void    RevFPCond( instruction *ins ) {
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= ~BLOCK_VISITED;
     }
-    other = ins;
-    while( other->head.opcode != OP_BLOCK ) {
+    for( other = ins; other->head.opcode != OP_BLOCK; ) {
         other = other->head.next;
     }
     RevOtherCond( _BLOCK( other ), ins );

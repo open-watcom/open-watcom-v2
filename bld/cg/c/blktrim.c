@@ -81,7 +81,7 @@ static  void    MarkReachableBlocks( void )
     bool        change;
     block_num   i;
 
-    for( ;; ) {
+    for( change = TRUE; change; ) {
         change = FALSE;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( blk->class & ( BIG_LABEL | BLOCK_VISITED | SELECT ) ) {
@@ -95,7 +95,6 @@ static  void    MarkReachableBlocks( void )
                 }
             }
         }
-        if( change == FALSE ) break;
     }
 }
 
@@ -367,10 +366,10 @@ static  bool    DoBlockTrim( void )
     block       *target;
     instruction *ins;
     bool        change;
-    bool        any_change = FALSE;
-    block_num   block_id;
+    bool        any_change;
+    block_num   blk_id;
 
-    for( ;; ) {
+    for( any_change = FALSE, change = TRUE; change; ) {
         change = FALSE;
         MarkReachableBlocks();
         for( blk = HeadBlock->next_block; blk != NULL; blk = next ) {
@@ -409,13 +408,14 @@ static  bool    DoBlockTrim( void )
             }
         }
         UnMarkBlocks();
-        if( change == FALSE ) break;
-        BlocksUnTrimmed = FALSE;
-        any_change = TRUE;
+        if( change ) {
+            BlocksUnTrimmed = FALSE;
+            any_change = TRUE;
+        }
     }
-    block_id = 1;
+    blk_id = 1;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->id = block_id++;
+        blk->id = blk_id++;
     }
     return( any_change );
 }

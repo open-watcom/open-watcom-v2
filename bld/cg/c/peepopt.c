@@ -368,8 +368,7 @@ static  instruction     *FindInsPair( instruction *ins,
     instruction         *next;
 
     if( stopper != NULL ) *stopper = NULL;
-    next = ins->head.next;
-    while( next->head.opcode != OP_BLOCK ) {
+    for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
         if( next->head.opcode == op && SameOpWithConst( ins, next ) ) {
             if( oprtn( ins, next ) ) {
                 *pchange = TRUE;
@@ -383,7 +382,6 @@ static  instruction     *FindInsPair( instruction *ins,
             }
             return( ins->head.next );
         }
-        next = next->head.next;
     }
     return( ins->head.next );
 }
@@ -532,7 +530,7 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
     }
     next = ins->head.next;
     if( ReDefinedBy( ins, ins->operands[ 0 ] ) ) return( FALSE );       // BBB - cnv U2 U1 [eax] -> ax
-    while( next->head.opcode != OP_BLOCK ) {
+    for( ; next->head.opcode != OP_BLOCK; next = next->head.next ) {
         if( ReDefinedBy( next, ins->result ) ) return( FALSE );
         if( ReDefinedBy( next, ins->operands[ 0 ] ) ) return( FALSE );
         if( ins->head.opcode == OP_CONVERT && next->head.opcode == OP_CONVERT ) {
@@ -569,7 +567,6 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
                 return( TRUE );
             }
         }
-        next = next->head.next;
     }
     return( FALSE );
 }
@@ -649,10 +646,8 @@ bool PeepOpt( block *start, block *(*func)(block *, void *parm), void *parm, boo
     bool        change;
 
     change = FALSE;
-    blk = start;
-    do {
+    for( blk = start; blk != NULL; blk = func( blk, parm ) ) {
         change |= PeepOptBlock( blk, after_reg_alloc );
-        blk = func( blk, parm );
-    } while( blk != NULL );
+    }
     return( change );
 }

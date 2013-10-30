@@ -224,15 +224,14 @@ static  void    CalculateLoadStore( conflict_node *conf )
     }
     _GBitAssign( id, conf->id.out_of_block );
     /* turn on bits before the conflict range */
-    while( blk != NULL ) {
+    for( ; blk != NULL; blk = blk->next_block ) {
         if( blk == conf->start_block ) break;
         _GBitTurnOn( blk->dataflow->need_load, id );
         _GBitTurnOn( blk->dataflow->need_store, id );
         blk->class |= REAL_REFERENCE;
-        blk = blk->next_block;
     }
     /* turn on bits in the conflict range */
-    while( blk != NULL ) {
+    for( ; blk != NULL; blk = blk->next_block ) {
         flow = blk->dataflow;
         CheckRefs( conf, blk );
         if( _GBitOverlap( flow->in, id ) && ( blk->class & BIG_LABEL ) ) {
@@ -251,7 +250,6 @@ static  void    CalculateLoadStore( conflict_node *conf )
             _INS_NOT_BLOCK( conf->ins_range.last );
             if( blk->ins.hd.prev->id >= conf->ins_range.last->id) break;
         }
-        blk = blk->next_block;
     }
     /* turn on bits after the conflict range */
     while( blk != NULL ) {

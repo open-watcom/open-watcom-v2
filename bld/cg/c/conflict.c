@@ -125,33 +125,32 @@ static  conflict_node   *AddOne( name *opnd, block *blk )
 }
 
 
-static  conflict_node   *FindConf( name *opnd,
-                                  block *blk, instruction *ins )
-/**************************************************************/
+static  conflict_node   *FindConf( name *opnd, block *blk, instruction *ins )
+/***************************************************************************/
 {
     conflict_node *conf;
 
     conf = opnd->v.conflict;
     if( conf == NULL ) return( AddOne( opnd, blk ) );
     if( conf->start_block == NULL ) return( conf ); /* not filled in yet */
-    for(;;) {                                       /* find the right one */
+    for( ; conf != NULL; conf = conf->next_for_name ) {                                    /* find the right one */
         _INS_NOT_BLOCK( conf->ins_range.first );
         _INS_NOT_BLOCK( conf->ins_range.last );
         if( conf->start_block != NULL
          && ins->id >= conf->ins_range.first->id
-         && ins->id <= conf->ins_range.last->id ) return( conf );
-        conf = conf->next_for_name;
-        if( conf == NULL ) break;
-    }
-    conf = opnd->v.conflict;
-    if( ( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) == 0 ) {
-        for(;;) {
-            if( conf->start_block == blk ) break;
-            conf = conf->next_for_name;
-            if( conf == NULL ) return( AddOne( opnd, blk ) );
+         && ins->id <= conf->ins_range.last->id ) {
+            return( conf );
         }
     }
-    return( conf );
+    conf = opnd->v.conflict;
+    if( opnd->v.usage & USE_IN_ANOTHER_BLOCK )
+        return( conf );
+    for( ; conf != NULL; conf = conf->next_for_name ) {
+        if( conf->start_block == blk ) {
+            return( conf );
+        }
+    }
+    return( AddOne( opnd, blk ) );
 }
 
 
@@ -218,15 +217,13 @@ extern  conflict_node   *NameConflict( instruction *ins, name *opnd )
         return( NULL );
     }
     _INS_NOT_BLOCK( ins );
-    conf = opnd->v.conflict;
-    while( conf != NULL ) {
+    for( conf = opnd->v.conflict; conf != NULL; conf = conf->next_for_name ) {
         _INS_NOT_BLOCK( conf->ins_range.first );
         _INS_NOT_BLOCK( conf->ins_range.last );
         if( conf->ins_range.first->id <= ins->id
-         && conf->ins_range.last->id  >= ins->id ) return( conf );
-        conf = conf->next_for_name;
+         && conf->ins_range.last->id  >= ins->id ) break;
     }
-    return( NULL );
+    return( conf );
 }
 
 

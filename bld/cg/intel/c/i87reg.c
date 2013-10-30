@@ -169,12 +169,12 @@ static  bool    MathOpsBlowStack( conflict_node *conf, int stk_level ) {
 */
 
     instruction *ins;
+    instruction *last;
 
     ins = conf->ins_range.first;
-    if( ins == conf->ins_range.last ) return( TRUE );
-    for( ;; ) {
-        ins = ins->head.next;
-        if( ins == conf->ins_range.last ) break;
+    last = conf->ins_range.last;
+    if( ins == last ) return( TRUE );
+    for( ins = ins->head.next; ins != last; ins = ins->head.next ) {
         if( FPStkReq( ins ) + stk_level + NumOperands( ins ) >= Max87Stk ) {
             return( TRUE );
         }
@@ -579,22 +579,17 @@ static  bool    CanStack( name *name ) {
     conflict_node       *conf;
 
     if( ( name->v.usage & USE_IN_ANOTHER_BLOCK ) ) return( FALSE );
-    conf = name->v.conflict;
-    while( conf != NULL ) {
-        if( conf == NULL ) return( TRUE ); /* if conflict not yet allocated */
+    for( conf = name->v.conflict; conf != NULL; conf = conf->next_for_name ) {
         if( conf->start_block == NULL ) return( FALSE );
-        if( conf->ins_range.first == NULL ) return( FALSE );
-        if( conf->ins_range.last == NULL ) return( FALSE );
-        if( conf->ins_range.first == conf->ins_range.last ) return( FALSE );
-        first = conf->ins_range.first->head.next;
+        first = conf->ins_range.first;
         last = conf->ins_range.last;
-        for( ;; ) {
-            if( first == last ) break;
+        if( first == NULL ) return( FALSE );
+        if( last == NULL ) return( FALSE );
+        if( first == last ) return( FALSE );
+        for( first = first->head.next; first != last; first = first->head.next ) {
             if( first->head.opcode == OP_CALL ) return( FALSE );
             if( first->head.opcode == OP_CALL_INDIRECT ) return( FALSE );
-            first = first->head.next;
         }
-        conf = conf->next_for_name;
     }
     return( TRUE );
 }

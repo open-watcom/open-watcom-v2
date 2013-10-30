@@ -148,8 +148,7 @@ static  bool    DoProp( block *blk ) {
             if( op->n.class == N_CONSTANT &&
                 op->c.const_type == CONS_ABSOLUTE &&
                 ins->result == ins->operands[ 0 ] ) {
-                next = ins->head.next;
-                while( next->head.opcode != OP_BLOCK ) {
+                for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
                     if( ReDefinedBy( next, ins->result ) ) break;
                     if( AdjustIndex( next, ins->result, op->c.int_value ) ) {
                         RemoveIns( ins );
@@ -158,7 +157,6 @@ static  bool    DoProp( block *blk ) {
                         return( TRUE );
                     }
                     if( NumRefs( next, ins->result ) != 0 ) break;
-                    next = next->head.next;
                 }
             }
         }

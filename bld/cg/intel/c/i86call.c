@@ -421,15 +421,16 @@ extern  void    RestoreFromTargProc( void ) {
 extern  void    PushInSameBlock( instruction *ins ) {
 /***************************************************/
 
+#if ( _TARGET & _TARG_80386 )
+    while( ins->head.opcode != OP_BLOCK ) {
+        ins = ins->head.next;
+    }
+    if( _BLOCK( ins ) != CurrBlock ) {
+        CurrProc->targ.never_sp_frame = TRUE;
+    }
+#else
     ins = ins;
-    #if ( _TARGET & _TARG_80386 )
-        while( ins->head.opcode != OP_BLOCK ) {
-            ins = ins->head.next;
-        }
-        if( _BLOCK( ins ) != CurrBlock ) {
-            CurrProc->targ.never_sp_frame = TRUE;
-        }
-    #endif
+#endif
 }
 
 

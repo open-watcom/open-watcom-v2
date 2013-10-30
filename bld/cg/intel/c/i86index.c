@@ -454,11 +454,10 @@ static  void    PropSegments( void ) {
             _SetTrue( src, WAS_SEGMENT );
         }
     }
-    for(;;) {
+    for( change = TRUE; change; ) {
         change = FALSE;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            ins = blk->ins.hd.prev;
-            while( ins->head.opcode != OP_BLOCK ) {
+            for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                 if( ins->head.opcode == OP_MOV ) {
                     dst = NameConflict( ins, ins->result );
                     if( dst != NULL && _Is( dst, WAS_SEGMENT ) ) {
@@ -469,10 +468,8 @@ static  void    PropSegments( void ) {
                         }
                     }
                 }
-                ins = ins->head.prev;
             }
         }
-        if( change == FALSE ) break;
     }
 }
 

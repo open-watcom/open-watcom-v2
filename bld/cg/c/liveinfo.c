@@ -266,14 +266,13 @@ static  void    FlowConflicts( instruction *first,
             break;
         }
         if( opcode != OP_BLOCK ) {
-            while( i < ins->num_operands ) {
+            for( ; i < ins->num_operands; ++i ) {
                 opnd = ins->operands[i];
                 if( opnd->n.class == N_INDEXED ) {
                     opnd = opnd->i.index;
                 }
                 conf = FindConflictNode( opnd, blk, ins );
                 NowAlive( opnd, conf, &alive, blk );
-                ++ i;
             }
         }
         if( ins->head.opcode == OP_CALL
@@ -391,8 +390,7 @@ extern  void    UpdateLive( instruction *first, instruction *last )
     instruction *ins;
 
     last = last->head.next;
-    ins = last;
-    while( ins->head.opcode != OP_BLOCK ) {
+    for( ins = last; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
     }
     if( ins->head.next == ins->head.prev ) { /* 1 or 2 instructions*/

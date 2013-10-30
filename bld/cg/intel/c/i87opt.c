@@ -832,8 +832,7 @@ extern  void    Opt8087( void ) {
     bool        again;
     instruction *next;
 
-    blk = HeadBlock;
-    while( blk != NULL ) {
+    for( blk = HeadBlock; blk != NULL; ) {
         i = 0;
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins->sequence = ++i;
