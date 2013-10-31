@@ -139,15 +139,13 @@ extern  abspatch_handle *NextFramePatch( void )
 extern  void    PatchBigLabels( offset lc ) {
 /*******************************************/
 
-    frame_patch *temp;
-    frame_patch *junk;
+    frame_patch *frame;
+    frame_patch *next;
 
-    temp = CurrProc->frame_index;
-    while( temp != NULL ) {
-        AbsPatch( temp->patch, lc );
-        junk = temp;
-        temp = temp->next;
-        CGFree( junk );
+    for( frame = CurrProc->frame_index; frame != NULL; frame = next ) {
+        next = frame->next;
+        AbsPatch( frame->patch, lc );
+        CGFree( frame );
     }
     CurrProc->frame_index = NULL;
 }

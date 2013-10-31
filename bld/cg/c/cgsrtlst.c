@@ -41,21 +41,19 @@ extern  mem_out_action          SetMemOut(mem_out_action);
 static  void            ShellSort( void **array, unsigned length,
                                    bool (*before)(void*,void*) );
 
-static  void            *BuildList( void **array,
-                                    unsigned next_offset, unsigned length ) {
-/***************************************************************************/
-
+static  void    *BuildList( void **array, unsigned next_offset, unsigned length )
+/*******************************************************************************/
+{
     void        *list;
     void        **owner;
 
     list = NULL;
     owner = &list;
-    while( length != 0 ) {
+    for( ; length != 0; --length ) {
         *owner = *array;
         _NEXT( *owner, next_offset ) = NULL;
         owner = &_NEXT( *owner, next_offset );
         ++array;
-        --length;
     }
     return( list );
 }
@@ -113,7 +111,7 @@ static  void            *DoSortList( void *list, unsigned next_offset,
         mid = length / 2;
         if( mid == 0 ) return( list ); /* FATAL ERROR! */
         list2 = list;
-        for( i = mid; i-- > 0; ) {
+        for( i = mid; i > 0; --i ) {
             list2 = _NEXT( list2, next_offset );
         }
         list = DoSortList( list, next_offset, before, mid );
@@ -122,9 +120,8 @@ static  void            *DoSortList( void *list, unsigned next_offset,
     } else {
         list2 = list;
         parray = array;
-        for( i = length; i-- > 0; ) {
-            *parray = list2;
-            ++parray;
+        for( i = length; i > 0; --i ) {
+            *parray++ = list2;
             list2 = _NEXT( list2, next_offset );
         }
         ShellSort( array, length, before );
@@ -173,11 +170,9 @@ extern  void            *SortList( void *list, unsigned next_offset,
     unsigned            length;
     mem_out_action      old_memout;
 
-    list2 = list;
     length = 0;
-    while( list2 != NULL ) {
+    for( list2 = list; list2 != NULL; list2 = _NEXT( list2, next_offset ) ) {
         ++length;
-        list2 = _NEXT( list2, next_offset );
     }
     if( length > 1 ) {
         old_memout = SetMemOut( MO_OK );

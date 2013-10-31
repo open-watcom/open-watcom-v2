@@ -505,7 +505,9 @@ extern  bool    LkUpOp( cg_op o, cg_op *l ) {
 //==========================================
 
     while( *l != O_NOP ) {
-        if( o == *l++ ) return( TRUE );
+        if( o == *l++ ) {
+            return( TRUE );
+        }
     }
     return( FALSE );
 }
@@ -531,7 +533,9 @@ extern  void    VerTipe( cg_type t, cg_type *l ) {
     t = a->refno;
     if( l != NULL ) {
         while( *l != TY_DEFAULT ) {
-            if( t == *l++ ) return;
+            if( t == *l++ ) {
+                return;
+            }
         }
         CGError( "Illegal type for given routine %s", Tipe(t) );
     }
@@ -539,9 +543,10 @@ extern  void    VerTipe( cg_type t, cg_type *l ) {
 extern  void    Find( char *msg, pointer *list, pointer nd ) {
 //============================================================
 
-    while( list != NULL ) {
-        if( list == nd ) return;
-        list = *list;
+    for( ; list != NULL; list = *list ) {
+        if( list == nd ) {
+            return;
+        }
     }
     CGError( "Unknown %s %p", msg, nd );
 }
@@ -562,11 +567,15 @@ extern  void    DumpTree( n *t ) {
 extern  void    NoDanglers() {
 //============================
 
+    n *next;
+
     if( NodeList != NULL ) {
         Code( "Dangling trees ========================%n" );
         while( NodeList != NULL ) {
+            next = NodeList->n;
             Code( "%t %p\n", NodeList, NodeList );
             NodeFree( NodeList );
+            NodeList = next;
         }
         CGError( "Hanging on to cgnames too long!" );
     }
@@ -591,19 +600,19 @@ extern void DumpCallTree( n *t ) {
 //================================
 
     n   *parm;
-    n   *junk;
+    n   *next;
+    n   *first;
 
     DumpSubTree( t->l );
     Code( "(" );
-    if( t->r == NULL ) return;
-    parm = t->r;
-    for( ;; ) {
+    first = t->r;
+    for( parm = t->r; parm != NULL; parm = next ) {
+        next = parm->r;
+        if( parm != first ) {
+            Code( "," );
+        }
         DumpSubTree( parm->l );
-        junk = parm;
-        parm = parm->r;
-        NodeFree( junk );
-        if( parm == NULL ) break;
-        Code( "," );
+        NodeFree( parm );
     }
     Code( ")" );
 }
@@ -632,15 +641,13 @@ extern  bool    CheckInLine( n * t ) {
     DDefILabel( bk->lp );
     Inlines = icall;
     padd = &icall->p;
-    parm = t->r;
-    while( parm != NULL ) {
+    for( parm = t->r; parm != NULL; parm = parm->r ) {
         iparm = CGAlloc( sizeof( ip ) );
         iparm->t = parm->t;
         iparm->n = NULL;
         *padd = iparm;
         padd = &iparm->n;
         icall->c++;
-        parm = parm->r;
     }
     DumpCallTree( t );
     nlist = NodeList;
@@ -755,8 +762,7 @@ extern  void    NodeFree( n *nd ) {
 //=================================
 
     n   **o;
-    o = &NodeList;
-    while( *o != nd ) {
+    for( o = &NodeList; *o != nd; ) {
         o = (n**)*o;
     }
     *o = nd->n;

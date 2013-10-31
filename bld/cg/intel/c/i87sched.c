@@ -999,10 +999,10 @@ static  void    InitGlobalTemps( void ) {
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
         if( temp->whole_block ) {
-            ins = Entry->ins.hd.prev;
-            while( ins->head.opcode == OP_NOP ) {
-                if( ins->flags.nop_flags & NOP_ZAP_INFO ) break;
-                ins = ins->head.prev;
+            for( ins = Entry->ins.hd.prev; ins->head.opcode == OP_NOP; ins = ins->head.prev ) {
+                if( ins->flags.nop_flags & NOP_ZAP_INFO ) {
+                    break;
+                }
             }
             ins = ins->head.next;
             PrefFLDOp( ins, OP_MEM, temp->actual_op );

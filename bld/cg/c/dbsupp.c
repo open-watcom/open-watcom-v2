@@ -104,9 +104,8 @@ extern  dbg_loc         LocDupl( dbg_loc loc ) {
     dbg_loc     first;
 
     first = loc;
-    while( loc != NULL ) {
+    for( ; loc != NULL; loc = loc->next ) {
         loc->use++;
-        loc = loc->next;
     }
     return( first );
 }

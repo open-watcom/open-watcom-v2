@@ -101,21 +101,19 @@ static  name    *findConst64( unsigned_32 low, unsigned_32 high, pointer cf_valu
     name        **last;
 
     last = &Names[  N_CONSTANT  ];
-    new_c = Names[  N_CONSTANT  ];
-    while( new_c != NULL ) {
+    for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
             if( new_c->c.int_value == low && new_c->c.int_value_2 == high ) {
                 if( CFCompare( new_c->c.value, cf_value ) == 0 ) {
                     // move constant found to front of list
                     *last = new_c->n.next_name;
-                    new_c->n.next_name = Names[ N_CONSTANT ];
-                    Names[ N_CONSTANT ] = new_c;
+                    new_c->n.next_name = Names[N_CONSTANT];
+                    Names[N_CONSTANT] = new_c;
                     break;
                 }
             }
         }
         last = &new_c->n.next_name;
-        new_c = new_c->n.next_name;
     }
     return( new_c );
 }
@@ -151,8 +149,7 @@ extern  name    *AllocConst( pointer value ) {
         return( ConstOne );
     }
     last = &Names[  N_CONSTANT  ];
-    new_c = Names[  N_CONSTANT  ];
-    while( new_c != NULL ) {
+    for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
             if( new_c->c.int_value == int_value ) {
                 if( CFCompare( new_c->c.value, value ) == 0 ) {
@@ -166,14 +163,13 @@ extern  name    *AllocConst( pointer value ) {
             }
         }
         last = &new_c->n.next_name;
-        new_c = new_c->n.next_name;
     }
     new_c = AllocName( N_CONSTANT, XX, 0 );
     new_c->c.value = value;
     new_c->c.int_value = int_value;
     if( test < 0 ){
         new_c->c.int_value_2 = -1; //sign extend
-    }else{
+    } else {
         new_c->c.int_value_2 = 0;
     }
     new_c->c.static_defn = NULL;
@@ -657,7 +653,7 @@ extern  void    FreeAName( name *op ) {
 /***************************************/
 
     constant_defn       *defn;
-    constant_defn       *junk;
+    constant_defn       *next;
 
     if( op->n.class == N_CONSTANT ) {
         if( op == ConstZero ) {
@@ -668,12 +664,9 @@ extern  void    FreeAName( name *op ) {
         }
         if( op->c.const_type == CONS_ABSOLUTE ) {
             CFFree( op->c.value );
-            defn = op->c.static_defn;
-            while( defn != NULL ) {
-                junk = defn;
-                defn = defn->next_defn;
-                FrlFreeSize( &ConstDefnFrl,
-                             (pointer *)junk, sizeof( constant_defn ) );
+            for( defn = op->c.static_defn; defn != NULL; defn = next ) {
+                next = defn->next_defn;
+                FrlFreeSize( &ConstDefnFrl, (pointer *)defn, sizeof( constant_defn ) );
             }
         }
     } else if( op->n.class == N_MEMORY ) {

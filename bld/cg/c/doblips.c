@@ -185,14 +185,14 @@ extern  void    LNBlip( source_line_number num )
     CheckEvents();
     if( BlipsOn ) {
         Blip( LNPos+LNSize, ' ' );
-        for( i = LNSize-1; i >=0; --i ) {
+        for( i = LNSize; i-- > 0; ) {
             if( num == 0 ) {
                 ch = ' ';
             } else {
                 ch = num % 10 + '0';
                 num /= 10;
             }
-            Blip( LNPos+i, ch );
+            Blip( LNPos + i, ch );
         }
     }
 }
@@ -205,26 +205,17 @@ extern  void    PGBlip(char *name)
 
     CheckEvents();
     if( BlipsOn ) {
-        count = 0;
-        for( ;; ) {
-            if( *name == NULLCHAR ) break;
-            if( count >= MAX_FNAME_LEN ) break;
+        for( count = 0; *name != NULLCHAR && count < MAX_FNAME_LEN; ++count, ++name) {
             Blip( count + PGPos, *name );
-            ++count;
-            ++name;
         }
-        while( count < MAX_FNAME_LEN ) {
+        for( ; count < MAX_FNAME_LEN; ++count ) {
             Blip( count + PGPos, ' ' );
-            ++count;
         }
-        count = PGPos;
-        while( --count >= BLPos ) {
+        for( count = PGPos; count-- > BLPos ) {
             Blip( count, ' ' );
         }
-        count = 0;
-        while( Version[ count ] != NULLCHAR ) {
-            Blip( count, Version[ count ] );
-            ++count;
+        for( count = 0; Version[count] != NULLCHAR; ++count ) {
+            Blip( count, Version[count] );
         }
     }
 }

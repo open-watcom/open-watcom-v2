@@ -80,14 +80,14 @@ extern  void    FrlFreeSize( pointer **head, pointer *what, size_t size ) {
 extern  bool    FrlFreeAll( pointer **head, size_t size ) {
 /******************************************************/
 
-    pointer     junk;
+    pointer     *next;
 
-    junk = NULL;
-    while( *head != NULL ) {
-        junk = *head;
-        *head = **head;
-        CGFree( junk );
+    if( *head == NULL )
+        return( FALSE );
+    for( ; *head != NULL; *head = next ) {
+        next = **head;
+        CGFree( *head );
         FrlSize -= size;
     }
-    return( junk != NULL );
+    return( TRUE );
 }

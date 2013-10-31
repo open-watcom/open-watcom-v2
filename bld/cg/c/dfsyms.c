@@ -867,12 +867,11 @@ static  dbg_local *UnLinkLoc( dbg_local **owner, sym_handle sym ) {
 
     dbg_local           *curr;
 
-    while( (curr = *owner) != NULL ) {
+    for( ; (curr = *owner) != NULL; owner = &(*owner)->link ) {
         if( curr->sym == sym ){
             *owner = curr->link;
             break;
         }
-        owner = &(*owner)->link;
     }
     return( curr );
 }
@@ -937,7 +936,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     dw_loc_handle       dw_frameloc;
     dw_loc_handle       dw_segloc;
     dbg_local           *parm;
-    dbg_local           *junk;
+    dbg_local           *next;
     dw_handle           obj;
     bck_info            *bck;
     sym_access          *access;
@@ -1010,15 +1009,13 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     if( dw_segloc != NULL ){
         DWLocTrash( Client, dw_segloc );
     }
-    parm = rtn->parms;
-    while( parm != NULL ) {  /* flush these suckers */
+    for( parm = rtn->parms; parm != NULL; parm = next ) {
+        next = parm->link;
         if( parm->sym != NULL ){
             GenParmLoc( parm, &rtn->rtn_blk->locals );
         }
         DBLocFini( parm->loc );
-        junk = parm;
-        parm = parm->link;
-        CGFree( junk );
+        CGFree( parm );
     }
     if( rtn->reeturn != NULL ){
         GenRetSym( rtn->reeturn, tipe );
@@ -1074,12 +1071,14 @@ extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc )
 
 
 
-static  void    DumpLocals( dbg_local *local ) {
-/***********************************************/
-    dbg_local   *junk;
+static  void    DumpLocals( dbg_local *local )
+/********************************************/
+{
+    dbg_local   *next;
     dbg_type    tipe;
 
-    while( local != NULL ) {
+    for( ; local != NULL; local = next ) {
+        next = local->link;
         switch( local->kind ){
         case DBG_SYM_VAR:
             DFGenStatic( local->sym, local->loc );
@@ -1093,9 +1092,7 @@ static  void    DumpLocals( dbg_local *local ) {
             DFTypedef( FEName( local->sym ), tipe );
             break;
         }
-        junk = local;
-        local = local->link;
-        CGFree( junk );
+        CGFree( local );
     }
 }
 

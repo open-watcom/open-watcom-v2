@@ -200,7 +200,7 @@ static  void *MarkInstance( block *blk )
     }
     if( _GBitOverlap( flow->out, Id ) ) {
         edge = &blk->edge[ 0 ];
-        for( i = blk->targets; i-- > 0; ) {
+        for( i = blk->targets; i > 0; --i ) {
             bitp = &edge->destination.u.blk->dataflow->in;
             if( _GBitOverlap( *bitp, Id ) ) {
                 SafeRecurseCG( (func_sr)MarkInstance, edge->destination.u.blk );

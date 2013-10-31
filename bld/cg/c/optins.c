@@ -247,7 +247,7 @@ static  ins_entry       *Redirect( ins_entry *l_ins, ins_entry *j_ins )
 {
     ins_entry   *ref;
     code_lbl    *new;
-    ins_entry   *ins;
+    ins_entry   *next;
     ins_entry   *new_ins;
 
   optbegin
@@ -256,11 +256,9 @@ static  ins_entry       *Redirect( ins_entry *l_ins, ins_entry *j_ins )
     if( UniqueLabel( _Label( l_ins ) ) && UniqueLabel( new ) ) {
         optreturn( NULL );
     }
-    ref = _Label( l_ins )->refs;
-    while( ref != NULL ) {
-        ins = ref;
-        ref = _LblRef( ref );
-        ChgLblRef( ins, new );
+    for( ref = _Label( l_ins )->refs; ref != NULL; ref = next ) {
+        next = _LblRef( ref );
+        ChgLblRef( ref, new );
     }
     if( new_ins != NULL && _Class( new_ins ) != OC_DEAD ) {
         Untangle( new_ins );

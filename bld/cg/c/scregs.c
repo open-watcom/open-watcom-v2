@@ -182,7 +182,7 @@ extern  void    RegKill( score *scoreboard, hw_reg_set regs ) {
     if( !HW_CEqual( regs, HW_EMPTY ) ) {
         entry = *ScoreList;
         free_heads = (list_head **)&scoreboard[ ScoreCount ];
-        for( i = ScoreCount; i-- > 0; ) {
+        for( i = ScoreCount; i > 0; --i ) {
             if( HW_Ovlap( entry->reg, regs ) ) {
                 if( scoreboard->list != NULL ) {
                     if( scoreboard->next_reg == scoreboard ) {
@@ -200,12 +200,11 @@ extern  void    RegKill( score *scoreboard, hw_reg_set regs ) {
                 scoreboard->generation = 0;
             } else {
                 owner = scoreboard->list;
-                for(;;) {
+                for( ; ; ) {
                     curr_list = *owner;
                     if( curr_list == NULL ) break;
                     if( curr_list->info.index_reg != NO_INDEX
-                     && HW_Ovlap( ScoreList[ curr_list->info.index_reg ]->reg,
-                                  regs ) ) {
+                      && HW_Ovlap( ScoreList[ curr_list->info.index_reg ]->reg, regs ) ) {
                         *owner = curr_list->next;
                         FreeScListEntry( curr_list );
                     } else {
@@ -213,8 +212,8 @@ extern  void    RegKill( score *scoreboard, hw_reg_set regs ) {
                     }
                 }
             }
-            ++ entry;
-            ++ scoreboard;
+            ++entry;
+            ++scoreboard;
         }
     }
 }

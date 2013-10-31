@@ -252,13 +252,12 @@ extern  void    FiniQueue( void )
 extern  void    AbortQueue( void )
 /********************************/
 {
-    ins_entry   *instr;
+    ins_entry   *next;
 
   optbegin
-    while( FirstIns != NULL ) {
-        instr = FirstIns;
-        FirstIns = FirstIns->ins.next;
-        FreeInstr( instr );
+    for( ; FirstIns != NULL; FirstIns = next ) {
+        next = FirstIns->ins.next;
+        FreeInstr( FirstIns );
     }
   optend
 }

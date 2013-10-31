@@ -39,8 +39,6 @@
 extern  void            DumpSym(name*);
 extern  void            DumpRegName(hw_reg_set);
 
-#define SET_SIZE        (MAX_RG + 1)
-
 static  void    DumpIndent( int i ) {
 /***********************************/
 
@@ -53,14 +51,20 @@ static  void    DumpIndent( int i ) {
 static  void    DumpRegs( hw_reg_set *regs ) {
 /********************************************/
 
-    int i;
+    int     i;
+    bool    first;
 
     DumpLiteral( "Choices " );
     if( regs != NULL ) {
-        for( i = SET_SIZE; i-- > 0; ) {
+        first = TRUE;
+        for( i = REG_COUNT; i > 0; --i ) {
             if( !HW_CEqual( *regs, HW_EMPTY ) ) {
+                if( first ) {
+                    first = FALSE;
+                } else {
+                    DumpChar( ',' );
+                }
                 DumpRegName( *regs );
-                DumpChar( ',' );
             }
             ++regs;
         }

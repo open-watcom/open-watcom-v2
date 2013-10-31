@@ -177,11 +177,9 @@ extern  void    ScoreFreeList( score *p )
     score_list  *next;
 
     if( p->list != NULL ) {
-        curr = *p->list;
-        while( curr != NULL ) {
+        for( curr = *p->list; curr != NULL; curr = next ) {
             next = curr->next;
             FreeScListEntry( curr );
-            curr = next;
         }
         *p->list = NULL;
     }

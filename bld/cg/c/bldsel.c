@@ -156,7 +156,9 @@ static  void    SortNodeList( an node, select_node *s_node, bool is_signed ) {
     list = SortList( s_node->list, offsetof( select_list, next ), NodeLess );
     s_node->list = list;
     s_node->lower = list->low;
-    while( list->next != NULL ) list = list->next;
+    while( list->next != NULL ) {
+        list = list->next;
+    }
     s_node->upper = list->high;
 }
 
@@ -173,20 +175,17 @@ typedef enum sel_kind {
 static  void    MergeListEntries( select_node *s_node ) {
 /*******************************************************/
 
-    select_list *list;
+    select_list *curr;
     select_list *next;
 
-    list = s_node->list;
-    next = list->next;
-    while( next != NULL ) {
-        if( ( list->high + 1 == next->low ) && ( list->label == next->label ) ) {
-            list->high = next->high;
-            list->next = next->next;
+    for( curr = s_node->list, next = curr->next; next != NULL; next = curr->next ) {
+        if( ( curr->high + 1 == next->low ) && ( curr->label == next->label ) ) {
+            curr->high = next->high;
+            curr->next = next->next;
             CGFree( next );
         } else {
-            list = list->next;
+            curr = next;
         }
-        next = list->next;
     }
 }
 
@@ -194,19 +193,16 @@ static  void    MergeListEntries( select_node *s_node ) {
 static  signed_32       DistinctIfCost( select_node *s_node ) {
 /*************************************************************/
 
-    select_list *list;
+    select_list *curr;
     select_list *next;
     int         entries;
 
     entries = 1;
-    list = s_node->list;
-    next = list->next;
-    while( next != NULL ) {
-        if( ( list->high + 1 != next->low ) || ( list->label != next->label ) ) {
+    for( curr = s_node->list, next = curr->next; next != NULL; next = next->next ) {
+        if( ( curr->high + 1 != next->low ) || ( curr->label != next->label ) ) {
             ++entries;
-            list = next;
+            curr = next;
         }
-        next = next->next;
     }
     return( IfCost( s_node, entries ) );
 }
@@ -325,7 +321,7 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
 
     mid = lo + ( hi - lo ) / 2;
     mid_list = list;
-    for( num = mid; num-- > 0; ) {
+    for( num = mid; num > 0; --num ) {
         mid_list = mid_list->next;
     }
     if( lo == hi ) {
@@ -441,10 +437,11 @@ extern  signed_32       NumValues( select_list *list, signed_32 hi ) {
     signed_32           cases;
 
     cases = 0;
-    while( list != NULL ) {
-        if( SelCompare( list->high, hi ) > 0 ) break;
+    for( ; list != NULL; list = list->next ) {
+        if( SelCompare( list->high, hi ) > 0 ) {
+            break;
+        }
         cases += list->high - list->low + 1;
-        list = list->next;
     }
     return( cases );
 }
@@ -530,13 +527,11 @@ static  void    FreeSelectNode( select_node *s_node ) {
 /*****************************************************/
 
     select_list         *list;
-    select_list         *prev;
+    select_list         *next;
 
-    list = s_node->list;
-    while( list != NULL ) {
-        prev = list;
-        list = list->next;
-        CGFree( prev );
+    for( list = s_node->list; list != NULL; list = next ) {
+        next = list->next;
+        CGFree( list );
     }
     CGFree( s_node );
 }

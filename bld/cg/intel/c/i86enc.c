@@ -242,10 +242,8 @@ extern  void    InsertByte( byte b ) {
     i = Temp.hdr.reclen - offsetof( template, data );
     dst = &Temp.data[i];
     src = &Temp.data[i - 1];
-    for( ; i-- > 0; ) {
-        *dst = *src;
-        --dst;
-        --src;
+    for( ; i > 0; --i ) {
+        *dst-- = *src--;
     }
     Temp.data[0] = b;
     Temp.hdr.reclen++;

@@ -146,8 +146,7 @@ extern  type_def        *TypeAddress( cg_type tipe ) {
     case TY_CODE_PTR:
         return( PTCodePointer );
     default:
-        list = TypeList;
-        while( list != NULL ) {
+        for( list = TypeList; list != NULL; list = list->link ) {
             if( list->format == TYPE_DEFINITION ) {
                 if( list->tipe.type_def.refno == tipe ) {
                     return( &list->tipe.type_def );
@@ -158,7 +157,6 @@ extern  type_def        *TypeAddress( cg_type tipe ) {
                 }
             }
 
-            list = list->link;
         }
         return( NULL );
     }
@@ -225,14 +223,12 @@ extern  void    TypeFini() {
     Finish up the typeing stuff
 */
 
-    type_list   *junk;
+    type_list   *type;
     type_list   *next;
 
-    next = TypeList;
-    while( next != NULL ) {
-        junk = next;
-        next = next->link;
-        CGFree( junk );
+    for( type = TypeList; type != NULL; type = next ) {
+        next = type->link;
+        CGFree( type );
     }
 }
 

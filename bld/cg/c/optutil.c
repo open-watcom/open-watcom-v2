@@ -243,13 +243,12 @@ extern  ins_entry       *DelInstr( ins_entry *old ) {
 extern  void    FreePendingDeletes() {
 /************************************/
 
-    ins_entry   *temp;
+    ins_entry   *next;
 
   optbegin
-    while( PendingDeletes != NULL ) {
-        temp = PendingDeletes->ins.prev;
+    for( ; PendingDeletes != NULL; PendingDeletes = next ) {
+        next = PendingDeletes->ins.prev;
         FreeInstr( PendingDeletes );
-        PendingDeletes = temp;
     }
   optend
 }

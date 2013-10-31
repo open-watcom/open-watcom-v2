@@ -224,7 +224,7 @@ extern  void    GenBlock( block_class class, int targets )
     CurrBlock->class &= BIG_LABEL;   /* the only one that sticks*/
     CurrBlock->class |= class;
     while( --targets >= 1 ) {
-        CurrBlock->edge[ targets ].flags = 0;
+        CurrBlock->edge[targets].flags = 0;
     }
 }
 
@@ -253,7 +253,7 @@ extern  block   *ReGenBlock( block *blk, code_lbl *lbl )
         blk->ins.hd.prev->head.next = (instruction *)&new->ins;
     }
     while( targets-- > 0 ) {
-        new->edge[ targets ].source = new;
+        new->edge[targets].source = new;
     }
     new->ins.blk = new;
     if( HeadBlock == blk ) {
@@ -414,10 +414,8 @@ extern  bool        FixReturns( void )
             if( !LinkReturns( NULL ) ) {
                 return( FALSE );
             }
-            other_blk = HeadBlock;
-            while( other_blk != NULL ) {
+            for( other_blk = HeadBlock; other_blk != NULL; other_blk = other_blk->next_block ) {
                 other_blk->class &= ~BLOCK_VISITED;
-                other_blk = other_blk->next_block;
             }
         }
     }

@@ -882,8 +882,7 @@ extern  tn  TGAddParm( tn to, tn parm, type_def *tipe )
         new->rite = to->rite;
         to->rite = new;
     } else {
-        scan = to;
-        while( scan->rite != NULL ) {
+        for( scan = to; scan->rite != NULL; ) {
             scan = scan->rite;
         }
         scan->rite = new;
@@ -2248,7 +2247,7 @@ static  void    MakeSPSafe( tn scan )
     an          parman;
     type_def    *tipe;
 
-    while( scan != NULL ) {
+    for( ; scan != NULL; scan = scan->rite ) {
         parmtn = scan->u.left;
         if( ModifiesSP( parmtn ) ) {
             tipe = parmtn->tipe;
@@ -2257,7 +2256,6 @@ static  void    MakeSPSafe( tn scan )
             BGDone( BGAssign( BGDuplicate( temp ), parman, parman->tipe ) );
             scan->u.left = TGUnary( O_POINTS, TGLeaf( temp ), tipe );
         }
-        scan = scan->rite;
     }
 }
 
@@ -2288,9 +2286,8 @@ static  an  TNCall( tn what, bool ignore_return )
     } else {
         call = BGInitCall( TreeGen( addr->u.left ), what->tipe, addr->rite );
     }
-    scan = what->rite;
-    MakeSPSafe( scan );
-    while( scan != NULL ) {
+    MakeSPSafe( scan = what->rite );
+    for( scan = what->rite; scan != NULL; scan = scan->rite ) {
         base = TNFindBase( scan->u.left );
         parmtn = scan->u.left;
         scan->u.name = base;
@@ -2341,7 +2338,6 @@ static  an  TNCall( tn what, bool ignore_return )
         } else {
             BGAddParm( call, parman );
         }
-        scan = scan->rite;
     }
     FreeTreeNode( addr );
     if( cclass & MAKE_CALL_INLINE ) {
@@ -2361,15 +2357,13 @@ static  an  TNCall( tn what, bool ignore_return )
 extern  void    TNZapParms( void )
 /********************************/
 {
-    tn      junk;
+    tn      next;
     tn      scan;
 
-    scan = NodesToZap;
-    while( scan != NULL ) {
+    for( scan = NodesToZap; scan != NULL; scan = next ) {
+        next = scan->rite;
         BGZapBase( scan->u.name, scan->tipe );
-        junk = scan;
-        scan = scan->rite;
-        FreeTreeNode( junk );
+        FreeTreeNode( scan );
     }
 }
 

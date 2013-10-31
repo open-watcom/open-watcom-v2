@@ -86,16 +86,14 @@ static  instruction     *SetToConst( block *blk, signed_32 *pcons )
     instruction *next;
     name        *op;
 
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode == OP_NOP ) {
+    for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ) {
         ins = ins->head.next;
     }
     if( ins->head.opcode != OP_MOV )
         return( NULL );
     if( _IsFloating( ins->type_class ) )
         return( NULL );
-    next = ins->head.next;
-    while( next->head.opcode == OP_NOP ) {
+    for( next = ins->head.next; next->head.opcode == OP_NOP; ) {
         next = next->head.next;
     }
     if( next->head.opcode != OP_BLOCK )

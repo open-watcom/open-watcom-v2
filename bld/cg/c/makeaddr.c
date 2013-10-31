@@ -177,8 +177,8 @@ extern  void    NamesCrossBlocks( void )
     an          next;
     name        *temp;
 
-    addr = AddrList;
-    while( addr != NULL ) { /* Careful. The list shifts under our feet.*/
+    /* Careful. The list shifts under our feet.*/
+    for( addr = AddrList; addr != NULL; addr = next ) {
         next = addr->link;
         if( addr->flags & FL_ADDR_OK_ACROSS_BLOCKS ) {
             addr->flags |= FL_ADDR_CROSSED_BLOCKS;
@@ -203,7 +203,6 @@ extern  void    NamesCrossBlocks( void )
             CopyAddr( new, addr );
             AddrFree( new );
         }
-        addr = next;
     }
 }
 
@@ -218,24 +217,23 @@ extern  bool    AddrFrlFree( void )
 static  name    *Display( sym_handle symbol, int level )
 /******************************************************/
 {
-    proc_def    *proc;
+    proc_def    *old_currproc;
+    name        *old_names;
     name        *op;
-    name        *names;
 
-    proc = CurrProc;
+    old_currproc = CurrProc;
+    old_names = Names[N_TEMP];
     while( level != CurrProc->lex_level ) {
         CurrProc = CurrProc->next_proc;
     }
-    names = Names[  N_TEMP  ];
-    Names[  N_TEMP  ] = CurrProc->names[  N_TEMP  ];
-    op = Names[  N_TEMP  ];
-    while( op->v.symbol != symbol ) {
+    Names[N_TEMP] = CurrProc->names[N_TEMP];
+    for( op = Names[N_TEMP]; op->v.symbol != symbol; ) {
         op = op->n.next_name;
     }
     op->v.usage |= ( NEEDS_MEMORY | USE_MEMORY | USE_IN_ANOTHER_BLOCK);
     AllocALocal( op );
-    CurrProc = proc;
-    Names[  N_TEMP  ] = names;
+    CurrProc = old_currproc;
+    Names[N_TEMP] = old_names;
     return( MakeDisplay( op, level ) );
 }
 

@@ -98,13 +98,11 @@ static  void    DumpCall( tn what, int indent ) {
     DumpLiteral( "<O_CALL>" );
     DumpNL();
     DumpSubTree( what->u.left->u.left, indent+2 );
-    scan = what->rite;
-    while( scan != NULL ) {
+    for( scan = what->rite; scan != NULL; scan = scan->rite ) {
         DumpIndent( indent );
         DumpLiteral( "<O_PARM>" );
         DumpNL();
         DumpSubTree( scan->u.left, indent+2 );
-        scan = scan->rite;
     }
 }
 

@@ -1133,8 +1133,7 @@ extern  void _CGAPI DBAddParm( proc_list *pr, dbg_type tipe ) {
 #endif
     parm = CGAlloc( sizeof( parm_entry ) );
     pr->num++;
-    owner = &pr->list;
-    while( *owner != NULL ) {
+    for( owner = &pr->list; *owner != NULL; ) {
         owner = &(*owner)->next;
     }
     *owner = parm;

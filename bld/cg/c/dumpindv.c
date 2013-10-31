@@ -77,8 +77,7 @@ extern  void    DumpIV( induction *var ) {
         DumpLong( var->plus2 );
         DumpLiteral( " )" );
     }
-    invar = var->invar;
-    while( invar != NULL ) {
+    for( invar = var->invar; invar != NULL; invar = invar->next ) {
         DumpLiteral( " + ( " );
         if( var->lasttimes >= invar->id ) {
             DumpOperand( var->ivtimes );
@@ -90,7 +89,6 @@ extern  void    DumpIV( induction *var ) {
         }
         DumpOperand( invar->name );
         DumpLiteral( " )" );
-        invar = invar->next;
     }
     DumpNL();
     DumpLiteral( "        ins=" );
@@ -101,8 +99,7 @@ extern  void    DumpIV( induction *var ) {
     DumpOperand( var->basic->name );
     if( _IsV( var, IV_ALIAS ) ) {
         DumpLiteral( " alias=" );
-        alias = var->alias;
-        while( _IsV( alias, IV_ALIAS ) ) {
+        for( alias = var->alias; _IsV( alias, IV_ALIAS ); ) {
             alias = alias->alias;
         }
         DumpPtr( alias );
@@ -143,10 +140,8 @@ extern  void    DumpIVList() {
 
     induction   *var;
 
-    var = IndVarList;
-    while( var != NULL ) {
+    for( var = IndVarList; var != NULL; var = var->next ) {
         DumpIV( var );
-        var = var->next;
     }
 }
 

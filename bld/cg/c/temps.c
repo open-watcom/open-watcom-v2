@@ -100,17 +100,16 @@ static  void    ReInitStackMap( void )
 {
     stack_entry *stack;
     stack_temp  *other;
+    stack_temp  *next;
 
-    stack = StackMap;
-    while( stack != NULL ) {
-        while( stack->temp.others != NULL ) {
-            other = stack->temp.others;
-            stack->temp.others = stack->temp.others->others;
+    for( stack = StackMap; stack != NULL; stack = stack->link ) {
+        for( other = stack->temp.others; other != NULL; other = next ) {
+            next = other->others;
             CGFree( other );
         }
+        stack->temp.others = NULL;
         stack->temp.first = LAST_INS_ID;
         stack->temp.last = FIRST_INS_ID;
-        stack = stack->link;
     }
 }
 
@@ -152,29 +151,27 @@ static  stack_entry     *ReUsableStack(stack_temp *st_temp,name *temp)
 {
     type_length size;
     stack_entry *stack;
-    stack_temp  *others;
+    stack_temp  *other;
 
-    stack = StackMap;
     size = temp->n.size;
-    while( stack != NULL ) {
-        others = &stack->temp;
+    for( stack = StackMap; stack != NULL; stack = stack->link ) {
         if( size <= stack->size ) {
-            for( ;; ) {
-                if( others->first <= st_temp->last
-                   && others->last >= st_temp->first ) break;
-                others = others->others;
-                if( others == NULL ) return( stack );
+            for( other = &stack->temp; other != NULL; other = other->others ) {
+                if( other->first <= st_temp->last && other->last >= st_temp->first ) {
+                    break;
+                }
+            }
+            if( other == NULL ) {
+                break;
             }
         }
-        stack = stack->link;
     }
     return( stack );
 }
 
 
-static bool SetLastUse( name *op, name *temp,
-                        stack_temp *new, instruction *ins )
-/*********************************************************/
+static bool SetLastUse( name *op, name *temp, stack_temp *new, instruction *ins )
+/*******************************************************************************/
 {
     if( op->n.class == N_INDEXED && op->i.base != NULL ) {
         op = op->i.base;
@@ -483,8 +480,7 @@ extern  void    AssignOtherLocals( void )
     }
     Names[ N_TEMP ] = SortList( Names[ N_TEMP ], offsetof( name, n.next_name ), TempAllocBefore );
     if( LastTemp != NULL ) {
-        owner = &Names[ N_TEMP ];
-        while( *owner != NULL ) {
+        for( owner = &Names[N_TEMP]; *owner != NULL; ) {
             owner = &(*owner)->n.next_name;
         }
         *owner = rest;
@@ -576,8 +572,9 @@ static void AssgnATemp( name *temp, block_num curr_id )
 extern  void    FiniStackMap( void )
 /**********************************/
 {
-    stack_entry *junk1;
-    stack_temp  *junk2;
+    stack_entry *next1;
+    stack_temp  *other;
+    stack_temp  *next2;
     name        *temp;
 
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
@@ -587,15 +584,13 @@ extern  void    FiniStackMap( void )
         AllocNewLocal( temp );
     }
 
-    while( StackMap != NULL ) {
-        junk1 = StackMap;
-        StackMap = StackMap->link;
-        while( junk1->temp.others != NULL ) {
-            junk2 = junk1->temp.others;
-            junk1->temp.others = junk1->temp.others->others;
-            CGFree( junk2 );
+    for( ; StackMap != NULL; StackMap = next1 ) {
+        next1 = StackMap->link;
+        for( other = StackMap->temp.others; other != NULL; other = next2 ) {
+            next2 = other->others;
+            CGFree( other );
         }
-        CGFree( junk1 );
+        CGFree( StackMap );
     }
     TellTempLocs();
 }

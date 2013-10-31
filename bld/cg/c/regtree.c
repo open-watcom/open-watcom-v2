@@ -47,8 +47,6 @@ extern  hw_reg_set      *RegSets[];
 static  pointer         *RegFrl;
 static  pointer         *TreeFrl;
 
-#define SET_SIZE (MAX_RG + 1)
-
 
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
 static bool HasSegRegs( reg_tree *tree )
@@ -91,11 +89,10 @@ static  hw_reg_set      *AllocRegSet( void )
     hw_reg_set  *regs;
     hw_reg_set  *curr;
 
-    regs = AllocFrl( &RegFrl, SET_SIZE * sizeof( hw_reg_set ) );
+    regs = AllocFrl( &RegFrl, REGSET_SIZE );
     curr = regs;
-    for( i = SET_SIZE; i-- > 0; ) {
-        HW_CAsgn( *curr, HW_EMPTY );
-        ++curr;
+    for( i = REG_COUNT; i > 0; --i ) {
+        HW_CAsgn( *curr++, HW_EMPTY );
     }
     return( regs );
 }
@@ -104,7 +101,7 @@ static  hw_reg_set      *AllocRegSet( void )
 static  void    FreeRegSet( hw_reg_set *regs )
 /********************************************/
 {
-    FrlFreeSize( &RegFrl, (pointer *)regs, SET_SIZE * sizeof( hw_reg_set ) );
+    FrlFreeSize( &RegFrl, (pointer *)regs, REGSET_SIZE );
 }
 
 
@@ -114,7 +111,7 @@ extern  bool    RegTreeFrlFree( void )
     bool        freed;
 
     freed = FrlFreeAll( &TreeFrl, sizeof( reg_tree ) );
-    freed |= FrlFreeAll( &RegFrl, SET_SIZE * sizeof( hw_reg_set ) );
+    freed |= FrlFreeAll( &RegFrl, REGSET_SIZE );
     return( freed );
 }
 
@@ -182,7 +179,7 @@ static  void    BuildPossible( reg_tree *tree )
             }
             *dst = *src;
 #ifndef NDEBUG
-            if ( dst - tree->regs >= SET_SIZE ) { /* '>=' 'coz no increment before 'break' */
+            if ( dst - tree->regs >= REG_COUNT ) { /* '>=' 'coz no increment before 'break' */
                 Zoiks( ZOIKS_143 );
             }
 #endif
@@ -357,15 +354,14 @@ static  void    CompressSets( reg_tree *tree )
         if( tree->regs != NULL ) {
             dst = tree->regs;
             src = dst;
-            for( i = SET_SIZE; i-- > 0; ) {
+            for( i = REG_COUNT; i > 0; --i ) {
                 if( !HW_CEqual( *src, HW_EMPTY ) ) {
                     *dst++ = *src;
                 }
                 ++src;
             }
             while( dst != src ) {
-                HW_CAsgn( *dst, HW_EMPTY );
-                ++dst;
+                HW_CAsgn( *dst++, HW_EMPTY );
             }
         }
     }
@@ -395,26 +391,26 @@ static  bool    PartIntersect( reg_tree *part,
             part->idx = RL_;
             src = whole->regs;
             dst = part->regs;
-            for( i = SET_SIZE; i-- > 0; ) {
-                *dst = rtn( *src );
-                ++dst;
-                ++src;
+            for( i = REG_COUNT; i > 0; --i ) {
+                *dst++ = rtn( *src++ );
             }
         }
 
         /* check that all Hi/Lo parts of whole are contained in part*/
 
         src = whole->regs;
-        for( i = SET_SIZE; i-- > 0; ) {
+        for( i = REG_COUNT; i > 0; --i ) {
             if( !HW_CEqual( *src, HW_EMPTY ) ) {
                 curr = rtn( *src );
                 if( !HW_CEqual( curr, HW_EMPTY ) ) {
                     dst = part->regs;
-                    for( j = SET_SIZE; j-- > 0; ) {
-                        if( HW_Equal( *dst, curr ) ) break;
+                    for( j = REG_COUNT; j > 0; --j ) {
+                        if( HW_Equal( *dst, curr ) ) {
+                            break;
+                        }
                         ++dst;
                     }
-                    if( j < 0 ) {
+                    if( j == 0 ) {
                         HW_CAsgn( *src, HW_EMPTY );
                         change = TRUE;
                     }
@@ -429,18 +425,18 @@ static  bool    PartIntersect( reg_tree *part,
         /* check that each reg in part is a Hi/Lo part in whole*/
 
         src = part->regs;
-        for( i = SET_SIZE; i-- > 0; ) {
+        for( i = REG_COUNT; i > 0; --i ) {
             curr = *src;
             if( !HW_CEqual( curr, HW_EMPTY ) ) {
                 dst = whole->regs;
-                for( j = SET_SIZE; j-- > 0; ) {
+                for( j = REG_COUNT; j > 0; --j ) {
                     if( !HW_CEqual( *dst, HW_EMPTY ) ) {
                         tmp = rtn( *dst );
                         if( HW_Equal( curr, tmp ) ) break;
                     }
                     ++dst;
                 }
-                if( j < 0 ) {
+                if( j == 0 ) {
                     HW_CAsgn( *src, HW_EMPTY );
                     change = TRUE;
                 }

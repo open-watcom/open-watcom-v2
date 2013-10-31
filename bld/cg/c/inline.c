@@ -191,10 +191,8 @@ extern  int     BGInlineDepth() {
     inline_stack        *curr;
 
     depth = 0;
-    curr = InlineStack;
-    while( curr != NULL ) {
+    for( curr = InlineStack; curr != NULL; curr = curr->next ) {
         depth++;
-        curr = curr->next;
     }
     return( depth );
 }

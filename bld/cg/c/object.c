@@ -201,14 +201,12 @@ extern  void    BlocksSortedBy( bool (*bigger)( block *, block * ) )
 /******************************************************************/
 {
     block       *blk;
-    block       *first;
     block       *next;
     bool        change;
 
-    first = HeadBlock->next_block;
-    for( change = ( first != NULL ); change; ) {
+    for( change = ( HeadBlock->next_block != NULL ); change; ) {
         change = FALSE;
-        for( blk = first; (next = blk->next_block) != NULL; blk = next ) {
+        for( blk = HeadBlock->next_block; (next = blk->next_block) != NULL; blk = next ) {
             if( bigger( blk, next ) ) {
                 blk->prev_block->next_block = next;
                 if( next->next_block != NULL ) {

@@ -155,12 +155,13 @@ static  bool    CantChange( instruction **pins, name *frm, name *to ) {
 /*********************************************************************/
 
     instruction         *new_ins;
-    int                 i;
+    int                 num_operands;
 
-    i = (*pins)->num_operands;
-    new_ins = NewIns( i );
-    Copy( *pins, new_ins, offsetof( instruction, operands ) + i * sizeof( name * ) );
-    if( CanChange( pins, frm, to, new_ins ) ) return( FALSE );
+    num_operands = (*pins)->num_operands;
+    new_ins = NewIns( num_operands );
+    Copy( *pins, new_ins, offsetof( instruction, operands ) + num_operands * sizeof( name * ) );
+    if( CanChange( pins, frm, to, new_ins ) )
+        return( FALSE );
     new_ins->head.next = new_ins;
     new_ins->head.prev = new_ins;
     FreeIns( new_ins );

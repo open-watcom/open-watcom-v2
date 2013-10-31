@@ -291,8 +291,7 @@ static  bool    FindIntervals( void )
                 if( add == FALSE ) {
                     curr->parent = prev_int;
                     prev_int->last_block = curr->last_block;
-                    test = prev_int->sub_int;
-                    while( test->next_sub_int != NULL ) {
+                    for( test = prev_int->sub_int; test->next_sub_int != NULL; ) {
                         test = test->next_sub_int;
                     }
                     test->next_sub_int = curr;
@@ -328,8 +327,7 @@ static  void    ReorderBlocks( void )
             curr->last_block = last_block;
         }
         if( curr == NULL )break;
-        curr = curr->next_sub_int;
-        while( curr->level > 0 ) {
+        for( curr = curr->next_sub_int; curr->level > 0; ) {
             curr = curr->sub_int;
         }
         next_block = curr->first_block;
@@ -457,13 +455,12 @@ static  void    NestingDepth( void )
 static  void    KillIntervals( void )
 /***********************************/
 {
-    interval_def        *junk;
+    interval_def        *next;
     block               *blk;
 
-    while( Intervals != NULL ) {
-        junk = Intervals;
-        Intervals = Intervals->link;
-        CGFree( junk );
+    for( ; Intervals != NULL; Intervals = next ) {
+        next = Intervals->link;
+        CGFree( Intervals );
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->u.interval = NULL;

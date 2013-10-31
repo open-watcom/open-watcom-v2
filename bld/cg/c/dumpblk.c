@@ -365,8 +365,7 @@ extern  void    DumpFlowGraph( block *blk )
 
     DumpLiteral( "Interval graph" );
     DumpNL();
-    head = blk->u.interval;
-    while( head->parent != NULL ) {
+    for( head = blk->u.interval; head->parent != NULL; ) {
         head = head->parent;
     }
     curr = head;
@@ -381,10 +380,8 @@ extern  void    DumpFlowGraph( block *blk )
                 if( curr == head ) break;
                 curr = curr->parent;
             }
-            i = head->level;
-            while( i > curr->level ) {
+            for( i = head->level; i > curr->level; --i ) {
                 DumpLiteral( "|     " );
-                -- i;
             }
             if( i > 0 ) {
                 for(;;) {
@@ -392,10 +389,8 @@ extern  void    DumpFlowGraph( block *blk )
                     if( -- i == 0 ) break;
                 }
                 DumpNL();
-                i = head->level;
-                while( i > curr->level ) {
+                for( i = head->level; i > curr->level; --i ) {
                     DumpLiteral( "|     " );
-                    -- i;
                 }
             }
             if( curr == head ) break;

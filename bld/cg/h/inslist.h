@@ -141,6 +141,7 @@ typedef struct instruction {
 #define NO_JUMP         2
 #define INS_PER_BLOCK   75
 #define MAX_OPS_PER_INS 4
+#define INS_SIZE        ( offsetof( instruction, operands ) + MAX_OPS_PER_INS * sizeof( name * ) )
 
 #define _TrueIndex( i )              ( (i)->flags.byte & 0x0f )
 #define _FalseIndex( i )             ( ( (i)->flags.byte & 0xf0 ) >> 4 )

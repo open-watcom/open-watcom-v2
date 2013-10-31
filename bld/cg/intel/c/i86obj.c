@@ -2363,9 +2363,8 @@ extern  void    OutLabel( code_lbl *lbl )
     }
     ctl = AskLblPatch( lbl );
     pat = ctl->array;
-    for( i = ctl->used; i-- > 0; ) {
-        DoPatch( pat, lc );
-        pat++;
+    for( i = ctl->used; i > 0; --i ) {
+        DoPatch( pat++, lc );
     }
     KillArray( ctl );
     TellDonePatch( lbl );

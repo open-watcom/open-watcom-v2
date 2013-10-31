@@ -128,7 +128,7 @@ static bool ConvertInsToInt( instruction *ins, name *temp )
             return( TRUE );
         }
     } else {
-        for( i = ins->num_operands; i > 0; ) {
+        for( i = ins->num_operands; i-- > 0; ) {
             if( ins->operands[i] == temp ) {
                 ins->type_class = SW;
                 ConvertOtherOperands( ins, temp );

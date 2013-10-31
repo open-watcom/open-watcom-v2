@@ -360,13 +360,9 @@ extern  void    ScoreKillInfo( score *scoreboard, name *op,
 
     last_offset = info->offset + op->n.size;
     entry = ScoreList[ 0 ];
-    for( i = ScoreCount; i-- > 0; ) {
+    for( i = ScoreCount; i > 0; --i ) {
         if( !HW_Subset( except, entry->reg ) ) {
-            owner = scoreboard->list;
-            for(;;) {
-                curr = *owner;
-                if( curr == NULL )
-            break;
+            for( owner = scoreboard->list; (curr = *owner) != NULL; ) {
                 /*   Currently looking at memory from*/
                 /*   curr->info+offset to curr->info+offset+entry->size*/
                 /*   If the names 'info' and 'curr' match, then have an*/
@@ -392,7 +388,7 @@ extern  void    ScoreKillInfo( score *scoreboard, name *op,
                 }
             }
         }
-        ++ entry;
-        ++ scoreboard;
+        ++entry;
+        ++scoreboard;
     }
 }

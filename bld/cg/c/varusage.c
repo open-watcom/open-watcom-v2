@@ -88,9 +88,9 @@ static  bool    CoveringDefinitions( name *op )
     for( alias = op->t.alias; alias != op; alias = alias->t.alias ) {
         if( alias->v.block_usage & DEF_WITHIN_BLOCK ) {
             loc = alias->v.offset - op->v.offset;
-            for( i = alias->n.size; i-- > 0; ) {
+            for( i = alias->n.size; i > 0; --i ) {
                 if( loc < sizeof( covered ) )
-                    covered[ loc ] = TRUE;
+                    covered[loc] = TRUE;
                 ++loc;
             }
         }

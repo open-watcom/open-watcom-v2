@@ -166,18 +166,18 @@ static  void    EndSym( cv_out *out )
     s_common    *com;
     byte        *ptr;
 
-    com = (s_common *) out->beg; /* assume ptr marks end of a sym */
+    com = (s_common *)out->beg; /* assume ptr marks end of a sym */
     ptr = out->ptr;
     len = ptr - out->beg;
 #if CVSIZE == 32
-    while( (len & CV_ALIGN-1)  != 0 ){
+    while( (len & CV_ALIGN-1)  != 0 ) {
         *ptr = '\0';
         ++len;
         ++ptr;
     }
     out->ptr = ptr;
 #endif
-    com->length  = len-sizeof( com->length );  /*don't count length field */
+    com->length = len - sizeof( com->length );  /*don't count length field */
 }
 
 extern  void    CVInitDbgInfo( void )
@@ -556,12 +556,11 @@ static  dbg_local *UnLinkLoc( dbg_local **owner, sym_handle sym )
 {
     dbg_local           *curr;
 
-    while( (curr = *owner) != NULL ) {
+    for( ; (curr = *owner) != NULL; owner = &(*owner)->link ) {
         if( curr->sym == sym ){
             *owner = curr->link;
             break;
         }
-        owner = &(*owner)->link;
     }
     return( curr );
 }
@@ -570,9 +569,10 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
 {
     dbg_local   *alt;
     cv_out      out[1];
-    dbg_local   *junk;
+    dbg_local   *next;
 
-    while( parm != NULL ) {  /* find and unlink from locals */
+    for( ; parm != NULL; parm = next ) {    /* find and unlink from locals */
+        next = parm->link;
         alt = UnLinkLoc( locals, parm->sym );
         if( alt != NULL ){
             dbg_type    tipe;
@@ -592,12 +592,10 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
                 }
             }
             DBLocFini( alt->loc );
-           CGFree( alt );
+            CGFree( alt );
         }
         DBLocFini( parm->loc );
-        junk = parm;
-        parm = parm->link;
-        CGFree( junk );
+        CGFree( parm );
     }
 //#if _TARGET & _TARG_AXP
 #if 0 // seems like it screws CVPACK on intel
@@ -762,18 +760,18 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )
 static  void    DumpLocals( dbg_local *local )
 /********************************************/
 {
-    dbg_local  *old;
+    dbg_local   *next;
     type_length offset;
     cv_out      out[1];
     dbg_type    tipe;
-    name       *t;
+    name        *t;
 
-    while( local != NULL ) {
-        switch( local->kind ){
+    for( ; local != NULL; next = local->link ) {
+        switch( local->kind ) {
         case DBG_SYM_VAR:
             tipe = FEDbgType( local->sym );
             t = LocSymBP( local->loc );
-            if( t != NULL ){
+            if( t != NULL ) {
                 offset = NewBase( t );
                 NewBuff( out, CVSyms );
                 FrameVar( out, FEName( local->sym ), tipe, offset );
@@ -790,9 +788,7 @@ static  void    DumpLocals( dbg_local *local )
             break;
         }
         DBLocFini( local->loc );
-        old = local;
-        local = local->link;
-        CGFree( old );
+        CGFree( local );
     }
 
 }

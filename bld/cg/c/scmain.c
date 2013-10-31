@@ -70,8 +70,9 @@ static  void    ScoreSeed( block *blk, block *son, unsigned index )
 
     if( !(blk->class & CONDITIONAL) ) return;
     if( blk->class & MULTIPLE_EXITS ) return;
-    cmp = blk->ins.hd.prev;
-    while( cmp->head.opcode == OP_NOP ) cmp = cmp->head.prev;
+    for( cmp = blk->ins.hd.prev; cmp->head.opcode == OP_NOP; ) {
+        cmp = cmp->head.prev;
+    }
     switch( cmp->head.opcode ) {
     case OP_CMP_EQUAL:
         which = _TrueIndex( cmp );

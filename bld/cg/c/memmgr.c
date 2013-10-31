@@ -426,10 +426,9 @@ static pointer  GetFromBlk( size_t amount )
     mem_blk     *block;
     tag         *alloc;
 
-    block = _Blks;
-    while( block && (block->free < amount) )
+    for( block = _Blks; block && (block->free < amount); ) {
         block = block->next;
-
+    }
     if( block ) {
         alloc = (tag*)((char*)block + block->size - block->free);
         assert( *alloc == 0 );
@@ -592,11 +591,9 @@ extern void MemFini( void )
     mem_blk *curr;
     mem_blk *next;
 
-    curr = _Blks;
-    while( curr != NULL ) {
+    for( curr = _Blks; curr != NULL; curr = next ) {
         next = curr->next;
         MemToSys( curr );
-        curr = next;
     }
 #ifdef MEMORY_STATS
     {

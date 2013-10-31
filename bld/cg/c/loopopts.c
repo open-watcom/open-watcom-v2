@@ -153,10 +153,12 @@ static  bool    InLoop( block *blk )
     return TRUE if blk is in the loop defined by Head.
 */
 {
-    if( blk == Head ) return( TRUE );
-    while( blk != NULL ) {
-        if( blk->loop_head == Head ) return( TRUE );
-        blk = blk->loop_head;
+    if( blk == Head )
+        return( TRUE );
+    for( ; blk != NULL; blk = blk->loop_head ) {
+        if( blk->loop_head == Head ) {
+            return( TRUE );
+        }
     }
     return( FALSE );
 }
@@ -306,7 +308,7 @@ extern  void    MarkLoop( void )
     }
     for( other_blk = Loop; other_blk != NULL; other_blk = other_blk->u.loop ) {
         edge = &other_blk->edge[ 0 ];
-        for( targets = other_blk->targets; targets-- > 0; ) {
+        for( targets = other_blk->targets; targets > 0; --targets ) {
             if( ( edge->destination.u.blk->class & IN_LOOP ) == EMPTY ) {
                 other_blk->class |= LOOP_EXIT;
             }
@@ -865,12 +867,11 @@ static  void    FreeInvariant( invariant *invar )
     Free an invariant list.
 */
 {
-    invariant   *junk;
+    invariant   *next;
 
-    while( invar != NULL ) {
-        junk = invar;
-        invar = invar->next;
-        CGFree( junk );
+    for( ; invar != NULL; invar = next ) {
+        next = invar->next;
+        CGFree( invar );
     }
 }
 
@@ -1060,12 +1061,11 @@ extern  void    FiniIndVars( void )
     clean up the induction variable lists.
 */
 {
-    induction   *junk;
+    induction   *next;
 
-    while( IndVarList != NULL ) {
-        junk = IndVarList;
-        IndVarList = IndVarList->next;
-        FreeVar( junk );
+    for( ; IndVarList != NULL; IndVarList = next ) {
+        next = IndVarList->next;
+        FreeVar( IndVarList );
     }
     NumIndVars = 0;
 }
@@ -1740,13 +1740,13 @@ static  name    *FindPointerPart( induction *var ) {
     name        *first;
 
     first = var->basic->name;
-    if( first->n.name_class == CP || first->n.name_class == PT ) return( first );
-    invar = var->invar;
-    while( invar != NULL ) {
+    if( first->n.name_class == CP || first->n.name_class == PT )
+        return( first );
+    for( invar = var->invar; invar != NULL; invar = invar->next ) {
         first = invar->name;
-        if( first->n.name_class==CP || first->n.name_class==PT )
+        if( first->n.name_class == CP || first->n.name_class == PT ) {
             return( first );
-        invar = invar->next;
+        }
     }
     return( NULL );
 }
@@ -1891,8 +1891,7 @@ static  void    IncAndInit( induction *var, name *iv, type_class_def class ) {
                            temp, class );
         SuffixPreHeader( ins );
     }
-    invar = var->invar;
-    while( invar != NULL ) {
+    for( invar = var->invar; invar != NULL; invar = invar->next ) {
         if( invar->name != first ) {
             if( invar->times == 1 && ( invar->id > var->lasttimes ) ) {
                 ins = MakeBinary( OP_ADD, temp, invar->name, temp, class );
@@ -1904,7 +1903,6 @@ static  void    IncAndInit( induction *var, name *iv, type_class_def class ) {
                 SuffixPreHeader( ins );
             }
         }
-        invar = invar->next;
     }
     if( var->plus2 != 0 ) {
         ins = Multiply( var->ivtimes, var->plus2,
@@ -1954,7 +1952,7 @@ static  void    LabelDown( instruction *frum,
     if( frum == avoiding ) return;
     blk = _BLOCK( frum );
     edge = &blk->edge[ 0 ];
-    for( i = blk->targets; i-- > 0; ) {
+    for( i = blk->targets; i > 0; --i ) {
         blk = edge->destination.u.blk;
         if( ( go_around || blk != Head ) && ( blk->class & IN_LOOP ) ) {
             ins = blk->ins.hd.next;
@@ -2180,11 +2178,13 @@ extern  instruction     *DupIns( instruction *blk_end, instruction *ins,
 /**************************************************************/
 
     instruction *new;
+    int         num_operands;
     int         i;
 
-    new = NewIns( ins->num_operands );
-    Copy( ins, new, offsetof( instruction, operands ) + ins->num_operands * sizeof( name * ) );
-    for( i = 0; i < new->num_operands; ++i ) {
+    num_operands = ins->num_operands;
+    new = NewIns( num_operands );
+    Copy( ins, new, offsetof( instruction, operands ) + num_operands * sizeof( name * ) );
+    for( i = 0; i < num_operands; ++i ) {
         AdjustOp( blk_end, &new->operands[i], var, adjust );
     }
     if( new->result != NULL ) {
@@ -2641,10 +2641,10 @@ static  bool    DangerousTypeChange( induction *var, induction *other ) {
 
     if( Unsigned[ var->type_class  ] == Unsigned[ other->type_class ] ) return( FALSE );
     if( PointerOk( other->name ) ) return( FALSE );
-    invar = other->invar;
-    while( invar != NULL ) {
-        if( PointerOk( invar->name ) ) return( FALSE );
-        invar = invar->next;
+    for( invar = other->invar; invar != NULL; invar = invar->next ) {
+        if( PointerOk( invar->name ) ) {
+            return( FALSE );
+        }
     }
     return( TRUE );
 }
@@ -2734,8 +2734,7 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
     if( rep->times < 0 ) {
         RevCond( ins );
     }
-    invar = rep->invar;
-    while( invar != NULL ) {
+    for( invar = rep->invar; invar != NULL; invar = invar->next ) {
         new_ins = MakeMul( prev_ins, invar->name, invar->times, NULL );
         prev_ins = new_ins;
         if( DifferentClasses( new_ins->result->n.name_class, class ) ) {
@@ -2749,7 +2748,6 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         ins->operands[ non_ind ] = new_ins->result;
         SuffixIns( prev_ins, new_ins );
         prev_ins = new_ins;
-        invar = invar->next;
     }
     return( TRUE );
 }
@@ -2872,9 +2870,8 @@ static  bool    DoLoopInvariant( bool (*rtn)(void) ) {
     bool                change;
 
     change = FALSE;
-    i = 1;
     depth = MaxDepth();
-    while( i <= depth ) { /* do loop invariant code motion from the outside in*/
+    for( i = 1; i <= depth; ++i ) { /* do loop invariant code motion from the outside in*/
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( ( blk->class & LOOP_HEADER ) != EMPTY && blk->depth == i ) {
                 LPBlip();
@@ -2889,7 +2886,6 @@ static  bool    DoLoopInvariant( bool (*rtn)(void) ) {
                 UnMarkLoop();
             }
         }
-        ++i;
     }
     return( change );
 }
@@ -3027,8 +3023,7 @@ extern  void    LoopEnregister( void )
     interval_depth      i;
     block               *blk;
 
-    i = MaxDepth();
-    while( i >= 1 ) { /* do loop enregistering from the inside out */
+    for( i = MaxDepth(); i >= 1; --i ) { /* do loop enregistering from the inside out */
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( ( blk->class & LOOP_HEADER ) != EMPTY && blk->depth == i ) {
                 Head = blk;
@@ -3037,7 +3032,6 @@ extern  void    LoopEnregister( void )
                 UnMarkLoop();
             }
         }
-        --i;
     }
 }
 
@@ -3112,11 +3106,10 @@ static  bool    ReduceVar( induction *var )
     ReplIns( var->ins, ins );
     var->ins = ins;
     IncAndInit( var, new_temp, class );
-    alias = var->alias;
-    while( alias != var ) {
+    for( alias = var->alias; alias != var; alias = alias->alias ) {
         if( NoPathThru( var->ins, alias->ins, var->basic->ins )
-         && !( alias->name->v.usage & USE_IN_ANOTHER_BLOCK )
-         && !( var->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
+          && !( alias->name->v.usage & USE_IN_ANOTHER_BLOCK )
+          && !( var->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
             ReplaceOccurences( alias->name, var->name );
             ins = MakeMove(new_temp,alias->name,class);
             PrefixIns(alias->ins,ins);
@@ -3128,7 +3121,6 @@ static  bool    ReduceVar( induction *var )
         alias->ins = ins;
 // why? ins = MakeMove( new_temp, alias->name, class );
 //      SuffixPreHeader( ins );
-        alias = alias->alias;
     }
     new = AddIndVar( var->basic->ins->head.prev, new_temp,
                      var->basic, var->invar, var->ivtimes,
@@ -3341,10 +3333,8 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll ) {
 
     /* do all loops inside this loop separately*/
 
-    curr_block.blk = HeadBlock;
-    while( curr_block.blk != NULL ) {
-        if( ( curr_block.blk->class & LOOP_HEADER ) &&
-            curr_block.blk->loop_head == header->blk ) {
+    for( curr_block.blk = HeadBlock; curr_block.blk != NULL; curr_block.blk = curr_block.blk->next_block ) {
+        if( ( curr_block.blk->class & LOOP_HEADER ) && curr_block.blk->loop_head == header->blk ) {
             curr_block.next = header;
             change |= DoInduction( &curr_block, reduce, unroll );
             while( *owner != NULL ) {   // hook inner indvars onto "list"
@@ -3353,7 +3343,6 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll ) {
             *owner = IndVarList;
             IndVarList = NULL;
         }
-        curr_block.blk = curr_block.blk->next_block;
     }
 
     /* now do this loop, BUT, don't consider any induction*/

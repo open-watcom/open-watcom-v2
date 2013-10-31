@@ -53,8 +53,7 @@ extern  void    RetAftrCall( ins_entry *ret_instr ) {
   optbegin
     if( _IsTargetModel( NO_CALL_RET_TRANSFORM ) )
         optreturnvoid;
-    call_instr = ret_instr;
-    while( PrevClass( call_instr ) == OC_LABEL ) {
+    for( call_instr = ret_instr; PrevClass( call_instr ) == OC_LABEL; ) {
         call_instr = PrevIns( call_instr );
     }
     if( PrevClass( call_instr ) != OC_CALL )
@@ -105,24 +104,22 @@ extern  bool    RetAftrLbl( ins_entry *ret ) {
 
     ins_entry   *ref;
     code_lbl    *lbl;
-    ins_entry   *instr;
+    ins_entry   *next;
     bool        change;
 
   optbegin
     change = FALSE;
     if( PrevClass( ret ) == OC_LABEL ) {
         lbl = _Label( PrevIns( ret ) );
-        ref = lbl->refs;
-        while( ref != NULL ) {
-            instr = ref;
-            ref = _LblRef( ref );
-            if( _Class( instr ) == OC_JMP ) {
-                JmpToRet( instr, ret );
+        for( ref = lbl->refs; ref != NULL; ref = next ) {
+            next = _LblRef( ref );
+            if( _Class( ref ) == OC_JMP ) {
+                JmpToRet( ref, ret );
                 change = TRUE;
-            } else if( _Class( instr ) == OC_CALL ) {
+            } else if( _Class( ref ) == OC_CALL ) {
                 if( (_Attr( ret ) & ATTR_POP) == 0 ) {
-                    _Savings( OPT_CALLTORET, _ObjLen( instr ) );
-                    DelInstr( instr );
+                    _Savings( OPT_CALLTORET, _ObjLen( ref ) );
+                    DelInstr( ref );
                     change = TRUE;
                 }
             }

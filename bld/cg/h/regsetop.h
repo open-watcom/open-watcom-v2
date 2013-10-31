@@ -35,3 +35,6 @@ typedef enum {
     #include "rg.h"
     #undef RG
 } op_reg_set_index;
+
+#define REG_COUNT       (MAX_RG + 1)
+#define REGSET_SIZE     (REG_COUNT * sizeof( hw_reg_set ))

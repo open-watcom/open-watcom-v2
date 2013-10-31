@@ -158,10 +158,8 @@ static  void    ClearCopyPtrs( block *tail )
 {
     block       *blk;
 
-    blk = tail;
-    while( blk != NULL ) {
+    for( blk = tail; blk != NULL; blk = blk->u.loop ) {
         COPY_PTR( blk ) = NULL;
-        blk = blk->u.loop;
     }
 }
 
@@ -314,19 +312,15 @@ static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *comple
         if( _IsntModel( LOOP_UNROLLING ) ) return( 0 );
         if( OptForSize != 0 ) return( FALSE );
         num_ins = 0;
-        blk = loop_tail;
-        while( blk != NULL ) {
+        for( blk = loop_tail; blk != NULL; blk = blk->u.loop ) {
             if( blk->class & SELECT ) return( 0 );
             num_ins += CountIns( blk );
-            blk = blk->u.loop;
         }
         if( Head->class & ITERATIONS_KNOWN ) {
-            unroll_count = MAX_CODE_SIZE / num_ins;
-            while( unroll_count ) {
+            for( unroll_count = MAX_CODE_SIZE / num_ins; unroll_count > 0; --unroll_count ) {
                 if( Head->iterations % ( unroll_count + 1 ) == 0 ) {
                     break;
                 }
-                unroll_count -= 1;
             }
             if( unroll_count >= ( Head->iterations - 1 ) ) {
                 unroll_count = Head->iterations - 1;
@@ -433,7 +427,7 @@ extern  void    DumpLoop( block *loop )
     DumpLiteral( "Block\t\tBlock->u.loop\tBlock->loop_head" );
     DumpNL();
     DumpNL();
-    while( loop != NULL ) {
+    for( ; loop != NULL; loop = loop->u.loop ) {
         DumpPtr( loop );
         DumpLiteral( "\t\t" );
         DumpPtr( loop->u.loop );
@@ -454,7 +448,6 @@ extern  void    DumpLoop( block *loop )
             edge++;
         }
         DumpNL();
-        loop = loop->u.loop;
     }
 }
 #endif
@@ -730,8 +723,7 @@ extern  bool    CanHoist( block *head )
         if( ( edge->source->class & ( JUMP | CONDITIONAL ) ) == EMPTY ) return( FALSE );
     }
 
-    curr = head;
-    while( curr != NULL ) {
+    for( curr = head; curr != NULL; ) {
         if( curr->class & LOOP_EXIT ) return( ExitEdges( head ) == 1 );
         if( curr->targets > 1 ) break;
         curr = curr->edge[ 0 ].destination.u.blk;
@@ -832,16 +824,15 @@ static  void    MarkLoopHeader( block *loop, block *header )
     Mark the entire loop as having header as it's loop_head.
 */
 {
-    while( loop != NULL ) {
-        if( ( loop->class & LOOP_HEADER ) != EMPTY ) {
+    for( ; loop != NULL; loop = loop->u.loop ) {
+        if( loop->class & LOOP_HEADER ) {
             loop->loop_head = PreHead->loop_head;
-            if( ( PreHead->class & LOOP_HEADER ) != EMPTY ) {
+            if( PreHead->class & LOOP_HEADER ) {
                 loop->loop_head = PreHead;
             }
             break;
         }
         loop->loop_head = header;
-        loop = loop->u.loop;
     }
     Assert( loop != NULL );
 }

@@ -463,7 +463,7 @@ extern  dbg_type    CVScalar( const char *name, cg_type tipe )
                 index.f.size = CV_RC64;
             }
         } else {
-            for( count =  0; count < MAX_REAL_NAME; ++count ) {
+            for( count = 0; count < MAX_REAL_NAME; ++count ) {
                 if( strcmp( name, RealNames[count] ) == 0 ) {
                     index.f.type =  CV_REALLYINT;
                     if( length == 1 ) {
@@ -530,7 +530,9 @@ extern  dbg_type    CVScope( const char *name )
     enum scope_name index;
 
     for( index = 0; index < SCOPE_MAX; ++index ) {
-        if( strcmp( name, ScopeNames[index] ) == 0 )break;
+        if( strcmp( name, ScopeNames[index] ) == 0 ) {
+            break;
+        }
     }
     return( index );
 }
@@ -917,6 +919,7 @@ static  dbg_type    CVDimVarLU( array_list *ar )
     dbg_type       symref[2];
     type_def       *tipe_addr;
     dim_any        *dim;
+    dim_any        *next;
 
     NewTypeString( out );
     var = StartType( out, LFG_DIMVARLU );
@@ -924,9 +927,8 @@ static  dbg_type    CVDimVarLU( array_list *ar )
     var->index = LF_TINT4;
     tipe_addr = NULL;
     itipe = 0;
-    for(;;) {
-        dim = ar->list;
-        if( dim == NULL ) break;
+    for( dim = ar->list; dim != NULL; dim = next ) {
+        next = dim->entry.next;
         switch( dim->entry.kind ) {
         case DIM_VAR:
             if( tipe_addr == NULL ){
@@ -934,7 +936,7 @@ static  dbg_type    CVDimVarLU( array_list *ar )
                 itipe = LFIntType( tipe_addr->length );
             }
             symref[0] = OutBckSym( dim->var.dims, dim->var.off, itipe );
-            symref[1] = OutBckSym( dim->var.dims, dim->var.off+tipe_addr->length, itipe );
+            symref[1] = OutBckSym( dim->var.dims, dim->var.off + tipe_addr->length, itipe );
             break;
         case DIM_CON:
             symref[0] = OutBckCon( dim->con.lo, dim->con.idx );
@@ -949,9 +951,9 @@ static  dbg_type    CVDimVarLU( array_list *ar )
         }
         PutFld2( out, symref[0] );
         PutFld2( out, symref[1] );
-        ar->list = dim->entry.next;
         CGFree( dim  );
     }
+    ar->list = NULL;
     EndTypeString( out );
     return( ++TypeIdx );
 }
@@ -959,17 +961,17 @@ static  dbg_type    CVDimVarLU( array_list *ar )
 static  dbg_type    CVDimConLU( array_list *ar )
 /**********************************************/
 {
-    cv_out         out[1];
-    ct_dimconlu   *con;
-    dim_any        *dim;
+    cv_out          out[1];
+    ct_dimconlu     *con;
+    dim_any         *dim;
+    dim_any         *next;
 
     NewTypeString( out );
     con = StartType( out, LFG_DIMCONLU );
     con->rank = ar->num;
     con->index = LF_TINT4;
-    for( ;; ) {
-        dim = ar->list;
-        if( dim == NULL ) break;
+    for( dim = ar->list; dim != NULL; dim = next ) {
+        next = dim->entry.next;
         switch( dim->entry.kind ) {
         case DIM_CON:
             PutFldSized( out, 4, dim->con.lo );
@@ -980,9 +982,9 @@ static  dbg_type    CVDimConLU( array_list *ar )
             break;
 
         }
-        ar->list = dim->entry.next;
-        CGFree( dim  );
+        CGFree( dim );
     }
+    ar->list = NULL;
     EndTypeString( out );
     return( ++TypeIdx );
 }
@@ -1480,9 +1482,8 @@ static int  MkFlist( struct_list *st )
     count = 0;
 //    mlist = TypeIdx;
     NewType( out ); /* reset buff for subfields */
-    field = st->list;
-    old = field;
-    while( field != NULL ) {
+    old = st->list;
+    for( field = old; field != NULL; field = field->entry.next ) {
         switch( field->entry.field_type ) {
         case FIELD_INHERIT:
             if( field->bclass.u.adjustor->class == LOC_CONST_1 ) {
@@ -1519,13 +1520,13 @@ static int  MkFlist( struct_list *st )
             int               count;
 
             count = 1;
-            curr = field->entry.next;
-            while( curr != NULL ){
-                if( curr->entry.field_type != FIELD_METHOD )break;
-                if( strcmp( curr->method.name, field->method.name ) != 0 )break;
+            for( curr = field->entry.next; curr != NULL; curr = curr->entry.next ) {
+                if( curr->entry.field_type != FIELD_METHOD )
+                    break;
+                if( strcmp( curr->method.name, field->method.name ) != 0 )
+                    break;
                 ++count;
                 field = curr;
-                curr = curr->entry.next;
             }
             fld.a_method = StartType( out, LFG_METHOD );
             fld.a_method->count = count;
@@ -1545,13 +1546,13 @@ static int  MkFlist( struct_list *st )
                 fld.a_vfunctab = StartType( out, LFG_VFUNCTAB );
                 fld.a_vfunctab->type = field->vfunc.base;
             }
-        #if 0   // till cvpack is fixed
+#if 0   // till cvpack is fixed
             else{
                 fld.a_vfuncoff = StartType( out, LFG_VFUNCOFF );
                 fld.a_vfuncoff->type = field->vfunc.base;
                 fld.a_vfuncoff->offset = field->vfunc.vfptr_off;
             }
-       #endif
+#endif
             len += EndSub( out );  /* write out subfield accum length */
             break;
         case FIELD_LOC:
@@ -1588,11 +1589,9 @@ static int  MkFlist( struct_list *st )
             len += EndSub( out );  /* write out subfield accum length */
             break;
         }
-        field = field->entry.next;
     }
     PatchLen( fstart, len ); /* fill in length */
-    field = old;
-    while( field != NULL ) {
+    for( field = old; field != NULL; field = field->entry.next ) {
         if( field->entry.field_type == FIELD_METHOD ) {
             field_any       *curr;
 
@@ -1622,12 +1621,9 @@ static int  MkFlist( struct_list *st )
             }
             EndTypeString( out );
          }
-        field = field->entry.next;
     }
-    field = old;
-    while( field != NULL ) {
-        old = field;
-        field  = field->entry.next;
+    for( ; old != NULL; old = field ) {
+        field = old->entry.next;
         CGFree( old );
     }
     return( count );
@@ -1638,14 +1634,13 @@ static  field_any  *UnLinkMethod( field_any **owner, const char *name )
 {
     field_any    *curr;
 
-    while( (curr = *owner) != NULL ) {
+    for( ; (curr = *owner) != NULL; owner = &(*owner)->entry.next ) {
         if( curr->entry.field_type == FIELD_METHOD ){
             if( strcmp( curr->method.name, name ) == 0 ){
                 *owner = curr->entry.next;
                 break;
             }
         }
-        owner = &(*owner)->entry.next;
     }
     return( curr );
 }
@@ -1659,8 +1654,7 @@ static  int   SortMethods( struct_list *st  )
     int        overops;
 
     overops = 0;
-    curr = st->list;
-    while( curr != NULL ) {
+    for( curr = st->list; curr != NULL; curr = curr->entry.next ) {
         if( curr->entry.field_type == FIELD_METHOD ) {
             add = UnLinkMethod(  &curr->entry.next, curr->method.name );
             if( add != NULL ){
@@ -1670,7 +1664,6 @@ static  int   SortMethods( struct_list *st  )
                 add->entry.next = next;
             }
         }
-        curr = curr->entry.next;
     }
     return( overops );
 }
@@ -1682,7 +1675,7 @@ static int  FlistCount( field_any *field )
     offset            disp;
 
     count = 0;
-    while(  field != NULL ) {
+    for( ; field != NULL; field = field->entry.next ) {
         switch( field->entry.field_type ) {
         case FIELD_INHERIT:
         case FIELD_METHOD:
@@ -1703,7 +1696,6 @@ static int  FlistCount( field_any *field )
             }
             break;
         }
-        field  = field->entry.next;
     }
     return( count );
 }
@@ -1771,11 +1763,10 @@ static  const_entry  *RevEnums( const_entry *cons )
     const_entry *next;
 
     head = NULL;
-    while( cons != NULL ) {
+    for( ; cons != NULL; cons = next ) {
         next = cons->next;
         cons->next = head;
         head = cons;
-        cons = next;
     }
     return( head );
 }
@@ -1784,7 +1775,7 @@ extern  dbg_type    CVEndEnum( enum_list *en )
 /********************************************/
 {
     const_entry     *cons;
-    const_entry     *old;
+    const_entry     *next;
     lf_values        fList;
     ct_enumerate    *mem;
     ct_enum         *head;
@@ -1801,16 +1792,14 @@ extern  dbg_type    CVEndEnum( enum_list *en )
     len = 2;
     en->list  = RevEnums( en->list );
     count = 0;
-    cons = en->list;
     NewType( out ); /* reset buff for subfields */
-    while( cons != NULL ) {
+    for( cons = en->list; cons != NULL; cons = cons->next ) {
         mem = StartType( out, LFG_ENUMERATE );
         mem->attr.s = 0;
         CVPutINum64( out, cons->val );
         CVPutStr( out, cons->name );
         len += EndSub( out );  /* write out subfield accum length */
         ++count;
-        cons = cons->next;
     }
     PatchLen( fstart, len ); /* fill in length */
     NewTypeString( out );
@@ -1823,17 +1812,13 @@ extern  dbg_type    CVEndEnum( enum_list *en )
     CVPutNullStr( out );
     EndTypeString( out );
     if( en->is_nested ){
-        cons = en->list;
-        while( cons != NULL ){
+        for( cons = en->list; cons != NULL; cons = cons->next ) {
             CVSymIConst64( cons->name, cons->val, headi );
-            cons = cons->next;
         }
     }
-    cons = en->list;
-    while( cons != NULL ) {
-        old = cons;
-        cons = cons->next;
-        CGFree( old );
+    for( cons = en->list; cons != NULL; cons = next ) {
+        next = cons->next;
+        CGFree( cons );
     }
     return( headi );
 }
@@ -1842,28 +1827,26 @@ extern  dbg_type    CVEndEnum( enum_list *en )
 extern  dbg_type    CVEndProc( proc_list  *pr )
 /*********************************************/
 {
-    parm_entry   *parm;
-    parm_entry   *old;
-    ct_arglist   *args;
-    lf_values     arglist;
-    cv_calls      call;
+    parm_entry  *parm;
+    parm_entry  *next;
+    ct_arglist  *args;
+    lf_values   arglist;
+    cv_calls    call;
     union{
         ct_procedure *a_procedure;
         ct_mfunction *a_mfunction;
     }f;
-    lf_values     proci;
-    cv_out    out[1];
+    lf_values   proci;
+    cv_out      out[1];
 
     NewTypeString( out );
     arglist = ++TypeIdx;
     args = StartType( out, LFG_ARGLIST );
     args->argcount = pr->num;
-    parm = pr->list;
-    while( parm != NULL ){
+    for( parm = pr->list; parm != NULL; parm = next ) {
+        next = parm->next;
         PutFld2( out, parm->tipe );
-        old = parm;
-        parm = parm->next;
-        CGFree( old );
+        CGFree( parm );
     }
     EndTypeString( out );
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )

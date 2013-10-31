@@ -235,12 +235,10 @@ static  possible_for_alias *FindPossibleForAlias( conflict_node *conf, name *opn
 {
     possible_for_alias   *aposs;
 
-    aposs = conf->possible_for_alias_list;
-    while( aposs != NULL ) {
+    for( aposs = conf->possible_for_alias_list; aposs != NULL; aposs = aposs->next ) {
         if( aposs->temp == opnd ) {
             break;
         }
-        aposs = aposs->next;
     }
     return aposs;
 }
@@ -342,11 +340,9 @@ extern  void    FreePossibleForAlias( conflict_node *conf )
 {
     possible_for_alias  *aposs, *next;
 
-    aposs = conf->possible_for_alias_list;
-    while ( aposs != NULL ) {
+    for( aposs = conf->possible_for_alias_list; aposs != NULL; aposs = next ) {
         next = aposs->next;
         FrlFreeSize( &ConfAliasVarsFrl, (pointer *)aposs, sizeof( possible_for_alias ) );
-        aposs = next;
     }
     conf->possible_for_alias_list = NULL;
 }
