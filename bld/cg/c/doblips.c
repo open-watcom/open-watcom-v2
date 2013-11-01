@@ -211,7 +211,7 @@ extern  void    PGBlip(char *name)
         for( ; count < MAX_FNAME_LEN; ++count ) {
             Blip( count + PGPos, ' ' );
         }
-        for( count = PGPos; count-- > BLPos ) {
+        for( count = PGPos; count-- > BLPos; ) {
             Blip( count, ' ' );
         }
         for( count = 0; Version[count] != NULLCHAR; ++count ) {
