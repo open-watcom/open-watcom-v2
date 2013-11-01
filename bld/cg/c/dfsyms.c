@@ -41,7 +41,7 @@
 #include "cgmem.h"
 #include "ocentry.h"
 #include "zoiks.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "dbgstrct.h"
 #include "dw.h"
 #include "dwarf.h"
@@ -49,9 +49,9 @@
 #include "dbcue.h"
 #include "data.h"
 #include "types.h"
+#include "objout.h"
 #include "cgprotos.h"
 #include "feprotos.h"
-#include "objout.h"
 
 extern  void            DoBigBckPtr(back_handle,offset);
 extern  name            *DeAlias(name*);
@@ -946,7 +946,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     tipe = FEDbgRetType( sym );
     flags = 0;
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-    if( *(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR_CALL ) {
+    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
         flags |= DW_PTR_TYPE_FAR;
     }
 #endif

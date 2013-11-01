@@ -34,13 +34,13 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cgmem.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "zoiks.h"
 #include "makeins.h"
 #include "data.h"
-#include "feprotos.h"
 #include "utils.h"
 #include "stack.h"
+#include "feprotos.h"
 
 extern  void            TellBeginExecutions(void);
 extern  void            FreeNames(void);

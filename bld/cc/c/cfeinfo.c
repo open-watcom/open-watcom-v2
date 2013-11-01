@@ -604,7 +604,7 @@ static void addDefaultLibs( void )
     }
 }
 
-static VOIDPTR NextLibrary( int index, aux_class request )
+static CGPOINTER NextLibrary( int index, aux_class request )
 {
     library_list    *lib;
     char            *name;
@@ -627,9 +627,9 @@ static VOIDPTR NextLibrary( int index, aux_class request )
     }
     /* return library name, or */
     if( request == LIBRARY_NAME || name == NULL )
-        return( name );
+        return( (CGPOINTER)name );
     /* library index */
-    return( (VOIDPTR)(pointer_int)index );
+    return( (CGPOINTER)(pointer_int)index );
 }
 
 //    NextAlias
@@ -652,7 +652,7 @@ static VOIDPTR NextLibrary( int index, aux_class request )
 //
 // Note: One of ALIAS..._NAME and ALIAS..._SYMBOL will always be 0/NULL and the other
 // will be valid, depending on which form of the pragma was used.
-static VOIDPTR NextAlias( int index, aux_class request )
+static CGPOINTER NextAlias( int index, aux_class request )
 {
     alias_list          *aliaslist;
     SYM_HANDLE          alias_sym = NULL;
@@ -677,22 +677,22 @@ static VOIDPTR NextAlias( int index, aux_class request )
         index = 0;          /* no (more) aliases */
 
     if( request == ALIAS_NAME ) {
-        return( (VOIDPTR)alias_name );
+        return( (CGPOINTER)alias_name );
     } else if( request == ALIAS_SYMBOL ) {
-        return( (VOIDPTR)alias_sym );
+        return( (CGPOINTER)alias_sym );
     } else if( request == ALIAS_SUBST_NAME ) {
-        return( (VOIDPTR)subst_name );
+        return( (CGPOINTER)subst_name );
     } else if( request == ALIAS_SUBST_SYMBOL ) {
-        return( (VOIDPTR)subst_sym );
+        return( (CGPOINTER)subst_sym );
     } else {    // this had better be a NEXT_ALIAS request
-        return( (VOIDPTR)(pointer_int)index );
+        return( (CGPOINTER)(pointer_int)index );
     }
 }
 
 /* Return the size of function parameters or -1 if size could
  * not be determined (symbol isn't a function or is variadic)
  */
-static int GetParmsSize( CGSYM_HANDLE sym_handle )
+static int GetParmsSize( SYM_HANDLE sym_handle )
 {
     int         total_parm_size = 0;
     int         parm_size;
@@ -730,7 +730,7 @@ static int GetParmsSize( CGSYM_HANDLE sym_handle )
 /*
 //    Return name pattern manipulator string
 */
-static char *GetNamePattern( CGSYM_HANDLE sym_handle )
+static char *GetNamePattern( SYM_HANDLE sym_handle )
 {
     char                 *pattern;
     SYM_ENTRY            sym;
@@ -774,7 +774,7 @@ static char *GetNamePattern( CGSYM_HANDLE sym_handle )
     return( pattern );
 }
 
-static char *GetBaseName( CGSYM_HANDLE sym_handle )
+static char *GetBaseName( SYM_HANDLE sym_handle )
 {
     SYM_ENTRY            sym;
 
@@ -787,11 +787,11 @@ char *FEExtName( CGSYM_HANDLE sym_handle, int request )
 {
     switch( request ) {
     case EXTN_BASENAME:
-        return( GetBaseName( sym_handle ) );
+        return( GetBaseName( (SYM_HANDLE)sym_handle ) );
     case EXTN_PATTERN:
-        return( GetNamePattern( sym_handle ) );
+        return( GetNamePattern( (SYM_HANDLE)sym_handle ) );
     case EXTN_PRMSIZE:
-        return( (char *)(pointer_int)GetParmsSize( sym_handle ) );
+        return( (char *)(pointer_int)GetParmsSize( (SYM_HANDLE)sym_handle ) );
     case EXTN_CALLBACKNAME:
     default:
         return( NULL );
@@ -969,7 +969,7 @@ static void addDefaultImports( void )
 //
 */
 
-static VOIDPTR NextImport( int index, aux_class request )
+static CGPOINTER NextImport( int index, aux_class request )
 /*******************************************************/
 {
     char        *name;
@@ -977,7 +977,7 @@ static VOIDPTR NextImport( int index, aux_class request )
     extref_info *e;
 
     if( !CompFlags.emit_targimp_symbols )
-        return (NULL);
+        return( NULL );
 
     name = NULL;
     if( index == 0 ) {
@@ -998,12 +998,12 @@ static VOIDPTR NextImport( int index, aux_class request )
     }
     /* return the import name, or */
     if( request == IMPORT_NAME || name == NULL )
-        return( name );
+        return( (CGPOINTER)name );
     /* return the index */
-    return( (char *)(pointer_int)index );
+    return( (CGPOINTER)(pointer_int)index );
 }
 
-static VOIDPTR NextImportS( int index, aux_class request )
+static CGPOINTER NextImportS( int index, aux_class request )
 /********************************************************/
 {
     void        *symbol;
@@ -1011,7 +1011,7 @@ static VOIDPTR NextImportS( int index, aux_class request )
     extref_info *e;
 
     if(!CompFlags.emit_targimp_symbols)
-        return (NULL);
+        return( NULL );
 
     symbol = NULL;
     if( request == NEXT_IMPORT_S )
@@ -1029,9 +1029,9 @@ static VOIDPTR NextImportS( int index, aux_class request )
     }
     /* return the import symbol, or */
     if( request == IMPORT_NAME_S || symbol == NULL )
-        return( symbol );
+        return( (CGPOINTER)symbol );
     /* return the index */
-    return( (char *)(pointer_int)index );
+    return( (CGPOINTER)(pointer_int)index );
 }
 
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
@@ -1043,34 +1043,33 @@ static VOIDPTR NextImportS( int index, aux_class request )
 //
 //    pass auxiliary information to back end
 */
-VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
+CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 {
-    SYM_HANDLE           sym_handle = cgsym_handle;
     aux_info             *inf;
     auto SYM_ENTRY       sym;
     static hw_reg_set    save_set;
 
     switch( request ) {
     case SOURCE_LANGUAGE:
-        return( "C" );
+        return( (CGPOINTER)"C" );
     case STACK_SIZE_8087:
-        return( (VOIDPTR)(pointer_int)Stack87 );
+        return( (CGPOINTER)(pointer_int)Stack87 );
     case CODE_GROUP:
-        return( (VOIDPTR)GenCodeGroup );
+        return( (CGPOINTER)GenCodeGroup );
     case DATA_GROUP:
-        return( (VOIDPTR)DataSegName );
+        return( (CGPOINTER)DataSegName );
     case OBJECT_FILE_NAME:
-        return( (VOIDPTR)ObjFileName() );
+        return( (CGPOINTER)ObjFileName() );
     case REVISION_NUMBER:
-        return( (VOIDPTR)(pointer_int)II_REVISION );
+        return( (CGPOINTER)(pointer_int)II_REVISION );
     case AUX_LOOKUP:
-        return( (VOIDPTR)sym_handle );
+        return( req_handle );
     case PROEPI_DATA_SIZE:
-        return( (VOIDPTR)(pointer_int)ProEpiDataSize );
+        return( (CGPOINTER)(pointer_int)ProEpiDataSize );
     case DBG_PREDEF_SYM:
-        return( (VOIDPTR)SymDFAbbr );
+        return( (CGPOINTER)SymDFAbbr );
     case P5_CHIP_BUG_SYM:
-        return( (VOIDPTR)SymChipBug ); /* 09-dec-94 */
+        return( (CGPOINTER)SymChipBug );
     case CODE_LABEL_ALIGNMENT:
         {
             static  unsigned char   Alignment[] = { 2, 1, 1 };
@@ -1078,71 +1077,71 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
             if( OptSize == 0 )
                 Alignment[1] = TARGET_INT;
 
-            return( Alignment );
+            return( (CGPOINTER)Alignment );
         }
     case CLASS_NAME:
-        return( SegClassName( (segment_id)(pointer_int)sym_handle ) );
+        return( (CGPOINTER)SegClassName( (segment_id)(pointer_int)req_handle ) );
     case USED_8087:
         CompFlags.pgm_used_8087 = 1;
         return( NULL );
   #if _CPU == 386
     case P5_PROF_DATA:
-        return( (VOIDPTR)FunctionProfileBlock );
+        return( (CGPOINTER)FunctionProfileBlock );
     case P5_PROF_SEG:
-        return( (VOIDPTR)(pointer_int)FunctionProfileSegment );
+        return( (CGPOINTER)(pointer_int)FunctionProfileSegment );
   #endif
     case SOURCE_NAME:
         if( SrcFName == ModuleName ) {
-            return( FNameFullPath( FNames ) );
+            return( (CGPOINTER)FNameFullPath( FNames ) );
         } else {
-            return( ModuleName );
+            return( (CGPOINTER)ModuleName );
         }
     case CALL_CLASS:
         {
             static call_class cclass;
 
-            cclass = GetCallClass( sym_handle );
-            return( &cclass );
+            cclass = GetCallClass( req_handle );
+            return( (CGPOINTER)&cclass );
         }
     case FREE_SEGMENT:
         return( NULL );
     case NEXT_LIBRARY:
     case LIBRARY_NAME:
-        return( NextLibrary( (int)(pointer_int)sym_handle, request ) );
+        return( NextLibrary( (int)(pointer_int)req_handle, request ) );
     case NEXT_IMPORT:
     case IMPORT_NAME:
-        return( NextImport( (int)(pointer_int)sym_handle, request ) );
+        return( NextImport( (int)(pointer_int)req_handle, request ) );
     case NEXT_IMPORT_S:
     case IMPORT_NAME_S:
-        return( NextImportS( (int)(pointer_int)sym_handle, request ) );
+        return( NextImportS( (int)(pointer_int)req_handle, request ) );
     case NEXT_ALIAS:
     case ALIAS_NAME:
     case ALIAS_SYMBOL:
     case ALIAS_SUBST_NAME:
     case ALIAS_SUBST_SYMBOL:
-        return( NextAlias( (int)(pointer_int)sym_handle, request ) );
+        return( NextAlias( (int)(pointer_int)req_handle, request ) );
     case TEMP_LOC_NAME:
-        return( (char *)TEMP_LOC_QUIT );
+        return( (CGPOINTER)(pointer_int)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL:
         return( NULL );
     case NEXT_DEPENDENCY:                               /* 03-dec-92 */
         if( CompFlags.emit_dependencies )
-            return( NextDependency( (FNAMEPTR)cgsym_handle ) );
+            return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
     case DEPENDENCY_TIMESTAMP:
-        return( getFileDepTimeStamp( (FNAMEPTR)cgsym_handle ) );
+        return( (CGPOINTER)getFileDepTimeStamp( (FNAMEPTR)req_handle ) );
     case DEPENDENCY_NAME:
-        return( FNameFullPath( (FNAMEPTR)cgsym_handle ) );
+        return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
     case PEGGED_REGISTER:
-        return( SegPeggedReg( (segment_id)(pointer_int)cgsym_handle ) );
+        return( (CGPOINTER)SegPeggedReg( (segment_id)(pointer_int)req_handle ) );
     default:
         break;
     }
 
-    inf = FindInfo( &sym, sym_handle );
+    inf = FindInfo( &sym, req_handle );
     switch( request ) {
     case SAVE_REGS:
-        if( sym_handle != 0 ) {
+        if( req_handle != 0 ) {
             inf = LangInfo( sym.mods, inf );
         } else {
             sym.mods = 0;
@@ -1153,39 +1152,39 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
         }
 
   #ifdef __SEH__
-        if( sym_handle == SymTryInit ) {
+        if( (SYM_HANDLE)req_handle == SymTryInit ) {
             HW_CTurnOff( save_set, HW_SP );
         }
   #endif
-        return( &save_set );
+        return( (CGPOINTER)&save_set );
     case RETURN_REG:
-        if( sym_handle != 0 ) {
+        if( req_handle != 0 ) {
             inf = LangInfo( sym.mods, inf );
         }
-        return( &inf->returns );
+        return( (CGPOINTER)&inf->returns );
     case CALL_BYTES:
-        return( inf->code );
+        return( (CGPOINTER)inf->code );
     case PARM_REGS:
   #ifdef __SEH__
-        if(( sym_handle == SymTryInit )
-          || ( sym_handle == SymTryFini )
-          || ( sym_handle == SymTryUnwind )
-          || ( sym_handle == SymExcept )) {
-            return( TryParms );
+        if(( (SYM_HANDLE)req_handle == SymTryInit )
+          || ( (SYM_HANDLE)req_handle == SymTryFini )
+          || ( (SYM_HANDLE)req_handle == SymTryUnwind )
+          || ( (SYM_HANDLE)req_handle == SymExcept )) {
+            return( (CGPOINTER)TryParms );
         }
   #endif
-        if( sym_handle != 0 ) {
+        if( req_handle != 0 ) {
             inf = LangInfo( sym.mods, inf );
             if( inf->code == NULL && VarFunc( &sym ) ) {
-                return( DefaultVarParms );
+                return( (CGPOINTER)DefaultVarParms );
             }
         }
-        return( inf->parms );
+        return( (CGPOINTER)inf->parms );
     case STRETURN_REG:
-        if( sym_handle != 0 ) {
+        if( req_handle != 0 ) {
             inf = LangInfo( sym.mods, inf );
         }
-        return( &inf->streturn );
+        return( (CGPOINTER)&inf->streturn );
     default:
         break;
     }
@@ -1202,93 +1201,92 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
 //
 //    pass auxiliary information to back end
 */
-VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
+CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
 {
-    SYM_HANDLE              sym_handle = cgsym_handle;
     aux_info                *inf;
     auto SYM_ENTRY          sym;
     static hw_reg_set       save_set;
 
     switch( request ) {
     case SOURCE_LANGUAGE:
-        return( "C" );
+        return( (CGPOINTER)"C" );
     case OBJECT_FILE_NAME:
-        return( (VOIDPTR)ObjFileName() );
+        return( (CGPOINTER)ObjFileName() );
     case REVISION_NUMBER:
-        return( (VOIDPTR)(pointer_int)II_REVISION );
+        return( (CGPOINTER)(pointer_int)II_REVISION );
     case AUX_LOOKUP:
-        return( (VOIDPTR)(pointer_int)sym_handle );
+        return( req_handle );
     case SOURCE_NAME:
         if( SrcFName == ModuleName ) {
-            return( FNameFullPath( FNames ) );
+            return( (CGPOINTER)FNameFullPath( FNames ) );
         } else {
-            return( ModuleName );
+            return( (CGPOINTER)ModuleName );
         }
     case CALL_CLASS:
         {
             static call_class cclass;
 
-            cclass = GetCallClass( sym_handle );
-            return( &cclass );
+            cclass = GetCallClass( req_handle );
+            return( (CGPOINTER)&cclass );
         }
     case NEXT_LIBRARY:
     case LIBRARY_NAME:
-        return( NextLibrary( (int)(pointer_int)sym_handle, request ) );
+        return( NextLibrary( (int)(pointer_int)req_handle, request ) );
     case NEXT_IMPORT:
     case IMPORT_NAME:
-        return( NextImport( (int)(pointer_int)sym_handle, request ) );
+        return( NextImport( (int)(pointer_int)req_handle, request ) );
     case NEXT_IMPORT_S:
     case IMPORT_NAME_S:
-        return( NextImportS( (int)(pointer_int)sym_handle, request ) );
+        return( NextImportS( (int)(pointer_int)req_handle, request ) );
     case NEXT_ALIAS:
     case ALIAS_NAME:
     case ALIAS_SYMBOL:
     case ALIAS_SUBST_NAME:
     case ALIAS_SUBST_SYMBOL:
-        return( NextAlias( (int)(pointer_int)sym_handle, request ) );
+        return( NextAlias( (int)(pointer_int)req_handle, request ) );
     case FREE_SEGMENT:
         return( NULL );
     case TEMP_LOC_NAME:
-        return( (char *)TEMP_LOC_QUIT );
+        return( (CGPOINTER)(pointer_int)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL:
         return( NULL );
     case NEXT_DEPENDENCY:                               /* 03-dec-92 */
         if( CompFlags.emit_dependencies )
-            return( NextDependency( (FNAMEPTR) cgsym_handle ) );
+            return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
     case DEPENDENCY_TIMESTAMP:
-        return( getFileDepTimeStamp( (FNAMEPTR)cgsym_handle ) );
+        return( (CGPOINTER)getFileDepTimeStamp( (FNAMEPTR)req_handle ) );
     case DEPENDENCY_NAME:
-        return( FNameFullPath( (FNAMEPTR)cgsym_handle ) );
+        return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
     default:
         break;
     }
 
-    inf = FindInfo( &sym, sym_handle );
+    inf = FindInfo( &sym, req_handle );
     switch( request ) {
     case SAVE_REGS:
-        if( sym_handle != 0 ) {
+        if( req_handle != 0 ) {
             inf = LangInfo( sym.mods, inf );
         } else {
             sym.mods = 0;
         }
         save_set = inf->save;
-        return( &save_set );
+        return( (CGPOINTER)&save_set );
     case RETURN_REG:
-        if( sym_handle != 0 ) {
+        if( req_handle != 0 ) {
             inf = LangInfo( sym.mods, inf );
         }
-        return( &inf->returns );
+        return( (CGPOINTER)&inf->returns );
     case CALL_BYTES:
-        return( inf->code );
+        return( (CGPOINTER)inf->code );
     case PARM_REGS:
-        if( sym_handle != 0 ) {
+        if( req_handle != 0 ) {
             inf = LangInfo( sym.mods, inf );
             if( inf->code == NULL && VarFunc( &sym ) ) {
-                return( DefaultVarParms );
+                return( (CGPOINTER)DefaultVarParms );
             }
         }
-        return( inf->parms );
+        return( (CGPOINTER)inf->parms );
     default:
         break;
     }

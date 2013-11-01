@@ -38,7 +38,7 @@
 #include "system.h"
 #include "jumps.h"
 #include "zoiks.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "i86obj.h"
 #include "data.h"
 #include "feprotos.h"
@@ -61,7 +61,6 @@ extern  void            SetUpObj(bool);
 extern  void            TellObjNewLabel( sym_handle );
 extern  void            TellOptimizerByPassed( void );
 extern  void            TellByPassOver( void );
-extern  bool            IsFarFunc(sym_handle);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            GenSelEntry(bool);
 extern  void            EmptyQueue( void );
@@ -226,7 +225,8 @@ extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
     TellOptimizerByPassed();
     attr = FEAttr( sym );
     bck = FEBack( sym );
-    if( ( attr & FE_PROC ) && _IsTargetModel( WINDOWS ) && IsFarFunc( sym ) ) {
+    if( ( attr & FE_PROC ) && _IsTargetModel( WINDOWS )
+      && (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL) ) {
         class = F_LDR_OFFSET;
     } else {
         class = F_OFFSET;

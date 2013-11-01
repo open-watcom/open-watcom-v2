@@ -35,7 +35,7 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "ocentry.h"
 #include "cgmem.h"
 #include "reloc.h"
@@ -47,10 +47,10 @@
 #include "autodep.h"
 #include "axpencod.h"
 #include "data.h"
-#include "feprotos.h"
 #include "rtrtn.h"
 #include "utils.h"
 #include "objout.h"
+#include "feprotos.h"
 
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)(x + 1))
 #define OWL_TO_HANDLE(x)    ((pointer_int)x - 1)
@@ -676,20 +676,17 @@ extern  segment_id  AskOP( void )
 /*******************************/
 {
     assert( currSection != NULL );
-     return( currSection->id );
+    return( currSection->id );
 }
 
-static  bool            InlineFunction( pointer hdl )
-/***************************************************/
+static  bool            InlineFunction( sym_handle sym )
+/******************************************************/
 {
-    aux_handle          aux;
-
-    if( (FEAttr( hdl ) & FE_PROC) == 0 )
+    if( (FEAttr( sym ) & FE_PROC) == 0 )
         return( FALSE );
-    aux = FEAuxInfo( hdl, AUX_LOOKUP );
-    if( FEAuxInfo( aux, CALL_BYTES ) != NULL )
+    if( FindAuxInfoSym( sym, CALL_BYTES ) != NULL )
         return( TRUE );
-    return( (*(call_class *)FEAuxInfo( aux, CALL_CLASS ) & MAKE_CALL_INLINE) != 0 );
+    return( (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & MAKE_CALL_INLINE) != 0 );
 }
 
 extern  segment_id  AskSegID( pointer hdl, cg_class class )
@@ -697,10 +694,10 @@ extern  segment_id  AskSegID( pointer hdl, cg_class class )
 {
     switch( class ) {
     case CG_FE:
-        if( InlineFunction( hdl ) ) {
+        if( InlineFunction( (sym_handle)hdl ) ) {
             return( AskCodeSeg() );
         }
-        return( FESegID( hdl ) );
+        return( FESegID( (sym_handle)hdl ) );
     case CG_BACK:
         return( ((bck_info*)hdl)->seg );
     case CG_TBL:

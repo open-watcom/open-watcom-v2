@@ -39,12 +39,12 @@
 #include "typedef.h"
 #include "types.h"
 #include "cfloat.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "model.h"
 #include "cgstub.h"
-#include "feprotos.h"
 #include "cgmem.h"
 #include "utils.h"
+#include "feprotos.h"
 
 #include "stubdata.h"
 
@@ -352,7 +352,7 @@ extern  void    CClass( sym  s ) {
 
     call_class  *pc;
 
-    pc = FEAuxInfo( FEAuxInfo( s, AUX_LOOKUP ), CALL_CLASS );
+    pc = FindAuxInfoSym( s, CALL_CLASS );
     DumpCClass( *pc );
     Action( "%n" );
 }

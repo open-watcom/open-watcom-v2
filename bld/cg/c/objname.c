@@ -34,10 +34,10 @@
 #include <assert.h>
 #include "cgdefs.h"
 #include "import.h"
-#include "cgaux.h"
 #include "coderep.h"
-#include "feprotos.h"
+#include "cgauxinf.h"
 #include "utils.h"
+#include "feprotos.h"
 
 #include "langenvd.h"
 #if _TARGET & _TARG_PPC
@@ -293,7 +293,7 @@ extern bool SymIsExported( sym_handle sym ) {
     if( sym != NULL ) {
         if( FEAttr( sym ) & FE_DLLEXPORT ) {
             exported = TRUE;
-        } else if( *(call_class*)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & DLL_EXPORT ) {
+        } else if( *(call_class*)FindAuxInfoSym( sym, CALL_CLASS ) & DLL_EXPORT ) {
             exported = TRUE;
         }
     }

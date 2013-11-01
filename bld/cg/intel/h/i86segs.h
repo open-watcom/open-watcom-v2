@@ -1,5 +1,4 @@
 /* ../intel/c/i86segs.c */
-extern bool IsFarFunc(sym_handle sym);
 extern void InitSegment(void);
 extern void FiniSegment(void);
 extern hw_reg_set CalcSegment(sym_handle sym, cg_class class);

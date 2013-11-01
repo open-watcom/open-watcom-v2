@@ -222,8 +222,8 @@ static fe_attr FESymAttr( SYMPTR sym )
 }
 
 
-void    FEGenProc( CGSYM_HANDLE hdl, call_handle call_list )
-/**********************************************************/
+void    FEGenProc( CGSYM_HANDLE hdl, CGPOINTER call_list )
+/********************************************************/
 {
     SYM_HANDLE      sym_handle = hdl;
 
@@ -698,8 +698,8 @@ char *FEName( CGSYM_HANDLE cgsym_handle )
 }
 
 
-void FEMessage( int class, void *parm )
-/*************************************/
+void FEMessage( int class, CGPOINTER parm )
+/*****************************************/
 {
     char    msgtxt[80];
     char    msgbuf[MAX_MSG_LEN];

@@ -33,7 +33,7 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "seldef.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "makeins.h"
 #include "convins.h"
 #include "data.h"

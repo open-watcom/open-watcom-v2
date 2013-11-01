@@ -46,6 +46,7 @@
 #include "i86obj.h"
 #include "addrname.h"
 #include "objout.h"
+#include "cgauxinf.h"
 
 extern  void            DbgSetBase( void );
 extern  void            OutFPPatch(fp_patches);
@@ -77,7 +78,6 @@ extern  void            EmitByte(byte);
 extern  void            EmitSegId(segment_id);
 extern  void            InsertByte(byte);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
-extern bool             IsFarFunc(sym_handle);
 extern  unsigned        SavePendingLine(unsigned);
 extern bool             UseImportForm(fe_attr);
 extern void             OutSpecialCommon(import_handle,fix_class,bool);
@@ -173,7 +173,7 @@ extern  void  DoFESymRef( sym_handle sym, cg_class class, offset val,
     if( class == CG_FE ) {
         attr = FEAttr( sym );
         if( ((kind & BASE) == 0) && _IsTargetModel( WINDOWS )
-         && ( attr & FE_PROC ) && IsFarFunc( sym ) ) {
+         && ( attr & FE_PROC ) && (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL) ) {
             kind |= LDOF;
         }
         if( UseImportForm( attr ) ) { /* 90-05-22 */

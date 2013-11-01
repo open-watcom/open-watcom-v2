@@ -38,14 +38,14 @@
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "dbgstrct.h"
 #include "wvdbg.h"
 #include "data.h"
 #include "types.h"
+#include "objout.h"
 #include "feprotos.h"
 #include "cgprotos.h"
-#include "objout.h"
 
 extern  bck_info        *BENewBack(sym_handle);
 extern  void            BEFreeBack(bck_info*);
@@ -207,7 +207,7 @@ extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
     }
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgType( sym );
-    if( *(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR_CALL ) {
+    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
         BuffStart( &temp, SYM_CODE + CODE_FAR_RTN );
     } else {
         BuffStart( &temp, SYM_CODE + CODE_NEAR_RTN );

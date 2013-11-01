@@ -38,7 +38,7 @@
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "dbgstrct.h"
 #include <stdio.h>
 #include <stdarg.h>
@@ -47,9 +47,9 @@
 #include "cvdbg.h"
 #include "data.h"
 #include "types.h"
+#include "objout.h"
 #include "feprotos.h"
 #include "cgprotos.h"
-#include "objout.h"
 
 extern  bck_info        *BENewBack(sym_handle);
 extern  void            BEFreeBack(bck_info*);
@@ -639,7 +639,7 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     ptr->proctype = tipe;
     ptr->flags.s = 0;
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-    if( *(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR_CALL ) {
+    if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
         ptr->flags.f.far_ret = TRUE;
     }
 #endif

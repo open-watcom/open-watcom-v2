@@ -33,7 +33,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "cgdefs.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "system.h"
 #include "objrep.h"
 #include "import.h"
@@ -42,11 +42,11 @@
 #include "cgmem.h"
 #include "zoiks.h"
 #include "data.h"
-#include "feprotos.h"
 #include "rtrtn.h"
 #include "i86obj.h"
 #include "utils.h"
 #include "objout.h"
+#include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
     #define _OMF_32
@@ -2913,7 +2913,7 @@ extern  void    OutImport( sym_handle sym, fix_class class, bool rel )
     attr = FEAttr( sym );
 #if  _TARGET & _TARG_80386
     if( !rel && F_CLASS( class ) == F_OFFSET && (attr & FE_PROC) ) {
-        if( *(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR16_CALL ) {
+        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR16_CALL ) {
             class |= F_FAR16;
         }
     }
@@ -3279,14 +3279,13 @@ extern void     TellObjVirtFuncRef( void *cookie )
     SetOP( old );
 }
 
-static  bool            InlineFunction( pointer hdl )
-/***************************************************/
+static  bool            InlineFunction( sym_handle sym )
+/******************************************************/
 {
-    aux_handle          aux;
-
-    if( FEAttr( hdl ) & FE_PROC ) {
-        aux = FEAuxInfo( hdl, AUX_LOOKUP );
-        if( FEAuxInfo( aux, CALL_BYTES ) != NULL || (*(call_class *)FEAuxInfo( aux, CALL_CLASS ) & MAKE_CALL_INLINE) ) {
+    if( FEAttr( sym ) & FE_PROC ) {
+        if( FindAuxInfoSym( sym, CALL_BYTES ) != NULL )
+            return( TRUE );
+        if( (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & MAKE_CALL_INLINE) ) {
             return( TRUE );
         }
     }
@@ -3298,10 +3297,10 @@ extern  segment_id      AskSegID( pointer hdl, cg_class class )
 {
     switch( class ) {
     case CG_FE:
-        if( InlineFunction( hdl ) ) {
+        if( InlineFunction( (sym_handle)hdl ) ) {
             return( AskCodeSeg() );
         }
-        return( FESegID( hdl ) );
+        return( FESegID( (sym_handle)hdl ) );
     case CG_BACK:
         return( ((bck_info *)hdl)->seg );
     case CG_TBL:

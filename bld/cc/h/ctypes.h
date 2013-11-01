@@ -41,6 +41,7 @@ typedef back_handle     BACK_HANDLE;
 typedef label_handle    LABEL_HANDLE;
 typedef char            *NAME_HANDLE;
 typedef cg_sym_handle   CGSYM_HANDLE;
+typedef pointer         CGPOINTER;
 typedef dbg_type        dbug_type;
 typedef signed_64       int64;
 typedef unsigned_64     uint64;

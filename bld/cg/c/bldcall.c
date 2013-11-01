@@ -33,7 +33,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "cgdefs.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "zoiks.h"
 #include "namelist.h"
 #include "makeins.h"
@@ -83,7 +83,6 @@ extern  void            TRDeclareParm(instruction*);
 extern  an              InsName(instruction*,type_def*);
 extern  type_def        *ClassType(type_class_def);
 extern  bool            SegIsCS( name * );
-extern  pointer         FindAuxInfo( name *, aux_class );
 extern  type_length     ParmAlignment( type_def * );
 extern  void            SuffixIns( instruction *, instruction * );
 

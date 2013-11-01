@@ -32,11 +32,11 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "zoiks.h"
 #include "data.h"
-#include "feprotos.h"
 #include "objout.h"
+#include "feprotos.h"
 
 extern  void            CodeLabel(code_lbl *,unsigned);
 extern  void            GenObjCode(instruction*);
@@ -56,7 +56,6 @@ extern  block           *FindBlockWithLbl( code_lbl *label );
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );
 extern  bool_maybe      ReDefinedBy( instruction *, name * );
-extern  pointer         FindAuxInfo( name *, aux_class );
 extern  void            StartBlockProfiling( block *blk );
 extern  void            EndBlockProfiling( void );
 
@@ -129,7 +128,7 @@ extern  void    GenObject( void )
                 // don't want to generate anything except calls to pragma's for
                 // naked functions
                 if( ins->head.opcode == OP_CALL ) {
-                    if( FindAuxInfo( ins->operands[ CALL_OP_ADDR ], CALL_BYTES ) != NULL ) {
+                    if( FindAuxInfo( ins->operands[CALL_OP_ADDR], CALL_BYTES ) != NULL ) {
                         GenObjCode( ins );
                     }
                 }

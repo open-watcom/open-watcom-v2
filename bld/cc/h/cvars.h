@@ -60,7 +60,6 @@
 
 typedef char        *MACADDR_T; /* contains actual pointer to block of memory */
 typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
-typedef void        *VOIDPTR;
 
 #include "dw.h"
 #include "ctypes.h"

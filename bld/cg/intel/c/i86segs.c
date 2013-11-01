@@ -32,12 +32,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "zoiks.h"
 #include "cgdefs.h"
 #include "data.h"
-#include "feprotos.h"
 #include "objout.h"
+#include "feprotos.h"
 
 extern  name            *SegmentPart(name*);
 extern  name            *AllocRegName(hw_reg_set);
@@ -46,12 +46,6 @@ extern  bool            HaveCodeGroup( void );
 extern  bool            AskSegPrivate(segment_id);
 extern  bool            AskSegNear(segment_id);
 extern  bool            AskNameCode(pointer,cg_class);
-
-extern  bool    IsFarFunc( sym_handle sym )
-/*******************************************/
-{
-    return( (*(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR_CALL) != 0 );
-}
 
 
 extern  void    InitSegment( void ) {
@@ -246,7 +240,7 @@ extern  cg_type NamePtrType( name *op ) {
             if( AskNameCode( sym, op->m.memory_type ) ) {
                 if( op->m.memory_type == CG_FE ) {
                     if( FEAttr( sym ) & FE_PROC ) {
-                        if( IsFarFunc( sym ) )
+                        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL )
                             return( TY_LONG_CODE_PTR );
                         return( TY_NEAR_CODE_PTR );
                     } else {

@@ -151,7 +151,7 @@ typedef struct  opnode {
         unsigned char   unroll_count;   // OPR_STMT
     } u1;
     union {
-        cg_sym_handle   sym_handle;     // OPR_PUSHSYM, OPR_PUSHADDR, ...
+        SYM_HANDLE      sym_handle;     // OPR_PUSHSYM, OPR_PUSHADDR, ...
                                         // OPR_CALL_INDIRECT
         source_loc      src_loc;        // OPR_STMT
         long            long_value;     // OPR_PUSHINT

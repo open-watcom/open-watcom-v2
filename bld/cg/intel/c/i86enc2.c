@@ -38,7 +38,7 @@
 #include "system.h"
 #include "escape.h"
 #include "pcencode.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "cgdefs.h"
 #include "seldef.h"
 #include "pccode.h"
@@ -48,9 +48,9 @@
 #include "encode.h"
 #include "data.h"
 #include "types.h"
-#include "feprotos.h"
 #include "utils.h"
 #include "objout.h"
+#include "feprotos.h"
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            EjectInst( void );
@@ -65,7 +65,6 @@ extern  void            LayModRM(name*);
 extern  void            LayOpword(gen_opcode);
 extern  void            ReFormat(oc_class);
 extern  void            Finalize( void );
-extern  pointer         FindAuxInfo(name*,aux_class);
 extern  void            InputOC(any_oc*);
 extern  void            AddByte(byte);
 extern  int             OptInsSize(oc_class,oc_dest_attr);

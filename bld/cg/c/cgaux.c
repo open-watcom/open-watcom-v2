@@ -35,44 +35,40 @@
 #include "coderep.h"
 #include "procdef.h"
 #include "model.h"
-#include "cgaux.h"
+#include "cgauxinf.h"
 #include "typedef.h"
 #include "feprotos.h"
 
-extern  pointer         BEAuxInfo(pointer,aux_class);
-
-extern  pointer FindAuxInfo( name *name, aux_class request ) {
-
-    bck_info            *bck;
-    aux_handle          info;
-
+extern  pointer FindAuxInfo( name *name, aux_class request )
+{
     if( name == NULL ) {
-        info = FEAuxInfo( NULL, AUX_LOOKUP );  /* return default*/
-        return( FEAuxInfo( info, request ) );
+        /* return default aux info */
+        return( FindAuxInfoSym( NULL, request ) );
     } else if( name->n.class != N_MEMORY ) {
-        info = FEAuxInfo( NULL, AUX_LOOKUP );  /* return default*/
-        return( FEAuxInfo( info, request ) );
+        /* return default aux info */
+        return( FindAuxInfoSym( NULL, request ) );
     } else if( name->m.memory_type == CG_FE ) {
-        info = FEAuxInfo( name->v.symbol, AUX_LOOKUP );
-        return( FEAuxInfo( info, request ) );
+        return( FindAuxInfoSym( name->v.symbol, request ) );
     } else if( name->m.memory_type == CG_BACK ) {
+        bck_info    *bck;
+
         bck = name->v.symbol;
-        info = FEAuxInfo( AskForLblSym( bck->lbl ), AUX_LOOKUP );
-        return( FEAuxInfo( info, request ) );
+        return( FindAuxInfoSym( AskForLblSym( bck->lbl ), request ) );
 #if _TARGET & _TARG_INTEL
-    } else if( name->m.memory_type == CG_LBL
-         && AskIfRTLabel( name->v.symbol ) ) {
+    } else if( name->m.memory_type == CG_LBL && AskIfRTLabel( name->v.symbol ) ) {
+        aux_handle  info;
+
         info = BEAuxInfo( name->v.symbol, AUX_LOOKUP );
         if( info == NULL ) {
-            info = FEAuxInfo( NULL, AUX_LOOKUP );  /* return default*/
-            return( FEAuxInfo( info, request ) );
+            /* return default aux info */
+            return( FindAuxInfoSym( NULL, request ) );
         } else {
             return( BEAuxInfo( info, request ) );
         }
 #endif
     } else {
-        info = FEAuxInfo( NULL, AUX_LOOKUP );  /* return default*/
-        return( FEAuxInfo( info, request ) );
+        /* return default aux info */
+        return( FindAuxInfoSym( NULL, request ) );
     }
 }
 
