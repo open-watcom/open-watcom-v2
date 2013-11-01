@@ -778,8 +778,7 @@ extern  void    DefSegment( segment_id id, seg_attr attr, const char *str, uint 
     new->align = align;
     new->str = CGAlloc( Length( str ) + 1 );
     CopyStr( str, new->str );
-    owner = &SegDefs;
-    while( *owner != NULL ) {
+    for( owner = &SegDefs; *owner != NULL; ) {
         owner = &(*owner)->next;
     }
     first_code = BACKSEGS;
@@ -1314,13 +1313,12 @@ static  void    SetPatches( void )
 /********************************/
 {
     temp_patch          *curr_pat;
-    temp_patch          *junk;
+    temp_patch          *next;
     array_control       *ctl;
     patch               *pat;
     unsigned            need;
 
-    curr_pat = CurrSeg->obj->patches;
-    while( curr_pat != NULL ) {
+    for( curr_pat = CurrSeg->obj->patches; curr_pat != NULL; curr_pat = next ) {
         ctl = AskLblPatch( curr_pat->lbl );
         need = ctl->used + 1;
         if( need > ctl->alloc ) {
@@ -1330,9 +1328,8 @@ static  void    SetPatches( void )
         pat->ref = AskObjHandle();
         pat->where = curr_pat->pat.where;
         pat->attr = curr_pat->pat.attr;
-        junk = curr_pat;
-        curr_pat = curr_pat->link;
-        CGFree( junk );
+        next = curr_pat->link;
+        CGFree( curr_pat );
     }
 }
 
@@ -1344,13 +1341,11 @@ static  void    SetAbsPatches( void )
     object      *obj;
 
     obj = CurrSeg->obj;
-    patch = AbsPatches;
-    while( patch != NULL ) {
+    for( patch = AbsPatches; patch != NULL; patch = patch->link ) {
         if( patch->pat.ref == INVALID && patch->obj == obj ) {
             patch->pat.ref = AskObjHandle();
             patch->flags |= AP_HAVE_OFFSET;
         }
-        patch = patch->link;
     }
 }
 
@@ -1896,14 +1891,12 @@ static  void    FiniAbsPatches( void )
 /************************************/
 {
     abspatch    *patch;
-    abspatch    *junk;
+    abspatch    *next;
 
-    patch = AbsPatches;
-    while( patch != NULL ) {
+    for( patch = AbsPatches; patch != NULL; patch = next ) {
+        next = patch->link;
         DoPatch( &patch->pat, (offset)patch->value );
-        junk = patch;
-        patch = patch->link;
-        CGFree( junk );
+        CGFree( patch );
     }
 }
 
@@ -2053,8 +2046,7 @@ static  void    FreeAbsPatch( abspatch *patch )
 {
     abspatch    **owner;
 
-    owner = &AbsPatches;
-    while( *owner != patch ) {
+    for( owner = &AbsPatches; *owner != patch; ) {
         owner = &(*owner)->link;
     }
     *owner = (*owner)->link;
@@ -2286,7 +2278,6 @@ extern  void    OutLabel( code_lbl *lbl )
 
     sym = AskForLblSym( lbl );
     if( sym != NULL ) {
-
         attr = FEAttr( sym );
         if( ( attr & FE_PROC ) == 0 ) {
             if( attr & FE_DLLEXPORT ) {
@@ -2303,12 +2294,10 @@ extern  void    OutLabel( code_lbl *lbl )
             }
         }
         for( curr = CurrSeg->virt_func_refs; curr != NULL; curr = next ) {
-            cookie = curr->cookie;
-            while( cookie != NULL ) {
-                OutVirtFuncRef( FEAuxInfo( cookie, VIRT_FUNC_SYM ) );
-                cookie = FEAuxInfo( cookie, VIRT_FUNC_NEXT_REFERENCE );
-            }
             next = curr->next;
+            for( cookie = curr->cookie; cookie != NULL; cookie = FEAuxInfo( cookie, VIRT_FUNC_NEXT_REFERENCE ) ) {
+                OutVirtFuncRef( FEAuxInfo( cookie, VIRT_FUNC_SYM ) );
+            }
             CGFree( curr );
         }
         CurrSeg->virt_func_refs = NULL;
@@ -2879,12 +2868,10 @@ static void DumpImportResolve( sym_handle sym, omf_idx idx )
             }
             OutIdx( idx, cmt );
             OutIdx( def_idx, cmt );
-            cond = FEAuxInfo( sym, CONDITIONAL_IMPORT );
-            while( cond != NULL ) {
+            for( cond = FEAuxInfo( sym, CONDITIONAL_IMPORT ); cond != NULL; cond = FEAuxInfo( cond, NEXT_CONDITIONAL ) ) {
                 sym = FEAuxInfo( cond, CONDITIONAL_SYMBOL );
                 DoOutObjectName( sym, GetSymLName, &nidx, NORMAL );
                 OutIdx( nidx, cmt );
-                cond = FEAuxInfo( cond, NEXT_CONDITIONAL );
             }
             FlushNames();
             break;
@@ -3131,9 +3118,8 @@ extern  void    OutIBytes( byte pat, offset len )
 
     SetPendingLine();
     if( len <= TRADEOFF ) {
-        while( len != 0 ) {
+        for( ; len != 0; --len ) {
             OutDataByte( pat );
-            --len;
         }
     } else {
         EjectLEData();

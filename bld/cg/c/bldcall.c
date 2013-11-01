@@ -726,12 +726,11 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_cla
     curr = NULL;
     size = TypeClassSize[using_class];
     len = _RoundUp( parm->name->tipe->length, size );
-    offset = len - size;
     temp = AllocTemp( from );
     temp->n.size = len;
     last = parm->next;
     parm->name->u.ins->result = temp;
-    while( offset >= 0 ) {
+    for( offset = len - size; offset >= 0; offset -= size ) {
         // create a parm node for this part of the struct
         curr = CGAlloc( sizeof( parm_node ) );
         ins = MakeMove( STempOffset( temp, offset, using_class, size ), NULL, using_class );
@@ -741,7 +740,6 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_cla
         curr->name->flags = parm->name->flags;
         curr->alignment = 4;
         last = curr;
-        offset -= size;
     }
     // only needed for first parm (PPC hack - doubles skip registers)
     curr->alignment = parm->alignment;

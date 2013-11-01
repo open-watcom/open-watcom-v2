@@ -758,13 +758,12 @@ extern  void    InitTempEntries( block *blk ) {
 extern  void    FiniTempEntries( void ) {
 /***************************/
 
-    temp_entry  *temp,*junk;
+    temp_entry  *temp;
+    temp_entry  *next;
 
-    temp = TempList;
-    while( temp != NULL ) {
-        junk = temp;
-        temp = temp->next;
-        CGFree( junk );
+    for( temp = TempList; temp != NULL; temp = next ) {
+        next = temp->next;
+        CGFree( temp );
     }
     TempList = NULL;
 }

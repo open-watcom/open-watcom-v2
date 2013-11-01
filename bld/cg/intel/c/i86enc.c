@@ -304,14 +304,13 @@ static  void    TransferIns( void ) {
     int i;
     int j;
 
-    i = 0;
     j = Temp.hdr.reclen - offsetof( template, data );
-    while( i < IEsc ) {
+    for( i = 0; i < IEsc; ++i ) {
         if( Inst[i] == ESC ) {
             Temp.data[j++] = ESC;
             Temp.hdr.reclen++;
         }
-        Temp.data[j++] = Inst[i++];
+        Temp.data[j++] = Inst[i];
     }
     Copy( &Inst[i], &Temp.data[j], ICur - i );
     Temp.hdr.reclen += ICur;
@@ -1586,10 +1585,8 @@ static  int     FPRegTrans( hw_reg_set reg ) {
     int         i;
     hw_reg_set  *table;
 
-    table = FPRegs;
     i = 0;
-    while( !HW_Equal( reg, *table ) ) {
-        table++;
+    for( table = FPRegs; !HW_Equal( reg, *table ); table++ ) {
         i++;
     }
     return( i );

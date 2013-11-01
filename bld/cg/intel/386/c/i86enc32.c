@@ -130,14 +130,13 @@ static void OpndSizeIf( bool if_32 )
 static void TakeUpSlack( type_length size )
 /*****************************************/
 {
-    while( size >= 2 ) {
-        if( _IsTargetModel( USE_32 ) ) AddByte( M_OPND_SIZE );
+    for( ; size >= 2; size -= 2 ) {
+        if( _IsTargetModel( USE_32 ) )
+            AddByte( M_OPND_SIZE );
         AddByte( M_MOVSW );
-        size -= 2;
     }
-    while( size >= 1 ) {
+    for( ; size >= 1; --size ) {
         AddByte( M_MOVSB );
-        size -= 1;
     }
 }
 
@@ -151,7 +150,7 @@ extern  void    DoRepOp( instruction *ins )
     size = ins->result->n.size;
     first = TRUE;
     if( ins->head.opcode == OP_MOV && !UseRepForm( size ) ) {
-        while( size >= 4 ) {
+        for( ; size >= 4; size -= 4 ) {
             if( first ) {
                 LayOpbyte( M_MOVSW );
                 OpndSizeIf( FALSE );
@@ -160,16 +159,15 @@ extern  void    DoRepOp( instruction *ins )
                 if( _IsntTargetModel( USE_32 ) ) AddByte( M_OPND_SIZE );
                 AddByte( M_MOVSW );
             }
-            size -= 4;
         }
         TakeUpSlack( size );
     } else {
         LayOpbyte( M_REPE );
         if( ins->head.opcode == OP_MOV ) {
-            if( ( size & (4-1) ) == 0 || OptForSize <= 50 ) {
+            if( ( size & ( 4 - 1 ) ) == 0 || OptForSize <= 50 ) {
                 if( _IsntTargetModel( USE_32 ) ) AddByte( M_OPND_SIZE );
                 AddByte( M_MOVSW );
-                TakeUpSlack( size & (4-1) );
+                TakeUpSlack( size & ( 4 - 1 ) );
             } else {
                 AddByte( M_MOVSB );
             }
@@ -217,10 +215,10 @@ static  byte    DoIndex( hw_reg_set regs )
 {
     byte i;
 
-    i = 0;
-    while( i < INDICES ) {
-        if( HW_Equal( regs, IndexTab[i] ) ) break;
-        i++;
+    for( i = 0; i < INDICES; ++i ) {
+        if( HW_Equal( regs, IndexTab[i] ) ) {
+            break;
+        }
     }
     if( i >= INDICES ) {
         _Zoiks( ZOIKS_033 );

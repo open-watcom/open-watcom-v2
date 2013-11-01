@@ -232,9 +232,10 @@ static  bool    ReallyDefinedBy( instruction *ins_i, instruction *ins_j,
         ins_i = ins_j;
         ins_j = ins;
     }
-    while( ins_i != ins_j ) {
-        if( ReDefinedBy( ins_i, op->i.index ) ) return( TRUE );
-        ins_i = ins_i->head.next;
+    for( ; ins_i != ins_j; ins_i = ins_i->head.next ) {
+        if( ReDefinedBy( ins_i, op->i.index ) ) {
+            return( TRUE );
+        }
     }
     return( FALSE );
 }
@@ -623,7 +624,8 @@ extern int StallCost( instruction *ins, instruction *top )
     if( top == NULL ) return( 0 );
     if( FPFreeIns( ins ) ) return( -1 );
     last = top;
-    while( FPFreeIns( top ) ) top = top->head.next;
+    while( FPFreeIns( top ) )
+        top = top->head.next;
     entry = FUEntry( ins );
     avail_fu = entry->good_fu;
     unit_stall = entry->unit_stall;

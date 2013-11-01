@@ -197,7 +197,7 @@ static  bool    GenId( block *blk, block *next ) {
 }
 
 
-extern  void    BlocksSortedBy( bool (*bigger)( block *, block * ) )
+static  void    BlocksSortedBy( bool (*bigger)( block *, block * ) )
 /******************************************************************/
 {
     block       *blk;

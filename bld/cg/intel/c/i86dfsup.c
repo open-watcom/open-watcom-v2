@@ -172,26 +172,19 @@ static struct reg_map    HWRegValues[REG_MAP_SIZE] = {
    { HW_D( HW_GS ),  DW_REG_gs }
 };
 
-static  uint   DFRegMap( hw_reg_set hw_reg ) {
-/***********************************************/
-
-
-    dw_regs           ret;
+static  uint   DFRegMap( hw_reg_set hw_reg )
+/******************************************/
+{
     struct reg_map   *map, *end;
 
-    map = &HWRegValues[0];
     end =  &HWRegValues[REG_MAP_SIZE];
-    ret = DW_REG_MAX;
-    while( map < end ){
+    for( map = &HWRegValues[0]; map < end; ++map ) {
         if( HW_Equal( map->reg, hw_reg ) ){
-            ret = map->dwarf;
-            goto found;
+            return( map->dwarf );
         }
-        ++map;
     }
     Zoiks( ZOIKS_085 );/* reg not found */
-found:
-    return( ret );
+    return( DW_REG_MAX );
 }
 
 extern  void   DFOutReg( dw_loc_id locid, name *reg ) {

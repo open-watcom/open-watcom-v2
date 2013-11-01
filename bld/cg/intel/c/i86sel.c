@@ -125,14 +125,13 @@ extern  signed_32       ScanCost( select_node *s_node ) {
     int         type_length;
     cg_type     tipe;
 
-    list = s_node->list;
     hi = s_node->upper;
     lo = s_node->lower;
     values = 0;
-    while( list != NULL ) {
-        if( SelCompare( list->low, hi ) > 0 ) break;
+    for( list = s_node->list; list != NULL; list = list->next ) {
+        if( SelCompare( list->low, hi ) > 0 )
+            break;
         values += list->high - list->low + 1;
-        list = list->next;
     }
     tipe = SelType( hi - lo );
     if( ( tipe == TY_UINT_4 && values < MIN_LVALUES ) || ( tipe != TY_UINT_4 && values < MIN_SVALUES ) ) {
@@ -324,9 +323,8 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
     select_list         *next;
     signed_32           curr;
 
-    scan = list;
     curr = hi;
-    while( scan->high != hi ) {
+    for( scan = list; scan->high != hi; ) {
         scan = scan->next;
     }
     for(;;) {
@@ -344,8 +342,7 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
         if( SelCompare( curr, lo ) <= 0 ) break;
         if( SelCompare( curr, scan->low ) <= 0 ) {
             next = scan;
-            scan = list;
-            while( scan->next != next ) {
+            for( scan = list; scan->next != next; ) {
                 scan = scan->next;
             }
             curr = scan->high;

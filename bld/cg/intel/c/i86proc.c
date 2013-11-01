@@ -739,10 +739,8 @@ static  void    MoveParms( void ) {
 
     int     i;
 
-    i = 0;
-    while( Parm8087[ i ] != NULL ) {
-        GFstpM( Parm8087[ i ] );
-        ++i;
+    for( i = 0; Parm8087[i] != NULL; ++i ) {
+        GFstpM( Parm8087[i] );
     }
 }
 
@@ -998,8 +996,9 @@ static  int Push( hw_reg_set to_push ) {
             HW_TurnOff( to_push, *curr_push );
         }
         ++ curr_push;
-        if( HW_CEqual( *curr_push, HW_EMPTY ) )
+        if( HW_CEqual( *curr_push, HW_EMPTY ) ) {
             break;
+        }
     }
     return( size );
 }
@@ -1011,9 +1010,8 @@ static  void        Pop( hw_reg_set to_pop ) {
     if( _IsntModel( NO_OPTIMIZATION ) && CurrProc->targ.sp_frame && !CurrProc->targ.sp_align ) {
         FlowRestore( &to_pop );
     }
-    curr_pop = PushRegs;
-    while( !HW_CEqual( *curr_pop, HW_EMPTY ) ) {
-        ++ curr_pop;
+    for( curr_pop = PushRegs; !HW_CEqual( *curr_pop, HW_EMPTY ); ) {
+        ++curr_pop;
     }
     while( !HW_CEqual( to_pop, HW_EMPTY ) ) {
         -- curr_pop;
@@ -1046,13 +1044,13 @@ static  void    AllocStack( void ) {
         if( CurrProc->prolog_state & GENERATE_TOUCH_STACK ) {
             GenTouchStack( TRUE );
         }
-    } else if( size <= 2*WORD_SIZE && OptForSize > 50 ) {
+    } else if( size <= 2 * WORD_SIZE && OptForSize > 50 ) {
         while( size > 0 ) {
-            #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
             QuickSave( HW_EAX, OP_PUSH );
-            #else
+#else
             QuickSave( HW_AX, OP_PUSH );
-            #endif
+#endif
             size -= WORD_SIZE;
         }
     } else if( size != 0 ) {

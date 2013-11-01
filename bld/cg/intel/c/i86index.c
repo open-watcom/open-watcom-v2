@@ -426,10 +426,8 @@ extern  void    FixChoices( void ) {
                 }
             }
 #else
-            aposs = conf->possible_for_alias_list;
-            while( aposs != NULL ) {
+            for( aposs = conf->possible_for_alias_list; aposs != NULL; aposs = aposs->next ) {
                 aposs->possible = NoSegments( aposs->possible );
-                aposs = aposs->next;
             }
 #endif
         }

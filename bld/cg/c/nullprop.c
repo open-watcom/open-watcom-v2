@@ -308,8 +308,7 @@ static  void            *DominatingDeref( parm_struct *parms )
         ( parms->op->v.usage & USE_IN_ANOTHER_BLOCK ) == EMPTY ) return( NULL );
     stk = InitStack();
     PushTargets( stk, parms->blk, parms->forward );
-    dominated = TRUE;
-    while( dominated ) {
+    for( dominated = TRUE; dominated; ) {
         if( Empty( stk ) ) break;
         edge = Pop( stk );
         blk = EdgeBlock( edge, parms->forward );
@@ -390,14 +389,13 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
     ClearBlockBits( BLOCK_VISITED );
     FloodDown( taken, BLOCK_VISITED );
     stk = InitStack();
-    side_effect = FALSE;
 
     /*
      * Flood fill forward looking for a path which has a side effect on it.
      * Paths are killed when we hit a block already seen or which is in
      * the other edge of the graph (the edge which is taken).
      */
-    while( !side_effect ) {
+    for( side_effect = FALSE; !side_effect; ) {
         if( ( elim->class & BLOCK_VISITED ) == EMPTY ) {
             if( BlockSideEffect( elim ) ) {
                 side_effect = TRUE;

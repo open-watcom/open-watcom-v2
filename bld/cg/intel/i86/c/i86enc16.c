@@ -112,11 +112,10 @@ static  byte    DoIndex( hw_reg_set regs )
 {
     int i;
 
-    i = 0;
-    while( i < INDICES ) {
-        if( HW_Equal( regs, IndexTab[i] ) )
+    for( i = 0; i < INDICES; ++i ) {
+        if( HW_Equal( regs, IndexTab[i] ) ) {
             break;
-        i++;
+        }
     }
     if( i >= INDICES ) {
         _Zoiks( ZOIKS_033 );
