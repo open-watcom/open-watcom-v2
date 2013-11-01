@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -44,7 +44,7 @@ const   lay_att     author_att[7] =
 /*Define the characteristics of the author entity.                                */
 /*:AUTHOR                                                                         */
 /*        left_adjust = 0                                                         */
-/*        right_adjust = ٿ1iٿ                                                   */
+/*        right_adjust = '1i'                                                     */
 /*        page_position = right                                                   */
 /*        font = 0                                                                */
 /*        pre_skip = 25                                                           */
@@ -79,7 +79,7 @@ const   lay_att     author_att[7] =
 /*by the current line spacing (see "Vertical Space Unit" on page 77 for           */
 /*more information). The resulting amount of space is skipped before              */
 /*the author lines. The pre-skip will be merged with the previous                 */
-/*document entityٿs post-skip value. If a pre-skip occurs at the                 */
+/*document entity's post-skip value. If a pre-skip occurs at the                  */
 /*beginning of an output page, the pre-skip value has no effect.                  */
 /*                                                                                */
 /*skip This attribute accepts vertical space units. A zero value means that       */

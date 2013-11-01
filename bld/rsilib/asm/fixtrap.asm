@@ -2,7 +2,7 @@
 ;
 ;                         Open Watcom Project
 ;
-; Copyright (c) 2002-2010 The Open Watcom Contributors. All Rights Reserved.
+; Copyright (c) 2002-2013 The Open Watcom Contributors. All Rights Reserved.
 ; Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ; Copyright (c) 1987-1992 Rational Systems, Incorporated. All Rights Reserved.
 ;

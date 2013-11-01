@@ -1,8 +1,8 @@
-/****************************************************************************
+﻿/****************************************************************************
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
