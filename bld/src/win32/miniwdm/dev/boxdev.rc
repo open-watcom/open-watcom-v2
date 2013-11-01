@@ -18,7 +18,7 @@ BEGIN
             VALUE "FileDescription", "Sample WDM Device Driver"
             VALUE "FileVersion",     "1.0.0"
             VALUE "InternalName",    "boxdev.sys"
-            VALUE "LegalCopyright",  "\251 2010 Open Watcom Contributors"
+            VALUE "LegalCopyright",  "\251 2010 The Open Watcom Contributors"
             VALUE "OriginalFilename","boxdev.sys"
             VALUE "ProductName",     "WDM Sample"
             VALUE "ProductVersion",  "1.0.0"

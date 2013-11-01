@@ -152,7 +152,6 @@
 !inject strstrea         noext hcpp
 !inject strstrea.h             hcpp
 !inject sys/_lfndos.h               hdos
-!inject sys/cdrom.h                           hqnx
 !inject sys/con_msg.h                         hqnx
 !inject sys/console.h                         hqnx
 !inject sys/debug.h                           hqnx

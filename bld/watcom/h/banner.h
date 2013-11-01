@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2013 The Open Watcom Contributors. All Rights Reserved.
+* Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -54,7 +55,7 @@
 #define banner1w1(p)        "Open Watcom " p
 #define banner1w2(v)        banner1p2(v)
 
-#define banner2             "Copyright (c) 2002-" CURR_YEAR " Open Watcom Contributors. All Rights Reserved."
+#define banner2             "Copyright (c) 2002-" CURR_YEAR " The Open Watcom Contributors. All Rights Reserved."
 #define banner2a(year)      "Portions Copyright (c) " year "-2002 Sybase, Inc. All Rights Reserved."
 
 #define banner3             "Source code is available under the Sybase Open Watcom Public License."
@@ -65,7 +66,7 @@
 #define banner3ps           "All rights reserved.  Powersoft is a trademark of Sybase, Inc."
 
 /* Used by setupgui/c/guiinit.c */
-#define gui_banner2         "Copyright © 2002-" CURR_YEAR " Open Watcom Contributors. All Rights Reserved."
+#define gui_banner2         "Copyright © 2002-" CURR_YEAR " The Open Watcom Contributors. All Rights Reserved."
 #define gui_banner2a        "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
 
 #if defined( _M_I86 )

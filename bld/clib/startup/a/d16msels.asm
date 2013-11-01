@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;*    Copyright (c) 2007 Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2007-2013 The Open Watcom Contributors. All Rights Reserved.
 ;*
 ;*  ========================================================================
 ;*

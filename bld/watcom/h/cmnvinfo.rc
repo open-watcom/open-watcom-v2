@@ -47,7 +47,7 @@ BEGIN
             VALUE "FileVersion", VERINFO_FILEVERSION_STR "\0"
             VALUE "InternalName", VERINFO_INTERNALNAME_STR "\0"
             VALUE "LegalCopyright", "Copyright \251 2002-" CURR_YEAR
-                                    " Open Watcom Contributors. "
+                                    " The Open Watcom Contributors. "
 #ifndef VERINFO_NO_SYBASE
                                     "Portions Copyright \251 2002 Sybase, Inc. "
 #endif
