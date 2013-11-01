@@ -1,7 +1,7 @@
 /*
  *  bsexcpt.h   OS/2 exception handling structures and constants.
  *
-:include readonly.sp
+:include crwatcnt.sp
  */
 
 #ifndef __BSEXCPT_H__
