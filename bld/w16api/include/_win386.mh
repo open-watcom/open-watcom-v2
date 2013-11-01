@@ -652,6 +652,7 @@ BOOL WINAPI _Cover_NotifyRegister( HTASK, LPFNNOTIFYCALLBACK, WORD );
 #undef int
 #undef __far
 #undef __huge
+#undef __export
 #undef FAR
 #define FAR __far
 
