@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
 *
 *                            Open Watcom Project
 *
@@ -88,7 +88,7 @@ const   lay_att     ul_att[13] =
 /*        line_break = no                                                       */
 /*                                                                              */
 /*level This attribute accepts a positive integer number. If not specified, a   */
-/*level value of ٿ1ٿ. is assumed. Each list level is separately               */
+/*level value of '1'. is assumed. Each list level is separately               */
 /*specified. For example, if two levels of the ordered list are                 */
 /*specified, the :dl tag will be specified twice in the layout. When            */
 /*some attributes for a new level of a list are not specified, the default      */
@@ -120,7 +120,7 @@ const   lay_att     ul_att[13] =
 /*by the current line spacing (see "Vertical Space Unit" on page 77 for         */
 /*more information). The resulting amount of space is skipped before            */
 /*the definition list. The pre-skip will be merged with the previous            */
-/*document entityٿs post-skip value. If a pre-skip occurs at the               */
+/*document entity's post-skip value. If a pre-skip occurs at the               */
 /*beginning of an output page, the pre-skip value has no effect.                */
 /*                                                                              */
 /*skip This attribute accepts vertical space units. A zero value means that     */

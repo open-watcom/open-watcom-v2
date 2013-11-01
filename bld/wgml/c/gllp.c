@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
 *
 *                            Open Watcom Project
 *
@@ -66,7 +66,7 @@ const   lay_att     lp_att[7] =
 /*by the current line spacing (see "Vertical Space Unit" on page 77 for          */
 /*more information). The resulting amount of space is skipped before             */
 /*the list part. The pre-skip will be merged with the previous                   */
-/*document entityٿs post-skip value. If a pre-skip occurs at the                */
+/*document entity's post-skip value. If a pre-skip occurs at the                */
 /*beginning of an output page, the pre-skip value has no effect.                 */
 /*                                                                               */
 /*post_skip This attribute accepts vertical space units. A zero value means that */
@@ -74,7 +74,7 @@ const   lay_att     lp_att[7] =
 /*by the current line spacing (see "Vertical Space Unit" on page 77 for          */
 /*more information). The resulting amount of space is skipped after              */
 /*the list part. The post-skip will be merged with the next document             */
-/*entityٿs pre-skip value. If a post-skip occurs at the end of an output        */
+/*entity's pre-skip value. If a post-skip occurs at the end of an output        */
 /*page, any remaining part of the skip is not carried over to the next           */
 /*output page.                                                                   */
 /*                                                                               */
