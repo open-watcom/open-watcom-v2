@@ -941,7 +941,6 @@ int __checkIsDBCS( void )
             if( leadBytes[0] || leadBytes[1] )  return( 1 );
         }
     }
-    return( 0 );
 #elif defined(__DOS4G) || defined(__CAUSEWAY)
     unsigned short  *leadBytes;
     rm_call_struct  dblock;
@@ -956,7 +955,6 @@ int __checkIsDBCS( void )
             if( leadBytes[0] || leadBytes[1] )  return( 1 );
         }
     }
-    return( 0 );
 #elif defined(__X32)
     unsigned            esi;
     unsigned short far *leadBytes;
@@ -998,8 +996,8 @@ int __checkIsDBCS( void )
                         (parm_struct.selector_ds << 4) + (esi & 0xFFFF) );
         if( leadBytes[0] || leadBytes[1] )  return( 1 );
     }
-    return( 0 );
 #endif
+    return( 0 );
 }
 
 int main( void )
