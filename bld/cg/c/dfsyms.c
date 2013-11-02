@@ -53,7 +53,7 @@
 #include "cgprotos.h"
 #include "feprotos.h"
 
-extern  void            DoBigBckPtr(back_handle,offset);
+extern  void            DoBigBckPtr(bck_info *,offset);
 extern  name            *DeAlias(name*);
 extern  void            DataInt(short_offset);
 extern  void            DataLong( long );
@@ -61,7 +61,6 @@ extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes( offset len, byte pat );
 extern  void            DataLabel( code_lbl * );
 extern  void            DoBigLblPtr(sym_handle);
-extern  void            DoBigBckPtr(back_handle,offset);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
 extern dw_loc_id        DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid );
 extern uint             DFStkReg( void );
@@ -405,11 +404,8 @@ extern  void    DFSymRange( sym_handle sym, offset size ){
     // this may cause debug information to be missing... call it
     // a FIXME
 
-    bck_info    *bck;
-
     if( !_IsModel( DBG_LOCALS | DBG_TYPES ) )return;
-    bck = FEBack( sym );
-    ARange = bck;
+    ARange = FEBack( sym );
     DWAddress( Client, size );
 }
 
@@ -938,7 +934,6 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     dbg_local           *parm;
     dbg_local           *next;
     dw_handle           obj;
-    bck_info            *bck;
     sym_access          *access;
 
     lc = lc;
@@ -985,9 +980,8 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     dw_frameloc = NULL;
     dw_segloc = NULL;
 #endif
-    bck = FEBack( sym );
     rtn->end_lbl = MakeLabel();
-    Pc_Low  = bck;
+    Pc_Low  = FEBack( sym );
     Pc_High = rtn->end_lbl;
     obj = DWBeginSubroutine( Client, 0, tipe, dw_retloc,
                      dw_frameloc, NULL, rtn->obj_type,

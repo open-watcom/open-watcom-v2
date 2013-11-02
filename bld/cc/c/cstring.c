@@ -162,7 +162,7 @@ STRING_LITERAL *GetLiteral( void )
     str_lit->literal = s;
     str_lit->length = len;
     str_lit->flags = 0;
-    str_lit->cg_back_handle = 0;
+    str_lit->back_handle = 0;
     str_lit->ref_count = 0;
     return( str_lit );
 }

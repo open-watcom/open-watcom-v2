@@ -2123,7 +2123,7 @@ static void _TellImportHandle( sym_handle sym, import_handle imp_idx, bool alt_d
 /*************************************************************************************/
 {
     if( alt_dllimp ) {
-        FEBack( sym )->imp_alt = imp_idx;
+        ((bck_info *)FEBack( sym ))->imp_alt = imp_idx;
     } else {
         TellImportHandle( sym, imp_idx );
     }
@@ -2133,7 +2133,7 @@ static import_handle _AskImportHandle( sym_handle sym, bool alt_dllimp )
 /**********************************************************************/
 {
     if( alt_dllimp ) {
-        return( FEBack( sym )->imp_alt );
+        return( ((bck_info *)FEBack( sym ))->imp_alt );
     } else {
         return( AskImportHandle( sym ) );
     }

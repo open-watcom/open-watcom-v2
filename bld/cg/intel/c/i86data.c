@@ -41,9 +41,9 @@
 #include "cgauxinf.h"
 #include "i86obj.h"
 #include "data.h"
-#include "feprotos.h"
 #include "utils.h"
 #include "objout.h"
+#include "feprotos.h"
 
 extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  void            OutPatch(code_lbl *,patch_attr);
@@ -153,7 +153,7 @@ extern  void    DoBigLblPtr( sym_handle sym ) {
 /*********************************************/
 
     TellOptimizerByPassed();
-    DoLblPtr( FEBack( sym )->lbl, FESegID( sym ), F_PTR, 0 );
+    DoLblPtr( ((bck_info *)FEBack( sym ))->lbl, FESegID( sym ), F_PTR, 0 );
     TellByPassOver();
 }
 
@@ -219,12 +219,10 @@ extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
 /*******************************************************************/
 
     fe_attr     attr;
-    bck_info    *bck;
     fix_class   class;
 
     TellOptimizerByPassed();
     attr = FEAttr( sym );
-    bck = FEBack( sym );
     if( ( attr & FE_PROC ) && _IsTargetModel( WINDOWS )
       && (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL) ) {
         class = F_LDR_OFFSET;
@@ -240,7 +238,7 @@ extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
     if( UseImportForm( attr ) ) {
         DoImpPtr( sym, class, plus );
     } else {
-        DoLblPtr( bck->lbl, FESegID( sym ), class, plus );
+        DoLblPtr( ((bck_info *)FEBack( sym ))->lbl, FESegID( sym ), class, plus );
     }
     TellByPassOver();
 }
@@ -249,15 +247,13 @@ extern  void    FEPtrBaseOffset( sym_handle sym,  offset plus ) {
 /***************************************************************/
 
     fe_attr     attr;
-    bck_info    *bck;
 
     TellOptimizerByPassed();
     attr = FEAttr( sym );
-    bck = FEBack( sym );
     if( UseImportForm( attr ) ) { /* 90-05-22 */
         DoImpPtr( sym, F_PTR, plus );
     } else {
-        DoLblPtr( bck->lbl, FESegID( sym ), F_PTR, plus );
+        DoLblPtr( ((bck_info *)FEBack( sym ))->lbl, FESegID( sym ), F_PTR, plus );
     }
     TellByPassOver();
 }
@@ -266,15 +262,13 @@ extern  void    FEPtrBase( sym_handle sym ) {
 /*******************************************/
 
     fe_attr     attr;
-    bck_info    *bck;
 
     TellOptimizerByPassed();
     attr = FEAttr( sym );
-    bck = FEBack( sym );
     if( UseImportForm( attr ) ) {
         DoImpPtr( sym, F_BASE, 0 );
     } else {
-        DoLblPtr( bck->lbl, FESegID( sym ), F_BASE, 0 );
+        DoLblPtr( ((bck_info *)FEBack( sym ))->lbl, FESegID( sym ), F_BASE, 0 );
     }
     TellByPassOver();
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2013 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,53 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Auxiliary info data search functions declaration.
 *
 ****************************************************************************/
 
-/*
 
-these structures are valid only for 32-bit OS2/NT targets
+#include "cgaux.h"
 
-struct  scope_entry {
-        unsigned char           parent_scope;
-        unsigned char           try_type;
-        void                    (*exception_handler);
-};
+#define FindAuxInfoSym(s,r) FEAuxInfo(FEAuxInfo(s,AUX_LOOKUP),r)
 
-struct  _EXCEPTION_RECORD;
-struct  _CONTEXT;
-
-struct  try_block {
-        struct try_block        *next;
-        void                    (*try_handler)( void );
-        unsigned long           saved_EBP;
-        struct scope_entry      *scope_table;
-        unsigned char           scope_index;
-        unsigned char           unwindflag;
-        unsigned char           unwind_index;
-        unsigned char           slack3;
-        struct _EXCEPTION_RECORD *exception_info;
-        struct _CONTEXT         *context_info;
-};
-
-*/
-
-#if ( _CPU != 8086 )
-
-/*
- * next definition define field offsets in structure above
- * see CRTL startup directory for seh386.asm
- */
-
-#define TRY_BLOCK_SIZE	    28
-
-#define FLD_next            0
-#define FLD_scope_table     12
-#define FLD_scope_index     16
-#define FLD_unwindflag      17
-#define FLD_exception_info  20
-#define FLD_context_info    24
-
+extern  pointer FindAuxInfo( name *, aux_class );
+#if _TARGET & _TARG_INTEL
+extern  pointer BEAuxInfo( pointer, aux_class );
 #endif

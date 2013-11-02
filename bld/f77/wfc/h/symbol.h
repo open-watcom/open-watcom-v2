@@ -60,7 +60,7 @@
 #define ALIGN_SEGMENT   16      // align segment on segment boundary
 
 
-typedef void            *obj_addr;              // back handle
+typedef back_handle     obj_addr;              // back handle
 
 typedef unsigned_32     db_handle;
 

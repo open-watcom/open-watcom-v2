@@ -788,23 +788,19 @@ seg_offset      GetComOffset( unsigned_32 offset ) {
 }
 
 
-struct bck_info *FEBack( cg_sym_handle _sym ) {
-//=============================================
+back_handle FEBack( cg_sym_handle _sym ) {
+//========================================
 
 // Return the back handle for the given symbol.
 
-    void        *back_handle;
     sym_id      sym = _sym;
 
-    if( ( sym->ns.flags & SY_CLASS ) == SY_COMMON ) {
-        back_handle = sym->ns.u3.address;
-    } else {
+    if( ( sym->ns.flags & SY_CLASS ) != SY_COMMON ) {
         if( sym->ns.u3.address == NULL ) {
             sym->ns.u3.address = BENewBack( sym );
         }
-        back_handle = sym->ns.u3.address;
     }
-    return( back_handle );
+    return( sym->ns.u3.address );
 }
 
 
@@ -1088,10 +1084,10 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
 }
 
 
-void    FEGenProc( cg_sym_handle sym, call_handle handle) {
-//=========================================================
+void    FEGenProc( cg_sym_handle sym, pointer handle) {
+//=====================================================
 
-    sym = sym;
+    sym = sym; handle = handle;
 }
 
 
@@ -1219,27 +1215,25 @@ static int GetParmsSize( sym_id sym )
     return( args_size );
 }
 
-extern char *FEExtName( cg_sym_handle _sym, int request ) {
+extern char *FEExtName( cg_sym_handle sym, int request ) {
 //=========================================================
 
 // Return symbol name related info for object file.
 
-    sym_id      sym = _sym;
-
     switch( request ) {
     case EXTN_BASENAME:
-        return( GetBaseName( sym ) );
+        return( GetBaseName( (sym_id)sym ) );
     case EXTN_PATTERN:
-        return( GetNamePattern( sym ) );
+        return( GetNamePattern( (sym_id)sym ) );
     case EXTN_PRMSIZE:
-        return( (char *)GetParmsSize( sym ) );
+        return( (char *)GetParmsSize( (sym_id)sym ) );
     default:
         return( NULL );
     }
 }
 
 char    *FEName( cg_sym_handle _sym ) {
-//=====================================
+//====================================
 
 // Return pointer to the name of the given symbol.
 
@@ -1344,8 +1338,8 @@ static  char    *AuxName( aux_info *aux, char *buff ) {
 }
 
 
-void    FCMessage( fc_msg_class tipe, void *x ) {
-//===============================================
+void    FCMessage( fc_msg_class tipe, pointer x ) {
+//=================================================
 
     char        name[MAX_SYMLEN+1];
 
@@ -1365,8 +1359,8 @@ void    FCMessage( fc_msg_class tipe, void *x ) {
     }
 }
 
-void    FEMessage( int msg, void *x ) {
-//======================================
+void    FEMessage( int msg, pointer x ) {
+//=======================================
 
 // Print a message for the back end.
 
@@ -1382,9 +1376,9 @@ void    FEMessage( int msg, void *x ) {
         break;
     case MSG_CODE_SIZE :
 #if _CPU == 8086
-        CodeSize = (unsigned short)x;
+        CodeSize = (unsigned short)(pointer_int)x;
 #else
-        CodeSize = (unsigned long)x;
+        CodeSize = (unsigned long)(pointer_int)x;
 #endif
         break;
     case MSG_DATA_SIZE :
@@ -1417,7 +1411,7 @@ void    FEMessage( int msg, void *x ) {
         CGFlags |= CG_MEM_LOW_ISSUED;
         break;
     case MSG_BACK_END_ERROR :
-        Error( CP_BACK_END_ERROR, (int)x );
+        Error( CP_BACK_END_ERROR, (int)(pointer_int)x );
         break;
     case MSG_BAD_SAVE :
         Error( CP_BAD_SAVE, AuxName( x, name ) );
@@ -1907,8 +1901,8 @@ char    *GetFullSrcName( void ) {
     }
 }
 
-void    *FEAuxInfo( aux_handle aux, int request ) {
-//=================================================
+pointer FEAuxInfo( pointer req_handle, int request ) {
+//====================================================
 
 // Return specified auxiliary information for given auxiliary entry.
 
@@ -1927,82 +1921,82 @@ void    *FEAuxInfo( aux_handle aux, int request ) {
         {
             static call_class CallClass;
 
-            CallClass = ((aux_info *)aux)->cclass ^ REVERSE_PARMS;
-            return( &CallClass );
+            CallClass = ((aux_info *)req_handle)->cclass ^ REVERSE_PARMS;
+            return( (pointer)&CallClass );
         }
     case SAVE_REGS :
-        return( &((aux_info *)aux)->save );
+        return( (pointer)&((aux_info *)req_handle)->save );
     case RETURN_REG :
-        return( &((aux_info *)aux)->returns );
+        return( (pointer)&((aux_info *)req_handle)->returns );
     case PARM_REGS :
-        return( ((aux_info *)aux)->parms );
+        return( (pointer)((aux_info *)req_handle)->parms );
     case CALL_BYTES :
 #if _CPU == _AXP || _CPU == _PPC
         return( NULL );
 #else
-        return( ((aux_info *)aux)->code );
+        return( (pointer)((aux_info *)req_handle)->code );
 #endif
 #if _CPU == 8086 || _CPU == 386
     case CODE_GROUP :
     case DATA_GROUP :
-        return( "" );
+        return( (pointer)"" );
     case STRETURN_REG :
-        return( &((aux_info *)aux)->streturn );
+        return( (pointer)&((aux_info *)req_handle)->streturn );
 #endif
     case NEXT_IMPORT :
-        switch( (int)aux ) {
+        switch( (int)(pointer_int)req_handle ) {
         case 0:
             if( CGFlags & CG_HAS_PROGRAM )
-                return( (void *)1 );
+                return( (pointer)1 );
 #if _CPU == 386 || _CPU == _AXP || _CPU == _PPC
             if( CGOpts & CGOPT_BD )
-                return( (void *)1 );
+                return( (pointer)1 );
 #endif
         case 1:
 #if _CPU == 386 || _CPU == 8086
             if(( CGFlags & CG_FP_MODEL_80x87 )
               && ( CGFlags & CG_USED_80x87 ))
-                return( (void *)2 );
+                return( (pointer)2 );
         case 2:
 #if _CPU == 386
             if( CPUOpts & CPUOPT_FPI )
-                return( (void *)3 );
+                return( (pointer)3 );
         case 3:
             if( CGOpts & CGOPT_BW )
-                return( (void *)4 );
+                return( (pointer)4 );
         case 4:
 #endif
 #endif
-            return( (void *)5 );
+            return( (pointer)5 );
         case 5:
-            return( (void *)6 );
+            return( (pointer)6 );
         case 6:
             if( Options & OPT_UNIT_6_CC )
-                return( (void *)7 );
+                return( (pointer)7 );
         case 7:
             if( Options & OPT_LF_WITH_FF )
-                return( (void *)8 );
+                return( (pointer)8 );
         case 8:
 #if _CPU == 386 || _CPU == _PPC || _CPU == _AXP
             if( CGOpts & ( CGOPT_BM | CGOPT_BD ) )
-                return( (void *)9 );
+                return( (pointer)9 );
         case 9:
 #endif
             if( Options & OPT_COMMA_SEP )
-                return( (void *)10 );
+                return( (pointer)10 );
         default:
             break;
         }
-        return( (void *)0 );
+        return( NULL );
     case NEXT_IMPORT_S :
-        if( aux == NULL ) {
+        if( req_handle == NULL ) {
             ImpSym = GList;
         } else {
             ImpSym = ImpSym->ns.link;
         }
         for(;;) {
             if( ImpSym == NULL )
-                return( (void *)0 );
+                return( NULL );
             flags = ImpSym->ns.flags;
             if(( ( flags & SY_CLASS ) == SY_SUBPROGRAM )
               && ( flags & SY_EXTERNAL )
@@ -2010,9 +2004,9 @@ void    *FEAuxInfo( aux_handle aux, int request ) {
                 break;
             ImpSym = ImpSym->ns.link;
         }
-        return( (void *)1 );
+        return( (pointer)1 );
     case IMPORT_NAME :
-        switch( (int)aux ) {
+        switch( (int)(pointer_int)req_handle ) {
         case 1:
 #if _CPU == 386 || _CPU == _AXP || _CPU == _PPC
             if( CGOpts & CGOPT_BD )
@@ -2051,17 +2045,17 @@ void    *FEAuxInfo( aux_handle aux, int request ) {
     case IMPORT_NAME_S :
         return( ImpSym );
     case NEXT_LIBRARY :
-        if( aux == NULL ) {
+        if( req_handle == NULL ) {
             return( DefaultLibs );
         } else {
-            return( ((default_lib *)(aux))->link );
+            return( ((default_lib *)req_handle)->link );
         }
     case LIBRARY_NAME :
-        return( &((default_lib *)(aux))->lib );
+        return( &((default_lib *)req_handle)->lib );
     case SOURCE_NAME :
         return( GetFullSrcName() );
     case AUX_LOOKUP :
-        sym = (sym_id)aux;
+        sym = (sym_id)req_handle;
         _UnShadow( sym );
         return( AuxLookup( sym ) );
     case OBJECT_FILE_NAME :
@@ -2083,9 +2077,9 @@ void    *FEAuxInfo( aux_handle aux, int request ) {
         }
         return( &TokenBuff );
     case FREE_SEGMENT :
-        return( 0 );
+        return( NULL );
     case REVISION_NUMBER :
-        return( (void *)II_REVISION );
+        return( (pointer)II_REVISION );
 #if _CPU == 8086 || _CPU == 386
     case CLASS_NAME :
         for( sym = GList; sym != NULL; sym = sym->ns.link ) {
@@ -2099,8 +2093,8 @@ void    *FEAuxInfo( aux_handle aux, int request ) {
                 com_size -= MaxSegSize;
                 idx++;
             }
-            if(( (segment_id)aux >= sym->ns.si.cb.seg_id )
-              && ( (segment_id)aux <= sym->ns.si.cb.seg_id + idx )) {
+            if(( (segment_id)(pointer_int)req_handle >= sym->ns.si.cb.seg_id )
+              && ( (segment_id)(pointer_int)req_handle <= sym->ns.si.cb.seg_id + idx )) {
                 MangleCommonBlockName( sym, MangleSymBuff, TRUE );
                 return( &MangleSymBuff );
             }
@@ -2111,36 +2105,36 @@ void    *FEAuxInfo( aux_handle aux, int request ) {
         return( NULL );
 #endif
     case SHADOW_SYMBOL :
-        sym = (sym_id)aux;
+        sym = (sym_id)req_handle;
         _Shadow( sym );
         return( sym );
 #if _CPU == 8086 || _CPU == 386
     case STACK_SIZE_8087 :
         // return the number of floating-point registers
         // that are NOT used as cache
-        if( CPUOpts & CPUOPT_FPR ) return( (void *)4 );
-        return( (void *)8 );
+        if( CPUOpts & CPUOPT_FPR ) return( (pointer)4 );
+        return( (pointer)8 );
     case CODE_LABEL_ALIGNMENT :
         return( AlignmentSeq() );
 #endif
     case TEMP_LOC_NAME :
-        return( TEMP_LOC_QUIT );
+        return( (pointer)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL :
         return( NULL );
     case NEXT_DEPENDENCY :
         if( !(Options & OPT_DEPENDENCY) ) {
             return( NULL );
         } else {
-            if( aux == NULL ) {
+            if( req_handle == NULL ) {
                 return( DependencyInfo );
             } else {
-                return( ((dep_info *)aux)->link );
+                return( ((dep_info *)req_handle)->link );
             }
         }
     case DEPENDENCY_TIMESTAMP :
-        return( makeDOSTimeStamp( ((dep_info *)aux)->time_stamp ) );
+        return( makeDOSTimeStamp( ((dep_info *)req_handle)->time_stamp ) );
     case DEPENDENCY_NAME :
-        return( ((dep_info *)aux)->fn );
+        return( ((dep_info *)req_handle)->fn );
     case SOURCE_LANGUAGE:
         return( "FORTRAN" );
 #if _CPU == 8086 || _CPU == 386
@@ -2148,7 +2142,7 @@ void    *FEAuxInfo( aux_handle aux, int request ) {
         return( NULL );
 #endif
     case UNROLL_COUNT:
-        return( 0 );
+        return( NULL );
     default:
         return( NULL );
     }

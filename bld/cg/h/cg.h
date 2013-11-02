@@ -80,7 +80,7 @@ typedef void            *call_handle;       /* retval for CGInitCall(), etc. */
 typedef void            *cg_sym_handle;
 typedef void            *label_handle;      /* 2nd parm to CGName for CG_LBL */
 typedef void            *sel_handle;        /* return value for CGSelInit() */
-typedef struct bck_info *back_handle;       /* return value for BENewBack() */
+typedef void            *back_handle;       /* return value for BENewBack() */
 typedef void            *aux_handle;        /* first parm to FEAuxInfo (sometimes) */
 typedef void            *temp_handle;       /* first parm to FEAuxInfo (sometimes) */
 typedef void            *float_handle;      /* for the BF... routines */

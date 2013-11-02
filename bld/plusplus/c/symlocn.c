@@ -72,7 +72,7 @@ SYM_TOKEN_LOCN* SymbolLocnAlloc(// ALLOCATE A SYM_TOKEN_LOCN, IF REQ'D
     if( NULL == loc ) {
         loc = CarveAlloc( carveSYMBOL_LOCN );
         *owner = loc;
-        loc->dwh = 0;
+        loc->u.dwh = 0;
     }
     return loc;
 }
@@ -126,7 +126,7 @@ static void markFreeTokenLocn( void *p )
 {
     SYM_TOKEN_LOCN *b = p;
 
-    b->dwh = -1;
+    b->u.dwh = -1;
 }
 
 static void saveTokenLocn( void *e, carve_walk_base *d )
@@ -134,14 +134,14 @@ static void saveTokenLocn( void *e, carve_walk_base *d )
     SYM_TOKEN_LOCN *b = e;
     SRCFILE save_src_file;
 
-    if( b->dwh == -1 ) {
+    if( b->u.dwh == -1 ) {
         return;
     }
-    DbgAssert( b->dwh == 0 );
+    DbgAssert( b->u.dwh == 0 );
     save_src_file = b->tl.src_file;
     b->tl.src_file = SrcFileGetIndex( save_src_file );
 #ifndef NDEBUG
-    if( b->dwh != 0 ) {
+    if( b->u.dwh != 0 ) {
         CFatal( "token locn contains dwarf info!" );
     }
 #endif

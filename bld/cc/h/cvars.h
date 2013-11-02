@@ -185,7 +185,7 @@ global  SYM_HANDLE SymChipBug;  /* sym handle for '__chipbug' */
 global  FIELDPTR ErrSym;
 
 #if _CPU == 386
-global  void     *FunctionProfileBlock; /* handle for profiling data block */
+global  BACK_HANDLE FunctionProfileBlock;  /* handle for profiling data block */
 global  segment_id FunctionProfileSegment; /* segment for profiling data block */
 #endif
 

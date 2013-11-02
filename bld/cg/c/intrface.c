@@ -41,12 +41,12 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "data.h"
-#include "feprotos.h"
-#include "cgprotos.h"
 #include "types.h"
 #include "bldins.h"
 #include "utils.h"
 #include "objout.h"
+#include "feprotos.h"
+#include "cgprotos.h"
 
 #ifndef NDEBUG
 #include "echoapi.h"
@@ -260,13 +260,13 @@ extern  void _CGAPI     BEAbort( void )
 }
 
 extern  pointer _CGAPI  BEMemAlloc( unsigned size )
-/*********************************************************/
+/*************************************************/
 {
     return( CGAlloc( size ) );
 }
 
 extern  void _CGAPI     BEMemFree( pointer ptr )
-/******************************************************/
+/**********************************************/
 {
     CGFree( ptr );
 }
@@ -470,7 +470,7 @@ extern  void _CGAPI     BEFiniPatch( patch_handle hdl )
 #define PTR_INT( x )            (*(pointer_int*)&(x))
 #define FAKE_BACK               ((pointer_int)1)
 #define REAL_BACK( bck )        ( ( PTR_INT( bck ) & FAKE_BACK ) == 0 )
-#define RETURN_NULL             (pointer)1
+#define RETURN_NULL             (pointer)(pointer_int)1
 #define RETURN_NORMAL           NULL
 static  pointer                 NewBackReturn = RETURN_NORMAL;
 
@@ -490,13 +490,13 @@ extern  pointer LkAddBack( sym_handle sym, pointer curr_back )
     return( (pointer)( PTR_INT( bck ) & ~FAKE_BACK ) );
 }
 
-extern pointer SymBack( pointer sym )
-/***********************************/
+extern bck_info *SymBack( sym_handle sym )
+/****************************************/
 {
     bck_info    *bck;
 
     bck = FEBack( sym );
-    return( (pointer)( PTR_INT( bck ) & ~FAKE_BACK ) );
+    return( (bck_info *)( PTR_INT( bck ) & ~FAKE_BACK ) );
 }
 
 static void AllocMoreBckInfo( void )
@@ -512,7 +512,7 @@ static void AllocMoreBckInfo( void )
         BckInfoCarveHead = carve_block;
         p = &carve_block->bck_infos[0];
         BckInfoHead = p;
-        for( i = 0; i < (MAX_BCK_INFO-1); i++ ) {
+        for( i = 0; i < (MAX_BCK_INFO - 1); i++ ) {
             p->link = p + 1;
             ++p;
         }
@@ -520,8 +520,8 @@ static void AllocMoreBckInfo( void )
     }
 }
 
-extern  back_handle _CGAPI      BENewBack( sym_handle sym )
-/*********************************************************/
+extern  back_handle _CGAPI      BENewBack( cg_sym_handle sym )
+/************************************************************/
 {
     bck_info            *bck;
 
@@ -561,17 +561,19 @@ extern  back_handle _CGAPI      BENewBack( sym_handle sym )
     return( bck );
 }
 
-extern  void _CGAPI     BEFiniBack( bck_info *bck )
-/*************************************************/
+extern  void _CGAPI     BEFiniBack( back_handle bck )
+/***************************************************/
 {
 #ifndef NDEBUG
     EchoAPI( "BEFiniBack( %L )\n", bck );
 #endif
-    if( REAL_BACK( bck ) ) TellNoSymbol( bck->lbl );
+    if( REAL_BACK( bck ) ) {
+        TellNoSymbol( ((bck_info *)bck)->lbl );
+    }
 }
 
-extern  void _CGAPI     BEFreeBack( bck_info *bck )
-/*************************************************/
+extern  void _CGAPI     BEFreeBack( back_handle bck )
+/***************************************************/
 {
 #ifndef NDEBUG
     EchoAPI( "BEFreeBack( %L )\n", bck );
@@ -644,31 +646,31 @@ extern  uint _CGAPI     BETypeAlign( cg_type tipe )
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-extern  void _CGAPI     CGProcDecl( pointer name, cg_type tipe )
-/**************************************************************/
+extern  void _CGAPI     CGProcDecl( cg_sym_handle sym, cg_type tipe )
+/********************************************************************/
 {
 #ifndef NDEBUG
     EchoAPI( "\n" );
-    EchoAPI( "CGProcDecl( %s, %t )\n", name, tipe );
+    EchoAPI( "CGProcDecl( %s, %t )\n", sym, tipe );
 #endif
     if( BGInInline() ) {
-        BGProcInline( name, TypeAddress( tipe ) );
+        BGProcInline( sym, TypeAddress( tipe ) );
     } else {
-        TellObjNewProc( name );
-        BGProcDecl( name, TypeAddress( tipe ) );
+        TellObjNewProc( sym );
+        BGProcDecl( sym, TypeAddress( tipe ) );
     }
 }
 
-extern  void _CGAPI     CGParmDecl( pointer name, cg_type tipe )
-/**************************************************************/
+extern  void _CGAPI     CGParmDecl( cg_sym_handle sym, cg_type tipe )
+/********************************************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "CGParmDecl( %s, %t )\n", name, tipe );
+    EchoAPI( "CGParmDecl( %s, %t )\n", sym, tipe );
 #endif
     if( BGInInline() ) {
-        BGParmInline( name, TypeAddress( tipe ) );
+        BGParmInline( sym, TypeAddress( tipe ) );
     } else {
-        BGParmDecl( name, TypeAddress( tipe ) );
+        BGParmDecl( sym, TypeAddress( tipe ) );
     }
 }
 
@@ -690,13 +692,13 @@ extern label_handle _CGAPI CGLastParm( void )
     return( top );
 }
 
-extern  void _CGAPI     CGAutoDecl( pointer name, cg_type tipe )
-/**************************************************************/
+extern  void _CGAPI     CGAutoDecl( cg_sym_handle sym, cg_type tipe )
+/********************************************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "CGAutoDecl( %s, %t )\n", name, tipe );
+    EchoAPI( "CGAutoDecl( %s, %t )\n", sym, tipe );
 #endif
-    BGAutoDecl( name, TypeAddress( tipe ) );
+    BGAutoDecl( sym, TypeAddress( tipe ) );
 }
 
 extern  void _CGAPI     CGReturn( cg_name name, cg_type tipe )
@@ -813,8 +815,8 @@ extern  cg_name _CGAPI CGBigInt( float_handle f, cg_type tipe )
 #endif
 }
 
-extern  cg_name _CGAPI CGFEName( sym_handle sym, cg_type tipe )
-/*************************************************************/
+extern  cg_name _CGAPI CGFEName( cg_sym_handle sym, cg_type tipe )
+/****************************************************************/
 {
     cg_name     leaf;
 
@@ -841,8 +843,8 @@ extern  cg_name _CGAPI CGFEName( sym_handle sym, cg_type tipe )
 #endif
 }
 
-extern  cg_name _CGAPI CGBackName( bck_info *bck, cg_type tipe )
-/**************************************************************/
+extern  cg_name _CGAPI CGBackName( back_handle bck, cg_type tipe )
+/****************************************************************/
 {
 #ifndef NDEBUG
     tn      retn;
@@ -1044,8 +1046,8 @@ extern  cg_name _CGAPI CGIndex( cg_name name, cg_name by,
 /* Routine calling*/
 /**/
 
-extern  call_handle _CGAPI  CGInitCall( cg_name name, cg_type tipe, sym_handle sym )
-/**********************************************************************************/
+extern  call_handle _CGAPI  CGInitCall( cg_name name, cg_type tipe, cg_sym_handle sym )
+/*************************************************************************************/
 {
 #ifndef NDEBUG
     tn      retn;
@@ -1213,20 +1215,20 @@ extern  void _CGAPI     CGControl( cg_op op, cg_name expr, label_handle lbl )
     TGControl( op, expr, lbl );  /* special TGen()*/
 }
 
-extern  void _CGAPI     CGBigLabel( back_handle value )
-/*****************************************************/
+extern  void _CGAPI     CGBigLabel( back_handle bck )
+/***************************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "CGBigLabel( %B )\n", value );
+    EchoAPI( "CGBigLabel( %B )\n", bck );
 #endif
-    BGBigLabel( value );
+    BGBigLabel( bck );
 }
 
 extern  void _CGAPI     CGBigGoto( label_handle lbl, int level )
 /**************************************************************/
 {
 #ifndef NDEBUG
-    EchoAPI( "CGBigLabel( %L, %i )\n", lbl, level );
+    EchoAPI( "CGBigGoto( %L, %i )\n", lbl, level );
 #endif
     BGBigGoto( lbl, level );
 }
@@ -1455,19 +1457,19 @@ extern  cg_name * _CGAPI CGDuplicate( cg_name name )
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-extern  void _CGAPI     DGLabel( bck_info *bck )
-/**********************************************/
+extern  void _CGAPI     DGLabel( back_handle bck )
+/************************************************/
 {
 #ifndef NDEBUG
     EchoAPI( "DGLabel( %B )\n", bck );
 #endif
     if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_068 );
     DGBlip();
-    DataLabel( bck->lbl );
-    bck->seg = AskOP();
+    DataLabel( ((bck_info *)bck)->lbl );
+    ((bck_info *)bck)->seg = AskOP();
 }
 
-extern  void _CGAPI     DGBackPtr( bck_info *bck, segment_id seg,
+extern  void _CGAPI     DGBackPtr( back_handle bck, segment_id seg,
                                    signed_32 offset, cg_type tipe )
 /*****************************************************************/
 {
@@ -1708,8 +1710,8 @@ extern  unsigned_32 _CGAPI      DGTell( void )
 }
 
 
-extern  unsigned_32 _CGAPI      DGBackTell( bck_info *bck )
-/*********************************************************/
+extern  unsigned_32 _CGAPI      DGBackTell( back_handle bck )
+/***********************************************************/
 {
 #ifndef NDEBUG
     unsigned_32 retn;
@@ -1719,10 +1721,10 @@ extern  unsigned_32 _CGAPI      DGBackTell( bck_info *bck )
     if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_068 );
 
 #ifndef NDEBUG
-    retn = AskAddress( bck->lbl );
+    retn = AskAddress( ((bck_info *)bck)->lbl );
     return EchoAPIIntReturn( retn );
 #else
-    return( AskAddress( bck->lbl ) );
+    return( AskAddress( ((bck_info *)bck)->lbl ) );
 #endif
 }
 
@@ -1772,7 +1774,7 @@ extern  code_lbl    *AskForSymLabel( pointer hdl, cg_class class )
 {
     switch( class ) {
     case CG_FE:
-        return( FEBack( hdl )->lbl );
+        return( ((bck_info *)FEBack( hdl ))->lbl );
     case CG_LBL:
         return( (code_lbl *)hdl );
     case CG_CLB:
@@ -1792,13 +1794,13 @@ extern  code_lbl    *AskForSymLabel( pointer hdl, cg_class class )
 extern  import_handle   AskImportHandle( sym_handle sym )
 /*******************************************************/
 {
-    return( FEBack( sym )->imp );
+    return( ((bck_info *)FEBack( sym ))->imp );
 }
 
 extern  void    TellImportHandle( sym_handle sym, import_handle imp )
 /*******************************************************************/
 {
-    FEBack( sym )->imp = imp;
+    ((bck_info *)FEBack( sym ))->imp = imp;
 }
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/

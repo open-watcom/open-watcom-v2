@@ -84,7 +84,7 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
 {
     SCOPE scope;                // - scope for symbol
     SYMBOL check_sym;           // - SYMBOL temp
-    void* cg_handle;            // - handle for symbol
+    back_handle cg_handle;      // - handle for symbol
 #ifndef NDEBUG
     SYMBOL orig                 // - original symbol
         = sym;
@@ -95,12 +95,12 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
         sym = check_sym;
     }
     if( sym->flag2 & SF2_CG_HANDLE ) {
-        cg_handle = sym->locn->cg_handle;
+        cg_handle = sym->locn->u.cg_handle;
     } else {
         cg_handle = BENewBack( (cg_sym_handle)sym );
         if( NULL != cg_handle ) {
             SYM_TOKEN_LOCN* locn = SymbolLocnAlloc( &sym->locn );
-            locn->cg_handle = cg_handle;
+            locn->u.cg_handle = cg_handle;
             scope = SymScope( sym );
             if( scope != NULL ) {
                 switch( scope->id ) {
@@ -135,7 +135,7 @@ void CgBackFreeHandle(          // FREE A BACK HANDLE FOR A SYMBOL
       &&( ! SymIsAnonymous( sym ) )
       &&( ! SymIsAutomatic( sym ) ) ) {     // - only because of RO,RW-DTORS
         sym->flag2 &= ~SF2_CG_HANDLE;
-        BEFreeBack( (back_handle)sym->locn->cg_handle );
+        BEFreeBack( sym->locn->u.cg_handle );
     }
 }
 

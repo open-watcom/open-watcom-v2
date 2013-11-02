@@ -271,7 +271,7 @@ static void undefine_string_const(  // UN-DEFINE A STRING CONSTANT
     STRING_CONSTANT str )           // - the constant
 {
     if( str->cg_handle != NULL ) {
-        BEFreeBack( (back_handle)str->cg_handle );
+        BEFreeBack( str->cg_handle );
         str->cg_handle = NULL;
     }
 }

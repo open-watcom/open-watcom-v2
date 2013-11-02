@@ -40,6 +40,13 @@
 #include "cgen.h"
 #include "cfeinfo.h"
 
+#ifdef __SEH__
+typedef struct  try_table_back_handles {
+    struct try_table_back_handles   *next;
+    BACK_HANDLE                     back_handle;
+} try_table_back_handles;
+#endif
+
 extern  SYM_LISTS       *SymListHeads;
 extern  int             LabelIndex;
 
@@ -72,12 +79,8 @@ static  struct  local_vars {
 #ifdef __SEH__
 #include "tryblock.h"
 
-static  int             TryRefno;
-
-static struct  try_table_back_handles {
-    struct try_table_back_handles   *next;
-    back_handle                     try_table_back_handle;
-} *TryTableBackHandles;
+static int                      TryRefno;
+static try_table_back_handles   *TryTableBackHandles;
 #endif
 
 #define PushCGName(name)        ((cg_name *)ValueStack)[index++] = name
@@ -327,10 +330,7 @@ static cg_name TryFieldAddr( unsigned offset )
     cg_name     name;
 
     name = CGFEName( TrySymHandle, TryRefno );
-    name = CGBinary( O_PLUS,
-                     name,
-                     CGInteger( offset, TY_UNSIGNED ),
-                     TY_POINTER );
+    name = CGBinary( O_PLUS, name, CGInteger( offset, TY_UNSIGNED ), TY_POINTER );
     name = CGVolatile( name );
     return( name );
 }
@@ -339,18 +339,18 @@ static cg_name TryExceptionInfoAddr( void )
 {
     cg_name     name;
 
-    name = TryFieldAddr( offsetof( struct try_block, exception_info ) );
+    name = TryFieldAddr( FLD_exception_info );
 //    name = CGUnary( O_POINTS, name, TY_POINTER );
 //    name = CGUnary( O_POINTS, name, TY_POINTER );
     return( name );
 }
 
-static void SetTryTable( back_handle except_table )
+static void SetTryTable( BACK_HANDLE except_table )
 {
     cg_name     name;
     cg_name     table;
 
-    name = TryFieldAddr( offsetof( struct try_block, scope_table ) );
+    name = TryFieldAddr( FLD_scope_table );
     table = CGBackName( except_table, TY_POINTER );
     CGDone( CGAssign( name, table, TY_POINTER ) );
 }
@@ -359,7 +359,7 @@ static void SetTryScope( tryindex_t scope )
 {
     cg_name     name;
 
-    name = TryFieldAddr( offsetof( struct try_block, scope_index ) );
+    name = TryFieldAddr( FLD_scope_index );
     CGDone( CGAssign( name, CGInteger( scope, TY_UINT_1 ), TY_UINT_1 ) );
 }
 
@@ -371,7 +371,7 @@ static void EndFinally( void )
     call_handle  call_list;
 
     label_handle = BENewLabel();
-    name = TryFieldAddr( offsetof( struct try_block, unwindflag ) );
+    name = TryFieldAddr( FLD_unwindflag );
     name = CGUnary( O_POINTS, name, TY_UINT_1 );
     name = CGCompare( O_EQ, name, CGInteger( 0, TY_UINT_1 ), TY_UINT_1 );
     CGControl( O_IF_TRUE, name, label_handle );
@@ -386,7 +386,7 @@ static cg_name TryAbnormalTermination( void )
 {
     cg_name      name;
 
-    name = TryFieldAddr( offsetof( struct try_block, unwindflag ) );
+    name = TryFieldAddr( FLD_unwindflag );
     name = CGUnary( O_POINTS, name, TY_UINT_1 );
     return( name );
 }
@@ -395,8 +395,7 @@ static void CallTryRtn( SYM_HANDLE try_rtn, cg_name parm )
 {
     call_handle call_list;
 
-    call_list = CGInitCall( CGFEName( try_rtn, TY_POINTER ),
-                            TY_INTEGER, try_rtn );
+    call_list = CGInitCall( CGFEName( try_rtn, TY_POINTER ), TY_INTEGER, try_rtn );
     CGAddParm( call_list, parm, TY_POINTER );
     CGDone( CGCall( call_list ) );
 }
@@ -410,7 +409,7 @@ static void CallTryFini( void )
 {
     cg_name     name;
 
-    name = TryFieldAddr( offsetof( struct try_block, next ) );
+    name = TryFieldAddr( FLD_next );
     name = CGUnary( O_POINTS, name, TY_POINTER );
     CallTryRtn( SymTryFini, name );
 }
@@ -435,8 +434,7 @@ local void GenVaStart( cg_name op1, cg_name offset )
 
     baseptr = CGVarargsBasePtr( TY_POINTER );
     name = CGLVAssign( op1, baseptr, TY_POINTER );
-    name = CGBinary( O_PLUS, name, CGInteger( TARGET_POINTER, TY_INTEGER ),
-                                        TY_POINTER );
+    name = CGBinary( O_PLUS, name, CGInteger( TARGET_POINTER, TY_INTEGER ), TY_POINTER );
     name = CGAssign( name, offset, TY_INTEGER );
     CGDone( name );
 }
@@ -462,8 +460,7 @@ local void GenVaStart( cg_name op1, cg_name offset )
     baseptr = CGVarargsBasePtr( TY_POINTER );
     name = CGBinary( O_PLUS, baseptr, offset, TY_POINTER );
     name = CGLVAssign( op1, name, TY_POINTER );
-    name = CGBinary( O_PLUS, name, CGInteger( TARGET_POINTER, TY_INTEGER ),
-                                        TY_POINTER );
+    name = CGBinary( O_PLUS, name, CGInteger( TARGET_POINTER, TY_INTEGER ), TY_POINTER );
     name = CGAssign( name, CGInteger( 0, TY_INTEGER ), TY_INTEGER );
     CGDone( name );
 }
@@ -685,7 +682,7 @@ static cg_name PushString( OPNODE *node )
 
     string = node->u2.string_handle;
     Emit1String( string );
-    return( CGBackName( string->cg_back_handle, TY_UINT_1 ) );
+    return( CGBackName( string->back_handle, TY_UINT_1 ) );
 }
 
 static cg_name DoIndirection( OPNODE *node, cg_name name )
@@ -1401,7 +1398,8 @@ void DoCompile( void )
                 SetSegs();
                 BEStart();
                 EmitSegLabels();                        /* 15-mar-92 */
-                if( GenSwitches & DBG_TYPES ) EmitDBType();
+                if( GenSwitches & DBG_TYPES )
+                    EmitDBType();
                 EmitSyms();
                 EmitCS_Strings();
                 SrcLoc.line = 0;
@@ -1410,7 +1408,7 @@ void DoCompile( void )
                 FreeDataQuads();
 #ifdef __SEH__
                 TryRefno = NewRefno();
-                BEDefType( TryRefno, 1, sizeof( struct try_block ) );
+                BEDefType( TryRefno, 1, TRY_BLOCK_SIZE );
                 TryTableBackHandles = NULL;
 #endif
                 PruneFunctions();
@@ -1711,13 +1709,13 @@ static void FreeTrySymBackInfo( void )
 
 static void FreeTryTableBackHandles( void )
 {
-    struct try_table_back_handles       *try_backinfo;
+    try_table_back_handles  *try_backinfo;
 
     for( ;; ) {
         try_backinfo = TryTableBackHandles;
         if( try_backinfo == NULL ) break;
         TryTableBackHandles = try_backinfo->next;
-        BEFreeBack( try_backinfo->try_table_back_handle );
+        BEFreeBack( try_backinfo->back_handle );
         CMemFree( try_backinfo );
     }
 }
@@ -1904,14 +1902,14 @@ void EmitStrPtr( STR_HANDLE str_handle, int pointer_type )
 {
     str_handle->ref_count++;
     Emit1String( str_handle );
-    DGBackPtr( str_handle->cg_back_handle, StringSegment( str_handle ), 0, pointer_type );
+    DGBackPtr( str_handle->back_handle, StringSegment( str_handle ), 0, pointer_type );
 }
 
 
 local void Emit1String( STR_HANDLE str_handle )
 {
-    if( str_handle->cg_back_handle == 0 ) {
-        str_handle->cg_back_handle = BENewBack( NULL );
+    if( str_handle->back_handle == 0 ) {
+        str_handle->back_handle = BENewBack( NULL );
         if( ! (str_handle->flags & FLAG_CONST) ) {
             EmitLiteral( str_handle );
         }
@@ -1934,7 +1932,7 @@ local void EmitLiteral( STR_HANDLE strlit )
     if( strlit->flags & STRLIT_WIDE ) {
         DGAlign( TARGET_SHORT );    /* NT requires word aligned wide strings */
     }
-    DGLabel( strlit->cg_back_handle );
+    DGLabel( strlit->back_handle );
     EmitBytes( strlit );
     BESetSeg( old_segment );
 }
@@ -1947,10 +1945,10 @@ local void FreeStrings( void )
 
     for( i = 0; i < STRING_HASH_SIZE; ++i ) {
         for( strlit = StringHash[i]; strlit; ) {
-            if( strlit->cg_back_handle != 0 ) {
-                BEFiniBack( strlit->cg_back_handle );
-                BEFreeBack( strlit->cg_back_handle );
-                strlit->cg_back_handle = 0;
+            if( strlit->back_handle != 0 ) {
+                BEFiniBack( strlit->back_handle );
+                BEFreeBack( strlit->back_handle );
+                strlit->back_handle = 0;
             }
             next = strlit->next_string;
             FreeLiteral( strlit );
@@ -1966,7 +1964,7 @@ local void DumpCS_Strings( STR_HANDLE strlit )
     while( strlit != NULL ) {
         if( strlit->flags & FLAG_CONST  &&
             strlit->ref_count != 0 ) {          /* 17-aug-91 */
-            strlit->cg_back_handle = BENewBack( NULL );
+            strlit->back_handle = BENewBack( NULL );
             EmitLiteral( strlit );
         }
         strlit = strlit->next_string;
@@ -2014,15 +2012,14 @@ static void GenerateTryBlock( TREEPTR tree )
     }
     if( max_try_index != TRYSCOPE_NONE ) {
         segment_id      old_segment;
-        back_handle     except_label;
-        back_handle     except_table;
-        struct try_table_back_handles *try_backinfo;
+        BACK_HANDLE     except_label;
+        BACK_HANDLE     except_table;
+        try_table_back_handles *try_backinfo;
 
         old_segment = BESetSeg( SEG_DATA );
         except_table = BENewBack( NULL );
-        try_backinfo = (struct try_table_back_handles *)
-                        CMemAlloc( sizeof( struct try_table_back_handles ) );
-        try_backinfo->try_table_back_handle = except_table;
+        try_backinfo = (try_table_back_handles *)CMemAlloc( sizeof( try_table_back_handles ) );
+        try_backinfo->back_handle = except_table;
         try_backinfo->next = TryTableBackHandles;
         TryTableBackHandles = try_backinfo;
         DGLabel( except_table );

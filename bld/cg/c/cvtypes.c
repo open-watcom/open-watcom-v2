@@ -642,7 +642,7 @@ extern  dbg_type    CVCharBlock( unsigned_32 len )
     return( ret );
 }
 
-static dbg_type  OutBckSym( back_handle bck, int off, dbg_type tipe )
+static dbg_type  OutBckSym( bck_info *bck, int off, dbg_type tipe )
 /*******************************************************************/
 {
     cv_out          out[1];
@@ -664,9 +664,8 @@ static dbg_type  OutBckCon( long val, dbg_type tipe )
     return( ++TypeIdx );
 }
 
-extern  dbg_type    CVIndCharBlock( back_handle len, cg_type len_type,
-                    int off )
-/********************************************************************/
+extern  dbg_type    CVIndCharBlock( bck_info *len, cg_type len_type, int off )
+/****************************************************************************/
 {
     dbg_type        itipe;
     dbg_type        symref;
@@ -818,9 +817,7 @@ extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
             StartType( out, LFG_REFSYM );
             CVOutLocal( out, tmp.v.n, tmp.o, itipe );
         } else {
-            bck_info       *bck;
-            bck = FEBack( tmp.v.s );
-            symref = OutBckSym( bck, tmp.o, itipe );
+            symref = OutBckSym( FEBack( tmp.v.s ), tmp.o, itipe );
         }
     } else {
         symref = OutBckCon( 1, itipe );
@@ -836,7 +833,7 @@ extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
     return( ret );
 }
 
-extern  dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
+extern  dbg_type    CVFtnArray( bck_info *dims, cg_type lo_bound_tipe,
                     cg_type num_elts_tipe, int off,
                     dbg_type base )
 /**********************************************************************/

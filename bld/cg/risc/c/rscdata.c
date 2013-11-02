@@ -146,13 +146,10 @@ extern  void    BackPtrBase( bck_info *bck, segment_id seg ) {
 extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
 /*******************************************************************/
 
-    bck_info            *bck;
-
     tipe = tipe;
     assert( tipe->length == 4 );
     TellOptimizerByPassed();
-    bck = FEBack( sym );
-    OutReloc( bck->lbl, OWL_RELOC_WORD, 0 );
+    OutReloc( ((bck_info *)FEBack( sym ))->lbl, OWL_RELOC_WORD, 0 );
     ObjBytes( &plus, 4 );
     TellByPassOver();
 }
@@ -173,15 +170,14 @@ extern  void    FEPtrBaseOffset( sym_handle sym,  offset plus ) {
     TellByPassOver();
 }
 
-extern  void    FEPtrBase( sym_handle sym ) {
-/*********************************************************/
-    bck_info            *bck;
+extern  void    FEPtrBase( sym_handle sym )
+/*****************************************/
+{
     segment_id          seg;
 
     TellOptimizerByPassed();
-    bck = FEBack( sym );
     seg = FESegID( sym );
-    OutSegReloc( bck->lbl, seg );
+    OutSegReloc( ((bck_info *)FEBack( sym ))->lbl, seg );
     ObjBytes( "\0\0", 2 );
     TellByPassOver();
 }

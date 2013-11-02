@@ -144,7 +144,6 @@ static void addReloc( asm_reloc *reloc, op_reloc_target target, owl_reloc_type t
     new_entry->target = target;
     new_entry->type = type;
     new_entry->loc = loc;
-    new_entry->target = target;
     new_entry->is_named = is_named;
     if( reloc->first == NULL ) {
         reloc->first = new_entry;
@@ -278,8 +277,7 @@ static void doAutoVar( asm_reloc *reloc, op_reloc_target targ, uint_32 *buffer, 
         return;
     }
     addReloc( reloc, targ, OWL_RELOC_FP_OFFSET, (unsigned)( (char *)buffer - (char *)result ), TRUE );
-    doOpcodeRaRb( buffer, table->opcode, RegIndex( ins->operands[0]->reg ),
-                  FP_REG_IDX, 0 );
+    doOpcodeRaRb( buffer, table->opcode, RegIndex( ins->operands[0]->reg ), FP_REG_IDX, 0 );
 }
 #endif
 

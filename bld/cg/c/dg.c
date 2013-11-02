@@ -796,7 +796,7 @@ extern  void  DBDimVar( array_list *ar,
             Tipe( lo_bound_tipe ), Tipe( num_elts_tipe ), off );
     dim = CGAlloc( sizeof( *dim ) );
     dim->entry.kind = DIM_VAR;
-    dim->dims = (back_handle)dims;
+    dim->dims = dims;
     dim->off = off;
     dim->lo_bound_tipe = lo_bound_tipe;
     dim->num_elts_tipe = num_elts_tipe;

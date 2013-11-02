@@ -116,7 +116,7 @@ typedef struct  switch_entry {
 
 typedef struct  string_literal {
         struct string_literal *next_string;
-        back_handle     cg_back_handle; /* back handle for string */
+        BACK_HANDLE     back_handle;    /* back handle for string */
         unsigned short  length;         /* length of literal string   */
         unsigned short  ref_count;      /* reference count */
         char            flags;          /* 0 or FLAG_FAR */

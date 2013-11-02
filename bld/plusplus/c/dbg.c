@@ -475,7 +475,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
               , sym->thread
               , sym->sym_type
               , sym->name
-              , ( sym->flag2 & SF2_TOKEN_LOCN ) ? sym->locn->cg_handle : 0
+              , ( sym->flag2 & SF2_TOKEN_LOCN ) ? sym->locn->u.cg_handle : 0
               , sym->u.tinfo
               , ids[sym->id]
               , sym->flag

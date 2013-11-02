@@ -50,10 +50,7 @@ extern  pointer FindAuxInfo( name *name, aux_class request )
     } else if( name->m.memory_type == CG_FE ) {
         return( FindAuxInfoSym( name->v.symbol, request ) );
     } else if( name->m.memory_type == CG_BACK ) {
-        bck_info    *bck;
-
-        bck = name->v.symbol;
-        return( FindAuxInfoSym( AskForLblSym( bck->lbl ), request ) );
+        return( FindAuxInfoSym( AskForLblSym( ((bck_info *)name->v.symbol)->lbl ), request ) );
 #if _TARGET & _TARG_INTEL
     } else if( name->m.memory_type == CG_LBL && AskIfRTLabel( name->v.symbol ) ) {
         aux_handle  info;

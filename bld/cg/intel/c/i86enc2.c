@@ -370,7 +370,7 @@ extern  void    GenCall( instruction *ins ) {
         }
     } else if( ( cclass & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
-        lbl = FEBack( sym )->lbl;
+        lbl = ((bck_info *)FEBack( sym ))->lbl;
         if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
             CodeHandle( OC_JMP | ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
         } else {
@@ -389,7 +389,7 @@ extern  void    GenCall( instruction *ins ) {
         }
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
-            DoCall( FEBack( sym )->lbl, (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
+            DoCall( ((bck_info *)FEBack( sym ))->lbl, (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
         } else {
             DoCall( sym, TRUE, big, pop_bit );
         }

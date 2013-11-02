@@ -47,13 +47,11 @@
 #include "feprotos.h"
 #include "cgprotos.h"
 
-extern  bck_info        *BENewBack(sym_handle);
-extern  void            BEFreeBack(bck_info*);
 extern  void            SetUpObj(bool);
 extern  void            DataInt(short_offset);
 extern  void            BuffIndex(uint);
 extern  void            BuffForward(dbg_patch_handle*);
-extern  void            BuffBack(back_handle, offset);
+extern  void            BuffBack(bck_info *, offset);
 extern  void            BuffWord(uint);
 extern  void            BuffByte( byte );
 extern  void            BuffOffset( offset );

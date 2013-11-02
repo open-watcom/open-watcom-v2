@@ -287,7 +287,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
     handle = str->cg_handle;
     if( control & DSC_CONST ) {
         if( handle == 0 ) {
-            handle = (void *)BENewBack( 0 );
+            handle = BENewBack( 0 );
             str->cg_handle = handle;
             str_len = str->len + TARGET_CHAR;
             if( str->wide_string ) {

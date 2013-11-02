@@ -160,7 +160,7 @@ static void sym_update( SYMBOL sym, symbol_flag2 mask, dw_handle dh )
     #endif
     sym->flag2 |= mask;
     if( sym->flag2 & SF2_TOKEN_LOCN ) {
-        sym->locn->dwh = dh;
+        sym->locn->u.dwh = dh;
     }
 }
 
@@ -1493,7 +1493,7 @@ static dw_handle dwarfFunctionDefine( SYMBOL sym, CGFILE *file_ctl )
     } else {
         return_dh = dwarfType( base->of, DC_RETURN );
     }
-    DWHandleSet( Client, sym->locn->dwh );
+    DWHandleSet( Client, sym->locn->u.dwh );
     dh = DWBeginSubroutine( Client,
                    call_type,
                    return_dh,
@@ -1520,7 +1520,7 @@ static dw_handle dwarfFunction( SYMBOL sym, DC_CONTROL control )
 
     sym_reset( sym );
     if( sym->flag2 & SF2_DW_HANDLE ) {
-        dh = sym->locn->dwh;
+        dh = sym->locn->u.dwh;
     } else {
         dh = DWHandle( Client, DW_ST_NONE );
         sym_update( sym, SF2_DW_HANDLE_FWD, dh );
@@ -1660,7 +1660,7 @@ static dw_handle dwarfSymbol( SYMBOL sym, DC_CONTROL control )
         if( (sym->flag2 & SF2_TOKEN_LOCN) == 0 ) return( 0 );
     };
     sym_reset( sym );
-    if( sym->flag2 & SF2_DW_HANDLE_DEF ) return( sym->locn->dwh );
+    if( sym->flag2 & SF2_DW_HANDLE_DEF ) return( sym->locn->u.dwh );
 
     if( !InDebug ) {
         dwarfLocation( sym );

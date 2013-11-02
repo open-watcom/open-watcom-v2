@@ -51,8 +51,8 @@ struct sym_token_locn           // SYM_TOKEN_LOCN -- location of source token
     TOKEN_LOCN  tl;             // - token location
     union {                     // - either:
         uint_32     dwh;        // - - dwarf handle for browser
-        void       *cg_handle;  // - - handle during code-generation
-    };
+        back_handle cg_handle;  // - - handle during code-generation
+    } u;
 };
 
 #define TokenLocnAssign( d, s ) \

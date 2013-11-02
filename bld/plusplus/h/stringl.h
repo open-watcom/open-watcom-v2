@@ -37,7 +37,7 @@ typedef STRING_LITERAL *STRING_CONSTANT;
 
 struct string_literal_t {
     STRING_CONSTANT     next;           // - next entry
-    void                *cg_handle;     // - handle during code generation
+    back_handle         cg_handle;      // - handle during code generation
     unsigned            len;            // - length in bytes not including '\0'
     fe_seg_id           segid;          // - segment containing string bytes
     unsigned            concat : 1;     // - is result of concatenation

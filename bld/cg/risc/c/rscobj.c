@@ -65,7 +65,7 @@ extern  bool            SymIsExported( sym_handle );
 extern  code_lbl        *GetWeirdPPCDotDotLabel( code_lbl * );
 extern  void            TellAddress( code_lbl *, offset );
 extern  type_length     TempLocation( name * );
-extern  pointer         SymBack( pointer );
+extern  bck_info        *SymBack( sym_handle );
 extern  void            EmptyQueue( void );
 extern  void            TellUnreachLabels( void );
 extern  void            *SortList( void *, unsigned, bool (*)( void *, void * ) );
@@ -699,7 +699,7 @@ extern  segment_id  AskSegID( pointer hdl, cg_class class )
         }
         return( FESegID( (sym_handle)hdl ) );
     case CG_BACK:
-        return( ((bck_info*)hdl)->seg );
+        return( ((bck_info *)hdl)->seg );
     case CG_TBL:
     case CG_VTB:
         return( AskCodeSeg() );
@@ -1165,7 +1165,7 @@ extern  void    ObjEmitSeq( byte_seq *code )
         reloc_type = 0;
         reloc_sym = NULL;
         while( curr != NULL && curr->off == i ) {
-            back = (bck_info *)SymBack( curr->sym );
+            back = SymBack( curr->sym );
             switch( curr->type ) {
             case OWL_RELOC_FP_OFFSET:
                 loc = TempLocation( (name *)back );

@@ -51,8 +51,6 @@
 #include "feprotos.h"
 #include "cgprotos.h"
 
-extern  bck_info        *BENewBack(sym_handle);
-extern  void            BEFreeBack(bck_info*);
 extern  void            SetUpObj(bool);
 extern  name            *DeAlias(name*);
 extern  void            DataInt(short_offset);
