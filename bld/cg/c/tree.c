@@ -234,8 +234,8 @@ extern  tn  TGWarp( tn before, code_lbl *label, tn after )
     return( result );
 }
 
-extern  tn  TGHandle( void *ptr )
-/********************************
+extern  tn  TGHandle( void )
+/***************************
     make a handle node - this is a leaf which holds a ptr
 */
 {
@@ -245,7 +245,6 @@ extern  tn  TGHandle( void *ptr )
     node->tipe = TypeAddress( TY_DEFAULT );
     node->class = TN_HANDLE;
     node->op = O_NOP;
-    node->u.handle = ptr;
     return( node );
 }
 
@@ -257,8 +256,11 @@ extern  tn  TGCallback( cg_callback rtn, callback_handle ptr )
 {
     tn      node;
 
-    node = TGNode( TN_CALLBACK, O_NOP, NULL, TGHandle( ptr ), TypeAddress( TY_DEFAULT ) );
-    node->u.handle = TGHandle( rtn );
+    node = TGHandle();
+    node->u.handle = ptr;
+    node = TGNode( TN_CALLBACK, O_NOP, NULL, node, TypeAddress( TY_DEFAULT ) );
+    node->u.left = TGHandle();
+    node->u.left->u.callback = rtn;
     return( node );
 }
 
@@ -1584,7 +1586,7 @@ static  an  TNCallback( tn node )
     cg_callback     rtn;
     callback_handle parm;
 
-    rtn = (cg_callback)node->u.left->u.handle;
+    rtn = node->u.left->u.callback;
     parm = (callback_handle)node->rite->u.handle;
     if( rtn != NULL ) {
 #ifndef NDEBUG

@@ -82,7 +82,6 @@ extern  void            GenReturn( int pop, bool is_long, bool iret );
 static  void            JumpReg( instruction *ins, name *reg_name );
 static  void            Pushf(void);
 
-extern  int             ILen;
 extern  fp_patches      FPPatchType;
 extern  bool            Used87;
 

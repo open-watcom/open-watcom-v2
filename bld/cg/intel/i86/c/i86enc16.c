@@ -75,10 +75,7 @@ extern  unsigned        UseRepForm( unsigned );
 extern  void            DoRelocConst( name *op, type_class_def kind );
 static  void            SetOff( name *op, int val );
 
-extern  template                Temp;   /* template for oc_entries*/
-extern  byte                    Inst[];  /* template for instructions*/
 extern  zero_page_scheme        ZPageType;
-extern  int                     ILen;
 
 #define RMR_MOD_DIR     6
 #define RMR_MOD_IND     0x80

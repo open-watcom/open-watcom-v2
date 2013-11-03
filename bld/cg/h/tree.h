@@ -81,10 +81,11 @@ typedef struct tree_node {
 #endif
         struct type_def         *tipe;
         union {
-          struct tree_node      *left;
-          union name            *name;
-          struct address_name   *addr;
-          void                  *handle;
+            struct tree_node    *left;
+            union name          *name;
+            struct address_name *addr;
+            void                *handle;
+            cg_callback         callback;
         } u;
         uint                    kids;
         tn_class                class;

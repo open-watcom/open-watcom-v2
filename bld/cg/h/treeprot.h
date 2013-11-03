@@ -32,7 +32,7 @@ extern  btn     TGBitMask( tn left, byte start, byte len, type_def *tipe );
 extern  tn      TGNode( tn_class class, cg_op op, tn left, tn rite,
                         type_def *tipe );
 extern  tn      TGWarp( tn before, code_lbl *label, tn after );
-extern  tn      TGHandle( void *ptr );
+extern  tn      TGHandle( void );
 extern  tn      TGCallback( cg_callback rtn, callback_handle ptr );
 extern  tn      TGCompare( cg_op op, tn left, tn rite, type_def *tipe );
 extern  unsigned_32     Mask( btn node );

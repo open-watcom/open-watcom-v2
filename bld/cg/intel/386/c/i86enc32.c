@@ -98,10 +98,6 @@ extern  void            OutReloc( segment_id, fix_class, bool );
 extern  void            TellByPassOver( void );
 extern  void            OutLblPatch( code_lbl *, fix_class, offset );
 
-extern  template        Temp;   /* template for oc_entries*/
-extern  byte            Inst[];  /* template for instructions*/
-extern  int             ILen;
-
 /* forward declarations */
 extern  void            DoRelocConst( name *op, type_class_def kind );
 extern  void            DoMAddr( name *op );

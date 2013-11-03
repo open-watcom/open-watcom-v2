@@ -131,22 +131,22 @@ static  void            CallMathFunc( instruction *ins );
 static  void            MathFunc( instruction *ins );
 static  void            PopSeg( hw_reg_set reg );
 static  void            PushSeg( hw_reg_set reg );
-static  void            GFld1(void);
+static  void            GFld1( void);
 static  int             FPRegTrans( hw_reg_set reg );
 
 
-extern    pccode_def            PCCodeTable[];
-extern    name                  *FPStatWord;
-extern    bool                  Used87;
+extern  pccode_def      PCCodeTable[];
+extern  name            *FPStatWord;
+extern  bool            Used87;
 
-          template              Temp;   /* template for oc_entries*/
-          byte                  Inst[INSSIZE];  /* template for instructions*/
+        template        Temp;           /* template for oc_entries */
+        byte            Inst[INSSIZE];  /* template for instructions */
 
-static    int   ICur;           /* cursor for writing into Inst*/
-static    int   IEsc;           /* number of initial bytes that must be*/
-                                /* checked for escapes when copied into Temp*/
-          int   ILen;           /* length of object instruction*/
-          fp_patches    FPPatchType;
+static  byte            ICur;           /* cursor for writing into Inst */
+static  byte            IEsc;           /* number of initial bytes that must be */
+                                        /* checked for escapes when copied into Temp */
+        byte            ILen;           /* length of object instruction */
+        fp_patches      FPPatchType;
 
 static  hw_reg_set RegTab[] = {
 #define REGS 24

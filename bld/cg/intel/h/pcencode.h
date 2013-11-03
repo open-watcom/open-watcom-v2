@@ -30,6 +30,7 @@
 
 
 #include <jumps.h>
+
 #define _Code   Format( OC_CODE );
 #define _Next   EjectInst()
 #define _Emit   Finalize()
@@ -86,38 +87,42 @@ extern void     Format(oc_class);
 /* structures and shift positions for instructions*/
 
 #define S_KEY_REG       0           /* bit position*/
-#define S_KEY_SR        3                    /* found in segment override*/
+#define S_KEY_SR        3           /* found in segment override*/
 #define S_RMR_MOD       6
 #define S_RMR_SR        3
 #define S_RMR_REG       3
 #define S_RMR_RM        0
-#define RMR_MOD_REG     0xc0       /* mask on RMR bit*/
-#define B_RMR_MUL_SGN   8               /* signed multiply/divid*/
+#define RMR_MOD_REG     0xc0        /* mask on RMR bit*/
+#define B_RMR_MUL_SGN   8           /* signed multiply/divid*/
 #define B_RMR_SHR_SAR   16
-#define B_KEY_W 1             /* bit mask*/
+#define B_KEY_W         1           /* bit mask*/
 #define B_KEY_AW        8
-#define B_KEY_S 2
+#define B_KEY_S         2
 #define B_KEY_DS        1
 #define B_KEY_FS        0x10
 #define B_KEY_POPSEG    1
 #define B_RMR_FMT_I8    0x28
 #define B_RMR_FMT_FL    0x28
 
-#define MF_FS   0x00
-#define MF_FD   0x04
-#define MF_FL   0x02
-#define MF_I2   0x06
-#define MF_I4   0x02
-#define MF_I8   0x06
+#define MF_FS           0x00
+#define MF_FD           0x04
+#define MF_FL           0x02
+#define MF_I2           0x06
+#define MF_I4           0x02
+#define MF_I8           0x06
 
-#define KEY     0
-#define RMR     1
-#define DATAHI  2
-#define DATALO  1
+#define KEY             0
+#define RMR             1
+#define DATAHI          2
+#define DATALO          1
 
 #define INSSIZE         128
 
 typedef struct template {
         oc_header       hdr;
-        byte            data[ INSSIZE ];
+        byte            data[INSSIZE];
 } template;
+
+extern  byte            Inst[INSSIZE];  /* template for instructions */
+extern  byte            ILen;           /* length of object instruction */
+extern  template        Temp;           /* template for oc_entries*/

@@ -517,7 +517,7 @@ void EchoAPIFini( void )
 }
 
 static char* callBackName       // MAKE CALL-BACK NAME FOR PRINTING
-    ( void (*rtn)( void* )      // - rtn address
+    ( cg_callback rtn           // - rtn address
     , char *buffer )            // - buffer
 {
     char *name;                 // - name to be used
