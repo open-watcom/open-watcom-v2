@@ -928,8 +928,7 @@ void ProcFile( FILE *fp, bool is_intel )
         } else {
             /* something bailed out... */
             if( raw_dump ) {
-                Output( INDENT "Error at offset %x" CRLF,
-                        (unsigned_32)RecOffset );
+                Output( INDENT "Error at offset %x" CRLF, (unsigned_32)(pointer_int)RecOffset );
             } else if( !EndRec() ) {
                 Output( INDENT "Remainder of record follows:" CRLF );
                 OutputData( (unsigned_32)RecOffset(), 0L );

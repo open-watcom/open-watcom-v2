@@ -320,6 +320,7 @@ extern int DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
         info.rdr.op_lens[index] = DWRVMReadByte( stmt );
         stmt++;
     }
+    ret = TRUE;
     index = 0;
     while( stmt < info.rdr.start ) {            // get directory table
         value = DWRVMReadByte( stmt );

@@ -231,21 +231,19 @@ static return_val processDrectveSection( orl_sec_handle shnd )
     cb.scantab_fn = scanTabCallBack;
 
     o_error = ORLNoteSecScan( shnd, &cb, NULL );
-    if( o_error != ORL_OKAY ) {
-        if( o_error == ORL_OUT_OF_MEMORY ) {
-            return( OUT_OF_MEMORY );
-        } else {
-            return( ERROR );
-        }
-    }
-    return( OKAY );
+    if( o_error == ORL_OKAY )
+        return( OKAY );
+    if( o_error == ORL_OUT_OF_MEMORY )
+        return( OUT_OF_MEMORY );
+    return( ERROR );
 }
 
 static return_val addRelocSection( orl_sec_handle shnd )
 {
     section_ptr         sec;
 
-    if( relocSections.first && ( GetFormat() == ORL_OMF ) ) return( ORL_OKAY );
+    if( relocSections.first && ( GetFormat() == ORL_OMF ) )
+        return( OKAY );
 
     sec = MemAlloc( sizeof( section_struct ) );
     if( sec ) {
@@ -430,13 +428,11 @@ static orl_return sectionInit( orl_sec_handle shnd )
             }
             break;
     }
-    switch( error ) {
-        case OUT_OF_MEMORY:
-           return( ORL_OUT_OF_MEMORY );
-        case ERROR:
-           return( ORL_ERROR );
-    }
-    return( ORL_OKAY );
+    if( error == OKAY )
+        return( ORL_OKAY );
+    if( error == OUT_OF_MEMORY )
+        return( ORL_OUT_OF_MEMORY );
+    return( ORL_ERROR );
 }
 
 
@@ -617,7 +613,7 @@ static return_val initORL( void )
 {
     orl_file_flags      flags;
     orl_machine_type    machine_type;
-    orl_return          error = OKAY;
+    orl_return          o_error = ORL_OKAY;
     orl_file_format     type;
     bool                byte_swap;
 
@@ -707,24 +703,24 @@ static return_val initORL( void )
                     PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
                     return( ERROR );
             }
+            return( OKAY );
         } else {
-            error = ORLGetError( ORLHnd );
+            o_error = ORLGetError( ORLHnd );
+            ORLFini( ORLHnd );
             // An "out of memory" error is not necessarily what it seems.
             // The ORL returns this error when encountering a bad or
             // unrecognized object file record.
-            if( error == ORL_OUT_OF_MEMORY ) {
+            if( o_error == ORL_OUT_OF_MEMORY ) {
                 PrintErrorMsg( OUT_OF_MEMORY, WHERE_OPENING_ORL );
+                return( OUT_OF_MEMORY );
             } else {
                 PrintErrorMsg( ERROR, WHERE_OPENING_ORL );
+                return( ERROR );
             }
         }
-        if( error != OKAY ) {
-            ORLFini( ORLHnd );
-        }
     } else {
-        error = OUT_OF_MEMORY;
+        return( OUT_OF_MEMORY );
     }
-    return( error );
 }
 
 static return_val initServicesUsed( void )
