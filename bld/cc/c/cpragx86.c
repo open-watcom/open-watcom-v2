@@ -467,6 +467,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                 skip = 0;
                 *dst++ = FLOATING_FIXUP_BYTE;
                 mutate_to_segment = 0;
+                cg_fix = 0;
 #if _CPU == 8086
                 fixup_padding = 0;
 #endif

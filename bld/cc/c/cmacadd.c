@@ -115,12 +115,10 @@ void MacroCopy( void *mptr, MACADDR_T offset, unsigned amount )
 
 void MacroOverflow( unsigned amount_needed, unsigned amount_used )
 {
-    MACADDR_T old_seg;
     MACADDR_T old_offset;
 
     amount_needed = _RoundUp( amount_needed, sizeof(int) );
     if( MacroLimit - MacroOffset < amount_needed ) {
-        old_seg = MacroSegment;
         old_offset = MacroOffset;
         AllocMacroSegment( amount_needed );
         MacroCopy( old_offset, MacroOffset, amount_used );

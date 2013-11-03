@@ -137,9 +137,9 @@ struct { DATA_TYPE decl_type; int size; } ItypeTable[ENUM_SIZE] =
 void get_msg_range( char *buff, enum enum_rng index )
 {
     if( index & 1 ) {
-        sprintf( buff, "%llu to %llu", RangeTable[index][LOW], RangeTable[index][HIGH] );
+        sprintf( buff, "%llu to %llu", RangeTable[index][LOW].u._64[0], RangeTable[index][HIGH].u._64[0] );
     } else {
-        sprintf( buff, "%lld to %lld", RangeTable[index][LOW], RangeTable[index][HIGH] );
+        sprintf( buff, "%lld to %lld", (long long)RangeTable[index][LOW].u._64[0], (long long)RangeTable[index][HIGH].u._64[0] );
     }
 }
 

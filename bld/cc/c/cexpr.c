@@ -673,7 +673,7 @@ static TREEPTR AddrOp( TREEPTR tree )
     TREEPTR         leaf;
     type_modifiers  modifiers;
     segment_id      segid;
-    SYM_HANDLE      based_sym;
+//    SYM_HANDLE      based_sym;
     SYM_ENTRY       sym;
 
     if( tree->op.opr == OPR_ERROR )  return( tree );
@@ -715,7 +715,7 @@ static TREEPTR AddrOp( TREEPTR tree )
             return( leaf );
         }
     }
-    based_sym = 0;
+//    based_sym = 0;
     modifiers  = FLAG_NONE;
     segid = SEG_DATA;
     if( leaf->op.opr == OPR_PUSHADDR ) {
@@ -2072,7 +2072,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
     type_modifiers  flags;
     unsigned        string_len;
     int             optimized;
-    int             recursive = 0;
+//    int             recursive = 0;
     int             far16_func = 0;
     unsigned char   parm_count;
     SYM_NAMEPTR     sym_name;
@@ -2101,15 +2101,12 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
 #if _CPU == 386                                 /* 22-aug-94 */
         {
             aux_info    *inf;
-            aux_entry   *ent;
 
             inf = FindInfo( &sym, functree->op.u2.sym_handle );
             if( (inf->flags & AUX_FLAG_FAR16) || (sym.mods & FLAG_FAR16) ) {
                 far16_func = 1;
                 typ = Far16Type( typ );
             }
-            sym_name = SymName( &sym, functree->op.u2.sym_handle );
-            ent = AuxLookup( sym_name );
         }
 #endif
     } else {
@@ -2151,9 +2148,11 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
         } else {
             if( functree->op.opr == OPR_FUNCNAME ) {
                 SymGet( &sym, functree->op.u2.sym_handle );
+#if 0
                 if( functree->op.u2.sym_handle == CurFuncHandle ) {
                     recursive = 1;                      /* 22-sep-91 */
                 }
+#endif
                 sym_name = SymName( &sym, functree->op.u2.sym_handle );
                 n = far_strlen_plus1( sym_name );
                 if( (GenSwitches & NO_OPTIMIZATION) == 0  &&
@@ -2253,7 +2252,7 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
     TYPEPTR             orig_typ;
     TYPEPTR             *parms;
     type_modifiers      decl_flags;
-    char                recursive = 0;
+//    char                recursive = 0;
 #ifdef __SEH__
     opr_code            opr;
 #endif
@@ -2277,14 +2276,17 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         tree->op.opr = OPR_FUNCNAME;            // change to funcname
         sym_handle = tree->op.u2.sym_handle;
         SymGet( &sym, sym_handle );
+#if 0
         if( tree->op.u2.sym_handle == CurFuncHandle ) {
             recursive = 1;
         }
+#endif
         decl_flags = sym.mods;
         // is it OK to inline?
     } else {                                    /* indirect call */
         if( CompFlags.initializing_data ) {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
+            sym_handle = 0;
         } else {
             if( tree->op.opr == OPR_POINTS ) {  //need to recover decl flags
                 decl_flags = typ->u.fn.decl_flags;

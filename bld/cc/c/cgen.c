@@ -39,6 +39,12 @@
 #include "feprotos.h"
 #include "cgen.h"
 #include "cfeinfo.h"
+#ifdef __SEH__
+#include "tryblock.h"
+#endif
+
+#define PushCGName(name)        ((cg_name *)ValueStack)[index++] = name
+#define PopCGName()             ValueStack[--index]
 
 #ifdef __SEH__
 typedef struct  try_table_back_handles {
@@ -53,12 +59,8 @@ extern  int             LabelIndex;
 local void      FreeExtVars( void );
 local void      FreeGblVars( SYM_HANDLE sym_handle );
 local void      FreeLocalVars( SYM_HANDLE sym_list );
-static void     FreeTrySymBackInfo( void );
-static void     FreeTryTableBackHandles( void );
-static void     FreeTrySymBackInfo( void );
 local cg_type   CodePtrType( type_modifiers flags );
 local int       DoFuncDefn( SYM_HANDLE funcsym_handle );
-static void     CallTryFini( void );
 local void      EmitSyms( void );
 local void      Emit1String( STR_HANDLE str_handle );
 local void      EmitLiteral( STR_HANDLE strlit );
@@ -68,6 +70,9 @@ local void      CDoAutoDecl( SYM_HANDLE sym_handle );
 local void      CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle );
 local void      ParmReverse( SYM_HANDLE sym_handle );
 #ifdef __SEH__
+static void     FreeTrySymBackInfo( void );
+static void     FreeTryTableBackHandles( void );
+static void     CallTryFini( void );
 static void     GenerateTryBlock( TREEPTR tree );
 #endif
 
@@ -75,16 +80,6 @@ static  struct  local_vars {
     struct local_vars       *next;
     SYM_HANDLE              sym_list;
 } *LocalVarList;
-
-#ifdef __SEH__
-#include "tryblock.h"
-
-static int                      TryRefno;
-static try_table_back_handles   *TryTableBackHandles;
-#endif
-
-#define PushCGName(name)        ((cg_name *)ValueStack)[index++] = name
-#define PopCGName()             ValueStack[--index]
 
 static label_handle     *CGLabelHandles;
 static TREEPTR          FirstNode;
@@ -94,6 +89,11 @@ static int              Refno;
 static temp_handle      SSVar;
 static SYM_HANDLE       Saved_CurFunc;
 static int              InLineDepth;
+
+#ifdef __SEH__
+static int                      TryRefno;
+static try_table_back_handles   *TryTableBackHandles;
+#endif
 
 struct func_save {
     SYMPTR          func;
@@ -282,7 +282,7 @@ static cg_type DataPointerType( OPNODE *node )
     }
     return( dtype );
 #else
-    node;
+    node = node;
     return( TY_POINTER );
 #endif
 }
@@ -302,7 +302,7 @@ local cg_name ForceVolatileFloat( cg_name name, TYPEPTR typ ) /* 05-sep-92 */
 static cg_name PushSymSeg( OPNODE *node )
 {
     cg_name     segname;
-    SYMPTR      sym;
+//    SYMPTR      sym;
     SYM_HANDLE  sym_handle;
 
     sym_handle = node->u2.sym_handle;
@@ -317,7 +317,7 @@ static cg_name PushSymSeg( OPNODE *node )
             }
             segname = CGTempName( SSVar, TY_UINT_2 );
         } else {
-            sym = SymGetPtr( sym_handle );
+//            sym = SymGetPtr( sym_handle );
             segname = CGFEName( sym_handle, TY_UINT_2 );
         }
     }
@@ -815,24 +815,19 @@ local void EmitNodes( TREEPTR tree )
             EndFunction( node );
             break;
         case OPR_EQUALS:                // =
-          {
-            cg_type     dtype;
-
             op2 = PopCGName();          // get right opnd
             op1 = PopCGName();          // get lvalue
             if( node->flags & OPFLAG_VOLATILE ) { // is lvalue volatile
                  op1 = CGVolatile( op1 );
             }
             if( IsStruct( node->u2.result_type ) ) {
-                dtype = DataPointerType( node );
-                op1 = CGLVAssign( op1, op2, CGenType( node->u2.result_type ));
+                op1 = CGLVAssign( op1, op2, CGenType( node->u2.result_type ) );
                 op1 = PushRValue( node, op1 );
             } else {
-                dtype =  CGenType( node->u2.result_type );
-                op1 = CGAssign( op1, op2, CGenType( node->u2.result_type ));
+                op1 = CGAssign( op1, op2, CGenType( node->u2.result_type ) );
             }
             PushCGName( op1 );
-          } break;
+            break;
         case OPR_ADD:                   // +
         case OPR_SUB:                   // -
             op2 = PopCGName();

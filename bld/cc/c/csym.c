@@ -900,11 +900,11 @@ void AsgnSegs( SYM_HANDLE sym_handle )
 
 void EndBlock( void )
 {
-    SYM_HASHPTR sym_list;
+/*    SYM_HASHPTR sym_list; */
 
     FreeEnums();
     FreeTags();
-    sym_list = FreeSym();
+    FreeSym();  /* sym_list = FreeSym(); */
     if( SymLevel != 0 ) {
 /*      CurFunc->u.func.locals = FreeVars( sym_list );  */
         if( SymLevel == 1 ) {

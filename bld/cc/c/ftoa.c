@@ -56,18 +56,9 @@ char *ftoa( FLOATVAL *flt )
     }
     if( *mant != '0' )
         --cvt.decimal_place;
-    sprintf( buf, "%c%c.%sE%+1d", 
-        ( cvt.sign ) ? '-' : '+', *mant, mant + 1, cvt.decimal_place );
+    sprintf( buf, "%c%c.%sE%+1d", ( cvt.sign ) ? '-' : '+', *mant, mant + 1, cvt.decimal_place );
 #else
-  #ifdef _LONG_DOUBLE_
-    double      dbl;
-    long_double ld;
-    ld = flt->ld;
-    __iLDFD( &ld, &dbl );
-    sprintf( buf, "%.19e", dbl );
-  #else
-    sprintf( buf, "%.19e", flt->ld );
-  #endif
+    sprintf( buf, "%.19e", flt->ld.u.value );
 #endif
     return( buf );
 }

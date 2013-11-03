@@ -2131,6 +2131,7 @@ local void Define_Memory_Model( void )
         DataPtrSize = TARGET_FAR_POINTER;
         break;
     default:
+        model = '?';
         break;
     }
 #endif

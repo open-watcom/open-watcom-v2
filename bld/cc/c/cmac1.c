@@ -448,7 +448,7 @@ static MACRO_ARG *CollectParms(void)
     int             parm_cnt;
     int             ppscan_mode;
     MACRO_ARG       *macro_parms;
-    struct tokens   **token_tail;
+//    struct tokens   **token_tail;
     struct tokens   *token_head;
 
     macro_parms = NULL;
@@ -465,7 +465,7 @@ static MACRO_ARG *CollectParms(void)
         } while( tok == T_WHITE_SPACE );
         /* tok will now be a '(' */
         bracket = 0;
-        token_tail = &token_head;
+//        token_tail = &token_head;
         token_head = NULL;
         MTokenLen = 0;
         for( ;; ) {
@@ -498,7 +498,7 @@ static MACRO_ARG *CollectParms(void)
                     SaveParm( mentry, MTokenLen, parm_cnt, macro_parms, token_head );
                 }
                 ++parm_cnt;
-                token_tail = &token_head;
+//                token_tail = &token_head;
                 token_head = NULL;
                 MTokenLen = 0;
                 continue;

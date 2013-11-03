@@ -523,24 +523,24 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
 
 local void StorePointer( TYPEPTR typ, unsigned long size )
 {
-    type_modifiers      flags;
+//    type_modifiers      flags;
     TREEPTR             tree;
     TYPEPTR             typ2;
-    int                 address_wanted;
+//    int                 address_wanted;
     DATA_QUAD           dq;
     addrfold_info       info;
 
     dq.flags = Q_DATA;
-    flags = FLAG_NONE;
-    if( CompFlags.strings_in_code_segment )
-        flags = FLAG_CONST;  /*01-sep-89*/
+//    flags = FLAG_NONE;
+//    if( CompFlags.strings_in_code_segment )
+//        flags = FLAG_CONST;  /*01-sep-89*/
     if( typ->decl_type == TYPE_POINTER ) {
         if( typ->u.p.decl_flags & (FLAG_FAR|FLAG_HUGE) ) {
             dq.flags |= Q_FAR_POINTER;
-            flags = FLAG_FAR;
+//            flags = FLAG_FAR;
         } else if( typ->u.p.decl_flags & FLAG_NEAR ) {
             dq.flags |= Q_NEAR_POINTER;
-            flags = FLAG_NONE;
+//            flags = FLAG_NONE;
         } else {
             typ2 = typ->object;
             SKIP_TYPEDEFS( typ2 );
@@ -552,7 +552,7 @@ local void StorePointer( TYPEPTR typ, unsigned long size )
         }
     }
 
-    address_wanted = 0;
+//    address_wanted = 0;
     if( CurToken == T_RIGHT_BRACE) { // t some x = {}
         dq.type = QDT_ID;
         dq.u.var.sym_handle = 0;

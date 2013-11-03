@@ -102,5 +102,5 @@ move_up_to_parent:
 
 void NoOp( TREEPTR node )
 {
-    node;
+    node = node;
 }

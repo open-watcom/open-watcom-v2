@@ -959,7 +959,7 @@ static void SwitchStmt( void )
     SWITCHPTR   sw;
     TREEPTR     tree;
     TYPEPTR     typ;
-    int         switch_type;
+//    int         switch_type;
 
     StartNewBlock();
     NextToken();
@@ -969,21 +969,21 @@ static void SwitchStmt( void )
     sw->high_value = 0;
     sw->case_format = "%ld";        /* assume signed cases */
     SwitchStack = sw;
-    switch_type = TYPE_INT;         /* assume int */
+//    switch_type = TYPE_INT;         /* assume int */
     tree = RValue( BracketExpr() );
     typ = TypeOf( tree );
     if( typ->decl_type == TYPE_ENUM ) typ = typ->object;
     if( typ->decl_type == TYPE_UFIELD ) {
         if( typ->u.f.field_width == (TARGET_INT * 8) ) {
             sw->case_format = "%lu";
-            switch_type = TYPE_UINT;
+//            switch_type = TYPE_UINT;
         }
     }
     switch( typ->decl_type ) {
     case TYPE_USHORT:
     case TYPE_UINT:
         sw->case_format = "%lu";
-        switch_type = TYPE_UINT;
+//        switch_type = TYPE_UINT;
     case TYPE_CHAR:
     case TYPE_UCHAR:
     case TYPE_SHORT:
@@ -993,10 +993,10 @@ static void SwitchStmt( void )
         break;
     case TYPE_ULONG:
         sw->case_format = "%lu";
-        switch_type = TYPE_ULONG;
+//        switch_type = TYPE_ULONG;
         break;
     case TYPE_LONG:
-        switch_type = TYPE_LONG;
+//        switch_type = TYPE_LONG;
         break;
     default:
         CErr1( ERR_INVALID_TYPE_FOR_SWITCH );
