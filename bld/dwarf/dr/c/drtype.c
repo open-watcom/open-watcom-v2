@@ -116,13 +116,12 @@ extern void DRGetSubrangeInfo( dr_handle sub, dr_subinfo *info )
 /**************************************************************/
 {
     dr_handle   abbrev;
-    int         tag;
     dr_val32    vals[3];
 
     abbrev = DWRVMReadULEB128( &sub );
     abbrev = DWRLookupAbbrev( sub, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
-    ++abbrev; /* skip child flag */
+    DWRVMReadULEB128( &abbrev );    /* skip tag */
+    ++abbrev;                       /* skip child flag */
     DWRGetAT( abbrev, sub, vals, SubATList );
     info->low = vals[0];
     info->high = vals[1];
@@ -140,14 +139,13 @@ extern int DRGetBitFieldInfo( dr_handle mem, dr_bitfield *info )
 /**************************************************************/
 {
     dr_handle   abbrev;
-    int         tag;
     dr_val32    vals[3];
     int         count;
 
     abbrev = DWRVMReadULEB128( &mem );
     abbrev = DWRLookupAbbrev( mem, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
-    ++abbrev; /* skip child flag */
+    DWRVMReadULEB128( &abbrev );  /* skip tag */
+    ++abbrev;                     /* skip child flag */
     count =  DWRGetAT( abbrev, mem, vals, BitATList );
     info->byte_size = vals[0];
     info->bit_offset = vals[1];
@@ -170,6 +168,7 @@ extern bool DRGetTypeInfo( dr_handle entry,  dr_typeinfo *info )
     info->acc = DR_STORE_NONE;
     info->mclass = DR_MOD_NONE;
 
+    kind = 0;
     for( ;; ) {
         if( entry == DR_HANDLE_VOID ) {
             info->kind = DR_TYPEK_VOID;
@@ -377,6 +376,9 @@ extern dr_ptr DRGetAddrClass( dr_handle entry )
     case DW_ADDR_far32:
         ret = DR_PTR_far32;
         break;
+    default:
+        ret = 0;
+        break;
     }
     return( ret );
 }
@@ -402,14 +404,13 @@ extern dr_array_stat DRGetArrayInfo( dr_handle entry, dr_array_info *info )
     dr_array_stat stat;
     uint_32       value;
     unsigned_8    haschild;
-    dw_tagnum     tag;
 
     stat = DR_ARRAY_NONE;
     abbrev = DWRVMReadULEB128( &entry );
     abbrev = DWRLookupAbbrev( entry, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
+    DWRVMReadULEB128( &abbrev );    /* skip tag */
     haschild = DWRVMReadByte( abbrev );
-    ++abbrev; /* skip child flag */
+    ++abbrev;                       /* skip child flag */
     if( DWRGetConstAT( abbrev, entry, DW_AT_ordering, &value ) ) {
         info->ordering = value;
         stat |= DR_ARRAY_ORDERING;

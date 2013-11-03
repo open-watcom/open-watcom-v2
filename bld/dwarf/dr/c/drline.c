@@ -51,6 +51,9 @@ static unsigned_32 ReadVWord( dr_handle where, int size )
     case 4:
         ret = DWRVMReadDWord( where );
         break;
+    default:
+        ret = 0;
+        break;
     }
     return( ret );
 }
@@ -325,7 +328,9 @@ extern int DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
         dd.name = DWRCopyString( &stmt );
         dd.index = index;
         ret = dir( dir_data, &dd );
-        if( ret == FALSE ) goto exit;
+        if( ret == FALSE ) {
+            return( ret );
+        }
     }
     info.rdr.dir_idx = index;
     stmt++;
@@ -337,11 +342,12 @@ extern int DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
         stmt = DefineFile( stmt, &df );
         df.index = index;
         ret  = file( file_data, &df );
-        if( ret == FALSE ) goto exit;
+        if( ret == FALSE ) {
+            return( ret );
+        }
     }
     info.rdr.file_idx = index;
     InitState( &info.state, 0, info.rdr.def_is_stmt );
     WlkStateProg( &info, NULL, NULL, file, file_data );
-exit:
     return( ret );
 }

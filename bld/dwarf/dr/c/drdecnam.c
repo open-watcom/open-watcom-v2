@@ -275,6 +275,7 @@ extern void DRDecorateLabel( dr_handle die, char *buf )
     dr_handle       tmp_abbrev;
     dr_handle       tmp_entry;
 
+    label = NULL;
     FillLoc( &loc, die );
 
     compunit = DWRFindCompileInfo( die );
@@ -1200,6 +1201,7 @@ static void AddTypeString( BrokenName_T *dn, String Kwd,
 
     default:
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        list = NULL;
     }
 
     ListConcat( list, Kwd );
@@ -1513,6 +1515,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             break;
         default:
             DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+            len = 0;
         }
 
         if( type_loc->tag == DW_TAG_string_type ) {
@@ -1531,11 +1534,11 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
 
             tmp_abbrev = type_loc->abbrev_cr;
             tmp_entry = type_loc->entry_cr;
-            if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_encoding )
-                == DW_AT_encoding ) {
+            if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_encoding ) == DW_AT_encoding ) {
                 encoding = DWRReadConstant( tmp_abbrev, tmp_entry );
             } else {
                 DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+                encoding = 0;
             }
 
             switch( encoding ) {
@@ -2385,6 +2388,7 @@ static void ListConcat( List_T *list, String str )
 
     default:
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        strptr = NULL;
     }
 
     strptr->l += str.l;

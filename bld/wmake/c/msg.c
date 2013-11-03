@@ -101,10 +101,8 @@ STATIC void positnArg( va_list args, UINT16 size )
  * va_arg().
  */
 {
-    UINT16      i; /* to avoid a compiler warning */
-
-    if( USEARGVALUE && ( size < (UINT16)sizeof(MSG_ARG) ) ) {
-        i = (UINT16)va_arg( args, unsigned );
+    if( USEARGVALUE && ( size < (UINT16)sizeof( MSG_ARG ) ) ) {
+        size = (UINT16)va_arg( args, unsigned );    // used for side efect
     }
 }
 

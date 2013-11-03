@@ -403,6 +403,7 @@ dwr_formcl DWRFormClass( unsigned_16 form )
         break;
     default:
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        formcl = 0;
     }
     return( formcl );
 }
@@ -440,6 +441,7 @@ unsigned_32 ReadConst( unsigned form, dr_handle info )
         break;
     default:
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        retval = 0;
     }
     return( retval );
 }
@@ -505,7 +507,10 @@ dr_handle DWRReadAddr( dr_handle abbrev, dr_handle info )
     case 4:
         retval = DWRVMReadDWord( info );
         break;
-     }
+    default:
+        retval = 0;
+        break;
+    }
     return( retval );
 }
 
@@ -831,7 +836,6 @@ int DWRWalkContaining( dr_handle mod, dr_handle target,
 {
     dr_handle   abbrev;
     dr_handle   curr;
-    dw_tagnum   tag;
     unsigned_8  haschild;
 
     abbrev = DWRVMReadULEB128( &mod );
@@ -840,7 +844,7 @@ int DWRWalkContaining( dr_handle mod, dr_handle target,
     }
 
     abbrev = DWRLookupAbbrev( mod, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
+    DWRVMReadULEB128( &abbrev );            /* skip tag */
     haschild = DWRVMReadByte( abbrev );
 
     abbrev += sizeof( unsigned_8 );         /* skip child byte */
@@ -856,7 +860,7 @@ int DWRWalkContaining( dr_handle mod, dr_handle target,
             abbrev = DWRVMReadULEB128( &curr );
             if( abbrev == 0 ) break;
             abbrev = DWRLookupAbbrev( mod, abbrev );
-            tag = DWRVMReadULEB128( &abbrev );
+            DWRVMReadULEB128( &abbrev );    /* skip tag */
             haschild = DWRVMReadByte( abbrev );
             abbrev += sizeof( unsigned_8 );
             old_abbrev = abbrev;
@@ -866,11 +870,11 @@ int DWRWalkContaining( dr_handle mod, dr_handle target,
             } else {
                 DWRSkipAttribs( abbrev, &curr );
             }
-            if( curr > target ) {       // mod < target < curr - encloses
+            if( curr > target ) {           // mod < target < curr - encloses
                 if( !wlk( mod, 0, d ) ){
-                    return( FALSE );    // FALSE == quit
+                    return( FALSE );        // FALSE == quit
                 }
-                abbrev = old_abbrev;    // rest cause we are going in
+                abbrev = old_abbrev;        // rest cause we are going in
                 curr = old_curr;
                 DWRSkipAttribs( abbrev, &curr );    // skip current tags stuff
             }
@@ -951,10 +955,10 @@ int DWRWalkScope( dr_handle mod,
     DWRSkipAttribs( abbrev, &mod );
     if( haschild == DW_CHILDREN_yes ) {
         int         depth;
-        int         skip;
+//        int         skip;
 
         depth = 1;
-        skip  = TRUE;
+//        skip  = TRUE;
         curr = mod;
         for( ;; ) {
             mod = curr;
@@ -977,10 +981,10 @@ int DWRWalkScope( dr_handle mod,
                 ++index;
             }
             if( tag == DW_TAG_lexical_block ) {
-                ++depth; // go into block
+                ++depth;                    // go into block
                  DWRSkipAttribs( abbrev, &curr );
             } else {
-                if( haschild ) {    // skip fuzz
+                if( haschild ) {            // skip fuzz
                     DWRSkipChildren( &abbrev, &curr );
                 } else {
                     DWRSkipAttribs( abbrev, &curr );

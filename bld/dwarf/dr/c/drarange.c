@@ -64,6 +64,7 @@ static uint_32 ReadInt( dr_handle offset, int size )
         ret = DWRVMReadByte( offset );
     } else {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        ret = 0;
     }
     return( ret );
 }

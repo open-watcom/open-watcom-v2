@@ -764,7 +764,8 @@ static  void    DumpLocals( dbg_local *local )
     dbg_type    tipe;
     name        *t;
 
-    for( ; local != NULL; next = local->link ) {
+    for( ; local != NULL; local = next ) {
+        next = local->link;
         switch( local->kind ) {
         case DBG_SYM_VAR:
             tipe = FEDbgType( local->sym );
@@ -774,7 +775,7 @@ static  void    DumpLocals( dbg_local *local )
                 NewBuff( out, CVSyms );
                 FrameVar( out, FEName( local->sym ), tipe, offset );
                 buffEnd( out );
-            }else{
+            } else {
                 CVGenStatic( local->sym, local->loc, FALSE );
             }
             break;
@@ -788,7 +789,6 @@ static  void    DumpLocals( dbg_local *local )
         DBLocFini( local->loc );
         CGFree( local );
     }
-
 }
 
 

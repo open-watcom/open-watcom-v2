@@ -477,7 +477,7 @@ extern int DRGetHighPc( dr_handle entry, uint_32 *num )
     } else {
         ret = FALSE;
     }
-    return( offset );
+    return( ret );
 }
 
 extern dr_handle DRGetContaining( dr_handle entry )
@@ -512,6 +512,9 @@ extern dr_handle DRWalkParent( dr_search_context * context )
         break;
     case SET_FUNCTION:
         prev = context->functionhdl;
+        break;
+    default:
+        prev = 0;
         break;
     }
     return( prev );

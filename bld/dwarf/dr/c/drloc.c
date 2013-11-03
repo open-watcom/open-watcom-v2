@@ -55,6 +55,9 @@ static unsigned_32 ReadVWord( dr_handle where, int size )
     case 4:
         ret = DWRVMReadDWord( where );
         break;
+    default:
+        ret = 0;
+        break;
     }
     return( ret );
 }
@@ -139,6 +142,10 @@ static void DoLocExpr( unsigned_8       *p,
     } else {
         kind = DR_LOC_ADDR;
     }
+    op1 = 0;
+    op2 = 0;
+    stk1 = 0;
+    stk2 = 0;
     while( p  < end ) {
         op = *p;
         ++p;
@@ -636,15 +643,14 @@ extern int DRParmEntryAT( dr_handle         var,
                           void              *d )
 /***************************************************/
 {
-    dw_tagnum   tag;
     dr_handle   abbrev;
     dr_handle   sym = var;
     int         ret;
 
     abbrev = DWRVMReadULEB128( &var );
     abbrev = DWRLookupAbbrev( var, abbrev );
-    tag = DWRVMReadULEB128( &abbrev );
-    ++abbrev; /* skip child flag */
+    DWRVMReadULEB128( &abbrev );    /* skip tag */
+    ++abbrev;                       /* skip child flag */
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_WATCOM_parm_entry ) != 0 ) {
          ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
