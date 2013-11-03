@@ -36,6 +36,6 @@ typedef struct {
         unsigned short e;
 } TB_LD;
 
-TB_LD * strtotb( char *bufptr, TB_LD *pld, char negative );
+TB_LD * strtotb( char *bufptr, TB_LD *pld, bool negative );
 
 #endif

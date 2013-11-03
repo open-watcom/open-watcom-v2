@@ -180,9 +180,8 @@ static void SetTargName( char *name, unsigned len )
         return;
     Options.build_target = AsmAlloc( len + 1 );
     p = Options.build_target;
-    while( len != 0 ) {
+    for( ; len != 0; --len ) {
         *p++ = toupper( *name++ );
-        --len;
     }
     *p++ = '\0';
 }
@@ -697,13 +696,13 @@ static struct option const cmdl_options[] = {
     { 0,        0,        0 }
 };
 
-static int OptionDelimiter( char c )
-/**********************************/
+static bool OptionDelimiter( char c )
+/***********************************/
 {
     if( c == ' ' || c == '-' || c == '\0' || c == '\t' || c == SwitchChar ) {
-        return( 1 );
+        return( TRUE );
     }
-    return( 0 );
+    return( FALSE );
 }
 
 static void get_os_include( void )
@@ -849,8 +848,7 @@ static char *ReadIndirectFile( void )
         env[len] = '\0';
         close( handle );
         // zip through characters changing \r, \n etc into ' '
-        str = env;
-        while( *str ) {
+        for( str = env; *str != '\0'; ++str ) {
             ch = *str;
             if( ch == '\r' || ch == '\n' ) {
                 *str = ' ';
@@ -861,7 +859,6 @@ static char *ReadIndirectFile( void )
                 break;
             }
 #endif
-            ++str;
         }
     }
     return( env );
@@ -1334,7 +1331,7 @@ void set_fpu_parameters( void )
 void CmdlParamsInit( void )
 /*************************/
 {
-    Code->use32 = 0;                // default is 16-bit segment
+    Code->use32 = FALSE;            // default is 16-bit segment
     Code->info.cpu = P_86 | P_87;   // default is 8086 CPU and 8087 FPU
 
     if( ForceInclude != NULL )

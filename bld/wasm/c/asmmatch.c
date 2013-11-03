@@ -430,7 +430,7 @@ int match_phase_1( void )
 {
     int             i;
     int             retcode;
-    signed char     temp_opsiz = 0;
+    bool            temp_opsiz = FALSE;
     OPNDTYPE        cur_opnd;
     OPNDTYPE        asm_op1;
 

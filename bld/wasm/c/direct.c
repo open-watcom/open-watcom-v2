@@ -116,11 +116,11 @@ static char             *Check4Mangler( int *i );
 static int              token_cmp( char **token, int start, int end );
 static void             ModelAssumeInit( void );
 
-extern  char            write_to_file;  // write if there is no error
-extern  uint_32         BufSize;
-extern  int_8           DefineProc;     // TRUE if the definition of procedure
+extern char             write_to_file;  // write if there is no error
+extern uint_32          BufSize;
+extern bool             DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
-extern char             EndDirectiveFound;
+extern bool             EndDirectiveFound;
 extern struct asm_sym   *SegOverride;
 extern void             FreeASym( struct asm_sym *sym );
 extern struct asmfixup  *ModendFixup;   // start address fixup
@@ -350,8 +350,8 @@ static int get_watcom_argument_string( char *buffer, int size, int *parm_number 
 {
     int parm = *parm_number;
 
-   if( parm > 3 )
-      return( TRUE );
+    if( parm > 3 )
+        return( TRUE );
     switch( size ) {
     case 1:
         sprintf( buffer, parm_reg[A_BYTE][parm] );
@@ -745,7 +745,7 @@ void FreeInfo( dir_node *dir )
                 DebugMsg( ( "freeing const(Number): %s = ", dir->sym.name ) );
             }
 #endif
-            for( i=0; i < dir->e.constinfo->count; i++ ) {
+            for( i = 0; i < dir->e.constinfo->count; i++ ) {
 #ifdef DEBUG_OUT
                 if( dir->e.constinfo->data[i].class == TC_NUM ) {
                     DebugMsg(( "%d ", dir->e.constinfo->data[i].u.value ));
@@ -953,8 +953,7 @@ static uint checkword( char **token )
 
     /* Check if there is any letters following that ending space */
     if( ptrend != NULL ) {
-        *ptrend = '\0';
-        ptrend++;
+        *ptrend++ = '\0';
         while( *ptrend != '\0' ) {
             if( ( *ptrend != ' ' ) && ( *ptrend != '\t' ) && ( *ptrend != '\n' ) ) {
                 return( ERROR );
@@ -1581,7 +1580,7 @@ int SegDef( int i )
                 break;
             case TOK_USE16:
             case TOK_USE32:
-                new->use_32 = TypeInfo[type].value;
+                new->use_32 = ( TypeInfo[type].value != 0 );
                 break;
             case TOK_IGNORE:
                 new->ignore = TRUE;
@@ -2221,7 +2220,7 @@ int Model( int i )
         wipe_space( token );
         type = token_cmp( &token, TOK_USE16, TOK_USE32 );
         if( type != ERROR ) {
-            SetUse32Def( TypeInfo[type].value );
+            SetUse32Def( TypeInfo[type].value != 0 );
             i++;
         }
     }
@@ -2450,7 +2449,7 @@ extern struct asm_sym *GetGrp( struct asm_sym *sym )
     return( NULL );
 }
 
-int SymIs32( struct asm_sym *sym )
+bool SymIs32( struct asm_sym *sym )
 /********************************/
 /* get sym's segment size */
 {
@@ -2461,7 +2460,7 @@ int SymIs32( struct asm_sym *sym )
         if( sym->state == SYM_EXTERNAL ) {
             if( ModuleInfo.mseg ) {
                 curr = (dir_node *)sym;
-                return( curr->e.extinfo->use32);
+                return( curr->e.extinfo->use32 );
             } else {
                 return( ModuleInfo.use32 );
             }
@@ -2469,7 +2468,7 @@ int SymIs32( struct asm_sym *sym )
     } else {
         return( curr->e.seginfo->use_32 );
     }
-    return( 0 );
+    return( FALSE );
 }
 
 int FixOverride( int index )
@@ -2525,6 +2524,7 @@ static enum assume_reg search_assume( struct asm_sym *sym,
     return( ASSUME_NOTHING );
 }
 
+#if 0
 int Use32Assume( enum assume_reg prefix )
 /***************************************/
 {
@@ -2548,6 +2548,7 @@ int Use32Assume( enum assume_reg prefix )
     }
     return( EMPTY );
 }
+#endif
 
 enum assume_reg GetPrefixAssume( struct asm_sym *sym, enum assume_reg prefix )
 /****************************************************************************/
@@ -2946,6 +2947,9 @@ int ArgDef( int i )
         return( ERROR );
     }
 
+    register_count = 0;
+    unused_stack_space = 0;
+
     /**/myassert( CurrProc != NULL );
 
     info = CurrProc->e.procinfo;
@@ -2953,7 +2957,6 @@ int ArgDef( int i )
     if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
         ( Options.watcom_parms_passed_by_regs || !Use32 ) ) {
         parameter_on_stack = FALSE;
-        register_count = unused_stack_space = 0;
     }
     for( i++; i < Token_Count; i++ ) {
         if( AsmBuffer[i]->class != TC_ID ) {

@@ -2307,17 +2307,16 @@ static int is_expr_const( int i )
 extern int EvalConstant( int count, int start_tok, int end_tok, bool flag_msg )
 /*****************************************************************************/
 {
-    int         i = start_tok;
+    int         i;
 //    bool        const_expr = TRUE;
 
     TokCnt = count;
     error_msg = flag_msg;
-    while( i < TokCnt && i <= end_tok ) {
+    for( i = start_tok; i < TokCnt && i <= end_tok; ++i ) {
         if( !is_expr1( i ) ) {
 //            const_expr = FALSE;
             break;
         }
-        i++;
     }
     return( TokCnt );
 }

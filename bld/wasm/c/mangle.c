@@ -45,7 +45,7 @@ enum changes {
 
 #define USCORE "_"
 
-extern int SymIs32( struct asm_sym *sym );
+extern bool SymIs32( struct asm_sym *sym );
 
 typedef char *(*mangle_func)( struct asm_sym *, char * );
 

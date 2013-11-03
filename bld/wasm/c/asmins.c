@@ -72,14 +72,14 @@ static int              segm_override_jumps( expr_list *opndx );
 
 #if defined( _STANDALONE_ )
 extern int              directive( int , asm_token );
-extern int              SymIs32( struct asm_sym *sym );
+extern bool             SymIs32( struct asm_sym *sym );
 
-extern int_8            DefineProc;     // TRUE if the definition of procedure
+extern bool             DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
 
 static void             check_assume( struct asm_sym *, enum prefix_reg );
 
-uint_8                  CheckSeg;       // if checking of opened segment is needed
+bool                    CheckSeg;       // if checking of opened segment is needed
 struct asm_sym          *Frame;         // Frame of current fixup
 struct asm_sym          *SegOverride;
 
@@ -450,7 +450,7 @@ int OperandSize( OPNDTYPE opnd )
     return( 0 );
 }
 
-int InRange( unsigned long val, unsigned bytes )
+bool InRange( unsigned long val, unsigned bytes )
 /**********************************************/
 /*
      Can 'val' be represented in 'bytes' bytes?
@@ -461,11 +461,11 @@ int InRange( unsigned long val, unsigned bytes )
 
     max = ( 1UL << ( bytes * 8 ) ) - 1;
     if( val <= max ) /* absolute value fits */
-        return( 1 );
+        return( TRUE );
     mask = ~(max >> 1);
     if( ( val & mask ) == mask ) /* just a sign extension */
-        return( 1 );
-    return( 0 );
+        return( TRUE );
+    return( FALSE );
 
 }
 
@@ -1701,7 +1701,7 @@ static int idata_fixup( expr_list *opndx )
     struct asmfixup     *fixup;
     enum fixup_types    fixup_type;
     int                 type;
-    int                 sym32;
+    bool                sym32;
 
     if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
         return( process_jumps( opndx ) );
@@ -1713,9 +1713,9 @@ static int idata_fixup( expr_list *opndx )
     if( ( opndx->sym->state == SYM_SEG )
         || ( opndx->sym->state == SYM_GRP )
         || ( opndx->instr == T_SEG ) ) {
-        sym32 = 0;
+        sym32 = FALSE;
     } else if( opndx->abs ) {
-        sym32 = 0;
+        sym32 = FALSE;
     } else {
         sym32 = SymIs32( opndx->sym );
     }
@@ -1775,11 +1775,11 @@ static int idata_fixup( expr_list *opndx )
                 if( oper_32( Code ) ) {
                     Code->mem_type = MT_DWORD;
                     Code->info.opnd_type[Opnd_Count] = OP_I32;
-                    sym32 = 1;
+                    sym32 = TRUE;
                     break;
                 }
             } else if( opndx->mem_type == MT_DWORD ) {
-                sym32 = 1;
+                sym32 = TRUE;
             }
         }
         if( ( Code->info.token == T_PUSHD ) || sym32 ) {
@@ -1846,11 +1846,11 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
     asm_token           index = EMPTY;
     asm_token           base = EMPTY;
     struct asm_sym      *sym;
-    char                base_lock = FALSE;
+    bool                base_lock = FALSE;
     enum fixup_types    fixup_type;
     int                 flag;
 #if defined( _STANDALONE_ )
-    int                 sym32;
+    bool                sym32;
 #endif
 
     Code->data[Opnd_Count] = opndx->value;
@@ -1996,7 +1996,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
 #endif
         case SYM_STACK:
             if( base != EMPTY ) {
-                if( base_lock == TRUE ) {
+                if( base_lock ) {
                     // [reg + data][reg + data] is not allowed
                     AsmError( TOO_MANY_BASE_REGISTERS );
                     return( ERROR );
@@ -3111,7 +3111,7 @@ void AsmInit( int use32, int cpu, int fpu, bool fpu_emu )
 {
     AsmBufferInit();
 
-    Code->use32 = use32;
+    Code->use32 = ( use32 != 0 );
     switch( cpu ) {
     case 0: Code->info.cpu = P_86;   break;
     case 1: Code->info.cpu = P_186;  break;

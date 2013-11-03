@@ -107,8 +107,8 @@ extern struct asm_code  *Code;
 extern struct asm_sym   *Frame;
 extern char             Parse_Pass;     // phase of parsing
 extern unsigned char    Opnd_Count;
-extern char             Modend;         // end of module is reached
-extern int_8            Use32;          // if 32-bit code is use
+extern bool             Modend;         // end of module is reached
+extern bool             Use32;          // if 32-bit code is use
 extern int              Token_Count;    // number of tokens on line
 
 extern void             AsmByte( unsigned char );

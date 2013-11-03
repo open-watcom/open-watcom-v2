@@ -47,7 +47,7 @@
 #if defined( _STANDALONE_ )
 
 extern int              ChangeCurrentLocation( bool, int_32, bool );
-extern int              SymIs32( struct asm_sym *sym );
+extern bool             SymIs32( struct asm_sym *sym );
 
 /* static globals */
 /* is this data element a field in a structure definition? */
@@ -74,7 +74,7 @@ static void little_endian( char *string, unsigned no_of_bytes )
     return;
 }
 
-static void output_float( unsigned char index, unsigned no_of_bytes, char negative )
+static void output_float( unsigned char index, unsigned no_of_bytes, bool negative )
 /**********************************************************************************/
 {
     double              double_value;
@@ -107,11 +107,8 @@ static void output_float( unsigned char index, unsigned no_of_bytes, char negati
         }
     }
 
-    count = 0;
-    while( count < no_of_bytes ) {
-        AsmDataByte( *char_ptr );
-        char_ptr++;
-        count++;
+    for( count = 0; count < no_of_bytes; ++count ) {
+        AsmDataByte( *char_ptr++ );
     }
     return;
 }
@@ -139,7 +136,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
     int                 cur_pos = start_pos;
     char                count;
     char                *char_ptr = NULL;
-    char                negative = FALSE;
+    bool                negative = FALSE;
 
 #if defined( _STANDALONE_ )
     asm_sym             *the_struct;
@@ -190,10 +187,8 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                 update_sizes( sym, first, no_of_bytes );
             }
 #else
-            count = 0;
-            while( count < no_of_bytes ) {
+            fo( count = 0; count < no_of_bytes; ++count ) {
                 AsmDataByte( 0 );
-                count++;
             }
 #endif
             break;
@@ -244,7 +239,6 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                 negative = FALSE;
                 break;
             }
-            count = 0;
             char_ptr = (char *)AsmBuffer[cur_pos]->u.bytes;
 #if defined( _STANDALONE_ )
             if( sym && Parse_Pass == PASS_1 ) {
@@ -252,9 +246,8 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             }
             if( !struct_field ) {
 #endif
-                while( count < no_of_bytes ) {
+                for( count = 0; count < no_of_bytes; ++count ) {
                     AsmDataByte( *(char_ptr++) );
-                    count++;
                 }
 #if defined( _STANDALONE_ )
             } else {
@@ -301,7 +294,6 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                     return( ERROR );
                 }
             }
-            count = 0;
             char_ptr = AsmBuffer[cur_pos]->string_ptr;
 
             /* anything bigger than a byte must be stored in little-endian
@@ -316,15 +308,12 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             }
             if( !struct_field ) {
 #endif
-                while( count < AsmBuffer[cur_pos]->u.value ) {
-                    AsmDataByte( *char_ptr );
-                    char_ptr++;
-                    count++;
+                for( count = 0; count < AsmBuffer[cur_pos]->u.value; ++count ) {
+                    AsmDataByte( *char_ptr++ );
                 }
-                while( count < no_of_bytes ) {
+                for( ; count < no_of_bytes; ++count ) {
                     AsmDataByte( 0 );
                     char_ptr++;
-                    count++;
                 }
 #if defined( _STANDALONE_ )
             } else {
@@ -657,7 +646,7 @@ static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned
   parse array with DUP operator;
 */
 {
-    int                 cur_pos = start_pos;
+    int                 cur_pos;
     int                 returned_pos = 0;
     int                 count;
 #if defined( _STANDALONE_ )
@@ -665,7 +654,7 @@ static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned
 #endif
 
     ExpandTheWorld( start_pos, FALSE, TRUE );
-    while( cur_pos + 2 < Token_Count ) {
+    for( cur_pos = start_pos; cur_pos + 2 < Token_Count; ) {
         if(( AsmBuffer[cur_pos + 1]->class == TC_RES_ID )
             && ( AsmBuffer[cur_pos + 1]->u.token == T_DUP )) {
             if( AsmBuffer[cur_pos]->class != TC_NUM ) {
@@ -696,15 +685,15 @@ static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned
                 }
                 returned_pos = cur_pos;
             }
-            while( count > 0 ) {
+            for( ; count > 0; --count ) {
                 /* in case there was a "," inside the dup */
 #if defined( _STANDALONE_ )
                 first = was_first;
 #endif
                 returned_pos = array_element( sym, struct_sym, cur_pos, no_of_bytes );
-                if( returned_pos == ERROR )
+                if( returned_pos == ERROR ) {
                     return( ERROR );
-                count--;
+                }
             }
             if( AsmBuffer[returned_pos]->class != TC_CL_BRACKET ) {
                 AsmError( BRACKET_EXPECTED );

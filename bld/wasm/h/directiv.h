@@ -205,7 +205,7 @@ typedef struct parm_list {
     struct parm_list    *next;
     char                *label;         // name of parameter
     char                *replace;       // string that replaces the label
-    char                required;       // is parm required ( T/F )
+    bool                required;       // is parm required ( T/F )
     char                *def;           // is there a default parm?
 } parm_list;
 
@@ -413,7 +413,7 @@ extern int              SetUse32Def( bool );
 
 extern dir_node         *CurrProc;      // current procedure
 extern unsigned long    LineNumber;
-extern int_8            PhaseError;
+extern bool             PhaseError;
 
 extern void             FlushCurrSeg( void );
 extern const FNAME      *AddFlist( char const *filename );

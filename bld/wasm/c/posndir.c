@@ -112,23 +112,23 @@ static void fill_in_objfile_space( uint size )
         }
     } else {
         /* output appropriate NOP type instructions to fill in the gap */
-        /**/ myassert( Use32 == 0 || Use32 == 1 );
+        int idx32 = ( Use32 ) ? 1 : 0;
 
-        while( size > NopLists[Use32][0] ) {
-            for( i = 1; i <= NopLists[Use32][0]; i++ ) {
-                AsmByte( NopLists[Use32][i] );
+        while( size > NopLists[idx32][0] ) {
+            for( i = 1; i <= NopLists[idx32][0]; i++ ) {
+                AsmByte( NopLists[idx32][i] );
             }
-            size -= NopLists[Use32][0];
+            size -= NopLists[idx32][0];
         }
         if( size == 0 ) return;
 
         i=1; /* here i is the index into the NOP table */
-        for( nop_type = NopLists[Use32][0]; nop_type > size ; nop_type-- ) {
+        for( nop_type = NopLists[idx32][0]; nop_type > size ; nop_type-- ) {
             i+=nop_type;
         }
         /* i now is the index of the 1st part of the NOP that we want */
         for( ; nop_type > 0; nop_type--,i++ ) {
-            AsmByte( NopLists[Use32][i] );
+            AsmByte( NopLists[idx32][i] );
         }
     }
 }

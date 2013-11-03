@@ -42,7 +42,6 @@
 #define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
 
 extern void             MsgPrintf( int resourceid );
-extern int              MsgGet( int resourceid, char *buffer );
 
 static pobj_filter      jumpTable[ CMD_MAX_CMD - CMD_POBJ_MIN_CMD + 1 ];
 
@@ -90,7 +89,7 @@ void ObjWriteError( void )
     exit( EXIT_FAILURE );
 }
 
-void write_record( obj_rec *objr, char kill )
+void write_record( obj_rec *objr, bool kill )
 /*******************************************/
 {
     /**/myassert( objr != NULL );

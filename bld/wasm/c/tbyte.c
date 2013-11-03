@@ -37,6 +37,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include "bool.h"
 #include "tbyte.h"
 #include "watcom.h"
 
@@ -356,7 +357,7 @@ static int TB_create(u96 *value, long exponent, TB_LD *ld)
     return 0;
 }
 
-TB_LD * strtotb(char *p, TB_LD * ld, char negative)
+TB_LD * strtotb(char *p, TB_LD * ld, bool negative)
 /**************************************************
     convert string into tbyte/long double
     set result sign
@@ -372,7 +373,8 @@ TB_LD * strtotb(char *p, TB_LD * ld, char negative)
     u96              value;
     u96              value_tmp;
 
-    while ( isspace(*p) ) p++;
+    while ( isspace(*p) )
+        p++;
     switch (*p) {
     case '-':
         sign = -1;
@@ -452,8 +454,9 @@ TB_LD * strtotb(char *p, TB_LD * ld, char negative)
         }
         while ( (unsigned int)(*p - '0') < 10u )
             exp_value = 10 * exp_value + (*p++ - '0');
-        if( exp_sign < 0 )
+        if( exp_sign < 0 ) {
             exp_value = -exp_value;
+        }
     }
     exp_value += exponent;
     TB_create(&value, exp_value, ld);

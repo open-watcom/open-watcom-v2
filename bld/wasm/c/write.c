@@ -78,14 +78,14 @@ int                     MacroLocalVarCounter = 0; // counter for temp. var names
 char                    Parse_Pass;     // phase of parsing
 char                    write_to_file;  // write if there is no error
 unsigned long           LineNumber;
-char                    Modend;         // end of module is reached
-int_8                   DefineProc;     // TRUE if the definition of procedure
+bool                    Modend;         // end of module is reached
+bool                    DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
 dir_node                *CurrProc;      // current procedure
-int_8                   Use32;          // if 32-bit code is use
+bool                    Use32;          // if 32-bit code is use
 unsigned long           PassTotal;      // Total number of ledata bytes generated
-int_8                   PhaseError;
-char                    EndDirectiveFound = FALSE;
+bool                    PhaseError;
+bool                    EndDirectiveFound = FALSE;
 
 struct asmfixup         *ModendFixup = NULL; // start address fixup
 

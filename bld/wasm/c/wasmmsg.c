@@ -183,7 +183,7 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 #endif
 
 
-int MsgInit( void )
+bool MsgInit( void )
 {
 #if !defined( USE_TEXT_MSGS )
     int         initerror;
@@ -208,10 +208,10 @@ int MsgInit( void )
     if( initerror ) {
         write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
         MsgFini();
-        return( 0 );
+        return( FALSE );
     }
 #endif
-    return( 1 );
+    return( TRUE );
 }
 
 void MsgFini( void )
@@ -229,7 +229,7 @@ void MsgFini( void )
 #define TXT_WASM_BASE   (TXT_WOMP_BASE + MSG_WOMP_LAST - MSG_WOMP_BASE)
 #define TXT_USAGE_BASE  (TXT_WASM_BASE + MSG_WASM_LAST - MSG_WASM_BASE)
 
-int MsgGet( int id, char *buffer )
+bool MsgGet( int id, char *buffer )
 {
 #if defined( USE_TEXT_MSGS )
     int index;
@@ -244,16 +244,15 @@ int MsgGet( int id, char *buffer )
         index = id - MSG_USAGE_BASE + TXT_USAGE_BASE;
     } else {
         buffer[0] = '\0';
-        return( 0 );
+        return( FALSE );
     }
     strncpy( buffer, txtmsgs[index], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
-    return( 1 );
 #else
-    if( LoadString( &hInstance, id + MsgShift, (LPSTR)buffer, MAX_MESSAGE_SIZE ) == 0 ) {
-        return( 1 );
+    if( LoadString( &hInstance, id + MsgShift, (LPSTR)buffer, MAX_MESSAGE_SIZE ) != 0 ) {
+        buffer[0] = '\0';
+        return( FALSE );
     }
-    buffer[0] = '\0';
-    return( 0 );
 #endif
+    return( TRUE );
 }

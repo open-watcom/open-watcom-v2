@@ -76,8 +76,8 @@ typedef struct file_list {
 extern void             heap( char * );
 
 extern char             write_to_file;
-extern uint_8           CheckSeg;
-extern int_8            DefineProc;             // TRUE if the definition of procedure
+extern bool             CheckSeg;
+extern bool             DefineProc;             // TRUE if the definition of procedure
                                                 // has not ended
 extern unsigned long    PassTotal;
 
@@ -104,12 +104,13 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
     char        quote = 0;
     bool        skip;
     int         c;
-    int         got_something;
+    bool        got_something;
 
     /* blow away any comments -- look for ;'s */
     /* note that ;'s are ok in quoted strings */
 
-    skip = got_something = FALSE;
+    skip = FALSE;
+    got_something = FALSE;
     for( ;; ) {
         c = getc( fp );
         /* copy the line until we hit a NULL, newline, or ; not in a quote */

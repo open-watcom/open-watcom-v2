@@ -71,8 +71,8 @@ extern void             AsmNote( int level, int msgnum, ... );
     #define MSG_WASM_BASE       500
     #define MSG_USAGE_BASE      900
 
-    extern int MsgInit( void );
-    extern int MsgGet( int, char * );
+    extern bool MsgInit( void );
+    extern bool MsgGet( int, char * );
     extern void MsgFini( void );
     extern void OpenLstFile( void );
     extern void LstMsg( const char *format, ... );

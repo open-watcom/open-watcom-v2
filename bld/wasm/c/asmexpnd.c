@@ -140,8 +140,7 @@ int ExpandProcString( int index )
     string = AsmTmpAlloc( strlen( AsmBuffer[index]->string_ptr ) + 1 );
     strcpy( string, AsmBuffer[index]->string_ptr );
     wipe_space( string );
-    word = strtok( string, " \t" );
-    while( word != NULL ) {
+    for( word = strtok( string, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
         count++;
 
         /**/myassert( CurrProc != NULL );
@@ -223,7 +222,6 @@ int ExpandProcString( int index )
             }
             break;
         }
-        word = strtok( NULL, " \t" );
     }
     if( replace == NULL ) return( NOT_ERROR );
 
@@ -232,7 +230,7 @@ int ExpandProcString( int index )
     /* now we need to build the new line string to pass through the scanner */
     buffer[0] = '\0';
     /* NOTE: if we have a TC_DIRECTIVE, token_count is always set to 1 !??! */
-    for( i=0; i < Token_Count; i++ ) {
+    for( i = 0; i < Token_Count; i++ ) {
         if( i != index ) {
             /* register parameter ? */
             if( ( label->is_register ) && ( info->is_vararg == FALSE ) ) {
@@ -266,11 +264,9 @@ int ExpandProcString( int index )
                 word = strtok( NULL, " \t" );
             }
             strcat( buffer, replace );
-            word = strtok( NULL, " \t" );
-            while( word != NULL ) {
+            for( word = strtok( NULL, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
                 strcat( buffer, " " );
                 strcat( buffer, word );
-                word = strtok( NULL, " \t" );
             }
         }
         strcat( buffer, " " );

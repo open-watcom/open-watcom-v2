@@ -44,7 +44,7 @@
 
 extern bool             GetQueueMacroHidden( void );
 
-extern  int_8           DefineProc;     // TRUE if the definition of procedure
+extern bool             DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
 extern int              MacroLocalVarCounter;
 
@@ -148,7 +148,8 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
                 continue;
             } else if( isspace( *tmp ) ) {
                 /* find 1st non blank char */
-                while( isspace( *tmp ) ) tmp++;
+                while( isspace( *tmp ) )
+                    tmp++;
                 break;
             } else if( *tmp == '"' ) {
                 /* toggle the quote flag */
@@ -338,7 +339,8 @@ static int macro_exam( int i )
             }
         }
         ptr = string;
-        while( isspace( *ptr ) ) ptr++;
+        while( isspace( *ptr ) )
+            ptr++;
         if( lineis( ptr, "for" )
          || lineis( ptr, "forc" )
          || lineis( ptr, "irp" )
@@ -347,8 +349,10 @@ static int macro_exam( int i )
          || lineis( ptr, "repeat" ) ) {
             nesting_depth++;
         }
-        while( *ptr != '\0' && !isspace( *ptr ) ) ptr++; // skip 1st token
-        while( isspace( *ptr ) ) ptr++;
+        while( *ptr != '\0' && !isspace( *ptr ) )
+            ptr++; // skip 1st token
+        while( isspace( *ptr ) )
+            ptr++;
         if( lineis( ptr, "macro" )
          || lineis( ptr, "for" )
          || lineis( ptr, "forc" )
@@ -622,8 +626,10 @@ int ExpandMacro( int tok_count)
             }
         } else {
             ptr = line;
-            while( *ptr != '\0' && !isspace( *ptr ) ) ptr++; // skip 1st token
-            while( isspace( *ptr ) ) ptr++; // skip all spaces
+            while( *ptr != '\0' && !isspace( *ptr ) )
+                ptr++; // skip 1st token
+            while( isspace( *ptr ) )
+                ptr++; // skip all spaces
             if( lineis( ptr, "macro" ) ) {
                 nesting_depth++;
             }

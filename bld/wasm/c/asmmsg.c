@@ -40,7 +40,6 @@
 #include "errout.h"
 
 extern void             MsgPrintf( int resourceid ); // don't use this
-extern int              MsgGet( int resourceid, char *buffer );
 extern int              trademark( void );
 
 void                    OpenErrFile( void );

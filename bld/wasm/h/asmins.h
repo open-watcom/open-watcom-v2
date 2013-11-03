@@ -126,7 +126,7 @@ extern void     GetInsString( asm_token, char *, int );
 
 extern int      check_override( int *i );
 extern int      OperandSize( OPNDTYPE opnd );
-extern int      InRange( unsigned long val, unsigned bytes );
+extern bool     InRange( unsigned long val, unsigned bytes );
 extern int      cpu_directive( asm_token );
 extern int      AsmParse( void );
 extern int      NextArrayElement( void );

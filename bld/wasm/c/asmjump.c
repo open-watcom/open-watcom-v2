@@ -45,7 +45,7 @@ int jmp( expr_list *opndx );
 
 #if defined( _STANDALONE_ )
 
-extern int              SymIs32( struct asm_sym *sym );
+extern bool             SymIs32( struct asm_sym *sym );
 extern void             check_assume( struct asm_sym *sym, enum prefix_reg default_reg );
 extern void             find_frame( struct asm_sym *sym );
 
