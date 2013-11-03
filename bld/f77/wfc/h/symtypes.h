@@ -31,6 +31,8 @@
 #ifndef _SYMTYPES_H_INCLUDED
 #define _SYMTYPES_H_INCLUDED
 
+#include <limits.h>
+
 // TYPES
 // =====
 
@@ -52,6 +54,14 @@ typedef enum {
  #define FT_INTEGER_TARG FT_INTEGER_2
 #else
  #define FT_INTEGER_TARG FT_INTEGER
+#endif
+
+#ifndef LONG_IS_64BITS
+#define INTEGER_MAX LONG_MAX
+#define INTEGER_MIN LONG_MIN
+#else
+#define INTEGER_MAX INT_MAX
+#define INTEGER_MIN INT_MIN
 #endif
 
 #define _IsTypeLogical( typ )   ((typ >= FT_LOGICAL_1) && (typ <= FT_LOGICAL))

@@ -39,8 +39,6 @@
 #include "ferror.h"
 #include "utility.h"
 
-#include <limits.h>
-
 extern  void            AddCSNode( byte );
 extern  void            DelCSNode( void );
 extern  void            CSNoMore( void );
@@ -130,7 +128,7 @@ static intstar4 MinCaseValue( TYPE typ )
 // Get a value for case expression.
 
     if( _IsTypeInteger( typ ) ) {
-        return( LONG_MIN );
+        return( INTEGER_MIN );
     } else { // if( typ = FT_CHAR ) {
         return( 0 );
     }
@@ -142,7 +140,7 @@ static intstar4 MaxCaseValue( TYPE typ )
 // Get a value for case expression.
 
     if( _IsTypeInteger( typ ) ) {
-        return( LONG_MAX );
+        return( INTEGER_MAX );
     } else { // if( typ = FT_CHAR ) {
         return( 255 );
     }
@@ -167,8 +165,8 @@ static void CaseHandler( void )
     label_id    label;
     case_entry  *link;
     case_entry  *kase;
-    intstar4    low;
-    intstar4    high;
+    intstar4    low = 0;
+    intstar4    high = 0;
     bool        case_ok;
     bool        multi_case;
 

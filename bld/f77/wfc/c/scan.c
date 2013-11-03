@@ -144,6 +144,9 @@ void    Scan( void ) {
 
     if( !(LexToken.flags & TK_LAST) ) {
         wasextch = 0;
+        len = 0;
+        tab = 0;
+        class = 0;
         old_state = SNS;
         LexToken.start = LexToken.stop;
         LexToken.col = Column;

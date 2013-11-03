@@ -101,7 +101,6 @@ void    InitObj( void ) {
 
     char        *fn;
     char        *tmp;
-    int         len;
     int         idx;
 
     ObjCode = NULL; // in case FMemAlloc() fails
@@ -112,7 +111,6 @@ void    InitObj( void ) {
     PageFile = NULL;
     if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) {
         fn = PageFileBuff;
-        len = 0;
         tmp = getenv( "TMP" );
         if( tmp != NULL && *tmp != NULLCHAR ) {
             GetPathElement( tmp, &fn );
@@ -258,7 +256,7 @@ void    AlignEven( void ) {
 
 // Align ObjPtr on an even boundary.
 
-    if( (int)ObjPtr & 0x0001 ) {
+    if( (int)(pointer_int)ObjPtr & 0x0001 ) {
         OutByte( 0 );
     }
 }

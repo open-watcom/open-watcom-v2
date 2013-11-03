@@ -78,6 +78,8 @@ static  void    ErrHandler( char *err_type, int error, va_list args ) {
     save_list = SetLst( TRUE );
     was_listed = WasStmtListed();
     caret = CarrotType( error );
+    column = 0;
+    contline = 0;
     if( (SrcRecNum != 0) && // consider error opening source file
         !(ProgSw & PS_SYMTAB_PROCESS) &&
         !(ProgSw & PS_END_OF_SUBPROG) ) {
@@ -85,8 +87,6 @@ static  void    ErrHandler( char *err_type, int error, va_list args ) {
             column = LexToken.col + 1;
             contline = LexToken.line;
         } else {
-            column = 0;
-            contline = 0;
             // If the message does not require a caret, then it is
             // possible to process an error when "CITNode" is NULL or
             // the "oprpos/opnpos" fields are meaningless.
@@ -121,8 +121,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args ) {
             ( ProgSw & PS_END_OF_SUBPROG ) ) {
             MsgFormat( "%s1: ", buffer, CurrFile->name );
         } else {
-            MsgFormat( "%s1(%d2): ", buffer, CurrFile->name,
-                       SrcRecNum + contline );
+            MsgFormat( "%s1(%d2): ", buffer, CurrFile->name, SrcRecNum + contline );
         }
         JustErr( buffer );
     }

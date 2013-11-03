@@ -116,15 +116,18 @@ void            FCAllocate( void ) {
     alloc_flags = GetU16();
     if( alloc_flags & ALLOC_NONE ) {
         expr_loc = CGInteger( 0, TY_POINTER );
+        expr_stat = NULL;
     } else {
         FCodeSequence();
         if( alloc_flags & ALLOC_LOC ) {
             expr_loc = XPopValue( TY_INT_4 );
+            expr_stat = NULL;
             if( alloc_flags & ALLOC_STAT ) {
                 FCodeSequence();
                 expr_stat = XPop();
             }
         } else {
+            expr_loc = NULL;
             expr_stat = XPop();
         }
     }

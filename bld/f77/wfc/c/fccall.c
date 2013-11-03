@@ -353,9 +353,7 @@ static  void    DefineEntries( void ) {
             if( ep->id->ns.u1.s.typ == FT_CHAR ) {
                 CGReturn( NULL, TY_INTEGER );
             } else {
-                CGReturn( CGUnary( O_POINTS,
-                                   CGFEName( ReturnValue, sp_type ),
-                                   sp_type ), sp_type );
+                CGReturn( CGUnary( O_POINTS, CGFEName( ReturnValue, sp_type ), sp_type ), sp_type );
             }
         }
         ep_count++;
@@ -544,6 +542,7 @@ void    FCCall( void ) {
     bool        arg_proc_far16;
 #endif
 
+    scb = NULL;
     sp = GetPtr();
     sp_type = SPType( sp );
     aux = AuxLookup( sp );

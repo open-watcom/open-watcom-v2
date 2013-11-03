@@ -154,14 +154,12 @@ static  sym_id  *Strut( sym_id *p_field, char *name, uint len ) {
         field = *p_field;
         if( field == NULL ) return( p_field );
         if( field->fd.typ == FT_UNION ) {
-            map = field->fd.xt.sym_record;
-            for(;;) {
-                if( map == NULL ) break;
+	    q_field = NULL;
+            for( map = field->fd.xt.sym_record; map != NULL; map = map->sd.link ) {
                 q_field = Strut( &map->sd.fl.sym_fields, name, len );
                 if( *q_field != NULL ) {
                     FieldErr( SP_DUPLICATE_FIELD, *q_field );
                 }
-                map = map->sd.link;
             }
             if( ( SgmtSw & SG_DEFINING_MAP ) && ( field->fd.link == NULL ) ) {
                 return( q_field );

@@ -460,8 +460,8 @@ static  void    FReal( byte format_code ) {
         R_FError( FM_MODIFIER );
         return;
     }
+    fmt_exp = 0;
     if( ( format_code == E_FORMAT ) || ( format_code == G_FORMAT ) ) {
-        fmt_exp = 0;
         if( isalpha( *Fmt_charptr ) ) {
             if( ( format_code == E_FORMAT ) || R_FR_Char( 'e' ) ) {
                 if( format_code == E_FORMAT ) {

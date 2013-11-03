@@ -80,6 +80,7 @@ static  intstar4        CheckSubscr( act_eq_entry *eqv_entry ) {
 
     sym = eqv_entry->name_equived;
     dims_no = 0;
+    dims = NULL;
     if( sym->ns.flags & SY_SUBSCRIPTED ) {
         dims = sym->ns.si.va.u.dim_ext;
         dims_no = _DimCount( dims->dim_flags );

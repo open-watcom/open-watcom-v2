@@ -185,9 +185,9 @@ void CpArithIf( void )
 {
 // Process an arithmetic IF.
 
-    sym_id      lt_label;
-    sym_id      eq_label;
-    sym_id      gt_label;
+    sym_id      lt_label = NULL;
+    sym_id      eq_label = NULL;
+    sym_id      gt_label = NULL;
     itnode      *cit;
 
     Remember.transfer = TRUE;

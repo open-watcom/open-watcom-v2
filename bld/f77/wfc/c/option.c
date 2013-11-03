@@ -702,6 +702,7 @@ void    PrtOptions( void ) {
     LFSkip();
     PrtLst( "Options:" );
     buffer[ 0 ] = ' ';
+    number = 0;
     optn = CompOptns;
     for( optn = CompOptns; optn->option != NULL; optn++ ) {
         if( optn->flags & VAL ) {

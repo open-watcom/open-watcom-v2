@@ -81,7 +81,7 @@ typedef struct aux_entry {
     pass_by             *arg_info;
     byte                sym_len;
     char                sym_name[1];
-};
+} aux_entry;
 
 typedef struct default_lib {
     struct default_lib  *link;

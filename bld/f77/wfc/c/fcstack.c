@@ -483,10 +483,10 @@ void    FCPop( void ) {
     typ_info = GetU16();
     dst_typ = GetType1( typ_info );
     src_typ = GetType2( typ_info );
-    if( ( dst_typ == TY_COMPLEX ) || ( dst_typ == TY_DCOMPLEX )
-        || ( dst_typ == TY_XCOMPLEX ) ) {
+    if( ( dst_typ == TY_COMPLEX ) || ( dst_typ == TY_DCOMPLEX ) || ( dst_typ == TY_XCOMPLEX ) ) {
         CmplxAssign( sym, dst_typ, src_typ );
     } else {
+        dst = NULL;
         if( (sym->ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
             // it's a statement function
             if( !(OZOpts & OZOPT_O_INLINE) ) {
@@ -517,18 +517,16 @@ void    FCPop( void ) {
                 } else {
                     dst_typ = fd->fd.xt.record->cg_typ;
                 }
-                XPush( CGAssign( dst, CGUnary( O_POINTS, XPop(), dst_typ ),
-                                 dst_typ ) );
+                XPush( CGAssign( dst, CGUnary( O_POINTS, XPop(), dst_typ ), dst_typ ) );
                 return;
             }
         }
-        if( (src_typ == TY_COMPLEX) || (src_typ == TY_DCOMPLEX)
-            || (src_typ == TY_XCOMPLEX) ) {
+        if( (src_typ == TY_COMPLEX) || (src_typ == TY_DCOMPLEX) || (src_typ == TY_XCOMPLEX) ) {
             Cmplx2Scalar();
             src_typ = CmplxBaseType( src_typ );
         }
-        if( ((sym->ns.flags & SY_CLASS) == SY_SUBPROGRAM) &&
-            (OZOpts & OZOPT_O_INLINE ) ) return;
+        if( ((sym->ns.flags & SY_CLASS) == SY_SUBPROGRAM) && (OZOpts & OZOPT_O_INLINE ) )
+            return;
         XPush( CGAssign( dst, XPopValue( src_typ ), dst_typ ) );
     }
 }

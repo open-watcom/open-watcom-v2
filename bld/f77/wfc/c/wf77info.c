@@ -1226,7 +1226,7 @@ extern char *FEExtName( cg_sym_handle sym, int request ) {
     case EXTN_PATTERN:
         return( GetNamePattern( (sym_id)sym ) );
     case EXTN_PRMSIZE:
-        return( (char *)GetParmsSize( (sym_id)sym ) );
+        return( (char *)(pointer_int)GetParmsSize( (sym_id)sym ) );
     default:
         return( NULL );
     }

@@ -435,6 +435,8 @@ void    FCSFCall( void ) {
 
     sf = GetPtr();
     arg_list = NULL;
+    value = NULL;
+    sf_type = 0;
     for(;;) {
         sf_arg = GetPtr();
         if( sf_arg == NULL ) break;

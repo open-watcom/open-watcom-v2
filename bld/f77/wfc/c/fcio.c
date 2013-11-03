@@ -176,7 +176,7 @@ static  void    StructIO( struct field *fd ) {
 //============================================
 
     sym_id      map;
-    sym_id      big_map;
+    sym_id      big_map = NULL;
     unsigned_32 size;
 
     while( fd != NULL ) {

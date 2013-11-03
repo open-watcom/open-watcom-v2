@@ -121,7 +121,7 @@ static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size ) {
 static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ) {
 /******************************************************/
     static char                 zeros[] = { 0, 0 };
-    dw_sym_handle               sym;
+//    dw_sym_handle               sym;
     uint                        section;
     va_list                     args;
     unsigned_32                 u32_data;
@@ -148,7 +148,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ) {
         CLIWrite( sect, &Sections[ section ].cur_offset, sizeof( uint_32 ) );
         break;
     case DW_W_STATIC:
-        sym = va_arg( args, dw_sym_handle );
+//        sym = va_arg( args, dw_sym_handle );
         u32_data = 0;
         CLIWrite( sect, &u32_data, sizeof( uint_32 ) );
         CLIWrite( sect, zeros, sizeof( zeros ) );
@@ -179,23 +179,24 @@ static void CLISeek( dw_sectnum sect, long offs, uint type ) {
 
     section_data                *cur_sec;
     long                        temp;
-    int                         typ;
+//    int                         typ;
     long                        new_off;
 
+    new_off = 0;
     cur_sec = &Sections[sect];
 
     switch( type ) {
     case DW_SEEK_CUR:
         new_off = cur_sec->cur_offset + offs;
-        typ = SEEK_CUR;
+//        typ = SEEK_CUR;
         break;
     case DW_SEEK_SET:
         new_off = offs;
-        typ = SEEK_SET;
+//        typ = SEEK_SET;
         break;
     case DW_SEEK_END:
         new_off = Sections[ sect ].max_offset - offs;
-        typ = SEEK_END;
+//        typ = SEEK_END;
         break;
     }
     if ( cur_sec->sec_type == MEM_SECTION ) {

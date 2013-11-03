@@ -44,4 +44,4 @@ typedef enum { // must map onto error message table in POSERR.C
     IO_EOF,
     IO_EOR,
     IO_SYS_ERROR
-};
+} io_status;

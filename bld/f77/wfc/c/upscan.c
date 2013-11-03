@@ -1351,7 +1351,7 @@ static  void    InlineCnvt( void ) {
 }
 
 
-static  const void (* const __FAR RtnTable[])(void) = {
+static  void (* const __FAR RtnTable[])(void) = {
     #define pick(id,proc) proc,
     #include "rtntable.h"
     #undef pick
@@ -1377,7 +1377,7 @@ void    UpScan( void ) {
             break;
         index = OprIndex[ CITNode->link->opr ];
         index += OprIndex[ CITNode->opr ] * OPR_SEQ_MAT_COLS;
-        RtnTable[ OprSeqMat[ index ] ]();
+        RtnTable[OprSeqMat[index]]();
     }
     EndExpr();
 }

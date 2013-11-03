@@ -34,8 +34,6 @@
 // GDO       : code generation for DO-loops
 //
 
-#include <limits.h>
-
 #include "ftnstd.h"
 #include "fcodes.h"
 #include "global.h"
@@ -114,11 +112,11 @@ static bool NeedIncrement( intstar4 limit, intstar4 incr, TYPE do_type ) {
         break;
     case FT_INTEGER:
         if( incr > 0 ) {
-            if( limit > LONG_MAX - incr ) {
+            if( limit > INTEGER_MAX - incr ) {
                 return( TRUE );
             }
         } else {
-            if( limit < LONG_MIN - incr ) {
+            if( limit < INTEGER_MIN - incr ) {
                 return( TRUE );
             }
         }

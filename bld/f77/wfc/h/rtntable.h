@@ -30,27 +30,27 @@
 
 
 //    id     proc
-pick( BB,  &BadBracket   )  // for odd parenthesis sequences
-pick( BC,  &BadColonOpn  )  // colon operator expects integer operands
-pick( BE,  &BadEqual     )  // illegal quantity on left side of =
-pick( BR,  &BadRelOpn    )  // relational operator has logical operand
-pick( BS,  &BadSequence  )  // bad sequence of operators
-pick( CA,  &Call         )  // detach ss list, substr list, call subprog
-pick( EE,  &EndExpr      )  // opr sequence is start,terminate
-pick( GC,  &GrabColon    )  // substring indexing expression using :
-pick( GO,  &Generate     )  // go and generate some code
-pick( PA,  &PrepArg      )  // prepare item in function or subscript list
-pick( RP,  &RemoveParen  )  // remove parenthesis
-pick( FC,  &FiniCat      )  // finish concatenation
-pick( MO,  &Missing      )  // missing operator
-pick( BT,  &BackTrack    )  // scan backwards
-pick( CB,  &CatBack      )  // maybe scan backwards on = // sequence
-pick( CR,  &CatAxeParens )  // remove parenthesis set on ( // sequence
-pick( CO,  &CatOpn       )  // concatenation operand
-pick( CP,  &CatParen     )  // check if ) is for a substring operand
-pick( EV,  &ProcOpn      )  // process operand and then scan backwards
-pick( HC,  &HighColon    )  // check for DSOPN_PHI on : ) sequence
-pick( LC,  &LowColon     )  // handle [ : and called from GrabColon
-pick( PC,  &ParenCat     )  // check if ) is for a substring operand
-pick( PE,  &ParenExpr    )  // done evaluating parenthesized expression
-pick( KO,  &ChkCatOpn    )  // check if concatenation operand
+pick( BB,  BadBracket   )  // for odd parenthesis sequences
+pick( BC,  BadColonOpn  )  // colon operator expects integer operands
+pick( BE,  BadEqual     )  // illegal quantity on left side of =
+pick( BR,  BadRelOpn    )  // relational operator has logical operand
+pick( BS,  BadSequence  )  // bad sequence of operators
+pick( CA,  Call         )  // detach ss list, substr list, call subprog
+pick( EE,  EndExpr      )  // opr sequence is start,terminate
+pick( GC,  GrabColon    )  // substring indexing expression using :
+pick( GO,  Generate     )  // go and generate some code
+pick( PA,  PrepArg      )  // prepare item in function or subscript list
+pick( RP,  RemoveParen  )  // remove parenthesis
+pick( FC,  FiniCat      )  // finish concatenation
+pick( MO,  Missing      )  // missing operator
+pick( BT,  BackTrack    )  // scan backwards
+pick( CB,  CatBack      )  // maybe scan backwards on = // sequence
+pick( CR,  CatAxeParens )  // remove parenthesis set on ( // sequence
+pick( CO,  CatOpn       )  // concatenation operand
+pick( CP,  CatParen     )  // check if ) is for a substring operand
+pick( EV,  ProcOpn      )  // process operand and then scan backwards
+pick( HC,  HighColon    )  // check for DSOPN_PHI on : ) sequence
+pick( LC,  LowColon     )  // handle [ : and called from GrabColon
+pick( PC,  ParenCat     )  // check if ) is for a substring operand
+pick( PE,  ParenExpr    )  // done evaluating parenthesized expression
+pick( KO,  ChkCatOpn    )  // check if concatenation operand

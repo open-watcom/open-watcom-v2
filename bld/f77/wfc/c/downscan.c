@@ -48,7 +48,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 
 extern  void            MoveDown( void );
 extern  void            DSName( void );
@@ -93,7 +92,7 @@ static  void    IntC( void ) {
             // overflow for I - 2147483648
             if( !(((BkLink == NULL) || (BkLink->opn.ds == DSOPN_PHI)) &&
                   (CITNode->opr == OPR_MIN) &&
-                  (CITNode->value.intstar4 == LONG_MIN)) ) {
+                  (CITNode->value.intstar4 == INTEGER_MIN)) ) {
                 Warning( KO_IOVERFLOW );
             }
         }
@@ -114,7 +113,7 @@ static  void    IntC( void ) {
             // overflow for I - 2147483648
             if( !(((BkLink == NULL) || (BkLink->opn.ds == DSOPN_PHI)) &&
                   (CITNode->opr == OPR_MIN) &&
-                  (CITNode->value.intstar4 == LONG_MIN)) ) {
+                  (CITNode->value.intstar4 == INTEGER_MIN)) ) {
                 Warning( KO_IOVERFLOW );
             }
         }

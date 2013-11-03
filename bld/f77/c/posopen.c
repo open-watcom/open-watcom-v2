@@ -50,7 +50,9 @@
 #endif
 
 /* Forward declarations */
+#if defined( __RT__ )
 static  void    ChkRedirection( b_file *fp );
+#endif
 
 static  int     IOBufferSize = { IO_BUFFER };
 
@@ -153,10 +155,9 @@ b_file  *Openf( char *f, f_attrs attrs ) {
 // Open a file.
     int         retc;
     long int    fpos;
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     int         share;
 
-    fpos = 0;
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     share = SH_COMPAT;
     if( attrs & S_DENYRW ) {
         share = SH_DENYRW;
@@ -167,8 +168,6 @@ b_file  *Openf( char *f, f_attrs attrs ) {
     } else if( attrs & S_DENYNO ) {
         share = SH_DENYNO;
     }
-#else
-    share = 0;
 #endif
     if( attrs & WRONLY ) {
         attrs |= WRITE_ONLY;
@@ -186,6 +185,7 @@ b_file  *Openf( char *f, f_attrs attrs ) {
         FSetSysErr( NULL );
         return( NULL );
     }
+    fpos = 0;
     if( attrs & APPEND ) {
         fpos = lseek( retc, 0, SEEK_END );
         if( fpos < 0 ) {

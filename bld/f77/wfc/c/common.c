@@ -65,6 +65,7 @@ void    CpCommon(void) {
     sym_id      last;
     com_eq      *com_ext;
 
+    sym = NULL;
     if( RecNOpn() ) {
         AdvanceITPtr();
         if( !RecDiv() ) {

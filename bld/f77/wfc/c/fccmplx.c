@@ -264,9 +264,9 @@ void    FCCmplxFlip( void ) {
 // Flip 2 complex operands.
 
     cg_name     rp_1;
-    cg_name     ip_1;
+    cg_name     ip_1 = NULL;
     cg_name     rp_2;
-    cg_name     ip_2;
+    cg_name     ip_2 = NULL;
 
     rp_1 = XPop();
     if( !TypePointer( CGType( rp_1 ) ) ) {
@@ -293,7 +293,7 @@ void    FCCXFlip( void ) {
 // Flip complex and scalar operands.
 
     cg_name     rp;
-    cg_name     ip;
+    cg_name     ip = NULL;
     cg_name     scalar;
 
     rp = XPop();
@@ -315,7 +315,7 @@ void    FCXCFlip( void ) {
 // Flip scalar and complex operands.
 
     cg_name     rp;
-    cg_name     ip;
+    cg_name     ip = NULL;
     cg_name     scalar;
 
     scalar = XPop();
@@ -787,6 +787,7 @@ void            CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ ) {
     temp_handle ti;
 
     flags = sym->ns.flags;
+    dest = NULL;
     if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
         // assigning to statement function
         if( !(OZOpts & OZOPT_O_INLINE) ) {

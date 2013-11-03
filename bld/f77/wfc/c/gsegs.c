@@ -99,8 +99,7 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init ) {
 
 // Allocate space in global data area and return the global segment.
 
-    segment_id  seg;
-    bool        first_seg;
+    segment_id  seg_id;
 
     if( ProgSw & PS_ERROR ) return( SEG_FREE );
     if( ( CurrGSeg != NULL ) && ( CurrGSeg->size + g_size <= MaxSegSize ) ) {
@@ -118,36 +117,27 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init ) {
         }
 #endif
     }
-    if( g_size <= MaxSegSize ) {
-
-        // object smaller than a segment but won't
-        // fit in current segment
-
-        NewGlobalSeg();
+    NewGlobalSeg();
+    seg_id = CurrGSeg->segment;
+    CurrGSeg->initialized = init;
+    if( g_size < MaxSegSize ) {
+        // object smaller than a segment chunk
         CurrGSeg->size = g_size;
-        CurrGSeg->initialized = init;
-        return( CurrGSeg->segment );
+    } else {
+        CurrGSeg->size = MaxSegSize;
     }
-
-    // object larger than a segment
-
-    first_seg = TRUE;
-    for(;;) {
+    g_size -= CurrGSeg->size;
+    while( g_size > MaxSegSize ) {
         NewGlobalSeg();
-        if( first_seg ) {
-            seg = CurrGSeg->segment;
-            first_seg = FALSE;
-        }
         CurrGSeg->size = MaxSegSize;
         CurrGSeg->initialized = init;
         g_size -= MaxSegSize;
-        if( g_size <= MaxSegSize ) break;
     }
     if( g_size != 0 ) {
         NewGlobalSeg();
         CurrGSeg->size = g_size;
         CurrGSeg->initialized = init;
     }
-    return( seg );
+    return( seg_id );
 }
 

@@ -88,7 +88,7 @@
                 parm [dx ax] [cx bx] value [al];
  #endif
  extern  bool   ChkI4Mul(intstar4 __far *arg1,intstar4 arg2);
-#elif defined( _M_IX86 )
+#elif defined( __WATCOMC__ ) && defined( _M_IX86 )
  extern  bool    __Add( intstar4 *arg1, intstar4 *arg2 );
  extern  bool    __Sub( intstar4 *arg1, intstar4 *arg2 );
  #pragma aux    __Add = \
@@ -111,7 +111,7 @@
                 "pop    ebx"       \
                 "seto   al"        \
                 parm [eax] [edx] value [al];
-#elif defined( _M_X64 )
+#else
 bool    __Add( intstar4 *arg1, intstar4 *arg2 )
 {
     intstar4  arg1v = *arg1;
@@ -143,13 +143,9 @@ bool    __Mul( intstar4 *arg1, intstar4 *arg2 )
     result >>= 31;
     return( result != 0 && result != -1 );
 #else
-    #error compiler doesn't support 64-bit integral type
+    #error "compiler doesn't support 64-bit integral type"
 #endif
 }
-#else
- extern  bool    __Add( intstar4 *arg1, intstar4 *arg2 );
- extern  bool    __Sub( intstar4 *arg1, intstar4 *arg2 );
- extern  bool    __Mul( intstar4 *arg1, intstar4 *arg2 );
 #endif
 
 bool    AddIOFlo( intstar4 *arg1, intstar4 *arg2 ) {

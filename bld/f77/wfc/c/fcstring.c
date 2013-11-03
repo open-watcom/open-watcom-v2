@@ -264,13 +264,13 @@ void    FCSubString( void ) {
     typ_info = GetU16();
     src = XPop();
     first_1 = XPopValue( GetType1( typ_info ) );
+    len = 0;
     if( char_var == NULL ) { // i.e. chr(i:i)
         len = CGInteger( GetInt(), TY_INTEGER );
         if( Options & OPT_BOUNDS ) {
             CloneCGName( first_1, &first_1, &last );
             last = CGBinary( O_PLUS, last, len, TY_INTEGER );
-            last = CGBinary( O_MINUS, last, CGInteger( 1, TY_INTEGER ),
-                             TY_INTEGER );
+            last = CGBinary( O_MINUS, last, CGInteger( 1, TY_INTEGER ), TY_INTEGER );
         }
     } else {
         last = XPop();
@@ -297,22 +297,18 @@ void    FCSubString( void ) {
         CGAddParm( call, last, TY_INT_4 );
         CGAddParm( call, first_1, TY_INT_4 );
         CGAddParm( call, src, TY_LOCAL_POINTER );
-        XPush( CGBinary( O_COMMA, CGCall( call ), CGFEName( dest, TY_CHAR ),
-                         TY_LOCAL_POINTER ) );
+        XPush( CGBinary( O_COMMA, CGCall( call ), CGFEName( dest, TY_CHAR ), TY_LOCAL_POINTER ) );
     } else {
         ptr = CGBinary( O_PLUS, SCBPointer( src ),
-                        CGBinary( O_MINUS, first_1, CGInteger( 1, TY_INTEGER ),
-                                  TY_INTEGER ),
+                        CGBinary( O_MINUS, first_1, CGInteger( 1, TY_INTEGER ), TY_INTEGER ),
                         TY_GLOBAL_POINTER );
-        CGTrash( CGAssign( SCBLenAddr( CGFEName( dest, TY_CHAR ) ),
-                           len, TY_INTEGER ) );
+        CGTrash( CGAssign( SCBLenAddr( CGFEName( dest, TY_CHAR ) ), len, TY_INTEGER ) );
         // Assumption is that the pointer in the SCB is the first field in
         // the SCB so that when we push the cg_name returned by CGAssign()
         // it is a pointer to the SCB.  We must leave the assignment of the
         // pointer into the SCB in the tree so that the aliasing information
         // is not lost.
-        XPush( CGLVAssign( SCBPtrAddr( CGFEName( dest, TY_CHAR ) ),
-                           ptr, TY_GLOBAL_POINTER ) );
+        XPush( CGLVAssign( SCBPtrAddr( CGFEName( dest, TY_CHAR ) ), ptr, TY_GLOBAL_POINTER ) );
 // Don't do it the following way:
 //        CGTrash( CGAssign( SCBPtrAddr( CGFEName( dest, TY_CHAR ) ),
 //                           ptr, TY_GLOBAL_POINTER ) );

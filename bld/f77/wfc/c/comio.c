@@ -94,6 +94,9 @@ void ComRead( void )
     stmt_type = STMT_COMMENT;
     cont_type = 0;
     cursor = 0;
+    column = FIRST_COL - 1;
+    stmt_no = 0;
+    stno_found = FALSE;
     done_scan = FALSE;
     for(;;) {
         ReadSrc();
