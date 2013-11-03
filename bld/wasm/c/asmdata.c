@@ -187,7 +187,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                 update_sizes( sym, first, no_of_bytes );
             }
 #else
-            fo( count = 0; count < no_of_bytes; ++count ) {
+            for( count = 0; count < no_of_bytes; ++count ) {
                 AsmDataByte( 0 );
             }
 #endif
