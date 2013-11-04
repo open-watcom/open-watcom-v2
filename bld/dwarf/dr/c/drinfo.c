@@ -536,7 +536,7 @@ static bool CheckAFunc( dr_handle abbrev, dr_handle mod, mod_scan_info *x,
 
     mod = x->handle;
     ret = d->wlk( mod, d->d, x->context );
-    return( ret );
+    return( ret != 0 );
 }
 
 static unsigned_16 const BlockTags[] = {

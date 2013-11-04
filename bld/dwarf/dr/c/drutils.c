@@ -924,7 +924,7 @@ bool DWRWalkSiblings( dr_handle           curr,
             DWRSkipAttribs( abbrev, &curr );
         }
     }
-    return( cont );
+    return( cont != 0 );
 }
 
 int DWRWalkScope( dr_handle mod,
