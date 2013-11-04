@@ -85,6 +85,15 @@ typedef enum {
 #define FIX_SET_FRAME(x)  ((fix_type)(x) << FIX_FRAME_SHIFT)
 #define FIX_SET_TARGET(x) ((fix_type)(x) << FIX_TARGET_SHIFT)
 
+typedef union fix_data {
+    segdata         *sdata;
+    group_entry     *group;
+    symbol          *sym;
+    segment         abs;
+    void            *ptr;
+    unsigned        val;
+} fix_data;
+
 /* This ordering is roughly the same as intel's - don't mess it up without
    a good reason (and make sure the code that depends on it is fixed!) */
 
@@ -100,17 +109,22 @@ typedef enum {
 
 #define FRAME_HAS_DATA( fix ) ((fix) < FIX_FRAME_LOC)
 
+typedef enum {
+    FIX_TARGET_SEG,      /* segdata */
+    FIX_TARGET_GRP,      /* group_entry */
+    FIX_TARGET_EXT,      /* symbol * */
+    FIX_TARGET_ABS,      /* absolute value */
+} target_type;
+
 typedef struct {
-    union {
-        segdata *       sdata;
-        group_entry *   group;
-        symbol *        sym;
-        segment         abs;
-        void *          ptr;
-        unsigned        val;
-    } u;
+    fix_data    u;
     frame_type  type;
 } frame_spec;
+
+typedef struct {
+    fix_data    u;
+    target_type type;
+} target_spec;
 
 // functions external to obj2supp
 
@@ -118,5 +132,5 @@ extern unsigned IncExecRelocs( void * );
 extern unsigned IncSaveRelocs( void * );
 extern unsigned RelocMarkSyms( void * );
 extern void     RelocStartMod( void );
-extern void     StoreFixup(offset, fix_type, frame_spec *, frame_spec *,offset);
+extern void     StoreFixup(offset, fix_type, frame_spec *, target_spec *,offset);
 extern void     ResetObj2Supp( void );

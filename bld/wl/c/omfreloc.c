@@ -62,7 +62,7 @@ static bakpat_list      *BakPats;
 #define MAX_THREADS 4
 
 static frame_spec       FrameThreads[MAX_THREADS];
-static frame_spec       TargThreads[MAX_THREADS];
+static target_spec      TargThreads[MAX_THREADS];
 
 static fix_type RelocTypeMap[] = {
     FIX_OFFSET_8,       // LOC_OFFSET_LO
@@ -75,7 +75,7 @@ static fix_type RelocTypeMap[] = {
     FIX_OFFSET_16 | FIX_LOADER_RES      // modified loader resolved off_16
 };
 
-static void GetTarget( unsigned loc, frame_spec *targ );
+static void GetTarget( unsigned loc, target_spec *targ );
 static void GetFrame( unsigned frame, frame_spec *refframe );
 
 void ResetOMFReloc( void )
@@ -95,7 +95,7 @@ void DoRelocs( void )
     unsigned    loc;
     offset      addend;
     frame_spec  fthread;
-    frame_spec  tthread;
+    target_spec tthread;
 
     if( ObjFormat & FMT_IGNORE_FIXUPP )
         return;
@@ -123,8 +123,7 @@ void DoRelocs( void )
                     omftype = LOC_BASE_OFFSET_32;
                     break;
                 }
-            } else if( omftype == LOC_MS_LINK_OFFSET
-                        && !(ObjFormat & FMT_32BIT_REC) ) {
+            } else if( omftype == LOC_MS_LINK_OFFSET && !(ObjFormat & FMT_32BIT_REC) ) {
                 omftype = LOC_BASE_OFFSET_32 + 1; // index of special table.
             }
             fixtype = RelocTypeMap[omftype];
@@ -173,11 +172,11 @@ static void GetFrame( unsigned frame, frame_spec *refframe )
     if( frame < FRAME_LOC ) {
         index = GetIdx();
     }
-    refframe->type = frame;
     switch( frame ) {
     case FRAME_SEG:
         seg = (segnode *) FindNode( SegNodes, index );
         refframe->u.sdata = seg->entry;
+        refframe->type = FIX_FRAME_SEG;
         break;
     case FRAME_GRP:
         group = (grpnode *) FindNode( GrpNodes, index );
@@ -185,6 +184,7 @@ static void GetFrame( unsigned frame, frame_spec *refframe )
             refframe->type = FIX_FRAME_FLAT;
         } else {
             refframe->u.group = group->entry;
+            refframe->type = FIX_FRAME_GRP;
         }
         break;
     case FRAME_EXT:
@@ -193,44 +193,47 @@ static void GetFrame( unsigned frame, frame_spec *refframe )
             refframe->type = FIX_FRAME_TARG;
         } else {
             refframe->u.sym = ext->entry;
+            refframe->type = FIX_FRAME_EXT;
         }
         break;
     case FRAME_TARG:
+        refframe->type = FIX_FRAME_TARG;
+        break;
     case FRAME_LOC:
+        refframe->type = FIX_FRAME_LOC;
         break;
     default:
         BadObject();
     }
 }
 
-static void GetTarget( unsigned loc, frame_spec *targ )
-/*****************************************************/
+static void GetTarget( unsigned loc, target_spec *targ )
+/******************************************************/
 {
     extnode             *ext;
     grpnode             *group;
     segnode             *seg;
 
-    targ->type = loc & 3;
-    switch( loc ) {
+    switch( loc & 3 ) {
     case TARGET_SEGWD:
-    case TARGET_SEG:
         seg = (segnode *) FindNode( SegNodes, GetIdx() );
         targ->u.sdata = seg->entry;
+        targ->type = FIX_TARGET_SEG;
         break;
     case TARGET_GRPWD:
-    case TARGET_GRP:
         group = (grpnode *) FindNode( GrpNodes, GetIdx() );
         targ->u.group = group->entry;
+        targ->type = FIX_TARGET_GRP;
         break;
     case TARGET_EXTWD:
-    case TARGET_EXT:
         ext = (extnode *) FindNode( ExtNodes, GetIdx() );
         targ->u.sym = ext->entry;
+        targ->type = FIX_TARGET_EXT;
         break;
     case TARGET_ABSWD:
-    case TARGET_ABS:
         _TargU16toHost( _GetU16UN( ObjBuff ), targ->u.abs );
         ObjBuff += sizeof( unsigned_16 );
+        targ->type = FIX_TARGET_ABS;
         break;
     }
 }
