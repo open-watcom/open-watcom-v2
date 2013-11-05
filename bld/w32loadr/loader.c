@@ -432,7 +432,7 @@ char volatile NestedException = 0;
 
 typedef struct SysERegRec {
     PEXCEPTIONREGISTRATIONRECORD pLink;
-    ULONG (_cdecl *pSysEH)(PEXCEPTIONREPORTRECORD,
+    ULONG (__cdecl *pSysEH)(PEXCEPTIONREPORTRECORD,
                            PEXCEPTIONREGISTRATIONRECORD,
                            PCONTEXTRECORD,
                            PVOID);
@@ -486,7 +486,7 @@ void Fatal( char *what, PCONTEXTRECORD p )
     DosExit( EXIT_PROCESS, 8 );
 }
 
-ULONG _cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
+ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
                             PEXCEPTIONREGISTRATIONRECORD regrecord,
                             PCONTEXTRECORD context,
                             PVOID other )
@@ -922,9 +922,9 @@ extern unsigned short __get_ds( void );
 int __checkIsDBCS( void )
 {
 #if defined(__TNT)
-    unsigned short far *leadBytes;
-    PHARLAP_block       pblock;
-    union REGPACK       regs;
+    unsigned short __far    *leadBytes;
+    PHARLAP_block           pblock;
+    union REGPACK           regs;
 
     memset( &pblock, 0, sizeof( pblock ) );
     memset( &regs, 0, sizeof( regs ) );
@@ -956,16 +956,16 @@ int __checkIsDBCS( void )
         }
     }
 #elif defined(__X32)
-    unsigned            esi;
-    unsigned short far *leadBytes;
+    unsigned                esi;
+    unsigned short __far    *leadBytes;
     struct parms {
-        unsigned short  interrupt_num;
-        unsigned short  selector_ds;
-        unsigned short  selector_es;
-        unsigned short  selector_fs;
-        unsigned short  selector_gs;
-        unsigned long   register_eax;
-        unsigned long   register_edx;
+        unsigned short      interrupt_num;
+        unsigned short      selector_ds;
+        unsigned short      selector_es;
+        unsigned short      selector_fs;
+        unsigned short      selector_gs;
+        unsigned long       register_eax;
+        unsigned long       register_edx;
     } parm_struct;
     extern  short       __x386_zero_base_selector;
     #pragma aux         __x386_zero_base_selector "*";

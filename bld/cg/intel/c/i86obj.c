@@ -191,7 +191,7 @@ static  offset          SelStart;
 static  omf_idx         selIdx;
 static  segment_id      BackSegIdx = BACKSEGS;
 static  omf_idx         FPPatchImp[FPP_NUMBER_OF_TYPES];
-static  int             SegsDefd;
+static  segment_id      SegsDefd;
 static  bool            NoDGroup;
 static  short           CurrFNo;
 #ifdef _OMF_32
@@ -1499,23 +1499,21 @@ static  void    OutLEDataStart( bool iterated )
 static  void    CheckLEDataSize( int max_size, bool need_init )
 /*************************************************************/
 {
-    long_offset      start;
-    int              used;
+    long_offset     start;
+    unsigned        used;
     object          *obj;
-    long_offset      end_valid;
+    long_offset     end_valid;
 
     obj = CurrSeg->obj;
     start = obj->start;
     used = obj->data.used;
     if( CurrSeg->location < start ) {
         EjectLEData();
-    } else if( CurrSeg->location - start + max_size
-        > BUFFSIZE - TOLERANCE - CurrSeg->data_prefix_size ) {
+    } else if( CurrSeg->location - start + max_size > BUFFSIZE - TOLERANCE - CurrSeg->data_prefix_size ) {
         EjectLEData();
     } else {
         end_valid = start + used - CurrSeg->data_prefix_size;
-        if( CurrSeg->max_written > end_valid
-            && CurrSeg->location > end_valid ) {
+        if( CurrSeg->max_written > end_valid && CurrSeg->location > end_valid ) {
             EjectLEData();
         }
     }
@@ -1689,7 +1687,7 @@ static  index_rec       *AskIndexRec( unsigned_16 sidx )
 /******************************************************/
 {
     index_rec   *rec;
-    int         i;
+    unsigned    i;
 
     rec = SegInfo->array;
     for( i = 0; i < SegInfo->used; ++i ) {
@@ -1922,7 +1920,7 @@ extern  void    ObjFini( void )
 {
 
     index_rec   *rec;
-    int         i;
+    unsigned    i;
     pointer     auto_import;
     char        *lib;
     char        *alias;
@@ -2439,7 +2437,7 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
     object      *obj;
     index_rec   *rec;
     byte        b;
-    int         need;
+    unsigned    need;
 
     b = rel ? LOCAT_REL : LOCAT_ABS;
     if( F_CLASS( class ) == F_PTR && CurrSeg->data_in_code ) {
@@ -2729,9 +2727,9 @@ static  void    SetMaxWritten( void )
 extern  void    OutDataByte( byte value )
 /***************************************/
 {
-    int     i;
-    int     need;
-    object  *obj;
+    unsigned    i;
+    unsigned    need;
+    object      *obj;
 
     SetPendingLine();
     CheckLEDataSize( sizeof( byte ), TRUE );
@@ -2752,9 +2750,9 @@ extern  void    OutDataByte( byte value )
 extern  void    OutDataInt( int value )
 /*************************************/
 {
-    int     i;
-    int     need;
-    object  *obj;
+    unsigned    i;
+    unsigned    need;
+    object      *obj;
 
     SetPendingLine();
     CheckLEDataSize( sizeof( unsigned_16 ), TRUE );
@@ -2776,9 +2774,9 @@ extern  void    OutDataInt( int value )
 extern  void    OutDataLong( long value )
 /***************************************/
 {
-    int     i;
-    int     need;
-    object  *obj;
+    unsigned    i;
+    unsigned    need;
+    object      *obj;
 
     SetPendingLine();
     CheckLEDataSize( sizeof( unsigned_32 ), TRUE );
@@ -3071,10 +3069,10 @@ static  void    OutConcat( char *name1, char *name2, array_control *dest )
 extern  void    OutDBytes( unsigned len, const byte *src )
 /********************************************************/
 {
-    int         i;
+    unsigned    i;
     unsigned    max;
     unsigned    n;
-    int         need;
+    unsigned    need;
     object      *obj;
 
     SetPendingLine();
