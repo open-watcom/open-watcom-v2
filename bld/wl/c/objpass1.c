@@ -445,7 +445,7 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
             sect = NonSect;
         }
     }
-    class = FindClass( sect, clname, sdata->is32bit, sdata->iscode );
+    class = FindClass( sect, clname, ( sdata->is32bit != 0 ), ( sdata->iscode != 0 ) );
     AddSegment( sdata, class );
     if( isovlclass ) {
         sdata->u.leader->info |= SEG_OVERLAYED;

@@ -194,7 +194,7 @@ static void WriteDLLInfo( void *_dll, void *info )
 {
     dll_sym_info *dll = _dll;
 
-    if( !CheckFree( dll->isfree, info ) ) {
+    if( !CheckFree( ( dll->isfree != 0 ), info ) ) {
         dll->m.modname = dll->m.modnum->name;
         if( !dll->isordinal ) {
             dll->u.entname = dll->u.entry->name;
@@ -208,7 +208,7 @@ static void WriteExportInfo( void *_exp, void *info )
 {
     entry_export *exp = _exp;
 
-    if( !CheckFree( exp->isfree, info ) ) {
+    if( !CheckFree( ( exp->isfree != 0 ), info ) ) {
         exp->next = CarveGetIndex( CarveExportInfo, exp->next );
         if( exp->name != NULL ) {
             exp->name = GetString( info, exp->name );

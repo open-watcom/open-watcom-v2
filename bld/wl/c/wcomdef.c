@@ -183,7 +183,7 @@ static bool isCOMDEF32( void )
         // none of these are generated for Dwarf debug info so
         // we should not get confused when we are 16-bit
         if( seg->isuninit || seg->iscdat || seg->iscode ) {
-            return( seg->is32bit );
+            return( seg->is32bit != 0 );
         }
     }
     return( (ObjFormat & FMT_32BIT_REC) != 0 );

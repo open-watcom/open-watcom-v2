@@ -337,7 +337,7 @@ void CarveWalkBlocks( carve_t cv, void (*cbfn)(carve_t, void *, void *), void *c
 bool CarveBlockModified( void *blk )
 /**********************************/
 {
-    return ((blk_t *)blk)->modified;
+    return( ((blk_t *)blk)->modified != 0 );
 }
 
 void CarveBlockScan( carve_t cv, void *blk, void (*rtn)(void *, void *), void *data )
@@ -359,25 +359,25 @@ void CarveBlockScan( carve_t cv, void *blk, void (*rtn)(void *, void *), void *d
 unsigned CarveBlockSize( carve_t cv )
 /***********************************/
 {
-    return cv->blk_size;
+    return( cv->blk_size );
 }
 
 void * CarveBlockData( void *block )
 /**********************************/
 {
-    return ((blk_t *)block)->data;
+    return( ((blk_t *)block)->data );
 }
 
 bool CarveSizeChanged( carve_t cv )
 /*********************************/
 {
-    return cv->size_chg;
+    return( cv->size_chg != 0 );
 }
 
 unsigned CarveNumElements( carve_t cv )
 /*************************************/
 {
-    return cv->blk_count * cv->elm_count;
+    return( cv->blk_count * cv->elm_count );
 }
 
 void CarveWalkAllFree( carve_t cv, void (*rtn)( void * ) )
