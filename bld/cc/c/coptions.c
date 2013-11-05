@@ -513,24 +513,31 @@ static void MacroDefs( void )
         Define_Macro( "__SW_OM" );
     }
 #if _CPU == 8086 || _CPU == 386
+  #if _CPU == 8086
+    #define MX86 "M_I86"
+  #else
+    #define MX86 "M_386"
+  #endif
     if( CompFlags.oldmacros_enabled ) {
         switch( SwData.mem ) {
         case SW_MS:
-            Define_Macro( "M_I86SM" );
+            Define_Macro( MX86 "SM" );
             break;
         case SW_MM:
-            Define_Macro( "M_I86MM" );
+            Define_Macro( MX86 "MM" );
             break;
         case SW_MC:
-            Define_Macro( "M_I86CM" );
+            Define_Macro( MX86 "CM" );
             break;
         case SW_ML:
-            Define_Macro( "M_I86LM" );
+            Define_Macro( MX86 "LM" );
             break;
         case SW_MH:
-            Define_Macro( "M_I86HM" );
+            Define_Macro( MX86 "HM" );
             break;
         case SW_MF:
+            Define_Macro( MX86 "FM" );
+            break;
         default:
             break;
         }
@@ -568,6 +575,7 @@ static void MacroDefs( void )
         break;
     case SW_MF:
         Define_Macro( "__SW_MF" );
+        Define_Macro( X86 "FM" );
         Define_Macro( "__FLAT__" );
         break;
     default:
