@@ -63,6 +63,8 @@ static char *usageMsg[] = {
 
 #define BUFF_SIZE 1024
 
+#define NO_IDX  ((unsigned)-1)
+
 static char *file;
 static unsigned line;
 static FILE *ic_h;
@@ -146,9 +148,9 @@ static char *skipSpace( char *p )
 
 static unsigned whatICAmI( char *p )
 {
-    char *s;
-    char c;
-    int i;
+    char        *s;
+    char        c;
+    unsigned    i;
 
     s = p;
     while( *p && ( isalnum( *p ) || *p == '_' ) ) {
@@ -163,7 +165,7 @@ static unsigned whatICAmI( char *p )
         }
     }
     fail( "cannot find IC '%s'\n", s );
-    return( -1 );
+    return( NO_IDX );
 }
 
 static void processIC_H( char *fname )
@@ -175,7 +177,7 @@ static void processIC_H( char *fname )
 
     file = fname;
     line = 0;
-    ic_idx = -1;
+    ic_idx = NO_IDX;
     for(;;) {
         ok = fgets( buff, sizeof(buff), ic_h );
         if( ok == NULL ) break;
@@ -191,7 +193,7 @@ static void processIC_H( char *fname )
             ic_idx = whatICAmI( p );
             continue;
         }
-        if( ic_idx != -1 ) {
+        if( ic_idx != NO_IDX ) {
             if( buff[0] == '#' ) {
                 addName( icPreProcTable, ic_idx, buff );
             }
