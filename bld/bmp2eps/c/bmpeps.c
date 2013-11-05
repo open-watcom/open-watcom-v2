@@ -43,7 +43,7 @@ bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, in
     unsigned char   *row, **rows, **rowp;
     bmp_file_header bmfh;
     bmp_info_header bmih;
-    bmp_rgb_quad    *bmpal;
+    bmp_rgb_quad    *bmpal = NULL;
     size_t          palsize = 0;
     size_t          hdrsize;
 
@@ -71,7 +71,7 @@ bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, in
 
     if( bpp != 24 ) {
         palsize = bmih.clr_used * sizeof( bmp_rgb_quad );
-        if( palsize == 0 )
+        if( palsize == 0 ) {
             switch( bpp ) {
             case 4:
                 palsize = 16 * sizeof( bmp_rgb_quad );
@@ -80,10 +80,11 @@ bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, in
                 palsize = 256 * sizeof( bmp_rgb_quad );
                 break;
             }
-
+        }
         bmpal = (bmp_rgb_quad *)malloc( palsize );
-        if( !fread( bmpal, palsize, 1, in ) )
+        if( !fread( bmpal, palsize, 1, in ) ) {
             return 0;
+        }
     }
 
     hdrsize = sizeof( bmfh ) + sizeof( bmih ) + palsize;
