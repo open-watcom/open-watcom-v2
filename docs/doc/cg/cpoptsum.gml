@@ -821,6 +821,11 @@ disable/enable language extensions (default is ze)
 :optref refid='SWza'.
 :optref refid='SWze'.
 .*
+.note zam
+:CMT. .ix 'options' 'zam'
+disable all predefined old extension macros (keyword macros, non-ISO names)
+:optref refid='SWzam'.
+.*
 .note zat
 :CMT. .ix 'options' 'zat'
 (C++ only) disable alternative tokens

@@ -1150,12 +1150,12 @@ model options.
 .millust begin
 Option     All        16-bit only          32-bit only
 ====== =========== =================    =================
-mf     __FLAT__                         M_386FM  _M_386FM
-ms     __SMALL__   M_I86SM  _M_I86SM    M_386SM  _M_386SM
-mm     __MEDIUM__  M_I86MM  _M_I86MM    M_386MM  _M_386MM
-mc     __COMPACT__ M_I86CM  _M_I86CM    M_386CM  _M_386CM
-ml     __LARGE__   M_I86LM  _M_I86LM    M_386LM  _M_386LM
-mh     __HUGE__    M_I86HM  _M_I86HM
+mf     __FLAT__                         _M_386FM  M_386FM
+ms     __SMALL__   _M_I86SM  M_I86SM    _M_386SM  M_386SM
+mm     __MEDIUM__  _M_I86MM  M_I86MM    _M_386MM  M_386MM
+mc     __COMPACT__ _M_I86CM  M_I86CM    _M_386CM  M_386CM
+ml     __LARGE__   _M_I86LM  M_I86LM    _M_386LM  M_386LM
+mh     __HUGE__    _M_I86HM  M_I86HM
 .millust end
 .np
 The following macros indicate which compiler is compiling the C/C++
@@ -1256,57 +1256,57 @@ with different values (including no value which means the symbol is
 defined without a value).
 .code begin
 Predefined Macro                Supported by Compiler
- and Setting                wcc     wcc386  wpp     wpp386
---------------------------- ------  ------  ------  ------
+ and Setting                wcc     wcc386  wpp     wpp386  note
+--------------------------- ------  ------  ------  ------ ---------
 __386__=1                             Yes             Yes
 __3R__=1                                              Yes
-_based=__based                Yes     Yes     Yes     Yes
-_cdecl=__cdecl                Yes     Yes     Yes     Yes
-cdecl=__cdecl                 Yes     Yes     Yes     Yes
+_based=__based                Yes     Yes     Yes     Yes  extension
+_cdecl=__cdecl                Yes     Yes     Yes     Yes  extension
+cdecl=__cdecl                 Yes     Yes     Yes     Yes  extension
 __cplusplus=1                                 Yes     Yes
 _CPPRTTI=1                                    Yes     Yes
 _CPPUNWIND=1                                  Yes     Yes
-_export=__export              Yes     Yes     Yes     Yes
-_far16=__far16                Yes     Yes     Yes     Yes
-_far=__far                    Yes     Yes     Yes     Yes
-far=__far                     Yes     Yes     Yes     Yes
-_fastcall=__fastcall          Yes     Yes     Yes     Yes
+_export=__export              Yes     Yes     Yes     Yes  extension
+_far16=__far16                Yes     Yes     Yes     Yes  extension
+_far=__far                    Yes     Yes     Yes     Yes  extension
+far=__far                     Yes     Yes     Yes     Yes  extension
+_fastcall=__fastcall          Yes     Yes     Yes     Yes  extension
 __FLAT__=1                            Yes             Yes
-_fortran=__fortran            Yes     Yes     Yes     Yes
-fortran=__fortran             Yes     Yes     Yes     Yes
+_fortran=__fortran            Yes     Yes     Yes     Yes  extension
+fortran=__fortran             Yes     Yes     Yes     Yes  extension
 __FPI__=1                     Yes     Yes     Yes     Yes
-_huge=__huge                  Yes     Yes     Yes     Yes
-huge=__huge                   Yes     Yes     Yes     Yes
+_huge=__huge                  Yes     Yes     Yes     Yes  extension
+huge=__huge                   Yes     Yes     Yes     Yes  extension
 __I86__=1                     Yes             Yes
-_inline=__inline              Yes     Yes     Yes     Yes
+_inline=__inline              Yes     Yes     Yes     Yes  extension
 _INTEGRAL_MAX_BITS=64         Yes     Yes     Yes     Yes
-_interrupt=__interrupt        Yes     Yes     Yes     Yes
-interrupt=__interrupt         Yes     Yes     Yes     Yes
-_loadds=__loadds              Yes     Yes     Yes     Yes
-_M_386FM=1                                            Yes
-M_386FM=1                                             Yes
+_interrupt=__interrupt        Yes     Yes     Yes     Yes  extension
+interrupt=__interrupt         Yes     Yes     Yes     Yes  extension
+_loadds=__loadds              Yes     Yes     Yes     Yes  extension
+_M_386FM=1                            Yes             Yes
+M_386FM=1                             Yes             Yes  extension
 _M_I386=1                             Yes             Yes
-M_I386=1                              Yes             Yes
+M_I386=1                              Yes             Yes  extension
 _M_I86=1                      Yes             Yes
-M_I86=1                       Yes             Yes
+M_I86=1                       Yes             Yes          extension
 _M_I86SM=1                    Yes             Yes
-M_I86SM=1                     Yes             Yes
+M_I86SM=1                     Yes             Yes          extension
 _M_IX86=0                     Yes             Yes
 _M_IX86=500                           Yes             Yes
-_near=__near                  Yes     Yes     Yes     Yes
-near=__near                   Yes     Yes     Yes     Yes
+_near=__near                  Yes     Yes     Yes     Yes  extension
+near=__near                   Yes     Yes     Yes     Yes  extension
 __NT__=1 (on Win32 platform)  Yes     Yes     Yes     Yes
-_pascal=__pascal              Yes     Yes     Yes     Yes
-pascal=__pascal               Yes     Yes     Yes     Yes
-_saveregs=__saveregs          Yes     Yes     Yes     Yes
-_segment=__segment            Yes     Yes     Yes     Yes
-_segname=__segname            Yes     Yes     Yes     Yes
-_self=__self                  Yes     Yes     Yes     Yes
+_pascal=__pascal              Yes     Yes     Yes     Yes  extension
+pascal=__pascal               Yes     Yes     Yes     Yes  extension
+_saveregs=__saveregs          Yes     Yes     Yes     Yes  extension
+_segment=__segment            Yes     Yes     Yes     Yes  extension
+_segname=__segname            Yes     Yes     Yes     Yes  extension
+_self=__self                  Yes     Yes     Yes     Yes  extension
 __SMALL__=1                   Yes             Yes
-SOMDLINK=__far                Yes
-SOMDLINK=_Syscall                     Yes             Yes
-SOMLINK=__cdecl               Yes
-SOMLINK=_Syscall                      Yes             Yes
+SOMDLINK=__far                Yes                          extension
+SOMDLINK=_Syscall                     Yes             Yes  extension
+SOMLINK=__cdecl               Yes                          extension
+SOMLINK=_Syscall                      Yes             Yes  extension
 _STDCALL_SUPPORTED=1                  Yes             Yes
 __SW_0=1                      Yes             Yes
 __SW_3R=1                             Yes             Yes
@@ -1317,17 +1317,20 @@ __SW_FP387=1                                          Yes
 __SW_FP3=1                            Yes
 __SW_FPI=1                    Yes     Yes     Yes     Yes
 __SW_MF=1                             Yes             Yes
-__SW_MS=1                     Yes
+__SW_MS=1                     Yes             Yes
 __SW_ZDP=1                    Yes     Yes     Yes     Yes
 __SW_ZFP=1                    Yes     Yes     Yes     Yes
 __SW_ZGF=1                            Yes             Yes
 __SW_ZGP=1                    Yes             Yes
-_stdcall=__stdcall            Yes     Yes     Yes     Yes
-_syscall=__syscall            Yes     Yes     Yes     Yes
+_stdcall=__stdcall            Yes     Yes     Yes     Yes  extension
+_syscall=__syscall            Yes     Yes     Yes     Yes  extension
 __WATCOM_CPLUSPLUS__=&vermacro                     Yes     Yes
 __WATCOMC__=&vermacro              Yes     Yes     Yes     Yes
 __X86__=1                     Yes     Yes     Yes     Yes
 .code end
+.*
+Note: "extension" mean it is old extension macros (non-ISO compliant names).
+Thay are suppressed by following options: -zam, -za, -zA
 .*
 .section *refid=wccext &product Extended Keywords
 .*

@@ -560,6 +560,11 @@ output function declarations to .def
 ignore environment variables when searching for include files
 :optref refid='SWx'.
 .do end
+.if &e'&$SWzam eq 1 .do begin
+.note zam
+disable all predefined old extension macros (keyword macros, non-ISO names)
+:optref refid='SWzam'.
+.do end
 .if &e'&$SWzat eq 1 .do begin
 .note zat
 (C++ only) disable alternative tokens
@@ -2551,6 +2556,8 @@ The macro
 (no extended keywords)
 will be predefined if "za" is selected.
 The "ou" option will be enabled :optref refid='SWou'..
+This option also suppress all predefined macros which name is not 
+ISO/ANSI C/C++ standard compliant.
 See also the description of the "ze" option.
 .np
 When using the C compiler, there is an exception to the enforcement of
@@ -2676,7 +2683,9 @@ In the above example, the size of "x" is the same size as an
 .us unsigned char
 whereas the size of "y" is the same size as an
 .us unsigned int.
+.pc
 .note
+Enable all predefined macros which name is not ISO/ANSI C/C++ compliant.
 The following macros are defined.
 .ix '_near macro'
 .ix 'near macro'
@@ -3182,6 +3191,16 @@ and
 environment variables, if they exist, when searching for include files.
 See the section entitled :HDREF refid='wccinc'. for information on
 directory searching.
+.do end
+.*
+.if &e'&$SWzam eq 1 .do begin
+:OPT refid='SWzam' name='zam'.
+.ix 'options' 'zam'
+Open Watcom define many extension macros for compatibility
+with old MS C compiler (far, _far, near, _near, cdecl, _cdecl, etc.). 
+For details see Open Watcom compilers predefined macros.
+These macros use names which are not ISO C/C++ compliant.
+The "zam" option disable all these predefined macros.
 .do end
 .*
 .if &e'&$SWzat eq 1 .do begin

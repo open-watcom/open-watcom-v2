@@ -786,6 +786,11 @@
 ~b~b~b~b~b~b
 .br
 .*
+:CMT. .note zam
+:hotlink refid='SWzam'.
+~b~b~b~b~b~b
+.br
+.*
 :CMT. .note zat
 :hotlink refid='SWzat'.
 ~b~b~b~b~b~b

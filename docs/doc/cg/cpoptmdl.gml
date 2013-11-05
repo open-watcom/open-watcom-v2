@@ -28,16 +28,20 @@ The "flat" memory model (code and data up to 4 gigabytes) is selected.
 By default, the 32-bit compiler will select this memory model unless
 the target system is Netware in which case "small" is selected.
 .do end
+.ix 'macros' '__SW_MF'
+.ix 'macros' '__FLAT__'
 The following macros will be predefined.
-.illust begin
 .if &version ge 107 .do begin
 .ix 'macros' 'M_386FM'
-.kwm M_386FM
 .ix 'macros' '_M_386FM'
+.do end
+.illust begin
+.kwm __SW_MF
+.kwm __FLAT__
+.if &version ge 107 .do begin
+.kwm M_386FM
 .kwm _M_386FM
 .do end
-.ix 'macros' '__FLAT__'
-.kwm __FLAT__
 .illust end
 .*
 :OPT refid='SWms' name='ms'.&optdag.
@@ -53,50 +57,108 @@ When the target system is Netware, the 32-bit compiler will select
 this memory model.
 .do end
 The following macros will be predefined.
+.ix 'macros' '__SW_MS'
+.ix 'macros' '__SMALL__'
 .illust begin
+.kwm __SW_MS
+.kwm __SMALL__
+.illust end
+additional for 16-bit compiler
 .ix 'macros' 'M_I86SM'
+.if &version ge 107 .do begin
+.ix 'macros' '_M_I86SM'
+.do end
+.illust begin
 .kwm M_I86SM
 .if &version ge 107 .do begin
 .kwm _M_I86SM
+.do end
+.illust end
+additional for 32-bit compiler
+.if &version ge 107 .do begin
+.ix 'macros' 'M_386SM'
+.ix 'macros' '_M_386SM'
+.do end
+.illust begin
+.if &version ge 107 .do begin
 .kwm M_386SM
 .kwm _M_386SM
 .do end
-.ix 'macros' '__SMALL__'
-.kwm __SMALL__
 .illust end
 .*
 :OPT refid='SWmm' name='mm'.&optdag.
 .ix 'options' 'mm'
 The "medium" memory model (big code, small data) is selected.
 The following macros will be predefined.
-.ix 'macros' 'M_I86MM'
+.ix 'macros' '__SW_MM'
 .ix 'macros' '__MEDIUM__'
 .illust begin
-.kwm M_I86MM
+.kwm __SW_MM
 .kwm __MEDIUM__
+.illust end
+additional for 16-bit compiler
+.ix 'macros' 'M_I86MM'
+.ix 'macros' '_M_I86MM'
+.illust begin
+.kwm M_I86MM
+.kwm _M_I86MM
+.illust end
+additional for 32-bit compiler
+.ix 'macros' 'M_386MM'
+.ix 'macros' '_M_386MM'
+.illust begin
+.kwm M_386MM
+.kwm _M_386MM
 .illust end
 .*
 :OPT refid='SWmc' name='mc'.&optdag.
 .ix 'options' 'mc'
 The "compact" memory model (small code, big data) is selected.
 The following macros will be predefined.
-.ix 'macros' 'M_I86CM'
+.ix 'macros' '__SW_MC'
 .ix 'macros' '__COMPACT__'
+.illust begin
+.kwm __SW_MC
+.kwm __COMPACT__
+.illust end
+additional for 16-bit compiler
+.ix 'macros' 'M_I86CM'
+.ix 'macros' '_M_I86CM'
 .illust begin
 .kwm M_I86CM
 .kwm _M_I86CM
-.kwm __COMPACT__
+.illust end
+additional for 32-bit compiler
+.ix 'macros' 'M_386CM'
+.ix 'macros' '_M_386CM'
+.illust begin
+.kwm M_386CM
+.kwm _M_386CM
 .illust end
 .*
 :OPT refid='SWml' name='ml'.&optdag.
 .ix 'options' 'ml'
 The "large" memory model (big code, big data) is selected.
 The following macros will be predefined.
-.ix 'macros' 'M_I86LM'
+.ix 'macros' '__SW_ML'
 .ix 'macros' '__LARGE__'
 .illust begin
-.kwm M_I86LM
+.kwm __SW_ML
 .kwm __LARGE__
+.illust end
+additional for 16-bit compiler
+.ix 'macros' 'M_I86LM'
+.ix 'macros' '_M_I86LM'
+.illust begin
+.kwm M_I86LM
+.kwm _M_I86LM
+.illust end
+additional for 32-bit compiler
+.ix 'macros' 'M_386LM'
+.ix 'macros' '_M_386LM'
+.illust begin
+.kwm M_386LM
+.kwm _M_386LM
 .illust end
 .*
 :OPT refid='SWmh' name='mh'.
@@ -104,11 +166,15 @@ The following macros will be predefined.
 (16-bit only)
 The "huge" memory model (big code, huge data) is selected.
 The following macros will be predefined.
-.ix 'macros' 'M_I86HM'
+.ix 'macros' '__SW_MH'
 .ix 'macros' '__HUGE__'
+.ix 'macros' 'M_I86HM'
+.ix 'macros' '_M_I86HM'
 .illust begin
-.kwm M_I86HM
+.kwm __SW_MH
 .kwm __HUGE__
+.kwm M_I86HM
+.kwm _M_I86HM
 .illust end
 .*
 :cmt. :eOPTLIST.
