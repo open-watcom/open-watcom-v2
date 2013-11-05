@@ -12,6 +12,16 @@ set PROJNAME=w32ldr
 [ BLOCK <1> rel ]
     cdsay <PROJDIR>
 
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/w32bind.exe <OWBINDIR>/w32bind<CMDEXT>
+
+[ BLOCK <BINTOOL> clean ]
+#========================
+    echo rm -f <OWBINDIR>/w32bind<CMDEXT>
+    rm -f <OWBINDIR>/w32bind<CMDEXT>
+
 [ BLOCK <1> rel cprel ]
 #======================
    <CCCMD> dos386/cwsrun.exe   <OWRELROOT>/binw/w32run.exe
