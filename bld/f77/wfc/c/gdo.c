@@ -112,11 +112,11 @@ static bool NeedIncrement( intstar4 limit, intstar4 incr, TYPE do_type ) {
         break;
     case FT_INTEGER:
         if( incr > 0 ) {
-            if( limit > INTEGER_MAX - incr ) {
+            if( limit > INT_MAX - incr ) {
                 return( TRUE );
             }
         } else {
-            if( limit < INTEGER_MIN - incr ) {
+            if( limit < INT_MIN - incr ) {
                 return( TRUE );
             }
         }

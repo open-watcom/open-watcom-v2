@@ -128,7 +128,7 @@ static intstar4 MinCaseValue( TYPE typ )
 // Get a value for case expression.
 
     if( _IsTypeInteger( typ ) ) {
-        return( INTEGER_MIN );
+        return( INT_MIN );
     } else { // if( typ = FT_CHAR ) {
         return( 0 );
     }
@@ -140,7 +140,7 @@ static intstar4 MaxCaseValue( TYPE typ )
 // Get a value for case expression.
 
     if( _IsTypeInteger( typ ) ) {
-        return( INTEGER_MAX );
+        return( INT_MAX );
     } else { // if( typ = FT_CHAR ) {
         return( 255 );
     }
