@@ -396,7 +396,7 @@ static bool ProcessKeyList( parse_entry *entry, const char *arg, int arg_len )
     int                 len;
     int                 plen;
 
-    while( entry->keyword != NULL ) {
+    for( ; entry->keyword != NULL; ++entry ) {
         key = entry->keyword;
         ptr = arg;
         len = 0;
@@ -414,7 +414,6 @@ static bool ProcessKeyList( parse_entry *entry, const char *arg, int arg_len )
             plen--;
         }
         /* here if this is no match */
-        entry++;
     }
     /* here if no match in table */
     return( FALSE );
@@ -1260,13 +1259,13 @@ static void WriteOptions( switch_entry *entry )
     int         i = 0;
     const char  *kw;
 
-    while( entry->keyword ) {
+    for( ; entry->keyword; ++entry ) {
         help_line[i++] = ' ';
         help_line[i++] = ' ';
         help_line[i++] = '/';
-        kw = entry->keyword;
-        while( *kw )
-            help_line[i++] = *kw++;
+        for( kw = entry->keyword; *kw != '\0'; ++kw ) {
+            help_line[i++] = *kw;
+        }
         if( i < 31 ) {  
             while( i < 31 ) // pad to second column
                 help_line[i++] = ' ';
@@ -1275,7 +1274,6 @@ static void WriteOptions( switch_entry *entry )
             i = 0;
             CommandOut( help_line );
         }
-        ++entry;
     }
     if( i ) {
         help_line[i] = '\0';
@@ -1556,7 +1554,7 @@ extern void ProcessOption( const char *opt )
     }
 
     /* Look for a valid command line option. */
-    while( entry->keyword != NULL ) {
+    for( ; entry->keyword != NULL; ++entry ) {
         key = entry->keyword;
         ptr = opt;
         len = 0;
@@ -1574,7 +1572,6 @@ extern void ProcessOption( const char *opt )
             plen--;
         }
         /* Entry didn't match. */
-        entry++;
     }
     /* No match found; probably junk. */
     NotRecognized( opt );

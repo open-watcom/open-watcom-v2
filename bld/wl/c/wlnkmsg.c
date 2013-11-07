@@ -149,7 +149,7 @@ void Msg_Put_Args(
         strcpy( types_buff, types );
                                         // conversions set order[]; digits->s
         percent = message - 2;          // So strchr below can work
-        while( ( percent = strchr( percent + 2, '%' ) ) != NULL ) {
+        while( (percent = strchr( percent + 2, '%' )) != NULL ) {
             specifier = percent[1];
             for( j = 0; types_buff[j] != '\0'; j++ ) {  // Match with types
                 if( types_buff[j] == specifier ) {

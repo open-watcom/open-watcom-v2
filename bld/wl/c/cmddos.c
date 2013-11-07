@@ -191,8 +191,7 @@ static void NewArea( section *sect )
     ovl->next_area = NULL;
     ovl->sections = sect;
     sect->parent = CurrSect;
-    owner = &CurrSect->areas;
-    while( *owner != NULL ) {
+    for( owner = &CurrSect->areas; *owner != NULL; ) {
         owner = &(*owner)->next_area;
     }
     *owner = ovl;

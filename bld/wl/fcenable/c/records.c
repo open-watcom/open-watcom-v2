@@ -145,9 +145,8 @@ void FileCleanup( void )
 static void ZeroIndicies( name_list *list )
 /*****************************************/
 {
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->next ) {
         list->lnameidx = 0;
-        list = list->next;
     }
 }
 
@@ -196,12 +195,11 @@ static void proccoment( void )
 static bool FindName( name_list *list, byte *name, int name_len )
 /***************************************************************/
 {
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->next ) {
         if( memicmp( list->name, name, name_len ) == 0 ) {
             list->lnameidx = NameIndex;
             return( TRUE );
         }
-        list = list->next;
     }
     return( FALSE );
 }
@@ -211,12 +209,10 @@ static void SetExLnames( byte *name, int name_len )
 {
     exclude_list *  list;
 
-    list = ExcludeList;
-    while( list != NULL ) {
+    for( list = ExcludeList; list != NULL; list = list->next ) {
         if( memicmp( list->name, name, name_len ) == 0 ) {
             list->lnameidx = NameIndex;
         }
-        list = list->next;
     }
 }
 
@@ -227,9 +223,8 @@ static void proclnames( void )
     byte            name_len;
     byte            *buff;
 
-    rec_len = Rec1->head.length;
     buff = Rec1->u.anyobj.rest;
-    while( rec_len > 1 ) {
+    for( rec_len = Rec1->head.length; rec_len > 1; rec_len -= name_len + 1 ) {
         ++NameIndex;
         name_len = *buff;
         buff++;
@@ -238,7 +233,6 @@ static void proclnames( void )
         }
         SetExLnames( buff, name_len );
         buff += name_len;
-        rec_len -= name_len + 1;
     }
     WriteRecord();
 }
@@ -246,11 +240,10 @@ static void proclnames( void )
 static bool MatchIndex( name_list *list, unsigned index )
 /*******************************************************/
 {
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->next ) {
         if( list->lnameidx == index ) {
             return( TRUE );
         }
-        list = list->next;
     }
     return( FALSE );
 }
@@ -305,12 +298,11 @@ static void procsegdef( bool is386 )
         IndexRecord( SegIndex );      //  |  |  +----- linker directive class
         CheckSum();                   //  |  +-------- attribute (nopurge)
     }                                 //  +----------- high-order length
-    exclude = ExcludeList;
-    while( exclude != NULL ) {          // set all seg indicies in the exclude
-        if( exclude->lnameidx == segidx ) {                     // list.
+    for( exclude = ExcludeList; exclude != NULL; exclude = exclude->next ) {
+        // set all seg indicies in the exclude list.
+        if( exclude->lnameidx == segidx ) {
             exclude->segidx = SegIndex;
         }
-        exclude = exclude->next;
     }
 }
 
@@ -333,8 +325,7 @@ static void ProcDataRec( bool is386 )
         offset = *((unsigned_16 *)dataloc);
     }
     endoffset = offset + Rec1->head.length;
-    exclude = ExcludeList;
-    while( exclude != NULL ) {
+    for( exclude = ExcludeList; exclude != NULL; exclude = exclude->next ) {
         if( segidx == exclude->segidx ) {
             if( offset < exclude->start_off ) {
                 if( endoffset >= exclude->start_off ) {
@@ -348,7 +339,6 @@ static void ProcDataRec( bool is386 )
                 }
             }
         }
-        exclude = exclude->next;
     }
 }
 

@@ -66,7 +66,7 @@ static bool IsNetWarePrefix( const char * pToken, unsigned nLen )
 static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name, unsigned *namelen, char **prefix, unsigned *prefixlen )
 {
     char        *findAt = tokenThis;
-    unsigned    nLen = tokenLen;
+    unsigned    nLen;
 
     if( (NULL == tokenThis) || (0 == tokenLen) || (NULL == name) || (NULL == namelen) || (NULL == prefix) || (NULL == prefixlen) )
         return( FALSE );
@@ -74,7 +74,7 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
     *name = *prefix = NULL;
     *namelen = *prefixlen = 0;
 
-    while( nLen ) {
+    for( nLen = tokenLen; nLen; nLen-- ) {
         if( '@' == *findAt )
             break;
         if( '\0' == *findAt ) {
@@ -82,7 +82,6 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
             break;
         }
         findAt++;
-        nLen--;
     }
 
     if( 0 == nLen ) {
@@ -154,10 +153,9 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
         */
         if( CheckDirectives ) {
             unsigned    len = 0;
-            char        *t = parse;
+            char        *t;
 
-            while( !IS_WHITESPACE(t) ) {
-                t++;
+            for( t = parse; !IS_WHITESPACE(t); ++t ) {
                 len++;
             }
 
@@ -455,10 +453,8 @@ bool ProcCopyright( void )
         copy_year = FmtData.u.nov.copyright + YEAR_OFFSET;
         thetime = time( NULL );
         currtime = localtime( &thetime );
-        year = currtime->tm_year + 1900;
-        while( year > 0 ) {
+        for( year = currtime->tm_year + 1900; year > 0; year /= 10 ) {
             *copy_year = '0' + (year % 10);
-            year /= 10;
             copy_year--;
         }
     } else {

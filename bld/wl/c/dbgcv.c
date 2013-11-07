@@ -477,10 +477,10 @@ void CVGenLines( lineinfo *info )
     offset                      adjust;
     unsigned long               cvsize;
     unsigned                    size;
+    unsigned                    item_size;
     segdata                     *seg;
 
     seg = info->seg;
-    size = info->size & ~LINE_IS_32BIT;
 
     if( !( CurrMod->modinfo & DBI_LINE ) )
         return;
@@ -506,9 +506,14 @@ void CVGenLines( lineinfo *info )
             LineInfo.range.end = adjust + seg->length;
         }
     }
-    pair = (ln_off_pair *)info->data;
     if( info->size & LINE_IS_32BIT ) {
-        while( size > 0 ) {
+        item_size = sizeof( ln_off_386 );
+    } else {
+        item_size = sizeof( ln_off_286 );
+    }
+    pair = (ln_off_pair *)info->data;
+    for( size = info->size & ~LINE_IS_32BIT; size > 0; size -= item_size ) {
+        if( info->size & LINE_IS_32BIT ) {
             pair->_386.off += adjust;
             if( pair->_386.off < LineInfo.prevaddr ) {
                 LineInfo.needsort = TRUE;
@@ -516,15 +521,7 @@ void CVGenLines( lineinfo *info )
             LineInfo.prevaddr = pair->_386.off;
             _HostU32toTarg( pair->_386.off, temp_off );
             _HostU16toTarg( pair->_386.linnum, temp_num );
-            PutInfo( LineInfo.offbase, &temp_off, sizeof( unsigned_32 ) );
-            PutInfo( LineInfo.numbase, &temp_num, sizeof( unsigned_16 ) );
-            LineInfo.offbase += sizeof( unsigned_32 );
-            LineInfo.numbase += sizeof( unsigned_16 );
-            pair = (void *)( (char *)pair + sizeof( ln_off_386 ) );
-            size -= sizeof( ln_off_386 );
-        }
-    } else {
-        while( size > 0 ) {
+        } else {
             pair->_286.off += adjust;
             if( pair->_286.off < LineInfo.prevaddr ) {
                 LineInfo.needsort = TRUE;
@@ -532,13 +529,12 @@ void CVGenLines( lineinfo *info )
             LineInfo.prevaddr = pair->_286.off;
             _HostU16toTarg( pair->_286.off, temp_off );
             _HostU16toTarg( pair->_286.linnum, temp_num );
-            PutInfo( LineInfo.offbase, &temp_off, sizeof( unsigned_32 ) );
-            PutInfo( LineInfo.numbase, &temp_num, sizeof( unsigned_16 ) );
-            LineInfo.offbase += sizeof( unsigned_32 );
-            LineInfo.numbase += sizeof( unsigned_16 );
-            pair = (void *)( (char *)pair + sizeof( ln_off_286 ) );
-            size -= sizeof( ln_off_286 );
         }
+        PutInfo( LineInfo.offbase, &temp_off, sizeof( unsigned_32 ) );
+        PutInfo( LineInfo.numbase, &temp_num, sizeof( unsigned_16 ) );
+        LineInfo.offbase += sizeof( unsigned_32 );
+        LineInfo.numbase += sizeof( unsigned_16 );
+        pair = (void *)( (char *)pair + item_size );
     }
 }
 

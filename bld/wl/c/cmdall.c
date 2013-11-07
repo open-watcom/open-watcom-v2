@@ -701,7 +701,7 @@ static bool AddDisable( void )
 bool ProcDisable( void )
 /*****************************/
 {
-    return( ProcArgList( &AddDisable, 0 ) );
+    return( ProcArgList( &AddDisable, TOK_NORMAL ) );
 }
 
 bool ProcNoDefLibs( void )
@@ -905,7 +905,7 @@ static bool GetPackValue( unsigned_32 *value, char *name )
 {
     ord_state   ret;
 
-    if( !HaveEquals(0) )
+    if( !HaveEquals( TOK_NORMAL ) )
         return( FALSE );
     ret = getatol( value );
     if( ret != ST_IS_ORDINAL ) {
@@ -1028,8 +1028,7 @@ bool ProcSystem( void )
         return( TRUE );
     }
     if( dodelete ) {
-        prev = &SysBlocks;
-        while( *prev != sys ) {
+        for( prev = &SysBlocks; *prev != sys; ) {
             prev = &((*prev)->next);
         }
         *prev = sys->next;
@@ -1166,7 +1165,7 @@ bool ProcVersion( void )
     ord_state   retval;
     unsigned_32 value;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( FALSE );
     }
     FmtData.minor = 0;
@@ -1178,7 +1177,7 @@ bool ProcVersion( void )
     }
     FmtData.major = value;
     FmtData.ver_specified = TRUE;
-    if( !GetToken( SEP_PERIOD, 0 ) ) {  /*if we don't get a minor number*/
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /*if we don't get a minor number*/
        return( TRUE );                      /* that's OK */
     }
     retval = getatol( &value );
@@ -1188,7 +1187,7 @@ bool ProcVersion( void )
     } else {
         FmtData.minor = value;
     }
-    if( !GetToken( SEP_PERIOD, 0 ) ) {  /* if we don't get a revision*/
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /* if we don't get a revision*/
         return( TRUE );                 /* that's all right */
     }
     retval = getatol( &value );
@@ -1339,7 +1338,7 @@ bool ProcOutputOfs( void )
     ord_state   retval;
     unsigned_32 value;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( FALSE );
     }
     retval = getatol( &value );
@@ -1358,7 +1357,7 @@ bool ProcOutputHshift( void )
     ord_state   ret;
     unsigned_16 value;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( FALSE );
     }
     ret = getatoi( &value );
@@ -1378,7 +1377,7 @@ bool ProcHshift( void )
     ord_state   ret;
     unsigned_16 value;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( FALSE );
     }
     ret = getatoi( &value );
@@ -1398,7 +1397,7 @@ bool ProcFillchar( void )
     ord_state   ret;
     unsigned_16 value;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( FALSE );
     }
     ret = getatoi( &value );
@@ -1465,7 +1464,7 @@ bool ProcOrdSegAdr( void )
     ord_state   ret;
     unsigned_16 value;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( FALSE );
     }
     ret = getatoi( &value );
@@ -1486,7 +1485,7 @@ bool ProcOrdOfsAdr( void )
     ord_state   retval;
     unsigned_32 value;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( FALSE );
     }
     retval = getatol( &value );
@@ -1542,7 +1541,7 @@ bool ProcOrdSegSegAdr( void )
     ord_state   ret;
     unsigned_16 value;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( FALSE );
     }
     ret = getatoi( &value );
@@ -1563,7 +1562,7 @@ bool ProcOrdSegOfsAdr( void )
     ord_state   retval;
     unsigned_32 value;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( FALSE );
     }
     retval = getatol( &value );

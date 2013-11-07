@@ -556,7 +556,7 @@ static void ProcAlias( void )
     unsigned    targetlen;
     symbol      *sym;
 
-    while( ObjBuff < EOObjRec ) {
+    for( ; ObjBuff < EOObjRec; ObjBuff += targetlen ) {
         aliaslen = *ObjBuff++;
         alias = (char *)ObjBuff;
         ObjBuff += aliaslen;
@@ -565,7 +565,6 @@ static void ProcAlias( void )
         if( !sym || !(sym->info & SYM_DEFINED) ) {
             MakeSymAlias( alias, aliaslen, (char *)ObjBuff, targetlen );
         }
-        ObjBuff += targetlen;
     }
 }
 
@@ -634,11 +633,10 @@ static void AddNames( void )
     list_of_names       **entry;
 
     DEBUG(( DBG_OLD, "AddNames()" ));
-    while( ObjBuff < EOObjRec ) {
+    for( ; ObjBuff < EOObjRec; ObjBuff += name_len ) {
         name_len = *ObjBuff++;
         entry = AllocNode( NameNodes );
         *entry = MakeListName( (char *)ObjBuff, name_len );
-        ObjBuff += name_len;
     }
 }
 
@@ -1070,7 +1068,7 @@ static void DoLIData( virt_mem start, byte *data, unsigned size )
     byte        *end_data;
 
     end_data = data + size;
-    while( data < end_data ) {
+    for( ; data < end_data; data = ProcIDBlock( &start, data, rep ) ) {
         if( ObjFormat & FMT_MS_386 ) {
             _TargU32toHost( _GetU32UN( data ), rep );
             data += sizeof( unsigned_32 );
@@ -1078,7 +1076,6 @@ static void DoLIData( virt_mem start, byte *data, unsigned size )
             _TargU16toHost( _GetU16UN( data ), rep );
             data += sizeof( unsigned_16 );
         }
-        data = ProcIDBlock( &start, data, rep );
     }
 }
 

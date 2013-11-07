@@ -928,8 +928,7 @@ static void CleanSystemList( bool check )
     sysblock    *next;
     char        *name;
 
-    sys = &SysBlocks;
-    while( *sys != NULL ) {
+    for( sys = &SysBlocks; *sys != NULL; ) {
         name = (*sys)->name;
         if( !check || memcmp( "286", name, 4 ) != 0 && memcmp( "386", name, 4) != 0 ) {
             next = (*sys)->next;

@@ -158,14 +158,14 @@ char *MakeFileName( infilelist *file, char *fullname )
     return( path );
 }
 
-int MakeFileNameFromList( char **path_list, char *name, char *fullname )
-/**********************************************************************/
+bool MakeFileNameFromList( char **path_list, char *name, char *fullname )
+/***********************************************************************/
 {
     if( *path_list != NULL && **path_list != '\0' ) {
         strcpy( MakePath( fullname, path_list ), name );
-        return( 1 );
+        return( TRUE );
     }
-    return( 0 );
+    return( FALSE );
 }
 
 #define LIB_SEARCH (INSTAT_USE_LIBPATH | INSTAT_LIBRARY)

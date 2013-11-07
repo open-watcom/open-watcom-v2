@@ -98,7 +98,7 @@ int __near __OvlRelocLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
         if( TINY_ERROR( status ) )
             __OvlExit__( OVL_IO_ERR );
         num_relocs -= buffered_relocs;
-        while( buffered_relocs != 0 ) {
+        for( ; buffered_relocs != 0; --buffered_relocs ) {
             fixup = MK_FP( ovl->code_handle + relocs->seg, relocs->off );
             if( (unsigned)(*fixup - ovl->start_para) < ovl->num_paras ) {
                 self_ref = 1;
@@ -107,7 +107,6 @@ int __near __OvlRelocLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
                 *fixup += __OVLTAB__.prolog.delta;
             }
             relocs++;
-            buffered_relocs--;
         }
     }
     return( self_ref );
@@ -217,8 +216,7 @@ extern tiny_ret_t __near __OpenOvl__( unsigned offset )
             } else if( lastslash == NULL ) {  //no path
                 fnstart = fname;
             } else {
-                cmd = fname;
-                while( *cmd != '\0' ) {
+                for( cmd = fname; *cmd != '\0'; ) {
                     *lastslash++ = *cmd++;
                 }
                 *lastslash = '\0';

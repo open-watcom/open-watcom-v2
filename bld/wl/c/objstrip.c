@@ -88,8 +88,7 @@ static void FreeEdgeList( edgelist * edge )
     edgelist *  listend;
 
     if( edge == NULL ) return;
-    listend = edge;
-    while( listend->next != NULL ) {
+    for( listend = edge; listend->next != NULL; ) {
         listend = listend->next;
     }
     listend->next = FreedEdges;
@@ -105,7 +104,7 @@ static void PruneNonSymEdges( symbol * sym )
 
     list = sym->p.edges;
     sym->p.edges = NULL;
-    while( list != NULL ) {
+    for( ;list != NULL; list = next ) {
         next = list->next;
         if( list->issym ) {
             list->next = sym->p.edges;
@@ -113,7 +112,6 @@ static void PruneNonSymEdges( symbol * sym )
         } else {
             FreeEdge( list );
         }
-        list = next;
     }
 }
 
@@ -129,13 +127,11 @@ void RefSeg( segdata * seg )
 //  if( !seg->iscode ) return;
     seg->isrefd = TRUE;
     seg->visited = TRUE;
-    edge = seg->a.refs;
-    while( edge != NULL ) {
+    for( edge = seg->a.refs; edge != NULL; edge = next ) {
         DbgAssert(edge->issym==0);
         next = edge->next;
         RefSeg( edge->u.seg );
         FreeEdge( edge );
-        edge = next;
     }
     seg->a.refs = NULL;
     seg->visited = FALSE;
@@ -245,8 +241,7 @@ void DefStripSym( symbol * sym, segdata * seg )
     if( sym->info & SYM_DCE_REF ) {
         RefSeg( seg );
     }
-    list = sym->p.edges;
-    while( list != NULL ) {
+    for( list = sym->p.edges; list != NULL; list = next ) {
         next = list->next;
         if( list->issym ) {
             DbgAssert(list->reverse_dir == 0); // for now this cannot happen
@@ -275,7 +270,6 @@ void DefStripSym( symbol * sym, segdata * seg )
                 }
             }
         }
-        list = next;
     }
     sym->p.seg = seg;
 }
@@ -294,8 +288,7 @@ void DefStripImpSym( symbol * sym )
     edgelist *  list;
     edgelist *  next;
 
-    list = sym->p.edges;
-    while( list != NULL ) {
+    for( list = sym->p.edges; list != NULL; list = next ) {
         next = list->next;
         if( list->reverse_dir == 0 ) {
             if( list->issym ) {
@@ -305,7 +298,6 @@ void DefStripImpSym( symbol * sym )
             }
         }
         FreeEdge( list );
-        list = next;
     }
     sym->p.edges = NULL;
 }

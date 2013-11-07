@@ -126,8 +126,7 @@ static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
     } else {
         class = seg->class;
     }
-    seg = RingStep( class->segs, seg );
-    while( seg == NULL ) {
+    for( seg = RingStep( class->segs, seg ); seg == NULL; seg = RingStep( class->segs, seg ) ) {
         for( class = class->next_class; class != NULL; class = class->next_class ) {
             if( !(class->flags & CLASS_DEBUG_INFO) ) {
                  break;
@@ -136,7 +135,6 @@ static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
         if( class == NULL ) {
             return( NULL );
         }
-        seg = RingStep( class->segs, seg );
     }
     return( seg );
 }
@@ -180,8 +178,7 @@ static void AutoGroupSect( section *sec )
     size = 0;
     num_segs = 0;
     packstart = NULL;
-    seg = NULL;
-    while( (seg = GetNextSeg( sec, seg )) != NULL ) {
+    for( seg = NULL; (seg = GetNextSeg( sec, seg )) != NULL; ) {
         if( seg->info & SEG_ABSOLUTE ) {
             PackSegs( seg, 1 );
         } else {

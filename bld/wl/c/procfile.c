@@ -190,13 +190,11 @@ static libnamelist *CalcLibBlacklist( void )
     libnamelist         *oldlibs;
 
     userlibs = CachedLibFiles;
-    oldlibs = SavedUserLibs;
-    while( oldlibs != NULL ) {
+    for( oldlibs = SavedUserLibs; oldlibs != NULL; oldlibs = oldlibs->next ) {
         if( userlibs == NULL )
             return( oldlibs );
         if( FNAMECMPSTR( userlibs->name, oldlibs->name ) != 0 )
             return( oldlibs );
-        oldlibs = oldlibs->next;
         userlibs = userlibs->next;
     }
     return( NULL );
@@ -212,7 +210,7 @@ static void CheckBlacklist( file_list *list, libnamelist *blacklist )
     if( list->status & STAT_HAS_CHANGED )
         return;
     length = strlen( list->file->name );
-    while( blacklist != NULL ) {
+    for( ; blacklist != NULL; blacklist = blacklist->next ) {
         length_b = strlen( blacklist->name );
         if( length >= length_b ) {
             delta = length - length_b;
@@ -221,7 +219,6 @@ static void CheckBlacklist( file_list *list, libnamelist *blacklist )
                 return;
             }
         }
-        blacklist = blacklist->next;
     }
 }
 
@@ -234,7 +231,7 @@ static void PrepareModList( void )
     libnamelist *blacklist;
 
     mod = Root->mods;
-    for( list = Root->files; list != NULL; list = list->next_file ) {
+    for( list = Root->files; list != NULL && mod != NULL; list = list->next_file ) {
         if( strcmp( list->file->name, mod->f.fname ) == 0 ) {
             SetupModule( &mod, list );
         } else if( mod->n.next_mod != NULL ) {
@@ -244,17 +241,12 @@ static void PrepareModList( void )
                 SetupModule( &mod, list );
             }
         }
-        if( mod == NULL ) {
-            break;
-        }
     }
-    while( mod != NULL ) {
+    for( ; mod != NULL; mod = mod->n.next_mod ) {
         mod->modinfo |= MOD_KILL;               // no match found
-        mod = mod->n.next_mod;
     }
     blacklist = CalcLibBlacklist();
-    mod = LibModules;
-    while( mod != NULL ) {
+    for( mod = LibModules; mod != NULL; mod = mod->n.next_mod ) {
         if( mod->f.fname == NULL ) {
             mod->modinfo |= MOD_KILL;
         } else if( !(mod->modinfo & MOD_VISITED) ) {
@@ -270,7 +262,6 @@ static void PrepareModList( void )
             mod->f.source = list;
         }
         mod->modinfo &= ~MOD_VISITED;
-        mod = mod->n.next_mod;
     }
     FreeList( SavedUserLibs );
     SavedUserLibs = NULL;
@@ -333,12 +324,11 @@ static void IncIterateMods( mod_entry *mod, void (*proc_fn)(mod_entry *),
 {
     bool haschanged;
 
-    while( mod != NULL ) {
+    for( ; mod != NULL; mod = mod->n.next_mod ) {
         haschanged = mod->modinfo & MOD_KILL || mod->f.source->status & STAT_HAS_CHANGED;
         if( haschanged == dochanged ) {
             proc_fn( mod );
         }
-        mod = mod->n.next_mod;
     }
 }
 
@@ -374,51 +364,35 @@ static void ProcessMods( void )
 
     mod = Root->mods;
     Root->mods = NULL;
-    for( list = Root->files; list != NULL; list = list->next_file ) {
-        if( mod == NULL )
-            break;
-        while( mod->modinfo & MOD_KILL ) {
+    for( list = Root->files; list != NULL && mod != NULL; list = list->next_file ) {
+        for( ; mod != NULL; mod = next ) {
             next = mod->n.next_mod;
-            FreeModEntry( mod );
-            mod = next;
-            if( mod == NULL ) {
+            if( mod->modinfo & MOD_KILL ) {
+                FreeModEntry( mod );
+            } else if( mod->f.source != list ) {
+                DoPass1( NULL, list );
                 break;
-            }
-        }
-        if( mod == NULL )
-            break;
-        if( mod->f.source == list ) {
-            for( ;; ) {
-                next = mod->n.next_mod;
+            } else {
                 if( list->status & STAT_HAS_CHANGED ) {
                     memset( mod, 0, sizeof( mod_entry ) );
                     DoPass1( mod, list );
                 } else {
                     SavedPass1( mod );
                 }
-                mod = next;
-                if( mod == NULL || mod->f.source != list ) {
-                    break;
-                }
             }
-        } else {
-            DoPass1( NULL, list );
         }
     }
-    while( mod != NULL ) {
+    for( ; mod != NULL; mod = next ) {
         next = mod->n.next_mod;
         FreeModEntry( mod );
-        mod = next;
     }
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->next_file ) {
         DoPass1( NULL, list );
-        list = list->next_file;
     }
-    mod = LibModules;
     savemod = Root->mods;       // pass1 routines will add new mods to this
     Root->mods = NULL;
     CurrMod = NULL;
-    while( mod != NULL ) {
+    for( mod = LibModules; mod != NULL; mod = next ) {
         next = mod->n.next_mod;
         if( (mod->modinfo & MOD_KILL)
                 || mod->f.source != NULL && (mod->f.source->status & STAT_HAS_CHANGED) ) {
@@ -426,7 +400,6 @@ static void ProcessMods( void )
         } else {
             SavedPass1( mod );
         }
-        mod = next;
     }
     LibModules = Root->mods;
     Root->mods = savemod;
@@ -479,14 +452,12 @@ static member_list *FindMember( file_list *list, char *name )
     member_list         *foundmemb;
 
     foundmemb = NULL;
-    memb = &list->u.member;
-    while( *memb != NULL ) {
+    for( memb = &list->u.member; *memb != NULL; memb = &(*memb)->next ) {
         if( ModNameCompare( name, (*memb)->name ) ) {
             foundmemb = *memb;
             *memb = (*memb)->next;      // remove it from the list.
             break;
         }
-        memb = &(*memb)->next;
     }
     return( foundmemb );
 }

@@ -162,14 +162,13 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 str = va_arg( *args, char * );
                 num = *src++ - '0';
                 num = num * 10 + *src++ - '0';
-                if( num > len ) num = len;
-                while( (*str != '\0') && (num > 0) ) {
+                if( num > len )
+                    num = len;
+                for( ; (*str != '\0') && (num > 0); --num ) {
                     *dest++ = *str++;
-                    num--;
                 }
-                while( num > 0 ) {
+                while( num-- > 0 ) {
                     *dest++ = ' ';
-                    num--;
                 }
                 len -= num;
                 break;

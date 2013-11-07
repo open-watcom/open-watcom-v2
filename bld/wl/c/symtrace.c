@@ -163,14 +163,12 @@ void CleanTraces( void )
 {
     trace_info *next;
 
-    while( TraceList != NULL ) {
+    for( ; TraceList != NULL; TraceList = next ) {
         next = TraceList->next;
         if( !TraceList->found ) {
             _LnkFree( TraceList->u.name );
         }
         _LnkFree( TraceList->member );
         _LnkFree( TraceList );
-        TraceList = next;
     }
-    TraceList = NULL;
 }

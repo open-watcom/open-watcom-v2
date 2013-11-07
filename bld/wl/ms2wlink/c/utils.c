@@ -79,9 +79,7 @@ extern char *FileName( char *buff, int len, int etype, bool force )
     int                 cnt;
 
     namptr = buff + len;
-    cnt = 0;
-    while( cnt != len ) {
-        cnt++;
+    for( cnt = 0; cnt < len; ++cnt ) {
         --namptr;
         if( *namptr == '\\' || *namptr == '/' ) break;
     }
@@ -89,9 +87,10 @@ extern char *FileName( char *buff, int len, int etype, bool force )
         namptr++;
     }
     cnt = len - ( namptr - buff );
-    namptr = buff + len;
-    while( *namptr != '.' && --cnt != 0 ) {
-        namptr--;
+    for( namptr = buff + len; *namptr != '.'; --namptr ) {
+        if( --cnt <= 0 ) {
+            break;
+        }
     }
     if( *namptr != '.' || force ) {
         if( cnt != 0 ) {

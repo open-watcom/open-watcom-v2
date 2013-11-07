@@ -78,16 +78,14 @@ static void FreeMemory( void )
 {
     int         index;
     cmdentry *  cmd;
-    cmdentry *  nextone;
+    cmdentry *  next;
 
     FreeParserMem();
     for( index = 0; index < 7; index++ ) {
-        cmd = Commands[ index ];
-        while( cmd != NULL ) {
+        for( cmd = Commands[index]; cmd != NULL; cmd = next ) {
+            next = cmd->next;
             MemFree( cmd->command );
-            nextone = cmd->next;
             MemFree( cmd );
-            cmd = nextone;
         }
     }
 }

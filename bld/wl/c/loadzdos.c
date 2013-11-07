@@ -103,10 +103,8 @@ static unsigned_32 WriteZdosData( unsigned file_pos )
     fnode->file_loc = file_pos;
     Root->u.file_loc = file_pos;
     Root->sect_addr = Groups->grp_addr;
-    group = Groups;
-    while( group != NULL ) {
+    for( group = Groups; group != NULL; group = group->next_group ) {
         repos = WriteDOSGroup( group );
-        group = group->next_group;
         if( repos ) {
             SeekLoad( fnode->file_loc );
         }

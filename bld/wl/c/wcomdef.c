@@ -357,9 +357,8 @@ static offset CountIDBlock( unsigned_8 **buffptr )
         buff += *buff + 1;
     } else {            // it is a series of id blocks
         size = 0;
-        while( count > 0 ) {
+        while( count-- > 0 ) {
             size += CountIDBlock( &buff );
-            count--;
         }
         repeat *= size;
     }

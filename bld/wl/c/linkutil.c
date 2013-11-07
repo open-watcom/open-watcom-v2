@@ -226,13 +226,12 @@ void FreeList( void *_curr )
 /*********************************/
 /* Free a list of nodes. */
 {
-    node        *curr = _curr;
-    node        *next_node;
+    node        *curr;
+    node        *next;
 
-    while( curr ) {
-        next_node = curr->next;
+    for( curr = _curr; curr != NULL; curr = next ) {
+        next = curr->next;
         _LnkFree( curr );
-        curr = next_node;
     }
 }
 
@@ -526,8 +525,7 @@ f_handle FindPath( char *name )
 
     file = QObjOpen( name );
     if( file == NIL_FHANDLE && ExePath != NULL ) {
-        path_list = ExePath;
-        while( *path_list != '\0' ) {
+        for( path_list = ExePath; *path_list != '\0'; ) {
             strcpy( MakePath( fullpath, &path_list ), name );
             file = QObjOpen( fullpath );
             if( file != NIL_FHANDLE ) {

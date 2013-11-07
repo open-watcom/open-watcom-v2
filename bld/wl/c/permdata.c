@@ -317,11 +317,10 @@ static void PrepNameTable( name_list *list, perm_write_info *info )
 {
     char        *savename;
 
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->next ) {
         savename = list->name;
         list->name = (char *)(pointer_int)GetStringTableSize( &info->strtab );
         AddBufferStringTable( &info->strtab, savename, list->len + 1 );
-        list = list->next;
     }
 }
 
@@ -654,12 +653,11 @@ static void ReadLibList( unsigned count, libnamelist **head, perm_read_info *inf
 {
     libnamelist         *list;
 
-    while( count > 0 ) {
+    while( count-- > 0 ) {
         _ChkAlloc( list, sizeof( libnamelist ) );
         list->name = MapString( (char *)(pointer_int)BufReadU32( info ) );
         BufRead( info, &list->priority, sizeof( lib_priority ) );
         LinkList( head, list );
-        count--;
     }
 }
 
@@ -943,9 +941,8 @@ void PermSaveFixup( void *fix, unsigned size )
     unsigned    size;
 
     fixoff = ReadRelocs + offset;
-    while( sizeleft > 0 ) {
+    for( ; sizeleft > 0; sizeleft -= size ) {
         size = fn( fixoff );
-        sizeleft -= size;
         fixoff += size;
     }
 }

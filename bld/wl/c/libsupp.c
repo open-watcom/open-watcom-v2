@@ -67,8 +67,7 @@ static bool SearchAndProcLibFile( file_list *lib, char *name )
         }
         AddModTable( lp, lib->ovlref );
     } else {
-        prev = &LibModules;
-        while( *prev != NULL ) {/*  find end of list */
+        for( prev = &LibModules; *prev != NULL; ) { /*  find end of list */
             prev = &(*prev)->n.next_mod;
         }
         *prev = lp;

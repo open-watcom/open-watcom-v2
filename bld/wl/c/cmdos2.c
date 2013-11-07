@@ -57,7 +57,7 @@ static bool             getsegflags( void );
 bool ProcOS2Import( void )
 /*******************************/
 {
-    return( ProcArgList( &getimport, 0 ) );
+    return( ProcArgList( &getimport, TOK_NORMAL ) );
 }
 
 bool ProcOS2Export( void )
@@ -68,7 +68,7 @@ bool ProcOS2Export( void )
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         retval = GetWlibImports();
     } else {
-        retval =  ProcArgList( &getexport, 0 );
+        retval =  ProcArgList( &getexport, TOK_NORMAL );
     }
     return( retval );
 }
@@ -101,13 +101,13 @@ static entry_export *ProcWlibDLLImportEntry( void )
     symname.name = alloca( Token.len + 1 );
     memcpy( symname.name, Token.this, Token.len );
     symname.name[ Token.len ] = '\0';
-    if( !GetToken( SEP_DOT_EXT, 0 ) ) {
+    if( !GetToken( SEP_DOT_EXT, TOK_NORMAL ) ) {
         return( NULL );
     }
     internal.len = 0;
     internal.name = NULL;
     ordinal = 0;
-    if( GetToken( SEP_DOT_EXT, 0 ) ) {
+    if( GetToken( SEP_DOT_EXT, TOK_NORMAL ) ) {
         if( getatoi( &ordinal ) != ST_IS_ORDINAL ) {
             if( Token.len > 0 ) {
                 internal = symname;
@@ -116,8 +116,8 @@ static entry_export *ProcWlibDLLImportEntry( void )
                 memcpy( symname.name, Token.this, Token.len );
                 symname.name[ Token.len ] = '\0';
             }
-            if( GetToken( SEP_DOT_EXT, 0 ) && getatoi( &ordinal ) != ST_IS_ORDINAL ) {
-                if( GetToken( SEP_DOT_EXT, 0 ) ) {
+            if( GetToken( SEP_DOT_EXT, TOK_NORMAL ) && getatoi( &ordinal ) != ST_IS_ORDINAL ) {
+                if( GetToken( SEP_DOT_EXT, TOK_NORMAL ) ) {
                     getatoi( &ordinal );
                 }
             }
@@ -151,7 +151,7 @@ static bool GetWlibImports( void )
     handle = QOpenR( fname );
     SetCommandFile( handle, fname );
     Token.locked = TRUE;      /* make sure only this file parsed */
-    while( GetToken( SEP_SPACE, 0 ) ) {
+    while( GetToken( SEP_SPACE, TOK_NORMAL ) ) {
         if( Token.len <= 2 )
             continue;
         if( (Token.this[0] == '+') && (Token.this[1] == '+') ) {
@@ -159,7 +159,7 @@ static bool GetWlibImports( void )
             Token.len -= 2;
             if( Token.this[0] == '\'' ) {
                 Token.thumb = REJECT;
-                if( !GetToken( SEP_QUOTE, 0 ) ) {
+                if( !GetToken( SEP_QUOTE, TOK_NORMAL ) ) {
                     LnkMsg( LOC+LINE+ERR+MSG_BAD_WLIB_IMPORT, NULL );
                     RestoreCmdLine();   /* get rid of this file */
                     return( TRUE );
@@ -191,7 +191,7 @@ static bool getimport( void )
     memcpy( intname.name, Token.this, Token.len );
     intname.name[ Token.len ] = '\0';
     intname.len = Token.len;
-    if( !GetToken( SEP_NO, 0 ) ) {
+    if( !GetToken( SEP_NO, TOK_NORMAL ) ) {
         return( FALSE );
     }
     modname.name = alloca( Token.len + 1 );
@@ -259,7 +259,7 @@ static bool getexport( void )
     while( ProcOne( Exp_Keywords, SEP_NO, FALSE ) ) {}  // handle misc options
     FmtData.u.os2.exports = exp->next;       // take it off the list
     exp->iopl_words = 0;
-    if(!(FmtData.type & (MK_WINDOWS|MK_PE)) &&GetToken(SEP_NO,TOK_INCLUDE_DOT)) {
+    if( !(FmtData.type & (MK_WINDOWS|MK_PE)) && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
             if( val16 > 63 ) {
                 LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );
@@ -295,7 +295,7 @@ bool ProcOS2Alignment( void )
     ord_state           ret;
     unsigned_32         value;
 
-    if( !HaveEquals(0) ) return( FALSE );
+    if( !HaveEquals( TOK_NORMAL ) ) return( FALSE );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( FALSE );
@@ -311,7 +311,7 @@ bool ProcObjAlign( void )
     ord_state           ret;
     unsigned_32         value;
 
-    if( !HaveEquals(0) ) return( FALSE );
+    if( !HaveEquals( TOK_NORMAL ) ) return( FALSE );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( FALSE );
@@ -328,7 +328,7 @@ bool ProcObjAlign( void )
 bool ProcModName( void )
 /*****************************/
 {
-    if( !HaveEquals(TOK_INCLUDE_DOT) ) return( FALSE );
+    if( !HaveEquals( TOK_INCLUDE_DOT ) ) return( FALSE );
     FmtData.u.os2.res_module_name = totext();
     return( TRUE );
 }
@@ -361,7 +361,7 @@ bool ProcOS2HeapSize( void )
     ord_state           ret;
     unsigned_32         value;
 
-    if( !HaveEquals(0) ) return( FALSE );
+    if( !HaveEquals( TOK_NORMAL ) ) return( FALSE );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "heapsize" );
@@ -1115,7 +1115,8 @@ static void ParseVersion( void )
 {
     ord_state   retval;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) return;
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) )
+        return;
     FmtData.u.pe.submajor = 0;
     FmtData.u.pe.subminor = 0;
     retval = getatoi( &FmtData.u.pe.submajor );
@@ -1124,7 +1125,7 @@ static void ParseVersion( void )
         return;
     }
     FmtData.u.pe.sub_specd = TRUE;
-    if( !GetToken( SEP_PERIOD, 0 ) ) {  /*if we don't get a minor number*/
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /*if we don't get a minor number*/
        return;                          /* that's OK */
     }
     retval = getatoi( &FmtData.u.pe.subminor );
@@ -1169,7 +1170,7 @@ static unsigned_32 ProcGenericVersion( VersBlock *pVers, unsigned_32 major_limit
     if(NULL == pVers) {
         return( state );
     }
-    if( !GetToken( SEP_EQUALS, 0 ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( state );
     }
 
@@ -1189,7 +1190,7 @@ static unsigned_32 ProcGenericVersion( VersBlock *pVers, unsigned_32 major_limit
     pVers->revision = 0;
     state |= (valid_result | major_valid);
 
-    if( !GetToken( SEP_PERIOD, 0 ) ) {  /*if we don't get a minor number*/
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /*if we don't get a minor number*/
        return( state );                      /* that's OK */
     }
     retval = getatol( &value );
@@ -1204,7 +1205,7 @@ static unsigned_32 ProcGenericVersion( VersBlock *pVers, unsigned_32 major_limit
     pVers->minor = value;
     state |= minor_valid;
 
-    if( !GetToken( SEP_PERIOD, 0 ) ) {  /* if we don't get a revision*/
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /* if we don't get a revision*/
         return( state );                 /* that's all right */
     }
 

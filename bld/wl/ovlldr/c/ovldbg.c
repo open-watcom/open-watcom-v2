@@ -101,15 +101,15 @@ static int GetSectionData( ovl_address __far *data )
     return( TRUE );
 }
 
-static int SaveOvlState( char __far *data )
-/***************************************/
+static int SaveOvlState( unsigned char __far *data )
+/**************************************************/
 // this fills a bit array with the status of the overlays
 // 1 means overlay in memory, 0 means overlay on disk
 {
     ovltab_entry_ptr    ovl;
     unsigned char       mask;
     unsigned char       loaded;
-    char __far          *savedata;
+    unsigned char __far *savedata;
 
     savedata = data;
     mask = 1;
@@ -130,7 +130,7 @@ static int SaveOvlState( char __far *data )
     if( mask != 1 )
         ++data;
 #ifndef OVL_WHOOSH
-    *(unsigned *)data = __BankStack__;
+    *(unsigned __far *)data = __BankStack__;
 #else
     *data = 1;
     if( __OVLFLAGS__ & DBGAREA_VALID ) {
@@ -141,8 +141,8 @@ static int SaveOvlState( char __far *data )
     return( TRUE );
 }
 
-static int RestoreOvlState( char __far *data )
-/******************************************/
+static int RestoreOvlState( unsigned char __far *data )
+/*****************************************************/
 // set the overlay state to match the given vector.
 {
     ovltab_entry_ptr    ovl;
@@ -158,21 +158,16 @@ static int RestoreOvlState( char __far *data )
  * debugger stack. (or run out of memory) */
     if( *( data + __OVLDBGINFO__.bitsize ) == 0 ) {
         ovlnum = 1;
-        while( *data == 0 ) {
+        for( ; *data == 0; ++data ) {
             ovlnum += 8;
-            data++;
         }
-        mask = *data >> 1;
-        while( mask != 0 ) {
-            mask >>= 1;
+        for( mask = *data >> 1; mask != 0; mask >>= 1 ) {
             ovlnum++;
         }
         ovl = __OVLTAB__.entries + ovlnum - 1;
         if( !( ovl->flags_anc & FLAG_INMEM ) ) {
-            if( ( __OVLFLAGS__ & DBGAREA_VALID )
-                && ( __OVLDBGINFO__.section != ovlnum ) ) {
-                __OVLTAB__.entries[__OVLDBGINFO__.section - 1].flags_anc
-                                                             |= FLAG_CHANGED;
+            if( (__OVLFLAGS__ & DBGAREA_VALID) && ( __OVLDBGINFO__.section != ovlnum ) ) {
+                __OVLTAB__.entries[__OVLDBGINFO__.section - 1].flags_anc |= FLAG_CHANGED;
             }
             __OVLDBGINFO__.section = ovlnum;
             code_save = ovl->code_handle;
@@ -192,12 +187,11 @@ static int RestoreOvlState( char __far *data )
     mask = 1;
     WALK_ALL_OVL( ovl ) {
 #ifndef OVL_WHOOSH
-        if( !( ovl->flags_anc & FLAG_INMEM ) && ( *data & mask ) ) {
+        if( !(ovl->flags_anc & FLAG_INMEM) && (*data & mask) ) {
             NAME( LoadOverlay )( OVLNUM( ovl ) );
         }
 #else
-        if( ( ( ovl->flags_anc & FLAG_INMEM ) == 0 ) !=
-                                                ( ( *data & mask ) == 0 ) ) {
+        if( (ovl->flags_anc & FLAG_INMEM) == 0 != (*data & mask) == 0 ) {
             /* our overlay state doesn't match the one given to us... so
                we tell the debugger to forget it. */
             return( FALSE );
@@ -213,8 +207,8 @@ static int RestoreOvlState( char __far *data )
 #ifndef OVL_WHOOSH
     if( mask != 1 )
         ++data;
-    if( *(unsigned *)data != 0 )
-        __BankStack__ = *(unsigned *)data;
+    if( *(unsigned __far *)data != 0 )
+        __BankStack__ = *(unsigned __far *)data;
 #else
     __OVLFLAGS__ &= ~DBGAREA_VALID;
 #endif

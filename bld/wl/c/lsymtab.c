@@ -718,10 +718,9 @@ void FiniSym( void )
 static void PrepHashTable( symbol **table, unsigned size )
 /********************************************************/
 {
-    while( size > 0 ) {
+    for( ; size > 0; --size ) {
         *table = CarveGetIndex( CarveSymbol, *table );
         table++;
-        size--;
     }
 }
 
@@ -737,10 +736,9 @@ void WriteHashPointers( void *cookie )
 static void RebuildHashTable( symbol **table, unsigned size )
 /***********************************************************/
 {
-    while( size > 0 ) {
+    for( ; size > 0; --size ) {
         *table = CarveMapIndex( CarveSymbol, *table );
         table++;
-        size--;
     }
 }
 
@@ -1070,10 +1068,9 @@ static unsigned StaticHashFn( char *name, unsigned len )
     value = ScatterTable[ modval & 0xff ];
     modval >>= 8;
     value = value ^ ScatterTable[ modval & 0xff ];
-    while( len > 0 ) {
+    for( ; len > 0; --len ) {
         value = (value << 1) ^ ScatterTable[ *(unsigned char *)name ];
         ++name;
-        len--;
     }
     return( value % STATIC_TABSIZE );
 }
@@ -1084,10 +1081,9 @@ static unsigned GlobalHashFn( char *name, unsigned len )
     unsigned    value;
 
     value = 0;
-    while( len > 0 ) {
+    for( ; len > 0; --len ) {
         value = (value << 1) ^ ScatterTable[ *(unsigned char *)name | 0x20 ];
         ++name;
-        len--;
     }
     return( value % GLOBAL_TABSIZE );
 }
@@ -1353,10 +1349,9 @@ static void WalkAHashTable( void (*fn)(symbol **), symbol **symtab,
                                 unsigned size )
 /*****************************************************************/
 {
-    while( size > 0 ) {
+    for( ; size > 0; --size ) {
         fn( symtab );
         symtab++;
-        size--;
     }
 }
 
@@ -1375,8 +1370,7 @@ void PurgeSymbols( void )
 
     WalkHashTables( PurgeHashTable );
     WalkHashTables( CleanupOldAltdefs );
-    list = &HeadSym;
-    while( *list != NULL ) {
+    for( list = &HeadSym; *list != NULL; ) {
         sym = *list;
         if( sym->info & SYM_KILL ) {
             *list = sym->link;
@@ -1536,22 +1530,27 @@ bool SetCurrentPrefix(const char * pszPrefix, unsigned nLen)
     pStart++;   /* skip opening parentheses */
     nIntLen--;  /* and record that */
 
-    while( (0 != *pStart) && IS_WHITESPACE(pStart) )
-        pStart++, nIntLen--;
+    for( ; *pStart != '\0'; --nIntLen, ++pStart ) {
+        if( !IS_WHITESPACE( pStart ) ) {
+            break;
+        }
+    }
 
-    if( (0 == *pStart) || (0 == nLen) )
+    if( ('\0' == *pStart) || (0 == nLen) )
         return FALSE;
 
     /* convert to C string */
     _LnkAlloc( newbuff, nIntLen + 1 );
     memcpy( newbuff, pStart, nIntLen - 1 );
-    newbuff[nIntLen-1] = '\0';
+    newbuff[nIntLen - 1] = '\0';
     CmdFile->symprefix = newbuff;
 
-    pFix = newbuff;
-    while( (0 != *pFix) && !IS_WHITESPACE(pFix) )
-        pFix++;
-    *pFix = '\0';
+    for( pFix = newbuff; *pFix != '\0'; ++pFix ) {
+        if( IS_WHITESPACE( pFix ) ) {
+            *pFix = '\0';
+            break;
+        }
+    }
 
     return( 0 != strlen( newbuff ));
 }

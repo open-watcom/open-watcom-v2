@@ -63,14 +63,13 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
     num = PAGE_COUNT(limit);
     if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
         size = num * sizeof( le_map_entry );
-        while( num > 0 ) {
+        while( num-- > 0 ) {
             *start += 1;
             buf->le.page_num[2] = *start;
             buf->le.page_num[1] = *start >> 8;
             buf->le.page_num[0] = *start >> 16;
             buf->le.flags = PAGE_VALID; //NYI: have to figure out how to fill in
             buf = (map_entry *)((char *)buf + sizeof(le_map_entry));
-            num--;
         }
     } else {
         shift = FmtData.u.os2.segment_shift;
@@ -182,13 +181,10 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
     start = 0;
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
-        sizeleft = group->size;
-        while( sizeleft > PAGEMAP_BUF_SIZE ) {
-            map_size = NumberBuf( &start, PAGEMAP_BUF_SIZE,
-                                  (map_entry *)TokBuff );
+        for( sizeleft = group->size; sizeleft > PAGEMAP_BUF_SIZE; sizeleft -= PAGEMAP_BUF_SIZE ) {
+            map_size = NumberBuf( &start, PAGEMAP_BUF_SIZE, (map_entry *)TokBuff );
             size += map_size;
             WriteLoad( TokBuff, map_size );
-            sizeleft -= PAGEMAP_BUF_SIZE;
         }
         map_size = NumberBuf( &start, sizeleft, (map_entry *)TokBuff );
         size += map_size;
@@ -226,27 +222,24 @@ static unsigned long DumpFlatEntryTable( void )
     start = FmtData.u.os2.exports;
     if( start != NULL ) {
         prevord = 0;
-        place = start;
-        while( place != NULL ) {
+        for( place = start; place != NULL; ) {
             gap = place->ordinal - prevord;
             if( gap > 1 ) {  // fill in gaps in ordinals.
                 gap--;       // fix 'off by 1' problem.
                 prefix.null.b32_cnt = 0xFF;
                 prefix.null.b32_type = FLT_BNDL_EMPTY;   // Null bundles.
-                while( gap > 0xff ) {
+                for( ; gap > 0xFF; gap -= 0xFF ) {
                     WriteLoad( &prefix.null, sizeof( prefix.null ) );
-                    gap -= 0xFF;
                     size += sizeof( prefix.null );
                 }
-                prefix.null.b32_cnt = (unsigned_8) gap;
+                prefix.null.b32_cnt = (unsigned_8)gap;
                 WriteLoad( &prefix.null, sizeof( prefix.null ) );
                 size += sizeof( prefix.null );
             }
             // now get a bundle of ordinals.
             entries = 1;
             prev = start = place;
-            place = place->next;
-            while( place != NULL ) {
+            for( place = place->next; place != NULL; place = place->next ) {
                 if( entries >= 0xff ) break;
                 if( place->addr.seg != start->addr.seg ) break;
                 if( place->ordinal - prev->ordinal > 1 ) {
@@ -254,7 +247,6 @@ static unsigned long DumpFlatEntryTable( void )
                 }
                 entries++;
                 prev = place;
-                place = place->next;
             }
             prefix.real.b32_cnt = entries;
             if (start->addr.seg == 0xFFFF) {
@@ -310,7 +302,7 @@ static unsigned_32 WriteRelocSize( void *** reloclist, unsigned_32 size,
     } else {
         rptr = NULL;
     }
-    while( limit > 0 ) {
+    for( ; limit > 0; --limit ) {
         WriteLoad( &size, sizeof( unsigned_32 ) );
         if( rptr != NULL ) {
             /* first one for external fixups */
@@ -318,7 +310,6 @@ static unsigned_32 WriteRelocSize( void *** reloclist, unsigned_32 size,
             /* second for internals */
             size += RelocSize( *rptr++ );
         }
-        limit--;
     }
     return( size );
 }
@@ -342,11 +333,11 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
         reloclist = group->g.grp_relocs;
         numpages = PAGE_COUNT( group->size );
         numentries += numpages;
-        highidx = OSF_RLIDX_HIGH(numpages);
-        while( highidx > 0 ) {
+        for( highidx = OSF_RLIDX_HIGH( numpages ); highidx > 0; --highidx ) {
             size = WriteRelocSize( reloclist, size, OSF_RLIDX_MAX );
-            highidx--;
-            if( reloclist != NULL ) reloclist++;
+            if( reloclist != NULL ) {
+                reloclist++;
+            }
         }
         lowidx = OSF_RLIDX_LOW(numpages);
         if( lowidx > 0 ) {

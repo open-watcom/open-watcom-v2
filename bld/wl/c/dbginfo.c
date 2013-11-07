@@ -155,16 +155,14 @@ static bool FindMatch( byte len, void *buff, unsigned *offset )
 {
     snamelist   *node;
 
-    node = DBISourceLang;
     *offset = 0;
-    while( node != NULL ) {
+    for( node = DBISourceLang; node != NULL; node = node->next ) {
         if( node->len == len ) {
             if( memicmp( buff, node->name, len ) == 0 ) {
                 return( TRUE );
             }
         }
         *offset += node->len + 1;     // +1 for NULLCHAR
-        node = node->next;
     }
     return( FALSE );
 }
@@ -632,15 +630,15 @@ void ODBIGenLines( lineinfo *info )
     offset              adjust;
     bool                needsort;
     unsigned            size;
+    unsigned            item_size;
     segdata             *seg;
+    int                 (*CmpLn)( const void *a, const void *b );
 
     seg = info->seg;
-    size = info->size & ~LINE_IS_32BIT;
 
     dinfo = CurrSect->dbg_info;
     if( ( dinfo == NULL ) || !( CurrMod->modinfo & DBI_LINE ) )
         return;
-    linelen = size;
     lineqty = DBICalcLineQty( info );
     DoGenLocal( &dinfo->line, &dinfo->linelinks, &CurrMod->d.o->lines, lineqty * sizeof( ln_off_386 ) + sizeof( lineseg ) );
     lseg.segment = seg->addrinfo;
@@ -659,42 +657,43 @@ void ODBIGenLines( lineinfo *info )
     prevoff = 0;
     needsort = FALSE;
     if( info->size & LINE_IS_32BIT ) {
-        while( size > 0 ) {
+        item_size = sizeof( ln_off_386 );
+        CmpLn = CmpLn386;
+    } else {
+        item_size = sizeof( ln_off_286 );
+        CmpLn = CmpLn286;
+    }
+    linelen = info->size & ~LINE_IS_32BIT;
+    for( size = linelen; size > 0; size -= item_size ) {
+        if( info->size & LINE_IS_32BIT ) {
             pair->_386.off += adjust;
             if( prevoff > pair->_386.off ) {
                 needsort = TRUE;
             }
             prevoff = pair->_386.off;
-            pair = (void *)( (char *)pair + sizeof( ln_off_386 ) );
-            size -= sizeof( ln_off_386 );
-        }
-        if( needsort ) {
-            qsort( info->data, lineqty, sizeof( ln_off_386 ), CmpLn386 );
-        }
-        DumpInfo( dinfo, info->data, linelen );
-    } else {
-        while( size > 0 ) {
+        } else {
             _TargU16toHost( pair->_286.off, temp );
             if( prevoff > temp ) {
                 needsort = TRUE;
             }
             prevoff = temp;
-            pair = (void *)( (char *)pair + sizeof( ln_off_286 ) );
-            size -= sizeof( ln_off_286 );
         }
-        if( needsort ) {
-            qsort( info->data, lineqty, sizeof( ln_off_286 ), CmpLn286 );
-        }
+        pair = (void *)( (char *)pair + item_size );
+    }
+    if( needsort ) {
+        qsort( info->data, lineqty, item_size, CmpLn );
+    }
+    if( info->size & LINE_IS_32BIT ) {
+        DumpInfo( dinfo, info->data, linelen );
+    } else {
         pair = (ln_off_pair *)info->data;
-        size = linelen;
-        while( size > 0 ) {
+        for( size = linelen; size > 0; size -= item_size ) {
             _TargU16toHost( pair->_286.off, temp );
             _HostU32toTarg( temp + adjust, tmp_ln.off );
             tmp_ln.linnum = pair->_286.linnum;
             // NYI: might have to do some buffering here
             DumpInfo( dinfo, &tmp_ln, sizeof( ln_off_386 ) );
-            pair = (void *)( (char *)pair + sizeof( ln_off_286 ) );
-            size -= sizeof( ln_off_286 );
+            pair = (void *)( (char *)pair + item_size );
         }
     }
 }
@@ -878,17 +877,15 @@ void ODBIWrite( void )
 /* copy debugging info from extra memory to loadfile */
 {
     snamelist   *node;
-    snamelist   *nextnode;
+    snamelist   *next;
 
     CurrSect = Root;
     Master.lang_size = 0;
-    node = DBISourceLang;
-    while( node != NULL ) {
+    for( node = DBISourceLang; node != NULL; node = next ) {
+        next = node->next;
         Master.lang_size += node->len + 1;
         DBIWriteLocal( node->name, node->len + 1 );  // +1 for nullchar
-        nextnode = node->next;
         _PermFree( node );
-        node = nextnode;
     }
     DBISourceLang = NULL;
     Master.seg_size = WriteSegValues();

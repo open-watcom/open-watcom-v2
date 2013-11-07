@@ -111,7 +111,7 @@ bool ProcELFAlignment( void )
     unsigned_32         value;
     unsigned_32         lessone;        // value without the lowest bit.
 
-    if( !HaveEquals(0) ) return( FALSE );
+    if( !HaveEquals( TOK_NORMAL ) ) return( FALSE );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( FALSE );
@@ -147,7 +147,8 @@ static void ParseABITypeAndVersion( void )
 
     FmtData.u.elf.abitype    = 0;
     FmtData.u.elf.abiversion = 0;
-    if( !GetToken( SEP_EQUALS, 0 ) ) return;
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) )
+        return;
     FmtData.u.pe.subminor = 0;
     retval = getatoi( &type );
     if( retval != ST_IS_ORDINAL || type > 255 ) {
@@ -155,8 +156,8 @@ static void ParseABITypeAndVersion( void )
         return;
     }
     FmtData.u.elf.abitype = type;
-    if( !GetToken( SEP_PERIOD, 0 ) ) {  /* if we don't get ABI version */
-       return;                          /* that's OK */
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) { /* if we don't get ABI version */
+       return;                                  /* that's OK */
     }
     retval = getatoi( &version );
     if( retval != ST_IS_ORDINAL || version > 255 ) {
@@ -172,7 +173,8 @@ static void ParseABIVersion( void )
     ord_state   retval;
     unsigned_16 version;
 
-    if( !GetToken( SEP_EQUALS, 0 ) ) return;
+    if( !GetToken( SEP_EQUALS, TOK_NORMAL ) )
+        return;
     FmtData.u.elf.abiversion = 0;
     retval = getatoi( &version );
     if( retval != ST_IS_ORDINAL || version > 255 ) {

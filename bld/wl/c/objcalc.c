@@ -1007,8 +1007,7 @@ static void SplitDGroupClasses( section *sec )
                 newclass->segs = newlist;
                 currcl->next_class = newclass;
                 currcl = newclass;
-                curr = NULL;
-                while( (curr = RingStep( newlist, curr )) != NULL ) {
+                for( curr = NULL; (curr = RingStep( newlist, curr )) != NULL; ) {
                     curr->class = newclass;
                 }
             }
@@ -1247,8 +1246,7 @@ static void SortSegments( void )
     for( currcl = Root->classlist; currcl != NULL; currcl = currcl->next_class ){
         foundgroup = FALSE;
         newlist = NULL;
-        curr = RingPop( &currcl->segs );
-        while( curr != NULL ) {
+        for( curr = RingPop( &currcl->segs ); curr != NULL; curr = RingPop( &currcl->segs ) ) {
             dollarpos = strchr( curr->segname, '$' );
             if( dollarpos != NULL ) {
                 currlen = dollarpos - curr->segname;
@@ -1259,9 +1257,8 @@ static void SortSegments( void )
             added = FALSE;
             if( foundgroup ) {
                 prev = NULL;
-                comp = RingStep( newlist, NULL );
                 foundmatch = FALSE;
-                while( comp != NULL ) {
+                for( comp = RingStep( newlist, NULL ); comp != NULL; comp = RingStep( newlist, comp ) ) {
                     complen = strcspn( comp->segname, "$" );
                     if( ( complen == currlen )
                         && ( memcmp( comp->segname, curr->segname, complen ) == 0 ) ) {
@@ -1278,13 +1275,11 @@ static void SortSegments( void )
                         break;
                     }
                     prev = comp;
-                    comp = RingStep( newlist, comp );
                 }
             }
             if( !added ) {
                 RingAppend( &newlist, curr );
             }
-            curr = RingPop( &currcl->segs );
         }
         currcl->segs = newlist;
     }

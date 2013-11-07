@@ -55,9 +55,10 @@ int main( int argc, char **argv )
     IDEDRV_STATUS   status;
 
 #if !defined( __UNIX__ )
+#if defined( __WATCOMC__ )
     argc = argc;
     argv = argv;
-#if !defined( __WATCOMC__ )
+#else
     _argv = argv;
     _argc = argc;
 #endif

@@ -190,10 +190,9 @@ static void WriteHexLine( void )
     checksum = bufOfs + (offset >> 8) + (offset & 0xFF);    // Start checksum using above elements
 
     i = 0;
-    while( bufOfs ) { // Do data bytes, leaving BufOfs 0 at end
+    for( ; bufOfs > 0; --bufOfs ) { // Do data bytes, leaving BufOfs 0 at end
         sprintf( str_buf + 9 + 2 * i, "%02x", lineBuf[i] );
         checksum += lineBuf[i++];
-        --bufOfs;
     }
     sprintf( str_buf + 9 + 2 * i, "%02x\r\n", (-checksum) & 0xFF );
     WriteLoad( str_buf, 13 + 2 * i );
@@ -219,7 +218,7 @@ static bool WriteHexData( void *_sdata, void *_addr )
             nextAddr = pieceAddr;
         }
         offset = 0;
-        while( len ) {                  // Now lob out records
+        for( ; len > 0; len -= piece ) {// Now lob out records
             piece = HEXLEN - bufOfs;    // Handle partially filled buffer
             if( piece > len ) {         // Handle not enough to fill buffer
                 piece = len;
@@ -231,7 +230,6 @@ static bool WriteHexData( void *_sdata, void *_addr )
                 nextAddr += HEXLEN;     // NextAddr reflects start of line
             }                           // Partial records will be written later
             offset += piece;            //   if address is not contiguous
-            len -= piece;
         }
     }
     return( FALSE );
@@ -427,14 +425,13 @@ extern void FiniRawLoadFile( void )
     fnode->file_loc = 0;
     Root->u.file_loc = 0;
     Root->sect_addr = Groups->grp_addr;
-    group = Groups;
     if( FmtData.raw_hex_output ) {
         nextAddr = 0;   // Start at absolute linear address 0
         linear   = 1;   // Linear mode
         seg      = 0;
         bufOfs   = 0;
     }
-    while( group != NULL ) {
+    for( group = Groups; group != NULL; group = group->next_group ) {
         if( group->size ) {
             sect = group->section;
             CurrSect = sect;
@@ -447,7 +444,6 @@ extern void FiniRawLoadFile( void )
             if( loc > finfo->file_loc )
                 finfo->file_loc = loc;
         }
-        group = group->next_group;
     }
     if( SymFileName != NULL )
         DBIWrite();

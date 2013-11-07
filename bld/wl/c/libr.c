@@ -491,8 +491,8 @@ static void SetDict( file_list *lib, unsigned dict_page )
 static void FreeDictCache( void **cache, unsigned buckets )
 /*********************************************************/
 {
-    while( buckets != 0 ) {
-        _LnkFree( cache[--buckets] );
+    while( buckets-- > 0 ) {
+        _LnkFree( cache[buckets] );
     }
     _LnkFree( cache );
 }

@@ -74,11 +74,11 @@ static unsigned_32 ElfHash( char *sym_name )
 {
     unsigned_32 h;
     unsigned_32 g;
-    unsigned_8  *name = (unsigned_8 *)sym_name;
+    char        *name;
 
     h = 0;
-    while( *name != '\0' ) {
-        h = (h << 4) + *name++;
+    for( name = sym_name; *name != '\0'; ++name ) {
+        h = (h << 4) + *(unsigned_8 *)name;
         g = h & 0xF0000000;
         if( g != 0 ) {
             h ^= g >> 24;

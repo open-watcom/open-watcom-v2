@@ -75,7 +75,7 @@ static fix_type RelocTypeMap[] = {
     FIX_OFFSET_16 | FIX_LOADER_RES      // modified loader resolved off_16
 };
 
-static void GetTarget( unsigned loc, target_spec *targ );
+static void GetTarget( unsigned loc, target_spec *target );
 static void GetFrame( unsigned frame, frame_spec *refframe );
 
 void ResetOMFReloc( void )
@@ -207,8 +207,8 @@ static void GetFrame( unsigned frame, frame_spec *refframe )
     }
 }
 
-static void GetTarget( unsigned loc, target_spec *targ )
-/******************************************************/
+static void GetTarget( unsigned loc, target_spec *target )
+/********************************************************/
 {
     extnode             *ext;
     grpnode             *group;
@@ -217,23 +217,23 @@ static void GetTarget( unsigned loc, target_spec *targ )
     switch( loc & 3 ) {
     case TARGET_SEGWD:
         seg = (segnode *) FindNode( SegNodes, GetIdx() );
-        targ->u.sdata = seg->entry;
-        targ->type = FIX_TARGET_SEG;
+        target->u.sdata = seg->entry;
+        target->type = FIX_TARGET_SEG;
         break;
     case TARGET_GRPWD:
         group = (grpnode *) FindNode( GrpNodes, GetIdx() );
-        targ->u.group = group->entry;
-        targ->type = FIX_TARGET_GRP;
+        target->u.group = group->entry;
+        target->type = FIX_TARGET_GRP;
         break;
     case TARGET_EXTWD:
         ext = (extnode *) FindNode( ExtNodes, GetIdx() );
-        targ->u.sym = ext->entry;
-        targ->type = FIX_TARGET_EXT;
+        target->u.sym = ext->entry;
+        target->type = FIX_TARGET_EXT;
         break;
     case TARGET_ABSWD:
-        _TargU16toHost( _GetU16UN( ObjBuff ), targ->u.abs );
+        _TargU16toHost( _GetU16UN( ObjBuff ), target->u.abs );
         ObjBuff += sizeof( unsigned_16 );
-        targ->type = FIX_TARGET_ABS;
+        target->type = FIX_TARGET_ABS;
         break;
     }
 }
@@ -283,8 +283,7 @@ void DoBakPats( void )
     unsigned_32         value32;
     virt_mem            vmemloc;
 
-    bkptr = BakPats;
-    while( bkptr != NULL ) {
+    for( bkptr = BakPats; bkptr != NULL; bkptr = next ) {
         next = bkptr->next;
         data = bkptr->data;
         off = 0;
@@ -324,7 +323,6 @@ void DoBakPats( void )
             }
         }
         _LnkFree( bkptr );
-        bkptr = next;
     }
     BakPats = NULL;
 }

@@ -688,7 +688,7 @@ static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
     unsigned_32 pagesize;
     bool        padme;
 
-    while( limit > 0 ) {
+    for( ; limit > 0; --limit ) {
         pagesize = RelocSize( *reloclist );
         if( pagesize != 0 ) {
             padme = FALSE;
@@ -707,7 +707,6 @@ static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
         }
         pagerva += OSF_PAGE_SIZE;
         reloclist++;
-        limit--;
     }
     return( size );
 }
@@ -735,10 +734,8 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
         if( reloclist != NULL ) {
             pagerva = group->linear;
             numpages = PAGE_COUNT( group->size );
-            highidx = OSF_RLIDX_HIGH( numpages );
-            while( highidx > 0 ) {
-                size = WriteRelocList(*reloclist, size, pagerva, OSF_RLIDX_MAX);
-                highidx--;
+            for( highidx = OSF_RLIDX_HIGH( numpages ); highidx > 0; --highidx ) {
+                size = WriteRelocList( *reloclist, size, pagerva, OSF_RLIDX_MAX );
                 reloclist++;
                 pagerva += OSF_PAGE_SIZE * ((unsigned_32) OSF_RLIDX_MAX);
             }
@@ -840,10 +837,9 @@ RcStatus CopyExeData( int inhandle, int outhandle, uint_32 length )
 /*****************************************************************/
 {
     outhandle = outhandle;
-    while( length > MAX_HEADROOM ) {
+    for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
         QRead( inhandle, TokBuff, MAX_HEADROOM, "resource file" );
         WriteLoad( TokBuff, MAX_HEADROOM );
-        length -= MAX_HEADROOM;
     }
     if( length > 0 ) {
         QRead( inhandle, TokBuff, length, "resource file" );
@@ -1010,13 +1006,11 @@ static bool SetPDataArray( void *_sdata, void *_array )
     virt_mem    data;
 
     if( !sdata->isdead ) {
-        size = sdata->length;
         data = sdata->u1.vm_ptr;
-        while( size >= sizeof( procedure_descriptor ) ) {
+        for( size = sdata->length; size >= sizeof( procedure_descriptor ); size -= sizeof( procedure_descriptor ) ) {
             **array = data;
             *array += 1;
             data += sizeof( procedure_descriptor );
-            size -= sizeof( procedure_descriptor );
         }
     }
     return( FALSE );
@@ -1443,11 +1437,10 @@ void FiniPELoadFile( void )
         _ChkAlloc( buffer, CRC_BUFF_SIZE );
 
         if( buffer ) {
-            while( currpos < totalsize ) {
+            for( ; currpos < totalsize; currpos += buffsize ) {
                 memset( buffer, 0, CRC_BUFF_SIZE );
                 buffsize = QRead( outfile->handle, buffer, CRC_BUFF_SIZE, outfile->fname );
                 DbgAssert( ( buffsize % 2 ) != 1 ); /* check for odd length */
-                currpos += buffsize;
 
                 crc = CalcPEChecksum( crc, (unsigned short *)buffer, buffsize / sizeof( unsigned short ) );
             }
@@ -1500,12 +1493,12 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
     QRead( file, TokBuff, nameend - namestart, fname );
     nameptr = TokBuff,
     ordptr = ordbuf;
-    while( numords > 0 ) {
+    for( ; numords > 0; --numords ) {
         CheckExport( nameptr, *ordptr + ord_base, &strcmp );
-        while( *nameptr != '\0' ) nameptr++;
+        while( *nameptr != '\0' )
+            nameptr++;
         nameptr++;
         ordptr++;
-        numords--;
     }
     _LnkFree( ordbuf );
 }
@@ -1536,8 +1529,7 @@ void ReadPEExportTable( f_handle file, pe_hdr_table_entry *base )
     curr = nameptrs;
     *curr -= base->rva;
     namestart = *curr++;
-    nameptrsize -= sizeof( unsigned_32 );
-    while( nameptrsize > 0 ) {
+    for( nameptrsize -= sizeof( unsigned_32 ); nameptrsize > 0; nameptrsize -= sizeof( unsigned_32 ) ) {
         *curr -= base->rva;
         if( *curr - namestart > TokSize ) {
             ReadExports( namestart, *(curr - 1), entrystart, numentries, table.ordinal_base, file, fname );
@@ -1547,7 +1539,6 @@ void ReadPEExportTable( f_handle file, pe_hdr_table_entry *base )
         }
         numentries++;
         curr++;
-        nameptrsize -= sizeof( unsigned_32 );
     }   /* NOTE! this assumes the name table is at the end */
     ReadExports( namestart, base->size + *nameptrs, entrystart, numentries, table.ordinal_base, file, fname );
     _LnkFree( nameptrs );

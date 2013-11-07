@@ -682,7 +682,7 @@ static orl_return DoReloc( orl_reloc *reloc )
 {
     fix_type    type;
     frame_spec  frame;
-    target_spec targ;
+    target_spec target;
     offset      addend;
     segnode     *seg;
     segnode     *symseg;
@@ -792,8 +792,8 @@ static orl_return DoReloc( orl_reloc *reloc )
 
                     val64 = ORLSymbolGetValue( reloc->symbol );
                     addend = val64.u._32[I64LO32];
-                    targ.u.sdata = symseg->entry;
-                    targ.type = FIX_TARGET_SEG;
+                    target.u.sdata = symseg->entry;
+                    target.type = FIX_TARGET_SEG;
                     if( istoc ) {
                         AddSdataOffToToc( symseg->entry, addend );
                     }
@@ -801,14 +801,14 @@ static orl_return DoReloc( orl_reloc *reloc )
                     skip = TRUE;
                 }
             } else {
-                targ.u.sym = ext->entry;
-                targ.type = FIX_TARGET_EXT;
+                target.u.sym = ext->entry;
+                target.type = FIX_TARGET_EXT;
                 if( istoc ) {
-                    AddSymToToc( targ.u.sym );
+                    AddSymToToc( target.u.sym );
                 }
             }
             if( !skip ) {
-                StoreFixup( reloc->offset, type, &frame, &targ, addend );
+                StoreFixup( reloc->offset, type, &frame, &target, addend );
             }
         }
     }

@@ -1279,13 +1279,11 @@ bool CheckVFList( symbol *sym )
         ConvertVFSym( sym );
         return( TRUE );
     }
-    symlist = sym->e.vfdata + 1;
-    while( *symlist != NULL ) {
+    for( symlist = sym->e.vfdata + 1; *symlist != NULL; ++symlist ) {
         if( (*symlist)->info & (SYM_DEFINED | SYM_VF_MARKED) ) {
             ConvertVFSym( sym );
             return( TRUE );
         }
-        symlist++;
     }
     return( FALSE );
 }

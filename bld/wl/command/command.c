@@ -41,20 +41,13 @@
 #include "impexp.h"     // For entry_export, etc.
 #include "fileio.h"     // For NIL_HANDLE, etc.
 
-extern bool             ProcArgList( bool( * ) ( void ), tokcontrol );
-extern char *           GetFileName( char **membname, bool setname );
 extern void             LnkMemInit( void );
 extern void             LnkMemFini( void );
-extern bool             GetToken( sep_type, tokcontrol );
 extern void             InitCmdFile( void );
-extern void             SetCommandFile( f_handle, char * );
-extern void             NewCommandSource( char *, char *, method );
 extern f_handle         FindPath( char * );
-extern bool             ProcOne( parse_entry *, sep_type, bool );
 extern int              Spawn(void (*)() );
 extern void             BurnSystemList( void );
 extern void             Burn( void );
-extern void             RestoreParser( void );
 extern void             FreeFormatStuff( void );
 extern section          *NewSection( void );
 extern int              Msg_Fini();
@@ -93,13 +86,11 @@ extern void FreeList( void *parm )
 /* Free a list of nodes. */
 {
     node *      curr;
-    node *      next_node;
+    node *      next;
 
-    curr = parm;
-    while( curr ) {
-        next_node = curr->next;
+    for( curr = parm; curr != NULL; curr = next ) {
+        next = curr->next;
         _LnkFree( curr );
-        curr = next_node;
     }
 }
 
@@ -108,11 +99,10 @@ extern void FreeSegFlags( seg_flags * curr )
 {
     seg_flags * next;
 
-    while( curr != NULL ) {
+    for( ; curr != NULL; curr = next ) {
         next = curr->next;
         _LnkFree( curr->name );
         _LnkFree( curr );
-        curr = next;
     }
 }
 
@@ -155,7 +145,7 @@ extern bool ProcSymTrace( void )
     bool ret;
 
     LinkFlags |= TRACE_FLAG;
-    ret = ProcArgList( &AddSymTrace, TRUE );
+    ret = ProcArgList( &AddSymTrace, TOK_INCLUDE_DOT );
     return( ret );
 }
 
@@ -174,7 +164,7 @@ extern bool ProcModTrace( void )
     bool            ret;
 
     LinkFlags |= TRACE_FLAG;
-    ret = ProcArgList( &AddModTrace, TRUE );
+    ret = ProcArgList( &AddModTrace, TOK_INCLUDE_DOT );
     return( ret );
 }
 
@@ -229,15 +219,14 @@ bool DiscardDicts( void ) {
 static void FreeFiles( file_list *list )
 /**************************************/
 {
-    FILE_LIST           *temp;
+    FILE_LIST           *next;
 
-    while( list != NULL ) {
-        temp = list->next_file;
+    for( ; list != NULL; list = next ) {
+        next = list->next_file;
         if( list->status & STAT_HAS_MEMBER && list->u.member != NULL ) {
             FreeList( list->u.member );
         }
         _LnkFree( list );
-        list = temp;
     }
 }
 
@@ -274,7 +263,7 @@ extern tok              Token;
 
 void ParseDirectives( void )
 {
-    while( GetToken( SEP_END, TRUE ) == FALSE ) {
+    while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == FALSE ) {
         if( ProcOne( Directives, SEP_NO, FALSE ) == FALSE ) {
             /* a directive error happened. deal with it? */
             break;
@@ -312,8 +301,7 @@ static void ProcessInfo( void )
     ParseDirectives();
     Burn();   /* clean up everything but the system list */
     FreeLinkStruct();
-    sys = SysBlocks;
-    while( sys != NULL ) {
+    for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
         LnkMsg( WRN+MSG_INTERNAL, "s", sys->name );
         SetUpCommands();
         NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
@@ -321,7 +309,6 @@ static void ProcessInfo( void )
         ParseDirectives();
         Burn();
         FreeLinkStruct();
-        sys = sys->next;
     }
     BurnSystemList();
     _LnkFree( Root );

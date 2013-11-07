@@ -73,8 +73,7 @@ static blk_t * newBlk( cv_t *cv )
     blk_t **    blklist;
 
     _ChkAlloc( newblk, sizeof( blk_t ) - 1 + cv->blk_size );
-    blklist = &cv->blk_list;
-    while( *blklist > newblk ) {        // keep list sorted by memory address
+    for( blklist = &cv->blk_list; *blklist > newblk; ) {    // keep list sorted by memory address
         blklist = &(*blklist)->next;    // biggest first.
     }
     newblk->next = *blklist;
@@ -177,11 +176,9 @@ void CarveDestroy( carve_t cv )
         if( cv->blk_map != NULL ) {
             _LnkFree( cv->blk_map );
         }
-        cur = cv->blk_list;
-        while( cur != NULL ) {
+        for( cur = cv->blk_list; cur != NULL; cur = next ) {
             next = cur->next;
             _LnkFree( cur );
-            cur = next;
         }
         _LnkFree( cv );
     }
@@ -313,10 +310,8 @@ void *CarveGetIndex( carve_t cv, void *elm )
         return( (void *)CARVE_NULL_INDEX );
     }
     block_index = cv->blk_count;
-    block = cv->blk_list;
-    while( elm < (void *)block ) {
+    for( block = cv->blk_list; elm < (void *)block; block = block->next ) {
         --block_index;
-        block = block->next;
     }
     DbgAssert( block != NULL );
     return( (void *)MK_INDEX( block_index, (char *)elm - block->data ) );
@@ -327,10 +322,8 @@ void CarveWalkBlocks( carve_t cv, void (*cbfn)(carve_t, void *, void *), void *c
 {
     blk_t *     block;
 
-    block = cv->blk_list;
-    while( block != NULL ) {
+    for( block = cv->blk_list; block != NULL; block = block->next ) {
         cbfn( cv, block, cookie );
-        block = block->next;
     }
 }
 

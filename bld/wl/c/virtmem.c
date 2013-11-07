@@ -271,14 +271,13 @@ static virt_mem DoAllocStg( virt_struct (*allocfn)(virt_mem_size),
 
     ret.l = 0;
     gotaddr = FALSE;
-    while( size > limit ) {
+    for( ; size > limit; size -= limit ) {
         if( !gotaddr ) {
             gotaddr = TRUE;
             ret = allocfn( limit );
         } else {
             allocfn( limit );
         }
-        size -= limit;
     }
     if( !gotaddr ) {
         ret = allocfn( size );
@@ -329,10 +328,10 @@ bool SwapOutVirt( void )
 // NOTE - this routine assumes that once something has been swapped out, it
 // will never be read back in again.
 {
-    spilladdr *     spillmem;
-    void *          mem;
-    seg_table *     seg_entry;
-    huge_table *    huge_entry;
+    spilladdr       *spillmem;
+    void            *mem;
+    seg_table       *seg_entry;
+    huge_table      *huge_entry;
     unsigned        size;
 
     while( NextSwap != NULL ) {
@@ -340,7 +339,7 @@ bool SwapOutVirt( void )
         NextSwap = NextSwap->next;
         if( seg_entry->flags & VIRT_INMEM ) {
             if( seg_entry->flags & VIRT_HUGE ) {
-                huge_entry = (huge_table *) seg_entry;
+                huge_entry = (huge_table *)seg_entry;
                 spillmem = &huge_entry->page[huge_entry->numswapped];
                 mem = (*spillmem).addr;
                 huge_entry->numswapped++;
@@ -617,13 +616,13 @@ static bool OutInfo( void * dummy, spilladdr loc, unsigned off, unsigned len, bo
     if( inmem ) {
         WriteLoad( (char *)loc.addr + off, len );
     } else {
-        while( len != 0 ) {
+        for( ; len != 0; len -= amt ) {
             amt = len;
-            if( amt >= TokSize ) amt = TokSize;
+            if( amt > TokSize )
+                amt = TokSize;
             SpillRead( loc.spill, off, TokBuff, amt );
             WriteLoad( TokBuff, amt );
             off += amt;
-            len -= amt;
         }
     }
     return TRUE;

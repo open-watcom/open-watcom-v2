@@ -94,9 +94,6 @@ typedef union fix_data {
     unsigned        val;
 } fix_data;
 
-/* This ordering is roughly the same as intel's - don't mess it up without
-   a good reason (and make sure the code that depends on it is fixed!) */
-
 typedef enum {
     FIX_FRAME_SEG,      /* segdata */
     FIX_FRAME_GRP,      /* group_entry */
@@ -107,7 +104,7 @@ typedef enum {
     FIX_FRAME_FLAT      /* frame is flat group */
 } frame_type;
 
-#define FRAME_HAS_DATA( fix ) ((fix) < FIX_FRAME_LOC)
+#define FRAME_HAS_DATA( fix ) ((fix) == FIX_FRAME_SEG || (fix) == FIX_FRAME_GRP || (fix) == FIX_FRAME_EXT || (fix) == FIX_FRAME_ABS)
 
 typedef enum {
     FIX_TARGET_SEG,      /* segdata */

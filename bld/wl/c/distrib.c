@@ -217,8 +217,7 @@ void SetSegments( void )
             }
             DefModSegments( mod );
             mod->x.next = NULL;
-            currmod = &CurrSect->u.dist_mods;
-            while( *currmod != NULL ) {
+            for( currmod = &CurrSect->u.dist_mods; *currmod != NULL; ) {
                 currmod = &((*currmod)->x.next);
             }
             *currmod = mod;
@@ -272,18 +271,14 @@ unsigned_16 LowestAncestor( unsigned_16 ovl1, section * sect )
 {
     section *   list;
 
-    list = sect;
-    while( list != NULL ) {
+    for( list = sect; list != NULL; list = list->parent ) {
         list->ovl_num |= SECT_VISITED;
+    }
+    for( list = SectOvlTab[ ovl1 ]; !(list->ovl_num & SECT_VISITED); ) {
         list = list->parent;
     }
-    list = SectOvlTab[ ovl1 ];
-    while( !(list->ovl_num & SECT_VISITED ) ) {
-        list = list->parent;
-    }
-    while( sect != NULL ) {
+    for( ; sect != NULL; sect = sect->parent ) {
         sect->ovl_num &= ~SECT_VISITED;
-        sect = sect->parent;
     }
     return( list->ovl_num );
 }
@@ -348,9 +343,7 @@ static bool NotAnArc( dist_arc arc )
     arcdata *   arclist;
 
     arclist = CurrMod->x.arclist;
-    index = arclist->numarcs;
-    while( index != 0 ) {
-        index--;
+    for( index = arclist->numarcs; index-- > 0; ) {
         if( arclist->arcs[index].test == arc.test ) {
             return( FALSE );
         }
@@ -470,9 +463,7 @@ static void ScanArcs( mod_entry *mod )
     arcs = mod->x.arclist;
     ovlnum = arcs->ovlref;
     if( ovlnum != NO_ARCS_YET ) {
-        index = arcs->numarcs;
-        while( index > 0 ) {
-            index--;
+        for( index = arcs->numarcs; index-- > 0; ) {
             currarc = arcs->arcs[index];
             if( currarc.test <= MAX_NUM_MODULES ) {     // GIANT KLUDGE!
                 DoRefGraph( ovlnum, MOD_DEREF( currarc.mod ) );
@@ -512,7 +503,7 @@ static void ScanArcs( mod_entry *mod )
                     }
                 }
             } /* if (a module) */
-        } /* while (arcs left)*/
+        } /* for (arcs left) */
     } /* if (an ovlnum defined) */
     mod->modinfo &= ~MOD_VISITED;
 }

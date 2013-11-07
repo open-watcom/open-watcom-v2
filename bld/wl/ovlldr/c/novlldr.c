@@ -106,8 +106,7 @@ static unsigned __near AllocFromArea( unsigned amount, unsigned area_seg )
     area_list_ptr       area;
 
     area = MK_FP( area_seg, 0 );
-    memptr = MK_FP( area->fblk.next, 0 );
-    while( memptr->num_paras != 0 && memptr->num_paras < amount ) {
+    for( memptr = MK_FP( area->fblk.next, 0 ); memptr->num_paras != 0 && memptr->num_paras < amount; ) {
         memptr = MK_FP( memptr->next, 0 );
     }
     seg = NULL_SEG;
@@ -126,15 +125,13 @@ static unsigned __near Allocate( unsigned amount )
     unsigned            seg;
     area_list_ptr       area;
 
-    area = MK_FP( __OVLAREALIST__, 0 );
-    while( area != NULL ) {
+    for( area = MK_FP( __OVLAREALIST__, 0 ); area != NULL; area = MK_FP( area->next, 0 ) ) {
         if( area->free_paras >= amount ) {
             seg = AllocFromArea( amount, FP_SEG( area ) );
             if( seg != NULL_SEG ) {
                 return( seg );
             }
         }
-        area = MK_FP( area->next, 0 );
     }
     return( NULL_SEG );
 }
@@ -194,10 +191,9 @@ static void __near FreeSeg( unsigned seg, unsigned num_paras, unsigned area_seg 
 
     area = MK_FP( area_seg, 0 );
     memptr = MK_FP( seg, 0 );
-    nextptr = MK_FP( area->fblk.next, 0 );
     /* Note: Since there is a dummy block at end of list, we don't have to
      * explicitly test for it here. */
-    while( FP_SEG( nextptr ) < FP_SEG( memptr ) ) {
+    for( nextptr = MK_FP( area->fblk.next, 0 ); FP_SEG( nextptr ) < FP_SEG( memptr ); ) {
         nextptr = MK_FP( nextptr->next, 0 );
     }
     FreeWithNext( seg, num_paras, area_seg, FP_SEG( nextptr ) );
@@ -877,22 +873,18 @@ extern void __far __NOVLDUMP__( void )
                 cprintf( "    ret_offset=%04xh, stack_trap=%04xh" CRLF,
                     rt->traps[i].ret_offset, rt->traps[i].stack_trap );
                 cprintf( "    ret_list=%04xh", rt->traps[i].ret_list );
-                ret = rt->traps[i].ret_list;
-                while( ret != 0 ) {
-                    stk_ptr = MK_FP( FP_SEG( &stk_ptr ), ret+4 );
-                    ret = *stk_ptr;
-                    cprintf( ", %04xh", ret );
+                for( ret = rt->traps[i].ret_list; ret != 0; ret = *stk_ptr ) {
+                    stk_ptr = MK_FP( FP_SEG( &stk_ptr ), ret + 4 );
+                    cprintf( ", %04xh", *stk_ptr );
                 }
             }
 #else
             cprintf( "    ret_offset=%04xh, stack_trap=%04xh" CRLF,
                 rt->ret_offset, rt->stack_trap );
             cprintf( "    ret_list=%04xh", rt->ret_list );
-            ret = rt->ret_list;
-            while( ret != 0 ) {
-                stk_ptr = MK_FP( FP_SEG( &stk_ptr ), ret+4 );
-                ret = *stk_ptr;
-                cprintf( ", %04xh", ret );
+            for( ret = rt->ret_list; ret != 0; ret = *stk_ptr ) {
+                stk_ptr = MK_FP( FP_SEG( &stk_ptr ), ret + 4 );
+                cprintf( ", %04xh", *stk_ptr );
             }
 #endif
             cprintf( CRLF );

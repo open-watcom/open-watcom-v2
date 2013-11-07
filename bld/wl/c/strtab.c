@@ -102,12 +102,11 @@ static char *AddToStringTable( stringtable *strtab, void *data, unsigned len, bo
 
     if( addnullchar )
         ++len;
-    blk = RingLast( strtab->data );
     if( strtab->currbase & 1 && len > STR_BLOCK_SIZE ) {
         LnkMsg( ERR+MSG_SYMBOL_NAME_TOO_LONG, "s", data );
         len = STR_BLOCK_SIZE;
     }
-    while( blk->size + len > STR_BLOCK_SIZE ) {
+    for( blk = RingLast( strtab->data ); blk->size + len > STR_BLOCK_SIZE; blk = AllocNewBlock( strtab ) ) {
         diff = STR_BLOCK_SIZE - blk->size;
         if( diff != 0 ) {
             if( strtab->currbase & 1 ) {        // then don't split
@@ -120,7 +119,6 @@ static char *AddToStringTable( stringtable *strtab, void *data, unsigned len, bo
         }
         blk->size = STR_BLOCK_SIZE;
         strtab->currbase += STR_BLOCK_SIZE;
-        blk = AllocNewBlock( strtab );
     }
     dest = &blk->data[blk->size];
     blk->size += len;

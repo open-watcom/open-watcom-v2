@@ -111,7 +111,7 @@ int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
     cur_reloc = 0;
     carry     = 0;
 
-    while( bin_size ) {
+    for( ; bin_size > 0; bin_size -= num_read ) {
         num_read  = (bin_size > BUF_SIZE) ? BUF_SIZE : bin_size;
 
         if( !fread( buffer, num_read, 1, istream ) ) {
@@ -142,14 +142,11 @@ int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
             }
 
             // apply all relocs fitting in the buffer as a whole
-            while( cur_reloc < reltab->num
-                   && reltab->reloc[cur_reloc] < tot_read + BUF_SIZE - 1 ) {
+            for( ; cur_reloc < reltab->num && reltab->reloc[cur_reloc] < tot_read + BUF_SIZE - 1; ++cur_reloc ) {
                 bptr  = buffer + reltab->reloc[cur_reloc] - tot_read;
                 addr  = GET_LE_16( *((unsigned_16 *)bptr) );
                 addr += reltab->lseg;
                 *((unsigned_16 *)bptr) = GET_LE_16( addr );
-
-                cur_reloc++;
             }
 
             // is there a "lo"-part of a reloc to apply?
@@ -170,7 +167,6 @@ int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
         }
 
         tot_read += num_read;
-        bin_size -= num_read;
     }
 
     free( buffer );
@@ -321,8 +317,7 @@ int parse_cmdline( arguments *arg, int argc, char *argv[] )
     arg->opt.have_l   = 0;
 
     // process the passed options
-    i = 1;
-    while( (i < argc) && ((*argv[i] == '-') || (*argv[i] == '/')) ) {
+    for( i = 1; (i < argc) && ((*argv[i] == '-') || (*argv[i] == '/')); ++i ) {
         switch( argv[i][1] ) {
         case 'q':
             arg->opt.be_quiet = 1;
@@ -346,7 +341,6 @@ int parse_cmdline( arguments *arg, int argc, char *argv[] )
         default :
             return( ERR_USAGE );
         }
-        i++;
     }
 
     // process file-name(s)

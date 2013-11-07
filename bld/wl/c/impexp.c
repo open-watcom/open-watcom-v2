@@ -107,8 +107,7 @@ void FreeExportList( void )
     entry_export *  exp;
 
     if( LinkFlags & INC_LINK_FLAG ) return;
-    exp = FmtData.u.os2.exports;
-    while( exp != NULL ) {
+    for( exp = FmtData.u.os2.exports; exp != NULL; ) {
         exp = FreeAnExport( exp );
     }
 }
@@ -338,9 +337,10 @@ void AssignOrdinals( void )
         if( FmtData.u.os2.old_lib_name != NULL ) {
             ReadOldLib();
         }
-        exp = prev = FmtData.u.os2.exports;
+        prev = FmtData.u.os2.exports;
         place = prev->next;
-        while( exp->ordinal == 0 ) {  // while still unassigned values
+        for( exp = FmtData.u.os2.exports; exp->ordinal == 0; exp = FmtData.u.os2.exports ) {
+            // while still unassigned values
             for(;;) {                 // search for an unassigned value
                 if( place != NULL ) {
                     isspace = (place->ordinal - prev->ordinal > 1);
@@ -359,7 +359,6 @@ void AssignOrdinals( void )
                     place = place->next;
                 }
             }
-            exp = FmtData.u.os2.exports;
         }
     }
 }
@@ -418,14 +417,13 @@ static void ReadOldLib( void )
             _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
             QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
             currobj = objects;
-            while( num_objects > 0 ) {
+            for( ; num_objects > 0; --num_objects ) {
                 if( currobj->rva == table[PE_TBL_EXPORT].rva ) {
                     QSeek( the_file, currobj->physical_offset, fname );
                     table[PE_TBL_EXPORT].rva -= currobj->physical_offset;
                     ReadPEExportTable( the_file, &table[PE_TBL_EXPORT]);
                     break;
                 }
-                num_objects--;
                 currobj++;
             }
             _LnkFree( objects );
@@ -451,26 +449,22 @@ void CheckExport( char * name, ordinal_t ordinal, int (*compare_rtn)(const char 
 
     DEBUG(( DBG_OLD, "Oldlib export %s ordinal %l", name, ordinal ));
     prev = NULL;
-    place = FmtData.u.os2.exports;
-    while( compare_rtn( place->name, name ) != 0 ) {
-        prev = place;
-        place = place->next;
-        if( place == NULL ) {
-            break;
-        }
-    }
-    if( place != NULL ) {
-        if( place->ordinal == 0 ) {
-            place->ordinal = ordinal;
-            place = FindPlace( place );
-            if( place != NULL ) {
-                if( prev == NULL ) {
-                    FmtData.u.os2.exports = place;
-                } else {
-                    prev->next = place;
+    for( place = FmtData.u.os2.exports; place != NULL; place = place->next ) {
+        if( compare_rtn( place->name, name ) == 0 ) {
+            if( place->ordinal == 0 ) {
+                place->ordinal = ordinal;
+                place = FindPlace( place );
+                if( place != NULL ) {
+                    if( prev == NULL ) {
+                        FmtData.u.os2.exports = place;
+                    } else {
+                        prev->next = place;
+                    }
                 }
             }
+            break;
         }
+        prev = place;
     }
 }
 

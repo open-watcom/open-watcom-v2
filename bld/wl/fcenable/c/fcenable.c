@@ -194,26 +194,24 @@ static void ProcList( bool (*fn)(char *,int), char ***argv )
 
     (**argv)++;        // skip the option character.
     checksep = FALSE;
-    while( **argv != NULL ) {
+    for( ; **argv != NULL; (*argv)++ ) {
         item = **argv;
         if( checksep ) {                // separator needed to continue list
             if( *item != ',' ) break;
             item++;
         }
-        comma = strchr( item, ',' );
-        while( comma != NULL ) {            // while commas inside string
+        // while commas inside string
+        for( comma = strchr( item, ',' ); comma != NULL; comma = strchr( item, ',' ) ) {
             if( !fn( item, comma - item ) ) {
                 Warning( "ignoring unexpected comma" );
             }
             item = comma + 1;
-            comma = strchr( item, ',' );
         }
         if( *item != '\0' ) {
             checksep = fn( item, strlen( item ) );
         } else {        // we had a comma at end of string, so no sep needed
             checksep = FALSE;
         }
-        (*argv)++;
     }
     if( ExcludeState != EX_NONE ) {
         Warning( "incomplete exclude option specified" );
@@ -521,8 +519,7 @@ void LinkList( void **in_head, void *newnode )
 {
     node                **owner;
 
-    owner = (node **)in_head;
-    while( *owner != NULL ) {
+    for( owner = (node **)in_head; *owner != NULL; ) {
         owner = &(*owner)->next;
     }
     *owner = newnode;
@@ -532,14 +529,12 @@ void FreeList( void *list )
 /*************************/
 /* Free a list of nodes. */
 {
-    node *  next_node;
+    node *  next;
     node *  curr;
 
-    curr = (node *) list;
-    while( curr ) {
-        next_node = curr->next;
+    for( curr = (node *)list; curr != NULL; curr = next ) {
+        next = curr->next;
         MemFree( curr );
-        curr = next_node;
     }
 }
 

@@ -124,13 +124,11 @@ static void WriteVectors( void )
     XReportSymAddr( OvlVecEnd );
     WriteOvlHead();
     n = 0;
-    vec = OvlVectors;
-    while( vec != NULL ) {
+    for( vec = OvlVectors; vec != NULL; vec = vec->next ) {
         GetVecAddr( ++n, &addr );
         sym = vec->entry;
-        WriteMap( "%a section %d : %S", &addr,
-                   sym->p.seg->u.leader->class->section->ovl_num, sym );
-        vec = vec->next;
+        WriteMap( "%a section %d : %S",
+                  &addr, sym->p.seg->u.leader->class->section->ovl_num, sym );
     }
 }
 

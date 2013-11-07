@@ -116,10 +116,8 @@ bool CacheOpen( file_list *list )
             numblocks = NumCacheBlocks( file->len );
             _Pass1Alloc( file->cache, numblocks * sizeof( char * ) );
             cache = file->cache;
-            while( numblocks > 0 ) {
-                *cache = NULL;
-                cache++;
-                numblocks--;
+            while( numblocks-- > 0 ) {
+                *cache++ = NULL;
             }
         }
     }

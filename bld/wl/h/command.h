@@ -67,9 +67,9 @@ typedef enum {
 }                       status;
 
 typedef enum {
-        ST_IS_ORDINAL,
-        ST_NOT_ORDINAL,
-        ST_INVALID_ORDINAL
+    ST_IS_ORDINAL,
+    ST_NOT_ORDINAL,
+    ST_INVALID_ORDINAL
 } ord_state;
 
 typedef struct tok {
@@ -83,7 +83,7 @@ typedef struct tok {
     unsigned_16 thumb : 1;
     unsigned_16 locked : 1;
     unsigned_16 quoted : 1;     /* set true if token parsed as a quoted string*/
-    unsigned_16 skipToNext : 1; /* set true if we need to skip to next token without a separator */
+   unsigned_16 skipToNext : 1;   /* set true if we need to skip to next token without a separator */
 } tok;
 
 typedef enum commandflag {
@@ -133,6 +133,7 @@ typedef struct sysblock {
 } sysblock;
 
 typedef enum {
+    TOK_NORMAL          = 0x00,
     TOK_INCLUDE_DOT     = 0x01,
     TOK_IS_FILENAME     = 0x02
 } tokcontrol;

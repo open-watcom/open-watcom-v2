@@ -47,8 +47,7 @@ static int          OverlayLevel = 0;
 extern void EatWhite( void )
 /**************************/
 {
-    while(*CmdFile->current == ' ' || *CmdFile->current == '\t'
-                                          || *CmdFile->current == '\r') {
+    while( *CmdFile->current == ' ' || *CmdFile->current == '\t' || *CmdFile->current == '\r' ) {
         CmdFile->current++;
     }
 }
@@ -75,23 +74,22 @@ extern bool InitParsing( void )
 extern void FreeParserMem( void )
 /*******************************/
 {
-    cmdfilelist *   nextone;
+    cmdfilelist     *next;
 
 
-    while( CmdFile != NULL ) {
+    for( ; CmdFile != NULL; CmdFile = next ) {
+        next = CmdFile->next;
         if( CmdFile->file != NIL_HANDLE ) {
             QClose( CmdFile->file, CmdFile->name );
         }
         MemFree( CmdFile->buffer );
         MemFree( CmdFile->name );
-        nextone = CmdFile->next;
         MemFree( CmdFile );
-        CmdFile = nextone;
     }
 }
 
 static void GetNewLine( int prompt )
-/******************************/
+/**********************************/
 {
     if( CmdFile->how == NONBUFFERED ) {
         if( QReadStr( CmdFile->file, CmdFile->buffer, MAX_LINE,CmdFile->name )){
@@ -102,12 +100,12 @@ static void GetNewLine( int prompt )
         CmdFile->current = CmdFile->buffer;
     } else if( CmdFile->how == BUFFERED ) {               // interactive.
         CmdFile->where = MIDST;
-        while( *CmdFile->current != '\n' ) {       //go until next line found;
+        //go until next line found;
+        for( ; *CmdFile->current != '\n'; CmdFile->current++ ) {
             if( *CmdFile->current == '\0' ) {
                 CmdFile->where = ENDOFFILE;
                 break;
             }
-            CmdFile->current++;
         }
     } else {
         CmdFile->how = INTERACTIVE;
@@ -451,9 +449,9 @@ static int GetNextInputChar( prompt_slot prompt )
     if( c == '@' && !is_quoting ) {
         if( CmdFile->how == COMMANDLINE || CmdFile->how == INTERACTIVE ) {
             char    fname[LINE_BUF_SIZE];
-            int     oi = 0;
+            int     oi;
 
-            while( oi < sizeof( fname ) - 1 ) {
+            for( oi = 0; oi < sizeof( fname ) - 1; ) {
                 c = ReadNextChar( prompt );
                 if( c == '"' )
                     is_quoting ^= TRUE;
@@ -461,8 +459,9 @@ static int GetNextInputChar( prompt_slot prompt )
                 if( (!is_quoting && (c == ',' || c == '+' || c == ';' || c == ' ')) ||
                     c == '/' || c < ' ' )
                     break;
-                if( c != '"' )
+                if( c != '"' ) {
                     fname[oi++] = c;
+                }
             }
             fname[oi] = '\0';
             if( c > ' ' )
@@ -494,9 +493,8 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
     c = 0;
     for( ;; ) {
         is_quoting = FALSE;
-        oi = 0;
         /* Read a line from input stream. */
-        while( oi < buf_len - 1 ) {
+        for( oi = 0; oi < buf_len - 1; ) {
             c = GetNextInputChar( prompt );
             if( c == '"' )
                 is_quoting ^= TRUE;
@@ -525,13 +523,14 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
         }
         if( oi ) {  /* Index of the terminating null. */
             /* Strip trailing spaces. */
-            while( oi > 0 && line[oi - 1] == ' ' )
+            while( oi > 0 && line[oi - 1] == ' ' ) {
                 --oi;
+            }
         }
         line[oi] = '\0';
 
-        idx1 = idx2 = 0;
-        while( idx2 < oi ) {
+        idx1 = 0;
+        for( idx2 = 0; idx2 < oi; ++idx2 ) {
             if( line[idx2] == '"' ) {
                 while( idx2 < oi && line[++idx2] != '"' )
                     line[idx1++] = line[idx2];
@@ -542,7 +541,6 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
                     line[idx1] = line[idx2];
                 ++idx1;
             }
-            ++idx2;
         }
 
         /* Null terminate string. */
@@ -566,15 +564,13 @@ static void TokenizeLine( char *buf, char delim, void (*pfn)( char * ) )
     char    *s1;
     char    *s2;
 
-    s1 = buf;
-    while( *s1 ) {
+    for( s1 = buf; *s1 != '\0'; s1 = s2 ) {
         s2 = s1;
-        while( *s2 && *s2 != delim )
+        while( *s2 != '\0' && *s2 != delim )
             ++s2;
-        if( *s2 )
+        if( *s2 != '\0' )
             *s2++ = '\0';
         pfn( s1 );
-        s1 = s2;
     }
 }
 
@@ -592,17 +588,20 @@ static void DoOptions( char *buf )
     char    opt[LINE_BUF_SIZE];
     char    *cmd;
 
-    cmd = buf;
-    while( *cmd && *cmd != '/' )
-        ++cmd;
+    for( cmd = buf; *cmd != '\0'; ++cmd ) {
+        if( *cmd == '/' ) {
+            break;
+        }
+    }
     /* See if option separator was found. */
     if( *cmd == '/' ) {
         *cmd = '\0';
         strcpy( opt, cmd + 1 );
         /* Strip trailing spaces from text preceding the option. */
         --cmd;
-        while( cmd > buf && *cmd == ' ' )
+        while( cmd > buf && *cmd == ' ' ) {
             *cmd-- = '\0';
+        }
         /* Strip trailing junk from the option. */
         //@TODO!
         /* Now handle the option(s). */
@@ -613,8 +612,8 @@ static void DoOptions( char *buf )
 static char *LastStringChar( char *s )
 /************************************/
 {
-    if( *s ) {
-        while( *s )
+    if( *s != '\0' ) {
+        while( *s != '\0' )
             ++s;
         --s;
     }

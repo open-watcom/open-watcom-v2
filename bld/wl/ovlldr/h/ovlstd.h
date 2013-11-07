@@ -116,7 +116,7 @@ extern  int         __near __OvlRelocLoad__( ovltab_entry_ptr, tiny_handle_t );
 extern  void        __near __OvlNum__( unsigned );
 extern  void        __near __OvlMsg__( unsigned );
 extern  tiny_ret_t  __near __OpenOvl__( unsigned );
-extern  tiny_ret_t  __near __OvlOpen__( char __far *fname );
+extern  tiny_ret_t  __near __OvlOpen__( const char __far *fname );
 extern  void        __far  __CloseOvl__( void );
 extern  void        __near __OvlClose__( tiny_handle_t hdl );
 

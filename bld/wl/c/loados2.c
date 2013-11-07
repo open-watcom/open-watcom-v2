@@ -282,25 +282,18 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
 static void FreeResTable( ResTable *restab )
 /*******************************************/
 {
-    FullTypeRecord              *exe_type;
-    FullTypeRecord              *old_type;
-    FullResourceRecord          *exe_res;
-    FullResourceRecord          *old_res;
+    FullTypeRecord              *type;
+    FullTypeRecord              *type_next;
+    FullResourceRecord          *res;
+    FullResourceRecord          *res_next;
 
-    exe_type = restab->Dir.Head;
-    while( exe_type != NULL ) {
-        exe_res = exe_type->Head;
-        while( exe_res != NULL ) {
-            old_res = exe_res;
-            exe_res = exe_res->Next;
-
-            _LnkFree( old_res );
+    for( type = restab->Dir.Head; type != NULL; type = type_next ) {
+        type_next = type->Next;
+        for( res = type->Head; res != NULL; res = res_next ) {
+            res_next = res->Next;
+            _LnkFree( res );
         }
-
-        old_type = exe_type;
-        exe_type = exe_type->Next;
-
-        _LnkFree( old_type );
+        _LnkFree( type );
     }
 
     restab->Dir.Head = NULL;
@@ -555,16 +548,14 @@ static unsigned long DumpEntryTable( void )
     start = FmtData.u.os2.exports;
     if( start != NULL ) {
         prevord = 0;
-        place = start;
-        while( place != NULL ) {
+        for( place = start; place != NULL; ) {
             gap = place->ordinal - prevord;
             if( gap > 1 ) {  // fill in gaps in ordinals.
                 gap--;       // fix 'off by 1' problem.
                 prefix.number = 0xFF;
                 prefix.type = 0x00;   // Null bundles.
-                while( gap > 0xff ) {
+                for( ; gap > 0xFF; gap -= 0xFF ) {
                     WriteLoad( &prefix, sizeof( bundle_prefix ) );
-                    gap -= 0xFF;
                     size += 2;
                 }
                 prefix.number = (unsigned_8) gap;
@@ -574,8 +565,7 @@ static unsigned long DumpEntryTable( void )
             // now get a bundle of ordinals.
             entries = 1;
             prev = start = place;
-            place = place->next;
-            while( place != NULL ) {
+            for( place = place->next; place != NULL; place = place->next ) {
                 if( entries >= 0xff ) break;
                 if( start->ismovable ) {
                     if( !place->ismovable )break;
@@ -587,7 +577,6 @@ static unsigned long DumpEntryTable( void )
                 }
                 entries++;
                 prev = place;
-                place = place->next;
             }
             if( start->ismovable ) {
                 prefix.type = MOVABLE_ENTRY_PNT;
@@ -1178,7 +1167,7 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
                 PadLoad( reloc_size );
             }
             QSeek( the_file, code_start, name );
-            while( read_len > 0 ) {
+            for( ; read_len > 0; read_len -= amount ) {
                 if( read_len < TokSize ) {
                     amount = read_len;
                 } else {
@@ -1186,7 +1175,6 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
                 }
                 QRead( the_file, TokBuff, amount, name );
                 WriteLoad( TokBuff, amount );
-                read_len -= amount;
             }
             stub_len = NullAlign( stub_align );
         }

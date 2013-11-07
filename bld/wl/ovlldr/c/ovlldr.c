@@ -139,8 +139,9 @@ int __near LOADOVERLAY( unsigned ovl_num )
     tiny_handle_t       fp;
     int                 loaded_something;
 
+    // load overlay and all its ancestors
     loaded_something = 0;
-    while( ovl_num != 0 ) { // load overlay and all its ancestors
+    for( ; ovl_num != 0; ovl_num = ovl->flags_anc & OVE_FLAG_ANC_MASK ) {
         ovl = __OVLTAB__.entries + ovl_num - 1;
 #ifdef OVL_DEBUG
         __OvlMsg__( OVL_SECTION );
@@ -165,7 +166,6 @@ int __near LOADOVERLAY( unsigned ovl_num )
             __OvlMsg__( OVL_RESIDENT );
 #endif
         }
-        ovl_num = ovl->flags_anc & OVE_FLAG_ANC_MASK;
     }
     return( loaded_something );
 }

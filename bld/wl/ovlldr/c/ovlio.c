@@ -32,8 +32,8 @@
 
 #include "ovlstd.h"
 
-extern tiny_ret_t __near __OvlOpen__( char __far *fname )
-/***************************************************/
+extern tiny_ret_t __near __OvlOpen__( const char __far *fname )
+/*************************************************************/
 {
     open_attr   openmode;
 

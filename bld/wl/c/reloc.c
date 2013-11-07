@@ -101,11 +101,10 @@ static void *OS2PagedRelocInit( offset size, int unitsize )
     _PermAlloc( mem, ( idxhigh + 1 ) * sizeof( void * ) );
     start = mem;
     allocsize = OSF_RLIDX_MAX * unitsize;
-    while( idxhigh > 0 ) {
+    while( idxhigh-- > 0 ) {
         _ChkAlloc( *mem, allocsize );
         memset( *mem, 0, allocsize );
         mem++;
-        idxhigh--;
     }
     idxlow = OSF_RLIDX_LOW( pageidx );
     if( idxlow != 0 ) {
@@ -225,11 +224,10 @@ static bool FreeRelocList( reloc_info *list )
 /********************************************/
 /* free any reloc blocks pointed to by list */
 {
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->next ) {
         if( !( list->sizeleft & RELOC_SPILLED ) ) {
             _LnkFree( list->loc.addr );
         }
-        list = list->next;
     }
     return( FALSE );  /* needed for OS2 generic traversal routines */
 }
@@ -244,7 +242,7 @@ static bool TraverseRelocBlock( reloc_info ** reloclist, unsigned num,
                                 bool (*fn)( reloc_info * ) )
 /********************************************************************/
 {
-    while( num > 0 ) {
+    while( num-- > 0 ) {
         if( fn( *reloclist++ ) )
             return( TRUE );
         if( FmtData.type & MK_OS2_FLAT ) {
@@ -252,7 +250,6 @@ static bool TraverseRelocBlock( reloc_info ** reloclist, unsigned num,
                 return( TRUE );
             }
         }
-        num--;
     }
     return( FALSE );
 }
@@ -269,12 +266,10 @@ bool TraverseOS2RelocList( group_entry *group, bool (*fn)( reloc_info * ) )
     reloclist = group->g.grp_relocs;
     if( reloclist != NULL ) {
         index = OSF_PAGE_COUNT( group->totalsize );
-        highidx = OSF_RLIDX_HIGH( index );
-        while( highidx > 0 ) {
+        for( highidx = OSF_RLIDX_HIGH( index ); highidx > 0; --highidx ) {
             if( TraverseRelocBlock( *reloclist, OSF_RLIDX_MAX, fn ) )
                 return( TRUE );
             reloclist++;
-            highidx--;
         }
         lowidx = OSF_RLIDX_LOW( index );
         if( lowidx > 0 ) {
@@ -302,10 +297,9 @@ static void FreeGroupRelocs( group_entry *group )
             if( OSF_RLIDX_LOW( index ) != 0 ) {
                 highidx++;
             }
-            while( highidx > 0 ) {
+            while( highidx-- > 0 ) {
                 _LnkFree( *reloclist );
                 reloclist++;
-                highidx--;
             }
         }
     } else if( FmtData.type & ( MK_ELF | MK_OS2_16BIT | MK_QNX ) ) {
@@ -341,9 +335,8 @@ unsigned_32 RelocSize( reloc_info *list )
     unsigned_32 size;
 
     size = 0;
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->next ) {
         size += RELOC_PAGE_SIZE - ( list->sizeleft & SIZELEFT_MASK );
-        list = list->next;
     }
     return( size );
 }
@@ -448,7 +441,7 @@ static bool SpillRelocList( reloc_info *list )
 {
     virt_mem_size   spill;
 
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->next ) {
         if( !( list->sizeleft & RELOC_SPILLED ) ) {
             spill = SpillAlloc( RELOC_PAGE_SIZE );
             SpillWrite( spill, 0, list->loc.addr, RELOC_PAGE_SIZE - list->sizeleft );
@@ -457,7 +450,6 @@ static bool SpillRelocList( reloc_info *list )
             list->sizeleft |= RELOC_SPILLED;
             return( TRUE );
         }
-        list = list->next;
     }
     return( FALSE );
 }

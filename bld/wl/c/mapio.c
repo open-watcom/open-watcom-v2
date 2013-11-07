@@ -548,8 +548,7 @@ void WriteMapLines( void )
     _ChkAlloc( input, length );
     ReadInfo( input_vm, input, length );
 
-    p = input;
-    while( p - input < length ) {
+    for( p = input; p - input < length; ) {
         state.col = 0;
         state.is_32 = 0;
         state.has_seg = 0;
@@ -907,9 +906,8 @@ void WriteMapNL( unsigned count )
 
     if( MapFlags & MAP_FLAG ) {
         len = strlen( NLSeq );
-        while( count != 0 ) {
+        while( count-- > 0 ) {
             BufWrite( NLSeq, len );
-            --count;
         }
         MapCol = 0;
     }

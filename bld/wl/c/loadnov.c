@@ -119,10 +119,9 @@ static unsigned_32 WriteNovImports( fixed_header *header )
                 refs = import->num_relocs;
                 WriteLoad( &refs, sizeof( unsigned_32 ) );
                 vmem_array = import->vm_ptr;
-                while( refs > IMP_NUM_VIRT ) {
+                for( ; refs > IMP_NUM_VIRT; refs -= IMP_NUM_VIRT ) {
                     WriteInfoLoad( *vmem_array, IMP_VIRT_ALLOC_SIZE );
                     vmem_array++;
-                    refs -= IMP_NUM_VIRT;
                 }
                 WriteInfoLoad( *vmem_array, refs * sizeof( unsigned_32 ) );
                 refs = import->num_relocs * sizeof( unsigned_32 );
@@ -145,9 +144,7 @@ static unsigned_32 WriteNovExports( fixed_header *header )
     unsigned_8  len;
 
     count = wrote = 0;
-    export = FmtData.u.nov.exp.export;
-    while( export != NULL ) {
-
+    for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
         len = export->len;
         sym = SymOp( ST_FIND, export->name, len );
         if( ( sym == NULL ) || !( sym->info & SYM_DEFINED ) ) {
@@ -184,7 +181,6 @@ static unsigned_32 WriteNovExports( fixed_header *header )
             WriteLoad( &off, sizeof( unsigned_32 ) );
             wrote += sizeof( unsigned_32 ) + sizeof( unsigned_8 ) + len;
         }
-        export = export->next;
     }
     header->numberOfPublics = count;
     return( wrote );
@@ -198,13 +194,11 @@ static unsigned_32 WriteNovModules( fixed_header *header )
     unsigned_32 wrote;
 
     count = wrote = 0;
-    module = FmtData.u.nov.exp.module;
-    while( module != NULL ) {
+    for( module = FmtData.u.nov.exp.module; module != NULL; module = module->next ) {
         count++;
         WriteLoad( &module->len, sizeof( unsigned_8 ) );
         WriteLoad( module->name, module->len );
         wrote += sizeof( unsigned_8 ) + module->len;
-        module = module->next;
     }
     header->numberOfModuleDependencies = count;
     return( wrote );
@@ -274,8 +268,7 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
         return( CurrDbgLoc - NovDbgInfo );
     } else if( FmtData.u.nov.flags & DO_NOV_EXPORTS ) {
         count = wrote = 0;
-        export = FmtData.u.nov.exp.export;
-        while( export != NULL ) {
+        for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
             len = export->len;
             sym = SymOp( ST_FIND, export->name, len );
             if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
@@ -291,7 +284,6 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
                 WriteLoad( export->name, len );
                 wrote += sizeof( nov_dbg_info ) + len;
             }
-            export = export->next;
         }
         header->numberOfDebugRecords = count;
         return( wrote );
@@ -707,13 +699,11 @@ void FindExportedSyms( void )
 
     dinfo = CurrSect->dbg_info;
     if( ( FmtData.u.nov.flags & DO_WATCOM_EXPORTS ) && ( dinfo != NULL ) ) {
-        export = FmtData.u.nov.exp.export;
-        while( export != NULL ) {
+        for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
             sym = SymOp( ST_FIND, export->name, export->len );
             if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
                 dinfo->global.curr.u.vm_ptr += strlen( sym->name ) + sizeof( gblinfo );
             }
-            export = export->next;
         }
     }
 }

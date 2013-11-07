@@ -192,15 +192,17 @@ static unsigned TestWrite( f_handle file, void *buffer, unsigned len, char *name
     return( TINY_INFO(h) );
 }
 
+#define QWRITE_BLOCK_SIZE   (16*1024)
+
 unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
 /*****************************************************************************/
 {
-    while( len > (16*1024) ) {
-        if( TestWrite( file, buffer, 16*1024, name ) != 16*1024 ) return 0;
-        len -= 16*1024;
-        buffer = ((char *) buffer) + 16*1024;
+    for( ; len > QWRITE_BLOCK_SIZE; len -= QWRITE_BLOCK_SIZE ) {
+        if( TestWrite( file, buffer, QWRITE_BLOCK_SIZE, name ) != QWRITE_BLOCK_SIZE )
+            return( 0 );
+        buffer = (char *)buffer + QWRITE_BLOCK_SIZE;
     }
-    return TestWrite( file, buffer, len, name );
+    return( TestWrite( file, buffer, len, name ) );
 }
 
 char    NLSeq[] = { "\r\n" };

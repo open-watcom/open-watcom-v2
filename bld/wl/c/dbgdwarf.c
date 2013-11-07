@@ -243,6 +243,7 @@ static void DwarfAddLines( lineinfo *info )
     dw_addr_delta       addrdelta;
     ln_off_386          prevline;
     unsigned            size;
+    unsigned            item_size;
 
     prevline.off = 0;
     prevline.linnum = 1;
@@ -255,22 +256,23 @@ static void DwarfAddLines( lineinfo *info )
         dwsize -= 5;    // size of LNE_segment burst
     }
     lineptr = (ln_off_pair *)info->data;
-    size = info->size & ~LINE_IS_32BIT;
-    while( size > 0 ) {
+    if( info->size & LINE_IS_32BIT ) {
+        item_size = sizeof( ln_off_386 );
+    } else {
+        item_size = sizeof( ln_off_286 );
+    }
+    for( size = info->size & ~LINE_IS_32BIT; size > 0; size -= item_size ) {
         if( info->size & LINE_IS_32BIT ) {
-            linedelta = (signed_32) lineptr->_386.linnum - prevline.linnum;
+            linedelta = (signed_32)lineptr->_386.linnum - prevline.linnum;
             addrdelta = lineptr->_386.off - prevline.off;
-            lineptr++;
-            size -= sizeof( ln_off_386 );
         } else {
-            linedelta = (signed_32) lineptr->_286.linnum - prevline.linnum;
+            linedelta = (signed_32)lineptr->_286.linnum - prevline.linnum;
             addrdelta = lineptr->_286.off - prevline.off;
-            lineptr = (void *)( (char *)lineptr + sizeof( ln_off_286 ) );
-            size -= sizeof( ln_off_286 );
         }
         prevline.linnum += linedelta;
         prevline.off += addrdelta;
         dwsize += DWLineGen( linedelta, addrdelta, buff );
+        lineptr = (void *)( (char *)lineptr + item_size );
     }
     CurrMod->d.d->dasi.size += dwsize;
 }
@@ -537,6 +539,7 @@ void DwarfGenLines( lineinfo *info )
     uint_8              buff[ 3 + 2 * MAX_LEB128 ];
     unsigned            size;
     segdata             *seg;
+    unsigned            item_size;
 
     if( CurrMod->modinfo & MOD_DBI_SEEN )
         return;
@@ -572,25 +575,26 @@ void DwarfGenLines( lineinfo *info )
         PutInfo( vmem_addr, buff, 5 );
         vmem_addr += 5;
     }
-    size = info->size & ~LINE_IS_32BIT;
+    if( info->size & LINE_IS_32BIT ) {
+        item_size = sizeof( ln_off_386 );
+    } else {
+        item_size = sizeof( ln_off_286 );
+    }
     lineptr = (ln_off_pair *)info->data;
-    while( size > 0 ) {
+    for( size = info->size & ~LINE_IS_32BIT; size > 0; size -= item_size ) {
         if( info->size & LINE_IS_32BIT ) {
             linedelta = (signed_32) lineptr->_386.linnum - prevline.linnum;
             addrdelta = lineptr->_386.off - prevline.off;
-            lineptr++;
-            size -= sizeof( ln_off_386 );
         } else {
             linedelta = (signed_32) lineptr->_286.linnum - prevline.linnum;
             addrdelta = lineptr->_286.off - prevline.off;
-            lineptr = (void *)( (char *)lineptr + sizeof( ln_off_286 ) );
-            size -= sizeof( ln_off_286 );
         }
         prevline.linnum += linedelta;
         prevline.off += addrdelta;
         dwsize = DWLineGen( linedelta, addrdelta, buff );
         PutInfo( vmem_addr, buff, dwsize );
         vmem_addr += dwsize;
+        lineptr = (void *)( (char *)lineptr + item_size );
     }
     buff[0] = 0;        // extended opcode
     buff[1] = 1;        // size 1
@@ -751,8 +755,8 @@ static unsigned_32 WriteELFSections( unsigned_32 file_off, unsigned_32 curr_off,
     unsigned_32 addsize;
 
     if( DBIClass != NULL ) {
-        seg = (seg_leader *) RingStep( DBIClass->segs, NULL );
-        while( seg != NULL ) {
+        for( seg = (seg_leader *)RingStep( DBIClass->segs, NULL ); seg != NULL;
+          seg = (seg_leader *)RingStep( DBIClass->segs, seg ) ) {
             addsize = 0;
             addidx = seg->dbgtype - DWARF_DEBUG_INFO;
             if( addidx < SECT_NUM_SECTIONS ) {
@@ -769,7 +773,6 @@ static unsigned_32 WriteELFSections( unsigned_32 file_off, unsigned_32 curr_off,
                 file_off += hdr->sh_size;
                 hdr++;
             }
-            seg = (seg_leader *) RingStep( DBIClass->segs, seg );
         }
     }
     for( addidx = 0; addidx < SECT_NUM_SECTIONS; addidx++ ) {

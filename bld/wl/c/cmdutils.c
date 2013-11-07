@@ -190,7 +190,7 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
     if( ret == FALSE ) {
         return( ret );
     }
-    while( entry->keyword != NULL ) {
+    for( ; entry->keyword != NULL; ++entry ) {
         key = entry->keyword;
         ptr = Token.this;
         plen = Token.len;
@@ -213,7 +213,6 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
             plen--;
         }
         /* here if this is no match */
-        entry++;
     }
     /* here if no match in table */
     if( suicide ) {
@@ -234,7 +233,7 @@ bool MatchOne( parse_entry *entry , sep_type req , char *match, unsigned len )
     unsigned            plen;
     bool                ret = FALSE;
 
-    while( entry->keyword != NULL ) {
+    for( ; entry->keyword != NULL; ++entry ) {
         key = entry->keyword;
         ptr = match;
         plen = len;
@@ -250,7 +249,6 @@ bool MatchOne( parse_entry *entry , sep_type req , char *match, unsigned len )
             plen--;
         }
         /* here if this is no match */
-        entry++;
     }
 
     /* here if no match in table */
@@ -339,7 +337,7 @@ ord_state getatol( unsigned_32 *pnt )
 }
 
 bool HaveEquals( tokcontrol ctrl )
-/***************************************/
+/********************************/
 {
     if( GetToken( SEP_EQUALS, ctrl ) == FALSE ) {
         Token.this = Token.next;
@@ -356,7 +354,7 @@ bool GetLong( unsigned_32 *addr )
     unsigned_32     value;
     ord_state       ok;
 
-    if( !HaveEquals(0) ) return( FALSE );
+    if( !HaveEquals( TOK_NORMAL ) ) return( FALSE );
     ok = getatol( &value );
     if( ok != ST_IS_ORDINAL ) {
         return( FALSE );
@@ -378,7 +376,7 @@ char *totext( void )
 /* get a possiblly quoted string */
 {
     Token.thumb = REJECT;
-    if( !GetToken( SEP_NO, 0 ) ) {
+    if( !GetToken( SEP_NO, TOK_NORMAL ) ) {
         GetToken( SEP_NO, TOK_INCLUDE_DOT );
     }
     return( tostring() );
@@ -430,7 +428,7 @@ static bool CheckFence( void )
             return( TRUE );
         }
     } else {
-        return( GetToken( SEP_RCURLY, 0 ) );
+        return( GetToken( SEP_RCURLY, TOK_NORMAL ) );
     }
     return( FALSE );
 }
@@ -637,12 +635,12 @@ static void GetNewLine( void )
      || Token.how == ENVIRONMENT
      || Token.how == SYSTEM ) {
         Token.where = MIDST;
-        while( *Token.next != '\n' ) {       //go until next line found;
+        //go until next line found;
+        for( ; *Token.next != '\n'; Token.next++ ) {
             if( *Token.next == '\0' || *Token.next == CTRLZ ) {
                 Token.where = ENDOFFILE;
                 break;
             }
-            Token.next++;
         }
         Token.next++;
     } else if( Token.how == NONBUFFERED ) {
@@ -1091,12 +1089,13 @@ void BurnUtils( void )
 /***************************/
 // Burn data structures used in command utils.
 {
-    void        *temp;
+    void        *prev;
 
     if( CmdFile->next != NULL ) {
         LnkMsg( LOC+LINE+ERR+MSG_NO_INPUT_LEFT, NULL );
     }
-    while( CmdFile != NULL ) {
+    for( ; CmdFile != NULL; CmdFile = prev ) {
+        prev = CmdFile->prev;
         if( CmdFile->file > STDIN_HANDLE ) {
             QClose( CmdFile->file, CmdFile->name );
         }
@@ -1112,9 +1111,7 @@ void BurnUtils( void )
             _LnkFree( CmdFile->token.buff );
             break;
         }
-        temp = CmdFile;
-        CmdFile = CmdFile->prev;
-        _LnkFree( temp );
+        _LnkFree( CmdFile );
     }
     Token.how = BUFFERED;       // so error message stuff reports right name
 }
