@@ -1,3 +1,5 @@
+#pmake: mathqa tests
+
 #
 # Math libraray test program makefile (see mathtest.c)
 #
@@ -44,6 +46,7 @@
 #                           lnx_fpcs
 
 !include cproj.mif
+!include defrule.mif
 !include deftarg.mif
 
 .erase
@@ -75,8 +78,8 @@
 
 mathtest = ../c/mathtest.c
 
-comp_opts = -za99 -ox -d2 -zq -fo=$^*.obj
-link_opts = NAME $^* OPTION quiet, map DEBUG all
+comp_opts = -za99 -ox -d2 -zq -fo=$^*.obj $(inc_path)
+link_opts = NAME $^* OPTION quiet, map DEBUG all 
 
 exes = &
     dos_fpis.exe dos_fpcs.exe &
@@ -101,180 +104,186 @@ exes = &
     lnx_fpir.exe lnx_fpcr.exe &
     lnx_fpis.exe lnx_fpcs.exe
 
+tests : .symbolic all
+
 all : .symbolic $(exes)
 
 dos_fpis.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -ms -fpi -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj
 
 dos_fpcs.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -ms -fpc -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj 
 
 dos_fpim.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -mm -fpi -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj
 
 dos_fpcm.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -mm -fpc -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj
 
 dos_fpic.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -mc -fpi -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj
 
 dos_fpcc.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -mc -fpc -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj
 
 dos_fpil.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -ml -fpi -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj
 
 dos_fpcl.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -ml -fpc -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj
 
 dos_fpih.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -mh -fpi -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj
 
 dos_fpch.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -mh -fpc -bt=dos
-    wlink SYSTEM dos $(link_opts) FILE $^*.obj
+    $(linker_i86) SYSTEM dos $(link_opts) FILE $^*.obj
 
 pls_fpir.exp : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=dos -3r
-    wlink SYSTEM pharlap option offset=4k $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM pharlap option offset=4k $(link_opts) FILE $^*.obj
 
 pls_fpcr.exp : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=dos -3r
-    wlink SYSTEM pharlap option offset=4k $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM pharlap option offset=4k $(link_opts) FILE $^*.obj
 
 pls_fpis.exp : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=dos -3s
-    wlink SYSTEM pharlap option offset=4k $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM pharlap option offset=4k $(link_opts) FILE $^*.obj
 
 pls_fpcs.exp : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=dos -3s
-    wlink SYSTEM pharlap option offset=4k $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM pharlap option offset=4k $(link_opts) FILE $^*.obj
 
 rsi_fpir.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=dos -3r
-    wlink SYSTEM dos4g $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM dos4g $(link_opts) FILE $^*.obj
 
 rsi_fpcr.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=dos -3r
-    wlink SYSTEM dos4g $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM dos4g $(link_opts) FILE $^*.obj
 
 rsi_fpis.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=dos -3s
-    wlink SYSTEM dos4g $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM dos4g $(link_opts) FILE $^*.obj
 
 rsi_fpcs.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=dos -3s
-    wlink SYSTEM dos4g $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM dos4g $(link_opts) FILE $^*.obj
 
 cw_fpir.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=dos -3r
-    wlink SYSTEM causeway $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM causeway $(link_opts) FILE $^*.obj
 
 cw_fpcr.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=dos -3r
-    wlink SYSTEM causeway $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM causeway $(link_opts) FILE $^*.obj
 
 cw_fpis.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=dos -3s
-    wlink SYSTEM causeway $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM causeway $(link_opts) FILE $^*.obj
 
 cw_fpcs.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=dos -3s
-    wlink SYSTEM causeway $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM causeway $(link_opts) FILE $^*.obj
 
 os2_fpi.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -fpi -bt=os2
-    wlink SYSTEM os2 pmcompatible $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM os2 pmcompatible $(link_opts) FILE $^*.obj
 
 os2_fpc.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -fpc -bt=os2
-    wlink SYSTEM os2 pmcompatible $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM os2 pmcompatible $(link_opts) FILE $^*.obj
 
 os3_fpir.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=os2 -3r
-    wlink SYSTEM os2v2 pmcompatible $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM os2v2 pmcompatible $(link_opts) FILE $^*.obj
 
 os3_fpcr.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=os2 -3r
-    wlink SYSTEM os2v2 pmcompatible $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM os2v2 pmcompatible $(link_opts) FILE $^*.obj
 
 os3_fpis.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=os2 -3s
-    wlink SYSTEM os2v2 pmcompatible $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM os2v2 pmcompatible $(link_opts) FILE $^*.obj
 
 os3_fpcs.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=os2 -3s
-    wlink SYSTEM os2v2 pmcompatible $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM os2v2 pmcompatible $(link_opts) FILE $^*.obj
 
 win_fpi.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -fpi -bw -zw -bt=windows
-    wlink SYSTEM windows $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM windows $(link_opts) FILE $^*.obj
 
 win_fpc.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -fpc -bw -zw -bt=windows
-    wlink SYSTEM windows $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM windows $(link_opts) FILE $^*.obj
 
 w32_fpir.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bw -zw -bt=windows -3r
-    wlink SYSTEM win386 $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM win386 $(link_opts) FILE $^*.obj
     wbind -q -s $(lang_root)/binw/win386.ext -n $^*
     rm $^*.rex
 
 w32_fpcr.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bw -zw -bt=windows -3r
-    wlink SYSTEM win386 $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM win386 $(link_opts) FILE $^*.obj
     wbind -q -s $(lang_root)/binw/win386.ext -n $^*
     rm $^*.rex
 
 w32_fpis.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bw -zw -bt=windows -3s
-    wlink SYSTEM win386 $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM win386 $(link_opts) FILE $^*.obj
     wbind -q -s $(lang_root)/binw/win386.ext -n $^*
     rm $^*.rex
 
 w32_fpcs.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bw -zw -bt=windows -3s
-    wlink SYSTEM win386 $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM win386 $(link_opts) FILE $^*.obj
     wbind -q -s $(lang_root)/binw/win386.ext -n $^*
     rm $^*.rex
 
 wnt_fpir.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=nt -3r
-    wlink SYSTEM nt $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM nt $(link_opts) FILE $^*.obj
 
 wnt_fpcr.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=nt -3r
-    wlink SYSTEM nt $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM nt $(link_opts) FILE $^*.obj
 
 wnt_fpis.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=nt -3s
-    wlink SYSTEM nt $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM nt $(link_opts) FILE $^*.obj
 
 wnt_fpcs.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=nt -3s
-    wlink SYSTEM nt $(link_opts) FILE $^*.obj
+    $(linker_386) SYSTEM nt $(link_opts) FILE $^*.obj
 
 lnx_fpir.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=linux -3r
-    wlink SYSTEM linux $(link_opts) FILE $^*.obj NAME $@
+    $(linker_386) SYSTEM linux $(link_opts) FILE $^*.obj NAME $@
 
 lnx_fpcr.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=linux -3r
-    wlink SYSTEM linux $(link_opts) FILE $^*.obj NAME $@
+    $(linker_386) SYSTEM linux $(link_opts) FILE $^*.obj NAME $@
 
 lnx_fpis.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bt=linux -3s
-    wlink SYSTEM linux $(link_opts) FILE $^*.obj NAME $@
+    $(linker_386) SYSTEM linux $(link_opts) FILE $^*.obj NAME $@
 
 lnx_fpcs.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=linux -3s
-    wlink SYSTEM linux $(link_opts) FILE $^*.obj NAME $@
+    $(linker_386) SYSTEM linux $(link_opts) FILE $^*.obj NAME $@
+    
+native : $(mathtest)
+    $(cc_386) $[@ $(comp_opts) -fpc
+    $(linker_386) $(link_opts) SYSTEM linux FILE $^*.obj NAME $@ 
