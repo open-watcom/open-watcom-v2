@@ -852,7 +852,7 @@ void AddLibPaths( char *path_list, unsigned len, bool add_to_front )
     while( path_list != end ) {
         if( p != newpath->name )
             *p++ = PATH_LIST_SEP;
-        path_list = GetPathElementEnd( path_list, end, &p );
+        path_list = GetPathElement( path_list, end, &p );
     }
     *p = '\0';
     if( add_to_front ) {

@@ -234,7 +234,7 @@ static  void    PathOption( opt_entry *optn, char *ptr )
     while( *ptr != NULLCHAR ) {
         if( p != IncludePath )
             *p++ = PATH_LIST_SEP;
-        ptr = GetPathElement( ptr, &p );
+        ptr = GetPathElement( ptr, NULL, &p );
     }
     *p = NULLCHAR;
 }
@@ -254,7 +254,7 @@ void    FIncludePathInit( void )
         while( *env != NULLCHAR ) {
             if( p != FIncludePath )
                 *p++ = PATH_LIST_SEP;
-            env = GetPathElement( env, &p );
+            env = GetPathElement( env, NULL, &p );
         }
         *p = NULLCHAR;
     }

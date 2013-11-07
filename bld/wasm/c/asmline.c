@@ -562,7 +562,7 @@ void AddItemToIncludePath( char *path_list, char *end )
         do {
             if( p != IncludePath )
                 *p++ = PATH_LIST_SEP;
-            path_list = GetPathElementEnd( path_list, end, &p );
+            path_list = GetPathElement( path_list, end, &p );
         } while( path_list != end );
         *p = '\0';
     }

@@ -187,7 +187,7 @@ char *AddPath( char *old_list, const char *path_list )
         while( *path_list != NULLCHAR ) {
             if( p != new_list )
                 *p++ = PATH_LIST_SEP;
-            path_list = GetPathElement( path_list, &p );
+            path_list = GetPathElement( path_list, NULL, &p );
         }
         *p = NULLCHAR;
     }

@@ -476,7 +476,7 @@ void InitEnvVars( void )
             do {
                 if( p != ExePath )
                     *p++ = PATH_LIST_SEP;
-                path_list = GetPathElement( path_list, &p );
+                path_list = GetPathElement( path_list, NULL, &p );
             } while( *path_list != '\0' );
             *p = '\0';
         } else {
@@ -493,7 +493,7 @@ void InitEnvVars( void )
             do {
                 if( p != LibPath )
                     *p++ = PATH_LIST_SEP;
-                path_list = GetPathElement( path_list, &p );
+                path_list = GetPathElement( path_list, NULL, &p );
             } while( *path_list != '\0' );
             *p = '\0';
         } else {

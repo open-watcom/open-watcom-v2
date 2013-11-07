@@ -570,7 +570,7 @@ bool ProcPath( void )
         while( Token.this != end ) {
             if( p != new_path->name )
                 *p++ = PATH_LIST_SEP;
-            Token.this = GetPathElementEnd( Token.this, end, &p );
+            Token.this = GetPathElement( Token.this, end, &p );
         }
         *p = '\0';
         new_path->next = ObjPath;

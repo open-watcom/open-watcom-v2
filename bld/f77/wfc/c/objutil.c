@@ -113,7 +113,7 @@ void    InitObj( void ) {
         fn = PageFileBuff;
         tmp = getenv( "TMP" );
         if( tmp != NULL && *tmp != NULLCHAR ) {
-            GetPathElement( tmp, &fn );
+            GetPathElement( tmp, NULL, &fn );
             if( fn != PageFileBuff ) {
                 char c = fn[-1];
                 if( !IS_PATH_SEP( c ) ) {

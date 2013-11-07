@@ -170,7 +170,7 @@ static char *initialize_env_directory_list( const char *name )
         while( *env != '\0' ) {
             if( p != list )
                 *p++ = PATH_LIST_SEP;
-            env = GetPathElement( env, &p );
+            env = GetPathElement( env, NULL, &p );
         }
     } else {
         p = list = mem_alloc( 1 );

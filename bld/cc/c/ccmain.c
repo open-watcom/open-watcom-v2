@@ -1169,7 +1169,7 @@ void SrcFileReadOnlyDir( char const *dirs )
 
     while( *dirs != '\0' ) {
         char *p = path;
-        dirs = GetPathElement( dirs, &p );
+        dirs = GetPathElement( dirs, NULL, &p );
         *p = '\0';
         full = SrcFullPath( path, buff, sizeof( buff ) );
         AddRDir( full );

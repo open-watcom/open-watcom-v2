@@ -823,7 +823,7 @@ static void AddIncList( const char *path_list )
         while( *path_list != '\0' ) {
             if( p != IncPathList )
                 *p++ = PATH_LIST_SEP;
-            path_list = GetPathElement( path_list, &p );
+            path_list = GetPathElement( path_list, NULL, &p );
         }
         *p = '\0';
     }

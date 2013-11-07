@@ -1621,7 +1621,7 @@ void SrcFileReadOnlyDir(        // SPECIFY DIRECTORY AS READ-ONLY
 
     while( *path_list != '\0' ) {
         char *p = path;
-        path_list = GetPathElement( path_list, &p );
+        path_list = GetPathElement( path_list, NULL, &p );
         *p = '\0';
         full = IoSuppFullPath( path, buff, sizeof( buff ) );
         curr = NULL;

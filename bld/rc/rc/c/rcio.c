@@ -157,7 +157,7 @@ extern void RcTmpFileName( char *tmpfilename )
     tmpdir = RcGetEnv( "TMP" );
     nextchar = tmpfilename;
     if( tmpdir != NULL && *tmpdir != '\0' ) {
-        GetPathElement( tmpdir, &nextchar );
+        GetPathElement( tmpdir, NULL, &nextchar );
         if( !IS_PATH_SEP( nextchar[-1] ) ) {
             *nextchar++ = DIR_SEP;
         }
