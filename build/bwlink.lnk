@@ -20,6 +20,7 @@ system begin dos
     libpath %OWSRCDIR%/clib/doslfn/library/msdos.086/ml
     libpath %OWSRCDIR%/fpuemu/i86/dosi86
     libpath %OWSRCDIR%/fpuemu/i86/stubi86
+    libpath %OWSRCDIR%/wl/ovlldr/dosi86
     format dos ^
 end
 

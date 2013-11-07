@@ -25,7 +25,7 @@ dmain.exe : .always
     %make ovl1.obj
     %make ovl2.obj
     %make ovl3.obj
-    $(linker) n $@ $(lflags) op map, dynamic begin autosection file { $(OBJS) } end libpath ../ovlldr/dosi86
+    $(linker) n $@ $(lflags) op map, dynamic begin autosection file { $(OBJS) } end
 
 lmain.exe : .always
     rm -f *.obj
@@ -34,7 +34,7 @@ lmain.exe : .always
     %make ovl1.obj
     %make ovl2.obj
     %make ovl3.obj
-    $(linker) n $@ $(lflags) sort global op map, standard begin autosection file { $(OBJS) } end libpath ../ovlldr/dosi86
+    $(linker) n $@ $(lflags) sort global op map, standard begin autosection file { $(OBJS) } end
 
 smain.exe : .always
     rm -f *.obj
@@ -43,4 +43,4 @@ smain.exe : .always
     %make ovl1.obj
     %make ovl2.obj
     %make ovl3.obj
-    $(linker) n $@ $(lflags) sort global op map, small begin autosection file { $(OBJS) } end libpath ../ovlldr/dosi86
+    $(linker) n $@ $(lflags) sort global op map, small begin autosection file { $(OBJS) } end
