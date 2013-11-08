@@ -105,7 +105,7 @@ void LDToS( char *buff, xreal *v, unsigned a, unsigned b, unsigned c,
 {
     double      value = LDToD( v );
 
-    gcvt( value, a, buff );
+    sprintf( buff, "%.*g", a, value );
     if( buff[0] == '0' && buff[1] == '\0' ) {
         buff[1] = '.';
         buff[2] = '\0';

@@ -1476,8 +1476,6 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
     unsigned    form;
     unsigned    len;
     char        *charBuf;
-    char        numBuf1[ 32 ];  // hold text for number
-    char        numBuf2[ 32 ];  // hold text for number
     String      value;
     unsigned_32 encoding;
 
@@ -1555,29 +1553,22 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             case DW_ATE_complex_float:
                 switch( len ) {
                 case (2 * sizeof(float)):
-                    gcvt( *(float *)buf, 5, numBuf1 );
-                    gcvt( *((float *)buf + 1), 5, numBuf2 );
+                    sprintf( charBuf, "(%.5g,%.5g)", *(float *)buf, *((float *)buf + 1) );
                     break;
                 case (2 * sizeof(double)):
-                    gcvt( *(double *)buf, 5, numBuf1 );
-                    gcvt( *((double *)buf + 1), 5, numBuf2 );
+                    sprintf( charBuf, "(%.5g,%.5g)", *(double *)buf, *((double *)buf + 1) );
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );
                 }
-                strcpy( charBuf, "(" );
-                strcat( charBuf, numBuf1 );
-                strcat( charBuf, "," );
-                strcat( charBuf, numBuf2 );
-                strcat( charBuf, ")" );
                 break;
             case DW_ATE_float:
                 switch( len ) {
                 case sizeof(float):
-                    gcvt( *(float *)buf, 5, charBuf );
+                    sprintf( charBuf, "%.5g", *(float *)buf );
                     break;
                 case sizeof(double):
-                    gcvt( *(double *)buf, 5, charBuf );
+                    sprintf( charBuf, "%.5g", *(double *)buf );
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );

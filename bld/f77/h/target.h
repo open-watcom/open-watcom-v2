@@ -47,6 +47,7 @@
 // number of digits required to accurately convert a floating-point string
 // to its binary representation
 #define CONVERSION_DIGITS 20
+#define CONVERSION_FMT    "%.20g"
 
 //                         s   0   .  <CONVERSION_DIGITS> E   s  <EXP_LEN>
 //

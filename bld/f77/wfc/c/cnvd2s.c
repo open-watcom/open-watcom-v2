@@ -34,19 +34,19 @@
 // CNVD2S       : format floating point number to string representation
 //
 
-#include <stdlib.h>
+#include <stdio.h>
 
 #include "ftnstd.h"
 #include "target.h"
 
 void    CnvD2S( double *val, char *buff ) {
 // Convert floating point number to string.
-    gcvt( *val, CONVERSION_DIGITS, buff );
+    sprintf( buff, CONVERSION_FMT, *val );
 }
 
 void    CnvX2S( extended *val, char *buff ) {
 // Convert floating point number to string.
-    gcvt( *val, CONVERSION_DIGITS, buff );
+    sprintf( buff, CONVERSION_FMT, *val );
 }
 
 void    CnvS2S( float *val, char *buff ) {

@@ -169,7 +169,6 @@ comovl1 += &
     docle.obj &
     emit.obj &
     exprutil.obj &
-    fltused.obj &
     galloc.obj &
     gcnvt.obj &
     gdata.obj &
