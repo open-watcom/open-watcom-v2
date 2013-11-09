@@ -121,6 +121,7 @@ extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_len
 
     hw_reg_set          parm;
 
+    len = len;
     parm = HW_EMPTY;
     if( state->parm.offset & ( alignment - 1 ) ) {
         // we cheat here - know it's 4-byte aligned and needs to be 8-byte aligned

@@ -148,7 +148,7 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
     name        *dst;
     name        *stack_reg;
 
-
+    state = state;
     stack_reg = AllocRegName( StackReg() );
     dst = AllocIndex( stack_reg, NULL, offset + STACK_HEADER_SIZE, class );
     new = MakeMove( curr, dst, class );
@@ -187,9 +187,9 @@ extern  void    RestoreFromTargProc() {
     MaxStack = CurrProc->targ.max_stack;
 }
 
-extern  reg_set_index   CallIPossible( instruction *ins ) {
+extern  reg_set_index   CallIPossible( instruction *ins )
 /*********************************************************/
-
-
-     return( RL_WORD );
+{
+    ins = ins;
+    return( RL_WORD );
 }

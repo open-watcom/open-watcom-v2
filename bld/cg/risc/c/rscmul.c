@@ -56,5 +56,6 @@ extern  int     SubCost( void )
 extern  int     ShiftCost( int count )
 /************************************/
 {
+    count = count;
     return( 1 );
 }

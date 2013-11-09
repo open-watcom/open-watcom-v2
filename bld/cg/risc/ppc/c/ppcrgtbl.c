@@ -373,6 +373,7 @@ extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 extern  hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used )
 /********************************************************************/
 {
+    regs = regs; used = used;
     return( HW_EMPTY );
 }
 
@@ -473,6 +474,7 @@ extern  reg_set_index   IndexIntersect( reg_set_index curr,
                                        bool is_temp_index )
 /***********************************************************/
 {
+    curr = curr; class = class;
     is_temp_index = is_temp_index;
     return( RL_DWORD );
 }
@@ -507,6 +509,7 @@ extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 extern  bool    IsSegReg( hw_reg_set regs )
 /*****************************************/
 {
+    regs = regs;
     return( FALSE );
 }
 
@@ -514,7 +517,7 @@ extern  bool    IsSegReg( hw_reg_set regs )
 extern  hw_reg_set      Low16Reg( hw_reg_set regs )
 /*************************************************/
 {
-
+    regs = regs;
     return( HW_EMPTY );
 }
 
@@ -522,6 +525,7 @@ extern  hw_reg_set      Low16Reg( hw_reg_set regs )
 extern  hw_reg_set      High16Reg( hw_reg_set regs )
 /**************************************************/
 {
+    regs = regs;
     return( HW_EMPTY );
 }
 
@@ -529,6 +533,7 @@ extern  hw_reg_set      High16Reg( hw_reg_set regs )
 extern  hw_reg_set      Low32Reg( hw_reg_set regs )
 /*************************************************/
 {
+    regs = regs;
     return( HW_EMPTY );
 }
 
@@ -536,6 +541,7 @@ extern  hw_reg_set      Low32Reg( hw_reg_set regs )
 extern  hw_reg_set      High32Reg( hw_reg_set regs )
 /**************************************************/
 {
+    regs = regs;
     return( HW_EMPTY );
 }
 
@@ -543,6 +549,7 @@ extern  hw_reg_set      High32Reg( hw_reg_set regs )
 extern  hw_reg_set      High48Reg( hw_reg_set regs )
 /**************************************************/
 {
+    regs = regs;
     return( HW_EMPTY );
 }
 
@@ -550,6 +557,7 @@ extern  hw_reg_set      High48Reg( hw_reg_set regs )
 extern  hw_reg_set      Low48Reg( hw_reg_set regs )
 /*************************************************/
 {
+    regs = regs;
     return( HW_EMPTY );
 }
 

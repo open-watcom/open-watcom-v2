@@ -145,6 +145,7 @@ extern  void    UpdateReturn( call_state *state, type_def *tipe,
                               type_class_def class, aux_handle aux )
 /******************************************************************/
 {
+    tipe = tipe; aux = aux;
     state->return_reg = ReturnReg( class );
 }
 
@@ -223,11 +224,13 @@ extern  bool            IsStackReg( name *n )
 extern  hw_reg_set      HighOffsetReg( hw_reg_set regs )
 /******************************************************/
 {
+    regs = regs;
     return( HW_EMPTY );
 }
 
 extern  hw_reg_set      LowOffsetReg( hw_reg_set regs )
 /*****************************************************/
 {
+    regs = regs;
     return( HW_EMPTY );
 }

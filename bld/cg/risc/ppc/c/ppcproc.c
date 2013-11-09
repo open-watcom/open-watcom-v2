@@ -536,12 +536,14 @@ extern  void    GenEpilog( void )
 extern  int     AskDisplaySize( int level )
 /*****************************************/
 {
+    level = level;
     return( 0 );
 }
 
 extern  void    InitStackDepth( block *blk )
 /******************************************/
 {
+    blk = blk;
 }
 
 extern  type_length     PushSize( type_length len )

@@ -85,12 +85,13 @@ extern type_class_def MapPointer( cg_type type ) {
 }
 
 
-extern  type_class_def  MapFloat( cg_type type, call_attributes attr ) {
+extern  type_class_def  MapFloat( cg_type type, call_attributes attr )
 /***********************************************************************
     called by the return value generator to decide whether to treat
     floating point return values as floats or structs.
 */
-
+{
+    attr = attr;
     if( type == TY_SINGLE ) return( FS );
     return( FD );
 }
@@ -106,6 +107,8 @@ extern  type_class_def  MapStruct( type_length length, call_attributes attr ) {
     if( length == 1 ) return( U1 );
     if( length == 2 ) return( U2 );
     if( length == 4 ) return( U4 );
+#else
+    length = length; attr = attr;
 #endif
     return( XX );
 }

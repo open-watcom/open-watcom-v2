@@ -892,6 +892,7 @@ extern  void    GenKillLabel( code_lbl *lbl )
 extern  void    GenCallLabel( pointer label )
 /*******************************************/
 {
+    label = label;
 }
 
 
@@ -964,6 +965,7 @@ extern  void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
     oc.oc_rins.reloc = type;
     InputOC( &oc );
 #else
+    ins = ins; sym = sym; type = type;
     _Zoiks( ZOIKS_091 );
 #endif
 }
