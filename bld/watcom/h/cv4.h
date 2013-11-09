@@ -73,7 +73,6 @@ typedef enum  lf_values {   /* type enumerations */
 #define _LFNUM( n, N, c )    LF_##N = c,
     #include "cv4nums.h"
 #undef _LFNUM
-#undef _LFMAC
 #define _LFPAD( n, N, c )    LF_##N = c,
     #include "cv4pads.h"
 #undef _LFPAD
