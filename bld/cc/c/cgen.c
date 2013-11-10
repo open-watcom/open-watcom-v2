@@ -43,8 +43,8 @@
 #include "tryblock.h"
 #endif
 
-#define PushCGName(name)        ((cg_name *)ValueStack)[index++] = name
-#define PopCGName()             ValueStack[--index]
+#define PushCGName(name)        ValueStack[index++] = (TREEPTR)name
+#define PopCGName()             (cg_name)ValueStack[--index]
 
 #ifdef __SEH__
 typedef struct  try_table_back_handles {
@@ -983,7 +983,7 @@ local void EmitNodes( TREEPTR tree )
             name = CGUnary( O_CONVERT, name, TY_UINT_4 );
             name = CGBinary( O_RSHIFT, name,
                              CGInteger( 16, TY_UNSIGNED ), TY_UINT_4 );
-            name = PushCGName( name );
+            PushCGName( name );
           } break;
         case OPR_MATHFUNC:              // intrinsic math func with 1 parm
             op1 = PopCGName();          // - get expression

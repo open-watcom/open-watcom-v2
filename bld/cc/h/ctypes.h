@@ -483,7 +483,7 @@ typedef struct segment_list {
 struct debug_fwd_types {
     struct  debug_fwd_types *next;
     TYPEPTR                 typ;
-    char                    *debug_name;
+    dbg_name                debug_name;
     unsigned                scope;
 };
 
