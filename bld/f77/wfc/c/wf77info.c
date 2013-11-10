@@ -1505,7 +1505,7 @@ static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
     intstar4    *bounds;
     intstar4    lo;
     intstar4    hi;
-    dbg_array   *db_arr;
+    dbg_array   db_arr;
 
     dims = 1;
     bounds = &dim_ptr->subs_1_lo;
@@ -1744,7 +1744,7 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
     int         dims;
     int         len;
     int         idx;
-    dbg_array   *db_arr;
+    dbg_array   db_arr;
 
     idx = 0;
     dims = _DimCount( dim_ptr->dim_flags );

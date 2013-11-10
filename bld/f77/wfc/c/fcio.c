@@ -818,7 +818,7 @@ void    FCSetFmt( void ) {
     call_handle handle;
 
     handle = InitCall( RT_SET_FMT );
-    CGAddParm( handle, CGBackName( GetStmtLabel( GetPtr() ), TY_POINTER ), TY_POINTER );
+    CGAddParm( handle, CGBackName( (back_handle)GetStmtLabel( GetPtr() ), TY_POINTER ), TY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -831,7 +831,7 @@ void    FCPassLabel( void ) {
     call_handle handle;
 
     handle = InitCall( GetU16() );
-    CGAddParm( handle, CGBackName( GetLabel( GetU16() ), TY_POINTER ), TY_POINTER );
+    CGAddParm( handle, CGBackName( (back_handle)GetLabel( GetU16() ), TY_POINTER ), TY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
