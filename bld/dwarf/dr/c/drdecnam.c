@@ -1477,6 +1477,10 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
     unsigned    form;
     unsigned    len;
     char        *charBuf;
+#ifdef __WATCOMC__
+    char        numBuf1[ 32 ];  // hold text for number
+    char        numBuf2[ 32 ];  // hold text for number
+#endif
     String      value;
     unsigned_32 encoding;
 
@@ -1554,22 +1558,47 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             case DW_ATE_complex_float:
                 switch( len ) {
                 case (2 * sizeof(float)):
+#ifdef __WATCOMC__
+                    gcvt( *(float *)buf, 5, numBuf1 );
+                    gcvt( *((float *)buf + 1), 5, numBuf2 );
+#else
                     sprintf( charBuf, "(%.5g,%.5g)", *(float *)buf, *((float *)buf + 1) );
+#endif
                     break;
                 case (2 * sizeof(double)):
+#ifdef __WATCOMC__
+                    gcvt( *(double *)buf, 5, numBuf1 );
+                    gcvt( *((double *)buf + 1), 5, numBuf2 );
+#else
                     sprintf( charBuf, "(%.5g,%.5g)", *(double *)buf, *((double *)buf + 1) );
+#endif
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );
                 }
+#ifdef __WATCOMC__
+                strcpy( charBuf, "(" );
+                strcat( charBuf, numBuf1 );
+                strcat( charBuf, "," );
+                strcat( charBuf, numBuf2 );
+                strcat( charBuf, ")" );
+#endif
                 break;
             case DW_ATE_float:
                 switch( len ) {
                 case sizeof(float):
+#ifdef __WATCOMC__
+                    gcvt( *(float *)buf, 5, charBuf );
+#else
                     sprintf( charBuf, "%.5g", *(float *)buf );
+#endif
                     break;
                 case sizeof(double):
+#ifdef __WATCOMC__
+                    gcvt( *(double *)buf, 5, charBuf );
+#else
                     sprintf( charBuf, "%.5g", *(double *)buf );
+#endif
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );

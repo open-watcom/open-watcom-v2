@@ -31,18 +31,50 @@
 
 #include <stddef.h>
 #include <string.h>
+#if defined( __WINDOWS__ )
+#include <stdlib.h>
+#include <windows.h>
+#include <i86.h>
+#endif
 #include "dipimp.h"
-
-address                 NilAddr;
-dip_client_routines     *Client;
-
 
 #ifndef DIP_PRIORITY
 #define DIP_PRIORITY DP_NORMAL
 #endif
 
-dip_status DIPENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it,
-                 imp_type_handle *base );
+#if defined( __WATCOMC__ )
+#define _CODE_BASED __based( __segname( "_CODE" ) )
+#else
+#define _CODE_BASED
+#endif
+
+#if defined( __WINDOWS__ )
+    #define DIP_DLLEXPORT __declspec(dllexport) __declspec(__pascal)
+#elif defined( __WATCOMC__ )
+  #if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
+    #define DIP_DLLEXPORT __declspec(dllexport)
+    #pragma aux DIPLOAD "*"
+  #elif defined( _M_I86 )
+    #define DIP_DLLEXPORT
+    #pragma aux DIPLOAD "*" __loadds
+  #else
+    #define DIP_DLLEXPORT
+    #pragma aux DIPLOAD "*"
+  #endif
+#elif !defined( __UNIX__ )
+    #define DIP_DLLEXPORT __declspec(dllexport)
+#else
+    #define DIP_DLLEXPORT
+#endif
+
+#if defined( __WINDOWS__ )
+typedef void (DIPENTRY INTER_FUNC)();
+#endif
+
+address                 NilAddr;
+dip_client_routines     *Client;
+
+dip_status DIPENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base );
 
 dip_imp_routines        ImpInterface = {
     DIP_MAJOR,
@@ -120,98 +152,19 @@ dip_imp_routines        ImpInterface = {
     DIPImpLookupSymEx,
 };
 
-
-#if defined( __386__ )
-
-#if defined( __WATCOMC__ )
-#pragma aux DIPLOAD "*"
-#endif
-
-#elif defined( __WINDOWS__ )
-
-#include <stdlib.h>
-#include <windows.h>
-#include <i86.h>
-
-#pragma aux (pascal) DIPLOAD export
-
-typedef void (DIPENTRY INTER_FUNC)();
-
-static HANDLE TaskId;
-static HINSTANCE ThisInst;
-
-extern dip_imp_routines *DIPLOAD( dip_status *, dip_client_routines * );
-
-#ifdef DEBUGGING
-void Say( char *buff )
-{
-    MessageBox( (HWND) NULL, buff, "IMP",
-            MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
-}
-#endif
-
-void DIPENTRY DIPUNLOAD()
-{
-    PostAppMessage( TaskId, WM_QUIT, 0, 0 );
-}
-
-int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
-                    LPSTR cmdline, int cmdshow )
-/***********************************************
-
-    Initialization, message loop.
-*/
-{
-    MSG                 msg;
-    INTER_FUNC          **func;
-    unsigned            count;
-    struct {
-        INTER_FUNC      *load;
-        INTER_FUNC      *unload;
-    }                   *link;
-    unsigned            seg;
-    unsigned            off;
-
-
-    prev_inst = prev_inst;
-    cmdshow = cmdshow;
-    seg = strtoul( cmdline, &cmdline, 16 );
-    off = strtoul( cmdline, NULL, 16 );
-    if( seg == 0 || off == 0 ) return( 1 );
-    link = MK_FP( seg, off );
-    TaskId = GetCurrentTask();
-    ThisInst = this_inst;
-    func = (INTER_FUNC **)&ImpInterface.handle_size;
-    count = (sizeof(dip_imp_routines)-offsetof(dip_imp_routines,handle_size))
-                / sizeof( INTER_FUNC * );
-    while( count != 0 ) {
-        *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
-        ++func;
-        --count;
-    }
-    link->load = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPLOAD, this_inst );
-    link->unload = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPUNLOAD, this_inst );
-    while( GetMessage( &msg, NULL, 0, 0 ) ) {
-        TranslateMessage( &msg );
-        DispatchMessage( &msg );
-    }
-
-    return( 0 );
-}
-#elif defined( _M_I86 )
-#pragma aux DIPLOAD "*" loadds
-#else
-/* nothing to do for Alpha, PowerPC etc. */
-#endif
-
 #if defined( __DOS__ ) || defined( __UNIX__ )
-    const char __based( __segname( "_CODE" ) ) Signature[4] = "DIP";
+const char _CODE_BASED Signature[4] = "DIP";
 #endif
 
-dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines *client )
+#if defined( __WINDOWS__ )
+static HINSTANCE    ThisInst;
+static HANDLE       TaskId;
+#endif
+
+DIP_DLLEXPORT dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines *client )
 {
     Client = client;
-#if defined(__WINDOWS__) && !defined(__386__)
+#if defined( __WINDOWS__ )
     {
         FARPROC start;
 
@@ -222,7 +175,8 @@ dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines *client )
 #else
     *status = DIPImpStartup();
 #endif
-    if( *status & DS_ERR ) return( NULL );
+    if( *status & DS_ERR )
+        return( NULL );
     return( &ImpInterface );
 }
 
@@ -260,14 +214,12 @@ imp_sym_handle *DCSymCreate( imp_image_handle *ii, void *d )
     return( Client->sym_create( ii, d ) );
 }
 
-dip_status DCItemLocation( location_context *lc, context_item ci,
-                        location_list *ll )
+dip_status DCItemLocation( location_context *lc, context_item ci, location_list *ll )
 {
     return( Client->item_location( lc, ci, ll ) );
 }
 
-dip_status DCAssignLocation( location_list *dst, location_list *src,
-                        unsigned long len )
+dip_status DCAssignLocation( location_list *dst, location_list *src, unsigned long len )
 {
     return( Client->assign_location( dst, src, len ) );
 }
@@ -331,7 +283,8 @@ void DCStatus( dip_status status )
 mad_handle DCCurrMAD( void )
 {
     /* check for old client */
-    if( Client->sizeof_struct < offsetof(dip_client_routines,curr_mad) ) return( MAD_X86 );
+    if( Client->sizeof_struct < offsetof(dip_client_routines,curr_mad) )
+        return( MAD_X86 );
     return( Client->curr_mad() );
 }
 
@@ -343,8 +296,64 @@ unsigned        DCMachineData( address a, unsigned info_type,
     return( Client->DIGCliMachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-dip_status DIPENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it,
-                 imp_type_handle *base )
+dip_status DIPENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
 {
     return( ImpInterface.type_base( ii, it, base, NULL, NULL ) );
 }
+
+#if defined( __WINDOWS__ )
+
+#ifdef DEBUGGING
+void Say( char *buff )
+{
+    MessageBox( (HWND)NULL, buff, "IMP", MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
+}
+#endif
+
+void DIPENTRY DIPUNLOAD( void )
+{
+    PostAppMessage( TaskId, WM_QUIT, 0, 0 );
+}
+
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
+/*****************************************************************************************
+
+    Initialization, message loop.
+*/
+{
+    MSG                 msg;
+    INTER_FUNC          **func;
+    unsigned            count;
+    struct {
+        INTER_FUNC      *load;
+        INTER_FUNC      *unload;
+    }                   *link;
+    unsigned            seg;
+    unsigned            off;
+
+    prev_inst = prev_inst;
+    cmdshow = cmdshow;
+    seg = strtoul( cmdline, &cmdline, 16 );
+    off = strtoul( cmdline, NULL, 16 );
+    if( seg == 0 || off == 0 )
+        return( 1 );
+    link = MK_FP( seg, off );
+    TaskId = GetCurrentTask();
+    ThisInst = this_inst;
+    func = (INTER_FUNC **)&ImpInterface.handle_size;
+    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, handle_size ) ) / sizeof( INTER_FUNC * );
+    while( count != 0 ) {
+        *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
+        ++func;
+        --count;
+    }
+    link->load = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPLOAD, this_inst );
+    link->unload = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPUNLOAD, this_inst );
+    while( GetMessage( &msg, NULL, 0, 0 ) ) {
+        TranslateMessage( &msg );
+        DispatchMessage( &msg );
+    }
+    return( 0 );
+}
+
+#endif

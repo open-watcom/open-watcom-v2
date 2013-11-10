@@ -8,6 +8,10 @@ dip_autodepends = .autodepend
 
 additional_cleanup = *.d32 *.dip
 
+!ifeq host_cpu x64
+sys_dll = 1
+!endif
+
 fpu_flags_dos_i86   = -fpc
 fpu_flags_dos_386   = -fpc
 fpu_flags_os2_i86   = -fpc
@@ -72,9 +76,9 @@ extra_l_flags_dll_rdos_386_watcom = op offset=0xda000000
 extra_l_flags_dll_rdos_386_dwarf  = op offset=0xda100000
 extra_l_flags_dll_rdos_386_mapsym = op offset=0xda200000
 
-extra_l_flags_dll_nt      = export DIPLOAD $(lflags_nt_$(host_cpu)_$(name))
-extra_l_flags_dll_os2     = export DIPLOAD
-extra_l_flags_dll_rdos    = export DIPLOAD $(lflags_rdos_386_$(name))
+extra_l_flags_dll_nt      = $(lflags_nt_$(host_cpu)_$(name))
+extra_l_flags_dll_os2     = 
+extra_l_flags_dll_rdos    = $(lflags_rdos_386_$(name))
 extra_l_flags_dll_win     =
 
 # systems where version resources must be added to .DLL

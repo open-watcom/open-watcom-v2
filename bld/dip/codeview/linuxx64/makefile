@@ -3,6 +3,4 @@
 host_os  = linux
 host_cpu = x64
 
-sys_dll = 1
-
 !include ../codeview.mif

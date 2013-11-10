@@ -30,7 +30,41 @@
 
 
 #include <stddef.h>
+#if defined( __WINDOWS__)
+#include <stdlib.h>
+#include <windows.h>
+#include <i86.h>
+#endif
 #include "madimp.h"
+
+#if defined( __WATCOMC__ )
+#define _CODE_BASED __based( __segname( "_CODE" ) )
+#else
+#define _CODE_BASED
+#endif
+
+#if defined( __WINDOWS__ )
+    #define MAD_DLLEXPORT __declspec(dllexport) __declspec(__pascal)
+#elif defined( __WATCOMC__ )
+  #if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
+    #define MAD_DLLEXPORT __declspec(dllexport)
+    #pragma aux MADLOAD "*"
+  #elif defined( _M_I86 )
+    #define MAD_DLLEXPORT
+    #pragma aux MADLOAD "*" __loadds
+  #else
+    #define MAD_DLLEXPORT
+    #pragma aux MADLOAD "*"
+  #endif
+#elif !defined( __UNIX__ )
+    #define MAD_DLLEXPORT __declspec(dllexport)
+#else
+    #define MAD_DLLEXPORT
+#endif
+
+#if defined( __WINDOWS__ )
+typedef void (DIGENTRY INTER_FUNC)();
+#endif
 
 mad_client_routines     *MadClient;
 
@@ -116,105 +150,27 @@ mad_imp_routines        MadImpInterface = {
     MICallUpStackLevel,
 };
 
+#if defined( __DOS__ ) || defined( __UNIX__ )
+const char _CODE_BASED Signature[4] = "MAD";
+#endif
 
-#if defined( __386__ )
-
-#if defined( __WATCOMC__ )
-#pragma aux MADLOAD "*"
-
+#if defined( __WATCOMC__ ) && defined( __386__ )
 /* WD looks for this symbol to determine module bitness */
 int __nullarea;
 #pragma aux __nullarea "*";
 #endif
 
-#elif defined( __WINDOWS__)
-
-#include <stdlib.h>
-#include <windows.h>
-#include <i86.h>
-
-#pragma aux (pascal) MADLOAD export
-
-typedef void (DIGENTRY INTER_FUNC)();
-
-static HANDLE TaskId;
-static HINSTANCE ThisInst;
-
-extern mad_imp_routines *MADLOAD( mad_status *, mad_client_routines * );
-
-#ifdef DEBUGGING
-void Say( char *buff )
-{
-    MessageBox( (HWND) NULL, buff, "IMP",
-            MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
-}
+#if defined( __WINDOWS__)
+static HANDLE       TaskId;
+static HINSTANCE    ThisInst;
 #endif
 
-void DIGENTRY MADUNLOAD()
-{
-    PostAppMessage( TaskId, WM_QUIT, 0, 0 );
-}
-
-int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
-                    LPSTR cmdline, int cmdshow )
-/***********************************************
-
-    Initialization, message loop.
-*/
-{
-    MSG                 msg;
-    INTER_FUNC          **func;
-    unsigned            count;
-    struct {
-        INTER_FUNC      *load;
-        INTER_FUNC      *unload;
-    }                   *link;
-    unsigned            seg;
-    unsigned            off;
-
-
-    prev_inst = prev_inst;
-    cmdshow = cmdshow;
-    seg = strtoul( cmdline, &cmdline, 16 );
-    off = strtoul( cmdline, NULL, 16 );
-    if( seg == 0 || off == 0 ) return( 1 );
-    link = MK_FP( seg, off );
-    TaskId = GetCurrentTask();
-    ThisInst = this_inst;
-    func = (INTER_FUNC **)&MadImpInterface.MIInit;
-    count = (sizeof(mad_imp_routines)-offsetof(mad_imp_routines,MIInit))
-                / sizeof( INTER_FUNC * );
-    while( count != 0 ) {
-        *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
-        ++func;
-        --count;
-    }
-    link->load = (INTER_FUNC *)MakeProcInstance( (FARPROC)MADLOAD, this_inst );
-    link->unload = (INTER_FUNC *)MakeProcInstance( (FARPROC)MADUNLOAD, this_inst );
-    while( GetMessage( &msg, NULL, 0, 0 ) ) {
-        TranslateMessage( &msg );
-        DispatchMessage( &msg );
-    }
-
-    return( 0 );
-}
-#elif defined( _M_I86 )
-#pragma aux MADLOAD "*" loadds
-#else
-/* nothing to do for Alpha, PowerPC etc. */
-#endif
-
-#if defined( __DOS__ ) || defined( __UNIX__ )
-    const char __based( __segname( "_CODE" ) ) Signature[4] = "MAD";
-#endif
-
-mad_imp_routines *MADLOAD( mad_status *status, mad_client_routines *client )
+MAD_DLLEXPORT mad_imp_routines *MADLOAD( mad_status *status, mad_client_routines *client )
 {
     MadClient = client;
     *status = MS_OK;
     return( &MadImpInterface );
 }
-
 
 void            *MCAlloc( unsigned amount )
 {
@@ -281,21 +237,17 @@ void            MCNotify( mad_notify_type nt, void *d )
     MadClient->MADCliNotify( nt, d );
 }
 
-unsigned        MCMachineData( address a, unsigned info_type,
-                                unsigned in_size,  void *in,
-                                unsigned out_size, void *out )
+unsigned        MCMachineData( address a, unsigned info_type, unsigned in_size,  void *in, unsigned out_size, void *out )
 {
     return( MadClient->MADCliMachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-mad_status      MCAddrToString( address a, mad_type_handle th,
-                mad_label_kind lk, unsigned max, char *buff )
+mad_status      MCAddrToString( address a, mad_type_handle th, mad_label_kind lk, unsigned max, char *buff )
 {
     return( MadClient->MADCliAddrToString( a, th, lk, max, buff ) );
 }
 
-mad_status      MCMemExpr( char *start, unsigned len, unsigned radix,
-                        address *a )
+mad_status      MCMemExpr( char *start, unsigned len, unsigned radix, address *a )
 {
     return( MadClient->MADCliMemExpr( start, len, radix, a ) );
 }
@@ -334,3 +286,60 @@ void            MCStatus( mad_status ms )
 {
     MCNotify( MNT_ERROR, &ms );
 }
+
+#if defined( __WINDOWS__)
+
+#ifdef DEBUGGING
+void Say( char *buff )
+{
+    MessageBox( (HWND)NULL, buff, "IMP", MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
+}
+#endif
+
+void DIGENTRY MADUNLOAD( void )
+{
+    PostAppMessage( TaskId, WM_QUIT, 0, 0 );
+}
+
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
+/*****************************************************************************************
+
+    Initialization, message loop.
+*/
+{
+    MSG                 msg;
+    INTER_FUNC          **func;
+    unsigned            count;
+    struct {
+        INTER_FUNC      *load;
+        INTER_FUNC      *unload;
+    }                   *link;
+    unsigned            seg;
+    unsigned            off;
+
+    prev_inst = prev_inst;
+    cmdshow = cmdshow;
+    seg = strtoul( cmdline, &cmdline, 16 );
+    off = strtoul( cmdline, NULL, 16 );
+    if( seg == 0 || off == 0 )
+        return( 1 );
+    link = MK_FP( seg, off );
+    TaskId = GetCurrentTask();
+    ThisInst = this_inst;
+    func = (INTER_FUNC **)&MadImpInterface.MIInit;
+    count = ( sizeof( mad_imp_routines ) - offsetof( mad_imp_routines, MIInit ) ) / sizeof( INTER_FUNC * );
+    while( count != 0 ) {
+        *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
+        ++func;
+        --count;
+    }
+    link->load = (INTER_FUNC *)MakeProcInstance( (FARPROC)MADLOAD, this_inst );
+    link->unload = (INTER_FUNC *)MakeProcInstance( (FARPROC)MADUNLOAD, this_inst );
+    while( GetMessage( &msg, NULL, 0, 0 ) ) {
+        TranslateMessage( &msg );
+        DispatchMessage( &msg );
+    }
+    return( 0 );
+}
+
+#endif

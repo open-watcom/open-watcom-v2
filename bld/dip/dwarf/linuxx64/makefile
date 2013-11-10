@@ -3,8 +3,4 @@
 host_os  = linux
 host_cpu = x64
 
-sys_dll = 1
-
-extra_ldflags_dll =
-
 !include ../dwarf.mif

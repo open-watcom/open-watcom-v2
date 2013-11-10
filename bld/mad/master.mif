@@ -8,6 +8,12 @@ proj_name = mad
 mad_autodepends = .autodepend
 !endif
 
+additional_cleanup = *.d32 *.mad
+
+!ifeq host_cpu x64
+sys_dll = 1
+!endif
+
 fpu_flags_dos_i86   = -fpc
 fpu_flags_dos_386   = -fpc
 fpu_flags_os2_i86   = -fpc
@@ -28,8 +34,6 @@ ext_nt_386    = .dll
 ext_nt_axp    = .dll
 ext_nt_x64    = .dll
 ext_rdos_386  = .dll
-
-additional_cleanup = *.d32 *.mad
 
 !include cproj.mif
 !include defrule.mif
@@ -66,9 +70,9 @@ extra_l_flags_dll_nt_axp   = op dosseg
 
 extra_l_flags_dll_rdos_386 = op offset=0xd9000000
 
-extra_l_flags_dll_nt   = export MADLOAD $(extra_l_flags_dll_nt_$(host_cpu))
-extra_l_flags_dll_os2  = export MADLOAD
-extra_l_flags_dll_rdos = export MADLOAD $(extra_l_flags_dll_rdos_386)
+extra_l_flags_dll_nt   = $(extra_l_flags_dll_nt_$(host_cpu))
+extra_l_flags_dll_os2  = 
+extra_l_flags_dll_rdos = $(extra_l_flags_dll_rdos_386)
 extra_l_flags_dll_win  = 
 
 ##################
