@@ -41,7 +41,7 @@
 #include <math.h>
 #include "xfloat.h"
 
-static const unsigned 
+static const u4 
 	B1 = 715094163, /* B1 = (682-0.03306235651)*2**20 */
 	B2 = 696219795; /* B2 = (664-0.03306235651)*2**20 */
 
@@ -56,17 +56,17 @@ G =  3.57142857142857150787e-01; /* 5/14      = 0x3FD6DB6D, 0xB6DB6DB7 */
 _WMRTLINK double cbrt(double x) 
 {
     float_double fdx, fdt;
-	int	hx;
+	u4 hx;
 	double r,s,w;
-	unsigned sign;
+	u4 sign;
 
     fdx.u.value = x;
 
 	hx = fdx.u.word[1];		        /* high word of x */
-	sign = hx&0x80000000; 		    /* sign= sign(x) */
+	sign = hx & ((u4)0x80000000); 		    /* sign= sign(x) */
 	hx ^= sign;
 	
-    if(hx>=0x7ff00000)              /* cbrt(NaN,INF) is itself */
+    if(hx>=((u4)0x7ff00000))              /* cbrt(NaN,INF) is itself */
         return(x+x); 
 	
     if((hx|fdx.u.word[0])==0) 
@@ -77,9 +77,9 @@ _WMRTLINK double cbrt(double x)
     fdt.u.value = 0.0;
     
     /* rough cbrt to 5 bits */
-	if(hx<0x00100000) 		        /* subnormal number */
+	if(hx<((u4)0x00100000)) 		        /* subnormal number */
     {
-        fdt.u.word[1]=0x43500000; 	/* set t= 2**54 */
+        fdt.u.word[1]=((u4)0x43500000); 	/* set t= 2**54 */
         fdt.u.value *=x; 
         fdt.u.word[1] = fdt.u.word[1]/3+B2;
     }
@@ -94,7 +94,7 @@ _WMRTLINK double cbrt(double x)
 
     /* chopped to 20 bits and make it larger than cbrt(x) */ 
 	fdt.u.word[0] = 0; 
-    fdt.u.word[1] += 0x00000001;
+    fdt.u.word[1] += ((u4)0x00000001);
 
 
     /* one step newton iteration to 53 bits with error less than 0.667 ulps */

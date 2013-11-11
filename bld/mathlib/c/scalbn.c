@@ -51,7 +51,7 @@ tiny   = 1.0e-300;
 
 _WMRTLINK double scalbn (double x, int n)
 {
-    int  k,hx,lx;
+    u4 k,hx,lx;
     
     float_double fdx;
     
@@ -71,8 +71,6 @@ _WMRTLINK double scalbn (double x, int n)
         fdx.u.value = x;
         hx = fdx.u.word[1];
         k = ((hx & ((u4)0x7ff00000)) >> 20) - 54;
-        if (n< -50000) 
-            return tiny*x; 	/*underflow*/
     }
     if (k==0x7ff) 
         return x+x;		/* NaN or Inf */
@@ -89,10 +87,7 @@ _WMRTLINK double scalbn (double x, int n)
     
     if (k <= -54)
     {
-        if (n > 50000) 	/* in case integer overflow in n+k */
-            return huge_*copysign(huge_,x);	/*overflow*/
-        else 
-            return tiny*copysign(tiny,x); 	/*underflow*/
+        return tiny*copysign(tiny,x); 	/*underflow*/
     }
     
     k += 54;				/* subnormal result */

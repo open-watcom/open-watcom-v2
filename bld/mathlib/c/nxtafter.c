@@ -57,11 +57,11 @@ _WMRTLINK double nextafter(double x, double y)
 	lx = fdx.u.word[0];		/* low  word of x */
 	hy = fdy.u.word[1];		/* high word of y */
 	ly = fdy.u.word[0];		/* low  word of y */
-	ix = hx & 0x7fffffff;	/* |x| */
-	iy = hy & 0x7fffffff;	/* |y| */
+	ix = hx & ((u4)0x7fffffff);	/* |x| */
+	iy = hy & ((u4)0x7fffffff);	/* |y| */
 
-	if(((ix>=0x7ff00000) && ((ix-0x7ff00000) | lx)!=0) ||   /* x is nan */ 
-	   ((iy>=0x7ff00000) && ((iy-0x7ff00000) | ly)!=0))     /* y is nan */ 
+	if(((ix>=((u4)0x7ff00000)) && ((ix-((u4)0x7ff00000)) | lx)!=0) ||   /* x is nan */ 
+	   ((iy>=((u4)0x7ff00000)) && ((iy-((u4)0x7ff00000)) | ly)!=0))     /* y is nan */ 
     {
         return x+y;
     }
@@ -71,7 +71,7 @@ _WMRTLINK double nextafter(double x, double y)
         
 	if((ix|lx) == 0) 			/* x == 0 */
     {
-	    fdx.u.word[1] = hy&0x80000000;	/* return +-minsubnormal */
+	    fdx.u.word[1] = hy&((u4)0x80000000);	/* return +-minsubnormal */
 	    fdx.u.word[0] = 1;
 	    y = fdx.u.value*fdx.u.value;
         
@@ -112,12 +112,12 @@ _WMRTLINK double nextafter(double x, double y)
 	    }
 	}
     
-	hy = hx & 0x7ff00000;
+	hy = hx & ((u4)0x7ff00000);
     
-	if(hy >= 0x7ff00000) 
+	if(hy >= ((u4)0x7ff00000))
         return x+x;	/* overflow  */
 	
-    if(hy<0x00100000) 		/* underflow */
+    if(hy<((u4)0x00100000)) 		/* underflow */
     {
 	    y = x*x;
 	    if(y!=x) 		/* raise underflow flag */
