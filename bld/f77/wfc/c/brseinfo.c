@@ -176,7 +176,7 @@ void    BIStartSubroutine( void ) {
 //===========================
 
     if( _GenerateBrInfo() ) {
-        if ( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) != SY_BLOCK_DATA ){
+        if ( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) != SY_BLOCK_DATA ){
             BIOutSrcLine();
             BIOutSP( SubProgId );
         }
@@ -188,10 +188,10 @@ void    BIFiniStartOfSubroutine( void ) {
 //=================================
 
     if( _GenerateBrInfo() && (currState & BI_STATE_IN_SCOPE) ) {
-        if ( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ){
+        if ( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ){
             BISolidifyFunction( SubProgId, subProgTyHandle );
         }
-        if ( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) != SY_BLOCK_DATA ){
+        if ( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) != SY_BLOCK_DATA ){
             if ( currState & BI_STATE_IN_SCOPE ) {
                 BIOutDummies( Entries );
             }
@@ -214,7 +214,7 @@ void    BIEndSubProg( void ) {
 //======================
 
     if( _GenerateBrInfo() ) {
-        if ( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) == SY_BLOCK_DATA ) {
+        if ( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_BLOCK_DATA ) {
             BIEndBlockData();
         } else {
             BIDumpAllEntryPoints( Entries, 0 );
@@ -247,7 +247,7 @@ void    BIStartRBorEP( sym_id ste_ptr ) {
 
     if( _GenerateBrInfo() ) {
         BIOutSP( ste_ptr );
-        if ( ste_ptr->ns.flags & SY_SENTRY ) {
+        if ( ste_ptr->u.ns.flags & SY_SENTRY ) {
             BIOutDummies( ArgList );
         }
     }
@@ -271,7 +271,7 @@ void    BIStartComBlock( sym_id ste_ptr ) {
         DWDeclPos( cBIId, CurrFile->rec, 0 );
         currState |= BI_STATE_IN_COMMON_BLOCK;
         DWIncludeCommonBlock( cBIId, DWBeginCommonBlock( cBIId, justJunk, 0,
-            strncpy( name, ste_ptr->ns.name, ste_ptr->ns.u2.name_len ), 0 ) );
+            strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ), 0 ) );
 
     }
 }
@@ -294,7 +294,7 @@ void    BIStartBlockData( sym_id ste_ptr ) {
         memset( name, 0, MAX_SYMLEN+1 );
         DWDeclPos( cBIId, CurrFile->rec, 0 );
         DWBeginLexicalBlock( cBIId, 0,
-                strncpy( name, ste_ptr->ns.name, ste_ptr->ns.u2.name_len ) );
+                strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ) );
     }
 }
 
@@ -314,11 +314,11 @@ void    BIOutNameList( sym_id ste_ptr ) {
     dw_handle   var;
 
     if( _GenerateBrInfo() ) {
-        if( !( ste_ptr->nl.dbh ) ) {
-            strncpy( name, ste_ptr->nl.name, ste_ptr->nl.name_len );
-            name[ste_ptr->nl.name_len] = 0;
+        if( !( ste_ptr->u.nl.dbh ) ) {
+            strncpy( name, ste_ptr->u.nl.name, ste_ptr->u.nl.name_len );
+            name[ste_ptr->u.nl.name_len] = 0;
             BIOutSrcLine();
-            ge = ste_ptr->nl.group_list;
+            ge = ste_ptr->u.nl.group_list;
             while( ge != NULL ) {
                 var = BIGetHandle( ge->sym );
                 if( !var ) {
@@ -326,15 +326,15 @@ void    BIOutNameList( sym_id ste_ptr ) {
                 }
                 ge = ge->link;
             }
-            ste_ptr->nl.dbh = DWNameListBegin( cBIId, name );
-            ge = ste_ptr->nl.group_list;
+            ste_ptr->u.nl.dbh = DWNameListBegin( cBIId, name );
+            ge = ste_ptr->u.nl.group_list;
             while( ge != NULL ) {
                 DWNameListItem( cBIId, BIGetHandle( ge->sym ) );
                 ge = ge->link;
             }
             DWEndNameList( cBIId );
         }
-        BIRefSymbol( ste_ptr->nl.dbh );
+        BIRefSymbol( ste_ptr->u.nl.dbh );
     }
 }
 
@@ -351,52 +351,52 @@ void    BIOutSymbol( sym_id ste_ptr ) {
         return;
     }
     BIOutSrcLine();
-    if ( !( ste_ptr->ns.flags & SY_REFERENCED ) ) {
-        if ( ( ste_ptr->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-            if((ste_ptr->ns.flags & SY_SUBPROG_TYPE)==SY_STMT_FUNC ) {
+    if ( !( ste_ptr->u.ns.flags & SY_REFERENCED ) ) {
+        if ( ( ste_ptr->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+            if((ste_ptr->u.ns.flags & SY_SUBPROG_TYPE)==SY_STMT_FUNC ) {
                 if( ( ASType & AST_ASF ) &&
                         !( currState & BI_STATE_IN_STMT_FUNC ) ) { //if defining s.f.
                     BIOutSF( ste_ptr );
                 } else {
                     BIRefSymbol( BIGetHandle( ste_ptr ) );
                 }
-            } else if((ste_ptr->ns.flags & SY_SUBPROG_TYPE)==SY_REMOTE_BLOCK){
+            } else if((ste_ptr->u.ns.flags & SY_SUBPROG_TYPE)==SY_REMOTE_BLOCK){
                     BIOutDeclareSP( ste_ptr, 0 );
             } else {
-                    if ( !( ste_ptr->ns.flags & SY_PS_ENTRY ) ) {
+                    if ( !( ste_ptr->u.ns.flags & SY_PS_ENTRY ) ) {
                         BIOutDeclareSP( ste_ptr, DW_FLAG_GLOBAL );
                     } else {
                         BIRefSymbol( BIGetHandle( ste_ptr ) );
                     }
             }
-        } else if ( ( ste_ptr->ns.flags & SY_CLASS ) == SY_VARIABLE ) {
-                if ( ste_ptr->ns.flags & SY_SUB_PARM ) {
+        } else if ( ( ste_ptr->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+                if ( ste_ptr->u.ns.flags & SY_SUB_PARM ) {
                     if ( currState & BI_STATE_RESOLVED ) {
                         BIRefSymbol( BIGetHandle( ste_ptr ) );
                     } else {
                         BIAdd2List( &fixSubParms, ste_ptr, CurrFile->rec );
                     }
-                } else if ( !( ste_ptr->ns.flags & SY_SPECIAL_PARM ) ) {
-                    if ( !( ste_ptr->ns.flags & SY_IN_COMMON ) ||
+                } else if ( !( ste_ptr->u.ns.flags & SY_SPECIAL_PARM ) ) {
+                    if ( !( ste_ptr->u.ns.flags & SY_IN_COMMON ) ||
                        ( currState & BI_STATE_IN_COMMON_BLOCK ) ) {
                         BIOutVar( ste_ptr );
-                    } else if ( !( ste_ptr->ns.flags &
+                    } else if ( !( ste_ptr->u.ns.flags &
                                         ( SY_DATA_INIT | SY_IN_DIMEXPR ) ) ||
-                                !( ste_ptr->ns.flags & SY_IN_COMMON ) ) {
+                                !( ste_ptr->u.ns.flags & SY_IN_COMMON ) ) {
                         BIRefSymbol( BIGetHandle( ste_ptr ) );
                     }
                 } else if ( currState & BI_STATE_IN_STMT_FUNC ) {
-                    BIRefSymbol( BIGetHandle( ste_ptr->ns.si.ms.sym ) );
+                    BIRefSymbol( BIGetHandle( ste_ptr->u.ns.si.ms.sym ) );
                 }
-        } else if ( ( ste_ptr->ns.flags & SY_CLASS ) == SY_PARAMETER ) {
+        } else if ( ( ste_ptr->u.ns.flags & SY_CLASS ) == SY_PARAMETER ) {
             BIOutConst( ste_ptr );
         }
     } else {
         // Do we need to use the magic symbol when referencing?
         if ( ( currState & BI_STATE_IN_STMT_FUNC ) &&
-             ( ste_ptr->ns.flags & SY_SPECIAL_PARM ) ) {
-            BIRefSymbol( BIGetHandle( ste_ptr->ns.si.ms.sym ) );
-        } else if ( ( ste_ptr->ns.flags & SY_SUB_PARM ) &&
+             ( ste_ptr->u.ns.flags & SY_SPECIAL_PARM ) ) {
+            BIRefSymbol( BIGetHandle( ste_ptr->u.ns.si.ms.sym ) );
+        } else if ( ( ste_ptr->u.ns.flags & SY_SUB_PARM ) &&
                   ( !( currState & BI_STATE_RESOLVED ) ) ) {
             BIAdd2List( &fixSubParms, ste_ptr, CurrFile->rec );
         } else {
@@ -413,9 +413,9 @@ void    BIOutSymbol( sym_id ste_ptr ) {
                 // so we must turn of the reference bit,
                 // Dump thhe symbol
                 // and set the bit on again
-                ste_ptr->ns.flags &= ~SY_REFERENCED;
+                ste_ptr->u.ns.flags &= ~SY_REFERENCED;
                 BIOutSymbol( ste_ptr );
-                ste_ptr->ns.flags |= SY_REFERENCED;
+                ste_ptr->u.ns.flags |= SY_REFERENCED;
             }
         }
     }
@@ -455,14 +455,14 @@ void BIOutSrcLine( void ) {
 static dw_handle BIGetHandle( sym_id ste_ptr) {
 //=============================================
 
-    return( ste_ptr->ns.u3.dbh );
+    return( ste_ptr->u.ns.u3.dbh );
 }
 
 
 static void BISetHandle( sym_id ste_ptr, dw_handle handle ) {
 //===========================================================
 
-    ste_ptr->ns.u3.dbh = handle;
+    ste_ptr->u.ns.u3.dbh = handle;
 }
 
 
@@ -531,11 +531,11 @@ static void BIOutSP( sym_id ste_ptr ) {
     dw_handle   fret;
 
     DWDeclPos( cBIId, CurrFile->rec, 0 );
-    if ( ( ste_ptr->ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
-        if( ste_ptr->ns.flags & SY_SENTRY ) {
+    if ( ( ste_ptr->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
+        if( ste_ptr->u.ns.flags & SY_SENTRY ) {
             fret = subProgTyHandle;
         } else {
-            if ( ste_ptr->ns.u1.s.typ == FT_STRUCTURE ) {
+            if ( ste_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
                 fret = BIStartStructType( ste_ptr, FALSE );
             } else {
                 fret = DWHandle( cBIId, DW_ST_NONE );
@@ -546,11 +546,11 @@ static void BIOutSP( sym_id ste_ptr ) {
         fret = BIGetSPType( ste_ptr );
     }
     memset( name, 0, MAX_SYMLEN+1 );
-    strncpy( name, ste_ptr->ns.name, ste_ptr->ns.u2.name_len );
-    if ( ste_ptr->ns.flags & SY_SENTRY ) {
+    strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len );
+    if ( ste_ptr->u.ns.flags & SY_SENTRY ) {
         fret =    DWBeginEntryPoint( cBIId, fret, justJunk, 0, name, 0, flags );
     }else{
-        if ( ( ste_ptr->ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) {
+        if ( ( ste_ptr->u.ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) {
             flags |= DW_FLAG_MAIN;
         }
         fret =    DWBeginSubroutine( cBIId, 0, fret, justJunk, 0, 0,
@@ -599,15 +599,15 @@ static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle ) {
 
 //  solidify the function type;
 
-    if ( ste_ptr->ns.u1.s.typ != FT_STRUCTURE ) {
+    if ( ste_ptr->u.ns.u1.s.typ != FT_STRUCTURE ) {
         DWHandleSet( cBIId, handle );
     }
-    if( _isFundamentalType( ste_ptr->ns.u1.s.typ ) ) {
+    if( _isFundamentalType( ste_ptr->u.ns.u1.s.typ ) ) {
         // since we now emit our fundamentals at init time, we must explicitly
         // create another fundemntal handle rather than using the ones created
         // at birth.  This is necessary because we must set next handle emitted
         // to that type
-        BIMakeFundamental( ste_ptr->ns.u1.s.typ );
+        BIMakeFundamental( ste_ptr->u.ns.u1.s.typ );
     } else {
         BIGetSPType( ste_ptr );
     }
@@ -627,8 +627,8 @@ static void BIOutDeclareSP( sym_id ste_ptr, long flags ) {
 
     memset( name, 0, MAX_SYMLEN+1 );
     handle = DWBeginSubroutine( cBIId, 0, BIGetSPType( ste_ptr ), justJunk,
-                 0, 0, 0, 0, strncpy( name, ste_ptr->ns.name,
-                                        ste_ptr->ns.u2.name_len ), 0, flags );
+                 0, 0, 0, 0, strncpy( name, ste_ptr->u.ns.name,
+                                        ste_ptr->u.ns.u2.name_len ), 0, flags );
     DWEndSubroutine ( cBIId );
     BISetHandle( ste_ptr, handle );
     BIRefSymbol( handle );
@@ -643,7 +643,7 @@ static void BIOutSF( sym_id ste_ptr ) {
     sf_parm             *tmp;
 
     BIOutSP( ste_ptr );
-    tmp = ste_ptr->ns.si.sf.header->parm_list;
+    tmp = ste_ptr->u.ns.si.sf.header->parm_list;
     while( tmp ) {
         BIOutSPDumInfo( tmp->actual );
         tmp = tmp->link;
@@ -662,8 +662,8 @@ static void BIOutSPDumInfo( sym_id ste_ptr ) {
 
     memset( name, 0, MAX_SYMLEN+1 );
     handle = DWFormalParameter( cBIId, BIGetAnyType( ste_ptr ), 0, 0,
-                                strncpy( name, ste_ptr->ns.name,
-                                        ste_ptr->ns.u2.name_len ),
+                                strncpy( name, ste_ptr->u.ns.name,
+                                        ste_ptr->u.ns.u2.name_len ),
                                 DW_DEFAULT_NONE );
     BIRefSymbol( handle );
     BISetHandle( ste_ptr, handle );
@@ -680,7 +680,7 @@ static void BIOutVar( sym_id ste_ptr ) {
 
     memset( name, 0, MAX_SYMLEN+1 );
     handle = DWVariable(cBIId, BIGetAnyType(ste_ptr), 0, 0, 0,
-                        strncpy(name, ste_ptr->ns.name, ste_ptr->ns.u2.name_len ),
+                        strncpy(name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ),
                         0, 0 );
     BIRefSymbol( handle );
     BISetHandle( ste_ptr, handle );
@@ -696,16 +696,16 @@ static void BIOutConst( sym_id ste_ptr ) {
     char                name[MAX_SYMLEN+1];
     void                *value;
 
-    if ( ste_ptr->ns.u1.s.typ == FT_CHAR ) {
-        value = &(ste_ptr->ns.si.pc.value->lt.value);
+    if ( ste_ptr->u.ns.u1.s.typ == FT_CHAR ) {
+        value = &(ste_ptr->u.ns.si.pc.value->u.lt.value);
     } else {
-        value = &(ste_ptr->ns.si.pc.value->cn.value);
+        value = &(ste_ptr->u.ns.si.pc.value->u.cn.value);
     }
 
     memset( name, 0, MAX_SYMLEN+1 );
     handle = DWConstant(cBIId, BIGetAnyType(ste_ptr), value,
-                        ste_ptr->ns.xt.size, 0,
-                        strncpy(name, ste_ptr->ns.name, ste_ptr->ns.u2.name_len),
+                        ste_ptr->u.ns.xt.size, 0,
+                        strncpy(name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len),
                         0, 0 );
     BIRefSymbol( handle );
     BISetHandle( ste_ptr, handle );
@@ -717,7 +717,7 @@ static dw_handle        BIGetAnyType( sym_id ste_ptr ) {
 
 // return any and all type
 
-    if ( ste_ptr->ns.flags & SY_SUBSCRIPTED ) {
+    if ( ste_ptr->u.ns.flags & SY_SUBSCRIPTED ) {
         return( BIGetArrayType( ste_ptr ) );
     } else {
         return( BIGetType( ste_ptr ) );
@@ -728,7 +728,7 @@ static dw_handle        BIGetAnyType( sym_id ste_ptr ) {
 static dw_handle BIGetSPType( sym_id ste_ptr ) {
 //==============================================
 
-    switch ( ste_ptr->ns.flags & SY_SUBPROG_TYPE ) {
+    switch ( ste_ptr->u.ns.flags & SY_SUBPROG_TYPE ) {
     case( SY_SUBROUTINE ) :
     case( SY_REMOTE_BLOCK ):
     case( SY_BLOCK_DATA ) :     return( 0 );
@@ -736,8 +736,8 @@ static dw_handle BIGetSPType( sym_id ste_ptr ) {
     case( SY_PROGRAM ) :
     case( SY_STMT_FUNC ) :
     case( SY_FN_OR_SUB ) :
-        if ( ( ste_ptr->ns.u1.s.typ == FT_STRUCTURE ) &&
-            !( ste_ptr->ns.xt.record ) ) {
+        if ( ( ste_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) &&
+            !( ste_ptr->u.ns.xt.record ) ) {
             return( BIStartStructType( ste_ptr, TRUE ) );
         }
         return( BIGetType( ste_ptr ) );
@@ -751,7 +751,7 @@ static dw_handle BIGetType( sym_id ste_ptr ) {
 
 // Get the Symbol's NON COMPOUND DWARF TYPE,
 
-    TYPE        typ = ste_ptr->ns.u1.s.typ;
+    TYPE        typ = ste_ptr->u.ns.u1.s.typ;
     dw_handle   ret = 0;
 
     switch( typ ) {
@@ -770,7 +770,7 @@ static dw_handle BIGetType( sym_id ste_ptr ) {
         ret = baseTypes[ typ ];
         break;
     case( FT_CHAR ):
-        ret = DWString(cBIId, 0, ste_ptr->ns.xt.size, "", 0, 0);
+        ret = DWString(cBIId, 0, ste_ptr->u.ns.xt.size, "", 0, 0);
         break;
     case( FT_UNION ):
         ret = BIGetUnionType( ste_ptr );
@@ -799,14 +799,14 @@ static dw_handle BIGetArrayType( sym_id ste_ptr ) {
 
 // Get An array type of a named symbol
 
-    int         dim = _DimCount( ste_ptr->ns.si.va.u.dim_ext->dim_flags );
+    int         dim = _DimCount( ste_ptr->u.ns.si.va.u.dim_ext->dim_flags );
     int         x = 0;
     dw_dim_info data;
     intstar4    *sub;
     dw_handle   ret;
 
     data.index_type = BIGetBaseType( FT_INTEGER );
-    sub = &( ste_ptr->ns.si.va.u.dim_ext->subs_1_lo );
+    sub = &( ste_ptr->u.ns.si.va.u.dim_ext->subs_1_lo );
 
     ret = DWBeginArray( cBIId, BIGetType( ste_ptr ), 0, NULL, 0, 0 );
     for( x = 0; x < dim; x++ ) {
@@ -834,52 +834,52 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
 
     if ( handle ) {
         ret = handle;
-    } else if ( ste_ptr->ns.xt.record->dbh ) {
-        return( ste_ptr->ns.xt.record->dbh );
+    } else if ( ste_ptr->u.ns.xt.record->dbh ) {
+        return( ste_ptr->u.ns.xt.record->dbh );
     } else {
         // consider: record /bar/ function x()
         //                       ....
         // we want to use the handle we used when the function
         // was defined
-        if ( ste_ptr->ns.xt.record == SubProgId->ns.xt.record ) {
+        if ( ste_ptr->u.ns.xt.record == SubProgId->u.ns.xt.record ) {
             ret = subProgTyHandle;
         } else {
             ret = DWStruct( cBIId, DW_ST_STRUCT );
         }
     }
-    ste_ptr->ns.xt.record->dbh = ret;
+    ste_ptr->u.ns.xt.record->dbh = ret;
     DWDeclPos( cBIId, CurrFile->rec, 0 );
     memset( buffer, 0, MAX_SYMLEN+1 );
-    DWBeginStruct( cBIId, ret, ste_ptr->ns.xt.record->size,
-                        strncpy( buffer, ste_ptr->ns.xt.record->name,
-                                ste_ptr->ns.xt.record->name_len ),
+    DWBeginStruct( cBIId, ret, ste_ptr->u.ns.xt.record->size,
+                        strncpy( buffer, ste_ptr->u.ns.xt.record->name,
+                                ste_ptr->u.ns.xt.record->name_len ),
                         0, 0 );
-    fields = ste_ptr->ns.xt.record->fl.fields;
+    fields = ste_ptr->u.ns.xt.record->fl.fields;
     while( fields ) {
-        data->ns.u1.s.typ = fields->typ;
-        data->ns.xt.record = fields->xt.record;
+        data->u.ns.u1.s.typ = fields->typ;
+        data->u.ns.xt.record = fields->xt.record;
         name = NULL;
         if ( fields->typ == FT_UNION ) {
-            data->ns.si.va.u.dim_ext = NULL;
-            data->ns.u2.name_len = 0;
-            data->ns.name[0] = 0;
+            data->u.ns.si.va.u.dim_ext = NULL;
+            data->u.ns.u2.name_len = 0;
+            data->u.ns.name[0] = 0;
             un++;
-            name = data->ns.name;
+            name = data->u.ns.name;
         } else {
-            data->ns.si.va.u.dim_ext = fields->dim_ext;
-            data->ns.u2.name_len = fields->name_len;
-            strncpy( data->ns.name, fields->name, fields->name_len );
-            data->ns.name[ fields->name_len ] = 0;
-            if ( *(data->ns.name) ) {
-                name = data->ns.name;
+            data->u.ns.si.va.u.dim_ext = fields->dim_ext;
+            data->u.ns.u2.name_len = fields->name_len;
+            strncpy( data->u.ns.name, fields->name, fields->name_len );
+            data->u.ns.name[ fields->name_len ] = 0;
+            if ( *(data->u.ns.name) ) {
+                name = data->u.ns.name;
             }
         }
-        if ( data->ns.si.va.u.dim_ext ) {
+        if ( data->u.ns.si.va.u.dim_ext ) {
             DWAddField(cBIId, BIGetArrayType(data), justJunk, name, 0);
         } else {
             DWAddField( cBIId, BIGetType( data ), justJunk, name, 0 );
         }
-        fields = &fields->link->fd;
+        fields = &fields->link->u.fd;
     }
     DWEndStruct( cBIId );
     return( ret );
@@ -899,35 +899,35 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
     char                buff[12];
 
     ret = DWStruct( cBIId, DW_ST_UNION );
-    fs = ste_ptr->ns.xt.record;
+    fs = ste_ptr->u.ns.xt.record;
     // find the largest size of map
     while( fs ) {
         if ( fs->size > max ) {
             max = fs->size;
         }
-        fs = &fs->link->sd;
+        fs = &fs->link->u.sd;
     }
 
     // Start the union declaration
     DWDeclPos( cBIId, CurrFile->rec, 0 );
-    DWBeginStruct( cBIId, ret, max, ste_ptr->ns.name, 0, 0 );
-    fs = ste_ptr->ns.xt.record;
-    data.ns.xt.record = FMemAlloc( sizeof( fstruct) );
+    DWBeginStruct( cBIId, ret, max, ste_ptr->u.ns.name, 0, 0 );
+    fs = ste_ptr->u.ns.xt.record;
+    data.u.ns.xt.record = FMemAlloc( sizeof( fstruct) );
     while( fs ) {
-        memset( data.ns.xt.record, 0, sizeof( fstruct ) );
-        memcpy( data.ns.xt.record, fs, sizeof( fmap ) );
-        data.ns.si.va.u.dim_ext = NULL;
-        data.ns.u1.s.typ = FT_STRUCTURE;
-        strcpy( data.ns.name, "MAP" );
-        strcat( data.ns.name, itoa( map, buff, 10 ) );
-        data.ns.u2.name_len = strlen( data.ns.name );
-        strcpy( data.ns.xt.record->name, data.ns.name );
-        data.ns.xt.record->name_len = data.ns.u2.name_len;
+        memset( data.u.ns.xt.record, 0, sizeof( fstruct ) );
+        memcpy( data.u.ns.xt.record, fs, sizeof( fmap ) );
+        data.u.ns.si.va.u.dim_ext = NULL;
+        data.u.ns.u1.s.typ = FT_STRUCTURE;
+        strcpy( data.u.ns.name, "MAP" );
+        strcat( data.u.ns.name, itoa( map, buff, 10 ) );
+        data.u.ns.u2.name_len = strlen( data.u.ns.name );
+        strcpy( data.u.ns.xt.record->name, data.u.ns.name );
+        data.u.ns.xt.record->name_len = data.u.ns.u2.name_len;
         map++;
-        DWAddField( cBIId, BIGetType( &data ), justJunk, data.ns.name, 0 );
-        fs = &fs->link->sd;
+        DWAddField( cBIId, BIGetType( &data ), justJunk, data.u.ns.name, 0 );
+        fs = &fs->link->u.sd;
     }
-    FMemFree( data.ns.xt.record );
+    FMemFree( data.u.ns.xt.record );
     DWEndStruct( cBIId );
     return( ret );
 }

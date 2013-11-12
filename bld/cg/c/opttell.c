@@ -93,7 +93,7 @@ extern  void    TellCommonLabel( code_lbl *lbl, unsigned hdl )
 {
   optbegin
     _ValidLbl( lbl );
-    lbl->lbl.sym = (sym_handle)(pointer_int)hdl;
+    lbl->lbl.sym = (cg_sym_handle)(pointer_int)hdl;
     _SetStatus( lbl, COMMON_LBL );
   optend
 }

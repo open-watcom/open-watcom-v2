@@ -60,7 +60,7 @@ void    CpExternal(void) {
     for(;;) {
         if( ReqName( NAME_EXT_PROC ) ) {
             sym = LkSym();
-            flags = sym->ns.flags;
+            flags = sym->u.ns.flags;
             if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
                 if( ( flags & SY_EXTERNAL ) != 0 ) {
                     Error( SR_EXTRNED_TWICE );
@@ -71,12 +71,12 @@ void    CpExternal(void) {
                 IllName( sym );
             } else {
                 flags = SY_USAGE | SY_SUBPROGRAM | SY_EXTERNAL;
-                if( ( sym->ns.flags & SY_TYPE ) != 0 ) {
+                if( ( sym->u.ns.flags & SY_TYPE ) != 0 ) {
                     flags |= SY_FUNCTION;
                 }
-                sym->ns.flags |= flags;
+                sym->u.ns.flags |= flags;
                 if( ( Options & OPT_REFERENCE ) == 0 ) {
-                    sym->ns.flags |= SY_RELAX_EXTERN;
+                    sym->u.ns.flags |= SY_RELAX_EXTERN;
                 }
             }
         }

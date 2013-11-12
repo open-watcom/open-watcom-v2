@@ -57,7 +57,7 @@ typedef enum {
 typedef struct label_def {
         struct code_lbl         *link;
         pointer                 patch;
-        sym_handle              sym;
+        cg_sym_handle           sym;
         offset                  address;
         status_bits             status;
 } label_def;

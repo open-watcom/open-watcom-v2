@@ -99,16 +99,16 @@ static  sym_id  IFSymLookup( char *name, uint len ) {
 
     sym = STNameSearch( name, len );
     if( sym != NULL ) {
-        if( ((sym->ns.flags & SY_CLASS) == SY_SUBPROGRAM) &&
-               (sym->ns.flags & SY_INTRINSIC) ) {
+        if( ((sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM) &&
+               (sym->u.ns.flags & SY_INTRINSIC) ) {
             return( sym );
         }
     }
     sym = STSearch( name, len, IFList );
     if( sym == NULL ) {
         sym = STAdd( name, len );
-        sym->ns.u3.address = NULL;
-        sym->ns.link = IFList;
+        sym->u.ns.u3.address = NULL;
+        sym->u.ns.link = IFList;
         IFList = sym;
     }
     return( sym );
@@ -144,7 +144,7 @@ IFF     IFSpecific( TYPE typ ) {
     sym_id      sym;
 
     magic = 0;
-    func = CITNode->sym_ptr->ns.si.fi.index;
+    func = CITNode->sym_ptr->u.ns.si.fi.index;
     if( IFFlags[ func ].next == MAGIC ) {
         magic = MAGIC;
     } else if( IFFlags[ func ].flags & IF_GENERIC ) {
@@ -157,7 +157,7 @@ IFF     IFSpecific( TYPE typ ) {
         }
         sym = IFSymLookup( IFNames[ func ], strlen( IFNames[ func ] ) );
         typ = IFFlags[ func ].ret_typ;
-        // merge flags - don't assign them from CITNode->sym_ptr->ns.flags
+        // merge flags - don't assign them from CITNode->sym_ptr->u.ns.flags
         // since SY_IF_ARGUMENT may be set in sym->flags
         // Consider:        DOUBLE PRECISION X
         //                  INTRINSIC DSIN
@@ -165,10 +165,10 @@ IFF     IFSpecific( TYPE typ ) {
         //                  PRINT *, SIN( X )
         // when we process SIN( X ), the specific function DSIN already
         // has SY_IF_ARGUMENT set
-        sym->ns.flags |= CITNode->sym_ptr->ns.flags | SY_REFERENCED;
-        sym->ns.u1.s.typ = typ;
-        sym->ns.xt.size = TypeSize( typ );
-        sym->ns.si.fi.index = func;
+        sym->u.ns.flags |= CITNode->sym_ptr->u.ns.flags | SY_REFERENCED;
+        sym->u.ns.u1.s.typ = typ;
+        sym->u.ns.xt.size = TypeSize( typ );
+        sym->u.ns.si.fi.index = func;
         CITNode->sym_ptr = sym;
         if( IFFlags[ func ].flags & IF_IN_LINE ) {
             magic = MAGIC;

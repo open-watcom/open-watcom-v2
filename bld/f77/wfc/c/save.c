@@ -57,9 +57,9 @@ static  void    Save( sym_id sym_ptr ) {
 
 // Check that item has not been saved twice.
 
-    if( ( ( sym_ptr->ns.flags & SY_SAVED ) == 0 ) &&
+    if( ( ( sym_ptr->u.ns.flags & SY_SAVED ) == 0 ) &&
         ( ( SgmtSw & SG_BIG_SAVE ) == 0 ) ) {
-        sym_ptr->ns.flags |= SY_SAVED;
+        sym_ptr->u.ns.flags |= SY_SAVED;
         SgmtSw |= SG_LITTLE_SAVE;
     } else {
         Error( SA_SAVED );
@@ -89,8 +89,8 @@ void    CpSave( void ) {
                 AdvanceITPtr();
                 if( ReqName( NAME_COMMON ) ) {
                     sym_ptr = LkCommon();
-                    if( sym_ptr->ns.flags == 0 ) {
-                        sym_ptr->ns.flags |= SY_USAGE | SY_COMMON;
+                    if( sym_ptr->u.ns.flags == 0 ) {
+                        sym_ptr->u.ns.flags |= SY_USAGE | SY_COMMON;
                     }
                     Save( sym_ptr );
                 }
@@ -99,7 +99,7 @@ void    CpSave( void ) {
                 ReqNOpn();
             } else if( ReqName( NAME_VAR_OR_ARR ) ) {
                 sym_ptr = LkSym();
-                if( ( sym_ptr->ns.flags & ~SV_ON_OR_OFF ) != SY_VARIABLE ) {
+                if( ( sym_ptr->u.ns.flags & ~SV_ON_OR_OFF ) != SY_VARIABLE ) {
                     IllName( sym_ptr );
                 } else {
                     Save( sym_ptr );

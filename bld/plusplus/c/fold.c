@@ -263,7 +263,7 @@ PTREE CastIntConstant( PTREE expr, TYPE type, boolean *happened )
 {
     PTREE new_expr;
     target_ulong ul_val;
-    CPP_FLOAT *dbl_val;
+    float_handle dbl_val;
     type_id id;
     boolean signed_type;
 
@@ -442,7 +442,7 @@ static PTREE castFloatingConstant( PTREE expr, TYPE type, boolean *happened )
         new_expr = CastIntConstant( new_expr, type, happened );
         break;
     case TYP_FLOAT: {
-        CPP_FLOAT *flt_val;
+        float_handle flt_val;
 
         flt_val = BFCopy( expr->u.floating_constant );
         new_expr = PTreeFloatingConstant( flt_val, id );
@@ -450,7 +450,7 @@ static PTREE castFloatingConstant( PTREE expr, TYPE type, boolean *happened )
         break;
     case TYP_LONG_DOUBLE:
     case TYP_DOUBLE:
-    {   CPP_FLOAT *flt_val;
+    {   float_handle flt_val;
         flt_val = BFCopy( expr->u.floating_constant );
         new_expr = PTreeFloatingConstant( flt_val, id );
     }   break;
@@ -660,10 +660,10 @@ PTREE FoldUnary( PTREE expr )
     return( castConstant( op1, result_type, &dont_care ) );
 }
 
-static PTREE foldFloating( CGOP op, PTREE left, CPP_FLOAT *v2 )
+static PTREE foldFloating( CGOP op, PTREE left, float_handle v2 )
 {
-    CPP_FLOAT *v1;
-    CPP_FLOAT *tmp;
+    float_handle v1;
+    float_handle tmp;
 
     v1 = left->u.floating_constant;
     switch( op ) {

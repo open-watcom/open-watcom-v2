@@ -49,7 +49,7 @@ extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  void            OutPatch(code_lbl *,patch_attr);
 extern  void            TellKeepLabel(code_lbl *);
 extern  void            OutReloc(segment_id,fix_class,bool);
-extern  void            OutImport(sym_handle,fix_class,bool);
+extern  void            OutImport(cg_sym_handle,fix_class,bool);
 extern  void            OutBckImport( const char *name, bck_info  *bck, fix_class class );
 extern  void            CodeBytes(byte*,uint);
 extern  void            CodeLabel(code_lbl *, unsigned);
@@ -58,7 +58,7 @@ extern  void            OutDataLong(long);
 extern  void            OutDataInt(int);
 extern  void            OutDBytes(unsigned,const byte*);
 extern  void            SetUpObj(bool);
-extern  void            TellObjNewLabel( sym_handle );
+extern  void            TellObjNewLabel( cg_sym_handle );
 extern  void            TellOptimizerByPassed( void );
 extern  void            TellByPassOver( void );
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
@@ -149,7 +149,7 @@ static  void    DoLblPtr( code_lbl *lbl, segment_id seg, fix_class class, offset
 }
 
 
-extern  void    DoBigLblPtr( sym_handle sym ) {
+extern  void    DoBigLblPtr( cg_sym_handle sym ) {
 /*********************************************/
 
     TellOptimizerByPassed();
@@ -159,7 +159,7 @@ extern  void    DoBigLblPtr( sym_handle sym ) {
 
 
 
-static  void    DoImpPtr( sym_handle sym, fix_class class, offset plus ) {
+static  void    DoImpPtr( cg_sym_handle sym, fix_class class, offset plus ) {
 /***********************************************************************/
 
     SetUpObj( TRUE );
@@ -215,7 +215,7 @@ extern  void    OutLblPatch( code_lbl *lbl, fix_class class, offset plus ) {
 }
 
 
-extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
+extern  void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus ) {
 /*******************************************************************/
 
     fe_attr     attr;
@@ -243,7 +243,7 @@ extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
     TellByPassOver();
 }
 
-extern  void    FEPtrBaseOffset( sym_handle sym,  offset plus ) {
+extern  void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus ) {
 /***************************************************************/
 
     fe_attr     attr;
@@ -258,7 +258,7 @@ extern  void    FEPtrBaseOffset( sym_handle sym,  offset plus ) {
     TellByPassOver();
 }
 
-extern  void    FEPtrBase( sym_handle sym ) {
+extern  void    FEPtrBase( cg_sym_handle sym ) {
 /*******************************************/
 
     fe_attr     attr;

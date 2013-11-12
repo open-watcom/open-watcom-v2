@@ -28,9 +28,9 @@
 *
 ****************************************************************************/
 
-extern  int     GetLog2( unsigned_32 value );
-extern  tn      FoldTimes( tn left, tn rite, type_def *tipe );
-extern  cfloat  *OkToNegate( cfloat *value, type_def *tipe );
+extern  int             GetLog2( unsigned_32 value );
+extern  tn              FoldTimes( tn left, tn rite, type_def *tipe );
+extern  float_handle    OkToNegate( float_handle value, type_def *tipe );
 extern  tn      FoldMinus( tn left, tn rite, type_def *tipe );
 extern  tn      FoldPlus( tn left, tn rite, type_def *tipe );
 extern  tn      FoldPow( tn left, tn rite, type_def *tipe );
@@ -48,10 +48,10 @@ extern  tn      FoldLog( cg_op op, tn left, type_def *tipe );
 extern  tn      FoldFlAnd( tn left, tn rite );
 extern  tn      FoldFlOr( tn left, tn rite );
 extern  tn      FoldFlNot( tn left );
-extern  tn      FoldBitCompare( cg_op op, tn_btn left, tn rite );
-extern  cfloat  *CnvCFToType( cfloat *cf, type_def *tipe );
+extern  tn      FoldBitCompare( cg_op op, tn left, tn rite );
+extern  float_handle CnvCFToType( float_handle cf, type_def *tipe );
 extern  tn      FoldCompare( cg_op op, tn left, tn rite, type_def *tipe );
 extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe );
 extern  an      FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe );
-extern  bool    FoldIfTrue( tn left, code_lbl *lbl );
-extern  bool    FoldIfFalse( tn left, code_lbl *lbl );
+extern  bool    FoldIfTrue( tn left, label_handle lbl );
+extern  bool    FoldIfFalse( tn left, label_handle lbl );

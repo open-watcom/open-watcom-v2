@@ -92,11 +92,11 @@ static  void    PrSFList( void ) {
 
     StmtSw |= SS_SF_REFERENCED;
     sf_sym = CITNode->sym_ptr;
-    sf_sym->ns.si.sf.header->ref_count++;
+    sf_sym->u.ns.si.sf.header->ref_count++;
     sfunc_node = CITNode;
     CITNode = CITNode->list;
     AdjSFList( CITNode );
-    parm = sf_sym->ns.si.sf.header->parm_list;
+    parm = sf_sym->u.ns.si.sf.header->parm_list;
     if( RecNOpn() ) {
         AdvanceITPtr();
         done_list = RecCloseParen() || RecColon();
@@ -108,9 +108,9 @@ static  void    PrSFList( void ) {
             if( parm == NULL ) break;
             num_parms++;
             sym_ptr = parm->shadow;
-            if( sym_ptr->ns.u1.s.typ != CITNode->typ ) {
+            if( sym_ptr->u.ns.u1.s.typ != CITNode->typ ) {
                 TypeTypeErr( SF_PARM_TYPE_MISMATCH, CITNode->typ,
-                             sym_ptr->ns.u1.s.typ );
+                             sym_ptr->u.ns.u1.s.typ );
             } else {
                 what = CITNode->opn.us & USOPN_WHAT;
                 where = CITNode->opn.us & USOPN_WHERE;
@@ -169,9 +169,9 @@ static  void    PrSubList( itnode *array_node ) {
         SubStrArgs( array_node );
     } else {
         if( array_node->opn.us & USOPN_FLD ) {
-            if( array_node->sym_ptr->fd.typ == FT_CHAR ) {
+            if( array_node->sym_ptr->u.fd.typ == FT_CHAR ) {
                 if( !(StmtSw & SS_DATA_INIT) )
-                    GFieldSCB( array_node->sym_ptr->fd.xt.size );
+                    GFieldSCB( array_node->sym_ptr->u.fd.xt.size );
             }
         }
     }

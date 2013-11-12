@@ -42,11 +42,12 @@
 #include "encode.h"
 #include "cgaux.h"
 #include "data.h"
-#include "feprotos.h"
 #include <assert.h>
 #include <stdio.h>
 #include "rtrtn.h"
 #include "dumpio.h"
+#include "cgauxinf.h"
+#include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
 extern void DumpGen(struct opcode_entry*);
@@ -465,7 +466,7 @@ extern  void    GenCallLabel( pointer label ) {
 static  void    doCall( instruction *ins ) {
 /******************************************/
 
-    pointer             sym;
+    cg_sym_handle       sym;
     byte_seq            *code;
     code_lbl            *lbl;
 
@@ -473,7 +474,7 @@ static  void    doCall( instruction *ins ) {
     sym = ins->operands[ CALL_OP_ADDR ]->v.symbol;
     lbl = symLabel( ins->operands[ CALL_OP_ADDR ] );
     if( !AskIfRTLabel( lbl ) ) {
-        code = FEAuxInfo( sym, CALL_BYTES );
+        code = FindAuxInfoSym( sym, CALL_BYTES );
     }
     if( code != NULL ) {
         ObjEmitSeq( code );

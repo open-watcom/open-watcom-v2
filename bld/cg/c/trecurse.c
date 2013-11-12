@@ -297,7 +297,7 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
     along these.
 */
 {
-    sym_handle  label;
+    cg_sym_handle label;
     block       *dest;
     block_num   i;
     instruction *parm;

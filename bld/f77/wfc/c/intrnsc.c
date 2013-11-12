@@ -68,7 +68,7 @@ void    CpIntrinsic(void) {
             if( func > 0 ) {
                 func_typ = IFType( func );
                 sym_ptr = LkSym();
-                flags = sym_ptr->ns.flags;
+                flags = sym_ptr->u.ns.flags;
                 if( ( flags & SY_USAGE ) != 0 ) {
                     if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
                         if( ( flags & SY_INTRINSIC ) != 0 ) {
@@ -82,17 +82,17 @@ void    CpIntrinsic(void) {
                 } else if( flags & ERR_MASK ) {
                     IllName( sym_ptr );
                 } else if( ( flags & SY_TYPE ) &&
-                           ( sym_ptr->ns.u1.s.typ != func_typ ) ) {
+                           ( sym_ptr->u.ns.u1.s.typ != func_typ ) ) {
                     NameTypeErr( TY_TYP_PREV_DEF, sym_ptr );
                 } else {
                     // we must OR the flags since SY_TYPE and/or SY_REFERENCED
                     // bit might already be set in the symbol table
-                    sym_ptr->ns.flags |= SY_USAGE | SY_SUBPROGRAM |
+                    sym_ptr->u.ns.flags |= SY_USAGE | SY_SUBPROGRAM |
                                          SY_FUNCTION | SY_INTRINSIC;
                     func_typ = IFType( func );
-                    sym_ptr->ns.u1.s.typ = func_typ;
-                    sym_ptr->ns.xt.size = TypeSize( func_typ );
-                    sym_ptr->ns.si.fi.index = func;
+                    sym_ptr->u.ns.u1.s.typ = func_typ;
+                    sym_ptr->u.ns.xt.size = TypeSize( func_typ );
+                    sym_ptr->u.ns.si.fi.index = func;
                 }
             } else {
                 Error( SR_NOT_INTRNSC );

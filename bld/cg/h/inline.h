@@ -27,11 +27,11 @@
 * Description:  Prototypes for inline.c
 *
 ****************************************************************************/
-extern  void    BGStartInline( sym_handle proc_sym );
+extern  void    BGStartInline( cg_sym_handle proc_sym );
 extern  void    BGAddInlineParm( an addr );
 extern  an      BGStopInline( cg_name handle, type_def *tipe );
-extern  void    BGProcInline( sym_handle proc_sym, type_def *tipe );
-extern  void    BGParmInline( sym_handle sym, type_def *tipe );
+extern  void    BGProcInline( cg_sym_handle proc_sym, type_def *tipe );
+extern  void    BGParmInline( cg_sym_handle sym, type_def *tipe );
 extern  void    BGRetInline( an addr, type_def *tipe );
 extern  bool    BGInInline( void );
 extern  int     BGInlineDepth( void );

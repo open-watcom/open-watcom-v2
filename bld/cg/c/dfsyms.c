@@ -60,12 +60,12 @@ extern  void            DataLong( long );
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes( offset len, byte pat );
 extern  void            DataLabel( code_lbl * );
-extern  void            DoBigLblPtr(sym_handle);
+extern  void            DoBigLblPtr(cg_sym_handle);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
 extern dw_loc_id        DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid );
 extern uint             DFStkReg( void );
 extern uint             DFDisplayReg( void );
-extern void             DFFEPtrRef( sym_handle sym );
+extern void             DFFEPtrRef( cg_sym_handle sym );
 extern char             GetMemModel( void );
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
@@ -145,14 +145,14 @@ static void DoReloc( dw_sym_handle sym, dw_addr_offset disp ){
     type_def            *ptr_type;
 
     ptr_type = TypeAddress( TY_NEAR_POINTER );
-    FEPtr( (sym_handle) sym, ptr_type, disp );
+    FEPtr( (cg_sym_handle)sym, ptr_type, disp );
 }
 
 
 static void DoSegReloc( dw_sym_handle sym ){
 /*************************************/
 
-    FEPtrBase( (sym_handle) sym );
+    FEPtrBase( (cg_sym_handle)sym );
 }
 
 static void DoLblReloc( bck_info *bck, long disp ){
@@ -278,7 +278,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ){
         sym = va_arg( args, dw_sym_handle );
         disp = va_arg( args, dw_addr_offset );
         DoReloc( sym, disp );
-//      DFFEPtrRef( (sym_handle )sym, disp );
+//      DFFEPtrRef( (cg_sym_handle)sym, disp );
         break;
       }
     default:
@@ -395,7 +395,7 @@ static  void    FiniLineSegBck( void ){
     BEFreeBack( bck );
 }
 
-extern  void    DFSymRange( sym_handle sym, offset size ){
+extern  void    DFSymRange( cg_sym_handle sym, offset size ){
 /*********************************************************/
     // I don't see what this is good for. The aranges for any
     // comdat symbols will be taken care of by DFSegRange().
@@ -521,8 +521,8 @@ extern  void    DFObjInitInfo( void ) {
         CLIFree
     };
     dw_init_info    info;
-    sym_handle      abbrev_sym;
-    sym_handle      debug_pch;
+    cg_sym_handle   abbrev_sym;
+    cg_sym_handle   debug_pch;
     fe_attr         attr;
 
     if( !_IsModel( DBG_LOCALS | DBG_TYPES ) ){
@@ -654,8 +654,8 @@ extern pointer _CGAPI DFClient( void ) {
     return( Client );
 }
 //TODO: maybe this should be some sort of call back
-extern void _CGAPI DFDwarfLocal( pointer client, pointer locid, sym_handle sym ){
-/*** add to location expr where local sym is ***********************************/
+extern void _CGAPI DFDwarfLocal( pointer client, pointer locid, pointer sym ) {
+/*** add to location expr where local sym is *********************************/
     name        *tmp;
     type_length offset;
 
@@ -730,7 +730,7 @@ extern void     DFLineNum( cue_state *state, offset lc ){
 
 
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-static  dw_loc_handle   SegLoc( sym_handle sym ){
+static  dw_loc_handle   SegLoc( cg_sym_handle sym ){
 /************************************************/
     dw_loc_id       locid;
     dw_loc_handle   df_loc;
@@ -741,7 +741,7 @@ static  dw_loc_handle   SegLoc( sym_handle sym ){
     return( df_loc );
 }
 #endif
-extern  void    DFGenStatic( sym_handle sym, dbg_loc loc ) {
+extern  void    DFGenStatic( cg_sym_handle sym, dbg_loc loc ) {
 /*******************************************************************/
     uint            flags;
     fe_attr         attr;
@@ -804,7 +804,7 @@ static  void    GenRetSym( dbg_loc loc, dbg_type tipe ) {
         DWLocTrash( Client, dw_loc );
     }
 }
-static void    SymParm( sym_handle sym, dw_loc_handle loc,
+static void    SymParm( cg_sym_handle sym, dw_loc_handle loc,
                                         dw_loc_handle entry ) {
 /*******************************************************************/
 //    fe_attr         attr;
@@ -857,7 +857,7 @@ static dw_loc_id StkLoc( uint_32 stk_offset, dw_loc_id locid ){
     return( locid );
 }
 
-static  dbg_local *UnLinkLoc( dbg_local **owner, sym_handle sym ) {
+static  dbg_local *UnLinkLoc( dbg_local **owner, cg_sym_handle sym ) {
 /********************************************/
 // unlink dbg_local with sym from owner
 
@@ -923,7 +923,7 @@ static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR32;
 
 extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
 /****************************************************/
-    sym_handle          sym;
+    cg_sym_handle       sym;
     dbg_type            tipe;
     fe_attr             attr;
     char               *name;

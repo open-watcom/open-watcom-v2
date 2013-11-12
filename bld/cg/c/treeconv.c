@@ -35,12 +35,12 @@
 #include "addrname.h"
 #include "tree.h"
 #include "treeconv.h"
+#include "treeprot.h"
 #include "zoiks.h"
 #include "cfloat.h"
 #include "utils.h"
 
 extern  void            BurnTree(tn);
-extern  tn              TGConst(pointer,type_def*);
 extern  bool            NeedPtrConvert(an,type_def*);
 extern  type_class_def  TypeClass(type_def*);
 extern  cfloat *        CnvCFToType( cfloat *cf, type_def *tipe );
@@ -59,7 +59,7 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
     if( TypeClass( frum ) <= I4 ) {
         switch( name->class ) {
         case TN_UNARY: /* go left*/
-            switch( name->op ) {
+            switch( name->u2.t.op ) {
             case O_UMINUS:
             case O_COMPLEMENT:
             case O_CONVERT:
@@ -76,7 +76,7 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             }
             break;
         case TN_BINARY: /* go left, right*/
-            switch( name->op ) {
+            switch( name->u2.t.op ) {
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
             case O_CONVERT:
                  /* Based pointer junk */
@@ -84,7 +84,7 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             case O_DIV:
             case O_MOD:
                 if( name->u.left->tipe->length > tipe->length ||
-                    name->rite->tipe->length > tipe->length ) break;
+                    name->u2.t.rite->tipe->length > tipe->length ) break;
 #endif
             case O_TIMES:
             case O_AND:
@@ -95,17 +95,17 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             case O_MINUS:
                 if( name->tipe->refno == TY_HUGE_POINTER ) break;
                 if( name->u.left->tipe->refno == TY_HUGE_POINTER ) break;
-                if( name->rite->tipe->refno == TY_HUGE_POINTER ) break;
+                if( name->u2.t.rite->tipe->refno == TY_HUGE_POINTER ) break;
                 can_demote = DemoteTree( name->u.left, tipe, just_test );
                 if( can_demote ) {
-                    can_demote = DemoteTree( name->rite, tipe, just_test );
+                    can_demote = DemoteTree( name->u2.t.rite, tipe, just_test );
                 }
                 demote_this_node = TRUE;
                 break;
             }
             break;
         case TN_COMMA:
-            can_demote = DemoteTree( name->rite, tipe, just_test );
+            can_demote = DemoteTree( name->u2.t.rite, tipe, just_test );
             break;
         case TN_SIDE_EFFECT:
             can_demote = DemoteTree( name->u.left, tipe, just_test );

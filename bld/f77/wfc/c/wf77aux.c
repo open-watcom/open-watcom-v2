@@ -455,10 +455,10 @@ void    SubAuxFini( void ) {
     while( ArrayInfo != NULL ) {
         next = ArrayInfo->link;
         arr = SymFind( ArrayInfo->arr, strlen( ArrayInfo->arr ) );
-        if( ( arr != NULL ) && ( arr->ns.flags & SY_SUBSCRIPTED ) &&
-            ( arr->ns.u1.s.typ != FT_CHAR ) &&
-            ( ( arr->ns.flags & SY_SUB_PARM ) || _Allocatable( arr ) ) ) {
-            arr->ns.si.va.u.dim_ext->dim_flags |= DIM_EXTENDED;
+        if( ( arr != NULL ) && ( arr->u.ns.flags & SY_SUBSCRIPTED ) &&
+            ( arr->u.ns.u1.s.typ != FT_CHAR ) &&
+            ( ( arr->u.ns.flags & SY_SUB_PARM ) || _Allocatable( arr ) ) ) {
+            arr->u.ns.si.va.u.dim_ext->dim_flags |= DIM_EXTENDED;
         }
         FMemFree( ArrayInfo );
         ArrayInfo = next;

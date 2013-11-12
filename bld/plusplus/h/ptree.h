@@ -196,7 +196,7 @@ typedef struct parse_tree_node {
         target_long             int_constant;   // PT_INT_CONSTANT
         target_ulong            uint_constant;  // PT_INT_CONSTANT
 #endif
-        CPP_FLOAT               *floating_constant; // PT_FLOATING_CONSTANT
+        float_handle            floating_constant; // PT_FLOATING_CONSTANT
         signed_64               int64_constant; // PT_INT_CONSTANT
         struct {                                // PT_ID
             NAME                name;
@@ -229,7 +229,7 @@ extern PTREE PTreeIntConstant( signed long, type_id );
 extern PTREE PTreeInt64Constant( signed_64, type_id );
 //extern PTREE PTreeUIntConstant( unsigned long, type_id );
 extern PTREE PTreeFloatingConstantStr( const char *, type_id );
-extern PTREE PTreeFloatingConstant( CPP_FLOAT *, type_id );
+extern PTREE PTreeFloatingConstant( float_handle, type_id );
 extern PTREE PTreeId( NAME );
 extern PTREE PTreeIdSym( SYMBOL );
 extern PTREE PTreeDottedSyms( SYMBOL base, SYMBOL qual );

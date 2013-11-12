@@ -108,8 +108,8 @@ sym_id  LookUp( unsigned_32 num ) {
     sym_ptr = NULL;
     if( num != 0 ) {
         sym_ptr = STStmtNo( num );
-        if( ( sym_ptr->st.flags & SN_INIT_MASK ) == SN_INIT ) {
-            sym_ptr->st.line = SrcRecNum;
+        if( ( sym_ptr->u.st.flags & SN_INIT_MASK ) == SN_INIT ) {
+            sym_ptr->u.st.line = SrcRecNum;
         }
     }
     return( sym_ptr );
@@ -119,7 +119,7 @@ sym_id  LookUp( unsigned_32 num ) {
 void    Err( int errcod, sym_id sym_ptr ) {
 //=========================================
 
-    Error( errcod, GetStmtNum( sym_ptr ), sym_ptr->st.line );
+    Error( errcod, GetStmtNum( sym_ptr ), sym_ptr->u.st.line );
 }
 
 
@@ -134,8 +134,8 @@ sym_id  LkUpStmtNo( void ) {
 
     sym_ptr = LookUp( GetStmtNo() );
     if( sym_ptr != NULL ) {
-        sym_ptr->st.ref_count++;
-        flags = sym_ptr->st.flags;
+        sym_ptr->u.st.ref_count++;
+        flags = sym_ptr->u.st.flags;
         if( GetStmtNum( sym_ptr ) == StmtNo ) {
             Warning( ST_TO_SELF );     // this is only a warning
         }                              // eg. 10 IF( FNX( Y ) )10,20,30
@@ -146,7 +146,7 @@ sym_id  LkUpStmtNo( void ) {
             }
             csptr = CSHead;
             for(;;) {
-                if( sym_ptr->st.block == csptr->block ) break;
+                if( sym_ptr->u.st.block == csptr->block ) break;
                 csptr = csptr->link;
                 if( csptr == NULL ) break;
             }
@@ -159,7 +159,7 @@ sym_id  LkUpStmtNo( void ) {
                 Err( SP_OUT_OF_BLOCK, sym_ptr );
             }
         } else {
-            if( ( sym_ptr->st.block > CSHead->block ) ||
+            if( ( sym_ptr->u.st.block > CSHead->block ) ||
                 ( ( flags & SN_BRANCHED_TO ) == 0 ) ||
                 // Consider:      DO 10 I==1,2
                 //                  GOTO 10
@@ -168,15 +168,15 @@ sym_id  LkUpStmtNo( void ) {
                 // When we compile "GOTO 10", 10 is no longer only
                 // a DO terminal statement number.
                 ( flags & SN_ONLY_DO_TERM ) ) {
-                sym_ptr->st.flags &= ~SN_ONLY_DO_TERM;
-                sym_ptr->st.block = CSHead->block;
-                sym_ptr->st.line = SrcRecNum;
+                sym_ptr->u.st.flags &= ~SN_ONLY_DO_TERM;
+                sym_ptr->u.st.block = CSHead->block;
+                sym_ptr->u.st.line = SrcRecNum;
             }
             if( StNumbers.in_remote ) {
-                sym_ptr->st.flags |= SN_IN_REMOTE;
+                sym_ptr->u.st.flags |= SN_IN_REMOTE;
             }
         }
-        sym_ptr->st.flags |= SN_BRANCHED_TO;
+        sym_ptr->u.st.flags |= SN_BRANCHED_TO;
     }
     return( sym_ptr );
 }
@@ -191,12 +191,12 @@ sym_id  LkUpFormat( void ) {
 
     sym_ptr = LookUp( GetStmtNo() );
     if( sym_ptr != NULL ) {
-        if( ( sym_ptr->st.flags & SN_DEFINED ) != 0 ) {
-            if( ( sym_ptr->st.flags & SN_FORMAT ) == 0 ) {
+        if( ( sym_ptr->u.st.flags & SN_DEFINED ) != 0 ) {
+            if( ( sym_ptr->u.st.flags & SN_FORMAT ) == 0 ) {
                 Err( ST_NOT_FORMAT, sym_ptr );
             }
         } else {
-            sym_ptr->st.flags |= ( SN_FORMAT | SN_BAD_BRANCH );
+            sym_ptr->u.st.flags |= ( SN_FORMAT | SN_BAD_BRANCH );
         }
     }
     return( sym_ptr );
@@ -227,13 +227,13 @@ sym_id  LkUpAssign( void ) {
 
     sym_ptr = LookUp( GetStmtNo() );
     if( sym_ptr != NULL ) {
-        sym_ptr->st.ref_count++;
-        sym_ptr->st.flags |= SN_ASSIGNED;
-        if( ( sym_ptr->st.flags & SN_DEFINED ) &&
-            ( ( sym_ptr->st.flags & SN_FORMAT ) == 0 ) &&
-            ( sym_ptr->st.flags & SN_BAD_BRANCH ) ) {
+        sym_ptr->u.st.ref_count++;
+        sym_ptr->u.st.flags |= SN_ASSIGNED;
+        if( ( sym_ptr->u.st.flags & SN_DEFINED ) &&
+            ( ( sym_ptr->u.st.flags & SN_FORMAT ) == 0 ) &&
+            ( sym_ptr->u.st.flags & SN_BAD_BRANCH ) ) {
             Err( GO_CANNOT_ASSIGN, sym_ptr );
-            sym_ptr->st.flags &= ~SN_ASSIGNED;
+            sym_ptr->u.st.flags &= ~SN_ASSIGNED;
         }
     }
     return( sym_ptr );
@@ -252,13 +252,13 @@ unsigned_32     LkUpDoTerm( void ) {
     num = GetStmtNo();
     if( num != 0 ) {
         sym_ptr = LookUp( num );
-        flags = sym_ptr->st.flags;
+        flags = sym_ptr->u.st.flags;
         if( ( flags & SN_DEFINED ) != 0 ) {
             Err( DO_BACKWARDS_DO, sym_ptr );
         }
         if( ( flags & SN_ONLY_DO_TERM ) != 0 ) {
-            sym_ptr->st.block = CSHead->block;
-            sym_ptr->st.line = SrcRecNum;
+            sym_ptr->u.st.block = CSHead->block;
+            sym_ptr->u.st.line = SrcRecNum;
         } else if( ( flags & (SN_INIT_MASK & ~SN_ASSIGNED) ) == SN_INIT ) {
             // Assert: SN_ASSIGNED is only bit that might be set
 
@@ -268,12 +268,12 @@ unsigned_32     LkUpDoTerm( void ) {
             // update the block number so we don't issue an SP_FROM_OUTSIDE
             // in Update() when we compile the CONTINUE statement
             if( flags & SN_ASSIGNED ) {
-                sym_ptr->st.block = CSHead->block;
+                sym_ptr->u.st.block = CSHead->block;
             }
 
-            sym_ptr->st.flags |= SN_ONLY_DO_TERM;
+            sym_ptr->u.st.flags |= SN_ONLY_DO_TERM;
         }
-        sym_ptr->st.flags |= SN_BRANCHED_TO;
+        sym_ptr->u.st.flags |= SN_BRANCHED_TO;
     }
     return( num );
 }
@@ -287,21 +287,21 @@ void    DefStmtNo( unsigned_32 num ) {
     sym_id      sym_ptr;
 
     sym_ptr = LookUp( num );
-    sym_ptr->st.ref_count++;
-    if( ( sym_ptr->st.flags & SN_DEFINED ) != 0 ) {
+    sym_ptr->u.st.ref_count++;
+    if( ( sym_ptr->u.st.flags & SN_DEFINED ) != 0 ) {
         Err( ST_ALREADY, sym_ptr );
     } else {
         StNumbers.blk_before = CSHead->block;
         if( Remember.transfer ) {
-            sym_ptr->st.flags |= SN_AFTR_BRANCH;
+            sym_ptr->u.st.flags |= SN_AFTR_BRANCH;
         }
         if( StmtProc == PR_FMT ) {
-            sym_ptr->st.flags |= SN_FORMAT;
+            sym_ptr->u.st.flags |= SN_FORMAT;
         } else if( !CtrlFlgOn( CF_BAD_BRANCH_OBJECT ) ) {
             GStmtLabel( sym_ptr );
         }
         if( StNumbers.in_remote ) {
-            sym_ptr->st.flags |= SN_IN_REMOTE;
+            sym_ptr->u.st.flags |= SN_IN_REMOTE;
         }
     }
 }
@@ -317,44 +317,44 @@ void    Update( unsigned_32 num ) {
     unsigned_16 block;
 
     sym = LookUp( num );
-    if( ( sym->st.flags & SN_DEFINED ) == 0 ) {
-        sym->st.flags |= SN_DEFINED;
+    if( ( sym->u.st.flags & SN_DEFINED ) == 0 ) {
+        sym->u.st.flags |= SN_DEFINED;
         block = StNumbers.blk_before; // allow branch to start of block
         if( block > CSHead->block ) { // end of structure occurred
             block = CSHead->block; // allow branch to end of block
         }
-        if( ( sym->st.flags & SN_BRANCHED_TO ) != 0 ) {
-            if( sym->st.block < block ) {
+        if( ( sym->u.st.flags & SN_BRANCHED_TO ) != 0 ) {
+            if( sym->u.st.block < block ) {
                 if( !(Options & OPT_WILD) ) {
                     Err( SP_FROM_OUTSIDE, sym );
                 }
             }
             if( !StNumbers.in_remote &&
-                ( ( sym->st.flags & SN_IN_REMOTE ) != 0 ) ) {
+                ( ( sym->u.st.flags & SN_IN_REMOTE ) != 0 ) ) {
                 Err( SP_OUT_OF_BLOCK, sym );
             }
         }
-        sym->st.block = block;
+        sym->u.st.block = block;
     }
     if( CtrlFlgOn( CF_BAD_BRANCH_OBJECT ) ) {
-        sym->st.flags |= SN_BAD_BRANCH;
-        if( ( sym->st.flags & SN_BRANCHED_TO ) != 0 ) {
-            StmtIntErr( ST_BAD_BRANCHED, sym->st.line );
+        sym->u.st.flags |= SN_BAD_BRANCH;
+        if( ( sym->u.st.flags & SN_BRANCHED_TO ) != 0 ) {
+            StmtIntErr( ST_BAD_BRANCHED, sym->u.st.line );
         }
-        sym->st.flags &= ~SN_AFTR_BRANCH;
-        if( ( sym->st.flags & SN_ASSIGNED ) && ( StmtProc != PR_FMT ) ) {
-            StmtIntErr( GO_ASSIGNED_BAD, sym->st.line );
+        sym->u.st.flags &= ~SN_AFTR_BRANCH;
+        if( ( sym->u.st.flags & SN_ASSIGNED ) && ( StmtProc != PR_FMT ) ) {
+            StmtIntErr( GO_ASSIGNED_BAD, sym->u.st.line );
         }
     }
     if( !CtrlFlgOn( CF_NOT_EXECUTABLE ) ) {
-        sym->st.flags |= SN_EXECUTABLE;
+        sym->u.st.flags |= SN_EXECUTABLE;
     }
     if( StmtProc != PR_FMT ) {
-        if( ( sym->st.flags & SN_FORMAT ) != 0 ) {
+        if( ( sym->u.st.flags & SN_FORMAT ) != 0 ) {
             Err( ST_EXPECT_FORMAT, sym );
         }
     }
-    sym->st.line = SrcRecNum;
+    sym->u.st.line = SrcRecNum;
 }
 
 

@@ -37,7 +37,7 @@
 #include "objout.h"
 
 
-static  code_lbl    *DoAskForLabel( sym_handle sym )
+static  code_lbl    *DoAskForLabel( cg_sym_handle sym )
 /**************************************************/
 {
     code_lbl    *new;
@@ -82,8 +82,8 @@ extern  code_lbl    *AskForNewLabel( void )
 }
 
 
-extern  code_lbl    *AskRTLabel( sym_handle *sym )
-/************************************************/
+extern  code_lbl    *AskRTLabel( cg_sym_handle sym )
+/**************************************************/
 {
     code_lbl    *lbl;
 
@@ -94,7 +94,7 @@ extern  code_lbl    *AskRTLabel( sym_handle *sym )
 }
 
 
-extern  code_lbl    *AskForLabel( sym_handle sym )
+extern  code_lbl    *AskForLabel( cg_sym_handle sym )
 /************************************************/
 {
     code_lbl    *new;
@@ -167,7 +167,7 @@ extern  pointer AskLblPatch( code_lbl *lbl )
 }
 
 
-extern  sym_handle      AskForLblSym( code_lbl *lbl )
+extern  cg_sym_handle   AskForLblSym( code_lbl *lbl )
 /***************************************************/
 {
   optbegin

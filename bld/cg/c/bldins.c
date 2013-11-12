@@ -37,16 +37,17 @@
 #include "cfloat.h"
 #include "makeins.h"
 #include "data.h"
-#include "feprotos.h"
-
 #include "bldins.h"
 #include "addrfold.h"
 #include "display.h"
 #include "utils.h"
+#include "tree.h"
+#include "treeprot.h"
+#include "feprotos.h"
 
 
 extern  an              MakeConst(pointer,type_def*);
-extern  an              MakeAddrName(cg_class,sym_handle,type_def*);
+extern  an              MakeAddrName(cg_class,cg_sym_handle,type_def*);
 extern  an              MakeTypeTempAddr(name*,type_def*);
 extern  void            GenKillLabel(code_lbl *);
 extern  void            GenBlock( block_class, int );
@@ -54,7 +55,6 @@ extern  void            AddTarget(code_lbl *,bool);
 extern  void            Generate(bool);
 extern  void            EnLink(code_lbl *,bool);
 extern  void            AddIns(instruction*);
-extern  bool            TGIsAddress( void );
 extern  name            *GenIns(an);
 extern  type_class_def  TypeClass(type_def*);
 extern  an              InsName(instruction*,type_def*);
@@ -200,7 +200,7 @@ extern  bool    NeedConvert( type_def *from, type_def *to ) {
 }
 
 
-static  cg_name Unary( cg_op op, an left, type_def *tipe ) {
+static  an      Unary( cg_op op, an left, type_def *tipe ) {
 /**********************************************************/
 
     instruction *ins;

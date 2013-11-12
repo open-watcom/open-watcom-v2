@@ -61,10 +61,10 @@ void    CpVolatile( void ) {
     for(;;) {
         if( ReqName( NAME_VAR_OR_ARR ) ) {
             sym = LkSym();
-            if( (sym->ns.flags & ~ERR_MASK ) != SY_VARIABLE ) {
+            if( (sym->u.ns.flags & ~ERR_MASK ) != SY_VARIABLE ) {
                 IllName( sym );
             } else {
-                sym->ns.u1.s.xflags |= SY_VOLATILE;
+                sym->u.ns.u1.s.xflags |= SY_VOLATILE;
             }
         }
         AdvanceITPtr();

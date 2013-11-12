@@ -35,12 +35,12 @@
 
 #include "cfloat.h"
 
-extern cfloat *BFCheckFloatLimit(
-        cfloat *f )
+extern float_handle BFCheckFloatLimit(
+        float_handle f )
 ;
-extern cfloat *BFCheckDblLimit(
-        cfloat *f )
+extern float_handle BFCheckDblLimit(
+        float_handle f )
 ;
-extern target_long BFGetLong( CPP_FLOAT **f );
+extern target_long BFGetLong( float_handle *f );
 
 #endif

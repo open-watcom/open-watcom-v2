@@ -143,7 +143,7 @@ static  void    DoLoop( TYPE do_type ) {
     bool        e2_const;
 
     doptr = CSHead->cs_info.do_parms;
-    do_size = CITNode->sym_ptr->ns.xt.size;
+    do_size = CITNode->sym_ptr->u.ns.xt.size;
     doptr->do_parm = CITNode->sym_ptr;          // save ptr to do variable
     AdvanceITPtr();                             // bump past the '='
     EatDoParm();                                // process e1

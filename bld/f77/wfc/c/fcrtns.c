@@ -100,20 +100,20 @@ call_handle     InitCall( RTCODE rtn_id ) {
             ++ptr;
         }
         sym = STAdd( SymBuff, name_len );
-        sym->ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION |
+        sym->u.ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION |
                         SY_RT_ROUTINE;
         if( rt_entry->typ == FT_NO_TYPE ) {
-            sym->ns.u1.s.typ = FT_INTEGER_TARG;
+            sym->u.ns.u1.s.typ = FT_INTEGER_TARG;
         } else {
-            sym->ns.u1.s.typ = rt_entry->typ;
+            sym->u.ns.u1.s.typ = rt_entry->typ;
         }
-        sym->ns.xt.size = TypeSize( sym->ns.u1.s.typ );
-        sym->ns.u3.address = NULL;
-        sym->ns.si.sp.u.imp_segid = AllocImpSegId();
+        sym->u.ns.xt.size = TypeSize( sym->u.ns.u1.s.typ );
+        sym->u.ns.u3.address = NULL;
+        sym->u.ns.si.sp.u.imp_segid = AllocImpSegId();
         rt_entry->sym_ptr = sym;
     }
     typ = F772CGType( sym );
-    return( CGInitCall( CGFEName( sym, typ ), typ, rt_entry->aux ) );
+    return( CGInitCall( CGFEName( sym, typ ), typ, rt_entry->sym_ptr ) );
 }
 
 
@@ -145,8 +145,8 @@ void    FreeRtRtns( void ) {
         sym = RtnTab[ rt_index ].sym_ptr;
         if( sym != NULL ) {
             if( ( CGFlags & CG_FATAL ) == 0 ) {
-                if( sym->ns.u3.address != NULL ) {
-                    BEFreeBack( sym->ns.u3.address );
+                if( sym->u.ns.u3.address != NULL ) {
+                    BEFreeBack( sym->u.ns.u3.address );
                 }
             }
             STFree( sym );

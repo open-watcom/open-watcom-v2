@@ -43,8 +43,8 @@ unsigned_32     GetStmtNum( sym_id sn ) {
 
     unsigned_32 st_number;
 
-    st_number = sn->st.number;
-    if( sn->st.flags & SN_ADD_65535 ) {
+    st_number = sn->u.st.number;
+    if( sn->u.st.flags & SN_ADD_65535 ) {
         st_number += 65535;
     }
     return( st_number );
@@ -66,19 +66,19 @@ sym_id  STStmtNo( unsigned_32 stmnt_no ) {
         if( st_number == stmnt_no ) {
             return( ste_ptr );
         }
-        ste_ptr = ste_ptr->st.link;
+        ste_ptr = ste_ptr->u.st.link;
     }
     ste_ptr = FMemAlloc( sizeof( stmtno ) );
-    ste_ptr->st.block = CSHead->block;
-    ste_ptr->st.flags = SN_INIT;
+    ste_ptr->u.st.block = CSHead->block;
+    ste_ptr->u.st.flags = SN_INIT;
     if( stmnt_no > 65535 ) {
         stmnt_no -= 65535;
-        ste_ptr->st.flags |= SN_ADD_65535;
+        ste_ptr->u.st.flags |= SN_ADD_65535;
     }
-    ste_ptr->st.number = stmnt_no;
-    ste_ptr->st.address = NextLabel();
-    ste_ptr->st.ref_count = 0;
-    ste_ptr->st.link = SList;
+    ste_ptr->u.st.number = stmnt_no;
+    ste_ptr->u.st.address = NextLabel();
+    ste_ptr->u.st.ref_count = 0;
+    ste_ptr->u.st.link = SList;
     SList = ste_ptr;
     return( ste_ptr );
 }

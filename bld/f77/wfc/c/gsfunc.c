@@ -61,7 +61,7 @@ void    GSFCall( itnode *sfunc ) {
 
     EmitOp( FC_SF_CALL );
     OutPtr( sfunc->sym_ptr );
-    arg = sfunc->sym_ptr->ns.si.sf.header->parm_list;
+    arg = sfunc->sym_ptr->u.ns.si.sf.header->parm_list;
     while( arg != NULL ) {
         OutPtr( arg->shadow );
         arg = arg->link;

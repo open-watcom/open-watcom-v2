@@ -174,7 +174,6 @@ enum {
     TS_MAX
 };
 
-typedef struct cfloat CPP_FLOAT;
 
 #include "symtype.h"
 #include "symbol.h"

@@ -67,7 +67,7 @@ extern  void        DataBytes(unsigned,const void *);
 extern  void        CVSymIConst( const char *nm, long val, dbg_type tipe );
 extern  void        CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe );
 extern  void        CVOutSymICon( cv_out *out, const char *nm, long val, dbg_type tipe );
-extern  void        CVOutSym( cv_out *out, sym_handle sym );
+extern  void        CVOutSym( cv_out *out, cg_sym_handle sym );
 extern  void        CVOutBck( cv_out *out, bck_info *bck, offset add,  dbg_type tipe );
 extern  void        CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe );
 
@@ -135,7 +135,7 @@ static  void  *AlignBuff( cv_out *out )
 }
 
 
-static  void    SegReloc( segment_id seg,  sym_handle sym )
+static  void    SegReloc( segment_id seg,  cg_sym_handle sym )
 /*********************************************************/
 {
     segment_id  old;
@@ -692,7 +692,7 @@ extern  dbg_type    CVIndCharBlock( bck_info *len, cg_type len_type, int off )
 
 typedef struct {
     union {
-      sym_handle s;
+      cg_sym_handle s;
       name      *n;
     } v;
     long       o;
@@ -1104,7 +1104,7 @@ extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base )
 
 
 static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
-                                sym_handle  sym, cv_based_kind kind )
+                                cg_sym_handle sym, cv_based_kind kind )
 /*******************************************************************/
 {
     cv_out          out[1];
@@ -1158,7 +1158,7 @@ static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
 }
 
 typedef struct {
-    sym_handle s;
+    cg_sym_handle s;
     enum {
         SYM_NOT,
         SYM_SYM,
@@ -1172,7 +1172,7 @@ typedef struct {
 typedef struct {
     based_leaf *stk;
     based_leaf ops[MAX_OP];
-    sym_handle sym;
+    cg_sym_handle sym;
     int count;
     enum {
         IS_NONE,

@@ -325,7 +325,7 @@ void            ParenCat( void ) {
         } else if( (cit->opr != OPR_FBR) || !all_const_opns ||
                    ((cit->link->flags & SY_CLASS ) != SY_SUBPROGRAM) ||
                    (!(cit->link->flags & SY_INTRINSIC)) ||
-                   (cit->link->sym_ptr->ns.si.fi.index != IF_CHAR) ) {
+                   (cit->link->sym_ptr->u.ns.si.fi.index != IF_CHAR) ) {
             ChkConstCatOpn( CITNode->link );
         }
     }

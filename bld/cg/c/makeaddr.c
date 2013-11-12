@@ -214,7 +214,7 @@ extern  bool    AddrFrlFree( void )
 }
 
 
-static  name    *Display( sym_handle symbol, int level )
+static  name    *Display( cg_sym_handle symbol, int level )
 /******************************************************/
 {
     proc_def    *old_currproc;
@@ -539,7 +539,7 @@ extern  name    *LoadAddress( name *op, name *suggest, type_def *type_ptr )
 }
 
 
-extern  an      MakeAddrName( cg_class class, sym_handle sym, type_def *tipe )
+extern  an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe )
 /****************************************************************************/
 {
     an          addr;

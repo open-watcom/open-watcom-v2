@@ -109,7 +109,7 @@ typedef struct fixup {
 
 typedef struct hassle_note {
         struct hassle_note      *link;
-        sym_handle              sym;
+        cg_sym_handle           sym;
         long_offset             where;
         objhandle               hdl;
 } hassle_note;
@@ -145,7 +145,7 @@ typedef struct index_rec {
         byte                    data_prefix_size;
         unsigned_32             comdat_size;
         unsigned_32             total_comdat_size;
-        sym_handle              comdat_symbol;
+        cg_sym_handle           comdat_symbol;
         code_lbl                *comdat_label;
         omf_idx                 comdat_nidx;
         void                    *virt_func_refs;

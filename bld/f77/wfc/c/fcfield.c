@@ -64,7 +64,7 @@ void            FCFieldOp( void ) {
 
     sym = GetPtr();
     base = XPop();
-    if( ( sym->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+    if( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
         // function returning a structure
         ptr_type = TY_LOCAL_POINTER;
     } else {
@@ -72,7 +72,7 @@ void            FCFieldOp( void ) {
     }
     // add offset of field
     addr = CGBinary( O_PLUS, base, XPopValue( TY_INT_4 ), ptr_type );
-    if( sym->ns.u1.s.xflags & SY_VOLATILE ) {
+    if( sym->u.ns.u1.s.xflags & SY_VOLATILE ) {
         addr = CGVolatile( addr );
     }
     XPush( addr );
@@ -84,10 +84,10 @@ cg_name FieldArrayEltSize( sym_id fd ) {
 
 // Return size of an array element.  Array is a field in a structure.
 
-    if( fd->fd.typ == FT_STRUCTURE ) {
-        return( CGInteger( fd->fd.xt.record->size, TY_INTEGER ) );
+    if( fd->u.fd.typ == FT_STRUCTURE ) {
+        return( CGInteger( fd->u.fd.xt.record->size, TY_INTEGER ) );
     } else {
-        return( CGInteger( fd->fd.xt.size, TY_INTEGER ) );
+        return( CGInteger( fd->u.fd.xt.size, TY_INTEGER ) );
     }
 }
 
@@ -103,7 +103,7 @@ void    FCFieldSubscript( void ) {
     base = XPop();
     size = FieldArrayEltSize( fd );
     XPush( CGBinary( O_PLUS, base,
-                     CGBinary( O_TIMES, ConstArrayOffset( fd->fd.dim_ext ),
+                     CGBinary( O_TIMES, ConstArrayOffset( fd->u.fd.dim_ext ),
                                size, TY_INTEGER ),
                      TY_INT_4 ) );
 }
@@ -129,7 +129,7 @@ void    FCFieldSubstring( void ) {
         CloneCGName( start_1, &start_1, &start_2 );
         end = XPop();
         if( end == NULL ) {
-            end = CGInteger( fd->fd.xt.size, TY_INTEGER );
+            end = CGInteger( fd->u.fd.xt.size, TY_INTEGER );
         } else {
             XPush( end );
             end = XPopValue( GetType2( typ_info ) );

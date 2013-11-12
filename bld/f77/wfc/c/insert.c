@@ -96,7 +96,7 @@ static  uint    SymClass( sym_id sym ) {
     unsigned_16 class;
     unsigned_16 flags;
 
-    flags = sym->ns.flags;
+    flags = sym->u.ns.flags;
     class = flags & SY_CLASS;
     if( class == SY_PARAMETER ) return( NAME_PARAMETER );
     if( class == SY_COMMON ) return( NAME_COMMON );
@@ -276,7 +276,7 @@ void    NameTypeErr( int errcod, sym_id sym ) {
     char        buff[MAX_SYMLEN+1];
 
     STGetName( sym, buff );
-    Error( errcod, buff, TypeKW( sym->ns.u1.s.typ ) );
+    Error( errcod, buff, TypeKW( sym->u.ns.u1.s.typ ) );
 }
 
 
@@ -353,7 +353,7 @@ void    IllType( sym_id sym ) {
     char        stmt[MAX_MSGLEN+1];
 
     STGetName( sym, buff );
-    Error( TY_ILL_USE, buff, TypeKW( sym->ns.u1.s.typ ), StmtName( stmt ) );
+    Error( TY_ILL_USE, buff, TypeKW( sym->u.ns.u1.s.typ ), StmtName( stmt ) );
 }
 
 

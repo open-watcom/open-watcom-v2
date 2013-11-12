@@ -48,10 +48,10 @@ static  sym_id  AddNameList( char *name, int length ) {
     sym_id      sym;
 
     sym = FMemAlloc( sizeof( name_list ) + AllocName( length ) );
-    sym->nl.name_len = length;
-    sym->nl.address = NULL;
-    sym->nl.dbh = 0;
-    memcpy( &sym->nl.name, name, length );
+    sym->u.nl.name_len = length;
+    sym->u.nl.address = NULL;
+    sym->u.nl.dbh = 0;
+    memcpy( &sym->u.nl.name, name, length );
     return( sym );
 }
 
@@ -66,10 +66,10 @@ sym_id  FindNameList( char *name, int len ) {
     head = NmList;
     for(;;) {
         if( head == NULL ) return( NULL );
-        if( head->nl.name_len == len ) {
-            if( memcmp( name, &head->nl.name, len ) == 0 ) return( head );
+        if( head->u.nl.name_len == len ) {
+            if( memcmp( name, &head->u.nl.name, len ) == 0 ) return( head );
         }
-        head = head->nl.link;
+        head = head->u.nl.link;
     }
 }
 
@@ -87,8 +87,8 @@ sym_id  STNameList( char *name, int length ) {
     sym = FindNameList( name, length );
     if( sym == NULL ) {
         sym = AddNameList( name, length );
-        sym->nl.link = NmList;
-        sym->nl.group_list = NULL;
+        sym->u.nl.link = NmList;
+        sym->u.nl.group_list = NULL;
         NmList = sym;
     }
     return( sym );
@@ -100,8 +100,8 @@ char    *STNmListName( sym_id sym, char *buff ) {
 
 // Get name list name.
 
-    memcpy( buff, &sym->nl.name, sym->nl.name_len );
-    buff += sym->nl.name_len;
+    memcpy( buff, &sym->u.nl.name, sym->u.nl.name_len );
+    buff += sym->u.nl.name_len;
     *buff = NULLCHAR;
     return( buff );
 

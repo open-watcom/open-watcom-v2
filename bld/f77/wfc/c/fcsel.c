@@ -94,7 +94,7 @@ void    DoSelect( FCODE kind ) {
         --cases;
     }
     sel_sym = GetPtr();
-    if( sel_sym->ns.u1.s.typ == FT_CHAR ) {
+    if( sel_sym->u.ns.u1.s.typ == FT_CHAR ) {
         sel_expr = CGUnary( O_POINTS,
                             SCBPointer( SymAddr( sel_sym ) ),
                             TY_UINT_1 );

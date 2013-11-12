@@ -682,7 +682,7 @@ static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *ou
 /*********************************************************************************/
 {
     type_length         offset;
-    sym_handle          symbol;
+    cg_sym_handle       symbol;
     constant_defn       *floatval;
     cg_class            cg;
     eight_byte_name     konst;

@@ -62,14 +62,14 @@ extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
 extern  void            DataBytes(unsigned,const void *);
-extern  void            DoBigLblPtr(sym_handle);
+extern  void            DoBigLblPtr(cg_sym_handle);
 extern  void            DBLocFini( dbg_loc loc );
 extern  void            CVPutStr( cv_out *, const char * );
 extern  void            CVPutINum( cv_out *out, signed_32 num );
 extern  void            CVPutINum64( cv_out *out, signed_64 num );
 extern  void            CVPutNullStr( cv_out * );
 extern  void            CVEndType( cv_out *out );
-extern  sym_handle      LocSimpStatic(dbg_loc);
+extern  cg_sym_handle   LocSimpStatic(dbg_loc);
 extern  type_length     NewBase(name*);
 
 // global variables
@@ -312,7 +312,7 @@ extern  void    CVObjFiniDbgInfo( void )
 
 
 
-static  void    SymReloc( segment_id seg, sym_handle sym, offset lc )
+static  void    SymReloc( segment_id seg, cg_sym_handle sym, offset lc )
 /*******************************************************************/
 {
     segment_id  old;
@@ -383,7 +383,7 @@ static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, long disp )
 #endif
 }
 
-extern  void    CVOutSym( cv_out *out, sym_handle sym )
+extern  void    CVOutSym( cv_out *out, cg_sym_handle sym )
 /*** Put a sym in out ********************************/
 {
     dbg_type    tipe;
@@ -413,7 +413,7 @@ extern  void    CVOutSym( cv_out *out, sym_handle sym )
     }
 }
 
-extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem )
+extern  void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem )
 /******************************************************************/
 {
     dbg_type    tipe;
@@ -548,7 +548,7 @@ static  name    *LocSymBP( dbg_loc loc )
 }
 
 
-static  dbg_local *UnLinkLoc( dbg_local **owner, sym_handle sym )
+static  dbg_local *UnLinkLoc( dbg_local **owner, cg_sym_handle sym )
 /***************************************************************/
 // unlink dbg_local with sym from owner
 {
@@ -607,7 +607,7 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
 extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
 /*************************************************/
 {
-    sym_handle          sym;
+    cg_sym_handle       sym;
     dbg_type            tipe;
     fe_attr             attr;
     char               *name;
@@ -668,7 +668,7 @@ extern  void    CVBlkBeg( dbg_block *blk, offset lc )
     dbg_patch_handle   *handle;
     cv_out             out[1];
     offset             start;
-    sym_handle         sym;
+    cg_sym_handle      sym;
     cs_block           *ptr;
     byte               *nm;
 

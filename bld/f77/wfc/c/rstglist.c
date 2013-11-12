@@ -64,7 +64,7 @@ static  sym_id  LnkNewGlobal( sym_id local ) {
     sym_id      global;
     int         len;
 
-    len = sizeof( symbol ) + AllocName( local->ns.u2.name_len );
+    len = sizeof( symbol ) + AllocName( local->u.ns.u2.name_len );
     global = FMemAlloc( len );
     memcpy( global, local, len );
     HashInsert( GHashTable, HashValue, &GList, global );
@@ -82,19 +82,19 @@ sym_id        SearchGList( sym_id local ) {
     sym_id      tail;
     int         name_len;
 
-    name_len = local->ns.u2.name_len;
-    HashValue = CalcHash( local->ns.name, name_len );
+    name_len = local->u.ns.u2.name_len;
+    HashValue = CalcHash( local->u.ns.name, name_len );
     head = GHashTable[ HashValue ].h_head;
     if( head == NULL ) return( NULL );
     tail = GHashTable[ HashValue ].h_tail;
     for(;;) {
-        if( ( head->ns.u2.name_len == name_len ) &&
-            ( memcmp( &local->ns.name, &head->ns.name, name_len ) == 0 ) &&
-            ( IsIntrinsic(head->ns.flags) == IsIntrinsic(local->ns.flags) ) ) {
+        if( ( head->u.ns.u2.name_len == name_len ) &&
+            ( memcmp( &local->u.ns.name, &head->u.ns.name, name_len ) == 0 ) &&
+            ( IsIntrinsic(head->u.ns.flags) == IsIntrinsic(local->u.ns.flags) ) ) {
              return( head );
         }
         if( head == tail ) return( NULL );
-        head = head->ns.link;
+        head = head->u.ns.link;
     }
 }
 
@@ -109,31 +109,31 @@ sym_id      AddSP2GList( sym_id ste_ptr ) {
     unsigned_16 subprog;
     unsigned_16 gsubprog;
 
-    flags = ste_ptr->ns.flags;
+    flags = ste_ptr->u.ns.flags;
     subprog = flags & SY_SUBPROG_TYPE;
     gbl = SearchGList( ste_ptr );
     if( gbl == NULL ) {
         gbl = LnkNewGlobal( ste_ptr );
-        gbl->ns.flags &= ~SY_REFERENCED;
-    } else if( ( gbl->ns.flags & SY_CLASS ) != SY_SUBPROGRAM ) {
+        gbl->u.ns.flags &= ~SY_REFERENCED;
+    } else if( ( gbl->u.ns.flags & SY_CLASS ) != SY_SUBPROGRAM ) {
         PrevDef( gbl );
         return( gbl );
     } else {
-        gsubprog = gbl->ns.flags & SY_SUBPROG_TYPE;
+        gsubprog = gbl->u.ns.flags & SY_SUBPROG_TYPE;
         if( gsubprog == SY_FN_OR_SUB ) {
             // We don't know what global symbol is - it could be a
             // function, subroutine or block data subprogram.
             // If we know what the local symbol is then the global symbol
             // becomes what the local symbol is.
-            gbl->ns.flags &= ~SY_FN_OR_SUB;
-            gbl->ns.flags |= subprog;
+            gbl->u.ns.flags &= ~SY_FN_OR_SUB;
+            gbl->u.ns.flags |= subprog;
         } else if( (gsubprog != subprog) && (subprog != SY_FN_OR_SUB) ) {
             PrevDef( gbl );
             return( gbl );
         }
     }
     if( ( flags & SY_PS_ENTRY ) || ( subprog == SY_BLOCK_DATA ) ) {
-        if( gbl->ns.flags & SY_ADDR_ASSIGNED ) {
+        if( gbl->u.ns.flags & SY_ADDR_ASSIGNED ) {
             if( ( ( subprog != SY_PROGRAM ) && ( subprog != SY_BLOCK_DATA ) ) ||
                 ( ( flags & SY_UNNAMED ) == 0 ) ) {
                 PrevDef( gbl );
@@ -141,7 +141,7 @@ sym_id      AddSP2GList( sym_id ste_ptr ) {
                 ClassErr( SR_TWO_UNNAMED, gbl );
             }
         } else {
-            gbl->ns.flags |= SY_ADDR_ASSIGNED;
+            gbl->u.ns.flags |= SY_ADDR_ASSIGNED;
         }
     }
     return( gbl );
@@ -161,17 +161,17 @@ void    CkComSize( sym_id sym_ptr, unsigned_32 size ) {
         if( size > com_size ) {
             SetComBlkSize( sym_ptr, size );
         }
-        if( ( sym_ptr->ns.flags & SY_COMSIZE_WARN ) == 0 ) {
+        if( ( sym_ptr->u.ns.flags & SY_COMSIZE_WARN ) == 0 ) {
             // It's nice to give a warning message when the blank common
             // block appears as different sizes even though the standard
             // permits it.
-            if( sym_ptr->ns.flags & SY_BLANK_COMMON ) {
+            if( sym_ptr->u.ns.flags & SY_BLANK_COMMON ) {
                 Warning( CM_BLANK_DIFF_SIZE );
             } else {
                 STGetName( sym_ptr, buff );
                 Warning( CM_NAMED_DIFF_SIZE, buff );
             }
-            sym_ptr->ns.flags |= SY_COMSIZE_WARN;
+            sym_ptr->u.ns.flags |= SY_COMSIZE_WARN;
         }
     }
 }
@@ -184,24 +184,24 @@ sym_id  AddCB2GList( sym_id ste_ptr ) {
     sym_id      gbl;
     unsigned_16 flags;
 
-    flags = ste_ptr->ns.flags;
+    flags = ste_ptr->u.ns.flags;
     gbl = SearchGList( ste_ptr );
     if( gbl == NULL ) {
         gbl = LnkNewGlobal( ste_ptr );
-    } else if( ( gbl->ns.flags & SY_CLASS ) != SY_COMMON ) {
+    } else if( ( gbl->u.ns.flags & SY_CLASS ) != SY_COMMON ) {
         PrevDef( gbl );
     } else {
-        if( ( gbl->ns.flags & SY_SAVED ) != ( flags & SY_SAVED ) ) {
-            gbl->ns.flags |= SY_SAVED;
+        if( ( gbl->u.ns.flags & SY_SAVED ) != ( flags & SY_SAVED ) ) {
+            gbl->u.ns.flags |= SY_SAVED;
             if( ( flags & SY_COMMON_LOAD ) == 0 ) {
                 NameWarn( SA_COMMON_NOT_SAVED, ste_ptr );
             }
         }
         CkComSize( gbl, GetComBlkSize( ste_ptr ) );
-        if( flags & gbl->ns.flags & SY_IN_BLOCK_DATA ) {
+        if( flags & gbl->u.ns.flags & SY_IN_BLOCK_DATA ) {
             NameErr( CM_BLKDATA_ALREADY, gbl );
         }
-        gbl->ns.flags |= flags & ( SY_COMMON_INIT | SY_EQUIVED_NAME );
+        gbl->u.ns.flags |= flags & ( SY_COMMON_INIT | SY_EQUIVED_NAME );
     }
     return( gbl );
 }

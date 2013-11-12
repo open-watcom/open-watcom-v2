@@ -143,7 +143,7 @@ extern  void    BackPtrBase( bck_info *bck, segment_id seg ) {
     TellByPassOver();
 }
 
-extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
+extern  void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus ) {
 /*******************************************************************/
 
     tipe = tipe;
@@ -154,7 +154,7 @@ extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
     TellByPassOver();
 }
 
-extern  void    FEPtrBaseOffset( sym_handle sym,  offset plus ) {
+extern  void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus ) {
 /***************************************************************/
     bck_info            *bck;
 //    segment_id          seg;
@@ -170,7 +170,7 @@ extern  void    FEPtrBaseOffset( sym_handle sym,  offset plus ) {
     TellByPassOver();
 }
 
-extern  void    FEPtrBase( sym_handle sym )
+extern  void    FEPtrBase( cg_sym_handle sym )
 /*****************************************/
 {
     segment_id          seg;

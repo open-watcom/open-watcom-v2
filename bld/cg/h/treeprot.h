@@ -28,18 +28,18 @@
 *
 ****************************************************************************/
 extern  tn      TGLeaf( an addr );
-extern  btn     TGBitMask( tn left, byte start, byte len, type_def *tipe );
+extern  tn      TGBitMask( tn left, byte start, byte len, type_def *tipe );
 extern  tn      TGNode( tn_class class, cg_op op, tn left, tn rite,
                         type_def *tipe );
-extern  tn      TGWarp( tn before, code_lbl *label, tn after );
+extern  tn      TGWarp( tn before, label_handle label, tn after );
 extern  tn      TGHandle( void );
 extern  tn      TGCallback( cg_callback rtn, callback_handle ptr );
 extern  tn      TGCompare( cg_op op, tn left, tn rite, type_def *tipe );
-extern  unsigned_32     Mask( btn node );
+extern  unsigned_32 TGMask32( tn node );
 extern  tn      TGConvert( tn name, type_def *tipe );
 extern  tn      TGBinary( cg_op op, tn left, tn rite, type_def *tipe );
 extern  tn      TGUnary( cg_op op, tn left, type_def *tipe );
-extern  tn      TGInitCall( tn left, type_def *tipe, sym_handle aux );
+extern  tn      TGInitCall( tn left, type_def *tipe, cg_sym_handle sym );
 extern  tn      TGAddParm( tn to, tn parm, type_def *tipe );
 extern  tn      TGCall( tn what );
 extern  tn      TGIndex( tn left, tn rite, type_def *tipe, type_def *ptipe );
@@ -49,7 +49,7 @@ extern  tn      TGLVAssign( tn dst, tn src, type_def *tipe );
 extern  name    *TGetName( tn node );
 extern  tn      TGReLeaf( an addr );
 extern  tn      TGTmpLeaf( an addr );
-extern  tn      TGConst( pointer cons, type_def *tipe );
+extern  tn      TGConst( float_handle cons, type_def *tipe );
 extern  tn      DoTGPreGets( cg_op op, tn left, tn rite, type_def *tipe,
                              tn_class class, tn_class assn_class );
 extern  tn      TGPreGets( cg_op op, tn left, tn rite, type_def *tipe );
@@ -62,8 +62,8 @@ extern  tn      TGTrash( tn node );
 extern  tn      TGAttr( tn node, cg_sym_attr attr );
 extern  tn      TGAlign( tn node, uint align );
 extern  tn      TGVolatile( tn node );
-extern  void    TG3WayControl( tn node, code_lbl *lt, code_lbl *eq, code_lbl *gt );
-extern  void    TGControl( cg_op op, tn node, code_lbl *lbl );
+extern  void    TG3WayControl( tn node, label_handle lt, label_handle eq, label_handle gt );
+extern  void    TGControl( cg_op op, tn node, label_handle lbl );
 extern  an      TGen( tn node, type_def *tipe );
 extern  an      TGReturn( tn node, type_def *tipe );
 extern  an      TNFlow( tn node );
@@ -81,4 +81,5 @@ extern  void    TInit( void );
 extern  bool    TreeFrlFree( void );
 extern  void    TFini( void );
 extern  an      TreeGen( tn node );
-
+extern  tn      TGDuplicate( tn node );
+extern  bool    TGCanDuplicate( tn node );

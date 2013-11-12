@@ -85,7 +85,7 @@ static  void    DumpStrType(tn node, const char *s1, const char *s2, int indent)
 static  void    DumpOpType( tn node, int indent ) {
 /*************************************************/
 
-    DumpStrType( node, Ops[ node->op ], Null, indent );
+    DumpStrType( node, Ops[ node->u2.t.op ], Null, indent );
 }
 
 
@@ -98,7 +98,7 @@ static  void    DumpCall( tn what, int indent ) {
     DumpLiteral( "<O_CALL>" );
     DumpNL();
     DumpSubTree( what->u.left->u.left, indent+2 );
-    for( scan = what->rite; scan != NULL; scan = scan->rite ) {
+    for( scan = what->u2.t.rite; scan != NULL; scan = scan->u2.t.rite ) {
         DumpIndent( indent );
         DumpLiteral( "<O_PARM>" );
         DumpNL();
@@ -126,17 +126,17 @@ static  void    DumpSubTree( tn node, int indent ) {
     case TN_SIDE_EFFECT:
         DumpSubTree( node->u.left, indent+2 );
         DumpOpType( node, indent );
-        DumpSubTree( node->rite, indent+2 );
+        DumpSubTree( node->u2.t.rite, indent+2 );
         break;
     case TN_LV_ASSIGN:
         DumpSubTree( node->u.left, indent+2 );
         DumpStrType( node, LvEq, Null, indent );
-        DumpSubTree( node->rite, indent+2 );
+        DumpSubTree( node->u2.t.rite, indent+2 );
         break;
     case TN_ASSIGN:
         DumpSubTree( node->u.left, indent+2 );
         DumpStrType( node, Eq, Null, indent );
-        DumpSubTree( node->rite, indent+2 );
+        DumpSubTree( node->u2.t.rite, indent+2 );
         break;
     case TN_UNARY:
         DumpOpType( node, indent );
@@ -144,24 +144,24 @@ static  void    DumpSubTree( tn node, int indent ) {
         break;
     case TN_PRE_GETS:
         DumpSubTree( node->u.left, indent+2 );
-        DumpStrType( node, Ops[ node->op ], Eq, indent );
-        DumpSubTree( node->rite, indent+2 );
+        DumpStrType( node, Ops[ node->u2.t.op ], Eq, indent );
+        DumpSubTree( node->u2.t.rite, indent+2 );
         break;
     case TN_LV_PRE_GETS:
         DumpSubTree( node->u.left, indent+2 );
-        DumpStrType( node, Ops[ node->op ], LvEq, indent );
-        DumpSubTree( node->rite, indent+2 );
+        DumpStrType( node, Ops[ node->u2.t.op ], LvEq, indent );
+        DumpSubTree( node->u2.t.rite, indent+2 );
         break;
     case TN_POST_GETS:
         DumpSubTree( node->u.left, indent+2 );
-        DumpStrType( node, Ops[ node->op ], PostEq, indent );
-        DumpSubTree( node->rite, indent+2 );
+        DumpStrType( node, Ops[ node->u2.t.op ], PostEq, indent );
+        DumpSubTree( node->u2.t.rite, indent+2 );
         break;
     case TN_FLOW:
-        if( node->rite != NULL ) {
+        if( node->u2.t.rite != NULL ) {
             DumpSubTree( node->u.left, indent+2 );
             DumpOpType( node, indent );
-            DumpSubTree( node->rite, indent+2 );
+            DumpSubTree( node->u2.t.rite, indent+2 );
         } else {
             DumpOpType( node, indent );
             DumpSubTree( node->u.left, indent+2 );
@@ -177,9 +177,9 @@ static  void    DumpSubTree( tn node, int indent ) {
     case TN_QUESTION:
         DumpSubTree( node->u.left, indent+2 );
         DumpStrType( node, Question, Null, indent );
-        DumpSubTree( node->rite->u.left, indent+2 );
+        DumpSubTree( node->u2.t.rite->u.left, indent+2 );
         DumpStrType( node, Colon, Null, indent );
-        DumpSubTree( node->rite->rite, indent+2 );
+        DumpSubTree( node->u2.t.rite->u2.t.rite, indent+2 );
         break;
     case TN_BIT_LVALUE:
     case TN_BIT_RVALUE:
@@ -189,14 +189,14 @@ static  void    DumpSubTree( tn node, int indent ) {
         } else {
             DumpLiteral( "O_BIT_RVALUE " );
         }
-        DumpInt( ((btn)node)->start );
+        DumpInt( node->u2.b.start );
         DumpLiteral( "for " );
-        DumpInt( ((btn)node)->len );
+        DumpInt( node->u2.b.len );
         DumpNL();
         DumpSubTree( node->u.left, indent+2 );
         break;
     case TN_CALLBACK:
-        DumpSubTree( node->rite, indent+2 );
+        DumpSubTree( node->u2.t.rite, indent+2 );
         DumpIndent( indent );
         DumpLiteral( "CALLBACK" );
         DumpNL();

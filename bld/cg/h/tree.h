@@ -90,43 +90,22 @@ typedef struct tree_node {
         uint                    kids;
         tn_class                class;
         tn_flags                flags;
-        cg_op                   op;
-        struct tree_node        *rite;
         struct type_def         *optipe;
-        name                    *base;
-        uint                    alignment;
+        union {
+            struct {
+                cg_op               op;
+                struct tree_node    *rite;
+                name                *base;
+                uint                alignment;
+            } t;
+            struct {
+                byte                start;
+                byte                len;
+                bool                is_signed;
+            } b;
+        } u2;
 } tree_node;
 
-typedef struct bit_tree_node {
-#ifndef NDEBUG
-        use_info                useinfo;
-#endif
-        struct type_def         *tipe;
-        union {
-          struct tree_node      *left;
-          union name            *name;
-          struct address_name   *addr;
-        } u;
-        uint                    kids;
-        tn_class                class;
-        tn_flags                flags;
-        struct type_def         *optipe;
-        byte                    start;
-        byte                    len;
-        bool                    is_signed;
-} bit_tree_node;
-
-typedef struct bit_tree_node    *btn;
 typedef struct tree_node        *tn;
-typedef union  either_tree_node *atn;
 
-typedef union either_tree_node {
-        tree_node       t;
-        bit_tree_node   b;
-} either_tree_node;
-
-typedef union tn_btn {
-        tn      t;
-        btn     b;
-} tn_btn;
 #endif // __TREE__H__

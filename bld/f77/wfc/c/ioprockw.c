@@ -158,7 +158,7 @@ static  void    BoolInq( FCODE routine ) {
         CkSize4();
         sym = CkAssignOk();
         if( sym != NULL ) {
-            sym->ns.u1.s.xflags |= SY_VOLATILE;
+            sym->u.ns.u1.s.xflags |= SY_VOLATILE;
         }
         GPassAddr( routine );
     }
@@ -175,7 +175,7 @@ static  void    IntInq( FCODE routine ) {
         CkSize4();
         sym = CkAssignOk();
         if( sym != NULL ) {
-            sym->ns.u1.s.xflags |= SY_VOLATILE;
+            sym->u.ns.u1.s.xflags |= SY_VOLATILE;
         }
         GPassAddr( routine );
     }
@@ -223,10 +223,10 @@ void    ChkAssumed( void ) {
 
     if( CITNode->opn.us & USOPN_FLD ) return;
     sym = CITNode->sym_ptr;
-    if( sym->ns.si.va.u.dim_ext->dim_flags & DIM_ASSUMED ) {
+    if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_ASSUMED ) {
         NameErr( SV_CANT_USE_ASSUMED, sym );
     }
-    sym->ns.si.va.u.dim_ext->dim_flags |= DIM_USED_IN_IO;
+    sym->u.ns.si.va.u.dim_ext->dim_flags |= DIM_USED_IN_IO;
 }
 
 
@@ -238,9 +238,9 @@ void    FormatIdd( void ) {
 
     if( RecName() && ( NameListFind() != NULL ) ) {
         BIOutNameList( CITNode->sym_ptr );
-        ge = CITNode->sym_ptr->nl.group_list;
+        ge = CITNode->sym_ptr->u.nl.group_list;
         while( ge != NULL ) {
-            ge->sym->ns.flags |= SY_REFERENCED;
+            ge->sym->u.ns.flags |= SY_REFERENCED;
             ge = ge->link;
         }
         GSetNameList( FC_SET_NML );
@@ -272,8 +272,8 @@ void    FormatIdd( void ) {
             } else if( ( CITNode->opn.us == USOPN_CON ) ) {
                 AddConst( CITNode ); // in case single constant
                 fmt_label.g_label = NextLabel();
-                FScan( CITNode->sym_ptr->lt.length,
-                       (char *)&CITNode->sym_ptr->lt.value, fmt_label );
+                FScan( CITNode->sym_ptr->u.lt.length,
+                       (char *)&CITNode->sym_ptr->u.lt.value, fmt_label );
                 GPassLabel( fmt_label.g_label, RT_SET_FMT );
             } else {
                 GFmtExprSet();

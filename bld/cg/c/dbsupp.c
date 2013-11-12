@@ -123,7 +123,7 @@ extern  offset          LocSimpField( dbg_loc loc ) {
 }
 
 
-extern  sym_handle      LocSimpStatic( dbg_loc loc ) {
+extern  cg_sym_handle   LocSimpStatic( dbg_loc loc ) {
 /****************************************************/
 
     if( loc == NULL ) return( NULL );
@@ -148,8 +148,8 @@ extern  dbg_loc  _CGAPI DBLocInit() {
 }
 
 
-extern dbg_loc  _CGAPI DBLocSym( dbg_loc loc,   sym_handle sym ) {
-/****************************************************************/
+extern dbg_loc  _CGAPI DBLocSym( dbg_loc loc, cg_sym_handle sym ) {
+/*****************************************************************/
 
     fe_attr     attr;
     name        *tmp;
@@ -177,7 +177,7 @@ extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle sym ) {
     EchoAPI( "DBLocTemp( %i, %i )", loc, sym );
 #endif
     loc = LocCreate( loc, LOC_BP_OFFSET );
-    tmp = DeAlias( sym );
+    tmp = DeAlias( (name *)sym );
     tmp->v.usage |= VAR_VOLATILE|NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
     loc->u.be_sym = tmp;
 #ifndef NDEBUG
@@ -186,8 +186,8 @@ extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle sym ) {
     return( loc );
 }
 
-extern void             DBSetSymLoc(  sym_handle sym, long off ) {
-/*****************************************************************/
+extern void         DBSetSymLoc( cg_sym_handle sym, long off ) {
+/**************************************************************/
 
     name        *tmp;
 

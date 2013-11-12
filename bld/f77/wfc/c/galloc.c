@@ -156,7 +156,7 @@ void    GAllocated( void ) {
 
     PushOpn( CITNode );
     EmitOp( FC_ALLOCATED );
-    if( CITNode->sym_ptr->ns.flags & SY_SUBSCRIPTED ) {
+    if( CITNode->sym_ptr->u.ns.flags & SY_SUBSCRIPTED ) {
         OutU16( 0 );
     } else {
         OutU16( ALLOC_STRING );

@@ -60,13 +60,13 @@ extern  dbg_loc         LocDupl(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);
 extern  dbg_loc         LocParm(dbg_loc,name*);
 extern  dbg_loc         DBLocInit(void);
-extern  dbg_loc         DBLocSym(dbg_loc,sym_handle);
+extern  dbg_loc         DBLocSym(dbg_loc,cg_sym_handle);
 extern  void            DBLocFini(dbg_loc);
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
 /* WV interface */
 extern  void    WVInitDbgInfo( void );
 extern  void    WVFiniDbgInfo( void );
-extern  void    WVGenStatic( sym_handle sym, dbg_loc loc );
+extern  void    WVGenStatic( cg_sym_handle sym, dbg_loc loc );
 extern  void    WVObjectPtr( cg_type ptr_type );
 extern  void    WVSetBase( void );
 extern  void    WVBlkEnd( dbg_block *blk, offset lc );
@@ -77,7 +77,7 @@ extern  void    DFInitDbgInfo( void );
 extern  void    DFObjInitInfo( void );
 extern  void    DFFiniDbgInfo( void );
 extern  void    DFObjFiniDbgInfo( void );
-extern  void    DFGenStatic( sym_handle sym, dbg_loc loc );
+extern  void    DFGenStatic( cg_sym_handle sym, dbg_loc loc );
 extern  void    DFTypedef( const char *nm, dbg_type tipe );
 extern  void    DFProEnd( dbg_rtn *rtn, offset lc );
 extern  void    DFBlkBeg( dbg_block *blk, offset lc );
@@ -90,7 +90,7 @@ extern  void    CVInitDbgInfo( void );
 extern  void    CVObjInitInfo( void );
 extern  void    CVFiniDbgInfo( void );
 extern  void    CVObjFiniDbgInfo( void );
-extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem );
+extern  void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem );
 extern  void    CVTypedef( const char *nm, dbg_type tipe );
 extern  void    CVSetBase( void );
 extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc );
@@ -486,7 +486,7 @@ extern  void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
     }
 }
 
-extern  void _CGAPI DBGenStMem( sym_handle sym, dbg_loc loc )
+extern  void _CGAPI DBGenStMem( cg_sym_handle sym, dbg_loc loc )
 /***********************************************************/
 {
 #ifndef NDEBUG
@@ -512,7 +512,7 @@ static  void    AddLocal( dbg_local **owner, dbg_local *lcl )
     *owner = lcl;
 }
 
-extern  void _CGAPI DBGenSym( sym_handle sym, dbg_loc loc, int scoped )
+extern  void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
 /*********************************************************************/
 {
     fe_attr     attr;
@@ -554,7 +554,7 @@ extern  void _CGAPI DBGenSym( sym_handle sym, dbg_loc loc, int scoped )
 }
 
 
-extern  void    _CGAPI DBModSym( sym_handle sym, cg_type indirect )
+extern  void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
 /*****************************************************************/
 {
     fe_attr     attr;
@@ -623,7 +623,7 @@ extern void _CGAPI DBTypeDef( cchar_ptr nm, dbg_type tipe )
     }
 }
 
-extern  void    _CGAPI DBLocalSym( sym_handle sym, cg_type indirect )
+extern  void    _CGAPI DBLocalSym( cg_sym_handle sym, cg_type indirect )
 /*******************************************************************/
 {
     fe_attr     attr;
@@ -644,7 +644,7 @@ extern  void    _CGAPI DBLocalSym( sym_handle sym, cg_type indirect )
     }
 }
 
-void    _CGAPI DBLocalType( sym_handle sym, bool kind )
+void    _CGAPI DBLocalType( cg_sym_handle sym, bool kind )
 /*****************************************************/
 {
     dbg_local   *lcl;
@@ -760,7 +760,7 @@ extern  void    DbgSetBase( void )
 }
 
 
-extern  void    DbgParmLoc( name *parm, sym_handle sym )
+extern  void    DbgParmLoc( name *parm, cg_sym_handle sym )
 /******************************************************/
 // sym is NULL if no front end sym
 {

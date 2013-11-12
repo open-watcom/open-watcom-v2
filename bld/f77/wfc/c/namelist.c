@@ -79,9 +79,9 @@ void    CpNameList( void ) {
             if( ( name_list != NULL ) && ( sym != NULL ) ) {
                 ge = STGroupEntry();
                 ge->sym = sym;
-                last = name_list->nl.group_list;
+                last = name_list->u.nl.group_list;
                 if( last == NULL ) {    // if empty name list
-                    name_list->nl.group_list = ge;
+                    name_list->u.nl.group_list = ge;
                 } else {
                     for(;;) {
                         if( last->sym == sym ) {

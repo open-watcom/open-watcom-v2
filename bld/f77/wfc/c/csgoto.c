@@ -129,7 +129,7 @@ static void CompGoto( void )
 void CkVarRef( void )
 {
     BIOutSymbol( CITNode->sym_ptr );
-    CITNode->sym_ptr->ns.flags |= SY_REFERENCED;
+    CITNode->sym_ptr->u.ns.flags |= SY_REFERENCED;
     CkTypeDeclared();
 }
 

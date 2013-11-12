@@ -38,10 +38,10 @@
 #include "namelist.h"
 #include "data.h"
 
-extern  void            FreeTable(sym_handle);
+extern  void            FreeTable(cg_sym_handle);
 extern  type_class_def  RegClass(hw_reg_set);
 extern  type_def        *ClassType(type_class_def);
-extern  pointer         LkAddBack(sym_handle,pointer);
+extern  pointer         LkAddBack(cg_sym_handle,pointer);
 extern  uint_8          RegTrans( hw_reg_set );
 
 static  pointer         *FrlHead[N_INDEXED+1];

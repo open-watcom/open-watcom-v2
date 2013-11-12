@@ -78,9 +78,9 @@ sym_id  SymLookup( char *name, int length ) {
     sym_id    sym;
 
     sym = STName( name, length );
-    if( ( sym->ns.flags & ( SY_TYPE | SY_INTRINSIC ) ) == 0 ) {
-        sym->ns.xt.size = ImplSize( *name );
-        sym->ns.u1.s.typ = MapTypes( ImplType( *name ), sym->ns.xt.size );
+    if( ( sym->u.ns.flags & ( SY_TYPE | SY_INTRINSIC ) ) == 0 ) {
+        sym->u.ns.xt.size = ImplSize( *name );
+        sym->u.ns.u1.s.typ = MapTypes( ImplType( *name ), sym->u.ns.xt.size );
     }
     return( sym );
 }
@@ -95,10 +95,10 @@ sym_id  LkSym( void ) {
 
     sym = SymLookup( CITNode->opnd, CITNode->opnd_size );
     CITNode->sym_ptr = sym;
-    CITNode->flags = sym->ns.flags;
-    CITNode->size = sym->ns.xt.size;
-    CITNode->typ = sym->ns.u1.s.typ;
-    if( ( sym->ns.u2.name_len > STD_SYMLEN ) &&
+    CITNode->flags = sym->u.ns.flags;
+    CITNode->size = sym->u.ns.xt.size;
+    CITNode->typ = sym->u.ns.u1.s.typ;
+    if( ( sym->u.ns.u2.name_len > STD_SYMLEN ) &&
         ( ( ExtnSw & XS_LONG_NAME ) == 0 ) ) {
         NameExt( VA_NAME_LEN_EXT, sym );
         ExtnSw |= XS_LONG_NAME;
@@ -115,7 +115,7 @@ sym_id  LkProgram( void ) {
     sym_id    sym;
 
     sym = SymLookup( ProgName, PROG_LEN );
-    sym->ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_PROGRAM | SY_PENTRY |
+    sym->u.ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_PROGRAM | SY_PENTRY |
                     SY_UNNAMED | SY_REFERENCED;
     return( sym );
 }
@@ -129,7 +129,7 @@ sym_id  LkBlkData( void ) {
     sym_id    sym;
 
     sym = SymLookup( BlkData, BLKDAT_LEN );
-    sym->ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_BLOCK_DATA |
+    sym->u.ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_BLOCK_DATA |
                     SY_PENTRY | SY_UNNAMED | SY_REFERENCED;
     return( sym );
 }
@@ -152,9 +152,9 @@ static  sym_id  ComLookup( char *name, int length ) {
     sym_id      sym;
 
     sym = STCommon( name, length );
-    sym->ns.flags |= SY_USAGE | SY_COMMON;
+    sym->u.ns.flags |= SY_USAGE | SY_COMMON;
     if( ProgSw & PS_BLOCK_DATA ) {
-        sym->ns.flags |= SY_IN_BLOCK_DATA;
+        sym->u.ns.flags |= SY_IN_BLOCK_DATA;
     }
     return( sym );
 }
@@ -168,7 +168,7 @@ sym_id  LkBCommon( void ) {
     sym_id      sym;
 
     sym = ComLookup( CBlank, CBLANK_LEN );
-    sym->ns.flags |= SY_BLANK_COMMON;
+    sym->u.ns.flags |= SY_BLANK_COMMON;
     return( sym );
 }
 
@@ -187,17 +187,17 @@ sym_id  LkField( sym_id sd ) {
 
     sym_id      sym;
 
-    sym = FieldLookup( sd->sd.fl.sym_fields, CITNode->opnd, CITNode->opnd_size,
+    sym = FieldLookup( sd->u.sd.fl.sym_fields, CITNode->opnd, CITNode->opnd_size,
                        &CITNode->value.intstar4 );
     if( sym != NULL ) {
-        CITNode->typ = sym->fd.typ;
+        CITNode->typ = sym->u.fd.typ;
         if( CITNode->typ == FT_STRUCTURE ) {
-            CITNode->size = sym->fd.xt.record->size;
+            CITNode->size = sym->u.fd.xt.record->size;
         } else {
-            CITNode->size = sym->fd.xt.size;
+            CITNode->size = sym->u.fd.xt.size;
         }
         CITNode->flags = SY_VARIABLE;
-        if( sym->fd.dim_ext != NULL ) {
+        if( sym->u.fd.dim_ext != NULL ) {
             CITNode->flags |= SY_SUBSCRIPTED;
         }
     } else {

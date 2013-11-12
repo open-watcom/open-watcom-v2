@@ -30,7 +30,7 @@
 
 
 extern  an      BGCall( cn call, bool use_return, bool in_line );
-extern  void    BGProcDecl( sym_handle sym, type_def *tipe );
+extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe );
 extern  name    *StReturn( an retval, type_def *tipe, instruction **pins );
 extern  reg_set_index   CallIPossible( instruction *ins );
 extern  void    InitTargProc( void );
@@ -42,4 +42,4 @@ extern  instruction     *PushOneParm( instruction *ins, name *curr,
                                       call_state *state );
 extern  void    PreCall( cn call );
 extern  void    PostCall( cn call );
-extern  type_def        *PassParmType( sym_handle func, type_def *tipe, call_class class );
+extern  type_def        *PassParmType( cg_sym_handle func, type_def *tipe, call_class class );

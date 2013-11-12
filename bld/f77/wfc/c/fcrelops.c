@@ -135,10 +135,10 @@ cg_name GetChOp( cg_type ch_type ) {
 
     lit = GetPtr();
     if( lit != NULL ) {
-        if( lit->lt.flags & (LT_SCB_REQUIRED | LT_SCB_TMP_REFERENCE) ) {
+        if( lit->u.lt.flags & (LT_SCB_REQUIRED | LT_SCB_TMP_REFERENCE) ) {
             CGTrash( XPop() );
         }
-        return( IntegerConstant( (ftn_type *)(&lit->lt.value), lit->lt.length));
+        return( IntegerConstant( (ftn_type *)(&lit->u.lt.value), lit->u.lt.length));
     } else {
         return( CGUnary( O_POINTS, SCBPointer( XPop() ), ch_type ) );
     }

@@ -95,7 +95,7 @@ void    CpStmtFunc(void) {
 
     unsigned_16 flags;
 
-    flags = CITNode->sym_ptr->ns.flags;
+    flags = CITNode->sym_ptr->u.ns.flags;
     if( ( ( flags & SY_CLASS ) == SY_VARIABLE ) &&
         ( ( flags & SF_MASK ) == 0 ) ) {
         ASType = AST_EOK | AST_ASF;
@@ -111,10 +111,10 @@ static  void    ArithNewSubr(void) {
 
     if( CITNode->flags & SY_TYPE ) {
         Extension( SR_FUNC_AS_SUB );
-        CITNode->sym_ptr->ns.flags |= SY_USAGE | SY_SUBPROGRAM | SY_FUNCTION;
+        CITNode->sym_ptr->u.ns.flags |= SY_USAGE | SY_SUBPROGRAM | SY_FUNCTION;
     } else {
         ASType |= AST_ALT;
-        CITNode->sym_ptr->ns.flags |= SY_USAGE | SY_SUBPROGRAM |
+        CITNode->sym_ptr->u.ns.flags |= SY_USAGE | SY_SUBPROGRAM |
                                       SY_SUBROUTINE;
     }
     Arith();

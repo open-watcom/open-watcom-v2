@@ -58,20 +58,20 @@ sym_id  STConst( void *ptr, TYPE typ, uint size ) {
     if( head != NULL ) {
         tail = ConstHashTable[ hash_value ].h_tail;
         for(;;) {
-            if( head->cn.typ == typ ) {
-                if( memcmp( c_ptr, &head->cn.value, size ) == 0 ) {
+            if( head->u.cn.typ == typ ) {
+                if( memcmp( c_ptr, &head->u.cn.value, size ) == 0 ) {
                     return( head );
                 }
             }
             if( head == tail ) break;
-            head = head->cn.link;
+            head = head->u.cn.link;
         }
     }
     head = FMemAlloc( sizeof( constant ) - sizeof( ftn_type ) + size );
-    memcpy( &head->cn.value, c_ptr, size );
-    head->cn.typ = typ;
-    head->cn.size = size;
-    head->cn.address = NULL;
+    memcpy( &head->u.cn.value, c_ptr, size );
+    head->u.cn.typ = typ;
+    head->u.cn.size = size;
+    head->u.cn.address = NULL;
     HashInsert( ConstHashTable, hash_value, &CList, head );
     return( head );
 }

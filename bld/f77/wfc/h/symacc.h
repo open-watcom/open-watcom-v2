@@ -36,5 +36,5 @@
 // Use this if you don't know the type. If you know the type, get the size
 // directly (code is smaller and faster).
 
-#define _SymSize( sym ) ( sym->ns.u1.s.typ == FT_STRUCTURE ?                 \
-                          sym->ns.xt.record->size : sym->ns.xt.size )
+#define _SymSize( sym ) ( sym->u.ns.u1.s.typ == FT_STRUCTURE ?                 \
+                          sym->u.ns.xt.record->size : sym->u.ns.xt.size )

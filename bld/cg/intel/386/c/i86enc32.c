@@ -57,7 +57,7 @@ extern  void            LayRegAC( hw_reg_set );
 extern  void            LayOpword( gen_opcode );
 extern  hw_reg_set      High32Reg( hw_reg_set );
 extern  hw_reg_set      Low32Reg( hw_reg_set );
-extern  hw_reg_set      CalcSegment( sym_handle, cg_class );
+extern  hw_reg_set      CalcSegment( cg_sym_handle, cg_class );
 extern  name            *DeAlias( name * );
 extern  void            AddByte( byte );
 extern  void            LayRMRegOp( name * );

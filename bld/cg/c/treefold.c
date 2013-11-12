@@ -37,11 +37,12 @@
 #include "zoiks.h"
 #include "i64.h"
 #include "data.h"
-#include "feprotos.h"
 #include "types.h"
 #include "treefold.h"
+#include "treeprot.h"
 #include "bldins.h"
 #include "utils.h"
+#include "feprotos.h"
 
 typedef union i32 {
     signed_32   s;
@@ -50,18 +51,8 @@ typedef union i32 {
 
 extern  an              TreeGen(tn);
 extern  name            *AllocIntConst(int);
-extern  tn              TGCompare(cg_op,tn,tn,type_def*);
-extern  unsigned_32     Mask(btn);
 extern  unsigned_32     U32ModDiv(unsigned_32*,unsigned_32);
-extern  tn              TGUnary(cg_op,tn,type_def*);
-extern  tn              TGBinary(cg_op,tn,tn,type_def*);
 extern  void            BurnTree(tn);
-extern  tn              TGConst(cfloat *,type_def*);
-extern  tn              TGConvert(tn,type_def*);
-extern  tn              TGTrash(tn);
-extern  tn              TGNode( tn_class, cg_op, tn, tn, type_def * );
-extern  bool            TGCanDuplicate( tn node );
-extern  tn              TGDuplicate( tn node );
 
 #define HasBigConst( t )       ( ( (t)->attr & TYPE_FLOAT ) || (t)->length == 8 )
 
@@ -366,27 +357,27 @@ extern  tn      FoldTimes( tn left, tn rite, type_def *tipe )
         rite = temp;
     }
     if( rite->class != TN_CONS ) return( NULL );
-    if( left->class == TN_BINARY && left->op == O_TIMES &&
+    if( left->class == TN_BINARY && left->u2.t.op == O_TIMES &&
         tipe == left->tipe && !HasBigConst( tipe ) ) {
         if( left->u.left->class == TN_CONS ) {
             left->u.left = FoldTimes( left->u.left, rite, tipe );
             return( left );
         }
-        if( left->rite->class == TN_CONS ) {
-            left->rite = FoldTimes( left->rite, rite, tipe );
+        if( left->u2.t.rite->class == TN_CONS ) {
+            left->u2.t.rite = FoldTimes( left->u2.t.rite, rite, tipe );
             return( left );
         }
     }
-    if( left->class==TN_BINARY && left->op==O_LSHIFT && tipe==left->tipe ) {
-        if( !HasBigConst( tipe ) && left->rite->class == TN_CONS ) {
+    if( left->class==TN_BINARY && left->u2.t.op==O_LSHIFT && tipe==left->tipe ) {
+        if( !HasBigConst( tipe ) && left->u2.t.rite->class == TN_CONS ) {
             li = 1;
-            for( log = left->rite->u.name->c.int_value; log > 0; --log ) {
+            for( log = left->u2.t.rite->u.name->c.int_value; log > 0; --log ) {
                 li <<= 1;
             }
-            BurnTree( left->rite );
-            left->rite = CFToType( CFCnvU32F( li ), tipe );
-            left->op = O_TIMES;
-            left->rite = FoldTimes( left->rite, rite, tipe );
+            BurnTree( left->u2.t.rite );
+            left->u2.t.rite = CFToType( CFCnvU32F( li ), tipe );
+            left->u2.t.op = O_TIMES;
+            left->u2.t.rite = FoldTimes( left->u2.t.rite, rite, tipe );
             return( left );
         }
     }
@@ -489,7 +480,7 @@ extern  tn      FoldMinus( tn left, tn rite, type_def *tipe )
                               tipe );
             BurnTree( rite );
         }
-    } else if( rite->class == TN_UNARY && rite->op == O_UMINUS ) {
+    } else if( rite->class == TN_UNARY && rite->u2.t.op == O_UMINUS ) {
         fold = TGBinary( O_PLUS, left, rite->u.left, tipe );
         rite->u.left = NULL;
         BurnTree( rite );
@@ -548,7 +539,7 @@ extern  tn      FoldPlus( tn left, tn rite, type_def *tipe )
         if( CFTest( rite->u.name->c.value ) == 0 ) {
             fold = TGConvert( left, tipe );
             BurnTree( rite );
-        } else if( left->class == TN_BINARY && left->op == O_PLUS &&
+        } else if( left->class == TN_BINARY && left->u2.t.op == O_PLUS &&
                    tipe == left->tipe && !HasBigConst( tipe ) ) {
             if( left->u.left->class == TN_CONS ) {
                 tipe = FixAddType( left->u.left, rite, tipe );
@@ -557,20 +548,20 @@ extern  tn      FoldPlus( tn left, tn rite, type_def *tipe )
                     left->u.left = fold;
                     fold = left;
                 }
-            } else if( left->rite->class == TN_CONS ) {
-                tipe = FixAddType( left->rite, rite, tipe );
-                if( left->rite->tipe == tipe ) {
-                    fold = FoldPlus( left->rite, rite, tipe );
-                    left->rite = fold;
+            } else if( left->u2.t.rite->class == TN_CONS ) {
+                tipe = FixAddType( left->u2.t.rite, rite, tipe );
+                if( left->u2.t.rite->tipe == tipe ) {
+                    fold = FoldPlus( left->u2.t.rite, rite, tipe );
+                    left->u2.t.rite = fold;
                     fold = left;
                 }
             }
         }
-    } else if( rite->class == TN_UNARY && rite->op == O_UMINUS ) {
+    } else if( rite->class == TN_UNARY && rite->u2.t.op == O_UMINUS ) {
         fold = TGBinary( O_MINUS, left, rite->u.left, tipe );
         rite->u.left = NULL;
         BurnTree( rite );
-    } else if( left->class == TN_UNARY && left->op == O_UMINUS ) {
+    } else if( left->class == TN_UNARY && left->u2.t.op == O_UMINUS ) {
         fold = TGBinary( O_MINUS, rite, left->u.left, tipe );
         left->u.left = NULL;
         BurnTree( left );
@@ -593,16 +584,16 @@ extern  tn      FoldPow( tn left, tn rite, type_def *tipe )
     tn          fold;
 
     fold = NULL;
-    if( left->class == TN_UNARY && left->op == O_SQRT ) {
+    if( left->class == TN_UNARY && left->u2.t.op == O_SQRT ) {
         fold = Halve( rite, tipe );
         fold = TGBinary( O_POW, left->u.left, fold, tipe );
         left->u.left = NULL;
         BurnTree( left );
-    } else if( left->class == TN_UNARY && left->op == O_EXP ) {
+    } else if( left->class == TN_UNARY && left->u2.t.op == O_EXP ) {
         left->u.left = TGBinary( O_TIMES, left->u.left, rite, tipe );
         fold = left;
-    } else if( left->class == TN_BINARY && left->op == O_POW ) {
-        left->rite = TGBinary( O_TIMES, left->rite, rite, tipe );
+    } else if( left->class == TN_BINARY && left->u2.t.op == O_POW ) {
+        left->u2.t.rite = TGBinary( O_TIMES, left->u2.t.rite, rite, tipe );
         fold = left;
     }
     return( fold );
@@ -1114,7 +1105,7 @@ extern  tn      FoldUMinus( tn left, type_def *tipe )
             new = CFToType( lv, tipe );
             BurnTree( left );
         }
-    } else if( left->class == TN_UNARY && left->op == O_UMINUS ) {
+    } else if( left->class == TN_UNARY && left->u2.t.op == O_UMINUS ) {
         new = left->u.left;
         left->u.left = NULL;
         BurnTree( left );
@@ -1129,11 +1120,11 @@ extern  tn      FoldSqrt( tn left, type_def *tipe )
     tn          fold;
 
     fold = NULL;
-    if( left->class == TN_UNARY && left->op == O_EXP ) {
+    if( left->class == TN_UNARY && left->u2.t.op == O_EXP ) {
         left->u.left = Halve( left->u.left, tipe );
         fold = left;
-    } else if( left->class == TN_BINARY && left->op == O_POW ) {
-        left->rite = Halve( left->rite, tipe );
+    } else if( left->class == TN_BINARY && left->u2.t.op == O_POW ) {
+        left->u2.t.rite = Halve( left->u2.t.rite, tipe );
         fold = left;
     }
     return( fold );
@@ -1146,16 +1137,16 @@ extern  tn      FoldLog( cg_op op, tn left, type_def *tipe )
     tn          fold;
 
     fold = NULL;
-    if( left->class == TN_UNARY && left->op == O_SQRT ) {
+    if( left->class == TN_UNARY && left->u2.t.op == O_SQRT ) {
         fold = TGUnary( op, left->u.left, tipe );
         fold = Halve( fold, tipe );
         left->u.left = NULL;
         BurnTree( left );
-    } else if( left->class == TN_BINARY && left->op == O_POW ) {
+    } else if( left->class == TN_BINARY && left->u2.t.op == O_POW ) {
         fold = TGUnary( op, left->u.left, tipe );
-        fold = TGBinary( O_TIMES, left->rite, fold, tipe );
+        fold = TGBinary( O_TIMES, left->u2.t.rite, fold, tipe );
         left->u.left = NULL;
-        left->rite = NULL;
+        left->u2.t.rite = NULL;
         BurnTree( left );
     }
     return( fold );
@@ -1254,35 +1245,30 @@ extern  tn      FoldFlNot( tn left )
     return( fold );
 }
 
-extern  tn      FoldBitCompare( cg_op op, tn_btn left, tn rite )
-/**************************************************************/
+extern  tn      FoldBitCompare( cg_op op, tn left, tn rite )
+/**********************************************************/
 {
     tn              fold;
     unsigned_32     new_cons;
     unsigned_32     mask;
 
-    if( left.t->class == TN_CONS ) {
-        fold = left.t;
-        left.t = rite;
+    if( left->class == TN_CONS ) {
+        fold = left;
+        left = rite;
         rite = fold;
         op = RevOpcode[  op - O_EQ  ];
     }
     fold = NULL;
-    if( rite->class == TN_CONS
-     && left.t->class == TN_BIT_RVALUE
-     && !(left.b->is_signed)
-     && !HasBigConst( left.b->tipe ) ) {
+    if( rite->class == TN_CONS && left->class == TN_BIT_RVALUE && !(left->u2.b.is_signed) && !HasBigConst( left->tipe ) ) {
         new_cons = rite->u.name->c.int_value;
-        new_cons <<= left.b->start;
-        mask = Mask( left.b );
+        new_cons <<= left->u2.b.start;
+        mask = TGMask32( left );
         if( ( new_cons & ~mask ) == 0 ) { /* idiot comparing out of range*/
-            fold = TGUnary( O_POINTS, left.b->u.left, left.b->tipe );
-            fold = TGBinary( O_AND, fold, IntToType( mask, left.b->tipe ),
-                              left.b->tipe );
-            fold = TGCompare( op, fold, IntToType( new_cons, left.b->tipe ),
-                               left.b->tipe );
-            left.b->u.left = NULL; /* so no recursion*/
-            BurnTree( left.t );
+            fold = TGUnary( O_POINTS, left->u.left, left->tipe );
+            fold = TGBinary( O_AND, fold, IntToType( mask, left->tipe ), left->tipe );
+            fold = TGCompare( op, fold, IntToType( new_cons, left->tipe ), left->tipe );
+            left->u.left = NULL; /* so no recursion*/
+            BurnTree( left );
             BurnTree( rite );
         }
     }
@@ -1309,7 +1295,7 @@ static  tn      FindBase( tn tree, bool op_eq )
 
     for( ;; ) {
         if( tree->class != TN_UNARY ) break;
-        if( tree->op != O_CONVERT ) break;
+        if( tree->u2.t.op != O_CONVERT ) break;
         if( tree->u.left->tipe->length > tree->tipe->length ) break;
         child_attr = tree->u.left->tipe->attr;
         this_attr = tree->tipe->attr;
@@ -1335,7 +1321,7 @@ static  void    BurnToBase( tn root, tn base )
     tn          curr;
 
     for( curr = root; curr != base; curr = next ) {
-        assert( curr->class == TN_UNARY && curr->op == O_CONVERT );
+        assert( curr->class == TN_UNARY && curr->u2.t.op == O_CONVERT );
         next = curr->u.left;
         curr->u.left = NULL;
         BurnTree( curr );
@@ -1463,17 +1449,17 @@ extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
             return( NULL );
         }
 #if _TARGET == _TARG_370
-        if( left->rite->class != TN_CONS ) return( NULL );
+        if( left->u2.t.rite->class != TN_CONS ) return( NULL );
 #endif
-        if( left->op != O_AND ) return( NULL );
+        if( left->u2.t.op != O_AND ) return( NULL );
         if( op != O_EQ && op != O_NE ) return( NULL );
         if( left->u.left->class == TN_CONS ) {
             temp = left->u.left;
-            left->u.left = left->rite;
-            left->rite = temp;
+            left->u.left = left->u2.t.rite;
+            left->u2.t.rite = temp;
         }
-        if( left->rite->class == TN_CONS
-         && left->rite->u.left == rite->u.left
+        if( left->u2.t.rite->class == TN_CONS
+         && left->u2.t.rite->u.left == rite->u.left
          && !HasBigConst( tipe )
          && GetLog2( rite->u.name->c.int_value ) != -1 ) {
             rite->u.name = AllocIntConst( 0 );
@@ -1488,9 +1474,9 @@ extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
         left->class = TN_COMPARE;
         left->tipe = TypeBoolean;
         if( op == O_EQ ) {
-            left->op = (cg_op)OP_BIT_TEST_FALSE;
+            left->u2.t.op = (cg_op)OP_BIT_TEST_FALSE;
         } else {
-            left->op = (cg_op)OP_BIT_TEST_TRUE;
+            left->u2.t.op = (cg_op)OP_BIT_TEST_TRUE;
         }
         return( left );
     } else {
@@ -1510,7 +1496,7 @@ extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
 static  bool    SimpleLeaf( tn tree )
 /***********************************/
 {
-    if( tree->class == TN_UNARY && tree->op == O_POINTS ) {
+    if( tree->class == TN_UNARY && tree->u2.t.op == O_POINTS ) {
         tree = tree->u.left;
     }
     return( tree->class == TN_LEAF );
@@ -1553,15 +1539,15 @@ extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe 
     if( op != O_EQ && op != O_NE ) return( NULL );
     if( rite->class == TN_CONS &&
         left->class == TN_POST_GETS &&
-        ( left->op == O_MINUS || left->op == O_PLUS ) ) {
-        if( left->rite->class == TN_CONS && SimpleLeaf( left->u.left ) ) {
+        ( left->u2.t.op == O_MINUS || left->u2.t.op == O_PLUS ) ) {
+        if( left->u2.t.rite->class == TN_CONS && SimpleLeaf( left->u.left ) ) {
             if( tipe == left->tipe ) {
                 rv = rite->u.name->c.value;
-                lv = left->rite->u.name->c.value;
+                lv = left->u2.t.rite->u.name->c.value;
                 if( !HasBigConst( tipe ) && CFIs32( lv ) && CFIs32( rv ) ) {
                     li = CFConvertByType( lv, tipe );
                     ri = CFConvertByType( rv, tipe );
-                    value = ( left->op == O_MINUS ) ? ( ri - li ) : ( ri + li );
+                    value = ( left->u2.t.op == O_MINUS ) ? ( ri - li ) : ( ri + li );
                     temp = IntToType( value, tipe );
                     left->class = TN_PRE_GETS;
                     left->optipe = left->tipe;

@@ -350,7 +350,7 @@ static  void emitSavedRegsEpilog( stack_record *saved_regs )
 static  void initVarargs( stack_record *varargs, type_length *offset )
 /********************************************************************/
 {
-    sym_handle          sym;
+    cg_sym_handle       sym;
     fe_attr             attr;
 
     varargs->start = *offset;

@@ -95,18 +95,18 @@ void    CpAllocate( void )
     for(;;) {
         if( ReqName( NAME_ARRAY ) ) {
             sym = LkSym();
-            if( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) {
-                if( (sym->ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) &&
-                    !( (sym->ns.u1.s.typ == FT_CHAR) && (sym->ns.xt.size == 0) ) ) {
+            if( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+                if( (sym->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) &&
+                    !( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) ) ) {
                     AdvanceITPtr();
                     ReqOpenParen();
-                    sym->ns.u1.s.xflags |= SY_DEFINED;
+                    sym->u.ns.u1.s.xflags |= SY_DEFINED;
                     GAllocate( sym );
-                } else if( (sym->ns.u1.s.typ == FT_CHAR) && (sym->ns.xt.size == 0) &&
-                           !( sym->ns.flags & SY_SUBSCRIPTED ) ) {
+                } else if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) &&
+                           !( sym->u.ns.flags & SY_SUBSCRIPTED ) ) {
                     AdvanceITPtr();
                     ReqMul();
-                    sym->ns.u1.s.xflags |= SY_ALLOCATABLE | SY_DEFINED;
+                    sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE | SY_DEFINED;
                     GAllocateString( sym );
                 } else {
                     IllName( sym );
@@ -192,7 +192,7 @@ void    DimArray( sym_id sym )
         }
         AdvanceITPtr();
         if( !RecComma() ||
-            ( subs == _DimCount( sym->ns.si.va.u.dim_ext->dim_flags ) ) ) break;
+            ( subs == _DimCount( sym->u.ns.si.va.u.dim_ext->dim_flags ) ) ) break;
     }
     ReqCloseParen();
     ReqNOpn();
@@ -228,11 +228,11 @@ void    CpDeAllocate( void )
     for(;;) {
         if( ReqName( NAME_ARRAY ) ) {
             sym = LkSym();
-            if( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) {
-                if( (sym->ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
+            if( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+                if( (sym->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
                     GDeAllocate( sym );
-                } else if( (sym->ns.u1.s.typ == FT_CHAR) && (sym->ns.xt.size == 0) ) {
-                    sym->ns.u1.s.xflags |= SY_ALLOCATABLE;
+                } else if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) ) {
+                    sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE;
                     GDeAllocateString( sym );
                 } else {
                     IllName( sym );

@@ -53,15 +53,15 @@ sym_id  NewMagSym( int class ) {
     sym_id      new;
 
     new = FMemAlloc( sizeof( symbol ) - STD_SYMLEN );
-    new->ns.link = MList;
+    new->u.ns.link = MList;
     MList = new;
-    new->ns.reloc_chain.lr = NULL;
+    new->u.ns.reloc_chain.lr = NULL;
     _MgcSetClass( new, class );
-    new->ns.flags = TEMP_FLAGS;
-    new->ns.u1.s.xflags = 0;
-    new->ns.xt.size = 0;
-    new->ns.u1.s.typ = FT_NO_TYPE;
-    new->ns.si.ms.sym = NULL;
+    new->u.ns.flags = TEMP_FLAGS;
+    new->u.ns.u1.s.xflags = 0;
+    new->u.ns.xt.size = 0;
+    new->u.ns.u1.s.typ = FT_NO_TYPE;
+    new->u.ns.si.ms.sym = NULL;
     return( new );
 }
 
@@ -78,12 +78,12 @@ sym_id  FindTempIndex( uint tmp_index, TYPE typ ) {
     for(;;) {
         if( ml == NULL ) break;
         if(( _MgcClass( ml ) == MAGIC_TEMP ) &&
-            ( ml->ns.si.ms.tmp_info.tmp_index == tmp_index ))
+            ( ml->u.ns.si.ms.tmp_info.tmp_index == tmp_index ))
             return( ml );
-        ml = ml->ns.link;
+        ml = ml->u.ns.link;
     }
     ml = NewMagSym( MAGIC_TEMP );
-    ml->ns.si.ms.tmp_info.tmp_index = tmp_index;
+    ml->u.ns.si.ms.tmp_info.tmp_index = tmp_index;
     return( ml );
 }
 
@@ -96,8 +96,8 @@ sym_id  TmpVar( TYPE typ, uint size ) {
     sym_id      ml;
 
     ml = FindTempIndex( TempIndex, typ );
-    ml->ns.xt.size = size;
-    ml->ns.u1.s.typ = typ;
+    ml->u.ns.xt.size = size;
+    ml->u.ns.u1.s.typ = typ;
     TempIndex += size;
     if( TempIndex > MaxTempIndex ) {
         MaxTempIndex = TempIndex;
@@ -133,9 +133,9 @@ sym_id  StaticAlloc( uint size, TYPE typ ) {
     sym_id      ml;
 
     ml = NewMagSym( MAGIC_STATIC );
-    ml->ns.si.ms.tmp_info.stat_off = NULL;
-    ml->ns.xt.size = size;
-    ml->ns.u1.s.typ = typ;
+    ml->u.ns.si.ms.tmp_info.stat_off = NULL;
+    ml->u.ns.xt.size = size;
+    ml->u.ns.u1.s.typ = typ;
     return( ml );
 }
 
@@ -150,12 +150,12 @@ sym_id  StaticOffset( sym_id stat, int offset ) {
     sym_id      ml;
 
     ml = FMemAlloc( sizeof( symbol ) - STD_SYMLEN );
-    ml->ns.reloc_chain.lr = NULL;
-    ml->ns.xt.size = offset;
-    ml->ns.flags = TEMP_FLAGS;
-    ml->ns.u1.s.typ = FT_NO_TYPE;
-    ml->ns.link = stat->ns.si.ms.tmp_info.stat_off;
-    stat->ns.si.ms.tmp_info.stat_off = ml;
+    ml->u.ns.reloc_chain.lr = NULL;
+    ml->u.ns.xt.size = offset;
+    ml->u.ns.flags = TEMP_FLAGS;
+    ml->u.ns.u1.s.typ = FT_NO_TYPE;
+    ml->u.ns.link = stat->u.ns.si.ms.tmp_info.stat_off;
+    stat->u.ns.si.ms.tmp_info.stat_off = ml;
     return( ml );
 }
 

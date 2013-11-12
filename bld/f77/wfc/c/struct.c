@@ -85,7 +85,7 @@ void    CpStructure( void ) {
     CSExtn();
     CurrStruct = StructName();
     if( CurrStruct != NULL ) {
-        if( CurrStruct->sd.fl.fields != NULL ) {
+        if( CurrStruct->u.sd.fl.fields != NULL ) {
             StructErr( SP_STRUCT_DEFINED, CurrStruct );
             // consider:
             //      STRUCTURE /FOO/
@@ -111,7 +111,7 @@ void    CpEndStructure( void ) {
 
     CSExtn();
     if( SgmtSw & SG_DEFINING_STRUCTURE ) {
-        if( CurrStruct->sd.fl.fields == NULL ) {
+        if( CurrStruct->u.sd.fl.fields == NULL ) {
             StructErr( SP_STRUCT_NEEDS_FIELD, CurrStruct );
             // consider:
             //  STRUCTURE /FOO/
@@ -146,7 +146,7 @@ void    CpRecord( void ) {
     sd = StructName();
     if( IsFunctionDefn() ) {
         Function( FT_STRUCTURE, 0, TRUE );
-        SubProgId->ns.xt.sym_record = sd;
+        SubProgId->u.ns.xt.sym_record = sd;
     } else {
         MustBeTypeDecl();
         for(;;) {
@@ -154,11 +154,11 @@ void    CpRecord( void ) {
                 var_node = CITNode;
                 if( SgmtSw & SG_DEFINING_STRUCTURE ) {
                     sym = FieldDecl();
-                    sym->fd.typ = FT_STRUCTURE;
-                    sym->fd.xt.sym_record = sd;
+                    sym->u.fd.typ = FT_STRUCTURE;
+                    sym->u.fd.xt.sym_record = sd;
                 } else {
                     sym = VarDecl( FT_STRUCTURE );
-                    sym->ns.xt.sym_record = sd;
+                    sym->u.ns.xt.sym_record = sd;
                 }
                 if( RecOpenParen() ) {
                     ArrayDecl( sym );
@@ -186,9 +186,9 @@ void    StructResolve( void ) {
 
     sym_id      sd;
 
-    for( sd = RList; sd != NULL; sd = sd->sd.link ) {
-        if( sd->sd.name_len == 0 ) continue; // NULL structure
-        if( sd->sd.fl.fields != NULL ) {
+    for( sd = RList; sd != NULL; sd = sd->u.sd.link ) {
+        if( sd->u.sd.name_len == 0 ) continue; // NULL structure
+        if( sd->u.sd.fl.fields != NULL ) {
             if( CalcStructSize( sd ) ) {
                 StructErr( SP_STRUCT_RECURSION, sd );
             }

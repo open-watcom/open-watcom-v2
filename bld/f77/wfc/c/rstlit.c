@@ -47,28 +47,28 @@ sym_id  STLit( byte *string, int len ) {
 
     sym = LList;
     while( sym != NULL ) {
-        if( sym->lt.length == len ) {
-            if( memcmp( string, &sym->lt.value, len ) == 0 ) {
+        if( sym->u.lt.length == len ) {
+            if( memcmp( string, &sym->u.lt.value, len ) == 0 ) {
                 if( StmtSw & SS_DATA_INIT ) {
-                    sym->lt.flags |= LT_DATA_STMT;
+                    sym->u.lt.flags |= LT_DATA_STMT;
                 } else {
-                    sym->lt.flags |= LT_EXEC_STMT;
+                    sym->u.lt.flags |= LT_EXEC_STMT;
                 }
                 return( sym );
             }
         }
-        sym = sym->lt.link;
+        sym = sym->u.lt.link;
     }
     sym = FMemAlloc( sizeof( literal ) - 1 + len );
-    memcpy( &sym->lt.value, string, len );
-    sym->lt.length = len;
+    memcpy( &sym->u.lt.value, string, len );
+    sym->u.lt.length = len;
     if( StmtSw & SS_DATA_INIT ) {
-        sym->lt.flags = LT_DATA_STMT;
+        sym->u.lt.flags = LT_DATA_STMT;
     } else {
-        sym->lt.flags = LT_EXEC_STMT;
+        sym->u.lt.flags = LT_EXEC_STMT;
     }
-    sym->lt.address = NULL;
-    sym->lt.link = LList;
+    sym->u.lt.address = NULL;
+    sym->u.lt.link = LList;
     LList = sym;
     return( sym );
 }

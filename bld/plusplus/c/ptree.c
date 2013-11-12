@@ -186,7 +186,7 @@ PTREE PTreeAssign( PTREE to, PTREE from )
 PTREE PTreeFree( PTREE tree )
 /***************************/
 {
-    CPP_FLOAT *fp_val;
+    float_handle fp_val;
 
     if( tree != NULL ) {
 #ifndef NDEBUG
@@ -421,7 +421,7 @@ PTREE PTreeInt64Constant( signed_64 v, type_id id )
     return new_tree;
 }
 
-static CPP_FLOAT *makeFPRep( const char *buff )
+static float_handle makeFPRep( const char *buff )
 {
     return BFCnvSF( buff );
 }
@@ -429,13 +429,13 @@ static CPP_FLOAT *makeFPRep( const char *buff )
 PTREE PTreeFloatingConstantStr( const char *buff, type_id id )
 /************************************************************/
 {
-    CPP_FLOAT *fp_rep;
+    float_handle fp_rep;
 
     fp_rep = makeFPRep( buff );
     return PTreeFloatingConstant( fp_rep, id );
 }
 
-PTREE PTreeFloatingConstant( CPP_FLOAT *rep, type_id id )
+PTREE PTreeFloatingConstant( float_handle rep, type_id id )
 /*******************************************************/
 {
     PTREE new_tree;
@@ -1751,7 +1751,7 @@ PTREE PTreeCheckFloatRepresentation( PTREE tree )
 unsigned PTreeGetFPRaw( PTREE tree, char *buff, unsigned len )
 /************************************************************/
 {
-    CPP_FLOAT *cg_float;
+    float_handle cg_float;
     char *end;
 
     DbgAssert( tree != NULL && tree->op == PT_FLOATING_CONSTANT );
@@ -1794,7 +1794,7 @@ static void savePTree( void *p, carve_walk_base *d )
     STRING_LITERAL *save_string;
     SYMBOL save_symbol;
     CGVALUE save_value;
-    CPP_FLOAT *save_float;
+    float_handle save_float;
     unsigned fp_len;
     PTREE save_subtree[2];
     auto char buff[128];

@@ -81,8 +81,8 @@ static  intstar4        CheckSubscr( act_eq_entry *eqv_entry ) {
     sym = eqv_entry->name_equived;
     dims_no = 0;
     dims = NULL;
-    if( sym->ns.flags & SY_SUBSCRIPTED ) {
-        dims = sym->ns.si.va.u.dim_ext;
+    if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
+        dims = sym->u.ns.si.va.u.dim_ext;
         dims_no = _DimCount( dims->dim_flags );
         dims->dim_flags &= ~DIM_PVD;
     }
@@ -115,17 +115,17 @@ static  intstar4        CheckSubStr( act_eq_entry *eqv_entry ) {
 
     sym = eqv_entry->name_equived;
     substr = &eqv_entry->subscrs[ eqv_entry->subs_no ];
-    if( sym->ns.u1.s.typ != FT_CHAR ) {
+    if( sym->u.ns.u1.s.typ != FT_CHAR ) {
         NameTypeErr( EV_ONLY_IF_CHAR, sym );
         offset = 0;
     } else {
         offset = substr[0];
         if( eqv_entry->substr == 1 ) {
-            last = sym->ns.xt.size;
+            last = sym->u.ns.xt.size;
         } else {
             last = substr[1];
         }
-        if( DoSubstring( offset, last, sym->ns.xt.size ) ) {
+        if( DoSubstring( offset, last, sym->u.ns.xt.size ) ) {
             offset--;
         } else {
             NameStmtErr( EV_SSTR_INVALID, sym, PR_EQUIV );
@@ -160,7 +160,7 @@ void    EquivResolve( void ) {
         // equivalence set - make him a leader since every equivalence
         // set requires one
         if( eqv_entry == NULL ) {
-            eq_head->name_equived->ns.si.va.vi.ec_ext->ec_flags |= LEADER;
+            eq_head->name_equived->u.ns.si.va.vi.ec_ext->ec_flags |= LEADER;
         } else {
             for(;;) {
                 offset = CheckSubscr( eqv_entry );
@@ -224,12 +224,12 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
     byte        q_type;
 
     /* if an entry is marked static, then b must be too */    
-    if( ForceStatic( a->name_equived->ns.flags ) ) {
-        unsigned_16     sym_flags = a->name_equived->ns.flags & ( SY_DATA_INIT | SY_SAVED );
-        b->name_equived->ns.flags |= sym_flags;
-    } else if( ForceStatic( b->name_equived->ns.flags ) ) {
-        unsigned_16     sym_flags = b->name_equived->ns.flags & ( SY_DATA_INIT | SY_SAVED );
-        a->name_equived->ns.flags |= sym_flags;
+    if( ForceStatic( a->name_equived->u.ns.flags ) ) {
+        unsigned_16     sym_flags = a->name_equived->u.ns.flags & ( SY_DATA_INIT | SY_SAVED );
+        b->name_equived->u.ns.flags |= sym_flags;
+    } else if( ForceStatic( b->name_equived->u.ns.flags ) ) {
+        unsigned_16     sym_flags = b->name_equived->u.ns.flags & ( SY_DATA_INIT | SY_SAVED );
+        a->name_equived->u.ns.flags |= sym_flags;
     }
 
     a_name = a->name_equived;
@@ -240,7 +240,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
     d = 0;
     dist = b_offset - a_offset;
     for(;;) {   // find leader of B
-        q_ext = q->ns.si.va.vi.ec_ext;
+        q_ext = q->u.ns.si.va.vi.ec_ext;
         if( ( q_ext->ec_flags & IN_EQUIV_SET ) == 0 ) {
             SetHigh( q );
             break;
@@ -249,14 +249,14 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
         d += q_ext->offset;
         q = q_ext->link_eqv;
     }
-    q_in_common = ( q->ns.flags & SY_IN_COMMON ) ||
+    q_in_common = ( q->u.ns.flags & SY_IN_COMMON ) ||
                   ( q_ext->ec_flags & MEMBER_IN_COMMON );
     q_type = q_ext->ec_flags & ES_TYPE;
     if( q_type == ES_NO_TYPE ) {
-        q_type = ClassifyType( q->ns.u1.s.typ );
+        q_type = ClassifyType( q->u.ns.u1.s.typ );
     }
     for(;;) {   // find leader of A
-        p_ext = p->ns.si.va.vi.ec_ext;
+        p_ext = p->u.ns.si.va.vi.ec_ext;
         if( ( p_ext->ec_flags & IN_EQUIV_SET ) == 0 ) {
             SetHigh( p );
             break;
@@ -265,11 +265,11 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
         c += p_ext->offset;
         p = p_ext->link_eqv;
     }
-    p_in_common = ( p->ns.flags & SY_IN_COMMON ) ||
+    p_in_common = ( p->u.ns.flags & SY_IN_COMMON ) ||
                   ( p_ext->ec_flags & MEMBER_IN_COMMON );
     p_type = p_ext->ec_flags & ES_TYPE;
     if( p_type == ES_NO_TYPE ) {
-        p_type = ClassifyType( p->ns.u1.s.typ );
+        p_type = ClassifyType( p->u.ns.u1.s.typ );
     }
     if( p == q ) {
         if( c - d != dist ) {
@@ -284,11 +284,11 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
             if( q_ext->com_blk != p_ext->com_blk ) {
                 // 2 names in common equivalenced
                 NamNamErr( EC_2NAM_EC, a_name, b_name );
-                if( !( a_name->ns.si.va.vi.ec_ext->ec_flags & IN_EQUIV_SET ) ) {
-                    a_name->ns.flags &= ~SY_IN_EQUIV;
+                if( !( a_name->u.ns.si.va.vi.ec_ext->ec_flags & IN_EQUIV_SET ) ) {
+                    a_name->u.ns.flags &= ~SY_IN_EQUIV;
                 }
-                if( !( b_name->ns.si.va.vi.ec_ext->ec_flags & IN_EQUIV_SET ) ) {
-                    b_name->ns.flags &= ~SY_IN_EQUIV;
+                if( !( b_name->u.ns.si.va.vi.ec_ext->ec_flags & IN_EQUIV_SET ) ) {
+                    b_name->u.ns.flags &= ~SY_IN_EQUIV;
                 }
                 return;
             }
@@ -306,8 +306,8 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
             q_ext->com_blk = p_ext->com_blk;
             q_ext->ec_flags |= MEMBER_IN_COMMON;
         }
-        if( ( q->ns.flags & SY_DATA_INIT ) ||
-            ( p->ns.flags & SY_DATA_INIT ) ||
+        if( ( q->u.ns.flags & SY_DATA_INIT ) ||
+            ( p->u.ns.flags & SY_DATA_INIT ) ||
             ( p_ext->ec_flags & MEMBER_INITIALIZED ) ) {
             // This used to be set by VarList in DATA, but there was
             // a problem with the following:
@@ -336,8 +336,8 @@ static  void    SetHigh( sym_id sym ) {
 // Set the high extent of a symbol which hasn't been put in an equivalence
 // set.
 
-    sym->ns.si.va.vi.ec_ext->high = _SymSize( sym );
-    if( sym->ns.flags & SY_SUBSCRIPTED ) {
-       sym->ns.si.va.vi.ec_ext->high *= sym->ns.si.va.u.dim_ext->num_elts;
+    sym->u.ns.si.va.vi.ec_ext->high = _SymSize( sym );
+    if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
+       sym->u.ns.si.va.vi.ec_ext->high *= sym->u.ns.si.va.u.dim_ext->num_elts;
     }
 }

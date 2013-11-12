@@ -103,8 +103,8 @@ sym_id  FindShadow( sym_id sym ) {
 
     shadow = MList;
     for(;;) {
-        if( shadow->ns.si.ms.sym == sym ) return( shadow );
-        shadow = shadow->ns.link;
+        if( shadow->u.ns.si.ms.sym == sym ) return( shadow );
+        shadow = shadow->u.ns.link;
     }
 }
 
@@ -118,8 +118,8 @@ sym_id    STAdvShadow( sym_id sym ) {
     sym_id       shadow;
 
     shadow = StaticAlloc( sizeof( inttarg ), FT_INTEGER_TARG );
-    shadow->ns.flags |= SY_SPECIAL_PARM | SY_SUBSCRIPTED;
-    shadow->ns.si.ms.sym = sym;
+    shadow->u.ns.flags |= SY_SPECIAL_PARM | SY_SUBSCRIPTED;
+    shadow->u.ns.si.ms.sym = sym;
     return( shadow );
 }
 
@@ -131,9 +131,9 @@ sym_id  FindAdvShadow( sym_id sym ) {
 
     sym_id      shadow;
 
-    for( shadow = MList; shadow != NULL; shadow = shadow->ns.link ) {
-        if( shadow->ns.si.ms.sym == sym ) {
-            if( shadow->ns.flags & SY_SUBSCRIPTED ) {
+    for( shadow = MList; shadow != NULL; shadow = shadow->u.ns.link ) {
+        if( shadow->u.ns.si.ms.sym == sym ) {
+            if( shadow->u.ns.flags & SY_SUBSCRIPTED ) {
                 break;
             }
         }
@@ -150,8 +150,8 @@ sym_id    STArgShadow( sym_id sym ) {
     sym_id       shadow;
 
     shadow = StaticAlloc( sizeof( inttarg ), FT_INTEGER_TARG );
-    shadow->ns.flags |= SY_SPECIAL_PARM | SY_VALUE_PARM;
-    shadow->ns.si.ms.sym = sym;
+    shadow->u.ns.flags |= SY_SPECIAL_PARM | SY_VALUE_PARM;
+    shadow->u.ns.si.ms.sym = sym;
     return( shadow );
 }
 
@@ -165,12 +165,12 @@ sym_id  FindArgShadow( sym_id sym ) {
 
     shadow = MList;
     for(;;) {
-        if( shadow->ns.si.ms.sym == sym ) {
-            if( shadow->ns.flags & SY_VALUE_PARM ) {
+        if( shadow->u.ns.si.ms.sym == sym ) {
+            if( shadow->u.ns.flags & SY_VALUE_PARM ) {
                 return( shadow );
             }
         }
-        shadow = shadow->ns.link;
+        shadow = shadow->u.ns.link;
     }
 }
 
@@ -182,9 +182,9 @@ sym_id    STEqSetShadow( sym_id sym ) {
 
     sym_id       shadow;
 
-    shadow = StaticAlloc( sym->ns.xt.size, sym->ns.u1.s.typ );
-    shadow->ns.flags |= SY_SPECIAL_PARM | SY_IN_EQUIV;
-    shadow->ns.si.ms.sym = sym;
+    shadow = StaticAlloc( sym->u.ns.xt.size, sym->u.ns.u1.s.typ );
+    shadow->u.ns.flags |= SY_SPECIAL_PARM | SY_IN_EQUIV;
+    shadow->u.ns.si.ms.sym = sym;
     return( shadow );
 }
 
@@ -196,9 +196,9 @@ sym_id  FindEqSetShadow( sym_id sym ) {
 
     sym_id      shadow;
 
-    for( shadow = MList; shadow != NULL; shadow = shadow->ns.link ) {
-        if( shadow->ns.si.ms.sym == sym ) {
-            if( shadow->ns.flags & SY_IN_EQUIV ) {
+    for( shadow = MList; shadow != NULL; shadow = shadow->u.ns.link ) {
+        if( shadow->u.ns.si.ms.sym == sym ) {
+            if( shadow->u.ns.flags & SY_IN_EQUIV ) {
                 break;
             }
         }
@@ -214,9 +214,9 @@ sym_id    STFnShadow( sym_id sym ) {
 
     sym_id       shadow;
 
-    shadow = StaticAlloc( sym->ns.xt.size, sym->ns.u1.s.typ );
-    shadow->ns.flags |= SY_SPECIAL_PARM | SY_PS_ENTRY;
-    shadow->ns.si.ms.sym = sym;
+    shadow = StaticAlloc( sym->u.ns.xt.size, sym->u.ns.u1.s.typ );
+    shadow->u.ns.flags |= SY_SPECIAL_PARM | SY_PS_ENTRY;
+    shadow->u.ns.si.ms.sym = sym;
     return( shadow );
 }
 
@@ -231,11 +231,11 @@ sym_id    STShadow( sym_id sym ) {
     if( StmtSw & SS_DATA_INIT ) { // implied do parm
         shadow = TmpVar( FT_INTEGER, TypeSize( FT_INTEGER ) );
     } else {
-        shadow = StaticAlloc( sym->ns.xt.size, sym->ns.u1.s.typ );
+        shadow = StaticAlloc( sym->u.ns.xt.size, sym->u.ns.u1.s.typ );
     }
-    shadow->ns.flags |= SY_SPECIAL_PARM;
-    sym->ns.flags |= SY_SPECIAL_PARM;
-    shadow->ns.si.ms.sym = sym;
+    shadow->u.ns.flags |= SY_SPECIAL_PARM;
+    sym->u.ns.flags |= SY_SPECIAL_PARM;
+    shadow->u.ns.si.ms.sym = sym;
     return( shadow );
 }
 
@@ -247,10 +247,10 @@ void    STUnShadow( sym_id sym ) {
 
     sym_id      shadow;
 
-    sym->ns.flags &= ~SY_SPECIAL_PARM;
+    sym->u.ns.flags &= ~SY_SPECIAL_PARM;
     shadow = FindShadow( sym );
-    shadow->ns.flags &= ~SY_SPECIAL_PARM;
-    shadow->ns.si.ms.sym = NULL;
+    shadow->u.ns.flags &= ~SY_SPECIAL_PARM;
+    shadow->u.ns.si.ms.sym = NULL;
 }
 
 
@@ -260,11 +260,11 @@ void    HashInsert( hash_entry *hash_table, unsigned hash_value,
 
     if( hash_table[ hash_value ].h_head == NULL ) { // empty list
         hash_table[ hash_value ].h_head = sym;
-        sym->ns.link = *list;
+        sym->u.ns.link = *list;
         *list = sym;
     } else {
-        sym->ns.link = hash_table[ hash_value ].h_tail->ns.link;
-        hash_table[ hash_value ].h_tail->ns.link = sym;
+        sym->u.ns.link = hash_table[ hash_value ].h_tail->u.ns.link;
+        hash_table[ hash_value ].h_tail->u.ns.link = sym;
     }
     hash_table[ hash_value ].h_tail = sym;
 }
@@ -283,11 +283,11 @@ sym_id  STName( char *name, int length ) {
     sym = STNameSearch( name, length );
     if( sym == NULL ) {
         sym = STAdd( name, length );
-        sym->ns.si.va.vi.ec_ext = NULL;
-        sym->ns.u3.address = NULL;
+        sym->u.ns.si.va.vi.ec_ext = NULL;
+        sym->u.ns.u3.address = NULL;
         HashInsert( HashTable, HashValue, &NList, sym );
-    } else if( ( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
-               ( sym->ns.flags & SY_SPECIAL_PARM ) ) {
+    } else if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
+               ( sym->u.ns.flags & SY_SPECIAL_PARM ) ) {
         sym = FindShadow( sym ); // Shadowed variable
     }
     return( sym );
@@ -307,9 +307,9 @@ sym_id  STCommon( char *name, int length ) {
     sym_ptr = STSearch( name, length, BList );
     if( sym_ptr == NULL ) {
         sym_ptr = STAdd( name, length );
-        sym_ptr->ns.link = BList;
-        sym_ptr->ns.si.cb.first = NULL;    // indicate an empty common block
-        sym_ptr->ns.u3.address = NULL;
+        sym_ptr->u.ns.link = BList;
+        sym_ptr->u.ns.si.cb.first = NULL;    // indicate an empty common block
+        sym_ptr->u.ns.u3.address = NULL;
         BList = sym_ptr;
     }
     return( sym_ptr );

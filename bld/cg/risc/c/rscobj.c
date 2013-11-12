@@ -60,12 +60,12 @@ extern  void            OpenObj( void );
 extern  void            PutObjBytes( const void *, uint );
 extern  char            *AskRTName( rt_class );
 extern  void            TryScrapLabel( code_lbl * );
-extern  void            DoOutObjectName(sym_handle,void(*)(char*,void*),void*,import_type);
-extern  bool            SymIsExported( sym_handle );
+extern  void            DoOutObjectName(cg_sym_handle,void(*)(char*,void*),void*,import_type);
+extern  bool            SymIsExported( cg_sym_handle );
 extern  code_lbl        *GetWeirdPPCDotDotLabel( code_lbl * );
 extern  void            TellAddress( code_lbl *, offset );
 extern  type_length     TempLocation( name * );
-extern  bck_info        *SymBack( sym_handle );
+extern  bck_info        *SymBack( cg_sym_handle );
 extern  void            EmptyQueue( void );
 extern  void            TellUnreachLabels( void );
 extern  void            *SortList( void *, unsigned, bool (*)( void *, void * ) );
@@ -80,7 +80,7 @@ extern  void            DFObjFiniDbgInfo( offset codesize );
 extern  void            DFObjLineFiniDbgInfo( void );
 extern  void            DFLineNum( cue_state *, offset );
 extern  void            DFSegRange( void );
-extern  void            DFSymRange( sym_handle, offset );
+extern  void            DFSymRange( cg_sym_handle, offset );
 /* CV interface */
 extern  void            CVObjInitInfo( void );
 extern  void            CVDefSegs( void );
@@ -412,7 +412,7 @@ static  void            NameGatherer( char *name, void *data )
 static  char            *LabelName( code_lbl *label )
 /***************************************************/
 {
-    sym_handle          sym;
+    cg_sym_handle       sym;
     char                *name;
     char                *buff;
     import_type         kind;
@@ -679,7 +679,7 @@ extern  segment_id  AskOP( void )
     return( currSection->id );
 }
 
-static  bool            InlineFunction( sym_handle sym )
+static  bool            InlineFunction( cg_sym_handle sym )
 /******************************************************/
 {
     if( (FEAttr( sym ) & FE_PROC) == 0 )
@@ -694,10 +694,10 @@ extern  segment_id  AskSegID( pointer hdl, cg_class class )
 {
     switch( class ) {
     case CG_FE:
-        if( InlineFunction( (sym_handle)hdl ) ) {
+        if( InlineFunction( (cg_sym_handle)hdl ) ) {
             return( AskCodeSeg() );
         }
-        return( FESegID( (sym_handle)hdl ) );
+        return( FESegID( (cg_sym_handle)hdl ) );
     case CG_BACK:
         return( ((bck_info *)hdl)->seg );
     case CG_TBL:
@@ -870,8 +870,8 @@ extern  void    SetBigLocation( long_offset loc )
 static void DumpImportResolve( code_lbl *label )
 /**********************************************/
 {
-    sym_handle          def_resolve;
-    sym_handle          sym;
+    cg_sym_handle       def_resolve;
+    cg_sym_handle       sym;
     pointer             cond;
     int                 type;
     bck_info            *bck;
@@ -930,7 +930,7 @@ extern  void    OutSegReloc( code_lbl *label, segment_id seg )
 extern  owl_sym_linkage labelLinkage( code_lbl *label )
 /********************************************************/
 {
-    sym_handle          sym;
+    cg_sym_handle       sym;
     owl_sym_linkage     linkage;
     fe_attr             attr;
 
@@ -948,7 +948,7 @@ extern  owl_sym_linkage labelLinkage( code_lbl *label )
 extern  void    OutLabel( code_lbl *label )
 /********************************************/
 {
-    sym_handle          sym;
+    cg_sym_handle       sym;
     fe_attr             attr;
     owl_sym_type        tipe;
 
@@ -996,7 +996,7 @@ extern void OutTOCRec( code_lbl *label )
 static owl_section_handle getPData( code_lbl *label )
 /***************************************************/
 {
-    sym_handle          sym;
+    cg_sym_handle       sym;
     owl_section_handle  pdata;
 
     sym = AskForLblSym( label );
@@ -1017,8 +1017,8 @@ extern void OutPDataRec( code_lbl *label, offset proc_size, offset pro_size )
 /***************************************************************************/
 {
     owl_section_handle  owl_pdata;
-    sym_handle          sym;
-    sym_handle          curr;
+    cg_sym_handle       sym;
+    cg_sym_handle       curr;
     code_lbl            *lbl;
 
     owl_pdata = getPData( label );
@@ -1073,7 +1073,7 @@ extern  void    DoEmptyQueue( void )
     TellUnreachLabels();
 }
 
-extern  void    TellObjNewProc( sym_handle proc )
+extern  void    TellObjNewProc( cg_sym_handle proc )
 /***********************************************/
 {
     segment_id  proc_id;

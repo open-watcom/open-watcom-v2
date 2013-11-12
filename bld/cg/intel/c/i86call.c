@@ -57,14 +57,14 @@ extern  name            *GenIns(an);
 extern  name            *AllocS32Const(signed_32);
 extern  an              MakeTempAddr(name*,type_def*);
 extern  bool            AssgnParms(cn,bool);
-extern  type_class_def  AddCallBlock(sym_handle,type_def*);
+extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);
 extern  void            AddCallIns(instruction*,cn);
 extern  name            *SegmentPart(name*);
 extern  name            *OffsetPart(name*);
-extern  name            *DoParmDecl(sym_handle,type_def*,hw_reg_set);
+extern  name            *DoParmDecl(cg_sym_handle,type_def*,hw_reg_set);
 extern  hw_reg_set      ReturnReg(type_class_def,bool);
 extern  type_length     PushSize(type_length);
-extern  type_def        *QParmType(sym_handle,sym_handle,type_def*);
+extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            ReverseParmNodeList(pn *);
 extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
@@ -276,7 +276,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
 }
 
 
-extern  void    BGProcDecl( sym_handle sym, type_def *tipe ) {
+extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
 /************************************************************/
 
     hw_reg_set          reg;
@@ -471,7 +471,7 @@ extern  void    PostCall( cn call ) {
     call = call;
 }
 
-extern  type_def        *PassParmType( sym_handle func, type_def* tipe, call_class class ) {
+extern  type_def        *PassParmType( cg_sym_handle func, type_def* tipe, call_class class ) {
 /******************************************************************************************/
 
     if( class & FAR16_CALL ) return( tipe );

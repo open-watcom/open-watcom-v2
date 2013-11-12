@@ -1,7 +1,7 @@
 /* ../intel/c/i86segs.c */
 extern void InitSegment(void);
 extern void FiniSegment(void);
-extern hw_reg_set CalcSegment(sym_handle sym, cg_class class);
+extern hw_reg_set CalcSegment(cg_sym_handle sym, cg_class class);
 extern name *AddrConst(name *value, segment_id seg, constant_class class);
 extern bool SegIsCS(name *op);
 extern bool SegIsSS(name *op);

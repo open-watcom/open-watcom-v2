@@ -79,10 +79,10 @@ void    STDump( void ) {
     // Merge IFList with NList
     if( IFList != NULL ) {
         sym = IFList;
-        while( sym->ns.link != NULL ) {
-            sym = sym->ns.link;
+        while( sym->u.ns.link != NULL ) {
+            sym = sym->u.ns.link;
         }
-        sym->ns.link = NList;
+        sym->u.ns.link = NList;
         NList = IFList;
         IFList = NULL;
     }
@@ -109,18 +109,18 @@ static  bool    CkInCommon( sym_id sym ) {
     bool        global_item;
 
     global_item = FALSE;
-    if( sym->ns.flags & SY_IN_EQUIV ) {
+    if( sym->u.ns.flags & SY_IN_EQUIV ) {
         offset = 0;
         leader = sym;
         for(;;) {
-            eq_ext = leader->ns.si.va.vi.ec_ext;
+            eq_ext = leader->u.ns.si.va.vi.ec_ext;
             if( eq_ext->ec_flags & LEADER ) break;
             offset += eq_ext->offset;
             leader = eq_ext->link_eqv;
         }
         if( ( eq_ext->ec_flags & MEMBER_IN_COMMON ) == 0 ) {
             if( !( eq_ext->ec_flags & EQUIV_SET_ALLOC ) ) {
-                if( ForceStatic(sym->ns.flags) || !(Options & OPT_AUTOMATIC) ) {
+                if( ForceStatic(sym->u.ns.flags) || !(Options & OPT_AUTOMATIC) ) {
                     if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
                         AllocGlobal( eq_ext->high - eq_ext->low,
                              (eq_ext->ec_flags & MEMBER_INITIALIZED) != 0 );
@@ -145,20 +145,20 @@ static  bool    DumpVariable( sym_id sym ) {
     bool                cp_reloc; // is array compile-time relocatable
 
     global_item = FALSE;
-    flags = sym->ns.flags;
+    flags = sym->u.ns.flags;
     CkDataOk( sym );
     if( !(flags & (SY_SUB_PARM | SY_DATA_INIT | SY_IN_EC)) ) {
-        if( (flags & SY_REFERENCED) && !(sym->ns.u1.s.xflags & SY_DEFINED) ) {
+        if( (flags & SY_REFERENCED) && !(sym->u.ns.u1.s.xflags & SY_DEFINED) ) {
             NameWarn( VA_USED_NOT_DEFINED, sym );
         }
     }
     if( ( flags & SY_IN_EQUIV ) &&
-        ( sym->ns.si.va.vi.ec_ext->ec_flags & LEADER ) &&
-        ( ( sym->ns.si.va.vi.ec_ext->ec_flags & ES_TYPE ) == ES_MIXED ) ) {
+        ( sym->u.ns.si.va.vi.ec_ext->ec_flags & LEADER ) &&
+        ( ( sym->u.ns.si.va.vi.ec_ext->ec_flags & ES_TYPE ) == ES_MIXED ) ) {
         Extension( EV_MIXED_EQUIV );
     }
     if( flags & SY_SUBSCRIPTED ) {
-        dim_list = sym->ns.si.va.u.dim_ext;
+        dim_list = sym->u.ns.si.va.u.dim_ext;
         cp_reloc = !( flags & SY_SUB_PARM ) && !_Allocatable( sym );
         if( cp_reloc && ( dim_list->num_elts == 0 ) ) {
             NameErr( SV_ARR_PARM, sym );
@@ -178,7 +178,7 @@ static  bool    DumpVariable( sym_id sym ) {
                 }
             }
         }
-    } else if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
+    } else if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
         if( ( flags & SY_SUB_PARM ) == 0 ) {
             if( (flags & SY_IN_DIMEXPR) && (flags & SY_IN_COMMON) == 0 ) {
                 NameErr( SV_ARR_DECL, sym );
@@ -188,28 +188,28 @@ static  bool    DumpVariable( sym_id sym ) {
                     global_item = CkInCommon( sym );
                 } else if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
                     if( ForceStatic( flags ) || !(Options & OPT_AUTOMATIC) ) {
-                        if( sym->ns.xt.record->size > DataThreshold ) {
-                            AllocGlobal( sym->ns.xt.record->size,
+                        if( sym->u.ns.xt.record->size > DataThreshold ) {
+                            AllocGlobal( sym->u.ns.xt.record->size,
                                          (flags & SY_DATA_INIT) != 0 );
                         }
                     }
                 }
             }
         }
-    } else if( sym->ns.u1.s.typ == FT_CHAR ) {
+    } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
         if( ( flags & SY_SUB_PARM ) == 0 ) {
             global_item = !_Allocatable( sym );
-            if( ( sym->ns.xt.size == 0 ) && !_Allocatable( sym ) ){
+            if( ( sym->u.ns.xt.size == 0 ) && !_Allocatable( sym ) ){
                 NameErr( CV_CHARSTAR_ILLEGAL, sym );
             } else {
                 if( _Allocatable( sym ) ) {
-                    Extension( VA_ALLOCATABLE_STORAGE, sym->ns.name );
+                    Extension( VA_ALLOCATABLE_STORAGE, sym->u.ns.name );
                 }
                 if( flags & SY_IN_EC ) {
                     global_item = CkInCommon( sym );
                 } else if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
                     if( ForceStatic( flags ) || !(Options & OPT_AUTOMATIC) ) {
-                        AllocGlobal( sym->ns.xt.size,
+                        AllocGlobal( sym->u.ns.xt.size,
                             (flags & SY_DATA_INIT) != 0 );
                     }
                 }
@@ -240,7 +240,7 @@ static  void    DumpLocalVars( void ) {
 
     sym = NList;
     while( sym != NULL ) {
-        flags = sym->ns.flags;
+        flags = sym->u.ns.flags;
         class = flags & SY_CLASS;
         if( class == SY_VARIABLE ) {
             if( (sym != ReturnValue) && (sym != EPValue) ) {
@@ -264,7 +264,7 @@ static  void    DumpLocalVars( void ) {
                 AddSP2GList( sym );
             } else if( !IsIntrinsic( flags ) ) {
                 AddSP2GList( sym );
-            } else if( IsIFUsed( sym->ns.si.fi.index ) ) {
+            } else if( IsIFUsed( sym->u.ns.si.fi.index ) ) {
                 AddSP2GList( sym );
             }
         } else { // if( class == SY_PARAMETER ) {
@@ -272,7 +272,7 @@ static  void    DumpLocalVars( void ) {
                 UnrefSym( sym );
             }
         }
-        sym = sym->ns.link;
+        sym = sym->u.ns.link;
     }
     // Common block list must be dumped after the name list so that the
     // SY_COMMON_INIT bit gets set in the common block flags
@@ -282,7 +282,7 @@ static  void    DumpLocalVars( void ) {
     sym = BList;
     while( sym != NULL ) {    // common block list
         if( ( SgmtSw & SG_BIG_SAVE ) || (Options & OPT_SAVE) ) {
-            sym->ns.flags |= SY_SAVED;
+            sym->u.ns.flags |= SY_SAVED;
         }
         AddCB2GList( sym );
         sym = STFreeName( sym );
@@ -301,7 +301,7 @@ static  void    UnrefSym( sym_id sym ) {
 
 // Issue a warning for unreferenced symbol.
 
-    if( !(sym->ns.u1.s.xflags & SY_FAKE_REFERENCE) ) {
+    if( !(sym->u.ns.u1.s.xflags & SY_FAKE_REFERENCE) ) {
         NameWarn( VA_UNREFERENCED, sym );
     }
 }
@@ -317,15 +317,15 @@ static  void    CkDataOk( sym_id sym ) {
     com_eq      *eq_ext;
     unsigned_16 flags;
 
-    flags = sym->ns.flags;
+    flags = sym->u.ns.flags;
     if( ( flags & SY_DATA_INIT ) == 0 ) return;
     name = sym;
     if( flags & SY_IN_EC ) {
         if( flags & SY_IN_COMMON ) {
-            sym = sym->ns.si.va.vi.ec_ext->com_blk;
+            sym = sym->u.ns.si.va.vi.ec_ext->com_blk;
         } else { // if( flags & SY_IN_EQUIV ) {
             for(;;) {
-                eq_ext = sym->ns.si.va.vi.ec_ext;
+                eq_ext = sym->u.ns.si.va.vi.ec_ext;
                 if( ( eq_ext->ec_flags & LEADER ) != 0 ) break;
                 sym = eq_ext->link_eqv;
             }
@@ -338,10 +338,10 @@ static  void    CkDataOk( sym_id sym ) {
                 sym = eq_ext->com_blk;
             }
         }
-        if( ( sym->ns.flags & SY_BLANK_COMMON ) != 0 ) {
+        if( ( sym->u.ns.flags & SY_BLANK_COMMON ) != 0 ) {
             NameErr( DA_BLANK_INIT, name );
         } else {
-            sym->ns.flags |= SY_COMMON_INIT;
+            sym->u.ns.flags |= SY_COMMON_INIT;
             if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
                 NameExt( CM_COMMON, name );
             }
@@ -360,8 +360,8 @@ bool    StmtNoRef( sym_id sn ) {
 // Check if statement number has been referenced.
 
     if( StNumbers.wild_goto ) return( TRUE );
-    if( ( sn->st.flags & SN_AFTR_BRANCH ) == 0 ) return( TRUE );
-    if( sn->st.flags & ( SN_ASSIGNED | SN_BRANCHED_TO ) ) return( TRUE );
+    if( ( sn->u.st.flags & SN_AFTR_BRANCH ) == 0 ) return( TRUE );
+    if( sn->u.st.flags & ( SN_ASSIGNED | SN_BRANCHED_TO ) ) return( TRUE );
     return( FALSE );
 }
 
@@ -377,10 +377,10 @@ static  void    DumpStmtNos( void ) {
 
     sn = SList;
     while( sn != NULL ) {
-        sn_flags = sn->st.flags;
+        sn_flags = sn->u.st.flags;
         st_number = GetStmtNum( sn );
         if( ( sn_flags & SN_DEFINED ) == 0 ) {
-            Error( ST_UNDEFINED, st_number, sn->st.line );
+            Error( ST_UNDEFINED, st_number, sn->u.st.line );
         } else {
             if( !StmtNoRef( sn ) ) {
                 Warning( ST_UNREFERENCED, st_number );
@@ -415,10 +415,10 @@ static  void    DumpStrings( void ) {
     }
     for( ; MList != NULL; MList = STFree( MList ) ) {
         // check if shadow for function return value
-        if( MList->ns.flags & SY_PS_ENTRY ) continue;
-        if( MList->ns.u1.s.typ == FT_CHAR ) {
-            if( ( MList->ns.xt.size != 0 ) && !( Options & OPT_AUTOMATIC ) ) {
-                AllocGlobal( MList->ns.xt.size, FALSE );
+        if( MList->u.ns.flags & SY_PS_ENTRY ) continue;
+        if( MList->u.ns.u1.s.typ == FT_CHAR ) {
+            if( ( MList->u.ns.xt.size != 0 ) && !( Options & OPT_AUTOMATIC ) ) {
+                AllocGlobal( MList->u.ns.xt.size, FALSE );
             }
         }
     }
@@ -439,13 +439,13 @@ static  void    DumpNameLists( void ) {
 
     nl = NmList;
     while( nl != NULL ) {
-        ge = nl->nl.group_list;
+        ge = nl->u.nl.group_list;
         while( ge != NULL ) {
             sym = ge->sym;
-            flags = sym->ns.flags;
+            flags = sym->u.ns.flags;
             // do error checks
             if( ((flags & SY_CLASS) != SY_VARIABLE) || (flags & SY_SUB_PARM) ||
-                (sym->ns.u1.s.typ == FT_STRUCTURE) || _Allocatable( sym ) ) {
+                (sym->u.ns.u1.s.typ == FT_STRUCTURE) || _Allocatable( sym ) ) {
                 STGetName( sym, buff1 );
                 STNmListName( nl, buff2 );
                 Error( VA_BAD_SYM_IN_NAMELIST, buff1, buff2 );
@@ -453,6 +453,6 @@ static  void    DumpNameLists( void ) {
 
             ge = ge->link;
         }
-        nl = nl->nl.link;
+        nl = nl->u.nl.link;
     }
 }

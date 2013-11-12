@@ -586,7 +586,7 @@ sym_id    CkAssignOk( void ) {
             if( CITNode->opn.us & USOPN_ASY ) {
                 sym = CITNode->value.st.ss_id;
             }
-            sym->ns.u1.s.xflags |= SY_DEFINED;
+            sym->u.ns.u1.s.xflags |= SY_DEFINED;
             return( sym );
         } else {
             ClassErr( EQ_CANNOT_ASSIGN, CITNode->sym_ptr );
@@ -871,9 +871,9 @@ static  void    Call( void ) {
                     DetCallList();
                     IFPrmChk();     // must do before InLineCnvt and ...
                                     // ... after IFSpecific, DetCallList
-                    func = CITNode->sym_ptr->ns.si.fi.index;
+                    func = CITNode->sym_ptr->u.ns.si.fi.index;
                     if( ( IsIFMax( func ) || IsIFMin( func ) ) &&
-                        ( CITNode->sym_ptr->ns.si.fi.u.num_args > 2 ) )
+                        ( CITNode->sym_ptr->u.ns.si.fi.u.num_args > 2 ) )
                         EvalList();
                     else
                         InlineCnvt();
@@ -924,7 +924,7 @@ static  void    IFPrmChk( void ) {
     PCODE       parm_code;
 
     sym = CITNode->sym_ptr;
-    func = sym->ns.si.fi.index;
+    func = sym->u.ns.si.fi.index;
     parm_typ = IFArgType( func );
     oldcit = CITNode;
     CITNode = oldcit->list;
@@ -941,9 +941,9 @@ static  void    IFPrmChk( void ) {
 
             if( (parm_code == PC_ARRAY_NAME) && _Allocatable( sym ) )
                 break;
-            if( (parm_code == PC_VARIABLE) && (sym->ns.u1.s.typ == FT_CHAR) &&
-                (sym->ns.xt.size == 0) && !(sym->ns.flags & SY_SUB_PARM) ) {
-                sym->ns.u1.s.xflags |= SY_ALLOCATABLE;
+            if( (parm_code == PC_VARIABLE) && (sym->u.ns.u1.s.typ == FT_CHAR) &&
+                (sym->u.ns.xt.size == 0) && !(sym->u.ns.flags & SY_SUB_PARM) ) {
+                sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE;
                 break;
             }
             Error( LI_ARG_ALLOCATED );
@@ -964,7 +964,7 @@ static  void    IFPrmChk( void ) {
                 }
                 break;
             case USOPN_ARR:
-                MkConst( CITNode->sym_ptr->ns.si.va.u.dim_ext->num_elts *
+                MkConst( CITNode->sym_ptr->u.ns.si.va.u.dim_ext->num_elts *
                          _SymSize( CITNode->sym_ptr ) );
                 break;
             default:
@@ -1036,7 +1036,7 @@ static  void    IFPrmChk( void ) {
         ++parm_cnt;
     }
     // for intrinsic functions that take variable # of args (e.g. MAX, MIN)
-    sym->ns.si.fi.u.num_args = parm_cnt;
+    sym->u.ns.si.fi.u.num_args = parm_cnt;
     CITNode = oldcit;
     IFCntPrms( func, parm_cnt );
 }
@@ -1051,7 +1051,7 @@ static  bool    IFAsOperator( void ) {
         return( FALSE );
     if( !(BkLink->flags & SY_INTRINSIC) )
         return( FALSE );
-    switch( BkLink->sym_ptr->ns.si.fi.index ) {
+    switch( BkLink->sym_ptr->u.ns.si.fi.index ) {
     case IF_ISIZEOF:
     case IF_ALLOCATED:
     case IF_VOLATILE:
@@ -1071,12 +1071,12 @@ static  void    PrepArg( void ) {
 
     if( ClassIs( SY_SUBPROGRAM ) && BitOn( SY_INTRINSIC ) ) {
         if( CITNode->opn.us == USOPN_NNL ) {
-            if_index = CITNode->sym_ptr->ns.si.fi.index;
+            if_index = CITNode->sym_ptr->u.ns.si.fi.index;
             if( IFAsArg( if_index ) == 0 ) {
                 Error( LI_NOT_PARM );
             } else {
                 MarkIFUsed( if_index );
-                CITNode->sym_ptr->ns.flags |= SY_IF_ARGUMENT;
+                CITNode->sym_ptr->u.ns.flags |= SY_IF_ARGUMENT;
             }
         }
     }
@@ -1122,7 +1122,7 @@ static  void    InlineCnvt( void ) {
     TYPE        func_type;
 
     cit = CITNode;
-    func = CITNode->sym_ptr->ns.si.fi.index;
+    func = CITNode->sym_ptr->u.ns.si.fi.index;
     func_type = CITNode->typ;
     CITNode = CITNode->list;
     typ = CITNode->typ;

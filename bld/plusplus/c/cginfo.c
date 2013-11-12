@@ -1149,7 +1149,7 @@ static void addDefaultImports( void )
 
 
 void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
-        cg_sym_handle _sym,     // - symbol
+        void *_sym,             // - symbol
         int request )           // - request
 {
     AUX_INFO *inf;              // - auxilary info

@@ -102,13 +102,13 @@ void    DSName( void ) {
     if( ( FieldNode != NULL ) &&
         ( ( CITNode->opr == OPR_FLD ) || ( CITNode->opr == OPR_DPT ) ) ) {
         if( FieldNode->opn.us & USOPN_FLD ) {
-            LkField( FieldNode->sym_ptr->fd.xt.sym_record );
+            LkField( FieldNode->sym_ptr->u.fd.xt.sym_record );
         } else {
-            LkField( FieldNode->sym_ptr->ns.xt.sym_record );
+            LkField( FieldNode->sym_ptr->u.ns.xt.sym_record );
         }
         CITNode->opn.us |= USOPN_FLD;
         if( CITNode->sym_ptr != NULL ) { // make sure field name exists
-            if( CITNode->sym_ptr->fd.dim_ext != NULL ) { // field is an array
+            if( CITNode->sym_ptr->u.fd.dim_ext != NULL ) { // field is an array
                 if( ( CITNode->opn.us & USOPN_WHAT ) != USOPN_NWL ) {
                     CITNode->opn.us &= ~USOPN_WHAT;
                     CITNode->opn.us |= USOPN_ARR;
@@ -116,12 +116,12 @@ void    DSName( void ) {
                 }
             } else if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_NWL ) {
                 // field better be character and substrung
-                if( ( CITNode->sym_ptr->fd.typ != FT_CHAR ) || !SubStrung() ) {
+                if( ( CITNode->sym_ptr->u.fd.typ != FT_CHAR ) || !SubStrung() ) {
                     AdvError( PC_SURP_PAREN );
                 }
             }
             // setup FieldNode for the next field lookup
-            if( CITNode->sym_ptr->fd.typ == FT_STRUCTURE ) {
+            if( CITNode->sym_ptr->u.fd.typ == FT_STRUCTURE ) {
                 // chain fields for CkFieldNoList()
                 CITNode->value.sc.struct_chain = FieldNode;
                 FieldNode = CITNode; // must come after LkField()
@@ -171,15 +171,15 @@ void    DSName( void ) {
         if( sd != NULL ) {
             CITNode->opn.us = USOPN_CON;
             CITNode->typ = FT_STRUCTURE;
-            CITNode->value.intstar4 = sd->sd.size;
+            CITNode->value.intstar4 = sd->u.sd.size;
             return;
         }
     }
     sym_ptr = LkSym();
     if( ( ASType & AST_DEXP ) && ( sym_ptr != InitVar ) &&
-        ( ( sym_ptr->ns.flags & SY_CLASS ) != SY_PARAMETER ) &&
-        ( ( ( sym_ptr->ns.flags & SY_CLASS ) != SY_VARIABLE ) ||
-            ( ( sym_ptr->ns.flags & SY_SPECIAL_PARM ) == 0 ) ) ) {
+        ( ( sym_ptr->u.ns.flags & SY_CLASS ) != SY_PARAMETER ) &&
+        ( ( ( sym_ptr->u.ns.flags & SY_CLASS ) != SY_VARIABLE ) ||
+            ( ( sym_ptr->u.ns.flags & SY_SPECIAL_PARM ) == 0 ) ) ) {
         NameErr( DA_BAD_VAR_IN_EXPR, sym_ptr );
     }
     if( ClassIs( SY_VARIABLE ) ) {
@@ -220,32 +220,32 @@ void    DSName( void ) {
             IllName( sym_ptr );
         } else {
             CITNode->opn.us = USOPN_CON;
-            CITNode->sym_ptr = sym_ptr->ns.si.pc.value;
+            CITNode->sym_ptr = sym_ptr->u.ns.si.pc.value;
             if( CITNode->typ == FT_CHAR ) {
                 if( StmtSw & SY_DATA_INIT ) {
-                    CITNode->sym_ptr->lt.flags |= LT_DATA_STMT;
+                    CITNode->sym_ptr->u.lt.flags |= LT_DATA_STMT;
                 } else {
-                    CITNode->sym_ptr->lt.flags |= LT_EXEC_STMT;
+                    CITNode->sym_ptr->u.lt.flags |= LT_EXEC_STMT;
                 }
-                CITNode->value.cstring.strptr = (char *)&CITNode->sym_ptr->lt.value;
-                CITNode->value.cstring.len = CITNode->sym_ptr->lt.length;
+                CITNode->value.cstring.strptr = (char *)&CITNode->sym_ptr->u.lt.value;
+                CITNode->value.cstring.len = CITNode->sym_ptr->u.lt.length;
             } else {
-                memcpy( &CITNode->value, &CITNode->sym_ptr->cn.value,
+                memcpy( &CITNode->value, &CITNode->sym_ptr->u.cn.value,
                         CITNode->size );
             }
         }
     }
     BIOutSymbol( sym_ptr );
-    if( ( sym_ptr->ns.flags & SY_REFERENCED ) == 0 ) {
+    if( ( sym_ptr->u.ns.flags & SY_REFERENCED ) == 0 ) {
         if( ASType & AST_ASF ) {
             if( sym_ptr != SFSymId ) {
-                sym_ptr->ns.flags |= SY_REFERENCED;
+                sym_ptr->u.ns.flags |= SY_REFERENCED;
             }
         } else if( ( ASType & AST_DEXP ) == 0 ) {
             if( SgmtSw & SG_SYMTAB_RESOLVED ) {
-                sym_ptr->ns.flags |= SY_REFERENCED;
+                sym_ptr->u.ns.flags |= SY_REFERENCED;
             } else if( ASType & ( AST_DIM | AST_CEX | AST_DIEXP ) ) {
-                sym_ptr->ns.flags |= SY_REFERENCED;
+                sym_ptr->u.ns.flags |= SY_REFERENCED;
             }
         }
     }
@@ -282,14 +282,14 @@ void    GetFunctionShadow( void ) {
     // update type in function shadow symbol in case an
     // IMPLICIT statement changed the type of the function
     fn_shadow = FindShadow( CITNode->sym_ptr );
-    fn_shadow->ns.u1.s.typ = CITNode->sym_ptr->ns.u1.s.typ;
-    if( fn_shadow->ns.u1.s.typ == FT_STRUCTURE ) {
-        fn_shadow->ns.xt.record = CITNode->sym_ptr->ns.xt.record;
+    fn_shadow->u.ns.u1.s.typ = CITNode->sym_ptr->u.ns.u1.s.typ;
+    if( fn_shadow->u.ns.u1.s.typ == FT_STRUCTURE ) {
+        fn_shadow->u.ns.xt.record = CITNode->sym_ptr->u.ns.xt.record;
     } else {
-        fn_shadow->ns.xt.size = CITNode->sym_ptr->ns.xt.size;
+        fn_shadow->u.ns.xt.size = CITNode->sym_ptr->u.ns.xt.size;
     }
     CITNode->sym_ptr = fn_shadow;
-    CITNode->flags = fn_shadow->ns.flags;
+    CITNode->flags = fn_shadow->u.ns.flags;
 }
 
 
@@ -342,7 +342,7 @@ static  void    SubProg( void ) {
         } else if( ( CITNode->flags & SY_PS_ENTRY ) != 0 ) {
             Extension( SR_TRIED_RECURSION );
         } else if( CITNode->flags & SY_INTRINSIC ) {
-            if( CITNode->sym_ptr->ns.si.fi.index == IF_ISIZEOF ) {
+            if( CITNode->sym_ptr->u.ns.si.fi.index == IF_ISIZEOF ) {
                 ASType |= AST_ISIZEOF;
             }
         }
@@ -397,18 +397,18 @@ static  void    CkIntrinsic( void ) {
         typ = CITNode->typ;
         func = IFLookUp();
         if( func > 0 ) {
-            sym_ptr->ns.si.fi.index = func;
+            sym_ptr->u.ns.si.fi.index = func;
             if( func == IF_ISIZEOF ) {
                 ASType |= AST_ISIZEOF;
             }
-            sym_ptr->ns.si.fi.u.num_args = 0;
+            sym_ptr->u.ns.si.fi.u.num_args = 0;
             CITNode->flags |= SY_INTRINSIC;
             IFChkExtension( func );
             if( !IFIsGeneric( func ) ) {
                 CITNode->typ = IFType( func );
                 CITNode->size = TypeSize( CITNode->typ );
-                sym_ptr->ns.u1.s.typ = CITNode->typ;
-                sym_ptr->ns.xt.size = CITNode->size;
+                sym_ptr->u.ns.u1.s.typ = CITNode->typ;
+                sym_ptr->u.ns.xt.size = CITNode->size;
                 if( ( CITNode->typ != typ ) && ( CITNode->flags & SY_TYPE ) ) {
                     Error( LI_WRONG_TYPE );
                 }
@@ -467,10 +467,10 @@ static  void    SetTypeUsage( unsigned_16 type_usage ) {
 
 // Indicate that a names' use and type has been established.
 
-    CITNode->sym_ptr->ns.flags = CITNode->flags;
+    CITNode->sym_ptr->u.ns.flags = CITNode->flags;
     CkTypeDeclared();
     CITNode->flags |= type_usage;
-    CITNode->sym_ptr->ns.flags |= type_usage;
+    CITNode->sym_ptr->u.ns.flags |= type_usage;
 }
 
 
@@ -482,7 +482,7 @@ void    CkTypeDeclared( void ) {
     unsigned_16 flags;
 
     if( ( SgmtSw & SG_IMPLICIT_NONE ) || ( Options & OPT_EXPLICIT ) ) {
-        flags = CITNode->sym_ptr->ns.flags;
+        flags = CITNode->sym_ptr->u.ns.flags;
         if( ( flags & SY_TYPE ) == 0 ) {
             if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
                 if( flags & SY_INTRINSIC ) return;

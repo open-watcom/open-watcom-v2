@@ -74,12 +74,12 @@ void    PushOpn( itnode *itptr ) {
         } else if( what == USOPN_CON ) {
             if( typ == FT_CHAR ) {
                 EmitOp( FC_PUSH_LIT );
-                if( itptr->sym_ptr->lt.flags & LT_SCB_TMP_REFERENCE ) {
-                    itptr->sym_ptr->lt.flags |= LT_SCB_REQUIRED;
+                if( itptr->sym_ptr->u.lt.flags & LT_SCB_TMP_REFERENCE ) {
+                    itptr->sym_ptr->u.lt.flags |= LT_SCB_REQUIRED;
                 } else {
                     // in case string optimizations use value directly,
                     // LT_SCB_TMP_REFERENCE will be turned off
-                    itptr->sym_ptr->lt.flags |= LT_SCB_TMP_REFERENCE;
+                    itptr->sym_ptr->u.lt.flags |= LT_SCB_TMP_REFERENCE;
                 }
             } else {
                 EmitOp( FC_PUSH_CONST );

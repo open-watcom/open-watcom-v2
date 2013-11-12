@@ -164,7 +164,7 @@ char *xtoa( char *p, int x )
     return( ++p );
 }
 
-static int GetExtName( sym_handle sym, char *buffer, int max_len )
+static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
 /****************************************************************/
 {
     char                 *src;
@@ -253,7 +253,7 @@ static int GetExtName( sym_handle sym, char *buffer, int max_len )
     return( 0 );
 }
 
-extern  void    DoOutObjectName( sym_handle sym,
+extern  void    DoOutObjectName( cg_sym_handle sym,
                                 void (*outputter)( char *, void * ),
                                 void *data,
                                 import_type kind ) {
@@ -284,7 +284,7 @@ extern  void    DoOutObjectName( sym_handle sym,
     outputter( buffer, data );
 }
 
-extern bool SymIsExported( sym_handle sym ) {
+extern bool SymIsExported( cg_sym_handle sym ) {
 /*******************************************/
 
     bool        exported;

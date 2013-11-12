@@ -89,7 +89,7 @@ typedef struct location {
         struct location         *next;
         union {
             union name          *be_sym;
-            sym_handle          fe_sym;
+            cg_sym_handle       fe_sym;
             unsigned            ptr_type;
             unsigned            stk;
             unsigned_32         val;

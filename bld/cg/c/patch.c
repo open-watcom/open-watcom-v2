@@ -39,6 +39,7 @@
 #include "types.h"
 #include "addrfold.h"
 #include "makeins.h"
+#include "treeprot.h"
 
 typedef struct {
 #ifndef NDEBUG
@@ -52,7 +53,6 @@ typedef struct {
     bool        patched;        // has someone made a node out of us yet?
 } patch;
 
-extern  tn              TGPatch( patch_handle, type_def * );
 extern  type_class_def  TypeClass( type_def *);
 extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocS32Const( signed_32 );

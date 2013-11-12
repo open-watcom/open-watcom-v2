@@ -75,17 +75,17 @@ typedef enum {
 typedef char            *char_ptr;
 typedef const char      *cchar_ptr;
 
-typedef void            *cg_name;           /* retval for CGName(),CGUnary()*/
-typedef void            *call_handle;       /* retval for CGInitCall(), etc. */
-typedef void            *cg_sym_handle;
-typedef void            *label_handle;      /* 2nd parm to CGName for CG_LBL */
-typedef void            *sel_handle;        /* return value for CGSelInit() */
-typedef void            *back_handle;       /* return value for BENewBack() */
-typedef void            *aux_handle;        /* first parm to FEAuxInfo (sometimes) */
-typedef void            *temp_handle;       /* first parm to FEAuxInfo (sometimes) */
-typedef void            *float_handle;      /* for the BF... routines */
-typedef void            *callback_handle;   /* passed to rtn from callback node */
-typedef void            *patch_handle;      /* used to stuff patchable ints into tree */
+typedef struct tree_node    *cg_name;           /* retval for CGName(),CGUnary()*/
+typedef void                *call_handle;       /* retval for CGInitCall(), etc. */
+typedef struct symbol       *cg_sym_handle;
+typedef struct code_lbl     *label_handle;      /* 2nd parm to CGName for CG_LBL */
+typedef struct select_node  *sel_handle;        /* return value for CGSelInit() */
+typedef struct bck_info     *back_handle;       /* return value for BENewBack() */
+typedef struct aux_info     *aux_handle;        /* first parm to FEAuxInfo (sometimes) */
+typedef struct temp_name    *temp_handle;       /* first parm to FEAuxInfo (sometimes) */
+typedef struct cfloat       *float_handle;      /* for the BF... routines */
+typedef void                *callback_handle;   /* passed to rtn from callback node */
+typedef void                *patch_handle;      /* used to stuff patchable ints into tree */
 
 typedef void            (*cg_callback)( callback_handle );
 
@@ -93,13 +93,13 @@ typedef short           segment_id;     /* must be signed */
 
 typedef unsigned_32     cg_linenum;
 
-typedef unsigned_32     dbg_type;       /* symbolic debugging type handle */
-typedef void            *dbg_struct;
-typedef void            *dbg_array;
-typedef void            *dbg_enum;
-typedef void            *dbg_proc;
-typedef void            *dbg_name;
-typedef struct location *dbg_loc;
+typedef unsigned_32         dbg_type;       /* symbolic debugging type handles */
+typedef struct struct_list  *dbg_struct;
+typedef struct array_list   *dbg_array;
+typedef struct enum_list    *dbg_enum;
+typedef struct proc_list    *dbg_proc;
+typedef struct name_entry   *dbg_name;
+typedef struct location     *dbg_loc;
 
 typedef enum {
         T_DBG_COMPLEX   = 0x47,

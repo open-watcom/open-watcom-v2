@@ -219,7 +219,7 @@ static cg_name CharArrLength( sym_id sym ) {
 
 // Get element size for character*(*) arrays.
 
-    if( sym->ns.flags & SY_VALUE_PARM ) {
+    if( sym->u.ns.flags & SY_VALUE_PARM ) {
         return( CGInteger( 0, TY_INTEGER ) );
     } else if( Options & OPT_DESCRIPTOR ) {
         return( SCBLength( CGUnary( O_POINTS, CGFEName( sym, TY_POINTER ),
@@ -236,7 +236,7 @@ cg_name CharItemLen( sym_id sym ) {
 
 // Get element size for character*(*) variables, functions and arrays.
 
-    if( sym->ns.flags & SY_SUBSCRIPTED ) {
+    if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
         return( CharArrLength( sym ) );
     } else {
         return( SCBLength( SymAddr( sym ) ) );
@@ -275,10 +275,10 @@ void    FCSubString( void ) {
     } else {
         last = XPop();
         if( last == NULL ) {
-            if( char_var->ns.xt.size == 0 ) {
+            if( char_var->u.ns.xt.size == 0 ) {
                 last = CharItemLen( char_var );
             } else {
-                last = CGInteger( char_var->ns.xt.size, TY_INTEGER );
+                last = CGInteger( char_var->u.ns.xt.size, TY_INTEGER );
             }
         } else {
             XPush( last );
@@ -351,6 +351,5 @@ void    FCSetSCBLen( void ) {
     // Get general information
     scb = GetPtr();
     len = GetTypedValue();
-    CGTrash( CGAssign( SCBLenAddr( CGFEName( scb, TY_CHAR ) ), len,
-                       TY_INTEGER ) );
+    CGTrash( CGAssign( SCBLenAddr( CGFEName( scb, TY_CHAR ) ), len, TY_INTEGER ) );
 }

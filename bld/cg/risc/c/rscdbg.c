@@ -58,7 +58,7 @@ extern  dbg_loc         DBLocInit() {
     return( NULL );
 }
 
-extern dbg_loc          DBLocSym( dbg_loc loc,  sym_handle sym ) {
+extern dbg_loc          DBLocSym( dbg_loc loc, cg_sym_handle sym ) {
 /****************************************************************/
 
     sym = sym;

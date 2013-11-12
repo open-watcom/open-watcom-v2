@@ -58,7 +58,7 @@ extern  void            DoFunnyRef(int);
 extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            DoSegRef(segment_id);
-extern  hw_reg_set      CalcSegment(sym_handle,cg_class);
+extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
 extern  void            EmitDbgInfo(instruction*);
 extern  void            DoCall(code_lbl *,bool,bool,oc_class);
 extern  void            RTCall( rt_class rtn, oc_class pop_bit );

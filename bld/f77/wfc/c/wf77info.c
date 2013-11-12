@@ -150,17 +150,17 @@ static  void    AllocComBlk( sym_id cb );
 segment_id       GetGlobalSeg( unsigned_32 g_offset );
 
 
-#define _Shadow( s )    if( (s->ns.flags & SY_CLASS) == SY_VARIABLE ) { \
-                            if( s->ns.flags & SY_SPECIAL_PARM ) { \
+#define _Shadow( s )    if( (s->u.ns.flags & SY_CLASS) == SY_VARIABLE ) { \
+                            if( s->u.ns.flags & SY_SPECIAL_PARM ) { \
                                 s = FindShadow( s ); \
                             } else { \
                                 s = STShadow( s ); \
-                                s->ns.u3.address = NULL; \
+                                s->u.ns.u3.address = NULL; \
                                 _MgcSetClass( s, MAGIC_SHADOW ); \
                             } \
                         }
 #define _UnShadow( s )  if( (s != NULL) && (_MgcClass(s) == MAGIC_SHADOW) ) { \
-                            s = sym->ns.si.ms.sym; \
+                            s = sym->u.ns.si.ms.sym; \
                         }
 
 segment_id              CurrCodeSegId;
@@ -181,7 +181,7 @@ static  unsigned        MangleCommonBlockName( sym_id sym, char *buffer,
 
     unsigned    cb_len;
 
-    cb_len = sym->ns.u2.name_len;
+    cb_len = sym->u.ns.u2.name_len;
     if( CGOpts & CGOPT_MANGLE ) {
         cb_len += SYM_MANGLE_PRE_LEN;
         strcpy( buffer, SYM_MANGLE_PRE );
@@ -253,9 +253,9 @@ void    FiniSegs( void ) {
 
     sym_id      sym;
 
-    for( sym = GList; sym != NULL; sym = sym->ns.link ) {
-        if( ( sym->ns.flags & SY_CLASS ) != SY_COMMON ) continue;
-        BEFreeBack( sym->ns.u3.address );
+    for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
+        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON ) continue;
+        BEFreeBack( sym->u.ns.u3.address );
     }
 }
 
@@ -349,10 +349,10 @@ static  void    DefineCommonSegs( void ) {
         private = PRIVATE;
     }
 #endif
-    for( sym = GList; sym != NULL; sym = sym->ns.link ) {
-        if( ( sym->ns.flags & SY_CLASS ) != SY_COMMON ) continue;
+    for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
+        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON ) continue;
 #if _CPU == _AXP || _CPU == _PPC
-        if( sym->ns.flags & SY_COMMON_INIT ) {
+        if( sym->u.ns.flags & SY_COMMON_INIT ) {
             private = INIT | COMDAT;
         } else {
             private = 0;
@@ -360,11 +360,11 @@ static  void    DefineCommonSegs( void ) {
 #endif
         cb_len = MangleCommonBlockName( sym, cb_name, FALSE );
 
-        sym->ns.si.cb.seg_id = AllocSegId();
+        sym->u.ns.si.cb.seg_id = AllocSegId();
         if( CGOpts & CGOPT_ALIGN ) {
-            BEDefSeg( sym->ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_SEGMENT );
+            BEDefSeg( sym->u.ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_SEGMENT );
         } else {
-            BEDefSeg( sym->ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_BYTE );
+            BEDefSeg( sym->u.ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_BYTE );
         }
         seg_count = 0;
         cb_name[ cb_len ] = '@';
@@ -391,8 +391,8 @@ static  void    AllocCommonSegs( void ) {
 
     sym_id      sym;
 
-    for( sym = GList; sym != NULL; sym = sym->ns.link ) {
-        if( ( sym->ns.flags & SY_CLASS ) != SY_COMMON ) continue;
+    for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
+        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON ) continue;
         AllocComBlk( sym );
     }
 }
@@ -406,10 +406,10 @@ static  void    AllocComBlk( sym_id cb ) {
     segment_id  segment;
     unsigned_32 size;
 
-    segment = cb->ns.si.cb.seg_id;
+    segment = cb->u.ns.si.cb.seg_id;
     BESetSeg( segment );
-    cb->ns.u3.address = BENewBack( cb );
-    DGLabel( cb->ns.u3.address );
+    cb->u.ns.u3.address = BENewBack( cb );
+    DGLabel( cb->u.ns.u3.address );
     size = GetComBlkSize( cb );
     while( size > MaxSegSize ) {
         BESetSeg( segment );
@@ -708,8 +708,8 @@ segment_id      GetComSeg( sym_id sym, unsigned_32 offset ) {
 
     segment_id  segment;
 
-    offset += sym->ns.si.va.vi.ec_ext->offset;
-    segment = sym->ns.si.va.vi.ec_ext->com_blk->ns.si.cb.seg_id;
+    offset += sym->u.ns.si.va.vi.ec_ext->offset;
+    segment = sym->u.ns.si.va.vi.ec_ext->com_blk->u.ns.si.cb.seg_id;
     while( offset > MaxSegSize ) {
         segment++;
         offset -= MaxSegSize;
@@ -727,10 +727,10 @@ segment_id      GetDataSegId( sym_id sym ) {
     unsigned_32 offset;
     com_eq      *ce_ext;
 
-    if( sym->ns.flags & SY_IN_EQUIV ) {
+    if( sym->u.ns.flags & SY_IN_EQUIV ) {
         offset = 0;
         for(;;) {
-            ce_ext = sym->ns.si.va.vi.ec_ext;
+            ce_ext = sym->u.ns.si.va.vi.ec_ext;
             if( ce_ext->ec_flags & LEADER ) break;
             offset += ce_ext->offset;
             sym = ce_ext->link_eqv;
@@ -740,15 +740,15 @@ segment_id      GetDataSegId( sym_id sym ) {
         } else {
             id = GetGlobalSeg( ce_ext->offset + offset );
         }
-    } else if( sym->ns.flags & SY_IN_COMMON ) {
+    } else if( sym->u.ns.flags & SY_IN_COMMON ) {
         id = GetComSeg( sym, 0 );
-    } else if( sym->ns.flags & SY_SUBSCRIPTED ) {
-        id = sym->ns.si.va.vi.seg_id;
-    } else if( sym->ns.u1.s.typ == FT_CHAR ) {
-        id = sym->ns.si.va.vi.seg_id;
-    } else if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
-        id = sym->ns.si.va.vi.seg_id;
-    } else if( sym->ns.flags & SY_DATA_INIT ) {
+    } else if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
+        id = sym->u.ns.si.va.vi.seg_id;
+    } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
+        id = sym->u.ns.si.va.vi.seg_id;
+    } else if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
+        id = sym->u.ns.si.va.vi.seg_id;
+    } else if( sym->u.ns.flags & SY_DATA_INIT ) {
         id = SEG_LDATA;
     } else {
         id = SEG_UDATA;
@@ -795,12 +795,12 @@ back_handle FEBack( cg_sym_handle _sym ) {
 
     sym_id      sym = _sym;
 
-    if( ( sym->ns.flags & SY_CLASS ) != SY_COMMON ) {
-        if( sym->ns.u3.address == NULL ) {
-            sym->ns.u3.address = BENewBack( sym );
+    if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON ) {
+        if( sym->u.ns.u3.address == NULL ) {
+            sym->u.ns.u3.address = BENewBack( sym );
         }
     }
-    return( sym->ns.u3.address );
+    return( sym->u.ns.u3.address );
 }
 
 
@@ -813,10 +813,10 @@ seg_offset      GetDataOffset( sym_id sym ) {
     unsigned_32 offset;
     com_eq      *ce_ext;
 
-    if( sym->ns.flags & SY_IN_EQUIV ) {
+    if( sym->u.ns.flags & SY_IN_EQUIV ) {
         offset = 0;
         for(;;) {
-            ce_ext = sym->ns.si.va.vi.ec_ext;
+            ce_ext = sym->u.ns.si.va.vi.ec_ext;
             if( ce_ext->ec_flags & LEADER ) break;
             offset += ce_ext->offset;
             sym = ce_ext->link_eqv;
@@ -826,12 +826,12 @@ seg_offset      GetDataOffset( sym_id sym ) {
         } else {
             seg_offset = GetGlobalOffset( ce_ext->offset + offset );
         }
-    } else if( sym->ns.flags & SY_IN_COMMON ) {
-        seg_offset = GetComOffset( sym->ns.si.va.vi.ec_ext->offset );
-    } else if( sym->ns.flags & SY_SUBSCRIPTED ) {
+    } else if( sym->u.ns.flags & SY_IN_COMMON ) {
+        seg_offset = GetComOffset( sym->u.ns.si.va.vi.ec_ext->offset );
+    } else if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
         seg_offset = DGBackTell( FEBack( sym ) );
-    } else if( sym->ns.u1.s.typ == FT_CHAR ) {
-        seg_offset = DGBackTell( sym->ns.si.va.u.bck_hdl );
+    } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
+        seg_offset = DGBackTell( sym->u.ns.si.va.u.bck_hdl );
     } else {
         seg_offset = DGBackTell( FEBack( sym ) );
     }
@@ -932,45 +932,45 @@ void    DefStructs( void ) {
     sym_id      sym;
 
     UserType = TY_USER_DEFINED;
-    for( sym = RList; sym != NULL; sym = sym->sd.link ) {
-        BEDefType( UserType, ALIGN_BYTE, sym->sd.size );
-        sym->sd.cg_typ = UserType;
-        sym->sd.dbi = DBG_NIL_TYPE;
+    for( sym = RList; sym != NULL; sym = sym->u.sd.link ) {
+        BEDefType( UserType, ALIGN_BYTE, sym->u.sd.size );
+        sym->u.sd.cg_typ = UserType;
+        sym->u.sd.dbi = DBG_NIL_TYPE;
         ++UserType;
     }
     if( Options & OPT_AUTOMATIC ) {
-        for( sym = NList; sym != NULL; sym = sym->ns.link ) {
-            if( ( sym->ns.flags & SY_CLASS ) != SY_VARIABLE ) continue;
-            if( sym->ns.flags & (SY_SUB_PARM | SY_IN_COMMON) ) continue;
-            if( ForceStatic( sym->ns.flags ) ) continue;
-            if( sym->ns.flags & SY_IN_EQUIV ) {
+        for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
+            if( ( sym->u.ns.flags & SY_CLASS ) != SY_VARIABLE ) continue;
+            if( sym->u.ns.flags & (SY_SUB_PARM | SY_IN_COMMON) ) continue;
+            if( ForceStatic( sym->u.ns.flags ) ) continue;
+            if( sym->u.ns.flags & SY_IN_EQUIV ) {
                 com_eq  *ce_ext;
                 sym_id  eqv_set;
-                ce_ext = sym->ns.si.va.vi.ec_ext;
+                ce_ext = sym->u.ns.si.va.vi.ec_ext;
                 if( !(ce_ext->ec_flags & LEADER) ) continue;
                 if( ce_ext->ec_flags & MEMBER_IN_COMMON ) continue;
                 if( ce_ext->ec_flags & MEMBER_INITIALIZED ) continue;
                 eqv_set = STEqSetShadow( sym );
                 BEDefType( UserType, ALIGN_DWORD, ce_ext->high - ce_ext->low );
-                eqv_set->ns.si.ms.u.cg_typ = UserType;
+                eqv_set->u.ns.si.ms.u.cg_typ = UserType;
                 ++UserType;
-            } else if( sym->ns.flags & SY_SUBSCRIPTED ) {
+            } else if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
                 if( _Allocatable( sym ) ) continue;
                 BEDefType( UserType, SymAlign( sym ),
-                   _SymSize( sym ) * sym->ns.si.va.u.dim_ext->num_elts );
-                sym->ns.si.va.u.dim_ext->l.cg_typ = UserType;
+                   _SymSize( sym ) * sym->u.ns.si.va.u.dim_ext->num_elts );
+                sym->u.ns.si.va.u.dim_ext->l.cg_typ = UserType;
                 ++UserType;
-            } else if( sym->ns.u1.s.typ == FT_CHAR ) {
-                BEDefType( UserType, ALIGN_BYTE, sym->ns.xt.size );
-                sym->ns.si.va.vi.cg_typ = UserType;
+            } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
+                BEDefType( UserType, ALIGN_BYTE, sym->u.ns.xt.size );
+                sym->u.ns.si.va.vi.cg_typ = UserType;
                 ++UserType;
             }
         }
-        for( sym = MList; sym != NULL; sym = sym->ns.link ) {
-            if( sym->ns.flags & (SY_IN_EQUIV | SY_SUBSCRIPTED) ) continue;
-            if( (sym->ns.u1.s.typ == FT_CHAR) && (sym->ns.xt.size != 0) ) {
-                BEDefType( UserType, ALIGN_BYTE, sym->ns.xt.size );
-                sym->ns.si.ms.u.cg_typ = UserType;
+        for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
+            if( sym->u.ns.flags & (SY_IN_EQUIV | SY_SUBSCRIPTED) ) continue;
+            if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size != 0) ) {
+                BEDefType( UserType, ALIGN_BYTE, sym->u.ns.xt.size );
+                sym->u.ns.si.ms.u.cg_typ = UserType;
                 ++UserType;
             }
         }
@@ -1013,7 +1013,7 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
     _UnShadow( sym );
     if( ( sym == EPValue ) || ( sym == ReturnValue ) ) return( 0 );
     attr = 0;
-    flags = sym->ns.flags;
+    flags = sym->u.ns.flags;
     if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
         // SY_VARIABLE with SY_PS_ENTRY is shadow for function return value
         if( !(flags & (SY_SUB_PARM | SY_PS_ENTRY)) ) {
@@ -1031,7 +1031,7 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
                     if( !_MgcIsMagic( sym ) ) {
                         com_eq  *ce_ext;
                         for(;;) {
-                            ce_ext = sym->ns.si.va.vi.ec_ext;
+                            ce_ext = sym->u.ns.si.va.vi.ec_ext;
                             if( ce_ext->ec_flags & LEADER ) break;
                             sym = ce_ext->link_eqv;
                         }
@@ -1042,17 +1042,17 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
                 } else {
                     attr |= FE_STATIC;
                 }
-            } else if( (flags & SY_SUBSCRIPTED) || (sym->ns.u1.s.typ == FT_STRUCTURE) ) {
+            } else if( (flags & SY_SUBSCRIPTED) || (sym->u.ns.u1.s.typ == FT_STRUCTURE) ) {
                 if( !(Options & OPT_AUTOMATIC) ) {
                     attr |= FE_STATIC;
                 }
-            } else if( sym->ns.u1.s.typ == FT_CHAR ) {
+            } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                 // SCB's with length 0 are automatic temporaries
                 // We mustn't allow the codegen to blow away non magical symbols
                 if( (Options & OPT_AUTOMATIC ) && !_MgcIsMagic( sym ) ) {
                     attr |= FE_VOLATILE;
                 }
-                if( (sym->ns.xt.size != 0) || _Allocatable( sym ) ) {
+                if( (sym->u.ns.xt.size != 0) || _Allocatable( sym ) ) {
                     if( !(Options & OPT_AUTOMATIC) ) {
                         // if the assignment of the data pointer into the
                         // static SCB gets optimized out, remove this line
@@ -1103,14 +1103,14 @@ segment_id      FESegID( cg_sym_handle _sym ) {
 
     _UnShadow( sym );
     id = SEG_LDATA;
-    flags = sym->ns.flags;
+    flags = sym->u.ns.flags;
     if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
         if( ( flags & SY_SUB_PARM ) == 0 ) {
             if( flags & SY_SUBSCRIPTED ) {
                 if( !_Allocatable( sym ) ) {
                     id = GetDataSegId( sym );
                 }
-            } else if( sym->ns.u1.s.typ != FT_CHAR ) {
+            } else if( sym->u.ns.u1.s.typ != FT_CHAR ) {
                 id = GetDataSegId( sym );
             }
         }
@@ -1123,9 +1123,9 @@ segment_id      FESegID( cg_sym_handle _sym ) {
                         (sp_type == SY_SUBROUTINE) ||
                         (sp_type == SY_FN_OR_SUB) ) {
                         if( flags & SY_INTRINSIC ) {
-                            id = sym->ns.si.fi.u.imp_segid;
+                            id = sym->u.ns.si.fi.u.imp_segid;
                         } else {
-                            id = sym->ns.si.sp.u.imp_segid;
+                            id = sym->u.ns.si.sp.u.imp_segid;
                         }
                     }
                 } else {
@@ -1134,7 +1134,7 @@ segment_id      FESegID( cg_sym_handle _sym ) {
             }
         }
     } else if( ( flags & SY_CLASS ) == SY_COMMON ) {
-        id = sym->ns.si.cb.seg_id;
+        id = sym->u.ns.si.cb.seg_id;
     }
     return( id );
 }
@@ -1146,14 +1146,14 @@ static char *GetName( sym_id sym ) {
 // Return pointer to the name of the given symbol.
 
     if( _MgcIsMagic( sym ) ) {
-        if( ( sym->ns.flags & SY_PS_ENTRY ) == 0 ) {
+        if( ( sym->u.ns.flags & SY_PS_ENTRY ) == 0 ) {
             return( "*MAGIC*" );
         } else {
-            sym = sym->ns.si.ms.sym;
+            sym = sym->u.ns.si.ms.sym;
         }
     }
-    if( ( ( sym->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
-        ( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) ) {
+    if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
+        ( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) ) {
         return( ProgName );
     }
     STExtractName( sym, SymBuff );
@@ -1173,8 +1173,8 @@ static char *GetBaseName( sym_id sym )
         strncpy( buff, aux->sym_name, aux->sym_len );
         buff[ aux->sym_len ] = 0;
     } else {
-        strncpy( buff, sym->ns.name, sym->ns.u2.name_len );
-        buff[ sym->ns.u2.name_len ] = 0;
+        strncpy( buff, sym->u.ns.name, sym->u.ns.u2.name_len );
+        buff[ sym->u.ns.u2.name_len ] = 0;
     }
     return( buff );
 }
@@ -1250,10 +1250,10 @@ void    *ConstBack( sym_id c_ptr ) {
 
 // Get a back handle for a literal.
 
-    if( c_ptr->cn.address == NULL ) {
-        c_ptr->cn.address = BENewBack( NULL );
+    if( c_ptr->u.cn.address == NULL ) {
+        c_ptr->u.cn.address = BENewBack( NULL );
     }
-    return( c_ptr->cn.address );
+    return( c_ptr->u.cn.address );
 }
 
 
@@ -1451,8 +1451,8 @@ static  dbg_type        GetDbgType( sym_id sym ) {
     dbg_loc     loc;
     dbg_type    type;
 
-    if( (sym->ns.u1.s.typ == FT_CHAR) && (sym->ns.xt.size == 0) ) {
-        if( (sym->ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+    if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) ) {
+        if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
             // return value for character*(*) function
             loc = DBLocInit();
             if( Options & OPT_DESCRIPTOR ) {
@@ -1468,7 +1468,7 @@ static  dbg_type        GetDbgType( sym_id sym ) {
             return( type );
         } else {
             // character*(*) variable/array
-            if( sym->ns.flags & SY_VALUE_PARM ) {
+            if( sym->u.ns.flags & SY_VALUE_PARM ) {
                 char    new_name[32];
                 sprintf( new_name, "%s*(*)", DBGNames[ PT_CHAR ] );
                 return( DBCharBlockNamed( new_name, 0 ) );        
@@ -1486,14 +1486,14 @@ static  dbg_type        GetDbgType( sym_id sym ) {
             DBLocFini( loc );
             return( type );
         }
-    } else if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
-        return( sym->ns.xt.record->dbi );
-    } else if( (sym->ns.u1.s.typ == FT_CHAR) ) {
+    } else if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
+        return( sym->u.ns.xt.record->dbi );
+    } else if( (sym->u.ns.u1.s.typ == FT_CHAR) ) {
         char    new_name[32];
-        sprintf( new_name, "%s*%u", DBGNames[ PT_CHAR ], sym->ns.xt.size );
-        return( DBCharBlockNamed( new_name, sym->ns.xt.size ) );        
+        sprintf( new_name, "%s*%u", DBGNames[ PT_CHAR ], sym->u.ns.xt.size );
+        return( DBCharBlockNamed( new_name, sym->u.ns.xt.size ) );        
     } else {
-        return( BaseDbgType( sym->ns.u1.s.typ, sym->ns.xt.size ) );
+        return( BaseDbgType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) );
     }
 }
 
@@ -1527,7 +1527,7 @@ static  dbg_type        GetDBGSubProgType( sym_id sym ) {
 
 // Get debugging information type for subprograms.
 
-    if( (sym->ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
+    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
 #if _CPU == 8086
         return( DBGTypes[ PT_INT_2 ] );
 #elif _CPU == 386 || _CPU == _AXP || _CPU == _PPC
@@ -1535,15 +1535,15 @@ static  dbg_type        GetDBGSubProgType( sym_id sym ) {
 #else
         #error Unknown platform
 #endif
-    } else if( (sym->ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-        if( sym->ns.u1.s.typ == FT_CHAR ) {
+    } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
+        if( sym->u.ns.u1.s.typ == FT_CHAR ) {
             // for character*(*) functions, we want to pass 0 so that
             // the debugger can tell that it's a character*(*) function
-            return( DBCharBlock( sym->ns.xt.size ) );
+            return( DBCharBlock( sym->u.ns.xt.size ) );
         } else {
             return( GetDbgType( sym ) );
         }
-    } else if( (sym->ns.flags & SY_SUBPROG_TYPE) == SY_FN_OR_SUB ) {
+    } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FN_OR_SUB ) {
         // Consider:
         //      subroutine foo( bar )
         //      external bar
@@ -1574,7 +1574,7 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
     parameter   *arg;
     dbg_type    arg_type;
 
-    if( sym->ns.u1.s.typ == FT_CHAR ) {
+    if( sym->u.ns.u1.s.typ == FT_CHAR ) {
         db_type = DBDereference( TY_POINTER, db_type );
     }
     db_proc = DBBegProc( TY_CODE_PTR, db_type );
@@ -1583,20 +1583,20 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
         for( arg = ep->parms; arg != NULL; arg = arg->link ) {
             if( arg->flags & ARG_STMTNO ) continue;
             arg_type = GetDbgType( arg->id );
-            if( ( arg->id->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+            if( ( arg->id->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
                 arg_type = DBDereference( TY_CODE_PTR,
                                DBEndProc( DBBegProc( TY_CODE_PTR,
                                           GetDBGSubProgType( arg->id ) ) ) );
 
             } else {
-                if( arg->id->ns.u1.s.typ == FT_CHAR ) {
-                    if( !(arg->id->ns.flags & SY_VALUE_PARM) ) {
+                if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
+                    if( !(arg->id->u.ns.flags & SY_VALUE_PARM) ) {
                         if( Options & OPT_DESCRIPTOR ) {
                             arg_type = DBDereference( TY_POINTER, arg_type );
                         }
                     }
                 } else {
-                    if( !(arg->id->ns.flags & SY_VALUE_PARM) ) {
+                    if( !(arg->id->u.ns.flags & SY_VALUE_PARM) ) {
                         arg_type = DBDereference( TY_POINTER, arg_type );
                     }
                 }
@@ -1618,36 +1618,36 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, unsigned_32 f_offset ) {
     dbg_type    db_type;
     char        field_name[MAX_SYMLEN+1];
 
-    field = sd->sd.fl.sym_fields;
+    field = sd->u.sd.fl.sym_fields;
     while( field != NULL ) {
-        if( field->fd.typ == FT_UNION ) {
+        if( field->u.fd.typ == FT_UNION ) {
             size = 0;
-            map = field->fd.xt.sym_record;
+            map = field->u.fd.xt.sym_record;
             while( map != NULL ) {
                 DefDbgFields( map, db, f_offset );
-                if( size < map->sd.size ) {
-                    size = map->sd.size;
+                if( size < map->u.sd.size ) {
+                    size = map->u.sd.size;
                 }
-                map = map->sd.link;
+                map = map->u.sd.link;
             }
         } else {
             STFieldName( field, field_name );
-            if( field->fd.typ == FT_STRUCTURE ) {
-                DefDbgStruct( field->fd.xt.sym_record );
-                size = field->fd.xt.record->size;
-                db_type = field->fd.xt.record->dbi;
+            if( field->u.fd.typ == FT_STRUCTURE ) {
+                DefDbgStruct( field->u.fd.xt.sym_record );
+                size = field->u.fd.xt.record->size;
+                db_type = field->u.fd.xt.record->dbi;
             } else {
-                size = field->fd.xt.size;
-                db_type = BaseDbgType( field->fd.typ, field->fd.xt.size );
+                size = field->u.fd.xt.size;
+                db_type = BaseDbgType( field->u.fd.typ, field->u.fd.xt.size );
             }
-            if( field->fd.dim_ext != NULL ) {
-                size *= field->fd.dim_ext->num_elts;
-                db_type = ArrayDbgType( field->fd.dim_ext, db_type );
+            if( field->u.fd.dim_ext != NULL ) {
+                size *= field->u.fd.dim_ext->num_elts;
+                db_type = ArrayDbgType( field->u.fd.dim_ext, db_type );
             }
             DBAddField( db, f_offset, field_name, db_type );
         }
         f_offset += size;
-        field = field->fd.link;
+        field = field->u.fd.link;
     }
 }
 
@@ -1659,10 +1659,10 @@ static  void    DefDbgStruct( sym_id sym ) {
 
     dbg_struct  db;
 
-    if( sym->sd.dbi != DBG_NIL_TYPE ) return;
-    db = DBBegStruct( sym->sd.cg_typ, TRUE );
+    if( sym->u.sd.dbi != DBG_NIL_TYPE ) return;
+    db = DBBegStruct( sym->u.sd.cg_typ, TRUE );
     DefDbgFields( sym, db, 0 );
-    sym->sd.dbi = DBEndStruct( db );
+    sym->u.sd.dbi = DBEndStruct( db );
 }
 
 
@@ -1681,19 +1681,19 @@ static  dbg_type        DefCommonStruct( sym_id sym ) {
     BEDefType( UserType, ALIGN_BYTE, GetComBlkSize( sym ) );
     db = DBBegNameStruct( "COMMON BLOCK", UserType, TRUE );
     com_offset = 0;
-    sym = sym->ns.si.cb.first;
+    sym = sym->u.ns.si.cb.first;
     for(;;) {
-        com_ext = sym->ns.si.va.vi.ec_ext;
+        com_ext = sym->u.ns.si.va.vi.ec_ext;
         STGetName( sym, field_name );
-        if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
-            DefDbgStruct( sym->ns.xt.sym_record );
+        if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
+            DefDbgStruct( sym->u.ns.xt.sym_record );
         }
         size = _SymSize( sym );
         db_type = GetDbgType( sym );
-        if( sym->ns.flags & SY_SUBSCRIPTED ) {
-            size *= sym->ns.si.va.u.dim_ext->num_elts;
+        if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
+            size *= sym->u.ns.si.va.u.dim_ext->num_elts;
             DBAddField( db, com_offset, field_name,
-                        ArrayDbgType( sym->ns.si.va.u.dim_ext, db_type ) );
+                        ArrayDbgType( sym->u.ns.si.va.u.dim_ext, db_type ) );
         } else {
             DBAddField( db, com_offset, field_name, db_type );
         }
@@ -1731,8 +1731,8 @@ dbg_type        FEDbgRetType( cg_sym_handle _sym ) {
 
     _UnShadow( sym );
     InitDBGTypes();
-    if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
-        DefDbgStruct( sym->ns.xt.sym_record );
+    if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
+        DefDbgStruct( sym->u.ns.xt.sym_record );
     }
     return( GetDBGSubProgType( sym ) );
 }
@@ -1790,42 +1790,42 @@ dbg_type        FEDbgType( cg_sym_handle _sym ) {
 
     _UnShadow( sym );
     InitDBGTypes();
-    if( (sym->ns.flags & SY_CLASS) == SY_COMMON ) {
+    if( (sym->u.ns.flags & SY_CLASS) == SY_COMMON ) {
         db_type = DefCommonStruct( sym );
     } else {
-        if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
-            DefDbgStruct( sym->ns.xt.sym_record );
+        if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
+            DefDbgStruct( sym->u.ns.xt.sym_record );
         }
-        if( (sym->ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
             db_type = GetDBGSubProgType( sym );
             // define the subprogram
             db_type = DefDbgSubprogram( sym, db_type );
-            if( sym->ns.flags & SY_SUB_PARM ) {
+            if( sym->u.ns.flags & SY_SUB_PARM ) {
                 // subprogram is an argument
                 db_type = DBDereference( TY_CODE_PTR, db_type );
             }
         } else {
-            if( sym->ns.flags & SY_PS_ENTRY ) {
+            if( sym->u.ns.flags & SY_PS_ENTRY ) {
                 // shadow symbols for all function entry points
                 // return value always points to the return value
-                db_type = GetDbgType( sym->ns.si.ms.sym );
+                db_type = GetDbgType( sym->u.ns.si.ms.sym );
                 db_type = DBDereference( TY_POINTER, db_type );
-                if( SubProgId->ns.u1.s.typ == FT_CHAR ) { // character function
+                if( SubProgId->u.ns.u1.s.typ == FT_CHAR ) { // character function
                     db_type = DBDereference( TY_POINTER, db_type );
                 }
             } else {
                 db_type = GetDbgType( sym );
-                if( sym->ns.flags & SY_SUBSCRIPTED ) {
-                    dim_ptr = sym->ns.si.va.u.dim_ext;
+                if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
+                    dim_ptr = sym->u.ns.si.va.u.dim_ext;
                     if( _AdvRequired( dim_ptr ) || _Allocatable( sym ) ) {
                         db_type = DbgADV( dim_ptr, db_type );
                     } else {
                         db_type = ArrayDbgType( dim_ptr, db_type );
                     }
-                    if( sym->ns.flags & SY_SUB_PARM ) {
+                    if( sym->u.ns.flags & SY_SUB_PARM ) {
                         db_type = DBDereference( TY_POINTER, db_type );
-                        if( sym->ns.u1.s.typ == FT_CHAR ) {
-                            if( !(sym->ns.flags & SY_VALUE_PARM) ) {
+                        if( sym->u.ns.u1.s.typ == FT_CHAR ) {
+                            if( !(sym->u.ns.flags & SY_VALUE_PARM) ) {
                                 if( Options & OPT_DESCRIPTOR ) {
                                     db_type = DBDereference( TY_POINTER, db_type );
                                 }
@@ -1835,18 +1835,18 @@ dbg_type        FEDbgType( cg_sym_handle _sym ) {
                     if( _Allocatable( sym ) ) {
                         db_type = DBDereference( TY_POINTER, db_type );
                     }
-                } else if( sym->ns.u1.s.typ == FT_CHAR ) {
+                } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                     // character variable
                     db_type = DBDereference( TY_POINTER, db_type );
-                    if( sym->ns.flags & SY_SUB_PARM ) {
-                        if( !(sym->ns.flags & SY_VALUE_PARM) ) {
+                    if( sym->u.ns.flags & SY_SUB_PARM ) {
+                        if( !(sym->u.ns.flags & SY_VALUE_PARM) ) {
                             if( Options & OPT_DESCRIPTOR ) {
                                 db_type = DBDereference( TY_POINTER, db_type );
                             }
                         }
                     }
-                } else if( sym->ns.flags & SY_SUB_PARM ) {
-                    if( !(sym->ns.flags & SY_VALUE_PARM) ) {
+                } else if( sym->u.ns.flags & SY_SUB_PARM ) {
+                    if( !(sym->u.ns.flags & SY_VALUE_PARM) ) {
                         db_type = DBDereference( TY_POINTER, db_type );
                     }
                 }
@@ -1992,17 +1992,17 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
         if( req_handle == NULL ) {
             ImpSym = GList;
         } else {
-            ImpSym = ImpSym->ns.link;
+            ImpSym = ImpSym->u.ns.link;
         }
         for(;;) {
             if( ImpSym == NULL )
                 return( NULL );
-            flags = ImpSym->ns.flags;
+            flags = ImpSym->u.ns.flags;
             if(( ( flags & SY_CLASS ) == SY_SUBPROGRAM )
               && ( flags & SY_EXTERNAL )
               && ( ( flags & ( SY_SUB_PARM | SY_REFERENCED | SY_RELAX_EXTERN ) ) == 0 ))
                 break;
-            ImpSym = ImpSym->ns.link;
+            ImpSym = ImpSym->u.ns.link;
         }
         return( (pointer)1 );
     case IMPORT_NAME :
@@ -2082,8 +2082,8 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
         return( (pointer)II_REVISION );
 #if _CPU == 8086 || _CPU == 386
     case CLASS_NAME :
-        for( sym = GList; sym != NULL; sym = sym->ns.link ) {
-            if( ( sym->ns.flags & SY_CLASS ) != SY_COMMON )
+        for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
+            if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
                 continue;
             idx = 0;
             com_size = GetComBlkSize( sym );
@@ -2093,8 +2093,8 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
                 com_size -= MaxSegSize;
                 idx++;
             }
-            if(( (segment_id)(pointer_int)req_handle >= sym->ns.si.cb.seg_id )
-              && ( (segment_id)(pointer_int)req_handle <= sym->ns.si.cb.seg_id + idx )) {
+            if(( (segment_id)(pointer_int)req_handle >= sym->u.ns.si.cb.seg_id )
+              && ( (segment_id)(pointer_int)req_handle <= sym->u.ns.si.cb.seg_id + idx )) {
                 MangleCommonBlockName( sym, MangleSymBuff, TRUE );
                 return( &MangleSymBuff );
             }

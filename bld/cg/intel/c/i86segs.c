@@ -58,7 +58,7 @@ extern  void    FiniSegment( void ) {
 }
 
 
-extern  hw_reg_set      CalcSegment( sym_handle sym, cg_class class ) {
+extern  hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
 /*********************************************************************/
 
     fe_attr     attr;
@@ -232,7 +232,7 @@ extern  name    *SegName( name *op ) {
 extern  cg_type NamePtrType( name *op ) {
 /*************************************/
 
-    pointer     sym;
+    cg_sym_handle sym;
 
     if( op->n.class == N_MEMORY ) {
         if( op->m.memory_type == CG_FE || op->m.memory_type == CG_BACK ) {

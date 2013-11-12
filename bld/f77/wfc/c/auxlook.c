@@ -94,35 +94,35 @@ aux_info    *AuxLookup( sym_id sym ) {
     aux_info    *info;
 
     if( sym == NULL ) return( &FortranInfo );
-    if( ( sym->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        if( sym->ns.flags & SY_INTRINSIC ) {
-            if( IFVarArgs( sym->ns.si.fi.index ) ) {
+    if( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+        if( sym->u.ns.flags & SY_INTRINSIC ) {
+            if( IFVarArgs( sym->u.ns.si.fi.index ) ) {
                 return( &IFVarInfo );
             // check for character arguments must come first so that
             // IF@xxx gets generated for intrinsic functions with character
             // arguments (instead of XF@xxxx)
-            } else if( IFArgType( sym->ns.si.fi.index ) == FT_CHAR ) {
-                if( sym->ns.flags & SY_IF_ARGUMENT ) {
+            } else if( IFArgType( sym->u.ns.si.fi.index ) == FT_CHAR ) {
+                if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
                     if( !(Options & OPT_DESCRIPTOR) ) {
                         return( &IFChar2Info );
                     }
                 }
                 return( &IFCharInfo );
-            } else if( sym->ns.flags & SY_IF_ARGUMENT ) {
+            } else if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
                 return( &IFXInfo );
             }
             return( &IFInfo );
-        } else if( sym->ns.flags & SY_RT_ROUTINE ) {
+        } else if( sym->u.ns.flags & SY_RT_ROUTINE ) {
             return( RTAuxInfo( sym ) );
-        } else if( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) {
+        } else if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) {
             return( &ProgramInfo );
         } else {
-            info = AuxLookupName( sym->ns.name, sym->ns.u2.name_len );
+            info = AuxLookupName( sym->u.ns.name, sym->u.ns.u2.name_len );
             if( info == NULL ) return( &FortranInfo );
             return( info );
         }
     } else {
-        info = AuxLookupName( sym->ns.name, sym->ns.u2.name_len );
+        info = AuxLookupName( sym->u.ns.name, sym->u.ns.u2.name_len );
         if( info == NULL ) return( &FortranInfo );
         return( info );
     }

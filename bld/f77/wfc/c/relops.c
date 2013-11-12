@@ -55,9 +55,9 @@ static  int     CharLength( itnode *op ) {
     if( ( opn & USOPN_WHERE ) == USOPN_SAFE )
         return( 0 );
     if( ( opn & USOPN_WHAT ) == USOPN_NNL )
-        return( op->sym_ptr->ns.xt.size );
+        return( op->sym_ptr->u.ns.xt.size );
     if( ( opn & USOPN_WHAT ) == USOPN_CON )
-        return( op->sym_ptr->lt.length );
+        return( op->sym_ptr->u.lt.length );
     return( 0 );
 }
 

@@ -72,9 +72,9 @@ void    CpParameter( void ) {
     for(;;) {
         if( ReqName( NAME_VARIABLE ) ) {
             sym = LkSym();
-            typ = sym->ns.u1.s.typ;
+            typ = sym->u.ns.u1.s.typ;
             assign_val = TRUE;
-            if( sym->ns.flags & (SY_USAGE | SY_SUB_PARM | SY_IN_EC) ) {
+            if( sym->u.ns.flags & (SY_USAGE | SY_SUB_PARM | SY_IN_EC) ) {
                 IllName( sym );
                 assign_val = FALSE;
             } else if( typ == FT_STRUCTURE ) {
@@ -85,7 +85,7 @@ void    CpParameter( void ) {
             }
             AdvanceITPtr();
             ReqEquSign();
-            parm_size = sym->ns.xt.size;
+            parm_size = sym->u.ns.xt.size;
             if( typ == FT_STRUCTURE ) {
                 ConstExpr( FT_NO_TYPE );
             } else if( _IsTypeLogical( typ ) ) {
@@ -117,9 +117,9 @@ void    CpParameter( void ) {
                     }
                     value_id = STConst( &CITNode->value, typ, parm_size );
                 }
-                sym->ns.flags |= SY_USAGE | SY_PARAMETER | SY_TYPE;
-                sym->ns.xt.size = parm_size;
-                sym->ns.si.pc.value = value_id;
+                sym->u.ns.flags |= SY_USAGE | SY_PARAMETER | SY_TYPE;
+                sym->u.ns.xt.size = parm_size;
+                sym->u.ns.si.pc.value = value_id;
             }
         }
         AdvanceITPtr();

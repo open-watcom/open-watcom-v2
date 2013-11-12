@@ -130,8 +130,8 @@ typedef struct dbg_seg_info {
 
 
 extern  char            *AskRTName(rt_class);
-extern  void            TellImportHandle(sym_handle,import_handle);
-extern  import_handle   AskImportHandle(sym_handle);
+extern  void            TellImportHandle(cg_sym_handle,import_handle);
+extern  import_handle   AskImportHandle(cg_sym_handle);
 extern  void            TellDonePatch(code_lbl *);
 extern  void            TellAddress(code_lbl *,offset);
 extern  void            FatalError(const char *);
@@ -140,7 +140,7 @@ extern  void            EmptyQueue( void );
 extern  void            TellCommonLabel(code_lbl *,import_handle);
 extern  void            TellUnreachLabels(void);
 extern  void            KillLblRedirects( void );
-extern  void            DoOutObjectName(sym_handle,void(*)(const char*,void*),void*,import_type);
+extern  void            DoOutObjectName(cg_sym_handle,void(*)(const char*,void*),void*,import_type);
 /* DF interface */
 extern  void            DFObjInitInfo( void );
 extern  void            DFObjLineInitInfo( void );
@@ -150,7 +150,7 @@ extern  void            DFObjFiniDbgInfo( offset codesize );
 extern  void            DFObjLineFiniDbgInfo( void );
 extern  void            DFLineNum( cue_state *, offset );
 extern  void            DFSegRange( void );
-extern  void            DFSymRange( sym_handle, offset );
+extern  void            DFSymRange( cg_sym_handle, offset );
 /* CV interface */
 extern  void            CVObjInitInfo( void );
 extern  void            CVDefSegs( void );
@@ -164,7 +164,7 @@ extern  void            WVDmpCueInfo( long_offset here );
 extern  bool            Used87;
 
 /* Forward ref's */
-static  void            DumpImportResolve( sym_handle sym, omf_idx idx );
+static  void            DumpImportResolve( cg_sym_handle sym, omf_idx idx );
 
 static  bool            GenStaticImports;
 static  omf_idx         ImportHdl;
@@ -838,7 +838,7 @@ static  void    OutName( const char *name, void *dst )
     OutBuffer( name, len, dest );
 }
 
-static  void    OutObjectName( sym_handle sym, array_control *dest )
+static  void    OutObjectName( cg_sym_handle sym, array_control *dest )
 /******************************************************************/
 {
     DoOutObjectName( sym, OutName, dest, NORMAL );
@@ -1563,7 +1563,7 @@ static  void    GenComdef( void )
     unsigned            count;
     unsigned_8          ind;
     unsigned long       size;
-    sym_handle          sym;
+    cg_sym_handle       sym;
     cmd_omf             cmd;
 
     if( CurrSeg->comdat_label != NULL &&
@@ -2052,7 +2052,7 @@ static  void    FreeAbsPatch( abspatch *patch )
 }
 
 
-static  void    OutExport( sym_handle sym )
+static  void    OutExport( cg_sym_handle sym )
 /*****************************************/
 {
     array_control       *exp;
@@ -2117,7 +2117,7 @@ static  void    CheckImportSwitch( bool next_is_static )
 }
 
 
-static void _TellImportHandle( sym_handle sym, import_handle imp_idx, bool alt_dllimp )
+static void _TellImportHandle( cg_sym_handle sym, import_handle imp_idx, bool alt_dllimp )
 /*************************************************************************************/
 {
     if( alt_dllimp ) {
@@ -2127,7 +2127,7 @@ static void _TellImportHandle( sym_handle sym, import_handle imp_idx, bool alt_d
     }
 }
 
-static import_handle _AskImportHandle( sym_handle sym, bool alt_dllimp )
+static import_handle _AskImportHandle( cg_sym_handle sym, bool alt_dllimp )
 /**********************************************************************/
 {
     if( alt_dllimp ) {
@@ -2137,7 +2137,7 @@ static import_handle _AskImportHandle( sym_handle sym, bool alt_dllimp )
     }
 }
 
-static  omf_idx     GenImport( sym_handle sym, bool alt_dllimp )
+static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
 /**************************************************************/
 {
     omf_idx         imp_idx;
@@ -2182,7 +2182,7 @@ static  omf_idx     GenImportComdat( void )
     return( ImportHdl++ );
 }
 
-static  void    ComdatData( code_lbl *lbl, sym_handle sym )
+static  void    ComdatData( code_lbl *lbl, cg_sym_handle sym )
 /************************************************************/
 {
     FlushData();
@@ -2203,7 +2203,7 @@ static  void    ComdatData( code_lbl *lbl, sym_handle sym )
     KillLblRedirects();
 }
 
-static void     OutVirtFuncRef( sym_handle virt )
+static void     OutVirtFuncRef( cg_sym_handle virt )
 /***********************************************/
 {
     object      *obj;
@@ -2231,7 +2231,7 @@ static void     OutVirtFuncRef( sym_handle virt )
 }
 
 
-extern  void    OutDLLExport( uint words, sym_handle sym )
+extern  void    OutDLLExport( uint words, cg_sym_handle sym )
 /********************************************************/
 {
     object      *obj;
@@ -2268,7 +2268,7 @@ extern  void    OutLabel( code_lbl *lbl )
     pointer             patptr;
     object              *obj;
     offset              lc;
-    sym_handle          sym;
+    cg_sym_handle       sym;
     fe_attr             attr;
     void                *cookie;
     virt_func_ref_list  *curr;
@@ -2823,10 +2823,10 @@ extern  void    OutAbsPatch( abspatch *patch, patch_attr attr )
 }
 
 
-static void DumpImportResolve( sym_handle sym, omf_idx idx )
+static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
 /**********************************************************/
 {
-    sym_handle          def_resolve;
+    cg_sym_handle       def_resolve;
     omf_idx             def_idx;
     array_control       *cmt;
     omf_idx             nidx;
@@ -2903,7 +2903,7 @@ extern void OutSpecialCommon( import_handle imp_idx, fix_class class, bool rel )
 }
 
 
-extern  void    OutImport( sym_handle sym, fix_class class, bool rel )
+extern  void    OutImport( cg_sym_handle sym, fix_class class, bool rel )
 /********************************************************************/
 {
     fe_attr     attr;
@@ -3183,7 +3183,7 @@ extern  long_offset  AskBigMaxSize( void )
     return( CurrSeg->max_size );
 }
 
-extern  void    TellObjNewLabel( sym_handle lbl )
+extern  void    TellObjNewLabel( cg_sym_handle lbl )
 /***********************************************/
 {
     if( lbl == NULL )
@@ -3215,7 +3215,7 @@ extern  void    TellObjNewLabel( sym_handle lbl )
     }
 }
 
-extern  void    TellObjNewProc( sym_handle proc )
+extern  void    TellObjNewProc( cg_sym_handle proc )
 /***********************************************/
 {
     segment_id  old;
@@ -3277,7 +3277,7 @@ extern void     TellObjVirtFuncRef( void *cookie )
     SetOP( old );
 }
 
-static  bool            InlineFunction( sym_handle sym )
+static  bool            InlineFunction( cg_sym_handle sym )
 /******************************************************/
 {
     if( FEAttr( sym ) & FE_PROC ) {
@@ -3295,10 +3295,10 @@ extern  segment_id      AskSegID( pointer hdl, cg_class class )
 {
     switch( class ) {
     case CG_FE:
-        if( InlineFunction( (sym_handle)hdl ) ) {
+        if( InlineFunction( (cg_sym_handle)hdl ) ) {
             return( AskCodeSeg() );
         }
-        return( FESegID( (sym_handle)hdl ) );
+        return( FESegID( (cg_sym_handle)hdl ) );
     case CG_BACK:
         return( ((bck_info *)hdl)->seg );
     case CG_TBL:

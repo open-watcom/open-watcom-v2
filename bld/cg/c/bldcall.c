@@ -46,7 +46,7 @@
 #include "x87.h"
 
 
-extern  type_def        *QParmType(sym_handle,sym_handle,type_def*);
+extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
 extern  hw_reg_set      ParmReg(type_class_def,type_length,type_length,call_state*);
 extern  hw_reg_set      CallZap(call_state*);
 extern  type_length     ParmMem(type_length,type_length,call_state*);
@@ -58,7 +58,7 @@ extern  type_length     PushSize(type_length);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
 extern  type_class_def  InitCallState(type_def*);
 extern  type_class_def  TypeClass(type_def*);
-extern  void            DbgParmLoc(name*, sym_handle);
+extern  void            DbgParmLoc(name*, cg_sym_handle);
 extern  void            DbgRetLoc(void);
 extern  void            GenBlock( block_class, int );
 extern  void            Generate(bool);
@@ -88,7 +88,7 @@ extern  void            SuffixIns( instruction *, instruction * );
 
 extern  bool            BlipsOn;
 
-extern  type_class_def  AddCallBlock( sym_handle sym, type_def *tipe )
+extern  type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
 /*********************************************************************
     create the initial basic block for routine "sym", and call some
     other initialization routines.
@@ -181,7 +181,7 @@ extern  void    BGAddParm( cn call, an parm ) {
 }
 
 
-extern  void    BGAutoDecl( sym_handle sym, type_def *tipe ) {
+extern  void    BGAutoDecl( cg_sym_handle sym, type_def *tipe ) {
 /*************************************************************
     declare an automatic variable with name "sym" and type "tipe". This
     just creates the appropriate back end symbol table entry. (eg: N_TEMP)
@@ -224,7 +224,7 @@ static  instruction *DoParmDef( name *result, type_class_def class ) {
 #define BASE_ALIGNMENT  4
 #endif
 
-static  name    *DoAlphaParmDecl( hw_reg_set reg, sym_handle sym, type_def *tipe, name *t2 ) {
+static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *tipe, name *t2 ) {
 /*********************************************************************************************
     N.B.: This was too weird to be incorporated in routine below.
     If we have a structure being passed by value on the Alpha, we start
@@ -281,7 +281,7 @@ static  name    *DoAlphaParmDecl( hw_reg_set reg, sym_handle sym, type_def *tipe
 }
 #endif
 
-extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
+extern  name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
 /******************************************************************************
     Declare a parameter of type "tipe" for the current routine. This
     routine determines whether the parameter is coming in in a register
@@ -383,7 +383,7 @@ extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
 }
 
 
-extern  void    BGParmDecl( sym_handle sym, type_def *tipe ) {
+extern  void    BGParmDecl( cg_sym_handle sym, type_def *tipe ) {
 /************************************************************/
 
     hw_reg_set          reg;
@@ -431,7 +431,7 @@ extern  void    AddCallIns( instruction *ins, cn call ) {
             attr = FEAttr( call_name->v.symbol );
 #if _TARGET & _TARG_RISC
             // in case the inline assembly code references a local variable
-            if( FEAuxInfo( call_name->v.symbol, CALL_BYTES ) != NULL ) {
+            if( FindAuxInfoSym( call_name->v.symbol, CALL_BYTES ) != NULL ) {
                 CurrProc->targ.base_is_fp = TRUE;
             }
 #endif

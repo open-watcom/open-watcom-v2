@@ -89,7 +89,7 @@ void    CpCommon(void) {
         for(;;) {
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 sym = LkSym();
-                flags = sym->ns.flags;
+                flags = sym->u.ns.flags;
                 CpError = FALSE;
                 if( ( flags & SY_CLASS ) != SY_VARIABLE ) {
                     IllName( sym );
@@ -115,23 +115,23 @@ void    CpCommon(void) {
                 }
                 // check if we dimensioned an allocatable array
                 if( !CpError ) {
-                    sym->ns.flags |= SY_IN_COMMON;
-                    com_ext = sym->ns.si.va.vi.ec_ext;
+                    sym->u.ns.flags |= SY_IN_COMMON;
+                    com_ext = sym->u.ns.si.va.vi.ec_ext;
                     // Since "ec_ext" is used for common and equivalence,
                     // the "ec_ext" may have already been allocated as a
                     // result of appearing in an EQUIVALENCE statement.
                     if( com_ext == NULL ) {
                         com_ext = STComEq();
-                        sym->ns.si.va.vi.ec_ext = com_ext;
+                        sym->u.ns.si.va.vi.ec_ext = com_ext;
                     }
                     com_ext->ec_flags |= LAST_IN_COMMON;
                     com_ext->com_blk = com;
-                    last = com->ns.si.cb.first;
+                    last = com->u.ns.si.cb.first;
                     if( last == NULL ) {    // if empty common block
-                        com->ns.si.cb.first = sym;
+                        com->u.ns.si.cb.first = sym;
                     } else {
                         for(;;) {
-                            com_ext = last->ns.si.va.vi.ec_ext;
+                            com_ext = last->u.ns.si.va.vi.ec_ext;
                             if( com_ext->link_com == NULL ) break;
                             last = com_ext->link_com;
                         }

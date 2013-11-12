@@ -76,35 +76,35 @@ void    STComDump( void )
 
     com_blk = BList;
     while( com_blk != NULL ) {
-        if( ( com_blk->ns.si.cb.first == NULL ) &&
-            ( com_blk->ns.flags & SY_SAVED ) ) {
+        if( ( com_blk->u.ns.si.cb.first == NULL ) &&
+            ( com_blk->u.ns.flags & SY_SAVED ) ) {
             NameErr( SA_COMBLK_EMPTY, com_blk );
         } else {
             extend_beg = NULL;
             common_size = 0;
             end_common = 0;
-            name_in_com = com_blk->ns.si.cb.first;
+            name_in_com = com_blk->u.ns.si.cb.first;
             BIStartComBlock( com_blk );
             // in case common block empty because of errors
             if( name_in_com == NULL ) break;
-            common_type = ClassifyType( name_in_com->ns.u1.s.typ );
+            common_type = ClassifyType( name_in_com->u.ns.u1.s.typ );
             for(;;) {
                 sym = name_in_com;
                 if( ( common_type != CT_MIXED ) &&
-                    ( common_type != ClassifyType( sym->ns.u1.s.typ ) ) ) {
+                    ( common_type != ClassifyType( sym->u.ns.u1.s.typ ) ) ) {
                     Extension( CM_MIXED_COMMON );
                     common_type = CT_MIXED;
                 }
                 size = _SymSize( sym );
-                if( sym->ns.flags & SY_SUBSCRIPTED ) {
-                    size *= sym->ns.si.va.u.dim_ext->num_elts;
-                    sym->ns.si.va.u.dim_ext->dim_flags &= ~DIM_PVD;
+                if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
+                    size *= sym->u.ns.si.va.u.dim_ext->num_elts;
+                    sym->u.ns.si.va.u.dim_ext->dim_flags &= ~DIM_PVD;
                 }
-                if( sym->ns.flags & SY_IN_EQUIV ) {
-                    com_blk->ns.flags |= SY_EQUIVED_NAME;
+                if( sym->u.ns.flags & SY_IN_EQUIV ) {
+                    com_blk->u.ns.flags |= SY_EQUIVED_NAME;
                     offset = 0;
                     for(;;) {
-                        eq_ext = sym->ns.si.va.vi.ec_ext;
+                        eq_ext = sym->u.ns.si.va.vi.ec_ext;
                         if( eq_ext->ec_flags & LEADER ) break;
                         offset += eq_ext->offset;
                         sym = eq_ext->link_eqv;
@@ -126,14 +126,14 @@ void    STComDump( void )
                         end_common = common_size + offset;
                     }
                 } else {
-                    sym->ns.si.va.vi.ec_ext->offset = common_size;
+                    sym->u.ns.si.va.vi.ec_ext->offset = common_size;
                 }
                 common_size += size;
                 if( common_size > end_common ) {
                     end_common = common_size;
                 }
                 BIOutComSymbol( name_in_com );
-                eq_ext = name_in_com->ns.si.va.vi.ec_ext;
+                eq_ext = name_in_com->u.ns.si.va.vi.ec_ext;
                 if( eq_ext->ec_flags & LAST_IN_COMMON ) break;
                 name_in_com = eq_ext->link_com;
             }
@@ -143,7 +143,7 @@ void    STComDump( void )
             }
             SetComBlkSize( com_blk, end_common );
         }
-        com_blk = com_blk->ns.link;
+        com_blk = com_blk->u.ns.link;
     }
 }
 

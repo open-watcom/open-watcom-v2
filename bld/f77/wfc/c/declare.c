@@ -110,7 +110,7 @@ sym_id  VarDecl( TYPE typ ) {
     sym_id      sym;
 
     sym = LkSym();
-    flags = sym->ns.flags;
+    flags = sym->u.ns.flags;
     if( flags & SY_TYPE ) {
         NameTypeErr( TY_TYP_PREV_DEF, sym );
     } else {
@@ -126,7 +126,7 @@ sym_id  VarDecl( TYPE typ ) {
                         AdvanceITPtr();
                         return( sym );
                     } else if( flags & SY_INTRINSIC ) {
-                        if( sym->ns.u1.s.typ != typ ) {
+                        if( sym->u.ns.u1.s.typ != typ ) {
                             NameTypeErr( TY_TYP_PREV_DEF, sym );
                             AdvanceITPtr();
                             return( sym );
@@ -142,9 +142,9 @@ sym_id  VarDecl( TYPE typ ) {
                     return( sym );
                 }
             }
-            sym->ns.flags = flags | SY_TYPE;
-            sym->ns.u1.s.typ = typ;
-            sym->ns.xt.size = TypeSize( typ );
+            sym->u.ns.flags = flags | SY_TYPE;
+            sym->u.ns.u1.s.typ = typ;
+            sym->u.ns.xt.size = TypeSize( typ );
         }
     }
     AdvanceITPtr();
@@ -266,17 +266,17 @@ static  void    TypeDecl( TYPE typ ) {
                     size = default_size;
                 }
                 if( SgmtSw & SG_DEFINING_STRUCTURE ) {
-                    sym->fd.typ = MapTypes( typ, size );
-                    sym->fd.xt.size = size;
-                    if( sym->fd.dim_ext != NULL ) {
-                        size *= sym->fd.dim_ext->num_elts;
+                    sym->u.fd.typ = MapTypes( typ, size );
+                    sym->u.fd.xt.size = size;
+                    if( sym->u.fd.dim_ext != NULL ) {
+                        size *= sym->u.fd.dim_ext->num_elts;
                     }
                     if( (typ == FT_CHAR) && (size == 0) ) {
                         NameErr( CV_CHARSTAR_ILLEGAL, sym );
                     }
                 } else {
-                    sym->ns.u1.s.typ = MapTypes( typ, size );
-                    sym->ns.xt.size = size;
+                    sym->u.ns.u1.s.typ = MapTypes( typ, size );
+                    sym->u.ns.xt.size = size;
                     if( RecDiv() || RecCat() ) {
                         StmtExtension( DA_IN_TYPE_STMT );
                         DataInit( var_node );
@@ -420,16 +420,16 @@ void    ArrayDecl( sym_id sym ) {
     dim_list.l.init_label = 0;
     allocatable = RecNOpn() && RecNextOpr( OPR_COL );
     if( ( SgmtSw & SG_DEFINING_STRUCTURE ) == 0 ) {
-        if( ( sym->ns.flags & ERR_MASK ) != SY_VARIABLE ) {
+        if( ( sym->u.ns.flags & ERR_MASK ) != SY_VARIABLE ) {
             IllName( sym );
             return;
         } else if( allocatable ) {
-            if( sym->ns.flags & ( SY_IN_EC | SY_SUB_PARM ) ) {
+            if( sym->u.ns.flags & ( SY_IN_EC | SY_SUB_PARM ) ) {
                 IllName( sym );
                 return;
             }
         }
-        sym->ns.si.va.u.dim_ext = &dim_list;
+        sym->u.ns.si.va.u.dim_ext = &dim_list;
         if( ( ProgSw & PS_IN_SUBPROGRAM ) &&
             !( ProgSw & PS_BLOCK_DATA ) && !allocatable ) {
             dim_list.l.init_label = GBegSList();
@@ -554,7 +554,7 @@ void    ArrayDecl( sym_id sym ) {
             Error( SP_ALLOC_NOT_IN_STRUCT );
         } else {
             dim_list.num_elts = num_elts;
-            sym->fd.dim_ext = STSubsList( &dim_list );
+            sym->u.fd.dim_ext = STSubsList( &dim_list );
         }
     } else {
         if( (ProgSw & PS_IN_SUBPROGRAM) && !(ProgSw & PS_BLOCK_DATA) &&
@@ -562,7 +562,7 @@ void    ArrayDecl( sym_id sym ) {
             dim_list.num_elts = num_elts;
             // for Psuedo-Variable Dimensioning ( WATFIVish )
             dim_list.dim_flags |= DIM_PVD;
-            if( sym->ns.flags & SY_SUB_PARM ) {
+            if( sym->u.ns.flags & SY_SUB_PARM ) {
                 NameExt( SV_PVD, sym );
                 dim_list.dim_flags |= DIM_ASSUMED;
             }
@@ -576,12 +576,12 @@ void    ArrayDecl( sym_id sym ) {
             dim_list.dim_flags |= DIM_VARIABLE;
             GEndSList( sym );
         } else if( allocatable ) {
-            Extension( VA_ALLOCATABLE_STORAGE, sym->ns.name );
+            Extension( VA_ALLOCATABLE_STORAGE, sym->u.ns.name );
             dim_list.dim_flags |= DIM_ALLOCATABLE;
-            sym->ns.u1.s.xflags |= SY_ALLOCATABLE;
+            sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE;
         } else {
             dim_list.num_elts = num_elts;
-            if( sym->ns.flags & SY_SUB_PARM ) {
+            if( sym->u.ns.flags & SY_SUB_PARM ) {
                 // we don't want an ADV generated in the following case:
                 //      SUBROUTINE SAM( A )
                 //      DIMENSION A(10)
@@ -594,7 +594,7 @@ void    ArrayDecl( sym_id sym ) {
                 dim_list.l.init_label = 0;
             }
         }
-        sym->ns.si.va.u.dim_ext = STSubsList( &dim_list );
-        sym->ns.flags |= ( SY_USAGE | SY_SUBSCRIPTED );
+        sym->u.ns.si.va.u.dim_ext = STSubsList( &dim_list );
+        sym->u.ns.flags |= ( SY_USAGE | SY_SUBSCRIPTED );
     }
 }

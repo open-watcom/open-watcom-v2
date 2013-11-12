@@ -45,7 +45,7 @@
 #include "utils.h"
 #include "objout.h"
 
-extern  void        OutDLLExport(uint,sym_handle);
+extern  void        OutDLLExport(uint,cg_sym_handle);
 extern  void        GenLeaSP(long);
 extern  void        Gcld( void );
 extern  void        GenReturn(int,bool,bool);
@@ -94,7 +94,7 @@ extern  void        GenLoadDS(void);
 extern  code_lbl    *GenFar16Thunk( code_lbl *, unsigned_16, bool );
 extern  void        GenP5ProfilingProlog( code_lbl * );
 extern  void        GenP5ProfilingEpilog( code_lbl * );
-extern  bool        SymIsExported( sym_handle );
+extern  bool        SymIsExported( cg_sym_handle );
 extern  void        FlowSave( hw_reg_set * );
 extern  void        FlowRestore( hw_reg_set * );
 
@@ -399,7 +399,7 @@ static  bool    NeedBPProlog( void ) {
 static void FindIfExported( void ) {
 /****************************/
 
-    sym_handle  sym;
+    cg_sym_handle sym;
 
     sym = AskForLblSym( CurrProc->label );
     if( sym == NULL )
@@ -459,7 +459,7 @@ static void DoStackCheck( void ) {
 static  void    EmitNameInCode( void ) {
 /********************************/
 
-    sym_handle      sym;
+    cg_sym_handle   sym;
     char            *name;
     char            *endname;
     char            b[128];

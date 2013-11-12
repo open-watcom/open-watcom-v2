@@ -1356,6 +1356,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
     CGVALUE ic_parms[IC_PARM_STACK_SIZE]; // - parm stack for complex ICs
     SYMBOL dtor_last_reqd;      // - dtor set by IC_SCOPE_CALL_CDTOR
     unsigned dtor_kind;         // - DTC_... when ctor called
+    label_handle lbl;           // - Label for IC_GOTO_NEAR
 
     static cg_op cg_opcodes[] ={// - opcodes for code generator
     #include "ppopscop.h"
@@ -1411,12 +1412,12 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             break;
 
           case IC_LABGET_GOTO :             // GET GOTO LABEL
-          { label_handle *label;            // - goto label
-            label = VstkPush( &stack_goto_near );
-            *label = BENewLabel();
+          { label_handle *lab;              // - goto label
+            lab = VstkPush( &stack_goto_near );
+            *lab = BENewLabel();
             dump_label( printf( "LabGoTo Push %d %x\n"
                               , VstkDimension( &stack_goto_near )
-                              , *label ) );
+                              , *lab ) );
           } break;
 
           case IC_LABDEF_CS :               // DEFINE CONTROL-SEQUENCE LABEL
@@ -1430,48 +1431,39 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
           case IC_LABDEF_GOTO :             // DEFINE GOTO LABEL
-          { label_handle *label;            // - goto label
-            label = VstkIndex( &stack_goto_near
+          { label_handle *lab;              // - goto label
+            lab = VstkIndex( &stack_goto_near
                              , fctl->base_goto_near + ins_value.uvalue );
-            CgLabel( *label );
+            CgLabel( *lab );
             dump_label( printf( "LabGoto Def %d %x\n"
                               , fctl->base_goto_near + ins_value.uvalue
-                              , *label ) );
+                              , *lab ) );
           } break;
 
-          case IC_LABEL_CS :                // SET CS LABEL FOR IC_NEAR_GOTO
+          case IC_LABEL_CS :                // SET CS LABEL FOR IC_GOTO_NEAR
           { label_handle *lab;              // - next label handle
-            lab = VstkIndex( &stack_labs_cs
-                           , fctl->base_labs_cs + ins_value.ivalue );
-            op2 = *lab;
-            dump_label( printf( "LabCs Set %d %x\n"
-                              , fctl->base_labs_cs + ins_value.uvalue
-                              , op2 ) );
+            lab = VstkIndex( &stack_labs_cs, fctl->base_labs_cs + ins_value.ivalue );
+            lbl = *lab;
+            dump_label( printf( "LabCs Set %d %x\n", fctl->base_labs_cs + ins_value.uvalue, lbl ) );
           } break;
 
-          case IC_LABEL_GOTO :              // SET GOTO LABEL FOR IC_NEAR_GOTO
-          { label_handle *label;            // - goto label
-            label = VstkIndex( &stack_goto_near
-                             , fctl->base_goto_near + ins_value.uvalue );
-            op2 = *label;
-            dump_label( printf( "LabGoto Set %d %x\n"
-                              , fctl->base_goto_near + ins_value.uvalue
-                              , op2 ) );
+          case IC_LABEL_GOTO :              // SET GOTO LABEL FOR IC_GOTO_NEAR
+          { label_handle *lab;              // - goto label
+            lab = VstkIndex( &stack_goto_near, fctl->base_goto_near + ins_value.uvalue );
+            lbl = *lab;
+            dump_label( printf( "LabGoto Set %d %x\n", fctl->base_goto_near + ins_value.uvalue, lbl ) );
           } break;
 
           case IC_GOTO_NEAR :               // GOTO LABEL IN CURRENT ROUTINE
           { cg_type type;
-            if( ( ins_value.uvalue == O_IF_TRUE )
-              ||( ins_value.uvalue == O_IF_FALSE ) ) {
+            if( ( ins_value.uvalue == O_IF_TRUE ) || ( ins_value.uvalue == O_IF_FALSE ) ) {
                 op1 = CgExprPopType( &type );
             } else {
                 type = 0;
                 op1 = NULL;
             }
-            CgControl( ins_value.uvalue, op1, type, op2 );
-            dump_label( printf( "Goto near %x %x\n"
-                              , op1
-                              , op2 ) );
+            CgControl( ins_value.uvalue, op1, type, lbl );
+            dump_label( printf( "Goto near %x %x\n", op1, lbl ) );
           } break;
         }
 //

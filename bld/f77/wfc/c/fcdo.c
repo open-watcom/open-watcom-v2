@@ -105,7 +105,7 @@ void    FCDoBegin( void ) {
         // compute:  ( e2 - e1 + e3 ) / e3
         tmp = CGBinary( O_DIV, tmp, SymValue( increment ), do_type );
         // set type of interation count
-        if( !_IsTypeInteger( do_var->ns.u1.s.typ ) ) {
+        if( !_IsTypeInteger( do_var->u.ns.u1.s.typ ) ) {
             do_type = TY_INT_4;
         }
         // save interation count
@@ -153,7 +153,7 @@ void    FCDoEnd( void ) {
                          do_type );
         CGDone( CGAssign( SymAddr( do_var ), tmp, do_type ) );
         // set type of iteration
-        if( !_IsTypeInteger( do_var->ns.u1.s.typ ) ) {
+        if( !_IsTypeInteger( do_var->u.ns.u1.s.typ ) ) {
             do_type = TY_INT_4;
         }
         // compute:  --iteration

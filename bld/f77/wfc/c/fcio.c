@@ -190,17 +190,17 @@ static  void    StructIO( struct field *fd ) {
             size = 0;
             map = fd->xt.sym_record;
             while( map != NULL ) { // find biggest map
-                if( map->sd.size > size ) {
-                    size = map->sd.size;        // 91/08/01 DJG
+                if( map->u.sd.size > size ) {
+                    size = map->u.sd.size;        // 91/08/01 DJG
                     big_map = map;
                 }
-                map = map->sd.link;
+                map = map->u.sd.link;
             }
-            StructIO( big_map->sd.fl.fields );
+            StructIO( big_map->u.sd.fl.fields );
         } else {
             StructIOItem( (sym_id)fd );
         }
-        fd = &fd->link->fd;
+        fd = &fd->link->u.fd;
     }
 }
 
@@ -646,7 +646,7 @@ void    FCOutStruct( void ) {
 
     IORtnTable = OutRtn;
     TmpStructPtr = MkTmp( XPop(), TY_POINTER );
-    StructIO( ((sym_id)GetPtr())->sd.fl.fields );
+    StructIO( ((sym_id)GetPtr())->u.sd.fl.fields );
 }
 
 
@@ -682,7 +682,7 @@ static  void    StructIOArrayStruct( sym_id arr ) {
     tmp_handle          num_elts;
 
     num_elts = MkTmp( FieldArrayNumElts( arr ), TY_INT_4 );
-    DoStructArrayIO( num_elts, arr->fd.xt.record->fl.fields );
+    DoStructArrayIO( num_elts, arr->u.fd.xt.record->fl.fields );
 }
 
 
@@ -693,16 +693,16 @@ static  void    StructIOItem( sym_id fd ) {
 
     RTCODE      rtn;
 
-    if( fd->fd.dim_ext == NULL ) {
+    if( fd->u.fd.dim_ext == NULL ) {
         XPush( TmpVal( TmpStructPtr, TY_POINTER ) );
-        if( fd->fd.typ == FT_CHAR ) {
-            XPush( CGInteger( fd->fd.xt.size, TY_INTEGER ) );
+        if( fd->u.fd.typ == FT_CHAR ) {
+            XPush( CGInteger( fd->u.fd.xt.size, TY_INTEGER ) );
         }
-        IORtnTable[ ParmType( fd->fd.typ, fd->fd.xt.size ) ]();
+        IORtnTable[ ParmType( fd->u.fd.typ, fd->u.fd.xt.size ) ]();
         CGTrash( CGAssign( TmpPtr( TmpStructPtr, TY_POINTER ),
                            CGBinary( O_PLUS,
                                      TmpVal( TmpStructPtr, TY_POINTER ),
-                                     CGInteger( fd->fd.xt.size, TY_UINT_4 ),
+                                     CGInteger( fd->u.fd.xt.size, TY_UINT_4 ),
                                      TY_POINTER ),
                            TY_POINTER ) );
     } else {
@@ -711,20 +711,20 @@ static  void    StructIOItem( sym_id fd ) {
         } else {
             rtn = RT_INP_ARRAY;
         }
-        if( fd->fd.typ == FT_CHAR ) {
+        if( fd->u.fd.typ == FT_CHAR ) {
             ChrArrayIO( rtn + 1, TmpVal( TmpStructPtr, TY_POINTER ),
-                        CGInteger( fd->fd.dim_ext->num_elts, TY_INT_4 ),
-                        CGInteger( fd->fd.xt.size, TY_INTEGER ) );
+                        CGInteger( fd->u.fd.dim_ext->num_elts, TY_INT_4 ),
+                        CGInteger( fd->u.fd.xt.size, TY_INTEGER ) );
         } else {
             NumArrayIO( rtn, TmpVal( TmpStructPtr, TY_POINTER ),
-                        CGInteger( fd->fd.dim_ext->num_elts, TY_INT_4 ),
-                        ParmType( fd->fd.typ, fd->fd.xt.size ) );
+                        CGInteger( fd->u.fd.dim_ext->num_elts, TY_INT_4 ),
+                        ParmType( fd->u.fd.typ, fd->u.fd.xt.size ) );
         }
         CGTrash( CGAssign( TmpPtr( TmpStructPtr, TY_POINTER ),
                            CGBinary( O_PLUS,
                                      TmpVal( TmpStructPtr, TY_POINTER ),
-                                     CGInteger( fd->fd.xt.size *
-                                                fd->fd.dim_ext->num_elts,
+                                     CGInteger( fd->u.fd.xt.size *
+                                                fd->u.fd.dim_ext->num_elts,
                                                 TY_UINT_4 ),
                                      TY_POINTER ),
                            TY_POINTER ) );
@@ -743,7 +743,7 @@ static  void    StructArrayIO( void ) {
     arr = GetPtr();
     num_elts = MkTmp( ArrayNumElts( arr ), TY_INT_4 );
     TmpStructPtr = MkTmp( SymAddr( arr ), TY_POINTER );
-    DoStructArrayIO( num_elts, arr->ns.xt.record->fl.fields );
+    DoStructArrayIO( num_elts, arr->u.ns.xt.record->fl.fields );
 }
 
 
@@ -770,7 +770,7 @@ void    FCInpStruct( void ) {
 
     IORtnTable = InpRtn;
     TmpStructPtr = MkTmp( XPop(), TY_POINTER );
-    StructIO( ((sym_id)GetPtr())->sd.fl.fields );
+    StructIO( ((sym_id)GetPtr())->u.sd.fl.fields );
 }
 
 
@@ -798,14 +798,14 @@ void    FCSetNml( void ) {
     NmlSpecified = TRUE;
     handle = InitCall( RT_SET_NML );
     nl = GetPtr();
-    ReverseList( &nl->nl.group_list );
-    ge = nl->nl.group_list;
+    ReverseList( &nl->u.nl.group_list );
+    ge = nl->u.nl.group_list;
     while( ge != NULL ) {
         CGAddParm( handle, SymAddr( ge->sym ), TY_POINTER );
         ge = ge->link;
     }
-    ReverseList( &nl->nl.group_list );
-    CGAddParm( handle, CGBackName( nl->nl.address, TY_POINTER ), TY_POINTER );
+    ReverseList( &nl->u.nl.group_list );
+    CGAddParm( handle, CGBackName( nl->u.nl.address, TY_POINTER ), TY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -868,21 +868,21 @@ void    ArrayIO( RTCODE num_array, RTCODE chr_array ) {
     if( field == NULL ) {
         addr = SymAddr( arr );
         num_elts = ArrayNumElts( arr );
-        if( arr->ns.u1.s.typ == FT_CHAR ) {
+        if( arr->u.ns.u1.s.typ == FT_CHAR ) {
             ChrArrayIO( chr_array, addr, num_elts, ArrayEltSize( arr ) );
         } else {
             NumArrayIO( num_array, addr, num_elts,
-                        ParmType( arr->ns.u1.s.typ, arr->ns.xt.size ) );
+                        ParmType( arr->u.ns.u1.s.typ, arr->u.ns.xt.size ) );
         }
     } else { // must be a array field in a structure
         addr = XPop();
         num_elts = FieldArrayNumElts( field );
-        if( field->fd.typ == FT_CHAR ) {
-            elt_size = CGInteger( field->fd.xt.size, TY_INTEGER );
+        if( field->u.fd.typ == FT_CHAR ) {
+            elt_size = CGInteger( field->u.fd.xt.size, TY_INTEGER );
             ChrArrayIO( chr_array, addr, num_elts, elt_size );
         } else {
             NumArrayIO( num_array, addr, num_elts,
-                        ParmType( field->fd.typ, field->fd.xt.size ) );
+                        ParmType( field->u.fd.typ, field->u.fd.xt.size ) );
         }
     }
 }
@@ -1035,7 +1035,7 @@ void    FCSetErr( void ) {
     // may call DoneLabel() if this is the last reference to the statement
     // label.
     ErrEqStmt = sn;
-    ErrEqLabel = sn->st.address;
+    ErrEqLabel = sn->u.st.address;
 }
 
 
@@ -1053,7 +1053,7 @@ void    FCSetEnd( void ) {
     // may call DoneLabel() if this is the last reference to the statement
     // label.
     EndEqStmt = sn;
-    EndEqLabel = sn->st.address;
+    EndEqLabel = sn->u.st.address;
 }
 
 

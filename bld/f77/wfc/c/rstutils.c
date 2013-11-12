@@ -48,8 +48,8 @@ char    *STExtractName( sym_id sym, char *buff ) {
 
 // Get the name of a symbol.
 
-    memcpy( buff, &sym->ns.name, sym->ns.u2.name_len );
-    buff += sym->ns.u2.name_len;
+    memcpy( buff, &sym->u.ns.name, sym->u.ns.u2.name_len );
+    buff += sym->u.ns.u2.name_len;
     *buff = NULLCHAR;
     return( buff );
 }
@@ -60,9 +60,9 @@ char    *STGetName( sym_id sym, char *buff ) {
 
 // Get the name of a symbol (check for shadowed symbols).
 
-    if( ( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
-        ( sym->ns.flags & SY_SPECIAL_PARM ) ) {
-        sym = sym->ns.si.ms.sym;
+    if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
+        ( sym->u.ns.flags & SY_SPECIAL_PARM ) ) {
+        sym = sym->u.ns.si.ms.sym;
     }
     return( STExtractName( sym, buff ) );
 }
@@ -87,12 +87,12 @@ sym_id  STAdd( char *name, int length ) {
     sym_id    sym;
 
     sym = FMemAlloc( sizeof( symbol ) + AllocName( length ) );
-    sym->ns.u2.name_len = length;
-    memcpy( &sym->ns.name, name, length );
-    sym->ns.flags = 0;
-    sym->ns.u1.s.xflags = 0;
+    sym->u.ns.u2.name_len = length;
+    memcpy( &sym->u.ns.name, name, length );
+    sym->u.ns.flags = 0;
+    sym->u.ns.u1.s.xflags = 0;
     if( !(Options & OPT_REFERENCE) ) {
-        sym->ns.u1.s.xflags |= SY_FAKE_REFERENCE;
+        sym->u.ns.u1.s.xflags |= SY_FAKE_REFERENCE;
     }
     return( sym );
 }
@@ -113,10 +113,10 @@ void    FreeSFHeader( sym_id sym ) {
 
 // Free statement function header.
 
-    if( sym->ns.si.sf.header != NULL ) {
-        FreeChain( &sym->ns.si.sf.header->parm_list );
-        FMemFree( sym->ns.si.sf.header );
-        sym->ns.si.sf.header = NULL;
+    if( sym->u.ns.si.sf.header != NULL ) {
+        FreeChain( &sym->u.ns.si.sf.header->parm_list );
+        FMemFree( sym->u.ns.si.sf.header );
+        sym->u.ns.si.sf.header = NULL;
     }
 }
 
@@ -127,7 +127,7 @@ void    CkSymDeclared( sym_id sym ) {
 // Make sure type has been explicitly declared.
 
     if( (SgmtSw & SG_IMPLICIT_NONE) || (Options & OPT_EXPLICIT) ) {
-        if( !(sym->ns.flags & SY_TYPE) ) {
+        if( !(sym->u.ns.flags & SY_TYPE) ) {
             NameErr( TY_UNDECLARED, sym );
         }
     }

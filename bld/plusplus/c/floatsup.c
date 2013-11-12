@@ -40,7 +40,7 @@
 #include "floatlim.h"
 
 
-static cfloat *makeOK( cfloat *f )
+static float_handle makeOK( float_handle f )
 {
     BFFree( f );
     f = BFCnvUF( 1 );
@@ -48,7 +48,7 @@ static cfloat *makeOK( cfloat *f )
 }
 
 
-cfloat *BFCheckFloatLimit( cfloat *f )
+float_handle BFCheckFloatLimit( float_handle f )
 /************************************/
 {
     int sign;
@@ -57,18 +57,18 @@ cfloat *BFCheckFloatLimit( cfloat *f )
     err = FALSE;
     sign = BFSign( f );
     if( sign > 0 ) {
-        if( BFCmp( f, &MaxPosFloat ) > 0 ) {
+        if( BFCmp( f, (float_handle)&MaxPosFloat ) > 0 ) {
             err = TRUE;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, &MinPosFloat ) < 0 ) {
+        } else if( BFCmp( f, (float_handle)&MinPosFloat ) < 0 ) {
             err = TRUE;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
     } else if( sign < 0 ) {
-        if( BFCmp( f, &MaxNegFloat ) < 0 ) {
+        if( BFCmp( f, (float_handle)&MaxNegFloat ) < 0 ) {
             err = TRUE;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, &MinNegFloat ) > 0 ) {
+        } else if( BFCmp( f, (float_handle)&MinNegFloat ) > 0 ) {
             err = TRUE;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
@@ -79,7 +79,7 @@ cfloat *BFCheckFloatLimit( cfloat *f )
     return( f );
 }
 
-extern cfloat *BFCheckDblLimit( cfloat *f )
+extern float_handle BFCheckDblLimit( float_handle f )
 {
     int sign;
     boolean err;
@@ -87,19 +87,19 @@ extern cfloat *BFCheckDblLimit( cfloat *f )
     err = FALSE;
     sign = BFSign( f );
     if( sign > 0 ) {
-        if( BFCmp( f, &MaxPosDbl ) > 0 ) {
+        if( BFCmp( f, (float_handle)&MaxPosDbl ) > 0 ) {
             err = TRUE;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, &MinPosDbl ) == -1 ) {
+        } else if( BFCmp( f, (float_handle)&MinPosDbl ) == -1 ) {
             err = TRUE;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
 
         }
     } else if( sign < 0 ) {
-        if( BFCmp( f, &MaxNegDbl ) < 0 ) {
+        if( BFCmp( f, (float_handle)&MaxNegDbl ) < 0 ) {
             err = TRUE;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, &MinNegDbl ) > 0 ) {
+        } else if( BFCmp( f, (float_handle)&MinNegDbl ) > 0 ) {
             err = TRUE;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
@@ -111,10 +111,10 @@ extern cfloat *BFCheckDblLimit( cfloat *f )
 }
 
 
-target_long BFGetLong( CPP_FLOAT **f )
-/************************************/
+target_long BFGetLong( float_handle *f )
+/**************************************/
 {
-    CPP_FLOAT *new_f;
+    float_handle new_f;
     target_long val;
 
     new_f = BFTrunc( *f );

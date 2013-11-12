@@ -57,15 +57,15 @@ sym_id  TmpVar( TYPE typ, uint size ) {
     sym_id     temp;
 
     temp = FMemAlloc( sizeof( symbol ) - STD_SYMLEN );
-    temp->ns.link = MList;
+    temp->u.ns.link = MList;
     MList = temp;
-    temp->ns.flags = SY_USAGE | SY_TYPE | SY_VARIABLE;
-    temp->ns.u1.s.xflags = 0;
-    temp->ns.u3.address = NULL;
-    temp->ns.xt.size = size;
-    temp->ns.u1.s.typ = typ;
+    temp->u.ns.flags = SY_USAGE | SY_TYPE | SY_VARIABLE;
+    temp->u.ns.u1.s.xflags = 0;
+    temp->u.ns.u3.address = NULL;
+    temp->u.ns.xt.size = size;
+    temp->u.ns.u1.s.typ = typ;
     _MgcSetClass( temp, MAGIC_TEMP );
-    temp->ns.si.ms.sym = NULL;
+    temp->u.ns.si.ms.sym = NULL;
     return( temp );
 }
 

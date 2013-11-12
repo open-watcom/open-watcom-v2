@@ -67,7 +67,7 @@ sym_id  GTempString( uint size ) {
     sym_id     sym_ptr;
 
     sym_ptr = StaticAlloc( sizeof( string ), FT_CHAR );
-    sym_ptr->ns.xt.size = size;
+    sym_ptr->u.ns.xt.size = size;
     return( sym_ptr );
 }
 
@@ -108,13 +108,13 @@ static  uint    SrcChar( itnode *op ) {
 
     if( op->opn.us & USOPN_SS1 ) return( op->value.st.ss_size );
     if( ( op->opn.us & USOPN_WHAT ) == USOPN_CON ) { // character constant
-        return( op->sym_ptr->lt.length );
+        return( op->sym_ptr->u.lt.length );
     }
     if( ( op->opn.us & USOPN_WHAT ) == USOPN_NNL ) { // character variable
-        if( op->sym_ptr->ns.u1.s.typ == FT_STRUCTURE ) {
+        if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
-            return( op->sym_ptr->ns.xt.size );
+            return( op->sym_ptr->u.ns.xt.size );
         }
     }
     return( 0 );
@@ -126,17 +126,17 @@ static  uint    TargChar( itnode *op ) {
 
     if( op->opn.us & USOPN_SS1 ) return( op->value.st.ss_size );
     if( ( op->opn.us & USOPN_WHAT ) == USOPN_NNL ) { // character variable
-        if( op->sym_ptr->ns.u1.s.typ == FT_STRUCTURE ) {
+        if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
-            return( op->sym_ptr->ns.xt.size );
+            return( op->sym_ptr->u.ns.xt.size );
         }
     }
     if( ( op->opn.us & USOPN_WHAT ) == USOPN_NWL ) { // character array
-        if( op->sym_ptr->ns.u1.s.typ == FT_STRUCTURE ) {
+        if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
-            return( op->sym_ptr->ns.xt.size );
+            return( op->sym_ptr->u.ns.xt.size );
         }
     }
     return( 0 );
@@ -165,7 +165,7 @@ void    AsgnChar( void ) {
             DumpType( MapTypes( FT_INTEGER, i ), i );
             GenChar1Op( CITNode );
             if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_CON ) {
-                CITNode->sym_ptr->lt.flags &= ~LT_SCB_TMP_REFERENCE;
+                CITNode->sym_ptr->u.lt.flags &= ~LT_SCB_TMP_REFERENCE;
             }
             CITNode = save_cit;
         } else {

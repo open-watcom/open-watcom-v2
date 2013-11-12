@@ -39,7 +39,7 @@
 #include "makeins.h"
 
 extern  bool            AssgnParms(cn,bool);
-extern  type_class_def  AddCallBlock(sym_handle,type_def*);
+extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);
 extern  hw_reg_set      StackReg( void );
 extern  name            *AllocRegName( hw_reg_set );
 extern  name            *SAllocIndex( name *, name *, type_length, type_class_def, type_length );
@@ -47,7 +47,7 @@ extern  name            *AllocIndex( name *, name *, type_length, type_class_def
 extern  void            AddCallIns( instruction *, cn );
 extern  void            AddIns( instruction * );
 extern  an              MakeTempAddr( name *, type_def * );
-extern  type_def        *QParmType( sym_handle, sym_handle, type_def * );
+extern  type_def        *QParmType( cg_sym_handle, cg_sym_handle, type_def * );
 extern  name            *AllocRegName( hw_reg_set );
 extern  name            *AllocS32Const( signed_32 );
 extern  type_length     PushSize( type_length );
@@ -108,7 +108,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line )
 }
 
 
-extern  void    BGProcDecl( sym_handle sym, type_def *tipe )
+extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
 /**********************************************************/
 {
     type_class_def      class;
@@ -131,7 +131,7 @@ extern  void    BGProcDecl( sym_handle sym, type_def *tipe )
 }
 
 
-extern  type_def        *PassParmType( sym_handle func, type_def *tipe, call_class class )
+extern  type_def        *PassParmType( cg_sym_handle func, type_def *tipe, call_class class )
 /****************************************************************************************/
 {
     class = class;

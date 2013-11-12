@@ -61,7 +61,7 @@ extern  void            BuffStart(temp_buff*,uint);
 extern  void            BuffEnd(segment_id);
 extern  void            LocDump(dbg_loc);
 extern  dbg_loc         LocDupl(dbg_loc);
-extern  sym_handle      LocSimpStatic(dbg_loc);
+extern  cg_sym_handle   LocSimpStatic(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);
 extern  void            WVSrcCueLoc( void  );
 
@@ -98,7 +98,7 @@ extern  void    WVFiniDbgInfo( void ) {
 
 }
 
-extern  void    WVGenStatic( sym_handle sym, dbg_loc loc ) {
+extern  void    WVGenStatic( cg_sym_handle sym, dbg_loc loc ) {
 /*******************************************************************/
 
     temp_buff   temp;
@@ -183,7 +183,7 @@ extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
     dbg_local           *parm;
     dbg_local           *junk;
     temp_buff           temp;
-    sym_handle          sym;
+    cg_sym_handle       sym;
     dbg_type            tipe;
     offset              off;
     segment_id          old;

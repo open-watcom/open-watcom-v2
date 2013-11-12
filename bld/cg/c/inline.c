@@ -47,7 +47,7 @@ typedef struct inline_parm {
 typedef struct inline_stack {
         struct inline_stack     *next;
         struct inline_parm      *parms;
-        sym_handle              proc_sym;
+        cg_sym_handle           proc_sym;
         type_def                *tipe;
         an                      addr;
 } inline_stack;
@@ -67,8 +67,8 @@ extern  an              BGAssign(an,an,type_def*);
 
 static inline_stack     *InlineStack = NULL; // fix this!
 
-extern  void    BGStartInline( sym_handle proc_sym ) {
-/****************************************************/
+extern  void    BGStartInline( cg_sym_handle proc_sym ) {
+/*******************************************************/
 
     inline_stack        *stk;
 
@@ -130,8 +130,8 @@ static bool NotEquiv( type_def *a, type_def *b )
 }
 
 
-extern  void    BGProcInline( sym_handle proc_sym, type_def *tipe ) {
-/*******************************************************************/
+extern  void    BGProcInline( cg_sym_handle proc_sym, type_def *tipe ) {
+/**********************************************************************/
 
     if( InlineStack->proc_sym != proc_sym || NotEquiv( InlineStack->tipe, tipe ) ) {
         _Zoiks( ZOIKS_072 );
@@ -139,7 +139,7 @@ extern  void    BGProcInline( sym_handle proc_sym, type_def *tipe ) {
 }
 
 
-extern  void    BGParmInline( sym_handle sym, type_def *tipe ) {
+extern  void    BGParmInline( cg_sym_handle sym, type_def *tipe ) {
 /**************************************************************/
 
     name                *temp;

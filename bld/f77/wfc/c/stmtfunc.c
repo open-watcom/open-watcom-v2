@@ -61,20 +61,20 @@ void    SFPrologue( void ) {
     StmtSw |= SS_SF_REFERENCED;
     CkTypeDeclared();
     SFSymId = CITNode->sym_ptr;
-    if( ( SFSymId->ns.u1.s.typ == FT_CHAR ) && ( SFSymId->ns.xt.size == 0 ) ) {
+    if( ( SFSymId->u.ns.u1.s.typ == FT_CHAR ) && ( SFSymId->u.ns.xt.size == 0 ) ) {
         Error( SF_ILL_CHAR_LEN );
-    } else if( SFSymId->ns.u1.s.typ == FT_STRUCTURE ) {
+    } else if( SFSymId->u.ns.u1.s.typ == FT_STRUCTURE ) {
         Error( SF_ILL_TYPE );
     }
     GStartSF();
-    SFSymId->ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_STMT_FUNC;
-    CITNode->flags = SFSymId->ns.flags;
+    SFSymId->u.ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_STMT_FUNC;
+    CITNode->flags = SFSymId->u.ns.flags;
     func_node = CITNode;
     AdvanceITPtr();
     ReqOpenParen();
-    SFSymId->ns.si.sf.header = FMemAlloc( sizeof( sf_header ) );
-    SFSymId->ns.si.sf.header->ref_count = 1;
-    parm = &SFSymId->ns.si.sf.header->parm_list;
+    SFSymId->u.ns.si.sf.header = FMemAlloc( sizeof( sf_header ) );
+    SFSymId->u.ns.si.sf.header->ref_count = 1;
+    parm = &SFSymId->u.ns.si.sf.header->parm_list;
     *parm = NULL;
     if( RecNOpn() ) {
         AdvanceITPtr();
@@ -82,14 +82,14 @@ void    SFPrologue( void ) {
         for(;;) {
             if( ReqName( NAME_SF_DUMMY ) ) {
                 sym = LkSym();
-                sym->ns.u1.s.xflags |= SY_DEFINED;
+                sym->u.ns.u1.s.xflags |= SY_DEFINED;
                 CkTypeDeclared();
-                if( ( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
-                    ( ( sym->ns.flags & SY_SUBSCRIPTED ) == 0 ) &&
-                    ( ( sym->ns.u1.s.typ != FT_CHAR ) ||
-                      ( sym->ns.xt.size != 0 ) ) &&
-                    ( sym->ns.u1.s.typ != FT_STRUCTURE ) ) {
-                    if( sym->ns.flags & SY_SPECIAL_PARM ) {
+                if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
+                    ( ( sym->u.ns.flags & SY_SUBSCRIPTED ) == 0 ) &&
+                    ( ( sym->u.ns.u1.s.typ != FT_CHAR ) ||
+                      ( sym->u.ns.xt.size != 0 ) ) &&
+                    ( sym->u.ns.u1.s.typ != FT_STRUCTURE ) ) {
+                    if( sym->u.ns.flags & SY_SPECIAL_PARM ) {
                         Error( SF_DUPLICATE_DUMMY_PARM );
                     } else {
                         *parm = FMemAlloc( sizeof( sf_parm ) );
@@ -124,10 +124,10 @@ void    SFEpilogue( void ) {
     sf_parm     *parm;
 
     GEndSF();
-    parm = SFSymId->ns.si.sf.header->parm_list;
+    parm = SFSymId->u.ns.si.sf.header->parm_list;
     while( parm != NULL ) {
-        if( parm->shadow->ns.flags & SY_REFERENCED ) {
-            parm->actual->ns.flags |= SY_REFERENCED;
+        if( parm->shadow->u.ns.flags & SY_REFERENCED ) {
+            parm->actual->u.ns.flags |= SY_REFERENCED;
         }
         STUnShadow( parm->actual );
         parm = parm->link;

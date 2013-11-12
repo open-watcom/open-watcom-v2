@@ -815,11 +815,11 @@ static  void    DoDataInit( PTYPE var_type ) {
     byte        const_buff[sizeof(ftn_type)];
 
     if( ( DtConstType == PT_CHAR ) || ( DtConstType == PT_NOTYPE ) ) {
-        const_size = DtConst->lt.length;
-        const_ptr = &DtConst->lt.value;
+        const_size = DtConst->u.lt.length;
+        const_ptr = &DtConst->u.lt.value;
     } else {
-        const_size = DtConst->cn.size;
-        const_ptr = (byte *)(&DtConst->cn.value);
+        const_size = DtConst->u.cn.size;
+        const_ptr = (byte *)(&DtConst->u.cn.value);
     }
     var_size = DtItemSize;
     seg = GetDataSegId( InitVar );
@@ -871,7 +871,7 @@ static  void    DoDataInit( PTYPE var_type ) {
 // Temporary fix for identical precision between front end and code generator.
         {
             char        fmt_buff[CONVERSION_BUFFER+1];
-            cfloat      *cf;
+            float_handle cf;
 
             if( (var_type == PT_REAL_4) || (var_type == PT_CPLX_8) ) {
                 CnvS2S( (single *)const_ptr, fmt_buff );
@@ -998,13 +998,13 @@ void    DtDataDoLoop( void ) {
     e2 = DXPop();
     e1 = DXPop();
     do_var = GetPtr();
-    do_var->ns.si.ms.u.value = &e1;
+    do_var->u.ns.si.ms.u.value = &e1;
     iter_count = ( e2 - e1 + e3 ) / e3;
     curr_fc = FCodeTell( 0 );
     while( iter_count > 0 ) {
         FCodeSeek( curr_fc );
         FCodeSequence();
-        *do_var->ns.si.ms.u.value += e3;
+        *do_var->u.ns.si.ms.u.value += e3;
         iter_count--;
     }
 }
@@ -1121,9 +1121,9 @@ void    DtInpCHAR( void ) {
 static  intstar4        IntegerValue( sym_id sym ) {
 //==================================================
 
-    if( sym->cn.size == sizeof( intstar1 ) ) return( sym->cn.value.intstar1 );
-    if( sym->cn.size == sizeof( intstar2 ) ) return( sym->cn.value.intstar2 );
-    return( sym->cn.value.intstar4 ); // sym->cn.size == sizeof( intstar4 )
+    if( sym->u.cn.size == sizeof( intstar1 ) ) return( sym->u.cn.value.intstar1 );
+    if( sym->u.cn.size == sizeof( intstar2 ) ) return( sym->u.cn.value.intstar2 );
+    return( sym->u.cn.value.intstar4 ); // sym->u.cn.size == sizeof( intstar4 )
 }
 
 
@@ -1154,12 +1154,12 @@ void    DtPush( void ) {
 
     sym = GetPtr();
     if( _MgcIsMagic( sym ) ) { // must be the value of an implied-DO-variable
-        DXPush( *sym->ns.si.ms.u.value );
+        DXPush( *sym->u.ns.si.ms.u.value );
     } else { // must be variable to initialize
         InitVar = sym;
         DtOffset = 0;
-        if( sym->ns.u1.s.typ != FT_STRUCTURE ) {
-            DtItemSize = InitVar->ns.xt.size;
+        if( sym->u.ns.u1.s.typ != FT_STRUCTURE ) {
+            DtItemSize = InitVar->u.ns.xt.size;
         }
     }
 }
@@ -1319,12 +1319,12 @@ void    DtSubscript( void ) {
     intstar4    offset;
 
     InitVar = GetPtr();
-    if( !Subscript( InitVar->ns.si.va.u.dim_ext, &offset ) ) {
+    if( !Subscript( InitVar->u.ns.si.va.u.dim_ext, &offset ) ) {
         NameStmtErr( EV_SSCR_INVALID, InitVar, PR_DATA );
     }
     DtOffset = offset * _SymSize( InitVar );
-    if( InitVar->ns.u1.s.typ != FT_STRUCTURE ) {
-        DtItemSize = InitVar->ns.xt.size;
+    if( InitVar->u.ns.u1.s.typ != FT_STRUCTURE ) {
+        DtItemSize = InitVar->u.ns.xt.size;
     }
 }
 
@@ -1343,7 +1343,7 @@ void    DtSubstring( void ) {
     first = DXPop();
     if( cv != NULL ) {
         if( DtFlags & DT_SS_NO_HIGH ) {
-            last = cv->ns.xt.size;
+            last = cv->u.ns.xt.size;
             DtFlags &= ~DT_SS_NO_HIGH;
         } else {
             last = DXPop();
@@ -1351,7 +1351,7 @@ void    DtSubstring( void ) {
     } else {
         last = first + GetInt() - 1;
     }
-    if( !DoSubstring( first, last, InitVar->ns.xt.size ) ) {
+    if( !DoSubstring( first, last, InitVar->u.ns.xt.size ) ) {
         NameStmtErr( EV_SSTR_INVALID, InitVar, PR_DATA );
     }
     DtOffset += first - 1;
@@ -1371,11 +1371,11 @@ void    DtFieldSubscript( void ) {
 
     base = DXPop();
     fd = GetPtr();
-    if( Subscript( fd->fd.dim_ext, &offset ) ) {
-        if( fd->fd.typ == FT_STRUCTURE ) {
-            offset *= fd->fd.xt.record->size;
+    if( Subscript( fd->u.fd.dim_ext, &offset ) ) {
+        if( fd->u.fd.typ == FT_STRUCTURE ) {
+            offset *= fd->u.fd.xt.record->size;
         } else {
-            offset *= fd->fd.xt.size;
+            offset *= fd->u.fd.xt.size;
         }
         DXPush( base + offset );
     } else {
@@ -1406,7 +1406,7 @@ void    DtFieldSubstring( void ) {
         last = DXPop();
     }
     GetU16(); // skip typing information
-    if( DoSubstring( first, last, fd->fd.xt.size ) ) {
+    if( DoSubstring( first, last, fd->u.fd.xt.size ) ) {
         DXPush( base + first - 1 );
         DtItemSize = last - first + 1;
     } else {
@@ -1446,9 +1446,9 @@ void    DtInpArray( void ) {
     if( fd == NULL ) {
         InitVar = sym;
         DtOffset = 0;
-        InitArr( sym->ns.si.va.u.dim_ext, sym->ns.u1.s.typ, _SymSize( sym ) );
+        InitArr( sym->u.ns.si.va.u.dim_ext, sym->u.ns.u1.s.typ, _SymSize( sym ) );
     } else { // array field within structure
-        InitArr( fd->fd.dim_ext, fd->fd.typ, fd->fd.xt.size );
+        InitArr( fd->u.fd.dim_ext, fd->u.fd.typ, fd->u.fd.xt.size );
     }
 }
 
@@ -1460,7 +1460,7 @@ void    DtInpStructArray( void ) {
 
     InitVar = GetPtr();
     DtOffset = 0;
-    InitStructArr( InitVar->ns.xt.record->fl.sym_fields, InitVar->ns.si.va.u.dim_ext );
+    InitStructArr( InitVar->u.ns.xt.record->fl.sym_fields, InitVar->u.ns.si.va.u.dim_ext );
 }
 
 
@@ -1488,13 +1488,13 @@ void    DtFieldOp( void ) {
 
     InitVar = GetPtr();
     fd = GetPtr();
-    if( fd->fd.typ == FT_CHAR ) {
+    if( fd->u.fd.typ == FT_CHAR ) {
         // DtItemSize will be set if a field has been substrung
         if( DtItemSize == 0 ) {
-            DtItemSize = fd->fd.xt.size;
+            DtItemSize = fd->u.fd.xt.size;
         }
     } else {
-        DtItemSize = fd->fd.xt.size;
+        DtItemSize = fd->u.fd.xt.size;
     }
     DtOffset += DXPop();
 }
@@ -1505,7 +1505,7 @@ void    DtInpStruct( void ) {
 
 // Initialize a struct.
 
-    StructInit( ((sym_id)GetPtr())->sd.fl.sym_fields );
+    StructInit( ((sym_id)GetPtr())->u.sd.fl.sym_fields );
 }
 
 
@@ -1513,15 +1513,15 @@ static  void    StructInit( sym_id fd ) {
 //=======================================
 
     while( fd != NULL ) {
-        if( fd->fd.typ == FT_STRUCTURE ) {
-            StructInit( fd->fd.xt.record->fl.sym_fields );
+        if( fd->u.fd.typ == FT_STRUCTURE ) {
+            StructInit( fd->u.fd.xt.record->fl.sym_fields );
         } else {
             StructInitItem( fd );
-            if( fd->fd.dim_ext == NULL ) {
-                DtOffset += fd->fd.xt.size;
+            if( fd->u.fd.dim_ext == NULL ) {
+                DtOffset += fd->u.fd.xt.size;
             }
         }
-        fd = fd->fd.link;
+        fd = fd->u.fd.link;
     }
 }
 
@@ -1531,14 +1531,14 @@ static  void    StructInitItem( sym_id fd ) {
 
 // Initialize a structure field.
 
-    DtItemSize = fd->fd.xt.size;
-    if( fd->fd.dim_ext == NULL ) {
-        AsnVal( ParmType( fd->fd.typ, DtItemSize ) );
+    DtItemSize = fd->u.fd.xt.size;
+    if( fd->u.fd.dim_ext == NULL ) {
+        AsnVal( ParmType( fd->u.fd.typ, DtItemSize ) );
     } else {
-        if( fd->fd.typ == FT_STRUCTURE ) {
-            InitStructArr( fd, fd->fd.dim_ext );
+        if( fd->u.fd.typ == FT_STRUCTURE ) {
+            InitStructArr( fd, fd->u.fd.dim_ext );
         } else {
-            InitArr( fd->fd.dim_ext, fd->fd.typ, DtItemSize );
+            InitArr( fd->u.fd.dim_ext, fd->u.fd.typ, DtItemSize );
         }
     }
 }

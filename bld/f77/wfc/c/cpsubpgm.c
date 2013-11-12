@@ -159,7 +159,7 @@ static  entry_pt *SubProgName( TYPE typ, unsigned_16 flags,
         GSetSrcLine();
     }
     name_node = CITNode;
-    sym_ptr->ns.flags = flags;
+    sym_ptr->u.ns.flags = flags;
     name_node->flags = flags;
     size = def_size;
     next_node = CITNode->link;
@@ -170,10 +170,10 @@ static  entry_pt *SubProgName( TYPE typ, unsigned_16 flags,
         }
         next_node = CITNode;
     }
-    sym_ptr->ns.xt.size = size;
+    sym_ptr->u.ns.xt.size = size;
     name_node->size = size;
     typ = MapTypes( typ, size );
-    sym_ptr->ns.u1.s.typ = typ;
+    sym_ptr->u.ns.u1.s.typ = typ;
     name_node->typ = typ;
     CITNode = name_node;
     entry = AddEntryPt( sym_ptr );
@@ -262,19 +262,19 @@ void CpEntry( void )
         Error( EY_NOT_IN_CS );
     }
     if( ReqName( NAME_FUNCTION ) ) {
-        in_subr = (SubProgId->ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE;
+        in_subr = (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE;
         sym = LkSym();
-        if( ( sym->ns.flags & (SY_USAGE|SY_SUB_PARM|SY_IN_EC|SY_SAVED) ) ||
-            ( in_subr && (sym->ns.flags & SY_TYPE) ) ) {
+        if( ( sym->u.ns.flags & (SY_USAGE|SY_SUB_PARM|SY_IN_EC|SY_SAVED) ) ||
+            ( in_subr && (sym->u.ns.flags & SY_TYPE) ) ) {
             IllName( sym );
         } else {
-            sym->ns.u1.s.typ = CITNode->typ;
-            sym->ns.flags &= SY_TYPE;
+            sym->u.ns.u1.s.typ = CITNode->typ;
+            sym->u.ns.flags &= SY_TYPE;
             if( in_subr ) {
-                sym->ns.flags |= SY_USAGE | SY_SUBPROGRAM | SY_SENTRY |
+                sym->u.ns.flags |= SY_USAGE | SY_SUBPROGRAM | SY_SENTRY |
                                      SY_SUBROUTINE | SY_REFERENCED;
             } else {
-                sym->ns.flags |= SY_USAGE | SY_SUBPROGRAM | SY_SENTRY |
+                sym->u.ns.flags |= SY_USAGE | SY_SUBPROGRAM | SY_SENTRY |
                                      SY_FUNCTION;
             }
             STFnShadow( sym );
@@ -316,14 +316,14 @@ void CpReturn( void )
     }
     CkRemBlock();
     if( RecNOpn() && RecNextOpr( OPR_TRM ) ) {
-        if( ( ( SubProgId->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
-            ( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) ) {
+        if( ( ( SubProgId->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
+            ( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) ) {
             GNullRetIdx();
         }
     } else {
         IntSubExpr();
-        if( ( ( SubProgId->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
-            ( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) ) {
+        if( ( ( SubProgId->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
+            ( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) ) {
             GRetIdx();
         } else {
             Error( RE_ALT_IN_SUBROUTINE );
@@ -358,7 +358,7 @@ static parameter *NameParm( entry_pt *entry )
     unsigned_16         class;
 
     sym = LkSym();
-    flags = sym->ns.flags;
+    flags = sym->u.ns.flags;
     class = flags & SY_CLASS;
     if( class == SY_VARIABLE ) {
         if( InArgList( entry, sym ) ) {
@@ -371,7 +371,7 @@ static parameter *NameParm( entry_pt *entry )
             IllName( sym );
             return( NULL );
         } else if( flags & SY_SUBSCRIPTED ) {
-            dim_ptr = sym->ns.si.va.u.dim_ext;
+            dim_ptr = sym->u.ns.si.va.u.dim_ext;
             if( dim_ptr->dim_flags & DIM_PVD ) {
                 dim_ptr->dim_flags |= DIM_ASSUMED;
                 NameExt( SV_PVD, sym );
@@ -399,10 +399,10 @@ static parameter *NameParm( entry_pt *entry )
     result->link = NULL;
     result->id = sym;
     result->flags = 0;
-    if( sym->ns.flags & SY_SUB_PARM ) {
+    if( sym->u.ns.flags & SY_SUB_PARM ) {
         result->flags |= ARG_DUPLICATE;
     }
-    sym->ns.flags |= SY_SUB_PARM;
+    sym->u.ns.flags |= SY_SUB_PARM;
     return( result );
 }
 
@@ -461,9 +461,9 @@ static void DoWarps( void )
     for( parm = ArgList->parms; parm != NULL; parm = parm->link ) {
         if( parm->flags & ARG_STMTNO ) continue;
         sym = parm->id;
-        if( ( sym->ns.flags & SY_CLASS ) != SY_VARIABLE ) continue;
-        if( ( sym->ns.flags & SY_SUBSCRIPTED ) == 0 ) continue;
-        if( _AdvRequired( sym->ns.si.va.u.dim_ext ) == 0 ) continue;
+        if( ( sym->u.ns.flags & SY_CLASS ) != SY_VARIABLE ) continue;
+        if( ( sym->u.ns.flags & SY_SUBSCRIPTED ) == 0 ) continue;
+        if( _AdvRequired( sym->u.ns.si.va.u.dim_ext ) == 0 ) continue;
         GWarp( sym );
     }
 }
@@ -516,7 +516,7 @@ void CpBlockData( void )
     ProgSw |= PS_IN_SUBPROGRAM | PS_BLOCK_DATA;
     if( RecName() ) {
         sym_ptr = LkSym();
-        sym_ptr->ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_BLOCK_DATA |
+        sym_ptr->u.ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_BLOCK_DATA |
                             SY_PENTRY | SY_REFERENCED;
     } else {
         ReqNOpn();

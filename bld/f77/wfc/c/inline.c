@@ -445,15 +445,14 @@ call_handle     InitInlineCall( int rtn_id ) {
         name_len = strlen( in_entry->name );
         strcpy( SymBuff, in_entry->name );
         sym = STAdd( SymBuff, name_len );
-        sym->ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION;
-        sym->ns.u1.s.typ = FT_INTEGER_TARG;
-        sym->ns.xt.size = TypeSize( sym->ns.u1.s.typ );
-        sym->ns.u3.address = NULL;
+        sym->u.ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION;
+        sym->u.ns.u1.s.typ = FT_INTEGER_TARG;
+        sym->u.ns.xt.size = TypeSize( sym->u.ns.u1.s.typ );
+        sym->u.ns.u3.address = NULL;
         in_entry->sym_ptr = sym;
         in_entry->aux = AuxLookupName( in_entry->name, name_len );
     }
-    return( CGInitCall( CGFEName( sym, in_entry->typ ), in_entry->typ,
-                        in_entry->aux ) );
+    return( CGInitCall( CGFEName( sym, in_entry->typ ), in_entry->typ, in_entry->sym_ptr ) );
 #else
     rtn_id = rtn_id;
     return( 0 );
@@ -475,8 +474,8 @@ void    FreeInlinePragmas( void ) {
         sym = InlineTab[ index ].sym_ptr;
         if( sym != NULL ) {
             if( ( CGFlags & CG_FATAL ) == 0 ) {
-                if( sym->ns.u3.address != NULL ) {
-                    BEFreeBack( sym->ns.u3.address );
+                if( sym->u.ns.u3.address != NULL ) {
+                    BEFreeBack( sym->u.ns.u3.address );
                 }
             }
             STFree( sym );

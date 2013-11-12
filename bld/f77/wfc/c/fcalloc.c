@@ -71,7 +71,7 @@ static cg_name  getFlags( sym_id sym ) {
     cg_name             fl;
     cg_type             typ;
 
-    if( sym->ns.flags & SY_SUBSCRIPTED ) {
+    if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
         typ = ArrayPtrType( sym );
         tlen = BETypeLength( typ );
     } else {
@@ -135,8 +135,8 @@ void            FCAllocate( void ) {
     for(;;) {
         arr = SymPop();
         if( arr == NULL ) break;
-        if( arr->ns.flags & SY_SUBSCRIPTED ) {
-            dim = arr->ns.si.va.u.dim_ext;
+        if( arr->u.ns.flags & SY_SUBSCRIPTED ) {
+            dim = arr->u.ns.si.va.u.dim_ext;
             CGAddParm( handle, CGInteger( _SymSize( arr ), TY_INT_4 ), TY_INT_4 );
             CGAddParm( handle, CGInteger( _DimCount( dim->dim_flags ), TY_INTEGER ), TY_INTEGER );
             CGAddParm( handle, GetAdv( arr ), TY_LOCAL_POINTER );

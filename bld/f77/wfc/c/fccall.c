@@ -103,10 +103,10 @@ cg_type SPType( sym_id sym ) {
 
 // Return subprogram cg type.
 
-    if( (sym->ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) return( TY_INTEGER );
-    if( (sym->ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) return( TY_INTEGER );
+    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) return( TY_INTEGER );
+    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) return( TY_INTEGER );
     // must be a function
-    if( sym->ns.u1.s.typ == FT_CHAR ) return( TY_INTEGER );
+    if( sym->u.ns.u1.s.typ == FT_CHAR ) return( TY_INTEGER );
     return( F772CGType( sym ) );
 }
 
@@ -134,12 +134,12 @@ void    FCPrologue( void ) {
 
     --NumSubProgs;
     sym = GetPtr();
-    sp_type = sym->ns.flags & SY_SUBPROG_TYPE;
+    sp_type = sym->u.ns.flags & SY_SUBPROG_TYPE;
     SubCodeSeg();
     BESetSeg( SEG_LDATA );
     DGSeek( LDSegOffset );
     if( sp_type == SY_BLOCK_DATA ) {
-        if( ( sym->ns.flags & SY_UNNAMED ) == 0 ) {
+        if( ( sym->u.ns.flags & SY_UNNAMED ) == 0 ) {
             DGLabel( FEBack( sym ) );
         }
     } else {
@@ -166,7 +166,7 @@ void    FCPrologue( void ) {
         ep_count = 1;
         ep = Entries->link;
         while( ep != NULL ) {
-            CGSelCase( sel, GetLabel( ep->id->ns.si.sp.u.entry ), ep_count );
+            CGSelCase( sel, GetLabel( ep->id->u.ns.si.sp.u.entry ), ep_count );
             ep_count++;
             ep = ep->link;
         }
@@ -204,7 +204,7 @@ void    FCEpilogue( void ) {
     unsigned_16 sp_type;
 
     sym = GetPtr();
-    sp_type = sym->ns.flags & SY_SUBPROG_TYPE;
+    sp_type = sym->u.ns.flags & SY_SUBPROG_TYPE;
     if( sp_type != SY_BLOCK_DATA ) {
         GenTraceback();
     }
@@ -213,7 +213,7 @@ void    FCEpilogue( void ) {
     }
     FiniLabels( 0 );
     FiniTmps();
-    if( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) {
+    if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) {
         CGReturn( NULL, TY_INTEGER );
     } else if( sp_type != SY_BLOCK_DATA ) {
         if( CommonEntry == NULL ) {
@@ -270,13 +270,13 @@ static  void    GenReturnValue( sym_id sym ) {
     cg_type     typ;
 
     typ = SPType( sym );
-    if( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+    if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
         if( !EntryWithAltRets() ) {
             CGReturn( NULL, TY_INTEGER );
             return;
         }
     } else { // must be a function
-        if( sym->ns.u1.s.typ == FT_CHAR ) {
+        if( sym->u.ns.u1.s.typ == FT_CHAR ) {
             CGReturn( NULL, TY_INTEGER );
             return;
         }
@@ -322,12 +322,11 @@ static  void    DefineEntries( void ) {
             DBModSym( ep->id, TY_DEFAULT );
         }
         DefineEntryPoint( ep );
-        call = CGInitCall( CGFEName( CommonEntry, common_type ), common_type,
-                           &FortranInfo );
+        call = CGInitCall( CGFEName( CommonEntry, common_type ), common_type, NULL );
         PassCommonArgs( call, ep );
-        if( ( ep->id->ns.flags & SY_SUBPROG_TYPE ) != SY_SUBROUTINE ) {
+        if( ( ep->id->u.ns.flags & SY_SUBPROG_TYPE ) != SY_SUBROUTINE ) {
             val = CGFEName( ReturnValue, sp_type );
-            if( ep->id->ns.u1.s.typ == FT_CHAR ) {
+            if( ep->id->u.ns.u1.s.typ == FT_CHAR ) {
                 val = CGUnary( O_POINTS, val, TY_POINTER );
                 CGAddParm( call, val, TY_POINTER );
                 if( !(Options & OPT_DESCRIPTOR) ) {
@@ -340,7 +339,7 @@ static  void    DefineEntries( void ) {
             }
         }
         CGAddParm( call, CGInteger( ep_count, TY_INTEGER ), TY_INTEGER );
-        if( ( ep->id->ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+        if( ( ep->id->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
             if( EntryWithAltRets() ) {
                 val = CGUnary( O_POINTS, CGCall( call ), sp_type );
                 CGReturn( val, sp_type );
@@ -350,7 +349,7 @@ static  void    DefineEntries( void ) {
             }
         } else {
             CGDone( CGCall( call ) );
-            if( ep->id->ns.u1.s.typ == FT_CHAR ) {
+            if( ep->id->u.ns.u1.s.typ == FT_CHAR ) {
                 CGReturn( NULL, TY_INTEGER );
             } else {
                 CGReturn( CGUnary( O_POINTS, CGFEName( ReturnValue, sp_type ), sp_type ), sp_type );
@@ -391,11 +390,11 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
         arg = ep->parms;
         while( arg != NULL ) {
             if( ( arg->flags & ( ARG_DUPLICATE | ARG_STMTNO ) ) == 0 ) {
-                if( ( arg->id->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+                if( ( arg->id->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
                     arg_type = TY_CODE_PTR;
-                } else if( arg->id->ns.flags & SY_SUBSCRIPTED ) {
+                } else if( arg->id->u.ns.flags & SY_SUBSCRIPTED ) {
                     arg_type = TY_POINTER;
-                } else if( arg->id->ns.u1.s.typ == FT_CHAR ) {
+                } else if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
                     arg_type = TY_POINTER;
                 } else if( ( arg_aux != NULL ) && ( arg_aux->info & PASS_BY_VALUE ) ) {
                     arg_type = F772CGType( arg->id );
@@ -404,7 +403,7 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
                 }
                 if( InArgList( ep_called, arg->id ) ) {
                     cg = CGUnary( O_POINTS, CGFEName( arg->id, arg_type ), arg_type );
-                    if( arg->id->ns.u1.s.typ == FT_CHAR ) {
+                    if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
                         CGAddParm( call, cg, PromoteToBaseType( arg_type ) );
                         if( NeedShadowArg( arg_aux ) ) {
                             cg = CGFEName( FindArgShadow( arg->id ), TY_INTEGER );
@@ -416,7 +415,7 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
                     }
                 } else {
                     CGAddParm( call, CGInteger( 0, arg_type ), PromoteToBaseType( arg_type ) );
-                    if( arg->id->ns.u1.s.typ == FT_CHAR ) {
+                    if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
                         if( NeedShadowArg( arg_aux ) ) {
                             CGAddParm( call, CGInteger( 0, TY_INTEGER ), TY_INTEGER );
                         }
@@ -547,7 +546,7 @@ void    FCCall( void ) {
     sp_type = SPType( sp );
     aux = AuxLookup( sp );
     arg_aux = aux->arg_info;
-    if( sp->ns.flags & SY_SUB_PARM ) {
+    if( sp->u.ns.flags & SY_SUB_PARM ) {
         rtn = CGUnary( O_POINTS, CGFEName( sp, TY_CODE_PTR ), TY_CODE_PTR );
     } else {
         rtn = CGFEName( sp, sp_type );
@@ -559,13 +558,13 @@ void    FCCall( void ) {
         // We need num_args + 1 becausewe use senitel NULL at the end
         arg_vec = FMemAlloc( ( num_args + 1 ) * sizeof( cg_name ) );
     }
-    call = CGInitCall( rtn, sp_type, aux );
-    if( sp->ns.flags & SY_INTRINSIC ) {
-        if( IFVarArgs( sp->ns.si.fi.index ) ) {
+    call = CGInitCall( rtn, sp_type, sp );
+    if( sp->u.ns.flags & SY_INTRINSIC ) {
+        if( IFVarArgs( sp->u.ns.si.fi.index ) ) {
             CGAddParm( call, CGInteger( num_args, TY_INTEGER ), TY_INTEGER );
         }
-    } else if( (sp->ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-        if( !(Options & OPT_DESCRIPTOR) && (sp->ns.u1.s.typ == FT_CHAR) ) {
+    } else if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
+        if( !(Options & OPT_DESCRIPTOR) && (sp->u.ns.u1.s.typ == FT_CHAR) ) {
             scb = GetPtr();
             arg = SCBPointer( CGFEName( scb, TY_CHAR ) );
 #if _CPU == 386
@@ -702,8 +701,8 @@ void    FCCall( void ) {
                 if( cg_typ != new_typ ) {
                     arg = CGUnary( O_CONVERT, arg, new_typ );
                     cg_typ = new_typ;
-                } else if( ( sp->ns.flags & SY_INTRINSIC ) &&
-                           ( IFArgType( sp->ns.si.fi.index ) == FT_INTEGER ) ) {
+                } else if( ( sp->u.ns.flags & SY_INTRINSIC ) &&
+                           ( IFArgType( sp->u.ns.si.fi.index ) == FT_INTEGER ) ) {
                     // The following code is only useful when the intrinsic
                     // promotion switch is activated.  We don't need to check
                     // for the switch because if the switch was not set then
@@ -744,11 +743,11 @@ void    FCCall( void ) {
         }
         FMemFree( arg_vec );
     }
-    if( (sp->ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
+    if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         XPush( CGUnary( O_POINTS, CGCall( call ), sp_type ) );
     } else {
-        if( sp->ns.u1.s.typ == FT_CHAR ) {
-            if( (Options & OPT_DESCRIPTOR) || ( sp->ns.flags & SY_INTRINSIC) ) {
+        if( sp->u.ns.u1.s.typ == FT_CHAR ) {
+            if( (Options & OPT_DESCRIPTOR) || ( sp->u.ns.flags & SY_INTRINSIC) ) {
                 scb = GetPtr();
                 arg = CGFEName( scb, TY_CHAR );
 #if _CPU == 386
@@ -793,10 +792,10 @@ cg_name VarAltSCB( sym_id sym ) {
     so we have no problems with recursion
     if( Options & OPT_AUTOMATIC ) {
     */
-        return( CGTempName( sym->ns.si.va.vi.alt_scb, TY_CHAR ) );
+        return( CGTempName( sym->u.ns.si.va.vi.alt_scb, TY_CHAR ) );
     /*
     } else {
-        return( CGBackName( sym->ns.si.va.vi.alt_scb, TY_CHAR ) );
+        return( CGBackName( sym->u.ns.si.va.vi.alt_scb, TY_CHAR ) );
     }
     */
 }
@@ -813,10 +812,10 @@ cg_name SubAltSCB( sym_id sym ) {
     so we have no problems with recursion
     if( Options & OPT_AUTOMATIC ) {
     */
-        return( CGTempName( sym->ns.si.sp.alt_scb, TY_CHAR ) );
+        return( CGTempName( sym->u.ns.si.sp.alt_scb, TY_CHAR ) );
     /*
     } else {
-        return( CGBackName( sym->ns.si.sp.alt_scb, TY_CHAR ) );
+        return( CGBackName( sym->u.ns.si.sp.alt_scb, TY_CHAR ) );
     }
     */
 }
@@ -833,8 +832,8 @@ void    FCDArgInit( void ) {
 
     sym = GetPtr();
     if( !(Options & OPT_DESCRIPTOR) ) {
-        if( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
-            if( sym->ns.u1.s.typ == FT_CHAR ) {
+        if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
+            if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                 arg = CGUnary( O_POINTS, CGFEName( ReturnValue, TY_POINTER ), TY_POINTER );
                 if( Options & OPT_DESCRIPTOR ) {
                     arg = SCBLength( arg );
@@ -855,20 +854,20 @@ void    FCDArgInit( void ) {
     for(;;) {
         sym = GetPtr();
         if( sym == NULL ) break;
-        if( (sym->ns.flags & SY_CLASS) != SY_VARIABLE ) continue;
-        if( sym->ns.u1.s.typ != FT_CHAR ) continue;
-        if( sym->ns.flags & SY_SUBSCRIPTED ) continue;
+        if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE ) continue;
+        if( sym->u.ns.u1.s.typ != FT_CHAR ) continue;
+        if( sym->u.ns.flags & SY_SUBSCRIPTED ) continue;
         if( !SCBRequired( sym ) ) continue;
         // character variable
         arg = CGUnary( O_POINTS, CGFEName( sym, TY_POINTER ), TY_POINTER );
         dst = SCBPtrAddr( VarAltSCB( sym ) );
-        if( !(sym->ns.flags & SY_VALUE_PARM) && (Options & OPT_DESCRIPTOR) ) {
+        if( !(sym->u.ns.flags & SY_VALUE_PARM) && (Options & OPT_DESCRIPTOR) ) {
             arg = SCBPointer( arg );
         }
         CGDone( CGAssign( dst, arg, TY_POINTER ) );
-        if( sym->ns.xt.size == 0 ) {
+        if( sym->u.ns.xt.size == 0 ) {
             dst = SCBLenAddr( VarAltSCB( sym ) );
-            if( sym->ns.flags & SY_VALUE_PARM ) {
+            if( sym->u.ns.flags & SY_VALUE_PARM ) {
                 arg = CGInteger( 0, TY_INTEGER );
             } else if( Options & OPT_DESCRIPTOR ) {
                 arg = CGFEName( sym, TY_POINTER );

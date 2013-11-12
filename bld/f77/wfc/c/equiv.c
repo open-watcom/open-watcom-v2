@@ -113,16 +113,16 @@ void    CpEquivalence(void) {
                 num_equived++;
                 sym = LkSym();
                 ill_name = TRUE;
-                if( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) {
-                    if( sym->ns.flags & SY_DATA_INIT ) {
+                if( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+                    if( sym->u.ns.flags & SY_DATA_INIT ) {
                         NameErr( ST_DATA_ALREADY, sym );
-                    } else if( sym->ns.flags & SY_SUB_PARM ) {
+                    } else if( sym->u.ns.flags & SY_SUB_PARM ) {
                         IllName( sym );
-                    } else if( ( sym->ns.flags & SY_SUBSCRIPTED ) &&
+                    } else if( ( sym->u.ns.flags & SY_SUBSCRIPTED ) &&
                                 _Allocatable( sym ) ) {
                         IllName( sym );
                     } else {
-                        sym->ns.flags |= SY_IN_EQUIV;
+                        sym->u.ns.flags |= SY_IN_EQUIV;
                         ill_name = FALSE;
                     }
                 } else {
@@ -196,8 +196,8 @@ void    CpEquivalence(void) {
                         eqv_entry->next_eq_entry = new_eq;
                         eqv_entry = new_eq;
                     }
-                    if( sym->ns.si.va.vi.ec_ext == NULL ) {
-                        sym->ns.si.va.vi.ec_ext = STComEq();
+                    if( sym->u.ns.si.va.vi.ec_ext == NULL ) {
+                        sym->u.ns.si.va.vi.ec_ext = STComEq();
                     }
                 }
             } else {

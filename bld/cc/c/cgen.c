@@ -720,6 +720,8 @@ static cg_name ConvertPointer( OPNODE *node, cg_name name )
     } else if( FAR16_PTRCLASS( node->u2.sp.newptr_class ) ) {
         name = CGUnary( O_PTR_TO_FOREIGN, name, TY_POINTER );
     }
+#else
+    node = node;
 #endif
     return( name );
 }

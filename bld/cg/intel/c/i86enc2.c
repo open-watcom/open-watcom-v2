@@ -69,7 +69,7 @@ extern  void            InputOC(any_oc*);
 extern  void            AddByte(byte);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern  void            AddToTemp(byte);
-extern  void            DoFESymRef( sym_handle, cg_class, offset, fe_fixup_types);
+extern  void            DoFESymRef( cg_sym_handle, cg_class, offset, fe_fixup_types);
 extern  void            FlipCond(instruction*);
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
@@ -220,24 +220,20 @@ extern  byte    ReverseCondition( byte cond ) {
     return( RevCond[cond] );
 }
 
-extern  void    DoCall( code_lbl *lbl, bool imported,
-                        bool big, oc_class pop_bit ) {
-/*****************************************************
+extern  void    DoCall( code_lbl *lbl, bool imported, bool big, oc_class pop_bit )
+/*********************************************************************************
     call routine "lbl".
 */
-
+{
     imported = imported;
     if( !big ) {
-        CodeHandle( OC_CALL | pop_bit,
-                    OptInsSize( OC_CALL, OC_DEST_NEAR ), lbl );
+        CodeHandle( OC_CALL | pop_bit, OptInsSize( OC_CALL, OC_DEST_NEAR ), lbl );
     } else if( AskIfRTLabel( lbl )
             || imported //NYI:multi-code-segment, this can go when FORTRAN is fixed up
             || AskCodeSeg() != FESegID( AskForLblSym( lbl ) ) ) {
-        CodeHandle( OC_CALL | ATTR_FAR | pop_bit,
-                    OptInsSize( OC_CALL, OC_DEST_FAR  ), lbl );
+        CodeHandle( OC_CALL | ATTR_FAR | pop_bit, OptInsSize( OC_CALL, OC_DEST_FAR  ), lbl );
     } else {
-        CodeHandle( OC_CALL | ATTR_FAR | pop_bit,
-                    OptInsSize( OC_CALL, OC_DEST_CHEAP ), lbl );
+        CodeHandle( OC_CALL | ATTR_FAR | pop_bit, OptInsSize( OC_CALL, OC_DEST_CHEAP ), lbl );
     }
 }
 
@@ -253,7 +249,7 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
     byte        *endp;
     byte        *startp;
     byte        type;
-    sym_handle  sym = 0;
+    cg_sym_handle sym = 0;
     offset      off = 0;
     fe_attr     attr = 0;
     name        *temp;
@@ -274,7 +270,7 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
                 case FIX_SYM_SEGMENT:
                 case FIX_SYM_RELOFF:
                     p += 2;
-                    sym = (sym_handle)*(void **)p;
+                    sym = (cg_sym_handle)*(void **)p;
                     p += sizeof( void * );
                     off = (offset)*(unsigned_32 *)p;
                     p += sizeof( unsigned_32 );
@@ -347,7 +343,7 @@ extern  void    GenCall( instruction *ins ) {
 */
 
     name                *op;
-    sym_handle          sym;
+    cg_sym_handle       sym;
     bool                big;
     oc_class            pop_bit;
     call_class          cclass;
@@ -390,7 +386,8 @@ extern  void    GenCall( instruction *ins ) {
         if( op->m.memory_type == CG_FE ) {
             DoCall( ((bck_info *)FEBack( sym ))->lbl, (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
         } else {
-            DoCall( sym, TRUE, big, pop_bit );
+            // handles mismatch Fix it!
+            DoCall( (label_handle)sym, TRUE, big, pop_bit );
         }
     }
 }

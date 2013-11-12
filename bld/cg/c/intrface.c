@@ -45,6 +45,8 @@
 #include "bldins.h"
 #include "utils.h"
 #include "objout.h"
+#include "treeprot.h"
+#include "cgauxinf.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -71,54 +73,26 @@ extern  void            TFini(void);
 extern  void            CGMemFini(void);
 extern  void            BGFiniLabel(code_lbl *);
 extern  void            TellNoSymbol(code_lbl *);
-extern  void            BGProcDecl(sym_handle,type_def*);
-extern  void            BGParmDecl(sym_handle,type_def*);
-extern  void            BGAutoDecl(sym_handle,type_def*);
-extern  tn              TGLeaf(an);
-extern  tn              TGTmpLeaf(an);
-extern  tn              TGReLeaf(an);
-extern  tn              TGLVAssign(tn,tn,type_def*);
-extern  tn              TGAssign(tn,tn,type_def*);
-extern  tn              TGPostGets(cg_op,tn,tn,type_def*);
-extern  tn              TGLVPreGets(cg_op,tn,tn,type_def*);
-extern  tn              TGPreGets(cg_op,tn,tn,type_def*);
-extern  tn              TGTrash(tn);
-extern  tn              TGBinary(cg_op,tn,tn,type_def*);
-extern  tn              TGUnary(cg_op,tn,type_def*);
-extern  tn              TGIndex(tn,tn,type_def*,type_def*);
-extern  tn              TGInitCall(tn,type_def*,sym_handle);
-extern  tn              TGAddParm(tn,tn,type_def*);
-extern  tn              TGCall(tn);
-extern  tn              TGCompare(cg_op,tn,tn,type_def*);
-extern  tn              TGFlow(cg_op,tn,tn);
-extern  tn              TGQuestion(tn,tn,tn,type_def*);
-extern  tn              TGWarp(tn,code_lbl *,tn);
-extern  void            TGControl(cg_op,tn,code_lbl *);
-extern  void            TG3WayControl(tn,code_lbl *,code_lbl *,code_lbl *);
+extern  void            BGProcDecl(cg_sym_handle,type_def*);
+extern  void            BGParmDecl(cg_sym_handle,type_def*);
+extern  void            BGAutoDecl(cg_sym_handle,type_def*);
 extern  select_node     *BGSelInit(void);
 extern  void            BGSelCase(select_node*,code_lbl *,signed_32);
 extern  void            BGSelRange(select_node*,signed_32,signed_32,code_lbl *);
 extern  void            BGSelOther(select_node*,code_lbl *);
 extern  an              TGen(tn,type_def*);
 extern  void            BGSelect(select_node*,an,cg_switch_type);
-extern  an              TGReturn(tn,type_def*);
 extern  void            BGReturn(an,type_def*);
 extern  an              BGSave(an);
-extern  cg_type         TGType(tn);
-extern  btn             TGBitMask(tn,byte,byte,type_def*);
-extern  tn              TGVolatile(tn);
-extern  tn              TGAttr( tn, cg_sym_attr );
-extern  tn              TGAlign( tn, uint );
 extern  void            DGBlip(void);
 extern  void            DataLabel(code_lbl *);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes(offset,byte);
 extern  bool            BGInInline(void);
-extern  void            BGParmInline(sym_handle,type_def*);
+extern  void            BGParmInline(cg_sym_handle,type_def*);
 extern  void            BGRetInline(an,type_def*);
-extern  void            BGProcInline(sym_handle,type_def*);
-extern  tn              TGCallback( cg_callback, callback_handle );
+extern  void            BGProcInline(cg_sym_handle,type_def*);
 extern  patch_handle    BGNewPatch(void);
 extern  cg_name         BGPatchNode( patch_handle, type_def * );
 extern  void            BGPatchInteger( patch_handle, signed_32 );
@@ -475,7 +449,7 @@ extern  void _CGAPI     BEFiniPatch( patch_handle hdl )
 static  pointer                 NewBackReturn = RETURN_NORMAL;
 
 
-extern  pointer LkAddBack( sym_handle sym, pointer curr_back )
+extern  pointer LkAddBack( cg_sym_handle sym, pointer curr_back )
 /************************************************************/
 {
     bck_info    *bck;
@@ -490,7 +464,7 @@ extern  pointer LkAddBack( sym_handle sym, pointer curr_back )
     return( (pointer)( PTR_INT( bck ) & ~FAKE_BACK ) );
 }
 
-extern bck_info *SymBack( sym_handle sym )
+extern bck_info *SymBack( cg_sym_handle sym )
 /****************************************/
 {
     bck_info    *bck;
@@ -705,6 +679,7 @@ extern  void _CGAPI     CGReturn( cg_name name, cg_type tipe )
 /************************************************************/
 {
     type_def    *new_tipe;
+    an          retv;
 
 #ifndef NDEBUG
     EchoAPI( "CGReturn( %n, %t )\n\n", name, tipe );
@@ -714,13 +689,14 @@ extern  void _CGAPI     CGReturn( cg_name name, cg_type tipe )
     }
 #endif
     new_tipe = TypeAddress( tipe );
+    retv = NULL;
     if( name != NULL ) {
-        name = TGReturn( name, new_tipe ); /* special TGen()*/
+        retv = TGReturn( name, new_tipe ); /* special TGen()*/
     }
     if( BGInInline() ) {
-        BGRetInline( name, new_tipe );
+        BGRetInline( retv, new_tipe );
     } else {
-        BGReturn( name, new_tipe );
+        BGReturn( retv, new_tipe );
     }
 }
 
@@ -821,8 +797,7 @@ extern  cg_name _CGAPI CGFEName( cg_sym_handle sym, cg_type tipe )
     cg_name     leaf;
 
 
-    if( (FEAttr( sym ) & FE_DLLIMPORT )
-     && ( FEAuxInfo( sym, CALL_BYTES ) == NULL ) ){
+    if( (FEAttr( sym ) & FE_DLLIMPORT ) && ( FindAuxInfoSym( sym, CALL_BYTES ) == NULL ) ) {
         leaf = TGLeaf( BGName( CG_FE, sym, TypeAddress( TY_POINTER ) ) );
 #ifndef NDEBUG
         EchoAPI( "CGFEName( %s, %t ) declspec(dllimport)", sym, tipe );
@@ -870,12 +845,12 @@ extern  cg_name _CGAPI CGTempName( temp_handle temp, cg_type tipe )
     tn      retn;
 
     EchoAPI( "CGTempName( %T, %t )", temp, tipe );
-    retn = TGLeaf( BGTempName( temp, TypeAddress( TY_POINTER ) ) );
+    retn = TGLeaf( BGTempName( (name *)temp, TypeAddress( TY_POINTER ) ) );
     hdlAdd( CG_NAMES, retn );
     return EchoAPICgnameReturn( retn );
 #else
     tipe = tipe;
-    return( TGLeaf( BGTempName( temp, TypeAddress( TY_POINTER ) ) ) );
+    return( TGLeaf( BGTempName( (name *)temp, TypeAddress( TY_POINTER ) ) ) );
 #endif
 }
 
@@ -1285,8 +1260,10 @@ extern  void _CGAPI     CGSelOther( sel_handle s, label_handle lbl )
 extern  void _CGAPI     CGSelectRestricted( sel_handle s, cg_name expr, cg_switch_type allowed )
 /**********************************************************************************************/
 {
-    expr = TGen( expr, TypeAddress( TY_DEFAULT ) );
-    BGSelect( s, expr, allowed );
+    an  selv;
+
+    selv = TGen( expr, TypeAddress( TY_DEFAULT ) );
+    BGSelect( s, selv, allowed );
 }
 
 extern  void _CGAPI     CGSelect( sel_handle s, cg_name expr )
@@ -1363,13 +1340,13 @@ extern  cg_name _CGAPI CGBitMask( cg_name left, byte start, byte len, cg_type ti
 /**********************************************************************************/
 {
 #ifndef NDEBUG
-    tn_btn      retn;
+    tn      retn;
 
     EchoAPI( "CGBitMask( %n, %x, %x, %t )", left, start, len, tipe );
     hdlUseOnce( CG_NAMES, left );
-    retn.b = TGBitMask( left, start, len, TypeAddress( tipe ) );
-    hdlAddUnary( CG_NAMES, retn.t, left );
-    return EchoAPICgnameReturn( retn.t );
+    retn = TGBitMask( left, start, len, TypeAddress( tipe ) );
+    hdlAddUnary( CG_NAMES, retn, left );
+    return EchoAPICgnameReturn( retn );
 #else
     return( TGBitMask( left, start, len, TypeAddress( tipe ) ) );
 #endif
@@ -1791,13 +1768,13 @@ extern  code_lbl    *AskForSymLabel( pointer hdl, cg_class class )
     }
 }
 
-extern  import_handle   AskImportHandle( sym_handle sym )
+extern  import_handle   AskImportHandle( cg_sym_handle sym )
 /*******************************************************/
 {
     return( ((bck_info *)FEBack( sym ))->imp );
 }
 
-extern  void    TellImportHandle( sym_handle sym, import_handle imp )
+extern  void    TellImportHandle( cg_sym_handle sym, import_handle imp )
 /*******************************************************************/
 {
     ((bck_info *)FEBack( sym ))->imp = imp;

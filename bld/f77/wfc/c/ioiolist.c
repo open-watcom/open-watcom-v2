@@ -88,11 +88,11 @@ static  bool    HasUnion( sym_id fld ) {
 
     for(;;) {
         if( fld == NULL ) return( FALSE );
-        if( fld->fd.typ == FT_STRUCTURE ) {
-            if( HasUnion( fld->fd.xt.record->fl.sym_fields ) ) break;
+        if( fld->u.fd.typ == FT_STRUCTURE ) {
+            if( HasUnion( fld->u.fd.xt.record->fl.sym_fields ) ) break;
         }
-        if( fld->fd.typ == FT_UNION ) break;
-        fld = fld->fd.link;
+        if( fld->u.fd.typ == FT_UNION ) break;
+        fld = fld->u.fd.link;
     }
     return( TRUE );
 }
@@ -101,7 +101,7 @@ static  bool    HasUnion( sym_id fld ) {
 static  void    ChkStructIO( sym_id sym ) {
 //========================================
 
-    if( HasUnion( sym->sd.fl.sym_fields ) ) {
+    if( HasUnion( sym->u.sd.fl.sym_fields ) ) {
         if( ( StmtSw & SS_DATA_INIT ) || !NotFormatted() ) {
             StructErr( SP_STRUCT_HAS_UNION, sym );
         }
@@ -197,20 +197,20 @@ void    ListItem( void ) {
             Error( SX_SURP_OPR );
         }
     } else if( RecArrName() ) {
-        CITNode->sym_ptr->ns.u1.s.xflags |= SY_DEFINED;
+        CITNode->sym_ptr->u.ns.u1.s.xflags |= SY_DEFINED;
         ChkAssumed();
         if( CITNode->typ == FT_STRUCTURE ) {
-            ChkStructIO( CITNode->sym_ptr->ns.xt.sym_record );
+            ChkStructIO( CITNode->sym_ptr->u.ns.xt.sym_record );
             GIOStructArray();
         } else {
             GIOArray();
         }
     } else if( CITNode->typ == FT_STRUCTURE ) {
-        CITNode->sym_ptr->ns.u1.s.xflags |= SY_DEFINED;
+        CITNode->sym_ptr->u.ns.u1.s.xflags |= SY_DEFINED;
         if( CITNode->opn.us & USOPN_FLD ) {
-            sd = CITNode->value.st.field_id->fd.xt.sym_record;
+            sd = CITNode->value.st.field_id->u.fd.xt.sym_record;
         } else {
-            sd = CITNode->sym_ptr->ns.xt.sym_record;
+            sd = CITNode->sym_ptr->u.ns.xt.sym_record;
         }
         ChkStructIO( sd );
         GIOStruct( sd );

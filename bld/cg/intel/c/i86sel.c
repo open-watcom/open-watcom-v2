@@ -38,10 +38,11 @@
 #include "seldef.h"
 #include "cgswitch.h"
 #include "data.h"
-#include "cgprotos.h"
 #include "types.h"
 #include "makeins.h"
 #include "objout.h"
+#include "treeprot.h"
+#include "cgprotos.h"
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
 #define MIN_LVALUES     5            /* to make it worth while for long sca*/
@@ -72,7 +73,6 @@ extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  void            GenCodePtr(pointer);
 extern  void            GenSelEntry(bool);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
-extern  tn              TGLeaf(an);
 extern  name            *GenIns(an);
 extern  void            Gen2ByteValue(unsigned_16);
 extern  void            BGDone(an);
@@ -81,7 +81,6 @@ extern  signed_32       NumValues(select_list*,signed_32);
 extern  int             SelCompare(signed_32,signed_32);
 extern  void            AddIns(instruction*);
 extern  an              BGInteger( signed_32, type_def * );
-extern  tn              TGBinary( cg_op, tn, tn, type_def * );
 
 /* forward declarations */
 static  void    GenValuesBackward( select_list *list, signed_32 hi,

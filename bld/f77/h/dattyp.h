@@ -81,7 +81,7 @@ typedef struct arr_desc {
 
 #define MAX_INT_SIZE    11       //  buffer for 32-bit integer strings
 
-typedef     union symbol        *sym_id;
+typedef struct symbol   *sym_id;
 
 typedef union ftn_type {
     logstar1            logstar1;

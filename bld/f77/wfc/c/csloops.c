@@ -270,23 +270,23 @@ void InitDo( signed_32 term )
         CkTypeDeclared();
         do_var = CITNode->sym_ptr;
         BIOutSymbol( do_var );
-        do_var->ns.flags |= SY_REFERENCED;
-        do_var->ns.u1.s.xflags |= SY_DEFINED;
-        if( do_var->ns.flags & SY_DO_PARM ) {
+        do_var->u.ns.flags |= SY_REFERENCED;
+        do_var->u.ns.u1.s.xflags |= SY_DEFINED;
+        if( do_var->u.ns.flags & SY_DO_PARM ) {
             Error( DO_PARM_REDEFINED );
         }
         do_pointer->do_parm = do_var;   // remember id of "i"
         ReqNextOpr( OPR_EQU, EQ_NO_EQUALS );
         if( StmtSw & SS_DATA_INIT ) {
-            if( !_IsTypeInteger( do_var->ns.u1.s.typ ) ) {
+            if( !_IsTypeInteger( do_var->u.ns.u1.s.typ ) ) {
                 NameErr( DA_BAD_DO_VAR, do_var );
             }
             do_var = STShadow( do_var );
-            CITNode->flags = do_var->ns.flags;
+            CITNode->flags = do_var->u.ns.flags;
         }
         CITNode->sym_ptr = do_var;
-        GDoInit( do_var->ns.u1.s.typ );
-        do_var->ns.flags |= SY_DO_PARM;
+        GDoInit( do_var->u.ns.u1.s.typ );
+        do_var->u.ns.flags |= SY_DO_PARM;
     }
 }
 
@@ -311,11 +311,11 @@ void TermDo( void )
             }
             GDoEnd();
             do_var = do_pointer->do_parm;
-            if( (do_var->ns.flags & SY_SPECIAL_PARM) &&
-                !(do_var->ns.flags & SY_PS_ENTRY) ) {
+            if( (do_var->u.ns.flags & SY_SPECIAL_PARM) &&
+                !(do_var->u.ns.flags & SY_PS_ENTRY) ) {
                 STUnShadow( do_var );
             }
-            do_var->ns.flags &= ~SY_DO_PARM;
+            do_var->u.ns.flags &= ~SY_DO_PARM;
             if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
                 GLabel( CSHead->bottom );
             }

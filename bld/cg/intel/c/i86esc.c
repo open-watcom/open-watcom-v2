@@ -50,7 +50,7 @@
 
 extern  void            DbgSetBase( void );
 extern  void            OutFPPatch(fp_patches);
-extern  void            OutImport(sym_handle,fix_class,bool);
+extern  void            OutImport(cg_sym_handle,fix_class,bool);
 extern  void            OutRTImport(rt_class,fix_class);
 extern  void            OutRTImportRel(rt_class,fix_class,bool rel);
 extern  void            OutSelect(bool);
@@ -82,7 +82,7 @@ extern  unsigned        SavePendingLine(unsigned);
 extern bool             UseImportForm(fe_attr);
 extern void             OutSpecialCommon(import_handle,fix_class,bool);
 
-static void             DoRelocRef( sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
+static void             DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
 static  void            OutShortDisp( code_lbl *lbl );
 static  void            OutCodeDisp( code_lbl *lbl, fix_class f, bool rel, oc_class class );
 
@@ -90,16 +90,16 @@ extern byte             *NopLists[];
 
 /* Grammar of Escapes :*/
 /**/
-/* Sequence                                             Meaning*/
-/* ========                                             ========*/
+/* Sequence                                                 Meaning*/
+/* ========                                                 ========*/
 /**/
-/* ESC, ESC                                             actual ESC byte */
-/* ESC, IMP <LDOF|OFST|BASE|SELF>, sym_handle <,offset> import reference */
-/* ESC, REL <LDOF|BASE|OFST>, segid                     relocate, with seg-id*/
-/* ESC, SYM <LDOF|OFST|SELF>, sym_handle <,offset>      unknown sym ref*/
-/* ESC, LBL <LDOF|OFST|SELF>, segid, lbl_handle, <,offset> ptr reference*/
-/* ESC, ABS objhandle, len, offset                      object patch*/
-/* ESC, FUN byte                                        for 87 instructions*/
+/* ESC, ESC                                                 actual ESC byte */
+/* ESC, IMP <LDOF|OFST|BASE|SELF>, cg_sym_handle <,offset>  import reference */
+/* ESC, REL <LDOF|BASE|OFST>, segid                         relocate, with seg-id */
+/* ESC, SYM <LDOF|OFST|SELF>, cg_sym_handle <,offset>       unknown sym ref */
+/* ESC, LBL <LDOF|OFST|SELF>, segid, lbl_handle, <,offset>  ptr reference */
+/* ESC, ABS objhandle, len, offset                          object patch */
+/* ESC, FUN byte                                            for 87 instructions*/
 /**/
 /*       OFST bit on means offset follows*/
 /*       LDOF means loader resolved offset*/
@@ -150,10 +150,9 @@ extern  void    DoFunnyRef( int segover ) {
 }
 
 
-extern  void  DoFESymRef( sym_handle sym, cg_class class, offset val,
-                                fe_fixup_types fixup ) {
-/*******************************************************************/
-
+extern  void  DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types fixup )
+/*********************************************************************************************/
+{
     fe_attr             attr;
     escape_class        kind;
 
@@ -186,7 +185,8 @@ extern  void  DoFESymRef( sym_handle sym, cg_class class, offset val,
         } else if( attr & FE_GLOBAL ) {
             DoRelocRef( sym, CG_FE, AskSegID( sym, CG_FE ), val, kind );
         } else {
-            DoRelocRef( AskForSymLabel( sym, CG_FE ), CG_LBL, AskSegID( sym, CG_FE ), val, kind );
+            // handle mismatch Fix it!
+            DoRelocRef( (cg_sym_handle)AskForSymLabel( sym, CG_FE ), CG_LBL, AskSegID( sym, CG_FE ), val, kind );
         }
     } else {                                /* CG_TBL, CG_LBL or CG_BCK*/
         DoRelocRef( sym, class, AskSegID( sym, class ), val, kind );
@@ -197,8 +197,7 @@ extern  void  DoFESymRef( sym_handle sym, cg_class class, offset val,
 extern  void    DoSymRef( name *opnd, offset val, bool base ) {
 /*************************************************************/
 
-    DoFESymRef( opnd->v.symbol, opnd->m.memory_type, val,
-                base ? FE_FIX_BASE : FE_FIX_OFF );
+    DoFESymRef( opnd->v.symbol, opnd->m.memory_type, val, base ? FE_FIX_BASE : FE_FIX_OFF );
 }
 
 
@@ -211,7 +210,7 @@ extern  void    DoSegRef( segment_id seg ) {
     EmitOffset( 0 );
 }
 
-static  void    DoRelocRef( sym_handle sym, cg_class class,
+static  void    DoRelocRef( cg_sym_handle sym, cg_class class,
                     segment_id seg, offset val, escape_class kind )
 /*****************************************************************/
 {
@@ -386,7 +385,7 @@ static  void    OutCodeDisp( code_lbl *lbl, fix_class f,
 /********************************************************/
 
     offset              addr;
-    sym_handle          sym;
+    cg_sym_handle       sym;
 
     sym = AskForLblSym( lbl );
     if( AskIfRTLabel( lbl ) ) {
@@ -432,7 +431,7 @@ static  code_lbl    *ExpandObj( byte *cur, int explen ) {
     byte                *fini;
     escape_class        key;
     code_lbl            *lbl;
-    sym_handle          sym;
+    cg_sym_handle       sym;
     offset              val = 0;
     segment_id          seg;
     fix_class           class;
@@ -522,8 +521,8 @@ static  code_lbl    *ExpandObj( byte *cur, int explen ) {
             }
             break;
         case IMP:
-            OutImport( *(sym_handle *)cur, class, rel );
-            cur += sizeof( sym_handle * );
+            OutImport( *(pointer *)cur, class, rel );
+            cur += sizeof( pointer );
             val = 0;
             break;
         case ABS:
@@ -547,10 +546,10 @@ static  code_lbl    *ExpandObj( byte *cur, int explen ) {
         if( class == F_BASE ) {
             _OutFarSeg( val );
         } else if ( class == F_OFFSET || class == F_LDR_OFFSET ) {
-            _OutFarOff( val );          /* offset*/
+            _OutFarOff( val );      /* offset */
         } else if( class == F_PTR ) {
             _OutFarOff( val );
-            _OutFarSeg( 0 );        /* segment*/
+            _OutFarSeg( 0 );        /* segment */
         }
     }
     return( lbl );
@@ -560,7 +559,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl )
 /******************************************************/
 {
     code_lbl            *lbl;
-    sym_handle          sym;
+    cg_sym_handle       sym;
     oc_class            base;
     int                 len;
     offset              lc;

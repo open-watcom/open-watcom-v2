@@ -51,9 +51,9 @@ static  sym_id  AddStruct( char *name, int length ) {
     sym_id      sym;
 
     sym = FMemAlloc( sizeof( fstruct ) + AllocName( length ) );
-    sym->sd.dbh = 0;
-    sym->sd.name_len = length;
-    memcpy( &sym->sd.name, name, length );
+    sym->u.sd.dbh = 0;
+    sym->u.sd.name_len = length;
+    memcpy( &sym->u.sd.name, name, length );
     return( sym );
 }
 
@@ -68,10 +68,10 @@ sym_id  FindStruct( char *name, int len ) {
     head = RList;
     for(;;) {
         if( head == NULL ) return( NULL );
-        if( head->sd.name_len == len ) {
-            if( memcmp( name, &head->sd.name, len ) == 0 ) return( head );
+        if( head->u.sd.name_len == len ) {
+            if( memcmp( name, &head->u.sd.name, len ) == 0 ) return( head );
         }
-        head = head->sd.link;
+        head = head->u.sd.link;
     }
 }
 
@@ -108,9 +108,9 @@ sym_id  STStruct( char *name, int length ) {
     }
     if( sym == NULL ) {
         sym = AddStruct( name, length );
-        sym->sd.link = RList;
-        sym->sd.fl.fields = NULL;
-        sym->sd.size = 0;
+        sym->u.sd.link = RList;
+        sym->u.sd.fl.fields = NULL;
+        sym->u.sd.size = 0;
         RList = sym;
     }
     return( sym );
@@ -122,8 +122,8 @@ char    *STStructName( sym_id sym, char *buff ) {
 
 // Get structure name.
 
-    memcpy( buff, &sym->sd.name, sym->sd.name_len );
-    buff += sym->sd.name_len;
+    memcpy( buff, &sym->u.sd.name, sym->u.sd.name_len );
+    buff += sym->u.sd.name_len;
     *buff = NULLCHAR;
     return( buff );
 
@@ -135,8 +135,8 @@ char    *STFieldName( sym_id sym, char *buff ) {
 
 // Get structure name.
 
-    memcpy( buff, &sym->fd.name, sym->fd.name_len );
-    buff += sym->fd.name_len;
+    memcpy( buff, &sym->u.fd.name, sym->u.fd.name_len );
+    buff += sym->u.fd.name_len;
     *buff = NULLCHAR;
     return( buff );
 
@@ -153,25 +153,25 @@ static  sym_id  *Strut( sym_id *p_field, char *name, uint len ) {
     for(;;) {
         field = *p_field;
         if( field == NULL ) return( p_field );
-        if( field->fd.typ == FT_UNION ) {
+        if( field->u.fd.typ == FT_UNION ) {
 	    q_field = NULL;
-            for( map = field->fd.xt.sym_record; map != NULL; map = map->sd.link ) {
-                q_field = Strut( &map->sd.fl.sym_fields, name, len );
+            for( map = field->u.fd.xt.sym_record; map != NULL; map = map->u.sd.link ) {
+                q_field = Strut( &map->u.sd.fl.sym_fields, name, len );
                 if( *q_field != NULL ) {
                     FieldErr( SP_DUPLICATE_FIELD, *q_field );
                 }
             }
-            if( ( SgmtSw & SG_DEFINING_MAP ) && ( field->fd.link == NULL ) ) {
+            if( ( SgmtSw & SG_DEFINING_MAP ) && ( field->u.fd.link == NULL ) ) {
                 return( q_field );
             }
         } else {
-            if( field->fd.name_len == len ) {
-                if( memcmp( name, &field->fd.name, len ) == 0 ) {
+            if( field->u.fd.name_len == len ) {
+                if( memcmp( name, &field->u.fd.name, len ) == 0 ) {
                     FieldErr( SP_DUPLICATE_FIELD, field );
                 }
             }
         }
-        p_field = &field->fd.link;
+        p_field = &field->u.fd.link;
     }
 }
 
@@ -185,8 +185,8 @@ static  sym_id  AddField( char *name, int length ) {
     sym_id      sym;
 
     sym = FMemAlloc( sizeof( field ) + AllocName( length ) );
-    sym->fd.name_len = length;
-    memcpy( &sym->fd.name, name, length );
+    sym->u.fd.name_len = length;
+    memcpy( &sym->u.fd.name, name, length );
     return( sym );
 }
 
@@ -201,10 +201,10 @@ sym_id  STField( char *name, uint len ) {
     if( len > MAX_SYMLEN ) {
         len = MAX_SYMLEN;
     }
-    p_field = Strut( &CurrStruct->sd.fl.sym_fields, name, len );
+    p_field = Strut( &CurrStruct->u.sd.fl.sym_fields, name, len );
     *p_field = AddField( name, len );
-    (*p_field)->fd.link = NULL;
-    (*p_field)->fd.dim_ext = NULL;
+    (*p_field)->u.fd.link = NULL;
+    (*p_field)->u.fd.dim_ext = NULL;
     return( *p_field );
 }
 
@@ -222,38 +222,38 @@ static  sym_id  LookupField( sym_id field, char *name, uint len,
     f_offset = 0;
     for(;;) {
         if( field == NULL ) return( NULL );
-        if( field->fd.typ == FT_UNION ) {
+        if( field->u.fd.typ == FT_UNION ) {
             size = 0;
-            map = field->fd.xt.sym_record;
+            map = field->u.fd.xt.sym_record;
             while( map != NULL ) {
-                u_field = LookupField( map->sd.fl.sym_fields, name, len, &f_size );
+                u_field = LookupField( map->u.sd.fl.sym_fields, name, len, &f_size );
                 if( u_field != NULL ) {
                     *offset = f_offset + f_size;
                     return( u_field );
                 }
-                if( size < map->sd.size ) {
-                    size = map->sd.size;
+                if( size < map->u.sd.size ) {
+                    size = map->u.sd.size;
                 }
-                map = map->sd.link;
+                map = map->u.sd.link;
             }
         } else {
-            if( field->fd.name_len == len ) {
-                if( memcmp( name, &field->fd.name, len ) == 0 ) {
+            if( field->u.fd.name_len == len ) {
+                if( memcmp( name, &field->u.fd.name, len ) == 0 ) {
                     *offset = f_offset;
                     return( field );
                 }
             }
-            if( field->fd.typ == FT_STRUCTURE ) {
-                size = field->fd.xt.record->size;
+            if( field->u.fd.typ == FT_STRUCTURE ) {
+                size = field->u.fd.xt.record->size;
             } else {
-                size = field->fd.xt.size;
+                size = field->u.fd.xt.size;
             }
-            if( field->fd.dim_ext != NULL ) {
-                size *= field->fd.dim_ext->num_elts;
+            if( field->u.fd.dim_ext != NULL ) {
+                size *= field->u.fd.dim_ext->num_elts;
             }
         }
         f_offset += size;
-        field = field->fd.link;
+        field = field->u.fd.link;
     }
 }
 
@@ -281,52 +281,52 @@ bool    CalcStructSize( sym_id sd ) {
     intstar4    total_size;
 
     // in case size of structure already calculated
-    if( sd->sd.size != 0 ) return( FALSE );
-    saved_link = sd->sd.link;
+    if( sd->u.sd.size != 0 ) return( FALSE );
+    saved_link = sd->u.sd.link;
     if( saved_link == sd ) {
         return( TRUE );         // recursion detected!
     }
-    sd->sd.link = sd;           // to protect against recursion
+    sd->u.sd.link = sd;           // to protect against recursion
     total_size = 0;
-    field = sd->sd.fl.sym_fields;
+    field = sd->u.sd.fl.sym_fields;
     while( field != NULL ) {
         size = 0;
-        if( field->fd.typ == FT_UNION ) {
-            map = field->fd.xt.sym_record;
+        if( field->u.fd.typ == FT_UNION ) {
+            map = field->u.fd.xt.sym_record;
             while( map != NULL ) {
                 if( CalcStructSize( map ) ) {
-                    sd->sd.link = saved_link;
+                    sd->u.sd.link = saved_link;
                     return( TRUE );             // recursion detected
                 }
-                if( size < map->sd.size ) {
-                    size = map->sd.size;
+                if( size < map->u.sd.size ) {
+                    size = map->u.sd.size;
                 }
-                map = map->sd.link;
+                map = map->u.sd.link;
             }
         } else {
-            if( field->fd.typ == FT_STRUCTURE ) {
+            if( field->u.fd.typ == FT_STRUCTURE ) {
                 if( StmtSw & SS_DATA_INIT ) {
-                    if( field->fd.xt.record->fl.fields == NULL ) {
-                        StructErr( SP_UNDEF_STRUCT, field->fd.xt.sym_record );
+                    if( field->u.fd.xt.record->fl.fields == NULL ) {
+                        StructErr( SP_UNDEF_STRUCT, field->u.fd.xt.sym_record );
                     }
                 }
-                if( CalcStructSize( field->fd.xt.sym_record ) ) {
-                    sd->sd.link = saved_link;
+                if( CalcStructSize( field->u.fd.xt.sym_record ) ) {
+                    sd->u.sd.link = saved_link;
                     return( TRUE );             // recursion detected
                 }
-                size = field->fd.xt.record->size;
+                size = field->u.fd.xt.record->size;
             } else {
-                size = field->fd.xt.size;
+                size = field->u.fd.xt.size;
             }
-            if( field->fd.dim_ext != NULL ) {
-                size *= field->fd.dim_ext->num_elts;
+            if( field->u.fd.dim_ext != NULL ) {
+                size *= field->u.fd.dim_ext->num_elts;
             }
         }
         total_size += size;
-        field = field->fd.link;
+        field = field->u.fd.link;
     }
-    sd->sd.size = total_size;
-    sd->sd.link = saved_link;                   // restore saved link
+    sd->u.sd.size = total_size;
+    sd->u.sd.link = saved_link;                   // restore saved link
     return( FALSE );
 }
 
@@ -346,17 +346,17 @@ void    STUnion( void ) {
     //                      ENDMAP
     if( CurrStruct == NULL ) return;
     un = FMemAlloc( sizeof( funion ) );
-    un->fd.typ = FT_UNION;
-    un->fd.link = NULL;
-    un->fd.xt.record = NULL;
-    field = CurrStruct->sd.fl.sym_fields;
+    un->u.fd.typ = FT_UNION;
+    un->u.fd.link = NULL;
+    un->u.fd.xt.record = NULL;
+    field = CurrStruct->u.sd.fl.sym_fields;
     if( field == NULL ) {
-        CurrStruct->sd.fl.sym_fields = un;
+        CurrStruct->u.sd.fl.sym_fields = un;
     } else {
-        while( field->fd.link != NULL ) {
-            field = field->fd.link;
+        while( field->u.fd.link != NULL ) {
+            field = field->u.fd.link;
         }
-        field->fd.link = un;
+        field->u.fd.link = un;
     }
 }
 
@@ -374,26 +374,26 @@ void    STMap( void ) {
     // Consider:        MAP
     //                      INTEGER I
     if( CurrStruct == NULL ) return;
-    field = CurrStruct->sd.fl.sym_fields;
+    field = CurrStruct->u.sd.fl.sym_fields;
     // make sure that a UNION was defined
     // Consider:      STRUCTURE /STRUCT/
     //                    MAP
     //                        INTEGER I
     if( field == NULL ) return;
     md = FMemAlloc( sizeof( fmap ) );
-    md->sd.link = NULL;
-    md->sd.fl.fields = NULL;
-    md->sd.size = 0;
-    while( field->fd.link != NULL ) {
-        field = field->fd.link;
+    md->u.sd.link = NULL;
+    md->u.sd.fl.fields = NULL;
+    md->u.sd.size = 0;
+    while( field->u.fd.link != NULL ) {
+        field = field->u.fd.link;
     }
-    map = field->fd.xt.sym_record;
+    map = field->u.fd.xt.sym_record;
     if( map == NULL ) {
-        field->fd.xt.sym_record = md;
+        field->u.fd.xt.sym_record = md;
     } else {
-        while( map->sd.link != NULL ) {
-            map = map->sd.link;
+        while( map->u.sd.link != NULL ) {
+            map = map->u.sd.link;
         }
-        map->sd.link = md;
+        map->u.sd.link = md;
     }
 }

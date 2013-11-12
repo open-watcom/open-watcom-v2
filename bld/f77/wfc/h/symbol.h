@@ -172,19 +172,19 @@ typedef struct remote_block {
 
 // Manipulation macros
 #define _MgcIsMagic( sym ) \
-        ( sym->ns.u2.magic_flags & MAGIC_BIT )
+        ( sym->u.ns.u2.magic_flags & MAGIC_BIT )
 
 #define _MgcClass( sym ) \
-        ( sym->ns.u2.magic_flags & MAGIC_CLASSMASK )
+        ( sym->u.ns.u2.magic_flags & MAGIC_CLASSMASK )
 
 #define _MgcSetClass( sym, class ) \
-        sym->ns.u2.magic_flags = ( MAGIC_BIT | class )
+        sym->u.ns.u2.magic_flags = ( MAGIC_BIT | class )
 
 #define _MgcSetLocalTemp( sym ) \
-        sym->ns.u2.magic_flags |= ( MAGIC_BIT | MAGIC_LOCALIZED )
+        sym->u.ns.u2.magic_flags |= ( MAGIC_BIT | MAGIC_LOCALIZED )
 
 #define _MgcIsLocalTemp( sym ) \
-        ( _MgcIsMagic( sym ) && ( sym->ns.u2.magic_flags & MAGIC_LOCALIZED ) )
+        ( _MgcIsMagic( sym ) && ( sym->u.ns.u2.magic_flags & MAGIC_LOCALIZED ) )
 
 
 typedef union tmp_info {
@@ -289,12 +289,14 @@ typedef struct named_symbol {
     char        name[STD_SYMLEN];       // symbol name
 } named_symbol;
 
-typedef union symbol {
-    struct named_symbol ns;             // named symbol
-    struct literal      lt;             // literal
-    struct constant     cn;             // constant
-    struct stmtno       st;             // statement number
-    struct fstruct      sd;             // structure definition
-    struct field        fd;             // field definition
-    struct name_list    nl;             // name list definition
+typedef struct symbol {
+    union {
+        struct named_symbol ns;         // named symbol
+        struct literal      lt;         // literal
+        struct constant     cn;         // constant
+        struct stmtno       st;         // statement number
+        struct fstruct      sd;         // structure definition
+        struct field        fd;         // field definition
+        struct name_list    nl;         // name list definition
+    } u;
 } symbol;

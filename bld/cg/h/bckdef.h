@@ -31,7 +31,6 @@
 
 
 /* aligned */
-typedef pointer         sym_handle;
 typedef pointer         targ_handle;
 typedef int             import_handle;
 typedef pointer         abspatch_handle;

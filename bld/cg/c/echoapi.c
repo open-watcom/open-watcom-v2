@@ -522,7 +522,7 @@ static char* callBackName       // MAKE CALL-BACK NAME FOR PRINTING
 {
     char *name;                 // - name to be used
 
-    name = FEExtName( rtn, EXTN_CALLBACKNAME );
+    name = FEExtName( (cg_sym_handle)rtn, EXTN_CALLBACKNAME );
     if( name == NULL ) {
         sprintf( buffer, "%p", rtn );
     } else {

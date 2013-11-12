@@ -96,7 +96,7 @@ extern  code_lbl    *RTLabel( rt_class rtindex ) {
 
     lbl = RTLbls[rtindex];
     if( lbl == NULL ) {
-        lbl = AskRTLabel( (sym_handle *)rtindex );
+        lbl = AskRTLabel( (cg_sym_handle)(pointer_int)rtindex );
         RTLbls[rtindex] = lbl;
     }
     return( lbl );

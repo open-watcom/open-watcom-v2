@@ -145,7 +145,7 @@ void    FreeNmList( sym_id sym ) {
 // Free a symbol table list of name lists.
 
     while( sym != NULL ) {
-        FreeChain( &sym->nl.group_list );
+        FreeChain( &sym->u.nl.group_list );
         sym = FreeLink( sym );
     }
 }
@@ -156,13 +156,13 @@ sym_id  FreeREntry( sym_id sym ) {
 
     sym_id      fd;
 
-    fd = sym->sd.fl.sym_fields;
+    fd = sym->u.sd.fl.sym_fields;
     while( fd != NULL ) {
-        if( fd->fd.typ == FT_UNION ) {
-            FreeRList( fd->fd.xt.sym_record );
+        if( fd->u.fd.typ == FT_UNION ) {
+            FreeRList( fd->u.fd.xt.sym_record );
         } else {
-            if( fd->fd.dim_ext != NULL ) {
-                FMemFree( fd->fd.dim_ext );
+            if( fd->u.fd.dim_ext != NULL ) {
+                FMemFree( fd->u.fd.dim_ext );
             }
         }
         fd = FreeLink( fd );
@@ -208,22 +208,22 @@ sym_id        STFreeName( sym_id sym_ptr ) {
 
 // Free a symbol name.
 
-    if( ( sym_ptr->ns.flags & SY_CLASS ) == SY_COMMON ) {
+    if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_COMMON ) {
         sym_ptr = FreeLink( sym_ptr );
     } else {
-        if( ( sym_ptr->ns.flags & SY_CLASS ) == SY_VARIABLE ) {
-            if( sym_ptr->ns.flags & SY_SUBSCRIPTED ) {
-                if( sym_ptr->ns.si.va.u.dim_ext != NULL ) {
-                    FMemFree( sym_ptr->ns.si.va.u.dim_ext );
+        if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+            if( sym_ptr->u.ns.flags & SY_SUBSCRIPTED ) {
+                if( sym_ptr->u.ns.si.va.u.dim_ext != NULL ) {
+                    FMemFree( sym_ptr->u.ns.si.va.u.dim_ext );
                 }
             }
-            if( sym_ptr->ns.flags & SY_IN_EC ) {
-                if( sym_ptr->ns.si.va.vi.ec_ext != NULL ) {
-                    FMemFree( sym_ptr->ns.si.va.vi.ec_ext );
+            if( sym_ptr->u.ns.flags & SY_IN_EC ) {
+                if( sym_ptr->u.ns.si.va.vi.ec_ext != NULL ) {
+                    FMemFree( sym_ptr->u.ns.si.va.vi.ec_ext );
                 }
             }
-        } else if( ( sym_ptr->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-            if( ( sym_ptr->ns.flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
+        } else if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+            if( ( sym_ptr->u.ns.flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
                 FreeSFHeader( sym_ptr );
             }
         }

@@ -190,7 +190,7 @@ label_handle    GetStmtLabel( sym_id sn ) {
 
 // Get a statement label.
 
-    return( GetLabel( sn->st.address ) );
+    return( GetLabel( sn->u.st.address ) );
 }
 
 
@@ -247,14 +247,14 @@ void    FCAssign( void ) {
     sym_id      stmt;
 
     stmt = GetPtr();
-    if( stmt->st.flags & SN_FORMAT ) {
+    if( stmt->u.st.flags & SN_FORMAT ) {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGBackName( GetFmtLabel( stmt->st.address ),
+                          CGBackName( GetFmtLabel( stmt->u.st.address ),
                                       TY_LOCAL_POINTER ),
                           TY_LOCAL_POINTER ) );
     } else {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGInteger( stmt->st.address, TY_INTEGER ),
+                          CGInteger( stmt->u.st.address, TY_INTEGER ),
                           TY_INTEGER ) );
         RefStmtLabel( stmt );
     }
@@ -319,10 +319,10 @@ void    FCAssignedGOTOList( void ) {
     for(;;) {
         sn = GetPtr();
         if( sn == NULL ) break;
-        if( ( sn->st.flags & SN_IN_GOTO_LIST ) == 0 ) {
-            sn->st.flags |= SN_IN_GOTO_LIST;
+        if( ( sn->u.st.flags & SN_IN_GOTO_LIST ) == 0 ) {
+            sn->u.st.flags |= SN_IN_GOTO_LIST;
             label = GetStmtLabel( sn );
-            CGSelCase( s, label, sn->st.address );
+            CGSelCase( s, label, sn->u.st.address );
         }
     }
     label = BENewLabel();
@@ -334,7 +334,7 @@ void    FCAssignedGOTOList( void ) {
     for(;;) {
         sn = GetPtr();
         if( sn == NULL ) break;
-        sn->st.flags &= ~SN_IN_GOTO_LIST;
+        sn->u.st.flags &= ~SN_IN_GOTO_LIST;
         RefStmtLabel( sn );
     }
 }
@@ -357,7 +357,7 @@ void    FCStartRB( void ) {
     sym_id      rb;
 
     rb = GetPtr();
-    CGControl( O_LABEL, NULL, GetLabel( rb->ns.si.rb.entry ) );
+    CGControl( O_LABEL, NULL, GetLabel( rb->u.ns.si.rb.entry ) );
     RBReferenced( rb );
 }
 
@@ -371,7 +371,7 @@ void    FCWarp( void ) {
     warp_label  init_label;
 
     arr = GetPtr();
-    init_label = arr->ns.si.va.u.dim_ext->l.init_label;
+    init_label = arr->u.ns.si.va.u.dim_ext->l.init_label;
     WarpReturn = FCodeSeek( init_label );
 }
 
@@ -393,7 +393,7 @@ void    FCExecute( void ) {
     sym_id      rb;
 
     rb = GetPtr();
-    CGControl( O_INVOKE_LABEL, NULL, GetLabel( rb->ns.si.rb.entry ) );
+    CGControl( O_INVOKE_LABEL, NULL, GetLabel( rb->u.ns.si.rb.entry ) );
     RBReferenced( rb );
 }
 
@@ -403,9 +403,9 @@ static  void    RBReferenced( sym_id rb ) {
 
 // REMOTE BLOCK has been referenced.
 
-    rb->ns.si.rb.ref_count--;
-    if( rb->ns.si.rb.ref_count == 0 ) {
-        DoneLabel( rb->ns.si.rb.entry );
+    rb->u.ns.si.rb.ref_count--;
+    if( rb->u.ns.si.rb.ref_count == 0 ) {
+        DoneLabel( rb->u.ns.si.rb.entry );
     }
 }
 
@@ -440,11 +440,11 @@ void    FCSFCall( void ) {
     for(;;) {
         sf_arg = GetPtr();
         if( sf_arg == NULL ) break;
-        if( sf_arg->ns.u1.s.typ == FT_CHAR ) {
+        if( sf_arg->u.ns.u1.s.typ == FT_CHAR ) {
             value = Concat( 1, CGFEName( sf_arg, TY_CHAR ) );
         } else {
             sf_type = F772CGType( sf_arg );
-            if( TypeCmplx( sf_arg->ns.u1.s.typ ) ) {
+            if( TypeCmplx( sf_arg->u.ns.u1.s.typ ) ) {
                 XPopCmplx( &z, sf_type );
                 sf_type = CmplxBaseType( sf_type );
                 value = ImagPtr( SymAddr( sf_arg ), sf_type );
@@ -462,7 +462,7 @@ void    FCSFCall( void ) {
             arg_list = CGBinary( O_COMMA, arg_list, value, TY_DEFAULT );
         }
     }
-    if( sf->ns.u1.s.typ == FT_CHAR ) {
+    if( sf->u.ns.u1.s.typ == FT_CHAR ) {
         tmp = GetPtr();
         value = CGUnary( O_POINTS, CGFEName( tmp, TY_CHAR ), TY_CHAR );
         value = CGAssign( CGFEName( sf, TY_CHAR ), value, TY_CHAR );
@@ -482,14 +482,14 @@ void    FCSFCall( void ) {
         if( arg_list != NULL ) {
             CGTrash( arg_list );
         }
-        curr_obj = FCodeSeek( sf->ns.si.sf.u.sequence );
+        curr_obj = FCodeSeek( sf->u.ns.si.sf.u.sequence );
         GetObjPtr();
         FCodeSequence();
         FCodeSeek( curr_obj );
-        if( sf->ns.u1.s.typ == FT_CHAR ) {
+        if( sf->u.ns.u1.s.typ == FT_CHAR ) {
             CGTrash( XPop() );
             XPush( value );
-        } else if( TypeCmplx( sf->ns.u1.s.typ ) ) {
+        } else if( TypeCmplx( sf->u.ns.u1.s.typ ) ) {
             XPopCmplx( &z, sf_type );
             sf_type = CmplxBaseType( sf_type );
             XPush( TmpVal( MkTmp( z.imagpart, sf_type ), sf_type ) );
@@ -498,12 +498,12 @@ void    FCSFCall( void ) {
             XPush( TmpVal( MkTmp( XPopValue( sf_type ), sf_type ), sf_type ) );
         }
     } else {
-        value = CGWarp( arg_list, GetLabel( sf->ns.si.sf.u.location ), value );
+        value = CGWarp( arg_list, GetLabel( sf->u.ns.si.sf.u.location ), value );
         // consider: y = f( a, f( b, c, d ), e )
         // make sure that inner reference to f gets evaluated before we assign
         // arguments for outer reference
         value = CGEval( value );
-        if( TypeCmplx( sf->ns.u1.s.typ ) ) {
+        if( TypeCmplx( sf->u.ns.u1.s.typ ) ) {
             SplitCmplx( TmpPtr( MkTmp( value, sf_type ), sf_type ), sf_type );
         } else {
             XPush( value );
@@ -527,7 +527,7 @@ void            FCStartSF( void ) {
         sf = GetPtr();
         SFEndLabel = GetU16();
         CGControl( O_GOTO, NULL, GetLabel( SFEndLabel ) );
-        CGControl( O_LABEL, NULL, GetLabel( sf->ns.si.sf.u.location ) );
+        CGControl( O_LABEL, NULL, GetLabel( sf->u.ns.si.sf.u.location ) );
     }
 }
 
@@ -559,13 +559,13 @@ void            FCSFReferenced( void ) {
     sf = SFSymId;
     for(;;) {
         if( sf == NULL ) break;
-        if( sf->ns.si.sf.header->ref_count == 0 ) {
-            if( sf->ns.si.sf.u.location != 0 ) {
-                DoneLabel( sf->ns.si.sf.u.location );
-                sf->ns.si.sf.u.location = 0;
+        if( sf->u.ns.si.sf.header->ref_count == 0 ) {
+            if( sf->u.ns.si.sf.u.location != 0 ) {
+                DoneLabel( sf->u.ns.si.sf.u.location );
+                sf->u.ns.si.sf.u.location = 0;
             }
         }
-        sf = sf->ns.si.sf.header->link;
+        sf = sf->u.ns.si.sf.header->link;
     }
 }
 
@@ -575,7 +575,7 @@ static  void    RefStmtFunc( sym_id sf ) {
 
 // A statement function has been referenced.
 
-    sf->ns.si.sf.header->ref_count--;
+    sf->u.ns.si.sf.header->ref_count--;
 }
 
 
@@ -613,12 +613,12 @@ void    RefStmtLabel( sym_id sn ) {
 
 // Statement number has been referenced.
 
-    if( sn->st.ref_count == 0 ) {
+    if( sn->u.st.ref_count == 0 ) {
         InfoError( CP_ERROR, "unaccounted referenced to label" );
     } else {
-        sn->st.ref_count--;
-        if( sn->st.ref_count == 0 ) {
-            DoneLabel( sn->st.address );
+        sn->u.st.ref_count--;
+        if( sn->u.st.ref_count == 0 ) {
+            DoneLabel( sn->u.st.address );
         }
     }
 }

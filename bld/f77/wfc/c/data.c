@@ -227,11 +227,11 @@ static  void    VarList( void ) {
             ++do_level;
         } else if( ReqName( NAME_VAR_OR_ARR ) ) {
             InitVar = LkSym();
-            if( InitVar->ns.u1.s.typ == FT_STRUCTURE ) {
+            if( InitVar->u.ns.u1.s.typ == FT_STRUCTURE ) {
                 // make sure structure size is calculated - normally
                 // structure size is calculated by StructResolve() which
                 // is not called until the first executable statement
-                CalcStructSize( InitVar->ns.xt.sym_record );
+                CalcStructSize( InitVar->u.ns.xt.sym_record );
             }
             CkFlags();
             opr = CITNode->opr;
@@ -275,7 +275,7 @@ static  bool    HexConst(void) {
         if( *hex_data != 'Z' ) return( FALSE );
         sym = SymFind( hex_data, hex_len );
         if( sym != NULL ) {
-            if( ( sym->ns.flags & SY_CLASS ) == SY_PARAMETER ) return( FALSE );
+            if( ( sym->u.ns.flags & SY_CLASS ) == SY_PARAMETER ) return( FALSE );
         }
         ++hex_data;
     }
@@ -417,16 +417,16 @@ int  MkHexConst( char *hex_data, char *dst, int hex_len ) {
 static  void    CkFlags( void ) {
 //=========================
 
-    if( ( InitVar->ns.flags & SY_CLASS ) != SY_VARIABLE ) {
+    if( ( InitVar->u.ns.flags & SY_CLASS ) != SY_VARIABLE ) {
         ClassNameErr( DA_ILL_NAME, InitVar );
-    } else if( ( InitVar->ns.flags & SY_SUB_PARM ) != 0 ) {
+    } else if( ( InitVar->u.ns.flags & SY_SUB_PARM ) != 0 ) {
         ClassNameErr( DA_ILL_NAME, InitVar );
-    } else if((InitVar->ns.flags & SY_SUBSCRIPTED) && _Allocatable( InitVar )) {
+    } else if((InitVar->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( InitVar )) {
         IllName( InitVar );
     } else {
         // Don't set SY_TYPE otherwise we won't be able to detect whether
         // the type has been explicitly declared when we call ProcDataExpr().
         // SY_TYPE will be set by DSName() when we call ProcDataExpr().
-        InitVar->ns.flags |= SY_USAGE | SY_DATA_INIT;
+        InitVar->u.ns.flags |= SY_USAGE | SY_DATA_INIT;
     }
 }

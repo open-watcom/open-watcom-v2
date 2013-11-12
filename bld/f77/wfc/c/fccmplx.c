@@ -753,20 +753,20 @@ void            PushCmplxConst( sym_id sym ) {
 
     char        fmt_buff[80];
 
-    if( sym->cn.typ == FT_COMPLEX ) {
-        CnvS2S( &sym->cn.value.complex.imagpart, fmt_buff );
+    if( sym->u.cn.typ == FT_COMPLEX ) {
+        CnvS2S( &sym->u.cn.value.complex.imagpart, fmt_buff );
         XPush( CGFloat( fmt_buff, TY_SINGLE ) );
-        CnvS2S( &sym->cn.value.complex.realpart, fmt_buff );
+        CnvS2S( &sym->u.cn.value.complex.realpart, fmt_buff );
         XPush( CGFloat( fmt_buff, TY_SINGLE ) );
-    } else if( sym->cn.typ == FT_DCOMPLEX ) {
-        CnvD2S( &sym->cn.value.dcomplex.imagpart, fmt_buff );
+    } else if( sym->u.cn.typ == FT_DCOMPLEX ) {
+        CnvD2S( &sym->u.cn.value.dcomplex.imagpart, fmt_buff );
         XPush( CGFloat( fmt_buff, TY_DOUBLE ) );
-        CnvD2S( &sym->cn.value.dcomplex.realpart, fmt_buff );
+        CnvD2S( &sym->u.cn.value.dcomplex.realpart, fmt_buff );
         XPush( CGFloat( fmt_buff, TY_DOUBLE ) );
     } else {
-        CnvX2S( &sym->cn.value.xcomplex.imagpart, fmt_buff );
+        CnvX2S( &sym->u.cn.value.xcomplex.imagpart, fmt_buff );
         XPush( CGFloat( fmt_buff, TY_LONGDOUBLE ) );
-        CnvX2S( &sym->cn.value.xcomplex.realpart, fmt_buff );
+        CnvX2S( &sym->u.cn.value.xcomplex.realpart, fmt_buff );
         XPush( CGFloat( fmt_buff, TY_LONGDOUBLE ) );
     }
 }
@@ -786,7 +786,7 @@ void            CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ ) {
     temp_handle tr;
     temp_handle ti;
 
-    flags = sym->ns.flags;
+    flags = sym->u.ns.flags;
     dest = NULL;
     if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
         // assigning to statement function
@@ -797,7 +797,7 @@ void            CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ ) {
         // check for structure type before checking for array
         // Consider:    A(1).X = A(2).X
         //    where A is an array of structures containing complex field X
-        if( sym->ns.u1.s.typ == FT_STRUCTURE ) {
+        if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
             dest = XPop();
             GetU16(); // ignore structure information
         } else if( flags & SY_SUBSCRIPTED ) {

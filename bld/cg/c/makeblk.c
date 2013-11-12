@@ -280,7 +280,7 @@ extern  type_class_def  InitCallState( type_def *tipe )
 /*****************************************************/
 {
     name        *name;
-    sym_handle  sym;
+    cg_sym_handle sym;
     pointer     aux;
 
     sym = AskForLblSym( CurrProc->label );

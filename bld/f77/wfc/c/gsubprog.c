@@ -84,13 +84,13 @@ void    GBegCall( itnode *itptr ) {
 #if _CPU == 386
     {
         aux_info    *aux;
-        aux = AuxLookupName( sp->ns.name, sp->ns.u2.name_len );
+        aux = AuxLookupName( sp->u.ns.name, sp->u.ns.u2.name_len );
         if( aux != NULL ) {
             if( aux->cclass & FAR16_CALL ) {
-                if( (SubProgId->ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
+                if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
                     ProgramInfo.cclass |= THUNK_PROLOG;
                 } else {
-                    aux = AuxLookupAdd( SubProgId->ns.name, SubProgId->ns.u2.name_len );
+                    aux = AuxLookupAdd( SubProgId->u.ns.name, SubProgId->u.ns.u2.name_len );
                     aux->cclass |= THUNK_PROLOG;
                 }
             }
@@ -102,10 +102,10 @@ void    GBegCall( itnode *itptr ) {
     curr_obj = ObjTell();
     OutU16( 0 );
     if( !(Options & OPT_DESCRIPTOR) ) {
-        if( (sp->ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-            if( !(sp->ns.flags & SY_INTRINSIC) ) {
-                if( sp->ns.u1.s.typ == FT_CHAR ) {
-                    OutPtr( GTempString( sp->ns.xt.size ) );
+        if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
+            if( !(sp->u.ns.flags & SY_INTRINSIC) ) {
+                if( sp->u.ns.u1.s.typ == FT_CHAR ) {
+                    OutPtr( GTempString( sp->u.ns.xt.size ) );
                 }
             }
         }
@@ -114,10 +114,10 @@ void    GBegCall( itnode *itptr ) {
     curr_obj = ObjSeek( curr_obj );
     OutU16( num_args );
     ObjSeek( curr_obj );
-    if( (sp->ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-        if( sp->ns.u1.s.typ == FT_CHAR ) {
-            if( (Options & OPT_DESCRIPTOR) || (sp->ns.flags & SY_INTRINSIC) ) {
-                OutPtr( GTempString( sp->ns.xt.size ) );
+    if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
+        if( sp->u.ns.u1.s.typ == FT_CHAR ) {
+            if( (Options & OPT_DESCRIPTOR) || (sp->u.ns.flags & SY_INTRINSIC) ) {
+                OutPtr( GTempString( sp->u.ns.xt.size ) );
             }
         }
     }
@@ -143,7 +143,7 @@ void    GEndCall( itnode *itptr, int num_stmts ) {
             arg = arg->link;
             if( num_stmts == 0 ) break;
         }
-    } else if( (itptr->sym_ptr->ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
+    } else if( (itptr->sym_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         EmitOp( FC_EXPR_DONE );
     }
     SetOpn( itptr, USOPN_SAFE );
@@ -255,8 +255,8 @@ void    GSPProlog( void ) {
 
     SetArgAddrs();
     ReturnValue = SymLookup( "$@RVAL", 6 );
-    ReturnValue->ns.flags |= SY_REFERENCED;
-    ReturnValue->ns.u1.s.xflags |= SY_DEFINED;
+    ReturnValue->u.ns.flags |= SY_REFERENCED;
+    ReturnValue->u.ns.u1.s.xflags |= SY_DEFINED;
 }
 
 
@@ -270,11 +270,11 @@ void    GEPProlog( void ) {
     char        name[MAX_SYMLEN+3];
 
     ep = ArgList->id;
-    ep->ns.si.sp.u.entry = NextLabel();
-    GLabel( ep->ns.si.sp.u.entry );
+    ep->u.ns.si.sp.u.entry = NextLabel();
+    GLabel( ep->u.ns.si.sp.u.entry );
     // by the time we define the label for the entry point, the code that
     // references it will have been executed
-    FreeLabel( ep->ns.si.sp.u.entry );
+    FreeLabel( ep->u.ns.si.sp.u.entry );
     SetArgAddrs();
     if( CommonEntry == NULL ) {
         ptr = name;
@@ -284,17 +284,17 @@ void    GEPProlog( void ) {
         *ptr = '.';
         ptr++;
         *ptr = NULLCHAR;
-        CommonEntry = SymLookup( name, SubProgId->ns.u2.name_len + 2 );
-        if( (SubProgId->ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
-            CommonEntry->ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_SUBROUTINE |
+        CommonEntry = SymLookup( name, SubProgId->u.ns.u2.name_len + 2 );
+        if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
+            CommonEntry->u.ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_SUBROUTINE |
                                     SY_SENTRY | SY_REFERENCED;
         } else {
-            CommonEntry->ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_FUNCTION |
+            CommonEntry->u.ns.flags = SY_USAGE | SY_SUBPROGRAM | SY_FUNCTION |
                                     SY_SENTRY | SY_REFERENCED;
         }
         EPValue = SymLookup( "$@EVAL", 6 );
-        EPValue->ns.flags |= SY_REFERENCED;
-        EPValue->ns.u1.s.xflags |= SY_DEFINED;
+        EPValue->u.ns.flags |= SY_REFERENCED;
+        EPValue->u.ns.u1.s.xflags |= SY_DEFINED;
     }
 }
 
@@ -324,7 +324,7 @@ void    GEpilog( void ) {
 
 // Generate a subprogram epilogue.
 
-    if( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+    if( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
         GNullRetIdx();
     }
     if( EpilogLabel != 0 ) {
@@ -413,7 +413,7 @@ void    GCallWithArgs( void ) {
 static  void    FinishCALL( itnode *sp ) {
 //========================================
 
-    if( ( sp->sym_ptr->ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
+    if( ( sp->sym_ptr->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
         // a FUNCTION invoked in a CALL statement
         EmitOp( FC_EXPR_DONE );
     }

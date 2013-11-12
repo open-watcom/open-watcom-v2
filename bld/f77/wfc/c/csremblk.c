@@ -74,13 +74,13 @@ static bool BlockName( unsigned_16 rb_defined )
     rb_name = FALSE;
     if( ReqName( NAME_REM_BLOCK ) ) {
         sym_ptr = LkSym();
-        if( ( sym_ptr->ns.flags & ~SY_REFERENCED ) == 0 ) {
-            sym_ptr->ns.si.rb.entry = NextLabel();
-            sym_ptr->ns.flags = RB_FLAGS;
+        if( ( sym_ptr->u.ns.flags & ~SY_REFERENCED ) == 0 ) {
+            sym_ptr->u.ns.si.rb.entry = NextLabel();
+            sym_ptr->u.ns.flags = RB_FLAGS;
         }
-        if( ( ( sym_ptr->ns.flags & ~(SY_RB_DEFINED | SY_REFERENCED) ) == RB_FLAGS ) &&
-            ( ( sym_ptr->ns.flags & rb_defined ) == 0 ) ) {
-            sym_ptr->ns.flags |= rb_defined;
+        if( ( ( sym_ptr->u.ns.flags & ~(SY_RB_DEFINED | SY_REFERENCED) ) == RB_FLAGS ) &&
+            ( ( sym_ptr->u.ns.flags & rb_defined ) == 0 ) ) {
+            sym_ptr->u.ns.flags |= rb_defined;
             rb_name = TRUE;
         } else {
             IllName( sym_ptr );
@@ -102,10 +102,10 @@ void CpRemBlock( void )
     GBranch( CSHead->branch );
     if( BlockName( SY_RB_DEFINED ) ) {
         rb = CITNode->sym_ptr;
-        if( ( rb->ns.flags & SY_REFERENCED ) == 0 ) {
-            rb->ns.si.rb.ref_count = 0;
+        if( ( rb->u.ns.flags & SY_REFERENCED ) == 0 ) {
+            rb->u.ns.si.rb.ref_count = 0;
         }
-        rb->ns.si.rb.ref_count++;
+        rb->u.ns.si.rb.ref_count++;
         CSHead->cs_info.rb = rb;
         GStartBlock();
         BIStartRBorEP( rb );
@@ -161,12 +161,12 @@ void CpExecute( void )
     }
     if( BlockName( 0 ) ) {
         rb = CITNode->sym_ptr;
-        if( ( rb->ns.flags & ( SY_RB_DEFINED | SY_REFERENCED ) ) == 0 ) {
-            rb->ns.si.rb.ref_count = 0;
+        if( ( rb->u.ns.flags & ( SY_RB_DEFINED | SY_REFERENCED ) ) == 0 ) {
+            rb->u.ns.si.rb.ref_count = 0;
         }
-        rb->ns.si.rb.ref_count++;
+        rb->u.ns.si.rb.ref_count++;
         BIOutSymbol( rb );              // reference and or declare the sucker
-        rb->ns.flags |= SY_REFERENCED;
+        rb->u.ns.flags |= SY_REFERENCED;
         GExecute();
     }
     AdvanceITPtr();

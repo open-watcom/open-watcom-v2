@@ -71,7 +71,7 @@ cg_name GetAdv( sym_id arr ) {
 
     act_dim_list        *dim_ptr;
 
-    dim_ptr = arr->ns.si.va.u.dim_ext;
+    dim_ptr = arr->u.ns.si.va.u.dim_ext;
     if( dim_ptr->adv == NULL ) {
         // ADV is allocated on the stack
         return( CGFEName( FindAdvShadow( arr ), TY_ADV_ENTRY ) );
@@ -110,13 +110,13 @@ void    FCSubscript( void ) {
     if( Options & OPT_BOUNDS ) {
         DbSubscript( arr );
     } else {
-        if( _AdvRequired( arr->ns.si.va.u.dim_ext ) ) {
+        if( _AdvRequired( arr->u.ns.si.va.u.dim_ext ) ) {
             VariableDims( arr );
         } else {
             ConstDims( arr );
         }
     }
-    if( arr->ns.u1.s.typ == FT_CHAR ) {
+    if( arr->u.ns.u1.s.typ == FT_CHAR ) {
         MakeSCB( GetPtr(), ArrayEltSize( arr ) );
     }
 }
@@ -127,16 +127,13 @@ void    MakeSCB( sym_id scb, cg_name len ) {
 
 // Make an SCB.
 
-    CGTrash( CGAssign( SCBLenAddr( CGFEName( scb, TY_CHAR ) ), len,
-                       TY_INTEGER ) );
+    CGTrash( CGAssign( SCBLenAddr( CGFEName( scb, TY_CHAR ) ), len, TY_INTEGER ) );
     // assumption is that the pointer in the SCB is the first field in
     // the SCB so that when we push the cg_name returned by CGAssign()
     // it is a pointer to the SCB
-    XPush( CGLVAssign( SCBPtrAddr( CGFEName( scb, TY_CHAR ) ),
-                       XPop(), TY_POINTER ) );
+    XPush( CGLVAssign( SCBPtrAddr( CGFEName( scb, TY_CHAR ) ), XPop(), TY_POINTER ) );
 // Don't do it the following way:
-//    CGTrash( CGAssign( SCBPtrAddr( CGFEName( scb, TY_CHAR ) ),
-//                       XPop(), TY_POINTER ) );
+//    CGTrash( CGAssign( SCBPtrAddr( CGFEName( scb, TY_CHAR ) ), XPop(), TY_POINTER ) );
 //    XPush( CGFEName( scb, TY_CHAR ) );
 }
 
@@ -178,7 +175,7 @@ cg_name ArrayNumElts( sym_id arr ) {
     cg_name             num_elts;
     act_dim_list        *dim;
 
-    dim = arr->ns.si.va.u.dim_ext;
+    dim = arr->u.ns.si.va.u.dim_ext;
     if( _AdvRequired( dim ) ) {
         num_elts = Multiplier( arr, _DimCount( dim->dim_flags ) );
     } else {
@@ -193,7 +190,7 @@ cg_name FieldArrayNumElts( sym_id arr ) {
 
 // Get number of elements in an array.
 
-    return( CGInteger( arr->fd.dim_ext->num_elts, TY_INT_4 ) );
+    return( CGInteger( arr->u.fd.dim_ext->num_elts, TY_INT_4 ) );
 }
 
 
@@ -245,7 +242,7 @@ static  void    ConstDims( sym_id arr ) {
 
 // Subscript an array that has a constant array declarator.
 
-    Index( arr, ConstArrayOffset( arr->ns.si.va.u.dim_ext ) );
+    Index( arr, ConstArrayOffset( arr->u.ns.si.va.u.dim_ext ) );
 }
 
 
@@ -267,7 +264,7 @@ static  cg_name LoBound( sym_id arr, int ss_offset ) {
     cg_name             lo_bound;
     act_dim_list        *dim_ptr;
 
-    dim_ptr = arr->ns.si.va.u.dim_ext;
+    dim_ptr = arr->u.ns.si.va.u.dim_ext;
     if( _LoConstBound( dim_ptr->dim_flags, ss_offset + 1 ) ) {
         lo_bound = CGInteger( ((intstar4 *)(&dim_ptr->subs_1_lo))[2*ss_offset],
                               TY_INT_4 );
@@ -292,7 +289,7 @@ static  void    VariableDims( sym_id arr ) {
     cg_name             offset;
     cg_name             c_offset;
 
-    dim_ptr = arr->ns.si.va.u.dim_ext;
+    dim_ptr = arr->u.ns.si.va.u.dim_ext;
     dims_no = _DimCount( dim_ptr->dim_flags );
     offset = CGInteger( 0, TY_INT_4 );
     c_offset = CGInteger( 0, TY_INT_4 );
@@ -336,7 +333,7 @@ static  void    DbSubscript( sym_id arr ) {
     cg_name             offset;
     cg_name             subscripts[MAX_DIM];
 
-    dim_ptr = arr->ns.si.va.u.dim_ext;
+    dim_ptr = arr->u.ns.si.va.u.dim_ext;
     dims_no = _DimCount( dim_ptr->dim_flags );
     call = InitCall( RT_SUBSCRIPT );
     for( i = 0; i < dims_no; ++i ) {
@@ -389,7 +386,7 @@ void    FCAdvFillHi( void ) {
     call_handle         call;
 
     arr = GetPtr();
-    dim_ptr = arr->ns.si.va.u.dim_ext;
+    dim_ptr = arr->u.ns.si.va.u.dim_ext;
     adv = GetAdv( arr );
     hi_size = BETypeLength( TY_ADV_HI );
     lo_size = BETypeLength( TY_ADV_LO );

@@ -43,6 +43,7 @@
 #include "data.h"
 #include "objout.h"
 #include "dumpio.h"
+#include "cgauxinf.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
@@ -313,7 +314,7 @@ static  void    doCall( instruction *ins )
     code_lbl        *lbl;
 
     sym = ins->operands[CALL_OP_ADDR]->v.symbol;
-    code = FEAuxInfo( sym, CALL_BYTES );
+    code = FindAuxInfoSym( sym, CALL_BYTES );
     if( code != NULL ) {
         ObjBytes( code->data, code->length );
     } else {
