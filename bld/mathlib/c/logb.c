@@ -44,7 +44,7 @@
 
 _WMRTLINK double logb(double x)
 {
-	u4 lx,ix;
+	i4 lx,ix;
     
     float_double fdx;
     

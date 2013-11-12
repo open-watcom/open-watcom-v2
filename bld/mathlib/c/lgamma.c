@@ -25,7 +25,7 @@
 *  ========================================================================
 *
 *    Translated from Fortran and based on specfun
-*    http://www.netlib.org/specfun/algamma
+*    http://www.netlib.org/specfun/algama
 *
 *  ========================================================================
 *
@@ -132,6 +132,9 @@ double corr;
 double xm1, xm2, xm4, ysq;
 double xden, xnum;
 
+    if(isnan(x))
+        return x;
+    
     y = x;
     if(y > 0 && y < XBIG) {
         
@@ -242,13 +245,18 @@ double xden, xnum;
             res = res + y*(corr-1.0);
         }
          
-    }
+    } else if(y < 0 && y > -INFINITY)
+        res = log(fabs(tgamma(y)));
     else
         res = XINF;
 
     /* Set the sign parameter before leaving */
-    if(sign != (int *)0)
-	*sign = signbit(sin(-PI*x)) == 0 ? 1 : -1;
+    if(sign != (int *)0) {
+        if(x >= 0) 
+            *sign = 1.0;
+        else
+            *sign = sin(PI*x) >= 0 ? 1 : -1;
+    }
     
     return res;
 }

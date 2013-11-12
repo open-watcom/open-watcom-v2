@@ -41,7 +41,7 @@
 #include <math.h>
 #include "xfloat.h"
 
-static const u4 
+static const i4 
 	B1 = 715094163, /* B1 = (682-0.03306235651)*2**20 */
 	B2 = 696219795; /* B2 = (664-0.03306235651)*2**20 */
 
@@ -56,10 +56,13 @@ G =  3.57142857142857150787e-01; /* 5/14      = 0x3FD6DB6D, 0xB6DB6DB7 */
 _WMRTLINK double cbrt(double x) 
 {
     float_double fdx, fdt;
-	u4 hx;
+	i4 hx;
 	double r,s,w;
-	u4 sign;
+	i4 sign;
 
+    if(x < 0.0)
+        return -cbrt(fabs(x));
+    
     fdx.u.value = x;
 
 	hx = fdx.u.word[1];		        /* high word of x */

@@ -44,9 +44,14 @@
 
 _WMRTLINK int ilogb(double x)
 {
-	u4 hx,lx,ix;
+	i4 hx,lx,ix;
     
     float_double fdx;
+    
+    if(x == 0)
+        return FP_ILOGB0;
+    else if(isnan(x))
+        return FP_ILOGBNAN;
     
     fdx.u.value = x;
 

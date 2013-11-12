@@ -118,7 +118,7 @@ double del;
             result = 1.0 - result;
         if(jint == 2)
             result = exp(ysq) * result;
-            
+        
         return result;
     }
     /* Evaluate  erfc  for 0.46875 <= |X| <= 4.0 */
@@ -143,8 +143,6 @@ double del;
             del = (y - ysq) * (y + ysq);
             result = exp(-ysq*ysq) * exp(-del) * result;
         }
-        
-        return result;
     }
     /* Evaluate  erfc  for |X| > 4.0 */
     else

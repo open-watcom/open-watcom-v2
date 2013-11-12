@@ -17,6 +17,8 @@
 #ifndef _MATH_H_INCLUDED
 #define _MATH_H_INCLUDED
 
+#include <limits.h>
+
 :include readonly.sp
 
 :: The following somewhat long segment only appears in math.h
@@ -235,6 +237,9 @@ _WMRTLINK long double nanl(const char *ignored);
 #else
 _WMRTLINK double nanl(const char *ignored);
 #endif
+
+#define FP_ILOGB0   INT_MAX
+#define FP_ILOGBNAN INT_MIN
 
 :include extepi.sp
 

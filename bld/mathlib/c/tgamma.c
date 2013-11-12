@@ -65,6 +65,7 @@
 #define XBIG    171.624
 #define XMININ    2.23E-308
 #define XINF      _INFINITY
+#define XNAN      NAN
 
 #define SQRTPI  0.9189385332046727417803297
 #define PI      3.1415926535897932384626434
@@ -84,6 +85,9 @@ double xnum, xden;
     n = 0;
     y = x;
     
+    if(isnan(x) || x == -INFINITY)
+        return XNAN;
+    
     /* Argument is negative */
     if(y < 0)
     {
@@ -98,7 +102,7 @@ double xnum, xden;
             y += 1.0;
         }
         else 
-            return XINF;
+            return XNAN;
     }
     
     /* Argument < eps */
