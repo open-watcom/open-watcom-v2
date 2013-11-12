@@ -44,8 +44,8 @@
 
 _WMRTLINK double nextafter(double x, double y)
 {
-	u4 hx,hy,ix,iy;
-	u4 lx,ly;
+	i4 hx,hy,ix,iy;
+	i4 lx,ly;
     
     float_double fdx;
     float_double fdy;
