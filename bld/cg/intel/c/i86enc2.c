@@ -58,7 +58,7 @@ extern  void            LayRegAC(hw_reg_set);
 extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  void            LayOpbyte(gen_opcode);
 extern  void            Format(oc_class);
-extern  void            TellScrapLabel(code_lbl *);
+extern  void            TellScrapLabel(label_handle);
 extern  void            LayRegRM(hw_reg_set);
 extern  void            LayRMRegOp(name*);
 extern  void            LayModRM(name*);
@@ -220,7 +220,7 @@ extern  byte    ReverseCondition( byte cond ) {
     return( RevCond[cond] );
 }
 
-extern  void    DoCall( code_lbl *lbl, bool imported, bool big, oc_class pop_bit )
+extern  void    DoCall( label_handle lbl, bool imported, bool big, oc_class pop_bit )
 /*********************************************************************************
     call routine "lbl".
 */
@@ -348,7 +348,7 @@ extern  void    GenCall( instruction *ins ) {
     oc_class            pop_bit;
     call_class          cclass;
     byte_seq            *code;
-    code_lbl            *lbl;
+    label_handle        lbl;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
@@ -365,7 +365,7 @@ extern  void    GenCall( instruction *ins ) {
         }
     } else if( ( cclass & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
-        lbl = ((bck_info *)FEBack( sym ))->lbl;
+        lbl = FEBack( sym )->lbl;
         if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
             CodeHandle( OC_JMP | ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
         } else {
@@ -384,7 +384,7 @@ extern  void    GenCall( instruction *ins ) {
         }
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
-            DoCall( ((bck_info *)FEBack( sym ))->lbl, (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
+            DoCall( FEBack( sym )->lbl, (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
         } else {
             // handles mismatch Fix it!
             DoCall( (label_handle)sym, TRUE, big, pop_bit );
@@ -571,8 +571,8 @@ extern  void    GenMJmp( instruction *ins ) {
     Generate a jump indirect through memory instruction.
 */
 
-    code_lbl            *lbl;
-    name                *base;
+    label_handle    lbl;
+    name            *base;
 
     if( ins->head.opcode != OP_SELECT && _IsTargetModel( BIG_CODE ) ) {
         ReFormat( OC_JMPI | ATTR_FAR );

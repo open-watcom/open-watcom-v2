@@ -89,7 +89,7 @@ typedef struct oc_entry {
 typedef struct oc_handle {
         oc_header               hdr;
         struct ins_entry        *ref;       // must be at this position, code rely on this (see also _LblRef macro in optmac.h)
-        code_lbl                *handle;    // must be at this position, code rely on this (see also _Label macro in optmac.h)
+        label_handle            handle;    // must be at this position, code rely on this (see also _Label macro in optmac.h)
 #if _TARGET & _TARG_RISC
         cg_linenum              line;
 #endif
@@ -108,7 +108,7 @@ typedef struct oc_select {
 typedef struct oc_jcond {
         oc_header               hdr;
         struct ins_entry        *ref;       // must be at this position, code rely on this (see also _LblRef macro in optmac.h)
-        code_lbl                *handle;    // must be at this position, code rely on this (see also _Label macro in optmac.h)
+        label_handle            handle;    // must be at this position, code rely on this (see also _Label macro in optmac.h)
         cond_no                 cond;
 #if _TARGET & _TARG_RISC
         int                     index;

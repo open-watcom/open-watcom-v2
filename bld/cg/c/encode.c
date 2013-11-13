@@ -49,7 +49,7 @@ extern  void            InputOC(any_oc*);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern  void            FlipCond(instruction*);
 
-static  code_lbl    *LocateLabel( instruction *ins, int index ) {
+static  label_handle    LocateLabel( instruction *ins, int index ) {
 /*******************************************************************
     find the true or false ("index") label of the block containing "ins"
 */
@@ -62,7 +62,7 @@ static  code_lbl    *LocateLabel( instruction *ins, int index ) {
 }
 
 #if _TARGET & _TARG_RISC
-extern  void    CodeLabelLinenum( code_lbl *label, unsigned align, cg_linenum line ) {
+extern  void    CodeLabelLinenum( label_handle label, unsigned align, cg_linenum line ) {
 /***************************************************************************************/
 
     any_oc      oc;
@@ -80,7 +80,7 @@ extern  void    CodeLabelLinenum( code_lbl *label, unsigned align, cg_linenum li
 }
 #endif
 
-extern  void    CodeLabel( code_lbl *label, unsigned align ) {
+extern  void    CodeLabel( label_handle label, unsigned align ) {
 /****************************************************************
     Drop label into the queue
 */
@@ -125,7 +125,7 @@ extern  void    CodeLineNum( cg_linenum line, bool label_line ) {
 }
 
 
-extern  void    CodeHandle( oc_class class, int len, code_lbl *handle ) {
+extern  void    CodeHandle( oc_class class, int len, label_handle handle ) {
 /***************************************************************************
     Dump a label reference to "handle" of class "class" (LREF or LABEL)
     into the queue.  Len is the code space taken.
@@ -150,9 +150,9 @@ static  void    DoCondJump( instruction *cond ) {
 */
 
     any_oc              oc;
-    code_lbl            *dest_true;
-    code_lbl            *dest_false;
-    code_lbl            *dest_next;
+    label_handle        dest_true;
+    label_handle        dest_false;
+    label_handle        dest_next;
     instruction         *next;
 
     for( next = cond->head.next; next->head.opcode != OP_BLOCK; ) {
@@ -219,7 +219,7 @@ extern  void    GenCondJump( instruction *cond ) {
     Given conditional "cond", generate the correct jcc or setcc instruction
 */
 
-    code_lbl        *dest;
+    label_handle    dest;
 
     if( cond->result == NULL ) {
         if( _TrueIndex( cond ) == _FalseIndex( cond ) ) {
@@ -236,7 +236,7 @@ extern  void    GenCondJump( instruction *cond ) {
     }
 }
 
-extern  void    GenJumpLabel( code_lbl *label ) {
+extern  void    GenJumpLabel( label_handle label ) {
 /**********************************************
     generate an unconditional jump to "label"
 */
@@ -253,7 +253,7 @@ extern  void    GenJumpLabel( code_lbl *label ) {
 #endif
 }
 
-extern  void    GenKillLabel( code_lbl *label ) {
+extern  void    GenKillLabel( label_handle label ) {
 /**********************************************
     indicate that "label" won't be used again after the OC_LDONE comes
     out of the queue.

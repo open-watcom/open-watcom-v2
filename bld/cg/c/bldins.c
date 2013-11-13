@@ -47,11 +47,11 @@
 #include "feprotos.h"
 
 
-extern  void            GenKillLabel(code_lbl *);
+extern  void            GenKillLabel(label_handle);
 extern  void            GenBlock( block_class, int );
-extern  void            AddTarget(code_lbl *,bool);
+extern  void            AddTarget(label_handle,bool);
 extern  void            Generate(bool);
-extern  void            EnLink(code_lbl *,bool);
+extern  void            EnLink(label_handle,bool);
 extern  void            AddIns(instruction*);
 extern  name            *GenIns(an);
 extern  type_class_def  TypeClass(type_def*);
@@ -140,7 +140,7 @@ extern  an      BGTempName( name *temp, type_def *tipe ) {
 }
 
 
-extern  bool    FiniLabel( code_lbl *lbl, block *blk ) {
+extern  bool    FiniLabel( label_handle lbl, block *blk ) {
 /*********************************************************/
 
     block_num   i;
@@ -158,7 +158,7 @@ extern  bool    FiniLabel( code_lbl *lbl, block *blk ) {
     return( FALSE );
 }
 
-extern  void    BGFiniLabel( code_lbl *lbl ) {
+extern  void    BGFiniLabel( label_handle lbl ) {
 /***********************************************/
 
     block       *blk;
@@ -242,7 +242,7 @@ static  an      FlowOut( bn node, type_def *tipe ) {
 /**************************************************/
 
     name                *temp;
-    code_lbl            *lbl;
+    label_handle        lbl;
 
     lbl = AskForNewLabel();
     temp = BGGlobalTemp( tipe );
@@ -278,8 +278,8 @@ extern  an      Arithmetic( an name, type_def *tipe ) {
 }
 
 extern  bn      BGCompare( cg_op op, an left, an rite,
-                           code_lbl *entry, type_def *tipe ) {
-/*****************************************************************************/
+                           label_handle entry, type_def *tipe ) {
+/***************************************************************/
 
     bn                  new;
     instruction         *ins;
@@ -308,7 +308,7 @@ extern  bn      BGCompare( cg_op op, an left, an rite,
 
 
 
-extern  bn      Boolean( an node, code_lbl *entry ) {
+extern  bn      Boolean( an node, label_handle entry ) {
 /******************************************************/
 
     if( node->format != NF_BOOL ) {
@@ -319,20 +319,19 @@ extern  bn      Boolean( an node, code_lbl *entry ) {
 }
 
 
-extern  code_lbl    *BGGetEntry( void ) {
-/************************************/
+extern  label_handle BGGetEntry( void ) {
+/***************************************/
 
     return( CurrBlock->label );
 }
 
 
-extern  void    BG3WayControl( an node, code_lbl *lt,
-                               code_lbl *eq, code_lbl *gt ) {
-/*****************************************************************/
+extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_handle gt ) {
+/*******************************************************************************************/
 
     instruction         *ins;
     name                *op;
-    code_lbl            *lbl;
+    label_handle        lbl;
     type_class_def      class;
 
     node = Arithmetic( node, node->tipe );
@@ -373,14 +372,14 @@ extern  void    BG3WayControl( an node, code_lbl *lt,
 }
 
 
-extern  void    BGControl( cg_op op, bn expr, code_lbl *lbl ) {
+extern  void    BGControl( cg_op op, bn expr, label_handle lbl ) {
 /****************************************************************/
 
     BGGenCtrl( op, expr, lbl, FALSE );
 }
 
 
-extern  void    BGGenCtrl( cg_op op, bn expr, code_lbl *lbl, bool gen ) {
+extern  void    BGGenCtrl( cg_op op, bn expr, label_handle lbl, bool gen ) {
 /**************************************************************************/
 
     switch( op ) {
@@ -453,8 +452,8 @@ extern  void    BGGenCtrl( cg_op op, bn expr, code_lbl *lbl, bool gen ) {
 }
 
 
-extern  void    BGBigLabel( bck_info *bck ) {
-/******************************************/
+extern  void    BGBigLabel( back_handle bck ) {
+/*********************************************/
 
     if( HaveCurrBlock ) {
         GenBlock( JUMP, 1 );  /* block with 1 target*/
@@ -468,7 +467,7 @@ extern  void    BGBigLabel( bck_info *bck ) {
 }
 
 
-extern  void    BGBigGoto( code_lbl *lbl, int level ) {
+extern  void    BGBigGoto( label_handle lbl, int level ) {
 /********************************************************/
 
     GenBlock( BIG_JUMP, 1 ); // No longer supported!
@@ -653,7 +652,7 @@ extern  bn      BGFlow( cg_op op, bn left, bn rite ) {
 /****************************************************/
 
     bn                  new = NULL;
-    code_lbl            **temp;
+    label_handle        *temp;
 
     if( op == O_FLOW_NOT ) {
         temp = left->t;
@@ -759,7 +758,7 @@ extern  void    FlowOff( bn name ) {
 extern  void    BGStartBlock( void ) {
 /************************************/
 
-    code_lbl        *lbl;
+    label_handle    lbl;
 
     if( _MemLow ) { /* break the block here and generate code*/
         lbl = AskForNewLabel();

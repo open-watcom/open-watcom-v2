@@ -34,7 +34,7 @@ extern  ins_entry       *LastIns;
 extern  ins_entry       *PendingDeletes;
 extern  bool            InsDelete;
 extern  uint            QCount;
-extern  code_lbl        *Handles;
+extern  label_handle    Handles;
 extern  ins_entry       *RetList;
 extern  pointer         *InstrFrl;
 //      pointer         *CodeLblFrl;

@@ -38,7 +38,7 @@
 #include "data.h"
 
 extern  instruction_id  Renumber( void );
-extern  block           *NewBlock(code_lbl *,bool);
+extern  block           *NewBlock(label_handle,bool);
 extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
 
 static  void            NewInterval( block *blk, int level );

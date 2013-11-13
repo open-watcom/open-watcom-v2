@@ -43,7 +43,7 @@
 
 extern  uint_32         CountBits( uint_32 );
 extern  unsigned        DepthAlign( unsigned );
-extern  void            CodeLabelLinenum( code_lbl *, unsigned, cg_linenum );
+extern  void            CodeLabelLinenum( label_handle, unsigned, cg_linenum );
 extern  hw_reg_set      *GPRegs( void );
 extern  hw_reg_set      *FPRegs( void );
 extern  hw_reg_set      SaveRegs( void );
@@ -52,11 +52,11 @@ extern  void            GenIType( uint_8, uint_8, uint_8, signed_16 );
 extern  void            GenRType( uint_8, uint_8, uint_8, uint_8, uint_8 );
 extern  hw_reg_set      VarargsHomePtr( void );
 extern  void            GenRET( void );
-extern  void            OutFuncStart( code_lbl *label, offset start, int line );
+extern  void            OutFuncStart( label_handle label, offset start, int line );
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
 extern  uint_8          RegTrans( hw_reg_set );
-extern  void            GenCallLabel( code_lbl *lbl );
+extern  void            GenCallLabel( label_handle lbl );
 extern  void            GenCallLabelReg( pointer label, uint reg );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
@@ -64,8 +64,8 @@ extern  void            EmitRtnBeg( void );
 extern  void            EmitProEnd( void );
 extern  void            EmitEpiBeg( void );
 extern  void            EmitRtnEnd( void );
-extern  void            TellKeepLabel( code_lbl * );
-extern  void            TellProcLabel( code_lbl * );
+extern  void            TellKeepLabel( label_handle );
+extern  void            TellProcLabel( label_handle );
 extern  void            GenLOADS32( signed_32, uint_8 );
 
 
@@ -592,7 +592,7 @@ extern  void GenProlog( void )
 /****************************/
 {
     segment_id          old;
-    code_lbl            *label;
+    label_handle        label;
 
     old = SetOP( AskCodeSeg() );
     label = CurrProc->label;

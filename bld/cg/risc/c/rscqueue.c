@@ -43,13 +43,13 @@
 #include "objout.h"
 
 extern  void    ObjBytes( const void *, unsigned );
-extern  void    OutReloc( code_lbl *, owl_reloc_type, unsigned );
+extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
 extern  void    DoAlignment( offset );
 extern  void    DbgSetBase( void );
-extern  void    TellScrapLabel( code_lbl * );
-extern  void    OutFuncStart( code_lbl *, offset, cg_linenum );
+extern  void    TellScrapLabel( label_handle );
+extern  void    OutFuncStart( label_handle, offset, cg_linenum );
 extern  void    OutFuncEnd( offset );
-extern  void    OutPDataRec( code_lbl *, offset, offset );
+extern  void    OutPDataRec( label_handle, offset, offset );
 
 extern  void    EncodeRet( oc_ret * );
 extern  void    EncodeCall( oc_handle * );
@@ -68,7 +68,7 @@ static  any_oc  debugOC;
 
 static  offset  procStart;
 static  offset  prologueEnd;
-static  code_lbl *procLabel;
+static  label_handle procLabel;
 
 static  void    saveDebug( any_oc *oc ) {
 /***************************************/
@@ -164,7 +164,7 @@ extern  void    OutputOC( any_oc *oc ) {
     oc_class            base;
     offset              lc;
     offset              len;
-    code_lbl            *lbl;
+    label_handle        lbl;
 
     base = oc->oc_header.class & GET_BASE;
     if( base != OC_LABEL ) {

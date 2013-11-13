@@ -35,13 +35,13 @@
 extern  ins_entry       *DelInstr(ins_entry*);
 extern  void            DelRef(ins_entry**,ins_entry*);
 
-extern  void    TryScrapLabel( code_lbl *old );
-static  void    ScrapCodeLabel( code_lbl *lbl );
+extern  void    TryScrapLabel( label_handle old );
+static  void    ScrapCodeLabel( label_handle lbl );
 
 extern  void    AddLblDef( ins_entry *instr ) {
 /*********************************************/
 
-    code_lbl    *lbl;
+    label_handle    lbl;
 
   optbegin
     _LblRef( instr ) = NULL;
@@ -59,7 +59,7 @@ extern  void    AddLblDef( ins_entry *instr ) {
 extern  void    DelLblDef( ins_entry *instr ) {
 /*********************************************/
 
-    code_lbl    *lbl;
+    label_handle    lbl;
 
   optbegin
     lbl = _Label( instr );
@@ -75,7 +75,7 @@ extern  void    DelLblDef( ins_entry *instr ) {
 extern  void    AddLblRef( ins_entry *instr ) {
 /*********************************************/
 
-    code_lbl    *lbl;
+    label_handle    lbl;
 
   optbegin
     lbl = _Label( instr );
@@ -92,7 +92,7 @@ extern  void    AddLblRef( ins_entry *instr ) {
 extern  void    DelLblRef( ins_entry *instr ) {
 /*********************************************/
 
-    code_lbl    *old;
+    label_handle    old;
 
   optbegin
     old = _Label( instr );
@@ -102,12 +102,12 @@ extern  void    DelLblRef( ins_entry *instr ) {
 }
 
 
-extern  void    ChgLblRef( ins_entry *instr, code_lbl *new ) {
+extern  void    ChgLblRef( ins_entry *instr, label_handle new ) {
 /************************************************************/
 
-    ins_entry   **owner;
-    ins_entry   *curr;
-    code_lbl    *old;
+    ins_entry       **owner;
+    ins_entry       *curr;
+    label_handle    old;
 
   optbegin
     old = _Label( instr );
@@ -128,7 +128,7 @@ extern  void    ChgLblRef( ins_entry *instr, code_lbl *new ) {
 }
 
 
-extern  bool    UniqueLabel( code_lbl *lbl ) {
+extern  bool    UniqueLabel( label_handle lbl ) {
 /*********************************************
         Does the label have any alias which is a UNIQUE label?
 */
@@ -146,10 +146,10 @@ extern  bool    UniqueLabel( code_lbl *lbl ) {
 extern  ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl ) {
 /****************************************************************************/
 
-    code_lbl    *old;
-    code_lbl    *new;
-    ins_entry   *old_jmp;
-    ins_entry   **owner;
+    label_handle    old;
+    label_handle    new;
+    ins_entry       *old_jmp;
+    ins_entry       **owner;
 
   optbegin
     if( oldlbl != newlbl ) {
@@ -203,8 +203,8 @@ extern  ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl ) {
 static  void    KillDeadLabels( ins_entry *instr ) {
 /**************************************************/
 
-    code_lbl    *curr;
-    code_lbl    **owner;
+    label_handle    curr;
+    label_handle    *owner;
 
   optbegin
     owner = &_Label( instr );
@@ -233,12 +233,12 @@ static  void    KillDeadLabels( ins_entry *instr ) {
 }
 
 
-static  void    ScrapCodeLabel( code_lbl *lbl ) {
+static  void    ScrapCodeLabel( label_handle lbl ) {
 /***********************************************/
 
-    code_lbl    **owner;
-    code_lbl    *redir;
-    bool        code;
+    label_handle    *owner;
+    label_handle    redir;
+    bool            code;
 
   optbegin
     owner = &Handles;
@@ -259,7 +259,7 @@ static  void    ScrapCodeLabel( code_lbl *lbl ) {
 }
 
 
-extern  void    TryScrapLabel( code_lbl *old ) {
+extern  void    TryScrapLabel( label_handle old ) {
 /**********************************************/
 
   optbegin

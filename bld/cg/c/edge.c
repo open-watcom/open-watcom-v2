@@ -34,7 +34,7 @@
 #include "cgmem.h"
 #include "utils.h"
 
-extern  block           *MakeBlock(code_lbl *,block_num);
+extern  block           *MakeBlock(label_handle,block_num);
 extern  void            SuffixIns(instruction *,instruction *);
 extern  void            RemoveIns(instruction *);
 extern  void            FixBlockIds(void);

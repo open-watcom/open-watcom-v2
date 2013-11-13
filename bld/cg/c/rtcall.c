@@ -77,7 +77,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
 */
 {
     rtn_info            *info;
-    code_lbl            *lbl;
+    label_handle        lbl;
     instruction         *left_ins;
     instruction         *new_ins;
     instruction         *last_ins;

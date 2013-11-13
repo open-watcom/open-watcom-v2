@@ -37,8 +37,8 @@ extern  void            JmpToRet( ins_entry *, ins_entry * );
 extern  oc_class        NextClass( ins_entry * );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  ins_entry       *Untangle( ins_entry * );
-extern  void            ChgLblRef( ins_entry *, code_lbl * );
-extern  code_lbl        *AddNewLabel( ins_entry *, int );
+extern  void            ChgLblRef( ins_entry *, label_handle );
+extern  label_handle    AddNewLabel( ins_entry *, int );
 extern  void            InsertQueue( ins_entry *, ins_entry * );
 extern  void            DeleteQueue( ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
@@ -96,7 +96,7 @@ static  void    DoCloneCode( ins_entry *jmp, ins_entry *hoist )
 
 #define MAX_CLONE_SIZE  40
 
-extern  void    CloneCode( code_lbl *lbl )
+extern  void    CloneCode( label_handle lbl )
 /*****************************************
     consider:
 
@@ -261,8 +261,8 @@ extern  bool    StraightenCode( ins_entry *jump )
 extern  void    CheckStraightenCode( ins_entry  *lbl_ins )
 /********************************************************/
 {
-    code_lbl    *lbl;
-    ins_entry   *jmp;
+    label_handle    lbl;
+    ins_entry       *jmp;
 
   optbegin
     if( lbl_ins != NULL ) {

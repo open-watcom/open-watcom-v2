@@ -146,7 +146,7 @@ typedef struct index_rec {
         unsigned_32             comdat_size;
         unsigned_32             total_comdat_size;
         cg_sym_handle           comdat_symbol;
-        code_lbl                *comdat_label;
+        label_handle            comdat_label;
         omf_idx                 comdat_nidx;
         void                    *virt_func_refs;
         omf_idx                 comdat_prefix_import;
@@ -180,4 +180,4 @@ typedef struct abspatch {
 } abspatch;
 
 extern void             OutAbsPatch(abspatch *,patch_attr);
-extern void             DoLblRef( code_lbl *lbl, segment_id seg, offset val, escape_class kind );
+extern void             DoLblRef( label_handle lbl, segment_id seg, offset val, escape_class kind );

@@ -102,7 +102,7 @@ static  void    DumpAnAddr( an node ) {
     }
 }
 
-static  void    DumpLbl( code_lbl **what ) {
+static  void    DumpLbl( label_handle *what ) {
 /*****************************************************/
 
     block       *blk;

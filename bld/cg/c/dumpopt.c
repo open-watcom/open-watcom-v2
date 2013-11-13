@@ -93,7 +93,7 @@ static  char    *CondName( oc_jcond *oc ) {
 }
 #endif
 
-static  bool    LblName( code_lbl *lbl ) {
+static  bool    LblName( label_handle lbl ) {
 /*****************************************/
 
 
@@ -286,7 +286,7 @@ static  void    DoData( oc_entry *instr ) {
 static  void    DoLabel( oc_handle *instr ) {
 /*******************************************/
 
-    code_lbl    *lbl;
+    label_handle    lbl;
 
     lbl = instr->handle;
     DumpLiteral( "align=<" );
@@ -315,7 +315,7 @@ static  void    DoRef( oc_handle *instr ) {
 }
 
 
-extern  void    DumpLbl( code_lbl *lbl ) {
+extern  void    DumpLbl( label_handle lbl ) {
 /****************************************/
 
     ins_entry   *ref;

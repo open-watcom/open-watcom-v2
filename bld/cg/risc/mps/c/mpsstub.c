@@ -38,7 +38,7 @@
 #include "zoiks.h"
 
 
-extern code_lbl *GetWeirdPPCDotDotLabel( code_lbl *lbl )
+extern label_handle GetWeirdPPCDotDotLabel( label_handle lbl )
 /******************************************************/
 {
     return( lbl );
@@ -58,7 +58,7 @@ void EndBlockProfiling( void )
 }
 
 
-segment_id GenP5ProfileData( char *fe_name, code_lbl **data )
+segment_id GenP5ProfileData( char *fe_name, label_handle *data )
 /**************************************************************/
 {
     fe_name = fe_name;

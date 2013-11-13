@@ -68,7 +68,7 @@ extern  void        CVSymIConst( const char *nm, long val, dbg_type tipe );
 extern  void        CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe );
 extern  void        CVOutSymICon( cv_out *out, const char *nm, long val, dbg_type tipe );
 extern  void        CVOutSym( cv_out *out, cg_sym_handle sym );
-extern  void        CVOutBck( cv_out *out, bck_info *bck, offset add,  dbg_type tipe );
+extern  void        CVOutBck( cv_out *out, back_handle bck, offset add,  dbg_type tipe );
 extern  void        CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe );
 
 extern  segment_id  CVTypes;
@@ -642,7 +642,7 @@ extern  dbg_type    CVCharBlock( unsigned_32 len )
     return( ret );
 }
 
-static dbg_type  OutBckSym( bck_info *bck, int off, dbg_type tipe )
+static dbg_type  OutBckSym( back_handle bck, int off, dbg_type tipe )
 /*******************************************************************/
 {
     cv_out          out[1];
@@ -664,7 +664,7 @@ static dbg_type  OutBckCon( long val, dbg_type tipe )
     return( ++TypeIdx );
 }
 
-extern  dbg_type    CVIndCharBlock( bck_info *len, cg_type len_type, int off )
+extern  dbg_type    CVIndCharBlock( back_handle len, cg_type len_type, int off )
 /****************************************************************************/
 {
     dbg_type        itipe;
@@ -833,7 +833,7 @@ extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
     return( ret );
 }
 
-extern  dbg_type    CVFtnArray( bck_info *dims, cg_type lo_bound_tipe,
+extern  dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
                     cg_type num_elts_tipe, int off,
                     dbg_type base )
 /**********************************************************************/

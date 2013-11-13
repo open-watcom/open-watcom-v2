@@ -53,13 +53,13 @@
 #include "cgprotos.h"
 #include "feprotos.h"
 
-extern  void            DoBigBckPtr(bck_info *,offset);
+extern  void            DoBigBckPtr(back_handle,offset);
 extern  name            *DeAlias(name*);
 extern  void            DataInt(short_offset);
 extern  void            DataLong( long );
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes( offset len, byte pat );
-extern  void            DataLabel( code_lbl * );
+extern  void            DataLabel( label_handle );
 extern  void            DoBigLblPtr(cg_sym_handle);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
 extern dw_loc_id        DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid );
@@ -83,10 +83,10 @@ static bool                CcuDef;
 
 sect_info DwarfSegs[ DW_DEBUG_MAX ];
 
-static bck_info  *Pc_High;
-static bck_info  *Pc_Low;
-static bck_info  *Comp_High;
-static bck_info  *ARange;
+static back_handle Pc_High;
+static back_handle Pc_Low;
+static back_handle Comp_High;
+static back_handle ARange;
 
 static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size )
 /************************************************************************/
@@ -155,7 +155,7 @@ static void DoSegReloc( dw_sym_handle sym ){
     FEPtrBase( (cg_sym_handle)sym );
 }
 
-static void DoLblReloc( bck_info *bck, long disp ){
+static void DoLblReloc( back_handle bck, long disp ){
 /**********************************/
     type_def        *ptr_type;
     segment_id      id;
@@ -165,7 +165,7 @@ static void DoLblReloc( bck_info *bck, long disp ){
     BackPtr( bck, id, disp, ptr_type );
 }
 
-static void DoSegLblReloc( bck_info *bck ){
+static void DoSegLblReloc( back_handle bck ){
 /**********************************/
     segment_id      id;
 
@@ -175,7 +175,7 @@ static void DoSegLblReloc( bck_info *bck ){
 
 static void DoSectOffset( dw_sectnum section  ){
 /**********************************/
-    bck_info    *bck;
+    back_handle bck;
     uint_32     pos;
     segment_id  id;
 
@@ -194,7 +194,7 @@ typedef struct {
 static big_patch_handle UnitSize[1];
 
 typedef struct {
-    bck_info    *bck;
+    back_handle  bck;
     int_32       disp;
 }loc_range;
 
@@ -236,7 +236,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ){
         break;
     case DW_W_LABEL:
         bck = va_arg( args, dw_sym_handle );
-        DoLblReloc( (bck_info *)bck, 0 );
+        DoLblReloc( (back_handle)bck, 0 );
         break;
     case DW_W_SEGMENT:
         sym = va_arg( args, dw_sym_handle );
@@ -244,7 +244,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ){
         break;
     case DW_W_LABEL_SEG:
         bck = va_arg( args, dw_sym_handle );
-        DoSegLblReloc( (bck_info *)bck );
+        DoSegLblReloc( (back_handle)bck );
         break;
     case DW_W_LOC_RANGE:
         low =  va_arg( args, loc_range* );
@@ -303,8 +303,8 @@ static void CLIFree( void *p ) {
     CGFree( p );
 }
 
-static bck_info  *MakeLabel( void ){
-    bck_info            *bck;
+static back_handle MakeLabel( void ){
+    back_handle bck;
 
     bck = BENewBack( NULL );
     bck->seg = AskOP();
@@ -351,7 +351,7 @@ static  void    InitSegBck( void ){
 /*********************************/
     dw_sectnum  i;
     segment_id  old;
-    bck_info    *bck;
+    back_handle bck;
 
     for( i = DW_DEBUG_INFO; i < DW_DEBUG_MAX; ++i ){
         old = SetOP( DwarfSegs[i].seg );
@@ -366,7 +366,7 @@ static  void    InitSegBck( void ){
 static  void    InitLineSegBck( void ){
 /*************************************/
     segment_id  old;
-    bck_info    *bck;
+    back_handle bck;
 
     old = SetOP( DwarfSegs[DW_DEBUG_LINE].seg );
     bck = MakeLabel();
@@ -379,7 +379,7 @@ static  void    InitLineSegBck( void ){
 static  void    FiniSegBck( void ){
 /**********************************/
     int         i;
-    bck_info    *bck;
+    back_handle bck;
 
     for( i = DW_DEBUG_INFO; i < DW_DEBUG_MAX; ++i ){
         bck = DwarfSegs[i].bck;
@@ -389,7 +389,7 @@ static  void    FiniSegBck( void ){
 
 static  void    FiniLineSegBck( void ){
 /**************************************/
-    bck_info    *bck;
+    back_handle bck;
 
     bck = DwarfSegs[DW_DEBUG_LINE].bck;
     BEFreeBack( bck );
@@ -412,7 +412,7 @@ extern  void    DFSymRange( cg_sym_handle sym, offset size ){
 extern  void    DFSegRange( void ){
 /****************************/
 /* do arange for the current segment */
-    bck_info    *bck;
+    back_handle bck;
     offset      off;
     offset      size;
 
@@ -435,7 +435,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
 // Call when codeseg hase been defined
 {
     dw_cu_info      cu;
-    bck_info        *bck;
+    back_handle     bck;
     segment_id      old;
     type_def        *tipe_addr;
 
@@ -543,7 +543,7 @@ extern  void    DFObjInitInfo( void ) {
             if( (attr & FE_IMPORT) ) {
                 info.compiler_options |= DW_CM_ABBREV_PRE;
             }else{
-                bck_info    *bck;
+                back_handle bck;
                 segment_id  old;
 
                 info.compiler_options |= DW_CM_ABBREV_GEN;
@@ -558,7 +558,7 @@ extern  void    DFObjInitInfo( void ) {
         if( debug_pch != NULL ){
             attr = FEAttr( debug_pch );
             if( !(attr & FE_IMPORT) ) {
-                bck_info    *bck;
+                back_handle bck;
                 segment_id  old;
 
                 bck = FEBack( debug_pch );
@@ -673,7 +673,7 @@ extern  void    DFObjFiniDbgInfo( offset codesize ) {
 /******************************/
     segment_id      old;
     offset          here;
-    bck_info        *bck;
+    back_handle     bck;
 
     if( !_IsModel( DBG_LOCALS | DBG_TYPES ) )return;
     bck = Comp_High;
@@ -708,7 +708,7 @@ extern void     DFLineNum( cue_state *state, offset lc ){
     char *fname;
 
     if( NeedBaseSet() ){
-        bck_info    *bck;
+        back_handle bck;
 
         bck = MakeLabel();
         OutLabel( bck->lbl );
@@ -1021,7 +1021,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
 
 extern  void    DFBlkBeg( dbg_block *blk, offset lc ) {
 /****************************************************/
-    bck_info    *bck;
+    back_handle bck;
 
     lc = lc;
     bck = MakeLabel();
@@ -1036,7 +1036,7 @@ extern  void    DFBlkBeg( dbg_block *blk, offset lc ) {
 
 extern  void    DFBlkEnd( dbg_block *blk, offset lc ) {
 /****************************************************/
-    bck_info    *bck;
+    back_handle bck;
 
     lc = lc;
     bck = blk->end_lbl;
@@ -1054,7 +1054,7 @@ extern  void    DFEpiBeg( dbg_rtn *rtn, offset lc )
 extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc )
 /*************************************************/
 {
-    bck_info            *bck;
+    back_handle bck;
 
     lc = 0;
     bck = rtn->end_lbl;

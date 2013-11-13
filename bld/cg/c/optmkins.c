@@ -80,11 +80,11 @@ extern  bool    InstrFrlFree( void )
 }
 
 
-extern  code_lbl        *AddNewLabel( ins_entry *new, int align )
+extern  label_handle AddNewLabel( ins_entry *new, int align )
 /***************************************************************/
 {
-    code_lbl    *lbl;
-    any_oc      oc;
+    label_handle    lbl;
+    any_oc          oc;
 
   optbegin
     if( NextClass( new ) == OC_LABEL )
@@ -106,7 +106,7 @@ extern  code_lbl        *AddNewLabel( ins_entry *new, int align )
 }
 
 
-extern  void    AddNewJump( ins_entry *new, code_lbl *lbl )
+extern  void    AddNewJump( ins_entry *new, label_handle lbl )
 /*********************************************************/
 {
     any_oc     oc;

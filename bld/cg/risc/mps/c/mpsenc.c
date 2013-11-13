@@ -54,7 +54,7 @@ extern void DumpGen( struct opcode_entry * );
 extern void             ObjBytes( const void *buffer, unsigned size );
 extern uint_8           RegTrans( hw_reg_set );
 extern name             *DeAlias( name * );
-extern void             TryScrapLabel( code_lbl * );
+extern void             TryScrapLabel( label_handle );
 extern void             EmitDbgInfo( instruction * );
 extern void             ObjEmitSeq( byte_seq * );
 extern void             InputOC( any_oc * );
@@ -503,7 +503,7 @@ static  void doCall( instruction *ins )
 {
     cg_sym_handle       sym;
     byte_seq            *code;
-    code_lbl            *lbl;
+    label_handle        lbl;
 
     code = NULL;
     sym = ins->operands[CALL_OP_ADDR]->v.symbol;
@@ -706,7 +706,7 @@ static  bool    encodeThreadDataRef( instruction *ins )
 /*****************************************************/
 {
     name                *op;
-//    code_lbl            *tls_index;
+//    label_handle        tls_index;
 
     op = ins->operands[0];
     if( op->n.class != N_MEMORY ) return( FALSE );

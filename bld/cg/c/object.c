@@ -38,21 +38,21 @@
 #include "objout.h"
 #include "feprotos.h"
 
-extern  void            CodeLabel(code_lbl *,unsigned);
+extern  void            CodeLabel(label_handle,unsigned);
 extern  void            GenObjCode(instruction*);
-extern  void            GenJumpLabel(code_lbl *);
+extern  void            GenJumpLabel(label_handle);
 extern  void            GenEpilog( void );
 extern  void            GenCallLabel(pointer);
 extern  void            GenLabelReturn( void );
-extern  void            TellCondemnedLabel(code_lbl *);
+extern  void            TellCondemnedLabel(label_handle);
 extern  void            FreeBlock( void );
 extern  void            CodeLineNum(cg_linenum,bool);
 extern  void            InitZeroPage( void );
 extern  void            FiniZeroPage( void );
-extern  void            TellReachedLabel(code_lbl *);
+extern  void            TellReachedLabel(label_handle);
 extern  unsigned        DepthAlign( unsigned );
 extern  void            InitStackDepth(block*);
-extern  block           *FindBlockWithLbl( code_lbl *label );
+extern  block           *FindBlockWithLbl( label_handle label );
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );
 extern  bool_maybe      ReDefinedBy( instruction *, name * );
@@ -90,7 +90,7 @@ extern  void    GenObject( void )
     block_num           targets;
     block_num           i;
     segment_id          old;
-    code_lbl            *lbl;
+    label_handle        lbl;
     unsigned            align;
     fe_attr             attr;
 

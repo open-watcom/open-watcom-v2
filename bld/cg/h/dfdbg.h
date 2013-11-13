@@ -32,6 +32,6 @@
 
 /* dwarf debug info */
 typedef struct sect_info {
-    bck_info    *bck;
+    back_handle bck;
     segment_id  seg;
 } sect_info;

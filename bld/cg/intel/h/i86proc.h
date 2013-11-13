@@ -73,8 +73,8 @@ typedef struct target_proc_def {
         type_length             push_local_size;
         union name              *return_points;
         dbg_rtn                 *debug;
-        code_lbl                *routine_profile_data;
-        code_lbl                *block_profile_data;
+        label_handle            routine_profile_data;
+        label_handle            block_profile_data;
         abspatch_handle         prolog_loc;
         abspatch_handle         stack_check;
         unsigned                sp_frame : 1;

@@ -37,10 +37,10 @@
 #include "addrname.h"
 
 
-extern code_lbl *GetWeirdPPCDotDotLabel( code_lbl *lbl ) {
+extern label_handle GetWeirdPPCDotDotLabel( label_handle lbl ) {
 /********************************************************/
 
-    code_lbl            *new;
+    label_handle    new;
 
     if( _TstStatus( lbl, HAS_PPC_ALIAS ) ) {
         return( lbl->ppc_alt_name );

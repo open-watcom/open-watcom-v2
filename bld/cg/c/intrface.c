@@ -72,21 +72,21 @@ extern  void            AbortCG(void);
 extern  void            FiniDbgInfo(void);
 extern  void            TFini(void);
 extern  void            CGMemFini(void);
-extern  void            BGFiniLabel(code_lbl *);
-extern  void            TellNoSymbol(code_lbl *);
+extern  void            BGFiniLabel(label_handle);
+extern  void            TellNoSymbol(label_handle);
 extern  void            BGProcDecl(cg_sym_handle,type_def*);
 extern  void            BGParmDecl(cg_sym_handle,type_def*);
 extern  void            BGAutoDecl(cg_sym_handle,type_def*);
 extern  select_node     *BGSelInit(void);
-extern  void            BGSelCase(select_node*,code_lbl *,signed_32);
-extern  void            BGSelRange(select_node*,signed_32,signed_32,code_lbl *);
-extern  void            BGSelOther(select_node*,code_lbl *);
+extern  void            BGSelCase(select_node*,label_handle,signed_32);
+extern  void            BGSelRange(select_node*,signed_32,signed_32,label_handle);
+extern  void            BGSelOther(select_node*,label_handle);
 extern  an              TGen(tn,type_def*);
 extern  void            BGSelect(select_node*,an,cg_switch_type);
 extern  void            BGReturn(an,type_def*);
 extern  an              BGSave(an);
 extern  void            DGBlip(void);
-extern  void            DataLabel(code_lbl *);
+extern  void            DataLabel(label_handle);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes(offset,byte);
@@ -330,7 +330,7 @@ extern  label_handle _CGAPI BENewLabel( void )
 /********************************************/
 {
 #ifndef NDEBUG
-    code_lbl *retn;
+    label_handle    retn;
 
     EchoAPI( "BENewLabel()" );
     retn = AskForNewLabel();
@@ -452,7 +452,7 @@ static  pointer                 NewBackReturn = RETURN_NORMAL;
 extern  pointer LkAddBack( cg_sym_handle sym, pointer curr_back )
 /************************************************************/
 {
-    bck_info    *bck;
+    back_handle bck;
 
     if( curr_back == NULL ) {
         NewBackReturn = RETURN_NULL;
@@ -464,13 +464,13 @@ extern  pointer LkAddBack( cg_sym_handle sym, pointer curr_back )
     return( (pointer)( PTR_INT( bck ) & ~FAKE_BACK ) );
 }
 
-extern bck_info *SymBack( cg_sym_handle sym )
-/****************************************/
+extern back_handle SymBack( cg_sym_handle sym )
+/*********************************************/
 {
-    bck_info    *bck;
+    back_handle bck;
 
     bck = FEBack( sym );
-    return( (bck_info *)( PTR_INT( bck ) & ~FAKE_BACK ) );
+    return( (back_handle)( PTR_INT( bck ) & ~FAKE_BACK ) );
 }
 
 static void AllocMoreBckInfo( void )
@@ -497,7 +497,7 @@ static void AllocMoreBckInfo( void )
 extern  back_handle _CGAPI      BENewBack( cg_sym_handle sym )
 /************************************************************/
 {
-    bck_info            *bck;
+    back_handle bck;
 
 #ifndef NDEBUG
     EchoAPI( "BENewBack( %s )", sym );
@@ -542,7 +542,7 @@ extern  void _CGAPI     BEFiniBack( back_handle bck )
     EchoAPI( "BEFiniBack( %L )\n", bck );
 #endif
     if( REAL_BACK( bck ) ) {
-        TellNoSymbol( ((bck_info *)bck)->lbl );
+        TellNoSymbol( bck->lbl );
     }
 }
 
@@ -651,7 +651,7 @@ extern  void _CGAPI     CGParmDecl( cg_sym_handle sym, cg_type tipe )
 extern label_handle _CGAPI CGLastParm( void )
 /*******************************************/
 {
-    code_lbl        *top;
+    label_handle    top;
 
 #ifndef NDEBUG
     EchoAPI( "CGLastParm()\n" );
@@ -1442,8 +1442,8 @@ extern  void _CGAPI     DGLabel( back_handle bck )
 #endif
     if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_068 );
     DGBlip();
-    DataLabel( ((bck_info *)bck)->lbl );
-    ((bck_info *)bck)->seg = AskOP();
+    DataLabel( bck->lbl );
+    bck->seg = AskOP();
 }
 
 extern  void _CGAPI     DGBackPtr( back_handle bck, segment_id seg,
@@ -1698,10 +1698,10 @@ extern  unsigned_32 _CGAPI      DGBackTell( back_handle bck )
     if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_068 );
 
 #ifndef NDEBUG
-    retn = AskAddress( ((bck_info *)bck)->lbl );
+    retn = AskAddress( bck->lbl );
     return EchoAPIIntReturn( retn );
 #else
-    return( AskAddress( ((bck_info *)bck)->lbl ) );
+    return( AskAddress( bck->lbl ) );
 #endif
 }
 
@@ -1746,18 +1746,18 @@ extern  char    *AskName( pointer hdl, cg_class class )
     }
 }
 
-extern  code_lbl    *AskForSymLabel( pointer hdl, cg_class class )
+extern  label_handle AskForSymLabel( pointer hdl, cg_class class )
 /****************************************************************/
 {
     switch( class ) {
     case CG_FE:
-        return( ((bck_info *)FEBack( hdl ))->lbl );
+        return( FEBack( hdl )->lbl );
     case CG_LBL:
-        return( (code_lbl *)hdl );
+        return( (label_handle)hdl );
     case CG_CLB:
-        return( (code_lbl *)hdl );
+        return( (label_handle)hdl );
     case CG_BACK:
-        return( ((bck_info*)hdl)->lbl );
+        return( ((back_handle)hdl)->lbl );
     case CG_TBL:
         return( ((tbl_control*)hdl)->lbl );
     case CG_VTB:
@@ -1771,13 +1771,13 @@ extern  code_lbl    *AskForSymLabel( pointer hdl, cg_class class )
 extern  import_handle   AskImportHandle( cg_sym_handle sym )
 /*******************************************************/
 {
-    return( ((bck_info *)FEBack( sym ))->imp );
+    return( FEBack( sym )->imp );
 }
 
 extern  void    TellImportHandle( cg_sym_handle sym, import_handle imp )
 /*******************************************************************/
 {
-    ((bck_info *)FEBack( sym ))->imp = imp;
+    FEBack( sym )->imp = imp;
 }
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/

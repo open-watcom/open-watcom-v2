@@ -33,7 +33,7 @@
 #include "optwif.h"
 #include "zoiks.h"
 
-extern  void            GenKillLabel(code_lbl *);
+extern  void            GenKillLabel(label_handle);
 
 
 extern  void    TellOptimizerByPassed( void )
@@ -52,8 +52,8 @@ extern  void    TellByPassOver( void )
 }
 
 
-extern  void    TellAddress( code_lbl *lbl, offset addr )
-/*******************************************************/
+extern  void    TellAddress( label_handle lbl, offset addr )
+/**********************************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -62,8 +62,8 @@ extern  void    TellAddress( code_lbl *lbl, offset addr )
 }
 
 
-extern  void    TellDonePatch( code_lbl *lbl )
-/********************************************/
+extern  void    TellDonePatch( label_handle lbl )
+/***********************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -72,8 +72,8 @@ extern  void    TellDonePatch( code_lbl *lbl )
 }
 
 
-extern  void    TellReachedLabel( code_lbl *lbl )
-/***********************************************/
+extern  void    TellReachedLabel( label_handle lbl )
+/**************************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -81,15 +81,15 @@ extern  void    TellReachedLabel( code_lbl *lbl )
   optend
 }
 
-extern  void    TellProcLabel( code_lbl *lbl )
-/********************************************/
+extern  void    TellProcLabel( label_handle lbl )
+/***********************************************/
 {
     _ValidLbl( lbl );
     _SetStatus( lbl, PROCEDURE );
 }
 
-extern  void    TellCommonLabel( code_lbl *lbl, unsigned hdl )
-/************************************************************/
+extern  void    TellCommonLabel( label_handle lbl, unsigned hdl )
+/***************************************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -99,8 +99,8 @@ extern  void    TellCommonLabel( code_lbl *lbl, unsigned hdl )
 }
 
 
-extern  void    TellKeepLabel( code_lbl *lbl )
-/********************************************/
+extern  void    TellKeepLabel( label_handle lbl )
+/***********************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -109,8 +109,8 @@ extern  void    TellKeepLabel( code_lbl *lbl )
 }
 
 
-extern  void    TellNoSymbol( code_lbl *lbl )
-/*******************************************/
+extern  void    TellNoSymbol( label_handle lbl )
+/**********************************************/
 {
   optbegin
     if( lbl != NULL ) {
@@ -123,10 +123,10 @@ extern  void    TellNoSymbol( code_lbl *lbl )
   optend
 }
 
-static  void    ReallyScrapLabel( code_lbl *lbl )
-/***********************************************/
+static  void    ReallyScrapLabel( label_handle lbl )
+/**************************************************/
 {
-    code_lbl   **owner;
+    label_handle *owner;
 
   optbegin
     owner = &Handles;
@@ -141,8 +141,8 @@ static  void    ReallyScrapLabel( code_lbl *lbl )
 }
 
 
-extern  void    TellScrapLabel( code_lbl *lbl )
-/*********************************************/
+extern  void    TellScrapLabel( label_handle lbl )
+/************************************************/
 {
   optbegin
     /* data labels in the code segment can't get freed until the end */
@@ -153,8 +153,8 @@ extern  void    TellScrapLabel( code_lbl *lbl )
 }
 
 
-extern  void    TellCondemnedLabel( code_lbl *lbl )
-/*************************************************/
+extern  void    TellCondemnedLabel( label_handle lbl )
+/****************************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -163,8 +163,8 @@ extern  void    TellCondemnedLabel( code_lbl *lbl )
 }
 
 
-static  code_lbl       *NextCondemned( code_lbl *lbl )
-/****************************************************/
+static  label_handle    NextCondemned( label_handle lbl )
+/*******************************************************/
 {
   optbegin
     for( ;; ) {
@@ -182,7 +182,7 @@ static  code_lbl       *NextCondemned( code_lbl *lbl )
 extern  void    TellBeginExecutions( void )
 /*****************************************/
 {
-    code_lbl   *dead;
+    label_handle    dead;
 
   optbegin
     for(;;) {
@@ -223,7 +223,7 @@ extern  void    TellUnreachLabels( void )
     unreachable by a short jump.
 */
 {
-  code_lbl      *lbl;
+    label_handle    lbl;
 
   optbegin
     for( lbl = Handles; lbl != NULL; lbl = lbl->lbl.link ) {
@@ -237,7 +237,7 @@ extern  void    TellUnreachLabels( void )
 extern  void    KillLblRedirects( void )
 /**************************************/
 {
-  code_lbl      *lbl;
+    label_handle    lbl;
 
   optbegin
 #if  OPTIONS & SHORT_JUMPS

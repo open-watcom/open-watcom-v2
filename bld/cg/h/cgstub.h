@@ -165,7 +165,7 @@ typedef struct dim_entry{
 
 typedef struct{
     dim_entry   entry;
-    bck_info    *dims;
+    back_handle dims;
     int         off;
     cg_type     lo_bound_tipe;
     cg_type     num_elts_tipe;

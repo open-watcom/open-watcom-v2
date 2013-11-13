@@ -53,10 +53,10 @@ static  name    *RTMemRef( rt_class rt_index )
     create a memory_name to reference the given runtime label.
 */
 {
-    code_lbl        *hdl;
+    label_handle    lbl;
 
-    hdl = RTLabel( rt_index );
-    return( AllocMemory( hdl, 0, CG_LBL, WD ) );
+    lbl = RTLabel( rt_index );
+    return( AllocMemory( lbl, 0, CG_LBL, WD ) );
 }
 
 static  void    AddSegOverride( instruction *ins, hw_reg_set reg )

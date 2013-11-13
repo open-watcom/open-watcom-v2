@@ -1568,7 +1568,7 @@ extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe 
 static  an Flip( an name, bool op_false, bool op_true )
 /*****************************************************/
 {
-    code_lbl        **temp;
+    label_handle    *temp;
 
     if( op_false ) {
         if( op_true ) {
@@ -1663,7 +1663,7 @@ extern  an FoldConsCompare( cg_op op, tn left,
 }
 
 
-extern  bool    FoldIfTrue( tn left, code_lbl *lbl )
+extern  bool    FoldIfTrue( tn left, label_handle lbl )
 /*****************************************************/
 {
     bool        folded;
@@ -1680,7 +1680,7 @@ extern  bool    FoldIfTrue( tn left, code_lbl *lbl )
 }
 
 
-extern  bool    FoldIfFalse( tn left, code_lbl *lbl )
+extern  bool    FoldIfFalse( tn left, label_handle lbl )
 /******************************************************/
 {
     bool        folded;

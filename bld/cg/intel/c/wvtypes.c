@@ -52,7 +52,7 @@ extern  void            DataLong(long);
 extern  void            DataBytes(unsigned_32,const void *);
 extern  void            BuffIndex(uint);
 extern  void            BuffForward(dbg_patch_handle *);
-extern  void            BuffBack(bck_info *, offset);
+extern  void            BuffBack(back_handle, offset);
 extern  void            BuffString(uint,char*);
 extern  void            BuffValue(unsigned_32,uint);
 extern  void            BuffWord(uint);
@@ -225,7 +225,7 @@ extern  dbg_type        WVCharBlock( unsigned_32 len ) {
     return( TypeIdx );
 }
 
-extern  dbg_type        WVIndCharBlock( bck_info *len, cg_type len_type,
+extern  dbg_type        WVIndCharBlock( back_handle len, cg_type len_type,
                                         int off ) {
 /************************************************************************/
 
@@ -251,7 +251,7 @@ extern  dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type ) {
 }
 
 
-extern  dbg_type        WVFtnArray( bck_info *dims, cg_type lo_bound_tipe,
+extern  dbg_type        WVFtnArray( back_handle dims, cg_type lo_bound_tipe,
                                     cg_type num_elts_tipe, int off,
                                     dbg_type base ) {
 /***************************************************************************/

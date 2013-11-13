@@ -102,10 +102,10 @@ extern  void    JmpToRet( ins_entry *instr, ins_entry *ret ) {
 extern  bool    RetAftrLbl( ins_entry *ret ) {
 /********************************************/
 
-    ins_entry   *ref;
-    code_lbl    *lbl;
-    ins_entry   *next;
-    bool        change;
+    ins_entry       *ref;
+    label_handle    lbl;
+    ins_entry       *next;
+    bool            change;
 
   optbegin
     change = FALSE;

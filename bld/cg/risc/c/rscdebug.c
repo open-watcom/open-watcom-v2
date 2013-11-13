@@ -90,7 +90,7 @@ extern  dbg_type        DBCharBlock( unsigned_32 len )
     return( 0 );
 }
 
-extern  dbg_type        DBIndCharBlock( bck_info *len, cg_type len_type, int off )
+extern  dbg_type        DBIndCharBlock( back_handle len, cg_type len_type, int off )
 {
     return( 0 );
 }
@@ -100,11 +100,11 @@ extern  dbg_type        DBDereference( cg_type ptr_type, dbg_type base )
     return( 0 );
 }
 
-extern  dbg_type        DBFtnArray( bck_info *bk, cg_type lo_bound,
+extern  dbg_type        DBFtnArray( back_handle bck, cg_type lo_bound,
                                   cg_type num_elts, int dim_off,dbg_type base )
-                                  {
-                                      return( 0 );
-                                  }
+{
+    return( 0 );
+}
 
 extern  dbg_type        DBArray( dbg_type idx, dbg_type base )
 {

@@ -85,7 +85,7 @@ typedef struct block_edge {
         struct destination {
             union {
                 block_pointer   blk;
-                code_lbl        *lbl;
+                label_handle    lbl;
             } u;
         }                       destination;    /* target */
         struct block            *source;        /* source of edge */
@@ -140,7 +140,7 @@ typedef struct block {
             struct block        *alter_ego;     /* used in loop unrolling */
             struct block        *next;          /* used for CALL_LABEL kludge */
         } v;
-        code_lbl                *label;         /* front end identification */
+        label_handle            label;          /* front end identification */
         local_bit_set           available_bit;
         interval_depth          depth;          /* loop nesting depth */
         block_num               id;             /* internal identification */

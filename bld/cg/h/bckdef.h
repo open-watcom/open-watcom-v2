@@ -42,7 +42,7 @@ typedef pointer         abspatch_handle;
 typedef struct bck_info {
         import_handle   imp;
         import_handle   imp_alt;
-        struct code_lbl *lbl;
+        label_handle    lbl;
         segment_id      seg;
 } bck_info;
 

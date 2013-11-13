@@ -167,7 +167,7 @@ extern  dbg_type    DFCharBlockNamed( const char *name, unsigned_32 len ) {
     return( ret );
 }
 
-extern  dbg_type        DFIndCharBlock( bck_info *len, cg_type len_type,
+extern  dbg_type        DFIndCharBlock( back_handle len, cg_type len_type,
                                         int off ) {
 /************************************************************************/
 
@@ -228,7 +228,7 @@ extern  dbg_type        DFIntArray( unsigned_32 hi, dbg_type base ) {
     return( ret );
 }
 
-static  dw_handle   MKBckVar( bck_info *bck, int off, dw_handle tipe ){
+static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe ){
     dw_loc_id       locid;
     dw_loc_handle   dw_loc;
     dw_loc_handle   dw_segloc;
@@ -303,7 +303,7 @@ extern  dbg_type    DFEndArray( array_list *ar ){
     return( ret );
 }
 
-extern  dbg_type        DFFtnArray( bck_info *dims, cg_type lo_bound_tipe,
+extern  dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
                                     cg_type num_elts_tipe, int off,
                                     dbg_type base ) {
 /***************************************************************************/

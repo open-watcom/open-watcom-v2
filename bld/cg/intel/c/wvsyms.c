@@ -51,7 +51,7 @@ extern  void            SetUpObj(bool);
 extern  void            DataInt(short_offset);
 extern  void            BuffIndex(uint);
 extern  void            BuffForward(dbg_patch_handle*);
-extern  void            BuffBack(bck_info *, offset);
+extern  void            BuffBack(back_handle, offset);
 extern  void            BuffWord(uint);
 extern  void            BuffByte( byte );
 extern  void            BuffOffset( offset );
@@ -122,7 +122,7 @@ extern  void    WVSetBase( void ) {
 
 
     temp_buff   temp;
-    bck_info    *bck;
+    back_handle bck;
 
     if( _IsModel( DBG_LOCALS ) && NeedBaseSet() ) {
         bck = BENewBack( NULL );

@@ -39,14 +39,14 @@ typedef struct common_info {
 } common_info;
 
 extern  ins_entry       *IsolatedCode( ins_entry * );
-extern  void            AddNewJump( ins_entry *, code_lbl * );
+extern  void            AddNewJump( ins_entry *, label_handle );
 extern  void            InsertQueue( ins_entry *, ins_entry * );
 extern  void            DeleteQueue( ins_entry * );
 extern  oc_class        PrevClass( ins_entry * );
 extern  ins_entry       *Untangle( ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
-extern  void            ChgLblRef( ins_entry *, code_lbl * );
-extern  code_lbl        *AddNewLabel( ins_entry *, int );
+extern  void            ChgLblRef( ins_entry *, label_handle );
+extern  label_handle    AddNewLabel( ins_entry *, int );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  ins_entry       *PrevIns( ins_entry * );
 extern  int             OptInsSize( oc_class, oc_dest_attr );

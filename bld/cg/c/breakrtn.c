@@ -37,11 +37,11 @@
 typedef struct  edge_list {
         block_edge              *edge;
         struct edge_list        *next;
-        code_lbl                *lbl;
+        label_handle            lbl;
         block_num               gen_id;
 } edge_list;
 
-extern  block           *NewBlock(code_lbl *,bool);
+extern  block           *NewBlock(label_handle,bool);
 extern  void            RemoveInputEdge(block_edge*);
 extern  bool            FixReturns( void );
 extern  void            FixEdges( void );

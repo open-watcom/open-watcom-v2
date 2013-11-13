@@ -226,7 +226,7 @@ static instruction *CheapCall( instruction *ins, rt_class rt_call, name *p1, nam
     instruction         *call;
     hw_reg_set          reg;
     name                *reg_name;
-    code_lbl            *lbl;
+    label_handle        lbl;
 
     reg = HW_EMPTY;
     lbl = RTLabel( rt_call );

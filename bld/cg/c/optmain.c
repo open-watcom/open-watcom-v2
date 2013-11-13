@@ -42,23 +42,23 @@ extern  void            OptPush( void );
 extern  void            AddInstr( ins_entry *, ins_entry * );
 extern  ins_entry       *NewInstr( any_oc * );
 extern  oc_class        PrevClass( ins_entry * );
-extern  void            TryScrapLabel( code_lbl * );
+extern  void            TryScrapLabel( label_handle );
 extern  void            PSBlip( void );
 extern  void            FreeInstr( ins_entry * );
 extern  pointer_int     MemInUse( void );
 extern  ins_entry       *NextIns( ins_entry * );
-extern  bool            UniqueLabel( code_lbl * );
+extern  bool            UniqueLabel( label_handle );
 
 
 static  void    PullQueue( void )
 /*******************************/
 {
-    code_lbl    *lbl;
-    code_lbl    *next;
-    oc_class    cl;
-    ins_entry   *next_ins;
-    code_lbl    *be_lbls;
-    code_lbl    **owner;
+    label_handle    lbl;
+    label_handle    next;
+    oc_class        cl;
+    ins_entry       *next_ins;
+    label_handle    be_lbls;
+    label_handle    *owner;
 
   optbegin
     for( ;; ) {
@@ -128,7 +128,7 @@ static  void    PullQueue( void )
 static  bool    LDone( any_oc *oc )
 /*********************************/
 {
-    code_lbl    *lbl;
+    label_handle    lbl;
 
   optbegin
     if( oc->oc_header.class != OC_LDONE )

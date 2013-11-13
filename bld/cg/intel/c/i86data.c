@@ -46,13 +46,13 @@
 #include "feprotos.h"
 
 extern  constant_defn   *GetFloat(name*,type_class_def);
-extern  void            OutPatch(code_lbl *,patch_attr);
-extern  void            TellKeepLabel(code_lbl *);
+extern  void            OutPatch(label_handle,patch_attr);
+extern  void            TellKeepLabel(label_handle);
 extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutImport(cg_sym_handle,fix_class,bool);
-extern  void            OutBckImport( const char *name, bck_info  *bck, fix_class class );
+extern  void            OutBckImport( const char *name, back_handle bck, fix_class class );
 extern  void            CodeBytes(byte*,uint);
-extern  void            CodeLabel(code_lbl *, unsigned);
+extern  void            CodeLabel(label_handle, unsigned);
 extern  void            OutIBytes(byte,offset);
 extern  void            OutDataLong(long);
 extern  void            OutDataInt(int);
@@ -67,8 +67,8 @@ extern  void            EmptyQueue( void );
 extern  bool            UseImportForm( fe_attr );
 extern  void            IterBytes( offset len, byte pat );
 
-extern  void            OutLblPatch( code_lbl *lbl, fix_class class, offset plus );
-static  void            DoLblPtr( code_lbl *lbl, segment_id seg, fix_class class, offset plus );
+extern  void            OutLblPatch( label_handle lbl, fix_class class, offset plus );
+static  void            DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus );
 
 
 extern  void    DataAlign( unsigned_32 align ) {
@@ -129,7 +129,7 @@ extern  void    IterBytes( offset len, byte pat ) {
 }
 
 
-extern  void    DoBigBckPtr( bck_info *bck, offset off ) {
+extern  void    DoBigBckPtr( back_handle bck, offset off ) {
 /********************************************************/
 
 /* Careful! Make sure a DGLabel has been done first! */
@@ -139,7 +139,7 @@ extern  void    DoBigBckPtr( bck_info *bck, offset off ) {
     TellByPassOver();
 }
 
-static  void    DoLblPtr( code_lbl *lbl, segment_id seg, fix_class class, offset plus )
+static  void    DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus )
 /****************************************************************************************/
 {
     SetUpObj( TRUE );
@@ -153,7 +153,7 @@ extern  void    DoBigLblPtr( cg_sym_handle sym ) {
 /*********************************************/
 
     TellOptimizerByPassed();
-    DoLblPtr( ((bck_info *)FEBack( sym ))->lbl, FESegID( sym ), F_PTR, 0 );
+    DoLblPtr( FEBack( sym )->lbl, FESegID( sym ), F_PTR, 0 );
     TellByPassOver();
 }
 
@@ -174,7 +174,7 @@ static  void    DoImpPtr( cg_sym_handle sym, fix_class class, offset plus ) {
     }
 }
 
-extern  void    BackImpPtr( const char *nm, bck_info *bck, offset plus ) {
+extern  void    BackImpPtr( const char *nm, back_handle bck, offset plus ) {
 /************************************************************************/
     fix_class const class = F_OFFSET;
 
@@ -190,7 +190,7 @@ extern  void    BackImpPtr( const char *nm, bck_info *bck, offset plus ) {
     }
 }
 
-extern  void    OutLblPatch( code_lbl *lbl, fix_class class, offset plus ) {
+extern  void    OutLblPatch( label_handle lbl, fix_class class, offset plus ) {
 /*****************************************************************************/
 
     offset      val;
@@ -238,7 +238,7 @@ extern  void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus ) {
     if( UseImportForm( attr ) ) {
         DoImpPtr( sym, class, plus );
     } else {
-        DoLblPtr( ((bck_info *)FEBack( sym ))->lbl, FESegID( sym ), class, plus );
+        DoLblPtr( FEBack( sym )->lbl, FESegID( sym ), class, plus );
     }
     TellByPassOver();
 }
@@ -253,7 +253,7 @@ extern  void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus ) {
     if( UseImportForm( attr ) ) { /* 90-05-22 */
         DoImpPtr( sym, F_PTR, plus );
     } else {
-        DoLblPtr( ((bck_info *)FEBack( sym ))->lbl, FESegID( sym ), F_PTR, plus );
+        DoLblPtr( FEBack( sym )->lbl, FESegID( sym ), F_PTR, plus );
     }
     TellByPassOver();
 }
@@ -268,13 +268,13 @@ extern  void    FEPtrBase( cg_sym_handle sym ) {
     if( UseImportForm( attr ) ) {
         DoImpPtr( sym, F_BASE, 0 );
     } else {
-        DoLblPtr( ((bck_info *)FEBack( sym ))->lbl, FESegID( sym ), F_BASE, 0 );
+        DoLblPtr( FEBack( sym )->lbl, FESegID( sym ), F_BASE, 0 );
     }
     TellByPassOver();
 }
 
 
-extern  void    BackPtr( bck_info *bck, segment_id seg, offset plus, type_def *tipe )
+extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
 /***********************************************************************************/
 {
     TellOptimizerByPassed();
@@ -286,7 +286,7 @@ extern  void    BackPtr( bck_info *bck, segment_id seg, offset plus, type_def *t
     TellByPassOver();
 }
 
-extern  void    BackBigOffset( bck_info *bck, segment_id seg, offset plus )
+extern  void    BackBigOffset( back_handle bck, segment_id seg, offset plus )
 /*************************************************************************/
 {
     TellOptimizerByPassed();
@@ -294,7 +294,7 @@ extern  void    BackBigOffset( bck_info *bck, segment_id seg, offset plus )
     TellByPassOver();
 }
 
-extern  void    BackPtrBase( bck_info *bck, segment_id seg )
+extern  void    BackPtrBase( back_handle bck, segment_id seg )
 /**********************************************************/
 {
     TellOptimizerByPassed();
@@ -324,7 +324,7 @@ extern  name    *GenConstData( byte *buffer, type_class_def class ) {
     segment_id          old;
     cg_class            cgclass;
     name                *result;
-    code_lbl            *label;
+    label_handle        label;
     type_length         size;
 
     TellOptimizerByPassed();
@@ -369,7 +369,7 @@ extern  name    *GenFloat( name *cons, type_class_def class ) {
 }
 
 
-extern  void    DataLabel( code_lbl *lbl ) {
+extern  void    DataLabel( label_handle lbl ) {
 /*********************************************/
 
     TellObjNewLabel( AskForLblSym( lbl ) );

@@ -69,7 +69,7 @@ extern  cg_type         SelType(unsigned_32);
 extern  an              BGDuplicate(an);
 extern  void            Gen4ByteValue(unsigned_32);
 extern  an              TreeGen(tn);
-extern  void            CodeLabel(code_lbl *, unsigned );
+extern  void            CodeLabel(label_handle, unsigned );
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  void            GenCodePtr(pointer);
 extern  void            GenSelEntry(bool);
@@ -220,12 +220,12 @@ extern  signed_32       IfCost( select_node *s_node, int entries ) {
 
 
 extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
-                                      code_lbl *other, cg_type tipe,
+                                      label_handle other, cg_type tipe,
                                       cg_type real_tipe ) {
 /*****************************************************************/
 
     tbl_control         *table;
-    code_lbl            **tab_ptr;
+    label_handle        *tab_ptr;
     unsigned_32         cases;
     signed_32           lo;
     signed_32           to_sub;
@@ -235,7 +235,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
 
     cases = NumValues( list, hi );
     lo = list->low;
-    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( code_lbl * ) );
+    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
     table->size = cases;
     old = SetOP( AskCodeSeg() );
     table->value_lbl = AskForNewLabel();
@@ -352,16 +352,16 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
 }
 
 extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
-                                     signed_32 hi, code_lbl *other ) {
+                                     signed_32 hi, label_handle other ) {
 /*****************************************************************/
 
     tbl_control         *table;
-    code_lbl            **tab_ptr;
+    label_handle        *tab_ptr;
     unsigned_32         cases;
     segment_id          old;
 
     cases = hi - lo + 1;
-    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( code_lbl * ) );
+    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
     old = SetOP( AskCodeSeg() );
     table->lbl = AskForNewLabel();
     table->value_lbl = NULL;

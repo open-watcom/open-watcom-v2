@@ -60,10 +60,10 @@ extern  dbg_type        WVScope( const char *name );
 extern  void            WVDumpName( name_entry *name, dbg_type tipe );
 extern  void            WVBackRefType( name_entry *name, dbg_type tipe );
 extern  dbg_type        WVCharBlock( unsigned_32 len );
-extern  dbg_type        WVIndCharBlock( bck_info *len, cg_type len_type,
+extern  dbg_type        WVIndCharBlock( back_handle len, cg_type len_type,
                                         int off );
 extern  dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type );
-extern  dbg_type        WVFtnArray( bck_info *dims, cg_type lo_bound_tipe,
+extern  dbg_type        WVFtnArray( back_handle dims, cg_type lo_bound_tipe,
                                     cg_type num_elts_tipe, int off,
                                     dbg_type base );
 extern  dbg_type        WVArray( dbg_type idx, dbg_type base );
@@ -87,10 +87,10 @@ extern  void            DFDumpName( name_entry *name, dbg_type tipe );
 extern  void            DFBackRefType( name_entry *name, dbg_type tipe );
 extern  dbg_type        DFCharBlock( unsigned_32 len );
 extern  dbg_type        DFCharBlockNamed( const char *name, unsigned_32 len );
-extern  dbg_type        DFIndCharBlock( bck_info *len, cg_type len_type,
+extern  dbg_type        DFIndCharBlock( back_handle len, cg_type len_type,
                                         int off );
 extern  dbg_type        DFLocCharBlock( dbg_loc loc, cg_type len_type );
-extern  dbg_type        DFFtnArray( bck_info *dims, cg_type lo_bound_tipe,
+extern  dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
                                     cg_type num_elts_tipe, int off,
                                     dbg_type base );
 extern  dbg_type        DFArray( dbg_type idx, dbg_type base );
@@ -114,10 +114,10 @@ extern  dbg_type        CVScope( const char *name );
 extern  void            CVDumpName( name_entry *name, dbg_type tipe );
 extern  void            CVBackRefType( name_entry *name, dbg_type tipe );
 extern  dbg_type        CVCharBlock( unsigned_32 len );
-extern  dbg_type        CVIndCharBlock( bck_info *len, cg_type len_type,
+extern  dbg_type        CVIndCharBlock( back_handle len, cg_type len_type,
                                         int off );
 extern  dbg_type        CVLocCharBlock( dbg_loc loc, cg_type len_type );
-extern  dbg_type        CVFtnArray( bck_info *dims, cg_type lo_bound_tipe,
+extern  dbg_type        CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
                                     cg_type num_elts_tipe, int off,
                                     dbg_type base );
 extern  dbg_type        CVArray( dbg_type idx, dbg_type base );

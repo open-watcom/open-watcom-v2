@@ -55,7 +55,7 @@ typedef enum {
 } status_bits;
 
 typedef struct label_def {
-        struct code_lbl         *link;
+        label_handle            link;
         pointer                 patch;
         cg_sym_handle           sym;
         offset                  address;
@@ -89,7 +89,7 @@ typedef struct code_lbl {
 #define _ValidLbl( lbl )
 #endif
 
-extern bool ValidLbl( code_lbl *lbl );
+extern bool ValidLbl( label_handle lbl );
 
 #include "optask.h"
 

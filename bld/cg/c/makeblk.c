@@ -56,7 +56,7 @@ extern  void            RestoreFromTargProc(void);
 extern  void            InitTargProc(void);
 
 
-extern  block   *MakeBlock( code_lbl *label, block_num edges )
+extern  block   *MakeBlock( label_handle label, block_num edges )
 /***************************************************************/
 {
     block       *blk;
@@ -94,7 +94,7 @@ extern  block   *MakeBlock( code_lbl *label, block_num edges )
 }
 
 
-extern  block   *NewBlock( code_lbl *label, bool label_dies )
+extern  block   *NewBlock( label_handle label, bool label_dies )
 /**************************************************************/
 {
     block       *blk;
@@ -133,7 +133,7 @@ extern  void    FreeBlock( void )
 }
 
 
-extern  void    EnLink( code_lbl *label, bool label_dies )
+extern  void    EnLink( label_handle label, bool label_dies )
 /***********************************************************/
 {
     block       *blk;
@@ -229,7 +229,7 @@ extern  void    GenBlock( block_class class, int targets )
 }
 
 
-extern  block   *ReGenBlock( block *blk, code_lbl *lbl )
+extern  block   *ReGenBlock( block *blk, label_handle lbl )
 /*********************************************************/
 {
     block       *new;
@@ -291,7 +291,7 @@ extern  type_class_def  InitCallState( type_def *tipe )
 }
 
 
-extern  void    AddTarget( code_lbl *dest, bool dest_label_dies )
+extern  void    AddTarget( label_handle dest, bool dest_label_dies )
 /******************************************************************/
 /*   Don't handle expression jumps yet*/
 {
@@ -307,7 +307,7 @@ extern  void    AddTarget( code_lbl *dest, bool dest_label_dies )
 }
 
 
-extern  block   *FindBlockWithLbl( code_lbl *label )
+extern  block   *FindBlockWithLbl( label_handle label )
 /*****************************************************/
 {
     block       *blk;
@@ -347,7 +347,7 @@ extern  void    FixEdges( void )
 }
 
 
-static code_lbl *LinkReturnsParms[ 2 ];
+static label_handle LinkReturnsParms[ 2 ];
 
 static void *LinkReturns( void *arg )
 /***********************************/
@@ -355,8 +355,8 @@ static void *LinkReturns( void *arg )
     block               *blk;
     block_num           i;
 //    bool                found;
-    code_lbl            *link_to;
-    code_lbl            *to_search;
+    label_handle        link_to;
+    label_handle        to_search;
 
     arg = arg;
     link_to = LinkReturnsParms[ 0 ];
@@ -460,7 +460,7 @@ extern  void    AddAnIns( block *blk, instruction *ins )
 extern  bool    BlkTooBig( void )
 /*******************************/
 {
-    code_lbl        *blk;
+    label_handle    blk;
 
     if( !HaveCurrBlock ) return( FALSE );
     if( CurrBlock == NULL ) return( FALSE );

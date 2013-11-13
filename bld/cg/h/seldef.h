@@ -40,7 +40,7 @@ typedef struct select_list {
         signed_32               low;
         signed_32               high;
         unsigned_32             count;
-        code_lbl                *label;
+        label_handle            label;
 } select_list;
 
 typedef struct select_node {
@@ -48,16 +48,16 @@ typedef struct select_node {
         use_info        useinfo;
 #endif
         struct select_list      *list;
-        code_lbl                *other_wise;
+        label_handle            other_wise;
         signed_32               lower;
         signed_32               upper;
         uint                    num_cases;
 } select_node;
 
 typedef struct tbl_control {
-        code_lbl                *lbl;            /*  for the table */
-        code_lbl                *value_lbl;      /*  for the value table */
+        label_handle            lbl;            /*  for the table */
+        label_handle            value_lbl;      /*  for the value table */
         uint                    size;
-        code_lbl                *cases[ 1 ];
+        label_handle            cases[ 1 ];
 } tbl_control;
 #endif // __SELDEF__H__

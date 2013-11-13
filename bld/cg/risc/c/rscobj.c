@@ -59,13 +59,13 @@ extern  void            CloseObj( void );
 extern  void            OpenObj( void );
 extern  void            PutObjBytes( const void *, uint );
 extern  char            *AskRTName( rt_class );
-extern  void            TryScrapLabel( code_lbl * );
+extern  void            TryScrapLabel( label_handle );
 extern  void            DoOutObjectName(cg_sym_handle,void(*)(char*,void*),void*,import_type);
 extern  bool            SymIsExported( cg_sym_handle );
-extern  code_lbl        *GetWeirdPPCDotDotLabel( code_lbl * );
-extern  void            TellAddress( code_lbl *, offset );
+extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
+extern  void            TellAddress( label_handle, offset );
 extern  type_length     TempLocation( name * );
-extern  bck_info        *SymBack( cg_sym_handle );
+extern  back_handle     SymBack( cg_sym_handle );
 extern  void            EmptyQueue( void );
 extern  void            TellUnreachLabels( void );
 extern  void            *SortList( void *, unsigned, bool (*)( void *, void * ) );
@@ -409,7 +409,7 @@ static  void            NameGatherer( char *name, void *data )
     CopyStr( name, (char *)data );
 }
 
-static  char            *LabelName( code_lbl *label )
+static  char            *LabelName( label_handle label )
 /***************************************************/
 {
     cg_sym_handle       sym;
@@ -450,7 +450,7 @@ static  char            *LabelName( code_lbl *label )
     return( NULL );
 }
 
-static  owl_symbol_handle labelOwlSym( code_lbl *lbl )
+static  owl_symbol_handle labelOwlSym( label_handle lbl )
 /****************************************************/
 {
     if( lbl->owl_symbol == NULL ) {
@@ -551,7 +551,7 @@ extern void    OutFileStart( int line )
         }
     }
 }
-extern void    OutFuncStart( code_lbl *label, offset start, cg_linenum line )
+extern void    OutFuncStart( label_handle label, offset start, cg_linenum line )
 /***************************************************************************/
 {
     cue_state            info;
@@ -699,7 +699,7 @@ extern  segment_id  AskSegID( pointer hdl, cg_class class )
         }
         return( FESegID( (cg_sym_handle)hdl ) );
     case CG_BACK:
-        return( ((bck_info *)hdl)->seg );
+        return( ((back_handle)hdl)->seg );
     case CG_TBL:
     case CG_VTB:
         return( AskCodeSeg() );
@@ -867,14 +867,14 @@ extern  void    SetBigLocation( long_offset loc )
     OWLSetLocation( currSection->owl_handle, loc );
 }
 
-static void DumpImportResolve( code_lbl *label )
+static void DumpImportResolve( label_handle label )
 /**********************************************/
 {
     cg_sym_handle       def_resolve;
     cg_sym_handle       sym;
     pointer             cond;
     int                 type;
-    bck_info            *bck;
+    back_handle         bck;
 
     if( AskIfRTLabel( label ) ) return;
     sym = AskForLblSym( label );
@@ -905,7 +905,7 @@ static void DumpImportResolve( code_lbl *label )
     }
 }
 
-extern  void    OutReloc( code_lbl *label, owl_reloc_type tipe, unsigned offset )
+extern  void    OutReloc( label_handle label, owl_reloc_type tipe, unsigned offset )
 /*******************************************************************************/
 {
     DumpImportResolve( label );
@@ -915,7 +915,7 @@ extern  void    OutReloc( code_lbl *label, owl_reloc_type tipe, unsigned offset 
         labelOwlSym( label ), tipe );
 }
 
-extern  void    OutSegReloc( code_lbl *label, segment_id seg )
+extern  void    OutSegReloc( label_handle label, segment_id seg )
 /************************************************************/
 {
     section_def             *sect;
@@ -927,7 +927,7 @@ extern  void    OutSegReloc( code_lbl *label, segment_id seg )
         sect->owl_handle, OWL_RELOC_SECTION_INDEX );
 }
 
-extern  owl_sym_linkage labelLinkage( code_lbl *label )
+extern  owl_sym_linkage labelLinkage( label_handle label )
 /********************************************************/
 {
     cg_sym_handle       sym;
@@ -945,7 +945,7 @@ extern  owl_sym_linkage labelLinkage( code_lbl *label )
     return( linkage );
 }
 
-extern  void    OutLabel( code_lbl *label )
+extern  void    OutLabel( label_handle label )
 /********************************************/
 {
     cg_sym_handle       sym;
@@ -958,7 +958,7 @@ extern  void    OutLabel( code_lbl *label )
     if( sym != NULL ) {
         attr = FEAttr( sym );
         if( attr & FE_PROC ) {
-            label = GetWeirdPPCDotDotLabel( (code_lbl *)label );
+            label = GetWeirdPPCDotDotLabel( (label_handle)label );
             tipe = OWL_TYPE_FUNCTION;
         }
     }
@@ -974,11 +974,11 @@ extern  void    OutLabel( code_lbl *label )
 static long const Zero = 0;
 
 #if _TARGET & _TARG_PPC
-extern void OutTOCRec( code_lbl *label )
+extern void OutTOCRec( label_handle label )
 /**************************************/
 {
-    code_lbl            *dot_lbl;
-    code_lbl            *toc_lbl;
+    label_handle    dot_lbl;
+    label_handle    toc_lbl;
 
     if( owlTocSect == NULL ) {
         owlTocSect = OWLSectionInit( owlFile, ".reldata", OWL_SEC_ATTR_DATA|OWL_SEC_ATTR_PERM_READ|OWL_SEC_ATTR_PERM_WRITE, 8 );
@@ -993,7 +993,7 @@ extern void OutTOCRec( code_lbl *label )
 }
 #endif
 
-static owl_section_handle getPData( code_lbl *label )
+static owl_section_handle getPData( label_handle label )
 /***************************************************/
 {
     cg_sym_handle       sym;
@@ -1013,13 +1013,13 @@ static owl_section_handle getPData( code_lbl *label )
     return( globalPdata );
 }
 
-extern void OutPDataRec( code_lbl *label, offset proc_size, offset pro_size )
+extern void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
 /***************************************************************************/
 {
     owl_section_handle  owl_pdata;
     cg_sym_handle       sym;
     cg_sym_handle       curr;
-    code_lbl            *lbl;
+    label_handle        lbl;
 
     owl_pdata = getPData( label );
     label = GetWeirdPPCDotDotLabel( label );
@@ -1149,7 +1149,7 @@ extern  void    ObjEmitSeq( byte_seq *code )
 /******************************************/
 {
     byte_seq_reloc      *curr;
-    bck_info            *back;
+    back_handle         back;
     type_length         loc;
     byte_seq_len        i;
     axp_ins             *code_ptr;

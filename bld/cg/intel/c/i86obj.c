@@ -132,12 +132,12 @@ typedef struct dbg_seg_info {
 extern  char            *AskRTName(rt_class);
 extern  void            TellImportHandle(cg_sym_handle,import_handle);
 extern  import_handle   AskImportHandle(cg_sym_handle);
-extern  void            TellDonePatch(code_lbl *);
-extern  void            TellAddress(code_lbl *,offset);
+extern  void            TellDonePatch(label_handle);
+extern  void            TellAddress(label_handle,offset);
 extern  void            FatalError(const char *);
 extern  void            PutObjRec(byte,byte*,uint);
 extern  void            EmptyQueue( void );
-extern  void            TellCommonLabel(code_lbl *,import_handle);
+extern  void            TellCommonLabel(label_handle,import_handle);
 extern  void            TellUnreachLabels(void);
 extern  void            KillLblRedirects( void );
 extern  void            DoOutObjectName(cg_sym_handle,void(*)(const char*,void*),void*,import_type);
@@ -2121,7 +2121,7 @@ static void _TellImportHandle( cg_sym_handle sym, import_handle imp_idx, bool al
 /*************************************************************************************/
 {
     if( alt_dllimp ) {
-        ((bck_info *)FEBack( sym ))->imp_alt = imp_idx;
+        FEBack( sym )->imp_alt = imp_idx;
     } else {
         TellImportHandle( sym, imp_idx );
     }
@@ -2131,7 +2131,7 @@ static import_handle _AskImportHandle( cg_sym_handle sym, bool alt_dllimp )
 /**********************************************************************/
 {
     if( alt_dllimp ) {
-        return( ((bck_info *)FEBack( sym ))->imp_alt );
+        return( FEBack( sym )->imp_alt );
     } else {
         return( AskImportHandle( sym ) );
     }
@@ -2182,7 +2182,7 @@ static  omf_idx     GenImportComdat( void )
     return( ImportHdl++ );
 }
 
-static  void    ComdatData( code_lbl *lbl, cg_sym_handle sym )
+static  void    ComdatData( label_handle lbl, cg_sym_handle sym )
 /************************************************************/
 {
     FlushData();
@@ -2257,7 +2257,7 @@ extern  void    OutDLLExport( uint words, cg_sym_handle sym )
 }
 
 
-extern  void    OutLabel( code_lbl *lbl )
+extern  void    OutLabel( label_handle lbl )
 /******************************************/
 {
     temp_patch          **owner;
@@ -2599,7 +2599,7 @@ extern  void    OutFPPatch( fp_patches i )
 }
 
 
-extern  void    OutPatch( code_lbl *lbl, patch_attr attr )
+extern  void    OutPatch( label_handle lbl, patch_attr attr )
 /***********************************************************/
 {
     temp_patch  *pat;
@@ -2993,7 +2993,7 @@ extern  void    OutBckExport( const char *name, bool is_export )
     OutIdx( 0, exp );                       /* type index*/
 }
 
-extern  void    OutBckImport( const char *name, bck_info *bck, fix_class class )
+extern  void    OutBckImport( const char *name, back_handle bck, fix_class class )
 /******************************************************************************/
 {
     omf_idx     idx;
@@ -3300,7 +3300,7 @@ extern  segment_id      AskSegID( pointer hdl, cg_class class )
         }
         return( FESegID( (cg_sym_handle)hdl ) );
     case CG_BACK:
-        return( ((bck_info *)hdl)->seg );
+        return( ((back_handle)hdl)->seg );
     case CG_TBL:
     case CG_VTB:
         return( AskCodeSeg() );

@@ -96,9 +96,9 @@ extern  void    DFDefSegs( void ){
 #define ABBREV_NAME  "___DFABBREV"
 extern void DFAbbrevRef( void ){
 /******************************/
-    bck_info    *bck;
+    back_handle bck;
 
-    bck =  BENewBack( NULL );
+    bck = BENewBack( NULL );
 //  BackImpPtr( ABBREV_NAME, bck, 0 );
     BEFreeBack( bck );
 }

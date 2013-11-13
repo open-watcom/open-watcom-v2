@@ -36,7 +36,7 @@ extern  ins_entry       *ValidIns( ins_entry * );
 extern  ins_entry       *AliasLabels( ins_entry *, ins_entry * );
 extern  oc_class        PrevClass( ins_entry * );
 extern  oc_class        NextClass( ins_entry * );
-extern  void            ChgLblRef( ins_entry *, code_lbl * );
+extern  void            ChgLblRef( ins_entry *, label_handle );
 extern  byte            ReverseCondition( byte );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  void            SetBranches( void );
@@ -54,8 +54,8 @@ extern  ins_entry       *PrevIns( ins_entry * );
 extern  void            CallRet( ins_entry * );
 extern  void            TraceCommon( ins_entry * );
 extern  void            MultiLineNums( ins_entry * );
-extern  void            CloneCode( code_lbl* );
-extern  bool            UniqueLabel( code_lbl* );
+extern  void            CloneCode( label_handle );
+extern  bool            UniqueLabel( label_handle );
 
 static  ins_entry       *Redirect( ins_entry *, ins_entry * );
 
@@ -245,10 +245,10 @@ static  ins_entry       *Redirect( ins_entry *l_ins, ins_entry *j_ins )
 /*********************************************************************/
 // Redirect all refs to l_ins to the target of j_ins
 {
-    ins_entry   *ref;
-    code_lbl    *new;
-    ins_entry   *next;
-    ins_entry   *new_ins;
+    ins_entry       *ref;
+    label_handle    new;
+    ins_entry       *next;
+    ins_entry       *new_ins;
 
   optbegin
     new = _Label( j_ins );

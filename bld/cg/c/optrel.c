@@ -32,16 +32,16 @@
 #include "optwif.h"
 #include "objout.h"
 
-extern  void            TryScrapLabel(code_lbl*);
+extern  void            TryScrapLabel(label_handle);
 extern  byte            ReverseCondition(byte);
-extern  void            AddNewJump(ins_entry*,code_lbl*);
-extern  code_lbl        *AddNewLabel(ins_entry*,int);
+extern  void            AddNewJump(ins_entry*,label_handle);
+extern  label_handle    AddNewLabel(ins_entry*,int);
 extern  ins_entry       *PrevIns(ins_entry*);
-extern  void            ChgLblRef(ins_entry*,code_lbl*);
+extern  void            ChgLblRef(ins_entry*,label_handle);
 extern  ins_entry       *NextIns(ins_entry*);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 
-static    code_lbl      *Handle;
+static  label_handle    Handle;
 
 
 static  bool    Jmp_to_lbl( ins_entry *instr )
@@ -54,7 +54,7 @@ static  bool    Jmp_to_lbl( ins_entry *instr )
 }
 
 
-static  bool    CanReach( code_lbl *lbl, ins_entry **add_ptr,
+static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
                                 ins_entry **jmp_ptr )
 /************************************************************
     Can a short branch at instruction 'FirstIns' reach label 'lbl'?
@@ -96,10 +96,10 @@ static  bool    CanReach( code_lbl *lbl, ins_entry **add_ptr,
 }
 
 
-static  void    HndlRedirect( code_lbl *new )
+static  void    HndlRedirect( label_handle new )
 /*******************************************/
 {
-    code_lbl    *redir;
+    label_handle    redir;
 
   optbegin
     redir = Handle->redirect;
@@ -119,7 +119,7 @@ static  bool    InRange( void )
 /*****************************/
 /* Check if redirection is still within range*/
 {
-    code_lbl    *jmp_lbl;
+    label_handle    jmp_lbl;
 
   optbegin
     if( _IsModel( NO_OPTIMIZATION ) ) optreturn( FALSE );

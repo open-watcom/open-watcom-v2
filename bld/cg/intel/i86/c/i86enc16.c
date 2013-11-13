@@ -727,7 +727,7 @@ void EndBlockProfiling( void )
 {
 }
 
-segment_id GenP5ProfileData( char *fe_name, code_lbl **data, code_lbl **stack )
+segment_id GenP5ProfileData( char *fe_name, label_handle *data, label_handle *stack )
 /*****************************************************************************/
 {
     fe_name = fe_name;

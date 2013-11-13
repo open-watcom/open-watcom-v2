@@ -71,7 +71,7 @@ typedef struct call_state {
 
 typedef struct label_id {
         struct label_id         *next;
-        code_lbl                *label;
+        label_handle            label;
         block_num               block_id;
 } label_id;
 

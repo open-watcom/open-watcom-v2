@@ -60,7 +60,7 @@ extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            DoSegRef(segment_id);
 extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
 extern  void            EmitDbgInfo(instruction*);
-extern  void            DoCall(code_lbl *,bool,bool,oc_class);
+extern  void            DoCall(label_handle,bool,bool,oc_class);
 extern  void            RTCall( rt_class rtn, oc_class pop_bit );
 extern  void            GenMJmp(instruction*);
 extern  void            GenRJmp(instruction*);
@@ -97,11 +97,11 @@ extern  name            *DeAlias(name*);
 extern  void            AddWData(signed_32,type_class_def );
 extern  name            *LowPart(name *,type_class_def);
 extern  name            *HighPart(name *,type_class_def);
-extern  void            CodeLabel(code_lbl *, unsigned);
+extern  void            CodeLabel(label_handle, unsigned);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
-extern  void            GenJumpLabel( code_lbl * );
-extern  void            GenKillLabel( code_lbl * );
-extern  segment_id      GenP5ProfileData( char *fe_name, code_lbl **data, code_lbl **stack );
+extern  void            GenJumpLabel( label_handle );
+extern  void            GenKillLabel( label_handle );
+extern  segment_id      GenP5ProfileData( char *fe_name, label_handle *data, label_handle *stack );
 extern  void            EndBlockProfiling( void );
 extern  void            LayOpbyte( gen_opcode op );
 extern  void            LayOpword( gen_opcode op );
@@ -577,8 +577,8 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     byte                pop;
     byte                dest;
     int                 ins_key;
-    code_lbl            *lbl;
-    code_lbl            *lbl_2;
+    label_handle        lbl;
+    label_handle        lbl_2;
     any_oc              oc;
 
     lbl = AskForNewLabel();
@@ -661,8 +661,8 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
 
     any_oc              oc;
     int                 rtindex;
-    code_lbl            *lbl;
-    code_lbl            *lbl_2;
+    label_handle        lbl;
+    label_handle        lbl_2;
     name                *high;
     name                *low;
 #if !(_TARGET & _TARG_80386)
@@ -1168,8 +1168,8 @@ extern  void    GenObjCode( instruction *ins ) {
             GenCall( ins );
             AdjustStackDepth( ins );
             if( _IsTargetModel( NEW_P5_PROFILING ) ) {
-                code_lbl *lbl;
-                segment_id seg;
+                label_handle    lbl;
+                segment_id      seg;
 
                 seg = GenP5ProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
                 _Code;
@@ -1187,10 +1187,10 @@ extern  void    GenObjCode( instruction *ins ) {
             }
             AdjustStackDepth( ins );
             if( _IsTargetModel( NEW_P5_PROFILING ) ) {
-                code_lbl *lbl;
-                code_lbl *junk;
-                segment_id seg;
-                char    c[2];
+                label_handle    lbl;
+                label_handle    junk;
+                segment_id      seg;
+                char            c[2];
 
                 seg = GenP5ProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
                 GenP5ProfileData( "", &junk, &CurrProc->targ.routine_profile_data );

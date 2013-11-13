@@ -42,28 +42,28 @@
 #include "makeins.h"
 #include "makeaddr.h"
 
-extern  void            AddTarget(code_lbl *,bool);
+extern  void            AddTarget(label_handle,bool);
 extern  signed_32       IfCost(select_node*,int);
-extern  void            EnLink(code_lbl *,bool);
+extern  void            EnLink(label_handle,bool);
 extern  name            *ScanCall(tbl_control*,name*,type_class_def);
 extern  void            AddIns(instruction*);
 extern  signed_32       JumpCost(select_node*);
 extern  void            Generate(bool);
 extern  signed_32       ScanCost(select_node*);
 extern  void            GenBlock( block_class, int );
-extern  tbl_control     *MakeScanTab(select_list*,signed_32,code_lbl *,cg_type,cg_type);
-extern  tbl_control     *MakeJmpTab(select_list*,signed_32,signed_32,code_lbl *);
+extern  tbl_control     *MakeScanTab(select_list*,signed_32,label_handle,cg_type,cg_type);
+extern  tbl_control     *MakeJmpTab(select_list*,signed_32,signed_32,label_handle);
 extern  name            *SelIdx(tbl_control*,an);
 extern  type_def        *SelNodeType(an,bool);
 extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
 extern  void            MkSelOp( name *idx, type_class_def class );
 
 /* forward declarations */
-extern  void    BGSelRange( select_node *s_node, signed_32 lo, signed_32 hi, code_lbl *label );
-static  void    ScanBlock( tbl_control *table, an node, type_class_def class, code_lbl *other );
-static  void    SelectBlock( tbl_control *table, an node, code_lbl *other );
+extern  void    BGSelRange( select_node *s_node, signed_32 lo, signed_32 hi, label_handle label );
+static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other );
+static  void    SelectBlock( tbl_control *table, an node, label_handle other );
 
-static  select_list *NewCase( signed_32 lo, signed_32 hi, code_lbl *label ) {
+static  select_list *NewCase( signed_32 lo, signed_32 hi, label_handle label ) {
 /******************************************************************************/
 
     select_list         *new_entry;
@@ -95,7 +95,7 @@ extern  select_node     *BGSelInit( void ) {
 }
 
 
-extern  void    BGSelCase( select_node *s_node, code_lbl *label,
+extern  void    BGSelCase( select_node *s_node, label_handle label,
                            signed_32 value ) {
 /**************************************************************/
 
@@ -104,7 +104,7 @@ extern  void    BGSelCase( select_node *s_node, code_lbl *label,
 
 
 extern  void    BGSelRange( select_node *s_node, signed_32 lo,
-                            signed_32 hi, code_lbl *label ) {
+                            signed_32 hi, label_handle label ) {
 /*************************************************************/
 
     select_list         *new_entry;
@@ -117,7 +117,7 @@ extern  void    BGSelRange( select_node *s_node, signed_32 lo,
 }
 
 
-extern  void    BGSelOther( select_node *s_node, code_lbl *other ) {
+extern  void    BGSelOther( select_node *s_node, label_handle other ) {
 /********************************************************************/
 
     s_node->other_wise = other;
@@ -308,7 +308,7 @@ static  an      GenSelTable( an node, select_node *s_node, type_def *tipe) {
 
 
 static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
-                               int lo, int hi, code_lbl *other,
+                               int lo, int hi, label_handle other,
                                signed_32 lobound, signed_32 hibound,
                                bool have_lobound, bool have_hibound ) {
 /****************************************************************/
@@ -317,7 +317,7 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
     int                 mid;
     select_list         *mid_list;
     bn                  cmp;
-    code_lbl            *lt;
+    label_handle        lt;
 
     mid = lo + ( hi - lo ) / 2;
     mid_list = list;
@@ -446,7 +446,7 @@ extern  signed_32       NumValues( select_list *list, signed_32 hi ) {
     return( cases );
 }
 
-static  void    ScanBlock( tbl_control *table, an node, type_class_def class, code_lbl *other )
+static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other )
 /************************************************************************************************/
 {
     uint                i;
@@ -482,7 +482,7 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def class, co
 }
 
 
-static  void    SelectBlock( tbl_control *table, an node, code_lbl *other ) {
+static  void    SelectBlock( tbl_control *table, an node, label_handle other ) {
 /*****************************************************************************/
 
     uint                i;

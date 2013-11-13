@@ -29,14 +29,14 @@
 ****************************************************************************/
 
 
-extern  code_lbl        *AskForNewLabel( void );
-extern  code_lbl        *AskRTLabel( cg_sym_handle sym );
-extern  code_lbl        *AskForLabel( cg_sym_handle sym );
-extern  bool            AskIfReachedLabel( code_lbl *lbl );
-extern  bool            AskIfRTLabel( code_lbl *lbl );
-extern  bool            AskIfUniqueLabel( code_lbl *lbl );
-extern  bool            AskIfCommonLabel( code_lbl *lbl );
-extern  offset          AskAddress( code_lbl *lbl );
-extern  pointer         AskLblPatch( code_lbl *lbl );
-extern  cg_sym_handle   AskForLblSym( code_lbl *lbl );
-extern  code_lbl        *AskForSymLabel( pointer hdl, cg_class class );
+extern  label_handle    AskForNewLabel( void );
+extern  label_handle    AskRTLabel( cg_sym_handle sym );
+extern  label_handle    AskForLabel( cg_sym_handle sym );
+extern  bool            AskIfReachedLabel( label_handle lbl );
+extern  bool            AskIfRTLabel( label_handle lbl );
+extern  bool            AskIfUniqueLabel( label_handle lbl );
+extern  bool            AskIfCommonLabel( label_handle lbl );
+extern  offset          AskAddress( label_handle lbl );
+extern  pointer         AskLblPatch( label_handle lbl );
+extern  cg_sym_handle   AskForLblSym( label_handle lbl );
+extern  label_handle    AskForSymLabel( pointer hdl, cg_class class );

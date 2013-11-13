@@ -36,7 +36,7 @@
         ins_entry       *PendingDeletes;
         bool            InsDelete;
         uint            QCount;
-        code_lbl        *Handles;
+        label_handle    Handles;
         ins_entry       *RetList;
         pointer         *InstrFrl;
 //      pointer         *CodeLblFrl;

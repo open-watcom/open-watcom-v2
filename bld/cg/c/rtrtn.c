@@ -37,7 +37,7 @@
 #include "rtrtn.h"
 
 static  import_handle   RTHdls[RTSIZE];
-static  code_lbl        *RTLbls[RTSIZE];
+static  label_handle    RTLbls[RTSIZE];
 
 extern  void    LookupRoutine( instruction *ins ) {
 /*************************************************/
@@ -89,10 +89,10 @@ extern  void    TellRTHandle( rt_class rtindex, import_handle hdl ) {
 }
 
 
-extern  code_lbl    *RTLabel( rt_class rtindex ) {
+extern  label_handle RTLabel( rt_class rtindex ) {
 /************************************************/
 
-    code_lbl    *lbl;
+    label_handle    lbl;
 
     lbl = RTLbls[rtindex];
     if( lbl == NULL ) {
@@ -103,13 +103,13 @@ extern  code_lbl    *RTLabel( rt_class rtindex ) {
 }
 
 
-extern  rt_class    FindRTLabel( code_lbl *hdl ) {
-/************************************************/
+extern  rt_class    FindRTLabel( label_handle lbl ) {
+/***************************************************/
 
     rt_class    rtindex;
 
     for( rtindex = 0; rtindex < RTSIZE; ++rtindex ) {
-        if( RTLbls[rtindex] == hdl ) break;
+        if( RTLbls[rtindex] == lbl ) break;
     }
     return( rtindex );
 }

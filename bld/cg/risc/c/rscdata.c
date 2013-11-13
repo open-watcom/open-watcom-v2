@@ -44,8 +44,8 @@
 extern  void            ObjBytes( const void *, unsigned );
 extern  constant_defn   *GetFloat( name *, type_class_def );
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
-extern  void            OutReloc( code_lbl *, owl_reloc_type, unsigned );
-extern  void            OutSegReloc( code_lbl *label, segment_id section );
+extern  void            OutReloc( label_handle, owl_reloc_type, unsigned );
+extern  void            OutSegReloc( label_handle label, segment_id section );
 extern  void            AlignObject( unsigned );
 extern  void            TellOptimizerByPassed( void );
 extern  void            TellByPassOver( void );
@@ -114,7 +114,7 @@ extern  void    IterBytes( offset len, byte pat ) {
     TellByPassOver();
 }
 
-extern  void    BackPtr( bck_info *bck, segment_id seg, offset plus, type_def *tipe ) {
+extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe ) {
 /*************************************************************************************/
 
     seg = seg; tipe = tipe;
@@ -125,7 +125,7 @@ extern  void    BackPtr( bck_info *bck, segment_id seg, offset plus, type_def *t
     TellByPassOver();
 }
 
-extern  void    BackBigOffset( bck_info *bck, segment_id seg, offset plus )
+extern  void    BackBigOffset( back_handle bck, segment_id seg, offset plus )
 /*************************************************************************/
 {
     seg = seg;
@@ -135,7 +135,7 @@ extern  void    BackBigOffset( bck_info *bck, segment_id seg, offset plus )
     TellByPassOver();
 }
 
-extern  void    BackPtrBase( bck_info *bck, segment_id seg ) {
+extern  void    BackPtrBase( back_handle bck, segment_id seg ) {
 /************************************************************/
     TellOptimizerByPassed();
     OutSegReloc( bck->lbl, seg );
@@ -149,14 +149,14 @@ extern  void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus ) {
     tipe = tipe;
     assert( tipe->length == 4 );
     TellOptimizerByPassed();
-    OutReloc( ((bck_info *)FEBack( sym ))->lbl, OWL_RELOC_WORD, 0 );
+    OutReloc( FEBack( sym )->lbl, OWL_RELOC_WORD, 0 );
     ObjBytes( &plus, 4 );
     TellByPassOver();
 }
 
 extern  void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus ) {
 /***************************************************************/
-    bck_info            *bck;
+    back_handle     bck;
 //    segment_id          seg;
 
     TellOptimizerByPassed();
@@ -177,13 +177,13 @@ extern  void    FEPtrBase( cg_sym_handle sym )
 
     TellOptimizerByPassed();
     seg = FESegID( sym );
-    OutSegReloc( ((bck_info *)FEBack( sym ))->lbl, seg );
+    OutSegReloc( FEBack( sym )->lbl, seg );
     ObjBytes( "\0\0", 2 );
     TellByPassOver();
 }
 
 
-extern  void    DataLabel( code_lbl *lbl ) {
+extern  void    DataLabel( label_handle lbl ) {
 /*********************************************/
     TellOptimizerByPassed();
     OutLabel( lbl );

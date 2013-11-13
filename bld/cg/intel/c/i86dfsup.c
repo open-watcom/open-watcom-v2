@@ -64,7 +64,7 @@ extern  segment_id      DbgSegDef( const char *, const char *, int  );
 extern  hw_reg_set      StackReg(void);
 extern  hw_reg_set      DisplayReg(void);
 extern  void            OutBckExport( const char *name, bool is_export );
-extern  void            BackImpPtr( const char *nm, bck_info *bck, offset plus );
+extern  void            BackImpPtr( const char *nm, back_handle bck, offset plus );
 
 
 extern  dw_client       Client;
@@ -254,7 +254,7 @@ extern uint DFDisplayReg( void ){
 #define ABBREV_NAME  "___DFABBREV"
 extern void DFAbbrevRef( void ){
 /******************************/
-    bck_info    *bck;
+    back_handle bck;
 
     bck =  BENewBack( NULL );
     BackImpPtr( ABBREV_NAME, bck, 0 );

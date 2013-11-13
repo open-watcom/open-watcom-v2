@@ -58,7 +58,7 @@ extern  hw_reg_set      Low32Reg(hw_reg_set);
 #elif _TARGET & _TARG_80386
 extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
-extern  void            DoBigBckPtr(bck_info *,offset);
+extern  void            DoBigBckPtr(back_handle,offset);
 extern  type_length     NewBase(name*);
 extern  int             ParmsAtPrologue( void ) ;
 

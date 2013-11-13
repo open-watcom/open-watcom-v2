@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-extern void CodeLabel( code_lbl *, unsigned );
+extern void CodeLabel( label_handle, unsigned );
 extern void CodeLineNumber( unsigned_32, bool );
-extern void CodeHandle( oc_class, int, code_lbl * );
+extern void CodeHandle( oc_class, int, label_handle );
 
 extern void GenCondJump( instruction *ins );
-extern void GenJumpLabel( code_lbl * );
-extern void GenKillLabel( code_lbl * );
+extern void GenJumpLabel( label_handle );
+extern void GenKillLabel( label_handle );

@@ -33,15 +33,14 @@
 #include "optwif.h"
 #include "zoiks.h"
 
-extern  bool    ValidLbl( code_lbl *lbl ) {
-/*****************************************/
-
+extern  bool    ValidLbl( label_handle lbl )
+/******************************************/
+{
     lbl=lbl;
     return( TRUE );
 #if 0
-
-    code_lbl    *chk;
-    static code_lbl     *last = 0;
+    label_handle    chk;
+    static label_handle last = 0;
 
     chk = Handles;
     if( last != NULL && last == lbl ) return( TRUE );
@@ -55,7 +54,5 @@ extern  bool    ValidLbl( code_lbl *lbl ) {
     }
     _Zoiks( ZOIKS_042 );
     return( FALSE );
-
 #endif
-
 }

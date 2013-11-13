@@ -118,7 +118,7 @@ typedef struct dbg_block {
         struct dbg_block        *parent;
         struct dbg_local        *locals;
         pointer                 patches;
-        bck_info               *end_lbl;
+        back_handle             end_lbl;
         unsigned_32             start;
 } dbg_block;
 
@@ -134,7 +134,7 @@ typedef struct dbg_rtn {
         unsigned_32             epi_start;
         byte                    pro_size;
         byte                    obj_ptr_type;   /* for member functions */
-        bck_info               *end_lbl;
+        back_handle             end_lbl;
 } dbg_rtn;
 
 #define DB_BUFF_SIZE    511

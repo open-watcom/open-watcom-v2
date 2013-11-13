@@ -54,7 +54,7 @@ extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type
 extern  name            *SAllocTemp(type_class_def,type_length);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            AddIns(instruction*);
-extern  void            DataLabel(code_lbl *);
+extern  void            DataLabel(label_handle);
 extern  name            *GenIns(an);
 extern  name            *AllocS32Const(signed_32);
 extern  bool            AssgnParms(cn,bool);
@@ -86,7 +86,7 @@ static  void    Far16Parms( cn call ) {
     name                *eax;
     name                *ecx;
     name                *esi;
-    code_lbl            *lbl;
+    label_handle        lbl;
     type_length         offset;
     name                *parmlist;
     call_state          *state;
@@ -284,7 +284,7 @@ extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
     name                *temp;
     type_class_def      class;
     segment_id          old;
-    code_lbl            *lbl;
+    label_handle        lbl;
 
     SaveTargetModel = TargetModel;
     class = AddCallBlock( sym, tipe );

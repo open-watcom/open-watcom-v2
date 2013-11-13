@@ -56,10 +56,10 @@ typedef struct inline_stack {
 
 extern  name            *GenIns(an);
 extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  void            EnLink(code_lbl *,bool);
+extern  void            EnLink(label_handle,bool);
 extern  void            AddIns(instruction*);
 extern  type_class_def  TypeClass(type_def*);
-extern  void            AddTarget(code_lbl *,bool);
+extern  void            AddTarget(label_handle,bool);
 extern  void            GenBlock( block_class, int );
 extern  name            *BGNewTemp(type_def*);
 extern  void            BGDone(an);
@@ -100,9 +100,9 @@ extern  an      BGStopInline( cg_name handle, type_def *tipe ) {
 
     // works if we're in the middle of a conditional???
 
-    code_lbl            *lbl;
-    inline_stack        *junk;
-    an                  retv;
+    label_handle    lbl;
+    inline_stack    *junk;
+    an              retv;
 
     if( HaveCurrBlock == FALSE ) {
         EnLink( AskForNewLabel(), TRUE );

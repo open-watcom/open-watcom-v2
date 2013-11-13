@@ -63,7 +63,7 @@ typedef struct patch {
 typedef struct temp_patch {
         struct patch            pat;
         struct temp_patch       *link;
-        struct code_lbl         *lbl;
+        label_handle            lbl;
 } temp_patch;
 
 typedef struct object {

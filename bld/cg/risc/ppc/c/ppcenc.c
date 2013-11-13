@@ -52,15 +52,15 @@ extern void GenCondJump( instruction * );
 
 extern void             ObjBytes( const void *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
-extern void             OutReloc( code_lbl *, ppc_reloc, unsigned );
+extern void             OutReloc( label_handle, ppc_reloc, unsigned );
 extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
-extern void             TryScrapLabel( code_lbl * );
+extern void             TryScrapLabel( label_handle );
 extern void             DbgBlkBeg( dbg_block *blk, offset lc );
 extern void             DbgBlkEnd( dbg_block *blk, offset lc );
 extern void             EmitDbgInfo( instruction * );
-extern code_lbl         *GetWeirdPPCDotDotLabel( code_lbl * );
+extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
 extern  void            GenCondJump( instruction *cond );
 
 extern type_class_def   Unsigned[];
@@ -311,7 +311,7 @@ static  void    doCall( instruction *ins )
     pointer         sym;
     byte_seq        *code;
     ppc_ins         encoding;
-    code_lbl        *lbl;
+    label_handle    lbl;
 
     sym = ins->operands[CALL_OP_ADDR]->v.symbol;
     code = FindAuxInfoSym( sym, CALL_BYTES );
@@ -794,7 +794,7 @@ extern  void    GenObjCode( instruction *ins )
 
 static byte Zeros[MAX_ALIGNMENT];
 
-extern  void    CodeLabel( code_lbl *label, unsigned alignment )
+extern  void    CodeLabel( label_handle label, unsigned alignment )
 /*****************************************************************/
 {
     offset      loc;
@@ -832,7 +832,7 @@ extern  void    CodeLineNum( cg_linenum line, bool label )
 }
 
 
-extern  void    GenJumpLabel( code_lbl *label )
+extern  void    GenJumpLabel( label_handle label )
 /*********************************************/
 {
     GenBRANCH( 18, label, FALSE, FALSE );
@@ -880,7 +880,7 @@ extern  void    GenJumpIf( instruction *ins, pointer label )
 }
 
 
-extern  void    GenKillLabel( code_lbl *lbl )
+extern  void    GenKillLabel( label_handle lbl )
 /*******************************************/
 {
     _ValidLbl( lbl );
@@ -910,7 +910,7 @@ extern  byte    ReverseCondition( byte cond )
 }
 
 
-extern  code_lbl    *LocateLabel( instruction *ins, int index )
+extern  label_handle LocateLabel( instruction *ins, int index )
 /****************************************************************/
 {
     if( index == NO_JUMP ) return( NULL );
@@ -934,8 +934,8 @@ static  block   *InsBlock( instruction *ins )
 extern  void    GenCondJump( instruction *cond )
 /**********************************************/
 {
-    code_lbl            *dest_false;
-    code_lbl            *dest_true;
+    label_handle    dest_false;
+    label_handle    dest_true;
     block               *blk;
 
     dest_false = LocateLabel( cond, _FalseIndex( cond ) );

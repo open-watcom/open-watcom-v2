@@ -37,10 +37,10 @@
 #include "objout.h"
 
 
-static  code_lbl    *DoAskForLabel( cg_sym_handle sym )
+static  label_handle DoAskForLabel( cg_sym_handle sym )
 /**************************************************/
 {
-    code_lbl    *new;
+    label_handle    new;
 
   optbegin
     new = CGAlloc( sizeof( code_lbl ) );
@@ -68,10 +68,10 @@ static  code_lbl    *DoAskForLabel( cg_sym_handle sym )
 }
 
 
-extern  code_lbl    *AskForNewLabel( void )
+extern  label_handle AskForNewLabel( void )
 /*****************************************/
 {
-    code_lbl    *new;
+    label_handle    new;
 
   optbegin
     new = DoAskForLabel( NULL );
@@ -82,10 +82,10 @@ extern  code_lbl    *AskForNewLabel( void )
 }
 
 
-extern  code_lbl    *AskRTLabel( cg_sym_handle sym )
+extern  label_handle AskRTLabel( cg_sym_handle sym )
 /**************************************************/
 {
-    code_lbl    *lbl;
+    label_handle    lbl;
 
   optbegin
     lbl = DoAskForLabel( sym );
@@ -94,11 +94,11 @@ extern  code_lbl    *AskRTLabel( cg_sym_handle sym )
 }
 
 
-extern  code_lbl    *AskForLabel( cg_sym_handle sym )
+extern  label_handle AskForLabel( cg_sym_handle sym )
 /************************************************/
 {
-    code_lbl    *new;
-    fe_attr     attr;
+    label_handle    new;
+    fe_attr         attr;
 
   optbegin
     new = DoAskForLabel( sym );
@@ -110,7 +110,7 @@ extern  code_lbl    *AskForLabel( cg_sym_handle sym )
 }
 
 
-extern  bool    AskIfReachedLabel( code_lbl *lbl )
+extern  bool    AskIfReachedLabel( label_handle lbl )
 /************************************************/
 {
   optbegin
@@ -119,7 +119,7 @@ extern  bool    AskIfReachedLabel( code_lbl *lbl )
 }
 
 
-extern  bool    AskIfRTLabel( code_lbl *lbl )
+extern  bool    AskIfRTLabel( label_handle lbl )
 /*******************************************/
 {
   optbegin
@@ -128,7 +128,7 @@ extern  bool    AskIfRTLabel( code_lbl *lbl )
 }
 
 
-extern  bool    AskIfUniqueLabel( code_lbl *lbl )
+extern  bool    AskIfUniqueLabel( label_handle lbl )
 /***********************************************/
 {
   optbegin
@@ -137,7 +137,7 @@ extern  bool    AskIfUniqueLabel( code_lbl *lbl )
 }
 
 
-extern  bool    AskIfCommonLabel( code_lbl *lbl )
+extern  bool    AskIfCommonLabel( label_handle lbl )
 /***********************************************/
 {
   optbegin
@@ -146,7 +146,7 @@ extern  bool    AskIfCommonLabel( code_lbl *lbl )
 }
 
 
-extern  offset  AskAddress( code_lbl *lbl )
+extern  offset  AskAddress( label_handle lbl )
 /*****************************************/
 {
   optbegin
@@ -155,7 +155,7 @@ extern  offset  AskAddress( code_lbl *lbl )
 }
 
 
-extern  pointer AskLblPatch( code_lbl *lbl )
+extern  pointer AskLblPatch( label_handle lbl )
 /******************************************/
 {
   optbegin
@@ -167,7 +167,7 @@ extern  pointer AskLblPatch( code_lbl *lbl )
 }
 
 
-extern  cg_sym_handle   AskForLblSym( code_lbl *lbl )
+extern  cg_sym_handle   AskForLblSym( label_handle lbl )
 /***************************************************/
 {
   optbegin

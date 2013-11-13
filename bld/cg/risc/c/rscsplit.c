@@ -450,7 +450,7 @@ extern  instruction     *rMOVEXX( instruction *ins ) {
     instruction         *new_ins;
     name                *len;
     name                *reg_name;
-    code_lbl            *lbl;
+    label_handle        lbl;
     hw_reg_set          all_regs;
     hw_reg_set          reg;
 

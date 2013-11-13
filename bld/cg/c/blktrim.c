@@ -35,7 +35,7 @@
 #include "data.h"
 #include "makeins.h"
 
-extern  void            TellScrapLabel( code_lbl * );
+extern  void            TellScrapLabel( label_handle );
 extern  void            FreeABlock( block * );
 extern  instruction_id  Renumber( void );
 extern  void            RemoveEdge( block_edge * );
@@ -278,7 +278,7 @@ static  void    JoinBlocks( block *jump, block *target )
 {
     block_edge          *edge;
     source_line_number  line_num;
-    code_lbl            *label;
+    label_handle        label;
     instruction         *nop;
 
     /*  To get here, 'target' is only entered from 'jump'*/

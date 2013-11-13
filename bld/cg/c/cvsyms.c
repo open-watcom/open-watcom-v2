@@ -322,8 +322,8 @@ static  void    SymReloc( segment_id seg, cg_sym_handle sym, offset lc )
     SetOP( old );
 }
 
-static void LabelReloc( segment_id seg, bck_info *bck, long disp )
-/****************************************************************/
+static void LabelReloc( segment_id seg, back_handle bck, long disp )
+/******************************************************************/
 {
     type_def    *ptr_type;
     segment_id  id;
@@ -336,8 +336,8 @@ static void LabelReloc( segment_id seg, bck_info *bck, long disp )
     SetOP( old );
 }
 
-extern  void    CVOutBck( cv_out *out, bck_info *bck, offset add, dbg_type tipe )
-/*** Put a back sym out*********************************************************/
+extern  void    CVOutBck( cv_out *out, back_handle bck, offset add, dbg_type tipe )
+/*** Put a back sym out***********************************************************/
 {
     cs_ldata    *ptr;
     void        *ptr1;
