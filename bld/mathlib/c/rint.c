@@ -36,6 +36,7 @@
 ****************************************************************************/
 
 #include <math.h>
+#include <fenv.h>
 
 _WMRTLINK double rint(double x)
 {

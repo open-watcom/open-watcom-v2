@@ -158,7 +158,6 @@
 !inject qmatherr.obj d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
 !inject rint.obj     d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject rmnder.obj   d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
-!inject rndmode.obj  d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject round.obj    d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject scalbn.obj   d16c d16i d32c d32i n32c n32i         axp ntp op lpc lmp
 !inject sgn.obj      d16c d16i d32c d32i n32c n32i wnc wni axp ntp op

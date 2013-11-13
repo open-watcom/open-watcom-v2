@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <fenv.h>
 #include <float.h>
 #ifdef __FPI__
  #include <signal.h>
