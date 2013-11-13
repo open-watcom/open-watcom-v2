@@ -97,6 +97,8 @@ qnx_libdir     = $(%WATCOM)/lib386:$(%WATCOM)/lib386/qnx
 wnt_libdir     = $(%WATCOM)/lib386:$(%WATCOM)/lib386/nt
 linux_libdir   = $(%WATCOM)/lib386:$(%WATCOM)/lib386/linux
 
+w32_lang_root  = $(%WATCOM)
+
 !else
 
 dos16_libdir   = $(%WATCOM)\lib286;$(%WATCOM)\lib286\dos
@@ -113,12 +115,14 @@ qnx_libdir     = $(%WATCOM)\lib386;$(%WATCOM)\lib386\qnx
 wnt_libdir     = $(%WATCOM)\lib386;$(%WATCOM)\lib386\nt
 linux_libdir   = $(%WATCOM)\lib386;$(%WATCOM)\lib386\linux
 
+w32_lang_root  = $(%WATCOM)
+
 !endif
 
 exes = &
-    dos_fpis.exe dos_fpcs.exe &
+#    dos_fpis.exe dos_fpcs.exe &
     dos_fpim.exe dos_fpcm.exe &
-    dos_fpic.exe dos_fpcc.exe &
+#    dos_fpic.exe dos_fpcc.exe &
     dos_fpil.exe dos_fpcl.exe &
     dos_fpih.exe dos_fpch.exe &
     pls_fpir.exp pls_fpcr.exp &
@@ -127,24 +131,18 @@ exes = &
     rsi_fpis.exe rsi_fpcs.exe &
     cw_fpir.exe cw_fpcr.exe &
     cw_fpis.exe cw_fpcs.exe &
-    os2_fpi.exe os2_fpc.exe &
+#    os2_fpi.exe os2_fpc.exe &
     os3_fpir.exe os3_fpcr.exe &
     os3_fpis.exe os3_fpcs.exe &
-    win_fpi.exe win_fpc.exe &
+#    win_fpi.exe win_fpc.exe &
     w32_fpir.exe w32_fpcr.exe &
     w32_fpis.exe w32_fpcs.exe &
     wnt_fpir.exe wnt_fpcr.exe &
     wnt_fpis.exe wnt_fpcs.exe &
     lnx_fpir.exe lnx_fpcr.exe &
     lnx_fpis.exe lnx_fpcs.exe
-	
-exe32s = &
-    wnt_fpir.exe wnt_fpcr.exe &
-    wnt_fpis.exe wnt_fpcs.exe &
-    lnx_fpir.exe lnx_fpcr.exe &
-    lnx_fpis.exe lnx_fpcs.exe
 
-tests : .symbolic $(exe32s)
+tests : .symbolic $(exes)
 
 all : .symbolic $(exes)
 
@@ -271,25 +269,25 @@ win_fpc.exe : $(mathtest)
 w32_fpir.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bw -zw -bt=windows -3r
     $(linker_386) SYSTEM win386 $(link_opts) LIBPATH $(win32_libdir) FILE $^*.obj
-    wbind -q -s $(lang_root)/binw/win386.ext -n $^*
+    wbind -q -s $(w32_lang_root)/binw/win386.ext -n $^*
     rm $^*.rex
 
 w32_fpcr.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bw -zw -bt=windows -3r
     $(linker_386) SYSTEM win386 $(link_opts) LIBPATH $(win32_libdir) FILE $^*.obj
-    wbind -q -s $(lang_root)/binw/win386.ext -n $^*
+    wbind -q -s $(w32_lang_root)/binw/win386.ext -n $^*
     rm $^*.rex
 
 w32_fpis.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpi -bw -zw -bt=windows -3s
     $(linker_386) SYSTEM win386 $(link_opts) LIBPATH $(win32_libdir) FILE $^*.obj
-    wbind -q -s $(lang_root)/binw/win386.ext -n $^*
+    wbind -q -s $(w32_lang_root)/binw/win386.ext -n $^*
     rm $^*.rex
 
 w32_fpcs.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bw -zw -bt=windows -3s
     $(linker_386) SYSTEM win386 $(link_opts) LIBPATH $(win32_libdir) FILE $^*.obj
-    wbind -q -s $(lang_root)/binw/win386.ext -n $^*
+    wbind -q -s $(w32_lang_root)/binw/win386.ext -n $^*
     rm $^*.rex
 
 wnt_fpir.exe : $(mathtest)
@@ -323,7 +321,3 @@ lnx_fpis.exe : $(mathtest)
 lnx_fpcs.exe : $(mathtest)
     $(cc_386) $[@ $(comp_opts) -fpc -bt=linux -3s
     $(linker_386) SYSTEM linux $(link_opts) LIBPATH $(linux_libdir) FILE $^*.obj NAME $@
-    
-native : $(mathtest)
-    $(cc_386) $[@ $(comp_opts) -fpc
-    $(linker_386) $(link_opts) SYSTEM linux LIBPATH $(linux_libdir) FILE $^*.obj NAME $@ 
