@@ -82,12 +82,12 @@ static  name    *AllocName( int class,
 
     name        *new;
 
-    new = AllocFrl( &FrlHead[  class  ], Size[  class  ] );
+    new = AllocFrl( &FrlHead[class], Size[class] );
     new->n.class = class;
-    new->n.next_name = Names[ class ];
-    Names[ class ] = new;
+    new->n.next_name = Names[class];
+    Names[class] = new;
     new->n.name_class = type_class;
-    new->n.size = TypeClassSize[ type_class ];
+    new->n.size = TypeClassSize[type_class];
     if( new->n.size == 0 ) {
         new->n.size = size;
     }
@@ -100,7 +100,7 @@ static  name    *findConst64( unsigned_32 low, unsigned_32 high, pointer cf_valu
     name        *new_c;
     name        **last;
 
-    last = &Names[  N_CONSTANT  ];
+    last = &Names[N_CONSTANT];
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
             if( new_c->c.int_value == low && new_c->c.int_value_2 == high ) {
@@ -124,7 +124,7 @@ static void ZapXX( name *xx, type_class_def class, type_length size ) {
 
     if( class != XX ) { /* if he's making a type with same size as xx */
         xx->n.name_class = class; /* zap the XX one to be a real type */
-        xx->n.size = TypeClassSize[  class  ];
+        xx->n.size = TypeClassSize[class];
     } else if( size != 0 ) {
         xx->n.size = size;
     }
@@ -148,7 +148,7 @@ extern  name    *AllocConst( pointer value ) {
         CFFree( value );
         return( ConstOne );
     }
-    last = &Names[  N_CONSTANT  ];
+    last = &Names[N_CONSTANT];
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
             if( new_c->c.int_value == int_value ) {
@@ -156,8 +156,8 @@ extern  name    *AllocConst( pointer value ) {
                     CFFree( value );
                     // move constant found to front of list
                     *last = new_c->n.next_name;
-                    new_c->n.next_name = Names[ N_CONSTANT ];
-                    Names[ N_CONSTANT ] = new_c;
+                    new_c->n.next_name = Names[N_CONSTANT];
+                    Names[N_CONSTANT] = new_c;
                     return( new_c );
                 }
             }
@@ -185,8 +185,8 @@ extern  name    *AllocConst( pointer value ) {
             unsigned_64         i64val;
 
             i64val = CFCnvF64( value );
-            new_c->c.int_value   = i64val.u._32[ I64LO32 ];
-            new_c->c.int_value_2 = i64val.u._32[ I64HI32 ];
+            new_c->c.int_value   = i64val.u._32[I64LO32];
+            new_c->c.int_value_2 = i64val.u._32[I64HI32];
         }
     }
     return( new_c );
@@ -309,7 +309,7 @@ extern  constant_defn   *GetFloat( name *cons, type_class_def class ) {
     defn = AllocFrl( &ConstDefnFrl, sizeof( constant_defn ) );
     defn->const_class = class;
     defn->label = NULL;
-    CFCnvTarget( cons->c.value, (flt*)&defn->value, TypeClassSize[ class ] );
+    CFCnvTarget( cons->c.value, (flt*)&defn->value, TypeClassSize[class] );
     defn->next_defn = cons->c.static_defn;
     cons->c.static_defn = defn;
     return( defn );
@@ -394,7 +394,7 @@ extern  name    *STempOffset( name *temp, type_length offset,
     name        *new_t;
     name        *xx;
 
-    class = OneClass[  class  ];
+    class = OneClass[class];
     offset += temp->v.offset;
     new_t = temp->t.alias;
     xx = NULL;
@@ -441,7 +441,7 @@ extern  name    *SAllocTemp( type_class_def class, type_length size ) {
 
     name        *new_t;
 
-    class = OneClass[  class  ];
+    class = OneClass[class];
     new_t = AllocName( N_TEMP, class, size );
     new_t->t.v.id = ++TempId;
     new_t->v.symbol = NULL;
@@ -478,7 +478,7 @@ extern  name    *SAllocUserTemp( pointer symbol,
 
     name        *new_t;
 
-    class = OneClass[  class  ];
+    class = OneClass[class];
     new_t = LkAddBack( symbol, NULL );
     if( new_t == NULL ) {
         new_t = AllocTemp( class );
@@ -549,7 +549,7 @@ extern  name    *ScaleIndex( name *index, name *base, type_length offset,
 
     name        *new_x;
 
-    class = OneClass[  class  ];
+    class = OneClass[class];
     for( new_x = Names[N_INDEXED]; new_x != NULL; new_x = new_x->n.next_name ) {
         if( new_x->i.base == base
          && new_x->i.index == index
@@ -562,7 +562,7 @@ extern  name    *ScaleIndex( name *index, name *base, type_length offset,
               && new_x->n.size == size ) ) ) {
             if( class != XX ) {
                 new_x->n.name_class = class;
-                new_x->n.size = TypeClassSize[  class  ];
+                new_x->n.size = TypeClassSize[class];
             }
             if( index->n.class == N_TEMP ) {
                 index->t.temp_flags |= INDEXED;
@@ -681,8 +681,8 @@ extern  void    FreeAName( name *op ) {
         if( op == LastTemp ) LastTemp = op->n.next_name;
         if( op == DummyIndex ) DummyIndex = NULL;
     }
-    FrlFreeSize( &FrlHead[  op->n.class  ],
-                 (pointer *)op, Size[  op->n.class  ] );
+    FrlFreeSize( &FrlHead[op->n.class],
+                 (pointer *)op, Size[op->n.class] );
 }
 
 

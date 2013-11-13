@@ -42,6 +42,8 @@
 #include "cgprotos.h"
 #include "rtrtn.h"
 #include "objout.h"
+#include "types.h"
+#include "makeaddr.h"
 
 extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
 extern  name            *AddrConst(name*,segment_id,constant_class);
@@ -55,7 +57,6 @@ extern  void            AddIns(instruction*);
 extern  void            DataLabel(code_lbl *);
 extern  name            *GenIns(an);
 extern  name            *AllocS32Const(signed_32);
-extern  an              MakeTempAddr(name*,type_def*);
 extern  bool            AssgnParms(cn,bool);
 extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);
 extern  void            AddCallIns(instruction*,cn);
@@ -272,7 +273,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
         AddIns( MakeBinary( OP_ADD, reg_name,
                 AllocS32Const( state->parm.offset ), reg_name, WD ) );
     }
-    return( MakeTempAddr( result, call->tipe ) );
+    return( MakeTempAddr( result ) );
 }
 
 

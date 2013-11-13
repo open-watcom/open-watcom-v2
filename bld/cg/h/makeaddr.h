@@ -31,7 +31,7 @@
 
 extern  an      NewAddrName( void );
 extern  an      MakeTypeTempAddr( name *op, type_def *tipe );
-extern  an      MakeTempAddr( name *op, type_def *tipe );
+extern  an      MakeTempAddr( name *op );
 extern  void    InitMakeAddr( void );
 extern  name    *GenIns( an addr );
 extern  void    NamesCrossBlocks( void );

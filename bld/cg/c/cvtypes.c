@@ -734,7 +734,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
     case LOC_BP_OFFSET:
         --stk;
         if( (loc->class & 0xf0) == LOC_BP_OFFSET ) {
-            stk[0].v.n  = ((name *)loc->u.be_sym)->v.symbol;
+            stk[0].v.n  = loc->u.be_sym->v.symbol;
             stk[0].state = EXPR_NAME;
             stk[0].o = 0;
         } else {
@@ -1209,7 +1209,7 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
             return;
         }
         if( (loc->class & 0xf0) == LOC_BP_OFFSET ) {
-            stk[0].s  = ((name *)loc->u.be_sym)->v.symbol;
+            stk[0].s  = loc->u.be_sym->v.symbol;
             stk[0].kind = SYM_SYM;
         } else {
             if( loc->class == LOC_MEMORY ) {

@@ -39,13 +39,13 @@
 #include "makeins.h"
 #include "display.h"
 #include "objout.h"
+#include "makeaddr.h"
 
 typedef struct frame_patch {
         struct frame_patch      *next;
         abspatch_handle         patch;
 } frame_patch;
 
-extern  name            *GenIns(an);
 extern  name            *TempOffset(name*,type_length,type_class_def);
 extern  int             SizeDisplayReg(void);
 extern  hw_reg_set      AllCacheRegs(void);

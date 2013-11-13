@@ -168,16 +168,16 @@ extern dbg_loc  _CGAPI DBLocSym( dbg_loc loc, cg_sym_handle sym ) {
 }
 
 
-extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle sym ) {
+extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp ) {
 /*****************************************************************/
 
     name        *tmp;
 
 #ifndef NDEBUG
-    EchoAPI( "DBLocTemp( %i, %i )", loc, sym );
+    EchoAPI( "DBLocTemp( %i, %i )", loc, temp );
 #endif
     loc = LocCreate( loc, LOC_BP_OFFSET );
-    tmp = DeAlias( (name *)sym );
+    tmp = DeAlias( (name *)temp );
     tmp->v.usage |= VAR_VOLATILE|NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
     loc->u.be_sym = tmp;
 #ifndef NDEBUG

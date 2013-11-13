@@ -39,9 +39,9 @@
 #include "zoiks.h"
 #include "cfloat.h"
 #include "utils.h"
+#include "makeaddr.h"
 
 extern  void            BurnTree(tn);
-extern  bool            NeedPtrConvert(an,type_def*);
 extern  type_class_def  TypeClass(type_def*);
 extern  cfloat *        CnvCFToType( cfloat *cf, type_def *tipe );
 

@@ -39,7 +39,7 @@ extern  bool    FiniLabel( code_lbl *lbl, block *blk );
 extern  void    BGFiniLabel( code_lbl *lbl );
 extern  bool    NeedConvert( type_def *from, type_def *to );
 extern  name    *BGNewTemp( type_def *tipe );
-extern  temp_name       *BGGlobalTemp( type_def *tipe );
+extern  name    *BGGlobalTemp( type_def *tipe );
 extern  an      Arithmetic( an name, type_def *tipe );
 extern  bn      BGCompare( cg_op op, an left, an rite, code_lbl *entry, type_def *tipe );
 extern  bn      Boolean( an node, code_lbl *entry );

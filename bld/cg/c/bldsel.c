@@ -40,6 +40,7 @@
 #include "types.h"
 #include "bldins.h"
 #include "makeins.h"
+#include "makeaddr.h"
 
 extern  void            AddTarget(code_lbl *,bool);
 extern  signed_32       IfCost(select_node*,int);
@@ -50,7 +51,6 @@ extern  signed_32       JumpCost(select_node*);
 extern  void            Generate(bool);
 extern  signed_32       ScanCost(select_node*);
 extern  void            GenBlock( block_class, int );
-extern  name            *GenIns(an);
 extern  tbl_control     *MakeScanTab(select_list*,signed_32,code_lbl *,cg_type,cg_type);
 extern  tbl_control     *MakeJmpTab(select_list*,signed_32,signed_32,code_lbl *);
 extern  name            *SelIdx(tbl_control*,an);

@@ -43,12 +43,10 @@
 #include "utils.h"
 #include "tree.h"
 #include "treeprot.h"
+#include "makeaddr.h"
 #include "feprotos.h"
 
 
-extern  an              MakeConst(pointer,type_def*);
-extern  an              MakeAddrName(cg_class,cg_sym_handle,type_def*);
-extern  an              MakeTypeTempAddr(name*,type_def*);
 extern  void            GenKillLabel(code_lbl *);
 extern  void            GenBlock( block_class, int );
 extern  void            AddTarget(code_lbl *,bool);
@@ -57,30 +55,18 @@ extern  void            EnLink(code_lbl *,bool);
 extern  void            AddIns(instruction*);
 extern  name            *GenIns(an);
 extern  type_class_def  TypeClass(type_def*);
-extern  an              InsName(instruction*,type_def*);
-extern  an              MakePoints(an,type_def*);
-extern  void            FixCodePtr(an);
-extern  void            NamesCrossBlocks( void );
-extern  an              MakeGets(an,an,type_def*);
-extern  an              AddrDuplicate(an);
-extern  an              AddrCopy(an);
-extern  void            AddrFree(an);
-extern  an              AddrSave(an);
-extern  void            AddrDemote(an);
 extern  name            *AllocIntConst(int);
 extern  name            *AllocS32Const(signed_32);
 extern  name            *AllocS64Const( unsigned_32 low, unsigned_32 high );
 extern  name            *AllocU64Const( unsigned_32 low, unsigned_32 high );
 extern  name            *AllocTemp(type_class_def);
 extern  bool            BlkTooBig( void );
-extern  bool            NeedPtrConvert(an,type_def*);
 extern  name            *AllocRegName( hw_reg_set );
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  hw_reg_set      ScratchReg( void );
 extern  hw_reg_set      StackReg( void );
 extern  hw_reg_set      VarargsHomePtr( void );
-extern  an              RegName( hw_reg_set, type_def *);
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 
 static  void    BoolFree( bn b );
@@ -241,14 +227,14 @@ extern  name        *BGNewTemp( type_def *tipe ) {
 }
 
 
-extern  temp_name       *BGGlobalTemp( type_def *tipe ) {
-/*******************************************************/
+extern  name        *BGGlobalTemp( type_def *tipe ) {
+/***************************************************/
 
     name        *temp;
 
     temp = BGNewTemp( tipe );
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
-    return( &(temp->t) );
+    return( temp );
 }
 
 
@@ -259,8 +245,7 @@ static  an      FlowOut( bn node, type_def *tipe ) {
     code_lbl            *lbl;
 
     lbl = AskForNewLabel();
-    temp = BGNewTemp( tipe );
-    temp->v.usage |= USE_IN_ANOTHER_BLOCK;
+    temp = BGGlobalTemp( tipe );
     AddIns( MakeMove( AllocIntConst( FETrue() ), temp, temp->n.name_class ) );
     *(node->t) = CurrBlock->label;
     GenBlock( JUMP, 1 );

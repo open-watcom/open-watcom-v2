@@ -43,6 +43,7 @@
 #include "addrfold.h"
 #include "display.h"
 #include "utils.h"
+#include "makeaddr.h"
 
 static    pointer       *AddrNameFrl;
 
@@ -106,14 +107,11 @@ extern  an      MakeTypeTempAddr( name *op, type_def *tipe )
     return( addr );
 }
 
-
-extern  an      MakeTempAddr( name *op, type_def *tipe )
-/******************************************************/
+extern  an      MakeTempAddr( name *op )
+/**************************************/
 {
-    tipe = tipe;
     return( MakeTypeTempAddr( op, TypeAddress( TY_NEAR_POINTER ) ) );
 }
-
 
 extern  void    InitMakeAddr( void )
 /**********************************/

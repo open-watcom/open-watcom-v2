@@ -1860,7 +1860,7 @@ an  TNPostGets( tn node )
     } else {
         left = AddrGen( node->u.left );
         rite = NotAddrGen( node->u2.t.rite );
-        retv = MakeTempAddr( BGNewTemp( node->tipe ), node->tipe );
+        retv = MakeTempAddr( BGNewTemp( node->tipe ) );
         leftp = BGUnary( O_POINTS, AddrCopy( left ), node->tipe );
         retv = BGAssign( retv, leftp, node->tipe );
         BGDone( BGOpGets( node->u2.t.op, left, rite, node->tipe, node->tipe ) );
@@ -2039,7 +2039,7 @@ static an   MakeBased( an left, an rite, type_def *tipe )
     an          seg;
 
     temp_var = BGNewTemp( tipe );
-    temp = MakeTempAddr( temp_var, tipe );
+    temp = MakeTempAddr( temp_var );
     near_type = TypeAddress( TY_NEAR_POINTER );
     short_type = TypeAddress( TY_UINT_2 );
     if( rite->format == NF_ADDR &&
@@ -2138,7 +2138,7 @@ static  an  TNWarp( tn node )
     }
     BGControl( O_INVOKE_LABEL, NULL, node->u.left->u.handle );
     FreeTreeNode( node->u.left );
-    dst = MakeTempAddr( BGNewTemp( node->tipe ), node->tipe );
+    dst = MakeTempAddr( BGNewTemp( node->tipe ) );
     src = NotAddrGen( node->u2.t.rite );
     return( BGAssign( dst, src, node->tipe ) );
 }
@@ -2164,7 +2164,7 @@ static  an  TNQuestion( tn node )
     Control( O_IF_FALSE, node->u.left, false_lbl, FALSE );
     temp_var = BGNewTemp( node->tipe );
     temp_var->v.usage |= USE_IN_ANOTHER_BLOCK;
-    temp = MakeTempAddr( temp_var, node->tipe );
+    temp = MakeTempAddr( temp_var );
     retv = TreeGen( node->u2.t.rite->u.left );
     BGDone( BGAssign( AddrCopy( temp ), retv, node->tipe ) );
     BGControl( O_GOTO, NULL, around_lbl );
@@ -2254,7 +2254,7 @@ static  void    MakeSPSafe( tn scan )
         parmtn = scan->u.left;
         if( ModifiesSP( parmtn ) ) {
             tipe = parmtn->tipe;
-            temp = MakeTempAddr( BGNewTemp( tipe ), tipe );
+            temp = MakeTempAddr( BGNewTemp( tipe ) );
             parman = NotAddrGen( parmtn );
             BGDone( BGAssign( BGDuplicate( temp ), parman, parman->tipe ) );
             scan->u.left = TGUnary( O_POINTS, TGLeaf( temp ), tipe );
@@ -2305,7 +2305,7 @@ static  an  TNCall( tn what, bool ignore_return )
                 parmtn->u2.t.rite = NULL;
                 BurnTree( parmtn );
             } else {
-                temp = MakeTempAddr( BGNewTemp( parmtn->tipe ), parmtn->tipe );
+                temp = MakeTempAddr( BGNewTemp( parmtn->tipe ) );
                 parman = AddrGen( parmtn );
                 BGDone( BGAssign( BGDuplicate( temp ), parman, parman->tipe ) );
                 parman = temp;

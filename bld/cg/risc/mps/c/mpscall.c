@@ -37,6 +37,8 @@
 #include "data.h"
 #include "bldins.h"
 #include "makeins.h"
+#include "types.h"
+#include "makeaddr.h"
 
 extern  bool            AssgnParms( cn, bool );
 extern  type_class_def  AddCallBlock( cg_sym_handle, type_def * );
@@ -46,7 +48,6 @@ extern  name            *SAllocIndex( name *, name *, type_length, type_class_de
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  void            AddCallIns( instruction *, cn );
 extern  void            AddIns( instruction * );
-extern  an              MakeTempAddr( name *, type_def * );
 extern  type_def        *QParmType( cg_sym_handle, cg_sym_handle, type_def * );
 extern  name            *AllocRegName( hw_reg_set );
 extern  name            *AllocS32Const( signed_32 );
@@ -105,7 +106,7 @@ extern an BGCall( cn call, bool use_return, bool in_line )
             // conv_ins = MakeMove( call_result, result, XX );
         }
     }
-    return( MakeTempAddr( result, call->tipe ) );
+    return( MakeTempAddr( result ) );
 }
 
 

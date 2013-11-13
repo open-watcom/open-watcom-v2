@@ -40,6 +40,7 @@
 #include "data.h"
 #include "utils.h"
 #include "stack.h"
+#include "makeaddr.h"
 #include "feprotos.h"
 
 extern  void            TellBeginExecutions(void);
@@ -49,7 +50,6 @@ extern  void            ReInitNames(void);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  type_class_def  TypeClass(type_def*);
-extern  void            NamesCrossBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);
 extern  void            SaveToTargProc(void);
 extern  void            RestoreFromTargProc(void);

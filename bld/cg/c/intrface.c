@@ -47,6 +47,7 @@
 #include "objout.h"
 #include "treeprot.h"
 #include "cgauxinf.h"
+#include "makeaddr.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -97,7 +98,6 @@ extern  patch_handle    BGNewPatch(void);
 extern  cg_name         BGPatchNode( patch_handle, type_def * );
 extern  void            BGPatchInteger( patch_handle, signed_32 );
 extern  void            BGFiniPatch( patch_handle );
-extern  an              MakeConst( cfloat *, type_def * );
 extern  void            DataAlign( unsigned_32 );
 
 #ifdef QNX_FLAKEY
@@ -861,10 +861,10 @@ extern  temp_handle _CGAPI      CGTemp( cg_type tipe )
     temp_handle     retn;
 
     EchoAPI( "CGTemp( %t )", tipe );
-    retn = BGGlobalTemp( TypeAddress( tipe ) );
+    retn = (temp_handle)BGGlobalTemp( TypeAddress( tipe ) );
     return EchoAPITempHandleReturn( retn );
 #else
-    return( BGGlobalTemp( TypeAddress( tipe ) ) );
+    return( (temp_handle)BGGlobalTemp( TypeAddress( tipe ) ) );
 #endif
 }
 
@@ -1025,7 +1025,7 @@ extern  call_handle _CGAPI  CGInitCall( cg_name name, cg_type tipe, cg_sym_handl
 /*************************************************************************************/
 {
 #ifndef NDEBUG
-    tn      retn;
+    tn  retn;
 
     EchoAPI( "CGInitCall( %n, %t, %s )", name, tipe, sym );
     hdlUseOnce( CG_NAMES, name );
@@ -1058,7 +1058,7 @@ extern  cg_name _CGAPI CGCall( call_handle call )
     hdlUseOnce( CG_NAMES, call );
     retn = TGCall( call );
     hdlAddUnary( CG_NAMES, retn, call );
-    return retn;
+    return( retn );
 #else
     return( TGCall( call ) );
 #endif

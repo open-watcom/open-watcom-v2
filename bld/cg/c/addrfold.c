@@ -42,11 +42,11 @@
 #include "cfloat.h"
 #include "x87.h"
 #include "makeins.h"
+#include "makeaddr.h"
 
 #include "addrfold.h"
 
 extern  type_class_def  TypeClass(type_def*);
-extern  void            AddrFree(an);
 extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
 extern  void            AddIns(instruction*);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
@@ -59,15 +59,6 @@ extern  name            *AllocTemp(type_class_def);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *TempOffset(name*,type_length,type_class_def);
 extern  void            BGDone(an);
-extern  void            CheckPointer(an );
-extern  name            *LoadTemp(name *,type_class_def);
-extern  name            *LoadAddress(name*,name*,type_def*);
-extern  void            Convert(an ,type_class_def );
-extern  an              NewAddrName(void);
-extern  bool            PointLess(an ,an );
-extern  void            InsToAddr(an );
-extern  name            *MaybeTemp(name *,type_class_def );
-extern  void            MoveAddress(an ,an );
 extern  i_flags         AlignmentToFlags( type_length );
 
 static  void    LoadTempInt( an addr );

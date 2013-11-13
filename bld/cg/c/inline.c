@@ -37,6 +37,8 @@
 #include "zoiks.h"
 #include "makeins.h"
 #include "data.h"
+#include "types.h"
+#include "makeaddr.h"
 #include "feprotos.h"
 
 typedef struct inline_parm {
@@ -59,7 +61,6 @@ extern  void            AddIns(instruction*);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            AddTarget(code_lbl *,bool);
 extern  void            GenBlock( block_class, int );
-extern  an              MakeTempAddr(name*,type_def*);
 extern  name            *BGNewTemp(type_def*);
 extern  void            BGDone(an);
 extern  an              BGCopy(an);
@@ -169,9 +170,9 @@ extern  void    BGRetInline( an addr, type_def *tipe ) {
         _Zoiks( ZOIKS_070 );
     }
     if( addr == NULL ) {
-        InlineStack->addr = MakeTempAddr( BGNewTemp(TypeInteger), TypeInteger );
+        InlineStack->addr = MakeTempAddr( BGNewTemp(TypeInteger) );
     } else {
-        tempaddr = MakeTempAddr( BGNewTemp( tipe ), tipe );
+        tempaddr = MakeTempAddr( BGNewTemp( tipe ) );
         InlineStack->addr = BGCopy( tempaddr );
         BGDone( BGAssign( tempaddr, addr, tipe ) );
     }

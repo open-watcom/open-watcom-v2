@@ -43,7 +43,7 @@ int         EchoAPIHexReturn( int retn );
 int         EchoAPIIntReturn( int retn );
 call_handle EchoAPICallHandleReturn( call_handle retn );
 select_node *EchoAPISelHandleReturn( select_node *retn );
-call_handle EchoAPITempHandleReturn( temp_handle retn );
+temp_handle EchoAPITempHandleReturn( temp_handle retn );
 cg_type     EchoAPICgtypeReturn( cg_type retn );
 
 void        EchoAPIInit( void );

@@ -404,7 +404,7 @@ select_node *EchoAPISelHandleReturn // EchoAPI sel_handle RETURN VALUE
 }
 
 
-call_handle EchoAPITempHandleReturn // EchoAPI temp_handle RETURN VALUE
+temp_handle EchoAPITempHandleReturn // EchoAPI temp_handle RETURN VALUE
     ( temp_handle retn )            // - temp_handle value
 {
     EchoAPI( " -> %T\n", retn );

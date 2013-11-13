@@ -35,14 +35,14 @@
 #include "memcheck.h"
 #include "data.h"
 #include "types.h"
-#include "feprotos.h"
-
 #include "addrcnst.h"
 #include "x87.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "rtrtn.h"
 #include "objout.h"
+#include "makeaddr.h"
+#include "feprotos.h"
 
 
 extern  void            FreeAName( name * );
@@ -75,7 +75,6 @@ extern  void            GenProlog( void );
 extern  void            GenObject( void );
 extern  void            SortBlocks( void );
 extern  void            InitNames( void );
-extern  void            InitMakeAddr( void );
 extern  void            RegTreeInit( void );
 extern  void            InitConflict( void );
 extern  void            InitSegment( void );

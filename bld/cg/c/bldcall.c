@@ -80,7 +80,6 @@ extern  void            TellObjVirtFuncRef(void *);
 #endif
 extern  void            TRAddParm(instruction*,instruction*);
 extern  void            TRDeclareParm(instruction*);
-extern  an              InsName(instruction*,type_def*);
 extern  type_def        *ClassType(type_class_def);
 extern  bool            SegIsCS( name * );
 extern  type_length     ParmAlignment( type_def * );

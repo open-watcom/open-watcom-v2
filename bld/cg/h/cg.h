@@ -72,11 +72,11 @@ typedef enum {
         EXTN_CALLBACKNAME,  /* return callback function name */
 } extn_request;
 
-typedef char            *char_ptr;
-typedef const char      *cchar_ptr;
+typedef char                *char_ptr;
+typedef const char          *cchar_ptr;
 
 typedef struct tree_node    *cg_name;           /* retval for CGName(),CGUnary()*/
-typedef void                *call_handle;       /* retval for CGInitCall(), etc. */
+typedef struct tree_node    *call_handle;       /* retval for CGInitCall(), etc. */
 typedef struct symbol       *cg_sym_handle;
 typedef struct code_lbl     *label_handle;      /* 2nd parm to CGName for CG_LBL */
 typedef struct select_node  *sel_handle;        /* return value for CGSelInit() */
@@ -87,13 +87,14 @@ typedef struct cfloat       *float_handle;      /* for the BF... routines */
 typedef void                *callback_handle;   /* passed to rtn from callback node */
 typedef void                *patch_handle;      /* used to stuff patchable ints into tree */
 
-typedef void            (*cg_callback)( callback_handle );
+typedef void                (*cg_callback)( callback_handle );
 
-typedef short           segment_id;     /* must be signed */
+typedef short               segment_id;         /* must be signed */
 
-typedef unsigned_32     cg_linenum;
+typedef unsigned_32         cg_linenum;
 
-typedef unsigned_32         dbg_type;       /* symbolic debugging type handles */
+/* symbolic debugging type handles */
+typedef unsigned_32         dbg_type;
 typedef struct struct_list  *dbg_struct;
 typedef struct array_list   *dbg_array;
 typedef struct enum_list    *dbg_enum;
