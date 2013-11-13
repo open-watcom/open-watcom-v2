@@ -53,6 +53,9 @@ _WMRTLINK double logb(double x)
 	ix = (fdx.u.word[1]) & ((u4)0x7fffffff);	/* high |x| */
 	lx = fdx.u.word[0]; 	                    /* low x */
     
+    if(x == 0)
+        return INFINITY;
+    
 	if((ix|lx)==0) 
         return -1.0/fabs(x);
 	
