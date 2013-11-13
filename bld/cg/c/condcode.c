@@ -34,9 +34,9 @@
 #include "pattern.h"
 #include "cgmem.h"
 #include "data.h"
+#include "namelist.h"
 
 
-extern  name            *AllocIntConst( int );
 extern  void            DoNothing( instruction * );
 extern  bool            VolatileIns( instruction * );
 extern  void            ClearBlockBits( block_class );

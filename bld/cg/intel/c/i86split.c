@@ -39,10 +39,10 @@
 #include "convins.h"
 #include "data.h"
 #include "utils.h"
+#include "namelist.h"
 
 extern  conflict_node   *GiveRegister(conflict_node*,bool);
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  hw_reg_set      Op1Reg(instruction*);
 extern  hw_reg_set      ResultReg(instruction*);
 extern  hw_reg_set      ZapReg(instruction*);
@@ -66,13 +66,8 @@ extern  instruction     *SplitMove(instruction*);
 extern  instruction     *SplitUnary(instruction*);
 extern  int             NumOperands(instruction*);
 extern  name            *Addressable(name*,type_class_def);
-extern  name            *AllocU64Const( unsigned_32, unsigned_32 );
-extern  name            *AllocConst(pointer);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  name            *AllocIntConst(int);
-extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocTemp(type_class_def);
 extern  name            *HighPart(name*,type_class_def);
 extern  name            *LowPart(name*,type_class_def);
 extern  name            *NearSegment(void);
@@ -81,7 +76,6 @@ extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  name            *SegName(name*);
 extern  name            *SegmentPart(name*);
-extern  name            *TempOffset(name*,type_length,type_class_def);
 extern  void            ChangeType(instruction*,type_class_def);
 extern  void            DelSeg(instruction*);
 extern  void            DupSeg(instruction*,instruction*);

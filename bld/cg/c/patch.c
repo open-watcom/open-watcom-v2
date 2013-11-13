@@ -40,6 +40,7 @@
 #include "addrfold.h"
 #include "makeins.h"
 #include "treeprot.h"
+#include "namelist.h"
 
 typedef struct {
 #ifndef NDEBUG
@@ -54,8 +55,6 @@ typedef struct {
 } patch;
 
 extern  type_class_def  TypeClass( type_def *);
-extern  name            *AllocTemp( type_class_def );
-extern  name            *AllocS32Const( signed_32 );
 extern  void            AddIns( instruction * );
 
 extern  patch   *BGNewPatch() {

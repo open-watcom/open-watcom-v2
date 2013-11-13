@@ -37,11 +37,11 @@
 #include "cgdefs.h"
 #include "data.h"
 #include "objout.h"
+#include "namelist.h"
 #include "feprotos.h"
 
 extern  name            *SegmentPart(name*);
 extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
 extern  bool            HaveCodeGroup( void );
 extern  bool            AskSegPrivate(segment_id);
 extern  bool            AskSegNear(segment_id);

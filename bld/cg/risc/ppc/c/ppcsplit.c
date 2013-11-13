@@ -39,15 +39,11 @@
 #include "model.h"
 #include "makeins.h"
 #include <assert.h>
+#include "namelist.h"
 
-extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  name            *AllocS32Const(signed_32);
 extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocTemp(type_class_def);
-extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
 
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);

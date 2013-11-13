@@ -35,9 +35,9 @@
 #include "data.h"
 #include "makeins.h"
 #include "stack.h"
+#include "namelist.h"
 
 extern  bool            SideEffect(instruction*);
-extern  name            *AllocTemp(type_class_def );
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction *,instruction *);
 extern  void            ReplIns(instruction *,instruction *);

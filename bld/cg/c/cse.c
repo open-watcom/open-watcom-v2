@@ -36,11 +36,12 @@
 #include "tree.h"
 #include "cfloat.h"
 #include "data.h"
-#include "feprotos.h"
 #include "x87.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "utils.h"
+#include "namelist.h"
+#include "feprotos.h"
 
 
 typedef enum {
@@ -52,24 +53,18 @@ typedef enum {
 extern type_class_def   Unsigned[];
 
 static instruction      *ExprHeads[LAST_CSE_OP+1];
-static  bool            LeaveIndVars;
+static bool             LeaveIndVars;
 
 extern  name            *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
-extern name             *AllocTemp(type_class_def);
 extern void             PrefixIns(instruction*,instruction*);
 extern void             SuffixIns(instruction*,instruction*);
-extern name             *AllocConst(pointer);
-extern pointer          CnvCFToType(pointer,type_def*);
+extern float_handle     CnvCFToType(float_handle,type_def*);
 extern type_def         *ClassType(type_class_def);
 extern int              NumOperands(instruction*);
 extern bool             InsDead(void);
 extern bool             LoadAToMove(instruction*);
 extern bool             Hoistable(instruction*,block*);
 extern void             SXBlip(void);
-extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
-extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
-extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
-extern  name            *AllocIntConst(int);
 extern  bool            DeadBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);
 extern  bool            DivIsADog(type_class_def);
@@ -1354,7 +1349,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                                                 opnd->n.size );
                                 break;
                             case N_MEMORY:
-                                *op = SAllocMemory( base->v.symbol,
+                                *op = (name *)SAllocMemory( base->v.symbol,
                                             base->v.offset + disp,
                                             base->m.memory_type,
                                             opnd->n.name_class,

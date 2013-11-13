@@ -36,6 +36,7 @@
 #include "data.h"
 #include "feprotos.h"
 #include "makeins.h"
+#include "namelist.h"
 
 extern  opcode_entry    String[];
 
@@ -44,7 +45,6 @@ extern  bool            SegOver(name*);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  name            *Addressable(name*,type_class_def);
 extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocTemp(type_class_def);
 extern  name            *FindIndex(instruction*);
 extern  name            *GetSegment(name*);
 extern  name            *NearSegment(void);

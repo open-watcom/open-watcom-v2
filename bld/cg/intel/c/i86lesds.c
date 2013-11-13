@@ -36,13 +36,12 @@
 #include "pattern.h"
 #include "data.h"
 #include "makeins.h"
+#include "namelist.h"
 
 
 extern  void            DoNothing(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *DeAlias(name*);
-extern  name            *AllocS32Const(signed_32);
-extern  name            *AllocIntConst( int );
 extern  bool            VolatileIns(instruction *);
 extern  hw_reg_set      Low16Reg( hw_reg_set regs );
 extern  hw_reg_set      High16Reg( hw_reg_set regs );

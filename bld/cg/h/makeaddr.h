@@ -38,7 +38,7 @@ extern  void    NamesCrossBlocks( void );
 extern  bool    AddrFrlFree( void );
 extern  void    AddrFree( an node );
 extern  an      MakeGets( an dst, an src, type_def *tipe );
-extern  an      MakeConst( pointer cf, type_def *tipe );
+extern  an      MakeConst( float_handle cf, type_def *tipe );
 extern  an      MakePoints( an name, type_def *tipe );
 extern  an      RegName( hw_reg_set reg, type_def *tipe );
 extern  an      InsName( instruction *ins, type_def *tipe );

@@ -38,7 +38,6 @@
 #include "stack.h"
 
 extern  bool_maybe      ReDefinedBy( instruction *, name * );
-extern  name            *AllocS32Const( signed_32 );
 extern void             KillCondBlk( block *blk, instruction *ins, int dest );
 extern  bool            SideEffect( instruction * );
 extern  bool            BlockTrim( void );

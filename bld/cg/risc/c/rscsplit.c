@@ -41,6 +41,7 @@
 #include "data.h"
 #include "rtrtn.h"
 #include <assert.h>
+#include "namelist.h"
 
 extern  instruction     *rMOVRESREG(instruction*);
 extern  instruction     *rSWAPOPS(instruction*);
@@ -99,14 +100,9 @@ extern  hw_reg_set      StackReg( void );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  hw_reg_set      SavedRegs( void );
 
-extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  name            *AllocS32Const(signed_32);
 extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocTemp(type_class_def);
-extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
 
 extern  name            *DeAlias( name * );
 
@@ -128,19 +124,13 @@ extern  type_class_def  Unsigned[];
 extern  type_class_def  HalfClass[];
 
 extern  opcode_entry    *CodeTable( instruction * );
-extern  name            *AllocConst( pointer );
-extern  name            *AllocIntConst( int );
-extern  name            *AllocUIntConst( uint );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  name            *AllocU64Const( unsigned_32, unsigned_32 );
 extern  hw_reg_set      Low16Reg( hw_reg_set regs );
 extern  hw_reg_set      Low32Reg( hw_reg_set regs );
 extern  hw_reg_set      Low64Reg( hw_reg_set regs );
 extern  hw_reg_set      High16Reg( hw_reg_set regs );
 extern  hw_reg_set      High32Reg( hw_reg_set regs );
 extern  hw_reg_set      High64Reg( hw_reg_set regs );
-extern  constant_defn   *GetFloat( name *, type_class_def );
-extern  name            *TempOffset( name *, type_length, type_class_def );
 extern  void            HalfType( instruction * );
 extern  bool            SameThing( name *, name * );
 

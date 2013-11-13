@@ -38,14 +38,13 @@
 #include "data.h"
 #include "rtrtn.h"
 #include "objout.h"
+#include "namelist.h"
 
 extern  name            *GenFloat( name *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
-extern  name            *AllocIntConst( int );
 extern  void            ReplIns( instruction *, instruction * );
 extern  void            SuffixIns( instruction *, instruction * );
 extern  void            MoveSegRes( instruction *, instruction * );
-extern  name            *AllocMemory( pointer, type_length, cg_class, type_class_def );
 extern  bool            SegIsSS( name * );
 extern  void            DelSeg( instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
@@ -53,7 +52,6 @@ extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  name            *AllocRegName( hw_reg_set );
 extern  conflict_node   *NameConflict( instruction *, name * );
 extern  void            AddIns( instruction * );
-extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  instruction     *rMAKECALL( instruction * );

@@ -41,8 +41,8 @@
 #include "zoiks.h"
 #include "data.h"
 #include "makeins.h"
+#include "namelist.h"
 
-extern  name                    *AllocS32Const(signed_32);
 extern  bool                    IsVolatile(name*);
 extern  bool                    InsOrderDependant(instruction*,instruction*);
 extern  bool_maybe              ReDefinedBy( instruction *, name * );

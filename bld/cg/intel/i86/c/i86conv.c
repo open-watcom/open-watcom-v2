@@ -36,8 +36,8 @@
 #include "zoiks.h"
 #include "convins.h"
 #include "data.h"
+#include "namelist.h"
 
-extern  name            *AllocTemp( type_class_def );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            DupSeg( instruction *, instruction * );

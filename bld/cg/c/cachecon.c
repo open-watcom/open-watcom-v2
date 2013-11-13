@@ -37,11 +37,10 @@
 #include "foldins.h"
 #include "convins.h"
 #include "data.h"
+#include "namelist.h"
 
 extern  type_class_def  Unsigned[];
 
-extern  name            *AllocTemp(type_class_def);
-extern  name            *TempOffset(name*,type_length,type_class_def);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  name            *DeAlias(name*);

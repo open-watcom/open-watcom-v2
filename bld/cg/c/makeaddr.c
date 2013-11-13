@@ -38,25 +38,20 @@
 #include "cfloat.h"
 #include "makeins.h"
 #include "data.h"
-#include "feprotos.h"
 #include "types.h"
 #include "addrfold.h"
 #include "display.h"
 #include "utils.h"
 #include "makeaddr.h"
+#include "namelist.h"
+#include "feprotos.h"
 
 static    pointer       *AddrNameFrl;
 
 extern  type_class_def  TypeClass(type_def*);
-extern  name            *SAllocTemp(type_class_def,type_length);
 extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  name            *AllocConst(pointer);
 extern  void            AddIns(instruction*);
 extern  name            *BGNewTemp(type_def*);
-extern  name            *AllocIntConst(int);
-extern  name            *AllocS32Const(signed_32);
-extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
-extern  name            *AllocTemp(type_class_def);
 extern  void            AllocALocal(name*);
 extern  void            BGDone(an);
 extern  cg_type         NamePtrType( name *op );
@@ -276,8 +271,8 @@ extern  an      MakeGets( an dst, an src, type_def *tipe )
 }
 
 
-extern  an      MakeConst( pointer cf, type_def *tipe )
-/*****************************************************/
+extern  an      MakeConst( float_handle cf, type_def *tipe )
+/**********************************************************/
 {
     return( AddrName( AllocConst( cf ), tipe ) );
 }
@@ -548,14 +543,14 @@ extern  an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe 
     addr = NewAddrName();
     addr->format = NF_ADDR;
     if( class != CG_FE ) {
-        op = SAllocMemory( sym, 0, class, TypeClass( tipe ), tipe->length );
+        op = (name *)SAllocMemory( sym, 0, class, TypeClass( tipe ), tipe->length );
         addr->u.name = op;
         addr->class = CL_ADDR_GLOBAL;
     } else {
         attr = FEAttr( sym );
         level = FELexLevel( sym );
         if( attr & FE_STATIC ) {
-            op = SAllocMemory( sym, 0, class, TypeClass(tipe), tipe->length );
+            op = (name *)SAllocMemory( sym, 0, class, TypeClass(tipe), tipe->length );
             if( ( attr & FE_MEMORY ) != EMPTY ) {
                 op->v.usage |= NEEDS_MEMORY | USE_MEMORY;
             }

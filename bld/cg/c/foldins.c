@@ -40,6 +40,7 @@
 #include "data.h"
 #include "treefold.h"
 #include "treeconv.h"
+#include "namelist.h"
 #include "feprotos.h"
 
 extern void             ReplIns(instruction*,instruction*);
@@ -51,11 +52,9 @@ extern type_def         *ClassType(type_class_def);
 extern int              NumOperands(instruction*);
 extern bool             DoesSomething(instruction*);
 extern bool             NeedConvert(type_def*,type_def*);
-extern  name            *AllocIntConst(int);
 extern  bool            AskSegNear(segment_id);
 extern  void            SetCSEBits(instruction *,instruction *);
-extern  name            *AllocConst( cfloat * );
-extern  cfloat          *OkToNegate( cfloat *, type_def * );
+extern  float_handle    OkToNegate( float_handle, type_def * );
 
 extern  bool    IsTrickyPointerConv( instruction *ins )
 /******************************************************
@@ -198,7 +197,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     pointer     rite;
     name        *tmp;
     name        *new_const;
-    cfloat      *value;
+    float_handle value;
 
     tipe = ClassType( ins->type_class );
     left_tipe = ClassType( _OpClass( ins ) );

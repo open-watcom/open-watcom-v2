@@ -36,20 +36,18 @@
 #include "data.h"
 #include "x87.h"
 #include "makeins.h"
+#include "namelist.h"
 
 extern  hw_reg_set      FPRegs[];
 extern  name            *FPStatWord;
 extern  int             Max87Stk;
 
 extern  void            SuffixIns(instruction*,instruction*);
-extern  name            *AllocIntConst(int);
-extern  name            *TempOffset(name*,type_length,type_class_def);
 extern  conflict_node   *InMemory(conflict_node*);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  void            MoveSegRes(instruction*,instruction*);
-extern  name            *AllocTemp(type_class_def);
 extern  bool            AssignARegister(conflict_node*,hw_reg_set);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            LiveInfoUpdate(void);

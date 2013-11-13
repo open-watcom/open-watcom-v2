@@ -43,21 +43,14 @@
 #include "x87.h"
 #include "makeins.h"
 #include "makeaddr.h"
-
 #include "addrfold.h"
+#include "namelist.h"
 
 extern  type_class_def  TypeClass(type_def*);
-extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
 extern  void            AddIns(instruction*);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  cg_type         NamePtrType(name*);
-extern  name            *AllocIntConst(int);
-extern  name            *AllocS32Const(signed_32);
-extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
-extern  name            *AllocTemp(type_class_def);
-extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
-extern  name            *TempOffset(name*,type_length,type_class_def);
 extern  void            BGDone(an);
 extern  i_flags         AlignmentToFlags( type_length );
 
@@ -192,7 +185,7 @@ extern  name    *Points( an addr, type_def *tipe ) {
           && addr->u.name->n.size == size ) {
             result = addr->u.name;
         } else {
-            result = SAllocMemory( addr->u.name->v.symbol,
+            result = (name *)SAllocMemory( addr->u.name->v.symbol,
                                    addr->offset,
                                    addr->u.name->m.memory_type,
                                    class, size );

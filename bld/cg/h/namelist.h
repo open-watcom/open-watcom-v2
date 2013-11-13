@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern  name     *AllocConst( pointer value );
+extern  name    *AllocConst( float_handle value );
 extern  name    *AllocAddrConst( name *value, int seg, constant_class class,
                                  type_class_def name_class );
 extern  name    *FindIntValue( signed_32 value );

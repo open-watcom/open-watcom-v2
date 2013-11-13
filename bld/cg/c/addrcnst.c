@@ -35,9 +35,8 @@
 #include "data.h"
 #include "addrcnst.h"
 #include "makeins.h"
+#include "namelist.h"
 
-extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
-extern  name            *AllocTemp(type_class_def);
 extern  void            PrefixIns(instruction*,instruction*);
 
 

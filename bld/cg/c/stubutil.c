@@ -811,7 +811,7 @@ extern  void    NotDefault( cg_type  t ) {
     }
 }
 
-extern  char   *CFCnvFS( cfloat *f, char *buffer, int maxlen ) {
+extern  char   *CFCnvFS( float_handle f, char *buffer, int maxlen ) {
 //====================================
 
     int         len;

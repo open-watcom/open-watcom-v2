@@ -39,6 +39,7 @@
 #include "data.h"
 #include "rtrtn.h"
 #include "objout.h"
+#include "namelist.h"
 
 
 extern    hw_reg_set      *RegSets[];
@@ -47,11 +48,9 @@ extern  name            *GenFloat( name *, type_class_def );
 extern  name            *GenConstData( byte *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
 extern  void            DoNothing( instruction * );
-extern  name            *AllocIntConst( int );
 extern  void            ReplIns( instruction *, instruction * );
 extern  void            SuffixIns( instruction *, instruction * );
 extern  void            MoveSegRes( instruction *, instruction * );
-extern  name            *AllocMemory( pointer, type_length, cg_class, type_class_def );
 extern  bool            SegIsSS( name * );
 extern  name            *GetSegment( name * );
 extern  void            DelSeg( instruction * );
@@ -62,7 +61,6 @@ extern  conflict_node   *NameConflict( instruction *, name * );
 extern  conflict_node   *InMemory( conflict_node * );
 extern  int             NumOperands( instruction * );
 extern  void            AddIns( instruction * );
-extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  hw_reg_set      ReturnReg( type_class_def, bool );

@@ -43,6 +43,7 @@
 #include "data.h"
 #include "makeins.h"
 #include "dumpio.h"
+#include "namelist.h"
 
 extern  block           *MakeBlock(label_handle,block_num);
 extern  instruction     *DupInstrs(instruction*,instruction*,instruction*,induction*,signed_32);
@@ -50,10 +51,7 @@ extern  void            MoveEdge(block_edge*,block*);
 extern  void            PointEdge(block_edge*,block*);
 extern  bool            AnalyseLoop(induction*,bool*,instruction**,block**);
 extern  name            *DeAlias(name*);
-extern  name            *TempOffset(name *,type_length ,type_class_def );
-extern  name            *AllocTemp(type_class_def );
 extern  name            *SAllocIndex(name *,name *,type_length ,type_class_def ,type_length );
-extern  name            *AllocS32Const(signed_32 );
 extern  void            SuffixIns(instruction *,instruction *);
 extern  name            *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
 extern  void            PrefixIns(instruction *,instruction *);

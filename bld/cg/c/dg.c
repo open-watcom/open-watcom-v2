@@ -193,8 +193,8 @@ extern  void    DGInteger(  unsigned_32 i,  cg_type  t ) {
     Put( " %s%n", Tipe(t) );
     Locs[ CurSeg ] += TypeAddress( t )->length;
 }
-extern  void    DGCFloat( pointer f, cg_type t ) {
-//================================================
+extern  void    DGCFloat( float_handle f, cg_type t ) {
+//=====================================================
     char        buffer[ 80 ];
 
     CFCnvFS( f, buffer, 80 );
@@ -206,8 +206,8 @@ extern  void    DGFloat( cchar_ptr f, cg_type t )
 //===============================================
 {
     Action( "DGFloat" );
-    VerTipe( t,FloatTypes );
-    Put( "        F(%s) %s%n", f, Tipe(t) );
+    VerTipe( t, FloatTypes );
+    Put( "        F(%s) %s%n", f, Tipe( t ) );
     Action( "( %s, %s )%n", f, Tipe( t ) );
     Locs[ CurSeg ] += TypeAddress( t )->length;
 }

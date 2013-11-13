@@ -39,6 +39,7 @@
 #include "feprotos.h"
 #include <assert.h>
 #include "makeins.h"
+#include "namelist.h"
 
 extern  opcode_entry    String[];
 
@@ -46,12 +47,9 @@ extern  void            SuffixIns(instruction*,instruction*);
 extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
 extern  reg_set_index   MarkIndex(instruction*,name*,bool);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  name            *AllocTemp(type_class_def);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  name            *IndexToTemp( instruction *, name * );
 extern  name            *FindIndex( instruction * );
-extern  name            *AllocAddrConst( name *, int, constant_class, type_class_def );
-extern  name            *AllocS32Const( signed_32 );
 extern  name            *ScaleIndex( name *, name *, type_length, type_class_def, type_length, int, i_flags );
 extern  i_flags         AlignmentToFlags( type_length );
 extern  name            *AllocRegName( hw_reg_set );

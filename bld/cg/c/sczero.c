@@ -37,12 +37,12 @@
 #include "score.h"
 #include "zerobits.h"
 #include "makeins.h"
+#include "namelist.h"
 
 extern  name            *LowPart(name*,type_class_def);
 extern  name            *HighPart(name*,type_class_def);
 extern  opcode_entry    *FindGenEntry(instruction*,bool*);
 extern  void            SuffixIns(instruction*,instruction*);
-extern  name            *AllocIntConst(int);
 extern  bool            VolatileIns(instruction*);
 
 extern  type_class_def  HalfClass[];

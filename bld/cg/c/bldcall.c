@@ -73,7 +73,6 @@ extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_
 extern  instruction     *PushOneParm(instruction*,name*,type_class_def,type_length,call_state*);
 extern  bool            IsVolatile(name*);
 extern  void            TNZapParms(void);
-extern  name            *AllocS32Const(signed_32);
 extern  void            PushInSameBlock(instruction*);
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
 extern  void            TellObjVirtFuncRef(void *);

@@ -38,9 +38,10 @@
 #include "cfloat.h"
 #include "cgaux.h"
 #include "data.h"
-#include "feprotos.h"
 #include "x87.h"
 #include "makeins.h"
+#include "namelist.h"
+#include "feprotos.h"
 
 
 extern  hw_reg_set      FPRegs[];
@@ -54,13 +55,11 @@ extern  bool            DoesSomething(instruction*);
 extern  int             NumOperands(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  int             Count87Regs(hw_reg_set);
-extern  name            *AllocIntConst(int);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  void            ReplIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            DoNothing(instruction*);
-extern  name            *AllocTemp(type_class_def);
 extern  void            AllocALocal(name*);
 extern  void            RevCond(instruction*);
 extern  void            MoveSegRes(instruction*,instruction*);

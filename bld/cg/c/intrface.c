@@ -1551,8 +1551,8 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
 extern  void _CGAPI     DGFloat( cchar_ptr value, cg_type tipe )
 /**************************************************************/
 {
-    pointer     cf;
-    flt         buff;
+    float_handle    cf;
+    flt             buff;
 
 #ifndef NDEBUG
     EchoAPI( "DGFloat( %c, %t )\n", value, tipe );
@@ -1790,7 +1790,7 @@ extern  void    TellImportHandle( cg_sym_handle sym, import_handle imp )
 extern  char * _CGAPI           BFCnvFS( float_handle cf, char_ptr buff, int buff_len )
 /*************************************************************************************/
 {
-    return( CFCnvFS( (cfloat *)cf, buff, buff_len ) );
+    return( CFCnvFS( cf, buff, buff_len ) );
 }
 
 extern  float_handle _CGAPI     BFCnvSF( cchar_ptr start )
@@ -1802,49 +1802,49 @@ extern  float_handle _CGAPI     BFCnvSF( cchar_ptr start )
 extern  float_handle _CGAPI     BFMul( float_handle c1, float_handle c2 )
 /***********************************************************************/
 {
-    return( CFMul( (cfloat *)c1, (cfloat *)c2 ) );
+    return( CFMul( c1, c2 ) );
 }
 
 extern  float_handle _CGAPI     BFAdd( float_handle c1, float_handle c2 )
 /***********************************************************************/
 {
-    return( CFAdd( (cfloat *)c1, (cfloat *)c2 ) );
+    return( CFAdd( c1, c2 ) );
 }
 
 extern  float_handle _CGAPI     BFDiv( float_handle c1, float_handle c2 )
 /***********************************************************************/
 {
-    return( CFDiv( (cfloat *)c1, (cfloat *)c2 ) );
+    return( CFDiv( c1, c2 ) );
 }
 
 extern  float_handle _CGAPI     BFSub( float_handle c1, float_handle c2 )
 /***********************************************************************/
 {
-    return( CFSub( (cfloat *)c1, (cfloat *)c2 ) );
+    return( CFSub( c1, c2 ) );
 }
 
 extern  void _CGAPI             BFNegate( float_handle c1 )
 /*********************************************************/
 {
-     CFNegate( (cfloat *) c1 );
+     CFNegate( c1 );
 }
 
 extern  float_handle _CGAPI     BFTrunc( float_handle c1 )
 /********************************************************/
 {
-     return( CFTrunc( (cfloat *) c1 ) );
+     return( CFTrunc( c1 ) );
 }
 
 extern  float_handle _CGAPI     BFCopy( float_handle c1 )
 /*******************************************************/
 {
-     return( CFCopy( (cfloat *) c1 ) );
+     return( CFCopy( c1 ) );
 }
 
 extern  int _CGAPI              BFSign( float_handle c1 )
 /*******************************************************/
 {
-     return( CFTest((cfloat *) c1) );
+     return( CFTest( c1 ) );
 }
 
 extern  float_handle _CGAPI     BFCnvIF( int data )
@@ -1862,19 +1862,19 @@ extern  float_handle _CGAPI     BFCnvUF( uint data )
 extern  signed_32 _CGAPI       BFCnvF32( float_handle f )
 /*******************************************************/
 {
-    return( CFCnvF32( (cfloat*) f ) );
+    return( CFCnvF32( f ) );
 }
 
 extern  int _CGAPI              BFCmp( float_handle l, float_handle r )
 /*********************************************************************/
 {
-    return( CFCompare( (cfloat *)l, (cfloat *)r ) );
+    return( CFCompare( l, r ) );
 }
 
 extern  void _CGAPI             BFFree( float_handle cf )
 /*******************************************************/
 {
-    CFFree( (cfloat *)cf );
+    CFFree( cf );
 }
 
 extern  void _CGAPI     DBSrcCue( uint fno, uint line, uint col );

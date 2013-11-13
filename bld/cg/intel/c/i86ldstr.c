@@ -37,6 +37,7 @@
 #include "score.h"
 #include "makeins.h"
 #include "data.h"
+#include "namelist.h"
 
 extern  hw_reg_set      *RegSets[];
 
@@ -45,7 +46,6 @@ extern  instruction     *PostExpandIns(instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocIntConst(int);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            DupSeg(instruction*,instruction*);
 extern  void            DelSeg(instruction*);

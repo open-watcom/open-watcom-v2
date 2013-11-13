@@ -43,9 +43,9 @@
 #include "data.h"
 #include "utils.h"
 #include "objout.h"
+#include "namelist.h"
 #include "feprotos.h"
 
-extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  void            OutPatch(label_handle,patch_attr);
 extern  void            TellKeepLabel(label_handle);
 extern  void            OutReloc(segment_id,fix_class,bool);
@@ -61,7 +61,6 @@ extern  void            SetUpObj(bool);
 extern  void            TellObjNewLabel( cg_sym_handle );
 extern  void            TellOptimizerByPassed( void );
 extern  void            TellByPassOver( void );
-extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            GenSelEntry(bool);
 extern  void            EmptyQueue( void );
 extern  bool            UseImportForm( fe_attr );

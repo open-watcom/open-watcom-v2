@@ -39,10 +39,11 @@
 #include "zoiks.h"
 #include "i64.h"
 #include "data.h"
-#include "feprotos.h"
 #include "x87.h"
 #include "makeins.h"
 #include "utils.h"
+#include "namelist.h"
+#include "feprotos.h"
 
 
 typedef struct block_list {
@@ -58,12 +59,8 @@ typedef struct block_list {
 
 extern    type_class_def        Unsigned[];
 
-extern  name            *AllocS64Const(signed_32,signed_32);
 extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  int             GetLog2(unsigned_32);
-extern  name            *AllocTemp(type_class_def);
-extern  name            *AllocConst(pointer);
-extern  name            *AllocS32Const(signed_32);
 extern  block           *NewBlock(label_handle,bool);
 extern  bool            SameThing(name*,name*);
 extern  void            RevCond(instruction*);

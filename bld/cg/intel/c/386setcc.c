@@ -35,13 +35,11 @@
 #include "data.h"
 #include "i64.h"
 #include "makeins.h"
+#include "namelist.h"
 
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            RemoveInputEdge(block_edge *);
 extern  void            FlipCond(instruction*);
-extern  name            *AllocTemp(type_class_def);
-extern  name            *AllocS32Const(signed_32);
-extern  name            *AllocS64Const( unsigned_32 low, unsigned_32 high );
 extern  void            RemoveBlock( block * );
 
 static  instruction     *SetToConst( block *blk, signed_64 *pcons ) {

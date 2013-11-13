@@ -36,15 +36,12 @@
 #include "conflict.h"
 #include "cfloat.h"
 #include "makeins.h"
+#include "namelist.h"
 
 extern  conflict_node   *GiveRegister(conflict_node*,bool);
 extern  conflict_node   *InMemory(conflict_node*);
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  name            *AllocConst(pointer);
-extern  name            *AllocIntConst(int);
-extern  name            *AllocS32Const(signed_32);
 extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocTemp(type_class_def);
 extern  name            *HighPart(name*,type_class_def);
 extern  name            *LowPart(name*,type_class_def);
 extern  void            CheckCC(instruction*,instruction*);

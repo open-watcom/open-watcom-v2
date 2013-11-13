@@ -34,12 +34,12 @@
 #include "coderep.h"
 #include "stack.h"
 #include "data.h"
+#include "namelist.h"
 
 extern  void            NullConflicts( var_usage );
 extern  void            FreeConflicts( void );
 extern  void            FindReferences( void );
 extern  void            MakeConflicts( void );
-extern  name            *SAllocTemp( type_class_def, type_length );
 extern  bool            InsDead( void );
 extern  bool            MoreConflicts( void );
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,

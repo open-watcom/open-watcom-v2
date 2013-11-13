@@ -33,9 +33,8 @@
 #include "coderep.h"
 #include "data.h"
 #include "makeins.h"
+#include "namelist.h"
 
-extern  name            *AllocIntConst(int);
-extern  name            *AllocTemp(type_class_def);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  int             SubCost(void);
 extern  int             AddCost(void);

@@ -44,6 +44,7 @@
 #include "tree.h"
 #include "treeprot.h"
 #include "makeaddr.h"
+#include "namelist.h"
 #include "feprotos.h"
 
 
@@ -55,14 +56,8 @@ extern  void            EnLink(label_handle,bool);
 extern  void            AddIns(instruction*);
 extern  name            *GenIns(an);
 extern  type_class_def  TypeClass(type_def*);
-extern  name            *AllocIntConst(int);
-extern  name            *AllocS32Const(signed_32);
-extern  name            *AllocS64Const( unsigned_32 low, unsigned_32 high );
-extern  name            *AllocU64Const( unsigned_32 low, unsigned_32 high );
-extern  name            *AllocTemp(type_class_def);
 extern  bool            BlkTooBig( void );
 extern  name            *AllocRegName( hw_reg_set );
-extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  hw_reg_set      ScratchReg( void );
 extern  hw_reg_set      StackReg( void );
@@ -95,7 +90,7 @@ extern  an      BGStackValue( type_def *tipe ) {
 extern  an      BGInteger( signed_32 value, type_def *tipe ) {
 /***********************************************************/
 
-    pointer     cf;
+    float_handle    cf;
 
     if( tipe->attr & TYPE_SIGNED ) {
         cf = CFCnvI32F( value );

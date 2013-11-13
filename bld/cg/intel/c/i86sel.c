@@ -43,6 +43,7 @@
 #include "objout.h"
 #include "treeprot.h"
 #include "makeaddr.h"
+#include "namelist.h"
 #include "cgprotos.h"
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
@@ -73,7 +74,6 @@ extern  void            CodeLabel(label_handle, unsigned );
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  void            GenCodePtr(pointer);
 extern  void            GenSelEntry(bool);
-extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            Gen2ByteValue(unsigned_16);
 extern  void            BGDone(an);
 extern  void            Gen1ByteValue(byte);

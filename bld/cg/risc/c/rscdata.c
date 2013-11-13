@@ -37,13 +37,12 @@
 #include "reloc.h"
 #include "cgmem.h"
 #include "data.h"
-#include "feprotos.h"
 #include "objout.h"
 #include <assert.h>
+#include "namelist.h"
+#include "feprotos.h"
 
 extern  void            ObjBytes( const void *, unsigned );
-extern  constant_defn   *GetFloat( name *, type_class_def );
-extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            OutReloc( label_handle, owl_reloc_type, unsigned );
 extern  void            OutSegReloc( label_handle label, segment_id section );
 extern  void            AlignObject( unsigned );

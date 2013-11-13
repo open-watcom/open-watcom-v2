@@ -34,12 +34,11 @@
 #include "cfloat.h"
 #include "data.h"
 #include "makeins.h"
+#include "namelist.h"
 
 extern  void            SuffixIns( instruction *, instruction * );
 extern  void            RemoveInputEdge( block_edge *);
 extern  void            FlipCond( instruction * );
-extern  name            *AllocTemp( type_class_def );
-extern  name            *AllocS32Const( signed_32 );
 extern  instruction     *rSWAPOPS( instruction *ins );
 extern  void            RemoveBlock( block * );
 

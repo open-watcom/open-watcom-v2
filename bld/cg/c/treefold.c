@@ -42,6 +42,7 @@
 #include "treeprot.h"
 #include "bldins.h"
 #include "utils.h"
+#include "namelist.h"
 #include "feprotos.h"
 
 typedef union i32 {
@@ -50,7 +51,6 @@ typedef union i32 {
 } i32;
 
 extern  an              TreeGen(tn);
-extern  name            *AllocIntConst(int);
 extern  unsigned_32     U32ModDiv(unsigned_32*,unsigned_32);
 extern  void            BurnTree(tn);
 
@@ -117,8 +117,8 @@ static int CmpType( type_def *tipe )
     return( ret );
 }
 
-static cmp_result CheckCmpRange( cg_op op, int op_type, cfloat *val )
-/*******************************************************************/
+static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
+/************************************************************************/
 /* Check if comparison 'op' of operand of type 'op_type' against constant
  * 'val' can be folded, eg. '(unsigned char)x <= 255'. Integer only, can
  * be used for bitfields (op_type contains number of bits).
@@ -197,8 +197,8 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, cfloat *val )
     return( ret );
 }
 
-static signed_32 CFConvertByType( cfloat *cf, type_def *tipe )
-/************************************************************/
+static signed_32 CFConvertByType( float_handle cf, type_def *tipe )
+/*****************************************************************/
 {
     signed_32   data;
 
@@ -222,12 +222,12 @@ static signed_32 CFConvertByType( cfloat *cf, type_def *tipe )
     return( data );
 }
 
-static signed_64 CFGetInteger64Value( cfloat *cf )
-/************************************************/
+static signed_64 CFGetInteger64Value( float_handle cf )
+/*****************************************************/
 {
-    signed_64   value;
-    int         neg;
-    cfloat      *trunc;
+    signed_64       value;
+    int             neg;
+    float_handle    trunc;
 
     trunc = CFTrunc( cf );
     neg = CFTest( trunc );
@@ -238,7 +238,7 @@ static signed_64 CFGetInteger64Value( cfloat *cf )
     return( value );
 }
 
-static  cfloat  *IntToCF( signed_64 value, type_def *tipe )
+static  float_handle IntToCF( signed_64 value, type_def *tipe )
 /*********************************************************/
 {
     signed_8    s8;
@@ -304,8 +304,8 @@ static  tn      Int64ToType( signed_64 value, type_def *tipe )
 }
 
 
-static  tn      CFToType( cfloat *cf, type_def *tipe )
-/****************************************************/
+static  tn      CFToType( float_handle cf, type_def *tipe )
+/*********************************************************/
 {
     tn          result;
 
@@ -342,14 +342,14 @@ extern  int     GetLog2( unsigned_32 value )
 extern  tn      FoldTimes( tn left, tn rite, type_def *tipe )
 /***********************************************************/
 {
-    tn          temp;
-    tn          fold;
-    int         test;
-    int         log;
-    cfloat      *lv;
-    cfloat      *rv;
-    unsigned_32 li;
-    unsigned_32 ri;
+    tn              temp;
+    tn              fold;
+    int             test;
+    int             log;
+    float_handle    lv;
+    float_handle    rv;
+    unsigned_32     li;
+    unsigned_32     ri;
 
     if( left->class == TN_CONS ) {
         temp = left;
@@ -427,12 +427,12 @@ extern  tn      FoldTimes( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  cfloat  *OkToNegate( cfloat *value, type_def *tipe )
+extern  float_handle OkToNegate( float_handle value, type_def *tipe )
 /**********************************************************/
 /* make sure we don't negate an unsigned and get out of range */
 /* for example -MAX_LONG is no longer an integer type */
 {
-    cfloat      *neg;
+    float_handle    neg;
 
     if( HasBigConst( tipe ) && ( tipe->attr & TYPE_FLOAT ) == 0 ) return( NULL );
     neg = CFCopy( value );
@@ -447,11 +447,11 @@ extern  cfloat  *OkToNegate( cfloat *value, type_def *tipe )
 extern  tn      FoldMinus( tn left, tn rite, type_def *tipe )
 /***********************************************************/
 {
-    tn          fold;
-    cfloat      *lv;
-    cfloat      *rv;
-    unsigned_32 li;
-    unsigned_32 ri;
+    tn              fold;
+    float_handle    lv;
+    float_handle    rv;
+    unsigned_32     li;
+    unsigned_32     ri;
 
     fold = NULL;
     if( left->class == TN_CONS ) {
@@ -503,12 +503,12 @@ static type_def *FixAddType( tn left, tn rite, type_def *tipe )
 extern  tn      FoldPlus( tn left, tn rite, type_def *tipe )
 /**********************************************************/
 {
-    tn          fold;
-    tn          temp;
-    cfloat      *lv;
-    cfloat      *rv;
-    unsigned_32 li;
-    unsigned_32 ri;
+    tn              fold;
+    tn              temp;
+    float_handle    lv;
+    float_handle    rv;
+    unsigned_32     li;
+    unsigned_32     ri;
 
     if( left->class == TN_CONS ) {
         temp = left;
@@ -603,9 +603,9 @@ extern  tn      FoldPow( tn left, tn rite, type_def *tipe )
 extern  tn      FoldAnd( tn left, tn rite, type_def *tipe )
 /*********************************************************/
 {
-    tn          fold;
-    cfloat      *rv;
-    cfloat      *lv;
+    tn              fold;
+    float_handle    rv;
+    float_handle    lv;
 
     if( left->class == TN_CONS ) {
         fold = left;
@@ -655,9 +655,9 @@ extern  tn      FoldAnd( tn left, tn rite, type_def *tipe )
 extern  tn      FoldOr( tn left, tn rite, type_def *tipe )
 /********************************************************/
 {
-    tn          fold;
-    cfloat      *rv;
-    cfloat      *lv;
+    tn              fold;
+    float_handle    rv;
+    float_handle    lv;
 
     if( left->class == TN_CONS ) {
         fold = left;
@@ -707,9 +707,9 @@ extern  tn      FoldOr( tn left, tn rite, type_def *tipe )
 extern  tn      FoldXor( tn left, tn rite, type_def *tipe )
 /*********************************************************/
 {
-    tn          fold;
-    cfloat      *rv;
-    cfloat      *lv;
+    tn              fold;
+    float_handle    rv;
+    float_handle    lv;
 
     if( left->class == TN_CONS ) {
         fold = left;
@@ -761,10 +761,10 @@ extern  tn      FoldXor( tn left, tn rite, type_def *tipe )
 extern  tn      FoldRShift( tn left, tn rite, type_def *tipe )
 /************************************************************/
 {
-    tn          fold;
-    cfloat      *rv;
-    cfloat      *lv;
-    signed_32   ri;
+    tn              fold;
+    float_handle    rv;
+    float_handle    lv;
+    signed_32       ri;
 
     fold = NULL;
     if( rite->class == TN_CONS ) {
@@ -827,10 +827,10 @@ extern  tn      FoldRShift( tn left, tn rite, type_def *tipe )
 extern  tn      FoldLShift( tn left, tn rite, type_def *tipe )
 /************************************************************/
 {
-    tn          fold;
-    cfloat      *rv;
-    cfloat      *lv;
-    signed_32   ri;
+    tn              fold;
+    float_handle    rv;
+    float_handle    lv;
+    signed_32       ri;
 
     fold = NULL;
     ri = 0;
@@ -879,13 +879,13 @@ extern  tn      FoldLShift( tn left, tn rite, type_def *tipe )
 extern  tn      FoldDiv( tn left, tn rite, type_def *tipe )
 /*********************************************************/
 {
-    tn          fold;
-    cfloat      *rv;
-    cfloat      *lv;
-    cfloat      *tmp;
-    unsigned_32 ri;
-    int         log;
-    unsigned_32 li;
+    tn              fold;
+    float_handle    rv;
+    float_handle    lv;
+    float_handle    tmp;
+    unsigned_32     ri;
+    unsigned_32     li;
+    int             log;
 
     fold = NULL;
     if( rite->class == TN_CONS ) {
@@ -973,12 +973,12 @@ extern  tn      FoldDiv( tn left, tn rite, type_def *tipe )
 extern  tn      FoldMod( tn left, tn rite, type_def *tipe )
 /*********************************************************/
 {
-    tn          fold;
-    cfloat      *rv;
-    cfloat      *lv;
-    unsigned_32 ri;
-    int         log;
-    unsigned_32 li;
+    tn              fold;
+    float_handle    rv;
+    float_handle    lv;
+    unsigned_32     ri;
+    unsigned_32     li;
+    int             log;
 
     fold = NULL;
     if( rite->class == TN_CONS ) {
@@ -1077,8 +1077,8 @@ extern  tn      FoldMod( tn left, tn rite, type_def *tipe )
 extern  tn      Fold1sComp( tn left, type_def *tipe )
 /***************************************************/
 {
-    tn          new;
-    cfloat      *lv;
+    tn              new;
+    float_handle    lv;
 
     new = NULL;
     if( !HasBigConst( tipe ) && left->class == TN_CONS ) {
@@ -1095,8 +1095,8 @@ extern  tn      Fold1sComp( tn left, type_def *tipe )
 extern  tn      FoldUMinus( tn left, type_def *tipe )
 /***************************************************/
 {
-    tn          new;
-    cfloat      *lv;
+    tn              new;
+    float_handle    lv;
 
     new = NULL;
     if( left->class == TN_CONS ) {
@@ -1276,8 +1276,8 @@ extern  tn      FoldBitCompare( cg_op op, tn left, tn rite )
 }
 
 
-extern  cfloat *CnvCFToType( cfloat *cf, type_def *tipe )
-/*******************************************************/
+extern  float_handle CnvCFToType( float_handle cf, type_def *tipe )
+/*****************************************************************/
 {
     if( ( tipe->attr & TYPE_FLOAT ) == EMPTY ) {
         cf = IntToCF( CFGetInteger64Value( cf ), tipe );
@@ -1346,15 +1346,15 @@ static bool IsObjectAddr( tn tree )
 extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
 /*******************************************************************/
 {
-    int         compare;
-    tn          temp;
-    int         result;
-    int         true_value;
-    cfloat      *lv;
-    cfloat      *rv;
-    tn          base_r;
-    tn          base_l;
-    bool        op_eq;
+    int             compare;
+    tn              temp;
+    int             result;
+    int             true_value;
+    float_handle    lv;
+    float_handle    rv;
+    tn              base_r;
+    tn              base_l;
+    bool            op_eq;
 
     if( left->class == TN_CONS ) {
         temp = left;
@@ -1506,13 +1506,13 @@ static  bool    SimpleLeaf( tn tree )
 extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe )
 /*******************************************************************************/
 {
-//    tn          compare;
-    tn          temp;
-    signed_32   ri;
-    signed_32   li;
-    signed_32   value;
-    cfloat      *rv;
-    cfloat      *lv;
+//    tn              compare;
+    tn              temp;
+    signed_32       ri;
+    signed_32       li;
+    signed_32       value;
+    float_handle    rv;
+    float_handle    lv;
 
 ///    compare = NULL;
     if( left->class == TN_CONS ) {
@@ -1592,17 +1592,16 @@ static  an Flip( an name, bool op_false, bool op_true )
 
 
 
-extern  an FoldConsCompare( cg_op op, tn left,
-                                 tn rite, type_def *tipe )
-/********************************************************/
+extern  an FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe )
+/**********************************************************************/
 {
-    tn          temp;
-    an          fold;
-    int         compare;
-    int         compare_true;
-    cfloat      *f;
-    cfloat      *t;
-    cfloat      *rv;
+    tn              temp;
+    an              fold;
+    int             compare;
+    int             compare_true;
+    float_handle    f;
+    float_handle    t;
+    float_handle    rv;
 
     if( left->class == TN_CONS ) {
         temp = left;

@@ -39,16 +39,15 @@
 #include "cfloat.h"
 #include "conflict.h"
 #include "makeins.h"
+#include "namelist.h"
 
 
 extern  void            ChangeType( instruction *, type_class_def );
 extern  name            *IntEquivalent( name * );
 extern  void            DupSegOp( instruction *, instruction *, int );
-extern  name            *AllocTemp( type_class_def );
 extern  opcode_entry    *CodeTable( instruction * );
 extern  bool            SameThing( name *, name * );
 extern  instruction     *MoveConst( unsigned_32, name *, type_class_def );
-extern  constant_defn   *GetFloat( name *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
 extern  void            DupSegRes( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
@@ -62,19 +61,13 @@ extern  hw_reg_set      Low64Reg( hw_reg_set );
 extern  hw_reg_set      Low48Reg( hw_reg_set );
 extern  hw_reg_set      Low32Reg( hw_reg_set );
 extern  hw_reg_set      Low16Reg( hw_reg_set );
-extern  name            *AllocMemory( pointer, type_length, cg_class, type_class_def );
-extern  name            *TempOffset( name *, type_length, type_class_def );
 extern  name            *AllocRegName( hw_reg_set );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  name            *AllocIntConst( int );
-extern  name            *AllocUIntConst( uint );
-extern  name            *AllocConst( pointer );
 extern  void            ReplIns( instruction *, instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            DupSeg( instruction *, instruction * );
 extern  name            *SegName( name * );
 extern  name            *ScaleIndex( name *, name *, type_length, type_class_def, type_length, int, i_flags );
-extern  name            *AllocS32Const( signed_32 );
 extern  name            *OpAdjusted( name *, int, type_class_def );
 extern  int             NumOperands( instruction * );
 extern  bool            Overlaps( name *, name * );

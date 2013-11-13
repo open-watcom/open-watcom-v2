@@ -131,8 +131,8 @@ static void ZapXX( name *xx, type_class_def class, type_length size ) {
 }
 
 
-extern  name    *AllocConst( pointer value ) {
-/********************************************/
+extern  name    *AllocConst( float_handle value ) {
+/*************************************************/
 
     name        *new_c;
     name        **last;
@@ -235,7 +235,7 @@ extern  name    *AllocIntConst( int value ) {
 
 
 extern  name    *AllocS32Const( signed_32 value ) {
-/*******************************************/
+/*************************************************/
 
     name        *konst;
 

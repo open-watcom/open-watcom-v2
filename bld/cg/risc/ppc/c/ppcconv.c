@@ -36,9 +36,8 @@
 #include "makeins.h"
 #include "convins.h"
 #include "data.h"
+#include "namelist.h"
 
-extern  name            *AllocS32Const( signed_32 );
-extern  name            *AllocTemp(type_class_def);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            ReplIns(instruction*,instruction*);
 extern  void            UpdateLive(instruction*,instruction*);

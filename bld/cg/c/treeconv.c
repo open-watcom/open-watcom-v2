@@ -43,7 +43,7 @@
 
 extern  void            BurnTree(tn);
 extern  type_class_def  TypeClass(type_def*);
-extern  cfloat *        CnvCFToType( cfloat *cf, type_def *tipe );
+extern  float_handle    CnvCFToType( float_handle cf, type_def *tipe );
 
 
 static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
@@ -137,9 +137,9 @@ extern  void    TGDemote( tn name, type_def *tipe ) {
 extern  tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe ) {
 /***************************************************************/
 
-    tn          new;
-    cfloat      *cf;
-    cfloat      *junk;
+    tn              new;
+    float_handle    cf;
+    float_handle    junk;
 
     if( name->class == TN_CONS ) {
         if( name->tipe->refno == TY_DEFAULT ) {

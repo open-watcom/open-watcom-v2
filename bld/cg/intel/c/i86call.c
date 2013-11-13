@@ -44,19 +44,16 @@
 #include "objout.h"
 #include "types.h"
 #include "makeaddr.h"
+#include "namelist.h"
 
-extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
 extern  name            *AddrConst(name*,segment_id,constant_class);
 extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocTemp(type_class_def);
 extern  name            *NearSegment(void);
 extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
-extern  name            *SAllocTemp(type_class_def,type_length);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            AddIns(instruction*);
 extern  void            DataLabel(label_handle);
 extern  name            *GenIns(an);
-extern  name            *AllocS32Const(signed_32);
 extern  bool            AssgnParms(cn,bool);
 extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);
 extern  void            AddCallIns(instruction*,cn);
@@ -66,9 +63,7 @@ extern  name            *DoParmDecl(cg_sym_handle,type_def*,hw_reg_set);
 extern  hw_reg_set      ReturnReg(type_class_def,bool);
 extern  type_length     PushSize(type_length);
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
-extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            ReverseParmNodeList(pn *);
-extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
 extern  void            SuffixIns( instruction *, instruction * );
 extern  name            *BGNewTemp( type_def *tipe );
 extern  void            BGDone( an );
@@ -295,7 +290,7 @@ extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
                 lbl = AskForNewLabel();
                 DataLabel( lbl );
                 DGUBytes( tipe->length );
-                CurrProc->targ.return_points = SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
+                CurrProc->targ.return_points = (name *)SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
                 SetOP( old );
             } else {
                 reg = CurrProc->state.return_reg;
