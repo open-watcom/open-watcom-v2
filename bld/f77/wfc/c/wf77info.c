@@ -1084,9 +1084,9 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
 }
 
 
-void    FEGenProc( cg_sym_handle sym, pointer handle) {
-//=====================================================
-
+void    FEGenProc( cg_sym_handle sym, call_handle handle)
+//=======================================================
+{
     sym = sym; handle = handle;
 }
 
