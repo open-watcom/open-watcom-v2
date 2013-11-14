@@ -51,6 +51,13 @@
 #include "echoapi.h"
 #endif
 
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#include "wvsyms.h"
+#endif
+#include "dfsyms.h"
+#include "cv4.h"
+#include "cvsyms.h"
+
 extern  void            AddIns(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  void            EmptyQueue(void);
@@ -62,43 +69,6 @@ extern  dbg_loc         LocParm(dbg_loc,name*);
 extern  dbg_loc         DBLocInit(void);
 extern  dbg_loc         DBLocSym(dbg_loc,cg_sym_handle);
 extern  void            DBLocFini(dbg_loc);
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-/* WV interface */
-extern  void    WVInitDbgInfo( void );
-extern  void    WVFiniDbgInfo( void );
-extern  void    WVGenStatic( cg_sym_handle sym, dbg_loc loc );
-extern  void    WVObjectPtr( cg_type ptr_type );
-extern  void    WVSetBase( void );
-extern  void    WVBlkEnd( dbg_block *blk, offset lc );
-extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc );
-#endif
-/* DF interface */
-extern  void    DFInitDbgInfo( void );
-extern  void    DFObjInitInfo( void );
-extern  void    DFFiniDbgInfo( void );
-extern  void    DFObjFiniDbgInfo( void );
-extern  void    DFGenStatic( cg_sym_handle sym, dbg_loc loc );
-extern  void    DFTypedef( const char *nm, dbg_type tipe );
-extern  void    DFProEnd( dbg_rtn *rtn, offset lc );
-extern  void    DFBlkBeg( dbg_block *blk, offset lc );
-extern  void    DFBlkEnd( dbg_block *blk, offset lc );
-extern  void    DFEpiBeg( dbg_rtn *rtn, offset lc );
-extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc );
-
-/* CV interface */
-extern  void    CVInitDbgInfo( void );
-extern  void    CVObjInitInfo( void );
-extern  void    CVFiniDbgInfo( void );
-extern  void    CVObjFiniDbgInfo( void );
-extern  void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem );
-extern  void    CVTypedef( const char *nm, dbg_type tipe );
-extern  void    CVSetBase( void );
-extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc );
-extern  void    CVProEnd( dbg_rtn *rtn, offset lc );
-extern  void    CVBlkBeg( dbg_block *blk, offset lc );
-extern  void    CVBlkEnd( dbg_block *blk, offset lc );
-extern  void    CVEpiBeg( dbg_rtn *rtn, offset lc );
-extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc );
 
 extern  struct opcode_entry   DbgInfo[];
 

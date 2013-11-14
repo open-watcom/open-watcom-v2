@@ -47,8 +47,9 @@
 #include <string.h>
 #include "dw.h"
 #include "dwarf.h"
-#include "cgprotos.h"
 #include "utils.h"
+#include "dftypes.h"
+#include "cgprotos.h"
 
 extern  type_length     NewBase(name*);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );

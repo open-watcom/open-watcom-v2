@@ -41,10 +41,11 @@
 #include "dbgstrct.h"
 #include "data.h"
 #include "types.h"
-#include "feprotos.h"
-#include "cgprotos.h"
 #include "utils.h"
 #include "objout.h"
+#include "cvtypes.h"
+#include "feprotos.h"
+#include "cgprotos.h"
 
 struct lf_info {
      char       size;

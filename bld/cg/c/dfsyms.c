@@ -50,6 +50,7 @@
 #include "data.h"
 #include "types.h"
 #include "objout.h"
+#include "dfsyms.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 

@@ -44,6 +44,7 @@
 #include "data.h"
 #include "types.h"
 #include "objout.h"
+#include "wvsyms.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 

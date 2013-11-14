@@ -48,6 +48,7 @@
 #include "data.h"
 #include "types.h"
 #include "objout.h"
+#include "cvsyms.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 

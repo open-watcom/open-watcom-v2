@@ -49,91 +49,17 @@
 #include "i64.h"
 #include "utils.h"
 
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#include "wvtypes.h"
+#endif
+#include "dftypes.h"
+#include "cv4.h"
+#include "cvtypes.h"
+
+#define MAX_TYPE_SIZE  (1024 * 16)
+
 extern  dbg_loc         LocDupl( dbg_loc );
 extern  offset          LocSimpField( dbg_loc );
-
-/* WV interface */
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-extern  dbg_type        WVFtnType( const char *name, dbg_ftn_type tipe );
-extern  dbg_type        WVScalar( const char *name, cg_type tipe );
-extern  dbg_type        WVScope( const char *name );
-extern  void            WVDumpName( name_entry *name, dbg_type tipe );
-extern  void            WVBackRefType( name_entry *name, dbg_type tipe );
-extern  dbg_type        WVCharBlock( unsigned_32 len );
-extern  dbg_type        WVIndCharBlock( back_handle len, cg_type len_type,
-                                        int off );
-extern  dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type );
-extern  dbg_type        WVFtnArray( back_handle dims, cg_type lo_bound_tipe,
-                                    cg_type num_elts_tipe, int off,
-                                    dbg_type base );
-extern  dbg_type        WVArray( dbg_type idx, dbg_type base );
-extern  dbg_type        WVIntArray( unsigned_32 hi, dbg_type base );
-extern  dbg_type        WVEndArray( array_list *ar );
-extern  dbg_type        WVSubRange( signed_32 lo, signed_32 hi,
-                                    dbg_type base );
-extern  dbg_type        WVDereference( cg_type ptr_type, dbg_type base );
-extern  dbg_type        WVPtr( cg_type ptr_type, dbg_type base );
-extern  dbg_type        WVBasedPtr( cg_type ptr_type, dbg_type base,
-                                        dbg_loc loc_segment );
-extern  dbg_type        WVEndStruct( struct_list  *st );
-extern  dbg_type        WVEndEnum( enum_list *en );
-extern  dbg_type        WVEndProc( proc_list  *pr );
-#endif
-/* DF interface */
-extern  dbg_type        DFFtnType( const char *name, dbg_ftn_type tipe );
-extern  dbg_type        DFScalar( const char *name, cg_type tipe );
-extern  dbg_type        DFScope( const char *name );
-extern  void            DFDumpName( name_entry *name, dbg_type tipe );
-extern  void            DFBackRefType( name_entry *name, dbg_type tipe );
-extern  dbg_type        DFCharBlock( unsigned_32 len );
-extern  dbg_type        DFCharBlockNamed( const char *name, unsigned_32 len );
-extern  dbg_type        DFIndCharBlock( back_handle len, cg_type len_type,
-                                        int off );
-extern  dbg_type        DFLocCharBlock( dbg_loc loc, cg_type len_type );
-extern  dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
-                                    cg_type num_elts_tipe, int off,
-                                    dbg_type base );
-extern  dbg_type        DFArray( dbg_type idx, dbg_type base );
-extern  dbg_type        DFIntArray( unsigned_32 hi, dbg_type base );
-extern  dbg_type        DFEndArray( array_list *ar );
-extern  dbg_type        DFSubRange( signed_32 lo, signed_32 hi,
-                                    dbg_type base );
-extern  dbg_type        DFDereference( cg_type ptr_type, dbg_type base );
-extern  dbg_type        DFPtr( cg_type ptr_type, dbg_type base );
-extern  dbg_type        DFBasedPtr( cg_type ptr_type, dbg_type base,
-                                        dbg_loc loc_segment );
-extern  void             DFBegStruct( struct_list  *st );
-extern  dbg_type        DFEndStruct( struct_list  *st );
-extern  dbg_type        DFEndEnum( enum_list *en );
-extern  dbg_type        DFEndProc( proc_list  *pr );
-
-/* DF interface */
-extern  dbg_type        CVFtnType( const char *name, dbg_ftn_type tipe );
-extern  dbg_type        CVScalar( const char *name, cg_type tipe );
-extern  dbg_type        CVScope( const char *name );
-extern  void            CVDumpName( name_entry *name, dbg_type tipe );
-extern  void            CVBackRefType( name_entry *name, dbg_type tipe );
-extern  dbg_type        CVCharBlock( unsigned_32 len );
-extern  dbg_type        CVIndCharBlock( back_handle len, cg_type len_type,
-                                        int off );
-extern  dbg_type        CVLocCharBlock( dbg_loc loc, cg_type len_type );
-extern  dbg_type        CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
-                                    cg_type num_elts_tipe, int off,
-                                    dbg_type base );
-extern  dbg_type        CVArray( dbg_type idx, dbg_type base );
-extern  dbg_type        CVIntArray( unsigned_32 hi, dbg_type base );
-extern  dbg_type        CVEndArray( array_list *ar );
-extern  dbg_type        CVArraySize( offset size, unsigned_32 hi, dbg_type base );
-extern  dbg_type        CVSubRange( signed_32 lo, signed_32 hi,
-                                    dbg_type base );
-extern  dbg_type        CVDereference( cg_type ptr_type, dbg_type base );
-extern  dbg_type        CVPtr( cg_type ptr_type, dbg_type base );
-extern  dbg_type        CVBasedPtr( cg_type ptr_type, dbg_type base,
-                                        dbg_loc loc_segment );
-extern  dbg_type        CVEndStruct( struct_list  *st );
-extern  dbg_type        CVEndEnum( enum_list *en );
-extern  dbg_type        CVEndProc( proc_list  *pr );
-#define MAX_TYPE_SIZE  (1024 * 16)
 
 static bool Nested;     /* set when types are nested by others */
 

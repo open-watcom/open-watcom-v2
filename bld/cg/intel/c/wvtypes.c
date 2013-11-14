@@ -42,6 +42,7 @@
 #include "types.h"
 #include "dbgstrct.h"
 #include "objout.h"
+#include "wvtypes.h"
 
 extern  uint            BuffLoc(void);
 extern  void            BuffByte(byte);
