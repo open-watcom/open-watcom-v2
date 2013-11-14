@@ -91,9 +91,9 @@ static  void    GenValuesForward( select_list *list, signed_32 hi,
                                   cg_type tipe );
 
 
-static  signed_32 Balance( signed_32 size, signed_32 time ) {
+static  signed_32 Balance( signed_32 size, signed_32 time )
 /*********************************************************/
-
+{
     signed_32   balance;
     byte        opt_size;
     signed_32   cost_size;
@@ -113,9 +113,9 @@ static  signed_32 Balance( signed_32 size, signed_32 time ) {
 }
 
 
-extern  signed_32       ScanCost( select_node *s_node ) {
-/*******************************************************/
-
+extern  signed_32       ScanCost( sel_handle s_node )
+/***************************************************/
+{
     select_list *list;
     signed_32   hi;
     signed_32   lo;
@@ -143,9 +143,9 @@ extern  signed_32       ScanCost( select_node *s_node ) {
 }
 
 
-extern  signed_32       JumpCost( select_node *s_node ) {
-/*******************************************************/
-
+extern  signed_32       JumpCost( sel_handle s_node )
+/***************************************************/
+{
     signed_32   in_range;
     signed_32   cost;
 
@@ -179,9 +179,9 @@ extern  signed_32       JumpCost( select_node *s_node ) {
     static byte CmpSize[] = { 0, 2, 3, 0, 9 };
 #endif
 
-extern  signed_32       IfCost( select_node *s_node, int entries ) {
-/******************************************************************/
-
+extern  signed_32       IfCost( sel_handle s_node, int entries )
+/**************************************************************/
+{
     signed_32   hi;
     signed_32   lo;
     signed_32   cost;
@@ -221,9 +221,9 @@ extern  signed_32       IfCost( select_node *s_node, int entries ) {
 
 extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
                                       label_handle other, cg_type tipe,
-                                      cg_type real_tipe ) {
-/*****************************************************************/
-
+                                      cg_type real_tipe )
+/*********************************************************************/
+{
     tbl_control         *table;
     label_handle        *tab_ptr;
     unsigned_32         cases;
@@ -285,9 +285,9 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
 
 static  void    GenValuesForward( select_list *list, signed_32 hi,
                                   signed_32 lo, signed_32 to_sub,
-                                  cg_type tipe ) {
+                                  cg_type tipe ) 
 /****************************************************************/
-
+{
     signed_32           curr;
 
     curr = lo;
@@ -316,8 +316,8 @@ static  void    GenValuesForward( select_list *list, signed_32 hi,
 
 static  void    GenValuesBackward( select_list *list, signed_32 hi,
                                    signed_32 lo, signed_32 to_sub,
-                                   cg_type tipe ) {
-
+                                   cg_type tipe )
+{
     select_list         *scan;
     select_list         *next;
     signed_32           curr;
@@ -352,9 +352,9 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
 }
 
 extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
-                                     signed_32 hi, label_handle other ) {
-/*****************************************************************/
-
+                                     signed_32 hi, label_handle other )
+/*********************************************************************/
+{
     tbl_control         *table;
     label_handle        *tab_ptr;
     unsigned_32         cases;
@@ -387,9 +387,9 @@ extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
 }
 
 
-extern  name        *SelIdx( tbl_control *table, an node ) {
-/**********************************************************/
-
+extern  name        *SelIdx( tbl_control *table, an node )
+/********************************************************/
+{
     an          idxan;
     name        *idx;
 
@@ -402,9 +402,9 @@ extern  name        *SelIdx( tbl_control *table, an node ) {
 }
 
 
-extern  type_def        *SelNodeType( an node, bool is_signed ) {
-/************************************************************/
-
+extern  type_def        *SelNodeType( an node, bool is_signed )
+/*************************************************************/
+{
     cg_type     unsigned_t;
     cg_type     signed_t;
 

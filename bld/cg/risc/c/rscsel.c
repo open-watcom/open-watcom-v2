@@ -45,35 +45,33 @@ extern  type_length     TypeClassLength[];
 
 #define MAX_COST        0x7FFF
 
-extern  int     ScanCost( select_node *s_node ) {
-/***********************************************/
-
+int     ScanCost( sel_handle s_node )
+/***********************************/
+{
     s_node = s_node;
     return( MAX_COST );
 }
 
 
-extern  int     JumpCost( select_node *s_node ) {
-/***********************************************/
-
+int     JumpCost( sel_handle s_node )
+/***********************************/
+{
     s_node = s_node;
     return( MAX_COST );
 }
 
 
-extern  int     IfCost( select_node *s_node ) {
-/*********************************************/
-
+int     IfCost( sel_handle s_node )
+/*********************************/
+{
     s_node = s_node;
     return( 0 );
 }
 
 
-extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
-                                      label_handle other, cg_type tipe,
-                                      cg_type real_tipe ) {
-/*****************************************************************/
-
+tbl_control *MakeScanTab( select_list *list, signed_32 hi, label_handle other, cg_type tipe, cg_type real_tipe )
+/**************************************************************************************************************/
+{
     list = list;
     hi = hi;
     tipe = tipe;
@@ -83,10 +81,9 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
 }
 
 
-extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
-                                     signed_32 hi, label_handle other ) {
-/*****************************************************************/
-
+tbl_control     *MakeJmpTab( select_list *list, signed_32 lo, signed_32 hi, label_handle other )
+/**********************************************************************************************/
+{
     list = list;
     lo = lo;
     hi = hi;
@@ -95,16 +92,16 @@ extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
 }
 
 
-extern  name        *SelIdx( tbl_control *table, an node ) {
-/**********************************************************/
-
+name    *SelIdx( tbl_control *table, an node )
+/********************************************/
+{
     node = node;
     table = table;
     return( NULL );
 }
 
-extern name *ScanCall( tbl_control* tbl, name* tmp, type_class_def class )
-/************************************************************************/
+name    *ScanCall( tbl_control* tbl, name* tmp, type_class_def class )
+/********************************************************************/
 {
     tbl = tbl;
     tmp = tmp;
@@ -112,9 +109,9 @@ extern name *ScanCall( tbl_control* tbl, name* tmp, type_class_def class )
     return( NULL );
 }
 
-extern  type_def        *SelNodeType( an node, bool is_signed ) {
-/************************************************************/
-
+type_def    *SelNodeType( an node, bool is_signed )
+/*************************************************/
+{
     cg_type     unsigned_t;
     cg_type     signed_t;
 
@@ -139,8 +136,8 @@ extern  type_def        *SelNodeType( an node, bool is_signed ) {
     return( TypeAddress( is_signed ? signed_t : unsigned_t ) );
 }
 
-extern  void    MkSelOp( name *idx, type_class_def class )
-/********************************************************/
+void    MkSelOp( name *idx, type_class_def class )
+/************************************************/
 {
     instruction         *ins;
 

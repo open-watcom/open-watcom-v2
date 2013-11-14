@@ -43,13 +43,13 @@
 #include "makeaddr.h"
 
 extern  void            AddTarget(label_handle,bool);
-extern  signed_32       IfCost(select_node*,int);
+extern  signed_32       IfCost(sel_handle,int);
 extern  void            EnLink(label_handle,bool);
 extern  name            *ScanCall(tbl_control*,name*,type_class_def);
 extern  void            AddIns(instruction*);
-extern  signed_32       JumpCost(select_node*);
+extern  signed_32       JumpCost(sel_handle);
 extern  void            Generate(bool);
-extern  signed_32       ScanCost(select_node*);
+extern  signed_32       ScanCost(sel_handle);
 extern  void            GenBlock( block_class, int );
 extern  tbl_control     *MakeScanTab(select_list*,signed_32,label_handle,cg_type,cg_type);
 extern  tbl_control     *MakeJmpTab(select_list*,signed_32,signed_32,label_handle);
@@ -59,13 +59,13 @@ extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
 extern  void            MkSelOp( name *idx, type_class_def class );
 
 /* forward declarations */
-extern  void    BGSelRange( select_node *s_node, signed_32 lo, signed_32 hi, label_handle label );
+extern  void    BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label );
 static  void    ScanBlock( tbl_control *table, an node, type_class_def class, label_handle other );
 static  void    SelectBlock( tbl_control *table, an node, label_handle other );
 
-static  select_list *NewCase( signed_32 lo, signed_32 hi, label_handle label ) {
-/******************************************************************************/
-
+static  select_list *NewCase( signed_32 lo, signed_32 hi, label_handle label )
+/****************************************************************************/
+{
     select_list         *new_entry;
 
     new_entry = CGAlloc( sizeof( select_list ) );
@@ -78,10 +78,10 @@ static  select_list *NewCase( signed_32 lo, signed_32 hi, label_handle label ) {
 }
 
 
-extern  select_node     *BGSelInit( void ) {
-/************************************/
-
-    select_node         *s_node;
+extern  sel_handle  BGSelInit( void )
+/***********************************/
+{
+    sel_handle  s_node;
 
     s_node = CGAlloc( sizeof( select_node ) );
     s_node->num_cases = 0;
@@ -95,18 +95,16 @@ extern  select_node     *BGSelInit( void ) {
 }
 
 
-extern  void    BGSelCase( select_node *s_node, label_handle label,
-                           signed_32 value ) {
-/**************************************************************/
-
+extern  void    BGSelCase( sel_handle s_node, label_handle label, signed_32 value )
+/*********************************************************************************/
+{
     BGSelRange( s_node, value, value, label );
 }
 
 
-extern  void    BGSelRange( select_node *s_node, signed_32 lo,
-                            signed_32 hi, label_handle label ) {
-/*************************************************************/
-
+extern  void    BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label )
+/*********************************************************************************************/
+{
     select_list         *new_entry;
 
     if( ( hi ^ lo ) < 0 ) _Zoiks( ZOIKS_089 );
@@ -117,18 +115,18 @@ extern  void    BGSelRange( select_node *s_node, signed_32 lo,
 }
 
 
-extern  void    BGSelOther( select_node *s_node, label_handle other ) {
-/********************************************************************/
-
+extern  void    BGSelOther( sel_handle s_node, label_handle other )
+/*****************************************************************/
+{
     s_node->other_wise = other;
 }
 
 
 static type_def         *SortTipe;
 
-extern int SelCompare( signed_32 lo1, signed_32 lo2 ) {
-/******************************************************/
-
+extern int SelCompare( signed_32 lo1, signed_32 lo2 )
+/***************************************************/
+{
     if( lo1 == lo2 ) return( 0 );
     if( SortTipe->attr & TYPE_SIGNED ) {
         if( lo1 < lo2 ) return( -1 );
@@ -139,17 +137,17 @@ extern int SelCompare( signed_32 lo1, signed_32 lo2 ) {
 }
 
 
-static  bool            NodeLess( void *s1, void *s2 ) {
-/******************************************************/
-
+static  bool            NodeLess( void *s1, void *s2 )
+/****************************************************/
+{
     return( SelCompare( ((select_list *)s1)->low, ((select_list *)s2)->low ) < 0 );
 }
 
 
 
-static  void    SortNodeList( an node, select_node *s_node, bool is_signed ) {
-/****************************************************************************/
-
+static  void    SortNodeList( an node, sel_handle s_node, bool is_signed )
+/************************************************************************/
+{
     select_list *list;
 
     SortTipe = SelNodeType( node, is_signed );
@@ -172,9 +170,9 @@ typedef enum sel_kind {
     S_IF
 } sel_kind;
 
-static  void    MergeListEntries( select_node *s_node ) {
-/*******************************************************/
-
+static  void    MergeListEntries( sel_handle s_node )
+/***************************************************/
+{
     select_list *curr;
     select_list *next;
 
@@ -190,9 +188,9 @@ static  void    MergeListEntries( select_node *s_node ) {
 }
 
 
-static  signed_32       DistinctIfCost( select_node *s_node ) {
-/*************************************************************/
-
+static  signed_32       DistinctIfCost( sel_handle s_node )
+/*********************************************************/
+{
     select_list *curr;
     select_list *next;
     int         entries;
@@ -208,9 +206,9 @@ static  signed_32       DistinctIfCost( select_node *s_node ) {
 }
 
 
-extern  cg_type SelType( unsigned_32 value_range ) {
-/**************************************************/
-
+extern  cg_type SelType( unsigned_32 value_range )
+/************************************************/
+{
     cg_type     tipe;
 
     if( ( value_range & 0xFFFF0000 ) == 0 ) {
@@ -242,9 +240,9 @@ extern  cg_type SelType( unsigned_32 value_range ) {
 }
 
 
-static  type_def        *UnSignedIntTipe( type_def *tipe ) {
-/*******************************************************/
-
+static  type_def        *UnSignedIntTipe( type_def *tipe )
+/********************************************************/
+{
     switch( tipe->length ) {
     case 1:
         return( TypeAddress( TY_UINT_1 ) );
@@ -258,8 +256,8 @@ static  type_def        *UnSignedIntTipe( type_def *tipe ) {
 }
 
 
-static  an      GenScanTable( an node, select_node *s_node, type_def *tipe )
-/**************************************************************************/
+static  an      GenScanTable( an node, sel_handle s_node, type_def *tipe )
+/************************************************************************/
 {
     bn          lt;
     cg_type     value_type;
@@ -281,9 +279,9 @@ static  an      GenScanTable( an node, select_node *s_node, type_def *tipe )
 }
 
 
-static  an      GenSelTable( an node, select_node *s_node, type_def *tipe) {
-/**************************************************************************/
-
+static  an      GenSelTable( an node, sel_handle s_node, type_def *tipe )
+/***********************************************************************/
+{
     bn          lt;
 
     if( s_node->lower != 0 ) {
@@ -310,9 +308,9 @@ static  an      GenSelTable( an node, select_node *s_node, type_def *tipe) {
 static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
                                int lo, int hi, label_handle other,
                                signed_32 lobound, signed_32 hibound,
-                               bool have_lobound, bool have_hibound ) {
-/****************************************************************/
-
+                               bool have_lobound, bool have_hibound )
+/*************************************************************************/
+{
     int                 num;
     int                 mid;
     select_list         *mid_list;
@@ -415,9 +413,9 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
 }
 
 
-static  an      GenIfStmts( an node, select_node *s_node, type_def *tipe ) {
-/**************************************************************************/
-
+static  an      GenIfStmts( an node, sel_handle s_node, type_def *tipe )
+/**********************************************************************/
+{
     select_list *list;
     int         nodes;
 
@@ -431,9 +429,9 @@ static  an      GenIfStmts( an node, select_node *s_node, type_def *tipe ) {
 }
 
 
-extern  signed_32       NumValues( select_list *list, signed_32 hi ) {
-/********************************************************************/
-
+extern  signed_32       NumValues( select_list *list, signed_32 hi )
+/******************************************************************/
+{
     signed_32           cases;
 
     cases = 0;
@@ -482,9 +480,9 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def class, la
 }
 
 
-static  void    SelectBlock( tbl_control *table, an node, label_handle other ) {
-/*****************************************************************************/
-
+static  void    SelectBlock( tbl_control *table, an node, label_handle other )
+/****************************************************************************/
+{
     uint                i;
     uint                targets;
 
@@ -516,16 +514,16 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other ) {
 }
 
 
-extern  void    FreeTable( tbl_control *table ) {
-/***********************************************/
-
+extern  void    FreeTable( tbl_control *table )
+/*********************************************/
+{
     CGFree( table );
 }
 
 
-static  void    FreeSelectNode( select_node *s_node ) {
-/*****************************************************/
-
+static  void    FreeSelectNode( sel_handle s_node )
+/*************************************************/
+{
     select_list         *list;
     select_list         *next;
 
@@ -537,9 +535,9 @@ static  void    FreeSelectNode( select_node *s_node ) {
 }
 
 
-extern  void    BGSelect( select_node *s_node, an node, cg_switch_type allowed ) {
-/********************************************************************************/
-
+extern  void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
+/****************************************************************************/
+{
     signed_32   cost;
     signed_32   best;
     sel_kind    kind;

@@ -77,12 +77,12 @@ extern  void            TellNoSymbol(label_handle);
 extern  void            BGProcDecl(cg_sym_handle,type_def*);
 extern  void            BGParmDecl(cg_sym_handle,type_def*);
 extern  void            BGAutoDecl(cg_sym_handle,type_def*);
-extern  select_node     *BGSelInit(void);
-extern  void            BGSelCase(select_node*,label_handle,signed_32);
-extern  void            BGSelRange(select_node*,signed_32,signed_32,label_handle);
-extern  void            BGSelOther(select_node*,label_handle);
+extern  sel_handle      BGSelInit(void);
+extern  void            BGSelCase(sel_handle,label_handle,signed_32);
+extern  void            BGSelRange(sel_handle,signed_32,signed_32,label_handle);
+extern  void            BGSelOther(sel_handle,label_handle);
 extern  an              TGen(tn,type_def*);
-extern  void            BGSelect(select_node*,an,cg_switch_type);
+extern  void            BGSelect(sel_handle,an,cg_switch_type);
 extern  void            BGReturn(an,type_def*);
 extern  an              BGSave(an);
 extern  void            DGBlip(void);
@@ -1212,7 +1212,7 @@ extern  sel_handle _CGAPI       CGSelInit( void )
 /***********************************************/
 {
 #ifndef NDEBUG
-    select_node     *retn;
+    sel_handle  retn;
 
     EchoAPI( "CGSelInit()" );
     retn = BGSelInit();

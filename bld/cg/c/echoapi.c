@@ -358,7 +358,7 @@ void EchoAPI              // EchoAPI ROUTINE
     }
 }
 
-cg_name EchoAPICgnameReturn // EchoAPI cg_name RETURN VALUE
+cg_name EchoAPICgnameReturn     // EchoAPI cg_name RETURN VALUE
     ( cg_name retn )            // - cg_name value
 {
     EchoAPI( " -> %n\n", retn );
@@ -372,7 +372,7 @@ call_handle EchoAPICallHandleReturn // EchoAPI call_handle RETURN VALUE
     return retn;
 }
 
-cg_type EchoAPICgtypeReturn // EchoAPI cg_type RETURN VALUE
+cg_type EchoAPICgtypeReturn     // EchoAPI cg_type RETURN VALUE
     ( cg_type retn )            // - cg_type value
 {
     EchoAPI( " -> %t\n", retn );
@@ -380,7 +380,7 @@ cg_type EchoAPICgtypeReturn // EchoAPI cg_type RETURN VALUE
 }
 
 
-int EchoAPIHexReturn      // EchoAPI HEXADECIMAL RETURN VALUE
+int EchoAPIHexReturn            // EchoAPI HEXADECIMAL RETURN VALUE
     ( int retn )                // - value
 {
     EchoAPI( " -> %x\n", retn );
@@ -388,16 +388,16 @@ int EchoAPIHexReturn      // EchoAPI HEXADECIMAL RETURN VALUE
 }
 
 
-int EchoAPIIntReturn      // EchoAPI DECIMAL RETURN VALUE
-    ( int retn )                // - value
+int EchoAPIIntReturn    // EchoAPI DECIMAL RETURN VALUE
+    ( int retn )        // - value
 {
     EchoAPI( " -> %i\n", retn );
     return retn;
 }
 
 
-select_node *EchoAPISelHandleReturn // EchoAPI sel_handle RETURN VALUE
-    ( select_node *retn )         // - sel_handle value
+sel_handle EchoAPISelHandleReturn   // EchoAPI sel_handle RETURN VALUE
+    ( sel_handle retn )             // - sel_handle value
 {
     EchoAPI( " -> %S\n", retn );
     return retn;
@@ -412,9 +412,9 @@ temp_handle EchoAPITempHandleReturn // EchoAPI temp_handle RETURN VALUE
 }
 
 
-void handleExists           // VERIFY EXISTING HANDLE
+void handleExists               // VERIFY EXISTING HANDLE
     ( handle_type hdltype
-    , use_info *useinfo )              // - the handle
+    , use_info *useinfo )       // - the handle
 {
     if( useinfo == NULL ) {
         handleMsg( hdltype, "handle does not exist" );
@@ -464,7 +464,7 @@ void handleAdd( handle_type hdltype, use_info *useinfo )
     }
 }
 
-void hdlAddUnary         // ADD A HANDLE AFTER A UNARY OPERATION
+void hdlAddUnary                // ADD A HANDLE AFTER A UNARY OPERATION
     ( handle_type hdltype       // - the handle type
     , tn handle                 // - the handle
     , tn old )                  // - handle operated upon by unary oper'n
@@ -473,23 +473,23 @@ void hdlAddUnary         // ADD A HANDLE AFTER A UNARY OPERATION
     hdlAddReuse( hdltype, handle );
 }
 
-void hdlAddBinary        // ADD A HANDLE AFTER A BINARY OPERATION
+void hdlAddBinary               // ADD A HANDLE AFTER A BINARY OPERATION
     ( handle_type hdltype
-    , tn handle                // - the handle
-    , tn old_l                 // - handle operated upon by unary oper'n
-    , tn old_r )               // - handle operated upon by unary oper'n
+    , tn handle                 // - the handle
+    , tn old_l                  // - handle operated upon by unary oper'n
+    , tn old_r )                // - handle operated upon by unary oper'n
 {
     old_l = old_l;
     old_r = old_r;
     hdlAddReuse( hdltype, handle );
 }
 
-void hdlAddTernary       // ADD A HANDLE AFTER A TERNARY OPERATION
+void hdlAddTernary              // ADD A HANDLE AFTER A TERNARY OPERATION
     ( handle_type hdltype
-    , tn handle                // - the handle
-    , tn old_t                 // - handle operated upon by unary oper'n
-    , tn old_l                 // - handle operated upon by unary oper'n
-    , tn old_r )               // - handle operated upon by unary oper'n
+    , tn handle                 // - the handle
+    , tn old_t                  // - handle operated upon by unary oper'n
+    , tn old_l                  // - handle operated upon by unary oper'n
+    , tn old_r )                // - handle operated upon by unary oper'n
 {
     old_t = old_t;
     old_l = old_l;
@@ -497,7 +497,7 @@ void hdlAddTernary       // ADD A HANDLE AFTER A TERNARY OPERATION
     hdlAddReuse( hdltype, handle );
 }
 
-void hdlAllUsed          // VERIFY ALL HANDLES IN RING HAVE BEEN USED
+void hdlAllUsed                 // VERIFY ALL HANDLES IN RING HAVE BEEN USED
     ( handle_type hdltype )
 {
     // check to ensure that all nodes of type hdltype are used LMW
@@ -532,11 +532,11 @@ static char* callBackName       // MAKE CALL-BACK NAME FOR PRINTING
 }
 
 
-void EchoAPICallBack(               // CALL-BACK SUPPORT
+void EchoAPICallBack(           // CALL-BACK SUPPORT
     tn node
   , cg_callback rtn
   , callback_handle param
-  , char *start_end )            // - call-back entry
+  , char *start_end )           // - call-back entry
 {
     char buffer[64];
 

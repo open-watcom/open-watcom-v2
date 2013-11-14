@@ -42,7 +42,7 @@ cg_name     EchoAPICgnameReturn( cg_name retn );
 int         EchoAPIHexReturn( int retn );
 int         EchoAPIIntReturn( int retn );
 call_handle EchoAPICallHandleReturn( call_handle retn );
-select_node *EchoAPISelHandleReturn( select_node *retn );
+sel_handle  EchoAPISelHandleReturn( sel_handle retn );
 temp_handle EchoAPITempHandleReturn( temp_handle retn );
 cg_type     EchoAPICgtypeReturn( cg_type retn );
 
