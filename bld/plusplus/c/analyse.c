@@ -1452,11 +1452,11 @@ void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
         }
         NodeIsIntConstant( op2, &icon );
         if( icon.type->id == TYP_SLONG64 || icon.type->id == TYP_ULONG64 ) {
-            val = icon.value;
+            val = icon.u.value;
         } else if( icon.type->id == TYP_ULONG || icon.type->id == TYP_UINT ) {
-            U32ToU64( icon.uval, &val );
+            U32ToU64( icon.u.uval, &val );
         } else {
-            I32ToI64( icon.sval, &val );
+            I32ToI64( icon.u.sval, &val );
         }
         ret = CheckMeaninglessCompare( rel
                                    , op1_size
@@ -4042,8 +4042,8 @@ start_opac_string:
                     } else {
                         INT_CONSTANT int_con;
                         rtcode = ( NodeIsIntConstant( throw_exp, &int_con )
-                                && 0 == int_con.value.u._32[0]
-                                && 0 == int_con.value.u._32[1] )
+                                && 0 == int_con.u.value.u._32[0]
+                                && 0 == int_con.u.value.u._32[1] )
                                  ? RTF_THROW_ZERO : RTF_THROW;
 //                      constant = NodeGetConstantNode( throw_exp );
                         throw_exp = NodeAssignTemporary

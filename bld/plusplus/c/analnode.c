@@ -732,7 +732,7 @@ static boolean nodeGetConstant  // TEST IF CONSTANT AND GET VALUE
         switch( node->op ) {
           case PT_INT_CONSTANT :
             pval->type = TypedefModifierRemoveOnly( node->type );
-            pval->value = node->u.int64_constant;
+            pval->u.value = node->u.int64_constant;
             retn = TRUE;
             break;
           case PT_SYMBOL :
@@ -773,7 +773,7 @@ boolean NodeIsZeroConstant(     // TEST IF A ZERO CONSTANT
     INT_CONSTANT icon;          // - integral constant
 
     if( nodeGetConstant( node, &icon ) ) {
-        retn = ( 0 == icon.value.u._32[0] && 0 == icon.value.u._32[1] );
+        retn = ( 0 == icon.u.value.u._32[0] && 0 == icon.u.value.u._32[1] );
     } else {
         retn = FALSE;
     }
@@ -792,7 +792,7 @@ boolean NodeIsZeroIntConstant(  // TEST IF A ZERO INTEGER CONSTANT
          || ( icon.type->id > TYP_ULONG64 ) ) {
             retn = FALSE;
         } else {
-            retn = ( 0 == icon.value.u._32[0] && 0 == icon.value.u._32[1] );
+            retn = ( 0 == icon.u.value.u._32[0] && 0 == icon.u.value.u._32[1] );
         }
     } else {
         retn = FALSE;
@@ -808,7 +808,7 @@ PTREE NodeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
     PTREE retn;                 // - new entry
 
     con = SymConstantValue( con, &icon );
-    retn = PTreeInt64Constant( icon.value, TYP_SLONG64 );
+    retn = PTreeInt64Constant( icon.u.value, TYP_SLONG64 );
     retn->type = SymUnmodifiedType( con );
     return retn;
 }
@@ -1803,7 +1803,7 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
         orig = expr;
         if( ! SymIsModuleDtorable( sym ) ) {
             sym->flag |= SF_CG_ADDR_TAKEN;
-            SymScope( sym )->s.dtor_reqd = TRUE;
+            SymScope( sym )->u.s.dtor_reqd = TRUE;
         }
         PTreeExtractLocn( expr, &err_locn );
         dtor = DtorFindLocn( sym->sym_type, &err_locn );
@@ -2276,7 +2276,7 @@ boolean NodeGetIbpSymbol(       // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
         if( NodeIsIntConstant( right, &icon )
          && NodeGetIbpSymbol( left, a_ibp, a_offset ) ) {
             bound = *a_ibp;
-            offset = *a_offset + icon.uval;
+            offset = *a_offset + icon.u.uval;
             retn = TRUE;
         } else {
             bound = NULL;

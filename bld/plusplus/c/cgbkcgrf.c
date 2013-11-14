@@ -284,7 +284,7 @@ static boolean oeInlineable(    // DETERMINE IF /oe CAN INLINE THE FUNCTION
     if( funcInlineable( sym ) ) {
         if( cgfile == NULL ) {
             retn = FALSE;
-        } else if( cgfile->s.oe_inl ) {
+        } else if( cgfile->u.s.oe_inl ) {
             retn = TRUE;
         } else {
             retn = FALSE;
@@ -583,9 +583,9 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
           case IC_BLOCK_OPEN :
           case IC_BLOCK_DEAD :
           { SCOPE scope = ins->value.pvalue;
-            if( NULL != scope && scope->s.try_catch ) {
+            if( NULL != scope && scope->u.s.try_catch ) {
                 CgrfMarkNodeGen( cnode );
-                scope->s.cg_stab = TRUE;
+                scope->u.s.cg_stab = TRUE;
             }
             if( call_graph->scope_call_opt ) {
                 sc.curr_scope = scope;
@@ -597,7 +597,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
                         break;
                       default :
                         CgrfMarkNodeGen( cnode );
-                        scope->s.cg_stab = TRUE;
+                        scope->u.s.cg_stab = TRUE;
                         break;
                     }
                 }
@@ -719,7 +719,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             if( DTM_DIRECT_SMALL == sc.func_dtm
              || DTM_TABLE_SMALL == sc.func_dtm ) {
                 cnode->depth = max_inline_depth + 1;
-                sc.file_ctl->s.not_inline = TRUE;
+                sc.file_ctl->u.s.not_inline = TRUE;
 //              callGraphFlags.not_inlined_set = TRUE;
                 _DUMP_CGRF( "static'ed dtor for -xds: %s\n", func );
             }
@@ -892,10 +892,10 @@ static void checkForExpandOnceInlines(  // scan for "at most 1" inline requests
                 cgfile = nodeCgFile( stk->callee );
                 if( cgfile != NULL ) {
                     // found a max 1 inline function
-                    if( cgfile->s.once_inl ) {
+                    if( cgfile->u.s.once_inl ) {
                         // make it out of line
-                        cgfile->s.oe_inl = FALSE;
-                        cgfile->s.once_inl = FALSE;
+                        cgfile->u.s.oe_inl = FALSE;
+                        cgfile->u.s.once_inl = FALSE;
                     }
                 }
             }
@@ -936,10 +936,10 @@ static void markAsGen(          // MARK CODE FILE TO BE GENERATED
 
     if( ! node->is_vft ) {
         cgfile = nodeCgFile( node );
-        if( cgfile != NULL && ! cgfile->s.refed ) {
+        if( cgfile != NULL && ! cgfile->u.s.refed ) {
             func = callNodeCaller( node );
             ExtraRptIncrementCtr( ctr_gened );
-            cgfile->s.refed = TRUE;
+            cgfile->u.s.refed = TRUE;
             if( NULL != func ) {
                 SegmentMarkUsed( func->segid );
             }
@@ -985,7 +985,7 @@ static boolean procEdge(        // PROCESS EDGE IN CALL GRAPH
             if( ! curr_node->is_vft ) {
                 CGFILE* cgfile;
                 cgfile = nodeCgFile( curr_node );
-                cgfile->s.calls_inline = TRUE;
+                cgfile->u.s.calls_inline = TRUE;
             }
             pushCaller( ctl, target );
         }
@@ -1009,8 +1009,8 @@ static void genFunction(        // INDICATE FUNCTION NEEDS TO BE GEN'ED
     switch( cgbackFuncType( func ) ) {
       case TCF_STATIC :
       { CGFILE* cgfile = nodeCgFile( node );
-        if( ! cgfile->s.once_inl
-         && ! cgfile->s.oe_inl ) {
+        if( ! cgfile->u.s.once_inl
+         && ! cgfile->u.s.oe_inl ) {
             markAsGen( node );
             break;
         }
@@ -1111,11 +1111,11 @@ static boolean procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
             if( flags.oe_small || flags.oe_static ) {
                 cgfile = nodeCgFile( node );
                 if( cgfile != NULL ) {
-                    cgfile->s.oe_inl = TRUE;
+                    cgfile->u.s.oe_inl = TRUE;
                     if( flags.oe_static ) {
                     // we are inlining a static function that is called once
                     // (mark it so that it only gets inlined once!)
-                        cgfile->s.once_inl = TRUE;
+                        cgfile->u.s.once_inl = TRUE;
                         callGraphFlags.only_once_found = TRUE;
                         _DUMP_CGRF( "inlined once-called static function: %s\n", func );
                     } else {
@@ -1188,13 +1188,13 @@ static boolean procFunction(    // POST-PROCESS FUNCTION IN CALL GRAPH
     }
     cgfile = nodeCgFile( node );
     if( cgfile != NULL ) {
-        cgfile->s.state_table = node->state_table;
-        cgfile->s.stab_gen = node->stab_gen;
+        cgfile->u.s.state_table = node->state_table;
+        cgfile->u.s.stab_gen = node->stab_gen;
         cgfile->cond_flags = node->cond_flags;
-        if( cgfile->s.oe_inl ) {
+        if( cgfile->u.s.oe_inl ) {
             func->flag |= SF_CG_INLINEABLE;
         }
-        if( cgfile->s.not_inline ) {
+        if( cgfile->u.s.not_inline ) {
             func->flag &= ~SF_CG_INLINEABLE;
         }
     }
@@ -1293,8 +1293,8 @@ static boolean setFunctionStab( // SET STATE-TABLE INFO. FOR FUNCTION
                     }
                 }
             }
-            cgfile->s.state_table = state_table;
-            cgfile->s.stab_gen = stab_gen;
+            cgfile->u.s.state_table = state_table;
+            cgfile->u.s.stab_gen = stab_gen;
             cgfile->cond_flags = max_cond_flags;
 #ifndef NDEBUG
             if( PragDbgToggle.dump_emit_ic ||

@@ -217,7 +217,7 @@ static void* resolveInitedSym(  // RESOLVE AN INITIALIZED SYMBOL
 
     ExtraRptIncrementCtr( ctr_cgfiles );
     cgfile = CgioLocateAnyFile( sym );
-    if( cgfile != NULL && cgfile->s.refed ) {
+    if( cgfile != NULL && cgfile->u.s.refed ) {
         retn = NULL;
     } else {
         // function is initialized and inlined everywhere it is referenced

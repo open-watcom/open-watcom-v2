@@ -873,7 +873,7 @@ PCH_struct name_space {
           unsigned      free : 1;       // - used for PCH
           unsigned      unnamed : 1;    // - unnamed namespace
         } s;
-    };
+    } u;
 };
 
 PCH_struct using_ns {
@@ -932,7 +932,7 @@ PCH_struct scope {
           unsigned      fn_template : 1;// - SCOPE_TEMPLATE_PARM -- function
           unsigned      dirty : 1;      // - a symbol has been added
         } s;
-    };
+    } u;
     scope_type_t        id;             // - type of scope
 };
 
@@ -1204,7 +1204,7 @@ extern boolean ScopeAccessType( scope_type_t );
 extern boolean ScopeType( SCOPE, scope_type_t );
 extern boolean ScopeEquivalent( SCOPE, scope_type_t );
 #define ScopeId( s )    ((s)->id)
-#define ScopeEnclosedInUnnamedNameSpace( sc )   ((sc)->s.in_unnamed)
+#define ScopeEnclosedInUnnamedNameSpace( sc )   ((sc)->u.s.in_unnamed)
 
 typedef enum {
     FVS_VIRTUAL_ABOVE   = 0x01, // sym[0] will be set
@@ -1768,37 +1768,37 @@ extern TYPE TypeCache[];
 #define TypeGetCache( tci )     ( TypeCache[ (tci) ] )
 #define TypeSetCache( tci, ty ) ( TypeCache[ (tci) ] = ( ty ) )
 
-#define TypeSegmentShort()      TypeGetCache( TYPC_SEGMENT_SHORT )
-#define TypePtrToVoid()         TypeGetCache( TYPC_VOID_PTR )
-#define TypeVoidFunOfVoid()     TypeGetCache( TYPC_VOID_FUN_OF_VOID )
-#define TypeVoidFunOfPtrVoid()  TypeGetCache( TYPC_VOID_FUN_OF_PTR_VOID )
-#define TypePtrVoidFunOfVoid()  TypeGetCache( TYPC_PTR_VOID_FUN_OF_VOID )
-#define TypePtrToVoidStdop()    TypeGetCache( TYPC_PTR_STDOP_VOID )
-#define TypePtrToConstVoidStdop() TypeGetCache( TYPC_PTR_CONST_STDOP_VOID )
-#define TypePtrToVolatileVoidStdop() TypeGetCache( TYPC_PTR_VOLATILE_STDOP_VOID )
-#define TypePtrToConstVolatileVoidStdop() TypeGetCache( TYPC_PTR_CONST_VOLATILE_STDOP_VOID )
-#define TypePtrToVoidStdopArith() TypeGetCache( TYPC_PTR_STDOP_ARITH_VOID )
-#define TypePtrToConstVoidStdopArith() TypeGetCache( TYPC_PTR_CONST_STDOP_ARITH_VOID )
-#define MakeCDtorExtraArgType() TypeGetCache( TYPC_CDTOR_ARG )
-#define TypePtrVoidFunOfCDtorArg() TypeGetCache( TYPC_PTR_VOID_FUN_OF_CDTOR_ARG )
-#define TypeVoidHandlerFunOfVoid() TypeGetCache( TYPC_VOID_HANDLER_FUN_OF_VOID )
+#define TypeSegmentShort()                  TypeGetCache( TYPC_SEGMENT_SHORT )
+#define TypePtrToVoid()                     TypeGetCache( TYPC_VOID_PTR )
+#define TypeVoidFunOfVoid()                 TypeGetCache( TYPC_VOID_FUN_OF_VOID )
+#define TypeVoidFunOfPtrVoid()              TypeGetCache( TYPC_VOID_FUN_OF_PTR_VOID )
+#define TypePtrVoidFunOfVoid()              TypeGetCache( TYPC_PTR_VOID_FUN_OF_VOID )
+#define TypePtrToVoidStdop()                TypeGetCache( TYPC_PTR_STDOP_VOID )
+#define TypePtrToConstVoidStdop()           TypeGetCache( TYPC_PTR_CONST_STDOP_VOID )
+#define TypePtrToVolatileVoidStdop()        TypeGetCache( TYPC_PTR_VOLATILE_STDOP_VOID )
+#define TypePtrToConstVolatileVoidStdop()   TypeGetCache( TYPC_PTR_CONST_VOLATILE_STDOP_VOID )
+#define TypePtrToVoidStdopArith()           TypeGetCache( TYPC_PTR_STDOP_ARITH_VOID )
+#define TypePtrToConstVoidStdopArith()      TypeGetCache( TYPC_PTR_CONST_STDOP_ARITH_VOID )
+#define MakeCDtorExtraArgType()             TypeGetCache( TYPC_CDTOR_ARG )
+#define TypePtrVoidFunOfCDtorArg()          TypeGetCache( TYPC_PTR_VOID_FUN_OF_CDTOR_ARG )
+#define TypeVoidHandlerFunOfVoid()          TypeGetCache( TYPC_VOID_HANDLER_FUN_OF_VOID )
 
 // defined in template.c
-extern TYPE BoundTemplateClass( TYPE );
-extern TYPE BindTemplateClass( TYPE , TOKEN_LOCN *, boolean );
+extern TYPE         BoundTemplateClass( TYPE );
+extern TYPE         BindTemplateClass( TYPE , TOKEN_LOCN *, boolean );
 
 // pre-compiled header support
-TYPE TypeGetIndex( TYPE );
-TYPE TypeMapIndex( TYPE );
-CLASSINFO *ClassInfoGetIndex( CLASSINFO * );
-CLASSINFO *ClassInfoMapIndex( CLASSINFO * );
-DECL_INFO *DeclInfoGetIndex( DECL_INFO * );
-DECL_INFO *DeclInfoMapIndex( DECL_INFO * );
-SYMBOL_NAME SymbolNameGetIndex( SYMBOL_NAME );
-SYMBOL_NAME SymbolNameMapIndex( SYMBOL_NAME );
-SYMBOL SymbolGetIndex( SYMBOL );
-SYMBOL SymbolMapIndex( SYMBOL );
-SCOPE ScopeGetIndex( SCOPE );
-SCOPE ScopeMapIndex( SCOPE );
+extern TYPE         TypeGetIndex( TYPE );
+extern TYPE         TypeMapIndex( TYPE );
+extern CLASSINFO    *ClassInfoGetIndex( CLASSINFO * );
+extern CLASSINFO    *ClassInfoMapIndex( CLASSINFO * );
+extern DECL_INFO    *DeclInfoGetIndex( DECL_INFO * );
+extern DECL_INFO    *DeclInfoMapIndex( DECL_INFO * );
+extern SYMBOL_NAME  SymbolNameGetIndex( SYMBOL_NAME );
+extern SYMBOL_NAME  SymbolNameMapIndex( SYMBOL_NAME );
+extern SYMBOL       SymbolGetIndex( SYMBOL );
+extern SYMBOL       SymbolMapIndex( SYMBOL );
+extern SCOPE        ScopeGetIndex( SCOPE );
+extern SCOPE        ScopeMapIndex( SCOPE );
 
 #endif

@@ -184,7 +184,7 @@ boolean SymIsNameSpaceMember(    // TEST IF SYMBOL IS MEMBER OF NAMESPACE
         NAME_SPACE *ns;
 
         ns = scope->owner.ns;
-        if( !ns->s.global_fs  ){
+        if( !ns->u.s.global_fs  ){
             ret = TRUE;
         }
     }
@@ -1357,11 +1357,11 @@ SYMBOL SymConstantValue             // GET CONSTANT VALUE FOR SYMBOL
 {
     pval->type = sym->sym_type;
     if( sym->flag & SF_CONSTANT_INT64 ) {
-        pval->value = sym->u.pval->int64_constant;
+        pval->u.value = sym->u.pval->int64_constant;
     } else if( sym->flag & SF_ENUM_UINT ) {
-        Int64FromU32( sym->u.sval, &pval->value );
+        Int64FromU32( sym->u.sval, &pval->u.value );
     } else {
-        Int64From32( sym->sym_type, sym->u.sval, &pval->value );
+        Int64From32( sym->sym_type, sym->u.sval, &pval->u.value );
     }
     return sym;
 }

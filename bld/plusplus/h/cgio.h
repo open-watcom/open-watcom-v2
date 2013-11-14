@@ -63,28 +63,28 @@ struct cgfile {                 // CGFILE -- control for a virtual file
     CGFILE_GEN  *gen;           // - data while generating file
     TOKEN_LOCN  defined;        // - location of definition
     unsigned    cond_flags;     // - # conditional flags req'd in state table
-  union {
-   unsigned     flags;          // - overlays flags for .pch
-   struct {
-    unsigned    delayed      :1;// - TRUE ==> delayed for code generation
-    unsigned    refed        :1;// - TRUE ==> referenced during code gener.
-    unsigned    stgen        :1;// - TRUE ==> code generated static init
-    unsigned    oe_inl       :1;// - TRUE ==> can be inlined when /oe
-    unsigned    state_table  :1;// - TRUE ==> has a state table
-    unsigned    once_inl     :1;// - TRUE ==> should be inlined only once
-    unsigned    done         :1;// - TRUE ==> IC_EOF has been written
-    unsigned    thunk        :1;// - TRUE ==> is addressibility thunk
-    unsigned    thunk_gen    :1;// - TRUE ==> generate addressibility thunk
-    unsigned    not_inline   :1;// - TRUE ==> do not inline
-    unsigned    calls_inline :1;// - TRUE ==> calls another inline
-    unsigned    can_throw    :1;// - TRUE ==> could throw an exception
-    unsigned    stab_gen     :1;// - TRUE ==> state table needs generation
-    unsigned    ctor_test    :1;// - TRUE ==> might have ctor test
-    unsigned    write_to_pch :1;// - TRUE ==> write out to PCH
-    unsigned    opt_retn_val :1;// - TRUE ==> optimize struct return: value
-    unsigned    opt_retn_ref :1;// - TRUE ==> optimize struct return: reference
-          } s;  // of struct
-        };      // of union
+    union {
+        unsigned     flags;          // - overlays flags for .pch
+        struct {
+            unsigned    delayed      :1;// - TRUE ==> delayed for code generation
+            unsigned    refed        :1;// - TRUE ==> referenced during code gener.
+            unsigned    stgen        :1;// - TRUE ==> code generated static init
+            unsigned    oe_inl       :1;// - TRUE ==> can be inlined when /oe
+            unsigned    state_table  :1;// - TRUE ==> has a state table
+            unsigned    once_inl     :1;// - TRUE ==> should be inlined only once
+            unsigned    done         :1;// - TRUE ==> IC_EOF has been written
+            unsigned    thunk        :1;// - TRUE ==> is addressibility thunk
+            unsigned    thunk_gen    :1;// - TRUE ==> generate addressibility thunk
+            unsigned    not_inline   :1;// - TRUE ==> do not inline
+            unsigned    calls_inline :1;// - TRUE ==> calls another inline
+            unsigned    can_throw    :1;// - TRUE ==> could throw an exception
+            unsigned    stab_gen     :1;// - TRUE ==> state table needs generation
+            unsigned    ctor_test    :1;// - TRUE ==> might have ctor test
+            unsigned    write_to_pch :1;// - TRUE ==> write out to PCH
+            unsigned    opt_retn_val :1;// - TRUE ==> optimize struct return: value
+            unsigned    opt_retn_ref :1;// - TRUE ==> optimize struct return: reference
+        } s;    // of struct
+    } u;        // of union
     SYMBOL      opt_retn;       // - symbol translated for optimized return
 };
 

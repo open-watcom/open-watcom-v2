@@ -909,11 +909,11 @@ void DumpScope(                 // DUMP SCOPE INFO FOR SYMBOL
           , scope->names
           , scope->owner.sym
           , id
-          , scope->s.keep
-          , scope->s.dtor_reqd
-          , scope->s.dtor_naked
-          , scope->s.try_catch
-          , scope->s.in_unnamed
+          , scope->u.s.keep
+          , scope->u.s.dtor_reqd
+          , scope->u.s.dtor_naked
+          , scope->u.s.try_catch
+          , scope->u.s.in_unnamed
           );
     switch( scope->id ) {
     case SCOPE_CLASS:

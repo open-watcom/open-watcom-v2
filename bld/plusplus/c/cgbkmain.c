@@ -1248,9 +1248,9 @@ static cg_name accessAuto(      // get cg_name for an auto var
     cg_name cgname;
 
     if( sym == file_ctl->opt_retn && CgRetnOptActive( fctl ) ) {
-        if( file_ctl->s.opt_retn_val ) {
+        if( file_ctl->u.s.opt_retn_val ) {
             cgname = CgSymbol( fctl->return_symbol );
-        } else if( file_ctl->s.opt_retn_ref ) {
+        } else if( file_ctl->u.s.opt_retn_ref ) {
             cgname = IbpFetchRef( fctl->return_symbol );
         }
     } else {
@@ -1981,7 +1981,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             sym = ins_value.pvalue;
             if( ( file_ctl->symbol != NULL )
               &&( sym->id == SC_STATIC )
-              &&( file_ctl->s.stgen ) ) {
+              &&( file_ctl->u.s.stgen ) ) {
                 flushOverInitialization( file_ctl );
             } else if( CgDeclSkippableConstObj( sym ) ) {
                 flushOverInitialization( file_ctl );
@@ -2187,9 +2187,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_FUNCTION_DTM :            // SET DTOR METHOD
           { DT_METHOD dtm;                  // - function dtor method
             dtm = ins_value.uvalue;
-            if( ! file_ctl->s.state_table ) {
+            if( ! file_ctl->u.s.state_table ) {
                 dtm = DTM_DIRECT;
-            } else if( ! file_ctl->s.stab_gen ) {
+            } else if( ! file_ctl->u.s.stab_gen ) {
                 dtm = DtmDirect( dtm );
             }
             fctl->dtor_method = dtm;
@@ -2208,7 +2208,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_FUNCTION_STAB :           // SET UP FUNCTION STATE-TABLE
             fctl->cond_flags = ins_value.uvalue;
-            if( file_ctl->s.ctor_test ) {
+            if( file_ctl->u.s.ctor_test ) {
                 fctl->has_ctor_test = TRUE;
             }
             break;
@@ -2295,7 +2295,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             BlkPosnTrash();
             CgLabelsFinish( &stack_goto_near, fctl->base_goto_near );
             CgLabelsFinish( &stack_labs_cs, fctl->base_labs_cs );
-            file_ctl->s.stgen = TRUE;
+            file_ctl->u.s.stgen = TRUE;
             DbgVerify( depth_inline != 0 || IbpEmpty(), "ibrps unfreed" );
             FstabDeRegister( fctl );
             retn_sym = fctl->return_symbol;
@@ -2310,7 +2310,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 }
             } else {
                 exprn_type = CgFuncRetnType( fctl->func );
-                if( file_ctl->s.opt_retn_ref
+                if( file_ctl->u.s.opt_retn_ref
                  && CgRetnOptActive( fctl ) ) {
                     cgname = IbpFetchRef( retn_sym );
                 } else {
@@ -2437,7 +2437,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             scope = ins_value.pvalue;
             BlkPosnPush( scope );
             if( scope != NULL ) {
-                scope->s.dtor_reqd = FALSE;
+                scope->u.s.dtor_reqd = FALSE;
                 if( fctl->debug_info
                  && ( GenSwitches & DBG_LOCALS )
                  && ScopeDebugable( scope ) ) {
@@ -3005,7 +3005,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             temp = saveGenedExpr( exprn_type );
             if( DtmTabularFunc( fctl ) ) {
                 SE* se;                     // - current state entry
-                DbgAssert( file_ctl->s.state_table );
+                DbgAssert( file_ctl->u.s.state_table );
                 se = SeSetSvPosition( BlkPosnTempEnd() );
                 if( se == NULL ) {
                     CgDtorAll();
@@ -3253,10 +3253,10 @@ static void process_virtual_file( // PROCESS A VIRTUAL FILE
     sym = file_ctl->symbol;
     if( sym == NULL ) {
         data_file = file_ctl;
-    } else if( file_ctl->s.thunk ) {
+    } else if( file_ctl->u.s.thunk ) {
         CgioThunkStash( file_ctl );
     } else {
-        if( file_ctl->s.refed ) {
+        if( file_ctl->u.s.refed ) {
             writeVirtualFile( file_ctl );
         }
     }
@@ -3268,10 +3268,10 @@ static void process_thunk(      // PROCESS THUNK AFTER VIRTUAL FILES
 {
     EXTRF ext_info;             // - extern-reference information (not used)
 
-    if( thunk->s.refed
-     && ! thunk->s.thunk_gen
+    if( thunk->u.s.refed
+     && ! thunk->u.s.thunk_gen
      && NULL == ExtrefResolve( thunk->symbol, &ext_info ) ) {
-        thunk->s.thunk_gen = TRUE;
+        thunk->u.s.thunk_gen = TRUE;
         writeVirtualFile( thunk );
     }
 }

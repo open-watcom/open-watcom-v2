@@ -40,7 +40,7 @@
 boolean CgRetnOptForFile        // TEST IF RETURN OPTIMIZATION FOR FILE
     ( CGFILE* file_ctl )        // - file control
 {
-    return file_ctl->s.opt_retn_val || file_ctl->s.opt_retn_ref;
+    return file_ctl->u.s.opt_retn_val || file_ctl->u.s.opt_retn_ref;
 }
 
 

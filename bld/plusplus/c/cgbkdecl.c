@@ -215,7 +215,7 @@ static void declareAuto(        // DECLARE AN AUTO SYMBOL
 {
     CGAutoDecl( (cg_sym_handle)sym, CgTypeSym( sym ) );
     if( SymRequiresDtoring( sym ) ) {
-        SymScope( sym )->s.dtor_reqd = TRUE;
+        SymScope( sym )->u.s.dtor_reqd = TRUE;
     }
 }
 

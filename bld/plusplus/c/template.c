@@ -2097,7 +2097,7 @@ static boolean sameConstantInt( SYMBOL s1, SYMBOL s2 )
 
     SymConstantValue( s1, &con1 );
     SymConstantValue( s2, &con2 );
-    return 0 == U64Cmp( &con1.value, &con2.value );
+    return 0 == U64Cmp( &con1.u.value, &con2.u.value );
 }
 
 boolean TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
@@ -2129,15 +2129,14 @@ static boolean parmsDifferent( SYMBOL temp_arg, PTREE temp_parm )
         switch( temp_parm->op ) {
         case PT_INT_CONSTANT:
             SymConstantValue( temp_arg, &con );
-            if( 0 == U64Cmp( &con.value, &temp_parm->u.int64_constant ) ) {
+            if( 0 == U64Cmp( &con.u.value, &temp_parm->u.int64_constant ) ) {
                 return( FALSE );
             }
             break;
         }
     } else if( SymIsTypedef( temp_arg ) ) {
         if( temp_parm->op == PT_TYPE ) {
-            if( TypeCompareExclude( temp_arg->sym_type, temp_parm->type,
-                                    TC1_NOT_ENUM_CHAR ) ) {
+            if( TypeCompareExclude( temp_arg->sym_type, temp_parm->type, TC1_NOT_ENUM_CHAR ) ) {
                 return( FALSE );
             }
         }

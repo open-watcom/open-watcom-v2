@@ -502,12 +502,12 @@ static boolean locatedVFun(     // LOCATE VIRTUAL FUNCTION FOR BASE
         CGFILE* cgfile;
         cgfile = CgioLocateAnyFile( exact_vfun );
         DbgVerify( cgfile != NULL, "locatedVfun -- no CGFILE" );
-        if( cgfile->s.calls_inline ) {
+        if( cgfile->u.s.calls_inline ) {
             retn = FALSE;
         } else if( cgfile->cond_flags != 0 ) {
             retn = FALSE;
         } else {
-            if( cgfile->s.state_table && FstabHasStateTable() ) {
+            if( cgfile->u.s.state_table && FstabHasStateTable() ) {
                 retn = FALSE;
             } else {
                 *a_vfun = exact_vfun;

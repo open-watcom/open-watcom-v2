@@ -255,7 +255,7 @@ static void generateCallRefICs( // GENERATE IC'S FOR REFERENCE PARAMETERS
                     INT_CONSTANT icon;
                     right = arg->u.subtree[1];
                     if( NodeIsIntConstant( right, &icon ) ) {
-                        off = icon.uval;
+                        off = icon.u.uval;
                         arg = getChildNode( &arg->u.subtree[0] );
                         if( arg->op == PT_SYMBOL ) {
                             generateRargOffset( arg, arg_no, off );

@@ -37,13 +37,13 @@
 
 #include "i64.h"
 
-typedef struct                  // INTEGER CONSTANT
-{ union                         // - value
-  { signed_64 value;            // - - 64-bit int
-    long sval;                  // - - signed long
-    unsigned long uval;         // - - unsigned long
-  };
-    TYPE type;                  // - type (not modified)
+typedef struct {                // INTEGER CONSTANT
+    union {                     // - value
+        signed_64     value;    // - - 64-bit int
+        long          sval;     // - - signed long
+        unsigned long uval;     // - - unsigned long
+    } u;
+    TYPE              type;     // - type (not modified)
 } INT_CONSTANT;
 
 
