@@ -42,37 +42,37 @@
 #define L       I64LO32
 #define H       I64HI32
 
-#define I64Zero( a ) ( (a).uval.u._32[L] == 0 && (a).uval.u._32[H] == 0 )
+#define I64Zero( a ) ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
 #define I64NonZero(a) ( ! I64Zero(a)  )
-#define U64Zero( a ) ( (a).uval.u._32[L] == 0 && (a).uval.u._32[H] == 0 )
+#define U64Zero( a ) ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
 #define U64NonZero(a) ( ! U64Zero(a)  )
-#define U64Low( a ) ( a.uval.u._32[L] )
-#define U64High( a ) ( a.uval.u._32[H] )
+#define U64Low( a ) ( a.u.uval.u._32[L] )
+#define U64High( a ) ( a.u.uval.u._32[H] )
 
-#define U64LT( a, b ) ( U64Cmp( &((a).uval), &((b).uval) ) < 0 )
-#define U64GT( a, b ) ( U64Cmp( &((a).uval), &((b).uval) ) > 0 )
-#define U64LE( a, b ) ( U64Cmp( &((a).uval), &((b).uval) ) <= 0 )
-#define U64GE( a, b ) ( U64Cmp( &((a).uval), &((b).uval) ) >= 0 )
-#define U64EQ( a, b ) ( U64Cmp( &((a).uval), &((b).uval) ) == 0 )
-#define U64NE( a, b ) ( U64Cmp( &((a).uval), &((b).uval) ) != 0 )
+#define U64LT( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) < 0 )
+#define U64GT( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) > 0 )
+#define U64LE( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) <= 0 )
+#define U64GE( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) >= 0 )
+#define U64EQ( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) == 0 )
+#define U64NE( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) != 0 )
 
-#define I64LT( a, b ) ( I64Cmp( &((a).sval), &((b).sval) ) < 0 )
-#define I64GT( a, b ) ( I64Cmp( &((a).sval), &((b).sval) ) > 0 )
-#define I64LE( a, b ) ( I64Cmp( &((a).sval), &((b).sval) ) <= 0 )
-#define I64GE( a, b ) ( I64Cmp( &((a).sval), &((b).sval) ) >= 0 )
-#define I64EQ( a, b ) ( I64Cmp( &((a).sval), &((b).sval) ) == 0 )
-#define I64NE( a, b ) ( I64Cmp( &((a).sval), &((b).sval) ) != 0 )
+#define I64LT( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) < 0 )
+#define I64GT( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) > 0 )
+#define I64LE( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) <= 0 )
+#define I64GE( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) >= 0 )
+#define I64EQ( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) == 0 )
+#define I64NE( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) != 0 )
 
-#define U64AddEq(a,b) U64Add( &((a).uval), &((b).uval), &((a).uval) );
-#define U64SubEq(a,b) U64Sub( &((a).uval), &((b).uval), &((a).uval) );
-#define U64MulEq(a,b) U64Mul( &((a).uval), &((b).uval), &((a).uval) );
-#define U64AndEq(a,b) U64And( &((a).uval), &((b).uval), &((a).uval) );
-#define U64OrEq(a,b)  U64Or( &((a).uval), &((b).uval), &((a).uval) );
-#define U64XOrEq(a,b) U64Xor( &((a).uval), &((b).uval), &((a).uval) );
+#define U64AddEq(a,b) U64Add( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64SubEq(a,b) U64Sub( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64MulEq(a,b) U64Mul( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64AndEq(a,b) U64And( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64OrEq(a,b)  U64Or(  &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64XOrEq(a,b) U64Xor( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
 
 
-#define I64SetZero( a ) ( I32ToI64( 0, &(a).sval) );
-#define U64SetZero( a ) ( U32ToU64( 0, &(a).uval) );
+#define I64SetZero( a ) ( I32ToI64( 0, &(a).u.sval) );
+#define U64SetZero( a ) ( U32ToU64( 0, &(a).u.uval) );
 
 /* include _ctokens.h for the precedence values */
 static  int    Prec[] = {     // table of token precedences
@@ -101,7 +101,7 @@ typedef struct ppvalue {
     union {
         unsigned_64    uval;
         signed_64      sval;
-    };
+    } u;
     unsigned            no_sign : 1;
 } ppvalue;
 
@@ -394,7 +394,7 @@ static boolean COperand( void )
                 SrcFileGetTokenLocn( &left_loc );
                 NextToken(); // no need to error check or advance Pos
                 PPControl = old_ppctl;
-                I32ToI64( MacroDependsDefined(), &(p.sval) );
+                I32ToI64( MacroDependsDefined(), &(p.u.sval) );
                 NextToken(); // no need to error check or advance Pos
                 if( CurToken != T_RIGHT_PAREN ) {
                     SetErrLoc( &left_loc );
@@ -403,7 +403,7 @@ static boolean COperand( void )
                 }
             } else {
                 PPControl = old_ppctl;
-                I32ToI64( MacroDependsDefined(), &(p.sval) );
+                I32ToI64( MacroDependsDefined(), &(p.u.sval) );
             }
         } else {
             CErr2p( WARN_UNDEFD_MACRO_IS_ZERO, Buffer );
@@ -417,7 +417,7 @@ static boolean COperand( void )
         break;
       case T_FALSE:
       case T_TRUE:
-        I32ToI64( CurToken == T_TRUE, &(p.sval) );
+        I32ToI64( CurToken == T_TRUE, &(p.u.sval) );
         p.no_sign = 0;
         PushOperandCurLocation( p );
         done = PpNextToken();
@@ -429,7 +429,7 @@ static boolean COperand( void )
           case TYP_LONG_DOUBLE:
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             done = TRUE;
-            I32ToI64( SafeAtof( Buffer ), &(p.sval) );
+            I32ToI64( SafeAtof( Buffer ), &(p.u.sval) );
             // LMW add long double support if available
             p.no_sign = 0;
             break;
@@ -439,11 +439,11 @@ static boolean COperand( void )
           case TYP_UINT:
           case TYP_ULONG:
           case TYP_ULONG64:
-            p.uval = Constant64;
+            p.u.uval = Constant64;
             p.no_sign = 1;
             break;
           default:
-            p.sval = Constant64;
+            p.u.sval = Constant64;
             p.no_sign = 0;
         }
         if (!done ) {
@@ -472,7 +472,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
     loc_info loc;
     error_state_t error_info;
 
-    U32ToU64( 0, &(p->sval) ); //default value
+    U32ToU64( 0, &(p->u.sval) ); //default value
 
     if( CurToken == T_NULL ) {
         unexpectedCurToken();
@@ -612,9 +612,9 @@ static boolean CConditional( void ) // reduce an a?b:c expression
             if( PopOperand( &e1, &e1_info ) &&
                 ( e1_info.pos < op1_info.pos ) ) {
                 if( I64NonZero( e1 ) ) {
-                    e1.sval = e2.sval;
+                    e1.u.sval = e2.u.sval;
                 } else {
-                    e1.sval = e3.sval;
+                    e1.u.sval = e3.u.sval;
                 }
                 e1.no_sign = e2.no_sign | e3.no_sign;
                 PushOperand( e1, &e1_info );
@@ -667,12 +667,12 @@ static boolean CLogicalOr( void )   // reduce a || b
 
         if( I64Zero( e1 ) ) { // e1 is zero, so consider e2
             if( I64NonZero( e2 ) ) { // e2 non-zero
-                I32ToI64( 1, &e1.sval ); // answer is 1
+                I32ToI64( 1, &e1.u.sval ); // answer is 1
             } else {
                 I64SetZero(e1);
             }
         } else {
-            I32ToI64( 1, &e1.sval ); // answer is 1
+            I32ToI64( 1, &e1.u.sval ); // answer is 1
         }
         e1.no_sign = 0;
         PushOperand( e1, &loc );
@@ -692,9 +692,9 @@ static boolean CLogicalAnd( void )  // reduce a && b
 
         if( I64NonZero( e1 ) ) { // e1 is non-zero
             if( I64Zero( e2 ) ) { // e2 is zero
-                e1.sval = e2.sval;
+                e1.u.sval = e2.u.sval;
             } else {
-                I32ToI64( 1, &e1.sval ); // answer is 1
+                I32ToI64( 1, &e1.u.sval ); // answer is 1
             }
         }
         // else e1 is already zero
@@ -767,7 +767,7 @@ static boolean CEquality( void )    // reduce a == b or a != b
         } else {
             val = I64NE( e1, e2 );
         }
-        I32ToI64( val, &e1.sval );
+        I32ToI64( val, &e1.u.sval );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
         return( FALSE );
@@ -791,7 +791,7 @@ static boolean CRelational( void )  // reduce a<b, a>b, a<=b, or a>=b
             } else {
                 val = I64LT( e1, e2 );
             }
-            I32ToI64( val, &(e1.sval) );
+            I32ToI64( val, &(e1.u.sval) );
             break;
           case T_LE :
             if( e1.no_sign || e2.no_sign ) {
@@ -799,7 +799,7 @@ static boolean CRelational( void )  // reduce a<b, a>b, a<=b, or a>=b
             } else {
                 val = I64LE( e1, e2 );
             }
-            I32ToI64( val, &(e1.sval) );
+            I32ToI64( val, &(e1.u.sval) );
             break;
           case T_GT :
             if( e1.no_sign || e2.no_sign ) {
@@ -807,7 +807,7 @@ static boolean CRelational( void )  // reduce a<b, a>b, a<=b, or a>=b
             } else {
                 val = I64GT( e1, e2 );
             }
-            I32ToI64( val, &(e1.sval) );
+            I32ToI64( val, &(e1.u.sval) );
             break;
           case T_GE :
             if( e1.no_sign || e2.no_sign ) {
@@ -815,7 +815,7 @@ static boolean CRelational( void )  // reduce a<b, a>b, a<=b, or a>=b
             } else {
                 val = I64GE( e1, e2 );
             }
-            I32ToI64( val, &(e1.sval) );
+            I32ToI64( val, &(e1.u.sval) );
             break;
           DbgDefault( "Default in CRelational\n" );
         }
@@ -841,16 +841,16 @@ static boolean CShift( void )   // reduce a<<b or a>>b
                     U64SetZero( e1 );
                 } else {
                     if( (signed int)U64Low( e1 ) < 0 ) {
-                        U32ToU64( -1, &e1.sval );
+                        U32ToU64( -1, &e1.u.sval );
                     } else {
                         U64SetZero( e1 );
                     }
                 }
             } else {
                 if( e1.no_sign ) {
-                        U64ShiftR( &(e1.uval), U64Low(e2), &e1.uval );
+                        U64ShiftR( &(e1.u.uval), U64Low(e2), &e1.u.uval );
                 } else {
-                    I64ShiftR( &(e1.sval), U64Low( e2), &e1.sval );
+                    I64ShiftR( &(e1.u.sval), U64Low( e2), &e1.u.sval );
                 }
             }
             break;
@@ -858,7 +858,7 @@ static boolean CShift( void )   // reduce a<<b or a>>b
             if( U64Low(e2) > 64 || ( U64High( e2 ) != 0 ) ) {
                 U64SetZero( e1 );
             } else {
-                U64ShiftL( &(e1.uval), U64Low( e2 ), &e1.uval );
+                U64ShiftL( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
             }
             break;
           DbgDefault( "Default in CShift\n" );
@@ -912,10 +912,10 @@ static boolean CMultiplicative( void )  // reduce a/b or a*b
                 U64SetZero( e1 );
             } else if( e1.no_sign || e2.no_sign ) {
                 unsigned_64 unused;
-                U64Div( &(e1.uval), &(e2.uval), &(e1.uval), &unused );
+                U64Div( &(e1.u.uval), &(e2.u.uval), &(e1.u.uval), &unused );
             } else {
                 signed_64 unused;
-                I64Div( &((e1).sval), &((e2).sval), &((e1).sval), &unused );
+                I64Div( &((e1).u.sval), &((e2).u.sval), &((e1).u.sval), &unused );
             }
             break;
           case T_PERCENT :
@@ -923,10 +923,10 @@ static boolean CMultiplicative( void )  // reduce a/b or a*b
                 U64SetZero( e1 );
             } else if( e1.no_sign || e2.no_sign ) {
                 unsigned_64 unused;
-                U64Div( &(e1.uval), &(e2.uval), &unused, &e1.uval );
+                U64Div( &(e1.u.uval), &(e2.u.uval), &unused, &e1.u.uval );
             } else {
                 signed_64 unused;
-                I64Div( &(e1.sval), &(e2.sval), &unused, &e1.sval );
+                I64Div( &(e1.u.sval), &(e2.u.sval), &unused, &e1.u.sval );
             }
             break;
           DbgDefault( "Default in CMultiplicative\n" );
@@ -952,12 +952,12 @@ static boolean CUnary( void )   // reduce +a or -a or !a or ~a
           case T_UNARY_PLUS:
             break;
           case T_UNARY_MINUS:
-            U64Neg( &((p).uval), &((p).uval ) );
+            U64Neg( &((p).u.uval), &((p).u.uval ) );
             break;
           case T_EXCLAMATION:
           case T_ALT_EXCLAMATION:
             if( I64Zero( p ) ) {
-                I32ToI64( 1, &(p.sval) );
+                I32ToI64( 1, &(p.u.sval) );
             } else {
                 I64SetZero( p );
             }
@@ -965,7 +965,7 @@ static boolean CUnary( void )   // reduce +a or -a or !a or ~a
             break;
           case T_TILDE:
           case T_ALT_TILDE:
-            U64Not( &(p.sval), &(p.sval) );
+            U64Not( &(p.u.sval), &(p.u.sval) );
             break;
           DbgDefault( "Default in CUnary\n" );
         }

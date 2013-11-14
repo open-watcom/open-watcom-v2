@@ -1526,14 +1526,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_LEAF_CONST_INT64 :        // LEAF: INTEGER CONSTANT (33-64)
           { POOL_CON *con;                  // - constant in pool
             con = ins_value.pvalue;
-            CgExprPush( CGInt64( con->int64_constant, exprn_type )
+            CgExprPush( CGInt64( con->u.int64_constant, exprn_type )
                       , exprn_type );
           } break;
 
           case IC_LEAF_CONST_FLT :          // LEAF: FLOATING-POINT CONSTANT
           { POOL_CON *con;                  // - constant in pool
             con = ins_value.pvalue;
-            CgExprPush( CGFloat( con->s.fp_constant, exprn_type )
+            CgExprPush( CGFloat( con->u.s.fp_constant, exprn_type )
                       , exprn_type );
           } break;
 
@@ -2082,10 +2082,10 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             con = ins_value.pvalue;
             DbgVerify( con->i64, "NON INT-64 CONSTANT" );
             if( curr_seg != SEG_BSS ) {
-                DGInteger64( con->int64_constant, exprn_type );
+                DGInteger64( con->u.int64_constant, exprn_type );
             } else {
-                DbgVerify( con->int64_constant.u._32[0] == 0
-                         &&con->int64_constant.u._32[1] == 0
+                DbgVerify( con->u.int64_constant.u._32[0] == 0
+                         &&con->u.int64_constant.u._32[1] == 0
                          , "CGBACK - IC_DATA_INT64 non-zero in SEG_BSS" );
             }
           } break;
@@ -2095,7 +2095,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             con = ins_value.pvalue;
             DbgVerify( con->flt, "NON FLOAT CONSTANT" );
             if( curr_seg != SEG_BSS ) {
-                DGFloat( con->s.fp_constant, exprn_type );
+                DGFloat( con->u.s.fp_constant, exprn_type );
             }
           } break;
 

@@ -70,8 +70,8 @@ POOL_CON *ConPoolFloatAdd       // ADD AN ITEM TO THE CONSTANTS POOL
     stg = CPermAlloc( len );
     stg = memcpy( stg, buff, len );
     pool = allocPoolCon( &pool_float );
-    pool->s.len = len;
-    pool->s.fp_constant = stg;
+    pool->u.s.len = len;
+    pool->u.s.fp_constant = stg;
     pool->flt  = TRUE;
     return( pool );
 }
@@ -83,7 +83,7 @@ POOL_CON *ConPoolInt64Add       // ADD AN INT-64 CONSTANT
     POOL_CON *pool;
 
     pool = allocPoolCon( &pool_int64 );
-    pool->int64_constant = con;
+    pool->u.int64_constant = con;
     pool->i64  = TRUE;
     return( pool );
 }
@@ -130,7 +130,7 @@ static void saveConstant( void *e, carve_walk_base *d )
     PCHWriteCVIndex( d->index );
     PCHWriteVar( *fcon );
     if( fcon->flt ) {
-        PCHWrite( fcon->s.fp_constant, fcon->s.len );
+        PCHWrite( fcon->u.s.fp_constant, fcon->u.s.len );
     }
     fcon->next = save_next;
 }
@@ -160,9 +160,9 @@ pch_status PCHReadConstantPool( void )
         PCHReadVar( *c );
         c->next = ConstantPoolMapIndex( c->next );
         if( c->flt ) {
-            len = c->s.len;
-            c->s.fp_constant = CPermAlloc( len );
-            PCHRead( c->s.fp_constant, len );
+            len = c->u.s.len;
+            c->u.s.fp_constant = CPermAlloc( len );
+            PCHRead( c->u.s.fp_constant, len );
         }
     }
     return( PCHCB_OK );

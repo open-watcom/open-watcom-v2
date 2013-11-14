@@ -2631,7 +2631,7 @@ static PTREE fakeUpParm( SYMBOL sym )
     switch( sym->id ) {
     case SC_STATIC:
         if( sym->flag & SF_CONSTANT_INT64 ) {
-            parm = PTreeInt64Constant( sym->u.pval->int64_constant,
+            parm = PTreeInt64Constant( sym->u.pval->u.int64_constant,
                                        sym->sym_type->id );
         } else {
             parm = PTreeIntConstant( sym->u.uval, TYP_SINT );
