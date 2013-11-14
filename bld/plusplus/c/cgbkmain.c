@@ -3415,7 +3415,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
 
 void FEGenProc(                 // INLINE SUPPORT
     cg_sym_handle _sym,         // - function to be in-lined
-    pointer handle )            // - handle of called function
+    call_handle handle )        // - handle of called function
 {
     CGFILE *file_ctl;           // - file control info
     FN_CTL* fctl;               // - file-gen info. for caller
