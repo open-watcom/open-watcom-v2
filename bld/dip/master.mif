@@ -41,6 +41,10 @@ objs = dipimp.obj $(imp_objs)
 !include defrule.mif
 !include deftarg.mif
 
+!ifeq name dwarf
+!include $(dwarfr_dir)/client.mif
+!endif
+
 verrc_dll = $(name)
 !include verrc.mif
 
@@ -56,7 +60,7 @@ extra_c_flags_i86 = -zc -zu
 extra_c_flags_dipimp = -zlf
 !endif
 
-inc_dirs = -I"../h" $(extra_incs) -I"$(dig_dir)/h"
+inc_dirs = -I"../h" $(dwarfr_inc_dirs) $(extra_incs) -I"$(dig_dir)/h"
 
 lflags_dll_dos_386     = sys pharlap rex disable 1023,1014
 lflags_dll_linux_386   = sys pharlap rex disable 1023,1014
@@ -94,6 +98,10 @@ xname = $(name)$(ext_lib_shared)
 
 !ifdef __WATCOM__
 objs += $(imp_objs_watcom)
+!endif
+
+!ifeq name dwarf
+imp_libs += $(dwarfr_lib)
 !endif
 
 $(xname) : $(objs) $(imp_libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)

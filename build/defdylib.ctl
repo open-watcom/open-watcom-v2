@@ -26,14 +26,14 @@ cdsay <PROJDIR>
     cdsay <OWOBJDIR>
     wmake -h -f ../binmake bootstrap=1
     cdsay ..
-    <CPCMD> <OWOBJDIR>/<PROJNAME><DYLEXT> <OWBINDIR>/<PROJNAME><DYLEXT>
+    <CPCMD> <OWOBJDIR>/<PROJNAME><DYEXT> <OWBINDIR>/<PROJNAME><DYEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -r -f <OWOBJDIR>
     rm -r -f <OWOBJDIR>
-    echo rm -f <OWBINDIR>/<PROJNAME><DYLEXT>
-    rm -f <OWBINDIR>/<PROJNAME><DYLEXT>
+    echo rm -f <OWBINDIR>/<PROJNAME><DYEXT>
+    rm -f <OWBINDIR>/<PROJNAME><DYEXT>
 
 [ BLOCK . . ]
 #============

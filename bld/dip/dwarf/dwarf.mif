@@ -19,11 +19,8 @@ imp_objs = &
 
 imp_objs_watcom = stub.obj
 
-extra_incs = $(dwarfr_inc_dirs) -I"$(lib_misc_dir)/h"
+extra_incs = -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c
 extra_cppflags = -DDIP_PRIORITY=DP_DEFAULT
 
-imp_libs = $(dwarfr_lib)
-
-!include $(dwarfr_dir)/client.mif
 !include ../../master.mif
