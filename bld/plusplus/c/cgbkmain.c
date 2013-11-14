@@ -3415,7 +3415,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
 
 void FEGenProc(                 // INLINE SUPPORT
     cg_sym_handle _sym,         // - function to be in-lined
-    call_handle handle )        // - handle of called function
+    pointer handle )            // - handle of called function
 {
     CGFILE *file_ctl;           // - file control info
     FN_CTL* fctl;               // - file-gen info. for caller
@@ -3489,7 +3489,7 @@ unsigned CgBackGetInlineDepth(  // GET MAXIMUM INLINE DEPTH
 }
 
 
-CALL_STAB* CgBackCallGened(           // SETUP FOR GENERATED CALL
+CALL_STAB* CgBackCallGened(     // SETUP FOR GENERATED CALL
     call_handle handle )        // - call handle
 {
     return CallStabAlloc( handle, FnCtlTop() );

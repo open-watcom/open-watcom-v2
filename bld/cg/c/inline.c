@@ -95,8 +95,8 @@ extern  void    BGAddInlineParm( an addr ) {
 }
 
 
-extern  an      BGStopInline( cg_name handle, type_def *tipe ) {
-/*********************************************************/
+extern  an      BGStopInline( call_handle handle, type_def *tipe ) {
+/******************************************************************/
 
     // works if we're in the middle of a conditional???
 
