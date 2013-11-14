@@ -158,7 +158,7 @@ extern  tn  TGLeaf( an addr )
         node->tipe = TypeBoolean;
     } else if( addr->format == NF_CONS ) {
         node->class = TN_CONS;
-        node->u.name = addr->u.name;
+        node->u.name = addr->u.n.name;
         BGDone( addr );
     }
     return( node );
@@ -1021,7 +1021,7 @@ extern  tn  TGReLeaf( an addr )
 
     addr->flags |= FL_NEVER_STACK;
     node = TGLeaf( addr );
-    node->u2.t.base = addr->base;
+    node->u2.t.base = addr->u.n.base;
     return( node );
 }
 
@@ -1032,9 +1032,9 @@ extern  tn  TGTmpLeaf( an addr )
 {
     name    *base;
 
-    base = addr->base;
+    base = addr->u.n.base;
     addr = AddrEval( addr );
-    addr->base = base;
+    addr->u.n.base = base;
     return( TGReLeaf( addr ) );
 }
 
@@ -1392,7 +1392,7 @@ static  void    Control( cg_op op, tn node, label_handle lbl, bool gen )
 
     addr = NotAddrGen( TGConvert( node, TypeBoolean ) );
     if( addr->format == NF_CONS ) { /* will either be NF_CONS or NF_BOOL*/
-        if( CFTest( addr->u.name->c.value ) != 0 ) {
+        if( CFTest( addr->u.n.name->c.value ) != 0 ) {
             if( op == O_IF_TRUE ) {
                 BGGenCtrl( O_GOTO, NULL, lbl, gen );
             }
@@ -1403,7 +1403,7 @@ static  void    Control( cg_op op, tn node, label_handle lbl, bool gen )
         }
         BGDone( addr );
     } else {
-        BGGenCtrl( op, (bn)addr, lbl, gen );
+        BGGenCtrl( op, addr, lbl, gen );
     }
 }
 
@@ -1420,9 +1420,9 @@ static  name    *TNGetLeafName( tn node )
     switch( addr->class ) {
     case CL_ADDR_TEMP:
     case CL_ADDR_GLOBAL:
-        return( addr->u.name );
+        return( addr->u.n.name );
     case CL_POINTER:
-        if( _IsModel( FORTRAN_ALIASING ) ) return( addr->u.name );
+        if( _IsModel( FORTRAN_ALIASING ) ) return( addr->u.n.name );
         return( NULL );
     default:
         return( NULL );
@@ -1520,7 +1520,7 @@ extern  an  TGen( tn node, type_def *tipe )
     retv = TreeGen( node );
     if( retv->format != NF_BOOL ) {
         retv->flags &= ~FL_STACKABLE;
-        retv->base = base;
+        retv->u.n.base = base;
     }
     return( retv );
 }
@@ -1570,10 +1570,10 @@ static  an  AddrGen( tn node )
     }
     if( alignment != 0 ) {
         if( retv->format != NF_BOOL )
-            retv->alignment = alignment;
+            retv->u.n.alignment = alignment;
     }
     if( retv->format != NF_BOOL )
-        retv->base = base;
+        retv->u.n.base = base;
     SetAddress( was_address );
     return( retv );
 }
@@ -1619,7 +1619,7 @@ an  TNFlow( tn node )
     if( node->u2.t.rite != NULL ) {
         rite = NotAddrGen( node->u2.t.rite );
     }
-    retv = (an)BGFlow( node->u2.t.op, (bn)left, (bn)rite );
+    retv = BGFlow( node->u2.t.op, left, rite );
     return( retv );
 }
 
@@ -1813,13 +1813,13 @@ static  an  TNBitOpGets( tn node, type_def *tipe, bool yield_before_op )
     FreeTreeNode( lhs );
     U64ShiftR( &mask, shift, &shiftmask );  // shiftmask = mask >> shift;
     if( after_value->format == NF_CONS && after_value->class == CL_CONS2 ) {
-        retv = Int( shiftmask.u._32[I64LO32] & after_value->u.name->c.int_value );
-        if( retv->u.name->c.int_value != shiftmask.u._32[I64LO32] ) {
+        retv = Int( shiftmask.u._32[I64LO32] & after_value->u.n.name->c.int_value );
+        if( retv->u.n.name->c.int_value != shiftmask.u._32[I64LO32] ) {
             DoAnd( left, mask, node );
         }
-        if( retv->u.name->c.int_value != 0 ) {
+        if( retv->u.n.name->c.int_value != 0 ) {
             free_retv = retv;
-            retv = Int( retv->u.name->c.int_value << shift );
+            retv = Int( retv->u.n.name->c.int_value << shift );
             BGDone( free_retv );
             retv = BGOpGets( O_OR, left, retv, node->tipe, node->tipe );
         } else {
@@ -1827,8 +1827,7 @@ static  an  TNBitOpGets( tn node, type_def *tipe, bool yield_before_op )
         }
         BGDone( retv );
     } else {
-        retv = BGBinary( O_AND, AddrCopy( after_value ), Int64( shiftmask ),
-                  node->tipe, TRUE );
+        retv = BGBinary( O_AND, AddrCopy( after_value ), Int64( shiftmask ), node->tipe, TRUE );
         DoAnd64( left, mask, node );
         retv = BGBinary( O_LSHIFT, retv, Int( shift ), node->tipe, TRUE );
         retv = BGOpGets( O_OR, left, retv, node->tipe, node->tipe );
@@ -2045,7 +2044,7 @@ static an   MakeBased( an left, an rite, type_def *tipe )
     if( rite->format == NF_ADDR &&
     ( rite->class == CL_ADDR_GLOBAL || rite->class == CL_ADDR_TEMP ) ) {
         BGDone( BGAssign( AddrCopy( temp ), left, near_type ) );
-        seg = AddrName( SegName( rite->u.name ), short_type );
+        seg = AddrName( SegName( rite->u.n.name ), short_type );
         BGDone( rite );
         seg_dest = BGBinary( O_PLUS, AddrCopy(temp), Int(near_type->length),
                     TypePtr, TRUE );

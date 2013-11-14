@@ -145,10 +145,10 @@ extern  cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
     if( node->format == NF_ADDR && node->class == CL_ADDR_GLOBAL ) {
         new->ins->head.opcode = OP_CALL;
         class = CallState( aux, tipe, new->state );
-        mem = node->u.name;
-        mem = (name *) SAllocMemory( mem->v.symbol, mem->v.offset, mem->m.memory_type,
+        mem = node->u.n.name;
+        mem = (name *)SAllocMemory( mem->v.symbol, mem->v.offset, mem->m.memory_type,
                             mem->n.name_class, mem->n.size );
-        node->u.name = mem;
+        node->u.n.name = mem;
     } else {
         new->ins->head.opcode = OP_CALL_INDIRECT;
         class = CallState( aux, tipe, new->state );
@@ -423,7 +423,7 @@ extern  void    AddCallIns( instruction *ins, cn call ) {
 
     PreCall( call );
     if( ins->head.opcode == OP_CALL ) {
-        call_name = call->name->u.name;
+        call_name = call->name->u.n.name;
         attr = 0;
         if( call_name->m.memory_type == CG_FE ) {
             attr = FEAttr( call_name->v.symbol );
@@ -503,7 +503,7 @@ extern  void            PushParms( pn parm, call_state *state ) {
                 if( addr->format != NF_INS ) {
                     _Zoiks( ZOIKS_043 );
                 }
-                ins = addr->u.ins;
+                ins = addr->u.i.ins;
                 PushInSameBlock( ins );
                 if( ins->head.opcode == OP_MOV && !IsVolatile( ins->operands[0] ) && !( addr->flags & FL_VOLATILE ) ) {
                     push_ins = PushOneParm( ins, ins->operands[0], ins->type_class, parm->offset, state );
@@ -576,7 +576,7 @@ extern  void    ParmIns( pn parm, call_state *state ) {
                 _Zoiks( ZOIKS_043 );
             }
             reg = AllocRegName( ActualParmReg( parm->regs ) );
-            ins = addr->u.ins;
+            ins = addr->u.i.ins;
             ins->result = BGNewTemp( addr->tipe );
             if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
                 ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
@@ -726,7 +726,7 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_cla
     temp = AllocTemp( from );
     temp->n.size = len;
     last = parm->next;
-    parm->name->u.ins->result = temp;
+    parm->name->u.i.ins->result = temp;
     for( offset = len - size; offset >= 0; offset -= size ) {
         // create a parm node for this part of the struct
         curr = CGAlloc( sizeof( parm_node ) );

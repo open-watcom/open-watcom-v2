@@ -141,7 +141,7 @@ static  bool    CanPushImmed( pn parm, int *num_parms ) {
             addr = parm->name;
             if( addr->tipe->attr & TYPE_FLOAT ) {
                 ++*num_parms;
-                ins = addr->u.ins;
+                ins = addr->u.i.ins;
                 for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
                     if( _OpIsCall( next->head.opcode ) )
                         return( FALSE );
@@ -188,9 +188,9 @@ static  int     FPPushImmed( pn parm ) {
                 if( addr->format != NF_INS ) {
                     _Zoiks( ZOIKS_043 );
                 }
-                addr->u.ins->result = AllocRegName( HW_ST0 );
-                Pushes( addr->u.ins );
-                parm->ins = addr->u.ins;
+                addr->u.i.ins->result = AllocRegName( HW_ST0 );
+                Pushes( addr->u.i.ins );
+                parm->ins = addr->u.i.ins;
                 addr->format = NF_ADDR;
                 BGDone( addr );
                 ++parms;
@@ -238,7 +238,7 @@ static bool PushDelayedIfStackOperand( instruction *ins, pn parm, call_state *st
     an          addr;
 
     addr = parm->name;
-    ins = addr->u.ins;
+    ins = addr->u.i.ins;
     for( i = ins->num_operands; i-- > 0; ) {
         if( FPIsStack( ins->operands[i] ) ) {
             parm->ins = PushDelayed( ins, addr, state );
@@ -323,7 +323,7 @@ static  int     FPPushDelay( pn parm, call_state *state ) {
                 if( addr->format != NF_INS ) {
                     _Zoiks( ZOIKS_043 );
                 }
-                ins = addr->u.ins;
+                ins = addr->u.i.ins;
                 if( PushDelayedIfStackOperand( ins, parm, state ) )
                     continue;
                 if( PushDelayedIfRedefinition( ins, parm, state ) )

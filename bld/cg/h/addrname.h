@@ -71,27 +71,32 @@ typedef enum {
 
 
 typedef struct address_name {
-        an_formats              format;
-        struct address_name     *link;
-        struct type_def         *tipe;
-        addr_class              class;
-        addr_flags              flags;
-        union {
-            union name          *name;
+    an_formats              format;
+    struct address_name     *link;
+    struct type_def         *tipe;
+    addr_class              class;
+    addr_flags              flags;
+    union {
+        struct {
+            union name      *base;
+            type_length     alignment;
+            union name      *name;
+            union name      *index;
+            type_length     offset;
+        } n;
+        struct {
+            union name          *base;
+            type_length         alignment;
             struct instruction  *ins;
-        } u;
-        union name              *index;
-        type_length              offset;
-        union name              *base;
-        type_length             alignment;
+        } i;
+        struct {
+            label_handle    *t;
+            label_handle    *f;
+            label_handle    e;
+        } b;
+    } u;
 } address_name;
 
-typedef struct bool_node {
-        an_formats              format;
-        label_handle            *t;
-        label_handle            *f;
-        label_handle            e;
-} bool_node;
 
 typedef struct parm_node {
         struct parm_node        *next;
@@ -111,7 +116,6 @@ typedef struct call_node {
         struct parm_node        *parms;
 } call_node;
 
+typedef struct address_name     *an;
 typedef struct call_node        *cn;
 typedef struct parm_node        *pn;
-typedef struct address_name     *an;
-typedef struct bool_node        *bn;

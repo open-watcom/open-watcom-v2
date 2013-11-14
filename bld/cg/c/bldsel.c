@@ -259,7 +259,7 @@ static  type_def        *UnSignedIntTipe( type_def *tipe )
 static  an      GenScanTable( an node, sel_handle s_node, type_def *tipe )
 /************************************************************************/
 {
-    bn          lt;
+    an          lt;
     cg_type     value_type;
     cg_type     real_type;
 
@@ -282,7 +282,7 @@ static  an      GenScanTable( an node, sel_handle s_node, type_def *tipe )
 static  an      GenSelTable( an node, sel_handle s_node, type_def *tipe )
 /***********************************************************************/
 {
-    bn          lt;
+    an          lt;
 
     if( s_node->lower != 0 ) {
         node = BGBinary( O_MINUS, node,
@@ -314,7 +314,7 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
     int                 num;
     int                 mid;
     select_list         *mid_list;
-    bn                  cmp;
+    an                  cmp;
     label_handle        lt;
 
     mid = lo + ( hi - lo ) / 2;

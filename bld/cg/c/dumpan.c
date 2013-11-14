@@ -70,17 +70,17 @@ static  void    DumpAnAddr( an node ) {
     switch( node->class ) {
     case CL_VALUE2:
     case CL_VALUE4:
-        DumpOperand( node->u.name );
+        DumpOperand( node->u.n.name );
         break;
     case CL_TEMP_OFFSET:
-        DumpOperand( node->u.name );
+        DumpOperand( node->u.n.name );
         DumpChar( '+' );
-        DumpLong( node->offset );
+        DumpLong( node->u.n.offset );
         break;
     case CL_ADDR_GLOBAL:
     case CL_ADDR_TEMP:
         DumpChar( '&' );
-        DumpOperand( node->u.name );
+        DumpOperand( node->u.n.name );
         break;
     case CL_POINTER:
     case CL_GLOBAL_INDEX:
@@ -88,15 +88,15 @@ static  void    DumpAnAddr( an node ) {
         if( node->class == CL_POINTER ) {
             DumpChar( '&' );
         }
-        if( node->u.name != NULL ) {
-            DumpOperand( node->u.name );
+        if( node->u.n.name != NULL ) {
+            DumpOperand( node->u.n.name );
         }
         DumpChar( '[' );
-        if( node->index != NULL ) {
-            DumpOperand( node->index );
+        if( node->u.n.index != NULL ) {
+            DumpOperand( node->u.n.index );
         }
         DumpChar( '+' );
-        DumpLong( node->offset );
+        DumpLong( node->u.n.offset );
         DumpChar( ']' );
         break;
     }
@@ -124,33 +124,33 @@ static  void    DumpLbl( label_handle *what ) {
     DumpPtr( what );
 }
 
-static  void    DumpAnBool( bn node ) {
+static  void    DumpAnBool( an node ) {
 /*************************************/
 
     DumpLiteral( "TRUE " );
-    DumpLbl( node->t );
+    DumpLbl( node->u.b.t );
     DumpLiteral( " FALSE " );
-    DumpLbl( node->f );
+    DumpLbl( node->u.b.f );
     DumpLiteral( " ENTRY L" );
-    DumpPtr( node->e );
+    DumpPtr( node->u.b.e );
 }
 
 static  void    DumpAnIns( an node ) {
 /************************************/
 
-    DumpIns( node->u.ins );
+    DumpIns( node->u.i.ins );
 }
 
 static  void    DumpAnCons( an node ) {
 /*************************************/
 
-    DumpOperand( node->u.name );
+    DumpOperand( node->u.n.name );
 }
 
 static  void    DumpAnName( an node ) {
 /*************************************/
 
-    DumpOperand( node->u.name );
+    DumpOperand( node->u.n.name );
 }
 
 extern  void    Dumpan( an node ) {
@@ -169,7 +169,7 @@ extern  void    Dumpan( an node ) {
         DumpAnCons( node );
         break;
     case NF_BOOL:
-        DumpAnBool( (bn)node );
+        DumpAnBool( node );
         break;
     case NF_INS:
         DumpAnIns( node );

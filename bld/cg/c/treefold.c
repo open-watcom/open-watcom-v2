@@ -1572,18 +1572,18 @@ static  an Flip( an name, bool op_false, bool op_true )
 
     if( op_false ) {
         if( op_true ) {
-            FlowOff( (bn)name );
+            FlowOff( name );
             name = BGInteger( FETrue(), TypeInteger );
         } else {
-            temp = ((bn)name)->f;
-            ((bn)name)->f = ((bn)name)->t;
-            ((bn)name)->t = temp;
+            temp = name->u.b.f;
+            name->u.b.f = name->u.b.t;
+            name->u.b.t = temp;
         }
     } else {
         if( op_true ) {
             /* nothing*/
         } else {
-            FlowOff( (bn)name );
+            FlowOff( name );
             name = BGInteger( 0, TypeInteger );
         }
     }

@@ -79,7 +79,7 @@ extern  an      TNPatch( tn node ) {
     p->in_tree = FALSE;
     tipe = TypeClass( node->tipe );
     addr = AddrName( AllocTemp( tipe ), node->tipe );
-    p->u.ins = MakeMove( NULL, addr->u.name, tipe );
+    p->u.ins = MakeMove( NULL, addr->u.n.name, tipe );
     p->u.ins->num_operands = 0;
     AddIns( p->u.ins );
     return( addr );

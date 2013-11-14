@@ -64,7 +64,7 @@ extern  hw_reg_set      StackReg( void );
 extern  hw_reg_set      VarargsHomePtr( void );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 
-static  void    BoolFree( bn b );
+static  void    BoolFree( an b );
 
 static  type_def        *LastCmpType;
 static  unsigned_32     UnrollValue = 0;
@@ -233,7 +233,7 @@ extern  name        *BGGlobalTemp( type_def *tipe ) {
 }
 
 
-static  an      FlowOut( bn node, type_def *tipe ) {
+static  an      FlowOut( an node, type_def *tipe ) {
 /**************************************************/
 
     name                *temp;
@@ -242,12 +242,12 @@ static  an      FlowOut( bn node, type_def *tipe ) {
     lbl = AskForNewLabel();
     temp = BGGlobalTemp( tipe );
     AddIns( MakeMove( AllocIntConst( FETrue() ), temp, temp->n.name_class ) );
-    *(node->t) = CurrBlock->label;
+    *(node->u.b.t) = CurrBlock->label;
     GenBlock( JUMP, 1 );
     AddTarget( lbl, FALSE );
     EnLink( AskForNewLabel(), TRUE );
     AddIns( MakeMove( AllocIntConst( 0 ), temp, temp->n.name_class ) );
-    *(node->f) = CurrBlock->label;
+    *(node->u.b.f) = CurrBlock->label;
     GenBlock( JUMP, 1 );
     AddTarget( lbl, FALSE );
     EnLink( lbl, TRUE );
@@ -263,20 +263,20 @@ extern  an      Arithmetic( an name, type_def *tipe ) {
     if( name->format == NF_BOOL ) {
         if( ( tipe->attr & TYPE_FLOAT ) != 0
           || ( tipe->length > TypeInteger->length ) ) {
-            name = FlowOut( (bn)name, TypeInteger );
+            name = FlowOut( name, TypeInteger );
             name = Unary( O_CONVERT, name, tipe );
         } else {
-            name = FlowOut( (bn)name, tipe );
+            name = FlowOut( name, tipe );
         }
     }
     return( name );
 }
 
-extern  bn      BGCompare( cg_op op, an left, an rite,
+extern  an      BGCompare( cg_op op, an left, an rite,
                            label_handle entry, type_def *tipe ) {
 /***************************************************************/
 
-    bn                  new;
+    an                  new;
     instruction         *ins;
     name                *newleft;
     name                *newrite;
@@ -290,27 +290,26 @@ extern  bn      BGCompare( cg_op op, an left, an rite,
     ins = MakeCondition( (opcode_defs)op, newleft, newrite, 0, 1, TypeClass( tipe ) );
     AddIns( ins );
     GenBlock( CONDITIONAL, 2 );
-    new = CGAlloc( sizeof( bool_node ) );
+    new = CGAlloc( sizeof( address_name ) );
     AddTarget( NULL, FALSE );
     AddTarget( NULL, FALSE );
     new->format = NF_BOOL;
-    new->e = entry;
-    new->t = &CurrBlock->edge[ 0 ].destination.u.lbl;
-    new->f = &CurrBlock->edge[ 1 ].destination.u.lbl;
+    new->u.b.e = entry;
+    new->u.b.t = &CurrBlock->edge[ 0 ].destination.u.lbl;
+    new->u.b.f = &CurrBlock->edge[ 1 ].destination.u.lbl;
     EnLink( AskForNewLabel(), TRUE );
     return( new );
 }
 
 
 
-extern  bn      Boolean( an node, label_handle entry ) {
+extern  an      Boolean( an node, label_handle entry ) {
 /******************************************************/
 
     if( node->format != NF_BOOL ) {
-        node = (an) BGCompare( O_NE, node, BGInteger( 0, node->tipe ),
-                           entry, node->tipe );
+        node = BGCompare( O_NE, node, BGInteger( 0, node->tipe ), entry, node->tipe );
     }
-    return( (bn)node );
+    return( node );
 }
 
 
@@ -367,14 +366,14 @@ extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_
 }
 
 
-extern  void    BGControl( cg_op op, bn expr, label_handle lbl ) {
+extern  void    BGControl( cg_op op, an expr, label_handle lbl ) {
 /****************************************************************/
 
     BGGenCtrl( op, expr, lbl, FALSE );
 }
 
 
-extern  void    BGGenCtrl( cg_op op, bn expr, label_handle lbl, bool gen ) {
+extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
 /**************************************************************************/
 
     switch( op ) {
@@ -426,16 +425,16 @@ extern  void    BGGenCtrl( cg_op op, bn expr, label_handle lbl, bool gen ) {
         HaveCurrBlock = FALSE;
         break;
     case O_IF_TRUE:
-        *(expr->f) = CurrBlock->label;
-        *(expr->t) = lbl;
+        *(expr->u.b.f) = CurrBlock->label;
+        *(expr->u.b.t) = lbl;
         BoolFree( expr );
         if( gen ) {
             Generate( FALSE );
         }
         break;
     case O_IF_FALSE:
-        *(expr->t) = CurrBlock->label;
-        *(expr->f) = lbl;
+        *(expr->u.b.t) = CurrBlock->label;
+        *(expr->u.b.f) = lbl;
         BoolFree( expr );
         if( gen ) {
             Generate( FALSE );
@@ -643,39 +642,39 @@ extern  an      BGConvert( an left, type_def *tipe ) {
 }
 
 
-extern  bn      BGFlow( cg_op op, bn left, bn rite ) {
+extern  an      BGFlow( cg_op op, an left, an rite ) {
 /****************************************************/
 
-    bn                  new = NULL;
+    an                  new = NULL;
     label_handle        *temp;
 
     if( op == O_FLOW_NOT ) {
-        temp = left->t;
-        left->t = left->f;
-        left->f = temp;
+        temp = left->u.b.t;
+        left->u.b.t = left->u.b.f;
+        left->u.b.f = temp;
         new = left;
     } else {
         switch( op ) {
         case O_FLOW_AND:
-            *(left->t) = rite->e;
-            *(left->f) = CurrBlock->label;
-            *(rite->f) = CurrBlock->label;
+            *(left->u.b.t) = rite->u.b.e;
+            *(left->u.b.f) = CurrBlock->label;
+            *(rite->u.b.f) = CurrBlock->label;
             GenBlock( JUMP, 1 );
             AddTarget( NULL, FALSE );
-            left->f = &CurrBlock->edge[ 0 ].destination.u.lbl;
-            left->t = rite->t;
+            left->u.b.f = &CurrBlock->edge[ 0 ].destination.u.lbl;
+            left->u.b.t = rite->u.b.t;
             new = left;
             BoolFree( rite );
             EnLink( AskForNewLabel(), TRUE );
             break;
         case O_FLOW_OR:
-            *(left->f) = rite->e;
-            *(left->t) = CurrBlock->label;
-            *(rite->t) = CurrBlock->label;
+            *(left->u.b.f) = rite->u.b.e;
+            *(left->u.b.t) = CurrBlock->label;
+            *(rite->u.b.t) = CurrBlock->label;
             GenBlock( JUMP, 1 );
             AddTarget( NULL, FALSE );
-            left->t = &CurrBlock->edge[ 0 ].destination.u.lbl;
-            left->f = rite->f;
+            left->u.b.t = &CurrBlock->edge[ 0 ].destination.u.lbl;
+            left->u.b.f = rite->u.b.f;
             new = left;
             BoolFree( rite );
             EnLink( AskForNewLabel(), TRUE );
@@ -717,7 +716,7 @@ extern  void    BGDone( an node ) {
 /*********************************/
 
     if( node->format == NF_BOOL ) {
-        FlowOff( (bn)node );
+        FlowOff( node );
     } else {
         AddrFree( node );
     }
@@ -731,18 +730,18 @@ extern  void    BGTrash( an node ) {
 }
 
 
-static  void    BoolFree( bn b ) {
+static  void    BoolFree( an b ) {
 /********************************/
 
     CGFree( b );
 }
 
 
-extern  void    FlowOff( bn name ) {
+extern  void    FlowOff( an name ) {
 /*****************************/
 
-    *(name->t) = CurrBlock->label;
-    *(name->f) = CurrBlock->label;
+    *(name->u.b.t) = CurrBlock->label;
+    *(name->u.b.f) = CurrBlock->label;
     NamesCrossBlocks();
     BoolFree( name );
 }

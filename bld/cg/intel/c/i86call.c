@@ -97,7 +97,7 @@ static  void    Far16Parms( cn call ) {
     parmlist->v.usage |= NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
     offset = 0;
     for( parm = call->parms; parm != NULL; parm = parm->next ) {
-        parm->name->u.ins->result = STempOffset( parmlist, offset,
+        parm->name->u.i.ins->result = STempOffset( parmlist, offset,
                                                  TypeClass( parm->name->tipe ),
                                                  parm->name->tipe->length );
         offset += (( parm->name->tipe->length ) + 1) & ~1;
@@ -119,7 +119,7 @@ static  void    Far16Parms( cn call ) {
     ins = MakeUnary( OP_LA, parmlist, esi, WD );
     AddIns( ins );
     if( ins->head.opcode == OP_CALL ) {
-        ins = MakeUnary( OP_LA, call->name->u.name, eax, WD );
+        ins = MakeUnary( OP_LA, call->name->u.n.name, eax, WD );
     } else {
         ins = MakeMove( GenIns( call->name ), eax, WD );
         call_ins->head.opcode = OP_CALL;
@@ -136,7 +136,7 @@ static  void    Far16Parms( cn call ) {
         thunk_rtn = RT_Far16Func;
     }
     lbl = RTLabel( thunk_rtn );
-    call->name->u.name = AllocMemory( lbl, 0, CG_LBL, WD );
+    call->name->u.n.name = AllocMemory( lbl, 0, CG_LBL, WD );
     call_ins->flags.call_flags |= CALL_FAR16 | CALL_POPS_PARMS;
     call_ins->operands[CALL_OP_USED] = AllocRegName( state->parm.used );
     call_ins->operands[CALL_OP_POPS] = AllocS32Const( 0 );
