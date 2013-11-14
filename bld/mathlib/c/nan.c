@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description: Performs a fake fused multiply-add in long double in an
-*              attempt to improve accuracy
+* Description: Provides functions that return not-a-number
 *
 ****************************************************************************/
 
