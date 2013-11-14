@@ -21,7 +21,7 @@ The routine will either return
 or 0.0, whichever is greater.
 .return end
 .see begin
-.seelist fmax fmin
+.seelist &function. fmax fmin
 .see end
 .exmp begin
 #include <stdio.h>

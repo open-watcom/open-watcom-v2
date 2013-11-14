@@ -23,7 +23,7 @@ infinity, the function returns positive or negative infinity
 respectively.
 .return end
 .see begin
-.seelist lgamma_r tgamma
+.seelist &function. lgamma_r tgamma
 .see end
 .exmp begin
 #include <stdio.h>

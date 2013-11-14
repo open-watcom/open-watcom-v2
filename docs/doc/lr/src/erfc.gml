@@ -18,7 +18,7 @@ positive one respectively.  For not-a-number the function returns
 NAN.
 .return end
 .see begin
-.seelist erf
+.seelist &function. erf
 .see end
 .exmp begin
 #include <stdio.h>

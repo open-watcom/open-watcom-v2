@@ -15,7 +15,7 @@ If successful, the return value is the exponent of
 infinity.  
 .return end
 .see begin
-.seelist ilogb
+.seelist &function. ilogb
 .see end
 .exmp begin
 #include <stdio.h>

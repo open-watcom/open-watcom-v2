@@ -1280,6 +1280,7 @@ objs_lr2 = &
 ../doc/lr/src/bzero.gml &
 ../doc/lr/src/cabs.gml &
 ../doc/lr/src/calloc.gml &
+../doc/lr/src/cbrt.gml &
 ../doc/lr/src/ceil.gml &
 ../doc/lr/src/cfunmacs.gml &
 ../doc/lr/src/cgets.gml &
@@ -1302,6 +1303,7 @@ objs_lr2 = &
 ../doc/lr/src/closedir.gml &
 ../doc/lr/src/control8.gml &
 ../doc/lr/src/controlf.gml &
+../doc/lr/src/copysign.gml &
 ../doc/lr/src/cos.gml &
 ../doc/lr/src/cosh.gml &
 ../doc/lr/src/cprintf.gml &
@@ -1338,6 +1340,8 @@ objs_lr2 = &
 ../doc/lr/src/dup2.gml &
 ../doc/lr/src/ecvt.gml &
 ../doc/lr/src/eof.gml &
+../doc/lr/src/erf.gml &
+../doc/lr/src/erfc.gml &
 ../doc/lr/src/errnocnv.gml &
 ../doc/lr/src/errnodom.gml &
 ../doc/lr/src/errnoref.gml &
@@ -1346,12 +1350,15 @@ objs_lr2 = &
 ../doc/lr/src/execcom.gml &
 ../doc/lr/src/exit.gml &
 ../doc/lr/src/exp.gml &
+../doc/lr/src/exp2.gml &
+../doc/lr/src/expm1.gml &
 ../doc/lr/src/fabs.gml &
 ../doc/lr/src/farfunc.gml &
 ../doc/lr/src/farparm.gml &
 ../doc/lr/src/fclose.gml &
 ../doc/lr/src/fcloseal.gml &
 ../doc/lr/src/fcvt.gml &
+../doc/lr/src/fdim.gml &
 ../doc/lr/src/fdopen.gml &
 ../doc/lr/src/feof.gml &
 ../doc/lr/src/ferror.gml &
@@ -1372,6 +1379,9 @@ objs_lr2 = &
 ../doc/lr/src/findnext.gml &
 ../doc/lr/src/floor.gml &
 ../doc/lr/src/flushall.gml &
+../doc/lr/src/fma.gml &
+../doc/lr/src/fmax.gml &
+../doc/lr/src/fmin.gml &
 ../doc/lr/src/fmod.gml &
 ../doc/lr/src/fms2ieee.gml &
 ../doc/lr/src/fopen.gml &
@@ -1432,6 +1442,7 @@ objs_lr2 = &
 ../doc/lr/src/hfree.gml &
 ../doc/lr/src/hypot.gml &
 ../doc/lr/src/ign_hnd.gml &
+../doc/lr/src/ilogb.gml &
 ../doc/lr/src/imaxabs.gml &
 ../doc/lr/src/imaxdiv.gml &
 ../doc/lr/src/inp.gml &
@@ -1567,6 +1578,8 @@ objs_lr2 = &
 ../doc/lr/src/ldexp.gml &
 ../doc/lr/src/ldiv.gml &
 ../doc/lr/src/lfind.gml &
+../doc/lr/src/lgamma.gml &
+../doc/lr/src/lgamma_r.gml &
 ../doc/lr/src/libpref.gml &
 ../doc/lr/src/llabs.gml &
 ../doc/lr/src/lldiv.gml &
@@ -1578,7 +1591,9 @@ objs_lr2 = &
 ../doc/lr/src/locking.gml &
 ../doc/lr/src/log.gml &
 ../doc/lr/src/log10.gml &
+../doc/lr/src/log1p.gml &
 ../doc/lr/src/log2.gml &
+../doc/lr/src/logb.gml &
 ../doc/lr/src/longjmp.gml &
 ../doc/lr/src/lsearch.gml &
 ../doc/lr/src/lseek.gml &
@@ -1701,9 +1716,12 @@ objs_lr2 = &
 ../doc/lr/src/mupcklbw.gml &
 ../doc/lr/src/mupckldq.gml &
 ../doc/lr/src/mupcklwd.gml &
+../doc/lr/src/nanf.gml &
+../doc/lr/src/nrbyint.gml &
 ../doc/lr/src/necbios.doc &
 ../doc/lr/src/nosound.gml &
 ../doc/lr/src/nthctype.gml &
+../doc/lr/src/nxtafter.gml &
 ../doc/lr/src/offsetof.gml &
 ../doc/lr/src/onexit.gml &
 ../doc/lr/src/open.gml &
@@ -1740,8 +1758,12 @@ objs_lr2 = &
 ../doc/lr/src/rename.gml &
 ../doc/lr/src/rewind.gml &
 ../doc/lr/src/rewinddi.gml &
+../doc/lr/src/rint.gml &
 ../doc/lr/src/rmdir.gml &
+../doc/lr/src/rmnder.gml &
+../doc/lr/src/round.gml &
 ../doc/lr/src/sbrk.gml &
+../doc/lr/src/scalbn.gml &
 ../doc/lr/src/scanf.gml &
 ../doc/lr/src/scanfs.gml &
 ../doc/lr/src/seealloc.gml &
@@ -1874,6 +1896,7 @@ objs_lr2 = &
 ../doc/lr/src/tanh.gml &
 ../doc/lr/src/tell.gml &
 ../doc/lr/src/tempnam.gml &
+../doc/lr/src/tgamma.gml &
 ../doc/lr/src/time.gml &
 ../doc/lr/src/tmpfile.gml &
 ../doc/lr/src/tmpfil_s.gml &
@@ -1882,6 +1905,7 @@ objs_lr2 = &
 ../doc/lr/src/tolower.gml &
 ../doc/lr/src/toupper.gml &
 ../doc/lr/src/towctrns.gml &
+../doc/lr/src/trunc.gml &
 ../doc/lr/src/tzref.gml &
 ../doc/lr/src/tzset.gml &
 ../doc/lr/src/udirent.gml &

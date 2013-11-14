@@ -17,7 +17,7 @@ The function returns a the exponential of
 minus 1 without loss of accuracy due to subtractive cancelation.
 .return end
 .see begin
-.seelist exp
+.seelist &function. exp
 .see end
 .exmp begin
 #include <stdio.h>

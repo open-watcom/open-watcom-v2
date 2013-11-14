@@ -18,7 +18,7 @@ or
 .ct .li .
 .return end
 .see begin
-.seelist fdim fmin
+.seelist &function. fdim fmin
 .see end
 .exmp begin
 #include <stdio.h>
