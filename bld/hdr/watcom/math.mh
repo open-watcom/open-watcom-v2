@@ -227,13 +227,17 @@ _WMRTLINK long double nanl(const char *ignored);
 _WMRTLINK double nanl(const char *ignored);
 #endif
 
+:segment DOS | QNX
 #if defined(_M_I86)
  #define FP_ILOGBNAN  (-32767-1)
  #define FP_ILOGB0    32767
 #else
+:endsegment
  #define FP_ILOGBNAN  (-2147483647-1)
  #define FP_ILOGB0    2147483647
+:segment DOS | QNX
 #endif
+:endsegment
 
 :include extepi.sp
 
