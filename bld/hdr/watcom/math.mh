@@ -55,8 +55,36 @@ using std::tanh;
 using std::acosh;
 using std::asinh;
 using std::atanh;
+using std::cbrt;
+using std::copysign;
+using std::erf;
+using std::erfc;
+using std::exp2;
+using std::expm1;
+using std::fdim;
+using std::fmax;
+using std::fma;
+using std::fmin;
 using std::hypot;
+using std::ilogb;
+using std::lgamma;
+using std::lgamma_r;
+using std::log1p;
 using std::log2;
+using std::logb;
+using std::nearbyint;
+using std::nextafter;
+using std::remainder;
+using std::rint;
+using std::round;
+using std::scalbn;
+using std::tgamma;
+using std::trunc;
+
+using std::nan;
+using std::nanf;
+using std::nanl;
+
 :include extepi.sp
 
 #else /* __cplusplus not defined */
@@ -123,6 +151,11 @@ _WMRTDATA extern const float    __f_posqnan;
 #define INFINITY   __f_infinity
 #define NAN        __f_posqnan
 
+/* The sign of the gamma function as returned by 
+ * lgamma
+ */
+extern int signgam;
+
 :segment CNAME
 namespace std {
 
@@ -160,8 +193,48 @@ _WMIRTLINK extern double tanh( double __x );
 _WMRTLINK extern double acosh( double __x );
 _WMRTLINK extern double asinh( double __x );
 _WMRTLINK extern double atanh( double __x );
+_WMRTLINK extern double cbrt( double __x );
+_WMRTLINK extern double copysign( double __x, double __y );
+_WMRTLINK extern double erf( double __x );
+_WMRTLINK extern double erfc( double __x );
+_WMRTLINK extern double exp2( double __x );
+_WMRTLINK extern double expm1( double __x );
+_WMRTLINK extern double fdim( double __x, double __y );
+_WMRTLINK extern double fmax( double __x, double __y );
+_WMRTLINK extern double fma( double __a, double __b, double __c );
+_WMRTLINK extern double fmin( double __x, double __y );
 _WMRTLINK extern double hypot( double __x, double __y );
+_WMRTLINK extern int ilogb( double __x );
+_WMRTLINK extern double lgamma( double __x );
+_WMRTLINK extern double lgamma_r( double __x, int *__signgamma );
+_WMRTLINK extern double log1p( double __x );
 _WMRTLINK extern double log2( double __x );
+_WMRTLINK extern double logb( double __x );
+_WMRTLINK extern double nearbyint( double __x );
+_WMRTLINK extern double nextafter( double __x, double __y );
+_WMRTLINK extern double remainder( double __x, double __y );
+_WMRTLINK extern double rint( double __x );
+_WMRTLINK extern double round( double __x );
+_WMRTLINK extern double scalbn( double __x, int __n );
+_WMRTLINK extern double tgamma( double __x );
+_WMRTLINK extern double trunc( double __x );
+
+_WMRTLINK float nanf(const char *ignored);
+_WMRTLINK double nan(const char *ignored);
+#ifdef _LONG_DOUBLE_
+_WMRTLINK long double nanl(const char *ignored);
+#else
+_WMRTLINK double nanl(const char *ignored);
+#endif
+
+#if defined(_M_I86)
+ #define FP_ILOGBNAN  (-32767-1)
+ #define FP_ILOGB0    32767
+#else
+ #define FP_ILOGBNAN  (-2147483647-1)
+ #define FP_ILOGB0    2147483647
+#endif
+
 :include extepi.sp
 
 :segment CNAME

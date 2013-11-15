@@ -92,6 +92,11 @@ set PROJNAME=mathlib
     <CCCMD> rtdll/winnt.387/mf_s/mt*.dll            <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.387/mf_s/mt*.sym            <OWRELROOT>/binnt/
 
+[ BLOCK <1> tests ]
+#==================
+    cdsay qa
+    pmake -d mathqa -h tests
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

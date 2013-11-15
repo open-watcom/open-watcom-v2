@@ -104,6 +104,7 @@
 .fnc _bcalloc                   calloc.gml      DOS QNX W
 .fnf _fcalloc                   calloc.gml      DOS QNX W
 .fnc _ncalloc                   calloc.gml      DOS QNX W WIN32
+.fnc cbrt                       cbrt.gml        DOS QNX W WIN32
 .fnc ceil                       ceil.gml        DOS QNX W WIN32
 .fnc cfgetispeed                cfgetisp.gml        QXO
 .fnc cfgetospeed                cfgetosp.gml        QXO
@@ -155,6 +156,7 @@
 .fnc console_write              con_wr.gml          QXO
 .fnc _control87                 control8.gml    DOS QNX W WIN32
 .fn7 _controlfp                 controlf.gml    DOS QNX W WIN32
+.fnc copysign                   copysign.gml    DOS QNX W WIN32
 .fnc cos                        cos.gml         DOS QNX W WIN32
 .fnc cosh                       cosh.gml        DOS QNX W WIN32
 .fnc cprintf                    cprintf.gml     DOS QNX W WIN32
@@ -248,6 +250,8 @@
 .fnc _endthreadex               _ethread.gml    DOS       WIN32
 .fnc eof                        eof.gml         DOS QNX W WIN32
 .fnc _eof                       eof.gml         DOS       WIN32
+.fnc erf                        erf.gml         DOS QNX W WIN32
+.fnc erfc                       erfc.gml        DOS QNX W WIN32
 .fnc errno                      errno.gml           QXO
 .fnc exec...                    exec.gml        DOS QNX W WIN32
 .fnc execl                      exec.gml        DOS QNX W WIN32
@@ -270,6 +274,8 @@
 .fnc _exit                      _exit.gml       DOS QNX W WIN32
 .fnc exit                       exit.gml        DOS QNX W WIN32
 .fnc exp                        exp.gml         DOS QNX W WIN32
+.fnc exp2                       exp2.gml        DOS QNX W WIN32
+.fnc expm1                      expm1.gml       DOS QNX W WIN32
 .fnc _expand                    _expand.gml     DOS QNX W WIN32
 .fnc _bexpand                   _expand.gml     DOS QNX W
 .fnf _fexpand                   _expand.gml     DOS QNX W
@@ -284,6 +290,7 @@
 .fnc _fcvt                      fcvt.gml        DOS QNX W WIN32
 .fnw _wfcvt                     fcvt.gml        DOS QNX W WIN32
 .fnc fdatasync                  fdsync.gml          QXO
+.fnc fdim                       fdim.gml        DOS QNX W WIN32
 .fnc fdopen                     fdopen.gml      DOS QNX W WIN32
 .fnc _fdopen                    fdopen.gml      DOS QNX W WIN32
 .fnw _wfdopen                   fdopen.gml      DOS QNX W WIN32
@@ -336,6 +343,9 @@
 .fnc _floodfill_w               gr_flood.gml    DOS QNX W GRAPH
 .fnc floor                      floor.gml       DOS QNX W WIN32
 .fnc flushall                   flushall.gml    DOS QNX W WIN32
+.fnc fma                        fma.gml         DOS QNX W WIN32
+.fnc fmax                       fmax.gml        DOS QNX W WIN32
+.fnc fmin                       fmin.gml        DOS QNX W WIN32
 .fnc fmod                       fmod.gml        DOS QNX W WIN32
 .fn8 _fmsbintoieee              fms2ieee.gml    DOS QNX W WIN32
 .fnc fnmatch                    fnmatch.gml     DOS QXO W WIN32
@@ -529,6 +539,7 @@
 .fnc hfree                      hfree.gml       DOS QNX W
 .fnc hypot                      hypot.gml       DOS QNX W WIN32
 .fnc ignore_handler_s           ign_hnd.gml     DOS QNX W WIN32
+.fnc ilogb                      ilogb.gml       DOS QNX W WIN32
 .fnc _imagesize                 gr_imsiz.gml    DOS QNX W GRAPH
 .fnc _imagesize_w               gr_imsiz.gml    DOS QNX W GRAPH
 .fnc _imagesize_wxy             gr_imsiz.gml    DOS QNX W GRAPH
@@ -721,6 +732,8 @@
 .fnc ldexp                      ldexp.gml       DOS QNX W WIN32
 .fnc ldiv                       ldiv.gml        DOS QNX W WIN32
 .fnc lfind                      lfind.gml       DOS QNX W WIN32
+.fnc lgamma                     lgamma.gml      DOS QNX W WIN32
+.fnc lgamma_r                   lgamma_r.gml    DOS QNX W WIN32
 .fnc _lineto                    gr_linto.gml    DOS QNX W GRAPH
 .fnc _lineto_w                  gr_linto.gml    DOS QNX W GRAPH
 .fnc link                       link.gml            QXO
@@ -735,7 +748,9 @@
 .fnc _locking                   locking.gml     DOS QNX W WIN32
 .fnc log                        log.gml         DOS QNX W WIN32
 .fnc log10                      log10.gml       DOS QNX W WIN32
+.fnc log1p                      log1p.gml       DOS QNX W WIN32
 .fnc log2                       log2.gml        DOS QNX W WIN32
+.fnc logb                       logb.gml        DOS QNX W WIN32
 .fnc longjmp                    longjmp.gml     DOS QNX W WIN32
 .fnc _lrotl                     _lrotl.gml      DOS QNX W WIN32
 .fnc _lrotr                     _lrotr.gml      DOS QNX W WIN32
@@ -942,7 +957,12 @@
 .fnf _fmtob                     mtob.gml        NEC
 .fn7 _m_to_int                  mtoint.gml      DOS QNX W WIN32
 .fnc munmap                     munmap.gml          QXO
+.fnc nan                        nanf.gml        DOS QNX W WIN32
+.fnc nanf                       nanf.gml        DOS QNX W WIN32
+.fnc nanl                       nanf.gml        DOS QNX W WIN32
 .fnc nanosleep                  nanoslep.gml        QXO
+.fnc nearbyint                  nrbyint.gml     DOS QNX W WIN32
+.fnc nextafter                  nxtafter.gml    DOS QNX W WIN32
 .fnc nosound                    nosound.gml     DOS QNX W
 .fnc nthctype                   nthctype.gml    NEC
 .fnf _fnthctype                 nthctype.gml    NEC
@@ -1123,6 +1143,7 @@
 .fnc regfree                    regfree.gml         QXO
 .fnc _registerfonts             gr_reg.gml      DOS QNX W GRAPH
 .fnc Relay                      relay.gml           QXO
+.fnc remainder                  rmnder.gml      DOS QNX W WIN32
 .fnc _remapallpalette           gr_mappa.gml    DOS QNX W GRAPH
 .fnc _remappalette              gr_mappc.gml    DOS QNX W GRAPH
 .fnc remove                     remove.gml      DOS QNX W WIN32
@@ -1137,13 +1158,16 @@
 .fnc rewinddir                  rewinddi.gml    DOS QNX W WIN32
 .fnw _wrewinddir                rewinddi.gml    DOS       WIN32
 .fnu _urewinddir                rewinddi.gml    DOS
+.fnc rint                       rint.gml        DOS QNX W WIN32
 .fnc rmdir                      rmdir.gml       DOS QNX W WIN32
 .fn8 _rmdir                     rmdir.gml       DOS       WIN32
 .fnw _wrmdir                    rmdir.gml       DOS       WIN32
 .fnu _urmdir                    rmdir.gml       DOS       WIN32
 .fnc _rotl                      _rotl.gml       DOS QNX W WIN32
 .fnc _rotr                      _rotr.gml       DOS QNX W WIN32
+.fnc round                      round.gml       DOS QNX W WIN32
 .fnc sbrk                       sbrk.gml        DOS QNX W WIN32
+.fnc scalbn                     scalbn.gml      DOS QNX W WIN32
 .fnc scanf                      scanf.gml       DOS QNX W WIN32
 .fnw wscanf                     scanf.gml       DOS QNX W WIN32
 .fnu _uscanf                    scanf.gml       DOS       WIN32
@@ -1603,6 +1627,7 @@
 .fnc term_up                    up.trm              QX40
 .fnc term_video_off             vid_off.trm         QX40
 .fnc term_video_on              vid_on.trm          QX40
+.fnc tgamma                     tgamma.gml      DOS QNX W WIN32
 .fnc time                       time.gml        DOS QNX W WIN32
 .fnc timer_create               timercre.gml        QXO
 .fnc timer_delete               timerdel.gml        QXO
@@ -1636,6 +1661,7 @@
 .fnc Trace5                     trace.gml           QXO
 .fnc Trace6                     trace.gml           QXO
 .fnc Trigger                    trigger.gml         QXO
+.fnc trunc                      trunc.gml       DOS QNX W WIN32
 .fnc ttyname                    ttyname.gml         QXO
 .fnc tzset                      tzset.gml       DOS QNX W WIN32
 .fnc ulltoa                     ulltoa.gml      DOS QNX W WIN32
