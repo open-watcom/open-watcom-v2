@@ -11,11 +11,15 @@
 ::
 #ifndef NULL
  #ifdef __cplusplus
+:segment DOS | QNX
   #if !defined(_M_I86) || defined(__SMALL__) || defined(__MEDIUM__)
+:endsegment
    #define NULL 0
+:segment DOS | QNX
   #else
    #define NULL 0L
   #endif 
+:endsegment
  #else
   #define NULL ((void *)0)
  #endif

@@ -22,13 +22,17 @@ typedef signed char         int8_t;
 typedef unsigned char       uint8_t;
 typedef short               int16_t;
 typedef unsigned short      uint16_t;
+:segment DOS | QNX
 #ifdef _M_I86
  typedef long               int32_t;
  typedef unsigned long      uint32_t;
 #else
+:endsegment
  typedef int                int32_t;
  typedef unsigned int       uint32_t;
+:segment DOS | QNX
 #endif
+:endsegment
 typedef long long           int64_t;
 typedef unsigned long long  uint64_t;
 :segment !CNAME

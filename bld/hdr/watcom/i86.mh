@@ -21,14 +21,20 @@
 :include pshpackl.sp
 
 #undef __FILLER
+:segment DOS | QNX
 #if defined(_M_I86) || defined(__WINDOWS_386__)
  #define __FILLER(a)
 #else
+:endsegment
  #define __FILLER(a) unsigned short a;
+:segment DOS | QNX
 #endif
+:endsegment
 
+:segment DOS | QNX
 #if !defined(_M_I86) && !defined(__WINDOWS_386__)
 
+:endsegment
 /* dword registers */
 
 struct DWORDREGS {
@@ -41,8 +47,10 @@ struct DWORDREGS {
         unsigned int cflag;
 };
 
+:segment DOS | QNX
 #endif
 
+:endsegment
 /* word registers */
 
 struct WORDREGS {
@@ -52,11 +60,15 @@ struct WORDREGS {
         unsigned short dx;  __FILLER(_4)
         unsigned short si;  __FILLER(_5)
         unsigned short di;  __FILLER(_6)
+:segment DOS | QNX
 #if defined(__WINDOWS_386__)
         unsigned short cflag;
 #else
+:endsegment
         unsigned int cflag;
+:segment DOS | QNX
 #endif
+:endsegment
 };
 
 /* byte registers */
@@ -73,11 +85,15 @@ struct BYTEREGS {
  */
 
 union REGS {
+:segment DOS | QNX
 #if defined(_M_I86) || defined(__WINDOWS_386__)
         struct WORDREGS  x;
 #else
+:endsegment
         struct DWORDREGS x;
+:segment DOS | QNX
 #endif
+:endsegment
         struct WORDREGS  w;
         struct BYTEREGS  h;
 };
@@ -87,9 +103,13 @@ union REGS {
 
 struct SREGS {
         unsigned short es, cs, ss, ds;
+:segment DOS | QNX
 #if !defined(_M_I86)
+:endsegment
         unsigned short fs, gs;
+:segment DOS | QNX
 #endif
+:endsegment
 };
 #define _SREGS SREGS
 
@@ -113,15 +133,21 @@ struct REGPACKW {
         unsigned short di;  __FILLER(_7)
         unsigned short ds;
         unsigned short es;
+:segment DOS | QNX
 #if !defined(_M_I86) && !defined(__WINDOWS_386__)
+:endsegment
         unsigned short fs;
         unsigned short gs;
+:segment DOS | QNX
 #endif
 #if defined(__WINDOWS_386__)
         unsigned short flags;
 #else
+:endsegment
         unsigned int flags;
+:segment DOS | QNX
 #endif
+:endsegment
 };
 
 struct REGPACKX {
@@ -133,11 +159,15 @@ struct REGPACKX {
 union REGPACK {
         struct REGPACKB h;
         struct REGPACKW w;
+:segment DOS | QNX
 #if defined(_M_I86) || defined(__WINDOWS_386__)
         struct REGPACKW x;
 #else
+:endsegment
         struct REGPACKX x;
+:segment DOS | QNX
 #endif
+:endsegment
 };
 
 /* input parm to an 'interrupt' function is union INTPACK */
@@ -168,17 +198,21 @@ struct INTPACKW {
         unsigned flags;
 };
 struct INTPACKB {
+:segment DOS | QNX
 #if defined(_M_I86)
         unsigned /*gs*/:16,/*fs*/:16,
                  /*es*/:16,/*ds*/:16,
                  /*di*/:16,/*si*/:16,
                  /*bp*/:16,/*sp*/:16;
 #else
+:endsegment
         unsigned /*gs*/ :32,/*fs*/ :32,
                  /*es*/ :32,/*ds*/ :32,
                  /*edi*/:32,/*esi*/:32,
                  /*ebp*/:32,/*esp*/:32;
+:segment DOS | QNX
 #endif
+:endsegment
         unsigned char bl, bh; __FILLER(_1)
         unsigned char dl, dh; __FILLER(_2)
         unsigned char cl, ch; __FILLER(_3)
@@ -187,11 +221,15 @@ struct INTPACKB {
 union  INTPACK {
         struct INTPACKB h;
         struct INTPACKW w;
+:segment DOS | QNX
 #if defined(_M_I86)
         struct INTPACKW x;
 #else
+:endsegment
         struct INTPACKX x;
+:segment DOS | QNX
 #endif
+:endsegment
 };
 
 /* bits defined for flags field defined in REGPACKW and INTPACKW */
@@ -220,15 +258,17 @@ _WCRTLINK extern unsigned delay(unsigned int __milliseconds);
 :elsesegment
 _WCRTLINK extern void    delay(unsigned int __milliseconds);
 :endsegment
+:segment DOS | QNX
 #if defined(_M_I86) || defined(__WINDOWS_386__)
 _WCRTLINK extern int     int86( int, union REGS *, union REGS * );
-_WCRTLINK extern int     int86x( int, union REGS *, union REGS *,
-                                 struct SREGS * );
+_WCRTLINK extern int     int86x( int, union REGS *, union REGS *, struct SREGS * );
 #else
+:endsegment
 _WCRTLINK extern int     int386( int, union REGS *, union REGS * );
-_WCRTLINK extern int     int386x( int, union REGS *, union REGS *,
-                                  struct SREGS * );
+_WCRTLINK extern int     int386x( int, union REGS *, union REGS *, struct SREGS * );
+:segment DOS | QNX
 #endif
+:endsegment
 _WCRTLINK extern void    intr( int, union REGPACK * );
 _WCRTLINK extern void    nosound( void );
 _WCRTLINK extern void    segread( struct SREGS * );
@@ -236,19 +276,26 @@ _WCRTLINK extern void    sound( unsigned __frequency );
 
 /* macros to break 'far' pointers into segment and offset components */
 
-#define  FP_OFF(__p) ((unsigned)(__p))
 #define _FP_OFF(__p) ((unsigned)(__p))
  
+:segment DOS | QNX
 #if defined(_M_I86)
- #define FP_SEG(__p) ((unsigned)((unsigned long)(void __far*)(__p) >> 16))
+ #define _FP_SEG(__p) ((unsigned)((unsigned long)(void __far*)(__p) >> 16))
 #else
- unsigned short FP_SEG( const volatile void __far * );
- #pragma aux    FP_SEG = __parm __caller [eax dx] __value [dx];
+:endsegment
+ unsigned short _FP_SEG( const volatile void __far * );
+ #pragma aux    _FP_SEG = __parm __caller [eax dx] __value [dx];
+:segment DOS | QNX
 #endif
-#define _FP_SEG FP_SEG
+:endsegment
 
 /* make a far pointer from segment and offset */
-#define MK_FP(__s,__o) (((unsigned short)(__s)):>((void __near *)(__o)))
+#define _MK_FP(__s,__o) (((unsigned short)(__s)):>((void __near *)(__o)))
+
+:: non-ANSI names
+#define FP_OFF _FP_OFF
+#define FP_SEG _FP_SEG
+#define MK_FP  _MK_FP
 
 :include poppack.sp
 

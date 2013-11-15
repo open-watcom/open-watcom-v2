@@ -36,7 +36,11 @@
 #else
  #define va_alist       void *__alist, ...
  #define va_dcl
+:segment DOS | QNX
  #if defined(__HUGE__) || defined(__SW_ZU)
+:elsesegment
+ #if defined(__SW_ZU)
+:endsegment
   #define va_start(ap)  ((ap)[0]=(char _WCFAR*)&__alist,(void)0)
  #else
   #define va_start(ap)  ((ap)[0]=(char *)&__alist,(void)0)

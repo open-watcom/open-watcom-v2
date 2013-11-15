@@ -29,16 +29,18 @@ _WCRTLINK extern void   longjmp( jmp_buf __env, int __val );
  #define setjmp(__env)  _setjmp(__env)
 #endif
 
-#if defined(_M_I86)
- #pragma aux _setjmp __modify [__8087];
-#elif defined(__386__)
-:segment DOS
- #if defined(__COMPACT__) || defined(__LARGE__)
-  #pragma aux _setjmp __parm __caller [__dx __eax] __modify [__8087];
+#if defined(_M_IX86)
+:segment DOS | QNX
+ #if defined(_M_I86)
+  #pragma aux _setjmp __modify [__8087];
  #else
 :endsegment
-  #pragma aux _setjmp __parm __caller [__eax] __modify [__8087];
-:segment DOS
+  #if defined(__COMPACT__) || defined(__LARGE__)
+   #pragma aux _setjmp __parm __caller [__dx __eax] __modify [__8087];
+  #else
+   #pragma aux _setjmp __parm __caller [__eax] __modify [__8087];
+  #endif
+:segment DOS | QNX
  #endif
 :endsegment
 #endif

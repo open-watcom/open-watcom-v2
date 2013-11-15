@@ -135,20 +135,26 @@ _WCIRTLINK extern void    *memchr( const void *__s, int __c, size_t __n );
 _WCIRTLINK extern int     memcmp( const void *__s1, const void *__s2, size_t __n );
 _WCIRTLINK extern void    *memcpy( void *__s1, const void *__s2, size_t __n );
 _WCRTLINK  extern void    *memmove( void *__s1, const void *__s2, size_t __n );
+:segment DOS | QNX
 #if defined(_M_I86)
-_WCIRTLINK
+_WCIRTLINK extern void    *memset( void *__s, int __c, size_t __n );
 #else
-_WCRTLINK
+:endsegment
+_WCRTLINK  extern void    *memset( void *__s, int __c, size_t __n );
+:segment DOS | QNX
 #endif
-           extern void    *memset( void *__s, int __c, size_t __n );
+:endsegment
 _WCIRTLINK extern char    *strcat( char *__s1, const char *__s2 );
 _WCIRTLINK extern char    *strchr( const char *__s, int __c );
+:segment DOS | QNX
 #if defined(_M_I86)
-_WCIRTLINK
+_WCIRTLINK extern int     strcmp( const char *__s1, const char *__s2 );
 #else
-_WCRTLINK
+:endsegment
+_WCRTLINK  extern int     strcmp( const char *__s1, const char *__s2 );
+:segment DOS | QNX
 #endif
-           extern int     strcmp( const char *__s1, const char *__s2 );
+:endsegment
 _WCRTLINK  extern int     strcoll( const char *__s1, const char *__s2 );
 _WCIRTLINK extern char    *strcpy( char *__s1, const char *__s2 );
 _WCRTLINK  extern size_t  strcspn( const char *__s1, const char *__s2 );
@@ -384,15 +390,19 @@ extern void __strerror( int __max, int __errnum, char *__buf );
 :segment CNAME
 namespace std {
   #pragma intrinsic(memchr,memcmp,memcpy,strcat,strcpy,strlen,strchr)
+:segment DOS | QNX
   #if defined(_M_I86)
     #pragma intrinsic(memset,strcmp)
   #endif
+:endsegment
 }
 :elsesegment
  #pragma intrinsic(memchr,memcmp,memcpy,strcat,strcpy,strlen,strchr)
+:segment DOS | QNX
  #if defined(_M_I86)
   #pragma intrinsic(memset,strcmp)
  #endif
+:endsegment
 :endsegment
 #endif  /* __INLINE_FUNCTIONS__ */
 

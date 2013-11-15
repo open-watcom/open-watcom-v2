@@ -193,24 +193,10 @@ typedef struct {
 #define SCNxMAX     "llx"
 #define SCNXMAX     "llX"
 
+:segment DOS | QNX
 #if defined(_M_I86)
 ::
-#if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
-:: typedef long intptr_t;
-:: typedef unsigned long uintptr_t;
-#define PRIdPTR     "ld"
-#define PRIiPTR     "li"
-#define PRIoPTR     "lo"
-#define PRIuPTR     "lu"
-#define PRIxPTR     "lx"
-#define PRIXPTR     "lX"
-#define SCNdPTR     "ld"
-#define SCNiPTR     "li"
-#define SCNoPTR     "lo"
-#define SCNuPTR     "lu"
-#define SCNxPTR     "lx"
-#define SCNXPTR     "lX"
-#else
+#if defined(__SMALL__) || defined(__MEDIUM__)
 :: typedef int intptr_t;
 :: typedef unsigned int uintptr_t;
 #define PRIdPTR     "d"
@@ -225,9 +211,25 @@ typedef struct {
 #define SCNuPTR     "u"
 #define SCNxPTR     "x"
 #define SCNXPTR     "X"
+#else
+:: typedef long intptr_t;
+:: typedef unsigned long uintptr_t;
+#define PRIdPTR     "ld"
+#define PRIiPTR     "li"
+#define PRIoPTR     "lo"
+#define PRIuPTR     "lu"
+#define PRIxPTR     "lx"
+#define PRIXPTR     "lX"
+#define SCNdPTR     "ld"
+#define SCNiPTR     "li"
+#define SCNoPTR     "lo"
+#define SCNuPTR     "lu"
+#define SCNxPTR     "lx"
+#define SCNXPTR     "lX"
 #endif
 ::
 #else /* 32 bit */
+:endsegment
 ::
 #if defined(__COMPACT__) || defined(__LARGE__)
 :: typedef long long intptr_t;
@@ -261,7 +263,9 @@ typedef struct {
 #define SCNXPTR     "lX"
 #endif
 ::
+:segment DOS | QNX
 #endif
+:endsegment
 
 #endif  /* __STDC_FORMAT_MACROS */
 

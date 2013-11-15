@@ -86,7 +86,11 @@ typedef __va_list va_list;
        (((sizeof(type)+_MIPS_WORD_SIZE-1)&~(_MIPS_WORD_SIZE-1))))))
  #define va_end(ap)      ((void)0)
 #else
+:segment DOS | QNX
  #if defined(__HUGE__) || defined(__SW_ZU)
+:elsesegment
+ #if defined(__SW_ZU)
+:endsegment
   #define va_start(ap,pn) ((ap)[0]=(char _WCFAR*)&pn+\
       ((sizeof(pn)+sizeof(int)-1)&~(sizeof(int)-1)),(void)0)
   #define va_arg(ap,type)     ((ap)[0]+=\

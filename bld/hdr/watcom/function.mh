@@ -467,6 +467,7 @@ namespace std {
             { return( static_cast< size_t >( value ) ); }
     };
 
+:segment DOS | QNX
 #if defined(_M_I86)
 
     template< >
@@ -518,6 +519,7 @@ namespace std {
     };
 
 #else  // 32 bit
+:endsegment
 
     template< >
     struct hash< long > : public unary_function< long, size_t >
@@ -555,7 +557,9 @@ namespace std {
         }
     };
 
+:segment DOS | QNX
 #endif
+:endsegment
 
 :: Not really what one would want for far pointers.
     template< class Type >

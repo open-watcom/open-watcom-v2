@@ -116,11 +116,15 @@ typedef unsigned long long uintmax_t;
 #define INT64_MAX  9223372036854775807LL
 
 #define UINT8_MAX   255
+:segment DOS | QNX
 #if defined(_M_I86)
  #define UINT16_MAX  65535U
 #else
+:endsegment
  #define UINT16_MAX  65535
+:segment DOS | QNX
 #endif
+:endsegment
 #define UINT32_MAX  4294967295UL
 #define UINT64_MAX  18446744073709551615ULL
 
@@ -135,53 +139,67 @@ typedef unsigned long long uintmax_t;
 #define INT_LEAST64_MAX  9223372036854775807LL
 
 #define UINT_LEAST8_MAX   255
+:segment DOS | QNX
 #if defined(_M_I86)
  #define UINT_LEAST16_MAX  65535U
 #else
+:endsegment
  #define UINT_LEAST16_MAX  65535
+:segment DOS | QNX
 #endif
+:endsegment
 #define UINT_LEAST32_MAX  4294967295UL
 #define UINT_LEAST64_MAX  18446744073709551615ULL
 
 /* Fast minimum-width types. */
+:segment DOS | QNX
 #if defined(_M_I86)
  #define INT_FAST8_MIN   (-32767-1)
  #define INT_FAST8_MAX   32767
  #define INT_FAST16_MIN  (-32767-1)
  #define INT_FAST16_MAX  32767
 #else
+:endsegment
  #define INT_FAST8_MIN   (-2147483647-1)
  #define INT_FAST8_MAX   2147483647
  #define INT_FAST16_MIN  (-2147483647-1)
  #define INT_FAST16_MAX  2147483647
+:segment DOS | QNX
 #endif
+:endsegment
 #define INT_FAST32_MIN  (-2147483647L-1)
 #define INT_FAST32_MAX  2147483647L
 #define INT_FAST64_MIN  (-9223372036854775807LL-1)
 #define INT_FAST64_MAX  9223372036854775807LL
 
+:segment DOS | QNX
 #if defined(_M_I86)
  #define UINT_FAST8_MAX   65535U
  #define UINT_FAST16_MAX  65535U
 #else
+:endsegment
  #define UINT_FAST8_MAX   4294967295U
  #define UINT_FAST16_MAX  4294967295U
+:segment DOS | QNX
 #endif
+:endsegment
 #define UINT_FAST32_MAX  4294967295UL
 #define UINT_FAST64_MAX  18446744073709551615ULL
 
 /* Integer types able to hold object pointers. */
+:segment DOS | QNX
 #if defined(_M_I86)
- #if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
-  #define INTPTR_MIN   (-2147483647L-1)
-  #define INTPTR_MAX   2147483647L
-  #define UINTPTR_MAX  4294967295UL
- #else
+ #if defined(__SMALL__) || defined(__MEDIUM__)
   #define INTPTR_MIN   (-32767-1)
   #define INTPTR_MAX   32767
   #define UINTPTR_MAX  65535U
+ #else
+  #define INTPTR_MIN   (-2147483647L-1)
+  #define INTPTR_MAX   2147483647L
+  #define UINTPTR_MAX  4294967295UL
  #endif
 #else /* 32 bit */
+:endsegment
  #if defined(__COMPACT__) || defined(__LARGE__)
   #define INTPTR_MIN   (-9223372036854775807LL-1)
   #define INTPTR_MAX   9223372036854775807LL
@@ -191,7 +209,9 @@ typedef unsigned long long uintmax_t;
   #define INTPTR_MAX   2147483647L
   #define UINTPTR_MAX  4294967295UL
  #endif
+:segment DOS | QNX
 #endif
+:endsegment
 
 /* Greatest-width types. */
 #define INTMAX_MIN   (-9223372036854775807LL-1)
@@ -206,6 +226,7 @@ typedef unsigned long long uintmax_t;
 #define WINT_MAX        WCHAR_MAX
 
 /* Limits of other integer types. */
+:segment DOS | QNX
 #if defined(_M_I86)
  #if defined(__HUGE__)
   #define PTRDIFF_MIN     (-2147483647L-1)
@@ -218,12 +239,15 @@ typedef unsigned long long uintmax_t;
  #define SIG_ATOMIC_MAX  32767
  #define SIZE_MAX        65535U
 #else /* 32 bit */
+:endsegment
  #define PTRDIFF_MIN     (-2147483647-1)
  #define PTRDIFF_MAX     2147483647
  #define SIG_ATOMIC_MIN  (-2147483647-1)
  #define SIG_ATOMIC_MAX  2147483647
  #define SIZE_MAX        4294967295U
+:segment DOS | QNX
 #endif
+:endsegment
 
 :segment CNAME
 #endif /* Limit macros. */

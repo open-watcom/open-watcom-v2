@@ -112,11 +112,15 @@ typedef char _WCI86FAR *caddr_t;
 
 typedef unsigned char   u_int8_t;
 typedef unsigned short  u_int16_t;
+:segment DOS | QNX
 #if defined _M_I86
 typedef unsigned long   u_int32_t;
 #else
+:endsegment
 typedef unsigned int    u_int32_t;
+:segment DOS | QNX
 #endif
+:endsegment
 
 typedef char _WCFAR *   faddr_t;
 typedef unsigned long   paddr_t;

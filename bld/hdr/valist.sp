@@ -22,7 +22,11 @@
       char  *__base;
       int   __offset;
   } __va_list;
+:segment DOS | QNX
  #elif defined(__HUGE__) || defined(__SW_ZU)
+:elsesegment
+ #elif defined(__SW_ZU)
+:endsegment
   typedef char _WCFAR *__va_list[1];
  #else
   typedef char    *__va_list[1];

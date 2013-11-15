@@ -175,12 +175,15 @@ _WCIRTLINK extern long int labs( long int __j );
 #pragma aux labs    parm nomemory modify nomemory;
 #endif
 
+:segment DOS | QNX
 #if defined(_M_I86)
-_WCRTLINK
+_WCRTLINK extern ldiv_t  ldiv( long int __numer, long int __denom );
 #else
-_WCIRTLINK
+:endsegment
+_WCIRTLINK extern ldiv_t  ldiv( long int __numer, long int __denom );
+:segment DOS | QNX
 #endif
-          extern ldiv_t  ldiv( long int __numer, long int __denom );
+:endsegment
 _WCRTLINK extern long long int llabs( long long int __j );
 _WCRTLINK extern lldiv_t lldiv( long long int __numer, long long int __denom );
 _WCRTLINK extern void    *malloc( size_t __size );
@@ -213,15 +216,23 @@ _WCRTLINK extern int     system( const char *__string );
 :segment CNAME
 namespace std {
   #pragma intrinsic(abs,div,labs)
+:segment DOS | QNX
   #if !defined(_M_I86)
+:endsegment
    #pragma intrinsic(ldiv)
+:segment DOS | QNX
   #endif
+:endsegment
 }
 :elsesegment
 #pragma intrinsic(abs,div,labs)
+:segment DOS | QNX
 #if !defined(_M_I86)
+:endsegment
  #pragma intrinsic(ldiv)
+:segment DOS | QNX
 #endif
+:endsegment
 :endsegment
 #endif
 
@@ -255,18 +266,22 @@ _WMRTLINK extern char    *gcvt( double __val, int __ndig, char *__buf );
 _WMRTLINK extern char    *_gcvt( double __val, int __ndig, char *__buf );
 _WCRTLINK extern char    *itoa( int __value, char *__buf, int __radix );
 _WCRTLINK extern char    *_itoa( int __value, char *__buf, int __radix );
+:segment DOS | QNX
 #if defined(_M_I86)
-_WCRTLINK
+_WCRTLINK extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
 #else
-_WCIRTLINK
+:endsegment
+_WCIRTLINK extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
+:segment DOS | QNX
 #endif
-    extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
 #if defined(_M_I86)
-_WCRTLINK
+_WCRTLINK extern unsigned long _lrotr( unsigned long __value, unsigned int __shift );
 #else
-_WCIRTLINK
+:endsegment
+_WCIRTLINK extern unsigned long _lrotr( unsigned long __value, unsigned int __shift );
+:segment DOS | QNX
 #endif
-    extern unsigned long _lrotr( unsigned long __value, unsigned int __shift );
+:endsegment
 _WCRTLINK extern char    *ltoa( long int __value, char *__buf, int __radix );
 _WCRTLINK extern char    *lltoa( long long int __value, char *__buf, int __radix );
 _WCRTLINK extern char    *_ltoa( long int __value, char *__buf, int __radix );
@@ -370,9 +385,13 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 :segment !CNAME
 #if defined(__INLINE_FUNCTIONS__)
  #pragma intrinsic(_rotl,_rotr)
+:segment DOS | QNX
  #if !defined(_M_I86)
+:endsegment
   #pragma intrinsic(_lrotl,_lrotr)
+:segment DOS | QNX
  #endif
+:endsegment
 #endif
 
 :include saferpro.sp

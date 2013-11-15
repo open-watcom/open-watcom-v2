@@ -123,6 +123,7 @@ long double creall(long double complex z);
 #if !defined(_M_IX86)
  #pragma library( "cplx.lib" )
 #elif defined(__SW_FPC)
+:segment DOS | QNX
  #if defined(_M_I86)
   #if defined(__MEDIUM__)
    #pragma library ( "cplxm.lib" )
@@ -136,13 +137,17 @@ long double creall(long double complex z);
    #pragma library ( "cplxs.lib" )
   #endif
  #else
+:endsegment
   #if defined(__3S__)
    #pragma library ( "cplx3s.lib" )
   #else
    #pragma library ( "cplx3r.lib" )
   #endif
+:segment DOS | QNX
  #endif
+:endsegment
 #else
+:segment DOS | QNX
  #if defined(_M_I86)
   #if defined(__MEDIUM__)
    #pragma library ( "cplx7m.lib" )
@@ -156,12 +161,15 @@ long double creall(long double complex z);
    #pragma library ( "cplx7s.lib" )
   #endif
  #else
+:endsegment
   #if defined(__3S__)
    #pragma library ( "cplx73s.lib" )
   #else
    #pragma library ( "cplx73r.lib" )
   #endif
+:segment DOS | QNX
  #endif
+:endsegment
 #endif
 
 :include owrtlink.sp
