@@ -49,8 +49,14 @@
 #ifndef E
  #define E              2.718281828459045
 #endif
+
+#ifdef TINY_MEMORY
+void print_fail(int line) { printf("FAIL: line %d\n", line); }
+#define VERIFY(expr)    if(!(expr)) print_fail(__LINE__);
+#else
 #define VERIFY(expr)    if(!(expr)) \
                             printf( "FAIL: %s, line %d\n",#expr,__LINE__ )
+#endif
 #define MYABS( a )      ((a) < 0 ? -(a) : (a) )
 
 #define SQRTPI  1.7724538509055160273

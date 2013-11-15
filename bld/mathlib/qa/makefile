@@ -78,8 +78,10 @@
 
 mathtest = ../c/mathtest.c
 
-comp_opts = -za99 -ox -d2 -zq -fo=$^*.obj $(inc_path)
+comp_opts = -za99 -d2 -zq -fo=$^*.obj $(inc_path)
 link_opts = NAME $^* OPTION quiet, map DEBUG all 
+
+tiny_opts = -os -DTINY_MEMORY -s
 
 !ifdef __UNIX__
 
@@ -120,9 +122,9 @@ w32_lang_root  = $(%WATCOM)
 !endif
 
 exes = &
-#    dos_fpis.exe dos_fpcs.exe &
+    dos_fpis.exe dos_fpcs.exe &
     dos_fpim.exe dos_fpcm.exe &
-#    dos_fpic.exe dos_fpcc.exe &
+    dos_fpic.exe dos_fpcc.exe &
     dos_fpil.exe dos_fpcl.exe &
     dos_fpih.exe dos_fpch.exe &
     pls_fpir.exp pls_fpcr.exp &
@@ -131,10 +133,11 @@ exes = &
     rsi_fpis.exe rsi_fpcs.exe &
     cw_fpir.exe cw_fpcr.exe &
     cw_fpis.exe cw_fpcs.exe &
-#    os2_fpi.exe os2_fpc.exe &
+    os2_fpi.exe os2_fpc.exe &
     os3_fpir.exe os3_fpcr.exe &
     os3_fpis.exe os3_fpcs.exe &
-#    win_fpi.exe win_fpc.exe &
+    win_fpi.exe  &
+#    win_fpc.exe &
     w32_fpir.exe w32_fpcr.exe &
     w32_fpis.exe w32_fpcs.exe &
     wnt_fpir.exe wnt_fpcr.exe &
@@ -147,11 +150,11 @@ tests : .symbolic $(exes)
 all : .symbolic $(exes)
 
 dos_fpis.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) -ms -fpi -bt=dos
+    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -ms -fpi -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
 
 dos_fpcs.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) -ms -fpc -bt=dos
+    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -ms -fpc -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj 
 
 dos_fpim.exe : $(mathtest)
@@ -163,11 +166,11 @@ dos_fpcm.exe : $(mathtest)
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
 
 dos_fpic.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) -mc -fpi -bt=dos
+    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -mc -fpi -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
 
 dos_fpcc.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) -mc -fpc -bt=dos
+    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -mc -fpc -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
 
 dos_fpil.exe : $(mathtest)
@@ -235,11 +238,11 @@ cw_fpcs.exe : $(mathtest)
     $(linker_386) SYSTEM causeway $(link_opts) LIBPATH $(dos32_libdir) FILE $^*.obj
 
 os2_fpi.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) -fpi -bt=os2
+    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -fpi -bt=os2
     $(linker_386) SYSTEM os2 pmcompatible $(link_opts) LIBPATH $(os216_libdir) FILE $^*.obj
 
 os2_fpc.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) -fpc -bt=os2
+    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -fpc -bt=os2
     $(linker_386) SYSTEM os2 pmcompatible $(link_opts) LIBPATH $(os216_libdir) FILE $^*.obj
 
 os3_fpir.exe : $(mathtest)
@@ -259,11 +262,11 @@ os3_fpcs.exe : $(mathtest)
     $(linker_386) SYSTEM os2v2 pmcompatible $(link_opts) LIBPATH $(os232_libdir) FILE $^*.obj
 
 win_fpi.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) -fpi -bw -zw -bt=windows
+    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -fpi -bw -zw -bt=windows
     $(linker_i86) SYSTEM windows $(link_opts) LIBPATH $(win16_libdir) FILE $^*.obj
 
 win_fpc.exe : $(mathtest)
-    $(cc_i86) $[@ $(comp_opts) -fpc -bw -zw -bt=windows
+    $(cc_i86) $[@ $(comp_opts) $(tiny_opts) -fpc -bw -zw -bt=windows
     $(linker_i86) SYSTEM windows $(link_opts) LIBPATH $(win16_libdir) FILE $^*.obj
 
 w32_fpir.exe : $(mathtest)
