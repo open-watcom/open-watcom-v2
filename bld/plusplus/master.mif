@@ -61,7 +61,6 @@ inc_dirs += -I"$(trmem_dir)"
 inc_dirs += $(cg_inc_dirs)
 inc_dirs += $(asminline_inc_dirs)
 inc_dirs += $(dwarfw_inc_dirs)
-inc_dirs += $(cfloat_inc_dirs)
 inc_dirs += -I"$(cc_dir)/h"
 inc_dirs += -I"$(comp_cfg_dir)/h"
 inc_dirs += -I"$(fe_misc_dir)/h"
@@ -91,6 +90,7 @@ extra_c_flags_carve    = $(incl_file_opts)carvecpp.h
 !ifeq release 0
 extra_c_flags_dbgzap   = $(incl_file_opts)fesupp.h
 !endif
+extra_c_flags_floatsup = $(cfloat_inc_dirs)
 extra_c_flags_idedrv   = -DSTATIC_LINKAGE
 extra_c_flags_initfini = -DSPLIT_REQD $(incl_file_opts)fesupp.h
 extra_c_flags_intlload = $(incl_file_opts)fesupp.h
@@ -159,20 +159,15 @@ extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)', manya
 #
 # External libraries
 #
-xlibs = $(asminline_lib) $(cg_libs)
+libs = $(asminline_lib) $(cg_libs)
  
-#
-# External dependencies
-#
-external_dependencies = $(xlibs) $(osildr)
-
 #
 # Common dependencies
 #
  
-depends_exe = $(pre_obj_deps) $(external_dependencies)
-depends_dll = $(pre_obj_deps) $(external_dependencies)
-depends_drv = $(pre_obj_deps)
+depends_exe = $(pre_obj_deps)
+depends_dll = $(pre_obj_deps)
+depends_drv =
  
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
@@ -204,13 +199,13 @@ $(exename).exe : $(depends_drv) $(dllname).dll $(comp_objs_drv) $(version_res_ex
  
 !else
  
-$(exename).exe : $(depends_exe) $(comp_objs_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe : $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
-    $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(libs) $(ldflags)
+    $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
 !else
     @%write exe.lnk $(lflags)
     @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i
-    @for %i in ($(xlibs)) do @%append exe.lnk library %i
+    @for %i in ($(libs)) do @%append exe.lnk library %i
     $(linker) name $(lname) @exe.lnk
     @%make bind_osildr
 !endif
@@ -218,13 +213,13 @@ $(exename).exe : $(depends_exe) $(comp_objs_exe) $(version_res_exe_$(host_os)_$(
  
 !endif
  
-$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
-    $(cl) $(clflags_dll) $(comp_objs_dll) $(xlibs) $(libs) $(ldflags)
+    $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags)
 !else
     @%write dll.lnk $(lflags_dll)
     @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
-    @for %i in ($(xlibs)) do @%append dll.lnk library %i
+    @for %i in ($(libs)) do @%append dll.lnk library %i
     $(linker) name $@ @dll.lnk
 !endif
     @%make bind_version_res_dll

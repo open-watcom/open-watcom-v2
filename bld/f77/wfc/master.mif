@@ -54,26 +54,25 @@ fobjs += trmem.obj trmemcvr.obj
 
 extra_c_flags_trmem = -DTRMEM -of+
 extra_c_flags_trmemcvr = -DTRMEM -of+
-extra_c_flags_fcdata = $(cfloat_inc_dirs)
 
 extra_l_flags += op map
 
 # Need lots of stack for NT because code gen turns off safe recurse.
 extra_l_flags_nt = op stack=1024k commit stack=32k
 
-flibs = $(cfloat_lib) $(asminline_lib) $(cg_libs) $(wres_lib)
+libs = $(asminline_lib) $(cg_libs) $(wres_lib)
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
-$(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(flibs) $(version_res_exe_$(host_os)_$(host_cpu))
+$(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(libs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-    $(cl) $(clflags) $(fobjs) $(flibs) $(ldflags)
+    $(cl) $(clflags) $(fobjs) $(libs) $(ldflags)
 !else
     %create $^&.lnk
     @for %i in ($(fobjs)) do @%append $^&.lnk file %i
-    @for %i in ($(flibs)) do @%append $^&.lnk lib %i
+    @for %i in ($(libs)) do @%append $^&.lnk lib %i
     $(linker) name $(lname) $(lflags) @$^&.lnk
     @%make bind_osildr
 !endif
