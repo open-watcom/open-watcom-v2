@@ -33,8 +33,6 @@
 #ifndef _FLOATSUP_H
 #define _FLOATSUP_H
 
-#include "cfloat.h"
-
 extern float_handle BFCheckFloatLimit(
         float_handle f )
 ;

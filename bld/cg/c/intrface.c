@@ -1799,6 +1799,12 @@ extern  float_handle _CGAPI     BFCnvSF( cchar_ptr start )
     return( CFCnvSF( start ) );
 }
 
+extern  void _CGAPI     BFCnvTarget( float_handle cf, pointer buff, int class )
+/*****************************************************************************/
+{
+    CFCnvTarget( cf, (flt *)buff, class );
+}
+
 extern  float_handle _CGAPI     BFMul( float_handle c1, float_handle c2 )
 /***********************************************************************/
 {

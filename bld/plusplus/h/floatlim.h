@@ -33,6 +33,8 @@
 #ifndef _FLOATLIM_H
 #define _FLOATLIM_H
 
+#include "cfloat.h"
+
 // constants are extracted from ISO C standard 2.2.4.2.2
 
 static struct STRUCT_cfloat( 10 )      MaxPosFloat = { // 3.40282347e+38
