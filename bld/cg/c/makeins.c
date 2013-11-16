@@ -37,10 +37,10 @@
 #include "freelist.h"
 #include "data.h"
 #include "makeins.h"
+#include "namelist.h"
 
 
 extern  void            DoNothing(instruction*);
-extern  name            *AllocRegName(hw_reg_set);
 
 static  pointer         *InsFrl;
 

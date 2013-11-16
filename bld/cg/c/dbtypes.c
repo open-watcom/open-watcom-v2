@@ -48,13 +48,13 @@
 #endif
 #include "i64.h"
 #include "utils.h"
-
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
 #include "wvtypes.h"
 #endif
 #include "dftypes.h"
 #include "cv4.h"
 #include "cvtypes.h"
+#include "cgprotos.h"
 
 #define MAX_TYPE_SIZE  (1024 * 16)
 
@@ -81,7 +81,7 @@ extern  dbg_type _CGAPI DBFtnType( cchar_ptr name, dbg_ftn_type tipe )
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVFtnType( name, tipe );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVFtnType( name, tipe );
 #else
         ret = 0;
@@ -107,7 +107,7 @@ extern  dbg_type _CGAPI DBScalar( cchar_ptr name, cg_type tipe )
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVScalar( name, tipe );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVScalar( name, tipe );
 #else
         ret = 0;
@@ -134,7 +134,7 @@ extern  dbg_type _CGAPI DBScope( cchar_ptr name )
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVScope( name );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVScope( name );
 #else
         ret = 0;
@@ -148,10 +148,10 @@ extern  dbg_type _CGAPI DBScope( cchar_ptr name )
 
 
 
-extern  name_entry * _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
-/*******************************************************************/
+extern  dbg_name _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
+/***************************************************************/
 {
-    name_entry  *name;
+    dbg_name    name;
     uint        len;
 
 #ifndef NDEBUG
@@ -170,9 +170,9 @@ extern  name_entry * _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
 }
 
 
-extern  dbg_type _CGAPI DBForward( name_entry *name ) {
-/*****************************************************/
-
+extern  dbg_type _CGAPI DBForward( dbg_name name )
+/************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DBForward( %i )", name );
 #endif
@@ -182,7 +182,7 @@ extern  dbg_type _CGAPI DBForward( name_entry *name ) {
         } else if( _IsModel( DBG_CV ) ) {
             CVDumpName( name, DBG_FWD_TYPE );
         } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
             WVDumpName( name, DBG_FWD_TYPE );
 #endif
         }
@@ -194,9 +194,9 @@ extern  dbg_type _CGAPI DBForward( name_entry *name ) {
 }
 
 
-extern  dbg_type _CGAPI DBEndName( name_entry *name, dbg_type tipe ) {
-/********************************************************************/
-
+extern  dbg_type _CGAPI DBEndName( dbg_name name, dbg_type tipe )
+/***************************************************************/
+{
     dbg_type    retv;
 
 #ifndef NDEBUG
@@ -208,7 +208,7 @@ extern  dbg_type _CGAPI DBEndName( name_entry *name, dbg_type tipe ) {
         } else if( _IsModel( DBG_CV ) ) {
            CVDumpName( name, tipe );
         } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
            WVDumpName( name, tipe );
 #endif
         }
@@ -218,7 +218,7 @@ extern  dbg_type _CGAPI DBEndName( name_entry *name, dbg_type tipe ) {
         } else if( _IsModel( DBG_CV ) ) {
             CVBackRefType( name, tipe );
         } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
             WVBackRefType( name, tipe );
 #endif
         }
@@ -232,9 +232,9 @@ extern  dbg_type _CGAPI DBEndName( name_entry *name, dbg_type tipe ) {
 }
 
 
-extern  dbg_type _CGAPI DBCharBlock( unsigned_32 len ) {
-/******************************************************/
-
+extern  dbg_type _CGAPI DBCharBlock( unsigned_32 len )
+/****************************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -245,7 +245,7 @@ extern  dbg_type _CGAPI DBCharBlock( unsigned_32 len ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVCharBlock( len );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVCharBlock( len );
 #else
         ret = 0;
@@ -267,7 +267,7 @@ extern  dbg_type _CGAPI DBCharBlockNamed( cchar_ptr name, unsigned_32 len )
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVCharBlock( len );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVCharBlock( len );
 #else
         ret = 0;
@@ -289,7 +289,7 @@ extern  dbg_type _CGAPI DBIndCharBlock( back_handle len, cg_type len_type, int o
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVIndCharBlock( len, len_type, off );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVIndCharBlock( len, len_type, off );
 #else
         ret = 0;
@@ -301,9 +301,9 @@ extern  dbg_type _CGAPI DBIndCharBlock( back_handle len, cg_type len_type, int o
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type ) {
-/***********************************************************************/
-
+extern  dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type )
+/*********************************************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -315,7 +315,7 @@ extern  dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVLocCharBlock( loc, len_type );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVLocCharBlock( loc, len_type );
 #else
         ret = 0;
@@ -330,9 +330,9 @@ extern  dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type ) {
 
 extern  dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
                                     cg_type num_elts_tipe, int off,
-                                    dbg_type base ) {
+                                    dbg_type base )
 /***************************************************************************/
-
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -344,7 +344,7 @@ extern  dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVFtnArray( dims, lo_bound_tipe, num_elts_tipe, off, base );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVFtnArray( dims, lo_bound_tipe, num_elts_tipe, off, base );
 #else
         ret = 0;
@@ -357,9 +357,9 @@ extern  dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
 }
 
 
-extern  dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base ) {
-/**************************************************************/
-
+extern  dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base )
+/************************************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -370,7 +370,7 @@ extern  dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVArray( idx, base );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVArray( idx, base );
 #else
         ret = 0;
@@ -382,9 +382,10 @@ extern  dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base ) {
     return( ret );
 }
 
-extern  array_list * _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major ){
-/****************************************************************************************/
-    array_list *ar;
+extern  dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
+/************************************************************************************/
+{
+    dbg_array   ar;
 //  type_def   *tipe_addr;
 
 #ifndef NDEBUG
@@ -405,9 +406,9 @@ extern  array_list * _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_co
     return( ar );
 }
 
-static  void    AddDim( array_list *ar, dim_any *dim ){
-/******************************************************/
-
+static  void    AddDim( dbg_array ar, dim_any *dim )
+/**************************************************/
+{
     dim_any *curr;
     dim_any **owner;
 
@@ -422,8 +423,9 @@ static  void    AddDim( array_list *ar, dim_any *dim ){
     ar->num++;
 }
 
-extern  void _CGAPI DBDimCon( array_list *ar, dbg_type idx, signed_32 lo, signed_32 hi ){
-/***************************************************/
+extern  void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, signed_32 lo, signed_32 hi )
+/************************************************************************************/
+{
     dim_con *dim;
 
 #ifndef NDEBUG
@@ -437,10 +439,11 @@ extern  void _CGAPI DBDimCon( array_list *ar, dbg_type idx, signed_32 lo, signed
     AddDim( ar, (dim_any *) dim );
 }
 
-extern  void _CGAPI DBDimVar( array_list *ar, back_handle dims, int off,
+extern  void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
                         cg_type lo_bound_tipe,
-                        cg_type num_elts_tipe ){
+                        cg_type num_elts_tipe )
 /*************************************************/
+{
     dim_var *dim;
 
 #ifndef NDEBUG
@@ -457,9 +460,9 @@ extern  void _CGAPI DBDimVar( array_list *ar, back_handle dims, int off,
     ar->is_variable = TRUE;
 }
 
-extern  dbg_type _CGAPI DBEndArray( array_list  *ar ) {
-/*****************************************************/
-
+extern  dbg_type _CGAPI DBEndArray( dbg_array ar )
+/************************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -470,7 +473,7 @@ extern  dbg_type _CGAPI DBEndArray( array_list  *ar ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret =  CVEndArray( ar );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVEndArray( ar );
 #else
         ret = 0;
@@ -483,9 +486,9 @@ extern  dbg_type _CGAPI DBEndArray( array_list  *ar ) {
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base ) {
-/*******************************************************************/
-
+extern  dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base )
+/*****************************************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -496,7 +499,7 @@ extern  dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVIntArray( hi, base );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVIntArray( hi, base );
 #else
         ret = 0;
@@ -508,9 +511,9 @@ extern  dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base ) {
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base ) {
-/*******************************************************************/
-
+extern  dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
+/*********************************************************************************/
+{
     dbg_type          ret;
     type_def          *tipe_addr;
 
@@ -523,7 +526,7 @@ extern  dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type bas
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVArraySize( tipe_addr->length, hi, base );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVIntArray( hi, base );
 #else
         ret = 0;
@@ -535,10 +538,9 @@ extern  dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type bas
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi,
-                                    dbg_type base ) {
-/***************************************************/
-
+extern  dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi, dbg_type base )
+/*****************************************************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -549,7 +551,7 @@ extern  dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi,
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVSubRange( lo, hi, base );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVSubRange( lo, hi, base );
 #else
         ret = 0;
@@ -562,9 +564,9 @@ extern  dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi,
 }
 
 
-extern  dbg_type _CGAPI DBDereference( cg_type ptr_type, dbg_type base ) {
-/************************************************************************/
-
+extern  dbg_type _CGAPI DBDereference( cg_type ptr_type, dbg_type base )
+/**********************************************************************/
+{
     dbg_type ret;
 
 
@@ -576,7 +578,7 @@ extern  dbg_type _CGAPI DBDereference( cg_type ptr_type, dbg_type base ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVDereference( ptr_type, base );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVDereference( ptr_type, base );
 #else
         ret = 0;
@@ -589,9 +591,9 @@ extern  dbg_type _CGAPI DBDereference( cg_type ptr_type, dbg_type base ) {
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBPtr( cg_type ptr_type, dbg_type base ) {
-/****************************************************************/
-
+extern  dbg_type _CGAPI DBPtr( cg_type ptr_type, dbg_type base )
+/**************************************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -602,7 +604,7 @@ extern  dbg_type _CGAPI DBPtr( cg_type ptr_type, dbg_type base ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVPtr( ptr_type, base );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVPtr( ptr_type, base );
 #else
         ret = 0;
@@ -615,9 +617,9 @@ extern  dbg_type _CGAPI DBPtr( cg_type ptr_type, dbg_type base ) {
 }
 
 extern  dbg_type _CGAPI DBBasedPtr( cg_type ptr_type, dbg_type base,
-                                        dbg_loc loc_segment ) {
+                                        dbg_loc loc_segment )
 /****************************************************************/
-
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -628,7 +630,7 @@ extern  dbg_type _CGAPI DBBasedPtr( cg_type ptr_type, dbg_type base,
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVBasedPtr( ptr_type, base, loc_segment );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVBasedPtr( ptr_type, base, loc_segment );
 #else
         ret = 0;
@@ -641,8 +643,9 @@ extern  dbg_type _CGAPI DBBasedPtr( cg_type ptr_type, dbg_type base,
 }
 
 
-bool _CGAPI DBNested( bool nested ){
-/**********************************/
+bool _CGAPI DBNested( bool nested )
+/*********************************/
+{
     bool ret;
 
 #ifndef NDEBUG
@@ -656,11 +659,11 @@ bool _CGAPI DBNested( bool nested ){
     return( ret );
 }
 
-struct_list * _CGAPI DBBegNameStruct( cchar_ptr nm, cg_type tipe, bool is_struct )
-/********************************************************************************/
+dbg_struct _CGAPI DBBegNameStruct( cchar_ptr nm, cg_type tipe, bool is_struct )
+/*****************************************************************************/
 {
-    uint      n_len;
-    struct_list *st;
+    uint        n_len;
+    dbg_struct  st;
 
 #ifndef NDEBUG
     EchoAPI( "DBBegNameStruct( %c, %t, %i )", nm, tipe, is_struct );
@@ -695,10 +698,10 @@ struct_list * _CGAPI DBBegNameStruct( cchar_ptr nm, cg_type tipe, bool is_struct
     return( st );
 }
 
-struct_list * _CGAPI DBBegStruct( cg_type tipe, bool is_struct ) {
-/****************************************************************/
-
-    struct_list *st;
+dbg_struct _CGAPI DBBegStruct( cg_type tipe, bool is_struct )
+/***********************************************************/
+{
+    dbg_struct  st;
 
 #ifndef NDEBUG
     EchoAPI( "DBBegStruct( %t, %i )", tipe, is_struct );
@@ -727,8 +730,8 @@ static  field_member     *CreateMember( const char *nm, byte strt,
     return( field );
 }
 
-static  void    AddField( struct_list *st, field_any *field )
-/***********************************************************/
+static  void    AddField( dbg_struct st, field_any *field )
+/*********************************************************/
 {
     field->entry.next = NULL;
     *st->list_tail = field;
@@ -737,7 +740,7 @@ static  void    AddField( struct_list *st, field_any *field )
 }
 
 
-extern  void _CGAPI DBAddBitField( struct_list *st, unsigned_32 off, byte strt,
+extern  void _CGAPI DBAddBitField( dbg_struct st, unsigned_32 off, byte strt,
                                         byte len, cchar_ptr nm, dbg_type base )
 /*****************************************************************************/
 {
@@ -753,7 +756,7 @@ extern  void _CGAPI DBAddBitField( struct_list *st, unsigned_32 off, byte strt,
 }
 
 
-extern  void _CGAPI DBAddField( struct_list *st, unsigned_32 off,
+extern  void _CGAPI DBAddField( dbg_struct st, unsigned_32 off,
                                    cchar_ptr nm, dbg_type  base )
 /***************************************************************/
 {
@@ -764,7 +767,7 @@ extern  void _CGAPI DBAddField( struct_list *st, unsigned_32 off,
 }
 
 
-extern  void _CGAPI DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
+extern  void _CGAPI DBAddLocField( dbg_struct st, dbg_loc loc, uint attr,
                          byte strt, byte len, cchar_ptr nm, dbg_type base )
 /*************************************************************************/
 {
@@ -786,9 +789,8 @@ extern  void _CGAPI DBAddLocField( struct_list *st, dbg_loc loc, uint attr,
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddStField( struct_list *st, dbg_loc loc, cchar_ptr nm,
-                                                   uint attr, dbg_type base )
-/***************************************************************************/
+extern  void _CGAPI DBAddStField( dbg_struct st, dbg_loc loc, cchar_ptr nm, unsigned_32 attr, dbg_type base )
+/***********************************************************************************************************/
 {
     uint          n_len;
     field_stfield *field;
@@ -806,7 +808,7 @@ extern  void _CGAPI DBAddStField( struct_list *st, dbg_loc loc, cchar_ptr nm,
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddMethod( struct_list *st, dbg_loc loc, uint attr,
+extern  void _CGAPI DBAddMethod( dbg_struct st, dbg_loc loc, uint attr,
                                  uint kind, cchar_ptr nm, dbg_type base )
 /***********************************************************************/
 {
@@ -828,8 +830,8 @@ extern  void _CGAPI DBAddMethod( struct_list *st, dbg_loc loc, uint attr,
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddNestedType( struct_list *st, cchar_ptr nm, dbg_type base )
-/*********************************************************************************/
+extern  void _CGAPI DBAddNestedType( dbg_struct st, cchar_ptr nm, dbg_type base )
+/*******************************************************************************/
 {
     uint          n_len;
     field_nested *field;
@@ -847,9 +849,10 @@ extern  void _CGAPI DBAddNestedType( struct_list *st, cchar_ptr nm, dbg_type bas
 }
 
 
-extern  void _CGAPI DBAddInheritance( struct_list *st, dbg_type inherit,
-                                  uint attr, uint kind,  dbg_loc loc ) {
-/*******************************************************************/
+extern  void _CGAPI DBAddInheritance( dbg_struct st, dbg_type inherit,
+                                  uint attr, uint kind,  dbg_loc loc )
+/**********************************************************************/
+{
     field_bclass *field;
 
 #ifndef NDEBUG
@@ -865,9 +868,10 @@ extern  void _CGAPI DBAddInheritance( struct_list *st, dbg_type inherit,
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddBaseInfo( struct_list  *st, offset vb_off,  offset esize,
-                                              dbg_type vtbl, cg_type ptr_type ){
-/*******************************************************************/
+extern  void _CGAPI DBAddBaseInfo( dbg_struct st, unsigned_32 vb_off, int esize,
+                                              dbg_type vtbl, cg_type ptr_type )
+/********************************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DBAddBaseInfo( %i,%i,%i,%i,%t)\n", st, vb_off, esize, vtbl, ptr_type );
 #endif
@@ -877,10 +881,11 @@ extern  void _CGAPI DBAddBaseInfo( struct_list  *st, offset vb_off,  offset esiz
     st->vtbl_esize = esize;
 }
 
-extern  void _CGAPI DBAddVFuncInfo( struct_list  *st, offset vfptr_off,
-                                                  int size,
-                                                  cg_type vft_cgtype ){
-/*******************************************************************/
+
+extern  void _CGAPI DBAddVFuncInfo( dbg_struct st, unsigned_32 vfptr_off,
+                                        int size, cg_type vft_cgtype )
+/********************************************************************/
+{
     field_vfunc  *field;
 
 #ifndef NDEBUG
@@ -895,9 +900,9 @@ extern  void _CGAPI DBAddVFuncInfo( struct_list  *st, offset vfptr_off,
     AddField( st, (field_any *) field );
 }
 
-extern  dbg_type _CGAPI DBEndStruct( struct_list  *st ) {
-/*******************************************************/
-
+extern  dbg_type _CGAPI DBEndStruct( dbg_struct st )
+/**************************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -908,7 +913,7 @@ extern  dbg_type _CGAPI DBEndStruct( struct_list  *st ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret =  CVEndStruct( st );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVEndStruct( st );
 #else
         ret = 0;
@@ -921,8 +926,9 @@ extern  dbg_type _CGAPI DBEndStruct( struct_list  *st ) {
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBStructForward( struct_list  *st ) {
-/********************************************************************/
+extern  dbg_type _CGAPI DBStructForward( dbg_struct st )
+/******************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DBStructForward( %i )", st );
     EchoAPI( " -> %i\n", st->me );
@@ -930,10 +936,10 @@ extern  dbg_type _CGAPI DBStructForward( struct_list  *st ) {
     return( st->me );
 }
 
-extern  enum_list * _CGAPI DBBegEnum( cg_type  tipe ) {
-/*****************************************************/
-
-    enum_list   *en;
+extern  dbg_enum _CGAPI DBBegEnum( cg_type tipe )
+/***********************************************/
+{
+    dbg_enum    en;
 
 #ifndef NDEBUG
     EchoAPI( "DBBegEnum( %t )", tipe );
@@ -950,8 +956,8 @@ extern  enum_list * _CGAPI DBBegEnum( cg_type  tipe ) {
     return( en );
 }
 
-void _CGAPI DBAddConst( enum_list *en, cchar_ptr nm, signed_32 val )
-/******************************************************************/
+void _CGAPI DBAddConst( dbg_enum en, cchar_ptr nm, signed_32 val )
+/****************************************************************/
 {
     const_entry *cons;
     uint        len;
@@ -969,8 +975,8 @@ void _CGAPI DBAddConst( enum_list *en, cchar_ptr nm, signed_32 val )
     en->num++;
 }
 
-void _CGAPI DBAddConst64( enum_list *en, cchar_ptr nm, signed_64  val )
-/*********************************************************************/
+void _CGAPI DBAddConst64( dbg_enum en, cchar_ptr nm, signed_64  val )
+/*******************************************************************/
 {
     const_entry *cons;
     uint        len;
@@ -988,9 +994,9 @@ void _CGAPI DBAddConst64( enum_list *en, cchar_ptr nm, signed_64  val )
     en->num++;
 }
 
-extern  dbg_type _CGAPI DBEndEnum( enum_list *en ) {
-/**************************************************/
-
+extern  dbg_type _CGAPI DBEndEnum( dbg_enum en )
+/**********************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -1001,7 +1007,7 @@ extern  dbg_type _CGAPI DBEndEnum( enum_list *en ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret = CVEndEnum( en );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVEndEnum( en );
 #else
         ret = 0;
@@ -1015,10 +1021,10 @@ extern  dbg_type _CGAPI DBEndEnum( enum_list *en ) {
 }
 
 
-extern  proc_list * _CGAPI DBBegProc(  cg_type call_type,  dbg_type  ret ) {
-/**************************************************************************/
-
-    proc_list   *pr;
+extern  dbg_proc _CGAPI DBBegProc( cg_type call_type, dbg_type  ret )
+/*******************************************************************/
+{
+    dbg_proc    pr;
 
 #ifndef NDEBUG
     EchoAPI( "DBBegProc( %t,%i)", call_type, ret );
@@ -1036,9 +1042,9 @@ extern  proc_list * _CGAPI DBBegProc(  cg_type call_type,  dbg_type  ret ) {
     return(pr);
 }
 
-extern  void  _CGAPI DBAddMethParms(  proc_list *pr,  dbg_type  cls, dbg_type this   ) {
-/************************************************************************/
-
+extern  void  _CGAPI DBAddMethParms( dbg_proc pr, dbg_type cls, dbg_type this )
+/*****************************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DBAddMethParms( %i, %i, %i)\n", pr, cls, this );
 #endif
@@ -1046,9 +1052,9 @@ extern  void  _CGAPI DBAddMethParms(  proc_list *pr,  dbg_type  cls, dbg_type th
     pr->this = this;
 }
 
-extern  void _CGAPI DBAddParm( proc_list *pr, dbg_type tipe ) {
+extern  void _CGAPI DBAddParm( dbg_proc pr, dbg_type tipe )
 /*********************************************************/
-
+{
     parm_entry  *parm;
     parm_entry  **owner;
 
@@ -1066,9 +1072,9 @@ extern  void _CGAPI DBAddParm( proc_list *pr, dbg_type tipe ) {
 }
 
 
-extern  dbg_type _CGAPI DBEndProc( proc_list  *pr ) {
-/***************************************************/
-
+extern  dbg_type _CGAPI DBEndProc( dbg_proc pr )
+/**********************************************/
+{
     dbg_type ret;
 
 #ifndef NDEBUG
@@ -1079,7 +1085,7 @@ extern  dbg_type _CGAPI DBEndProc( proc_list  *pr ) {
     } else if( _IsModel( DBG_CV ) ) {
         ret =  CVEndProc( pr );
     } else {
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         ret = WVEndProc( pr );
 #else
         ret = 0;

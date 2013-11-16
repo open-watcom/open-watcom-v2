@@ -37,13 +37,13 @@
 #include "cgmem.h"
 #include "data.h"
 #include "makeins.h"
+#include "namelist.h"
 
 extern  hw_reg_set      PushRegs[];
 
 extern  opcode_entry    *ResetGenEntry( instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            SuffixIns( instruction *, instruction * );
-extern  name            *AllocRegName( hw_reg_set );
 extern  void            ClearBlockBits( block_class );
 extern  uint_32         CountBits( uint_32 );
 extern  bool            IsSegReg( hw_reg_set );

@@ -51,6 +51,7 @@
 #include "dw.h"
 #include "dwarf.h"
 #include "dfdbg.h"
+#include "dfsupp.h"
 #include "cgprotos.h"
 
 #if _TARGET & _TARG_IAPX86
@@ -116,7 +117,7 @@ typedef enum {
     #include "dwreginf.h"
     DW_REG( MAX )
     #undef DW_REG
-}dw_regs;
+} dw_regs;
 
 /* lifted from dbsupp probably canbe merged */
 
@@ -172,8 +173,8 @@ static struct reg_map    HWRegValues[REG_MAP_SIZE] = {
    { HW_D( HW_GS ),  DW_REG_gs }
 };
 
-static  uint   DFRegMap( hw_reg_set hw_reg )
-/******************************************/
+static dw_regs  DFRegMap( hw_reg_set hw_reg )
+/*******************************************/
 {
     struct reg_map   *map, *end;
 
@@ -193,6 +194,7 @@ extern  void   DFOutReg( dw_loc_id locid, name *reg ) {
     hw_reg_set  hw_reg;
     hw_reg_set  hw_low;
     dw_regs     regnum;
+
     hw_reg = reg->r.reg;
 #if _TARGET & _TARG_IAPX86
     if( HW_CEqual( hw_reg, HW_ABCD ) ) {
@@ -226,16 +228,17 @@ extern  void   DFOutReg( dw_loc_id locid, name *reg ) {
     }
 }
 
-extern  void   DFOutRegInd( dw_loc_id locid, name *reg ) {
-/***********************************************/
-
+extern  void   DFOutRegInd( dw_loc_id locid, name *reg )
+/******************************************************/
+{
     dw_regs     regnum;
 
     regnum = DFRegMap(  reg->r.reg );
     DWLocOp( Client,locid,DW_LOC_breg, regnum, 0 );
 }
 
-extern uint DFStkReg( void ){
+extern uint DFStkReg( void )
+{
     dw_regs    ret;
     hw_reg_set stk;
 
@@ -243,7 +246,9 @@ extern uint DFStkReg( void ){
     ret = DFRegMap( stk );
     return( ret );
 }
-extern uint DFDisplayReg( void ){
+
+extern uint DFDisplayReg( void )
+{
     dw_regs    ret;
     hw_reg_set dsp;
 
@@ -251,6 +256,7 @@ extern uint DFDisplayReg( void ){
     ret = DFRegMap( dsp );
     return( ret );
 }
+
 #define ABBREV_NAME  "___DFABBREV"
 extern void DFAbbrevRef( void ){
 /******************************/

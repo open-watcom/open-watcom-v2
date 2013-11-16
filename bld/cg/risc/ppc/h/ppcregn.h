@@ -96,5 +96,6 @@ typedef enum ppc_regn{
      PPC_REGN_f30,
      PPC_REGN_f31,
      PPC_REGN_END,
-}ppc_regn;
-extern  ppc_regn PpcRegN( name *reg_name );
+} ppc_regn;
+
+extern  ppc_regn RegTransN( name *reg_name );

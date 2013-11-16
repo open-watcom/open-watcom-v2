@@ -33,13 +33,13 @@
 #include "coderep.h"
 #include "data.h"
 #include "zeropage.h"
+#include "namelist.h"
 
 zero_page_scheme        ZPageType;
 
 extern  name            *SAllocIndex( name *, name *, type_length, type_class_def, type_length );
 extern  name            *ScaleIndex( name *, name *, type_length, type_class_def, type_length, int, i_flags );
 extern  hw_reg_set      High64Reg( hw_reg_set );
-extern  name            *AllocRegName( hw_reg_set );
 extern  bool            SegIsCS( name * );
 
 

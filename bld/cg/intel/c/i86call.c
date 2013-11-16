@@ -104,7 +104,7 @@ static  void    Far16Parms( cn call ) {
     }
     for( parm = call->parms; parm != NULL; parm = next ) {
         next = parm->next;
-        parm->name->format = NF_ADDR;
+        parm->name->format = NF_ADDR;   /* so instruction doesn't get freed! */
         BGDone( parm->name );
         CGFree( parm );
     }

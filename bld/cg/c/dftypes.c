@@ -49,14 +49,11 @@
 #include "dwarf.h"
 #include "utils.h"
 #include "dftypes.h"
+#include "dfsupp.h"
 #include "cgprotos.h"
 
 extern  type_length     NewBase(name*);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
-extern  void            DBLocFini( dbg_loc loc );
-extern  uint            DFRegMap( hw_reg_set hw_reg );
-extern  void            DFOutReg( dw_loc_id locid, name *reg );
-extern  void            DFOutRegInd( dw_loc_id locid, name *reg );
 
 
 extern  dw_client       Client;
@@ -134,17 +131,18 @@ extern  dbg_type        DFScope( const char *name ) {
 }
 
 
-extern  void    DFDumpName( name_entry *name, dbg_type tipe ) {
+extern  void    DFDumpName( dbg_name name, dbg_type tipe )
 /***********************************************************/
-
+{
     if( name->scope == SCOPE_TYPEDEF ){
         tipe = DWTypedef( Client, tipe, name->name, 0, 0 );
     }
    name->refno = tipe; /* link in  typedef sym to type */
 }
 
-extern void DFBackRefType( name_entry *name, dbg_type tipe ){
-/******************************************************/
+extern void DFBackRefType( dbg_name name, dbg_type tipe )
+/*******************************************************/
+{
     name = name;
     tipe = tipe;
     Zoiks( ZOIKS_108 );
@@ -239,7 +237,7 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe ){
     DWLocSym( Client, locid, (dw_sym_handle)bck, DW_W_LABEL );
     DWLocOp( Client, locid, DW_LOC_plus_uconst, off );
     dw_loc = DWLocFini( Client, locid );
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     if( _IsTargetModel( FLAT_MODEL ) ) {
         dw_segloc = NULL;
     }else{
@@ -260,8 +258,9 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe ){
     return( obj );
 }
 
-extern  dbg_type    DFEndArray( array_list *ar ){
-/************************************************/
+extern  dbg_type    DFEndArray( dbg_array ar )
+/********************************************/
+{
     dw_dim_info    info;
     dw_vardim_info varinfo;
     dbg_type       lo_tipe;
@@ -344,7 +343,7 @@ static  uint   DFPtrClass( cg_type ptr_type ){
     uint        flags;
 
     if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR)
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
       && _IsTargetModel( FLAT_MODEL )  ) {
 #else
       ) {
@@ -401,8 +400,9 @@ extern  dbg_type        DFPtr( cg_type ptr_type, dbg_type base ) {
 }
 
 
-extern  void      DFBegStruct( struct_list  *st ){
-/******************************************************/
+extern  void      DFBegStruct( dbg_struct st )
+/********************************************/
+{
     dbg_type    ret;
     uint        class;
 
@@ -665,9 +665,9 @@ static int WVDFAccess( uint attr ){
     return( ret );
 }
 
-extern  dbg_type        DFEndStruct( struct_list  *st ) {
-/*******************************************************/
-
+extern  dbg_type        DFEndStruct( dbg_struct st )
+/**************************************************/
+{
     field_any      *field;
     dbg_type        ret;
     dw_loc_id       locid;
@@ -745,8 +745,9 @@ extern  dbg_type        DFEndStruct( struct_list  *st ) {
 }
 
 
-extern  dbg_type        DFEndEnum( enum_list *en ) {
-/**************************************************/
+extern  dbg_type        DFEndEnum( dbg_enum en )
+/**********************************************/
+{
     dbg_type    ret;
     type_def    *tipe_addr;
     const_entry *cons;
@@ -771,9 +772,9 @@ extern  dbg_type        DFEndEnum( enum_list *en ) {
 }
 
 
-extern  dbg_type        DFEndProc( proc_list  *pr ) {
-/***************************************************/
-
+extern  dbg_type        DFEndProc( dbg_proc pr )
+/**********************************************/
+{
     parm_entry  *parm;
     dbg_type    proc_type;
     uint        flags;

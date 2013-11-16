@@ -54,7 +54,7 @@ extern void DumpGen(struct opcode_entry*);
 extern void GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
 extern void             ObjBytes( const char *buffer, unsigned size );
-extern uint_8           RegTrans( hw_reg_set );
+extern byte             RegTrans( hw_reg_set );
 extern void             OutReloc( label_handle, axp_reloc, unsigned );
 extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );

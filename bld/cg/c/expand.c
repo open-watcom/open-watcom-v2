@@ -35,10 +35,10 @@
 #include "memcheck.h"
 #include "zoiks.h"
 #include "data.h"
+#include "namelist.h"
 
 extern  void            EXBlip(void);
 extern  instruction     *Reduce(instruction*);
-extern  name            *AllocRegName(hw_reg_set);
 extern  int             NumOperands(instruction*);
 extern  instruction     *NeedIndex(instruction*);
 extern  opcode_entry    *CodeTable(instruction*);

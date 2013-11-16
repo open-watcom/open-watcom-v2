@@ -44,31 +44,27 @@
 #include "data.h"
 #include "types.h"
 #include "makeins.h"
-#include "feprotos.h"
-#include "cgprotos.h"
 #include "objout.h"
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
-
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
 #include "wvsyms.h"
 #endif
 #include "dfsyms.h"
 #include "cv4.h"
 #include "cvsyms.h"
+#include "namelist.h"
+#include "feprotos.h"
+#include "cgprotos.h"
 
 extern  void            AddIns(instruction*);
-extern  name            *AllocRegName(hw_reg_set);
 extern  void            EmptyQueue(void);
 extern  void            InputOC(any_oc *);
 extern  bool            DBNested( bool nested );
 extern  dbg_loc         LocDupl(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);
 extern  dbg_loc         LocParm(dbg_loc,name*);
-extern  dbg_loc         DBLocInit(void);
-extern  dbg_loc         DBLocSym(dbg_loc,cg_sym_handle);
-extern  void            DBLocFini(dbg_loc);
 
 extern  struct opcode_entry   DbgInfo[];
 
@@ -399,7 +395,7 @@ extern  void    InitDbgInfo( void )
         DFInitDbgInfo();
     } else if( _IsModel( DBG_CV ) ) {
         CVInitDbgInfo();
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     } else {
         WVInitDbgInfo();
 #endif
@@ -416,7 +412,7 @@ extern  void    FiniDbgInfo( void )
         DFFiniDbgInfo();
     } else if( _IsModel( DBG_CV ) ) {
         CVFiniDbgInfo();
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     } else {
         WVFiniDbgInfo();
 #endif
@@ -513,7 +509,7 @@ extern  void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
                     DFGenStatic( sym, loc );
                 } else if( _IsModel( DBG_CV ) ) {
                     CVGenStatic( sym, loc, FALSE );
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
                 } else {
                     WVGenStatic( sym , loc );
 #endif
@@ -563,7 +559,7 @@ extern  void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
        //
     } else if( _IsModel( DBG_CV ) ) {
       //
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     } else {
         WVObjectPtr( ptr_type );
 #endif
@@ -722,7 +718,7 @@ extern  void    DbgSetBase( void )
     /* nothing */
     } else if( _IsModel( DBG_CV ) ) {
         CVSetBase();
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     } else {
         WVSetBase();
 #endif
@@ -888,7 +884,7 @@ extern  void    DbgBlkEnd( dbg_block *blk, offset lc )
         DFBlkEnd( blk, lc );
     } else if( _IsModel( DBG_CV ) ) {
         CVBlkEnd( blk, lc );
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     } else {
         WVBlkEnd( blk, lc );
 #endif
@@ -916,7 +912,7 @@ extern  void    DbgRtnEnd( dbg_rtn *rtn, offset lc )
         DFRtnEnd( rtn, lc );
     } else if( _IsModel( DBG_CV ) ) {
         CVRtnEnd( rtn, lc );
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     } else {
         WVRtnEnd( rtn, lc );
 #endif

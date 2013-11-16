@@ -89,6 +89,19 @@ extern  an      NewAddrName( void )
 }
 
 
+extern  an      NewBoolNode( void )
+/*********************************/
+{
+    an  addr;
+
+    addr = AllocFrl( &AddrNameFrl, sizeof( address_name ) );
+    addr->tipe = NULL;
+    addr->format = NF_BOOL;
+    addr->flags = 0;
+    return( addr );
+}
+
+
 extern  an      MakeTypeTempAddr( name *op, type_def *tipe )
 /**********************************************************/
 {
@@ -96,7 +109,6 @@ extern  an      MakeTypeTempAddr( name *op, type_def *tipe )
 
     addr = NewAddrName();
     addr->tipe = tipe;
-    addr->format = NF_ADDR;
     addr->u.n.name = op;
     addr->class = CL_ADDR_TEMP;
     return( addr );
@@ -128,16 +140,18 @@ extern  void    AddrFree( an node )
 {
     an  *owner;
 
-    owner = &AddrList;
-    for( ;; ) {
-        if( *owner == node ) {
-            *owner = node->link;
-            break;
+    if( node->format != NF_BOOL ) {
+        owner = &AddrList;
+        for( ;; ) {
+            if( *owner == node ) {
+                *owner = node->link;
+                break;
+            }
+            owner = &(*owner)->link;
         }
-        owner = &(*owner)->link;
-    }
-    if( node->format == NF_INS ) {
-        FreeIns( node->u.i.ins );
+        if( node->format == NF_INS ) {
+            FreeIns( node->u.i.ins );
+        }
     }
     FrlFreeSize( &AddrNameFrl, (pointer *)node, sizeof( address_name ) );
 }
@@ -245,7 +259,7 @@ extern  an      MakeGets( an dst, an src, type_def *tipe )
     ins = src->u.i.ins;
     if( src->format == NF_INS && CurrBlock->ins.hd.prev == ins ) {
         ins->result = dst_name;
-        src->format = NF_ADDR;  /*% so instruction doesn't get freed!*/
+        src->format = NF_ADDR;  /* so instruction doesn't get freed! */
     } else {
         src_name = GetValue( src, dst_name );
         if( src_name != dst_name ||
@@ -541,7 +555,6 @@ extern  an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe 
     name        *op;
 
     addr = NewAddrName();
-    addr->format = NF_ADDR;
     if( class != CG_FE ) {
         op = (name *)SAllocMemory( sym, 0, class, TypeClass( tipe ), tipe->length );
         addr->u.n.name = op;

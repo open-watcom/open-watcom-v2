@@ -55,7 +55,7 @@ extern  void            GenRET( void );
 extern  void            OutFuncStart( label_handle label, offset start, int line );
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
-extern  uint_8          RegTrans( hw_reg_set );
+extern  byte            RegTrans( hw_reg_set );
 extern  void            GenCallLabel( label_handle lbl );
 extern  void            GenCallLabelReg( pointer label, uint reg );
 extern  type_length     TempLocation( name * );

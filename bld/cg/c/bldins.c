@@ -64,8 +64,6 @@ extern  hw_reg_set      StackReg( void );
 extern  hw_reg_set      VarargsHomePtr( void );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 
-static  void    BoolFree( an b );
-
 static  type_def        *LastCmpType;
 static  unsigned_32     UnrollValue = 0;
 
@@ -252,7 +250,7 @@ static  an      FlowOut( an node, type_def *tipe ) {
     AddTarget( lbl, FALSE );
     EnLink( lbl, TRUE );
     NamesCrossBlocks();
-    BoolFree( node );
+    AddrFree( node );
     return( AddrName( temp, tipe ) );
 }
 
@@ -290,10 +288,9 @@ extern  an      BGCompare( cg_op op, an left, an rite,
     ins = MakeCondition( (opcode_defs)op, newleft, newrite, 0, 1, TypeClass( tipe ) );
     AddIns( ins );
     GenBlock( CONDITIONAL, 2 );
-    new = CGAlloc( sizeof( address_name ) );
     AddTarget( NULL, FALSE );
     AddTarget( NULL, FALSE );
-    new->format = NF_BOOL;
+    new = NewBoolNode();
     new->u.b.e = entry;
     new->u.b.t = &CurrBlock->edge[ 0 ].destination.u.lbl;
     new->u.b.f = &CurrBlock->edge[ 1 ].destination.u.lbl;
@@ -334,13 +331,11 @@ extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_
     op = GenIns( node );
     BGDone( node );
     ins = NULL;
-    #if _TARGET & _TARG_80386
-        if( class == FS ) {
-            ins = MakeCondition( OP_BIT_TEST_FALSE, op,
-                                 AllocS32Const( 0x7FFFFFFFL ),
-                                 0, 1, SW );
-        }
-    #endif
+#if _TARGET & _TARG_80386
+    if( class == FS ) {
+        ins = MakeCondition( OP_BIT_TEST_FALSE, op, AllocS32Const( 0x7FFFFFFFL ), 0, 1, SW );
+    }
+#endif
     if( ins == NULL ) {
         ins = MakeCondition( OP_CMP_EQUAL, op, AllocIntConst( 0 ), 0, 1, class );
     }
@@ -351,11 +346,11 @@ extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_
     AddTarget( lbl, FALSE );
 
     EnLink( lbl, TRUE );
-    #if _TARGET & _TARG_80386
-        if( class == FS ) {
-            class = SW;
-        }
-    #endif
+#if _TARGET & _TARG_80386
+    if( class == FS ) {
+        class = SW;
+    }
+#endif
     ins = MakeCondition( OP_CMP_LESS, op, AllocIntConst( 0 ), 0, 1, class );
     AddIns( ins );
     GenBlock( CONDITIONAL, 2 );
@@ -403,14 +398,14 @@ extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
         if( HaveCurrBlock ) {
             GenBlock( CALL_LABEL, 1 );
             AddTarget( lbl, FALSE );
-        #if 0
+#if 0
             Need to make sure that next_block != NULL when we generate the
             code for a CALL_LABEL block - see comments in GenObject
 
             if( gen ) {
                 Generate( FALSE );
             }
-        #endif
+#endif
             EnLink( AskForNewLabel(), TRUE );
         }
         break;
@@ -427,7 +422,7 @@ extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
     case O_IF_TRUE:
         *(expr->u.b.f) = CurrBlock->label;
         *(expr->u.b.t) = lbl;
-        BoolFree( expr );
+        AddrFree( expr );
         if( gen ) {
             Generate( FALSE );
         }
@@ -435,7 +430,7 @@ extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
     case O_IF_FALSE:
         *(expr->u.b.t) = CurrBlock->label;
         *(expr->u.b.f) = lbl;
-        BoolFree( expr );
+        AddrFree( expr );
         if( gen ) {
             Generate( FALSE );
         }
@@ -664,7 +659,7 @@ extern  an      BGFlow( cg_op op, an left, an rite ) {
             left->u.b.f = &CurrBlock->edge[ 0 ].destination.u.lbl;
             left->u.b.t = rite->u.b.t;
             new = left;
-            BoolFree( rite );
+            AddrFree( rite );
             EnLink( AskForNewLabel(), TRUE );
             break;
         case O_FLOW_OR:
@@ -676,7 +671,7 @@ extern  an      BGFlow( cg_op op, an left, an rite ) {
             left->u.b.t = &CurrBlock->edge[ 0 ].destination.u.lbl;
             left->u.b.f = rite->u.b.f;
             new = left;
-            BoolFree( rite );
+            AddrFree( rite );
             EnLink( AskForNewLabel(), TRUE );
             break;
         default:
@@ -717,9 +712,8 @@ extern  void    BGDone( an node ) {
 
     if( node->format == NF_BOOL ) {
         FlowOff( node );
-    } else {
-        AddrFree( node );
     }
+    AddrFree( node );
 }
 
 
@@ -730,20 +724,12 @@ extern  void    BGTrash( an node ) {
 }
 
 
-static  void    BoolFree( an b ) {
-/********************************/
-
-    CGFree( b );
-}
-
-
 extern  void    FlowOff( an name ) {
 /*****************************/
 
     *(name->u.b.t) = CurrBlock->label;
     *(name->u.b.f) = CurrBlock->label;
     NamesCrossBlocks();
-    BoolFree( name );
 }
 
 

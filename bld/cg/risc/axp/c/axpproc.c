@@ -60,7 +60,7 @@ extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
 extern void             OutPDataRec( label_handle label, uint_32 pro_size, uint_32 proc_end );
 extern  hw_reg_set      FrameBaseReg(void);
-extern  uint_8          RegTrans(hw_reg_set);
+extern  byte            RegTrans(hw_reg_set);
 extern  void            GenCallLabelReg( label_handle lbl, uint reg );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );

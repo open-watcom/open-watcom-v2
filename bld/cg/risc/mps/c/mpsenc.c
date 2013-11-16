@@ -52,7 +52,7 @@ extern void DumpInsOnly( instruction * );
 extern void DumpGen( struct opcode_entry * );
 
 extern void             ObjBytes( const void *buffer, unsigned size );
-extern uint_8           RegTrans( hw_reg_set );
+extern byte             RegTrans( hw_reg_set );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( label_handle );
 extern void             EmitDbgInfo( instruction * );

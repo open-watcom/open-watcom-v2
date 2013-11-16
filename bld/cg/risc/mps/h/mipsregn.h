@@ -97,4 +97,4 @@ typedef enum mips_regn {
     MIPS_REGN_END,
 } mips_regn;
 
-extern mips_regn MIPSRegN( name *reg_name );
+extern mips_regn RegTransN( name *reg_name );

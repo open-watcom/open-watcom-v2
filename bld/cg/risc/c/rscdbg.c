@@ -44,6 +44,8 @@
 #include "typedef.h"
 #include "dbgstrct.h"
 #include "dbcue.h"
+#include "cgprotos.h"
+
 
 extern  uint    DBSrcFile( const char *fname )
 /********************************************/
@@ -102,17 +104,18 @@ extern  dbg_type        DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type bas
     return( base );
 }
 
-struct_list     *DBBegNameStruct( const char *nm, cg_type tipe, bool is_struct ) {
-/********************************************************************************/
-
+dbg_struct DBBegNameStruct( const char *nm, cg_type tipe, bool is_struct )
+/************************************************************************/
+{
     nm = nm;
     tipe = tipe;
     is_struct = is_struct;
     return( NULL );
 }
 
-extern  dbg_type      DBStructForward( struct_list  *st ) {
-/*********************************************************/
+extern  dbg_type      DBStructForward( dbg_struct st )
+/****************************************************/
+{
     return( 0 );
 }
 

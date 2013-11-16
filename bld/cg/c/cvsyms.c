@@ -64,7 +64,6 @@ extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
 extern  void            DataBytes(unsigned,const void *);
 extern  void            DoBigLblPtr(cg_sym_handle);
-extern  void            DBLocFini( dbg_loc loc );
 extern  void            CVPutStr( cv_out *, const char * );
 extern  void            CVPutINum( cv_out *out, signed_32 num );
 extern  void            CVPutINum64( cv_out *out, signed_64 num );
@@ -363,7 +362,7 @@ static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, long disp )
 /***  local rel to  frame  **************************************************/
 #if 1     // it seems like BPREL works for AXP so I'll give it a try
 {
-//#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+//#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     cs_bprel   *ptr;
 
     ptr = StartSym(  out, SG_BPREL );
@@ -637,7 +636,7 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     tipe = FEDbgType( sym );
     ptr->proctype = tipe;
     ptr->flags.s = 0;
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
         ptr->flags.f.far_ret = TRUE;
     }

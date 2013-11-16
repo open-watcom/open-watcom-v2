@@ -44,11 +44,12 @@
 #include "typedef.h"
 #include "types.h"
 #include "dbgstrct.h"
-#include "feprotos.h"
 #include "objout.h"
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
+#include "feprotos.h"
+#include "cgprotos.h"
 
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
@@ -133,8 +134,9 @@ extern  cg_sym_handle   LocSimpStatic( dbg_loc loc ) {
 }
 
 
-extern  dbg_loc  _CGAPI DBLocInit() {
-/***********************************/
+extern  dbg_loc  _CGAPI DBLocInit( void )
+/***************************************/
+{
 #ifndef NDEBUG
     dbg_loc retn;
     EchoAPI( "DBLocInit()" );
@@ -142,15 +144,14 @@ extern  dbg_loc  _CGAPI DBLocInit() {
     EchoAPI( " -> %i\n", retn );
     return( retn );
 #else
-
     return( NULL );
 #endif
 }
 
 
-extern dbg_loc  _CGAPI DBLocSym( dbg_loc loc, cg_sym_handle sym ) {
-/*****************************************************************/
-
+extern dbg_loc  _CGAPI DBLocSym( dbg_loc loc, cg_sym_handle sym )
+/***************************************************************/
+{
     fe_attr     attr;
     name        *tmp;
 
@@ -168,9 +169,9 @@ extern dbg_loc  _CGAPI DBLocSym( dbg_loc loc, cg_sym_handle sym ) {
 }
 
 
-extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp ) {
-/*****************************************************************/
-
+extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp )
+/**************************************************************/
+{
     name        *tmp;
 
 #ifndef NDEBUG
@@ -196,8 +197,9 @@ extern void         DBSetSymLoc( cg_sym_handle sym, long off ) {
     tmp->t.location = off;
 }
 
-extern  dbg_loc _CGAPI DBLocConst( dbg_loc loc, unsigned_32 val ) {
-/******************************************************************/
+extern  dbg_loc _CGAPI DBLocConst( dbg_loc loc, unsigned_32 val )
+/***************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DBLocConst( %i, %i  )", loc, val );
 #endif
@@ -211,9 +213,9 @@ extern  dbg_loc _CGAPI DBLocConst( dbg_loc loc, unsigned_32 val ) {
 }
 
 
-extern  dbg_loc _CGAPI DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
-/***************************************************************************/
-
+extern  dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
+/**************************************************************************/
+{
     unsigned    stkop;
 
 #ifndef NDEBUG
@@ -295,9 +297,9 @@ extern  dbg_loc _CGAPI DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
 }
 
 
-extern  void _CGAPI DBLocFini( dbg_loc loc ) {
-/************************************************/
-
+extern  void _CGAPI DBLocFini( dbg_loc loc )
+/******************************************/
+{
     dbg_loc     *owner;
     dbg_loc     curr;
 

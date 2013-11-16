@@ -49,9 +49,11 @@
 #include "mipsregn.h"
 #include "dwarf.h"
 #include "dfdbg.h"
+#include "dfsupp.h"
+#include "cgprotos.h"
 
 
-#define MapRegN2dw(r)   ((dw_regs)r)
+#define MapReg2DW(r)   ((dw_regs)r)
 
 typedef enum {
     #define DW_REG( __n  )   DW_MIPS_##__n,
@@ -60,50 +62,48 @@ typedef enum {
     #undef DW_REG
 } dw_regs;
 
-extern  void            DBLocFini( dbg_loc loc );
 extern  hw_reg_set      StackReg( void );
-extern  uint_8          RegTrans( hw_reg_set reg );
+extern  byte            RegTrans( hw_reg_set reg );
 
 extern  dw_client       Client;
 
 
-extern  uint DFRegMap( hw_reg_set hw_reg )
-/****************************************/
+static dw_regs  DFRegMap( hw_reg_set hw_reg )
+/*******************************************/
 {
-    dw_regs           ret;
-
-    ret = RegTrans( hw_reg );
-    return( ret );
+    return( MapReg2DW( RegTrans( hw_reg ) ) );
 }
 
 
-extern  void   DFOutReg( dw_loc_id locid, name *reg )
-/***************************************************/
+static dw_regs  DFRegMapN( name *reg )
+/************************************/
 {
-    dw_regs     regnum;
-
-    regnum = MapRegN2dw( MIPSRegN( reg ) );
-    DWLocReg( Client, locid, regnum );
+    return( MapReg2DW( RegTransN( reg ) ) );
 }
 
 
-extern  void DFOutRegInd( dw_loc_id locid, name *reg )
+extern  void    DFOutReg( dw_loc_id locid, name *reg )
 /****************************************************/
 {
     dw_regs     regnum;
 
-    regnum = MapRegN2dw( MIPSRegN( reg ) );
+    regnum = DFRegMapN( reg );
+    DWLocReg( Client, locid, regnum );
+}
+
+
+extern  void    DFOutRegInd( dw_loc_id locid, name *reg )
+/*******************************************************/
+{
+    dw_regs     regnum;
+
+    regnum = DFRegMapN( reg );
     DWLocOp( Client, locid, DW_LOC_breg, regnum, 0 );
 }
 
 
-extern dw_regs DFStkReg( void )
-/*****************************/
+extern uint     DFStkReg( void )
+/******************************/
 {
-    dw_regs    ret;
-    hw_reg_set stk;
-
-    stk = StackReg();
-    ret = RegTrans( stk );
-    return( ret );
+    return( DFRegMap( StackReg() ) );
 }

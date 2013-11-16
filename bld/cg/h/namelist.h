@@ -68,3 +68,4 @@ extern  void    FreeAName( name *op );
 extern  bool    NameFrlFree( void );
 extern  i_flags AlignmentToFlags( type_length alignment );
 extern  type_length     FlagsToAlignment( i_flags flags );
+extern  void    SetArchIndex( name *new_r, hw_reg_set regs );

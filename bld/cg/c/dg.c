@@ -608,7 +608,7 @@ extern  dbg_type        DBScope( cchar_ptr nm )
 extern  dbg_name        DBBegName( cchar_ptr nm, dbg_type scope )
 //===============================================================
 {
-    name_entry  *name;
+    dbg_name    name;
 
     Action( "DBBegName( %s, %d )", nm, scope );
     name = CGAlloc( sizeof( name_entry ) );
@@ -618,15 +618,15 @@ extern  dbg_name        DBBegName( cchar_ptr nm, dbg_type scope )
     Action( " -> %p%n", name );
     return( name );
 }
-extern  void    DumpName( name_entry *nm, dbg_type tipe ) {
-//=========================================================
+extern  void    DumpName( dbg_name nm, dbg_type tipe ) {
+//======================================================
 
     TypDbg( "(%d) Type Name '%s' scope==%d, type==%d%n", ++TypeIdx,
             nm->name, nm->scope, tipe );
     nm->refno = TypeIdx;
 }
-extern  dbg_type        DBForward( name_entry *nm ) {
-//===================================================
+extern  dbg_type        DBForward( dbg_name nm ) {
+//================================================
 
     Action( "DBForward( %p )", nm );
     if( nm->refno == DBG_NIL_TYPE ) {
@@ -635,8 +635,8 @@ extern  dbg_type        DBForward( name_entry *nm ) {
     Action( " -> %d%n", nm->refno );
     return( nm->refno );
 }
-extern  dbg_type        DBEndName( name_entry *nm, dbg_type tipe ) {
-//==================================================================
+extern  dbg_type        DBEndName( dbg_name nm, dbg_type tipe ) {
+//===============================================================
 
     dbg_type    retv;
 

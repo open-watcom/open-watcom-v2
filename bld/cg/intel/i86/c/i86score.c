@@ -35,8 +35,8 @@
 #include "pattern.h"
 #include "data.h"
 #include "makeins.h"
+#include "namelist.h"
 
-extern  name            *AllocRegName( hw_reg_set );
 extern  name            *NearSegment( void );
 extern  hw_reg_set      HighReg( hw_reg_set );
 extern  hw_reg_set      LowReg( hw_reg_set );

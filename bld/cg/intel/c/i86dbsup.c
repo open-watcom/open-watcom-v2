@@ -60,7 +60,6 @@ extern  void            DataBytes(unsigned,const void *);
 extern  void            DoBigBckPtr(back_handle,offset);
 extern  type_length     NewBase(name*);
 extern  int             ParmsAtPrologue( void ) ;
-extern  void            DBLocFini( dbg_loc loc );
 
 
 static  temp_buff       *CurrBuff;

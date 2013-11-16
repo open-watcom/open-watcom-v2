@@ -34,8 +34,7 @@
 #include "score.h"
 #include "pattern.h"
 #include "data.h"
-
-extern  name            *AllocRegName( hw_reg_set );
+#include "namelist.h"
 
 
 extern  void    ScInitRegs( score *sc )

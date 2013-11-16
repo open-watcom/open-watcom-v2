@@ -36,6 +36,7 @@
 #include "data.h"
 #include "makeins.h"
 #include "foldins.h"
+#include "namelist.h"
 
 enum allocation_state {
     ALLOC_DONE,
@@ -76,7 +77,6 @@ extern  void            FixGenEntry(instruction*);
 extern  int             NumOperands(instruction*);
 extern  void            CalcSavings(conflict_node*);
 extern  hw_reg_set      LowOffsetReg(hw_reg_set);
-extern  name            *AllocRegName(hw_reg_set);
 extern  bool            PropagateMoves(void);
 extern  bool            PropRegsOne(void);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);

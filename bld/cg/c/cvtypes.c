@@ -62,7 +62,6 @@ extern  void        ChkDbgSegSize( offset, bool );
 extern  void        DataInt(short_offset);
 extern  void        LocDump( dbg_loc );
 extern  dbg_loc     LocDupl( dbg_loc );
-extern  void        DBLocFini( dbg_loc loc );
 extern  offset      LocSimpField( dbg_loc );
 extern  void        DataBytes(unsigned,const void *);
 extern  void        CVSymIConst( const char *nm, long val, dbg_type tipe );
@@ -539,8 +538,8 @@ extern  dbg_type    CVScope( const char *name )
 }
 
 
-extern  void    CVDumpName( name_entry *name, dbg_type tipe )
-/***********************************************************/
+extern  void    CVDumpName( dbg_name name, dbg_type tipe )
+/********************************************************/
 {
     cv_out          out[1];
     ct_modifier     *mod;
@@ -563,8 +562,8 @@ extern  void    CVDumpName( name_entry *name, dbg_type tipe )
     name->refno = tipe;
 }
 
-extern void CVBackRefType( name_entry *name, dbg_type tipe )
-/**********************************************************/
+extern void CVBackRefType( dbg_name name, dbg_type tipe )
+/*******************************************************/
 {
     long_offset     here;
     segment_id      old;
@@ -908,8 +907,8 @@ static  lf_values   ArrayDimL( signed_32  low, signed_32  hi )
     return( ret );
 }
 
-static  dbg_type    CVDimVarLU( array_list *ar )
-/**********************************************/
+static  dbg_type    CVDimVarLU( dbg_array ar )
+/********************************************/
 {
     cv_out         out[1];
     ct_dimvarlu    *var;
@@ -956,8 +955,8 @@ static  dbg_type    CVDimVarLU( array_list *ar )
     return( ++TypeIdx );
 }
 
-static  dbg_type    CVDimConLU( array_list *ar )
-/**********************************************/
+static  dbg_type    CVDimConLU( dbg_array ar )
+/********************************************/
 {
     cv_out          out[1];
     ct_dimconlu     *con;
@@ -987,8 +986,8 @@ static  dbg_type    CVDimConLU( array_list *ar )
     return( ++TypeIdx );
 }
 
-extern  dbg_type    CVEndArray( array_list *ar )
-/**********************************************/
+extern  dbg_type    CVEndArray( dbg_array ar )
+/********************************************/
 {
     dbg_type        dims;
 
@@ -1459,8 +1458,8 @@ static lf_values MkVTShape( cv_out *out, field_vfunc *vf )
     return( vshape );
 }
 
-static int  MkFlist( struct_list *st )
-/************************************/
+static int  MkFlist( dbg_struct st )
+/**********************************/
 {
     field_any         *field;
     field_any         *old;
@@ -1643,8 +1642,8 @@ static  field_any  *UnLinkMethod( field_any **owner, const char *name )
     return( curr );
 }
 
-static  int   SortMethods( struct_list *st  )
-/*******************************************/
+static  int   SortMethods( dbg_struct st )
+/****************************************/
 {
     field_any  *curr;
     field_any  *next;
@@ -1698,9 +1697,9 @@ static int  FlistCount( field_any *field )
     return( count );
 }
 
-extern  dbg_type    CVEndStruct( struct_list  *st ) {
-/*******************************************************/
-
+extern  dbg_type    CVEndStruct( dbg_struct st )
+/**********************************************/
+{
     lf_values        flisti;
     lf_values        hd;
     lf_values        vshape;
@@ -1769,8 +1768,8 @@ static  const_entry  *RevEnums( const_entry *cons )
     return( head );
 }
 
-extern  dbg_type    CVEndEnum( enum_list *en )
-/********************************************/
+extern  dbg_type    CVEndEnum( dbg_enum en )
+/******************************************/
 {
     const_entry     *cons;
     const_entry     *next;
@@ -1822,8 +1821,8 @@ extern  dbg_type    CVEndEnum( enum_list *en )
 }
 
 
-extern  dbg_type    CVEndProc( proc_list  *pr )
-/*********************************************/
+extern  dbg_type    CVEndProc( dbg_proc pr )
+/******************************************/
 {
     parm_entry  *parm;
     parm_entry  *next;
@@ -1847,7 +1846,7 @@ extern  dbg_type    CVEndProc( proc_list  *pr )
         CGFree( parm );
     }
     EndTypeString( out );
-#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     if( pr->call == TY_NEAR_CODE_PTR ) {
         call = CV_NEARC;
     } else {

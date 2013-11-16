@@ -51,7 +51,7 @@ extern void DumpGen( struct opcode_entry * );
 extern void GenCondJump( instruction * );
 
 extern void             ObjBytes( const void *buffer, int size );
-extern uint_8           RegTrans( hw_reg_set );
+extern byte             RegTrans( hw_reg_set );
 extern void             OutReloc( label_handle, ppc_reloc, unsigned );
 extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
@@ -61,7 +61,7 @@ extern void             DbgBlkBeg( dbg_block *blk, offset lc );
 extern void             DbgBlkEnd( dbg_block *blk, offset lc );
 extern void             EmitDbgInfo( instruction * );
 extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
-extern  void            GenCondJump( instruction *cond );
+extern void             GenCondJump( instruction *cond );
 
 extern type_class_def   Unsigned[];
 

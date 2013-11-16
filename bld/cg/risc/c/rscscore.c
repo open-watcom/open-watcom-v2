@@ -35,8 +35,8 @@
 #include "score.h"
 #include "pattern.h"
 #include "data.h"
+#include "namelist.h"
 
-extern  name            *AllocRegName(hw_reg_set);
 
 extern  bool    MultiIns( instruction *ins ) {
 /********************************************/

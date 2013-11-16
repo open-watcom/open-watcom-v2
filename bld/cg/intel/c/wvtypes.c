@@ -181,9 +181,9 @@ extern  dbg_type        WVScope( const char *name ) {
 }
 
 
-extern  void    WVDumpName( name_entry *name, dbg_type tipe ) {
-/***********************************************************/
-
+extern  void    WVDumpName( dbg_name name, dbg_type tipe )
+/********************************************************/
+{
     temp_buff   temp;
 
     NewType( &temp, WT_NAME + NAME_NAME );
@@ -200,8 +200,9 @@ extern  void    WVDumpName( name_entry *name, dbg_type tipe ) {
     EndType( TRUE );
 }
 
-extern void WVBackRefType( name_entry *name, dbg_type tipe ){
-/******************************************************/
+extern void WVBackRefType( dbg_name name, dbg_type tipe )
+/*******************************************************/
+{
     offset      here;
     segment_id  old;
 
@@ -317,9 +318,9 @@ extern  dbg_type        WVSubRange( signed_32 lo, signed_32 hi,
     return( TypeIdx );
 }
 #if 0
-static  void    ReverseDims( array_list *ar  ){
-/***********************************************/
-
+static  void    ReverseDims( dbg_array ar )
+/*****************************************/
+{
     dim_any   *curr;
     dim_entry *next;
     dim_entry *head;
@@ -336,8 +337,9 @@ static  void    ReverseDims( array_list *ar  ){
     ar->list = head;
 }
 #endif
-extern  dbg_type    WVEndArray( array_list *ar ){
-/************************************************/
+extern  dbg_type    WVEndArray( dbg_array ar )
+/********************************************/
+{
     dim_any   *dim;
     dbg_type  ret = 0;
     dbg_type  sub;
@@ -429,9 +431,9 @@ static  void    AddField( field_any **owner, field_any *field  ){
     *owner = field;
 }
 
-static  void    SortFields( struct_list *st  ){
-/***********************************************/
-
+static  void    SortFields( dbg_struct st )
+/*****************************************/
+{
     field_any   *curr;
     field_any   *next;
     field_any   *head;
@@ -453,9 +455,9 @@ static  void    SortFields( struct_list *st  ){
 }
 
 
-extern  dbg_type        WVEndStruct( struct_list  *st ) {
-/*******************************************************/
-
+extern  dbg_type        WVEndStruct( dbg_struct st )
+/**************************************************/
+{
     field_any   *field;
     uint        class;
     temp_buff   temp;
@@ -526,9 +528,9 @@ extern  dbg_type        WVEndStruct( struct_list  *st ) {
 }
 
 
-extern  dbg_type        WVEndEnum( enum_list *en ) {
-/**************************************************/
-
+extern  dbg_type        WVEndEnum( dbg_enum en )
+/**********************************************/
+{
     const_entry *cons;
     uint        class;
     temp_buff   temp;
@@ -559,16 +561,16 @@ extern  dbg_type        WVEndEnum( enum_list *en ) {
 }
 
 
-extern  dbg_type        WVEndProc( proc_list  *pr ) {
-/***************************************************/
-
+extern  dbg_type        WVEndProc( dbg_proc pr )
+/**********************************************/
+{
     parm_entry  *parm;
     temp_buff   temp;
     dbg_type    proc_type;
 
     if( pr->call == TY_NEAR_CODE_PTR ) {
         NewType( &temp, WT_PROCEDURE + PROC_NEAR );
-   } else {
+    } else {
         NewType( &temp, WT_PROCEDURE + PROC_FAR );
     }
     proc_type = TypeIdx;

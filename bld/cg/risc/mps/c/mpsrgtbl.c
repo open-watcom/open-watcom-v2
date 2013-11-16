@@ -835,8 +835,8 @@ extern  void InitRegTbl( void )
 }
 
 
-extern  uint_8 RegTrans( hw_reg_set reg )
-/***************************************/
+extern  byte    RegTrans( hw_reg_set reg )
+/****************************************/
 {
     int                 i;
 
@@ -856,8 +856,8 @@ extern  uint_8 RegTrans( hw_reg_set reg )
 }
 
 
-extern  mips_regn MIPSRegN( name *reg_name )
-/*******************************************
+extern  mips_regn RegTransN( name *reg_name )
+/********************************************
  * Translate reg name to enum name
  */
 {
@@ -873,4 +873,10 @@ extern  mips_regn MIPSRegN( name *reg_name )
     }
     _Zoiks( ZOIKS_031 );
     return( MIPS_REGN_END );
+}
+
+
+extern  void SetArchIndex( name *new_r, hw_reg_set regs )
+{
+    new_r->r.arch_index = RegTrans( regs );
 }

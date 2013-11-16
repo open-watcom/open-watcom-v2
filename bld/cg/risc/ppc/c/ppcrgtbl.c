@@ -771,8 +771,8 @@ extern  void            InitRegTbl( void )
 {
 }
 
-extern  uint_8          RegTrans( hw_reg_set reg )
-/************************************************/
+extern  byte    RegTrans( hw_reg_set reg )
+/****************************************/
 {
     int                 i;
 
@@ -785,9 +785,9 @@ extern  uint_8          RegTrans( hw_reg_set reg )
     return( 0 );
 }
 
-extern  ppc_regn PpcRegN( name *reg_name )
-/****************************************/
-/** Translate reg name to enum name***/
+extern  ppc_regn RegTransN( name *reg_name )
+/******************************************/
+/***** Translate reg name to enum name ****/
 {
     hw_reg_set reg;
     int       i;
@@ -810,4 +810,10 @@ extern hw_reg_set ParmRegConflicts( hw_reg_set r )
 /************************************************/
 {
     return( r );
+}
+
+
+extern  void SetArchIndex( name *new_r, hw_reg_set regs )
+{
+    new_r->r.arch_index = RegTrans( regs );
 }

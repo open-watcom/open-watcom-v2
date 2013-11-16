@@ -97,4 +97,4 @@ typedef enum axp_regn{
      AXP_REGN_f31,
      AXP_REGN_END,
 }axp_regn;
-extern  axp_regn AxpRegN( name *reg_name );
+extern  axp_regn RegTransN( name *reg_name );

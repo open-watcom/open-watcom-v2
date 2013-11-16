@@ -517,7 +517,7 @@ extern  void            PushParms( pn parm, call_state *state ) {
                     }
                     push_ins = PushOneParm( ins, ins->result, ins->result->n.name_class, parm->offset, state );
                 }
-                addr->format = NF_ADDR;
+                addr->format = NF_ADDR; /* so instruction doesn't get freed! */
                 BGDone( addr );
                 parm->ins = push_ins;
             }
@@ -602,7 +602,6 @@ extern  void    ParmIns( pn parm, call_state *state ) {
                 AddIns( ins );
             }
 #endif
-            addr->format = NF_ADDR;
 #if _TARGET & _TARG_80386
             if( state->attr & ROUTINE_STACK_RESERVE ) {
                 // this is for the stupid OS/2 _Optlink calling convention
@@ -611,6 +610,7 @@ extern  void    ParmIns( pn parm, call_state *state ) {
 #else
             state = state;
 #endif
+            addr->format = NF_ADDR; /* so instruction doesn't get freed! */
             BGDone( addr );
             parm->ins = ins;
         }
@@ -782,7 +782,7 @@ static void SplitStructParms( pn *parm_list, call_state *state )
                 parm->alignment = 8;
             }
             *last_parm = BustUpStruct( parm, class, tipe );
-            name->format = NF_ADDR;
+            name->format = NF_ADDR; /* so instruction doesn't get freed! */
             BGDone( name );
             CGFree( parm );
             parm = *last_parm;

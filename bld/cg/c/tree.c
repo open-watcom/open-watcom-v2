@@ -1988,9 +1988,9 @@ an  TNCompare( tn node )
             rite = NotAddrGen( node->u2.t.rite );
             left = NotAddrGen( node->u.left );
         }
-        retv = (an)BGCompare( node->u2.t.op, left, rite, entry, left->tipe );
+        retv = BGCompare( node->u2.t.op, left, rite, entry, left->tipe );
     } else {
-        retv = (an)Boolean( Arithmetic( retv, TypeInteger ), entry );
+        retv = Boolean( Arithmetic( retv, TypeInteger ), entry );
     }
     return( retv );
 }

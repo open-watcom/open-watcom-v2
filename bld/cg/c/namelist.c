@@ -42,7 +42,6 @@ extern  void            FreeTable(cg_sym_handle);
 extern  type_class_def  RegClass(hw_reg_set);
 extern  type_def        *ClassType(type_class_def);
 extern  pointer         LkAddBack(cg_sym_handle,pointer);
-extern  uint_8          RegTrans( hw_reg_set );
 
 static  pointer         *FrlHead[N_INDEXED+1];
 static  pointer         *ConstDefnFrl;
@@ -536,7 +535,7 @@ extern  name    *AllocRegName( hw_reg_set regs ) {
     new_r->r.reg = regs;
     new_r->r.reg_index = -1;
 #if _TARGET & _TARG_RISC
-    new_r->r.arch_index = RegTrans( regs );
+    SetArchIndex( new_r, regs );
 #endif
     return( new_r );
 }

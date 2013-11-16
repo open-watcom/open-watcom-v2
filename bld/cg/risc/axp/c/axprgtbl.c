@@ -760,9 +760,9 @@ extern  void            InitRegTbl() {
 
 }
 
-extern  uint_8          RegTrans( hw_reg_set reg ) {
-/**************************************************/
-
+extern  byte            RegTrans( hw_reg_set reg )
+/************************************************/
+{
     int                 i;
 
     /*
@@ -777,9 +777,15 @@ extern  uint_8          RegTrans( hw_reg_set reg ) {
     return( 0 );
 }
 
+extern  void SetArchIndex( name *new_r, hw_reg_set regs )
+{
+    new_r->r.arch_index = RegTrans( regs );
+}
 
-extern  axp_regn AxpRegN( name *reg_name ){
-/** Translate reg name to enum name***/
+
+extern  axp_regn RegTransN( name *reg_name )
+/***** Translate reg name to enum name ****/
+{
     hw_reg_set reg;
     int       i;
     reg = reg_name->r.reg;
@@ -793,4 +799,3 @@ extern  axp_regn AxpRegN( name *reg_name ){
     _Zoiks( ZOIKS_031 );
     return( AXP_REGN_END );
 }
-

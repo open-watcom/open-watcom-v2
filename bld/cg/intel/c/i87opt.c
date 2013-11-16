@@ -38,6 +38,7 @@
 #include "makeins.h"
 #include "data.h"
 #include "x87.h"
+#include "namelist.h"
 
 
 extern  name            *Parm8087[];
@@ -47,7 +48,6 @@ extern  int             Max87Stk;
 
 extern  int             FPRegNum(name*);
 extern  void            DoNothing(instruction*);
-extern  name            *AllocRegName(hw_reg_set);
 extern  void            BGDone(an);
 extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            AddIns(instruction*);
@@ -191,7 +191,7 @@ static  int     FPPushImmed( pn parm ) {
                 addr->u.i.ins->result = AllocRegName( HW_ST0 );
                 Pushes( addr->u.i.ins );
                 parm->ins = addr->u.i.ins;
-                addr->format = NF_ADDR;
+                addr->format = NF_ADDR; /* so instruction doesn't get freed! */
                 BGDone( addr );
                 ++parms;
             }
@@ -210,11 +210,10 @@ static  instruction     *PushDelayed( instruction *ins, an addr, call_state *sta
     if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
         ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
     }
-    ins = MakeMove( ins->result, AllocRegName( HW_ST0 ),
-                TypeClass( addr->tipe ) );
+    ins = MakeMove( ins->result, AllocRegName( HW_ST0 ), TypeClass( addr->tipe ) );
     Pushes( ins );
     AddIns( ins );
-    addr->format = NF_ADDR; /* so ins doesn't get freed*/
+    addr->format = NF_ADDR; /* so instruction doesn't get freed! */
     BGDone( addr );
 #if _TARGET & _TARG_80386
     if( state->attr & ROUTINE_STACK_RESERVE ) {

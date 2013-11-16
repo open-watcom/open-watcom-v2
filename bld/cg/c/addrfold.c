@@ -277,7 +277,6 @@ extern  an      AddrName( name *op, type_def *tipe ) {
             addr->format = NF_NAME;
         } else if( tipe->length == WORD_SIZE ) {
             addr->u.n.name = op;
-            addr->format = NF_ADDR;
             if( op->n.class == N_TEMP ) {
                 addr->class = CL_TEMP_OFFSET;
             } else {
@@ -286,7 +285,6 @@ extern  an      AddrName( name *op, type_def *tipe ) {
 #if WORD_SIZE == 2
         } else if( tipe->length == 4 ) {
             addr->u.n.name = op;
-            addr->format = NF_ADDR;
             addr->class = CL_VALUE4;
 #endif
         } else {
