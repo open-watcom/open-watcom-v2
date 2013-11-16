@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-extern  void            DFOutReg( dw_loc_id locid, name *reg );
-extern  void            DFOutRegInd( dw_loc_id locid, name *reg );
-extern  uint            DFStkReg( void );
+extern void         DFOutReg( dw_loc_id locid, name *reg );
+extern void         DFOutRegInd( dw_loc_id locid, name *reg );
+extern uint         DFStkReg( void );
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
-extern  uint            DFDisplayReg( void );
+extern uint         DFDisplayReg( void );
 #endif
