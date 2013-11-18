@@ -164,8 +164,8 @@ void DbgDumpOperandStack( void )        // dump PPEXPN_OPERAND_STACK
 
     if( PragDbgToggle.ppexpn ) {
         Stack_forall( HeadOperand, cur ) {
-            printf("uval: %d sval %d no_sign %d Pos %d\n", cur->value.uval,
-                    cur->value.sval, cur->value.no_sign, cur->loc.pos );
+            printf("uval: %d sval %d no_sign %d Pos %d\n", cur->value.u.uval,
+                    cur->value.u.sval, cur->value.no_sign, cur->loc.pos );
         }
     }
 }

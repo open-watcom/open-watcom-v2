@@ -165,12 +165,11 @@ static char const* _unr_use( UNR_USE type )
 
 static void _printAction( RES_ACT const * ra, char const * msg )
 {
-    if( PragDbgToggle.callgraph_scan
-     && ra != NULL ) {
+    if( PragDbgToggle.callgraph_scan && ra != NULL ) {
         printf( "RES_ACT[%x] %s %x %s\n"
               , ra
               , _res_type( ra->type )
-              , ra->node
+              , ra->u.node
               , msg );
     }
 }
@@ -208,7 +207,7 @@ static void _printUnrUsage( UNR_USAGE const *fu, char const * msg )
         printf( "UNR_USAGE[%x] %s %x %s\n"
               , fu
               , _unr_use( fu->type )
-              , fu->node
+              , fu->u.node
               , msg );
     }
 }
@@ -257,12 +256,16 @@ static boolean _printCallNode
     return FALSE;
 }
 
+#define _printAction1   _printAction
+#define _printUnrUsage1 _printUnrUsage
+
 #else
 
 #define _print(a)
 #define _res_type(a)
 #define _unr_use(a)
 #define _printAction(a,b)
+#define _printAction1(a,b)      a
 #define _printScopeRes(a,b)
 #define _printScopeResAll(a,b)
 #define _printFnUsage(a,b)
@@ -270,6 +273,7 @@ static boolean _printCallNode
 #define _printFunction(a,b)
 #define _printCallNode(a,b)
 #define _printUnrUsage(a,b)
+#define _printUnrUsage1(a,b)    a
 
 #endif
 
@@ -376,16 +380,13 @@ static CALLNODE* makeThrowFun   // FUNCTION BECOMES A THROWING FUNCTION
     ( CALLNODE* owner )         // - owner
 {
     SYMBOL fun;                 // - owner symbol
-    RES_ACT* res;               // - resolution action
 
     fun = owner->base.object;
     fun = symDefaultBase( fun );
-    DbgVerify( ! ( fun->flag & SF_NO_LONGJUMP )
-             , "makeThrowFun -- has SF_NO_LONGJUMP" );
+    DbgVerify( ! ( fun->flag & SF_NO_LONGJUMP ), "makeThrowFun -- has SF_NO_LONGJUMP" );
     if( ! ( fun->flag & SF_LONGJUMP ) ) {
         fun->flag |= SF_LONGJUMP;
-        res = pushActionCaller( owner, RES_FN_TH );
-        _printAction( res, "Function resolved: throwable" );
+        _printAction1( pushActionCaller( owner, RES_FN_TH ), "Function resolved: throwable" );
         CgResolve();
     }
     return owner;
@@ -396,16 +397,13 @@ static CALLNODE* makeNonThrowFun// FUNCTION BECOMES A NON-THROWING FUNCTION
     ( CALLNODE* owner )         // - owner
 {
     SYMBOL fun;                 // - owner symbol
-    RES_ACT* res;               // - resolution action
 
     fun = owner->base.object;
     fun = symDefaultBase( fun );
-    DbgVerify( ! ( fun->flag & SF_LONGJUMP )
-             , "makeNonThrowFun -- has SF_LONGJUMP" );
+    DbgVerify( ! ( fun->flag & SF_LONGJUMP ), "makeNonThrowFun -- has SF_LONGJUMP" );
     if( ! ( fun->flag & SF_NO_LONGJUMP ) ) {
         fun->flag |= SF_NO_LONGJUMP;
-        res = pushActionCaller( owner, RES_FN_NT );
-        _printAction( res, "Function resolved: non-throwable" );
+        _printAction1( pushActionCaller( owner, RES_FN_NT ), "Function resolved: non-throwable" );
         CgResolve();
     }
     return owner;
@@ -651,11 +649,8 @@ static void addFnUsageSc        // SCOPE PROCESSING AFTER FN RESOLUTION
     ( CALLNODE* node            // - node for unresolved function
     , SCOPE_RES* sr )           // - affected scope
 {
-    UNR_USAGE* use;             // - allocated usage
-
-    ++ sr->toresolve;
-    use = addFnUsage( FNUSE_SCOPE, node, sr );
-    _printUnrUsage( use, "function/scope resolution" );
+    ++sr->toresolve;
+    _printUnrUsage1( addFnUsage( FNUSE_SCOPE, node, sr ), "function/scope resolution" );
 }
 
 
@@ -729,16 +724,13 @@ static void resolveCall         // RESOLVE A CALL, IF POSSIBLE
     , SYMBOL fun                // - function
     , CALLNODE* called )        // - NULL or node for unresolved function
 {
-    UNR_USAGE* use;             // - new usage
-
     fun = symDefaultBase( fun );
     if( fun->flag & SF_LONGJUMP ) {
         makeThrowFun( caller );
     } else if( fun->flag & SF_NO_LONGJUMP ) {
         // do nothing
     } else {
-        use  = addFnUsage( FNUSE_CALL, called, caller );
-        _printUnrUsage( use, "unresolved call" );
+        _printUnrUsage1( addFnUsage( FNUSE_CALL, called, caller ), "unresolved call" );
     }
 }
 
@@ -748,15 +740,12 @@ static void resolveCallEnc      // RESOLVE ENCLOSED CALL, IF POSSIBLE
     , CALLNODE* called          // - node for "fun" if unresolved
     , SYMBOL fun )              // - function called
 {
-    UNR_USAGE* use;             // - a use
-
     if( 0 != sr->dtorables ) {
         fun = symDefaultBase( fun );
         if( called == NULL ) {
             resolvedCallInScope( fun, sr );
         } else {
-            use = addFnUsage( FNUSE_CALL_SCOPE, called, sr );
-            _printUnrUsage( use, "call after dtorable" );
+            _printUnrUsage1( addFnUsage( FNUSE_CALL_SCOPE, called, sr ), "call after dtorable" );
             addFnUsageSc( called, sr );
         }
     }
@@ -769,7 +758,6 @@ void CgResCall                  // ADD: CALL TO RESOLVE
 {
     SCOPE_RES* sr;              // - an open scope
     CALLNODE* called;           // - NULL or node for unresolved function
-    UNR_USAGE* use;             // - a use
 
     fun = symDefaultBase( fun );
     if( resolveSymbol( fun, &called )
@@ -780,8 +768,7 @@ void CgResCall                  // ADD: CALL TO RESOLVE
                 if( called == NULL ) {
                     resolvedCallInStmt( fun, sr );
                 } else {
-                    use = addFnUsage( FNUSE_CALL_TEMP, called, sr );
-                    _printUnrUsage( use, "call in statement" );
+                    _printUnrUsage1( addFnUsage( FNUSE_CALL_TEMP, called, sr ), "call in statement" );
                     addFnUsageSc( called, sr );
                 }
             } else {
@@ -822,10 +809,7 @@ static void unresolvedDtor      // PROCESS AN UNRESOLVED DTOR
     , SCOPE_RES* sr             // - it's scope
     , UNR_USE type )            // - type of scope usage
 {
-    UNR_USAGE* use;             // - allocated usage
-
-    use = addScUsage( type, sr, symDefaultBase( dtor ) );
-    _printUnrUsage( use, "unresolved dtor usage" );
+    _printUnrUsage1( addScUsage( type, sr, symDefaultBase( dtor ) ), "unresolved dtor usage" );
     addFnUsageSc( dtornode, sr );
 }
 
@@ -853,7 +837,6 @@ static void resolveDtorBlk      // ADD: DTOR IN SCOPE TO RESOLVE
     SCOPE_RES* sr;              // - an open scope
     boolean top_scope;          // - TRUE ==> is top scope
     CALLNODE* called;           // - NULL or node for unresolved dtor
-    UNR_USAGE* use;             // - a use
 
     fun = symDefaultBase( fun );
     if( resolveSymbol( fun, &called ) ) {
@@ -861,8 +844,7 @@ static void resolveDtorBlk      // ADD: DTOR IN SCOPE TO RESOLVE
         DbgVerify( NULL != sr, "CgResDtorBlk -- no scope" );
         if( fun->flag & SF_FN_LONGJUMP ) {
             resolvedDtorBlk( fun, sr );
-            use = addScUsage( SCUSE_DTOR_BLK, sr, fun );
-            _printUnrUsage( use, "resolved blk dtor" );
+            _printUnrUsage1( addScUsage( SCUSE_DTOR_BLK, sr, fun ), "resolved blk dtor" );
         } else {
             unresolvedDtor( fun, called, sr, SCUSE_DTOR_BLK );
         }
@@ -870,8 +852,7 @@ static void resolveDtorBlk      // ADD: DTOR IN SCOPE TO RESOLVE
         top_scope = TRUE;
         OpenScopesIterBeg( sr ) {
             if( ! top_scope ) {
-                DbgVerify( ! sr->statement
-                         , "CgResDtorBlk -- statement scope" );
+                DbgVerify( ! sr->statement, "CgResDtorBlk -- statement scope" );
                 resolveCallEnc( sr, called, fun );
             }
             top_scope = FALSE;
@@ -889,7 +870,6 @@ static void resolveDtorStmt     // ADD: DTOR IN STATEMENT TO RESOLVE
     boolean top_scope;          // - TRUE ==> is top scope
     CALLNODE* dtornode;         // - NULL or node for unresolved dtor
     CALLNODE* ctornode;         // - NULL or node for unresolved ctor
-    UNR_USAGE* use;             // - a use
 
     dtor = symDefaultBase( dtor );
     ctor = symDefaultBase( ctor );
@@ -901,8 +881,7 @@ static void resolveDtorStmt     // ADD: DTOR IN STATEMENT TO RESOLVE
         DbgVerify( sr->statement, "CgResDtorStmt -- no statement scope" );
         if( dtor->flag & SF_FN_LONGJUMP ) {
             resolvedDtor( dtor, sr );
-            use = addScUsage( SCUSE_DTOR_TEMP, sr, dtor );
-            _printUnrUsage( use, "resolved stmt dtor" );
+            _printUnrUsage1( addScUsage( SCUSE_DTOR_TEMP, sr, dtor ), "resolved stmt dtor" );
         } else {
             unresolvedDtor( dtor, dtornode, sr, SCUSE_DTOR_TEMP );
         }
@@ -920,15 +899,13 @@ static void resolveDtorStmt     // ADD: DTOR IN STATEMENT TO RESOLVE
                     if( ctornode == NULL ) {
                         resolvedCtorInStmt( ctor, sr );
                     } else {
-                        use = addFnUsage( FNUSE_CALL_CTOR, ctornode, sr );
-                        _printUnrUsage( use, "ctor in statement" );
+                        _printUnrUsage1( addFnUsage( FNUSE_CALL_CTOR, ctornode, sr ), "ctor in statement" );
                         addFnUsageSc( ctornode, sr );
                     }
                 }
                 top_scope = FALSE;
             } else {
-                DbgVerify( ! sr->statement
-                         , "CgResDtorBlk -- statement scope" );
+                DbgVerify( ! sr->statement, "CgResDtorBlk -- statement scope" );
                 if( NULL != ctor ) {
                     resolveCallEnc( sr, ctornode, ctor );
                 }
@@ -943,7 +920,6 @@ static void resolveDtorComponent// ADD: DTOR IN COMPONENT TO RESOLVE
     ( SYMBOL dtor )             // - function (DTOR)
 {
     SCOPE_RES* sr;              // - an open scope
-    UNR_USAGE* use;             // - a use
     CALLNODE* dtornode;         // - callnode for dtor
 
     dtor = symDefaultBase( dtor );
@@ -954,8 +930,7 @@ static void resolveDtorComponent// ADD: DTOR IN COMPONENT TO RESOLVE
 //      DbgVerify( ! sr->statement, "CgResDtorComponent -- statement scope" );
         if( dtor->flag & SF_FN_LONGJUMP ) {
             resolvedDtor( dtor, sr );
-            use = addScUsage( SCUSE_DTOR_COMPONENT, sr, dtor );
-            _printUnrUsage( use, "resolved component dtor" );
+            _printUnrUsage1( addScUsage( SCUSE_DTOR_COMPONENT, sr, dtor ), "resolved component dtor" );
         } else {
             _print( "component dtor" );
             unresolvedDtor( dtor, dtornode, sr, SCUSE_DTOR_COMPONENT );
@@ -1123,19 +1098,14 @@ static void resolveScopeNoGen   // RESOLUTIONS FOR SCOPE WITHOUT STATE TABLE
           // the statement scope might be no-gen while the block scope
           // is gen. We don't yet have support for statement scopes in
           // CGBKMAIN (ctor10.c tests this)
-          #if 0
+#if 0
             CgrfDtorCall( node, su->u.fun );
             _printFunction( su->u.fun, "call added" );
-          #else
-          { UNR_USAGE* use = addScUsage( SCUSE_DTOR_BLK
-                                       , sr->enclosing
-                                       , su->u.fun );
-            use = use;
-            _printUnrUsage( use, "temp dtor added to block scope" );
-          }
-          #endif
+#else
+            _printUnrUsage1( addScUsage( SCUSE_DTOR_BLK, sr->enclosing, su->u.fun ), "temp dtor added to block scope" );
+#endif
             break;
-          case SCUSE_DTOR_COMPONENT :
+        case SCUSE_DTOR_COMPONENT :
             break;
         }
     } RingIterEnd( su );

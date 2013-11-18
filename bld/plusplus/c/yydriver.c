@@ -226,16 +226,16 @@ static void dump_rule( unsigned rule )
     const YYTOKENTYPE YYFAR *tok;
     const char YYFAR *p;
 
-    for( p = yytoknames[ yyplhstab[ rule ] ]; *p; ++p ) {
+    for( p = yytoknames[yyplhstab[rule]]; *p; ++p ) {
         putchar( *p );
     }
     putchar( ' ' );
     putchar( '<' );
     putchar( '-' );
-    tok = &yyrhstoks[ yyrulebase[ rule ] ];
-    for( i = yyplentab[ rule ]; i != 0; --i ) {
+    tok = &yyrhstoks[yyrulebase[rule]];
+    for( i = yyplentab[rule]; i != 0; --i ) {
         putchar( ' ' );
-        for( p = yytoknames[ *tok ]; *p; ++p ) {
+        for( p = yytoknames[*tok]; *p; ++p ) {
             putchar( *p );
         }
         ++tok;
@@ -511,7 +511,7 @@ static int doId( SCOPE scope_member )
     }
     id_check = lexCategory( scope_member ? scope_member : GetCurrScope(),
                             id, control, &yylval.tree->sym_name );
-    return( lookupToken[ id_check ] );
+    return( lookupToken[id_check] );
 }
 
 #define nextToken( yyl )        \
@@ -898,7 +898,7 @@ static int globalChain( PARSE_STACK *state, boolean special_typename )
         yylval.tree = makeBinary( CO_STORAGE, tree, id );
         yylval.tree->flags |= special_typename ? PTF_TYPENAME : 0;
         id_check = lexCategory( GetFileScope(), id, LK_LEXICAL, &yylval.tree->sym_name );
-        return( globalLookupToken[ id_check ] );
+        return( globalLookupToken[id_check] );
     case T_OPERATOR:
         yylval.tree = makeUnary( CO_OPERATOR, tree );
         return( Y_GLOBAL_OPERATOR );
@@ -1024,7 +1024,7 @@ static int yylex( PARSE_STACK *state )
     switch( CurToken ) {
     case T_COLON_COLON:
         if( flags.no_super_token ) {
-            token = yytranslate[ CurToken ];
+            token = yytranslate[CurToken];
         } else {
             if( flags.special_colon_colon ) {
                 token = templateScopedChain( state, flags.special_typename );
@@ -1092,7 +1092,7 @@ static int yylex( PARSE_STACK *state )
         setLocation( yylval.tree, &yylocation );
         break;
     default:
-        token = yytranslate[ CurToken ];
+        token = yytranslate[CurToken];
     }
 
     if( ( token != Y_SCOPED_TILDE ) && ( token != Y_TEMPLATE_SCOPED_TILDE ) ) {
@@ -1594,8 +1594,9 @@ static void syncToRestart( PARSE_STACK *state )
         restartInit( state );
 
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) 
+        if( PragDbgToggle.dump_parse ) {
             dump_state_stack("after syncToRestart", state);
+        }
 #endif
 
     } else {
@@ -1679,15 +1680,15 @@ static YYACTIONTYPE GOTOYYAction( PARSE_STACK *state, unsigned rule )
 
     ssp = state->ssp;
     top_state = ssp[0];
-    lhs = yyplhstab[ rule ];
-    raw_action = yyaction[ lhs + yygotobase[ top_state ] ];
+    lhs = yyplhstab[rule];
+    raw_action = yyaction[lhs + yygotobase[top_state]];
     return( raw_action );
 }
 #if 0
 // doAction contains variables called 'yyaction' so this can't be used
 // plus it slowed down the compiler at one point in time
 #define GOTOYYAction( state, rule ) \
-        ( yyaction[ yyplhstab[(rule)] + yygotobase[ (state)->ssp[0] ] ] )
+        ( yyaction[yyplhstab[(rule)] + yygotobase[(state)->ssp[0]]] )
 #endif
 
 static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, unsigned *pa )
@@ -1705,15 +1706,15 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, unsigned *pa 
     bit_index = ( t >> 3 );
     mask = 1 << ( t & 0x07 );
     for(;;) {
-        if( yybitcheck[ bit_index + yybitbase[ top_state ] ] & mask ) {
-            raw_action = yyaction[ t + yyactionbase[ top_state ] ];
+        if( yybitcheck[bit_index + yybitbase[top_state]] & mask ) {
+            raw_action = yyaction[t + yyactionbase[top_state]];
             if(( raw_action & RAW_REDUCTION ) == 0 ) {
                 /* we have a shift */
                 *pa = raw_action;
                 return( P_NULL );
             }
         } else {
-            raw_action = yydefaction[ top_state ];
+            raw_action = yydefaction[top_state];
             if( raw_action == YYNOACTION ) {
                 return( P_SYNTAX );
             }
@@ -1725,11 +1726,12 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, unsigned *pa 
             return( P_NULL );
         }
         /* we have a unit reduction */
-        lhs = yyplhstab[ rule ];
-        top_state = yyaction[ lhs + yygotobase[ ssp[-1] ] ];
+        lhs = yyplhstab[rule];
+        top_state = yyaction[lhs + yygotobase[ssp[-1]]];
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) 
+        if( PragDbgToggle.dump_parse ) { 
             printf("=== Unit reduction. New top state %03u Old state %03u ===\n", top_state, ssp[0]);
+        }
 #endif
         ssp[0] = top_state;
     }
@@ -1751,7 +1753,7 @@ static void lookAheadShift( PARSE_STACK *state, YYACTIONTYPE new_state, YYTOKENT
 {
 #ifndef NDEBUG
     if( PragDbgToggle.dump_parse ) {
-        puts( yytoknames[ t ] );
+        puts( yytoknames[t] );
     }
 #else
     t = t;
@@ -1770,7 +1772,7 @@ static la_action lookAheadReduce( PARSE_STACK *state, YYACTIONTYPE new_rule )
         dump_rule( new_rule );
     }
 #endif
-    state->ssp -= yyplentab[ new_rule ];
+    state->ssp -= yyplentab[new_rule];
     if( state->ssp < state->sstack ) {
         return( LA_UNDERFLOW );
     }
@@ -2038,15 +2040,16 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         unsigned stackDepth;
 #endif
         yyk = *(state->ssp);
-        DbgStmt( if( PragDbgToggle.parser_states ) printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[ t ]); );
+        DbgStmt( if( PragDbgToggle.parser_states ) printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t]); );
         DbgStmt(stackDepth = (state->ssp - &(state->sstack[0])) + 1; );
 
         /* 
         //  DumpStack
         */
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) 
+        if( PragDbgToggle.dump_parse ) {
             dump_state_stack("in start of doAction loop", state);
+        }
 #endif
 
         if( yyk == YYAMBIGS0 && t == YYAMBIGT0 ) {
@@ -2080,8 +2083,9 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
             INC_STACK( lsp );
 
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_parse ) 
+            if( PragDbgToggle.dump_parse ) {
                 dump_state_stack("after yyaction shift", state);
+            }
 #endif
 
             TokenLocnAssign( *curr_lsp, yylocation );
@@ -2099,17 +2103,17 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
                 case Y_TEMPLATE_ID:
                 case Y_TYPE_NAME:
                 case Y_TEMPLATE_NAME:
-                    printf( "%s '%s'\n", yytoknames[ t ], yylval.tree->u.id.name );
+                    printf( "%s '%s'\n", yytoknames[t], yylval.tree->u.id.name );
                     break;
                 default:
-                    puts( yytoknames[ t ] );
+                    puts( yytoknames[t] );
                 }
             }
 #endif
             return( P_SHIFT );
         }
         rule = yyaction - YYUSED;
-        yyl = yyplentab[ rule ];
+        yyl = yyplentab[rule];
         if( yyl != 0 ) {
             state->ssp -= yyl;
             state->vsp -= yyl;
@@ -2118,8 +2122,9 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
                 fatalParserError();
             }
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_parse ) 
+            if( PragDbgToggle.dump_parse ) {
                 printf("=== Parser stack reduced by %u levels ===\n", yyl);
+            }
 #endif
         } else {
             if( state->ssp == state->exhaust ) {
@@ -2133,8 +2138,9 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         yyvp = curr_vsp;
         yylp = state->lsp;
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) 
+        if( PragDbgToggle.dump_parse ) {
             dump_state_stack("shift / reduce?", state);
+        }
 #endif
 #ifndef NDEBUG
         if( PragDbgToggle.dump_parse ) {
@@ -2186,8 +2192,7 @@ static void makeStable( TOKEN end_token )
     PTreeFreeSubtrees( getMultiToken() );
     token_absorbed = FALSE;     /* infinite loop protection */
     depth = 0;
-    for(;;) {
-        if( CurToken == T_EOF ) return;
+    while( CurToken != T_EOF ) {
         if( ( CurToken == T_LEFT_BRACE ) || ( CurToken == T_ALT_LEFT_BRACE ) ) {
             ++depth;
         } else if( depth == 0 ) {
@@ -2316,12 +2321,7 @@ static void recordTemplateCtorInitializer( PARSE_STACK *state )
     brace_depth = 0;
     paren_depth = 0;
 
-    for(;;) {
-        if( CurToken == T_EOF ) {
-            syntaxError( state );
-            break;
-        }
-
+    while( CurToken != T_EOF ) {
         switch( CurToken ) {
         case T_LEFT_PAREN:
             ++paren_depth;
@@ -2351,6 +2351,7 @@ static void recordTemplateCtorInitializer( PARSE_STACK *state )
         }
         nextRecordedToken( state );
     }
+    syntaxError( state );
 }
 
 static PTREE genericParseExpr( YYTOKENTYPE tok, TOKEN end_token, MSG_NUM err_msg )
@@ -2491,9 +2492,7 @@ void ParseDecls( void )
     PARSE_STACK decl_state;
     p_action what;
 
-    for(;;) {
-        if( CurToken == T_EOF ) break;
-
+    while( CurToken != T_EOF ) {
         /*
         // We have seen a case where a macro subsitution was returned, leaving 
         // us with T_BAD_CHAR rather than T_BAD_TOKEN. For now,just die and 
@@ -2689,7 +2688,7 @@ void ParseClassMemberInstantiation( REWRITE *defn )
     LinkagePop();
     SrcFileResetTokenLocn( &locn );
     CurToken = T_EOF;
-    strcpy( Buffer, Tokens[ T_EOF ] );
+    strcpy( Buffer, Tokens[T_EOF] );
 }
 
 void ParseFunctionInstantiation( REWRITE *defn )
@@ -2744,7 +2743,7 @@ void ParseFunctionInstantiation( REWRITE *defn )
     LinkagePop();
     SrcFileResetTokenLocn( &locn );
     CurToken = T_EOF;
-    strcpy( Buffer, Tokens[ T_EOF ] );
+    strcpy( Buffer, Tokens[T_EOF] );
 }
 
 static unsigned decl_paren_depth;
