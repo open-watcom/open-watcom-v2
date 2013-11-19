@@ -48,6 +48,7 @@ void dumpInternalState( a_state *x )
     a_reduce_action *rx;
     unsigned col, new_col;
     short int *p;
+    short int *mp;
     a_name name;
 
     printf( "state %d: %p (%u)\n", x->sidx, x, x->kersize );
@@ -63,18 +64,18 @@ void dumpInternalState( a_state *x )
     }
     printf( "\n" );
     if( x->name.item[0] == NULL || !IsState( *x->name.item[0] ) ) {
-        for( name.item = x->name.item; *name.item; ++name.item ) {
+        for( name.item = x->name.item; *name.item != NULL; ++name.item ) {
             showitem( *name.item, " ." );
         }
     } else {
-        for( name.state = x->name.state; *name.state; ++name.state ) {
+        for( name.state = x->name.state; *name.state != NULL; ++name.state ) {
             printf( " %d", (*name.state)->sidx );
         }
         printf( "\n" );
     }
     printf( "actions:" );
     col = 8;
-    for( tx = x->trans; tx->sym; ++tx ) {
+    for( tx = x->trans; tx->sym != NULL; ++tx ) {
         new_col = col + 1 + strlen( tx->sym->name ) + 1 + 1 + 3;
         if( new_col > 79 ) {
             putchar('\n');
@@ -85,15 +86,15 @@ void dumpInternalState( a_state *x )
     }
     putchar( '\n' );
     col = 0;
-    for( rx = x->redun; rx->pro; ++rx ) {
-        for( p = Members( rx->follow, setmembers ); --p >= setmembers; ) {
-            new_col = col + 1 + strlen( symtab[*p]->name );
+    for( rx = x->redun; rx->pro != NULL; ++rx ) {
+        for( mp = Members( rx->follow ); --mp >= setmembers; ) {
+            new_col = col + 1 + strlen( symtab[*mp]->name );
             if( new_col > 79 ) {
                 putchar('\n');
                 new_col -= col;
             }
             col = new_col;
-            printf( " %s", symtab[*p]->name );
+            printf( " %s", symtab[*mp]->name );
         }
         new_col = col + 1 + 5;
         if( new_col > 79 ) {
@@ -145,9 +146,7 @@ static a_pro *analyseParents( a_state *state, a_pro *pro, a_word *reduce_set )
             printf( "error! %u %s %u\n", state->sidx, old_lhs->name, parent_state->sidx );
             exit(1);
         }
-        for( raction = new_state->redun; ; ++raction ) {
-            test_pro = raction->pro;
-            if( test_pro == NULL ) break;
+        for( raction = new_state->redun; (test_pro = raction->pro) != NULL; ++raction ) {
             if( !test_pro->unit ) {
                 continue;
             }
@@ -264,9 +263,7 @@ static a_sym *onlyOneReduction( a_state *state )
     }
     // iterate over all reductions in state
     save_pro = NULL;
-    for( raction = state->redun; ; ++raction ) {
-        pro = raction->pro;
-        if( pro == NULL ) break;
+    for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
         if( save_pro != NULL ) {
             /* state contains at least two reductions */
             return( NULL );
@@ -338,7 +335,7 @@ static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro 
     a_state *check_state;
     a_parent *parent;
     a_word *follow;
-    short *terminal;
+    short *mp;
     int change_occurred;
 
     /*
@@ -355,9 +352,8 @@ static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro 
     follow = raction->follow;
     unit_lhs = pro->sym;
     change_occurred = 0;
-    terminal = Members( follow, setmembers );
-    while( --terminal >= setmembers ) {
-        term_sym = symtab[ *terminal ];
+    for( mp = Members( follow ); --mp >= setmembers; ) {
+        term_sym = symtab[*mp];
         check_state = NULL;
         for( parent = state->parents; parent != NULL; parent = parent->next ) {
             after_lhs_state = findNewShiftState( parent->state, unit_lhs );
@@ -380,7 +376,7 @@ static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro 
         if( check_state != NULL ) {
             /* all shifts in *terminal ended up in the same state! */
             state->trans = addShiftAction( term_sym, check_state, state->trans );
-            ClearBit( follow, *terminal );
+            ClearBit( follow, *mp );
             change_occurred = 1;
             ++changeOccurred;
         }
@@ -466,9 +462,7 @@ static void tryElimination( a_state *state, a_word *reduce_set )
     }
     // iterate over all reductions in state
     for(;;) {
-        for( raction = state->redun; ; ++raction ) {
-            pro = raction->pro;
-            if( pro == NULL ) break;
+        for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( pro->unit ) {
                 if( multiUnitReduce( state, raction, pro, reduce_set ) ) {
                     /* state->redun could have changed */
@@ -493,9 +487,7 @@ static void tossSingleReduceStates( a_state *state )
         return;
     }
     /* iterate over all shifts in the state */
-    for( saction = state->trans; ; ++saction ) {
-        shift_sym = saction->sym;
-        if( shift_sym == NULL ) break;
+    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( saction->units_checked ) continue;
         shiftToSingleReduce( state, saction );
     }

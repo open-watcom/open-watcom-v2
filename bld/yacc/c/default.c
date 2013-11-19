@@ -56,7 +56,7 @@ void MarkDefaultReductions( void )
         // iterate over all reductions in state
         state = statetab[i];
         nshifts = 0;
-        for( saction = state->trans; saction->sym; ++saction ) {
+        for( saction = state->trans; saction->sym != NULL; ++saction ) {
             ++nshifts;
             if( saction->sym == errsym ) {
                 // if there is a shift on the error token then
@@ -71,9 +71,7 @@ void MarkDefaultReductions( void )
         default_raction = NULL;
         max_tokens = 0;
         nreduces = 0;
-        for( raction = state->redun; ; ++raction ) {
-            pro = raction->pro;
-            if( pro == NULL ) break;
+        for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             ++nreduces;
             count_tokens = Cardinality( raction->follow );
             if( count_tokens >= max_tokens ) {

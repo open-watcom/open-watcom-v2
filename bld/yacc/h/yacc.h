@@ -141,7 +141,7 @@ struct a_pro {                          /* production: LHS -> RHS1 RHS2 ... */
     a_SR_conflict_list  *SR_conflicts;  /* list of S/R conflicts */
     unsigned            used : 1;       /* has rule been reduced */
     unsigned            unit : 1;       /* LHS -> RHS and no action specified */
-    an_item             item[ 2 ];      /* must be the last field */
+    an_item             item[2];      /* must be the last field */
 };
 
 struct a_sym {                          /* symbol: terminal or non-terminal */
@@ -213,7 +213,7 @@ extern void Clear(a_word *);
 extern bool Empty(a_word *);
 extern void AndNot(a_word *,a_word *);
 extern void UnionAnd(a_word *,a_word *,a_word *);
-extern short *Members(a_word *,short *);
+extern short *Members(a_word *);
 extern bool EmptyIntersection( a_word *, a_word * );
 extern bool Equal( a_word *, a_word * );
 extern void DumpSet(a_word *);

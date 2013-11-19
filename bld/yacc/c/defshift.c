@@ -74,12 +74,10 @@ static void doState(
     memset( state_freq, 0, nstate * sizeof( *state_freq ) );
     memset( all_used, 0, range_size );
     /* find shift state frequencies */
-    for( saction = state->trans; ; ++saction ) {
-        shift_sym = saction->sym;
-        if( shift_sym == NULL ) break;
+    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( ! okToConsider( shift_sym ) ) continue;
-        all_used[ shift_sym->token - keyword_id_low ] = 1;
-        ++state_freq[ saction->state->sidx ];
+        all_used[shift_sym->token - keyword_id_low] = 1;
+        ++state_freq[saction->state->sidx];
     }
     /* verify entire range of tokens shift somewhere */
     for( i = 0; i < range_size; ++i ) {
@@ -89,7 +87,7 @@ static void doState(
     }
     /* find which state had the highest frequency */
     max_idx = 0;
-    max = state_freq[ max_idx ];
+    max = state_freq[max_idx];
     for( i = 1; i < nstate; ++i ) {
         unsigned test = state_freq[i];
         if( test > max ) {
@@ -102,9 +100,7 @@ static void doState(
     }
     ++nStates;
     /* mark tokens used to shift to highest frequency state */
-    for( saction = state->trans; ; ++saction ) {
-        shift_sym = saction->sym;
-        if( shift_sym == NULL ) break;
+    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( ! okToConsider( shift_sym ) ) continue;
         if( saction->state->sidx == max_idx ) {
             saction->is_default = 1;

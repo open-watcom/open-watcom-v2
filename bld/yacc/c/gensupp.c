@@ -173,7 +173,7 @@ void puttokennames( int dtoken, value_size token_size )
     rule_base = 0;
     begtab( "unsigned short", "yyrulebase" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym; ++item )
+        for( item = protab[i]->item; item->p.sym != NULL; ++item )
           /* do nothing */;
         puttab( FITS_A_WORD, rule_base );
         rule_base += item - protab[i]->item;
@@ -181,7 +181,7 @@ void puttokennames( int dtoken, value_size token_size )
     endtab();
     begtab( "YYTOKENTYPE", "yyrhstoks" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym; ++item ) {
+        for( item = protab[i]->item; item->p.sym != NULL; ++item ) {
             puttab( token_size, item->p.sym->token );
         }
     }
@@ -193,7 +193,7 @@ void puttokennames( int dtoken, value_size token_size )
             fprintf( actout, "\"$dtoken\",\n" );
             fprintf( actout, "\"$ptoken\",\n" );
         }
-        fprintf( actout, "\"%s\",\n", symtab[ i ]->name );
+        fprintf( actout, "\"%s\",\n", symtab[i]->name );
     }
     fprintf( actout, "\"\"" );
     endtab();

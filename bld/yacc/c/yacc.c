@@ -192,9 +192,9 @@ int main( int argc, char **argv )
     }
     skeleton = NULL;
     if( i == argc - 2 ) {
-        skeleton = openr( argv[ argc - 1 ] );
+        skeleton = openr( argv[argc - 1] );
         if( !skeleton ) {
-            msg( "could not open driver source code '%s'\n", argv[ argc - 1 ] );
+            msg( "could not open driver source code '%s'\n", argv[argc - 1] );
         }
     }
     loadpath = argv[0];

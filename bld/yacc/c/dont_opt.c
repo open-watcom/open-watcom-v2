@@ -44,9 +44,7 @@ static int hasReduceByPro( a_state *state, a_pro *unit_pro )
         return( 0 );
     }
     // iterate over all reductions in state
-    for( raction = state->redun; ; ++raction ) {
-        pro = raction->pro;
-        if( pro == NULL ) break;
+    for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
         if( pro->unit && pro == unit_pro ) {
             return( 1 );
         }

@@ -88,11 +88,9 @@ bool EmptyIntersection( a_word *s, a_word *t )
     int n;
 
     for( n = wperset; n; --n ) {
-        if( *s & *t ) {
+        if( *s++ & *t++ ) {
             return( FALSE );
         }
-        ++s;
-        ++t;
     }
     return( TRUE );
 }
@@ -102,11 +100,9 @@ bool Equal( a_word *s, a_word *t )
     int n;
 
     for( n = wperset; n; --n ) {
-        if( *s != *t ) {
+        if( *s++ != *t++ ) {
             return( FALSE );
         }
-        ++s;
-        ++t;
     }
     return( TRUE );
 }
@@ -138,12 +134,14 @@ void UnionAnd( a_word *s, a_word *t, a_word *u )
     }
 }
 
-short *Members( a_word *s, short *p )
+short *Members( a_word *s )
 {
     a_word *t;
     a_word word;
     int i, j;
+    short *p;
 
+    p = setmembers;
     i = 0;
     for( t = s + wperset; s < t; ++s ) {
         j = i;

@@ -43,9 +43,7 @@ void FindUnused( void )
     a_state *state;
 
     for( state = statelist; state != NULL; state = state->next ) {
-        for( raction = state->redun; ; ++raction ) {
-            pro = raction->pro;
-            if( pro == NULL ) break;
+        for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             pro->used = TRUE;
         }
     }

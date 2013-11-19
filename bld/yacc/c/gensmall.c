@@ -105,8 +105,8 @@ void add_table( short token, short action )
         table_size += 64;
         table = REALLOC( table, table_size, a_entry );
     }
-    table[ used ].token = token;
-    table[ used ].action = action;
+    table[used].token = token;
+    table[used].action = action;
     ++used;
 }
 
@@ -114,12 +114,11 @@ void add_table( short token, short action )
 void dump_reduction( a_reduce_action *rx, unsigned *base )
 {
     a_pro *pro;
-    short *p;
+    short *mp;
 
     pro = rx->pro;
-    p = Members( rx->follow, setmembers );
-    while( --p >= setmembers ) {
-        add_table( *p, ACTION_REDUCE | pro->pidx );
+    for( mp = Members( rx->follow ); --mp >= setmembers; ) {
+        add_table( *mp, ACTION_REDUCE | pro->pidx );
         ++(*base);
     }
 }
@@ -132,6 +131,7 @@ void genobj( void )
     int any_token;
     int action;
     short *p;
+    short *mp;
     a_pro *pro;
     a_state *x;
     a_reduce_action *rx;
@@ -164,17 +164,17 @@ void genobj( void )
     for( i = 0; i < nstate; ++i ){
         state_base[i] = base;
         x = statetab[i];
-        for( tx = x->trans; sym = tx->sym; ++tx ) {
+        for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
             add_table( sym->idx, ACTION_SHIFT | tx->state->sidx );
             ++base;
         }
         default_reduction = NULL;
         savings = 0;
         for( rx = x->redun; rx->pro != NULL; ++rx ){
-            p = Members( rx->follow, setmembers );
-            if( p != setmembers ) {
-                if( p - setmembers > savings ) {
-                    savings = p - setmembers;
+            mp = Members( rx->follow );
+            if( mp != setmembers ) {
+                if( mp - setmembers > savings ) {
+                    savings = mp - setmembers;
                     if( default_reduction != NULL ) {
                         dump_reduction( default_reduction, &base );
                     }
@@ -218,7 +218,7 @@ void genobj( void )
     end_table();
     begin_table( "YYPLENTYPE", "yyplentab" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym; ++item )
+        for( item = protab[i]->item; item->p.sym != NULL; ++item )
           /* do nothing */;
         puttab( FITS_A_BYTE, item - protab[i]->item );
     }
@@ -232,7 +232,7 @@ void genobj( void )
     rule_base = 0;
     begin_table( "unsigned short", "yyrulebase" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym; ++item )
+        for( item = protab[i]->item; item->p.sym != NULL; ++item )
           /* do nothing */;
         puttab( FITS_A_WORD, rule_base );
         rule_base += item - protab[i]->item;
@@ -240,7 +240,7 @@ void genobj( void )
     end_table();
     begin_table( "YYCHKTYPE", "yyrhstoks" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym; ++item ) {
+        for( item = protab[i]->item; item->p.sym != NULL; ++item ) {
             puttab( FITS_A_BYTE, item->p.sym->token );
         }
     }
@@ -248,7 +248,7 @@ void genobj( void )
     begin_table( "char YYFAR *", "yytoknames" );
     fputc( '\n', actout );
     for( i = 0; i < nsym; ++i ) {
-        fprintf( actout, "\"%s\",\n", symtab[ i ]->name );
+        fprintf( actout, "\"%s\",\n", symtab[i]->name );
     }
     fprintf( actout, "\"\"" );
     end_table();

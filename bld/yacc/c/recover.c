@@ -54,12 +54,12 @@ static AddError()
     s = CALLOC( nstate, a_state * );
     at = CALLOC( nstate, short int );
     s = t = CALLOC( nstate + 1, a_state * );
-    for( x = statelist; x; x = x->next ) {
+    for( x = statelist; x != NULL; x = x->next ) {
          Mark( *x );
          *t++ = x;
     }
     restart = AddErrState( &errsym->enter, s, t );
-    for( x = restart; x; x = x->next ) {
+    for( x = restart; x != NULL; x = x->next ) {
         Clear( defined );
         Clear( conflict );
         xpro = NULL;

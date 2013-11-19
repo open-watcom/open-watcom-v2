@@ -362,7 +362,7 @@ static void createYACCTables( void )
     byte *bvector;
     compressed_action * ca;
     unsigned num_actions;
-    short *p;
+    short *mp;
     unsigned *base;
     unsigned *abase;
     unsigned *gbase;
@@ -389,9 +389,7 @@ static void createYACCTables( void )
         state = statetab[i];
         memset( state_vector, 0, vsize );
         // iterate over all shifts in state
-        for( saction = state->trans; ; ++saction ) {
-            sym = saction->sym;
-            if( sym == NULL ) break;
+        for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro != NULL ) {
                 // we only want terminals
                 continue;
@@ -406,12 +404,10 @@ static void createYACCTables( void )
             state_vector[index] |= mask;
         }
         // iterate over all reductions in state
-        for( raction = state->redun; ; ++raction ) {
-            pro = raction->pro;
-            if( pro == NULL ) break;
+        for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( state->default_reduction == raction ) continue;
-            for( p = Members( raction->follow, setmembers ); --p >= setmembers; ) {
-                token = symtab[*p]->token;
+            for( mp = Members( raction->follow ); --mp >= setmembers; ) {
+                token = symtab[*mp]->token;
                 index = token >> 3;
                 mask = 1 << ( token & 0x07 );
                 state_vector[index] |= mask;
@@ -429,28 +425,24 @@ static void createYACCTables( void )
             state_actions[j] = ACTION_NULL;
         }
         // iterate over all shifts in state
-        for( saction = state->trans; ; ++saction ) {
-            sym = saction->sym;
-            if( sym == NULL ) break;
+        for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro != NULL ) continue;
             state_idx = saction->state->sidx;
             if( saction->is_default ) {
-                defaction[ i ] = state_idx;
+                defaction[i] = state_idx;
                 continue;
             }
             token = sym->token;
             state_actions[token] = state_idx;
         }
         // iterate over all reductions in state
-        for( raction = state->redun; ; ++raction ) {
-            pro = raction->pro;
-            if( pro == NULL ) break;
+        for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( state->default_reduction == raction ) {
                 defaction[i] = reduceaction( state, raction );
                 continue;
             }
-            for( p = Members( raction->follow, setmembers ); --p >= setmembers; ) {
-                token = symtab[*p]->token;
+            for( mp = Members( raction->follow ); --mp >= setmembers; ) {
+                token = symtab[*mp]->token;
                 state_actions[token] = reduceaction( state, raction );
             }
         }
@@ -477,9 +469,7 @@ static void createYACCTables( void )
             state_actions[j] = ACTION_NULL;
         }
         // iterate over all shifts in state
-        for( saction = state->trans; ; ++saction ) {
-            sym = saction->sym;
-            if( sym == NULL ) break;
+        for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro == NULL ) continue;
             token = sym->token;
             state_actions[token] = saction->state->sidx;
@@ -546,7 +536,7 @@ static void createYACCTables( void )
     begtab( "YYPLENTYPE", "yyplentab" );
     for( i = 0; i < npro; ++i ) {
         first_item = protab[i]->item;
-        for( item = first_item; item->p.sym; ++item )
+        for( item = first_item; item->p.sym != NULL; ++item )
           /* do nothing */;
         puttab( FITS_A_BYTE, item - first_item );
     }

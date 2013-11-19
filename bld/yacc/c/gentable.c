@@ -67,6 +67,7 @@ void genobj( void )
     value_size token_size;
     short *token, *action, *base, *other, *parent, *size;
     register short *p, *q, *r, *s;
+    short *mp;
     short error, tokval, redun, *same, *diff, *test, *best;
     a_sym *sym;
     a_pro *pro;
@@ -114,25 +115,28 @@ void genobj( void )
     for( i = nstate; --i >= 0; ) {
         x = statetab[i];
         q = token;
-        for( tx = x->trans; (sym = tx->sym); ++tx ) {
-            action[*q++ = sym->token] = tx->state->sidx;
+        for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
+            *q++ = sym->token;
+            action[sym->token] = tx->state->sidx;
         }
         savings = 0;
-        for( rx = x->redun; (pro = rx->pro); ++rx ) {
+        for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
             redun = pro->pidx + nstate;
-            p = Members( rx->follow, setmembers );
-            if( p - setmembers > savings ) {
-                savings = p - setmembers;
+            mp = Members( rx->follow );
+            if( mp - setmembers > savings ) {
+                savings = mp - setmembers;
                 r = q;
             }
-            while( --p >= setmembers ) {
-                tokval = symtab[*p]->token;
-                action[*q++ = tokval] = redun;
+            while( --mp >= setmembers ) {
+                tokval = symtab[*mp]->token;
+                *q++ = tokval;
+                action[tokval] = redun;
             }
         }
         if( savings ) {
             tokval = other[i] = action[*r];
-            action[*q++ = dtoken] = tokval;
+            *q++ = dtoken;
+            action[dtoken] = tokval;
             p = r;
             while( --savings >= 0 )
                 action[*p++] = error;
@@ -149,28 +153,31 @@ void genobj( void )
             if( abs( size[j] - size[i] ) < min ) {
                 x = statetab[j];
                 q = (p = test) + ntoken;
-                for( tx = x->trans; (sym = tx->sym); ++tx )
-                    if( action[sym->token] == tx->state->sidx )
+                for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
+                    if( action[sym->token] == tx->state->sidx ) {
                        *p++ = sym->token;
-                    else
+                    } else {
                        *--q = sym->token;
-                for( rx = x->redun; (pro = rx->pro); ++rx ) {
+                    }
+                }
+                for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
                     if( (redun = pro->pidx + nstate) == other[j] )
                         redun = error;
-                    s = Members( rx->follow, setmembers );
-                    while( --s >= setmembers ) {
-                        tokval = symtab[*s]->token;
-                        if( action[tokval] == redun )
+                    for( mp = Members( rx->follow ); --mp >= setmembers; ) {
+                        tokval = symtab[*mp]->token;
+                        if( action[tokval] == redun ) {
                             *p++ = tokval;
-                        else
+                        } else {
                             *--q = tokval;
+                        }
                     }
                 }
                 if( other[j] != error ) {
-                    if( other[j] == other[i] )
+                    if( other[j] == other[i] ) {
                         *p++ = dtoken;
-                    else
+                    } else {
                         *--q = dtoken;
+                    }
                 }
                 savings = size[i] + size[j] - 2*(p - test);
                 if( savings < min ) {
@@ -190,19 +197,25 @@ void genobj( void )
             p = same;
             while( --p >= best )
                 action[*p] = error;
-            for( q = token; q < r; ++q )
-                if( action[*q] != error )
+            for( q = token; q < r; ++q ) {
+                if( action[*q] != error ) {
                     *s++ = *q;
+                }
+            }
             p = best + ntoken;
-            while( --p >= diff )
-                if( action[*p] == error )
+            while( --p >= diff ) {
+                if( action[*p] == error ) {
                     *s++ = *p;
+                }
+            }
             tokval = parent[i];
-            action[*s++ = ptoken] = tokval;
+            *s++ = ptoken;
+            action[ptoken] = tokval;
         }
         base[i] = addtotable( token, s, action, dtoken, ptoken );
-        while( --s >= token )
+        while( --s >= token ) {
             action[*s] = error;
+        }
     }
     putambigs( base );
     putnum( "YYNOACTION", error - nstate + used );
@@ -239,7 +252,7 @@ void genobj( void )
                 if( new_action != 0 ) {
                     if( new_action < nstate ) {
                         // Shift
-                        new_action = base[ new_action ];
+                        new_action = base[new_action];
                     } else {
                         // Reduce
                         new_action -= nstate;   // convert to 0 based
@@ -250,7 +263,7 @@ void genobj( void )
                 tokval = table[i].token;
                 if( new_action < nstate ) {
                     // Shift
-                    new_action = base[ new_action ];
+                    new_action = base[new_action];
                 } else {
                     // Reduce
                     new_action -= nstate;       // convert to 0 based
@@ -263,7 +276,7 @@ void genobj( void )
         // Combine lengths & lhs into a single table
         begtab( "YYPRODTYPE", "yyprodtab" );
         for( i = 0; i < npro; ++i ) {
-            for( item = protab[i]->item, j = 0; item->p.sym; ++item ) {
+            for( item = protab[i]->item, j = 0; item->p.sym != NULL; ++item ) {
                 ++ j;
             }
             puttab( FITS_A_WORD, (j << shift) + protab[i]->sym->token );
@@ -286,7 +299,7 @@ void genobj( void )
         endtab();
         begtab( "YYPLENTYPE", "yyplentab" );
         for( i = 0; i < npro; ++i ) {
-            for( item = protab[i]->item; item->p.sym; ++item )
+            for( item = protab[i]->item; item->p.sym != NULL; ++item )
               /* do nothing */;
             puttab( FITS_A_BYTE, item - protab[i]->item );
         }
@@ -335,7 +348,7 @@ static int addtotable(  short *token,
                 ++ used;
             }
         }
-        table[start].token = action[ parent_token ];
+        table[start].token = action[parent_token];
         table[start].action = default_action;
     } else {
         r = token;

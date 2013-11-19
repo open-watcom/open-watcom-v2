@@ -109,7 +109,7 @@ a_sym *terminalInKernel( an_item *p )
     an_item     *q;
     a_pro       *pro;
 
-    for( q = p; q->p.sym; ++q );
+    for( q = p; q->p.sym != NULL; ++q );
     pro = q[1].p.pro;
     q = pro->item;
     sym_after_dot = NULL;
@@ -153,7 +153,7 @@ static a_sym *findNewShiftSym( a_state *state, traceback **h )
         }
     }
     if( state->name.item[0] == NULL || !IsState( *state->name.item[0] ) ) {
-        for( name.item = state->name.item; *name.item; ++name.item ) {
+        for( name.item = state->name.item; *name.item != NULL; ++name.item ) {
             shift_sym = terminalInKernel( *name.item );
             if( shift_sym != NULL ) {
                 if( notInTraceback( h, shift_sym ) ) {
@@ -348,7 +348,7 @@ void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
     traceback   *token_stack;
     a_parent    *parent;
 
-    for( parent = s->parents; parent; parent = parent->next ) {
+    for( parent = s->parents; parent != NULL; parent = parent->next ) {
         if( to_state != NULL ) {
             /* S/R conflict */
             printf( "Sample sentence(s) for shift to state %u:\n", to_state->sidx );
@@ -478,13 +478,13 @@ static void propagateMin( a_sym *disallow_error )
             sym = symtab[i];
             if( ! sym->min ) {
                 min_len = -1;
-                for( pro = sym->pro; pro; pro = pro->next ) {
+                for( pro = sym->pro; pro != NULL; pro = pro->next ) {
                     len = symHasMinLen( sym, pro, disallow_error );
                     if( len != 0 && len < min_len ) {
                         min_len = len;
                     }
                 }
-                for( pro = sym->pro; pro; pro = pro->next ) {
+                for( pro = sym->pro; pro != NULL; pro = pro->next ) {
                     len = symHasMinLen( sym, pro, disallow_error );
                     if( len != 0 && len == min_len ) {
                         has_min = symHasMin( sym, pro, disallow_error );

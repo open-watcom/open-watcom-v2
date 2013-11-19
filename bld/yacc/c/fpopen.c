@@ -50,13 +50,13 @@ FILE *fpopen( char *path, char *name )
         for( ;; ) {
             for( p = path; *p != '\0' && *p != ';'; ++p );
             memcpy( qualname, path, dirlen = p - path );
-            if( p > path && p[ -1 ] != '\\' && p[ -1 ] != '/' )
-                qualname[ dirlen++ ] = '/';
-            memcpy( &qualname[ dirlen ], name, namelen );
-            qualname[ dirlen + namelen ] = '\0';
+            if( p > path && p[-1] != '\\' && p[-1] != '/' )
+                qualname[dirlen++] = '/';
+            memcpy( &qualname[dirlen], name, namelen );
+            qualname[dirlen + namelen] = '\0';
             if( (file = fopen( qualname, "r" )) || !*p )
                 break;
-            path = &p[ 1 ];
+            path = &p[1];
         }
     }
     return( file );

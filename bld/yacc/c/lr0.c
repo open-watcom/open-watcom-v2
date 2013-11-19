@@ -52,7 +52,7 @@ static a_state *addState( a_state **enter, an_item **s, an_item **q, a_state *pa
          Mark( **p );
     }
     kersize = q - s;
-    for( ; *enter; enter = &(*enter)->same_enter_sym ) {
+    for( ; *enter != NULL; enter = &(*enter)->same_enter_sym ) {
          if( (*enter)->kersize == kersize ) {
              p = (*enter)->name.item;
              for( t = p + kersize; p != t; ++p ) {
@@ -96,12 +96,12 @@ static void Sort( void **vec, int n, bool (*lt)( void *, void * ) )
         l = n/2;  r = n - 1;
         for( ;; ) {
             if( l > 0 )
-                k = vec[ --l ];
+                k = vec[--l];
             else {
-                k = vec[ r ];
-                vec[ r ] = vec[ 0 ];
+                k = vec[r];
+                vec[r] = vec[0];
                 if( --r <= 0 ) {
-                    vec[ 0 ] = k;
+                    vec[0] = k;
                     return;
                 }
             }
@@ -110,13 +110,13 @@ static void Sort( void **vec, int n, bool (*lt)( void *, void * ) )
                 i = j;  j = 2 * j + 1;
                 if( j > r )
                     break;
-                if( j < r && (*lt)( vec[ j ], vec[ j + 1 ] ) )
+                if( j < r && (*lt)( vec[j], vec[j + 1] ) )
                     ++j;
-                if( !(*lt)( k, vec[ j ] ) )
+                if( !(*lt)( k, vec[j] ) )
                     break;
-                vec[ i ] = vec[ j ];
+                vec[i] = vec[j];
             }
-            vec[ i ] = k;
+            vec[i] = k;
         }
     }
 }
@@ -127,9 +127,9 @@ static bool itemlt( void *_a, void *_b )
     an_item     *b = _b;
 
     if( a->p.sym ) {
-        return( b->p.sym && a[ 0 ].p.sym > b[ 0 ].p.sym );
+        return( b->p.sym && a[0].p.sym > b[0].p.sym );
     } else {
-        return( b->p.sym || a[ 1 ].p.pro > b[ 1 ].p.pro );
+        return( b->p.sym || a[1].p.pro > b[1].p.pro );
     }
 }
 
@@ -142,13 +142,13 @@ static void Complete( a_state *x, an_item **s )
     int             n;
 
     q = s;
-    for( p = x->name.item; *p; ++p ) {
+    for( p = x->name.item; *p != NULL; ++p ) {
         Mark( **p );
         *q++ = *p;
     }
     for( p = s; p < q; ++p ) {
         if( (*p)->p.sym ) {
-            for( pro = (*p)->p.sym->pro; pro; pro = pro->next ) {
+            for( pro = (*p)->p.sym->pro; pro != NULL; pro = pro->next ) {
                 if( !IsMarked( *pro->item ) ) {
                     Mark( *pro->item );
                     *q++ = pro->item;
@@ -160,12 +160,12 @@ static void Complete( a_state *x, an_item **s )
         Unmark( **p );
     }
     Sort( (void **)s, q - s, itemlt );
-    for( p = s; p < q && !(*p)->p.sym; ++p )
+    for( p = s; p < q && (*p)->p.sym == NULL; ++p )
           /* do nothing */;
     nredun += (n = p - s);
     rx = x->redun = CALLOC( n + 1, a_reduce_action );
-    for( p = s; p < q && !(*p)->p.sym; ++p ) {
-        (rx++)->pro = (*p)[ 1 ].p.pro;
+    for( p = s; p < q && (*p)->p.sym == NULL; ++p ) {
+        (rx++)->pro = (*p)[1].p.pro;
     }
     if( p == q ) {
         x->trans = CALLOC( 1, a_shift_action );
@@ -173,7 +173,7 @@ static void Complete( a_state *x, an_item **s )
         n = 1;
         s = p;
         while( ++p < q ) {
-            n += (p[ -1 ]->p.sym != p[ 0 ]->p.sym);
+            n += (p[-1]->p.sym != p[0]->p.sym);
         }
         tx = x->trans = CALLOC( n + 1, a_shift_action );
         do {
@@ -200,7 +200,7 @@ void lr0( void )
     statetail = &statelist;
     *s = startsym->pro->item;
     startstate = addState( &startsym->enter, s, s + 1, NULL );
-    for( x = statelist; x; x = x->next ) {
+    for( x = statelist; x != NULL; x = x->next ) {
         Complete( x, s );
     }
     Complete( errstate = addState( &errsym->enter, s, s, NULL ), s );
@@ -213,8 +213,8 @@ void SetupStateTable( void )
 
     free( statetab );
     statetab = CALLOC( nstate, a_state * );
-    for( x = statelist; x; x = x->next ) {
-        statetab[ x->sidx ] = x;
+    for( x = statelist; x != NULL; x = x->next ) {
+        statetab[x->sidx] = x;
     }
 }
 
@@ -226,10 +226,10 @@ void RemoveDeadStates( void )
 
     j = 0;
     for( i = 0; i < nstate; ++i ) {
-        x = statetab[ i ];
+        x = statetab[i];
         if( ! IsDead( *x ) ) {
             x->sidx = j;
-            statetab[ j ] = x;
+            statetab[j] = x;
             ++j;
         }
     }

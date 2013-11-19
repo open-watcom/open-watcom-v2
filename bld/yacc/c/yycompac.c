@@ -104,8 +104,8 @@ static YYACTTYPE find_action( unsigned base, YYCHKTYPE lookup )
     packed_action YYFAR *       probe;
     YYCHKTYPE                   check;
 
-    // yychktab[ base ] is parent + YYPARENT
-    // yyacttab[ base ] is default reduction
+    // yychktab[base] is parent + YYPARENT
+    // yyacttab[base] is default reduction
     for(;;) {   // Chase up through parent productions
         pack = yyacttab + base;
 #if !defined(OMIT_ERROR_RECOVER)
@@ -234,7 +234,7 @@ yyparse()
             //
             // yyvp[] are the lexical values ($1, $2, etc.)
             production = action - YYUSED;
-            lhs = yyprodtab[ production ];
+            lhs = yyprodtab[production];
             // Mask out length & lhs
             plen = lhs >> YYPRODSIZE;
             lhs &= (1 << YYPRODSIZE) - 1;
