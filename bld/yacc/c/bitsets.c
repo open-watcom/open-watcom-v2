@@ -44,6 +44,11 @@ void InitSets( unsigned n )
     setmembers = CALLOC( n, short );
 }
 
+a_word *AllocSet( unsigned n )
+{
+    return( CALLOC( n * wperset, a_word ) );
+}
+
 void Union( a_word *s, a_word *t )
 {
     int n;

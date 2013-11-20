@@ -51,7 +51,7 @@ static void Reads( a_look *x )
     *top = x;
     x->depth = k = ++top - stk;
     for( tx = x->trans->state->trans; tx->sym != NULL; ++tx ) {
-        if( !tx->sym->pro ) {
+        if( tx->sym->pro == NULL ) {
             SetBit( x->follow, tx->sym->idx );
         }
     }
@@ -167,11 +167,15 @@ static void CalcIncludes( void )
                 }
                 y = x;
                 for( item = pro->item; (sym = item->p.sym) != NULL; ++item ) {
-                    if( !sym->pro ) {
-                        for( tx = y->trans; tx->sym != sym; ++tx );
+                    if( sym->pro == NULL ) {
+                        for( tx = y->trans; tx->sym != sym; ) {
+                            ++tx;
+                        }
                         y = tx->state;
                     } else {
-                        for( q = y->look; q->trans->sym != sym; ++q );
+                        for( q = y->look; q->trans->sym != sym; ) {
+                            ++q;
+                        }
                         if( item >= nullable ) {
                             free = CALLOC( 1, a_link );
                             free->el = p;
@@ -208,10 +212,14 @@ static void Lookback( void )
             for( pro = p->trans->sym->pro; pro != NULL; pro = pro->next ) {
                 y = x;
                 for( item = pro->item; (sym = item->p.sym) != NULL; ++item ) {
-                    for( tx = y->trans; tx->sym != sym; ++tx );
+                    for( tx = y->trans; tx->sym != sym; ) {
+                        ++tx;
+                    }
                     y = tx->state;
                 }
-                for( rx = y->redun; rx->pro !=NULL && rx->pro != pro; ++rx );
+                for( rx = y->redun; rx->pro !=NULL && rx->pro != pro; ) {
+                    ++rx;
+                }
                 Union( rx->follow, p->follow );
             }
         }
@@ -222,7 +230,9 @@ static a_pro *extract_pro( an_item *p )
 {
     an_item     *q;
 
-    for( q = p; q->p.sym != NULL; ++q );
+    for( q = p; q->p.sym != NULL; ) {
+        ++q;
+    }
     return( q[1].p.pro );
 }
 
@@ -322,11 +332,10 @@ static void resolve( a_state *x, short *work, a_reduce_action **reduce )
     w = work;
     for( rx = x->redun; rx->pro != NULL; ++rx ) {
         for( mp = Members( rx->follow ); --mp >= setmembers; ) {
-            if( reduce[*mp] ) {
+            if( reduce[*mp] != NULL ) {
                 prevprec = reduce[*mp]->pro->prec;
                 proprec = rx->pro->prec;
-                if( !prevprec.prec || !proprec.prec
-                ||  prevprec.prec == proprec.prec ) {
+                if( !prevprec.prec || !proprec.prec || prevprec.prec == proprec.prec ) {
                     *w++ = *mp;
                     /* resolve to the earliest production */
                     if( rx->pro->pidx >= reduce[*mp]->pro->pidx ) {
@@ -341,7 +350,8 @@ static void resolve( a_state *x, short *work, a_reduce_action **reduce )
         }
     }
     while( --w >= work ) {
-        if( *w == errsym->token ) continue;
+        if( *w == errsym->token )
+            continue;
         printf( "r/r conflict in state %d on %s:\n", x->sidx, symtab[*w]->name);
         ++RR_conflicts;
         for( rx = x->redun; rx->pro != NULL; ++rx ) {
@@ -357,9 +367,10 @@ static void resolve( a_state *x, short *work, a_reduce_action **reduce )
         }
         printf( "---\n\n" );
     }
-    for( tx = ux = x->trans; tx->sym != NULL; ++tx ) {
+    ux = x->trans;
+    for( tx = ux; tx->sym != NULL; ++tx ) {
         i = tx->sym->idx;
-        if( i >= nterm || !reduce[i] ) {
+        if( i >= nterm || reduce[i] == NULL ) {
             *ux++ = *tx;
         } else {
             /* shift/reduce conflict detected */
@@ -403,7 +414,7 @@ static void resolve( a_state *x, short *work, a_reduce_action **reduce )
         Clear( rx->follow );
     }
     for( i = 0; i < nterm; ++i ) {
-        if( reduce[i] ) {
+        if( reduce[i] != NULL ) {
             SetBit( reduce[i]->follow, i );
             reduce[i] = NULL;
         }
@@ -420,13 +431,13 @@ static void Conflict( void )
     short           *work;
     int             i;
 
-    set = CALLOC( wperset, a_word );
+    set = AllocSet( 1 );
     reduce = CALLOC( nterm, a_reduce_action * );
     work = CALLOC( nterm, short );
     for( x = statelist; x != NULL; x = x->next ) {
         Clear( set );
         for( tx = x->trans; tx->sym != NULL; ++tx ) {
-            if( !tx->sym->pro ) {
+            if( tx->sym->pro == NULL ) {
                 SetBit( set, tx->sym->idx );
             }
         }
@@ -455,12 +466,12 @@ void lalr1( void )
 
     InitSets( nterm );
     lk = look = CALLOC( nvtrans + nstate, a_look );
-    lp = lset = CALLOC( nvtrans*wperset, a_word );
-    rp = rset = CALLOC( nredun*wperset, a_word );
+    lp = lset = AllocSet( nvtrans );
+    rp = rset = AllocSet( nredun );
     for( x = statelist; x != NULL; x = x->next ) {
         x->look = lk;
         for( tx = x->trans; tx->sym != NULL; ++tx ) {
-            if( tx->sym->pro ) {
+            if( tx->sym->pro != NULL ) {
                 lk->trans = tx;
                 lk->follow = lp;
                 lp += wperset;

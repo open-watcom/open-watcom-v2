@@ -42,10 +42,14 @@ unsigned keyword_id_high;
 unsigned nStates;
 unsigned nActions;
 
-static int okToConsider( a_sym *sym ) {
-    if( sym->pro != NULL ) return( 0 );
-    if( sym->token < keyword_id_low ) return( 0 );
-    if( sym->token > keyword_id_high ) return( 0 );
+static int okToConsider( a_sym *sym )
+{
+    if( sym->pro != NULL )
+        return( 0 );
+    if( sym->token < keyword_id_low )
+        return( 0 );
+    if( sym->token > keyword_id_high )
+        return( 0 );
     return( 1 );
 }
 
@@ -75,7 +79,8 @@ static void doState(
     memset( all_used, 0, range_size );
     /* find shift state frequencies */
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
-        if( ! okToConsider( shift_sym ) ) continue;
+        if( ! okToConsider( shift_sym ) )
+            continue;
         all_used[shift_sym->token - keyword_id_low] = 1;
         ++state_freq[saction->state->sidx];
     }
@@ -101,7 +106,8 @@ static void doState(
     ++nStates;
     /* mark tokens used to shift to highest frequency state */
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
-        if( ! okToConsider( shift_sym ) ) continue;
+        if( ! okToConsider( shift_sym ) )
+            continue;
         if( saction->state->sidx == max_idx ) {
             saction->is_default = 1;
             ++nActions;

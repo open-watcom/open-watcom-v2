@@ -49,25 +49,25 @@ static a_state *addState( a_state **enter, an_item **s, an_item **q, a_state *pa
     int         kersize;
 
     for( p = s; p != q; ++p ) {
-         Mark( **p );
+        Mark( **p );
     }
     kersize = q - s;
     for( ; *enter != NULL; enter = &(*enter)->same_enter_sym ) {
-         if( (*enter)->kersize == kersize ) {
-             p = (*enter)->name.item;
-             for( t = p + kersize; p != t; ++p ) {
-                 if( !IsMarked( **p ) ) {
-                     goto contin;
-                 }
-             }
-             break;
-         }
-         contin:;
+        if( (*enter)->kersize == kersize ) {
+            p = (*enter)->name.item;
+            for( t = p + kersize; p != t; ++p ) {
+                if( !IsMarked( **p ) ) {
+                    goto contin;
+                }
+            }
+            break;
+        }
+contin:;
     }
     for( p = s; p != q; ++p ) {
-         Unmark( **p );
+        Unmark( **p );
     }
-    if( !*enter ) {
+    if( *enter == NULL ) {
         *enter = CALLOC( 1, a_state );
         State( **enter );
         *statetail = *enter;
@@ -92,12 +92,13 @@ static void Sort( void **vec, int n, bool (*lt)( void *, void * ) )
     int         i, j, l, r;
     void        *k;
 
-    if( n > 1 ){
-        l = n/2;  r = n - 1;
+    if( n > 1 ) {
+        l = n / 2;
+        r = n - 1;
         for( ;; ) {
-            if( l > 0 )
+            if( l > 0 ) {
                 k = vec[--l];
-            else {
+            } else {
                 k = vec[r];
                 vec[r] = vec[0];
                 if( --r <= 0 ) {
@@ -126,7 +127,7 @@ static bool itemlt( void *_a, void *_b )
     an_item     *a = _a;
     an_item     *b = _b;
 
-    if( a->p.sym ) {
+    if( a->p.sym != NULL ) {
         return( b->p.sym && a[0].p.sym > b[0].p.sym );
     } else {
         return( b->p.sym || a[1].p.pro > b[1].p.pro );
@@ -147,7 +148,7 @@ static void Complete( a_state *x, an_item **s )
         *q++ = *p;
     }
     for( p = s; p < q; ++p ) {
-        if( (*p)->p.sym ) {
+        if( (*p)->p.sym != NULL ) {
             for( pro = (*p)->p.sym->pro; pro != NULL; pro = pro->next ) {
                 if( !IsMarked( *pro->item ) ) {
                     Mark( *pro->item );
@@ -160,8 +161,9 @@ static void Complete( a_state *x, an_item **s )
         Unmark( **p );
     }
     Sort( (void **)s, q - s, itemlt );
-    for( p = s; p < q && (*p)->p.sym == NULL; ++p )
-          /* do nothing */;
+    for( p = s; p < q && (*p)->p.sym == NULL; ) {
+        ++p;
+    }
     nredun += (n = p - s);
     rx = x->redun = CALLOC( n + 1, a_reduce_action );
     for( p = s; p < q && (*p)->p.sym == NULL; ++p ) {
@@ -178,7 +180,7 @@ static void Complete( a_state *x, an_item **s )
         tx = x->trans = CALLOC( n + 1, a_shift_action );
         do {
             tx->sym = (*s)->p.sym;
-            if( tx->sym->pro ) {
+            if( tx->sym->pro != NULL ) {
                 ++nvtrans;
             }
             for( p = s; p < q && (*p)->p.sym == tx->sym; ++p ) {

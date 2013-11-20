@@ -46,7 +46,7 @@ enum {
     TOKEN_SPARSE_BASE   = 0x007f, TOKEN_SPARSE_MAX      = 0x7fff,
 };
 
-typedef unsigned long   a_word;
+typedef unsigned int    a_word;
 typedef unsigned char   byte;
 
 #define MAX_AMBIGS      10
@@ -206,6 +206,7 @@ struct a_parent {
 };
 
 extern void InitSets(unsigned );
+extern a_word *AllocSet( unsigned );
 extern void Union(a_word *,a_word *);
 extern void Intersection( a_word *, a_word *);
 extern void Assign(a_word *,a_word *);

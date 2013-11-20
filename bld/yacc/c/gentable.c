@@ -144,8 +144,9 @@ void genobj( void )
                 *r++ = *p++;
             q = r;
             ++ num_default;
-        } else
+        } else {
             other[i] = error;
+        }
         r = q;
         min = size[i] = r - token;
         parent[i] = nstate;
@@ -161,7 +162,8 @@ void genobj( void )
                     }
                 }
                 for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
-                    if( (redun = pro->pidx + nstate) == other[j] )
+                    redun = pro->pidx + nstate;
+                    if( redun == other[j] )
                         redun = error;
                     for( mp = Members( rx->follow ); --mp >= setmembers; ) {
                         tokval = symtab[*mp]->token;
@@ -189,9 +191,9 @@ void genobj( void )
                 }
             }
         }
-        if( min >= size[i] )
+        if( min >= size[i] ) {
             s = r;
-        else {
+        } else {
             ++ num_parent;
             s = token;
             p = same;
@@ -225,7 +227,10 @@ void genobj( void )
     if( compactflag ) {
         parent_base = used + npro;
         putnum( "YYPARENT", parent_base );
-        for( i = 256, shift = 8; i < used; i <<= 1, ++shift ) ;
+        shift = 8;
+        for( i = 256; i < used; i <<= 1 ) {
+            ++shift;
+        }
         putnum( "YYPRODSIZE", shift );
     } else {
         putnum( "YYPTOKEN", ptoken );
@@ -237,9 +242,10 @@ void genobj( void )
     putnum( "YYUSED", used );
     if( compactflag ) {
         begtab( "YYPACKTYPE", "yyacttab" );
-        for( i = 0, j = nstate; i < used; ++i ) {
+        j = nstate;
+        for( i = 0; i < used; ++i ) {
             new_action = table[i].action;
-            if( i == base[j-1] ) {
+            if( i == base[j - 1] ) {
                 // First element in each state is default/parent
                 -- j;
                 if( parent[j] == nstate ) {
@@ -276,8 +282,9 @@ void genobj( void )
         // Combine lengths & lhs into a single table
         begtab( "YYPRODTYPE", "yyprodtab" );
         for( i = 0; i < npro; ++i ) {
-            for( item = protab[i]->item, j = 0; item->p.sym != NULL; ++item ) {
-                ++ j;
+            j = 0;
+            for( item = protab[i]->item; item->p.sym != NULL; ++item ) {
+                ++j;
             }
             puttab( FITS_A_WORD, (j << shift) + protab[i]->sym->token );
         }
@@ -290,7 +297,8 @@ void genobj( void )
         endtab();
         begtab( "YYACTTYPE", "yyacttab" );
         for( i = 0; i < used; ++i ) {
-            if( (j = Action( table[i] )) < nstate ) {
+            j = Action( table[i] );
+            if( j < nstate ) {
                 puttab( FITS_A_WORD, base[j] );
             } else {
                 puttab( FITS_A_WORD, j - nstate + used );
@@ -299,8 +307,9 @@ void genobj( void )
         endtab();
         begtab( "YYPLENTYPE", "yyplentab" );
         for( i = 0; i < npro; ++i ) {
-            for( item = protab[i]->item; item->p.sym != NULL; ++item )
-              /* do nothing */;
+            for( item = protab[i]->item; item->p.sym != NULL; ) {
+                ++item;
+            }
             puttab( FITS_A_BYTE, item - protab[i]->item );
         }
         endtab();
@@ -330,7 +339,7 @@ static int addtotable(  short *token,
     if( compactflag ) {
         start = used++;         // Leave room for parent & default
         default_action = 0;
-        for( ;; ++ token ) {
+        for( ;; ++token ) {
             if( used >= avail ) {
                 avail = roundup( used + 1, BLOCK );
                 if( table ) {
@@ -339,7 +348,8 @@ static int addtotable(  short *token,
                     table = MALLOC( avail, a_table );
                 }
             }
-            if( token == s ) break;
+            if( token == s )
+                break;
             if( *token == default_token ) {
                 default_action = action[*token];
             } else if( *token != parent_token ) {
@@ -351,9 +361,8 @@ static int addtotable(  short *token,
         table[start].token = action[parent_token];
         table[start].action = default_action;
     } else {
-        r = token;
-        max = *(r++);
-        for(; r < s; ++r ) {
+        max = *token;
+        for( r = token + 1; r < s; ++r ) {
             if( *r > max ) {
                 max = *r;
             }
@@ -394,7 +403,8 @@ static int addtotable(  short *token,
             SetToken( *t, *r );
             SetAction( *t, action[*r] );
         }
-        if( (i = start + max + 1) > used ) {
+        i = start + max + 1;
+        if( i > used ) {
             used = i;
         }
     }

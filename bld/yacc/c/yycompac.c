@@ -168,12 +168,12 @@ yyparse()
     *yysp = YYSTART;
     token = yylex();
     for(;;) {   /* parse loop */
-        if( yysp >= &yys[MAXDEPTH-1] ){
+        if( yysp >= &yys[MAXDEPTH-1] ) {
             yyerror( "parse stack overflow" );
             YYABORT;
         }
         action = find_action( *yysp, token );
-        if( action == YYNOACTION ){
+        if( action == YYNOACTION ) {
             // No action -- look for default action
             action = find_default( *yysp );
             if( action == YYNOACTION ) {
@@ -182,7 +182,7 @@ yyparse()
                 YYABORT;
 #else
                 // No default action either -- error!
-                switch( yyerrflag ){
+                switch( yyerrflag ) {
                   case 0:
                     yyerror( "syntax error" );
                     yyerrlab:
@@ -241,7 +241,7 @@ yyparse()
             yysp -= plen;
             yyvp -= plen;
 #if !defined(OMIT_ERROR_RECOVERY)
-            if( yysp < yys ){
+            if( yysp < yys ) {
                 YYPRINT( "stack underflow\n" );
                 YYABORT;
             }

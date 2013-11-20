@@ -87,46 +87,52 @@ yyparse()
   yyvp = yyv;
   *yysp = YYSTART;
   yytoken = yylex();
-  for(;;){
+  for(;;) {
 yynewact:
       yyk = *yysp;
-      while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken )
-          if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN )
+      while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken ) {
+          if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
               goto yycheck1;
-          else
+          } else {
               yyk = yyacttab[yyi];
+          }
+      }
       yyaction = yyacttab[yyi];
-      if( yyaction == YYNOACTION ){
+      if( yyaction == YYNOACTION ) {
 yycheck1:
           yyk = *yysp;
-          while( (yyi = yyk + YYDTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYDTOKEN )
-              if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN )
+          while( (yyi = yyk + YYDTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYDTOKEN ) {
+              if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
                   goto yycheck2;
-              else
+              } else {
                   yyk = yyacttab[yyi];
+              }
+          }
           yyaction = yyacttab[yyi];
-          if( yyaction == YYNOACTION ){
+          if( yyaction == YYNOACTION ) {
 yycheck2:
-              switch( yyerrflag ){
+              switch( yyerrflag ) {
                 case 0:
                   yyerror( "syntax error" );
                   yyerrlab:
                 case 1:
                 case 2:
                   yyerrflag = 3;
-                  while( yysp >= yys ){
+                  while( yysp >= yys ) {
                       yyk = *yysp;
-                      while( (yyi = yyk + YYETOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYETOKEN )
-                          if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN )
+                      while( (yyi = yyk + YYETOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYETOKEN ) {
+                          if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
                               goto continu;
-                          else
+                          } else {
                               yyk = yyacttab[yyi];
+                          }
+                      }
                       yyaction = yyacttab[yyi];
-                      if( yyaction < YYUSED ){
+                      if( yyaction < YYUSED ) {
                           *++yysp = yyaction;
                           ++yyvp;
                           goto yynewact;
-                      };
+                      }
                       continu:;
                       --yysp;
                       --yyvp;
@@ -140,8 +146,8 @@ yycheck2:
               };
           };
       };
-      if( yyaction < YYUSED ){
-          if( yyaction == YYSTOP ){
+      if( yyaction < YYUSED ) {
+          if( yyaction == YYSTOP ) {
               YYACCEPT;
           } else {
               *++yysp = yyaction;
@@ -156,13 +162,13 @@ yycheck2:
           yysp -= yyi;
           yyvp -= yyi;
           yylhs = yyplhstab[yypnum];
-          if( yysp < yys ){
+          if( yysp < yys ) {
               printf( "stack underflow\n" );
               YYABORT;
           };
           yyk = *yysp;
-          while( (yyi = yyk + yylhs) < 0 || yyi >= YYUSED || yychktab[yyi] != yylhs ){
-              if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ){
+          while( (yyi = yyk + yylhs) < 0 || yyi >= YYUSED || yychktab[yyi] != yylhs ) {
+              if( (yyi = yyk + YYPTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
                   printf( "missing nonterminal\n" );
                   YYABORT;
               };
@@ -170,7 +176,7 @@ yycheck2:
           };
           *++yysp = yyacttab[yyi];
           ++yyvp;
-          switch( yypnum ){
+          switch( yypnum ) {
 
             default:
               yyval = yyvp[0];

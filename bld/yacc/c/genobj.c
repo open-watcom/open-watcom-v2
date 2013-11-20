@@ -147,7 +147,9 @@ void genobj( void )
     for( i = 0; i < npro; ++i ) {
         pro = protab[i];
         if( pro != startpro ) {
-            for( item = pro->item; item->p.sym != NULL; ++item );
+            for( item = pro->item; item->p.sym != NULL; ) {
+                ++item;
+            }
             emitins( LBL, PROENTRY( pro->pidx ) );
             emitins( ACTION, PROPACK( item - pro->item, i ) );
             emitins( REDUCE, PROPACK( item - pro->item, pro->sym->token ) );
@@ -164,7 +166,8 @@ static emitt( symbol, target, n, redun )
     unsigned i, j;
 
     for( i = 0; i < n; ++i ) {
-        emitins( TCMP, symtab[j = symbol[i]]->token );
+        j = symbol[i];
+        emitins( TCMP, symtab[j]->token );
         emitins( JEQ, target[j] );
     }
     emitins( JMP, redun );
@@ -180,17 +183,20 @@ static emitv( symbol, target, n )
     if( n == 1 ) {
         emitins( JMP, target[symbol[0]] );
     } else if( n != 0 ) {
-        m = n/2; n -= m+1;
+        m = n / 2;
+        n -= m + 1;
         emitins( VCMP, symtab[symbol[m]]->token );
         if( m == 1 ) {
             emitins( JLT, target[symbol[0]] );
         } else if( m != 0 ) {
-            emitins( JLT, l1 = newlabel() );
+            l1 = newlabel();
+            emitins( JLT, l1 );
         }
         if( n == 1 ) {
             emitins( JGT, target[symbol[m+1]] );
         } else if( n != 0 ) {
-            emitins( JGT, l2 = newlabel() );
+            l2 = newlabel();
+            emitins( JGT, l2 );
         }
         emitins( JMP, target[symbol[m]] );
         if( m > 1 ) {
@@ -199,7 +205,7 @@ static emitv( symbol, target, n )
         }
         if( n > 1 ) {
             emitins( LBL, l2 );
-            emitv( &symbol[m+1], target, n );
+            emitv( &symbol[m + 1], target, n );
         }
     }
 }

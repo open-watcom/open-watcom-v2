@@ -71,14 +71,10 @@ static a_state *findNewShiftState( a_state *state, a_sym *sym )
     a_shift_action  *saction;
     a_sym           *shift_sym;
 
-    saction = state->trans;
-    for( ;; ) {
-        shift_sym = saction->sym;
-        if( shift_sym == NULL ) break;
+    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( shift_sym == sym ) {
             return( saction->state );
         }
-        ++saction;
     }
     return( NULL );
 }
@@ -109,13 +105,13 @@ a_sym *terminalInKernel( an_item *p )
     an_item     *q;
     a_pro       *pro;
 
-    for( q = p; q->p.sym != NULL; ++q );
+    for( q = p; q->p.sym != NULL; ) {
+        ++q;
+    }
     pro = q[1].p.pro;
-    q = pro->item;
     sym_after_dot = NULL;
     post_sym = NULL;
-    for( ;; ) {
-        if( q->p.sym == NULL ) break;
+    for( q = pro->item; q->p.sym != NULL; ++q ) {
         post_sym = q->p.sym;
         if( q == p ) {
             if( post_sym->pro == NULL ) {
@@ -123,7 +119,6 @@ a_sym *terminalInKernel( an_item *p )
             }
             break;
         }
-        ++q;
     }
     return( sym_after_dot );
 }
@@ -162,21 +157,17 @@ static a_sym *findNewShiftSym( a_state *state, traceback **h )
             }
         }
     }
-    saction = state->trans;
-    for( ;; ) {
-        shift_sym = saction->sym;
-        if( shift_sym == NULL ) break;
+    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( notInTraceback( h, shift_sym ) ) {
             return( shift_sym );
         }
-        ++saction;
     }
     return( NULL );
 }
 
 static void flushStack( traceback **h )
 {
-    while( *h ) {
+    while( *h != NULL ) {
         popTrace( h );
     }
 }
@@ -189,8 +180,7 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
     a_state             *top;
     a_reduce_action     *raction;
 
-    for( ;; ) {
-        if( *h == NULL ) break;
+    for( ; *h != NULL; ) {
         top = (*h)->state;
         if( top == NULL ) {
             flushStack( h );
@@ -203,10 +193,10 @@ static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned
             if( sym == eofsym ) {
                 break;
             }
-            for( ;; ) {
-                if( *h == NULL ) break;
+            for( ; *h != NULL; ) {
                 top = (*h)->state;
-                if( top->redun->pro == NULL ) break;
+                if( top->redun->pro == NULL )
+                    break;
                 performReduce( h, top->redun->pro );
             }
             break;
@@ -274,7 +264,7 @@ static void printAndFreeStack( traceback *top )
     traceback   *token;
 
     column = 0;
-    while( top ) {
+    while( top != NULL ) {
         token = top;
         top = token->next;
         sym = token->sym;
@@ -314,9 +304,7 @@ static traceback *getStatePrefix( a_state *s, a_state *initial_parent )
     a_shift_action  *t;
 
     list = NULL;
-    for( ;; ) {
-        parent = s->parents;
-        if( parent == NULL ) break;
+    for( ; (parent = s->parents) != NULL; s = min ) {
         if( initial_parent != NULL ) {
             min = initial_parent;
             initial_parent = NULL;
@@ -334,7 +322,6 @@ static traceback *getStatePrefix( a_state *s, a_state *initial_parent )
                 pushTrace( &list, s, t->sym );
             }
         }
-        s = min;
     }
     pushTrace( &list, s, NULL );
     return( list );
@@ -379,7 +366,8 @@ void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
             putchar( '\n' );
         }
         // dump all of the contexts if we have verbose state output
-        if( ! showflag ) break;
+        if( ! showflag )
+            break;
         putchar( '\n' );
     }
 }
@@ -507,7 +495,7 @@ static void seedWithSimpleMin( void )
     // set terminals to their name and set nullable syms
     for( i = 0; i < nsym; ++i ) {
         sym = symtab[i];
-        if( sym->pro ) {
+        if( sym->pro != NULL ) {
             if( sym->nullable ) {
                 sym->min = strdup( "" );
             }

@@ -39,42 +39,42 @@
 static FILE *tblout;
 
 static char *opstr[] = {
-  "_jl",        /* JLT */
-  "_je",        /* JEQ */
-  "_jg",        /* JGT */
-  "_jle",       /* JLE */
-  "_jne",       /* JNE */
-  "_jge",       /* JGE */
-  "ljmp",       /* JMP */
-  "_lbl",       /* LBL */
-  "_vcmp",      /* VCMP */
-  "_tcmp",      /* TCMP */
-  "_scan",      /* SCAN */
-  "_call",      /* CALL */
-  "_action",    /* ACTION */
-  "_reduce"     /* REDUCE */
+    "_jl",          /* JLT */
+    "_je",          /* JEQ */
+    "_jg",          /* JGT */
+    "_jle",         /* JLE */
+    "_jne",         /* JNE */
+    "_jge",         /* JGE */
+    "ljmp",         /* JMP */
+    "_lbl",         /* LBL */
+    "_vcmp",        /* VCMP */
+    "_tcmp",        /* TCMP */
+    "_scan",        /* SCAN */
+    "_call",        /* CALL */
+    "_action",      /* ACTION */
+    "_reduce"       /* REDUCE */
 };
 
 static unsigned opsize[] = {
-  5,            /* JLT */
-  5,            /* JEQ */
-  5,            /* JGT */
-  5,            /* JLE */
-  5,            /* JNE */
-  5,            /* JGE */
-  3,            /* JMP */
-  0,            /* LBL */
-  3,            /* VCMP */
-  2,            /* TCMP */
-  3,            /* SCAN */
-  3,            /* CALL */
-  15,           /* ACTION */
-  8             /* REDUCE */
+    5,              /* JLT */
+    5,              /* JEQ */
+    5,              /* JGT */
+    5,              /* JLE */
+    5,              /* JNE */
+    5,              /* JGE */
+    3,              /* JMP */
+    0,              /* LBL */
+    3,              /* VCMP */
+    2,              /* TCMP */
+    3,              /* SCAN */
+    3,              /* CALL */
+    15,             /* ACTION */
+    8               /* REDUCE */
 };
 
 typedef struct an_ins {
-  char          opcode;
-  short         offset;
+    char            opcode;
+    short           offset;
 } an_ins;
 
 static an_ins *code;
@@ -86,93 +86,95 @@ static int *lbladdr;
 
 void writeobj( int maxlabel )
 {
-  tblout = fopen( "ytab.asm", "w" );
-  if( tblout == NULL ) {
-      msg( "cannot open 'ytab.asm'\n" );
-  }
-  fprintf( tblout, "INCLUDE ytabmac.inc\n" );
-  fprintf( tblout, "_TEXT\tSEGMENT\n" );
-  lbladdr = MALLOC( maxlabel, int );
-  calcaddr();
-  dumpcode();
-  fprintf( tblout, "_TEXT\tENDS\n" );
-  fprintf( tblout, "END\n" );
-  fclose( tblout );
-  free( code );
-  free( lbladdr );
+    tblout = fopen( "ytab.asm", "w" );
+    if( tblout == NULL ) {
+        msg( "cannot open 'ytab.asm'\n" );
+    }
+    fprintf( tblout, "INCLUDE ytabmac.inc\n" );
+    fprintf( tblout, "_TEXT\tSEGMENT\n" );
+    lbladdr = MALLOC( maxlabel, int );
+    calcaddr();
+    dumpcode();
+    fprintf( tblout, "_TEXT\tENDS\n" );
+    fprintf( tblout, "END\n" );
+    fclose( tblout );
+    free( code );
+    free( lbladdr );
 }
 
 
-static calcaddr()
+static calcaddr( void )
 {
-  an_ins *ins;
-  unsigned j, insaddr;
-
-  insaddr = 0;
-  for( j = 0; j < codeused; ++j ){
-      ins = &code[j];
-      if( ins->opcode == LBL )
-          lbladdr[ins->offset] = insaddr;
-      insaddr += opsize[ins->opcode];
-  }
+    an_ins *ins;
+    unsigned j, insaddr;
+    
+    insaddr = 0;
+    for( j = 0; j < codeused; ++j ) {
+        ins = &code[j];
+        if( ins->opcode == LBL )
+            lbladdr[ins->offset] = insaddr;
+        insaddr += opsize[ins->opcode];
+    }
 }
 
-static dumpcode()
+static dumpcode( void )
 {
-  an_ins *ins;
-  int offset;
-  unsigned j;
-
-  fprintf( tblout, "L:" );
-  for( j = 0; j < codeused; ++j ){
-      ins = &code[j];
-      offset = ins->offset;
-      fprintf( tblout, "\t%s", opstr[ins->opcode] );
-      switch( ins->opcode ){
+    an_ins *ins;
+    int offset;
+    unsigned j;
+    
+    fprintf( tblout, "L:" );
+    for( j = 0; j < codeused; ++j ) {
+        ins = &code[j];
+        offset = ins->offset;
+        fprintf( tblout, "\t%s", opstr[ins->opcode] );
+        switch( ins->opcode ) {
         case VCMP: case TCMP:
-          if( isprint( offset ) && offset != '\'' && offset != '\\' )
-              fprintf( tblout, "\t'%c'", offset );
-          else
-              fprintf( tblout, "\t%d", offset );
-          break;
+            if( isprint( offset ) && offset != '\'' && offset != '\\' ) {
+                fprintf( tblout, "\t'%c'", offset );
+            } else {
+                fprintf( tblout, "\t%d", offset );
+            }
+            break;
         case JLT: case JEQ: case JGT: case JLE: case JNE: case JGE: case JMP:
         case LBL: case CALL:
-          if( offset > 0 )
-              fprintf( tblout, "\tL+%d", lbladdr[offset] );
-          else
-              fprintf( tblout, "\tL%d", -offset );
-          break;
+            if( offset > 0 ) {
+                fprintf( tblout, "\tL+%d", lbladdr[offset] );
+            } else {
+                fprintf( tblout, "\tL%d", -offset );
+            }
+            break;
         case ACTION:
-          fprintf( tblout, "\t%d,%d", PROLEN(offset), PRONUM(offset) );
-          break;
+            fprintf( tblout, "\t%d,%d", PROLEN(offset), PRONUM(offset) );
+            break;
         case REDUCE:
-          fprintf( tblout, "\t%d,%d", PROLEN(offset), PROLHS(offset) );
-          break;
+            fprintf( tblout, "\t%d,%d", PROLEN(offset), PROLHS(offset) );
+            break;
         default:
-          ;
-      }
-      fprintf( tblout, "\n" );
-  }
+            break;
+        }
+        fprintf( tblout, "\n" );
+    }
 }
 
 void emitins( unsigned opcode, unsigned offset )
 {
-  an_ins *ins;
+    an_ins *ins;
 
-  need( 1 );
-  ins = &code[codeused++];
-  ins->opcode = opcode;
-  ins->offset = offset;
+    need( 1 );
+    ins = &code[codeused++];
+    ins->opcode = opcode;
+    ins->offset = offset;
 }
 
-static need( n )
-  unsigned n;
+static need( unsigned n )
 {
-  if( codeused + n > codeavail ){
-      codeavail += BLOCK;
-      if( code )
-          code = REALLOC( code, codeavail, an_ins );
-      else
-          code = MALLOC( codeavail, an_ins );
-  }
+    if( codeused + n > codeavail ) {
+        codeavail += BLOCK;
+        if( code ) {
+            code = REALLOC( code, codeavail, an_ins );
+        } else {
+            code = MALLOC( codeavail, an_ins );
+        }
+    }
 }

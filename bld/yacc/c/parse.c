@@ -185,11 +185,8 @@ void defs( void )
     scan( 0 );
     prec.prec = 0;
     prec.assoc = NON_ASSOC;
-    for( ;; ) {
+    for( ; token != MARK; ) {
         switch( token ) {
-        case MARK:
-            scan( 0 );
-            return;
         case START:
             if( scan( 0 ) != IDENTIFIER )
                 msg( "Identifier needed after %%start.\n" );
@@ -300,8 +297,7 @@ void defs( void )
                         sym->token = gentoken++;
                     }
                     if( sym->name[0] != '\'' ) {
-                        fprintf( tokout, "#define\t%-20s\t0x%02x\n",
-                            sym->name, sym->token );
+                        fprintf( tokout, "#define\t%-20s\t0x%02x\n", sym->name, sym->token );
                     }
                 }
                 if( token == ',' ) {
@@ -313,6 +309,7 @@ void defs( void )
             msg( "Incorrect syntax.\n" );
         }
     }
+    scan( 0 );
 }
 
 static int scanambig( unsigned used, a_SR_conflict_list **list )
@@ -324,12 +321,9 @@ static int scanambig( unsigned used, a_SR_conflict_list **list )
     a_SR_conflict_list      *en;
 
     absorbed_something = FALSE;
-    for( ;; ) {
+    for( ; token == AMBIG; ) {
         /* syntax is "%ambig <number> <token>" */
         /* token has already been scanned by scanprec() */
-        if( token != AMBIG ) {
-            break;
-        }
         if( scan( used ) != NUMBER || value < 0 ) {
             msg( "Expecting a non-negative number after %ambig.\n" );
             break;
@@ -366,7 +360,7 @@ static int scanprec( unsigned used, a_sym **precsym )
 {
     if( token != PREC )
         return( FALSE );
-    if( scan( used ) != IDENTIFIER || !(*precsym = findsym( buf )) || !(*precsym)->token ) {
+    if( scan( used ) != IDENTIFIER || (*precsym = findsym( buf )) == NULL || !(*precsym)->token ) {
         msg( "Expecting a token after %prec.\n" );
     }
     scan( used );
@@ -413,7 +407,7 @@ void rules( void )
         lhs = addsym( buf );
         if( lhs->token )
             msg( "%s used on lhs.\n", lhs->name );
-        if( !startsym )
+        if( startsym == NULL )
             startsym = lhs;
         numacts = 0;
         do {
@@ -422,9 +416,7 @@ void rules( void )
             list_of_ambiguities = NULL;
             nrhs = 0;
             scanextra( 0, &precsym, &list_of_ambiguities );
-            for(;;) {
-                if( token != '{' && token != IDENTIFIER )
-                    break;
+            for( ; token == '{' || token == IDENTIFIER; ) {
                 if( nrhs + 2 > maxrhs )
                     rhs = REALLOC( rhs, maxrhs *= 2, a_sym * );
                 if( token == '{' ) {
@@ -477,7 +469,7 @@ void rules( void )
             if( unit_production ) {
                 pro->unit = TRUE;
             }
-            if( precsym ) {
+            if( precsym != NULL ) {
                 pro->prec = precsym->prec;
             }
             if( list_of_ambiguities ) {
@@ -1186,7 +1178,7 @@ static void addbuf( int ch )
 {
     if( bufused == bufmax ) {
         bufmax += BUF_INCR;
-        if( buf ) {
+        if( buf != NULL ) {
             buf = REALLOC( buf, bufmax, char );
         } else {
             buf = MALLOC( bufmax, char );

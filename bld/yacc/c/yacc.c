@@ -171,7 +171,8 @@ int main( int argc, char **argv )
     char    tempfname[10];
 
     for( i = 1; i < argc; ++i ) {
-        if( argv[i][0] != '-' ) break;
+        if( argv[i][0] != '-' )
+            break;
         setoptions( &argv[i][1] );
     }
     if( i != argc - 1 && i != argc - 2 ) {

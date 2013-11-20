@@ -42,20 +42,22 @@ FILE *fpopen( char *path, char *name )
 {
     FILE        *file;
     char        *qualname, *p;
-    int         dirlen, namelen;
+    size_t      dirlen, namelen;
 
-    if( !(file = fopen( name, "r" )) && path ) {
+    file = fopen( name, "r" );
+    if( file == NULL && path != NULL ) {
         namelen = strlen( name );
         qualname = alloca( strlen( path ) + namelen + 1 );
-        for( ;; ) {
-            for( p = path; *p != '\0' && *p != ';'; ++p );
+        for( ; file == NULL && *path != '\0'; ) {
+            for( p = path; *p != '\0' && *p != ';'; ) {
+                ++p;
+            }
             memcpy( qualname, path, dirlen = p - path );
             if( p > path && p[-1] != '\\' && p[-1] != '/' )
                 qualname[dirlen++] = '/';
             memcpy( &qualname[dirlen], name, namelen );
             qualname[dirlen + namelen] = '\0';
-            if( (file = fopen( qualname, "r" )) || !*p )
-                break;
+            file = fopen( qualname, "r" );
             path = &p[1];
         }
     }

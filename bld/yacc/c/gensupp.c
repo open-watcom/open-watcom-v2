@@ -173,8 +173,9 @@ void puttokennames( int dtoken, value_size token_size )
     rule_base = 0;
     begtab( "unsigned short", "yyrulebase" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym != NULL; ++item )
-          /* do nothing */;
+        for( item = protab[i]->item; item->p.sym != NULL; ) {
+            ++item;
+        }
         puttab( FITS_A_WORD, rule_base );
         rule_base += item - protab[i]->item;
     }

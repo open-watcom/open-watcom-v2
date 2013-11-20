@@ -46,9 +46,6 @@ extern a_pro **protab;
 
 extern a_state **statetab, *statelist, **statetail, *startstate, *errstate;
 
-extern unsigned wperset;
-extern short *setmembers;
-
 static void putnum( char *name, int i )
 {
     fprintf( actout, "#define\t%-20s\t%d\n", name, i );
@@ -101,7 +98,8 @@ static void copyact( a_pro * pro, char * indent )
     unsigned    n;
     int         only_default_type;
 
-    if( pro->action == NULL ) return;   // Default action is noop
+    if( pro->action == NULL )
+        return;   // Default action is noop
     lhs = pro->sym;
     rhs = pro->item;
     fprintf( actout, "%s/* %s <-", indent, lhs->name );
@@ -110,9 +108,9 @@ static void copyact( a_pro * pro, char * indent )
     }
     fprintf( actout, " */\n%s{ YYSTYPE yyval;\n%s\t", indent, indent );
     only_default_type = TRUE;
-    for( s = pro->action; *s != '\0'; ){
-        if( *s == '$' ){
-            if( *++s == '<' ){
+    for( s = pro->action; *s != '\0'; ) {
+        if( *s == '$' ) {
+            if( *++s == '<' ) {
                 for( type = ++s; *s != '>'; ++s ) {
                     if( *s == '\0' ) {
                         msg( "Bad type specifier.\n" );
@@ -123,7 +121,7 @@ static void copyact( a_pro * pro, char * indent )
             } else {
                 type = NULL;
             }
-            if( *s == '$' ){
+            if( *s == '$' ) {
                 fprintf( actout, "yyval", *s );
                 if( !type ) {
                     type = lhs->type;
@@ -241,7 +239,9 @@ static void gencode( int statenum, short *toklist, short *s, short *action,
             }
 
             for( symnum = 0; symnum < nsym; ++ symnum ) {
-                if( symtab[symnum]->token == token ) break;
+                if( symtab[symnum]->token == token ) {
+                    break;
+                }
             }
             if( symnum == nsym ) {
                 fprintf( actout, "    case %d:\n", token );
@@ -296,7 +296,9 @@ static void print_token( int token )
     int symnum;
 
     for( symnum = 0; symnum < nsym; ++ symnum ) {
-        if( symtab[symnum]->token == token ) break;
+        if( symtab[symnum]->token == token ) {
+            break;
+        }
     }
     if( symnum == nsym ) {
         printf( " %d", token );
@@ -388,15 +390,17 @@ void genobj( void )
                 *r++ = *p++;
             q = r;
             ++ num_default;
-        } else
+        } else {
             other[i] = error;
+        }
         r = q;
         size[i] = r - token;
         max = 0;
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
             // FOR NOW -- only use parent if no default here or same default
-            if( other[i] != error && other[i] != other[j] ) continue;
+            if( other[i] != error && other[i] != other[j] )
+                continue;
             savings = 0;
             x = statetab[j];
             q = (p = test) + ntoken;
@@ -405,7 +409,8 @@ void genobj( void )
                     ++ savings;
                     *p++ = sym->token;
                 } else {
-                    if( action[sym->token] == error ) -- savings;
+                    if( action[sym->token] == error )
+                        --savings;
                     *--q = sym->token;
                 }
             for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
@@ -418,7 +423,8 @@ void genobj( void )
                         ++ savings;
                         *p++ = tokval;
                     } else {
-                        if( action[tokval] == error ) -- savings;
+                        if( action[tokval] == error )
+                            --savings;
                         *--q = tokval;
                     }
                 }
@@ -461,20 +467,25 @@ void genobj( void )
             p = same;
             while( --p >= best )
                 action[*p] = error;
-            for( q = token; q < r; ++q )
-                if( action[*q] != error )
+            for( q = token; q < r; ++q ) {
+                if( action[*q] != error ) {
                     *s++ = *q;
+                }
+            }
             p = best + ntoken;
-            while( --p >= diff )
-                if( action[*p] == error )
+            while( --p >= diff ) {
+                if( action[*p] == error ) {
                     *s++ = *p;
+                }
+            }
             tokval = parent[i];
             *s++ = ptoken;
             action[ptoken] = tokval;
         }
         gencode( i, token, s, action, dtoken, ptoken, error );
-        while( --s >= token )
+        while( --s >= token ) {
             action[*s] = error;
+        }
     }
     for( i = 0; i < nambig; ++i ) {
         putambig( i, base[ambiguities[i].state], ambiguities[i].token );

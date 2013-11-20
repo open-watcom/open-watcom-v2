@@ -125,7 +125,8 @@ static int actcmp( action_t *a1, compressed_action * ca, unsigned num_comp,
     unsigned i;
 
     for( i = 0; i < num_comp; ++i, ++ ca ) {
-        if( ca->index >= size ) break;
+        if( ca->index >= size )
+            break;
         v2 = ca->action;
         // NB Know v2 != ACTION_NULL
         v1 = a1[ca->index];
@@ -405,7 +406,8 @@ static void createYACCTables( void )
         }
         // iterate over all reductions in state
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
-            if( state->default_reduction == raction ) continue;
+            if( state->default_reduction == raction )
+                continue;
             for( mp = Members( raction->follow ); --mp >= setmembers; ) {
                 token = symtab[*mp]->token;
                 index = token >> 3;
@@ -426,7 +428,8 @@ static void createYACCTables( void )
         }
         // iterate over all shifts in state
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
-            if( sym->pro != NULL ) continue;
+            if( sym->pro != NULL )
+                continue;
             state_idx = saction->state->sidx;
             if( saction->is_default ) {
                 defaction[i] = state_idx;
@@ -470,7 +473,8 @@ static void createYACCTables( void )
         }
         // iterate over all shifts in state
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
-            if( sym->pro == NULL ) continue;
+            if( sym->pro == NULL )
+                continue;
             token = sym->token;
             state_actions[token] = saction->state->sidx;
         }
@@ -536,8 +540,9 @@ static void createYACCTables( void )
     begtab( "YYPLENTYPE", "yyplentab" );
     for( i = 0; i < npro; ++i ) {
         first_item = protab[i]->item;
-        for( item = first_item; item->p.sym != NULL; ++item )
-          /* do nothing */;
+        for( item = first_item; item->p.sym != NULL; ) {
+            ++item;
+        }
         puttab( FITS_A_BYTE, item - first_item );
     }
     endtab();

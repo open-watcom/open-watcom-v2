@@ -56,7 +56,7 @@ void buildpro( void )
     index_t     i;
     index_t     j;
 
-    if( !startsym ) {
+    if( startsym == NULL ) {
         msg( "No grammar specified.\n" );
     }
     /* construct: $start <- <start_symbol> $eof */
@@ -67,9 +67,9 @@ void buildpro( void )
     startsym = goalsym;
     startpro = startsym->pro;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
-        if( sym->pro ) {
+        if( sym->pro != NULL ) {
             nvble++;
-            for( pro = sym->pro; pro != NULL; pro = pro->next ){
+            for( pro = sym->pro; pro != NULL; pro = pro->next ) {
                 ++nitem;
                 for( item = pro->item; item->p.sym != NULL; ++item ) {
                     ++nitem;
@@ -85,7 +85,7 @@ void buildpro( void )
     i = 0;
     j = 0;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
-        if( sym->pro ) {
+        if( sym->pro != NULL ) {
             sym->idx = nterm + j++;
             for( pro = sym->pro; pro != NULL; pro = pro->next ) {
                 protab[pro->pidx] = pro;
@@ -138,7 +138,7 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
     pro = (a_pro *)calloc( amt, sizeof( char ) );
     pro->pidx = npro++;
     for( i = 0; i < n; ++i ) {
-         pro->item[i].p.sym = rhs[i];
+        pro->item[i].p.sym = rhs[i];
     }
     pro->item[n + 0].p.sym = NULL;
     pro->item[n + 1].p.pro = pro;
@@ -165,18 +165,18 @@ void showitem( an_item *p, char *dot )
     an_item     *q;
     a_pro       *pro;
 
-    for( q = p; q->p.sym != NULL; ++q );
+    for( q = p; q->p.sym != NULL; ) {
+        ++q;
+    }
     pro = q[1].p.pro;
     printf( "%3d (%03x): %s <-", pro->pidx, pro->pidx, pro->sym->name );
-    q = pro->item;
-    for(;;) {
+    for( q = pro->item; ; ++q ) {
         if( q == p ) {
             printf( "%s", dot );
         }
         if( q->p.sym == NULL )
             break;
         printf( " %s", q->p.sym->name );
-        ++q;
     }
     if( pro->unit ) {
         printf( " (unit production)" );

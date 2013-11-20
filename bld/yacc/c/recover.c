@@ -45,7 +45,7 @@ static AddError()
 
     trans = CALLOC( nsym, a_shift_action );
     rx = redun = CALLOC( npro + 1, a_reduce_action );
-    rset = conflict = CALLOC( (npro + 2)*wperset, a_word );
+    rset = conflict = AllocSet( npro + 2 );
     for( i = 0; i <= npro; ++i ) {
         (rx++)->follow = rset;
         rset += wperset;
@@ -65,7 +65,8 @@ static AddError()
         xpro = NULL;
         for( i = 0; i < x->kersize; ++i ) {
             at[i] = 0;
-            if( (pro = x->name.state[i]->redun->pro) > xpro ) {
+            pro = x->name.state[i]->redun->pro;
+            if( pro > xpro ) {
                 xpro = pro;
             }
         }
@@ -95,7 +96,8 @@ static AddError()
         xsym = NULL;
         for( i = 0; i < x->kersize; ++i ) {
             at[i] = 0;
-            if( (sym = x->name.state[i]->trans->sym) > xsym ) {
+            sym = x->name.state[i]->trans->sym;
+            if( sym > xsym ) {
                 xsym = sym;
             }
         }
@@ -119,7 +121,7 @@ static AddError()
                 }
             }
             tx->sym = sym;
-            if( sym->pro ) {
+            if( sym->pro != NULL ) {
                 ++nvtrans;
             } else {
                 if( IsBitSet( defined, sym->id ) ) {
@@ -153,10 +155,10 @@ static AddError()
         }
         x->redun = CALLOC( i + 1, a_reduce_action );
         if( i ) {
-            rset = CALLOC( i*wperset, a_word );
+            rset = AllocSet( i );
             rx = redun;
             while( i > 0 ) {
-                if( rx->pro ) {
+                if( rx->pro != NULL ) {
                     --i;
                     x->redun[i].pro = rx->pro;
                     x->redun[i].follow = rset;

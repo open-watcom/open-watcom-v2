@@ -113,14 +113,10 @@ static a_state *findNewShiftState( a_state *state, a_sym *sym )
     a_shift_action *saction;
     a_sym *shift_sym;
 
-    saction = state->trans;
-    for(;;) {
-        shift_sym = saction->sym;
-        if( shift_sym == NULL ) break;
+    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( shift_sym == sym ) {
             return( saction->state );
         }
-        ++saction;
     }
     return( NULL );
 }
@@ -179,7 +175,8 @@ static a_shift_action *addShiftAction( a_sym *sym, a_state *state, a_shift_actio
     a_shift_action *new_saction;
     int i;
 
-    for( saction = s; saction->sym != NULL; ++saction ) {
+    for( saction = s; saction->sym != NULL; ) {
+        ++saction;
     }
     i = saction - s;
     new_saction = realloc( s, ( i + 2 ) * sizeof(a_shift_action) );
@@ -198,10 +195,11 @@ static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_ac
     a_word *new_follow;
     int i;
 
-    for( raction = r; raction->pro != NULL; ++raction ) {
+    for( raction = r; raction->pro != NULL; ) {
+        ++raction;
     }
     i = raction - r;
-    new_follow = CALLOC( wperset, a_word );
+    new_follow = AllocSet( 1 );
     Assign( new_follow, follow );
     new_raction = realloc( r, ( i + 2 ) * sizeof(a_reduce_action) );
     new_raction[i].pro = pro;
@@ -217,8 +215,7 @@ static a_reduce_action *removeReduceAction( a_reduce_action *remove, a_reduce_ac
     a_reduce_action *copy_raction;
 
     copy_raction = NULL;
-    raction = r;
-    for(;;) {
+    for( raction = r; ; ++raction ) {
         if( raction == remove ) {
             copy_raction = remove;
         } else {
@@ -227,8 +224,9 @@ static a_reduce_action *removeReduceAction( a_reduce_action *remove, a_reduce_ac
                 ++copy_raction;
             }
         }
-        if( raction->pro == NULL ) break;
-        ++raction;
+        if( raction->pro == NULL ) {
+            break;
+        }
     }
     return( r );
 }
@@ -314,14 +312,10 @@ static a_state *onlyShiftsOnTerminals( a_state *state )
         is important because it moves to the correct state for more
         reductions.  We cannot remove this unit reduction.
     */
-    saction = state->trans;
-    for(;;) {
-        shift_sym = saction->sym;
-        if( shift_sym == NULL ) break;
+    for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( shift_sym->pro != NULL ) {
             return( NULL );
         }
-        ++saction;
     }
     return( state );
 }
@@ -436,10 +430,7 @@ static int shiftToSingleReduce( a_state *state, a_shift_action *saction )
             change shift action for token (t) to shift into state (s3)
     */
     made_change = 0;
-    for(;;) {
-        sub_state = saction->state;
-        new_lhs = onlyOneReduction( sub_state );
-        if( new_lhs == NULL ) break;
+    for( sub_state = saction->state; (new_lhs = onlyOneReduction( sub_state )) != NULL; sub_state = saction->state ) {
         saction->state = findNewShiftState( state, new_lhs );
         removeParent( sub_state, state );
         made_change = 1;
@@ -461,7 +452,7 @@ static void tryElimination( a_state *state, a_word *reduce_set )
         return;
     }
     // iterate over all reductions in state
-    for(;;) {
+    for( pro = state->redun->pro; pro != NULL; ) {
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( pro->unit ) {
                 if( multiUnitReduce( state, raction, pro, reduce_set ) ) {
@@ -474,7 +465,6 @@ static void tryElimination( a_state *state, a_word *reduce_set )
                 }
             }
         }
-        if( pro == NULL ) break;
     }
 }
 
@@ -488,7 +478,8 @@ static void tossSingleReduceStates( a_state *state )
     }
     /* iterate over all shifts in the state */
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
-        if( saction->units_checked ) continue;
+        if( saction->units_checked )
+            continue;
         shiftToSingleReduce( state, saction );
     }
 }
@@ -508,7 +499,7 @@ void EliminateUnitReductions( void )
         }
         sum += changeOccurred;
     } while( changeOccurred );
-    reduce_set = CALLOC( wperset, a_word );
+    reduce_set = AllocSet( 1 );
     do {
         changeOccurred = 0;
         for( i = 0; i < nstate; ++i ) {

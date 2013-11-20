@@ -67,16 +67,13 @@ static void dontOptimizeUnitGOTOStates( a_state *ambig_state, a_pro *pro )
     unit_rhs = pro->item[0].p.sym;
     for( parent = ambig_state->parents; parent != NULL; parent = parent->next ) {
         parent_state = parent->state;
-        saction = parent_state->trans;
-        for(;;) {
-            if( saction->sym == NULL ) break;
+        for( saction = parent_state->trans; saction->sym != NULL; ++saction ) {
             if( saction->sym == unit_rhs ) {
                 shift_state = saction->state;
                 if( hasReduceByPro( shift_state, pro ) ) {
                     DontOptimize( *shift_state );
                 }
             }
-            ++saction;
         }
     }
 }
@@ -93,14 +90,11 @@ static a_sym *findEntrySym( a_state *state )
         return( NULL );
     }
     parent_state = parent->state;
-    saction = parent_state->trans;
-    for(;;) {
-        if( saction->sym == NULL ) break;
+    for( saction = parent_state->trans; saction->sym != NULL; ++saction ) {
         shift_state = saction->state;
         if( shift_state == state ) {
             return( saction->sym );
         }
-        ++saction;
     }
     return( NULL );
 }
@@ -114,11 +108,14 @@ void MarkNoUnitRuleOptimizationStates( void )
 
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
-        //if( IsDead( *state ) ) continue;
-        if( ! IsAmbiguous( *state ) ) continue;
+        //if( IsDead( *state ) )
+        //    continue;
+        if( ! IsAmbiguous( *state ) )
+            continue;
         entry_sym = findEntrySym( state );
         for( pro = entry_sym->pro; pro != NULL; pro = pro->next ) {
-            if( ! pro->unit ) continue;
+            if( ! pro->unit )
+                continue;
             dontOptimizeUnitGOTOStates( state, pro );
         }
     }

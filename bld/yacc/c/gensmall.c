@@ -161,7 +161,7 @@ void genobj( void )
     base = 0;
     max = 0;
     sum = 0;
-    for( i = 0; i < nstate; ++i ){
+    for( i = 0; i < nstate; ++i ) {
         state_base[i] = base;
         x = statetab[i];
         for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
@@ -170,7 +170,7 @@ void genobj( void )
         }
         default_reduction = NULL;
         savings = 0;
-        for( rx = x->redun; rx->pro != NULL; ++rx ){
+        for( rx = x->redun; rx->pro != NULL; ++rx ) {
             mp = Members( rx->follow );
             if( mp != setmembers ) {
                 if( mp - setmembers > savings ) {
@@ -218,8 +218,9 @@ void genobj( void )
     end_table();
     begin_table( "YYPLENTYPE", "yyplentab" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym != NULL; ++item )
-          /* do nothing */;
+        for( item = protab[i]->item; item->p.sym != NULL; ) {
+            ++item;
+        }
         puttab( FITS_A_BYTE, item - protab[i]->item );
     }
     end_table();
@@ -232,8 +233,9 @@ void genobj( void )
     rule_base = 0;
     begin_table( "unsigned short", "yyrulebase" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym != NULL; ++item )
-          /* do nothing */;
+        for( item = protab[i]->item; item->p.sym != NULL; ) {
+            ++item;
+        }
         puttab( FITS_A_WORD, rule_base );
         rule_base += item - protab[i]->item;
     }
