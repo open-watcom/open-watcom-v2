@@ -39,7 +39,9 @@ char *getname( char *qualname )
 {
     char *name;
 
-    if( (name = strrchr( qualname, '\\' )) || (name = strrchr( qualname, '/' )) || (name = strrchr( qualname, ':' )) ) {
+    if( (name = strrchr( qualname, '\\' )) != NULL
+      || (name = strrchr( qualname, '/' )) != NULL
+      || (name = strrchr( qualname, ':' )) != NULL ) {
         return( name + 1 );
     } else {
         return( qualname );

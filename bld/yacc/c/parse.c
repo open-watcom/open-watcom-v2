@@ -551,7 +551,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
     char        save;
     char        *type;
     int         err_count;
-    int         i;
+    long        il;
 
     err_count = 0;
     ++s;
@@ -578,18 +578,18 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
         }
         ++s;
     } else {
-        i = n + 1;
+        il = n + 1;
         if( *s == '-' || isdigit( *s ) ) {
-            i = strtol( s, &s, 10 );
+            il = strtol( s, &s, 10 );
         }
-        if( i >= 0 && i > n ) {
+        if( il >= 0 && il > (long)n ) {
             ++err_count;
-            msg( "Invalid $ parameter (%d).\n", i );
+            msg( "Invalid $ parameter (%ld).\n", il );
         }
-        i -= base + 1;
-        sprintf( buff, "yyvp[%d]", i );
-        if( type == NULL && i >= 0 && rhs[i]->type != NULL ) {
-            type = strdup( rhs[i]->type );
+        il -= base + 1;
+        sprintf( buff, "yyvp[%ld]", il );
+        if( type == NULL && il >= 0 && rhs[il]->type != NULL ) {
+            type = strdup( rhs[il]->type );
         }
     }
     *ptype = type;

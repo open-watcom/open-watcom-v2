@@ -61,7 +61,8 @@ static FILE *openr( char *filename )
 {
     FILE *file;
 
-    if( !(file = fopen( filename, "r" )) ) {
+    file = fopen( filename, "r" );
+    if( file == NULL ) {
         msg( "Can't open %s.\n", filename );
     }
     return( file );
@@ -71,7 +72,8 @@ static FILE *openw( char *filename )
 {
     FILE *file;
 
-    if( !(file = fopen( filename, "w" )) ) {
+    file = fopen( filename, "w" );
+    if( file == NULL ) {
         msg( "Can't open %s for output.\n", filename );
     }
     return( file );
@@ -194,7 +196,7 @@ int main( int argc, char **argv )
     skeleton = NULL;
     if( i == argc - 2 ) {
         skeleton = openr( argv[argc - 1] );
-        if( !skeleton ) {
+        if( skeleton == NULL ) {
             msg( "could not open driver source code '%s'\n", argv[argc - 1] );
         }
     }
@@ -210,11 +212,10 @@ int main( int argc, char **argv )
     tokout = openw( "ytab.h" );
 
     defs();
-    for( i = 0; i < 1000; ++i ) {
+    temp = NULL;
+    for( i = 0; i < 1000 && temp == NULL; ++i ) {
         sprintf( tempfname, "ytab.%3d", i );
-        if( (temp = fopen( tempfname, "w+" )) != NULL ) {
-            break;
-        }
+        temp = fopen( tempfname, "w+" );
     }
     if( temp == NULL ) {
         msg( "Cannot create temporary file\n" );
@@ -267,8 +268,9 @@ int main( int argc, char **argv )
     while( (ch = fgetc( tokout )) != EOF ) {
         fputc( ch, actout );
     }
-    if( !skeleton ) {
-        if( !(skeleton = fpopen( loadpath, "yydriver.c" )) ) {
+    if( skeleton == NULL ) {
+        skeleton = fpopen( loadpath, "yydriver.c" );
+        if( skeleton == NULL ) {
             msg( "Can't find yacc skeleton yydriver.c\n" );
         }
     }
@@ -286,6 +288,7 @@ int main( int argc, char **argv )
     while( (ch = fgetc( skeleton )) != EOF ) {
         fputc( ch, actout );
     }
+    fclose( skeleton );
     tail();
     fclose( temp );
     remove( tempfname );

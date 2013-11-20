@@ -207,6 +207,7 @@ struct a_parent {
 
 extern void InitSets(unsigned );
 extern a_word *AllocSet( unsigned );
+extern unsigned GetSetSize( unsigned );
 extern void Union(a_word *,a_word *);
 extern void Intersection( a_word *, a_word *);
 extern void Assign(a_word *,a_word *);
@@ -318,7 +319,6 @@ extern a_state *errstate;
 extern a_pro **protab;
 extern a_pro *startpro;
 
-extern unsigned wperset;
 extern short *setmembers;
 
 extern char *srcname;

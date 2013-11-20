@@ -40,10 +40,10 @@
 
 #define Token(c)        ((c).token)
 #define SetToken(c,i)   ((c).token = (i))
-#define IsUsed(c)       ((c).action&0x4000)
-#define Action(c)       ((c).action&0x3fff)
+#define IsUsed(c)       ((c).action & 0x4000)
+#define Action(c)       ((c).action & 0x3fff)
 #define SetAction(c,i)  ((c).action |= (0x4000|(i)))
-#define IsBase(c)       ((c).action&0x8000)
+#define IsBase(c)       ((c).action & 0x8000)
 #define SetBase(c)      ((c).action |= 0x8000)
 #define roundup(a,b)    ((((a)+(b)-1)/(b))*(b))
 
@@ -56,7 +56,8 @@ static int addtotable(  short *token,
                         short parent_token );
 
 typedef struct a_table {
-    short       token, action;
+    short       token;
+    short       action;
 } a_table;
 
 static int avail, used;
@@ -110,8 +111,11 @@ void genobj( void )
     other = CALLOC( nstate, short );
     parent = CALLOC( nstate, short );
     size = CALLOC( nstate, short );
-    same = r = diff = NULL;
-    shift = parent_base = 0;
+    same = NULL;
+    r = NULL;
+    diff = NULL;
+    shift = 0;
+    parent_base = 0;
     for( i = nstate; --i >= 0; ) {
         x = statetab[i];
         q = token;
@@ -134,7 +138,8 @@ void genobj( void )
             }
         }
         if( savings ) {
-            tokval = other[i] = action[*r];
+            tokval = action[*r];
+            other[i] = tokval;
             *q++ = dtoken;
             action[dtoken] = tokval;
             p = r;
@@ -148,12 +153,14 @@ void genobj( void )
             other[i] = error;
         }
         r = q;
-        min = size[i] = r - token;
+        min = q - token;
+        size[i] = min;
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
             if( abs( size[j] - size[i] ) < min ) {
                 x = statetab[j];
-                q = (p = test) + ntoken;
+                p = test;
+                q = test + ntoken;
                 for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
                     if( action[sym->token] == tx->state->sidx ) {
                        *p++ = sym->token;
@@ -181,12 +188,12 @@ void genobj( void )
                         *--q = dtoken;
                     }
                 }
-                savings = size[i] + size[j] - 2*(p - test);
+                savings = size[i] + size[j] - 2 * ( p - test );
                 if( savings < min ) {
                     min = savings;
                     same = p;
                     diff = q;
-                    s = test;  test = best;  best = s;
+                    s = test; test = best; best = s;
                     parent[i] = j;
                 }
             }
@@ -194,7 +201,7 @@ void genobj( void )
         if( min >= size[i] ) {
             s = r;
         } else {
-            ++ num_parent;
+            ++num_parent;
             s = token;
             p = same;
             while( --p >= best )

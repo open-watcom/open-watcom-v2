@@ -35,8 +35,9 @@
 #include "yacc.h"
 #include "alloc.h"
 
-unsigned wperset;
 short *setmembers;
+
+static unsigned wperset;
 
 void InitSets( unsigned n )
 {
@@ -47,6 +48,11 @@ void InitSets( unsigned n )
 a_word *AllocSet( unsigned n )
 {
     return( CALLOC( n * wperset, a_word ) );
+}
+
+unsigned GetSetSize( unsigned n )
+{
+    return( n * wperset );
 }
 
 void Union( a_word *s, a_word *t )

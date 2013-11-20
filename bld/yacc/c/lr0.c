@@ -164,8 +164,10 @@ static void Complete( a_state *x, an_item **s )
     for( p = s; p < q && (*p)->p.sym == NULL; ) {
         ++p;
     }
-    nredun += (n = p - s);
-    rx = x->redun = CALLOC( n + 1, a_reduce_action );
+    n = p - s;
+    nredun += n;
+    rx = CALLOC( n + 1, a_reduce_action );
+    x->redun = rx;
     for( p = s; p < q && (*p)->p.sym == NULL; ++p ) {
         (rx++)->pro = (*p)[1].p.pro;
     }
@@ -177,7 +179,8 @@ static void Complete( a_state *x, an_item **s )
         while( ++p < q ) {
             n += (p[-1]->p.sym != p[0]->p.sym);
         }
-        tx = x->trans = CALLOC( n + 1, a_shift_action );
+        tx = CALLOC( n + 1, a_shift_action );
+        x->trans = tx;
         do {
             tx->sym = (*s)->p.sym;
             if( tx->sym->pro != NULL ) {
@@ -205,7 +208,8 @@ void lr0( void )
     for( x = statelist; x != NULL; x = x->next ) {
         Complete( x, s );
     }
-    Complete( errstate = addState( &errsym->enter, s, s, NULL ), s );
+    errstate = addState( &errsym->enter, s, s, NULL );
+    Complete( errstate, s );
     free( s );
 }
 

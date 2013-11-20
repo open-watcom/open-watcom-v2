@@ -59,7 +59,7 @@ static void doState(
     char        *all_used,
     unsigned    range_size )
 {
-    int i;
+    unsigned i;
     unsigned max;
     index_t max_idx;
     a_shift_action *saction;

@@ -49,7 +49,8 @@ static void Reads( a_look *x )
     int             k;
 
     *top = x;
-    x->depth = k = ++top - stk;
+    k = ++top - stk;
+    x->depth = k;
     for( tx = x->trans->state->trans; tx->sym != NULL; ++tx ) {
         if( tx->sym->pro == NULL ) {
             SetBit( x->follow, tx->sym->idx );
@@ -126,7 +127,8 @@ static void Includes( a_look *x )
     int         k;
 
     *top = x;
-    x->depth = k = ++top - stk;
+    k = ++top - stk;
+    x->depth = k;
     for( link = x->include; link != NULL; link = link->next ) {
         y = link->el;
         if( y->depth == 0 ) {
@@ -217,7 +219,7 @@ static void Lookback( void )
                     }
                     y = tx->state;
                 }
-                for( rx = y->redun; rx->pro !=NULL && rx->pro != pro; ) {
+                for( rx = y->redun; rx->pro != NULL && rx->pro != pro; ) {
                     ++rx;
                 }
                 Union( rx->follow, p->follow );
@@ -442,7 +444,7 @@ static void Conflict( void )
             }
         }
         for( rx = x->redun; rx->pro != NULL; ++rx ) {
-            for( i = 0; i < wperset; ++i ) {
+            for( i = 0; i < GetSetSize( 1 ); ++i ) {
                 if( rx->follow[i] & set[i] ) {
                     resolve( x, work, reduce );
                     goto continu;
@@ -474,14 +476,14 @@ void lalr1( void )
             if( tx->sym->pro != NULL ) {
                 lk->trans = tx;
                 lk->follow = lp;
-                lp += wperset;
+                lp += GetSetSize( 1 );
                 ++lk;
             }
         }
         ++lk;
         for( rx = x->redun; rx->pro != NULL; ++rx ) {
             rx->follow = rp;
-            rp += wperset;
+            rp += GetSetSize( 1 );
         }
     }
     top = stk = CALLOC( nvtrans, a_look * );
@@ -492,10 +494,10 @@ void lalr1( void )
     if( lk - look != nvtrans + nstate ) {
         puts( "internal error" );
     }
-    if( lp - lset != nvtrans * wperset ) {
+    if( lp - lset != GetSetSize( nvtrans ) ) {
         puts( "internal error" );
     }
-    if( rp - rset != nredun * wperset ) {
+    if( rp - rset != GetSetSize( nredun ) ) {
         puts( "internal error" );
     }
     free( look );

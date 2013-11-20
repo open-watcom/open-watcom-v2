@@ -193,7 +193,7 @@ static emitv( symbol, target, n )
             emitins( JLT, l1 );
         }
         if( n == 1 ) {
-            emitins( JGT, target[symbol[m+1]] );
+            emitins( JGT, target[symbol[m + 1]] );
         } else if( n != 0 ) {
             l2 = newlabel();
             emitins( JGT, l2 );

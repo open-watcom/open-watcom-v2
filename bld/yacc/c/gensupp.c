@@ -162,7 +162,7 @@ void putcomment( char *comment )
 
 void puttokennames( int dtoken, value_size token_size )
 {
-    unsigned rule_base;
+    int rule_base;
     an_item *item;
     unsigned i;
 
@@ -177,7 +177,7 @@ void puttokennames( int dtoken, value_size token_size )
             ++item;
         }
         puttab( FITS_A_WORD, rule_base );
-        rule_base += item - protab[i]->item;
+        rule_base += (int)( item - protab[i]->item );
     }
     endtab();
     begtab( "YYTOKENTYPE", "yyrhstoks" );

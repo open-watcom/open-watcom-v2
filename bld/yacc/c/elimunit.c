@@ -173,18 +173,18 @@ static a_shift_action *addShiftAction( a_sym *sym, a_state *state, a_shift_actio
 {
     a_shift_action *saction;
     a_shift_action *new_saction;
-    int i;
+    size_t i;
 
     for( saction = s; saction->sym != NULL; ) {
         ++saction;
     }
     i = saction - s;
-    new_saction = realloc( s, ( i + 2 ) * sizeof(a_shift_action) );
+    new_saction = realloc( s, ( i + 2 ) * sizeof( a_shift_action ) );
     memset( &new_saction[i], 0, sizeof( *new_saction ) * 2 );
     new_saction[i].sym = sym;
     new_saction[i].state = state;
-    new_saction[i+1].sym = NULL;
-    new_saction[i+1].state = NULL;
+    new_saction[i + 1].sym = NULL;
+    new_saction[i + 1].state = NULL;
     return( new_saction );
 }
 
@@ -193,7 +193,7 @@ static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_ac
     a_reduce_action *raction;
     a_reduce_action *new_raction;
     a_word *new_follow;
-    int i;
+    size_t i;
 
     for( raction = r; raction->pro != NULL; ) {
         ++raction;
@@ -201,11 +201,11 @@ static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_ac
     i = raction - r;
     new_follow = AllocSet( 1 );
     Assign( new_follow, follow );
-    new_raction = realloc( r, ( i + 2 ) * sizeof(a_reduce_action) );
+    new_raction = realloc( r, ( i + 2 ) * sizeof( a_reduce_action ) );
     new_raction[i].pro = pro;
     new_raction[i].follow = new_follow;
-    new_raction[i+1].pro = NULL;
-    new_raction[i+1].follow = NULL;
+    new_raction[i + 1].pro = NULL;
+    new_raction[i + 1].follow = NULL;
     return( new_raction );
 }
 

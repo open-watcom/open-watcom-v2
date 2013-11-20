@@ -37,11 +37,6 @@
 #include "alloc.h"
 
 enum {
-    FITS_A_BYTE,
-    FITS_A_WORD
-};
-
-enum {
     ACTION_AMBIGUOUS    = 0x8000,
     ACTION_SHIFT        = 0x4000,
     ACTION_REDUCE       = 0x0000,
@@ -69,7 +64,7 @@ static void begin_table( char *tipe, char *name )
     tabcol = 0;
 }
 
-static void puttab( int fits, int i )
+void puttab( value_size fits, int i )
 {
     char *format;
     unsigned mod;
@@ -221,7 +216,7 @@ void genobj( void )
         for( item = protab[i]->item; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( FITS_A_BYTE, item - protab[i]->item );
+        puttab( FITS_A_BYTE, (int)( item - protab[i]->item ) );
     }
     end_table();
     begin_table( "YYPLHSTYPE", "yyplhstab" );
@@ -237,7 +232,7 @@ void genobj( void )
             ++item;
         }
         puttab( FITS_A_WORD, rule_base );
-        rule_base += item - protab[i]->item;
+        rule_base += (int)( item - protab[i]->item );
     }
     end_table();
     begin_table( "YYCHKTYPE", "yyrhstoks" );

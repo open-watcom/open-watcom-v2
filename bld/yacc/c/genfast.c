@@ -134,7 +134,7 @@ static int actcmp( action_t *a1, compressed_action * ca, unsigned num_comp,
             continue;
         }
         if( v1 != v2 ) {
-            return( ca->index+1 );
+            return( ca->index + 1 );
         }
     }
     return( 0 );
@@ -142,7 +142,7 @@ static int actcmp( action_t *a1, compressed_action * ca, unsigned num_comp,
 
 static void actcpy( action_t *a1, compressed_action * ca, unsigned num_comp )
 {
-    int i;
+    unsigned    i;
 
     for( i = 0; i < num_comp; ++i, ++ ca ) {
         a1[ca->index] = ca->action;
@@ -183,8 +183,7 @@ static unsigned actcompress( compressed_action * ca, action_t * a, unsigned size
 }
 
 static unsigned insertIntoActionVector( action_t **bv, unsigned *bs,
-                                compressed_action * ca, unsigned num_actions,
-                                unsigned size )
+        compressed_action * ca, unsigned num_actions, unsigned size )
 {
     int i;
     int s;
@@ -457,8 +456,7 @@ static void createYACCTables( void )
     abase = CALLOC( nstate, unsigned );
     for( i = 0; i < nstate; ++i ) {
         num_actions = actcompress( ca, all_actions[i], maxTerminal );
-        abase[mapping[i]] = insertIntoActionVector( &avector, &asize,
-                                        ca, num_actions, maxTerminal );
+        abase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, maxTerminal );
         free( all_actions[i] );
         all_actions[i] = NULL;
     }
@@ -484,8 +482,7 @@ static void createYACCTables( void )
     gbase = CALLOC( nstate, unsigned );
     for( i = 0; i < nstate; ++i ) {
         num_actions = actcompress( ca, all_actions[i], maxNonTerminal );
-        gbase[mapping[i]] = insertIntoActionVector( &avector, &asize,
-                                        ca, num_actions, maxNonTerminal );
+        gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, maxNonTerminal );
         free( all_actions[i] );
         all_actions[i] = NULL;
     }
@@ -543,7 +540,7 @@ static void createYACCTables( void )
         for( item = first_item; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( FITS_A_BYTE, item - first_item );
+        puttab( FITS_A_BYTE, (int)( item - first_item ) );
     }
     endtab();
     putcomment( "index by rule to get left hand side token" );

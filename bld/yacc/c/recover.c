@@ -48,7 +48,7 @@ static AddError()
     rset = conflict = AllocSet( npro + 2 );
     for( i = 0; i <= npro; ++i ) {
         (rx++)->follow = rset;
-        rset += wperset;
+        rset += GetSetSize( 1 );
     }
     defined = rset;
     s = CALLOC( nstate, a_state * );
@@ -163,7 +163,7 @@ static AddError()
                     x->redun[i].pro = rx->pro;
                     x->redun[i].follow = rset;
                     Assign( rset, rx->follow );
-                    rset += wperset;
+                    rset += GetSetSize( 1 );
                 }
                 ++rx;
             }

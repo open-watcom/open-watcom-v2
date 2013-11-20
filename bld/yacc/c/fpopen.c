@@ -52,7 +52,8 @@ FILE *fpopen( char *path, char *name )
             for( p = path; *p != '\0' && *p != ';'; ) {
                 ++p;
             }
-            memcpy( qualname, path, dirlen = p - path );
+            dirlen = p - path;
+            memcpy( qualname, path, dirlen );
             if( p > path && p[-1] != '\\' && p[-1] != '/' )
                 qualname[dirlen++] = '/';
             memcpy( &qualname[dirlen], name, namelen );

@@ -70,8 +70,7 @@ static void preamble()
                      );
 
     for( i = 0; i < nstate; ++ i ) {
-        fprintf( actout,
-                 "static int YYNEAR state%d( struct parse_stack *, unsigned );\n", i );
+        fprintf( actout, "static int YYNEAR state%d( struct parse_stack *, unsigned );\n", i );
     }
 }
 
@@ -208,8 +207,7 @@ static void reduce( int production, int error )
         if( (shift_to = unique_shift( pro )) != NULL ) {
             fprintf( actout, "\tyysp[0].state = state%d;\n", shift_to->sidx );
         } else {
-            fprintf( actout, "\t(*yysp[-1].state) ( yysp, %d );\n",
-                                    pro->sym->token );
+            fprintf( actout, "\t(*yysp[-1].state) ( yysp, %d );\n", pro->sym->token );
         }
         fprintf( actout, "\treturn( %d );\n", plen );
     }
@@ -248,8 +246,7 @@ static void gencode( int statenum, short *toklist, short *s, short *action,
             } else if( symtab[symnum]->name[0] == '\'' ) {
                 fprintf( actout, "    case %s:\n", symtab[symnum]->name );
             } else {
-                fprintf( actout, "    case %d: /* %s */\n", token,
-                                    symtab[symnum]->name );
+                fprintf( actout, "    case %d: /* %s */\n", token, symtab[symnum]->name );
             }
             if( todo >= nstate ) {
                 // Reduction or error
@@ -403,7 +400,8 @@ void genobj( void )
                 continue;
             savings = 0;
             x = statetab[j];
-            q = (p = test) + ntoken;
+            p = test;
+            q = test + ntoken;
             for( tx = x->trans; (sym = tx->sym) != NULL; ++tx )
                 if( action[sym->token] == tx->state->sidx ) {
                     ++ savings;
@@ -497,6 +495,5 @@ void genobj( void )
     putnum( "YYERR", errstate->sidx );
     fprintf( actout, "#define YYSTART   state%d\n", startstate->sidx );
     fprintf( actout, "#define YYSTOP    state%d\n", eofsym->enter->sidx );
-    printf( "%u states, %u with defaults, %u with parents\n",
-                nstate, num_default, num_parent );
+    printf( "%u states, %u with defaults, %u with parents\n", nstate, num_default, num_parent );
 }
