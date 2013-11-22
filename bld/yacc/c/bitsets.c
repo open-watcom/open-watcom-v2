@@ -35,14 +35,14 @@
 #include "yacc.h"
 #include "alloc.h"
 
-short *setmembers;
+set_size *setmembers;
 
-static unsigned wperset;
+static set_size wperset;
 
 void InitSets( unsigned n )
 {
     wperset = (n + WSIZE - 1)/WSIZE;
-    setmembers = CALLOC( n, short );
+    setmembers = CALLOC( n, set_size );
 }
 
 a_word *AllocSet( unsigned n )
@@ -57,36 +57,36 @@ unsigned GetSetSize( unsigned n )
 
 void Union( a_word *s, a_word *t )
 {
-    int n;
+    set_size    n;
 
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         *s++ |= *t++;
     }
 }
 
 void Assign( a_word *s, a_word *t )
 {
-    int n;
+    set_size    n;
 
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         *s++ = *t++;
     }
 }
 
 void Clear( a_word *s )
 {
-    int n;
+    set_size    n;
 
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         *s++ = 0;
     }
 }
 
 bool Empty( a_word *s )
 {
-    int n;
+    set_size    n;
 
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         if( *s++ ) {
             return( FALSE );
         }
@@ -96,9 +96,9 @@ bool Empty( a_word *s )
 
 bool EmptyIntersection( a_word *s, a_word *t )
 {
-    int n;
+    set_size    n;
 
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         if( *s++ & *t++ ) {
             return( FALSE );
         }
@@ -108,9 +108,9 @@ bool EmptyIntersection( a_word *s, a_word *t )
 
 bool Equal( a_word *s, a_word *t )
 {
-    int n;
+    set_size    n;
 
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         if( *s++ != *t++ ) {
             return( FALSE );
         }
@@ -120,64 +120,58 @@ bool Equal( a_word *s, a_word *t )
 
 void Intersection( a_word *s, a_word *t )
 {
-    int n;
+    set_size    n;
 
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         *s++ &= *t++;
     }
 }
 
 void AndNot( a_word *s, a_word *t )
 {
-    int n;
+    set_size    n;
 
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         *s++ &= ~*t++;
     }
 }
 
 void UnionAnd( a_word *s, a_word *t, a_word *u )
 {
-    int n;
+    set_size    n;
 
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         *s++ |= *t++ & *u++;
     }
 }
 
-short *Members( a_word *s )
+set_size *Members( a_word *s )
 {
-    a_word *t;
     a_word word;
-    int i, j;
-    short *p;
+    set_size i, j;
+    set_size *p;
 
     p = setmembers;
-    i = 0;
-    for( t = s + wperset; s < t; ++s ) {
-        j = i;
-        for( word = *s; word; word >>= 1 ) {
+    for( i = 0; i < wperset; ++i ) {
+        j = i * WSIZE;
+        for( word = *s++; word != 0; word >>= 1 ) {
             if( word & 1 ) {
                 *p++ = j;
             }
             ++j;
         }
-        i += WSIZE;
     }
     return( p );
 }
 
 void DumpSet( a_word *s )
 {
-    char *p;
-    char *t;
-    int size;
+    char        *p;
+    set_size    size;
 
-    size = wperset * sizeof( a_word );
     p = (char *)s;
-    t = &p[size];
-    for( ; p < t; ++p ) {
-        printf( "%02x", *p );
+    for( size = wperset * WSIZE; size > 0; --size ) {
+        printf( "%02x", *p++ );
     }
     printf( "\n" );
 }
@@ -213,11 +207,11 @@ static unsigned bit_count( unsigned x )
 unsigned Cardinality( a_word *s )
 /*******************************/
 {
-    int n;
-    unsigned sum;
+    set_size    n;
+    unsigned    sum;
 
     sum = 0;
-    for( n = wperset; n; --n ) {
+    for( n = wperset; n > 0; --n ) {
         sum += bit_count( *s );
         ++s;
     }

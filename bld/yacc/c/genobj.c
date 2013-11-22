@@ -55,7 +55,7 @@ void genobj( void )
     short int *symbol, *target;
     short int *p, *q, *r;
     short int action;
-    short int *mp;
+    set_size *mp;
     a_sym *sym;
     a_pro *pro;
     an_item *item;

@@ -48,7 +48,7 @@ void dumpInternalState( a_state *x )
     a_reduce_action *rx;
     unsigned col, new_col;
     short int *p;
-    short int *mp;
+    set_size *mp;
     a_name name;
 
     printf( "state %d: %p (%u)\n", x->sidx, x, x->kersize );
@@ -329,7 +329,7 @@ static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro 
     a_state *check_state;
     a_parent *parent;
     a_word *follow;
-    short *mp;
+    set_size *mp;
     int change_occurred;
 
     /*

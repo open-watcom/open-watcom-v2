@@ -362,7 +362,7 @@ static void createYACCTables( void )
     byte *bvector;
     compressed_action * ca;
     unsigned num_actions;
-    short *mp;
+    set_size *mp;
     unsigned *base;
     unsigned *abase;
     unsigned *gbase;

@@ -46,9 +46,6 @@ enum {
     TOKEN_SPARSE_BASE   = 0x007f, TOKEN_SPARSE_MAX      = 0x7fff,
 };
 
-typedef unsigned int    a_word;
-typedef unsigned char   byte;
-
 #define MAX_AMBIGS      10
 
 #define WSIZE           (sizeof(a_word)*8)
@@ -98,15 +95,19 @@ typedef struct a_prec {
     typedef unsigned short index_t;
 #endif
 
-typedef unsigned short token_t;
+typedef unsigned int    a_word;
+typedef unsigned char   byte;
 
-typedef struct a_state a_state;
-typedef struct a_sym a_sym;
-typedef struct a_pro a_pro;
+typedef unsigned short  token_t;
+typedef unsigned short  set_size;
+
+typedef struct a_state  a_state;
+typedef struct a_sym    a_sym;
+typedef struct a_pro    a_pro;
 typedef struct a_parent a_parent;
 typedef struct a_SR_conflict a_SR_conflict;
 typedef struct a_SR_conflict_list a_SR_conflict_list;
-typedef struct a_link a_link;
+typedef struct a_link   a_link;
 
 typedef struct an_item {
     flags               flag;
@@ -205,129 +206,129 @@ struct a_parent {
     a_state             *state;
 };
 
-extern void InitSets(unsigned );
-extern a_word *AllocSet( unsigned );
-extern unsigned GetSetSize( unsigned );
-extern void Union(a_word *,a_word *);
-extern void Intersection( a_word *, a_word *);
-extern void Assign(a_word *,a_word *);
-extern void Clear(a_word *);
-extern bool Empty(a_word *);
-extern void AndNot(a_word *,a_word *);
-extern void UnionAnd(a_word *,a_word *,a_word *);
-extern short *Members(a_word *);
-extern bool EmptyIntersection( a_word *, a_word * );
-extern bool Equal( a_word *, a_word * );
-extern void DumpSet(a_word *);
-extern unsigned Cardinality( a_word * );
-
-extern void buildpro(void);
-extern a_sym *findsym(char *);
-extern a_sym *addsym(char *);
-extern a_pro *addpro(a_sym *,a_sym **,int );
-extern void showpro(void);
-extern void showitem(an_item *,char *);
-extern void show_unused(void);
-
-extern void lalr1(void );
-extern void showstates(void);
-extern void showstate(a_state *);
-
-extern void lr0(void );
-extern void SetupStateTable(void);
-extern void RemoveDeadStates( void );
-extern void MarkDefaultReductions( void );
-extern void CalcMinSentence( void );
-
-extern void EliminateUnitReductions(void);
-extern void MarkDefaultShifts( void );
-extern void ShowSentence( a_state *, a_sym *, a_pro *, a_state * );
-
-extern void FindUnused( void );
-
-extern char *getname( char * );
-
-extern FILE *fpopen( char *, char * );
-
-extern void defs(void);
-extern void rules(void);
-extern void parsestats( void );
-extern void tail(void);
-
-extern void genobj(void);
-
-extern void msg( char *, ... );
-extern void warn( char *, ... );
-extern void dumpstatistic( char *name, unsigned stat );
-
-extern void MarkNoUnitRuleOptimizationStates( void );
-
-extern void GenFastTables( void );
-
 typedef enum value_size {
     FITS_A_BYTE,
     FITS_A_WORD
 } value_size;
 
+extern void     InitSets(unsigned );
+extern a_word   *AllocSet( unsigned );
+extern unsigned GetSetSize( unsigned );
+extern void     Union(a_word *,a_word *);
+extern void     Intersection( a_word *, a_word *);
+extern void     Assign(a_word *,a_word *);
+extern void     Clear(a_word *);
+extern bool     Empty(a_word *);
+extern void     AndNot(a_word *,a_word *);
+extern void     UnionAnd(a_word *,a_word *,a_word *);
+extern set_size *Members(a_word *);
+extern bool     EmptyIntersection( a_word *, a_word * );
+extern bool     Equal( a_word *, a_word * );
+extern void     DumpSet(a_word *);
+extern unsigned Cardinality( a_word * );
+
+extern void     buildpro(void);
+extern a_sym    *findsym(char *);
+extern a_sym    *addsym(char *);
+extern a_pro    *addpro(a_sym *,a_sym **,int );
+extern void     showpro(void);
+extern void     showitem(an_item *,char *);
+extern void     show_unused(void);
+
+extern void     lalr1(void );
+extern void     showstates(void);
+extern void     showstate(a_state *);
+
+extern void     lr0(void );
+extern void     SetupStateTable(void);
+extern void     RemoveDeadStates( void );
+extern void     MarkDefaultReductions( void );
+extern void     CalcMinSentence( void );
+
+extern void     EliminateUnitReductions(void);
+extern void     MarkDefaultShifts( void );
+extern void     ShowSentence( a_state *, a_sym *, a_pro *, a_state * );
+
+extern void     FindUnused( void );
+
+extern char     *getname( char * );
+
+extern FILE     *fpopen( char *, char * );
+
+extern void     defs(void);
+extern void     rules(void);
+extern void     parsestats( void );
+extern void     tail(void);
+
+extern void     genobj(void);
+
+extern void     msg( char *, ... );
+extern void     warn( char *, ... );
+extern void     dumpstatistic( char *name, unsigned stat );
+
+extern void     MarkNoUnitRuleOptimizationStates( void );
+
+extern void     GenFastTables( void );
+
 extern unsigned MaxTerminalTokenValue( void );
-extern void endtab( void );
-extern void putcompact( unsigned token, unsigned action );
-extern void begtab( char *tipe, char *name );
-extern void putnum( char *name, int i );
-extern void putambigs( short *base );
-extern void puttab( value_size fits, int i );
-extern void puttokennames( int dtoken, value_size token_size );
-extern void putcomment( char *comment );
+extern void     endtab( void );
+extern void     putcompact( unsigned token, unsigned action );
+extern void     begtab( char *tipe, char *name );
+extern void     putnum( char *name, int i );
+extern void     putambigs( short *base );
+extern void     puttab( value_size fits, int i );
+extern void     puttokennames( int dtoken, value_size token_size );
+extern void     putcomment( char *comment );
 
-extern index_t npro;    /* # of productions */
-extern index_t nsym;    /* # of symbols */
-extern index_t nterm;   /* # of terminals */
-extern index_t nvble;   /* # of non-terminals */
-extern index_t nitem;   /* # of LR(0) items */
+extern index_t  npro;    /* # of productions */
+extern index_t  nsym;    /* # of symbols */
+extern index_t  nterm;   /* # of terminals */
+extern index_t  nvble;   /* # of non-terminals */
+extern index_t  nitem;   /* # of LR(0) items */
 
-extern index_t nbstate;
-extern index_t nstate;
-extern index_t nvtrans;
-extern index_t nredun;
-extern index_t nstate_1_reduce;
+extern index_t  nbstate;
+extern index_t  nstate;
+extern index_t  nvtrans;
+extern index_t  nredun;
+extern index_t  nstate_1_reduce;
 
-extern index_t RR_conflicts;
-extern index_t SR_conflicts;
+extern index_t  RR_conflicts;
+extern index_t  SR_conflicts;
 
-extern char lineflag;
-extern char bigflag;
-extern char denseflag;
-extern char default_shiftflag;
-extern char compactflag;
-extern char fastflag;
-extern char showflag;
-extern char translateflag;
-extern char defaultwarnflag;
+extern char     lineflag;
+extern char     bigflag;
+extern char     denseflag;
+extern char     default_shiftflag;
+extern char     compactflag;
+extern char     fastflag;
+extern char     showflag;
+extern char     translateflag;
+extern char     defaultwarnflag;
 
-extern a_sym **symtab;
-extern a_sym *symlist;
-extern a_sym *startsym;
-extern a_sym *eofsym;
-extern a_sym *errsym;
-extern a_sym *goalsym;
-extern a_sym *nosym;
-extern a_state **statetab;
-extern a_state *statelist;
-extern a_state **statetail;
-extern a_state *startstate;
-extern a_state *errstate;
-extern a_pro **protab;
-extern a_pro *startpro;
+extern a_sym    **symtab;
+extern a_sym    *symlist;
+extern a_sym    *startsym;
+extern a_sym    *eofsym;
+extern a_sym    *errsym;
+extern a_sym    *goalsym;
+extern a_sym    *nosym;
+extern a_state  **statetab;
+extern a_state  *statelist;
+extern a_state  **statetail;
+extern a_state  *startstate;
+extern a_state  *errstate;
+extern a_pro    **protab;
+extern a_pro    *startpro;
 
-extern short *setmembers;
+extern set_size *setmembers;
 
-extern char *srcname;
+extern char     *srcname;
 
-extern FILE *yaccin;
-extern FILE *actout;
-extern FILE *tokout;
+extern FILE     *yaccin;
+extern FILE     *actout;
+extern FILE     *tokout;
 
-extern int lineno;
+extern int      lineno;
 
 extern a_SR_conflict *ambiguousstates;
 

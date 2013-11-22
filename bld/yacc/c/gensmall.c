@@ -109,7 +109,7 @@ void add_table( short token, short action )
 void dump_reduction( a_reduce_action *rx, unsigned *base )
 {
     a_pro *pro;
-    short *mp;
+    set_size *mp;
 
     pro = rx->pro;
     for( mp = Members( rx->follow ); --mp >= setmembers; ) {
@@ -126,7 +126,7 @@ void genobj( void )
     int any_token;
     int action;
     short *p;
-    short *mp;
+    set_size *mp;
     a_pro *pro;
     a_state *x;
     a_reduce_action *rx;

@@ -312,7 +312,7 @@ void genobj( void )
 #if 1
     short *same, *diff;
 #endif
-    short *mp;
+    set_size *mp;
     a_sym *sym;
     a_pro *pro;
     a_state *x;

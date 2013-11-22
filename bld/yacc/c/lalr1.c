@@ -321,12 +321,12 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction,
     }
 }
 
-static void resolve( a_state *x, short *work, a_reduce_action **reduce )
+static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
 {
     a_shift_action  *tx, *ux;
     a_reduce_action *rx;
-    short int       *w;
-    short int       *mp;
+    set_size        *w;
+    set_size        *mp;
     int             i;
     a_prec          symprec, proprec, prevprec;
 
@@ -430,12 +430,12 @@ static void Conflict( void )
     a_shift_action  *tx;
     a_reduce_action *rx;
     a_reduce_action **reduce;
-    short           *work;
+    set_size        *work;
     int             i;
 
     set = AllocSet( 1 );
     reduce = CALLOC( nterm, a_reduce_action * );
-    work = CALLOC( nterm, short );
+    work = CALLOC( nterm, set_size );
     for( x = statelist; x != NULL; x = x->next ) {
         Clear( set );
         for( tx = x->trans; tx->sym != NULL; ++tx ) {
@@ -523,7 +523,7 @@ void showstate( a_state *x )
     a_shift_action  *tx;
     a_reduce_action *rx;
     unsigned        col, new_col;
-    short int       *mp;
+    set_size        *mp;
     a_name          name;
 
     printf( "state %d:\n", x->sidx );

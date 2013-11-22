@@ -68,7 +68,7 @@ void genobj( void )
     value_size token_size;
     short *token, *action, *base, *other, *parent, *size;
     register short *p, *q, *r, *s;
-    short *mp;
+    set_size *mp;
     short error, tokval, redun, *same, *diff, *test, *best;
     a_sym *sym;
     a_pro *pro;
