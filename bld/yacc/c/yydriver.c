@@ -133,7 +133,7 @@ yycheck2:
                           ++yyvp;
                           goto yynewact;
                       }
-                      continu:;
+continu:;
                       --yysp;
                       --yyvp;
                   };

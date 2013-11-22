@@ -218,7 +218,7 @@ void defs( void )
             switch( scan( 0 ) ) {
             case IDENTIFIER:
                 sym = addsym( buf );
-                if( ! sym->token ) {
+                if( sym->token == 0 ) {
                     msg( "Token must be assigned number before %keyword_id\n" );
                 }
                 value = sym->token;
@@ -232,7 +232,7 @@ void defs( void )
             switch( scan( 0 ) ) {
             case IDENTIFIER:
                 sym = addsym( buf );
-                if( ! sym->token ) {
+                if( sym->token == 0 ) {
                     msg( "Token must be assigned number before %keyword_id\n" );
                 }
                 value = sym->token;
@@ -278,7 +278,7 @@ void defs( void )
                 if( ctype == TYPE ) {
                     scan( 0 );
                 } else {
-                    if( !sym->token ) {
+                    if( sym->token == 0 ) {
                         sym->token = value;
                     }
                     if( ctype != TOKEN ) {
@@ -293,7 +293,7 @@ void defs( void )
                         sym->token = value;
                         scan( 0 );
                     }
-                    if( !sym->token ) {
+                    if( sym->token == 0 ) {
                         sym->token = gentoken++;
                     }
                     if( sym->name[0] != '\'' ) {
@@ -507,7 +507,7 @@ void rules( void )
                 continue;
             }
         }
-        if( !sym->pro && !sym->token ) {
+        if( sym->pro != NULL && sym->token != 0 ) {
             not_token = TRUE;
             warn( "%s not defined as '%%token'.\n", sym->name );
         }

@@ -66,6 +66,8 @@ void buildpro( void )
     addpro( goalsym, rhs, 2 );
     startsym = goalsym;
     startpro = startsym->pro;
+    nterm = 0;
+    nvble = 0;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
         if( sym->pro != NULL ) {
             nvble++;

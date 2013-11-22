@@ -49,7 +49,8 @@ typedef struct {
 } a_entry;
 
 static a_entry *table;
-static unsigned used, table_size;
+static unsigned used;
+static unsigned table_size;
 
 void dump_define( char *name, int i )
 {
@@ -64,7 +65,7 @@ static void begin_table( char *tipe, char *name )
     tabcol = 0;
 }
 
-void puttab( value_size fits, int i )
+void puttab( value_size fits, unsigned i )
 {
     char *format;
     unsigned mod;
@@ -73,10 +74,10 @@ void puttab( value_size fits, int i )
         if(( i & 0x00ff ) != i ) {
             msg( "value cannot fit into table! (%x)", i );
         }
-        format = "%3d";
+        format = "%3u";
         mod = 20;
     } else {
-        format = "%5d";
+        format = "%5u";
         mod = 13;
     }
     if( tabcol ) {
@@ -94,7 +95,7 @@ static void end_table( void )
     fprintf( actout, "\n};\n" );
 }
 
-void add_table( short token, short action )
+static void add_table( short token, short action )
 {
     if( used == table_size ) {
         table_size += 64;
@@ -106,7 +107,7 @@ void add_table( short token, short action )
 }
 
 
-void dump_reduction( a_reduce_action *rx, unsigned *base )
+static void dump_reduction( a_reduce_action *rx, unsigned *base )
 {
     a_pro *pro;
     set_size *mp;
@@ -141,21 +142,18 @@ void genobj( void )
     unsigned rule_base;
     short *state_base;
 
-    ntoken = 0;
-    for( i = 0; i < nterm; ++i ) {
-        this_token = symtab[i]->token;
-        if( this_token > ntoken ) {
-            ntoken = this_token;
-        }
-    }
+    ntoken = FirstNonTerminalTokenValue();
     for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = ++ntoken;
+        symtab[i]->token = ntoken++;
     }
-    any_token = ++ntoken;
+    any_token = ntoken;
     state_base = CALLOC( nstate, short );
     base = 0;
     max = 0;
     sum = 0;
+    used = 0;
+    table_size = 0;
+    table = NULL;
     for( i = 0; i < nstate; ++i ) {
         state_base[i] = base;
         x = statetab[i];
@@ -216,7 +214,7 @@ void genobj( void )
         for( item = protab[i]->item; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( FITS_A_BYTE, (int)( item - protab[i]->item ) );
+        puttab( FITS_A_BYTE, (unsigned)( item - protab[i]->item ) );
     }
     end_table();
     begin_table( "YYPLHSTYPE", "yyplhstab" );
@@ -250,4 +248,5 @@ void genobj( void )
     fprintf( actout, "\"\"" );
     end_table();
     fprintf( actout, "#endif\n" );
+    free( table );
 }

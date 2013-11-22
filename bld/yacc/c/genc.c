@@ -37,21 +37,12 @@
 #include "yacc.h"
 #include "alloc.h"
 
-extern FILE *actout;
-
-extern char *loadpath;
-
-extern a_sym **symtab, *symlist, *startsym, *eofsym, *errsym, *goalsym, *nosym;
-extern a_pro **protab;
-
-extern a_state **statetab, *statelist, **statetail, *startstate, *errstate;
-
 static void putnum( char *name, int i )
 {
     fprintf( actout, "#define\t%-20s\t%d\n", name, i );
 }
 
-static void preamble()
+static void preamble( void )
 {
     int         i;
 
@@ -69,7 +60,7 @@ static void preamble()
                      "\n"
                      );
 
-    for( i = 0; i < nstate; ++ i ) {
+    for( i = 0; i < nstate; ++i ) {
         fprintf( actout, "static int YYNEAR state%d( struct parse_stack *, unsigned );\n", i );
     }
 }
@@ -102,7 +93,7 @@ static void copyact( a_pro * pro, char * indent )
     lhs = pro->sym;
     rhs = pro->item;
     fprintf( actout, "%s/* %s <-", indent, lhs->name );
-    for( n = 0; rhs[n].p.sym != NULL; ++ n ) {
+    for( n = 0; rhs[n].p.sym != NULL; ++n ) {
         fprintf( actout, " %s", rhs[n].p.sym->name );
     }
     fprintf( actout, " */\n%s{ YYSTYPE yyval;\n%s\t", indent, indent );
@@ -167,7 +158,7 @@ static a_state * unique_shift( a_pro * reduced )
     int                 i;
 
     shift_to = NULL;
-    for( i = 0; i < nstate; ++ i ) {
+    for( i = 0; i < nstate; ++i ) {
         test = statetab[i];
         for( tx = test->trans; tx->sym != NULL; ++tx ) {
             if( tx->sym == reduced->sym ) {
@@ -213,7 +204,7 @@ static void reduce( int production, int error )
     }
 }
 
-static void gencode( int statenum, short *toklist, short *s, short *action,
+static void gencode( int statenum, short *toklist, short *s, short *actions,
                         short default_token, short parent_token, short error )
 {
     short               default_action;
@@ -225,9 +216,9 @@ static void gencode( int statenum, short *toklist, short *s, short *action,
     prolog( statenum );
     default_action = 0;
     switched = FALSE;
-    for( ; toklist < s; ++ toklist ) {
+    for( ; toklist < s; ++toklist ) {
         token = *toklist;
-        todo = action[token] ;
+        todo = actions[token] ;
         if( token == default_token ) {
             default_action = todo;
         } else if( token != parent_token ) {
@@ -236,7 +227,7 @@ static void gencode( int statenum, short *toklist, short *s, short *action,
                 switched = TRUE;
             }
 
-            for( symnum = 0; symnum < nsym; ++ symnum ) {
+            for( symnum = 0; symnum < nsym; ++symnum ) {
                 if( symtab[symnum]->token == token ) {
                     break;
                 }
@@ -261,7 +252,7 @@ static void gencode( int statenum, short *toklist, short *s, short *action,
     if( switched ) {
         fprintf( actout, "    default: ;\n" );
     }
-    todo = action[parent_token];
+    todo = actions[parent_token];
     if( todo != error ) {
         // There is a parent production
         // For now, try parents only when there is no default action
@@ -277,7 +268,7 @@ static void gencode( int statenum, short *toklist, short *s, short *action,
     epilog();
 }
 
-static void epilog()
+static void epilog( void )
 {
     fprintf( actout, "}\n" );
 }
@@ -292,7 +283,7 @@ static void print_token( int token )
 {
     int symnum;
 
-    for( symnum = 0; symnum < nsym; ++ symnum ) {
+    for( symnum = 0; symnum < nsym; ++symnum ) {
         if( symtab[symnum]->token == token ) {
             break;
         }
@@ -306,7 +297,7 @@ static void print_token( int token )
 
 void genobj( void )
 {
-    short *token, *action, *base, *other, *parent, *size;
+    short *token, *actions, *base, *other, *parent, *size;
     register short *p, *q, *r, *s;
     short error, tokval, redun, *test, *best;
 #if 1
@@ -322,23 +313,17 @@ void genobj( void )
     unsigned num_default, num_parent;
 
     num_default = num_parent = 0;
-    ntoken = 0;
-    for( i = 0; i < nterm; ++i ) {
-        if( (j = symtab[i]->token) > ntoken ) {
-            ntoken = j;
-        }
-    }
-    dtoken = ++ntoken;
-    ptoken = ++ntoken;
+    ntoken = FirstNonTerminalTokenValue();
+    dtoken = ntoken++;
+    ptoken = ntoken++;
     for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = ++ntoken;
+        symtab[i]->token = ntoken++;
     }
-    ++ntoken;
 
     error = nstate + npro;
-    action = CALLOC( ntoken, short );
+    actions = CALLOC( ntoken, short );
     for( i = 0; i < ntoken; ++i ) {
-        action[i] = error;
+        actions[i] = error;
     }
     preamble();
     token = CALLOC( ntoken, short );
@@ -349,7 +334,7 @@ void genobj( void )
     parent = CALLOC( nstate, short );
     size = CALLOC( nstate, short );
     for( i = nstate; --i >= 0; ) {
-        for( s = action + ntoken; --s >= action; ) {
+        for( s = actions + ntoken; --s >= actions; ) {
             *s = error;
         }
         x = statetab[i];
@@ -357,7 +342,7 @@ void genobj( void )
         for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
             tokval = sym->token;
             *q++ = tokval;
-            action[tokval] = tx->state->sidx;
+            actions[tokval] = tx->state->sidx;
         }
         savings = 0;
         for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
@@ -373,20 +358,20 @@ void genobj( void )
             while( --mp >= setmembers ) {
                 tokval = symtab[*mp]->token;
                 *q++ = tokval;
-                action[tokval] = redun;
+                actions[tokval] = redun;
             }
         }
         if( savings ) {
-            tokval = other[i] = action[*r];
+            tokval = other[i] = actions[*r];
             *q++ = dtoken;
-            action[dtoken] = tokval;
+            actions[dtoken] = tokval;
             p = r;
             while( --savings >= 0 )
-                action[*p++] = error;
+                actions[*p++] = error;
             while( p < q )
                 *r++ = *p++;
             q = r;
-            ++ num_default;
+            ++num_default;
         } else {
             other[i] = error;
         }
@@ -403,11 +388,11 @@ void genobj( void )
             p = test;
             q = test + ntoken;
             for( tx = x->trans; (sym = tx->sym) != NULL; ++tx )
-                if( action[sym->token] == tx->state->sidx ) {
-                    ++ savings;
+                if( actions[sym->token] == tx->state->sidx ) {
+                    ++savings;
                     *p++ = sym->token;
                 } else {
-                    if( action[sym->token] == error )
+                    if( actions[sym->token] == error )
                         --savings;
                     *--q = sym->token;
                 }
@@ -417,11 +402,11 @@ void genobj( void )
                 redun = pro->pidx + nstate;
                 for( mp = Members( rx->follow ); --mp >= setmembers; ) {
                     tokval = symtab[*mp]->token;
-                    if( action[tokval] == redun ) {
-                        ++ savings;
+                    if( actions[tokval] == redun ) {
+                        ++savings;
                         *p++ = tokval;
                     } else {
-                        if( action[tokval] == error )
+                        if( actions[tokval] == error )
                             --savings;
                         *--q = tokval;
                     }
@@ -429,7 +414,7 @@ void genobj( void )
             }
             if( other[j] != error ) {
                 if( other[j] == other[i] ) {
-                    ++ savings;
+                    ++savings;
                     *p++ = dtoken;
                 } else {
                     *--q = dtoken;
@@ -438,12 +423,12 @@ void genobj( void )
 #if 0
             printf( "state %d calling state %d saves %d:",
                         i, j, savings );
-            for( s = test; s < p; ++ s ) {
+            for( s = test; s < p; ++s ) {
                 print_token( *s );
             }
             printf( " costs" );
             for( s = test + ntoken; --s >= q; ) {
-                if( action[*s] == error ) {
+                if( actions[*s] == error ) {
                     print_token( *s );
                 }
             }
@@ -460,29 +445,29 @@ void genobj( void )
         if( max < 1 ) { // Could raise threshold for performance
             s = r;
         } else {
-            ++ num_parent;
+            ++num_parent;
             s = token;
             p = same;
             while( --p >= best )
-                action[*p] = error;
+                actions[*p] = error;
             for( q = token; q < r; ++q ) {
-                if( action[*q] != error ) {
+                if( actions[*q] != error ) {
                     *s++ = *q;
                 }
             }
             p = best + ntoken;
             while( --p >= diff ) {
-                if( action[*p] == error ) {
+                if( actions[*p] == error ) {
                     *s++ = *p;
                 }
             }
             tokval = parent[i];
             *s++ = ptoken;
-            action[ptoken] = tokval;
+            actions[ptoken] = tokval;
         }
-        gencode( i, token, s, action, dtoken, ptoken, error );
+        gencode( i, token, s, actions, dtoken, ptoken, error );
         while( --s >= token ) {
-            action[*s] = error;
+            actions[*s] = error;
         }
     }
     for( i = 0; i < nambig; ++i ) {

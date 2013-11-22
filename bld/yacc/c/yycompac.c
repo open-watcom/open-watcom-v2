@@ -114,7 +114,7 @@ static YYACTTYPE find_action( unsigned base, YYCHKTYPE lookup )
             return( YYNOACTION );
         }
 #endif
-        for( probe = pack + 1; ; ++ probe ) {
+        for( probe = pack + 1; ; ++probe ) {
             check = _check( *probe );
             if( check >= YYPARENT ) break;
             if( check == lookup ) {

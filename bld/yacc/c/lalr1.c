@@ -113,7 +113,7 @@ static void Nullable( void )
                     /* (the vacuous case means the LHS is nullable) */
                     sym->nullable = TRUE;
                     nullable_added = TRUE;
-                    next_production:;
+next_production:;
                 }
             }
         }
@@ -452,7 +452,7 @@ static void Conflict( void )
                 set[i] |= rx->follow[i];
             }
         }
-        continu:;
+continu:;
     }
     free( set );
     free( reduce );

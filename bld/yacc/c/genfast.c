@@ -48,8 +48,8 @@ enum {
 
 typedef unsigned short  action_t;
 
-static unsigned         maxTerminal;
-static unsigned         maxNonTerminal;
+static unsigned         sizeTerminal;
+static unsigned         sizeNonTerminal;
 
 typedef struct {
     unsigned            num_entries;
@@ -67,15 +67,12 @@ typedef struct compressed_action {
 static void assignAllTokenValues( void )
 {
     unsigned i;
-    unsigned ntoken;
 
-    ntoken = MaxTerminalTokenValue();
-    ++ntoken;
-    maxTerminal = ntoken;
+    sizeTerminal = FirstNonTerminalTokenValue();
+    sizeNonTerminal = sizeTerminal;
     for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = ntoken++;
+        symtab[i]->token = sizeNonTerminal++;
     }
-    maxNonTerminal = ntoken;
 }
 
 static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned size )
@@ -101,7 +98,7 @@ static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned 
         }
     }
     for( i = size; i > 0; --i ) {
-        if( memcmp( &p[ls-i], v, i ) == 0 ) {
+        if( memcmp( &p[ls - i], v, i ) == 0 ) {
             // bitvector has some common bits with the end of the large vector
             *bs += size - i;
             p = REALLOC( p, *bs, byte );
@@ -118,13 +115,12 @@ static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned 
     return( ls );
 }
 
-static int actcmp( action_t *a1, compressed_action * ca, unsigned num_comp,
-                                unsigned size )
+static int actcmp( action_t *a1, compressed_action * ca, unsigned num_comp, unsigned size )
 {
     action_t v1,v2;
     unsigned i;
 
-    for( i = 0; i < num_comp; ++i, ++ ca ) {
+    for( i = 0; i < num_comp; ++i, ++ca ) {
         if( ca->index >= size )
             break;
         v2 = ca->action;
@@ -144,7 +140,7 @@ static void actcpy( action_t *a1, compressed_action * ca, unsigned num_comp )
 {
     unsigned    i;
 
-    for( i = 0; i < num_comp; ++i, ++ ca ) {
+    for( i = 0; i < num_comp; ++i, ++ca ) {
         a1[ca->index] = ca->action;
     }
 }
@@ -176,7 +172,7 @@ static unsigned actcompress( compressed_action * ca, action_t * a, unsigned size
         if( a[i] != ACTION_NULL ) {
             ca[num_actions].action = a[i];
             ca[num_actions].index = i;
-            ++ num_actions;
+            ++num_actions;
         }
     }
     return( num_actions );
@@ -382,7 +378,7 @@ static void createYACCTables( void )
 
     bvector = NULL;
     bsize = 0;
-    vsize = ( maxTerminal + (8-1) ) / 8 + 1;
+    vsize = ( sizeTerminal + ( 8 - 1 ) ) / 8;
     state_vector = MALLOC( vsize, byte );
     base = CALLOC( nstate, unsigned );
     for( i = 0; i < nstate; ++i ) {
@@ -420,9 +416,9 @@ static void createYACCTables( void )
     all_actions = MALLOC( nstate, action_t * );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
-        state_actions = MALLOC( maxTerminal, action_t );
+        state_actions = MALLOC( sizeTerminal, action_t );
         all_actions[i] = state_actions;
-        for( j = 0; j < maxTerminal; ++j ) {
+        for( j = 0; j < sizeTerminal; ++j ) {
             state_actions[j] = ACTION_NULL;
         }
         // iterate over all shifts in state
@@ -449,14 +445,14 @@ static void createYACCTables( void )
             }
         }
     }
-    mapping = orderActionVectors( all_actions, maxTerminal );
+    mapping = orderActionVectors( all_actions, sizeTerminal );
     avector = NULL;
     asize = 0;
-    ca = CALLOC( maxTerminal, compressed_action );
+    ca = CALLOC( sizeTerminal, compressed_action );
     abase = CALLOC( nstate, unsigned );
     for( i = 0; i < nstate; ++i ) {
-        num_actions = actcompress( ca, all_actions[i], maxTerminal );
-        abase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, maxTerminal );
+        num_actions = actcompress( ca, all_actions[i], sizeTerminal );
+        abase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, sizeTerminal );
         free( all_actions[i] );
         all_actions[i] = NULL;
     }
@@ -464,9 +460,9 @@ static void createYACCTables( void )
     free( ca );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
-        state_actions = MALLOC( maxNonTerminal, action_t );
+        state_actions = MALLOC( sizeNonTerminal, action_t );
         all_actions[i] = state_actions;
-        for( j = 0; j < maxNonTerminal; ++j ) {
+        for( j = 0; j < sizeNonTerminal; ++j ) {
             state_actions[j] = ACTION_NULL;
         }
         // iterate over all shifts in state
@@ -477,12 +473,12 @@ static void createYACCTables( void )
             state_actions[token] = saction->state->sidx;
         }
     }
-    mapping = orderActionVectors( all_actions, maxNonTerminal );
-    ca = CALLOC( maxNonTerminal, compressed_action );
+    mapping = orderActionVectors( all_actions, sizeNonTerminal );
+    ca = CALLOC( sizeNonTerminal, compressed_action );
     gbase = CALLOC( nstate, unsigned );
     for( i = 0; i < nstate; ++i ) {
-        num_actions = actcompress( ca, all_actions[i], maxNonTerminal );
-        gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, maxNonTerminal );
+        num_actions = actcompress( ca, all_actions[i], sizeNonTerminal );
+        gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, sizeNonTerminal );
         free( all_actions[i] );
         all_actions[i] = NULL;
     }
@@ -540,7 +536,7 @@ static void createYACCTables( void )
         for( item = first_item; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( FITS_A_BYTE, (int)( item - first_item ) );
+        puttab( FITS_A_BYTE, (unsigned)( item - first_item ) );
     }
     endtab();
     putcomment( "index by rule to get left hand side token" );

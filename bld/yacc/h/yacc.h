@@ -270,13 +270,13 @@ extern void     MarkNoUnitRuleOptimizationStates( void );
 
 extern void     GenFastTables( void );
 
-extern unsigned MaxTerminalTokenValue( void );
+extern unsigned FirstNonTerminalTokenValue( void );
 extern void     endtab( void );
 extern void     putcompact( unsigned token, unsigned action );
 extern void     begtab( char *tipe, char *name );
 extern void     putnum( char *name, int i );
 extern void     putambigs( short *base );
-extern void     puttab( value_size fits, int i );
+extern void     puttab( value_size fits, unsigned i );
 extern void     puttokennames( int dtoken, value_size token_size );
 extern void     putcomment( char *comment );
 

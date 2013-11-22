@@ -41,7 +41,7 @@ unsigned long bytesused;
 static unsigned tabcol;
 static char *tablename;
 
-unsigned MaxTerminalTokenValue( void )
+unsigned FirstNonTerminalTokenValue( void )
 {
     unsigned i;
     unsigned j;
@@ -54,6 +54,9 @@ unsigned MaxTerminalTokenValue( void )
             ntoken = j;
         }
     }
+    if( nterm > 0 ) {
+        ++ntoken;
+    }
     return( ntoken );
 }
 
@@ -63,10 +66,10 @@ static void putambig( a_SR_conflict *ambig, short *base )
     index_t ambig_state, ambig_state_based;
     index_t ambig_shift, ambig_shift_based;
     static char *msg[] = {
-    "#define\tYYAMBIGS%u\t\t%d\t/* ambiguous state (%u) */\n",
-    "#define\tYYAMBIGT%u\t\t%d\t/* token causing ambiguity */\n",
-    "#define\tYYAMBIGH%u\t\t%d\t/* state to shift (%u) */\n",
-    "#define\tYYAMBIGR%u\t\t%d\t/* rule to reduce */\n",
+        "#define\tYYAMBIGS%u\t\t%d\t/* ambiguous state (%u) */\n",
+        "#define\tYYAMBIGT%u\t\t%d\t/* token causing ambiguity */\n",
+        "#define\tYYAMBIGH%u\t\t%d\t/* state to shift (%u) */\n",
+        "#define\tYYAMBIGR%u\t\t%d\t/* rule to reduce */\n",
     };
 
     if( ambig->state == NULL ) {
@@ -110,7 +113,7 @@ void begtab( char *tipe, char *name )
     tabcol = 0;
 }
 
-void puttab( value_size fits, int i )
+void puttab( value_size fits, unsigned i )
 {
     char *format;
     unsigned mod;
@@ -162,7 +165,7 @@ void putcomment( char *comment )
 
 void puttokennames( int dtoken, value_size token_size )
 {
-    int rule_base;
+    unsigned rule_base;
     an_item *item;
     unsigned i;
 
@@ -177,7 +180,7 @@ void puttokennames( int dtoken, value_size token_size )
             ++item;
         }
         puttab( FITS_A_WORD, rule_base );
-        rule_base += (int)( item - protab[i]->item );
+        rule_base += (unsigned)( item - protab[i]->item );
     }
     endtab();
     begtab( "YYTOKENTYPE", "yyrhstoks" );

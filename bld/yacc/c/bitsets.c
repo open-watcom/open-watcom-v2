@@ -41,7 +41,7 @@ static set_size wperset;
 
 void InitSets( unsigned n )
 {
-    wperset = (n + WSIZE - 1)/WSIZE;
+    wperset = ( n + WSIZE - 1 ) / WSIZE;
     setmembers = CALLOC( n, set_size );
 }
 
@@ -147,9 +147,10 @@ void UnionAnd( a_word *s, a_word *t, a_word *u )
 
 set_size *Members( a_word *s )
 {
-    a_word word;
-    set_size i, j;
-    set_size *p;
+    a_word      word;
+    set_size    i;
+    set_size    j;
+    set_size    *p;
 
     p = setmembers;
     for( i = 0; i < wperset; ++i ) {
@@ -212,8 +213,7 @@ unsigned Cardinality( a_word *s )
 
     sum = 0;
     for( n = wperset; n > 0; --n ) {
-        sum += bit_count( *s );
-        ++s;
+        sum += bit_count( *s++ );
     }
     return( sum );
 }

@@ -51,7 +51,7 @@
 
 static int addtotable(  short *token,
                         short *s,
-                        short *action,
+                        short *actions,
                         short default_token,
                         short parent_token );
 
@@ -66,7 +66,7 @@ static a_table *table;
 void genobj( void )
 {
     value_size token_size;
-    short *token, *action, *base, *other, *parent, *size;
+    short *token, *actions, *base, *other, *parent, *size;
     register short *p, *q, *r, *s;
     set_size *mp;
     short error, tokval, redun, *same, *diff, *test, *best;
@@ -91,18 +91,17 @@ void genobj( void )
         token_size = FITS_A_BYTE;
     }
     num_default = num_parent = 0;
-    ntoken = MaxTerminalTokenValue();
-    dtoken = ++ntoken;
-    ptoken = ++ntoken;
+    ntoken = FirstNonTerminalTokenValue();
+    dtoken = ntoken++;
+    ptoken = ntoken++;
     for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = ++ntoken;
+        symtab[i]->token = ntoken++;
     }
-    ++ntoken;
 
     error = nstate + npro;
-    action = CALLOC( ntoken, short );
+    actions = CALLOC( ntoken, short );
     for( i = 0; i < ntoken; ++i ) {
-        action[i] = error;
+        actions[i] = error;
     }
     token = CALLOC( ntoken, short );
     test = CALLOC( ntoken, short );
@@ -121,7 +120,7 @@ void genobj( void )
         q = token;
         for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
             *q++ = sym->token;
-            action[sym->token] = tx->state->sidx;
+            actions[sym->token] = tx->state->sidx;
         }
         savings = 0;
         for( rx = x->redun; (pro = rx->pro) != NULL; ++rx ) {
@@ -134,21 +133,21 @@ void genobj( void )
             while( --mp >= setmembers ) {
                 tokval = symtab[*mp]->token;
                 *q++ = tokval;
-                action[tokval] = redun;
+                actions[tokval] = redun;
             }
         }
         if( savings ) {
-            tokval = action[*r];
+            tokval = actions[*r];
             other[i] = tokval;
             *q++ = dtoken;
-            action[dtoken] = tokval;
+            actions[dtoken] = tokval;
             p = r;
             while( --savings >= 0 )
-                action[*p++] = error;
+                actions[*p++] = error;
             while( p < q )
                 *r++ = *p++;
             q = r;
-            ++ num_default;
+            ++num_default;
         } else {
             other[i] = error;
         }
@@ -162,7 +161,7 @@ void genobj( void )
                 p = test;
                 q = test + ntoken;
                 for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
-                    if( action[sym->token] == tx->state->sidx ) {
+                    if( actions[sym->token] == tx->state->sidx ) {
                        *p++ = sym->token;
                     } else {
                        *--q = sym->token;
@@ -174,7 +173,7 @@ void genobj( void )
                         redun = error;
                     for( mp = Members( rx->follow ); --mp >= setmembers; ) {
                         tokval = symtab[*mp]->token;
-                        if( action[tokval] == redun ) {
+                        if( actions[tokval] == redun ) {
                             *p++ = tokval;
                         } else {
                             *--q = tokval;
@@ -205,25 +204,25 @@ void genobj( void )
             s = token;
             p = same;
             while( --p >= best )
-                action[*p] = error;
+                actions[*p] = error;
             for( q = token; q < r; ++q ) {
-                if( action[*q] != error ) {
+                if( actions[*q] != error ) {
                     *s++ = *q;
                 }
             }
             p = best + ntoken;
             while( --p >= diff ) {
-                if( action[*p] == error ) {
+                if( actions[*p] == error ) {
                     *s++ = *p;
                 }
             }
             tokval = parent[i];
             *s++ = ptoken;
-            action[ptoken] = tokval;
+            actions[ptoken] = tokval;
         }
-        base[i] = addtotable( token, s, action, dtoken, ptoken );
+        base[i] = addtotable( token, s, actions, dtoken, ptoken );
         while( --s >= token ) {
-            action[*s] = error;
+            actions[*s] = error;
         }
     }
     putambigs( base );
@@ -334,7 +333,7 @@ void genobj( void )
 
 static int addtotable(  short *token,
                         short *s,
-                        short *action,
+                        short *actions,
                         short default_token,
                         short parent_token )
 {
@@ -358,14 +357,14 @@ static int addtotable(  short *token,
             if( token == s )
                 break;
             if( *token == default_token ) {
-                default_action = action[*token];
+                default_action = actions[*token];
             } else if( *token != parent_token ) {
                 table[used].token = *token;
-                table[used].action = action[*token];
-                ++ used;
+                table[used].action = actions[*token];
+                ++used;
             }
         }
-        table[start].token = action[parent_token];
+        table[start].token = actions[parent_token];
         table[start].action = default_action;
     } else {
         max = *token;
@@ -397,7 +396,7 @@ static int addtotable(  short *token,
                 }
                 break;
             }
-            contin2:;
+contin2:;
         }
         SetBase( table[start] );
         for( r = token; r < s; ++r ) {
@@ -408,7 +407,7 @@ static int addtotable(  short *token,
                 }
             }
             SetToken( *t, *r );
-            SetAction( *t, action[*r] );
+            SetAction( *t, actions[*r] );
         }
         i = start + max + 1;
         if( i > used ) {
