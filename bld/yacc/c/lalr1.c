@@ -38,7 +38,7 @@
 #include "yacc.h"
 #include "alloc.h"
 
-#define INFINITY        32767
+#define INFINITY        (unsigned short)-1
 
 static a_look **stk, **top;
 
@@ -46,10 +46,10 @@ static void Reads( a_look *x )
 {
     a_shift_action  *tx;
     a_look          *y;
-    int             k;
+    unsigned short  k;
 
-    *top = x;
-    k = ++top - stk;
+    *top++ = x;
+    k = top - stk;
     x->depth = k;
     for( tx = x->trans->state->trans; tx->sym != NULL; ++tx ) {
         if( tx->sym->pro == NULL ) {
@@ -69,7 +69,8 @@ static void Reads( a_look *x )
     }
     if( x->depth == k ) {
         do {
-            (*--top)->depth = INFINITY;
+            --top;
+            (*top)->depth = INFINITY;
             Assign( (*top)->follow, x->follow );
         } while( *top != x );
     }
@@ -82,7 +83,7 @@ static void CalcReads( void )
 
     for( x = statelist; x != NULL; x = x->next ) {
         for( p = x->look; p->trans != NULL; ++p ) {
-            if( !p->depth ) {
+            if( p->depth == 0 ) {
                 Reads( p );
             }
         }
@@ -124,10 +125,10 @@ static void Includes( a_look *x )
 {
     a_look      *y;
     a_link      *link;
-    int         k;
+    unsigned    k;
 
-    *top = x;
-    k = ++top - stk;
+    *top++ = x;
+    k = top - stk;
     x->depth = k;
     for( link = x->include; link != NULL; link = link->next ) {
         y = link->el;
@@ -141,7 +142,8 @@ static void Includes( a_look *x )
     }
     if( x->depth == k ) {
         do {
-            (*--top)->depth = INFINITY;
+            --top;
+            (*top)->depth = INFINITY;
             Assign( (*top)->follow, x->follow );
         } while( *top != x );
     }
@@ -192,7 +194,7 @@ static void CalcIncludes( void )
     }
     for( x = statelist; x != NULL; x = x->next ) {
         for( p = x->look; p->trans != NULL; ++p ) {
-            if( !p->depth ) {
+            if( p->depth == 0 ) {
                 Includes( p );
             }
         }
@@ -238,8 +240,7 @@ static a_pro *extract_pro( an_item *p )
     return( q[1].p.pro );
 }
 
-static void check_for_user_hooks( a_state *state, a_shift_action *saction,
-                                  index_t rule )
+static void check_for_user_hooks( a_state *state, a_shift_action *saction, index_n rule )
 {
     int                 min_max_set;
     int                 all_match;
@@ -333,7 +334,8 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
 
     w = work;
     for( rx = x->redun; rx->pro != NULL; ++rx ) {
-        for( mp = Members( rx->follow ); --mp >= setmembers; ) {
+        for( mp = Members( rx->follow ); mp != setmembers; ) {
+            --mp;
             if( reduce[*mp] != NULL ) {
                 prevprec = reduce[*mp]->pro->prec;
                 proprec = rx->pro->prec;
@@ -352,7 +354,7 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
         }
     }
     while( --w >= work ) {
-        if( *w == errsym->token )
+        if( symtab[*w]->token == errsym->token )
             continue;
         printf( "r/r conflict in state %d on %s:\n", x->sidx, symtab[*w]->name);
         ++RR_conflicts;
@@ -381,8 +383,7 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
             proprec = reduce[i]->pro->prec;
             if( !symprec.prec || !proprec.prec ) {
                 if( tx->sym != errsym ) {
-                    printf( "s/r conflict in state %d on %s:\n",
-                    x->sidx, tx->sym->name );
+                    printf( "s/r conflict in state %d on %s:\n", x->sidx, tx->sym->name );
                     ++SR_conflicts;
                     printf( "\tshift to %d\n", tx->state->sidx );
                     showitem( reduce[i]->pro->item, "" );
@@ -486,7 +487,8 @@ void lalr1( void )
             rp += GetSetSize( 1 );
         }
     }
-    top = stk = CALLOC( nvtrans, a_look * );
+    stk = CALLOC( nvtrans, a_look * );
+    top = stk;
     Nullable();
     CalcReads();
     CalcIncludes();
@@ -560,7 +562,8 @@ void showstate( a_state *x )
     putchar( '\n' );
     col = 0;
     for( rx = x->redun; rx->pro != NULL; ++rx ) {
-        for( mp = Members( rx->follow ); --mp >= setmembers; ) {
+        for( mp = Members( rx->follow ); mp != setmembers; ) {
+            --mp;
             new_col = col + 1 + strlen( symtab[*mp]->name );
             if( new_col > 79 ) {
                 putchar('\n');

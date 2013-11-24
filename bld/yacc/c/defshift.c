@@ -59,11 +59,11 @@ static void doState(
     char        *all_used,
     unsigned    range_size )
 {
-    unsigned i;
-    unsigned max;
-    index_t max_idx;
-    a_shift_action *saction;
-    a_sym *shift_sym;
+    unsigned        i;
+    unsigned        max;
+    action_n        max_sidx;
+    a_shift_action  *saction;
+    a_sym           *shift_sym;
 
     if( IsDead( *state ) ) {
         return;
@@ -91,13 +91,13 @@ static void doState(
         }
     }
     /* find which state had the highest frequency */
-    max_idx = 0;
-    max = state_freq[max_idx];
+    max_sidx = 0;
+    max = state_freq[0];
     for( i = 1; i < nstate; ++i ) {
         unsigned test = state_freq[i];
         if( test > max ) {
             max = test;
-            max_idx = i;
+            max_sidx = i;
         }
     }
     if( max == 0 ) {
@@ -108,7 +108,7 @@ static void doState(
     for( saction = state->trans; (shift_sym = saction->sym) != NULL; ++saction ) {
         if( ! okToConsider( shift_sym ) )
             continue;
-        if( saction->state->sidx == max_idx ) {
+        if( saction->state->sidx == max_sidx ) {
             saction->is_default = 1;
             ++nActions;
         }

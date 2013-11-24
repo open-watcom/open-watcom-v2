@@ -35,11 +35,11 @@
 #include "alloc.h"
 #include "yacc.h"
 
-index_t npro;
-index_t nsym;
-index_t nterm;
-index_t nvble;
-index_t nitem;
+index_n npro;
+index_n nsym;
+index_n nterm;
+index_n nvble;
+index_n nitem;
 
 a_sym   **symtab, *symlist, *startsym, *eofsym, *goalsym, *nosym, *errsym;
 a_pro   **protab, *startpro;
@@ -53,8 +53,8 @@ void buildpro( void )
     a_sym       *rhs[2];
     a_pro       *pro;
     an_item     *item;
-    index_t     i;
-    index_t     j;
+    index_n     i;
+    index_n     j;
 
     if( startsym == NULL ) {
         msg( "No grammar specified.\n" );
@@ -155,7 +155,7 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
 
 void showpro( void )
 {
-    index_t     i;
+    index_n     i;
 
     for( i = 0; i < npro; ++i ) {
         showitem( protab[i]->item, "" );
@@ -189,7 +189,7 @@ void showitem( an_item *p, char *dot )
 void show_unused( void )
 {
     unsigned    count;
-    index_t     i;
+    index_n     i;
 
     count = 0;
     for( i = 0; i < npro; ++i ) {

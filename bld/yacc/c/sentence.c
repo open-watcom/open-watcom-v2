@@ -174,7 +174,7 @@ static void flushStack( traceback **h )
 
 static void doRunUntilShift( traceback **h, a_sym *sym, traceback **ht, unsigned count )
 {
-    index_t             sidx;
+    index_n             sidx;
     a_sym               *chk_sym;
     a_state             *state;
     a_state             *top;

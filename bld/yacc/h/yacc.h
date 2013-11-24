@@ -46,6 +46,9 @@ enum {
 
 #define WSIZE           (sizeof(a_word)*8)
 
+#define ACTION_NULL     0
+#define ACTION_MASK     0x3FFF
+
 #define ClearBit(x,i)   ((x)[(i)/WSIZE] &= ~( 1UL << ((i) % WSIZE )))
 #define SetBit(x,i)     ((x)[(i)/WSIZE] |= ( 1UL << ((i) % WSIZE )))
 #define IsBitSet(x,i)   ((x)[(i)/WSIZE] &  ( 1UL << ((i) % WSIZE )))
@@ -85,18 +88,15 @@ typedef struct a_prec {
     unsigned char       prec;
 } a_prec;
 
-#if defined( SUN ) || defined( __sun ) || defined( SGI )
-    #include <sys/types.h>
-#else
-    typedef unsigned short index_t;
-#endif
-
 typedef unsigned int    a_word;
 typedef unsigned char   byte;
 typedef unsigned short  set_size;
 
-typedef unsigned short  token_t;
-typedef unsigned short  action_t;
+typedef unsigned short  token_n;
+typedef unsigned short  action_n;
+typedef unsigned short  index_n;
+typedef unsigned short  base_n;
+typedef unsigned short  rule_n;
 
 typedef struct a_state  a_state;
 typedef struct a_sym    a_sym;
@@ -120,7 +120,7 @@ struct a_SR_conflict {
     a_state             *state;         /* final state that contains ambigity */
     a_state             *shift;         /* state if we were to shift token */
     a_SR_conflict_list  *thread;        /* all registered productions */
-    index_t             reduce;         /* rule if we were to reduce on token */
+    index_n             reduce;         /* rule if we were to reduce on token */
     unsigned            id;             /* numeric id assigned by user */
 };
 
@@ -133,7 +133,7 @@ struct a_SR_conflict_list {
 
 struct a_pro {                          /* production: LHS -> RHS1 RHS2 ... */
     a_pro               *next;
-    index_t             pidx;           /* index of production [0..npro] */
+    rule_n              pidx;           /* index of production [0..npro] */
     a_prec              prec;
     a_sym               *sym;           /* LHS of production */
     a_SR_conflict_list  *SR_conflicts;  /* list of S/R conflicts */
@@ -150,8 +150,8 @@ struct a_sym {                          /* symbol: terminal or non-terminal */
     a_prec              prec;
     a_pro               *pro;           /* productions with this symbol as LHS*/
     a_state             *enter;
-    index_t             idx;
-    token_t             token;
+    index_n             idx;
+    token_n             token;
     unsigned            nullable : 1;
 };
 
@@ -166,7 +166,7 @@ typedef struct a_look {
     a_shift_action      *trans;
     a_word              *follow;
     a_link              *include;
-    short int           depth;
+    unsigned short      depth;
 } a_look;
 
 typedef struct a_reduce_action {
@@ -186,7 +186,7 @@ typedef union a_name {
 
 struct a_state {
     a_state             *next;
-    short int           kersize;
+    unsigned short      kersize;
     union a_name        name;
     a_shift_action      *trans;
     a_reduce_action     *redun;
@@ -194,7 +194,7 @@ struct a_state {
     a_parent            *parents;
     a_look              *look;
     a_state             *same_enter_sym;
-    index_t             sidx;           /* index of state [0..nstates] */
+    action_n            sidx;           /* index of state [0..nstates] */
     flags               flag;
 };
 
@@ -267,30 +267,30 @@ extern void     MarkNoUnitRuleOptimizationStates( void );
 
 extern void     GenFastTables( void );
 
-extern unsigned FirstNonTerminalTokenValue( void );
+extern token_n  FirstNonTerminalTokenValue( void );
 extern void     endtab( void );
-extern void     putcompact( unsigned token, unsigned action );
+extern void     putcompact( token_n token, action_n action );
 extern void     begtab( char *tipe, char *name );
 extern void     putnum( char *name, int i );
-extern void     putambigs( short *base );
+extern void     putambigs( base_n *base );
 extern void     puttab( value_size fits, unsigned i );
-extern void     puttokennames( int dtoken, value_size token_size );
+extern void     puttokennames( token_n dtoken, value_size token_size );
 extern void     putcomment( char *comment );
 
-extern index_t  npro;    /* # of productions */
-extern index_t  nsym;    /* # of symbols */
-extern index_t  nterm;   /* # of terminals */
-extern index_t  nvble;   /* # of non-terminals */
-extern index_t  nitem;   /* # of LR(0) items */
+extern rule_n   npro;    /* # of productions */
+extern index_n  nsym;    /* # of symbols */
+extern index_n  nterm;   /* # of terminals */
+extern index_n  nvble;   /* # of non-terminals */
+extern index_n  nitem;   /* # of LR(0) items */
 
-extern index_t  nbstate;
-extern index_t  nstate;
-extern index_t  nvtrans;
-extern index_t  nredun;
-extern index_t  nstate_1_reduce;
+extern index_n  nbstate;
+extern action_n nstate;
+extern index_n  nvtrans;
+extern index_n  nredun;
+extern index_n  nstate_1_reduce;
 
-extern index_t  RR_conflicts;
-extern index_t  SR_conflicts;
+extern index_n  RR_conflicts;
+extern index_n  SR_conflicts;
 
 extern char     lineflag;
 extern char     bigflag;

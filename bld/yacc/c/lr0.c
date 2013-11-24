@@ -35,18 +35,18 @@
 #include "yacc.h"
 #include "alloc.h"
 
-index_t nbstate;
-index_t nstate;
-index_t nvtrans;
-index_t nredun;
+index_n nbstate;
+index_n nstate;
+index_n nvtrans;
+index_n nredun;
 
 a_state **statetab, *statelist, **statetail, *startstate, *errstate;
 
 static a_state *addState( a_state **enter, an_item **s, an_item **q, a_state *parent )
 {
-    a_parent    *add_parent;
-    an_item     **p, **t;
-    int         kersize;
+    a_parent        *add_parent;
+    an_item         **p, **t;
+    unsigned short  kersize;
 
     for( p = s; p != q; ++p ) {
         Mark( **p );
@@ -201,6 +201,8 @@ void lr0( void )
     a_state     *x;
     an_item     **s;
 
+    nvtrans = 0;
+    nredun = 0;
     s = CALLOC( nitem, an_item * );
     statetail = &statelist;
     *s = startsym->pro->item;

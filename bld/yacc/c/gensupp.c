@@ -41,11 +41,11 @@ unsigned long bytesused;
 static unsigned tabcol;
 static char *tablename;
 
-unsigned FirstNonTerminalTokenValue( void )
+token_n FirstNonTerminalTokenValue( void )
 {
-    unsigned i;
-    unsigned j;
-    unsigned ntoken;
+    index_n i;
+    token_n j;
+    token_n ntoken;
 
     ntoken = 0;
     for( i = 0; i < nterm; ++i ) {
@@ -60,16 +60,16 @@ unsigned FirstNonTerminalTokenValue( void )
     return( ntoken );
 }
 
-static void putambig( a_SR_conflict *ambig, short *base )
+static void putambig( a_SR_conflict *ambig, base_n *base )
 {
-    int i;
-    index_t ambig_state, ambig_state_based;
-    index_t ambig_shift, ambig_shift_based;
+    unsigned i;
+    index_n ambig_state, ambig_state_based;
+    index_n ambig_shift, ambig_shift_based;
     static char *msg[] = {
-        "#define\tYYAMBIGS%u\t\t%d\t/* ambiguous state (%u) */\n",
-        "#define\tYYAMBIGT%u\t\t%d\t/* token causing ambiguity */\n",
-        "#define\tYYAMBIGH%u\t\t%d\t/* state to shift (%u) */\n",
-        "#define\tYYAMBIGR%u\t\t%d\t/* rule to reduce */\n",
+        "#define\tYYAMBIGS%u\t        %5d\t/* ambiguous state (%u) */\n",
+        "#define\tYYAMBIGT%u\t        %5d\t/* token causing ambiguity */\n",
+        "#define\tYYAMBIGH%u\t        %5d\t/* state to shift (%u) */\n",
+        "#define\tYYAMBIGR%u\t        %5d\t/* rule to reduce */\n",
     };
 
     if( ambig->state == NULL ) {
@@ -92,7 +92,7 @@ static void putambig( a_SR_conflict *ambig, short *base )
     fprintf( actout, msg[3], i, ambig->reduce );
 }
 
-void putambigs( short *base )
+void putambigs( base_n *base )
 {
     a_SR_conflict *cx;
 
@@ -103,7 +103,7 @@ void putambigs( short *base )
 
 void putnum( char *name, int i )
 {
-    fprintf( actout, "#define\t%-20s\t%d\n", name, i );
+    fprintf( actout, "#define\t%-20s\t%5d\n", name, i );
 }
 
 void begtab( char *tipe, char *name )
@@ -126,7 +126,7 @@ void puttab( value_size fits, unsigned i )
         format = "%3u";
         mod = 20;
     } else {
-        bytesused += sizeof(short);
+        bytesused += sizeof( short );
         format = "%5u";
         mod = 10;
     }
@@ -140,7 +140,7 @@ void puttab( value_size fits, unsigned i )
     ++tabcol;
 }
 
-void putcompact( unsigned token, unsigned action )
+void putcompact( token_n token, action_n action )
 {
     if( tabcol ) {
         fprintf( actout, "," );
@@ -163,7 +163,7 @@ void putcomment( char *comment )
     fprintf( actout, "/* %s */\n", comment );
 }
 
-void puttokennames( int dtoken, value_size token_size )
+void puttokennames( token_n dtoken, value_size token_size )
 {
     unsigned rule_base;
     an_item *item;
@@ -193,7 +193,7 @@ void puttokennames( int dtoken, value_size token_size )
     begtab( "char YYFAR *", "yytoknames" );
     fputc( '\n', actout );
     for( i = 0; i < nsym; ++i ) {
-        if( dtoken != 0 && i == dtoken ) {
+        if( dtoken != 0 && symtab[i]->token == dtoken ) {
             fprintf( actout, "\"$dtoken\",\n" );
             fprintf( actout, "\"$ptoken\",\n" );
         }

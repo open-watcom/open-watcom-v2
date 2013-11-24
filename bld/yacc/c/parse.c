@@ -59,7 +59,7 @@ typedef enum {
 
 static void                 copycurl( void );
 static void                 copyUniqueActions( void );
-static void                 copyact( int, a_sym *, a_sym **, unsigned, unsigned );
+static void                 copyact( rule_n, a_sym *, a_sym **, unsigned, unsigned );
 static void                 lineinfo( void );
 static a_token              scan( unsigned used );
 static void                 need( char *pat );
@@ -85,7 +85,7 @@ typedef struct uniq_case    uniq_case;
 typedef struct rule_case    rule_case;
 struct rule_case {
     rule_case   *next;
-    int         pnum;
+    rule_n      pnum;
     a_sym       *lhs;
 };
 struct uniq_case {
@@ -130,7 +130,7 @@ static char *get_typename( char *src )
     return( src );
 }
 
-static a_sym *make_sym( char *name, token_t value )
+static a_sym *make_sym( char *name, token_n value )
 {
     a_sym *p;
 
@@ -167,7 +167,7 @@ static a_SR_conflict *make_unique_ambiguity( a_sym *sym, unsigned index )
 
 void defs( void )
 {
-    token_t     gentoken;
+    token_n     gentoken;
     a_sym       *sym;
     int         ctype;
     char        *dupbuf( void );
@@ -401,6 +401,7 @@ void rules( void )
     a_SR_conflict_list  *list_of_ambiguities;
     a_SR_conflict_list  *am;
 
+    ambiguousstates = NULL;
     rhs = CALLOC( maxrhs, a_sym * );
     while( token == C_IDENTIFIER ) {
         int sym_lineno = lineno;
@@ -597,7 +598,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
     return( s );
 }
 
-static a_pro *findPro( a_sym *lhs, unsigned pnum )
+static a_pro *findPro( a_sym *lhs, rule_n pnum )
 {
     a_pro       *pro;
 
@@ -643,7 +644,7 @@ static void copyUniqueActions( void )
     }
 }
 
-static void addRuleToUniqueCase( uniq_case *p, int pnum, a_sym *lhs )
+static void addRuleToUniqueCase( uniq_case *p, rule_n pnum, a_sym *lhs )
 {
     rule_case   *r;
 
@@ -654,7 +655,7 @@ static void addRuleToUniqueCase( uniq_case *p, int pnum, a_sym *lhs )
     p->rules = r;
 }
 
-static void insertUniqueAction( int pnum, char *buf, a_sym *lhs )
+static void insertUniqueAction( rule_n pnum, char *buf, a_sym *lhs )
 {
     uniq_case   **p;
     uniq_case   *c;
@@ -690,7 +691,7 @@ static char *strpcpy( char *d, char *s )
     return( d );
 }
 
-static void copyact( int pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
+static void copyact( rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
 {
     char        *b;
     char        *p;

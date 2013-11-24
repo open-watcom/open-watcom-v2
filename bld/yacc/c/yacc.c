@@ -50,9 +50,9 @@ char showflag;
 char translateflag;
 char defaultwarnflag = 1;
 
-index_t RR_conflicts;
-index_t SR_conflicts;
-index_t nstate_1_reduce;
+index_n RR_conflicts;
+index_n SR_conflicts;
+index_n nstate_1_reduce;
 
 static int warnings;
 static int proflag;
@@ -238,7 +238,7 @@ int main( int argc, char **argv )
         EliminateUnitReductions();
     }
     if( default_shiftflag ) {
-        if( ! keyword_id_low ) {
+        if( keyword_id_low == 0 ) {
             msg( "No %%keyword_id <low> <high> specified." );
         } else {
             MarkDefaultShifts();

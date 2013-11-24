@@ -40,47 +40,28 @@
 
 enum {
     ACTION_REDUCE       = 0x8000,
-    ACTION_UNIT         = 0x4000,
-    ACTION_NULL         = 0
+    ACTION_UNIT         = 0x4000
 };
 
-#define static
-
-typedef unsigned short  action_t;
-
-static unsigned         sizeTerminal;
-static unsigned         sizeNonTerminal;
-
 typedef struct {
-    unsigned            num_entries;
-    unsigned            min;
-    unsigned            max;
-    unsigned            index;
-    action_t            *action_vector;
+    index_n             num_entries;
+    token_n             min;
+    token_n             max;
+    action_n            index;
+    action_n            *action_vector;
 } av_info;
 
 typedef struct compressed_action {
-    action_t            action;
-    unsigned short      index;
+    action_n            action;
+    token_n             token;
 } compressed_action;
 
-static void assignAllTokenValues( void )
+static index_n insertIntoBitVector( byte **bv, index_n *bs, byte *v, index_n size )
 {
-    unsigned i;
-
-    sizeTerminal = FirstNonTerminalTokenValue();
-    sizeNonTerminal = sizeTerminal;
-    for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = sizeNonTerminal++;
-    }
-}
-
-static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned size )
-{
-    int i;
-    int s;
-    int ls;
-    byte *p;
+    index_n     i;
+    index_n     s;
+    index_n     ls;
+    byte        *p;
 
     if( *bv == NULL ) {
         *bs = size;
@@ -115,46 +96,46 @@ static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned 
     return( ls );
 }
 
-static int actcmp( action_t *a1, compressed_action * ca, unsigned num_comp, unsigned size )
+static int actcmp( action_n *a1, compressed_action *ca, index_n num_comp, token_n size )
 {
-    action_t v1,v2;
-    unsigned i;
+    action_n    v1, v2;
+    index_n     i;
 
     for( i = 0; i < num_comp; ++i, ++ca ) {
-        if( ca->index >= size )
+        if( ca->token >= size )
             break;
         v2 = ca->action;
         // NB Know v2 != ACTION_NULL
-        v1 = a1[ca->index];
+        v1 = a1[ca->token];
         if( v1 == ACTION_NULL ) {
             continue;
         }
         if( v1 != v2 ) {
-            return( ca->index + 1 );
+            return( ca->token + 1 );
         }
     }
     return( 0 );
 }
 
-static void actcpy( action_t *a1, compressed_action * ca, unsigned num_comp )
+static void actcpy( action_n *a1, compressed_action *ca, index_n num_comp )
 {
-    unsigned    i;
+    index_n i;
 
     for( i = 0; i < num_comp; ++i, ++ca ) {
-        a1[ca->index] = ca->action;
+        a1[ca->token] = ca->action;
     }
 }
 
-static action_t * actextend( action_t * a, unsigned * psize, unsigned incr )
+static action_n *actextend( action_n *a, index_n *psize, token_n incr )
 {
-    unsigned    i;
+    index_n i;
 
     i = *psize;
     *psize += incr;
-    if( *psize == 0 ) {
-        a = MALLOC( incr, action_t );
+    if( i == 0 ) {
+        a = MALLOC( incr, action_n );
     } else {
-        a = REALLOC( a, *psize, action_t );
+        a = REALLOC( a, *psize, action_n );
     }
     while( i < *psize ) {
         a[i++] = ACTION_NULL;
@@ -162,30 +143,31 @@ static action_t * actextend( action_t * a, unsigned * psize, unsigned incr )
     return( a );
 }
 
-static unsigned actcompress( compressed_action * ca, action_t * a, unsigned size )
+static index_n actcompress( compressed_action *ca, action_n *actions, token_n size )
 {
-    unsigned    i;
-    unsigned    num_actions;
+    token_n     token;
+    index_n     num_actions;
 
     num_actions = 0;
-    for( i = 0; i < size; ++i ) {
-        if( a[i] != ACTION_NULL ) {
-            ca[num_actions].action = a[i];
-            ca[num_actions].index = i;
+    for( token = 0; token < size; ++token ) {
+        if( actions[token] != ACTION_NULL ) {
+            ca[num_actions].action = actions[token];
+            ca[num_actions].token = token;
             ++num_actions;
         }
     }
     return( num_actions );
 }
 
-static unsigned insertIntoActionVector( action_t **bv, unsigned *bs,
-        compressed_action * ca, unsigned num_actions, unsigned size )
+static index_n insertIntoActionVector( action_n **bv, index_n *bs,
+        compressed_action *ca, index_n num_actions, token_n size )
 {
-    int i;
-    int s;
-    int ls;
-    action_t c;
-    action_t *p;
+    index_n  i;
+    index_n  j;
+    index_n  s;
+    index_n  ls;
+    action_n c;
+    action_n *p;
 
     if( num_actions == 0 ) {
         // no action items!
@@ -199,25 +181,25 @@ static unsigned insertIntoActionVector( action_t **bv, unsigned *bs,
     p = *bv;
     ls = *bs;
     s = ( ls - size ) + 1;
-    for( i = 0; i < s; ++i ) {
+    for( j = 0; j < s; ++j ) {
         // try a quick check with the last element that failed (may fail again!)
-        c = p[i+ca[0].index];
-        // we know v[bi-1] != ACTION_NULL
+        c = p[j + ca[0].token];
+        // we know v[bi - 1] != ACTION_NULL
         if( c != ACTION_NULL && c != ca[0].action ) {
             continue;
         }
-        if( actcmp( &p[i], ca, num_actions, size ) == 0 ) {
+        if( actcmp( &p[j], ca, num_actions, size ) == 0 ) {
             // action vector was found inside large vector
-            actcpy( &p[i], ca, num_actions );
-            return( i );
+            actcpy( &p[j], ca, num_actions );
+            return( j );
         }
     }
     for( i = size; i > 0; --i ) {
-        if( actcmp( &p[ls-i], ca, num_actions, i ) == 0 ) {
+        if( actcmp( &p[ls - i], ca, num_actions, i ) == 0 ) {
             // action vector has some common actions with the end of the large vector
             p = actextend( p, bs, size - i );
             *bv = p;
-            actcpy( &p[ls-i], ca, num_actions );
+            actcpy( &p[ls - i], ca, num_actions );
             return( ls - i );
         }
     }
@@ -228,15 +210,18 @@ static unsigned insertIntoActionVector( action_t **bv, unsigned *bs,
     return( ls );
 }
 
-static action_t reduceaction( a_state *state, a_reduce_action *raction )
+static action_n reduceaction( a_state *state, a_reduce_action *raction )
 {
-    action_t action;
-    a_pro *pro;
+    action_n    action;
+    a_pro       *pro;
 
     action = ACTION_REDUCE;
     pro = raction->pro;
     if( pro->unit && ! IsDontOptimize( *state ) ) {
         action |= ACTION_UNIT;
+    }
+    if( (pro->pidx & ACTION_MASK) != pro->pidx ) {
+        printf( "reduce action 0x%X is higher then 0x3FFF !\n", pro->pidx );
     }
     action |= pro->pidx;
     return( action );
@@ -248,10 +233,10 @@ static int cmp_action( const void *v1, const void *v2 )
     av_info **p2 = (av_info **) v2;
     av_info *s1 = *p1;
     av_info *s2 = *p2;
-    unsigned n1, n2;
-    unsigned ne1, ne2;
-    unsigned mx1, mx2;
-    unsigned mn1, mn2;
+    token_n n1, n2;
+    token_n ne1, ne2;
+    token_n mx1, mx2;
+    token_n mn1, mn2;
 
     ne1 = s1->num_entries;
     ne2 = s2->num_entries;
@@ -296,42 +281,43 @@ static int cmp_action( const void *v1, const void *v2 )
     return( 0 );
 }
 
-static unsigned *orderActionVectors( action_t **av, unsigned size )
+static action_n *orderActionVectors( action_n **av, token_n size )
 {
     av_info **a;
     av_info *p;
-    action_t *v;
-    unsigned num_entries;
-    unsigned max;
-    unsigned min;
-    unsigned i, j;
-    unsigned *map;
+    action_n *actions;
+    index_n num_entries;
+    token_n max;
+    token_n min;
+    token_n token;
+    action_n i;
+    action_n *map;
 
     a = MALLOC( nstate, av_info * );
-    for( j = 0; j < nstate; ++j ) {
-        v = av[j];
+    for( i = 0; i < nstate; ++i ) {
+        actions = av[i];
         p = MALLOC( 1, av_info );
-        a[j] = p;
+        a[i] = p;
         max = 0;
         min = size;
         num_entries = 0;
-        for( i = 0; i < size; ++i ) {
-            if( v[i] != ACTION_NULL ) {
+        for( token = 0; token < size; ++token ) {
+            if( actions[token] != ACTION_NULL ) {
                 if( num_entries == 0 ) {
-                    min = i;
+                    min = token;
                 }
+                max = token;
                 ++num_entries;
-                max = i;
             }
         }
         p->min = min;
         p->max = max;
         p->num_entries = num_entries;
-        p->index = j;
-        p->action_vector = av[j];
+        p->index = i;
+        p->action_vector = actions;
     }
     qsort( a, nstate, sizeof( av_info * ), cmp_action );
-    map = MALLOC( nstate, unsigned );
+    map = MALLOC( nstate, action_n );
     for( i = 0; i < nstate; ++i ) {
         map[i] = a[i]->index;
         av[i] = a[i]->action_vector;
@@ -342,45 +328,54 @@ static unsigned *orderActionVectors( action_t **av, unsigned size )
     return( map );
 }
 
-static void createYACCTables( void )
+void GenFastTables( void )
 {
-    unsigned i;
-    unsigned j;
-    unsigned asize;
-    unsigned index;
-    unsigned mask;
-    unsigned token;
-    unsigned vsize;
-    unsigned bsize;
-    unsigned *mapping;
-    value_size bitv_base_size;
-    byte *state_vector;
-    byte *bvector;
-    compressed_action * ca;
-    unsigned num_actions;
-    set_size *mp;
-    unsigned *base;
-    unsigned *abase;
-    unsigned *gbase;
-    action_t *state_actions;
-    action_t *avector;
-    action_t **all_actions;
-    a_state *state;
+    index_n     i;
+    index_n     j;
+    index_n     asize;
+    unsigned    index;
+    unsigned    mask;
+    token_n     tokval;
+    index_n     vsize;
+    index_n     bsize;
+    action_n    *mapping;
+    value_size  bitv_base_size;
+    byte        *state_vector;
+    byte        *bvector;
+    compressed_action *ca;
+    index_n     num_actions;
+    set_size    *mp;
+    index_n     *base;
+    index_n     *abase;
+    index_n     *gbase;
+    action_n    *state_actions;
+    action_n    *avector;
+    action_n    **all_actions;
+    a_state     *state;
     a_shift_action *saction;
     a_reduce_action *raction;
-    a_sym *sym;
-    a_pro *pro;
-    an_item *first_item;
-    an_item *item;
-    unsigned empty_actions;
-    unsigned *defaction;
-    index_t state_idx;
+    a_sym       *sym;
+    a_pro       *pro;
+    an_item     *first_item;
+    an_item     *item;
+    index_n     empty_actions;
+    action_n    *defaction;
+    action_n    state_idx;
+    token_n     ntoken_term;
+    token_n     ntoken;
+
+
+    ntoken_term = FirstNonTerminalTokenValue();
+    ntoken = ntoken_term;
+    for( i = nterm; i < nsym; ++i ) {
+        symtab[i]->token = ntoken++;
+    }
 
     bvector = NULL;
     bsize = 0;
-    vsize = ( sizeTerminal + ( 8 - 1 ) ) / 8;
+    vsize = ( ntoken_term + ( 8 - 1 ) ) / 8;
     state_vector = MALLOC( vsize, byte );
-    base = CALLOC( nstate, unsigned );
+    base = CALLOC( nstate, index_n );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
         memset( state_vector, 0, vsize );
@@ -394,31 +389,32 @@ static void createYACCTables( void )
                 // we want these to be default actions
                 continue;
             }
-            token = sym->token;
-            index = token >> 3;
-            mask = 1 << ( token & 0x07 );
+            tokval = sym->token;
+            index = tokval >> 3;
+            mask = 1 << ( tokval & 0x07 );
             state_vector[index] |= mask;
         }
         // iterate over all reductions in state
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
             if( state->default_reduction == raction )
                 continue;
-            for( mp = Members( raction->follow ); --mp >= setmembers; ) {
-                token = symtab[*mp]->token;
-                index = token >> 3;
-                mask = 1 << ( token & 0x07 );
+            for( mp = Members( raction->follow ); mp != setmembers; ) {
+                --mp;
+                tokval = symtab[*mp]->token;
+                index = tokval >> 3;
+                mask = 1 << ( tokval & 0x07 );
                 state_vector[index] |= mask;
             }
         }
         base[i] = insertIntoBitVector( &bvector, &bsize, state_vector, vsize );
     }
-    defaction = CALLOC( nstate, unsigned );
-    all_actions = MALLOC( nstate, action_t * );
+    defaction = CALLOC( nstate, action_n );
+    all_actions = MALLOC( nstate, action_n * );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
-        state_actions = MALLOC( sizeTerminal, action_t );
+        state_actions = MALLOC( ntoken_term, action_n );
         all_actions[i] = state_actions;
-        for( j = 0; j < sizeTerminal; ++j ) {
+        for( j = 0; j < ntoken_term; ++j ) {
             state_actions[j] = ACTION_NULL;
         }
         // iterate over all shifts in state
@@ -430,8 +426,7 @@ static void createYACCTables( void )
                 defaction[i] = state_idx;
                 continue;
             }
-            token = sym->token;
-            state_actions[token] = state_idx;
+            state_actions[sym->token] = state_idx;
         }
         // iterate over all reductions in state
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
@@ -439,20 +434,20 @@ static void createYACCTables( void )
                 defaction[i] = reduceaction( state, raction );
                 continue;
             }
-            for( mp = Members( raction->follow ); --mp >= setmembers; ) {
-                token = symtab[*mp]->token;
-                state_actions[token] = reduceaction( state, raction );
+            for( mp = Members( raction->follow ); mp != setmembers; ) {
+                --mp;
+                state_actions[symtab[*mp]->token] = reduceaction( state, raction );
             }
         }
     }
-    mapping = orderActionVectors( all_actions, sizeTerminal );
+    mapping = orderActionVectors( all_actions, ntoken_term );
     avector = NULL;
     asize = 0;
-    ca = CALLOC( sizeTerminal, compressed_action );
-    abase = CALLOC( nstate, unsigned );
+    ca = CALLOC( ntoken_term, compressed_action );
+    abase = CALLOC( nstate, set_size );
     for( i = 0; i < nstate; ++i ) {
-        num_actions = actcompress( ca, all_actions[i], sizeTerminal );
-        abase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, sizeTerminal );
+        num_actions = actcompress( ca, all_actions[i], ntoken_term );
+        abase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_term );
         FREE( all_actions[i] );
         all_actions[i] = NULL;
     }
@@ -460,30 +455,45 @@ static void createYACCTables( void )
     FREE( ca );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
-        state_actions = MALLOC( sizeNonTerminal, action_t );
+        state_actions = MALLOC( ntoken, action_n );
         all_actions[i] = state_actions;
-        for( j = 0; j < sizeNonTerminal; ++j ) {
+        for( j = 0; j < ntoken; ++j ) {
             state_actions[j] = ACTION_NULL;
         }
         // iterate over all shifts in state
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
             if( sym->pro == NULL )
                 continue;
-            token = sym->token;
-            state_actions[token] = saction->state->sidx;
+            state_actions[sym->token] = saction->state->sidx;
         }
     }
-    mapping = orderActionVectors( all_actions, sizeNonTerminal );
-    ca = CALLOC( sizeNonTerminal, compressed_action );
-    gbase = CALLOC( nstate, unsigned );
+    mapping = orderActionVectors( all_actions, ntoken );
+    ca = CALLOC( ntoken, compressed_action );
+    gbase = CALLOC( nstate, set_size );
     for( i = 0; i < nstate; ++i ) {
-        num_actions = actcompress( ca, all_actions[i], sizeNonTerminal );
-        gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, sizeNonTerminal );
+        num_actions = actcompress( ca, all_actions[i], ntoken );
+        gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken );
         FREE( all_actions[i] );
         all_actions[i] = NULL;
     }
     FREE( mapping );
     FREE( ca );
+
+    putambigs( NULL );
+
+    putnum( "YYNOACTION", 0 );
+    putnum( "YYEOFTOKEN", eofsym->token );
+    putnum( "YYERRTOKEN", errsym->token );
+    putnum( "YYETOKEN", errsym->token );
+    putnum( "YYSTART", startstate->sidx );
+    putnum( "YYSTOP", eofsym->enter->sidx );
+    putnum( "YYERR", errstate->sidx );
+    putnum( "YYUSED", nstate );
+    if( keyword_id_low != 0 && default_shiftflag ) {
+        putnum( "YYKEYWORD_ID_LOW", keyword_id_low );
+        putnum( "YYKEYWORD_ID_HIGH", keyword_id_high );
+    }
+
     putcomment( "index by state to get default action for state" );
     begtab( "YYACTIONTYPE", "yydefaction" );
     for( i = 0; i < nstate; ++i ) {
@@ -545,6 +555,7 @@ static void createYACCTables( void )
         puttab( FITS_A_WORD, protab[i]->sym->token );
     }
     endtab();
+
     FREE( all_actions );
     FREE( base );
     FREE( abase );
@@ -552,26 +563,9 @@ static void createYACCTables( void )
     FREE( bvector );
     FREE( avector );
     FREE( state_vector );
+
     dumpstatistic( "bytes used in tables", bytesused );
     dumpstatistic( "table space utilization", 100 - ( empty_actions * 100L / asize ) );
-}
 
-void GenFastTables( void )
-{
-    assignAllTokenValues();
-    putnum( "YYNOACTION", 0 );
-    putnum( "YYEOFTOKEN", eofsym->token );
-    putnum( "YYERRTOKEN", errsym->token );
-    putnum( "YYETOKEN", errsym->token );
-    putnum( "YYSTART", startstate->sidx );
-    putnum( "YYSTOP", eofsym->enter->sidx );
-    putnum( "YYERR", errstate->sidx );
-    putnum( "YYUSED", nstate );
-    if( keyword_id_low != 0 && default_shiftflag ) {
-        putnum( "YYKEYWORD_ID_LOW", keyword_id_low );
-        putnum( "YYKEYWORD_ID_HIGH", keyword_id_high );
-    }
-    putambigs( NULL );
-    createYACCTables();
     puttokennames( 0, FITS_A_WORD );
 }
