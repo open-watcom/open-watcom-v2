@@ -210,14 +210,14 @@ void lr0( void )
     }
     errstate = addState( &errsym->enter, s, s, NULL );
     Complete( errstate, s );
-    free( s );
+    FREE( s );
 }
 
 void SetupStateTable( void )
 {
     a_state     *x;
 
-    free( statetab );
+    FREE( statetab );
     statetab = CALLOC( nstate, a_state * );
     for( x = statelist; x != NULL; x = x->next ) {
         statetab[x->sidx] = x;

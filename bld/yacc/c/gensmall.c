@@ -248,5 +248,5 @@ void genobj( void )
     fprintf( actout, "\"\"" );
     end_table();
     fprintf( actout, "#endif\n" );
-    free( table );
+    FREE( table );
 }

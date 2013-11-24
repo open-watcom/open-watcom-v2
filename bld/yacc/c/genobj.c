@@ -141,8 +141,8 @@ void genobj( void )
         }
     }
 
-    free( target );
-    free( symbol );
+    FREE( target );
+    FREE( symbol );
 
     for( i = 0; i < npro; ++i ) {
         pro = protab[i];

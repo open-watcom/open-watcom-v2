@@ -98,8 +98,8 @@ void writeobj( int maxlabel )
     fprintf( tblout, "_TEXT\tENDS\n" );
     fprintf( tblout, "END\n" );
     fclose( tblout );
-    free( code );
-    free( lbladdr );
+    FREE( code );
+    FREE( lbladdr );
 }
 
 

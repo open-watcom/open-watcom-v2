@@ -169,11 +169,11 @@ static AddError()
             }
         }
     }
-    free( trans );
-    free( redun );
-    free( conflict );
-    free( s );
-    free( at );
+    FREE( trans );
+    FREE( redun );
+    FREE( conflict );
+    FREE( s );
+    FREE( at );
 }
 
 static a_state *AddErrState( enter, s, t )

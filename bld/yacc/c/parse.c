@@ -491,7 +491,7 @@ void rules( void )
             }
         } while( token == '|' );
     }
-    free( rhs );
+    FREE( rhs );
 
     not_token = FALSE;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
@@ -632,14 +632,14 @@ static void copyUniqueActions( void )
                 fprintf( actout, " %s", item->p.sym->name );
             }
             fprintf( actout, " */\n" );
-            free( r );
+            FREE( r );
         }
         for( s = c->action; *s != '\0'; ++s ) {
             fputc( *s, actout );
         }
         fprintf( actout, "\nbreak;\n" );
-        free( c->action );
-        free( c );
+        FREE( c->action );
+        FREE( c );
     }
 }
 
@@ -669,7 +669,7 @@ static void insertUniqueAction( int pnum, char *buf, a_sym *lhs )
             *p = c->next;
             c->next = caseActions;
             caseActions = c;
-            free( buf );
+            FREE( buf );
             return;
         }
         p = &(c->next);
@@ -713,7 +713,7 @@ static void copyact( int pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned 
                 if( type != NULL ) {
                     total_len += strlen( type ) + 1;
                 }
-                free( type );
+                FREE( type );
                 total_errs += errs;
             } else {
                 ++s;
@@ -729,7 +729,7 @@ static void copyact( int pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned 
                     if( type != NULL ) {
                         *p++ = '.';
                         p = strpcpy( p, type );
-                        free( type );
+                        FREE( type );
                     }
                 } else {
                     *p++ = *s++;
@@ -753,7 +753,7 @@ static void copyact( int pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned 
             fprintf( actout, "%s", buff );
             if( type != NULL ) {
                 fprintf( actout, ".%s", type );
-                free( type );
+                FREE( type );
             }
         } else {
             fputc( *s++, actout );

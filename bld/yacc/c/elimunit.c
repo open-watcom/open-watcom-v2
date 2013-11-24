@@ -179,7 +179,7 @@ static a_shift_action *addShiftAction( a_sym *sym, a_state *state, a_shift_actio
         ++saction;
     }
     i = saction - s;
-    new_saction = realloc( s, ( i + 2 ) * sizeof( a_shift_action ) );
+    new_saction = REALLOC( s, i + 2, a_shift_action );
     memset( &new_saction[i], 0, sizeof( *new_saction ) * 2 );
     new_saction[i].sym = sym;
     new_saction[i].state = state;
@@ -201,7 +201,7 @@ static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_ac
     i = raction - r;
     new_follow = AllocSet( 1 );
     Assign( new_follow, follow );
-    new_raction = realloc( r, ( i + 2 ) * sizeof( a_reduce_action ) );
+    new_raction = REALLOC( r, i + 2, a_reduce_action );
     new_raction[i].pro = pro;
     new_raction[i].follow = new_follow;
     new_raction[i + 1].pro = NULL;
@@ -291,7 +291,7 @@ static void removeParent( a_state *child, a_state *parent )
     for( curr = *prev; curr != NULL; curr = curr->next ) {
         if( curr->state == parent ) {
             *prev = curr->next;
-            free( curr );
+            FREE( curr );
             break;
         }
         prev = &(curr->next);
@@ -507,7 +507,7 @@ void EliminateUnitReductions( void )
         }
         sum += changeOccurred;
     } while( changeOccurred );
-    free( reduce_set );
+    FREE( reduce_set );
     dumpstatistic( "unit reduction states removed", deadStates );
     dumpstatistic( "unit reduction optimizations", sum );
 }

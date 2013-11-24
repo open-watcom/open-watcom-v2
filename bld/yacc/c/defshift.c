@@ -129,8 +129,8 @@ void MarkDefaultShifts( void )
     for( i = 0; i < nstate; ++i ) {
         doState( statetab[i], state_freq, all_used, range_size );
     }
-    free( state_freq );
-    free( all_used );
+    FREE( state_freq );
+    FREE( all_used );
     dumpstatistic( "default shift optimization states", nStates );
     dumpstatistic( "default shift optimization actions", nActions );
 }

@@ -335,10 +335,10 @@ static unsigned *orderActionVectors( action_t **av, unsigned size )
     for( i = 0; i < nstate; ++i ) {
         map[i] = a[i]->index;
         av[i] = a[i]->action_vector;
-        free( a[i] );
+        FREE( a[i] );
         a[i] = NULL;
     }
-    free( a );
+    FREE( a );
     return( map );
 }
 
@@ -453,11 +453,11 @@ static void createYACCTables( void )
     for( i = 0; i < nstate; ++i ) {
         num_actions = actcompress( ca, all_actions[i], sizeTerminal );
         abase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, sizeTerminal );
-        free( all_actions[i] );
+        FREE( all_actions[i] );
         all_actions[i] = NULL;
     }
-    free( mapping );
-    free( ca );
+    FREE( mapping );
+    FREE( ca );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
         state_actions = MALLOC( sizeNonTerminal, action_t );
@@ -479,18 +479,18 @@ static void createYACCTables( void )
     for( i = 0; i < nstate; ++i ) {
         num_actions = actcompress( ca, all_actions[i], sizeNonTerminal );
         gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, sizeNonTerminal );
-        free( all_actions[i] );
+        FREE( all_actions[i] );
         all_actions[i] = NULL;
     }
-    free( mapping );
-    free( ca );
+    FREE( mapping );
+    FREE( ca );
     putcomment( "index by state to get default action for state" );
     begtab( "YYACTIONTYPE", "yydefaction" );
     for( i = 0; i < nstate; ++i ) {
         puttab( FITS_A_WORD, defaction[i] );
     }
     endtab();
-    free( defaction );
+    FREE( defaction );
     bitv_base_size = FITS_A_WORD;
     if( bsize < 257 ) {
         bitv_base_size = FITS_A_BYTE;
@@ -545,13 +545,13 @@ static void createYACCTables( void )
         puttab( FITS_A_WORD, protab[i]->sym->token );
     }
     endtab();
-    free( all_actions );
-    free( base );
-    free( abase );
-    free( gbase );
-    free( bvector );
-    free( avector );
-    free( state_vector );
+    FREE( all_actions );
+    FREE( base );
+    FREE( abase );
+    FREE( gbase );
+    FREE( bvector );
+    FREE( avector );
+    FREE( state_vector );
     dumpstatistic( "bytes used in tables", bytesused );
     dumpstatistic( "table space utilization", 100 - ( empty_actions * 100L / asize ) );
 }

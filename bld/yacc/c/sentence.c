@@ -62,7 +62,7 @@ static void popTrace( traceback **h )
     token = *h;
     if( token != NULL ) {
         *h = token->next;
-        free( token );
+        FREE( token );
     }
 }
 
@@ -278,7 +278,7 @@ static void printAndFreeStack( traceback *top )
             fputs( min, stdout );
             column += len;
         }
-        free( token );
+        FREE( token );
     }
 }
 
