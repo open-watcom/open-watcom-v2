@@ -31,12 +31,8 @@
 
 
 #include <stdio.h>
+#include "bool.h"
 #include "clibext.h"
-
-typedef enum {
-    FALSE = 0,
-    TRUE = 1
-} bool;
 
 enum {
     TOKEN_EOF           = 0x0000,
@@ -97,9 +93,10 @@ typedef struct a_prec {
 
 typedef unsigned int    a_word;
 typedef unsigned char   byte;
+typedef unsigned short  set_size;
 
 typedef unsigned short  token_t;
-typedef unsigned short  set_size;
+typedef unsigned short  action_t;
 
 typedef struct a_state  a_state;
 typedef struct a_sym    a_sym;

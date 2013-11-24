@@ -49,12 +49,6 @@
 
 #define BLOCK           512
 
-static int addtotable(  short *token,
-                        short *s,
-                        short *actions,
-                        short default_token,
-                        short parent_token );
-
 typedef struct a_table {
     short       token;
     short       action;
@@ -63,10 +57,96 @@ typedef struct a_table {
 static int avail, used;
 static a_table *table;
 
+static int addtotable(  short *token,
+                        short *end_token,
+                        short *actions,
+                        short default_token,
+                        short parent_token )
+{
+    unsigned            start, max, i;
+    short               default_action;
+    short *             r;
+    a_table *           t;
+
+    if( compactflag ) {
+        start = used++;         // Leave room for parent & default
+        default_action = 0;
+        for( ;; ++token ) {
+            if( used >= avail ) {
+                avail = roundup( used + 1, BLOCK );
+                if( table ) {
+                    table = REALLOC( table, avail, a_table );
+                } else {
+                    table = MALLOC( avail, a_table );
+                }
+            }
+            if( token == end_token )
+                break;
+            if( *token == default_token ) {
+                default_action = actions[*token];
+            } else if( *token != parent_token ) {
+                table[used].token = *token;
+                table[used].action = actions[*token];
+                ++used;
+            }
+        }
+        table[start].token = actions[parent_token];
+        table[start].action = default_action;
+    } else {
+        max = *token;
+        for( r = token + 1; r < end_token; ++r ) {
+            if( *r > max ) {
+                max = *r;
+            }
+        }
+        for( start = 0; ; ++start ) {
+            if( start + max >= avail ) {
+                i = avail;
+                avail = roundup( start + max + 1, BLOCK );
+                if( table ) {
+                    table = REALLOC( table, avail, a_table );
+                } else {
+                    table = MALLOC( avail, a_table );
+                }
+                while( i < avail ) {
+                    table[i].token = TOKEN_IMPOSSIBLE;
+                    table[i].action = 0;
+                    ++i;
+                }
+            }
+            if( !IsBase( table[start] ) ) {
+                for( r = token; r < end_token; ++r ) {
+                    if( IsUsed( table[start + *r] ) ) {
+                        goto contin2;
+                    }
+                }
+                break;
+            }
+contin2:;
+        }
+        SetBase( table[start] );
+        for( r = token; r < end_token; ++r ) {
+            t = &table[start + *r];
+            if( ! bigflag ) {
+                if( *r >= UCHAR_MAX ) {
+                    msg( "too many tokens!\n" );
+                }
+            }
+            SetToken( *t, *r );
+            SetAction( *t, actions[*r] );
+        }
+        i = start + max + 1;
+        if( i > used ) {
+            used = i;
+        }
+    }
+    return( start );
+}
+
 void genobj( void )
 {
     value_size token_size;
-    short *token, *actions, *base, *other, *parent, *size;
+    short *tokens, *actions, *base, *other, *parent, *size;
     register short *p, *q, *r, *s;
     set_size *mp;
     short error, tokval, redun, *same, *diff, *test, *best;
@@ -103,7 +183,7 @@ void genobj( void )
     for( i = 0; i < ntoken; ++i ) {
         actions[i] = error;
     }
-    token = CALLOC( ntoken, short );
+    tokens = CALLOC( ntoken, short );
     test = CALLOC( ntoken, short );
     best = CALLOC( ntoken, short );
     base = CALLOC( nstate, short );
@@ -117,7 +197,7 @@ void genobj( void )
     parent_base = 0;
     for( i = nstate; --i >= 0; ) {
         x = statetab[i];
-        q = token;
+        q = tokens;
         for( tx = x->trans; (sym = tx->sym) != NULL; ++tx ) {
             *q++ = sym->token;
             actions[sym->token] = tx->state->sidx;
@@ -152,7 +232,7 @@ void genobj( void )
             other[i] = error;
         }
         r = q;
-        min = q - token;
+        min = q - tokens;
         size[i] = min;
         parent[i] = nstate;
         for( j = nstate; --j > i; ) {
@@ -201,11 +281,11 @@ void genobj( void )
             s = r;
         } else {
             ++num_parent;
-            s = token;
+            s = tokens;
             p = same;
             while( --p >= best )
                 actions[*p] = error;
-            for( q = token; q < r; ++q ) {
+            for( q = tokens; q < r; ++q ) {
                 if( actions[*q] != error ) {
                     *s++ = *q;
                 }
@@ -220,11 +300,18 @@ void genobj( void )
             *s++ = ptoken;
             actions[ptoken] = tokval;
         }
-        base[i] = addtotable( token, s, actions, dtoken, ptoken );
-        while( --s >= token ) {
+        base[i] = addtotable( tokens, s, actions, dtoken, ptoken );
+        while( --s >= tokens ) {
             actions[*s] = error;
         }
     }
+    FREE( actions );
+    FREE( tokens );
+    FREE( test );
+    FREE( best );
+    FREE( other );
+    FREE( size );
+
     putambigs( base );
     putnum( "YYNOACTION", error - nstate + used );
     putnum( "YYEOFTOKEN", eofsym->token );
@@ -329,90 +416,7 @@ void genobj( void )
     dumpstatistic( "states with defaults", num_default );
     dumpstatistic( "states with parents", num_parent );
     puttokennames( dtoken, token_size );
-}
-
-static int addtotable(  short *token,
-                        short *s,
-                        short *actions,
-                        short default_token,
-                        short parent_token )
-{
-    unsigned            start, max, i;
-    short               default_action;
-    short *             r;
-    a_table *           t;
-
-    if( compactflag ) {
-        start = used++;         // Leave room for parent & default
-        default_action = 0;
-        for( ;; ++token ) {
-            if( used >= avail ) {
-                avail = roundup( used + 1, BLOCK );
-                if( table ) {
-                    table = REALLOC( table, avail, a_table );
-                } else {
-                    table = MALLOC( avail, a_table );
-                }
-            }
-            if( token == s )
-                break;
-            if( *token == default_token ) {
-                default_action = actions[*token];
-            } else if( *token != parent_token ) {
-                table[used].token = *token;
-                table[used].action = actions[*token];
-                ++used;
-            }
-        }
-        table[start].token = actions[parent_token];
-        table[start].action = default_action;
-    } else {
-        max = *token;
-        for( r = token + 1; r < s; ++r ) {
-            if( *r > max ) {
-                max = *r;
-            }
-        }
-        for( start = 0; ; ++start ) {
-            if( start + max >= avail ) {
-                i = avail;
-                avail = roundup( start + max + 1, BLOCK );
-                if( table ) {
-                    table = REALLOC( table, avail, a_table );
-                } else {
-                    table = MALLOC( avail, a_table );
-                }
-                while( i < avail ) {
-                    table[i].token = TOKEN_IMPOSSIBLE;
-                    table[i].action = 0;
-                    ++i;
-                }
-            }
-            if( !IsBase( table[start] ) ) {
-                for( r = token; r < s; ++r ) {
-                    if( IsUsed( table[start + *r] ) ) {
-                        goto contin2;
-                    }
-                }
-                break;
-            }
-contin2:;
-        }
-        SetBase( table[start] );
-        for( r = token; r < s; ++r ) {
-            t = &table[start + *r];
-            if( ! bigflag ) {
-                if( *r >= UCHAR_MAX ) {
-                    msg( "too many tokens!\n" );
-                }
-            }
-            SetToken( *t, *r );
-            SetAction( *t, actions[*r] );
-        }
-        i = start + max + 1;
-        if( i > used ) {
-            used = i;
-        }
-    }
-    return( start );
+    FREE( table );
+    FREE( base );
+    FREE( parent );
 }

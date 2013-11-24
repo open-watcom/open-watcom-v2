@@ -137,7 +137,7 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
     int         i;
 
     amt = sizeof( a_pro ) + n * sizeof( an_item );
-    pro = CALLOC( amt, char );
+    pro = (a_pro *)CALLOC( amt, char );
     pro->pidx = npro++;
     for( i = 0; i < n; ++i ) {
         pro->item[i].p.sym = rhs[i];

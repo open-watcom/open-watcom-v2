@@ -257,8 +257,8 @@ static traceback *reverseStack( traceback *s )
 
 static void printAndFreeStack( traceback *top )
 {
-    unsigned    column;
-    unsigned    len;
+    size_t      column;
+    size_t      len;
     a_sym       *sym;
     char        *min;
     traceback   *token;
@@ -372,7 +372,7 @@ void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
     }
 }
 
-char *stpcpy( char *d, char const *s )
+static char *my_stpcpy( char *d, char const *s )
 {
     size_t  len;
 
@@ -381,10 +381,9 @@ char *stpcpy( char *d, char const *s )
     return( d + len );
 }
 
-static unsigned symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
+static size_t symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 {
-    unsigned    len;
-    char        *check_min;
+    size_t      len;
     an_item     *p;
 
     sym = sym;
@@ -393,8 +392,7 @@ static unsigned symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
             // derivations using the error sym are not desirable
             return( 0 );
         }
-        check_min = p->p.sym->min;
-        if( check_min == NULL ) {
+        if( p->p.sym->min == NULL ) {
             return( 0 );
         }
     }
@@ -408,7 +406,7 @@ static unsigned symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 
 static a_sym *symHasMin( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 {
-    unsigned    len;
+    size_t      len;
     an_item     *p;
     char        *min;
     char        *cat;
@@ -422,11 +420,11 @@ static a_sym *symHasMin( a_sym *sym, a_pro *pro, a_sym *disallow_error )
     cat = min;
     for( p = pro->item; p->p.sym != NULL; ++p ) {
         if( p->p.sym->min[0] != '\0' ) {
-            cat = stpcpy( cat, p->p.sym->min );
+            cat = my_stpcpy( cat, p->p.sym->min );
         }
     }
     if( cat != min && cat[-1] != ' ' ) {
-        cat = stpcpy( cat, " " );
+        cat = my_stpcpy( cat, " " );
     }
     sym->min = min;
     return( sym );
@@ -434,7 +432,7 @@ static a_sym *symHasMin( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 
 static void setMinToName( a_sym *sym )
 {
-    unsigned    len;
+    size_t      len;
     char        *min;
     char        *cat;
 
@@ -443,9 +441,9 @@ static void setMinToName( a_sym *sym )
     min = MALLOC( len, char );
     min[0] = '\0';
     cat = min;
-    cat = stpcpy( cat, sym->name );
+    cat = my_stpcpy( cat, sym->name );
     if( cat != min && cat[-1] != ' ' ) {
-        cat = stpcpy( cat, " " );
+        cat = my_stpcpy( cat, " " );
     }
     sym->min = min;
 }
@@ -457,14 +455,14 @@ static void propagateMin( a_sym *disallow_error )
     a_sym       *has_min;
     a_pro       *pro;
     unsigned    i;
-    unsigned    min_len;
-    unsigned    len;
+    size_t      min_len;
+    size_t      len;
 
     do {
         last = NULL;
         for( i = 0; i < nsym; ++i ) {
             sym = symtab[i];
-            if( ! sym->min ) {
+            if( sym->min == NULL ) {
                 min_len = -1;
                 for( pro = sym->pro; pro != NULL; pro = pro->next ) {
                     len = symHasMinLen( sym, pro, disallow_error );
@@ -512,7 +510,7 @@ static void verifyAllHaveMin( void )
 
     for( i = 0; i < nsym; ++i ) {
         sym = symtab[i];
-        if( ! sym->min ) {
+        if( sym->min == NULL ) {
             printf( "%s has no minimum expansion! (mutually recursive?)\n", sym->name );
             setMinToName( sym );
         }

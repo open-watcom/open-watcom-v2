@@ -29,6 +29,8 @@ objs =                  &
         yacc.obj
 # genc.obj, genobj.obj, and recover.obj are unused
 
+extra_l_flags = op map
+
 $(proj_name).exe : $(objs)
 !ifndef __WATCOM__
         $(cl) $(clflags) $< $(ldflags)
