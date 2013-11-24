@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 
-#define MALLOC(n,t)     ((t *) malloc((n)*sizeof(t)))
-#define REALLOC(p,n,t)  ((t *) realloc((char *) p,(n)*sizeof(t)))
-#define CALLOC(n,t)     ((t *) calloc((n),sizeof(t)))
+#define MALLOC(n,t)     ((t *)malloc((n) * sizeof(t)))
+#define REALLOC(p,n,t)  ((t *)realloc((char *)p,(n) * sizeof(t)))
+#define CALLOC(n,t)     ((t *)calloc((n),sizeof(t)))
+#define FREE(n)         free((n))
