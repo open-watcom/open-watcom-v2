@@ -96,33 +96,35 @@ static index_n insertIntoBitVector( byte **bv, index_n *bs, byte *v, index_n siz
     return( ls );
 }
 
-static int actcmp( action_n *a1, compressed_action *ca, index_n num_comp, token_n size )
+static int actcmp( action_n *actions, compressed_action *ca, index_n num_actions, token_n ntoken )
 {
-    action_n    v1, v2;
+    action_n    a1, a2;
     index_n     i;
+    token_n     ca_token;
 
-    for( i = 0; i < num_comp; ++i, ++ca ) {
-        if( ca->token >= size )
+    for( i = 0; i < num_actions; ++ca, ++i ) {
+        ca_token = ca->token;
+        if( ca_token >= ntoken )
             break;
-        v2 = ca->action;
-        // NB Know v2 != ACTION_NULL
-        v1 = a1[ca->token];
-        if( v1 == ACTION_NULL ) {
+        a1 = actions[ca_token];
+        if( a1 == ACTION_NULL ) {
             continue;
         }
-        if( v1 != v2 ) {
-            return( ca->token + 1 );
+        // NB Know a2 != ACTION_NULL
+        a2 = ca->action;
+        if( a1 != a2 ) {
+            return( ca_token + 1 );
         }
     }
     return( 0 );
 }
 
-static void actcpy( action_n *a1, compressed_action *ca, index_n num_comp )
+static void actcpy( action_n *actions, compressed_action *ca, index_n num_actions )
 {
     index_n i;
 
-    for( i = 0; i < num_comp; ++i, ++ca ) {
-        a1[ca->token] = ca->action;
+    for( i = 0; i < num_actions; ++ca, ++i ) {
+        actions[ca->token] = ca->action;
     }
 }
 
@@ -143,13 +145,13 @@ static action_n *actextend( action_n *a, index_n *psize, token_n incr )
     return( a );
 }
 
-static index_n actcompress( compressed_action *ca, action_n *actions, token_n size )
+static index_n actcompress( compressed_action *ca, action_n *actions, token_n ntoken )
 {
     token_n     token;
     index_n     num_actions;
 
     num_actions = 0;
-    for( token = 0; token < size; ++token ) {
+    for( token = 0; token < ntoken; ++token ) {
         if( actions[token] != ACTION_NULL ) {
             ca[num_actions].action = actions[token];
             ca[num_actions].token = token;
@@ -160,51 +162,51 @@ static index_n actcompress( compressed_action *ca, action_n *actions, token_n si
 }
 
 static index_n insertIntoActionVector( action_n **bv, index_n *bs,
-        compressed_action *ca, index_n num_actions, token_n size )
+        compressed_action *ca, index_n num_actions, token_n ntoken )
 {
     index_n  i;
-    index_n  j;
     index_n  s;
     index_n  ls;
-    action_n c;
+    action_n action;
     action_n *p;
 
     if( num_actions == 0 ) {
         // no action items!
         return( 0 );
     }
-    if( *bs == 0 ) {
-        *bv = actextend( *bv, bs, size );
-        actcpy( *bv, ca, num_actions );
-        return( 0 );
-    }
-    p = *bv;
     ls = *bs;
-    s = ( ls - size ) + 1;
-    for( j = 0; j < s; ++j ) {
-        // try a quick check with the last element that failed (may fail again!)
-        c = p[j + ca[0].token];
-        // we know v[bi - 1] != ACTION_NULL
-        if( c != ACTION_NULL && c != ca[0].action ) {
-            continue;
-        }
-        if( actcmp( &p[j], ca, num_actions, size ) == 0 ) {
-            // action vector was found inside large vector
-            actcpy( &p[j], ca, num_actions );
-            return( j );
+    p = *bv;
+    if( ls >= ntoken ) {
+        // try action vector has common actions inside large vector
+        s = ( ls - ntoken ) + 1;
+        for( i = 0; i < s; ++i ) {
+            // try a quick check with the last element that failed (may fail again!)
+            // we know ca[0].action != ACTION_NULL
+            action = p[i + ca[0].token];
+            if( action == ACTION_NULL || action == ca[0].action ) {
+                if( actcmp( &p[i], ca, num_actions, ntoken ) == 0 ) {
+                    // action vector was found inside large vector
+                    actcpy( &p[i], ca, num_actions );
+                    return( i );
+                }
+            }
         }
     }
-    for( i = size; i > 0; --i ) {
+    // try action vector has some common actions with the end of the large vector
+    i = ntoken;
+    if( ls < ntoken ) {
+        i = ls;
+    }
+    for( ; i > 0; --i ) {
         if( actcmp( &p[ls - i], ca, num_actions, i ) == 0 ) {
             // action vector has some common actions with the end of the large vector
-            p = actextend( p, bs, size - i );
-            *bv = p;
-            actcpy( &p[ls - i], ca, num_actions );
-            return( ls - i );
+            ntoken -= i;
+            ls -= i;
+            break;
         }
     }
-    // action vector has no common actions with large vector
-    p = actextend( p, bs, size );
+    // add action vector to the large vector
+    p = actextend( p, bs, ntoken );
     *bv = p;
     actcpy( &p[ls], ca, num_actions );
     return( ls );
@@ -221,16 +223,16 @@ static action_n reduceaction( a_state *state, a_reduce_action *raction )
         action |= ACTION_UNIT;
     }
     if( (pro->pidx & ACTION_MASK) != pro->pidx ) {
-        printf( "reduce action 0x%X is higher then 0x3FFF !\n", pro->pidx );
+        printf( "Error: reduce action 0x%X is higher then 0x3FFF !\n", pro->pidx );
     }
     action |= pro->pidx;
     return( action );
 }
 
-static int cmp_action( const void *v1, const void *v2 )
+static int cmp_action( const void *a1, const void *a2 )
 {
-    av_info **p1 = (av_info **) v1;
-    av_info **p2 = (av_info **) v2;
+    av_info **p1 = (av_info **)a1;
+    av_info **p2 = (av_info **)a2;
     av_info *s1 = *p1;
     av_info *s2 = *p2;
     token_n n1, n2;
@@ -281,7 +283,7 @@ static int cmp_action( const void *v1, const void *v2 )
     return( 0 );
 }
 
-static action_n *orderActionVectors( action_n **av, token_n size )
+static action_n *orderActionVectors( action_n **av, token_n ntoken )
 {
     av_info **a;
     av_info *p;
@@ -299,9 +301,9 @@ static action_n *orderActionVectors( action_n **av, token_n size )
         p = MALLOC( 1, av_info );
         a[i] = p;
         max = 0;
-        min = size;
+        min = ntoken;
         num_entries = 0;
-        for( token = 0; token < size; ++token ) {
+        for( token = 0; token < ntoken; ++token ) {
             if( actions[token] != ACTION_NULL ) {
                 if( num_entries == 0 ) {
                     min = token;
@@ -362,13 +364,13 @@ void GenFastTables( void )
     action_n    *defaction;
     action_n    state_idx;
     token_n     ntoken_term;
-    token_n     ntoken;
+    token_n     ntoken_all;
 
 
     ntoken_term = FirstNonTerminalTokenValue();
-    ntoken = ntoken_term;
+    ntoken_all = ntoken_term;
     for( i = nterm; i < nsym; ++i ) {
-        symtab[i]->token = ntoken++;
+        symtab[i]->token = ntoken_all++;
     }
 
     bvector = NULL;
@@ -455,9 +457,9 @@ void GenFastTables( void )
     FREE( ca );
     for( i = 0; i < nstate; ++i ) {
         state = statetab[i];
-        state_actions = MALLOC( ntoken, action_n );
+        state_actions = MALLOC( ntoken_all, action_n );
         all_actions[i] = state_actions;
-        for( j = 0; j < ntoken; ++j ) {
+        for( j = 0; j < ntoken_all; ++j ) {
             state_actions[j] = ACTION_NULL;
         }
         // iterate over all shifts in state
@@ -467,12 +469,12 @@ void GenFastTables( void )
             state_actions[sym->token] = saction->state->sidx;
         }
     }
-    mapping = orderActionVectors( all_actions, ntoken );
-    ca = CALLOC( ntoken, compressed_action );
+    mapping = orderActionVectors( all_actions, ntoken_all );
+    ca = CALLOC( ntoken_all, compressed_action );
     gbase = CALLOC( nstate, set_size );
     for( i = 0; i < nstate; ++i ) {
-        num_actions = actcompress( ca, all_actions[i], ntoken );
-        gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken );
+        num_actions = actcompress( ca, all_actions[i], ntoken_all );
+        gbase[mapping[i]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_all );
         FREE( all_actions[i] );
         all_actions[i] = NULL;
     }

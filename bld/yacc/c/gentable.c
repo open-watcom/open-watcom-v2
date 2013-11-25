@@ -90,10 +90,10 @@ static unsigned addtotable( token_n *token, token_n *end_token, action_n *action
                 tokval = *token;
                 actval = actions[tokval];
                 if( tokval > 0x0FFF ) {
-                    printf( "token index 0x%X for item %d is higher then 0x0FFF !\n", tokval, start );
+                    printf( "Error: token index 0x%X for item %d is higher then 0x0FFF !\n", tokval, start );
                 }
                 if( actval > 0x0FFF ) {
-                    printf( "token action 0x%X for item %d is higher then 0x0FFF !\n", actval, start );
+                    printf( "Error: token action 0x%X for item %d is higher then 0x0FFF !\n", actval, start );
                 }
                 table[used].token = tokval;
                 table[used].action = actval;
@@ -102,10 +102,10 @@ static unsigned addtotable( token_n *token, token_n *end_token, action_n *action
         }
         actval = actions[parent_token];
         if( actval > 0x0FFF ) {
-            printf( "parent action 0x%X for item %d is higher then 0x0FFF !\n", actval, start );
+            printf( "Error: parent action 0x%X for item %d is higher then 0x0FFF !\n", actval, start );
         }
         if( default_action > 0x0FFF ) {
-            printf( "default action 0x%X for item %d is higher then 0x0FFF !\n", default_action, start );
+            printf( "Error: default action 0x%X for item %d is higher then 0x0FFF !\n", default_action, start );
         }
         table[start].token = (token_n)actval;
         table[start].action = default_action;
@@ -152,7 +152,7 @@ contin2:;
             SetToken( *t, *r );
             actval = actions[*r];
             if( (actval & ACTION_MASK) != actval ) {
-                printf( "token action 0x%X for token %d is higher then 0x3FFF !\n", actval, *r );
+                printf( "Error: token action 0x%X for token %d is higher then 0x3FFF !\n", actval, *r );
             }
             SetAction( *t, actions[*r] );
         }
@@ -437,7 +437,7 @@ void genobj( void )
             for( item = protab[i]->item; item->p.sym != NULL; ) {
                 ++item;
             }
-            puttab( FITS_A_BYTE, item - protab[i]->item );
+            puttab( FITS_A_BYTE, (unsigned)( item - protab[i]->item ) );
         }
         endtab();
         begtab( "YYPLHSTYPE", "yyplhstab" );
