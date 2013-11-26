@@ -335,8 +335,6 @@ void GenFastTables( void )
     index_n     i;
     index_n     j;
     index_n     asize;
-    unsigned    index;
-    unsigned    mask;
     token_n     tokval;
     index_n     vsize;
     index_n     bsize;
@@ -392,9 +390,7 @@ void GenFastTables( void )
                 continue;
             }
             tokval = sym->token;
-            index = tokval >> 3;
-            mask = 1 << ( tokval & 0x07 );
-            state_vector[index] |= mask;
+            state_vector[tokval >> 3] |= 1 << ( tokval & 0x07 );
         }
         // iterate over all reductions in state
         for( raction = state->redun; (pro = raction->pro) != NULL; ++raction ) {
@@ -403,13 +399,13 @@ void GenFastTables( void )
             for( mp = Members( raction->follow ); mp != setmembers; ) {
                 --mp;
                 tokval = symtab[*mp]->token;
-                index = tokval >> 3;
-                mask = 1 << ( tokval & 0x07 );
-                state_vector[index] |= mask;
+                state_vector[tokval >> 3] |= 1 << ( tokval & 0x07 );
             }
         }
         base[i] = insertIntoBitVector( &bvector, &bsize, state_vector, vsize );
     }
+    FREE( state_vector );
+
     defaction = CALLOC( nstate, action_n );
     all_actions = MALLOC( nstate, action_n * );
     for( i = 0; i < nstate; ++i ) {
@@ -480,6 +476,8 @@ void GenFastTables( void )
     }
     FREE( mapping );
     FREE( ca );
+
+    FREE( all_actions );
 
     putambigs( NULL );
 
@@ -558,16 +556,17 @@ void GenFastTables( void )
     }
     endtab();
 
-    FREE( all_actions );
     FREE( base );
     FREE( abase );
     FREE( gbase );
     FREE( bvector );
     FREE( avector );
-    FREE( state_vector );
 
     dumpstatistic( "bytes used in tables", bytesused );
     dumpstatistic( "table space utilization", 100 - ( empty_actions * 100L / asize ) );
 
     puttokennames( 0, FITS_A_WORD );
+
+    FREE( protab );
+    FREE( symtab );
 }

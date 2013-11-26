@@ -110,9 +110,7 @@ a_sym *terminalInKernel( an_item *p )
     }
     pro = q[1].p.pro;
     sym_after_dot = NULL;
-    post_sym = NULL;
-    for( q = pro->item; q->p.sym != NULL; ++q ) {
-        post_sym = q->p.sym;
+    for( q = pro->item; (post_sym = q->p.sym) != NULL; ++q ) {
         if( q == p ) {
             if( post_sym->pro == NULL ) {
                 sym_after_dot = post_sym;
@@ -356,8 +354,7 @@ void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
         printAndFreeStack( list );
         fputs( ".", stdout );
         if( parse_stack == NULL ) {
-            printf( "%s\n  Will never shift token '%s' in this context\n",
-                    sym->name, sym->name );
+            printf( "%s\n  Will never shift token '%s' in this context\n", sym->name, sym->name );
         } else {
             putchar( '\n' );
             runUntilShift( &parse_stack, eofsym, &token_stack );
@@ -463,7 +460,7 @@ static void propagateMin( a_sym *disallow_error )
         for( i = 0; i < nsym; ++i ) {
             sym = symtab[i];
             if( sym->min == NULL ) {
-                min_len = -1;
+                min_len = (size_t)-1;
                 for( pro = sym->pro; pro != NULL; pro = pro->next ) {
                     len = symHasMinLen( sym, pro, disallow_error );
                     if( len != 0 && len < min_len ) {

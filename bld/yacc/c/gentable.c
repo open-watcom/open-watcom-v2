@@ -39,13 +39,13 @@
 #define ACTION_USED     0x4000
 #define ACTION_BASE     0x8000
 
-#define Token(c)        ((c).token)
-#define SetToken(c,i)   ((c).token = (i))
-#define IsUsed(c)       ((c).action & ACTION_USED)
-#define Action(c)       ((c).action & ACTION_MASK)
-#define SetAction(c,i)  ((c).action |= (ACTION_USED|(i)))
-#define IsBase(c)       ((c).action & ACTION_BASE)
-#define SetBase(c)      ((c).action |= ACTION_BASE)
+#define Token(c)        ((c)->token)
+#define SetToken(c,i)   ((c)->token = (i))
+#define IsUsed(c)       ((c)->action & ACTION_USED)
+#define Action(c)       ((c)->action & ACTION_MASK)
+#define SetAction(c,i)  ((c)->action |= (ACTION_USED|(i)))
+#define IsBase(c)       ((c)->action & ACTION_BASE)
+#define SetBase(c)      ((c)->action |= ACTION_BASE)
 #define roundup(a,b)    ((((a)+(b)-1)/(b))*(b))
 
 #define BLOCK           512
@@ -55,39 +55,43 @@ typedef struct a_table {
     action_n        action;
 } a_table;
 
-static unsigned     avail;
-static unsigned     used;
+static base_n       avail;
+static base_n       used;
 static a_table      *table;
 
-static unsigned addtotable( token_n *token, token_n *end_token, action_n *actions,
+static void expand_table( base_n new_size )
+{
+    if( new_size > avail ) {
+        avail = roundup( new_size, BLOCK );
+        if( table != NULL ) {
+            table = REALLOC( table, avail, a_table );
+        } else {
+            table = MALLOC( avail, a_table );
+        }
+    }
+}
+
+static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions,
                             token_n default_token, token_n parent_token )
 {
-    unsigned            start, i;
+    base_n              start, i;
     token_n             max;
     action_n            default_action;
     token_n             *r;
     a_table             *t;
+    a_table             *tstart;
     action_n            actval;
     token_n             tokval;
 
     if( compactflag ) {
-        start = used++;         // Leave room for parent & default
+        start = used++;
+        expand_table( used );   // Leave room for parent & default
         default_action = ACTION_NULL;
-        for( ;; ++token ) {
-            if( used >= avail ) {
-                avail = roundup( used + 1, BLOCK );
-                if( table != NULL ) {
-                    table = REALLOC( table, avail, a_table );
-                } else {
-                    table = MALLOC( avail, a_table );
-                }
-            }
-            if( token == end_token )
-                break;
-            if( *token == default_token ) {
-                default_action = actions[*token];
-            } else if( *token != parent_token ) {
-                tokval = *token;
+        for( r = tokens; r < end_token; ++r ) {
+            tokval = *r;
+            if( tokval == default_token ) {
+                default_action = actions[tokval];
+            } else if( tokval != parent_token ) {
                 actval = actions[tokval];
                 if( tokval > 0x0FFF ) {
                     printf( "Error: token index 0x%X for item %d is higher then 0x0FFF !\n", tokval, start );
@@ -95,6 +99,7 @@ static unsigned addtotable( token_n *token, token_n *end_token, action_n *action
                 if( actval > 0x0FFF ) {
                     printf( "Error: token action 0x%X for item %d is higher then 0x0FFF !\n", actval, start );
                 }
+                expand_table( used + 1 );
                 table[used].token = tokval;
                 table[used].action = actval;
                 ++used;
@@ -110,51 +115,47 @@ static unsigned addtotable( token_n *token, token_n *end_token, action_n *action
         table[start].token = (token_n)actval;
         table[start].action = default_action;
     } else {
-        max = *token;
-        for( r = token + 1; r < end_token; ++r ) {
+        max = *tokens;
+        for( r = tokens + 1; r < end_token; ++r ) {
             if( *r > max ) {
                 max = *r;
             }
         }
         for( start = 0; ; ++start ) {
-            if( start + max >= avail ) {
-                i = avail;
-                avail = roundup( start + max + 1, BLOCK );
-                if( table != NULL ) {
-                    table = REALLOC( table, avail, a_table );
-                } else {
-                    table = MALLOC( avail, a_table );
-                }
-                while( i < avail ) {
-                    table[i].token = TOKEN_IMPOSSIBLE;
-                    table[i].action = ACTION_NULL;
-                    ++i;
-                }
+            i = avail;
+            expand_table( start + max + 1 );
+            while( i < avail ) {
+                table[i].token = TOKEN_IMPOSSIBLE;
+                table[i].action = ACTION_NULL;
+                ++i;
             }
-            if( !IsBase( table[start] ) ) {
-                for( r = token; r < end_token; ++r ) {
-                    if( IsUsed( table[start + *r] ) ) {
-                        goto contin2;
+            tstart = table + start;
+            if( !IsBase( tstart ) ) {
+                for( r = tokens; r < end_token; ++r ) {
+                    if( IsUsed( tstart + *r ) ) {
+                        break;
                     }
                 }
-                break;
+                if( r >= end_token ) {
+                    break;
+                }
             }
-contin2:;
         }
-        SetBase( table[start] );
-        for( r = token; r < end_token; ++r ) {
-            t = &table[start + *r];
+        SetBase( tstart );
+        for( r = tokens; r < end_token; ++r ) {
+            tokval = *r;
+            t = tstart + tokval;
             if( ! bigflag ) {
-                if( *r >= UCHAR_MAX ) {
+                if( tokval >= UCHAR_MAX ) {
                     msg( "too many tokens!\n" );
                 }
             }
-            SetToken( *t, *r );
-            actval = actions[*r];
+            SetToken( t, tokval );
+            actval = actions[tokval];
             if( (actval & ACTION_MASK) != actval ) {
-                printf( "Error: token action 0x%X for token %d is higher then 0x3FFF !\n", actval, *r );
+                printf( "Error: token action 0x%X for token %d is higher then 0x3FFF !\n", actval, tokval );
             }
-            SetAction( *t, actions[*r] );
+            SetAction( t, actval );
         }
         i = start + max + 1;
         if( i > used ) {
@@ -183,7 +184,7 @@ void genobj( void )
     index_n     i, j;
     set_size    savings, min, *size;
     set_size    shift;
-    unsigned    parent_base;
+    token_n     parent_base;
     unsigned    num_default, num_parent;
 
     if( fastflag ) {
@@ -419,12 +420,12 @@ void genobj( void )
     } else {
         begtab( "YYCHKTYPE", "yychktab" );
         for( i = 0; i < used; ++i ) {
-            puttab( token_size, Token( table[i] ) );
+            puttab( token_size, Token( table + i ) );
         }
         endtab();
         begtab( "YYACTTYPE", "yyacttab" );
         for( i = 0; i < used; ++i ) {
-            j = Action( table[i] );
+            j = Action( table + i );
             if( j < nstate ) {
                 puttab( FITS_A_WORD, base[j] );
             } else {
@@ -455,4 +456,7 @@ void genobj( void )
     dumpstatistic( "states with parents", num_parent );
 
     puttokennames( dtoken, token_size );
+
+    FREE( protab );
+    FREE( symtab );
 }

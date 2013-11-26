@@ -51,7 +51,7 @@ static a_state *addState( a_state **enter, an_item **s, an_item **q, a_state *pa
     for( p = s; p != q; ++p ) {
         Mark( **p );
     }
-    kersize = q - s;
+    kersize = (unsigned short)( q - s );
     for( ; *enter != NULL; enter = &(*enter)->same_enter_sym ) {
         if( (*enter)->kersize == kersize ) {
             p = (*enter)->name.item;
@@ -87,9 +87,9 @@ contin:;
 }
 
 /*  Heap Sort.  Reference:  Knuth, Vol. 3, pages 146, 147. */
-static void Sort( void **vec, int n, bool (*lt)( void *, void * ) )
+static void Sort( void **vec, unsigned n, bool (*lt)( void *, void * ) )
 {
-    int         i, j, l, r;
+    unsigned    i, j, l, r;
     void        *k;
 
     if( n > 1 ) {
@@ -128,9 +128,9 @@ static bool itemlt( void *_a, void *_b )
     an_item     *b = _b;
 
     if( a->p.sym != NULL ) {
-        return( b->p.sym && a[0].p.sym > b[0].p.sym );
+        return( b->p.sym != NULL && a[0].p.sym > b[0].p.sym );
     } else {
-        return( b->p.sym || a[1].p.pro > b[1].p.pro );
+        return( b->p.sym != NULL || a[1].p.pro > b[1].p.pro );
     }
 }
 
@@ -140,7 +140,7 @@ static void Complete( a_state *x, an_item **s )
     a_reduce_action *rx;
     a_shift_action  *tx;
     a_pro           *pro;
-    int             n;
+    index_n         n;
 
     q = s;
     for( p = x->name.item; *p != NULL; ++p ) {
@@ -155,16 +155,16 @@ static void Complete( a_state *x, an_item **s )
                     *q++ = pro->item;
                 }
             }
-          }
+        }
     }
     for( p = s; p < q; ++p ) {
         Unmark( **p );
     }
-    Sort( (void **)s, q - s, itemlt );
+    Sort( (void **)s, (unsigned)( q - s ), itemlt );
     for( p = s; p < q && (*p)->p.sym == NULL; ) {
         ++p;
     }
-    n = p - s;
+    n = (index_n)( p - s );
     nredun += n;
     rx = CALLOC( n + 1, a_reduce_action );
     x->redun = rx;
@@ -177,7 +177,9 @@ static void Complete( a_state *x, an_item **s )
         n = 1;
         s = p;
         while( ++p < q ) {
-            n += (p[-1]->p.sym != p[0]->p.sym);
+            if( p[-1]->p.sym != p[0]->p.sym ) {
+                ++n;
+            }
         }
         tx = CALLOC( n + 1, a_shift_action );
         x->trans = tx;
@@ -228,8 +230,8 @@ void SetupStateTable( void )
 
 void RemoveDeadStates( void )
 {
-    int         i;
-    int         j;
+    index_n     i;
+    index_n     j;
     a_state     *x;
 
     j = 0;

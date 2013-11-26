@@ -49,7 +49,7 @@ static void Reads( a_look *x )
     unsigned short  k;
 
     *top++ = x;
-    k = top - stk;
+    k = (unsigned short)( top - stk );
     x->depth = k;
     for( tx = x->trans->state->trans; tx->sym != NULL; ++tx ) {
         if( tx->sym->pro == NULL ) {
@@ -123,12 +123,12 @@ next_production:;
 
 static void Includes( a_look *x )
 {
-    a_look      *y;
-    a_link      *link;
-    unsigned    k;
+    a_look          *y;
+    a_link          *link;
+    unsigned short  k;
 
     *top++ = x;
-    k = top - stk;
+    k = (unsigned short)( top - stk );
     x->depth = k;
     for( link = x->include; link != NULL; link = link->next ) {
         y = link->el;
@@ -328,7 +328,7 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
     a_reduce_action *rx;
     set_size        *w;
     set_size        *mp;
-    int             i;
+    index_n         i;
     a_prec          symprec, proprec, prevprec;
 
 
@@ -432,7 +432,7 @@ static void Conflict( void )
     a_reduce_action *rx;
     a_reduce_action **reduce;
     set_size        *work;
-    int             i;
+    set_size        i;
 
     set = AllocSet( 1 );
     reduce = CALLOC( nterm, a_reduce_action * );
@@ -524,7 +524,7 @@ void showstate( a_state *x )
     a_parent        *parent;
     a_shift_action  *tx;
     a_reduce_action *rx;
-    unsigned        col, new_col;
+    size_t          col, new_col;
     set_size        *mp;
     a_name          name;
 

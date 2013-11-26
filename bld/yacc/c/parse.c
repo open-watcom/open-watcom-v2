@@ -279,7 +279,7 @@ void defs( void )
                     scan( 0 );
                 } else {
                     if( sym->token == 0 ) {
-                        sym->token = value;
+                        sym->token = (token_n)value;
                     }
                     if( ctype != TOKEN ) {
                         sym->prec = prec;
@@ -290,7 +290,7 @@ void defs( void )
                                 fprintf( tokout, "#undef\t%-20s\n", sym->name );
                             }
                         }
-                        sym->token = value;
+                        sym->token = (token_n)value;
                         scan( 0 );
                     }
                     if( sym->token == 0 ) {
@@ -437,8 +437,9 @@ void rules( void )
                     memcpy( buf, &buf[i], bufused -= i );
                 } else {
                     sym = addsym( buf );
-                    if( value )
-                        sym->token = value;
+                    if( value != 0 ) {
+                        sym->token = (token_n)value;
+                    }
                     if( sym->token )
                         precsym = sym;
                     scanextra( 0, &precsym, &list_of_ambiguities );
@@ -685,7 +686,7 @@ static void insertUniqueAction( rule_n pnum, char *buf, a_sym *lhs )
 
 static char *strpcpy( char *d, char *s )
 {
-    while( (*d = *s++) ) {
+    while( (*d = *s++) != '\0' ) {
         ++d;
     }
     return( d );
@@ -1185,7 +1186,7 @@ static void addbuf( int ch )
             buf = MALLOC( bufmax, char );
         }
     }
-    buf[bufused++] = ch;
+    buf[bufused++] = (char)ch;
 }
 
 static char *dupbuf( void )
