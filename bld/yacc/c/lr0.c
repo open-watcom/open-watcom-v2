@@ -101,7 +101,7 @@ static void Sort( void **vec, unsigned n, bool (*lt)( void *, void * ) )
             } else {
                 k = vec[r];
                 vec[r] = vec[0];
-                if( --r <= 0 ) {
+                if( --r == 0 ) {
                     vec[0] = k;
                     return;
                 }
