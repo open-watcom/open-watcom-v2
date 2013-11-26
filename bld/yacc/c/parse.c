@@ -85,8 +85,8 @@ typedef struct uniq_case    uniq_case;
 typedef struct rule_case    rule_case;
 struct rule_case {
     rule_case   *next;
-    rule_n      pnum;
     a_sym       *lhs;
+    rule_n      pnum;
 };
 struct uniq_case {
     uniq_case   *next;

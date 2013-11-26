@@ -107,11 +107,11 @@ typedef struct a_SR_conflict_list a_SR_conflict_list;
 typedef struct a_link   a_link;
 
 typedef struct an_item {
-    flags               flag;
     union {
         a_sym           *sym;
         a_pro           *pro;
     }                   p;
+    flags               flag;
 } an_item;
 
 struct a_SR_conflict {
@@ -120,8 +120,8 @@ struct a_SR_conflict {
     a_state             *state;         /* final state that contains ambigity */
     a_state             *shift;         /* state if we were to shift token */
     a_SR_conflict_list  *thread;        /* all registered productions */
-    index_n             reduce;         /* rule if we were to reduce on token */
     unsigned            id;             /* numeric id assigned by user */
+    index_n             reduce;         /* rule if we were to reduce on token */
 };
 
 struct a_SR_conflict_list {
@@ -147,12 +147,12 @@ struct a_sym {                          /* symbol: terminal or non-terminal */
     char                *name;
     char                *type;
     char                *min;
-    a_prec              prec;
     a_pro               *pro;           /* productions with this symbol as LHS*/
     a_state             *enter;
+    unsigned            nullable : 1;
+    a_prec              prec;
     index_n             idx;
     token_n             token;
-    unsigned            nullable : 1;
 };
 
 typedef struct a_shift_action {
@@ -186,7 +186,6 @@ typedef union a_name {
 
 struct a_state {
     a_state             *next;
-    unsigned short      kersize;
     union a_name        name;
     a_shift_action      *trans;
     a_reduce_action     *redun;
@@ -194,6 +193,7 @@ struct a_state {
     a_parent            *parents;
     a_look              *look;
     a_state             *same_enter_sym;
+    unsigned short      kersize;
     action_n            sidx;           /* index of state [0..nstates] */
     flags               flag;
 };
