@@ -30,10 +30,23 @@
 #define _USEDENTRY      0
 #define _FREEENTRY      1
 
+:segment LINUX
+#undef __FILLER
+#if defined(_M_IX86)
+ #define __FILLER(a) unsigned short a;
+#else
+ #define __FILLER(a)
+#endif
+
+:endsegment
 typedef struct _heapinfo {
-    void _WCFAR *_pentry;       /* heap pointer */
-    size_t      _size;          /* heap entry size */
-    int         _useflag;       /* heap entry 'in-use' flag */
+:segment LINUX
+    void _WCFAR *_pentry; __FILLER(_1)  /* heap pointer */
+:elsesegment
+    void _WCFAR *_pentry;               /* heap pointer */
+:endsegment
+    size_t      _size;                  /* heap entry size */
+    int         _useflag;               /* heap entry 'in-use' flag */
 } _HEAPINFO;
 
 _WCRTLINK extern int _heapenable( int __enabled );
@@ -61,30 +74,50 @@ _WCRTLINK extern void _fheapgrow( void );
 _WCRTLINK extern int _fheapmin( void );
 _WCRTLINK extern int _fheapshrink( void );
 #endif
-:endsegment
 
+:endsegment
 _WCRTLINK extern int __nmemneed( size_t );
+:segment DOS
 #if !defined(_ncalloc) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern void _WCNEAR *_ncalloc( size_t __n, size_t __size );
+:segment DOS
 #endif
+:endsegment
 _WCRTLINK extern void *_expand( void *__ptr, size_t __size );
+:segment DOS
 #if !defined(_nexpand) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern void _WCNEAR *_nexpand( void _WCNEAR *__ptr, size_t __size );
+:segment DOS
 #endif
+:endsegment
 _WCRTLINK extern unsigned int _freect( size_t __size );
+:segment DOS
 #if !defined(_nfree) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern void _nfree( void _WCNEAR *__ptr );
+:segment DOS
 #endif
 #if !defined(_nmalloc) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern void _WCNEAR *_nmalloc( size_t __size );
+:segment DOS
 #endif
 #if !defined(_nrealloc) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern void _WCNEAR *_nrealloc( void _WCNEAR *__ptr, size_t __size );
+:segment DOS
 #endif
+:endsegment
 _WCRTLINK extern size_t _msize( void *__ptr );
+:segment DOS
 #if !defined(_nmsize) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern size_t _nmsize( void _WCNEAR *__ptr );
+:segment DOS
 #endif
+:endsegment
 
 :segment DOS | QNX
 #if defined(_M_I86)
@@ -110,10 +143,11 @@ _WCRTLINK extern void _WCFAR *_frealloc( void _WCFAR *__ptr, size_t __size );
 _WCRTLINK extern size_t _fmsize( void _WCFAR *__ptr );
 #endif
 #endif
-:endsegment
 
+:endsegment
 _WCRTLINK extern size_t _memavl( void );
 _WCRTLINK extern size_t _memmax( void );
+
 #ifdef __cplusplus
 namespace std {
 #endif

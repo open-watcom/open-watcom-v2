@@ -24,11 +24,15 @@
  * Some data types and #defines.
  */
 
+:segment DOS
 #ifdef __NT__
  typedef void   *_HFILE;
 #else
+:endsegment
  typedef int    _HFILE;
+:segment DOS
 #endif
+:endsegment
 typedef int     (*_CRT_REPORT_HOOK)( int, char *, int * );
 
 #define _CRT_WARN               0

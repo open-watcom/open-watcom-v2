@@ -178,9 +178,11 @@ _WCRTLINK  extern int _stricoll( const char *__s1, const char *__s2 );
 _WCRTLINK  extern int _strncoll( const char *__s1, const char *__s2, _w_size_t __n );
 _WCRTLINK  extern int _strnicoll( const char *__s1, const char *__s2, _w_size_t __n );
 
+:segment DOS
 #if defined(__NT__)
 _WCRTLINK extern char  *_doserror( int __oserrnum );
 #endif
+:endsegment
 _WCRTLINK extern int   _memicmp( const void *__s1, const void *__s2, _w_size_t __n );
 _WCRTLINK extern char  *_strdup( const char *__string );
 _WCRTLINK extern char  *_strerror( const char *__s );
@@ -198,96 +200,158 @@ _WCRTLINK extern char  *_strupr( char *__string );
 
 _WCRTLINK  extern char   *strspnp( const char *__s1, const char *__s2 );
 
+:segment DOS
 #if !defined(_fmemccpy) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern void _WCFAR *_fmemccpy( void _WCFAR *__s1, const void _WCFAR *__s2, int __c, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fmemchr) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCIRTLINK extern void _WCFAR *_fmemchr( const void _WCFAR *__s, int __c, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fmemcpy) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCIRTLINK extern void _WCFAR *_fmemcpy( void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fmemmove) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern void _WCFAR *_fmemmove( void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fmemset) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCIRTLINK extern void _WCFAR *_fmemset( void _WCFAR *__s, int __c, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fmemcmp) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCIRTLINK extern int _fmemcmp( const void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fmemicmp) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern int _fmemicmp( const void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fstrcat) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCIRTLINK extern char _WCFAR *_fstrcat( char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrchr) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrchr( const char _WCFAR *__s, int __c );
+:segment DOS
 #endif
 #if !defined(_fstrcmp) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCIRTLINK extern int _fstrcmp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrcpy) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCIRTLINK extern char _WCFAR *_fstrcpy( char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrcspn) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern _w_size_t _fstrcspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrdup) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrdup( const char _WCFAR *__string );
+:segment DOS
 #endif
 #if !defined(_fstricmp) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern int _fstricmp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrncat) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrncat( char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fstrlen) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCIRTLINK extern _w_size_t _fstrlen( const char _WCFAR *__s );
+:segment DOS
 #endif
 #if !defined(_fstrlwr) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrlwr( char _WCFAR *__string );
+:segment DOS
 #endif
 #if !defined(_fstrncmp) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern int _fstrncmp( const char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fstrncpy) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrncpy( char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fstrnicmp) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern int _fstrnicmp( const char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
+:segment DOS
 #endif
 #if !defined(_fstrnset) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrnset( char _WCFAR *__string, int __c, _w_size_t __len );
+:segment DOS
 #endif
 #if !defined(_fstrpbrk) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrpbrk( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrrchr) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrrchr( const char _WCFAR *__s, int __c );
+:segment DOS
 #endif
 #if !defined(_fstrrev) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrrev( char _WCFAR *__string );
+:segment DOS
 #endif
 #if !defined(_fstrset) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrset( char _WCFAR *__string, int __c );
+:segment DOS
 #endif
 #if !defined(_fstrspn) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern _w_size_t _fstrspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrspnp) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrspnp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrstr) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrstr( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrtok) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrtok( char _WCFAR *__s1, const char _WCFAR *__s2 );
+:segment DOS
 #endif
 #if !defined(_fstrupr) || !defined(_INC_WINDOWSX)
+:endsegment
 _WCRTLINK extern char _WCFAR *_fstrupr( char _WCFAR *__string );
+:segment DOS
 #endif
+:endsegment
 _WCIRTLINK extern void movedata( unsigned __srcseg, unsigned __srcoff, unsigned __tgtseg, unsigned __tgtoff, unsigned __len );
 
 _WCRTLINK extern int   bcmp( const void *__s1, const void *__s2, _w_size_t __n );
@@ -337,9 +401,11 @@ _WCRTLINK extern size_t   wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __
 :endsegment
 _WCRTLINK extern int      wcscmpi( const wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t  *wcserror( int );
+:segment DOS
 #if defined(__NT__)
 _WCRTLINK extern wchar_t  *_wdoserror( int __errnum );
 #endif
+:endsegment
 
 ::_WCRTLINK extern wchar_t  *wcsnset( wchar_t *, int, _w_size_t );
 ::_WCRTLINK extern int      wcsnicmp( const wchar_t *, const wchar_t *, _w_size_t );

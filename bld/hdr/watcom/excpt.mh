@@ -11,6 +11,7 @@
 
 :include cpluspro.sp
 
+:segment DOS
 #if defined(__OS2__)
 #ifndef __BSEXCPT_H__
  #include <os2def.h>
@@ -18,6 +19,7 @@
 #endif
 #endif
 
+:endsegment
 /*
  * Exception disposition return values.
  */
@@ -42,6 +44,7 @@ EXCEPTION_DISPOSITION __cdecl _except_handler (
         void * DispatcherContext
         );
 
+:segment DOS
 #if defined(__OS2__)
  typedef struct _EXCEPTION_POINTERS {
      PEXCEPTIONREPORTRECORD ExceptionRecord;
@@ -49,6 +52,7 @@ EXCEPTION_DISPOSITION __cdecl _except_handler (
  } EXCEPTION_POINTERS,*PEXCEPTION_POINTERS,*LPEXCEPTION_POINTERS;
 #endif
 
+:endsegment
 /*
  * Keywords and intrinsics for SEH
  */

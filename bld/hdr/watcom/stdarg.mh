@@ -62,6 +62,7 @@ typedef __va_list va_list;
              ((sizeof(type)+_AXP_WORD_SIZE-1)&~(_AXP_WORD_SIZE-1))))))
  #define va_end(ap)      ((void)0)
 #elif defined(__PPC__)
+:segment DOS
  #if defined(__NT__)
   #define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
   #define       _ALIGNIT(ap,t) \
@@ -70,11 +71,14 @@ typedef __va_list va_list;
   #define va_arg(ap,t)    ( *(t *)((ap = (char *) (_ALIGNIT(ap, t) + _INTSIZEOF(t))) - _INTSIZEOF(t)) )
   #define va_end(ap)      ( ap = (__va_list)0 )
  #else
+:endsegment
   extern void *__builtin_va_start( __va_list * );
   #pragma intrinsic(__builtin_va_start);
   #define va_start(ap,pn) (__builtin_va_start(&ap,pn))
   #define va_arg(ap,type) (__builtin_va_arg(&ap,type))
+:segment DOS
  #endif
+:endsegment
 #elif defined(__MIPS__)
  #define _MIPS_WORD_SIZE     4
  extern void *__builtin_va_start(__va_list*, ...);
