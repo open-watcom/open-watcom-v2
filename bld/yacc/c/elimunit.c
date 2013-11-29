@@ -43,13 +43,12 @@ static unsigned deadStates;
 #if 0
 void dumpInternalState( a_state *x )
 {
-    a_parent *parent;
-    a_shift_action *tx;
+    a_parent        *parent;
+    a_shift_action  *tx;
     a_reduce_action *rx;
-    unsigned col, new_col;
-    short *p;
-    set_size *mp;
-    a_name name;
+    size_t          col, new_col;
+    set_size        *mp;
+    an_item         **item;
 
     printf( "state %d: %p (%u)\n", x->sidx, x, x->kersize );
     printf( "  parent states:" );
@@ -63,15 +62,8 @@ void dumpInternalState( a_state *x )
         }
     }
     printf( "\n" );
-    if( x->name.item[0] == NULL || !IsState( *x->name.item[0] ) ) {
-        for( name.item = x->name.item; *name.item != NULL; ++name.item ) {
-            showitem( *name.item, " ." );
-        }
-    } else {
-        for( name.state = x->name.state; *name.state != NULL; ++name.state ) {
-            printf( " %d", (*name.state)->sidx );
-        }
-        printf( "\n" );
+    for( item = x->items; *item != NULL; ++item ) {
+        showitem( *item, " ." );
     }
     printf( "actions:" );
     col = 8;
@@ -249,7 +241,7 @@ static a_sym *onlyOneReduction( a_state *state )
     if( state->kersize != 1 ) {
         return( NULL );
     }
-    if( IsAmbiguous( *state ) ) {
+    if( IsAmbiguous( state ) ) {
         /* catch all of the ambiguous states */
         return( NULL );
     }
@@ -299,7 +291,7 @@ static void removeParent( a_state *child, a_state *parent )
     }
     if( child->parents == NULL ) {
         ++deadStates;
-        Dead( *child );
+        Dead( child );
     }
 }
 
@@ -343,7 +335,7 @@ static int immediateShift( a_state *state, a_reduce_action *raction, a_pro *pro 
         action:
             add shift on terminal to common parent shift state
     */
-    //dumpInternalState( state );
+//    dumpInternalState( state );
     follow = raction->follow;
     unit_lhs = pro->sym;
     change_occurred = 0;
@@ -447,10 +439,10 @@ static void tryElimination( a_state *state, a_word *reduce_set )
     a_reduce_action *raction;
     a_pro *pro;
 
-    if( IsDead( *state ) ) {
+    if( IsDead( state ) ) {
         return;
     }
-    if( IsAmbiguous( *state ) ) {
+    if( IsAmbiguous( state ) ) {
         return;
     }
     // iterate over all reductions in state
@@ -475,7 +467,7 @@ static void tossSingleReduceStates( a_state *state )
     a_shift_action *saction;
     a_sym *shift_sym;
 
-    if( IsDead( *state ) ) {
+    if( IsDead( state ) ) {
         return;
     }
     /* iterate over all shifts in the state */

@@ -176,16 +176,16 @@ void puttokennames( token_n dtoken, value_size token_size )
     rule_base = 0;
     begtab( "unsigned short", "yyrulebase" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym != NULL; ) {
+        for( item = protab[i]->items; item->p.sym != NULL; ) {
             ++item;
         }
         puttab( FITS_A_WORD, rule_base );
-        rule_base += (unsigned)( item - protab[i]->item );
+        rule_base += (unsigned)( item - protab[i]->items );
     }
     endtab();
     begtab( "YYTOKENTYPE", "yyrhstoks" );
     for( i = 0; i < npro; ++i ) {
-        for( item = protab[i]->item; item->p.sym != NULL; ++item ) {
+        for( item = protab[i]->items; item->p.sym != NULL; ++item ) {
             puttab( token_size, item->p.sym->token );
         }
     }

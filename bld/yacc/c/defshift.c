@@ -53,22 +53,19 @@ static int okToConsider( a_sym *sym )
     return( 1 );
 }
 
-static void doState(
-    a_state     *state,
-    unsigned    *state_freq,
-    char        *all_used,
-    unsigned    range_size )
+static void doState( a_state *state, unsigned *state_freq, char *all_used, unsigned range_size )
 {
     unsigned        i;
     unsigned        max;
     action_n        max_sidx;
     a_shift_action  *saction;
     a_sym           *shift_sym;
+    index_n         sidx;
 
-    if( IsDead( *state ) ) {
+    if( IsDead( state ) ) {
         return;
     }
-    if( IsAmbiguous( *state ) ) {
+    if( IsAmbiguous( state ) ) {
         return;
     }
     if( state->redun->pro != NULL ) {
@@ -93,11 +90,11 @@ static void doState(
     /* find which state had the highest frequency */
     max_sidx = 0;
     max = state_freq[0];
-    for( i = 1; i < nstate; ++i ) {
-        unsigned test = state_freq[i];
+    for( sidx = 1; sidx < nstate; ++sidx ) {
+        unsigned test = state_freq[sidx];
         if( test > max ) {
             max = test;
-            max_sidx = i;
+            max_sidx = sidx;
         }
     }
     if( max == 0 ) {

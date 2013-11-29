@@ -63,19 +63,19 @@ typedef enum flags {
     M_ONLY_REDUCE       = 0x20
 } flags;
 
-#define IsState(c)              ((c).flag &   M_STATE)
-#define State(c)                ((c).flag |=  M_STATE)
-#define IsMarked(c)             ((c).flag &   M_MARKED)
-#define Mark(c)                 ((c).flag |=  M_MARKED)
-#define Unmark(c)               ((c).flag &= ~M_MARKED)
-#define IsDead(c)               ((c).flag &   M_DEAD)
-#define Dead(c)                 ((c).flag |=  M_DEAD)
-#define IsAmbiguous(c)          ((c).flag &   M_AMBIGUOUS)
-#define Ambiguous(c)            ((c).flag |=  M_AMBIGUOUS)
-#define IsDontOptimize(c)       ((c).flag &   M_DONT_OPTIMIZE)
-#define DontOptimize(c)         ((c).flag |=  M_DONT_OPTIMIZE)
-#define IsOnlyReduce(c)         ((c).flag &   M_ONLY_REDUCE)
-#define OnlyReduce(c)           ((c).flag |=  M_ONLY_REDUCE)
+#define IsState(c)              ((c)->flag &   M_STATE)
+#define State(c)                ((c)->flag |=  M_STATE)
+#define IsMarked(c)             ((c)->flag &   M_MARKED)
+#define Mark(c)                 ((c)->flag |=  M_MARKED)
+#define Unmark(c)               ((c)->flag &= ~M_MARKED)
+#define IsDead(c)               ((c)->flag &   M_DEAD)
+#define Dead(c)                 ((c)->flag |=  M_DEAD)
+#define IsAmbiguous(c)          ((c)->flag &   M_AMBIGUOUS)
+#define Ambiguous(c)            ((c)->flag |=  M_AMBIGUOUS)
+#define IsDontOptimize(c)       ((c)->flag &   M_DONT_OPTIMIZE)
+#define DontOptimize(c)         ((c)->flag |=  M_DONT_OPTIMIZE)
+#define IsOnlyReduce(c)         ((c)->flag &   M_ONLY_REDUCE)
+#define OnlyReduce(c)           ((c)->flag |=  M_ONLY_REDUCE)
 
 enum assoc_t {
     NON_ASSOC           = 0,
@@ -139,7 +139,7 @@ struct a_pro {                          /* production: LHS -> RHS1 RHS2 ... */
     a_SR_conflict_list  *SR_conflicts;  /* list of S/R conflicts */
     unsigned            used : 1;       /* has rule been reduced */
     unsigned            unit : 1;       /* LHS -> RHS and no action specified */
-    an_item             item[2];      /* must be the last field */
+    an_item             items[2];       /* must be the last field */
 };
 
 struct a_sym {                          /* symbol: terminal or non-terminal */
@@ -179,14 +179,9 @@ struct a_link {
     a_look              *el;
 };
 
-typedef union a_name {
-    an_item             **item;
-    a_state             **state;
-} a_name;
-
 struct a_state {
     a_state             *next;
-    union a_name        name;
+    an_item             **items;
     a_shift_action      *trans;
     a_reduce_action     *redun;
     a_reduce_action     *default_reduction;

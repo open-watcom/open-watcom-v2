@@ -80,7 +80,7 @@ void MarkDefaultReductions( void )
             }
         }
         if( nshifts == 0 && nreduces == 1 ) {
-            OnlyReduce( *state );
+            OnlyReduce( state );
             ++nstate_1_reduce;
             assert( default_raction != NULL );
         }

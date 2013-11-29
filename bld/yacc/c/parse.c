@@ -37,6 +37,10 @@
 #include "alloc.h"
 #include "yacc.h"
 
+#define BUF_INCR            500
+
+#define INIT_RHS_SIZE       16
+
 typedef enum {
     IDENTIFIER = 256,   /* includes identifiers and literals */
     C_IDENTIFIER,       /* identifier (but not literal) followed by colon */
@@ -70,8 +74,6 @@ static void                 addbuf( int ch );
 static char                 *dupbuf( void );
 
 int lineno = { 1 };
-
-#define BUF_INCR            500
 
 static unsigned             bufused;
 static unsigned             bufmax;
@@ -285,7 +287,7 @@ void defs( void )
                         sym->prec = prec;
                     }
                     if( scan( 0 ) == NUMBER ) {
-                        if( sym->token ) {
+                        if( sym->token != 0 ) {
                             if( sym->name[0] != '\'' ) {
                                 fprintf( tokout, "#undef\t%-20s\n", sym->name );
                             }
@@ -312,9 +314,9 @@ void defs( void )
     scan( 0 );
 }
 
-static int scanambig( unsigned used, a_SR_conflict_list **list )
+static bool scanambig( unsigned used, a_SR_conflict_list **list )
 {
-    int                     absorbed_something;
+    bool                    absorbed_something;
     unsigned                index;
     a_sym                   *sym;
     a_SR_conflict           *am;
@@ -356,11 +358,11 @@ static int scanambig( unsigned used, a_SR_conflict_list **list )
     return( absorbed_something );
 }
 
-static int scanprec( unsigned used, a_sym **precsym )
+static bool scanprec( unsigned used, a_sym **precsym )
 {
     if( token != PREC )
         return( FALSE );
-    if( scan( used ) != IDENTIFIER || (*precsym = findsym( buf )) == NULL || !(*precsym)->token ) {
+    if( scan( used ) != IDENTIFIER || (*precsym = findsym( buf )) == NULL || (*precsym)->token == 0 ) {
         msg( "Expecting a token after %prec.\n" );
     }
     scan( used );
@@ -371,7 +373,7 @@ static void scanextra( unsigned used, a_sym **psym, a_SR_conflict_list **pSR )
 {
     scan( used );
     for( ;; ) {
-        if( ! scanprec( used, psym ) && ! scanambig( used, pSR ) ) {
+        if( !scanprec( used, psym ) && !scanambig( used, pSR ) ) {
             break;
         }
     }
@@ -390,7 +392,7 @@ void rules( void )
     a_sym               *lhs, *sym, *precsym;
     a_sym               **rhs;
     unsigned            nrhs;
-    unsigned            maxrhs = { 16 };
+    unsigned            maxrhs;
     a_pro               *pro;
     char                buffer[20];
     unsigned            i;
@@ -402,11 +404,12 @@ void rules( void )
     a_SR_conflict_list  *am;
 
     ambiguousstates = NULL;
+    maxrhs = INIT_RHS_SIZE;
     rhs = CALLOC( maxrhs, a_sym * );
     while( token == C_IDENTIFIER ) {
         int sym_lineno = lineno;
         lhs = addsym( buf );
-        if( lhs->token )
+        if( lhs->token != 0 )
             msg( "%s used on lhs.\n", lhs->name );
         if( startsym == NULL )
             startsym = lhs;
@@ -418,8 +421,6 @@ void rules( void )
             nrhs = 0;
             scanextra( 0, &precsym, &list_of_ambiguities );
             for( ; token == '{' || token == IDENTIFIER; ) {
-                if( nrhs + 2 > maxrhs )
-                    rhs = REALLOC( rhs, maxrhs *= 2, a_sym * );
                 if( token == '{' ) {
                     i = bufused;
                     scanextra( bufused, &precsym, &list_of_ambiguities );
@@ -434,20 +435,25 @@ void rules( void )
                         action_defined = TRUE;
                         break;
                     }
-                    memcpy( buf, &buf[i], bufused -= i );
+                    bufused -= i;
+                    memcpy( buf, &buf[i], bufused );
                 } else {
                     sym = addsym( buf );
                     if( value != 0 ) {
                         sym->token = (token_n)value;
                     }
-                    if( sym->token )
+                    if( sym->token != 0 )
                         precsym = sym;
                     scanextra( 0, &precsym, &list_of_ambiguities );
+                }
+                if( nrhs + 1 > maxrhs ) {
+                    maxrhs *= 2;
+                    rhs = REALLOC( rhs, maxrhs, a_sym * );
                 }
                 rhs[nrhs++] = sym;
             }
             unit_production = FALSE;
-            if( ! action_defined ) {
+            if( !action_defined ) {
                 if( nrhs > 0 ) {
                     /* { $$ = $1; } is default action */
                     if( defaultwarnflag ) {
@@ -584,7 +590,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
         if( *s == '-' || isdigit( *s ) ) {
             il = strtol( s, &s, 10 );
         }
-        if( il >= 0 && il > (long)n ) {
+        if( il > (long)n ) {
             ++err_count;
             msg( "Invalid $ parameter (%ld).\n", il );
         }
@@ -616,21 +622,19 @@ static void copyUniqueActions( void )
     a_pro       *pro;
     char        *s;
     uniq_case   *c;
-    uniq_case   *nc;
+    uniq_case   *cnext;
     rule_case   *r;
-    rule_case   *nr;
-    an_item     *first_item;
+    rule_case   *rnext;
     an_item     *item;
 
-    for( c = caseActions; c != NULL; c = nc ) {
-        nc = c->next;
-        for( r = c->rules; r != NULL; r = nr ) {
-            nr = r->next;
+    for( c = caseActions; c != NULL; c = cnext ) {
+        cnext = c->next;
+        for( r = c->rules; r != NULL; r = rnext ) {
+            rnext = r->next;
             fprintf( actout, "case %d:\n", r->pnum );
             pro = findPro( r->lhs, r->pnum );
             fprintf( actout, "/* %s <-", pro->sym->name );
-            first_item = pro->item;
-            for( item = first_item; item->p.sym != NULL; ++item ) {
+            for( item = pro->items; item->p.sym != NULL; ++item ) {
                 fprintf( actout, " %s", item->p.sym->name );
             }
             fprintf( actout, " */\n" );
@@ -911,7 +915,7 @@ static xlat_entry xlat[] = {
     { '\0',     NULL }
 };
 
-static int xlat_char( int special, int c )
+static bool xlat_char( bool special, int c )
 {
     xlat_entry  *t;
     char        buff[16];
@@ -940,7 +944,7 @@ static int xlat_char( int special, int c )
 
 static void xlat_token( void )
 {
-    int special;
+    bool special;
 
     addbuf( 'Y' );
     special = TRUE;

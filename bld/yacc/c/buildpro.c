@@ -44,9 +44,6 @@ index_n nitem;
 a_sym   **symtab, *symlist, *startsym, *eofsym, *goalsym, *nosym, *errsym;
 a_pro   **protab, *startpro;
 
-a_sym   *addsym( char *s );
-a_pro   *addpro( a_sym *sym, a_sym **rhs, int n );
-
 void buildpro( void )
 {
     a_sym       *sym;
@@ -68,12 +65,13 @@ void buildpro( void )
     startpro = startsym->pro;
     nterm = 0;
     nvble = 0;
+    nitem = 0;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
         if( sym->pro != NULL ) {
             nvble++;
             for( pro = sym->pro; pro != NULL; pro = pro->next ) {
                 ++nitem;
-                for( item = pro->item; item->p.sym != NULL; ++item ) {
+                for( item = pro->items; item->p.sym != NULL; ++item ) {
                     ++nitem;
                 }
             }
@@ -140,10 +138,10 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
     pro = (a_pro *)CALLOC( amt, char );
     pro->pidx = npro++;
     for( i = 0; i < n; ++i ) {
-        pro->item[i].p.sym = rhs[i];
+        pro->items[i].p.sym = rhs[i];
     }
-    pro->item[n + 0].p.sym = NULL;
-    pro->item[n + 1].p.pro = pro;
+    pro->items[n + 0].p.sym = NULL;
+    pro->items[n + 1].p.pro = pro;
     pro->sym = sym;
     pro->next = sym->pro;
     pro->SR_conflicts = NULL;
@@ -158,7 +156,7 @@ void showpro( void )
     index_n     i;
 
     for( i = 0; i < npro; ++i ) {
-        showitem( protab[i]->item, "" );
+        showitem( protab[i]->items, "" );
     }
 }
 
@@ -172,7 +170,7 @@ void showitem( an_item *p, char *dot )
     }
     pro = q[1].p.pro;
     printf( "%3d (%03x): %s <-", pro->pidx, pro->pidx, pro->sym->name );
-    for( q = pro->item; ; ++q ) {
+    for( q = pro->items; ; ++q ) {
         if( q == p ) {
             printf( "%s", dot );
         }
@@ -195,7 +193,7 @@ void show_unused( void )
     for( i = 0; i < npro; ++i ) {
         if( protab[i]->sym == goalsym )
             continue;
-        if( protab[i]->used == FALSE ) {
+        if( !protab[i]->used ) {
             ++count;
         }
     }
@@ -204,8 +202,8 @@ void show_unused( void )
         for( i = 0; i < npro; ++i ) {
             if( protab[i]->sym == goalsym )
                 continue;
-            if( protab[i]->used == FALSE ) {
-                showitem( protab[i]->item, "" );
+            if( !protab[i]->used ) {
+                showitem( protab[i]->items, "" );
             }
         }
     }

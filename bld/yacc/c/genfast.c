@@ -219,7 +219,7 @@ static action_n reduceaction( a_state *state, a_reduce_action *raction )
 
     action = ACTION_REDUCE;
     pro = raction->pro;
-    if( pro->unit && ! IsDontOptimize( *state ) ) {
+    if( pro->unit && ! IsDontOptimize( state ) ) {
         action |= ACTION_UNIT;
     }
     if( (pro->pidx & ACTION_MASK) != pro->pidx ) {
@@ -356,7 +356,6 @@ void GenFastTables( void )
     a_reduce_action *raction;
     a_sym       *sym;
     a_pro       *pro;
-    an_item     *first_item;
     an_item     *item;
     index_n     empty_actions;
     action_n    *defaction;
@@ -542,11 +541,10 @@ void GenFastTables( void )
     putcomment( "index by rule to get length of rule" );
     begtab( "YYPLENTYPE", "yyplentab" );
     for( i = 0; i < npro; ++i ) {
-        first_item = protab[i]->item;
-        for( item = first_item; item->p.sym != NULL; ) {
+        for( item = protab[i]->items; item->p.sym != NULL; ) {
             ++item;
         }
-        puttab( FITS_A_BYTE, (unsigned)( item - first_item ) );
+        puttab( FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
     }
     endtab();
     putcomment( "index by rule to get left hand side token" );

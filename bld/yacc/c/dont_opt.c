@@ -40,7 +40,7 @@ static int hasReduceByPro( a_state *state, a_pro *unit_pro )
     a_reduce_action *raction;
     a_pro *pro;
 
-    if( IsDead( *state ) ) {
+    if( IsDead( state ) ) {
         return( 0 );
     }
     // iterate over all reductions in state
@@ -64,14 +64,14 @@ static void dontOptimizeUnitGOTOStates( a_state *ambig_state, a_pro *pro )
     a_state *shift_state;
     a_shift_action *saction;
 
-    unit_rhs = pro->item[0].p.sym;
+    unit_rhs = pro->items[0].p.sym;
     for( parent = ambig_state->parents; parent != NULL; parent = parent->next ) {
         parent_state = parent->state;
         for( saction = parent_state->trans; saction->sym != NULL; ++saction ) {
             if( saction->sym == unit_rhs ) {
                 shift_state = saction->state;
                 if( hasReduceByPro( shift_state, pro ) ) {
-                    DontOptimize( *shift_state );
+                    DontOptimize( shift_state );
                 }
             }
         }
@@ -110,11 +110,11 @@ void MarkNoUnitRuleOptimizationStates( void )
         state = statetab[i];
         //if( IsDead( *state ) )
         //    continue;
-        if( ! IsAmbiguous( *state ) )
+        if( !IsAmbiguous( state ) )
             continue;
         entry_sym = findEntrySym( state );
         for( pro = entry_sym->pro; pro != NULL; pro = pro->next ) {
-            if( ! pro->unit )
+            if( !pro->unit )
                 continue;
             dontOptimizeUnitGOTOStates( state, pro );
         }

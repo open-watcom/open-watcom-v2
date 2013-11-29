@@ -411,7 +411,7 @@ void genobj( void )
         begtab( "YYPRODTYPE", "yyprodtab" );
         for( i = 0; i < npro; ++i ) {
             j = 0;
-            for( item = protab[i]->item; item->p.sym != NULL; ++item ) {
+            for( item = protab[i]->items; item->p.sym != NULL; ++item ) {
                 ++j;
             }
             puttab( FITS_A_WORD, (j << shift) + protab[i]->sym->token );
@@ -435,10 +435,10 @@ void genobj( void )
         endtab();
         begtab( "YYPLENTYPE", "yyplentab" );
         for( i = 0; i < npro; ++i ) {
-            for( item = protab[i]->item; item->p.sym != NULL; ) {
+            for( item = protab[i]->items; item->p.sym != NULL; ) {
                 ++item;
             }
-            puttab( FITS_A_BYTE, (unsigned)( item - protab[i]->item ) );
+            puttab( FITS_A_BYTE, (unsigned)( item - protab[i]->items ) );
         }
         endtab();
         begtab( "YYPLHSTYPE", "yyplhstab" );

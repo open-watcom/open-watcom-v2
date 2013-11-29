@@ -105,16 +105,17 @@ static void Nullable( void )
         for( sym = symlist; sym != NULL; sym = sym->next ) {
             if( !sym->nullable ) {
                 for( pro = sym->pro; pro != NULL; pro = pro->next ) {
-                    for( p = pro->item; p->p.sym != NULL; ++p ) {
+                    for( p = pro->items; p->p.sym != NULL; ++p ) {
                         if( !p->p.sym->nullable ) {
-                            goto next_production;
+                            break;
                         }
                     }
-                    /* all of the RHS symbols are nullable */
-                    /* (the vacuous case means the LHS is nullable) */
-                    sym->nullable = TRUE;
-                    nullable_added = TRUE;
-next_production:;
+                    if( p->p.sym == NULL ) {
+                        /* all of the RHS symbols are nullable */
+                        /* (the vacuous case means the LHS is nullable) */
+                        sym->nullable = TRUE;
+                        nullable_added = TRUE;
+                    }
                 }
             }
         }
@@ -163,14 +164,14 @@ static void CalcIncludes( void )
         for( p = x->look; p->trans != NULL; ++p ) {
             p->depth = 0;
             for( pro = p->trans->sym->pro; pro != NULL; pro = pro->next ) {
-                nullable = pro->item;
-                for( item = pro->item; (sym = item->p.sym) != NULL; ++item ) {
+                nullable = pro->items;
+                for( item = pro->items; (sym = item->p.sym) != NULL; ++item ) {
                     if( !sym->nullable ) {
                         nullable = item;
                     }
                 }
                 y = x;
-                for( item = pro->item; (sym = item->p.sym) != NULL; ++item ) {
+                for( item = pro->items; (sym = item->p.sym) != NULL; ++item ) {
                     if( sym->pro == NULL ) {
                         for( tx = y->trans; tx->sym != sym; ) {
                             ++tx;
@@ -215,7 +216,7 @@ static void Lookback( void )
         for( p = x->look; p->trans != NULL; ++p ) {
             for( pro = p->trans->sym->pro; pro != NULL; pro = pro->next ) {
                 y = x;
-                for( item = pro->item; (sym = item->p.sym) != NULL; ++item ) {
+                for( item = pro->items; (sym = item->p.sym) != NULL; ++item ) {
                     for( tx = y->trans; tx->sym != sym; ) {
                         ++tx;
                     }
@@ -247,7 +248,7 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction, index
     unsigned            min;
     unsigned            max;
     unsigned            index;
-    a_name              name;
+    an_item             **item;
     a_pro               *pro;
     a_SR_conflict       *conflict;
     a_SR_conflict_list  *cx;
@@ -257,67 +258,65 @@ static void check_for_user_hooks( a_state *state, a_shift_action *saction, index
     if( state->kersize < 2 ) {
         return;
     }
-    if( state->name.item[0] == NULL || !IsState( *state->name.item[0] ) ) {
-        sym = saction->sym;
-        min_max_set = 0;
-        min = UINT_MAX;
-        max = 0;
-        for( name.item = state->name.item; *name.item != NULL; ++name.item ) {
-            pro = extract_pro( *name.item );
-            if( pro->SR_conflicts == NULL ) {
-                /* production doesn't contain any conflicts */
-                return;
+    sym = saction->sym;
+    min_max_set = 0;
+    min = UINT_MAX;
+    max = 0;
+    for( item = state->items; *item != NULL; ++item ) {
+        pro = extract_pro( *item );
+        if( pro->SR_conflicts == NULL ) {
+            /* production doesn't contain any conflicts */
+            return;
+        }
+        for( cx = pro->SR_conflicts; cx != NULL; cx = cx->next ) {
+            conflict = cx->conflict;
+            if( conflict->sym != sym ) {
+                continue;
             }
+            index = conflict->id;
+            if( index < min ) {
+                min_max_set = 1;
+                min = index;
+            }
+            if( index > max ) {
+                min_max_set = 1;
+                max = index;
+            }
+        }
+        if( ! min_max_set ) {
+            /* production doesn't contain a matching conflict */
+            return;
+        }
+    }
+    for( index = min; index <= max; ++index ) {
+        last = NULL;
+        all_match = 1;
+        for( item = state->items; *item != NULL; ++item ) {
+            pro = extract_pro( *item );
             for( cx = pro->SR_conflicts; cx != NULL; cx = cx->next ) {
                 conflict = cx->conflict;
+                if( conflict->id != index ) {
+                    continue;
+                }
                 if( conflict->sym != sym ) {
                     continue;
                 }
-                index = conflict->id;
-                if( index < min ) {
-                    min_max_set = 1;
-                    min = index;
-                }
-                if( index > max ) {
-                    min_max_set = 1;
-                    max = index;
-                }
+                break;
             }
-            if( ! min_max_set ) {
-                /* production doesn't contain a matching conflict */
-                return;
+            if( cx == NULL ) {
+                all_match = 0;
+                break;
             }
+            last = cx;
         }
-        for( index = min; index <= max; ++index ) {
-            last = NULL;
-            all_match = 1;
-            for( name.item = state->name.item; *name.item != NULL; ++name.item ) {
-                pro = extract_pro( *name.item );
-                for( cx = pro->SR_conflicts; cx != NULL; cx = cx->next ) {
-                    conflict = cx->conflict;
-                    if( conflict->id != index ) {
-                        continue;
-                    }
-                    if( conflict->sym != sym ) {
-                        continue;
-                    }
-                    break;
-                }
-                if( cx == NULL ) {
-                    all_match = 0;
-                    break;
-                }
-                last = cx;
-            }
-            if( all_match ) {
-                /* found the desired S/R conflict */
-                Ambiguous( *state );
-                conflict = last->conflict;
-                conflict->state = state;
-                conflict->shift = saction->state;
-                conflict->reduce = rule;
-                return;
-            }
+        if( all_match ) {
+            /* found the desired S/R conflict */
+            Ambiguous( state );
+            conflict = last->conflict;
+            conflict->state = state;
+            conflict->shift = saction->state;
+            conflict->reduce = rule;
+            return;
         }
     }
 }
@@ -339,7 +338,7 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
             if( reduce[*mp] != NULL ) {
                 prevprec = reduce[*mp]->pro->prec;
                 proprec = rx->pro->prec;
-                if( !prevprec.prec || !proprec.prec || prevprec.prec == proprec.prec ) {
+                if( prevprec.prec == 0 || proprec.prec == 0 || prevprec.prec == proprec.prec ) {
                     *w++ = *mp;
                     /* resolve to the earliest production */
                     if( rx->pro->pidx >= reduce[*mp]->pro->pidx ) {
@@ -353,14 +352,15 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
             reduce[*mp] = rx;
         }
     }
-    while( --w >= work ) {
+    while( w != work ) {
+        --w;
         if( symtab[*w]->token == errsym->token )
             continue;
         printf( "r/r conflict in state %d on %s:\n", x->sidx, symtab[*w]->name);
         ++RR_conflicts;
         for( rx = x->redun; rx->pro != NULL; ++rx ) {
             if( IsBitSet( rx->follow, *w ) ) {
-                showitem( rx->pro->item, "" );
+                showitem( rx->pro->items, "" );
             }
         }
         printf( "\n" );
@@ -381,12 +381,12 @@ static void resolve( a_state *x, set_size *work, a_reduce_action **reduce )
             check_for_user_hooks( x, tx, reduce[i]->pro->pidx );
             symprec = tx->sym->prec;
             proprec = reduce[i]->pro->prec;
-            if( !symprec.prec || !proprec.prec ) {
+            if( symprec.prec == 0 || proprec.prec == 0 ) {
                 if( tx->sym != errsym ) {
                     printf( "s/r conflict in state %d on %s:\n", x->sidx, tx->sym->name );
                     ++SR_conflicts;
                     printf( "\tshift to %d\n", tx->state->sidx );
-                    showitem( reduce[i]->pro->item, "" );
+                    showitem( reduce[i]->pro->items, "" );
                     printf( "\n" );
                     ShowSentence( x, tx->sym, reduce[i]->pro, NULL );
                     ShowSentence( x, tx->sym, NULL, tx->state );
@@ -448,24 +448,28 @@ static void Conflict( void )
             for( i = 0; i < GetSetSize( 1 ); ++i ) {
                 if( rx->follow[i] & set[i] ) {
                     resolve( x, work, reduce );
-                    goto continu;
+                    break;
                 }
                 set[i] |= rx->follow[i];
             }
+            if( i < GetSetSize( 1 ) ) {
+                break;
+            }
         }
-continu:;
     }
     FREE( set );
     FREE( reduce );
+    FREE( work );
 }
 
 void lalr1( void )
 {
     a_state         *x;
-    a_look          *look, *lk;
     a_shift_action  *tx;
     a_reduce_action *rx;
-    a_word          *lp, *lset, *rp, *rset;
+    a_look          *lk, *look;
+    a_word          *lp, *lset;
+    a_word          *rp, *rset;
 
     InitSets( nterm );
     lk = look = CALLOC( nvtrans + nstate, a_look );
@@ -526,7 +530,8 @@ void showstate( a_state *x )
     a_reduce_action *rx;
     size_t          col, new_col;
     set_size        *mp;
-    a_name          name;
+    an_item         **item;
+    a_state         **state;
 
     printf( "state %d:\n", x->sidx );
     col = printf( "  parent states:" );
@@ -538,15 +543,8 @@ void showstate( a_state *x )
         }
     }
     printf( "\n" );
-    if( x->name.item[0] == NULL || !IsState( *x->name.item[0] ) ) {
-        for( name.item = x->name.item; *name.item != NULL; ++name.item ) {
-            showitem( *name.item, " ." );
-        }
-    } else {
-        for( name.state = x->name.state; *name.state != NULL; ++name.state ) {
-            printf( " %d", (*name.state)->sidx );
-        }
-        printf( "\n" );
+    for( item = x->items; *item != NULL; ++item ) {
+        showitem( *item, " ." );
     }
     printf( "actions:" );
     col = 8;

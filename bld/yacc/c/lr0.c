@@ -49,32 +49,32 @@ static a_state *addState( a_state **enter, an_item **s, an_item **q, a_state *pa
     unsigned short  kersize;
 
     for( p = s; p != q; ++p ) {
-        Mark( **p );
+        Mark( *p );
     }
     kersize = (unsigned short)( q - s );
     for( ; *enter != NULL; enter = &(*enter)->same_enter_sym ) {
         if( (*enter)->kersize == kersize ) {
-            p = (*enter)->name.item;
+            p = (*enter)->items;
             for( t = p + kersize; p != t; ++p ) {
-                if( !IsMarked( **p ) ) {
-                    goto contin;
+                if( !IsMarked( *p ) ) {
+                    break;
                 }
             }
-            break;
+            if( p == t ) {
+                break;
+            }
         }
-contin:;
     }
     for( p = s; p != q; ++p ) {
-        Unmark( **p );
+        Unmark( *p );
     }
     if( *enter == NULL ) {
         *enter = CALLOC( 1, a_state );
-        State( **enter );
         *statetail = *enter;
         statetail = &(*enter)->next;
         (*enter)->kersize = kersize;
-        (*enter)->name.item = CALLOC( kersize + 1, an_item * );
-        memcpy( (*enter)->name.item, s, kersize * sizeof( an_item * ) );
+        (*enter)->items = CALLOC( kersize + 1, an_item * );
+        memcpy( (*enter)->items, s, kersize * sizeof( an_item * ) );
         (*enter)->sidx = nstate++;
     }
     if( parent != NULL ) {
@@ -128,9 +128,9 @@ static bool itemlt( void *_a, void *_b )
     an_item     *b = _b;
 
     if( a->p.sym != NULL ) {
-        return( b->p.sym != NULL && a[0].p.sym > b[0].p.sym );
+        return( b->p.sym != NULL && a[0].p.sym->idx > b[0].p.sym->idx );
     } else {
-        return( b->p.sym != NULL || a[1].p.pro > b[1].p.pro );
+        return( b->p.sym != NULL || a[1].p.pro->pidx > b[1].p.pro->pidx );
     }
 }
 
@@ -143,22 +143,22 @@ static void Complete( a_state *x, an_item **s )
     index_n         n;
 
     q = s;
-    for( p = x->name.item; *p != NULL; ++p ) {
-        Mark( **p );
+    for( p = x->items; *p != NULL; ++p ) {
+        Mark( *p );
         *q++ = *p;
     }
     for( p = s; p < q; ++p ) {
         if( (*p)->p.sym != NULL ) {
             for( pro = (*p)->p.sym->pro; pro != NULL; pro = pro->next ) {
-                if( !IsMarked( *pro->item ) ) {
-                    Mark( *pro->item );
-                    *q++ = pro->item;
+                if( !IsMarked( pro->items ) ) {
+                    Mark( pro->items );
+                    *q++ = pro->items;
                 }
             }
         }
     }
     for( p = s; p < q; ++p ) {
-        Unmark( **p );
+        Unmark( *p );
     }
     Sort( (void **)s, (unsigned)( q - s ), itemlt );
     for( p = s; p < q && (*p)->p.sym == NULL; ) {
@@ -207,7 +207,7 @@ void lr0( void )
     nredun = 0;
     s = CALLOC( nitem, an_item * );
     statetail = &statelist;
-    *s = startsym->pro->item;
+    *s = startsym->pro->items;
     startstate = addState( &startsym->enter, s, s + 1, NULL );
     for( x = statelist; x != NULL; x = x->next ) {
         Complete( x, s );
@@ -237,7 +237,7 @@ void RemoveDeadStates( void )
     j = 0;
     for( i = 0; i < nstate; ++i ) {
         x = statetab[i];
-        if( ! IsDead( *x ) ) {
+        if( ! IsDead( x ) ) {
             x->sidx = j;
             statetab[j] = x;
             ++j;

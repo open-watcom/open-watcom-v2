@@ -91,7 +91,7 @@ static void performReduce( traceback **h, a_pro *pro )
 {
     an_item     *p;
 
-    for( p = pro->item; p->p.sym != NULL; ++p ) {
+    for( p = pro->items; p->p.sym != NULL; ++p ) {
         popTrace( h );
     }
     performShift( h, pro->sym );
@@ -110,7 +110,7 @@ a_sym *terminalInKernel( an_item *p )
     }
     pro = q[1].p.pro;
     sym_after_dot = NULL;
-    for( q = pro->item; (post_sym = q->p.sym) != NULL; ++q ) {
+    for( q = pro->items; (post_sym = q->p.sym) != NULL; ++q ) {
         if( q == p ) {
             if( post_sym->pro == NULL ) {
                 sym_after_dot = post_sym;
@@ -137,7 +137,7 @@ static a_sym *findNewShiftSym( a_state *state, traceback **h )
 {
     a_shift_action  *saction;
     a_sym           *shift_sym;
-    a_name          name;
+    an_item         **item;
 
     if( state->trans[0].sym != NULL && state->trans[1].sym == NULL ) {
         shift_sym = state->trans[0].sym;
@@ -145,13 +145,11 @@ static a_sym *findNewShiftSym( a_state *state, traceback **h )
             return( shift_sym );
         }
     }
-    if( state->name.item[0] == NULL || !IsState( *state->name.item[0] ) ) {
-        for( name.item = state->name.item; *name.item != NULL; ++name.item ) {
-            shift_sym = terminalInKernel( *name.item );
-            if( shift_sym != NULL ) {
-                if( notInTraceback( h, shift_sym ) ) {
-                    return( shift_sym );
-                }
+    for( item = state->items; *item != NULL; ++item ) {
+        shift_sym = terminalInKernel( *item );
+        if( shift_sym != NULL ) {
+            if( notInTraceback( h, shift_sym ) ) {
+                return( shift_sym );
             }
         }
     }
@@ -384,7 +382,7 @@ static size_t symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
     an_item     *p;
 
     sym = sym;
-    for( p = pro->item; p->p.sym != NULL; ++p ) {
+    for( p = pro->items; p->p.sym != NULL; ++p ) {
         if( p->p.sym == disallow_error ) {
             // derivations using the error sym are not desirable
             return( 0 );
@@ -394,7 +392,7 @@ static size_t symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
         }
     }
     len = 0;
-    for( p = pro->item; p->p.sym != NULL; ++p ) {
+    for( p = pro->items; p->p.sym != NULL; ++p ) {
         len += strlen( p->p.sym->min ) + 1;
     }
     ++len;
@@ -415,7 +413,7 @@ static a_sym *symHasMin( a_sym *sym, a_pro *pro, a_sym *disallow_error )
     min = MALLOC( len, char );
     min[0] = '\0';
     cat = min;
-    for( p = pro->item; p->p.sym != NULL; ++p ) {
+    for( p = pro->items; p->p.sym != NULL; ++p ) {
         if( p->p.sym->min[0] != '\0' ) {
             cat = my_stpcpy( cat, p->p.sym->min );
         }
