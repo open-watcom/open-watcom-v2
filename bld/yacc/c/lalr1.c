@@ -531,7 +531,6 @@ void showstate( a_state *x )
     size_t          col, new_col;
     set_size        *mp;
     an_item         **item;
-    a_state         **state;
 
     printf( "state %d:\n", x->sidx );
     col = printf( "  parent states:" );
