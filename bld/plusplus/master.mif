@@ -256,7 +256,7 @@ ytab.c ytab.gh : ../../y/plusplus.y ../../c/yydriver.c
 # The -p and -s switches are v. useful when debugging parser but gen large file!
 #    $(yacc) -b -d -f -t -u -p -s $[@ $]@ >y.out
 # comment out the next line during testing of grammar changes
-#    diff y.out ../../y/plusplus.chk
+    diff y.out ../../y/plusplus.chk
     rm -f ytab.gh
     cp ytab.h ytab.gh
     rm -f ytab.h
