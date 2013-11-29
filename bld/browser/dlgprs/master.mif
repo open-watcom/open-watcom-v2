@@ -6,13 +6,11 @@ dlgprs_autodepends=.AUTODEPEND
 
 .IGNORE
 
-.EXTENSIONS: .gh
+bnd_yacc_prefix = bndy
+dlg_yacc_prefix = dlgy
 
-win_yacc_prefix = winy
-os2_yacc_prefix = os2y
-
-win_yacc_file = $(win_yacc_prefix)tab
-os2_yacc_file = $(os2_yacc_prefix)tab
+bnd_yacc_file = $(bnd_yacc_prefix)tab
+dlg_yacc_file = $(dlg_yacc_prefix)tab
 
 !include cproj.mif
 !include defrule.mif
