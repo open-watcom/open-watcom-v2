@@ -34,10 +34,9 @@ additional_cleanup_subdir = $(stand_subdir)
 
 # yacc
 #########################
-yacc_flags      = -b -d
-#yacc_flags     = -d -q
-#yacc_flags     = -b -d -f -u
-#yacc_flags     = -b "y" -l -v
+yacc_flags      = -b asy -d -db -dd
+asi_yacc_flags  = -b asiy -d -db -dd
+
 yacc_src        = as.y
 yacc_in         = as_in.y
 asi_yacc_in     = asi_in.y
@@ -214,15 +213,9 @@ $(asi_yacc_in) : $(as_dir)/y/$(yacc_src) $(as_dir)/y/yydriver.c
 
 $(yacc_out).c : $(yacc_in)
         $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
-        sed -f $(as_dir)/y/asyy.sed ytab.c > $^*.c
-        sed -f $(as_dir)/y/asyy.sed ytab.h > $^*.h
-        # $(yacc) $(yacc_flags) $[@
 
 $(asi_yacc_out).c : $(asi_yacc_in)
-        $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
-        sed -f $(as_dir)/y/asyy.sed ytab.c > $^*.c
-        sed -f $(as_dir)/y/asyy.sed ytab.h > $^*.h
-        # $(yacc) $(yacc_flags) $[@
+        $(yacc) $(asi_yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
 
 $(lex_in) : $(as_dir)/y/$(lex_src)
         @if not exist $(stand_subdir) mkdir $(stand_subdir)

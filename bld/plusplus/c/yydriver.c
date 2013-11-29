@@ -5,7 +5,7 @@ YYDRIVER: driver code to make use of YACC generated parser tables and support
 */
 
 #include "plusplus.h"
-#include "ytab.gh"
+#include "ytab.h"
 #include "preproc.h"
 #include "fnbody.h"
 #include "ptree.h"

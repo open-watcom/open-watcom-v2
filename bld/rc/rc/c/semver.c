@@ -35,7 +35,7 @@
 #include "rcmem.h"
 #include "global.h"
 #include "errors.h"
-#include "ytabw.gh"
+#include "winytab.h"
 #include "semantic.h"
 #include "semver.h"
 #include "wresdefn.h"

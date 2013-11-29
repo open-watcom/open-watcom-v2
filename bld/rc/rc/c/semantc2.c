@@ -34,7 +34,7 @@
 #include "errors.h"
 #include "rcmem.h"
 #include "global.h"
-#include "ytab2.gh"
+#include "os2ytab.h"
 #include "semantic.h"
 
 

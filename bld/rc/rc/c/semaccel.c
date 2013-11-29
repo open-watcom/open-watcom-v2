@@ -34,7 +34,7 @@
 #include "wresall.h"
 #include "errors.h"
 #include "global.h"
-#include "ytabw.gh"
+#include "winytab.h"
 #include "semaccel.h"
 
 const FullAccelFlags DefaultAccelFlags = { 0, FALSE };

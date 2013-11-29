@@ -35,7 +35,7 @@
 #include "semantic.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "ytabw.gh"
+#include "winytab.h"
 #include "yydrivrw.h"
 #include "scanw.h"
 #include "errprt.h"
@@ -106,8 +106,8 @@ typedef struct {
     YYACTTYPE           *sstack;
 } parse_stack;
 
-YYSTYPE yylval;
-uint_8  yysyntaxerror = FALSE;  /* boolean variable */
+static YYSTYPE yylval;
+static uint_8  yysyntaxerror;   /* boolean variable */
 #define YYERRORTHRESHOLD    5   /* no. of tokens to accept before restarting */
 
 typedef enum {

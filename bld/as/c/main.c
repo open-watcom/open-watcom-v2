@@ -36,7 +36,7 @@
 extern bool     OptionsInit( int argc, char *argv[] );
 extern void     OptionsFini( void );
 extern void     OptionsPPDefine( void );
-extern int      asyyparse( void );
+extern int      yyparse( void );
 extern void     AsLexerFini( void );
 
 extern bool     DoReport;
@@ -86,7 +86,7 @@ int main( int argc, char **argv )
                     if( setjmp( AsmParse ) == 0 ) {
                         ErrorCountsReset();
                         DoReport = TRUE;
-                        if( !asyyparse() ) {
+                        if( !yyparse() ) {
                             CurrLineno--;    // This is the total # of lines
                             ObjRelocsFini(); // Must be done before ErrorReport
                                              // and other finis

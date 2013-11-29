@@ -12,7 +12,7 @@
 #define YYMARKER        marker
 #define YYFILL( n )     {fill();}
 
-extern YYSTYPE asyylval;
+extern YYSTYPE yylval;
 #ifndef _STANDALONE_
 extern char *AsmInStr;          // The input string.
 #endif
@@ -21,9 +21,9 @@ extern char *AsmInStr;          // The input string.
 int CurrLineno = 1;             // This pair is used by the parser and the
 char *CurrFilename = NULL;      // outside world.
 
-int asyylineno = 1;             // The lexer uses this pair for their own error
-char *asyyfname = NULL;         // reporting. (globl also because parser needs
-/* NOTE: -- make sure asyylineno is used correctly: update it when we get '\n' and
+int yylineno = 1;             // The lexer uses this pair for their own error
+char *yyfname = NULL;         // reporting. (globl also because parser needs
+/* NOTE: -- make sure yylineno is used correctly: update it when we get '\n' and
             when we get #line directive.
          -- CurrLineno should be set in the parser
 */
@@ -96,11 +96,11 @@ static void yylexError( int res_id ) {
 
     saveLineno = CurrLineno;
     saveFname = CurrFilename;
-    CurrLineno = asyylineno;
-    CurrFilename = asyyfname;
+    CurrLineno = yylineno;
+    CurrFilename = yyfname;
     AsMsgGet( res_id, AsResBuffer );
     tmpstr = AsStrdup( AsResBuffer );
-    asyyerror( tmpstr );
+    yyerror( tmpstr );
     MemFree( tmpstr );
     CurrLineno = saveLineno;
     CurrFilename = saveFname;
@@ -117,8 +117,8 @@ static void ppError( char *str ) {
 
     saveLineno = CurrLineno;
     saveFname = CurrFilename;
-    CurrLineno = asyylineno;
-    CurrFilename = asyyfname;
+    CurrLineno = yylineno;
+    CurrFilename = yyfname;
     Error( GET_STRING, str );
     CurrLineno = saveLineno;
     CurrFilename = saveFname;
@@ -140,15 +140,15 @@ extern void AsLexerFini( void ) {
 #ifdef _STANDALONE_
     MemFree( bot );
     CurrLineno = 1;
-    asyylineno = 1;
+    yylineno = 1;
     ppFlush();
     bot = NULL;
     pos = NULL;
     top = NULL;
     MemFree( CurrFilename );
     CurrFilename = NULL;
-    MemFree( asyyfname );
-    asyyfname = NULL;
+    MemFree( yyfname );
+    yyfname = NULL;
 #endif
     cursor = NULL;
     limit = NULL;
@@ -256,7 +256,7 @@ ppchar  = "#";          /* preprocessor character */
 empstr  = "";           /* empty string */
 */
 
-extern int asyylex( void ) {
+extern int yylex( void ) {
 //**************************
 
         if( DirGetNextScanState() == TRUE ) goto getdirop;
@@ -270,78 +270,78 @@ ppchar"line "[0-9]*     { newlineno = atoi( yytext()+6 ); goto getfname; }
 :endsegment
 
 :segment AS_ALPHA
-"$"[0-9]                { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-"$"[1-2][0-9]           { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-"$"[3][0-1]             { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+"$"[0-9]                { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+"$"[1-2][0-9]           { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+"$"[3][0-1]             { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
 
-"$v0"                   { asyylval.reg = MakeReg( RC_GPR, 0 ); return( T_REGISTER ); }
-"$t"[0-7]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 1 ); return( T_REGISTER ); }
-"$s"[0-6]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 9 ); return( T_REGISTER ); }
-"$fp"                   { asyylval.reg = MakeReg( RC_GPR, 15 ); return( T_REGISTER ); }
-"$a"[0-5]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 16 ); return( T_REGISTER ); }
-"$t"[8-9]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 14 ); return( T_REGISTER ); }
-"$t"[1][0-1]            { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 14 ); return( T_REGISTER ); }
-"$ra"                   { asyylval.reg = MakeReg( RC_GPR, 26 ); return( T_REGISTER ); }
-"$pv"                   { asyylval.reg = MakeReg( RC_GPR, 27 ); return( T_REGISTER ); }
-"$t12"                  { asyylval.reg = MakeReg( RC_GPR, 27 ); return( T_REGISTER ); }
-"$at"                   { asyylval.reg = MakeReg( RC_GPR, 28 ); return( T_REGISTER ); }
-"$gp"                   { asyylval.reg = MakeReg( RC_GPR, 29 ); return( T_REGISTER ); }
-"$sp"                   { asyylval.reg = MakeReg( RC_GPR, 30 ); return( T_REGISTER ); }
-"$zero"                 { asyylval.reg = MakeReg( RC_GPR, 31 ); return( T_REGISTER ); }
+"$v0"                   { yylval.reg = MakeReg( RC_GPR, 0 ); return( T_REGISTER ); }
+"$t"[0-7]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 1 ); return( T_REGISTER ); }
+"$s"[0-6]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 9 ); return( T_REGISTER ); }
+"$fp"                   { yylval.reg = MakeReg( RC_GPR, 15 ); return( T_REGISTER ); }
+"$a"[0-5]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 16 ); return( T_REGISTER ); }
+"$t"[8-9]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 14 ); return( T_REGISTER ); }
+"$t"[1][0-1]            { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 14 ); return( T_REGISTER ); }
+"$ra"                   { yylval.reg = MakeReg( RC_GPR, 26 ); return( T_REGISTER ); }
+"$pv"                   { yylval.reg = MakeReg( RC_GPR, 27 ); return( T_REGISTER ); }
+"$t12"                  { yylval.reg = MakeReg( RC_GPR, 27 ); return( T_REGISTER ); }
+"$at"                   { yylval.reg = MakeReg( RC_GPR, 28 ); return( T_REGISTER ); }
+"$gp"                   { yylval.reg = MakeReg( RC_GPR, 29 ); return( T_REGISTER ); }
+"$sp"                   { yylval.reg = MakeReg( RC_GPR, 30 ); return( T_REGISTER ); }
+"$zero"                 { yylval.reg = MakeReg( RC_GPR, 31 ); return( T_REGISTER ); }
 
-"$f"[0-9]               { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
-"$f"[1-2][0-9]          { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
-"$f"[3][0-1]            { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+"$f"[0-9]               { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+"$f"[1-2][0-9]          { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+"$f"[3][0-1]            { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
 :elsesegment AS_MIPS
-"$"[0-9]                { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-"$"[1-2][0-9]           { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-"$"[3][0-1]             { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+"$"[0-9]                { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+"$"[1-2][0-9]           { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+"$"[3][0-1]             { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
 
-"$zero"                 { asyylval.reg = MakeReg( RC_GPR, 0 ); return( T_REGISTER ); }
-"$at"                   { asyylval.reg = MakeReg( RC_GPR, 1 ); return( T_REGISTER ); }
-"$v"[0-1]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 2 ); return( T_REGISTER ); }
-"$a"[0-3]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 4 ); return( T_REGISTER ); }
-"$t"[0-7]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 8 ); return( T_REGISTER ); }
-"$s"[0-7]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 16 ); return( T_REGISTER ); }
-"$t"[8-9]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 16 ); return( T_REGISTER ); }
-"$k"[0-1]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 26 ); return( T_REGISTER ); }
-"$gp"                   { asyylval.reg = MakeReg( RC_GPR, 28 ); return( T_REGISTER ); }
-"$sp"                   { asyylval.reg = MakeReg( RC_GPR, 29 ); return( T_REGISTER ); }
-"$s8"                   { asyylval.reg = MakeReg( RC_GPR, 30 ); return( T_REGISTER ); }
-"$fp"                   { asyylval.reg = MakeReg( RC_GPR, 30 ); return( T_REGISTER ); }
-"$ra"                   { asyylval.reg = MakeReg( RC_GPR, 31 ); return( T_REGISTER ); }
+"$zero"                 { yylval.reg = MakeReg( RC_GPR, 0 ); return( T_REGISTER ); }
+"$at"                   { yylval.reg = MakeReg( RC_GPR, 1 ); return( T_REGISTER ); }
+"$v"[0-1]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 2 ); return( T_REGISTER ); }
+"$a"[0-3]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 4 ); return( T_REGISTER ); }
+"$t"[0-7]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 8 ); return( T_REGISTER ); }
+"$s"[0-7]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 16 ); return( T_REGISTER ); }
+"$t"[8-9]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 16 ); return( T_REGISTER ); }
+"$k"[0-1]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+2 ) + 26 ); return( T_REGISTER ); }
+"$gp"                   { yylval.reg = MakeReg( RC_GPR, 28 ); return( T_REGISTER ); }
+"$sp"                   { yylval.reg = MakeReg( RC_GPR, 29 ); return( T_REGISTER ); }
+"$s8"                   { yylval.reg = MakeReg( RC_GPR, 30 ); return( T_REGISTER ); }
+"$fp"                   { yylval.reg = MakeReg( RC_GPR, 30 ); return( T_REGISTER ); }
+"$ra"                   { yylval.reg = MakeReg( RC_GPR, 31 ); return( T_REGISTER ); }
 
-"$f"[0-9]               { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
-"$f"[1-2][0-9]          { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
-"$f"[3][0-1]            { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+"$f"[0-9]               { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+"$f"[1-2][0-9]          { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+"$f"[3][0-1]            { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
 :elsesegment AS_PPC
-[rR][0-9]               { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-[rR][1-2][0-9]          { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-[rR][3][0-1]            { asyylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-"sp"                    { asyylval.reg = MakeReg( RC_GPR, 1 ); return( T_REGISTER ); }
-"rtoc"                  { asyylval.reg = MakeReg( RC_GPR, 2 ); return( T_REGISTER ); }
+[rR][0-9]               { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+[rR][1-2][0-9]          { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+[rR][3][0-1]            { yylval.reg = MakeReg( RC_GPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+"sp"                    { yylval.reg = MakeReg( RC_GPR, 1 ); return( T_REGISTER ); }
+"rtoc"                  { yylval.reg = MakeReg( RC_GPR, 2 ); return( T_REGISTER ); }
 
-[fF][0-9]               { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-[fF][1-2][0-9]          { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
-[fF][3][0-1]            { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+[fF][0-9]               { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+[fF][1-2][0-9]          { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
+[fF][3][0-1]            { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+1 ) ); return( T_REGISTER ); }
 
-[fF][rR][0-9]           { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
-[fF][rR][1-2][0-9]      { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
-[fF][rR][3][0-1]        { asyylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+[fF][rR][0-9]           { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+[fF][rR][1-2][0-9]      { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+[fF][rR][3][0-1]        { yylval.reg = MakeReg( RC_FPR, atoi( yytext()+2 ) ); return( T_REGISTER ); }
 
-[cC][rR][bB][0-9]       { asyylval.reg = MakeReg( RC_CRB, atoi( yytext()+3 ) ); return( T_REGISTER ); }
-[cC][rR][bB][1-2][0-9]  { asyylval.reg = MakeReg( RC_CRB, atoi( yytext()+3 ) ); return( T_REGISTER ); }
-[cC][rR][bB][3][0-1]    { asyylval.reg = MakeReg( RC_CRB, atoi( yytext()+3 ) ); return( T_REGISTER ); }
+[cC][rR][bB][0-9]       { yylval.reg = MakeReg( RC_CRB, atoi( yytext()+3 ) ); return( T_REGISTER ); }
+[cC][rR][bB][1-2][0-9]  { yylval.reg = MakeReg( RC_CRB, atoi( yytext()+3 ) ); return( T_REGISTER ); }
+[cC][rR][bB][3][0-1]    { yylval.reg = MakeReg( RC_CRB, atoi( yytext()+3 ) ); return( T_REGISTER ); }
 
-[cC][rR][0-7]           { asyylval.reg = MakeReg( RC_CRF, atoi( yytext()+2 ) ); return( T_REGISTER ); }
+[cC][rR][0-7]           { yylval.reg = MakeReg( RC_CRF, atoi( yytext()+2 ) ); return( T_REGISTER ); }
 
 /* The following symbols are defined just for the BI field of the simplified
    branch mnemonics. */
-"lt"                    { asyylval.val = BI_LT; return( T_BI_OFFSET ); }
-"gt"                    { asyylval.val = BI_GT; return( T_BI_OFFSET ); }
-"eq"                    { asyylval.val = BI_EQ; return( T_BI_OFFSET ); }
-"so"                    { asyylval.val = BI_SO; return( T_BI_OFFSET ); }
-"un"                    { asyylval.val = BI_UN; return( T_BI_OFFSET ); }
+"lt"                    { yylval.val = BI_LT; return( T_BI_OFFSET ); }
+"gt"                    { yylval.val = BI_GT; return( T_BI_OFFSET ); }
+"eq"                    { yylval.val = BI_EQ; return( T_BI_OFFSET ); }
+"so"                    { yylval.val = BI_SO; return( T_BI_OFFSET ); }
+"un"                    { yylval.val = BI_UN; return( T_BI_OFFSET ); }
 :endsegment
 
 :segment AS_ALPHA
@@ -350,7 +350,7 @@ symqual                 {
 
                             sym = SymLookup( yytext() );
                             if( sym != NULL ) {
-                                asyylval.sym = sym;
+                                yylval.sym = sym;
                                 assert( SymClass( sym ) == SYM_INSTRUCTION );
                                 return( T_OPCODE );
                             }
@@ -369,7 +369,7 @@ sym                     {
                             }
                             sym = SymLookup( symstr );
                             if( sym != NULL ) {
-                                asyylval.sym = sym;
+                                yylval.sym = sym;
                                 switch( SymClass( sym ) ) {
                                 case SYM_INSTRUCTION: return( T_OPCODE );
                                 case SYM_LABEL: return( T_IDENTIFIER );
@@ -377,33 +377,33 @@ sym                     {
                                 }
                             } else {
                                 sym = SymAdd( symstr, SYM_LABEL );
-                                asyylval.sym = sym;
+                                yylval.sym = sym;
                                 return( T_IDENTIFIER );
                             }
                         }
 
-[0-9]":"                { asyylval.val = *yytext() - '0' + 1; return( T_NUMERIC_LABEL ); }
-[0-9]"b"                { asyylval.val = '0' - *yytext() - 1; return( T_NUMLABEL_REF ); }
-[0-9]"f"                { asyylval.val = *yytext() - '0' + 1; return( T_NUMLABEL_REF ); }
-[1-9][0-9]*             { asyylval.val = atoi( yytext() ); return( T_INTEGER_CONST ); }
+[0-9]":"                { yylval.val = *yytext() - '0' + 1; return( T_NUMERIC_LABEL ); }
+[0-9]"b"                { yylval.val = '0' - *yytext() - 1; return( T_NUMLABEL_REF ); }
+[0-9]"f"                { yylval.val = *yytext() - '0' + 1; return( T_NUMLABEL_REF ); }
+[1-9][0-9]*             { yylval.val = atoi( yytext() ); return( T_INTEGER_CONST ); }
 "0"[Xx][0-9a-fA-F]+ |
-"0"[0-7]*               { asyylval.val = strtoul( yytext(), NULL, 0 ); return( T_INTEGER_CONST ); }
-"0"[Bb][0-1]+           { asyylval.val = strtoul( yytext()+2, NULL, 2 ); return( T_INTEGER_CONST ); }
+"0"[0-7]*               { yylval.val = strtoul( yytext(), NULL, 0 ); return( T_INTEGER_CONST ); }
+"0"[Bb][0-1]+           { yylval.val = strtoul( yytext()+2, NULL, 2 ); return( T_INTEGER_CONST ); }
 [0-9]+"."[0-9]* |
-[0-9]*"."[0-9]+         { asyylval.fval = strtod( yytext(), NULL ); return( T_FLOAT_CONST ); }
+[0-9]*"."[0-9]+         { yylval.fval = strtod( yytext(), NULL ); return( T_FLOAT_CONST ); }
 string                  {
                             MemFree( cStr );
-                            asyylval.str = ( cStr = AsStrdup( yytext()+1 ) );
+                            yylval.str = ( cStr = AsStrdup( yytext()+1 ) );
                             cStr[yytextlen - 2] = 0;
                             return( T_STRING_CONST );
                         }
 
-[Ll]"^"                 { asyylval.rtype = ASM_RELOC_HALF_LO; return( T_RELOC_MODIFIER ); }
-[Hh]"^"                 { asyylval.rtype = ASM_RELOC_HALF_HI; return( T_RELOC_MODIFIER ); }
-[Hh][Aa]"^"             { asyylval.rtype = ASM_RELOC_HALF_HA; return( T_RELOC_MODIFIER ); }
-[Jj]"^"                 { asyylval.rtype = ASM_RELOC_JUMP; return( T_RELOC_MODIFIER ); }
+[Ll]"^"                 { yylval.rtype = ASM_RELOC_HALF_LO; return( T_RELOC_MODIFIER ); }
+[Hh]"^"                 { yylval.rtype = ASM_RELOC_HALF_HI; return( T_RELOC_MODIFIER ); }
+[Hh][Aa]"^"             { yylval.rtype = ASM_RELOC_HALF_HA; return( T_RELOC_MODIFIER ); }
+[Jj]"^"                 { yylval.rtype = ASM_RELOC_JUMP; return( T_RELOC_MODIFIER ); }
 :segment !AS_ALPHA
-[Bb]"^"                 { asyylval.rtype = ASM_RELOC_BRANCH; return( T_RELOC_MODIFIER ); }
+[Bb]"^"                 { yylval.rtype = ASM_RELOC_BRANCH; return( T_RELOC_MODIFIER ); }
 :endsegment
 "("                     { return( T_LEFT_PAREN ); }
 ")"                     { return( T_RIGHT_PAREN ); }
@@ -424,7 +424,7 @@ string                  {
 "~"                     { return( T_NOT ); }
 
 :segment _STANDALONE_
-nl                      { ++asyylineno; return( T_NEWLINE ); }
+nl                      { ++yylineno; return( T_NEWLINE ); }
 :endsegment
 any                     {
                             if( eofPtr && ( cursor == eofPtr ) ) {
@@ -439,19 +439,19 @@ getfname:   tok = cursor;
 /*!re2c
 ws                      { goto getfname; }
 "\""fname"\""           {
-                            MemFree( asyyfname );
-                            asyyfname = AsStrdup( yytext()+1 );
-                            asyyfname[yytextlen - 2] = 0;
-                            dropDblBackSlashes( asyyfname );
+                            MemFree( yyfname );
+                            yyfname = AsStrdup( yytext()+1 );
+                            yyfname[yytextlen - 2] = 0;
+                            dropDblBackSlashes( yyfname );
                             goto getfname;
                         }
 nl                      {
                             fileinfo    *file;
 
-                            file = MemAlloc( sizeof( fileinfo ) + strlen( asyyfname ) );
-                            file->line = asyylineno = newlineno;
-                            strcpy( file->name, asyyfname );
-                            asyylval.file = file;
+                            file = MemAlloc( sizeof( fileinfo ) + strlen( yyfname ) );
+                            file->line = yylineno = newlineno;
+                            strcpy( file->name, yyfname );
+                            yylval.file = file;
                             return( T_FILE_SWITCH );
                         }
 (dot \ [ \t])+          {
@@ -467,7 +467,7 @@ ws                      { goto getdirop; }
 ((ch \ [ \t]) ch*) |
 empstr                  {
                             MemFree( dirOpStr );
-                            asyylval.str = ( dirOpStr = AsStrdup( yytext() ) );
+                            yylval.str = ( dirOpStr = AsStrdup( yytext() ) );
                             return( T_DIRECTIVE_OPERAND );
                         }
 */
@@ -477,7 +477,7 @@ empstr                  {
 #pragma on( unreferenced );
 #endif
 
-void asyyerror( char *s ) {
+void yyerror( char *s ) {
 //*************************
 // Code within this module should use yylexError() instead
 

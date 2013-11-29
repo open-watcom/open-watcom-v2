@@ -19,7 +19,7 @@ exename     +=$(target_cpu)
 #suppress_zc = 1
  
 # Extra files to delete on clean
-additional_cleanup = *.u *.int y.out ytab.c *.mbr $(dll_subdir)/*.mbr
+additional_cleanup = *.u *.int y.out ytab.* *.mbr $(dll_subdir)/*.mbr
  
 !include cproj.mif
 !include defrule.mif
@@ -248,18 +248,17 @@ yylex.gh : ./umktable.exe
 ./mktrans.exe: ../../c/mktrans.c
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
  
-xlat.gh : ./mktrans.exe ../../h/ctokens.h keywords.gh ytab.gh
+xlat.gh : ./mktrans.exe ../../h/ctokens.h keywords.gh ytab.h
     $[@ $]@ $@
- 
-ytab.c ytab.gh : ../../y/plusplus.y ../../c/yydriver.c
-    $(yacc) -b -d -f -t -u $[@ $]@ >y.out
-# The -p and -s switches are v. useful when debugging parser but gen large file!
-#    $(yacc) -b -d -f -t -u -p -s $[@ $]@ >y.out
+
+yacc_options = -d -db -dd -df -dt -du
+# The -dp and -ds switches are v. useful when debugging parser but gen large file!
+#yacc_options = -d -db -dd -df -dp -ds -dt -du
+
+ytab.c ytab.h : ../../y/plusplus.y ../../c/yydriver.c
+    $(yacc) $(yacc_options) $[@ $]@ >y.out
 # comment out the next line during testing of grammar changes
     diff y.out ../../y/plusplus.chk
-    rm -f ytab.gh
-    cp ytab.h ytab.gh
-    rm -f ytab.h
  
 # optencod options and targets for various hosts
 optencod_opt_qnx = -u $(extra_link_res_qnx) 

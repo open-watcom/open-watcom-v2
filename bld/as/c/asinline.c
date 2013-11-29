@@ -39,7 +39,7 @@
 
 extern void AsmError( char * );
 extern void AsLexerFini( void );
-extern int asyyparse( void );
+extern int yyparse( void );
 
 
 char *AsmInStr;
@@ -82,7 +82,7 @@ extern int AsmLine( char *in_str ) {
     int ret;
 
     AsmInStr = in_str;
-    if( !asyyparse() ) {
+    if( !yyparse() ) {
         ret = FALSE;
     } else {
         ret = TRUE;

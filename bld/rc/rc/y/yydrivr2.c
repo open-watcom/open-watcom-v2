@@ -34,7 +34,7 @@
 #include "semantic.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "ytab2.gh"
+#include "os2ytab.h"
 #include "yydrivr2.h"
 #include "scan2.h"
 #include "errprt.h"
@@ -101,12 +101,8 @@ typedef struct {
     YYACTTYPE           *sstack;
 } parse_stack;
 
-/* This is pretty ugly but... these variables are defined in yydriver.c and
- * shared between the Windows and OS/2 parsers. It seems safe to assume that
- * either one or the other will be used, never both at the same time.
- */
-extern YYSTYPE yylval;
-extern uint_8  yysyntaxerror;  /* boolean variable */
+static YYSTYPE yylval;
+static uint_8  yysyntaxerror;   /* boolean variable */
 #define YYERRORTHRESHOLD    5   /* no. of tokens to accept before restarting */
 
 typedef enum {

@@ -32,7 +32,7 @@
 #include "global.h"
 #include "errors.h"
 #include "rcmem.h"
-#include "ytab2.gh"
+#include "os2ytab.h"
 #include "semantic.h"
 #include "semhelp.h"
 

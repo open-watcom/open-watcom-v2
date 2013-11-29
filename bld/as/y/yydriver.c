@@ -24,7 +24,9 @@
 
 
 
-YYSTYPE *yyvp, yyval, yylval;
+static YYSTYPE yyval;
+
+YYSTYPE yylval;
 
 #define yyerrok         yyerrflag = 0
 #define yyclearin       yytoken = yyscan()

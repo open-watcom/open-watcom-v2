@@ -31,7 +31,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "scan.h"
-#include "ytab2.gh"
+#include "os2ytab.h"
 #include "keyword2.h"
 #include "weights2.gh"
 

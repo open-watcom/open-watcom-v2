@@ -33,7 +33,7 @@
 #include "varstr.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "ytabw.gh"
+#include "winytab.h"
 #include "scan.h"
 #include "scanw.h"
 #include "keywordw.h"

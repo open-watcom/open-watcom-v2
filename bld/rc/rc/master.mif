@@ -14,7 +14,7 @@ exename     = wrc
 dllname     = wrcd
 !endif
 
-additional_cleanup = ytab.* ytab2.* ytabw.* *.uni
+additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 
 !include cproj.mif
 !include defrule.mif
@@ -32,6 +32,11 @@ verrc_dll = $(dllname)
 
 .EXTENSIONS : .y .key .gh .res .rc
 
+win_yacc_options = -b winy -d -dd -db
+os2_yacc_options = -b os2y -d -dd -db
+win_yacc_file = winytab
+os2_yacc_file = os2ytab
+
 !ifeq release 0
 !ifeq host_os nt
 !ifneq host_cpu axp
@@ -45,8 +50,8 @@ WRC_USE_TRMEM = 1
 !endif
 
 common_objs = &
-    $(_subdir_)ytabw.obj &
-    $(_subdir_)ytab2.obj &
+    $(_subdir_)$(win_yacc_file).obj &
+    $(_subdir_)$(os2_yacc_file).obj &
     $(_subdir_)keywordw.obj &
     $(_subdir_)keyword2.obj &
     $(_subdir_)errors.obj &
@@ -183,11 +188,11 @@ xlibs = $(wres_lib)
 
 depends_drv =
 !ifeq bootstrap 1
-depends_dll = rcmsg.gh incltext.gh ytab2.c ytabw.c keyword2.gh keywordw.gh
-depends_exe = rcmsg.gh incltext.gh ytab2.c ytabw.c keyword2.gh keywordw.gh
+depends_dll = rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+depends_exe = rcmsg.gh incltext.gh $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !else
-depends_dll = rcmsg.gh wrc.res ytab2.c ytabw.c keyword2.gh keywordw.gh
-depends_exe = rcmsg.gh wrc.res ytab2.c ytabw.c keyword2.gh keywordw.gh
+depends_dll = rcmsg.gh wrc.res $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
+depends_exe = rcmsg.gh wrc.res $(os2_yacc_file).c $(win_yacc_file).c keyword2.gh keywordw.gh
 !endif
 
 # explicit rules
@@ -238,19 +243,11 @@ $(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(version_res_dll_$(host_os
         $(wstrip) -q -a -r $@ . wrc.res
 !endif
 
-ytabw.c : ../y/rcwin.y ../y/yydrivrw.c
-        $(yacc) -d -b $< >$(nulldevice)
-        @cat ytab.c >ytabw.c
-        @rm -f ytab.c
-        @cat ytab.h >ytabw.gh
-        @rm -f ytab.h
+$(win_yacc_file).c : ../y/rcwin.y ../y/yydrivrw.c
+        $(yacc) $(win_yacc_options) $< >$(nulldevice)
 
-ytab2.c : ../y/rcos2.y ../y/yydrivr2.c
-        $(yacc) -d -b $< >$(nulldevice)
-        @cat ytab.c >ytab2.c
-        @rm -f ytab.c
-        @cat ytab.h >ytab2.gh
-        @rm -f ytab.h
+$(os2_yacc_file).c : ../y/rcos2.y ../y/yydrivr2.c
+        $(yacc) $(os2_yacc_options) $< >$(nulldevice)
 
 keywordw.gh : ../hash/rcwin.key
         findhash -q -m $<

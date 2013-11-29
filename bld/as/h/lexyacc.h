@@ -36,12 +36,12 @@ typedef struct {
 } fileinfo;
 #endif
 
-extern int      asyylex( void );
-extern void     asyyerror( char * );
+extern int      yylex( void );
+extern void     yyerror( char * );
 
-extern int      asyylineno;
+extern int      yylineno;
 #ifdef _STANDALONE_
-extern char     *asyyfname;
+extern char     *yyfname;
 extern int      CurrLineno;
 extern char     *CurrFilename;
 #endif

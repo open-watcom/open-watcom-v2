@@ -33,7 +33,7 @@
 #include "global.h"
 #include "errors.h"
 #include "rcmem.h"
-#include "ytabw.gh"
+#include "winytab.h"
 #include "semantic.h"
 #include "tmpctl.h"
 

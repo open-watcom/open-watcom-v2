@@ -20,7 +20,9 @@
 #endif
 
     instruction             *AsCurrIns;
-    directive_t             *AsCurrDir;
+
+static directive_t          *AsCurrDir;
+
 %}
 
 %union {

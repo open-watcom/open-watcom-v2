@@ -36,7 +36,7 @@
 #include "global.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "ytab2.gh"
+#include "os2ytab.h"
 #include "scan.h"
 #include "scan2.h"
 #include "keyword2.h"

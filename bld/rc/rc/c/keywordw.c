@@ -32,7 +32,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "scan.h"
-#include "ytabw.gh"
+#include "winytab.h"
 #include "keywordw.h"
 #include "weightsw.gh"
 

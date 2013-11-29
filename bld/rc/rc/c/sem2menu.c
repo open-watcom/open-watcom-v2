@@ -55,7 +55,7 @@ struct MenuItem {
 #include "errors.h"
 #include "global.h"
 #include "rcmem.h"
-#include "ytab2.gh"
+#include "os2ytab.h"
 #include "semantic.h"
 #include "semmenu.h"
 
