@@ -34,10 +34,14 @@
 #include <stdarg.h>
 #include <string.h>
 #include "yacc.h"
+#include "alloc.h"
 #include "walloca.h"
 
 FILE *yaccin, *actout, *tokout;
 char *loadpath, *srcname;
+char *codefilename;
+char *headerfilename;
+char *descfilename;
 
 char lineflag;
 char bigflag;
@@ -49,6 +53,12 @@ char eliminateunitflag;
 char showflag;
 char translateflag;
 char defaultwarnflag = 1;
+char verbosefileflag;
+char headerfileflag = 1;
+
+char *symprefix = "yy";
+
+char param_requested;
 
 index_n RR_conflicts;
 index_n SR_conflicts;
@@ -84,39 +94,51 @@ static void setoptions( char *p )
     for( ; *p; ++p ) {
         switch( *p ) {
         case 'b':
-            bigflag = 1;
-            break;
-        case 'c':
-            compactflag = 1;
+            param_requested = 'b';
             break;
         case 'd':
-            if( p[1] == 's' ) {
+            if( p[1] == 'b' ) {
+                ++p;
+                bigflag = 1;
+            } else if( p[1] == 'c' ) {
+                ++p;
+                compactflag = 1;
+            } else if( p[1] == 'd' ) {
+                ++p;
+                denseflag = 1;
+            } else if( p[1] == 'f' ) {
+                ++p;
+                fastflag = 1;
+            } else if( p[1] == 'h' ) {
                 ++p;
                 default_shiftflag = 1;
+            } else if( p[1] == 'p' ) {
+                ++p;
+                proflag = 1;
+            } else if( p[1] == 's' ) {
+                ++p;
+                showflag = 1;
+            } else if( p[1] == 't' ) {
+                ++p;
+                translateflag = 1;
+            } else if( p[1] == 'u' ) {
+                ++p;
+                eliminateunitflag = 1;
+            } else if( p[1] == 'w' ) {
+                ++p;
+                defaultwarnflag = 0;
             } else {
-                denseflag = 1;
+                headerfileflag = 1;
             }
-            break;
-        case 'f':
-            fastflag = 1;
-            break;
-        case 's':
-            showflag = 1;
             break;
         case 'l':
             lineflag = 1;
             break;
         case 'p':
-            proflag = 1;
+            param_requested = 'p';
             break;
-        case 't':
-            translateflag = 1;
-            break;
-        case 'u':
-            eliminateunitflag = 1;
-            break;
-        case 'w':
-            defaultwarnflag = 0;
+        case 'v':
+            verbosefileflag = 1;
             break;
         default:
             msg( "Unknown option '%c'\n", *p );
@@ -171,26 +193,54 @@ int main( int argc, char **argv )
     FILE    *skeleton, *temp, *save;
     int     ch;
     char    tempfname[10];
+    char    *fileprefix = "y";
+    size_t  size;
 
+    param_requested = 0;
     for( i = 1; i < argc; ++i ) {
+        ch = argv[i][0];
+        switch( param_requested ) {
+        case 'b':
+            if( ch != '-' ) {
+                if( ch != '\0' )
+                    fileprefix = argv[i];
+                ++i;
+            }
+            break;
+        case 'p':
+            if( ch != '-' ) {
+                if( ch != '\0' )
+                    symprefix = argv[i];
+                ++i;
+            }
+            break;
+        default:
+            break;
+        }
+        param_requested = 0;
         if( argv[i][0] != '-' )
             break;
         setoptions( &argv[i][1] );
     }
     if( i != argc - 1 && i != argc - 2 ) {
-        puts( "usage: yacc [-bcdflpsuw] <grammar> [<driver>]\n" );
+        puts( "usage: yacc [-dlv] [-d[bcdfhpstuw]] [-b <file_prefix>] [-p <sym_prefix>]" );
+        puts( "                  <grammar> [<driver>]" );
         puts( "options:" );
-        puts( "    -b    output bigger (less optimal) tables" );
-        puts( "    -c    output compact tables (slower to execute)" );
-        puts( "    -d    use dense tokens (no '+' style tokens allowed)" );
-        puts( "    -ds   use 'default shift' optimization" );
-        puts( "    -f    output fast tables (larger size)" );
+        puts( "    -b <file_prefix> file prefix used in place of default 'y' prefix" );
+        puts( "    -d    output header file" );
+        puts( "    -db   output bigger (less optimal) tables" );
+        puts( "    -dc   output compact tables (slower to execute)" );
+        puts( "    -dd   use dense tokens (no '+' style tokens allowed)" );
+        puts( "    -df   output fast tables (larger size)" );
+        puts( "    -dh   use 'default shift' optimization" );
+        puts( "    -dp   dump all productions" );
+        puts( "    -ds   dump full state tables" );
+        puts( "    -dt   translate 'keyword' to Y_KEYWORD, '++' to Y_PLUS_PLUS, etc." );
+        puts( "    -du   eliminate useless unit production reduction" );
+        puts( "    -dw   disable default action type checking" );
         puts( "    -l    output #line directives" );
-        puts( "    -p    dump all productions" );
-        puts( "    -s    dump full state tables" );
-        puts( "    -t    translate 'keyword' to Y_KEYWORD, '++' to Y_PLUS_PLUS, etc." );
-        puts( "    -u    eliminate useless unit production reduction" );
-        puts( "    -w    disable default action type checking" );
+        puts( "    -p <sym_prefix> symbol prefix used in place of default 'yy' prefix" );
+        puts( "    -v    write description and report into file" );
         exit( 1 );
     }
     skeleton = NULL;
@@ -208,8 +258,16 @@ int main( int argc, char **argv )
         srcname = strcat( strcpy( srcname, argv[i] ), ".y" );
     }
     yaccin = openr( srcname );
-    actout = openw( "ytab.c" );
-    tokout = openw( "ytab.h" );
+
+    size = strlen( fileprefix);
+    codefilename   = MALLOC( size + 6, char );
+    strcat( strcpy( codefilename, fileprefix), "tab.c" );
+    headerfilename = MALLOC( size + 6, char );
+    strcat( strcpy( headerfilename, fileprefix), "tab.h" );
+    descfilename   = MALLOC( size + 5, char );
+    strcat( strcpy( descfilename, fileprefix), ".out" );
+    actout = openw( codefilename );
+    tokout = openw( headerfilename );
 
     defs();
     temp = NULL;
@@ -292,5 +350,8 @@ int main( int argc, char **argv )
     tail();
     fclose( temp );
     remove( tempfname );
+    FREE( codefilename );
+    FREE( headerfilename );
+    FREE( descfilename );
     return( 0 );
 }

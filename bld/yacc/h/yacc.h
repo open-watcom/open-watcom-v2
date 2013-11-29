@@ -297,6 +297,8 @@ extern char     showflag;
 extern char     translateflag;
 extern char     defaultwarnflag;
 
+extern char     *symprefix;
+
 extern a_sym    **symtab;
 extern a_sym    *symlist;
 extern a_sym    *startsym;
