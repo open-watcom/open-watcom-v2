@@ -39,13 +39,11 @@
 #include "types.h"
 #include "list.h"
 #include "sruinter.h"
-#include "ytab.gh"
+#include "ytab.h"
 #include "error.h"
 #include "mem.h"
 #include "filelist.h"
 #include "keywords.h"
-
-#include "sruparse.gh"
 
 #define ID_BUFLEN               (8*1024)
 #define BUF_SIZE_INCREMENT      1024
@@ -66,6 +64,7 @@ static char     *yyFileName;            /* name of Current File         */
 static char     idBuffer[ID_BUFLEN];    /* delayed token destroy buffer */
 static int      idPtr;                  /* pointer to current token     */
 
+#include "ytab.c"
 
 int wig_parse( void )
 /*******************/

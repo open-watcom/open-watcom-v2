@@ -14,6 +14,12 @@ exename     = wrc
 dllname     = wrcd
 !endif
 
+win_yacc_prefix = winy
+os2_yacc_prefix = os2y
+
+win_yacc_file = $(win_yacc_prefix)tab
+os2_yacc_file = $(os2_yacc_prefix)tab
+
 additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 
 !include cproj.mif
@@ -31,11 +37,6 @@ verrc_dll = $(dllname)
 !include verrc.mif
 
 .EXTENSIONS : .y .key .gh .res .rc
-
-win_yacc_options = -b winy -d -dd -db
-os2_yacc_options = -b os2y -d -dd -db
-win_yacc_file = winytab
-os2_yacc_file = os2ytab
 
 !ifeq release 0
 !ifeq host_os nt
@@ -242,6 +243,9 @@ $(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(version_res_dll_$(host_os
 !ifneq bootstrap 1
         $(wstrip) -q -a -r $@ . wrc.res
 !endif
+
+win_yacc_options = -b $(win_yacc_prefix) -d -dd -db
+os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db
 
 $(win_yacc_file).c : ../y/rcwin.y ../y/yydrivrw.c
         $(yacc) $(win_yacc_options) $< >$(nulldevice)

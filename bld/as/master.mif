@@ -34,14 +34,17 @@ additional_cleanup_subdir = $(stand_subdir)
 
 # yacc
 #########################
-yacc_flags      = -b asy -d -db -dd
-asi_yacc_flags  = -b asiy -d -db -dd
+yacc_prefix     = asy
+asi_yacc_prefix = asiy
+
+yacc_flags      = -b $(yacc_prefix) -d -db -dd
+asi_yacc_flags  = -b $(asi_yacc_prefix) -d -db -dd
 
 yacc_src        = as.y
 yacc_in         = as_in.y
 asi_yacc_in     = asi_in.y
-yacc_out        = asytab
-asi_yacc_out    = asiytab
+yacc_out        = $(yacc_prefix)tab
+asi_yacc_out    = $(asi_yacc_prefix)tab
 
 lex_flags       =
 lex_src         = scan.re

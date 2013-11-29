@@ -8,6 +8,12 @@ dlgprs_autodepends=.AUTODEPEND
 
 .EXTENSIONS: .gh
 
+win_yacc_prefix = winy
+os2_yacc_prefix = os2y
+
+win_yacc_file = $(win_yacc_prefix)tab
+os2_yacc_file = $(os2_yacc_prefix)tab
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -20,8 +26,8 @@ dialog.obj &
 main.obj &
 scanner.obj &
 styles.obj &
-prsbnd.obj &
-prsdlg.obj
+$(bnd_yacc_file).obj &
+$(dlg_yacc_file).obj
 
 browse_files = &
 chfile.obj  &
@@ -40,25 +46,22 @@ extra_l_flags=op map
 
 inc_dirs = -I. -I"../h"
 
-dlgprs.exe : prsdlg.gh prsbnd.gh $(c_objs)
+dlgprs.exe : $(dlg_yacc_file).h $(bnd_yacc_file).h $(c_objs)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(c_objs) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) file {$(c_objs)}
 !endif
 
-prsdlg.gh prsdlg.gc : ../y/prsdlg.y ../cpp/yydriver.cpp
-    $(yacc) -b $[@ $]@ >$(nulldevice)
-    @rm -f prsdlg.gh
-    @cp ytab.h prsdlg.gh >$(nulldevice)
-    @rm -f ytab.h
-    @sed -e "s/^static //" ytab.c >prsdlg.cpp
-    @rm -f ytab.c
+bnd_yacc_options = -b $(bnd_yacc_prefix) -d -db
+dlg_yacc_options = -b $(dlg_yacc_prefix) -d -db
 
-prsbnd.gh prsbnd.gc : ../y/prsbnd.y ../cpp/yydriver.cpp
-    $(yacc) -b $[@ $]@ >$(nulldevice)
-    @rm -f prsbnd.gh
-    @cp ytab.h prsbnd.gh >$(nulldevice)
-    @rm -f ytab.h
-    @sed -e "s/^static //" ytab.c >prsbnd.cpp
-    @rm -f ytab.c
+$(dlg_yacc_file).h $(dlg_yacc_file).cpp : ../y/prsdlg.y ../cpp/yydriver.cpp
+    $(yacc) $(dlg_yacc_options) $[@ $]@ >$(nulldevice)
+    @sed -e "s/^static //" $(dlg_yacc_file).c >$(dlg_yacc_file).cpp
+    @rm -f $(dlg_yacc_file).c
+
+$(bnd_yacc_file).h $(bnd_yacc_file).cpp : ../y/prsbnd.y ../cpp/yydriver.cpp
+    $(yacc) $(bnd_yacc_options) $[@ $]@ >$(nulldevice)
+    @sed -e "s/^static //" $(bnd_yacc_file).c >$(bnd_yacc_file).cpp
+    @rm -f $(bnd_yacc_file).c

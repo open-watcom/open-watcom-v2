@@ -43,6 +43,52 @@
 
 extern FILE *yyin;
 extern int wig_parse( void );
+
+static void finiProgram( void )
+/*****************************/
+{
+    FreeSru();
+    FiniError();
+    FiniLex();
+    FiniFileList();
+    FiniMem();
+}
+
+
+int Wigmain( int argc, char **argv )
+/**********************************/
+{
+    int         rc;
+
+    InitMem();
+    rc = setjmp( ErrorEnv );
+    if( rc == RC_SPAWN_SET ) {
+        // Program main line
+        InitFileList();
+        if( !ProcessOptions( argc, argv ) ) {
+
+            /* initialize various components */
+            InitError();
+            InitLex( GetInputFile() );
+            InitSru();
+
+            /* parse loop */
+            while( !wig_parse() );
+
+            /* do any post processing */
+            DoPostProcessing();
+
+            /* generate new sru file */
+            if( Options & OPT_MODIFY_SRU ) FiniSru();
+
+            /* generare new cpp/c/hpp files */
+            GenCPPInterface();
+        }
+    }
+    finiProgram();
+    return( rc == RC_ERROR );
+}
+
 #if defined( __DLL__ )
 #elif defined( __WINDOWS__ )
 int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
@@ -90,48 +136,3 @@ int main( int argc, char **argv )
     return( Wigmain( argc, argv ) );
 }
 #endif
-
-static void finiProgram( void )
-/*****************************/
-{
-    FreeSru();
-    FiniError();
-    FiniLex();
-    FiniFileList();
-    FiniMem();
-}
-
-
-int Wigmain( int argc, char **argv )
-/**********************************/
-{
-    int         rc;
-
-    InitMem();
-    rc = setjmp( ErrorEnv );
-    if( rc == RC_SPAWN_SET ) {
-        // Program main line
-        InitFileList();
-        if( !ProcessOptions( argc, argv ) ) {
-
-            /* initialize various components */
-            InitError();
-            InitLex( GetInputFile() );
-            InitSru();
-
-            /* parse loop */
-            while( !wig_parse() );
-
-            /* do any post processing */
-            DoPostProcessing();
-
-            /* generate new sru file */
-            if( Options & OPT_MODIFY_SRU ) FiniSru();
-
-            /* generare new cpp/c/hpp files */
-            GenCPPInterface();
-        }
-    }
-    finiProgram();
-    return( rc == RC_ERROR );
-}

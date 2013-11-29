@@ -36,7 +36,7 @@
 #include "global.h"
 #include "types.h"
 #include "sruinter.h"
-#include "ytab.gh"
+#include "ytab.h"
 #include "keywords.h"
 
 const keyword __based(__segname("_CONST")) Statements[] = {

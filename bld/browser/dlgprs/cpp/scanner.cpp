@@ -38,8 +38,8 @@
 
 #include "chbffile.h"
 #include "scanner.h"
-#include "prsbnd.gh"
-#include "prsdlg.gh"
+#include "bndytab.h"
+#include "dlgytab.h"
 
 const char * const   Scanner::_SpecialCharacters = ",{}|:()@#;";
 

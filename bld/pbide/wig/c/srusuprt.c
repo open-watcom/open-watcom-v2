@@ -41,7 +41,7 @@
 #include "hashtab.h"
 #include "srusuprt.h"
 #include "sruinter.h"
-#include "ytab.gh"
+#include "ytab.h"
 #include "mem.h"
 #include "keywords.h"
 #include "lexxer.h"

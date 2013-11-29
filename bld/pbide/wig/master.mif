@@ -32,10 +32,10 @@ objs += trmemcvr.obj trmem.obj
 !endif
 
 .h      : ../h;
-.c      : ../c;.;$(trmem_dir)
+.c      : ../c;$(trmem_dir)
 .y      : ../c
 
-inc_dirs = -I"../h" -I"$(trmem_dir)"
+inc_dirs = -I. -I"../h" -I"$(trmem_dir)"
 
 lnk = wig.lnk
 
@@ -62,16 +62,11 @@ extra_l_flags = option map
 extra_l_flags_dll = option map
 extra_l_flags_dll_win = op rwr export WEP RESIDENT
 
-$(xname) : sruparse.gh ytab.gh $(objs) $(__MAKEFILES__)
+$(xname) : ytab.h $(objs) $(__MAKEFILES__)
         @%create $(lnk)
         @for %i in ($(libs)) do @@%append $(lnk) library %i
         @for %i in ($(objs)) do @@%append $(lnk) file %i
         $(linker) name $^@ $(lflags) @$(lnk)
 
-sruparse.gh ytab.gh: sruparse.y ../c/yydriver.c
-        @wtouch $^@
-        @rm $^@
-        $(yacc) $[@ ../c/yydriver.c > $(nulldevice)
-        @cp ytab.c $^@
-        @cp ytab.h ytab.gh
-        @rm ytab.c ytab.h
+ytab.c ytab.h: sruparse.y ../c/yydriver.c
+        $(yacc) -d $[@ ../c/yydriver.c > $(nulldevice)

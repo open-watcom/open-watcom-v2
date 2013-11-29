@@ -7,13 +7,15 @@ host_cpu = 386
 
 xname = defgen.exe
 
+additional_cleanup = ytab.*
+
 lnk = $(name).lnk
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I..
+inc_dirs = -I. -I..
 
 objs = ytab.obj main.obj scan.obj error.obj semantic.obj output.obj
 
@@ -23,6 +25,5 @@ $(xname) : ytab.h ytab.c $(objs) $(__MAKEFILES__)
 .c: ..
 
 ytab.c ytab.h: ../yydriver.c ../defgen.y
-        $(yacc) -d $]@ $[@
+        $(yacc) -d -dd $]@ $[@
 
-additional_cleanup = ytab.h ytab.c
