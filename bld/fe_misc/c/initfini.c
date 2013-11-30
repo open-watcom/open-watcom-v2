@@ -33,14 +33,14 @@
     are completed when that point is released.  Completions are in reverse
     order of the initializations.
 
-    Split entries generate a SPLIT_INIT entry which cause splitInit to be
+    Split entries generate a SPLITINIT entry which cause splitInit to be
     invoked as the initialization routine.
 
     SplitInit invokes the actual initialization routine and then links the
-    SPLIT_FINI entry contained within the SPLIT_INIT entry into a pending set.
+    SPLITFINI entry contained within the SPLITINIT entry into a pending set.
 
-    The SPLIT_FINI entry points at both the initialization and completion
-    exit points.  When either of these is released, the SPLIT_FINI entry is
+    The SPLITFINI entry points at both the initialization and completion
+    exit points.  When either of these is released, the SPLITFINI entry is
     removed from the pending set and the indicated completion routine is
     invoked.
 
@@ -50,45 +50,105 @@
     Split entries are done after the completion of the EXIT_REG entries, in
     reverse order of initialization.
 
-*/
+    this module depend on initspec.h
 
-// make this module depend on initspec.h
-#define INITSPEC_TABLES
+*/
 
 #include "initdefs.h"
 #include "ringcarv.h"
 
-typedef struct split_init SPLIT_INIT;
-typedef struct split_fini SPLIT_FINI;
+typedef void (*ac_callback)( EXIT_POINT * );
 
-struct split_fini {                 // SPLIT_FINI -- entry for completion
-    SPLIT_FINI* next;               // - next entry in pending ring
-    INITFINI* orig;                 // - actual entry
-    EXIT_POINT* init;               // - exit point for initialization
-    EXIT_POINT* fini;               // - exit point for completion
-};
+static EXIT_POINT *exit_stack;              // stack of active exit points
+static ac_callback acquisition_callback;    // call-back at exit-point acquisition
 
-struct split_init {                 // SPLIT_INIT -- entry for initialization
-    INITFINI defn;                  // - standard entry for initialization
-    SPLIT_FINI fini;                // - entry for completion
-};
+#ifdef SPLIT_REQD
+#define SPLIT_NAME( name, fini )    split_ ## name ## _ ## fini
+#else
+#define SPLIT_NAME( name, fini )    INIT_FINI_NAME( name )
+#endif
 
-
-static EXIT_POINT *exit_stack;  // stack of active exit points
-static void (*acquisition_callback) // call-back at exit-point acquisition
-    ( EXIT_POINT* );
+// The following sets up definitions for any split entries
 
 #ifdef SPLIT_REQD
 
-static SPLIT_FINI *split_hdr;   // ring of active split entries
+typedef struct split_init       SPLITINIT;
+typedef struct split_fini       SPLITFINI;
+
+struct split_fini {             // SPLITFINI -- entry for completion
+    SPLITFINI       *next;      // - next entry in pending ring
+    INITFINI        *orig;      // - actual entry
+    EXIT_POINT      *init;      // - exit point for initialization
+    EXIT_POINT      *fini;      // - exit point for completion
+};
+
+struct split_init {             // SPLITINIT -- entry for initialization
+    INITFINI        defn;       // - standard entry for initialization
+    SPLITFINI       fini;       // - entry for completion
+};
+
+static void splitInit( INITFINI *d );
+static void splitFini( INITFINI *d );
+
+// The following sets up static definitions for any split entries
+
+#define SPLIT_INIT( name, fini )                    \
+    static SPLITINIT SPLIT_NAME( name, fini ) = {   \
+      { &splitInit                                  \
+        , &InitFiniStub                             \
+      }                                             \
+      , { NULL                                      \
+        , &INIT_FINI_NAME( name )                   \
+        , NULL                                      \
+        , &EXIT_POINT_NAME( fini )                  \
+      }                                             \
+    };
+
+#define EXIT_BEG( name )
+#define EXIT_REG( name )
+#define EXIT_END
+
+#include "initspec.h"           // supplied by front-end
+
+#undef EXIT_BEG
+#undef EXIT_REG
+#undef EXIT_END
+#undef SPLIT_INIT
+
+#endif // SPLIT_REQD
+
+// The following sets up the standard tables
+
+#define EXIT_BEG( name )                    \
+    EXIT_POINT EXIT_POINT_NAME( name ) =    \
+    {   NULL, 0, {
+
+#define EXIT_REG( name )            &INIT_FINI_NAME( name ),
+
+#define EXIT_END                            \
+        NULL }                              \
+    };
+
+#define SPLIT_INIT( name, fini )    (INITFINI *)&SPLIT_NAME( name, fini ),
+
+#include "initspec.h"           // supplied by front-end
+
+#undef EXIT_BEG
+#undef EXIT_REG
+#undef EXIT_END
+#undef SPLIT_INIT
+
+#ifdef SPLIT_REQD
+
+static SPLITFINI *split_hdr;        // ring of active split entries
 
 static void splitInit(              // INITIALIZE SPLIT ENTRY
     INITFINI *d )                   // - initialization entry
 {
-    SPLIT_INIT *init;               // - initialization entry
-    SPLIT_FINI *fptr;               // - points at completion
+    SPLITINIT *init;                // - initialization entry
+    SPLITFINI *fptr;                // - points at completion
 
-    init = (SPLIT_INIT*) d;
+    init = (SPLITINIT *)d;
     fptr = &init->fini;
     (*fptr->orig->init_rtn)( fptr->orig );
     fptr->init = exit_stack;
@@ -98,63 +158,20 @@ static void splitInit(              // INITIALIZE SPLIT ENTRY
 static void splitFini(              // COMPLETE SPLIT ENTRY
     INITFINI *d )                   // - completion entry
 {
-    SPLIT_FINI* fptr;               // - completion entry
+    SPLITFINI *fptr;                // - completion entry
 
-    fptr = (SPLIT_FINI*) d;
+    fptr = (SPLITFINI *)d;
     RingPrune( &split_hdr, fptr );
     (*fptr->orig->fini_rtn)( fptr->orig );
 }
 
-
-// The following sets up static definitions for any split entries
-
-#define SPLIT_NAME( name, fini ) split_ ## name ## _ ## fini
-
-#define SPLIT_INIT( name, fini )                    \
-    static SPLIT_INIT SPLIT_NAME( name, fini )      \
-    =   { { &splitInit                              \
-          , &InitFiniStub                           \
-          }                                         \
-        , { NULL                                    \
-          , &INIT_FINI_NAME( name )                 \
-          , NULL                                    \
-          , &EXIT_POINT_NAME( fini )                \
-          }                                         \
-        };
-
 #endif // SPLIT_REQD
 
-#define EXIT_BEG( name )
-#define EXIT_REG( name )
-#define EXIT_END
-
-#include "initfini.h"
-
-
-// The following sets up the standard tables
-
-#define EXIT_BEG( name )                \
-    EXIT_POINT EXIT_POINT_NAME( name ) =\
-    {   NULL, 0, {
-
-#define EXIT_REG( name )                \
-        &INIT_FINI_NAME( name ),
-
-#define EXIT_END                        \
-        NULL }                          \
-    };
-
-#define SPLIT_INIT( name, fini )        \
-        (INITFINI*)&SPLIT_NAME( name, fini ),
-
-#include "initspec.h"       // front-end dependent initialization
-
-
 void ExitPointAcquireRtn(       // ESTABLISH EXIT_POINT
-    EXIT_POINT* est )           // - point to be established
+    EXIT_POINT *est )           // - point to be established
 {
-    INITFINI** iptr;            // - current init/completion entry ptr.
-    INITFINI* ient;             // - current init/completion entry
+    INITFINI **iptr;            // - current init/completion entry ptr.
+    INITFINI *ient;             // - current init/completion entry
 
 #if 0
 //**** this is a problem (maybe solved by a front-end callback?)
@@ -174,12 +191,12 @@ void ExitPointAcquireRtn(       // ESTABLISH EXIT_POINT
 
 
 static void releaseExitPoint(   // CALL COMPLETION RTN.S FOR AN EXIT_POINT
-    EXIT_POINT* rel )           // - point being released
+    EXIT_POINT *rel )           // - point being released
 {
-    INITFINI** iptr;            // - current init/completion entry ptr.
-    INITFINI* ient;             // - current init/completion entry
+    INITFINI **iptr;            // - current init/completion entry ptr.
+    INITFINI *ient;             // - current init/completion entry
 #ifdef SPLIT_REQD
-    SPLIT_FINI* fptr;           // - current pending split entry
+    SPLITFINI *fptr;            // - current pending split entry
 #endif
 
     for( iptr = rel->registered; *iptr != NULL; ++iptr );
@@ -191,7 +208,7 @@ static void releaseExitPoint(   // CALL COMPLETION RTN.S FOR AN EXIT_POINT
 #ifdef SPLIT_REQD
     RingIterBegSafe( split_hdr, fptr ) {
         if( fptr->init == rel || fptr->fini == rel ) {
-            splitFini( (INITFINI*) fptr );
+            splitFini( (INITFINI *)fptr );
         }
     } RingIterEndSafe( fptr )
 #endif
@@ -199,10 +216,10 @@ static void releaseExitPoint(   // CALL COMPLETION RTN.S FOR AN EXIT_POINT
 
 
 void ExitPointReleaseRtn(       // RELEASE EXIT_POINT
-    EXIT_POINT* rel )           // - point to be released
+    EXIT_POINT *rel )           // - point to be released
 {
-    EXIT_POINT* top;            // - point on top of exit stack
-    EXIT_POINT* previous;       // - next point on top of exit stack
+    EXIT_POINT *top;            // - point on top of exit stack
+    EXIT_POINT *previous;       // - next point on top of exit stack
 
     previous = exit_stack;
     do {
@@ -215,27 +232,26 @@ void ExitPointReleaseRtn(       // RELEASE EXIT_POINT
 
 
 void InitFiniStub(              // STUB FOR NULL INIT/FINI
-    INITFINI* defn )            // - definition
+    INITFINI *defn )            // - definition
 {
     defn = defn;
 }
 
 
-static void defaultAcquisitionCallback // default call back at acquisition
-    ( EXIT_POINT* ex )          // - acquisition
+static void defaultAcquisitionCallback( // default call back at acquisition
+    EXIT_POINT *ex )                    // - acquisition
 {
     ex = ex;
 }
 
 
 void InitFiniStartup(           // START-UP FOR INIT/FINI
-    void (*callback)            // - call-back at aquisition
-        ( EXIT_POINT* ) )       // - - exit-point data structure
+    ac_callback cb )            // - call-back at aquisition
 {
-    if( NULL == callback ) {
+    if( NULL == cb ) {
         acquisition_callback = &defaultAcquisitionCallback;
     } else {
-        acquisition_callback = callback;
+        acquisition_callback = cb;
     }
     exit_stack = NULL;
 #ifdef SPLIT_REQD

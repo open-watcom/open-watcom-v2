@@ -43,6 +43,11 @@ extern "C" {
 
 #include "initfini.h"
 
+#undef EXIT_BEG
+#undef EXIT_REG
+#undef EXIT_END
+#undef SPLIT_INIT
+
 #ifdef __cplusplus
 };
 #endif

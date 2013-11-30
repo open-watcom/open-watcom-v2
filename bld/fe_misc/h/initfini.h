@@ -32,10 +32,6 @@
 #ifndef __INITFINI_H__
 #define __INITFINI_H__
 
-#ifdef header
-#   include header
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,18 +39,17 @@ extern "C" {
 #include <stddef.h>
 
 typedef struct initfini     INITFINI;
-typedef struct splitinit    SPLITINIT;
 typedef struct exit_point   EXIT_POINT;
 
 struct initfini {                   // INITFINI -- register init/fini
-    void (*init_rtn)( INITFINI* );  // - initialization routine
-    void (*fini_rtn)( INITFINI* );  // - completion routine
+    void (*init_rtn)( INITFINI * ); // - initialization routine
+    void (*fini_rtn)( INITFINI * ); // - completion routine
 };
 
 struct exit_point {                 // EXIT_POINT -- registration point
-    EXIT_POINT* previous;           // - previous exit point
-    unsigned subsequent : 1;        // - TRUE ==> not first time
-    INITFINI* registered[];         // - registrations
+    EXIT_POINT  *previous;          // - previous exit point
+    unsigned    subsequent : 1;     // - TRUE ==> not first time
+    INITFINI    *registered[];      // - registrations
 };
 
 
@@ -71,9 +66,7 @@ struct exit_point {                 // EXIT_POINT -- registration point
 
 #ifdef __cplusplus
 #define INITDEFN( defn, init, fini )                        \
-    extern "C" {                                            \
-    INITFINI INIT_FINI_NAME( defn ) = { &init, &fini };     \
-    };
+    extern "C" INITFINI INIT_FINI_NAME( defn ) = { &init, &fini };
 #else
 #define INITDEFN( defn, init, fini ) \
     INITFINI INIT_FINI_NAME( defn ) = { &init, &fini };
@@ -96,16 +89,10 @@ void InitFiniStub(              // STUB FOR NULL INIT/FINI
     INITFINI* defn )            // - definition
 ;
 
-
-#endif
-
 #include "initspec.h"           // supplied by front-end
 
 #ifdef __cplusplus
 };
 #endif
 
-#undef EXIT_BEG
-#undef EXIT_REG
-#undef EXIT_END
-#undef SPLIT_INIT
+#endif
