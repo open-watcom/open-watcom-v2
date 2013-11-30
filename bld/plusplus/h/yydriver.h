@@ -52,7 +52,6 @@ extern void ParsePushQualification( void * );
 extern void *ParsePopQualification( void );
 extern void *ParseCurrQualification( void );
 extern SYMBOL ParseCurrFunction( void );
-static void recordTemplateCtorInitializer( PARSE_STACK * );
 
 #define _YYDRIVER_H
 #endif

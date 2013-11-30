@@ -24,20 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  define codes for run-time functions
 *
 ****************************************************************************/
 
 
-// RTFUNCOD -- define codes for run-time functions
-//
-// 91/11/04 -- J.W.Welch        -- defined
+// type for run-time function code
 
-#define RTFUN( code, name ) code
-#define RTDAT( code, name ) code
-#define RTFNC( code, name ) code
-#define RTFNP( code, name ) code
+typedef enum {
+    #define RTFUN( code, name ) code
+    #define RTDAT( code, name ) code
+    #define RTFNC( code, name ) code
+    #define RTFNP( code, name ) code
 
-enum
-#include "rtfuns.h"
+    #include "_rtfuns.h"
+
+    #undef RTFUN
+    #undef RTDAT
+    #undef RTFNC
+    #undef RTFNP
+} RTF;

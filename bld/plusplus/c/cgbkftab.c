@@ -42,7 +42,7 @@
 #include "ring.h"
 #include "initdefs.h"
 #include "dbg.h"
-#include "rtfuncod.h"
+#include "rtfuns.h"
 
 static STAB_CTL fstab;          // function state table instance
 static STAB_DEFN fStabDefn;     // function state table definition

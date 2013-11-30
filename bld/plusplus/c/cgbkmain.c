@@ -43,7 +43,6 @@
 #include "ring.h"
 #include "conpool.h"
 #include "stringl.h"
-#include "rtfuncod.h"
 #include "carve.h"
 #include "label.h"
 #include "vstk.h"
@@ -98,14 +97,17 @@
         DbgAssert( ic_sp < IC_PARM_STACK_SIZE ); \
         ic_parms[ic_sp++].ivalue = i;
 #define IC_PARM_POP_PTR( p )            \
-        DbgAssert( ic_sp != 0 ); \
+        DbgAssert( ic_sp != 0 );        \
         p = ic_parms[--ic_sp].pvalue;
 #define IC_PARM_POP_INT( i )            \
-        DbgAssert( ic_sp != 0 ); \
+        DbgAssert( ic_sp != 0 );        \
         i = ic_parms[--ic_sp].ivalue;
 #define IC_PARM_DONE                    \
         DbgAssert( ic_sp == 0 );        \
         ic_sp = 0;
+#define IC_PARM_SKIP                    \
+        DbgAssert( ic_sp != 0 );        \
+        --ic_sp;
 
 #ifndef NDEBUG
     #include <stdio.h>
@@ -464,7 +466,7 @@ static unsigned cgDestructGroup(// DESTRUCT UP TO STATE ENTRY
     SE* se;                     // - state entry in state table
     SE* try_se;                 // - position preceding last try
     unsigned cdtor;             // - current CDTOR parameter
-    label_handle virt_label;    // - label for virtual by-pass test
+    label_handle virt_label = NULL; // - label for virtual by-pass test
     unsigned destructions;      // - # destructions
     COND_LABEL* lab_ring;       // - ring hdr. for conditional labels
 
@@ -960,12 +962,12 @@ static void setupDtorOtab(      // SETUP OBJECT STATE TABLE FOR DTOR
     FN_CTL* fctl )              // - current file generation information
 {
     TYPE type;                  // - type for dtor
-    STAB_OBJ* obj;              // - object definition
+//    STAB_OBJ* obj;              // - object definition
 
     type = SymClass( fctl->func );
     if( initCDtorStateTable( fctl, type ) ) {
         ftabAddSubobjs( fctl );
-        obj = fctl->obj_registration;
+//        obj = fctl->obj_registration;
         if( DtmTabular( fctl ) ) {
             registerObject( fctl );
         }
@@ -978,14 +980,12 @@ static SYMBOL saveGenedExpr(    // SAVE OPTIONAL GENERATED EXPRESSION
 {
     SYMBOL temp;                // - for saved expression value
 
+    temp = NULL;
     switch( CgExprStackSize() ) {
       case 0 :
-        temp = NULL;
         break;
       case 1 :
-        if( CgExprPopGarbage() ) {
-            temp = NULL;
-        } else {
+        if( !CgExprPopGarbage() ) {
             temp = CgVarTempTyped( exprn_type );
             CgAssign( CgSymbol( temp ), CgExprPop(), exprn_type );
         }
@@ -1245,7 +1245,7 @@ static cg_name accessAuto(      // get cg_name for an auto var
     FN_CTL *fctl,               // - function information
     SYMBOL sym )                // - sym
 {
-    cg_name cgname;
+    cg_name cgname = NULL;
 
     if( sym == file_ctl->opt_retn && CgRetnOptActive( fctl ) ) {
         if( file_ctl->u.s.opt_retn_val ) {
@@ -1925,14 +1925,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_CALL_EXEC :               // EXECUTE FUNCTION CALL
           { call_handle handle;             // - handle for call
             cg_type retn_type;              // - return type
-            CALL_STAB* call_entry;          // - entry for call
+//            CALL_STAB* call_entry;          // - entry for call
             retn_type = CallStackRetnType();
             handle = CallStackPop();
-            call_entry = CgBackCallGened( handle );
+//            call_entry = CgBackCallGened( handle );
+            CgBackCallGened( handle );
             dtor_last_reqd = NULL;
             dtor_kind = 0;
-            CgExprPush( CgFetchType( CGCall( handle ), retn_type )
-                      , exprn_type );
+            CgExprPush( CgFetchType( CGCall( handle ), retn_type ), exprn_type );
           } break;
 
           case IC_CALL_SETUP_IND :          // SETUP INDIRECT FUNCTION CALL
@@ -2365,8 +2365,10 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
           case IC_DTOBJ_PUSH :              // DTORABLE OBJECT: START
-          { OBJ_INIT* init;                 // - new initialization object
-            init = ObjInitPush( ins_value.pvalue );
+//          { OBJ_INIT* init;                 // - new initialization object
+//            init = ObjInitPush( ins_value.pvalue );
+          {                                 // - new initialization object
+            ObjInitPush( ins_value.pvalue );
           } break;
 
           case IC_DTOBJ_SYM :               // DTORABLE OBJECT: SYMBOL
@@ -2421,10 +2423,10 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_DTARRAY_INDEX :           // CTOR'ED ARRAY ELEMENT
             if( DtmTabular( fctl ) ) {
                 OBJ_INIT* init;             // - top initialization object
-                SE* se;                     // - stacked entry
+//                SE* se;                     // - stacked entry
                 cg_name expr;               // - expression pushed
                 init = ObjInitArray();
-                se = init->obj_se;
+//                se = init->obj_se;
                 expr = ObjInitAssignIndex( fctl, init, ins_value.uvalue + 1 );
                 CgExprPush( expr, TY_POINTER );
             } else {
@@ -2536,9 +2538,10 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           { SYMBOL table_sym;
             target_offset_t vb_offset;
             unsigned vb_index;
-            target_offset_t exact_delta;
+//            target_offset_t exact_delta;
             boolean vbptr;
-            IC_PARM_POP_INT( exact_delta );
+//            IC_PARM_POP_INT( exact_delta );
+	        IC_PARM_SKIP;
             IC_PARM_POP_INT( vb_index );
             IC_PARM_POP_INT( vb_offset );
             IC_PARM_POP_PTR( table_sym );
@@ -3202,15 +3205,15 @@ static void remove_file(        // REMOVE FILE, IF NOT INLINE
 static void writeVirtualFile(   // EMIT AND FREE A VIRTUAL FILE
     CGFILE *file_ctl )          // - current file
 {
-    SYMBOL func;                // - function symbol
-    FN_CTL* fctl;               // - file control
+//    SYMBOL func;                // - function symbol
+//    FN_CTL* fctl;               // - file control
 
     ExtraRptIncrementCtr( ctr_funcs );
 //  new_ctor_ptr = NULL;
     autos = NULL;
     FstabInit();
-    func = file_ctl->symbol;
 #ifndef NDEBUG
+    func = file_ctl->symbol;
     if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ||
         PragDbgToggle.dump_exec_ic ) {
         if( func == NULL ) {
@@ -3225,7 +3228,8 @@ static void writeVirtualFile(   // EMIT AND FREE A VIRTUAL FILE
         DbgGenned( func );
     }
 #endif
-    fctl = emit_virtual_file( file_ctl, NULL );
+//    fctl = emit_virtual_file( file_ctl, NULL );
+    emit_virtual_file( file_ctl, NULL );
 #ifndef NDEBUG
     if( PragDbgToggle.dump_stab ) {
         FstabDump();
@@ -3418,18 +3422,19 @@ void FEGenProc(                 // INLINE SUPPORT
     call_handle handle )        // - handle of called function
 {
     CGFILE *file_ctl;           // - file control info
-    FN_CTL* fctl;               // - file-gen info. for caller
-    SE* curr;                   // - current state entry for caller
+//    FN_CTL* fctl;               // - file-gen info. for caller
+//    SE* curr;                   // - current state entry for caller
     SYMBOL sym = _sym;          // - function to be in-lined
 
                                 // - CGFILE information stacked
     CGIOBUFF *buffering;        // - - buffering control
     CGINTER *cursor;            // - - cursor in block
 
-    fctl = FnCtlTop();
+//    fctl = FnCtlTop();
+    FnCtlTop();
     ExtraRptIncrementCtr( ctr_inlines );
-    curr = CallStabStateTablePosn( handle );
 #ifndef NDEBUG
+    curr = CallStabStateTablePosn( handle );
     if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
         VBUF vbuf;
         if( PragDbgToggle.dump_exec_ic )
@@ -3445,6 +3450,8 @@ void FEGenProc(                 // INLINE SUPPORT
         }
         VbufFree( &vbuf );
     }
+#else
+    CallStabStateTablePosn( handle );
 #endif
     SymTransNewBlock();
     ++ depth_inline;

@@ -35,7 +35,7 @@
 #include "memmgr.h"
 #include "fnovload.h"
 #include "calldiag.h"
-#include "rtfuncod.h"
+#include "rtfuns.h"
 #include "fold.h"
 #include "defarg.h"
 #include "typesig.h"

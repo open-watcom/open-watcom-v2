@@ -36,7 +36,7 @@
 #include "ptree.h"
 #include "specname.h"
 #include "class.h"
-#include "rtfuncod.h"
+#include "rtfuns.h"
 #include "analtyid.h"
 #include "rtti.h"
 

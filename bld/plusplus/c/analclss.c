@@ -86,7 +86,7 @@ A destructor will return 'this' as its return value.
 #include "fnovload.h"
 #include "ring.h"
 #include "vstk.h"
-#include "rtfuncod.h"
+#include "rtfuns.h"
 #include "class.h"
 #include "defarg.h"
 #include "ctexcept.h"
@@ -144,8 +144,6 @@ static type_flag cvFlags(       // GET CV FLAGS FOR AN OPERAND
     TypeModFlags( TypeReferenced( expr->type ), &flags );
     return flags & TF1_CV_MASK;
 }
-
-static SYMBOL getVBTableSym( SCOPE, target_offset_t );
 
 static void returnThis(         // RETURN "this" value
     SYMBOL rtn )                // - routine being compiled
@@ -514,7 +512,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
 {
     PTREE src;                  // - source expression
     PTREE tgt;                  // - target expression
-    PTREE expr;                 // - expression to be emitted
+    PTREE expr = NULL;          // - expression to be emitted
     SYMBOL op_equal;            // - op= for array base element
     SYMBOL assop;               // - assignment operator
     target_offset_t offset;     // - offset of element
@@ -798,11 +796,12 @@ static PTREE doBinaryCopy(      // DO A BINARY COPY
     unsigned code_src )         // - error for truncation on source
 {
     TYPE tgt_type;              // - type for class being assigned to
-    TYPE src_type;              // - type for class being assigned from
+//    TYPE src_type;              // - type for class being assigned from
 
     tgt_type = checkCopyModel( tgt, code_tgt );
     src = NodeRvalue( src );
-    src_type = checkCopyModel( src, code_src );
+//    src_type = checkCopyModel( src, code_src );
+    checkCopyModel( src, code_src );
     if( OMR_CLASS_REF == ObjModelArgument( tgt_type ) ) {
         src->flags &= ~PTF_CLASS_RVREF;
         src->flags |= PTF_LVALUE | PTF_MEMORY_EXACT;
@@ -891,14 +890,15 @@ static SEARCH_RESULT *accessDefaultCopy( // ACCESS DEFAULT-COPY CTOR
     TYPE type,                  // - class type
     SYMBOL *ctor )              // - constructor
 {
-    SYMBOL sym;
+//    SYMBOL sym;
     SEARCH_RESULT *result;
     NAME name;
 
     name = CppConstructorName();
     result = classResult( type, ctor, name, NULL );
     if( result == NULL ) {
-        sym = ClassAddDefaultCopy( type->u.c.scope );
+//        sym = ClassAddDefaultCopy( type->u.c.scope );
+        ClassAddDefaultCopy( type->u.c.scope );
         result = classResult( type, ctor, name, NULL );
     }
     return result;
@@ -1035,7 +1035,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
     FNOV_DIAG fnov_diag;        // - for diagnostics
     TOKEN_LOCN err_locn;        // - location for errors
     SEARCH_RESULT* result;      // - search result for symbol
-    TYPE udcf_type;             // - target type for UDCF
+    TYPE udcf_type = NULL;      // - target type for UDCF
     PTREE src_list[1];          // - source list
 
     type_left = NodeType( left );
@@ -1053,6 +1053,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
                     , &is_ctor
                     , &fnov_list
                     , &fnov_diag );
+    opt = CALL_OPT_ERR;
     switch( rank ) {
       case OV_RANK_UD_CONV :
         ctor_udc = fnov_list->sym;
@@ -1095,7 +1096,6 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
         FnovFreeDiag( &fnov_diag );
         ConversionTypesSet( type_left, type_right );
         ConversionDiagnoseInf();
-        opt = CALL_OPT_ERR;
         break;
       case OV_RANK_NO_MATCH :
 #if 0
@@ -1108,7 +1108,6 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
                       , &fnov_diag );
 #endif
         FnovFreeDiag( &fnov_diag );
-        opt = CALL_OPT_ERR;
         break;
       DbgDefault( "FindConvFunc -- bad return from overloading" );
     }
@@ -1121,8 +1120,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
             } else {
                 src_type = SymFuncArgList( ctor_udc )->type_list[0];
             }
-            if( ! temp_ok
-             && NodeNonConstRefToTemp( src_type, right ) ) {
+            if( !temp_ok && NodeNonConstRefToTemp( src_type, right ) ) {
                 opt = CALL_OPT_ERR;
             }
         }
@@ -2521,7 +2519,7 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
         if( iter_status == TITER_NONE ) break;
         depth = 0;
         for(;;) {
-            boolean is_exact;
+//            boolean is_exact;
             TITER sub_status = CDoptIterNextElement( iter );
             switch( sub_status ) {
               case TITER_NONE :
@@ -2536,7 +2534,7 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
               case TITER_CLASS_EXACT :
               case TITER_CLASS_DBASE :
               case TITER_CLASS_VBASE :
-                is_exact = CDoptIterExact( iter );
+//                is_exact = CDoptIterExact( iter );
                 dtorSubObject( CDoptIterFunction( iter ) );
                 regster = TRUE;
                 continue;

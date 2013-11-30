@@ -37,8 +37,7 @@
 #include "codegen.h"
 #include "cgbackut.h"
 #include "initdefs.h"
-
-#include "rtfuncod.h"
+#include "rtfuns.h"
 #include "name.h"
 
 #if _CPU != _AXP

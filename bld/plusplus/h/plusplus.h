@@ -126,12 +126,13 @@ typedef unsigned MSG_NUM;           // - message number
 #define NULL_CGREFNO    (0)
 typedef unsigned        CGLABEL;
 typedef unsigned        CGREFNO;
-typedef unsigned        RTF;        // type for run-time function code
 typedef unsigned        LINE_NO;    // a line number
 typedef unsigned        COLUMN_NO;  // a column number
 typedef struct _src_file *SRCFILE;  // SOURCE FILE (PERMANENT)
 typedef struct symbol   *SYMBOL;    // symbol pointer
 typedef struct type     *TYPE;      // type pointer
+
+#include "rtfuncod.h"               // type for run-time function code
 
 #include "cg.h"
 #define fe_seg_id       segment_id  // segment ids (use cg prototype, must be a signed type)

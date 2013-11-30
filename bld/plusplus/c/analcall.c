@@ -861,7 +861,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
     intrinsic_mapping *intr_map;// - mapping for intrinsic function
     SEARCH_RESULT *result;      // - searching result
     boolean membptr_deref;      // - TRUE ==> member pointer dereference
-    boolean has_ellipsis;       // - TRUE ==> ellipsis in argument list
+//    boolean has_ellipsis;       // - TRUE ==> ellipsis in argument list
     boolean virtual_call;       // - TRUE ==> virtual call
     TEMP_PT_LIST default_list;  // - default PTREE list
     TEMP_ARG_LIST default_args; // - default arg_list
@@ -1148,7 +1148,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         }
         ftype = type;
         type = TypedefModifierRemove( type );
-        has_ellipsis = TypeHasEllipsisArg( type );
+//        has_ellipsis = TypeHasEllipsisArg( type );
         type = type->of;
         {
             TYPE tgt = TypeReference( type );

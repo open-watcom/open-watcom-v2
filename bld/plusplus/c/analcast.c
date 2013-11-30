@@ -614,10 +614,14 @@ static void setConversionNode   // SET CONVERSION TYPE INTO PTREE NODE
 static PTREE doReintMPtrToMPtr  // DO A RE-INTERPRET MEMB-PTR CONVERSION
     ( CONVCTL* ctl )            // - conversion control
 {
+#ifndef NDEBUG
     unsigned retn;
     retn = MembPtrReint( &ctl->expr->u.subtree[1], ctl->tgt.orig );
     DbgVerify( CNV_OK == retn, "ReintCast -- should work" );
     DbgVerify( ctl->expr->u.subtree[1]->cgop != CO_MEMPTR_CONST, "ReintCast -- mp const" );
+#else
+    MembPtrReint( &ctl->expr->u.subtree[1], ctl->tgt.orig );
+#endif
     stripOffCastOk( ctl );
     return ctl->expr;
 }
@@ -630,9 +634,7 @@ static PTREE doCgConversion     // DO A CONVERSION ACCOMPLISHED BY CODEGEN
 {
     TYPE result = NodeType( ctl->expr->u.subtree[1] );
 
-    if( result != ctl->tgt.unmod
-     && ! TypesIdentical( TypedefModifierRemoveOnly( result )
-                        , ctl->tgt.unmod ) ) {
+    if( result != ctl->tgt.unmod && ! TypesIdentical( TypedefModifierRemoveOnly( result ), ctl->tgt.unmod ) ) {
         ctl->keep_cast = TRUE;
     }
     ctl->expr->cgop = CO_CONVERT;
@@ -1362,8 +1364,7 @@ static CAST_RESULT arithToArith     // EXPLICIT, IMPLICIT ARITH->ARITH
 {
     CAST_RESULT result;             // - cast result
 
-    if( NULL != SegmentShortType( ctl->tgt.unmod )
-     && NULL == IntegralType( ctl->src.unmod ) ) {
+    if( NULL != SegmentShortType( ctl->tgt.unmod ) && NULL == IntegralType( ctl->src.unmod ) ) {
         result = DIAG_CAST_ILLEGAL;
     } else if( ctl->tgt.unmod->id == TYP_BOOL ) {
         result = CAST_CONVERT_TO_BOOL;
@@ -1388,8 +1389,7 @@ static CAST_RESULT implicitArithToPtr // IMPLICIT ARITH,ENUM->PTR
 {
     CAST_RESULT result;             // - cast result
 
-    if( ctl->src.unmod->id == TYP_SINT
-     || NULL != IntegralType( ctl->src.unmod ) ) {
+    if( ctl->src.unmod->id == TYP_SINT || NULL != IntegralType( ctl->src.unmod ) ) {
         if( zeroSrc( ctl ) ) {
             result = CAST_REPLACE_INTEGRAL;
         } else if( TypeIsBasedPtr( ctl->tgt.unmod ) ) {
@@ -1414,10 +1414,8 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
     CAST_RESULT result;             // - cast result
 
     ConvCtlAnalysePoints( ctl );
-    if( ctl->implicit_cast_ok
-     || ( ctl->explicit_cast_ok && ctl->clscls_explicit ) ) {
-        if( ctl->to_base
-         && ctl->to_ambiguous ) {
+    if( ctl->implicit_cast_ok || ( ctl->explicit_cast_ok && ctl->clscls_explicit ) ) {
+        if( ctl->to_base && ctl->to_ambiguous ) {
             result = DIAG_CAST_TO_AMBIGUITY;
         } else {
             CNV_RETN retn = PcPtrValidate( ctl->tgt.unmod
@@ -1426,6 +1424,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
                                          , ctl->src.pc_ptr
                                          , ctl->expr
                                          , ctl->req );
+            result = DIAG_CAST_ILLEGAL;
             switch( retn ) {
               DbgDefault( "analysePtrToPtr -- funny pc validation" );
               case CNV_IMPOSSIBLE :
@@ -1476,8 +1475,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
             ctl->cv_mismatch = FALSE;
             result = DIAG_NOT_CONST_REF;
         }
-    } else if( ctl->from_void
-            && ( ctl->clscls_explicit || ctl->clscls_static ) ) {
+    } else if( ctl->from_void && ( ctl->clscls_explicit || ctl->clscls_static ) ) {
         result = CAST_DO_CGCONV;
     } else {
         result = DIAG_CAST_ILLEGAL;
@@ -2113,6 +2111,9 @@ PTREE CastConst                 // CONST_CASTE< TYPE >( EXPR )
             result = DIAG_CONST_CAST_MPTR_TYPE;
         }
         break;
+      default:
+        result = CAST_ERR_NODE;
+        break;
     }
     return doCastResult( &ctl, result );
 }
@@ -2211,6 +2212,9 @@ PTREE CastReint                 // REINTERPRET_CASTE< TYPE >( EXPR )
       case  9 : // source expression cannot be converted to memb_ptr type
         result = DIAG_REINT_CAST_MPTR_TYPE;
         break;
+      default:
+        result = CAST_ERR_NODE;
+        break;
     }
     return doCastResult( &ctl, result );
 }
@@ -2262,6 +2266,7 @@ PTREE CastStatic                // STATIC_CASTE< TYPE >( EXPR )
     ctl.clscls_copy_init = FALSE;
     ctl.clscls_static = TRUE;
     ctl.clscls_cv = TRUE;
+    result = CAST_ERR_NODE;
     switch( ctl.rough ) {
       case CRUFF_CL_TO_CL :
       case CRUFF_SC_TO_CL :
@@ -2400,6 +2405,7 @@ PTREE CastDynamic               // DYNAMIC_CASTE< TYPE >( EXPR )
     CAST_RESULT result;         // - cast result
 
     ConvCtlInitCast( &ctl, expr, &diagDynamic );
+    result = CAST_ERR_NODE;
     switch( dynamicTable[ ctl.tgt.kind ][ ctl.src.kind ] ) {
       case  0 : // impossible
         DbgVerify( 0, "DynamicCast -- bad selection" );
@@ -2531,6 +2537,7 @@ PTREE CastExplicit              // EXPLICIT CASTE: ( TYPE )( EXPR )
     ctl.clscls_copy_init = FALSE;
     ctl.diag_cast = &diagExplicit;
     allocClassDestination( &ctl );
+    result = CAST_ERR_NODE;
     switch( ctl.rough ) {
       case CRUFF_CL_TO_CL :
       case CRUFF_SC_TO_CL :
@@ -2773,6 +2780,7 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
     uint_8 jump;                // - jump code
 
     setupCastImplicit( expr, type, reqd, diagnosis, destination, &ctl );
+    result = CAST_ERR_NODE;
     switch( ctl.rough ) {
       case CRUFF_CL_TO_CL :
       case CRUFF_SC_TO_CL :
@@ -3203,20 +3211,16 @@ boolean CastCommonClass         // CAST (IMPLICITLY) TO A COMMON CLASS
                              , NodeType( expr->u.subtree[1] )
                              , diagnosis
                              , &ctl_right );
-    if( result_right == CAST_ERR_NODE
-     || result_left == CAST_ERR_NODE ) {
+    if( result_right == CAST_ERR_NODE || result_left == CAST_ERR_NODE ) {
         stripOffCastOrig( &ctl_left );
         stripOffCastOrig( &ctl_right );
         PTreeErrorNode( expr );
         retn = TRUE;
     } else if( castCommonOk( result_left ) ) {
         if( castCommonOk( result_right ) ) {
-            if( result_right >= DIAGNOSIS_START
-             || result_left  >= DIAGNOSIS_START ) {
-                expr->u.subtree[0] = castCommonExpr( &ctl_right
-                                                   , result_right );
-                expr->u.subtree[1] = castCommonExpr( &ctl_left
-                                                   , result_left );
+            if( result_right >= DIAGNOSIS_START || result_left  >= DIAGNOSIS_START ) {
+                expr->u.subtree[0] = castCommonExpr( &ctl_right, result_right );
+                expr->u.subtree[1] = castCommonExpr( &ctl_left, result_left );
                 PTreeErrorNode( expr );
             } else {
                 stripOffCastOrig( &ctl_left );

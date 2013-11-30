@@ -581,10 +581,9 @@ TITER CDoptIterNextComp(        // GET NEXT COMPONENT
     iter->gened_comp = FALSE;
     iter->at_end = FALSE;
     info = iter->info;
+    retn = TITER_NONE;
     exp = VstkTop( &iter->stack );
-    if( exp->elem == info->elements ) {
-        retn = TITER_NONE;
-    } else {
+    if( exp->elem != info->elements ) {
         if( exp->elem == NULL ) {
             elem = info->elements;
         } else {
@@ -717,7 +716,7 @@ TITER CDoptIterNextElement(     // GET NEXT ELEMENT ACTION FOR COMPONENT
 unsigned CDoptObjectKind        // DETERMINE DTC_... OBJECT KIND
     ( CDOPT_ITER* iter )        // - iteration data
 {
-    unsigned retn;              // - return value: DTC_...
+    unsigned retn = 0;          // - return value: DTC_...
     CL_ELEM* elem;              // - current element
 
     elem = activeElement( iter );
@@ -888,7 +887,7 @@ static CD_DESCR** refCiPtr      // GET REF TO CD_DESCR PTR IN CLASSINFO
     , CDOPT_TYPE opt )          // - type of optimization
 {
     CLASSINFO* ci;              // - class information
-    CD_DESCR** retn;            // - ref[ ptr to descriptor ]
+    CD_DESCR **retn = NULL;     // - ref[ ptr to descriptor ]
     CDOPT_CACHE* cache;         // - CDOPT cache for class information
 
     ci = cltype->u.c.info;

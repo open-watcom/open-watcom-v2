@@ -35,7 +35,6 @@
 #include "fnovload.h"
 #include "calldiag.h"
 #include "memmgr.h"
-#include "rtfuncod.h"
 #include "ring.h"
 #include "defarg.h"
 #include "class.h"
@@ -212,6 +211,7 @@ static CNV_RETN ctorFindDiag(   // FIND CONSTRUCTOR FOR ARGUMENT LIST
             ovret = ctorExplicitDiag( access, cl_type, alist, ptlist, locn, ctor, fnov_diag );
         }
     }
+    retn = CNV_ERR;
     switch( ovret ) {
       case FNOV_ERR :
         retn = CNV_ERR;
@@ -494,7 +494,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
     TOKEN_LOCN *err_locn,       // - error location
     unsigned control )          // - control mask
 {
-    PTREE node;                 // - resultant node
+    PTREE node = NULL;          // - resultant node
     CNV_RETN retn;              // - conversion return
 
     /*

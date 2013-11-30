@@ -368,10 +368,10 @@ extern dw_client DwarfInit( void )
     dw_cu_info      cu;
     char            dir[_MAX_PATH2];
     char            fname[_MAX_PATH];
-    char *          full_fname;
+    char            *full_fname;
     int             i;
-    char *          incbuf;
-    char *          inccurr;
+    char            *incbuf = NULL;
+    char            *inccurr;
     unsigned        incsize;
     dw_client       client;
 

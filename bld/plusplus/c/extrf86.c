@@ -31,7 +31,7 @@
 
 
 #include "plusplus.h"
-#include "rtfuncod.h"
+#include "rtfuns.h"
 #include "fnovload.h"
 #include "dbg.h"
 #include "cgback.h"

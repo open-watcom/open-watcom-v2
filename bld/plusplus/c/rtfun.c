@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 #include "cgfront.h"
-#include "rtfuncod.h"
 #include "ring.h"
 #include "name.h"
 #include "pragdefn.h"
@@ -54,7 +53,23 @@ typedef enum                    // SPECIFIES RUN-TIME SYMBOL'S TYPE
 ,   RTS_IG_THROW  = 0x0004      // - throwing to be ignored
 } RTS_TYPE;
 
-#include "rtfunnam.h"           // - function name array
+// function name array
+
+static char *runTimeCodeString[] = {
+    #define QSTRING( name ) __STR( name )
+    #define RTFUN( code, name ) QSTRING(CPPLIB(name))
+    #define RTDAT( code, name ) QSTRING(CPPLIBDATA(name))
+    #define RTFNC( code, name ) QSTRING(name)
+    #define RTFNP( code, name ) #name
+
+    #include "_rtfuns.h"
+
+    #undef QSTRING
+    #undef RTFUN
+    #undef RTDAT
+    #undef RTFNC
+    #undef RTFNP
+};
 
 static NAME runTimeCodeName[ ARRAY_SIZE( runTimeCodeString ) ];
 
@@ -182,10 +197,11 @@ SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
             break;
 #if _CPU == _AXP
           case RTF_PD_HANDLER :
+          case RTF_PD_HANDLER_RTN :
 #else
           case RTF_FS_HANDLER :
-#endif
           case RTF_FS_HANDLER_RTN :
+#endif
             runtime = RTS_BASE_SINT | RTS_FUNCTION | RTS_HANDLER | RTS_NO_THROW;
             break;
           case RTF_SETJMP :

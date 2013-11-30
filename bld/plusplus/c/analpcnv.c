@@ -429,6 +429,9 @@ CNV_RETN NodeCheckCnvPtrVoid(   // CHECK CONVERSION TO 'VOID*'
                   case TF1_CONST | TF1_VOLATILE :
                     msg = ERR_CNV_VOID_STAR_CONST_VOLATILE;
                     break;
+                  default:
+                    msg = ERR_FRONT_END;
+                    break;
                 }
                 retn = emitConvMsg( expr, src, tgt, msg );
             }
@@ -449,7 +452,7 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
 {
     SCOPE src_scope;            // - source scope
     SCOPE tgt_scope;            // - target scope
-    CNV_RETN retn;              // - return: CNV_... indicates what happened
+    CNV_RETN retn = CNV_ERR;    // - return: CNV_... indicates what happened
 
     if( same_ptr_types( src, tgt ) ) {
         (*expr)->type = src;

@@ -217,10 +217,14 @@ void BlkPosnPop(                // POP A BLOCK POSITION
 void BlkPosnTrash(              // TRASH TOP BLOCK POSITION
     void )
 {
-    BLK_POSN* bpos;             // - popped element
+#ifndef NDEBUG
+    BLK_POSN *bpos;             // - popped element
 
     bpos = VstkPop( &stack_blk_posn );
     DbgDumpBlkPosn( bpos, "Trashed" );
+#else
+    VstkPop( &stack_blk_posn );
+#endif
 }
 
 

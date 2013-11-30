@@ -184,14 +184,11 @@ unsigned ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
     TYPE points;                // - unmodified pointer to function
     FNOV_RESULT ov_retn;        // - return from overloading
 
+    retn = CNV_IMPOSSIBLE;
     points = PointerTypeEquivalent( tgt );
-    if( points == NULL ) {
-        retn = CNV_IMPOSSIBLE;
-    } else {
+    if( points != NULL ) {
         points = FunctionDeclarationType( points->of );
-        if( points == NULL ) {
-            retn = CNV_IMPOSSIBLE;
-        } else {
+        if( points != NULL ) {
             sym = func->u.symcg.symbol;
             if( SymIsUDC( sym ) ) {
                 ov_retn = UdcOverloaded( &sym
@@ -211,10 +208,7 @@ unsigned ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
             }
             switch( ov_retn ) {
               case FNOV_AMBIGUOUS :
-                retn = CNV_IMPOSSIBLE;
-                break;
               case FNOV_NO_MATCH :
-                retn = CNV_IMPOSSIBLE;
                 break;
               case FNOV_NONAMBIGUOUS :
                 result = func->u.symcg.result;
@@ -222,9 +216,7 @@ unsigned ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
                     retn = CNV_ERR;
                 } else {
                     DbgAssert( sym->id != SC_DEFAULT );
-                    if( sym->id == SC_DEFAULT ) {
-                        retn = CNV_IMPOSSIBLE;
-                    } else {
+                    if( sym->id != SC_DEFAULT ) {
                         func->u.symcg.symbol = sym;
                         func->type = sym->sym_type;
                         retn = CNV_OK;
@@ -248,13 +240,13 @@ static unsigned diagnoseCommon( // DIAGNOSE A COMMON CONVERSION
     TYPE left;                  // - type of operand on left
     TYPE right;                 // - type of operand on right
 
+    retn = CNV_IMPOSSIBLE;
     switch( ctd ) {
       case CTD_RIGHT :
       case CTD_RIGHT_VIRTUAL :
       case CTD_NO :
       case CTD_LEFT :
       case CTD_LEFT_VIRTUAL :
-        retn = CNV_IMPOSSIBLE;
         break;
       case CTD_LEFT_AMBIGUOUS :
       case CTD_RIGHT_AMBIGUOUS :
@@ -283,14 +275,13 @@ static boolean convertCommonClass(// CONVERT TO COMMON TYPE, FROM CLASS
 {
     boolean cretn;              // - TRUE ==> conversion handled
     PTREE expr;                 // - expression
-    PTREE* a_cnv;               // - converted subtree
+    PTREE *a_cnv = NULL;        // - converted subtree
     PTREE cnv;                  // - converted subtree
     CTD ctd;                    // - common-type derivation
-    TYPE tgt_type;              // - target type
+    TYPE tgt_type = NULL;       // - target type
 
     expr = *a_expr;
-    ctd = TypeCommonDerivation( expr->u.subtree[0]->type
-                              , expr->u.subtree[1]->type );
+    ctd = TypeCommonDerivation( expr->u.subtree[0]->type, expr->u.subtree[1]->type );
     switch( ctd ) {
       case CTD_NO :
         if( CastCommonClass( a_expr, diagnosis ) ) {

@@ -209,6 +209,7 @@ PTREE NodePruneTop(             // PRUNE TOP OPERAND NODE
         curr = next;
     }
     if( curr != NULL ) {
+        dlt = NULL;
         switch( curr->op ) {
           case PT_DUP_EXPR :
             dlt = fixupTraverse( curr );
@@ -701,7 +702,7 @@ unsigned long NodeConstantValue(// GET CONSTANT VALUE FOR A NODE
     PTREE node )                // - a constant node
 {
     SYMBOL sym;                 // - symbol for node
-    unsigned long retn;         // - return value
+    unsigned long retn = 0;     // - return value
 
     node = NodeRemoveCasts( node );
     switch( node->op ) {
@@ -1114,9 +1115,9 @@ static PTREE nodeRefedRvalue(   // PROPOGATE RVALUE RESULT
     PTREE start;                // - starting node
     PTREE* r_mod;               // - ref[ modified node ]
     PTREE mod;                  // - modified node
-    TYPE src_type;              // - starting (source) type
+//    TYPE src_type;              // - starting (source) type
 
-    src_type = (*r_start)->type;
+//    src_type = (*r_start)->type;
     r_mod = PTreeRef( r_start );
     mod = NodeRvalue( *r_mod );
     *r_mod = mod;
@@ -1986,6 +1987,7 @@ static boolean nodeMakesTemporary(  // CHECK IF NODE PRODUCES A TEMPORARY
     boolean retn;               // - TRUE ==> is invalid
     SYMBOL fun;                 // - function called
 
+    fun = NULL;
     if( NodeIsBinaryOp( node, CO_CALL_EXEC ) ) {
         fun = NodeFuncForCall( node )->u.symcg.symbol;
         if( SymIsCtor( fun ) ) {
@@ -2007,12 +2009,9 @@ static boolean nodeMakesTemporary(  // CHECK IF NODE PRODUCES A TEMPORARY
         }
 #endif
     } else {
-        fun = NULL;
         retn = FALSE;
     }
-    if( ! retn
-     && 0 == ( node->flags & PTF_LVALUE )
-     && NULL == TypeReference( node->type ) ) {
+    if( !retn && 0 == ( node->flags & PTF_LVALUE ) && NULL == TypeReference( node->type ) ) {
         if( fun != NULL ) {
             if( NULL != TypeReference( SymFuncReturnType( fun ) ) ) {
                 retn = FALSE;

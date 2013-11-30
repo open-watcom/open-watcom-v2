@@ -486,16 +486,13 @@ CTD TypeCommonDerivation(       // GET COMMON TYPE DERIVATION FOR TWO TYPES
     SCOPE scope1;               // - scope for type[1]
     SCOPE scope2;               // - scope for type[2]
 
+    retn = CTD_NO;
     scope1 = TypeScope( StructType( type1 ) );
-    if( NULL == scope1 ) {
-        retn = CTD_NO;
-    } else {
+    if( NULL != scope1 ) {
         scope2 = TypeScope( StructType( type2 ) );
         if( scope1 == scope2 ) {
             retn = CTD_LEFT;
-        } else if( NULL == scope2 ) {
-            retn = CTD_NO;
-        } else {
+        } else if( NULL != scope2 ) {
             switch( ScopeDerived( scope1, scope2 ) ) {
               case DERIVED_YES :
                 retn = CTD_LEFT;

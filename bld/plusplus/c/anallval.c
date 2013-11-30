@@ -517,7 +517,7 @@ static boolean analyseMember(   // ANALYSE A MEMBER NODE
     PTREE member;               // - node for member
     PTREE expr;                 // - expression
     SEARCH_RESULT *result;      // - result of search
-    boolean retn;               // - TRUE ==> ok
+    boolean retn = FALSE;       // - TRUE ==> ok
 
     expr = *a_expr;
     member = PTreeOpRight( expr );
@@ -620,7 +620,7 @@ static boolean analyseMembRight(// ANALYSE MEMBER ON RIGHT
     PTREE *a_expr,              // - addr( expression for member )
     TYPE type )                 // - type for class on left
 {
-    boolean retn;               // - return: TRUE ==> is ok
+    boolean retn = FALSE;       // - return: TRUE ==> is ok
     PTREE expr;                 // - operation
     PTREE right;                // - right operand
     SCOPE scope;                // - scope for class

@@ -36,7 +36,7 @@
 
 #include "cgfront.h"
 #include "codegen.h"
-#include "rtfuncod.h"
+#include "rtfuns.h"
 #include "label.h"
 #include "fnbody.h"
 #include "cgsegid.h"

@@ -207,6 +207,8 @@ static const unsigned globalLookupToken[] = {
     #undef LKDEF
 };
 
+static void recordTemplateCtorInitializer( PARSE_STACK * );
+
 
 
 #define LA_SHIFT_TOKEN                  Y_SHIFT_SPECIAL

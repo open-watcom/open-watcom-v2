@@ -54,7 +54,7 @@ ANALYSE.C -- analyse parsed tree of tokens
 #include "defarg.h"
 #include "fnbody.h"
 #include "context.h"
-#include "rtfuncod.h"
+#include "rtfuns.h"
 #include "ctexcept.h"
 #include "objmodel.h"
 #include "analtyid.h"

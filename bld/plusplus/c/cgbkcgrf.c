@@ -44,7 +44,6 @@
 #include "feprotos.h"
 #include "ring.h"
 #include "stringl.h"
-#include "rtfuncod.h"
 #include "carve.h"
 #include "label.h"
 #include "vstk.h"
@@ -505,7 +504,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
     SCAN_INFO sc;               // - scan information
     CGINTER *ins;               // - current instruction
     unsigned opcodes;           // - number of significant opcodes
-    TYPE curr_type;             // - current type in virtual file
+//    TYPE curr_type;             // - current type in virtual file
     SYMBOL func;                // - name of function
     SYMBOL sym;                 // - symbol from IC
     TCF tcf;                    // - symbol classification
@@ -699,11 +698,11 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             ThrowCnvFini( &ctl );
           } continue;
           case IC_SET_TYPE :
-            curr_type = ins->value.pvalue;
+//            curr_type = ins->value.pvalue;
             continue;
           case IC_LEAF_NAME_FRONT :
             sym = ins->value.pvalue;
-            curr_type = sym->sym_type;
+//            curr_type = sym->sym_type;
             tcf = addAddrOf( cnode, sym );
             if( tcf == TCF_NOT_FUNC ) {
                 type_flag flags;

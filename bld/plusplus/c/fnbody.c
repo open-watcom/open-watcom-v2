@@ -48,7 +48,6 @@
 #include "class.h"
 #include "fold.h"
 #include "context.h"
-#include "rtfuncod.h"
 #include "ctexcept.h"
 #include "template.h"
 #include "fnbody.h"

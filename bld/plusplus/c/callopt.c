@@ -134,7 +134,7 @@ PTREE CopyOptimize              // COPY OPTIMIZATION
     , PTREE dtor                // - NULL or CO_DTOR expression
     , CALL_OPT opt )            // - type of optimization
 {
-    PTREE expr;                 // - resultant expression
+    PTREE expr = NULL;          // - resultant expression
     PTREE parm;                 // - parameter node to be replaced
 
     switch( opt ) {

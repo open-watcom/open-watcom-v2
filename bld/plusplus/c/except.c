@@ -35,7 +35,6 @@
 #include "cgback.h"
 #include "ctexcept.h"
 #include "ring.h"
-#include "rtfuncod.h"
 #include "typesig.h"
 
 #define TSA_THROW (TSA_DTOR | TSA_COPY_CTOR )

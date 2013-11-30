@@ -47,7 +47,6 @@
 #include "segment.h"
 #include "cgback.h"
 #include "rtfuns.h"
-#include "rtfuncod.h"
 #include "module.h"
 #include "srcfile.h"
 #include "symdbg.h"
@@ -69,6 +68,7 @@
 
 #if _INTEL_CPU && ( _CPU != 8086 )
     extern inline_funcs Fs_Functions[];   // FS PRAGMAS
+    extern byte_seq *FlatAlternates[];
 #endif
 
 static SYMBOL lastFunctionOutOfMem;
@@ -416,13 +416,13 @@ cg_type FEParmType(             // ARGUMENT PROMOTION ?
     case TY_UINT_4:
         return( TY_UINT_8 );
 #else
-#if _CPU != 8086
+  #if _CPU != 8086
     case TY_UINT_2:
     case TY_INT_2:
-#endif
+  #endif
     case TY_INT_1:
     case TY_UINT_1:
-#if _CPU != 8086
+  #if _CPU != 8086
         if( func != NULL ) {
             type_flag fn_flags;
             TypeModFlags( func->sym_type, &fn_flags );
@@ -430,7 +430,7 @@ cg_type FEParmType(             // ARGUMENT PROMOTION ?
                 return( TY_INT_2 );
             }
         }
-#endif
+  #endif
         type = TY_INTEGER;
         break;
 #endif
@@ -454,7 +454,6 @@ int FEStackChk(                 // STACK CHECKING ?
 static inline_funcs *Flat( inline_funcs *ifunc )
 {
   #if _CPU != 8086
-    extern byte_seq *FlatAlternates[];
     byte_seq **p;
     if( TargetSwitches & FLAT_MODEL ) {
         for( p = FlatAlternates; p[0] != NULL; p += 2 ) {

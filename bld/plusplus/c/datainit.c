@@ -47,7 +47,7 @@
 #include "decl.h"
 #include "dbg.h"
 #include "datainit.h"
-#include "rtfuncod.h"
+#include "rtfuns.h"
 #include "label.h"
 #include "typesig.h"
 #include "datadtor.h"
@@ -1249,7 +1249,7 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
     PTREE               node;
     unsigned            num_elem;
     TYPE                base_type;
-    unsigned            fun_code;
+    RTF                 fun_code;
     SYMBOL              ctor_sym;
 
     switch( currInit->state ) {

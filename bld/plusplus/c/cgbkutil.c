@@ -36,7 +36,7 @@
 #include "codegen.h"
 #include "cgaux.h"
 #include "feprotos.h"
-#include "rtfuncod.h"
+#include "rtfuns.h"
 #include "cgbackut.h"
 #include "objmodel.h"
 #include "cgio.h"
