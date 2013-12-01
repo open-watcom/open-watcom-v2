@@ -2084,9 +2084,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             if( curr_seg != SEG_BSS ) {
                 DGInteger64( con->u.int64_constant, exprn_type );
             } else {
-                DbgVerify( con->u.int64_constant.u._32[0] == 0
-                         &&con->u.int64_constant.u._32[1] == 0
-                         , "CGBACK - IC_DATA_INT64 non-zero in SEG_BSS" );
+                DbgVerify( Zero64( &con->u.int64_constant ), "CGBACK - IC_DATA_INT64 non-zero in SEG_BSS" );
             }
           } break;
 
@@ -2541,7 +2539,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //            target_offset_t exact_delta;
             boolean vbptr;
 //            IC_PARM_POP_INT( exact_delta );
-	        IC_PARM_SKIP;
+            IC_PARM_SKIP;
             IC_PARM_POP_INT( vb_index );
             IC_PARM_POP_INT( vb_offset );
             IC_PARM_POP_PTR( table_sym );

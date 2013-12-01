@@ -36,6 +36,7 @@
 #include "conpool.h"
 #include "codegen.h"
 #include "floatsup.h"
+#include "fold.h"
 
 
 void DgSymbol( SYMBOL sym )
@@ -111,8 +112,7 @@ static boolean DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
         } else {
             POOL_CON* pcon = ConPoolInt64Add( expr->u.int64_constant );
             CgFrontDataPtr( IC_DATA_INT64, pcon );
-            retn = ( expr->u.int64_constant.u._32[0] == 0
-                  && expr->u.int64_constant.u._32[1] == 0 );
+            retn = Zero64( &expr->u.int64_constant );
         }
         break;
     case PT_STRING_CONSTANT:
@@ -179,16 +179,16 @@ void DgStoreConstScalar( PTREE expr, TYPE type, SYMBOL sym )
     case PT_INT_CONSTANT:
         sym = SymBindConstant( sym, expr->u.int64_constant );
         sym->flag |= SF_CONSTANT_INT | SF_INITIALIZED;
-    #if 0
+#if 0
         if( NULL == Integral64Type( type ) ) {
             sym->u.sval = expr->u.int_constant;
             added = SF_CONSTANT_INT | SF_INITIALIZED;
         } else {
             sym->u.pval = ConPoolInt64Add( expr->u.int64_constant );
-            added = SF_CONSTANT_INT64|  SF_CONSTANT_INT | SF_INITIALIZED;
+            added = SF_CONSTANT_INT64 | SF_CONSTANT_INT | SF_INITIALIZED;
         }
         sym->flag |= added;
-    #endif
+#endif
         break;
     }
 }

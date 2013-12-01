@@ -38,5 +38,6 @@ extern PTREE Fold( PTREE );
 extern PTREE FoldUnary( PTREE );
 extern PTREE FoldBinary( PTREE );
 extern target_long FoldSignedRShiftMax( target_long );
+extern boolean Zero64( signed_64 const *test );
 
 #endif

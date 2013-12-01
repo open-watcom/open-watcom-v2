@@ -182,14 +182,11 @@ static PTREE overCondDecor(     // BY-PASS CONDITIONAL DECORATION
 }
 
 
-static boolean zero64           // TEST IF 64-BITTER IS ZERO
-    ( signed_64 const *test )   // - value to e tested
+boolean Zero64                  // TEST IF 64-BITTER IS ZERO
+    ( signed_64 const *test )   // - value to be tested
 {
-    return test->u._32[0] == 0
-        && test->u._32[1] == 0;
+    return( test->u._32[0] == 0 && test->u._32[1] == 0 );
 }
-
-#define nonZero64( t ) ( ! zero64( t ) )
 
 
 static boolean zeroConstant(    // TEST IF NODE IS ZERO CONSTANT
@@ -200,9 +197,9 @@ static boolean zeroConstant(    // TEST IF NODE IS ZERO CONSTANT
     switch( expr->op ) {
     case PT_INT_CONSTANT:
         if( NULL == Integral64Type( expr->type ) ) {
-            return expr->u.int_constant == 0;
+            return( expr->u.int_constant == 0 );
         } else {
-            return zero64( &expr->u.int64_constant );
+            return( Zero64( &expr->u.int64_constant ) );
         }
     case PT_FLOATING_CONSTANT:
     {   target_ulong ul_val = BFCnvF32( expr->u.floating_constant );
@@ -1010,10 +1007,10 @@ static PTREE foldInt64( CGOP op, PTREE left, signed_64 v2 )
         left = makeBooleanConst( left, 0 <= I64Cmp( &v1, &v2 ) );
         return( left );
     case CO_AND_AND:
-        left = makeBooleanConst( left, nonZero64( &v1 ) && nonZero64( &v2 ) );
+        left = makeBooleanConst( left, !Zero64( &v1 ) && !Zero64( &v2 ) );
         return( left );
     case CO_OR_OR:
-        left = makeBooleanConst( left, nonZero64( &v1) || nonZero64( &v2 ) );
+        left = makeBooleanConst( left, !Zero64( &v1) || !Zero64( &v2 ) );
         return( left );
     case CO_COMMA:
         left->u.int64_constant = v2;
@@ -1115,10 +1112,10 @@ static PTREE foldUInt64( CGOP op, PTREE left, signed_64 v2 )
         left = makeBooleanConst( left, 0 <= U64Cmp( &v1, &v2 ) );
         return( left );
     case CO_AND_AND:
-        left = makeBooleanConst( left, nonZero64( &v1 ) && nonZero64( &v2 ) );
+        left = makeBooleanConst( left, !Zero64( &v1 ) && !Zero64( &v2 ) );
         return( left );
     case CO_OR_OR:
-        left = makeBooleanConst( left, nonZero64( &v1) || nonZero64( &v2 ) );
+        left = makeBooleanConst( left, !Zero64( &v1) || !Zero64( &v2 ) );
         return( left );
     case CO_COMMA:
         left->u.int64_constant = v2;

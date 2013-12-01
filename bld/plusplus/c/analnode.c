@@ -774,7 +774,7 @@ boolean NodeIsZeroConstant(     // TEST IF A ZERO CONSTANT
     INT_CONSTANT icon;          // - integral constant
 
     if( nodeGetConstant( node, &icon ) ) {
-        retn = ( 0 == icon.u.value.u._32[0] && 0 == icon.u.value.u._32[1] );
+        retn = Zero64( &icon.u.value );
     } else {
         retn = FALSE;
     }
@@ -789,11 +789,10 @@ boolean NodeIsZeroIntConstant(  // TEST IF A ZERO INTEGER CONSTANT
     INT_CONSTANT icon;          // - integral constant
 
     if( nodeGetConstant( node, &icon ) ) {
-        if( ( icon.type->id < TYP_BOOL )
-         || ( icon.type->id > TYP_ULONG64 ) ) {
+        if( ( icon.type->id < TYP_BOOL ) || ( icon.type->id > TYP_ULONG64 ) ) {
             retn = FALSE;
         } else {
-            retn = ( 0 == icon.u.value.u._32[0] && 0 == icon.u.value.u._32[1] );
+            retn = Zero64( &icon.u.value );
         }
     } else {
         retn = FALSE;

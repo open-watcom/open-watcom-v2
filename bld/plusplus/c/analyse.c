@@ -4036,19 +4036,17 @@ start_opac_string:
                   case THROBJ_PTR_CLASS :
                   case THROBJ_PTR_SCALAR :
                   case THROBJ_VOID_STAR :
+                    rtcode = RTF_THROW;
                     if( throw_exp->flags & PTF_LVALUE ) {
                         expr = PTreeOp( &throw_exp );
-                        rtcode = RTF_THROW;
                     } else {
                         INT_CONSTANT int_con;
-                        rtcode = ( NodeIsIntConstant( throw_exp, &int_con )
-                                && 0 == int_con.u.value.u._32[0]
-                                && 0 == int_con.u.value.u._32[1] )
-                                 ? RTF_THROW_ZERO : RTF_THROW;
+                        if( NodeIsIntConstant( throw_exp, &int_con )
+                            && Zero64( &int_con.u.value ) ) {
+                            rtcode = RTF_THROW_ZERO;
+                        }
 //                      constant = NodeGetConstantNode( throw_exp );
-                        throw_exp = NodeAssignTemporary
-                                        ( throw_exp->type
-                                        , throw_exp );
+                        throw_exp = NodeAssignTemporary( throw_exp->type, throw_exp );
                         expr = PTreeOpLeft( throw_exp );
                         type = NodeType( expr );
                     }
