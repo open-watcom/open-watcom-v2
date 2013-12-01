@@ -464,10 +464,12 @@ PCH_struct friend_list {
     } u;
 };
 
-#define FriendIsType( friend )          ( (friend)->u.is_type )
-#define FriendIsSymbol( friend )        ( !(friend)->u.is_type )
-#define FriendGetSymbol( friend )       ( (friend)->u.sym )
-#define FriendGetType( friend )         (TYPE)( (pointer_int)(friend)->u.type & ~1 )
+#define FriendIsSymbol( friend )        (!(friend)->u.is_type)
+#define FriendIsType( friend )          ((friend)->u.is_type)
+#define FriendGetSymbol( friend )       (friend)->u.sym
+#define FriendGetType( friend )         (TYPE)((pointer_int)(friend)->u.type & ~1)
+#define FriendSetSymbol( friend, sym )  (friend)->u.sym = sym
+#define FriendSetType( friend, type )   (friend)->u.type = (TYPE)((pointer_int)type | 1)
 
 struct reloc_list {
     RELOC_LIST *next;

@@ -2193,7 +2193,7 @@ void ScopeRawAddFriendSym( CLASSINFO *info, SYMBOL sym )
 
     new_friend = CPermAlloc( sizeof( FRIEND ) );
     new_friend->next = NULL;
-    new_friend->u.sym = sym;
+    FriendSetSymbol( new_friend, sym );
     RingAppend( &(info->friends), new_friend );
 }
 
@@ -2204,8 +2204,7 @@ void ScopeRawAddFriendType( CLASSINFO *info, TYPE type )
 
     new_friend = CPermAlloc( sizeof( FRIEND ) );
     new_friend->next = NULL;
-    new_friend->u.type = type;
-    new_friend->u.is_type = TRUE;
+    FriendSetType( new_friend, type );
     RingAppend( &(info->friends), new_friend );
 }
 
