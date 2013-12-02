@@ -39,11 +39,11 @@
 extern void             BufferConcat( const char * );
 extern void             BufferQuoteName( const char * );
 extern void             BufferConcatNL( void );
-extern unsigned         BufferStore( const char * format, ... );
+extern size_t           BufferStore( const char * format, ... );
 extern void             BufferHex( unsigned prec, unsigned long value );
 extern void             BufferPrint( void );
-extern unsigned         BufferMsg( int );
-extern void             BufferAlignToTab( tab_position );
-extern void             FmtHexNum( char *buff, unsigned prec, unsigned long value );
+extern size_t           BufferMsg( int );
+extern void             BufferAlignToTab( unsigned );
+extern void             FmtHexNum( char *buff, unsigned prec, unsigned long value, bool no_prefix );
 
 #endif

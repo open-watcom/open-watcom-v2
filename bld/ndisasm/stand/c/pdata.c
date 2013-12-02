@@ -142,19 +142,19 @@ return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
     is32bit = ( size >= 0x10000 );
 
     data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)sec->shnd );
+    r_entry = NULL;
     if( *data_ptr ) {
         r_list = (ref_list)*data_ptr;
         if( r_list ) {
             r_entry = r_list->first;
-        } else {
-            r_entry = NULL;
         }
     }
     BufferConcatNL();
     PrintHeader( sec );
     BufferConcatNL();
     for( loop = 0; loop < size; loop += sizeof( descriptor_struct ) ) {
-        if( r_entry == NULL ) break;
+        if( r_entry == NULL )
+            break;
         memcpy( &descriptor, contents + loop, sizeof( descriptor_struct ) );
         if( DFormat & DFF_ASM ) {
             BufferStore( "\t\t" );

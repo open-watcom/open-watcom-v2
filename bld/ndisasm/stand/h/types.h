@@ -170,7 +170,6 @@ typedef enum {
 } wd_options;
 
 typedef int_16 buffer_position;
-typedef uint_16 tab_position;
 
 typedef struct section_struct section_struct;
 typedef section_struct * section_ptr;

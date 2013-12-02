@@ -43,11 +43,11 @@
 
 extern dis_format_flags         DFormat;
 
-static buffer_position          OutputPos = 0;
+static unsigned                 OutputPos = 0;
 static char                     Buffer[BUFFER_LEN] = {0};
 static char                     IntermedBuffer[BUFFER_LEN] = {0};
 
-void FmtHexNum( char *buff, unsigned prec, unsigned long value )
+void FmtHexNum( char *buff, unsigned prec, unsigned long value, bool no_prefix )
 {
     char * src;
     char * dst;
@@ -55,6 +55,8 @@ void FmtHexNum( char *buff, unsigned prec, unsigned long value )
     if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
         if( ( value == 0 ) && ( prec == 0 ) ) {
             strcpy( buff, "0" );
+        } else if( no_prefix ) {
+            sprintf( buff, "%*.*lxH", prec, prec, value );
         } else {
             sprintf( buff, "0%*.*lxH", prec, prec, value );
         }
@@ -70,25 +72,25 @@ void FmtHexNum( char *buff, unsigned prec, unsigned long value )
     } else {
         if( ( value == 0 ) && ( prec == 0 ) ) {
             strcpy( buff, "0x0" );
+        } else if( no_prefix ) {
+            sprintf( buff, "%*.*lx", prec, prec, value );
         } else {
             sprintf( buff, "0x%*.*lx", prec, prec, value );
         }
     }
 }
 
-void BufferAlignToTab( tab_position pos )
+void BufferAlignToTab( unsigned pos )
 // align the buffer to a particular tab position
 {
-    buffer_position     difference;
-    int                 num_tabs;
-    int                 loop;
+    unsigned            num_tabs;
+    unsigned            loop;
 
-    difference = pos * TAB_WIDTH - OutputPos;
-    if( difference < 0 ) {
+    if( pos * TAB_WIDTH < OutputPos ) {
         BufferConcatNL();
         num_tabs = pos;
     } else {
-        num_tabs = (difference + TAB_WIDTH - 1 ) / TAB_WIDTH;
+        num_tabs = (pos * TAB_WIDTH - OutputPos + TAB_WIDTH - 1 ) / TAB_WIDTH;
     }
     for( loop = 0; loop < num_tabs; loop++ ) {
         IntermedBuffer[loop] = '\t';
@@ -98,8 +100,9 @@ void BufferAlignToTab( tab_position pos )
     OutputPos = pos * TAB_WIDTH;
 }
 
-static void updateOutputPos( const char *string ) {
+static void updateOutputPos( const char *string )
 // update the position of the last character as it will be seen in output
+{
     if( string == NULL ) return;
     while( *string ) {
         if( *string == '\n' ) {
@@ -127,11 +130,11 @@ void BufferConcatNL( void )
     OutputPos = 0;
 }
 
-unsigned BufferStore( const char *format, ... )
+size_t BufferStore( const char *format, ... )
 // do the equivalent of a printf to the end of the buffer
 {
     va_list     arg_list;
-    int         len;
+    size_t      len;
 
     va_start( arg_list, format );
     len = vsprintf( IntermedBuffer, format, arg_list );
@@ -141,7 +144,7 @@ unsigned BufferStore( const char *format, ... )
     return( len );
 }
 
-unsigned BufferMsg( int resourceid )
+size_t BufferMsg( int resourceid )
 // concatenate a message from the resource file
 {
     char        buff[MAX_RESOURCE_SIZE];
@@ -162,7 +165,7 @@ void BufferPrint( void )
 
 void BufferHex( unsigned prec, unsigned long value )
 {
-    FmtHexNum( IntermedBuffer, prec, value );
+    FmtHexNum( IntermedBuffer, prec, value, FALSE );
     BufferConcat( IntermedBuffer );
 }
 

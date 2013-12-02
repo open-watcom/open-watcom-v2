@@ -160,7 +160,7 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
     if( Options & METAWARE_COMPATIBLE || (ext_pref[0]==0 && int_pref[0]==0) ) {
         switch( l_entry->type ) {
         case LTYP_ABSOLUTE:
-            FmtHexNum( temp, 0, l_entry->offset );
+            FmtHexNum( temp, 0, l_entry->offset, FALSE );
             if( *frame == 0 && ( ( flags & RFLAG_NO_FRAME ) == 0 ) )
                 frame = "ds:";
             sprintf( buff, "%s%s[%s]", frame, sep, temp);
@@ -188,7 +188,7 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
             break;
 
         case LTYP_ABSOLUTE:
-            FmtHexNum( temp, 0, l_entry->offset );
+            FmtHexNum( temp, 0, l_entry->offset, FALSE );
             if( *frame == 0 && ( ( flags & RFLAG_NO_FRAME ) == 0 ) )
                 frame = "ds:";
             sprintf( buff, "%s%s%s[%s]", int_pref, frame, sep, temp);
@@ -206,7 +206,7 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
     return( OKAY );
 }
 
-unsigned HandleAReference( dis_value value, int ins_size, ref_flags flags,
+size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
                            orl_sec_offset offset, orl_sec_size sec_size,
                            ref_entry * r_entry, char *buff )
 // handle any references at this offset
@@ -395,7 +395,7 @@ unsigned HandleAReference( dis_value value, int ins_size, ref_flags flags,
             } else {
                 *p++ = '+';
             }
-            FmtHexNum( p, 0, nvalue );
+            FmtHexNum( p, 0, nvalue, FALSE );
         }
     }
     return( strlen( buff ) );
@@ -406,55 +406,110 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     unsigned            size;
     unsigned            len;
     unsigned            i;
-    int                  is_sparc = GetMachineType()==ORL_MACHINE_TYPE_SPARC;
+    unsigned            mask;
+    bool                sign_extended;
+    bool                no_prefix;
+    signed_32           value;
 
-    static const unsigned long mask[] = {
-        0x00000000, 0x000000ff, 0x0000ffff, 0x00ffffff, 0xffffffff
-    };
-    if( is_sparc ) {
+    mask = 0;
+    sign_extended = FALSE;
+    no_prefix = FALSE;
+    value = ins->op[op_num].value;
+    switch( ins->op[op_num].ref_type ) {
+    case DRT_SPARC_BYTE:
+    case DRT_X86_BYTE:
+    case DRT_X64_BYTE:
+        size = 2;
+        mask = 0x000000ff;
+        break;
+    case DRT_SPARC_HALF:
+    case DRT_X86_WORD:
+    case DRT_X64_WORD:
         size = 4;
-        switch( ins->op[op_num].ref_type ) {
-        case DRT_SPARC_BYTE:    size = 1;   break;
-        case DRT_SPARC_HALF:    size = 2;   break;
-        case DRT_SPARC_WORD:
-        case DRT_SPARC_SFLOAT:  size = 4;   break;
-        case DRT_SPARC_DWORD:
-        case DRT_SPARC_DFLOAT:  size = 8;   break;
-        default:                            break;
-        }
-    } else {
-        switch( ins->op[op_num].ref_type ) {
-        case DRT_X86_BYTE:      size = 1;   break;
-        case DRT_X86_WORD:      size = 2;   break;
-        case DRT_X86_DWORD:
-        case DRT_X86_DWORDF:    size = 4;   break;
-        default:                size = 0;
-            for( i = 0; i < ins->num_ops; i++ ) {
-                switch( ins->op[i].ref_type ) {
-                case DRT_X86_BYTE:      len = 1;  break;
-                case DRT_X86_WORD:      len = 2;  break;
-                case DRT_X86_DWORD:
-                case DRT_X86_DWORDF:    len = 4;  break;
-                default:                len = 0;
-                }
+        mask = 0x0000ffff;
+        break;
+    case DRT_SPARC_WORD:
+    case DRT_SPARC_SFLOAT:
+    case DRT_X86_DWORD:
+    case DRT_X86_DWORDF:
+    case DRT_X64_DWORD:
+        size = 8;
+        mask = 0xffffffff;
+        break;
+    case DRT_X64_QWORD:
+        sign_extended = TRUE;
+        // fall down
+    case DRT_SPARC_DWORD:
+    case DRT_SPARC_DFLOAT:
+        size = 16;
+        mask = 0xffffffff;
+        break;
+    default:
+        size = 0;
+        for( i = 0; i < ins->num_ops; i++ ) {
+            switch( ins->op[i].ref_type ) {
+            case DRT_X86_BYTE:
+            case DRT_X64_BYTE:
+                len = 2;
                 if ( len > size ) {
                     size = len;
+                    mask = 0x000000ff;
                 }
+                break;
+            case DRT_X86_WORD:
+            case DRT_X64_WORD:
+                len = 4;
+                if ( len > size ) {
+                    size = len;
+                    mask = 0x0000ffff;
+                }
+                break;
+            case DRT_X86_DWORD:
+            case DRT_X86_DWORDF:
+            case DRT_X64_DWORD:
+                len = 8;
+                if ( len > size ) {
+                    size = len;
+                    mask = 0xffffffff;
+                }
+                break;
+            case DRT_X64_QWORD:
+                len = 16;
+                if ( len > size ) {
+                    size = len;
+                    mask = 0xffffffff;
+                    sign_extended = TRUE;
+                }
+                break;
+            default:
+                break;
             }
-            if ( size == 0 ) {
-                size = 4;
+        }
+        if ( size == 0 ) {
+            size = 8;
+            mask = 0xffffffff;
+        }
+        break;
+    }
+    if( size > 8 ) {
+        size = 8;
+        if( sign_extended ) {
+            if( value < 0 ) {
+                FmtHexNum( buff, size, 0xffffffff, no_prefix );
+            } else {
+                FmtHexNum( buff, size, 0, no_prefix );
             }
-            break;
+            buff += strlen( buff );
+            no_prefix = TRUE;
         }
     }
-    FmtHexNum( buff, size * 2, mask[size] & ins->op[op_num].value );
+    FmtHexNum( buff, size, mask & value, no_prefix );
 }
 
-unsigned DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num,
-                            char *buff )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff )
 {
     struct pass2        *pd = d;
-    unsigned            len;
+    size_t              len;
     dis_operand         *op;
     ref_flags           rf;
 
@@ -487,10 +542,10 @@ unsigned DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num,
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             FmtSizedHexNum( buff, ins, op_num );
         } else if( op->value > 0 ) {
-            FmtHexNum( buff, 0, op->value );
+            FmtHexNum( buff, 0, op->value, FALSE );
         } else if( op->value < 0 ) {
             buff[0] = '-';
-            FmtHexNum( &buff[1], 0, -op->value );
+            FmtHexNum( &buff[1], 0, -op->value, FALSE );
         }
         break;
     case DO_IMMED:
@@ -571,6 +626,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
     data.size = size;
     sds.data = contents;
     sds.last = size - 1;
+    l_entry = NULL;
     if( sec_label_list != NULL ) {
         l_entry = sec_label_list->first;
     }
@@ -621,8 +677,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
             if( is_intel || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data
                 decoded.size = 0;
-                processDataInCode( sec, contents, &data, RelocSize( data.r_entry ),
-                                   &l_entry );
+                processDataInCode( sec, contents, &data, RelocSize( data.r_entry ), &l_entry );
                 continue;
             }
         }
@@ -692,7 +747,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
         BufferPrint();
     }
     if( sec_label_list ) {
-        l_entry = handleLabels( sec->name, size, -1, l_entry, size );
+        l_entry = handleLabels( sec->name, size, (orl_sec_offset)-1, l_entry, size );
     }
     if( !(DFormat & DFF_ASM) ) {
         routineSize = data.loop - routineBase;

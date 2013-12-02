@@ -146,9 +146,9 @@ static char *skipToNextArg( char * cmd ) {
 
 static char *getFileName( char *start, char *following )
 {
-    int         length;
-    char *      name;
-    char *      tmp;
+    size_t      length;
+    char        *name;
+    char        *tmp;
 
     length = following - start;
     tmp = (char *) MemAlloc( length + 1 );
@@ -168,11 +168,11 @@ static char *getFileName( char *start, char *following )
 static void composeFileNames( bool list_file )
 {
     char        path[_MAX_PATH2];
-    char *      drive;
-    char *      dir;
-    char *      file_name;
-    char *      extension;
-    int         length;
+    char        *drive;
+    char        *dir;
+    char        *file_name;
+    char        *extension;
+    size_t      length;
 
     // object file name
     _splitpath2( ObjFileName, path, &drive, &dir, &file_name, &extension );

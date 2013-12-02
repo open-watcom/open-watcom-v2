@@ -134,7 +134,8 @@ static bool printableChar( char c )
 
 static bool printableString( char *s )
 {
-    int i;
+    size_t  i;
+    
     for( i = 0; i < strlen( s ); i++ ){
         if( !printableChar( s[i] ) ) {
             return FALSE;
@@ -143,13 +144,13 @@ static bool printableString( char *s )
     return TRUE;
 }
 
-static orl_sec_offset printString( char * string, string_type type )
+static size_t printString( char *string, string_type type )
 {
-    char                *buffer;
-    orl_sec_offset      i,j;
+    char        *buffer;
+    size_t      i, j;
 
     buffer = MemAlloc( strlen( string ) * 2 + 1 );
-    for( i=0, j=0; i < strlen( string ); i++ ){
+    for( i = 0, j = 0; i < strlen( string ); i++ ) {
         switch( string[i] ){
             case '\n':
                 buffer[j++] = '\\';
@@ -199,21 +200,25 @@ static orl_sec_offset printString( char * string, string_type type )
     return( 0 );
 }
 
-static orl_sec_offset tryDUP( unsigned_8 *bytes, orl_sec_offset i, orl_sec_size size )
+static size_t tryDUP( unsigned_8 *bytes, size_t i, size_t size )
 {
-    orl_sec_offset      d;
-    unsigned int        dup;
+    size_t      d;
+    size_t      dup;
 
 
-    if( i >= ( size - ( 8 * MIN_DUP_LINES ) ) ) return( 0 );
+    if( i >= ( size - ( 8 * MIN_DUP_LINES ) ) )
+        return( 0 );
 
     for( d = i + 8; d < ( size - 8 ); d += 8 ) {
-        if( memcmp( &bytes[i], &bytes[d], 8 ) ) return( 0 );
+        if( memcmp( &bytes[i], &bytes[d], 8 ) ) {
+            return( 0 );
+        }
     }
 
     d -= i;
     dup = d / 8;
-    if( dup < MIN_DUP_LINES ) return( 0 );
+    if( dup < MIN_DUP_LINES )
+        return( 0 );
 
     BufferStore( "0%XH DUP(", dup );
 
@@ -226,12 +231,12 @@ static orl_sec_offset tryDUP( unsigned_8 *bytes, orl_sec_offset i, orl_sec_size 
     return( d );
 }
 
-static void printRest( unsigned_8 *bytes, orl_sec_size size )
+static void printRest( unsigned_8 *bytes, size_t size )
 {
-    orl_sec_offset      i;
-    orl_sec_offset      d;
-    char                *btype;
-    int                 is_masm;
+    size_t      i;
+    size_t      d;
+    char        *btype;
+    int         is_masm;
 
     is_masm = IsMasmOutput();
     if( is_masm ) {
@@ -493,18 +498,18 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     return( rv );
 }
 
-static void printOut( char *string, orl_sec_offset offset, orl_sec_size size)
+static void printOut( char *string, size_t offset, size_t size )
 {
     char *              string_left = string;
-    orl_sec_offset      curr_pos = 0;
+    size_t              curr_pos = 0;
     int                 ascii;
 
-    ascii = !IsMasmOutput();
+    offset = offset;
 
+    ascii = !IsMasmOutput();
     for( ;; ) {
         if( string_left < ( string + size ) ) {
-            if( ascii && printableString( string_left ) &&
-                                                strlen( string_left ) > 0 ) {
+            if( ascii && printableString( string_left ) && strlen( string_left ) > 0 ) {
                 if( strlen( string_left ) < ( size - curr_pos ) ) {
                     BufferConcat( "    .asciiz\t" );
                     curr_pos = printString( string_left, ASCIZ );
@@ -514,7 +519,7 @@ static void printOut( char *string, orl_sec_offset offset, orl_sec_size size)
                 }
                 string_left += curr_pos;
             } else {
-                printRest( (unsigned_8 *)string_left, size - (int)( string_left - string ) );
+                printRest( (unsigned_8 *)string_left, size - (size_t)( string_left - string ) );
                 break;
             }
         } else {
@@ -531,6 +536,8 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
 {
     int         raw;
     int         is_masm;
+
+    end = end;
 
     raw = buffer && contents;
 
@@ -596,10 +603,10 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
                                    orl_sec_offset end, label_entry *labent,
                                    ref_entry *refent, section_ptr sec )
 {
-    orl_sec_offset      curr_pos;
-    orl_sec_size        curr_size;
-    orl_sec_size        tmp_size;
-    orl_sec_size        size;
+    size_t              curr_pos;
+    size_t              curr_size;
+    size_t              tmp_size;
+    size_t              size;
     label_entry         l_entry;
     ref_entry           r_entry;
     char                *buffer;
@@ -608,7 +615,8 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
     r_entry = *refent;
 
     size = end - start;
-    if( size < sizeof( unsigned_32 ) ) size = sizeof( unsigned_32 );
+    if( size < sizeof( unsigned_32 ) )
+        size = sizeof( unsigned_32 );
     buffer = MemAlloc( size + 1 );
     if( !buffer ) {
         PrintErrorMsg( OUT_OF_MEMORY, WHERE_PRINT_SECTION );
@@ -630,8 +638,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
         }
 
         /* Skip over pair relocs */
-        while( r_entry != NULL
-           && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < curr_pos) ) {
+        while( r_entry != NULL && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < curr_pos) ) {
             r_entry = r_entry->next;
         }
         if( r_entry != NULL && r_entry->offset < (curr_pos + curr_size) ) {
@@ -660,8 +667,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
     return( OKAY );
 }
 
-return_val DumpASMSection( section_ptr sec, unsigned_8 *contents,
-                        orl_sec_size size, unsigned pass )
+return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size size, unsigned pass )
 {
     hash_data           *data_ptr;
     label_list          sec_label_list;
@@ -679,14 +685,13 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents,
         l_entry = NULL;
     }
 
+    r_entry = NULL;
     data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) sec->shnd );
     if( data_ptr ) {
         sec_ref_list = (ref_list) *data_ptr;
         if( sec_ref_list != NULL ) {
             r_entry = sec_ref_list->first;
         }
-    } else {
-        r_entry = NULL;
     }
 
     if( pass == 1 ) {
@@ -729,8 +734,7 @@ static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
     PrintHeader( sec );
     prev_entry = NULL;
     for( ; l_entry != NULL; l_entry = l_entry->next ) {
-        if( ( l_entry->type == LTYP_SECTION )
-            && ( strcmp( l_entry->label.name, sec->name ) == 0 ) ) {
+        if( ( l_entry->type == LTYP_SECTION ) && ( strcmp( l_entry->label.name, sec->name ) == 0 ) ) {
             continue;
         } else if( prev_entry == NULL ) {
             prev_entry = l_entry;
@@ -746,8 +750,7 @@ static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
         }
         switch( prev_entry->type ) {
         case LTYP_UNNAMED:
-            BufferStore( "%s%c$%d", prefix, LabelChar,
-                prev_entry->label.number );
+            BufferStore( "%s%c$%d", prefix, LabelChar, prev_entry->label.number );
             break;
         case LTYP_SECTION:
         case LTYP_NAMED:
@@ -775,8 +778,7 @@ static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
         }
         switch( prev_entry->type ) {
         case LTYP_UNNAMED:
-            BufferStore( "%s%c$%d", prefix, LabelChar,
-                prev_entry->label.number );
+            BufferStore( "%s%c$%d", prefix, LabelChar, prev_entry->label.number );
             break;
         case LTYP_SECTION:
         case LTYP_NAMED:
@@ -799,10 +801,12 @@ static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
     return( OKAY );
 }
 
+#define OFFSET_UNDEF    ((size_t)-1)
+
 static return_val bssMasmASMSection( section_ptr sec, orl_sec_size size,
                                      label_entry l_entry )
 {
-    int     offset = -1;
+    size_t  offset = OFFSET_UNDEF;
 
     PrintHeader( sec );
 
@@ -831,7 +835,7 @@ static return_val bssMasmASMSection( section_ptr sec, orl_sec_size size,
             BufferPrint();
         }
     }
-    if( offset == -1 ) {
+    if( offset == OFFSET_UNDEF ) {
         if( size > 0 ) {
             BufferStore( "    ORG 0" );
             BufferConcatNL();

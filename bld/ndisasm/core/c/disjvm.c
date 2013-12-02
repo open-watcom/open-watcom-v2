@@ -245,19 +245,19 @@ dis_handler_return JVMInterface( dis_handle *h, void *d, dis_dec_ins *ins )
     return( DHR_DONE );
 }
 
-static unsigned JVMInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t JVMInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
     return( 0 );
 }
 
-static unsigned JVMFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t JVMFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
     return( 0 );
 }
 
-static unsigned JVMOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t JVMOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff )
 {
     return( 0 );
@@ -278,10 +278,11 @@ static void JVMPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
     ByteSwap( h, d, ins );
 }
 
-static unsigned JVMPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t JVMPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff )
 {
     // Nothing to do
+    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff;
     return( 0 );
 }
 

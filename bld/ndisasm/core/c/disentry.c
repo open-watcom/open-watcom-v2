@@ -71,12 +71,12 @@ long SEX( unsigned long v, unsigned bit )
 
 #define LENGTH_BIT      0x80
 
-unsigned DisGetString( unsigned index, char *buff, int upper )
+size_t DisGetString( unsigned index, char *buff, bool to_upper )
 {
     unsigned            len;
     unsigned            i;
     const unsigned char *src;
-    unsigned char       c;
+    int                 c;
 
     src = &DisStringTable[index];
     len = *src++ & ~LENGTH_BIT;
@@ -85,8 +85,9 @@ unsigned DisGetString( unsigned index, char *buff, int upper )
         if( i == 0 ) break;
         c = *src++;
         if( !(c & LENGTH_BIT) ) {
-            if( upper ) c = toupper( c );
-            *buff++ = c;
+            if( to_upper )
+                c = toupper( c );
+            *buff++ = (char)c;
             --i;
         }
     }
@@ -96,6 +97,7 @@ unsigned DisGetString( unsigned index, char *buff, int upper )
 
 dis_handler_return DisDummyHandler( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    h = h; d = d; ins = ins;
     return( DHR_INVALID );
 }
 
@@ -180,13 +182,13 @@ dis_return DisDecode( dis_handle *h, void *d, dis_dec_ins *ins )
 // Decode an instruction
 {
     int                     curr;
-    const dis_range        *table;
+    const dis_range         *table;
     dis_return              dr;
-    unsigned                idx;
+    unsigned char           idx;
     unsigned                start;
     dis_handler_return      hr;
     int                     page;
-    int const              *pos;
+    int const               *pos;
     int                     offs;
 
     start = 0;
@@ -240,8 +242,7 @@ dis_return DisDecode( dis_handle *h, void *d, dis_dec_ins *ins )
 
 char *DisAddReg( dis_register reg, char *dst, dis_format_flags flags )
 {
-    return( &dst[ DisGetString( DisRegisterTable[reg], dst,
-                        (flags & DFF_REG_UP) ) ] );
+    return( &dst[ DisGetString( DisRegisterTable[reg], dst, (flags & DFF_REG_UP) != 0 ) ] );
 }
 
 char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags flags,
@@ -322,7 +323,7 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
     unsigned    i;
     dis_dec_ins ins;
     char        *p;
-    unsigned    len;
+    size_t      len;
 
     ins = *ins_p;       /* so we can fiddle it around */
 
@@ -330,7 +331,7 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
     len = h->d->ins_hook( h, d, &ins, flags, name );
     if( name != NULL ) {
         if( len == 0 ) {
-            DisGetString( DisInstructionTable[ins.type].name, name, 0 );
+            DisGetString( DisInstructionTable[ins.type].name, name, FALSE );
         }
         p = &name[ strlen( name ) ];
         h->d->flag_hook( h, d, &ins, flags, p );

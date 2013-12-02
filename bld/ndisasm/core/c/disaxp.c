@@ -90,6 +90,7 @@ dis_handler_return AXPPal( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     ins->op[0].type = DO_IMMED;
     ins->op[0].value = code.pal.code;
@@ -101,6 +102,7 @@ dis_handler_return AXPMemory( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.memory.ra + DR_AXP_r0;
@@ -152,6 +154,7 @@ dis_handler_return AXPMemoryFC( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     switch( ins->type ) {
     case DI_AXP_FETCH:
@@ -174,6 +177,7 @@ dis_handler_return AXPJump( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.memory.ra + DR_AXP_r0;
@@ -190,6 +194,7 @@ dis_handler_return AXPBranch( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.branch.ra + DR_AXP_r0;
@@ -210,6 +215,7 @@ dis_handler_return AXPOperate( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.reg_operate.ra + DR_AXP_r0;
@@ -239,6 +245,7 @@ dis_handler_return AXPFPOperate( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.fp_operate.ra + DR_AXP_f0;
@@ -254,6 +261,7 @@ dis_handler_return AXPFPConvert( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.fp_operate.rb + DR_AXP_f0;
@@ -326,6 +334,7 @@ dis_handler_return AXPIEEEConvert( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     ins->num_ops = 2;
     ins->op[0].type = DO_REG;
@@ -348,6 +357,7 @@ dis_handler_return AXPVAXConvert( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     axp_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.fp_operate.rb + DR_AXP_f0;
@@ -359,11 +369,12 @@ dis_handler_return AXPVAXConvert( dis_handle *h, void *d, dis_dec_ins *ins )
     return( DHR_DONE );
 }
 
-static unsigned AXPInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t AXPInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
     const char  *new;
 
+    h = h; d = d;
     if( !(flags & DFF_PSEUDO) ) return( 0 );
     new = NULL;
     switch( ins->type ) {
@@ -518,11 +529,12 @@ static unsigned AXPInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     return( 0 );
 }
 
-static unsigned AXPFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t AXPFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
     char        *p;
 
+    h = h; d = d; flags = flags;
     p = name;
     if( ins->flags.u.axp != DIF_NONE ) {
         *p++ = '/';
@@ -538,11 +550,12 @@ static unsigned AXPFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
     return( p - name );
 }
 
-static unsigned AXPOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t AXPOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff )
 {
     dis_operand *op;
 
+    h = h; d = d; op_buff = op_buff;
     if( flags & DFF_SYMBOLIC_REG ) {
         op = &ins->op[op_num];
         if( op->base >= DR_AXP_r0 && op->base <= DR_AXP_r31 ) {
@@ -566,11 +579,13 @@ static unsigned AXPOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
 static dis_handler_return AXPDecodeTableCheck( int page, dis_dec_ins *ins )
 {
+    page = page; ins = ins;
     return( DHR_DONE );
 }
 
 static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    h = h; d = d;
     if( h->need_bswap ) {
         SWAP_32( ins->opcode );
     }
@@ -581,10 +596,11 @@ static void AXPPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
     ByteSwap( h, d, ins );
 }
 
-static unsigned AXPPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t AXPPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff )
 {
     // Nothing to do
+    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff;
     return( 0 );
 }
 

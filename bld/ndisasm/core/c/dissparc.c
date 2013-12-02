@@ -48,9 +48,11 @@ extern const unsigned char      SPARCMaxInsName;
 #define _SparcCReg( x )         ( (x) + DR_SPARC_c0 )
 #define _SparcIns( x )          (x)
 
-dis_handler_return SPARCSetHi( dis_handle*h, void *d, dis_dec_ins *ins )
+dis_handler_return SPARCSetHi( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
+
+    h = h; d = d;
 
     code.full = _SparcIns( ins->opcode );
     ins->op[0].type = DO_IMMED;
@@ -64,6 +66,8 @@ dis_handler_return SPARCSetHi( dis_handle*h, void *d, dis_dec_ins *ins )
 dis_handler_return SPARCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
+
+    h = h; d = d;
 
     code.full = _SparcIns( ins->opcode );
     ins->op[0].type = DO_RELATIVE;
@@ -79,6 +83,8 @@ dis_handler_return SPARCCall( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
 
+    h = h; d = d;
+
     code.full = _SparcIns( ins->opcode );
     ins->op[0].type  = DO_RELATIVE;
     // BartoszP 16.10.2005
@@ -93,6 +99,8 @@ dis_handler_return SPARCCall( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return SPARCOp3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
+
+    h = h; d = d;
 
     code.full = _SparcIns( ins->opcode );
     ins->op[ 0 ].type = DO_REG;
@@ -129,6 +137,8 @@ static void getOpIndices( sparc_ins code, int *mem, int *reg )
 
 static void doSparcMem( dis_handle *h, void *d, dis_operand *op, sparc_ins code )
 {
+    h = h; d = d;
+
     op->type = DO_MEMORY_ABS;
     op->base = _SparcReg( code.op3.rs1 );
     op->index = DR_NONE;
@@ -154,6 +164,8 @@ dis_handler_return SPARCMem( dis_handle *h, void *d, dis_dec_ins *ins )
     int         mem_op;
     int         reg_op;
 
+    h = h; d = d;
+
     code.full = _SparcIns( ins->opcode );
     getOpIndices( code, &mem_op, &reg_op );
     ins->op[ reg_op ].type = DO_REG;
@@ -175,6 +187,8 @@ dis_handler_return SPARCFPop2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
 
+    h = h; d = d;
+
     code.full = _SparcIns( ins->opcode );
     if( code.op3opf.opcode_3 == 0x35 ) {
         // fcmp
@@ -195,6 +209,8 @@ dis_handler_return SPARCFPop2( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return SPARCFPop3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
+
+    h = h; d = d;
 
     code.full = _SparcIns( ins->opcode );
     ins->op[ 0 ].type = DO_REG;
@@ -263,10 +279,12 @@ dis_handler_return SPARCMemC( dis_handle *h, void *d, dis_dec_ins *ins )
     return( DHR_DONE );
 }
 
-static unsigned SPARCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t SPARCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
     const char  *new_op_name;
+
+    h = h; d = d;
 
     if( !(flags & DFF_PSEUDO) ) return( 0 );
     new_op_name = NULL;
@@ -348,9 +366,11 @@ static unsigned SPARCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     return( 0 );
 }
 
-static unsigned SPARCFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t SPARCFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
+    h = h; d = d; ins = ins; flags = flags; name = name;
+
     return( 0 );
 }
 
@@ -372,10 +392,12 @@ static dis_register sparcTranslate( dis_register reg ) {
     return( reg );
 }
 
-static unsigned SPARCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t SPARCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff )
 {
     dis_operand *op;
+
+    h = h; d = d; op_buff = op_buff;
 
     ins->op[op_num].ref_type = DRT_SPARC_WORD;
     if( flags & DFF_SYMBOLIC_REG ) {
@@ -392,11 +414,15 @@ static unsigned SPARCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
 static dis_handler_return SPARCDecodeTableCheck( int page, dis_dec_ins *ins )
 {
+    page = page; ins = ins;
+
     return( DHR_DONE );
 }
 
 static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    h = h; d = d;
+
     if( h->need_bswap ) {
         SWAP_32( ins->opcode );
     }
@@ -407,10 +433,11 @@ static void SPARCPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
     ByteSwap( h, d, ins );
 }
 
-static unsigned SPARCPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t SPARCPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff )
 {
     // Nothing to do
+    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff;
     return( 0 );
 }
 

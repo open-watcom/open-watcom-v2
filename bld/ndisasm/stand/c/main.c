@@ -82,7 +82,7 @@ extern char             *SourceFileInObject;
 
 static void printUnixHeader( section_ptr sec )
 {
-    orl_sec_alignment   alignment;
+    char                alignment;
     orl_sec_flags       flags;
     orl_sec_type        type;
     char                attributes[10];

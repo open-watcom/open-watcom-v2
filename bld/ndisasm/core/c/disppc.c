@@ -274,6 +274,7 @@ dis_handler_return PPCMath( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
+    h = h; d = d;
     code.full = ins->opcode;
 
     ins->num_ops = 3;
@@ -365,6 +366,8 @@ dis_handler_return PPCImmediate( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
+    h = h; d = d;
+
     code.full = ins->opcode;
 
     ins->num_ops = 3;
@@ -410,12 +413,12 @@ static void PPCDoFloat( dis_dec_ins *ins, const int *order )
 // |     | 1  | 2  | 3  | 4  |    ||
 // +-----+----+----+----+----+----++
 {
-    ppc_ins     code;
-    int         operand;
+    ppc_ins         code;
+    unsigned char   operand;
 
     code.full = ins->opcode;
 
-    for( operand=0; operand<4; operand++ ) {
+    for( operand = 0; operand < 4; operand++ ) {
         if( order[operand] == 0 ) break;
         ins->op[operand].type = DO_REG;
         switch( order[operand] ) {
@@ -438,10 +441,13 @@ static void PPCDoFloat( dis_dec_ins *ins, const int *order )
         ins->flags.u.ppc |= DIF_PPC_RC;
     }
 }
+
 dis_handler_return PPCFloat( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     // note silly ordering of operands
     const int order[5] = {1, 2, 4, 3, 0};
+
+    h = h; d = d;
 
     PPCDoFloat( ins, order );
 
@@ -451,6 +457,8 @@ dis_handler_return PPCFloatdab( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     const int order[4] = {1, 2, 3, 0};
 
+    h = h; d = d;
+
     PPCDoFloat( ins, order );
 
     return( DHR_DONE );
@@ -458,6 +466,8 @@ dis_handler_return PPCFloatdab( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return PPCFloatdac( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     const int order[4] = {1, 2, 4, 0};
+
+    h = h; d = d;
 
     PPCDoFloat( ins, order );
 
@@ -467,6 +477,8 @@ dis_handler_return PPCFloatCmpab( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     const int order[4] = {1, 2, 3, 0};
     ppc_ins     code;
+
+    h = h; d = d;
 
     PPCDoFloat( ins, order );
 
@@ -479,6 +491,8 @@ dis_handler_return PPCFloatCmpab( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return PPCFloatdb( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     const int order[3] = {1, 3, 0};
+
+    h = h; d = d;
 
     PPCDoFloat( ins, order );
 
@@ -510,6 +524,8 @@ dis_handler_return PPCFloato( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return PPCMem1( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
+
+    h = h; d = d;
 
     code.full = ins->opcode;
 
@@ -552,6 +568,8 @@ dis_handler_return PPCMemD1( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
+    h = h; d = d;
+
     code.full = ins->opcode;
 
     ins->num_ops = 2;
@@ -566,6 +584,8 @@ dis_handler_return PPCMemD1( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return PPCMem2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
+
+    h = h; d = d;
 
     code.full = ins->opcode;
 
@@ -629,6 +649,8 @@ dis_handler_return PPCMemD2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
+    h = h; d = d;
+
     code.full = ins->opcode;
 
     ins->num_ops = 3;
@@ -645,6 +667,8 @@ dis_handler_return PPCMemD2( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return PPCMem3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
+
+    h = h; d = d;
 
     code.full = ins->opcode;
 
@@ -677,7 +701,9 @@ dis_handler_return PPCFloatMem2( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
-    int         magic;
+    unsigned_8  magic;
+
+    h = h; d = d;
 
     code.full = ins->opcode;
 
@@ -687,9 +713,9 @@ dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
     magic = 2;
     switch( ins->type ) {
     case DI_PPC_b:
-        magic = 0; // fall through
+        magic = 0;  // fall through
     case DI_PPC_bc:
-        magic++; // magic=1 for b, 3 for bc
+        magic++;    // magic=1 for b, 3 for bc
         if( code.b.AA ) {
             ins->flags.u.ppc |= DIF_PPC_AA;
             ins->op[magic-1].type = DO_ABSOLUTE;
@@ -699,7 +725,7 @@ dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
         // fall through
     case DI_PPC_bcctr:
     case DI_PPC_bclr:
-        ins->num_ops = magic; // magic=2 for bcctr, bclr
+        ins->num_ops = magic;   // magic=2 for bcctr, bclr
         break;
     default:
         break;
@@ -729,6 +755,8 @@ dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return PPCCompare( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
+
+    h = h; d = d;
 
     code.full = ins->opcode;
 
@@ -762,6 +790,8 @@ dis_handler_return PPCCondition( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
+    h = h; d = d;
+
     code.full = ins->opcode;
 
     ins->op[0].type = DO_REG;
@@ -789,6 +819,8 @@ dis_handler_return PPCCondition( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return PPCConditionField( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
+
+    h = h; d = d;
 
     code.full = ins->opcode;
 
@@ -819,7 +851,9 @@ dis_handler_return PPCConditionField( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return PPCSpecial( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
-    int         magic = 0;
+    unsigned_8  magic = 0;
+
+    h = h; d = d;
 
     code.full = ins->opcode;
 
@@ -839,7 +873,7 @@ dis_handler_return PPCSpecial( dis_handle *h, void *d, dis_dec_ins *ins )
     }
     ins->op[magic].type = DO_REG;
     ins->op[magic].base = code.i.hi.general.second + DR_PPC_r0;
-    magic = 1-magic;
+    magic = 1 - magic;
     ins->op[magic].type = DO_IMMED;
     switch( ins->type ) {
     case DI_PPC_mfspr:
@@ -959,6 +993,8 @@ dis_handler_return PPCTrap( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
+    h = h; d = d;
+
     code.full = ins->opcode;
 
     ins->num_ops = 3;
@@ -987,15 +1023,19 @@ dis_handler_return PPCTrap( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 dis_handler_return PPCNull( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    h = h; d = d;
+
     ins->num_ops = 0;
     return( DHR_DONE );
 }
 
-static unsigned PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
     const char *new;
     const char *more;
+
+    h = h; d = d;
 
     if( !(flags & DFF_PSEUDO) ) return( 0 );
     new = NULL;
@@ -1342,32 +1382,36 @@ static unsigned PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     return 0;
 }
 
-static unsigned PPCFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t PPCFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
     char *p;
+
+    h = h; d = d; flags = flags;
 
     p = name;
     if( ins->flags.u.ppc & DIF_PPC_OE ) *p++ = 'o';
     if( ins->flags.u.ppc & DIF_PPC_RC ) *p++ = '.';
     if( ins->flags.u.ppc & DIF_PPC_LK ) *p++ = 'l';
     if( ins->flags.u.ppc & DIF_PPC_AA ) *p++ = 'a';
-    *p='\0';
-    return( p-name );
+    *p = '\0';
+    return( p - name );
 }
 
 static const char ConditionField[4][3] = {
     "lt", "gt", "eq", "so"
 };
 
-static unsigned PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff )
 {
     char        *p;
-    int         val;
+    char        val;
     char        ch;
     const char  *src;
     dis_operand *op;
+
+    h = h; d = d;
 
     p = op_buff;
     switch( ins->op[op_num].type ) {
@@ -1381,20 +1425,22 @@ static unsigned PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         case DI_PPC_cmpli:
             if( op_num == 1 ) {
                 // The 1-bit L parameter.
-                *p++ = ins->op[op_num].value + '0';
+                val = ins->op[op_num].value & 1;
+                *p++ = val + '0';
                 *p='\0';
             }
             break;
         case DI_PPC_bc:
         case DI_PPC_bcctr:
         case DI_PPC_bclr:
+            val = ins->op[op_num].value & 0x1f;
             if( (flags & DFF_PSEUDO) && op_num == 0 ) {
                 // pretty-printed BI parameter
                 if( ins->op[op_num].base != DR_PPC_cr0 ) {
                     p = DisAddReg( ins->op[op_num].base, p, flags );
                     *p++ = '+';
                 }
-                src = ConditionField[ins->op[op_num].value % 4];
+                src = ConditionField[val & 3];
                 for( ;; ) {
                     ch = *src;
                     *p = ch;
@@ -1409,17 +1455,20 @@ static unsigned PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             //NYI: have to use client to get numeric prefix right
             *p++ = '0';
             *p++ = 'x';
-            val = ins->op[op_num].value;
-            *p++ = (val >> 4) + '0';
-            if( (val & 0xf) > 9 ) {
-                *p++ = (val & 0xf) + 'a' - 0xa;
+            if( val & 0x10 )
+                *p++ = '1';
+            else
+                *p++ = '0';
+            val &= 0x0f;
+            if( val > 9 ) {
+                *p++ = val + 'a' - 0xa;
             } else {
-                *p++ = (val & 0xf) + '0';
+                *p++ = val + '0';
             }
-            *p='\0';
+            *p = '\0';
             break;
         default:
-        break;
+            break;
         }
     default:
         break;
@@ -1437,16 +1486,20 @@ static unsigned PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             break;
         }
     }
-    return( p-op_buff );
+    return( p - op_buff );
 }
 
 static dis_handler_return PPCDecodeTableCheck( int page, dis_dec_ins *ins )
 {
+    page = page; ins = ins;
+
     return( DHR_DONE );
 }
 
 static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
 {
+    h = h; d = d;
+
     if( h->need_bswap ) {
         SWAP_32( ins->opcode );
     }
@@ -1457,10 +1510,11 @@ static void PPCPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
     ByteSwap( h, d, ins );
 }
 
-static unsigned PPCPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+static size_t PPCPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff )
 {
     // Nothing to do
+    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff;
     return( 0 );
 }
 

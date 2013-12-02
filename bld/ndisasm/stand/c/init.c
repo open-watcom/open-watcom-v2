@@ -127,7 +127,7 @@ static orl_sec_handle           drectveSection;
 static orl_funcs                oFuncs;
 static section_list_struct      relocSections;
 static char *                   objFileBuf;
-static unsigned long            objFilePos;
+static long                     objFilePos;
 static unsigned long            objFileLen;
 
 
@@ -469,12 +469,13 @@ static void openFiles( void )
 }
 
 static void * objRead( void *hdl, size_t len )
-/*****************************************/
+/********************************************/
 {
     void *      retval;
 
     hdl = hdl;
-    if( objFilePos + len > objFileLen ) return NULL;
+    if( (unsigned long)( objFilePos + len ) > objFileLen )
+        return NULL;
     retval = objFileBuf + objFilePos;
     objFilePos += len;
     return retval;
@@ -489,7 +490,7 @@ static long objSeek( void *hdl, long pos, int where )
     } else if( where == SEEK_CUR ) {
         objFilePos += pos;
     } else {
-        objFilePos = objFileLen - pos;
+        objFilePos = objFileLen - (unsigned long)pos;
     }
     return objFilePos;
 }

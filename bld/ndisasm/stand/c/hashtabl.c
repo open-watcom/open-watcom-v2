@@ -115,7 +115,7 @@ hash_data *HashTableQuery( hash_table hash_tbl, hash_value key )
 hash_table HashTableCreate( hash_table_size size, hash_table_type type, hash_table_comparison_func func )
 {
     hash_table          hash_tbl;
-    int                 loop;
+    hash_table_size     loop;
 
     hash_tbl = (hash_table) MemAlloc( sizeof( hash_table_struct ) );
     if( !hash_tbl) return( NULL );
@@ -132,7 +132,7 @@ hash_table HashTableCreate( hash_table_size size, hash_table_type type, hash_tab
 
 void HashTableFree( hash_table hash_tbl )
 {
-    int                 loop;
+    hash_table_size     loop;
     hash_struct         *hash_ptr;
     hash_struct         *next_hash_ptr;
 

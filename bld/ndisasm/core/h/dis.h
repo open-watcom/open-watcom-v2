@@ -45,6 +45,6 @@ extern void             DisFini( dis_handle * );
 /*
         Client routines
 */
-extern dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data );
-extern unsigned DisCliGetAlign( void *d, unsigned off, unsigned align );
-extern unsigned DisCliValueString( void *d, dis_dec_ins *, unsigned op, char *buff );
+extern dis_return   DisCliGetData( void *d, unsigned off, unsigned size, void *data );
+extern unsigned     DisCliGetAlign( void *d, unsigned off, unsigned align );
+extern size_t       DisCliValueString( void *d, dis_dec_ins *, unsigned op, char *buff );
