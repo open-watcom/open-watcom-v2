@@ -95,6 +95,26 @@ extern void             InitSuppServices( void );
 extern void             AsyncNotify( void );
 extern void             RunThreadNotify( void );
 
+extern unsigned         ScanCmd( char *cmd_table );
+extern void             WndMsgBox( char *text );
+extern bool             WndDlgTxt( char *text );
+extern void             WndInfoBox( char *text );
+extern void             WndUser( void );
+extern void             WndDebug( void );
+extern a_window         *WndClassInspect( wnd_class class );
+extern char             *WndLoadString( int i );
+extern void             WndFlushKeys( void );
+extern void             PlayDead( bool );
+extern void             WndSysEnd( bool pause );
+extern void             WndSysStart( void );
+extern void             RingBell( void );
+extern void             ProcPendingPaint( void );
+extern bool             DlgInfoRelease( void );
+extern bool             VarInfoRelease( void );
+extern void             WndSrcOrAsmInspect( address );
+extern void             WndAddrInspect( address );
+extern void             RemovePoint( brkp *bp );
+
 #define TIMER_MS        250
 
 void GUITimer( void )
@@ -163,19 +183,16 @@ void DUIStatusText( char *text )
     WndStatusText( text );
 }
 
-extern void WndMsgBox( char *text );
 void DUIMsgBox( char *text )
 {
     WndMsgBox( text );
 }
 
-extern bool WndDlgTxt( char *text );
 bool DUIDlgTxt( char *text )
 {
     return( WndDlgTxt( text ) );
 }
 
-extern void WndInfoBox( char *text );
 void DUIInfoBox( char *text )
 {
     WndInfoBox( text );
@@ -232,17 +249,17 @@ void DUIFini( void )
     WndDlgFini();
 }
 
-extern void DUIFreshAll( void )
+void DUIFreshAll( void )
 {
     WndFreshAll();
 }
 
-extern bool DUIStopRefresh( bool ok )
+bool DUIStopRefresh( bool ok )
 {
     return( WndStopRefresh( ok ) );
 }
 
-extern void DUIShow( void )
+void DUIShow( void )
 {
     WndDebug();
     WndShowAll();
@@ -253,35 +270,31 @@ extern void DUIShow( void )
     }
 }
 
-extern void WndUser( void );
-extern void DUIWndUser( void )
+void DUIWndUser( void )
 {
     WndUser();
 }
 
-extern void WndDebug( void );
-extern void DUIWndDebug( void )
+void DUIWndDebug( void )
 {
     WndDebug();
 }
 
-extern a_window         *WndClassInspect( wnd_class class );
-extern void DUIShowLogWindow( void )
+void DUIShowLogWindow( void )
 {
     WndClassInspect( WND_DIALOGUE );
 }
 
-unsigned ScanCmd( char *cmd_table );
 wnd_class ReqWndName( void )
 {
     wnd_class   class;
 
-    class = ScanCmd( &WndNameTab );
+    class = ScanCmd( WndNameTab );
     if( class == 0 ) Error( ERR_LOC, LIT( ERR_BAD_WIND_NAME ) );
     return( class-1 );
 }
 
-extern int DUIGetMonitorType( void )
+int DUIGetMonitorType( void )
 {
     if( GUIIsGUI() ) {
         return( 1 );
@@ -292,12 +305,12 @@ extern int DUIGetMonitorType( void )
     }
 }
 
-extern int DUIScreenSizeY( void )
+int DUIScreenSizeY( void )
 {
     return( WndScreen.y );
 }
 
-extern int DUIScreenSizeX( void )
+int DUIScreenSizeX( void )
 {
     return( WndScreen.x );
 }
@@ -307,74 +320,64 @@ void DUIErrorBox( char *buff )
     WndDisplayMessage( buff, LIT( Error ), GUI_INFORMATION + GUI_SYSTEMMODAL );
 }
 
-extern void DUIArrowCursor( void )
+void DUIArrowCursor( void )
 {
     WndArrowCursor();
 }
 
-extern char *WndLoadString( int i );
-extern char *DUILoadString( int i )
+char *DUILoadString( int i )
 {
     return( WndLoadString( i ) );
 }
 
 bool DUIAskIfAsynchOk( void )
 {
-    return( WndDisplayMessage( LIT( WARN_Asynch_Event ), LIT( Empty ),
-                             GUI_YES_NO ) == GUI_RET_YES );
+    return( WndDisplayMessage( LIT( WARN_Asynch_Event ), LIT( Empty ), GUI_YES_NO ) == GUI_RET_YES );
 }
 
-extern void WndFlushKeys( void );
-extern void DUIFlushKeys( void )
+void DUIFlushKeys( void )
 {
     WndFlushKeys();
 }
 
-extern void PlayDead( bool );
-extern void DUIPlayDead( bool dead )
+void DUIPlayDead( bool dead )
 {
     PlayDead( dead );
 }
 
-extern void WndSysEnd( bool pause );
-extern void DUISysEnd( bool pause )
+void DUISysEnd( bool pause )
 {
     WndSysEnd( pause );
 }
 
-extern void WndSysStart( void );
-extern void DUISysStart( void )
+void DUISysStart( void )
 {
     WndSysStart();
 }
 
-extern void RingBell( void );
-extern void DUIRingBell( void )
+void DUIRingBell( void )
 {
     RingBell();
 }
 
-extern void ProcPendingPaint( void );
-extern void DUIProcPendingPaint( void )
+void DUIProcPendingPaint( void )
 {
     ProcPendingPaint();
 }
 
-extern bool DlgInfoRelease( void );
-extern bool VarInfoRelease( void );
-extern bool DUIInfoRelease( void )
+bool DUIInfoRelease( void )
 {
     if( DlgInfoRelease() ) return( TRUE );
     if( VarInfoRelease() ) return( TRUE );
     return( FALSE );
 }
 
-extern void *DUIHourGlass( void *x )
+void *DUIHourGlass( void *x )
 {
     return( WndHourGlass( x ) );
 }
 
-extern void WndDoInput( void )
+void WndDoInput( void )
 {
     InitSuppServices();
     DoInput();
@@ -414,20 +417,17 @@ void DUIDirty( void )
     WndDirty( NULL );
 }
 
-extern void WndSrcOrAsmInspect( address );
 void DUISrcOrAsmInspect( address addr )
 {
     WndSrcOrAsmInspect( addr );
 }
 
-extern void WndAddrInspect( address );
 void DUIAddrInspect( address addr )
 {
     WndAddrInspect( addr );
 }
 
-extern void RemovePoint( brkp *bp );
-extern void DUIRemoveBreak( brkp *bp )
+void DUIRemoveBreak( brkp *bp )
 /***********************************/
 {
     RemovePoint( bp );

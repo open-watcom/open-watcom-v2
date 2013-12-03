@@ -1622,7 +1622,7 @@ void ProcNew( void )
 {
     if( CurrToken == T_DIV ) {
         Scan();
-        (*NewJmpTab[ ScanCmd( &NewNameTab ) ])();
+        (*NewJmpTab[ ScanCmd( NewNameTab ) ])();
     } else {
         ResNew();
     }

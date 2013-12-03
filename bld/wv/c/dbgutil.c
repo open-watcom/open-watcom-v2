@@ -553,7 +553,7 @@ OVL_EXTERN bool DoneCmdList( void *_cmds, inp_rtn_action action )
 void PushCmdList( cmd_list *cmds )
 {
     cmds->use++;
-    PushInpStack( cmds, &DoneCmdList, FALSE );
+    PushInpStack( cmds, DoneCmdList, FALSE );
 }
 
 
@@ -581,7 +581,7 @@ OVL_EXTERN bool DoneCmdText( char *cmds, inp_rtn_action action )
 #ifdef DEADCODE
 void PushCmdText( char *cmds )
 {
-    PushInpStack( cmds, &DoneCmdText, FALSE );
+    PushInpStack( cmds, DoneCmdText, FALSE );
 }
 #endif
 
@@ -617,7 +617,7 @@ OVL_EXTERN bool DoneNull( void *_buff, inp_rtn_action action )
 
 void FreezeInpStack( void )
 {
-    PushInpStack( LIT( Empty ), &DoneNull, FALSE );
+    PushInpStack( LIT( Empty ), DoneNull, FALSE );
     TypeInpStack( INP_NEW_LANG | INP_HOLD | INP_STOP_PURGE );
 }
 

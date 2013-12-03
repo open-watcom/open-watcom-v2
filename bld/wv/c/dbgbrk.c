@@ -777,7 +777,7 @@ static void DoProcBreak( void )
 
     if( CurrToken == T_DIV ) {
         Scan();
-        cmd = ScanCmd( &PointNameTab );
+        cmd = ScanCmd( PointNameTab );
         BPJmpTab[ cmd ].rtn( BPJmpTab[ cmd ].type );
     } else if( ScanEOC() ) {
         ShowBPs();
@@ -843,7 +843,7 @@ OVL_EXTERN brkp *ImageBreak( memory_expr def_seg )
     def_seg=def_seg;
     while( CurrToken == T_DIV ) {
         Scan();
-        switch( ScanCmd( &PointNameTab ) ) {
+        switch( ScanCmd( PointNameTab ) ) {
         case 0:
             goto done;
         case B_CLEAR:
@@ -1355,7 +1355,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
     symaddress = FALSE;
     while( CurrToken == T_DIV ) {
         Scan();
-        switch( ScanCmd( &PointNameTab ) ) {
+        switch( ScanCmd( PointNameTab ) ) {
         case 0:
             goto done;
         case B_RESUME:

@@ -31,6 +31,8 @@
 
 #include <setjmp.h>
 
+extern void PopErrBox( char *buff );
+
 static jmp_buf  *ExitSP;
 
 /*
@@ -48,7 +50,7 @@ int Spawn( void (*func)(void) )
     int     ret;
 
     old = ExitSP;
-    ExitSP = env;
+    ExitSP = &env;
     if( setjmp( env ) == 0 ) {
         func();
         ret = 0;
@@ -66,7 +68,7 @@ int SpawnP( void (*func)(void*), void *parm )
     int     ret;
 
     old = ExitSP;
-    ExitSP = env;
+    ExitSP = &env;
     if( setjmp( env ) == 0 ) {
         func( parm );
         ret = 0;
@@ -84,7 +86,7 @@ int SpawnPP( void (*func)(void*, void*), void *p1, void *p2 )
     int     ret;
 
     old = ExitSP;
-    ExitSP = env;
+    ExitSP = &env;
     if( setjmp( env ) == 0 ) {
         func( p1, p2 );
         ret = 0;
@@ -95,12 +97,10 @@ int SpawnPP( void (*func)(void*, void*), void *p1, void *p2 )
     return( ret );
 }
 
-extern void PopErrBox( char *buff );
-
 void Suicide( void )
 {
-    if( ExitSP ) {
-        longjmp( ExitSP, 1 );
+    if( ExitSP != NULL ) {
+        longjmp( *ExitSP, 1 );
     } else {
         PopErrBox( "Internal Error: missing Spawn" );
     }

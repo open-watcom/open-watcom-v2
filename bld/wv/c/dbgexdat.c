@@ -147,6 +147,6 @@ void ProcExamine( void )
         MemExam( GetMADTypeHandleDefaultAt( NilAddr, MTK_BASIC ) );
     } else {
         Scan();
-        (*ExamJmpTab[ ScanCmd( &FmtNameTab ) ])();
+        (*ExamJmpTab[ ScanCmd( FmtNameTab ) ])();
     }
 }

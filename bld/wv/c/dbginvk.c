@@ -51,7 +51,7 @@ extern bool             ScanEOC( void );
 extern bool             SwitchOnOff( void );
 extern void             ShowSwitch( bool );
 extern handle           LocalFullPathOpen( char *name, char *ext, char *result, unsigned max_result );
-extern void             PushInpStack( void *, bool (*)(), bool );
+extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );
 extern char             *ReScan( char * );
 extern unsigned int     ScanCmd( char * );
@@ -89,7 +89,7 @@ extern void ImplicitConf( void )
 
 static int InvRead( invokes *inv, unsigned *save_point )
 {
-    char        ch;
+    int         ch;
     unsigned    left;
     int         size;
 
@@ -101,10 +101,8 @@ static int InvRead( invokes *inv, unsigned *save_point )
             return( ch );
         }
         left = inv->in_size - *save_point;
-        memmove( &inv->in_buff[0], &inv->in_buff[*save_point],
-                 left );
-        size = ReadText( inv->inv_input, &inv->in_buff[left],
-                            IN_BUFF_SIZE - left );
+        memmove( &inv->in_buff[0], &inv->in_buff[*save_point], left );
+        size = ReadText( inv->inv_input, &inv->in_buff[left], IN_BUFF_SIZE - left );
         if( size <= 0 ) break;
         inv->in_size = size + left;
         inv->in_off = left;
@@ -221,13 +219,13 @@ static void Conclude( invokes *inv )
 }
 
 
-OVL_EXTERN bool DoneInvLine( invokes *inv, inp_rtn_action action )
+OVL_EXTERN bool DoneInvLine( void *inv, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:
     case INP_RTN_EOL:
         if( !GetInvkCmd( inv ) ) return( FALSE );
-        ReScan( inv->buff );
+        ReScan( ((invokes *)inv)->buff );
         return( TRUE );
     case INP_RTN_FINI:
         Conclude( inv );
@@ -266,7 +264,7 @@ static void DoInvoke( handle hndl, char *name, char_ring *parmlist )
     inv->prmlst = parmlist;
     inv->number = InvCount++;
     inv->line = 0;
-    PushInpStack( inv, &DoneInvLine, TRUE );
+    PushInpStack( inv, DoneInvLine, TRUE );
     TypeInpStack( INP_CMD_FILE );
 }
 

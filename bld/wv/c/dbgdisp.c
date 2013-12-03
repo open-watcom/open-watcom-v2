@@ -56,7 +56,7 @@ extern void             WndToolClose( void );
 extern char             *DupStrLen( char *, unsigned );
 extern bool             ScanItem( bool, char **, unsigned int * );
 extern char             *GetCmdName( int );
-extern void             PushInpStack( void *, bool (*)(), bool );
+extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );
 extern bool             HookPendingPush( void );
 

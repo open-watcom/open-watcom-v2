@@ -129,7 +129,7 @@ extern void             SetRegIP( address );
 extern address          GetRegSP( void );
 extern bool             RemoteOvlTransAddr( address * );
 extern bool             TransOvlRetAddr( address *, unsigned int );
-extern void             PushInpStack( void *, bool (*)(), bool );
+extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern char             *ReScan( char * );
 extern void             TypeInpStack( input_type );
 extern void             SetCodeLoc( address );
@@ -587,7 +587,7 @@ void PerformTrace( void )
  * DoneTraceCmd
  */
 
-OVL_EXTERN bool DoneTraceCmd( char *cmds, inp_rtn_action action )
+OVL_EXTERN bool DoneTraceCmd( void *cmds, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:
@@ -609,7 +609,7 @@ OVL_EXTERN bool DoneTraceCmd( char *cmds, inp_rtn_action action )
 
 static void PushTraceCmd( void )
 {
-    PushInpStack( "\0", &DoneTraceCmd, TRUE );
+    PushInpStack( "\0", DoneTraceCmd, TRUE );
     TypeInpStack( INP_HOLD );
 }
 

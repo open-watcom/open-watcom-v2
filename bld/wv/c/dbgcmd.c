@@ -44,11 +44,11 @@
 
 
 extern char             *ReScan( char * );
-extern void             PushInpStack( void *, bool (*)(), bool );
+extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );
 extern bool             TBreak( void );
 
-static bool DoneCmd( char *buff, inp_rtn_action action )
+static bool DoneCmd( void *buff, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:
@@ -71,7 +71,7 @@ static void DoOneCmd( void *_cmd )
     if( cmd[0] == NULLCHAR ) {
         DUIDlgTxt( LIT( Empty ) );
     } else {
-        PushInpStack( cmd, &DoneCmd, FALSE );
+        PushInpStack( cmd, DoneCmd, FALSE );
         TypeInpStack( INP_DLG_CMD );
         TBreak();   /* clear any pending terminal interrupts */
     }
@@ -79,5 +79,5 @@ static void DoOneCmd( void *_cmd )
 
 void DoCmd( char *cmd )
 {
-    SpawnP( &DoOneCmd, cmd );
+    SpawnP( DoOneCmd, cmd );
 }

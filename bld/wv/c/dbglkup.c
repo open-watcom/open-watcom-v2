@@ -156,7 +156,7 @@ void LookSet( void )
         if( ScanCmd( AddTab ) == 1 ) {
             add = TRUE;
         } else {
-            switch( ScanCmd( &CaseTab ) ) {
+            switch( ScanCmd( CaseTab ) ) {
             case 0:
                 Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
             case 1:
@@ -175,7 +175,7 @@ void LookSet( void )
         need_item = FALSE;
         if( CurrToken == T_DIV ) {
             Scan();
-            switch( ScanCmd( &CaseTab ) ) {
+            switch( ScanCmd( CaseTab ) ) {
             case 0:
                 Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
             case 1:

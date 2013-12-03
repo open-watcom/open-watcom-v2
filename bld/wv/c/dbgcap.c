@@ -42,7 +42,7 @@ extern void             FreeCmdList( cmd_list * );
 extern void             WndTmpFileInspect( char *file, bool binary );
 extern char             *ReScan( char * );
 extern void             ReqEOC( void );
-extern void             PushInpStack( void *, bool (*)(), bool );
+extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             StdOutNew( void );
 extern char             *CnvULongHex( unsigned long, char * );
 extern char             *CnvULongDec( unsigned long value, char *buff );
@@ -62,12 +62,12 @@ extern void CaptureError( void )
     CaptureOk = FALSE;
 }
 
-OVL_EXTERN bool DoneCapture( cmd_list *cmds, inp_rtn_action action )
+OVL_EXTERN bool DoneCapture( void *cmds, inp_rtn_action action )
 {
     char        *old;
     switch( action ) {
     case INP_RTN_INIT:
-        ReScan( cmds->buff );
+        ReScan( ((cmd_list *)cmds)->buff );
         return( TRUE );
     case INP_RTN_EOL:
         return( FALSE );
@@ -105,7 +105,7 @@ extern void ProcCapture( void )
     ReScan( old );
     cmds->use++;
     CaptureOk = TRUE;
-    PushInpStack( cmds, &DoneCapture, FALSE );
+    PushInpStack( cmds, DoneCapture, FALSE );
     TypeInpStack( INP_CAPTURED );
     FreeCmdList( cmds );
 }

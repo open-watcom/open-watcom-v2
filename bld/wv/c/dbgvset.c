@@ -345,15 +345,15 @@ void TypeSet( void )
 
     ScanLeftBrace();
     while( !ScanRightBrace() ) {
-        if( ScanCmd( &TypeSettings ) != TY_STRUCT ) oops();
+        if( ScanCmd( TypeSettings ) != TY_STRUCT ) oops();
         parent = VarDisplayAddStruct( ScanName() );
         ScanLeftBrace();
         while( !ScanRightBrace() ) {
-            if( ScanAttribute( parent, ScanCmd( &TypeSettings ) ) == TY_FIELD ) {
+            if( ScanAttribute( parent, ScanCmd( TypeSettings ) ) == TY_FIELD ) {
                 field = VarDisplayAddField( parent, ScanName() );
                 ScanLeftBrace();
                 while( !ScanRightBrace() ) {
-                    if( ScanAttribute( field, ScanCmd( &TypeSettings ) ) == TY_FIELD ) {
+                    if( ScanAttribute( field, ScanCmd( TypeSettings ) ) == TY_FIELD ) {
                         oops();
                     }
                 }

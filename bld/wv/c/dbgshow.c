@@ -231,7 +231,7 @@ static  show_rtn ShowJmpTab[] = {
 
 void ProcShow( void )
 {
-    ShowJmpTab[ ScanCmd( &ShowNameTab ) ].rtn();
+    ShowJmpTab[ ScanCmd( ShowNameTab ) ].rtn();
 }
 
 

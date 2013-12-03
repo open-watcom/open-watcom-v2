@@ -42,9 +42,9 @@ typedef struct invokes {
     unsigned            number;
     unsigned            line;
     inv_flags           flags;
-    char                in_off;
-    char                in_size;
-    char                in_buff[ IN_BUFF_SIZE ];
+    unsigned char       in_off;
+    unsigned char       in_size;
+    char                in_buff[IN_BUFF_SIZE];
     char                *buff;
     char                name[1];
 } invokes;

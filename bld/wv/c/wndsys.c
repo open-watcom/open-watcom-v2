@@ -276,7 +276,7 @@ void ProcWindow( void )
     a_window    *wnd = WndFindActive();
     unsigned    cmd;
 
-    cmd = ScanCmd( &WindowNameTab );
+    cmd = ScanCmd( WindowNameTab );
     ReqEOC();
     if( wnd != NULL ) {
         WndJmpTab[ cmd ]( wnd );

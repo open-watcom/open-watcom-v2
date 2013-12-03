@@ -43,13 +43,12 @@
 #include "dlgcmd.h"
 #include <string.h>
 
-extern char             *ReScan();
-extern void             PushInpStack(void *,bool (*)(),bool );
+extern char             *ReScan(char *);
+extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack(input_type);
 extern void             WndDlgTxt(char*);
 extern bool             TBreak();
-extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd,
-                           int edit, int list );
+extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list );
 extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, int list );
 extern void             DlgClickHistory( gui_window *gui, int edit, int list );
 extern void             SymComplete( gui_window *gui, int id );

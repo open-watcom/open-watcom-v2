@@ -62,7 +62,7 @@ extern char             *StrCopy( char *src, char *dest );
 extern char             *StrAddr( address *addr, char *p, unsigned);
 extern unsigned         NewCurrRadix( unsigned rad );
 extern unsigned         ReqExpr( void );
-extern void             PushInpStack( void *handle, bool (*rtn)( void *, inp_rtn_action  ), bool save_lang );
+extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern char             *ScanPos( void );
 extern char             *DupStr( char *str );
 extern void             UnAsm( address addr, unsigned, char *buff );

@@ -214,7 +214,7 @@ void ProcLog( void )
         LogAppend();
     } else if( CurrToken == T_DIV ) {
         Scan();
-        (*LogJmpTab[ ScanCmd( &LogNameTab ) ])();
+        (*LogJmpTab[ ScanCmd( LogNameTab ) ])();
     } else {
         LogStart();
     }

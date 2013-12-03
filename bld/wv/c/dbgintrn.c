@@ -185,7 +185,7 @@ static void (*InternalJmpTab[])() =
 
 void ProcInternal()
 {
-    InternalJmpTab[ ScanCmd( &InternalNameTab ) ]();
+    InternalJmpTab[ ScanCmd( InternalNameTab ) ]();
 }
 
 #endif
