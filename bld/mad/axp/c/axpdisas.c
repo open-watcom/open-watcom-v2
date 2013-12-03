@@ -63,7 +63,7 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
     return( DR_OK );
 }
 
-unsigned DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
 {
     mad_disasm_data     *dd = d;
     char                *p;

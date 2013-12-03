@@ -886,7 +886,7 @@ static int GetValueByteSize( unsigned long value )
     return( size );
 }
 
-unsigned DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff )
 {
     mad_disasm_data     *dd = d;
     char                *p;
