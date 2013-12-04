@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <setjmp.h>
 
 extern void PopErrBox( char *buff );
