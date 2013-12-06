@@ -739,6 +739,43 @@ static int BuildRanges( FILE *fp, ins_decode_data **_data, unsigned *_num, char 
     return( dumped_entries );
 }
 
+typedef struct list_item {
+    struct list_item    *next;
+    char                *handler;
+} list_item;
+
+
+static void addHandlerItem( list_item **owner, char *handler )
+{
+    list_item   *new;
+    int         cmp;
+
+    for( ; *owner != NULL; owner = &(*owner)->next ) {
+        cmp = strcmp( (*owner)->handler, handler );
+        if( cmp == 0 ) {
+            return;
+        }
+        if( cmp > 0 ) {
+            break;
+        }
+    }
+    new = malloc( sizeof( list_item ) );
+    new->next = *owner;
+    new->handler = handler;
+    *owner = new;
+}
+
+static void printHandlersDeclaration( FILE *fp, list_item *item )
+{
+    list_item   *item_next;
+
+    for( ; item != NULL; item = item_next ) {
+        item_next = item->next;
+        fprintf( fp, "extern dis_handler_return %s( dis_handle *, void *, dis_dec_ins * );\n", item->handler );
+        free( item );
+    }
+}
+
 #define INVALID_INS     "????"
 string_data InvalidIns = { INVALID_INS, 0 };
 string_data NullString = { "", 0 };
@@ -755,6 +792,7 @@ int main( void )
     ins_decode_data **decode;
     unsigned        *num_ins;
     int             *listl;
+    list_item       *handlersList;
 
     fp = fopen( "distbls.gh", "w" );
     if( fp == NULL ) {
@@ -799,16 +837,17 @@ int main( void )
     }
     fprintf( fp, "};\n\n" );
     for( i = 0, mach = AMachine ; i < NUM_ELTS( AMachine ); ++i, ++mach ) {
+        handlersList = NULL;
         num_ins = mach->num_ins;
         for( decode = mach->decode; *decode != NULL ; ++decode ) {
             for( j = 0; j < *num_ins; ++j ) {
                 if( strcmp( (*decode)[j].handler, "NULL" ) != 0 ) {
-                    fprintf( fp, "extern dis_handler_return %s( dis_handle *, void *, dis_dec_ins * );\n",
-                        (*decode)[j].handler );
+                    addHandlerItem( &handlersList, (*decode)[j].handler );
                 }
             }
             ++num_ins;
         }
+        printHandlersDeclaration( fp, handlersList );
     }
     fprintf( fp, "\nconst dis_ins_descript DisInstructionTable[] = {\n" );
     fprintf( fp, "    { 0x%4.4x, 0x00000001, 0x00000000, NULL },\n", InvalidIns.string_idx );
