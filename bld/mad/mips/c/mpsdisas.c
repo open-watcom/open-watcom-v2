@@ -199,9 +199,9 @@ mad_status DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
 }
 
 const unsigned_16   RegTrans[] = {
-#define regpick( e, n ) offsetof( mad_registers, mips.e ),
-#include "regmips.h"
-#undef regpick
+    #define regpick( e, n ) offsetof( mad_registers, mips.e ),
+    #include "regmips.h"
+    #undef regpick
 };
 
 // Map left/right accesses to plain word/dword accesses
@@ -212,21 +212,21 @@ const unsigned_16   RegTrans[] = {
 #define MIPST_SFLOAT    MIPST_FLOAT
 #define MIPST_DFLOAT    MIPST_DOUBLE
 
-static const mad_type_handle RefTrans[] = {
-#define refpick( e, n ) MIPST_##e,
-#include "refmips.h"
-#undef refpick
+const mad_type_handle RefTrans[] = {
+    #define refpick( e, n ) MIPST_##e,
+    #include "refmips.h"
+    #undef refpick
 };
 
 static int Cond1( mad_disasm_data *dd, const mad_registers *mr, unsigned condition )
 {
-    const unsigned_64   *rs;
     int                 cmp;
+    unsigned_32         val;
 
-    rs = &TRANS_REG( mr, dd->ins.op[0].base );
-    if( rs->u._32[I64LO32] & 0x80000000 ) {     // check sign bit
+    val = TRANS_REG( mr, dd->ins.op[0].base )->u._32[I64LO32];
+    if( val & 0x80000000 ) {     // check sign bit
         cmp = -1;
-    } else if( rs->u._32[I64LO32] != 0 ) {
+    } else if( val != 0 ) {
         cmp = +1;
     } else {
         cmp = 0;
@@ -261,19 +261,19 @@ static int Cond1( mad_disasm_data *dd, const mad_registers *mr, unsigned conditi
 
 static int Cond2( mad_disasm_data *dd, const mad_registers *mr, unsigned condition )
 {
-    const unsigned_64   *rs;
-    const unsigned_64   *rt;
+    unsigned_32     sval;
+    unsigned_32     tval;
 
-    rs = &TRANS_REG( mr, dd->ins.op[0].base );
-    rt = &TRANS_REG( mr, dd->ins.op[1].base );
+    sval = TRANS_REG( mr, dd->ins.op[0].base )->u._32[I64LO32];
+    tval = TRANS_REG( mr, dd->ins.op[1].base )->u._32[I64LO32];
     switch( condition ) {
     case DI_MIPS_BEQ:
     case DI_MIPS_BEQL:
-        if( rs->u._32[I64LO32] == rt->u._32[I64LO32] ) break;
+        if( sval == tval ) break;
         return( 0 );
     case DI_MIPS_BNE:
     case DI_MIPS_BNEL:
-        if( rs->u._32[I64LO32] != rt->u._32[I64LO32] ) break;
+        if( sval != tval ) break;
         return( 0 );
     default:
         break;
@@ -370,7 +370,6 @@ mad_status DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, mad_registers const *m
     mad_disasm_control  dc;
     addr_off            new;
     unsigned            op;
-    const unsigned_64   *reg;
 
     memset( next, 0, sizeof( *next ) );
     next->mach.offset = mr->mips.pc.u._32[I64LO32] + sizeof( unsigned_32 );
@@ -391,8 +390,7 @@ mad_status DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, mad_registers const *m
             new += mr->mips.pc.u._32[I64LO32];
         }
         if( dd->ins.op[op].base != DR_NONE ) {
-            reg = &TRANS_REG( mr, dd->ins.op[op].base );
-            new += reg->u._32[0];
+            new += TRANS_REG( mr, dd->ins.op[op].base )->u._32[I64LO32];
         }
         next->mach.offset = new;
     }
@@ -418,25 +416,25 @@ walk_result DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALKER *
         if( dd->ins.op[i].type == DO_MEMORY_ABS ) {
             a.mach.offset = dd->ins.op[i].value;
             if( dd->ins.op[i].base != DR_MIPS_r0 ) {
-                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base ).u._32[I64LO32];
+                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base )->u._32[I64LO32];
             }
             mmk &= (MMK_READ | MMK_WRITE);
             if( dd->ins.op[i].base == DR_MIPS_sp ) {
                 mmk |= MMK_VOLATILE;
             }
-            wr = wk( a, RefTrans[dd->ins.op[i].ref_type - DRT_MIPS_FIRST], mmk, d );
+            wr = wk( a, TRANS_REF( dd->ins.op[i].ref_type ), mmk, d );
             return( wr );
         } else if( dd->ins.op[i].extra & PE_XFORM ) {
             a.mach.offset = 0;
             if( dd->ins.op[i].base != DR_MIPS_r0 ) {
-                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base ).u._32[I64LO32];
+                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base )->u._32[I64LO32];
             }
-            a.mach.offset += TRANS_REG( mr, dd->ins.op[i+1].base ).u._32[I64LO32];
+            a.mach.offset += TRANS_REG( mr, dd->ins.op[i + 1].base )->u._32[I64LO32];
             mmk &= (MMK_READ | MMK_WRITE);
-            if( dd->ins.op[i].base == DR_MIPS_sp || dd->ins.op[i+1].base == DR_MIPS_sp ) {
+            if( dd->ins.op[i].base == DR_MIPS_sp || dd->ins.op[i + 1].base == DR_MIPS_sp ) {
                 mmk |= MMK_VOLATILE;
             }
-            wr = wk( a, RefTrans[dd->ins.op[i].ref_type - DRT_MIPS_FIRST], mmk, d );
+            wr = wk( a, TRANS_REF( dd->ins.op[i].ref_type ), mmk, d );
             return( wr );
         }
     }

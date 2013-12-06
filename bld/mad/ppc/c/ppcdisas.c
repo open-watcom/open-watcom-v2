@@ -198,9 +198,9 @@ mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
 }
 
 const unsigned_16 RegTrans[] = {
-#define regpick( e, n ) offsetof( mad_registers, ppc.e ),
-#include "regppc.h"
-#undef regpick
+    #define regpick( e, n ) offsetof( mad_registers, ppc.e ),
+    #include "regppc.h"
+    #undef regpick
 };
 
 #define PPCT_BRHWORD    PPCT_HWORD
@@ -211,10 +211,10 @@ const unsigned_16 RegTrans[] = {
 #define PPCT_SFLOAT     PPCT_FLOAT
 #define PPCT_DFLOAT     PPCT_DOUBLE
 
-static const mad_type_handle RefTrans[] = {
-#define refpick( e, n ) PPCT_##e,
-#include "refppc.h"
-#undef refpick
+const mad_type_handle RefTrans[] = {
+    #define refpick( e, n ) PPCT_##e,
+    #include "refppc.h"
+    #undef refpick
 };
 
 static int CTRZero( mad_registers const *mr )
@@ -282,8 +282,6 @@ static mad_disasm_control Cond( mad_disasm_data *dd, mad_registers const *mr,
     }
 }
 
-#define TRANS_REG( mr, r ) (*(unsigned_64 *)((unsigned_8*)(mr) + RegTrans[r - DR_PPC_FIRST]))
-
 static unsigned TrapTest( mad_disasm_data *dd, mad_registers const *mr )
 {
     unsigned_64 a;
@@ -301,10 +299,10 @@ static unsigned TrapTest( mad_disasm_data *dd, mad_registers const *mr )
        }
        break;
     default:
-        b = TRANS_REG( mr, dd->ins.op[2].base );
+        b = *TRANS_REG( mr, dd->ins.op[2].base );
         break;
     }
-    a = TRANS_REG( mr, dd->ins.op[1].base );
+    a = *TRANS_REG( mr, dd->ins.op[1].base );
     bits = 0;
     switch( dd->ins.type ) {
     case DI_PPC_td:
@@ -465,25 +463,25 @@ walk_result             DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEM
         if( dd->ins.op[i].type == DO_MEMORY_ABS ) {
             a.mach.offset = dd->ins.op[i].value;
             if( dd->ins.op[i].base != DR_PPC_r0 ) {
-                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base ).u._32[I64LO32];
+                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base )->u._32[I64LO32];
             }
             mmk &= (MMK_READ|MMK_WRITE);
             if( dd->ins.op[i].base == DR_PPC_r1 ) {
                 mmk |= MMK_VOLATILE;
             }
-            wr = wk( a, RefTrans[dd->ins.op[i].ref_type-DRT_PPC_FIRST], mmk, d );
+            wr = wk( a, TRANS_REF( dd->ins.op[i].ref_type ), mmk, d );
             return( wr );
         } else if( dd->ins.op[i].extra & PE_XFORM ) {
             a.mach.offset = 0;
             if( dd->ins.op[i].base != DR_PPC_r0 ) {
-                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base ).u._32[I64LO32];
+                a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base )->u._32[I64LO32];
             }
-            a.mach.offset += TRANS_REG( mr, dd->ins.op[i+1].base ).u._32[I64LO32];
+            a.mach.offset += TRANS_REG( mr, dd->ins.op[i+1].base )->u._32[I64LO32];
             mmk &= (MMK_READ|MMK_WRITE);
             if( dd->ins.op[i].base == DR_PPC_r1 || dd->ins.op[i+1].base == DR_PPC_r1 ) {
                 mmk |= MMK_VOLATILE;
             }
-            wr = wk( a, RefTrans[dd->ins.op[i].ref_type-DRT_PPC_FIRST], mmk, d );
+            wr = wk( a, TRANS_REF( dd->ins.op[i].ref_type ), mmk, d );
             return( wr );
         }
     }

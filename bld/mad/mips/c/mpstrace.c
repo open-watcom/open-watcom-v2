@@ -138,8 +138,7 @@ mad_status DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, ma
             new += dd->ins.op[1].value;
         } else {
             // takes care of 'jalr' and 'jr'
-            reg = &TRANS_REG( out, dd->ins.op[dd->ins.num_ops - 1].base );
-            new = reg->u._32[I64LO32];
+            new = TRANS_REG( out, dd->ins.op[dd->ins.num_ops - 1].base )->u._32[I64LO32];
         }
 
         if( dd->ins.flags.u.mips & DIF_MIPS_LINK ) {
@@ -149,7 +148,7 @@ mad_status DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, ma
             else
                 base = DR_MIPS_r31;         // everything else updates r31
             if( base != DR_MIPS_r0 ) {
-                reg = &TRANS_REG( out, base );
+                reg = TRANS_REG( out, base );
                 *reg = out->mips.pc;
                 reg->u._32[I64LO32] += sizeof( unsigned_32 ) * 2;
             }
@@ -158,8 +157,7 @@ mad_status DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, ma
         return( MS_OK );
     case MDC_RET:
         // this is a 'jr ra'
-        reg = &TRANS_REG( out, dd->ins.op[0].base );
-        new = reg->u._32[I64LO32];
+        new = TRANS_REG( out, dd->ins.op[0].base )->u._32[I64LO32];
         out->mips.pc.u._32[I64LO32] = new;
         return( MS_OK );
     }

@@ -144,14 +144,17 @@ mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
         }
         switch( dd.ins.type ) {
         case DI_AXP_STQ:
-            switch( TRANS_REG( dd.ins.op[0].base ) ) {
-            case AR_ra:
+            switch( dd.ins.op[0].base ) {
+            case DR_AXP_ra:
+            case DR_AXP_r26:
                 prev_ra_off = dd.ins.op[1].value;
                 break;
-            case AR_sp:
+            case DR_AXP_sp:
+            case DR_AXP_r30:
                 prev_sp_off = dd.ins.op[1].value;
                 break;
-            case AR_fp:
+            case DR_AXP_fp:
+            case DR_AXP_r15:
                 prev_fp_off = dd.ins.op[1].value;
                 break;
             }
@@ -160,9 +163,9 @@ mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
             if( dd.ins.op[0].type == DO_REG
              && dd.ins.op[1].type == DO_REG
              && dd.ins.op[2].type == DO_REG
-             && dd.ins.op[0].base == DR_AXP_r31
-             && dd.ins.op[1].base == DR_AXP_r30
-             && dd.ins.op[2].base == DR_AXP_r15 ) {
+             && dd.ins.op[0].base == DR_AXP_r31 /* zero */
+             && dd.ins.op[1].base == DR_AXP_r30 /* sp */
+             && dd.ins.op[2].base == DR_AXP_r15 /* fp */ ) {
                 /* variable frame routine, and we've done all the prolog */
                 frame_start = cud->fp;
             }

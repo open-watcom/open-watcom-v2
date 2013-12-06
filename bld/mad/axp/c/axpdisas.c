@@ -191,22 +191,22 @@ mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
     return( MS_OK );
 }
 
-const unsigned_8 RegTrans[] = {
-#define regpick( e, n ) AR_##e,
-#include "regaxp.h"
-#undef regpick
+const unsigned_16 RegTrans[] = {
+    #define regpick( e, n ) AR_##e,
+    #include "regaxp.h"
+    #undef regpick
 };
 
-static const mad_type_handle RefTrans[] = {
-        AXPT_BYTE,
-        AXPT_WORD,
-        AXPT_LWORD,
-        AXPT_QWORD,
-        AXPT_F_FLOAT,
-        AXPT_G_FLOAT,
-        AXPT_D_FLOAT,
-        AXPT_FLOAT,
-        AXPT_DOUBLE,
+const mad_type_handle RefTrans[] = {
+    AXPT_BYTE,
+    AXPT_WORD,
+    AXPT_LWORD,
+    AXPT_QWORD,
+    AXPT_F_FLOAT,
+    AXPT_G_FLOAT,
+    AXPT_D_FLOAT,
+    AXPT_FLOAT,
+    AXPT_DOUBLE,
 };
 
 static int Cond( mad_disasm_data *dd, const mad_registers *mr, unsigned condition )
@@ -214,7 +214,7 @@ static int Cond( mad_disasm_data *dd, const mad_registers *mr, unsigned conditio
     const axpreg        *reg;
     int         cmp;
 
-    reg = &mr->axp.r[TRANS_REG(dd->ins.op[0].base)];
+    reg = TRANS_REG( mr, dd->ins.op[0].base );
     if( dd->ins.op[0].base >= DR_AXP_f0 && dd->ins.op[0].base <= DR_AXP_f31 ) {
         /* floating point */
         if( reg->t.r < 0 ) {
@@ -372,7 +372,6 @@ mad_status      DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registe
 {
     mad_disasm_control  dc;
     addr_off            new;
-    const axpreg        *reg;
 
     memset( next, 0, sizeof( *next ) );
     next->mach.offset = mr->axp.pal.nt.fir.u._32[0] + sizeof( unsigned_32 );
@@ -389,8 +388,7 @@ mad_status      DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registe
             new += mr->axp.pal.nt.fir.u._32[0];
         }
         if( dd->ins.op[1].base != DR_NONE ) {
-            reg = &mr->axp.r[TRANS_REG(dd->ins.op[1].base)];
-            new += reg->u64.u._32[0];
+            new += TRANS_REG( mr, dd->ins.op[1].base )->u64.u._32[0];
         }
         next->mach.offset = new;
     }
@@ -419,13 +417,12 @@ walk_result             DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEM
             a.mach.offset += dd->addr.mach.offset;
             /* fall through */
         case DO_MEMORY_ABS:
-            a.mach.offset +=
-             mr->axp.r[TRANS_REG(dd->ins.op[i].base)].u64.u._32[0];
+            a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base )->u64.u._32[0];
             mmk &= (MMK_READ|MMK_WRITE);
-            if( TRANS_REG(dd->ins.op[i].base) == AR_sp ) {
+            if( dd->ins.op[i].base == DR_AXP_sp || dd->ins.op[i].base == DR_AXP_r30 ) {
                 mmk |= MMK_VOLATILE;
             }
-            wr = wk( a, RefTrans[dd->ins.op[i].ref_type-DRT_AXP_FIRST], mmk, d );
+            wr = wk( a, TRANS_REF( dd->ins.op[i].ref_type ), mmk, d );
             if( wr != WR_CONTINUE ) return( wr );
             break;
         }

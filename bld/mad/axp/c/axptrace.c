@@ -111,12 +111,11 @@ mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *d
             new += out->axp.pal.nt.fir.u._32[0];
         }
         if( dd->ins.op[1].base != DR_NONE ) {
-            reg = &out->axp.r[TRANS_REG(dd->ins.op[1].base)];
-            new += reg->u64.u._32[0];
+            new += TRANS_REG( out, dd->ins.op[1].base )->u64.u._32[0];
         }
         if( !(dc & MDC_CONDITIONAL) ) {
             if( dd->ins.op[0].base != DR_AXP_r31 ) {
-                reg = &out->axp.r[TRANS_REG(dd->ins.op[0].base)];
+                reg = TRANS_REG( out, dd->ins.op[0].base );
                 reg->u64 = out->axp.pal.nt.fir;
                 reg->u64.u._32[0] += sizeof( unsigned_32 );
             }

@@ -29,118 +29,52 @@
 ****************************************************************************/
 
 
-#if !defined( regpick )
-#define regpick( name, type, s )        IDX_##name,
-#define defining_enums
-enum {
-#endif
-    regpick( f0, DOUBLE, FPU )
-    regpick( f1, DOUBLE, FPU )
-    regpick( f2, DOUBLE, FPU )
-    regpick( f3, DOUBLE, FPU )
-    regpick( f4, DOUBLE, FPU )
-    regpick( f5, DOUBLE, FPU )
-    regpick( f6, DOUBLE, FPU )
-    regpick( f7, DOUBLE, FPU )
-    regpick( f8, DOUBLE, FPU )
-    regpick( f9, DOUBLE, FPU )
-    regpick( f10, DOUBLE, FPU )
-    regpick( f11, DOUBLE, FPU )
-    regpick( f12, DOUBLE, FPU )
-    regpick( f13, DOUBLE, FPU )
-    regpick( f14, DOUBLE, FPU )
-    regpick( f15, DOUBLE, FPU )
-    regpick( f16, DOUBLE, FPU )
-    regpick( f17, DOUBLE, FPU )
-    regpick( f18, DOUBLE, FPU )
-    regpick( f19, DOUBLE, FPU )
-    regpick( f20, DOUBLE, FPU )
-    regpick( f21, DOUBLE, FPU )
-    regpick( f22, DOUBLE, FPU )
-    regpick( f23, DOUBLE, FPU )
-    regpick( f24, DOUBLE, FPU )
-    regpick( f25, DOUBLE, FPU )
-    regpick( f26, DOUBLE, FPU )
-    regpick( f27, DOUBLE, FPU )
-    regpick( f28, DOUBLE, FPU )
-    regpick( f29, DOUBLE, FPU )
-    regpick( f30, DOUBLE, FPU )
-    regpick( f31, DOUBLE, FPU )
+#define REGS_LIST() \
+regpickuu( 0, zero ) \
+regpickuu( 1, at ) \
+regpickuu( 2, v0 ) \
+regpickuu( 3, v1 ) \
+regpickuu( 4, a0 ) \
+regpickuu( 5, a1 ) \
+regpickuu( 6, a2 ) \
+regpickuu( 7, a3 ) \
+regpickuu( 8, t0 ) \
+regpickuu( 9, t1 ) \
+regpickuu( 10, t2 ) \
+regpickuu( 11, t3 ) \
+regpickuu( 12, t4 ) \
+regpickuu( 13, t5 ) \
+regpickuu( 14, t6 ) \
+regpickuu( 15, t7 ) \
+regpickuu( 16, s0 ) \
+regpickuu( 17, s1 ) \
+regpickuu( 18, s2 ) \
+regpickuu( 19, s3 ) \
+regpickuu( 20, s4 ) \
+regpickuu( 21, s5 ) \
+regpickuu( 22, s6 ) \
+regpickuu( 23, s7 ) \
+regpickuu( 24, t8 ) \
+regpickuu( 25, t9 ) \
+regpickuu( 26, k0 ) \
+regpickuu( 27, k1 ) \
+regpickuu( 28, gp ) \
+regpickuu( 29, sp ) \
+regpickuu( 30, fp ) \
+regpickuu( 31, ra )
 
-    regpick( r0, DWORD, CPU )
-    regpick( r1, DWORD, CPU )
-    regpick( r2, DWORD, CPU )
-    regpick( r3, DWORD, CPU )
-    regpick( r4, DWORD, CPU )
-    regpick( r5, DWORD, CPU )
-    regpick( r6, DWORD, CPU )
-    regpick( r7, DWORD, CPU )
-    regpick( r8, DWORD, CPU )
-    regpick( r9, DWORD, CPU )
-    regpick( r10, DWORD, CPU )
-    regpick( r11, DWORD, CPU )
-    regpick( r12, DWORD, CPU )
-    regpick( r13, DWORD, CPU )
-    regpick( r14, DWORD, CPU )
-    regpick( r15, DWORD, CPU )
-    regpick( r16, DWORD, CPU )
-    regpick( r17, DWORD, CPU )
-    regpick( r18, DWORD, CPU )
-    regpick( r19, DWORD, CPU )
-    regpick( r20, DWORD, CPU )
-    regpick( r21, DWORD, CPU )
-    regpick( r22, DWORD, CPU )
-    regpick( r23, DWORD, CPU )
-    regpick( r24, DWORD, CPU )
-    regpick( r25, DWORD, CPU )
-    regpick( r26, DWORD, CPU )
-    regpick( r27, DWORD, CPU )
-    regpick( r28, DWORD, CPU )
-    regpick( r29, DWORD, CPU )
-    regpick( r30, DWORD, CPU )
-    regpick( r31, DWORD, CPU )
+#define regpickuu(num,alias) regpick(f##num,DOUBLE,FPU)
+REGS_LIST()
+#undef regpickuu
+#define regpickuu(num,alias) regpick(r##num,DWORD,CPU)
+REGS_LIST()
+#undef regpickuu
+#define regpickuu(num,alias) regpick(alias,DWORD,CPU)
+REGS_LIST()
+#undef regpickuu
 
-    regpick( zero, DWORD, CPU )
-    regpick( at, DWORD, CPU )
-    regpick( v0, DWORD, CPU )
-    regpick( v1, DWORD, CPU )
-    regpick( a0, DWORD, CPU )
-    regpick( a1, DWORD, CPU )
-    regpick( a2, DWORD, CPU )
-    regpick( a3, DWORD, CPU )
-    regpick( t0, DWORD, CPU )
-    regpick( t1, DWORD, CPU )
-    regpick( t2, DWORD, CPU )
-    regpick( t3, DWORD, CPU )
-    regpick( t4, DWORD, CPU )
-    regpick( t5, DWORD, CPU )
-    regpick( t6, DWORD, CPU )
-    regpick( t7, DWORD, CPU )
-    regpick( s0, DWORD, CPU )
-    regpick( s1, DWORD, CPU )
-    regpick( s2, DWORD, CPU )
-    regpick( s3, DWORD, CPU )
-    regpick( s4, DWORD, CPU )
-    regpick( s5, DWORD, CPU )
-    regpick( s6, DWORD, CPU )
-    regpick( s7, DWORD, CPU )
-    regpick( t8, DWORD, CPU )
-    regpick( t9, DWORD, CPU )
-    regpick( k0, DWORD, CPU )
-    regpick( k1, DWORD, CPU )
-    regpick( gp, DWORD, CPU )
-    regpick( sp, DWORD, CPU )
-    regpick( fp, DWORD, CPU )
-    regpick( ra, DWORD, CPU )
-
-    regpick( pc, DWORD, CPU )
-    regpick( lo, WORD, CPU )
-    regpick( hi, WORD, CPU )
-    regpick( fpcsr, FPCSR, FPU )
-    regpick( fpivr, WORD, FPU )
-
-#if defined( defining_enums )
-IDX_LAST_ONE };
-#undef regpick
-#undef defining_enums
-#endif
+regpick( pc, DWORD, CPU )
+regpick( lo, WORD, CPU )
+regpick( hi, WORD, CPU )
+regpick( fpcsr, FPCSR, FPU )
+regpick( fpivr, WORD, FPU )

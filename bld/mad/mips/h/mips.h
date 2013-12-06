@@ -31,8 +31,14 @@
 
 #include "madimp.h"
 #include "madmips.h"
-#include "mpsregs.h"
 #include "dis.h"
+
+enum {
+    #define regpick(id,type,reg_set)        IDX_##id,
+    #include "mpsregs.h"
+    #undef regpick
+    IDX_LAST_ONE
+};
 
 enum toggle_states {
     /* cpu register display toggles */
@@ -94,11 +100,13 @@ typedef struct mad_type_data {
 
 extern imp_mad_state_data       *MADState;
 
+extern const mad_type_handle    RefTrans[];
 extern const mips_reg_info      RegList[];
-extern const unsigned_16         RegTrans[];
+extern const unsigned_16        RegTrans[];
 extern const mad_type_data      TypeArray[];
 
-#define TRANS_REG( mr, r )  (*(unsigned_64 *)((unsigned_8*)(mr) + RegTrans[r - DR_MIPS_FIRST]))
+#define TRANS_REF(r)            RefTrans[(r) - DRT_MIPS_FIRST]
+#define TRANS_REG(mr,r) ((unsigned_64 *)((unsigned_8*)(mr) + RegTrans[(r) - DR_MIPS_FIRST]))
 
 extern mad_status               DisasmInit( void );
 extern void                     DisasmFini( void );

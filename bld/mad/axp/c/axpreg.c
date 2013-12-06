@@ -51,7 +51,8 @@ enum {
     RS_NUM,
 };
 
-#define REG_NAME( name )        const char NAME_##name[] = #name
+#define REG_NAME(id)        static const char NAME_##id[] = #id
+#define REG_NAME2(id,name)  static const char NAME_##id[] = #name
 
 typedef struct {
     char                name[5];
@@ -159,21 +160,11 @@ static const axp_reg_info       *SubList[] =
 #define RT_FPCR RT_INT
 
 /* to avoid relocations to R/W data segments */
-#define regpick( name, type, s ) REG_NAME( name );
-#define palpick( pal, name )     static const char NAME_##pal##_##name[] = #name;
+#define regpick(id,type,reg_set)    REG_NAME(id);
+#define palpick(pal,id)             REG_NAME2(pal##_##id,id);
 #include "axpregs.h"
 #undef regpick
 #undef palpick
-
-#define regpick( name, type, reg_set )      \
-        { { NAME_##name,                    \
-            RT_##type,                      \
-            AXPREG_BIT_OFF( AR_##name ),    \
-            REG_BITS_##type,                \
-            1 },                            \
-            PAL_all, reg_set##_REG_SET, RS_##type },
-
-//NYI: unix, vms pal registers
 
 #define PR_nt_fir                       \
         { { NAME_nt_fir,                \
@@ -199,10 +190,18 @@ static const axp_reg_info       *SubList[] =
             1 },                        \
             PAL_nt, 0, RS_NT_PSR }
 
-#define palpick( pal, name )    PR_##pal##_##name,
-
 const axp_reg_info RegList[] = {
+    #define regpick(id,type,reg_set)        \
+        { { NAME_##id,                      \
+            RT_##type,                      \
+            AXPREG_BIT_OFF( AR_##id ),      \
+            REG_BITS_##type,                \
+            1 },                            \
+            PAL_all, reg_set##_REG_SET, RS_##type },
+    #define palpick(pal,id)     PR_##pal##_##id,
     #include "axpregs.h"
+    #undef regpick
+    #undef palpick
 };
 
 static axp_reg_info             **RegSubList;
