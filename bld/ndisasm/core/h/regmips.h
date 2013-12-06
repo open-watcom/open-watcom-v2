@@ -125,7 +125,7 @@ regpick( gp, "gp" )
 regpick( sp, "sp" )
 regpick( fp, "fp" )
 regpick( ra, "ra" )
-#ifndef SKIP_ASM_REGS
+#ifdef INCLUDE_ASM_REGS
 regpick( af0, "$f0" )
 regpick( af1, "$f1" )
 regpick( af2, "$f2" )

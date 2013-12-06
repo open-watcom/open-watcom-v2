@@ -198,11 +198,10 @@ mad_status DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
     return( MS_OK );
 }
 
-#define SKIP_ASM_REGS
 const unsigned_16   RegTrans[] = {
-#undef regpick
 #define regpick( e, n ) offsetof( mad_registers, mips.e ),
 #include "regmips.h"
+#undef regpick
 };
 
 // Map left/right accesses to plain word/dword accesses
@@ -214,9 +213,9 @@ const unsigned_16   RegTrans[] = {
 #define MIPST_DFLOAT    MIPST_DOUBLE
 
 static const mad_type_handle RefTrans[] = {
-#undef refpick
 #define refpick( e, n ) MIPST_##e,
 #include "refmips.h"
+#undef refpick
 };
 
 static int Cond1( mad_disasm_data *dd, const mad_registers *mr, unsigned condition )

@@ -61,7 +61,7 @@ regpick( r28, "r28" )
 regpick( r29, "r29" )
 regpick( r30, "r30" )
 regpick( r31, "r31" )
-#ifndef SKIP_ASM_REGS
+#ifdef INCLUDE_ASM_REGS
 regpick( f0, "f0" )
 regpick( f1, "f1" )
 regpick( f2, "f2" )

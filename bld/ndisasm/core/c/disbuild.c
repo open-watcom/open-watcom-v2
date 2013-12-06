@@ -92,30 +92,32 @@ typedef struct range {
     dis_selector        entry[1]; /* variable sized */
 } range;
 
+#define INCLUDE_ASM_REGS
+
 #if DISCPU & DISCPU_axp
 
 ins_decode_data AXPDecodeTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_AXP_##idx, #idx, #handler },
     #include "insaxp.h"
+    #undef inspick
 };
 
 string_data AXPInsTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insaxp.h"
+    #undef inspick
 };
 
 string_data AXPRegTable[] = {
-    #undef regpick
     #define regpick( idx, name ) { name, 0 },
     #include "regaxp.h"
+    #undef regpick
 };
 
 string_data AXPRefTable[] = {
-    #undef refpick
     #define refpick( idx, name ) { name, 0 },
     #include "refaxp.h"
+    #undef refpick
 };
 
 unsigned AXPInsNum[] = {
@@ -138,27 +140,27 @@ string_data *AXPInsTable[] = {
 #if DISCPU & DISCPU_ppc
 
 ins_decode_data PPCDecodeTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_PPC_##idx, #idx, #handler },
     #include "insppc.h"
+    #undef inspick
 };
 
 string_data PPCInsTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insppc.h"
+    #undef inspick
 };
 
 string_data PPCRegTable[] = {
-    #undef regpick
     #define regpick( idx, name ) { name, 0 },
     #include "regppc.h"
+    #undef regpick
 };
 
 string_data PPCRefTable[] = {
-    #undef refpick
     #define refpick( idx, name ) { name, 0 },
     #include "refppc.h"
+    #undef refpick
 };
 
 unsigned PPCInsNum[] = {
@@ -181,75 +183,75 @@ string_data *PPCInsTable[] = {
 #if DISCPU & DISCPU_x86
 
 ins_decode_data X86DecodeTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_X86_##idx, #idx, #handler },
     #include "insx86.h"
+    #undef inspick
 };
 
 string_data X86InsTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insx86.h"
+    #undef inspick
 };
 
 ins_decode_data X86DecodeTable2[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_X86_##idx, #idx, #handler },
     #include "insx86e1.h"
+    #undef inspick
 };
 
 string_data X86InsTable2[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insx86e1.h"
+    #undef inspick
 };
 
 ins_decode_data X86DecodeTable3[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_X86_##idx, #idx, #handler },
     #include "insx86e2.h"
+    #undef inspick
 };
 
 string_data X86InsTable3[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insx86e2.h"
+    #undef inspick
 };
 
 ins_decode_data X86DecodeTable4[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_X86_##idx, #idx, #handler },
     #include "insx86e3.h"
+    #undef inspick
 };
 
 string_data X86InsTable4[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insx86e3.h"
+    #undef inspick
 };
 
 ins_decode_data X86DecodeTable5[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_X86_##idx, #idx, #handler },
     #include "insx86e4.h"
+    #undef inspick
 };
 
 string_data X86InsTable5[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insx86e4.h"
+    #undef inspick
 };
 
 string_data X86RegTable[] = {
-    #undef regpick
     #define regpick( idx, name ) { name, 0 },
     #include "regx86.h"
+    #undef regpick
 };
 
 string_data X86RefTable[] = {
-    #undef refpick
     #define refpick( idx, name ) { name, 0 },
     #include "refx86.h"
+    #undef refpick
 };
 
 unsigned X86InsNum[] = {
@@ -284,27 +286,27 @@ string_data *X86InsTable[] = {
 #if DISCPU & DISCPU_x64
 
 ins_decode_data X64DecodeTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_X64_##idx, #idx, #handler },
     #include "insx64.h"
+    #undef inspick
 };
 
 string_data X64InsTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insx64.h"
+    #undef inspick
 };
 
 string_data X64RegTable[] = {
-    #undef regpick
     #define regpick( idx, name ) { name, 0 },
     #include "regx64.h"
+    #undef regpick
 };
 
 string_data X64RefTable[] = {
-    #undef refpick
     #define refpick( idx, name ) { name, 0 },
     #include "refx64.h"
+    #undef refpick
 };
 
 unsigned X64InsNum[] = {
@@ -327,27 +329,27 @@ string_data *X64InsTable[] = {
 #if DISCPU & DISCPU_jvm
 
 ins_decode_data JVMDecodeTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_JVM_##idx, #idx, #handler },
     #include "insjvm.h"
+    #undef inspick
 };
 
 string_data JVMInsTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insjvm.h"
+    #undef inspick
 };
 
 string_data JVMRegTable[] = {
-    #undef regpick
     #define regpick( idx, name ) { name, 0 },
     #include "regjvm.h"
+    #undef regpick
 };
 
 string_data JVMRefTable[] = {
-    #undef refpick
     #define refpick( idx, name ) { name, 0 },
     #include "refjvm.h"
+    #undef refpick
 };
 
 unsigned JVMInsNum[] = {
@@ -370,27 +372,27 @@ string_data *JVMInsTable[] = {
 #if DISCPU & DISCPU_sparc
 
 ins_decode_data SPARCDecodeTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_SPARC_##idx, #idx, #handler },
     #include "inssparc.h"
+    #undef inspick
 };
 
 string_data SPARCInsTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "inssparc.h"
+    #undef inspick
 };
 
 string_data SPARCRegTable[] = {
-    #undef regpick
     #define regpick( idx, name ) { name, 0 },
     #include "regsparc.h"
+    #undef regpick
 };
 
 string_data SPARCRefTable[] = {
-    #undef refpick
     #define refpick( idx, name ) { name, 0 },
     #include "refsparc.h"
+    #undef refpick
 };
 
 unsigned SPARCInsNum[] = {
@@ -413,27 +415,27 @@ string_data *SPARCInsTable[] = {
 #if DISCPU & DISCPU_mips
 
 ins_decode_data MIPSDecodeTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { opcode, mask, DI_MIPS_##idx, #idx, #handler },
     #include "insmips.h"
+    #undef inspick
 };
 
 string_data MIPSInsTable1[] = {
-    #undef inspick
     #define inspick( idx, name, opcode, mask, handler ) { name, 0 },
     #include "insmips.h"
+    #undef inspick
 };
 
 string_data MIPSRegTable[] = {
-    #undef regpick
     #define regpick( idx, name ) { name, 0 },
     #include "regmips.h"
+    #undef regpick
 };
 
 string_data MIPSRefTable[] = {
-    #undef refpick
     #define refpick( idx, name ) { name, 0 },
     #include "refmips.h"
+    #undef refpick
 };
 
 unsigned MIPSInsNum[] = {
@@ -452,6 +454,8 @@ string_data *MIPSInsTable[] = {
 };
 
 #endif
+
+#undef INCLUDE_ASM_REGS
 
 machine_data AMachine[] = {
 #if DISCPU & DISCPU_axp

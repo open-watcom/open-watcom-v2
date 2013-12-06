@@ -191,11 +191,10 @@ mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
     return( MS_OK );
 }
 
-#define SKIP_ASM_REGS
 const unsigned_8 RegTrans[] = {
-#undef regpick
 #define regpick( e, n ) AR_##e,
 #include "regaxp.h"
+#undef regpick
 };
 
 static const mad_type_handle RefTrans[] = {

@@ -197,11 +197,10 @@ mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
     return( MS_OK );
 }
 
-#define SKIP_ASM_REGS
 const unsigned_16 RegTrans[] = {
-#undef regpick
 #define regpick( e, n ) offsetof( mad_registers, ppc.e ),
 #include "regppc.h"
+#undef regpick
 };
 
 #define PPCT_BRHWORD    PPCT_HWORD
@@ -211,10 +210,11 @@ const unsigned_16 RegTrans[] = {
 #define PPCT_MWORD      MAD_NIL_TYPE_HANDLE
 #define PPCT_SFLOAT     PPCT_FLOAT
 #define PPCT_DFLOAT     PPCT_DOUBLE
+
 static const mad_type_handle RefTrans[] = {
-#undef refpick
 #define refpick( e, n ) PPCT_##e,
 #include "refppc.h"
+#undef refpick
 };
 
 static int CTRZero( mad_registers const *mr )
