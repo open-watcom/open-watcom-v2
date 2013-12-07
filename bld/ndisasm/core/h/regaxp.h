@@ -29,197 +29,66 @@
 ****************************************************************************/
 
 
-regpick( f0, "f0" )
-regpick( f1, "f1" )
-regpick( f2, "f2" )
-regpick( f3, "f3" )
-regpick( f4, "f4" )
-regpick( f5, "f5" )
-regpick( f6, "f6" )
-regpick( f7, "f7" )
-regpick( f8, "f8" )
-regpick( f9, "f9" )
-regpick( f10, "f10" )
-regpick( f11, "f11" )
-regpick( f12, "f12" )
-regpick( f13, "f13" )
-regpick( f14, "f14" )
-regpick( f15, "f15" )
-regpick( f16, "f16" )
-regpick( f17, "f17" )
-regpick( f18, "f18" )
-regpick( f19, "f19" )
-regpick( f20, "f20" )
-regpick( f21, "f21" )
-regpick( f22, "f22" )
-regpick( f23, "f23" )
-regpick( f24, "f24" )
-regpick( f25, "f25" )
-regpick( f26, "f26" )
-regpick( f27, "f27" )
-regpick( f28, "f28" )
-regpick( f29, "f29" )
-regpick( f30, "f30" )
-regpick( f31, "f31" )
-regpick( r0, "r0" )
-regpick( r1, "r1" )
-regpick( r2, "r2" )
-regpick( r3, "r3" )
-regpick( r4, "r4" )
-regpick( r5, "r5" )
-regpick( r6, "r6" )
-regpick( r7, "r7" )
-regpick( r8, "r8" )
-regpick( r9, "r9" )
-regpick( r10, "r10" )
-regpick( r11, "r11" )
-regpick( r12, "r12" )
-regpick( r13, "r13" )
-regpick( r14, "r14" )
-regpick( r15, "r15" )
-regpick( r16, "r16" )
-regpick( r17, "r17" )
-regpick( r18, "r18" )
-regpick( r19, "r19" )
-regpick( r20, "r20" )
-regpick( r21, "r21" )
-regpick( r22, "r22" )
-regpick( r23, "r23" )
-regpick( r24, "r24" )
-regpick( r25, "r25" )
-regpick( r26, "r26" )
-regpick( r27, "r27" )
-regpick( r28, "r28" )
-regpick( r29, "r29" )
-regpick( r30, "r30" )
-regpick( r31, "r31" )
-regpick( v0, "v0" )
-regpick( t0, "t0" )
-regpick( t1, "t1" )
-regpick( t2, "t2" )
-regpick( t3, "t3" )
-regpick( t4, "t4" )
-regpick( t5, "t5" )
-regpick( t6, "t6" )
-regpick( t7, "t7" )
-regpick( s0, "s0" )
-regpick( s1, "s1" )
-regpick( s2, "s2" )
-regpick( s3, "s3" )
-regpick( s4, "s4" )
-regpick( s5, "s5" )
-regpick( fp, "fp" )
-regpick( a0, "a0" )
-regpick( a1, "a1" )
-regpick( a2, "a2" )
-regpick( a3, "a3" )
-regpick( a4, "a4" )
-regpick( a5, "a5" )
-regpick( t8, "t8" )
-regpick( t9, "t9" )
-regpick( t10, "t10" )
-regpick( t11, "t11" )
-regpick( ra, "ra" )
-regpick( t12, "t12" )
-regpick( at, "at" )
-regpick( gp, "gp" )
-regpick( sp, "sp" )
-regpick( zero, "zero" )
+#define REGS_LIST() \
+regpickr( 0, v0 ) \
+regpickr( 1, t0 ) \
+regpickr( 2, t1 ) \
+regpickr( 3, t2 ) \
+regpickr( 4, t3 ) \
+regpickr( 5, t4 ) \
+regpickr( 6, t5 ) \
+regpickr( 7, t6 ) \
+regpickr( 8, t7 ) \
+regpickr( 9, s0 ) \
+regpickr( 10, s1 ) \
+regpickr( 11, s2 ) \
+regpickr( 12, s3 ) \
+regpickr( 13, s4 ) \
+regpickr( 14, s5 ) \
+regpickr( 15, fp ) \
+regpickr( 16, a0 ) \
+regpickr( 17, a1 ) \
+regpickr( 18, a2 ) \
+regpickr( 19, a3 ) \
+regpickr( 20, a4 ) \
+regpickr( 21, a5 ) \
+regpickr( 22, t8 ) \
+regpickr( 23, t9 ) \
+regpickr( 24, t10 ) \
+regpickr( 25, t11 ) \
+regpickr( 26, ra ) \
+regpickr( 27, t12 ) \
+regpickr( 28, at ) \
+regpickr( 29, gp ) \
+regpickr( 30, sp ) \
+regpickr( 31, zero )
+
+#define strx(x) #x
+
+#define regpickr(num,alias) regpick(f##num,strx(f##num))
+REGS_LIST()
+#undef regpickr
+#define regpickr(num,alias) regpick(r##num,strx(r##num))
+REGS_LIST()
+#undef regpickr
+#define regpickr(num,alias) regpick(alias,strx(alias))
+REGS_LIST()
+#undef regpickr
+
 #ifdef INCLUDE_ASM_REGS
-regpick( af0, "$f0" )
-regpick( af1, "$f1" )
-regpick( af2, "$f2" )
-regpick( af3, "$f3" )
-regpick( af4, "$f4" )
-regpick( af5, "$f5" )
-regpick( af6, "$f6" )
-regpick( af7, "$f7" )
-regpick( af8, "$f8" )
-regpick( af9, "$f9" )
-regpick( af10, "$f10" )
-regpick( af11, "$f11" )
-regpick( af12, "$f12" )
-regpick( af13, "$f13" )
-regpick( af14, "$f14" )
-regpick( af15, "$f15" )
-regpick( af16, "$f16" )
-regpick( af17, "$f17" )
-regpick( af18, "$f18" )
-regpick( af19, "$f19" )
-regpick( af20, "$f20" )
-regpick( af21, "$f21" )
-regpick( af22, "$f22" )
-regpick( af23, "$f23" )
-regpick( af24, "$f24" )
-regpick( af25, "$f25" )
-regpick( af26, "$f26" )
-regpick( af27, "$f27" )
-regpick( af28, "$f28" )
-regpick( af29, "$f29" )
-regpick( af30, "$f30" )
-regpick( af31, "$f31" )
-regpick( ar0, "$0" )
-regpick( ar1, "$1" )
-regpick( ar2, "$2" )
-regpick( ar3, "$3" )
-regpick( ar4, "$4" )
-regpick( ar5, "$5" )
-regpick( ar6, "$6" )
-regpick( ar7, "$7" )
-regpick( ar8, "$8" )
-regpick( ar9, "$9" )
-regpick( ar10, "$10" )
-regpick( ar11, "$11" )
-regpick( ar12, "$12" )
-regpick( ar13, "$13" )
-regpick( ar14, "$14" )
-regpick( ar15, "$15" )
-regpick( ar16, "$16" )
-regpick( ar17, "$17" )
-regpick( ar18, "$18" )
-regpick( ar19, "$19" )
-regpick( ar20, "$20" )
-regpick( ar21, "$21" )
-regpick( ar22, "$22" )
-regpick( ar23, "$23" )
-regpick( ar24, "$24" )
-regpick( ar25, "$25" )
-regpick( ar26, "$26" )
-regpick( ar27, "$27" )
-regpick( ar28, "$28" )
-regpick( ar29, "$29" )
-regpick( ar30, "$30" )
-regpick( ar31, "$31" )
-regpick( av0, "$v0" )
-regpick( at0, "$t0" )
-regpick( at1, "$t1" )
-regpick( at2, "$t2" )
-regpick( at3, "$t3" )
-regpick( at4, "$t4" )
-regpick( at5, "$t5" )
-regpick( at6, "$t6" )
-regpick( at7, "$t7" )
-regpick( as0, "$s0" )
-regpick( as1, "$s1" )
-regpick( as2, "$s2" )
-regpick( as3, "$s3" )
-regpick( as4, "$s4" )
-regpick( as5, "$s5" )
-regpick( afp, "$fp" )
-regpick( aa0, "$a0" )
-regpick( aa1, "$a1" )
-regpick( aa2, "$a2" )
-regpick( aa3, "$a3" )
-regpick( aa4, "$a4" )
-regpick( aa5, "$a5" )
-regpick( at8, "$t8" )
-regpick( at9, "$t9" )
-regpick( at10, "$t10" )
-regpick( at11, "$t11" )
-regpick( ara, "$ra" )
-regpick( at12, "$t12" )
-regpick( aat, "$at" )
-regpick( agp, "$gp" )
-regpick( asp, "$sp" )
-regpick( azero, "$zero" )
+
+#define regpickr(num,alias) regpick(af##num,strx($f##num))
+REGS_LIST()
+#undef regpickr
+#define regpickr(num,alias) regpick(ar##num,strx($##num))
+REGS_LIST()
+#undef regpickr
+#define regpickr(num,alias) regpick(a##alias,strx($##alias))
+REGS_LIST()
+#undef regpickr
+
 #endif
+
+#undef strx
+
+#undef REGS_LIST
