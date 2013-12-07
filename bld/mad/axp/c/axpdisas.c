@@ -192,9 +192,13 @@ mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
 }
 
 const unsigned_16 RegTrans[] = {
-    #define regpick( e, n ) AR_##e,
-    #include "regaxp.h"
+    #define regpick(id,type,reg_set)    offsetof( mad_registers, axp.##id ),
+    #define regpicku(u,id,type,reg_set) offsetof( mad_registers, axp.##u ),
+    #define palpick(pal,id)
+    #include "axpregs.h"
+    #undef palpick
     #undef regpick
+    #undef regpicku
 };
 
 const mad_type_handle RefTrans[] = {

@@ -98,7 +98,7 @@ unsigned        DIGENTRY MICallUpStackSize( void )
 mad_status      DIGENTRY MICallUpStackInit( mad_call_up_data *cud, const mad_registers *mr )
 {
     cud->lr = mr->ppc.lr.u._32[I64LO32];
-    cud->sp = mr->ppc.sp.u._32[I64LO32];
+    cud->sp = mr->ppc.u1.sp.u._32[I64LO32];
     cud->fp = mr->ppc.r31.u._32[I64LO32];    // NYI: can float around
     cud->first_frame = TRUE;
     return( MS_OK );

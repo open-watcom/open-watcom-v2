@@ -198,9 +198,16 @@ mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
 }
 
 const unsigned_16 RegTrans[] = {
+    #define regpick(id,type,reg_set)    offsetof( mad_registers, ppc.##id ),
+    #define regpicku(u,id,type,reg_set) offsetof( mad_registers, ppc.##u ),
+    #include "ppcregs.h"
+    #undef regpick
+    #undef regpicku
+/*
     #define regpick( e, n ) offsetof( mad_registers, ppc.e ),
     #include "regppc.h"
     #undef regpick
+*/
 };
 
 #define PPCT_BRHWORD    PPCT_HWORD

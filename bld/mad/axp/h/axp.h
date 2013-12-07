@@ -36,9 +36,11 @@
 
 enum {
     #define regpick(id,type,reg_set)    IDX_##id,
+    #define regpicku(u,id,type,reg_set) IDX_##id,
     #define palpick(pal,id)             IDX_##pal##_##id,
     #include "axpregs.h"
     #undef regpick
+    #undef regpicku
     #undef palpick
     IDX_LAST_ONE
 };

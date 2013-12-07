@@ -51,11 +51,11 @@ struct ppc_mad_registers {
     union {
         unsigned_64     r1;
         unsigned_64     sp;
-    };
+    } u1;
     union {
         unsigned_64     r2;
         unsigned_64     rtoc;
-    };
+    } u2;
     unsigned_64 r3;
     unsigned_64 r4;
     unsigned_64 r5;

@@ -66,10 +66,10 @@ regpickuu( 31, ra )
 #define regpickuu(num,alias) regpick(f##num,DOUBLE,FPU)
 REGS_LIST()
 #undef regpickuu
-#define regpickuu(num,alias) regpick(r##num,DWORD,CPU)
+#define regpickuu(num,alias) regpicku(u##num,r##num,DWORD,CPU)
 REGS_LIST()
 #undef regpickuu
-#define regpickuu(num,alias) regpick(alias,DWORD,CPU)
+#define regpickuu(num,alias) regpicku(u##num,alias,DWORD,CPU)
 REGS_LIST()
 #undef regpickuu
 

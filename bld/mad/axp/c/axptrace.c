@@ -47,7 +47,7 @@ void            DIGENTRY MITraceInit( mad_trace_data *td, const mad_registers *m
 
 mad_status      DIGENTRY MITraceHaveRecursed( address watch_stack, const mad_registers *mr )
 {
-    if( mr->axp.r[AR_sp].u64.u._32[0] < watch_stack.mach.offset ) {
+    if( mr->axp.u30.sp.u64.u._32[0] < watch_stack.mach.offset ) {
         return( MS_OK );
     }
     return( MS_FAIL );
@@ -157,7 +157,7 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, unsigned 
     mr->axp.pal.nt.fir.u._32[0] += sizeof( unsigned_32 );
     if( data.br != JMP_SHORT ) return( MS_OK );
     if( memcmp( data.name, "WVIDEO\0\0", 8 ) != 0 ) return( MS_OK );
-    a.mach.offset = mr->axp.r[AR_a0].u64.u._32[0];
+    a.mach.offset = mr->axp.u16.a0.u64.u._32[0];
     len = 0;
     for( ;; ) {
         if( MCReadMem( a, sizeof( ch ), &ch ) == 0 ) break;

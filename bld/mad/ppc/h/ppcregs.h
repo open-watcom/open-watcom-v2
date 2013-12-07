@@ -64,20 +64,20 @@ regpickr( 29 ) \
 regpickr( 30 ) \
 regpickr( 31 )
 
-#define regpickr(num) regpick(f##num,DOUBLE,FPU)
+#define regpickr(num)        regpick(f##num,DOUBLE,FPU)
 #define regpickuu(num,alias) regpick(f##num,DOUBLE,FPU)
 REGS_LIST()
 #undef regpickuu
 #undef regpickr
 regpick( fpscr, WORD, FPU )
 
-#define regpickr(num) regpick(r##num,DWORD,CPU)
-#define regpickuu(num,alias) regpick(r##num,DWORD,CPU)
+#define regpickr(num)        regpick(r##num,DWORD,CPU)
+#define regpickuu(num,alias) regpicku(u##num,r##num,DWORD,CPU)
 REGS_LIST()
 #undef regpickuu
 #undef regpickr
 #define regpickr(num)
-#define regpickuu(num,alias) regpick(alias,DWORD,CPU)
+#define regpickuu(num,alias) regpicku(u##num,alias,DWORD,CPU)
 REGS_LIST()
 #undef regpickuu
 #undef regpickr

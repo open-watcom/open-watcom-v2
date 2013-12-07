@@ -62,111 +62,6 @@ typedef union {
     dfloat              d;
 } axpreg;
 
-enum {
-    AR_f0,
-    AR_f1,
-    AR_f2,
-    AR_f3,
-    AR_f4,
-    AR_f5,
-    AR_f6,
-    AR_f7,
-    AR_f8,
-    AR_f9,
-    AR_f10,
-    AR_f11,
-    AR_f12,
-    AR_f13,
-    AR_f14,
-    AR_f15,
-    AR_f16,
-    AR_f17,
-    AR_f18,
-    AR_f19,
-    AR_f20,
-    AR_f21,
-    AR_f22,
-    AR_f23,
-    AR_f24,
-    AR_f25,
-    AR_f26,
-    AR_f27,
-    AR_f28,
-    AR_f29,
-    AR_f30,
-    AR_f31,
-
-    AR_r0,
-    AR_r1,
-    AR_r2,
-    AR_r3,
-    AR_r4,
-    AR_r5,
-    AR_r6,
-    AR_r7,
-    AR_r8,
-    AR_r9,
-    AR_r10,
-    AR_r11,
-    AR_r12,
-    AR_r13,
-    AR_r14,
-    AR_r15,
-    AR_r16,
-    AR_r17,
-    AR_r18,
-    AR_r19,
-    AR_r20,
-    AR_r21,
-    AR_r22,
-    AR_r23,
-    AR_r24,
-    AR_r25,
-    AR_r26,
-    AR_r27,
-    AR_r28,
-    AR_r29,
-    AR_r30,
-    AR_r31,
-
-    AR_fpcr,
-    AR_NUM_REGS,
-
-    AR_v0       = AR_r0,
-    AR_t0       = AR_r1,
-    AR_t1       = AR_r2,
-    AR_t2       = AR_r3,
-    AR_t3       = AR_r4,
-    AR_t4       = AR_r5,
-    AR_t5       = AR_r6,
-    AR_t6       = AR_r7,
-    AR_t7       = AR_r8,
-    AR_s0       = AR_r9,
-    AR_s1       = AR_r10,
-    AR_s2       = AR_r11,
-    AR_s3       = AR_r12,
-    AR_s4       = AR_r13,
-    AR_s5       = AR_r14,
-    AR_fp       = AR_r15,
-    AR_a0       = AR_r16,
-    AR_a1       = AR_r17,
-    AR_a2       = AR_r18,
-    AR_a3       = AR_r19,
-    AR_a4       = AR_r20,
-    AR_a5       = AR_r21,
-    AR_t8       = AR_r22,
-    AR_t9       = AR_r23,
-    AR_t10      = AR_r24,
-    AR_t11      = AR_r25,
-    AR_ra       = AR_r26,
-    AR_t12      = AR_r27,
-    AR_at       = AR_r28,
-    AR_gp       = AR_r29,
-    AR_sp       = AR_r30,
-    AR_zero     = AR_r31
-};
-
-
 typedef unsigned_8 axp_pal; enum {
     PAL_all,
     PAL_nt,
@@ -175,7 +70,170 @@ typedef unsigned_8 axp_pal; enum {
 };
 
 struct axp_mad_registers {
-    axpreg      r[AR_NUM_REGS];
+    axpreg          f0;
+    axpreg          f1;
+    axpreg          f2;
+    axpreg          f3;
+    axpreg          f4;
+    axpreg          f5;
+    axpreg          f6;
+    axpreg          f7;
+    axpreg          f8;
+    axpreg          f9;
+    axpreg          f10;
+    axpreg          f11;
+    axpreg          f12;
+    axpreg          f13;
+    axpreg          f14;
+    axpreg          f15;
+    axpreg          f16;
+    axpreg          f17;
+    axpreg          f18;
+    axpreg          f19;
+    axpreg          f20;
+    axpreg          f21;
+    axpreg          f22;
+    axpreg          f23;
+    axpreg          f24;
+    axpreg          f25;
+    axpreg          f26;
+    axpreg          f27;
+    axpreg          f28;
+    axpreg          f29;
+    axpreg          f30;
+    axpreg          f31;
+
+    union {
+        axpreg      r0;
+        axpreg      v0;
+    } u0;
+    union {
+        axpreg      r1;
+        axpreg      t0;
+    } u1;
+    union {
+        axpreg      r2;
+        axpreg      t1;
+    } u2;
+    union {
+        axpreg      r3;
+        axpreg      t2;
+    } u3;
+    union {
+        axpreg      r4;
+        axpreg      t3;
+    } u4;
+    union {
+        axpreg      r5;
+        axpreg      t4;
+    } u5;
+    union {
+        axpreg      r6;
+        axpreg      t5;
+    } u6;
+    union {
+        axpreg      r7;
+        axpreg      t6;
+    } u7;
+    union {
+        axpreg      r8;
+        axpreg      t7;
+    } u8;
+    union {
+        axpreg      r9;
+        axpreg      s0;
+    } u9;
+    union {
+        axpreg      r10;
+        axpreg      s1;
+    } u10;
+    union {
+        axpreg      r11;
+        axpreg      s2;
+    } u11;
+    union {
+        axpreg      r12;
+        axpreg      s3;
+    } u12;
+    union {
+        axpreg      r13;
+        axpreg      s4;
+    } u13;
+    union {
+        axpreg      r14;
+        axpreg      s5;
+    } u14;
+    union {
+        axpreg      r15;
+        axpreg      fp;
+    } u15;
+    union {
+        axpreg      r16;
+        axpreg      a0;
+    } u16;
+    union {
+        axpreg      r17;
+        axpreg      a1;
+    } u17;
+    union {
+        axpreg      r18;
+        axpreg      a2;
+    } u18;
+    union {
+        axpreg      r19;
+        axpreg      a3;
+    } u19;
+    union {
+        axpreg      r20;
+        axpreg      a4;
+    } u20;
+    union {
+        axpreg      r21;
+        axpreg      a5;
+    } u21;
+    union {
+        axpreg      r22;
+        axpreg      t8;
+    } u22;
+    union {
+        axpreg      r23;
+        axpreg      t9;
+    } u23;
+    union {
+        axpreg      r24;
+        axpreg      t10;
+    } u24;
+    union {
+        axpreg      r25;
+        axpreg      t11;
+    } u25;
+    union {
+        axpreg      r26;
+        axpreg      ra;
+    } u26;
+    union {
+        axpreg      r27;
+        axpreg      t12;
+    } u27;
+    union {
+        axpreg      r28;
+        axpreg      at;
+    } u28;
+    union {
+        axpreg      r29;
+        axpreg      gp;
+    } u29;
+    union {
+        axpreg      r30;
+        axpreg      sp;
+    } u30;
+    union {
+        axpreg      r31;
+        axpreg      zero;
+    } u31;
+
+    unsigned_64     fpcr;
+
     /* the PC must be the first item in all of the PAL reg structures */
     union {
         struct {

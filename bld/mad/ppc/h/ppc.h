@@ -35,8 +35,10 @@
 
 enum {
     #define regpick(id,type,reg_set)    IDX_##id,
+    #define regpicku(u,id,type,reg_set) IDX_##id,
     #include "ppcregs.h"
     #undef regpick
+    #undef regpicku
     IDX_LAST_ONE
 };
 

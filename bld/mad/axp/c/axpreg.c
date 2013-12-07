@@ -38,8 +38,8 @@
 #include "madregs.h"
 
 
-#define BIT_OFF(who)        (offsetof( mad_registers, axp.who ) * BITS_PER_BYTE)
-#define AXPREG_BIT_OFF(who) ((offsetof( mad_registers, axp.r ) + sizeof( axpreg ) * (who)) * BITS_PER_BYTE)
+#define BIT_OFF(who)    (offsetof( mad_registers, axp.who ) * BITS_PER_BYTE)
+#define IS_FP_BIT(x)    (x < BIT_OFF(f31) + 64)
 
 enum {
     RS_NONE,
@@ -51,6 +51,12 @@ enum {
     RS_NUM,
 };
 
+typedef enum {
+    RF_NONE,
+    RF_GPREG  = 0x1,
+    RF_FPREG  = 0x2,
+} register_flags;
+
 #define REG_NAME(id)        static const char NAME_##id[] = #id
 #define REG_NAME2(id,name)  static const char NAME_##id[] = #name
 
@@ -61,42 +67,34 @@ typedef struct {
 } sublist_data;
 
 static const sublist_data IntRegSubData[] = {
-        { "b0",  0, AXPT_BYTE },
-        { "b1",  8, AXPT_BYTE },
-        { "b2", 16, AXPT_BYTE },
-        { "b3", 24, AXPT_BYTE },
-        { "b4", 32, AXPT_BYTE },
-        { "b5", 40, AXPT_BYTE },
-        { "b6", 48, AXPT_BYTE },
-        { "b7", 56, AXPT_BYTE },
-        { "w0",  0, AXPT_WORD },
-        { "w1", 16, AXPT_WORD },
-        { "w2", 32, AXPT_WORD },
-        { "w3", 48, AXPT_WORD },
-        { "l0",  0, AXPT_LWORD },
-        { "l1", 32, AXPT_LWORD },
+    { "b0",  0, AXPT_BYTE },
+    { "b1",  8, AXPT_BYTE },
+    { "b2", 16, AXPT_BYTE },
+    { "b3", 24, AXPT_BYTE },
+    { "b4", 32, AXPT_BYTE },
+    { "b5", 40, AXPT_BYTE },
+    { "b6", 48, AXPT_BYTE },
+    { "b7", 56, AXPT_BYTE },
+    { "w0",  0, AXPT_WORD },
+    { "w1", 16, AXPT_WORD },
+    { "w2", 32, AXPT_WORD },
+    { "w3", 48, AXPT_WORD },
+    { "l0",  0, AXPT_LWORD },
+    { "l1", 32, AXPT_LWORD },
 };
 
 static const sublist_data FltRegSubData[] = {
-        { "t", 0, AXPT_DOUBLE },
-        { "g", 0, AXPT_RG_FLOAT },
+    { "t", 0, AXPT_DOUBLE },
+    { "g", 0, AXPT_RG_FLOAT },
 };
 
-#define sublist( name, type, reg_set, base, start, len ) \
-        { { NAME_##name,                \
-            AXPT_##type,                \
-            BIT_OFF( base ) + start,    \
-            len,                        \
-            1 },                        \
-            PAL_all, reg_set##_REG_SET, RS_NONE },
-
-#define sublist_axpreg( name, type, reg_set, axpreg, start, len ) \
-        { { NAME_##name,                        \
-            AXPT_##type,                        \
-            AXPREG_BIT_OFF( axpreg ) + start,   \
-            len,                                \
-            1 },                                \
-            PAL_all, reg_set##_REG_SET, RS_NONE },
+#define sublist( id, type, reg_set, base, start, len ) \
+    { { NAME_##id,                  \
+        AXPT_##type,                \
+        BIT_OFF( base ) + start,    \
+        len,                        \
+        RF_GPREG },                 \
+        PAL_all, reg_set##_REG_SET, RS_NONE },
 
 REG_NAME( invd );
 REG_NAME( dzed );
@@ -111,17 +109,17 @@ REG_NAME( dyn );
 REG_NAME( sum );
 
 static const axp_reg_info       FPCRSubList[] = {
-    sublist_axpreg( invd,BYTE, FPU, AR_fpcr, 49, 1 )
-    sublist_axpreg( dzed,BYTE, FPU, AR_fpcr, 50, 1 )
-    sublist_axpreg( ovfd,BYTE, FPU, AR_fpcr, 51, 1 )
-    sublist_axpreg( inv, BYTE, FPU, AR_fpcr, 52, 1 )
-    sublist_axpreg( dze, BYTE, FPU, AR_fpcr, 53, 1 )
-    sublist_axpreg( ovf, BYTE, FPU, AR_fpcr, 54, 1 )
-    sublist_axpreg( unf, BYTE, FPU, AR_fpcr, 55, 1 )
-    sublist_axpreg( ine, BYTE, FPU, AR_fpcr, 56, 1 )
-    sublist_axpreg( iov, BYTE, FPU, AR_fpcr, 57, 1 )
-    sublist_axpreg( dyn, BYTE, FPU, AR_fpcr, 58, 2 )
-    sublist_axpreg( sum, BYTE, FPU, AR_fpcr, 63, 1 )
+    sublist( invd, BYTE, FPU, fpcr, 49, 1 )
+    sublist( dzed, BYTE, FPU, fpcr, 50, 1 )
+    sublist( ovfd, BYTE, FPU, fpcr, 51, 1 )
+    sublist( inv,  BYTE, FPU, fpcr, 52, 1 )
+    sublist( dze,  BYTE, FPU, fpcr, 53, 1 )
+    sublist( ovf,  BYTE, FPU, fpcr, 54, 1 )
+    sublist( unf,  BYTE, FPU, fpcr, 55, 1 )
+    sublist( ine,  BYTE, FPU, fpcr, 56, 1 )
+    sublist( iov,  BYTE, FPU, fpcr, 57, 1 )
+    sublist( dyn,  BYTE, FPU, fpcr, 58, 2 )
+    sublist( sum,  BYTE, FPU, fpcr, 63, 1 )
     { NULL }
 };
 
@@ -142,7 +140,7 @@ static const axp_reg_info       *SubList[] =
     NULL,
     NULL,
     FPCRSubList,
-    NULL,       //NT SOFTFPCR
+    NULL,                       // NT SOFTFPCR
     NTPSRSubList
 };
 
@@ -154,16 +152,20 @@ static const axp_reg_info       *SubList[] =
 #define REG_BITS_INT    64
 #define REG_BITS_FLT    64
 #define REG_BITS_FPCR   REG_BITS_INT
+#define REG_BITS_U32    32
 
-#define RT_INT  REG_TYPE( REG_BITS_INT )
-#define RT_FLT  AXPT_DOUBLE
-#define RT_FPCR RT_INT
+#define RT_INT          REG_TYPE( REG_BITS_INT )
+#define RT_FLT          AXPT_DOUBLE
+#define RT_FPCR         RT_INT
+#define RT_U32          AXPT_U32
 
 /* to avoid relocations to R/W data segments */
 #define regpick(id,type,reg_set)    REG_NAME(id);
+#define regpicku(u,id,type,reg_set) REG_NAME(id);
 #define palpick(pal,id)             REG_NAME2(pal##_##id,id);
 #include "axpregs.h"
 #undef regpick
+#undef regpicku
 #undef palpick
 
 #define PR_nt_fir                       \
@@ -171,7 +173,7 @@ static const axp_reg_info       *SubList[] =
             RT_INT,                     \
             BIT_OFF( pal.nt.fir ),      \
             REG_BITS_INT,               \
-            1 },                        \
+            RF_GPREG },                 \
             PAL_nt, 0, RS_NONE }
 
 #define PR_nt_softfpcr                  \
@@ -179,28 +181,36 @@ static const axp_reg_info       *SubList[] =
             RT_INT,                     \
             BIT_OFF( pal.nt.softfpcr ), \
             REG_BITS_INT,               \
-            1 },                        \
+            RF_GPREG },                 \
             PAL_nt, 0, RS_NT_SOFTFPCR }
 
 #define PR_nt_psr                       \
         { { NAME_nt_psr,                \
-            AXPT_U32,                   \
+            RT_U32,                     \
             BIT_OFF( pal.nt.psr ),      \
-            32,                         \
-            1 },                        \
+            REG_BITS_U32,               \
+            RF_GPREG },                 \
             PAL_nt, 0, RS_NT_PSR }
 
 const axp_reg_info RegList[] = {
-    #define regpick(id,type,reg_set)        \
-        { { NAME_##id,                      \
-            RT_##type,                      \
-            AXPREG_BIT_OFF( AR_##id ),      \
-            REG_BITS_##type,                \
-            1 },                            \
+    #define regpick(id,type,reg_set)    \
+        { { NAME_##id,                  \
+            RT_##type,                  \
+            BIT_OFF( id ),              \
+            REG_BITS_##type,            \
+            RF_GPREG },                 \
+            PAL_all, reg_set##_REG_SET, RS_##type },
+    #define regpicku(u,id,type,reg_set) \
+        { { NAME_##id,                  \
+            RT_##type,                  \
+            BIT_OFF( u ),               \
+            REG_BITS_##type,            \
+            RF_GPREG },                 \
             PAL_all, reg_set##_REG_SET, RS_##type },
     #define palpick(pal,id)     PR_##pal##_##id,
     #include "axpregs.h"
     #undef regpick
+    #undef regpicku
     #undef palpick
 };
 
@@ -486,8 +496,8 @@ mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, con
 {
     rsd = rsd;
     switch( ri->bit_start ) {
-    case AXPREG_BIT_OFF( AR_r31 ):
-    case AXPREG_BIT_OFF( AR_f31 ):
+    case BIT_OFF( u31 ):
+    case BIT_OFF( f31 ):
         *possible_p = NULL;
         *num_possible_p = 0;
         return( MS_FAIL );
@@ -546,7 +556,7 @@ mad_status      DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, const mad_reg
         a->mach.offset = mr->axp.pal.nt.fir.u._32[0];
         return( MS_OK );
     }
-    if( bit_start < AXPREG_BIT_OFF( AR_f31 + 1 ) ) {
+    if( IS_FP_BIT( bit_start ) ) {
         return( MS_FAIL );
     }
     if( bit_start >= BIT_OFF( pal ) ) {
@@ -596,8 +606,8 @@ walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
         switch( ((axp_reg_info *)ri)->sublist_code ) {
         case RS_INT:
         case RS_FLT:
-           curr = RegSubList[ ri->bit_start / (sizeof( axpreg )*BITS_PER_BYTE) ];
-           break;
+            curr = RegSubList[ri->bit_start / ( sizeof( axpreg ) * BITS_PER_BYTE )];
+            break;
         default:
             curr = SubList[((axp_reg_info *)ri)->sublist_code];
             break;
@@ -605,7 +615,8 @@ walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
         if( curr != NULL ) {
             while( curr->info.name != NULL ) {
                 wr = wk( &curr->info, 0, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE )
+                    return( wr );
                 ++curr;
             }
         }
@@ -613,10 +624,11 @@ walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
         reg_set = rsd - RegSet;
         curr = RegList;
         while( curr < &RegList[ IDX_LAST_ONE ] ) {
-            if( curr->reg_set == reg_set
-             && (curr->pal == PAL_all || curr->pal == CurrPAL) ) {
+            if( curr->reg_set == reg_set && (curr->pal == PAL_all || curr->pal == CurrPAL) ) {
                 wr = wk( &curr->info, curr->sublist_code != 0, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE ) {
+                    return( wr );
+                }
             }
             ++curr;
         }
@@ -624,7 +636,7 @@ walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
     return( WR_CONTINUE );
 }
 
-void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
+void    DIGENTRY MIRegSpecialGet( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
 {
     ma->segment = 0;
     switch( sr ) {
@@ -633,19 +645,19 @@ void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, const mad_register
         ma->offset = mr->axp.pal.nt.fir.u._32[0];
         break;
     case MSR_SP:
-        ma->offset = mr->axp.r[AR_sp].u64.u._32[0];
+        ma->offset = mr->axp.u30.sp.u64.u._32[0];
         break;
     case MSR_FP:
         if( VariableFrame( mr->axp.pal.nt.fir.u._32[0] ) ) {
-            ma->offset = mr->axp.r[AR_fp].u64.u._32[0];
+            ma->offset = mr->axp.u15.fp.u64.u._32[0];
         } else {
-            ma->offset = mr->axp.r[AR_sp].u64.u._32[0];
+            ma->offset = mr->axp.u30.sp.u64.u._32[0];
         }
         break;
     }
 }
 
-void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
+void    DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
 {
     switch( sr ) {
     case MSR_IP:
@@ -653,19 +665,19 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
         mr->axp.pal.nt.fir.u._32[0] = ma->offset;
         break;
     case MSR_SP:
-        mr->axp.r[AR_sp].u64.u._32[0] = ma->offset;
+        mr->axp.u30.sp.u64.u._32[0] = ma->offset;
         break;
     case MSR_FP:
         if( VariableFrame( mr->axp.pal.nt.fir.u._32[0] ) ) {
-            mr->axp.r[AR_fp].u64.u._32[0] = ma->offset;
+            mr->axp.u15.fp.u64.u._32[0] = ma->offset;
         } else {
-            mr->axp.r[AR_sp].u64.u._32[0] = ma->offset;
+            mr->axp.u30.sp.u64.u._32[0] = ma->offset;
         }
         break;
     }
 }
 
-unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, unsigned max, char *buff )
+unsigned    DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, unsigned max, char *buff )
 {
     unsigned    idx;
     unsigned    len;
@@ -742,8 +754,8 @@ void            DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsi
 
     mr = mr;
     flags = flags;
-    memset( &mr->axp.r[AR_r31], 0, sizeof( mr->axp.r[AR_r31] ) );
-    memset( &mr->axp.r[AR_f31], 0, sizeof( mr->axp.r[AR_f31] ) );
+    memset( &mr->axp.u31, 0, sizeof( mr->axp.u31 ) );
+    memset( &mr->axp.f31, 0, sizeof( mr->axp.f31 ) );
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \
       ((bit) >= RegList[i].info.bit_start && (bit) < RegList[i].info.bit_start+RegList[i].info.bit_size)
@@ -758,10 +770,10 @@ void            DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsi
     case BIT_OFF( pal.nt.fir ):
         MCNotify( MNT_MODIFY_IP, NULL );
         break;
-    case AXPREG_BIT_OFF( AR_sp ):
+    case BIT_OFF( u30 ): // sp
         MCNotify( MNT_MODIFY_SP, NULL );
         break;
-    case AXPREG_BIT_OFF( AR_fp ):
+    case BIT_OFF( u15 ): // fp
         MCNotify( MNT_MODIFY_FP, NULL );
         break;
     }
@@ -773,9 +785,11 @@ static mad_status AddSubList( unsigned idx, const sublist_data *sub, unsigned nu
     unsigned    j;
 
     i = RegList[idx].info.bit_start / (sizeof( axpreg )*BITS_PER_BYTE);
-    if( RegSubList[i] != NULL ) return( MS_OK );
+    if( RegSubList[i] != NULL )
+        return( MS_OK );
     RegSubList[i] = MCAlloc( sizeof( axp_reg_info ) * (num+1) );
-    if( RegSubList[i] == NULL ) return( MS_ERR|MS_NO_MEM );
+    if( RegSubList[i] == NULL )
+        return( MS_ERR|MS_NO_MEM );
     memset( RegSubList[i], 0, sizeof( axp_reg_info ) * (num+1) );
     for( j = 0; j < num; ++j ) {
         RegSubList[i][j] = RegList[idx];
@@ -788,7 +802,7 @@ static mad_status AddSubList( unsigned idx, const sublist_data *sub, unsigned nu
     return( MS_OK );
 }
 
-mad_status RegInit()
+mad_status RegInit( void )
 {
     unsigned    i;
     unsigned    max;
@@ -800,29 +814,34 @@ mad_status RegInit()
         switch( RegList[i].sublist_code ) {
         case RS_INT:
         case RS_FLT:
-            curr = RegList[i].info.bit_start / (sizeof(axpreg)*BITS_PER_BYTE);
-            if( curr > max ) max = curr;
+            curr = RegList[i].info.bit_start / ( sizeof( axpreg ) * BITS_PER_BYTE );
+            if( curr > max )
+                max = curr;
             break;
         }
     }
-    RegSubList = MCAlloc( (max+1) * sizeof( *RegSubList ) );
-    if( RegSubList == NULL ) return( MS_ERR | MS_NO_MEM );
-    memset( RegSubList, 0, (max+1) * sizeof( *RegSubList ) );
+    RegSubList = MCAlloc( ( max + 1 ) * sizeof( *RegSubList ) );
+    if( RegSubList == NULL )
+        return( MS_ERR | MS_NO_MEM );
+    memset( RegSubList, 0, ( max + 1 ) * sizeof( *RegSubList ) );
     for( i = 0; i < NUM_ELTS( RegList ); ++i ) {
         switch( RegList[i].sublist_code ) {
         case RS_INT:
             ms = AddSubList( i, IntRegSubData, NUM_ELTS( IntRegSubData ) );
-            if( ms != MS_OK ) return( ms );
+            if( ms != MS_OK )
+                return( ms );
             break;
         case RS_FLT:
             ms = AddSubList( i, FltRegSubData, NUM_ELTS( FltRegSubData ) );
-            if( ms != MS_OK ) return( ms );
+            if( ms != MS_OK )
+                return( ms );
+            break;
         }
     }
     return( MS_OK );
 }
 
-void RegFini()
+void RegFini( void )
 {
     unsigned    i;
     unsigned    max;
@@ -834,11 +853,13 @@ void RegFini()
         case RS_INT:
         case RS_FLT:
             curr = RegList[i].info.bit_start / (sizeof(axpreg)*BITS_PER_BYTE);
-            if( curr > max ) max = curr;
+            if( curr > max )
+                max = curr;
             break;
         }
     }
-    for( i = 0; i <= max; ++i ) MCFree( RegSubList[i] );
+    for( i = 0; i <= max; ++i )
+        MCFree( RegSubList[i] );
     MCFree( RegSubList );
     RegSubList = NULL;
 }

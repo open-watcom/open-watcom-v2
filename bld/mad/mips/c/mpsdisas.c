@@ -199,9 +199,11 @@ mad_status DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
 }
 
 const unsigned_16   RegTrans[] = {
-    #define regpick( e, n ) offsetof( mad_registers, mips.e ),
-    #include "regmips.h"
+    #define regpick(id,type,reg_set)    offsetof( mad_registers, mips.##id ),
+    #define regpicku(u,id,type,reg_set) offsetof( mad_registers, mips.##u ),
+    #include "mpsregs.h"
     #undef regpick
+    #undef regpicku
 };
 
 // Map left/right accesses to plain word/dword accesses

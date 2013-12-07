@@ -46,7 +46,7 @@ void            DIGENTRY MITraceInit( mad_trace_data *td, mad_registers const *m
 
 mad_status      DIGENTRY MITraceHaveRecursed( address watch_stack, mad_registers const *mr )
 {
-    if( mr->ppc.sp.u._32[I64LO32] < watch_stack.mach.offset ) {
+    if( mr->ppc.u1.sp.u._32[I64LO32] < watch_stack.mach.offset ) {
         return( MS_OK );
     }
     return( MS_FAIL );

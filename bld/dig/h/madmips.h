@@ -46,139 +46,139 @@ typedef union {
     struct {
         sreal           s_lo;
         sreal           s_hi;
-    };
+    } u;
 } mipsfloat;
 
 struct mips_mad_registers {
     union {
         unsigned_64     r0;
         unsigned_64     zero;
-    };
+    } u0;
     union {
         unsigned_64     r1;
         unsigned_64     at;
-    };
+    } u1;
     union {
         unsigned_64     r2;
         unsigned_64     v0;
-    };
+    } u2;
     union {
         unsigned_64     r3;
         unsigned_64     v1;
-    };
+    } u3;
     union {
         unsigned_64     r4;
         unsigned_64     a0;
-    };
+    } u4;
     union {
         unsigned_64     r5;
         unsigned_64     a1;
-    };
+    } u5;
     union {
         unsigned_64     r6;
         unsigned_64     a2;
-    };
+    } u6;
     union {
         unsigned_64     r7;
         unsigned_64     a3;
-    };
+    } u7;
     union {
         unsigned_64     r8;
         unsigned_64     t0;
-    };
+    } u8;
     union {
         unsigned_64     r9;
         unsigned_64     t1;
-    };
+    } u9;
     union {
         unsigned_64     r10;
         unsigned_64     t2;
-    };
+    } u10;
     union {
         unsigned_64     r11;
         unsigned_64     t3;
-    };
+    } u11;
     union {
         unsigned_64     r12;
         unsigned_64     t4;
-    };
+    } u12;
     union {
         unsigned_64     r13;
         unsigned_64     t5;
-    };
+    } u13;
     union {
         unsigned_64     r14;
         unsigned_64     t6;
-    };
+    } u14;
     union {
         unsigned_64     r15;
         unsigned_64     t7;
-    };
+    } u15;
     union {
         unsigned_64     r16;
         unsigned_64     s0;
-    };
+    } u16;
     union {
         unsigned_64     r17;
         unsigned_64     s1;
-    };
+    } u17;
     union {
         unsigned_64     r18;
         unsigned_64     s2;
-    };
+    } u18;
     union {
         unsigned_64     r19;
         unsigned_64     s3;
-    };
+    } u19;
     union {
         unsigned_64     r20;
         unsigned_64     s4;
-    };
+    } u20;
     union {
         unsigned_64     r21;
         unsigned_64     s5;
-    };
+    } u21;
     union {
         unsigned_64     r22;
         unsigned_64     s6;
-    };
+    } u22;
     union {
         unsigned_64     r23;
         unsigned_64     s7;
-    };
+    } u23;
     union {
         unsigned_64     r24;
         unsigned_64     t8;
-    };
+    } u24;
     union {
         unsigned_64     r25;
         unsigned_64     t9;
-    };
+    } u25;
     union {
         unsigned_64     r26;
         unsigned_64     k0;
-    };
+    } u26;
     union {
         unsigned_64     r27;
         unsigned_64     k1;
-    };
+    } u27;
     union {
         unsigned_64     r28;
         unsigned_64     gp;
-    };
+    } u28;
     union {
         unsigned_64     r29;
         unsigned_64     sp;
-    };
+    } u29;
     union {
         unsigned_64     r30;
         unsigned_64     fp;
         unsigned_64     s8;
-    };
+    } u30;
     union {
         unsigned_64     r31;
         unsigned_64     ra;
-    };
+    } u31;
 
     unsigned_64 pc;
     unsigned_32 lo;

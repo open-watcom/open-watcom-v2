@@ -67,11 +67,11 @@ regpickuu( 31, zero )
 #define regpickuu(num,alias) regpick(f##num,FLT,FPU)
 REGS_LIST()
 #undef regpickuu
-#define regpickuu(num,alias) regpick(r##num,INT,CPU)
+#define regpickuu(num,alias) regpicku(u##num,r##num,INT,CPU)
 REGS_LIST()
 #undef regpickuu
 regpick( fpcr, FPCR, FPU )
-#define regpickuu(num,alias) regpick(alias,INT,CPU)
+#define regpickuu(num,alias) regpicku(u##num,alias,INT,CPU)
 REGS_LIST()
 #undef regpickuu
 //NYI: unix, vms pal registers

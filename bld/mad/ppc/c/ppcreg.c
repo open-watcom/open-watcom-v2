@@ -55,6 +55,12 @@ enum {
     RS_NUM,
 };
 
+typedef enum {
+    RF_NONE,
+    RF_GPREG  = 0x1,
+    RF_FPREG  = 0x2,
+} register_flags;
+
 #define REG_NAME( name )        const char NAME_##name[] = #name
 
 typedef struct {
@@ -64,29 +70,29 @@ typedef struct {
 } sublist_data;
 
 static const sublist_data IntRegSubData[] = {
-        { "b0",  0, PPCT_BYTE },
-        { "b1",  8, PPCT_BYTE },
-        { "b2", 16, PPCT_BYTE },
-        { "b3", 24, PPCT_BYTE },
-        { "b4", 32, PPCT_BYTE },
-        { "b5", 40, PPCT_BYTE },
-        { "b6", 48, PPCT_BYTE },
-        { "b7", 56, PPCT_BYTE },
-        { "h0",  0, PPCT_HWORD },
-        { "h1", 16, PPCT_HWORD },
-        { "h2", 32, PPCT_HWORD },
-        { "h3", 48, PPCT_HWORD },
-        { "w0",  0, PPCT_WORD },
-        { "w1", 32, PPCT_WORD },
+    { "b0",  0, PPCT_BYTE },
+    { "b1",  8, PPCT_BYTE },
+    { "b2", 16, PPCT_BYTE },
+    { "b3", 24, PPCT_BYTE },
+    { "b4", 32, PPCT_BYTE },
+    { "b5", 40, PPCT_BYTE },
+    { "b6", 48, PPCT_BYTE },
+    { "b7", 56, PPCT_BYTE },
+    { "h0",  0, PPCT_HWORD },
+    { "h1", 16, PPCT_HWORD },
+    { "h2", 32, PPCT_HWORD },
+    { "h3", 48, PPCT_HWORD },
+    { "w0",  0, PPCT_WORD },
+    { "w1", 32, PPCT_WORD },
 };
 
-#define sublist( name, type, reg_set, base, start, len )        \
-        { { NAME_##name,                \
-            PPCT_##type,                \
-            BIT_OFF( base )+start,      \
-            len,                        \
-            1 },                        \
-            reg_set##_REG_SET, RS_NONE },
+#define sublist( name, type, reg_set, base, start, len ) \
+    { { NAME_##name,                \
+        PPCT_##type,                \
+        BIT_OFF( base ) + start,    \
+        len,                        \
+        RF_GPREG },                 \
+        reg_set##_REG_SET, RS_NONE },
 
 static const ppc_reg_info       *SubList[] =
 {
@@ -110,20 +116,30 @@ static const ppc_reg_info       *SubList[] =
 #define REG_BITS_DOUBLE 64
 
 /* to avoid relocations to R/W data segments */
-#define regpick( name, type, s ) REG_NAME( name );
+#define regpick(id,type,reg_set)    REG_NAME( id );
+#define regpicku(u,id,type,reg_set) REG_NAME( id );
 #include "ppcregs.h"
 #undef regpick
-
-#define regpick( name, type, reg_set )  \
-        { { NAME_##name,                \
-            PPCT_##type,                \
-            BIT_OFF( name ),            \
-            REG_BITS_##type,            \
-            1 },                        \
-            reg_set##_REG_SET, RS_##type },
+#undef regpicku
 
 const ppc_reg_info RegList[] = {
+    #define regpick(id,type,reg_set)    \
+        { { NAME_##id,                  \
+            PPCT_##type,                \
+            BIT_OFF( id ),              \
+            REG_BITS_##type,            \
+            RF_GPREG },                 \
+            reg_set##_REG_SET, RS_##type },
+    #define regpicku(u,id,type,reg_set) \
+        { { NAME_##id,                  \
+            PPCT_##type,                \
+            BIT_OFF( u ),               \
+            REG_BITS_##type,            \
+            RF_GPREG },                 \
+            reg_set##_REG_SET, RS_##type },
     #include "ppcregs.h"
+    #undef regpick
+    #undef regpicku
 };
 
 // For 64-bit registers displayed as 32-bit - 32GPRs + sp, lr, iar, ctr, msr
@@ -598,7 +614,7 @@ void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, mad_registers cons
         ma->offset = mr->ppc.iar.u._32[I64LO32];
         break;
     case MSR_SP:
-        ma->offset = mr->ppc.sp.u._32[I64LO32];
+        ma->offset = mr->ppc.u1.sp.u._32[I64LO32];
         break;
     case MSR_FP:
         //NYI: can actually float around
@@ -614,7 +630,7 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
         mr->ppc.iar.u._32[I64LO32] = ma->offset;
         break;
     case MSR_SP:
-        mr->ppc.sp.u._32[I64LO32] = ma->offset;
+        mr->ppc.u1.sp.u._32[I64LO32] = ma->offset;
         break;
     case MSR_FP:
         //NYI: can actually float around
@@ -711,10 +727,10 @@ void            DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsi
     case BIT_OFF( iar ):
         MCNotify( MNT_MODIFY_IP, NULL );
         break;
-    case BIT_OFF( sp ):
+    case BIT_OFF( u1 ): // sp
         MCNotify( MNT_MODIFY_SP, NULL );
         break;
-    case BIT_OFF( r31 ): //NYI: can float
+    case BIT_OFF( r31 ): // fp NYI: can float
         MCNotify( MNT_MODIFY_FP, NULL );
         break;
     }

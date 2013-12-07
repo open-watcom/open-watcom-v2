@@ -53,6 +53,12 @@ enum {
     RS_NUM,
 };
 
+typedef enum {
+    RF_NONE,
+    RF_GPREG  = 0x1,
+    RF_FPREG  = 0x2,
+} register_flags;
+
 #define REG_NAME( name )        const char NAME_##name[] = #name
 
 typedef struct {
@@ -62,29 +68,29 @@ typedef struct {
 } sublist_data;
 
 static const sublist_data DwordRegSubData[] = {
-        { "b0",  0, MIPST_BYTE },
-        { "b1",  8, MIPST_BYTE },
-        { "b2", 16, MIPST_BYTE },
-        { "b3", 24, MIPST_BYTE },
-        { "b4", 32, MIPST_BYTE },
-        { "b5", 40, MIPST_BYTE },
-        { "b6", 48, MIPST_BYTE },
-        { "b7", 56, MIPST_BYTE },
-        { "h0",  0, MIPST_HALF },
-        { "h1", 16, MIPST_HALF },
-        { "h2", 32, MIPST_HALF },
-        { "h3", 48, MIPST_HALF },
-        { "w0",  0, MIPST_WORD },
-        { "w1", 32, MIPST_WORD },
+    { "b0",  0, MIPST_BYTE },
+    { "b1",  8, MIPST_BYTE },
+    { "b2", 16, MIPST_BYTE },
+    { "b3", 24, MIPST_BYTE },
+    { "b4", 32, MIPST_BYTE },
+    { "b5", 40, MIPST_BYTE },
+    { "b6", 48, MIPST_BYTE },
+    { "b7", 56, MIPST_BYTE },
+    { "h0",  0, MIPST_HALF },
+    { "h1", 16, MIPST_HALF },
+    { "h2", 32, MIPST_HALF },
+    { "h3", 48, MIPST_HALF },
+    { "w0",  0, MIPST_WORD },
+    { "w1", 32, MIPST_WORD },
 };
 
-#define sublist( name, type, reg_set, base, start, len )        \
-        { { NAME_##name,                \
-            MIPST_##type,               \
-            BIT_OFF( base )+start,      \
-            len,                        \
-            1 },                        \
-            reg_set##_REG_SET, RS_NONE },
+#define sublist( name, type, reg_set, base, start, len ) \
+    { { NAME_##name,                \
+        MIPST_##type,               \
+        BIT_OFF( base ) + start,    \
+        len,                        \
+        RF_GPREG },                 \
+        reg_set##_REG_SET, RS_NONE },
 
 REG_NAME( rm );
 REG_NAME( fi );
@@ -152,20 +158,30 @@ static const mips_reg_info      *SubList[] =
 #define RT_FPCSR        RT_WORD
 
 /* to avoid relocations to R/W data segments */
-#define regpick( name, type, s ) REG_NAME( name );
+#define regpick(id,type,reg_set)    REG_NAME(id);
+#define regpicku(u,id,type,reg_set) REG_NAME(id);
 #include "mpsregs.h"
 #undef regpick
-
-#define regpick( name, type, reg_set )  \
-        { { NAME_##name,                \
-            RT_##type,                  \
-            BIT_OFF( name ),            \
-            REG_BITS_##type,            \
-            1 },                        \
-            reg_set##_REG_SET, RS_##type },
+#undef regpicku
 
 const mips_reg_info RegList[] = {
+    #define regpick(id,type,reg_set)    \
+        { { NAME_##id,                  \
+            RT_##type,                  \
+            BIT_OFF( id ),              \
+            REG_BITS_##type,            \
+            RF_GPREG },                 \
+            reg_set##_REG_SET, RS_##type },
+    #define regpicku(u,id,type,reg_set) \
+        { { NAME_##id,                  \
+            RT_##type,                  \
+            BIT_OFF( u ),               \
+            REG_BITS_##type,            \
+            RF_GPREG },                 \
+            reg_set##_REG_SET, RS_##type },
     #include "mpsregs.h"
+    #undef regpick
+    #undef regpicku
 };
 
 // For 64-bit registers displayed as 32-bit - 32GPRs + pc
@@ -626,11 +642,11 @@ void DIGENTRY MIRegSpecialGet( mad_special_reg sr, mad_registers const *mr, addr
         ma->offset = mr->mips.pc.u._32[I64LO32];
         break;
     case MSR_SP:
-        ma->offset = mr->mips.sp.u._32[I64LO32];
+        ma->offset = mr->mips.u29.sp.u._32[I64LO32];
         break;
     case MSR_FP:
         //NYI: may not be used?
-        ma->offset = mr->mips.r30.u._32[I64LO32];
+        ma->offset = mr->mips.u30.r30.u._32[I64LO32];
         break;
     }
 }
@@ -642,11 +658,11 @@ void DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, addr_ptr c
         mr->mips.pc.u._32[I64LO32] = ma->offset;
         break;
     case MSR_SP:
-        mr->mips.sp.u._32[I64LO32] = ma->offset;
+        mr->mips.u29.sp.u._32[I64LO32] = ma->offset;
         break;
     case MSR_FP:
         //NYI: may not be used?
-        mr->mips.r30.u._32[I64LO32] = ma->offset;
+        mr->mips.u30.r30.u._32[I64LO32] = ma->offset;
         break;
     }
 }
@@ -730,10 +746,10 @@ void DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_st
     case BIT_OFF( pc ):
         MCNotify( MNT_MODIFY_IP, NULL );
         break;
-    case BIT_OFF( sp ):
+    case BIT_OFF( u29 ): // sp
         MCNotify( MNT_MODIFY_SP, NULL );
         break;
-    case BIT_OFF( r30 ): //NYI: may not be used?
+    case BIT_OFF( u30 ): // fp //NYI: may not be used?
         MCNotify( MNT_MODIFY_FP, NULL );
         break;
     }
