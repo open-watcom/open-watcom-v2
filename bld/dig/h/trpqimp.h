@@ -39,8 +39,8 @@ typedef struct {
     unsigned long       len;
     char                ***environ;
     void                **_slib_func;
-    void                *(*malloc)( unsigned );
-    void                *(*realloc)( void *, unsigned );
+    void                *(*malloc)( size_t );
+    void                *(*realloc)( void *, size_t );
     void                (*free)( void * );
     char                *(*getenv)( const char * );
     void                (*(*signal)( int __sig, void (*__func)(int) ))(int);

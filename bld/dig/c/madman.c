@@ -1322,15 +1322,16 @@ static char *__xcvt( long_double *value,
 static char *DoStrReal( long_double *value, char *p, mad_type_info const *mti )
 {
     unsigned    mant_digs;
-    unsigned    exp_digs;
+//    unsigned    exp_digs;
     char        *mant;
     int         sign;
     int         exp;
+#ifdef __WATCOMC__
     char        buff[80];
+#endif
 
-    exp_digs = LOG10B2( mti->f.exp.data.b.bits * (mti->f.exp.base / 2) );
-    mant_digs = LOG10B2( mti->b.bits + mti->f.exp.hidden
-                        - ( mti->f.exp.data.b.bits + 1 ) );
+//    exp_digs = LOG10B2( mti->f.exp.data.b.bits * (mti->f.exp.base / 2) );
+    mant_digs = LOG10B2( mti->b.bits + mti->f.exp.hidden - ( mti->f.exp.data.b.bits + 1 ) );
 #ifdef __WATCOMC__
     mant = __xcvt( value, mant_digs, &exp, &sign, buff );
 #else
