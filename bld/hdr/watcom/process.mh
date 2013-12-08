@@ -83,6 +83,8 @@ _WCRTDATA extern int __p_overlay;
 #define _P_OVERLAY   P_OVERLAY
 #define _P_NOWAITO   P_NOWAITO
 
+#define	_OLD_P_OVERLAY	_P_OVERLAY
+
 /*
  *  Prototypes for non-POSIX functions
  */
