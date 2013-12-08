@@ -38,8 +38,14 @@ _WCRTLINK extern int    execvp( const char *__file, const char *const __argv[] )
 :: Begin of extension section
 ::
 :endsegment
-:segment QNX
+_WCRTLINK extern int    _execl( const char *__path, const char *__arg0, ... );
+_WCRTLINK extern int    _execle( const char *__path, const char *__arg0, ... );
+_WCRTLINK extern int    _execlp( const char *__file, const char *__arg0, ... );
+_WCRTLINK extern int    _execv( const char *__path, const char *const __argv[] );
+_WCRTLINK extern int    _execve( const char *__path, const char *const __argv[], const char *const __envp[] );
+_WCRTLINK extern int    _execvp( const char *__file, const char *const __argv[] );
 
+:segment QNX
 /*
  *  Spawn flags passed to qnx_spawn()
  *  These are unique to QNX
@@ -66,15 +72,21 @@ extern pid_t qnx_spawn( int __mode, struct _proc_spawn *__msgbuf, nid_t __node,
 #if defined(__386__)
 extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*), void *__arg, int __flags );
 #endif
-:endsegment
 
+:endsegment
 /* mode flags for spawnxxx routines */
 _WCRTDATA extern int __p_overlay;
 
 #define P_WAIT      0
+#define _P_WAIT     0
 #define P_NOWAIT    1
+#define _P_NOWAIT   1
 #define P_OVERLAY   __p_overlay
+#define _P_OVERLAY  __p_overlay
 #define P_NOWAITO   3
+#define _P_NOWAITO  3
+
+#define _OLD_P_OVERLAY  _P_OVERLAY
 
 /*
  *  Prototypes for non-POSIX functions
@@ -82,6 +94,9 @@ _WCRTDATA extern int __p_overlay;
 
 _WCRTLINK extern int    execlpe( const char *__file, const char *__arg0, ... );
 _WCRTLINK extern int    execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
+
+_WCRTLINK extern int    _execlpe( const char *__file, const char *__arg0, ... );
+_WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
 
 :segment QNX | LINUX
 #if defined(__386__)
@@ -131,8 +146,8 @@ _WCRTLINK extern int    execvpe( const char *__file, const char *const __argv[],
  _WCRTLINK extern void  _endthread( void );
 :endsegment
 #endif
-:segment DOS | LINUX
 
+:segment DOS
 /* values for __action_code used with cwait() */
 
 #define WAIT_CHILD 0
@@ -140,8 +155,8 @@ _WCRTLINK extern int    execvpe( const char *__file, const char *const __argv[],
 
 _WCRTLINK extern int    cwait( int *__status, int __process_id, int __action_code );
 _WCRTLINK extern int    _cwait( int *__status, int __process_id, int __action_code );
-:endsegment
 
+:endsegment
 :: These functions from the standard library need to be in namspace std
 :: in C++ to avoid conflicts on using declarations if standard headers
 :: are also included.
@@ -181,6 +196,15 @@ _WCRTLINK extern int    spawnve( int __mode, const char *__path, const char * co
 _WCRTLINK extern int    spawnvp( int __mode, const char *__path, const char * const *__argv );
 _WCRTLINK extern int    spawnvpe( int __mode, const char *__path, const char * const *__argv, const char * const *__envp );
 
+_WCRTLINK extern int    _spawnl( int __mode, const char *__path, const char *__arg0, ... );
+_WCRTLINK extern int    _spawnle( int __mode, const char *__path, const char *__arg0, ... );
+_WCRTLINK extern int    _spawnlp( int __mode, const char *__path, const char *__arg0, ... );
+_WCRTLINK extern int    _spawnlpe( int __mode, const char *__path, const char *__arg0, ... );
+_WCRTLINK extern int    _spawnv( int __mode, const char *__path, const char * const *__argv );
+_WCRTLINK extern int    _spawnve( int __mode, const char *__path, const char * const *__argv, const char * const *__envp );
+_WCRTLINK extern int    _spawnvp( int __mode, const char *__path, const char * const *__argv );
+_WCRTLINK extern int    _spawnvpe( int __mode, const char *__path, const char * const *__argv, const char * const *__envp );
+
 _WCRTLINK extern wchar_t *_wgetenv( const wchar_t *__name );
 _WCRTLINK extern int    _wsetenv( const wchar_t *__name, const wchar_t *__newvalue, int __overwrite );
 _WCRTLINK extern int    _wputenv( const wchar_t *__env_string );
@@ -214,12 +238,14 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
   extern int (__stdcall *_pRawDllMain)( void *, unsigned, void * );
  #endif
 #endif
+:endsegment
+:segment DOS
 _WCRTLINK extern int    getpid( void );
 _WCRTLINK extern int    _getpid( void );
 _WCRTLINK extern int    wait( int *__status );
-:endsegment
-:segment QNX | LINUX
+:elsesegment QNX | LINUX
 _WCRTLINK extern pid_t  getpid( void );
+_WCRTLINK extern pid_t  _getpid( void );
 _WCRTLINK extern pid_t  wait( int *__status );
 :endsegment
 
