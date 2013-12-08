@@ -97,7 +97,7 @@ using std::time;
 :endsegment
 
 :segment QNX | LINUX
-:include unixext.sp
+:include extunix.sp
 ::
 :: Begin of extension section
 ::
@@ -301,7 +301,7 @@ _WCRTLINK extern errno_t      _wctime_s( wchar_t *__s, rsize_t __maxsize, const 
 
 :endsegment
 :segment QNX | LINUX
-:include unixext.sp
+:include extunix.sp
 
 :endsegment
 _WCRTLINK extern void   tzset( void );

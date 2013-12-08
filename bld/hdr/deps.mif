@@ -2,8 +2,8 @@
 # These items use always the pair of files (prolog + epilog)
 extension = ../ext.sp ../extepi.sp
 c99ext    = ../extc99.sp ../extepi.sp
-posixext  = ../posixext.sp ../extepi.sp
-unixext   = ../unixext.sp ../extepi.sp
+posixext  = ../extposix.sp ../extepi.sp
+unixext   = ../extunix.sp ../extepi.sp
 redefnew  = ../undefnew.sp ../redefnew.sp
 packll    = ../pshpackl.sp ../poppack.sp
 packlnxk  = ../lnxkpack.sp ../poppack.sp

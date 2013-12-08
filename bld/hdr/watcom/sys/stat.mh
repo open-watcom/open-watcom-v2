@@ -57,7 +57,7 @@
 #define S_ISBLK(m)  (((m)&_S_IFMT)==_S_IFBLK) /* Test for block specl file. */
 #define S_ISREG(m)  (((m)&_S_IFMT)==_S_IFREG) /* Test for regular file.     */
 
-:include posixext.sp
+:include extposix.sp
 
 #define S_ISLNK(m)  (((m)&_S_IFMT)==_S_IFLNK) /* Test for symbolic link.    */
 #define S_ISNAM(m)  (((m)&_S_IFMT)==_S_IFNAM) /* Test for special named file*/

@@ -62,7 +62,7 @@ typedef void (*__sig_func)( int );
 :include incdir.sp
 #include _ARCH_INCLUDE(signal.h)
 
-:include posixext.sp
+:include extposix.sp
 
 :include pshpackl.sp
 
@@ -78,7 +78,7 @@ typedef struct siginfo siginfo_t;
 
 #define __SIG_FAR _WCI86FAR
 
-:include unixext.sp
+:include extunix.sp
 ::
 :: Begin of extension section
 ::
@@ -233,7 +233,7 @@ _WCRTLINK extern void (*signal( int __sig, void (*__func)(int) ) )(int);
 :endsegment
 
 :segment QNX | LINUX
-:include unixext.sp
+:include extunix.sp
 _WCRTLINK extern int  kill( pid_t __pid, int __signum );
 _WCRTLINK extern int  sigaction( int __signo, const struct sigaction *__act, struct sigaction *__oact );
 _WCRTLINK extern int  sigaddset( sigset_t *__set, int __signo );

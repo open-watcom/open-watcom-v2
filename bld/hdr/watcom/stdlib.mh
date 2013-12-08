@@ -241,7 +241,7 @@ namespace std {
 
 :endsegment
 :segment QNX | LINUX
-:include unixext.sp
+:include extunix.sp
 _WCRTLINK void           _exit( int __status );
 :include extepi.sp
 

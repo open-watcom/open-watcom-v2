@@ -331,7 +331,7 @@ _WCRTLINK extern FILE *__get_std_file(unsigned handle);
 #define _WIDE_ORIENTED  2               /* wide-oriented stream */
 
 :segment QNX | LINUX
-:include unixext.sp
+:include extunix.sp
 #define L_cuserid   14                  /*  Max length of login names       */
 #define L_ctermid   16                  /*  Max length of terminal names    */
 #define P_tmpdir    "/usr/tmp"          /*  Temporary file directory        */
@@ -646,7 +646,7 @@ _WCRTLINK extern errno_t _wtmpnam_s( wchar_t *__s, rsize_t __maxsize );
 :include extepi.sp
 
 :segment QNX | LINUX
-:include unixext.sp
+:include extunix.sp
 extern char       *ctermid( char * );
 extern char       *cuserid( char * );
 :segment CNAME

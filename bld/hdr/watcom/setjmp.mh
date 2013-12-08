@@ -48,7 +48,7 @@ _WCRTLINK extern void   longjmp( jmp_buf __env, int __val );
 #pragma aux longjmp __aborts;
 
 :segment QNX | LINUX
-:include unixext.sp
+:include extunix.sp
 
 :include pshpackl.sp
 

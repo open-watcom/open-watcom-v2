@@ -103,7 +103,7 @@
 :endsegment
 
 :segment QNX | LINUX
-:include unixext.sp
+:include extunix.sp
 ::
 :: Begin of extension section
 ::

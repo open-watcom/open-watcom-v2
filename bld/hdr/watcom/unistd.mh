@@ -100,7 +100,7 @@
  *  POSIX 1003.1 Prototypes
  */
 
-:include unixext.sp
+:include extunix.sp
 _WCRTLINK extern void   _exit( int __status );
 :include extepi.sp
 
@@ -210,7 +210,7 @@ _WCRTLINK extern int    unlock( int __fildes, long __offset, long __nbytes );
 :include extepi.sp
 
 _WCRTLINK extern size_t confstr( int, char*, size_t );
-:include posixext.sp
+:include extposix.sp
 _WCRTLINK extern char   *basename( char *__fname );
 _WCRTLINK extern off_t  ltrunc( int __fildes, off_t __offset, int __origin );
 :include extepi.sp
