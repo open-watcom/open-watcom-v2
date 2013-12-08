@@ -41,6 +41,8 @@ unsigned        DIGENTRY MITraceSize( void )
 
 void            DIGENTRY MITraceInit( mad_trace_data *td, const mad_registers *mr )
 {
+    mr = mr;
+
     td->prev_ins_type = -1;
     td->prev_ins_flags.u.x86 = DIF_NONE;
 }

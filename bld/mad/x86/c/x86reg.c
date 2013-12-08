@@ -816,7 +816,7 @@ static mad_status FPUGetPiece(
     mad_type_handle *disp_type_p,
     unsigned *max_value_p )
 {
-    const static x86_reg_info   FPU_nil;
+    const static x86_reg_info   FPU_nil = { 0 };
 
     LIST( 0, st0,  st1,  st2,  st3,  st4,  st5,  st6,  st7 );
     LIST( 1, tag0, tag1, tag2, tag3, tag4, tag5, tag6, tag7 );

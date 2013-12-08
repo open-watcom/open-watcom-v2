@@ -170,6 +170,8 @@ unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm
 
 unsigned                DIGENTRY MIDisasmInsSize( mad_disasm_data *dd )
 {
+    dd = dd;
+
     return( sizeof( unsigned_32 ) );
 }
 
@@ -215,8 +217,8 @@ const mad_type_handle RefTrans[] = {
 
 static int Cond( mad_disasm_data *dd, const mad_registers *mr, unsigned condition )
 {
-    const axpreg        *reg;
-    int         cmp;
+    const axpreg    *reg;
+    int             cmp;
 
     reg = TRANS_REG( mr, dd->ins.op[0].base );
     if( dd->ins.op[0].base >= DR_AXP_f0 && dd->ins.op[0].base <= DR_AXP_f31 ) {

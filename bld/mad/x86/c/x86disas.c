@@ -336,6 +336,8 @@ mad_disasm_control DIGENTRY MIDisasmControl( mad_disasm_data *dd, const mad_regi
 
 static walk_result FindCallTarget( address a, mad_type_handle th, mad_memref_kind mk, void *d )
 {
+    th = th; mk = mk;
+
     *(address *)d = a;
     return( WR_STOP );
 }
@@ -782,6 +784,8 @@ char *JmpLabel( unsigned long addr, addr_off off )
     mad_type_handle     th;
     char                *p;
 
+    off = off;
+
     memaddr = DbgAddr;
     memaddr.mach.offset = addr;
     th = ( BIG_SEG( memaddr ) ) ? X86T_N32_PTR : X86T_N16_PTR;
@@ -803,6 +807,8 @@ char *ToSegStr( addr_off value, addr_seg seg, addr_off addr )
 {
     address             memaddr;
     mad_type_handle     th;
+
+    addr = addr;
 
     memaddr.mach.segment = seg;
     memaddr.mach.offset  = value;

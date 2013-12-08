@@ -184,6 +184,8 @@ unsigned DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsi
 
 unsigned DIGENTRY MIDisasmInsSize( mad_disasm_data *dd )
 {
+    dd = dd;
+
     return( sizeof( unsigned_32 ) );
 }
 

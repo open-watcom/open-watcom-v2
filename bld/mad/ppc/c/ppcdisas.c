@@ -174,6 +174,8 @@ unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm
 
 unsigned                DIGENTRY MIDisasmInsSize( mad_disasm_data *dd )
 {
+    dd = dd;
+
     return( sizeof( unsigned_32 ) );
 }
 
@@ -193,6 +195,8 @@ mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
     case DI_AXP_STQ_C:
         return( MS_FAIL );
     }
+#else
+    dd = dd;
 #endif
     return( MS_OK );
 }
@@ -203,11 +207,6 @@ const unsigned_16 RegTrans[] = {
     #include "ppcregs.h"
     #undef regpick
     #undef regpicku
-/*
-    #define regpick( e, n ) offsetof( mad_registers, ppc.e ),
-    #include "regppc.h"
-    #undef regpick
-*/
 };
 
 #define PPCT_BRHWORD    PPCT_HWORD

@@ -57,6 +57,8 @@ unsigned DIGENTRY MITraceSize( void )
 
 void DIGENTRY MITraceInit( mad_trace_data *td, mad_registers const *mr )
 {
+    td = td; mr = mr;
+
     /* nothing to do */
 }
 
@@ -116,6 +118,8 @@ mad_status DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, ma
     addr_off            new;
     int                 base;
 
+    td = td;
+
     dc = DisasmControl( dd, in );
     out->mips = in->mips;
     if( (dc & MDC_TAKEN_MASK) == MDC_TAKEN_NOT ) {
@@ -166,6 +170,8 @@ mad_status DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, ma
 
 void DIGENTRY MITraceFini( mad_trace_data *td )
 {
+    td = td;
+
     /* nothing to do */
 }
 

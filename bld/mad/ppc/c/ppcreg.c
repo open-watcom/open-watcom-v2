@@ -37,6 +37,7 @@
 #include "madregs.h"
 
 #define BIT_OFF( who ) (offsetof( mad_registers, ppc.who ) * BITS_PER_BYTE)
+#define IS_FP_BIT(x)   (x >= BIT_OFF(f0) && x < BIT_OFF(f31) + 64)
 
 /* Macros to get at GP/FP registers based on their number; useful in loops */
 #define TRANS_GPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.r0.u._32[I64LO32])) + (2 * idx)))
@@ -86,8 +87,8 @@ static const sublist_data IntRegSubData[] = {
     { "w1", 32, PPCT_WORD },
 };
 
-#define sublist( name, type, reg_set, base, start, len ) \
-    { { NAME_##name,                \
+#define sublist( id, type, reg_set, base, start, len ) \
+    { { NAME_##id,                  \
         PPCT_##type,                \
         BIT_OFF( base ) + start,    \
         len,                        \
@@ -361,6 +362,8 @@ unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, unsigned ma
 
 unsigned        DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 {
+    rsd = rsd;
+
     return( 0 );
 }
 
@@ -470,8 +473,9 @@ mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value )
 {
-    return( rsd->get_piece( piece, descript, max_descript, reg,
-                        disp_type, max_value ) );
+    mr = mr;
+
+    return( rsd->get_piece( piece, descript, max_descript, reg, disp_type, max_value ) );
 }
 
 static const mad_modify_list    WordReg = { NULL, PPCT_H_WORD, MAD_MSTR_NIL };
@@ -480,6 +484,8 @@ static const mad_modify_list    FltReg = { NULL, PPCT_H_DOUBLE, MAD_MSTR_NIL };
 
 mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, unsigned *num_possible_p )
 {
+    rsd = rsd;
+
     *num_possible_p = 1;
     switch( ri->type ) {
     case PPCT_H_DOUBLE:
@@ -503,6 +509,8 @@ mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_in
     unsigned_8  *p_cur;
     unsigned    mask;
     unsigned    size;
+
+    rsd = rsd;
 
     if( ri->bit_start == BIT_OFF( iar ) ) {
         new_ip = old->ppc.iar;
@@ -540,7 +548,7 @@ mad_status      DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, mad_registers
         a->mach.offset = mr->ppc.iar.u._32[I64LO32];
         return( MS_OK );
     }
-    if( bit_start >= BIT_OFF( f0 ) && bit_start < (BIT_OFF( f31 ) + 64) ) {
+    if( IS_FP_BIT( bit_start ) ) {
         return( MS_FAIL );
     }
     p = (unsigned_64 *)((unsigned_8 *)mr + (bit_start / BITS_PER_BYTE));
@@ -645,6 +653,8 @@ unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers con
     unsigned    len;
     char const  *p;
 
+    af = af; mr = mr;
+
     switch( sr ) {
     case MSR_IP:
         idx = IDX_iar;
@@ -707,12 +717,15 @@ const mad_reg_info *DIGENTRY MIRegFromContextItem( context_item ci )
 
 void            DIGENTRY MIRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
+    mr = mr; flags = flags; bit_start = bit_start; bit_size = bit_size;
 }
 
 void            DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     unsigned    i;
     unsigned    bit_end;
+
+    mr = mr; flags = flags;
 
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \

@@ -41,6 +41,8 @@ unsigned        DIGENTRY MITraceSize( void )
 
 void            DIGENTRY MITraceInit( mad_trace_data *td, mad_registers const *mr )
 {
+    td = td; mr = mr;
+
     /* nothing to do */
 }
 
@@ -92,11 +94,15 @@ mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, ma
 
 mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, mad_registers const *in, mad_registers *out )
 {
+    td = td; dd = dd; in = in; out = out;
+
     return( MS_UNSUPPORTED );
 }
 
 void            DIGENTRY MITraceFini( mad_trace_data *td )
 {
+    td = td;
+
     /* nothing to do */
 }
 

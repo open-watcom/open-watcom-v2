@@ -37,10 +37,11 @@
 #include "madregs.h"
 
 #define BIT_OFF( who ) (offsetof( mad_registers, mips.who ) * BITS_PER_BYTE)
+#define IS_FP_BIT(x)   (x >= BIT_OFF(f0) && x < BIT_OFF(f31) + 64)
 
 /* Macros to get at GP/FP registers based on their number; useful in loops */
-#define TRANS_GPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.r0.u._32[I64LO32])) + (2 * idx)))
-#define TRANS_GPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr.r0.u._32[I64HI32])) + (2 * idx)))
+#define TRANS_GPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.u0.r0.u._32[I64LO32])) + (2 * idx)))
+#define TRANS_GPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr.u0.r0.u._32[I64HI32])) + (2 * idx)))
 #define TRANS_FPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.f0.u64.u._32[I64LO32])) + (2 * idx)))
 #define TRANS_FPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr.f0.u64.u._32[I64HI32])) + (2 * idx)))
 
@@ -271,6 +272,8 @@ mad_status DIGENTRY MIRegistersHost( mad_registers *mr )
     CONV_BE_32( mr->mips.hi );
     CONV_BE_32( mr->mips.fpcsr );
     CONV_BE_32( mr->mips.fpivr );
+#else
+    mr = mr;
 #endif
     return( MS_OK );
 }
@@ -308,6 +311,8 @@ mad_status DIGENTRY MIRegistersTarget( mad_registers *mr )
     CONV_BE_32( mr->mips.hi );
     CONV_BE_32( mr->mips.fpcsr );
     CONV_BE_32( mr->mips.fpivr );
+#else
+    mr = mr;
 #endif
     return( MS_OK );
 }
@@ -370,6 +375,8 @@ unsigned DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, unsigned max, char
 
 unsigned DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 {
+    rsd = rsd;
+
     return( 0 );
 }
 
@@ -492,8 +499,9 @@ mad_status DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                                 mad_type_handle *disp_type,
                                 unsigned *max_value )
 {
-    return( rsd->get_piece( piece, descript, max_descript, reg,
-                        disp_type, max_value ) );
+    mr = mr;
+
+    return( rsd->get_piece( piece, descript, max_descript, reg, disp_type, max_value ) );
 }
 
 static const mad_modify_list    WordReg = { NULL, MIPST_WORD, MAD_MSTR_NIL };
@@ -502,6 +510,8 @@ static const mad_modify_list    FltReg = { NULL, MIPST_DOUBLE, MAD_MSTR_NIL };
 
 mad_status DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, unsigned *num_possible_p )
 {
+    rsd = rsd;
+
     *num_possible_p = 1;
     switch( ri->type ) {
     case MIPST_DOUBLE:
@@ -525,6 +535,8 @@ mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_in
     unsigned_8  *p_cur;
     unsigned    mask;
     unsigned    size;
+
+    rsd = rsd;
 
     if( ri->bit_start == BIT_OFF( pc ) ) {
         new_ip = old->mips.pc;
@@ -562,7 +574,7 @@ mad_status DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, mad_registers cons
         a->mach.offset = mr->mips.pc.u._32[I64LO32];
         return( MS_OK );
     }
-    if( bit_start >= BIT_OFF( f0 ) && bit_start < (BIT_OFF( f31 ) + 64) ) {
+    if( IS_FP_BIT( bit_start ) ) {
         return( MS_FAIL );
     }
     p = (unsigned_64 *)((unsigned_8 *)mr + (bit_start / BITS_PER_BYTE));
@@ -673,6 +685,8 @@ unsigned DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr,
     unsigned    len;
     char const  *p;
 
+    mr = mr; af = af;
+
     switch( sr ) {
     case MSR_IP:
         idx = IDX_pc;
@@ -726,12 +740,15 @@ const mad_reg_info *DIGENTRY MIRegFromContextItem( context_item ci )
 
 void DIGENTRY MIRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
+    mr = mr; flags = flags; bit_start = bit_start; bit_size = bit_size;
 }
 
 void DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     unsigned    i;
     unsigned    bit_end;
+
+    mr = mr; flags = flags;
 
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \

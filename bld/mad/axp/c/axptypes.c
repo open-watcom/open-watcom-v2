@@ -118,6 +118,8 @@ void            DIGENTRY MITypeInfo( mad_type_handle th, mad_type_info *ti )
 
 mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *ap )
 {
+    af = af; mr = mr; ap = ap;
+
     if( tk & MAS_IO ) {
         return( MAD_NIL_TYPE_HANDLE );
     }
@@ -262,5 +264,7 @@ mad_type_handle DIGENTRY MITypeForDIPType( const type_info *ti )
 
 mad_status      DIGENTRY MITypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
 {
+    seg = seg;
+
     return( DoConvert( in_t, in_d, out_t, out_d ) );
 }

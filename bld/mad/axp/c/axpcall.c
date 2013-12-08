@@ -59,6 +59,8 @@ mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address
 
 const mad_reg_info      *DIGENTRY MICallReturnReg( mad_string call, address rtn )
 {
+    call = call; rtn = rtn;
+
     return( &RegList[IDX_v0].info );
 }
 
@@ -68,6 +70,8 @@ const mad_reg_info      **DIGENTRY MICallParmRegList( mad_string call, address r
         &RegList[IDX_a0].info, &RegList[IDX_a1].info, &RegList[IDX_a2].info,
         &RegList[IDX_a3].info, &RegList[IDX_a4].info, &RegList[IDX_a5].info,
         NULL };
+
+    call = call; rtn = rtn;
 
     return( list );
 }
@@ -115,6 +119,8 @@ mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
     addr_off            prev_fp_off;
     addr_off            frame_size;
     addr_off            frame_start;
+
+    return_disp = return_disp;
 
     start = start;
     rtn_characteristics = rtn_characteristics;

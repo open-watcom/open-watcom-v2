@@ -209,6 +209,8 @@ mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mt
 {
     unsigned    i;
 
+    radix = radix;
+
     switch( mti->b.handler_code ) {
     case X86T_UNKNOWN:
     case X86T_F10EMPTY:
