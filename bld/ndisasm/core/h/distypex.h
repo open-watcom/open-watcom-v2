@@ -77,21 +77,21 @@ typedef enum {
 #if DISCPU & DISCPU_axp
     DI_AXP_FIRST,
     DI_AXP_SKIPBACK = DI_AXP_FIRST - 1,
-    #define inspick( idx, name, opcode, mask, handler ) DI_AXP_##idx,
+    #define inspick( id, name, opcode, mask, handler ) DI_AXP_##id,
     #include "insaxp.h"
     #undef inspick
 #endif
 #if DISCPU & DISCPU_ppc
     DI_PPC_FIRST,
     DI_PPC_SKIPBACK = DI_PPC_FIRST - 1,
-    #define inspick( idx, name, opcode, mask, handler ) DI_PPC_##idx,
+    #define inspick( id, name, opcode, mask, handler ) DI_PPC_##id,
     #include "insppc.h"
     #undef inspick
 #endif
 #if DISCPU & DISCPU_x86
     DI_X86_FIRST,
     DI_X86_SKIPBACK = DI_X86_FIRST - 1,
-    #define inspick( idx, name, opcode, mask, handler ) DI_X86_##idx,
+    #define inspick( id, name, opcode, mask, handler ) DI_X86_##id,
     #include "insx86.h"
     #include "insx86e1.h"
     #include "insx86e2.h"
@@ -102,28 +102,28 @@ typedef enum {
 #if DISCPU & DISCPU_x64
     DI_X64_FIRST,
     DI_X64_SKIPBACK = DI_X64_FIRST - 1,
-    #define inspick( idx, name, opcode, mask, handler ) DI_X64_##idx,
+    #define inspick( id, name, opcode, mask, handler ) DI_X64_##id,
     #include "insx64.h"
     #undef inspick
 #endif
 #if DISCPU & DISCPU_jvm
     DI_JVM_FIRST,
     DI_JVM_SKIPBACK = DI_JVM_FIRST - 1,
-    #define inspick( idx, name, opcode, mask, handler ) DI_JVM_##idx,
+    #define inspick( id, name, opcode, mask, handler ) DI_JVM_##id,
     #include "insjvm.h"
     #undef inspick
 #endif
 #if DISCPU & DISCPU_sparc
     DI_SPARC_FIRST,
     DI_SPARC_SKIPBACK = DI_SPARC_FIRST - 1,
-    #define inspick( idx, name, opcode, mask, handler ) DI_SPARC_##idx,
+    #define inspick( id, name, opcode, mask, handler ) DI_SPARC_##id,
     #include "inssparc.h"
     #undef inspick
 #endif
 #if DISCPU & DISCPU_mips
     DI_MIPS_FIRST,
     DI_MIPS_SKIPBACK = DI_MIPS_FIRST - 1,
-    #define inspick( idx, name, opcode, mask, handler ) DI_MIPS_##idx,
+    #define inspick( id, name, opcode, mask, handler ) DI_MIPS_##id,
     #include "insmips.h"
     #undef inspick
 #endif
@@ -137,49 +137,49 @@ typedef enum {
 #if DISCPU & DISCPU_axp
     DR_AXP_FIRST,
     DR_AXP_SKIPBACK = DR_AXP_FIRST - 1,
-    #define regpick( idx, name ) DR_AXP_##idx,
+    #define regpick( id, name ) DR_AXP_##id,
     #include "regaxp.h"
     #undef regpick
 #endif
 #if DISCPU & DISCPU_ppc
     DR_PPC_FIRST,
     DR_PPC_SKIPBACK = DR_PPC_FIRST - 1,
-    #define regpick( idx, name ) DR_PPC_##idx,
+    #define regpick( id, name ) DR_PPC_##id,
     #include "regppc.h"
     #undef regpick
 #endif
 #if DISCPU & DISCPU_x86
     DR_X86_FIRST,
     DR_X86_SKIPBACK = DR_X86_FIRST - 1,
-    #define regpick( idx, name ) DR_X86_##idx,
+    #define regpick( id, name ) DR_X86_##id,
     #include "regx86.h"
     #undef regpick
 #endif
 #if DISCPU & DISCPU_x64
     DR_X64_FIRST,
     DR_X64_SKIPBACK = DR_X64_FIRST - 1,
-    #define regpick( idx, name ) DR_X64_##idx,
+    #define regpick( id, name ) DR_X64_##id,
     #include "regx64.h"
     #undef regpick
 #endif
 #if DISCPU & DISCPU_jvm
     DR_JVM_FIRST,
     DR_JVM_SKIPBACK = DR_JVM_FIRST - 1,
-    #define regpick( idx, name ) DR_JVM_##idx,
+    #define regpick( id, name ) DR_JVM_##id,
     #include "regjvm.h"
     #undef regpick
 #endif
 #if DISCPU & DISCPU_sparc
     DR_SPARC_FIRST,
     DR_SPARC_SKIPBACK = DR_SPARC_FIRST - 1,
-    #define regpick( idx, name ) DR_SPARC_##idx,
+    #define regpick( id, name ) DR_SPARC_##id,
     #include "regsparc.h"
     #undef regpick
 #endif
 #if DISCPU & DISCPU_mips
     DR_MIPS_FIRST,
     DR_MIPS_SKIPBACK = DR_MIPS_FIRST - 1,
-    #define regpick( idx, name ) DR_MIPS_##idx,
+    #define regpick( id, name ) DR_MIPS_##id,
     #include "regmips.h"
     #undef regpick
 #endif
@@ -193,49 +193,49 @@ typedef enum {
 #if DISCPU & DISCPU_axp
     DRT_AXP_FIRST,
     DRT_AXP_SKIPBACK = DRT_AXP_FIRST - 1,
-    #define refpick( idx, name ) DRT_AXP_##idx,
+    #define refpick( id, name ) DRT_AXP_##id,
     #include "refaxp.h"
     #undef refpick
 #endif
 #if DISCPU & DISCPU_ppc
     DRT_PPC_FIRST,
     DRT_PPC_SKIPBACK = DRT_PPC_FIRST - 1,
-    #define refpick( idx, name ) DRT_PPC_##idx,
+    #define refpick( id, name ) DRT_PPC_##id,
     #include "refppc.h"
     #undef refpick
 #endif
 #if DISCPU & DISCPU_x86
     DRT_X86_FIRST,
     DRT_X86_SKIPBACK = DRT_X86_FIRST - 1,
-    #define refpick( idx, name ) DRT_X86_##idx,
+    #define refpick( id, name ) DRT_X86_##id,
     #include "refx86.h"
     #undef refpick
 #endif
 #if DISCPU & DISCPU_x64
     DRT_X64_FIRST,
     DRT_X64_SKIPBACK = DRT_X64_FIRST - 1,
-    #define refpick( idx, name ) DRT_X64_##idx,
+    #define refpick( id, name ) DRT_X64_##id,
     #include "refx64.h"
     #undef refpick
 #endif
 #if DISCPU & DISCPU_jvm
     DRT_JVM_FIRST,
     DRT_JVM_SKIPBACK = DRT_JVM_FIRST - 1,
-    #define refpick( idx, name ) DRT_JVM_##idx,
+    #define refpick( id, name ) DRT_JVM_##id,
     #include "refjvm.h"
     #undef refpick
 #endif
 #if DISCPU & DISCPU_sparc
     DRT_SPARC_FIRST,
     DRT_SPARC_SKIPBACK = DRT_SPARC_FIRST - 1,
-    #define refpick( idx, name ) DRT_SPARC_##idx,
+    #define refpick( id, name ) DRT_SPARC_##id,
     #include "refsparc.h"
     #undef refpick
 #endif
 #if DISCPU & DISCPU_mips
     DRT_MIPS_FIRST,
     DRT_MIPS_SKIPBACK = DRT_MIPS_FIRST - 1,
-    #define refpick( idx, name ) DRT_MIPS_##idx,
+    #define refpick( id, name ) DRT_MIPS_##id,
     #include "refmips.h"
     #undef refpick
 #endif
