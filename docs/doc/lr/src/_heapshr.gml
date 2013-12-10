@@ -70,10 +70,7 @@ occurred.
 void main()
   {
     _heapshrink();
-.if '&machsys' eq 'PP' .do begin
-    system( "cd \\usr\\fred" );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     system( "cd /home/fred" );
 .do end
 .el .do begin

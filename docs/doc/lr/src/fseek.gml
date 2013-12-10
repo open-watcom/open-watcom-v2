@@ -59,10 +59,6 @@ in a subsequent call to &func with the
 parameter set to
 .kw SEEK_SET
 .ct .li .
-.if '&machsys' eq 'PP' .do begin
-.np
-The requested file position may NOT be beyond the end of the file.
-.do end
 .desc end
 .return begin
 The &func function returns zero if successful, non-zero otherwise.

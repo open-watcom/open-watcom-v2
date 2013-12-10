@@ -45,18 +45,6 @@ or
 as appropriate.
 .do end
 .*
-.el .if '&machsys' eq 'PP' .do begin
-.kw dirent
-.ct .li .
-.blkcode begin
-typedef struct dirent {
-  void*   d_handle;             /* readdir handle */
-  char    d_name[maxNameLength + 1]; /* file's name */
-  char    d_attr;               /* file's attribute */
-} DIR;
-.blkcode end
-.do end
-.*
 .el .do begin
 .kw dirent
 .ct .li .

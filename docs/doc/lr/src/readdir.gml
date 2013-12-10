@@ -129,11 +129,7 @@ does not refer to an open directory stream.
 .exmp begin
 .blktext begin
 To get a list of files contained in the directory
-.if '&machsys' eq 'PP' .do begin
-.filename \\foo\fred
-of your computer:
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .filename /home/fred
 of your node:
 .do end
@@ -169,10 +165,7 @@ void main()
     fdate_t *f_date;
 .do end
 .exmp break
-.if '&machsys' eq 'PP' .do begin
-    dirp = opendir( "\\\\foo\\fred" );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     dirp = opendir( "/home/fred" );
 .do end
 .el .do begin

@@ -1,5 +1,5 @@
 .func utime _utime _wutime _uutime
-.if '&machsys' eq 'PP' or '&machsys' eq 'QNX' .do begin
+.if ''&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
 #include <utime.h>
 .do end
@@ -40,10 +40,6 @@ or directory
 identified by
 .arg path
 .ct .li .
-.if '&machsys' eq 'PP' .do begin
-The volume on which the file resides must support access and
-modification times.
-.do end
 .if &'length(&_func.) ne 0 .do begin
 .np
 The &_func function is identical to &func..
@@ -104,7 +100,6 @@ The &func function returns zero when the time was successfully recorded.
 A value of &minus.1 indicates an error occurred.
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -153,7 +148,6 @@ does not have the appropriate privileges.
 The named file resides on a read-only file system.
 .do end
 .endterm
-.do end
 .error end
 .exmp begin
 #include <stdio.h>

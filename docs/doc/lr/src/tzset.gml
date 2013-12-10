@@ -4,12 +4,7 @@ void tzset( void );
 .funcend
 .desc begin
 The &func function sets the
-.if '&machsys' eq 'PP' .do begin
-internal
-.do end
-.el .do begin
 global
-.do end
 variables
 .kw daylight
 .ct,
@@ -22,7 +17,6 @@ environment variable.
 The section
 .us The TZ Environment Variable
 describes how to set this variable.
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .np
 Under Win32, &func also uses operating system supplied time zone
@@ -31,15 +25,9 @@ The
 .kw TZ
 environment variable can be used to override this information.
 .do end
-.do end
 .np
 The
-.if '&machsys' eq 'PP' .do begin
-internal
-.do end
-.el .do begin
 global
-.do end
 variables have the following values after &func is executed:
 .begterm 12
 .term .mono daylight

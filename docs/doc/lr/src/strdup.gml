@@ -72,7 +72,6 @@ Use &_func for ANSI/ISO naming conventions.
 .im farparm
 .im widefunc
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns the pointer to the new copy of the string

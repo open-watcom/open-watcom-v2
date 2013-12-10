@@ -53,7 +53,6 @@ function to copy objects that overlap.
 .im farfunc
 .im widefunc
 .im mbsfunc
-.im unifunc
 .desc end
 .return begin
 The value of

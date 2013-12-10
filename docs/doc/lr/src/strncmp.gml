@@ -57,7 +57,6 @@ to the string pointed to by
 .im farparm
 .im widefunc
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns an integer less than, equal to, or greater

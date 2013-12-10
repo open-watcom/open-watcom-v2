@@ -26,11 +26,7 @@ unique wide-character string for the file name.
 The &ufunc Unicode function is identical to &func except that it
 generates a unique Unicode string for the file name.
 .do end
-.if '&machsys' eq 'PP' .do begin
-The string that is generated is unique across the entire system.
-An internal buffer is allocated and used to construct the filename.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .np
 If the
 .kw TMPDIR

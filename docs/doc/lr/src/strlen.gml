@@ -38,7 +38,6 @@ The &func function computes the length of the string pointed to by
 .im farparm
 .im widefunc
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns the number of characters that precede the

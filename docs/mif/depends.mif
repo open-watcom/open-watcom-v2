@@ -1225,7 +1225,6 @@ objs_lr2 = &
 ../doc/lr/src/_rotr.gml &
 ../doc/lr/src/_searche.gml &
 ../doc/lr/src/_setmath.gml &
-../doc/lr/src/_smalloc.gml &
 ../doc/lr/src/_snprntf.gml &
 ../doc/lr/src/_splitp2.gml &
 ../doc/lr/src/_splitpa.gml &
@@ -1914,7 +1913,6 @@ objs_lr2 = &
 ../doc/lr/src/umask.gml &
 ../doc/lr/src/ungetc.gml &
 ../doc/lr/src/ungetch.gml &
-../doc/lr/src/unifunc.gml &
 ../doc/lr/src/unlink.gml &
 ../doc/lr/src/unlock.gml &
 ../doc/lr/src/utime.gml &

@@ -63,7 +63,6 @@ If the value of
 is 16, the characters "0x" or "0X" may optionally precede the sequence
 of letters and digits.
 .im widefunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns the converted value.

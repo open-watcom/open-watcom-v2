@@ -81,7 +81,6 @@ is set to indicate the error, and the current working directory
 remains unchanged.
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -111,7 +110,6 @@ A component of
 is not a directory.
 .do end
 .endterm
-.do end
 .error end
 .see begin
 .seelist &function. chdir chmod _dos_setdrive getcwd mkdir

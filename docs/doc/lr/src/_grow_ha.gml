@@ -47,7 +47,6 @@ and
 .us stderr
 files are included in the count.
 .if '&machsys' ne 'QNX' .do begin
-.if '&machsys' ne 'PP' .do begin
 Also include
 .ix 'stdaux'
 .us stdaux
@@ -60,7 +59,6 @@ The
 and
 .us stdprn
 files are not available for Win32.
-.do end
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .note

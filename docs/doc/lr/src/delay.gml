@@ -1,9 +1,6 @@
 .func delay
 #include <i86.h>
-.if '&machsys' eq 'PP' .do begin
-unsigned int delay( unsigned int milliseconds );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 unsigned int delay( unsigned int milliseconds );
 .do end
 .el .do begin
@@ -28,12 +25,7 @@ The &func function suspends execution by the specified number of
 .do end
 .desc end
 .return begin
-.if '&machsys' eq 'PP' .do begin
-The &func function returns zero if the full time specified was
-completed; otherwise it returns the number of milliseconds unslept if
-interrupted by a signal.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 The &func function returns zero if the full time specified was
 completed; otherwise it returns the number of milliseconds unslept if
 interrupted by a signal.

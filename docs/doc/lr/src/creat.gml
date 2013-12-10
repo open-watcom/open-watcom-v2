@@ -82,7 +82,6 @@ When an error occurs while opening the file, &minus.1 is returned, and
 is set to indicate the error.
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -157,7 +156,6 @@ does not exist or
 is an empty string.
 .do end
 .endterm
-.do end
 .error end
 .see begin
 .im seeioos creat
@@ -165,10 +163,7 @@ is an empty string.
 .exmp begin
 #include <sys/types.h>
 #include <sys/stat.h>
-.if '&machsys' eq 'PP' .do begin
-#include <fcntl.h>
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 #include <fcntl.h>
 .do end
 .el .do begin
@@ -179,11 +174,7 @@ void main()
   {
     int &fd;
 .exmp break
-.if '&machsys' eq 'PP' .do begin
-    &fd = creat( "file",
-                 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     &fd = creat( "file",
                  S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
 .do end

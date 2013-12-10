@@ -47,7 +47,6 @@ The terminating null character is considered to be part of the string.
 .im farfunc
 .im widefunc
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns a pointer to the located character,

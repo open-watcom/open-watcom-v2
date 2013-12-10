@@ -107,7 +107,6 @@ By comparing the "end" pointer with
 .ct , it can be determined how much of the string, if any, was scanned by
 the &func function.
 .im widefunc
-.im unifunc
 .desc end
 .*
 .return begin

@@ -81,12 +81,7 @@ second or later position to indicate that the file is (or must be) a
 binary file (an ANSI requirement for portability to systems that make
 a distinction between text and binary files).
 .endnote
-.if '&machsys' eq 'PP' .do begin
-.np
-Under PenPoint, there is no difference between text files and binary
-files.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .np
 Under QNX, there is no difference between text files and binary files.
 .do end
@@ -215,10 +210,7 @@ void main()
     }
 }
 .exmp end
-.if '&machsys' eq 'PP' .do begin
-.class ANSI
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .class ANSI
 .do end
 .el .do begin

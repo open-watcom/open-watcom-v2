@@ -9,148 +9,7 @@ proper declarations for the functions and for the number and types of
 arguments used with them. Constant values used in conjunction with the
 functions are also declared. The files can be included multiple times
 and in any order.
-.if '&machsys' eq 'PP' .do begin
-.np
-When the &company C compiler option "za" is used ("ANSI conformance"),
-the macro
-.kw NO_EXT_KEYS
-is predefined. The "za" option is used when you are creating an
-application that must conform to a certain standard, whether it be ANSI
-or POSIX. The effect on the inclusion of ANSI- and POSIX-defined header
-files is that certain portions of the header files are omitted. For ANSI
-header files, these are the portions that go beyond the ANSI standard.
-For POSIX header files, these are the portions that go beyond the POSIX
-standard. Feature test macros may then be defined to select those
-portions which are omitted.
-.if &unifnc eq 1 .do begin
-Three feature test macros may be defined.
-.do end
-.el .do begin
-Two feature test macros may be defined.
-.do end
-.begterm 17
-.term _POSIX_SOURCE
-Include those portions of the ANSI header files which relate to the
-POSIX standard
-.us (IEEE Standard Portable Operating System Interface for Computer
-.us Environments - POSIX 1003.1)
-.term _PP_SOURCE
-Include those portions of the ANSI and POSIX header files which relate
-to the POSIX standard and all extensions provided by the PenPoint system.
-In essence, the definition of
-.kw _PP_SOURCE
-before any header files are included is equivalent to omitting the
-specification of the "za" compiler option.
-Note that when
-.kw _PP_SOURCE
-is defined, it encompasses
-.kw _POSIX_SOURCE
-so it is not necessary to define
-.kw _POSIX_SOURCE
-also.
-.if &unifnc eq 1 .do begin
-.term __UNICODE__
-Select PenPoint's Unicode variation of the "U..." function macros.
-Certain header files define a set of macros of the form
-"Ufunction".
-If
-.kw __UNICODE__
-is defined then the 16-bit Unicode version of "Ufunction" is selected;
-otherwise the 8-bit non-Unicode version of "Ufunction" is selected.
-The purpose of this feature is to provide portability of applications
-between the 8-bit character set supported by PenPoint 1.0 and the
-16-bit Unicode character set supported by PenPoint 2.0.
-.do end
-.endterm
-.np
-Feature test macros may be defined on the command line or in the
-source file before any header files are included.
-The latter is illustrated in the following example in which an ANSI
-and POSIX conforming application is being developed.
-.millust begin
-    #define _POSIX_SOURCE
-    #include <limits.h>
-    #include <stdio.h>
-      .
-      .
-      .
-    #if defined(_PP_SOURCE)
-      #include "non_POSIX_header1.h"
-      #include "non_POSIX_header2.h"
-      #include "non_POSIX_header3.h"
-    #endif
-.millust end
-.pc
-The source code is then compiled using the "za" option.
-.if &unifnc eq 1 .do begin
-.np
-The use of the
-.kw __UNICODE__
-feature test macro is illustrated in the following examples.
-.millust begin
-Example:
-    #include <string.h>
-
-    Ustrcpy( dst, src ); /* 8-bit strcpy is selected */
-
-Example:
-    #define __UNICODE__
-    #include <string.h>
-
-    Ustrcpy( dst, src ); /* 16-bit _ustrcpy is selected */
-.millust end
-.do end
-.np
-The following ANSI header files are affected by the
-.kw _POSIX_SOURCE
-feature test macro.
-.millust begin
-    limits.h
-    stdlib.h
-    time.h
-.millust end
-.np
-The following ANSI and POSIX header files are affected by the
-.kw _PP_SOURCE
-feature test macro.
-.millust begin
-    assert.h             (ANSI)
-    ctype.h              (ANSI)
-    dirent.h             (POSIX)
-    env.h                (POSIX)
-    fcntl.h              (POSIX)
-    float.h              (ANSI)
-    limits.h             (ANSI)
-    math.h               (ANSI)
-    sys&pc.stat.h           (POSIX)
-    stdio.h              (ANSI)
-    stdlib.h             (ANSI)
-    string.h             (ANSI)
-    time.h               (ANSI)
-    unistd.h             (POSIX)
-    utime.h              (POSIX)
-.millust end
-.if &unifnc eq 1 .do begin
-.np
-The following header files are affected by the
-.kw __UNICODE__
-feature test macro.
-.millust begin
-    assert.h
-    ctype.h
-    dirent.h
-    env.h
-    fcntl.h
-    stdio.h
-    stdlib.h
-    string.h
-    time.h
-    unistd.h
-    utime.h
-.millust end
-.do end
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .np
 When the &company C compiler option "za" is used ("ANSI conformance"),
 the macro
@@ -282,7 +141,7 @@ This header file declares functions related to directories and the type
 which describes an entry in a directory.
 .do end
 .*------------------------------
-.if '&machsys' eq 'PP' or '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .df dirent.h
 This POSIX header file declares functions related to directories and
 the type
@@ -363,22 +222,14 @@ declaration of the floating-point exception codes.
 This header file declares the pattern matching function
 .kw fnmatch
 .*------------------------------
-.if '&machsys' ne 'PP' .do begin
 .df graph.h
 This header file contains structure definitions and function
 declarations for the &company C Graphics library functions.
-.do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
 .df grp.h
 This POSIX header file contains structure definitions and function
 declarations for group operations.
-.do end
-.*------------------------------
-.if '&machsys' eq 'PP' .do begin
-.df i86.h
-This header file contains structure definitions and function
-declarations for interacting with the Intel architecture.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
@@ -627,7 +478,7 @@ defines the structure
 .kw struct tm
 .ct .li .
 .*------------------------------
-.if '&machsys' eq 'PP' or '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .df unistd.h
 This POSIX header file declares functions that perform input/output
 operations at the operating system level. These functions use file
@@ -644,7 +495,7 @@ This header file contains definitions that aid in porting traditional
 UNIX code.
 .do end
 .*------------------------------
-.if '&machsys' eq 'PP' or '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .df utime.h
 This POSIX header file declares the
 .kw utime
@@ -798,12 +649,10 @@ This header file contains structure definitions for load module
 format.
 .do end
 .*------------------------------
-.if '&machsys' ne 'PP' .do begin
 .df sys&pc.locking.h
 This header file contains the manifest constants used by the
 .kw locking
 function.
-.do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
 .df sys&pc.magic.h
@@ -941,14 +790,12 @@ file or device
 This header file contains standard system message definitions.
 .do end
 .*------------------------------
-.if '&machsys' ne 'PP' .do begin
 .df sys&pc.timeb.h
 This header file describes the
 .kw timeb
 structure used in conjunction with the
 .kw ftime
 function.
-.do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
 .df sys&pc.timers.h
@@ -983,7 +830,6 @@ This header file contains declarations related to the readv() and
 writev() functions.
 .do end
 .*------------------------------
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .df sys&pc.utime.h
 This POSIX header file contains a declaration for the
@@ -991,7 +837,6 @@ This POSIX header file contains a declaration for the
 function and for the structured type
 .kw utimbuf
 used by it.
-.do end
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin

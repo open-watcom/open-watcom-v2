@@ -29,13 +29,11 @@ The path indicated by
 .arg dirname
 can be either relative to the current working directory or it can be
 an absolute path name.
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 As an extension to POSIX, the last part of
 .arg dirname
 can contain the characters '?' and '*' for matching multiple files
 within a directory.
-.do end
 .do end
 .im dirent
 .np
@@ -129,7 +127,6 @@ is not a valid pathname, or if there are no files matching
 .do end
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -155,7 +152,6 @@ A component of
 is not a directory.
 .do end
 .endterm
-.do end
 .error end
 .see begin
 .im seeiodir opendir
@@ -199,10 +195,7 @@ void main()
     fdate_t *f_date;
 .do end
 .exmp break
-.if '&machsys' eq 'PP' .do begin
-    dirp = opendir( "\\\\foo\\fred" );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     dirp = opendir( "/home/fred" );
 .do end
 .el .do begin

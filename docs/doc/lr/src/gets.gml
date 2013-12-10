@@ -55,13 +55,11 @@ will be destroyed if a new-line character is not read from the input stream
 before the end of the array
 .arg buf
 is reached.
-.if '&machsys' ne 'PP' .do begin
 .np
 A common programming error is to assume the presence of a new-line
 character in every string that is read into the array.
 A new-line character may not appear as the last character in a file,
 just before end-of-file.
-.do end
 .desc end
 .return begin
 The &func function returns

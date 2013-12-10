@@ -1264,7 +1264,6 @@
 .fnm mbsinit                    sisinit.gml     DOS       WIN32
 .fnm sisinit                    sisinit.gml     DOS       WIN32
 .fnc sleep                      sleep.gml       DOS QNX W WIN32
-.fnc _smalloc                   _smalloc.gml
 .fnc _snprintf                  _snprntf.gml    DOS QNX W WIN32
 .fnc _snwprintf                 _snprntf.gml    DOS QNX W WIN32
 .fnc snprintf                   snprintf.gml    DOS QNX W WIN32

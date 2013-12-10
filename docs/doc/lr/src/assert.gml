@@ -43,15 +43,6 @@ The given
 .arg expression
 should be chosen so that it is true when the program is functioning
 as intended.
-.if '&machsys' eq 'PP' .do begin
-Two variations of the &func macro are available.
-When the "za" &company C compiler option is specified, the ANSI C
-version of &func is obtained.
-When the "za" option is not specified, the non-standard PenPoint
-version of &func is obtained.
-.np
-.us ANSI C:
-.do end
 After the program has been debugged, the special "no debug" identifier
 .kw NDEBUG
 can be used to remove &func calls from the program when it is
@@ -64,21 +55,6 @@ command line option or with a
 .id #define
 directive, the C preprocessor ignores all &func calls in the program
 source.
-.if '&machsys' eq 'PP' .do begin
-.np
-.us PenPoint:
-While the program is being debugged, the special "debug" identifier
-.kw DEBUG
-can be used to include &func calls in the program when it is compiled.
-If
-.kw DEBUG
-is defined (with any value) with a
-.id -d
-command line option or with a
-.id #define
-directive, the C preprocessor includes all &func calls in the program
-source.
-.do end
 .desc end
 .return begin
 The &func macro does not return a value.

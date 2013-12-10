@@ -6,9 +6,6 @@ void *malloc( size_t size );
 .func end
 .desc begin
 The &func function allocates space
-.if '&machsys' eq 'PP' .do begin
-from the process heap
-.do end
 for an object of
 .arg size
 bytes.

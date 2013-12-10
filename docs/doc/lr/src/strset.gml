@@ -50,7 +50,6 @@ Use &_func for ANSI naming conventions.
 .im farfunc
 .im widefunc
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The address of the original string

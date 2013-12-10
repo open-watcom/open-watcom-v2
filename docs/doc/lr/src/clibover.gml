@@ -502,12 +502,10 @@ between upper and lowercase.
 These functions manipulate blocks of memory.
 In each case, the address of the memory block and its size is passed
 to the function.
-.if '&machsys' ne 'PP' .do begin
 The functions that begin with "_f" accept
 .id far
 pointers as their arguments allowing manipulation of any memory location
 regardless of which memory model your program has been compiled for.
-.do end
 .fdbeg
 .fd *fun="_fmemccpy" copy far memory block up to a certain character
 .fd *fun="_fmemchr" search far memory block for a character value
@@ -553,12 +551,10 @@ is an array of characters (with type
 .mono ('\0').
 Functions are passed only the address of the string since the size
 can be determined by searching for the terminating character.
-.if '&machsys' ne 'PP' .do begin
 The functions that begin with "_f" accept
 .id far
 pointers as their arguments allowing manipulation of any memory location
 regardless of which memory model your program has been compiled for.
-.do end
 .if &unifnc eq 1 .do begin
 .np
 A set of functions that manipulate strings of Unicode characters is
@@ -657,12 +653,10 @@ is an array of wide characters (with type
 .mono (L'\0').
 Functions are passed only the address of the string since the size
 can be determined by searching for the terminating character.
-.if '&machsys' ne 'PP' .do begin
 The functions that begin with "_f" accept
 .id far
 pointers as their arguments allowing manipulation of any memory location
 regardless of which memory model your program has been compiled for.
-.do end
 .fdbeg
 .fd *fun="_bwprintf" formatted wide character transmission to fixed-length wcsing
 :cmt. .fd *fun="_fwcscat" concatenate two far strings
@@ -747,12 +741,10 @@ is an array of wide characters (with type
 .mono (L'\0').
 Functions are passed only the address of the wide string since the
 size can be determined by searching for the terminating character.
-.if '&machsys' ne 'PP' .do begin
 The functions that begin with "_f" accept
 .id far
 pointers as their arguments allowing manipulation of any memory location
 regardless of which memory model your program has been compiled for.
-.do end
 .fdbeg
 .fd *fun="btowc" return wide-character version of single-byte character
 .fd *fun="_fmbscat" concatenate two far strings
@@ -949,7 +941,6 @@ the default data segment has a maximum size of 64K bytes.
 It may be less in a machine with insufficient memory or when other
 programs in the computer already occupy some of the memory.
 .do end
-.if '&machsys' ne 'PP' .do begin
 The
 .kw _nmalloc
 function allocates space within this area while the
@@ -1025,7 +1016,6 @@ It should be noted that the
 and
 .kw _nmalloc
 functions can both be used in either data memory model.
-.do end
 .fdbeg
 .fd *fun="alloca" allocate auto storage from stack
 .fd *fun="_bcalloc" allocate and zero memory from a based heap
@@ -1048,12 +1038,7 @@ functions can both be used in either data memory model.
 .fd *fun="_freect" return number of objects that can be allocated
 .fd *fun="halloc" allocate huge array
 .fd *fun="hfree" free huge array
-.if '&machsys' eq 'PP' .do begin
-.fd *fun="malloc" allocate a memory block
-.do end
-.el .do begin
 .fd *fun="malloc" allocate a memory block (using current memory model)
-.do end
 .fd *fun="_memavl" return amount of available memory
 .fd *fun="_memmax" return largest block of memory available
 .fd *fun="_msize" return the size of a memory block
@@ -1065,7 +1050,6 @@ functions can both be used in either data memory model.
 .fd *fun="_nrealloc" re-allocate a memory block (inside default data segment)
 .fd *fun="realloc" re-allocate a block of memory
 .fd *fun="sbrk" set allocation "break" position
-.fd *fun="_smalloc" allocate a memory block from a shared heap
 .fd *fun="stackavail" determine available amount of stack space
 .fdend
 .*======================================================================
@@ -1462,7 +1446,6 @@ signal handling, and timer operations.
 These functions deal with process creation, execution and termination,
 signal handling, and timer operations.
 .do end
-.if '&machsys' ne 'PP' .do begin
 .np
 When a new process is started, it may replace the existing process
 .begbull
@@ -1490,7 +1473,6 @@ functions
 .kw system
 is used
 .endbull
-.do end
 .np
 .fdbeg
 .fd *fun="abort" immediate termination of process, return code 3
@@ -1556,7 +1538,6 @@ is used
 .fd *fun="_wspawnvpe" create process, set environment
 .fd *fun="_wsystem" execute system command
 .fdend
-.if '&machsys' ne 'PP' .do begin
 .np
 There are eight
 .kw spawn...
@@ -1578,7 +1559,6 @@ environment variable is searched to locate the program for the process
 "e" (optional) to indicate that the
 environment variables are being passed
 .endbull
-.do end
 .*======================================================================
 .section Process Environment
 .*
@@ -2463,7 +2443,6 @@ as follows:
     SET TZ=PST8PDT
 .millust end
 .do end
-.if '&machsys' ne 'PP' .do begin
 .pc
 or (during the program execution) by using the
 .kw setenv
@@ -2498,7 +2477,6 @@ and
 .kw tzname
 (a vector of two pointers to character strings containing the
 standard and daylight time-zone names).
-.do end
 .np
 The value of the
 .kw TZ

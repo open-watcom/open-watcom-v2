@@ -115,7 +115,6 @@ The tokenization of
 is similar to that for the &func function.
 .do end
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns a pointer to the first character of a token

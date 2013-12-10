@@ -7,14 +7,12 @@ void _Exit( int status );
 .desc begin
 The &func function causes normal program termination to occur.
 .autonote
-.if '&machsys' ne 'PP' .do begin
 .note
 The functions registered by the
 .kw atexit
 or
 .kw onexit
 functions are not called.
-.do end
 .if '&machsys' eq 'QNX' .do begin
 .note
 All open file descriptors and directory streams in the calling process

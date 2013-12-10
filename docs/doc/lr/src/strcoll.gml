@@ -39,7 +39,6 @@ function when the collating sequence is selected from the
 locale.
 .im widefunc
 .im mbsfunc
-.im unifunc
 .if &'length(&ufunc.) ne 0 .do begin
 The &ufunc comparison uses the collating sequence defined by the
 Unicode character set.

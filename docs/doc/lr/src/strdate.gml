@@ -22,7 +22,6 @@ where "DD" is two digits representing the day, and
 where "YY" is two digits representing the year.
 The buffer must be at least 9 bytes long.
 .im widefunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns a pointer to the resulting text string

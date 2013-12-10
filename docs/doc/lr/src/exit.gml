@@ -14,12 +14,10 @@ function are removed.
 Finally, the return
 .arg status
 is made available to the parent process.
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 Only the low order byte of
 .arg status
 is available on DOS systems.
-.do end
 .do end
 The
 .arg status

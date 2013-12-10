@@ -1,5 +1,5 @@
 .func sleep
-.if '&machsys' eq 'PP' or '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
 unsigned int sleep( unsigned int seconds );
 .do end
@@ -72,10 +72,7 @@ void main( int argc, char *argv[] )
     sleep( seconds );
 }
 .exmp end
-.if '&machsys' eq 'PP' .do begin
-.class POSIX 1003.1
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .class POSIX 1003.1
 .do end
 .el .do begin

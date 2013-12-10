@@ -15,20 +15,10 @@ deallocates the memory block located by the argument
 which points to a memory block previously allocated through a call to
 .kw calloc
 .ct,
-.if '&machsys' eq 'PP' .do begin
-.kw malloc
-.ct,
-.kw realloc
-or
-.kw _smalloc
-.ct .li .
-.do end
-.el .do begin
 .kw malloc
 or
 .kw realloc
 .ct .li .
-.do end
 After the call, the freed block is available for allocation.
 .desc end
 .return begin

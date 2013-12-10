@@ -10,10 +10,6 @@ The &func function would be used in conjunction with the
 .kw _disable
 function to make sure that a sequence of instructions are executed
 without any intervening interrupts occurring.
-.if '&machsys' eq 'PP' .do begin
-.np
-General use of the &func function is not recommended for PenPoint.
-.do end
 .im privity
 .desc end
 .return begin

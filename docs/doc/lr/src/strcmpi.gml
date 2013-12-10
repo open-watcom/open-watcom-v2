@@ -31,7 +31,6 @@ The &func function is identical to the
 .kw stricmp
 function.
 .im widefunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns an integer less than, equal to, or greater

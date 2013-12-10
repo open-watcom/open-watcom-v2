@@ -133,10 +133,8 @@ The named file resides on a read-only file system.
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 #include <&iohdr>
-.do end
 .do end
 .exmp break
 void main( int argc, char *argv[] )

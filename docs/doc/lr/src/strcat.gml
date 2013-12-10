@@ -56,7 +56,6 @@ overwrites the null character at the end of
 .im farfunc
 .im widefunc
 .im mbsfunc
-.im unifunc
 .desc end
 .return begin
 The value of

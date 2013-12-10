@@ -22,7 +22,6 @@ where "MM" is two digits representing the minutes past the hour, and
 where "SS" is two digits representing seconds.
 The buffer must be at least 9 bytes long.
 .im widefunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns a pointer to the resulting text string

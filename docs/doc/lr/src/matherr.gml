@@ -19,11 +19,6 @@ errors can be handled by an application.
 .np
 A program may contain a user-written version of &func to take any
 appropriate action when an error is detected.
-.if '&machsys' eq 'PP' .do begin
-For PenPoint, the
-.kw _set_matherr
-function must be called to install the user-written version of &func..
-.do end
 When zero is returned, an error message will be printed upon
 .kw stderr
 and
@@ -95,11 +90,6 @@ function.
 The &func function returns zero when an error message is to be printed
 and a non-zero value otherwise.
 .return end
-.if '&machsys' eq 'PP' .do begin
-.see begin
-.seelist matherr _set_matherr
-.see end
-.do end
 .exmp begin
 #include <stdio.h>
 #include <stdlib.h>

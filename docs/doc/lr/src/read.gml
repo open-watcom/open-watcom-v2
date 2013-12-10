@@ -34,7 +34,6 @@ This file position can be determined with the
 function and can be set with the
 .kw lseek
 function.
-.if '&machsys' ne 'PP' .do begin
 .np
 When
 .kw O_BINARY
@@ -44,7 +43,6 @@ When
 is included in the access mode, the data is transmitted with the extra
 carriage return character removed before each linefeed character
 encountered in the original data.
-.do end
 .if &'length(&_func.) ne 0 .do begin
 .np
 The &_func function is identical to &func..
@@ -54,13 +52,8 @@ Use &_func for ANSI/ISO naming conventions.
 .return begin
 The &func function returns the number of bytes of data transmitted
 from the file to the
-.if '&machsys' eq 'PP' .do begin
-buffer.
-.do end
-.el .do begin
 buffer (this does not include any carriage-return characters that were
 removed during the transmission).
-.do end
 Normally, this is the number given by the
 .arg len
 argument.

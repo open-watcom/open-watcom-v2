@@ -48,10 +48,7 @@ void main( void )
     int &fd;
 .exmp break
     /* open a file for input              */
-.if '&machsys' eq 'PP' .do begin
-    &fd = open( "file", O_RDONLY );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     &fd = open( "file", O_RDONLY );
 .do end
 .el .do begin

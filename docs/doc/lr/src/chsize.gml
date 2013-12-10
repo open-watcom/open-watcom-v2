@@ -39,7 +39,6 @@ A return value of -1 indicates an error, and
 is set to indicate the error.
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12 $compact
 .termhd1 Constant
 .termhd2 Meaning
@@ -55,7 +54,6 @@ Invalid file &handle..
 .term ENOSPC
 Not enough space left on the device to extend the file.
 .endterm
-.do end
 .error end
 .see begin
 .seelist chsize close creat open

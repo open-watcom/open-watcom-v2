@@ -32,20 +32,14 @@ points to a string beginning with one of the following sequences:
 .termhd1 Mode
 .termhd2 Meaning
 .note "r"
-.if '&machsys' eq 'PP' .do begin
-open file for reading
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 open file for reading
 .do end
 .el .do begin
 open file for reading; use default file translation
 .do end
 .note "w"
-.if '&machsys' eq 'PP' .do begin
-create file for writing, or truncate to zero length
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 create file for writing, or truncate to zero length
 .do end
 .el .do begin
@@ -53,10 +47,7 @@ create file for writing, or truncate to zero length; use default file
 translation
 .do end
 .note "a"
-.if '&machsys' eq 'PP' .do begin
-append: open text file or create for writing at end-of-file
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 append: open text file or create for writing at end-of-file
 .do end
 .el .do begin
@@ -67,31 +58,25 @@ file translation
 .note "rb"
 open binary file for reading
 .do end
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .note "rt"
 open text file for reading
-.do end
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .note "wb"
 create binary file for writing, or truncate to zero length
 .do end
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .note "wt"
 create text file for writing, or truncate to zero length
-.do end
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .note "ab"
 append; open binary file or create for writing at end-of-file
 .do end
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .note "at"
 append; open text file or create for writing at end-of-file
-.do end
 .do end
 .note "r+"
 open file for update (reading and/or writing); use default file
@@ -106,38 +91,28 @@ use default file translation
 .note "r+b", "rb+"
 open binary file for update (reading and/or writing)
 .do end
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .note "r+t", "rt+"
 open text file for update (reading and/or writing)
-.do end
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .note "w+b", "wb+"
 create binary file for update, or truncate to zero length
 .do end
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .note "w+t", "wt+"
 create text file for update, or truncate to zero length
-.do end
 .do end
 .if '&machsys' ne 'QNX' .do begin
 .note "a+b", "ab+"
 append; open binary file or create for update, writing at end-of-file
 .do end
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .note "a+t", "at+"
 append; open text file or create for update, writing at end-of-file
 .do end
-.do end
 .endnote
-.if '&machsys' eq 'PP' .do begin
-Under PenPoint, there is no difference between text files and binary
-files.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 The letter "b" may be added to any of the above sequences in the
 second or third position to indicate that the file is (or must be) a
 binary file (an ANSI requirement for portability to systems that make

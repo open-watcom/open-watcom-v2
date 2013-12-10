@@ -40,7 +40,6 @@ regions are contiguous.
 All locked regions of a file should be unlocked before closing a file
 or exiting the program.
 .if '&machsys' ne 'QNX' .do begin
-.if '&machsys' ne 'PP' .do begin
 .np
 With DOS, locking is supported by version 3.0 or later.
 Note that
@@ -48,7 +47,6 @@ Note that
 or
 .mono SHARE.EXE
 must be installed.
-.do end
 .do end
 .desc end
 .return begin
@@ -69,10 +67,7 @@ void main()
     int &fd;
     char buffer[20];
 .exmp break
-.if '&machsys' eq 'PP' .do begin
-    &fd = open( "file", O_RDWR );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     &fd = open( "file", O_RDWR );
 .do end
 .el .do begin

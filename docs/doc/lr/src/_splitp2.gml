@@ -1,9 +1,6 @@
 .func _splitpath2 _wsplitpath2 _u_splitpath2
 #include <stdlib.h>
-.if '&machsys' eq 'PP' .do begin
-.   .se *drv=node
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .   .se *drv=node
 .do end
 .el .do begin
@@ -39,12 +36,7 @@ void _u_splitpath2( const wchar_t *inp,
 .desc begin
 The &func function splits up a full pathname into four components
 consisting of a
-.if '&machsys' eq 'PP' .do begin
-node specification (e.g., \\foo), directory path (e.g., \usr\include),
-file name (e.g., myfile) and file name extension or suffix (e.g.,
-dat).
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 node specification (e.g., //2), directory path (e.g., /home/fred),
 file name (e.g., myfile) and file name extension or suffix (e.g.,
 dat).
@@ -67,15 +59,7 @@ constant
 .kw _MAX_PATH2
 which is defined in
 .mono <stdlib.h>.
-.if '&machsys' eq 'PP' .do begin
-.note node
-The
-.arg node
-argument is the location that is to contain the pointer to the node
-specification (e.g., \\foo, \\fred, etc.) if a node is specified in
-the full pathname (filled in by &func.).
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .note node
 The
 .arg node
@@ -140,7 +124,6 @@ compared to the
 .kw splitpath
 function.
 .im widefunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns no value.
@@ -166,7 +149,7 @@ void main()
     _splitpath2( full_path, tmp_path,
                  &&*drv., &dir, &fname, &ext );
     printf( "Components after _splitpath2\n" );
-.if '&machsys' eq 'PP' or '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     printf( "&*drv.:  %s\n", &*drv. );
 .do end
 .el .do begin
@@ -177,10 +160,7 @@ void main()
     printf( "ext:   %s\n", ext );
   }
 .exmp output
-.if '&machsys' eq 'PP' .do begin
-Full path is: \\foo\fred\h\stdio.h
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 Full path is: //0/home/fred/h/stdio.h
 .do end
 .el .do begin
@@ -188,11 +168,7 @@ Full path is: c:watcomc\h\stdio.h
 .do end
 
 Components after _splitpath2
-.if '&machsys' eq 'PP' .do begin
-node:  \\foo
-dir:   \fred\h\
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 node:  //0
 dir:   /home/fred/h/
 .do end

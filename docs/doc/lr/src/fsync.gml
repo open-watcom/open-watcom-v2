@@ -62,11 +62,7 @@ void main()
     int &fd;
     int i;
 .exmp break
-.if '&machsys' eq 'PP' .do begin
-    &fd = creat( "file",
-                 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     &fd = creat( "file",
                  S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
 .do end

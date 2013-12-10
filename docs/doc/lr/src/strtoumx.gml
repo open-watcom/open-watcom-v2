@@ -58,7 +58,6 @@ of letters and digits.
 .np
 If there is a leading minus sign in the string, the value is negated.
 .im widefunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns the converted value.

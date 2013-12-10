@@ -16,10 +16,7 @@ The array must be big enough to hold the string, a terminating null
 character, and two additional bytes.
 .pp
 The &func function reads characters until a
-.if '&machsys' eq 'PP' .do begin
-newline character
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 newline character
 .do end
 .el .do begin
@@ -30,10 +27,7 @@ The string is stored in the array starting at
 .arg buf[2]
 .ct .li .
 The
-.if '&machsys' eq 'PP' .do begin
-newline character,
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 newline character,
 .do end
 .el .do begin

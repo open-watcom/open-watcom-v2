@@ -61,7 +61,6 @@ returned in
 .arg buffer
 .ct .li .
 .im widefunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns a pointer to the full path specification if

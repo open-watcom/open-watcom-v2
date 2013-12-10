@@ -10,7 +10,6 @@
 !inject clib        dos  html  htmlhelp  nt  os2  pdf  ps  win
 !inject clib_fox
 !inject clib_nec
-!inject clib_pp
 !inject clibnt
 !inject clibqnx          html                     pdf  ps
 !inject clr         dos  html  htmlhelp  nt  os2  pdf  ps  win
@@ -160,14 +159,6 @@ book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 book_bmroot=$(bmroot_lr3)
 book_src=clib_nec
-
-!else ifeq hbook clib_pp
-# clib_pp
-book_title=$(company) $(%BLD_VER_STR) C Library Reference for PenPoint
-book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
-book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
-book_bmroot=$(bmroot_lr3)
-book_src=clib_pp
 
 !else ifeq hbook clibnt
 # clibnt

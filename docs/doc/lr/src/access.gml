@@ -50,13 +50,11 @@ test for existence of file
 :cmt. .term ACCESS_RD
 :cmt. check for read permission
 .endterm
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .pc
 With DOS, all files have read permission; it is a good idea to test
 for read permission anyway, since a later version of DOS may support
 write-only files.
-.do end
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -81,7 +79,6 @@ Otherwise, &minus.1 is returned and
 is set to indicate the error.
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -91,7 +88,6 @@ specified access.
 .term ENOENT
 Path or file not found.
 .endterm
-.do end
 .error end
 .see begin
 .seelist access chmod fstat open sopen stat

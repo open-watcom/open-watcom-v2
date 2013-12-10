@@ -31,12 +31,7 @@
 .chap Implementation-Defined Behavior of the C Library
 .np
 This appendix describes the behavior of
-.if '&machsys' eq 'PP' .do begin
-the &company C Library for Penpoint
-.do end
-.el .do begin
 the 16-bit and 32-bit &company C libraries
-.do end
 when the ANSI/ISO C Language standard describes the behavior as
 .us implementation-defined.
 The term describing each behavior is taken directly from the ANSI/ISO
@@ -56,12 +51,7 @@ expands (7.1.6).
 The macro
 .kw NULL
 expands to
-.if '&machsys' eq 'PP' .do begin
-0.
-.do end
-.el .do begin
 0 in small data models and to 0L in large data models.
-.do end
 .*-------------------------
 .section Diagnostic Printed by the assert Function
 .bigterm
@@ -192,13 +182,6 @@ The set of signals for the
 function (7.7.1.1).
 .bigdesc
 .np
-.if '&machsys' eq 'PP' .do begin
-Signals are not completely implemented under PenPoint.
-Hence, the
-.kw signal
-function is not described in this book.
-.do end
-.el .do begin
 See the description of the
 .kw signal
 function presented earlier in this book.
@@ -206,7 +189,6 @@ function presented earlier in this book.
 Also see the
 .kw QNX System Architecture
 manual.
-.do end
 .do end
 .*-------------------------
 .bigterm
@@ -215,13 +197,6 @@ The semantics for each signal recognized by the
 function (7.7.1.1).
 .bigdesc
 .np
-.if '&machsys' eq 'PP' .do begin
-Signals are not completely implemented under PenPoint.
-Hence, the
-.kw signal
-function is not described in this book.
-.do end
-.el .do begin
 See the description of the
 .kw signal
 function presented earlier in this book.
@@ -229,7 +204,6 @@ function presented earlier in this book.
 Also see the
 .kw QNX System Architecture
 manual.
-.do end
 .do end
 .*-------------------------
 .bigterm
@@ -239,13 +213,6 @@ signal recognized by the
 function (7.7.1.1).
 .bigdesc
 .np
-.if '&machsys' eq 'PP' .do begin
-Signals are not completely implemented under PenPoint.
-Hence, the
-.kw signal
-function is not described in this book.
-.do end
-.el .do begin
 See the description of the
 .kw signal
 function presented earlier in this book.
@@ -253,7 +220,6 @@ function presented earlier in this book.
 Also see the
 .kw QNX System Architecture
 manual.
-.do end
 .do end
 .*-------------------------
 .section Default Signals
@@ -336,11 +302,7 @@ Writing to a text stream does not truncate the file beyond that point.
 The characteristics of file buffering (7.9.3).
 .bigdesc
 .np
-.if '&machsys' eq 'PP' .do begin
-Disk files accessed through the standard I/O functions are fully buffered.
-The default buffer size is 512 bytes.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 Disk files accessed through the standard I/O functions are fully buffered.
 The default buffer size is 1024 bytes for both 16 and 32-bit systems.
 .do end
@@ -361,20 +323,7 @@ A file with length zero can exist.
 .bigterm
 The rules of composing valid file names (7.9.3).
 .bigdesc
-.if '&machsys' eq 'PP' .do begin
-.np
-A valid file specification consists of an optional volume name (which is
-always preceded by two backslashes), a series of optional directory names
-(each preceded by one backslash), and a file name.
-If a volume name or directory name precedes the file name, then the
-file name must also be preceded by a backslash.
-.np
-Volume names, directory names, and file names can each contain up to
-33 characters.
-The maximum combined length of a file specification is 255 characters.
-Case is ignored.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .np
 A valid file specification consists of an optional node name (which is
 always preceded by two slashes), a series of optional directory names
@@ -459,14 +408,6 @@ function (7.9.6.1).
 .np
 Two types of pointers are supported: near pointers (%hp), and
 far pointers (%lp).
-.if '&machsys' eq 'PP' .do begin
-The
-.kw fprintf
-function produces hexadecimal values of the form XXXXXXXX for 32-bit near
-pointers, and XXXX:XXXXXXXX (segment and offset separated by a colon) for
-48-bit far pointers.
-.do end
-.el .do begin
 The output for %p depends on the memory model being used.
 .np
 In 16-bit mode, the
@@ -480,7 +421,6 @@ In 32-bit mode, the
 function produces hexadecimal values of the form XXXXXXXX for 32-bit near
 pointers, and XXXX:XXXXXXXX (segment and offset separated by a colon) for
 48-bit far pointers.
-.do end
 .*-------------------------
 .section Reading Pointer Values
 .bigterm
@@ -546,10 +486,7 @@ function (7.9.10.4).
 The
 .kw perror
 function generates the following messages.
-.if '&machsys' eq 'PP' .do begin
-.im strerror.pp
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .im strerror.qnx
 .do end
 .el .do begin
@@ -610,15 +547,7 @@ list used by the
 function (7.10.4.4).
 .bigdesc
 .np
-.if '&machsys' eq 'PP' .do begin
-The set of environment names is unlimited.
-.ix 'ENVIRON.INI'
-Environment variables can be set in the system initialization file
-"ENVIRON.INI".
-There is no method provided by PenPoint for modifying the environment
-list.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 The set of environment names is unlimited.
 Environment variables can be set from the QNX command line using the
 EXPORT or SET commands.
@@ -647,10 +576,7 @@ function (7.10.4.5).
 The
 .kw system
 function
-.if '&machsys' eq 'PP' .do begin
-is not supported by PenPoint.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 always executes an executable binary or a shell file, using
 .filename /bin/sh.
 .do end
@@ -677,10 +603,7 @@ function (7.11.6.2).
 The
 .kw strerror
 function generates the following messages.
-.if '&machsys' eq 'PP' .do begin
-.im strerror.pp
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .im strerror.qnx
 .do end
 .el .do begin
@@ -692,16 +615,7 @@ function generates the following messages.
 The local time zone and Daylight Saving Time (7.12.1).
 .bigdesc
 .np
-.if '&machsys' eq 'PP' .do begin
-.ix 'ENVIRON.INI'
-In the PenPoint SDK, the time zone is set in the system initialization
-file "ENVIRON.INI".
-For PenPoint 1.0, the default setting is "TZ=PST8PDT" (Pacific Standard Time
-and Pacific Daylight Time, 8 hours later than Universal Coordinated Time).
-For PenPoint 2.0, the default setting is "TZ=Toky-9" (Tokyo time, 9 hours
-earlier than Universal Coordinated Time).
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 The time zone is set in the system initialization file for your node,
 ( e.g.
 .mono /etc/config/sysinit.2

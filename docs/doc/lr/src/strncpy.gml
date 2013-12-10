@@ -80,7 +80,6 @@ characters, then the result will not be terminated by a null character.
 .im farfunc
 .im widefunc
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns the value of

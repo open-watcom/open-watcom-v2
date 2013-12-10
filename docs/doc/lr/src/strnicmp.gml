@@ -70,7 +70,6 @@ Use &_func for ANSI/ISO naming conventions.
 .im farparm
 .im widefunc
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns an integer less than, equal to, or greater

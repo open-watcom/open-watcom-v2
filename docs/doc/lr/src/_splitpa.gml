@@ -1,10 +1,7 @@
 .func _splitpath _wsplitpath _u_splitpath
 #include <stdlib.h>
 void _splitpath( const char *path,
-.if '&machsys' eq 'PP' .do begin
-                       char *node,
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
                        char *node,
 .do end
 .el .do begin
@@ -16,10 +13,7 @@ void _splitpath( const char *path,
 .ixfunc2 '&Parsing' '&func'
 .if &'length(&wfunc.) ne 0 .do begin
 void _wsplitpath( const wchar_t *path,
-.if '&machsys' eq 'PP' .do begin
-                        wchar_t *node,
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
                         wchar_t *node,
 .do end
 .el .do begin
@@ -33,10 +27,7 @@ void _wsplitpath( const wchar_t *path,
 .do end
 .if &'length(&ufunc.) ne 0 .do begin
 void _u_splitpath( const wchar_t *path,
-.if '&machsys' eq 'PP' .do begin
-                         wchar_t *node,
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
                          wchar_t *node,
 .do end
 .el .do begin
@@ -51,14 +42,7 @@ void _u_splitpath( const wchar_t *path,
 .desc begin
 The &func function splits up a full pathname into four components
 consisting of a
-.if '&machsys' eq 'PP' .do begin
-node specification (e.g., \\foo),
-directory path (e.g., \usr\include),
-file name (e.g., myfile)
-and
-file name extension or suffix (e.g., .dat).
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 node specification (e.g., //2),
 directory path (e.g., /home/fred),
 file name (e.g., myfile)
@@ -76,17 +60,12 @@ The argument
 .arg path
 points to a buffer containing the full pathname to be split up.
 .im widefunc
-.im unifunc
 .np
 The maximum size required for each buffer is specified by the manifest
 constants
 .kw _MAX_PATH
 .ct,
-.if '&machsys' eq 'PP' .do begin
-.kw _MAX_NODE
-.ct,
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .kw _MAX_NODE
 .ct,
 .do end
@@ -105,15 +84,7 @@ and
 which are defined in
 .mono <stdlib.h>.
 .begnote $setptnt 8
-.if '&machsys' eq 'PP' .do begin
-.note node
-The
-.arg node
-argument points to a buffer that will be filled in with the node
-specification (e.g., \\foo, \\fred, etc.) if a node is specified in
-the full pathname.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .note node
 The
 .arg node
@@ -166,11 +137,7 @@ file name.
 .endnote
 .np
 The arguments
-.if '&machsys' eq 'PP' .do begin
-.arg node
-.ct ,
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .arg node
 .ct ,
 .do end
@@ -201,10 +168,7 @@ The &func function returns no value.
 void main()
   {
     char full_path[ _MAX_PATH ];
-.if '&machsys' eq 'PP' .do begin
-    char node[ _MAX_NODE ];
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     char node[ _MAX_NODE ];
 .do end
 .el .do begin
@@ -214,30 +178,21 @@ void main()
     char fname[ _MAX_FNAME ];
     char ext[ _MAX_EXT ];
 .exmp break
-.if '&machsys' eq 'PP' .do begin
-    _makepath(full_path,"\\\\foo","\\fred\\h","stdio","h");
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     _makepath(full_path,"//0","/home/fred/h","stdio","h");
 .do end
 .el .do begin
     _makepath(full_path,"c","watcomc\\h\\","stdio","h");
 .do end
     printf( "Full path is: %s\n\n", full_path );
-.if '&machsys' eq 'PP' .do begin
-    _splitpath( full_path, node, dir, fname, ext );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     _splitpath( full_path, node, dir, fname, ext );
 .do end
 .el .do begin
     _splitpath( full_path, drive, dir, fname, ext );
 .do end
     printf( "Components after _splitpath\n" );
-.if '&machsys' eq 'PP' .do begin
-    printf( "node:  %s\n", node );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     printf( "node:  %s\n", node );
 .do end
 .el .do begin
@@ -248,10 +203,7 @@ void main()
     printf( "ext:   %s\n", ext );
   }
 .exmp output
-.if '&machsys' eq 'PP' .do begin
-Full path is: \\foo\fred\h\stdio.h
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 Full path is: //0/home/fred/h/stdio.h
 .do end
 .el .do begin
@@ -259,11 +211,7 @@ Full path is: c:watcomc\h\stdio.h
 .do end
 
 Components after _splitpath
-.if '&machsys' eq 'PP' .do begin
-node:  \\foo
-dir:   \fred\h\
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 node:  //0
 dir:   /home/fred/h/
 .do end

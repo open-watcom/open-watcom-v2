@@ -21,13 +21,6 @@ The &func function associates a stream with the file &handle
 .arg &fd
 which represents an opened file or device.
 The &handle was returned by one of
-.if '&machsys' eq 'PP' .do begin
-.kw creat
-or
-.kw open
-.ct .li .
-.do end
-.el .do begin
 .kw creat
 .ct ,
 .kw dup
@@ -47,7 +40,6 @@ or
 or
 .kw sopen
 .ct .li .
-.do end
 The open mode
 .arg mode
 must match the mode with which the file or device was originally
@@ -97,10 +89,7 @@ void main()
     int &fd;
     FILE *fp;
 .exmp break
-.if '&machsys' eq 'PP' .do begin
-    &fd = open( "file", O_RDONLY );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     &fd = open( "file", O_RDONLY );
 .do end
 .el .do begin

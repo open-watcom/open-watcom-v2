@@ -58,7 +58,6 @@ If successful, &func returns a &handle for the file.
 When an error occurs while opening the file, &minus.1 is returned.
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -72,7 +71,6 @@ No more &handle.s available (too many open files)
 .term ENOENT
 Path or file not found
 .endterm
-.do end
 .error end
 .see begin
 .im seeioos open

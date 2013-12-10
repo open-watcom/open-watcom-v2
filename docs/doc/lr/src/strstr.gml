@@ -52,7 +52,6 @@ character) in the string pointed to by
 .im farfunc
 .im widefunc
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns a pointer to the located string, or

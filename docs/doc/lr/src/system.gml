@@ -31,23 +31,15 @@ If the value of
 is
 .mono NULL,
 then the &func function determines whether or not a &shell is
-.if '&machsys' eq 'PP' .do begin
-present (the shell identified by the "SHELL" environment variable or
-"sh" if "SHELL" is not defined).
-.do end
-.el .do begin
 present ("COMMAND.COM" in DOS and Windows 95/98
 or "CMD.EXE" in OS/2 and Windows NT/2000).
-.do end
 .do end
 .np
 Otherwise, the &func function invokes a copy of the &shell, and passes
 the string
 .arg command
 to it for processing.
-.if '&machsys' eq 'PP' .do begin
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 This function uses
 .kw spawnlp
 to load a copy of the &shell..
@@ -72,10 +64,7 @@ shell and may fail as a result of running a different shell.
 .np
 This means that any command that can be entered to &machsys can be
 executed, including programs, &machsys commands and
-.if '&machsys' eq 'PP' .do begin
-shell scripts.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 shell scripts.
 .do end
 .el .do begin

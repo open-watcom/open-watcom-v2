@@ -42,7 +42,6 @@ This file position can be determined with the
 function and can be set with the
 .kw lseek
 function.
-.if '&machsys' ne 'PP' .do begin
 .np
 When
 .kw O_BINARY
@@ -62,13 +61,10 @@ other operating systems.
 To truncate a file in a portable manner, use the
 .kw chsize
 function.
-.do end
 .desc end
 .return begin
 The &func function returns the number of bytes
-.if '&machsys' ne 'PP' .do begin
 (does not include any extra carriage-return characters transmitted)
-.do end
 of data transmitted to the file.
 When there is no error, this is the number given by the
 .arg len

@@ -240,10 +240,7 @@ int wmain( int wargc, wchar_t *wargv[] )
 #endif
 .do end
 .exmp output
-.if '&machsys' eq 'PP' .do begin
-argv[0] = mypgm
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 argv[0] = mypgm
 .do end
 .el .do begin

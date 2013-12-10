@@ -29,12 +29,7 @@ int _usetenv( const wchar_t *name,
 The environment list consists of a number of environment names,
 each of which has a value associated with it.
 Entries can be added to the environment list
-.if '&machsys' eq 'PP' .do begin
-in the
-.mono environ.ini
-file.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 with the
 .qnxcmd export
 or with the &func function.
@@ -44,9 +39,7 @@ with the
 .doscmd set
 or with the &func function.
 .do end
-.if '&machsys' eq 'PP' .do begin
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .ix 'environment'
 All entries in the environment list can be displayed by using the
 .qnxcmd export
@@ -85,12 +78,10 @@ If the
 pointer is NULL, all strings of the form
 .arg name=value
 in the environment list will be deleted.
-.if '&machsys' ne 'PP' .do begin
 .np
 The value of the pointer
 .kw environ
 may change across a call to the &func function.
-.do end
 .np
 The &func function will make copies of the strings associated with
 .arg name
@@ -108,12 +99,7 @@ as if they were in upper case.
 .do end
 .np
 Entries can also be added to the environment list
-.if '&machsys' eq 'PP' .do begin
-in the
-.mono environ.ini
-file.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 with the
 .qnxcmd export
 or with the
@@ -134,19 +120,14 @@ function.
 .np
 To assign a string to a variable and place it in the environment list:
 .millust begin
-.if '&machsys' eq 'PP' .do begin
-    TZ=PST8PDT
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     % export INCLUDE=/usr/include
 .do end
 .el .do begin
     C>SET INCLUDE=C:\WATCOM\H
 .do end
 .millust end
-.if '&machsys' eq 'PP' .do begin
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .np
 To see what variables are in the environment list, and their current
 assignments:
@@ -180,7 +161,6 @@ The &_func function is identical to &func..
 Use &_func for ANSI naming conventions.
 .do end
 .im widefunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns zero upon successful completion.
@@ -212,13 +192,7 @@ void main()
   {
     char *path;
 .exmp break
-.if '&machsys' eq 'PP' .do begin
-    if( setenv( "INCLUDE",
-                "\\usr\\include;\\usr\\fred\\include",
-                1
-              ) == 0 )
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     if( setenv( "INCLUDE",
                 "/usr/include:/home/fred/include",
                 1

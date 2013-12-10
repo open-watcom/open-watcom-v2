@@ -200,11 +200,7 @@ void main()
   }
 .blkcode end
 .exmp output
-.if '&machsys' eq 'PP' .do begin
-INCLUDE=\\FOO\WATCOM\H
-INCLUDE=mylib;yourlib
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 INCLUDE=/usr/include
 INCLUDE=//5/usr/include
 .do end

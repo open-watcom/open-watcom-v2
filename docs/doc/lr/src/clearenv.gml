@@ -7,13 +7,7 @@ int clearenv( void );
 The &func function clears the process environment area.
 No environment variables are defined immediately after a call to the
 &func function.
-.if '&machsys' eq 'PP' .do begin
-Note that this clears the
-.kw TZ
-environment variables which may then affect the operation of other
-library functions.
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 Note that this clears the
 .kw PATH
 .ct,
@@ -55,14 +49,12 @@ Otherwise, it will return a non-zero value and set
 to indicate the error.
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
 .term ENOMEM
 Not enough memory to allocate a control structure.
 .endterm
-.do end
 .error end
 .see begin
 .im seeenv clearenv

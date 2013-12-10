@@ -18,10 +18,6 @@ Execute/search permission
 .endterm
 .pp
 The following bits define permissions for the group.
-.if '&machsys' eq 'PP' .do begin
-PenPoint does not support "group" permissions.
-These bits are ignored.
-.do end
 .begterm 12 $compact
 .termhd1 Permission
 .termhd2 Meaning
@@ -36,10 +32,6 @@ Execute/search permission
 .endterm
 .pp
 The following bits define permissions for others.
-.if '&machsys' eq 'PP' .do begin
-PenPoint does not support "others" permissions.
-These bits are ignored.
-.do end
 .begterm 12 $compact
 .termhd1 Permission
 .termhd2 Meaning
@@ -52,7 +44,6 @@ Write permission
 .term S_IXOTH
 Execute/search permission
 .endterm
-.if '&machsys' ne 'PP' .do begin
 .pp
 The following bits define miscellaneous permissions used by other
 implementations.
@@ -66,4 +57,3 @@ is equivalent to S_IWUSR (write permission)
 .term S_IEXEC
 is equivalent to S_IXUSR (execute/search permission)
 .endterm
-.do end

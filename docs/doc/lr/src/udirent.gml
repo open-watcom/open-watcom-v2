@@ -13,14 +13,7 @@ type.
 .ct .li .
 .do end
 .blkcode begin
-.if '&machsys' eq 'PP' .do begin
-typedef struct udirent {
-  void*    d_handle;                /* readdir handle */
-  _UNICHAR d_name[maxNameLength + 1]; /* file's name */
-  char     d_attr;                  /* file's attribute */
-} UDIR;
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 /*
  * Please note:
  *

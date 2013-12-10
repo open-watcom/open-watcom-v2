@@ -84,10 +84,7 @@ void main()
     int &fd, dup_&fd;
 
     &fd = open( "file",
-.if '&machsys' eq 'PP' .do begin
-                O_WRONLY | O_CREAT | O_TRUNC,
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
                 O_WRONLY | O_CREAT | O_TRUNC,
 .do end
 .el .do begin

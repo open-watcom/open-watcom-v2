@@ -5,16 +5,7 @@ int fcloseall( void );
 .funcend
 .desc begin
 The &func function closes all open stream files, except
-.if '&machsys' eq 'PP' .do begin
-.kw stdin
-.ct,
-.kw stdout
-.ct,
-and
-.kw stderr
-.ct .li .
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .kw stdin
 .ct,
 .kw stdout

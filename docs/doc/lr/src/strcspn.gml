@@ -55,7 +55,6 @@ The terminating null character is not considered part of
 .im farparm
 .im widefunc
 .im mbsfunc
-.im unifunc
 .desc end
 .return begin
 The length, in bytes, of the initial segment is returned.

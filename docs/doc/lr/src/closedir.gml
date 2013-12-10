@@ -69,7 +69,6 @@ The &func function returns zero if successful, non-zero otherwise.
 .do end
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -82,7 +81,6 @@ does not refer to an open directory stream.
 The &func function was interrupted by a signal.
 .do end
 .endterm
-.do end
 .error end
 .see begin
 .im seeiodir closedir
@@ -126,10 +124,7 @@ void main()
     fdate_t *f_date;
 .do end
 .exmp break
-.if '&machsys' eq 'PP' .do begin
-    dirp = opendir( "\\\\foo\\fred" );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
     dirp = opendir( "/home/fred" );
 .do end
 .el .do begin

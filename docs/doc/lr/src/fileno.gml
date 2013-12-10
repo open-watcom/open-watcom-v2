@@ -15,16 +15,7 @@ can be used.
 The following symbolic values in
 .hdrfile &iohdr
 define the file &handle.s that are associated with the C language
-.if '&machsys' eq 'PP' .do begin
-.ix 'stdin'
-.ix 'stdout'
-.ix 'stderr'
-.us stdin,
-.us stdout,
-and
-.us stderr
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .ix 'stdin'
 .ix 'stdout'
 .ix 'stderr'
@@ -48,13 +39,11 @@ and
 .do end
 files when the application is started.
 .if '&machsys' ne 'QNX' .do begin
-.if '&machsys' ne 'PP' .do begin
 The
 .us stdaux
 and
 .us stdprn
 files are not available for Win32.
-.do end
 .do end
 .begterm 20 $compact
 .termhd1 Value
@@ -71,7 +60,6 @@ Standard output file number,
 Standard error file number,
 .us stderr
 (2)
-.if '&machsys' ne 'PP' .do begin
 .if '&machsys' ne 'QNX' .do begin
 .term STDAUX_FILENO
 Standard auxiliary file number,
@@ -81,7 +69,6 @@ Standard auxiliary file number,
 Standard printer file number,
 .us stdprn
 (4)
-.do end
 .do end
 .endterm
 .desc end

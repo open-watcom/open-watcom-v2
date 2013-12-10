@@ -65,7 +65,6 @@ A terminating null character is always appended to the result.
 .im farfunc
 .im widefunc
 .im mbsffunc
-.im unifunc
 .desc end
 .return begin
 The &func function returns the value of

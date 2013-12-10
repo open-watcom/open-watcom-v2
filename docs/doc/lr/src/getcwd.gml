@@ -1,9 +1,5 @@
 .func getcwd _wgetcwd _ugetcwd
-.if '&machsys' eq 'PP' .do begin
-#include <unistd.h>
-char *getcwd( char *buffer, size_t size );
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
 char *getcwd( char *buffer, size_t size );
 .do end
@@ -73,7 +69,6 @@ which case
 is returned.
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -88,7 +83,6 @@ The buffer is too small (specified by
 .arg size
 .ct ) to contain the name of the current working directory.
 .endterm
-.do end
 .error end
 .see begin
 .seelist &function. chdir chmod getcwd _getdcwd mkdir mknod rmdir
@@ -96,10 +90,7 @@ The buffer is too small (specified by
 .exmp begin
 #include <stdio.h>
 #include <stdlib.h>
-.if '&machsys' eq 'PP' .do begin
-#include <unistd.h>
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
 .do end
 .el .do begin
@@ -117,10 +108,7 @@ void main()
     }
   }
 .exmp output
-.if '&machsys' eq 'PP' .do begin
-My working directory is \\foo\fred\tmp
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 My working directory is /home/bill
 .do end
 .el .do begin

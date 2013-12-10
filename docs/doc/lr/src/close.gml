@@ -13,14 +13,7 @@ The
 .arg &fd
 value is the file &handle returned by a successful execution of one of
 the
-.if '&machsys' eq 'PP' .do begin
-.kw creat
-.ct,
-.kw dup
-or
-.kw open
-.do end
-.el .if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .kw creat
 .ct,
 .kw dup
@@ -58,7 +51,6 @@ Otherwise, it returns &minus.1 and
 is set to indicate the error.
 .return end
 .error begin
-.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -75,7 +67,6 @@ An i/o error occurred while updating the directory information.
 A previous buffered write call has failed.
 .do end
 .endterm
-.do end
 .error end
 .see begin
 .if '&machsys' eq 'QNX' .do begin

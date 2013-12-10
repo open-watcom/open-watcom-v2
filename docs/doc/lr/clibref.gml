@@ -94,9 +94,7 @@
 :CMT.    :INCLUDE gr_index
 :CMT.    .do end
 .*
-.if '&machsys' ne 'PP' .do begin
 :INCLUDE file='CREFUNS'.
-.do end
 :cmt. .if '&machsys' eq 'DOS' .do begin
 :cmt. :INCLUDE file='CSUMFUNS'.
 :cmt. .do end

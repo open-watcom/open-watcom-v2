@@ -53,7 +53,6 @@ function is identical to &wfunc except that the
 .arg format
 is not a wide-character string.
 .do end
-.im unifunc
 .if &'length(&ufunc.) ne 0 .do begin
 .np
 The

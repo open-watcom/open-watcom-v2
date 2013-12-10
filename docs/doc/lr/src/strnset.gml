@@ -69,7 +69,6 @@ If the number of bytes to be filled is odd and
 .arg fill
 is a double-byte character, the partial byte at the end is filled with
 an ASCII space character.
-.im unifunc
 .desc end
 .return begin
 The address of the original string
