@@ -1,5 +1,5 @@
 .func utime _utime _wutime
-.if ''&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
 #include <utime.h>
 .do end

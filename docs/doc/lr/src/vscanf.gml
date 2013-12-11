@@ -2,14 +2,12 @@
 .funcw vwscanf
 #include <stdarg.h>
 #include <stdio.h>
-int vscanf( const char *format,
-            va_list arg );
+int vscanf( const char *format, va_list arg );
 .ixfunc2 '&StrIo' &func
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdarg.h>
 #include <wchar.h>
-int vwscanf( const wchar_t *format,
-              va_list arg );
+int vwscanf( const wchar_t *format, va_list arg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end

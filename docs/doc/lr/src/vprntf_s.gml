@@ -4,14 +4,12 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdarg.h>
 #include <stdio.h>
-int vprintf_s( const char * restrict format,
-               va_list arg );
+int vprintf_s( const char * restrict format, va_list arg );
 .ixfunc2 '&StrIo' &func
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdarg.h>
 #include <wchar.h>
-int vwprintf_s( const wchar_t * restrict format,
-                va_list prg );
+int vwprintf_s( const wchar_t * restrict format, va_list prg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
