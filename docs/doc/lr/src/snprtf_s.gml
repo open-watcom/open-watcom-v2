@@ -13,11 +13,6 @@ int snwprintf_s( char * restrict s, rsize_t n,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _usnprintf_s( char * restrict s, rsize_t n,
-         const wchar_t * restrict format, ... );
-.ixfunc2 '&StrIo' &ufunc
-.do end
 .func end
 .*
 .rtconst begin
@@ -72,13 +67,6 @@ The &wfunc function is identical to &func except that it accepts a
 wide-character string argument for
 .arg format
 and produces wide character output.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and produces Unicode character output.
 .do end
 .desc end
 .*

@@ -1,4 +1,4 @@
-.func strncpy _fstrncpy wcsncpy _mbsncpy _fmbsncpy _ustrncpy
+.func strncpy _fstrncpy wcsncpy _mbsncpy _fmbsncpy
 #include <string.h>
 char *strncpy( char *dst,
                const char *src,
@@ -37,13 +37,6 @@ unsigned char __far *_fmbsncpy( unsigned char __far *dst,
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Copy' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrncpy( wchar_t *dst,
-                     const wchar_t *src,
-                     size_t n );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Copy' &ufunc
 .do end
 .funcend
 .*

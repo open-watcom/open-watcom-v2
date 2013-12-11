@@ -64,15 +64,6 @@
 .do end
 .dm fnw end
 .*
-.* create a unicode entry (e.g., _ustrcmp)
-.* corresponding to regular entry (e.g., strcmp)
-.*
-.dm fnu begin
-.if &unifnc. eq 1 .do begin
-.  .fnc &*
-.do end
-.dm fnu end
-.*
 .* DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232
 .* 1     2     4     8      16    32    64    128   256     512     1024
 .*

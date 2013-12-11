@@ -1,4 +1,4 @@
-.func tmpnam _wtmpnam _utmpnam
+.func tmpnam _wtmpnam
 #include <stdio.h>
 char *tmpnam( char *buffer );
 .ixfunc2 '&FileOp' &func
@@ -6,10 +6,6 @@ char *tmpnam( char *buffer );
 wchar_t *_wtmpnam( wchar_t *buffer );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_utmpnam( wchar_t *buffer );
-.ixfunc2 '&FileOp' &ufunc
 .do end
 .funcend
 .*
@@ -21,10 +17,6 @@ name.
 .if &'length(&wfunc.) ne 0 .do begin
 The &wfunc function is identical to &func except that it generates a
 unique wide-character string for the file name.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-The &ufunc Unicode function is identical to &func except that it
-generates a unique Unicode string for the file name.
 .do end
 .if '&machsys' eq 'QNX' .do begin
 .np

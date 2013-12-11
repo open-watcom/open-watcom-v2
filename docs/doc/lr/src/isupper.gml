@@ -1,4 +1,4 @@
-.func isupper iswupper _uisupper
+.func isupper iswupper
 .funcw iswupper
 #include <ctype.h>
 int isupper( int c );
@@ -9,10 +9,6 @@ int iswupper( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uisupper( int c );
-.ixfunc2 '&CharTest' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function tests for any uppercase letter 'A' through 'Z'.
@@ -20,11 +16,6 @@ The &func function tests for any uppercase letter 'A' through 'Z'.
 .np
 The &wfunc function is similar to &func except that it accepts a
 wide-character argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument.
 .do end
 .desc end
 .return begin

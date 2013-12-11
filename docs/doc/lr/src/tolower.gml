@@ -1,4 +1,4 @@
-.func tolower _tolower towlower _utolower
+.func tolower _tolower towlower
 .funcw towlower
 #include <ctype.h>
 int tolower( int c );
@@ -13,11 +13,6 @@ wint_t towlower( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _utolower( int c );
-.ixfunc2 '&CharTest' &ufunc
-.ixfunc2 '&Conversion' &ufunc
 .do end
 .funcend
 .desc begin
@@ -34,11 +29,6 @@ is known to be uppercase.
 .np
 The &wfunc function is similar to &func except that it accepts a
 wide-character argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument.
 .do end
 .desc end
 .return begin

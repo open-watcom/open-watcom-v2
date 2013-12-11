@@ -36,7 +36,6 @@
 :set symbol="version"   value="110".
 :set symbol="company"   value="Watcom".
 :set symbol="farfnc"    value="1".
-:set symbol="unifnc"    value="0".
 :set symbol="sw"        value="/".
 :set symbol="pc"        value="\".
 :set symbol="ps"        value=";".
@@ -71,7 +70,6 @@
 .*
 .if '&machsys' eq 'DOS' .do begin
 :set symbol="target"    value="DOS".
-:set symbol="unifnc"    value="0".
 .do end
 .*
 .if '&machsys' eq 'NEC' .do begin
@@ -80,7 +78,6 @@
 .*
 .if '&machsys' eq 'TEST' .do begin
 :set symbol="target"    value="DOS".
-:set symbol="unifnc"    value="1".
 .do end
 .*
 :set symbol="pi"        value=";.ct .sf7 ~P;.esf ".

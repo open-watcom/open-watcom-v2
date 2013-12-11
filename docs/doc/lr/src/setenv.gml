@@ -1,4 +1,4 @@
-.func setenv _setenv _wsetenv _usetenv
+.func setenv _setenv _wsetenv
 #include <env.h>
 int setenv( const char *name,
             const char *newvalue,
@@ -16,12 +16,6 @@ int _wsetenv( const wchar_t *name,
               int overwrite );
 .ixfunc2 '&Process' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _usetenv( const wchar_t *name,
-            const wchar_t *newvalue ,
-            int overwrite );
-.ixfunc2 '&Process' &ufunc
 .do end
 .funcend
 .desc begin

@@ -1,4 +1,4 @@
-.func open _open _wopen _uopen
+.func open _open _wopen
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -12,10 +12,6 @@ int _open( const char *path, int access, ... );
 int _wopen( const wchar_t *path, int access, ... );
 .ixfunc2 '&OsIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uopen( const wchar_t *path, int access, ... );
-.ixfunc2 '&OsIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -40,13 +36,6 @@ Use &_func for ANSI/ISO naming conventions.
 .np
 The &wfunc function is identical to &func except that it
 accepts a wide character string argument for
-.arg path
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
 .arg path
 .ct .li .
 .do end

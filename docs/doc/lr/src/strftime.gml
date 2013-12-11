@@ -1,4 +1,4 @@
-.func strftime wcsftime _wstrftime_ms _ustrftime _ustrftime_ms
+.func strftime wcsftime _wstrftime_ms
 .funcw wcsftime
 #include <time.h>
 size_t strftime( char *s,
@@ -22,18 +22,6 @@ size_t _wstrftime_ms( wchar_t *s,
 .ixfunc2 '&TimeFunc' _wstrftime_ms
 .ixfunc2 '&Wide' _wstrftime_ms
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-size_t _ustrftime( wchar_t *s,
-                   size_t maxsize,
-                   const wchar_t *format,
-                   const struct tm *timeptr );
-.ixfunc2 '&TimeFunc' &ufunc
-size_t _ustrftime_ms( wchar_t *s,
-                      size_t maxsize,
-                      const char *format,
-                      const struct tm *timeptr );
-.ixfunc2 '&TimeFunc' &ufunc._ms
-.do end
 .im structtm
 .funcend
 .desc begin
@@ -52,14 +40,6 @@ The
 function is identical to &wfunc except that the
 .arg format
 is not a wide-character string.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The
-.kw _ustrftime_ms
-Unicode function is identical to &ufunc except that the
-.arg format
-is not a Unicode string.
 .do end
 .np
 The

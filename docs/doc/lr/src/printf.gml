@@ -1,4 +1,4 @@
-.func printf wprintf _uprintf
+.func printf wprintf
 .funcw wprintf
 #include <stdio.h>
 int printf( const char *format, ... );
@@ -8,10 +8,6 @@ int printf( const char *format, ... );
 int wprintf( const wchar_t *format, ... );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uprintf( const wchar_t *format, ... );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .*
@@ -32,13 +28,6 @@ The &wfunc function is identical to &func except that it accepts a
 wide-character string argument for
 .arg format
 .ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and produces Unicode character output.
 .do end
 .desc end
 .*

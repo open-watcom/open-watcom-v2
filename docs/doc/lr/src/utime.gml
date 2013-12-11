@@ -1,4 +1,4 @@
-.func utime _utime _wutime _uutime
+.func utime _utime _wutime
 .if ''&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
 #include <utime.h>
@@ -19,11 +19,6 @@ int _wutime( const wchar_t *path,
              const struct utimbuf *times );
 .ixfunc2 '&OsIo' &wfunc
 .ixfunc2 '&Wide' &func
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uutime( const wchar_t *path,
-             const struct utimbuf *times );
-.ixfunc2 '&OsIo' &ufunc
 .do end
 
 struct utimbuf {
@@ -87,12 +82,6 @@ fields in this structure.
 The &wfunc function is identical to &func except that
 .arg path
 points to a wide-character string.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that
-.arg path
-points to a Unicode character string.
 .do end
 .desc end
 .return begin

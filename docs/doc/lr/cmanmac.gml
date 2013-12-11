@@ -11,7 +11,6 @@
 .sr fwfunc=''
 .sr mfunc=''
 .sr fmfunc=''
-.sr ufunc=''
 .sr _func64=''
 .sr wfunc64=''
 .sr mathfunc=''
@@ -222,9 +221,6 @@
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
 .   :set symbol="fmfunc" value=";.sf4 &fmfunc.;.esf ".
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.   :set symbol="ufunc" value=";.sf4 &ufunc.;.esf ".
 .do end
 .if &'length(&mathfunc.) ne 0 .do begin
 .   :set symbol="mathfunc" value=";.sf4 &mathfunc.;.esf ".
@@ -458,11 +454,6 @@ Prototype in
 .   :set symbol="fmfunc" value="&'word("&fmfunc.",2)".
 .   .if '&fmfunc.' ne '&func.' :set symbol="*extr" value=1.
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-.   :set symbol="ufunc" value="&'translate("&ufunc.",' ',';')".
-.   :set symbol="ufunc" value="&'word("&ufunc.",2)".
-.   .if '&ufunc.' ne '&func.' :set symbol="*extr" value=1.
-.do end
 .if |&*1| eq |begin| .sr *all=&'strip(&'substr(&*,6),'L',' ')
 .el .sr *all=&*
 .if &*extr eq 0 .do begin
@@ -524,9 +515,6 @@ Prototype in
 .   .do end
 .   .if &'length(&fmfunc.) ne 0 .do begin
 .   .   .clitm &fmfunc. is not &*cls
-.   .do end
-.   .if &'length(&ufunc.) ne 0 .do begin
-.   .   .clitm &ufunc. is not &*cls
 .   .do end
 .do end
 .do end
@@ -713,7 +701,6 @@ command
 .*   .funct_fm  farmultibytenorm       "
 .*   .funct_w   widenorm               "
 .*   .funct_fw  farwidewnorm           "
-.*   .funct_u   unicodenorm            "
 .*
 .*   .functm    doublemathfunc         "
 .*   .functm_f  floatmathfunc          "
@@ -728,7 +715,7 @@ command
 .*
 .*  .func norm Functions
 .*  .func norm
-.*  .func norm _norm __norm _wnorm _unorm _fnorm _mbsnorm
+.*  .func norm _norm __norm _wnorm _fnorm _mbsnorm
 .*
 .*  functii internal macro for funct_xxx
 .*
@@ -792,11 +779,6 @@ command
 .sr fwfunc=&*1
 .functii &*
 .dm funct_fw end
-.*
-.dm funct_u begin
-.sr ufunc=&*1
-.functii &*
-.dm funct_u end
 .*
 .dm functm begin
 .sr mathfunc=&*1

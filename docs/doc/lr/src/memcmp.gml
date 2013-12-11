@@ -1,4 +1,4 @@
-.func memcmp _fmemcmp wmemcmp _umemcmp
+.func memcmp _fmemcmp wmemcmp
 #include <string.h>
 int memcmp( const void *s1,
             const void *s2,
@@ -16,12 +16,6 @@ int wmemcmp( const wchar_t *s1,
              const wchar_t *s2,
 	     size_t length );
 .ixfunc2 '&Compare' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _umemcmp( const void *s1,
-              const void *s2,
-              size_t length );
-.ixfunc2 '&Compare' &ufunc
 .do end
 .funcend
 .desc begin
@@ -42,14 +36,6 @@ type.
 The argument
 .arg length
 is interpreted to mean the number of wide characters.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-operates on 16-bit Unicode character strings.
-The argument
-.arg length
-is interpreted to mean the number of Unicode characters.
 .do end
 .desc end
 .return begin

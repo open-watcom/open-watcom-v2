@@ -1,4 +1,4 @@
-.func fdopen _fdopen _wfdopen _ufdopen
+.func fdopen _fdopen _wfdopen
 #include <stdio.h>
 FILE *fdopen( int &fd, const char *mode );
 .ixfunc2 '&StrIo' &func
@@ -10,10 +10,6 @@ FILE *_fdopen( int &fd, const char *mode );
 FILE *_wfdopen( int &fd, const wchar_t *mode );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-FILE *_ufdopen( int &fd, const wchar_t *mode );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -59,11 +55,6 @@ Use &_func for ANSI/ISO naming conventions.
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide character string for the second argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string for the second argument.
 .do end
 .desc end
 .return begin

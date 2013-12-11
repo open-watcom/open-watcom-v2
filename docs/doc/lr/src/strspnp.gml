@@ -1,4 +1,4 @@
-.func strspnp _strspnp _fstrspnp _wcsspnp _mbsspnp _fmbsspnp _ustrspnp
+.func strspnp _strspnp _fstrspnp _wcsspnp _mbsspnp _fmbsspnp
 #include <string.h>
 char *strspnp( const char *str,
                const char *charset );
@@ -39,12 +39,6 @@ unsigned char __far *_fmbsspnp(
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrspnp( const wchar_t *str,
-                 const wchar_t *charset );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Search' &ufunc
 .do end
 .funcend
 .desc begin

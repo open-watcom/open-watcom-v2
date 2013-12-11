@@ -1,4 +1,4 @@
-.func strtod wcstod _ustrtod
+.func strtod wcstod
 .funcw wcstod
 #include <stdlib.h>
 double strtod( const char *ptr, char **endptr );
@@ -8,10 +8,6 @@ double strtod( const char *ptr, char **endptr );
 double wcstod( const wchar_t *ptr, wchar_t **endptr );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-double _ustrtod( const wchar_t *ptr, wchar_t **endptr );
-.ixfunc2 '&Conversion' &ufunc
 .do end
 .funcend
 .*

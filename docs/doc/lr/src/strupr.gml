@@ -1,4 +1,4 @@
-.func strupr _strupr _fstrupr _wcsupr _mbsupr _fmbsupr _ustrupr
+.func strupr _strupr _fstrupr _wcsupr _mbsupr _fmbsupr
 #include <string.h>
 char *strupr( char *s );
 .ixfunc2 '&String' &func
@@ -26,10 +26,6 @@ unsigned char *_mbsupr( unsigned char *s );
 unsigned char __far *_fmbsupr( unsigned char __far *s );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrupr( wchar_t *s );
-.ixfunc2 '&String' &ufunc
 .do end
 .funcend
 .desc begin

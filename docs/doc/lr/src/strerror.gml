@@ -1,4 +1,4 @@
-.func strerror wcserror _ustrerror
+.func strerror wcserror
 #include <string.h>
 char *strerror( int errnum );
 .ixfunc2 '&String' &func
@@ -8,11 +8,6 @@ wchar_t *wcserror( int errnum );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Errs' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrerror( int errnum );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Errs' &ufunc
 .do end
 .funcend
 .*
@@ -26,11 +21,6 @@ to an error message.
 .np
 The &wfunc function is identical to &func except that the message it
 points to is a wide-character string.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that the
-message it points to is a Unicode character string.
 .do end
 .desc end
 .return begin

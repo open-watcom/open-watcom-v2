@@ -1,4 +1,4 @@
-.func memchr _fmemchr wmemchr _umemchr
+.func memchr _fmemchr wmemchr
 #include <string.h>
 void *memchr( const void *buf, int ch, size_t length );
 .ixfunc2 '&Search' &func
@@ -12,10 +12,6 @@ void __far *_fmemchr( const void __far *buf,
 #include <wchar.h>
 wchar_t *wmemchr( const wchar_t *buf, wchar_t ch, size_t length );
 .ixfunc2 '&Search' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-void *_umemchr( const void *buf, int ch, size_t length );
-.ixfunc2 '&Search' &ufunc
 .do end
 .funcend
 .desc begin
@@ -36,14 +32,6 @@ type.
 The argument
 .arg length
 is interpreted to mean the number of wide characters.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-operates on 16-bit Unicode characters.
-The argument
-.arg length
-is interpreted to mean the number of Unicode characters.
 .do end
 .desc end
 .return begin

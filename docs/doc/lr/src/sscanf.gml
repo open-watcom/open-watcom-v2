@@ -1,4 +1,4 @@
-.func sscanf swscanf _usscanf
+.func sscanf swscanf
 .funcw swscanf
 #include <stdio.h>
 int sscanf( const char *in_string,
@@ -10,11 +10,6 @@ int swscanf( const wchar_t *in_string,
              const wchar_t *format, ... );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _usscanf( const wchar_t *in_string,
-              const wchar_t *format, ... );
-.ixfunc2 '&String' &ufunc
 .do end
 .funcend
 .*
@@ -42,15 +37,6 @@ wide-character string argument for
 and the input string
 .arg in_string
 consists of wide characters.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and the input string
-.arg in_string
-consists of 16-bit Unicode characters.
 .do end
 .desc end
 .*

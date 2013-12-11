@@ -1,4 +1,4 @@
-.func isspace iswspace _uisspace
+.func isspace iswspace
 .funcw iswspace
 #include <ctype.h>
 int isspace( int c );
@@ -8,10 +8,6 @@ int isspace( int c );
 int iswspace( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uisspace( int c );
-.ixfunc2 '&CharTest' &ufunc
 .do end
 .funcend
 .desc begin
@@ -36,11 +32,6 @@ vertical tab
 .np
 The &wfunc function is similar to &func except that it accepts a
 wide-character argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument.
 .do end
 .desc end
 .return begin

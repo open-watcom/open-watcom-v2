@@ -1,4 +1,4 @@
-.func strpbrk _fstrpbrk wcspbrk _mbspbrk _fmbspbrk _ustrpbrk
+.func strpbrk _fstrpbrk wcspbrk _mbspbrk _fmbspbrk
 #include <string.h>
 char *strpbrk( const char *str, const char *charset );
 .ixfunc2 '&String' &func
@@ -32,12 +32,6 @@ unsigned char __far *_fmbspbrk(
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Wide' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrpbrk( const wchar_t *str,
-                     const wchar_t *charset );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Search' &ufunc
 .do end
 .funcend
 .desc begin

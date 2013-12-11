@@ -1,4 +1,4 @@
-.func memcpy _fmemcpy wmemcpy _umemcpy
+.func memcpy _fmemcpy wmemcpy
 #include <string.h>
 void *memcpy( void *dst,
               const void *src,
@@ -16,12 +16,6 @@ wchar_t *wmemcpy( wchar_t *dst,
                   const wchar_t *src,
                   size_t length );
 .ixfunc2 '&Copy' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-void *_umemcpy( void *dst,
-                const void *src,
-                size_t length );
-.ixfunc2 '&Copy' &ufunc
 .do end
 .funcend
 .*
@@ -49,14 +43,6 @@ type.
 The argument
 .arg length
 is interpreted to mean the number of wide characters.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-operates on 16-bit Unicode character strings.
-The argument
-.arg length
-is interpreted to mean the number of Unicode characters.
 .do end
 .desc end
 .*

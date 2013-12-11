@@ -1,4 +1,4 @@
-.func strncat _fstrncat wcsncat _mbsncat _fmbsncat _ustrncat
+.func strncat _fstrncat wcsncat _mbsncat _fmbsncat
 #include <string.h>
 char *strncat( char *dst, const char *src, size_t n );
 .ixfunc2 '&String' &func
@@ -35,13 +35,6 @@ unsigned char __far *_fmbsncat( unsigned char __far *dst,
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Concats' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrncat( wchar_t *dst,
-                     const wchar_t *src,
-                     size_t n );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Concats' &ufunc
 .do end
 .funcend
 .*

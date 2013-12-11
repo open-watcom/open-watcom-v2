@@ -1,4 +1,4 @@
-.func freopen _wfreopen _ufreopen
+.func freopen _wfreopen
 #include <stdio.h>
 FILE *freopen( const char *filename,
                const char *mode,
@@ -10,12 +10,6 @@ FILE *_wfreopen( const wchar_t *filename,
                  FILE *fp );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-FILE *_ufreopen( const wchar_t *filename,
-                 const wchar_t *mode,
-                 FILE *fp );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .*
@@ -42,15 +36,6 @@ function.
 .np
 The &wfunc function is identical to &func except that it accepts
 wide-character string arguments for
-.arg filename
-and
-.arg mode
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts Unicode string arguments for
 .arg filename
 and
 .arg mode

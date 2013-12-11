@@ -1,4 +1,4 @@
-.func stricmp _stricmp _fstricmp _wcsicmp _mbsicmp _fmbsicmp _ustricmp
+.func stricmp _stricmp _fstricmp _wcsicmp _mbsicmp _fmbsicmp
 #include <string.h>
 int stricmp( const char *s1, const char *s2 );
 .ixfunc2 '&String' &func
@@ -35,11 +35,6 @@ int _fmbsicmp( const unsigned char __far *s1,
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Compare' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _ustricmp( const wchar_t *s1, const wchar_t *s2 );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Compare' &ufunc
 .do end
 .funcend
 .desc begin

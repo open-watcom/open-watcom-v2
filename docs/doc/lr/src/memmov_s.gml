@@ -14,13 +14,6 @@ errno_t wmemmove_s( wchar_t * restrict s1,
                     size_t n );
 .ixfunc2 '&Copy' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-void *_umemmove_s( void * restrict s1,
-                   rsize_t s1max,
-                   const void * restrict s2,
-                   size_t n );
-.ixfunc2 '&Copy' &ufunc
-.do end
 .funcend
 .*
 .rtconst begin
@@ -93,14 +86,6 @@ The arguments
 and
 .arg n
 are interpreted to mean the number of wide characters.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-operates on 16-bit Unicode character strings.
-The argument
-.arg n
-is interpreted to mean the number of Unicode characters.
 .do end
 .desc end
 .*

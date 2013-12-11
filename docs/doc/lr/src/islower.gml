@@ -1,4 +1,4 @@
-.func islower iswlower _uislower
+.func islower iswlower
 .funcw iswlower
 #include <ctype.h>
 int islower( int c );
@@ -9,10 +9,6 @@ int iswlower( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uislower( int c );
-.ixfunc2 '&CharTest' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function tests for any lowercase letter 'a' through 'z'.
@@ -20,11 +16,6 @@ The &func function tests for any lowercase letter 'a' through 'z'.
 .np
 The &wfunc function is similar to &func except that it accepts a
 wide-character argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument.
 .do end
 .desc end
 .return begin

@@ -11,10 +11,6 @@ int _wunlink( const wchar_t *path );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uunlink( const wchar_t *path );
-.ixfunc2 '&FileOp' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function deletes the file whose name is the string
@@ -33,11 +29,6 @@ Use &_func for ANSI/ISO naming conventions.
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide-character string argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument.
 .do end
 .desc end
 .return begin

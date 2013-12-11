@@ -3,8 +3,6 @@
 .func2 _ctime
 .func2 _wctime
 .func2 __wctime
-.func2 _uctime
-.func2 _u_ctime
 .func gen
 #include <time.h>
 char * ctime( const time_t *timer );
@@ -18,12 +16,6 @@ wchar_t *__wctime( const time_t *timer, wchar_t *buf );
 .ixfunc2 '&Wide' _wctime
 .ixfunc2 '&TimeFunc' __wctime
 .ixfunc2 '&Wide' __wctime
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t * _uctime( const time_t *timer );
-wchar_t *_u_ctime( const time_t *timer, wchar_t *buf );
-.ixfunc2 '&TimeFunc' _uctime
-.ixfunc2 '&TimeFunc' _u_ctime
 .do end
 .func end
 .*
@@ -74,18 +66,6 @@ is identical to
 .kw _ctime
 except that it produces a wide-character string (which is twice as
 long).
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The Unicode function
-.kw _uctime
-is identical to &func except that it produces a Unicode string (which
-is twice as long).
-The Unicode function
-.kw _u_ctime
-is identical to
-.kw _ctime
-except that it produces a Unicode string (which is twice as long).
 .do end
 .np
 Whenever the &func functions are called, the

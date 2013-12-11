@@ -1,4 +1,4 @@
-.func opendir _wopendir _uopendir
+.func opendir _wopendir
 #include <&dirhdr>
 .if '&machsys' eq 'QNX' .do begin
 DIR *opendir( const char *dirname );
@@ -11,10 +11,6 @@ struct dirent *opendir( const char *dirname );
 struct _wdirent *_wopendir( const wchar_t *dirname );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-UDIR *_uopendir( const wchar_t *dirname );
-.ixfunc2 '&Direct' &ufunc
 .do end
 .funcend
 .desc begin
@@ -84,22 +80,6 @@ and
 .kw _wclosedir
 functions.
 .im _wdirent
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument and returns a pointer to a
-.kw udirent
-structure that can be used with the
-.kw _ureaddir
-.if '&machsys' eq 'QNX' .do begin
-.ct ,
-.kw _urewinddir
-.do end
-and
-.kw _uclosedir
-functions.
-.im udirent
 .do end
 .desc end
 .return begin

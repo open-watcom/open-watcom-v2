@@ -17,13 +17,6 @@ errno_t _wfreopen_s( FILE * restrict * restrict newstreamptr,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-errno_t _ufreopen_s( FILE * restrict * restrict newstreamptr,
-                     const wchar_t * restrict filename,
-                     const wchar_t * restrict mode,
-                     FILE * restrict stream );
-.ixfunc2 '&StrIo' &ufunc
-.do end
 .func end
 .*
 .rtconst begin

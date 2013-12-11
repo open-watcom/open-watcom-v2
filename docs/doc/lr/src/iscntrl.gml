@@ -1,4 +1,4 @@
-.func iscntrl iswcntrl _uiscntrl
+.func iscntrl iswcntrl
 .funcw iswcntrl
 #include <ctype.h>
 int iscntrl( int c );
@@ -9,10 +9,6 @@ int iswcntrl( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uiscntrl( int c );
-.ixfunc2 '&CharTest' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function tests for any control character.
@@ -21,11 +17,6 @@ A control character is any character whose value is from 0 through 31.
 .np
 The &wfunc function is similar to &func except that it accepts a
 wide-character argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument.
 .do end
 .desc end
 .return begin

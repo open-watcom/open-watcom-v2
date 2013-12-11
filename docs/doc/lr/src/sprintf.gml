@@ -1,4 +1,4 @@
-.func sprintf swprintf _usprintf
+.func sprintf swprintf
 .funcw swprintf
 #include <stdio.h>
 int sprintf( char *buf, const char *format, ... );
@@ -10,11 +10,6 @@ int swprintf( wchar_t *buf,
               const wchar_t *format, ... );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _usprintf( wchar_t *buf,
-               const wchar_t *format, ... );
-.ixfunc2 '&String' &ufunc
 .do end
 .funcend
 .*
@@ -47,13 +42,6 @@ terminating null wide character, is specified by
 .ct .li .
 The &wfunc function accepts a wide-character string argument for
 .arg format
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and produces Unicode character output.
 .do end
 .desc end
 .*

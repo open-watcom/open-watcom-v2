@@ -1,4 +1,4 @@
-.func memicmp _memicmp _fmemicmp _umemicmp
+.func memicmp _memicmp _fmemicmp
 #include <string.h>
 int memicmp( const void *s1,
              const void *s2,
@@ -16,12 +16,6 @@ int _fmemicmp( const void __far *s1,
                size_t length );
 .ixfunc2 '&Compare' &ffunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _umemicmp( const void *s1,
-               const void *s2,
-               size_t length );
-.ixfunc2 '&Compare' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function compares, with case insensitivity (upper- and
@@ -37,14 +31,6 @@ to the object pointed to by
 .np
 The &_func function is identical to &func..
 Use &_func for ANSI/ISO naming conventions.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-operates on 16-bit Unicode character strings.
-The argument
-.arg length
-is interpreted to mean the number of Unicode characters.
 .do end
 .desc end
 .return begin

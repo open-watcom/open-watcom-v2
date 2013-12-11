@@ -1,4 +1,4 @@
-.func isxdigit iswxdigit _uisxdigit
+.func isxdigit iswxdigit
 .funcw iswxdigit
 #include <ctype.h>
 int isxdigit( int c );
@@ -9,10 +9,6 @@ int iswxdigit( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uisxdigit( int c );
-.ixfunc2 '&CharTest' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function tests for any hexadecimal-digit character.
@@ -22,11 +18,6 @@ through 'f') and ('A' through 'F').
 .np
 The &wfunc function is similar to &func except that it accepts a
 wide-character argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument.
 .do end
 .desc end
 .return begin

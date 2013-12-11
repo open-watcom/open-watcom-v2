@@ -1,4 +1,4 @@
-.func strcmpi wcscmpi _ustrcmpi
+.func strcmpi wcscmpi
 #include <string.h>
 int strcmpi( const char *s1, const char *s2 );
 .ixfunc2 '&String' &func
@@ -8,11 +8,6 @@ int wcscmpi( const wchar_t *s1, const wchar_t *s2 );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Compare' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _ustrcmpi( const wchar_t *s1, const wchar_t *s2 );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Compare' &ufunc
 .do end
 .funcend
 .desc begin

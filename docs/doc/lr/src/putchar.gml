@@ -1,4 +1,4 @@
-.func putchar putwchar _uputchar
+.func putchar putwchar
 .funcw putwchar
 #include <stdio.h>
 int putchar( int c );
@@ -8,10 +8,6 @@ int putchar( int c );
 wint_t putwchar( wint_t c );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uputchar( int c );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -31,13 +27,6 @@ The &wfunc function is identical to &func except that it converts the
 wide character specified by
 .arg c
 to a multibyte character and writes it to the output stream.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument
-.arg c
-and writes the Unicode character to the output stream.
 .do end
 .desc end
 .return begin

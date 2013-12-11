@@ -1,4 +1,4 @@
-.func strtoul wcstoul _ustrtoul
+.func strtoul wcstoul
 #include <stdlib.h>
 unsigned long int strtoul( const char *ptr,
                            char **endptr,
@@ -11,12 +11,6 @@ unsigned long int wcstoul( const wchar_t *ptr,
                            int base );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-unsigned long int _ustrtoul( const wchar_t *ptr,
-                             wchar_t **endptr,
-                             int base );
-.ixfunc2 '&Conversion' &ufunc
 .do end
 .funcend
 .desc begin

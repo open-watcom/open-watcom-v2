@@ -1,4 +1,4 @@
-.func strdup _strdup _fstrdup _wcsdup _mbsdup _fmbsdup _ustrdup
+.func strdup _strdup _fstrdup _wcsdup _mbsdup _fmbsdup
 #include <string.h>
 char *strdup( const char *src );
 .ixfunc2 '&String' &func
@@ -32,11 +32,6 @@ unsigned char __far *_fmbsdup( unsigned char __far *src );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Copy' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrdup( const wchar_t *src );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Copy' &ufunc
 .do end
 .funcend
 .desc begin

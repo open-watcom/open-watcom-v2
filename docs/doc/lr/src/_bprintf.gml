@@ -1,4 +1,4 @@
-.func _bprintf _bwprintf _u_bprintf
+.func _bprintf _bwprintf
 .funcw _bwprintf
 #include <stdio.h>
 int _bprintf( char *buf, size_t bufsize,
@@ -9,11 +9,6 @@ int _bwprintf( wchar_t *buf, size_t bufsize,
                const wchar_t *format, ... );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _u_bprintf( wchar_t *buf, size_t bufsize,
-                const wchar_t *format, ... );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .*
@@ -41,13 +36,6 @@ is to be written, rather than converted to multibyte characters and
 written to a stream.
 The &wfunc function accepts a wide-character string argument for
 .arg format
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and produces Unicode character output.
 .do end
 .desc end
 .*

@@ -1,4 +1,4 @@
-.func rename _wrename _urename
+.func rename _wrename
 #include <stdio.h>
 int rename( const char *old, const char *new );
 .ixfunc2 '&FileOp' &func
@@ -6,10 +6,6 @@ int rename( const char *old, const char *new );
 int _wrename( const wchar_t *old, const wchar_t *new );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _urename( const wchar_t *old, const wchar_t *new );
-.ixfunc2 '&FileOp' &ufunc
 .do end
 .funcend
 .desc begin
@@ -21,10 +17,6 @@ to be renamed to the name given by the string
 .if &'length(&wfunc.) ne 0 .do begin
 The &wfunc function is identical to &func except that it accepts
 wide-character string arguments.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-The &ufunc Unicode function is identical to &func except that it
-accepts Unicode string arguments.
 .do end
 .desc end
 .return begin

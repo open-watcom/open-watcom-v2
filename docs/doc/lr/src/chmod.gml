@@ -1,4 +1,4 @@
-.func chmod _chmod _wchmod _uchmod
+.func chmod _chmod _wchmod
 #include <sys/types.h>
 #include <sys/stat.h>
 .if '&machsys' eq 'QNX' .do begin
@@ -17,10 +17,6 @@ int _chmod( const char *path, int permission );
 int _wchmod( const wchar_t *path, int permission );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uchmod( const wchar_t *path, int permission );
-.ixfunc2 '&FileOp' &ufunc
 .do end
 .funcend
 .desc begin
@@ -67,11 +63,6 @@ Use &_func for ANSI naming conventions.
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide-character string argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc function is identical to &func except that it accepts a
-Unicode string argument.
 .do end
 .desc end
 .return begin

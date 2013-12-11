@@ -1,4 +1,4 @@
-.func puts _putws _uputs
+.func puts _putws
 .funcw _putws
 #include <stdio.h>
 int puts( const char *buf );
@@ -8,10 +8,6 @@ int puts( const char *buf );
 int _putws( const wchar_t *bufs );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uputs( const wchar_t *buf );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -28,13 +24,6 @@ The &wfunc function is identical to &func except that it converts the
 wide character string specified by
 .arg buf
 to a multibyte character string and writes it to the output stream.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-writes a Unicode character string pointed to by
-.arg buf
-to the output stream.
 .do end
 .desc end
 .return begin

@@ -1,4 +1,4 @@
-.func readdir _wreaddir _ureaddir
+.func readdir _wreaddir
 #include <&dirhdr>
 .if '&machsys' eq 'QNX' .do begin
 struct dirent *readdir( DIR *dirp );
@@ -11,10 +11,6 @@ struct dirent *readdir( struct dirent *dirp );
 struct _wdirent *_wreaddir( _wdirent *dirp );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-struct udirent *_ureaddir( UDIR *dirp );
-.ixfunc2 '&Direct' &ufunc
 .do end
 .funcend
 .desc begin
@@ -64,12 +60,6 @@ The &wfunc function is identical to &func except that it reads a
 directory of wide-character filenames.
 .im _wdirent
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it reads
-a directory of Unicode filenames.
-.im udirent
-.do end
 .desc end
 .return begin
 When successful, &func returns a pointer to an object of type
@@ -94,21 +84,6 @@ and
 .kw errno
 is set to indicate the error.
 When the end of the directory is encountered, &wfunc returns the value
-.mono NULL
-and
-.kw errno
-is unchanged.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-When successful, &ufunc returns a pointer to an object of type
-.us struct udirent.
-When an error occurs, &ufunc returns the value
-.mono NULL
-and
-.kw errno
-is set to indicate the error.
-When the end of the directory is encountered, &ufunc returns the value
 .mono NULL
 and
 .kw errno

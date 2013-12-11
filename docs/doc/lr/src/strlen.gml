@@ -1,4 +1,4 @@
-.func strlen _fstrlen wcslen _mbslen _fmbslen _ustrlen
+.func strlen _fstrlen wcslen _mbslen _fmbslen
 #include <string.h>
 size_t strlen( const char *s );
 .ixfunc2 '&String' &func
@@ -22,10 +22,6 @@ size_t _mbslen( const unsigned char *s );
 size_t _fmbslen( const unsigned char __far *s );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-size_t _ustrlen( const wchar_t *s );
-.ixfunc2 '&String' &ufunc
 .do end
 .funcend
 .*

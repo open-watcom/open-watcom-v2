@@ -1,4 +1,4 @@
-.func strcoll wcscoll _mbscoll _ustrcoll
+.func strcoll wcscoll _mbscoll
 #include <string.h>
 int strcoll( const char *s1, const char *s2 );
 .ixfunc2 '&String' &func
@@ -17,11 +17,6 @@ int _mbscoll( const unsigned char *s1, const unsigned char *s2 );
 .ixfunc2 '&Compare' &mfunc
 .ixfunc2 '&Multibyte' &mfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _ustrcoll( const wchar_t *s1, const wchar_t *s2 );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Compare' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function compares the string pointed to by
@@ -39,10 +34,6 @@ function when the collating sequence is selected from the
 locale.
 .im widefunc
 .im mbsfunc
-.if &'length(&ufunc.) ne 0 .do begin
-The &ufunc comparison uses the collating sequence defined by the
-Unicode character set.
-.do end
 .desc end
 .return begin
 The &func function returns an integer less than, equal to, or

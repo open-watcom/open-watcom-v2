@@ -1,4 +1,4 @@
-.func _splitpath2 _wsplitpath2 _u_splitpath2
+.func _splitpath2 _wsplitpath2
 #include <stdlib.h>
 .if '&machsys' eq 'QNX' .do begin
 .   .se *drv=node
@@ -22,15 +22,6 @@ void _wsplitpath2( const wchar_t *inp,
                          wchar_t **ext );
 .ixfunc2 '&Parsing' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-void _u_splitpath2( const wchar_t *inp,
-                          wchar_t *outp,
-                          wchar_t **&*drv.,
-                          wchar_t **dir,
-                          wchar_t **fname,
-                          wchar_t **ext );
-.ixfunc2 '&Parsing' &ufunc
 .do end
 .funcend
 .desc begin

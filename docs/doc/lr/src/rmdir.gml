@@ -1,4 +1,4 @@
-.func rmdir _rmdir _wrmdir _urmdir
+.func rmdir _rmdir _wrmdir
 #include <sys/types.h>
 .if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
@@ -16,10 +16,6 @@ int _rmdir( const char *path );
 int _wrmdir( const wchar_t *path );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _urmdir( const wchar_t *path );
-.ixfunc2 '&Direct' &ufunc
 .do end
 .funcend
 .*
@@ -61,11 +57,6 @@ Use &_func for ANSI/ISO naming conventions.
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide-character string argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument.
 .do end
 .desc end
 .*

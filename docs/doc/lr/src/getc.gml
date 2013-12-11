@@ -1,4 +1,4 @@
-.func getc getwc _ugetc
+.func getc getwc
 .funcw getwc
 #include <stdio.h>
 int getc( FILE *fp );
@@ -9,10 +9,6 @@ int getc( FILE *fp );
 wint_t getwc( FILE *fp );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _ugetc( FILE *fp );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -32,11 +28,6 @@ The &wfunc function is identical to &func except that it gets the next
 multibyte character (if present) from the input stream pointed to by
 .arg fp
 and converts it to a wide character.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-returns a Unicode character.
 .do end
 .desc end
 .return begin
@@ -72,11 +63,6 @@ is set to
 and &wfunc returns
 .kw WEOF
 .ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc function is identical in behaviour except that it returns a
-Unicode character.
 .do end
 .np
 .im errnoref

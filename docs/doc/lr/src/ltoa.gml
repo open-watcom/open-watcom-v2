@@ -1,4 +1,4 @@
-.func ltoa _ltoa _ltow _ltou
+.func ltoa _ltoa _ltow
 .funcw _ltow
 #include <stdlib.h>
 char *ltoa( long int value,
@@ -17,12 +17,6 @@ wchar_t *_ltow( long int value,
                 int radix );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ltou( long int value,
-                wchar_t *buffer,
-                int radix );
-.ixfunc2 '&Conversion' &ufunc
 .do end
 .funcend
 .desc begin
@@ -57,11 +51,6 @@ Use &_func for ANSI/ISO naming conventions.
 .np
 The &wfunc function is identical to &func except that it produces a
 wide-character string (which is twice as long).
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-produces a Unicode character string (which is twice as long).
 .do end
 .desc end
 .return begin

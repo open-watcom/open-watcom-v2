@@ -1,4 +1,4 @@
-.func strnicmp _strnicmp _fstrnicmp _wcsnicmp _mbsnicmp _fmbsnicmp _ustrnicmp
+.func strnicmp _strnicmp _fstrnicmp _wcsnicmp _mbsnicmp _fmbsnicmp
 #include <string.h>
 int strnicmp( const char *s1,
               const char *s2,
@@ -44,13 +44,6 @@ int _fmbsnicmp( const unsigned char __far *s1,
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Compare' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _ustrnicmp( const wchar_t *s1,
-                const wchar_t *s2,
-                size_t len );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Compare' &ufunc
 .do end
 .funcend
 .desc begin

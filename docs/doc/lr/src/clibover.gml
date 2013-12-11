@@ -38,13 +38,6 @@ of classes:
 .note Character Manipulation Functions
 .sk 0
 These functions deal with single characters.
-.if &unifnc eq 1 .do begin
-.np
-A set of functions that deal with Unicode characters is also provided.
-A Unicode character is a 16-bit item (unsigned short).
-The Unicode character set is capable of representing 65536 unique
-characters.
-.do end
 .*
 .note Wide Character Manipulation Functions
 .sk 0
@@ -65,15 +58,6 @@ A character string is an array of zero or more adjacent characters
 followed by a null character
 .mono ('\0')
 which marks the end of the string.
-.if &unifnc eq 1 .do begin
-.np
-A set of functions that manipulate strings of Unicode characters is
-also provided.
-A Unicode character string is an array of zero or more adjacent
-16-bit Unicode characters followed by a 16-bit null character
-.mono (L'\0')
-which marks the end of the string.
-.do end
 .*
 .note Wide String Manipulation Functions
 .sk 0
@@ -116,10 +100,6 @@ determined by scanning from left to right starting with the first byte
 .sk 0
 These functions convert values from one representation to another.
 Numeric values, for example, can be converted to strings.
-.if &unifnc eq 1 .do begin
-A set of functions that convert to and from Unicode character strings
-is also provided.
-.do end
 .*
 .note Memory Allocation Functions
 .sk 0
@@ -213,21 +193,11 @@ They are included to provide compatibility with other C implementations
 and to provide the capability to directly use operating-system
 file operations.
 .do end
-.if &unifnc eq 1 .do begin
-.np
-A set of functions that handle a file system based upon Unicode
-filenames is also provided.
-.do end
 .*
 .note File Manipulation Functions
 .sk 0
 These functions operate directly on files, providing facilities such
 as deletion of files.
-.if &unifnc eq 1 .do begin
-.np
-A set of functions that handle a file system based upon Unicode
-filenames is also provided.
-.do end
 .*
 .note Console I/O Functions
 .sk 0
@@ -344,20 +314,6 @@ These functions operate upon single characters of type
 .id char.
 The functions test characters in various ways and convert them between
 upper and lowercase.
-.if &unifnc eq 1 .do begin
-.np
-A set of functions that deal with Unicode characters is also provided.
-These functions are identified by the "_u" prefix.
-A Unicode character is a 16-bit item (unsigned short).
-The Unicode character set is capable of representing 65536 unique
-characters.
-These Unicode functions operate on characters in the range 0x0000 to
-0x00ff.
-Unicode characters outside this range fail any is... test.
-Only Unicode characters in the range L'A' to L'Z' and L'a' to L'z'
-convert to upper/lower case.
-.np
-.do end
 .fdbeg
 .fd *fun="isalnum" test for letter or digit
 .fd *fun="isalpha" test for letter
@@ -555,17 +511,6 @@ The functions that begin with "_f" accept
 .id far
 pointers as their arguments allowing manipulation of any memory location
 regardless of which memory model your program has been compiled for.
-.if &unifnc eq 1 .do begin
-.np
-A set of functions that manipulate strings of Unicode characters is
-also provided.
-These functions are identified by the "_u" prefix.
-A Unicode character string is an array of zero or more adjacent
-16-bit Unicode characters followed by a 16-bit null character
-.mono (L'\0')
-which marks the end of the string.
-.np
-.do end
 .fdbeg
 .fd *fun="bcmp" compare two byte strings
 .fd *fun="bcopy" copy a byte string
@@ -850,10 +795,6 @@ For related functions see the sections
 .ix '&Conversion'
 These functions perform conversions between objects of various types
 and strings.
-.if &unifnc eq 1 .do begin
-A set of functions that convert to and from Unicode character strings
-is also provided.
-.do end
 .fdbeg
 .fd *fun="atof" string to "double"
 .fd *fun="atoh" hexadecimal string to "unsigned int"
@@ -1655,11 +1596,6 @@ The functions in this section reference opened files and devices using a
 .us file &handle
 which is returned when the file is opened.
 The file &handle is passed to the other functions.
-.if &unifnc eq 1 .do begin
-.np
-A set of functions that handle a file system based upon Unicode
-filenames is also provided.
-.do end
 .np
 .fdbeg
 .fd *fun="chsize" change the size of a file
@@ -1716,10 +1652,6 @@ filenames is also provided.
 .np
 .ix '&FileOp'
 These functions operate directly with files.
-.if &unifnc eq 1 .do begin
-A set of functions that handle a file system based upon Unicode
-filenames is also provided.
-.do end
 .fdbeg
 .fd *fun="access" test file or directory for mode of access
 .fd *fun="chmod" change permissions for a file

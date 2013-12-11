@@ -1,4 +1,4 @@
-.func _fullpath _wfullpath _u_fullpath
+.func _fullpath _wfullpath
 #include <stdlib.h>
 char *_fullpath( char *buffer,
                  const char *path,
@@ -10,12 +10,6 @@ wchar_t *_wfullpath( wchar_t *buffer ,
                      size_t size );
 .ixfunc2 '&Parsing' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_u_fullpath( wchar_t *buffer,
-                       const wchar_t *path,
-                       size_t size );
-.ixfunc2 '&Parsing' &ufunc
 .do end
 .funcend
 .desc begin

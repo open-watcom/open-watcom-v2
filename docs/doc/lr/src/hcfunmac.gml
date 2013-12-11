@@ -14,12 +14,6 @@ The following functions are defined:
 .if &*fnd. ne 0 .do begin
 .* .if &*0 ge 30 .ty **** not enough macro args (&*0) *****
 .sr *ent=&*fun
-.if &unifnc. eq 1 .do begin
-.   .se *fnd=&'vecpos(_u&*fun.,fnclst)
-.   .if &*fnd. ne 0 .do begin
-.   .   .sr *ent=&*ent., _u&*fun
-.   .do end
-.do end
 :ZDT.&*ent.
 :ZDD.&*1 &*2 &*3 &*4 &*5 &*6 &*7 &*8 &*9 &*10 &*11 &*12 &*13 &*14 &*15 &*16 &*17 &*18 &*19 &*20 &*21 &*22 &*23 &*24 &*25 &*26 &*27 &*28 &*29 &*30
 .do end

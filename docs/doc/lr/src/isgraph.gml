@@ -1,4 +1,4 @@
-.func isgraph iswgraph _uisgraph
+.func isgraph iswgraph
 .funcw iswgraph
 #include <ctype.h>
 int isgraph( int c );
@@ -8,10 +8,6 @@ int isgraph( int c );
 int iswgraph( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uisgraph( int c );
-.ixfunc2 '&CharTest' &ufunc
 .do end
 .funcend
 .desc begin
@@ -25,11 +21,6 @@ in the character set being tested.
 .np
 The &wfunc function is similar to &func except that it accepts a
 wide-character argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument.
 .do end
 .desc end
 .return begin

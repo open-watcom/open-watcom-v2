@@ -1,4 +1,4 @@
-.func strstr _fstrstr wcsstr _mbsstr _fmbsstr _ustrstr
+.func strstr _fstrstr wcsstr _mbsstr _fmbsstr
 #include <string.h>
 char *strstr( const char *str,
               const char *substr );
@@ -33,12 +33,6 @@ unsigned char __far *_fmbsstr(
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrstr( const wchar_t *str,
-                    const wchar_t *substr );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Search' &ufunc
 .do end
 .funcend
 .desc begin

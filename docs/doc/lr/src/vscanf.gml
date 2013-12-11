@@ -1,4 +1,4 @@
-.func vscanf vwscanf _uvscanf
+.func vscanf vwscanf
 .funcw vwscanf
 #include <stdarg.h>
 #include <stdio.h>
@@ -12,11 +12,6 @@ int vwscanf( const wchar_t *format,
               va_list arg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uvscanf( const wchar_t *format,
-              va_list arg );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .*
@@ -47,13 +42,6 @@ The &wfunc function is identical to &func except that it
 accepts a wide-character string argument for
 .arg format
 .ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and the input consists of 16-bit Unicode characters.
 .do end
 .desc end
 .*

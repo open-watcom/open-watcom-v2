@@ -1,4 +1,4 @@
-.func strset _strset _fstrset _wcsset _mbsset _fmbsset _ustrset
+.func strset _strset _fstrset _wcsset _mbsset _fmbsset
 #include <string.h>
 char *strset( char *s1, int fill );
 .ixfunc2 '&String' &func
@@ -28,10 +28,6 @@ unsigned char __far *_fmbsset( unsigned char __far *s1,
                                unsigned int fill );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrset( wchar_t *s1, int fill );
-.ixfunc2 '&String' &ufunc
 .do end
 .funcend
 .desc begin

@@ -1,4 +1,4 @@
-.func putc putwc _uputc
+.func putc putwc
 .funcw putwc
 #include <stdio.h>
 int putc( int c, FILE *fp );
@@ -9,10 +9,6 @@ int putc( int c, FILE *fp );
 wint_t putwc( wint_t c, FILE *fp );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uputc( int c, FILE *fp );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -31,13 +27,6 @@ The &wfunc function is identical to &func except that it converts the
 wide character specified by
 .arg c
 to a multibyte character and writes it to the output stream.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument
-.arg c
-and writes the Unicode character to the output stream.
 .do end
 .desc end
 .return begin

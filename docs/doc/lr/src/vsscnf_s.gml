@@ -1,4 +1,4 @@
-.func begin vsscanf_s vswscanf_s _uvsscanf_s
+.func begin vsscanf_s vswscanf_s
 .funcw vswscanf_s
 .func gen
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -16,12 +16,6 @@ int vswscanf_s( const wchar_t * restrict s,
 		va_list arg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uvsscanf_s( const wchar_t * restrict s,
-                 const wchar_t * restrict format,
-		 va_list arg );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .func end
 .*
@@ -59,15 +53,6 @@ wide-character string arguments for
 and
 .arg format
 .ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts Unicode string arguments for
-.arg s
-and
-.arg format
-and the input consists of 16-bit Unicode characters.
 .do end
 .desc end
 .*

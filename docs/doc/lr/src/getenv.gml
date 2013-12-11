@@ -1,4 +1,4 @@
-.func getenv _wgetenv _ugetenv
+.func getenv _wgetenv
 #include <stdlib.h>
 char *getenv( const char *name );
 .ixfunc2 '&Process' &func
@@ -6,10 +6,6 @@ char *getenv( const char *name );
 wchar_t *_wgetenv( const wchar_t *name );
 .ixfunc2 '&Process' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t  *_ugetenv( const wchar_t *name );
-.ixfunc2 '&Process' &ufunc
 .do end
 .funcend
 .*
@@ -119,12 +115,6 @@ value of &wfunc are wide-character strings.
 :CMT. pointed to by
 :CMT. .kw _wenviron
 :CMT. .ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument and returns a pointer to a Unicode
-string.
 .do end
 .desc end
 .*

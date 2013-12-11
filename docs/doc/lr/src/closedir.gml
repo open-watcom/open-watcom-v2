@@ -1,4 +1,4 @@
-.func closedir _wclosedir _uclosedir
+.func closedir _wclosedir
 #include <&dirhdr>
 .if '&machsys' eq 'QNX' .do begin
 int closedir( DIR *dirp );
@@ -11,10 +11,6 @@ int closedir( struct dirent *dirp );
 int _wclosedir( struct _wdirent *dirp );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uclosedir( UDIR *dirp );
-.ixfunc2 '&Direct' &ufunc
 .do end
 .funcend
 .desc begin
@@ -47,13 +43,6 @@ Either or both processes may use the &func function.
 The &wfunc function is identical to &func except that it closes a
 directory of wide-character filenames opened by
 .kw _wopendir
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-closes a directory of Unicode filenames opened by
-.kw _uopendir
 .ct .li .
 .do end
 .desc end

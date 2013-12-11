@@ -17,11 +17,6 @@ int _wsopen( const wchar_t *filename,
            int access, int share, ... );
 .ixfunc2 '&OsIo' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _usopen( const wchar_t *filename,
-           int access, int share, ... );
-.ixfunc2 '&OsIo' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function opens a file at the operating system level for
@@ -51,11 +46,6 @@ Use &_func for ANSI/ISO naming conventions.
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide character string argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument.
 .do end
 .im openacc
 .im openper

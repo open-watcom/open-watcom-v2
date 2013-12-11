@@ -1,4 +1,4 @@
-.func _fsopen _wfsopen _u_fsopen
+.func _fsopen _wfsopen
 #include <stdio.h>
 FILE *_fsopen( const char *filename,
                const char *mode, int share );
@@ -8,11 +8,6 @@ FILE *_wfsopen( const wchar_t *filename,
                 const wchar_t *mode, int share );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-FILE *_u_fsopen( const wchar_t *filename,
-                 const wchar_t *mode, int share );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -206,15 +201,6 @@ you are using for more detailed information about these sharing modes.
 .np
 The &wfunc function is identical to &func except that it accepts
 wide-character string arguments for
-.arg filename
-and
-.arg mode
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts Unicode string arguments for
 .arg filename
 and
 .arg mode

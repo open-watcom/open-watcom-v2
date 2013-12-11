@@ -1,4 +1,4 @@
-.func fgetchar _fgetchar _fgetwchar _ufgetchar
+.func fgetchar _fgetchar _fgetwchar
 .funcw _fgetwchar
 #include <stdio.h>
 int fgetchar( void );
@@ -11,10 +11,6 @@ int _fgetchar( void );
 wint_t _fgetwchar( void );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _ufgetchar( void );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -34,11 +30,6 @@ The &wfunc function is identical to &func except that it gets the next
 multibyte character (if present) from the input stream pointed to by
 .kw stdin
 and converts it to a wide character.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it returns
-a Unicode character.
 .do end
 .desc end
 .return begin

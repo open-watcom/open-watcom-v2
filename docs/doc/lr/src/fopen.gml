@@ -1,4 +1,4 @@
-.func fopen _wfopen _ufopen
+.func fopen _wfopen
 #include <stdio.h>
 FILE *fopen( const char *filename, const char *mode );
 .ixfunc2 '&StrIo' &func
@@ -7,11 +7,6 @@ FILE *_wfopen( const wchar_t *filename,
                const wchar_t *mode );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-FILE *_ufopen( const wchar_t *filename,
-               const wchar_t *mode );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .*
@@ -167,15 +162,6 @@ resulted in end-of-file.
 .np
 The &wfunc function is identical to &func except that it
 accepts wide-character string arguments for
-.arg filename
-and
-.arg mode
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts Unicode string arguments for
 .arg filename
 and
 .arg mode

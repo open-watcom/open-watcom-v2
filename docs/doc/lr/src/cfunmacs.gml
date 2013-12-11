@@ -14,13 +14,6 @@ The following functions are defined:
 .do end
 .dm fdbeg end
 .*
-:CMT. .   .if &unifnc. eq 1 .do begin
-:CMT. .   .   .se *fnd=&'vecpos(_u&*fun.,fnclst)
-:CMT. .   .   .if &*fnd. ne 0 .do begin
-:CMT. .   .   .   .sr *ent=&*ent., _u&*fun
-:CMT. .   .   .do end
-:CMT. .   .do end
-.*
 .*  The hotlink depends on the fact that the first name in the list
 .*  of functions described by a single file is also the first name
 .*  listed in the .func line of that single file.  If this is not the

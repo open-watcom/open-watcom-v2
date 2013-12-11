@@ -1,4 +1,4 @@
-.func strtoimax wcstoimax _ustrtoimax
+.func strtoimax wcstoimax
 #include <inttypes.h>
 intmax_t strtoimax( const char *ptr,
                     char **endptr,
@@ -10,12 +10,6 @@ intmax_t wcstoimax( const wchar_t *ptr,
                     int base );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-intmax_t _ustrtoimax( const wchar_t *ptr,
-                      wchar_t **endptr,
-                      int base );
-.ixfunc2 '&Conversion' &ufunc
 .do end
 .funcend
 .desc begin

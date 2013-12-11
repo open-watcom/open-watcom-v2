@@ -3,8 +3,6 @@
 .func2 _asctime
 .func2 _wasctime
 .func2 __wasctime
-.func2 _uasctime
-.func2 _u_asctime
 .func gen
 #include <time.h>
 char * asctime( const struct tm *timeptr );
@@ -12,19 +10,12 @@ char *_asctime( const struct tm *timeptr, char *buf );
 .ixfunc2 '&TimeFunc' asctime
 .ixfunc2 '&TimeFunc' _asctime
 .if &'length(&wfunc.) ne 0 .do begin
-wchar_t * _wasctime( const struct tm *timeptr );
+wchar_t *_wasctime( const struct tm *timeptr );
 wchar_t *__wasctime( const struct tm *timeptr, wchar_t *buf );
 .ixfunc2 '&TimeFunc' _wasctime
 .ixfunc2 '&TimeFunc' __wasctime
 .ixfunc2 '&Wide' _wasctime
 .ixfunc2 '&Wide' __wasctime
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t * _uasctime( const struct tm *timeptr );
-wchar_t *_u_asctime( const struct tm *timeptr,
-                      wchar_t *buf );
-.ixfunc2 '&TimeFunc' _uasctime
-.ixfunc2 '&TimeFunc' _u_asctime
 .do end
 .im structtm
 .func end
@@ -69,17 +60,6 @@ functions are identical to their
 and
 .kw _asctime
 counterparts except that they deal with wide-character strings.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-The Unicode function
-.kw _uasctime
-is identical to &func except that it produces a Unicode string (which
-is twice as long).
-The Unicode function
-.kw _u_asctime
-is identical to
-.kw _asctime
-except that it produces a Unicode string (which is twice as long).
 .do end
 .desc end
 .return begin

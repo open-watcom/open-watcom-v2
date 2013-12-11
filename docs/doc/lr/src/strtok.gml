@@ -1,4 +1,4 @@
-.func strtok _fstrtok wcstok _mbstok _fmbstok _ustrtok
+.func strtok _fstrtok wcstok _mbstok _fmbstok
 #include <string.h>
 char *strtok( char *s1, const char *s2 );
 .ixfunc2 '&String' &func
@@ -31,11 +31,6 @@ unsigned char __far *_fmbstok( unsigned char __far *s1,
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Wide' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrtok( wchar_t *s1, const wchar_t *s2 );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Search' &ufunc
 .do end
 .funcend
 .*

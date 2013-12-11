@@ -1,4 +1,4 @@
-.func access _access _waccess _uaccess
+.func access _access _waccess
 #include <&iohdr>
 int access( const char *path, int mode );
 .ixfunc2 '&FileOp' &func
@@ -10,10 +10,6 @@ int _access( const char *path, int mode );
 int _waccess( const wchar_t *path, int mode );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uaccess( const wchar_t *path, int mode );
-.ixfunc2 '&FileOp' &ufunc
 .do end
 .funcend
 .desc begin
@@ -60,13 +56,6 @@ write-only files.
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide-character string argument for
-.arg path
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
 .arg path
 .ct .li .
 .do end

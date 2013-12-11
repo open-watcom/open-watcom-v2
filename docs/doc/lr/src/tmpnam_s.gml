@@ -40,10 +40,6 @@ The &func function generates a different string each time it is called.
 The &wfunc function is identical to &func except that it generates a
 unique wide-character string for the file name.
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-The &ufunc Unicode function is identical to &func except that it
-generates a unique Unicode string for the file name.
-.do end
 .desc end
 .*
 .return begin

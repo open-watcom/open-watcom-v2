@@ -1,4 +1,4 @@
-.func ungetc ungetwc _uungetc
+.func ungetc ungetwc
 .funcw ungetwc
 #include <stdio.h>
 int ungetc( int c, FILE *fp );
@@ -9,10 +9,6 @@ int ungetc( int c, FILE *fp );
 wint_t ungetwc( wint_t c, FILE *fp );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uungetc( int c, FILE *fp );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -54,15 +50,6 @@ of
 .arg c
 is
 .kw WEOF
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-pushes the Unicode character specified by
-.arg c
-back onto the input stream pointed to by
-.arg fp
 .ct .li .
 .do end
 .desc end

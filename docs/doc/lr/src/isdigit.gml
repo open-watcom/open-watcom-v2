@@ -1,4 +1,4 @@
-.func isdigit iswdigit _uisdigit
+.func isdigit iswdigit
 .funcw iswdigit
 #include <ctype.h>
 int isdigit( int c );
@@ -9,10 +9,6 @@ int iswdigit( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uisdigit( int c );
-.ixfunc2 '&CharTest' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function tests for any decimal-digit character '0' through
@@ -21,11 +17,6 @@ The &func function tests for any decimal-digit character '0' through
 .np
 The &wfunc function is similar to &func except that it accepts a
 wide-character argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument.
 .do end
 .desc end
 .return begin

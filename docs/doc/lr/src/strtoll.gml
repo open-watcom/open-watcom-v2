@@ -1,4 +1,4 @@
-.func strtoll wcstoll _ustrtoll
+.func strtoll wcstoll
 #include <stdlib.h>
 long long int strtoll( const char *ptr,
                        char **endptr,
@@ -11,12 +11,6 @@ long long int wcstoll( const wchar_t *ptr,
                        int base );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-long long int _ustrtoll( const wchar_t *ptr,
-                         wchar_t **endptr,
-                         int base );
-.ixfunc2 '&Conversion' &ufunc
 .do end
 .funcend
 .desc begin

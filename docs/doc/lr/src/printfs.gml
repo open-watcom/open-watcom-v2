@@ -390,17 +390,7 @@ the "l" or "w" modifiers are used to indicate a wide character string.
 For &wfunc, this specifier refers to a wide character string unless
 the "h" modifier is used to indicate an ASCII character string.
 .do end
-
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-For &func, this specifier refers to an ASCII character string unless
-the "l" or "w" modifiers are used to indicate a 16-bit Unicode
-character string.
-.np
-For &ufunc, this specifier refers to a 16-bit Unicode character string
-unless the "h" modifier is used to indicate an ASCII character string.
-.do end
-
+*.
 .note S
 Characters from the string specified by an argument of type
 .id wchar_t *

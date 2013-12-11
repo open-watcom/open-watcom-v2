@@ -1,4 +1,4 @@
-.func _strtime _wstrtime _ustrtime
+.func _strtime _wstrtime
 #include <time.h>
 char *_strtime( char *timestr )
 .ixfunc2 '&Conversion' &func
@@ -6,10 +6,6 @@ char *_strtime( char *timestr )
 wchar_t _wstrtime( wchar_t *timestr );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t _ustrtime( wchar_t *timestr );
-.ixfunc2 '&Conversion' &ufunc
 .do end
 .funcend
 .desc begin

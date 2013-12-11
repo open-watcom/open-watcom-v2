@@ -1,4 +1,4 @@
-.func fgets fgetws _ufgets
+.func fgets fgetws
 .funcw fgetws
 #include <stdio.h>
 char *fgets( char *buf, int n, FILE *fp );
@@ -9,10 +9,6 @@ char *fgets( char *buf, int n, FILE *fp );
 wchar_t *fgetws( wchar_t *buf, int n, FILE *fp );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ufgets( wchar_t *buf, int n, FILE *fp );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -42,15 +38,6 @@ wide-character array pointed to by
 In this case,
 .arg n
 specifies the number of wide characters, less one, to be read.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it gets
-Unicode characters from the file designated by
-.arg fp
-and stores them in the array pointed to by
-.arg buf
-.ct .li .
 .do end
 .np
 A common programming error is to assume the presence of a new-line

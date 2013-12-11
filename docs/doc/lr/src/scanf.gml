@@ -1,4 +1,4 @@
-.func scanf wscanf _uscanf
+.func scanf wscanf
 .funcw wscanf
 #include <stdio.h>
 int scanf( const char *format, ... );
@@ -8,10 +8,6 @@ int scanf( const char *format, ... );
 int wscanf( const wchar_t *format, ... );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uscanf( const wchar_t *format, ... );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .*
@@ -34,13 +30,6 @@ The &wfunc function is identical to &func except that it accepts a
 wide-character string argument for
 .arg format
 .ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and the input consists of 16-bit Unicode characters.
 .do end
 .desc end
 .*

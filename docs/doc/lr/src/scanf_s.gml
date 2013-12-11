@@ -1,4 +1,4 @@
-.func begin scanf_s wscanf_s _uscanf_s
+.func begin scanf_s wscanf_s
 .funcw wscanf_s
 .func gen
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -10,10 +10,6 @@ int scanf_s( const char * restrict format, ... );
 int wscanf_s( const wchar_t * restrict format, ... );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uscanf_s( const wchar_t * restrict format, ... );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .func end
 .*
@@ -41,13 +37,6 @@ The &wfunc function is identical to &func except that it accepts a
 wide-character string argument for
 .arg format
 .ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and the input consists of 16-bit Unicode characters.
 .do end
 .desc end
 .*

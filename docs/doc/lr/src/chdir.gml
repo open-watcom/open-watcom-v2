@@ -1,4 +1,4 @@
-.func chdir _chdir _wchdir _uchdir
+.func chdir _chdir _wchdir
 #include <sys/types.h>
 .if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
@@ -16,10 +16,6 @@ int _chdir( const char *path );
 int _wchdir( const wchar_t *path );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uchdir( const wchar_t *path );
-.ixfunc2 '&Direct' &ufunc
 .do end
 .funcend
 .desc begin
@@ -66,11 +62,6 @@ Use &_func for ANSI/ISO naming conventions.
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide-character string argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument.
 .do end
 .desc end
 .return begin

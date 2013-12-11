@@ -146,7 +146,7 @@ struct fixpt foo2 =
 "h" causes an "n" (read length assignment) operation to assign the
 number of characters that have been read to an object of type
 .id short int.
-
+*.
 .if &'length(&wfunc.) ne 0 .do begin
 .bull
 "h" causes an "s" operation to convert the input string to an ASCII
@@ -156,17 +156,7 @@ For &wfunc, this specifier is required if the wide character input
 string is to be converted to an ASCII character string; otherwise it
 will not be converted.
 .do end
-
-.if &'length(&ufunc.) ne 0 .do begin
-.bull
-"h" causes an "s" operation to convert the input string to an ASCII
-character string.
-For &func, this specifier is redundant.
-For &ufunc, this specifier is required if the Unicode input string is
-to be converted to an ASCII character string; otherwise it will not be
-converted.
-.do end
-
+*.
 .bull
 "l" causes a "d", "i", "o", "u" or "x" (integer) conversion to
 assign the converted value to an object of type
@@ -190,16 +180,7 @@ For &func, this specifier is required if the input ASCII string is to
 be converted to a wide character string; otherwise it will not be
 converted.
 .do end
-
-.if &'length(&ufunc.) ne 0 .do begin
-.bull
-"l" or "w" cause an "s" operation to convert the input string to a
-16-bit Unicode character string.
-For &func, this specifier is required if the input ASCII string is to
-be converted to a 16-bit Unicode character string; otherwise it will
-not be converted.
-.do end
-
+*.
 .bull
 "ll" causes a "d", "i", "o", "u" or "x" (integer) conversion to
 assign the converted value to an object of type

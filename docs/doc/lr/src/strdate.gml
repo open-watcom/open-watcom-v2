@@ -1,4 +1,4 @@
-.func _strdate _wstrdate _ustrdate
+.func _strdate _wstrdate
 #include <time.h>
 char *_strdate( char *datestr )
 .ixfunc2 '&Conversion' &func
@@ -6,10 +6,6 @@ char *_strdate( char *datestr )
 wchar_t _wstrdate( wchar_t *datestr );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t _ustrdate( wchar_t *datestr );
-.ixfunc2 '&Conversion' &ufunc
 .do end
 .funcend
 .desc begin

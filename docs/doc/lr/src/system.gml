@@ -1,4 +1,4 @@
-.func system _wsystem _usystem
+.func system _wsystem
 #include <stdlib.h>
 int system( const char *command );
 .ixfunc2 '&Process' &func
@@ -6,10 +6,6 @@ int system( const char *command );
 int _wsystem( const wchar_t *command );
 .ixfunc2 '&Process' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _usystem( const wchar_t *command );
-.ixfunc2 '&Process' &ufunc
 .do end
 .funcend
 .desc begin
@@ -79,11 +75,6 @@ functions can only cause programs to be executed.
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide-character string argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument.
 .do end
 .desc end
 .return begin

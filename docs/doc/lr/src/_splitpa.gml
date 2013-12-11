@@ -1,4 +1,4 @@
-.func _splitpath _wsplitpath _u_splitpath
+.func _splitpath _wsplitpath
 #include <stdlib.h>
 void _splitpath( const char *path,
 .if '&machsys' eq 'QNX' .do begin
@@ -24,19 +24,6 @@ void _wsplitpath( const wchar_t *path,
                         wchar_t *ext );
 .ixfunc2 '&Parsing' '&wfunc'
 .ixfunc2 '&Wide' '&wfunc'
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-void _u_splitpath( const wchar_t *path,
-.if '&machsys' eq 'QNX' .do begin
-                         wchar_t *node,
-.do end
-.el .do begin
-                         wchar_t *drive,
-.do end
-                         wchar_t *dir,
-                         wchar_t *fname,
-                         wchar_t *ext );
-.ixfunc2 '&Parsing' '&ufunc'
 .do end
 .funcend
 .desc begin

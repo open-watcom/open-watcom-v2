@@ -1,4 +1,4 @@
-.func isascii __isascii iswascii _uisascii
+.func isascii __isascii iswascii
 .funcw iswascii
 #include <ctype.h>
 int isascii( int c );
@@ -11,10 +11,6 @@ int iswascii( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uisascii( int c );
-.ixfunc2 '&CharTest' &ufunc
-.do end
 .funcend
 .desc begin
 The &func function tests for a character in the range from 0 to 127.
@@ -25,11 +21,6 @@ Use &__func for ANSI/ISO naming conventions.
 .np
 The &wfunc function is similar to &func except that it accepts a
 wide-character argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode character argument.
 .do end
 .desc end
 .return begin

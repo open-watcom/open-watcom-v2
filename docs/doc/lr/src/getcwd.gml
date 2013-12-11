@@ -1,4 +1,4 @@
-.func getcwd _wgetcwd _ugetcwd
+.func getcwd _wgetcwd
 .if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
 char *getcwd( char *buffer, size_t size );
@@ -12,10 +12,6 @@ char *getcwd( char *buffer, size_t size );
 wchar_t *_wgetcwd( wchar_t *buffer, size_t size );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ugetcwd( wchar_t *buffer, size_t size );
-.ixfunc2 '&Direct' &ufunc
 .do end
 .funcend
 .desc begin
@@ -53,12 +49,6 @@ function.
 The &wfunc function is identical to &func except that it returns the
 name of the current working directory as a wide-character string
 (which is twice as long).
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-returns the name of the current working directory as a Unicode
-character string (which is twice as long).
 .do end
 .desc end
 .return begin

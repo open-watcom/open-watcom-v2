@@ -1,4 +1,4 @@
-.func creat _creat _wcreat _ucreat
+.func creat _creat _wcreat
 #include <sys/types.h>
 #include <sys/stat.h>
 .ixfunc2 '&OsIo' &func
@@ -8,10 +8,6 @@ int creat( const char *path, mode_t mode );
 .if &'length(&wfunc.) ne 0 .do begin
 int _wcreat( const wchar_t *path, mode_t mode );
 .ixfunc2 '&OsIo' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _ucreat( const wchar_t *path, mode_t mode );
-.ixfunc2 '&OsIo' &ufunc
 .do end
 .do end
 .el .do begin
@@ -25,10 +21,6 @@ int _creat( const char *path, int mode );
 int _wcreat( const wchar_t *path, int mode );
 .ixfunc2 '&OsIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _ucreat( const wchar_t *path, int mode );
-.ixfunc2 '&OsIo' &ufunc
 .do end
 .do end
 .funcend
@@ -48,11 +40,6 @@ Use &_func for ANSI naming conventions.
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide character string argument.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument.
 .do end
 .np
 The name of the file to be created is given by

@@ -1,4 +1,4 @@
-.func strspn _fstrspn wcsspn _mbsspn _fmbsspn _ustrspn
+.func strspn _fstrspn wcsspn _mbsspn _fmbsspn
 #include <string.h>
 size_t strspn( const char *str,
                const char *charset );
@@ -32,12 +32,6 @@ size_t _fmbsspn( const unsigned char __far *str,
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-size_t _ustrspn( const wchar_t *str,
-                 const wchar_t *charset );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Search' &ufunc
 .do end
 .funcend
 .desc begin

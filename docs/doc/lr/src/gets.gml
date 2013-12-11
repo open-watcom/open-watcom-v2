@@ -1,4 +1,4 @@
-.func gets _getws _ugets
+.func gets _getws
 .funcw _getws
 #include <stdio.h>
 char *gets( char *buf );
@@ -8,10 +8,6 @@ char *gets( char *buf );
 wchar_t *_getws( wchar_t *buf );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ugets( wchar_t *buf );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -34,16 +30,6 @@ wide-character array pointed to by
 .arg buf
 until end-of-file is encountered or a wide-character new-line
 character is read.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it gets
-a string of Unicode characters from
-.kw stdin
-and stores them in the array pointed to by
-.arg buf
-until end-of-file is encountered or a Unicode new-line character is
-read.
 .do end
 .np
 It is recommended that

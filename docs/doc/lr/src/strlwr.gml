@@ -1,4 +1,4 @@
-.func strlwr _strlwr _fstrlwr _wcslwr _mbslwr _fmbslwr _ustrlwr
+.func strlwr _strlwr _fstrlwr _wcslwr _mbslwr _fmbslwr
 #include <string.h>
 char *strlwr( char *s1 );
 .ixfunc2 '&String' &func
@@ -26,10 +26,6 @@ unsigned char *_mbslwr( unsigned char *s1 );
 unsigned char __far *_fmbslwr( unsigned char __far *s1 );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrlwr( wchar_t *s1 );
-.ixfunc2 '&String' &ufunc
 .do end
 .funcend
 .desc begin

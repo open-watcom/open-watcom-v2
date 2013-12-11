@@ -1,4 +1,4 @@
-.func itoa _itoa _itow _itou
+.func itoa _itoa _itow
 .funcw _itow
 #include <stdlib.h>
 char *itoa( int value, char *buffer, int radix );
@@ -12,11 +12,6 @@ wchar_t *_itow( int value, wchar_t *buffer,
                 int radix );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_itou( int value, wchar_t *buffer,
-                int radix );
-.ixfunc2 '&Conversion' &ufunc
 .do end
 .funcend
 .desc begin
@@ -54,11 +49,6 @@ Use &_func for ANSI/ISO naming conventions.
 .np
 The &wfunc function is identical to &func except that it
 produces a wide-character string (which is twice as long).
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-produces a Unicode character string (which is twice as long).
 .do end
 .desc end
 .return begin

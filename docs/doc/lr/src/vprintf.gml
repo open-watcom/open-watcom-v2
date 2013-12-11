@@ -1,4 +1,4 @@
-.func vprintf vwprintf _uvprintf
+.func vprintf vwprintf
 .funcw vwprintf
 #include <stdarg.h>
 #include <stdio.h>
@@ -10,10 +10,6 @@ int vprintf( const char *format, va_list arg );
 int vwprintf( const wchar_t *format, va_list arg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uvprintf( const wchar_t *format, va_list arg );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .*
@@ -42,15 +38,6 @@ macro.
 The &wfunc function is identical to &func except that it accepts a
 wide-character string argument for
 .arg format
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and writes Unicode characters to the file
-.kw stdout
 .ct .li .
 .do end
 .desc end

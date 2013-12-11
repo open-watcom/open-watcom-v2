@@ -1,4 +1,4 @@
-.func getchar getwchar _ugetchar
+.func getchar getwchar
 .funcw getwchar
 #include <stdio.h>
 int getchar( void );
@@ -8,10 +8,6 @@ int getchar( void );
 wint_t getwchar( void );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _ugetchar( void );
-.ixfunc2 '&StrIo' &ufunc
 .do end
 .funcend
 .desc begin
@@ -25,15 +21,6 @@ with the argument
 The &wfunc function is similar to &func except that it is equivalent
 to
 .kw getwc
-with the argument
-.kw stdin
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is similar to &func except that it is
-equivalent to
-.kw _ugetc
 with the argument
 .kw stdin
 .ct .li .
@@ -72,11 +59,6 @@ is set to
 and &wfunc returns
 .kw WEOF
 .ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc function is identical in behaviour except that it returns a
-Unicode character.
 .do end
 .np
 .im errnoref

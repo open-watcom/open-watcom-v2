@@ -1,4 +1,4 @@
-.func _makepath _wmakepath _u_makepath
+.func _makepath _wmakepath
 #include <stdlib.h>
 void _makepath( char *path,
 .if '&machsys' eq 'QNX' .do begin
@@ -24,19 +24,6 @@ void _wmakepath( wchar_t *path,
                   const wchar_t *ext );
 .ixfunc2 '&Parsing' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-void _u_makepath( wchar_t *path,
-.if '&machsys' eq 'QNX' .do begin
-                  const wchar_t *node,
-.do end
-.el .do begin
-                  const wchar_t *drive,
-.do end
-                  const wchar_t *dir,
-                  const wchar_t *fname,
-                  const wchar_t *ext );
-.ixfunc2 '&Parsing' &ufunc
 .do end
 .funcend
 .desc begin

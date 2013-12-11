@@ -1,4 +1,4 @@
-.func perror _wperror _uperror
+.func perror _wperror
 #include <stdio.h>
 void perror( const char *prefix );
 .ixfunc2 '&StrIo' &func
@@ -8,11 +8,6 @@ void _wperror( const wchar_t *prefix );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Errs' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-void _uperror( const wchar_t *prefix );
-.ixfunc2 '&StrIo' &ufunc
-.ixfunc2 '&Errs' &ufunc
 .do end
 .funcend
 .desc begin
@@ -33,12 +28,6 @@ This is followed by a colon (":"), a space, the string returned by
 .np
 The &wfunc function is identical to &func except that it accepts a
 wide-character string argument and produces wide-character output.
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument and produces Unicode character
-output.
 .do end
 .desc end
 .return begin

@@ -15,11 +15,6 @@ int vfwprintf_s( FILE * restrict stream,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.if &'length(&ufunc.) ne 0 .do begin
-int _uvprintf_s( FILE * restrict stream,
-        const wchar_t * restrict format, va_list prg );
-.ixfunc2 '&StrIo' &ufunc
-.do end
 .func end
 .*
 .rtconst begin
@@ -51,15 +46,6 @@ function except for the explicit runtime-constraints listed above.
 The &wfunc function is identical to &func except that it accepts a
 wide-character string argument for
 .arg format
-.ct .li .
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-.np
-The &ufunc Unicode function is identical to &func except that it
-accepts a Unicode string argument for
-.arg format
-and writes Unicode characters to the file
-.kw stdout
 .ct .li .
 .do end
 .desc end

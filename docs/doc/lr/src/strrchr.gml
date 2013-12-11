@@ -1,4 +1,4 @@
-.func strrchr _fstrrchr wcsrchr _mbsrchr _fmbsrchr _ustrrchr
+.func strrchr _fstrrchr wcsrchr _mbsrchr _fmbsrchr
 #include <string.h>
 char *strrchr( const char *s, int c );
 .ixfunc2 '&String' &func
@@ -30,11 +30,6 @@ unsigned char __far *_fmbsrchr(
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrrchr( const wchar_t *s, int c );
-.ixfunc2 '&String' &ufunc
-.ixfunc2 '&Search' &ufunc
 .do end
 .funcend
 .desc begin

@@ -1,4 +1,4 @@
-.func strnset _strnset _fstrnset _wcsnset _mbsnset _fmbsnset _ustrnset
+.func strnset _strnset _fstrnset _wcsnset _mbsnset _fmbsnset
 #include <string.h>
 char *strnset( char *str, int fill, size_t count );
 .ixfunc2 '&String' &func
@@ -32,10 +32,6 @@ unsigned char __far *_fmbsnset( unsigned char __far *str,
                                 size_t __n );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
-.do end
-.if &'length(&ufunc.) ne 0 .do begin
-wchar_t *_ustrnset( wchar_t *str, int fill, size_t count );
-.ixfunc2 '&String' &ufunc
 .do end
 .funcend
 .desc begin
