@@ -161,13 +161,6 @@ These functions are part of the PC graphics library.
 .point Windows
 .ix 'Windows classification'
 These functions are specific to Microsoft Windows.
-:cmt. .point PenPoint
-:cmt. .ix 'PenPoint classification'
-:cmt. These functions or macros are neither ANSI/ISO nor POSIX.
-:cmt. They perform a function related to PenPoint.
-:cmt. They may be found in other implementations of C for personal computers
-:cmt. with PenPoint.
-:cmt. Use these functions with caution, if portability is a consideration.
 .do end
 .point WATCOM
 .ix 'WATCOM classification'
@@ -231,9 +224,6 @@ Phar Lap's 286|DOS-Extender (RUN286).
 .point OS/2-32
 This function is available on 32-bit IBM OS/2, a protected-mode
 system for Intel 80386 and upwards compatible systems.
-:cmt. .point PenPoint
-:cmt. This function is available on GO Corporation's PenPoint 1.0 or 2.0
-:cmt. operating systems.
 .point QNX
 This function is available on QNX Software Systems' 16 or 32-bit
 operating systems.

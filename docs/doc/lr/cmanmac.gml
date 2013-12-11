@@ -84,17 +84,6 @@
 .   .   .do end
 .   .do end
 .do end
-.el .if &'pos('_u',&*) eq 1 .do begin
-.   .if '&*' eq '_utow' .do begin
-.   .   .sr wfunc=&*
-.   .do end
-.   .el .if '&*' ne '_ultow' .do begin
-.   .   .sr wfunc=&*
-.   .do end
-.   .el .if '&*' ne '_ulltow' .do begin
-.   .   .sr wfunc=&*
-.   .do end
-.do end
 .el .if &'pos('wc',&*) eq 1 .do begin
 .   .sr wfunc=&*
 .do end
