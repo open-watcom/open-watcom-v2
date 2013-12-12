@@ -7,12 +7,16 @@ int _finite( double x );
 .desc begin
 .ix 'infinity'
 .ix 'NAN'
-The &func function determines whether the double precision
+The
+.id &func.
+function determines whether the double precision
 floating-point argument is a valid number (i.e., not infinite
 and not a NAN).
 .desc end
 .return begin
-The &func function returns 0 if the number is not valid and
+The
+.id &func.
+function returns 0 if the number is not valid and
 non-zero otherwise.
 .return end
 .see begin

@@ -16,7 +16,9 @@ wchar_t *wmemset( wchar_t *dst,
 .do end
 .synop end
 .desc begin
-The &func function fills the first
+The
+.id &func.
+function fills the first
 .arg length
 characters of the object pointed to by
 .arg dst
@@ -26,7 +28,11 @@ with the value
 .im farfunc
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc wide-character function is identical to &func except that it
+The
+.id &wfunc.
+wide-character function is identical to
+.id &func.
+except that it
 operates on characters of
 .kw wchar_t
 type.
@@ -36,7 +42,9 @@ is interpreted to mean the number of wide characters.
 .do end
 .desc end
 .return begin
-The &func function returns the pointer
+The
+.id &func.
+function returns the pointer
 .arg dst
 .ct .li .
 .return end

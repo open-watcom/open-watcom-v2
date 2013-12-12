@@ -6,7 +6,9 @@ int fesetenv( const fenv_t *__envp );
 .synop end
 .*
 .desc begin
-The &func function attempts to establishe the floating-point environment represented by the
+The
+.id &func.
+function attempts to establishe the floating-point environment represented by the
 object pointed to by envp. The argument envp shall point to an object set by a call to
 .kw fegetenv
 or
@@ -18,7 +20,9 @@ its argument, and does not raise these floating-point exceptions.
 .desc end
 .*
 .return begin
-The &func function returns zero if the environment was successfully established.
+The
+.id &func.
+function returns zero if the environment was successfully established.
 Otherwise, it returns a nonzero value.
 .return end
 .*

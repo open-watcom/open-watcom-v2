@@ -18,7 +18,9 @@ int _wfstati64( int handle, struct _stati64 *buf );
 .ixfunc2 '&Wide' &wfunc64
 .synop end
 .desc begin
-The &func functions obtain information about an open file whose file
+The
+.id &func.
+functions obtain information about an open file whose file
 &handle is
 .arg &fd
 .ct .li .
@@ -29,8 +31,12 @@ indicated by
 .im statdesc
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 The
 .kw _fstati64
@@ -38,7 +44,9 @@ The
 .kw _wfstat
 .ct , and
 .kw _wfstati64
-functions differ from &func in the type of structure that they are
+functions differ from
+.id &func.
+in the type of structure that they are
 asked to fill in.
 The
 .kw _wfstat

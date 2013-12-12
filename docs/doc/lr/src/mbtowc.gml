@@ -12,7 +12,9 @@ int _fmbtowc( wchar_t __far *pwc,
 .do end
 .synop end
 .desc begin
-The &func function converts a single multibyte character pointed to by
+The
+.id &func.
+function converts a single multibyte character pointed to by
 .arg s
 into the wide character code that corresponds to that multibyte
 character.
@@ -28,7 +30,9 @@ bytes of the array pointed to by
 .arg s
 will be examined.
 .np
-The &func function does not examine more than
+The
+.id &func.
+function does not examine more than
 .kw MB_CUR_MAX
 bytes.
 .im farparm
@@ -36,11 +40,15 @@ bytes.
 .return begin
 If
 .arg s
-is a NULL pointer, the &func function returns zero if multibyte
+is a NULL pointer, the
+.id &func.
+function returns zero if multibyte
 character encodings are not state dependent, and non-zero otherwise.
 If
 .arg s
-is not a NULL pointer, the &func function returns:
+is not a NULL pointer, the
+.id &func.
+function returns:
 .begnote $setptnt 6
 .termhd1 Value
 .termhd2 Meaning

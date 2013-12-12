@@ -4,7 +4,9 @@
 void exit( int status );
 .synop end
 .desc begin
-The &func function causes normal program termination to occur.
+The
+.id &func.
+function causes normal program termination to occur.
 .pp
 First, all functions registered by the
 .kw atexit
@@ -26,7 +28,9 @@ value is typically set to 0 to indicate successful termination and
 set to some other value to indicate an error.
 .desc end
 .return begin
-The &func function does not return to its caller.
+The
+.id &func.
+function does not return to its caller.
 .return end
 .see begin
 .seelist exit abort atexit _exit onexit

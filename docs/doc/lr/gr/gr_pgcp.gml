@@ -1,4 +1,5 @@
 .gfunc pg_chartpie
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_chartpie( chartenv _FAR *env,
                          char _FAR * _FAR *cat,
@@ -12,9 +13,11 @@ integer*4 cat(*)
 real values(*)
 integer*2 explode(*), n
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine displays a pie chart.
+The
+.id &func.
+&routine displays a pie chart.
 The chart is displayed using the options specified in the
 .arg env
 argument.
@@ -37,7 +40,9 @@ For each non-zero element in the array, the corresponding pie slice
 is drawn "exploded", or slightly offset from the rest of the pie.
 .desc end
 .return begin
-The &func &routine returns zero
+The
+.id &func.
+&routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin

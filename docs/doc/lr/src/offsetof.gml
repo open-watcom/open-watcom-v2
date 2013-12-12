@@ -4,7 +4,9 @@
 size_t offsetof( composite, name );
 .synop end
 .desc begin
-The &func macro returns the offset of the element
+The
+.id &func.
+macro returns the offset of the element
 .arg name
 within the
 .kw struct
@@ -15,7 +17,9 @@ or
 This provides a portable method to determine the offset.
 .desc end
 .return begin
-The &func function returns the offset of
+The
+.id &func.
+function returns the offset of
 .arg name
 .ct .li .
 .return end

@@ -11,10 +11,16 @@ FJSTRING __far _fjgetmoji( const JCHAR __far *str,
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function places
+The
+.id &func.
+function places
 .do end
 .el .do begin
-The &func and &ffunc functions place
+The
+.id &func.
+and
+.id &ffunc.
+functions place
 .do end
 the next single- or double-byte character from the start of the Kanji
 string specified by
@@ -28,10 +34,16 @@ returned wide character is NULL.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 a pointer to the next character to be obtained from the string.
 If

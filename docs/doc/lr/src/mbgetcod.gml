@@ -9,7 +9,9 @@ unsigned char far *_fmbgetcode( unsigned char far *mbstr,
 .do end
 .synop end
 .desc begin
-The &func function places the next single- or double-byte character
+The
+.id &func.
+function places the next single- or double-byte character
 from the start of the Kanji string specified by
 .arg mbstr
 in the wide character pointed to by
@@ -20,7 +22,9 @@ returned wide character is NULL.
 .im ffarfunc
 .desc end
 .return begin
-The &func function returns a pointer to the next character to be
+The
+.id &func.
+function returns a pointer to the next character to be
 obtained from the string.
 If
 .arg mbstr

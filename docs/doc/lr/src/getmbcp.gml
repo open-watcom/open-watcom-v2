@@ -4,10 +4,14 @@
 int _getmbcp( void );
 .synop end
 .desc begin
-The &func function returns the current multibyte code page number.
+The
+.id &func.
+function returns the current multibyte code page number.
 .desc end
 .return begin
-The &func function returns the current multibyte code page.
+The
+.id &func.
+function returns the current multibyte code page.
 A return value of zero indicates that a single byte code page is in
 use.
 .return end

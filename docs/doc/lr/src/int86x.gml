@@ -8,7 +8,9 @@ int int86x( int inter_no,
 .ixfunc2 '&CpuInt' &func
 .synop end
 .desc begin
-The &func function causes the computer's central processor (CPU) to be
+The
+.id &func.
+function causes the computer's central processor (CPU) to be
 interrupted with an interrupt whose number is given by
 .arg inter_no
 .ct .li .

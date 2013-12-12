@@ -13,32 +13,48 @@ wint_t putwc( wint_t c, FILE *fp );
 .do end
 .synop end
 .desc begin
-The &func function is equivalent to
+The
+.id &func.
+function is equivalent to
 .kw fputc
 .ct,
 except it may be implemented as a macro.
-The &func function writes the character specified by the argument
+The
+.id &func.
+function writes the character specified by the argument
 .arg c
 to the output stream designated by
 .arg fp
 .ct .li .
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it converts the
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it converts the
 wide character specified by
 .arg c
 to a multibyte character and writes it to the output stream.
 .do end
 .desc end
 .return begin
-The &func function returns the character written or, if a write error
-occurs, the error indicator is set and &func returns
+The
+.id &func.
+function returns the character written or, if a write error
+occurs, the error indicator is set and
+.id &func.
+returns
 .kw EOF
 .ct .li .
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function returns the wide character written or, if a write
-error occurs, the error indicator is set and &wfunc returns
+The
+.id &wfunc.
+function returns the wide character written or, if a write
+error occurs, the error indicator is set and
+.id &wfunc.
+returns
 .kw WEOF
 .ct .li .
 .do end

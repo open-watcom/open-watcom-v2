@@ -54,9 +54,13 @@ multibyte characters of the array pointed to by
 .arg src
 .ct .li .
 .np
-If there is a runtime-constraint violation, then &func. does the following. If
+If there is a runtime-constraint violation, then
+.id &func.
+does the following. If
 .arg retval
-is not a null pointer, then &func. sets
+is not a null pointer, then
+.id &func.
+sets
 .arg *retval
 to (size_t)(-1). If
 .arg dst
@@ -64,13 +68,17 @@ is not a null pointer and
 .arg dstmax
 is greater than zero and less than
 .kw RSIZE_MAX
-.ct , then &func. sets
+.ct , then
+.id &func.
+sets
 .arg dst[0]
 to the null wide character.
 .rtconst end
 .*
 .desc begin
-The &func. function converts a sequence of multibyte characters that begins in
+The
+.id &func.
+function converts a sequence of multibyte characters that begins in
 the initial shift state from the array pointed to by
 .arg src
 into a sequence of corresponding wide characters. If
@@ -105,20 +113,27 @@ Regardless of whether
 .arg dst
 is or is not a null pointer, if the input conversion encounters a
 sequence of bytes that do not form a valid multibyte character, an encoding error occurs:
-the &func. function stores the value (size_t)(-1) into
+the
+.id &func.
+function stores the value (size_t)(-1) into
 .arg *retval
 .ct .li .
-Otherwise, the &func function stores into
+Otherwise, the
+.id &func.
+function stores into
 .arg *retval
 the number of multibyte
 characters successfully converted, not including the terminating null character (if any).
 .np
 All elements following the terminating null wide character (if any) written by
-&func in the array of
+.id &func.
+in the array of
 .arg dstmax
 wide characters pointed to by
 .arg dst
-take unspecified values when &func returns.
+take unspecified values when
+.id &func.
+returns.
 .np
 If copying takes place between objects that overlap, the objects take on unspecified
 values.

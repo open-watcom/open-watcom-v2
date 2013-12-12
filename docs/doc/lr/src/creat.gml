@@ -26,7 +26,9 @@ int _wcreat( const wchar_t *path, int mode );
 .do end
 .synop end
 .desc begin
-The &func function creates (and opens) a file at the operating system
+The
+.id &func.
+function creates (and opens) a file at the operating system
 level.
 It is equivalent to:
 .millust begin
@@ -34,12 +36,22 @@ It is equivalent to:
 .millust end
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI naming conventions.
+The
+.id &_func.
+function is identical to
+.id &func.
+.
+Use
+id &_func.
+for ANSI naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide character string argument.
 .do end
 .np
@@ -64,7 +76,9 @@ when read permission is intended for the file.
 .do end
 .desc end
 .return begin
-If successful, &func returns a &handle for the file.
+If successful,
+.id &func.
+returns a &handle for the file.
 When an error occurs while opening the file, &minus.1 is returned, and
 .kw errno
 is set to indicate the error.
@@ -96,7 +110,9 @@ is a block special device which is already open for writing, or
 names a file which is on a file system mounted on a block special
 device which is already open for writing.
 .term EINTR
-The &func operation was interrupted by a signal.
+The
+.id &func.
+operation was interrupted by a signal.
 .term EISDIR
 The named file is a directory and the file creation flags
 specify write-only or read/write access.

@@ -4,7 +4,9 @@
 int _ismbblead( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg ch
 is a valid first byte of a multibyte character.
 .np
@@ -20,7 +22,8 @@ must represent a single-byte value (i.e., 0 <=
 Incorrect results occur if the argument is a double-byte character.
 .desc end
 .return begin
-&func returns a non-zero value if the argument is valid as the first
+.id &func.
+returns a non-zero value if the argument is valid as the first
 byte of a multibyte character; otherwise zero is returned.
 .return end
 .see begin

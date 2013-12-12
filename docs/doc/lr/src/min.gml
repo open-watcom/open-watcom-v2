@@ -4,14 +4,18 @@
 #define min(a,b)  (((a) < (b)) ? (a) : (b))
 .synop end
 .desc begin
-The &func macro will evaluate to be the lesser of two values.
+The
+.id &func.
+macro will evaluate to be the lesser of two values.
 It is implemented as follows.
 .millust begin
 #define min(a,b)  (((a) < (b)) ? (a) : (b))
 .millust end
 .desc end
 .return begin
-The &func macro will evaluate to the smaller of the two values passed.
+The
+.id &func.
+macro will evaluate to the smaller of the two values passed.
 .return end
 .see begin
 .seelist min max

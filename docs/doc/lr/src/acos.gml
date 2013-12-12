@@ -8,14 +8,18 @@ double acos( double x );
 .ixfunc2 '&Hyper' &func
 .synop end
 .desc begin
-The &func function computes the principal value of the
+The
+.id &func.
+function computes the principal value of the
 arccosine of
 .arg x
 .ct .li .
 A domain error occurs for arguments not in the range [&minus.1,1].
 .desc end
 .return begin
-The &func function returns the arccosine in the range [0,&pi.].
+The
+.id &func.
+function returns the arccosine in the range [0,&pi.].
 .im errnodom
 .return end
 .see begin

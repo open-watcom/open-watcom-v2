@@ -5,7 +5,9 @@ int isleadbyte( int ch );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg ch
 is a valid first byte of a multibyte character in the current code
 page.
@@ -14,7 +16,9 @@ For example, in code page 932, a valid lead byte is any byte in the
 range 0x81 through 0x9F or 0xE0 through 0xFC.
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 valid lead byte.
 Otherwise, zero is returned.
 .return end

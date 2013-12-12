@@ -5,17 +5,23 @@ JMOJI hantozen( JMOJI c );
 .ixfunc2 '&Jstring' &func
 .synop end
 .desc begin
-The &func function returns the double-byte character equivalent to the
+The
+.id &func.
+function returns the double-byte character equivalent to the
 single-byte ASCII character
 .arg c
 .ct .li .
 The ASCII character must be in the range 0x20 to 0x7E.
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg c
 if there is no equivalent double-byte character;
-otherwise &func returns a double-byte character.
+otherwise
+.id &func.
+returns a double-byte character.
 .return end
 .see begin
 .im seejis &function.

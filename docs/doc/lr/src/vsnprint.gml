@@ -23,7 +23,9 @@ int vsnwprintf( wchar_t *buf,
 .safealt
 .*
 .desc begin
-The &func function formats data under control of the
+The
+.id &func.
+function formats data under control of the
 .arg format
 control string and stores the result in
 .arg buf
@@ -37,7 +39,9 @@ The
 string is described under the description of the
 .kw printf
 function.
-The &func function is equivalent to the
+The
+.id &func.
+function is equivalent to the
 .kw _snprintf
 function, with the variable argument list replaced with
 .arg arg
@@ -46,7 +50,11 @@ function, with the variable argument list replaced with
 macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that the argument
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that the argument
 .arg buf
 specifies an array of wide characters into which the generated output
 is to be written, rather than converted to multibyte characters and
@@ -55,13 +63,17 @@ The maximum number of wide characters to write, including a
 terminating null wide character, is specified by
 .arg count
 .ct .li .
-The &wfunc function accepts a wide-character string argument for
+The
+.id &wfunc.
+function accepts a wide-character string argument for
 .arg format
 .do end
 .desc end
 .*
 .return begin
-The &func function returns the number of characters that would have been
+The
+.id &func.
+function returns the number of characters that would have been
 written had
 .arg count
 been sufficiently large, not counting the terminating null
@@ -71,7 +83,9 @@ if the returned value is nonnegative and less than
 .arg count
 .ct .li .
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns the number of wide characters that would have
+The
+.id &wfunc.
+function returns the number of wide characters that would have
 been written had
 .arg count
 been sufficiently large, not counting the terminating null wide character,
@@ -90,7 +104,9 @@ if the returned value is nonnegative and less than
 .*
 .exmp begin
 .blktext begin
-The following shows the use of &func in a general error message routine.
+The following shows the use of
+.id &func.
+in a general error message routine.
 .blktext end
 .blkcode begin
 #include <stdio.h>

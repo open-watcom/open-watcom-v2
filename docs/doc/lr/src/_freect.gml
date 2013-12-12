@@ -5,7 +5,9 @@ unsigned int _freect( size_t size );
 .ixfunc2 '&Memory' &func
 .synop end
 .desc begin
-The &func function returns the number of times that
+The
+.id &func.
+function returns the number of times that
 .kw _nmalloc
 (or
 .kw malloc
@@ -21,7 +23,9 @@ in these memory models before calling &func
 in order to get a meaningful result.
 .desc end
 .return begin
-The &func function returns the number of calls as an unsigned integer.
+The
+.id &func.
+function returns the number of calls as an unsigned integer.
 .return end
 .see begin
 .seelist _freect calloc _heapgrow Functions malloc Functions _memavl _memmax

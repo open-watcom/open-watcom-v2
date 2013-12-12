@@ -5,18 +5,24 @@ long int ftell( FILE *fp );
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function returns the current read/write position
+The
+.id &func.
+function returns the current read/write position
 of the file specified by
 .arg fp
 .ct .li .
 This position defines the character that will be read or written by the
 next I/O operation on the file.
-The value returned by &func can be used in a subsequent call to
+The value returned by
+.id &func.
+can be used in a subsequent call to
 .kw fseek
 to set the file to the same position.
 .desc end
 .return begin
-The &func function returns the current read/write position
+The
+.id &func.
+function returns the current read/write position
 of the file specified by
 .arg fp
 .ct .li .

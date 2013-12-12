@@ -1,4 +1,5 @@
 .gfunc getphyscoord
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getphyscoord( short x, short y );
 .do end
@@ -6,9 +7,11 @@ struct xycoord _FAR _getphyscoord( short x, short y );
 record /xycoord/ function _getphyscoord( x, y )
 integer*2 x, y
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the physical coordinates
+The
+.id &func.
+&routine returns the physical coordinates
 of the position with view coordinates
 .coord x y .
 View coordinates are defined by the
@@ -18,7 +21,9 @@ and
 &routines..
 .desc end
 .return begin
-The &func &routine returns the physical coordinates,
+The
+.id &func.
+&routine returns the physical coordinates,
 as an
 .id xycoord
 structure,

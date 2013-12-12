@@ -10,10 +10,16 @@ size_t far _fbtom( const unsigned char far *str, size_t nb );
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the number of characters between the start of the Japanese double-byte
 character set (DBCS) string specified by
@@ -31,10 +37,16 @@ bytes have been processed or a null character is encountered.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the number of single- and double-byte characters in the string.
 .return end

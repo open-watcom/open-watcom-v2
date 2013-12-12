@@ -11,7 +11,9 @@ unsigned char __far *_fmbvtop( unsigned int ch,
 .do end
 .synop end
 .desc begin
-The &func function stores the multibyte character
+The
+.id &func.
+function stores the multibyte character
 .arg ch
 into the string pointed to by
 .arg addr
@@ -19,7 +21,9 @@ into the string pointed to by
 .im farparm
 .desc end
 .return begin
-The &func function returns the value of the argument
+The
+.id &func.
+function returns the value of the argument
 .arg addr
 .ct .li .
 .return end

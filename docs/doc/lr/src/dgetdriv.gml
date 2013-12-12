@@ -5,7 +5,9 @@ void _dos_getdrive( unsigned *drive );
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x19 to get the current disk drive
+The
+.id &func.
+function uses system call 0x19 to get the current disk drive
 number.
 The current disk drive number is returned in the word pointed to by
 .arg drive
@@ -13,7 +15,9 @@ The current disk drive number is returned in the word pointed to by
 A value of 1 is drive A, 2 is drive B, 3 is drive C, etc.
 .desc end
 .return begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 .return end
 .see begin
 .seelist &function. _dos_getdiskfree _dos_getdrive _dos_setdrive _getdiskfree _getdrive

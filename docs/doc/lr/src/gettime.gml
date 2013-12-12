@@ -12,7 +12,9 @@ struct dostime_t {
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x2C to get the current system time.
+The
+.id &func.
+function uses system call 0x2C to get the current system time.
 The time information is returned in a
 .kw dostime_t
 structure pointed to by
@@ -20,7 +22,9 @@ structure pointed to by
 .ct .li .
 .desc end
 .return begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 .return end
 .see begin
 .seelist _dos_gettime _dos_getdate _dos_setdate _dos_settime gmtime localtime mktime time

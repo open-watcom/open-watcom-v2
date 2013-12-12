@@ -7,7 +7,9 @@ long double nanl( const char *str );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function returns not-a-number, or NAN.  The argument
+The
+.id &func.
+function returns not-a-number, or NAN.  The argument
 .arg str
 is ignored.
 .desc end

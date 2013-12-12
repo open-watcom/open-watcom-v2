@@ -6,7 +6,9 @@ unsigned int _controlfp( unsigned int newcw,
 .ixfunc2 '&Errs' &func
 .synop end
 .desc begin
-The &func function updates the control word of the
+The
+.id &func.
+function updates the control word of the
 8087/80287/80387/80486.
 If
 .arg mask
@@ -20,7 +22,9 @@ corresponding to every bit that is on in
 .ct .li .
 .desc end
 .return begin
-The &func function returns the new control word.
+The
+.id &func.
+function returns the new control word.
 The description of bits defined for the control word is found in the
 .hdrfile float.h
 header file.

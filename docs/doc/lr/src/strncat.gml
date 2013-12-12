@@ -42,7 +42,9 @@ unsigned char __far *_fmbsncat( unsigned char __far *dst,
 .safealt
 .*
 .desc begin
-The &func function appends not more than
+The
+.id &func.
+function appends not more than
 .arg n
 characters of the string
 pointed to by
@@ -61,7 +63,9 @@ A terminating null character is always appended to the result.
 .im mbsffunc
 .desc end
 .return begin
-The &func function returns the value of
+The
+.id &func.
+function returns the value of
 .arg dst
 .ct .li .
 .return end

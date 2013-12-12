@@ -1,4 +1,5 @@
 .gfunc pg_defaultchart
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_defaultchart( chartenv _FAR *env,
                              short type, short style );
@@ -8,9 +9,11 @@ integer*2 function _pg_defaultchart( env, type, style )
 record /chartenv/ env
 integer*2 type, style
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine initializes the chart structure
+The
+.id &func.
+&routine initializes the chart structure
 .arg env
 to contain default values before a chart is drawn.
 All values in the chart structure are initialized, including
@@ -64,7 +67,9 @@ The "percent" style for pie charts causes percentages to be displayed
 beside each of the pie slices.
 .desc end
 .return begin
-The &func &routine returns zero
+The
+.id &func.
+&routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin

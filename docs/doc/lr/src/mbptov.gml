@@ -7,14 +7,18 @@ unsigned int _fmbptov( const unsigned char __far *string );
 .do end
 .synop end
 .desc begin
-The &func function returns the multibyte character at the position in
+The
+.id &func.
+function returns the multibyte character at the position in
 the string pointed to by
 .arg string
 .ct .li .
 .im farparm
 .desc end
 .return begin
-The &func function returns a multibyte character or null if
+The
+.id &func.
+function returns a multibyte character or null if
 .arg string
 points at a null character.
 .return end

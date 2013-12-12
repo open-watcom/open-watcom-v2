@@ -10,7 +10,9 @@ function multiplies a floating-point number by an integral power of 2.
 A range error may occur.
 .desc end
 .return begin
-The &func function returns the value of
+The
+.id &func.
+function returns the value of
 .arg x
 times 2 raised to the power
 .arg exp

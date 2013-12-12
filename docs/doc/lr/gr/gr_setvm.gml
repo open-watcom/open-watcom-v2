@@ -1,4 +1,5 @@
 .gfunc setvideomode
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _setvideomode( short mode );
 .do end
@@ -6,9 +7,11 @@ short _FAR _setvideomode( short mode );
 integer*2 function _setvideomode( mode )
 integer*2 mode
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the video mode according to the value of the
+The
+.id &func.
+&routine sets the video mode according to the value of the
 .arg mode
 argument.
 The value of
@@ -131,7 +134,9 @@ The background color is reset to black and the default color value
 is set to be one less than the number of colors in the selected mode.
 .desc end
 .return begin
-The &func &routine returns the number of text rows when the new mode is
+The
+.id &func.
+&routine returns the number of text rows when the new mode is
 successfully selected; otherwise, zero is returned.
 .return end
 .see begin

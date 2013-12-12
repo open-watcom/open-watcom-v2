@@ -5,7 +5,9 @@ int jisdigit( JMOJI c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg c
 is a double-byte character equivalent to the single-byte decimal digit
 characters "0" to "9".
@@ -16,7 +18,9 @@ following expression is true:
 .millust end
 .desc end
 .return begin
-The &func function returns zero if the argument is not a double-byte decimal
+The
+.id &func.
+function returns zero if the argument is not a double-byte decimal
 digit character;
 otherwise, a non-zero value is returned.
 .return end

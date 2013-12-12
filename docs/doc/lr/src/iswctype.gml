@@ -7,7 +7,9 @@ int iswctype( wint_t wc, wctype_t desc );
 .synop end
 .*
 .desc begin
-The &func function determines whether the wide character
+The
+.id &func.
+function determines whether the wide character
 .arg wc
 has the property described by
 .arg desc
@@ -63,7 +65,9 @@ iswxdigit(wc)
 .desc end
 .*
 .return begin
-The &func function returns non-zero (true) if and only if the value of
+The
+.id &func.
+function returns non-zero (true) if and only if the value of
 the wide character
 .arg wc
 has the property described by

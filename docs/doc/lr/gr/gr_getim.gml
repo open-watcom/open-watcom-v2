@@ -1,4 +1,5 @@
 .gfuncwxy getimage
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _getimage( short x1, short y1,
                      short x2, short y2,
@@ -27,14 +28,22 @@ subroutine _getimage_wxy( p1, p2, image )
 record /_wxycoord/ p1, p2
 integer*1 image(*)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines store a copy of an area of the screen into the buffer
+The
+.id &func.
+&routines store a copy of an area of the screen into the buffer
 indicated by the
 .arg image
 argument.
-The &func &routine uses the view coordinate system.
-The &func2 and &func3 &routines use the window coordinate system.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+and
+.id &func3.
+&routines use the window coordinate system.
 .np
 The screen image is the rectangular area defined by the points
 .coord x1 y1
@@ -53,7 +62,9 @@ by using the
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routines do not return a value.
+The
+.id &func.
+&routines do not return a value.
 .return end
 .do end
 .see begin

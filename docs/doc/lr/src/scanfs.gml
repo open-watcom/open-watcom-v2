@@ -151,7 +151,9 @@ number of characters that have been read to an object of type
 .bull
 "h" causes an "s" operation to convert the input string to an ASCII
 character string.
-For &func, this specifier is redundant.
+For
+.id &func.
+this specifier is redundant.
 For &wfunc, this specifier is required if the wide character input
 string is to be converted to an ASCII character string; otherwise it
 will not be converted.
@@ -176,7 +178,9 @@ the converted value to an object of type
 .bull
 "l" or "w" cause an "s" operation to convert the input string to a
 wide character string.
-For &func, this specifier is required if the input ASCII string is to
+For
+.id &func.
+this specifier is required if the input ASCII string is to
 be converted to a wide character string; otherwise it will not be
 converted.
 .do end

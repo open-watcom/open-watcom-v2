@@ -7,7 +7,9 @@ unsigned _dos_write( int &fd, void const __far *buffer,
 .ixfunc2 '&OsIo' &func
 .synop end
 .desc begin
-The &func function uses system call 0x40 to write
+The
+.id &func.
+function uses system call 0x40 to write
 .arg count
 bytes of data from the buffer pointed to by
 .arg buffer
@@ -20,7 +22,9 @@ unsigned integer pointed to by
 .ct .li .
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 accordingly.

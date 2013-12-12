@@ -10,7 +10,9 @@ typedef struct {
 .synop end
 .*
 .desc begin
-The &func function calculates the quotient
+The
+.id &func.
+function calculates the quotient
 and remainder of the division of the numerator
 .arg numer
 by the denominator
@@ -19,7 +21,9 @@ by the denominator
 .desc end
 .*
 .return begin
-The &func function returns a structure of type
+The
+.id &func.
+function returns a structure of type
 .kw div_t
 which contains the fields
 .kw quot

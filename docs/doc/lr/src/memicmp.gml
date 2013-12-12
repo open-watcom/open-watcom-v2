@@ -19,7 +19,9 @@ int _fmemicmp( const void __far *s1,
 .do end
 .synop end
 .desc begin
-The &func function compares, with case insensitivity (upper- and
+The
+.id &func.
+function compares, with case insensitivity (upper- and
 lowercase characters are equivalent), the first
 .arg length
 characters of the object pointed to by
@@ -30,12 +32,18 @@ to the object pointed to by
 .im farparm
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .desc end
 .return begin
-The &func function returns an integer less than, equal to, or greater
+The
+.id &func.
+function returns an integer less than, equal to, or greater
 than zero, indicating that the object pointed to by
 .arg s1
 is less than, equal to, or greater than the object pointed to by

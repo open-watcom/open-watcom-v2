@@ -1,4 +1,5 @@
 .gfunc setcolor
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _setcolor( short pixval );
 .do end
@@ -6,9 +7,11 @@ short _FAR _setcolor( short pixval );
 integer*2 function _setcolor( pixval )
 integer*2 pixval
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the pixel value for the
+The
+.id &func.
+&routine sets the pixel value for the
 current color to be that indicated by the
 .arg pixval
 argument.
@@ -24,7 +27,9 @@ in the current video mode.
 .* .im gr_pixvl
 .desc end
 .return begin
-The &func &routine returns the previous value of the
+The
+.id &func.
+&routine returns the previous value of the
 current color.
 .return end
 .see begin

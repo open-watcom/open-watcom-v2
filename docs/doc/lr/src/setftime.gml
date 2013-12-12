@@ -7,7 +7,9 @@ unsigned _dos_setftime( int &fd,
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x57 to set the date and time that
+The
+.id &func.
+function uses system call 0x57 to set the date and time that
 the file associated with
 .arg &fd
 was last modified.
@@ -38,7 +40,9 @@ Hours (0-23)
 .endnote
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 accordingly.

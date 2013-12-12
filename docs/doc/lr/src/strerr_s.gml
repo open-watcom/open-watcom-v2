@@ -33,11 +33,15 @@ is not modified.
 .rtconst end
 .*
 .desc begin
-The &func function maps the number in
+The
+.id &func.
+function maps the number in
 .arg errnum
 to a locale-specific message string. Typically,the values for
 .arg errnum
-come from errno, but &func shall map any value of type int to a message.
+come from errno, but
+.id &func.
+shall map any value of type int to a message.
 If the length of the desired string is less than
 .arg maxsize
 .ct , then the string is copied to the array pointed to by

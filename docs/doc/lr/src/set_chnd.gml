@@ -8,12 +8,16 @@ constraint_handler_t set_constraint_handler_s(
 .synop end
 .*
 .desc begin
-The &func function sets the runtime-constraint handler to be
+The
+.id &func.
+function sets the runtime-constraint handler to be
 .arg handler
 .ct .li .
 The runtime-constraint handler is the function called when a library function
 detect a runtime-constraint violation. Only the most recent handler registered
-with &func is called when a runtime-constraint violation occurs.
+with
+.id &func.
+is called when a runtime-constraint violation occurs.
 .np
 When the handler is called, it is passed the following arguments:
 .autonote
@@ -29,17 +33,23 @@ If the function calling the handler has a return type declared as
 .kw errno_t
 is passed.
 .endnote
-If no calls to the &func function have been made, a default constraint handler
+If no calls to the
+.id &func.
+function have been made, a default constraint handler
 is used. This handler will display an error message and abort the program.
 .np
 If the
 .arg handler
-argument to &func is a null pointer, the default handler becomes the current
+argument to
+.id &func.
+is a null pointer, the default handler becomes the current
 constraint handler.
 .desc end
 .*
 .return begin
-The &func function returns a pointer to the previously registered handler.
+The
+.id &func.
+function returns a pointer to the previously registered handler.
 .return end
 .*
 .see begin

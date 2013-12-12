@@ -1,4 +1,5 @@
 .gfunc setlinestyle
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _setlinestyle( unsigned short style );
 .do end
@@ -6,9 +7,11 @@ void _FAR _setlinestyle( unsigned short style );
 subroutine _setlinestyle( style )
 integer*2 style
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current line-style mask to the value of the
+The
+.id &func.
+&routine sets the current line-style mask to the value of the
 .arg style
 argument.
 .pp
@@ -19,7 +22,9 @@ The default line style mask is
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

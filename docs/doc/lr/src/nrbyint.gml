@@ -5,7 +5,9 @@ double nearbyint( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function rounds the argument
+The
+.id &func.
+function rounds the argument
 .arg x
 to a nearby integer without the possibility of throwing
 an exception.  The direction of the rounding is determined by

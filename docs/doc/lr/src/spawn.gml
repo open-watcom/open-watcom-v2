@@ -99,9 +99,10 @@ int _wspawnvpe( mode, file, argv, envp );
 .ixfunc2 '&Wide' _wspawnvpe
 .do end
 .synop end
-.funcbold spawn...
 .desc begin
-The &func functions create and execute a new child process, named by
+The
+.idbold &func.
+functions create and execute a new child process, named by
 .arg pgm
 .ct .li .
 The value of
@@ -156,7 +157,9 @@ function.
 .*==========================================
 .np
 Arguments are passed to the child process by supplying one or more
-pointers to character strings as arguments in the &func call.
+pointers to character strings as arguments in the
+.idbold &func.
+call.
 .if '&machsys' ne 'QNX' .do begin
 These character strings are concatenated with spaces inserted to separate
 the arguments to form one argument string for the child process.
@@ -336,9 +339,13 @@ is:
 .termhd1 Mode
 .termhd2 Meaning
 .term P_WAIT
-then the return value from &func is the exit status of the child process.
+then the return value from
+.idbold &func.
+is the exit status of the child process.
 .term P_NOWAIT
-then the return value from &func is the process id (or process handle
+then the return value from
+.idbold &func.
+is the process id (or process handle
 under Win32) of the child process.
 To obtain the exit code for a process spawned with
 .kw P_NOWAIT
@@ -359,7 +366,9 @@ process passed to the
 .kw DOSEXIT
 function.
 .term P_NOWAITO
-then the return value from &func is the process id of the child process.
+then the return value from
+.idbold &func.
+is the process id of the child process.
 The exit code cannot be obtained for a process spawned with
 .kw P_NOWAITO
 .ct .li .

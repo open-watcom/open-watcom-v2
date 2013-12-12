@@ -5,7 +5,9 @@ double lgamma_r( double x, int *y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function returns the natural logarithm of the
+The
+.id &func.
+function returns the natural logarithm of the
 absolute value of the Gamma function of 
 .arg x
 .ct .li . The sign of the Gamma function will be returned

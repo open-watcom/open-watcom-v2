@@ -4,7 +4,9 @@
 int _ismbcalpha( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests if the multibyte character argument
+The
+.id &func.
+function tests if the multibyte character argument
 .arg ch
 is an alphabetic character.
 For example, in code page 932, 'A' through 'Z' or 'a' through 'z' and
@@ -12,7 +14,9 @@ its corresponding double-byte versions and the Katakana letters (0xA6
 through 0xDF) are alphabetic.
 .desc end
 .return begin
-The &func function returns zero if the argument is not an alphabetic
+The
+.id &func.
+function returns zero if the argument is not an alphabetic
 character; otherwise, a non-zero value is returned.
 .return end
 .see begin

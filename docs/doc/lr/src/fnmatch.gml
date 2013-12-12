@@ -6,7 +6,9 @@ int fnmatch( const char *pattern,
 .synop end
 .*
 .desc begin
-The &func function checks the string specified by the
+The
+.id &func.
+function checks the string specified by the
 .arg string
 argument to see if it matches the pattern specified by the
 .arg pattern
@@ -152,7 +154,9 @@ and
 .desc end
 .*
 .return begin
-The &func function returns zero when
+The
+.id &func.
+function returns zero when
 .arg string
 matches the pattern specified by 
 .arg pattern

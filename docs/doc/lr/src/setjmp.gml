@@ -5,18 +5,24 @@ int setjmp( jmp_buf env );
 .ixfunc2 'Non-local Jumps' &func
 .synop end
 .desc begin
-The &func function saves its calling environment in its
+The
+.id &func.
+function saves its calling environment in its
 .kw jmp_buf
 argument, for subsequent use by the
 .kw longjmp
 function.
 .np
-In some cases, error handling can be implemented by using &func to record
+In some cases, error handling can be implemented by using
+.id &func.
+to record
 the point to which a return will occur following an error.
 When an error is detected in a called function, that function uses
 .kw longjmp
 to jump back to the recorded position.
-The original function which called &func must still be active (it cannot
+The original function which called
+.id &func.
+must still be active (it cannot
 have returned to the function which called it).
 .np
 Special care must be exercised to ensure that any side effects that
@@ -24,7 +30,9 @@ are left undone (allocated memory, opened files, etc.) are
 satisfactorily handled.
 .desc end
 .return begin
-The &func function returns zero when it is initially called.
+The
+.id &func.
+function returns zero when it is initially called.
 The return value will be non-zero if the return is the result of a call
 to the
 .kw longjmp

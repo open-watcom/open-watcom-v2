@@ -11,7 +11,9 @@ struct dostime_t {
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x2D to set the current system time.
+The
+.id &func.
+function uses system call 0x2D to set the current system time.
 The time information is passed in a
 .kw dostime_t
 structure pointed to by
@@ -19,7 +21,9 @@ structure pointed to by
 .ct .li .
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns a non-zero value and sets
 .kw errno
 to

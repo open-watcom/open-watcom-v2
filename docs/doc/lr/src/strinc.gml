@@ -22,7 +22,9 @@ unsigned char *_fmbsinc(
 .do end
 .synop end
 .desc begin
-The &func function returns a pointer to the next character
+The
+.id &func.
+function returns a pointer to the next character
 (single-byte, wide, or multibyte) in the string pointed to by
 .arg current
 .ct .li .
@@ -34,7 +36,9 @@ does not point into the middle of a multibyte or wide character.
 .im mbsfunc
 .desc end
 .return begin
-The &func function returns a pointer to the next character
+The
+.id &func.
+function returns a pointer to the next character
 (single-byte, wide, or multibyte depending on the function used).
 .return end
 .see begin

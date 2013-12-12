@@ -4,7 +4,9 @@
 int _ismbbgraph( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg ch
 satisfies the condition that one of
 .kw isgraph
@@ -12,7 +14,9 @@ or
 .kw _ismbbkprint
 is true.
 .np
-For example, in code page 932, &func tests if the argument
+For example, in code page 932,
+.id &func.
+tests if the argument
 .arg ch
 is a single-byte printable character excluding space ("&sysrb.") or
 single-byte Katakana character.
@@ -27,7 +31,9 @@ Incorrect results occur if the argument is a double-byte character.
 This is shown by the example below.
 .desc end
 .return begin
-The &func function returns a non-zero value if the argument satisfies
+The
+.id &func.
+function returns a non-zero value if the argument satisfies
 the condition; otherwise a zero value is returned.
 .return end
 .see begin

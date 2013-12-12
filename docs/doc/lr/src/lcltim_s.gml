@@ -19,7 +19,9 @@ there is no attempt to convert the time.
 .rtconst end
 .*
 .desc begin
-The &func function converts the calendar time pointed to by
+The
+.id &func.
+function converts the calendar time pointed to by
 .arg timer
 into a broken-down time, expressed as local time.
 The broken-down time is stored in the structure pointed to by
@@ -28,7 +30,9 @@ The broken-down time is stored in the structure pointed to by
 .desc end
 .*
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg result
 .ct , or a null pointer if the specified time cannot be converted to local time
 or there is a runtime-constraint violation.

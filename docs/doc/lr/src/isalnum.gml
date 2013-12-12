@@ -12,7 +12,9 @@ int iswalnum( wint_t c );
 .do end
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg c
 is an alphanumeric character ('a' to 'z', 'A' to 'Z', or '0' to '9').
 An alphanumeric character is any character for which
@@ -22,16 +24,24 @@ or
 is true.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is similar to &func except that it accepts a
+The
+.id &wfunc.
+function is similar to
+.id &func.
+except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
-The &func function returns zero if the argument is neither an alphabetic
+The
+.id &func.
+function returns zero if the argument is neither an alphabetic
 character (A-Z or a-z) nor a digit (0-9).
 Otherwise, a non-zero value is returned.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns a non-zero value if either
+The
+.id &wfunc.
+function returns a non-zero value if either
 .kw iswalpha
 or
 .kw iswdigit

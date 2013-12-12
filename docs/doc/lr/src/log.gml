@@ -5,14 +5,18 @@ double log( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the natural logarithm (base e) of
+The
+.id &func.
+function computes the natural logarithm (base e) of
 .arg x
 .ct .li .
 A domain error occurs if the argument is negative.
 A range error occurs if the argument is zero.
 .desc end
 .return begin
-The &func function returns the natural logarithm of the argument.
+The
+.id &func.
+function returns the natural logarithm of the argument.
 .im errnodom
 .return end
 .see begin

@@ -27,12 +27,16 @@ Entries can be added to the environment list
 .if '&machsys' eq 'QNX' .do begin
 with the
 .qnxcmd export
-or with the &func function.
+or with the
+.id &func.
+function.
 .do end
 .el .do begin
 with the
 .doscmd set
-or with the &func function.
+or with the
+.id &func.
+function.
 .do end
 .if '&machsys' eq 'QNX' .do begin
 .ix 'environment'
@@ -51,16 +55,22 @@ the
 .kw getenv
 function.
 .np
-The &func function searches the environment list for an entry of the
+The
+.id &func.
+function searches the environment list for an entry of the
 form
 .arg name=value
 .ct .li .
-If no such string is present, &func adds an entry of the form
+If no such string is present,
+.id &func.
+adds an entry of the form
 .arg name=newvalue
 to the environment list.
 Otherwise, if the
 .arg overwrite
-argument is non-zero, &func either will change the existing value to
+argument is non-zero,
+.id &func.
+either will change the existing value to
 .arg newvalue
 or will delete the string
 .arg name=value
@@ -76,9 +86,13 @@ in the environment list will be deleted.
 .np
 The value of the pointer
 .kw environ
-may change across a call to the &func function.
+may change across a call to the
+.id &func.
+function.
 .np
-The &func function will make copies of the strings associated with
+The
+.id &func.
+function will make copies of the strings associated with
 .arg name
 and
 .arg newvalue
@@ -99,14 +113,18 @@ with the
 .qnxcmd export
 or with the
 .kw putenv
-or &func functions.
+or
+.id &func.
+functions.
 .do end
 .el .do begin
 with the
 .doscmd set
 or with the
 .kw putenv
-or &func functions.
+or
+.id &func.
+functions.
 .do end
 .ix 'environment'
 All entries in the environment list can be obtained by using the
@@ -152,13 +170,19 @@ assignments:
 .do end
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI naming conventions.
 .do end
 .im widefunc
 .desc end
 .return begin
-The &func function returns zero upon successful completion.
+The
+.id &func.
+function returns zero upon successful completion.
 Otherwise, it will return a non-zero value and set
 .kw errno
 to indicate the error.

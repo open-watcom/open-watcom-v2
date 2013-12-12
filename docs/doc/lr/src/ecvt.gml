@@ -22,7 +22,9 @@ wchar_t *_wecvt( double value,
 .do end
 .synop end
 .desc begin
-The &func function converts the floating-point number
+The
+.id &func.
+function converts the floating-point number
 .arg value
 into a character string.
 The parameter
@@ -46,20 +48,33 @@ will contain 0 if the number is positive, and non-zero if the number
 is negative.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to
+.id &func.
+.
+Use
+id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it produces a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it produces a
 wide-character string.
 .do end
 .desc end
 .return begin
-The &func function returns a pointer to a static buffer containing the
+The
+.id &func.
+function returns a pointer to a static buffer containing the
 converted string of digits.
 Note:
-&func and
+.id &func.
+and
 .kw fcvt
 both use the same static buffer.
 .return end

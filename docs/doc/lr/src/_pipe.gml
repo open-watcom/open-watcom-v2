@@ -4,14 +4,17 @@
 int _pipe( int *phandles, unsigned psize, int textmode );
 .synop end
 .desc begin
-The &func function creates a pipe (an unnamed FIFO) and places a file
+The
+.id &func.
+function creates a pipe (an unnamed FIFO) and places a file
 descriptor for the read end of the pipe in
 .arg phandles[0]
 and a file descriptor for the write end of the pipe in
 .arg phandles[1]
 .ct .li .
 Their integer values are the two lowest available at the time of the
-&func function call.
+.id &func.
+function call.
 The
 .kw O_NONBLOCK
 flag is cleared for both file descriptors.
@@ -42,7 +45,9 @@ and the read end of the pipe to the data consuming process as its
 (either via the traditional fork/dup2/exec or the more efficient spawn
 calls).
 .np
-If successful, &func marks for update the
+If successful,
+.id &func.
+marks for update the
 .us st_ftime,
 .us st_ctime,
 .us st_atime
@@ -51,14 +56,18 @@ and
 fields of the pipe for updating.
 .desc end
 .return begin
-The &func function returns zero on success.
+The
+.id &func.
+function returns zero on success.
 Otherwise, (-1) is
 returned and
 .kw errno
 is set to indicate the error.
 .return end
 .error begin
-If any of the following conditions occur, the &func function shall
+If any of the following conditions occur, the
+.id &func.
+function shall
 return (-1) and set
 .kw errno
 to the corresponding value:

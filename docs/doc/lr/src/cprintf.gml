@@ -5,7 +5,9 @@ int cprintf( const char *format, ... );
 .ixfunc2 '&KbIo' &func
 .synop end
 .desc begin
-The &func function writes output directly to the console under control
+The
+.id &func.
+function writes output directly to the console under control
 of the argument
 .arg format
 .ct .li .
@@ -19,7 +21,9 @@ string is described under the description of the
 function.
 .desc end
 .return begin
-The &func function returns the number of characters written.
+The
+.id &func.
+function returns the number of characters written.
 .return end
 .see begin
 .im seeprtf cprintf

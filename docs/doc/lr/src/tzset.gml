@@ -4,7 +4,9 @@
 void tzset( void );
 .synop end
 .desc begin
-The &func function sets the
+The
+.id &func.
+function sets the
 global
 variables
 .kw daylight
@@ -20,7 +22,9 @@ The section
 describes how to set this variable.
 .if '&machsys' ne 'QNX' .do begin
 .np
-Under Win32, &func also uses operating system supplied time zone
+Under Win32,
+.id &func.
+also uses operating system supplied time zone
 information.
 The
 .kw TZ
@@ -29,13 +33,17 @@ environment variable can be used to override this information.
 .np
 The
 global
-variables have the following values after &func is executed:
+variables have the following values after
+.id &func.
+is executed:
 .begterm 12
 .term .mono daylight
 Zero indicates that daylight saving time is not supported in the
 locale; a non-zero value indicates that daylight saving time is
 supported in the locale.
-This variable is cleared/set after a call to the &func function
+This variable is cleared/set after a call to the
+.id &func.
+function
 depending on whether a daylight saving time abbreviation is specified
 in the
 .kw TZ
@@ -52,7 +60,9 @@ effect.
 .im tzref
 .desc end
 .return begin
-The &func function does not return a value.
+The
+.id &func.
+function does not return a value.
 .return end
 .see begin
 .seelist tzset ctime Functions localtime mktime strftime

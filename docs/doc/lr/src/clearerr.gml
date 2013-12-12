@@ -6,17 +6,23 @@ void clearerr( FILE *fp );
 .ixfunc2 '&Errs' &func
 .synop end
 .desc begin
-The &func function clears the end-of-file and error indicators
+The
+.id &func.
+function clears the end-of-file and error indicators
 for the stream pointed to by
 .arg fp
 .ct .li .
 These indicators are cleared only when the file is opened or by an
-explicit call to the &func or
+explicit call to the
+.id &func.
+or
 .kw rewind
 functions.
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .seelist &function. clearerr feof ferror perror strerror

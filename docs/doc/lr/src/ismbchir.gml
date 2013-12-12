@@ -4,7 +4,9 @@
 int _ismbchira( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests for a double-byte Hiragana character.
+The
+.id &func.
+function tests for a double-byte Hiragana character.
 A double-byte Hiragana character is any character for which the
 following expression is true:
 .millust begin
@@ -21,7 +23,9 @@ The Hiragana code set includes 83 characters and the Katakana code set
 includes 86 characters.
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end
 .see begin

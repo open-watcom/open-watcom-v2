@@ -1,4 +1,5 @@
 .gfunc gettextextent
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _gettextextent( short x, short y,
                           char _FAR *text,
@@ -12,9 +13,11 @@ character*(*) text
 record /xycoord/ concat
 record /xycoord/ extent(4)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine simulates the effect of using the
+The
+.id &func.
+&routine simulates the effect of using the
 .kw _grtext
 &routine to display the text string
 .arg text
@@ -37,7 +40,9 @@ at the upper-left corner.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

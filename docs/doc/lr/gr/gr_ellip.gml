@@ -1,4 +1,5 @@
 .gfuncwxy ellipse
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _ellipse( short fill, short x1, short y1,
                                  short x2, short y2 );
@@ -25,11 +26,19 @@ integer*2 function _ellipse_wxy( fill, p1, p2 )
 integer*2 fill,
 record /_wxycoord/ p1, p2
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines draw ellipses.
-The &func &routine uses the view coordinate system.
-The &func2 and &func3 &routines use the window coordinate system.
+The
+.id &func.
+&routines draw ellipses.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+and
+.id &func3.
+&routines use the window coordinate system.
 .np
 The center of the ellipse is the center of the
 rectangle established by the points

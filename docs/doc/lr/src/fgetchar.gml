@@ -15,55 +15,78 @@ wint_t _fgetwchar( void );
 .do end
 .synop end
 .desc begin
-The &func function is equivalent to
+The
+.id &func.
+function is equivalent to
 .kw fgetc
 with the argument
 .kw stdin
 .ct .li .
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI naming conventions.
+The
+.id &_func.
+function is identical to
+.id &func.
+.
+Use
+.id &_func.
+for ANSI naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it gets the next
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it gets the next
 multibyte character (if present) from the input stream pointed to by
 .kw stdin
 and converts it to a wide character.
 .do end
 .desc end
 .return begin
-The &func function returns the next character from the input stream
+The
+.id &func.
+function returns the next character from the input stream
 pointed to by
 .kw stdin
 .ct .li .
 If the stream is at end-of-file, the end-of-file indicator is set and
-&func returns
+.id &func.
+returns
 .kw EOF
 .ct .li .
 If a read error occurs, the error indicator is set and
-&func returns
+.id &func.
+returns
 .kw EOF
 .ct .li .
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function returns the next wide character from the input
+The
+.id &wfunc.
+function returns the next wide character from the input
 stream pointed to by
 .kw stdin
 .ct .li .
 If the stream is at end-of-file, the end-of-file indicator is set and
-&wfunc returns
+.id &wfunc.
+returns
 .kw WEOF
 .ct .li .
-If a read error occurs, the error indicator is set and &wfunc returns
+If a read error occurs, the error indicator is set and
+.id &wfunc.
+returns
 .kw WEOF
 .ct .li .
 If an encoding error occurs,
 .kw errno
 is set to
 .kw EILSEQ
-and &wfunc returns
+and
+.id &wfunc.
+returns
 .kw WEOF
 .ct .li .
 .do end

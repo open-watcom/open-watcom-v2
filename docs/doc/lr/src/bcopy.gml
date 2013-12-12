@@ -6,7 +6,9 @@ void bcopy( const void *src, void *dst, size_t n );
 .ixfunc2 '&Copy' &func
 .synop end
 .desc begin
-The &func function copies the byte string pointed to by
+The
+.id &func.
+function copies the byte string pointed to by
 .arg src
 (including any null characters) into the array pointed to by
 .arg dst
@@ -22,7 +24,9 @@ function but the order of arguments is different
 (new code should use the ANSI function).
 .desc end
 .return begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 .return end
 .see begin
 .seelist &function. bcmp bcopy bzero memmove strcpy

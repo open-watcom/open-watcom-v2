@@ -1,4 +1,5 @@
 .gfunc setwindow
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _setwindow( short invert,
                        double x1, double y1,
@@ -10,9 +11,11 @@ logical invert
 double precision x1, y1
 double precision x2, y2
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine defines a window for the window coordinate system.
+The
+.id &func.
+&routine defines a window for the window coordinate system.
 Window coordinates are specified as a user-defined range of values.
 This allows for consistent pictures regardless of the video mode.
 .np
@@ -34,7 +37,9 @@ non-zero,
 the y values increase from the bottom of the screen to the top,
 otherwise, the y values increase as you move down the screen.
 .np
-The window defined by the &func &routine is displayed in
+The window defined by the
+.id &func.
+&routine is displayed in
 the current viewport.
 A viewport is defined by the
 .kw _setviewport
@@ -47,7 +52,9 @@ located at the lower left corner of the screen, and the point
 at the upper right corner.
 .desc end
 .return begin
-The &func &routine returns a non-zero value when the window is set
+The
+.id &func.
+&routine returns a non-zero value when the window is set
 successfully; otherwise, zero is returned.
 .return end
 .see begin

@@ -5,7 +5,9 @@ void _dos_keep( unsigned retcode, unsigned memsize );
 .ixfunc2 '&TSR' &func
 .synop end
 .desc begin
-The &func function is used to install terminate-and-stay-resident
+The
+.id &func.
+function is used to install terminate-and-stay-resident
 programs ("TSR's") in memory.
 The amount of memory kept for the program is
 .arg memsize
@@ -18,7 +20,9 @@ The value of
 is returned to the parent process.
 .desc end
 .return begin
-The &func function does not return.
+The
+.id &func.
+function does not return.
 .return end
 .see begin
 .seelist _dos_keep _chain_intr _dos_getvect _dos_setvect

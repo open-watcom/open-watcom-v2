@@ -11,7 +11,9 @@ unsigned _dos_freemem( unsigned segment );
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x49 to release memory that was
+The
+.id &func.
+function uses system call 0x49 to release memory that was
 previously allocated by
 .kw _dos_allocmem
 .ct .li .
@@ -25,7 +27,9 @@ For 32-bit DOS applications, it is recommended that the corresponding
 DPMI services be used.
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 accordingly.

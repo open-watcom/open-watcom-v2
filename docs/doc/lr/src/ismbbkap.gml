@@ -4,11 +4,15 @@
 int _ismbbkalpha( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg ch
 is a non-ASCII text symbol other than digits or punctuation.
 .np
-For example, in code page 932, &func tests for a single-byte Katakana
+For example, in code page 932,
+.id &func.
+tests for a single-byte Katakana
 character (excluding the Katakana punctuation characters).
 Note that there are no Katakana digit characters.
 A single-byte Katakana non-punctuation character is any character for
@@ -27,7 +31,9 @@ Incorrect results occur if the argument is a double-byte character.
 This is shown by the example below.
 .desc end
 .return begin
-The &func function returns a non-zero value if the argument satisfies
+The
+.id &func.
+function returns a non-zero value if the argument satisfies
 the condition; otherwise a zero value is returned.
 .return end
 .see begin

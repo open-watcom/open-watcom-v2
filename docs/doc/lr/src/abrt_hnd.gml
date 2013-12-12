@@ -10,7 +10,9 @@ void abort_handler_s(
 .synop end
 .*
 .desc begin
-The &func function may be passed as an argument to the
+The
+.id &func.
+function may be passed as an argument to the
 .mono set_constraint_handler_s
 function. It writes a message on the standard error stream in the
 following format:
@@ -19,13 +21,17 @@ following format:
 Runtime-constraint violation: <msg>
 .millust end
 .np
-The &func function then calls the
+The
+.id &func.
+function then calls the
 .mono abort
 function.
 .desc end
 .*
 .return begin
-The &func function does not return to its caller.
+The
+.id &func.
+function does not return to its caller.
 .return end
 .*
 .see begin

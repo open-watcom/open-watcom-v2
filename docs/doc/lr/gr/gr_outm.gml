@@ -1,4 +1,5 @@
 .gfunc outmem
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _outmem( char _FAR *text, short length );
 .do end
@@ -7,9 +8,11 @@ subroutine _outmem( text, length )
 character*(*) text
 integer*2 length
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine displays the character string indicated by the argument
+The
+.id &func.
+&routine displays the character string indicated by the argument
 .arg text
 .ct .li .
 The argument
@@ -17,7 +20,9 @@ The argument
 specifies the number of characters to be displayed.
 Unlike the
 .kw _outtext
-&routine, &func will display the graphical representation of characters
+&routine,
+.id &func.
+will display the graphical representation of characters
 such as ASCII 10 and 0, instead of interpreting them as control characters.
 .np
 The text is displayed using the current text color (see the
@@ -30,7 +35,9 @@ The text position is updated to follow the end of the displayed text.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

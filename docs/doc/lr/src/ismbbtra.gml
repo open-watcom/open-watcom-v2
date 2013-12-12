@@ -4,7 +4,9 @@
 int _ismbbtrail( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests if
+The
+.id &func.
+function tests if
 .arg ch
 is a valid second byte of a multibyte character.
 .np
@@ -20,7 +22,8 @@ ignored and may be invalid.
 This is shown by the example below.
 .desc end
 .return begin
-&func returns a non-zero value if the argument is valid as the second
+.id &func.
+returns a non-zero value if the argument is valid as the second
 byte of a multibyte character; otherwise zero is returned.
 .return end
 .see begin

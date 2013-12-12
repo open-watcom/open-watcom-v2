@@ -4,7 +4,9 @@
 int _ismbbalpha( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg ch
 satisfies the condition that one of
 .kw isalpha
@@ -12,7 +14,9 @@ or
 .kw _ismbbkalpha
 is true.
 .np
-For example, in code page 932, &func tests if the argument
+For example, in code page 932,
+.id &func.
+tests if the argument
 .arg ch
 is a single-byte alphabetic character ("a" to "z" or "A" to "Z") or
 single-byte Katakana non-punctuation character.
@@ -26,7 +30,9 @@ must represent a single-byte value (i.e., 0 <=
 Incorrect results occur if the argument is a double-byte character.
 .desc end
 .return begin
-The &func function returns a non-zero value if the argument satisfies
+The
+.id &func.
+function returns a non-zero value if the argument satisfies
 the condition; otherwise a zero value is returned.
 .return end
 .see begin

@@ -16,7 +16,9 @@ int fwscanf( FILE *fp, const wchar_t *format, ... );
 .safealt
 .*
 .desc begin
-The &func function scans input from the file designated by
+The
+.id &func.
+function scans input from the file designated by
 .arg fp
 under control of the argument
 .arg format
@@ -29,7 +31,11 @@ string is described under the description of the
 function.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument for
 .arg format
 .ct .li .
@@ -37,7 +43,9 @@ wide-character string argument for
 .desc end
 .*
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .kw EOF
 if an input failure occurred before any conversion.
 Otherwise, the number of input arguments for which

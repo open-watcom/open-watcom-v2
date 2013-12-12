@@ -4,9 +4,13 @@
 unsigned int _mbcjistojms( unsigned int ch );
 .synop end
 .desc begin
-The &func converts a JIS character set code to a shift-JIS character
+The
+.id &func.
+converts a JIS character set code to a shift-JIS character
 set code.
-If the argument is out of range, &func returns 0.
+If the argument is out of range,
+.id &func.
+returns 0.
 Valid JIS double-byte characters are those in which the first and
 second byte fall in the range 0x21 through 0x7E.
 This is summarized in the following diagram.
@@ -34,7 +38,9 @@ This function was called
 in earlier versions.
 .desc end
 .return begin
-The &func function returns zero if the argument is not in the range;
+The
+.id &func.
+function returns zero if the argument is not in the range;
 otherwise, the corresponding shift-JIS code is returned.
 .return end
 .see begin

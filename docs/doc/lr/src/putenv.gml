@@ -24,7 +24,9 @@ Entries can be added to the environment list with the
 .el .do begin
 .doscmd set
 .do end
-or with the &func function.
+or with the
+.id &func.
+function.
 All entries in the environment list can be displayed by using the
 .if '&machsys' eq 'QNX' .do begin
 .qnxcmd export
@@ -66,18 +68,33 @@ as if they were in upper case.
 .np
 The space into which environment names and their values are placed
 is limited.
-Consequently, the &func function can fail when there is insufficient
+Consequently, the
+.id &func.
+function can fail when there is insufficient
 space remaining to store an additional value.
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI naming conventions.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is a wide-character version of &func; the
+The
+.id &wfunc.
+function is a wide-character version of
+.id &func.
+the
 .arg env_name
-argument to &wfunc is a wide-character string.
+argument to
+.id &wfunc.
+is a wide-character string.
 .np
-&func and &wfunc affect only the environment that is local to the
+.id &func.
+and
+.id &wfunc.
+affect only the environment that is local to the
 current process; you cannot use them to modify the command-level
 environment. That is, these functions operate only on data structures
 accessible to the run-time library and not on the environment
@@ -86,14 +103,21 @@ current process terminates, the environment reverts to the level of
 the calling process (in most cases, the operating-system level).
 However, the modified environment can be passed to any new processes
 created by _spawn, _exec, or system, and these new processes get any
-new items added by &func and &wfunc..
+new items added by
+.id &func.
+and &wfunc..
 .np
 With regard to environment entries, observe the following cautions:
 .begbull
 .bull
 Do not change an environment entry directly; instead, use &func
-or &wfunc to change it. To modify the return value of &func or
-&wfunc without affecting the environment table, use
+or
+.id &wfunc.
+to change it. To modify the return value of
+.id &func.
+or
+.id &wfunc.
+without affecting the environment table, use
 .kw _strdup
 or
 .kw strcpy
@@ -109,17 +133,33 @@ does not copy the value; for example,
 .bull
 Never free a pointer to an environment entry, because the environment
 variable will then point to freed space. A similar problem
-can occur if you pass &func or &wfunc a pointer to a local
+can occur if you pass
+.id &func.
+or
+.id &wfunc.
+a pointer to a local
 variable, then exit the function in which the variable is declared.
 .endbull
 :CMT. .np
-:CMT. getenv and &func use the global variable _environ to access the
-:CMT. environment table; _wgetenv and &wfunc use _wenviron. &func and
-:CMT. &wfunc may change the value of _environ and _wenviron, thus
+:CMT. getenv and
+.id &func.
+use the global variable _environ to access the
+:CMT. environment table; _wgetenv and
+.id &wfunc.
+use _wenviron.
+.id &func.
+and
+:CMT.
+.id &wfunc.
+may change the value of _environ and _wenviron, thus
 :CMT. invalidating the envp argument to main and the _wenvp argument to wmain.
 :CMT. Therefore, it is safer to use _environ or _wenviron to access the
 :CMT. environment information. For more information about the relation of
-:CMT. &func and &wfunc to global variables, see _environ, _wenviron.
+:CMT.
+.id &func.
+and
+.id &wfunc.
+to global variables, see _environ, _wenviron.
 .do end
 .np
 To assign a string to a variable and place it in the environment list:
@@ -157,7 +197,9 @@ assignments:
 .millust end
 .desc end
 .return begin
-The &func function returns zero when it is successfully executed and
+The
+.id &func.
+function returns zero when it is successfully executed and
 returns &minus.1 when it fails.
 .return end
 .error begin

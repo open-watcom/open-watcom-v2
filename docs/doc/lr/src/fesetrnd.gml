@@ -6,13 +6,17 @@ int fesetround( int __round );
 .synop end
 .*
 .desc begin
-The &func function establishes the rounding direction represented by its
+The
+.id &func.
+function establishes the rounding direction represented by its
 argument round. If the argument is not equal to the value of a rounding direction macro,
 the rounding direction is not changed.
 .desc end
 .*
 .return begin
-The &func function returns a zero value if and only if the requested rounding direction was
+The
+.id &func.
+function returns a zero value if and only if the requested rounding direction was
 established.
 .return end
 .*

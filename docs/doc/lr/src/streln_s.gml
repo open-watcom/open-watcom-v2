@@ -15,7 +15,9 @@ size_t wcserrorlen_s( errno errnum );
 .rtconst none
 .*
 .desc begin
-The &func function calculates the length of the (untruncated) locale-specific
+The
+.id &func.
+function calculates the length of the (untruncated) locale-specific
 message string that the
 .kw strerror_s
 function maps to
@@ -26,7 +28,9 @@ function maps to
 .desc end
 .*
 .return begin
-The &func function returns the number of characters (not including the
+The
+.id &func.
+function returns the number of characters (not including the
 null character) in the full message string.
 .return end
 .*

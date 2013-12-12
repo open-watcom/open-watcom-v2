@@ -5,7 +5,9 @@ int raise( int condition );
 .ixfunc2 '&Errs' &func
 .synop end
 .desc begin
-The &func function signals the exceptional condition indicated by the
+The
+.id &func.
+function signals the exceptional condition indicated by the
 .arg condition
 argument.
 The possible conditions are defined in the
@@ -19,7 +21,9 @@ function can be used to specify the action which is to take
 place when such a condition occurs.
 .desc end
 .return begin
-The &func function returns zero when the condition is successfully
+The
+.id &func.
+function returns zero when the condition is successfully
 raised and a non-zero value otherwise.
 There may be no return of control following the function call if the
 action for that condition is to terminate the program or to transfer

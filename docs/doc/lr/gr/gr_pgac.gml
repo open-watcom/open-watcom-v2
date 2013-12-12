@@ -1,4 +1,5 @@
 .gfuncms pg_analyzechart
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_analyzechart( chartenv _FAR *env,
                              char _FAR * _FAR *cat,
@@ -27,14 +28,18 @@ real values(*)
 integer*2 nseries, n, dim
 integer*4 labels(*)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines analyze either a single-series or a multi-series
+The
+.id &func.
+&routines analyze either a single-series or a multi-series
 bar, column or line chart.
 These &routines calculate default values for chart elements without
 actually displaying the chart.
 .pp
-The &func &routine analyzes a single-series bar, column or line chart.
+The
+.id &func.
+&routine analyzes a single-series bar, column or line chart.
 The chart environment structure
 .arg env
 is filled with default values based on the type of chart and the values
@@ -47,7 +52,9 @@ The arguments are the same as for the
 .kw _pg_chart
 &routine..
 .pp
-The &func2 &routine analyzes a multi-series bar, column or line chart.
+The
+.id &func1.
+&routine analyzes a multi-series bar, column or line chart.
 The chart environment structure
 .arg env
 is filled with default values based on the type of chart and the values
@@ -63,7 +70,9 @@ The arguments are the same as for the
 &routine..
 .desc end
 .return begin
-The &func &routines return zero
+The
+.id &func.
+&routines return zero
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin

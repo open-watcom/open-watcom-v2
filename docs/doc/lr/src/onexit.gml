@@ -5,23 +5,35 @@ onexit_t onexit( onexit_t func );
 .ixfunc2 '&Process' &func
 .synop end
 .desc begin
-The &func  function is passed the address of function
+The
+.id &func.
+ function is passed the address of function
 .arg func
 to be called when the program terminates normally.
-Successive calls to &func create a list of functions that will be
+Successive calls to
+.id &func.
+create a list of functions that will be
 executed on a "last-in, first-out" basis.
-No more than 32 functions can be registered with the &func function.
+No more than 32 functions can be registered with the
+.id &func.
+function.
 .pp
 The functions have no parameters and do not return values.
 .pp
-NOTE: The &func function is not an ANSI function.
+NOTE: The
+.id &func.
+function is not an ANSI function.
 The ANSI standard function
 .kw atexit
-does the same thing that &func does and should be used instead of &func
+does the same thing that
+.id &func.
+does and should be used instead of &func
 where ANSI portability is concerned.
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg func
 if the registration succeeds,
 NULL if it fails.

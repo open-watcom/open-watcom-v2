@@ -5,7 +5,9 @@ double tgamma( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function returns the value of the Gamma function of 
+The
+.id &func.
+function returns the value of the Gamma function of 
 .arg x
 .ct .li . 
 .desc end

@@ -15,7 +15,9 @@ struct _wdirent *_wreaddir( _wdirent *dirp );
 .do end
 .synop end
 .desc begin
-The &func function obtains information about the next matching file
+The
+.id &func.
+function obtains information about the next matching file
 name from the argument
 .arg dirp
 .ct .li .
@@ -24,7 +26,9 @@ The argument
 is the value returned from the
 .kw opendir
 function.
-The &func function can be called repeatedly to obtain the list of file
+The
+.id &func.
+function can be called repeatedly to obtain the list of file
 names contained in the directory specified by the pathname given to
 .kw opendir
 .ct .li .
@@ -57,34 +61,50 @@ Either or both processes may use
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it reads a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it reads a
 directory of wide-character filenames.
 .im _wdirent
 .do end
 .desc end
 .return begin
-When successful, &func returns a pointer to an object of type
+When successful,
+.id &func.
+returns a pointer to an object of type
 .us struct dirent.
-When an error occurs, &func returns the value
+When an error occurs,
+.id &func.
+returns the value
 .mono NULL
 and
 .kw errno
 is set to indicate the error.
-When the end of the directory is encountered, &func returns the value
+When the end of the directory is encountered,
+.id &func.
+returns the value
 .mono NULL
 and
 .kw errno
 is unchanged.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-When successful, &wfunc returns a pointer to an object of type
+When successful,
+.id &wfunc.
+returns a pointer to an object of type
 .us struct _wdirent.
-When an error occurs, &wfunc returns the value
+When an error occurs,
+.id &wfunc.
+returns the value
 .mono NULL
 and
 .kw errno
 is set to indicate the error.
-When the end of the directory is encountered, &wfunc returns the value
+When the end of the directory is encountered,
+.id &wfunc.
+returns the value
 .mono NULL
 and
 .kw errno

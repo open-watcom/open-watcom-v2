@@ -5,7 +5,9 @@ int getch( void );
 .ixfunc2 '&KbIo' '&func'
 .synop end
 .desc begin
-The &func function obtains the next available keystroke from the console.
+The
+.id &func.
+function obtains the next available keystroke from the console.
 Nothing is echoed on the screen (the function
 .kw getche
 will echo the keystroke, if possible).
@@ -20,7 +22,9 @@ function can be used to determine if a keystroke is available.
 A value of
 .mono EOF
 is returned when an error is detected; otherwise
-the &func function returns the value of the keystroke (or character).
+the
+.id &func.
+function returns the value of the keystroke (or character).
 .pp
 When the keystroke represents an extended function key (for example,
 a function key, a cursor-movement key or the ALT key with a letter or
@@ -31,7 +35,9 @@ a digit),
 .el .do begin
 zero
 .do end
-is returned and the next call to &func returns a value for the
+is returned and the next call to
+.id &func.
+returns a value for the
 extended function.
 .return end
 .see begin

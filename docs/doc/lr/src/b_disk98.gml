@@ -18,7 +18,9 @@ struct  diskinfo_t {        /* disk parameters     */
 .ixfunc2 '&BiosFunc' &func
 .synop end
 .desc begin
-The &func function makes disk access operations specified by
+The
+.id &func.
+function makes disk access operations specified by
 .arg service
 .ct .li .
 Please exercise caution when using this function because it accesses
@@ -120,7 +122,9 @@ stored in the area pointed to by <result>.
 .endterm
 .desc end
 .return begin
-If the &func function finishes normally, it returns zero in the upper
+If the
+.id &func.
+function finishes normally, it returns zero in the upper
 byte and the status information in the lower byte. If an error occurs,
 the upper byte is not zero and the lower byte is the status
 information.

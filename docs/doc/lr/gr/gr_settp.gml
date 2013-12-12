@@ -1,4 +1,5 @@
 .gfunc settextposition
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct rccoord _FAR _settextposition( short row,
                                       short col );
@@ -7,9 +8,11 @@ struct rccoord _FAR _settextposition( short row,
 record /rccoord/ function _settextposition( row, col )
 integer*2 row, col
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current output position for text to be
+The
+.id &func.
+&routine sets the current output position for text to be
 .coord row col
 where this position is in terms of characters, not pixels.
 .np
@@ -48,7 +51,9 @@ uses the output position that was set by &func..
 .do end
 .desc end
 .return begin
-The &func &routine returns, as an
+The
+.id &func.
+&routine returns, as an
 .id rccoord
 structure, the previous output position for text.
 .return end

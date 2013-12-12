@@ -14,21 +14,35 @@ int iswascii( wint_t c );
 .do end
 .synop end
 .desc begin
-The &func function tests for a character in the range from 0 to 127.
+The
+.id &func.
+function tests for a character in the range from 0 to 127.
 .np
-The &__func function is identical to &func..
-Use &__func for ANSI/ISO naming conventions.
+The
+.id &__func.
+function is identical to &func..
+Use
+.id &__func.
+for ANSI/ISO naming conventions.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is similar to &func except that it accepts a
+The
+.id &wfunc.
+function is similar to
+.id &func.
+except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
-The &func function returns a non-zero value when the character is in
+The
+.id &func.
+function returns a non-zero value when the character is in
 the range 0 to 127; otherwise, zero is returned.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns a non-zero value when
+The
+.id &wfunc.
+function returns a non-zero value when
 .arg c
 is a wide-character representation of an ASCII character.
 .do end

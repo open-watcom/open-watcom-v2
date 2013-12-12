@@ -19,7 +19,9 @@ long _wfindfirsti64( const wchar_t *filespec,
 .do end
 .synop end
 .desc begin
-The &func function returns information on the first file whose name
+The
+.id &func.
+function returns information on the first file whose name
 matches the
 .arg filespec
 argument.
@@ -46,7 +48,9 @@ The &_func64 function returns information on the first file whose
 name matches the
 .arg filespec
 argument.
-It differs from the &_func function in that it returns a 64-bit file
+It differs from the
+.id &_func.
+function in that it returns a 64-bit file
 size.
 The
 .arg filespec
@@ -68,7 +72,11 @@ struct _finddatai64_t {
 .millust end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The wide-character &wfunc function is similar to the &_func function
+The wide-character
+.id &wfunc.
+function is similar to the
+.id &_func.
+function
 but operates on wide-character strings.
 .millust begin
 struct _wfinddata_t {
@@ -83,7 +91,9 @@ struct _wfinddata_t {
 .np
 The wide-character &wfunc64 function is similar to the &_func64
 function but operates on wide-character strings.
-It differs from the &wfunc function in that it returns a 64-bit file
+It differs from the
+.id &wfunc.
+function in that it returns a 64-bit file
 size.
 .millust begin
 struct _wfinddatai64_t {
@@ -98,7 +108,9 @@ struct _wfinddatai64_t {
 .do end
 .desc end
 .return begin
-If successful, &_func returns a unique search handle identifying the
+If successful,
+.id &_func.
+returns a unique search handle identifying the
 file or group of files matching the
 .arg filespec
 specification, which can be used in a subsequent call to
@@ -106,7 +118,9 @@ specification, which can be used in a subsequent call to
 or to
 .kw _findclose
 .ct .li .
-Otherwise, &_func and returns &minus.1 and sets
+Otherwise,
+.id &_func.
+and returns &minus.1 and sets
 .kw errno
 to one of the following values:
 .begterm

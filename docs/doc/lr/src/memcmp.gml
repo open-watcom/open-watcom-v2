@@ -20,7 +20,9 @@ int wmemcmp( const wchar_t *s1,
 .do end
 .synop end
 .desc begin
-The &func function compares the first
+The
+.id &func.
+function compares the first
 .arg length
 characters of the object pointed to by
 .arg s1
@@ -30,7 +32,11 @@ to the object pointed to by
 .im farparm
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc wide-character function is identical to &func except that it
+The
+.id &wfunc.
+wide-character function is identical to
+.id &func.
+except that it
 operates on characters of
 .kw wchar_t
 type.
@@ -40,7 +46,9 @@ is interpreted to mean the number of wide characters.
 .do end
 .desc end
 .return begin
-The &func function returns an integer less than, equal to, or greater
+The
+.id &func.
+function returns an integer less than, equal to, or greater
 than zero, indicating that the object pointed to by
 .arg s1
 is less than, equal to, or greater than the object pointed to by

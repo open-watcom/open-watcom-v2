@@ -5,7 +5,9 @@ void ( *signal(int sig, void (*func)(int)) )( int );
 .ixfunc2 '&Errs' &func
 .synop end
 .desc begin
-The &func function is used to specify an action to take place when
+The
+.id &func.
+function is used to specify an action to take place when
 certain conditions are detected while a program executes.
 .if '&machsys' eq 'QNX' .do begin
 See the
@@ -86,7 +88,9 @@ functions or call the
 .kw longjmp
 function.
 Because the next signal will be handled with default handling, the
-program must again call &func if it is desired to handle the next
+program must again call
+.id &func.
+if it is desired to handle the next
 condition of the type that has been signalled.
 .if '&machsys' eq 'QNX' .do begin
 .np

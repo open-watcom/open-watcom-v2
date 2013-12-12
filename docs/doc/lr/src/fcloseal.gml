@@ -5,7 +5,9 @@ int fcloseall( void );
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function closes all open stream files, except
+The
+.id &func.
+function closes all open stream files, except
 .if '&machsys' eq 'QNX' .do begin
 .kw stdin
 .ct,
@@ -44,7 +46,9 @@ files are not available for some Windows platforms.
 .do end
 .desc end
 .return begin
-The &func function returns the number of streams that were closed if
+The
+.id &func.
+function returns the number of streams that were closed if
 no errors were encountered.
 When an error occurs,
 .kw EOF

@@ -6,7 +6,9 @@ unsigned _bios_timeofday( unsigned service,
 .ixfunc2 '&BiosFunc' &func
 .synop end
 .desc begin
-The &func function gets or sets the current system clock value.
+The
+.id &func.
+function gets or sets the current system clock value.
 The values for service are:
 .begterm 12
 .termhd1 Value

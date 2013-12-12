@@ -6,7 +6,9 @@ int bcmp(const void *s1, const void *s2, size_t n);
 .ixfunc2 '&Compare' &func
 .synop end
 .desc begin
-The &func function compares the byte string pointed to by
+The
+.id &func.
+function compares the byte string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
@@ -22,7 +24,9 @@ function but just tests for equality
 (new code should use the ANSI function).
 .desc end
 .return begin
-The &func function returns zero if the byte strings are identical;
+The
+.id &func.
+function returns zero if the byte strings are identical;
 otherwise it returns 1.
 .return end
 .see begin

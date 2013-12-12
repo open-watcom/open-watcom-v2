@@ -4,7 +4,9 @@
 int _ismbbalnum( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg ch
 satisfies the condition that one of
 .kw isalnum
@@ -21,7 +23,9 @@ must represent a single-byte value (i.e., 0 <=
 Incorrect results occur if the argument is a double-byte character.
 .desc end
 .return begin
-The &func function returns a non-zero value if the argument satisfies
+The
+.id &func.
+function returns a non-zero value if the argument satisfies
 the condition; otherwise a zero value is returned.
 .return end
 .see begin

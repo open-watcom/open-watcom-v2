@@ -4,16 +4,22 @@
 int _dwSetAppTitle( const char *title );
 .synop end
 .desc begin
-The &func function sets the main window's title.
+The
+.id &func.
+function sets the main window's title.
 The argument
 .arg title
 points to the string that will replace the current title.
 .np
-The &func function is one of the support functions that can be called
+The
+.id &func.
+function is one of the support functions that can be called
 from an application using &company's default windowing support.
 .desc end
 .return begin
-The &func function returns 1 if it was successful and 0 if not.
+The
+.id &func.
+function returns 1 if it was successful and 0 if not.
 .return end
 .see begin
 .seelist &function. _dwDeleteOnClose _dwSetAboutDlg _dwSetAppTitle _dwSetConTitle _dwShutDown _dwYield

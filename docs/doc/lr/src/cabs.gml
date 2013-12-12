@@ -10,7 +10,9 @@ struct _complex {
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the absolute value of the complex number
+The
+.id &func.
+function computes the absolute value of the complex number
 .arg value
 by a calculation which is equivalent to
 .blkcode begin

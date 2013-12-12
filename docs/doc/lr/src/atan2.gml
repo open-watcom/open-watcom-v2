@@ -6,14 +6,18 @@ double atan2( double y, double x );
 .ixfunc2 '&Trig' &func
 .synop end
 .desc begin
-The &func function computes the principal value of the arctangent of
+The
+.id &func.
+function computes the principal value of the arctangent of
 .arg y/x
 .ct , using the signs of both arguments
 to determine the quadrant of the return value.
 A domain error occurs if both arguments are zero.
 .desc end
 .return begin
-The &func function returns the arctangent of
+The
+.id &func.
+function returns the arctangent of
 .arg y/x
 .ct , in the range (&minus.&pi.,&pi.).
 .im errnodom

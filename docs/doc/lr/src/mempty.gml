@@ -4,7 +4,9 @@
 void  _m_empty(void);
 .synop end
 .desc begin
-The &func function empties the multimedia state.
+The
+.id &func.
+function empties the multimedia state.
 The values in the Multimedia Tag Word (TW) are set to empty
 (i.e., all ones).
 This will indicate that no Multimedia registers are in use.
@@ -25,13 +27,16 @@ Do not rely on the contents of FP/MM registers across transitions
 from one stream to the other.
 .bull
 Leave the MM state empty at the end of an MM stream using the
-&func function.
+.id &func.
+function.
 .bull
 Similarly, leave the FP stack empty at the end of an FP stream.
 .endbull
 .desc end
 .return begin
-The &func function does not return a value.
+The
+.id &func.
+function does not return a value.
 .return end
 .see begin
 .im seemmfun &function.

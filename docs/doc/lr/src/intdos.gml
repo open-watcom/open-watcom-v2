@@ -6,7 +6,9 @@ int intdos( const union REGS *in_regs,
 .ixfunc2 '&OsInt' &func
 .synop end
 .desc begin
-The &func function causes the computer's central processor (CPU) to
+The
+.id &func.
+function causes the computer's central processor (CPU) to
 be interrupted with an interrupt number hexadecimal 21 (
 .ct .mono 0x21
 .ct ), which is

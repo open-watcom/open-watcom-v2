@@ -5,7 +5,9 @@ double fmin( double x, double y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function returns the smaller of
+The
+.id &func.
+function returns the smaller of
 .arg x
 and
 .arg y

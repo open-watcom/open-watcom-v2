@@ -5,15 +5,21 @@
 int _mbbtype( unsigned char ch, int type );
 .synop end
 .desc begin
-The &func function determines the type of a byte in a multibyte
+The
+.id &func.
+function determines the type of a byte in a multibyte
 character.
 If the value of
 .arg type
-is any value except 1, &func tests for a valid single-byte or lead
+is any value except 1,
+.id &func.
+tests for a valid single-byte or lead
 byte of a multibyte character.
 If the value of
 .arg type
-is 1, &func tests for a valid trail byte of a multibyte character.
+is 1,
+.id &func.
+tests for a valid trail byte of a multibyte character.
 .np
 .us Note:
 A similar function was called
@@ -23,7 +29,9 @@ in earlier versions.
 .return begin
 If the value of
 .arg type
-is not 1, the &func function returns one of the following values:
+is not 1, the
+.id &func.
+function returns one of the following values:
 .begterm
 .term _MBC_SINGLE
 the character is a valid single-byte character
@@ -39,7 +47,9 @@ the character is an illegal character
 .np
 If the value of
 .arg type
-is 1, the &func function returns one of the following values:
+is 1, the
+.id &func.
+function returns one of the following values:
 .begterm
 .term _MBC_TRAIL
 the character is a valid trailing byte character

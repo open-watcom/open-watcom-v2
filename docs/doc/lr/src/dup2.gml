@@ -9,7 +9,9 @@ int _dup2( int &fd, int &fd.2 );
 .do end
 .synop end
 .desc begin
-The &func function duplicates the file &handle given by the argument
+The
+.id &func.
+function duplicates the file &handle given by the argument
 .arg &fd
 .ct .li .
 The new file &handle is identical to the original in that it references
@@ -25,8 +27,14 @@ If a file already is opened with this &handle, the file is closed
 before the duplication is attempted.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to
+.id &func.
+.
+Use
+id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if '&machsys' eq 'QNX' .do begin
 .pp
@@ -44,12 +52,16 @@ is equivalent to:
 .desc end
 .return begin
 .if '&machsys' eq 'QNX' .do begin
-The &func function returns the value of
+The
+.id &func.
+function returns the value of
 .arg &fd.2
 if successful.
 .do end
 .el .do begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 .do end
 Otherwise, &minus.1 is returned and
 .kw errno

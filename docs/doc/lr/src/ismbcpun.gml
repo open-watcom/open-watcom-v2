@@ -4,10 +4,14 @@
 int _ismbcpunct( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests for any multibyte punctuation character.
+The
+.id &func.
+function tests for any multibyte punctuation character.
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end
 .see begin

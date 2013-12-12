@@ -10,10 +10,16 @@ FJSTRING __far _fjputmoji( JCHAR __far *str, JMOJI c );
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function places
+The
+.id &func.
+function places
 .do end
 .el .do begin
-The &func and &ffunc functions place
+The
+.id &func.
+and
+.id &ffunc.
+functions place
 .do end
 the next single- or double-byte character specified by
 .arg c
@@ -24,10 +30,16 @@ at the start of the buffer specified by
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 a pointer to the next location in which to store a character.
 .return end

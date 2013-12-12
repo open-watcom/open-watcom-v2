@@ -1,4 +1,5 @@
 .gfunc settextrows
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _settextrows( short rows );
 .do end
@@ -6,9 +7,11 @@ short _FAR _settextrows( short rows );
 integer*2 function _settextrows( rows )
 integer*2 rows
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine selects the number of rows of text displayed on the screen.
+The
+.id &func.
+&routine selects the number of rows of text displayed on the screen.
 The number of rows is specified by the argument
 .arg rows
 .ct .li .
@@ -29,7 +32,9 @@ Some graphics modes will support 43 rows for EGA adapters and
 60 rows for MCGA and VGA adapters.
 .desc end
 .return begin
-The &func &routine returns the number of screen rows when the number of
+The
+.id &func.
+&routine returns the number of screen rows when the number of
 rows is set successfully; otherwise, zero is returned.
 .return end
 .see begin

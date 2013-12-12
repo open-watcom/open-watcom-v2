@@ -6,7 +6,9 @@ double hypot( double x, double y );
 .ixfunc2 '&Trig' &func
 .synop end
 .desc begin
-The &func function computes the length of the hypotenuse of a right
+The
+.id &func.
+function computes the length of the hypotenuse of a right
 triangle whose sides are
 .arg x
 and

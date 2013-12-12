@@ -8,7 +8,9 @@ int int386x( int inter_no,
 .ixfunc2 '&CpuInt' &func
 .synop end
 .desc begin
-The &func function causes the computer's central processor (CPU) to
+The
+.id &func.
+function causes the computer's central processor (CPU) to
 be interrupted with an interrupt whose number is given by
 .arg inter_no
 .ct .li .
@@ -42,7 +44,9 @@ you are using to determine the expected register contents before and
 after the interrupt in question.
 .desc end
 .return begin
-The &func function returns the value of the CPU EAX register after the
+The
+.id &func.
+function returns the value of the CPU EAX register after the
 interrupt.
 .return end
 .see begin

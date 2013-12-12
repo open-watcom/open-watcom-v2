@@ -5,16 +5,22 @@ void _disable( void );
 .ixfunc2 '&Interrupt' &func
 .synop end
 .desc begin
-The &func function causes interrupts to become disabled.
+The
+.id &func.
+function causes interrupts to become disabled.
 .np
-The &func function would be used in conjunction with the
+The
+.id &func.
+function would be used in conjunction with the
 .kw _enable
 function to make sure that a sequence of instructions are executed
 without any intervening interrupts occurring.
 .im privity
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .seelist _disable _enable

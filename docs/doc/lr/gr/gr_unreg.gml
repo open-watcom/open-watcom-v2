@@ -1,24 +1,31 @@
 .gfunc unregisterfonts
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _unregisterfonts( void );
 .do end
 .el .do begin
 subroutine _unregisterfonts()
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine frees the memory previously allocated by the
+The
+.id &func.
+&routine frees the memory previously allocated by the
 .kw _registerfonts
 &routine..
 The currently selected font is also unloaded.
 .pp
 Attempting to use the
 .kw _setfont
-&routine after calling &func will result in an error.
+&routine after calling
+.id &func.
+will result in an error.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

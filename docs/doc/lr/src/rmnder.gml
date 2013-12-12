@@ -5,7 +5,9 @@ double remainder( double x, double y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes remainder of the division of
+The
+.id &func.
+function computes remainder of the division of
 .arg x
 by
 .arg y

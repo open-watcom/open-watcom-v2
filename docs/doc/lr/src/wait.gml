@@ -6,11 +6,15 @@ int wait( int *status );
 .ixfunc2 '&NTFunc' &func
 .synop end
 .desc begin
-The &func function suspends the calling process until any of the caller's
+The
+.id &func.
+function suspends the calling process until any of the caller's
 immediate child processes terminate.
 .np
 Under Win32, there is no parent-child relationship amongst
-processes so the &func function cannot and does not wait for child
+processes so the
+.id &func.
+function cannot and does not wait for child
 processes to terminate.
 To wait for any process, you must specify its process id.
 For this reason, the
@@ -19,9 +23,13 @@ function should be used (one of its arguments is a process id).
 .im waitstat
 .desc end
 .return begin
-The &func function returns the child's process id if the child process
+The
+.id &func.
+function returns the child's process id if the child process
 terminated normally.
-Otherwise, &func returns &minus.1 and sets
+Otherwise,
+.id &func.
+returns &minus.1 and sets
 .kw errno
 to one of the following values:
 .begterm 10

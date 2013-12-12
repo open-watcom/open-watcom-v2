@@ -5,7 +5,9 @@ clock_t clock(void);
 .ixfunc2 '&TimeFunc' &func
 .synop end
 .desc begin
-The &func function returns the number of clock ticks of processor time
+The
+.id &func.
+function returns the number of clock ticks of processor time
 used by program since the program started executing.
 This can be converted to seconds by dividing by the value of the macro
 .kw CLOCKS_PER_SEC
@@ -17,7 +19,9 @@ for each subsequent 24 hour interval that elapses.
 .do end
 .desc end
 .return begin
-The &func function returns the number of clock ticks that have
+The
+.id &func.
+function returns the number of clock ticks that have
 occurred since the program started executing.
 .return end
 .see begin

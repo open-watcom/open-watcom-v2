@@ -10,7 +10,9 @@ FILE *_wpopen( const wchar_t *command, const wchar_t *mode );
 .do end
 .synop end
 .desc begin
-The &func function executes the command specified by
+The
+.id &func.
+function executes the command specified by
 .arg command
 and creates a pipe between the calling process and the executed
 command.
@@ -47,16 +49,22 @@ is one of "command.com" (DOS, Windows 95) or "cmd.exe"
 .np
 The
 .arg mode
-argument to &func is a string that specifies an I/O mode for the pipe.
+argument to
+.id &func.
+is a string that specifies an I/O mode for the pipe.
 .begnote
 .termhd1 Mode
 .termhd2 Meaning
 .note "r"
 The calling process will read from the standard output of the child
-process using the stream pointer returned by &func..
+process using the stream pointer returned by
+.id &func.
+.
 .note "w"
 The calling process will write to the standard input of the child
-process using the stream pointer returned by &func..
+process using the stream pointer returned by
+.id &func.
+.
 .endnote
 .np
 The letter "t" may be added to any of the above modes to indicate that
@@ -75,14 +83,20 @@ establishes whether the file is to treated as a binary or a text file.
 Unless this value is changed by the program, the default will be text
 mode.
 .np
-A stream opened by &func should be closed by the
+A stream opened by
+.id &func.
+should be closed by the
 .kw pclose
 function.
 .desc end
 .return begin
-The &func function returns a non-NULL stream pointer upon successful
+The
+.id &func.
+function returns a non-NULL stream pointer upon successful
 completion.
-If &func is unable to create either the pipe or the subprocess, a
+If
+.id &func.
+is unable to create either the pipe or the subprocess, a
 .mono NULL
 stream pointer is returned and
 .kw errno
@@ -98,7 +112,8 @@ The
 argument is invalid.
 .endterm
 .np
-&func may also set
+.id &func.
+may also set
 .kw errno
 values as described by the
 .kw _pipe

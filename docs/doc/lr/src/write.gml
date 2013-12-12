@@ -9,7 +9,9 @@ int _write( int &fd, void *buffer, unsigned len );
 .do end
 .synop end
 .desc begin
-The &func function writes data at the operating system level.
+The
+.id &func.
+function writes data at the operating system level.
 The number of bytes transmitted is given by
 .arg len
 and the data to be transmitted is located at the address specified by
@@ -17,8 +19,12 @@ and the data to be transmitted is located at the address specified by
 .ct .li .
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .np
 The
@@ -64,7 +70,9 @@ To truncate a file in a portable manner, use the
 function.
 .desc end
 .return begin
-The &func function returns the number of bytes
+The
+.id &func.
+function returns the number of bytes
 (does not include any extra carriage-return characters transmitted)
 of data transmitted to the file.
 When there is no error, this is the number given by the

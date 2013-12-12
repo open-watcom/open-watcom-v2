@@ -12,7 +12,9 @@ unsigned sleep( unsigned seconds );
 .synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
-The &func function suspends the calling process until the number of
+The
+.id &func.
+function suspends the calling process until the number of
 real time seconds specified by the
 .arg seconds
 argument have elapsed, or a signal whose action is to either terminate
@@ -21,14 +23,18 @@ The suspension time may be greater than the requested amount due to
 the scheduling of other, higher priority activity by the system.
 .do end
 .el .do begin
-The &func function suspends execution by the specified number of
+The
+.id &func.
+function suspends execution by the specified number of
 .arg seconds
 .ct .li .
 .do end
 .desc end
 .return begin
 .if '&machsys' eq 'QNX' .do begin
-The &func function returns zero if the full time specified was
+The
+.id &func.
+function returns zero if the full time specified was
 completed; otherwise it returns the number of seconds unslept if
 interrupted by a signal.
 If an error occurs, an (unsigned)(-1) is returned and
@@ -36,7 +42,9 @@ If an error occurs, an (unsigned)(-1) is returned and
 will be set.
 .do end
 .el .do begin
-The &func function always returns zero.
+The
+.id &func.
+function always returns zero.
 .do end
 .return end
 .if '&machsys' eq 'QNX' .do begin

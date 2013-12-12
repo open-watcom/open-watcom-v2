@@ -5,7 +5,9 @@ int ungetch( int c );
 .ixfunc2 '&KbIo' &func
 .synop end
 .desc begin
-The &func function pushes the character specified by
+The
+.id &func.
+function pushes the character specified by
 .arg c
 back onto the input stream for the console.
 This character will be returned by the next read from the console (with
@@ -17,14 +19,18 @@ functions) and will be detected by the function
 .ct .li .
 Only the last character returned in this way is remembered.
 .pp
-The &func function clears the end-of-file indicator, unless the value of
+The
+.id &func.
+function clears the end-of-file indicator, unless the value of
 .arg c
 is
 .kw EOF
 .ct .li .
 .desc end
 .return begin
-The &func function returns the character pushed back.
+The
+.id &func.
+function returns the character pushed back.
 .return end
 .see begin
 .im seeiocon ungetch

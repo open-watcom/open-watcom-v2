@@ -5,7 +5,9 @@ double erf( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the value of the error function, also
+The
+.id &func.
+function computes the value of the error function, also
 known as the Gauss error function, for the argument
 .arg x
 .ct .li .

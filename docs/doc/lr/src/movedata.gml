@@ -9,7 +9,9 @@ void movedata( unsigned int src_segment,
 .ixfunc2 '&Copy' &func
 .synop end
 .desc begin
-The &func function copies
+The
+.id &func.
+function copies
 .arg length
 bytes from the far pointer calculated as
 .mono (src_segment:src_offset)

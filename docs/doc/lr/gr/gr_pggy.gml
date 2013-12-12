@@ -1,4 +1,5 @@
 .gfunc pg_getstyleset
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _pg_getstyleset( unsigned short _FAR *style );
 .do end
@@ -6,9 +7,11 @@ void _FAR _pg_getstyleset( unsigned short _FAR *style );
 subroutine _pg_getstyleset( style )
 integer*2 style(*)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine retrieves the internal style-set of the
+The
+.id &func.
+&routine retrieves the internal style-set of the
 presentation graphics system.
 The style-set is a set of line styles used for drawing
 window borders and grid-lines.
@@ -18,7 +21,9 @@ is an array that will contain the style-set.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

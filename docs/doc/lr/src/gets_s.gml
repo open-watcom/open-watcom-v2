@@ -7,7 +7,9 @@ char *gets_s( char *s, rsize_t n );
 
 .rtconst freetext
 If any of the following runtime-constraints is violated, the currently
-active runtime-constraint handler will be invoked and &func will set
+active runtime-constraint handler will be invoked and
+.id &func.
+will set
 .arg s[0]
 to be the null character, and characters are read and discarded from
 .kw stdin
@@ -27,7 +29,9 @@ characters from
 .rtconst end
 
 .desc begin
-The &func function gets a string of characters from the file
+The
+.id &func.
+function gets a string of characters from the file
 designated by
 .kw stdin
 and stores them in the array pointed to by
@@ -45,7 +49,9 @@ read into the array.
 .desc end
 
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg s
 if successful.
 .mono NULL

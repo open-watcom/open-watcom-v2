@@ -26,16 +26,22 @@ None of
 .ct , or
 .arg mode
 shall be a null pointer.
-If there is a runtime-constraint violation, &func does not attempt to open a file.
+If there is a runtime-constraint violation,
+.id &func.
+does not attempt to open a file.
 Furthermore, if
 .arg streamptr
-is not a null pointer, &func sets
+is not a null pointer,
+.id &func.
+sets
 .arg *streamptr
 to the null pointer.
 .rtconst end
 .*
 .desc begin
-The &func function opens the file whose name is the string pointed to by
+The
+.id &func.
+function opens the file whose name is the string pointed to by
 .arg filename
 .ct , and associates a stream with it.
 The
@@ -206,7 +212,11 @@ intervening call to a file positioning function, unless the read
 resulted in end-of-file.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it
 accepts wide-character string arguments for
 .arg filename
 and
@@ -215,8 +225,12 @@ and
 .do end
 .desc end
 .return begin
-The &func function returns zero if it opened the file. If it did not open the file or if
-there was a runtime-constraint violation, &func returns a non-zero value.
+The
+.id &func.
+function returns zero if it opened the file. If it did not open the file or if
+there was a runtime-constraint violation,
+.id &func.
+returns a non-zero value.
 .return end
 .see begin
 .seelist fopen_s _dos_open fclose fcloseall fdopen fopen freopen freopen_s

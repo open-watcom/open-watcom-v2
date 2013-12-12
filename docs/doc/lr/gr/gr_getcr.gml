@@ -1,4 +1,5 @@
 .gfunc getcliprgn
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _getcliprgn( short _FAR *x1, short _FAR *y1,
                        short _FAR *x2, short _FAR *y2 );
@@ -8,9 +9,11 @@ subroutine _getcliprgn( x1, y1, x2, y2 )
 integer*2 x1, y1
 integer*2 x2, y2
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the location of the current clipping region.
+The
+.id &func.
+&routine returns the location of the current clipping region.
 A clipping region is defined with the
 .kw _setcliprgn
 or
@@ -27,7 +30,9 @@ The bottom right corner of the clipping region is placed in
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine returns the location of the current clipping region.
+The
+.id &func.
+&routine returns the location of the current clipping region.
 .return end
 .do end
 .see begin

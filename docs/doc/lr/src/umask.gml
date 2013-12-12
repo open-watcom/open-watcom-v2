@@ -17,7 +17,9 @@ int _umask( int cmask );
 .ixfunc2 '&OsIo' &func
 .synop end
 .desc begin
-The &func function sets the process's file mode creation mask to
+The
+.id &func.
+function sets the process's file mode creation mask to
 .arg cmask
 .ct .li .
 The process's file mode creation mask is used during
@@ -46,8 +48,12 @@ In other words, if a bit in the mask is on, then the corresponding bit
 in the file's requested permission value is disallowed.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .pp
 The argument
@@ -63,7 +69,9 @@ If
 is specified, then writing is not allowed (i.e., the file is read only).
 .desc end
 .return begin
-The &func function returns the previous value of
+The
+.id &func.
+function returns the previous value of
 .arg cmask
 .ct .li .
 .return end

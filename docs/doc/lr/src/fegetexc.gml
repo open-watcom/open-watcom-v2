@@ -6,7 +6,9 @@ int fegetexceptflag( fexcept_t *__flagp, int __excepts );
 .synop end
 .*
 .desc begin
-The &func function attempts to store a representation of the states of the
+The
+.id &func.
+function attempts to store a representation of the states of the
 floating-point status flags indicated by the argument excepts in the
 object pointed to by the argument flagp.
 .np
@@ -30,7 +32,9 @@ is the logical OR of these values.
 .desc end
 .*
 .return begin
-The &func function returns zero if the representation was successfully
+The
+.id &func.
+function returns zero if the representation was successfully
 stored. Otherwise, it returns a nonzero value.
 .return end
 .*

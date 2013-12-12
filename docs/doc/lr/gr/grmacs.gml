@@ -12,16 +12,21 @@
 .sk
 .if '&XMPset' eq 'on' .xmpoff
 .if &e'&dohelp eq 0 .do begin
-:GRAPHIC depth='3.6i' file='&*1..ps'.
+.  :GRAPHIC depth='3.6i' file='&*1..ps'.
 .do end
 .el .do begin
-:HBMP '&*1..bmp' c
+.  :HBMP '&*1..bmp' c
 :cmt. The graphical image cannot be reproduced here.  See the printed
 :cmt. version of the manual.
 .do end
 .dm picture end
 .*
+.dm gfuncinit begin
+.  .funcinit ''
+.dm gfuncinit end
+.*
 .dm gfunc begin
+.gfuncinit
 .topsect _&*
 :set symbol="function" value="_&*".
 :set symbol="func" value="_&*".
@@ -30,18 +35,10 @@
 .ixm '&func.'
 .se __fnx=1
 .se $$fnc(1)=&func.
-.newcode Synopsis:
-.if '&lang' eq 'C' .do begin
-.if '&'substr(&*,1,2)' eq 'pg' .do begin
-#include <pgchart.h>
-.do end
-.el .do begin
-#include <graph.h>
-.do end
-.do end
 .dm gfunc end
 .*
 .dm gfuncw begin
+.gfuncinit
 .topsect _&*, _&*._w
 :set symbol="function" value="_&*".
 :set symbol="func" value="_&*".
@@ -53,13 +50,10 @@
 .se __fnx=2
 .se $$fnc(1)=&func.
 .se $$fnc(2)=&func._w
-.newcode Synopsis:
-.if '&lang' eq 'C' .do begin
-#include <graph.h>
-.do end
 .dm gfuncw end
 .*
 .dm gfuncwxy begin
+.gfuncinit
 .topsect _&*, _&*._w, _&*._wxy
 :set symbol="function" value="_&*".
 :set symbol="func" value="_&*".
@@ -74,17 +68,14 @@
 .se $$fnc(1)=&func.
 .se $$fnc(2)=&func._w
 .se $$fnc(3)=&func._wxy
-.newcode Synopsis:
-.if '&lang' eq 'C' .do begin
-#include <graph.h>
-.do end
 .dm gfuncwxy end
 .*
 .dm gfuncms begin
+.gfuncinit
 .topsect _&*, _&*.ms
 :set symbol="function" value="_&*".
 :set symbol="func" value="_&*".
-:set symbol="func2" value="_&*.ms".
+:set symbol="func1" value="_&*.ms".
 :set symbol="headtxt0$" value="_&* &rroutines".
 :set symbol="headtxt1$" value="_&* &rroutines".
 .ixm '&func.'
@@ -92,23 +83,24 @@
 .se __fnx=2
 .se $$fnc(1)=&func.
 .se $$fnc(2)=&func.ms
-.newcode Synopsis:
-.if '&lang' eq 'C' .do begin
-#include <pgchart.h>
-.do end
 .dm gfuncms end
 .*
-.dm gfuncend begin
-.endcode
-:set symbol="func" value=";.sf4 &function;.esf ".
-.if '&'substr(&function,1,3)' eq '_pg' .do begin
-:set symbol="func2" value=";.sf4 &function.ms;.esf ".
+.dm gsynop begin
+.if '&*' eq 'begin' .do begin
+.  .newcode Synopsis:
+.  .if '&lang' eq 'C' .do begin
+.  .  .if '&'substr(&function.,1,4)' eq '_pg_' .do begin
+#include <pgchart.h>
+.  .  .do end
+.  .  .el .do begin
+#include <graph.h>
+.  .  .do end
+.  .do end
 .do end
-.el .do begin
-:set symbol="func2" value=";.sf4 &function._w;.esf ".
-:set symbol="func3" value=";.sf4 &function._wxy;.esf ".
+.el .if '&*' eq 'end' .do begin
+.   .endcode
 .do end
-.dm gfuncend end
+.dm gsynop end
 .*
 .dm hex begin
 .if '&lang' eq 'C' .do begin

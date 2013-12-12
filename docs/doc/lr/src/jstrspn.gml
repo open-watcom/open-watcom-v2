@@ -13,10 +13,16 @@ size_t __far _fjstrspn( const JCHAR __far *str,
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function computes
+The
+.id &func.
+function computes
 .do end
 .el .do begin
-The &func and &ffunc functions compute
+The
+.id &func.
+and
+.id &ffunc.
+functions compute
 .do end
 the length of the initial segment of the Kanji string pointed to by
 .arg str
@@ -31,10 +37,16 @@ The terminating null character is not considered to be part of
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the length of the segment.
 .return end

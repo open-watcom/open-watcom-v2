@@ -1,4 +1,5 @@
 .gfunc getvideoconfig
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct videoconfig _FAR * _FAR _getvideoconfig
     ( struct videoconfig _FAR *config );
@@ -7,9 +8,11 @@ struct videoconfig _FAR * _FAR _getvideoconfig
 subroutine _getvideoconfig( config )
 record /videoconfig/ config
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns information about the current video mode
+The
+.id &func.
+&routine returns information about the current video mode
 and the hardware configuration.
 The information is returned in the
 .id videoconfig
@@ -88,14 +91,19 @@ analog color
 .endterm
 .keep end
 .pp
-The amount of memory reported by &func will not always
+The amount of memory reported by
+.id &func.
+will not always
 be correct for SuperVGA adapters.
 Since it is not always possible to determine the amount of memory,
-&func will always report 256K, the minimum amount.
+.id &func.
+will always report 256K, the minimum amount.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine returns information about the current video mode
+The
+.id &func.
+&routine returns information about the current video mode
 and the hardware configuration.
 .return end
 .do end

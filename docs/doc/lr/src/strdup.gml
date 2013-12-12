@@ -36,7 +36,9 @@ unsigned char __far *_fmbsdup( unsigned char __far *src );
 .do end
 .synop end
 .desc begin
-The &func function creates a duplicate copy of the string pointed to
+The
+.id &func.
+function creates a duplicate copy of the string pointed to
 by
 .arg src
 and returns a pointer to the new copy.
@@ -49,7 +51,9 @@ and can be freed using the
 function.
 .do end
 .el .do begin
-For &func, the memory for the new string is obtained by using the
+For
+.id &func.
+the memory for the new string is obtained by using the
 .kw malloc
 function and can be freed using the
 .kw free
@@ -62,15 +66,21 @@ function.
 .do end
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .im farparm
 .im widefunc
 .im mbsffunc
 .desc end
 .return begin
-The &func function returns the pointer to the new copy of the string
+The
+.id &func.
+function returns the pointer to the new copy of the string
 if successful, otherwise it
 returns
 .mono NULL.

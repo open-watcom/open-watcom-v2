@@ -11,10 +11,13 @@ wchar_t *_wmktemp( wchar_t *template );
 .do end
 .synop end
 .desc begin
-The &func function creates a unique filename by modifying the
+The
+.id &func.
+function creates a unique filename by modifying the
 .arg template
 argument.
-&func automatically handles multibyte-character string arguments as
+.id &func.
+automatically handles multibyte-character string arguments as
 appropriate, recognizing multibyte-character sequences according to
 the multibyte code page currently in use by the run-time system.
 .im widefunc
@@ -32,27 +35,36 @@ Each of the 6 X's is a placeholder for a character supplied by &func..
 Each placeholder character in
 .arg template
 must be an uppercase "X".
-&func preserves
+.id &func.
+preserves
 .mono base
 and replaces the first of the 6 trailing X's with a lowercase
 alphabetic character (a-z).
-&func replaces the following 5 trailing X's with a five-digit value;
+.id &func.
+replaces the following 5 trailing X's with a five-digit value;
 this value is a unique number identifying the calling process or
 thread.
 .np
-&func checks to see if a file with the generated name already exists
+.id &func.
+checks to see if a file with the generated name already exists
 and if so selects another letter, in succession, from "a" to "z" until
 it finds a file that doesn't exist.
 If it is unsuccessful at finding a name for a file that does not
-already exist, &func returns NULL.
+already exist,
+.id &func.
+returns NULL.
 At most, 26 unique file names can be returned to the calling process
 or thread.
 .desc end
 .return begin
-The &func function returns a pointer to the modified
+The
+.id &func.
+function returns a pointer to the modified
 .arg template
 .ct .li .
-The &func function returns NULL if
+The
+.id &func.
+function returns NULL if
 .arg template
 is badly formed or no more unique names can be created from the given
 template.

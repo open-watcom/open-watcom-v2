@@ -47,9 +47,13 @@ extended automatically when needed.
 If the current far heap cannot be extended, then another far heap will be
 started.
 .np
-In a small data memory model, the &func function is equivalent to the
+In a small data memory model, the
+.id &func.
+function is equivalent to the
 .kw _nheapgrow
-function; in a large data memory model, the &func function is
+function; in a large data memory model, the
+.id &func.
+function is
 equivalent to the
 .kw _fheapgrow
 function.

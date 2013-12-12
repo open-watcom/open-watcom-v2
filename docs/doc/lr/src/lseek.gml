@@ -18,7 +18,9 @@ __int64 _lseeki64( int &fd, __int64 offset, int origin );
 .synop end
 .*
 .desc begin
-The &func function sets the current file position at the operating
+The
+.id &func.
+function sets the current file position at the operating
 system level.
 The file is referenced using the file &handle
 .arg &fd
@@ -99,26 +101,38 @@ Some versions of MS-DOS allow seeking to a negative offset, but it is
 not recommended since it is not supported by other platforms and may
 not be supported in future versions of MS-DOS.
 .np
-The &func function does not, in itself, extend the size of a file (see
+The
+.id &func.
+function does not, in itself, extend the size of a file (see
 the description of the
 .kw chsize
 function).
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .np
-The &_func64 function is identical to &func except that it accepts a
+The &_func64 function is identical to
+.id &func.
+except that it accepts a
 64-bit value for the
 .arg offset
 argument.
 .np
-The &func function can be used to obtain the current file position
+The
+.id &func.
+function can be used to obtain the current file position
 (the
 .kw tell
 function is implemented in terms of &func).
-This value can then be used with the &func function to reset the file
+This value can then be used with the
+.id &func.
+function to reset the file
 position to that point in the file:
 .millust begin
 &off_t file_posn;
@@ -154,7 +168,9 @@ If successful, the current file position is returned in a
 system-dependent manner.
 A value of 0 indicates the start of the file.
 .np
-If an error occurs in &func, (&minus.1L) is returned.
+If an error occurs in
+.id &func.
+(&minus.1L) is returned.
 .np
 If an error occurs in &_func64, (&minus.1I64) is returned.
 .np

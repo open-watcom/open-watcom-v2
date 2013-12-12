@@ -5,7 +5,9 @@ int bdos( int dos_func, unsigned dx, unsigned char al );
 .ixfunc2 '&OsInt' &func
 .synop end
 .desc begin
-The &func function causes the computer's central processor (CPU) to
+The
+.id &func.
+function causes the computer's central processor (CPU) to
 be interrupted with an interrupt number hexadecimal 21 (
 .ct .mono 0x21
 .ct ), which is
@@ -24,7 +26,9 @@ system you are using to determine the expected register contents before
 and after the interrupt in question.
 .desc end
 .return begin
-The &func function returns the value of the AX register after the
+The
+.id &func.
+function returns the value of the AX register after the
 interrupt has completed.
 .return end
 .see begin

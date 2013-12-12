@@ -9,11 +9,15 @@ errno_t tmpfile_s( FILE * restrict * restrict streamptr);
 .rtconst begin
 .arg streamptr
 shall not be a null pointer.
-If there is a runtime-constraint violation, &func does not attempt to create a file.
+If there is a runtime-constraint violation,
+.id &func.
+does not attempt to create a file.
 .rtconst end
 .*
 .desc begin
-The &func function creates a temporary binary file that is different from any other
+The
+.id &func.
+function creates a temporary binary file that is different from any other
 existing file and that will automatically be removed when it is closed or at program
 termination. If the program terminates abnormally, whether an open temporary file is
 removed is implementation-defined. The file is opened for update with "wb+" mode

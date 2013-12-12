@@ -11,7 +11,9 @@ int _fmblen( const char __far *s, size_t n );
 .do end
 .synop end
 .desc begin
-The &func function determines the number of bytes comprising the
+The
+.id &func.
+function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg s
 .ct .li .
@@ -25,11 +27,15 @@ will be examined.
 .return begin
 If
 .arg s
-is a NULL pointer, the &func function returns zero if multibyte
+is a NULL pointer, the
+.id &func.
+function returns zero if multibyte
 character encodings are not state dependent, and non-zero otherwise.
 If
 .arg s
-is not a NULL pointer, the &func function returns:
+is not a NULL pointer, the
+.id &func.
+function returns:
 .begnote $setptnt 6
 .termhd1 Value
 .termhd2 Meaning

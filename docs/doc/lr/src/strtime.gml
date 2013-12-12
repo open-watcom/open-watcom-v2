@@ -10,7 +10,9 @@ wchar_t _wstrtime( wchar_t *timestr );
 .do end
 .synop end
 .desc begin
-The &func function copies the current time to the buffer pointed to by
+The
+.id &func.
+function copies the current time to the buffer pointed to by
 .arg timestr
 .ct .li .
 The time is formatted as "HH:MM:SS"
@@ -21,7 +23,9 @@ The buffer must be at least 9 bytes long.
 .im widefunc
 .desc end
 .return begin
-The &func function returns a pointer to the resulting text string
+The
+.id &func.
+function returns a pointer to the resulting text string
 .arg timestr
 .ct .li .
 .return end

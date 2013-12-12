@@ -1,4 +1,5 @@
 .gfunc registerfonts
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _registerfonts( char _FAR *path );
 .do end
@@ -6,9 +7,11 @@ short _FAR _registerfonts( char _FAR *path );
 integer*2 function _registerfonts( path )
 character*(*) path
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine initializes the font graphics system.
+The
+.id &func.
+&routine initializes the font graphics system.
 Fonts must be registered, and a font selected,
 before text can be displayed with the
 .kw _outgtext
@@ -19,7 +22,9 @@ The argument
 specifies the location of the font files.
 This argument is a file specification, and can contain drive and
 directory components and may contain wildcard characters.
-The &func &routine opens each of the font files specified and
+The
+.id &func.
+&routine opens each of the font files specified and
 reads the font information.
 Memory is allocated to store the characteristics of the font.
 These font characteristics are used by the
@@ -27,7 +32,9 @@ These font characteristics are used by the
 &routine when selecting a font.
 .desc end
 .return begin
-The &func &routine returns the number of fonts that were registered if
+The
+.id &func.
+&routine returns the number of fonts that were registered if
 the &routine is successful; otherwise, a negative number is returned.
 .return end
 .see begin

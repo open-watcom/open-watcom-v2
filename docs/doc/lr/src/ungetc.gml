@@ -13,7 +13,9 @@ wint_t ungetwc( wint_t c, FILE *fp );
 .do end
 .synop end
 .desc begin
-The &func function pushes the character specified by
+The
+.id &func.
+function pushes the character specified by
 .arg c
 back onto the input stream pointed to by
 .arg fp
@@ -31,7 +33,9 @@ or
 .np
 Only one character (the most recent one) of pushback is remembered.
 .np
-The &func function clears the end-of-file indicator, unless the value
+The
+.id &func.
+function clears the end-of-file indicator, unless the value
 of
 .arg c
 is
@@ -39,14 +43,20 @@ is
 .ct .li .
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it pushes the
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it pushes the
 wide character specified by
 .arg c
 back onto the input stream pointed to by
 .arg fp
 .ct .li .
 .np
-The &wfunc function clears the end-of-file indicator, unless the value
+The
+.id &wfunc.
+function clears the end-of-file indicator, unless the value
 of
 .arg c
 is
@@ -55,7 +65,9 @@ is
 .do end
 .desc end
 .return begin
-The &func function returns the character pushed back.
+The
+.id &func.
+function returns the character pushed back.
 .return end
 .see begin
 .seelist &function. fgetc fgetchar fgets fopen getc getchar gets ungetc

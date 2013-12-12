@@ -7,7 +7,9 @@ struct tm *_gmtime( const time_t *timer,
 .im structtm
 .synop end
 .desc begin
-The &func function converts the calendar time pointed to by
+The
+.id &func.
+function converts the calendar time pointed to by
 .arg timer
 into a broken-down time, expressed as Coordinated Universal Time (UTC)
 (formerly known as Greenwich Mean Time (GMT)).

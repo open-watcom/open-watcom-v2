@@ -5,7 +5,9 @@ void hfree( void __huge *ptr );
 .ixfunc2 '&Memory' &func
 .synop end
 .desc begin
-The &func function deallocates a memory block previously allocated by the
+The
+.id &func.
+function deallocates a memory block previously allocated by the
 .kw halloc
 function.
 The argument
@@ -14,7 +16,9 @@ points to a memory block to be deallocated.
 After the call, the freed block is available for allocation.
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .im seealloc hfree

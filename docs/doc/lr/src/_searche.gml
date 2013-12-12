@@ -14,7 +14,9 @@ void _wsearchenv( const wchar_t *name,
 .do end
 .synop end
 .desc begin
-The &func function searches for the file specified by
+The
+.id &func.
+function searches for the file specified by
 .arg name
 in the list of directories assigned to the environment variable
 specified by
@@ -38,7 +40,9 @@ will contain an empty string.
 .im widefunc
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .seelist _searchenv getenv setenv _splitpath putenv

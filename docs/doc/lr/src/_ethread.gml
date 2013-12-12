@@ -10,11 +10,17 @@ void _endthreadex( unsigned retval );
 .ixfunc2 '&NTFunc' &func.ex
 .synop end
 .desc begin
-The &func function is used to terminate a thread created by
+The
+.id &func.
+function is used to terminate a thread created by
 .kw _beginthread
 .ct .li .
-For each operating environment under which &func is supported,
-the &func function uses the appropriate system call to end the current
+For each operating environment under which
+.id &func.
+is supported,
+the
+.id &func.
+function uses the appropriate system call to end the current
 thread of execution.
 .np
 The
@@ -27,7 +33,9 @@ The thread exit code
 must be specified.
 .desc end
 .return begin
-The &func function does not return any value.
+The
+.id &func.
+function does not return any value.
 .return end
 .see begin
 .seelist &function. _beginthread _endthread

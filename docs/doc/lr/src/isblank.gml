@@ -12,7 +12,9 @@ int iswblank( wint_t c );
 .do end
 .synop end
 .desc begin
-The &func function tests for the following blank characters:
+The
+.id &func.
+function tests for the following blank characters:
 .begpoint $compact $setptnt 12
 .termhd1 Constant
 .termhd2 Character
@@ -23,15 +25,23 @@ horizontal tab
 .endpoint
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is similar to &func except that it accepts a
+The
+.id &wfunc.
+function is similar to
+.id &func.
+except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
-The &func function returns a non-zero character when the argument is
+The
+.id &func.
+function returns a non-zero character when the argument is
 one of the indicated blank characters.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns a non-zero value when the argument is a
+The
+.id &wfunc.
+function returns a non-zero value when the argument is a
 wide character that corresponds to a standard blank character or
 is one of an implementation-defined set of wide characters for which
 .kw iswalnum

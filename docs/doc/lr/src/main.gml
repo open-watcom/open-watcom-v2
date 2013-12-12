@@ -23,10 +23,13 @@ int PASCAL wWinMain( HINSTANCE hInstance,
 .do end
 .synop end
 .desc begin
-&func is a user-supplied function where program execution begins.
+.id &func.
+is a user-supplied function where program execution begins.
 .ix 'main program'
 The command line to the program is broken into a sequence of tokens
-separated by blanks and are passed to &func as an array of pointers
+separated by blanks and are passed to
+.id &func.
+as an array of pointers
 to character strings in the parameter
 .arg argv
 .ct .li .
@@ -43,7 +46,9 @@ will be a NULL pointer (i.e.
 will be
 .mono NULL
 .ct ).
-Arguments that contain blanks can be passed to &func by enclosing them
+Arguments that contain blanks can be passed to
+.id &func.
+by enclosing them
 within double quote characters (which are removed from that element in
 the
 .arg argv
@@ -75,7 +80,9 @@ variable which is defined in the
 header file.
 .do end
 .np
-Alternatively, the &func function can be declared to return
+Alternatively, the
+.id &func.
+function can be declared to return
 .kw void
 (i.e., no return value).
 In this case, you will not be able to return an exit code from &func
@@ -86,13 +93,21 @@ statement but must use the
 function to do so.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is a user-defined wide-character version of &func
+The
+.id &wfunc.
+function is a user-defined wide-character version of &func
 that operates with wide-character strings.
 If this function is present in the application, then it will be called
-by the run-time system startup code (and the &func function, if
+by the run-time system startup code (and the
+.id &func.
+function, if
 present, will not be called).
 .np
-As with &func, the &wfunc function can be declared to return
+As with
+.id &func.
+the
+.id &wfunc.
+function can be declared to return
 .kw void
 and the same considerations will apply.
 .do end
@@ -192,10 +207,14 @@ parameter.
 .return begin
 The
 .if &'length(&wfunc.) eq 0 .do begin
-&func function returns
+.id &func.
+function returns
 .do end
 .el .do begin
-&func and &wfunc functions return
+.id &func.
+and
+.id &wfunc.
+functions return
 .do end
 an exit code to the calling program (usually the operating
 system).

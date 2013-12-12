@@ -5,7 +5,9 @@ double frexp( double value, int *exp );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function breaks a floating-point number into a
+The
+.id &func.
+function breaks a floating-point number into a
 normalized fraction and an integral power of 2.
 It stores the integral power of 2 in the
 .arg int
@@ -14,7 +16,9 @@ object pointed to by
 .ct .li .
 .desc end
 .return begin
-The &func function returns the value of
+The
+.id &func.
+function returns the value of
 .arg x
 .ct , such that
 .arg x

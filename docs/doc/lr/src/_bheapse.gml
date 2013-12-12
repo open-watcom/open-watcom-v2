@@ -5,7 +5,9 @@ __segment _bheapseg( size_t size );
 .ixfunc2 '&Memory' _bheapseg
 .synop end
 .desc begin
-The &func function allocates a based-heap segment of at least
+The
+.id &func.
+function allocates a based-heap segment of at least
 .arg size
 bytes.
 .np
@@ -24,15 +26,21 @@ or
 .kw _brealloc
 .ct .li .
 .np
-The value returned by &func is the segment value or selector for the
+The value returned by
+.id &func.
+is the segment value or selector for the
 based heap.
 This value must be saved and used as an argument to other based heap
 functions to indicate which based heap to operate upon.
 .np
-Each call to &func allocates a new based heap.
+Each call to
+.id &func.
+allocates a new based heap.
 .desc end
 .return begin
-The value returned by &func is the segment value or selector for the
+The value returned by
+.id &func.
+is the segment value or selector for the
 based heap.
 This value must be saved and used as an argument to other based heap
 functions to indicate which based heap to operate upon.

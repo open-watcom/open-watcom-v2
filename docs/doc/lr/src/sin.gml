@@ -6,13 +6,17 @@ double sin( double x );
 .ixfunc2 '&Trig' &func
 .synop end
 .desc begin
-The &func function computes the sine of
+The
+.id &func.
+function computes the sine of
 .arg x
 (measured in radians).
 A large magnitude argument may yield a result with little or no significance.
 .desc end
 .return begin
-The &func function returns the sine value.
+The
+.id &func.
+function returns the sine value.
 .return end
 .see begin
 .seelist sin acos asin atan atan2 cos tan

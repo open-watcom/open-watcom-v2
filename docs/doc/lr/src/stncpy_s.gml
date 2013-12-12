@@ -60,7 +60,9 @@ to the null character.
 .rtconst end
 .*
 .desc begin
-The &func function copies not more than
+The
+.id &func.
+function copies not more than
 .arg n
 successive characters (characters that follow a null character are not
 copied) from the array pointed to by

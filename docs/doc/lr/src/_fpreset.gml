@@ -6,12 +6,18 @@ void _fpreset( void );
 .synop end
 .*
 .desc begin
-The &func function resets the floating-point unit to the default state that
+The
+.id &func.
+function resets the floating-point unit to the default state that
 the math library requires for correct function. After a floating-point
-exception, it may be necessary to call the &func function before any further
+exception, it may be necessary to call the
+.id &func.
+function before any further
 floating-point operations are attempted.
 .np
-In multi-threaded environments, &func only affects the current thread.
+In multi-threaded environments,
+.id &func.
+only affects the current thread.
 .desc end
 .*
 .return begin

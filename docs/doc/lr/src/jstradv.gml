@@ -13,10 +13,16 @@ FJSTRING __far _fjstradv( const JCHAR __far *src,
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function skips
+The
+.id &func.
+function skips
 .do end
 .el .do begin
-The &func and &ffunc functions skip
+The
+.id &func.
+and
+.id &ffunc.
+functions skip
 .do end
 over
 .arg n

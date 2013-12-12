@@ -5,13 +5,17 @@ intmax_t imaxabs( intmax_t j );
 .synop end
 .*
 .desc begin
-The &func function returns the absolute value
+The
+.id &func.
+function returns the absolute value
 of its maximum-size integer argument
 .arg j
 .ct .li .
 .desc end
 .return begin
-The &func function returns the absolute value of its argument.
+The
+.id &func.
+function returns the absolute value of its argument.
 .return end
 .*
 .see begin

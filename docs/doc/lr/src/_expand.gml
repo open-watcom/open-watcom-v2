@@ -18,7 +18,9 @@ void __near *_nexpand(void __near *mem_blk,size_t size);
 .ixfunc2 '&Memory' _nexpand
 .synop end
 .desc begin
-The &func functions change the size of the previously allocated block
+The
+.id &func.
+functions change the size of the previously allocated block
 pointed to by
 .arg mem_blk
 by attempting to expand or contract the memory block without moving
@@ -45,15 +47,21 @@ Far heap (outside the default data segment)
 Near heap (inside the default data segment)
 .endterm
 .np
-In a small data memory model, the &func function is equivalent to the
+In a small data memory model, the
+.id &func.
+function is equivalent to the
 .kw _nexpand
-function; in a large data memory model, the &func function is
+function; in a large data memory model, the
+.id &func.
+function is
 equivalent to the
 .kw _fexpand
 function.
 .desc end
 .return begin
-The &func functions return the value
+The
+.id &func.
+functions return the value
 .arg mem_blk
 if it was successful in changing the size of the block.
 The return value is

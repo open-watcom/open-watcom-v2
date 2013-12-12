@@ -12,7 +12,9 @@ int wcscmpi( const wchar_t *s1, const wchar_t *s2 );
 .do end
 .synop end
 .desc begin
-The &func function compares, with case insensitivity, the string
+The
+.id &func.
+function compares, with case insensitivity, the string
 pointed to by
 .arg s1
 to the string pointed to by
@@ -23,13 +25,17 @@ All uppercase characters from
 and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
-The &func function is identical to the
+The
+.id &func.
+function is identical to the
 .kw stricmp
 function.
 .im widefunc
 .desc end
 .return begin
-The &func function returns an integer less than, equal to, or greater
+The
+.id &func.
+function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by

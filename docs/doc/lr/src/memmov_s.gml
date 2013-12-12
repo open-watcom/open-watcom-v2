@@ -34,7 +34,9 @@ shall not be greater than
 .arg s1max
 .ct .li .
 .np
-If there is a runtime-constraint violation, the &func function stores zeros in the first
+If there is a runtime-constraint violation, the
+.id &func.
+function stores zeros in the first
 .arg s1max
 characters of the object pointed to by
 .arg s1
@@ -49,7 +51,9 @@ not greater than
 .rtconst end
 .*
 .desc begin
-The &func function copies
+The
+.id &func.
+function copies
 .arg n
 characters from the buffer pointed to by
 .arg s2
@@ -78,7 +82,11 @@ See the
 function if you wish to copy objects that do not overlap.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc wide-character function is identical to &func except that it
+The
+.id &wfunc.
+wide-character function is identical to
+.id &func.
+except that it
 operates on characters of
 .arg wchar_t
 type.

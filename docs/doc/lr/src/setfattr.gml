@@ -6,7 +6,9 @@ unsigned _dos_setfileattr( const char *path,
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x43 to set the attributes
+The
+.id &func.
+function uses system call 0x43 to set the attributes
 of the file or directory that
 .arg path
 points to.
@@ -14,7 +16,9 @@ The possible attributes are:
 .im dosattr
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 accordingly.

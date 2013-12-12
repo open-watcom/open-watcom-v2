@@ -21,7 +21,9 @@ int _wchdir( const wchar_t *path );
 .synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
-The &func function changes the current working directory to the
+The
+.id &func.
+function changes the current working directory to the
 specified
 .arg path
 .ct .li .
@@ -32,7 +34,9 @@ an absolute path name.
 .do end
 .el .do begin
 .ix 'current directory'
-The &func function changes the current directory on the specified
+The
+.id &func.
+function changes the current directory on the specified
 drive to the specified
 .arg path
 .ct .li .
@@ -56,17 +60,27 @@ function.
 .do end
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument.
 .do end
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, &minus.1 is returned,
 .kw errno
 is set to indicate the error, and the current working directory

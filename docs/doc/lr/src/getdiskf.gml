@@ -12,7 +12,9 @@ struct diskfree_t {
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x36 to obtain useful information
+The
+.id &func.
+function uses system call 0x36 to obtain useful information
 on the disk drive specified by
 .arg drive
 .ct .li .
@@ -24,7 +26,9 @@ pointed to by
 .ct .li .
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns a non-zero value and sets
 .kw errno
 to

@@ -11,7 +11,9 @@ void _fmbccpy( unsigned char __far *dest,
 .do end
 .synop end
 .desc begin
-The &func function copies one multibyte character from
+The
+.id &func.
+function copies one multibyte character from
 .arg ch
 to
 .arg dest
@@ -19,7 +21,9 @@ to
 .im farparm
 .desc end
 .return begin
-The &func function does not return a value.
+The
+.id &func.
+function does not return a value.
 .return end
 .see begin
 .im seembc &function.

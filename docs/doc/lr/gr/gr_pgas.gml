@@ -1,4 +1,5 @@
 .gfuncms pg_analyzescatter
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_analyzescatter( chartenv _FAR *env,
                                float _FAR *x,
@@ -24,14 +25,18 @@ real x(*), y(*)
 integer*2 nseries, n, dim
 integer*4 labels(*)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines analyze either a single-series or a multi-series
+The
+.id &func.
+&routines analyze either a single-series or a multi-series
 scatter chart.
 These &routines calculate default values for chart elements without
 actually displaying the chart.
 .pp
-The &func &routine analyzes a single-series scatter chart.
+The
+.id &func.
+&routine analyzes a single-series scatter chart.
 The chart environment structure
 .arg env
 is filled with default values based on the values
@@ -44,7 +49,9 @@ The arguments are the same as for the
 .kw _pg_chartscatter
 &routine..
 .pp
-The &func2 &routine analyzes a multi-series scatter chart.
+The
+.id &func1.
+&routine analyzes a multi-series scatter chart.
 The chart environment structure
 .arg env
 is filled with default values based on the values
@@ -60,7 +67,9 @@ The arguments are the same as for the
 &routine..
 .desc end
 .return begin
-The &func &routines return zero
+The
+.id &func.
+&routines return zero
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin

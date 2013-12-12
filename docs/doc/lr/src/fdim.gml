@@ -5,7 +5,9 @@ double fdim( double x, double y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the positive difference of 
+The
+.id &func.
+function computes the positive difference of 
 .arg x
 and
 .arg y

@@ -5,16 +5,22 @@ void *alloca( size_t size );
 .ixfunc2 '&Memory' &func
 .synop end
 .desc begin
-The &func function allocates space for an object of
+The
+.id &func.
+function allocates space for an object of
 .arg size
 bytes from the stack.
 The allocated space is automatically discarded when the current
 function exits.
-The &func function should not be used in an expression that is an
+The
+.id &func.
+function should not be used in an expression that is an
 argument to a function.
 .desc end
 .return begin
-The &func function returns a pointer
+The
+.id &func.
+function returns a pointer
 to the start of the allocated memory.
 The return value is
 .mono NULL

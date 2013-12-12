@@ -5,7 +5,9 @@ time_t time( time_t *tloc );
 .ixfunc2 '&TimeFunc' &func
 .synop end
 .desc begin
-The &func function determines the current calendar time and encodes it
+The
+.id &func.
+function determines the current calendar time and encodes it
 into the type
 .kw time_t
 .ct .li .
@@ -15,7 +17,9 @@ Universal Time (UTC) (formerly known as Greenwich Mean Time (GMT)).
 .im tzref
 .desc end
 .return begin
-The &func function returns the current calendar time.
+The
+.id &func.
+function returns the current calendar time.
 If
 .arg tloc
 is not

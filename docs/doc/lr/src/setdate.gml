@@ -12,7 +12,9 @@ struct dosdate_t {
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x2B to set the current system date.
+The
+.id &func.
+function uses system call 0x2B to set the current system date.
 The date information is passed in a
 .kw dosdate_t
 structure pointed to by
@@ -20,7 +22,9 @@ structure pointed to by
 .ct .li .
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 accordingly.

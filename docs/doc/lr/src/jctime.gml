@@ -5,15 +5,21 @@ unsigned char *jctime( const time_t *timer );
 .ixfunc2 '&TimeFunc' jctime
 .synop end
 .desc begin
-The &func function converts the calendar time pointed to by
+The
+.id &func.
+function converts the calendar time pointed to by
 .arg timer
 to local time in the form of a string.
-The &func function is equivalent to
+The
+.id &func.
+function is equivalent to
 .millust begin
 jasctime( localtime( timer ) )
 .millust end
 .np
-The &func functions convert the time into a string containing exactly
+The
+.id &func.
+functions convert the time into a string containing exactly
 37 characters.
 This string has the form shown in the following example:
 .millust begin
@@ -47,12 +53,18 @@ and the null character
 .id '\0'
 occupy the last two positions of the string.
 .np
-The &func function places the result string in a static buffer that is
-re-used each time &func or
+The
+.id &func.
+function places the result string in a static buffer that is
+re-used each time
+.id &func.
+or
 .kw jasctime
 is called.
 .np
-Whenever the &func function is called, the
+Whenever the
+.id &func.
+function is called, the
 .kw tzset
 function is also called.
 .np
@@ -64,7 +76,9 @@ Greenwich Mean Time (GMT)).
 .im tzref
 .desc end
 .return begin
-The &func function returns the pointer to the string containing the
+The
+.id &func.
+function returns the pointer to the string containing the
 local time.
 .return end
 .see begin

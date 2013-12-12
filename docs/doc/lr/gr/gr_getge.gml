@@ -1,4 +1,5 @@
 .gfunc getgtextextent
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _getgtextextent( char _FAR *text );
 .do end
@@ -6,9 +7,11 @@ short _FAR _getgtextextent( char _FAR *text );
 integer*2 function _getgtextextent( text )
 character*(*) text
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the length in pixels of the argument
+The
+.id &func.
+&routine returns the length in pixels of the argument
 .arg text
 as it would be displayed in the current font by the &routine
 .kw _outgtext
@@ -17,7 +20,9 @@ Note that the text is not displayed on the screen, only its length
 is determined.
 .desc end
 .return begin
-The &func &routine returns the length in pixels of a string.
+The
+.id &func.
+&routine returns the length in pixels of a string.
 .return end
 .see begin
 .seelist &function. _registerfonts _unregisterfonts _setfont _getfontinfo _outgtext _setgtextvector _getgtextvector

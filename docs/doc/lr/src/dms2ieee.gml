@@ -5,7 +5,9 @@ extern int _dmsbintoieee( double *src, double *dest );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function loads the double pointed to by
+The
+.id &func.
+function loads the double pointed to by
 .arg src
 in Microsoft binary format and converts it to IEEE format, storing the
 result into the double pointed to by
@@ -21,7 +23,9 @@ Microsoft Binary Format was used by early versions of Microsoft
 QuickBASIC before coprocessors became standard.
 .desc end
 .return begin
-The &func function returns 0 if the conversion was successful.
+The
+.id &func.
+function returns 0 if the conversion was successful.
 Otherwise, it returns 1 if conversion would cause an overflow.
 .return end
 .see begin

@@ -16,7 +16,9 @@ int _wopen( const wchar_t *path, int access, ... );
 .do end
 .synop end
 .desc begin
-The &func function opens a file at the operating system level.
+The
+.id &func.
+function opens a file at the operating system level.
 The name of the file to be opened is given by
 .arg path
 .ct .li .
@@ -30,12 +32,20 @@ flag is on in the
 mode.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it
 accepts a wide character string argument for
 .arg path
 .ct .li .
@@ -44,7 +54,9 @@ accepts a wide character string argument for
 .im openper
 .desc end
 .return begin
-If successful, &func returns a &handle for the file.
+If successful,
+.id &func.
+returns a &handle for the file.
 When an error occurs while opening the file, &minus.1 is returned.
 .return end
 .error begin

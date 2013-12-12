@@ -4,7 +4,9 @@
 int _ismbcalnum( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests if the multibyte character argument
+The
+.id &func.
+function tests if the multibyte character argument
 .arg ch
 is an alphanumeric character.
 For example, in code page 932,
@@ -17,7 +19,9 @@ or
 is true.
 .desc end
 .return begin
-The &func function returns zero if the argument is not an alphanumeric
+The
+.id &func.
+function returns zero if the argument is not an alphanumeric
 character; otherwise, a non-zero value is returned.
 .return end
 .see begin

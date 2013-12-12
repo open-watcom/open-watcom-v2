@@ -5,7 +5,9 @@ int fseek( FILE *fp, long int offset, int where );
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function changes the read/write position of the file
+The
+.id &func.
+function changes the read/write position of the file
 specified by
 .arg fp
 .ct .li .
@@ -44,7 +46,9 @@ may be positive, negative or zero.
 The new file position is computed relative to the end of the file.
 .endterm
 .np
-The &func function clears the end-of-file indicator and undoes any
+The
+.id &func.
+function clears the end-of-file indicator and undoes any
 effects of the
 .kw ungetc
 function on the same file.
@@ -55,14 +59,18 @@ function can be used to obtain the current position in the file before
 changing it.
 The position can be restored by using the value returned by
 .kw ftell
-in a subsequent call to &func with the
+in a subsequent call to
+.id &func.
+with the
 .arg where
 parameter set to
 .kw SEEK_SET
 .ct .li .
 .desc end
 .return begin
-The &func function returns zero if successful, non-zero otherwise.
+The
+.id &func.
+function returns zero if successful, non-zero otherwise.
 .im errnoref
 .return end
 .see begin

@@ -5,7 +5,9 @@ double expm1( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the value of the exponential of
+The
+.id &func.
+function computes the value of the exponential of
 .arg x
 minus 1.  This routine provides far better accuracy for
 cases where the exponential of the argument

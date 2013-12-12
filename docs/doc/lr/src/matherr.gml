@@ -6,9 +6,13 @@ int matherr( struct _exception *err_info );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function is invoked each time an error is detected by
+The
+.id &func.
+function is invoked each time an error is detected by
 functions in the math library.
-The default &func function supplied in the library returns zero which
+The default
+.id &func.
+function supplied in the library returns zero which
 causes an error message to be displayed upon
 .kw stderr
 and
@@ -18,7 +22,9 @@ An alternative version of this function can be provided, instead of
 the library version, in order that the error handling for mathematical
 errors can be handled by an application.
 .np
-A program may contain a user-written version of &func to take any
+A program may contain a user-written version of
+.id &func.
+to take any
 appropriate action when an error is detected.
 When zero is returned, an error message will be printed upon
 .kw stderr
@@ -33,7 +39,9 @@ The value
 is used as the return value for the function in which the error was
 detected.
 .np
-The &func function is passed a pointer to a structure of type
+The
+.id &func.
+function is passed a pointer to a structure of type
 .id struct _exception
 which contains information about the error that has been detected:
 .millust begin
@@ -88,7 +96,9 @@ This value may be changed by a user-supplied version of the &func
 function.
 .desc end
 .return begin
-The &func function returns zero when an error message is to be printed
+The
+.id &func.
+function returns zero when an error message is to be printed
 and a non-zero value otherwise.
 .return end
 .exmp begin

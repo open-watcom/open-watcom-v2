@@ -5,7 +5,9 @@ int _grow_handles( int new_count );
 .ixfunc2 '&OsIo' &func
 .synop end
 .desc begin
-The &func function increases the number of POSIX level files that are
+The
+.id &func.
+function increases the number of POSIX level files that are
 allowed to be open at one time.
 The parameter
 .arg new_count
@@ -18,7 +20,9 @@ variable should be consulted for the reason.
 If the number returned is greater than or equal to the number
 requested, the call was successful.
 .np
-Note that even if &func returns successfully, you still might not be
+Note that even if
+.id &func.
+returns successfully, you still might not be
 able to open the requested number of files due to some system
 limit (e.g. FILES= in the CONFIG.SYS file under DOS) or because some
 file handles are already in use (stdin, stdout, stderr, etc.).
@@ -78,12 +82,16 @@ In this case, you may have to increase the number specified in the
 "FILES=n" statement.
 .do end
 .note
-Add a call to &func in your application similar to that shown in the
+Add a call to
+.id &func.
+in your application similar to that shown in the
 example below.
 .endnote
 .desc end
 .return begin
-The &func function returns the maximum number of file handles which
+The
+.id &func.
+function returns the maximum number of file handles which
 the run-time system can accommodate.
 This number can exceed an operating system
 .if '&machsys' eq 'QNX' .do begin

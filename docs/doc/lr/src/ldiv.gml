@@ -20,7 +20,9 @@ by the denominator
 .desc end
 .*
 .return begin
-The &func function returns a structure of type
+The
+.id &func.
+function returns a structure of type
 .kw ldiv_t
 that contains the fields
 .kw quot

@@ -9,7 +9,9 @@ int _close( int &fd );
 .do end
 .synop end
 .desc begin
-The &func function closes a file at the operating system level.
+The
+.id &func.
+function closes a file at the operating system level.
 The
 .arg &fd
 value is the file &handle returned by a successful execution of one of
@@ -41,12 +43,20 @@ or
 functions.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to
+.id &func.
+.
+Use
+id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns &minus.1 and
 .kw errno
 is set to indicate the error.
@@ -61,7 +71,9 @@ The
 argument is not a valid file &handle..
 .if '&machsys' eq 'QNX' .do begin
 .term EINTR
-The &func function was interrupted by a signal.
+The
+.id &func.
+function was interrupted by a signal.
 .term EIO
 An i/o error occurred while updating the directory information.
 .term ENOSPC

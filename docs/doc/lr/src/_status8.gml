@@ -5,11 +5,15 @@ unsigned int _status87( void );
 .ixfunc2 '&Errs' &func
 .synop end
 .desc begin
-The &func function returns the floating-point status word which is used
+The
+.id &func.
+function returns the floating-point status word which is used
 to record the status of 8087/80287/80387/80486 floating-point operations.
 .desc end
 .return begin
-The &func function returns the floating-point status word which is
+The
+.id &func.
+function returns the floating-point status word which is
 used to record the status of 8087/80287/80387/80486 floating-point
 operations.
 The description of this status is found in the

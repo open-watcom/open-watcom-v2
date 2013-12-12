@@ -5,12 +5,16 @@ double floor( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the largest integer not greater than
+The
+.id &func.
+function computes the largest integer not greater than
 .arg x
 .ct .li .
 .desc end
 .return begin
-The &func function computes the largest integer not greater than
+The
+.id &func.
+function computes the largest integer not greater than
 .arg x
 .ct , expressed as a
 .id double.

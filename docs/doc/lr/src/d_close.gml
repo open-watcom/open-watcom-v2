@@ -6,7 +6,9 @@ unsigned _dos_close( int &fd );
 .ixfunc2 '&OsIo' &func
 .synop end
 .desc begin
-The &func function uses system call 0x3E to close the file indicated by
+The
+.id &func.
+function uses system call 0x3E to close the file indicated by
 .arg &fd
 .ct .li .
 The value for
@@ -14,7 +16,9 @@ The value for
 is the one returned by a function call that created or last opened the file.
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 accordingly.

@@ -4,16 +4,25 @@
 #define FILENAME_MAX 123
 .synop end
 .desc begin
-The &func macro is the size of an array of char big enough to hold a string 
+The
+.id &func.
+macro is the size of an array of char big enough to hold a string 
 naming any file that the implementation expects to open;
-If there is no practical file name length limit, &func is the recommended
+If there is no practical file name length limit,
+.id &func.
+is the recommended
 size of such an array.  As file name string contents must meet other
-system-specific constraints, some strings of length &func may not work.
+system-specific constraints, some strings of length
+.id &func.
+may not work.
 .np
-&func typically sizes an array to hold a file name.
+.id &func.
+typically sizes an array to hold a file name.
 .desc end
 .return begin
-The &func macro returns a positive integer value.
+The
+.id &func.
+macro returns a positive integer value.
 .return end
 .exmp begin
 #include <stdio.h>

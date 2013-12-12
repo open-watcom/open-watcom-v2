@@ -14,7 +14,9 @@ FILE *_wfopen( const wchar_t *filename,
 .safealt
 .*
 .desc begin
-The &func function opens the file whose name is the string pointed to by
+The
+.id &func.
+function opens the file whose name is the string pointed to by
 .arg filename
 .ct , and associates a stream with it.
 The argument
@@ -112,13 +114,17 @@ link your program with
 This option is not supported under Netware.
 .endnote
 .np
-The "t", "c", and "n" mode options are extensions for &func and
+The "t", "c", and "n" mode options are extensions for
+.id &func.
+and
 .kw _fdopen
 and should not be used where ANSI portability is desired.
 .do end
 .el .do begin
 .np
-The "t" mode option is an extension for &func and
+The "t" mode option is an extension for
+.id &func.
+and
 .kw _fdopen
 and should not be used where ANSI portability is desired.
 .do end
@@ -161,7 +167,11 @@ intervening call to a file positioning function, unless the read
 resulted in end-of-file.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it
 accepts wide-character string arguments for
 .arg filename
 and
@@ -170,11 +180,15 @@ and
 .do end
 .desc end
 .return begin
-The &func function returns a pointer to the object controlling the
+The
+.id &func.
+function returns a pointer to the object controlling the
 stream.
 This pointer must be passed as a parameter to subsequent functions for
 performing operations on the file.
-If the open operation fails, &func returns
+If the open operation fails,
+.id &func.
+returns
 .mono NULL.
 .im errnoref
 .return end

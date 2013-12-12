@@ -5,9 +5,12 @@ int clearenv( void );
 .ixfunc2 '&Process' &func
 .synop end
 .desc begin
-The &func function clears the process environment area.
+The
+.id &func.
+function clears the process environment area.
 No environment variables are defined immediately after a call to the
-&func function.
+.id &func.
+function.
 .if '&machsys' eq 'QNX' .do begin
 Note that this clears the
 .kw PATH
@@ -39,12 +42,16 @@ environment variables which may then affect the operation of other
 library functions.
 .do end
 .pp
-The &func function may manipulate the value of the pointer
+The
+.id &func.
+function may manipulate the value of the pointer
 .kw environ
 .ct .li .
 .desc end
 .return begin
-The &func function returns zero upon successful completion.
+The
+.id &func.
+function returns zero upon successful completion.
 Otherwise, it will return a non-zero value and set
 .kw errno
 to indicate the error.

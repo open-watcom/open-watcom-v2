@@ -10,7 +10,9 @@ The default
 .kw matherr
 function supplied in the library can be replaced so that the
 application can handle mathematical errors.
-To do this, the &func function must be called with the address of the
+To do this, the
+.id &func.
+function must be called with the address of the
 new mathematical error handling routine.
 .pp
 .bi Note:
@@ -92,7 +94,9 @@ This value may be changed by a user-supplied version of the &func
 function.
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .blktext end
 .return end
 .exmp begin

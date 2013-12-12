@@ -1,4 +1,5 @@
 .gfuncw getcurrentposition
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getcurrentposition( void );
 
@@ -9,12 +10,18 @@ record /xycoord/ function _getcurrentposition()
 
 record /_wxycoord/ function _getcurrentposition_w()
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines return the current
+The
+.id &func.
+&routines return the current
 output position for graphics.
-The &func &routine returns the point in view coordinates.
-The &func2 &routine returns the point in window coordinates.
+The
+.id &func.
+&routine returns the point in view coordinates.
+The
+.id &func2.
+&routine returns the point in window coordinates.
 .pp
 The current position defaults to the origin,
 .coord 0 0 ,
@@ -38,7 +45,9 @@ The output position for text output can be set by use of the
 &routine..
 .desc end
 .return begin
-The &func &routines return the current output
+The
+.id &func.
+&routines return the current output
 position for graphics.
 .return end
 .see begin

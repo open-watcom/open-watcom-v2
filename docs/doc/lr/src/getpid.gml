@@ -4,10 +4,14 @@
 int getpid(void);
 .synop end
 .desc begin
-The &func function returns the process id for the current process.
+The
+.id &func.
+function returns the process id for the current process.
 .desc end
 .return begin
-The &func function returns the process id for the current process.
+The
+.id &func.
+function returns the process id for the current process.
 .return end
 .* .see begin
 .* .seelist getpid _threadid

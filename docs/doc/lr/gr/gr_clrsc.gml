@@ -1,4 +1,5 @@
 .gfunc clearscreen
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _clearscreen( short area );
 .do end
@@ -6,9 +7,11 @@ void _FAR _clearscreen( short area );
 subroutine _clearscreen( area )
 integer*2 area
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine clears the indicated
+The
+.id &func.
+&routine clears the indicated
 .arg area
 and fills it with the background color.
 The
@@ -25,7 +28,9 @@ area is current text window
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

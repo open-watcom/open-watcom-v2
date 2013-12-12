@@ -26,7 +26,9 @@ void _wsplitpath2( const wchar_t *inp,
 .do end
 .synop end
 .desc begin
-The &func function splits up a full pathname into four components
+The
+.id &func.
+function splits up a full pathname into four components
 consisting of a
 .if '&machsys' eq 'QNX' .do begin
 node specification (e.g., //2), directory path (e.g., /home/fred),
@@ -57,7 +59,9 @@ The
 .arg node
 argument is the location that is to contain the pointer to the node
 specification (e.g., //0, //1, etc.) if a node is specified in the
-full pathname (filled in by &func.).
+full pathname (filled in by
+.id &func.
+).
 .do end
 .el .do begin
 .note drive
@@ -65,14 +69,18 @@ The
 .arg drive
 argument is the location that is to contain the pointer to
 the drive letter (e.g., A, B, C, etc.) followed by a colon if a drive
-is specified in the full pathname (filled in by &func.).
+is specified in the full pathname (filled in by
+.id &func.
+).
 .do end
 .note dir
 The
 .arg dir
 argument is the location that is to contain the pointer to the
 directory path including the trailing slash if a directory path is
-specified in the full pathname (filled in by &func.).
+specified in the full pathname (filled in by
+.id &func.
+).
 .if '&machsys' ne 'QNX' .do begin
 Either forward slashes (/) or backslashes (\) may be used.
 .do end
@@ -81,13 +89,17 @@ The
 .arg fname
 argument is the location that is to contain the pointer to
 the base name of the file without any extension (suffix) if a file
-name is specified in the full pathname (filled in by &func.).
+name is specified in the full pathname (filled in by
+.id &func.
+).
 .note ext
 The
 .arg ext
 argument is the location that is to contain the pointer to
 the filename extension (suffix) including the leading period if an
-extension is specified in the full pathname (filled in by &func.).
+extension is specified in the full pathname (filled in by
+.id &func.
+).
 .if '&machsys' eq 'QNX' .do begin
 If more than one period appears in the filename, the suffix consists
 of the final period and characters following it.
@@ -118,7 +130,9 @@ function.
 .im widefunc
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .seelist _splitpath2 _fullpath _makepath _splitpath

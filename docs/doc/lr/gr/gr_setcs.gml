@@ -1,4 +1,5 @@
 .gfuncw setcharsize
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _setcharsize( short height, short width );
 
@@ -11,20 +12,26 @@ integer*2 height, width
 subroutine _setcharsize_w( height, width )
 double precision height, width
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines set the character height and width to the values
+The
+.id &func.
+&routines set the character height and width to the values
 specified by the arguments
 .arg height
 and
 .arg width
 .ct .li .
-For the &func &routine, the arguments
+For the
+.id &func.
+&routine, the arguments
 .arg height
 and
 .arg width
 represent a number of pixels.
-For the &func2 &routine, the arguments
+For the
+.id &func2.
+&routine, the arguments
 .arg height
 and
 .arg width
@@ -40,7 +47,9 @@ and can be determined by the
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routines do not return a value.
+The
+.id &func.
+&routines do not return a value.
 .return end
 .do end
 .see begin

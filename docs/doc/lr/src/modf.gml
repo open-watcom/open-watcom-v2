@@ -5,7 +5,9 @@ double modf( double value, double *iptr );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function breaks the argument
+The
+.id &func.
+function breaks the argument
 .arg value
 into integral and fractional parts, each of which has the same sign as
 the argument.
@@ -16,7 +18,9 @@ in the object pointed to by
 .ct .li .
 .desc end
 .return begin
-The &func function returns the signed fractional part of
+The
+.id &func.
+function returns the signed fractional part of
 .arg value
 .ct .li .
 .return end

@@ -1,4 +1,5 @@
 .gfunc settextcolor
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _settextcolor( short pixval );
 .do end
@@ -6,9 +7,11 @@ short _FAR _settextcolor( short pixval );
 integer*2 function _settextcolor( pixval )
 integer*2 pixval
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current text color to be the color
+The
+.id &func.
+&routine sets the current text color to be the color
 indicated by the pixel value of the
 .arg pixval
 argument.
@@ -46,7 +49,9 @@ value                   value
 .* .im gr_pixvl
 .desc end
 .return begin
-The &func &routine returns the pixel value of the previous text color.
+The
+.id &func.
+&routine returns the pixel value of the previous text color.
 .return end
 .see begin
 .seelist &function. _gettextcolor _outtext _outmem _setcolor

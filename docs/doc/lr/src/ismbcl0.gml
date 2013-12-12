@@ -4,7 +4,9 @@
 int _ismbcl0( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg ch
 is in the set of double-byte characters that include Hiragana,
 Katakana, punctuation symbols, graphical symbols, Roman and Cyrillic
@@ -15,7 +17,9 @@ These are any characters for which the following expression is true:
 0x8140 <= ch <= 0x889E  &&  ch != 0x837F
 .millust end
 .np
-The &func function tests if the argument is a valid double-byte
+The
+.id &func.
+function tests if the argument is a valid double-byte
 character (i.e., it checks that the lower byte is not in the ranges
 0x00 - 0x3F, 0x7F, or 0xFD - 0xFF).
 .np
@@ -29,7 +33,9 @@ The Hiragana code set includes 83 characters and the Katakana code set
 includes 86 characters.
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end
 .see begin

@@ -5,7 +5,9 @@ void sound( unsigned frequency );
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function turns on the PC's speaker at the specified
+The
+.id &func.
+function turns on the PC's speaker at the specified
 .arg frequency
 .ct .li .
 The frequency is in Hertz (cycles per second).
@@ -15,7 +17,9 @@ function after an appropriate amount of time.
 .im privity
 .if '&machsys' eq 'QNX' .do begin
 .bd WARNING:
-The &func function only works if either the program is owned by
+The
+.id &func.
+function only works if either the program is owned by
 .id root
 and is
 .id setuid,
@@ -24,7 +28,9 @@ or if the invoking user is
 .do end
 .desc end
 .return begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 .return end
 .see begin
 .seelist sound delay nosound

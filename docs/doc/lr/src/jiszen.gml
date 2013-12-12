@@ -5,7 +5,9 @@ int jiszen( JMOJI c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg c
 is a valid double-byte character.
 Valid double-byte characters are those in which the first byte falls
@@ -20,7 +22,9 @@ This is summarized in the following diagram.
 .millust end
 .desc end
 .return begin
-The &func function returns zero if the argument is not in the range;
+The
+.id &func.
+function returns zero if the argument is not in the range;
 otherwise, a non-zero value is returned.
 .return end
 .see begin

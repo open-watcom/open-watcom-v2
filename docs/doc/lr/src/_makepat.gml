@@ -28,7 +28,9 @@ void _wmakepath( wchar_t *path,
 .do end
 .synop end
 .desc begin
-The &func function constructs a full pathname from the components
+The
+.id &func.
+function constructs a full pathname from the components
 consisting of a
 .if '&machsys' eq 'QNX' .do begin
 node specification (e.g., //2),
@@ -80,7 +82,9 @@ The
 .arg node
 argument points to a buffer containing the node specification
 (e.g., //0, //1, etc.) followed by an optional "/".
-The &func function will automatically insert a "/" following the node
+The
+.id &func.
+function will automatically insert a "/" following the node
 number in the full pathname if it is missing.
 If
 .arg node
@@ -93,7 +97,9 @@ The
 .arg drive
 argument points to a buffer containing the drive letter (A, B, C,
 etc.) followed by an optional colon.
-The &func function will automatically insert a colon in the full
+The
+.id &func.
+function will automatically insert a colon in the full
 pathname if it is missing.
 If
 .arg drive
@@ -108,7 +114,9 @@ argument points to a buffer containing just the pathname.
 Either forward slashes (/) or backslashes (\) may be used.
 .do end
 The trailing slash is optional.
-The &func function will automatically insert a trailing slash in the
+The
+.id &func.
+function will automatically insert a trailing slash in the
 full pathname if it is missing.
 If
 .arg dir
@@ -125,7 +133,9 @@ The
 argument points to a buffer containing the filename extension or
 suffix.
 A leading period (.) is optional.
-The &func routine will automatically insert a period in the full
+The
+.id &func.
+routine will automatically insert a period in the full
 pathname if it is missing.
 If
 .arg ext
@@ -134,7 +144,9 @@ placed in the full pathname.
 .endnote
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .seelist _makepath _fullpath _splitpath

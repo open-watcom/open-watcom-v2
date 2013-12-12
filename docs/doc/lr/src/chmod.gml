@@ -21,7 +21,9 @@ int _wchmod( const wchar_t *path, int permission );
 .do end
 .synop end
 .desc begin
-The &func function changes the permissions for a file specified by
+The
+.id &func.
+function changes the permissions for a file specified by
 .arg path
 to be the settings in the mode given by
 .arg permission
@@ -48,21 +50,32 @@ is a regular file, bit
 .mono S_ISGID
 (set group ID on execution)
 in the file's mode shall be cleared upon successful return from the
-&func function.
+.id &func.
+function.
 .do end
 .np
-Upon successful completion, the &func function will mark for update
+Upon successful completion, the
+.id &func.
+function will mark for update
 the
 .us st_ctime
 field of the file.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument.
 .do end
 .desc end

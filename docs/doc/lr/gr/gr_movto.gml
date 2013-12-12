@@ -1,4 +1,5 @@
 .gfuncw moveto
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _moveto( short x, short y );
 
@@ -11,11 +12,17 @@ integer*2 x, y
 record /_wxycoord/ function _moveto_w( x, y )
 double precision x, y
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines set the current output position for graphics.
-The &func &routine uses the view coordinate system.
-The &func2 &routine uses the window coordinate system.
+The
+.id &func.
+&routines set the current output position for graphics.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+&routine uses the window coordinate system.
 .np
 The current output position is set to be
 the point at the coordinates
@@ -33,7 +40,9 @@ The output position for text output can be set by use of the
 &routine..
 .desc end
 .return begin
-The &func &routines return the previous value of the
+The
+.id &func.
+&routines return the previous value of the
 output position for graphics.
 .return end
 .see begin

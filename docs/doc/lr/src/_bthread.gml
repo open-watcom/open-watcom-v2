@@ -56,15 +56,21 @@ unsigned long _beginthreadex(
 .do end
 .synop end
 .desc begin
-The &func function is used to start a new thread of execution at the
+The
+.id &func.
+function is used to start a new thread of execution at the
 function identified by
 .arg start_address
 with a single parameter identified by
 .arg arglist
 .ct .li .
 .np
-For each operating environment under which &func is supported,
-the &func function uses the appropriate system call to begin a new
+For each operating environment under which
+.id &func.
+is supported,
+the
+.id &func.
+function uses the appropriate system call to begin a new
 thread of execution.
 .np
 The new thread will use the memory identified by
@@ -192,11 +198,15 @@ unsigned __MaxThreads = { 48 };
 .millust end
 .desc end
 .return begin
-Under Win32, the &func function returns the thread handle for the new
+Under Win32, the
+.id &func.
+function returns the thread handle for the new
 thread if successful; otherwise it returns &minus.1 to indicate that the
 thread could not be started.
 .np
-Under all other systems that support the &func function (OS/2, Netware
+Under all other systems that support the
+.id &func.
+function (OS/2, Netware
 and QNX), it returns the thread ID for the new thread if successful;
 otherwise it returns &minus.1 to indicate that the thread could not be
 started.

@@ -4,10 +4,14 @@
 int _setmbcp( int codepage );
 .synop end
 .desc begin
-The &func function sets the current code page number.
+The
+.id &func.
+function sets the current code page number.
 .desc end
 .return begin
-The &func function returns zero if the code page is set successfully.
+The
+.id &func.
+function returns zero if the code page is set successfully.
 If an invalid code page value is supplied for
 .arg codepage
 .ct , the function returns -1 and the code page setting is unchanged.

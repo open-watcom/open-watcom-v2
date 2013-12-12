@@ -11,7 +11,9 @@ All files are readable with DOS; however, it is a good idea to set
 when read permission is intended for the file.
 .do end
 .np
-The &func function applies the current file permission mask
+The
+.id &func.
+function applies the current file permission mask
 to the specified permissions (see
 .kw umask
 .ct ).

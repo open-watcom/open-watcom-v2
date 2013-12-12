@@ -21,7 +21,9 @@ int lstat( const char *path, struct stat *buf );
 .ixfunc2 '&FileOp' l&func
 .synop end
 .desc begin
-The &func functions obtain information about the file or directory
+The
+.id &func.
+functions obtain information about the file or directory
 referenced in
 .arg path
 .ct .li .
@@ -32,8 +34,12 @@ indicated by
 .im statdesc
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 The
 .kw _stati64
@@ -41,7 +47,9 @@ The
 .kw _wstat
 .ct , and
 .kw _wstati64
-functions differ from &func in the type of structure that they are
+functions differ from
+.id &func.
+in the type of structure that they are
 asked to fill in.
 The
 .kw _wstat
@@ -51,7 +59,9 @@ functions deal with wide character strings.
 The differences in the structures are described above.
 The
 .kw lstat
-function is identical to &func on non-UNIX platforms.
+function is identical to
+.id &func.
+on non-UNIX platforms.
 .desc end
 .im statrtn
 .error begin

@@ -9,7 +9,9 @@ int _fmbsbtype( const unsigned char __far *mbstr,
 .do end
 .synop end
 .desc begin
-The &func function determines the type of a byte in a multibyte
+The
+.id &func.
+function determines the type of a byte in a multibyte
 character string.
 The function examines only the byte at offset
 .arg count
@@ -23,7 +25,9 @@ A similar function was called
 in earlier versions.
 .desc end
 .return begin
-The &func function returns one of the following values:
+The
+.id &func.
+function returns one of the following values:
 .begterm
 .term _MBC_SINGLE
 the character is a valid single-byte character

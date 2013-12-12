@@ -4,7 +4,9 @@
 int _ismbclegal( unsigned int dbch );
 .synop end
 .desc begin
-The &func function tests for a valid multibyte character.
+The
+.id &func.
+function tests for a valid multibyte character.
 Multibyte characters include both single-byte and double-byte
 characters.
 For example, in code page 932, a legal double-byte character is one in
@@ -19,7 +21,9 @@ This is summarized in the following diagram.
 .millust end
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end
 .see begin

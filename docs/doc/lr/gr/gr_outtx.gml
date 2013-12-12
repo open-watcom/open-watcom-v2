@@ -1,4 +1,5 @@
 .gfunc outtext
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _outtext( char _FAR *text );
 .do end
@@ -6,9 +7,11 @@ void _FAR _outtext( char _FAR *text );
 subroutine _outtext( text )
 character*(*) text
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine displays the character string indicated by the argument
+The
+.id &func.
+&routine displays the character string indicated by the argument
 .arg text
 .ct .li .
 The string must be terminated by a null character
@@ -38,7 +41,9 @@ The text position is updated to follow the end of the displayed text.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

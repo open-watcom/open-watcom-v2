@@ -6,7 +6,9 @@ unsigned long outpd( int port,
 .ixfunc2 '&PortIo' &func
 .synop end
 .desc begin
-The &func function writes a double-word (four bytes), determined by
+The
+.id &func.
+function writes a double-word (four bytes), determined by
 .arg value
 .ct , to the 80x86 hardware port whose number is given by
 .arg port

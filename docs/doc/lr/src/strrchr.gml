@@ -34,7 +34,9 @@ unsigned char __far *_fmbsrchr(
 .do end
 .synop end
 .desc begin
-The &func function locates the last occurrence of
+The
+.id &func.
+function locates the last occurrence of
 .arg c
 (converted to a char) in the string pointed to by
 .arg s
@@ -45,7 +47,9 @@ The terminating null character is considered to be part of the string.
 .im mbsffunc
 .desc end
 .return begin
-The &func function returns a pointer to the located character,
+The
+.id &func.
+function returns a pointer to the located character,
 or a NULL pointer if the character does not occur in the string.
 .return end
 .see begin

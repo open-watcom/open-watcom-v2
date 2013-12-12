@@ -5,7 +5,9 @@ int ispnkana( int c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg c
 is a single-byte punctuation character such as a comma (,) or a period
 (.) or single-byte Katakana punctuation character.
@@ -15,7 +17,9 @@ ispunct(c) || iskpun(c)
 .millust end
 .desc end
 .return begin
-The &func function returns zero if the argument is not a single-byte
+The
+.id &func.
+function returns zero if the argument is not a single-byte
 punctuation character or single-byte Katakana punctuation character;
 otherwise, a non-zero value is returned.
 .return end

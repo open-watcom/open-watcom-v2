@@ -12,7 +12,9 @@ void __far *_fmemccpy( void __far *dest,
 .do end
 .synop end
 .desc begin
-The &func function copies bytes from
+The
+.id &func.
+function copies bytes from
 .arg src
 to
 .arg dest
@@ -24,7 +26,9 @@ bytes have been copied, whichever comes first.
 .im farfunc
 .desc end
 .return begin
-The &func function returns a pointer to the byte in
+The
+.id &func.
+function returns a pointer to the byte in
 .arg dest
 following the character
 .arg c

@@ -1,4 +1,5 @@
 .gfunc setplotaction
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _setplotaction( short action );
 .do end
@@ -6,9 +7,11 @@ short _FAR _setplotaction( short action );
 integer*2 function _setplotaction( action )
 integer*2 action
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current plotting action to the value of the
+The
+.id &func.
+&routine sets the current plotting action to the value of the
 .arg action
 argument.
 .pp

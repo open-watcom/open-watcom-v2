@@ -4,7 +4,9 @@
 unsigned int _mbbtombc( unsigned int ch );
 .synop end
 .desc begin
-The &func function returns the double-byte character equivalent to the
+The
+.id &func.
+function returns the double-byte character equivalent to the
 single-byte character
 .arg ch
 .ct .li .
@@ -17,10 +19,14 @@ This function was called
 in earlier versions.
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg ch
 if there is no equivalent double-byte character;
-otherwise &func returns a double-byte character.
+otherwise
+.id &func.
+returns a double-byte character.
 .return end
 .see begin
 .im seeismbb &function.

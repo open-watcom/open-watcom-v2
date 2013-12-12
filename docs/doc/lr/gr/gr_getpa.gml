@@ -1,18 +1,23 @@
 .gfunc getplotaction
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _getplotaction( void );
 .do end
 .el .do begin
 integer*2 function _getplotaction()
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the current plotting action.
+The
+.id &func.
+&routine returns the current plotting action.
 .pp
 .im gr_plot
 .desc end
 .return begin
-The &func &routine returns the current plotting action.
+The
+.id &func.
+&routine returns the current plotting action.
 .return end
 .see begin
 .seelist &function. _setplotaction

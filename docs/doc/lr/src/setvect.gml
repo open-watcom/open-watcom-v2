@@ -6,14 +6,18 @@ void _dos_setvect( unsigned intnum,
 .ixfunc2 '&CpuInt' &func
 .synop end
 .desc begin
-The &func function sets interrupt vector number
+The
+.id &func.
+function sets interrupt vector number
 .arg intnum
 to point to the interrupt handling function pointed to by
 .arg handler
 .ct .li .
 .desc end
 .return begin
-The &func function does not return a value.
+The
+.id &func.
+function does not return a value.
 .return end
 .see begin
 .seelist setvect _chain_intr _dos_getvect _dos_keep

@@ -7,7 +7,9 @@ unsigned short _bios_serialcom( unsigned service,
 .ixfunc2 '&BiosFunc' &func
 .synop end
 .desc begin
-The &func function uses INT 0x14 to provide serial communications
+The
+.id &func.
+function uses INT 0x14 to provide serial communications
 services to the serial port specified by
 .arg serial_port
 .ct .li .
@@ -75,7 +77,9 @@ Odd parity
 .endnote
 .desc end
 .return begin
-The &func function returns a 16-bit value with the high-order byte
+The
+.id &func.
+function returns a 16-bit value with the high-order byte
 containing status information defined as follows:
 .begnote $compact $setptnt 12
 .termhd1 Bit

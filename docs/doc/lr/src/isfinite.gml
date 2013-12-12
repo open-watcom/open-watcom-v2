@@ -5,7 +5,9 @@ int isfinite( x );
 .synop end
 .*
 .desc begin
-The &func macro determines whether its argument
+The
+.id &func.
+macro determines whether its argument
 .arg x
 has a finite value (zero, subnormal, or normal, and not infinite or NaN).
 First, an argument represented in a format wider than its semantic type is
@@ -18,7 +20,9 @@ must be an expression of real floating type.
 .desc end
 .*
 .return begin
-The &func macro returns a nonzero value if and only if its argument has
+The
+.id &func.
+macro returns a nonzero value if and only if its argument has
 a finite value.
 .return end
 .*

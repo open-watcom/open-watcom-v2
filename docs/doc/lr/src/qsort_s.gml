@@ -24,11 +24,15 @@ is not equal to zero, then neither
 nor
 .arg compar
 shall be a null pointer.
-If there is a runtime-constraint violation, the &func function does not sort the array.
+If there is a runtime-constraint violation, the
+.id &func.
+function does not sort the array.
 .rtconst end
 .*
 .desc begin
-The &func function sorts an array of
+The
+.id &func.
+function sorts an array of
 .arg nmemb
 objects, the initial element of which is
 pointed to by
@@ -45,14 +49,20 @@ point to the objects being compared. The function shall return an integer less t
 to, or greater than zero if the first argument is considered to be respectively less than,
 equal to, or greater than the second. The third argument to the comparison function is the
 .arg context
-argument passed to &func. The sole use of
+argument passed to
+.id &func.
+The sole use of
 .arg context
-by &func is to pass it to the comparison function.
+by
+.id &func.
+is to pass it to the comparison function.
 If two elements compare as equal, their relative order in the resulting sorted array is
 unspecified.
 .desc end
 .return begin
-The &func function returns zero if there was no runtime-constraint violation.
+The
+.id &func.
+function returns zero if there was no runtime-constraint violation.
 Otherwise, a non-zero value is returned.
 .return end
 .see begin

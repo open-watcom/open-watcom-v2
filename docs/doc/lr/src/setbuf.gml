@@ -5,7 +5,9 @@ void setbuf( FILE *fp, char *buffer );
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function can be used to associate a buffer with the file
+The
+.id &func.
+function can be used to associate a buffer with the file
 designated by
 .arg fp
 .ct .li .
@@ -27,7 +29,9 @@ then it must point to an array that is at least
 characters in length, and all input/output will be fully buffered.
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .seelist setbuf fopen setvbuf

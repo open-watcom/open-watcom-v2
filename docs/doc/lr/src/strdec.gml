@@ -24,7 +24,9 @@ unsigned char *_fmbsdec( const unsigned char __far *start,
 .do end
 .synop end
 .desc begin
-The &func function returns a pointer to the previous character
+The
+.id &func.
+function returns a pointer to the previous character
 (single-byte, wide, or multibyte) in the string pointed to by
 .arg start
 which must precede
@@ -41,7 +43,9 @@ does not point into the middle of a multibyte or wide character.
 .im mbsfunc
 .desc end
 .return begin
-The &func function returns a pointer to the previous character
+The
+.id &func.
+function returns a pointer to the previous character
 (single-byte, wide, or multibyte depending on the function used).
 .return end
 .see begin

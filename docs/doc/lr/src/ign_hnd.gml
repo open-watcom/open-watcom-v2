@@ -10,14 +10,20 @@ void ignore_handler_s(
 .synop end
 .*
 .desc begin
-A pointer to the &func function may be passed as an argument to the
+A pointer to the
+.id &func.
+function may be passed as an argument to the
 .mono set_constraint_handler_s
 function.
-The &func function simply returns to its caller.
+The
+.id &func.
+function simply returns to its caller.
 .desc end
 .*
 .return begin
-The &func function does not returns no value.
+The
+.id &func.
+function does not returns no value.
 .return end
 .*
 .see begin

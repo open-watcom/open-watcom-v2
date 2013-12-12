@@ -12,7 +12,9 @@ FILE *_wfsopen( const wchar_t *filename,
 .do end
 .synop end
 .desc begin
-The &func function opens the file whose name is the string pointed to by
+The
+.id &func.
+function opens the file whose name is the string pointed to by
 .arg filename
 .ct .li ,
 and associates a stream with it.
@@ -200,7 +202,11 @@ you are using for more detailed information about these sharing modes.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts
 wide-character string arguments for
 .arg filename
 and
@@ -209,11 +215,15 @@ and
 .do end
 .desc end
 .return begin
-The &func function returns a pointer to the object controlling the
+The
+.id &func.
+function returns a pointer to the object controlling the
 stream.
 This pointer must be passed as a parameter to subsequent functions for
 performing operations on the file.
-If the open operation fails, &func returns
+If the open operation fails,
+.id &func.
+returns
 .mono NULL.
 .im errnoref
 .return end

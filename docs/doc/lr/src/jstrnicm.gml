@@ -16,10 +16,16 @@ int __far _fjstrnicmp( const JCHAR __far *s1,
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function compares,
+The
+.id &func.
+function compares,
 .do end
 .el .do begin
-The &func and &ffunc functions compare,
+The
+.id &func.
+and
+.id &ffunc.
+functions compare,
 .do end
 without case sensitivity, the Kanji string pointed to by
 .arg s1
@@ -35,10 +41,16 @@ characters.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 an integer less than, equal to, or greater than zero, indicating that
 the Kanji string pointed to by

@@ -10,16 +10,19 @@ wchar_t *_wtempnam( wchar_t *dir, wchar_t *prefix );
 .do end
 .synop end
 .desc begin
-&func creates a temporary filename for use in another directory.
+.id &func.
+creates a temporary filename for use in another directory.
 This filename is different from that of any existing file.
 The
 .arg prefix
 argument is the prefix to the filename.
-&func uses
+.id &func.
+uses
 .kw malloc
 to allocate space for the filename; the program is responsible for
 freeing this space when it is no longer needed.
-&func looks for the file with the given name in the following
+.id &func.
+looks for the file with the given name in the following
 directories, listed in order of precedence.
 .begnote
 .notehd1 Directory Used
@@ -46,21 +49,34 @@ The
 .kw _wP_tmpdir
 string is used by &wfunc..
 .note Current working directory
-&func uses the current working directory when
+.id &func.
+uses the current working directory when
 .kw _P_tmpdir
 does not exist.
-&wfunc uses the current working directory when
+.id &wfunc.
+uses the current working directory when
 .kw _wP_tmpdir
 does not exist.
 .endnote
 .np
-&func automatically handles multibyte-character string arguments as
+.id &func.
+automatically handles multibyte-character string arguments as
 appropriate, recognizing multibyte-character sequences according to
 the OEM code page obtained from the operating system.
 .if &'length(&wfunc.) ne 0 .do begin
-&wfunc is a wide-character version of &func; the arguments and return
-value of &wfunc are wide-character strings.
-&wfunc and &func behave identically except that &wfunc does not handle
+.id &wfunc.
+is a wide-character version of
+.id &func.
+the arguments and return
+value of
+.id &wfunc.
+are wide-character strings.
+.id &wfunc.
+and
+.id &func.
+behave identically except that
+.id &wfunc.
+does not handle
 multibyte-character strings.
 .do end
 .np
@@ -69,10 +85,14 @@ The function generates unique filenames for up to
 calls.
 .desc end
 .return begin
-The &func function returns a pointer to the name generated, unless it
+The
+.id &func.
+function returns a pointer to the name generated, unless it
 is impossible to create this name or the name is not unique.
 If the name cannot be created or if a file with that name already
-exists, &func returns NULL.
+exists,
+.id &func.
+returns NULL.
 .return end
 .see begin
 .seelist &function. fopen freopen mkstemp _mktemp _tempnam tmpfile tmpnam

@@ -8,7 +8,9 @@ unsigned _dos_creat( const char *path,
 .ixfunc2 '&OsIo' &func
 .synop end
 .desc begin
-The &func function uses system call 0x3C to create a new file named
+The
+.id &func.
+function uses system call 0x3C to create a new file named
 .arg path
 .ct , with the access attributes specified by
 .arg attribute
@@ -21,7 +23,9 @@ attributes of the file will remain unchanged.
 .im creatatt
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 accordingly.

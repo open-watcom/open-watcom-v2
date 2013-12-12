@@ -14,11 +14,15 @@ intmax_t wcstoimax( const wchar_t *ptr,
 .do end
 .synop end
 .desc begin
-The &func function converts the string pointed to by
+The
+.id &func.
+function converts the string pointed to by
 .arg ptr
 to an object of type
 .id intmax_t.
-The &func function recognizes a string containing:
+The
+.id &func.
+function recognizes a string containing:
 .begbull $compact
 .bull
 optional white space,
@@ -59,7 +63,9 @@ of letters and digits.
 .im widefunc
 .desc end
 .return begin
-The &func function returns the converted value.
+The
+.id &func.
+function returns the converted value.
 If the correct value would cause overflow,
 .kw INTMAX_MAX
 or

@@ -5,7 +5,9 @@ double round( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function rounds the argument
+The
+.id &func.
+function rounds the argument
 .arg x
 to the nearest integer. Values halfway between integers
 always rounded away from zero.

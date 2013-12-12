@@ -384,7 +384,9 @@ are written (e.g., %.7s)
 
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-For &func, this specifier refers to an ASCII character string unless
+For
+.id &func.
+this specifier refers to an ASCII character string unless
 the "l" or "w" modifiers are used to indicate a wide character string.
 .np
 For &wfunc, this specifier refers to a wide character string unless

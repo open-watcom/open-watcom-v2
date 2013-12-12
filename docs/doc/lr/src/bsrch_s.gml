@@ -25,13 +25,17 @@ is not equal to zero, then none of
 .ct , or
 .arg compar
 shall be a null pointer.
-If there is a runtime-constraint violation, the &func function does not
+If there is a runtime-constraint violation, the
+.id &func.
+function does not
 search the array.
 .rtconst end
 .*
 .desc begin
 
-The &func function searches an array of
+The
+.id &func.
+function searches an array of
 .arg nmemb
 objects, the initial element of
 which is pointed to by
@@ -52,13 +56,19 @@ shall consist of: all the elements that compare less than, all the elements that
 equal to, and all the elements that compare greater than the key object, in that order.
 The third argument to the comparison function is the
 .arg context
-argument passed to &func.
-The sole use of context by &funcs is to pass it to the comparison function.
+argument passed to
+.id &func.
+.
+The sole use of context by
+.id &func.
+is to pass it to the comparison function.
 
 .desc end
 .*
 .return begin
-The &func function returns a pointer to a matching element of the array,or a null
+The
+.id &func.
+function returns a pointer to a matching element of the array,or a null
 pointer if no match is found or there is a runtime-constraint violation. If two elements
 compare as equal, which element is matched is unspecified.
 .return end

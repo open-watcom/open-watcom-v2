@@ -17,32 +17,48 @@ wint_t towupper( wint_t c );
 .do end
 .synop end
 .desc begin
-The &func function converts
+The
+.id &func.
+function converts
 .arg c
 to a uppercase letter if
 .arg c
 represents a lowercase letter.
 .np
-The &_func function is a version of &func to be used only when
+The
+.id &_func.
+function is a version of
+.id &func.
+to be used only when
 .arg c
 is known to be lowercase.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is similar to &func except that it accepts a
+The
+.id &wfunc.
+function is similar to
+.id &func.
+except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
-The &func function returns the corresponding uppercase letter when the
+The
+.id &func.
+function returns the corresponding uppercase letter when the
 argument is a lowercase letter; otherwise, the original character is
 returned.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns the corresponding wide-character uppercase
+The
+.id &wfunc.
+function returns the corresponding wide-character uppercase
 letter when the argument is a wide-character lowercase letter;
 otherwise, the original wide character is returned.
 .do end
 .np
-The result of &_func is undefined if
+The result of
+.id &_func.
+is undefined if
 .arg c
 is not a lowercase letter.
 .return end

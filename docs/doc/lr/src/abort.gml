@@ -5,7 +5,9 @@ void abort( void );
 .ixfunc2 '&Process' &func
 .synop end
 .desc begin
-The &func function raises the signal SIGABRT.
+The
+.id &func.
+function raises the signal SIGABRT.
 The default action for SIGABRT is to terminate program execution,
 returning control
 to the process that started the calling program (usually the operating
@@ -26,7 +28,9 @@ header file.
 .do end
 .desc end
 .return begin
-The &func function does not return to its caller.
+The
+.id &func.
+function does not return to its caller.
 .return end
 .see begin
 .im seeproc abort

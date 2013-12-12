@@ -10,6 +10,7 @@
 :INCLUDE lytchg
 :INCLUDE bantop
 :INCLUDE fmtmacro
+:INCLUDE xdefs
 :INCLUDE symbols
 :INCLUDE grsyms
 :INCLUDE grmacs

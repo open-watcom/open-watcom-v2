@@ -15,7 +15,9 @@ struct _wdirent *_wopendir( const wchar_t *dirname );
 .do end
 .synop end
 .desc begin
-The &func function is used in conjunction with the functions
+The
+.id &func.
+function is used in conjunction with the functions
 .kw readdir
 and
 .kw closedir
@@ -68,7 +70,11 @@ Either or both processes may use
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument and returns a pointer to a
 .kw _wdirent
 structure that can be used with the
@@ -84,7 +90,9 @@ functions.
 .do end
 .desc end
 .return begin
-The &func function, if successful, returns a pointer to a structure
+The
+.id &func.
+function, if successful, returns a pointer to a structure
 required for subsequent calls to
 .kw readdir
 to retrieve the file names
@@ -94,7 +102,9 @@ matching the pattern
 specified by
 .arg dirname
 .ct .li .
-The &func function returns
+The
+.id &func.
+function returns
 .mono NULL
 if
 .arg dirname

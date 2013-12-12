@@ -1,13 +1,16 @@
 .gfunc gettextposition
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct rccoord _FAR _gettextposition( void );
 .do end
 .el .do begin
 record /rccoord/ function _gettextposition()
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the current output position for text.
+The
+.id &func.
+&routine returns the current output position for text.
 This position is in terms of characters, not pixels.
 .pp
 The current position defaults to the top left corner of the screen,
@@ -30,7 +33,9 @@ The output position for graphics output can be set by use of the
 &routine..
 .desc end
 .return begin
-The &func &routine returns, as an
+The
+.id &func.
+&routine returns, as an
 .id rccoord
 structure, the current output position for text.
 .return end

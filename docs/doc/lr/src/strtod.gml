@@ -13,7 +13,9 @@ double wcstod( const wchar_t *ptr, wchar_t **endptr );
 .synop end
 .*
 .desc begin
-The &func function converts the string pointed to by
+The
+.id &func.
+function converts the string pointed to by
 .arg ptr
 to
 .id double
@@ -50,7 +52,9 @@ input string, starting with the first non-whitespace character, that is of
 the expected form. The subject sequence contains no characters if the input
 string is not of the expected form.
 .np
-A decimal floating-point number recognized by &func (after optional sign was
+A decimal floating-point number recognized by
+.id &func.
+(after optional sign was
 processed) is a string containing:
 .begbull $compact
 .bull
@@ -60,7 +64,9 @@ an optional 'e' or 'E' followed by an optionally signed sequence of
 digits.
 .endbull
 .np
-A hexadecimal floating-point number recognized by &func (after optional sign
+A hexadecimal floating-point number recognized by
+.id &func.
+(after optional sign
 was processed) is a string containing:
 .begbull $compact
 .bull
@@ -102,12 +108,16 @@ is not
 By comparing the "end" pointer with
 .arg ptr
 .ct , it can be determined how much of the string, if any, was scanned by
-the &func function.
+the
+.id &func.
+function.
 .im widefunc
 .desc end
 .*
 .return begin
-The &func function returns the converted value, if any. If no conversion
+The
+.id &func.
+function returns the converted value, if any. If no conversion
 could be performed, zero is returned.
 If the correct value would cause overflow, plus or minus
 .kw HUGE_VAL

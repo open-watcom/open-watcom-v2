@@ -6,13 +6,17 @@ wint_t btowc( int c );
 .synop end
 .*
 .desc begin
-The &func function determines whether
+The
+.id &func.
+function determines whether
 .arg c
 is a valid single-byte character in the initial shift state.
 .desc end
 .*
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .mono WEOF
 if
 .arg c
@@ -21,7 +25,9 @@ has the value
 or if
 .arg (unsigned char)c
 does not constitute a valid single-byte character in the initial
-shift state. Otherwise, &func returns the wide character representation of
+shift state. Otherwise,
+.id &func.
+returns the wide character representation of
 that character. 
 .return end
 .*

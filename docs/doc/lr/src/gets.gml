@@ -12,7 +12,9 @@ wchar_t *_getws( wchar_t *buf );
 .do end
 .synop end
 .desc begin
-The &func function gets a string of characters from the file
+The
+.id &func.
+function gets a string of characters from the file
 designated by
 .kw stdin
 and stores them in the array pointed to by
@@ -22,7 +24,11 @@ Any new-line character is discarded, and a null character is placed
 immediately after the last character read into the array.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it gets a string
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it gets a string
 of multibyte characters (if present) from the input stream pointed to
 by
 .kw stdin
@@ -35,7 +41,9 @@ character is read.
 .np
 It is recommended that
 .kw fgets
-be used instead of &func because data beyond the array
+be used instead of
+.id &func.
+because data beyond the array
 .arg buf
 will be destroyed if a new-line character is not read from the input stream
 .kw stdin
@@ -49,7 +57,9 @@ A new-line character may not appear as the last character in a file,
 just before end-of-file.
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg buf
 if successful.
 .mono NULL

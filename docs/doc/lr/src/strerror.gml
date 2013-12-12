@@ -15,17 +15,25 @@ wchar_t *wcserror( int errnum );
 .safealt
 .*
 .desc begin
-The &func function maps the error number contained in
+The
+.id &func.
+function maps the error number contained in
 .arg errnum
 to an error message.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that the message it
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that the message it
 points to is a wide-character string.
 .do end
 .desc end
 .return begin
-The &func function returns a pointer to the error message.
+The
+.id &func.
+function returns a pointer to the error message.
 The array containing the error string should not be modified by the
 program.
 This array may be overwritten by a subsequent call to the &func

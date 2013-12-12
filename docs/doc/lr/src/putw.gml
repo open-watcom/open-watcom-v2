@@ -5,24 +5,34 @@ int _putw( int binint, FILE *fp );
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function writes a binary value of type
+The
+.id &func.
+function writes a binary value of type
 .us int
 to the current position of the stream
 .arg fp
 .ct .li .
-&func does not affect the alignment of items in the stream, nor does
+.id &func.
+does not affect the alignment of items in the stream, nor does
 it assume any special alignment.
 .np
-&func is provided primarily for compatibility with previous libraries.
-Portability problems may occur with &func because the size of an
+.id &func.
+is provided primarily for compatibility with previous libraries.
+Portability problems may occur with
+.id &func.
+because the size of an
 .us int
 and the ordering of bytes within an
 .us int
 differ across systems.
 .desc end
 .return begin
-The &func function returns the value written or, if a write error
-occurs, the error indicator is set and &func returns
+The
+.id &func.
+function returns the value written or, if a write error
+occurs, the error indicator is set and
+.id &func.
+returns
 .kw EOF
 .ct .li .
 Since

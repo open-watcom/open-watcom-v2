@@ -7,7 +7,9 @@ unsigned _dos_setblock( unsigned size,
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x4A to change the size of
+The
+.id &func.
+function uses system call 0x4A to change the size of
 .arg segment
 .ct , which was previously allocated by
 .kw _dos_allocmem
@@ -23,7 +25,9 @@ For 32-bit DOS applications, it is recommended that the corresponding
 DPMI services be used.
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 to

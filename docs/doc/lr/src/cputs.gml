@@ -5,7 +5,9 @@ int cputs( const char *buf );
 .ixfunc2 '&KbIo' &func
 .synop end
 .desc begin
-The &func function writes the character string pointed to by
+The
+.id &func.
+function writes the character string pointed to by
 .arg buf
 directly to the console using the
 .kw putch

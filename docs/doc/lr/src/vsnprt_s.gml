@@ -39,7 +39,9 @@ specifier (modified or not by flags, field width, or precision) shall not
 appear in the string pointed to by
 .arg format
 .ct .li .
-Any argument to &func corresponding to a
+Any argument to
+.id &func.
+corresponding to a
 .mono %s
 specifier shall not be a null pointer. No encoding error shall occur.
 .np
@@ -49,24 +51,34 @@ is not a null pointer and
 .arg n
 is greater than zero and less than
 .mono RSIZE_MAX,
-then the &func function sets
+then the
+.id &func.
+function sets
 .arg s[0]
 to the null character.
 .rtconst end
 .*
 .desc begin
-The &func function is equivalent to the
+The
+.id &func.
+function is equivalent to the
 .kw vsnprintf
 function except for the explicit runtime-constraints listed above.
 .np
-The &func function, unlike
+The
+.id &func.
+function, unlike
 .kw vsprintf_s
 .ct , will truncate the result to fit within the array pointed to by
 .arg s
 .ct .li .
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument for
 .arg format
 and produces wide character output.
@@ -74,7 +86,9 @@ and produces wide character output.
 .desc end
 .*
 .return begin
-The &func function returns the number of characters that would have been
+The
+.id &func.
+function returns the number of characters that would have been
 written had
 .arg n 
 been sufficiently large, not counting the terminating null character, or a
@@ -85,7 +99,9 @@ returned value is nonnegative and less than
 .ct .li .
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &func function returns the number of wide characters that would have been
+The
+.id &func.
+function returns the number of wide characters that would have been
 written had
 .arg n 
 been sufficiently large, not counting the terminating wide null character, or
@@ -102,7 +118,9 @@ returned value is nonnegative and less than
 .*
 .exmp begin
 .blktext begin
-The following shows the use of &func in a general error message routine.
+The following shows the use of
+.id &func.
+in a general error message routine.
 .blktext end
 .blkcode begin
 #define __STDC_WANT_LIB_EXT1__ 1

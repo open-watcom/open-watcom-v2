@@ -13,10 +13,16 @@ FJSTRING __far _fjstrstr( const JCHAR __far *str,
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function locates
+The
+.id &func.
+function locates
 .do end
 .el .do begin
-The &func and &ffunc functions locate
+The
+.id &func.
+and
+.id &ffunc.
+functions locate
 .do end
 the first occurrence in the Kanji string pointed to by
 .arg str
@@ -28,10 +34,16 @@ terminating null character) in the Kanji string pointed to by
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 a pointer to the located string, or
 .mono NULL

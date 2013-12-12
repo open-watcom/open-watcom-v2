@@ -9,7 +9,9 @@ int _read( int &fd, void *buffer, unsigned len );
 .do end
 .synop end
 .desc begin
-The &func function reads data at the operating system level.
+The
+.id &func.
+function reads data at the operating system level.
 The number of bytes transmitted is given by
 .arg len
 and the data is transmitted starting at the address specified by
@@ -46,12 +48,18 @@ carriage return character removed before each linefeed character
 encountered in the original data.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .desc end
 .return begin
-The &func function returns the number of bytes of data transmitted
+The
+.id &func.
+function returns the number of bytes of data transmitted
 from the file to the
 buffer (this does not include any carriage-return characters that were
 removed during the transmission).

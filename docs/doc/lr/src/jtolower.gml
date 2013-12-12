@@ -5,7 +5,9 @@ JMOJI jtolower( JMOJI c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function converts a double-byte uppercase character to an
+The
+.id &func.
+function converts a double-byte uppercase character to an
 equivalent double-byte lowercase character.
 A double-byte uppercase character is any character for which the
 following expression is true:
@@ -14,7 +16,9 @@ following expression is true:
 .millust end
 .desc end
 .return begin
-The &func function returns the argument value if the argument is not a
+The
+.id &func.
+function returns the argument value if the argument is not a
 double-byte uppercase character;
 otherwise, the equivalent lowercase character is returned.
 .return end

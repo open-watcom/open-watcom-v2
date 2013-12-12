@@ -22,7 +22,9 @@ function is called to release the memory pointed to by
 .arg old_blk
 .ct .li .
 .np
-Otherwise, the &func function re-allocates space for an object of
+Otherwise, the
+.id &func.
+function re-allocates space for an object of
 .arg size
 bytes by either:
 .begbull
@@ -79,7 +81,9 @@ was your only pointer to the memory block then you will have
 lost access to this memory.
 .desc end
 .return begin
-The &func function returns a pointer to the start of the re-allocated
+The
+.id &func.
+function returns a pointer to the start of the re-allocated
 memory.
 The return value is
 .mono NULL
@@ -152,7 +156,9 @@ function is called to release the memory pointed to by
 .arg old_blk
 .ct .li .
 .np
-Otherwise, the &func function re-allocates space for an object of
+Otherwise, the
+.id &func.
+function re-allocates space for an object of
 .arg size
 bytes by either:
 .begbull
@@ -222,15 +228,21 @@ Far heap (outside the default data segment)
 Near heap (inside the default data segment)
 .endterm
 .np
-In a small data memory model, the &func function is equivalent to the
+In a small data memory model, the
+.id &func.
+function is equivalent to the
 .kw _nrealloc
-function; in a large data memory model, the &func function is
+function; in a large data memory model, the
+.id &func.
+function is
 equivalent to the
 .kw _frealloc
 function.
 .desc end
 .return begin
-The &func functions return a pointer to the start of the re-allocated
+The
+.id &func.
+functions return a pointer to the start of the re-allocated
 memory.
 The return value is
 .mono NULL

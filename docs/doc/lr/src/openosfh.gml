@@ -4,13 +4,17 @@
 int _open_osfhandle( long osfhandle, int access );
 .synop end
 .desc begin
-The &func function allocates a POSIX-level file handle and sets it to
+The
+.id &func.
+function allocates a POSIX-level file handle and sets it to
 point to the operating system's internal file handle specified by
 .arg osfhandle
 .ct .li .
 The value returned by
 .kw _get_osfhandle
-can be used as an argument to the &func function.
+can be used as an argument to the
+.id &func.
+function.
 .im openacc
 .np
 When two or more manifest constants are used to form the
@@ -19,7 +23,9 @@ argument, the constants are combined with the bitwise-OR operator (|).
 .np
 The example below demonstrates the use of the
 .kw _get_osfhandle
-and &func functions.
+and
+.id &func.
+functions.
 Note that the example shows how the
 .kw dup2
 function can be used to obtain almost identical functionality.
@@ -34,7 +40,9 @@ at the right time, i.e., after all I/O operations are completed to the
 file.
 .desc end
 .return begin
-If successful, &func returns a POSIX-style file handle.
+If successful,
+.id &func.
+returns a POSIX-style file handle.
 Otherwise, it returns -1.
 .return end
 .see begin

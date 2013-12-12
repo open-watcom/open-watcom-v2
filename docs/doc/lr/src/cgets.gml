@@ -16,7 +16,9 @@ must contain the maximum length in characters of the string to be read.
 The array must be big enough to hold the string, a terminating null
 character, and two additional bytes.
 .pp
-The &func function reads characters until a
+The
+.id &func.
+function reads characters until a
 .if '&machsys' eq 'QNX' .do begin
 newline character
 .do end
@@ -40,7 +42,9 @@ The actual length of the string read is placed in
 .ct .li .
 .desc end
 .return begin
-The &func function returns a pointer to the start of the string
+The
+.id &func.
+function returns a pointer to the start of the string
 which is at
 .arg buf[2]
 .ct .li .

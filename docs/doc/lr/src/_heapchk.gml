@@ -20,13 +20,17 @@ int _fheapchk( void );
 int _nheapchk( void );
 .synop end
 .desc begin
-The &func functions along with
+The
+.id &func.
+functions along with
 .kw _heapset
 and
 .kw _heapwalk
 are provided for debugging heap related problems in programs.
 .np
-The &func functions perform a consistency check on the unallocated
+The
+.id &func.
+functions perform a consistency check on the unallocated
 memory space or "heap".
 The consistency check determines whether all the heap entries are valid.
 Each function checks a particular heap, as listed below:
@@ -47,9 +51,13 @@ Far heap (outside the default data segment)
 Near heap (inside the default data segment)
 .endterm
 .np
-In a small data memory model, the &func function is equivalent to the
+In a small data memory model, the
+.id &func.
+function is equivalent to the
 .kw _nheapchk
-function; in a large data memory model, the &func function is
+function; in a large data memory model, the
+.id &func.
+function is
 equivalent to the
 .kw _fheapchk
 function.

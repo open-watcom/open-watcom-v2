@@ -13,7 +13,9 @@ unsigned char __far *_fmbsnbset( unsigned char __far *str,
 .do end
 .synop end
 .desc begin
-The &func function fills the string
+The
+.id &func.
+function fills the string
 .arg str
 with the value of the argument
 .arg fill
@@ -24,7 +26,8 @@ is greater than the length of the string, the entire string is filled.
 Otherwise, that number of characters at the start of the string are set
 to the fill character.
 .np
-&func is similar to
+.id &func.
+is similar to
 .kw _mbsnset
 .ct , except that it fills in
 .arg count

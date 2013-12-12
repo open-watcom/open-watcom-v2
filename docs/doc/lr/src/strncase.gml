@@ -8,7 +8,9 @@ int strncasecmp( const char *s1,
 .ixfunc2 '&Compare' &func
 .synop end
 .desc begin
-The &func function compares, without case sensitivity, the string
+The
+.id &func.
+function compares, without case sensitivity, the string
 pointed to by
 .arg s1
 to the string pointed to by
@@ -17,12 +19,16 @@ to the string pointed to by
 .arg len
 characters.
 .np
-The &func function is identical to the
+The
+.id &func.
+function is identical to the
 .kw strnicmp
 function.
 .desc end
 .return begin
-The &func function returns an integer less than, equal to, or greater
+The
+.id &func.
+function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1
 is, ignoring case, less than, equal to, or greater than the string pointed

@@ -1,4 +1,5 @@
 .gfuncw floodfill
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _floodfill( short x, short y,
                        short stop_color );
@@ -15,11 +16,17 @@ integer*2 function _floodfill_w( x, y, stop_color )
 double precision x, y
 integer*2 stop_color
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines fill an area of the screen.
-The &func &routine uses the view coordinate system.
-The &func2 &routine uses the window coordinate system.
+The
+.id &func.
+&routines fill an area of the screen.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+&routine uses the window coordinate system.
 .np
 The filling starts at the point
 .coord x y
@@ -62,7 +69,9 @@ is the current color.
 .* .im gr_fillm
 .desc end
 .return begin
-The &func &routines return zero
+The
+.id &func.
+&routines return zero
 when no filling takes place; a non-zero
 value is returned to indicate that filling has occurred.
 .return end

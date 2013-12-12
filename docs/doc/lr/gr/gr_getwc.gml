@@ -1,4 +1,5 @@
 .gfunc getwindowcoord
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct _wxycoord _FAR _getwindowcoord( short x, short y );
 .do end
@@ -6,9 +7,11 @@ struct _wxycoord _FAR _getwindowcoord( short x, short y );
 record /_wxycoord/ function _getwindowcoord( x, y )
 integer*2 x, y
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the window coordinates
+The
+.id &func.
+&routine returns the window coordinates
 of the position with view coordinates
 .coord x y .
 Window coordinates are defined by the
@@ -16,7 +19,9 @@ Window coordinates are defined by the
 &routine..
 .desc end
 .return begin
-The &func &routine returns the window coordinates,
+The
+.id &func.
+&routine returns the window coordinates,
 as a
 .id _wxycoord
 structure,

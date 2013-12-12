@@ -9,7 +9,9 @@ size_t far _fmbclen( const unsigned char __far *ch );
 .do end
 .synop end
 .desc begin
-The &func function determines the number of bytes comprising the
+The
+.id &func.
+function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg ch
 .ct .li .
@@ -18,12 +20,16 @@ multibyte character pointed to by
 .return begin
 If
 .arg ch
-is a NULL pointer, the &func function returns zero if multibyte
+is a NULL pointer, the
+.id &func.
+function returns zero if multibyte
 character encodings do not have state-dependent encoding, and non-zero
 otherwise.
 If
 .arg ch
-is not a NULL pointer, the &func function returns:
+is not a NULL pointer, the
+.id &func.
+function returns:
 .begnote $setptnt 6
 .termhd1 Value
 .termhd2 Meaning

@@ -6,14 +6,18 @@ void jperror( const char *prefix );
 .ixfunc2 '&Errs' &func
 .synop end
 .desc begin
-The &func function prints, on the file designated by
+The
+.id &func.
+function prints, on the file designated by
 .kw stderr
 .ct,
 the Kanji error message corresponding to the error number
 contained in
 .kw errno
 .ct .li .
-The &func function is implemented as follows:
+The
+.id &func.
+function is implemented as follows:
 .millust begin
 #include <stdio.h>
 void jperror( const char *prefix )
@@ -28,7 +32,9 @@ void jperror( const char *prefix )
 .millust end
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 Because the function uses the
 .kw fprintf
 function,

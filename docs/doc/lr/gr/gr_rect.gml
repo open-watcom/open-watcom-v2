@@ -1,4 +1,5 @@
 .gfuncwxy rectangle
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _rectangle( short fill,
                        short x1, short y1,
@@ -27,11 +28,19 @@ integer*2 function _rectangle_wxy( fill, p1, p2 )
 integer*2 fill
 record /_wxycoord/ p1, p2
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines draw rectangles.
-The &func &routine uses the view coordinate system.
-The &func2 and &func3 &routines use the window coordinate system.
+The
+.id &func.
+&routines draw rectangles.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+and
+.id &func3.
+&routines use the window coordinate system.
 .np
 The rectangle is defined with opposite corners
 established by the points

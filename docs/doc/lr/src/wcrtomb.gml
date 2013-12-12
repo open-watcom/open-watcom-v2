@@ -16,14 +16,18 @@ int _fwcrtomb( char __far *s, wchar_t wc, mbstate_t __far *ps );
 .desc begin
 If
 .arg s
-is a null pointer, the &func function determines the number of bytes
+is a null pointer, the
+.id &func.
+function determines the number of bytes
 necessary to enter the initial shift state (zero if encodings are not
 state-dependent or if the initial conversion state is described).
 The resulting state described will be the initial conversion state.
 .np
 If
 .arg s
-is not a null pointer, the &func function determines the number of
+is not a null pointer, the
+.id &func.
+function determines the number of
 bytes needed to represent the multibyte character that corresponds
 to the wide character given by
 .arg wc
@@ -44,7 +48,9 @@ initial conversion state.
 .return begin
 If
 .arg s
-is a null pointer, the &func function returns the number of bytes
+is a null pointer, the
+.id &func.
+function returns the number of bytes
 necessary to enter the initial shift state.
 The value returned will not be greater than that of the
 .kw MB_CUR_MAX
@@ -52,7 +58,9 @@ macro.
 .np
 If
 .arg s
-is not a null pointer, the &func function returns the number of bytes
+is not a null pointer, the
+.id &func.
+function returns the number of bytes
 stored in the array object (including any shift sequences) when
 .arg wc
 is a valid wide character; otherwise (when

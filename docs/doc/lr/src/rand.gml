@@ -5,7 +5,9 @@ int rand( void );
 .ixfunc2 'Random Numbers' &func
 .synop end
 .desc begin
-The &func function computes a sequence of pseudo-random integers in
+The
+.id &func.
+function computes a sequence of pseudo-random integers in
 the range 0 to
 .kw RAND_MAX
 (32767).
@@ -14,7 +16,9 @@ The sequence can be started at different values by calling the
 function.
 .desc end
 .return begin
-The &func function returns a pseudo-random integer.
+The
+.id &func.
+function returns a pseudo-random integer.
 .return end
 .see begin
 .seelist rand srand

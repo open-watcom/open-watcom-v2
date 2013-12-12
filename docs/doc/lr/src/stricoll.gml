@@ -20,7 +20,9 @@ int _mbsicoll( const unsigned char *s1, const unsigned char *s2 );
 .do end
 .synop end
 .desc begin
-The &func function performs a case insensitive comparison of the
+The
+.id &func.
+function performs a case insensitive comparison of the
 string pointed to by
 .arg s1
 to the string pointed to by

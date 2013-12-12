@@ -19,7 +19,9 @@ size_t _fwcsrtombs( char __far *dst,
 .safealt
 .*
 .desc begin
-The &func function converts a sequence of wide characters from the
+The
+.id &func.
+function converts a sequence of wide characters from the
 array indirectly pointed to by
 .arg src
 into a sequence of corresponding multibyte characters that begins
@@ -63,7 +65,9 @@ initial conversion state.
 .desc end
 .return begin
 If the first code is not a valid wide character, an encoding error
-occurs: The &func function stores the value of the macro
+occurs: The
+.id &func.
+function stores the value of the macro
 .kw EILSEQ
 in
 .kw errno

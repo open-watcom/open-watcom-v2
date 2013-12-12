@@ -18,7 +18,9 @@ If there is a runtime-constraint violation, there is no attempt to convert the t
 .rtconst end
 .*
 .desc begin
-The &func function converts the calendar time pointed to by
+The
+.id &func.
+function converts the calendar time pointed to by
 .arg timer
 into a broken-down time, expressed as UTC. The broken-down time is stored in
 the structure pointed to by
@@ -27,7 +29,9 @@ the structure pointed to by
 .desc end
 .*
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg result
 .ct , or a null pointer if the specified time cannot
 be converted to UTC or there is a runtime-constraint violation.

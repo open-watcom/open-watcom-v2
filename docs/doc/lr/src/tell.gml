@@ -12,7 +12,9 @@ __int64 _telli64( int &fd );
 .synop end
 .*
 .desc begin
-The &func function reports the current file position at the operating
+The
+.id &func.
+function reports the current file position at the operating
 system level.
 The
 .arg &fd
@@ -25,11 +27,17 @@ The returned value may be used in conjunction with the
 function to reset the current file position.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .np
-The &_func64 function is similar to the &func function but returns a
+The &_func64 function is similar to the
+.id &func.
+function but returns a
 64-bit file position.
 This value may be used in conjunction with the
 .kw _lseeki64
@@ -37,7 +45,9 @@ function to reset the current file position.
 .desc end
 .*
 .return begin
-If an error occurs in &func, (&minus.1L) is returned.
+If an error occurs in
+.id &func.
+(&minus.1L) is returned.
 .np
 If an error occurs in &_func64, (&minus.1I64) is returned.
 .np

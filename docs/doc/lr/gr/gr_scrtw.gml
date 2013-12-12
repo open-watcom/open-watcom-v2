@@ -1,4 +1,5 @@
 .gfunc scrolltextwindow
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _scrolltextwindow( short rows );
 .do end
@@ -6,9 +7,11 @@ void _FAR _scrolltextwindow( short rows );
 subroutine _scrolltextwindow( rows )
 integer*2 rows
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine scrolls the lines in the current text window.
+The
+.id &func.
+&routine scrolls the lines in the current text window.
 A text window is defined with the
 .kw _settextwindow
 &routine..
@@ -26,7 +29,9 @@ is equivalent to clearing the text window with the
 .kw _clearscreen
 &routine..
 .np
-Two constants are defined that can be used with the &func &routine:
+Two constants are defined that can be used with the
+.id &func.
+&routine:
 .begterm 15
 .uterm GSCROLLUP
 the contents of the text window are scrolled up (towards the top of the
@@ -38,7 +43,9 @@ screen) by one row
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

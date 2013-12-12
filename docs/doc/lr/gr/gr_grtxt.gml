@@ -1,4 +1,5 @@
 .gfuncw grtext
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _grtext( short x, short y,
                     char _FAR *text );
@@ -15,11 +16,17 @@ integer*2 function _grtext_w( x, y, text )
 double precision x, y
 character*(*) text
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines display a character string.
-The &func &routine uses the view coordinate system.
-The &func2 &routine uses the window coordinate system.
+The
+.id &func.
+&routines display a character string.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+&routine uses the window coordinate system.
 .np
 The character string
 .arg text

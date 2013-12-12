@@ -6,7 +6,9 @@ char *getcmd( char *cmd_line );
 .ixfunc2 '&Direct' &func
 .synop end
 .desc begin
-The &func function causes the command line information, with the program
+The
+.id &func.
+function causes the command line information, with the program
 name removed, to be copied to
 .arg cmd_line
 .ct .li .

@@ -5,13 +5,17 @@ int chkctype( JCHAR c, int mode );
 .ixfunc2 '&Jstring' &func
 .synop end
 .desc begin
-The &func function identifies the type of an 8-bit character.
+The
+.id &func.
+function identifies the type of an 8-bit character.
 .np
 If
 .arg mode
 is not
 .kw CT_KJ1
-then &func identifies whether
+then
+.id &func.
+identifies whether
 .arg c
 is the first byte of a double-byte Kanji character.
 If
@@ -31,7 +35,9 @@ If
 .arg mode
 is
 .kw CT_KJ1
-then &func identifies whether
+then
+.id &func.
+identifies whether
 .arg c
 is the second byte of a double-byte Kanji character.
 If
@@ -52,7 +58,8 @@ function identifies the type of the n'th byte of a Kanji string.
 If
 .arg c
 is a null character,
-&func returns
+.id &func.
+returns
 .kw CT_ILGL
 .ct .li .
 In all other cases, it returns one of

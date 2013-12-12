@@ -1,4 +1,5 @@
 .gfunc getfillmask
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 unsigned char _FAR * _FAR
     _getfillmask( unsigned char _FAR *mask );
@@ -7,9 +8,11 @@ unsigned char _FAR * _FAR
 subroutine _getfillmask( mask )
 integer*1 mask(8)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine copies the current fill mask into the area
+The
+.id &func.
+&routine copies the current fill mask into the area
 located by the argument
 .arg mask
 .ct .li .
@@ -32,7 +35,9 @@ and
 If no fill mask has been set,
 .id NULL
 is returned; otherwise,
-the &func &routine returns
+the
+.id &func.
+&routine returns
 .arg mask
 .ct .li .
 .return end

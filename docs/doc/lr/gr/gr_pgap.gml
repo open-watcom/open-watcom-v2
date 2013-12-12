@@ -1,4 +1,5 @@
 .gfunc pg_analyzepie
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_analyzepie( chartenv _FAR *env,
                            char _FAR * _FAR *cat,
@@ -13,9 +14,11 @@ integer*4 cat(*)
 real values(*)
 integer*2 explode(*), n
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine analyzes a pie chart.
+The
+.id &func.
+&routine analyzes a pie chart.
 This &routine calculates default values for chart elements without
 actually displaying the chart.
 .pp
@@ -33,7 +36,9 @@ The arguments are the same as for the
 &routine..
 .desc end
 .return begin
-The &func &routine returns zero
+The
+.id &func.
+&routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin

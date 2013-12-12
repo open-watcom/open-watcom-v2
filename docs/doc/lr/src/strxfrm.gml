@@ -17,7 +17,9 @@ size_t wcsxfrm( wchar_t *dst,
 .do end
 .synop end
 .desc begin
-The &func function transforms, for no more than
+The
+.id &func.
+function transforms, for no more than
 .arg n
 characters, the string pointed to by
 .arg src
@@ -53,11 +55,16 @@ with the two transformed strings yields results identical to those of a
 call to
 .kw wcscoll
 applied to the original two strings.
-&wfunc and &func behave identically otherwise.
+.id &wfunc.
+and
+.id &func.
+behave identically otherwise.
 .do end
 .desc end
 .return begin
-The &func function returns the length of the transformed string.
+The
+.id &func.
+function returns the length of the transformed string.
 If this length is more than
 .arg n
 .ct , the contents of the array pointed to by

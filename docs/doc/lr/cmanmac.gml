@@ -140,6 +140,7 @@
 .   .sr *i=1
 .   .pe &__fnx.
 .   .   .if '&funcgrp.' ne '&$$fnc(&*i.)' .ixm '&$$fnc(&*i.)';.sr *i=&*i.+1
+.   .sr function=&func.
 .do end
 .dm func end
 .*
@@ -178,54 +179,6 @@
 .do end
 .dm ixfunc2 end
 .*
-.*  final processing for functions
-.*
-.dm funcend begin
-.endcode
-.if &'length(&_func.) ne 0 .do begin
-.   :set symbol="_func" value=";.sf4 &_func.;.esf ".
-.do end
-.if &'length(&_func64.) ne 0 .do begin
-.   :set symbol="_func64" value=";.sf4 &_func64.;.esf ".
-.do end
-.if &'length(&__func.) ne 0 .do begin
-.   :set symbol="__func" value=";.sf4 &__func.;.esf ".
-.do end
-.if &'length(&ffunc.) ne 0 .do begin
-.   :set symbol="ffunc" value=";.sf4 &ffunc.;.esf ".
-.do end
-.if &'length(&wfunc.) ne 0 .do begin
-.   :set symbol="wfunc" value=";.sf4 &wfunc.;.esf ".
-.do end
-.if &'length(&wfunc64.) ne 0 .do begin
-.   :set symbol="wfunc64" value=";.sf4 &wfunc64.;.esf ".
-.do end
-.if &'length(&fwfunc.) ne 0 .do begin
-.   :set symbol="fwfunc" value=";.sf4 &fwfunc.;.esf ".
-.do end
-.if &'length(&mfunc.) ne 0 .do begin
-.   :set symbol="mfunc" value=";.sf4 &mfunc.;.esf ".
-.do end
-.if &'length(&fmfunc.) ne 0 .do begin
-.   :set symbol="fmfunc" value=";.sf4 &fmfunc.;.esf ".
-.do end
-.if &'length(&mathfunc.) ne 0 .do begin
-.   :set symbol="mathfunc" value=";.sf4 &mathfunc.;.esf ".
-.do end
-.if &'length(&fmathfunc.) ne 0 .do begin
-.   :set symbol="fmathfunc" value=";.sf4 &fmathfunc.;.esf ".
-.do end
-.if &'length(&lmathfunc.) ne 0 .do begin
-.   :set symbol="lmathfunc" value=";.sf4 &lmathfunc.;.esf ".
-.do end
-.sr function=&func.
-:set symbol="func" value=";.sf4 &func.;.esf ".
-.dm funcend end
-.*
-.dm funcbold begin
-:set symbol="func" value=";.sf2 &*;.esf "
-.dm funcbold end
-.*
 .dm desc begin
 .if '&*' eq 'begin' .newtext Description:
 .el .if '&*' eq 'end' .oldtext
@@ -243,11 +196,11 @@
 .*
 .dm synop begin
 .if '&*' eq 'begin' .do begin
-.cp 5
-.newcode Synopsis:
+.   .cp 5
+.   .newcode Synopsis:
 .do end
 .el .if '&*' eq 'end' .do begin
-.   .funcend
+.   .endcode
 .do end
 .dm synop end
 .*
@@ -312,7 +265,7 @@ contains a value indicating the type of error that has been detected.
 :DTHD.&*
 .do end
 .el .do begin
-:cmt. :ZDT.:SF font=2.&*:eSF.
+:cmt.   :ZDT.:SF font=2.&*:eSF.
 .sr termhd1$='&*'
 .do end
 .dm termhd1 end
@@ -322,7 +275,7 @@ contains a value indicating the type of error that has been detected.
 :DDHD.&*
 .do end
 .el .do begin
-:cmt. :ZDD.:SF font=2.&*:eSF.
+:cmt.   :ZDD.:SF font=2.&*:eSF.
 :ZDT.&termhd1$.~b~b~b~b~b&*
 .do end
 .dm termhd2 end
@@ -382,6 +335,10 @@ Prototype in
 :SF font=1.&*:eSF.
 .dm arg end
 .*
+.dm idbold begin
+:SF font=2.&*:eSF.
+.dm idbold end
+.*
 .dm clitm begin
 .if |&*| ne || .do begin
 .   .if &clitmc eq 0 .do begin
@@ -404,116 +361,96 @@ Prototype in
 .dm class begin
 .sr *extr=0
 .if |&*1| ne |end| .do begin
-.if |&*1| eq |begin| .sr __class=&*2
-.el .sr __class=&*1
-.listnew Classification:
-.if &'length(&func.) ne 0 .do begin
-.   :set symbol="func" value="&'translate("&func.",' ',';')".
-.   :set symbol="func" value="&'word("&func.",2)".
-.do end
-.if &'length(&_func.) ne 0 .do begin
-.   :set symbol="_func" value="&'translate("&_func.",' ',';')".
-.   :set symbol="_func" value="&'word("&_func.",2)".
-.   .if '&_func.' ne '&func.' :set symbol="*extr" value=1.
-.do end
-.if &'length(&_func64.) ne 0 .do begin
-.   :set symbol="_func64" value="&'translate("&_func64.",' ',';')".
-.   :set symbol="_func64" value="&'word("&_func64.",2)".
-.   .if '&_func64.' ne '&func.' :set symbol="*extr" value=1.
-.do end
-.if &'length(&__func.) ne 0 .do begin
-.   :set symbol="__func" value="&'translate("&__func.",' ',';')".
-.   :set symbol="__func" value="&'word("&__func.",2)".
-.   .if '&__func.' ne '&func.' :set symbol="*extr" value=1.
-.do end
-.if &'length(&ffunc.) ne 0 .do begin
-.   :set symbol="ffunc" value="&'translate("&ffunc.",' ',';')".
-.   :set symbol="ffunc" value="&'word("&ffunc.",2)".
-.   .if '&ffunc.' ne '&func.' :set symbol="*extr" value=1.
-.do end
-.if &'length(&wfunc.) ne 0 .do begin
-.   :set symbol="wfunc" value="&'translate("&wfunc.",' ',';')".
-.   :set symbol="wfunc" value="&'word("&wfunc.",2)".
-.   .if '&wfunc.' ne '&func.' :set symbol="*extr" value=1.
-.do end
-.if &'length(&wfunc64.) ne 0 .do begin
-.   :set symbol="wfunc64" value="&'translate("&wfunc64.",' ',';')".
-.   :set symbol="wfunc64" value="&'word("&wfunc64.",2)".
-.   .if '&wfunc64.' ne '&func.' :set symbol="*extr" value=1.
-.do end
-.if &'length(&mfunc.) ne 0 .do begin
-.   :set symbol="mfunc" value="&'translate("&mfunc.",' ',';')".
-.   :set symbol="mfunc" value="&'word("&mfunc.",2)".
-.   .if '&mfunc.' ne '&func.' :set symbol="*extr" value=1.
-.do end
-.if &'length(&fmfunc.) ne 0 .do begin
-.   :set symbol="fmfunc" value="&'translate("&fmfunc.",' ',';')".
-.   :set symbol="fmfunc" value="&'word("&fmfunc.",2)".
-.   .if '&fmfunc.' ne '&func.' :set symbol="*extr" value=1.
-.do end
-.if |&*1| eq |begin| .sr *all=&'strip(&'substr(&*,6),'L',' ')
-.el .sr *all=&*
-.if &*extr eq 0 .do begin
-&*all
-.do end
-.el .if |&*all| eq |WATCOM| .do begin
-&*all
-.do end
-.el .if &'words(|&*all|) gt 6 .do begin
-&*all
-.do end
-.el .do begin
-.   .sr clitmc=0
-.   .clitm &function. is &*all
-.   .if |&*1| eq |begin| .sr *first=&*2
-.   .el .sr *first=&*1
-.   .if |&*first| eq |ISO| OR |&*first| eq |TR| .do begin
-.   .   .sr *cls=&'strip(&*all,'T',',')
-.   .   .if |&*all| eq |ISO C90| .do begin
-.   .   .   .sr *wcls='ISO C95'
-.   .   .do end
-.   .   .el .do begin
-.   .   .   .sr *wcls=&'strip(&*all,'T',',')
-.   .   .do end
-.   .do end
-.   .el .do begin
-.   .   .sr *cls=&'strip(&*first,'T',',')
-.   .   .sr *wcls=&'strip(&*first,'T',',')
-.   .do end
+.   .if |&*1| eq |begin| .sr __class=&*2
+.   .el .sr __class=&*1
+.   .listnew Classification:
 .   .if &'length(&_func.) ne 0 .do begin
-.   .   .clitm &_func. is not &*cls
+.   .   .if '&_func.' ne '&func.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&_func64.) ne 0 .do begin
-.   .   .clitm &_func64. is not &*cls
+.   .   .if '&_func64.' ne '&func.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&__func.) ne 0 .do begin
-.   .   .clitm &__func. is not &*cls
+.   .   .if '&__func.' ne '&func.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&ffunc.) ne 0 .do begin
-.   .   .clitm &ffunc. is not &*cls
+.   .   .if '&ffunc.' ne '&func.' :set symbol="*extr" value=1.
 .   .do end
 .   .if &'length(&wfunc.) ne 0 .do begin
-.   .   .if "&'substr(&wfunc.,1,1)" eq "_" .do begin
-.   .   .   .clitm &wfunc. is not &*cls
+.   .   .if '&wfunc.' ne '&func.' :set symbol="*extr" value=1.
+.   .do end
+.   .if &'length(&wfunc64.) ne 0 .do begin
+.   .   .if '&wfunc64.' ne '&func.' :set symbol="*extr" value=1.
+.   .do end
+.   .if &'length(&mfunc.) ne 0 .do begin
+.   .   .if '&mfunc.' ne '&func.' :set symbol="*extr" value=1.
+.   .do end
+.   .if &'length(&fmfunc.) ne 0 .do begin
+.   .   .if '&fmfunc.' ne '&func.' :set symbol="*extr" value=1.
+.   .do end
+.   .if |&*1| eq |begin| .sr *all=&'strip(&'substr(&*,6),'L',' ')
+.   .el .sr *all=&*
+.   .if &*extr eq 0 .do begin
+&*all
+.   .do end
+.   .el .if |&*all| eq |WATCOM| .do begin
+&*all
+.   .do end
+.   .el .if &'words(|&*all|) gt 6 .do begin
+&*all
+.   .do end
+.   .el .do begin
+.   .   .sr clitmc=0
+.   .   .clitm &function. is &*all
+.   .   .if |&*1| eq |begin| .sr *first=&*2
+.   .   .el .sr *first=&*1
+.   .   .if |&*first| eq |ISO| OR |&*first| eq |TR| .do begin
+.   .   .   .sr *cls=&'strip(&*all,'T',',')
+.   .   .   .if |&*all| eq |ISO C90| .do begin
+.   .   .   .   .sr *wcls='ISO C95'
+.   .   .   .do end
+.   .   .   .el .do begin
+.   .   .   .   .sr *wcls=&'strip(&*all,'T',',')
+.   .   .   .do end
 .   .   .do end
 .   .   .el .do begin
-.   .   .   .if '&wfunc.' ne '&func.' .do begin
-.   .   .   .   .if '&wfunc.' ne '&function.' .do begin
-.   .   .   .   .   .clitm &wfunc. is &*wcls
+.   .   .   .sr *cls=&'strip(&*first,'T',',')
+.   .   .   .sr *wcls=&'strip(&*first,'T',',')
+.   .   .do end
+.   .   .if &'length(&_func.) ne 0 .do begin
+.   .   .   .clitm &_func. is not &*cls
+.   .   .do end
+.   .   .if &'length(&_func64.) ne 0 .do begin
+.   .   .   .clitm &_func64. is not &*cls
+.   .   .do end
+.   .   .if &'length(&__func.) ne 0 .do begin
+.   .   .   .clitm &__func. is not &*cls
+.   .   .do end
+.   .   .if &'length(&ffunc.) ne 0 .do begin
+.   .   .   .clitm &ffunc. is not &*cls
+.   .   .do end
+.   .   .if &'length(&wfunc.) ne 0 .do begin
+.   .   .   .if "&'substr(&wfunc.,1,1)" eq "_" .do begin
+.   .   .   .   .clitm &wfunc. is not &*cls
+.   .   .   .do end
+.   .   .   .el .do begin
+.   .   .   .   .if '&wfunc.' ne '&func.' .do begin
+.   .   .   .   .   .if '&wfunc.' ne '&function.' .do begin
+.   .   .   .   .   .   .clitm &wfunc. is &*wcls
+.   .   .   .   .   .do end
 .   .   .   .   .do end
 .   .   .   .do end
 .   .   .do end
+.   .   .if &'length(&wfunc64.) ne 0 .do begin
+.   .   .   .clitm &wfunc64. is not &*cls
+.   .   .do end
+.   .   .if &'length(&mfunc.) ne 0 .do begin
+.   .   .   .clitm &mfunc. is not &*cls
+.   .   .do end
+.   .   .if &'length(&fmfunc.) ne 0 .do begin
+.   .   .   .clitm &fmfunc. is not &*cls
+.   .   .do end
 .   .do end
-.   .if &'length(&wfunc64.) ne 0 .do begin
-.   .   .clitm &wfunc64. is not &*cls
-.   .do end
-.   .if &'length(&mfunc.) ne 0 .do begin
-.   .   .clitm &mfunc. is not &*cls
-.   .do end
-.   .if &'length(&fmfunc.) ne 0 .do begin
-.   .   .clitm &fmfunc. is not &*cls
-.   .do end
-.do end
 .do end
 .if |&*1| ne |begin| .do begin
 .   .listend

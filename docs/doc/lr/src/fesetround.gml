@@ -5,7 +5,9 @@ void fesetround( int mode );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function sets the current rounding mode, specified by
+The
+.id &func.
+function sets the current rounding mode, specified by
 .arg x
 .ct .li , for the current process.  The rounding mode can be one
 of the following constants:

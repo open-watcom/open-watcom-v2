@@ -5,7 +5,9 @@ void _chain_intr( void (__interrupt __far *func)() );
 .ixfunc2 '&CpuInt' &func
 .synop end
 .desc begin
-The &func function is used at the end of an interrupt routine to
+The
+.id &func.
+function is used at the end of an interrupt routine to
 start executing another interrupt handler (usually the previous
 handler for that interrupt).
 When the interrupt handler designated by
@@ -14,7 +16,9 @@ receives control, the stack and registers appear as though the
 interrupt just occurred.
 .desc end
 .return begin
-The &func function does not return.
+The
+.id &func.
+function does not return.
 .return end
 .see begin
 .seelist _chain_intr _dos_getvect _dos_keep _dos_setvect

@@ -13,13 +13,17 @@ wchar_t *fgetws( wchar_t *buf, int n, FILE *fp );
 .do end
 .synop end
 .desc begin
-The &func function gets a string of characters from the file
+The
+.id &func.
+function gets a string of characters from the file
 designated by
 .arg fp
 and stores them in the array pointed to by
 .arg buf
 .ct .li .
-The &func function stops reading characters when end-of-file is
+The
+.id &func.
+function stops reading characters when end-of-file is
 reached, or when a newline character is read, or when
 .arg n-1
 characters have been read, whichever comes first.
@@ -28,7 +32,11 @@ A null character is placed immediately after the last character
 read into the array.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it gets a string
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it gets a string
 of multibyte characters (if present) from the input stream pointed to
 by
 .arg fp
@@ -51,13 +59,17 @@ file, just before end-of-file.
 .np
 The
 .kw gets
-function is similar to &func except that it operates with
+function is similar to
+.id &func.
+except that it operates with
 .filename stdin
 .ct , it has no size argument, and it replaces a newline character
 with the null character.
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg buf
 if successful.
 .mono NULL

@@ -1,4 +1,5 @@
 .gfunc wrapon
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _wrapon( short wrap );
 .do end
@@ -6,9 +7,11 @@ short _FAR _wrapon( short wrap );
 integer*2 function _wrapon( wrap )
 integer*2 wrap
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine is used to control the display of text when
+The
+.id &func.
+&routine is used to control the display of text when
 the text output reaches the right side of the text window.
 This is text displayed with the
 .kw _outtext
@@ -26,7 +29,9 @@ causes lines to be truncated at the window border
 .endterm
 .desc end
 .return begin
-The &func &routine returns the previous setting for wrapping.
+The
+.id &func.
+&routine returns the previous setting for wrapping.
 .return end
 .see begin
 .seelist &function. _outtext _outmem _settextwindow

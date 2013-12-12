@@ -5,7 +5,9 @@ int fpclassify( x );
 .synop end
 .*
 .desc begin
-The &func macro classifies its argument
+The
+.id &func.
+macro classifies its argument
 .arg x
 as NaN, infinite, normal, subnormal, or zero.
 First, an argument represented in a format wider than its semantic
@@ -16,7 +18,9 @@ The argument
 .arg x
 must be an expression of real floating type.
 .np
-The possible return values of &func and their meanings are listed below.
+The possible return values of
+.id &func.
+and their meanings are listed below.
 .begterm 20
 .termhd1 Constant
 .termhd2 Meaning
@@ -39,7 +43,9 @@ positive or negative zero
 .desc end
 .*
 .return begin
-The &func macro returns the value of the number classification macro
+The
+.id &func.
+macro returns the value of the number classification macro
 appropriate to the value of its argument
 .arg x
 .ct .li .

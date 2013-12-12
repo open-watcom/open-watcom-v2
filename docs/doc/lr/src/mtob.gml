@@ -10,10 +10,16 @@ size_t far _fmtob( const unsigned char far *str, size_t nm );
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the number of bytes between the start of the Kanji string specified by
 .arg str
@@ -30,10 +36,16 @@ characters have been processed or a null character is encountered.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the number of bytes in the string up to the specified number of
 characters.

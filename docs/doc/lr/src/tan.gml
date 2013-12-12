@@ -6,13 +6,17 @@ double tan( double x );
 .ixfunc2 '&Trig' &func
 .synop end
 .desc begin
-The &func function computes the tangent of
+The
+.id &func.
+function computes the tangent of
 .arg x
 (measured in radians).
 A large magnitude argument may yield a result with little or no significance.
 .desc end
 .return begin
-The &func function returns the tangent value.
+The
+.id &func.
+function returns the tangent value.
 .im errnoref
 .return end
 .see begin

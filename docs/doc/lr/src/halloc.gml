@@ -5,7 +5,9 @@ void __huge *halloc( long int numb, size_t size );
 .ixfunc2 '&Memory' &func
 .synop end
 .desc begin
-The &func function allocates space for an array of
+The
+.id &func.
+function allocates space for an array of
 .arg numb
 objects of
 .arg size
@@ -15,7 +17,9 @@ an array element must be a power of 2 since an object could straddle a
 segment boundary.
 .desc end
 .return begin
-The &func function returns a far pointer (of type
+The
+.id &func.
+function returns a far pointer (of type
 .id void huge *
 .ct ) to the start of the allocated memory.
 The

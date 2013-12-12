@@ -7,7 +7,9 @@ struct tm *_localtime( const time_t *timer,
 .im structtm
 .synop end
 .desc begin
-The &func function converts the calendar time pointed to by
+The
+.id &func.
+function converts the calendar time pointed to by
 .arg timer
 into a structure of type
 .kw tm
@@ -15,7 +17,9 @@ into a structure of type
 The information is stored in the structure pointed to by
 .arg tmbuf
 .ct .li .
-Whenever &func is called, the
+Whenever
+.id &func.
+is called, the
 .kw tzset
 function is also called.
 .pp
@@ -27,7 +31,9 @@ Greenwich Mean Time (GMT)).
 .im tzref
 .desc end
 .return begin
-The &func function returns a pointer to a
+The
+.id &func.
+function returns a pointer to a
 .kw tm
 structure containing the time information.
 .return end

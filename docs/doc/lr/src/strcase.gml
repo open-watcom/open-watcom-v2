@@ -6,7 +6,9 @@ int strcasecmp( const char *s1, const char *s2 );
 .ixfunc2 '&Compare' &func
 .synop end
 .desc begin
-The &func function compares, with case insensitivity, the string
+The
+.id &func.
+function compares, with case insensitivity, the string
 pointed to by
 .arg s1
 to the string pointed to by
@@ -18,12 +20,16 @@ and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
 .np
-The &func function is identical to the
+The
+.id &func.
+function is identical to the
 .kw stricmp
 function.
 .desc end
 .return begin
-The &func function returns an integer less than, equal to, or greater
+The
+.id &func.
+function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1
 is, ignoring case, less than, equal to, or greater than the string pointed

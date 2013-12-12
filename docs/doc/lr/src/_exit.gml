@@ -6,7 +6,9 @@ void _Exit( int status );
 .ixfunc2 '&Process' &func
 .synop end
 .desc begin
-The &func function causes normal program termination to occur.
+The
+.id &func.
+function causes normal program termination to occur.
 .autonote
 .note
 The functions registered by the
@@ -99,7 +101,9 @@ set to some other value to indicate an error.
 .do end
 .desc end
 .return begin
-The &func function does not return to its caller.
+The
+.id &func.
+function does not return to its caller.
 .return end
 .see begin
 .im seeproc _exit

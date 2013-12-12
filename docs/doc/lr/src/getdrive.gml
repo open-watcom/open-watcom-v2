@@ -5,7 +5,9 @@ int _getdrive( void );
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function returns the current (default) drive number.
+The
+.id &func.
+function returns the current (default) drive number.
 .desc end
 .return begin
 A value of 1 is drive A, 2 is drive B, 3 is drive C, etc.

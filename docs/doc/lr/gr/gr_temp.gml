@@ -1,16 +1,21 @@
 .gfunc xxxx
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 long _FAR _xxxx
 .do end
 .el .do begin
 integer*4 function _xxxx
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine
+The
+.id &func.
+&routine
 .desc end
 .return begin
-The &func &routine returns
+The
+.id &func.
+&routine returns
 .return end
 .see begin
 .seelist &function. _

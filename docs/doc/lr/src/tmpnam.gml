@@ -13,10 +13,16 @@ wchar_t *_wtmpnam( wchar_t *buffer );
 .safealt
 .*
 .desc begin
-The &func function generates a unique string for use as a valid file
+The
+.id &func.
+function generates a unique string for use as a valid file
 name.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function is identical to &func except that it generates a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it generates a
 unique wide-character string for the file name.
 .do end
 .if '&machsys' eq 'QNX' .do begin
@@ -62,7 +68,9 @@ following:
 .el .do begin
 An internal static buffer is used to construct the filename.
 .do end
-Subsequent calls to &func reuse the internal buffer.
+Subsequent calls to
+.id &func.
+reuse the internal buffer.
 .np
 The function generates unique filenames for up to
 .kw TMP_MAX
@@ -71,11 +79,15 @@ calls.
 .return begin
 If the argument
 .arg buffer
-is a NULL pointer, &func returns a pointer to an internal buffer
+is a NULL pointer,
+.id &func.
+returns a pointer to an internal buffer
 containing the temporary file name.
 If the argument
 .arg buffer
-is not a NULL pointer, &func copies the temporary file name from the
+is not a NULL pointer,
+.id &func.
+copies the temporary file name from the
 internal buffer to the specified buffer and returns a pointer to the
 specified buffer.
 It is assumed that the specified buffer is an array of at least
@@ -85,7 +97,9 @@ characters.
 If the argument
 .arg buffer
 is a NULL pointer, you may wish to duplicate the resulting string
-since subsequent calls to &func reuse the internal buffer.
+since subsequent calls to
+.id &func.
+reuse the internal buffer.
 .ixfunc strdup
 .millust begin
 char *name1, *name2;

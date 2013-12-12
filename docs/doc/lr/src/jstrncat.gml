@@ -16,10 +16,16 @@ FJSTRING __far _fjstrncat( JCHAR __far *dst,
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function appends
+The
+.id &func.
+function appends
 .do end
 .el .do begin
-The &func and &ffunc functions append
+The
+.id &func.
+and
+.id &ffunc.
+functions append
 .do end
 not more than
 .arg n
@@ -38,10 +44,16 @@ A terminating null character is always appended to the result.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the value of
 .arg dst

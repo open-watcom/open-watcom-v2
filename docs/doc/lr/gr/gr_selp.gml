@@ -1,4 +1,5 @@
 .gfunc selectpalette
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _selectpalette( short palnum );
 .do end
@@ -6,9 +7,11 @@ short _FAR _selectpalette( short palnum );
 integer*2 function _selectpalette( palnum )
 integer*2 palnum
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine selects the palette indicated by the argument
+The
+.id &func.
+&routine selects the palette indicated by the argument
 .arg palnum
 from the color palettes available.
 This &routine is only supported by the video modes
@@ -36,7 +39,9 @@ Number    1               2               3
 .millust end
 .desc end
 .return begin
-The &func &routine returns the number of the previously selected palette.
+The
+.id &func.
+&routine returns the number of the previously selected palette.
 .return end
 .see begin
 .seelist &function. _setvideomode _getvideoconfig

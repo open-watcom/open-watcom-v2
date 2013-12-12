@@ -5,7 +5,9 @@ void _dos_setdrive( unsigned drive, unsigned *total );
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x0E to set the current default
+The
+.id &func.
+function uses system call 0x0E to set the current default
 disk drive to be the drive specified by
 .arg drive
 .ct , where 1 = drive A, 2 = drive B, etc.
@@ -16,7 +18,9 @@ For DOS versions 3.0 or later, the minimum number of drives returned
 is 5.
 .desc end
 .return begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 If an invalid drive number is specified, the function fails with no
 error indication.
 You must use the

@@ -5,12 +5,16 @@ int cscanf( const char *format, ... );
 .ixfunc2 '&KbIo' &func
 .synop end
 .desc begin
-The &func function scans input from the console
+The
+.id &func.
+function scans input from the console
 under control of the argument
 .arg format
 .ct .li .
 Following the format string is a list of addresses to receive values.
-The &func function uses the function
+The
+.id &func.
+function uses the function
 .kw getche
 to read characters from the console.
 The
@@ -20,7 +24,9 @@ string is described under the description of the
 function.
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .kw EOF
 when the scanning is terminated by reaching the end of the input stream.
 Otherwise, the number of input arguments for which

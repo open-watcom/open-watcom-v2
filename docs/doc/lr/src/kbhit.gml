@@ -8,7 +8,9 @@ int _kbhit( void );
 .ixfunc2 '&KbIo' &_func
 .synop end
 .desc begin
-The &func function tests whether or not a keystroke is currently
+The
+.id &func.
+function tests whether or not a keystroke is currently
 available.
 When one is available, the function
 .kw getch
@@ -16,16 +18,24 @@ or
 .kw getche
 may be used to obtain the keystroke in question.
 .pp
-With a stand-alone program, the &func function may be called
+With a stand-alone program, the
+.id &func.
+function may be called
 continuously until a keystroke is available.
 .if '&machsys' eq 'QNX' .do begin
-Note that loops involving the &func function are not recommended in
+Note that loops involving the
+.id &func.
+function are not recommended in
 multitasking systems.
 .do end
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .desc end
 .return begin

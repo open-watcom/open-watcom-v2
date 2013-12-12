@@ -1,4 +1,5 @@
 .gfuncms pg_chart
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_chart( chartenv _FAR *env,
                       char _FAR * _FAR *cat,
@@ -25,9 +26,11 @@ real values(*)
 integer*2 nseries, n, dim
 integer*4 labels(*)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines display either a single-series or a multi-series
+The
+.id &func.
+&routines display either a single-series or a multi-series
 bar, column or line chart.
 The type of chart displayed and other chart options are contained in the
 .arg env
@@ -40,7 +43,9 @@ the data in the
 .arg values
 array is charted.
 .pp
-The &func &routine displays a bar, column or line chart from the single series
+The
+.id &func.
+&routine displays a bar, column or line chart from the single series
 of data contained in the
 .arg values
 array.
@@ -48,7 +53,9 @@ The argument
 .arg n
 specifies the number of values to chart.
 .pp
-The &func2 &routine displays a multi-series bar, column or line chart.
+The
+.id &func1.
+&routine displays a multi-series bar, column or line chart.
 The argument
 .arg nseries
 specifies the number of series of data to chart.
@@ -77,7 +84,9 @@ is an array of &strings..
 These strings describe each of the series and are used in the chart legend.
 .desc end
 .return begin
-The &func &routines return zero
+The
+.id &func.
+&routines return zero
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin

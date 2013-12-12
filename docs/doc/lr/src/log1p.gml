@@ -5,7 +5,9 @@ double log1p( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the natural logarithm of one plus
+The
+.id &func.
+function computes the natural logarithm of one plus
 .arg x
 .ct .li . For small values of
 .arg x

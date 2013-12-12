@@ -4,7 +4,9 @@
 int _dwSetAboutDlg( const char *title, const char *text );
 .synop end
 .desc begin
-The &func function sets the "About" dialog box of the default
+The
+.id &func.
+function sets the "About" dialog box of the default
 windowing system.
 The argument
 .arg title
@@ -22,11 +24,15 @@ If
 is NULL, then the current text in the "About" box will not be
 replaced.
 .np
-The &func function is one of the support functions that can be called
+The
+.id &func.
+function is one of the support functions that can be called
 from an application using &company's default windowing support.
 .desc end
 .return begin
-The &func function returns 1 if it was successful and 0 if not.
+The
+.id &func.
+function returns 1 if it was successful and 0 if not.
 .return end
 .see begin
 .seelist &function. _dwDeleteOnClose _dwSetAboutDlg _dwSetAppTitle _dwSetConTitle _dwShutDown _dwYield

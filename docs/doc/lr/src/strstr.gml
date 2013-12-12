@@ -37,7 +37,9 @@ unsigned char __far *_fmbsstr(
 .do end
 .synop end
 .desc begin
-The &func function locates the first occurrence in the string pointed
+The
+.id &func.
+function locates the first occurrence in the string pointed
 to by
 .arg str
 of the sequence of characters (excluding the terminating null
@@ -49,7 +51,9 @@ character) in the string pointed to by
 .im mbsffunc
 .desc end
 .return begin
-The &func function returns a pointer to the located string, or
+The
+.id &func.
+function returns a pointer to the located string, or
 .mono NULL
 if the string is not found.
 .return end

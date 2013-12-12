@@ -11,7 +11,9 @@ void delay( unsigned milliseconds );
 .synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
-The &func function suspends the calling process until the number
+The
+.id &func.
+function suspends the calling process until the number
 of real time milliseconds specified by the
 .arg milliseconds
 argument have elapsed, or a signal whose action is to either terminate
@@ -20,19 +22,25 @@ The suspension time may be greater than the requested amount due to
 the scheduling of other, higher priority activity by the system.
 .do end
 .el .do begin
-The &func function suspends execution by the specified number of
+The
+.id &func.
+function suspends execution by the specified number of
 .arg milliseconds
 .ct .li .
 .do end
 .desc end
 .return begin
 .if '&machsys' eq 'QNX' .do begin
-The &func function returns zero if the full time specified was
+The
+.id &func.
+function returns zero if the full time specified was
 completed; otherwise it returns the number of milliseconds unslept if
 interrupted by a signal.
 .do end
 .el .do begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 .do end
 .return end
 .if '&machsys' eq 'QNX' .do begin

@@ -9,7 +9,9 @@ int _locking( int &fd, int mode, long nbyte );
 .do end
 .synop end
 .desc begin
-The &func function locks or unlocks
+The
+.id &func.
+function locks or unlocks
 .arg nbyte
 bytes of the file specified by
 .arg &fd
@@ -73,12 +75,18 @@ must be installed.
 .do end
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns &minus.1 and
 .kw errno
 is set to indicate the error.

@@ -14,7 +14,9 @@ struct  diskinfo_t {        /* disk parameters   */
 .ixfunc2 '&BiosFunc' &func
 .synop end
 .desc begin
-The &func function uses INT 0x13 to provide access to the BIOS
+The
+.id &func.
+function uses INT 0x13 to provide access to the BIOS
 disk functions.
 Information for the desired
 .arg service
@@ -73,7 +75,9 @@ This function is not supported by DOS/4GW (you must use the Simulate
 Real-Mode Interrupt DPMI call).
 .desc end
 .return begin
-The &func function returns status information in the high-order byte when
+The
+.id &func.
+function returns status information in the high-order byte when
 .arg service
 is _DISK_STATUS, _DISK_READ, _DISK_WRITE, or _DISK_VERIFY.
 The possible values are:

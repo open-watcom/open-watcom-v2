@@ -4,7 +4,9 @@
 int _ismbcprint( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests for any printable multibyte character
+The
+.id &func.
+function tests for any printable multibyte character
 including space ('&sysrb').
 The
 .kw _ismbcgraph
@@ -12,7 +14,9 @@ function is similar, except that the space character is not included
 in the character set being tested.
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 member of this set of characters; otherwise, zero is returned.
 .return end
 .see begin

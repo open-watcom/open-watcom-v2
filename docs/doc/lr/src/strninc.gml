@@ -24,33 +24,48 @@ unsigned char __far *_fmbsninc(
 .do end
 .synop end
 .desc begin
-The &mfunc function increments
+The
+.id &mfunc.
+function increments
 .arg str
 by
 .arg count
 multibyte characters.
-&mfunc recognizes multibyte-character sequences according to the
+.id &mfunc.
+recognizes multibyte-character sequences according to the
 multibyte code page currently in use.
 The header file
 .hdrfile tchar.h
 defines the generic-text routine
 .kw _tcsninc
 .ct .li .
-This macro maps to &mfunc if
+This macro maps to
+.id &mfunc.
+if
 .kw _MBCS
-has been defined, or to &wfunc if
+has been defined, or to
+.id &wfunc.
+if
 .kw _UNICODE
 has been defined.
 Otherwise
 .kw _tcsninc
 maps to &func..
-&func and &wfunc are single-byte-character string and wide-character
+.id &func.
+and
+.id &wfunc.
+are single-byte-character string and wide-character
 string versions of &mfunc..
-&wfunc and &func are provided only for this mapping and should not be
+.id &wfunc.
+and
+.id &func.
+are provided only for this mapping and should not be
 used otherwise.
 .desc end
 .return begin
-The &func function returns a pointer to
+The
+.id &func.
+function returns a pointer to
 .arg str
 after it has been incremented by
 .arg count

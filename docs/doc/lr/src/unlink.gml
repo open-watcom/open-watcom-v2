@@ -14,7 +14,9 @@ int _wunlink( const wchar_t *path );
 .do end
 .synop end
 .desc begin
-The &func function deletes the file whose name is the string
+The
+.id &func.
+function deletes the file whose name is the string
 pointed to by
 .arg path
 .ct .li .
@@ -23,12 +25,20 @@ This function is equivalent to the
 function.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument.
 .do end
 .desc end
@@ -69,7 +79,9 @@ is not a directory.
 The file named by
 .arg path
 is a directory and either the calling process does not have the
-appropriate privileges, or the implementation prohibits using &func on
+appropriate privileges, or the implementation prohibits using
+.id &func.
+on
 directories.
 .term EROFS
 The directory entry to be unlinked resides on a read-only file system.

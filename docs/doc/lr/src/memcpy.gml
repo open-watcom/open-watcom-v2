@@ -23,7 +23,9 @@ wchar_t *wmemcpy( wchar_t *dst,
 .safealt
 .*
 .desc begin
-The &func function copies
+The
+.id &func.
+function copies
 .arg length
 characters from the buffer pointed to by
 .arg src
@@ -37,7 +39,11 @@ function if you wish to copy objects that overlap.
 .im farfunc
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc wide-character function is identical to &func except that it
+The
+.id &wfunc.
+wide-character function is identical to
+.id &func.
+except that it
 operates on characters of
 .kw wchar_t
 type.

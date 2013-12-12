@@ -36,7 +36,9 @@ size_t _fmbscpsn( const unsigned char __far *str,
 .do end
 .synop end
 .desc begin
-The &func function computes the length, in bytes, of the initial
+The
+.id &func.
+function computes the length, in bytes, of the initial
 segment of the string pointed to by
 .arg str
 which consists entirely of characters

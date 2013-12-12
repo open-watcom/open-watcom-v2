@@ -43,7 +43,9 @@ characters of
 for the first call, and shall occur within the first
 .arg *s1max
 characters of where searching resumes on subsequent calls.
-If there is a runtime-constraint violation, the &func function does not indirect
+If there is a runtime-constraint violation, the
+.id &func.
+function does not indirect
 through the
 .arg s1
 or
@@ -54,14 +56,17 @@ pointers, and does not store a value in the object pointed to by
 .rtconst end
 .*
 .desc begin
-A sequence of calls to the &func function breaks the string pointed to by
+A sequence of calls to the
+.id &func.
+function breaks the string pointed to by
 .arg s1
 into a sequence of tokens, each of which is delimited by a character
 from the string pointed to by
 .arg s2
 .ct .li .
 The fourth argument points to a caller-provided char pointer into which the
-&func function stores information necessary for it to continue scanning the same
+.id &func.
+function stores information necessary for it to continue scanning the same
 string.
 The first call in a sequence has a non-null first argument and
 .arg s1max
@@ -92,8 +97,12 @@ string pointed to by
 .ct .li .
 If no such character is found, then there are no tokens in the string pointed to by
 .arg s1
-and the &func function returns a null pointer. If such a character is found,
-it is the start of the first token. The &func function then searches from there for the
+and the
+.id &func.
+function returns a null pointer. If such a character is found,
+it is the start of the first token. The
+.id &func.
+function then searches from there for the
 first character in
 .arg s1
 that is contained in the current separator string. If no such character is found, the
@@ -102,7 +111,9 @@ current token extends to the end of the string pointed to by
 .ct , and subsequent searches in the same string for a token return a null pointer.
 If such a character is found, it is overwritten by a null character,
 which terminates the current token.
-In all cases, the &func function stores sufficient information in the pointer pointed
+In all cases, the
+.id &func.
+function stores sufficient information in the pointer pointed
 to by
 .arg ptr
 so that subsequent calls, with a null pointer for
@@ -115,7 +126,9 @@ value for
 .desc end
 .*
 .return begin
-The &func function returns a pointer to the first character of a token, or a null
+The
+.id &func.
+function returns a pointer to the first character of a token, or a null
 pointer if there is no token or there is a runtime-constraint violation.
 .return end
 .*

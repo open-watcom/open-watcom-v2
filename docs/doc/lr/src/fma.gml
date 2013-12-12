@@ -5,7 +5,9 @@ double fma( double x, double y, double z );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function performs a fused multiply-add operation. The
+The
+.id &func.
+function performs a fused multiply-add operation. The
 resultant value is the product of
 .arg x
 and

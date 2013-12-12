@@ -17,7 +17,9 @@ struct com_t
 .ixfunc2 '&BiosFunc' &func
 .synop end
 .desc begin
-The &func function provides serial communications services to the
+The
+.id &func.
+function provides serial communications services to the
 serial port specified by
 .arg port
 .ct .li .
@@ -93,7 +95,9 @@ of the structure
 The returned controller information is described below.
 .desc end
 .return begin
-The &func function returns zero if no error occurred, non-zero if an
+The
+.id &func.
+function returns zero if no error occurred, non-zero if an
 error occurred.
 When the
 .kw _COM_STATUS

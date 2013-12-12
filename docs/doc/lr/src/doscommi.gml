@@ -4,7 +4,9 @@
 unsigned _dos_commit( int handle );
 .synop end
 .desc begin
-The &func function uses system call 0x68 to flush to disk the DOS
+The
+.id &func.
+function uses system call 0x68 to flush to disk the DOS
 buffers associated with the file indicated by
 .arg handle
 .ct .li .
@@ -12,7 +14,9 @@ It also forces an update on the corresponding disk directory and the
 file allocation table.
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 accordingly.

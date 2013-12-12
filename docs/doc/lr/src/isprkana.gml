@@ -5,7 +5,9 @@ int isprkana( int c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg c
 is a single-byte printable character including space ("&sysrb.") or
 single-byte Katakana character.
@@ -15,7 +17,9 @@ isprint(c) || iskana(c)
 .millust end
 .desc end
 .return begin
-The &func function returns zero if the argument is not a single-byte printable
+The
+.id &func.
+function returns zero if the argument is not a single-byte printable
 character (including space) or single-byte Katakana character;
 otherwise, a non-zero value is returned.
 .return end

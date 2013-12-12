@@ -1,4 +1,5 @@
 .gfunc pg_setchardef
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_setchardef( short ch,
                            unsigned char _FAR *def );
@@ -8,9 +9,11 @@ integer*2 function _pg_setchardef( ch, def )
 integer*2 ch
 integer*1 def(8)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current bit-map definition
+The
+.id &func.
+&routine sets the current bit-map definition
 for the character
 .arg ch
 .ct .li .
@@ -20,7 +23,9 @@ The bit-map is contained in the array
 The current font must be an 8-by-8 bit-mapped font.
 .desc end
 .return begin
-The &func &routine returns zero
+The
+.id &func.
+&routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin

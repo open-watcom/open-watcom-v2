@@ -5,7 +5,9 @@ double scalbn( double x, int y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes 
+The
+.id &func.
+function computes 
 .arg x
 *(2**
 .arg y

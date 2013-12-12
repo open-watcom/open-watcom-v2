@@ -1,4 +1,5 @@
 .gfuncwxy arc
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _arc( short x1, short y1,
                  short x2, short y2,
@@ -36,11 +37,19 @@ record /_wxycoord/ p2
 record /_wxycoord/ p3
 record /_wxycoord/ p4
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines draw elliptical arcs.
-The &func &routine uses the view coordinate system.
-The &func2 and &func3 &routines use the window coordinate system.
+The
+.id &func.
+&routines draw elliptical arcs.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+and
+.id &func3.
+&routines use the window coordinate system.
 .np
 The center of the arc is the center of the
 rectangle established by the points

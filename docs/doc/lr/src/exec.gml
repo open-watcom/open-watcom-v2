@@ -98,9 +98,10 @@ int _wexecvpe( file, argv, envp );
 .ixfunc2 '&Wide' _wexecvpe
 .do end
 .synop end
-.funcbold exec...
 .desc begin
-The &func functions load and execute a new child process, named by
+The
+.idbold &func.
+functions load and execute a new child process, named by
 .arg path
 or
 .arg file
@@ -113,7 +114,9 @@ No return is made to the original program.
 .*==========================================
 .np
 Arguments are passed to the child process by supplying one or more
-pointers to character strings as arguments in the &func call.
+pointers to character strings as arguments in the
+.idbold &func.
+call.
 .if '&machsys' ne 'QNX' .do begin
 These character strings are concatenated with spaces inserted to separate
 the arguments to form one argument string for the child process.

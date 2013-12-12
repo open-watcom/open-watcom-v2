@@ -1,4 +1,5 @@
 .gfunc setcliprgn
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _setcliprgn( short x1, short y1,
                        short x2, short y2 );
@@ -8,9 +9,11 @@ subroutine _setcliprgn( x1, y1, x2, y2 )
 integer*2 x1, y1
 integer*2 x2, y2
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine restricts the display of graphics output to the
+The
+.id &func.
+&routine restricts the display of graphics output to the
 clipping region.
 This region is a rectangle whose opposite corners are established
 by the physical points
@@ -18,7 +21,9 @@ by the physical points
 and
 .coord x2 y2 .
 .pp
-The &func &routine does not affect text output using the
+The
+.id &func.
+&routine does not affect text output using the
 .kw _outtext
 and
 .kw _outmem
@@ -29,7 +34,9 @@ To control the location of text output, see the
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

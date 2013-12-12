@@ -5,7 +5,9 @@ double nextafter( double x, double y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function returns the next machine floating point
+The
+.id &func.
+function returns the next machine floating point
 number of
 .arg x
 in the direction towards

@@ -26,7 +26,9 @@ size_t _wstrftime_ms( wchar_t *s,
 .im structtm
 .synop end
 .desc begin
-The &func function formats the time in the argument
+The
+.id &func.
+function formats the time in the argument
 .arg timeptr
 into the array pointed to by the argument
 .arg s
@@ -38,7 +40,9 @@ argument.
 .np
 The
 .kw _wstrftime_ms
-function is identical to &wfunc except that the
+function is identical to
+.id &wfunc.
+except that the
 .arg format
 is not a wide-character string.
 .do end
@@ -158,7 +162,9 @@ The format modifiers E and O are ignored. (eg. %EY is the same as %Y)
 .return begin
 If the number of characters to be placed into the array is less than
 .arg maxsize
-.ct , the &func function returns the number of characters placed into the
+.ct , the
+.id &func.
+function returns the number of characters placed into the
 array pointed to by
 .arg s
 not including the terminating null character.

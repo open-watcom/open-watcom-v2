@@ -6,7 +6,9 @@ unsigned short _bios_printer( unsigned service,
 .ixfunc2 '&BiosFunc' &func
 .synop end
 .desc begin
-The &func function performs printer output services to the printer.
+The
+.id &func.
+function performs printer output services to the printer.
 The values for service are:
 .begterm 12
 .termhd1 Value
@@ -64,7 +66,9 @@ Disabled from data output
 .endterm
 .desc end
 .return begin
-The &func function returns a printer status byte described above.
+The
+.id &func.
+function returns a printer status byte described above.
 .return end
 .exmp begin
 #include <stdio.h>

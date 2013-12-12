@@ -11,7 +11,9 @@ int _fmbcicmp( const unsigned char __far *s1,
 .do end
 .synop end
 .desc begin
-The &func function compares one multibyte character from
+The
+.id &func.
+function compares one multibyte character from
 .arg s1
 to one multibyte character from
 .arg s2
@@ -20,10 +22,16 @@ using a case-insensitive comparison.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the following values.
 .begnote

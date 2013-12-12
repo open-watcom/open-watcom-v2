@@ -15,7 +15,9 @@ When a program starts execution, the break value is placed following
 the code and constant data for the program.
 As memory is allocated, this pointer will advance when there is no
 freed block large enough to satisfy an allocation request.
-The &func function can be used to set a new "break" value for the
+The
+.id &func.
+function can be used to set a new "break" value for the
 program by adding the value of
 .arg increment
 to the current break value.
@@ -23,7 +25,9 @@ This increment may be positive or negative.
 .if '&machsys' ne 'QNX' .do begin
 .np
 Under other systems, heap allocation is discontiguous.
-The &func function can only be used to allocate additional
+The
+.id &func.
+function can only be used to allocate additional
 discontiguous blocks of memory.
 The value of
 .arg increment
@@ -57,12 +61,16 @@ allocated by the resident program after other programs are loaded.
 .do end
 .desc end
 .return begin
-If the call to &func succeeds, a pointer to the start of the new block
+If the call to
+.id &func.
+succeeds, a pointer to the start of the new block
 of memory is returned.
 .if '&machsys' ne 'QNX' .do begin
 Under 16-bit DOS, this corresponds to the old break value.
 .do end
-If the call to &func fails, &minus.1 is returned.
+If the call to
+.id &func.
+fails, &minus.1 is returned.
 .im errnoref
 .return end
 .see begin

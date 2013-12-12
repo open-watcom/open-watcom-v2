@@ -10,7 +10,9 @@ void *lsearch( const void *key, /* object to search for */
 .ixfunc2 '&Search' &func
 .synop end
 .desc begin
-The &func function performs a linear search for the value
+The
+.id &func.
+function performs a linear search for the value
 .arg key
 in the array of
 .arg num
@@ -45,7 +47,9 @@ If the
 .arg key
 value is not found in the array, then it is added to the end
 of the array and the number of elements is incremented.
-The &func function returns a pointer to the array element in
+The
+.id &func.
+function returns a pointer to the array element in
 .arg base
 that matches
 .arg key

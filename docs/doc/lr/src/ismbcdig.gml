@@ -4,13 +4,17 @@
 int _ismbcdigit( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests for any multibyte decimal-digit character '0'
+The
+.id &func.
+function tests for any multibyte decimal-digit character '0'
 through '9'.
 In code page 932, this includes the corresponding double-byte versions
 of these characters.
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 decimal-digit character.
 Otherwise, zero is returned.
 .return end

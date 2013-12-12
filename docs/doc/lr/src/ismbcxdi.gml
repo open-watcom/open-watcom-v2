@@ -4,13 +4,17 @@
 int _ismbcxdigit( unsigned int ch );
 .synop end
 .desc begin
-The &func function tests for any multibyte hexadecimal-digit character
+The
+.id &func.
+function tests for any multibyte hexadecimal-digit character
 '0' through '9' or 'A' through 'F'.
 In code page 932, this includes the corresponding double-byte versions
 of these characters.
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 hexadecimal-digit character.
 Otherwise, zero is returned.
 .return end

@@ -1,4 +1,5 @@
 .gfunc getfontinfo
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _getfontinfo( struct _fontinfo _FAR *info );
 .do end
@@ -6,9 +7,11 @@ short _FAR _getfontinfo( struct _fontinfo _FAR *info );
 integer*2 function _getfontinfo( info )
 record /_fontinfo/ info
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns information about the currently selected font.
+The
+.id &func.
+&routine returns information about the currently selected font.
 Fonts are selected with the
 .kw _setfont
 &routine..
@@ -36,7 +39,9 @@ name of the current font
 .endterm
 .desc end
 .return begin
-The &func &routine returns zero if the font information is
+The
+.id &func.
+&routine returns zero if the font information is
 returned successfully; otherwise a negative value is returned.
 .return end
 .see begin

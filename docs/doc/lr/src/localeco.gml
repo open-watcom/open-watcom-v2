@@ -5,7 +5,9 @@ struct lconv *localeconv( void );
 .ixfunc2 '&Locale' &func
 .synop end
 .desc begin
-The &func function sets the components of an object of type
+The
+.id &func.
+function sets the components of an object of type
 .kw struct lconv
 with values appropriate for the formatting of numeric quantities
 according to the current locale.
@@ -141,7 +143,9 @@ The sign string immediately follows the quantity and
 .endnote
 .desc end
 .return begin
-The &func function returns a pointer to the filled-in object.
+The
+.id &func.
+function returns a pointer to the filled-in object.
 .return end
 .see begin
 .seelist localeconv setlocale

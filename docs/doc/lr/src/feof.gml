@@ -6,7 +6,9 @@ int feof( FILE *fp );
 .ixfunc2 '&Errs' &func
 .synop end
 .desc begin
-The &func function tests the end-of-file indicator for the stream
+The
+.id &func.
+function tests the end-of-file indicator for the stream
 pointed to by
 .arg fp
 .ct .li .
@@ -14,12 +16,16 @@ Because this indicator is set when an input operation attempts to read
 past the end of the file the &func
 function will detect the end of the file only after an attempt
 is made to read beyond the end of the file.
-Thus, if a file contains 10 lines, the &func will not detect
+Thus, if a file contains 10 lines, the
+.id &func.
+will not detect
 end of file after the tenth line is read; it will detect end of file
 once the program attempts to read more data.
 .desc end
 .return begin
-The &func function returns non-zero
+The
+.id &func.
+function returns non-zero
 if the end-of-file indicator is set for
 .arg fp
 .ct .li .

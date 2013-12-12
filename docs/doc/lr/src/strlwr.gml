@@ -30,15 +30,21 @@ unsigned char __far *_fmbslwr( unsigned char __far *s1 );
 .do end
 .synop end
 .desc begin
-The &func function replaces the string
+The
+.id &func.
+function replaces the string
 .arg s1
 with lowercase characters by invoking the
 .kw tolower
 function for each character in the string.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .im farfunc
 .im widefunc

@@ -1,18 +1,23 @@
 .gfunc getactivepage
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _getactivepage( void );
 .do end
 .el .do begin
 integer*2 function _getactivepage()
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the number of the currently selected
+The
+.id &func.
+&routine returns the number of the currently selected
 active graphics page.
 .im gr_pages
 .desc end
 .return begin
-The &func &routine returns the number of the currently selected
+The
+.id &func.
+&routine returns the number of the currently selected
 active graphics page.
 .return end
 .see begin

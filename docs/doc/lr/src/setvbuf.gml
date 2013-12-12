@@ -8,7 +8,9 @@ int setvbuf( FILE *fp,
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function can be used to associate a buffer with the file
+The
+.id &func.
+function can be used to associate a buffer with the file
 designated by
 .arg fp
 .ct .li .
@@ -43,7 +45,9 @@ The argument
 specifies the size of the array.
 .desc end
 .return begin
-The &func function returns zero on success, or a non-zero value if an
+The
+.id &func.
+function returns zero on success, or a non-zero value if an
 invalid value is given for
 .arg mode
 or

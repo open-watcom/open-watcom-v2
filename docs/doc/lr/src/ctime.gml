@@ -6,12 +6,12 @@
 .func end
 .synop begin
 #include <time.h>
-char * ctime( const time_t *timer );
+char *ctime( const time_t *timer );
 char *_ctime( const time_t *timer, char *buf );
 .ixfunc2 '&TimeFunc' ctime
 .ixfunc2 '&TimeFunc' _ctime
 .if &'length(&wfunc.) ne 0 .do begin
-wchar_t * _wctime( const time_t *timer );
+wchar_t *_wctime( const time_t *timer );
 wchar_t *__wctime( const time_t *timer, wchar_t *buf );
 .ixfunc2 '&TimeFunc' _wctime
 .ixfunc2 '&Wide' _wctime
@@ -22,17 +22,22 @@ wchar_t *__wctime( const time_t *timer, wchar_t *buf );
 .*
 .safealt
 .*
-.funcbold ctime
 .desc begin
-The &func functions convert the calendar time pointed to by
+The
+.idbold &func.
+functions convert the calendar time pointed to by
 .arg timer
 to local time in the form of a string.
-The &func function is equivalent to
+The
+.idbold &func.
+function is equivalent to
 .millust begin
 asctime( localtime( timer ) )
 .millust end
 .np
-The &func functions convert the time into a string containing exactly
+The
+.idbold &func.
+functions convert the time into a string containing exactly
 26 characters.
 This string has the form shown in the following example:
 .millust begin
@@ -46,8 +51,12 @@ and the null character
 .id '\0'
 occupy the last two positions of the string.
 .np
-The ANSI function &func places the result string in a static buffer
-that is re-used each time &func or
+The ANSI function
+.idbold &func.
+places the result string in a static buffer
+that is re-used each time
+.idbold &func.
+or
 .kw asctime
 is called.
 The non-ANSI function
@@ -59,7 +68,9 @@ places the result string in the buffer pointed to by
 .np
 The wide-character function
 .kw _wctime
-is identical to &func except that it produces a wide-character string
+is identical to
+.idbold &func.
+except that it produces a wide-character string
 (which is twice as long).
 The wide-character function
 .kw __wctime
@@ -69,7 +80,9 @@ except that it produces a wide-character string (which is twice as
 long).
 .do end
 .np
-Whenever the &func functions are called, the
+Whenever the
+.idbold &func.
+functions are called, the
 .kw tzset
 function is also called.
 .np
@@ -81,7 +94,9 @@ Greenwich Mean Time (GMT)).
 .im tzref
 .desc end
 .return begin
-The &func functions return the pointer to the string containing the
+The
+.idbold &func.
+functions return the pointer to the string containing the
 local time.
 .return end
 .see begin

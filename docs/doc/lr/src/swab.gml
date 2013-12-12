@@ -5,7 +5,9 @@ void swab( char *src, char *dest, int num );
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function copies
+The
+.id &func.
+function copies
 .arg num
 bytes (which should be even) from
 .arg src
@@ -16,7 +18,9 @@ This is useful for preparing binary data to be transferred to another
 machine that has a different byte ordering.
 .desc end
 .return begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 .return end
 .exmp begin
 #include <stdio.h>

@@ -10,10 +10,16 @@ size_t __far _fjstrlen( const JCHAR __far *s );
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function computes
+The
+.id &func.
+function computes
 .do end
 .el .do begin
-The &func and &ffunc functions compute
+The
+.id &func.
+and
+.id &ffunc.
+functions compute
 .do end
 the number of characters in the Kanji string pointed to by
 .arg s
@@ -23,10 +29,16 @@ A double-byte character is treated as one character.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the number of characters that precede the terminating null character.
 .return end

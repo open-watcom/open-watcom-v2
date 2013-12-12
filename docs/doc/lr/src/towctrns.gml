@@ -7,7 +7,9 @@ wint_t towctrans( wint_t wc, wctrans_t desc );
 .synop end
 .*
 .desc begin
-The &func function maps the wide character
+The
+.id &func.
+function maps the wide character
 .arg wc
 using the mapping described by
 .arg desc
@@ -34,7 +36,9 @@ towupper(wc)
 .desc end
 .*
 .return begin
-The &func function returns the mapped value of
+The
+.id &func.
+function returns the mapped value of
 .arg wc
 using the mapping described by
 .arg desc

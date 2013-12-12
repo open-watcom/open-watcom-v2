@@ -15,7 +15,9 @@ int wprintf( const wchar_t *format, ... );
 .safealt
 .*
 .desc begin
-The &func function writes output to the file designated by
+The
+.id &func.
+function writes output to the file designated by
 .kw stdout
 under control of the argument
 .arg format
@@ -25,7 +27,11 @@ The
 string is described below.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument for
 .arg format
 .ct .li .
@@ -33,11 +39,15 @@ wide-character string argument for
 .desc end
 .*
 .return begin
-The &func function returns the number of characters written, or a
+The
+.id &func.
+function returns the number of characters written, or a
 negative value if an output error occurred.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function returns the number of wide characters written, or
+The
+.id &wfunc.
+function returns the number of wide characters written, or
 a negative value if an output error occurred.
 .do end
 .im errnoref

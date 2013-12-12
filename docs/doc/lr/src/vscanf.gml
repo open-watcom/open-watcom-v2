@@ -17,7 +17,9 @@ int vwscanf( const wchar_t *format, va_list arg );
 .safealt
 .*
 .desc begin
-The &func function scans input from the file designated by
+The
+.id &func.
+function scans input from the file designated by
 .arg stdin
 under control of the argument
 .arg format
@@ -28,7 +30,9 @@ string is described under the description of the
 .kw scanf
 function.
 .np
-The &func function is equivalent to the
+The
+.id &func.
+function is equivalent to the
 .kw scanf
 function, with a variable argument list replaced with
 .arg arg
@@ -37,7 +41,11 @@ function, with a variable argument list replaced with
 macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it
 accepts a wide-character string argument for
 .arg format
 .ct .li .
@@ -45,7 +53,9 @@ accepts a wide-character string argument for
 .desc end
 .*
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .kw EOF
 if an input failure occurred before any conversion.
 values were successfully scanned and stored is returned.

@@ -1,4 +1,5 @@
 .gfunc gettextwindow
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _gettextwindow(
                 short _FAR *row1, short _FAR *col1,
@@ -9,9 +10,11 @@ subroutine _gettextwindow( row1, col1, row2, col2 )
 integer*2 row1, col1
 integer*2 row2, col2
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the location of the current text window.
+The
+.id &func.
+&routine returns the location of the current text window.
 A text window is defined with the
 .kw _settextwindow
 &routine..
@@ -26,7 +29,9 @@ The bottom right corner of the text window is placed in
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine returns the location of the current text window.
+The
+.id &func.
+&routine returns the location of the current text window.
 .return end
 .do end
 .see begin

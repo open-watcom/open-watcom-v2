@@ -1,4 +1,5 @@
 .gfunc getarcinfo
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _getarcinfo( struct xycoord _FAR *start_pt,
                         struct xycoord _FAR *end_pt,
@@ -11,9 +12,11 @@ record /xycoord/ start_pt
 record /xycoord/ end_pt
 record /xycoord/ inside_pt
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns information about the arc most recently
+The
+.id &func.
+&routine returns information about the arc most recently
 drawn by the
 .kw _arc
 or
@@ -33,7 +36,9 @@ The endpoints of the arc can be used to connect other lines to the arc.
 The interior point can be used to fill the pie.
 .desc end
 .return begin
-The &func &routine returns a non-zero value when successful.
+The
+.id &func.
+&routine returns a non-zero value when successful.
 If the previous arc or pie was not successfully drawn, zero is returned.
 .return end
 .see begin

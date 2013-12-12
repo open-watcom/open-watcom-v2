@@ -4,7 +4,9 @@
 int _hdopen( int os_handle, int mode );
 .synop end
 .desc begin
-The &func function takes a previously opened operating system file
+The
+.id &func.
+function takes a previously opened operating system file
 handle specified by
 .arg os_handle
 and opened with access and sharing specified by
@@ -12,7 +14,9 @@ and opened with access and sharing specified by
 .ct , and creates a POSIX-style file handle.
 .desc end
 .return begin
-The &func function returns the new POSIX-style file handle if
+The
+.id &func.
+function returns the new POSIX-style file handle if
 successful.
 Otherwise, it returns -1.
 .return end

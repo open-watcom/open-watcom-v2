@@ -17,7 +17,9 @@ size_t _fmbsrtowcs( wchar_t __far *dst,
 .safealt
 .*
 .desc begin
-The &func function converts a sequence of multibyte characters
+The
+.id &func.
+function converts a sequence of multibyte characters
 that begins in the shift state described by
 .arg ps
 from the array indirectly pointed
@@ -60,7 +62,9 @@ initial conversion state.
 .desc end
 .return begin
 If the input string does not begin with a valid multibyte character, an
-encoding error occurs: The &func function stores the value of the macro
+encoding error occurs: The
+.id &func.
+function stores the value of the macro
 .kw EILSEQ
 in
 .kw errno

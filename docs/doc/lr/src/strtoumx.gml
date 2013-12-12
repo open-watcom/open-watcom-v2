@@ -15,7 +15,9 @@ uintmax_t wcstoumax( const wchar_t *ptr,
 .do end
 .synop end
 .desc begin
-The &func function converts the string pointed to by
+The
+.id &func.
+function converts the string pointed to by
 .arg ptr
 to an
 .id uintmax_t.
@@ -55,7 +57,9 @@ If there is a leading minus sign in the string, the value is negated.
 .im widefunc
 .desc end
 .return begin
-The &func function returns the converted value.
+The
+.id &func.
+function returns the converted value.
 If the correct value would cause overflow,
 .kw UINTMAX_MAX
 is returned and

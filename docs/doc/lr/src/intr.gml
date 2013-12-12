@@ -5,7 +5,9 @@ void intr( int inter_no, union REGPACK *regs );
 .ixfunc2 '&CpuInt' &func
 .synop end
 .desc begin
-The &func function causes the computer's central processor (CPU) to
+The
+.id &func.
+function causes the computer's central processor (CPU) to
 be interrupted with an interrupt whose number is given by
 .arg inter_no
 .ct .li .
@@ -33,7 +35,9 @@ you are using to determine the expected register contents before and
 after the interrupt in question.
 .desc end
 .return begin
-The &func function does not return a value.
+The
+.id &func.
+function does not return a value.
 .return end
 .see begin
 .im seeint intr

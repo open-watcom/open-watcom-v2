@@ -9,18 +9,26 @@ size_t _stackavail( void );
 .do end
 .synop end
 .desc begin
-The &func function returns the number of bytes currently available
+The
+.id &func.
+function returns the number of bytes currently available
 in the stack.
 This value is usually used to determine an appropriate amount to
 allocate using alloca.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .desc end
 .return begin
-The &func function returns the number of bytes currently available
+The
+.id &func.
+function returns the number of bytes currently available
 in the stack.
 .return end
 .see begin

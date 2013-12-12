@@ -15,7 +15,9 @@ int _fmbsnbcmp( const unsigned char __far *s1,
 .do end
 .synop end
 .desc begin
-The &func lexicographically compares not more than
+The
+.id &func.
+lexicographically compares not more than
 .arg n
 bytes from the string pointed to by
 .arg s1
@@ -25,15 +27,20 @@ to the string pointed to by
 .im farparm
 .desc end
 .return begin
-The &func function returns an integer less than, equal to, or greater
+The
+.id &func.
+function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2
 .ct .li .
-&func is similar to
+.id &func.
+is similar to
 .kw _mbsncmp
-.ct , except that &func compares strings by bytes rather than by characters.
+.ct , except that
+.id &func.
+compares strings by bytes rather than by characters.
 .return end
 .see begin
 .seelist &function. _mbsnbcat _mbsnbcmp _mbsnbicmp strncmp strnicmp

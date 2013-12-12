@@ -12,7 +12,9 @@ struct _DOSERROR {
 .ixfunc2 '&Errs' &func
 .synop end
 .desc begin
-The &func function extracts extended error information following
+The
+.id &func.
+function extracts extended error information following
 a failed DOS function.
 This information is placed in the structure located by
 .arg err_info
@@ -23,9 +25,13 @@ You should consult the technical documentation for the DOS system on
 your computer for an interpretation of the error information.
 .desc end
 .return begin
-The &func function returns an unpredictable result when the preceding
+The
+.id &func.
+function returns an unpredictable result when the preceding
 DOS call did not result in an error.
-Otherwise, &func returns the number of the extended error.
+Otherwise,
+.id &func.
+returns the number of the extended error.
 .return end
 .see begin
 .seelist dosexterr perror

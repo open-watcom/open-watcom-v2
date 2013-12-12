@@ -5,7 +5,9 @@ double exp2( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes 2.0 raised to the value 
+The
+.id &func.
+function computes 2.0 raised to the value 
 .arg x
 .ct .li .  The current implementation uses a simple power
 calculation.

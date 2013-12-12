@@ -5,7 +5,9 @@ int _heapenable( int enabled );
 .ixfunc2 '&Heap' _heapenable
 .synop end
 .desc begin
-The &func function is used to control attempts by the heap allocation
+The
+.id &func.
+function is used to control attempts by the heap allocation
 manager to request more memory from the operating system's memory
 pool.
 If
@@ -21,7 +23,9 @@ This function can be used to impose a limit on the amount of system
 memory that is allocated by an application.
 For example, if an application wishes to allocate no more than 200K
 bytes of memory, it could allocate 200K and immediately free it.
-It can then call &func to disable any further requests from the system
+It can then call
+.id &func.
+to disable any further requests from the system
 memory pool.
 After this, the application can allocate memory from the 200K pool
 that it has already obtained.

@@ -7,12 +7,16 @@ double asinh( double x );
 .ixfunc2 '&Hyper' &func
 .synop end
 .desc begin
-The &func function computes the inverse hyperbolic sine of
+The
+.id &func.
+function computes the inverse hyperbolic sine of
 .arg x
 .ct .li .
 .desc end
 .return begin
-The &func function returns the inverse hyperbolic sine value.
+The
+.id &func.
+function returns the inverse hyperbolic sine value.
 .return end
 .see begin
 .seelist asinh acosh atanh sinh matherr

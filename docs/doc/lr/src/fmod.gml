@@ -5,14 +5,18 @@ double fmod( double x, double y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the floating-point remainder of
+The
+.id &func.
+function computes the floating-point remainder of
 .arg x/y
 .ct , even if the quotient
 .arg x/y
 is not representable.
 .desc end
 .return begin
-The &func function returns the value
+The
+.id &func.
+function returns the value
 .arg x &minus. (i * y)
 .ct , for some integer
 .arg i

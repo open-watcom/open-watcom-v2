@@ -1,4 +1,5 @@
 .gfunc setvieworg
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _setvieworg( short x, short y );
 .do end
@@ -6,9 +7,11 @@ struct xycoord _FAR _setvieworg( short x, short y );
 record /xycoord/ function _setvieworg( x, y )
 integer*2 x, y
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the origin of the view coordinate system,
+The
+.id &func.
+&routine sets the origin of the view coordinate system,
 .coord 0 0 ,
 to be located at the physical point
 .coord x y .
@@ -17,13 +20,17 @@ This causes subsequently drawn images to be translated by the amount
 .if '&lang' eq 'C' .do begin
 .np
 .bd Note:
-In previous versions of the software, the &func &routine was called
+In previous versions of the software, the
+.id &func.
+&routine was called
 .mono _setlogorg.
 .uindex setlogorg
 .do end
 .desc end
 .return begin
-The &func &routine returns, as an
+The
+.id &func.
+&routine returns, as an
 .id xycoord
 structure, the physical coordinates of
 the previous origin.

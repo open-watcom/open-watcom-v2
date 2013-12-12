@@ -19,7 +19,9 @@ int snwprintf( wchar_t *buf,
 .safealt
 .*
 .desc begin
-The &func function is equivalent to the
+The
+.id &func.
+function is equivalent to the
 .kw fprintf
 function, except that the argument
 .arg buf
@@ -38,7 +40,11 @@ string is described under the description of the
 function.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that the argument
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that the argument
 .arg buf
 specifies an array of wide characters into which the generated output
 is to be written, rather than converted to multibyte characters and
@@ -47,13 +53,17 @@ The maximum number of wide characters to store, including a
 terminating null wide character, is specified by
 .arg count
 .ct .li .
-The &wfunc function accepts a wide-character string argument for
+The
+.id &wfunc.
+function accepts a wide-character string argument for
 .arg format
 .do end
 .desc end
 .*
 .return begin
-The &func function returns the number of characters that would have been
+The
+.id &func.
+function returns the number of characters that would have been
 written had
 .arg count
 been sufficiently large, not counting the terminating null
@@ -63,7 +73,9 @@ if the returned value is nonnegative and less than
 .arg count
 .ct .li .
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns the number of wide characters that would have
+The
+.id &wfunc.
+function returns the number of wide characters that would have
 been written had
 .arg count
 been sufficiently large, not counting the terminating null wide character,

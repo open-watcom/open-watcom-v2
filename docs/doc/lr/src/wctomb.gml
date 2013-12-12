@@ -15,7 +15,9 @@ int _fwctomb( char __far *s, wchar_t wc );
 .safealt
 .*
 .desc begin
-The &func function determines the number of bytes required to
+The
+.id &func.
+function determines the number of bytes required to
 represent the multibyte character corresponding to the wide character
 contained in
 .arg wc
@@ -34,11 +36,15 @@ characters will be stored.
 .return begin
 If
 .arg s
-is a NULL pointer, the &func function returns zero if multibyte
+is a NULL pointer, the
+.id &func.
+function returns zero if multibyte
 character encodings are not state dependent, and non-zero otherwise.
 If
 .arg s
-is not a NULL pointer, the &func function returns:
+is not a NULL pointer, the
+.id &func.
+function returns:
 .begnote $setptnt 6
 .termhd1 Value
 .termhd2 Meaning

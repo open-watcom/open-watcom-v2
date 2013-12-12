@@ -5,7 +5,9 @@ int fsetpos( FILE *fp, fpos_t *pos );
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function positions the file
+The
+.id &func.
+function positions the file
 .arg fp
 according to the value of the object pointed to by
 .arg pos
@@ -14,8 +16,11 @@ according to the value of the object pointed to by
 function on the same file.
 .desc end
 .return begin
-The &func function returns zero if successful, otherwise, the
-&func function returns a non-zero value.
+The
+.id &func.
+function returns zero if successful, otherwise, the
+.id &func.
+function returns a non-zero value.
 .im errnoref
 .return end
 .see begin

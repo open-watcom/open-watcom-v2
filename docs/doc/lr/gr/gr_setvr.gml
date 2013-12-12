@@ -1,4 +1,5 @@
 .gfunc setvideomoderows
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _setvideomoderows( short mode, short rows );
 .do end
@@ -7,9 +8,11 @@ integer*2 function _setvideomoderows( mode, rows )
 integer*2 mode
 integer*2 rows
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine selects a video mode and the number of rows
+The
+.id &func.
+&routine selects a video mode and the number of rows
 of text displayed on the screen.
 The video mode is specified by the argument
 .arg mode
@@ -28,7 +31,9 @@ The number of rows that can be selected depends on the
 video mode and the type of monitor attached.
 .desc end
 .return begin
-The &func &routine returns the number of screen rows when the
+The
+.id &func.
+&routine returns the number of screen rows when the
 mode and number of rows are set successfully; otherwise, zero is returned.
 .return end
 .see begin

@@ -11,7 +11,9 @@ int _cwait( int *status, int process_id, int action );
 .do end
 .synop end
 .desc begin
-The &func function suspends the calling process until the specified
+The
+.id &func.
+function suspends the calling process until the specified
 process terminates.
 .im waitstat
 .np
@@ -46,9 +48,13 @@ of that child process have ended.
 Under Win32, there is no parent-child relationship.
 .desc end
 .return begin
-The &func function returns the (child's) process id if the (child)
+The
+.id &func.
+function returns the (child's) process id if the (child)
 process terminated normally.
-Otherwise, &func returns &minus.1 and sets
+Otherwise,
+.id &func.
+returns &minus.1 and sets
 .kw errno
 to one of the following values:
 .begterm 10

@@ -9,7 +9,9 @@ int _fmbterm( const unsigned char __far *ch );
 .do end
 .synop end
 .desc begin
-The &func function determines if the next multibyte character in the
+The
+.id &func.
+function determines if the next multibyte character in the
 string pointed to by
 .arg ch
 is a null character or a valid lead byte followed by a null
@@ -17,13 +19,19 @@ character.
 .im farparm
 .desc end
 .return begin
-The &func function returns 1 if the multibyte character pointed to by
+The
+.id &func.
+function returns 1 if the multibyte character pointed to by
 .arg ch
 is a null character.
-The &func function returns 2 if the multibyte character pointed to by
+The
+.id &func.
+function returns 2 if the multibyte character pointed to by
 .arg ch
 is a valid lead byte character followed by a null character.
-Otherwise, the &func function returns 0.
+Otherwise, the
+.id &func.
+function returns 0.
 .return end
 .see begin
 .im seembc &function.

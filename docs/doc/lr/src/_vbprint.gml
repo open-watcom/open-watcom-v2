@@ -14,7 +14,9 @@ int _vbwprintf( wchar_t *buf, size_t bufsize,
 .do end
 .synop end
 .desc begin
-The &func function formats data under control of the
+The
+.id &func.
+function formats data under control of the
 .arg format
 control string and writes the result to
 .arg buf
@@ -29,7 +31,9 @@ The
 string is described under the description of the
 .kw printf
 function.
-The &func function is equivalent to the
+The
+.id &func.
+function is equivalent to the
 .kw _bprintf
 function, with the variable argument list replaced with
 .arg arg
@@ -38,14 +42,20 @@ function, with the variable argument list replaced with
 macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument for
 .arg format
 and produces wide-character output.
 .do end
 .desc end
 .return begin
-The &func function returns the number of characters written, or a
+The
+.id &func.
+function returns the number of characters written, or a
 negative value if an output error occurred.
 .return end
 .see begin
@@ -53,7 +63,9 @@ negative value if an output error occurred.
 .see end
 .exmp begin
 .blktext begin
-The following shows the use of &func in a general error message routine.
+The following shows the use of
+.id &func.
+in a general error message routine.
 .blktext end
 .blkcode begin
 #include <stdio.h>

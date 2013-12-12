@@ -6,7 +6,9 @@ unsigned short _bios_keybrd( unsigned service,
 .ixfunc2 '&BiosFunc' &func
 .synop end
 .desc begin
-The &func function accesses the BIOS keyboard services.
+The
+.id &func.
+function accesses the BIOS keyboard services.
 The possible values for
 .arg service
 are the following constants:

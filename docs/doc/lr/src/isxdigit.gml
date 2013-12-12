@@ -12,20 +12,30 @@ int iswxdigit( wint_t c );
 .do end
 .synop end
 .desc begin
-The &func function tests for any hexadecimal-digit character.
+The
+.id &func.
+function tests for any hexadecimal-digit character.
 These characters are the digits ('0' through '9') and the letters ('a'
 through 'f') and ('A' through 'F').
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is similar to &func except that it accepts a
+The
+.id &wfunc.
+function is similar to
+.id &func.
+except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 hexadecimal-digit character.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns a non-zero value when the argument is a
+The
+.id &wfunc.
+function returns a non-zero value when the argument is a
 wide character that corresponds to a hexadecimal-digit character.
 .do end
 Otherwise, zero is returned.

@@ -10,10 +10,16 @@ FJSTRING __far _fjstrset( JCHAR __far *s1, JMOJI fill );
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function fills
+The
+.id &func.
+function fills
 .do end
 .el .do begin
-The &func and &ffunc functions fill
+The
+.id &func.
+and
+.id &ffunc.
+functions fill
 .do end
 the string pointed to by
 .arg s1

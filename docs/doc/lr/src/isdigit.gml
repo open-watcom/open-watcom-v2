@@ -12,19 +12,29 @@ int iswdigit( wint_t c );
 .do end
 .synop end
 .desc begin
-The &func function tests for any decimal-digit character '0' through
+The
+.id &func.
+function tests for any decimal-digit character '0' through
 '9'.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is similar to &func except that it accepts a
+The
+.id &wfunc.
+function is similar to
+.id &func.
+except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 decimal-digit character.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns a non-zero value when the argument is a
+The
+.id &wfunc.
+function returns a non-zero value when the argument is a
 wide character corresponding to a decimal-digit character.
 .do end
 Otherwise, zero is returned.

@@ -6,14 +6,18 @@ double asin( double x );
 .ixfunc2 '&Trig' &func
 .synop end
 .desc begin
-The &func function computes the principal value of the
+The
+.id &func.
+function computes the principal value of the
 arcsine of
 .arg x
 .ct .li .
 A domain error occurs for arguments not in the range [&minus.1,1].
 .desc end
 .return begin
-The &func function returns the arcsine in the range [&minus.&pi./2,&pi./2].
+The
+.id &func.
+function returns the arcsine in the range [&minus.&pi./2,&pi./2].
 .im errnodom
 .return end
 .see begin

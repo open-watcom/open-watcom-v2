@@ -6,20 +6,26 @@ void *calloc( size_t n, size_t size );
 .ixfunc2 '&Memory' &func
 .synop end
 .desc begin
-The &func function allocates space for an array of
+The
+.id &func.
+function allocates space for an array of
 .arg n
 objects, each of length
 .arg size
 bytes.
 Each element is initialized to 0.
 .np
-A block of memory allocated using the &func function should be freed
+A block of memory allocated using the
+.id &func.
+function should be freed
 using the
 .kw free
 function.
 .desc end
 .return begin
-The &func function returns a pointer to the start of the allocated
+The
+.id &func.
+function returns a pointer to the start of the allocated
 memory.
 The return value is
 .mono NULL
@@ -65,9 +71,10 @@ void __near *_ncalloc( size_t n, size_t size );
 .ixfunc2 '&Memory' _fcalloc
 .ixfunc2 '&Memory' _ncalloc
 .synop end
-.funcbold calloc
 .desc begin
-The &func functions allocate space for an array of
+The
+.idbold &func.
+functions allocate space for an array of
 .arg n
 objects, each of length
 .arg size
@@ -90,9 +97,13 @@ Far heap (outside the default data segment)
 Near heap (inside the default data segment)
 .endterm
 .np
-In a small data memory model, the &func function is equivalent to the
+In a small data memory model, the
+.idbold &func.
+function is equivalent to the
 .kw _ncalloc
-function; in a large data memory model, the &func function is
+function; in a large data memory model, the
+.idbold &func.
+function is
 equivalent to the
 .kw _fcalloc
 function.
@@ -103,7 +114,9 @@ using the appropriate
 function.
 .desc end
 .return begin
-The &func functions return a pointer to the start of the allocated
+The
+.idbold &func.
+functions return a pointer to the start of the allocated
 memory.
 The return value is
 .mono NULL

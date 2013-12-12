@@ -17,7 +17,9 @@ int swscanf( const wchar_t *in_string,
 .safealt
 .*
 .desc begin
-The &func function scans input from the character string
+The
+.id &func.
+function scans input from the character string
 .arg in_string
 under control of the argument
 .arg format
@@ -32,7 +34,11 @@ string is described under the description of the
 function.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument for
 .arg format
 and the input string
@@ -42,7 +48,9 @@ consists of wide characters.
 .desc end
 .*
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .kw EOF
 if the end of the input string was reached before any input conversion.
 Otherwise, the number of input arguments for which values were

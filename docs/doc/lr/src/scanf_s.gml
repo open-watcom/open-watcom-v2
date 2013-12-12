@@ -21,20 +21,29 @@ argument shall not be a null pointer.
 Any argument indirected through in order to store converted input shall
 not be a null pointer.
 .np
-If there is a runtime-constraint violation, the &func function does not
+If there is a runtime-constraint violation, the
+.id &func.
+function does not
 attempt to perform further input, and it is unspecified to what extent
-&func performed input before discovering the runtime-constraint violation.
+.id &func.
+performed input before discovering the runtime-constraint violation.
 .rtconst end
 .*
 .desc begin
-The &func function is equivalent to
+The
+.id &func.
+function is equivalent to
 .kw fscanf_s
 with the argument
 .arg stdin
 interposed before the arguments to &func.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument for
 .arg format
 .ct .li .
@@ -42,11 +51,15 @@ wide-character string argument for
 .desc end
 .*
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .kw EOF
 if an input failure occurred before any conversion or if there was
 a runtime-constraint violation.
-Otherwise, the &func function returns the number of input items
+Otherwise, the
+.id &func.
+function returns the number of input items
 successfully assigned, which can be fewer than provided for, or even zero.
 .np
 When a file input error occurs, the

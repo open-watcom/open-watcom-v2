@@ -20,7 +20,9 @@ FILE *_wfreopen( const wchar_t *filename,
 The stream located by the
 .kw fp
 pointer is closed.
-The &func function opens the file whose name is the string pointed to
+The
+.id &func.
+function opens the file whose name is the string pointed to
 by
 .arg filename
 .ct , and associates a stream with it.
@@ -35,7 +37,11 @@ is described in the description of the
 function.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts
 wide-character string arguments for
 .arg filename
 and
@@ -44,11 +50,15 @@ and
 .do end
 .desc end
 .return begin
-The &func function returns a pointer to the object controlling the
+The
+.id &func.
+function returns a pointer to the object controlling the
 stream.
 This pointer must be passed as a parameter to subsequent functions for
 performing operations on the file.
-If the open operation fails, &func returns
+If the open operation fails,
+.id &func.
+returns
 .mono NULL.
 .im errnoref
 .return end

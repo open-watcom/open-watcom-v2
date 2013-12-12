@@ -1,4 +1,5 @@
 .gfuncw putimage
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _putimage( short x, short y,
                      char _HUGE *image, short mode );
@@ -17,13 +18,19 @@ double precision x, y
 integer*1 image(*)
 integer*2 mode
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines display the screen image indicated by the argument
+The
+.id &func.
+&routines display the screen image indicated by the argument
 .arg image
 .ct .li .
-The &func &routine uses the view coordinate system.
-The &func2 &routine uses the window coordinate system.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+&routine uses the window coordinate system.
 .np
 The image is displayed upon the screen with its top left corner
 located at the point with coordinates
@@ -63,7 +70,9 @@ animated effects
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routines do not return a value.
+The
+.id &func.
+&routines do not return a value.
 .return end
 .do end
 .see begin

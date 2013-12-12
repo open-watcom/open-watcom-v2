@@ -1,4 +1,5 @@
 .gfunc displaycursor
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _displaycursor( short mode );
 .do end
@@ -6,9 +7,11 @@ short _FAR _displaycursor( short mode );
 integer*2 function _displaycursor( mode )
 integer*2 mode
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine is used to establish whether the text cursor is to be
+The
+.id &func.
+&routine is used to establish whether the text cursor is to be
 displayed when graphics &routines complete.
 On entry to a graphics &routine, the text cursor is turned off.
 When the &routine completes, the
@@ -25,7 +28,9 @@ the cursor will not be displayed
 .endterm
 .desc end
 .return begin
-The &func &routine returns the previous setting for
+The
+.id &func.
+&routine returns the previous setting for
 .arg mode
 .ct .li .
 .return end

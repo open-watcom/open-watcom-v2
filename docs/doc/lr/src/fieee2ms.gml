@@ -5,14 +5,18 @@ extern int _fieeetomsbin( float *src, float *dest );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function loads the float pointed to by
+The
+.id &func.
+function loads the float pointed to by
 .arg src
 in IEEE format and converts it to Microsoft binary format, storing the
 result into the float pointed to by
 .arg dest
 .ct .li .
 .np
-For &func, IEEE Nan's and Infinities will cause overflow.
+For
+.id &func.
+IEEE Nan's and Infinities will cause overflow.
 IEEE denormals will be converted if within range.
 Otherwise, they will be converted to 0 in the Microsoft binary format.
 .np
@@ -25,7 +29,9 @@ Microsoft Binary Format was used by early versions of Microsoft
 QuickBASIC before coprocessors became standard.
 .desc end
 .return begin
-The &func function returns 0 if the conversion was successful.
+The
+.id &func.
+function returns 0 if the conversion was successful.
 Otherwise, it returns 1 if conversion would cause an overflow.
 .return end
 .see begin

@@ -13,7 +13,9 @@ int fputws( const wchar_t *buf, FILE *fp );
 .do end
 .synop end
 .desc begin
-The &func function writes the character string pointed to by
+The
+.id &func.
+function writes the character string pointed to by
 .arg buf
 to the output stream designated by
 .arg fp
@@ -21,19 +23,27 @@ to the output stream designated by
 The terminating null character is not written.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it converts the
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it converts the
 wide character string specified by
 .arg buf
 to a multibyte character string and writes it to the output stream.
 .do end
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .kw EOF
 if an error occurs; otherwise, it returns a non-negative value
 (the number of characters written).
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns
+The
+.id &wfunc.
+function returns
 .kw EOF
 if a write or encoding error occurs; otherwise, it returns a
 non-negative value (the number of characters written).

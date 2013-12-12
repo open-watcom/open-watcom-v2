@@ -10,10 +10,16 @@ int far _fnthctype( const char far * str, size_t n );
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the type of an 8-bit character indicated as a byte offset
 .arg n
@@ -42,12 +48,16 @@ or it is the null character,
 .im ffarparm
 .desc end
 .return begin
-If the character is a null character, &func returns
+If the character is a null character,
+.id &func.
+returns
 .kw CT_ILGL
 .ct .li .
 If the offset
 .arg n
-is beyond the end of the string, &func returns
+is beyond the end of the string,
+.id &func.
+returns
 .kw CT_ILGL
 .ct .li .
 In all other cases, it returns one of

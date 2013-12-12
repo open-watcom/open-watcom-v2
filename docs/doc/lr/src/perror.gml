@@ -12,14 +12,18 @@ void _wperror( const wchar_t *prefix );
 .do end
 .synop end
 .desc begin
-The &func function prints, on the file designated by
+The
+.id &func.
+function prints, on the file designated by
 .kw stderr
 .ct,
 the error message corresponding to the error number
 contained in
 .kw errno
 .ct .li .
-The &func function writes first the string pointed to by
+The
+.id &func.
+function writes first the string pointed to by
 .arg prefix
 to stderr.
 This is followed by a colon (":"), a space, the string returned by
@@ -27,13 +31,21 @@ This is followed by a colon (":"), a space, the string returned by
 .ct , and a newline character.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument and produces wide-character output.
 .do end
 .desc end
 .return begin
-The &func function returns no value.
-Because &func uses the
+The
+.id &func.
+function returns no value.
+Because
+.id &func.
+uses the
 .kw fprintf
 function,
 .kw errno

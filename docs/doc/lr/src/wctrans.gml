@@ -7,7 +7,9 @@ wctrans_t wctrans( const char *property );
 .synop end
 .*
 .desc begin
-The &func function constructs a value with type
+The
+.id &func.
+function constructs a value with type
 .kw wctrans_t
 that describes a mapping between wide characters identified by the
 string argument
@@ -20,7 +22,9 @@ indeterminate if the category's setting is changed.
 .np
 The two strings listed below are valid in all locales as
 .arg property
-arguments to the &func function.
+arguments to the
+.id &func.
+function.
 .begterm 10
 .termhd1 Constant
 .termhd2 Meaning
@@ -38,7 +42,9 @@ If
 .arg property
 identifies a valid class of wide characters according to the
 .kw LC_CTYPE
-category of the current locale, the &func function returns a non-zero
+category of the current locale, the
+.id &func.
+function returns a non-zero
 value that is valid as the second argument to the
 .kw towctrans
 function; otherwise, it returns zero.

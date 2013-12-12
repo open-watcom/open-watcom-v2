@@ -4,7 +4,9 @@
 void assert( int expression );
 .synop end
 .desc begin
-The &func macro prints a diagnostic message upon the
+The
+.id &func.
+macro prints a diagnostic message upon the
 .kw stderr
 stream and terminates the program if
 .arg expression
@@ -38,7 +40,9 @@ No action is taken if
 .arg expression
 is true (non-zero).
 .np
-The &func macro is typically used during program development to
+The
+.id &func.
+macro is typically used during program development to
 identify program logic errors.
 The given
 .arg expression
@@ -46,7 +50,9 @@ should be chosen so that it is true when the program is functioning
 as intended.
 After the program has been debugged, the special "no debug" identifier
 .kw NDEBUG
-can be used to remove &func calls from the program when it is
+can be used to remove
+.id &func.
+calls from the program when it is
 re-compiled.
 If
 .kw NDEBUG
@@ -54,11 +60,15 @@ is defined (with any value) with a
 .id -d
 command line option or with a
 .id #define
-directive, the C preprocessor ignores all &func calls in the program
+directive, the C preprocessor ignores all
+.id &func.
+calls in the program
 source.
 .desc end
 .return begin
-The &func macro does not return a value.
+The
+.id &func.
+macro does not return a value.
 :cmt. Because the function uses the
 :cmt. .kw fprintf
 :cmt. function to display errors, the

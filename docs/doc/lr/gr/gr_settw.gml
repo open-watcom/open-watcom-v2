@@ -1,4 +1,5 @@
 .gfunc settextwindow
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _settextwindow( short row1, short col1,
                           short row2, short col2 );
@@ -8,9 +9,11 @@ subroutine _settextwindow( row1, col1, row2, col2 )
 integer*2 row1, col1
 integer*2 row2, col2
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the text window to be the rectangle with a top
+The
+.id &func.
+&routine sets the text window to be the rectangle with a top
 left corner at
 .coord row1 col1
 and a bottom right corner at
@@ -36,7 +39,9 @@ then text is displayed on the last line of the window.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

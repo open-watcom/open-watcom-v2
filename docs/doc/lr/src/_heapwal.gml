@@ -28,13 +28,17 @@ struct _heapinfo {
 #define _FREEENTRY      1
 .synop end
 .desc begin
-The &func functions along with
+The
+.id &func.
+functions along with
 .kw _heapchk
 and
 .kw _heapset
 are provided for debugging heap related problems in programs.
 .np
-The &func functions walk through the heap, one entry per call,
+The
+.id &func.
+functions walk through the heap, one entry per call,
 updating the
 .kw _heapinfo
 structure with information on the next heap entry.
@@ -64,9 +68,13 @@ Far heap (outside the default data segment)
 Near heap (inside the default data segment)
 .endterm
 .np
-In a small data memory model, the &func function is equivalent to the
+In a small data memory model, the
+.id &func.
+function is equivalent to the
 .kw _nheapwalk
-function; in a large data memory model, the &func function is
+function; in a large data memory model, the
+.id &func.
+function is
 equivalent to the
 .kw _fheapwalk
 function.

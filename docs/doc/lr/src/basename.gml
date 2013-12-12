@@ -5,7 +5,9 @@ char *basename( char *path );
 .synop end
 .*
 .desc begin
-The &func function returns a pointer to the final component of a pathname
+The
+.id &func.
+function returns a pointer to the final component of a pathname
 pointed to by the
 .arg path
 argument, deleting trailing path separators.
@@ -20,16 +22,24 @@ If
 is a null pointer or points to an empty string, a pointer to the string "."
 is returned.
 .np
-The &func function may modify the string pointed to by
+The
+.id &func.
+function may modify the string pointed to by
 .arg path
 and may return a pointer to static storage that may be overwritten by
-a subsequent call to &func..
+a subsequent call to
+.id &func.
+.
 .np
-The &func function is not re-entrant or thread-safe.
+The
+.id &func.
+function is not re-entrant or thread-safe.
 .desc end
 .*
 .return begin
-The &func function returns a pointer to the final component of
+The
+.id &func.
+function returns a pointer to the final component of
 .arg path
 .ct .li .
 .return end

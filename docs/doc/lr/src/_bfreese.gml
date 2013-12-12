@@ -5,7 +5,9 @@ int _bfreeseg( __segment seg );
 .ixfunc2 '&Memory' _bfreeseg
 .synop end
 .desc begin
-The &func function frees a based-heap segment.
+The
+.id &func.
+function frees a based-heap segment.
 .pp
 The argument
 .arg seg
@@ -14,7 +16,9 @@ indicates the segment returned by an earlier call to
 .ct .li .
 .desc end
 .return begin
-The &func function returns 0 if successful and -1 if an error occurred.
+The
+.id &func.
+function returns 0 if successful and -1 if an error occurred.
 .return end
 .see begin
 .if &e'&dohelp eq 0 .do begin

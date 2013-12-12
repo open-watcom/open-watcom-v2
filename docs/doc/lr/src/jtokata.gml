@@ -5,7 +5,9 @@ JMOJI jtokata( JMOJI c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func converts a double-byte Hiragana character to a Katakana
+The
+.id &func.
+converts a double-byte Hiragana character to a Katakana
 character.
 A double-byte Hiragana character is any character for which
 the following expression is true:
@@ -23,7 +25,9 @@ The Hiragana code set includes 83 characters and the Katakana code set
 includes 86 characters.
 .desc end
 .return begin
-The &func function returns the argument value if the argument is not a
+The
+.id &func.
+function returns the argument value if the argument is not a
 double-byte Hiragana character;
 otherwise, the equivalent Katakana character is returned.
 .return end

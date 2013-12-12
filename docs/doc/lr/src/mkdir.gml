@@ -28,7 +28,9 @@ int _wmkdir( const wchar_t *path );
 .synop end
 .*
 .desc begin
-The &func function creates a new subdirectory with name
+The
+.id &func.
+function creates a new subdirectory with name
 .arg path
 .ct .li .
 The
@@ -54,7 +56,9 @@ group ID.
 .np
 The newly created directory will be empty.
 .np
-Upon successful completion, the &func function will mark for update
+Upon successful completion, the
+.id &func.
+function will mark for update
 the
 .us st_atime, st_ctime,
 and
@@ -69,18 +73,28 @@ update.
 .do end
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument.
 .do end
 .desc end
 .*
 .return begin
-The &func function returns zero if successful, and a non-zero value
+The
+.id &func.
+function returns zero if successful, and a non-zero value
 otherwise.
 .return end
 .*

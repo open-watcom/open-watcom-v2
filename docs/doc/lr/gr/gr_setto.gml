@@ -1,4 +1,5 @@
 .gfunc settextorient
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _settextorient( short vecx, short vecy );
 .do end
@@ -6,9 +7,11 @@ void _FAR _settextorient( short vecx, short vecy );
 subroutine _settextorient( vecx, vecy )
 integer*2 vecx, vecy
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current text orientation to the
+The
+.id &func.
+&routine sets the current text orientation to the
 vector specified by the arguments
 .coord vecx vecy .
 The text orientation specifies the direction of the base-line vector
@@ -22,7 +25,9 @@ is the vector
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

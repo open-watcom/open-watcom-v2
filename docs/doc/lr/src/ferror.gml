@@ -6,13 +6,17 @@ int ferror( FILE *fp );
 .ixfunc2 '&Errs' &func
 .synop end
 .desc begin
-The &func function tests the error indicator for the stream
+The
+.id &func.
+function tests the error indicator for the stream
 pointed to by
 .arg fp
 .ct .li .
 .desc end
 .return begin
-The &func function returns non-zero if the error indicator is set for
+The
+.id &func.
+function returns non-zero if the error indicator is set for
 .arg fp
 .ct .li .
 .return end

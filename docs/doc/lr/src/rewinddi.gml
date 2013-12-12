@@ -16,7 +16,9 @@ void _wrewinddir( _wdirent *dirp );
 .do end
 .synop end
 .desc begin
-The &func function resets the position of the directory stream to
+The
+.id &func.
+function resets the position of the directory stream to
 which
 .arg dirp
 refers to the beginning of the directory.
@@ -47,14 +49,20 @@ Either or both processes may use
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it rewinds a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it rewinds a
 directory of wide-character filenames opened by
 .kw _wopendir
 .ct .li .
 .do end
 .desc end
 .return begin
-The &func function does not return a value.
+The
+.id &func.
+function does not return a value.
 .return end
 .see begin
 .im seeiodir rewinddir

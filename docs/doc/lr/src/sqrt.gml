@@ -5,13 +5,17 @@ double sqrt( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the non-negative square root of
+The
+.id &func.
+function computes the non-negative square root of
 .arg x
 .ct .li .
 A domain error occurs if the argument is negative.
 .desc end
 .return begin
-The &func function returns the value of the square root.
+The
+.id &func.
+function returns the value of the square root.
 .im errnodom
 .return end
 .see begin

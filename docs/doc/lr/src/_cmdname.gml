@@ -5,7 +5,9 @@ char *_cmdname( char *buffer );
 .ixfunc2 '&String' &func
 .synop end
 .desc begin
-The &func function obtains a copy of the executing program's pathname
+The
+.id &func.
+function obtains a copy of the executing program's pathname
 and places it in
 .arg buffer
 .ct .li .

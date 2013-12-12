@@ -19,11 +19,14 @@ unsigned int _wcsnextc( const wchar_t *string ) {
 .ixfunc2 '&Wide' &wfunc
 .synop end
 .desc begin
-The &mfunc function returns the integer value of the next
+The
+.id &mfunc.
+function returns the integer value of the next
 multibyte-character in
 .arg string
 .ct , without advancing the string pointer.
-&mfunc recognizes multibyte character sequences according to the
+.id &mfunc.
+recognizes multibyte character sequences according to the
 multibyte code page currently in use.
 .np
 The header file
@@ -31,21 +34,33 @@ The header file
 defines the generic-text routine
 .kw _tcsnextc
 .ct .li .
-This macro maps to &mfunc if
+This macro maps to
+.id &mfunc.
+if
 .kw _MBCS
-has been defined, or to &wfunc if
+has been defined, or to
+.id &wfunc.
+if
 .kw _UNICODE
 has been defined.
 Otherwise
 .kw _tcsnextc
 maps to &func..
-&func and &wfunc are single-byte character string and wide-character
+.id &func.
+and
+.id &wfunc.
+are single-byte character string and wide-character
 string versions of &mfunc..
-&func and &wfunc are provided only for this mapping and should not be
+.id &func.
+and
+.id &wfunc.
+are provided only for this mapping and should not be
 used otherwise.
-&func returns the integer value of the next single-byte character in
+.id &func.
+returns the integer value of the next single-byte character in
 the string.
-&wfunc returns the integer value of the next wide character in the
+.id &wfunc.
+returns the integer value of the next wide character in the
 string.
 .desc end
 .return begin

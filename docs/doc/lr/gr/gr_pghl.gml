@@ -1,4 +1,5 @@
 .gfunc pg_hlabelchart
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_hlabelchart( chartenv _FAR *env,
                             short x, short y,
@@ -12,9 +13,11 @@ record /chartenv/ env
 integer*2 x, y, color
 character*(*) label
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine displays the text string
+The
+.id &func.
+&routine displays the text string
 .arg label
 on the chart described by the
 .arg env
@@ -27,7 +30,9 @@ The
 specifies the palette color used to display the string.
 .desc end
 .return begin
-The &func &routine returns zero
+The
+.id &func.
+&routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin

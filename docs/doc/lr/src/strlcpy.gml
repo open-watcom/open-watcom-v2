@@ -16,7 +16,9 @@ size_t wcslcpy( wchar_t *dst,
 .do end
 .synop end
 .desc begin
-The &func function copies no more than
+The
+.id &func.
+function copies no more than
 .arg n
 characters from the string pointed to by
 .arg src
@@ -38,7 +40,9 @@ characters, then only
 .im widefunc
 .desc end
 .return begin
-The &func function returns the number of characters in the
+The
+.id &func.
+function returns the number of characters in the
 .arg src
 string, not including the terminating null character.
 .return end

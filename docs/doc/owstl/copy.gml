@@ -1,6 +1,6 @@
 Notice of Copyright
 :P.
-Copyright (c) 2005 The Open Watcom Contributors.
+Copyright (c) 2005-&cpyyear. The Open Watcom Contributors.
 All rights reserved.
 :P.
 Any part of this publication may be reproduced, transmitted, or

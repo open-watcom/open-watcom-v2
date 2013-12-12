@@ -5,7 +5,9 @@ PFV set_new_handler( PFV pNewHandler );
 PFU _set_new_handler( PFU pNewHandler );
 .synop end
 .desc begin
-The &func functions are used to transfer control to a user-defined
+The
+.id &func.
+functions are used to transfer control to a user-defined
 error handler if the
 .kw new
 operator fails to allocate memory.
@@ -42,10 +44,14 @@ Thus, each process and thread is in charge of its own free-store error
 handling.
 .desc end
 .return begin
-The &func functions return a pointer to the previous error handler so
+The
+.id &func.
+functions return a pointer to the previous error handler so
 that the previous error handler can be reinstated at a later time.
 .np
-The error handler specified as the argument to &_func returns zero
+The error handler specified as the argument to
+.id &_func.
+returns zero
 indicating that further attempts to allocate memory should be halted
 or non-zero to indicate that an allocation request should be
 re-attempted.

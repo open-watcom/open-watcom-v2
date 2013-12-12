@@ -5,7 +5,9 @@ void rewind( FILE *fp );
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function sets the file position indicator for the stream
+The
+.id &func.
+function sets the file position indicator for the stream
 indicated to by
 .arg fp
 to the beginning of the file.
@@ -17,7 +19,9 @@ It is equivalent to
 except that the error indicator for the stream is cleared.
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .seelist rewind fopen clearerr

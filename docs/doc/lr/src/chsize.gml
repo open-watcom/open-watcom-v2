@@ -9,7 +9,9 @@ int _chsize( int &fd, long size );
 .do end
 .synop end
 .desc begin
-The &func function changes the size of the file associated with
+The
+.id &func.
+function changes the size of the file associated with
 .arg &fd
 by extending or truncating the file to the length specified by
 .arg size
@@ -18,12 +20,18 @@ If the file needs to be extended, the file is padded with NULL ('\0')
 characters.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI naming conventions.
 .do end
 .if '&machsys' eq 'QNX' .do begin
 .np
-Note that the &func function call ignores advisory locks which may
+Note that the
+.id &func.
+function call ignores advisory locks which may
 have been set by the
 .kw fcntl
 .ct ,
@@ -34,7 +42,9 @@ functions.
 .do end
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 A return value of -1 indicates an error, and
 .kw errno
 is set to indicate the error.

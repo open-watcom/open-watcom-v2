@@ -1,4 +1,5 @@
 .gfunc gettextsettings
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct textsettings _FAR * _FAR _gettextsettings
     ( struct textsettings _FAR *settings );
@@ -7,9 +8,11 @@ struct textsettings _FAR * _FAR _gettextsettings
 subroutine _gettextsettings( settings )
 record /textsettings/ settings
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns information about the current text settings
+The
+.id &func.
+&routine returns information about the current text settings
 used when text is displayed by the
 .kw _grtext
 &routine..
@@ -42,7 +45,9 @@ vertical component of the current text alignment
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine returns information about the current graphics text settings.
+The
+.id &func.
+&routine returns information about the current graphics text settings.
 .return end
 .do end
 .see begin

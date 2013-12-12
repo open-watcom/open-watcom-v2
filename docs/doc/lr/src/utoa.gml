@@ -20,7 +20,9 @@ wchar_t *_utow( unsigned int value,
 .do end
 .synop end
 .desc begin
-The &func function converts the unsigned binary integer
+The
+.id &func.
+function converts the unsigned binary integer
 .arg value
 into the equivalent string in base
 .arg radix
@@ -42,17 +44,27 @@ must satisfy the condition:
 .millust end
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it produces a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it produces a
 wide-character string (which is twice as long).
 .do end
 .desc end
 .return begin
-The &func function returns the pointer to the result.
+The
+.id &func.
+function returns the pointer to the result.
 .return end
 .see begin
 .im seestoi &function.

@@ -27,7 +27,9 @@ shall be greater than the length of the generated file name string.
 .rtconst end
 .*
 .desc begin
-The &func function generates a string that is a valid file name and that is not the
+The
+.id &func.
+function generates a string that is a valid file name and that is not the
 same as the name of an existing file. The function is potentially capable of generating
 .kw TMP_MAX_S
 different strings, but any or all of them may already be in use by existing
@@ -35,24 +37,33 @@ files and thus not be suitable return values. The lengths of these strings shall
 the value of the
 .kw L_tmpnam_s
 macro.
-The &func function generates a different string each time it is called.
+The
+.id &func.
+function generates a different string each time it is called.
 .np
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function is identical to &func except that it generates a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it generates a
 unique wide-character string for the file name.
 .do end
 .desc end
 .*
 .return begin
 If no suitable string can be generated, or if there is a runtime-constraint violation, the
-&func function writes a null character to
+.id &func.
+function writes a null character to
 .arg s[0]
 (only if
 .arg s
 is not null and
 .arg maxsize
 is greater than zero) and returns a non-zero value.
-Otherwise, the &func function writes the string in the array pointed to by
+Otherwise, the
+.id &func.
+function writes the string in the array pointed to by
 .arg s
 and returns zero.
 .return end

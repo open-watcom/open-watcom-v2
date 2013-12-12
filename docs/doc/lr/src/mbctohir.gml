@@ -5,7 +5,9 @@ unsigned int _mbctohira( unsigned int ch );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func converts a double-byte Katakana character to a Hiragana
+The
+.id &func.
+converts a double-byte Katakana character to a Hiragana
 character.
 A double-byte Katakana character is any character for which
 the following expression is true:
@@ -32,7 +34,9 @@ This function was called
 in earlier versions.
 .desc end
 .return begin
-The &func function returns the argument value if the argument is not a
+The
+.id &func.
+function returns the argument value if the argument is not a
 double-byte Katakana character;
 otherwise, the equivalent Hiragana character is returned.
 .return end

@@ -5,7 +5,9 @@ int _findclose( long handle );
 .ixfunc2 '&DosFunc' _findclose
 .synop end
 .desc begin
-The &func function closes the directory of filenames established by a
+The
+.id &func.
+function closes the directory of filenames established by a
 call to the
 .kw _findfirst
 function.
@@ -16,7 +18,11 @@ argument was returned by the
 function.
 .desc end
 .return begin
-If successful, &func returns 0; otherwise, &func and returns &minus.1
+If successful,
+.id &func.
+returns 0; otherwise,
+.id &func.
+and returns &minus.1
 and sets
 .kw errno
 to one of the following values:

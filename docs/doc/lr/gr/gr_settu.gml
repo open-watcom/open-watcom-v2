@@ -1,4 +1,5 @@
 .gfunc settextcursor
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _settextcursor( short cursor );
 .do end
@@ -6,9 +7,11 @@ short _FAR _settextcursor( short cursor );
 integer*2 function _settextcursor( cursor )
 integer*2 cursor
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the attribute, or shape, of the cursor in text modes.
+The
+.id &func.
+&routine sets the attribute, or shape, of the cursor in text modes.
 :CMT.The cursor shape is set using the BIOS Set Cursor Size function.
 The argument
 .arg cursor
@@ -41,7 +44,9 @@ Cursor          Shape
 .millust end
 .desc end
 .return begin
-The &func &routine returns the previous cursor shape when the shape
+The
+.id &func.
+&routine returns the previous cursor shape when the shape
 is set successfully; otherwise, (-1) is returned.
 .return end
 .see begin

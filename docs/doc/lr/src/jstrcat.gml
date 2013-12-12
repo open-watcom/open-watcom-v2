@@ -13,10 +13,16 @@ FJSTRING __far _fjstrcat( JCHAR __far *dst,
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function appends
+The
+.id &func.
+function appends
 .do end
 .el .do begin
-The &func and &ffunc functions append
+The
+.id &func.
+and
+.id &ffunc.
+functions append
 .do end
 a copy of the Kanji string pointed to by
 .arg src

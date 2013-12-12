@@ -5,7 +5,9 @@ double fmax( double x, double y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function returns the larger of
+The
+.id &func.
+function returns the larger of
 .arg x
 and
 .arg y

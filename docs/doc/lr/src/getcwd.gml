@@ -16,7 +16,9 @@ wchar_t *_wgetcwd( wchar_t *buffer, size_t size );
 .do end
 .synop end
 .desc begin
-The &func function returns the name of the current working directory.
+The
+.id &func.
+function returns the name of the current working directory.
 The
 .arg buffer
 address is either
@@ -47,13 +49,19 @@ This string may be freed using the
 .kw free
 function.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function is identical to &func except that it returns the
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it returns the
 name of the current working directory as a wide-character string
 (which is twice as long).
 .do end
 .desc end
 .return begin
-The &func function returns the address of the string containing the
+The
+.id &func.
+function returns the address of the string containing the
 name of the current working directory, unless an error occurs, in
 which case
 .mono NULL

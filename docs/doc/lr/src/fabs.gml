@@ -5,12 +5,16 @@ double fabs( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the absolute value of the argument
+The
+.id &func.
+function computes the absolute value of the argument
 .arg x
 .ct .li .
 .desc end
 .return begin
-The &func function returns the absolute value of
+The
+.id &func.
+function returns the absolute value of
 .arg x
 .ct .li .
 .return end

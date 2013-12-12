@@ -12,19 +12,29 @@ int iswpunct( wint_t c );
 .do end
 .synop end
 .desc begin
-The &func function tests for any punctuation character such as a comma
+The
+.id &func.
+function tests for any punctuation character such as a comma
 (,) or a period (.).
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is similar to &func except that it accepts a
+The
+.id &wfunc.
+function is similar to
+.id &func.
+except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
-The &func function returns a non-zero value when the argument is a
+The
+.id &func.
+function returns a non-zero value when the argument is a
 punctuation character.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns a non-zero value when the argument is a
+The
+.id &wfunc.
+function returns a non-zero value when the argument is a
 printable wide character that is neither the space wide character nor
 a wide character for which
 .kw iswalnum

@@ -19,7 +19,9 @@ wchar_t *_wgcvt( double value,
 .do end
 .synop end
 .desc begin
-The &func function converts the floating-point number
+The
+.id &func.
+function converts the floating-point number
 .arg value
 into a character string and stores the result in
 .arg buffer
@@ -35,17 +37,27 @@ is converted into E-format, otherwise the number is formatted using
 F-format.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it produces a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it produces a
 wide-character string (which is twice as long).
 .do end
 .desc end
 .return begin
-The &func function returns a pointer to the string of digits.
+The
+.id &func.
+function returns a pointer to the string of digits.
 .return end
 .see begin
 .seelist gcvt ecvt fcvt printf

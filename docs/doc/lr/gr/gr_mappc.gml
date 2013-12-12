@@ -1,4 +1,5 @@
 .gfunc remappalette
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 long _FAR _remappalette( short pixval, long color );
 .do end
@@ -7,9 +8,11 @@ integer*4 function _remappalette( pixval, color )
 integer*2 pixval
 integer*4 color
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets (or remaps) the palette color
+The
+.id &func.
+&routine sets (or remaps) the palette color
 .arg pixval
 to be the color
 .arg color
@@ -47,7 +50,9 @@ The file
 defines constants containing the color intensities of each
 of the 16 default colors.
 .pp
-The &func &routine takes effect immediately.
+The
+.id &func.
+&routine takes effect immediately.
 All pixels on the complete screen which have a pixel value equal to the value of
 .arg pixval
 will now have the color indicated by the argument
@@ -55,7 +60,9 @@ will now have the color indicated by the argument
 .ct .li .
 .desc end
 .return begin
-The &func &routine returns the previous color for the pixel value
+The
+.id &func.
+&routine returns the previous color for the pixel value
 if the palette is remapped successfully; otherwise, (-1) is returned.
 .return end
 .see begin

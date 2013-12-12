@@ -20,7 +20,9 @@ int _wsopen( const wchar_t *filename,
 .do end
 .synop end
 .desc begin
-The &func function opens a file at the operating system level for
+The
+.id &func.
+function opens a file at the operating system level for
 shared access.
 The name of the file to be opened is given by
 .arg filename
@@ -40,12 +42,20 @@ flag is on in the
 mode.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide character string argument.
 .do end
 .im openacc
@@ -82,7 +92,9 @@ is the same as:
 sopen( path, oflag, SH_COMPAT, ... );
 .millust end
 .np
-Note that the &func function call ignores advisory locks which may
+Note that the
+.id &func.
+function call ignores advisory locks which may
 have been set by the
 .kw fcntl
 .ct ,
@@ -98,7 +110,9 @@ you are using for more detailed information about these sharing modes.
 .do end
 .desc end
 .return begin
-If successful, &func returns a &handle for the file.
+If successful,
+.id &func.
+returns a &handle for the file.
 When an error occurs while opening the file, &minus.1 is returned.
 .im errnoref
 .return end

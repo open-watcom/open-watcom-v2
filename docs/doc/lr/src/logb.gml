@@ -5,7 +5,9 @@ double logb( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function returns the exponent portion of the argument
+The
+.id &func.
+function returns the exponent portion of the argument
 .arg x
 as a double.
 .desc end

@@ -12,16 +12,22 @@ struct timeb {
 .ixfunc2 '&TimeFunc' &func
 .synop end
 .desc begin
-The &func function gets the current time and stores it in the
+The
+.id &func.
+function gets the current time and stores it in the
 structure pointed to by
 .arg timeptr
 .ct .li .
 .desc end
 .return begin
-The &func function fills in the fields of the structure pointed to by
+The
+.id &func.
+function fills in the fields of the structure pointed to by
 .arg timeptr
 .ct .li .
-The &func function returns &minus.1 if not successful, and no useful
+The
+.id &func.
+function returns &minus.1 if not successful, and no useful
 value otherwise.
 .return end
 .see begin

@@ -7,7 +7,9 @@ unsigned char far *_fmbputchar( unsigned char far *mbstr,
                                 unsigned int dbch );
 .synop end
 .desc begin
-The &func function places the next single- or double-byte character
+The
+.id &func.
+function places the next single- or double-byte character
 specified by
 .arg dbch
 at the start of the buffer specified by
@@ -16,7 +18,9 @@ at the start of the buffer specified by
 .im ffarfunc
 .desc end
 .return begin
-The &func function returns a pointer to the next location in which to
+The
+.id &func.
+function returns a pointer to the next location in which to
 store a character.
 .return end
 .see begin

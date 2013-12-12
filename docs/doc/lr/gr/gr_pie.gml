@@ -1,4 +1,5 @@
 .gfuncwxy pie
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _pie( short fill, short x1, short y1,
                              short x2, short y2,
@@ -38,11 +39,19 @@ integer*2 fill,
 record /_wxycoord/ p1, p2
 record /_wxycoord/ p3, p4
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines draw pie-shaped wedges.
-The &func &routine uses the view coordinate system.
-The &func2 and &func3 &routines use the window coordinate system.
+The
+.id &func.
+&routines draw pie-shaped wedges.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+and
+.id &func3.
+&routines use the window coordinate system.
 .np
 The pie wedges are drawn by drawing an elliptical
 arc (in the way described for the

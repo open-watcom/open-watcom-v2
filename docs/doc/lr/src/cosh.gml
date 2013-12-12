@@ -7,7 +7,9 @@ double cosh( double x );
 .ixfunc2 '&Hyper' &func
 .synop end
 .desc begin
-The &func function computes the hyperbolic cosine of
+The
+.id &func.
+function computes the hyperbolic cosine of
 .arg x
 .ct .li .
 A range error occurs if the magnitude of
@@ -15,7 +17,9 @@ A range error occurs if the magnitude of
 is too large.
 .desc end
 .return begin
-The &func function returns the hyperbolic cosine value.
+The
+.id &func.
+function returns the hyperbolic cosine value.
 .im errnorng
 .return end
 .see begin

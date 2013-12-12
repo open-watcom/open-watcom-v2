@@ -7,7 +7,9 @@ double tanh( double x );
 .ixfunc2 '&Hyper' &func
 .synop end
 .desc begin
-The &func function computes the hyperbolic tangent of
+The
+.id &func.
+function computes the hyperbolic tangent of
 .arg x
 .ct .li .
 .np
@@ -19,7 +21,9 @@ The
 function will be invoked in this case.
 .desc end
 .return begin
-The &func function returns the hyperbolic tangent value.
+The
+.id &func.
+function returns the hyperbolic tangent value.
 .im errnoref
 .return end
 .see begin

@@ -5,7 +5,9 @@ int signbit( x );
 .synop end
 .*
 .desc begin
-The &func macro determines whether the sign of its argument value is negative.
+The
+.id &func.
+macro determines whether the sign of its argument value is negative.
 .np
 The argument
 .arg x
@@ -13,7 +15,9 @@ must be an expression of real floating type.
 .desc end
 .*
 .return begin
-The &func macro returns a nonzero value if and only if the sign of its
+The
+.id &func.
+macro returns a nonzero value if and only if the sign of its
 argument has value is negative.
 .return end
 .*

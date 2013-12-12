@@ -1,4 +1,5 @@
 .gfunc setbkcolor
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 long _FAR _setbkcolor( long color );
 .do end
@@ -6,9 +7,11 @@ long _FAR _setbkcolor( long color );
 integer*4 function _setbkcolor( color )
 integer*4 color
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current background color to be that of the
+The
+.id &func.
+&routine sets the current background color to be that of the
 .arg color
 argument.
 In text modes, the background color controls the area behind each
@@ -28,7 +31,9 @@ only subsequent output is affected.
 .* .im gr_pixvl
 .desc end
 .return begin
-The &func &routine returns the previous background color.
+The
+.id &func.
+&routine returns the previous background color.
 .return end
 .see begin
 .seelist &function. _getbkcolor

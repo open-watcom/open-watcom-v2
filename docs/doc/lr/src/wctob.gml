@@ -6,14 +6,18 @@ int wctob( wint_t wc );
 .ixfunc2 '&Multibyte' &func
 .synop end
 .desc begin
-The &func function determines whether
+The
+.id &func.
+function determines whether
 .arg wc
 corresponds to a member of the extended character set whose multibyte
 character representation is as a single byte when in the initial shift
 state.
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .mono EOF
 if
 .arg wc

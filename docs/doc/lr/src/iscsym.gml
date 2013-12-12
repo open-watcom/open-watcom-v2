@@ -14,13 +14,23 @@ int __iswcsym( wint_t c );
 .do end
 .synop end
 .desc begin
-The &func function tests for a letter, underscore or digit.
+The
+.id &func.
+function tests for a letter, underscore or digit.
 .np
-The &__func function is identical to &func..
-Use &__func for ANSI/ISO naming conventions.
+The
+.id &__func.
+function is identical to &func..
+Use
+.id &__func.
+for ANSI/ISO naming conventions.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is similar to &func except that it accepts a
+The
+.id &wfunc.
+function is similar to
+.id &func.
+except that it accepts a
 wide-character argument.
 .do end
 .desc end
@@ -28,7 +38,9 @@ wide-character argument.
 A non-zero value is returned when the character is a letter,
 underscore or digit; otherwise, zero is returned.
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns a non-zero value when
+The
+.id &wfunc.
+function returns a non-zero value when
 .arg c
 is a wide-character representation of a letter, underscore or
 digit character.

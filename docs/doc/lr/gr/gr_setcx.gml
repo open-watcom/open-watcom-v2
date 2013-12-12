@@ -1,4 +1,5 @@
 .gfuncw setcharspacing
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _setcharspacing( short space );
 
@@ -11,16 +12,22 @@ integer*2 space
 subroutine _setcharspacing_w( space )
 double precision space
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines set the current character spacing to have the value
+The
+.id &func.
+&routines set the current character spacing to have the value
 of the argument
 .arg space
 .ct .li .
-For the &func &routine,
+For the
+.id &func.
+&routine,
 .arg space
 represents a number of pixels.
-For the &func2 &routine,
+For the
+.id &func2.
+&routine,
 .arg space
 represents a length along the x-axis in the window coordinate system.
 .np
@@ -34,7 +41,9 @@ The default value of the character spacing is 0.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routines do not return a value.
+The
+.id &func.
+&routines do not return a value.
 .return end
 .do end
 .see begin

@@ -1,4 +1,5 @@
 .gfunc setactivepage
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _setactivepage( short pagenum );
 .do end
@@ -6,9 +7,11 @@ short _FAR _setactivepage( short pagenum );
 integer*2 function _setactivepage( pagenum )
 integer*2 pagenum
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine selects the page (in memory) to which graphics output
+The
+.id &func.
+&routine selects the page (in memory) to which graphics output
 is written.
 The page to be selected is given by the
 .arg pagenum
@@ -16,7 +19,9 @@ argument.
 .im gr_pages
 .desc end
 .return begin
-The &func &routine returns the number of the previous page when the
+The
+.id &func.
+&routine returns the number of the previous page when the
 active page is set successfully; otherwise, a negative number
 is returned.
 .return end

@@ -4,7 +4,9 @@
 void segread( struct SREGS *seg_regs );
 .synop end
 .desc begin
-The &func function places the values of the segment registers into
+The
+.id &func.
+function places the values of the segment registers into
 the structure located by
 .arg seg_regs
 .ct .li .

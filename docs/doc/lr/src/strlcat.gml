@@ -14,7 +14,9 @@ size_t *wcslcat( wchar_t *dst,
 .do end
 .synop end
 .desc begin
-The &func function appends characters of the string pointed to by
+The
+.id &func.
+function appends characters of the string pointed to by
 .arg src
 to the end of the string in a buffer pointed to by
 .arg dst
@@ -34,7 +36,9 @@ are scanned and no null character is found.
 .im widefunc
 .desc end
 .return begin
-The &func function returns the total length of string it tried to create,
+The
+.id &func.
+function returns the total length of string it tried to create,
 that is the number of characters in both
 .arg src
 and

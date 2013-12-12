@@ -8,7 +8,9 @@ char   *optarg;
 int    optind, opterr, optopt;
 .synop end
 .desc begin
-The &func function is a command-line parser that can be used by applications
+The
+.id &func.
+function is a command-line parser that can be used by applications
 that follow Utility Syntax Guidelines 3, 4, 5, 6, 7, 9 and 10 in the Base
 Definitions volume of IEEE Std 1003.1-2001, Section 12.2, Utility Syntax
 Guidelines.
@@ -38,14 +40,20 @@ updates it when it finishes with each element of
 .ct .li .
 When an element of
 .arg argv[]
-contains multiple option characters, &func uses a static variable to determine
+contains multiple option characters,
+.id &func.
+uses a static variable to determine
 which options have already been processed.
 .np
-The &func function returns the next option character (if one is found) from
+The
+.id &func.
+function returns the next option character (if one is found) from
 .arg argv
 that matches a character in
 .arg optstring
-.ct, if there is one that matches. If the option takes an argument, &func sets
+.ct, if there is one that matches. If the option takes an argument,
+.id &func.
+sets
 the variable
 .kw optarg
 to point to the option-argument as follows:
@@ -62,7 +70,9 @@ is incremented by 2. If the resulting value of
 .kw optind
 is not less than
 .arg argc
-.ct, this indicates a missing option-argument, and &func returns an error
+.ct, this indicates a missing option-argument, and
+.id &func.
+returns an error
 indication.
 .np
 Otherwise,
@@ -73,7 +83,9 @@ points to the string following the option character in that element of
 .kw optind
 is incremented by 1.
 .np
-If, when &func is called:
+If, when
+.id &func.
+is called:
 .*
 .begbull
 .bull
@@ -87,16 +99,21 @@ is not the character '-'
 points to the string "-"
 .endbull
 .*
-&func returns -1 without changing
+.id &func.
+returns -1 without changing
 .kw optind
 .ct .li .
 If
 .arg argv[optind]
-points to the string "--", &func returns -1 after incrementing
+points to the string "--",
+.id &func.
+returns -1 after incrementing
 .kw optind
 .ct .li .
 .np
-If &func encounters an option character that is not contained in
+If
+.id &func.
+encounters an option character that is not contained in
 .arg optstring
 .ct, it returns the question-mark (?) character. If it detects a missing
 option-argument, it returns the colon character (:) if the first character of
@@ -109,28 +126,40 @@ the global variable
 .kw opterr
 to 0 and the first character of
 .arg optstring
-is not a colon, &func also prints a diagnostic message to
+is not a colon,
+.id &func.
+also prints a diagnostic message to
 .kw stderr
 .ct .li .
 .np
-The &func function is not re-entrant and hence not thread-safe.
+The
+.id &func.
+function is not re-entrant and hence not thread-safe.
 .desc end
 .return begin
-The &func function returns the next option character specified on the command
+The
+.id &func.
+function returns the next option character specified on the command
 line.
 .np
-A colon (:) is returned if &func detects a missing argument and the
+A colon (:) is returned if
+.id &func.
+detects a missing argument and the
 first character of
 .arg optstring
 was a colon (:).
 .np
-A question mark (?) is returned if &func encounters an option character not in
+A question mark (?) is returned if
+.id &func.
+encounters an option character not in
 .arg optstring
 or detects a missing argument and the first character of
 .arg optstring
 was not a colon (:).
 .np
-Otherwise, &func returns -1 when all command line options are parsed.
+Otherwise,
+.id &func.
+returns -1 when all command line options are parsed.
 .return end
 .see begin
 .im seeproc &function.

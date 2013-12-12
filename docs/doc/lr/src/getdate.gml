@@ -12,7 +12,9 @@ struct dosdate_t {
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x2A to get the current system date.
+The
+.id &func.
+function uses system call 0x2A to get the current system date.
 The date information is returned in a
 .kw dosdate_t
 structure pointed to by
@@ -20,7 +22,9 @@ structure pointed to by
 .ct .li .
 .desc end
 .return begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 .return end
 .see begin
 .seelist _dos_getdate _dos_gettime _dos_setdate _dos_settime gmtime localtime mktime time

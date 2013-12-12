@@ -1,19 +1,24 @@
 .gfunc getgtextvector
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getgtextvector( void );
 .do end
 .el .do begin
 record /xycoord/ function _getgtextvector()
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the current value of the text orientation vector.
+The
+.id &func.
+&routine returns the current value of the text orientation vector.
 This is the direction used when text is displayed by the
 .kw _outgtext
 &routine..
 .desc end
 .return begin
-The &func &routine returns, as an
+The
+.id &func.
+&routine returns, as an
 .id xycoord
 structure, the current value of the text orientation vector.
 .return end

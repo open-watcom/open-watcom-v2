@@ -7,7 +7,9 @@ int lock( int &fd,
 .ixfunc2 '&OsIo' &func
 .synop end
 .desc begin
-The &func function locks
+The
+.id &func.
+function locks
 .arg nbytes
 amount of data in the file designated by
 .arg &fd
@@ -51,7 +53,9 @@ must be installed.
 .do end
 .desc end
 .return begin
-The &func function returns zero if successful, and &minus.1 when an error
+The
+.id &func.
+function returns zero if successful, and &minus.1 when an error
 occurs.
 .im errnoref
 .return end

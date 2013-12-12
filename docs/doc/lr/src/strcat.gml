@@ -37,7 +37,9 @@ unsigned char __far *_fmbscat( unsigned char __far *dst,
 .safealt
 .*
 .desc begin
-The &func function appends a copy of the string pointed to
+The
+.id &func.
+function appends a copy of the string pointed to
 by
 .arg src
 (including the terminating null character)

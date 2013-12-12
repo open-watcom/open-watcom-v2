@@ -12,10 +12,16 @@ FJSTRING __far _fjstrchr( const JCHAR __far *s, JMOJI c );
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function locates
+The
+.id &func.
+function locates
 .do end
 .el .do begin
-The &func and &ffunc functions locate
+The
+.id &func.
+and
+.id &ffunc.
+functions locate
 .do end
 the first occurrence of the single- or double-byte character
 .arg c
@@ -27,10 +33,16 @@ The terminating null character is considered to be part of the string.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 a pointer to the located character, or
 .mono NULL

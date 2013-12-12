@@ -5,15 +5,21 @@ int ffs( int i );
 .ixfunc2 '&String' &func
 .synop end
 .desc begin
-The &func finds the first bit set, beginning with the least significant bit, in
+The
+.id &func.
+finds the first bit set, beginning with the least significant bit, in
 .arg i
 .ct .li .
 Bits are numbered starting at one (the least significant bit).
 .desc end
 .return begin
-The &func function returns the index of the first bit set. If
+The
+.id &func.
+function returns the index of the first bit set. If
 .arg i
-is 0, &func returns zero.
+is 0,
+.id &func.
+returns zero.
 .return end
 .see begin
 .seelist &function. _lrotl _lrotr _rotl _rotr

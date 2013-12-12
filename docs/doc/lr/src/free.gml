@@ -10,7 +10,11 @@ When the value of the argument
 .arg ptr
 is
 .mono NULL,
-the &func function does nothing; otherwise, the &func function
+the
+.id &func.
+function does nothing; otherwise, the
+.id &func.
+function
 deallocates the memory block located by the argument
 .arg ptr
 which points to a memory block previously allocated through a call to
@@ -23,7 +27,9 @@ or
 After the call, the freed block is available for allocation.
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .im seealloc free
@@ -74,7 +80,11 @@ When the value of the argument
 .arg ptr
 is
 .mono NULL,
-the &func function does nothing; otherwise, the &func function
+the
+.id &func.
+function does nothing; otherwise, the
+.id &func.
+function
 deallocates the memory block located by the argument
 .arg ptr
 which points to a memory block previously allocated through a call to
@@ -103,15 +113,21 @@ Far heap (outside the default data segment)
 Near heap (inside the default data segment)
 .endterm
 .np
-In a large data memory model, the &func function is equivalent to the
+In a large data memory model, the
+.id &func.
+function is equivalent to the
 .kw _ffree
-function; in a small data memory model, the &func function is
+function; in a small data memory model, the
+.id &func.
+function is
 equivalent to the
 .kw _nfree
 function.
 .desc end
 .return begin
-The &func functions return no value.
+The
+.id &func.
+functions return no value.
 .return end
 .see begin
 .im seealloc free

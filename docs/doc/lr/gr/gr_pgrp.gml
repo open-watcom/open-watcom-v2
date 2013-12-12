@@ -1,20 +1,25 @@
 .gfunc pg_resetpalette
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_resetpalette( void );
 .do end
 .el .do begin
 integer*2 function _pg_resetpalette()
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine resets the internal palette of the presentation
+The
+.id &func.
+&routine resets the internal palette of the presentation
 graphics system to default values.
 The palette controls the colors, line styles, fill patterns
 and plot characters used to display each series of data in a chart.
 The default palette chosen is dependent on the current video mode.
 .desc end
 .return begin
-The &func &routine returns zero
+The
+.id &func.
+&routine returns zero
 if successful; otherwise, a non-zero value is returned.
 .return end
 .see begin

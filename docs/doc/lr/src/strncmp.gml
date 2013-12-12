@@ -41,7 +41,9 @@ int _fmbsncmp( const unsigned char __far *s1,
 .do end
 .synop end
 .desc begin
-The &func compares not more than
+The
+.id &func.
+compares not more than
 .arg n
 characters from the string pointed to by
 .arg s1
@@ -53,7 +55,9 @@ to the string pointed to by
 .im mbsffunc
 .desc end
 .return begin
-The &func function returns an integer less than, equal to, or greater
+The
+.id &func.
+function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by

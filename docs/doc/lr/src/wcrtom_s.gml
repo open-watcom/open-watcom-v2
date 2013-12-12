@@ -47,13 +47,17 @@ is a null pointer, then
 .arg smax
 shall equal zero.
 .np
-If there is a runtime-constraint violation, then &func does the following. If
+If there is a runtime-constraint violation, then
+.id &func.
+does the following. If
 .arg s
 is not a null pointer and
 .arg smax
 is greater than zero and not greater than
 .kw RSIZE_MAX
-.ct , then &func. sets
+.ct , then
+.id &func.
+sets
 .arg s[0]
 to the null character. If
 .arg retval
@@ -67,7 +71,9 @@ to (size_t)(-1).
 .desc begin
 If
 .arg s
-is a null pointer, the &func. function is equivalent to the call
+is a null pointer, the
+.id &func.
+function is equivalent to the call
 .br
 wcrtomb_s(&retval, buf, sizeof buf, L'\0', ps)
 .br
@@ -81,7 +87,9 @@ is greater than MB_CUR_MAX.
 .np
 If
 .arg s
-is not a null pointer, the &func. function determines the number of bytes
+is not a null pointer, the
+.id &func.
+function determines the number of bytes
 needed to represent the multibyte character that corresponds to the wide character given
 by
 .arg wc
@@ -101,10 +109,14 @@ described is the initial conversion state.
 If
 .arg wc
 does not correspond to a valid multibyte character, an encoding error
-occurs: the &func. function stores the value (size_t)(-1) into
+occurs: the
+.id &func.
+function stores the value (size_t)(-1) into
 .arg *retval
 and the
-conversion state is unspecified. Otherwise, the &func function stores into
+conversion state is unspecified. Otherwise, the
+.id &func.
+function stores into
 .arg *retval
 the number of bytes (including any shift sequences) stored in the array pointed
 to by

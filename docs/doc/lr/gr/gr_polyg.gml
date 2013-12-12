@@ -1,4 +1,5 @@
 .gfuncwxy polygon
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _polygon( short fill, short numpts,
                      struct xycoord _FAR *points );
@@ -25,11 +26,19 @@ integer*2 fill
 integer*2 numpts
 record /_wxycoord/ points(*)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines draw polygons.
-The &func &routine uses the view coordinate system.
-The &func2 and &func3 &routines use the window coordinate system.
+The
+.id &func.
+&routines draw polygons.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+and
+.id &func3.
+&routines use the window coordinate system.
 .np
 The polygon is defined as containing
 .arg numpts

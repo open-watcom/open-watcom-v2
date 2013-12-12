@@ -5,7 +5,9 @@ double copysign( double x, double y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function returns a value whose absolute value is equal
+The
+.id &func.
+function returns a value whose absolute value is equal
 to the absolute value of the argument 
 .arg x
 and whose sign matches argument

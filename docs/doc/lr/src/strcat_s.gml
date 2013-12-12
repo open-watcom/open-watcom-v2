@@ -59,7 +59,9 @@ to the null character.
 .rtconst end
 .*
 .desc begin
-The &func function appends a copy of the string pointed to by
+The
+.id &func.
+function appends a copy of the string pointed to by
 .arg s2
 (including the terminating null character) to the end of the string pointed to by
 .arg s1
@@ -70,11 +72,14 @@ overwrites the null character at the end of
 .arg s1
 .ct .li .
 All elements following the terminating null character (if any) written by
-&func in the array of
+.id &func.
+in the array of
 .arg s1max
 characters pointed to by
 .arg s1
-take unspecified values when &func returns.
+take unspecified values when
+.id &func.
+returns.
 .im widefunc
 .desc end
 .*

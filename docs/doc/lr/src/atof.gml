@@ -10,7 +10,9 @@ double _wtof( const wchar_t *ptr );
 .do end
 .synop end
 .desc begin
-The &func function converts the string pointed to by
+The
+.id &func.
+function converts the string pointed to by
 .arg ptr
 to
 .id double
@@ -21,7 +23,11 @@ strtod( ptr, (char **)NULL )
 .millust end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it
 accepts a wide-character string argument.
 It is equivalent to
 .millust begin
@@ -30,7 +36,9 @@ wcstod( ptr, (wchar_t **)NULL )
 .do end
 .desc end
 .return begin
-The &func function returns the converted value.
+The
+.id &func.
+function returns the converted value.
 .im errnocnv
 .return end
 .see begin

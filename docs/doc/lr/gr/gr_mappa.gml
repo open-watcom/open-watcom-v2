@@ -1,4 +1,5 @@
 .gfunc remapallpalette
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _remapallpalette( long _FAR *colors );
 .do end
@@ -6,9 +7,11 @@ short _FAR _remapallpalette( long _FAR *colors );
 integer*2 function _remapallpalette( colors )
 integer*4 colors(*)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets (or remaps) all of the colors in the palette.
+The
+.id &func.
+&routine sets (or remaps) all of the colors in the palette.
 The color values in the palette are replaced by the array of
 color values given by the argument
 .arg colors
@@ -28,7 +31,9 @@ The number of colors in the palette can be determined by using the
 &routine..
 .desc end
 .return begin
-The &func &routine returns (-1) if the palette is remapped successfully
+The
+.id &func.
+&routine returns (-1) if the palette is remapped successfully
 and zero otherwise.
 .return end
 .see begin

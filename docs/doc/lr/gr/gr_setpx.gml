@@ -1,4 +1,5 @@
 .gfuncw setpixel
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _setpixel( short x, short y );
 
@@ -11,18 +12,26 @@ integer*2 x, y
 integer*2 function _setpixel_w( x, y )
 double precision x, y
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the pixel value of the point
+The
+.id &func.
+&routine sets the pixel value of the point
 .coord x y
 using the current plotting action with the current color.
-The &func &routine uses the view coordinate system.
-The &func2 &routine uses the window coordinate system.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+&routine uses the window coordinate system.
 .pp
 .im gr_pixvl
 .desc end
 .return begin
-The &func &routines return the previous value of the indicated pixel
+The
+.id &func.
+&routines return the previous value of the indicated pixel
 if the pixel value can be set; otherwise, (-1) is returned.
 .return end
 .see begin

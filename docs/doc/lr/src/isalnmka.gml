@@ -5,7 +5,9 @@ int isalnmkana( int c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg c
 is a single-byte alphanumeric character ("a" to "z", "A" to "Z", or
 "0" to "9") or single-byte Katakana non-punctuation character.
@@ -15,7 +17,9 @@ isalnum(c) || iskmoji(c)
 .millust end
 .desc end
 .return begin
-The &func function returns zero if the argument is not a single-byte
+The
+.id &func.
+function returns zero if the argument is not a single-byte
 alphanumeric character or single-byte Katakana non-punctuation
 character;
 otherwise, a non-zero value is returned.

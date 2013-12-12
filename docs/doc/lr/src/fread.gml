@@ -8,7 +8,9 @@ size_t fread( void *buf,
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function reads
+The
+.id &func.
+function reads
 .arg nelem
 elements of
 .arg elsize
@@ -19,7 +21,9 @@ into the buffer specified by
 .ct .li .
 .desc end
 .return begin
-The &func function returns the number of complete elements
+The
+.id &func.
+function returns the number of complete elements
 successfully read.
 This value may be less than the requested number of elements.
 .pp

@@ -1,4 +1,5 @@
 .gfunc outgtext
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _outgtext( char _FAR *text );
 .do end
@@ -6,9 +7,11 @@ void _FAR _outgtext( char _FAR *text );
 subroutine _outgtext( text )
 character*(*) text
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine displays the character string indicated by the argument
+The
+.id &func.
+&routine displays the character string indicated by the argument
 .arg text
 .ct .li .
 The string must be terminated by a null character
@@ -34,7 +37,9 @@ The default font is an 8-by-8 bit-mapped font.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

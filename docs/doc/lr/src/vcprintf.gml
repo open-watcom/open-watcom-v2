@@ -6,7 +6,9 @@ int vcprintf( const char *format, va_list arg );
 .ixfunc2 '&KbIo' &func
 .synop end
 .desc begin
-The &func function writes output directly to the console under control
+The
+.id &func.
+function writes output directly to the console under control
 of the argument
 .arg format
 .ct .li .
@@ -18,7 +20,9 @@ The
 string is described under the description of the
 .kw printf
 function.
-The &func function is equivalent to the
+The
+.id &func.
+function is equivalent to the
 .kw cprintf
 function, with the variable argument list replaced with
 .arg arg
@@ -27,7 +31,9 @@ function, with the variable argument list replaced with
 macro.
 .desc end
 .return begin
-The &func function returns the number of characters written, or a
+The
+.id &func.
+function returns the number of characters written, or a
 negative value if an output error occurred.
 .im errnoref
 .return end

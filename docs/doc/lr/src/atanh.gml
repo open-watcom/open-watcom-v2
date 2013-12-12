@@ -7,7 +7,9 @@ double atanh( double x );
 .ixfunc2 '&Hyper' &func
 .synop end
 .desc begin
-The &func function computes the inverse hyperbolic tangent of
+The
+.id &func.
+function computes the inverse hyperbolic tangent of
 .arg x
 .ct .li .
 A domain error occurs if the value of
@@ -15,7 +17,9 @@ A domain error occurs if the value of
 is outside the range (&minus.1,1).
 .desc end
 .return begin
-The &func function returns the inverse hyperbolic tangent value.
+The
+.id &func.
+function returns the inverse hyperbolic tangent value.
 .im errnodom
 .return end
 .see begin

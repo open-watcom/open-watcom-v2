@@ -11,11 +11,16 @@ int _setmode( int &fd, int mode );
 .synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
-The &func is provided for compatibility with other systems.
-&func performs no useful action under &machsys..
+The
+.id &func.
+is provided for compatibility with other systems.
+.id &func.
+performs no useful action under &machsys..
 .do end
 .el .do begin
-The &func function sets, at the operating system level, the
+The
+.id &func.
+function sets, at the operating system level, the
 translation mode to be the value of
 .arg mode
 for the file whose file &handle is given by
@@ -40,7 +45,8 @@ Data is read or written unchanged.
 .desc end
 .return begin
 .if '&machsys' eq 'QNX' .do begin
-&func always returns
+.id &func.
+always returns
 .kw O_BINARY
 under &machsys..
 This manifest is defined in the
@@ -48,7 +54,9 @@ This manifest is defined in the
 header file.
 .do end
 .el .do begin
-If successful, the &func function returns the previous mode that was
+If successful, the
+.id &func.
+function returns the previous mode that was
 set for the file; otherwise, &minus.1 is returned.
 .im errnoref
 .do end

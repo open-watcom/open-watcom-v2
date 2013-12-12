@@ -1,4 +1,5 @@
 .gfunc settextpath
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _settextpath( short path );
 .do end
@@ -6,9 +7,11 @@ void _FAR _settextpath( short path );
 subroutine _settextpath( path )
 integer*2 path
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current text path to have the value of the
+The
+.id &func.
+&routine sets the current text path to have the value of the
 .arg path
 argument.
 The text path specifies the writing direction of the text displayed
@@ -32,7 +35,9 @@ The default value of the text path is
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

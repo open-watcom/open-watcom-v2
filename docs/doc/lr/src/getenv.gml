@@ -13,7 +13,9 @@ wchar_t *_wgetenv( const wchar_t *name );
 .safealt
 .*
 .desc begin
-The &func function searches the environment list for an entry matching
+The
+.id &func.
+function searches the environment list for an entry matching
 the string pointed to by
 .arg name
 .ct .li .
@@ -95,8 +97,13 @@ assignments:
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-&wfunc is a wide-character version of &func; the argument and return
-value of &wfunc are wide-character strings.
+.id &wfunc.
+is a wide-character version of
+.id &func.
+the argument and return
+value of
+.id &wfunc.
+are wide-character strings.
 :CMT. The
 :CMT. .kw _wenviron
 :CMT. global variable is a wide-character version of
@@ -120,7 +127,9 @@ value of &wfunc are wide-character strings.
 .desc end
 .*
 .return begin
-The &func function returns a pointer to the string assigned to the
+The
+.id &func.
+function returns a pointer to the string assigned to the
 environment variable if found, and NULL if no match was found.
 Note: the value returned should be duplicated if you intend to
 modify the contents of the string.

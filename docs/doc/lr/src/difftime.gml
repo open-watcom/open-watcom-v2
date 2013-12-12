@@ -5,14 +5,18 @@ double difftime( time_t time1, time_t time0 );
 .ixfunc2 '&TimeFunc' &func
 .synop end
 .desc begin
-The &func function calculates the difference
+The
+.id &func.
+function calculates the difference
 between the two calendar times:
 .millust begin
     time1 - time0
 .millust end
 .desc end
 .return begin
-The &func function returns the difference
+The
+.id &func.
+function returns the difference
 between the two times in seconds as a
 .id double.
 .return end

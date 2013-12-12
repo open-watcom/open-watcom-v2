@@ -7,7 +7,9 @@ double acosh( double x );
 .ixfunc2 '&Hyper' &func
 .synop end
 .desc begin
-The &func function computes the inverse hyperbolic cosine of
+The
+.id &func.
+function computes the inverse hyperbolic cosine of
 .arg x
 .ct .li .
 A domain error occurs if the value of
@@ -15,7 +17,9 @@ A domain error occurs if the value of
 is less than 1.0.
 .desc end
 .return begin
-The &func function returns the inverse hyperbolic cosine value.
+The
+.id &func.
+function returns the inverse hyperbolic cosine value.
 .im errnodom
 .return end
 .see begin

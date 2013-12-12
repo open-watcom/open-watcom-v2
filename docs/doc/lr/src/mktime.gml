@@ -6,7 +6,9 @@ time_t mktime( struct tm *timeptr );
 .ixfunc2 '&TimeFunc' &func
 .synop end
 .desc begin
-The &func function converts the local time information in the
+The
+.id &func.
+function converts the local time information in the
 structure pointed to by
 .arg timeptr
 into a calendar time (Coordinated Universal Time) with the same
@@ -42,12 +44,16 @@ Otherwise, a value of 0 is treated as "daylight savings time is not in
 effect" and a positive value is treated as "daylight savings time is
 in effect".
 .np
-Whenever &func is called, the
+Whenever
+.id &func.
+is called, the
 .kw tzset
 function is also called.
 .desc end
 .return begin
-The &func function returns the converted calendar time.
+The
+.id &func.
+function returns the converted calendar time.
 .return end
 .see begin
 .im seetime mktime

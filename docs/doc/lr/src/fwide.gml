@@ -6,7 +6,9 @@ int fwide( FILE *fp, int mode );
 .synop end
 .*
 .desc begin
-The &func function determines the orientation of the stream pointed
+The
+.id &func.
+function determines the orientation of the stream pointed
 to by
 .arg fp
 .ct .li .
@@ -18,11 +20,15 @@ wide oriented. If
 is less than zero, the function first attempts to make the stream
 byte oriented. Otherwise,
 .arg mode
-is zero and the &func function does not alter the orientation of the stream.
+is zero and the
+.id &func.
+function does not alter the orientation of the stream.
 .desc end
 .*
 .return begin
-The &func function returns a value greater than zero if, after the call, 
+The
+.id &func.
+function returns a value greater than zero if, after the call, 
 the stream has wide orientation, a value less than zero if the stream
 has byte orientation, or zero if the stream has no orientation.
 .return end

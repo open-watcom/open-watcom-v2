@@ -5,17 +5,23 @@ JMOJI zentohan( JMOJI c );
 .ixfunc2 '&Jstring' &func
 .synop end
 .desc begin
-The &func function returns the single-byte ASCII character equivalent
+The
+.id &func.
+function returns the single-byte ASCII character equivalent
 to the double-byte character
 .arg c
 .ct .li .
 The ASCII character will be in the range 0x20 to 0x7E.
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg c
 if there is no equivalent single-byte ASCII character;
-otherwise &func returns a single-byte ASCII character.
+otherwise
+.id &func.
+returns a single-byte ASCII character.
 .return end
 .see begin
 .im seejis &function.

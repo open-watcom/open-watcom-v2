@@ -11,7 +11,9 @@ void qsort( void *base,
 .safealt
 .*
 .desc begin
-The &func function sorts an array of
+The
+.id &func.
+function sorts an array of
 .arg num
 elements, which is pointed to by
 .arg base
@@ -33,7 +35,9 @@ by Jon Louis Bentley and M. Douglas McIlroy in the article
 23(11):1249-1265, November 1993.
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .seelist qsort qsort_s bsearch bsearch_s

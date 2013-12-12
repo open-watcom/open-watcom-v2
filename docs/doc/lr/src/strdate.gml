@@ -10,7 +10,9 @@ wchar_t _wstrdate( wchar_t *datestr );
 .do end
 .synop end
 .desc begin
-The &func function copies the current date to the buffer pointed to by
+The
+.id &func.
+function copies the current date to the buffer pointed to by
 .arg datestr
 .ct .li .
 The date is formatted as "MM/DD/YY"
@@ -21,7 +23,9 @@ The buffer must be at least 9 bytes long.
 .im widefunc
 .desc end
 .return begin
-The &func function returns a pointer to the resulting text string
+The
+.id &func.
+function returns a pointer to the resulting text string
 .arg datestr
 .ct .li .
 .return end

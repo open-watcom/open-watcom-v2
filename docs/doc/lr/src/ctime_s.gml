@@ -38,7 +38,9 @@ is not equal zero and is not greater than
 .rtconst end
 .*
 .desc begin
-The &func function converts the calendar time pointed to by
+The
+.id &func.
+function converts the calendar time pointed to by
 .arg timer
 to local time in the form of a string. It is equivalent to
 .millust begin
@@ -52,7 +54,8 @@ The
 .arg strftime
 function allows more flexible formatting and supports locale-specific
 behavior. If you do not require the exact form of the result string produced by the
-&func function, consider using the
+.id &func.
+function, consider using the
 .arg strftime
 function instead.
 .oldtext

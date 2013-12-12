@@ -9,18 +9,26 @@ int _isatty( int &fd );
 .do end
 .synop end
 .desc begin
-The &func function tests if the opened file or device referenced by
+The
+.id &func.
+function tests if the opened file or device referenced by
 the file &handle
 .arg &fd
 is a character device (for example, a console, printer or port).
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .desc end
 .return begin
-The &func function returns zero if the device or file is not
+The
+.id &func.
+function returns zero if the device or file is not
 a character device; otherwise, a non-zero value is returned.
 .im errnoref
 .return end

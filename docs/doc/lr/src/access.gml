@@ -14,15 +14,23 @@ int _waccess( const wchar_t *path, int mode );
 .do end
 .synop end
 .desc begin
-The &func function determines if the file or directory specified by
+The
+.id &func.
+function determines if the file or directory specified by
 .arg path
 exists and if it can be accessed with the file permission given by
 .arg mode
 .ct .li .
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI naming conventions.
+The
+.id &_func.
+function is identical to
+.id &func.
+.
+Use
+id &_func.
+for ANSI naming conventions.
 .do end
 .np
 When the value of
@@ -55,14 +63,20 @@ write-only files.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument for
 .arg path
 .ct .li .
 .do end
 .desc end
 .return begin
-The &func function returns zero if the file or directory exists and can be
+The
+.id &func.
+function returns zero if the file or directory exists and can be
 accessed with the specified mode.
 Otherwise, &minus.1 is returned and
 .kw errno

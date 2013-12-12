@@ -6,11 +6,15 @@ int vcscanf( const char *format, va_list args )
 .ixfunc2 '&KbIo' &func
 .synop end
 .desc begin
-The &func function scans input from the console
+The
+.id &func.
+function scans input from the console
 under control of the argument
 .arg format
 .ct .li .
-The &func function uses the function
+The
+.id &func.
+function uses the function
 .kw getche
 to read characters from the console.
 The
@@ -19,7 +23,9 @@ string is described under the description of the
 .kw scanf
 function.
 .pp
-The &func function is equivalent to the
+The
+.id &func.
+function is equivalent to the
 .kw cscanf
 function, with a variable argument list replaced with
 .arg arg
@@ -28,7 +34,9 @@ function, with a variable argument list replaced with
 macro.
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .kw EOF
 when the scanning is terminated by reaching the end of the input stream.
 Otherwise, the number of input arguments for which

@@ -6,7 +6,9 @@ unsigned char *jasctime( const struct tm *timeptr );
 .ixfunc2 '&TimeFunc' jasctime
 .synop end
 .desc begin
-The &func function converts the time information in the structure
+The
+.id &func.
+function converts the time information in the structure
 pointed to by
 .arg timeptr
 into a string containing exactly 37 characters.
@@ -42,13 +44,19 @@ and the null character
 .id '\0'
 occupy the last two positions of the string.
 .pp
-The &func function places the result string in a static buffer that is
-re-used each time &func or
+The
+.id &func.
+function places the result string in a static buffer that is
+re-used each time
+.id &func.
+or
 .kw jctime
 is called.
 .desc end
 .return begin
-The &func function returns a pointer to the character string result.
+The
+.id &func.
+function returns a pointer to the character string result.
 .return end
 .see begin
 .im seetime jasctime

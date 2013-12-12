@@ -1,13 +1,16 @@
 .gfunc grstatus
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _grstatus( void );
 .do end
 .el .do begin
 integer*2 function _grstatus()
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine returns the status of the most recently called
+The
+.id &func.
+&routine returns the status of the most recently called
 graphics library &routine..
 The &routine can be called after any graphics &routine to determine
 if any errors or warnings occurred.
@@ -42,7 +45,9 @@ _GRCLIPPED              2    output clipped
 .millust end
 .desc end
 .return begin
-The &func &routine returns the status of the most recently called
+The
+.id &func.
+&routine returns the status of the most recently called
 graphics library &routine..
 .return end
 .grexam begin eg_stat.&langsuff

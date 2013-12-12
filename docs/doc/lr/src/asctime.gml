@@ -20,12 +20,13 @@ wchar_t *__wasctime( const struct tm *timeptr, wchar_t *buf );
 .do end
 .im structtm
 .synop end
-.funcbold asctime
 .*
 .safealt
 .*
 .desc begin
-The &func functions convert the time information in the structure
+The
+.idbold &func.
+functions convert the time information in the structure
 pointed to by
 .arg timeptr
 into a string containing exactly 26 characters.
@@ -41,8 +42,12 @@ and the null character
 .id '\0'
 occupy the last two positions of the string.
 .np
-The ANSI function &func places the result string in a static buffer
-that is re-used each time &func or
+The ANSI function
+.idbold &func.
+places the result string in a static buffer
+that is re-used each time
+.idbold &func.
+or
 .kw ctime
 is called.
 The non-ANSI function
@@ -64,7 +69,9 @@ counterparts except that they deal with wide-character strings.
 .do end
 .desc end
 .return begin
-The &func functions return a pointer to the character string result.
+The
+.idbold &func.
+functions return a pointer to the character string result.
 .return end
 .see begin
 .im seetime asctime

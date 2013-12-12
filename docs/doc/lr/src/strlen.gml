@@ -29,7 +29,9 @@ size_t _fmbslen( const unsigned char __far *s );
 .safealt
 .*
 .desc begin
-The &func function computes the length of the string pointed to by
+The
+.id &func.
+function computes the length of the string pointed to by
 .arg s
 .ct .li .
 .im farparm
@@ -37,7 +39,9 @@ The &func function computes the length of the string pointed to by
 .im mbsffunc
 .desc end
 .return begin
-The &func function returns the number of characters that precede the
+The
+.id &func.
+function returns the number of characters that precede the
 terminating null character.
 .return end
 .see begin

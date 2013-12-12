@@ -32,7 +32,9 @@ unsigned char __far *_fmbsset( unsigned char __far *s1,
 .do end
 .synop end
 .desc begin
-The &func function fills the string pointed to by
+The
+.id &func.
+function fills the string pointed to by
 .arg s1
 with the character
 .arg fill
@@ -41,8 +43,12 @@ The terminating null character in the original string remains
 unchanged.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI naming conventions.
 .do end
 .im farfunc
 .im widefunc

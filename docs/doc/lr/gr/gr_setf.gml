@@ -1,4 +1,5 @@
 .gfunc setfont
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _setfont( char _FAR *opt );
 .do end
@@ -6,9 +7,11 @@ short _FAR _setfont( char _FAR *opt );
 integer*2 function _setfont( opt )
 character*(*) opt
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine selects a font from the list of registered fonts
+The
+.id &func.
+&routine selects a font from the list of registered fonts
 (see the
 .kw _registerfonts
 &routine).
@@ -70,7 +73,9 @@ proportional-width vector font with serifs
 When "nX" is specified to select a particular font, the other options
 are ignored.
 .pp
-If the best fit option ("b") is specified, &func will always be able
+If the best fit option ("b") is specified,
+.id &func.
+will always be able
 to select a font.
 The font chosen will be the one that best matches the options specified.
 The following precedence is given to the options when selecting a font:
@@ -91,7 +96,9 @@ has been selected, the font will be stretched appropriately to match the
 given size.
 .desc end
 .return begin
-The &func &routine returns zero
+The
+.id &func.
+&routine returns zero
 if successful; otherwise, (-1) is returned.
 .return end
 .see begin

@@ -5,11 +5,15 @@ void nosound( void );
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function turns off the PC's speaker.
+The
+.id &func.
+function turns off the PC's speaker.
 .im privity
 .desc end
 .return begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 .return end
 .see begin
 .seelist nosound delay sound

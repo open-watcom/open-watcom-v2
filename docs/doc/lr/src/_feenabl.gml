@@ -6,7 +6,9 @@ void __feenableexcept( int __excepts );
 .synop end
 .*
 .desc begin
-The &func function enables the specified floating point exceptions.
+The
+.id &func.
+function enables the specified floating point exceptions.
 .desc end
 .*
 .return begin

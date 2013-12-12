@@ -5,13 +5,17 @@ double ceil( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function (ceiling function)
+The
+.id &func.
+function (ceiling function)
 computes the smallest integer not less than
 .arg x
 .ct .li .
 .desc end
 .return begin
-The &func function returns the smallest integer not less than
+The
+.id &func.
+function returns the smallest integer not less than
 .arg x
 .ct , expressed as a
 .id double.

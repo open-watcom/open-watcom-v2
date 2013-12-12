@@ -43,7 +43,9 @@ unsigned char __far *_fmbsspnp(
 .do end
 .synop end
 .desc begin
-The &func function returns a pointer to the first character in
+The
+.id &func.
+function returns a pointer to the first character in
 .arg str
 that does not belong to the set of characters in
 .arg charset
@@ -53,15 +55,21 @@ The terminating null character is not considered to be part of
 .ct .li .
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .im farparm
 .im widefunc
 .im mbsffunc
 .desc end
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .mono NULL
 if
 .arg str

@@ -45,7 +45,9 @@ is not zero and is not greater than
 .rtconst end
 .*
 .desc begin
-The &func function converts the normalized broken-down time in the structure
+The
+.id &func.
+function converts the normalized broken-down time in the structure
 pointed to by
 .arg timeptr
 into a 26 character (including the null character) string in the form

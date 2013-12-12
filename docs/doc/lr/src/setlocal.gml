@@ -10,7 +10,9 @@ wchar_t *_wsetlocale( int category, const wchar_t *locale);
 .do end
 .synop end
 .desc begin
-The &func function selects a portion of a program's
+The
+.id &func.
+function selects a portion of a program's
 .us locale
 according to the category given by
 .arg category

@@ -1,4 +1,5 @@
 .gfunc setgtextvector
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _setgtextvector( short x, short y );
 .do end
@@ -6,9 +7,11 @@ struct xycoord _FAR _setgtextvector( short x, short y );
 record /xycoord/ function _setgtextvector( x, y )
 integer*2 x, y
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the orientation for text output used by the
+The
+.id &func.
+&routine sets the orientation for text output used by the
 .kw _outgtext
 &routine to the vector specified by the arguments
 .coord x y .
@@ -19,7 +22,9 @@ is the vector
 .coord 1 0 .
 .desc end
 .return begin
-The &func &routine returns, as an
+The
+.id &func.
+&routine returns, as an
 .id xycoord
 structure, the previous value of the text orientation vector.
 .return end

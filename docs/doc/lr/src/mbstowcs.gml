@@ -15,7 +15,9 @@ size_t _fmbstowcs( const wchar_t __far *pwcs,
 .safealt
 .*
 .desc begin
-The &func function converts a sequence of multibyte characters pointed
+The
+.id &func.
+function converts a sequence of multibyte characters pointed
 to by
 .arg s
 into their corresponding wide character codes and stores not more than
@@ -23,7 +25,9 @@ into their corresponding wide character codes and stores not more than
 codes into the array pointed to by
 .arg pwcs
 .ct .li .
-The &func function does not convert any multibyte characters beyond
+The
+.id &func.
+function does not convert any multibyte characters beyond
 the null character.
 At most
 .arg n
@@ -33,10 +37,14 @@ will be modified.
 .im farparm
 .desc end
 .return begin
-If an invalid multibyte character is encountered, the &func function
+If an invalid multibyte character is encountered, the
+.id &func.
+function
 returns
 .mono (size_t)&minus.1.
-Otherwise, the &func function returns the number of array elements
+Otherwise, the
+.id &func.
+function returns the number of array elements
 modified, not including the terminating zero code if present.
 .return end
 .see begin

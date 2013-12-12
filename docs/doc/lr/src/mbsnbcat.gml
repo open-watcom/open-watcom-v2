@@ -15,7 +15,9 @@ unsigned char __far *_fmbsnbcat( unsigned char __far *dst,
 .do end
 .synop end
 .desc begin
-The &func function appends not more than
+The
+.id &func.
+function appends not more than
 .arg n
 bytes of the string pointed to by
 .arg src
@@ -43,7 +45,9 @@ result.
 .im farfunc
 .desc end
 .return begin
-The &func function returns the value of
+The
+.id &func.
+function returns the value of
 .arg dst
 .ct .li .
 .return end

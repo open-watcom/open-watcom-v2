@@ -8,7 +8,9 @@ size_t fwrite( const void *buf,
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function writes
+The
+.id &func.
+function writes
 .arg nelem
 elements of
 .arg elsize
@@ -17,7 +19,9 @@ bytes each to the file specified by
 .ct .li .
 .desc end
 .return begin
-The &func function returns the number of complete elements
+The
+.id &func.
+function returns the number of complete elements
 successfully written.
 This value will be less than the requested number of elements only if
 a write error occurs.

@@ -38,19 +38,27 @@ unsigned char __far *_fmbstok( unsigned char __far *s1,
 .safealt
 .*
 .desc begin
-The &func function is used to break the string pointed to by
+The
+.id &func.
+function is used to break the string pointed to by
 .arg s1
 into a sequence of tokens, each of which is delimited by a character
 from the string pointed to by
 .arg s2
 .ct .li .
-The first call to &func will return a pointer to the first token in
+The first call to
+.id &func.
+will return a pointer to the first token in
 the string pointed to by
 .arg s1
 .ct .li .
-Subsequent calls to &func must pass a NULL pointer as the first
+Subsequent calls to
+.id &func.
+must pass a NULL pointer as the first
 argument, in order to get the next token in the string.
-The set of delimiters used in each of these calls to &func can be
+The set of delimiters used in each of these calls to
+.id &func.
+can be
 different from one call to the next.
 .np
 The first call in the sequence searches
@@ -61,10 +69,14 @@ string
 .ct .li .
 If no such character is found, then there are no tokens in
 .arg s1
-and the &func function returns a NULL pointer.
+and the
+.id &func.
+function returns a NULL pointer.
 If such a character is found, it is the start of the first token.
 .np
-The &func function then searches from there for a character that is
+The
+.id &func.
+function then searches from there for a character that is
 contained in the current delimiter string.
 If no such character is found, the current token extends to the end of
 the string pointed to by
@@ -72,11 +84,15 @@ the string pointed to by
 .ct .li .
 If such a character is found, it is overwritten by a null character,
 which terminates the current token.
-The &func function saves a pointer to the following character, from
+The
+.id &func.
+function saves a pointer to the following character, from
 which the next search for a token will start when the first argument
 is a NULL pointer.
 .np
-Because &func may modify the original string, that string should be
+Because
+.id &func.
+may modify the original string, that string should be
 duplicated if the string is to be re-used.
 .im farfunc
 .im widefunc
@@ -85,7 +101,9 @@ The third argument
 .arg ptr
 points to a caller-provided
 .kw wchar_t
-pointer into which the &wfunc function stores information necessary
+pointer into which the
+.id &wfunc.
+function stores information necessary
 for it to continue scanning the same wide string.
 .np
 On the first call in the sequence of calls to &wfunc,
@@ -98,7 +116,9 @@ If
 .arg s1
 is NULL, the value pointed to by
 .arg ptr
-matches that set by the previous call to &wfunc for the same wide
+matches that set by the previous call to
+.id &wfunc.
+for the same wide
 string.
 Otherwise, the value of
 .arg ptr
@@ -108,12 +128,16 @@ The list of delimiters pointed to by
 may be different from one call to the next.
 The tokenization of
 .arg s1
-is similar to that for the &func function.
+is similar to that for the
+.id &func.
+function.
 .do end
 .im mbsffunc
 .desc end
 .return begin
-The &func function returns a pointer to the first character of a token
+The
+.id &func.
+function returns a pointer to the first character of a token
 or
 .mono NULL
 if there is no token found.

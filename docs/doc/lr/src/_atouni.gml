@@ -4,7 +4,9 @@
 wchar_t *_atouni( wchar_t *wcs, const char *sbcs );
 .synop end
 .desc begin
-The &func function converts the string pointed to by
+The
+.id &func.
+function converts the string pointed to by
 .arg sbcs
 to a wide-character string and places it in the buffer
 pointed to by
@@ -14,7 +16,9 @@ pointed to by
 The conversion ends at the first null character.
 .desc end
 .return begin
-The &func function returns the first argument as a result.
+The
+.id &func.
+function returns the first argument as a result.
 .return end
 .see begin
 .seelist &function. atoi atol itoa ltoa

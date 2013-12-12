@@ -4,7 +4,9 @@
 int _dwShutDown( void );
 .synop end
 .desc begin
-The &func function shuts down the default windowing I/O system.
+The
+.id &func.
+function shuts down the default windowing I/O system.
 The application will continue to execute but no windows will be
 available for output.
 Care should be exercised when using this function since any subsequent
@@ -13,11 +15,15 @@ output may cause unpredictable results.
 When the application terminates, it will not be necessary to manually
 close the main window.
 .np
-The &func function is one of the support functions that can be called
+The
+.id &func.
+function is one of the support functions that can be called
 from an application using &company's default windowing support.
 .desc end
 .return begin
-The &func function returns 1 if it was successful and 0 if not.
+The
+.id &func.
+function returns 1 if it was successful and 0 if not.
 .return end
 .see begin
 .seelist &function. _dwDeleteOnClose _dwSetAboutDlg _dwSetAppTitle _dwSetConTitle _dwShutDown _dwYield

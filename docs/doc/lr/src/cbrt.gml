@@ -5,7 +5,9 @@ double cbrt( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes the cubed root of the argument
+The
+.id &func.
+function computes the cubed root of the argument
 .arg x
 .ct .li .
 .desc end

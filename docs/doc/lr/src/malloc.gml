@@ -6,7 +6,9 @@ void *malloc( size_t size );
 .ixfunc2 '&Memory' &func
 .synop end
 .desc begin
-The &func function allocates space
+The
+.id &func.
+function allocates space
 for an object of
 .arg size
 bytes.
@@ -15,9 +17,13 @@ Nothing is allocated when the
 argument has a value of zero.
 .desc end
 .return begin
-The &func function returns a pointer to the start of the allocated
+The
+.id &func.
+function returns a pointer to the start of the allocated
 memory.
-The &func function returns
+The
+.id &func.
+function returns
 .mono NULL
 if there is insufficient memory available or if the requested size is zero.
 .return end
@@ -63,7 +69,9 @@ void __near *_nmalloc( size_t size );
 .ixfunc2 '&Memory' _nmalloc
 .synop end
 .desc begin
-The &func functions allocate space for an object of
+The
+.id &func.
+functions allocate space for an object of
 .arg size
 bytes.
 Nothing is allocated when the
@@ -86,15 +94,21 @@ Far heap (outside the default data segment)
 Near heap (inside the default data segment)
 .endterm
 .np
-In a small data memory model, the &func function is equivalent to the
+In a small data memory model, the
+.id &func.
+function is equivalent to the
 .kw _nmalloc
-function; in a large data memory model, the &func function is
+function; in a large data memory model, the
+.id &func.
+function is
 equivalent to the
 .kw _fmalloc
 function.
 .desc end
 .return begin
-The &func functions return a pointer to the start of the allocated
+The
+.id &func.
+functions return a pointer to the start of the allocated
 memory.
 The &func
 .ct ,

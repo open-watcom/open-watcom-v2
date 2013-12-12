@@ -5,7 +5,9 @@ int iskanji( int fb );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg fb
 is valid as the first byte of a double-byte Kanji character.
 A valid first byte is any 8-bit value for which the following
@@ -15,7 +17,9 @@ expression is true:
 .millust end
 .desc end
 .return begin
-The &func function returns zero if the argument is not valid for the first byte
+The
+.id &func.
+function returns zero if the argument is not valid for the first byte
 of a double-byte Kanji character;
 otherwise, a non-zero value is returned.
 .return end

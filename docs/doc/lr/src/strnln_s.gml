@@ -17,7 +17,9 @@ size_t wcsnlen_s( const wchar_t * s,
 .rtconst none
 .*
 .desc begin
-The &func function calculates the length of the string pointed to by
+The
+.id &func.
+function calculates the length of the string pointed to by
 .arg s
 .ct .li .
 
@@ -27,13 +29,19 @@ The &func function calculates the length of the string pointed to by
 .return begin
 If
 .arg s
-is a null pointer, then the &func function returns zero.
-Otherwise, the &func function returns the number of characters that precede the
+is a null pointer, then the
+.id &func.
+function returns zero.
+Otherwise, the
+.id &func.
+function returns the number of characters that precede the
 terminating null character. If there is no null character in the first
 .arg maxsize
 characters of
 .arg s
-then &func returns
+then
+.id &func.
+returns
 .arg maxsize
 .ct .li .
 At most the first

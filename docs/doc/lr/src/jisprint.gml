@@ -5,7 +5,9 @@ int jisprint( JMOJI c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg c
 is a printable single- or double-byte character.
 These are any characters for which the following expression is true:
@@ -21,7 +23,9 @@ in the range 0x81 - 0x9F or 0xE0 - 0xFC and whose second byte falls in
 the range 0x40 - 0x7E or 0x80 - 0xFC.
 .desc end
 .return begin
-The &func function returns zero if the argument does not meet one of the above
+The
+.id &func.
+function returns zero if the argument does not meet one of the above
 tests;
 otherwise, a non-zero value is returned.
 .return end

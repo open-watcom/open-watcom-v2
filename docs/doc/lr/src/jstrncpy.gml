@@ -16,10 +16,16 @@ FJSTRING __far _fjstrncpy( JCHAR __far *dst,
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function copies
+The
+.id &func.
+function copies
 .do end
 .el .do begin
-The &func and &ffunc functions copy
+The
+.id &func.
+and
+.id &ffunc.
+functions copy
 .do end
 no more than
 .arg n
@@ -53,10 +59,16 @@ terminated by a null character.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin
-The &func function returns
+The
+.id &func.
+function returns
 .do end
 .el .do begin
-The &func and &ffunc functions return
+The
+.id &func.
+and
+.id &ffunc.
+functions return
 .do end
 the value of
 .arg dst

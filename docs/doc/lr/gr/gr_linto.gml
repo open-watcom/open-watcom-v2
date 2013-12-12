@@ -1,4 +1,5 @@
 .gfuncw lineto
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 short _FAR _lineto( short x, short y );
 
@@ -11,11 +12,17 @@ integer*2 x, y
 integer*2 function _lineto_w( x, y )
 double precision x, y
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines draw straight lines.
-The &func &routine uses the view coordinate system.
-The &func2 &routine uses the window coordinate system.
+The
+.id &func.
+&routines draw straight lines.
+The
+.id &func.
+&routine uses the view coordinate system.
+The
+.id &func2.
+&routine uses the window coordinate system.
 .np
 The line is drawn from the current position to
 the point at the coordinates

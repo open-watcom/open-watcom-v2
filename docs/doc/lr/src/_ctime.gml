@@ -5,11 +5,15 @@ char *_ctime( const time_t *timer, char *buf );
 .ixfunc2 '&TimeFunc' &func
 .synop end
 .desc begin
-The &func function converts the calendar time pointed to by
+The
+.id &func.
+function converts the calendar time pointed to by
 .arg timer
 to local time in the form of a string.
 .pp
-The &func function converts the time into a string containing exactly
+The
+.id &func.
+function converts the time into a string containing exactly
 26 characters.
 This string has the form shown in the following example:
 .millust begin
@@ -27,7 +31,9 @@ The string is placed in the buffer pointed to by
 .arg buf
 .ct .li .
 .pp
-Whenever &func is called, the
+Whenever
+.id &func.
+is called, the
 .kw tzset
 function is also called.
 .pp
@@ -39,7 +45,9 @@ Greenwich Mean Time (GMT)).
 .im tzref
 .desc end
 .return begin
-The &func function returns the pointer
+The
+.id &func.
+function returns the pointer
 to the string containing the local time.
 .return end
 .see begin

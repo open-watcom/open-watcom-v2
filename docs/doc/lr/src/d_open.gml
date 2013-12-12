@@ -10,7 +10,9 @@ unsigned _dos_open( const char *path,
 .ixfunc2 '&OsIo' &func
 .synop end
 .desc begin
-The &func function uses system call 0x3D to open the file specified by
+The
+.id &func.
+function uses system call 0x3D to open the file specified by
 .arg path
 .ct , which must be an existing file.
 The
@@ -53,7 +55,9 @@ File is not inherited by a child process
 .endterm
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an
 MS-DOS error code and sets
 .kw errno

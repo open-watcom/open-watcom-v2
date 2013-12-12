@@ -28,7 +28,9 @@ void _wsplitpath( const wchar_t *path,
 .do end
 .synop end
 .desc begin
-The &func function splits up a full pathname into four components
+The
+.id &func.
+function splits up a full pathname into four components
 consisting of a
 .if '&machsys' eq 'QNX' .do begin
 node specification (e.g., //2),
@@ -86,13 +88,17 @@ The
 .arg drive
 argument points to a buffer that will be filled in with
 the drive letter (e.g., A, B, C, etc.) followed by a colon if a drive
-is specified in the full pathname (filled in by &func.).
+is specified in the full pathname (filled in by
+.id &func.
+).
 .np
 For Netware applications, the
 .arg drive
 argument points to a buffer that will be filled in with
 the volume identifier (e.g., \\NAME_SPACE) if a volume
-is specified in the full pathname (filled in by &func.).
+is specified in the full pathname (filled in by
+.id &func.
+).
 .do end
 .note dir
 The
@@ -107,13 +113,17 @@ The
 .arg fname
 argument points to a buffer that will be filled in with
 the base name of the file without any extension (suffix) if a file
-name is specified in the full pathname (filled in by &func.).
+name is specified in the full pathname (filled in by
+.id &func.
+).
 .note ext
 The
 .arg ext
 argument points to a buffer that will be filled in with
 the filename extension (suffix) including the leading period if an
-extension is specified in the full pathname (filled in by &func.).
+extension is specified in the full pathname (filled in by
+.id &func.
+).
 .if '&machsys' eq 'QNX' .do begin
 If more than one period appears in the filename, the suffix consists
 of the final period and characters following it.
@@ -144,7 +154,9 @@ For each component of the full pathname that is not present, its
 corresponding buffer will be set to an empty string.
 .desc end
 .return begin
-The &func function returns no value.
+The
+.id &func.
+function returns no value.
 .return end
 .see begin
 .seelist _splitpath _fullpath _makepath _splitpath2

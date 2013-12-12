@@ -58,13 +58,17 @@ is not a null pointer and
 is
 greater than zero and not greater than
 .kw RSIZE_MAX
-.ct , then &func sets
+.ct , then
+.id &func.
+sets
 .arg s1[0]
 to the null character.
 .rtconst end
 .*
 .desc begin
-The &func function appends not more than
+The
+.id &func.
+function appends not more than
 .arg n
 successive characters (characters that follow a null character are not copied)
 from the array pointed to by
@@ -81,12 +85,16 @@ If no null character was copied from
 .arg s2,then
 .arg s1[s1max-m+n]
 is set to a null character.
-All elements following the terminating null character (if any) written by &func in
+All elements following the terminating null character (if any) written by
+.id &func.
+in
 the array of
 .arg s1max
 characters pointed to by
 .arg s1
-take unspecified values when &func returns.
+take unspecified values when
+.id &func.
+returns.
 .im widefunc
 .desc end
 .*

@@ -5,7 +5,9 @@ int iskana( int c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg c
 is a single-byte Katakana character.
 A single-byte Katakana character is any character for which the
@@ -15,7 +17,9 @@ following expression is true:
 .millust end
 .desc end
 .return begin
-The &func function returns zero if the argument is not a single-byte Katakana
+The
+.id &func.
+function returns zero if the argument is not a single-byte Katakana
 character;
 otherwise, a non-zero value is returned.
 .return end

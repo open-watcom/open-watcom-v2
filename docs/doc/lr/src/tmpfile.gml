@@ -8,7 +8,9 @@ FILE *tmpfile( void );
 .safealt
 .*
 .desc begin
-The &func function creates a temporary binary file that will
+The
+.id &func.
+function creates a temporary binary file that will
 automatically be removed when it is closed or at program termination.
 The file is opened for update.
 .if '&machsys' ne 'QNX' .do begin
@@ -29,9 +31,13 @@ They are listed in the order examined:
 .do end
 .desc end
 .return begin
-The &func function returns a pointer to the stream of the file that it
+The
+.id &func.
+function returns a pointer to the stream of the file that it
 created.
-If the file cannot be created, the &func function returns
+If the file cannot be created, the
+.id &func.
+function returns
 .mono NULL.
 .im errnoref
 .return end

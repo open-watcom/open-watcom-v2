@@ -4,13 +4,17 @@
 int _os_handle( int handle );
 .synop end
 .desc begin
-The &func function takes a POSIX-style file handle specified by
+The
+.id &func.
+function takes a POSIX-style file handle specified by
 .arg handle
 .ct .li .
 It returns the corresponding operating system level handle.
 .desc end
 .return begin
-The &func function returns the operating system handle that
+The
+.id &func.
+function returns the operating system handle that
 corresponds to the specified POSIX-style file handle.
 .return end
 .see begin

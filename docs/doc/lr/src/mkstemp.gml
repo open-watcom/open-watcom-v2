@@ -5,10 +5,14 @@ int mkstemp( char *template );
 .ixfunc2 '&FileOp' &func
 .synop end
 .desc begin
-The &func function creates a file with unique name by modifying the
+The
+.id &func.
+function creates a file with unique name by modifying the
 .arg template
 argument, and returns its file handle open for reading and writing
-in binary mode. The use of &func prevents any possible race condition between
+in binary mode. The use of
+.id &func.
+prevents any possible race condition between
 testing whether the file exists and opening it for use.
 .np
 The string
@@ -24,20 +28,26 @@ Each of the 6 X's is a placeholder for a character supplied by &func..
 Each placeholder character in
 .arg template
 must be an uppercase "X".
-&func preserves
+.id &func.
+preserves
 .mono base
 and replaces the first of the 6 trailing X's with a unique sequence
 of alphanumeric characters. The string
 .arg template
 therefore must be writable.
 .np
-&func checks to see if a file with the generated name already exists
+.id &func.
+checks to see if a file with the generated name already exists
 and if so selects another name, until it finds a file that doesn't exist.
 If it is unsuccessful at finding a name for a file that does not
-already exist or is unable to create a file, &func returns -1.
+already exist or is unable to create a file,
+.id &func.
+returns -1.
 .desc end
 .return begin
-The &func function returns a file handle. When an error occurs while creating
+The
+.id &func.
+function returns a file handle. When an error occurs while creating
 the file, -1 is returned.
 .return end
 .see begin

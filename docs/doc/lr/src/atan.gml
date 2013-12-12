@@ -8,13 +8,17 @@ double atan( double x );
 .ixfunc2 '&Hyper' &func
 .synop end
 .desc begin
-The &func function computes the principal value of the
+The
+.id &func.
+function computes the principal value of the
 arctangent of
 .arg x
 .ct .li .
 .desc end
 .return begin
-The &func function returns the arctangent in the range (&minus.&pi./2,&pi./2).
+The
+.id &func.
+function returns the arctangent in the range (&minus.&pi./2,&pi./2).
 .return end
 .see begin
 .seelist atan acos asin atan2

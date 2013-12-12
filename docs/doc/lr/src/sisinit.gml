@@ -9,14 +9,18 @@ int sisinit( const mbstate_t *ps );
 .desc begin
 If
 .arg ps
-is not a null pointer, the &func function determines whether
+is not a null pointer, the
+.id &func.
+function determines whether
 the pointed-to
 .kw mbstate_t
 object describes an initial conversion state.
 .desc end
 .*
 .return begin
-The &func function returns nonzero if
+The
+.id &func.
+function returns nonzero if
 .arg ps
 is a null pointer or if the pointed-to object describes an initial
 conversion state; otherwise, it returns zero.

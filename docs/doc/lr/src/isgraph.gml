@@ -12,7 +12,9 @@ int iswgraph( wint_t c );
 .do end
 .synop end
 .desc begin
-The &func function tests for any printable character except space
+The
+.id &func.
+function tests for any printable character except space
 ('&sysrb').
 The
 .kw isprint
@@ -20,15 +22,23 @@ function is similar, except that the space character is also included
 in the character set being tested.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is similar to &func except that it accepts a
+The
+.id &wfunc.
+function is similar to
+.id &func.
+except that it accepts a
 wide-character argument.
 .do end
 .desc end
 .return begin
-The &func function returns non-zero when the argument is a printable
+The
+.id &func.
+function returns non-zero when the argument is a printable
 character (except a space).
 .if &'length(&wfunc.) ne 0 .do begin
-The &wfunc function returns a non-zero value when the argument is a
+The
+.id &wfunc.
+function returns a non-zero value when the argument is a
 printable wide character (except a wide-character space).
 .do end
 Otherwise, zero is returned.

@@ -5,7 +5,9 @@ double trunc( double x );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function truncates the argument
+The
+.id &func.
+function truncates the argument
 .arg x
 to the appropriate integer.  The function is equivalent to
 .kw floor

@@ -5,7 +5,8 @@ void va_end( va_list param );
 .ixfunc2 'variable arguments' &func
 .synop end
 .desc begin
-&func is a macro used to complete the acquisition of arguments
+.id &func.
+is a macro used to complete the acquisition of arguments
 from a list of variable arguments.
 It must be used with the associated macros
 .kw va_start

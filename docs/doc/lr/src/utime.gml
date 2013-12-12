@@ -28,7 +28,9 @@ struct utimbuf {
 };
 .synop end
 .desc begin
-The &func function records the access and modification times
+The
+.id &func.
+function records the access and modification times
 for the file
 .if '&machsys' eq 'QNX' .do begin
 or directory
@@ -38,8 +40,12 @@ identified by
 .ct .li .
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI naming conventions.
 .do end
 .np
 If the
@@ -69,7 +75,9 @@ directory are set to the values contained in the designated structure.
 .*
 .if '&machsys' eq 'QNX' .do begin
 Only the owner of the file or directory and processes with appropriate
-privileges are permitted to use the &func function in this way.
+privileges are permitted to use the
+.id &func.
+function in this way.
 .do end
 .*
 The access and modification times are taken from the
@@ -80,13 +88,19 @@ fields in this structure.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that
 .arg path
 points to a wide-character string.
 .do end
 .desc end
 .return begin
-The &func function returns zero when the time was successfully recorded.
+The
+.id &func.
+function returns zero when the time was successfully recorded.
 A value of &minus.1 indicates an error occurred.
 .return end
 .error begin

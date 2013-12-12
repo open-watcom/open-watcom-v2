@@ -4,7 +4,9 @@
 int fsync( int fd );
 .synop end
 .desc begin
-The &func function writes to disk all the currently queued data for
+The
+.id &func.
+function writes to disk all the currently queued data for
 the open file specified by
 .arg fd
 .ct .li .
@@ -12,18 +14,26 @@ All necessary file system information required to retrieve the data is
 also written to disk.
 The file access times are also updated.
 .np
-The &func function is used when you wish to ensure that both the file
+The
+.id &func.
+function is used when you wish to ensure that both the file
 data and file system information required to recover the complete file
 have been written to the disk.
 .np
-The &func function does not return until the transfer is completed.
+The
+.id &func.
+function does not return until the transfer is completed.
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns &minus.1 and
 .kw errno
 is set to indicate the error.
-If the &func function fails, outstanding i/o operations are not
+If the
+.id &func.
+function fails, outstanding i/o operations are not
 guaranteed to have been completed.
 .return end
 .error begin
@@ -40,7 +50,9 @@ Synchronized i/o is not supported for this file.
 A physical I/O error occurred (e.g., a bad block). The precise meaning
 is device dependent.
 .term ENOSYS
-The &func function is not supported.
+The
+.id &func.
+function is not supported.
 .endterm
 .error end
 .see begin

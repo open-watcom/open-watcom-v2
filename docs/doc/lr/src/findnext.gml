@@ -19,7 +19,9 @@ int _wfindnexti64( long handle,
 .do end
 .synop end
 .desc begin
-The &_func function returns information on the next file whose name
+The
+.id &_func.
+function returns information on the next file whose name
 matches the
 .arg filespec
 argument that was specified in a call to the
@@ -52,7 +54,9 @@ matches the
 argument that was specified in a call to the
 .kw _findfirsti64
 function.
-It differs from the &_func function in that it returns a 64-bit file
+It differs from the
+.id &_func.
+function in that it returns a 64-bit file
 size.
 The
 .arg handle
@@ -76,7 +80,11 @@ struct _finddatai64_t {
 .millust end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The wide-character &wfunc function is similar to the &_func function
+The wide-character
+.id &wfunc.
+function is similar to the
+.id &_func.
+function
 but operates on wide-character strings.
 .millust begin
 struct _wfinddata_t {
@@ -91,7 +99,9 @@ struct _wfinddata_t {
 .np
 The wide-character &wfunc64 function is similar to the &_func64
 function but operates on wide-character strings.
-It differs from the &wfunc function in that it returns a 64-bit file
+It differs from the
+.id &wfunc.
+function in that it returns a 64-bit file
 size.
 .millust begin
 struct _wfinddatai64_t {
@@ -106,7 +116,11 @@ struct _wfinddatai64_t {
 .do end
 .desc end
 .return begin
-If successful, &_func returns 0; otherwise, &_func and returns &minus.1
+If successful,
+.id &_func.
+returns 0; otherwise,
+.id &_func.
+and returns &minus.1
 and sets
 .kw errno
 to one of the following values:

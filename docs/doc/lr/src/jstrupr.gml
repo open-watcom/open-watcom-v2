@@ -10,10 +10,16 @@ FJSTRING __far _fjstrupr( JCHAR __far *s1 );
 .synop end
 .desc begin
 .if &farfnc eq 0 .do begin
-The &func function replaces
+The
+.id &func.
+function replaces
 .do end
 .el .do begin
-The &func and &ffunc functions replace
+The
+.id &func.
+and
+.id &ffunc.
+functions replace
 .do end
 all lowercase Roman characters ("a" to "z") in the Kanji string
 .arg s1

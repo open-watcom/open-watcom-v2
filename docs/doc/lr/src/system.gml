@@ -16,7 +16,9 @@ If the value of
 .arg command
 is
 .mono NULL,
-then the &func function determines whether or not a &shell is
+then the
+.id &func.
+function determines whether or not a &shell is
 present.
 On a POSIX 1003.2 system (e.g., QNX), the shell is always assumed
 present and &func.(NULL) always returns a non-zero value.
@@ -27,12 +29,16 @@ If the value of
 .arg command
 is
 .mono NULL,
-then the &func function determines whether or not a &shell is
+then the
+.id &func.
+function determines whether or not a &shell is
 present ("COMMAND.COM" in DOS and Windows 95/98
 or "CMD.EXE" in OS/2 and Windows NT/2000).
 .do end
 .np
-Otherwise, the &func function invokes a copy of the &shell, and passes
+Otherwise, the
+.id &func.
+function invokes a copy of the &shell, and passes
 the string
 .arg command
 to it for processing.
@@ -74,7 +80,11 @@ and
 functions can only cause programs to be executed.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument.
 .do end
 .desc end
@@ -83,20 +93,26 @@ If the value of
 .arg command
 is
 .mono NULL,
-then the &func function returns zero if the &shell is not present,
+then the
+.id &func.
+function returns zero if the &shell is not present,
 a non-zero value if the &shell is present.
 .if '&machsys' eq 'QNX' .do begin
 This implementation always returns a non-zero value.
 .do end
 .el .do begin
 Note that Microsoft Windows 3.x does not support a command shell and
-so the &func function always returns zero when
+so the
+.id &func.
+function always returns zero when
 .arg command
 is
 .mono NULL.
 .do end
 .np
-Otherwise, the &func function returns the result of invoking a copy of
+Otherwise, the
+.id &func.
+function returns the result of invoking a copy of
 the &shell..
 .if '&machsys' eq 'QNX' .do begin
 A -1 is returned if the &shell could not be loaded; otherwise, the

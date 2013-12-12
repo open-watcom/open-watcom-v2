@@ -13,7 +13,9 @@ unsigned _dos_allocmem( unsigned size,
 .ixfunc2 '&DosFunc' &func
 .synop end
 .desc begin
-The &func function uses system call 0x48 to allocate
+The
+.id &func.
+function uses system call 0x48 to allocate
 .arg size
 paragraphs directly from DOS.
 The size of a paragraph is 16 bytes.
@@ -29,7 +31,9 @@ For 32-bit DOS applications, it is recommended that the corresponding
 DPMI services be used.
 .desc end
 .return begin
-The &func function returns zero if successful.
+The
+.id &func.
+function returns zero if successful.
 Otherwise, it returns an OS error code and sets
 .kw errno
 accordingly.

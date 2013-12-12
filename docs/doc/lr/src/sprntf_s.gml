@@ -37,7 +37,9 @@ specifier (modified or not by flags, field width, or precision) shall not
 appear in the string pointed to by
 .arg format
 .ct .li .
-Any argument to &func corresponding to a
+Any argument to
+.id &func.
+corresponding to a
 .mono %s
 specifier shall not be a null pointer. No encoding error shall occur.
 .np
@@ -47,24 +49,34 @@ is not a null pointer and
 .arg n
 is greater than zero and less than
 .mono RSIZE_MAX,
-then the &func function sets
+then the
+.id &func.
+function sets
 .arg s[0]
 to the null character.
 .rtconst end
 .*
 .desc begin
-The &func function is equivalent to the
+The
+.id &func.
+function is equivalent to the
 .kw sprintf
 function except for the explicit runtime-constraints listed above.
 .np
-The &func function, unlike
+The
+.id &func.
+function, unlike
 .kw snprintf_s
 .ct , treats a result too big for the array pointed to by
 .arg s
 as a runtime-constraint violation.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument for
 .arg format
 and produces wide character output.
@@ -72,18 +84,30 @@ and produces wide character output.
 .desc end
 .*
 .return begin
-If no runtime-constraint violation occurred, the &func function returns the
+If no runtime-constraint violation occurred, the
+.id &func.
+function returns the
 number of characters written in the array, not counting the terminating null
-character. If an encoding error occurred, &func returns a negative value. If
-any other runtime-constraint violation occurred, &func returns zero.
+character. If an encoding error occurred,
+.id &func.
+returns a negative value. If
+any other runtime-constraint violation occurred,
+.id &func.
+returns zero.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-If no runtime-constraint violation occurred, the &wfunc function returns the
+If no runtime-constraint violation occurred, the
+.id &wfunc.
+function returns the
 number of wide characters written in the array, not counting the terminating
 null wide character. If an encoding error occurred or if
 .arg n
-or more wide characters are requested to be written, &wfunc returns a negative
-value. If any other runtime-constraint violation occurred, &wfunc returns zero.
+or more wide characters are requested to be written,
+.id &wfunc.
+returns a negative
+value. If any other runtime-constraint violation occurred,
+.id &wfunc.
+returns zero.
 .do end
 .return end
 .*

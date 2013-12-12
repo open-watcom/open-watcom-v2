@@ -1,4 +1,5 @@
 .gfunc settextalign
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _settextalign( short horiz, short vert );
 .do end
@@ -6,9 +7,11 @@ void _FAR _settextalign( short horiz, short vert );
 subroutine _settextalign( horiz, vert )
 integer*2 horiz, vert
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current text alignment to the values
+The
+.id &func.
+&routine sets the current text alignment to the values
 specified by the arguments
 .arg horiz
 and
@@ -69,7 +72,9 @@ alignment is used.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

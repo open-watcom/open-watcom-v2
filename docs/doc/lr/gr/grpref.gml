@@ -25,10 +25,10 @@ lines and circles on the screen.
 .*
 .sect Acknowledgements
 .*
-Many members of &scompany have made a significant contribution to the
-design and implementation of the &company &lang Graphics Library.
-The design of this software is based upon ideas evolved and
-proven over the past decade in other software projects
+Many members of Watcom International Corp. have made a significant
+contribution to the design and implementation of the &company &lang
+Graphics Library. The design of this software is based upon ideas
+evolved and proven over the past decade in other software projects
 in which these people have been involved.
 :CMT. The major project members for the implementation
 :CMT. of the &company &lang Graphics Library were Bill Hillis, Claude Lepage,

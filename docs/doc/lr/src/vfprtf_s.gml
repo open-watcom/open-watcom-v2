@@ -29,22 +29,33 @@ specifier (modified or not by flags, field width, or precision) shall not
 appear in the string pointed to by
 .arg format
 .ct .li .
-Any argument to &func corresponding to a
+Any argument to
+.id &func.
+corresponding to a
 .mono %s
 specifier shall not be a null pointer.
 .np
-If there is a runtime-constraint violation, the &func function does not
+If there is a runtime-constraint violation, the
+.id &func.
+function does not
 attempt to produce further output, and it is unspecified to what extent
-&func produced output before discovering the runtime-constraint violation.
+.id &func.
+produced output before discovering the runtime-constraint violation.
 .rtconst end
 .*
 .desc begin
-The &func function is equivalent to the
+The
+.id &func.
+function is equivalent to the
 .kw vprintf
 function except for the explicit runtime-constraints listed above.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument for
 .arg format
 .ct .li .
@@ -52,11 +63,15 @@ wide-character string argument for
 .desc end
 .*
 .return begin
-The &func function returns the number of characters written, or a
+The
+.id &func.
+function returns the number of characters written, or a
 negative value if an output error or runtime-constraint violation occurred.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function returns the number of wide characters written, or a
+The
+.id &wfunc.
+function returns the number of wide characters written, or a
 negative value if an output error or runtime-constraint violation occurred.
 .do end
 .return end

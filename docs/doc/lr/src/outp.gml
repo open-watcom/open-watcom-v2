@@ -5,7 +5,9 @@ unsigned int outp( int port, int value );
 .ixfunc2 '&PortIo' &func
 .synop end
 .desc begin
-The &func function writes one byte, determined by
+The
+.id &func.
+function writes one byte, determined by
 .arg value
 .ct , to the 80x86 hardware port whose number is given by
 .arg port

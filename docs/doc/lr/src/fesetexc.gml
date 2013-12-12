@@ -6,7 +6,9 @@ int fesetexceptflag( const fexcept_t *__flagp, int __excepts );
 .synop end
 .*
 .desc begin
-The &func function attempts to set the floating-point status flags indicated by the
+The
+.id &func.
+function attempts to set the floating-point status flags indicated by the
 argument excepts to the states stored in the object pointed to by flagp. The value of
 *flagp shall have been set by a previous call to
 .kw fegetexceptflag
@@ -16,7 +18,9 @@ of the flags.
 .desc end
 .*
 .return begin
-The &func function returns zero if the excepts argument is zero or if
+The
+.id &func.
+function returns zero if the excepts argument is zero or if
 all the specified flags were successfully set to the appropriate state. Otherwise, it returns
 a nonzero value.
 .return end

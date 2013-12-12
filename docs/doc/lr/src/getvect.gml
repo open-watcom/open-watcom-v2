@@ -5,12 +5,16 @@ void (__interrupt __far *_dos_getvect(unsigned intnum))();
 .ixfunc2 '&CpuInt' &func
 .synop end
 .desc begin
-The &func function gets the current value of interrupt vector number
+The
+.id &func.
+function gets the current value of interrupt vector number
 .arg intnum
 .ct .li .
 .desc end
 .return begin
-The &func function returns a far pointer to the current interrupt
+The
+.id &func.
+function returns a far pointer to the current interrupt
 handler for interrupt number
 .arg intnum
 .ct .li .

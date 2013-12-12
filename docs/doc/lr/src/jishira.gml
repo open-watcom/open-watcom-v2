@@ -5,7 +5,9 @@ int jishira( JMOJI c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function tests if the argument
+The
+.id &func.
+function tests if the argument
 .arg c
 is a double-byte Hiragana character.
 A double-byte Hiragana character is any character for which the
@@ -24,7 +26,9 @@ The Hiragana code set includes 83 characters and the Katakana code set
 includes 86 characters.
 .desc end
 .return begin
-The &func function returns zero if the argument is not a double-byte Hiragana
+The
+.id &func.
+function returns zero if the argument is not a double-byte Hiragana
 character;
 otherwise, a non-zero value is returned.
 .return end

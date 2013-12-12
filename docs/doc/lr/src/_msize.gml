@@ -16,7 +16,9 @@ size_t _fmsize( void __far *buffer );
 size_t _nmsize( void __near *buffer );
 .synop end
 .desc begin
-The &func functions return the size of the memory block pointed to by
+The
+.id &func.
+functions return the size of the memory block pointed to by
 .arg buffer
 that was allocated by a call to the appropriate version of the
 .kw calloc
@@ -27,7 +29,9 @@ or
 .kw realloc
 functions.
 .np
-You must use the correct &func function as listed below depending on
+You must use the correct
+.id &func.
+function as listed below depending on
 which heap the memory block belongs to.
 .begterm 8
 .termhd1 Function
@@ -44,7 +48,9 @@ Far heap (outside the default data segment)
 Near heap (inside the default data segment)
 .endterm
 .np
-In small data models (small and medium memory models), &func maps to
+In small data models (small and medium memory models),
+.id &func.
+maps to
 .kw _nmsize
 .ct .li .
 In large data models (compact, large and huge memory models), &func
@@ -65,7 +71,9 @@ maps to
 :cmt. .ct .li .
 .desc end
 .return begin
-The &func functions return the size of the memory block pointed to by
+The
+.id &func.
+functions return the size of the memory block pointed to by
 .arg buffer
 .ct .li .
 .return end

@@ -46,7 +46,9 @@ is a null pointer, then
 .arg smax
 shall equal zero.
 .np
-If there is a runtime-constraint violation, &func does not modify
+If there is a runtime-constraint violation,
+.id &func.
+does not modify
 the int pointed to by
 .arg status
 .ct , and if
@@ -60,7 +62,9 @@ will be accessed.
 .rtconst end
 .*
 .desc begin
-The &func. function determines
+The
+.id &func.
+function determines
 .arg n
 and stores the multibyte character representation
 of
@@ -81,18 +85,24 @@ is a null wide character, a null byte is stored, preceded by any shift
 sequence needed to restore the initial shift state, and the function is
 left in the initial conversion state.
 .np
-The implementation shall behave as if no library function calls the &func. function.
+The implementation shall behave as if no library function calls the
+.id &func.
+function.
 .np
 If
 .arg s
-is a null pointer,the &func. function stores into the int pointed to by
+is a null pointer,the
+.id &func.
+function stores into the int pointed to by
 .arg status
 a nonzero or zero value, if multibyte character encodings, respectively,
 do or do not have state-dependent encodings.
 .np
 If
 .arg s
-is not a null pointer,the &func. function stores into the int pointed to by
+is not a null pointer,the
+.id &func.
+function stores into the int pointed to by
 .arg status
 either
 .arg n

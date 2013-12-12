@@ -9,7 +9,9 @@ int _dup( int &fd );
 .do end
 .synop end
 .desc begin
-The &func function duplicates the file &handle given by the argument
+The
+.id &func.
+function duplicates the file &handle given by the argument
 .arg &fd
 .ct .li .
 The new file &handle refers to the same open file &handle as the
@@ -21,8 +23,14 @@ Changing the position with one &handle will result in a changed position
 in the other.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to
+.id &func.
+.
+Use
+id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if '&machsys' eq 'QNX' .do begin
 .np

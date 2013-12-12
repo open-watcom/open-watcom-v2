@@ -7,7 +7,9 @@ int unlock( int &fd,
 .ixfunc2 '&OsIo' &func
 .synop end
 .desc begin
-The &func function unlocks
+The
+.id &func.
+function unlocks
 .arg nbytes
 amount of previously locked data in the file designated by
 .arg &fd
@@ -33,7 +35,9 @@ must be installed.
 .do end
 .desc end
 .return begin
-The &func function returns zero if successful, and &minus.1 when an
+The
+.id &func.
+function returns zero if successful, and &minus.1 when an
 error occurs.
 .im errnoref
 .return end

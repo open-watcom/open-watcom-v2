@@ -14,7 +14,9 @@ wchar_t *_wfullpath( wchar_t *buffer ,
 .do end
 .synop end
 .desc begin
-The &func function returns the full pathname of the file specification
+The
+.id &func.
+function returns the full pathname of the file specification
 in
 .arg path
 in the specified buffer
@@ -58,7 +60,9 @@ returned in
 .im widefunc
 .desc end
 .return begin
-The &func function returns a pointer to the full path specification if
+The
+.id &func.
+function returns a pointer to the full path specification if
 no error occurred.
 Otherwise,
 .mono NULL

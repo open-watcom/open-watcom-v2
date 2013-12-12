@@ -37,7 +37,9 @@ int _fmbscpy( unsigned char __far *dst,
 .safealt
 .*
 .desc begin
-The &func function copies the string pointed to by
+The
+.id &func.
+function copies the string pointed to by
 .arg src
 (including the terminating null character) into the array pointed to by
 .arg dst

@@ -5,7 +5,9 @@ unsigned int _mbctolower( unsigned int c );
 .ixfunc2 '&CharTest' &func
 .synop end
 .desc begin
-The &func function converts an uppercase multibyte character to an
+The
+.id &func.
+function converts an uppercase multibyte character to an
 equivalent lowercase multibyte character.
 .np
 For example, in code page 932, this includes the single-byte uppercase
@@ -20,7 +22,9 @@ This function was called
 in earlier versions.
 .desc end
 .return begin
-The &func function returns the argument value if the argument is not a
+The
+.id &func.
+function returns the argument value if the argument is not a
 double-byte uppercase character;
 otherwise, the equivalent lowercase character is returned.
 .return end

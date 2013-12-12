@@ -30,13 +30,19 @@ unsigned char __far *_fmbsrev( unsigned char __far *s1 );
 .do end
 .synop end
 .desc begin
-The &func function replaces the string
+The
+.id &func.
+function replaces the string
 .arg s1
 with a string whose characters are in the reverse order.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .im farfunc
 .im widefunc

@@ -5,7 +5,9 @@ int fgetpos( FILE *fp, fpos_t *pos );
 .ixfunc2 '&StrIo' &func
 .synop end
 .desc begin
-The &func function stores the current position of the file
+The
+.id &func.
+function stores the current position of the file
 .arg fp
 in the object pointed to by
 .arg pos
@@ -13,11 +15,16 @@ in the object pointed to by
 The value stored is usable by the
 .kw fsetpos
 function for repositioning the file to its position at the time of the
-call to the &func function.
+call to the
+.id &func.
+function.
 .desc end
 .return begin
-The &func function returns zero if successful, otherwise, the
-&func function returns a non-zero value.
+The
+.id &func.
+function returns zero if successful, otherwise, the
+.id &func.
+function returns a non-zero value.
 .im errnoref
 .return end
 .see begin

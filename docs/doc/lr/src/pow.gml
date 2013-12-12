@@ -5,7 +5,9 @@ double pow( double x, double y );
 .ixfunc2 '&Math' &func
 .synop end
 .desc begin
-The &func function computes
+The
+.id &func.
+function computes
 .arg x
 raised to the power
 .arg y
@@ -22,7 +24,9 @@ is not an integer.
 A range error may occur.
 .desc end
 .return begin
-The &func function returns the value of
+The
+.id &func.
+function returns the value of
 .arg x
 raised to the power
 .arg y

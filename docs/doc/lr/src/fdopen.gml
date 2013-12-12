@@ -14,7 +14,9 @@ FILE *_wfdopen( int &fd, const wchar_t *mode );
 .do end
 .synop end
 .desc begin
-The &func function associates a stream with the file &handle
+The
+.id &func.
+function associates a stream with the file &handle
 .arg &fd
 which represents an opened file or device.
 The &handle was returned by one of
@@ -49,21 +51,33 @@ is described in the description of the
 function.
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide character string for the second argument.
 .do end
 .desc end
 .return begin
-The &func function returns a pointer to the object controlling the
+The
+.id &func.
+function returns a pointer to the object controlling the
 stream.
 This pointer must be passed as a parameter to subsequent functions for
 performing operations on the file.
-If the open operation fails, &func returns a NULL pointer.
+If the open operation fails,
+.id &func.
+returns a NULL pointer.
 .im errnoref
 .return end
 .see begin

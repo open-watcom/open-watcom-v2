@@ -20,13 +20,17 @@ int _fheapset( unsigned char fill_char );
 int _nheapset( unsigned char fill_char );
 .synop end
 .desc begin
-The &func functions along with
+The
+.id &func.
+functions along with
 .kw _heapchk
 and
 .kw _heapwalk
 are provided for debugging heap related problems in programs.
 .np
-The &func functions perform a consistency check on the unallocated
+The
+.id &func.
+functions perform a consistency check on the unallocated
 memory space or "heap" just as
 .kw _heapchk
 does, and sets the heap's free entries with the
@@ -51,15 +55,21 @@ Far heap (outside the default data segment)
 Near heap (inside the default data segment)
 .endterm
 .np
-In a small data memory model, the &func function is equivalent to the
+In a small data memory model, the
+.id &func.
+function is equivalent to the
 .kw _nheapset
-function; in a large data memory model, the &func function is
+function; in a large data memory model, the
+.id &func.
+function is
 equivalent to the
 .kw _fheapset
 function.
 .desc end
 .return begin
-The &func functions return one of the following manifest constants
+The
+.id &func.
+functions return one of the following manifest constants
 which are defined in
 .mono <malloc.h>.
 .begterm 12

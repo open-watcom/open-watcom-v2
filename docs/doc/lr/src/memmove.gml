@@ -23,7 +23,9 @@ wchar_t *wmemmove( wchar_t *dst,
 .safealt
 .*
 .desc begin
-The &func function copies
+The
+.id &func.
+function copies
 .arg length
 characters from the buffer pointed to by
 .arg src
@@ -37,7 +39,11 @@ function to copy objects that do not overlap.
 .im farfunc
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc wide-character function is identical to &func except that it
+The
+.id &wfunc.
+wide-character function is identical to
+.id &func.
+except that it
 operates on characters of
 .kw wchar_t
 type.
@@ -48,7 +54,9 @@ is interpreted to mean the number of wide characters.
 .desc end
 .*
 .return begin
-The &func function returns
+The
+.id &func.
+function returns
 .arg dst
 .ct .li .
 .return end

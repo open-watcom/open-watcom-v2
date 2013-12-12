@@ -1,4 +1,5 @@
 .gfuncwxy getviewcoord
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getviewcoord( short x, short y );
 
@@ -17,14 +18,22 @@ double precision x, y
 record /xycoord/ function _getviewcoord_wxy( p )
 record /_wxycoord/ p
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routines translate a point
+The
+.id &func.
+&routines translate a point
 from one coordinate system to viewport coordinates.
-The &func &routine translates the point
+The
+.id &func.
+&routine translates the point
 .coord x y
 from physical coordinates.
-The &func2 and &func3 &routines translate the point from the
+The
+.id &func2.
+and
+.id &func3.
+&routines translate the point from the
 window coordinate system.
 .np
 Viewport coordinates are defined by the
@@ -38,13 +47,17 @@ Window coordinates are defined by the
 .if '&lang' eq 'C' .do begin
 .np
 .bd Note:
-In previous versions of the software, the &func &routine was called
+In previous versions of the software, the
+.id &func.
+&routine was called
 .mono _getlogcoord.
 .uindex getlogcoord
 .do end
 .desc end
 .return begin
-The &func &routines return the viewport coordinates,
+The
+.id &func.
+&routines return the viewport coordinates,
 as an
 .id xycoord
 structure,

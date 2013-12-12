@@ -1,20 +1,25 @@
 .gfunc pg_resetstyleset
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _pg_resetstyleset( void );
 .do end
 .el .do begin
 subroutine _pg_resetstyleset()
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine resets the internal style-set of the
+The
+.id &func.
+&routine resets the internal style-set of the
 presentation graphics system to default values.
 The style-set is a set of line styles used for drawing
 window borders and grid-lines.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

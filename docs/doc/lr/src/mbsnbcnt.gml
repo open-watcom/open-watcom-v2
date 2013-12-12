@@ -21,7 +21,9 @@ size_t _wcsncnt( const wchar_t *string, size_t n ) {
 .do end
 .synop end
 .desc begin
-The &mfunc function counts the number of bytes in the first
+The
+.id &mfunc.
+function counts the number of bytes in the first
 .arg n
 multibyte characters of the string
 .arg string
@@ -33,7 +35,9 @@ This function was called
 in earlier versions.
 .if &farfnc eq 1 .do begin
 .np
-The &fmfunc function is a data model independent form of the &func
+The
+.id &fmfunc.
+function is a data model independent form of the &func
 function that accepts far pointer arguments.
 It is most useful in mixed memory model applications.
 .do end
@@ -43,20 +47,33 @@ The header file
 defines the generic-text routine
 .kw _tcsnbcnt
 .ct .li .
-This macro maps to &mfunc if
+This macro maps to
+.id &mfunc.
+if
 .kw _MBCS
-has been defined, or to the &wfunc macro if
+has been defined, or to the
+.id &wfunc.
+macro if
 .kw _UNICODE
 has been defined.
 Otherwise
 .kw _tcsnbcnt
 maps to &func..
-&func and &wfunc are single-byte character string and wide-character
+.id &func.
+and
+.id &wfunc.
+are single-byte character string and wide-character
 string versions of &mfunc..
-The &func and &wfunc macros are provided only for this mapping and
+The
+.id &func.
+and
+.id &wfunc.
+macros are provided only for this mapping and
 should not be used otherwise.
 .np
-The &func function returns the number of characters (i.e.,
+The
+.id &func.
+function returns the number of characters (i.e.,
 .arg n
 .ct )
 in the first
@@ -64,7 +81,9 @@ in the first
 bytes of the single-byte string
 .arg string
 .ct .li .
-The &wfunc function returns the number of bytes (i.e., 2 *
+The
+.id &wfunc.
+function returns the number of bytes (i.e., 2 *
 .arg n
 .ct )
 in the first
@@ -74,7 +93,9 @@ wide characters of the wide-character string
 .ct .li .
 .desc end
 .return begin
-The &func functions return the number of bytes in the string up to the
+The
+.id &func.
+functions return the number of bytes in the string up to the
 specified number of characters or until a null character is
 encountered.
 The null character is not included in the count.

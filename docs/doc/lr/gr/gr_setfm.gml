@@ -1,4 +1,5 @@
 .gfunc setfillmask
+.gsynop begin 
 .if '&lang' eq 'C' .do begin
 void _FAR _setfillmask( char _FAR *mask );
 .do end
@@ -6,9 +7,11 @@ void _FAR _setfillmask( char _FAR *mask );
 subroutine _setfillmask( mask )
 integer*1 mask(8)
 .do end
-.gfuncend
+.gsynop end
 .desc begin
-The &func &routine sets the current fill mask to the value of the argument
+The
+.id &func.
+&routine sets the current fill mask to the value of the argument
 .arg mask
 .ct .li .
 .if '&lang' eq 'C' .do begin
@@ -24,7 +27,9 @@ By default, no fill mask is set.
 .desc end
 .if '&lang' eq 'C' .do begin
 .return begin
-The &func &routine does not return a value.
+The
+.id &func.
+&routine does not return a value.
 .return end
 .do end
 .see begin

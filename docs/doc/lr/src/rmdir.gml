@@ -21,7 +21,9 @@ int _wrmdir( const wchar_t *path );
 .synop end
 .*
 .desc begin
-The &func function removes (deletes) the specified directory.
+The
+.id &func.
+function removes (deletes) the specified directory.
 The directory must not contain any files or directories.
 The
 .arg path
@@ -38,11 +40,14 @@ directory open, the space occupied by the directory is freed and the
 directory is no longer accessible.
 If one or more processes have the directory open when the last link
 is removed, the dot and dot-dot entries, if present, are removed before
-&func returns and no new entries may be created in the directory, but
+.id &func.
+returns and no new entries may be created in the directory, but
 the directory is not removed until all references to the directory
 have been closed.
 .pp
-Upon successful completion, the &func function will mark for update
+Upon successful completion, the
+.id &func.
+function will mark for update
 the
 .us st_ctime
 and
@@ -51,18 +56,28 @@ fields of the parent directory.
 .do end
 .if &'length(&_func.) ne 0 .do begin
 .np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
+The
+.id &_func.
+function is identical to &func..
+Use
+.id &_func.
+for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The &wfunc function is identical to &func except that it accepts a
+The
+.id &wfunc.
+function is identical to
+.id &func.
+except that it accepts a
 wide-character string argument.
 .do end
 .desc end
 .*
 .return begin
-The &func function returns zero if successful and -1 otherwise.
+The
+.id &func.
+function returns zero if successful and -1 otherwise.
 .return end
 .*
 .error begin

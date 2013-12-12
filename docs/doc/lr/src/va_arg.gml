@@ -5,7 +5,8 @@ type va_arg( va_list param, type );
 .ixfunc2 'variable arguments'  &func
 .synop end
 .desc begin
-&func is a macro that can be used to obtain the next argument in a
+.id &func.
+is a macro that can be used to obtain the next argument in a
 list of variable arguments.
 It must be used with the associated macros
 .kw va_start

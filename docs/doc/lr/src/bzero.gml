@@ -5,7 +5,9 @@ void bzero( void *dst, size_t n );
 .ixfunc2 '&String' &func
 .synop end
 .desc begin
-The &func function fills the first
+The
+.id &func.
+function fills the first
 .arg n
 bytes of the object pointed to by
 .arg dst
@@ -16,7 +18,9 @@ Note that this function is similar to the ANSI
 function (new code should use the ANSI function).
 .desc end
 .return begin
-The &func function has no return value.
+The
+.id &func.
+function has no return value.
 .return end
 .see begin
 .seelist &function. bcmp bcopy bzero memset strset
