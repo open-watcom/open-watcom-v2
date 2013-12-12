@@ -1,4 +1,5 @@
 .func _findnext _findnexti64 _wfindnext _wfindnexti64
+.synop begin
 #include <&iohdr>
 int _findnext( long handle,
                struct _finddata_t *fileinfo );

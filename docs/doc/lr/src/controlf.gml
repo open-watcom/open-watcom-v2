@@ -1,4 +1,5 @@
 .func _controlfp
+.synop begin
 #include <float.h>
 unsigned int _controlfp( unsigned int newcw,
                          unsigned int mask );

@@ -1,4 +1,5 @@
 .func _dos_freemem
+.synop begin
 #include <&doshdr>
 #if defined(__NT__) || \
   ( defined(__OS2__) && \

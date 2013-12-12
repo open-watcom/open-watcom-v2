@@ -1,4 +1,5 @@
 .func fpclassify
+.synop begin
 #include <math.h>
 int fpclassify( x );
 .synop end

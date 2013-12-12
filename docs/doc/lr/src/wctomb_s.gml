@@ -1,7 +1,8 @@
 .func begin
 .funct_w  wctomb_s   TR 24731
 .funct_fw _fwctomb_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdlib.h>
 errno_t wctomb_s( int * restrict status,

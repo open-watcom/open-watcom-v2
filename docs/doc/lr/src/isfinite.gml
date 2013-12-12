@@ -1,4 +1,5 @@
 .func isfinite
+.synop begin
 #include <math.h>
 int isfinite( x );
 .synop end

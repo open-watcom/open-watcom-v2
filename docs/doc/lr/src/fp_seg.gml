@@ -1,4 +1,5 @@
 .func FP_SEG
+.synop begin
 #include <i86.h>
 unsigned FP_SEG( void __far *far_ptr );
 .synop end

@@ -1,4 +1,5 @@
 .func fputs fputws
+.synop begin
 .funcw fputws
 #include <stdio.h>
 int fputs( const char *buf, FILE *fp );

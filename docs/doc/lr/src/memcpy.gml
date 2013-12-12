@@ -1,4 +1,5 @@
 .func memcpy _fmemcpy wmemcpy
+.synop begin
 #include <string.h>
 void *memcpy( void *dst,
               const void *src,

@@ -1,4 +1,5 @@
 .func _ismbblead
+.synop begin
 #include <mbctype.h>
 int _ismbblead( unsigned int ch );
 .synop end

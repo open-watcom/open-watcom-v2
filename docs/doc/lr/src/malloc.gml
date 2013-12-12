@@ -1,5 +1,6 @@
 .if &farfnc eq 0 .do begin
 .func malloc
+.synop begin
 #include <stdlib.h>
 void *malloc( size_t size );
 .ixfunc2 '&Memory' &func
@@ -48,7 +49,8 @@ void main()
 .func2 _bmalloc
 .func2 _fmalloc
 .func2 _nmalloc
-.func gen
+.func end
+.synop begin
 #include <stdlib.h>  For ANSI compatibility (malloc only)
 #include <malloc.h>  Required for other function prototypes
 void *malloc( size_t size );

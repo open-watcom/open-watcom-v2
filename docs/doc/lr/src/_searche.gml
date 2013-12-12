@@ -1,4 +1,5 @@
 .func _searchenv _wsearchenv
+.synop begin
 #include <stdlib.h>
 void _searchenv( const char *name,
                  const char *env_var,

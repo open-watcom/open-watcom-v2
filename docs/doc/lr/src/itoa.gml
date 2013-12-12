@@ -1,4 +1,5 @@
 .func itoa _itoa _itow
+.synop begin
 .funcw _itow
 #include <stdlib.h>
 char *itoa( int value, char *buffer, int radix );

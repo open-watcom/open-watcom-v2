@@ -1,4 +1,5 @@
 .func ulltoa _ulltoa _ulltow
+.synop begin
 #include <stdlib.h>
 char *ulltoa( unsigned long long int value,
               char *buffer,

@@ -1,5 +1,6 @@
 .if &farfnc eq 0 .do begin
 .func calloc
+.synop begin
 #include <stdlib.h>
 void *calloc( size_t n, size_t size );
 .ixfunc2 '&Memory' &func
@@ -49,7 +50,8 @@ void main()
 .func2 _bcalloc
 .func2 _fcalloc
 .func2 _ncalloc
-.func gen
+.func end
+.synop begin
 #include <stdlib.h>  For ANSI compatibility (calloc only)
 #include <malloc.h>  Required for other function prototypes
 void *calloc( size_t n, size_t size );

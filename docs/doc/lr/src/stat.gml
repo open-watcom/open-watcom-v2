@@ -1,4 +1,5 @@
 .func stat _stat _stati64 _wstat _wstati64 lstat
+.synop begin
 #include <sys/stat.h>
 int stat( const char *path, struct stat *buf );
 .ixfunc2 '&FileOp' &func

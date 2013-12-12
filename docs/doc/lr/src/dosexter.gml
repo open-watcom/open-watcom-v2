@@ -1,4 +1,5 @@
 .func dosexterr
+.synop begin
 #include <&doshdr>
 int dosexterr( struct DOSERROR *err_info );
 

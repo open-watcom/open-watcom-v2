@@ -1,4 +1,5 @@
 .func _ismbbkalpha
+.synop begin
 #include <mbctype.h>
 int _ismbbkalpha( unsigned int ch );
 .synop end

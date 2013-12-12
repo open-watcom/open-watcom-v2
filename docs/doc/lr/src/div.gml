@@ -1,4 +1,5 @@
 .func div
+.synop begin
 #include <stdlib.h>
 div_t div( int numer, int denom );
 

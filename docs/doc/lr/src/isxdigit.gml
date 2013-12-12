@@ -1,4 +1,5 @@
 .func isxdigit iswxdigit
+.synop begin
 .funcw iswxdigit
 #include <ctype.h>
 int isxdigit( int c );

@@ -1,4 +1,5 @@
 .func isgraph iswgraph
+.synop begin
 .funcw iswgraph
 #include <ctype.h>
 int isgraph( int c );

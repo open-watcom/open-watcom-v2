@@ -1,4 +1,5 @@
 .func scalbn
+.synop begin
 #include <math.h>
 double scalbn( double x, int y );
 .ixfunc2 '&Math' &func

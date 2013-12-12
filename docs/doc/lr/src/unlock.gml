@@ -1,4 +1,5 @@
 .func unlock
+.synop begin
 #include <&iohdr>
 int unlock( int &fd,
             unsigned long offset,

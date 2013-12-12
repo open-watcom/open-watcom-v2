@@ -1,4 +1,5 @@
 .func wcsrtombs _fwcsrtombs
+.synop begin
 #include <wchar.h>
 size_t wcsrtombs( char *dst,
          const wchar_t **src,

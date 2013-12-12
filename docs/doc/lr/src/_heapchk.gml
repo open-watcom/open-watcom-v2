@@ -3,7 +3,8 @@
 .func2 _bheapchk
 .func2 _fheapchk
 .func2 _nheapchk
-.func gen
+.func end
+.synop begin
 .ixfunc2 '&Heap' _heapchk
 .ixfunc2 '&Heap' _bheapchk
 .ixfunc2 '&Heap' _fheapchk

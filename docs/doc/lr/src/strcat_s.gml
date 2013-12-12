@@ -1,4 +1,5 @@
 .func strcat_s wcscat_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <string.h>
 errno_t strcat_s( char * restrict s1,

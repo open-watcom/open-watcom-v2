@@ -1,4 +1,5 @@
 .func imaxdiv
+.synop begin
 #include <stdlib.h>
 imaxdiv_t imaxdiv( intmax_t numer, intmax_t denom );
 

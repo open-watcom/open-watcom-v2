@@ -1,4 +1,5 @@
 .func clearenv
+.synop begin
 #include <env.h>
 int clearenv( void );
 .ixfunc2 '&Process' &func

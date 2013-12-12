@@ -1,4 +1,5 @@
 .func vcscanf
+.synop begin
 #include <conio.h>
 #include <stdarg.h>
 int vcscanf( const char *format, va_list args )

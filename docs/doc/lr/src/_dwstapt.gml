@@ -1,4 +1,5 @@
 .func _dwSetAppTitle
+.synop begin
 #include <wdefwin.h>
 int _dwSetAppTitle( const char *title );
 .synop end

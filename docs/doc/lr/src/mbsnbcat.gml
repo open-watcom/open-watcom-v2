@@ -1,4 +1,5 @@
 .func _mbsnbcat _fmbsnbcat
+.synop begin
 #include <mbstring.h>
 unsigned char *_mbsnbcat( unsigned char *dst,
                     const unsigned char *src,

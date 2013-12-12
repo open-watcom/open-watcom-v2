@@ -1,4 +1,5 @@
 .func _finite
+.synop begin
 #include <float.h>
 int _finite( double x );
 .ixfunc2 '&Math' &func

@@ -1,4 +1,5 @@
 .func _bgetcmd
+.synop begin
 #include <process.h>
 int _bgetcmd( char *cmd_line, int len );
 .ixfunc2 '&Process' &func

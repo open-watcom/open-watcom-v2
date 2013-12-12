@@ -1,4 +1,5 @@
 .func _ismbdlower
+.synop begin
 #include <mbstring.h>
 int _ismbdlower( unsigned int ch );
 .synop end

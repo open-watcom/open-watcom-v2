@@ -3,7 +3,8 @@
 .func2 _bheapmin
 .func2 _fheapmin
 .func2 _nheapmin
-.func gen
+.func end
+.synop begin
 .ixfunc2 '&Heap' _heapmin
 .ixfunc2 '&Heap' _bheapmin
 .ixfunc2 '&Heap' _fheapmin

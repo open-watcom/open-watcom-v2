@@ -106,7 +106,7 @@
 .*
 .*
 .dm func begin
-.if |&*1| ne |end| AND |&*1| ne |gen| .do begin
+.if |&*1| ne |end| .do begin
 .   .sr *cnt=&*0
 .   .sr *i=1
 .   .if |&*1| eq |begin| .do begin
@@ -131,7 +131,7 @@
 .   .   .do end
 .   .do end
 .do end
-.if |&*1| ne |begin| AND |&*1| ne |end| .do begin
+.if |&*1| ne |begin| .do begin
 .*  generate title and start of code (declaration)
 .   .topsect &fncttl.
 .   .if '&funcgrp.' ne '' .do begin
@@ -140,11 +140,6 @@
 .   .sr *i=1
 .   .pe &__fnx.
 .   .   .if '&funcgrp.' ne '&$$fnc(&*i.)' .ixm '&$$fnc(&*i.)';.sr *i=&*i.+1
-.   .cp 5
-.   .newcode Synopsis:
-.do end
-.if |&*1| eq |end| .do begin
-.   .funcend
 .do end
 .dm func end
 .*
@@ -252,7 +247,7 @@
 .newcode Synopsis:
 .do end
 .el .if '&*' eq 'end' .do begin
-.   .func end
+.   .funcend
 .do end
 .dm synop end
 .*
@@ -707,11 +702,10 @@ command
 .*   .functm    doublemathfunc         "
 .*   .functm_f  floatmathfunc          "
 .*   .functm_l  longdoublemathfunc     "
-.*   .func gen
+.*   .func end
 .*
 .*    description
 .*
-.*   .synop end
 .*   .classt
 .*
 .*

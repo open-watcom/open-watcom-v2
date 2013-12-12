@@ -1,4 +1,5 @@
 .func tzset
+.synop begin
 #include <time.h>
 void tzset( void );
 .synop end

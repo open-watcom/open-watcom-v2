@@ -1,4 +1,5 @@
 .func ispnkana
+.synop begin
 #include <jctype.h>
 int ispnkana( int c );
 .ixfunc2 '&CharTest' &func

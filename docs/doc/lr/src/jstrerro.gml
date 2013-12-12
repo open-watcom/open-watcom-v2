@@ -1,4 +1,5 @@
 .func jstrerror
+.synop begin
 #include <jstring.h>
 unsigned char *jstrerror( int errnum );
 .ixfunc2 '&Jstring' &func

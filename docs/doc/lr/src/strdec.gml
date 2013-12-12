@@ -1,4 +1,5 @@
 .func _strdec _wcsdec _mbsdec _fmbsdec
+.synop begin
 #include <tchar.h>
 char *_strdec( const char *start, const char *current );
 .ixfunc2 '&String' &func

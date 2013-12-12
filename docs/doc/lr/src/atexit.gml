@@ -1,4 +1,5 @@
 .func atexit
+.synop begin
 #include <stdlib.h>
 int atexit( void (*func)(void) );
 .ixfunc2 '&Process' &func

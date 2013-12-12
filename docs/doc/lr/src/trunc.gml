@@ -1,4 +1,5 @@
 .func trunc
+.synop begin
 #include <math.h>
 double trunc( double x );
 .ixfunc2 '&Math' &func

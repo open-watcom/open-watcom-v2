@@ -1,4 +1,5 @@
 .func strerror_s wcserror_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <string.h>
 errno_t strerror_s( char * s,

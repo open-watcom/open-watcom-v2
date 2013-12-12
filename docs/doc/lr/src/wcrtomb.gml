@@ -1,4 +1,5 @@
 .func wcrtomb _fwcrtomb
+.synop begin
 #include <wchar.h>
 int wcrtomb( char *s, wchar_t wc, mbstate_t *ps );
 .ixfunc2 '&Wide' &func

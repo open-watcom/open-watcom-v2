@@ -1,4 +1,5 @@
 .func _ismbckata
+.synop begin
 #include <mbstring.h>
 int _ismbckata( unsigned int ch );
 .synop end

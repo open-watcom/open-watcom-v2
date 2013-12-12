@@ -1,4 +1,5 @@
 .func jstrmatch _fjstrmatch
+.synop begin
 #include <jstring.h>
 JSTRING jstrmatch( const JCHAR *str, const JCHAR *charset );
 .ixfunc2 '&Jstring' &func

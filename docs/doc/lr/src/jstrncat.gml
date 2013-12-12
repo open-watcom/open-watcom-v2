@@ -1,4 +1,5 @@
 .func jstrncat _fjstrncat
+.synop begin
 #include <jstring.h>
 JSTRING jstrncat( JCHAR *dst,
                   const JCHAR *src,

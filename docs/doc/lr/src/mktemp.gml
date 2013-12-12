@@ -1,4 +1,5 @@
 .func _mktemp _wmktemp
+.synop begin
 #include <&iohdr>
 char *_mktemp( char *template );
 .ixfunc2 '&FileOp' &func

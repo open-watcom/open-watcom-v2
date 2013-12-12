@@ -1,4 +1,5 @@
 .func sqrt
+.synop begin
 #include <math.h>
 double sqrt( double x );
 .ixfunc2 '&Math' &func

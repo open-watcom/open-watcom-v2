@@ -1,4 +1,5 @@
 .func strcat _fstrcat wcscat _mbscat _fmbscat
+.synop begin
 #include <string.h>
 char *strcat( char *dst, const char *src );
 .ixfunc2 '&String' &func

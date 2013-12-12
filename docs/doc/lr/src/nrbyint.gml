@@ -1,4 +1,5 @@
 .func nearbyint
+.synop begin
 #include <math.h>
 double nearbyint( double x );
 .ixfunc2 '&Math' &func

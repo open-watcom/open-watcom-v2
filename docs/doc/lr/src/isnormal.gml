@@ -1,4 +1,5 @@
 .func isnormal
+.synop begin
 #include <math.h>
 int isnormal( x );
 .synop end

@@ -1,4 +1,5 @@
 .func acos
+.synop begin
 #include <math.h>
 double acos( double x );
 .ixfunc2 '&Math' &func

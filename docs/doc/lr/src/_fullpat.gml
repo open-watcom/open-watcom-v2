@@ -1,4 +1,5 @@
 .func _fullpath _wfullpath
+.synop begin
 #include <stdlib.h>
 char *_fullpath( char *buffer,
                  const char *path,

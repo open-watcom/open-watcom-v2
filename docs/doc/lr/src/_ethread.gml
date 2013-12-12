@@ -1,6 +1,7 @@
 .func begin _endthread
 .func2 _endthreadex
-.func gen
+.func end
+.synop begin
 #include <process.h>
 void _endthread(void);
 .ixfunc2 '&OS2Func' &func

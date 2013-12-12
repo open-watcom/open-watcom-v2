@@ -1,4 +1,5 @@
 .func islower iswlower
+.synop begin
 .funcw iswlower
 #include <ctype.h>
 int islower( int c );

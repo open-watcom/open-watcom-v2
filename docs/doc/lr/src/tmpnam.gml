@@ -1,4 +1,5 @@
 .func tmpnam _wtmpnam
+.synop begin
 #include <stdio.h>
 char *tmpnam( char *buffer );
 .ixfunc2 '&FileOp' &func

@@ -1,4 +1,5 @@
 .func strdup _strdup _fstrdup _wcsdup _mbsdup _fmbsdup
+.synop begin
 #include <string.h>
 char *strdup( const char *src );
 .ixfunc2 '&String' &func

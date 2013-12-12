@@ -1,4 +1,5 @@
 .func _dos_getdiskfree
+.synop begin
 #include <&doshdr>
 unsigned _dos_getdiskfree( unsigned drive,
                         struct diskfree_t *diskspace );

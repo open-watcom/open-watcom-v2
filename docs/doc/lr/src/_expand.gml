@@ -3,7 +3,8 @@
 .func2 _bexpand
 .func2 _fexpand
 .func2 _nexpand
-.func gen
+.func end
+.synop begin
 #include <malloc.h>
 void        *_expand( void *mem_blk, size_t size );
 void __based(void) *_bexpand( __segment seg,

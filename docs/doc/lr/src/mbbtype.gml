@@ -1,4 +1,5 @@
 .func _mbbtype
+.synop begin
 #include <mbstring.h>
 #include <mbctype.h> (for manifest constants)
 int _mbbtype( unsigned char ch, int type );

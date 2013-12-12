@@ -1,4 +1,5 @@
 .func _dwShutDown
+.synop begin
 #include <wdefwin.h>
 int _dwShutDown( void );
 .synop end

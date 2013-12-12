@@ -1,4 +1,5 @@
 .func _dos_setdrive
+.synop begin
 #include <&doshdr>
 void _dos_setdrive( unsigned drive, unsigned *total );
 .ixfunc2 '&DosFunc' &func

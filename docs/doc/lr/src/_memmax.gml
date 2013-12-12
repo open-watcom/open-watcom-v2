@@ -1,4 +1,5 @@
 .func _memmax
+.synop begin
 #include <malloc.h>
 size_t _memmax( void );
 .ixfunc2 '&Memory' &func

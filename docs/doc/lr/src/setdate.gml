@@ -1,4 +1,5 @@
 .func _dos_setdate
+.synop begin
 #include <&doshdr>
 unsigned _dos_setdate( struct dosdate_t *date );
 

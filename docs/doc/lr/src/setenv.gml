@@ -1,4 +1,5 @@
 .func setenv _setenv _wsetenv
+.synop begin
 #include <env.h>
 int setenv( const char *name,
             const char *newvalue,

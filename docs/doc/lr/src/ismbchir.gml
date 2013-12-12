@@ -1,4 +1,5 @@
 .func _ismbchira
+.synop begin
 #include <mbstring.h>
 int _ismbchira( unsigned int ch );
 .synop end

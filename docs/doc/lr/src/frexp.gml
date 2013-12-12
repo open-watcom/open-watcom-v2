@@ -1,4 +1,5 @@
 .func frexp
+.synop begin
 #include <math.h>
 double frexp( double value, int *exp );
 .ixfunc2 '&Math' &func

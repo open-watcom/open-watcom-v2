@@ -1,4 +1,5 @@
 .func DefineUserProc16
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 *$include 'winapi.fi'
        integer*4 function DefineUserProc16(typ, routine, ...)

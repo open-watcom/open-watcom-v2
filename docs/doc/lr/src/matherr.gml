@@ -1,4 +1,5 @@
 .func matherr
+.synop begin
 #include <math.h>
 int matherr( struct _exception *err_info );
 .ixfunc2 '&Errs' &func

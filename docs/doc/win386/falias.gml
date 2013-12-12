@@ -1,4 +1,5 @@
 .func FreeAlias16
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 c$include 'winapi.fi'
        subroutine FreeAlias16( fp16 )

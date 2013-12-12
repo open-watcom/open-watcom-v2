@@ -1,4 +1,5 @@
 .func _mbsnbcmp _fmbsnbcmp
+.synop begin
 #include <mbstring.h>
 int _mbsnbcmp( const unsigned char *s1,
                const unsigned char *s2,

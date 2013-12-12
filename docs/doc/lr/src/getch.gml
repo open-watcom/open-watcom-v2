@@ -1,4 +1,5 @@
 .func getch
+.synop begin
 #include <conio.h>
 int getch( void );
 .ixfunc2 '&KbIo' '&func'

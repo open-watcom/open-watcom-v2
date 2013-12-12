@@ -1,4 +1,5 @@
 .func _Call16
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 c$include 'winapi.fi'
        integer*4 function _Call16( lpFunc, fmt, ... )

@@ -1,4 +1,5 @@
 .func memcpy_s wmemcpy_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <string.h>
 errno_t memcpy_s( void * restrict s1,

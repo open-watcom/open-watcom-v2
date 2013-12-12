@@ -1,4 +1,5 @@
 .func asinh
+.synop begin
 #include <math.h>
 double asinh( double x );
 .ixfunc2 '&Math' &func

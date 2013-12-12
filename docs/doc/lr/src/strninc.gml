@@ -1,4 +1,5 @@
 .func _strninc _wcsninc _mbsninc _fmbsninc
+.synop begin
 #ninclude <tchar.h>
 char *_strninc( const char *str, size_t count );
 .ixfunc2 '&String' &func

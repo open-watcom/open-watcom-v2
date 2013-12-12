@@ -1,4 +1,5 @@
 .func _cmdname
+.synop begin
 #include <process.h>
 char *_cmdname( char *buffer );
 .ixfunc2 '&String' &func

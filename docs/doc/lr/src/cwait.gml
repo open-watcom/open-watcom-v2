@@ -1,4 +1,5 @@
 .func cwait _cwait
+.synop begin
 #include <process.h>
 int cwait( int *status, int process_id, int action );
 .ixfunc2 '&OS2Func' &func

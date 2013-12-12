@@ -1,4 +1,5 @@
 .func _mbptov _fmbptov
+.synop begin
 #include <mbstring.h>
 unsigned int _mbptov( const unsigned char *string );
 .if &farfnc eq 1 .do begin

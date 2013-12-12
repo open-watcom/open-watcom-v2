@@ -1,4 +1,5 @@
 .func isinf
+.synop begin
 #include <math.h>
 int isinf( x );
 .synop end

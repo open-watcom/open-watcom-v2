@@ -1,4 +1,5 @@
 .func strcmp _fstrcmp wcscmp _mbscmp _fmbscmp
+.synop begin
 #include <string.h>
 int strcmp( const char *s1, const char *s2 );
 .ixfunc2 '&String' &func

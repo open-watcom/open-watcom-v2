@@ -1,4 +1,5 @@
 .func cbrt
+.synop begin
 #include <math.h>
 double cbrt( double x );
 .ixfunc2 '&Math' &func

@@ -1,4 +1,5 @@
 .func _ismbbkana
+.synop begin
 #include <mbctype.h>
 int _ismbbkana( unsigned int ch );
 .synop end

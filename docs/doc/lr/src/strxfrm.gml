@@ -1,4 +1,5 @@
 .func strxfrm wcsxfrm
+.synop begin
 #include <string.h>
 size_t strxfrm( char *dst,
                 const char *src,

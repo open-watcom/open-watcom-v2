@@ -1,4 +1,5 @@
 .func sbrk
+.synop begin
 #include <stdlib.h>
 void *sbrk( int increment );
 .ixfunc2 '&Memory' &func

@@ -1,4 +1,5 @@
 .func isatty _isatty
+.synop begin
 #include <&iohdr>
 int isatty( int &fd );
 .ixfunc2 '&OsIo' &func

@@ -1,4 +1,5 @@
 .func _ismbddigit
+.synop begin
 #include <mbstring.h>
 int _ismbddigit( unsigned int ch );
 .synop end

@@ -1,4 +1,5 @@
 .func isleadbyte
+.synop begin
 #include <ctype.h>
 int isleadbyte( int ch );
 .ixfunc2 '&CharTest' &func

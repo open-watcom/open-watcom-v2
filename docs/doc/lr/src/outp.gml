@@ -1,4 +1,5 @@
 .func outp
+.synop begin
 #include <conio.h>
 unsigned int outp( int port, int value );
 .ixfunc2 '&PortIo' &func

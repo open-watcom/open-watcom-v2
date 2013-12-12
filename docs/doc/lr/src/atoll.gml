@@ -1,4 +1,5 @@
 .func atoll _wtoll
+.synop begin
 #include <stdlib.h>
 long long int atoll( const char *ptr );
 .ixfunc2 '&Conversion' &func

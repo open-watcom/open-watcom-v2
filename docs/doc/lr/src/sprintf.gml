@@ -1,4 +1,5 @@
 .func sprintf swprintf
+.synop begin
 .funcw swprintf
 #include <stdio.h>
 int sprintf( char *buf, const char *format, ... );

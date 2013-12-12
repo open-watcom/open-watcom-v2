@@ -1,4 +1,5 @@
 .func _findfirst _findfirsti64 _wfindfirst _wfindfirsti64
+.synop begin
 #include <&iohdr>
 long _findfirst( const char *filespec,
                  struct _finddata_t *fileinfo );

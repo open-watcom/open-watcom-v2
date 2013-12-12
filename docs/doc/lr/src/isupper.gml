@@ -1,4 +1,5 @@
 .func isupper iswupper
+.synop begin
 .funcw iswupper
 #include <ctype.h>
 int isupper( int c );

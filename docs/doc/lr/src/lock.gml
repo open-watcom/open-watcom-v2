@@ -1,4 +1,5 @@
 .func lock
+.synop begin
 #include <&iohdr>
 int lock( int &fd,
           unsigned long offset,

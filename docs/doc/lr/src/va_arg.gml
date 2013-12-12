@@ -1,4 +1,5 @@
 .func va_arg
+.synop begin
 #include <stdarg.h>
 type va_arg( va_list param, type );
 .ixfunc2 'variable arguments'  &func

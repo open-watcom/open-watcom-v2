@@ -1,4 +1,5 @@
 .func offsetof
+.synop begin
 #include <stddef.h>
 size_t offsetof( composite, name );
 .synop end

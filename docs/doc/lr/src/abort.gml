@@ -1,4 +1,5 @@
 .func abort
+.synop begin
 #include <stdlib.h>
 void abort( void );
 .ixfunc2 '&Process' &func

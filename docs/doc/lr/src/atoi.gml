@@ -1,4 +1,5 @@
 .func atoi _wtoi
+.synop begin
 #include <stdlib.h>
 int atoi( const char *ptr );
 .ixfunc2 '&Conversion' &func

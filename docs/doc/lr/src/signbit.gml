@@ -1,4 +1,5 @@
 .func signbit
+.synop begin
 #include <math.h>
 int signbit( x );
 .synop end

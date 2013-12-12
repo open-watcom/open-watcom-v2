@@ -1,4 +1,5 @@
 .func strcpy_s wcscpy_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <string.h>
 errno_t strcpy_s( char * restrict s1,

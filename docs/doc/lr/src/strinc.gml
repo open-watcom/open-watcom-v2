@@ -1,4 +1,5 @@
 .func _strinc _wcsinc _mbsinc _fmbsinc
+.synop begin
 #include <tchar.h>
 char *_strinc( const char *current );
 .ixfunc2 '&String' &func

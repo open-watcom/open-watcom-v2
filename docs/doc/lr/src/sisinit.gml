@@ -1,4 +1,5 @@
 .func mbsinit sisinit
+.synop begin
 #include <wchar.h>
 int mbsinit( const mbstate_t *ps );
 int sisinit( const mbstate_t *ps );

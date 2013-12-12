@@ -1,4 +1,5 @@
 .func _hdopen
+.synop begin
 #include <&iohdr>
 int _hdopen( int os_handle, int mode );
 .synop end

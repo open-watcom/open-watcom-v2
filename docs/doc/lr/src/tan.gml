@@ -1,4 +1,5 @@
 .func tan
+.synop begin
 #include <math.h>
 double tan( double x );
 .ixfunc2 '&Math' &func

@@ -1,6 +1,7 @@
 .func begin vsscanf_s vswscanf_s
 .funcw vswscanf_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdarg.h>
 #include <stdio.h>

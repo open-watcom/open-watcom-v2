@@ -1,4 +1,5 @@
 .func cputs
+.synop begin
 #include <conio.h>
 int cputs( const char *buf );
 .ixfunc2 '&KbIo' &func

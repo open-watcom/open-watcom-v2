@@ -1,4 +1,5 @@
 .func feclearexcept
+.synop begin
 #include <fenv.h>
 int feclearexcept( int __excepts );
 .ixfunc2 'Floating Point Environment' &func

@@ -1,4 +1,5 @@
 .func erf
+.synop begin
 #include <math.h>
 double erf( double x );
 .ixfunc2 '&Math' &func

@@ -1,4 +1,5 @@
 .func mbsrtowcs _fmbsrtowcs
+.synop begin
 #include <wchar.h>
 size_t mbsrtowcs( wchar_t *dst,
                const char **src,

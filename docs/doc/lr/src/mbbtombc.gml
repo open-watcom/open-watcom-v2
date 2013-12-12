@@ -1,4 +1,5 @@
 .func _mbbtombc
+.synop begin
 #include <mbstring.h>
 unsigned int _mbbtombc( unsigned int ch );
 .synop end

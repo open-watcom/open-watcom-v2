@@ -1,4 +1,5 @@
 .func mtob _fmtob
+.synop begin
 #include <jstring.h>
 size_t mtob( const unsigned char *str, size_t nm );
 .ixfunc2 '&Jstring' &func

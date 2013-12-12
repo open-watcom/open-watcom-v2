@@ -1,4 +1,5 @@
 .func _chain_intr
+.synop begin
 #include <&doshdr>
 void _chain_intr( void (__interrupt __far *func)() );
 .ixfunc2 '&CpuInt' &func

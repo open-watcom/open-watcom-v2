@@ -1,4 +1,5 @@
 .func delay
+.synop begin
 #include <i86.h>
 .if '&machsys' eq 'QNX' .do begin
 unsigned int delay( unsigned int milliseconds );

@@ -1,4 +1,5 @@
 .func qsort
+.synop begin
 #include <stdlib.h>
 void qsort( void *base,
             size_t num,

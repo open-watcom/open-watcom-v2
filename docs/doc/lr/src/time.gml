@@ -1,4 +1,5 @@
 .func time
+.synop begin
 #include <time.h>
 time_t time( time_t *tloc );
 .ixfunc2 '&TimeFunc' &func

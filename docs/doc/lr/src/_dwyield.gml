@@ -1,4 +1,5 @@
 .func _dwYield
+.synop begin
 #include <wdefwin.h>
 int _dwYield( void );
 .synop end

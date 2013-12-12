@@ -1,4 +1,5 @@
 .func _findclose
+.synop begin
 #include <&iohdr>
 int _findclose( long handle );
 .ixfunc2 '&DosFunc' _findclose

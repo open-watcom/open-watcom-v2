@@ -1,4 +1,5 @@
 .func perror _wperror
+.synop begin
 #include <stdio.h>
 void perror( const char *prefix );
 .ixfunc2 '&StrIo' &func

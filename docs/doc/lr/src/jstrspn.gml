@@ -1,4 +1,5 @@
 .func jstrspn _fjstrspn
+.synop begin
 #include <jstring.h>
 size_t jstrspn( const JCHAR *str, const JCHAR *charset );
 .ixfunc2 '&Jstring' &func

@@ -1,4 +1,5 @@
 .func _heapenable
+.synop begin
 #include <malloc.h>
 int _heapenable( int enabled );
 .ixfunc2 '&Heap' _heapenable

@@ -1,4 +1,5 @@
 .func _ismbdupper
+.synop begin
 #include <mbstring.h>
 int _ismbdupper( unsigned int ch );
 .synop end

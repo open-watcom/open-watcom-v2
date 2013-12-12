@@ -1,4 +1,5 @@
 .func jtokata
+.synop begin
 #include <jstring.h>
 JMOJI jtokata( JMOJI c );
 .ixfunc2 '&CharTest' &func

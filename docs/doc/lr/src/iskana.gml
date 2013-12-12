@@ -1,4 +1,5 @@
 .func iskana
+.synop begin
 #include <jctype.h>
 int iskana( int c );
 .ixfunc2 '&CharTest' &func

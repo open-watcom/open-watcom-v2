@@ -1,4 +1,5 @@
 .func jisl1
+.synop begin
 #include <jstring.h>
 int jisl1( JMOJI c );
 .ixfunc2 '&CharTest' &func

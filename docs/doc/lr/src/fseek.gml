@@ -1,4 +1,5 @@
 .func fseek
+.synop begin
 #include <stdio.h>
 int fseek( FILE *fp, long int offset, int where );
 .ixfunc2 '&StrIo' &func

@@ -1,4 +1,5 @@
 .func max
+.synop begin
 #include <stdlib.h>
 #define max(a,b)  (((a) > (b)) ? (a) : (b))
 .synop end

@@ -1,4 +1,5 @@
 .func rewind
+.synop begin
 #include <stdio.h>
 void rewind( FILE *fp );
 .ixfunc2 '&StrIo' &func

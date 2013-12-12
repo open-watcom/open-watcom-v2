@@ -1,4 +1,5 @@
 .func _bios_keybrd
+.synop begin
 #include <bios.h>
 unsigned short _bios_keybrd( unsigned service );
 .ixfunc2 '&BiosFunc' &func

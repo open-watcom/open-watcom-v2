@@ -1,4 +1,5 @@
 .func wctomb _fwctomb
+.synop begin
 #include <stdlib.h>
 int wctomb( char *s, wchar_t wc );
 .ixfunc2 '&Wide' &func

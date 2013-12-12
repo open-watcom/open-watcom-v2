@@ -2,7 +2,8 @@
 .func2 _heapgrow
 .func2 _fheapgrow
 .func2 _nheapgrow
-.func gen
+.func end
+.synop begin
 .ixfunc2 '&Heap' _heapgrow
 .ixfunc2 '&Heap' _fheapgrow
 .ixfunc2 '&Heap' _nheapgrow

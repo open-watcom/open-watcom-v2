@@ -1,4 +1,5 @@
 .func ctime_s _wctime_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <time.h>
 errno_t ctime_s( char * s,

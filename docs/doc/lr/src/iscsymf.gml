@@ -1,4 +1,5 @@
 .func iscsymf __iscsymf __iswcsymf
+.synop begin
 .funcw __iswcsymf
 #include <ctype.h>
 int iscsymf( int c );

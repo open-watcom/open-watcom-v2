@@ -1,4 +1,5 @@
 .func log
+.synop begin
 #include <math.h>
 double log( double x );
 .ixfunc2 '&Math' &func

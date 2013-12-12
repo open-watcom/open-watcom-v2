@@ -1,4 +1,5 @@
 .func putchar putwchar
+.synop begin
 .funcw putwchar
 #include <stdio.h>
 int putchar( int c );

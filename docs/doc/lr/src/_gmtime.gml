@@ -1,4 +1,5 @@
 .func _gmtime
+.synop begin
 #include <time.h>
 struct tm *_gmtime( const time_t *timer,
                     struct tm *tmbuf );

@@ -1,4 +1,5 @@
 .func getc getwc
+.synop begin
 .funcw getwc
 #include <stdio.h>
 int getc( FILE *fp );

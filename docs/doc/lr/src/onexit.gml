@@ -1,4 +1,5 @@
 .func onexit
+.synop begin
 #include <stdlib.h>
 onexit_t onexit( onexit_t func );
 .ixfunc2 '&Process' &func

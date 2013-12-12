@@ -1,4 +1,5 @@
 .func _grow_handles
+.synop begin
 #include <stdio.h>
 int _grow_handles( int new_count );
 .ixfunc2 '&OsIo' &func

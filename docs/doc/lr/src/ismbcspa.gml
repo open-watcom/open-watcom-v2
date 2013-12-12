@@ -1,4 +1,5 @@
 .func _ismbcspace
+.synop begin
 #include <mbstring.h>
 int _ismbcspace( unsigned int ch );
 .synop end

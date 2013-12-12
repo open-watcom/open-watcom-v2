@@ -5,6 +5,7 @@
 :set symbol="dword"      value="DWORD".
 .do end
 .func MapAliasToFlat
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 c$include 'winapi.fi'
        integer*4 function MapAliasToFlat( alias )

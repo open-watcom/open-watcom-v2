@@ -3,7 +3,8 @@
 .func2 _bheapset
 .func2 _fheapset
 .func2 _nheapset
-.func gen
+.func end
+.synop begin
 .ixfunc2 '&Heap' _heapset
 .ixfunc2 '&Heap' _bheapset
 .ixfunc2 '&Heap' _fheapset

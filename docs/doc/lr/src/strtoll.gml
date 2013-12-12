@@ -1,4 +1,5 @@
 .func strtoll wcstoll
+.synop begin
 #include <stdlib.h>
 long long int strtoll( const char *ptr,
                        char **endptr,

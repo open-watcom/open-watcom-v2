@@ -1,4 +1,5 @@
 .func jstrcat _fjstrcat
+.synop begin
 #include <jstring.h>
 JSTRING jstrcat( JCHAR *dst, const JCHAR *src );
 .if &farfnc eq 1 .do begin

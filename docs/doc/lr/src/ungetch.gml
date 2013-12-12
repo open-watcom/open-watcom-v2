@@ -1,4 +1,5 @@
 .func ungetch
+.synop begin
 #include <conio.h>
 int ungetch( int c );
 .ixfunc2 '&KbIo' &func

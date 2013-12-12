@@ -1,4 +1,5 @@
 .func jstrupr _fjstrupr
+.synop begin
 #include <jstring.h>
 JSTRING jstrupr( JCHAR *s1 );
 .ixfunc2 '&Jstring' &func

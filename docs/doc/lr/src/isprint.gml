@@ -1,4 +1,5 @@
 .func isprint iswprint
+.synop begin
 .funcw iswprint
 #include <ctype.h>
 int isprint( int c );

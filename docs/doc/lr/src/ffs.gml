@@ -1,4 +1,5 @@
 .func ffs
+.synop begin
 #include <strings.h>
 int ffs( int i );
 .ixfunc2 '&String' &func

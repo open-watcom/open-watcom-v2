@@ -1,4 +1,5 @@
 .func _bfreeseg
+.synop begin
 #include <malloc.h>
 int _bfreeseg( __segment seg );
 .ixfunc2 '&Memory' _bfreeseg

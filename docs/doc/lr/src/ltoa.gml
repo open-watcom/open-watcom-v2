@@ -1,4 +1,5 @@
 .func ltoa _ltoa _ltow
+.synop begin
 .funcw _ltow
 #include <stdlib.h>
 char *ltoa( long int value,

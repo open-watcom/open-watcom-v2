@@ -1,4 +1,5 @@
 .func setmode _setmode
+.synop begin
 #include <&iohdr>
 #include <fcntl.h>
 int setmode( int &fd, int mode );

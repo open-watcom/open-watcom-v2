@@ -1,4 +1,5 @@
 .func cscanf
+.synop begin
 #include <conio.h>
 int cscanf( const char *format, ... );
 .ixfunc2 '&KbIo' &func

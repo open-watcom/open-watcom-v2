@@ -1,4 +1,5 @@
 .func _dos_keep
+.synop begin
 #include <&doshdr>
 void _dos_keep( unsigned retcode, unsigned memsize );
 .ixfunc2 '&TSR' &func

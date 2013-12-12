@@ -1,4 +1,5 @@
 .func fcloseall
+.synop begin
 #include <stdio.h>
 int fcloseall( void );
 .ixfunc2 '&StrIo' &func

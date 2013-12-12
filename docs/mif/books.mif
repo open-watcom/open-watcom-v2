@@ -11,7 +11,7 @@
 !inject clib_fox
 !inject clib_nec
 !inject clibnt
-!inject clibqnx          html                     pdf  ps
+!inject clibqnx
 !inject clr         dos  html  htmlhelp  nt  os2  pdf  ps  win
 !inject clslib
 !inject cpplib      dos  html  htmlhelp  nt  os2  pdf  ps  win

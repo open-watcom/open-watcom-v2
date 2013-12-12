@@ -1,4 +1,5 @@
 .func fdopen _fdopen _wfdopen
+.synop begin
 #include <stdio.h>
 FILE *fdopen( int &fd, const char *mode );
 .ixfunc2 '&StrIo' &func

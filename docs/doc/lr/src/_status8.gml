@@ -1,4 +1,5 @@
 .func _status87
+.synop begin
 #include <float.h>
 unsigned int _status87( void );
 .ixfunc2 '&Errs' &func

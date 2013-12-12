@@ -1,4 +1,5 @@
 .func printf wprintf
+.synop begin
 .funcw wprintf
 #include <stdio.h>
 int printf( const char *format, ... );

@@ -1,4 +1,5 @@
 .func jisupper
+.synop begin
 #include <jstring.h>
 int jisupper( JMOJI c );
 .ixfunc2 '&CharTest' &func

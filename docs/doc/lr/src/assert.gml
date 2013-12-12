@@ -1,4 +1,5 @@
 .func assert _assert _wassert
+.synop begin
 #include <assert.h>
 void assert( int expression );
 .synop end

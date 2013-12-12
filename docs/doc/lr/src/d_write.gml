@@ -1,4 +1,5 @@
 .func _dos_write
+.synop begin
 #include <&doshdr>
 unsigned _dos_write( int &fd, void const __far *buffer,
                      unsigned count, unsigned *bytes );

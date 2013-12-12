@@ -1,4 +1,5 @@
 .func _dos_getvect
+.synop begin
 #include <&doshdr>
 void (__interrupt __far *_dos_getvect(unsigned intnum))();
 .ixfunc2 '&CpuInt' &func

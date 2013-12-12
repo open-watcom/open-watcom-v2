@@ -1,4 +1,5 @@
 .func ispunct iswpunct
+.synop begin
 .funcw iswpunct
 #include <ctype.h>
 int ispunct( int c );

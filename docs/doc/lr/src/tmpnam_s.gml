@@ -1,7 +1,8 @@
 .func begin
 .funct   tmpnam_s   TR 24731
 .funct_w _wtmpnam_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 errno_t tmpnam_s( char * s, rsize_t maxsize );

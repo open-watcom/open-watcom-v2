@@ -1,4 +1,5 @@
 .func pow
+.synop begin
 #include <math.h>
 double pow( double x, double y );
 .ixfunc2 '&Math' &func

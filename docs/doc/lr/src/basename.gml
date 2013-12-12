@@ -1,4 +1,5 @@
 .func basename 
+.synop begin
 #include <libgen.h>
 char *basename( char *path );
 .synop end

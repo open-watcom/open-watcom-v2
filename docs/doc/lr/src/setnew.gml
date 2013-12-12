@@ -1,4 +1,5 @@
 .func set_new_handler _set_new_handler
+.synop begin
 #include <new.h>
 PFV set_new_handler( PFV pNewHandler );
 PFU _set_new_handler( PFU pNewHandler );

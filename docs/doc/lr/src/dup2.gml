@@ -1,4 +1,5 @@
 .func dup2 _dup2
+.synop begin
 #include <&iohdr>
 int dup2( int &fd, int &fd.2 );
 .ixfunc2 '&OsIo' &func

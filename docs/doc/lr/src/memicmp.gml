@@ -1,4 +1,5 @@
 .func memicmp _memicmp _fmemicmp
+.synop begin
 #include <string.h>
 int memicmp( const void *s1,
              const void *s2,

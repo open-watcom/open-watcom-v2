@@ -1,4 +1,5 @@
 .func _splitpath2 _wsplitpath2
+.synop begin
 #include <stdlib.h>
 .if '&machsys' eq 'QNX' .do begin
 .   .se *drv=node

@@ -1,6 +1,7 @@
 .func begin fscanf_s fwscanf_s
 .funcw fwscanf_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 int fscanf_s( FILE * restrict stream,

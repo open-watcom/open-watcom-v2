@@ -1,4 +1,5 @@
 .func wcstombs _fwcstombs
+.synop begin
 #include <stdlib.h>
 size_t wcstombs( char *s, const wchar_t *pwcs, size_t n );
 .ixfunc2 '&Wide' &func

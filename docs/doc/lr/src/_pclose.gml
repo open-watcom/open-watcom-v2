@@ -1,4 +1,5 @@
 .func _pclose
+.synop begin
 #include <stdio.h>
 int _pclose( FILE *fp );
 .synop end

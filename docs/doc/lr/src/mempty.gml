@@ -1,4 +1,5 @@
 .func _m_empty
+.synop begin
 #include <mmintrin.h>
 void  _m_empty(void);
 .synop end

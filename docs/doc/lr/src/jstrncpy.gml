@@ -1,4 +1,5 @@
 .func jstrncpy _fjstrncpy
+.synop begin
 #include <jstring.h>
 JSTRING jstrncpy( JCHAR *dst,
                   const JCHAR *src,

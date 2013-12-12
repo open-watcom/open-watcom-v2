@@ -1,4 +1,5 @@
 .func strcspn _fstrcspn wcscspn _mbscspn _fmbscspn
+.synop begin
 #include <string.h>
 size_t strcspn( const char *str,
                 const char *charset );

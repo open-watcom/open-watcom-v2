@@ -1,4 +1,5 @@
 .func jputmoji _fjputmoji
+.synop begin
 #include <jstring.h>
 JSTRING jputmoji( JCHAR *str, JMOJI c );
 .ixfunc2 '&Jstring' &func

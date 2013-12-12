@@ -1,4 +1,5 @@
 .func MK_FP
+.synop begin
 #include <i86.h>
 void __far *MK_FP( unsigned int segment,
                    unsigned int offset );

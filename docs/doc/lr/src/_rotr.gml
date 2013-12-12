@@ -1,4 +1,5 @@
 .func _rotr
+.synop begin
 #include <stdlib.h>
 unsigned int _rotr( unsigned int value,
                     unsigned int shift );

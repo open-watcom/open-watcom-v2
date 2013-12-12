@@ -1,4 +1,5 @@
 .func _control87
+.synop begin
 #include <float.h>
 unsigned int _control87( unsigned int newcw,
                          unsigned int mask );

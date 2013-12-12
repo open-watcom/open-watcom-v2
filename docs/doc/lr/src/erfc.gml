@@ -1,4 +1,5 @@
 .func erfc
+.synop begin
 #include <math.h>
 double erfc( double x );
 .ixfunc2 '&Math' &func

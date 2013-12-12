@@ -1,4 +1,5 @@
 .func iskmoji
+.synop begin
 #include <jctype.h>
 int iskmoji( int c );
 .ixfunc2 '&CharTest' &func

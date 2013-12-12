@@ -1,4 +1,5 @@
 .func _memavl
+.synop begin
 #include <malloc.h>
 size_t _memavl( void );
 .ixfunc2 '&Memory' &func

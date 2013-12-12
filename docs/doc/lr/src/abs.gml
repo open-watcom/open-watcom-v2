@@ -1,4 +1,5 @@
 .func abs
+.synop begin
 #include <stdlib.h>
 int abs( int j );
 .synop end

@@ -1,4 +1,5 @@
 .func gmtime_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <time.h>
 struct tm * gmtime_s( const time_t * restrict timer,

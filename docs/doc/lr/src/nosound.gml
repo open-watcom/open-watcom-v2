@@ -1,4 +1,5 @@
 .func nosound
+.synop begin
 #include <i86.h>
 void nosound( void );
 .ixfunc2 '&DosFunc' &func

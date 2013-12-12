@@ -1,4 +1,5 @@
 .func memmove_s wmemmove_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <string.h>
 errno_t memmove_s( void * restrict s1,

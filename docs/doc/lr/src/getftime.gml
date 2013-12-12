@@ -1,4 +1,5 @@
 .func _dos_getftime
+.synop begin
 #include <&doshdr>
 unsigned _dos_getftime( int &fd,
                         unsigned *date,

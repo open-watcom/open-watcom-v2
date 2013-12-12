@@ -1,4 +1,5 @@
 .func mbrtowc _fmbrtowc
+.synop begin
 #include <wchar.h>
 int mbrtowc( wchar_t *pwc, const char *s,
              size_t n, mbstate_t *ps );

@@ -1,4 +1,5 @@
 .func opendir _wopendir
+.synop begin
 #include <&dirhdr>
 .if '&machsys' eq 'QNX' .do begin
 DIR *opendir( const char *dirname );

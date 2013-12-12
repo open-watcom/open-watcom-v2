@@ -1,4 +1,5 @@
 .func chkctype
+.synop begin
 #include <jstring.h>
 int chkctype( JCHAR c, int mode );
 .ixfunc2 '&Jstring' &func

@@ -1,4 +1,5 @@
 .func chsize _chsize
+.synop begin
 #include <&iohdr>
 int chsize( int &fd, long size );
 .ixfunc2 '&DosFunc' &func

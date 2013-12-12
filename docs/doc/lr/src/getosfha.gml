@@ -1,4 +1,5 @@
 .func _get_osfhandle
+.synop begin
 #include <&iohdr>
 long _get_osfhandle( int posixhandle );
 .synop end

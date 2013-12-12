@@ -1,4 +1,5 @@
 .func _m_psubusw
+.synop begin
 #include <mmintrin.h>
 __m64 _m_psubusw(__m64 *m1, __m64 *m2);
 .synop end

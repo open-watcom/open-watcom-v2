@@ -1,4 +1,5 @@
 .func _bheapseg
+.synop begin
 #include <malloc.h>
 __segment _bheapseg( size_t size );
 .ixfunc2 '&Memory' _bheapseg

@@ -1,4 +1,5 @@
 .func intdos
+.synop begin
 #include <&doshdr>
 int intdos( const union REGS *in_regs,
             union REGS *out_regs );

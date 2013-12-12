@@ -1,4 +1,5 @@
 .func strupr _strupr _fstrupr _wcsupr _mbsupr _fmbsupr
+.synop begin
 #include <string.h>
 char *strupr( char *s );
 .ixfunc2 '&String' &func

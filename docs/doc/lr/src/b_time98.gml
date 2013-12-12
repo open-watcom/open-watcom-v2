@@ -1,4 +1,5 @@
 .func _bios_timeofday for NEC PC98
+.synop begin
 #include <bios.h>
 unsigned _bios_timeofday( unsigned service,
                           char *timeval );

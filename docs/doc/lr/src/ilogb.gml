@@ -1,4 +1,5 @@
 .func ilogb
+.synop begin
 #include <math.h>
 int ilogb( double x );
 .ixfunc2 '&Math' &func

@@ -1,4 +1,5 @@
 .func MK_FP16
+.synop begin
 #include <windows.h>
 DWORD MK_FP16( void far * fp32 );
 .synop end

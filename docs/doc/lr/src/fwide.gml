@@ -1,4 +1,5 @@
 .func fwide
+.synop begin
 #include <stdio.h>
 #include <wchar.h>
 int fwide( FILE *fp, int mode );

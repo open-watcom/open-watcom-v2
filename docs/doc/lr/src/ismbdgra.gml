@@ -1,4 +1,5 @@
 .func _ismbdgraph
+.synop begin
 #include <mbstring.h>
 int _ismbdgraph( unsigned int ch );
 .synop end

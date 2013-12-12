@@ -1,4 +1,5 @@
 .func write _write
+.synop begin
 #include <&iohdr>
 int write( int &fd, void *buffer, unsigned len );
 .ixfunc2 '&OsIo' &func

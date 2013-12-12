@@ -1,4 +1,5 @@
 .func _mbclen _fmbclen
+.synop begin
 #include <mbstring.h>
 size_t _mbclen( const unsigned char *ch );
 .ixfunc2 '&Multibyte' &func

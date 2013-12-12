@@ -1,4 +1,5 @@
 .func _dos_read
+.synop begin
 #include <&doshdr>
 unsigned _dos_read( int &fd, void __far *buffer,
                     unsigned count, unsigned *bytes );

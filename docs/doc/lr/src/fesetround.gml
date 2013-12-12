@@ -1,4 +1,5 @@
 .func fesetround
+.synop begin
 #include <math.h>
 void fesetround( int mode );
 .ixfunc2 '&Math' &func

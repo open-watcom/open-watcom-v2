@@ -1,4 +1,5 @@
 .func _fpreset
+.synop begin
 #include <float.h>
 void _fpreset( void );
 .ixfunc2 '&Errs' &func

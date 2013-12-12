@@ -1,4 +1,5 @@
 .func fopen _wfopen
+.synop begin
 #include <stdio.h>
 FILE *fopen( const char *filename, const char *mode );
 .ixfunc2 '&StrIo' &func

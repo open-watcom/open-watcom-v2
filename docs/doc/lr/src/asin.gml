@@ -1,4 +1,5 @@
 .func asin
+.synop begin
 #include <math.h>
 double asin( double x );
 .ixfunc2 '&Math' &func

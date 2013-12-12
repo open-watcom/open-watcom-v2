@@ -1,4 +1,5 @@
 .func _chdrive
+.synop begin
 #include <direct.h>
 void _chdrive( int drive );
 .ixfunc2 '&DosFunc' &func

@@ -1,4 +1,5 @@
 .func tolower _tolower towlower
+.synop begin
 .funcw towlower
 #include <ctype.h>
 int tolower( int c );

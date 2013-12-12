@@ -1,4 +1,5 @@
 .func gets_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 char *gets_s( char *s, rsize_t n );

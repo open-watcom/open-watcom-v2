@@ -1,4 +1,5 @@
 .func remove _wremove
+.synop begin
 #include <stdio.h>
 int remove( const char *filename );
 .ixfunc2 '&FileOp' &func

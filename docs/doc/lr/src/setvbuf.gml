@@ -1,4 +1,5 @@
 .func setvbuf
+.synop begin
 #include <stdio.h>
 int setvbuf( FILE *fp,
              char *buf,

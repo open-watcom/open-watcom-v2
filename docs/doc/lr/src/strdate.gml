@@ -1,4 +1,5 @@
 .func _strdate _wstrdate
+.synop begin
 #include <time.h>
 char *_strdate( char *datestr )
 .ixfunc2 '&Conversion' &func

@@ -1,4 +1,5 @@
 .func feupdateenv
+.synop begin
 #include <fenv.h>
 int feupdateenv( const fenv_t *__envp );
 .ixfunc2 'Floating Point Environment' &func

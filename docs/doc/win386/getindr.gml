@@ -9,6 +9,7 @@
 :set symbol="char"       value="char".
 .do end
 .func GetIndirectFunctionHandle
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 c$include 'winapi.fi'
       integer*4 function GetIndirectFunctionHandle( prc, ... )

@@ -1,4 +1,5 @@
 .func mbrlen _fmbrlen
+.synop begin
 #include <wchar.h>
 int mbrlen( const char *s, size_t n, mbstate_t *ps );
 .if &farfnc eq 1 .do begin

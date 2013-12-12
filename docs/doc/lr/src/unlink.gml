@@ -1,4 +1,5 @@
 .func unlink _unlink _wunlink
+.synop begin
 #include <&iohdr>
 int unlink( const char *path );
 .ixfunc2 '&FileOp' &func

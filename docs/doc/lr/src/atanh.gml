@@ -1,4 +1,5 @@
 .func atanh
+.synop begin
 #include <math.h>
 double atanh( double x );
 .ixfunc2 '&Math' &func

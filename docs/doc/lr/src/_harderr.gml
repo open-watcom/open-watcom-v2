@@ -1,4 +1,5 @@
 .func _harderr _hardresume _hardretn
+.synop begin
 #include <dos.h>
 void _harderr( int (__far *handler)() );
 void _hardresume( int action );

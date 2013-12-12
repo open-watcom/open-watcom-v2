@@ -1,4 +1,5 @@
 .func tmpfile_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 errno_t tmpfile_s( FILE * restrict * restrict streamptr);

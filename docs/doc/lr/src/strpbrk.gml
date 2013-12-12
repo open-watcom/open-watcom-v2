@@ -1,4 +1,5 @@
 .func strpbrk _fstrpbrk wcspbrk _mbspbrk _fmbspbrk
+.synop begin
 #include <string.h>
 char *strpbrk( const char *str, const char *charset );
 .ixfunc2 '&String' &func

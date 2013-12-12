@@ -1,4 +1,5 @@
 .func nan
+.synop begin
 #include <math.h>
 float nanf( const char *str );
 double nan( const char *str );

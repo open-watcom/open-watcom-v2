@@ -1,4 +1,5 @@
 .func _mbsbtype _fmbsbtype
+.synop begin
 #include <mbstring.h>
 #include <mbctype.h> (for manifest constants)
 int _mbsbtype( const unsigned char *mbstr, int count );

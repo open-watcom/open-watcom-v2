@@ -1,7 +1,8 @@
 .func begin
 .funct   freopen_s   TR 24731
 .funct_w _wfreopen_s
-.func gen
+.func end
+.synop begin
 #include <stdio.h>
 #define __STDC_WANT_LIB_EXT1__ 1
 errno_t  freopen_s( FILE * restrict * restrict newstreamptr,

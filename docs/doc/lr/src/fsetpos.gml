@@ -1,4 +1,5 @@
 .func fsetpos
+.synop begin
 #include <stdio.h>
 int fsetpos( FILE *fp, fpos_t *pos );
 .ixfunc2 '&StrIo' &func

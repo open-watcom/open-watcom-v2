@@ -1,4 +1,5 @@
 .func exp
+.synop begin
 #include <math.h>
 double exp( double x );
 .ixfunc2 '&Math' &func

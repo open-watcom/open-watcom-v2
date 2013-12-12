@@ -1,4 +1,5 @@
 .func modf
+.synop begin
 #include <math.h>
 double modf( double value, double *iptr );
 .ixfunc2 '&Math' &func

@@ -1,4 +1,5 @@
 .func jstrcspn _fjstrcspn
+.synop begin
 #include <string.h>
 size_t jstrcspn( const JCHAR *str,
                  const JCHAR *charset );

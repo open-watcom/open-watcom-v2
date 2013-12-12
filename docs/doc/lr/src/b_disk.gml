@@ -1,4 +1,5 @@
 .func _bios_disk
+.synop begin
 #include <bios.h>
 unsigned short _bios_disk( unsigned service,
                            struct diskinfo_t *diskinfo );

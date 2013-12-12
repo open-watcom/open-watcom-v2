@@ -1,4 +1,5 @@
 .func vscanf vwscanf
+.synop begin
 .funcw vwscanf
 #include <stdarg.h>
 #include <stdio.h>

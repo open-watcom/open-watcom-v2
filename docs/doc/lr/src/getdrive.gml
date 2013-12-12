@@ -1,4 +1,5 @@
 .func _getdrive
+.synop begin
 #include <direct.h>
 int _getdrive( void );
 .ixfunc2 '&DosFunc' &func

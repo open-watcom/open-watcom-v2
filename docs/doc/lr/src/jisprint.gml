@@ -1,4 +1,5 @@
 .func jisprint
+.synop begin
 #include <jstring.h>
 int jisprint( JMOJI c );
 .ixfunc2 '&CharTest' &func

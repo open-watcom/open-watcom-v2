@@ -1,4 +1,5 @@
 .func _mbctoupper
+.synop begin
 #include <mbstring.h>
 unsigned int _mbctoupper( unsigned int c );
 .ixfunc2 '&CharTest' &func

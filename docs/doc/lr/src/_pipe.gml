@@ -1,4 +1,5 @@
 .func _pipe
+.synop begin
 #include <&iohdr>
 int _pipe( int *phandles, unsigned psize, int textmode );
 .synop end

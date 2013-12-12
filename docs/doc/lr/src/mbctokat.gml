@@ -1,4 +1,5 @@
 .func _mbctokata
+.synop begin
 #include <mbstring.h>
 unsigned int _mbctokata( unsigned int ch );
 .ixfunc2 '&CharTest' &func

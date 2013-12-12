@@ -1,4 +1,5 @@
 .func jstradv _fjstradv
+.synop begin
 #include <jstring.h>
 JSTRING jstradv( const JCHAR *src, size_t n );
 .ixfunc2 '&Jstring' &func

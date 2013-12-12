@@ -1,4 +1,5 @@
 .func jstrncmp _fjstrncmp
+.synop begin
 #include <jstring.h>
 int jstrncmp( const JCHAR *s1,
               const JCHAR *s2,

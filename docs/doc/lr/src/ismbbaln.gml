@@ -1,4 +1,5 @@
 .func _ismbbalnum
+.synop begin
 #include <mbctype.h>
 int _ismbbalnum( unsigned int ch );
 .synop end

@@ -1,4 +1,5 @@
 .func hfree
+.synop begin
 #include <malloc.h>
 void hfree( void __huge *ptr );
 .ixfunc2 '&Memory' &func

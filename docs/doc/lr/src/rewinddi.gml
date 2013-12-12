@@ -1,4 +1,5 @@
 .func rewinddir _wrewinddir
+.synop begin
 #include <sys/types.h>
 #include <&dirhdr>
 .if '&machsys' eq 'QNX' .do begin

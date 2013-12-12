@@ -1,4 +1,5 @@
 .func _ismbcxdigit
+.synop begin
 #include <mbstring.h>
 int _ismbcxdigit( unsigned int ch );
 .synop end

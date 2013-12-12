@@ -1,4 +1,5 @@
 .func _ismbccntrl
+.synop begin
 #include <mbstring.h>
 int _ismbccntrl( unsigned int ch );
 .synop end

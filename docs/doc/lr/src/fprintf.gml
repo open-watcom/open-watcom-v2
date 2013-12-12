@@ -1,4 +1,5 @@
 .func fprintf fwprintf
+.synop begin
 .funcw fwprintf
 #include <stdio.h>
 int fprintf( FILE *fp, const char *format, ... );

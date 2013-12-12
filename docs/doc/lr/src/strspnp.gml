@@ -1,4 +1,5 @@
 .func strspnp _strspnp _fstrspnp _wcsspnp _mbsspnp _fmbsspnp
+.synop begin
 #include <string.h>
 char *strspnp( const char *str,
                const char *charset );

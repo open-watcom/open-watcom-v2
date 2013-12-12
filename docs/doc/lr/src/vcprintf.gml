@@ -1,4 +1,5 @@
 .func vcprintf
+.synop begin
 #include <conio.h>
 #include <stdarg.h>
 int vcprintf( const char *format, va_list arg );

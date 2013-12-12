@@ -1,4 +1,5 @@
 .func PASS_WORD_AS_POINTER
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 c$include 'winapi.fi'
        integer*4 function PASS_WORD_AS_POINTER( dw )

@@ -1,4 +1,5 @@
 .func _ismbcupper
+.synop begin
 #include <mbstring.h>
 int _ismbcupper( unsigned int ch );
 .synop end

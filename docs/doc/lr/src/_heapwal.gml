@@ -3,7 +3,8 @@
 .func2 _bheapwalk
 .func2 _fheapwalk
 .func2 _nheapwalk
-.func gen
+.func end
+.synop begin
 .ixfunc2 '&Heap' _heapwalk
 .ixfunc2 '&Heap' _bheapwalk
 .ixfunc2 '&Heap' _fheapwalk

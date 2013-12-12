@@ -1,4 +1,5 @@
 .func _splitpath _wsplitpath
+.synop begin
 #include <stdlib.h>
 void _splitpath( const char *path,
 .if '&machsys' eq 'QNX' .do begin

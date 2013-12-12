@@ -1,4 +1,5 @@
 .func _dos_setfileattr
+.synop begin
 #include <&doshdr>
 unsigned _dos_setfileattr( const char *path,
                            unsigned attributes );

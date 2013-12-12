@@ -1,4 +1,5 @@
 .func _bios_serialcom
+.synop begin
 #include <bios.h>
 unsigned short _bios_serialcom( unsigned service,
                                 unsigned serial_port,

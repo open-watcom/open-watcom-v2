@@ -1,4 +1,5 @@
 .func _getmbcp
+.synop begin
 #include <mbctype.h>
 int _getmbcp( void );
 .synop end

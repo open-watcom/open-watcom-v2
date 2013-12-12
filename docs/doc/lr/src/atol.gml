@@ -1,4 +1,5 @@
 .func atol _wtol
+.synop begin
 #include <stdlib.h>
 long int atol( const char *ptr );
 .ixfunc2 '&Conversion' &func

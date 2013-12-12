@@ -1,4 +1,5 @@
 .func _set_matherr
+.synop begin
 #include <math.h>
 void _set_matherr( int (*rtn)( struct _exception *err_info ) )
 .ixfunc2 '&Errs' &func

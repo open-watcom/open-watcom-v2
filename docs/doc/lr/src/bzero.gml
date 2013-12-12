@@ -1,4 +1,5 @@
 .func bzero
+.synop begin
 #include <string.h>
 void bzero( void *dst, size_t n );
 .ixfunc2 '&String' &func

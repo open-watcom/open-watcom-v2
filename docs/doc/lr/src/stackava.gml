@@ -1,4 +1,5 @@
 .func stackavail _stackavail
+.synop begin
 #include <malloc.h>
 size_t stackavail( void );
 .ixfunc2 '&Memory' &func

@@ -1,4 +1,5 @@
 .func _ismbcl1
+.synop begin
 #include <mbstring.h>
 int _ismbcl1( unsigned int ch );
 .synop end

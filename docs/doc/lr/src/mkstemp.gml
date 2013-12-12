@@ -1,4 +1,5 @@
 .func mkstemp
+.synop begin
 #include <stdlib.h>
 int mkstemp( char *template );
 .ixfunc2 '&FileOp' &func

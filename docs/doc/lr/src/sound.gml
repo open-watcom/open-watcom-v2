@@ -1,4 +1,5 @@
 .func sound
+.synop begin
 #include <i86.h>
 void sound( unsigned frequency );
 .ixfunc2 '&DosFunc' &func

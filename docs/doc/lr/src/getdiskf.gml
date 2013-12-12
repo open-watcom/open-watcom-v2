@@ -1,4 +1,5 @@
 .func _getdiskfree
+.synop begin
 #include <direct.h>
 unsigned _getdiskfree( unsigned drive,
                         struct diskfree_t *diskspace );

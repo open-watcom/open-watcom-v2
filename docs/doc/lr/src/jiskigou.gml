@@ -1,4 +1,5 @@
 .func jiskigou
+.synop begin
 #include <jstring.h>
 int jiskigou( JMOJI c );
 .ixfunc2 '&CharTest' &func

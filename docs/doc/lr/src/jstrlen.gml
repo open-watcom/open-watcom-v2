@@ -1,4 +1,5 @@
 .func jstrlen _fjstrlen
+.synop begin
 #include <jstring.h>
 size_t jstrlen( const JCHAR *s );
 .ixfunc2 '&Jstring' &func

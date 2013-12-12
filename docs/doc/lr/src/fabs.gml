@@ -1,4 +1,5 @@
 .func fabs
+.synop begin
 #include <math.h>
 double fabs( double x );
 .ixfunc2 '&Math' &func

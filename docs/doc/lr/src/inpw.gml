@@ -1,4 +1,5 @@
 .func inpw
+.synop begin
 #include <conio.h>
 unsigned int inpw( int port );
 .ixfunc2 '&PortIo' &func

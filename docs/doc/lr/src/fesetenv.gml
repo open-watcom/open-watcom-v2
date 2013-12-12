@@ -1,4 +1,5 @@
 .func fesetenv
+.synop begin
 #include <fenv.h>
 int fesetenv( const fenv_t *__envp );
 .ixfunc2 'Floating Point Environment' &func

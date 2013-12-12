@@ -1,4 +1,5 @@
 .func _dos_open
+.synop begin
 #include <&doshdr>
 #include <fcntl.h>
 #include <share.h>

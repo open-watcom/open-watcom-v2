@@ -1,4 +1,5 @@
 .func putch
+.synop begin
 #include <conio.h>
 int putch( int c );
 .ixfunc2 '&KbIo' &func

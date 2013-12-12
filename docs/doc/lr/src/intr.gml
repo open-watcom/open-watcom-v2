@@ -1,4 +1,5 @@
 .func intr
+.synop begin
 #include <i86.h>
 void intr( int inter_no, union REGPACK *regs );
 .ixfunc2 '&CpuInt' &func

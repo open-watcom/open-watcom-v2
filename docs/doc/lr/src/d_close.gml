@@ -1,4 +1,5 @@
 .func _dos_close
+.synop begin
 #include <&doshdr>
 unsigned _dos_close( int &fd );
 .ixfunc2 '&DosFunc' &func

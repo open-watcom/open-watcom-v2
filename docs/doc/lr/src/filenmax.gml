@@ -1,4 +1,5 @@
 .func FILENAME_MAX
+.synop begin
 #include <stdio.h>
 #define FILENAME_MAX 123
 .synop end

@@ -1,4 +1,5 @@
 .func setbuf
+.synop begin
 #include <stdio.h>
 void setbuf( FILE *fp, char *buffer );
 .ixfunc2 '&StrIo' &func

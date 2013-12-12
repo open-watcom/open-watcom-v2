@@ -1,4 +1,5 @@
 .func _mbsnccnt _fmbsnccnt _strncnt _wcsncnt
+.synop begin
 .sr func=_strncnt
 #include <mbstring.h>
 size_t _mbsnccnt( const unsigned char *string, size_t n );

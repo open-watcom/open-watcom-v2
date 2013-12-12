@@ -1,4 +1,5 @@
 .func _clear87
+.synop begin
 #include <float.h>
 unsigned int _clear87( void );
 .ixfunc2 '&Errs' &func

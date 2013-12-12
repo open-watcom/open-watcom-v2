@@ -1,4 +1,5 @@
 .func strtok _fstrtok wcstok _mbstok _fmbstok
+.synop begin
 #include <string.h>
 char *strtok( char *s1, const char *s2 );
 .ixfunc2 '&String' &func

@@ -1,4 +1,5 @@
 .func _ismbclower
+.synop begin
 #include <mbstring.h>
 int _ismbclower( unsigned int ch );
 .synop end

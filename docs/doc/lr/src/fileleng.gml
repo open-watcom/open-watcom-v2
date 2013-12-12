@@ -1,4 +1,5 @@
 .func filelength _filelength _filelengthi64
+.synop begin
 #include <&iohdr>
 long filelength( int &fd );
 .ixfunc2 '&OsIo' &func

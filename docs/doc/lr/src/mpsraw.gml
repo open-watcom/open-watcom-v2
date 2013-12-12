@@ -1,4 +1,5 @@
 .func _m_psraw
+.synop begin
 #include <mmintrin.h>
 __m64 _m_psraw(__m64 *m, __m64 *count);
 .synop end

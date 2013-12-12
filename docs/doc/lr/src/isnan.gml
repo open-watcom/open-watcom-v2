@@ -1,4 +1,5 @@
 .func isnan
+.synop begin
 #include <math.h>
 int isnan( x );
 .synop end

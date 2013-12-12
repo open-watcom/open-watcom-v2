@@ -1,4 +1,5 @@
 .func memchr _fmemchr wmemchr
+.synop begin
 #include <string.h>
 void *memchr( const void *buf, int ch, size_t length );
 .ixfunc2 '&Search' &func

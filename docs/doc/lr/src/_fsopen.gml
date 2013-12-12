@@ -1,4 +1,5 @@
 .func _fsopen _wfsopen
+.synop begin
 #include <stdio.h>
 FILE *_fsopen( const char *filename,
                const char *mode, int share );

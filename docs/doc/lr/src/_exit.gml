@@ -1,4 +1,5 @@
 .func _exit _Exit
+.synop begin
 #include <stdlib.h>
 void _exit( int status );
 void _Exit( int status );

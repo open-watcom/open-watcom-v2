@@ -1,4 +1,5 @@
 .func umask _umask
+.synop begin
 #include <sys/types.h>
 #include <sys/stat.h>
 .if '&machsys' eq 'QNX' .do begin

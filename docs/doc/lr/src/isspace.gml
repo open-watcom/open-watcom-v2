@@ -1,4 +1,5 @@
 .func isspace iswspace
+.synop begin
 .funcw iswspace
 #include <ctype.h>
 int isspace( int c );

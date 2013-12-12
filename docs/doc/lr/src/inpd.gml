@@ -1,4 +1,5 @@
 .func inpd
+.synop begin
 #include <conio.h>
 unsigned long inpd( int port );
 .ixfunc2 '&PortIo' &func

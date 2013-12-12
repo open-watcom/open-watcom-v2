@@ -1,4 +1,5 @@
 .func _mbcjistojms
+.synop begin
 #include <mbstring.h>
 unsigned int _mbcjistojms( unsigned int ch );
 .synop end

@@ -1,4 +1,5 @@
 .func round
+.synop begin
 #include <math.h>
 double round( double x );
 .ixfunc2 '&Math' &func

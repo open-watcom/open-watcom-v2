@@ -1,4 +1,5 @@
 .func ungetc ungetwc
+.synop begin
 .funcw ungetwc
 #include <stdio.h>
 int ungetc( int c, FILE *fp );

@@ -1,4 +1,5 @@
 .func localeconv
+.synop begin
 #include <locale.h>
 struct lconv *localeconv( void );
 .ixfunc2 '&Locale' &func

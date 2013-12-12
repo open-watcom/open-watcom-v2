@@ -1,4 +1,5 @@
 .func vprintf vwprintf
+.synop begin
 .funcw vwprintf
 #include <stdarg.h>
 #include <stdio.h>

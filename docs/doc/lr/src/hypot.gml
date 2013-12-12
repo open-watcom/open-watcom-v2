@@ -1,4 +1,5 @@
 .func hypot
+.synop begin
 #include <math.h>
 double hypot( double x, double y );
 .ixfunc2 '&Math' &func

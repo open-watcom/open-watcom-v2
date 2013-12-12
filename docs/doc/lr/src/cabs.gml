@@ -1,4 +1,5 @@
 .func cabs
+.synop begin
 #include <math.h>
 double cabs( struct complex value );
 

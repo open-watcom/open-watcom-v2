@@ -1,4 +1,5 @@
 .func jistojms
+.synop begin
 #include <jstring.h>
 unsigned short jistojms( unsigned short c );
 .ixfunc2 '&CharTest' &func

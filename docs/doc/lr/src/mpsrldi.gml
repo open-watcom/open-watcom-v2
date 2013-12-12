@@ -1,4 +1,5 @@
 .func _m_psrldi
+.synop begin
 #include <mmintrin.h>
 __m64 _m_psrldi(__m64 *m, int count);
 .synop end

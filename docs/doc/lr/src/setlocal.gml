@@ -1,4 +1,5 @@
 .func setlocale _wsetlocale
+.synop begin
 #include <locale.h>
 char *setlocale( int category, const char *locale );
 .ixfunc2 '&Locale' &func

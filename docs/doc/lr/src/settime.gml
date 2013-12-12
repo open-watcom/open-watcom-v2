@@ -1,4 +1,5 @@
 .func _dos_settime
+.synop begin
 #include <&doshdr>
 unsigned _dos_settime( struct dostime_t *time );
 struct dostime_t {

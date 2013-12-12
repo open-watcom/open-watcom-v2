@@ -1,4 +1,5 @@
 .func fileno
+.synop begin
 #include <stdio.h>
 int fileno( FILE *stream );
 .ixfunc2 '&OsIo' &func

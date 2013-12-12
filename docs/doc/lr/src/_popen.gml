@@ -1,4 +1,5 @@
 .func _popen _wpopen
+.synop begin
 #include <stdio.h>
 FILE *_popen( const char *command, const char *mode );
 .ixfunc2 '&Direct' &func

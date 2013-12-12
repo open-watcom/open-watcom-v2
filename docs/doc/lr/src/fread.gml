@@ -1,4 +1,5 @@
 .func fread
+.synop begin
 #include <stdio.h>
 size_t fread( void *buf,
               size_t elsize,

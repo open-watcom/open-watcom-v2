@@ -1,4 +1,5 @@
 .func strtoull wcstoull
+.synop begin
 #include <stdlib.h>
 unsigned long long int strtoull( const char *ptr,
                                  char **endptr,

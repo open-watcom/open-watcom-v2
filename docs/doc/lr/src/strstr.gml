@@ -1,4 +1,5 @@
 .func strstr _fstrstr wcsstr _mbsstr _fmbsstr
+.synop begin
 #include <string.h>
 char *strstr( const char *str,
               const char *substr );

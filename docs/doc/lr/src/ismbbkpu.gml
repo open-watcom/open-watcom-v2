@@ -1,4 +1,5 @@
 .func _ismbbkpunct
+.synop begin
 #include <mbctype.h>
 int _ismbbkpunct( unsigned int ch );
 .synop end

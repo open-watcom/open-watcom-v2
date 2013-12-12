@@ -1,4 +1,5 @@
 .func jmstojis
+.synop begin
 #include <jstring.h>
 unsigned short jmstojis( unsigned short msc );
 .ixfunc2 '&CharTest' &func

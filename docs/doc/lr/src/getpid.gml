@@ -1,4 +1,5 @@
 .func getpid
+.synop begin
 #include <process.h>
 int getpid(void);
 .synop end

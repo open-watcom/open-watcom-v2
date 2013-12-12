@@ -1,4 +1,5 @@
 .func outpd
+.synop begin
 #include <conio.h>
 unsigned long outpd( int port,
                     unsigned long value );

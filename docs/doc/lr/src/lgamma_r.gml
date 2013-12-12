@@ -1,4 +1,5 @@
 .func lgamma_r
+.synop begin
 #include <math.h>
 double lgamma_r( double x, int *y );
 .ixfunc2 '&Math' &func

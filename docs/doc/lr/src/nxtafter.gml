@@ -1,4 +1,5 @@
 .func nextafter
+.synop begin
 #include <math.h>
 double nextafter( double x, double y );
 .ixfunc2 '&Math' &func

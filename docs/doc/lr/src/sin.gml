@@ -1,4 +1,5 @@
 .func sin
+.synop begin
 #include <math.h>
 double sin( double x );
 .ixfunc2 '&Math' &func

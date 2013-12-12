@@ -1,4 +1,5 @@
 .func nthctype _fnthctype
+.synop begin
 #include <jstring.h>
 int nthctype( const char * str, size_t n );
 .ixfunc2 '&Jstring' &func

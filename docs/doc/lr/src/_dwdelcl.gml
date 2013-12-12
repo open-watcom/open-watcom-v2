@@ -1,4 +1,5 @@
 .func _dwDeleteOnClose
+.synop begin
 #include <wdefwin.h>
 int _dwDeleteOnClose( int handle );
 .synop end

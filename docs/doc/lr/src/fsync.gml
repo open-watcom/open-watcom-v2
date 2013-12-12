@@ -1,4 +1,5 @@
 .func fsync
+.synop begin
 #include <&iohdr>
 int fsync( int fd );
 .synop end

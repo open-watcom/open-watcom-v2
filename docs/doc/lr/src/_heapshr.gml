@@ -3,7 +3,8 @@
 .func2 _bheapshrink
 .func2 _fheapshrink
 .func2 _nheapshrink
-.func gen
+.func end
+.synop begin
 .ixfunc2 '&Heap' _heapshrink
 .ixfunc2 '&Heap' _bheapshrink
 .ixfunc2 '&Heap' _fheapshrink

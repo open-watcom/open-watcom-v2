@@ -1,4 +1,5 @@
 .func _getdcwd _wgetdcwd
+.synop begin
 #include <direct.h>
 char *_getdcwd( int drive, char *buffer, size_t maxlen );
 .ixfunc2 '&Direct' &func

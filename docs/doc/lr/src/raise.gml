@@ -1,4 +1,5 @@
 .func raise
+.synop begin
 #include <signal.h>
 int raise( int condition );
 .ixfunc2 '&Errs' &func

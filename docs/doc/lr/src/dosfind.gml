@@ -6,7 +6,8 @@
 .func2 _wdos_findfirst
 .func2 _wdos_findnext
 .funcw _wdos_find...
-.func gen
+.func end
+.synop begin
 #include <&doshdr>
 unsigned _dos_findfirst( const char *path,
                          unsigned attributes,

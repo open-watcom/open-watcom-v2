@@ -1,7 +1,8 @@
 .func begin gmtime Functions
 .func2 gmtime
 .func2 _gmtime
-.func gen
+.func end
+.synop begin
 #include <time.h>
 struct tm * gmtime( const time_t *timer );
 struct tm *_gmtime( const time_t *timer,

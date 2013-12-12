@@ -1,4 +1,5 @@
 .func imaxabs
+.synop begin
 #include <inttypes.h>
 intmax_t imaxabs( intmax_t j );
 .synop end

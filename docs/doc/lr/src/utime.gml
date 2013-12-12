@@ -1,4 +1,5 @@
 .func utime _utime _wutime
+.synop begin
 .if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
 #include <utime.h>

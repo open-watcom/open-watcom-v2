@@ -1,4 +1,5 @@
 .func _stricoll _wcsicoll _mbsicoll
+.synop begin
 #include <string.h>
 int _stricoll( const char *s1, const char *s2 );
 .ixfunc2 '&String' &func

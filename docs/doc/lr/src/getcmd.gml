@@ -1,4 +1,5 @@
 .func getcmd
+.synop begin
 #include <process.h>
 char *getcmd( char *cmd_line );
 .ixfunc2 '&Process' &func

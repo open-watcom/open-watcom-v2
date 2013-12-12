@@ -1,4 +1,5 @@
 .func _fmsbintoieee
+.synop begin
 #include <math.h>
 extern int _fmsbintoieee( float *src, float *dest );
 .ixfunc2 '&Math' &func

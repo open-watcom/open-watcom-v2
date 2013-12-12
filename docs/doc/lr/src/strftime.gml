@@ -1,4 +1,5 @@
 .func strftime wcsftime _wstrftime_ms
+.synop begin
 .funcw wcsftime
 #include <time.h>
 size_t strftime( char *s,

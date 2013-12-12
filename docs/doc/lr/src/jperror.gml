@@ -1,4 +1,5 @@
 .func jperror
+.synop begin
 #include <jstring.h>
 void jperror( const char *prefix );
 .ixfunc2 '&StrIo' &func

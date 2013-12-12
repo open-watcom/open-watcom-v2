@@ -1,4 +1,5 @@
 .func floor
+.synop begin
 #include <math.h>
 double floor( double x );
 .ixfunc2 '&Math' &func

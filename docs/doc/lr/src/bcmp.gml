@@ -1,4 +1,5 @@
 .func bcmp
+.synop begin
 #include <string.h>
 int bcmp(const void *s1, const void *s2, size_t n);
 .ixfunc2 '&String' &func

@@ -1,4 +1,5 @@
 .func _mbsnbset _fmbsnbset
+.synop begin
 #include <mbstring.h>
 unsigned char *_mbsnbset( unsigned char *str,
                           unsigned int fill,

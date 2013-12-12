@@ -1,4 +1,5 @@
 .func _mbvtop _fmbvtop
+.synop begin
 #include <mbstring.h>
 unsigned char *_mbvtop( unsigned int ch,
                         unsigned char *addr );

@@ -1,4 +1,5 @@
 .func va_start
+.synop begin
 #include <stdarg.h>
 void va_start( va_list param, previous );
 .ixfunc2 'variable arguments' &func

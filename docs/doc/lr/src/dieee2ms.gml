@@ -1,4 +1,5 @@
 .func _dieeetomsbin
+.synop begin
 #include <math.h>
 extern int _dieeetomsbin( double *src, double *dest );
 .ixfunc2 '&Math' &func

@@ -1,4 +1,5 @@
 .func _bios_equiplist
+.synop begin
 #include <bios.h>
 unsigned short _bios_equiplist( void );
 .ixfunc2 '&BiosFunc' &func

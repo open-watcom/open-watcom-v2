@@ -1,4 +1,5 @@
 .func strerrorlen_s wcserrorlen_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <string.h>
 size_t strerrorlen_s( errno_t errnum );

@@ -1,4 +1,5 @@
 .func ReleaseProc16
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 c$include 'winapi.fi'
        subroutine ReleaseProc16( cbp )

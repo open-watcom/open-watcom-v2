@@ -1,4 +1,5 @@
 .func _mbputchar _fmbputchar
+.synop begin
 #include <mbstring.h>
 unsigned char *_mbputchar( unsigned char *mbstr,
                            unsigned int dbch );

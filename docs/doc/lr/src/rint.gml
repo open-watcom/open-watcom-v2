@@ -1,4 +1,5 @@
 .func rint
+.synop begin
 #include <math.h>
 double rint( double x );
 .ixfunc2 '&Math' &func

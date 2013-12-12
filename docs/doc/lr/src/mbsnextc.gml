@@ -1,4 +1,5 @@
 .func _mbsnextc _fmbsnextc _strnextc _wcsnextc
+.synop begin
 .sr func=_strnextc
 #include <mbstring.h>
 unsigned int _mbsnextc( const unsigned char *string );

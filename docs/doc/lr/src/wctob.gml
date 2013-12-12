@@ -1,4 +1,5 @@
 .func wctob
+.synop begin
 #include <wchar.h>
 int wctob( wint_t wc );
 .ixfunc2 '&Wide' &func

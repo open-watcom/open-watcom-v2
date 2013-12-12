@@ -1,4 +1,5 @@
 .func _dos_gettime
+.synop begin
 #include <&doshdr>
 void _dos_gettime( struct dostime_t *time );
 

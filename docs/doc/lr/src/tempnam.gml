@@ -1,4 +1,5 @@
 .func _tempnam _wtempnam
+.synop begin
 #include <stdio.h>
 char *_tempnam( char *dir, char *prefix );
 .ixfunc2 '&FileOp' &func

@@ -1,4 +1,5 @@
 .func toupper _toupper towupper
+.synop begin
 .funcw towupper
 #include <ctype.h>
 int toupper( int c );

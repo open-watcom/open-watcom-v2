@@ -1,4 +1,5 @@
 .func jctime
+.synop begin
 #include <jtime.h>
 unsigned char *jctime( const time_t *timer );
 .ixfunc2 '&TimeFunc' jctime

@@ -1,4 +1,5 @@
 .func setjmp
+.synop begin
 #include <setjmp.h>
 int setjmp( jmp_buf env );
 .ixfunc2 'Non-local Jumps' &func

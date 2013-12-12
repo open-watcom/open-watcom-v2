@@ -1,4 +1,5 @@
 .func _makepath _wmakepath
+.synop begin
 #include <stdlib.h>
 void _makepath( char *path,
 .if '&machsys' eq 'QNX' .do begin

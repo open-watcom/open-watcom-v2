@@ -1,4 +1,5 @@
 .func jstrskip _fjstrskip
+.synop begin
 #include <jstring.h>
 JSTRING jstrskip( const JCHAR *str,
                   const JCHAR *charset );

@@ -1,4 +1,5 @@
 .func _m_psrawi
+.synop begin
 #include <mmintrin.h>
 __m64 _m_psrawi(__m64 *m, int count);
 .synop end

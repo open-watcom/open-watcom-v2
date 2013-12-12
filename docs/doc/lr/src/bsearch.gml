@@ -1,4 +1,5 @@
 .func bsearch
+.synop begin
 #include <stdlib.h>
 void *bsearch( const void *key,
                const void *base,

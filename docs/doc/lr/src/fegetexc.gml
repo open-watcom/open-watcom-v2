@@ -1,4 +1,5 @@
 .func fegetexceptflag
+.synop begin
 #include <fenv.h>
 int fegetexceptflag( fexcept_t *__flagp, int __excepts );
 .ixfunc2 'Floating Point Environment' &func

@@ -1,4 +1,5 @@
 .func strlwr _strlwr _fstrlwr _wcslwr _mbslwr _fmbslwr
+.synop begin
 #include <string.h>
 char *strlwr( char *s1 );
 .ixfunc2 '&String' &func

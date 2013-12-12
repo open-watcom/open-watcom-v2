@@ -1,4 +1,5 @@
 .func bdos
+.synop begin
 #include <&doshdr>
 int bdos( int dos_func, unsigned dx, unsigned char al );
 .ixfunc2 '&OsInt' &func

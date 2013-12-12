@@ -1,4 +1,5 @@
 .func _commit
+.synop begin
 #include <&iohdr>
 int _commit( int handle );
 .ixfunc2 '&FileOp' &func

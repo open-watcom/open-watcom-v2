@@ -1,4 +1,5 @@
 .func iskpun
+.synop begin
 #include <jctype.h>
 int iskpun( int c );
 .ixfunc2 '&CharTest' &func

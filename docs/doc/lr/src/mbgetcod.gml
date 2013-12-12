@@ -1,4 +1,5 @@
 .func _mbgetcode _fmbgetcode
+.synop begin
 #include <mbstring.h>
 unsigned char *_mbgetcode( unsigned char *mbstr,
                            unsigned int *dbchp );

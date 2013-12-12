@@ -1,4 +1,5 @@
 .func strrev _strrev _fstrrev _wcsrev _mbsrev _fmbsrev
+.synop begin
 #include <string.h>
 char *strrev( char *s1 );
 .ixfunc2 '&String' &func

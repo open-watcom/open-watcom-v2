@@ -1,7 +1,8 @@
 .func begin
 .funct_m  mbsrtowcs_s   TR 24731
 .funct_fm _fmbsrtowcs_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <wchar.h>
 errno_t mbsrtowcs_s( size_t * restrict retval,

@@ -1,4 +1,5 @@
 .func _bios_printer
+.synop begin
 #include <bios.h>
 unsigned short _bios_printer( unsigned service,
                               unsigned port,

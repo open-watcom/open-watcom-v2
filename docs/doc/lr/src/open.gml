@@ -1,4 +1,5 @@
 .func open _open _wopen
+.synop begin
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

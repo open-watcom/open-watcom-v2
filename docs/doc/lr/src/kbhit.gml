@@ -1,4 +1,5 @@
 .func kbhit _kbhit
+.synop begin
 #include <conio.h>
 int kbhit( void );
 .ixfunc2 '&KbIo' &func

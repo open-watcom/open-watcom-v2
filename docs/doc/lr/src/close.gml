@@ -1,4 +1,5 @@
 .func close _close
+.synop begin
 #include <&iohdr>
 int close( int &fd );
 .ixfunc2 '&OsIo' &func

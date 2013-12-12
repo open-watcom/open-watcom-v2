@@ -1,4 +1,5 @@
 .func _ismbclegal
+.synop begin
 #include <mbstring.h>
 int _ismbclegal( unsigned int dbch );
 .synop end

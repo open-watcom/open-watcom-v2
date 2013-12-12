@@ -1,4 +1,5 @@
 .func _mbsnbcpy _fmbsnbcpy
+.synop begin
 #include <mbstring.h>
 unsigned char *_mbsnbcpy( unsigned char *dst,
                     const unsigned char *src,

@@ -5,7 +5,8 @@
 .func2 y0
 .func2 y1
 .func2 yn
-.func gen
+.func end
+.synop begin
 #include <math.h>
 double j0( double x );
 double j1( double x );

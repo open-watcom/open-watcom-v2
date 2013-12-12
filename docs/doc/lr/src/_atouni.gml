@@ -1,4 +1,5 @@
 .func _atouni
+.synop begin
 #include <stdlib.h>
 wchar_t *_atouni( wchar_t *wcs, const char *sbcs );
 .synop end

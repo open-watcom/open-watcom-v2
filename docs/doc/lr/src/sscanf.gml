@@ -1,4 +1,5 @@
 .func sscanf swscanf
+.synop begin
 .funcw swscanf
 #include <stdio.h>
 int sscanf( const char *in_string,

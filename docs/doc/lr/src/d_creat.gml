@@ -1,4 +1,5 @@
 .func _dos_creat
+.synop begin
 #include <&doshdr>
 unsigned _dos_creat( const char *path,
                      unsigned attribute,

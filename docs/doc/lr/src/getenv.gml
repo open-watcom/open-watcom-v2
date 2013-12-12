@@ -1,4 +1,5 @@
 .func getenv _wgetenv
+.synop begin
 #include <stdlib.h>
 char *getenv( const char *name );
 .ixfunc2 '&Process' &func

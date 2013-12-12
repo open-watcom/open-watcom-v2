@@ -1,4 +1,5 @@
 .func system _wsystem
+.synop begin
 #include <stdlib.h>
 int system( const char *command );
 .ixfunc2 '&Process' &func

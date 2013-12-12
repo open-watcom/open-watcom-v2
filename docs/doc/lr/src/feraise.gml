@@ -1,4 +1,5 @@
 .func feraiseexcept
+.synop begin
 #include <fenv.h>
 int feraiseexcept( int __excepts );
 .ixfunc2 'Floating Point Environment' &func

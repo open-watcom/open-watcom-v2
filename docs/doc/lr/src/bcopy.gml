@@ -1,4 +1,5 @@
 .func bcopy
+.synop begin
 #include <string.h>
 void bcopy( const void *src, void *dst, size_t n );
 .ixfunc2 '&String' &func

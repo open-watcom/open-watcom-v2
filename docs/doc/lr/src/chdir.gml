@@ -1,4 +1,5 @@
 .func chdir _chdir _wchdir
+.synop begin
 #include <sys/types.h>
 .if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>

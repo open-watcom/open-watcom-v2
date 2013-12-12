@@ -3,7 +3,8 @@
 .func2 _ctime
 .func2 _wctime
 .func2 __wctime
-.func gen
+.func end
+.synop begin
 #include <time.h>
 char * ctime( const time_t *timer );
 char *_ctime( const time_t *timer, char *buf );

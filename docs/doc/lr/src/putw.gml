@@ -1,4 +1,5 @@
 .func _putw
+.synop begin
 #include <stdio.h>
 int _putw( int binint, FILE *fp );
 .ixfunc2 '&StrIo' &func

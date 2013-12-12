@@ -1,4 +1,5 @@
 .func fstat _fstat _fstati64 _wfstat _wfstati64
+.synop begin
 #include <sys/types.h>
 #include <sys/stat.h>
 int fstat( int &fd, struct stat *buf );

@@ -1,4 +1,5 @@
 .func _dos_setblock
+.synop begin
 #include <&doshdr>
 unsigned _dos_setblock( unsigned size,
                         unsigned segment,

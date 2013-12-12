@@ -1,4 +1,5 @@
 .func _mbcjmstojis
+.synop begin
 #include <mbstring.h>
 unsigned int _mbcjmstojis( unsigned int ch );
 .synop end

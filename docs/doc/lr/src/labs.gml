@@ -1,4 +1,5 @@
 .func labs
+.synop begin
 #include <stdlib.h>
 long int labs( long int j );
 .synop end

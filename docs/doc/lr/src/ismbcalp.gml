@@ -1,4 +1,5 @@
 .func _ismbcalpha
+.synop begin
 #include <mbstring.h>
 int _ismbcalpha( unsigned int ch );
 .synop end

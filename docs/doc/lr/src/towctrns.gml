@@ -1,4 +1,5 @@
 .func towctrans
+.synop begin
 #include <wctype.h>
 wint_t towctrans( wint_t wc, wctrans_t desc );
 .ixfunc2 '&Conversion' &func

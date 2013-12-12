@@ -1,4 +1,5 @@
 .func read _read
+.synop begin
 #include <&iohdr>
 int read( int &fd, void *buffer, unsigned len );
 .ixfunc2 '&OsIo' &func

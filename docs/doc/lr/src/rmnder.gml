@@ -1,4 +1,5 @@
 .func remainder
+.synop begin
 #include <math.h>
 double remainder( double x, double y );
 .ixfunc2 '&Math' &func

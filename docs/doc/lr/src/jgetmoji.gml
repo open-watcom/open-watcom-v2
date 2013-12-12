@@ -1,4 +1,5 @@
 .func jgetmoji _fjgetmoji
+.synop begin
 #include <jstring.h>
 JSTRING jgetmoji( const JCHAR *str, JMOJI *c );
 .ixfunc2 '&Jstring' &func

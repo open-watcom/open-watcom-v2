@@ -1,4 +1,5 @@
 .func closedir _wclosedir
+.synop begin
 #include <&dirhdr>
 .if '&machsys' eq 'QNX' .do begin
 int closedir( DIR *dirp );

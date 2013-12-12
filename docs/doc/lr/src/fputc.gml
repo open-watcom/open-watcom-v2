@@ -1,4 +1,5 @@
 .func fputc fputwc
+.synop begin
 .funcw fputwc
 #include <stdio.h>
 int fputc( int c, FILE *fp );

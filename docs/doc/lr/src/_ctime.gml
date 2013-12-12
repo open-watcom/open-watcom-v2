@@ -1,4 +1,5 @@
 .func _ctime
+.synop begin
 #include <time.h>
 char *_ctime( const time_t *timer, char *buf );
 .ixfunc2 '&TimeFunc' &func

@@ -1,4 +1,5 @@
 .func _bios_memsize
+.synop begin
 #include <bios.h>
 unsigned short _bios_memsize( void );
 .ixfunc2 '&BiosFunc' &func

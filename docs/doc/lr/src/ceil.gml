@@ -1,4 +1,5 @@
 .func ceil
+.synop begin
 #include <math.h>
 double ceil( double x );
 .ixfunc2 '&Math' &func

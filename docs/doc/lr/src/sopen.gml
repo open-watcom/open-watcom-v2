@@ -1,4 +1,5 @@
 .func sopen _sopen _wsopen
+.synop begin
 #include <&iohdr>
 #include <fcntl.h>
 #include <sys/stat.h>

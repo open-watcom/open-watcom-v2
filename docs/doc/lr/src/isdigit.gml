@@ -1,4 +1,5 @@
 .func isdigit iswdigit
+.synop begin
 .funcw iswdigit
 #include <ctype.h>
 int isdigit( int c );

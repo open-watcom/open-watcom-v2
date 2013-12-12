@@ -1,4 +1,5 @@
 .func clock
+.synop begin
 #include <time.h>
 clock_t clock(void);
 .ixfunc2 '&TimeFunc' &func

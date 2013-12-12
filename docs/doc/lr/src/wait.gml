@@ -1,4 +1,5 @@
 .func wait
+.synop begin
 #include <process.h>
 int wait( int *status );
 .ixfunc2 '&OS2Func' &func

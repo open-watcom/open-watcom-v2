@@ -1,4 +1,5 @@
 .func cos
+.synop begin
 #include <math.h>
 double cos( double x );
 .ixfunc2 '&Math' &func

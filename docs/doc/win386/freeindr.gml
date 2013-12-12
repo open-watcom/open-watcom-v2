@@ -9,6 +9,7 @@
 :set symbol="char"       value="char".
 .do end
 .func FreeIndirectFunctionHandle
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 c$include 'winapi.fi'
       subroutine FreeIndirectFunctionHandle( handle )

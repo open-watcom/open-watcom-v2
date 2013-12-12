@@ -1,4 +1,5 @@
 .func tell _tell _telli64
+.synop begin
 #include <&iohdr>
 &off_t tell( int &fd );
 .ixfunc2 '&OsIo' &func

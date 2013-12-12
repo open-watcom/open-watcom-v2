@@ -1,4 +1,5 @@
 .func _ismbbtrail
+.synop begin
 #include <mbstring.h>
 int _ismbbtrail( unsigned int ch );
 .synop end

@@ -1,4 +1,5 @@
 .func memcmp _fmemcmp wmemcmp
+.synop begin
 #include <string.h>
 int memcmp( const void *s1,
             const void *s2,

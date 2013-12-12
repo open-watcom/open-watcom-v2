@@ -1,4 +1,5 @@
 .func jiskana
+.synop begin
 #include <jstring.h>
 int jiskana( JMOJI c );
 .ixfunc2 '&CharTest' &func

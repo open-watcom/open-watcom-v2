@@ -1,4 +1,5 @@
 .func _lrotr
+.synop begin
 #include <stdlib.h>
 unsigned long _lrotr( unsigned long value,
                       unsigned int shift );

@@ -1,7 +1,8 @@
 .func begin break... Functions
 .func2 break_off
 .func2 break_on
-.func gen
+.func end
+.synop begin
 #include <stdlib.h>
 void break_off( void );
 void break_on( void );

@@ -1,4 +1,5 @@
 .func _disable
+.synop begin
 #include <i86.h>
 void _disable( void );
 .ixfunc2 '&Interrupt' &func

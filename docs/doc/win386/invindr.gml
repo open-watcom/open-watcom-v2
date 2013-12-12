@@ -1,4 +1,5 @@
 .func InvokeIndirectFunction
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 c$include 'winapi.fi'
        integer*4 function InvokeIndirectFunction(handle, ...)

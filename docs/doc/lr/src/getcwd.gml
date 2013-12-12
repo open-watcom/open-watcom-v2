@@ -1,4 +1,5 @@
 .func getcwd _wgetcwd
+.synop begin
 .if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
 char *getcwd( char *buffer, size_t size );

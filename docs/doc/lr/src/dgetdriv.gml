@@ -1,4 +1,5 @@
 .func _dos_getdrive
+.synop begin
 #include <&doshdr>
 void _dos_getdrive( unsigned *drive );
 .ixfunc2 '&DosFunc' &func

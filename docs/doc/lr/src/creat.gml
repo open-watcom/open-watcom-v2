@@ -1,4 +1,5 @@
 .func creat _creat _wcreat
+.synop begin
 #include <sys/types.h>
 #include <sys/stat.h>
 .ixfunc2 '&OsIo' &func

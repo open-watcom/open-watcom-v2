@@ -1,4 +1,5 @@
 .func acosh
+.synop begin
 #include <math.h>
 double acosh( double x );
 .ixfunc2 '&Math' &func

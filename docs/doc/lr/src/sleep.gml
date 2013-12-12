@@ -1,4 +1,5 @@
 .func sleep
+.synop begin
 .if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
 unsigned int sleep( unsigned int seconds );

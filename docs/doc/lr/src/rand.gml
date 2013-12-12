@@ -1,4 +1,5 @@
 .func rand
+.synop begin
 #include <stdlib.h>
 int rand( void );
 .ixfunc2 'Random Numbers' &func

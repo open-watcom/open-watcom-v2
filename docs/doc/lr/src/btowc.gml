@@ -1,4 +1,5 @@
 .func btowc
+.synop begin
 #include <wchar.h>
 wint_t btowc( int c );
 .ixfunc2 '&Wide' &func

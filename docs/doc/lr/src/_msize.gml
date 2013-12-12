@@ -3,7 +3,8 @@
 .func2 _bmsize
 .func2 _fmsize
 .func2 _nmsize
-.func gen
+.func end
+.synop begin
 .ixfunc2 '&Memory' _msize
 .ixfunc2 '&Memory' _bmsize
 .ixfunc2 '&Memory' _fmsize

@@ -1,4 +1,5 @@
 .func _mbislead
+.synop begin
 #include <mbctype.h>
 int _mbislead( unsigned int ch );
 .ixfunc2 '&Multibyte' &func

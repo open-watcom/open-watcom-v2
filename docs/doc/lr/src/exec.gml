@@ -25,7 +25,8 @@
 .func2 _wexecvpe
 .func_ _exec...
 .funcw _wexec...
-.func gen
+.func end
+.synop begin
 .* .synop begin
 #include <process.h>
 int execl(   path, arg0, arg1..., argn, NULL );

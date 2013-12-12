@@ -1,4 +1,5 @@
 .func fgetchar _fgetchar _fgetwchar
+.synop begin
 .funcw _fgetwchar
 #include <stdio.h>
 int fgetchar( void );

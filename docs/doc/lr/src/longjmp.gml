@@ -1,4 +1,5 @@
 .func longjmp
+.synop begin
 #include <setjmp.h>
 void longjmp( jmp_buf env, int return_value );
 .ixfunc2 'Non-local jumps' &func

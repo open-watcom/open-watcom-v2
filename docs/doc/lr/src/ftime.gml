@@ -1,4 +1,5 @@
 .func ftime
+.synop begin
 #include <sys/timeb.h>
 int ftime( struct timeb *timeptr );
 

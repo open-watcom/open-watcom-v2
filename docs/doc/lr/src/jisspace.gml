@@ -1,4 +1,5 @@
 .func jisspace
+.synop begin
 #include <jstring.h>
 int jisspace( JMOJI c );
 .ixfunc2 '&CharTest' &func

@@ -1,4 +1,5 @@
 .func isalnmkana
+.synop begin
 #include <jctype.h>
 int isalnmkana( int c );
 .ixfunc2 '&CharTest' &func

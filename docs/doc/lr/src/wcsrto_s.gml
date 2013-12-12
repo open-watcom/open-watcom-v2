@@ -1,7 +1,8 @@
 .func begin
 .funct_w   wcsrtombs_s   TR 24731
 .funct_fw  _fwcsrtombs_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 errno_t wcsrtombs_s( size_t * restrict retval,
                      char * restrict dst,

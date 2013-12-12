@@ -1,4 +1,5 @@
 .func _os_handle
+.synop begin
 #include <&iohdr>
 int _os_handle( int handle );
 .synop end

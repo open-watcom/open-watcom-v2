@@ -1,4 +1,5 @@
 .func strerror wcserror
+.synop begin
 #include <string.h>
 char *strerror( int errnum );
 .ixfunc2 '&String' &func

@@ -1,4 +1,5 @@
 .func fcvt _fcvt _wfcvt
+.synop begin
 #include <stdlib.h>
 char *fcvt( double value,
             int ndigits,

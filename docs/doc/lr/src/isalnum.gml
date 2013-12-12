@@ -1,4 +1,5 @@
 .func isalnum iswalnum
+.synop begin
 .funcw iswalnum
 #include <ctype.h>
 int isalnum( int c );

@@ -1,4 +1,5 @@
 .func segread
+.synop begin
 #include <i86.h>
 void segread( struct SREGS *seg_regs );
 .synop end

@@ -1,4 +1,5 @@
 .func fdim
+.synop begin
 #include <math.h>
 double fdim( double x, double y );
 .ixfunc2 '&Math' &func

@@ -1,4 +1,5 @@
 .func strcpy _fstrcpy wcscpy _mbscpy _fmbscpy
+.synop begin
 #include <string.h>
 char *strcpy( char *dst, const char *src );
 .ixfunc2 '&String' &func

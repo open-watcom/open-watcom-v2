@@ -1,4 +1,5 @@
 .func _open_osfhandle
+.synop begin
 #include <&iohdr>
 int _open_osfhandle( long osfhandle, int access );
 .synop end

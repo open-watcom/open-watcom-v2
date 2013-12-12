@@ -1,4 +1,5 @@
 .func srand
+.synop begin
 #include <stdlib.h>
 void srand( unsigned int seed );
 .ixfunc2 'Random Numbers' &func

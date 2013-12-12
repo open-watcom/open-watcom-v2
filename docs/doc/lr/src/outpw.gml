@@ -1,4 +1,5 @@
 .func outpw
+.synop begin
 #include <conio.h>
 unsigned int outpw( int port,
                     unsigned int value );

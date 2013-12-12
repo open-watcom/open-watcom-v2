@@ -1,4 +1,5 @@
 .func utoa _utoa _utow
+.synop begin
 #include <stdlib.h>
 char *utoa( unsigned int value,
             char *buffer,

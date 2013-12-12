@@ -1,4 +1,5 @@
 .func ftell
+.synop begin
 #include <stdio.h>
 long int ftell( FILE *fp );
 .ixfunc2 '&StrIo' &func

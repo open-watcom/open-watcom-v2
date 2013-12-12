@@ -1,4 +1,5 @@
 .func access _access _waccess
+.synop begin
 #include <&iohdr>
 int access( const char *path, int mode );
 .ixfunc2 '&FileOp' &func

@@ -1,4 +1,5 @@
 .func movedata
+.synop begin
 #include <string.h>
 void movedata( unsigned int src_segment,
                unsigned int src_offset,

@@ -1,4 +1,5 @@
 .func mktime
+.synop begin
 #include <time.h>
 time_t mktime( struct tm *timeptr );
 .im structtm

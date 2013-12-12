@@ -1,4 +1,5 @@
 .func min
+.synop begin
 #include <stdlib.h>
 #define min(a,b)  (((a) < (b)) ? (a) : (b))
 .synop end

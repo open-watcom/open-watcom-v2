@@ -1,4 +1,5 @@
 .func _ismbcsymbol
+.synop begin
 #include <mbstring.h>
 int _ismbcsymbol( unsigned int ch );
 .synop end

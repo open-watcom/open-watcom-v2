@@ -1,4 +1,5 @@
 .func jtolower
+.synop begin
 #include <jstring.h>
 JMOJI jtolower( JMOJI c );
 .ixfunc2 '&CharTest' &func

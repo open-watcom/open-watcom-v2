@@ -1,4 +1,5 @@
 .func _freect
+.synop begin
 #include <malloc.h>
 unsigned int _freect( size_t size );
 .ixfunc2 '&Memory' &func

@@ -1,4 +1,5 @@
 .func lgamma
+.synop begin
 #include <math.h>
 double lgamma( double x );
 .ixfunc2 '&Math' &func

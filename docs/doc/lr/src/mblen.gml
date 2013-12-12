@@ -1,4 +1,5 @@
 .func mblen _fmblen
+.synop begin
 #include <stdlib.h>
     or
 #include <mbstring.h>

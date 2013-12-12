@@ -1,4 +1,5 @@
 .func rename _wrename
+.synop begin
 #include <stdio.h>
 int rename( const char *old, const char *new );
 .ixfunc2 '&FileOp' &func

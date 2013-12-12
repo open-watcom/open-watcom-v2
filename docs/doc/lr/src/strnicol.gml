@@ -1,4 +1,5 @@
 .func _strnicoll _wcsnicoll _mbsnicoll
+.synop begin
 #include <string.h>
 int _strnicoll( const char *s1,
                 const char *s2,

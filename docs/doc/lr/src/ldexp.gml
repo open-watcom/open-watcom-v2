@@ -1,4 +1,5 @@
 .func ldexp
+.synop begin
 #include <math.h>
 double ldexp( double x, int exp );
 .ixfunc2 '&Math' &func

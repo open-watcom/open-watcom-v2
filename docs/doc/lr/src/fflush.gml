@@ -1,4 +1,5 @@
 .func fflush
+.synop begin
 #include <stdio.h>
 int fflush( FILE *fp );
 .ixfunc2 '&StrIo' &func

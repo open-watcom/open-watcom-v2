@@ -1,4 +1,5 @@
 .func flushall
+.synop begin
 #include <stdio.h>
 int flushall( void );
 .ixfunc2 '&StrIo' &func

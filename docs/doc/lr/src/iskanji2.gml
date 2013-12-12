@@ -1,4 +1,5 @@
 .func iskanji2
+.synop begin
 #include <jctype.h>
 int iskanji2( int sb );
 .ixfunc2 '&CharTest' &func

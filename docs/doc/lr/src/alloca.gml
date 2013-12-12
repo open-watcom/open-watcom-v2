@@ -1,4 +1,5 @@
 .func alloca
+.synop begin
 #include <malloc.h>
 void *alloca( size_t size );
 .ixfunc2 '&Memory' &func

@@ -1,4 +1,5 @@
 .func lseek _lseek _lseeki64
+.synop begin
 .if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
 .do end

@@ -1,4 +1,5 @@
 .func tmpfile
+.synop begin
 #include <stdio.h>
 FILE *tmpfile( void );
 .ixfunc2 '&StrIo' &func

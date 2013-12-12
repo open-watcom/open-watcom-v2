@@ -25,7 +25,8 @@
 .func2 _wspawnvpe
 .func_ _spawn...
 .funcw _wspawn...
-.func gen
+.func end
+.synop begin
 #include <process.h>
 int spawnl(   mode, path, arg0, arg1..., argn, NULL );
 int spawnle(  mode, path, arg0, arg1..., argn, NULL, envp);

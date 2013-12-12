@@ -1,4 +1,5 @@
 .func _m_psllqi
+.synop begin
 #include <mmintrin.h>
 __m64 _m_psllqi(__m64 *m, int count);
 .synop end

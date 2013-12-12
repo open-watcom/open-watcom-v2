@@ -1,4 +1,5 @@
 .func strtoimax wcstoimax
+.synop begin
 #include <inttypes.h>
 intmax_t strtoimax( const char *ptr,
                     char **endptr,

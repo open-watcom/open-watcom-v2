@@ -1,4 +1,5 @@
 .func mkdir _mkdir _wmkdir
+.synop begin
 .if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
 #include <sys/stat.h>

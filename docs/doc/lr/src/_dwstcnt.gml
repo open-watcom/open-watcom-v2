@@ -1,4 +1,5 @@
 .func _dwSetConTitle
+.synop begin
 #include <wdefwin.h>
 int _dwSetConTitle( int handle, const char *title );
 .synop end

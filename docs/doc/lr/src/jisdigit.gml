@@ -1,4 +1,5 @@
 .func jisdigit
+.synop begin
 #include <jstring.h>
 int jisdigit( JMOJI c );
 .ixfunc2 '&CharTest' &func

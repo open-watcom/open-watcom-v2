@@ -1,4 +1,5 @@
 .func cprintf
+.synop begin
 #include <conio.h>
 int cprintf( const char *format, ... );
 .ixfunc2 '&KbIo' &func

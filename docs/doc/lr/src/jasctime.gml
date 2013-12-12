@@ -1,4 +1,5 @@
 .func jasctime
+.synop begin
 #include <jtime.h>
 unsigned char *jasctime( const struct tm *timeptr );
 .im structtm

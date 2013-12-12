@@ -1,4 +1,5 @@
 .func fesetround
+.synop begin
 #include <fenv.h>
 int fesetround( int __round );
 .ixfunc2 'Floating Point Environment' &func

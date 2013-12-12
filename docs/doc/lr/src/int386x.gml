@@ -1,4 +1,5 @@
 .func int386x
+.synop begin
 #include <i86.h>
 int int386x( int inter_no,
              const union REGS *in_regs,

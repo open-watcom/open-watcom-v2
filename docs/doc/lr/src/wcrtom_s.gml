@@ -1,7 +1,8 @@
 .func begin
 .funct_w   wcrtomb_s TR24731
 .funct_fw  _fwcrtomb_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <wchar.h>
 errno_t wcrtomb_s( size_t * restrict retval,

@@ -1,4 +1,5 @@
 .func _mbccmp _fmbccmp
+.synop begin
 #include <mbstring.h>
 int _mbccmp( const unsigned char *s1,
              const unsigned char *s2 );

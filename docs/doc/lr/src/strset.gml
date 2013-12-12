@@ -1,4 +1,5 @@
 .func strset _strset _fstrset _wcsset _mbsset _fmbsset
+.synop begin
 #include <string.h>
 char *strset( char *s1, int fill );
 .ixfunc2 '&String' &func

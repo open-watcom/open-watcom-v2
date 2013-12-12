@@ -1,4 +1,5 @@
 .func _localtime
+.synop begin
 #include <time.h>
 struct tm *_localtime( const time_t *timer,
                        struct tm *tmbuf );

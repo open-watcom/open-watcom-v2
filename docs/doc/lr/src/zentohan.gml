@@ -1,4 +1,5 @@
 .func zentohan
+.synop begin
 #include <jstring.h>
 JMOJI zentohan( JMOJI c );
 .ixfunc2 '&Jstring' &func

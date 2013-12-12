@@ -1,4 +1,5 @@
 .func MK_LOCAL32
+.synop begin
 #include <windows.h>
 void far *MK_LOCAL32( void * fp16 );
 .synop end

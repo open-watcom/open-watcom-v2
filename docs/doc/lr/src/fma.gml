@@ -1,4 +1,5 @@
 .func fma
+.synop begin
 #include <math.h>
 double fma( double x, double y, double z );
 .ixfunc2 '&Math' &func

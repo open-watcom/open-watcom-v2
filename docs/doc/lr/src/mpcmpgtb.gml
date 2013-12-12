@@ -1,4 +1,5 @@
 .func _m_pcmpgtb
+.synop begin
 #include <mmintrin.h>
 __m64 _m_pcmpgtb(__m64 *m1, __m64 *m2);
 .synop end

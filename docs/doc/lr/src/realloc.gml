@@ -1,5 +1,6 @@
 .if &farfnc eq 0 .do begin
 .func realloc
+.synop begin
 #include <stdlib.h>
 void * realloc( void *old_blk, size_t size );
 .ixfunc2 '&Memory' &func
@@ -117,7 +118,8 @@ void main()
 .func2 _brealloc
 .func2 _frealloc
 .func2 _nrealloc
-.func gen
+.func end
+.synop begin
 #include <stdlib.h>  For ANSI compatibility (realloc only)
 #include <malloc.h>  Required for other function prototypes
 void * realloc( void *old_blk, size_t size );

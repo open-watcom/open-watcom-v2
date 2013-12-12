@@ -1,4 +1,5 @@
 .func gcvt _gcvt _wgcvt
+.synop begin
 #include <stdlib.h>
 char *gcvt( double value,
             int ndigits,

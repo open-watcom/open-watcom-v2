@@ -1,4 +1,5 @@
 .func strlen _fstrlen wcslen _mbslen _fmbslen
+.synop begin
 #include <string.h>
 size_t strlen( const char *s );
 .ixfunc2 '&String' &func

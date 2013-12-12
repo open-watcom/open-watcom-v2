@@ -1,5 +1,6 @@
 .if &farfnc eq 0 .do begin
 .func free
+.synop begin
 #include <stdlib.h>
 void free( void *ptr );
 .ixfunc2 '&Memory' free
@@ -55,7 +56,8 @@ void main()
 .func2 _bfree
 .func2 _ffree
 .func2 _nfree
-.func gen
+.func end
+.synop begin
 #include <stdlib.h>  For ANSI compatibility (free only)
 #include <malloc.h>  Required for other function prototypes
 void free( void *ptr );

@@ -1,6 +1,7 @@
 .func begin _beginthread
 .func2 _beginthreadex
-.func gen
+.func end
+.synop begin
 #include <process.h>
 .if &version ge 107 .do begin
 #if defined(__386__)

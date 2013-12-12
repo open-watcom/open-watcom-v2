@@ -1,4 +1,5 @@
 .func fmod
+.synop begin
 #include <math.h>
 double fmod( double x, double y );
 .ixfunc2 '&Math' &func

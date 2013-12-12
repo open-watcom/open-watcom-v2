@@ -1,4 +1,5 @@
 .func wctrans
+.synop begin
 #include <wctype.h>
 wctrans_t wctrans( const char *property );
 .ixfunc2 '&Conversion' &func

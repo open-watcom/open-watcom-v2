@@ -1,4 +1,5 @@
 .func main wmain WinMain wWinMain
+.synop begin
 .funcw wmain
 int main( void );
 int main( int argc, char *argv[] );

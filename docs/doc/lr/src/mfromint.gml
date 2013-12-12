@@ -1,4 +1,5 @@
 .func _m_from_int
+.synop begin
 #include <mmintrin.h>
 __m64 _m_from_int(int i);
 .synop end

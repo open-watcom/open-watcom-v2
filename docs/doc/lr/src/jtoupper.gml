@@ -1,4 +1,5 @@
 .func jtoupper
+.synop begin
 #include <jstring.h>
 JMOJI jtoupper( JMOJI c );
 .ixfunc2 '&CharTest' &func

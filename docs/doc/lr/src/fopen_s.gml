@@ -1,7 +1,8 @@
 .func begin
 .funct   fopen_s TR 24731
 .funct_w _wfopen_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 errno_t fopen_s( FILE * restrict * restrict streamptr,

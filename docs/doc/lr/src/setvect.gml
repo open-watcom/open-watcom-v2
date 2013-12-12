@@ -1,4 +1,5 @@
 .func _dos_setvect
+.synop begin
 #include <&doshdr>
 void _dos_setvect( unsigned intnum,
                    void (__interrupt __far *handler)() );

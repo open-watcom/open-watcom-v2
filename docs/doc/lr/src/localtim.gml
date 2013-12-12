@@ -1,7 +1,8 @@
 .func begin localtime Functions
 .func2 localtime
 .func2 _localtime
-.func gen
+.func end
+.synop begin
 #include <time.h>
 struct tm * localtime( const time_t *timer );
 struct tm *_localtime( const time_t *timer,

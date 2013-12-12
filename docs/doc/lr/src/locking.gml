@@ -1,4 +1,5 @@
 .func locking _locking
+.synop begin
 #include <sys/locking.h>
 int locking( int &fd, int mode, long nbyte );
 .ixfunc2 '&OsIo' &func

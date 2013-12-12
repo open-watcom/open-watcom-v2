@@ -1,4 +1,5 @@
 .func va_end
+.synop begin
 #include <stdarg.h>
 void va_end( va_list param );
 .ixfunc2 'variable arguments' &func

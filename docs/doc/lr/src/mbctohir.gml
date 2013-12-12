@@ -1,4 +1,5 @@
 .func _mbctohira
+.synop begin
 #include <mbstring.h>
 unsigned int _mbctohira( unsigned int ch );
 .ixfunc2 '&CharTest' &func

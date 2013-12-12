@@ -1,4 +1,5 @@
 .func FreeHugeAlias16
+.synop begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 c$include 'winapi.fi'
        subroutine FreeHugeAlias16( fp16, size )

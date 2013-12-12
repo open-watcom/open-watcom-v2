@@ -1,4 +1,5 @@
 .func _setmbcp
+.synop begin
 #include <mbctype.h>
 int _setmbcp( int codepage );
 .synop end

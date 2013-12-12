@@ -1,4 +1,5 @@
 .func abort_handler_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdlib.h>
 void abort_handler_s(

@@ -1,4 +1,5 @@
 .func jstricmp _fjstricmp
+.synop begin
 #include <jstring.h>
 int jstricmp( const JCHAR *s1, const JCHAR *s2 );
 .ixfunc2 '&Jstring' &func

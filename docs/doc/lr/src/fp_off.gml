@@ -1,4 +1,5 @@
 .func FP_OFF
+.synop begin
 #include <i86.h>
 unsigned FP_OFF( void __far *far_ptr );
 .synop end

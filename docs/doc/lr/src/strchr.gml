@@ -1,4 +1,5 @@
 .func strchr _fstrchr wcschr _mbschr _fmbschr
+.synop begin
 #include <string.h>
 char *strchr( const char *s, int c );
 .ixfunc2 '&String' &func

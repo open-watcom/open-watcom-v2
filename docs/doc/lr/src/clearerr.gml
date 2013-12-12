@@ -1,4 +1,5 @@
 .func clearerr
+.synop begin
 #include <stdio.h>
 void clearerr( FILE *fp );
 .ixfunc2 '&StrIo' &func

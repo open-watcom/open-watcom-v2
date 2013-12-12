@@ -1,4 +1,5 @@
 .func cgets
+.synop begin
 #include <conio.h>
 char *cgets( char *buf );
 .ixfunc2 '&KbIo' &func

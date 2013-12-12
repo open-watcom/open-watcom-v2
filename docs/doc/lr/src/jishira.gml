@@ -1,4 +1,5 @@
 .func jishira
+.synop begin
 #include <jstring.h>
 int jishira( JMOJI c );
 .ixfunc2 '&CharTest' &func

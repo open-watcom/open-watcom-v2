@@ -1,4 +1,5 @@
 .func _bios_printer for NEC PC98
+.synop begin
 #include <bios.h>
 unsigned short _bios_printer( unsigned service,
                               unsigned char *databyte );

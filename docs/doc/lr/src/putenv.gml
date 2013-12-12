@@ -1,4 +1,5 @@
 .func putenv _putenv _wputenv
+.synop begin
 #include <stdlib.h>
 int putenv( const char *env_name );
 .ixfunc2 '&Process' &func

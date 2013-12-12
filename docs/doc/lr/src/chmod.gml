@@ -1,4 +1,5 @@
 .func chmod _chmod _wchmod
+.synop begin
 #include <sys/types.h>
 #include <sys/stat.h>
 .if '&machsys' eq 'QNX' .do begin

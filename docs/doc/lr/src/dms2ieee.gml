@@ -1,4 +1,5 @@
 .func _dmsbintoieee
+.synop begin
 #include <math.h>
 extern int _dmsbintoieee( double *src, double *dest );
 .ixfunc2 '&Math' &func

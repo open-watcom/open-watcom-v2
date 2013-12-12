@@ -1,4 +1,5 @@
 .func _dos_commit
+.synop begin
 #include <dos.h>
 unsigned _dos_commit( int handle );
 .synop end

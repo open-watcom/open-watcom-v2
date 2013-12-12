@@ -1,4 +1,5 @@
 .func atof _wtof
+.synop begin
 #include <stdlib.h>
 double atof( const char *ptr );
 .ixfunc2 '&Conversion' &func

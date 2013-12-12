@@ -1,4 +1,5 @@
 .func ecvt _ecvt _wecvt
+.synop begin
 #include <stdlib.h>
 char *ecvt( double value,
             int ndigits,

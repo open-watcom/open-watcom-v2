@@ -1,4 +1,5 @@
 .func _dwSetAboutDlg
+.synop begin
 #include <wdefwin.h>
 int _dwSetAboutDlg( const char *title, const char *text );
 .synop end

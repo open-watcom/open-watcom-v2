@@ -1,4 +1,5 @@
 .func _ismbdprint
+.synop begin
 #include <mbstring.h>
 int _ismbdprint( unsigned int ch );
 .synop end

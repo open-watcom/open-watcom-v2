@@ -1,4 +1,5 @@
 .func iscntrl iswcntrl
+.synop begin
 .funcw iswcntrl
 #include <ctype.h>
 int iscntrl( int c );

@@ -1,4 +1,5 @@
 .func lsearch
+.synop begin
 #include <search.h>
 void *lsearch( const void *key, /* object to search for */
                void *base,      /* base of search data  */

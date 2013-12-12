@@ -1,4 +1,5 @@
 .func eof _eof
+.synop begin
 #include <&iohdr>
 int eof( int &fd );
 .ixfunc2 '&OsIo' &func

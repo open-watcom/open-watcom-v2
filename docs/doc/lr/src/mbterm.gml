@@ -1,4 +1,5 @@
 .func _mbterm _fmbterm
+.synop begin
 #include <mbstring.h>
 int _mbterm( const unsigned char *ch );
 .ixfunc2 '&Multibyte' &func

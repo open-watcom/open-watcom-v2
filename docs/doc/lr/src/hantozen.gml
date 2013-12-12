@@ -1,4 +1,5 @@
 .func hantozen
+.synop begin
 #include <jstring.h>
 JMOJI hantozen( JMOJI c );
 .ixfunc2 '&Jstring' &func

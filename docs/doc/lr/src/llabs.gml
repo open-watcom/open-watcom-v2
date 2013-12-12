@@ -1,4 +1,5 @@
 .func llabs
+.synop begin
 #include <stdlib.h>
 long long int llabs( long long int j );
 .synop end

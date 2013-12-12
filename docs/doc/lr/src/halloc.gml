@@ -1,4 +1,5 @@
 .func halloc
+.synop begin
 #include <malloc.h>
 void __huge *halloc( long int numb, size_t size );
 .ixfunc2 '&Memory' &func

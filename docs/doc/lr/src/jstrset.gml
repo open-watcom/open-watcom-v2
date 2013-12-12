@@ -1,4 +1,5 @@
 .func jstrset _fjstrset
+.synop begin
 #include <jstring.h>
 JSTRING jstrset( JCHAR *s1, JMOJI fill );
 .ixfunc2 '&Jstring' &func

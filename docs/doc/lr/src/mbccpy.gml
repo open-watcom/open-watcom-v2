@@ -1,4 +1,5 @@
 .func _mbccpy _fmbccpy
+.synop begin
 #include <mbstring.h>
 void _mbccpy( unsigned char *dest,
               const unsigned char *ch );

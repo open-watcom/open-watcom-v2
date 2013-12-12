@@ -1,6 +1,7 @@
 .func begin sprintf_s swprintf_s
 .funcw swprintf_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 int sprintf_s( char * restrict s, rsize_t n

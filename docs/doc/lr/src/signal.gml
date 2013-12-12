@@ -1,4 +1,5 @@
 .func signal
+.synop begin
 #include <signal.h>
 void ( *signal(int sig, void (*func)(int)) )( int );
 .ixfunc2 '&Errs' &func

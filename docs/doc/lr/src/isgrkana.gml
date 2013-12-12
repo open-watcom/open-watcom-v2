@@ -1,4 +1,5 @@
 .func isgrkana
+.synop begin
 #include <jctype.h>
 int isgrkana( int c );
 .ixfunc2 '&CharTest' &func

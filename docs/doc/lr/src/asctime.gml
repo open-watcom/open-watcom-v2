@@ -3,7 +3,8 @@
 .func2 _asctime
 .func2 _wasctime
 .func2 __wasctime
-.func gen
+.func end
+.synop begin
 #include <time.h>
 char * asctime( const struct tm *timeptr );
 char *_asctime( const struct tm *timeptr, char *buf );

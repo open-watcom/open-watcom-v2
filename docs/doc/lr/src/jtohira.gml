@@ -1,4 +1,5 @@
 .func jtohira
+.synop begin
 #include <jstring.h>
 JMOJI jtohira( JMOJI c );
 .ixfunc2 '&CharTest' &func

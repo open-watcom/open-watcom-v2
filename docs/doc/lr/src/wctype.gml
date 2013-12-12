@@ -1,4 +1,5 @@
 .func wctype
+.synop begin
 #include <wctype.h>
 wctype_t wctype( const char *property );
 .ixfunc2 '&CharTest' &func

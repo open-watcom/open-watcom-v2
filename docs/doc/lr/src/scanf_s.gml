@@ -1,6 +1,7 @@
 .func begin scanf_s wscanf_s
 .funcw wscanf_s
-.func gen
+.func end
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 int scanf_s( const char * restrict format, ... );

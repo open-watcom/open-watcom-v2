@@ -1,4 +1,5 @@
 .func _dos_getfileattr
+.synop begin
 #include <&doshdr>
 unsigned _dos_getfileattr( const char *path,
                            unsigned *attributes );

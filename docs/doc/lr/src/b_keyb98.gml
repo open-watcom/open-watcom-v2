@@ -1,4 +1,5 @@
 .func _bios_keybrd for NEC PC98
+.synop begin
 #include <bios.h>
 unsigned short _bios_keybrd( unsigned service,
                              unsigned char *keytable);

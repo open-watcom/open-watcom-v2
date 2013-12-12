@@ -1,4 +1,5 @@
 .func memmove _fmemmove wmemmove
+.synop begin
 #include <string.h>
 void *memmove( void *dst,
                const void *src,

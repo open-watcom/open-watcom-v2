@@ -1,4 +1,5 @@
 .func strncmp _fstrncmp wcsncmp _mbsncmp _fmbsncmp
+.synop begin
 #include <string.h>
 int strncmp( const char *s1,
              const char *s2,

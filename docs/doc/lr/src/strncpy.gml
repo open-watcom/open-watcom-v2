@@ -1,4 +1,5 @@
 .func strncpy _fstrncpy wcsncpy _mbsncpy _fmbsncpy
+.synop begin
 #include <string.h>
 char *strncpy( char *dst,
                const char *src,

@@ -1,4 +1,5 @@
 .func getenv_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdlib.h>
 errno_t getenv_s( size_t * restrict len,

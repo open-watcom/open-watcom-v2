@@ -1,4 +1,5 @@
 .func _snprintf _snwprintf
+.synop begin
 .funcw _snwprintf
 #include <stdio.h>
 int _snprintf( char *buf,

@@ -1,4 +1,5 @@
 .func memset _fmemset wmemset
+.synop begin
 #include <string.h>
 void *memset( void *dst, int c, size_t length );
 .ixfunc2 '&String' &func

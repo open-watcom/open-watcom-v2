@@ -1,4 +1,5 @@
 .func _ismbdalnum
+.synop begin
 #include <mbstring.h>
 int _ismbdalnum( unsigned int ch );
 .synop end

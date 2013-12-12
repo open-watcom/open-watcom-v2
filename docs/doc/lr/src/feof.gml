@@ -1,4 +1,5 @@
 .func feof
+.synop begin
 #include <stdio.h>
 int feof( FILE *fp );
 .ixfunc2 '&StrIo' &func

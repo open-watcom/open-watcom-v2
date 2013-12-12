@@ -1,4 +1,5 @@
 .func swab
+.synop begin
 #include <stdlib.h>
 void swab( char *src, char *dest, int num );
 .ixfunc2 '&DosFunc' &func

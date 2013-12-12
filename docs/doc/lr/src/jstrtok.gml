@@ -1,4 +1,5 @@
 .func jstrtok _fjstrtok
+.synop begin
 #include <jstring.h>
 JSTRING jstrtok( JCHAR *s1, const JCHAR *s2 );
 .ixfunc2 '&Jstring' &func

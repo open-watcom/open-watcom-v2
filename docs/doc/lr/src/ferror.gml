@@ -1,4 +1,5 @@
 .func ferror
+.synop begin
 #include <stdio.h>
 int ferror( FILE *fp );
 .ixfunc2 '&StrIo' &func

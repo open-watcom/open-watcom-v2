@@ -1,4 +1,5 @@
 .func isascii __isascii iswascii
+.synop begin
 .funcw iswascii
 #include <ctype.h>
 int isascii( int c );

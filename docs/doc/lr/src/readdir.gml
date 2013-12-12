@@ -1,4 +1,5 @@
 .func readdir _wreaddir
+.synop begin
 #include <&dirhdr>
 .if '&machsys' eq 'QNX' .do begin
 struct dirent *readdir( DIR *dirp );

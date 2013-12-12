@@ -1,4 +1,5 @@
 .func asctime_s _wasctime_s
+.synop begin
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <time.h>
 errno_t asctime_s( char * s,

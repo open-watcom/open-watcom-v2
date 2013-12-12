@@ -1,4 +1,5 @@
 .func _mbctolower
+.synop begin
 #include <mbstring.h>
 unsigned int _mbctolower( unsigned int c );
 .ixfunc2 '&CharTest' &func
