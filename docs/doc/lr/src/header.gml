@@ -89,13 +89,13 @@ feature test macro.
     process.h            (extension to POSIX)
     setjmp.h             (ANSI)
     signal.h             (ANSI)
-    sys&pc.stat.h           (POSIX)
+    sys/stat.h           (POSIX)
     stdio.h              (ANSI)
     stdlib.h             (ANSI)
     string.h             (ANSI)
     termios.h            (POSIX)
     time.h               (ANSI)
-    sys&pc.types.h          (POSIX)
+    sys/types.h          (POSIX)
     unistd.h             (POSIX)
 .millust end
 .do end
@@ -275,7 +275,7 @@ operations at the operating system level. These functions use file
 &handle.s to reference files or devices. The function
 .kw fstat
 is declared in the
-.hdrfile sys&pc.stat.h
+.hdrfile sys/stat.h
 header file.
 .do end
 .*------------------------------
@@ -485,7 +485,7 @@ operations at the operating system level. These functions use file
 &handle.s to reference files or devices. The function
 .kw fstat
 is declared in the
-.hdrfile sys&pc.stat.h
+.hdrfile sys/stat.h
 header file.
 .do end
 .*------------------------------
@@ -564,196 +564,196 @@ system-dependent header files.
 .dfbeg
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.con_msg.h
+.df sys/con_msg.h
 This header file contains definitions for the console driver.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.console.h
+.df sys/console.h
 This header file contains "public" definitions for the console driver.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.debug.h
+.df sys/debug.h
 This header file contains debugger data structures.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.dev.h
+.df sys/dev.h
 This header file contains "public" device administrator definitions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.dev_msg.h
+.df sys/dev_msg.h
 This header file contains "public" device driver messages.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.disk.h
+.df sys/disk.h
 This header file contains non-portable file system definitions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.dumper.h
+.df sys/dumper.h
 This header file contains the dumper file structure.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.fd.h
+.df sys/fd.h
 This header file contains file descriptor data structures.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.fsys.h
+.df sys/fsys.h
 This header file contains non-portable file system definitions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.fsysinfo.h
+.df sys/fsysinfo.h
 This header file contains declarations related to the fsysinfo()
 function.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.fsys_msg.h
+.df sys/fsys_msg.h
 This header file contains non-portable file system message
 definitions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.inline.h
+.df sys/inline.h
 Contains handy pragmas that are often used when doing low-level
 programming.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.io_msg.h
+.df sys/io_msg.h
 This header file contains non-portable low-level I/O definitions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.irqinfo.h
+.df sys/irqinfo.h
 This header file contains structure definitions and prototypes for
 interrupt request functions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.kernel.h
+.df sys/kernel.h
 This header file contains prototypes and pragmas for kernel function
 calls.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.lmf.h
+.df sys/lmf.h
 This header file contains structure definitions for load module
 format.
 .do end
 .*------------------------------
-.df sys&pc.locking.h
+.df sys/locking.h
 This header file contains the manifest constants used by the
 .kw locking
 function.
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.magic.h
+.df sys/magic.h
 This header file contains a definition for the
 .kw _magic
 structure.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.mman.h
+.df sys/mman.h
 This header file contains declarations related to the memory mapping
 functions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.mouse.h
+.df sys/mouse.h
 This header file contains structure definitions and prototypes for
 mouse operations.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.mous_msg.h
+.df sys/mous_msg.h
 This header file contains "private" definitions for the mouse driver.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.name.h
+.df sys/name.h
 This header file contains structure definitions and prototypes for QNX
 "name" functions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.osinfo.h
+.df sys/osinfo.h
 This header file contains manifests, structure definitions and
 prototypes for operating system information.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.osstat.h
+.df sys/osstat.h
 This header file contains manifests, structure definitions and
 prototypes for operating system status information.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.prfx.h
+.df sys/prfx.h
 This header file contains file prefix prototypes.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.proc_msg.h
+.df sys/proc_msg.h
 This header file contains process data structures and definitions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.proxy.h
+.df sys/proxy.h
 This header file contains proxy process prototypes.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.psinfo.h
+.df sys/psinfo.h
 This header file contains manifests and structure definitions for
 process information.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.qioctl.h
+.df sys/qioctl.h
 This header files contains manifests and structures for common
 qnx_ioctl messages.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.qnx_glob.h
+.df sys/qnx_glob.h
 This header file contains a structure definition for the QNX process
 spawning global data area.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.qnxterm.h
+.df sys/qnxterm.h
 This header file contains terminal capability definitions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.sched.h
+.df sys/sched.h
 This header file contains manifests and prototypes for process
 scheduling.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.seginfo.h
+.df sys/seginfo.h
 This header file contains segment information data structures.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.select.h
+.df sys/select.h
 This header file contains the prototype for the
 .kw select
 function.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.sendmx.h
+.df sys/sendmx.h
 This header file contains a definition for
 .kw _setmx
 and a definition
@@ -763,16 +763,16 @@ structure.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.ser_msg.h
+.df sys/ser_msg.h
 This header file contains "public" serial driver messages.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.sidinfo.h
+.df sys/sidinfo.h
 This header file contains session information data structures.
 .do end
 .*------------------------------
-.df sys&pc.stat.h
+.df sys/stat.h
 This POSIX header file contains the declarations pertaining to file
 status, including definitions for the
 .kw fstat
@@ -786,11 +786,11 @@ file or device
 .sfend
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.sys_msg.h
+.df sys/sys_msg.h
 This header file contains standard system message definitions.
 .do end
 .*------------------------------
-.df sys&pc.timeb.h
+.df sys/timeb.h
 This header file describes the
 .kw timeb
 structure used in conjunction with the
@@ -798,40 +798,40 @@ structure used in conjunction with the
 function.
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.timers.h
+.df sys/timers.h
 This POSIX header file contains interval timer definitions from POSIX
 1003.4.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.times.h
+.df sys/times.h
 This POSIX header file contains process timing definitions from POSIX
 1003.1.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.trace.h
+.df sys/trace.h
 This header file contains trace data structures and definitions.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.tracecod.h
+.df sys/tracecod.h
 This header file contains the trace codes used by the Trace()
 functions.
 .do end
 .*------------------------------
-.df sys&pc.types.h
+.df sys/types.h
 This POSIX header file contains declarations for the types used by
 system-level calls to obtain file status or time information.
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.uio.h
+.df sys/uio.h
 This header file contains declarations related to the readv() and
 writev() functions.
 .do end
 .*------------------------------
 .if '&machsys' ne 'QNX' .do begin
-.df sys&pc.utime.h
+.df sys/utime.h
 This POSIX header file contains a declaration for the
 .kw utime
 function and for the structured type
@@ -840,7 +840,7 @@ used by it.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.utsname.h
+.df sys/utsname.h
 This POSIX header file contains a definition of the
 .kw utsname
 structure and
@@ -850,19 +850,19 @@ function.
 .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.vc.h
+.df sys/vc.h
 This header file contains manifests and prototypes for virtual circuit
 functions.
 .do end
 .*------------------------------
 :cmt. .if '&machsys' eq 'QNX' .do begin
-:cmt. .df sys&pc.vc_msg.h
+:cmt. .df sys/vc_msg.h
 :cmt. This header file contains message formats for virtual circuit
 :cmt. functions.
 :cmt. .do end
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
-.df sys&pc.wait.h
+.df sys/wait.h
 This POSIX header file contains manifests and prototypes for "wait"
 functions.
 .do end

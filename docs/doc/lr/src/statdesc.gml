@@ -1,6 +1,6 @@
 .np
 The file
-.hdrfile sys&pc.stat.h
+.hdrfile sys/stat.h
 contains definitions for the structure
 .kw stat
 .ct .li .
@@ -80,7 +80,7 @@ total file size (as a 64-bit value)
 .do end
 .np
 At least the following macros are defined in the
-.hdrfile sys&pc.stat.h
+.hdrfile sys/stat.h
 header file.
 .begterm 12
 .termhd1 Macro

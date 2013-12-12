@@ -1,6 +1,6 @@
 The access permissions for the file or directory are specified as a
 combination of bits (defined in the
-.hdrfile sys&pc.stat.h
+.hdrfile sys/stat.h
 header file).
 .pp
 The following bits define permissions for the owner.
