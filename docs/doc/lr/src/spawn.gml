@@ -7,6 +7,14 @@
 .func2 spawnve
 .func2 spawnvp
 .func2 spawnvpe
+.func2 _spawnl
+.func2 _spawnle
+.func2 _spawnlp
+.func2 _spawnlpe
+.func2 _spawnv
+.func2 _spawnve
+.func2 _spawnvp
+.func2 _spawnvpe
 .func2 _wspawnl
 .func2 _wspawnle
 .func2 _wspawnlp
@@ -15,6 +23,7 @@
 .func2 _wspawnve
 .func2 _wspawnvp
 .func2 _wspawnvpe
+.func_ _spawn...
 .funcw _wspawn...
 .func gen
 #include <process.h>
@@ -26,6 +35,14 @@ int spawnv(   mode, path, argv );
 int spawnve(  mode, path, argv, envp );
 int spawnvp(  mode, file, argv );
 int spawnvpe( mode, file, argv, envp );
+int _spawnl(   mode, path, arg0, arg1..., argn, NULL );
+int _spawnle(  mode, path, arg0, arg1..., argn, NULL, envp);
+int _spawnlp(  mode, file, arg0, arg1..., argn, NULL );
+int _spawnlpe( mode, file, arg0, arg1..., argn, NULL, envp);
+int _spawnv(   mode, path, argv );
+int _spawnve(  mode, path, argv, envp );
+int _spawnvp(  mode, file, argv );
+int _spawnvpe( mode, file, argv, envp );
   int         mode;             /* mode for parent      */
   const char *path;             /* file name incl. path */
   const char *file;             /* file name            */
@@ -40,6 +57,14 @@ int spawnvpe( mode, file, argv, envp );
 .ixfunc2 '&Process' spawnve
 .ixfunc2 '&Process' spawnvp
 .ixfunc2 '&Process' spawnvpe
+.ixfunc2 '&Process' _spawnl
+.ixfunc2 '&Process' _spawnle
+.ixfunc2 '&Process' _spawnlp
+.ixfunc2 '&Process' _spawnlpe
+.ixfunc2 '&Process' _spawnv
+.ixfunc2 '&Process' _spawnve
+.ixfunc2 '&Process' _spawnvp
+.ixfunc2 '&Process' _spawnvpe
 .if &'length(&wfunc.) ne 0 .do begin
 int _wspawnl(   mode, path, arg0, arg1..., argn, NULL );
 int _wspawnle(  mode, path, arg0, arg1..., argn, NULL, envp);
@@ -449,5 +474,7 @@ void main( int argc, char *argv[] )
 }
 */
 .exmp end
-.class WATCOM
+.class begin WATCOM
+.ansiname &_func
+.class end
 .system

@@ -48,7 +48,10 @@
 .*
 .dm funkw begin
 .se *fnd=&'vecpos(&*,fnclst)
-.if &*fnd. eq 0 .me
+.if &*fnd. eq 0 .do begin
+.   .ty ***WARNING*** &* not defined in libfuns.gml
+.   .me
+.do end
 .if &__sysl(&*fnd.) eq 0 .ty ***WARNING*** &* not in library
 .if |&fncttl.| eq || .do begin
 .   .sr fncttl=&*

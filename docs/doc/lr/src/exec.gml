@@ -7,6 +7,14 @@
 .func2 execve
 .func2 execvp
 .func2 execvpe
+.func2 _execl
+.func2 _execle
+.func2 _execvpe
+.func2 _execlp
+.func2 _execlpe
+.func2 _execv
+.func2 _execve
+.func2 _execvp
 .func2 _wexecl
 .func2 _wexecle
 .func2 _wexeclp
@@ -15,6 +23,7 @@
 .func2 _wexecve
 .func2 _wexecvp
 .func2 _wexecvpe
+.func_ _exec...
 .funcw _wexec...
 .func gen
 #include <process.h>
@@ -26,6 +35,14 @@ int execv(   path, argv );
 int execve(  path, argv, envp );
 int execvp(  file, argv );
 int execvpe( file, argv, envp );
+int _execl(   path, arg0, arg1..., argn, NULL );
+int _execle(  path, arg0, arg1..., argn, NULL, envp );
+int _execlp(  file, arg0, arg1..., argn, NULL );
+int _execlpe( file, arg0, arg1..., argn, NULL, envp );
+int _execv(   path, argv );
+int _execve(  path, argv, envp );
+int _execvp(  file, argv );
+int _execvpe( file, argv, envp );
   const char *path;             /* file name incl. path */
   const char *file;             /* file name            */
   const char *arg0, ..., *argn; /* arguments            */
@@ -39,6 +56,14 @@ int execvpe( file, argv, envp );
 .ixfunc2 '&Process' execve
 .ixfunc2 '&Process' execvp
 .ixfunc2 '&Process' execvpe
+.ixfunc2 '&Process' _execl
+.ixfunc2 '&Process' _execle
+.ixfunc2 '&Process' _execlp
+.ixfunc2 '&Process' _execlpe
+.ixfunc2 '&Process' _execv
+.ixfunc2 '&Process' _execve
+.ixfunc2 '&Process' _execvp
+.ixfunc2 '&Process' _execvpe
 .if &'length(&wfunc.) ne 0 .do begin
 int _wexecl(   path, arg0, arg1..., argn, NULL );
 int _wexecle(  path, arg0, arg1..., argn, NULL, envp );
@@ -362,5 +387,7 @@ The program will be found if one of
 is found in the current working directory.
 .blktext end
 .exmp end
-.class POSIX 1003.1 with extensions
+.class begin POSIX 1003.1 with extensions
+.ansiname &_func
+.class end
 .system

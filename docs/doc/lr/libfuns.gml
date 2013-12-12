@@ -45,6 +45,8 @@
 .fnc asin                       asin.gml        DOS QNX W WIN32
 .fnc asinh                      asinh.gml       DOS QNX W WIN32
 .fnc assert                     assert.gml      DOS QNX W WIN32
+.fnc _assert                    assert.gml      DOS QNX W WIN32
+.fnc _wassert                   assert.gml      DOS QNX W WIN32
 .fnc atan                       atan.gml        DOS QNX W WIN32
 .fnc atan2                      atan2.gml       DOS QNX W WIN32
 .fnc atanh                      atanh.gml       DOS QNX W WIN32
@@ -169,6 +171,7 @@
 .fnw _wctime_s                  ctime_s.gml     DOS       WIN32
 .fnc cuserid                    cuserid.gml         QXO
 .fnc cwait                      cwait.gml       DOS       WIN32
+.fnc _cwait                     cwait.gml       DOS       WIN32
 .fnc delay                      delay.gml       DOS QNX W WIN32
 .fnc dev_arm                    dev_arm.gml         QXO
 .fnc dev_fdinfo                 dev_fdin.gml        QXO
@@ -244,14 +247,23 @@
 .fnc erfc                       erfc.gml        DOS QNX W WIN32
 .fnc errno                      errno.gml           QXO
 .fnc exec...                    exec.gml        DOS QNX W WIN32
+.fnc _exec...                   exec.gml        DOS QNX W WIN32
 .fnc execl                      exec.gml        DOS QNX W WIN32
+.fnc _execl                     exec.gml        DOS QNX W WIN32
 .fnc execle                     exec.gml        DOS QNX W WIN32
+.fnc _execle                    exec.gml        DOS QNX W WIN32
 .fnc execlp                     exec.gml        DOS QNX W WIN32
+.fnc _execlp                    exec.gml        DOS QNX W WIN32
 .fnc execlpe                    exec.gml        DOS QNX W WIN32
+.fnc _execlpe                   exec.gml        DOS QNX W WIN32
 .fnc execv                      exec.gml        DOS QNX W WIN32
+.fnc _execv                     exec.gml        DOS QNX W WIN32
 .fnc execve                     exec.gml        DOS QNX W WIN32
+.fnc _execve                    exec.gml        DOS QNX W WIN32
 .fnc execvp                     exec.gml        DOS QNX W WIN32
+.fnc _execvp                    exec.gml        DOS QNX W WIN32
 .fnc execvpe                    exec.gml        DOS QNX W WIN32
+.fnc _execvpe                   exec.gml        DOS QNX W WIN32
 .fnw _wexecl                    exec.gml        DOS       WIN32
 .fnw _wexecle                   exec.gml        DOS       WIN32
 .fnw _wexeclp                   exec.gml        DOS       WIN32
@@ -443,6 +455,7 @@
 .fnc getpgrp                    getpgrp.gml         QXO
 .fnc _getphyscoord              gr_getpc.gml    DOS QNX W GRAPH
 .fnc getpid                     getpid.gml      DOS QXO   WIN32
+.fnc _getpid                    getpid.gml      DOS QXO   WIN32
 .fnc _getpixel                  gr_getpx.gml    DOS QNX W GRAPH
 .fnc _getpixel_w                gr_getpx.gml    DOS QNX W GRAPH
 .fnc _getplotaction             gr_getpa.gml    DOS QNX W GRAPH
@@ -1215,14 +1228,23 @@
 .fnw _wsopen                    sopen.gml       DOS       WIN32
 .fnc sound                      sound.gml       DOS QNX W
 .fnc spawn...                   spawn.gml       DOS QNX W WIN32
+.fnc _spawn...                  spawn.gml       DOS QNX W WIN32
 .fnc spawnl                     spawn.gml       DOS QNX W WIN32
+.fnc _spawnl                    spawn.gml       DOS QNX W WIN32
 .fnc spawnle                    spawn.gml       DOS QNX W WIN32
+.fnc _spawnle                   spawn.gml       DOS QNX W WIN32
 .fnc spawnlp                    spawn.gml       DOS QNX W WIN32
+.fnc _spawnlp                   spawn.gml       DOS QNX W WIN32
 .fnc spawnlpe                   spawn.gml       DOS QNX W WIN32
+.fnc _spawnlpe                  spawn.gml       DOS QNX W WIN32
 .fnc spawnv                     spawn.gml       DOS QNX W WIN32
+.fnc _spawnv                    spawn.gml       DOS QNX W WIN32
 .fnc spawnve                    spawn.gml       DOS QNX W WIN32
+.fnc _spawnve                   spawn.gml       DOS QNX W WIN32
 .fnc spawnvp                    spawn.gml       DOS QNX W WIN32
+.fnc _spawnvp                   spawn.gml       DOS QNX W WIN32
 .fnc spawnvpe                   spawn.gml       DOS QNX W WIN32
+.fnc _spawnvpe                  spawn.gml       DOS QNX W WIN32
 .fnw _wspawnl                   spawn.gml       DOS       WIN32
 .fnw _wspawnle                  spawn.gml       DOS       WIN32
 .fnw _wspawnlp                  spawn.gml       DOS       WIN32
