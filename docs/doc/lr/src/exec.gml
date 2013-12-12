@@ -9,12 +9,12 @@
 .func2 execvpe
 .func2 _execl
 .func2 _execle
-.func2 _execvpe
 .func2 _execlp
 .func2 _execlpe
 .func2 _execv
 .func2 _execve
 .func2 _execvp
+.func2 _execvpe
 .func2 _wexecl
 .func2 _wexecle
 .func2 _wexeclp
