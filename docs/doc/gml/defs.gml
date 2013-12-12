@@ -11,9 +11,6 @@
 .do end
 .if &e'&company eq 0 .do begin
 :set symbol="company"   value="Open Watcom".
-:set symbol="scompany"  value="Watcom International Corp.".
-:set symbol="pcompany"  value="Sybase".
-:set symbol="spcompany" value="Sybase, Inc.".
 .do end
 .*
 .if '&lang' eq 'C/C++' .do begin

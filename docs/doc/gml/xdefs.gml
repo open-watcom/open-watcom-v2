@@ -9,14 +9,11 @@
 .do end
 .if &e'&company eq 0 .do begin
 :set symbol="company"   value="Open Watcom".
-:set symbol="scompany"  value="Watcom International Corp.".
-:set symbol="pcompany"  value="Sybase".
-:set symbol="spcompany" value="Sybase, Inc.".
 .do end
-:set symbol="cpyyear"   value="2010".
+:set symbol="cpyyear"   value="2013".
 .dm cpyrit begin
-Copyright (c) &cpyyear. the Open Watcom Contributors. All Rights Reserved.
-Portions Copyright (c) &*, 2002 Sybase, Inc. All Rights Reserved.
+Copyright (c) 2002-&cpyyear. the Open Watcom Contributors. All Rights Reserved.
+Portions Copyright (c) &*.-2002 Sybase, Inc. All Rights Reserved.
 .dm cpyrit end
 .dm trdmrk begin
 Source code is available under the Sybase Open Watcom Public License.

@@ -34,7 +34,9 @@ PRIVATXM.EXE Copyright :SF font=7.~C:eSF. 1991 Tenberry Software, Inc.
 .bull
 DOS4GW.DOC Copyright :SF font=7.~C:eSF. 1991-1995 Tenberry Software, Inc.
 .bull
-WEMU387.386 Copyright :SF font=7.~C:eSF. 1991-&cpyyear. &spcompany.
+WEMU387.386
+Copyright :SF font=7.~C:eSF. 2002-&cpyyear. the Open Watcom Contributors.
+Copyright :SF font=7.~C:eSF. 1991-2002 Sybase, Inc.
 .endbull
 .np
 The Microsoft Components from the Microsoft Windows SDK version 3.1,
