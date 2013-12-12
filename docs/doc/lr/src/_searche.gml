@@ -11,7 +11,7 @@ void _wsearchenv( const wchar_t *name,
 .ixfunc2 '&Search' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function searches for the file specified by
 .arg name

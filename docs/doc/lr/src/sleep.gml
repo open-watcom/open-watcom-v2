@@ -8,7 +8,7 @@ unsigned int sleep( unsigned int seconds );
 unsigned sleep( unsigned seconds );
 .do end
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
 The &func function suspends the calling process until the number of

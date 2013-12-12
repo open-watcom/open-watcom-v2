@@ -10,7 +10,7 @@ int _bwprintf( wchar_t *buf, size_t bufsize,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .desc begin
 The &func function is equivalent to the

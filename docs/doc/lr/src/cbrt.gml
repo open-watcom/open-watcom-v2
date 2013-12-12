@@ -2,7 +2,7 @@
 #include <math.h>
 double cbrt( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the cubed root of the argument
 .arg x

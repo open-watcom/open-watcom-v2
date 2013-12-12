@@ -1,7 +1,7 @@
 .func _ismbcpunct
 #include <mbstring.h>
 int _ismbcpunct( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for any multibyte punctuation character.
 .desc end

@@ -5,7 +5,7 @@ void qsort( void *base,
             size_t width,
             int (*compar) ( const void *,
                             const void *) );
-.funcend
+.synop end
 .*
 .safealt
 .*

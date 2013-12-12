@@ -5,7 +5,7 @@ size_t fread( void *buf,
               size_t nelem,
               FILE *fp );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function reads
 .arg nelem

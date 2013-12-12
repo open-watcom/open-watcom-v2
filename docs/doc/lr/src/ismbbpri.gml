@@ -1,7 +1,7 @@
 .func _ismbbprint
 #include <mbctype.h>
 int _ismbbprint( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg ch

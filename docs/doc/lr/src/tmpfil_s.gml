@@ -3,7 +3,7 @@
 #include <stdio.h>
 errno_t tmpfile_s( FILE * restrict * restrict streamptr);
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .*
 .rtconst begin
 .arg streamptr

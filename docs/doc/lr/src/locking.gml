@@ -6,7 +6,7 @@ int locking( int &fd, int mode, long nbyte );
 int _locking( int &fd, int mode, long nbyte );
 .ixfunc2 '&OsIo' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function locks or unlocks
 .arg nbyte

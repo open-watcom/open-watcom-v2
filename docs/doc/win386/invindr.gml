@@ -8,7 +8,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 long InvokeIndirectFunction( HINDIR handle, ... );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function invokes the 16-bit function pointed to by the
 specified handle.

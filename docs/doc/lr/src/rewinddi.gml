@@ -13,7 +13,7 @@ void _wrewinddir( _wdirent *dirp );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function resets the position of the directory stream to
 which

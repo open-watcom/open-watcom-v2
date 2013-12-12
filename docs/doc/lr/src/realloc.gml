@@ -3,7 +3,7 @@
 #include <stdlib.h>
 void * realloc( void *old_blk, size_t size );
 .ixfunc2 '&Memory' &func
-.func end
+.synop end
 .desc begin
 When the value of the
 .arg old_blk
@@ -132,7 +132,7 @@ void __near *_nrealloc( void __near *old_blk,
 .ixfunc2 '&Memory' _brealloc
 .ixfunc2 '&Memory' _frealloc
 .ixfunc2 '&Memory' _nrealloc
-.func end
+.synop end
 .desc begin
 When the value of the
 .arg old_blk

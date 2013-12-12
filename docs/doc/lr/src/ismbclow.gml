@@ -1,7 +1,7 @@
 .func _ismbclower
 #include <mbstring.h>
 int _ismbclower( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for a valid lowercase multibyte character.
 Multibyte characters include both single-byte and double-byte

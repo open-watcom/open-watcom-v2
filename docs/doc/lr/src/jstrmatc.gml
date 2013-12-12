@@ -9,7 +9,7 @@ FJSTRING __far _fjstrmatch( const JCHAR __far *str,
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function locates

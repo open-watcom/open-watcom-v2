@@ -7,7 +7,7 @@ wchar_t *_wgetenv( const wchar_t *name );
 .ixfunc2 '&Process' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

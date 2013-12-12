@@ -10,7 +10,7 @@ unsigned char __far *_fmbsnbset( unsigned char __far *str,
                                  size_t count );
 .ixfunc2 '&String' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function fills the string
 .arg str

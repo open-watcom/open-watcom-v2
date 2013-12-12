@@ -9,7 +9,7 @@ int wcscmpi( const wchar_t *s1, const wchar_t *s2 );
 .ixfunc2 '&Compare' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function compares, with case insensitivity, the string
 pointed to by

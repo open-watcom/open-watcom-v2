@@ -2,7 +2,7 @@
 #include <math.h>
 double trunc( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function truncates the argument
 .arg x

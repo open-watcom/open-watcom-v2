@@ -2,7 +2,7 @@
 #include <new.h>
 PFV set_new_handler( PFV pNewHandler );
 PFU _set_new_handler( PFU pNewHandler );
-.funcend
+.synop end
 .desc begin
 The &func functions are used to transfer control to a user-defined
 error handler if the

@@ -56,7 +56,7 @@ struct _wfind_t {
 #endif
 };
 .do end
-.func end
+.synop end
 .desc begin
 The
 .kw _dos_findfirst

@@ -2,7 +2,7 @@
 #include <math.h>
 double exp2( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes 2.0 raised to the value 
 .arg x

@@ -3,7 +3,7 @@
 void _exit( int status );
 void _Exit( int status );
 .ixfunc2 '&Process' &func
-.funcend
+.synop end
 .desc begin
 The &func function causes normal program termination to occur.
 .autonote

@@ -11,7 +11,7 @@ FILE *_wfdopen( int &fd, const wchar_t *mode );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function associates a stream with the file &handle
 .arg &fd

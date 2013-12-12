@@ -1,7 +1,7 @@
 .func _getmbcp
 #include <mbctype.h>
 int _getmbcp( void );
-.funcend
+.synop end
 .desc begin
 The &func function returns the current multibyte code page number.
 .desc end

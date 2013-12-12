@@ -2,7 +2,7 @@
 #include <stdlib.h>
 int rand( void );
 .ixfunc2 'Random Numbers' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes a sequence of pseudo-random integers in
 the range 0 to

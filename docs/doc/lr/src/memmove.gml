@@ -17,7 +17,7 @@ wchar_t *wmemmove( wchar_t *dst,
                    size_t length );
 .ixfunc2 '&Copy' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

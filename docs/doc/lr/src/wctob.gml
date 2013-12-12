@@ -3,7 +3,7 @@
 int wctob( wint_t wc );
 .ixfunc2 '&Wide' &func
 .ixfunc2 '&Multibyte' &func
-.funcend
+.synop end
 .desc begin
 The &func function determines whether
 .arg wc

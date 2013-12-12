@@ -6,7 +6,7 @@ size_t btom( const unsigned char *str, size_t nb );
 size_t far _fbtom( const unsigned char far *str, size_t nb );
 .ixfunc2 '&Jstring' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function returns

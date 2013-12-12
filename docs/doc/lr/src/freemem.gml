@@ -8,7 +8,7 @@ unsigned _dos_freemem( void *   segment );
 unsigned _dos_freemem( unsigned segment );
 #endif
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x49 to release memory that was
 previously allocated by

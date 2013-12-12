@@ -2,7 +2,7 @@
 #include <malloc.h>
 __segment _bheapseg( size_t size );
 .ixfunc2 '&Memory' _bheapseg
-.funcend
+.synop end
 .desc begin
 The &func function allocates a based-heap segment of at least
 .arg size

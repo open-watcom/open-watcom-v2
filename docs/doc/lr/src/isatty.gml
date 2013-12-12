@@ -6,7 +6,7 @@ int isatty( int &fd );
 int _isatty( int &fd );
 .ixfunc2 '&OsIo' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function tests if the opened file or device referenced by
 the file &handle

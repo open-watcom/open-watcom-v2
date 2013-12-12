@@ -1,7 +1,7 @@
 .func _ismbdxdigit
 #include <mbstring.h>
 int _ismbdxdigit( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 .desc end
 .return begin

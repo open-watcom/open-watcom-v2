@@ -13,7 +13,7 @@ int vwprintf_s( const wchar_t * restrict format, va_list prg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 The

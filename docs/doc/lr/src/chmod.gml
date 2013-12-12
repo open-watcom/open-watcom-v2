@@ -18,7 +18,7 @@ int _wchmod( const wchar_t *path, int permission );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function changes the permissions for a file specified by
 .arg path

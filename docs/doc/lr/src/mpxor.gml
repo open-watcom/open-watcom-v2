@@ -1,7 +1,7 @@
 .func _m_pxor
 #include <mmintrin.h>
 __m64 _m_pxor(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 A bit-wise logical XOR is performed between 64-bit multimedia operands
 .arg m1

@@ -1,7 +1,7 @@
 .func _m_pslld
 #include <mmintrin.h>
 __m64 _m_pslld(__m64 *m, __m64 *count);
-.funcend
+.synop end
 .desc begin
 The 32-bit double-words in
 .arg m

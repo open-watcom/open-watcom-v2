@@ -1,7 +1,7 @@
 .func _ismbcprint
 #include <mbstring.h>
 int _ismbcprint( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for any printable multibyte character
 including space ('&sysrb').

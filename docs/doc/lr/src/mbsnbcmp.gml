@@ -12,7 +12,7 @@ int _fmbsnbcmp( const unsigned char __far *s1,
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Compare' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func lexicographically compares not more than
 .arg n

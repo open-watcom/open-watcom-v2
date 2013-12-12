@@ -2,7 +2,7 @@
 #include <conio.h>
 int putch( int c );
 .ixfunc2 '&KbIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function writes the character specified by the argument
 .arg c

@@ -2,7 +2,7 @@
 #include <i86.h>
 void nosound( void );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function turns off the PC's speaker.
 .im privity

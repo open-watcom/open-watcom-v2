@@ -13,7 +13,7 @@ size_t _fwcsrtombs( char __far *dst,
 .ixfunc2 '&Wide' &ffunc
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

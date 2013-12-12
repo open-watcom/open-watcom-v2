@@ -9,7 +9,7 @@ int _putws( const wchar_t *bufs );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function writes the character string pointed to by
 .arg buf

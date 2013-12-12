@@ -2,7 +2,7 @@
 #include <math.h>
 double ceil( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function (ceiling function)
 computes the smallest integer not less than

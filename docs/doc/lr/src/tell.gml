@@ -8,7 +8,7 @@ off_t _tell( int &fd );
 .do end
 __int64 _telli64( int &fd );
 .ixfunc2 '&OsIo' &_func64
-.funcend
+.synop end
 .*
 .desc begin
 The &func function reports the current file position at the operating

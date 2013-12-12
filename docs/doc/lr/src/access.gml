@@ -11,7 +11,7 @@ int _waccess( const wchar_t *path, int mode );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function determines if the file or directory specified by
 .arg path

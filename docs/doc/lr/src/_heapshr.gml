@@ -17,7 +17,7 @@ int  _heapshrink( void );
 int _bheapshrink( __segment seg );
 int _fheapshrink( void );
 int _nheapshrink( void );
-.func end
+.synop end
 .desc begin
 The &func functions attempt to shrink the heap to its smallest
 possible size by returning all free entries at the end of the heap

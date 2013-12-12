@@ -2,7 +2,7 @@
 #include <stdlib.h>
 void abort( void );
 .ixfunc2 '&Process' &func
-.funcend
+.synop end
 .desc begin
 The &func function raises the signal SIGABRT.
 The default action for SIGABRT is to terminate program execution,

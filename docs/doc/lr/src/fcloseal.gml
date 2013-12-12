@@ -2,7 +2,7 @@
 #include <stdio.h>
 int fcloseall( void );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function closes all open stream files, except
 .if '&machsys' eq 'QNX' .do begin

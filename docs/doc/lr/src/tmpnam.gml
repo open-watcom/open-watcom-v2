@@ -7,7 +7,7 @@ wchar_t *_wtmpnam( wchar_t *buffer );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

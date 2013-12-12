@@ -2,7 +2,7 @@
 #include <mbstring.h>
 unsigned int _mbctokata( unsigned int ch );
 .ixfunc2 '&CharTest' &func
-.funcend
+.synop end
 .desc begin
 The &func converts a double-byte Hiragana character to a Katakana
 character.

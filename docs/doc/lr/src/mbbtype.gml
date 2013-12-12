@@ -2,7 +2,7 @@
 #include <mbstring.h>
 #include <mbctype.h> (for manifest constants)
 int _mbbtype( unsigned char ch, int type );
-.funcend
+.synop end
 .desc begin
 The &func function determines the type of a byte in a multibyte
 character.

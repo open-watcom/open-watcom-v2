@@ -3,7 +3,7 @@
 unsigned _dos_getfileattr( const char *path,
                            unsigned *attributes );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x43 to get the current attributes
 of the file or directory that

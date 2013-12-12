@@ -17,7 +17,7 @@ errno_t wcsncat_s( wchar_t * restrict s1,
 .ixfunc2 '&Concats' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .rtconst begin
 Let

@@ -1,7 +1,7 @@
 .func imaxabs
 #include <inttypes.h>
 intmax_t imaxabs( intmax_t j );
-.funcend
+.synop end
 .*
 .desc begin
 The &func function returns the absolute value

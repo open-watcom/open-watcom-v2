@@ -1,7 +1,7 @@
 .func _dos_commit
 #include <dos.h>
 unsigned _dos_commit( int handle );
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x68 to flush to disk the DOS
 buffers associated with the file indicated by

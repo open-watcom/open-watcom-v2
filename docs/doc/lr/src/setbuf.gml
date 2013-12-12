@@ -2,7 +2,7 @@
 #include <stdio.h>
 void setbuf( FILE *fp, char *buffer );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function can be used to associate a buffer with the file
 designated by

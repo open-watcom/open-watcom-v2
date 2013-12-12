@@ -9,7 +9,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 int DefineDLLEntry( int index, void * routine, ... );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function defines an
 .arg index

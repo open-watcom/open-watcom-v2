@@ -1,7 +1,7 @@
 .func _m_psllq
 #include <mmintrin.h>
 __m64 _m_psllq(__m64 *m, __m64 *count);
-.funcend
+.synop end
 .desc begin
 The 64-bit quad-word in
 .arg m

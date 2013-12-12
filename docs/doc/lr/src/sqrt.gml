@@ -2,7 +2,7 @@
 #include <math.h>
 double sqrt( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the non-negative square root of
 .arg x

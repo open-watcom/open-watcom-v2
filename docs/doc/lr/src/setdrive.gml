@@ -2,7 +2,7 @@
 #include <&doshdr>
 void _dos_setdrive( unsigned drive, unsigned *total );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x0E to set the current default
 disk drive to be the drive specified by

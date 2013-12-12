@@ -3,7 +3,7 @@
 void _harderr( int (__far *handler)() );
 void _hardresume( int action );
 void _hardretn( int error );
-.funcend
+.synop end
 .desc begin
 The &func routine installs a critical error handler (for INT 0x24)
 to handle hardware errors.

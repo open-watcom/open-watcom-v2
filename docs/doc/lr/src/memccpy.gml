@@ -9,7 +9,7 @@ void __far *_fmemccpy( void __far *dest,
                        int c, size_t cnt );
 .ixfunc2 '&String' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function copies bytes from
 .arg src

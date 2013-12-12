@@ -1,7 +1,7 @@
 .func signbit
 #include <math.h>
 int signbit( x );
-.funcend
+.synop end
 .*
 .desc begin
 The &func macro determines whether the sign of its argument value is negative.

@@ -9,7 +9,7 @@ struct timeb {
  short dstflag;  /* nonzero if in daylight savings time */
 };
 .ixfunc2 '&TimeFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function gets the current time and stores it in the
 structure pointed to by

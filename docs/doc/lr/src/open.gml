@@ -13,7 +13,7 @@ int _wopen( const wchar_t *path, int access, ... );
 .ixfunc2 '&OsIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function opens a file at the operating system level.
 The name of the file to be opened is given by

@@ -2,7 +2,7 @@
 #include <process.h>
 char *_cmdname( char *buffer );
 .ixfunc2 '&String' &func
-.funcend
+.synop end
 .desc begin
 The &func function obtains a copy of the executing program's pathname
 and places it in

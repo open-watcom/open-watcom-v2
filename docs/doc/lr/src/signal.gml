@@ -2,7 +2,7 @@
 #include <signal.h>
 void ( *signal(int sig, void (*func)(int)) )( int );
 .ixfunc2 '&Errs' &func
-.funcend
+.synop end
 .desc begin
 The &func function is used to specify an action to take place when
 certain conditions are detected while a program executes.

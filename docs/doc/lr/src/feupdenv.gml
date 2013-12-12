@@ -2,7 +2,7 @@
 #include <fenv.h>
 int feupdateenv( const fenv_t *__envp );
 .ixfunc2 'Floating Point Environment' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function attempts to save the currently raised floating-point exceptions in its

@@ -17,7 +17,7 @@ int _wrmdir( const wchar_t *path );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .desc begin
 The &func function removes (deletes) the specified directory.

@@ -23,7 +23,7 @@ int _wcreat( const wchar_t *path, int mode );
 .ixfunc2 '&Wide' &wfunc
 .do end
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function creates (and opens) a file at the operating system
 level.

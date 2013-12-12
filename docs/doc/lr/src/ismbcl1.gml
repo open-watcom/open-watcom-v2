@@ -1,7 +1,7 @@
 .func _ismbcl1
 #include <mbstring.h>
 int _ismbcl1( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg ch

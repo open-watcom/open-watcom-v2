@@ -3,7 +3,7 @@
 int wait( int *status );
 .ixfunc2 '&OS2Func' &func
 .ixfunc2 '&NTFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function suspends the calling process until any of the caller's
 immediate child processes terminate.

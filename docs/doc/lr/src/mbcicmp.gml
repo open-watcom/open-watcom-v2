@@ -8,7 +8,7 @@ int _fmbcicmp( const unsigned char __far *s1,
                const unsigned char __far *s2 );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function compares one multibyte character from
 .arg s1

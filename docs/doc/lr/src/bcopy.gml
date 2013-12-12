@@ -3,7 +3,7 @@
 void bcopy( const void *src, void *dst, size_t n );
 .ixfunc2 '&String' &func
 .ixfunc2 '&Copy' &func
-.funcend
+.synop end
 .desc begin
 The &func function copies the byte string pointed to by
 .arg src

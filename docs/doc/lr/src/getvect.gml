@@ -2,7 +2,7 @@
 #include <&doshdr>
 void (__interrupt __far *_dos_getvect(unsigned intnum))();
 .ixfunc2 '&CpuInt' &func
-.funcend
+.synop end
 .desc begin
 The &func function gets the current value of interrupt vector number
 .arg intnum

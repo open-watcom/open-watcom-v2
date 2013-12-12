@@ -2,7 +2,7 @@
 #include <math.h>
 extern int _dieeetomsbin( double *src, double *dest );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function loads the double pointed to by
 .arg src

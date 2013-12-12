@@ -8,7 +8,7 @@ int _cwait( int *status, int process_id, int action );
 .ixfunc2 '&OS2Func' &_func
 .ixfunc2 '&NTFunc' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function suspends the calling process until the specified
 process terminates.

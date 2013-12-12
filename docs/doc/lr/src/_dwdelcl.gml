@@ -1,7 +1,7 @@
 .func _dwDeleteOnClose
 #include <wdefwin.h>
 int _dwDeleteOnClose( int handle );
-.funcend
+.synop end
 .desc begin
 The &func function tells the console window that it should close
 itself when the corresponding file is closed.

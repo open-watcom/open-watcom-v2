@@ -1,7 +1,7 @@
 .func max
 #include <stdlib.h>
 #define max(a,b)  (((a) > (b)) ? (a) : (b))
-.funcend
+.synop end
 .desc begin
 The &func macro will evaluate to be the greater of two values.
 It is implemented as follows.

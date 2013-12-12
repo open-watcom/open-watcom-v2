@@ -2,7 +2,7 @@
 #include <time.h>
 time_t time( time_t *tloc );
 .ixfunc2 '&TimeFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function determines the current calendar time and encodes it
 into the type

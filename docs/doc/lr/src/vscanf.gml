@@ -11,7 +11,7 @@ int vwscanf( const wchar_t *format, va_list arg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

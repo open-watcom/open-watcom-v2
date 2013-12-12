@@ -1,7 +1,7 @@
 .func _m_from_int
 #include <mmintrin.h>
 __m64 _m_from_int(int i);
-.funcend
+.synop end
 .desc begin
 The &func function forms a 64-bit MM value from an unsigned 32-bit
 integer value.

@@ -2,7 +2,7 @@
 #include <conio.h>
 unsigned int outp( int port, int value );
 .ixfunc2 '&PortIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function writes one byte, determined by
 .arg value

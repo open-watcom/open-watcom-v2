@@ -29,7 +29,7 @@ unsigned char __far *_fmbsset( unsigned char __far *s1,
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function fills the string pointed to by
 .arg s1

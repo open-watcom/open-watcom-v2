@@ -3,7 +3,7 @@
 int strcasecmp( const char *s1, const char *s2 );
 .ixfunc2 '&String' &func
 .ixfunc2 '&Compare' &func
-.funcend
+.synop end
 .desc begin
 The &func function compares, with case insensitivity, the string
 pointed to by

@@ -12,7 +12,7 @@ int __far _fjstrnicmp( const JCHAR __far *s1,
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jcompare' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function compares,

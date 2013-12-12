@@ -7,7 +7,7 @@ wchar_t *_wsetlocale( int category, const wchar_t *locale);
 .ixfunc2 '&Locale' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function selects a portion of a program's
 .us locale

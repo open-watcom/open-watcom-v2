@@ -1,7 +1,7 @@
 .func _m_pandn
 #include <mmintrin.h>
 __m64 _m_pandn(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 A bit-wise logical AND is performed on the logical inversion of
 64-bit multimedia operand

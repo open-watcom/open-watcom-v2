@@ -14,7 +14,7 @@ size_t wcsxfrm( wchar_t *dst,
 .ixfunc2 '&Search' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function transforms, for no more than
 .arg n

@@ -6,7 +6,7 @@ int chsize( int &fd, long size );
 int _chsize( int &fd, long size );
 .ixfunc2 '&DosFunc' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function changes the size of the file associated with
 .arg &fd

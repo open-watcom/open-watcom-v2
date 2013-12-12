@@ -1,7 +1,7 @@
 .func _m_packuswb
 #include <mmintrin.h>
 __m64 _m_packuswb(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 Convert signed packed words into unsigned packed bytes by packing
 (with unsigned saturation) the low-order bytes of the signed word

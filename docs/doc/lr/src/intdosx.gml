@@ -4,7 +4,7 @@ int intdosx( const union REGS *in_regs,
              union REGS *out_regs,
              struct SREGS *seg_regs );
 .ixfunc2 '&OsInt' &func
-.funcend
+.synop end
 .desc begin
 The &func function causes the computer's central processor (CPU) to
 be interrupted with an interrupt number hexadecimal 21 (

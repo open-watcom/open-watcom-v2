@@ -1,7 +1,7 @@
 .func _m_psrlqi
 #include <mmintrin.h>
 __m64 _m_psrlqi(__m64 *m, int count);
-.funcend
+.synop end
 .desc begin
 The 64-bit quad-word in
 .arg m

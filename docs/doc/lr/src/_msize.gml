@@ -13,7 +13,7 @@ size_t _msize( void *buffer );
 size_t _bmsize( __segment seg, void __based(void) *buffer );
 size_t _fmsize( void __far *buffer );
 size_t _nmsize( void __near *buffer );
-.func end
+.synop end
 .desc begin
 The &func functions return the size of the memory block pointed to by
 .arg buffer

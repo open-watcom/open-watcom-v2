@@ -9,7 +9,7 @@ struct dostime_t {
         unsigned char hsecond;  /* 1/100 second; 0-99 */
 };
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x2C to get the current system time.
 The time information is returned in a

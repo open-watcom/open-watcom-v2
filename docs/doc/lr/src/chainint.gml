@@ -2,7 +2,7 @@
 #include <&doshdr>
 void _chain_intr( void (__interrupt __far *func)() );
 .ixfunc2 '&CpuInt' &func
-.funcend
+.synop end
 .desc begin
 The &func function is used at the end of an interrupt routine to
 start executing another interrupt handler (usually the previous

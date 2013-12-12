@@ -9,7 +9,7 @@ int _fwctomb( char __far *s, wchar_t wc );
 .ixfunc2 '&Wide' &ffunc
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

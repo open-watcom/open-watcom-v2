@@ -11,7 +11,7 @@ wchar_t *_wfullpath( wchar_t *buffer ,
 .ixfunc2 '&Parsing' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function returns the full pathname of the file specification
 in

@@ -19,7 +19,7 @@ wchar_t *_wecvt( double value,
                  int *sign );
 .ixfunc2 '&Conversion' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function converts the floating-point number
 .arg value

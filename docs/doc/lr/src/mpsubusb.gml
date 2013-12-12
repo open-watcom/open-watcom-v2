@@ -1,7 +1,7 @@
 .func _m_psubusb
 #include <mmintrin.h>
 __m64 _m_psubusb(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 The unsigned 8-bit bytes of
 .arg m2

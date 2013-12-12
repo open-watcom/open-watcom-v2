@@ -8,7 +8,7 @@ FJSTRING __far _fjstrnset( JCHAR __far *s1,
                            size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function fills

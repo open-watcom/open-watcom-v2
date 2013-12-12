@@ -7,7 +7,7 @@ wchar_t *_wtempnam( wchar_t *dir, wchar_t *prefix );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 &func creates a temporary filename for use in another directory.
 This filename is different from that of any existing file.

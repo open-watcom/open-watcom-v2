@@ -5,7 +5,7 @@ errno_t getenv_s( size_t * restrict len,
                   char * restrict value,
 		  rsize_t maxsize,
                   const char * restrict name );
-.funcend
+.synop end
 .*
 .rtconst begin
 .arg name

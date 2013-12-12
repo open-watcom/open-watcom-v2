@@ -2,7 +2,7 @@
 #include <stdio.h>
 int fsetpos( FILE *fp, fpos_t *pos );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function positions the file
 .arg fp

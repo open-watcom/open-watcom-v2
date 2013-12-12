@@ -8,7 +8,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 CALLBACKPTR GetProc16( PROCPTR fcn, long type );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function returns a 16-bit far function pointer suitable for
 use as a Windows callback function.

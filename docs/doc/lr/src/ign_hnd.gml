@@ -6,7 +6,7 @@ void ignore_handler_s(
         void * restrict ptr, 
         errno_t error );
 .ixfunc2 '&Process' &func
-.funcend
+.synop end
 .*
 .desc begin
 A pointer to the &func function may be passed as an argument to the

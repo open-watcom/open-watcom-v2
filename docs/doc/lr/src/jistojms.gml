@@ -2,7 +2,7 @@
 #include <jstring.h>
 unsigned short jistojms( unsigned short c );
 .ixfunc2 '&CharTest' &func
-.funcend
+.synop end
 .desc begin
 The &func converts a JIS character set code to a shift-JIS character
 set code.

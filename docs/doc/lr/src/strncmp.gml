@@ -38,7 +38,7 @@ int _fmbsncmp( const unsigned char __far *s1,
 .ixfunc2 '&Compare' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func compares not more than
 .arg n

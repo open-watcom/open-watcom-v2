@@ -1,7 +1,7 @@
 .func _m_pcmpgtw
 #include <mmintrin.h>
 __m64 _m_pcmpgtw(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 If the respective signed words of
 .arg m1

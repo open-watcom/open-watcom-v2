@@ -2,7 +2,7 @@
 #include <mbctype.h>
 int _mbislead( unsigned int ch );
 .ixfunc2 '&Multibyte' &func
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg ch

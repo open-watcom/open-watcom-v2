@@ -2,7 +2,7 @@
 #include <math.h>
 void fesetround( int mode );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function sets the current rounding mode, specified by
 .arg x

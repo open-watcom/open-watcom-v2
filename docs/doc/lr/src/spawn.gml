@@ -97,7 +97,7 @@ int _wspawnvpe( mode, file, argv, envp );
 .ixfunc2 '&Wide' _wspawnvp
 .ixfunc2 '&Wide' _wspawnvpe
 .do end
-.func end
+.synop end
 .funcbold spawn...
 .desc begin
 The &func functions create and execute a new child process, named by

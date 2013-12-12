@@ -2,7 +2,7 @@
 #include <bios.h>
 unsigned short _bios_equiplist( void );
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function determines what hardware and peripherals are
 installed on the machine.

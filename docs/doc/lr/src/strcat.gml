@@ -31,7 +31,7 @@ unsigned char __far *_fmbscat( unsigned char __far *dst,
 .ixfunc2 '&Concats' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

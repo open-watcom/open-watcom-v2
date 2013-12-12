@@ -23,7 +23,7 @@ size_t _wstrftime_ms( wchar_t *s,
 .ixfunc2 '&Wide' _wstrftime_ms
 .do end
 .im structtm
-.funcend
+.synop end
 .desc begin
 The &func function formats the time in the argument
 .arg timeptr

@@ -8,7 +8,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 void FreeAlias16( DWORD fp16 );
 .do end
-.funcend
+.synop end
 .desc begin
 &func frees a 16-bit far pointer alias for a 32-bit near pointer that
 was allocated with

@@ -2,7 +2,7 @@
 #include <setjmp.h>
 void longjmp( jmp_buf env, int return_value );
 .ixfunc2 'Non-local jumps' &func
-.funcend
+.synop end
 .desc begin
 The &func function restores the environment saved by the most recent
 call to the

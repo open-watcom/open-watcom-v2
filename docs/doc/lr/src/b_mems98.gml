@@ -2,7 +2,7 @@
 #include <bios.h>
 unsigned short _bios_memsize( void );
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function determines the total amount of real-mode memory
 available.

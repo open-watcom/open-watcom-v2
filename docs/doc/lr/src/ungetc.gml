@@ -10,7 +10,7 @@ wint_t ungetwc( wint_t c, FILE *fp );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function pushes the character specified by
 .arg c

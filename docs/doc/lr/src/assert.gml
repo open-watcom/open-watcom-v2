@@ -1,7 +1,7 @@
 .func assert _assert _wassert
 #include <assert.h>
 void assert( int expression );
-.funcend
+.synop end
 .desc begin
 The &func macro prints a diagnostic message upon the
 .kw stderr

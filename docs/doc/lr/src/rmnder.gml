@@ -2,7 +2,7 @@
 #include <math.h>
 double remainder( double x, double y );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes remainder of the division of
 .arg x

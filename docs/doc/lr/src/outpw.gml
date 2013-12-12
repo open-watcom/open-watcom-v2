@@ -3,7 +3,7 @@
 unsigned int outpw( int port,
                     unsigned int value );
 .ixfunc2 '&PortIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function writes a word (two bytes), determined by
 .arg value

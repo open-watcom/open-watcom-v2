@@ -2,7 +2,7 @@
 #include <direct.h>
 int _getdrive( void );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the current (default) drive number.
 .desc end

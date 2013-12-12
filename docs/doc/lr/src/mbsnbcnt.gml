@@ -18,7 +18,7 @@ size_t _wcsncnt( const wchar_t *string, size_t n ) {
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &mfunc function counts the number of bytes in the first
 .arg n

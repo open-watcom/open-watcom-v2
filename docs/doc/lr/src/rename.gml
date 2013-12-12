@@ -7,7 +7,7 @@ int _wrename( const wchar_t *old, const wchar_t *new );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function causes the file whose name is indicated by the string
 .arg old

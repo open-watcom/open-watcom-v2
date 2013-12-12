@@ -2,7 +2,7 @@
 #include <malloc.h>
 size_t _memavl( void );
 .ixfunc2 '&Memory' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the number of bytes of memory available for
 dynamic memory allocation in the near heap (the default data segment).

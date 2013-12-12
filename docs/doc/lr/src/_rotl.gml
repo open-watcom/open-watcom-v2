@@ -3,7 +3,7 @@
 unsigned int _rotl( unsigned int value,
                     unsigned int shift );
 .ixfunc2 '&Rotate' &func
-.funcend
+.synop end
 .desc begin
 The &func function rotates the unsigned integer, determined by
 .arg value

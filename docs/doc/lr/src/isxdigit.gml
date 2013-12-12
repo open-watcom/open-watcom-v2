@@ -9,7 +9,7 @@ int iswxdigit( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function tests for any hexadecimal-digit character.
 These characters are the digits ('0' through '9') and the letters ('a'

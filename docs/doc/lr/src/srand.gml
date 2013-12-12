@@ -2,7 +2,7 @@
 #include <stdlib.h>
 void srand( unsigned int seed );
 .ixfunc2 'Random Numbers' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses the argument
 .arg seed

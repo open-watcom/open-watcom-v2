@@ -9,7 +9,7 @@ wint_t getwchar( void );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function is equivalent to
 .kw getc

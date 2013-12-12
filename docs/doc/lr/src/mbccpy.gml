@@ -8,7 +8,7 @@ void _fmbccpy( unsigned char __far *dest,
                const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function copies one multibyte character from
 .arg ch

@@ -2,7 +2,7 @@
 #include <stdarg.h>
 void va_end( va_list param );
 .ixfunc2 'variable arguments' &func
-.funcend
+.synop end
 .desc begin
 &func is a macro used to complete the acquisition of arguments
 from a list of variable arguments.

@@ -7,7 +7,7 @@ struct _complex {
     double  y;  /* imaginary part */
 };
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the absolute value of the complex number
 .arg value

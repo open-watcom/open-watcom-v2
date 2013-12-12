@@ -1,7 +1,7 @@
 .func _m_psubsw
 #include <mmintrin.h>
 __m64 _m_psubsw(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 The signed 16-bit words of
 .arg m2

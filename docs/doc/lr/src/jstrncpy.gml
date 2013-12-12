@@ -12,7 +12,7 @@ FJSTRING __far _fjstrncpy( JCHAR __far *dst,
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jcopy' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function copies

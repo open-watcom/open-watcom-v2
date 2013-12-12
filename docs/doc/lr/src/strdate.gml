@@ -7,7 +7,7 @@ wchar_t _wstrdate( wchar_t *datestr );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function copies the current date to the buffer pointed to by
 .arg datestr

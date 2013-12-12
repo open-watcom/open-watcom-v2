@@ -8,7 +8,7 @@ unsigned char __far *_fmbvtop( unsigned int ch,
                         unsigned char __far *addr );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function stores the multibyte character
 .arg ch

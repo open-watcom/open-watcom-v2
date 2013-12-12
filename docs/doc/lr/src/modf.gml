@@ -2,7 +2,7 @@
 #include <math.h>
 double modf( double value, double *iptr );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function breaks the argument
 .arg value

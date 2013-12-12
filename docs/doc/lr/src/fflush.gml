@@ -2,7 +2,7 @@
 #include <stdio.h>
 int fflush( FILE *fp );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 If the file
 .arg fp

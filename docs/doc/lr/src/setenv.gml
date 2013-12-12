@@ -17,7 +17,7 @@ int _wsetenv( const wchar_t *name,
 .ixfunc2 '&Process' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 .ix 'environment'
 The environment list consists of a number of environment names,

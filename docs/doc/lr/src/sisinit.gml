@@ -3,7 +3,7 @@
 int mbsinit( const mbstate_t *ps );
 int sisinit( const mbstate_t *ps );
 .ixfunc2 '&Multibyte' &func
-.funcend
+.synop end
 .*
 .desc begin
 If

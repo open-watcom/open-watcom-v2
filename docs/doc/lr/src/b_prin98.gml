@@ -3,7 +3,7 @@
 unsigned short _bios_printer( unsigned service,
                               unsigned char *databyte );
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function performs printer output services to the printer.
 The values for service are:

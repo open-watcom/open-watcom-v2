@@ -3,7 +3,7 @@
 unsigned long _lrotl( unsigned long value,
                       unsigned int shift );
 .ixfunc2 '&Rotate' &func
-.funcend
+.synop end
 .desc begin
 The &func function rotates the unsigned long integer, determined by
 .arg value

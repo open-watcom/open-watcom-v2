@@ -6,7 +6,7 @@ int write( int &fd, void *buffer, unsigned len );
 int _write( int &fd, void *buffer, unsigned len );
 .ixfunc2 '&OsIo' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function writes data at the operating system level.
 The number of bytes transmitted is given by

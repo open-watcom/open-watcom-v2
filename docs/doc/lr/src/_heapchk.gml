@@ -17,7 +17,7 @@ int  _heapchk( void );
 int _bheapchk( __segment seg );
 int _fheapchk( void );
 int _nheapchk( void );
-.func end
+.synop end
 .desc begin
 The &func functions along with
 .kw _heapset

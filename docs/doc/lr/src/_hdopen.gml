@@ -1,7 +1,7 @@
 .func _hdopen
 #include <&iohdr>
 int _hdopen( int os_handle, int mode );
-.funcend
+.synop end
 .desc begin
 The &func function takes a previously opened operating system file
 handle specified by

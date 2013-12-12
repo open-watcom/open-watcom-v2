@@ -25,7 +25,7 @@ struct _heapinfo {
 };
 #define _USEDENTRY      0
 #define _FREEENTRY      1
-.func end
+.synop end
 .desc begin
 The &func functions along with
 .kw _heapchk

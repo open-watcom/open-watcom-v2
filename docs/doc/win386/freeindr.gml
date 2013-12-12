@@ -18,7 +18,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 void FreeIndirectFunctionHandle( HINDIR handle );
 .do end
-.funcend
+.synop end
 .desc begin
 &func frees a handle that was obtained using
 .kw GetIndirectFunctionHandle

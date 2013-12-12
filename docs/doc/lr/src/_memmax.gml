@@ -2,7 +2,7 @@
 #include <malloc.h>
 size_t _memmax( void );
 .ixfunc2 '&Memory' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the size of the largest contiguous block
 of memory available for dynamic memory allocation in the near heap

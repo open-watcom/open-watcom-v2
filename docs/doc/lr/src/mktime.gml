@@ -3,7 +3,7 @@
 time_t mktime( struct tm *timeptr );
 .im structtm
 .ixfunc2 '&TimeFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function converts the local time information in the
 structure pointed to by

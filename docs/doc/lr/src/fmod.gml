@@ -2,7 +2,7 @@
 #include <math.h>
 double fmod( double x, double y );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the floating-point remainder of
 .arg x/y

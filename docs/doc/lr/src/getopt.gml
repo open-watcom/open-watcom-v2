@@ -5,7 +5,7 @@ int getopt( int argc, char * const argv[],
 
 char   *optarg;
 int    optind, opterr, optopt;
-.funcend
+.synop end
 .desc begin
 The &func function is a command-line parser that can be used by applications
 that follow Utility Syntax Guidelines 3, 4, 5, 6, 7, 9 and 10 in the Base

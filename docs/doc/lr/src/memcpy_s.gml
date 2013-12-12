@@ -21,7 +21,7 @@ errno_t wmemcpy_s( wchar_t * restrict s1,
                    size_t n );
 .ixfunc2 '&Copy' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .rtconst begin
 Neither

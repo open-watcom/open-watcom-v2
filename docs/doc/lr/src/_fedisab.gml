@@ -2,7 +2,7 @@
 #include <fenv.h>
 void __fedisableexcept( int __excepts );
 .ixfunc2 'Floating Point Environment' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function disables the specified floating point exceptions.

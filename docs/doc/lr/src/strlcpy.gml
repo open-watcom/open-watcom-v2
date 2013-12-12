@@ -13,7 +13,7 @@ size_t wcslcpy( wchar_t *dst,
 .ixfunc2 '&Copy' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function copies no more than
 .arg n

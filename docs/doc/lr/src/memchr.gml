@@ -13,7 +13,7 @@ void __far *_fmemchr( const void __far *buf,
 wchar_t *wmemchr( const wchar_t *buf, wchar_t ch, size_t length );
 .ixfunc2 '&Search' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function locates the first occurrence of
 .arg ch

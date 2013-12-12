@@ -8,7 +8,7 @@ wchar_t *_wgetdcwd( int drive, wchar_t *buffer,
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function gets the full path of the current working directory
 on the specified drive.

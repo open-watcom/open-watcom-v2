@@ -2,7 +2,7 @@
 #include <stdio.h>
 FILE *tmpfile( void );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .*
 .safealt
 .*

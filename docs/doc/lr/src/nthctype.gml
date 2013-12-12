@@ -6,7 +6,7 @@ int nthctype( const char * str, size_t n );
 int far _fnthctype( const char far * str, size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function returns

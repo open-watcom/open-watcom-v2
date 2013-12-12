@@ -1,7 +1,7 @@
 .func _ismbcalnum
 #include <mbstring.h>
 int _ismbcalnum( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests if the multibyte character argument
 .arg ch

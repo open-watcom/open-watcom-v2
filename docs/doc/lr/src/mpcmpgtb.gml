@@ -1,7 +1,7 @@
 .func _m_pcmpgtb
 #include <mmintrin.h>
 __m64 _m_pcmpgtb(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 If the respective signed bytes of
 .arg m1

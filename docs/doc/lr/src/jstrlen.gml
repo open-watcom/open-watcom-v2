@@ -6,7 +6,7 @@ size_t jstrlen( const JCHAR *s );
 size_t __far _fjstrlen( const JCHAR __far *s );
 .ixfunc2 '&Jstring' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function computes

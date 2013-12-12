@@ -7,7 +7,7 @@ int _wremove( const wchar_t *filename );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function deletes the file whose name is the string pointed
 to by

@@ -1,7 +1,7 @@
 .func _ismbchira
 #include <mbstring.h>
 int _ismbchira( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for a double-byte Hiragana character.
 A double-byte Hiragana character is any character for which the

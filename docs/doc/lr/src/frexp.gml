@@ -2,7 +2,7 @@
 #include <math.h>
 double frexp( double value, int *exp );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function breaks a floating-point number into a
 normalized fraction and an integral power of 2.

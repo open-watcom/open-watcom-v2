@@ -1,7 +1,7 @@
 .func FILENAME_MAX
 #include <stdio.h>
 #define FILENAME_MAX 123
-.funcend
+.synop end
 .desc begin
 The &func macro is the size of an array of char big enough to hold a string 
 naming any file that the implementation expects to open;

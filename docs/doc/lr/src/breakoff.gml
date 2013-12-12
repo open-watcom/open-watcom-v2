@@ -5,7 +5,7 @@
 #include <stdlib.h>
 void break_off( void );
 void break_on( void );
-.func end
+.synop end
 .desc begin
 The
 .kw break_off

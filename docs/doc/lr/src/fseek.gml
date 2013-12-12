@@ -2,7 +2,7 @@
 #include <stdio.h>
 int fseek( FILE *fp, long int offset, int where );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function changes the read/write position of the file
 specified by

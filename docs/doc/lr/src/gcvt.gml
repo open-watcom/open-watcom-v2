@@ -16,7 +16,7 @@ wchar_t *_wgcvt( double value,
                  wchar_t *buffer );
 .ixfunc2 '&Conversion' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function converts the floating-point number
 .arg value

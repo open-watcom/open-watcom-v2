@@ -1,7 +1,7 @@
 .func _get_osfhandle
 #include <&iohdr>
 long _get_osfhandle( int posixhandle );
-.funcend
+.synop end
 .desc begin
 The &func function returns the operating system's internal file handle
 that corresponds to the POSIX-level file handle specified by

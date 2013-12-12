@@ -2,7 +2,7 @@
 #include <time.h>
 char *_ctime( const time_t *timer, char *buf );
 .ixfunc2 '&TimeFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function converts the calendar time pointed to by
 .arg timer

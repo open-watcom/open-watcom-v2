@@ -2,7 +2,7 @@
 #include <conio.h>
 char *cgets( char *buf );
 .ixfunc2 '&KbIo' &func
-.funcend
+.synop end
 .desc begin
 The &func
 function gets a string of characters directly from the console

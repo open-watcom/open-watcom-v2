@@ -36,7 +36,7 @@ int _fmbsicmp( const unsigned char __far *s1,
 .ixfunc2 '&Compare' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function compares, with case insensitivity, the string
 pointed to by

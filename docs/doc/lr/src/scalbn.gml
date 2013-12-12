@@ -2,7 +2,7 @@
 #include <math.h>
 double scalbn( double x, int y );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes 
 .arg x

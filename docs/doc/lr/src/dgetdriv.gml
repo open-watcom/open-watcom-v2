@@ -2,7 +2,7 @@
 #include <&doshdr>
 void _dos_getdrive( unsigned *drive );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x19 to get the current disk drive
 number.

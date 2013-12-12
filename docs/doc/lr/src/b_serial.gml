@@ -4,7 +4,7 @@ unsigned short _bios_serialcom( unsigned service,
                                 unsigned serial_port,
                                 unsigned data );
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses INT 0x14 to provide serial communications
 services to the serial port specified by

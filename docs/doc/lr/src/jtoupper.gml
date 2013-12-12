@@ -2,7 +2,7 @@
 #include <jstring.h>
 JMOJI jtoupper( JMOJI c );
 .ixfunc2 '&CharTest' &func
-.funcend
+.synop end
 .desc begin
 The &func function converts a double-byte lowercase character to an
 equivalent double-byte uppercase character.

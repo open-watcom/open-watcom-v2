@@ -2,7 +2,7 @@
 #include <conio.h>
 unsigned int inp( int port );
 .ixfunc2 '&PortIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function reads one byte from the 80x86 hardware port whose
 number is given by

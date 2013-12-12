@@ -2,7 +2,7 @@
 #include <malloc.h>
 void *alloca( size_t size );
 .ixfunc2 '&Memory' &func
-.funcend
+.synop end
 .desc begin
 The &func function allocates space for an object of
 .arg size

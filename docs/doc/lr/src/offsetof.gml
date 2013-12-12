@@ -1,7 +1,7 @@
 .func offsetof
 #include <stddef.h>
 size_t offsetof( composite, name );
-.funcend
+.synop end
 .desc begin
 The &func macro returns the offset of the element
 .arg name

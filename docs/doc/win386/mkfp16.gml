@@ -1,7 +1,7 @@
 .func MK_FP16
 #include <windows.h>
 DWORD MK_FP16( void far * fp32 );
-.funcend
+.synop end
 .desc begin
 The &func function converts a 32-bit far pointer to a 16-bit far
 pointer.

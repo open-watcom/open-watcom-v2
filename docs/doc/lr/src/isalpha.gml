@@ -8,7 +8,7 @@ int isalpha( int c );
 int iswalpha( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg c

@@ -17,7 +17,7 @@ wchar_t *__wctime( const time_t *timer, wchar_t *buf );
 .ixfunc2 '&TimeFunc' __wctime
 .ixfunc2 '&Wide' __wctime
 .do end
-.func end
+.synop end
 .*
 .safealt
 .*

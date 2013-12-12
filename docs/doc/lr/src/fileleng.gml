@@ -8,7 +8,7 @@ long _filelength( int &fd );
 .do end
 __int64 _filelengthi64( int &fd );
 .ixfunc2 '&OsIo' &_func64
-.funcend
+.synop end
 .desc begin
 The &func function returns, as a 32-bit long integer, the number of
 bytes in the opened file indicated by the file &handle

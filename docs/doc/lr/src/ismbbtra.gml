@@ -1,7 +1,7 @@
 .func _ismbbtrail
 #include <mbstring.h>
 int _ismbbtrail( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests if
 .arg ch

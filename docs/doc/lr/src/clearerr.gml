@@ -3,7 +3,7 @@
 void clearerr( FILE *fp );
 .ixfunc2 '&StrIo' &func
 .ixfunc2 '&Errs' &func
-.funcend
+.synop end
 .desc begin
 The &func function clears the end-of-file and error indicators
 for the stream pointed to by

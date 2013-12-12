@@ -7,7 +7,7 @@ void _endthread(void);
 .ixfunc2 '&NTFunc' &func
 void _endthreadex( unsigned retval );
 .ixfunc2 '&NTFunc' &func.ex
-.func end
+.synop end
 .desc begin
 The &func function is used to terminate a thread created by
 .kw _beginthread

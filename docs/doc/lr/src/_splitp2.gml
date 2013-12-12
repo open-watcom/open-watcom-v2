@@ -23,7 +23,7 @@ void _wsplitpath2( const wchar_t *inp,
 .ixfunc2 '&Parsing' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function splits up a full pathname into four components
 consisting of a

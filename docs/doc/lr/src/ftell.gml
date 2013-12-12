@@ -2,7 +2,7 @@
 #include <stdio.h>
 long int ftell( FILE *fp );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the current read/write position
 of the file specified by

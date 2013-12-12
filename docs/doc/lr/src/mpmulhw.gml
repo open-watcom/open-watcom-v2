@@ -1,7 +1,7 @@
 .func _m_pmulhw
 #include <mmintrin.h>
 __m64 _m_pmulhw(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 The signed 16-bit words of
 .arg m1

@@ -9,7 +9,7 @@ size_t _fmbstowcs( const wchar_t __far *pwcs,
                    size_t n );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

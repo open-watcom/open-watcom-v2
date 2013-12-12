@@ -6,7 +6,7 @@ int mbrtowc( wchar_t *pwc, const char *s,
 int _fmbrtowc( wchar_t __far *pwc, const char __far *s,
                size_t n, mbstate_t __far *ps );
 .do end
-.funcend
+.synop end
 .desc begin
 If
 .arg s

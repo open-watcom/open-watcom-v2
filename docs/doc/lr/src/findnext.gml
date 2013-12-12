@@ -16,7 +16,7 @@ int _wfindnexti64( long handle,
 .ixfunc2 '&DosFunc' &wfunc64
 .ixfunc2 '&Wide' &wfunc64
 .do end
-.funcend
+.synop end
 .desc begin
 The &_func function returns information on the next file whose name
 matches the

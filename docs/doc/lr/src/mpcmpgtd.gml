@@ -1,7 +1,7 @@
 .func _m_pcmpgtd
 #include <mmintrin.h>
 __m64 _m_pcmpgtd(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 If the respective signed double-words of
 .arg m1

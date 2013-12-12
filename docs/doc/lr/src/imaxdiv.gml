@@ -6,7 +6,7 @@ typedef struct {
     intmax_t    quot;  /* quotient */
     intmax_t    rem;   /* remainder */
 } imaxdiv_t;
-.funcend
+.synop end
 .*
 .desc begin
 The &func

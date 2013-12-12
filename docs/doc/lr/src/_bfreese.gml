@@ -2,7 +2,7 @@
 #include <malloc.h>
 int _bfreeseg( __segment seg );
 .ixfunc2 '&Memory' _bfreeseg
-.funcend
+.synop end
 .desc begin
 The &func function frees a based-heap segment.
 .pp

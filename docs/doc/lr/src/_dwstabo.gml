@@ -1,7 +1,7 @@
 .func _dwSetAboutDlg
 #include <wdefwin.h>
 int _dwSetAboutDlg( const char *title, const char *text );
-.funcend
+.synop end
 .desc begin
 The &func function sets the "About" dialog box of the default
 windowing system.

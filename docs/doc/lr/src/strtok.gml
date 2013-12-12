@@ -32,7 +32,7 @@ unsigned char __far *_fmbstok( unsigned char __far *s1,
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Wide' &fmfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

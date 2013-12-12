@@ -9,7 +9,7 @@ struct tm *_gmtime( const time_t *timer,
 .ixfunc2 '&TimeFunc' gmtime
 .ixfunc2 '&TimeFunc' _gmtime
 .im structtm
-.func end
+.synop end
 .*
 .safealt
 .*

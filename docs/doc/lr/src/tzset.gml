@@ -1,7 +1,7 @@
 .func tzset
 #include <time.h>
 void tzset( void );
-.funcend
+.synop end
 .desc begin
 The &func function sets the
 global

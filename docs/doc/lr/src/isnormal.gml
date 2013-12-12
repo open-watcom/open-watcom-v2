@@ -1,7 +1,7 @@
 .func isnormal
 #include <math.h>
 int isnormal( x );
-.funcend
+.synop end
 .*
 .desc begin
 The &func macro determines whether its argument value is normal (neither

@@ -6,7 +6,7 @@ int dup2( int &fd, int &fd.2 );
 int _dup2( int &fd, int &fd.2 );
 .ixfunc2 '&OsIo' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function duplicates the file &handle given by the argument
 .arg &fd

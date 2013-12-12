@@ -10,7 +10,7 @@ unsigned _dos_allocmem( unsigned size,
                         unsigned *segment);
 #endif
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x48 to allocate
 .arg size

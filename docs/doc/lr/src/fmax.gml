@@ -2,7 +2,7 @@
 #include <math.h>
 double fmax( double x, double y );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the larger of
 .arg x

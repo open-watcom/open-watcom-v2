@@ -3,7 +3,7 @@
 wint_t towctrans( wint_t wc, wctrans_t desc );
 .ixfunc2 '&Conversion' &func
 .ixfunc2 '&Wide' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function maps the wide character

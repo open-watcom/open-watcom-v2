@@ -14,7 +14,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 void *MapAliasToFlat( DWORD alias );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function returns a 32-bit near pointer equivalent of a pointer
 allocated previously with

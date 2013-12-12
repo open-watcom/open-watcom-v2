@@ -6,7 +6,7 @@ size_t stackavail( void );
 size_t _stackavail( void );
 .ixfunc2 '&Memory' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function returns the number of bytes currently available
 in the stack.

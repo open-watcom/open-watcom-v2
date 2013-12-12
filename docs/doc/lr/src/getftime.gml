@@ -4,7 +4,7 @@ unsigned _dos_getftime( int &fd,
                         unsigned *date,
                         unsigned *time );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x57 to get the date and time
 that the file associated with

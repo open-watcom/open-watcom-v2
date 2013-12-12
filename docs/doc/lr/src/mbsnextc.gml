@@ -16,7 +16,7 @@ unsigned int _strnextc( const char *string );
 unsigned int _wcsnextc( const wchar_t *string ) {
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.funcend
+.synop end
 .desc begin
 The &mfunc function returns the integer value of the next
 multibyte-character in

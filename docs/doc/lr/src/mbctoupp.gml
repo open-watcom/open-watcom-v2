@@ -2,7 +2,7 @@
 #include <mbstring.h>
 unsigned int _mbctoupper( unsigned int c );
 .ixfunc2 '&CharTest' &func
-.funcend
+.synop end
 .desc begin
 The &func function converts a lowercase multibyte character to an
 equivalent uppercase multibyte character.

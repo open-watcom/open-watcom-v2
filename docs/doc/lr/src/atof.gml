@@ -7,7 +7,7 @@ double _wtof( const wchar_t *ptr );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function converts the string pointed to by
 .arg ptr

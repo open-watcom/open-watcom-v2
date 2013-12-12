@@ -2,7 +2,7 @@
 #include <conio.h>
 int getche( void );
 .ixfunc2 '&KbIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function obtains the next available keystroke from the console.
 The function will wait until a keystroke is available.

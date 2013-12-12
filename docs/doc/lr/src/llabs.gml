@@ -1,7 +1,7 @@
 .func llabs
 #include <stdlib.h>
 long long int llabs( long long int j );
-.funcend
+.synop end
 .desc begin
 The &func function returns the absolute value
 of its long long integer argument

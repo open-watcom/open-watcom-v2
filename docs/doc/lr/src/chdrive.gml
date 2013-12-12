@@ -2,7 +2,7 @@
 #include <direct.h>
 void _chdrive( int drive );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function changes the current working drive to the one specified by
 .arg drive

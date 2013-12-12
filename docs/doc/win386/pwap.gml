@@ -8,7 +8,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 void *PASS_WORD_AS_POINTER( DWORD dw );
 .do end
-.funcend
+.synop end
 .desc begin
 Some Windows API functions have pointer parameters that do not always
 take pointers.

@@ -4,7 +4,7 @@ unsigned int _mbptov( const unsigned char *string );
 .if &farfnc eq 1 .do begin
 unsigned int _fmbptov( const unsigned char __far *string );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function returns the multibyte character at the position in
 the string pointed to by

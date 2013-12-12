@@ -6,7 +6,7 @@ void abort_handler_s(
         void * restrict ptr, 
         errno_t error );
 .ixfunc2 '&Process' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function may be passed as an argument to the

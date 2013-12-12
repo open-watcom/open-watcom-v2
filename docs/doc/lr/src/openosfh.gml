@@ -1,7 +1,7 @@
 .func _open_osfhandle
 #include <&iohdr>
 int _open_osfhandle( long osfhandle, int access );
-.funcend
+.synop end
 .desc begin
 The &func function allocates a POSIX-level file handle and sets it to
 point to the operating system's internal file handle specified by

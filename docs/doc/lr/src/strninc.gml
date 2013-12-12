@@ -21,7 +21,7 @@ unsigned char __far *_fmbsninc(
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &mfunc function increments
 .arg str

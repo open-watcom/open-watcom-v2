@@ -2,7 +2,7 @@
 #include <malloc.h>
 void hfree( void __huge *ptr );
 .ixfunc2 '&Memory' &func
-.funcend
+.synop end
 .desc begin
 The &func function deallocates a memory block previously allocated by the
 .kw halloc

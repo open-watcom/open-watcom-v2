@@ -2,7 +2,7 @@
 #include <malloc.h>
 void __huge *halloc( long int numb, size_t size );
 .ixfunc2 '&Memory' &func
-.funcend
+.synop end
 .desc begin
 The &func function allocates space for an array of
 .arg numb

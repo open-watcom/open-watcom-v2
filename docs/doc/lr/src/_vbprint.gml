@@ -11,7 +11,7 @@ int _vbwprintf( wchar_t *buf, size_t bufsize,
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function formats data under control of the
 .arg format

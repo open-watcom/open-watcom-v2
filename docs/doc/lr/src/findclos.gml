@@ -2,7 +2,7 @@
 #include <&iohdr>
 int _findclose( long handle );
 .ixfunc2 '&DosFunc' _findclose
-.funcend
+.synop end
 .desc begin
 The &func function closes the directory of filenames established by a
 call to the

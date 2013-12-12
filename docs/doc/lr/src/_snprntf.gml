@@ -13,7 +13,7 @@ int _snwprintf( wchar_t *buf,
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function is equivalent to the
 .kw fprintf

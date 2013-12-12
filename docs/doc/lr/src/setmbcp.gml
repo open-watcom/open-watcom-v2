@@ -1,7 +1,7 @@
 .func _setmbcp
 #include <mbctype.h>
 int _setmbcp( int codepage );
-.funcend
+.synop end
 .desc begin
 The &func function sets the current code page number.
 .desc end

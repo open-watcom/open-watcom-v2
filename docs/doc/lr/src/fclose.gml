@@ -2,7 +2,7 @@
 #include <stdio.h>
 int fclose( FILE *fp );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function closes the file
 .arg fp

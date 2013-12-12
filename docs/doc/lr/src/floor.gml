@@ -2,7 +2,7 @@
 #include <math.h>
 double floor( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the largest integer not greater than
 .arg x

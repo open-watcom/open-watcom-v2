@@ -2,7 +2,7 @@
 #include <locale.h>
 struct lconv *localeconv( void );
 .ixfunc2 '&Locale' &func
-.funcend
+.synop end
 .desc begin
 The &func function sets the components of an object of type
 .kw struct lconv

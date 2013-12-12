@@ -2,7 +2,7 @@
 #include <conio.h>
 unsigned long inpd( int port );
 .ixfunc2 '&PortIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function reads a double-word (four bytes) from the 80x86 hardware
 port whose number is given by

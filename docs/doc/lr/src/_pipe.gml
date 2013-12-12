@@ -1,7 +1,7 @@
 .func _pipe
 #include <&iohdr>
 int _pipe( int *phandles, unsigned psize, int textmode );
-.funcend
+.synop end
 .desc begin
 The &func function creates a pipe (an unnamed FIFO) and places a file
 descriptor for the read end of the pipe in

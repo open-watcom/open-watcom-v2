@@ -3,7 +3,7 @@
 int feof( FILE *fp );
 .ixfunc2 '&StrIo' &func
 .ixfunc2 '&Errs' &func
-.funcend
+.synop end
 .desc begin
 The &func function tests the end-of-file indicator for the stream
 pointed to by

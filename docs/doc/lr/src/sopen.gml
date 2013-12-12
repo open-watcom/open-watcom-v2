@@ -17,7 +17,7 @@ int _wsopen( const wchar_t *filename,
            int access, int share, ... );
 .ixfunc2 '&OsIo' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function opens a file at the operating system level for
 shared access.

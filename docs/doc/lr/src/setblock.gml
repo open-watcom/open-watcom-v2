@@ -4,7 +4,7 @@ unsigned _dos_setblock( unsigned size,
                         unsigned segment,
                         unsigned *maxsize );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x4A to change the size of
 .arg segment

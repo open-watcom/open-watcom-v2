@@ -9,7 +9,7 @@ struct diskfree_t {
         unsigned short bytes_per_sector;
 };
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x36 to obtain useful information
 on the disk drive specified by

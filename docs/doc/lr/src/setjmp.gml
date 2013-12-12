@@ -2,7 +2,7 @@
 #include <setjmp.h>
 int setjmp( jmp_buf env );
 .ixfunc2 'Non-local Jumps' &func
-.funcend
+.synop end
 .desc begin
 The &func function saves its calling environment in its
 .kw jmp_buf

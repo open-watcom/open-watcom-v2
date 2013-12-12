@@ -1,7 +1,7 @@
 .func _ismbcspace
 #include <mbstring.h>
 int _ismbcspace( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for any multibyte space character.
 Multibyte characters include both single-byte and double-byte

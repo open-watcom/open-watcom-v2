@@ -2,7 +2,7 @@
 #include <ctype.h>
 int isleadbyte( int ch );
 .ixfunc2 '&CharTest' &func
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg ch

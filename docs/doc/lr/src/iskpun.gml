@@ -2,7 +2,7 @@
 #include <jctype.h>
 int iskpun( int c );
 .ixfunc2 '&CharTest' &func
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg c

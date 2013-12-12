@@ -4,7 +4,7 @@ unsigned _dos_write( int &fd, void const __far *buffer,
                      unsigned count, unsigned *bytes );
 .ixfunc2 '&DosFunc' &func
 .ixfunc2 '&OsIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x40 to write
 .arg count

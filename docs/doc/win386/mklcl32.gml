@@ -1,7 +1,7 @@
 .func MK_LOCAL32
 #include <windows.h>
 void far *MK_LOCAL32( void * fp16 );
-.funcend
+.synop end
 .desc begin
 The &func function converts a 16-bit near pointer to a 32-bit far
 pointer.

@@ -1,7 +1,7 @@
 .func _ismbbkalpha
 #include <mbctype.h>
 int _ismbbkalpha( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg ch

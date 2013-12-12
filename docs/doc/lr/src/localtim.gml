@@ -9,7 +9,7 @@ struct tm *_localtime( const time_t *timer,
 .ixfunc2 '&TimeFunc' localtime
 .ixfunc2 '&TimeFunc' _localtime
 .im structtm
-.func end
+.synop end
 .*
 .safealt
 .*

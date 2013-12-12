@@ -6,7 +6,7 @@ JSTRING jstrset( JCHAR *s1, JMOJI fill );
 FJSTRING __far _fjstrset( JCHAR __far *s1, JMOJI fill );
 .ixfunc2 '&Jstring' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function fills

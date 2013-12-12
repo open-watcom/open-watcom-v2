@@ -6,7 +6,7 @@ size_t _mbclen( const unsigned char *ch );
 size_t far _fmbclen( const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function determines the number of bytes comprising the
 multibyte character pointed to by

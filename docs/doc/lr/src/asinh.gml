@@ -4,7 +4,7 @@ double asinh( double x );
 .ixfunc2 '&Math' &func
 .ixfunc2 '&Trig' &func
 .ixfunc2 '&Hyper' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the inverse hyperbolic sine of
 .arg x

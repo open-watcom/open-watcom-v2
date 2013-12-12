@@ -3,7 +3,7 @@
 double cos( double x );
 .ixfunc2 '&Math' &func
 .ixfunc2 '&Trig' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the cosine of
 .arg x

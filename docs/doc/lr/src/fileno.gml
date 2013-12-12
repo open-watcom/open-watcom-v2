@@ -2,7 +2,7 @@
 #include <stdio.h>
 int fileno( FILE *stream );
 .ixfunc2 '&OsIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the number of the file &handle for the file
 designated by

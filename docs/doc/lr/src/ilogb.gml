@@ -2,7 +2,7 @@
 #include <math.h>
 int ilogb( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the exponent portion of the argument
 .arg x

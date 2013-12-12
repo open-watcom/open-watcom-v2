@@ -1,7 +1,7 @@
 .func FP_SEG
 #include <i86.h>
 unsigned FP_SEG( void __far *far_ptr );
-.funcend
+.synop end
 .desc begin
 The &func macro can be used to obtain the segment portion of the far
 pointer value given in

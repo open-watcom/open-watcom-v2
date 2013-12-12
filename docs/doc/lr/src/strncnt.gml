@@ -19,7 +19,7 @@ _fmbsnccnt( const unsigned char __far *string, size_t n );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Compare' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function counts the number of characters in the first
 .arg n

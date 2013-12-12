@@ -2,7 +2,7 @@
 #include <math.h>
 double fmin( double x, double y );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the smaller of
 .arg x

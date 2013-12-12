@@ -2,7 +2,7 @@
 #include <math.h>
 extern int _fmsbintoieee( float *src, float *dest );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function loads the float pointed to by
 .arg src

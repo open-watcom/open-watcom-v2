@@ -8,7 +8,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 void FreeHugeAlias16( DWORD fp16, DWORD size );
 .do end
-.funcend
+.synop end
 .desc begin
 &func frees a 16-bit far pointer alias that was allocated with
 .kw AllocHugeAlias16

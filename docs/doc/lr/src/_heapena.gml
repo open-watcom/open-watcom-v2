@@ -2,7 +2,7 @@
 #include <malloc.h>
 int _heapenable( int enabled );
 .ixfunc2 '&Heap' _heapenable
-.funcend
+.synop end
 .desc begin
 The &func function is used to control attempts by the heap allocation
 manager to request more memory from the operating system's memory

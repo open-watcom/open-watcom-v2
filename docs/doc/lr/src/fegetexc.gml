@@ -2,7 +2,7 @@
 #include <fenv.h>
 int fegetexceptflag( fexcept_t *__flagp, int __excepts );
 .ixfunc2 'Floating Point Environment' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function attempts to store a representation of the states of the

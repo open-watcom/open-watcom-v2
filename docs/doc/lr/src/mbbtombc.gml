@@ -1,7 +1,7 @@
 .func _mbbtombc
 #include <mbstring.h>
 unsigned int _mbbtombc( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function returns the double-byte character equivalent to the
 single-byte character

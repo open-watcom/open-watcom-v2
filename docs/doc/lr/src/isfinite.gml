@@ -1,7 +1,7 @@
 .func isfinite
 #include <math.h>
 int isfinite( x );
-.funcend
+.synop end
 .*
 .desc begin
 The &func macro determines whether its argument

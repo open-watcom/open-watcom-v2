@@ -1,7 +1,7 @@
 .func _ismbddigit
 #include <mbstring.h>
 int _ismbddigit( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 .desc end
 .return begin

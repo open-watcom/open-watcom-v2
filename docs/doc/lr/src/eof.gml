@@ -6,7 +6,7 @@ int eof( int &fd );
 int _eof( int &fd );
 .ixfunc2 '&OsIo' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function determines, at the operating system level, if the
 end of the file has been reached for the file whose file &handle is

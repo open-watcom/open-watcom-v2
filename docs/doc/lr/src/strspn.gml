@@ -33,7 +33,7 @@ size_t _fmbsspn( const unsigned char __far *str,
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function computes the length, in bytes, of the initial
 segment of the string pointed to by

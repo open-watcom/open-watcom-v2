@@ -13,7 +13,7 @@
 void  _heapgrow( void );
 void _nheapgrow( void );
 void _fheapgrow( void );
-.func end
+.synop end
 .desc begin
 The
 .kw _nheapgrow

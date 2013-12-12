@@ -2,7 +2,7 @@
 #include <math.h>
 double log1p( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the natural logarithm of one plus
 .arg x

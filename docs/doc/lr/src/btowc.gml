@@ -2,7 +2,7 @@
 #include <wchar.h>
 wint_t btowc( int c );
 .ixfunc2 '&Wide' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function determines whether

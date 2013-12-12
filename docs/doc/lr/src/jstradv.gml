@@ -9,7 +9,7 @@ FJSTRING __far _fjstradv( const JCHAR __far *src,
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jconcat' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function skips

@@ -7,7 +7,7 @@ int setmode( int &fd, int mode );
 int _setmode( int &fd, int mode );
 .ixfunc2 '&OsIo' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
 The &func is provided for compatibility with other systems.

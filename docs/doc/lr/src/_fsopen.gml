@@ -9,7 +9,7 @@ FILE *_wfsopen( const wchar_t *filename,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function opens the file whose name is the string pointed to by
 .arg filename

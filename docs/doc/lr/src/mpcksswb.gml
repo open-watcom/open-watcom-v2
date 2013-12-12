@@ -1,7 +1,7 @@
 .func _m_packsswb
 #include <mmintrin.h>
 __m64 _m_packsswb(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 Convert signed packed words into signed packed bytes by packing
 (with signed saturation) the low-order bytes of the signed word

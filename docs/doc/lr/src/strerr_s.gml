@@ -14,7 +14,7 @@ errno_t wcserror_s( wchar_t * s,
 .ixfunc2 '&Errs' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .rtconst begin
 .arg s

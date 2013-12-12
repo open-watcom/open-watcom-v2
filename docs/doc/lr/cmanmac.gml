@@ -246,6 +246,16 @@
 .el .if '&*' eq 'output' .outcode
 .dm exmp end
 .*
+.dm synop begin
+.if '&*' eq 'begin' .do begin
+.cp 5
+.newcode Synopsis:
+.do end
+.el .if '&*' eq 'end' .do begin
+.   .func end
+.do end
+.dm synop end
+.*
 .dm seexmp begin
 .newtext Example:
 See example provided with
@@ -701,7 +711,7 @@ command
 .*
 .*    description
 .*
-.*   .func end
+.*   .synop end
 .*   .classt
 .*
 .*

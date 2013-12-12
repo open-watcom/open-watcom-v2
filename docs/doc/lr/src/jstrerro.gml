@@ -3,7 +3,7 @@
 unsigned char *jstrerror( int errnum );
 .ixfunc2 '&Jstring' &func
 .ixfunc2 '&Errs' &func
-.funcend
+.synop end
 .desc begin
 The &func function maps the error number contained in
 .arg errnum

@@ -3,7 +3,7 @@
 int iswctype( wint_t wc, wctype_t desc );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
-.funcend
+.synop end
 .*
 .desc begin
 The &func function determines whether the wide character

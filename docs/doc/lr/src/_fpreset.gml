@@ -2,7 +2,7 @@
 #include <float.h>
 void _fpreset( void );
 .ixfunc2 '&Errs' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function resets the floating-point unit to the default state that

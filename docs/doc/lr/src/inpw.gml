@@ -2,7 +2,7 @@
 #include <conio.h>
 unsigned int inpw( int port );
 .ixfunc2 '&PortIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function reads a word (two bytes) from the 80x86 hardware
 port whose number is given by

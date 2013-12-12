@@ -11,7 +11,7 @@ int _wputenv( const wchar_t *env_name );
 .ixfunc2 '&Process' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 .ix 'environment'
 The environment list consists of a number of environment names,

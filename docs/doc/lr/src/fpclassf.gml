@@ -1,7 +1,7 @@
 .func fpclassify
 #include <math.h>
 int fpclassify( x );
-.funcend
+.synop end
 .*
 .desc begin
 The &func macro classifies its argument

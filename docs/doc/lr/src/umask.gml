@@ -14,7 +14,7 @@ int _umask( int cmask );
 .do end
 .do end
 .ixfunc2 '&OsIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function sets the process's file mode creation mask to
 .arg cmask

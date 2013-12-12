@@ -2,7 +2,7 @@
 #include <math.h>
 double lgamma_r( double x, int *y );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the natural logarithm of the
 absolute value of the Gamma function of 

@@ -34,7 +34,7 @@ unsigned char __far *_fmbsstr(
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function locates the first occurrence in the string pointed
 to by

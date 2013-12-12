@@ -2,7 +2,7 @@
 #include <stdlib.h>
 void *sbrk( int increment );
 .ixfunc2 '&Memory' &func
-.funcend
+.synop end
 .desc begin
 .if '&machsys' ne 'QNX' .do begin
 Under 16-bit DOS and Phar Lap's 386|DOS-Extender, the data segment is

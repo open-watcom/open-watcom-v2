@@ -20,7 +20,7 @@ int PASCAL wWinMain( HINSTANCE hInstance,
                      wcharT *lpszCmdLine,
                      int nCmdShow );
 .do end
-.funcend
+.synop end
 .desc begin
 &func is a user-supplied function where program execution begins.
 .ix 'main program'

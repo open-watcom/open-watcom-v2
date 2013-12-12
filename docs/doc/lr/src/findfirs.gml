@@ -16,7 +16,7 @@ long _wfindfirsti64( const wchar_t *filespec,
 .ixfunc2 '&DosFunc' _wfindfirsti64
 .ixfunc2 '&Wide' _wfindfirsti64
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function returns information on the first file whose name
 matches the

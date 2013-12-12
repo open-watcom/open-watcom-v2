@@ -18,7 +18,7 @@ errno_t _fwctomb_s( int __far * restrict status,
 .ixfunc2 '&Wide' &fwfunc
 .ixfunc2 '&Multibyte' &fwfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 Let

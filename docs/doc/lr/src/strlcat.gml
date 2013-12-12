@@ -11,7 +11,7 @@ size_t *wcslcat( wchar_t *dst,
 .ixfunc2 '&Concats' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function appends characters of the string pointed to by
 .arg src

@@ -9,7 +9,7 @@ int iswdigit( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function tests for any decimal-digit character '0' through
 '9'.

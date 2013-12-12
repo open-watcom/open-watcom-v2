@@ -1,7 +1,7 @@
 .func _m_psubd
 #include <mmintrin.h>
 __m64 _m_psubd(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 The signed or unsigned 32-bit double-words of
 .arg m2

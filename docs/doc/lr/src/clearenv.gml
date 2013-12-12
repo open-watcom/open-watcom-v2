@@ -2,7 +2,7 @@
 #include <env.h>
 int clearenv( void );
 .ixfunc2 '&Process' &func
-.funcend
+.synop end
 .desc begin
 The &func function clears the process environment area.
 No environment variables are defined immediately after a call to the

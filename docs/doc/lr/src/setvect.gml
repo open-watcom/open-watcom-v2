@@ -3,7 +3,7 @@
 void _dos_setvect( unsigned intnum,
                    void (__interrupt __far *handler)() );
 .ixfunc2 '&CpuInt' &func
-.funcend
+.synop end
 .desc begin
 The &func function sets interrupt vector number
 .arg intnum

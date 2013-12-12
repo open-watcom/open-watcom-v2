@@ -1,7 +1,7 @@
 .func _m_punpckhwd
 #include <mmintrin.h>
 __m64 _m_punpckhwd(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 The &func function performs an interleaved unpack of the
 high-order data elements of

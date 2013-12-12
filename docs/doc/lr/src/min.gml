@@ -1,7 +1,7 @@
 .func min
 #include <stdlib.h>
 #define min(a,b)  (((a) < (b)) ? (a) : (b))
-.funcend
+.synop end
 .desc begin
 The &func macro will evaluate to be the lesser of two values.
 It is implemented as follows.

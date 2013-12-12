@@ -8,7 +8,7 @@ int mblen( const char *s, size_t n );
 int _fmblen( const char __far *s, size_t n );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function determines the number of bytes comprising the
 multibyte character pointed to by

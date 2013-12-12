@@ -2,7 +2,7 @@
 #include <math.h>
 double fdim( double x, double y );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the positive difference of 
 .arg x

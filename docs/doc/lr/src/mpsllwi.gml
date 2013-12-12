@@ -1,7 +1,7 @@
 .func _m_psllwi
 #include <mmintrin.h>
 __m64 _m_psllwi(__m64 *m, int count);
-.funcend
+.synop end
 .desc begin
 The 16-bit words in
 .arg m

@@ -2,7 +2,7 @@
 #include <jstring.h>
 JMOJI zentohan( JMOJI c );
 .ixfunc2 '&Jstring' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the single-byte ASCII character equivalent
 to the double-byte character

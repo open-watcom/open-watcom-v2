@@ -1,7 +1,7 @@
 .func _ismbccntrl
 #include <mbstring.h>
 int _ismbccntrl( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for any multibyte control character.
 .desc end

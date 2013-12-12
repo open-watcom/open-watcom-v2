@@ -4,7 +4,7 @@ int unlock( int &fd,
             unsigned long offset,
             unsigned long nbytes );
 .ixfunc2 '&OsIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function unlocks
 .arg nbytes

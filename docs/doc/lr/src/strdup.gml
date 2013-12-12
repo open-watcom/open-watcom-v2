@@ -33,7 +33,7 @@ unsigned char __far *_fmbsdup( unsigned char __far *src );
 .ixfunc2 '&Copy' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function creates a duplicate copy of the string pointed to
 by

@@ -1,7 +1,7 @@
 .func _m_packssdw
 #include <mmintrin.h>
 __m64 _m_packssdw(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 Convert signed packed double-words into signed packed words by packing
 (with signed saturation) the low-order words of the signed double-word

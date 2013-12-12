@@ -9,7 +9,7 @@ size_t wcserrorlen_s( errno errnum );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .rtconst none
 .*

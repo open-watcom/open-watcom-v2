@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <wchar.h>
 int fwide( FILE *fp, int mode );
-.funcend
+.synop end
 .*
 .desc begin
 The &func function determines the orientation of the stream pointed

@@ -5,7 +5,7 @@ int kbhit( void );
 .if &'length(&_func.) ne 0 .do begin
 int _kbhit( void );
 .ixfunc2 '&KbIo' &_func
-.funcend
+.synop end
 .desc begin
 The &func function tests whether or not a keystroke is currently
 available.

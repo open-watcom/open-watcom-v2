@@ -1,7 +1,7 @@
 .func _os_handle
 #include <&iohdr>
 int _os_handle( int handle );
-.funcend
+.synop end
 .desc begin
 The &func function takes a POSIX-style file handle specified by
 .arg handle

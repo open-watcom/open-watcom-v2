@@ -7,7 +7,7 @@ FJSTRING __far _fjgetmoji( const JCHAR __far *str,
                            JMOJI __far *c );
 .ixfunc2 '&Jstring' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function places

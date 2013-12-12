@@ -1,7 +1,7 @@
 .func _ismbbgraph
 #include <mbctype.h>
 int _ismbbgraph( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg ch

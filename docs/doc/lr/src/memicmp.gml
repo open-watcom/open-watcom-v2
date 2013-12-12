@@ -16,7 +16,7 @@ int _fmemicmp( const void __far *s1,
                size_t length );
 .ixfunc2 '&Compare' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function compares, with case insensitivity (upper- and
 lowercase characters are equivalent), the first

@@ -6,7 +6,7 @@ errno_t qsort_s( void *base,
                  rsize_t size,
     int (*compar)( const void *x, const void *y, void *context ),
                  void *context );
-.funcend
+.synop end
 .*
 .rtconst begin
 Neither

@@ -3,7 +3,7 @@
 int _bgetcmd( char *cmd_line, int len );
 .ixfunc2 '&Process' &func
 .ixfunc2 '&Direct' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function causes the command line information, with the program

@@ -12,7 +12,7 @@ struct _wdirent *_wreaddir( _wdirent *dirp );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function obtains information about the next matching file
 name from the argument

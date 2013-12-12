@@ -19,7 +19,7 @@ double yn( int n, double x );
 .ixfunc2 '&Math' y0
 .ixfunc2 '&Math' y1
 .ixfunc2 '&Math' yn
-.func end
+.synop end
 .desc begin
 .ix '&Math' 'bessel Functions'
 Functions

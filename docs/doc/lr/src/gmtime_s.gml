@@ -5,7 +5,7 @@ struct tm * gmtime_s( const time_t * restrict timer,
                       struct tm * restrict result );
 .ixfunc2 '&TimeFunc' gmtime_s
 .im structtm
-.funcend
+.synop end
 .*
 .rtconst begin
 Neither

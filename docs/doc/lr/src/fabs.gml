@@ -2,7 +2,7 @@
 #include <math.h>
 double fabs( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the absolute value of the argument
 .arg x

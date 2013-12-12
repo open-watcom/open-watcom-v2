@@ -15,7 +15,7 @@ int _wfstat( int handle, struct _stat *buf );
 int _wfstati64( int handle, struct _stati64 *buf );
 .ixfunc2 '&OsIo' &wfunc64
 .ixfunc2 '&Wide' &wfunc64
-.funcend
+.synop end
 .desc begin
 The &func functions obtain information about an open file whose file
 &handle is

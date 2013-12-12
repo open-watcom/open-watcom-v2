@@ -2,7 +2,7 @@
 #include <&doshdr>
 void _dos_keep( unsigned retcode, unsigned memsize );
 .ixfunc2 '&TSR' &func
-.funcend
+.synop end
 .desc begin
 The &func function is used to install terminate-and-stay-resident
 programs ("TSR's") in memory.

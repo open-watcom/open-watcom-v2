@@ -17,7 +17,7 @@ int _wchdir( const wchar_t *path );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
 The &func function changes the current working directory to the

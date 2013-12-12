@@ -13,7 +13,7 @@ int vwscanf_s( const wchar_t * restrict format, va_list arg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 The argument

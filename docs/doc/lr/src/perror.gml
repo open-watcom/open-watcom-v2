@@ -9,7 +9,7 @@ void _wperror( const wchar_t *prefix );
 .ixfunc2 '&Errs' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function prints, on the file designated by
 .kw stderr

@@ -1,7 +1,7 @@
 .func _dwSetAppTitle
 #include <wdefwin.h>
 int _dwSetAppTitle( const char *title );
-.funcend
+.synop end
 .desc begin
 The &func function sets the main window's title.
 The argument

@@ -1,7 +1,7 @@
 .func _m_psrawi
 #include <mmintrin.h>
 __m64 _m_psrawi(__m64 *m, int count);
-.funcend
+.synop end
 .desc begin
 The 16-bit signed words in
 .arg m

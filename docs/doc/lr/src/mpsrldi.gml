@@ -1,7 +1,7 @@
 .func _m_psrldi
 #include <mmintrin.h>
 __m64 _m_psrldi(__m64 *m, int count);
-.funcend
+.synop end
 .desc begin
 The 32-bit double-words in
 .arg m

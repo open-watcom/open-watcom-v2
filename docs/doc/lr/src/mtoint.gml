@@ -1,7 +1,7 @@
 .func _m_to_int
 #include <mmintrin.h>
 int   _m_to_int(__m64 *__m);
-.funcend
+.synop end
 .desc begin
 The &func function returns the low-order 32 bits of a multimedia value.
 .desc end

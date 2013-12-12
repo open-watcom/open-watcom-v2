@@ -1,7 +1,7 @@
 .func _ismbclegal
 #include <mbstring.h>
 int _ismbclegal( unsigned int dbch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for a valid multibyte character.
 Multibyte characters include both single-byte and double-byte

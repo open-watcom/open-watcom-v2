@@ -2,7 +2,7 @@
 #include <string.h>
 void bzero( void *dst, size_t n );
 .ixfunc2 '&String' &func
-.funcend
+.synop end
 .desc begin
 The &func function fills the first
 .arg n

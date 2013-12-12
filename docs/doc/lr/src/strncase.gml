@@ -5,7 +5,7 @@ int strncasecmp( const char *s1,
                  size_t len );
 .ixfunc2 '&String' &func
 .ixfunc2 '&Compare' &func
-.funcend
+.synop end
 .desc begin
 The &func function compares, without case sensitivity, the string
 pointed to by

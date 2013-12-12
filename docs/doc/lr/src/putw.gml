@@ -2,7 +2,7 @@
 #include <stdio.h>
 int _putw( int binint, FILE *fp );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function writes a binary value of type
 .us int

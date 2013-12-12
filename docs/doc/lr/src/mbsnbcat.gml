@@ -12,7 +12,7 @@ unsigned char __far *_fmbsnbcat( unsigned char __far *dst,
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Concats' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function appends not more than
 .arg n

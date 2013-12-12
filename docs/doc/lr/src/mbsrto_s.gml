@@ -16,7 +16,7 @@ errno_t _fmbsrtowcs_s( size_t __far * restrict retval,
                        mbstate_t __far * restrict ps);
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 None of

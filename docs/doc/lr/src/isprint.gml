@@ -9,7 +9,7 @@ int iswprint( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function tests for any printable character including space
 ('&sysrb').

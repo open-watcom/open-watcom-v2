@@ -1,7 +1,7 @@
 .func isnan
 #include <math.h>
 int isnan( x );
-.funcend
+.synop end
 .*
 .desc begin
 The &func macro determines whether its argument

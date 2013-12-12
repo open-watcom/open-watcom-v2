@@ -9,7 +9,7 @@ wchar_t *wcserror( int errnum );
 .ixfunc2 '&Errs' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

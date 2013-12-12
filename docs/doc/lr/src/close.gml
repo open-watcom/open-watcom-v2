@@ -6,7 +6,7 @@ int close( int &fd );
 int _close( int &fd );
 .ixfunc2 '&OsIo' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function closes a file at the operating system level.
 The

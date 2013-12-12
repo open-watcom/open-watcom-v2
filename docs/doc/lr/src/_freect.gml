@@ -2,7 +2,7 @@
 #include <malloc.h>
 unsigned int _freect( size_t size );
 .ixfunc2 '&Memory' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the number of times that
 .kw _nmalloc

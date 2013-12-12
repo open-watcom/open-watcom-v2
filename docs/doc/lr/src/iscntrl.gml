@@ -9,7 +9,7 @@ int iswcntrl( wint_t c );
 .ixfunc2 '&CharTest' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function tests for any control character.
 A control character is any character whose value is from 0 through 31.

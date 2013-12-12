@@ -10,7 +10,7 @@ wint_t getwc( FILE *fp );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function gets the next character from the file designated by
 .arg fp

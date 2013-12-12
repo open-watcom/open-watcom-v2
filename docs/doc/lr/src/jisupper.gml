@@ -2,7 +2,7 @@
 #include <jstring.h>
 int jisupper( JMOJI c );
 .ixfunc2 '&CharTest' &func
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg c

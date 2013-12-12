@@ -2,7 +2,7 @@
 #include <conio.h>
 int cscanf( const char *format, ... );
 .ixfunc2 '&KbIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function scans input from the console
 under control of the argument

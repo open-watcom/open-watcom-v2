@@ -15,7 +15,7 @@ struct  diskinfo_t {        /* disk parameters     */
         void _far *result;  /* result buffer       */
 };
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function makes disk access operations specified by
 .arg service

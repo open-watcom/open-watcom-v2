@@ -33,7 +33,7 @@ unsigned char __far *_fmbsnset( unsigned char __far *str,
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function fills the string
 .arg str

@@ -6,7 +6,7 @@ unsigned char *_mbgetcode( unsigned char *mbstr,
 unsigned char far *_fmbgetcode( unsigned char far *mbstr,
                                 unsigned int *dbchp );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function places the next single- or double-byte character
 from the start of the Kanji string specified by

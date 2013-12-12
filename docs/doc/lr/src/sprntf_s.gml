@@ -13,7 +13,7 @@ int swprintf_s( char * restrict s, rsize_t n,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 Neither

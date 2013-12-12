@@ -1,7 +1,7 @@
 .func dirname 
 #include <libgen.h>
 char *dirname( char *path );
-.funcend
+.synop end
 .*
 .desc begin
 The &func function takes a pointer to a character string that contains

@@ -1,7 +1,7 @@
 .func _dwSetConTitle
 #include <wdefwin.h>
 int _dwSetConTitle( int handle, const char *title );
-.funcend
+.synop end
 .desc begin
 The &func function sets the console window's title which corresponds
 to the handle passed to it.

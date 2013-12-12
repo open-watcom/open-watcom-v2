@@ -6,7 +6,7 @@ int read( int &fd, void *buffer, unsigned len );
 int _read( int &fd, void *buffer, unsigned len );
 .ixfunc2 '&OsIo' &_func
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function reads data at the operating system level.
 The number of bytes transmitted is given by

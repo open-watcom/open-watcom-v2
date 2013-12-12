@@ -6,7 +6,7 @@ JSTRING jputmoji( JCHAR *str, JMOJI c );
 FJSTRING __far _fjputmoji( JCHAR __far *str, JMOJI c );
 .ixfunc2 '&Jstring' _f&func
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function places

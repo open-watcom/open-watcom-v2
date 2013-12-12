@@ -1,7 +1,7 @@
 .func isinf
 #include <math.h>
 int isinf( x );
-.funcend
+.synop end
 .*
 .desc begin
 The &func macro determines whether its argument value is an infinity

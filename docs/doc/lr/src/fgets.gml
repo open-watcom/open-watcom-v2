@@ -10,7 +10,7 @@ wchar_t *fgetws( wchar_t *buf, int n, FILE *fp );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function gets a string of characters from the file
 designated by

@@ -2,7 +2,7 @@
 #include <fenv.h>
 int fesetexceptflag( const fexcept_t *__flagp, int __excepts );
 .ixfunc2 'Floating Point Environment' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function attempts to set the floating-point status flags indicated by the

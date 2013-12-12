@@ -17,7 +17,7 @@ int  _heapset( unsigned char fill_char );
 int _bheapset( __segment seg, unsigned char fill_char );
 int _fheapset( unsigned char fill_char );
 int _nheapset( unsigned char fill_char );
-.func end
+.synop end
 .desc begin
 The &func functions along with
 .kw _heapchk

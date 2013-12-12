@@ -31,7 +31,7 @@ int _fmbscpy( unsigned char __far *dst,
 .ixfunc2 '&Copy' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

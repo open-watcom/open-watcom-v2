@@ -5,7 +5,7 @@ int setvbuf( FILE *fp,
              int mode,
              size_t size );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function can be used to associate a buffer with the file
 designated by

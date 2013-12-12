@@ -2,7 +2,7 @@
 #include <stdarg.h>
 type va_arg( va_list param, type );
 .ixfunc2 'variable arguments'  &func
-.funcend
+.synop end
 .desc begin
 &func is a macro that can be used to obtain the next argument in a
 list of variable arguments.

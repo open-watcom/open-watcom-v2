@@ -2,7 +2,7 @@
 #include <fnmatch.h>
 int fnmatch( const char *pattern,
              const char *string, int flags );
-.funcend
+.synop end
 .*
 .desc begin
 The &func function checks the string specified by the

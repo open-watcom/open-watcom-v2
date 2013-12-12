@@ -23,7 +23,7 @@ size_t _fmbslen( const unsigned char __far *s );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

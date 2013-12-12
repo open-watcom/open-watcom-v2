@@ -13,7 +13,7 @@ wchar_t *wmemset( wchar_t *dst,
                   size_t length );
 .ixfunc2 '&String' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function fills the first
 .arg length

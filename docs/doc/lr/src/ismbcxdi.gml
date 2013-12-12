@@ -1,7 +1,7 @@
 .func _ismbcxdigit
 #include <mbstring.h>
 int _ismbcxdigit( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for any multibyte hexadecimal-digit character
 '0' through '9' or 'A' through 'F'.

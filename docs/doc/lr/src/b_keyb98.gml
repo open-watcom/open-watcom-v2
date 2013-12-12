@@ -3,7 +3,7 @@
 unsigned short _bios_keybrd( unsigned service,
                              unsigned char *keytable);
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function accesses the BIOS keyboard services.
 The possible values for

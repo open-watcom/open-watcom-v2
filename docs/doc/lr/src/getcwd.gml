@@ -13,7 +13,7 @@ wchar_t *_wgetcwd( wchar_t *buffer, size_t size );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function returns the name of the current working directory.
 The

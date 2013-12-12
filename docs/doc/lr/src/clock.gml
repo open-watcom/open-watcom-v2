@@ -2,7 +2,7 @@
 #include <time.h>
 clock_t clock(void);
 .ixfunc2 '&TimeFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns the number of clock ticks of processor time
 used by program since the program started executing.

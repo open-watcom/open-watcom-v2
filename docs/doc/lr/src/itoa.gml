@@ -13,7 +13,7 @@ wchar_t *_itow( int value, wchar_t *buffer,
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function converts the binary integer
 .arg value

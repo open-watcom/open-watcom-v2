@@ -2,7 +2,7 @@
 #include <&doshdr>
 int bdos( int dos_func, unsigned dx, unsigned char al );
 .ixfunc2 '&OsInt' &func
-.funcend
+.synop end
 .desc begin
 The &func function causes the computer's central processor (CPU) to
 be interrupted with an interrupt number hexadecimal 21 (

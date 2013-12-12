@@ -1,7 +1,7 @@
 .func _ismbcsymbol
 #include <mbstring.h>
 int _ismbcsymbol( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for a valid multibyte symbol character
 (punctuation and other special graphical symbols).

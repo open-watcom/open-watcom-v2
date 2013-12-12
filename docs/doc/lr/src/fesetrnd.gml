@@ -2,7 +2,7 @@
 #include <fenv.h>
 int fesetround( int __round );
 .ixfunc2 'Floating Point Environment' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function establishes the rounding direction represented by its

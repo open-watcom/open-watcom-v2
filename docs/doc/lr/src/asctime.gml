@@ -18,7 +18,7 @@ wchar_t *__wasctime( const struct tm *timeptr, wchar_t *buf );
 .ixfunc2 '&Wide' __wasctime
 .do end
 .im structtm
-.func end
+.synop end
 .funcbold asctime
 .*
 .safealt

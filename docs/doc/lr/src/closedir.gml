@@ -12,7 +12,7 @@ int _wclosedir( struct _wdirent *dirp );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function closes the directory specified by
 .arg dirp

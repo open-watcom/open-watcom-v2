@@ -2,7 +2,7 @@
 #include <strings.h>
 int ffs( int i );
 .ixfunc2 '&String' &func
-.funcend
+.synop end
 .desc begin
 The &func finds the first bit set, beginning with the least significant bit, in
 .arg i

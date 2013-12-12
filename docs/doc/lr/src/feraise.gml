@@ -2,7 +2,7 @@
 #include <fenv.h>
 int feraiseexcept( int __excepts );
 .ixfunc2 'Floating Point Environment' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function attempts to raise the supported floating-point exceptions

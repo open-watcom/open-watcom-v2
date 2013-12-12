@@ -4,7 +4,7 @@ int int386( int inter_no,
            const union REGS *in_regs,
            union REGS *out_regs );
 .ixfunc2 '&CpuInt' &func
-.funcend
+.synop end
 .desc begin
 The &func function causes the computer's central processor (CPU) to
 be interrupted with an interrupt whose number is given by

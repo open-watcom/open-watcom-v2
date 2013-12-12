@@ -4,7 +4,7 @@ struct tm *_localtime( const time_t *timer,
                        struct tm *tmbuf );
 .ixfunc2 '&TimeFunc' &func
 .im structtm
-.funcend
+.synop end
 .desc begin
 The &func function converts the calendar time pointed to by
 .arg timer

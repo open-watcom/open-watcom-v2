@@ -3,7 +3,7 @@
 unsigned _bios_timeofday( unsigned service,
                           char *timeval );
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function gets or sets the current system clock value.
 The values for service are:

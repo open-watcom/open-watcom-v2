@@ -2,7 +2,7 @@
 #include <jtime.h>
 unsigned char *jctime( const time_t *timer );
 .ixfunc2 '&TimeFunc' jctime
-.funcend
+.synop end
 .desc begin
 The &func function converts the calendar time pointed to by
 .arg timer

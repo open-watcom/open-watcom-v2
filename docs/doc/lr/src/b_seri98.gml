@@ -14,7 +14,7 @@ struct com_t
   void _far *buffer; /* Pointer to receive buffer      */
 };
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function provides serial communications services to the
 serial port specified by

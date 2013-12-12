@@ -2,7 +2,7 @@
 #include <bios.h>
 unsigned short _bios_keybrd( unsigned service );
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses INT 0x16 to access the BIOS keyboard services.
 The possible values for

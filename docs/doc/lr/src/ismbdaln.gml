@@ -1,7 +1,7 @@
 .func _ismbdalnum
 #include <mbstring.h>
 int _ismbdalnum( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 .desc end
 .return begin

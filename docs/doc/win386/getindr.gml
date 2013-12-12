@@ -18,7 +18,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 HINDIR GetIndirectFunctionHandle( FARPROC prc, ... );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function gets a handle for a 16-bit procedure that is to be
 invoked indirectly.

@@ -1,7 +1,7 @@
 .func basename 
 #include <libgen.h>
 char *basename( char *path );
-.funcend
+.synop end
 .*
 .desc begin
 The &func function returns a pointer to the final component of a pathname

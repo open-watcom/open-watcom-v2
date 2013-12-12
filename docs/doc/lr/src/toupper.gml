@@ -14,7 +14,7 @@ wint_t towupper( wint_t c );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function converts
 .arg c

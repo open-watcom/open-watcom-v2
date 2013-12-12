@@ -2,7 +2,7 @@
 #include <math.h>
 double log10( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the logarithm (base 10) of
 .arg x

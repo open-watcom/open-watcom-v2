@@ -15,7 +15,7 @@ errno_t _wfopen_s( FILE * restrict * restrict streamptr,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 None of

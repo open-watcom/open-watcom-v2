@@ -9,7 +9,7 @@ int wprintf( const wchar_t *format, ... );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

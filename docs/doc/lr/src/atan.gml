@@ -5,7 +5,7 @@ double atan( double x );
 .ixfunc2 '&Trig' &func
 .ixfunc2 '&Trig' &func
 .ixfunc2 '&Hyper' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the principal value of the
 arctangent of

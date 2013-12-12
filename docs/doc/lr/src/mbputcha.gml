@@ -4,7 +4,7 @@ unsigned char *_mbputchar( unsigned char *mbstr,
                            unsigned int dbch );
 unsigned char far *_fmbputchar( unsigned char far *mbstr,
                                 unsigned int dbch );
-.funcend
+.synop end
 .desc begin
 The &func function places the next single- or double-byte character
 specified by

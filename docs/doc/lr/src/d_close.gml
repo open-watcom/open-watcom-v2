@@ -3,7 +3,7 @@
 unsigned _dos_close( int &fd );
 .ixfunc2 '&DosFunc' &func
 .ixfunc2 '&OsIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x3E to close the file indicated by
 .arg &fd

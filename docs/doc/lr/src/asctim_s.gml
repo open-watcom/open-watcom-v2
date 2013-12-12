@@ -13,7 +13,7 @@ errno_t _wasctime_s( wchar_t * s,
 .ixfunc2 '&Wide' &wfunc
 .do end
 .im structtm
-.funcend
+.synop end
 .*
 .rtconst begin
 Neither

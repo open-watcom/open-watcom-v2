@@ -17,7 +17,7 @@ int vswscanf_s( const wchar_t * restrict s,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 Neither

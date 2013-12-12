@@ -2,7 +2,7 @@
 #include <conio.h>
 int cputs( const char *buf );
 .ixfunc2 '&KbIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function writes the character string pointed to by
 .arg buf

@@ -7,7 +7,7 @@ FILE *_wpopen( const wchar_t *command, const wchar_t *mode );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function executes the command specified by
 .arg command

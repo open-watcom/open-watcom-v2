@@ -25,7 +25,7 @@ struct utimbuf {
     time_t   actime;    /* access time */
     time_t   modtime;   /* modification time */
 };
-.funcend
+.synop end
 .desc begin
 The &func function records the access and modification times
 for the file

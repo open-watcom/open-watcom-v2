@@ -1,7 +1,7 @@
 .func _ismbbkana
 #include <mbctype.h>
 int _ismbbkana( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests if the argument
 .arg ch

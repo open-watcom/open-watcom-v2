@@ -14,7 +14,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 DWORD AllocAlias16( void *ptr );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function obtains a 16-bit far pointer equivalent of a 32-bit
 near pointer.

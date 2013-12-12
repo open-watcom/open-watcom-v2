@@ -6,7 +6,7 @@ typedef struct {
     int quot;     /* quotient */
     int rem;      /* remainder */
 } div_t;
-.funcend
+.synop end
 .*
 .desc begin
 The &func function calculates the quotient

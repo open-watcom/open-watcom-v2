@@ -3,7 +3,7 @@
 unsigned char *jasctime( const struct tm *timeptr );
 .im structtm
 .ixfunc2 '&TimeFunc' jasctime
-.funcend
+.synop end
 .desc begin
 The &func function converts the time information in the structure
 pointed to by

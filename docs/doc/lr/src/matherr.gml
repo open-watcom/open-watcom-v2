@@ -3,7 +3,7 @@
 int matherr( struct _exception *err_info );
 .ixfunc2 '&Errs' &func
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function is invoked each time an error is detected by
 functions in the math library.

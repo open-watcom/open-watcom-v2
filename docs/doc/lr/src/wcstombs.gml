@@ -11,7 +11,7 @@ size_t _fwcstombs( char __far *s,
 .ixfunc2 '&Wide' &ffunc
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

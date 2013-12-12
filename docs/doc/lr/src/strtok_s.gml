@@ -17,7 +17,7 @@ wchar_t *wcstok_s( wchar_t * restrict s1,
 .ixfunc2 '&Search' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .rtconst begin
 None of

@@ -2,7 +2,7 @@
 #include <signal.h>
 int raise( int condition );
 .ixfunc2 '&Errs' &func
-.funcend
+.synop end
 .desc begin
 The &func function signals the exceptional condition indicated by the
 .arg condition

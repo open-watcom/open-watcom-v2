@@ -1,7 +1,7 @@
 .func _dwShutDown
 #include <wdefwin.h>
 int _dwShutDown( void );
-.funcend
+.synop end
 .desc begin
 The &func function shuts down the default windowing I/O system.
 The application will continue to execute but no windows will be

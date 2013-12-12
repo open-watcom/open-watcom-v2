@@ -3,7 +3,7 @@
 #include <stdarg.h>
 int vcscanf( const char *format, va_list args )
 .ixfunc2 '&KbIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function scans input from the console
 under control of the argument

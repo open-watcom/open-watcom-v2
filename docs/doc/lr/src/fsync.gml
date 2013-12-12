@@ -1,7 +1,7 @@
 .func fsync
 #include <&iohdr>
 int fsync( int fd );
-.funcend
+.synop end
 .desc begin
 The &func function writes to disk all the currently queued data for
 the open file specified by

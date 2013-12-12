@@ -2,7 +2,7 @@
 #include <math.h>
 double log( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the natural logarithm (base e) of
 .arg x

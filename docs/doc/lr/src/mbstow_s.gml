@@ -16,7 +16,7 @@ errno_t _fmbstowcs_s( size_t __far * restrict retval,
                     rsize_t dstmax,
                     const char __far * restrict src, rsize_t len);
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 Neither

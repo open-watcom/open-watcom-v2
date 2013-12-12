@@ -6,7 +6,7 @@ void *bsearch( const void *key,
                size_t width,
                int (*compar)( const void *pkey,
                               const void *pbase) );
-.funcend
+.synop end
 .*
 .safealt
 .*

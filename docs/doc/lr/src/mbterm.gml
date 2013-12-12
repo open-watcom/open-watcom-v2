@@ -6,7 +6,7 @@ int _mbterm( const unsigned char *ch );
 int _fmbterm( const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function determines if the next multibyte character in the
 string pointed to by

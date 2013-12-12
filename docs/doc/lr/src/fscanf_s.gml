@@ -14,7 +14,7 @@ int fwscanf_s( FILE * restrict stream,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 Neither

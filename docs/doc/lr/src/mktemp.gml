@@ -8,7 +8,7 @@ wchar_t *_wmktemp( wchar_t *template );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function creates a unique filename by modifying the
 .arg template

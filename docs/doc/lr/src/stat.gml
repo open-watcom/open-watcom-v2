@@ -18,7 +18,7 @@ int _wstati64( const wchar_t *path, struct _stati64 *buf );
 .ixfunc2 '&Wide' &wfunc64
 int lstat( const char *path, struct stat *buf );
 .ixfunc2 '&FileOp' l&func
-.funcend
+.synop end
 .desc begin
 The &func functions obtain information about the file or directory
 referenced in

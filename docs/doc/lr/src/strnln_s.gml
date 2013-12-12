@@ -11,7 +11,7 @@ size_t wcsnlen_s( const wchar_t * s,
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .rtconst none
 .*

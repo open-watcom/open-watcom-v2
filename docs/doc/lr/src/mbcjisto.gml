@@ -1,7 +1,7 @@
 .func _mbcjistojms
 #include <mbstring.h>
 unsigned int _mbcjistojms( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func converts a JIS character set code to a shift-JIS character
 set code.

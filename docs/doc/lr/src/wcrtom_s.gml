@@ -17,7 +17,7 @@ errno_t _wcrtomb_s( size_t __far * restrict retval,
 .ixfunc2 '&Wide' &fwfunc
 .ixfunc2 '&Multibyte' &fwfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 Neither

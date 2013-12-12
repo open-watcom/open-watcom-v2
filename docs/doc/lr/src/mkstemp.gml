@@ -2,7 +2,7 @@
 #include <stdlib.h>
 int mkstemp( char *template );
 .ixfunc2 '&FileOp' &func
-.funcend
+.synop end
 .desc begin
 The &func function creates a file with unique name by modifying the
 .arg template

@@ -2,7 +2,7 @@
 #include <math.h>
 double ldexp( double x, int exp );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func
 function multiplies a floating-point number by an integral power of 2.

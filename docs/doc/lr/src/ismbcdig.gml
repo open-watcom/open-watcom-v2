@@ -1,7 +1,7 @@
 .func _ismbcdigit
 #include <mbstring.h>
 int _ismbcdigit( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for any multibyte decimal-digit character '0'
 through '9'.

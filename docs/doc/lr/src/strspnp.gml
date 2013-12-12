@@ -40,7 +40,7 @@ unsigned char __far *_fmbsspnp(
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function returns a pointer to the first character in
 .arg str

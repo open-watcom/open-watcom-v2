@@ -11,7 +11,7 @@ size_t _fmbsrtowcs( wchar_t __far *dst,
          size_t len, mbstate_t __far *ps );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

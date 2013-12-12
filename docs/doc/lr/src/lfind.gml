@@ -7,7 +7,7 @@ void *lfind( const void *key, /* object to search for  */
              int (*compare)( const void *element1,
                              const void *element2 ) );
 .ixfunc2 '&Search' &func
-.funcend
+.synop end
 .desc begin
 The &func function performs a linear search for the value
 .arg key

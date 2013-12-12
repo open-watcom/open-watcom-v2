@@ -1,7 +1,7 @@
 .func _m_empty
 #include <mmintrin.h>
 void  _m_empty(void);
-.funcend
+.synop end
 .desc begin
 The &func function empties the multimedia state.
 The values in the Multimedia Tag Word (TW) are set to empty

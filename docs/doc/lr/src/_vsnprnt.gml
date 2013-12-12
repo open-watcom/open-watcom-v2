@@ -17,7 +17,7 @@ int _vsnwprintf( wchar_t *buf,
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function formats data under control of the
 .arg format

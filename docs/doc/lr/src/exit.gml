@@ -1,7 +1,7 @@
 .func exit
 #include <stdlib.h>
 void exit( int status );
-.funcend
+.synop end
 .desc begin
 The &func function causes normal program termination to occur.
 .pp

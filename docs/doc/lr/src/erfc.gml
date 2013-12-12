@@ -2,7 +2,7 @@
 #include <math.h>
 double erfc( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the value of the complementary error 
 function, also known as the Gauss error function, for the argument

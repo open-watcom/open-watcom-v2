@@ -4,7 +4,7 @@
 constraint_handler_t set_constraint_handler_s(
         constraint_handler_t handler );
 .ixfunc2 '&Process' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function sets the runtime-constraint handler to be

@@ -2,7 +2,7 @@
 #include <i86.h>
 void _disable( void );
 .ixfunc2 '&Interrupt' &func
-.funcend
+.synop end
 .desc begin
 The &func function causes interrupts to become disabled.
 .np

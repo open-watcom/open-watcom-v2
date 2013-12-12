@@ -1,7 +1,7 @@
 .func _m_psradi
 #include <mmintrin.h>
 __m64 _m_psradi(__m64 *m, int count);
-.funcend
+.synop end
 .desc begin
 The 32-bit signed double-words in
 .arg m

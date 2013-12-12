@@ -12,7 +12,7 @@ unsigned char __far *_fmbsnbcpy( unsigned char __far *dst,
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Copy' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function copies no more than
 .arg n

@@ -2,7 +2,7 @@
 #include <math.h>
 double round( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function rounds the argument
 .arg x

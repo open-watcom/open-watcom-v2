@@ -4,7 +4,7 @@ unsigned short _bios_printer( unsigned service,
                               unsigned port,
                               unsigned data );
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses INT 0x17 to perform printer output
 services to the printer specified by

@@ -5,7 +5,7 @@ unsigned _dos_creat( const char *path,
                      int *&fd );
 .ixfunc2 '&DosFunc' &func
 .ixfunc2 '&OsIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x3C to create a new file named
 .arg path

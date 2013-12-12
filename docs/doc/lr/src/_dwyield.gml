@@ -1,7 +1,7 @@
 .func _dwYield
 #include <wdefwin.h>
 int _dwYield( void );
-.funcend
+.synop end
 .desc begin
 The &func function yields control back to the operating system,
 thereby giving other processes a chance to run.

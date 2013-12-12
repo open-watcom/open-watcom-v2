@@ -1,7 +1,7 @@
 .func _pclose
 #include <stdio.h>
 int _pclose( FILE *fp );
-.funcend
+.synop end
 .desc begin
 The &func function closes the pipe associated with
 .arg fp

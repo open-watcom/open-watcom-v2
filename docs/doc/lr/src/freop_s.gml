@@ -17,7 +17,7 @@ errno_t _wfreopen_s( FILE * restrict * restrict newstreamptr,
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 None of

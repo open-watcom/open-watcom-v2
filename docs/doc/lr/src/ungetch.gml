@@ -2,7 +2,7 @@
 #include <conio.h>
 int ungetch( int c );
 .ixfunc2 '&KbIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function pushes the character specified by
 .arg c

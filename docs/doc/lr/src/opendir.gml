@@ -12,7 +12,7 @@ struct _wdirent *_wopendir( const wchar_t *dirname );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function is used in conjunction with the functions
 .kw readdir

@@ -6,7 +6,7 @@ typedef struct {
     long int quot;     /* quotient */
     long int rem;      /* remainder */
 } ldiv_t;
-.funcend
+.synop end
 .*
 .desc begin
 The &func

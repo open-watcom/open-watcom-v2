@@ -1,7 +1,7 @@
 .func _m_pcmpeqw
 #include <mmintrin.h>
 __m64 _m_pcmpeqw(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 If the respective words of
 .arg m1

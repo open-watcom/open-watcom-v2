@@ -1,7 +1,7 @@
 .func getpid
 #include <process.h>
 int getpid(void);
-.funcend
+.synop end
 .desc begin
 The &func function returns the process id for the current process.
 .desc end

@@ -1,7 +1,7 @@
 .func _ismbcupper
 #include <mbstring.h>
 int _ismbcupper( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for a valid uppercase multibyte character.
 Multibyte characters include both single-byte and double-byte

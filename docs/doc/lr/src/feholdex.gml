@@ -2,7 +2,7 @@
 #include <fenv.h>
 int feholdexcept( fenv_t *__envp );
 .ixfunc2 'Floating Point Environment' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function saves the current floating-point environment in the object

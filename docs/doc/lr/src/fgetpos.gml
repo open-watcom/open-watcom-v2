@@ -2,7 +2,7 @@
 #include <stdio.h>
 int fgetpos( FILE *fp, fpos_t *pos );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function stores the current position of the file
 .arg fp

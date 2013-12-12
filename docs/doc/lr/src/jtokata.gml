@@ -2,7 +2,7 @@
 #include <jstring.h>
 JMOJI jtokata( JMOJI c );
 .ixfunc2 '&CharTest' &func
-.funcend
+.synop end
 .desc begin
 The &func converts a double-byte Hiragana character to a Katakana
 character.

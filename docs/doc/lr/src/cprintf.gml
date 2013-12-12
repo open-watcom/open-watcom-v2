@@ -2,7 +2,7 @@
 #include <conio.h>
 int cprintf( const char *format, ... );
 .ixfunc2 '&KbIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function writes output directly to the console under control
 of the argument

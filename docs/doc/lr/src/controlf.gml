@@ -3,7 +3,7 @@
 unsigned int _controlfp( unsigned int newcw,
                          unsigned int mask );
 .ixfunc2 '&Errs' &func
-.funcend
+.synop end
 .desc begin
 The &func function updates the control word of the
 8087/80287/80387/80486.

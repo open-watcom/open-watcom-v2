@@ -1,7 +1,7 @@
 .func _atouni
 #include <stdlib.h>
 wchar_t *_atouni( wchar_t *wcs, const char *sbcs );
-.funcend
+.synop end
 .desc begin
 The &func function converts the string pointed to by
 .arg sbcs

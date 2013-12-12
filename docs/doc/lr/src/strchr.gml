@@ -31,7 +31,7 @@ unsigned char __far *_fmbschr(
 .ixfunc2 '&Search' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function locates the first occurrence of
 .arg c

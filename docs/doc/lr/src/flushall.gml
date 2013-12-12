@@ -2,7 +2,7 @@
 #include <stdio.h>
 int flushall( void );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function clears all buffers associated with input streams
 and writes any buffers associated with output streams.

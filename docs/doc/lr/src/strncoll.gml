@@ -23,7 +23,7 @@ int _mbsncoll( const unsigned char *s1,
 .ixfunc2 '&Compare' &mfunc
 .ixfunc2 '&Multibyte' &mfunc
 .do end
-.funcend
+.synop end
 .desc begin
 These functions compare the first
 .arg count

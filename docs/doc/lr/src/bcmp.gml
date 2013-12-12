@@ -3,7 +3,7 @@
 int bcmp(const void *s1, const void *s2, size_t n);
 .ixfunc2 '&String' &func
 .ixfunc2 '&Compare' &func
-.funcend
+.synop end
 .desc begin
 The &func function compares the byte string pointed to by
 .arg s1

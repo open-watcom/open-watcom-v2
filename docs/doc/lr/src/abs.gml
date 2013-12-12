@@ -1,7 +1,7 @@
 .func abs
 #include <stdlib.h>
 int abs( int j );
-.funcend
+.synop end
 .*
 .desc begin
 The &func function returns the absolute value of its integer argument

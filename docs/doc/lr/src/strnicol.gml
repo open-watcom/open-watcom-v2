@@ -23,7 +23,7 @@ int _mbsnicoll( const unsigned char *s1,
 .ixfunc2 '&Compare' &mfunc
 .ixfunc2 '&Multibyte' &mfunc
 .do end
-.funcend
+.synop end
 .desc begin
 These functions perform a case insensitive comparison of the first
 .arg count

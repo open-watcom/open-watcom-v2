@@ -3,7 +3,7 @@
 void jperror( const char *prefix );
 .ixfunc2 '&StrIo' &func
 .ixfunc2 '&Errs' &func
-.funcend
+.synop end
 .desc begin
 The &func function prints, on the file designated by
 .kw stderr

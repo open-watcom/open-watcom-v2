@@ -2,7 +2,7 @@
 #include <math.h>
 double exp( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the exponential function of
 .arg x

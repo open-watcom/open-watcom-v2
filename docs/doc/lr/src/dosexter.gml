@@ -9,7 +9,7 @@ struct _DOSERROR {
         char locus;     /* contents of CH register */
 };
 .ixfunc2 '&Errs' &func
-.funcend
+.synop end
 .desc begin
 The &func function extracts extended error information following
 a failed DOS function.

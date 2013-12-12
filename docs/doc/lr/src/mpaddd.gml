@@ -1,7 +1,7 @@
 .func _m_paddd
 #include <mmintrin.h>
 __m64 _m_paddd(__m64 *m1, __m64 *m2);
-.funcend
+.synop end
 .desc begin
 The signed or unsigned 32-bit double-words of
 .arg m2

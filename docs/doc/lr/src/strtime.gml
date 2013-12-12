@@ -7,7 +7,7 @@ wchar_t _wstrtime( wchar_t *timestr );
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function copies the current time to the buffer pointed to by
 .arg timestr

@@ -24,7 +24,7 @@ int _wmkdir( const wchar_t *path );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .desc begin
 The &func function creates a new subdirectory with name

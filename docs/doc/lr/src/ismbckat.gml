@@ -1,7 +1,7 @@
 .func _ismbckata
 #include <mbstring.h>
 int _ismbckata( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 The &func function tests for a double-byte Katakana character.
 A double-byte Katakana character is any character for which the

@@ -26,6 +26,7 @@
 .func_ _exec...
 .funcw _wexec...
 .func gen
+.* .synop begin
 #include <process.h>
 int execl(   path, arg0, arg1..., argn, NULL );
 int execle(  path, arg0, arg1..., argn, NULL, envp );
@@ -95,7 +96,7 @@ int _wexecvpe( file, argv, envp );
 .ixfunc2 '&Wide' _wexecvp
 .ixfunc2 '&Wide' _wexecvpe
 .do end
-.func end
+.synop end
 .funcbold exec...
 .desc begin
 The &func functions load and execute a new child process, named by

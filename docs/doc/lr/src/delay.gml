@@ -7,7 +7,7 @@ unsigned int delay( unsigned int milliseconds );
 void delay( unsigned milliseconds );
 .do end
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
 The &func function suspends the calling process until the number

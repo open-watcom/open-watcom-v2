@@ -17,7 +17,7 @@ int  _heapmin( void );
 int _bheapmin( __segment seg );
 int _fheapmin( void );
 int _nheapmin( void );
-.func end
+.synop end
 .desc begin
 The &func functions attempt to shrink the specified heap to its
 smallest possible size by returning all free entries at the end of the

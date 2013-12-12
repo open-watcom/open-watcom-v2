@@ -3,7 +3,7 @@
 double tan( double x );
 .ixfunc2 '&Math' &func
 .ixfunc2 '&Trig' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the tangent of
 .arg x

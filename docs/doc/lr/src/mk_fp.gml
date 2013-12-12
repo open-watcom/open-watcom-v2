@@ -2,7 +2,7 @@
 #include <i86.h>
 void __far *MK_FP( unsigned int segment,
                    unsigned int offset );
-.funcend
+.synop end
 .desc begin
 The &func macro can be used to obtain the far
 pointer value given by the

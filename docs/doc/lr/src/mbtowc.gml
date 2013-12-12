@@ -9,7 +9,7 @@ int _fmbtowc( wchar_t __far *pwc,
               size_t n );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function converts a single multibyte character pointed to by
 .arg s

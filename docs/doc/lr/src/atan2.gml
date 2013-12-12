@@ -3,7 +3,7 @@
 double atan2( double y, double x );
 .ixfunc2 '&Math' &func
 .ixfunc2 '&Trig' &func
-.funcend
+.synop end
 .desc begin
 The &func function computes the principal value of the arctangent of
 .arg y/x

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 void free( void *ptr );
 .ixfunc2 '&Memory' free
-.funcend
+.synop end
 .desc begin
 When the value of the argument
 .arg ptr
@@ -66,7 +66,7 @@ void _nfree( void __near *ptr );
 .ixfunc2 '&Memory' _bfree
 .ixfunc2 '&Memory' _ffree
 .ixfunc2 '&Memory' _nfree
-.func end
+.synop end
 .desc begin
 When the value of the argument
 .arg ptr

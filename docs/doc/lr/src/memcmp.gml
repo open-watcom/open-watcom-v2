@@ -17,7 +17,7 @@ int wmemcmp( const wchar_t *s1,
 	     size_t length );
 .ixfunc2 '&Compare' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function compares the first
 .arg length

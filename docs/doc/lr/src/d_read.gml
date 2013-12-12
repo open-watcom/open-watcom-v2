@@ -4,7 +4,7 @@ unsigned _dos_read( int &fd, void __far *buffer,
                     unsigned count, unsigned *bytes );
 .ixfunc2 '&DosFunc' &func
 .ixfunc2 '&OsIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x3F to read
 .arg count

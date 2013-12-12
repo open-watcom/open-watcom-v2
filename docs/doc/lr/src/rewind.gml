@@ -2,7 +2,7 @@
 #include <stdio.h>
 void rewind( FILE *fp );
 .ixfunc2 '&StrIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function sets the file position indicator for the stream
 indicated to by

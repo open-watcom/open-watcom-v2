@@ -2,7 +2,7 @@
 #include <jstring.h>
 int chkctype( JCHAR c, int mode );
 .ixfunc2 '&Jstring' &func
-.funcend
+.synop end
 .desc begin
 The &func function identifies the type of an 8-bit character.
 .np

@@ -53,7 +53,7 @@ unsigned long _beginthreadex(
 .ixfunc2 '&NTFunc' &func.ex
 .ixfunc2 '&TNTFunc' &func.ex
 .do end
-.func end
+.synop end
 .desc begin
 The &func function is used to start a new thread of execution at the
 function identified by

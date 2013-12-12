@@ -9,7 +9,7 @@
 #include <windows.h>
 int DefineUserProc16( int typ, PROCPTR routine, ... );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function defines the arguments accepted by the user defined
 callback procedure

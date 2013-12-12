@@ -16,7 +16,7 @@ int vswprintf( wchar_t *buf,
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .safealt
 .*

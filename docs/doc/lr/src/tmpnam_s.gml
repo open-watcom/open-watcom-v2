@@ -12,7 +12,7 @@ errno_t _wtmpnam_s( wchar_t * s, rsize_t maxsize );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.func end
+.synop end
 .*
 .rtconst begin
 .arg s

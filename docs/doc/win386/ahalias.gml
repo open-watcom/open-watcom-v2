@@ -14,7 +14,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 DWORD AllocHugeAlias16( void *ptr, DWORD size );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function obtains a 16-bit far pointer to a 32-bit memory object
 that is

@@ -15,7 +15,7 @@ void __near *_nexpand(void __near *mem_blk,size_t size);
 .ixfunc2 '&Memory' _bexpand
 .ixfunc2 '&Memory' _fexpand
 .ixfunc2 '&Memory' _nexpand
-.func end
+.synop end
 .desc begin
 The &func functions change the size of the previously allocated block
 pointed to by

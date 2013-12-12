@@ -17,7 +17,7 @@ int _mbscoll( const unsigned char *s1, const unsigned char *s2 );
 .ixfunc2 '&Compare' &mfunc
 .ixfunc2 '&Multibyte' &mfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function compares the string pointed to by
 .arg s1

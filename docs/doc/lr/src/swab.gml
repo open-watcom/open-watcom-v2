@@ -2,7 +2,7 @@
 #include <stdlib.h>
 void swab( char *src, char *dest, int num );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function copies
 .arg num

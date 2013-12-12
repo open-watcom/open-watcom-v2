@@ -3,7 +3,7 @@
 unsigned long outpd( int port,
                     unsigned long value );
 .ixfunc2 '&PortIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function writes a double-word (four bytes), determined by
 .arg value

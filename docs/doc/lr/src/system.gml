@@ -7,7 +7,7 @@ int _wsystem( const wchar_t *command );
 .ixfunc2 '&Process' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
 .sr shell = 'shell'

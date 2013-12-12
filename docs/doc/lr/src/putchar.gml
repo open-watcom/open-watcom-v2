@@ -9,7 +9,7 @@ wint_t putwchar( wint_t c );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function writes the character specified by the argument
 .arg c

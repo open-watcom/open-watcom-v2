@@ -21,7 +21,7 @@ unsigned char *_fmbsdec( const unsigned char __far *start,
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function returns a pointer to the previous character
 (single-byte, wide, or multibyte) in the string pointed to by

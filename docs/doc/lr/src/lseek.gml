@@ -14,7 +14,7 @@
 __int64 _lseeki64( int &fd, __int64 offset, int origin );
 .ixfunc2 '&OsIo' &_func64
 .do end
-.funcend
+.synop end
 .*
 .desc begin
 The &func function sets the current file position at the operating

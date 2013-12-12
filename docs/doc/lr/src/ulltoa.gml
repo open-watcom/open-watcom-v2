@@ -17,7 +17,7 @@ wchar_t *_ulltow( unsigned long long int value,
 .ixfunc2 '&Conversion' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function converts the unsigned binary integer
 .arg value

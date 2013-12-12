@@ -9,7 +9,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 DWORD _Call16( FARPROC lpFunc, char *fmt, ... );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function performs the same function as
 .kw GetIndirectFunctionHandle

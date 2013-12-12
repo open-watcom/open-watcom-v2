@@ -4,7 +4,7 @@ int mbrlen( const char *s, size_t n, mbstate_t *ps );
 .if &farfnc eq 1 .do begin
 int _fmbrlen( const char far *s, size_t n, mbstate_t far *ps );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function determines the number of bytes comprising the
 multibyte character pointed to by

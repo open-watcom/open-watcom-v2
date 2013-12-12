@@ -12,7 +12,7 @@ FJSTRING __far _fjstrncat( JCHAR __far *dst,
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Concats' &ffunc
 .do end
-.funcend
+.synop end
 .desc begin
 .if &farfnc eq 0 .do begin
 The &func function appends

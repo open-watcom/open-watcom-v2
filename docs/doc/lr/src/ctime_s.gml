@@ -13,7 +13,7 @@ errno_t _wctime_s( wchar_t * s,
 .ixfunc2 '&TimeFunc' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
-.funcend
+.synop end
 .*
 .rtconst begin
 Neither

@@ -1,7 +1,7 @@
 .func labs
 #include <stdlib.h>
 long int labs( long int j );
-.funcend
+.synop end
 .*
 .desc begin
 The &func function returns the absolute value

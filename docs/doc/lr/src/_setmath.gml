@@ -3,7 +3,7 @@
 void _set_matherr( int (*rtn)( struct _exception *err_info ) )
 .ixfunc2 '&Errs' &func
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The default
 .kw matherr

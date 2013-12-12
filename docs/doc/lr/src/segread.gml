@@ -1,7 +1,7 @@
 .func segread
 #include <i86.h>
 void segread( struct SREGS *seg_regs );
-.funcend
+.synop end
 .desc begin
 The &func function places the values of the segment registers into
 the structure located by

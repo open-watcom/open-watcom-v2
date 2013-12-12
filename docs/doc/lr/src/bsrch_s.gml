@@ -7,7 +7,7 @@ void *bsearch_s( const void *key,
                  rsize_t size,
     int (*compar)( const void *k, const void *y, void *context ),
                  void *context );
-.funcend
+.synop end
 .*
 .rtconst begin
 Neither

@@ -2,7 +2,7 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 char *gets_s( char *s, rsize_t n );
-.funcend
+.synop end
 
 .rtconst freetext
 If any of the following runtime-constraints is violated, the currently

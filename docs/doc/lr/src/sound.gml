@@ -2,7 +2,7 @@
 #include <i86.h>
 void sound( unsigned frequency );
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function turns on the PC's speaker at the specified
 .arg frequency

@@ -2,7 +2,7 @@
 #include <fenv.h>
 int fetestexcept( int __excepts );
 .ixfunc2 'Floating Point Environment' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function determines which of a specified subset of the floatingpoint

@@ -2,7 +2,7 @@
 #include <fenv.h>
 int fegetround( void );
 .ixfunc2 'Floating Point Environment' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function gets the current rounding direction.

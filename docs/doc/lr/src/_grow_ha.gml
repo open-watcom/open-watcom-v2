@@ -2,7 +2,7 @@
 #include <stdio.h>
 int _grow_handles( int new_count );
 .ixfunc2 '&OsIo' &func
-.funcend
+.synop end
 .desc begin
 The &func function increases the number of POSIX level files that are
 allowed to be open at one time.

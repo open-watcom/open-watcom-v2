@@ -6,7 +6,7 @@ void movedata( unsigned int src_segment,
                unsigned int tgt_offset,
                size_t length );
 .ixfunc2 '&Copy' &func
-.funcend
+.synop end
 .desc begin
 The &func function copies
 .arg length

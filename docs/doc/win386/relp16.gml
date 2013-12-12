@@ -8,7 +8,7 @@ c$include 'winapi.fi'
 #include <windows.h>
 void ReleaseProc16( CALLBACKPTR cbp );
 .do end
-.funcend
+.synop end
 .desc begin
 &func releases the callback function allocated by
 .kw GetProc16

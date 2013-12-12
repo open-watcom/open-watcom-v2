@@ -2,7 +2,7 @@
 #include <float.h>
 int _finite( double x );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 .ix 'infinity'
 .ix 'NAN'

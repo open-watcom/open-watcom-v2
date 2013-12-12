@@ -3,7 +3,7 @@
 wctype_t wctype( const char *property );
 .ixfunc2 '&CharTest' &func
 .ixfunc2 '&Wide' &func
-.funcend
+.synop end
 .*
 .desc begin
 The &func function constructs a value with type

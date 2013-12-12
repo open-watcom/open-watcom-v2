@@ -1,7 +1,7 @@
 .func _ismbdpunct
 #include <mbstring.h>
 int _ismbdpunct( unsigned int ch );
-.funcend
+.synop end
 .desc begin
 .desc end
 .return begin

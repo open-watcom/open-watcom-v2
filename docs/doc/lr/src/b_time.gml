@@ -2,7 +2,7 @@
 #include <bios.h>
 int _bios_timeofday( int service, long *timeval );
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses INT 0x1A to get or set the current
 system clock value.

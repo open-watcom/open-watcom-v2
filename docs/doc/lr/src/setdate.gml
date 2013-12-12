@@ -9,7 +9,7 @@ struct dosdate_t {
         unsigned char dayofweek;/* 0-6 (0=Sunday) */
 };
 .ixfunc2 '&DosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses system call 0x2B to set the current system date.
 The date information is passed in a

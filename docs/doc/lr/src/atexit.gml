@@ -2,7 +2,7 @@
 #include <stdlib.h>
 int atexit( void (*func)(void) );
 .ixfunc2 '&Process' &func
-.funcend
+.synop end
 .desc begin
 The &func  function is passed the address of function
 .arg func

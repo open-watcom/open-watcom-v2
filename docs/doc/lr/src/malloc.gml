@@ -3,7 +3,7 @@
 #include <stdlib.h>
 void *malloc( size_t size );
 .ixfunc2 '&Memory' &func
-.func end
+.synop end
 .desc begin
 The &func function allocates space
 for an object of
@@ -59,7 +59,7 @@ void __near *_nmalloc( size_t size );
 .ixfunc2 '&Memory' _bmalloc
 .ixfunc2 '&Memory' _fmalloc
 .ixfunc2 '&Memory' _nmalloc
-.func end
+.synop end
 .desc begin
 The &func functions allocate space for an object of
 .arg size

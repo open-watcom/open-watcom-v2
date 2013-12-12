@@ -11,7 +11,7 @@ struct  diskinfo_t {        /* disk parameters   */
         void __far *buffer; /* buffer address    */
 };
 .ixfunc2 '&BiosFunc' &func
-.funcend
+.synop end
 .desc begin
 The &func function uses INT 0x13 to provide access to the BIOS
 disk functions.

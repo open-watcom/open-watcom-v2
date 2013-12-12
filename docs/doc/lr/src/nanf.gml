@@ -4,7 +4,7 @@ float nanf( const char *str );
 double nan( const char *str );
 long double nanl( const char *str );
 .ixfunc2 '&Math' &func
-.funcend
+.synop end
 .desc begin
 The &func function returns not-a-number, or NAN.  The argument
 .arg str

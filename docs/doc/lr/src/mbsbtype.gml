@@ -6,7 +6,7 @@ int _mbsbtype( const unsigned char *mbstr, int count );
 int _fmbsbtype( const unsigned char __far *mbstr,
                 int count );
 .do end
-.funcend
+.synop end
 .desc begin
 The &func function determines the type of a byte in a multibyte
 character string.
