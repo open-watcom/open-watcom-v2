@@ -43,11 +43,11 @@ Project
 :segment C_FOR_PB
   Editor "weditviw"  DLL
   Browse wbrg "wbrw"
-  Help ide.hlp
+  HelpFile ide.hlp
 :elsesegment FOR_OS2
   Editor "epmlink" DLL
   Browse wbrg wbrw
-  Help ide.hlp
+  HelpFile ide.hlp
 :elsesegment FOR_WIN
   Editor "$(%watcom)\\binw\\weditviw"  DLL
   Browse wbrg "$(%watcom)\\binw\\wbrw"
@@ -63,7 +63,7 @@ Project
   Action "&DDE Spy..."
     Command "$(%watcom)\\binw\\wddespy"
     Hint "Invoke WDDESPY utility"
-  Help ide.hlp
+  HelpFile ide.hlp
 :elsesegment FOR_NT
   Editor "weditviw" DLL
   Browse wbrg wbrw
@@ -79,8 +79,8 @@ Project
   Action "&DDE Spy..."
     Command "wddespy"
     Hint "Invoke WDDESPY utility"
-  Help ide.hlp
-  HtmlHelp ide.chm
+  HelpFile ide.hlp
+  HtmlHelpFile ide.chm
 :endsegment
 
 MsgLog

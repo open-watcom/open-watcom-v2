@@ -383,10 +383,10 @@ void MConfig::configProject( WTokenFile& fil, WString& tok )
             fil.token( _browse );
             expandMacroes( _browse );
             fil.token( tok );
-        } else if( tok == "Help" ) {
+        } else if( tok == "HelpFile" ) {
             fil.token( _helpFile );
             fil.token( tok );
-        } else if( tok == "HtmlHelp" ) {
+        } else if( tok == "HtmlHelpFile" ) {
             fil.token( _htmlHelpFile );
             fil.token( tok );
         } else if( tok == "TargetGroup" ) {
