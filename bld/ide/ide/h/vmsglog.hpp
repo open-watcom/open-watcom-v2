@@ -82,7 +82,7 @@ WCLASS VMsgLog : public WMdiChild
 
         void            loadConfig();
         void            loadHelpList();
-        const char*     findHelpFile( const char* file, WSystemHelp** hobj, int* offset );
+        int             findHelpFile( const char* file, WSystemHelp** hobj, int offset );
         bool            matchPattern( const char* p, int index, char* file, int& line, int& offset, char* help );
         bool            matchLine( int index, char* file, int& line, int& offset, char* help );
         void            selected( WWindow* );

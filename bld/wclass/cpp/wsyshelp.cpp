@@ -34,21 +34,22 @@
 
 
 WEXPORT WSystemHelp::WSystemHelp( WWindow *win, const char *title,
-                                  const char *hlib, const char *chmfile )
+                    const char *hlib, const char *chmfile, int offset )
     : _title( title )
     , _library( hlib )
     , _chmfile( chmfile )
+    , _offset( offset )
     , _helpWindow( win )
-    , _helpInstance( NULL ) {
+    , _helpInstance( NULL )
 /***************************/
-
+{
     _helpInstance = GUIHelpInit( win->handle(), (char *)hlib, (char *)title );
 }
 
 
-WEXPORT WSystemHelp::~WSystemHelp() {
-/***********************************/
-
+WEXPORT WSystemHelp::~WSystemHelp()
+/*********************************/
+{
     if( _helpInstance ) {
         if( _helpWindow->handle() ) {
             GUIHelpFini( _helpInstance, _helpWindow->handle(), (char *)_library );
@@ -57,66 +58,105 @@ WEXPORT WSystemHelp::~WSystemHelp() {
 }
 
 
-bool WEXPORT WSystemHelp::sysHelpContent( void ) {
-/************************************************/
-
+bool WEXPORT WSystemHelp::sysHelpContent( void )
+/**********************************************/
+{
     if( !_helpInstance ) {
         return( FALSE );
     }
-    if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_CONTENTS, (char *)_chmfile, NULL ) ) {
-        return( TRUE );
+#ifdef __NT__
+    if( _chmfile != NULL && *_chmfile != '\0' ) {
+        if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
+                             GUI_HELP_CONTENTS, (char *)_chmfile, NULL ) ) {
+            return( TRUE );
+        }
     }
+#endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_CONTENTS, (char *)_library, NULL ) );
 }
 
 
-bool WEXPORT WSystemHelp::sysHelpOnHelp( void ) {
-/***********************************************/
-
+bool WEXPORT WSystemHelp::sysHelpOnHelp( void )
+/*********************************************/
+{
     if( !_helpInstance ) {
         return( FALSE );
     }
+#ifdef __NT__
+#if 0
+    if( _chmfile != NULL && *_chmfile != '\0' ) {
+        if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
+                         GUI_HELP_ON_HELP, (char *)_chmfile, NULL ) ) {
+            return( TRUE );
+        }
+    }
+#endif
+#endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_ON_HELP, (char *)_library, NULL ) );
 }
 
 
-bool WEXPORT WSystemHelp::sysHelpSearch( const char *topic ) {
-/************************************************************/
-
+bool WEXPORT WSystemHelp::sysHelpSearch( const char *topic )
+/**********************************************************/
+{
     if( !_helpInstance ) {
         return( FALSE );
     }
-    if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_SEARCH, (char *)_chmfile, (char *)topic ) ) {
-        return( TRUE );
+#ifdef __NT__
+    if( _chmfile != NULL && *_chmfile != '\0' ) {
+        if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
+                             GUI_HELP_SEARCH, (char *)_chmfile, (char *)topic ) ) {
+            return( TRUE );
+        }
     }
+#endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_SEARCH, (char *)_library, (char *)topic ) );
 }
 
 
-bool WEXPORT WSystemHelp::sysHelpTopic( const char *topic ) {
-/***********************************************************/
-
+bool WEXPORT WSystemHelp::sysHelpTopic( const char *topic )
+/*********************************************************/
+{
     if( !_helpInstance ) {
         return( FALSE );
     }
-    if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
-                         GUI_HELP_KEY, (char *)_chmfile, (char *)topic ) ) {
-        return( TRUE );
+#ifdef __NT__
+    if( _chmfile != NULL && *_chmfile != '\0' ) {
+        if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
+                             GUI_HELP_KEY, (char *)_chmfile, (char *)topic ) ) {
+            return( TRUE );
+        }
     }
+#endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_KEY, (char *)_library, (char *)topic ) );
 }
 
 
-bool WEXPORT WSystemHelp::sysHelpId( int help_id ) {
-/**************************************************/
-
-    if( !_helpInstance ) return( FALSE );
+bool WEXPORT WSystemHelp::sysHelpId( int help_id )
+/************************************************/
+{
+    if( !_helpInstance ) {
+        return( FALSE );
+    }
+#ifdef __NT__
+    if( _chmfile != NULL && *_chmfile != '\0' ) {
+        return( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
+                         GUI_HELP_CONTEXT, (char *)_chmfile, (char *)(pointer_int)help_id ) );
+    }
+#endif
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_CONTEXT, (char *)_library, (char *)(pointer_int)help_id ) );
+}
+
+const char * WEXPORT WSystemHelp::getHelpFile( void )
+/***************************************************/
+{
+    if( _chmfile != NULL && *_chmfile != '\0' ) {
+        return( _chmfile );
+    }
+    return( _library );
 }

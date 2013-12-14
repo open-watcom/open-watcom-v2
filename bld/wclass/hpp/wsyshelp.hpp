@@ -34,13 +34,13 @@
 #define wsyshelp_class
 
 #include "wobject.hpp"
-#include "wsyshelp.hpp"
 #include "wwindow.hpp"
 
 WCLASS WSystemHelp : public WObject {
     public:
         WEXPORT WSystemHelp( WWindow *, const char *title,
-                             const char *library, const char *chmfile = NULL );
+                        const char *library, const char *chmfile = NULL,
+                        int offset = 0 );
         WEXPORT ~WSystemHelp();
 
         bool WEXPORT sysHelpContent( void );
@@ -48,11 +48,15 @@ WCLASS WSystemHelp : public WObject {
         bool WEXPORT sysHelpSearch( const char *topic );
         bool WEXPORT sysHelpTopic( const char *topic );
         bool WEXPORT sysHelpId( int help_id );
+        const char * WEXPORT getHelpFile( void );
+        const char * WEXPORT getHelpTitle( void ) { return( _title ); };
+        int WEXPORT getHelpOffset( void ) { return( _offset ); };
 
     private:
         const char              *_title;
         const char              *_library;
         const char              *_chmfile;
+        int                     _offset;
         WWindow                 *_helpWindow;
         gui_help_instance       _helpInstance;
 };

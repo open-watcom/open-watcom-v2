@@ -269,7 +269,7 @@ void VMsgLog::getState( bool& editOk, bool& helpOk )
             if( strlen( file ) > 0 ) {
                 editOk = TRUE;
             }
-            int hcount = _config->logHelpFiles().count();
+            int hcount = _helpList.count();
             if( hcount > 0 && strlen( help ) > 0 ) {
                 helpOk = TRUE;
             }
@@ -649,7 +649,7 @@ bool VMsgLog::matchLine( int index, char* file, int& line, int& offset, char* he
                 if( data->match( "cd *" ) ) {
                     WString dir( &(*data)[3] );
                     int dirLen = dir.size()-1;
-                    if( dir[ dirLen ] != '\\' ) {
+                    if( dir[dirLen] != '\\' ) {
                         dir.concat( '\\' );
                     }
                     f.absoluteTo( dir );
@@ -665,48 +665,61 @@ bool VMsgLog::matchLine( int index, char* file, int& line, int& offset, char* he
 
 void VMsgLog::loadHelpList()
 {
-    int hcount = _config->logHelpFiles().count();
+    int hcount;
+
+#ifdef __NT__
+    hcount = _config->logHtmlHelpFiles().count();
     for( int i=0; i<hcount; i+=LOG_HELP_WIDTH ) {
-        const char* hx = *(WString*)_config->logHelpFiles()[ i ];
-        const char* hf = *(WString*)_config->logHelpFiles()[ i + 1 ];
-        _helpList.add( new WSystemHelp( this, hx, hf ) );
+        const char* hx = *(WString*)_config->logHtmlHelpFiles()[i];
+        const char* hf = *(WString*)_config->logHtmlHelpFiles()[i + 1];
+        int offset = atoi( *(WString*)_config->logHtmlHelpFiles()[i + 2] );
+        _helpList.add( new WSystemHelp( this, hx, NULL, hf, offset ) );
+    }
+#endif
+    hcount = _config->logHelpFiles().count();
+    for( int i=0; i<hcount; i+=LOG_HELP_WIDTH ) {
+        const char* hx = *(WString*)_config->logHelpFiles()[i];
+        const char* hf = *(WString*)_config->logHelpFiles()[i + 1];
+        int offset = atoi( *(WString*)_config->logHelpFiles()[i + 2] );
+        _helpList.add( new WSystemHelp( this, hx, hf, NULL, offset ) );
     }
 }
 
-const char* VMsgLog::findHelpFile( const char* file, WSystemHelp** hobj, int* offset )
+int VMsgLog::findHelpFile( const char *file, WSystemHelp **hobj, int from )
 {
-    const char* hf = NULL;
     if( strlen( file ) > 0 ) {
-        int hcount = _config->logHelpFiles().count();
+        int hcount = _helpList.count();
         if( hcount > 0 ) {
             WFileName f( file );
-            for( int i=0; i<hcount; i+=LOG_HELP_WIDTH ) {
-                const char* hx = *(WString*)_config->logHelpFiles()[ i ];
-                if( strieq( hx, f.ext() ) ) {
-                    hf = *(WString*)_config->logHelpFiles()[ i + 1 ];
-                    if( hobj ) *hobj = (WSystemHelp*)_helpList[ i/LOG_HELP_WIDTH ];
-                    if( offset ) *offset = atoi( *(WString*)_config->logHelpFiles()[ i + 2 ] );
-                    break;
+            while( from < hcount ) {
+                WSystemHelp *shf = (WSystemHelp *)_helpList[from++];
+                if( strieq( shf->getHelpTitle(), f.ext() ) ) {
+                    if( hobj )
+                        *hobj = shf;
+                    return( from );
                 }
             }
         }
     }
-    return hf;
+    return( 0 );
 }
 
 void VMsgLog::helpRequest( WMenuItem* )
 {
     int index = _batcher->selected();
     if( index >= 0 ) {
-        char file[101]; int line, offset; char help[51];
+        char file[101];
+        int line, offset;
+        char help[51];
         if( matchLine( index, file, line, offset, help ) ) {
             WSystemHelp* hobj;
-            int offset;
-            if( findHelpFile( file, &hobj, &offset ) ) {
-                if( !hobj->sysHelpId( atoi( help ) + offset ) ) {
-                    WMessageDialog::info( this, "No help available for error %s.", help );
+            int next = 0;
+            while( (next = findHelpFile( file, &hobj, next )) != 0 ) {
+                if( hobj->sysHelpId( atoi( help ) + hobj->getHelpOffset() ) ) {
+                    return;
                 }
             }
+            WMessageDialog::info( this, "No help available for error %s.", help );
         }
     }
 }
@@ -720,11 +733,16 @@ void VMsgLog::editRequest( WMenuItem* )
 {
     int index = _batcher->selected();
     if( index >= 0 ) {
-        const char* text = *(WString*)_data[ index ];
+        const char* text = *(WString*)_data[index];
         char file[101]; int line, offset; char help[51];
         if( matchLine( index, file, line, offset, help ) ) {
-            const char* hf = findHelpFile( file, NULL, NULL );
-            if( !hf ) hf = "";
+            WSystemHelp *sh;
+            const char *hf;
+            if( findHelpFile( file, &sh, 0 ) == 0 ) {
+                hf = "";
+            } else {
+                hf = sh->getHelpFile();
+            }
             WString msg;
             int resId = atoi( help ) + 1;
             WFileName filename( file );

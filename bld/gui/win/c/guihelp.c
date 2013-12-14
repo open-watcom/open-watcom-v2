@@ -130,7 +130,7 @@ static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, char *title, char *
     inst = inst;
     title = title;
     help_file = help_file;
-    return( (gui_help_instance)help_file );
+    return( (gui_help_instance)TRUE );
 }
 
 static void FiniHelp( gui_help_instance inst, HWND hwnd, char *file )
@@ -179,6 +179,12 @@ bool DisplayHelpContext( gui_help_instance inst, HWND hwnd, char *file, char *to
 {
     inst=inst;
     return( WWinHelp( hwnd, file, (UINT)HELP_CONTEXT, (HELP_DATA)topic ) );
+}
+
+bool DisplayHelpContextHH( gui_help_instance inst, HWND hwnd, char *file, char *topic )
+{
+    inst=inst;
+    return( WHtmlHelp( hwnd, file, (UINT)HELP_CONTEXT, (HELP_DATA)topic ) );
 }
 
 bool DisplayHelpKey( gui_help_instance inst, HWND hwnd, char *file, char *topic )
@@ -240,7 +246,8 @@ bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions 
 
     ret = FALSE;
 
-#ifndef __OS2_PM__
+#ifdef __OS2_PM__
+#elif defined( __NT__ )
     switch( act ) {
     case GUI_HELP_CONTENTS:
         ret = DisplayContentsHH( inst, wnd->hwnd, file );
@@ -248,12 +255,14 @@ bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions 
     case GUI_HELP_SEARCH:
         ret = DisplayHelpSearchHH( inst, wnd->hwnd, file, topic );
         break;
+    case GUI_HELP_CONTEXT:
+        ret = DisplayHelpContextHH( inst, wnd->hwnd, file, topic );
+        break;
     case GUI_HELP_KEY:
         ret = DisplayHelpKeyHH( inst, wnd->hwnd, file, topic );
         break;
     }
 #endif
-
     return( ret );
 }
 
@@ -282,16 +291,16 @@ bool GUIDisplayHelpWin4( gui_window *wnd, char *file, char *topic )
     return( FALSE );
 #else
     if( topic == NULL ) {
-        #if defined( __NT__ )
-            DWORD   version;
+  #if defined( __NT__ )
+        DWORD   version;
 
-            version = GetVersion();
-            version = 100 * LOBYTE(LOWORD(version)) + HIBYTE(LOWORD(version));
-            if( version >= 351 ) {
-                // NT 3.51 or higher
-                return( WWinHelp( wnd->hwnd, file, (UINT)HELP_FINDER, 0 ) );
-            }
-        #endif
+        version = GetVersion();
+        version = 100 * LOBYTE(LOWORD(version)) + HIBYTE(LOWORD(version));
+        if( version >= 351 ) {
+            // NT 3.51 or higher
+            return( WWinHelp( wnd->hwnd, file, (UINT)HELP_FINDER, 0 ) );
+        }
+  #endif
         return( WWinHelp( wnd->hwnd, file, (UINT)HELP_INDEX, 0 ) );
     } else {
         return( WWinHelp( wnd->hwnd, file, (UINT)HELP_KEY, (HELP_DATA)topic ) );
