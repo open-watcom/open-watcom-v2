@@ -89,6 +89,10 @@ bool WEXPORT WSystemHelp::sysHelpSearch( const char *topic ) {
     if( !_helpInstance ) {
         return( FALSE );
     }
+    if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
+                         GUI_HELP_SEARCH, (char *)_chmfile, (char *)topic ) ) {
+        return( TRUE );
+    }
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_SEARCH, (char *)_library, (char *)topic ) );
 }

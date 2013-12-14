@@ -235,7 +235,7 @@ WEXPORT VpeMain::VpeMain()
 
     createStatusBar();
 
-    _help = new WSystemHelp( this, _viperTitle, _config->helpFile() );
+    _help = new WSystemHelp( this, _viperTitle, _config->helpFile(), _config->htmlHelpFile() );
 
     if( !_config->debug() ) {
         _myHandle.printf( "V%04x", proc.processId() );
