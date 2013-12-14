@@ -182,8 +182,8 @@ static char *formHex( char *ptr, memsize data, uint size )
 }
 
 #if defined(_M_I86LM) || defined(_M_I86HM) || defined(_M_I86MM) || defined(_M_I86CM)
-static char * formFarPtr( char *ptr, void far *data )
-/***************************************************/
+static char * formFarPtr( char *ptr, void __far *data )
+/*****************************************************/
 {
     ptr = formHex( ptr, FP_SEG( data ), 2 );
     *ptr = ':';
@@ -191,7 +191,7 @@ static char * formFarPtr( char *ptr, void far *data )
 #ifdef __WATCOMC__
 #pragma warning 579 9;  // shut up pointer truncated warning for FP_OFF
 #endif
-    return formHex( ptr, FP_OFF( data ), sizeof( void near * ) );
+    return formHex( ptr, FP_OFF( data ), sizeof( void __near * ) );
 #ifdef __WATCOMC__
 #pragma warning 579 4;  // reenable pointer truncated warning
 #endif
