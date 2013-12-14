@@ -251,10 +251,12 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
 !ifdef book_bmroot
     cp -f $(book_bmroot)/*.bmp $(hbook)/ > $(nulldevice)
 !endif
+    cp -f $(hbook).h $(hbook)/$(hbook).h > $(nulldevice)
     awk -f ../splithtm.awk -v dir=$(hbook) $(hbook).htm
+    awk -f ../makehha.awk $(hbook).htm >$(hbook)/$(hbook).hha
     awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
     awk -f ../makehhk.awk $(hbook).mix >$(hbook)/$(hbook).hhk
-    awk -f ../makehhp.awk -v hhcfile=$(hbook).hhc -v hhkfile=$(hbook).hhk $(hbook).htm >$(hbook)/$(hbook).hhp
+    awk -f ../makehhp.awk -v hbook=$(hbook) $(hbook).htm >$(hbook)/$(hbook).hhp
 !ifeq bld_os linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_hh) $(hbook)/$(hbook).hhp
