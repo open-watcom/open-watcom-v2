@@ -202,7 +202,6 @@ static int setup_os_env( const char *watcom )
         free( buf );
         return( -8 );
     }
-    free( buf );
 #else
     return( 0 );
 #endif
