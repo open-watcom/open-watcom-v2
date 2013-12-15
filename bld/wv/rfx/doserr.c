@@ -34,6 +34,7 @@ extern char *Format(char *,char *,... );
 extern char *StrCopy(char *,char *);
 
 char *DosErrMsgs[] = {
+    "",
     #define pickdoserr(id,text) text,
     #include "_doserr.h"
     #undef pickdoserr
