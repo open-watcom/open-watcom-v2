@@ -23,8 +23,7 @@ set PROJNAME=docs
     <CCCMD> htmlhelp/*.chi  <OWRELROOT>/binnt/help/
     <CCCMD> htmlhelp/*.chm  <OWRELROOT>/binnt/help/
     <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
-    <CPCMD> readme.txt      <OWRELROOT>/readme.txt
-    <CPCMD> freadme.txt     <OWRELROOT>/freadme.txt
+    <CCCMD> txt/*.txt       <OWRELROOT>/
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
 
 [ BLOCK . . ]

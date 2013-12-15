@@ -88,6 +88,7 @@ dep_ps = $(hbook).ps
 !ifdef %OWGHOSTSCRIPTPATH
 dep_pdf = $(hbook).pdf
 !endif
+dep_txt = readme.txt freadme.txt
 
 #
 # There should be settings for supported building platforms
@@ -376,6 +377,21 @@ $(hbook).h $(hbook).htm : $(book_objs) $(proj_objs)
 !endif
 !endif
     @%make compile_gml_to_xxx
+
+####################################################
+#
+# make TXT help files
+#
+####################################################
+!else ifeq dotarget txt
+
+.EXTENSIONS: .txt
+
+readme.txt : ../readme.sp
+    wsplice -kC $[@ $@
+
+freadme.txt : ../readme.sp
+    wsplice -kF77 $[@ $@
 
 !endif
 

@@ -69,7 +69,11 @@ books=$($(dotarget))
 !endif
 
 !ifeq books
+!ifeq dotarget txt
+books=txt
+!else
 !error Unsuported dotarget ($(dotarget)) for documentation. Must be dos, html, htmlhelp, nt, os2, pdf, ps or win.
+!endif
 !endif
 
 !ifdef hbook
@@ -606,6 +610,8 @@ book_objs=$(objs_wipfc)
 book_incs=$(incs_wipfc)
 book_src=wipfc
 book_multi_chapter=1
+
+!else ifeq dotarget txt
 
 !else
 

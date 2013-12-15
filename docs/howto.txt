@@ -18,49 +18,42 @@ How to Set it up
 ================
 
 A Win32 or OS/2 system can be used to produce most of the documentation.
-OS/2 Warp is required for the final step in producing the OS/2 online help
-files (unless you have an IPF compiler that runs under Win32) and Win32 system
-is needed for producing Windows help files (unless you can run the required
-help compilers under OS/2). DOS may work too but it is untested at this time.
+Win32 system is needed for producing Windows help files (unless you can run
+the required help compilers under OS/2).
+DOS may work too but it is untested at this time.
 
-The environment variable "doc_root" must point to the root of the doc
-tree (the place where cmds, doc, gml, and Hlp directories are located).
-If you're wondering where the Hlp directory is, run mkdocs.bat/mkdocs.cmd
-located in the bat directory. But first you'll need to do something like
+The environment variable "OWROOT" must point to the root of the OW
+tree. Add %OWROOT%\docs\cmds to your PATH. Your PATH must also contain the 
+Watcom C/C++ binary directories appropriate for your host platform (for wmake).
+This is taken care of automatically by using setvars.cmd/setvars.bat.
 
- set doc_root=d:\OpenWatcom\docs
-
-Add %doc_root%\cmds to your PATH. Your PATH must also contain the Watcom C/C++
-binary directories appropriate for your host platform (for wmake). This is
-taken care of automatically by using setvars.cmd/setvars.bat.
-
-Note that to produce Windows and/or OS/2 online documentation, you will need
-the appropriate SDKs and Toolkits containing the platform specific online
+Note that to produce Windows online documentation, you will need the
+appropriate SDKs and Toolkits containing the platform specific online
 help compilers.
 
 
 How it is organized
 ===================
 
-Under the main directory are number of sub-directories.
+Under the main documentation directory are number of sub-directories.
 
-.\gml       It is main directory for GML SCRIPT. It contains all GML support files.
+gml       It is main directory for GML SCRIPT. It contains all GML support files.
 
-.\doc       Main documentation source directory.
+doc       Main documentation source directory.
 
-.\cmds      It contains arbitrary files for creating on-line help version (help compilers etc.).
+cmds      It contains arbitrary files for creating on-line help version (help compilers etc.).
 
-.\mif       Contains makefiles for the documentation building system.
+mif       Contains makefiles for the documentation building system.
 
-.\dos .\os2 .\win .\nt Here on-line help version are created for each operating system.
+dos os2 win nt Here on-line help version are created for each operating system.
 
-.\ps        Here the post script documentation is created.
+ps        Here the post script documentation is created.
 
-.\html      Html version of the documentation is there.
+html      Html version of the documentation is there.
 
-.\htmlhelp  Windows Html version of the documentation is there.
+htmlhelp  Windows Html version of the documentation is there.
 
-.\pdf       Here the PDF documentation is created.
+pdf       Here the PDF documentation is created.
 
 
 How to Build Postscript Versions of the Documentation
@@ -132,18 +125,9 @@ For Microsoft Help format (both old and new help formats):
     builder rel os_nt (for new win32 format only).
 
 
-
-    If you can build only one book than you must change current directory to
-    win or nt sub-directory and you can use command
-
-    wmake hbook=<book>
-
-    where <book> is book code.
-
-
     The Win16 format help files (*.hlp) are created in the
-    %doc_root%\win directory. The Win32 format help files (*.hlp,
-    *.cnt) are cerated in the %doc_root%\nt directory.
+    docs\win directory. The Win32 format help files (*.hlp,
+    *.cnt) are cerated in the docs\nt directory.
 
 For Watcom Help format (for Watcom WHELP command):
 
@@ -155,7 +139,7 @@ For Watcom Help format (for Watcom WHELP command):
 
 
     The WHELP format help files (*.ihp) are copied to the
-    %doc_root%\dos directory.
+    docs\dos directory.
 
 For OS/2 Help format:
 
@@ -163,34 +147,18 @@ For OS/2 Help format:
 
     builder rel os_os2
 
-    to create all the IPF files for the OS/2 IPF compiler.
+    to create all online help.
 
-    Transfer the IPF files, bitmap files, etc. to an OS/2 system.
+    The OS/2 Help format help files (*.inf) are copied to the
+    docs\os2 directory.
 
-    Look at cpos2.bat for an example of what needs to be copied and what
-    directories are set up.
+Note:
+    If you want build only one book than you must change current directory to
+    appropriate sub-directory and you can use command
 
-    Under OS/2:
-    Define the doc_root environment variable.
+    wmake hbook=<book>
 
-    Run doit.cmd under OS/2 to produce the INF and HLP files.
-
-    Look at doit.cmd for a hint on how to do one document at a time.
-    Or read on if you're lazy.
-
-    Note: If, under OS/2, you get a "memory exhausted" (out of memory)
-    message from the IPF compiler then, under Win32, erase the WHP and IPF
-    file for the document in question and recreate it (I don't understand
-    why but it just makes the problem go away).  This problem usually only
-    shows up for the CMIX and FMIX (master index) files (which are huge).
-
-    The OS/2 format help files (*.INF, *.HLP) should be moved to the
-    %doc_root%\os2 directory on the Win32 platform.
-
-    To format one document at a time, go to the appropriate directory
-    (for instance docs\os2) and run wmake with argument
-    hbook=<book_name> where <book_name> is one of the online books listed
-    above.
+    where <book> is book code.
 
 
 How to Update the Documentation

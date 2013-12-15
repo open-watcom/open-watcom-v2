@@ -35,6 +35,8 @@ clean : .procedure
 
  @if exist *.ch? rm -f *.ch?
 
+ @if exist *.txt rm -f *.txt
+
 !ifeq dotarget ps
  @if exist tmp rm -f tmp/*.ps tmp/*.tmp tmp/*.bmp
  @if exist tmp rmdir tmp

@@ -21,3 +21,6 @@
 
 /win/*
 !/win/makefile
+
+/txt/*
+!/txt/makefile
