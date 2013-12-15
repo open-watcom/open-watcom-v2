@@ -8,16 +8,4 @@ host_cpu = 386
 
 syshdir = ../h;../../dos/h
 
-sysobjs =   &
-    dsxfork.obj &
-    dsxstart.obj &
-    dsxchk.obj &
-    dsxcmd.obj &
-    dsxfilio.obj &
-    dsxscrn.obj &
-    dsxlkup.obj &
-    dsxhdlr.obj &
-    dsxmem.obj
-
-
 !include ../../master.mif

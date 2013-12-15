@@ -8,13 +8,4 @@ host_cpu=i86
 
 sys_windowed = 1
 
-sysobjs =   &
-    autoenv.obj &
-    wininit.obj &
-    winchk.obj &
-    wincmd.obj &
-    winfilio.obj &
-    winlkup.obj &
-    wguiscrn.obj
-
 !include ../../master.mif

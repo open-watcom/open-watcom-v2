@@ -1,0 +1,2 @@
+#include "banner.h"
+#include "strings.rc"

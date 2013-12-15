@@ -12,8 +12,6 @@ extra_c_flags= -br
 
 all : wdb.exe .SYMBOLIC
 
-sysobjs = ntstub.obj ntfilio.obj winlkup.obj winchk.obj ntcmd.obj ntfinfo.obj
-
 !include ../../master.mif
 
 wdb.exe : $(resfile) wdbstub.obj wd.lib $(__MAKEFILES__)

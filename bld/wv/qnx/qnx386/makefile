@@ -5,12 +5,4 @@
 host_os  = qnx
 host_cpu = 386
 
-sysobjs = &
-        qnxinit.obj  &
-        qnxlkup.obj  &
-        qnxchk.obj   &
-        qnxcmd.obj   &
-        qnxfilio.obj &
-        qnxscrn.obj
-
 !include ../../master.mif

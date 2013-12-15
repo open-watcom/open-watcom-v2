@@ -13,8 +13,6 @@ extra_c_flags = -br
 
 all : dve.exe .SYMBOLIC
 
-sysobjs = os22flio.obj os2cmd.obj os22ini.obj os2chk.obj autoenv.obj
-
 !include ../../master.mif
 
 dve.exe : $(resfile) stubdb.obj wd.lib $(__MAKEFILES__)

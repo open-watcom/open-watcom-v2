@@ -13,8 +13,6 @@ extra_c_flags= -br
 
 all : dve.exe .SYMBOLIC
 
-sysobjs = ntstub.obj ntfilio.obj winlkup.obj winchk.obj ntcmd.obj ntfinfo.obj
-
 !include ../../master.mif
 
 dve.exe : $(resfile) stubdb.obj wd.lib $(__MAKEFILES__)

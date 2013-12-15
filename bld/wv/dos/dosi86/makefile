@@ -9,17 +9,4 @@ host_cpu=i86
 ovl_dos = 1
 # really_ovl_dos = 1
 
-sysobjs =   &
-    fork.obj &
-    dosstl.obj &
-    doschk.obj &
-    doscmd.obj &
-    dosfilio.obj &
-    doslkup.obj &
-    dosmem.obj &
-    dosgrow.obj &
-    dosalloc.obj &
-    dostrap.obj &
-    dosscrn.obj
-
 !include ../../master.mif

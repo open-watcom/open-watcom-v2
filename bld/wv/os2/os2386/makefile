@@ -8,12 +8,4 @@ host_cpu = 386
 
 syshdir  =
 
-sysobjs =            &
-        autoenv.obj  &
-        os22ini.obj  &
-        os2chk.obj   &
-        os2cmd.obj   &
-        os22flio.obj &
-        os2scrn.obj
-
 !include ../../master.mif

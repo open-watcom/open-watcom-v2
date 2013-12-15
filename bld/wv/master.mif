@@ -42,167 +42,7 @@ verrc_exe = wd
 
 !include trmem.mif
 
-engine_objs = &
-        $(trmem_objs) &
-        $(dip_objs) &
-        $(mad_objs) &
-        $(trap_objs) &
-        dumb.obj &
-        spawn.obj &
-        dbgchain.obj &
-        dbgvar.obj &
-        dbgvset.obj &
-        dbgass.obj &
-        dbgimg.obj &
-        dbglist.obj &
-        dbgpend.obj &
-        ambigsym.obj &
-        addarith.obj &
-        dbgbrk.obj &
-        dbgcall.obj &
-        dbgcall2.obj &
-        dbgcmd.obj &
-        dbgcmdln.obj &
-        dbgdot.obj &
-        dbgexec.obj &
-        dbgexpr.obj &
-        dbgexpr2.obj &
-        dbgexpr3.obj &
-        dbgexpr4.obj &
-        dbgfile.obj &
-        dbghook.obj &
-        dbginvk.obj &
-        dbglkup.obj &
-        dbgloc.obj &
-        dbglog.obj &
-        dbgmain.obj &
-        dbgmem.obj &
-        memtypes.obj &
-        dbgmisc.obj &
-        dbgovl.obj &
-        dbgparse.obj &
-        dbgprint.obj &
-        dbgreg.obj &
-        dbgscan.obj &
-        dbgshow.obj &
-        dbgsrc.obj &
-        dbgstdio.obj &
-        dbgsys.obj &
-        dbgutil.obj &
-        dbg_dbg.obj &
-        dbgprog.obj &
-        strutil.obj &
-        stub.obj &
-        dbgwalk.obj &
-        dynmem.obj &
-        dbgsem.obj &
-        dbgtrace.obj &
-        dbgexins.obj &
-        dbgexdat.obj &
-        dbgmodfy.obj &
-        dbgtback.obj &
-        dbgerr.obj &
-        namelist.obj &
-        modlist.obj &
-        sortlist.obj &
-        remmisc.obj &
-        remcore.obj &
-        remfinfo.obj &
-        remenv.obj &
-        remfile.obj &
-        remthrd.obj &
-        remrtrd.obj &
-        removl.obj &
-        remasync.obj &
-        ldsupp.obj &
-        doserr.obj &
-        diginter.obj &
-        dipinter.obj &
-        madinter.obj &
-        dbglit.obj &
-        dbginsty.obj &
-        dbgdata.obj &
-        dbgevent.obj &
-        dbgdll.obj &
-        dlgscan.obj &
-        dbgset.obj &
-        srcmgt.obj &
-        dbgupdt.obj &
-        symcomp.obj &
-        litengin.obj
-
-ui_objs = &
-        litwd.obj &
-        dui.obj &
-        dbgwset.obj &
-        dbginsp.obj &
-        dbgicon.obj &
-        dbgdisp.obj &
-        dbgpaint.obj &
-        dbgcap.obj &
-        wndalloc.obj &
-        dlgambig.obj &
-        dlgscomp.obj &
-        modcomp.obj &
-        wndsys.obj &
-        wnddump.obj &
-        dbgintrn.obj &
-        dlgabout.obj &
-        dlgstk.obj &
-        dlgayn.obj &
-        dlgsrc.obj &
-        dlgdll.obj &
-        dlglist.obj &
-        dlgfile.obj &
-        dlgnewp.obj &
-        dlgexpr.obj &
-        dlgbreak.obj &
-        dlgvarx.obj &
-        dlgcmd.obj &
-        dlgnewws.obj &
-        dlgasync.obj &
-        wndhelp.obj &
-        wndmenu.obj &
-        dbgwfpu.obj &
-        dbgwmac.obj &
-        dbgwglob.obj &
-        dbgwfunc.obj &
-        dbgwcall.obj &
-        dbgwmod.obj &
-        dbgwsrch.obj &
-        dbgwdlg.obj &
-        dbgwfil.obj &
-        dbgwass.obj &
-        dbgwimg.obj &
-        dbgwbrk.obj &
-        dbgwio.obj &
-        dbgwrep.obj &
-        dbgwmem.obj &
-        dbgwregs.obj &
-        dbgwmmx.obj &
-        dbgwxmm.obj &
-        dbgwmadr.obj &
-        dbgwtogl.obj &
-        dbgwvar.obj &
-        dbgwthrd.obj &
-        dbgwrtrd.obj &
-        dlgwind.obj &
-        dbgwdata.obj &
-        dlgoptn.obj &
-        dbgtool.obj &
-        dbgfing.obj
-
-!ifneq sys_windowed 1
-objs_win_i86        = helpio.obj
-objs_nt_386         = helpio.obj
-objs_os2_i86        = helpio.obj
-objs_dos_386        = helpio.obj
-objs_qnx_i86        = helpio.obj
-objs_qnx_386        = helpio.obj
-objs_nt_axp         = helpio.obj
-!endif
-
-ui_objs += $(objs_$(host_os)_$(host_cpu))
+!include $(wv_dir)/wvobjs.mif
 
 objs = $(engine_objs) $(ui_objs)
 
@@ -332,7 +172,7 @@ resname = $(resname_$(host_os))
 resname = wvui
 !endif
 !ifdef dll
-resname=$+$(resname)$-dll
+resname = wvuidll
 !endif
 resfile = $(resname).res
 
@@ -346,9 +186,9 @@ extra_ldflags = -ldl
 !endif
 !endif
 
-$(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) $(sysobjs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
+$(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(objs) $(sysobjs) fingmsg.obj $(libs) $(ldflags)
+        $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
         %create $^&.lnk
         @%append $^&.lnk option map,verbose,nocache
@@ -377,9 +217,9 @@ $(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) $(sysobjs) fingmsg.
         $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
 !endif
 
-wd.lib : litdef.gh $(engine_objs) $(sysobjs)
+wd.lib : litdef.gh $(engine_objs)
         @%create tmp.lbc
-        @for %i in ($(engine_objs) $(sysobjs)) do @%append tmp.lbc +%i
+        @for %i in ($(engine_objs)) do @%append tmp.lbc +%i
         $(librarian) $(libflags) @tmp.lbc
 
 $(lnk) : $(__MAKEFILES__)
@@ -588,10 +428,7 @@ rcfiles = &
 wvui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh .autodepend
         $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvntdll.res : $(rdir)/strings.rc litdef.gh .autodepend
-        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
-
-wvpmdll.res : $(rdir)/strings.rc litdef.gh .autodepend
+wvuidll.res : $(rdir)/wvuidll.rc litdef.gh .autodepend
         $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvwin.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend

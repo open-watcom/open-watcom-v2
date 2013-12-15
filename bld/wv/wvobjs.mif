@@ -1,0 +1,241 @@
+engine_objs = &
+    $(trmem_objs) &
+    $(dip_objs) &
+    $(mad_objs) &
+    $(trap_objs) &
+    dumb.obj &
+    spawn.obj &
+    dbgchain.obj &
+    dbgvar.obj &
+    dbgvset.obj &
+    dbgass.obj &
+    dbgimg.obj &
+    dbglist.obj &
+    dbgpend.obj &
+    ambigsym.obj &
+    addarith.obj &
+    dbgbrk.obj &
+    dbgcall.obj &
+    dbgcall2.obj &
+    dbgcmd.obj &
+    dbgcmdln.obj &
+    dbgdot.obj &
+    dbgexec.obj &
+    dbgexpr.obj &
+    dbgexpr2.obj &
+    dbgexpr3.obj &
+    dbgexpr4.obj &
+    dbgfile.obj &
+    dbghook.obj &
+    dbginvk.obj &
+    dbglkup.obj &
+    dbgloc.obj &
+    dbglog.obj &
+    dbgmain.obj &
+    dbgmem.obj &
+    memtypes.obj &
+    dbgmisc.obj &
+    dbgovl.obj &
+    dbgparse.obj &
+    dbgprint.obj &
+    dbgreg.obj &
+    dbgscan.obj &
+    dbgshow.obj &
+    dbgsrc.obj &
+    dbgstdio.obj &
+    dbgsys.obj &
+    dbgutil.obj &
+    dbg_dbg.obj &
+    dbgprog.obj &
+    strutil.obj &
+    stub.obj &
+    dbgwalk.obj &
+    dynmem.obj &
+    dbgsem.obj &
+    dbgtrace.obj &
+    dbgexins.obj &
+    dbgexdat.obj &
+    dbgmodfy.obj &
+    dbgtback.obj &
+    dbgerr.obj &
+    namelist.obj &
+    modlist.obj &
+    sortlist.obj &
+    remmisc.obj &
+    remcore.obj &
+    remfinfo.obj &
+    remenv.obj &
+    remfile.obj &
+    remthrd.obj &
+    remrtrd.obj &
+    removl.obj &
+    remasync.obj &
+    ldsupp.obj &
+    doserr.obj &
+    diginter.obj &
+    dipinter.obj &
+    madinter.obj &
+    dbglit.obj &
+    dbginsty.obj &
+    dbgdata.obj &
+    dbgevent.obj &
+    dbgdll.obj &
+    dlgscan.obj &
+    dbgset.obj &
+    srcmgt.obj &
+    dbgupdt.obj &
+    symcomp.obj &
+    litengin.obj &
+    autoenv.obj
+
+engine_objs_dosi86 = &
+    fork.obj &
+    dosstl.obj &
+    doschk.obj &
+    doscmd.obj &
+    dosfilio.obj &
+    doslkup.obj &
+    dosmem.obj &
+    dosgrow.obj &
+    dosalloc.obj &
+    dostrap.obj
+
+engine_objs_dos386 = &
+    dsxfork.obj &
+    dsxstart.obj &
+    dsxchk.obj &
+    dsxcmd.obj &
+    dsxfilio.obj &
+    dsxlkup.obj &
+    dsxhdlr.obj &
+    dsxmem.obj
+
+engine_objs_linux = &
+    lnxinit.obj &
+    linuxcmd.obj &
+    linuxio.obj &
+    lnxlkup.obj &
+    lnxchk.obj
+
+engine_objs_os2 = &
+    os2chk.obj &
+    os2cmd.obj
+
+engine_objs_os2386 = &
+    os22ini.obj &
+    os22flio.obj
+
+engine_objs_os2i86 = &
+    os2init.obj &
+    os2lkup.obj &
+    os2filio.obj
+
+engine_objs_qnx386 = &
+    qnxinit.obj &
+    qnxlkup.obj &
+    qnxchk.obj &
+    qnxcmd.obj &
+    qnxfilio.obj
+
+engine_objs_rdos386 = &
+    rdosinit.obj &
+    rdosio.obj &
+    rdoscmd.obj &
+    rdoschk.obj &
+    rdoslkup.obj
+
+engine_objs_nt = &
+    ntinit.obj &
+    ntfilio.obj &
+    ntfinfo.obj &
+    ntcmd.obj &
+    winchk.obj &
+    winlkup.obj
+
+engine_objs_wini86 = &
+    wininit.obj &
+    winchk.obj &
+    wincmd.obj &
+    winfilio.obj &
+    winlkup.obj
+
+ui_objs = &
+    litwd.obj &
+    dui.obj &
+    dbgwset.obj &
+    dbginsp.obj &
+    dbgicon.obj &
+    dbgdisp.obj &
+    dbgpaint.obj &
+    dbgcap.obj &
+    wndalloc.obj &
+    dlgambig.obj &
+    dlgscomp.obj &
+    modcomp.obj &
+    wndsys.obj &
+    wnddump.obj &
+    dbgintrn.obj &
+    dlgabout.obj &
+    dlgstk.obj &
+    dlgayn.obj &
+    dlgsrc.obj &
+    dlgdll.obj &
+    dlglist.obj &
+    dlgfile.obj &
+    dlgnewp.obj &
+    dlgexpr.obj &
+    dlgbreak.obj &
+    dlgvarx.obj &
+    dlgcmd.obj &
+    dlgnewws.obj &
+    dlgasync.obj &
+    wndhelp.obj &
+    wndmenu.obj &
+    dbgwfpu.obj &
+    dbgwmac.obj &
+    dbgwglob.obj &
+    dbgwfunc.obj &
+    dbgwcall.obj &
+    dbgwmod.obj &
+    dbgwsrch.obj &
+    dbgwdlg.obj &
+    dbgwfil.obj &
+    dbgwass.obj &
+    dbgwimg.obj &
+    dbgwbrk.obj &
+    dbgwio.obj &
+    dbgwrep.obj &
+    dbgwmem.obj &
+    dbgwregs.obj &
+    dbgwmmx.obj &
+    dbgwxmm.obj &
+    dbgwmadr.obj &
+    dbgwtogl.obj &
+    dbgwvar.obj &
+    dbgwthrd.obj &
+    dbgwrtrd.obj &
+    dlgwind.obj &
+    dbgwdata.obj &
+    dlgoptn.obj &
+    dbgtool.obj &
+    dbgfing.obj
+
+ui_objs_dosi86    = dosscrn.obj helpio.obj
+ui_objs_dos386    = dsxscrn.obj helpio.obj
+ui_objs_linux     = lnxscrn.obj helpio.obj
+ui_objs_qnx386    = qnxscrn.obj helpio.obj
+ui_objs_rdos386   = rdosscrn.obj helpio.obj
+!ifeq sys_windowed 1
+ui_objs_os2i86    = pmscrn2.obj
+ui_objs_os2386    = pmscrn2.obj
+ui_objs_nt        = ntguiscn.obj
+ui_objs_win       = wguiscrn.obj
+!else
+ui_objs_os2i86    = os2scrn.obj helpio.obj
+ui_objs_os2386    = os2scrn.obj helpio.obj
+ui_objs_nt        = ntscrn.obj helpio.obj
+ui_objs_win       = winscrn.obj helpio.obj
+!endif
+
+engine_objs += $(engine_objs_$(host_os)) $(engine_objs_$(host_os)$(host_cpu))
+ui_objs += $(ui_objs_$(host_os)) $(ui_objs_$(host_os)$(host_cpu)) $(objs_$(host_os)_$(host_cpu))

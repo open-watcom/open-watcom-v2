@@ -8,12 +8,4 @@ host_cpu = 386
 
 syshdir =
 
-sysobjs = &
-    linuxcmd.obj &
-    linuxio.obj &
-    lnxinit.obj &
-    lnxscrn.obj &
-    lnxlkup.obj &
-    lnxchk.obj
-
 !include ../../master.mif

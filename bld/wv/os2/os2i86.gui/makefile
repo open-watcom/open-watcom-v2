@@ -13,12 +13,4 @@ syshdir  =
 #add '16' suffix to avoid conflicts
 tail_gui_os2 = w16
 
-sysobjs =            &
-        os2init.obj  &
-        os2lkup.obj  &
-        os2chk.obj   &
-        os2cmd.obj   &
-        os2filio.obj &
-        pmscrn.obj
-
 !include ../../master.mif

@@ -10,12 +10,4 @@ sys_windowed = 1
 
 syshdir  =
 
-sysobjs =            &
-        autoenv.obj  &
-        os22ini.obj  &
-        os2chk.obj   &
-        os2cmd.obj   &
-        os22flio.obj &
-        pmscrn2.obj
-
 !include ../../master.mif

@@ -8,12 +8,4 @@ host_cpu = x64
 
 syshdir =
 
-sysobjs = &
-    linuxcmd.obj &
-    linuxio.obj &
-    lnxinit.obj &
-    lnxscrn.obj &
-    lnxlkup.obj &
-    lnxchk.obj
-
 !include ../../master.mif
