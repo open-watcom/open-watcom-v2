@@ -140,7 +140,7 @@ static int setup_os_env( const char *watcom )
     len = strlen( watcom );
     buf = malloc( len + 16 );
     memcpy( buf, watcom, len );
-    strcpy( buf, "\\binp\\help;" );
+    strcpy( buf + len, "\\binp\\help;" );
     if( add_path( "HELP", buf ) ) {
         free( buf );
         return( -6 );
@@ -202,9 +202,64 @@ static int setup_os_env( const char *watcom )
         free( buf );
         return( -8 );
     }
+    free( buf );
 #else
     return( 0 );
 #endif
+}
+
+#elif defined( __NT__ )
+
+#include <windows.h>
+
+#define HAVE_SETUP_OS_ENV
+
+#ifndef _M_X64
+
+typedef BOOL (WINAPI *ISWOW64PROCESS_FN)( HANDLE, PBOOL );
+
+static BOOL isWOW64( void )
+{
+    ISWOW64PROCESS_FN   fn;
+    BOOL                retval;
+    HANDLE              h;
+
+    retval = FALSE;
+    h = GetModuleHandle( "kernel32" );
+    fn = (ISWOW64PROCESS_FN)GetProcAddress( h, "IsWow64Process" );
+    if( fn != NULL ) {
+        if( !fn( GetCurrentProcess(), &retval ) ) {
+            retval = FALSE;
+        }
+    }
+    return( retval );
+}
+
+#endif
+
+static int setup_os_env( const char *watcom )
+{
+    char        *buf;
+    size_t      len;
+    int         rc = 0;
+#ifndef _M_X64
+    DWORD       version;
+
+    version = GetVersion();
+    if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && isWOW64() ) {
+#endif
+        len = strlen( watcom );
+        buf = malloc( len + 16 );
+        memcpy( buf, watcom, len );
+        strcpy( buf + len, "\\binnt\\help;" );
+        if( add_path( "WHTMLHELP", buf ) ) {
+            rc = -6;
+        }
+        free( buf );
+#ifndef _M_X64
+    }
+#endif
+    return( rc );
 }
 
 #endif
@@ -225,7 +280,6 @@ int watcom_setup_env( void )
     watcom = getenv( "WATCOM" );
     /* If WATCOM env var isn't set, try to construct it */
     if( watcom == NULL ) {
-//        int     len;
         char    *path_sep = NULL;
         char    *prev_path_sep = NULL;
 
@@ -234,7 +288,6 @@ int watcom_setup_env( void )
             return( -1 );
         }
         /* Set WATCOM to a directory one level up from the executable */
-//        len = strlen( buf );
         p = buf;
         while( *p != '\0' ) {
             if( IS_DIR_SEP( *p ) ) {
