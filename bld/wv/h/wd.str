@@ -485,7 +485,7 @@ pick( ERR_CANT_GET_RV,
 
 // these are DOS error messages #1 thru 14
 
-#define pickdoserr(id,text) pick(DOS_##id,text,"j" text)
+#define pickdoserr(id,text) pick( ERR_DOS_##id, text, "j" text )
 #include "_doserr.h"
 #undef pickdoserr
 

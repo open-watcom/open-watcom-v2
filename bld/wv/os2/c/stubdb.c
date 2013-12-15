@@ -79,7 +79,7 @@ extern stack_entry      *ExprSP;
 unsigned                NumLines;
 unsigned                NumColumns;
 
-#define pickdoserr(id,text)  char *LIT(DOS_##id) = text;
+#define pickdoserr(id,text)  char *LIT(ERR_DOS_##id) = text;
 #include "_doserr.h"
 #undef pickdoserr
 

@@ -40,7 +40,7 @@ extern char *StrCopy(char *,char *);
 
 char **DosErrMsgs[] = {
     LITREF( Empty ),
-    #define pickdoserr(id,text) LITREF(DOS_##id),
+    #define pickdoserr(id,text) LITREF(ERR_DOS_##id),
     #include "_doserr.h"
     #undef pickdoserr
 };
