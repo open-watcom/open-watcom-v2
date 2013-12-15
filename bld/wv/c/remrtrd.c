@@ -62,7 +62,7 @@ bool HaveRemoteRunThread( void )
     return( SuppRunThreadId != 0 );
 }
 
-bool RemoteGetRunThreadInfo( int row, char *infotype, int *width, char *header, int maxsize )
+bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, int maxsize )
 {
     mx_entry            in[1];
     mx_entry            out[2];
@@ -89,8 +89,9 @@ bool RemoteGetRunThreadInfo( int row, char *infotype, int *width, char *header, 
         *infotype = ret.info;
         *width = ret.width;
         return( TRUE );
-    } else
+    } else {
         return( FALSE );
+    }
 }
 
 dtid_t RemoteGetNextRunThread( dtid_t tid )

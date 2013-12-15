@@ -37,7 +37,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern bool             RemoteGetRunThreadInfo( int row, char *infotype, int *width, char *header, int maxsize );
+extern bool             RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, int maxsize );
 extern void             RemoteUpdateRunThread( thread_state *thd );
 
 extern bool             IsThdCurr( thread_state *thd );
@@ -68,11 +68,11 @@ static gui_menu_struct RunTrdMenu[] = {
 #define MAX_PIECE_COUNT     4
 #define MAX_HEADER_SIZE     80
 
-static a_window *RunThreadWnd = 0;
-static int      PieceCount = 0;
-static char     Indents[MAX_PIECE_COUNT + 1];
-static char     InfoType[MAX_PIECE_COUNT];
-static char     HeaderArr[MAX_PIECE_COUNT][MAX_HEADER_SIZE + 1];
+static a_window         *RunThreadWnd = 0;
+static int              PieceCount = 0;
+static unsigned char    Indents[MAX_PIECE_COUNT + 1];
+static unsigned char    InfoType[MAX_PIECE_COUNT];
+static char             HeaderArr[MAX_PIECE_COUNT][MAX_HEADER_SIZE + 1];
 
 void InitRunThreadWnd()
 {
@@ -86,7 +86,7 @@ void InitRunThreadWnd()
     for(i  = 0; i < MAX_PIECE_COUNT; i++ ) {
         ok = RemoteGetRunThreadInfo( i, &InfoType[PieceCount], &Width, HeaderArr[PieceCount], MAX_HEADER_SIZE );
         if( ok ) {
-            Indents[PieceCount + 1] = Indents[PieceCount] + (char)Width;
+            Indents[PieceCount + 1] = Indents[PieceCount] + (unsigned char)Width;
             PieceCount++;
         } else
             break;

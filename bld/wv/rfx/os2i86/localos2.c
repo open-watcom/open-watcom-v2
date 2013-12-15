@@ -194,12 +194,12 @@ unsigned LocalDateTime( sys_handle fh, int *time, int *date, int set )
 }
 
 unsigned LocalGetCwd( int drive, char *where )
-/****************************************/
+/********************************************/
 {
     USHORT len;
 
     len = 256;
-    return( StashErrCode( DosQCurDir( drive, where, &len ), OP_LOCAL ) );
+    return( StashErrCode( DosQCurDir( drive, (PBYTE)where, &len ), OP_LOCAL ) );
 }
 
 static void makeDOSDTA( struct _FILEFINDBUF *os2, dta *dos )

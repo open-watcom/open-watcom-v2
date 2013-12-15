@@ -109,9 +109,7 @@ extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned l
 extern void             DoInput( void );
 extern char             *DupStr(char*);
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
-extern void             FDoneSource(void         *);
 extern void             FlushEOC(void);
-extern int              FReadLine(void   *,int ,int ,char *,int );
 extern  void            FiniSource( void );
 extern brkp             *GetBPAt(int row);
 extern int              GetBPsCount( void );
@@ -1441,7 +1439,7 @@ char *GetCmdArg( int num )
     return( CmdData );
 }
 
-void SetCmdArgStart( int num, char __far *ptr )
+void SetCmdArgStart( int num, char *ptr )
 {
     num = num;
     CmdData = ptr;

@@ -78,7 +78,6 @@ extern void             AsmNewSrcNotify( a_window *, mod_handle, bool track );
 extern void             SkipToAddr( address );
 extern void             StepIntoFunction( char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
-extern int              FileIsRemote( struct browser *hndl );
 extern unsigned         NewCurrRadix( unsigned int );
 extern bool             DbgWndSearch( a_window *, bool, int );
 extern char             *DupStr( char * );

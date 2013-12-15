@@ -66,8 +66,6 @@ extern bool             DUIGetSourceLine( cue_handle *ch, char *buff, unsigned l
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern unsigned         Go( bool );
 extern void             *OpenSrcFile( cue_handle * );
-extern int              FReadLine( void *, int, int, char *, int );
-extern void             FDoneSource( void * );
 extern void             ExprValue( stack_entry * );
 
 extern debug_level      DbgLevel;

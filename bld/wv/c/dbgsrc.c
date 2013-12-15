@@ -47,7 +47,6 @@ extern unsigned long    CueLine( cue_handle *ch );
 extern bool             ScanItem( bool ,char **,unsigned int *);
 extern unsigned int     ScanCmd( char * );
 extern void             Scan( void );
-extern struct browser   *FOpenSource( char *, mod_handle, cue_file_id );
 extern void             ConfigLine( char * );
 extern char             *StrCopy(char *, char *);
 extern char             *GetCmdName( int );

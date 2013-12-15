@@ -31,10 +31,10 @@
 
 #include <string.h>
 #include <stdio.h>
+#include "_srcmgt.h"
 #include "spawn.h"
 #include "dbgdefn.h"
 #include "dbglit.h"
-#include "dbgio.h"
 #include "dbgtoggl.h"
 #include "dbgtoken.h"
 #include "dbgerr.h"
@@ -46,6 +46,7 @@
 #include "dbgreg.h"
 #include "mad.h"
 #include "dui.h"
+#include "srcmgt.h"
 #include "tistrail.h"
 #include <limits.h>
 
@@ -132,7 +133,6 @@ static bool             CopyToRemote( char *local, char *remote, bool strip, voi
 char                    *RealFName( char *name, open_access *loc );
 
 extern void             DUIImageLoaded( image_entry*, bool, bool, bool* );
-extern void             FClearOpenSourceCache( void );
 
 extern tokens           CurrToken;
 extern char             *TxtBuff;
