@@ -485,70 +485,9 @@ pick( ERR_CANT_GET_RV,
 
 // these are DOS error messages #1 thru 14
 
-pick( DOS_invalid_function,
-       "invalid function number",
-       "jinvalid function number" )
-
-pick( DOS_file_not_found,
-       "file not found",
-       "jfile not found" )
-
-pick( DOS_path_not_found,
-       "path not found",
-       "jpath not found" )
-
-pick( DOS_too_many_open_files,
-       "too many open files",
-       "jtoo many open files" )
-
-pick( DOS_access_denied,
-       "access denied",
-       "jaccess denied" )
-
-pick( DOS_invalid_handle,
-       "invalid handle",
-       "jinvalid handle" )
-
-pick( DOS_memory_control,
-       "memory control blocks destroyed",
-       "jmemory control blocks destroyed" )
-
-pick( DOS_insufficient_memory,
-       "insufficient memory",
-       "jinsufficient memory" )
-
-pick( DOS_invalid_address,
-       "invalid memory block address",
-       "jinvalid memory block address" )
-
-pick( DOS_invalid_environment,
-       "invalid environment",
-       "jinvalid environment" )
-
-pick( DOS_invalid_format,
-       "invalid format",
-       "jinvalid format" )
-
-pick( DOS_invalid_access_code,
-       "invalid access code",
-       "jinvalid access code" )
-
-pick( DOS_invalid_data,
-       "invalid data",
-       "jinvalid data" )
-
-pick( DOS_invalid_drive,
-       "invalid drive was specified",
-       "jinvalid drive was specified" )
-
-pick( DOS_remove_cd,
-       "attempt to remove current directory",
-       "jattempt to remove current directory" )
-
-pick( DOS_not_same_device,
-       "not same device",
-       "jnot same device" )
-
+#define pickdoserr(id,text) pick(DOS_##id,text,"j" text)
+#include "_doserr.h"
+#undef pickdoserr
 
 pick( Unable_to_alloc_DOS_mem,
        "Unable to allocate DOS memory",

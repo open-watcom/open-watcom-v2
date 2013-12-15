@@ -40,23 +40,9 @@ extern char *StrCopy(char *,char *);
 
 char **DosErrMsgs[] = {
     LITREF( Empty ),
-    LITREF( DOS_invalid_function ),
-    LITREF( DOS_file_not_found ),
-    LITREF( DOS_path_not_found ),
-    LITREF( DOS_too_many_open_files ),
-    LITREF( DOS_access_denied ),
-    LITREF( DOS_invalid_handle ),
-    LITREF( DOS_memory_control ),
-    LITREF( DOS_insufficient_memory ),
-    LITREF( DOS_invalid_address ),
-    LITREF( DOS_invalid_environment ),
-    LITREF( DOS_invalid_format ),
-    LITREF( DOS_invalid_access_code ),
-    LITREF( DOS_invalid_data ),
-    LITREF( Empty ),
-    LITREF( DOS_invalid_drive ),
-    LITREF( DOS_remove_cd ),
-    LITREF( DOS_not_same_device ),
+    #define pickdoserr(id,text) LITREF(DOS_##id),
+    #include "_doserr.h"
+    #undef pickdoserr
 };
 
 #define MAX_CODE (sizeof( DosErrMsgs ) / sizeof( char * ) - 1)
@@ -66,6 +52,6 @@ void GetDOSErrMsg( sys_error code, char *buff )
     if( code > MAX_CODE ) {
         Format( buff, "error #%u", code );
     } else {
-        StrCopy( *DosErrMsgs[ code ], buff );
+        StrCopy( *DosErrMsgs[code], buff );
     }
 }

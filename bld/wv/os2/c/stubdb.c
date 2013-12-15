@@ -81,22 +81,9 @@ extern stack_entry      *ExprSP;
 unsigned                NumLines;
 unsigned                NumColumns;
 
-char *_LITDOS_invalid_function = "invalid function";
-char *_LITDOS_file_not_found = "file not found";
-char *_LITDOS_path_not_found = "path not found";
-char *_LITDOS_too_many_open_files = "too many open files";
-char *_LITDOS_access_denied = "access denied";
-char *_LITDOS_invalid_handle = "invalid handle";
-char *_LITDOS_memory_control = "memory control";
-char *_LITDOS_insufficient_memory = "insufficient memory";
-char *_LITDOS_invalid_address = "invalid address";
-char *_LITDOS_invalid_environment = "invalid environment";
-char *_LITDOS_invalid_format = "invalid format";
-char *_LITDOS_invalid_access_code = "invalid access code";
-char *_LITDOS_invalid_data = "invalid data";
-char *_LITDOS_invalid_drive = "invalid drive";
-char *_LITDOS_remove_cd = "remove cd";
-char *_LITDOS_not_same_device = "not same device";
+#define pickdoserr(id,text)  char *LIT(DOS_##id) = text;
+#include "_doserr.h"
+#undef pickdoserr
 
 void WndMemInit( void )
 {

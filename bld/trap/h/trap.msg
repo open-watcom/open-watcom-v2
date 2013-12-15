@@ -121,60 +121,11 @@ trappick( TRP_EXC_CPU_internal_error,
 trappick( TRP_EXC_SIMD_floating_point_error,
     "SIMD floating point error",
     "jSIMD floating point error" )
-trappick( TRP_ERR_invalid_function_number,
-    "invalid function number",
-    "jinvalid function number" )
-trappick( TRP_ERR_file_not_found,
-    "file not found",
-    "jfile not found" )
-trappick( TRP_ERR_path_not_found,
-    "path not found",
-    "jpath not found" )
-trappick( TRP_ERR_too_many_open_files,
-    "too many open files",
-    "jtoo many open files" )
-trappick( TRP_ERR_access_denied,
-    "access denied",
-    "jaccess denied" )
-trappick( TRP_ERR_invalid_handle,
-    "invalid handle",
-    "jinvalid handle" )
-trappick( TRP_ERR_memory_control_blocks_destroyed,
-    "memory control blocks destroyed",
-    "jmemory control blocks destroyed" )
-trappick( TRP_ERR_insufficient_memory,
-    "insufficient memory",
-    "jinsufficient memory" )
-trappick( TRP_ERR_invalid_memory_block_address,
-    "invalid memory block address",
-    "jinvalid memory block address" )
-trappick( TRP_ERR_invalid_environment,
-    "invalid environment",
-    "jinvalid environment" )
-trappick( TRP_ERR_invalid_format,
-    "invalid format",
-    "jinvalid format" )
-trappick( TRP_ERR_invalid_access_code,
-    "invalid access code",
-    "jinvalid access code" )
-trappick( TRP_ERR_invalid_data,
-    "invalid data",
-    "jinvalid data" )
-trappick( TRP_ERR_reserved_error_code,
-    "reserved error code",
-    "jreserved error code" )
-trappick( TRP_ERR_invalid_drive_was_specified,
-    "invalid drive was specified",
-    "jinvalid drive was specified" )
-trappick( TRP_ERR_attempt_to_remove_current_directory,
-    "attempt to remove current directory",
-    "jattempt to remove current directory" )
-trappick( TRP_ERR_not_same_device,
-    "not same device",
-    "jnot same device" )
-trappick( TRP_ERR_no_more_files,
-    "no more files",
-    "jno more files" )
+
+#define pickdoserr(id,text) trappick(TRP_ERR_DOS_##id,text,"j" text)
+#include "_doserr.h"
+#undef pickdoserr
+
 trappick( TRP_ERR_must_use_rsi,
     "must use the '/tr=rsi' command line option to debug a rational application",
     "jmust use the '/tr=rsi' command line option to debug a rational application" )
