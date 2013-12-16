@@ -41,6 +41,7 @@
 #include "cp.h"
 #include "getopt.h"
 #include "filerx.h"
+#include "iopath.h"
 
 char *OptEnvVar="cp";
 
@@ -171,9 +172,11 @@ int main( int argc, char *argv[] )
      * see if destination is a directory
      */
     c = destination[ strlen(destination)-1 ];
-    if( ( !rc && (ft.attrib & _A_SUBDIR) ) || c=='.' || c==':' || c=='\\' ) {
-        if( !(c==':' || c=='\\') ) {
-            strcat(destination,"\\");
+    if( ( !rc && (ft.attrib & _A_SUBDIR) ) || c=='.' || IS_PATH_SEP( c ) ) {
+        if( !IS_PATH_SEP( c ) ) {
+            size_t len = strlen( destination );
+            destination[len++] = DIR_SEP;
+            destination[len] = '\0';
         }
         for( i=1;i<argc-1;i++ ) {
             DoCP( argv[i] , destination );
