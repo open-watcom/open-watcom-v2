@@ -105,13 +105,6 @@ type="l"                        dir="lib386"    usr="wresfs.lib"        cond="os
 #type="e"                       dir="binnt"     usr="api32wh.hlp"       cond="wnttarg helpfiles"        where="jc jf77"
 #type="e"                       dir="binnt"     usr="api32wh.ind"       cond="wnttarg helpfiles"        where="jc jf77"
 
-
-# readme files
-
-type="s" usr="readme.txt"        dir="."         where="c jc"
-type="s" usr="freadme.txt"       dir="."         where="f77 jf77"
-type="s" usr="areadme.txt"       dir="."         where="ac"
-
 # Miscellaneous files required by the installer
 
 type="s" usr="license.txt"       dir="."         where="c ac f77"

@@ -305,3 +305,12 @@ usr="pguide.pdf"
 usr="tools.pdf"
 usr="vi.pdf"
 usr="wd.pdf"
+
+#-----------------------------------------------------------------------------
+[ DEFAULT type="s" dir="."]
+#-----------------------------------------------------------------------------
+# readme files
+usr="readme.txt"        where="c jc"
+usr="freadme.txt"       where="f77 jf77"
+usr="areadme.txt"       where="ac"
+
