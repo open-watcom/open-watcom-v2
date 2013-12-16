@@ -18,9 +18,6 @@ set PROJNAME=misc
 
     <CPCMD> watcom.ico              <OWRELROOT>/
     <CPCMD> <OWROOT>/license.txt    <OWRELROOT>/
-    <CPCMD> <OWDOCROOT>/readme.txt  <OWRELROOT>/
-    <CPCMD> <OWDOCROOT>/areadme.txt <OWRELROOT>/
-    <CPCMD> <OWDOCROOT>/freadme.txt <OWRELROOT>/
 
     <CCCMD> nt386/unicode*          <OWRELROOT>/binnt/
     <CCCMD> ntx64/unicode*          <OWRELROOT>/binnt64/
