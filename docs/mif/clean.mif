@@ -50,6 +50,6 @@ clean : .procedure
  @if exist *.bat rm -f *.bat
 
 !ifeq dotarget htmlhelp
- @for %f in ($(books)) do @if exist %f rm -f %f/*.bmp %f/*.htm %f/*.hh? %f/*.ch?
+ @for %f in ($(books)) do @if exist %f rm -f %f/*.bmp %f/*.htm %f/*.hh? %f/*.ch? %f/*.h
  @for %f in ($(books)) do @if exist %f rmdir %f
 !endif
