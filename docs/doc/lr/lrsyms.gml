@@ -36,7 +36,7 @@
 :set symbol="version"   value="110".
 :set symbol="company"   value="Watcom".
 :set symbol="farfnc"    value="1".
-:set symbol="sw"        value="/".
+:set symbol="sw"        value="-".
 :set symbol="pc"        value="\".
 :set symbol="ps"        value=";".
 :set symbol="psword"    value="semicolon".

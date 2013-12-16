@@ -32,7 +32,7 @@
 :set symbol="machsys"    value="DOS".
 :set symbol="target"     value="DOS32".
 :set symbol="prompt"     value="C>".
-:set symbol="sw"         value="/".
+:set symbol="sw"         value="-".
 :set symbol="pc"         value="\".
 :cmt. fix problem with using the Script control word separator ";"
 .ti 3b fb

@@ -56,7 +56,7 @@ QNX is a registered trademark of QNX Software Systems Ltd.
 .el .do begin
 :set symbol="pathnam"   value="\watcom".
 :set symbol="pathnamup" value="\WATCOM".
-:set symbol="sw"        value="/".
+:set symbol="sw"        value="-".
 :set symbol="pc"        value="\".
 :set symbol="ps"        value="~;".
 :set symbol="psword"    value="semicolon".
