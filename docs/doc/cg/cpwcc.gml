@@ -100,10 +100,12 @@ If no drive is specified, the default drive is assumed.
 .do end
 .np
 If no path is specified, the current working directory is assumed.
+.np
 .ix 'directories' 'C'
 .ix 'C directory'
-If the file is not in the current directory, an adjacent "C" directory
-(i.e.,
+.ix 'options' 'xx'
+If the "xx" option was not specified and the file is not in the current
+directory then an adjacent "C" directory (i.e.,
 .fi ~..&pc.c
 .ct ) is searched if it exists.
 .np
@@ -650,16 +652,18 @@ No other searching is performed.
 The &drive need not be specified in which case the current &drive is
 assumed.
 .note
-If the file specification is enclosed in quotation marks, the current
-directory is searched.
+.ix 'options' 'xx'
+Next, if the "xx" option was not specified and the file specification is
+enclosed in quotation marks then the current directory is searched.
 .note
 Next, if the file specification is enclosed in quotation marks, the
 directory of the file containing the
 .id #include
 directive is searched.
-If the current file is also an
+.note
+Next, if the "xx" option was not specified and the current file is also an
 .id #include
-file, the directory of the parent file is searched next.
+file then the directory of the parent file is searched next.
 This search continues recursively through all the nested
 .id #include
 files until the original source file's directory is searched.
@@ -710,8 +714,8 @@ environment variable is searched (in the order that they were
 specified).
 .note
 .ix '&hdrdirup directory'
-Finally, if the file specification is enclosed in quotation marks, an
-adjacent "H" directory (i.e.,
+Finally, if the "xx" option was not specified and the file specification
+is enclosed in quotation marks then an adjacent "H" directory (i.e.,
 .fi ~..&pc.h
 .ct ) is searched if it exists.
 .endnote

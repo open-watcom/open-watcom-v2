@@ -560,6 +560,11 @@ output function declarations to .def
 ignore environment variables when searching for include files
 :optref refid='SWx'.
 .do end
+.if &e'&$SWxx eq 1 .do begin
+.note xx
+ignore default directories for file search (.,../h,../c,...)
+:optref refid='SWxx'.
+.do end
 .if &e'&$SWzam eq 1 .do begin
 .note zam
 disable all predefined old extension macros (keyword macros, non-ISO names)
@@ -3193,6 +3198,28 @@ See the section entitled :HDREF refid='wccinc'. for information on
 directory searching.
 .do end
 .*
+.if &e'&$SWxx eq 1 .do begin
+:OPT refid='SWxx' name='xx'.
+.ix 'options' 'xx'
+The compiler behaviour for file search changes following way:
+.begbull
+.bull
+current directory "." is ignored when searching for include files
+.bull
+adjacent
+.fi ~..&pc.h
+directory is ignored when searching for include files
+.bull
+don't do recursive search for parent directories when searching for include files
+.bull
+adjacent
+.fi ~..&pc.c
+directory is ignored when searching for source file
+.endbull
+See the section entitled :HDREF refid='wccinc'. for information on
+directory searching.
+.do end
+.*
 .if &e'&$SWzam eq 1 .do begin
 :OPT refid='SWzam' name='zam'.
 .ix 'options' 'zam'
@@ -3200,7 +3227,7 @@ Open Watcom define many extension macros for compatibility
 with old MS C compiler (far, _far, near, _near, cdecl, _cdecl, etc.). 
 For details see Open Watcom compilers predefined macros.
 These macros use names which are not ISO C/C++ compliant.
-The "zam" option disable all these predefined macros.
+The option disables all these predefined macros.
 .do end
 .*
 .if &e'&$SWzat eq 1 .do begin

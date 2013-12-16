@@ -815,6 +815,11 @@ preprocessor ignores environment variables
 (C++ only) enable exception handling (table-driven destructors)
 :optref refid='SWxss'.
 .*
+.note xx
+:CMT. .ix 'options' 'xx'
+ignore default directories for file search (.,../h,../c,...)
+:optref refid='SWxx'.
+.*
 .note z{a,e}
 :CMT. .ix 'options' 'za, ze'
 disable/enable language extensions (default is ze)
