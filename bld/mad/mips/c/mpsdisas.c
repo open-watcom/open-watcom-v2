@@ -201,8 +201,8 @@ mad_status DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
 }
 
 const unsigned_16   RegTrans[] = {
-    #define regpick(id,type,reg_set)    offsetof( mad_registers, mips.##id ),
-    #define regpicku(u,id,type,reg_set) offsetof( mad_registers, mips.##u ),
+    #define regpick(id,type,reg_set)    offsetof( mad_registers, mips.id ),
+    #define regpicku(u,id,type,reg_set) offsetof( mad_registers, mips.u ),
     #include "mpsregs.h"
     #undef regpick
     #undef regpicku
