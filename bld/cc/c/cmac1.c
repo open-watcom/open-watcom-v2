@@ -227,6 +227,7 @@ void GetMacroToken( void )
                 CurToken = KwLookup( buf, i );
             }
             break;
+        case T_BAD_TOKEN:
         case T_CONSTANT:
             ReScanInit( mtok->data );
             ReScanToken();
