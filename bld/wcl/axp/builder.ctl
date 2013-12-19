@@ -36,6 +36,7 @@ set PROJNAME=wclaxp
     <CCCMD> ntaxp/wclaxp.sym      <OWRELROOT>/axpnt/
 
     <CCCMD> ntx64/wclaxp.exe      <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wclaxp.exe   <OWRELROOT>/binl64/wclaxp
 
 [ BLOCK . . ]
 #============

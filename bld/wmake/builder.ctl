@@ -27,6 +27,7 @@ set PROJNAME=wmake
     <CCCMD> qnxi86/wmk.exe    <OWRELROOT>/qnx/binq/wmake
 
     <CCCMD> ntx64/wmk.exe     <OWRELROOT>/binnt64/wmake.exe
+    <CCCMD> linuxx64/wmk.exe  <OWRELROOT>/binl64/wmake
 
 [ BLOCK . . ]
 #============

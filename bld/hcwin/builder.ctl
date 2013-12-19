@@ -25,6 +25,7 @@ set PROJNAME=whc
     <CCCMD> linux386/whc.exe    <OWRELROOT>/binl/whc
 
     <CCCMD> ntx64/whc.exe       <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/whc.exe    <OWRELROOT>/binl64/whc
 
 [ BLOCK . . ]
 #============

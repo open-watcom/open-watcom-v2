@@ -21,6 +21,7 @@ set PROJNAME=wtouch
     <CCCMD> ntaxp/wtouch.exe     <OWRELROOT>/axpnt/
 
     <CCCMD> ntx64/wtouch.exe     <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wtouch.exe  <OWRELROOT>/binl64/wtouch
 
 [ BLOCK . . ]
 #============

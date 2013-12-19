@@ -64,6 +64,7 @@ set PROJNAME=wd
 
     <CCCMD> win/ntx64/wv.exe        <OWRELROOT>/binnt64/wd.exe
     <CCCMD> win/ntx64.gui/wv.exe    <OWRELROOT>/binnt64/wdw.exe
+    <CCCMD> linux/linuxx64/wv.exe   <OWRELROOT>/binl64/wd
 
 [ BLOCK . . ]
 #============

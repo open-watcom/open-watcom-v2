@@ -32,6 +32,7 @@ set PROJNAME=wclmps
     <CCCMD> linux386/wclmps.sym   <OWRELROOT>/binl/
 
     <CCCMD> ntx64/wclmps.exe      <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wclmps.exe   <OWRELROOT>/binl64/wclmps
 
 [ BLOCK . . ]
 #============

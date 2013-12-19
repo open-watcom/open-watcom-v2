@@ -36,6 +36,7 @@ set PROJNAME=wcl
     <CCCMD> ntaxp/wcl.sym         <OWRELROOT>/axpnt/
 
     <CCCMD> ntx64/wcl.exe         <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wcl.exe      <OWRELROOT>/binl64/wcl
 
 [ BLOCK . . ]
 #============

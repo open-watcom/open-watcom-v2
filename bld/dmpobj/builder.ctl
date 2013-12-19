@@ -21,6 +21,7 @@ set PROJNAME=dmpobj
     <CCCMD> ntaxp/dmpobj.exe     <OWRELROOT>/axpnt/
 
     <CCCMD> ntx64/dmpobj.exe     <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/dmpobj.exe  <OWRELROOT>/binl64/dmpobj
 
 [ BLOCK . . ]
 #============

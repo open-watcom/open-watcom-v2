@@ -32,6 +32,7 @@ set PROJNAME=wclppc
     <CCCMD> os2386/wclppc.sym     <OWRELROOT>/binp/
 
     <CCCMD> ntx64/wclppc.exe      <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wclppc.exe   <OWRELROOT>/binl64/wclppc
 
 [ BLOCK . . ]
 #============

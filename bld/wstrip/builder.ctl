@@ -32,6 +32,7 @@ set PROJNAME=wstrip
     <CCCMD> qnx386/wstripx.exe    <OWRELROOT>/qnx/binq/wstrip
 
     <CCCMD> ntx64/wstripx.exe     <OWRELROOT>/binnt64/wstrip.exe
+    <CCCMD> linuxx64/wstripx.exe  <OWRELROOT>/binl64/wstrip
 
 [ BLOCK . . ]
 #============

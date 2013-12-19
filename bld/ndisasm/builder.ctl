@@ -30,6 +30,7 @@ set PROJNAME=wdis
     <CCCMD> linux386/wdis.sym <OWRELROOT>/binl/
 
     <CCCMD> ntx64/wdis.exe    <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wdis.exe <OWRELROOT>/binl64/wdis
 
 [ BLOCK . . ]
 #============

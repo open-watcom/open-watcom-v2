@@ -44,6 +44,8 @@ set PROJNAME=wfc
     <CCCMD> 386/ntx64/wfc386.exe        <OWRELROOT>/binnt64/wfc386.exe
     <CCCMD> 386/ntx64/wfc386.sym        <OWRELROOT>/binnt64/wfc386.sym
 #    <CCCMD> axp/ntx64/wfcaxp.exe        <OWRELROOT>/binnt64/wfcaxp.exe
+    <CCCMD> i86/linuxx64/wfc.exe        <OWRELROOT>/binl64/wfc
+    <CCCMD> 386/linuxx64/wfc386.exe     <OWRELROOT>/binl64/wfc386
 
 [ BLOCK . . ]
 #==================

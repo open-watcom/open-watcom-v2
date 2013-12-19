@@ -26,6 +26,7 @@ set PROJNAME=wsample
     <CCCMD> nlm/wsample.nlm         <OWRELROOT>/nlm/
 
     <CCCMD> ntx64/wsmpnt.exe        <OWRELROOT>/binnt64/wsample.exe
+    <CCCMD> linuxx64/wsample.exe    <OWRELROOT>/binl64/wsample
 
 [ BLOCK . . ]
 #============

@@ -33,6 +33,8 @@ set PROJNAME=CauseWay
 
     <CCCMD> cwc/ntx64/cwc.exe       <OWRELROOT>/binnt64/
     <CCCMD> cwc/ntx64/cwstub.exe    <OWRELROOT>/binnt64/
+    <CCCMD> cwc/linuxx64/cwc.exe    <OWRELROOT>/binl64/cwc
+    <CCCMD> cwc/linuxx64/cwstub.exe <OWRELROOT>/binl64/
 
 [ BLOCK . . ]
 #============

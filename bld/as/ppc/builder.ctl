@@ -36,6 +36,7 @@ set PROJNAME=wasppc
     <CCCMD> ntaxp/wasppc.sym      <OWRELROOT>/axpnt/
 
     <CCCMD> ntx64/wasppc.exe      <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wasppc.exe   <OWRELROOT>/binl64/wasppc
 
 [ BLOCK . . ]
 #============

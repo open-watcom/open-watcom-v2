@@ -28,6 +28,7 @@ set PROJNAME=wipfc
     <CCCMD> linux386/wipfc.exe    <OWRELROOT>/binl/wipfc
 
     <CCCMD> ntx64/wipfc.exe       <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wipfc.exe    <OWRELROOT>/binl64/wipfc
 
 [ BLOCK . . ]
 #============

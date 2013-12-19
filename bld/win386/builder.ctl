@@ -21,14 +21,12 @@ set PROJNAME=win386
     <CCCMD> vxd/wemu387.386             <OWRELROOT>/binw/
 
     <CCCMD> wbind/dosi86/wbind.exe      <OWRELROOT>/binw/
-
     <CCCMD> wbind/os2i86/wbind.exe      <OWRELROOT>/binp/
-
     <CCCMD> wbind/nt386/wbind.exe       <OWRELROOT>/binnt/
-
     <CCCMD> wbind/linux386/wbind.exe    <OWRELROOT>/binl/wbind
 
     <CCCMD> wbind/ntx64/wbind.exe       <OWRELROOT>/binnt64/
+    <CCCMD> wbind/linuxx64/wbind.exe    <OWRELROOT>/binl64/wbind
 
 [ BLOCK <1> clean ]
 #==================

@@ -36,6 +36,7 @@ set PROJNAME=wasaxp
     <CCCMD> ntaxp/wasaxp.sym      <OWRELROOT>/axpnt/
 
     <CCCMD> ntx64/wasaxp.exe      <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/wasaxp.exe   <OWRELROOT>/binl64/wasaxp
 
 [ BLOCK . . ]
 #============

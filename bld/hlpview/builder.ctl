@@ -18,6 +18,8 @@ set PROJNAME=whelp
     <CCCMD> os2386/whelp.exe    <OWRELROOT>/binp/whelp.exe
     <CCCMD> linux386/whelp.exe  <OWRELROOT>/binl/whelp
 
+    <CCCMD> linuxx64/whelp.exe  <OWRELROOT>/binl64/whelp
+    
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>
