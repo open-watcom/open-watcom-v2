@@ -77,12 +77,12 @@ static void dispatch_init(      // INITIALIZE DISPATCH BLOCK
 
 void CPPLIB( exc_setup )        // SETUP DISPATCH, EXCEPTION RECORDS
     ( DISPATCH_EXC* disp        // - dispatch record
-    , THROW_RO* thr_ro          // - throw r/o block
+    , THROW_RO* throw_ro        // - throw r/o block
     , rboolean is_zero          // - TRUE ==> thrown object is zero constant
     , _RTCTL* rt_ctl            // - R/T control
     , void* object              // - thrown object
     , FsExcRec* rec )           // - exception record
 {
-    dispatch_init( disp, thr_ro, is_zero, rt_ctl );
+    dispatch_init( disp, throw_ro, is_zero, rt_ctl );
     initFsExcRec( object, rec, disp );
 }
