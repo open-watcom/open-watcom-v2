@@ -414,7 +414,7 @@ static cg_type typeVbVfPtr(     // MAKE CG TYPE FOR VB/VF PTR
 
 static cg_name fetchVbVfPtr(    // FETCH VB/VF PTR
     cg_name op,                 // - expr for ptr to vb/vf table
-    unsigned index,             // - index into table
+    vindex index,               // - index into table
     TYPE vfvbtbl_cpp,           // - type for vb/vf table
     cg_type* a_type )           // - addr[ resultant type ]
 {
@@ -423,9 +423,7 @@ static cg_name fetchVbVfPtr(    // FETCH VB/VF PTR
     vfvbtbl_type = CgExprType( vfvbtbl_cpp );
     op = CgFetchType( op, vfvbtbl_type );
     vfvbtbl_cpp = TypePointedAtModified( vfvbtbl_cpp );
-    op = CgOffsetExpr( op
-                     , index * CgMemorySize( vfvbtbl_cpp )
-                     , vfvbtbl_type );
+    op = CgOffsetExpr( op, index * CgMemorySize( vfvbtbl_cpp ), vfvbtbl_type );
     vfvbtbl_type = CgExprType( vfvbtbl_cpp );
     *a_type = vfvbtbl_type;
     op = CgFetchType( op, vfvbtbl_type );
@@ -438,7 +436,7 @@ cg_name IbpFetchVbRef(          // MAKE A REFERENCE FROM A BOUND PARAMETER
     target_offset_t delta,      // - offset after vb computation
     target_offset_t vb_exact,   // - offset from original sym to base
     target_offset_t vb_offset,  // - offset to vb table
-    unsigned vb_index )         // - index in vb table
+    vindex vb_index )           // - index in vb table
 {
     SYMBOL sym;                 // - translated symbol
     cg_name op;                 // - operand
@@ -532,7 +530,7 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
     cg_name this_expr,          // - expression for this
     SYMBOL vf_this,             // - original symbol (for access)
     target_offset_t vf_offset,  // - offset to vf table ptr
-    unsigned vf_index,          // - index in vf table
+    vindex vf_index,            // - index in vf table
     boolean* is_vcall,          // - addr[ TRUE ==> real virtual call ]
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn,// - addr[ return adjustment ]

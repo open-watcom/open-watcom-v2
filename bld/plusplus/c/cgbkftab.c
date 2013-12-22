@@ -202,7 +202,7 @@ boolean FstabSetup(             // SETUP FUNCTION STATE TABLE
 }
 
 
-static unsigned offsetStateVar( // GET OFFSET OF STATE VAR. IN R/W BLOCK
+static target_offset_t offsetStateVar( // GET OFFSET OF STATE VAR. IN R/W BLOCK
     void )
 {
 #if _CPU == _AXP

@@ -39,8 +39,6 @@
 
 // prototypes
 
-#define VFUN_BASE               (1)
-
 
 PTREE AccessVirtualFnAddress(   // GET ADDRESS OF VIRTUAL FUNCTION
     PTREE node,                 // - class pointer

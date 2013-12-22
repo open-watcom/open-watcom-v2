@@ -330,7 +330,7 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
 {
     target_offset_t delta;      // - output delta
     target_offset_t vb_offset;  // - output offset
-    target_offset_t vb_index;   // - output index
+    vindex vb_index;            // - output index
     TYPE ret_type;              // - type of call expression
     TYPE ptr_type;              // - pointer equivalent of "ret_type"
     PTREE dup1;

@@ -380,7 +380,7 @@ struct obj_init
     TYPE obj_type;              // - type of object
     SYMBOL obj_sym;             // - base symbol
     patch_handle patch;         // - patch handle for state
-    target_size_t obj_offset;   // - offset from base symbol
+    target_offset_t obj_offset; // - offset from base symbol
     PAD_UNSIGNED
 };
 
@@ -956,7 +956,7 @@ cg_name CgSymbol(               // PASS SYMBOL TO CODE GENERATOR
 ;
 cg_name CgSymbolPlusOffset(     // GENERATE SYMBOL + OFFSET
     SYMBOL sym,                 // - symbol
-    unsigned offset )           // - offset
+    target_offset_t offset )    // - offset
 ;
 void CgTrash(                   // COMPLETE TRASH OF EXPRESSION
     cg_name expr,               // - expression
@@ -1268,14 +1268,14 @@ cg_name IbpFetchVbRef(          // MAKE A REFERENCE FROM A BOUND PARAMETER
     target_offset_t delta,      // - offset after vb computation
     target_offset_t vb_exact,   // - offset from original sym to base
     target_offset_t vb_offset,  // - offset to vb table
-    unsigned vb_index )         // - index in vb table
+    vindex vb_index )           // - index in vb table
 ;
 cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
     SYMBOL vfun,                // - virtual function
     cg_name this_expr,          // - expression for this
     SYMBOL vf_this,             // - original symbol (for access)
     target_offset_t vf_offset,  // - offset to vf table ptr
-    unsigned vf_index,          // - index in vf table
+    vindex vf_index,            // - index in vf table
     boolean* is_vcall,          // - addr[ TRUE ==> real virtual call ]
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn,// - addr[ return adjustment ]

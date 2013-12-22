@@ -176,13 +176,13 @@ PTREE PtdOffsetofExpr           // DECORATE FOR OFFSETOF EXPR
 PTREE PtdVbaseFetch             // FETCH OF VIRTUAL BASE
     ( PTREE expr                // - expression
     , target_offset_t vb_offset // - virtual base offset
-    , unsigned vb_index         // - virtual base index
+    , vindex vb_index           // - virtual base index
     , target_offset_t vb_delta  // - virtual base delta
     , target_offset_t vb_exact )// - virtual base exact offset
 ;
 PTREE PtdVfunAccess             // ACCESS VIRTUAL FUNCTION
     ( PTREE expr                // - expression
-    , unsigned vf_index         // - index into VF table
+    , vindex vf_index           // - index into VF table
     , target_offset_t vf_offset // - offset to VF table ptr
     , SYMBOL baser )            // - basing "this" symbol
 ;

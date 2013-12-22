@@ -6899,8 +6899,8 @@ SYMBOL MakeVATableSym( SCOPE class_scope )
     return( sym );
 }
 
-SYMBOL MakeVBTableSym( SCOPE scope, unsigned num_vbases, target_offset_t delta )
-/******************************************************************************/
+SYMBOL MakeVBTableSym( SCOPE scope, vindex num_vbases, target_offset_t delta )
+/****************************************************************************/
 {
     SYMBOL sym;
     TYPE vbtable_type;
@@ -6928,7 +6928,7 @@ SYMBOL MakeVMTableSym( SCOPE from, SCOPE to, boolean *had_to_define )
 {
     SYMBOL sym;
     TYPE vmtable_type;
-    unsigned num_vbases;
+    vindex num_vbases;
     NAME name;
 
     *had_to_define = FALSE;
@@ -6951,8 +6951,8 @@ SYMBOL MakeVMTableSym( SCOPE from, SCOPE to, boolean *had_to_define )
     return( sym );
 }
 
-SYMBOL MakeVFTableSym( SCOPE scope, unsigned num_vfns, target_offset_t delta )
-/****************************************************************************/
+SYMBOL MakeVFTableSym( SCOPE scope, vindex num_vfns, target_offset_t delta )
+/**************************************************************************/
 {
     SYMBOL sym;
     TYPE vftable_type;

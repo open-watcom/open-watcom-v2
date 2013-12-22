@@ -302,7 +302,7 @@ static dbg_type symWVDebugClassType( TYPE type )
                             dl = DBLocOp( dl, DB_OP_ADD, 0 );
                         }
                         dl = DBLocOp( dl, DB_OP_POINTS, CgTypeOutput( pvf_FieldType ) );
-                        dl = DBLocConst( dl, ( curr->u.member_vf_index - VFUN_BASE ) * vf_FieldTypeSize );
+                        dl = DBLocConst( dl, ( curr->u.member_vf_index - 1 ) * vf_FieldTypeSize );
                         dl = DBLocOp( dl, DB_OP_ADD, 0 );
                         dl = DBLocOp( dl, DB_OP_POINTS, CgTypeOutput( vf_FieldType ) );
                         dl = symbolicDebugSetCodeSegment( dl );
@@ -602,7 +602,7 @@ static dbg_type symCVDebugClassType( TYPE type )
                 } else if( SymIsThisFuncMember( curr ) ) {
                     if( SymIsVirtual( curr ) ) {
                         kind = METHOD_VIRTUAL;
-                        dl = DBLocConst( dl, ( curr->u.member_vf_index - VFUN_BASE ) * vf_FieldTypeSize );
+                        dl = DBLocConst( dl, ( curr->u.member_vf_index - 1 ) * vf_FieldTypeSize );
                     } else {
                         dl = symbolicDebugSymAddr( dl, curr );
                     }

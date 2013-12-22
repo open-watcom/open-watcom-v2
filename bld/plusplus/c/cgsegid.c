@@ -88,14 +88,14 @@ static fe_seg_id cgSegIdBased( SYMBOL sym, type_flag flags )
     TYPE            base_mod;   // - __based modifier
 
     size = CgMemorySize( sym->sym_type );
-    #ifdef _CHECK_SIZE      // only defined if needed
-        if( !(flags & TF1_HUGE) ) {
-            if( _CHECK_SIZE( size ) ) {
-                CErr2p( ERR_DATA_TOO_BIG, sym );
-                return( SEG_NULL );
-            }
+#ifdef _CHECK_SIZE      // only defined if needed
+    if( !(flags & TF1_HUGE) ) {
+        if( _CHECK_SIZE( size ) ) {
+            CErr2p( ERR_DATA_TOO_BIG, sym );
+            return( SEG_NULL );
         }
-    #endif
+    }
+#endif
 
     if( SymIsExtern( sym ) ) {
         // not defined in this compilation unit
@@ -129,16 +129,16 @@ static fe_seg_id cgSegIdThread( SYMBOL sym, type_flag flags )
     fe_seg_id       id;         // - segment id
 
     flags = flags;
-    #ifdef _CHECK_SIZE      // only defined if needed
-        if( !(flags & TF1_HUGE) ) {
-            target_size_t   size;       // - size of symbol
-            size = CgMemorySize( sym->sym_type );
-            if( _CHECK_SIZE( size ) ) {
-                CErr2p( ERR_DATA_TOO_BIG, sym );
-                return( SEG_NULL );
-            }
+#ifdef _CHECK_SIZE      // only defined if needed
+    if( !(flags & TF1_HUGE) ) {
+        target_size_t   size;       // - size of symbol
+        size = CgMemorySize( sym->sym_type );
+        if( _CHECK_SIZE( size ) ) {
+            CErr2p( ERR_DATA_TOO_BIG, sym );
+            return( SEG_NULL );
         }
-    #endif
+    }
+#endif
 
     if( SymIsExtern( sym ) ) {
         // not defined in this compilation unit
@@ -211,14 +211,14 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
     target_size_t size;
 
     size = CgMemorySize( sym->sym_type );
-    #ifdef _CHECK_SIZE      // only defined if needed
-        if( !(flags & TF1_HUGE) ) {
-            if( _CHECK_SIZE( size ) ) {
-                CErr2p( ERR_DATA_TOO_BIG, sym );
-                return( SEG_NULL );
-            }
+#ifdef _CHECK_SIZE      // only defined if needed
+    if( !(flags & TF1_HUGE) ) {
+        if( _CHECK_SIZE( size ) ) {
+            CErr2p( ERR_DATA_TOO_BIG, sym );
+            return( SEG_NULL );
         }
-    #endif
+    }
+#endif
     if( flags & TF1_NEAR ) {
         id = cgSegIdNearVariable( sym, flags, size, control );
     } else if( flags & TF1_HUGE ) {

@@ -1144,7 +1144,7 @@ static void genExactVPtrInit(   // generate a vptr init with exact delta
 static void genVBaseVPtrInit(   // generate a vptr init in a virtual base
     FN_CTL* fctl,               // - function information
     target_offset_t vb_offset,  // - offset in class of vbptr
-    unsigned vb_index,          // - vbase index in table
+    vindex vb_index,            // - vbase index in table
     target_offset_t delta,      // - offset in class of vptr
     SYMBOL table_sym,           // - symbol of table to init vptr with
     boolean vbptr )             // - a vbptr?
@@ -1220,7 +1220,7 @@ static void genVthunkCDisp(     // generate virtual function thunk ctor-disp
 
 static void genVthunkVBase(     // generate virtual function thunk ctor-disp
     FN_CTL* fctl,               // - function information
-    target_offset_t index )     // - virtual base index
+    vindex index )              // - virtual base index
 {
     /* generated code:
 
@@ -1652,8 +1652,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
               case CO_GE :
               case CO_GT :
               case CO_LE :
-                CgExprPush( CGCompare( cg_opcode, op1, op2, exprn_type )
-                          , TY_BOOL );
+                CgExprPush( CGCompare( cg_opcode, op1, op2, exprn_type ), TY_BOOL );
                 exprn_type = TY_BOOL;
                 break;
 
@@ -1664,15 +1663,13 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 break;
 
               case CO_INDEX :
-                CgExprPush( CGIndex( op1, op2, exprn_type, indexing_type )
-                          , lvalue_type );
+                CgExprPush( CGIndex( op1, op2, exprn_type, indexing_type ), lvalue_type );
                 break;
 
               case CO_BPOST_PLUS_PLUS :
               case CO_BPOST_BOOL_PLUS_PLUS :
               case CO_BPOST_MINUS_MINUS :
-                CgExprPush( CGPostGets( cg_opcode, op1, op2, exprn_type )
-                          , exprn_type );
+                CgExprPush( CGPostGets( cg_opcode, op1, op2, exprn_type ), exprn_type );
                 break;
 
               case CO_PTR_DELTA :
@@ -2535,7 +2532,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_VBASE_VPTR_INIT : // GENERATE VBASE OFFSET VPTR INIT CODE
           { SYMBOL table_sym;
             target_offset_t vb_offset;
-            unsigned vb_index;
+            vindex vb_index;
 //            target_offset_t exact_delta;
             boolean vbptr;
 //            IC_PARM_POP_INT( exact_delta );
@@ -2645,7 +2642,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
         {
             boolean vf_call;            // TRUE ==> virtual call gen'ed
             target_offset_t vf_offset;  // offset to virtual function ptr
-            unsigned vf_index;          // index for virtual function
+            vindex vf_index;            // index for virtual function
             target_offset_t vf_adj_this;// adjustment for "this" on virt call
             target_offset_t vf_adj_retn;// adjustment for return on virt call
             SYMBOL vf_this;             // this for function (bound ?)
@@ -2735,7 +2732,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             target_offset_t vb_exact;   // exact for virtual base
             target_offset_t vb_delta;   // delta for virtual base
             target_offset_t vb_offset;  // offset to virtual base ptr.
-            unsigned        vb_index;   // index for virtual base
+            vindex          vb_index;   // index for virtual base
 
           case IC_VB_EXACT :        // SET vb_exact
             vb_exact = ins_value.uvalue;

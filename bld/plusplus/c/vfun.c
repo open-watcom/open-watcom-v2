@@ -152,7 +152,7 @@ void VfnAncestralWalk(          // WALK ANCESTRAL VIRTUAL FUNCTIONS
 static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
     target_offset_t vf_offset,  // - offset to VF table ptr
     PTREE node,                 // - original "this" expression
-    unsigned vf_index,          // - index into VF table
+    vindex vf_index,            // - index into VF table
     SYMBOL sym )                // - symbol to access
 {
     TYPE vfptr_type;            // - type[ ptr to VF table ]
@@ -185,7 +185,7 @@ static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
 static PTREE genVfunIcs(        // GENERATE IC'S FOR CG-GENERATION OF VFUN CALL
     target_offset_t vf_offset,  // - offset to VF table ptr
     PTREE node,                 // - original "this" expression
-    unsigned vf_index,          // - index into VF table
+    vindex vf_index,            // - index into VF table
     SYMBOL baser,               // - basing "this" symbol
     SYMBOL vfun )               // - virtual function
 {
@@ -211,11 +211,11 @@ PTREE AccessVirtualFnAddress(   // GET ADDRESS OF VIRTUAL FUNCTION
     SYMBOL base_this;           // - basing "this" symbol
     target_offset_t this_offset;// - offset to "this" basing symbol
     target_offset_t vf_offset;  // - offset to VF PTR
-    unsigned vf_index;          // - index in VF table
+    vindex vf_index;          // - index in VF table
 
     vf_offset = result->vf_offset;
     vfun = SymDefaultBase( sym );
-    vf_index = vfun->u.member_vf_index - VFUN_BASE;
+    vf_index = vfun->u.member_vf_index - 1;
     if( NodeGetIbpSymbol( node, &base_this, &this_offset ) ) {
         node = genVfunIcs( vf_offset, node, vf_index, base_this, vfun );
     } else {

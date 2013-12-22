@@ -72,6 +72,8 @@ typedef struct pool_con POOL_CON;               // defined in CONPOOL.H
 typedef struct func_list FNOV_LIST;             // defined in FNOVLOAD.H
 #endif
 
+typedef unsigned short   vindex;
+
 #include "linkage.h"
 #include "toknlocn.h"
 #include "hashtab.h"
@@ -822,7 +824,7 @@ PCH_struct symbol {                     // SYMBOL in symbol table
         target_long     sval;           // - SC_ENUM -- signed value
         POOL_CON*       pval;           // - SC_ENUM, const int: - pool value
         target_offset_t member_offset;  // - SC_MEMBER -- data offset
-        unsigned        member_vf_index;// - SC_MEMBER -- virtual function index
+        vindex          member_vf_index;// - SC_MEMBER -- virtual function index
         TEMPLATE_INFO   *tinfo;         // - SC_CLASS_TEMPLATE -- info for it
         FN_TEMPLATE     *defn;          // - SC_FUNCTION_TEMPLATE -- defn for it
         PTREE           defarg_info;    // - SC_DEFAULT -- defarg info
@@ -983,7 +985,7 @@ struct search_result {                  // * means private to SCOPE.C
     SYMBOL              info1;          // * parm for info message #1
     SYMBOL              info2;          // * parm for info message #2
     target_offset_t     vb_offset;      // - offset of vftable pointer
-    unsigned            vb_index;       // - index of virtual base
+    vindex              vb_index;       // - index of virtual base
     target_offset_t     delta;          // - last base class offset
     target_offset_t     exact_delta;    // - last base class direct offset
     target_offset_t     offset;         // - member offset
@@ -1016,10 +1018,10 @@ typedef enum {
 struct class_table {
     CLASS_TABLE         *next;          /* must be RingFreed after use */
     target_offset_t     vb_offset;      /* offset of vbptr */
-    unsigned            vb_index;       /* index into vbtable */
+    vindex              vb_index;       /* index into vbtable */
     target_offset_t     delta;          /* delta table ptr goes in */
     target_offset_t     exact_delta;    /* exact delta table ptr goes in */
-    unsigned            count;          /* number of things def'd */
+    vindex              count;          /* number of things def'd */
     unsigned            ctor_disp : 1;  /* apply ctor-disp adjustment */
 };
 
@@ -1047,7 +1049,7 @@ struct class_vbtable {
 */
 struct thunk_cast {
     target_offset_t     vb_offset;
-    unsigned            vb_index;
+    vindex              vb_index;
     target_offset_t     delta;
 };
 
@@ -1131,8 +1133,8 @@ struct member_ptr_cast {                /* I - input, O - output, * - private */
     SCOPE               base;           /* I: base class cope */
     SCOPE               derived;        /* I: derived from 'base' */
     target_offset_t     delta;          /* O: amount to adjust delta by */
-    target_offset_t     single_test;    /* O: single idx val that needs mapping */
-    unsigned            vb_index;       /* O: new value for 'index' */
+    vindex              single_test;    /* O: single idx val that needs mapping */
+    vindex              vb_index;       /* O: new value for 'index' */
     SYMBOL              mapping;        /* O: unsigned array to map indices */
     unsigned            safe : 1;       /* I: casting from 'base' to 'derived' */
     unsigned            init_conv : 1;  /* I: convert from found base to final base */
@@ -1154,7 +1156,7 @@ struct member_ptr_cast {                /* I - input, O - output, * - private */
 struct gen_leap {
     GEN_LEAP            *next;
     TYPE                type;           /* base class type */
-    unsigned            vb_index;       /* index into virtual base table */
+    vindex              vb_index;       /* index into virtual base table */
     target_offset_t     offset;         /* offset to add */
     unsigned            control;        /* RL_* control mask */
 };
@@ -1409,8 +1411,8 @@ extern boolean TypesIdentical( TYPE, TYPE );
 // extern boolean TypesSame( TYPE, TYPE );
 extern SYMBOL MakeTypeidSym( TYPE );
 extern SYMBOL MakeVATableSym( SCOPE );
-extern SYMBOL MakeVBTableSym( SCOPE, unsigned, target_offset_t );
-extern SYMBOL MakeVFTableSym( SCOPE, unsigned, target_offset_t );
+extern SYMBOL MakeVBTableSym( SCOPE, vindex, target_offset_t );
+extern SYMBOL MakeVFTableSym( SCOPE, vindex, target_offset_t );
 extern SYMBOL MakeVMTableSym( SCOPE, SCOPE, boolean * );
 
 extern target_offset_t PackAlignment( target_offset_t, target_size_t );

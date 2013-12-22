@@ -53,12 +53,16 @@
 #define TARGET_BITS_CHAR        8
 #define TARGET_BITS             (TARGET_INT * TARGET_BITS_CHAR)
 
-#define TARGET_INT_MAX  32767
-#define TARGET_INT_MIN  (-32767-1)
-#define TARGET_UINT_MAX 0xFFFF
+#define TARGET_INT_MAX          32767
+#define TARGET_INT_MIN          (-32767-1)
+#define TARGET_UINT_MAX         0xFFFF
 
-#define TARGET_PACKING  2
+#define TARGET_PACKING          2
 #define TARGET_MAX_PACKING      8
+
+#define _CHECK_SIZE( n )        ((n) > (TARGET_UINT_MAX + 1))
+#define _CHECK_OFFS( n, o )     ((n) < (o) || (n) > TARGET_UINT_MAX)
+#define _CHECK_ADJUST( n, o )   ((n) < (o) || _CHECK_SIZE(n))
 
 typedef signed char     target_schar;
 typedef unsigned char   target_uchar;

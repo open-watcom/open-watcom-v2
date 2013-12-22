@@ -341,7 +341,7 @@ static dw_handle dwarfDebugMemberFuncDef( CLASSINFO *info, SYMBOL sym )
         } else {
             DWLocOp0( Client, locid, DW_LOC_deref );
         }
-        DWLocConstS( Client, locid, ( sym->u.member_vf_index - VFUN_BASE ) * vf_FieldTypeSize );
+        DWLocConstS( Client, locid, ( sym->u.member_vf_index - 1 ) * vf_FieldTypeSize );
         DWLocOp0( Client, locid, DW_LOC_plus );
         if( DefaultMemoryFlag( vf_FieldType ) != TF1_NEAR ) {
             DWLocOp0( Client, locid, DW_LOC_xderef );

@@ -83,19 +83,6 @@ struct vf_hide {
     SYMBOL_NAME         base;
 };
 
-// new offset can equal old offset for zero sized array at end of struct
-#if TARGET_UINT_MAX < 0x010000
-#define _CLASS_CHECK_SIZE( n, o ) \
-        if( ((n) < (o)) || ((n) > TARGET_UINT_MAX) ) { \
-            CErr1( ERR_MAX_STRUCT_EXCEEDED ); \
-        }
-#else
-#define _CLASS_CHECK_SIZE( n, o ) \
-        if( (n) < (o) ) { \
-            CErr1( ERR_MAX_STRUCT_EXCEEDED ); \
-        }
-#endif
-
 #define _IS_DEFAULT_INLINE      ( OptSize <= 50 )
 
 enum {
@@ -196,7 +183,9 @@ static void doAlignment( CLASS_DATA *data, target_offset_t adjustment )
     if( adjustment != 1 ) {
         old_offset = data->offset;
         calc_offset = _RoundUp( old_offset, adjustment );
-        _CLASS_CHECK_SIZE( calc_offset, data->offset );
+        if( _CHECK_OFFS( calc_offset, data->offset ) ) {
+            CErr1( ERR_MAX_STRUCT_EXCEEDED );
+        }
         data->offset = calc_offset;
         if( calc_offset != old_offset && CompFlags.warn_about_padding ) {
             CErr2( WARN_PADDING_ADDED, ( calc_offset - old_offset ) );
@@ -222,7 +211,9 @@ static target_offset_t addField( CLASS_DATA *data, target_size_t size,
     start = data->offset;
     calc_offset = start;
     calc_offset += size;
-    _CLASS_CHECK_SIZE( calc_offset, start );
+    if( _CHECK_OFFS( calc_offset, start ) ) {
+        CErr1( ERR_MAX_STRUCT_EXCEEDED );
+    }
     data->offset = calc_offset;
     if( data->is_union ) {
         if( save_end > data->offset ) {
@@ -1575,7 +1566,7 @@ static void setRefPassing(      // SET passed_ref IN CLASSINFO
 
 static void warnAboutHiding( CLASS_DATA *data )
 {
-    unsigned vf_index;
+    vindex vf_index;
     unsigned i;
     unsigned m;
     unsigned amt;
@@ -2113,7 +2104,7 @@ static boolean checkForCallingConventionChange( SYMBOL sym, SYMBOL above )
 
 static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
 {
-    unsigned vf_index;
+    vindex vf_index;
     unsigned arg_info;
     boolean is_virtual;
     boolean is_pure;
@@ -2784,8 +2775,8 @@ static void processVFPtrBase( CLASS_DATA *data, BASE_CLASS *base )
 {
     TYPE base_type;
     CLASSINFO *base_info;
-    unsigned base_vfindex;
-    unsigned class_vfindex;
+    vindex base_vfindex;
+    vindex class_vfindex;
 
     if( _IsVirtualBase( base ) ) {
         return;

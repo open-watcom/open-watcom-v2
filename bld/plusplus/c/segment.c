@@ -473,7 +473,9 @@ target_offset_t SegmentAdjust(  // SEGMENT: ADJUST OFFSET TO ALIGN
     }
     calc_offset = _RoundUp( offset, align );
     adjust = calc_offset - offset;
-    _CHECK_ADJUST( adjust, calc_offset, offset );
+    if( _CHECK_ADJUST( calc_offset, offset ) ) {
+        adjust = 0;
+    }
     return( adjust );
 }
 
@@ -517,7 +519,9 @@ static boolean same_segment(    // DETERMINE IF SAME SEGMENT
     if( lk->use_sym_size_align ) {
         align_adjust = SegmentAdjust( curr->seg_id, curr->offset, lk->sym_align );
         new_offset = curr->offset + align_adjust + lk->sym_size;
-        _CHECK_ADJUST( new_offset, new_offset, curr->offset );
+        if( _CHECK_ADJUST( new_offset, curr->offset ) ) {
+            new_offset = 0;
+        }
         if( new_offset == 0 ) {
             return( FALSE );
         }
@@ -766,7 +770,9 @@ fe_seg_id SegmentAddSym(        // SEGMENT: ADD SYMBOL TO SPECIFIED SEGMENT
         } else {
             aligned_offset = SegmentAdjust( curr->seg_id, curr->offset, align );
             calc_offset = curr->offset + aligned_offset + size;
-            _CHECK_ADJUST( calc_offset, calc_offset, curr->offset );
+            if( _CHECK_ADJUST( calc_offset, curr->offset ) ) {
+                calc_offset = 0;
+            }
             if( calc_offset == 0 ) {
                 if( size != 0 ) {
                     CErr( ERR_MAX_SEGMENT_EXCEEDED, curr->name, sym );
@@ -774,7 +780,9 @@ fe_seg_id SegmentAddSym(        // SEGMENT: ADD SYMBOL TO SPECIFIED SEGMENT
                 id = SEG_NULL;
             } else if( curr->dgroup ) {
                 total_size = dgroup_size + size + aligned_offset;
-                _CHECK_ADJUST( calc_offset, total_size, dgroup_size );
+                if( _CHECK_ADJUST( total_size, dgroup_size ) ) {
+                    calc_offset = 0;
+                }
                 if( calc_offset == 0 ) {
                     if( size != 0 ) {
                         CErr( ERR_MAX_DGROUP_EXCEEDED, sym, curr->name );

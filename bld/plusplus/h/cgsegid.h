@@ -33,20 +33,6 @@
 #ifndef _CGSEGID_H_
 #define _CGSEGID_H_
 
-#if TARGET_UINT_MAX < 0x010000
-#define _CHECK_SIZE( n ) \
-        ((n) > (TARGET_UINT_MAX+1))
-#define _CHECK_ADJUST( a, n, o ) \
-        if( ((n) < (o)) || _CHECK_SIZE((n)) ) { \
-            a = 0; \
-        }
-#else
-#define _CHECK_ADJUST( a, n, o ) \
-        if( (n) < (o) ) { \
-            a = 0; \
-        }
-#endif
-
 typedef enum {
     SI_DEFAULT      =0x00,  // default behaviour
     SI_ALL_ZERO     =0x01,  // all data for this symbol is zero

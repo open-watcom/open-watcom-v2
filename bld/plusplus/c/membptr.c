@@ -389,12 +389,12 @@ static PTREE computeNewIndex(   // COMPUTE NEW INDEX
     if( inf->mapping_reqd ) {
         type = TypeTargetSizeT();
         if( inf->mapping == NULL ) {
-            off_node = NodeOffset( inf->vb_index );
+            off_node = NodeOffset( inf->vb_index * TARGET_UINT );
             off_node->type = type;
             if( inf->single_mapping ) {
                 node = NodeBinary( (inf->vb_index == 0 ) ? CO_GT : CO_EQ
                                  , NodeDupExpr( &new_index )
-                                 , NodeOffset( inf->single_test ) );
+                                 , NodeOffset( inf->single_test * TARGET_UINT ) );
                 node = NodeSetBooleanType( node );
                 node = FoldBinary( node );
                 new_index = NodeBinary( CO_COLON, off_node, new_index );

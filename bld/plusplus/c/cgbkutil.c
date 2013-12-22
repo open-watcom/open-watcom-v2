@@ -498,7 +498,7 @@ cg_name CgOffset(               // PASS ABSOLUTE OFFSET TO CODE GENERATOR
 
 cg_name CgSymbolPlusOffset(     // GENERATE SYMBOL + OFFSET
     SYMBOL sym,                 // - symbol
-    unsigned offset )           // - offset
+    target_offset_t offset )    // - offset
 {
     return CgOffsetExpr( CgAddrSymbol( sym ), offset, CgTypePtrSym( sym ) );
 }

@@ -95,7 +95,7 @@ struct save_mapping {
     SCOPE               from;
     SCOPE               to;
     SYMBOL              sym;
-    target_offset_t     map_0;
+    vindex              map_0;
 };
 
 typedef struct base_path BASE_PATH;
@@ -489,7 +489,7 @@ static void dumpThunk( THUNK_ACTION *thunk )
     printf( "--\n" );
 }
 
-static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, unsigned vf_index )
+static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, vindex vf_index )
 {
     BASE_STACK *top;
     BASE_CLASS *base;
@@ -498,7 +498,7 @@ static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, unsig
         return;
     }
     printSymbolName( sym );
-    printf( "offset=%04xh index=%u\n", table->h.exact_delta, vf_index + VFUN_BASE );
+    printf( "offset=%04xh index=%u\n", table->h.exact_delta, vf_index + 1 );
     for( top = data->top; top != NULL; top = top->parent ) {
         printScopeName( top->scope, NULL );
         base = top->base;
@@ -4894,7 +4894,7 @@ static walk_status collectVBTable( BASE_STACK *top, void *parm )
     CLASSINFO *info;
     CLASS_VBTABLE *table;
     CLASS_VBTABLE *curr;
-    unsigned max_vbase;
+    vindex max_vbase;
     target_offset_t delta;
     BASE_CLASS *base;
     unsigned amount;
@@ -4924,7 +4924,7 @@ static walk_status collectVBTable( BASE_STACK *top, void *parm )
     if( ! data->already_done ) {
         RingIterBeg( ScopeInherits( scope ), base ) {
             if( _IsVirtualBase( base ) ) {
-                table->data[ base->vb_index - VFUN_BASE ] = base->type;
+                table->data[ base->vb_index - 1 ] = base->type;
             }
         } RingIterEnd( base )
     }
@@ -5397,14 +5397,14 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
 static void handleVFN( vftable_walk *data, SYMBOL sym )
 {
     SYMBOL introducing_sym;
-    unsigned vf_index;
+    vindex vf_index;
     CLASS_VFTABLE *table;
     THUNK_ACTION *thunk;
     THUNK_ACTION *thunk_table;
 
     table = data->curr;
     thunk_table = table->data;
-    vf_index = sym->u.member_vf_index - VFUN_BASE;
+    vf_index = sym->u.member_vf_index - 1;
     thunk = &thunk_table[ vf_index ];
     introducing_sym = thunk->sym;
     if( introducing_sym == NULL ) {
@@ -5492,7 +5492,7 @@ static walk_status collectVFTable( BASE_STACK *top, void *parm )
     CLASSINFO *info;
     CLASS_VFTABLE *curr;
     CLASS_VFTABLE *table;
-    unsigned max_vfn;
+    vindex max_vfn;
     target_offset_t delta;
     THUNK_ACTION *init;
     unsigned i;
@@ -5693,7 +5693,7 @@ SYMBOL ScopePureVirtualThunk( THUNK_ACTION *thunk )
     return( NULL );
 }
 
-static boolean isIdentityMapping( SCOPE from, SCOPE to, target_offset_t *except)
+static boolean isIdentityMapping( SCOPE from, SCOPE to, vindex *except)
 {
     TYPE find_base;
     TYPE from_type;
@@ -5702,11 +5702,11 @@ static boolean isIdentityMapping( SCOPE from, SCOPE to, target_offset_t *except)
     CLASSINFO *to_info;
     BASE_CLASS *from_base;
     BASE_CLASS *to_base;
-    target_offset_t from_last;
-    target_offset_t to_last;
-    target_offset_t from_index;
-    target_offset_t to_index;
-    target_offset_t from_done;
+    vindex from_last;
+    vindex to_last;
+    vindex from_index;
+    vindex to_index;
+    vindex from_done;
 
     except[0] = 0;
     from_type = ScopeClass( from );
@@ -5781,14 +5781,14 @@ static void emitIndexMapping( SAVE_MAPPING *mapping )
     CLASSINFO *to_info;
     BASE_CLASS *from_base;
     BASE_CLASS *to_base;
-    target_offset_t from_index;
-    target_offset_t to_index;
+    vindex from_index;
+    vindex to_index;
     SYMBOL sym;
 
     sym = mapping->sym;
     DgSymbolLabel( sym );
     sym->flag |= SF_INITIALIZED;
-    emitOffset( mapping->map_0 );
+    emitOffset( mapping->map_0 * TARGET_UINT );
     from_type = ScopeClass( mapping->from );
     from_info = from_type->u.c.info;
     to_type = ScopeClass( mapping->to );
@@ -5829,7 +5829,7 @@ void ScopeEmitIndexMappings( void )
     }
 }
 
-static SYMBOL genIndexMapping( target_offset_t map_0, SCOPE from, SCOPE to )
+static SYMBOL genIndexMapping( vindex map_0, SCOPE from, SCOPE to )
 {
     SAVE_MAPPING *mapping;
     boolean new_sym;
@@ -5858,8 +5858,8 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
     SCOPE from_scope;
     SCOPE to_scope;
     target_offset_t delta;
-    target_offset_t map_0;
-    target_offset_t except[2];
+    vindex map_0;
+    vindex except[2];
     boolean base_has_vbases;
     boolean derived_has_vbases;
     boolean identity_mapping;
@@ -5901,7 +5901,7 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
                 }
             } else {
                 /* a virtual base was introduced by the cast */
-                data->vb_index = vbase->vb_index * TARGET_UINT;
+                data->vb_index = vbase->vb_index;
                 data->mapping_reqd = TRUE;
             }
             return( WALK_FINISH );
@@ -5942,9 +5942,9 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
         }
         if( except[0] != 0 ) {
             /* almost an identity mapping so we handle the exception */
-            data->single_test = except[0] * TARGET_UINT;
+            data->single_test = except[0];
             /* if this is 0, any index above 'single_test' maps to 0 */
-            data->vb_index = except[1] * TARGET_UINT;
+            data->vb_index = except[1];
             data->single_mapping = TRUE;
             data->mapping_reqd = TRUE;
             return( WALK_FINISH );
@@ -5953,7 +5953,7 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
         if( identity_mapping ) {
             /* 0 maps to k but all others don't need mapping */
             data->single_test = 0;
-            data->vb_index = map_0 * TARGET_UINT;
+            data->vb_index = map_0;
             data->single_mapping = TRUE;
             data->mapping_reqd = TRUE;
             return( WALK_FINISH );
