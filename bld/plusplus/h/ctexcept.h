@@ -44,7 +44,7 @@ typedef struct throw_cnv THROW_CNV;
 struct throw_cnv                // THROW_CNV -- a throw conversions
 {   THROW_CNV *next;            // - next conversion
     TYPE_SIG *sig;              // - type signature
-    target_size_t offset;       // - offset for conversion
+    target_offset_t offset;     // - offset for conversion
 };
 
 typedef struct throw_cnv_ctl THROW_CNV_CTL;
@@ -54,7 +54,7 @@ struct throw_cnv_ctl            // THROW_CNV_CTL -- controls throw conversions
     carve_t carver;             // - carve information
     TOKEN_LOCN err_locn;        // - location, in case of error
     TYPE src_type;              // - source type (most derived)
-    unsigned offset;            // - offset of current element
+    target_offset_t offset;     // - offset of current element
     unsigned error_occurred :1; // - TRUE ==> error occurred
 };
 
@@ -79,7 +79,7 @@ void ExceptionsCheck(           // DIAGNOSE EXCEPTIONAL USE, WHEN DISABLED
 THROBJ ThrowCategory(           // GET THROW-OBJECT CATEGORY FOR A TYPE
     TYPE type )                 // - type
 ;
-target_size_t ThrowBaseOffset(  // GET OFFSET OF BASE
+target_offset_t ThrowBaseOffset(// GET OFFSET OF BASE
     SCOPE thr_scope,            // - scope of throw
     SCOPE base_scope )          // - scope for base
 ;
@@ -92,7 +92,7 @@ unsigned ThrowCnvInit(          // THROW CONVERSIONS: INITIALIZE
 ;
 TYPE ThrowCnvType(              // THROW CONVERSIONS: GET NEXT TYPE
     THROW_CNV_CTL *ctl,         // - control area
-    target_size_t *offset )     // - addr[ offset ]
+    target_offset_t *offset )   // - addr[ offset ]
 ;
 PTREE ThrowTypeSig(             // GET THROW ARGUMENT FOR TYPE SIGNATURE
     TYPE type,                  // - type to be thrown

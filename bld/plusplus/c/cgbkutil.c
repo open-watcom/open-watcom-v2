@@ -689,7 +689,7 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
     FN_CTL* fctl,               // - function control
     SYMBOL dtor,                // - destructor
     SYMBOL sym,                 // - SYMBOL to be DTOR'ed
-    target_size_t offset,       // - offset from "sym"
+    target_offset_t offset,     // - offset from "sym"
     unsigned cdtor )            // - CDTOR to be used
 {
     call_handle handle;         // - call handle
@@ -961,8 +961,7 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
         printf( "State Table for static object: %x\n", &dctl.state_table );
     }
 #endif
-    sctl.rw = CgVarRw( CgbkInfo.size_rw_base + CgbkInfo.size_data_ptr
-                     , SC_STATIC );
+    sctl.rw = CgVarRw( CgbkInfo.size_rw_base + CgbkInfo.size_data_ptr, SC_STATIC );
     dctl.ro = CgVarRo( 1, SC_STATIC, NULL );
     se = SeAlloc( DTC_SYM_STATIC );
     se->base.gen = TRUE;

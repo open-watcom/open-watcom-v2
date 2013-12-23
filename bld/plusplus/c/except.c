@@ -43,7 +43,7 @@
 
 static TYPE throwCnvTypeRetn(   // RETURN NEXT THROW TYPE
     THROW_CNV_CTL *ctl,         // - control area
-    target_size_t *offset,      // - addr[ offset ]
+    target_offset_t *offset,    // - addr[ offset ]
     THROW_CNV *cnv )            // - conversion entry
 {
     ctl->cur = cnv;
@@ -54,7 +54,7 @@ static TYPE throwCnvTypeRetn(   // RETURN NEXT THROW TYPE
 
 TYPE ThrowCnvType(              // THROW CONVERSIONS: GET NEXT TYPE
     THROW_CNV_CTL *ctl,         // - control area
-    target_size_t *offset )     // - addr[ offset ]
+    target_offset_t *offset )   // - addr[ offset ]
 {
     THROW_CNV *cnv;             // - conversion entry
     TYPE type;                  // - type of conversion entry
@@ -118,7 +118,7 @@ THROBJ ThrowCategory(           // GET THROW-OBJECT CATEGORY FOR A TYPE
 static void makeThrowCnvAccess( // MAKE A THROW CONVERSION, WITH ACCESS
     THROW_CNV_CTL *ctl,         // - control area
     TYPE type,                  // - conversion type
-    target_size_t offset,       // - conversion offset
+    target_offset_t offset,     // - conversion offset
     TYPE_SIG_ACCESS access )    // - type of access
 {
     THROW_CNV *cnv;             // - conversion entry
@@ -136,7 +136,7 @@ static void makeThrowCnvAccess( // MAKE A THROW CONVERSION, WITH ACCESS
 static void makeThrowCnv(       // MAKE A THROW CONVERSION, DEFAULT ACCESS
     THROW_CNV_CTL *ctl,         // - control area
     TYPE type,                  // - conversion type
-    target_size_t offset )      // - conversion offset
+    target_offset_t offset )    // - conversion offset
 {
     if( CompFlags.codegen_active ) {
         makeThrowCnvAccess( ctl, type, offset, TSA_NULL );
@@ -149,18 +149,18 @@ static void makeThrowCnv(       // MAKE A THROW CONVERSION, DEFAULT ACCESS
 static void makeThrowCnvNoAcc(  // MAKE A THROW CONVERSION, NO ACCESS
     THROW_CNV_CTL *ctl,         // - control area
     TYPE type,                  // - conversion type
-    target_size_t offset )      // - conversion offset
+    target_offset_t offset )    // - conversion offset
 {
     makeThrowCnvAccess( ctl, type, offset, TSA_NULL );
 }
 
 
-target_size_t ThrowBaseOffset(  // GET OFFSET OF BASE
+target_offset_t ThrowBaseOffset(  // GET OFFSET OF BASE
     SCOPE thr_scope,            // - scope of throw
     SCOPE base_scope )          // - scope for base
 {
     SEARCH_RESULT *result;      // - search result for valid type
-    target_size_t offset;       // - exact offset of base
+    target_offset_t offset;     // - exact offset of base
 
     result = ScopeBaseResult( thr_scope, base_scope );
     offset = result->exact_delta;

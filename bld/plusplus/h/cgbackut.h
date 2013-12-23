@@ -738,7 +738,7 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
     FN_CTL* fctl,               // - function control
     SYMBOL dtor,                // - destructor
     SYMBOL sym,                 // - SYMBOL to be DTOR'ed
-    target_size_t offset,       // - offset from "sym"
+    target_offset_t offset,     // - offset from "sym"
     unsigned cdtor )            // - CDTOR to be used
 ;
 cg_name CgDestructExpr(         // CONSTRUCT DTOR CALL FOR EXPRESSION

@@ -124,9 +124,7 @@ SYMBOL CgCmdFnExc(              // GET SYMBOL FOR FN-EXCEPTION SPEC. COMMAND
     cmd = stateTableCmdAllocVar
                     ( carveCMD_FN_EXC
                     , &ringCmdsFnExc
-                    , 2 +
-                      CgbkInfo.size_offset +
-                      RingCount( sigs ) * CgbkInfo.size_data_ptr );
+                    , 2 + CgbkInfo.size_offset + RingCount( sigs ) * CgbkInfo.size_data_ptr );
     cmd->sigs = sigs;
     return cmd->base.sym;
 }
@@ -353,9 +351,7 @@ SYMBOL CgCmdTry(                // GET SYMBOL FOR TRY BLOCK
     cmd = stateTableCmdAllocVar
                     ( carveCMD_TRY
                     , &ringCmdsTry
-                    , 2 + 2 +
-                      3 * CgbkInfo.size_offset +
-                      RingCount( sigs ) * CgbkInfo.size_data_ptr );
+                    , 2 + 2 + 3 * CgbkInfo.size_offset + RingCount( sigs ) * CgbkInfo.size_data_ptr );
     cmd->state = SeStateVar( FstabPrevious( se ) );
     cmd->offset_var = CgOffsetRw( se->try_blk.try_impl->offset_var );
     cmd->offset_jmpbuf = CgOffsetRw( se->try_blk.try_impl->offset_jmpbuf );

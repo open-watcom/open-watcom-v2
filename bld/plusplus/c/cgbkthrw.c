@@ -63,7 +63,7 @@ static THROW_RO *throwRoGet(    // GET THROW R/O BLOCK
     THROW_RO *ro;               // - R/O block for symbol
     SYMBOL sym;                 // - symbol for throw object
     THROW_CNV_CTL ctl;          // - control area
-    target_size_t offset;       // - offset ( not used )
+    target_offset_t offset;     // - offset ( not used )
 
     type = TypeCanonicalThr( type );
     ro = NULL;
@@ -77,10 +77,8 @@ static THROW_RO *throwRoGet(    // GET THROW R/O BLOCK
         ro = RingCarveAlloc( carveTHROW_RO, &ring_throw_ro );
         ro->sig = BeTypeSignature( type );
         ro->emitted = FALSE;
-        sym = CgVarRo( CgbkInfo.size_offset
-                        + sizeOfThrowCnv() * ThrowCnvInit( &ctl, type )
-                     , SC_PUBLIC
-                     , CppNameThrowRo( type ) );
+        sym = CgVarRo( CgbkInfo.size_offset + sizeOfThrowCnv() * ThrowCnvInit( &ctl, type ),
+                     SC_PUBLIC, CppNameThrowRo( type ) );
         ro->sym = sym;
         for( ; ; ) {
             type = ThrowCnvType( &ctl, &offset );
@@ -102,7 +100,7 @@ cg_name ThrowRo(                // CREATE/ACCESS THROW R/O BLOCK
 
 static void cgGenThrowCnv(      // GENERATE THROW CONVERSION
     TYPE type,                  // - target type
-    target_size_t offset )      // - offset within class
+    target_offset_t offset )    // - offset within class
 {
     TYPE_SIG *sig;              // - signature for type
 
@@ -130,7 +128,7 @@ void ThrowRoGen(                // GENERATE A THROW R/O BLOCK
     segment_id old;             // - old segment
     TYPE type;                  // - type being converted
     THROW_CNV_CTL ctl;          // - control for conversions
-    target_size_t offset;       // - offset within class
+    target_offset_t offset;     // - offset within class
 
     RingIterBeg( ring_throw_ro, ro ) {
         if( ! ro->emitted ) {

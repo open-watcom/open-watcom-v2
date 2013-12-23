@@ -78,8 +78,7 @@ DTREG_OBJ* DtregObj(            // LOCATE RW_DTREG_OBJ SYMBOL
         obj->sym = NULL;
     } else {
         if( obj->cg_sym == NULL ) {
-            obj->cg_sym = CgVarRw( 3 * CgbkInfo.size_data_ptr
-                                 , SC_AUTO );
+            obj->cg_sym = CgVarRw( 3 * CgbkInfo.size_data_ptr, SC_AUTO );
             AutoRelRegister( obj->cg_sym, &obj->offset );
         }
         obj->sym = obj->cg_sym;

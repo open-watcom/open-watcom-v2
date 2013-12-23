@@ -687,7 +687,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             continue;
           case IC_THROW_RO_BLK :
           { THROW_CNV_CTL ctl;  // - controls conversions
-            target_size_t not_used; // - offset not used
+            target_offset_t not_used; // - offset not used
             TYPE type;          // - a conversion from thrown object
             ThrowCnvInit( &ctl, ins->value.pvalue );
             for( ; ; ) {

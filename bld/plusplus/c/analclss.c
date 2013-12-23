@@ -268,7 +268,7 @@ static PTREE setThisFromOffset( // SET "THIS" BACK BY AN OFFSET
     PTREE expr,                 // - DTOR, CTOR call
     TYPE type,                  // - type of component accessed by 'this'
     TYPE this_type,             // - type of 'this'
-    target_size_t offset )      // - the offset
+    target_offset_t offset )    // - the offset
 {
     PTREE offset_node;
 
