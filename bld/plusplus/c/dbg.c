@@ -403,7 +403,7 @@ void DumpTemplateInfo( TEMPLATE_INFO *tinfo )
           , tprimary->defn
           , tprimary->num_args
           );
-    printf( "      %s", tinfo->sym->name->name );
+    printf( "      %s", NameStr( tinfo->sym->name->name ) );
     delim = '<';
     for( i = 0; i < tprimary->num_args; ++i ) {
         FormatType( tprimary->type_list[i], &prefix, &suffix );
@@ -809,7 +809,7 @@ void DumpSymbolName(            // DUMP SYMBOL_NAME ENTRY
           , sn->name_type
           , sn->name_syms
           , sn->name
-          , sn->name
+          , NameStr( sn->name )
           );
 }
 
@@ -1194,7 +1194,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
                   , node->flags
                   , DbgOperator( node->cgop )
                   , node->u.id.name
-                  , node->u.id.name
+                  , NameStr( node->u.id.name )
                   , DbgOperator( node->id_cgop )
                   , node->u.id.scope
                   );

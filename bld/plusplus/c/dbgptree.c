@@ -402,7 +402,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         break;
       case PT_DUP_EXPR :
         text = stpcpy( buffer, "dup[" );
-        text = stxcpy( text, (unsigned)pnode->u.subtree[0] );
+        text = stxcpy( text, (unsigned)(pointer_int)pnode->u.subtree[0] );
         stpcpy( text, "]" );
         type_add = printTypes;
         break;
@@ -559,7 +559,7 @@ static void printSubtree(       // PRINT A SUBTREE
         print_locn = FALSE;
         bptr = stpcpy( buffer, "dup[" );
     }
-    bptr = stxcpy( bptr, (unsigned)subtree->root );
+    bptr = stxcpy( bptr, (unsigned)(pointer_int)subtree->root );
     if( print_locn ) {
         PTreeExtractLocn( subtree->root, &locn );
         if( NULL != locn.src_file ) {

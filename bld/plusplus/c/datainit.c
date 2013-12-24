@@ -1380,7 +1380,8 @@ static void dataInitStashExpr( PTREE expr )
         DbgAssert( expr->u.subtree[0] != NULL );
         if( currInit->auto_static ) {
             if( constant ) {
-                currInit->all_zero &= DgStoreScalar( cexpr, offset, type );
+                if( !DgStoreScalar( cexpr, offset, type ) )
+                    currInit->all_zero = 0;
                 NodeFreeSearchResult( cexpr );
                 PTreeFreeSubtrees( expr );
             } else {
@@ -1410,7 +1411,8 @@ static void dataInitStashExpr( PTREE expr )
                 DbgAssert( expr->u.subtree[0] != NULL );
                 DgStoreConstScalar( cexpr, type, currInit->sym );
             }
-            currInit->all_zero &= DgStoreScalar( cexpr, offset, type );
+            if( !DgStoreScalar( cexpr, offset, type ) )
+                currInit->all_zero = 0;
             NodeFreeSearchResult( cexpr );
             PTreeFreeSubtrees( expr );
             dtorableObjectCtored( currInit->nest, NULL, FALSE );
@@ -1645,7 +1647,8 @@ static void dataInitPadOut( INITIALIZE_INFO *top )
         if( currInit->huge_sym ) {
             dataInitCheckHugeSegment( top->base + top->offset );
         }
-        currInit->all_zero &= DgStoreBitfield( top->u.b.type, top->u.b.mask );
+        if( !DgStoreBitfield( top->u.b.type, top->u.b.mask ) )
+            currInit->all_zero = 0;
         while( !dataInitIsFull( top ) ) {
             top->type = dataInitAdvanceField( top->previous );
         }

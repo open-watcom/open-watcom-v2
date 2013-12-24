@@ -417,7 +417,7 @@ static void printScopeName( SCOPE scope, char *suffix )
         }
         break;
     case SCOPE_FUNCTION:
-        printf( "%s() ", ScopeFunction( scope )->name->name );
+        printf( "%s() ", NameStr( ScopeFunction( scope )->name->name ) );
         break;
     case SCOPE_BLOCK:
         printf( "{} " );
@@ -3639,7 +3639,7 @@ static void dumpSearch( lookup_walk *data )
             }
         }
         if( cap->sym_name != NULL ) {
-            printf( ". %s\n", cap->sym_name->name );
+            printf( ". %s\n", NameStr( cap->sym_name->name ) );
         } else {
             putchar( '\n' );
         }
@@ -4993,8 +4993,7 @@ static SYMBOL findOverride( BASE_STACK *top, SYMBOL curr_override, SYMBOL base_s
     if( table == NULL ) {
         return( NULL );
     }
-    thunk = table->data;
-    for(;;) {
+    for( thunk = table->data; ; ++thunk ) {
         sym = thunk->sym;
         if( sym != NULL && overloadedSym( sym, base_sym ) ) {
             SCOPE sym_scope = SymScope( sym );
@@ -5010,9 +5009,9 @@ static SYMBOL findOverride( BASE_STACK *top, SYMBOL curr_override, SYMBOL base_s
             }
             break;
         }
-        if( thunk->last_entry )
+        if( thunk->last_entry ) {
             break;
-        ++thunk;
+        }
     }
     return( NULL );
 }
@@ -5456,15 +5455,14 @@ static void doubleCheckEntries( vftable_walk *data, CLASS_VFTABLE *table )
     THUNK_ACTION *thunk;
     SYMBOL sym;
 
-    thunk = table->data;
-    for(;;) {
+    for( thunk = table->data; ; ++thunk ) {
         sym = thunk->sym;
         if( sym != NULL && thunk->possible_ambiguity ) {
             handleVFN( data, sym );
         }
-        if( thunk->last_entry )
+        if( thunk->last_entry ) {
             break;
-        ++thunk;
+        }
     }
 }
 
@@ -5611,15 +5609,14 @@ boolean ScopeHasPureFunctions( SCOPE scope )
         if( table->corrupted ) {
             continue;
         }
-        thunk = table->data;
-        for(;;) {
+        for( thunk = table->data; ; ++thunk ) {
             if( ScopePureVirtualThunk( thunk ) != NULL ) {
                 has_a_pure = TRUE;
                 break;
             }
-            if( thunk->last_entry )
+            if( thunk->last_entry ) {
                 break;
-            ++thunk;
+            }
         }
         if( has_a_pure ) {
             break;
@@ -5659,15 +5656,14 @@ void ScopeNotePureFunctions( TYPE type )
         if( table->corrupted ) {
             continue;
         }
-        thunk = table->data;
-        for(;;) {
+        for( thunk = table->data; ; ++thunk ) {
             pure_fn = ScopePureVirtualThunk( thunk );
             if( pure_fn != NULL ) {
                 CErr( INF_PURE_FUNCTION, pure_fn, &pure_fn->locn->tl );
             }
-            if( thunk->last_entry )
+            if( thunk->last_entry ) {
                 break;
-            ++thunk;
+            }
         }
     } RingIterEnd( table )
     // NYI: we could cache this ring of tables in case it is needed again

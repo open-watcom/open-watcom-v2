@@ -62,6 +62,7 @@
 #include "floatsup.h"
 #include "rtti.h"
 #include "cgcli.h"
+#include "fold.h"
 
 #ifndef NDEBUG
 #include "pragdefn.h"
@@ -3200,7 +3201,9 @@ static void remove_file(        // REMOVE FILE, IF NOT INLINE
 static void writeVirtualFile(   // EMIT AND FREE A VIRTUAL FILE
     CGFILE *file_ctl )          // - current file
 {
-//    SYMBOL func;                // - function symbol
+#ifndef NDEBUG
+    SYMBOL func;                // - function symbol
+#endif
 //    FN_CTL* fctl;               // - file control
 
     ExtraRptIncrementCtr( ctr_funcs );
@@ -3418,7 +3421,9 @@ void FEGenProc(                 // INLINE SUPPORT
 {
     CGFILE *file_ctl;           // - file control info
 //    FN_CTL* fctl;               // - file-gen info. for caller
-//    SE* curr;                   // - current state entry for caller
+#ifndef NDEBUG
+    SE* curr;                   // - current state entry for caller
+#endif
     SYMBOL sym = _sym;          // - function to be in-lined
 
                                 // - CGFILE information stacked

@@ -448,7 +448,7 @@ void PCHWriteUInt( unsigned v )
     unsigned write_value;
 
     if( sizeof( unsigned ) <= amountLeft ) {
-        DbgAssert( (((unsigned)bufferCursor) & ( PCH_ALIGN - 1 )) == 0 );
+        DbgAssert( (((unsigned)(pointer_int)bufferCursor) & ( PCH_ALIGN - 1 )) == 0 );
         *((unsigned *)bufferCursor) = v;
         bufferCursor += sizeof( unsigned );
         amountLeft -= sizeof( unsigned );
@@ -914,7 +914,7 @@ unsigned PCHReadUInt( void )
     buff_ptr = pch_buff_cur;
     end = (char *)buff_ptr + sizeof( value );
     if( end <= (void *)pch_buff_eob ) {
-        DbgAssert( ( ((unsigned)buff_ptr) % PCH_ALIGN ) == 0 );
+        DbgAssert( ( ((unsigned)(pointer_int)buff_ptr) % PCH_ALIGN ) == 0 );
         p_value = (unsigned *)buff_ptr;
         pch_buff_cur = end;
         value = *p_value;
@@ -934,7 +934,7 @@ void *PCHReadCVIndexElement( cvinit_t *data )
     buff_ptr = pch_buff_cur;
     end = (char *)buff_ptr + sizeof( cv_index );
     if( end <= (void *)pch_buff_eob ) {
-        DbgAssert( ( ((unsigned)pch_buff_cur) % PCH_ALIGN ) == 0 );
+        DbgAssert( ( ((unsigned)(pointer_int)pch_buff_cur) % PCH_ALIGN ) == 0 );
         index = *(cv_index *)pch_buff_cur;
         pch_buff_cur = end;
     } else {

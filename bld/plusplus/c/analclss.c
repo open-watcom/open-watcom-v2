@@ -2220,13 +2220,13 @@ static void emitThunks( CLASS_VFTABLE *table, SYMBOL ctor )
     SCOPE scope;
 
     scope = SymScope( ctor );
-    thunk = table->data;
-    for(;;) {
+    for( thunk = table->data; ; ++thunk ) {
         if( thunk->non_empty ) {
             EmitVfunThunk( scope, thunk );
         }
-        if( thunk->last_entry ) break;
-        ++thunk;
+        if( thunk->last_entry ) {
+            break;
+        }
     }
     CgFrontSwitchFile( ctor );
 }
@@ -2273,7 +2273,7 @@ static void genVFPtrCode( SCOPE scope, SYMBOL ctor, CLASS_VFTABLE *table )
     SYMBOL sym;
     SYMBOL vfn_sym;
     SYMBOL rtti_sym;
-    THUNK_ACTION *curr;
+    THUNK_ACTION *thunk;
     target_offset_t offset;
 
     sym = MakeVFTableSym( scope, table->h.count, table->h.exact_delta );
@@ -2286,17 +2286,17 @@ static void genVFPtrCode( SCOPE scope, SYMBOL ctor, CLASS_VFTABLE *table )
         sym->flag |= SF_INITIALIZED;
         rtti_sym = RttiBuild( scope, &(table->h), &offset );
         emitRttiRef( rtti_sym, offset );
-        curr = table->data;
-        for(;;) {
-            vfn_sym = curr->sym;
-            if( curr->non_empty ) {
-                vfn_sym = curr->thunk;
-            } else if( curr->override != NULL ) {
-                vfn_sym = curr->override;
+        for( thunk = table->data; ; ++thunk ) {
+            vfn_sym = thunk->sym;
+            if( thunk->non_empty ) {
+                vfn_sym = thunk->thunk;
+            } else if( thunk->override != NULL ) {
+                vfn_sym = thunk->override;
             }
             emitVFNPointer( vfn_sym );
-            if( curr->last_entry ) break;
-            ++curr;
+            if( thunk->last_entry ) {
+                break;
+            }
         }
         CgSegId( sym );
         CgFrontData( IC_INIT_DONE );
