@@ -251,7 +251,7 @@ static blk_t *withinABlock( carve_t cv, void *elm )
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         start = block->data;
         compare = start + cv->blk_top;
-        if( elm < start || elm > compare ) {
+        if( (char *)elm < start || (char *)elm > compare ) {
             continue;
         }
         return( block );
@@ -292,7 +292,7 @@ void CarveDebugFree( carve_t cv, void *elm )
     }
     if( do_search ) {
         for( check = cv->free_list; check != NULL; check = check->next_free ) {
-            if( elm == (void *) check ) {
+            if( elm == (void *)check ) {
                 _FatalAbort( "carve: freed object was previously freed" );
             }
         }
@@ -301,7 +301,7 @@ void CarveDebugFree( carve_t cv, void *elm )
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         start = block->data;
         compare = start + cv->blk_top;
-        if( elm < start || elm > compare ) {
+        if( (char *)elm < start || (char *)elm > compare ) {
             continue;
         }
         for(;;) {
@@ -382,32 +382,31 @@ void CarveVerifyAllGone( carve_t cv, char const *node_name )
 //!!!!!!!!!!!!! JIM WELCH
 //!!!!!!!!!!!!!
 
-void *CarveGetIndex( carve_t cv, void *e )
-/****************************************/
+void *CarveGetIndex( carve_t cv, void *elm )
+/******************************************/
 {
-    char *elm = e;
     char *start;
     char *top;
     blk_t *block;
     unsigned block_index;
 
     if( elm == NULL ) {
-        return( (void *) CARVE_NULL_INDEX );
+        return( (void *)CARVE_NULL_INDEX );
     }
     block_index = cv->blk_count + 1;
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         --block_index;
         start = block->data;
-        if( elm >= start ) {
+        if( (char *)elm >= start ) {
             top = start + cv->blk_top;
-            if( elm < top ) {
-                DbgAssert( (( elm - start ) % cv->elm_size ) == 0 );
-                return( (void *) MK_INDEX( block_index, elm - start ) );
+            if( (char *)elm < top ) {
+                DbgAssert( (( (char *)elm - start ) % cv->elm_size ) == 0 );
+                return( (void *)MK_INDEX( block_index, (char *)elm - start ) );
             }
         }
     }
     _FatalAbort( "unable to find carve memory block" );
-    return( (void *) CARVE_ERROR_INDEX );
+    return( (void *)CARVE_ERROR_INDEX );
 }
 
 carve_t CarveRestart( carve_t cv )

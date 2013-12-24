@@ -252,7 +252,7 @@ static void dump_state_stack(const char * label, PARSE_STACK * stack)
     if(stack != last_stack)
     {
         printf("===============================================================================\n");
-        printf("*** PARSE STACK CHANGE *** New: 0x%.08X Old: 0x%.08X\n", stack, last_stack);
+        printf("*** PARSE STACK CHANGE *** New: 0x%p Old: 0x%p\n", stack, last_stack);
         printf("===============================================================================\n");
         last_stack = stack;
     }    
@@ -267,7 +267,7 @@ static void dump_state_stack(const char * label, PARSE_STACK * stack)
         YYACTIONTYPE *  the_sstack = stack->sstack;
         unsigned        index;
         
-        printf("dump_state_stack \"%s\" (0x%.08X):\n", label, the_sstack);
+        printf("dump_state_stack \"%s\" (0x%p):\n", label, the_sstack);
         /*
         //  ensure we dump the top of stack (test &(ssp[1]))
         */
@@ -1533,7 +1533,7 @@ static void pushRestartDecl( PARSE_STACK *state )
 #ifndef NDEBUG
     if( PragDbgToggle.dump_parse ){
         printf("===============================================================================\n");
-        printf("*** pushRestartDecl: 0x%.08X 0x%.08X\n", state, restart);
+        printf("*** pushRestartDecl: 0x%p 0x%p\n", state, restart);
         printf("===============================================================================\n");
     }
 #endif
@@ -1552,7 +1552,7 @@ static void popRestartDecl( PARSE_STACK *state )
 #ifndef NDEBUG
     if( PragDbgToggle.dump_parse ){
         printf("===============================================================================\n");
-        printf("*** popRestartDecl: 0x%.08X 0x%.08X\n", state, restart);
+        printf("*** popRestartDecl: 0x%p 0x%p\n", state, restart);
         printf("===============================================================================\n");
     }
 #endif
@@ -2105,7 +2105,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
                 case Y_TEMPLATE_ID:
                 case Y_TYPE_NAME:
                 case Y_TEMPLATE_NAME:
-                    printf( "%s '%s'\n", yytoknames[t], yylval.tree->u.id.name );
+                    printf( "%s '%s'\n", yytoknames[t], NameStr( yylval.tree->u.id.name ) );
                     break;
                 default:
                     puts( yytoknames[t] );
