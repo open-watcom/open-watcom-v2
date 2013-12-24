@@ -69,9 +69,9 @@ typedef struct {                // INFO FOR A CONDITION
     static void _Dump( COND_STK* cond, const char* msg )
     {
         if( PragDbgToggle.dump_stab ) {
-            printf( "COND_STK[%x]: flag(%d) %s\n"
-                    "  last(%x) true(%x) false(%x)\n"
-                    "  handle_set(%x) handle_clr(%x) mask_set(%x) mask_clr(%x)\n"
+            printf( "COND_STK[%p]: flag(%d) %s\n"
+                    "  last(%p) true(%p) false(%p)\n"
+                    "  handle_set(%p) handle_clr(%p) mask_set(%x) mask_clr(%x)\n"
                   , cond
                   , cond->offset
                   , msg

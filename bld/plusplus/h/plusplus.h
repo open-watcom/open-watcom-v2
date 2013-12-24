@@ -147,18 +147,12 @@ typedef union cgvalue {             // CGVALUE: one of
 
 #include "icodes.h"
 
-// structure is written out to a file
-#include "pushpck1.h"
-
 // having 'value' first means it will be aligned in cases
 // were it is a singleton
-typedef struct cginter          CGINTER;    // intermediate text
-struct cginter {                // CGINTER -- intermediate-code instruction
+typedef struct cginter {        // CGINTER -- intermediate-code instruction
     CGVALUE     value;          // - value
     CGINTEROP   opcode;         // - opcode for text
-};
-
-#include "poppck.h"
+} CGINTER;
 
 /* Target System types */
 enum {

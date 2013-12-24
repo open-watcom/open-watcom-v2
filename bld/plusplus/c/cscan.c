@@ -911,7 +911,6 @@ static TOKEN scanNum( int expanding )
 {
     int c;
     unsigned_64 *max_value;
-    unsigned long value;
     char too_big;
     char max_digit;
 
@@ -920,7 +919,6 @@ static TOKEN scanNum( int expanding )
         return( doScanAsmToken() );
 
     U64Clear( Constant64 );
-    value = 0;
     too_big = 0;
     TokenLen = 1;
     c = CurrChar;

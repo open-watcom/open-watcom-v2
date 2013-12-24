@@ -237,7 +237,7 @@ boolean AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
     PTREE *args;                // addr( call arguments )
     PTREE init_node;            // node to setup function symbol
     PTREE func_node;            // node for function symbol
-    PTREE arg;                  // new argument
+//    PTREE arg;                  // new argument
     PTREE arg_locn;             // expr used to give locn for CO_LIST node
     TYPE arg_type;              // argument type in prototype
     arg_list *proto_without;    // function arg list without default arg
@@ -267,7 +267,7 @@ boolean AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
         while( *args != NULL ) {
             args = PTreeRefLeft( *args );
         }
-        arg = NULL;
+//        arg = NULL;
         do {
             defarg_expr = NULL;
             reloc_list = NULL;

@@ -271,8 +271,8 @@ void DumpCdoptIter(             // DUMP ITERATOR
     const char* text2 )         // - and some text
 {
     if( PragDbgToggle.cdopt ) {
-        printf( "CDOPT_ITER[%x] info(%x) orig_otype(%s) %s %s\n"
-                "    offsets: comp(%x) elem(%x) vbase(%x) gened_comp(%x) at_end(%x)\n"
+        printf( "CDOPT_ITER[%p] info(%p) orig_otype(%s) %s %s\n"
+                "    offsets: comp(%x) elem(%x) vbase(%p) gened_comp(%x) at_end(%x)\n"
               , iter
               , iter->info
               , __fmt_TITER( iter->orig_otype )
@@ -295,8 +295,8 @@ void DumpCdoptClElem(           // DUMP A CLASS ELEMENT
         VBUF vbuf1;
         VBUF vbuf2;
 
-        printf( "  CL_ELEM[%x]: next(%x) type(%x) offset(%x) type(%s)\n"
-                "       descr(%x) cdtor(%s) sym(%s)\n"
+        printf( "  CL_ELEM[%p]: next(%p) type(%p) offset(%x) type(%s)\n"
+                "       descr(%p) cdtor(%s) sym(%s)\n"
                 "       elim_intermed(%d) cannot_define(%d) must_call(%d)\n"
               , elem
               , elem->next
@@ -325,8 +325,8 @@ void DumpCdoptInfo(             // DUMP CD_DESCR
     if( PragDbgToggle.cdopt ) {
         VBUF vbuf;
 
-        printf( "CD_DESCR[%x]: type(%x) opt(%s) elements(%x)\n"
-                "              accessed(%x) vft(%d) vbt(%d)\n"
+        printf( "CD_DESCR[%p]: type(%p) opt(%s) elements(%p)\n"
+                "              accessed(%p) vft(%d) vbt(%d)\n"
               , info
               , info->orig_type
               , __fmt_CDOPT_TYPE( info->opt )
@@ -351,7 +351,7 @@ void DumpCdoptIn(               // DUMP INPUT STACK ENTRY
     const char* text )          // - descriptive text
 {
     if( PragDbgToggle.cdopt ) {
-        printf( "STKIN[%x]: info(%x) elem(%x) %s\n"
+        printf( "STKIN[%p]: info(%p) elem(%p) %s\n"
               , inp
               , inp->info
               , inp->elem
@@ -366,7 +366,7 @@ void DumpClIter(                // DUMP STACK ENTRY
     const char* text )          // - and some text
 {
     if( PragDbgToggle.cdopt ) {
-        printf( "CL_ITER[%x]: info(%x) elem(%x) comp_otype(%s) %s\n"
+        printf( "CL_ITER[%p]: info(%p) elem(%p) comp_otype(%s) %s\n"
               , exp
               , exp->info
               , exp->elem
@@ -1479,7 +1479,7 @@ static void addInfoElement(     // ADD ELEMENT TO CD_DESCR
 {
 #ifndef NDEBUG
     if( PragDbgToggle.cdopt ) {
-        printf( "-- ADDED %x TO %x\n", elem, info );
+        printf( "-- ADDED %p TO %p\n", elem, info );
     }
 #endif
     if( info->opt == CDOPT_DTOR ) {

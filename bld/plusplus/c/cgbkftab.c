@@ -172,7 +172,7 @@ boolean FstabSetup(             // SETUP FUNCTION STATE TABLE
         if( file_ctl->u.s.state_table && file_ctl->u.s.stab_gen ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
-                printf( "State Table for Function: %x\n"
+                printf( "State Table for Function: %p\n"
                       , &fStabDefn.state_table );
             }
 #endif
@@ -395,7 +395,7 @@ SE* FstabMarkedPosnSet(         // SET MARKED POSITION
 {
 #ifndef NDEBUG
     if( PragDbgToggle.dump_stab ) {
-        printf( "--- update marked position = %x\n", se );
+        printf( "--- update marked position = %p\n", se );
     }
 #endif
     fstab.marked_posn = se;

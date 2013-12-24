@@ -366,8 +366,8 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
     attr &= ~mask;
 #ifndef NDEBUG
     if( PragDbgToggle.auxinfo ) {
-        printf( "FeAttr( %x = %s ) -> %x\n"
-              , sym
+        printf( "FeAttr( %p = %s ) -> %x\n"
+              , (void *)sym
               , GetMangledName( sym )
               , attr );
     }
@@ -627,7 +627,7 @@ static target_size_t GetParmsSize( SYMBOL sym )
     size = 0;
     fn_type = FunctionDeclarationType( sym->sym_type );
     if( fn_type == NULL ) {
-        size = ~0UL;
+        size = ~0U;
     } else {
         TypeParmSize( fn_type, &size );
     }
@@ -714,7 +714,7 @@ char *FEExtName( cg_sym_handle sym, int request ) {
     case EXTN_PATTERN:
         return( GetNamePattern( sym ) );
     case EXTN_PRMSIZE:
-        return( (char *)GetParmsSize( sym ) );
+        return( (char *)(pointer_int)GetParmsSize( sym ) );
     case EXTN_CALLBACKNAME:
         return( (char *)CallbackName( sym ) );
     default:
@@ -1412,7 +1412,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = ExtrefResolve( sym, &res_info );
   #ifndef NDEBUG
         if( PragDbgToggle.extref ) {
-            printf( "DEFAULT_IMPORT_RESOLVE[%x]: %s ==> %s\n", sym
+            printf( "DEFAULT_IMPORT_RESOLVE[%p]: %s ==> %s\n", sym
                   , GetMangledName( sym )
                   , retn == NULL ? "0" : GetMangledName( retn ) );
         }
@@ -1423,7 +1423,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = ExtrefImportType( &res_info );
   #ifndef NDEBUG
         if( PragDbgToggle.extref ) {
-            printf( "  IMPORT_TYPE[%x]: %s <%x>\n"
+            printf( "  IMPORT_TYPE[%p]: %s <%p>\n"
                   , sym, GetMangledName( sym ), retn );
         }
   #endif
@@ -1455,10 +1455,10 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
           &&( sym->id == SC_VIRTUAL_FUNCTION ) ) {
             SYMBOL vsym;
             vsym = sym->u.virt_fun;
-            printf( "VIRTUAL_FUNC_REFERENCE[%x]: %s"
+            printf( "VIRTUAL_FUNC_REFERENCE[%p]: %s"
                       , vsym, GetMangledName( vsym ) );
             retn = ExtrefVfunInfo( sym );
-            printf( " <%x>\n", retn );
+            printf( " <%p>\n", retn );
         } else {
             retn = ExtrefVfunInfo( sym );
         }
@@ -1472,7 +1472,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = ExtrefNextVfunSym( sym );
   #ifndef NDEBUG
         if( PragDbgToggle.extref ) {
-            printf( "  VIRT_FUNC_NEXT_REFERENCE[%x]: <%x>\n", sym, retn );
+            printf( "  VIRT_FUNC_NEXT_REFERENCE[%p]: <%p>\n", sym, retn );
         }
   #endif
         break;
@@ -1481,7 +1481,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = ExtrefVfunSym( sym );
   #ifndef NDEBUG
         if( PragDbgToggle.extref ) {
-            printf( "  VIRT_FUNC_SYM[%x]: %s\n"
+            printf( "  VIRT_FUNC_SYM[%p]: %s\n"
                   , sym, GetMangledName( retn ) );
         }
   #endif
@@ -1515,7 +1515,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     }
 #ifndef NDEBUG
     if( PragDbgToggle.auxinfo ) {
-        printf( "FeAuxInfo( %x, %x ) -> %x\n", sym, request, retn );
+        printf( "FeAuxInfo( %p, %x ) -> %p\n", sym, request, retn );
         if( isSym && ( NULL != sym )) {
             printf( "  sym = %s\n", GetMangledName( sym ) );
         }

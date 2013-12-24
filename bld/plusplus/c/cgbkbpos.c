@@ -64,8 +64,8 @@ void DbgDumpBlkPosn(            // DUMP A BLK_POSN
     const char* text )          // - text
 {
     if( PragDbgToggle.dump_blk_posn ) {
-        printf( "%s BLK_POSN[%x] scope(%x) posn(%x)\n"
-                "    last_method(%d) starting(%x) temp_beg(%x) temp_end(%x)\n"
+        printf( "%s BLK_POSN[%p] scope(%p) posn(%p)\n"
+                "    last_method(%d) starting(%p) temp_beg(%p) temp_end(%p)\n"
               , text
               , bpos
               , bpos->scope

@@ -380,7 +380,9 @@ static boolean openSrc(         // ATTEMPT TO OPEN FILE
 {
     pch_absorb pch_OK;          // - pre-compiled header load status
     FILE *fp;                   // - file pointer
+#ifdef OPT_BR
     boolean might_browse;       // - true ==> might browse, if right file type
+#endif
 
     if( SrcFileProcessOnce( name ) ) {
         SrcFileOpen( NULL, name );
@@ -390,14 +392,18 @@ static boolean openSrc(         // ATTEMPT TO OPEN FILE
     if( fp == NULL ) {
         return( FALSE );
     }
+#ifdef OPT_BR
     might_browse = FALSE;
+#endif
     if( CompFlags.watch_for_pcheader ) {
         CompFlags.watch_for_pcheader = FALSE;
         pch_OK = PCHeaderAbsorb( name );
         if( pch_OK != PCHA_OK ) {
             SrcFileSetCreatePCHeader();
             SrcFileOpen( fp, name );
+#ifdef OPT_BR
             might_browse = TRUE;
+#endif
         } else {
             SrcFileOpen( NULL, name );
             fclose( fp );
@@ -407,7 +413,9 @@ static boolean openSrc(         // ATTEMPT TO OPEN FILE
         if( typ == FT_SRC ) {
             SetSrcFilePrimary();
         }
+#ifdef OPT_BR
         might_browse = TRUE;
+#endif
     }
 #ifdef OPT_BR
     if( might_browse ) switch( typ ) {

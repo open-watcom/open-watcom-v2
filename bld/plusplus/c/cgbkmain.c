@@ -762,7 +762,7 @@ static STAB_OBJ* buildObjectStateTable( // BUILD STATE TABLE FOR OBJECT
                 obj->defn = StabDefnAllocate( DTRG_OBJECT );
 #ifndef NDEBUG
                 if( PragDbgToggle.dump_stab ) {
-                    printf( "State Table for static object: %x\n"
+                    printf( "State Table for static object: %p\n"
                           , &obj->defn->state_table );
                 }
 #endif
@@ -1398,7 +1398,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             for( ctr = ins_value.uvalue; ctr > 0; -- ctr ) {
                 lab = VstkPush( &stack_labs_cs );
                 *lab = BENewLabel();
-                dump_label( printf( "LabCs Push %d %x\n"
+                dump_label( printf( "LabCs Push %d %p\n"
                                   , VstkDimension( &stack_labs_cs )
                                   , *lab ) );
             }
@@ -1416,7 +1416,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           { label_handle *lab;              // - goto label
             lab = VstkPush( &stack_goto_near );
             *lab = BENewLabel();
-            dump_label( printf( "LabGoTo Push %d %x\n"
+            dump_label( printf( "LabGoTo Push %d %p\n"
                               , VstkDimension( &stack_goto_near )
                               , *lab ) );
           } break;
@@ -1426,7 +1426,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             lab = VstkIndex( &stack_labs_cs
                            , fctl->base_labs_cs + ins_value.uvalue );
             CgLabel( *lab );
-            dump_label( printf( "LabCs Def %d %x\n"
+            dump_label( printf( "LabCs Def %d %p\n"
                               , fctl->base_labs_cs + ins_value.uvalue
                               , *lab ) );
           } break;
@@ -1436,7 +1436,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             lab = VstkIndex( &stack_goto_near
                              , fctl->base_goto_near + ins_value.uvalue );
             CgLabel( *lab );
-            dump_label( printf( "LabGoto Def %d %x\n"
+            dump_label( printf( "LabGoto Def %d %p\n"
                               , fctl->base_goto_near + ins_value.uvalue
                               , *lab ) );
           } break;
@@ -1445,14 +1445,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           { label_handle *lab;              // - next label handle
             lab = VstkIndex( &stack_labs_cs, fctl->base_labs_cs + ins_value.ivalue );
             lbl = *lab;
-            dump_label( printf( "LabCs Set %d %x\n", fctl->base_labs_cs + ins_value.uvalue, lbl ) );
+            dump_label( printf( "LabCs Set %d %p\n", fctl->base_labs_cs + ins_value.uvalue, lbl ) );
           } break;
 
           case IC_LABEL_GOTO :              // SET GOTO LABEL FOR IC_GOTO_NEAR
           { label_handle *lab;              // - goto label
             lab = VstkIndex( &stack_goto_near, fctl->base_goto_near + ins_value.uvalue );
             lbl = *lab;
-            dump_label( printf( "LabGoto Set %d %x\n", fctl->base_goto_near + ins_value.uvalue, lbl ) );
+            dump_label( printf( "LabGoto Set %d %p\n", fctl->base_goto_near + ins_value.uvalue, lbl ) );
           } break;
 
           case IC_GOTO_NEAR :               // GOTO LABEL IN CURRENT ROUTINE
@@ -1464,7 +1464,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 op1 = NULL;
             }
             CgControl( ins_value.uvalue, op1, type, lbl );
-            dump_label( printf( "Goto near %x %x\n", op1, lbl ) );
+            dump_label( printf( "Goto near %p %p\n", op1, lbl ) );
           } break;
         }
 //
@@ -1475,7 +1475,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           { label_handle select;
             select = CgSwitchBeg( fctl );
             CGControl( O_GOTO, NULL, select );
-            dump_label( printf( "Goto switch beg %x\n", select ) );
+            dump_label( printf( "Goto switch beg %p\n", select ) );
           } break;
 
           case IC_SWITCH_CASE :             // SWITCH : CASE
@@ -3441,7 +3441,7 @@ void FEGenProc(                 // INLINE SUPPORT
             printf( "\n" );
         printf( "start of inline function: %s\n", DbgSymNameFull( sym, &vbuf ) );
         if( PragDbgToggle.dump_stab ) {
-            printf( "   positions: state-table(%x) call(%x)\n"
+            printf( "   positions: state-table(%p) call(%p)\n"
                   , FstabCurrPosn()
                   , curr );
         }
@@ -3466,7 +3466,7 @@ void FEGenProc(                 // INLINE SUPPORT
             printf( "\n" );
         printf( "end of inline function: %s\n", DbgSymNameFull( sym, &vbuf ) );
         if( PragDbgToggle.dump_stab ) {
-            printf( "   positions: state-table(%x) marked_posn(%x)\n"
+            printf( "   positions: state-table(%p) marked_posn(%p)\n"
                   , FstabCurrPosn()
                   , FstabMarkedPosn() );
         }

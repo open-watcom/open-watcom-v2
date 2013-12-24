@@ -231,14 +231,14 @@ void FnctlDump()                // DEBUGGING -- dump stack
         if( func == NULL ) {
             func = ModuleInitFuncSym();
         }
-        printf( "FN_CTL[%x] %s\n"
+        printf( "FN_CTL[%p] %s\n"
                 "  bases: labs_cs(%u) goto_near(%u)\n"
                 "  try_depth(%u) try_label(%p)\n"
-                "  sym_trans_id(%d) symbols: return(%x) this(%x) cdtor(%x)\n"
-                "  handle(%x) state_table_bound(%x) pre_init(%x) cond_flags(%x)\n"
-                "  fun_sv(%x) expr_calls(%x) dtor_method(%d) cdtor_val(%x) ctor_components(%x)\n"
-                "  cond_next(%d) ctored_obj(%x) new_ctor_ptr(%x)\n"
-                "  cdarg_lab(%x) func_dtor_method(%d)\n"
+                "  sym_trans_id(%d) symbols: return(%p) this(%p) cdtor(%p)\n"
+                "  handle(%p) state_table_bound(%p) pre_init(%p) cond_flags(%x)\n"
+                "  fun_sv(%p) expr_calls(%p) dtor_method(%d) cdtor_val(%x) ctor_components(%p)\n"
+                "  cond_next(%d) ctored_obj(%p) new_ctor_ptr(%p)\n"
+                "  cdarg_lab(%p) func_dtor_method(%d)\n"
                 "flags:\n"
                 "  deregistered(%d) has_fn_exc(%d) is_ctor(%d) is_dtor(%d) ctor_complet(%d)\n"
                 "  coded_return(%d) has_cdtor_val(%d) temp_dtoring(%d) ctor_test(%d)\n"

@@ -1514,9 +1514,9 @@ static void dumpStatsZero(      // ZERO DUMP STATISTICS
 static void dumpStats(          // PRINT STATISTICS
     DUMP_STATS *stats )
 {
-    printf( "total types:   %6u\n", stats->sum );
-    printf( "longest chain: %6u\n", stats->max );
-    printf( "average chain: %6u\n", stats->sum / stats->chains );
+    printf( "total types:   %6lu\n", stats->sum );
+    printf( "longest chain: %6lu\n", stats->max );
+    printf( "average chain: %6lu\n", stats->sum / stats->chains );
     putchar( '\n' );
 }
 
@@ -8485,8 +8485,8 @@ static void typesInit(          // TYPES INITIALIZATION
             #include "type_arr.h"
             "Total"
         };
-        ExtraRptRegisterTab( "type id frequency table", typeIdNames, ctr_type_ids, TYP_MAX, 1 );
-        ExtraRptRegisterTab( "number of fn arguments frequency table", NULL, ctr_fn_args, ARGS_MAX+1+1, 1 );
+        ExtraRptRegisterTab( "type id frequency table", typeIdNames, &ctr_type_ids[0][0], TYP_MAX, 1 );
+        ExtraRptRegisterTab( "number of fn arguments frequency table", NULL, &ctr_fn_args[0][0], ARGS_MAX + 1 + 1, 1 );
     }
 #endif
 }

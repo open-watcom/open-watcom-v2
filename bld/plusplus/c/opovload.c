@@ -1213,7 +1213,7 @@ static void dumpOVOP            // DEBUG -- DUMP OVOP structure
     ( OVOP* ovop                // - OVOP
     , char const *operand )     // - title info
 {
-    printf( "Operand[%x] (%s)\n"
+    printf( "Operand[%p] (%s)\n"
           , ovop->operand
           , operand );
     printf( "  node_type: " );
@@ -1236,7 +1236,7 @@ void DumpOpovLoad               // DEBUG -- DUMP ROUTINE
     RingIterBeg( oli->scalars, sym ) {
         PrintFullType( sym->sym_type );
     } RingIterEnd( sym );
-    printf( "\nSearch results: memb[%x] non-memb[%x]"
+    printf( "\nSearch results: memb[%p] non-memb[%p]"
             "\nMask[%x] Flags[%x] scalar_overload(%d) repeat_overload(%d)"
             "\nhave_user_type(%d) have_class_type(%d)"
             "\n"

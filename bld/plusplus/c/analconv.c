@@ -158,12 +158,12 @@ static void init(               // START OF RANK REPORTING
     defn = defn;
     ExtraRptRegisterTab( "Conversion Kinds"
                        , NULL
-                       , cnvKind
+                       , &cnvKind[0][0]
                        , sizeof( cnvKind ) / sizeof( cnvKind[0] )
                        , 1);
     ExtraRptRegisterTab( "Conversion Types"
                        , NULL
-                       , cnvType
+                       , &cnvType[0][0]
                        , sizeof( cnvType ) / sizeof( cnvType[0] )
                        , 1);
 }

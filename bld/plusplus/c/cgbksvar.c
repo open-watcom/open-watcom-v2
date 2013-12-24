@@ -138,7 +138,7 @@ static void pruneSE(            // PRUNE STATE ENTRY
     RingPrune( a_stab, se );
 #ifndef NDEBUG
     if( PragDbgToggle.dump_stab ) {
-        printf( "State Table[%x] removed: %x\n", a_stab, se );
+        printf( "State Table[%p] removed: %p\n", a_stab, se );
         DbgDumpStateEntry( se );
     }
 #endif
@@ -169,7 +169,7 @@ static boolean sameSE(          // DETERMINE IF SAME STATE ENTRY
 // check for SET_SV to previous
 #ifndef NDEBUG
                 if( PragDbgToggle.dump_stab ) {
-                    printf( "State Table replacement %x\n", se );
+                    printf( "State Table replacement %p\n", se );
                     DbgDumpStateEntry( last );
                 }
 #endif
@@ -231,7 +231,7 @@ static SE* stateTableAddSe(     // ADD TO STATE TABLE
         next->base.prev = se;
 #ifndef NDEBUG
         if( PragDbgToggle.dump_stab ) {
-            printf( "State Table[%x] added: %x\n", a_stab, se );
+            printf( "State Table[%p] added: %p\n", a_stab, se );
             DbgDumpStateEntry( se );
         }
 #endif
@@ -460,7 +460,7 @@ void DbgDumpTypeSigEnt(         // DUMP TYPE_SIG_ENT entries
     TYPE_SIG_ENT* sig;          // - current entry
 
     RingIterBeg( hdr, sig ) {
-        printf( "         TYPE_SIG_ENT[%x]: next[%x] type-sig[%x]\n"
+        printf( "         TYPE_SIG_ENT[%p]: next[%p] type-sig[%p]\n"
               , sig
               , sig->next
               , sig->sig );
@@ -500,7 +500,7 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
 
     se = arg;
     sv_name = DbgSeName( se->base.se_type );
-    printf( "State Entry[%x]: gen(%d) next(%x) prev(%x) var(%d) %s"
+    printf( "State Entry[%p]: gen(%d) next(%p) prev(%p) var(%d) %s"
           , se
           , se->base.gen
           , se->base.next
@@ -528,7 +528,7 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
         VbufFree( &vbuf2 );
         break;
       case DTC_SET_SV :
-        printf( "\n    se(%x = %d)\n"
+        printf( "\n    se(%p = %d)\n"
               , se->set_sv.se
               , SeStateVar( se->set_sv.se ) );
         break;
@@ -537,14 +537,14 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
       case DTC_COMP_VBASE :
       case DTC_COMP_DBASE :
       case DTC_COMP_MEMB :
-        printf( "\n    reg(%x) offset(%x) dtor(%s)\n"
+        printf( "\n    reg(%p) offset(%x) dtor(%s)\n"
               , se->component.obj
               , se->component.offset
               , DbgSymNameFull( se->component.dtor, &vbuf1 ) );
         VbufFree( &vbuf1 );
         break;
       case DTC_TEST_FLAG :
-        printf( "\n    index(%d) true(%x = %d) false(%x = %d)\n"
+        printf( "\n    index(%d) true(%p = %d) false(%p = %d)\n"
               , se->test_flag.index
               , se->test_flag.se_true
               , SeStateVar( se->test_flag.se_true )
@@ -552,7 +552,7 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
               , SeStateVar( se->test_flag.se_false ) );
         break;
       case DTC_TRY :
-        printf( "\n    impl(%x) sigs(%x) sym(%s)\n"
+        printf( "\n    impl(%p) sigs(%p) sym(%s)\n"
               , se->try_blk.try_impl
               , se->try_blk.sigs
               , DbgSymNameFull( se->try_blk.sym, &vbuf1 ) );
@@ -560,17 +560,17 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
         VbufFree( &vbuf1 );
         break;
       case DTC_CATCH :
-        printf( "\n    try(%x) sig(%x)\n"
+        printf( "\n    try(%p) sig(%p)\n"
               , se->catch_blk.try_blk
               , se->catch_blk.sig );
         break;
       case DTC_FN_EXC :
-        printf( "\n    sigs(%x)\n"
+        printf( "\n    sigs(%p)\n"
               , se->fn_exc.sigs );
         DbgDumpTypeSigEnt( se->fn_exc.sigs );
         break;
       case DTC_ARRAY :
-        printf( "\n    offset(%x) sig(%x) count(%x)\n"
+        printf( "\n    offset(%x) sig(%p) count(%x)\n"
               , se->array.offset
               , se->array.sig
               , se->array.count );
@@ -584,7 +584,7 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
         VbufFree( &vbuf1 );
         break;
       case DTC_ARRAY_INIT :
-        printf( "\n    reg(%x)\n"
+        printf( "\n    reg(%p)\n"
               , se->array_init.reg );
         break;
       case DTC_DLT_1 :
@@ -615,7 +615,7 @@ void DbgDumpStateTableDefn(     // DUMP STATE TABLE DEFINITION
     defn = arg;
     if( defn != NULL ) {
         VBUF vbuf;
-        printf( "State Table Definition[%x] R/O(%s) kind(%x)\n"
+        printf( "State Table Definition[%p] R/O(%s)\n"
               , defn
               , DbgSymNameFull( defn->ro, &vbuf ) );
         if( defn->state_table != NULL ) {
@@ -639,7 +639,7 @@ void DbgDumpStateTable(         // DUMP STATE TABLE INSTANCE
 
     sctl = arg;
     defn = sctl->defn;
-    printf( "State Table Instance[%x] definition(%x) R/W(%s)\n"
+    printf( "State Table Instance[%p] definition(%p) R/W(%s)\n"
           , sctl
           , defn
           , DbgSymNameFull( sctl->rw, &vbuf ) );

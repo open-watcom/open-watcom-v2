@@ -320,7 +320,7 @@ static boolean cgrfDumpNode(    // DUMP CALL GRAPH NODE
         func = ModuleInitFuncSym();
     }
     printf( "\nNode[%p] depth(%d) refs(%d) addrs(%d) opcodes(%d) cflags(%d)\n"
-            "         inline_fun(%d) inlineable(%d) oe(%d) cgfile(%x)\n"
+            "         inline_fun(%d) inlineable(%d) oe(%d) cgfile(%p)\n"
             "         state_table(%d) rescan(%d) stab_gen(%d)\n"
             "         %s flags(%x)\n"
           , node

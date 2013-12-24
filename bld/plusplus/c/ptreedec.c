@@ -1026,7 +1026,7 @@ void PtdPrint(                  // DEBUG: print decoration for a node
     char const * name;          // - name to be printed
     VBUF vbuf;
 
-    printf( "%d. Decorated Node: %x\n", numb, node );
+    printf( "%d. Decorated Node: %p\n", numb, node );
     RingIterBeg( node->decor, curr ) {
         if( curr->base.kind >= MAX_PTD_KIND ) {
             name = "PtdPrint -- bad PTD type";

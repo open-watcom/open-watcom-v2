@@ -101,13 +101,13 @@ static fe_seg_id cgSegIdBased( SYMBOL sym, type_flag flags )
         // not defined in this compilation unit
         id = SegmentImport();
     } else {
+        id = SEG_NULL;
         switch( flags & TF1_BASED ) {
         case TF1_BASED_STRING:
             id = SegmentFindBased( sym->sym_type );
             break;
         case TF1_BASED_SELF:
         case TF1_BASED_VOID:
-            id = SEG_NULL;
             break;
         case TF1_BASED_FETCH:
         case TF1_BASED_ADD:

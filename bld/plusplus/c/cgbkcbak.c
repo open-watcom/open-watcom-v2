@@ -67,7 +67,7 @@ static PSTK_CTL stack_new_ctors;    // stack: newed ctoring
 
     static void _peDump( patch_entry* pe, const char* msg ) {
         if( PragDbgToggle.dump_stab ) {
-            printf( "%s[%x] se[%x] handle[%d]\n"
+            printf( "%s[%p] se[%p] handle[%p]\n"
                   , msg
                   , pe
                   , pe->se
@@ -239,7 +239,7 @@ static void checkCtorTest(      // ELIMINATE CTOR-TEST IF POSSIBLE
     SE* test = FstabActualPosn();
 #ifndef NDEBUG
     if( PragDbgToggle.dump_stab ) {
-        printf( "CallBack: checkCtorTest: se[%x] test[%x]\n"
+        printf( "CallBack: checkCtorTest: se[%p] test[%p]\n"
               , se
               , test );
     }

@@ -200,7 +200,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
           case THROBJ_ANYTHING :    code = "THROBJ_ANYTHING";   break;
           default:                  code = "****** BAD ******"; break;
         }
-        printf( "Type Signature[%x] %s(%x)"
+        printf( "Type Signature[%p] %s(%x)"
               , ts
               , code
               , thr );

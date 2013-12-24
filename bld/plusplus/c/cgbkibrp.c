@@ -72,7 +72,7 @@ static unsigned parm_no;            // parm # being defined
         IBRP* ibrp,                 // - entry
         const char *text )          // - text string
     {
-        printf ( "[%x]%s\n    hdl=%x func=%x refed=%x off=%x parm=%x\n"
+        printf ( "[%p]%s\n    hdl=%p func=%p refed=%p off=%x parm=%p\n"
                , ibrp
                , text
                , ibrp->handle

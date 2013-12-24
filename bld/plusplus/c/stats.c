@@ -333,7 +333,7 @@ void ExtraRptSymDefn(           // REPORT SYMBOL DEFINITION IN PRIMARY SOURCE
 
 
 static char sbuff[512];
-static char const fmt_repos[] = "%5d %5d %5d %5d %s";
+static char const fmt_repos[] = "%5ld %5ld %5ld %5ld %s";
 
 static void rptRepository       // PRINT REPOSITORY REPORT
     ( INITFINI* defn )          // - definition

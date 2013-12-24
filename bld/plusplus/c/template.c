@@ -839,8 +839,8 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
                 FormatPTreeList( curr_spec->spec_args, &vbuf1 );
                 FormatPTreeList( tspec->spec_args, &vbuf2 );
                 printf( "%s<%s> is at least as specialised as %s<%s>\n",
-                        tinfo->sym->name->name, VbufString( &vbuf1 ),
-                        tinfo->sym->name->name, VbufString( &vbuf2 ) );
+                        NameStr( tinfo->sym->name->name ), VbufString( &vbuf1 ),
+                        NameStr( tinfo->sym->name->name ), VbufString( &vbuf2 ) );
                 VbufFree( &vbuf1 );
                 VbufFree( &vbuf2 );
             }
@@ -869,8 +869,8 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
                 FormatPTreeList( tspec->spec_args, &vbuf1 );
                 FormatPTreeList( curr_spec->spec_args, &vbuf2 );
                 printf( "%s<%s> is at least as specialised as %s<%s>\n",
-                        tinfo->sym->name->name, VbufString( &vbuf1 ),
-                        tinfo->sym->name->name, VbufString( &vbuf2 ) );
+                        NameStr( tinfo->sym->name->name ), VbufString( &vbuf1 ),
+                        NameStr( tinfo->sym->name->name ), VbufString( &vbuf2 ) );
                 VbufFree( &vbuf1 );
                 VbufFree( &vbuf2 );
             }
@@ -1406,7 +1406,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
 
         FormatPTreeList( templ_args, &vbuf1 );
         FormatPTreeList( pargs, &vbuf2 );
-        printf( "attemptGen for %s<%s>(%s)\n", fn_templ->name->name,
+        printf( "attemptGen for %s<%s>(%s)\n", NameStr( fn_templ->name->name ),
                                VbufString( &vbuf1 ), VbufString( &vbuf2 ) );
         VbufFree( &vbuf1 );
         VbufFree( &vbuf2 );
@@ -1672,7 +1672,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
         FormatType( fn_type, &vbuf1, &vbuf2 );
         FormatTemplateParmScope( &vbuf3, parm_scope );
         printf( "TemplateFunctionGenerate: %s%s%s%s\n", VbufString( &vbuf1 ),
-               sym->name->name, VbufString( &vbuf3 ), VbufString( &vbuf2 ) );
+               NameStr( sym->name->name ), VbufString( &vbuf3 ), VbufString( &vbuf2 ) );
         VbufFree( &vbuf1 );
         VbufFree( &vbuf2 );
         VbufFree( &vbuf3 );
@@ -2403,7 +2403,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
 
         FormatPTreeList( parms, &vbuf );
         printf( "try to find template class specialisation for %s<%s>\n",
-                            tinfo->sym->name->name, VbufString( &vbuf ) );
+                            NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
         VbufFree( &vbuf );
     }
 #endif
@@ -2429,7 +2429,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
 
                     FormatPTreeList( spec_list, &vbuf );
                     printf( "found specialisation candidate %s<%s>\n",
-                            tinfo->sym->name->name, VbufString( &vbuf ) );
+                            NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
                     VbufFree( &vbuf );
                 }
 #endif
@@ -2484,7 +2484,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
 
 #ifndef NDEBUG
         if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 )) {
-            printf( "chose primary template %s ", tinfo->sym->name->name );
+            printf( "chose primary template %s ", NameStr( tinfo->sym->name->name ) );
             DbgDumpTokenLocn( tinfo->sym->locn );
             printf( "\n" );
         }
@@ -2504,7 +2504,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
 
             FormatPTreeList( tspec->spec_args, &vbuf );
             printf( "chose specialisation %s<%s> ",
-                              tinfo->sym->name->name, VbufString( &vbuf ) );
+                              NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
             DbgDumpTokenLocn( &tspec->locn );
             printf( "\n" );
             VbufFree( &vbuf );
@@ -2566,7 +2566,7 @@ TYPE TemplateClassReference( PTREE tid, PTREE parms )
             VBUF vbuf;
 
             FormatPTreeList( parms, &vbuf );
-            printf( "referencing template %s<%s>%s\n", template_name,
+            printf( "referencing template %s<%s>%s\n", NameStr( template_name ),
                      VbufString( &vbuf ), is_generic ? " (generic)" : "");
             VbufFree( &vbuf );
         }
@@ -2702,7 +2702,7 @@ static TYPE makeBoundClass( TYPE unbound_class, SCOPE parm_scope,
 
         FormatPTreeList( parms, &vbuf );
         printf( "instantiating template %s<%s>\n",
-                tinfo->sym->name->name, VbufString( &vbuf ) );
+                NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
         VbufFree( &vbuf );
     }
 #endif
@@ -3043,7 +3043,7 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
         FormatType( bound_sym->sym_type, &vbuf1, &vbuf2 );
         FormatTemplateParmScope( &vbuf3, parm_scope );
         printf( "templateFunctionInstantiate: %s%s%s%s\n", VbufString( &vbuf1 ),
-               fn_sym->name->name, VbufString( &vbuf3 ), VbufString( &vbuf2 ) );
+               NameStr( fn_sym->name->name ), VbufString( &vbuf3 ), VbufString( &vbuf2 ) );
         VbufFree( &vbuf1 );
         VbufFree( &vbuf2 );
         VbufFree( &vbuf3 );

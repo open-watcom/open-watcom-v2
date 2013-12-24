@@ -387,7 +387,7 @@ static boolean cgGenerateCmdBase(  // EMIT BASE FOR COMMAND
     } else {
 #ifndef NDEBUG
         if( PragDbgToggle.dump_stab ) {
-            printf( "CMD[%x]: ", base->sym );
+            printf( "CMD[%p]: ", base->sym );
         }
 #endif
         base->emitted = TRUE;

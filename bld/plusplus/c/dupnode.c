@@ -64,7 +64,7 @@ static void printPromo
     ( PROMO const * promo
     , char const* text )
 {
-    printf( "  %x: ( %x %x %x %x ) %s\n"
+    printf( "  %p: ( %p %p %p %p ) %s\n"
           , promo
           , promo->dup_src
           , promo->anc_src
@@ -218,7 +218,7 @@ static void setAncestor(        // SET ANCESTRY FOR CURRENT NODE
                 } RingIterEnd( srch )
 #ifndef NDEBUG
             if( PragDbgToggle.dump_dups ) {
-                printf( "Node %x ", zap_left );
+                printf( "Node %p ", zap_left );
                 printPromo( promo, "-- added to promotion ring" );
             }
 #endif
@@ -277,9 +277,8 @@ static PTREE dupProc(           // PROCESS NODE IN TREE
         }
     }
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_dups
-     && NULL != promoHdr ) {
-        printf( "Node %x ", dup );
+    if( PragDbgToggle.dump_dups && NULL != promoHdr ) {
+        printf( "Node %p ", dup );
         printPromoRing( promoHdr, "Duplicates Ring" );
     }
 #endif
@@ -317,7 +316,7 @@ PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
         dupPromote( promo );
 #ifndef NDEBUG
         if( PragDbgToggle.dump_dups ) {
-            printf( "promo[%x]: ", promo );
+            printf( "promo[%p]: ", promo );
             printPromo( promo, "Unduplicated Tree\n" );
             DbgPrintPTREE( dup );
         }
