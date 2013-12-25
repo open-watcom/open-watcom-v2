@@ -108,9 +108,7 @@ opt_cmdln01 = -d+XXX=0+1
 opt_cmdln02 = -d+ -dXXX=0+1
 opt_cmdln03 = -dX -DXX -uXX -DXXX -uXXX -UXXX -dXXX -DXXXX -uXXXX -DXXXX -uXXXX
 opt_cmdln04 = -dCMDMAC -DCMD1= -DCMD2$#
-!ifndef %plustest_old_compiler
 opt_cmdln05 = -dXN2=2 -dXS1="a-/ b"-dXN1=2 -dXS2#"a-/ b"
-!endif
 opt_dyn01 = -xr
 opt_friend5 = -za
 opt_opt09 = -za
