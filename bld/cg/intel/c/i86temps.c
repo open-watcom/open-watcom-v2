@@ -83,10 +83,10 @@ static  void    AssignPushLocals( void ) {
             if( src->n.class != N_REGISTER ) break;
             if( _IsFloating( src->n.name_class ) ) break; /*90-Dec-17*/
             if( dst->n.class != N_TEMP ) break;
-#if _TARGET & _TARG_80386
-            if( dst->n.size != 4 ) break;
-#else
+#if _TARGET & _TARG_IAPX86
             if( dst->n.size != 2 && dst->n.size != 4 ) break;
+#else
+            if( dst->n.size != 4 ) break;
 #endif
             curr_offset -= PushSize( dst->n.size );/* assume it will be pushed*/
             if( DeAlias( dst ) != dst ) break;

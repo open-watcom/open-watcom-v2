@@ -240,7 +240,7 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe ){
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     if( _IsTargetModel( FLAT_MODEL ) ) {
         dw_segloc = NULL;
-    }else{
+    } else {
         locid = DWLocInit( Client );
         DWLocSym( Client, locid, (dw_sym_handle)bck, DW_W_LABEL_SEG );
         dw_segloc = DWLocFini( Client, locid );
@@ -248,8 +248,7 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe ){
 #else
     dw_segloc = NULL;
 #endif
-    obj = DWVariable( Client, tipe, dw_loc,
-                0, dw_segloc, "__bck", 0, 0 );
+    obj = DWVariable( Client, tipe, dw_loc, 0, dw_segloc, "__bck", 0, 0 );
 
     DWLocTrash( Client, dw_loc );
     if( dw_segloc != NULL ){
@@ -342,11 +341,10 @@ static  uint   DFPtrClass( cg_type ptr_type ){
     type_def    *tipe_addr;
     uint        flags;
 
-    if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR)
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-      && _IsTargetModel( FLAT_MODEL )  ) {
+    if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR) && _IsTargetModel( FLAT_MODEL )  ) {
 #else
-      ) {
+    if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR) ) {
 #endif
         flags = DW_PTR_TYPE_DEFAULT;
     } else {

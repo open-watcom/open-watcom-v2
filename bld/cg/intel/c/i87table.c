@@ -48,16 +48,16 @@ opcode_entry    Move87D[] = {
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R|M|U,R|M|U,EQ_R1 ),      V_NO,           RG_,          G_NO,           FU_NO ),
 _OE( _UnPP(  M,    M,    NONE  ),      V_SAME_LOCN,    RG_,          G_NO,           FU_NO ),
-#if _TARGET & _TARG_80386
-_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_,          R_SPLITMOVE,    FU_NO ),
-_OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_8,         R_SPLITMOVE,    FU_NO ),
-_OE( _UnPP(  R,    M,    NONE  ),      V_NO,           RG_8,         R_SPLITMOVE,    FU_NO ),
-_OE( _UnPP(  C,    M,    NONE  ),      V_SAME_TYPE,    RG_8,         R_SPLITMOVE,    FU_NO ),
-#else
+#if _TARGET & _TARG_IAPX86
 _OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_,          R_SPLIT8,       FU_NO ),
 _OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_8,         R_SPLIT8,       FU_NO ),
 _OE( _UnPP(  R,    M,    NONE  ),      V_NO,           RG_8,         R_SPLIT8,       FU_NO ),
 _OE( _UnPP(  C,    M,    NONE  ),      V_SAME_TYPE,    RG_8,         R_SPLIT8,       FU_NO ),
+#else
+_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_,          R_SPLITMOVE,    FU_NO ),
+_OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_8,         R_SPLITMOVE,    FU_NO ),
+_OE( _UnPP(  R,    M,    NONE  ),      V_NO,           RG_8,         R_SPLITMOVE,    FU_NO ),
+_OE( _UnPP(  C,    M,    NONE  ),      V_SAME_TYPE,    RG_8,         R_SPLITMOVE,    FU_NO ),
 #endif
 _OE( _UnPP(  U,    M,    NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
 _OE( _UnPP(  R,    M,    NONE ),       V_NO,           RG_ST0_STI,   G_UNKNOWN,      FU_NO ),
@@ -81,15 +81,15 @@ opcode_entry    Move87S[] = {
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R|M|U,R|M|U,EQ_R1 ),      V_NO,           RG_,          G_NO,           FU_NO ),
 _OE( _UnPP(  M,    M,    NONE  ),      V_SAME_LOCN,    RG_,          G_NO,           FU_NO ),
-#if _TARGET & _TARG_80386
-_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_DBL,       R_MOVOP1REG,    FU_NO ),
-_OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_DBL,       R_EXT_PUSHC,    FU_NO ),
-_OE( _UnPP(  R|C,  M,    NONE  ),      V_NO,           RG_DBL,       R_EXT_PUSHC,    FU_NO ),
-#else
+#if _TARGET & _TARG_IAPX86
 _OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
 _OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
 _OE( _UnPP(  R,    M,    NONE  ),      V_NO,           RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
 _OE( _UnPP(  C,    M,    NONE  ),      V_SAME_TYPE,    RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
+#else
+_OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_DBL,       R_MOVOP1REG,    FU_NO ),
+_OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_DBL,       R_EXT_PUSHC,    FU_NO ),
+_OE( _UnPP(  R|C,  M,    NONE  ),      V_NO,           RG_DBL,       R_EXT_PUSHC,    FU_NO ),
 #endif
 _OE( _UnPP(  U,    M,    NONE ),       V_NO,           RG_8087_NEED, G_UNKNOWN,      FU_NO ),
 _OE( _UnPP(  R,    M,    NONE ),       V_NO,           RG_ST0_STI,   G_UNKNOWN,      FU_NO ),

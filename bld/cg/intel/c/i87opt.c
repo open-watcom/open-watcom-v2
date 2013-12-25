@@ -215,12 +215,12 @@ static  instruction     *PushDelayed( instruction *ins, an addr, call_state *sta
     AddIns( ins );
     addr->format = NF_ADDR; /* so instruction doesn't get freed! */
     BGDone( addr );
-#if _TARGET & _TARG_80386
+#if _TARGET & _TARG_IAPX86
+    state = state;
+#else
     if( state->attr & ROUTINE_STACK_RESERVE ) {
         ReserveStack( state, ins, addr->tipe->length );
     }
-#else
-    state = state;
 #endif
     return( ins );
 }
@@ -553,23 +553,18 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
         break;
     }
     if( next->result->n.name_class == FS ) {
-#if _TARGET & _TARG_80386
-        MoveThrough( ins->operands[ 0 ], next->result, ins, next, reg, U4 );
-#else
+#if _TARGET & _TARG_IAXP86
         if( OptForSize > 50 ) return( ret );
         MoveThrough( LowPart( ins->operands[ 0 ], U2 ),
                      LowPart( next->result, U2 ), ins, next, reg, U2 );
         MoveThrough( HighPart( ins->operands[ 0 ], U2 ),
                      HighPart( next->result, U2 ), ins, next, reg, U2 );
+#else
+        MoveThrough( ins->operands[ 0 ], next->result, ins, next, reg, U4 );
 #endif
     } else {
         if( OptForSize > 50 ) return( ret );
-#if _TARGET & _TARG_80386
-        MoveThrough( LowPart( ins->operands[ 0 ], U4 ),
-                     LowPart( next->result, U4 ), ins, next, reg, U4 );
-        MoveThrough( HighPart( ins->operands[ 0 ], U4 ),
-                     HighPart( next->result, U4 ), ins, next, reg, U4 );
-#else
+#if _TARGET & _TARG_IAPX86
         MoveThrough( LowPart( LowPart( ins->operands[ 0 ], U4 ), U2 ),
                      LowPart( LowPart( next->result      , U4 ), U2 ),
                      ins, next, reg, U2 );
@@ -582,6 +577,11 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
         MoveThrough( HighPart( HighPart( ins->operands[ 0 ], U4 ), U2 ),
                      HighPart( HighPart( next->result      , U4 ), U2 ),
                      ins, next, reg, U2 );
+#else
+        MoveThrough( LowPart( ins->operands[ 0 ], U4 ),
+                     LowPart( next->result, U4 ), ins, next, reg, U4 );
+        MoveThrough( HighPart( ins->operands[ 0 ], U4 ),
+                     HighPart( next->result, U4 ), ins, next, reg, U4 );
 #endif
     }
     return( BackUpAndFree( ins, ins, next ) );

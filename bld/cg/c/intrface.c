@@ -151,16 +151,16 @@ extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
 
     OptForSize = optsize;
     CGProcessorVersion = proc; /* so _CPULevel works */
-#if  _TARGET & _TARG_80386
-    if( !_CPULevel( CPU_386 ) ) {
-        SET_CPU( proc, CPU_386 );
-    }
-    proc &= ~FPU_EMU;   /* don't need funny fixups for 386 */
-#elif _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
     /* if it ain't a 386 or better, FS and GS aren't there */
     if( !_CPULevel( CPU_386 ) ) {
         switches &= ~(FLOATING_FS | FLOATING_GS);
     }
+#elif  _TARGET & _TARG_80386
+    if( !_CPULevel( CPU_386 ) ) {
+        SET_CPU( proc, CPU_386 );
+    }
+    proc &= ~FPU_EMU;   /* don't need funny fixups for 386 */
 #endif
     Model = switches;
     TargetModel = platform;
@@ -183,10 +183,10 @@ extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
     } else {
         info.success = 1;
         info.version.is_large = TRUE;
-#if _TARGET & _TARG_80386
-        info.version.target = II_TARG_80386;
-#elif _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
         info.version.target = II_TARG_8086;
+#elif _TARGET & _TARG_80386
+        info.version.target = II_TARG_80386;
 #elif _TARGET & _TARG_370
         info.version.target = II_TARG_370; /* NYI -- for now */
 #elif _TARGET & _TARG_AXP

@@ -314,10 +314,10 @@ static  uint    MultiReg( register_name *reg ) {
         return( 4 );
     }
 #endif
-#if _TARGET & _TARG_80386
-    hw_reg = Low64Reg( hw_reg );
-#elif _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
     hw_reg = Low32Reg( hw_reg );
+#elif _TARGET & _TARG_80386
+    hw_reg = Low64Reg( hw_reg );
 #endif
     if( HW_CEqual( hw_reg, HW_EMPTY ) ) {
         BuffByte( RegNibble( reg->reg ) );

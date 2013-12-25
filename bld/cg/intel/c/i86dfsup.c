@@ -142,12 +142,12 @@ static struct reg_map    HWRegValues[REG_MAP_SIZE] = {
    { HW_D( HW_DX ),  DW_REG_dx },
    { HW_D( HW_SI ),  DW_REG_si },
    { HW_D( HW_DI ),  DW_REG_di },
-#if _TARGET & _TARG_80386
-   { HW_D( HW_BP ),  DW_REG_ebp },
-   { HW_D( HW_SP ),  DW_REG_esp },
-#elif _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
    { HW_D( HW_BP ),  DW_REG_bp },
    { HW_D( HW_SP ),  DW_REG_sp },
+#elif _TARGET & _TARG_80386
+   { HW_D( HW_BP ),  DW_REG_ebp },
+   { HW_D( HW_SP ),  DW_REG_esp },
 #endif
    { HW_D( HW_CS ),  DW_REG_cs },
    { HW_D( HW_SS ),  DW_REG_ss },
@@ -209,10 +209,10 @@ extern  void   DFOutReg( dw_loc_id locid, name *reg ) {
         return;
     }
 #endif
-#if _TARGET & _TARG_80386
-    hw_low = Low64Reg( hw_reg );
-#elif _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
     hw_low = Low32Reg( hw_reg );
+#elif _TARGET & _TARG_80386
+    hw_low = Low64Reg( hw_reg );
 #endif
     if( HW_CEqual( hw_low, HW_EMPTY ) ) {
         regnum = DFRegMap( hw_reg );

@@ -39,12 +39,12 @@
 #define SHORT_RANGE     MAX_SHORT_NEG+MAX_SHORT_POS+1;
 #define SHORT_COST      3
 
-#if _TARGET & _TARG_80386
-    #define     SHORT_SAVINGS   3
-    #define     LONG_COST       12
-#else
+#if _TARGET & _TARG_IAPX86
     #define     SHORT_SAVINGS   1
     #define     LONG_COST       6
+#else
+    #define     SHORT_SAVINGS   3
+    #define     LONG_COST       12
 #endif
 
 static  int             CalcBaseSave( type_length bp, name *temp );

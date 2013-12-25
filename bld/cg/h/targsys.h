@@ -53,18 +53,7 @@
 
 #include <deftarg.h>
 
-#if _TARGET & _TARG_80386
-    #define _TARG_CSET          _TARG_ASCII
-    #define _TARG_INTEGER       32
-    #define _TARG_IS_SEGMENTED  1
-    #define _TARG_MEMORY        _TARG_LOW_FIRST
-    #define WD                  U4
-    #define SW                  I4
-    #define WORD_SIZE           4
-    #define REG_SIZE            4
-    #define TY_WORD             TY_UINT_4
-    #define _OMF_32
-#elif _TARGET &  _TARG_IAPX86
+#if _TARGET &  _TARG_IAPX86
     #define _TARG_CSET          _TARG_ASCII
     #define _TARG_INTEGER       16
     #define _TARG_MEMORY        _TARG_LOW_FIRST
@@ -75,6 +64,17 @@
     #define REG_SIZE            2
     #define TY_WORD             TY_UINT_2
     #undef _OMF_32
+#elif _TARGET & _TARG_80386
+    #define _TARG_CSET          _TARG_ASCII
+    #define _TARG_INTEGER       32
+    #define _TARG_IS_SEGMENTED  1
+    #define _TARG_MEMORY        _TARG_LOW_FIRST
+    #define WD                  U4
+    #define SW                  I4
+    #define WORD_SIZE           4
+    #define REG_SIZE            4
+    #define TY_WORD             TY_UINT_4
+    #define _OMF_32
 #elif _TARGET & _TARG_370
     #define _TARG_CSET          _TARG_EBCDIC
     #define _TARG_INTEGER       32

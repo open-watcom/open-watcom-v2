@@ -377,7 +377,7 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
     case DB_OP_POINTS:
         VerTipe( other, NULL );
         switch( TypeAddress( other )->refno ) {
-#if  !(_TARGET & _TARG_80386)
+#if _TARGET & _TARG_IAPX86
         case TY_NEAR_POINTER:
         case TY_NEAR_CODE_PTR:
 #endif
@@ -385,7 +385,7 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
         case TY_INT_2:
             stkop = LOP_IND_2;
             break;
-#if  _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
         case TY_NEAR_POINTER:
         case TY_NEAR_CODE_PTR:
 #endif
@@ -393,15 +393,17 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
         case TY_INT_4:
             stkop = LOP_IND_4;
             break;
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         case TY_LONG_POINTER:
         case TY_HUGE_POINTER:
         case TY_LONG_CODE_PTR:
-#if  _TARGET & _TARG_80386
-            stkop = LOP_IND_ADDR386;
-#else
+    #if _TARGET & _TARG_IAPX86
             stkop = LOP_IND_ADDR286;
-#endif
+    #else
+            stkop = LOP_IND_ADDR386;
+    #endif
             break;
+#endif
         default:
             CGError( "Invalid DB points type %d\n", other );
             break;

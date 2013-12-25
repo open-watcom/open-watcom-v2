@@ -46,12 +46,12 @@ typedef enum {
 
 #include "targsys.h"
 
-#if _TARGET & _TARG_80386
-    typedef signed_32     type_length;
-    #define MAX_TYPE_LENGTH 0x7fffffff
-#elif _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
     typedef signed_16     type_length;
     #define MAX_TYPE_LENGTH 0x7fff
+#elif _TARGET & _TARG_80386
+    typedef signed_32     type_length;
+    #define MAX_TYPE_LENGTH 0x7fffffff
 #elif _TARGET & _TARG_370
     typedef signed_32     type_length;
     #define MAX_TYPE_LENGTH 0x7fffffff

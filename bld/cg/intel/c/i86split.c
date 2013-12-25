@@ -395,15 +395,7 @@ extern instruction      *rHIGHLOWMOVE( instruction *ins ) {
     return( ins );
 }
 
-#if _TARGET & _TARG_80386
-    #define     CX              HW_ECX
-    #define     DI              HW_EDI
-    #define     ES_DI           HW_ES_EDI
-    #define     SI              HW_ESI
-    #define     DS_SI           HW_DS_ESI
-    #define     LP              CP
-    #define     MOV_SIZE        5
-#else
+#if _TARGET & _TARG_IAPX86
     #define     CX              HW_CX
     #define     DI              HW_DI
     #define     ES_DI           HW_ES_DI
@@ -411,6 +403,14 @@ extern instruction      *rHIGHLOWMOVE( instruction *ins ) {
     #define     DS_SI           HW_DS_SI
     #define     LP              PT
     #define     MOV_SIZE        3
+#else
+    #define     CX              HW_ECX
+    #define     DI              HW_EDI
+    #define     ES_DI           HW_ES_EDI
+    #define     SI              HW_ESI
+    #define     DS_SI           HW_DS_ESI
+    #define     LP              CP
+    #define     MOV_SIZE        5
 #endif
 
 #define hw( x ) x

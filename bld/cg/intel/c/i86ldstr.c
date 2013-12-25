@@ -278,7 +278,10 @@ static  bool    LoadStoreIns( instruction *ins )
     return( TRUE );
 }
 
-#if _TARGET & _TARG_80386
+#if _TARGET & _TARG_IAPX86
+static  bool    FixMem16Moves( void ) { return( FALSE ); }
+static  void    CompressMem16Moves( void ) {}
+#else
 static  bool    SplitMem16Move( instruction *ins )
 /*************************************************
     Return TRUE if we can split the 16-bit move
@@ -403,9 +406,6 @@ static  void    CompressMem16Moves( void )
         }
     }
 }
-#else
-static  bool    FixMem16Moves( void ) { return( FALSE ); }
-static  void    CompressMem16Moves( void ) {}
 #endif
 
 

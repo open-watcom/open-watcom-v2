@@ -55,7 +55,7 @@
     #define _OFFSET_PATCH           LONG_PATCH
     #define _NEAR_PATCH             (ADD_PATCH | LONG_PATCH)
 #else
-    #define  _OutOpndSize
+    #define _OutOpndSize
     #define _OutFarD( seg, off )    OutDataInt( seg ); \
                                     OutDataInt( off )
     #define _OutFarOff( off )       OutDataInt( off )

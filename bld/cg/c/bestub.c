@@ -51,11 +51,11 @@ extern  cg_init_info    BEInit(cg_switches switches, cg_target_switches tg_switc
     cg_init_info        info;
     info.version.is_large = TRUE;
     info.version.revision = II_REVISION;
-    #if _TARGET & _TARG_80386
-        info.version.target = II_TARG_80386;
-    #else
-        info.version.target = II_TARG_8086;
-    #endif
+#if _TARGET & _TARG_IAPX86
+    info.version.target = II_TARG_8086;
+#else
+    info.version.target = II_TARG_80386;
+#endif
     return( info );
 }
 extern void BEStart() {}

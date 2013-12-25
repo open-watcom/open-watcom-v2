@@ -245,21 +245,21 @@ static bool OkToSlide( instruction *ins, name *op )
     Is it OK to slide an INDEX_ADJUST instruction past an index name?
 */
 {
-    #if  _TARGET & (_TARG_80386 | _TARG_IAPX86 )
-        int             i;
-    #endif
+#if  _TARGET & (_TARG_80386 | _TARG_IAPX86 )
+    int             i;
+#endif
 
     ins = ins;
     if( op->i.base != NULL ) return( TRUE );
     if( op->i.constant != 0 ) return( TRUE );
     if( OptForSize >= 50 ) return( FALSE );
-    #if  _TARGET & (_TARG_80386 | _TARG_IAPX86 )
-        /* bad news to add a displacement on an instruction that also
-           has a constant operand (takes an extra clock) */
-        for( i = ins->num_operands; i-- > 0; ) {
-            if( ins->operands[i]->n.class == N_CONSTANT ) return( FALSE );
-        }
-    #endif
+#if  _TARGET & (_TARG_80386 | _TARG_IAPX86 )
+    /* bad news to add a displacement on an instruction that also
+       has a constant operand (takes an extra clock) */
+    for( i = ins->num_operands; i-- > 0; ) {
+        if( ins->operands[i]->n.class == N_CONSTANT ) return( FALSE );
+    }
+#endif
     return( TRUE );
 }
 

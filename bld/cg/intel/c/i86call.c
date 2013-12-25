@@ -192,9 +192,9 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
         HW_CTurnOn( state->parm.used, HW_DS );
     }
     if( _RoutineIsFar16( state->attr ) ) {
-        #if _TARGET & _TARG_80386
-            Far16Parms( call );
-        #endif
+#if _TARGET & _TARG_80386
+        Far16Parms( call );
+#endif
     } else {
         if( AssgnParms( call, in_line ) ) {
             if( state->attr & ROUTINE_REMOVES_PARMS ) {
@@ -377,10 +377,10 @@ extern  reg_set_index   CallIPossible( instruction *ins ) {
 
      if( ins->operands[ CALL_OP_ADDR ]->n.name_class == CP ) return( RL_ );
      if( ins->operands[ CALL_OP_ADDR ]->n.name_class == PT ) return( RL_ );
-#if _TARGET & _TARG_80386
-     return( RL_DOUBLE );
-#else
+#if _TARGET & _TARG_IAPX86
      return( RL_WORD );
+#else
+     return( RL_DOUBLE );
 #endif
 }
 
@@ -417,15 +417,15 @@ extern  void    RestoreFromTargProc( void ) {
 extern  void    PushInSameBlock( instruction *ins ) {
 /***************************************************/
 
-#if ( _TARGET & _TARG_80386 )
+#if ( _TARGET & _TARG_IAPX86 )
+    ins = ins;
+#else
     while( ins->head.opcode != OP_BLOCK ) {
         ins = ins->head.next;
     }
     if( _BLOCK( ins ) != CurrBlock ) {
         CurrProc->targ.never_sp_frame = TRUE;
     }
-#else
-    ins = ins;
 #endif
 }
 

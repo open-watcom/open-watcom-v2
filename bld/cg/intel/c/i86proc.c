@@ -134,21 +134,7 @@ extern  pointer     Parm8087[ MAX_8087_REG+1 ];
 type_length StackDepth;
 
 hw_reg_set   PushRegs[] = {
-#if _TARGET & _TARG_80386
-#define ALL_REG_SIZE 12*WORD_SIZE
-#define HW_STACK_CHECK HW_EAX
-    HW_D( HW_EAX ),
-    HW_D( HW_EBX ),
-    HW_D( HW_ECX ),
-    HW_D( HW_EDX ),
-    HW_D( HW_ESI ),
-    HW_D( HW_EDI ),
-    HW_D( HW_DS ),
-    HW_D( HW_ES ),
-    HW_D( HW_FS ),
-    HW_D( HW_GS ),
-    HW_D( HW_SS ),
-#else
+#if _TARGET & _TARG_IAPX86
 #define ALL_REG_SIZE 8*WORD_SIZE+4*2
 #define HW_STACK_CHECK HW_AX
     HW_D( HW_AX ),
@@ -157,6 +143,20 @@ hw_reg_set   PushRegs[] = {
     HW_D( HW_DX ),
     HW_D( HW_SI ),
     HW_D( HW_DI ),
+    HW_D( HW_DS ),
+    HW_D( HW_ES ),
+    HW_D( HW_FS ),
+    HW_D( HW_GS ),
+    HW_D( HW_SS ),
+#else
+#define ALL_REG_SIZE 12*WORD_SIZE
+#define HW_STACK_CHECK HW_EAX
+    HW_D( HW_EAX ),
+    HW_D( HW_EBX ),
+    HW_D( HW_ECX ),
+    HW_D( HW_EDX ),
+    HW_D( HW_ESI ),
+    HW_D( HW_EDI ),
     HW_D( HW_DS ),
     HW_D( HW_ES ),
     HW_D( HW_FS ),
@@ -317,7 +317,7 @@ static  bool    ScanLabelCalls( void ) {
 extern  void    AddCacheRegs( void ) {
 /******************************/
 
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
     if( CurrProc->targ.never_sp_frame )
         return;
     if( _IsntModel( MEMORY_LOW_FAILS ) )
@@ -352,7 +352,7 @@ extern  void    AddCacheRegs( void ) {
         CurrProc->targ.sp_frame = TRUE;
         HW_CTurnOff( CurrProc->state.unalterable, HW_BP );
     }
-    #endif
+#endif
 }
 
 
@@ -439,10 +439,7 @@ static void DoStackCheck( void ) {
     }
 #endif
     if( NeedStackCheck() ) {
-#if _TARGET & _TARG_80386
-        GenUnkPush( &CurrProc->targ.stack_check );
-        RTCall( RT_CHK, ATTR_POP );
-#else
+#if _TARGET & _TARG_IAPX86
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
             QuickSave( HW_STACK_CHECK, OP_PUSH );
         }
@@ -451,6 +448,9 @@ static void DoStackCheck( void ) {
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
             QuickSave( HW_STACK_CHECK, OP_POP );
         }
+#else
+        GenUnkPush( &CurrProc->targ.stack_check );
+        RTCall( RT_CHK, ATTR_POP );
 #endif
     }
 }
@@ -501,10 +501,10 @@ static  void    PrologHook( void )
         GenRegSub( HW_SP, size );
         CurrProc->targ.base_adjust += size;
     }
-#if _TARGET & _TARG_80386
-//    GenPushC( CurrProc->parms.size );
+#if _TARGET & _TARG_IAPX86
     RTCall( RT_PROHOOK, EMPTY );
 #else
+//    GenPushC( CurrProc->parms.size );
     RTCall( RT_PROHOOK, EMPTY );
 #endif
 }
@@ -530,9 +530,8 @@ static  void    DoLoadDS( void )
 #if _TARGET & _TARG_80386
     if( _IsntTargetModel( LOAD_DS_DIRECTLY ) ) {
         RTCall( RT_GETDS, EMPTY );
-    } else
+    } else {
 #endif
-    {
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
             QuickSave( HW_STACK_CHECK, OP_PUSH );
         }
@@ -540,7 +539,9 @@ static  void    DoLoadDS( void )
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
             QuickSave( HW_STACK_CHECK, OP_POP );
         }
+#if _TARGET & _TARG_80386
     }
+#endif
 }
 
 
@@ -1046,10 +1047,10 @@ static  void    AllocStack( void ) {
         }
     } else if( size <= 2 * WORD_SIZE && OptForSize > 50 ) {
         while( size > 0 ) {
-#if _TARGET & _TARG_80386
-            QuickSave( HW_EAX, OP_PUSH );
-#else
+#if _TARGET & _TARG_IAPX86
             QuickSave( HW_AX, OP_PUSH );
+#else
+            QuickSave( HW_EAX, OP_PUSH );
 #endif
             size -= WORD_SIZE;
         }
@@ -1202,14 +1203,14 @@ static  void    DoEpilog( void ) {
 
     is_long = _RoutineIsLong( CurrProc->state.attr ) ||
         _RoutineIsFar16( CurrProc->state.attr );
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
     if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
         QuickSave( HW_SP, OP_POP );
     }
     if( _IsTargetModel( NEW_P5_PROFILING|P5_PROFILING ) ) {
         GenP5ProfilingEpilog( CurrProc->label );
     }
-    #endif
+#endif
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
         GenReturn( 0, FALSE, TRUE );
@@ -1235,11 +1236,11 @@ extern  int ParmsAtPrologue( void ) {
 
     parms_off_sp= 0;
 
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
     if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
         parms_off_sp += WORD_SIZE;
     }
-    #endif
+#endif
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ||
        ( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) ) {

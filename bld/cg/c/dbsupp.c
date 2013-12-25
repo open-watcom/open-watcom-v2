@@ -225,31 +225,33 @@ extern  dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
     switch( op ) {
     case DB_OP_POINTS:
         switch( TypeAddress( other )->refno ) {
-        #if _TARGET & _TARG_IAPX86
-            case TY_NEAR_POINTER:
-            case TY_NEAR_CODE_PTR:
-        #endif
+#if _TARGET & _TARG_IAPX86
+        case TY_NEAR_POINTER:
+        case TY_NEAR_CODE_PTR:
+#endif
         case TY_UINT_2:
         case TY_INT_2:
             stkop = LOC_OPER+LOP_IND_2;
             break;
-        #if !( _TARGET & _TARG_IAPX86 )
-            case TY_NEAR_POINTER:
-            case TY_NEAR_CODE_PTR:
-        #endif
+#if _TARGET & _TARG_80386
+        case TY_NEAR_POINTER:
+        case TY_NEAR_CODE_PTR:
+#endif
         case TY_UINT_4:
         case TY_INT_4:
             stkop = LOC_OPER+LOP_IND_4;
             break;
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         case TY_LONG_POINTER:
         case TY_HUGE_POINTER:
         case TY_LONG_CODE_PTR:
-            #if  _TARGET & _TARG_80386
-                stkop = LOC_OPER+LOP_IND_ADDR386;
-            #else
-                stkop = LOC_OPER+LOP_IND_ADDR286;
-            #endif
+    #if _TARGET & _TARG_IAPX86
+            stkop = LOC_OPER+LOP_IND_ADDR286;
+    #else
+            stkop = LOC_OPER+LOP_IND_ADDR386;
+    #endif
             break;
+#endif
         default:
             Zoiks( ZOIKS_085 );
             break;

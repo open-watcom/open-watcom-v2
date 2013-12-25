@@ -138,17 +138,17 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
     Action( "BEInit%n" );
     info.version.is_large = TRUE;
     info.version.revision = II_REVISION;
-    #if _TARGET & _TARG_80386
-        info.version.target = II_TARG_80386;
-    #elif _TARGET & _TARG_IAPX86
-        info.version.target = II_TARG_8086;
-    #elif _TARGET & _TARG_AXP
-        info.version.target = II_TARG_AXP;
-    #elif _TARGET & _TARG_PPC
-        info.version.target = II_TARG_PPC;
-    #else
-        #error UNKNOWN TARGET
-    #endif
+#if _TARGET & _TARG_IAPX86
+    info.version.target = II_TARG_8086;
+#elif _TARGET & _TARG_80386
+    info.version.target = II_TARG_80386;
+#elif _TARGET & _TARG_AXP
+    info.version.target = II_TARG_AXP;
+#elif _TARGET & _TARG_PPC
+    info.version.target = II_TARG_PPC;
+#else
+    #error UNKNOWN TARGET
+#endif
     return( info );
 }
 extern  void    BECloseFiles()
