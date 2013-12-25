@@ -429,7 +429,7 @@ static void dtorableObjectEnd(  // EMIT COMPLETION FOR DTORABLE OBJECT IF REQ'D
 {
     TYPE type;                  // - NULL or type of dtorable element
 
-    _dumpDtorPtr( "dtorableObjectEnd( %x )\n", info );
+    _dumpDtorPtr( "dtorableObjectEnd( %p )\n", info );
     type = dtorableObjectType( info );
     if( type != NULL ) {
         dataInitCodeFileOpen( TRUE );
@@ -622,7 +622,7 @@ static void dtorableObjectBeg(  // EMIT START FOR DTORABLE OBJECT IF REQ'D
     TYPE type;                  // - NULL or type of dtorable element
     SYMBOL sym;                 // - symbol to be initialized
 
-    _dumpDtorPtr( "dtorableObjectBeg( %x )\n", info );
+    _dumpDtorPtr( "dtorableObjectBeg( %p )\n", info );
     type = dtorableObjectType( info );
     if( type != NULL ) {
         dataInitCodeFileOpen( TRUE );
@@ -709,7 +709,7 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
     INITIALIZE_INFO* info;      // - info on previous entry
     INITIALIZE_INFO* prev;      // - used in searching previous entries
 
-    _dumpDtorPtr( "dtorableObjectCtored( %x )\n", curr );
+    _dumpDtorPtr( "dtorableObjectCtored( %p )\n", curr );
     info = curr->previous;
     if( info == NULL ) {
         type = dtorableObjectType( curr );

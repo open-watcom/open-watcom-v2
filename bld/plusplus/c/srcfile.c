@@ -381,7 +381,7 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_src->found_eof = FALSE;
     new_src->once_only = FALSE;
     new_src->ignore_swend = FALSE;
-    new_src->index = totalSrcFiles;
+    new_src->index = totalSrcFiles++;
     new_src->active = NULL;
     new_src->ifndef_name = NULL;
     new_src->ifndef_len = 0;
@@ -417,11 +417,6 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_act->nextc = &notFilled[0];
     new_act->lastc = &notFilled[1];
     new_act->fp = fp;
-    set_srcFile( new_src );
-    if( CompFlags.cpp_output && !new_src->cmdline ) {
-        EmitLine( 1, new_src->name );
-    }
-    ++totalSrcFiles;
     return( new_src );
 }
 
@@ -467,6 +462,10 @@ SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
     OPEN_FILE *new_act;         // - open-file information (new)
 
     new_src = srcFileAlloc( fp, FNameAdd( name ) );
+    if( CompFlags.cpp_output && !new_src->cmdline ) {
+        EmitLine( 1, new_src->name );
+    }
+    set_srcFile( new_src );
     new_act = activeSrc();
     if( ( new_act->buff == NULL ) && ( fp != NULL ) ) {
         // need room for '\0' to signal end of buffer
@@ -1790,6 +1789,7 @@ void SrcFileCmdLnDummyOpen(     // OPEN DUMMY FILE FOR COMMAND LINE
     SRCFILE cmd_file;           // - command file
 
     cmd_file = srcFileAlloc( NULL, NULL );
+    set_srcFile( cmd_file );
     setGuardState( GUARD_IFNDEF );
 }
 

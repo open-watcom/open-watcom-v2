@@ -1479,7 +1479,7 @@ void DbgConvCtl                 // DUMP CONVCTL INFORMATION
 {
     VBUF vbuf;
 
-    printf( "CONVCTL[%X] rough[%s]\n\n"
+    printf( "CONVCTL[%p] rough[%s]\n\n"
           , info
           , ruffstr[ info->rough ] );
     printf( "Source Type information\n" );
@@ -1495,9 +1495,9 @@ void DbgConvCtl                 // DUMP CONVCTL INFORMATION
         DbgPrintPTREE( info->destination );
     }
     DbgPrintPTREE( info->expr );
-    printf( "\ndiag_good(%x) diag_cast(%x) msg_no(%x)"
+    printf( "\ndiag_good(%p) diag_cast(%p) msg_no(%x)"
             " req(%x) rough(%x) ctd(%x)"
-            "\nconv_fun[%x] %s"
+            "\nconv_fun[%p] %s"
             "\n"
           , info->diag_good
           , info->diag_cast

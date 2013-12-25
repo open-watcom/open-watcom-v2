@@ -113,8 +113,7 @@ static void cgGenThrowCnv(      // GENERATE THROW CONVERSION
     BeGenTsRef( sig );
 #ifndef NDEBUG
     if( PragDbgToggle.dump_stab ) {
-        printf( " offset=%x\n"
-              , offset );
+        printf( " offset=%x\n", offset );
     }
 #endif
     DgOffset( offset );
@@ -139,7 +138,7 @@ void ThrowRoGen(                // GENERATE A THROW R/O BLOCK
                      , "cgGenThrowRo -- failure in ThrowCnvInit" );
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
-                printf( "ThrowRo[%x] offset=%x sig=%x\n"
+                printf( "ThrowRo[%p] offset=%p sig=%x\n"
                       , ro
                       , ro->sig
                       , offset );

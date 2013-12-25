@@ -100,6 +100,7 @@ static boolean DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
     boolean retn;
 
     CgFrontDataPtr( IC_SET_TYPE, type );
+    retn = FALSE;
     switch( expr->op ) {
     case PT_FLOATING_CONSTANT:
         CgFrontDataPtr( IC_DATA_FLT, ConPoolFloatAdd( expr ) );
@@ -118,16 +119,13 @@ static boolean DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
     case PT_STRING_CONSTANT:
         CgFrontDataUint( IC_DATA_PTR_OFFSET, offset );
         CgFrontDataPtr( IC_DATA_PTR_STR, expr->u.string );
-        retn = FALSE;
         break;
     case PT_SYMBOL:
         CgFrontDataUint( IC_DATA_PTR_OFFSET, offset );
         CgFrontDataPtr( IC_DATA_PTR_SYM, expr->u.symcg.symbol );
-        retn = FALSE;
         break;
     default:
         CFatal( "dgfront.c unexpected pointer data in DgStorePointer" );
-        retn = FALSE;
         break;
     }
     return( retn );
@@ -141,6 +139,7 @@ static boolean DgStoreMemberPointer( TYPE type, PTREE expr )
     boolean retn;
 
     CgFrontDataPtr( IC_SET_TYPE, type );
+    retn = FALSE;
     switch( expr->op ) {
     case PT_INT_CONSTANT:
         DgZeroBytes( CgMemorySize( type ) );
@@ -159,12 +158,10 @@ static boolean DgStoreMemberPointer( TYPE type, PTREE expr )
             DgStoreScalarValue( expr->type, expr->u.subtree[1], 0 );
             expr = expr->u.subtree[0];
             DgStoreScalarValue( expr->type, expr->u.subtree[1], 0 );
-            retn = FALSE;
         }
         break;
     default:
         CFatal( "dgfront.c unexpected data in DgStoreMemberPointer" );
-        retn = FALSE;
         break;
     }
     return( retn );

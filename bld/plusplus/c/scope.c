@@ -312,7 +312,7 @@ extern SCOPE    SetCurrScope(SCOPE newScope)
 #ifndef NDEBUG
     if( PragDbgToggle.dump_scopes )
     {
-        printf("Set new scope to 0x%.08X\n", newScope);
+        printf("Set new scope to 0x%p\n", newScope);
         if(newScope)
         {
             printf("===============================================================================\n");
@@ -535,7 +535,7 @@ static void dumpData( MEMBER_PTR_CAST *data )
         "delta:         %u "
         "single_test:   %u "
         "vb_index:      %u "
-        "mapping:       %08x "
+        "mapping:       %p "
         "\n"
         "init_conv:     %u "
         "mapping_reqd:  %u "

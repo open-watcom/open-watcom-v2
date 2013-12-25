@@ -57,7 +57,7 @@
 #endif
 
 static  void    nextMacroToken( void );
-static  void    (*tokenSource)( void ) = nextMacroToken;
+static  void    (*tokenSource)( void );
 
 static  char    *ReScanPtr;
 

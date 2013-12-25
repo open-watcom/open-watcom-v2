@@ -527,8 +527,8 @@ void PCHeaderCreate( char *include_file )
     }
 #ifndef NDEBUG
     stop = clock();
-    printf( "%u ticks to parse header\n", ( start - start_parse ) );
-    printf( "%u ticks to save pre-compiled header\n", ( stop - start ) );
+    printf( "%u ticks to parse header\n", (unsigned)( start - start_parse ) );
+    printf( "%u ticks to save pre-compiled header\n", (unsigned)( stop - start ) );
 #endif
 }
 
@@ -802,10 +802,14 @@ pch_absorb PCHeaderAbsorb( char *include_file )
             ret = PCHA_NOT_PRESENT;
         } else {
             auto precompiled_header_header header;
+#ifdef OPT_BR
             unsigned long br_posn;
+#endif
 
             PCHReadVar( header );
+#ifdef OPT_BR
             br_posn = header.browse_info;
+#endif
             if( headerIsOK( &header ) ) {
                 if( ! stalePCH( include_file ) ) {
                     execInitFunctions( FALSE );
@@ -835,7 +839,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     }
 #ifndef NDEBUG
     stop = clock();
-    printf( "%u ticks to load pre-compiled header\n", ( stop - start ) );
+    printf( "%u ticks to load pre-compiled header\n", (unsigned)( stop - start ) );
 #endif
     return( ret );
 }
@@ -1081,7 +1085,7 @@ void PCHPerformReloc( pch_reloc_index ri )
     }
 #ifndef NDEBUG
     stop = clock();
-    printf( "%u ticks to relocate pre-compiled header (%u section)\n", ( stop - start ), ri );
+    printf( "%u ticks to relocate pre-compiled header (%u section)\n", (unsigned)( stop - start ), ri );
 #endif
 }
 
@@ -1106,7 +1110,7 @@ static void pchInit( INITFINI* defn )
 #ifndef NDEBUG
     ExtraRptRegisterCtr( &ctr_pch_length, "# bytes in PCH" );
     ExtraRptRegisterCtr( &ctr_pch_waste, "# bytes wasted in PCH for alignment" );
-    ExtraRptRegisterTab( "PCH region size table (pcregdef.h)", pchRegionNames, ctr_pchw_region, PCHRW_MAX+1, 1 );
+    ExtraRptRegisterTab( "PCH region size table (pcregdef.h)", pchRegionNames, &ctr_pchw_region[0][0], PCHRW_MAX + 1, 1 );
     if( strlen( PHH_TEXT_HEADER ) != TEXT_HEADER_SIZE ) {
         CFatal( "pre-compiled header text is not the correct size!" );
     }

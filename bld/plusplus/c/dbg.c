@@ -50,7 +50,7 @@
 #endif
 
 
-#define F_ADDR      "%x"
+#define F_ADDR      "%p"
 #define F_NAME      "%s"
 #define F_DECIMAL   "%d"
 #define F_HEX       "%x"
@@ -59,7 +59,7 @@
 #define F_HEX_1     "(%x)"
 #define F_HEX_2     "(%x)"
 #define F_HEX_4     "(%x)"
-#define F_S64       "(%i64d)"
+#define F_S64       "(%lld)"
 #define F_STRING    "(" F_NAME ")"
 #define F_QSTRING   "('" F_NAME "')"
 #define F_EOL       "\n"
@@ -69,7 +69,7 @@
 #define F_FLOAT     "(%g)"
 #define F_POINTS    "->"
 #define F_INSTR     "%20s"
-#define F_BUF_FMT   "[%3x-%4x]"
+#define F_BUF_FMT   "[%3lx-%4x]"
 #define F_CPP_FLOAT "(%s)"
 
 extern char *FEName( SYMBOL );
@@ -178,7 +178,7 @@ void DumpMDefn(                 // DUMP MACRO DEFINITION
                     putchar( c );
                 break;
             default:
-                printf( "%lld", Constant64 );
+                printf( F_S64, Constant64 );
                 p += sizeof( Constant64 );
                 break;
             }
@@ -760,7 +760,7 @@ void PrintFullType(             // PRINT FULL TYPE INFORMATION
     VBUF prefix, suffix;
 
     FormatType( tp, &prefix, &suffix );
-    printf( "     Type[%x]: %s<id> %s" F_EOL, tp, VbufString( &prefix ), VbufString( &suffix ) );
+    printf( "     Type" F_BADDR ": %s<id> %s" F_EOL, tp, VbufString( &prefix ), VbufString( &suffix ) );
     VbufFree( &prefix );
     VbufFree( &suffix );
 }
@@ -1319,7 +1319,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
           case PT_IC :
             printf( "PT_IC"         F_BADDR
                     " "             F_NAME
-                    " value"        F_HEX_4
+                    " value"        F_ADDR
                   , node
                   , DbgIcOpcode( node->u.ic.opcode )
                   , node->u.ic.value.pvalue
@@ -1377,8 +1377,8 @@ void DumpInitInfo( void *v_info )
     static char *entryName[3] = { "DE_ROOT_TYPE", "DE_BRACE", "DE_TYPE" };
 
     printf( "Stack Entry"       F_BADDR
-            " stack"            F_HEX_4
-            " prev"             F_HEX_4
+            " stack"            F_ADDR
+            " prev"             F_ADDR
             " entry="           F_STRING F_NL
             " base"             F_HEX_2
             " offset"           F_HEX_2
@@ -1398,8 +1398,8 @@ void DumpInitInfo( void *v_info )
         switch( info->target ) {
         case DT_CLASS:
             printf( "(CLASS)"
-                    " stop"         F_HEX_4
-                    " curr"         F_HEX_4 F_EOL
+                    " stop"         F_ADDR
+                    " curr"         F_ADDR F_EOL
                   , info->u.c.stop
                   , info->u.c.curr
                   );
@@ -1427,7 +1427,7 @@ void DumpInitInfo( void *v_info )
                   );
             break;
         default:
-            printf( "(UNKNOWN="     F_ADDR
+            printf( "(UNKNOWN="     F_HEX_4
                     ")"             F_EOL
                   , info->target
                   );

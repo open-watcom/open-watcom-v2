@@ -476,8 +476,8 @@ static boolean toBoolRank( FNOV_CONV *conv )
 }
 
 static boolean fnovScopeDerived( TYPE src, type_flag srcflags, TYPE tgt,
-/**********************************************************************/
     type_flag tgtflags, FNOV_RANK *rank )
+/**********************************************************************/
 // if src is derived from tgt, return TRUE and set rank, else return FALSE
 {
     SCOPE       src_scope;
@@ -669,7 +669,8 @@ FNOV_LIST **pmatch, FNOV_RANK *rank, FNOV_DIAG *fnov_diag )
 // fill in fnov_diag if non-null
 {
     TYPE                src_basic, tgt_basic, cl_type_src, cl_type_tgt;
-    type_flag           srcflags, tgtflags;
+    type_flag           srcflags;
+    type_flag           tgtflags;
     FNOV_LIST           *udcfRank;
     FNOV_LIST           *ctorRank;
     derived_status      derived;
@@ -1654,7 +1655,7 @@ static void init(               // START OF RANK REPORTING
     defn = defn;
     ExtraRptRegisterTab( "Argument ranking combinations"
                        , rankNames
-                       , type_combos
+                       , &type_combos[0][0]
                        , RKD_MAX
                        , RKD_MAX );
 }

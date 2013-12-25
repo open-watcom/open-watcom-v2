@@ -112,9 +112,8 @@ void DumpClasses( void )
         printf( "'%s' "
             "inline_data %p "
             "\n",
-            data->name,
-            data->inline_data,
-            0 );
+            NameStr( data->name ),
+            data->inline_data );
     }
 }
 #endif
@@ -922,6 +921,7 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
     scoped_id = FALSE;
     scope = GetCurrScope();
 
+    sym_name = NULL;
     if( id->op == PT_ID ) {
         name = id->u.id.name;
     } else if( id->op == PT_ERROR ) {
@@ -1569,7 +1569,7 @@ static void warnAboutHiding( CLASS_DATA *data )
     vindex vf_index;
     unsigned i;
     unsigned m;
-    unsigned amt;
+    size_t amt;
     indices_t *indices_used;
     SYMBOL base_sym;
     SYMBOL derived_sym;

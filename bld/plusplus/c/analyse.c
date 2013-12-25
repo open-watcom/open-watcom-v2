@@ -2633,7 +2633,7 @@ static void init( INITFINI* defn )  // initialization
 #include "ppopsdef.h"
     };
     defn = defn;
-    ExtraRptRegisterTab( "Frequency of operators", opNames, ctrOps, CO_LOG, 1 );
+    ExtraRptRegisterTab( "Frequency of operators", opNames, &ctrOps[0][0], CO_LOG, 1 );
 }
 
 INITDEFN( analyse_reports, init, InitFiniStub )
