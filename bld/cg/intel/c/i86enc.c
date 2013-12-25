@@ -665,7 +665,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     label_handle        lbl_2;
     name                *high;
     name                *low;
-#if _TARGET & _TARG_IPX86
+#if _TARGET & _TARG_IAPX86
     name                *h;
     name                *l;
 #endif
