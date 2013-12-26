@@ -553,7 +553,7 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
         break;
     }
     if( next->result->n.name_class == FS ) {
-#if _TARGET & _TARG_IAXP86
+#if _TARGET & _TARG_IAPX86
         if( OptForSize > 50 ) return( ret );
         MoveThrough( LowPart( ins->operands[ 0 ], U2 ),
                      LowPart( next->result, U2 ), ins, next, reg, U2 );
