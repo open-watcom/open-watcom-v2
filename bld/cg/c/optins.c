@@ -31,6 +31,7 @@
 
 
 #include "optwif.h"
+#include "model.h"
 
 extern  ins_entry       *ValidIns( ins_entry * );
 extern  ins_entry       *AliasLabels( ins_entry *, ins_entry * );

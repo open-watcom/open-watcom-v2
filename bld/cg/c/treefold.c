@@ -1448,7 +1448,7 @@ extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
             }
             return( NULL );
         }
-#if _TARGET == _TARG_370
+#if _TARGET & _TARG_370
         if( left->u2.t.rite->class != TN_CONS ) return( NULL );
 #endif
         if( left->u2.t.op != O_AND ) return( NULL );

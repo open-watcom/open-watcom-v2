@@ -30,7 +30,6 @@
 
 
 #include "cgstd.h"
-#include "pattern.h"
 #include "coderep.h"
 #include "makeins.h"
 #include "zoiks.h"

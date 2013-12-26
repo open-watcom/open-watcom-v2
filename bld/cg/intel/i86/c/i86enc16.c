@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "ocentry.h"
 #include "pccode.h"
 #include "system.h"

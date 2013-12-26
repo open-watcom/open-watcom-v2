@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "regset.h"
 #include "model.h"
 #include "tables.h"
@@ -106,10 +105,9 @@ _OE( _BinSC( R,    C,    R,    EQ_R1 ),V_NO,           RG_WORD,      G_RC,      
 _OE( _BinPP( R,    C,    R,    NONE ), V_LEA,          RG_LEA,       G_LEA,          FU_ALU1 ),
 _OE( _BinSC( M,    C,    M,    EQ_R1 ),V_OP2ONE,       RG_,          G_M1,           FU_ALU1 ),
 
-/* Fall into AddExt table*/
-/**** NB. AddExt points here ****/
-/* opcode_entry    AddExt[] = { */
-/**************************/
+/* AddExt points here */
+/**********************/
+#define AddExt &Add2[11]
 
 /* instructions that we can generate*/
 
@@ -133,10 +131,6 @@ _OE( _Bin(   R|C,  ANY,  ANY,  EQ_R2), V_NO,           RG_WORD,      G_UNKNOWN, 
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_WORD_NEED, G_UNKNOWN,      FU_NO ),
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
-
-/* Point at where AddExt used to start */
-/*************************/
-#define AddExt &Add2[11]
 
 static  opcode_entry    Add4[] = {
 /************************/
@@ -493,17 +487,13 @@ static  opcode_entry    Rtn4C[] = {
 _OE( _Bin(   R,    R,    R,    BOTH_EQ ),V_NO,         RG_4CRTN,     R_MAKECALL,     FU_NO ),
 _OE( _Bin(   ANY,  R,    R,    EQ_R2 ),V_NO,           RG_4CRTN,     R_SWAPOPS,      FU_NO ),
 
-/* Fall into Rtn4 table*/
-/**** NB. Rtn4 points here ****/
-/* static  opcode_entry    Rtn4[] = { */
-/************************/
+/* Rtn4 points here */
+/********************/
+#define Rtn4 &Rtn4C[2]
+
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_MAKECALL,     FU_NO ),
 };
-
-/* Point at where Rtn4 used to start */
-/*************************/
-#define Rtn4 &Rtn4C[2]
 
 static  opcode_entry    Mul1[] = {
 /************************/
@@ -982,6 +972,7 @@ static opcode_entry    Move2CC[] = {
 _OE( _Un(    C,    R,    NONE ),       V_OP1ZERO,      RG_WORD,      R_MAKEXORRR,    FU_NO ),
 
 /* Move2 points here */
+/*********************/
 #define Move2   &Move2CC[1]
 
 /* optimizing reductions*/
@@ -1019,12 +1010,8 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_ANYWORD_NEED,G_UNKNOWN
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN,      FU_NO ),
 };
 
-static opcode_entry     Move4op[] = {
+static opcode_entry     Move4[] = {
 /***********************************/
-
-/* Move4 points here */
-#define Move4   &Move4op[0]
-
 /*           from  to    eq            verify          reg           gen             fu  */
 //_OE( _Un(    C,    ANY,  NONE ),       NVI(V_HIGHEQLOW),RG_DOUBLE,   R_HIGHLOWMOVE,  FU_NO ),
 _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_DOUBLE,    R_SPLITMOVE,    FU_NO ),

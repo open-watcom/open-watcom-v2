@@ -51,7 +51,6 @@ extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            FreeJunk(block*);
 
 typedef enum {
-    NONE            = 0x00,
     MOVEABLE        = 0x01,
     SWAPABLE        = 0x02,
     SIDE_EFFECT     = 0x04,

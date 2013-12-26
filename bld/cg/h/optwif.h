@@ -46,6 +46,3 @@
 #include "typclass.h"
 #include "name.h"
 #include "opcodes.h"
-#include "inslist.h"
-#include "block.h"
-#include "data.h"

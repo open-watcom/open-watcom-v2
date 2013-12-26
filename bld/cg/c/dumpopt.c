@@ -31,6 +31,8 @@
 
 #include "optwif.h"
 #include "dumpio.h"
+#include "typedef.h"
+#include "rtclass.h"
 #include "feprotos.h"
 
 extern  char            *AskRTName( rt_class );

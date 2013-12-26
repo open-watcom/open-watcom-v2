@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "tables.h"
 #include "data.h"
 #include "feprotos.h"

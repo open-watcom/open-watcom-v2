@@ -33,7 +33,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"

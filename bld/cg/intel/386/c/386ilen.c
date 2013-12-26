@@ -29,7 +29,10 @@
 ****************************************************************************/
 
 
-#include "optwif.h"
+#include "cgstd.h"
+#include "cg.h"
+#include "ocentry.h"
+#include "model.h"
 
 
 static byte NopList1[] = {

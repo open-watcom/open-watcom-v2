@@ -30,6 +30,9 @@
 
 
 #include "optwif.h"
+#include "inslist.h"
+#include "block.h"
+#include "data.h"
 #include "objout.h"
 
 extern  void            TryScrapLabel(label_handle);

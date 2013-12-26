@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "ocentry.h"
 #include "mipsenc.h"
 #include "reloc.h"
@@ -49,7 +48,7 @@
 #include "dumpio.h"
 
 extern void DumpInsOnly( instruction * );
-extern void DumpGen( struct opcode_entry * );
+extern void DumpGen( opcode_entry * );
 
 extern void             ObjBytes( const void *buffer, unsigned size );
 extern byte             RegTrans( hw_reg_set );

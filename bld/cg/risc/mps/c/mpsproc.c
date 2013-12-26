@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "cgmem.h"
 #include "zoiks.h"
 #include "mipsenc.h"

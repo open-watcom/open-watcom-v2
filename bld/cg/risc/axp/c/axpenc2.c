@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "symdbg.h"
 #include "ocentry.h"
 #include "axpencod.h"

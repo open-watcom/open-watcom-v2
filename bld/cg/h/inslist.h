@@ -30,6 +30,7 @@
 
 
 #include <limits.h>
+#include "pattern.h"
 
 /* aligned */
 typedef int                     instruction_id;
@@ -97,9 +98,9 @@ typedef struct ins_header {
 
 typedef struct instruction {
         struct ins_header       head;
-        struct opcode_entry     *table;
+        opcode_entry            *table;
         union {
-            struct opcode_entry *gen_table;     /*  do not merge this one! */
+            opcode_entry        *gen_table;     /*  do not merge this one! */
         } u;
         union {
             struct instruction  *parm_list;

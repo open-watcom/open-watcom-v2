@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "tables.h"
-#include "pattern.h"
 #include "zoiks.h"
 #include <assert.h>
 #include "data.h"

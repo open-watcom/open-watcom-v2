@@ -33,8 +33,9 @@
 #include "cgdefs.h"
 #include "optwif.h"
 #include "targsys.h"
-#include "feprotos.h"
+#include "typedef.h"
 #include "objout.h"
+#include "feprotos.h"
 
 
 static  label_handle DoAskForLabel( cg_sym_handle sym )

@@ -35,7 +35,6 @@
 #include "indvars.h"
 #include "model.h"
 #include "sched.h"
-#include "pattern.h"
 
 enum {
     F_NONE      = 0x0000,

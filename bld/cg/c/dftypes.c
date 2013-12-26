@@ -486,9 +486,9 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
             DWLocOp( Client, locid, dref_op, size );
             state->addr_seg = FALSE;  /* ate offset seg */
             break;
-        case LOP_IND_ADDR286:
-        case LOP_IND_ADDR386:
-            if( (loc->class & 0x0f) == LOP_IND_ADDR286 ){
+        case LOP_IND_ADDR_16:
+        case LOP_IND_ADDR_32:
+            if( (loc->class & 0x0f) == LOP_IND_ADDR_16 ){
                 size = 2;
             }else{
                 size = 4;

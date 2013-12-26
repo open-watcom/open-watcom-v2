@@ -30,6 +30,7 @@
 
 
 #include "optwif.h"
+#include "model.h"
 
 static byte NopList[] = {
     2,                  /* objlen of first NOP pattern */

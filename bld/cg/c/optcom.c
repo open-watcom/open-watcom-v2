@@ -31,6 +31,9 @@
 
 #include "optwif.h"
 #include "utils.h"
+#include "inslist.h"
+#include "block.h"
+#include "data.h"
 
 typedef struct common_info {
         ins_entry   *start_com;

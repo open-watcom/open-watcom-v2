@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
 #include "cgmem.h"
@@ -115,7 +114,7 @@ extern  offset          LocSimpField( dbg_loc loc ) {
 /***************************************************/
 
     if( loc == NULL ) return( 0 );
-    if( loc->class != LOC_OPER+LOP_ADD ) return( NO_OFFSET );
+    if( loc->class != LOC_OPER + LOP_ADD ) return( NO_OFFSET );
     loc = loc->next;
     if( loc == NULL ) return( NO_OFFSET );
     if( loc->next != NULL ) return( NO_OFFSET );
@@ -231,27 +230,25 @@ extern  dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
 #endif
         case TY_UINT_2:
         case TY_INT_2:
-            stkop = LOC_OPER+LOP_IND_2;
+            stkop = LOC_OPER + LOP_IND_2;
             break;
-#if _TARGET & _TARG_80386
+#if !( _TARGET & _TARG_IAPX86 )
         case TY_NEAR_POINTER:
         case TY_NEAR_CODE_PTR:
 #endif
         case TY_UINT_4:
         case TY_INT_4:
-            stkop = LOC_OPER+LOP_IND_4;
+            stkop = LOC_OPER + LOP_IND_4;
             break;
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         case TY_LONG_POINTER:
         case TY_HUGE_POINTER:
         case TY_LONG_CODE_PTR:
     #if _TARGET & _TARG_IAPX86
-            stkop = LOC_OPER+LOP_IND_ADDR286;
+            stkop = LOC_OPER + LOP_IND_ADDR_16;
     #else
-            stkop = LOC_OPER+LOP_IND_ADDR386;
+            stkop = LOC_OPER + LOP_IND_ADDR_32;
     #endif
             break;
-#endif
         default:
             Zoiks( ZOIKS_085 );
             break;
@@ -261,10 +258,10 @@ extern  dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
     case DB_OP_ZEX:
         switch( TypeAddress( other )->length ) {
         case 1:
-            stkop = LOC_OPER+LOP_ZEB;
+            stkop = LOC_OPER + LOP_ZEB;
             break;
         case 2:
-            stkop = LOC_OPER+LOP_ZEW;
+            stkop = LOC_OPER + LOP_ZEW;
             break;
         default:
             Zoiks( ZOIKS_084 );
@@ -273,20 +270,20 @@ extern  dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
         loc = LocCreate( loc, stkop );
         break;
     case DB_OP_XCHG:
-        loc = LocCreate( loc, LOC_OPER+LOP_XCHG );
+        loc = LocCreate( loc, LOC_OPER + LOP_XCHG );
         loc->u.stk = other;
         break;
     case DB_OP_MK_FP:
-        loc = LocCreate( loc, LOC_OPER+LOP_MK_FP );
+        loc = LocCreate( loc, LOC_OPER + LOP_MK_FP );
         break;
     case DB_OP_ADD:
-        loc = LocCreate( loc, LOC_OPER+LOP_ADD );
+        loc = LocCreate( loc, LOC_OPER + LOP_ADD );
         break;
     case DB_OP_DUP:
-        loc = LocCreate( loc, LOC_OPER+LOP_DUP );
+        loc = LocCreate( loc, LOC_OPER + LOP_DUP );
         break;
     case DB_OP_POP:
-        loc = LocCreate( loc, LOC_OPER+LOP_POP );
+        loc = LocCreate( loc, LOC_OPER + LOP_POP );
         break;
     default:
         Zoiks( ZOIKS_083 );

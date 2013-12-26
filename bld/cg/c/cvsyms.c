@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include <string.h>
 #include "coderep.h"
-#include "pattern.h"
 #include "cgdefs.h"
 #include "cgmem.h"
 #include "ocentry.h"

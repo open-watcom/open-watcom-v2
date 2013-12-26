@@ -48,14 +48,14 @@ extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            MoveSegRes(instruction*,instruction*);
 extern  void            FixCallIns(instruction*);
-#if _TARGET == _TARG_370
+#if _TARGET & _TARG_370
 extern  hw_reg_set      RAReg( void );
 extern  hw_reg_set      LNReg( void );
 #endif
-#if _TARGET == _TARG_AXP
+#if _TARGET & _TARG_AXP
 extern  hw_reg_set      SavedRegs( void );
 extern  hw_reg_set      ReturnAddrReg( void );
-#elif _TARGET == _TARG_80386
+#elif _TARGET & _TARG_80386
 extern  hw_reg_set      ReturnReg(type_class_def,bool);
 #endif
 
@@ -107,12 +107,12 @@ extern  instruction     *rMAKECALL( instruction *ins )
         HW_TurnOn( all_regs, regs );
         PrefixIns( ins, new_ins );
     }
-#if _TARGET == _TARG_370
+#if _TARGET & _TARG_370
     tmp = RAReg();
     HW_TurnOn( all_regs, tmp );
     tmp = LNReg();
     HW_TurnOn( all_regs, tmp );
-#elif _TARGET == _TARG_80386
+#elif _TARGET & _TARG_80386
     {
     tmp = ReturnReg( WD, FALSE );
     HW_TurnOn( all_regs, tmp );
@@ -129,7 +129,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
                                                     ins->type_class );
     new_ins->result = NULL;
     new_ins->num_operands = 2;         /* special case for OP_CALL*/
-#if _TARGET == _TARG_AXP
+#if _TARGET & _TARG_AXP
     {
     HW_CTurnOn( all_regs, HW_FULL );
     HW_TurnOff( all_regs, SavedRegs() );

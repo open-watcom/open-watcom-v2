@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include "cgdefs.h"
 #include "coderep.h"
-#include "vergen.h"
 #include "data.h"
 #include "feprotos.h"
 

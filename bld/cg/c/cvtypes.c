@@ -1233,8 +1233,8 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
         switch( loc->class & 0x0f ) {
         case LOP_IND_2:
         case LOP_IND_4:
-        case LOP_IND_ADDR286:
-        case LOP_IND_ADDR386:
+        case LOP_IND_ADDR_16:
+        case LOP_IND_ADDR_32:
             if( stk[0].kind == SYM_SYM ) {
                 stk[0].kind = SYM_IND;
                 what->state = IS_VALUE;

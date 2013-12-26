@@ -36,7 +36,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
-#include "pattern.h"
 #include "score.h"
 #include "zoiks.h"
 #include "data.h"

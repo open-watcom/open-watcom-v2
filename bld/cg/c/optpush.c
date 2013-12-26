@@ -31,6 +31,7 @@
 
 
 #include "optwif.h"
+#include "model.h"
 
 extern  ins_entry       *IsolatedCode(ins_entry*);
 extern  void            AddInstr(ins_entry*,ins_entry*);

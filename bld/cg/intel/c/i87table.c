@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "model.h"
-#include "pattern.h"
 #include "regset.h"
 
 

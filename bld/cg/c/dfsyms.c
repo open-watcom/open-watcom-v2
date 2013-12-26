@@ -36,7 +36,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "coderep.h"
-#include "pattern.h"
 #include "cgdefs.h"
 #include "cgmem.h"
 #include "ocentry.h"
@@ -70,7 +69,7 @@ extern char             GetMemModel( void );
 extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
 
-extern  struct opcode_entry   DbgInfo[];
+extern  opcode_entry    DbgInfo[];
 
 extern  void            DFBlkBeg( dbg_block *blk, offset lc );
 static  void            DumpLocals( dbg_local *local );

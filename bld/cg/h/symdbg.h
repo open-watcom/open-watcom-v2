@@ -53,8 +53,8 @@
 #define LOC_OPER                0x60
 #define LOP_IND_2               0x00
 #define LOP_IND_4               0x01
-#define LOP_IND_ADDR286         0x02
-#define LOP_IND_ADDR386         0x03
+#define LOP_IND_ADDR_16         0x02
+#define LOP_IND_ADDR_32         0x03
 #define LOP_ZEB                 0x04
 #define LOP_ZEW                 0x05
 #define LOP_MK_FP               0x06

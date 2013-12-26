@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "ocentry.h"
 #include "cgmem.h"
-#include "vergen.h"
 #include "system.h"
 #include "escape.h"
 #include "pcencode.h"

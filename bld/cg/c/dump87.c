@@ -37,7 +37,6 @@
 
 #include "i87sched.h"
 #include "gen8087.h"
-#include "pattern.h"
 
 extern  void            DumpOperand(name*);
 extern  void            DumpFPInfo(instruction*);

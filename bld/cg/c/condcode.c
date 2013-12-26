@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "cgmem.h"
 #include "data.h"
 #include "namelist.h"

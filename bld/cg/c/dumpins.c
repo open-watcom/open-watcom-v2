@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "cfloat.h"
 #include "dumpio.h"
 #include "data.h"
@@ -244,7 +243,7 @@ extern  void    DumpOperand( name *operand ) {
                 }
             } else if( operand->c.const_type == CONS_OFFSET ) {
                 DumpLiteral( "OFFSET(" );
-#if _TARGET == _TARG_370
+#if _TARGET & _TARG_370
                 DumpInt( operand->c.int_value );
 #else
                 DumpOperand( operand->c.value );

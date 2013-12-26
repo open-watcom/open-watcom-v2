@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "conflict.h"
 #include "regset.h"
-#include "regsetop.h"
 #include "dumpio.h"
 
 extern  void            DumpSym(name*);

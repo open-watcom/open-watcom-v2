@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "cfloat.h"
 #include "system.h"
 #include "zoiks.h"
@@ -62,7 +61,6 @@ extern  instruction     *SplitCompare(instruction*);
 extern  instruction     *SplitMove(instruction*);
 extern  instruction     *SplitOp(instruction*);
 extern  instruction     *SplitFDPush(instruction*);
-extern  instruction     *SplitMove(instruction*);
 extern  instruction     *SplitUnary(instruction*);
 extern  int             NumOperands(instruction*);
 extern  name            *Addressable(name*,type_class_def);

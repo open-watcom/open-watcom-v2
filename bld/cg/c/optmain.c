@@ -31,6 +31,7 @@
 
 #include "optwif.h"
 #include "freelist.h"
+#include "typedef.h"
 #include "objout.h"
 
 extern  void            FreePendingDeletes( void );

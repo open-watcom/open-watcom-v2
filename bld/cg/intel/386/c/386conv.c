@@ -30,7 +30,6 @@
 
 
 #include "cgstd.h"
-#include "pattern.h"
 #include "coderep.h"
 #include "model.h"
 #include "makeins.h"

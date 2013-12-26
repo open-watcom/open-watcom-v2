@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "tables.h"
-#include "pattern.h"
 #include "rtclass.h"
 #include "zoiks.h"
 #include "model.h"

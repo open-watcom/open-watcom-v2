@@ -32,6 +32,9 @@
 
 #include "optwif.h"
 #include "escape.h"
+#include "inslist.h"
+#include "block.h"
+#include "data.h"
 
 extern  void            JmpToRet( ins_entry *, ins_entry * );
 extern  oc_class        NextClass( ins_entry * );

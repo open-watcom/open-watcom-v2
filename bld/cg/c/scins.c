@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "score.h"
-#include "pattern.h"
 #include "makeins.h"
 #include "data.h"
 #include "x87.h"

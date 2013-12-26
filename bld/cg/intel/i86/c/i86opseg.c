@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "zeropage.h"
-#include "pattern.h"
 #include "data.h"
 
 zero_page_scheme        ZPageType;

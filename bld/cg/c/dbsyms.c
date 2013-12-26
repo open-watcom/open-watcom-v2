@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include <string.h>
 #include "coderep.h"
-#include "pattern.h"
 #include "cgdefs.h"
 #include "cgmem.h"
 #include "ocentry.h"
@@ -66,7 +65,7 @@ extern  dbg_loc         LocDupl(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);
 extern  dbg_loc         LocParm(dbg_loc,name*);
 
-extern  struct opcode_entry   DbgInfo[];
+extern  opcode_entry    DbgInfo[];
 
 static  void        EmitDbg( oc_class class, pointer ptr );
 static  dbg_block   *MkBlock( void );

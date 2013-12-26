@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "conflict.h"
-#include "pattern.h"
 #include "model.h"
 #include "savings.h"
 

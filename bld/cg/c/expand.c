@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "memcheck.h"
 #include "zoiks.h"
 #include "data.h"

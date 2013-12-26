@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "regset.h"
 #include "model.h"
 #include "tables.h"
@@ -1140,6 +1139,7 @@ static opcode_entry    Move2CC[] = {
 _OE( _Un(    C,    R,    NONE ),       V_OP1ZERO,      RG_WORD,      R_MAKEXORRR,    FU_NO ),
 
 /* Move2 points here */
+/*********************/
 #define Move2   &Move2CC[1]
 
 /* optimizing reductions*/
@@ -1186,6 +1186,7 @@ static opcode_entry    MoveFS[] = {
 _OE( _Un(    C,    ANY,  NONE ),       V_NO,           RG_DBL,       R_MAKEU4CONS,   FU_NO ),
 
 /* Move4CC points here */
+/***********************/
 #define Move4CC &MoveFS[1]
 
 /* optimizing reductions*/
@@ -1194,6 +1195,7 @@ _OE( _Un(    C,    ANY,  NONE ),       V_NO,           RG_DBL,       R_MAKEU4CON
 _OE( _Un(    C,    R,    NONE ),       V_OP1ZERO,      RG_DBL,       R_MAKEXORRR,    FU_NO ),
 
 /* Move4 points here */
+/*********************/
 #define Move4   &MoveFS[2]
 
 /* optimizing reductions*/
@@ -1499,6 +1501,7 @@ static opcode_entry     PushFS[] = {
 _OE( _UnPP(  C,    ANY,  NONE ),       V_NO,           RG_DBL,       R_MAKEU4CONS,   FU_NO ),
 
 /* Push4 points here */
+/*********************/
 #define Push4   &PushFS[1]
 
 /*           op1   op2   eq            verify          reg           gen             fu  */

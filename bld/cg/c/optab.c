@@ -34,7 +34,6 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "tables.h"
-#include "pattern.h"
 #include "zoiks.h"
 #include "feprotos.h"
 

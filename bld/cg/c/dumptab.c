@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "dumpio.h"
 
 static char *opRegTab[] = {

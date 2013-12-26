@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "gen8087.h"
 #include "zoiks.h"
 #include "cfloat.h"

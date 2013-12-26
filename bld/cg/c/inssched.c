@@ -38,7 +38,6 @@
 #include "memout.h"
 #include "freelist.h"
 #include "sched.h"
-#include "pattern.h"
 #include "zoiks.h"
 #include "data.h"
 #include "x87.h"

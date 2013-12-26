@@ -169,11 +169,11 @@ extern  signed_32       JumpCost( sel_handle s_node )
 }
 
 
-#if _TARGET == _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
     #define LONG_JUMP 5
     #define SHORT_JUMP 2
     static byte CmpSize[] = { 0, 2, 3, 0, 9 };
-#elif _TARGET == _TARG_80386
+#elif _TARGET & _TARG_80386
     #define LONG_JUMP 6
     #define SHORT_JUMP 2
     static byte CmpSize[] = { 0, 2, 4, 0, 5 };

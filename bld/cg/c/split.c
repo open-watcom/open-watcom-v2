@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "regset.h"
 #include "conflict.h"
 #include "cfloat.h"

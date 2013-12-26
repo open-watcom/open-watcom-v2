@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "ocentry.h"
 #include "axpencod.h"
 #include "reloc.h"
@@ -50,7 +49,7 @@
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
-extern void DumpGen(struct opcode_entry*);
+extern void DumpGen( opcode_entry * );
 extern void GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
 extern void             ObjBytes( const char *buffer, unsigned size );

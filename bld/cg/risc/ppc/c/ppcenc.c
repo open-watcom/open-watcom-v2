@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "pattern.h"
 #include "reloc.h"
 #include "zoiks.h"
 #include "coff.h"
@@ -47,7 +46,7 @@
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
-extern void DumpGen( struct opcode_entry * );
+extern void DumpGen( opcode_entry * );
 extern void GenCondJump( instruction * );
 
 extern void             ObjBytes( const void *buffer, int size );
