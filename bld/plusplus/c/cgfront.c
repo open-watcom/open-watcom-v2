@@ -369,10 +369,9 @@ void CgFrontCodePtr(            // EMIT (code,ptr) TO CODE SEGMENT
 void CgFrontData(               // EMIT TO DATA SEGMENT
     CGINTEROP opcode )          // - intermediate code
 {
-    CGINTER ins;                // - instruction
+    CGINTER ins = { 0 };        // - instruction
 
     ins.opcode = opcode;
-    ins.value.ivalue = 0;
     cgEmitData( &ins );
 }
 
