@@ -323,10 +323,9 @@ CGFILE_INS CgFrontLastIns(      // RETURN LOCATION OF LAST WRITTEN CODE IC
 void CgFrontCode(               // EMIT TO CODE SEGMENT
     CGINTEROP opcode )          // - intermediate code
 {
-    CGINTER ins;                // - instruction
+    CGINTER ins = { 0 };        // - instruction
 
     ins.opcode = opcode;
-    ins.value.ivalue = 0;
     cgEmit( getGenData(), &ins );
 }
 
