@@ -68,10 +68,10 @@ typedef unsigned char   target_uchar;
 typedef unsigned short  target_wchar;
 typedef short           target_short;
 typedef unsigned short  target_ushort;
-typedef long            target_int;
-typedef unsigned long   target_uint;
+typedef int             target_int;
+typedef unsigned int    target_uint;
 typedef long            target_long;
 typedef unsigned long   target_ulong;
 
-typedef unsigned long   target_size_t;
-typedef unsigned long   target_offset_t;
+typedef unsigned int    target_size_t;
+typedef unsigned int    target_offset_t;
