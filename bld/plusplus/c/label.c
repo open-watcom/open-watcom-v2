@@ -624,7 +624,7 @@ void LabelReturn(               // RETURN STATEMENT PROCESSING
         if( FunctionBodyCtor() ) {
             CgFrontCode( IC_CTOR_COMPLETE );
         }
-        CgFrontCode( IC_DESTRUCT );
+        CgFrontCodePtr( IC_DESTRUCT, NULL );
     }
 }
 
