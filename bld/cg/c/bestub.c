@@ -38,7 +38,6 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "symdbg.h"
-#include "dbgstrct.h"
 
 typedef union hdl_type {
         bck_info        *b;

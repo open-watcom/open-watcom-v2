@@ -37,7 +37,6 @@
 #include "system.h"
 #include "objrep.h"
 #include "import.h"
-#include "dbcue.h"
 #include "fppatch.h"
 #include "cgmem.h"
 #include "zoiks.h"
@@ -46,6 +45,7 @@
 #include "i86obj.h"
 #include "utils.h"
 #include "objout.h"
+#include "dbsyms.h"
 #include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -1315,7 +1315,7 @@ static  void    SetPatches( void )
     temp_patch          *curr_pat;
     temp_patch          *next;
     array_control       *ctl;
-    patch               *pat;
+    obj_patch           *pat;
     unsigned            need;
 
     for( curr_pat = CurrSeg->obj->patches; curr_pat != NULL; curr_pat = next ) {
@@ -1324,7 +1324,7 @@ static  void    SetPatches( void )
         if( need > ctl->alloc ) {
             ReallocArray( ctl, need );
         }
-        pat = &_ARRAYOF( ctl, patch )[ctl->used++];
+        pat = &_ARRAYOF( ctl, obj_patch )[ctl->used++];
         pat->ref = AskObjHandle();
         pat->where = curr_pat->pat.where;
         pat->attr = curr_pat->pat.attr;
@@ -1848,8 +1848,8 @@ static void DoSegARange( offset *codesize, index_rec *rec )
     }
 }
 
-static  void    DoPatch( patch *pat, offset lc )
-/**********************************************/
+static  void    DoPatch( obj_patch *pat, offset lc )
+/**************************************************/
 {
     unsigned_32 lword;
     unsigned_16 word;
@@ -2263,7 +2263,7 @@ extern  void    OutLabel( label_handle lbl )
     temp_patch          **owner;
     temp_patch          *curr_pat;
     array_control       *ctl;
-    patch               *pat;
+    obj_patch           *pat;
     unsigned            i;
     pointer             patptr;
     object              *obj;
@@ -2375,7 +2375,7 @@ extern  void    AbsPatch( abspatch_handle patch_handle, offset lc )
 extern  void    *InitPatch( void )
 /********************************/
 {
-    return( InitArray( sizeof( patch ),  MODEST_PAT, INCREMENT_PAT ) );
+    return( InitArray( sizeof( obj_patch ),  MODEST_PAT, INCREMENT_PAT ) );
 }
 
 

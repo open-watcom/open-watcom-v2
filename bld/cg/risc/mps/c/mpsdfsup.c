@@ -31,14 +31,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
+#include "typedef.h"
 #include "procdef.h"
-#include "cgdefs.h"
 #include "model.h"
 #include "ocentry.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include "typedef.h"
-#include "dbgstrct.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <setjmp.h>

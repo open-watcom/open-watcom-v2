@@ -32,33 +32,21 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
-#include "tree.h"
 #include "addrname.h"
+#include "tree.h"
 #include "cgmem.h"
 #include "types.h"
 #include "addrfold.h"
 #include "makeins.h"
-#include "treeprot.h"
 #include "namelist.h"
-
-typedef struct {
-#ifndef NDEBUG
-    use_info    useinfo;
-#endif
-    union {
-        tn              node;
-        instruction     *ins;
-    } u;
-    bool        in_tree;        // are we hanging in a tree somewhere?
-    bool        patched;        // has someone made a node out of us yet?
-} patch;
+#include "patch.h"
 
 extern  type_class_def  TypeClass( type_def *);
 extern  void            AddIns( instruction * );
 
-extern  patch   *BGNewPatch() {
-    patch               *p;
+patch *BGNewPatch( void )
+{
+    patch   *p;
 
     p = CGAlloc( sizeof( patch ) );
     p->in_tree = FALSE;

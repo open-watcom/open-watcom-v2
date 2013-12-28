@@ -30,12 +30,11 @@
 
 
 typedef enum {
-    #define pick(e) e,
+    #define pick(e,t) e,
     #include "typcldef.h"
     #undef pick
     XX,
-    X8,
-/*  following included for use only by GENTYPE.WSL */
+/*  following included for use only by tree.c */
     ER
 } type_class_def;
 

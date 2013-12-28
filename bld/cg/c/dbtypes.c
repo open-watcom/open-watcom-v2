@@ -33,16 +33,14 @@
 #include <string.h>
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
+#include "typedef.h"
 #include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
-#include "typedef.h"
 #include "types.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
-#include "dbgstrct.h"
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif

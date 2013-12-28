@@ -36,9 +36,10 @@
 #include "zoiks.h"
 #include "axpencod.h"
 #include "data.h"
-#include "feprotos.h"
 #include "rtrtn.h"
 #include "objout.h"
+#include "dbsyms.h"
+#include "feprotos.h"
 
 extern  uint_32         CountBits( uint_32 );
 extern  unsigned        DepthAlign( unsigned );
@@ -64,10 +65,6 @@ extern  void            GenCallLabelReg( label_handle lbl, uint reg );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            FactorInt32( signed_32, signed_16 *, signed_16 *, signed_16 * );
-extern  void            EmitRtnBeg( void );
-extern  void            EmitProEnd( void );
-extern  void            EmitEpiBeg( void );
-extern  void            EmitRtnEnd( void );
 extern  void            EmitFuncStart( label_handle cg_linenum );
 extern  void            TellKeepLabel( label_handle );
 extern  void            TellProcLabel( label_handle );

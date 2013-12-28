@@ -35,7 +35,6 @@
 #include "cgstd.h"
 #include "cg.h"
 #include "bckdef.h"
-#include "cgdefs.h"
 #include "typclass.h"
 #include "typedef.h"
 #include "cfloat.h"

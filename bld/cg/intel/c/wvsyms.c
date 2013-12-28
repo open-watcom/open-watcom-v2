@@ -38,7 +38,6 @@
 #include "objrep.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
-#include "dbgstrct.h"
 #include "wvdbg.h"
 #include "data.h"
 #include "types.h"
@@ -50,7 +49,7 @@
 extern  void            SetUpObj(bool);
 extern  void            DataInt(short_offset);
 extern  void            BuffIndex(uint);
-extern  void            BuffForward(dbg_patch_handle*);
+extern  void            BuffForward(dbg_patch *);
 extern  void            BuffBack(back_handle, offset);
 extern  void            BuffWord(uint);
 extern  void            BuffByte( byte );
@@ -72,12 +71,6 @@ static  void            DumpLocals( dbg_local *local );
 static  void            DumpDbgBlk( dbg_block *blk, offset lc );
 
 static  offset          CodeOffset;
-
-typedef struct block_patch {
-    struct block_patch  *link;
-    dbg_patch_handle    handle;
-} block_patch;
-
 
 extern  void    WVInitDbgInfo( void ) {
 /******************************/
@@ -248,20 +241,20 @@ extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
 static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
 /************************************************************/
 
-    block_patch *patch;
+    block_patch *bpatch;
     offset      off;
     segment_id  old;
 
     old = SetOP( -1 );
     while( blk->patches != NULL ) {
-        patch = blk->patches;
-        blk->patches = patch->link;
-        SetOP( patch->handle.segment );
+        bpatch = blk->patches;
+        blk->patches = bpatch->link;
+        SetOP( bpatch->patch.segment );
         off = AskLocation();
-        SetLocation( patch->handle.offset );
+        SetLocation( bpatch->patch.offset );
         DataInt( off );
         SetLocation( off );
-        CGFree( patch );
+        CGFree( bpatch );
     }
     SetOP( old );
     BuffOffset( blk->start - CodeOffset );
@@ -272,16 +265,16 @@ static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
 static  void    DumpParentPtr( dbg_block *blk ) {
 /***********************************************/
 
-    block_patch *patch;
+    block_patch *bpatch;
 
     blk = blk->parent;
     if( blk == NULL ) {
         BuffWord( 0 );
    } else {
-        patch = CGAlloc( sizeof( block_patch ) );
-        patch->link = blk->patches;
-        blk->patches = patch;
-        BuffForward( &patch->handle );
+        bpatch = CGAlloc( sizeof( block_patch ) );
+        bpatch->link = blk->patches;
+        blk->patches = bpatch;
+        BuffForward( &bpatch->patch );
     }
 }
 

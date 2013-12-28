@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Emit debug information for debugging locals.
 *
 ****************************************************************************/
 
@@ -37,7 +36,7 @@ typedef struct cue_state{
     cg_linenum  line;
     short       fno;
     short       col;
-}cue_state;
+} cue_state;
 
 #define CUES_PER_BLK  200
 #define MAX_LINE_DELTA  20
@@ -46,7 +45,7 @@ typedef struct cue_state{
 typedef struct cue_blk {
     struct cue_blk *next;
     cue_state       info[CUES_PER_BLK];
-}cue_blk;
+} cue_blk;
 
 typedef struct cue_ctl {
     cue_blk        *head;
@@ -57,19 +56,41 @@ typedef struct cue_ctl {
     cue_state       state;
     cue_state       start[1];
     long            count;
-}cue_ctl;
+} cue_ctl;
 
 /* filename to number mapping */
 typedef struct fname_lst {
     struct fname_lst   *next;
     unsigned_16         len;
     char                fname[1];
-}fname_lst;
+} fname_lst;
 
 typedef struct {
     fname_lst   *lst;
     short       count;
-}fname_ctl;
+} fname_ctl;
 
-extern bool CueFind( cue_idx cue, cue_state *ret );
-extern  char *SrcFNoFind( uint fno );
+extern  char        *SrcFNoFind( uint fno );
+extern  bool        CueFind( cue_idx cue, cue_state *ret );
+extern  cue_idx     CueAdd( int fno, int line, int col );
+extern  void        CueMap( cue_ctl *ctl, cue_state *base );
+extern  void        InitDbgInfo( void );
+extern  void        FiniDbgInfo( void );
+extern  void        DBAllocReg( name *reg, name *temp );
+extern  dbg_block   *DoDBBegBlock( int fast_codegen );
+extern  void        DoDBEndBlock( int fast_codegen );
+extern  void        DbgSetBase( void );
+extern  void        DbgParmLoc( name *parm, cg_sym_handle sym );
+extern  void        DbgRetLoc( void );
+extern  void        DbgRetOffset( type_length offset );
+extern  void        EmitDbgInfo( instruction *ins );
+extern  void        EmitRtnBeg( void );
+extern  void        EmitRtnEnd( void );
+extern  void        EmitProEnd( void );
+extern  void        EmitEpiBeg( void );
+extern  void        DbgRtnBeg( dbg_rtn *rtn,  offset lc );
+extern  void        DbgRtnEnd( dbg_rtn *rtn, offset lc );
+extern  void        DbgProEnd( dbg_rtn *rtn, offset lc );
+extern  void        DbgEpiBeg( dbg_rtn *rtn, offset lc );
+extern  void        DbgBlkBeg( dbg_block *blk, offset lc );
+extern  void        DbgBlkEnd( dbg_block *blk, offset lc );

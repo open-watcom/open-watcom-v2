@@ -306,7 +306,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
         rtipe = TypeInteger;
     }
     if( tipe->refno == TY_DEFAULT ) {
-        return( ClassType( mat[TypeClass( ltipe ) * XX + TypeClass( rtipe )] ));
+        return( ClassType( mat[TypeClass( ltipe ) * XX + TypeClass( rtipe )] ) );
     }
 #if _TARGET & 0
     return( tipe );
@@ -1213,8 +1213,8 @@ extern  cg_type TGType( tn node )
 }
 
 
-extern  tn  TGPatch( patch_handle hdl, type_def *tipe )
-/******************************************************
+extern  tn  TGPatch( patch *hdl, type_def *tipe )
+/************************************************
     create a patch node for "hdl"
 */
 {
@@ -2450,8 +2450,8 @@ extern  void    TInit( void )
 */
 {
     SetAddress( FALSE );
-    SubMat[CP+XX*CP] = TypeClass( TypeLongInteger );
-    SubMat[PT+XX*PT] = TypeClass( TypeHugeInteger );
+    SubMat[CP + XX * CP] = TypeClass( TypeLongInteger );
+    SubMat[PT + XX * PT] = TypeClass( TypeHugeInteger );
     InitFrl( &TreeFrl );
 }
 

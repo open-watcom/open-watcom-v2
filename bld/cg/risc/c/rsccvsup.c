@@ -33,18 +33,16 @@
 #include "cgstd.h"
 #include <string.h>
 #include "coderep.h"
+#include "typedef.h"
 #include "procdef.h"
-#include "cgdefs.h"
 #include "model.h"
 #include "ocentry.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include "typedef.h"
-#include "dbgstrct.h"
 #include "cvdbg.h"
-#include "dbcue.h"
 #include "owl.h"
 #include "rscobj.h"
+#include "dbsyms.h"
 
 extern  segment_id          DbgSegDef( const char *name );
 

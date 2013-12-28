@@ -39,11 +39,12 @@
 #include "makeins.h"
 #include "convins.h"
 #include "data.h"
-#include "feprotos.h"
 #include "bldins.h"
 #include "makeaddr.h"
 #include "bgcall.h"
 #include "x87.h"
+#include "dbsyms.h"
+#include "feprotos.h"
 
 
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
@@ -58,8 +59,6 @@ extern  type_length     PushSize(type_length);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
 extern  type_class_def  InitCallState(type_def*);
 extern  type_class_def  TypeClass(type_def*);
-extern  void            DbgParmLoc(name*, cg_sym_handle);
-extern  void            DbgRetLoc(void);
 extern  void            GenBlock( block_class, int );
 extern  void            Generate(bool);
 extern  void            PGBlip(char*);

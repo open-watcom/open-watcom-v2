@@ -39,11 +39,12 @@
 #include "stack.h"
 #include "zoiks.h"
 #include "data.h"
-#include "feprotos.h"
 #include "display.h"
 #include "rtrtn.h"
 #include "utils.h"
 #include "objout.h"
+#include "dbsyms.h"
+#include "feprotos.h"
 
 extern  void        OutDLLExport(uint,cg_sym_handle);
 extern  void        GenLeaSP(long);
@@ -56,8 +57,6 @@ extern  void        GenWindowsEpilog( void );
 extern  void        GenCypWindowsEpilog( void );
 extern  void        GenRdosdevProlog( void );
 extern  void        GenRdosdevEpilog( void );
-extern  void        EmitRtnEnd( void );
-extern  void        EmitEpiBeg( void );
 extern  void        GenEnter(int,int);
 extern  void        GenUnkEnter(pointer,int);
 extern  void        GenRegAnd(hw_reg_set,type_length);
@@ -68,8 +67,6 @@ extern  bool        DoesSomething(instruction*);
 extern  void        GenRegAdd(hw_reg_set,type_length);
 extern  void        GenRegMove(hw_reg_set,hw_reg_set);
 extern  void        GenPushOffset(byte);
-extern  void        EmitProEnd( void );
-extern  void        DbgRetOffset(type_length);
 extern  void        RelocParms( void );
 extern  type_length AdjustBase( void );
 extern  hw_reg_set  SaveRegs( void );
@@ -79,7 +76,6 @@ extern  void        GenPushC(signed_32);
 extern  void        GenUnkMov(hw_reg_set,pointer);
 extern  void        QuickSave(hw_reg_set,opcode_defs);
 extern  void        CodeLabel(label_handle,unsigned);
-extern  void        EmitRtnBeg( void );
 extern  void        CodeLineNum( cg_linenum,bool);
 extern  void        Gpusha( void );
 extern  void        Gpopa( void );

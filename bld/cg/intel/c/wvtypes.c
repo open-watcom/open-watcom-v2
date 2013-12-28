@@ -36,13 +36,12 @@
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
-#include "dbcue.h"
 #include "wvdbg.h"
 #include "data.h"
 #include "types.h"
-#include "dbgstrct.h"
 #include "objout.h"
 #include "wvtypes.h"
+#include "dbsyms.h"
 
 extern  uint            BuffLoc(void);
 extern  void            BuffByte(byte);
@@ -52,7 +51,7 @@ extern  void            DataInt(short_offset);
 extern  void            DataLong(long);
 extern  void            DataBytes(unsigned_32,const void *);
 extern  void            BuffIndex(uint);
-extern  void            BuffForward(dbg_patch_handle *);
+extern  void            BuffForward(dbg_patch *);
 extern  void            BuffBack(back_handle, offset);
 extern  void            BuffString(uint,char*);
 extern  void            BuffValue(unsigned_32,uint);
@@ -69,9 +68,9 @@ static  void            EndType( bool check_too_big );
 extern  cue_ctl         LineInfo;
 extern  fname_ctl       DBFiles;
 
-#define MAX_TYPE_SIZE  (1024 * 16)
+#define MAX_TYPE_SIZE   (1024 * 16)
 
-static dbg_patch_handle  CueInfoOffset;
+static dbg_patch        CueInfoOffset;
 
 static  byte    GetScalar( cg_type tipe ) {
 /*****************************************/

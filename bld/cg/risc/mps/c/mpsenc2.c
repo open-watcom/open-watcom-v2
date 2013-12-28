@@ -31,6 +31,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
+#include "cgdefs.h"
 #include "symdbg.h"
 #include "ocentry.h"
 #include "mipsenc.h"

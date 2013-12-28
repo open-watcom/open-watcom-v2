@@ -33,9 +33,9 @@
 #include "cgstd.h"
 #include "cg.h"
 #include "bckdef.h"
-#include "feprotos.h"
 #include "cgmem.h"
 #include "memsydep.h"
+#include "feprotos.h"
 
 extern  pointer CGAlloc( size_t size ) {
 /**************************************/

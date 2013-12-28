@@ -30,11 +30,10 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
 #include "coderep.h"
+#include "typedef.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "typedef.h"
 #include "types.h"
 #include "regset.h"
 #include "zoiks.h"

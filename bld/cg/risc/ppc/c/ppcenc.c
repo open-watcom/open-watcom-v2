@@ -43,6 +43,7 @@
 #include "objout.h"
 #include "dumpio.h"
 #include "cgauxinf.h"
+#include "dbsyms.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
@@ -56,9 +57,6 @@ extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( label_handle );
-extern void             DbgBlkBeg( dbg_block *blk, offset lc );
-extern void             DbgBlkEnd( dbg_block *blk, offset lc );
-extern void             EmitDbgInfo( instruction * );
 extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
 extern void             GenCondJump( instruction *cond );
 

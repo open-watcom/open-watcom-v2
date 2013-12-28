@@ -48,6 +48,8 @@
 #include "treeprot.h"
 #include "cgauxinf.h"
 #include "makeaddr.h"
+#include "patch.h"
+#include "dbsyms.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -62,14 +64,12 @@ extern  void            InitBlip(void);
 extern  void            FiniBlip(void);
 extern  void            InitWeights(uint);
 extern  void            CGMemInit(void);
-extern  void            InitDbgInfo(void);
 extern  void            TInit(void);
 extern  bool            CGOpenf(void);
 extern  void            InitCG(void);
 extern  void            SillyMemLimit(void);
 extern  void            FiniCG(void);
 extern  void            AbortCG(void);
-extern  void            FiniDbgInfo(void);
 extern  void            TFini(void);
 extern  void            CGMemFini(void);
 extern  void            BGFiniLabel(label_handle);
@@ -94,10 +94,6 @@ extern  bool            BGInInline(void);
 extern  void            BGParmInline(cg_sym_handle,type_def*);
 extern  void            BGRetInline(an,type_def*);
 extern  void            BGProcInline(cg_sym_handle,type_def*);
-extern  patch_handle    BGNewPatch(void);
-extern  cg_name         BGPatchNode( patch_handle, type_def * );
-extern  void            BGPatchInteger( patch_handle, signed_32 );
-extern  void            BGFiniPatch( patch_handle );
 extern  void            DataAlign( unsigned_32 );
 
 #ifdef QNX_FLAKEY
@@ -1882,7 +1878,3 @@ extern  void _CGAPI             BFFree( float_handle cf )
 {
     CFFree( cf );
 }
-
-extern  void _CGAPI     DBSrcCue( uint fno, uint line, uint col );
-extern  void _CGAPI     DBBegBlock( void );
-extern  void _CGAPI     DBEndBlock( void );

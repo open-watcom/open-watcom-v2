@@ -60,8 +60,8 @@ extern    void          TargTypeInit(void);
 static    type_list     *TypeList;
 
 
-/*                          refno           length  attributes*/
-/*                          ======          ======  ==========*/
+/*                          refno           length  attributes */
+/*                          ======          ======  ========== */
 
 static type_def TUInt1 = {  TY_UINT_1,       1,      0 };
 static type_def TInt1  = {  TY_INT_1,        1,      TYPE_SIGNED };
@@ -151,12 +151,11 @@ extern  type_def        *TypeAddress( cg_type tipe ) {
                 if( list->tipe.type_def.refno == tipe ) {
                     return( &list->tipe.type_def );
                 }
-            } else {/* TYPE_ALIAS*/
+            } else {    /* TYPE_ALIAS */
                 if( list->tipe.alias.refno == tipe ) {
                     return( list->tipe.alias.tptr );
                 }
             }
-
         }
         return( NULL );
     }
@@ -179,7 +178,6 @@ extern  type_def        *TypeAlias( cg_type define, cg_type existing ) {
 /***********************************************************************
     cause refno "define" to become an alias for existing type "existing"
 */
-
     type_def    *t;
     type_list   *list;
 
@@ -200,7 +198,6 @@ extern  type_def        *TypeDef( cg_type refno, type_length length, type_length
     Define a structure/array type which will have handle "refno".  The
     type will occupy "length" bytes of storage.
 */
-
     type_list   *list;
 
     align = align;
@@ -222,7 +219,6 @@ extern  void    TypeFini() {
 /***************************
     Finish up the typeing stuff
 */
-
     type_list   *type;
     type_list   *next;
 

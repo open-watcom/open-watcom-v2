@@ -45,8 +45,8 @@
 #include "pcobj.h"
 #include "zoiks.h"
 #include "banner.h"
-#include "feprotos.h"
 #include "utils.h"
+#include "feprotos.h"
 
 
 typedef int             handle;

@@ -149,7 +149,7 @@ _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          G_UNKNOWN,      FU_NO
     RT_MAP( DTOI4, RT_DTOI4 )
 
 typedef enum {
-    #define pick(e) C##e,
+    #define pick(e,t) C##e,
     #include "typcldef.h"
     #undef pick
     OK,

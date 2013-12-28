@@ -54,14 +54,14 @@ typedef struct array_control {
         unsigned        inc;    /*  number of elements to increment by */
 } array_control;
 
-typedef struct patch {
+typedef struct obj_patch {
         int                     where;
         objhandle               ref;
         patch_attr              attr;
-} patch;
+} obj_patch;
 
 typedef struct temp_patch {
-        struct patch            pat;
+        struct obj_patch        pat;
         struct temp_patch       *link;
         label_handle            lbl;
 } temp_patch;

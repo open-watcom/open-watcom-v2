@@ -35,10 +35,10 @@
 #include "coderep.h"
 #include "tables.h"
 #include "data.h"
-#include "feprotos.h"
 #include <assert.h>
 #include "makeins.h"
 #include "namelist.h"
+#include "feprotos.h"
 
 extern  opcode_entry    String[];
 

@@ -36,7 +36,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
 #include "typedef.h"
 #include "types.h"
 #include "tree.h"

@@ -41,16 +41,15 @@
 #include "ocentry.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
-#include "dbgstrct.h"
 #include "dw.h"
 #include "dwarf.h"
 #include "dfdbg.h"
-#include "dbcue.h"
 #include "data.h"
 #include "types.h"
 #include "objout.h"
 #include "dfsyms.h"
 #include "dfsupp.h"
+#include "dbsyms.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 
@@ -68,8 +67,6 @@ extern void             DFFEPtrRef( cg_sym_handle sym );
 extern char             GetMemModel( void );
 extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
-
-extern  opcode_entry    DbgInfo[];
 
 extern  void            DFBlkBeg( dbg_block *blk, offset lc );
 static  void            DumpLocals( dbg_local *local );
@@ -309,9 +306,10 @@ static back_handle MakeLabel( void ){
     return( bck );
 }
 
-extern  void    DFInitDbgInfo(){
-/******************************/
+extern  void    DFInitDbgInfo( void )
+/***********************************/
 /* called after ObjInit */
+{
     CurrFNo = 0;
     CcuDef = FALSE;
     Client = NULL;
@@ -663,7 +661,8 @@ extern void _CGAPI DFDwarfLocal( pointer client, pointer locid, pointer sym ) {
 
 }
 
-extern  void    DFFiniDbgInfo() {
+extern  void    DFFiniDbgInfo( void )
+{
 }
 
 
@@ -693,9 +692,9 @@ extern  void    DFObjFiniDbgInfo( offset codesize ) {
     FiniSegBck();
 }
 
-extern  void    DFObjLineFiniDbgInfo( void ) {
-/********************************************/
-
+extern  void    DFObjLineFiniDbgInfo( void )
+/******************************************/
+{
     DWFiniDebugLine( Client );
     DWFini( Client );
     FiniLineSegBck();

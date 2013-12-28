@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include "typedef.h"
-
 #include "model.h"
 #include "addrname.h"
 #include "regset.h"

@@ -36,8 +36,8 @@
 #include "cg.h"
 #include "cgmisc.h"
 #include "coderep.h"
-#include "feprotos.h"
 #include "objrep.h"
+#include "feprotos.h"
 
 extern void             GrabTimer( void );
 extern void             ReleTimer( void );

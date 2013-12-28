@@ -56,7 +56,6 @@ extern  tn      TGPreGets( cg_op op, tn left, tn rite, type_def *tipe );
 extern  tn      TGLVPreGets( cg_op op, tn left, tn rite, type_def *tipe );
 extern  tn      TGPostGets( cg_op op, tn left, tn rite, type_def *tipe );
 extern  cg_type TGType( tn node );
-extern  tn      TGPatch( patch_handle hdl, type_def *tipe );
 extern  tn      TGFlow( cg_op op, tn left, tn rite );
 extern  tn      TGTrash( tn node );
 extern  tn      TGAttr( tn node, cg_sym_attr attr );

@@ -36,6 +36,7 @@
 #include "makeins.h"
 #include "foldins.h"
 #include "namelist.h"
+#include "dbsyms.h"
 
 enum allocation_state {
     ALLOC_DONE,
@@ -85,7 +86,6 @@ extern  void            GRBlip(void);
 extern  bool            IsSegReg(hw_reg_set);
 extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
 extern  bool            MoreConflicts(void);
-extern  void            DBAllocReg(name*,name*);
 extern  void            MemConstTemp(conflict_node*);
 extern  void            ConstSavings(void);
 extern  void            RegInsDead(void);

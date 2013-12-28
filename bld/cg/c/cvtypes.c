@@ -38,7 +38,6 @@
 #include "objrep.h"
 #include "zoiks.h"
 #include "cvdbg.h"
-#include "dbgstrct.h"
 #include "data.h"
 #include "types.h"
 #include "utils.h"

@@ -34,7 +34,6 @@
 #include "cgstd.h"
 #include "cg.h"
 #include "bckdef.h"
-#include "cgdefs.h"
 #include "typclass.h"
 #include "typedef.h"
 #include "types.h"
@@ -44,9 +43,8 @@
 #include "cgstub.h"
 #include "cgmem.h"
 #include "utils.h"
-#include "feprotos.h"
-
 #include "stubdata.h"
+#include "feprotos.h"
 
 extern  int             TempId;
 

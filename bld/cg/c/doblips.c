@@ -32,8 +32,8 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "feprotos.h"
 #include "utils.h"
+#include "feprotos.h"
 
 #define Version         "WATCOM Code Generator --------"
 

@@ -37,6 +37,7 @@
 #include "ppcgen.h"
 #include "data.h"
 #include "objout.h"
+#include "dbsyms.h"
 #include "feprotos.h"
 
 extern  uint_32         CountBits( uint_32 );
@@ -46,10 +47,6 @@ extern  hw_reg_set      *GPRegs( void );
 extern  hw_reg_set      *FPRegs( void );
 extern  hw_reg_set      SaveRegs( void );
 extern  hw_reg_set      FrameBaseReg( void );
-extern  void            DbgRtnBeg( dbg_rtn *rtn,  offset lc );
-extern  void            DbgProEnd( dbg_rtn *rtn, offset lc );
-extern  void            DbgEpiBeg( dbg_rtn *rtn, offset lc );
-extern  void            DbgRtnEnd( dbg_rtn *rtn, offset lc );
 extern  void            OutFuncStart( label_handle label, offset start, int line );
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );

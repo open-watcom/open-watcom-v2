@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "addrname.h"
 #include "model.h"
-#include "cgdefs.h"
 #include "procdef.h"
 #include "tree.h"
 #include "dumpio.h"

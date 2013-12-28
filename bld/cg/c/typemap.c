@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "typedef.h"
 #include "types.h"
-#include "cgdefs.h"
 #include "procdef.h"
 
 extern  type_class_def  MapPointer(cg_type);
@@ -43,21 +42,12 @@ extern  type_class_def  MapFloat(cg_type,call_attributes);
 extern  type_class_def  MapStruct(type_length,call_attributes);
 
 static cg_type  Types[] = {
-         TY_UINT_1,
-         TY_INT_1,
-         TY_UINT_2,
-         TY_INT_2,
-         TY_UINT_4,
-         TY_INT_4,
-         TY_UINT_8,
-         TY_INT_8,
-         TY_LONG_POINTER,
-         TY_HUGE_POINTER,
-         TY_SINGLE,
-         TY_DOUBLE,
-         TY_DOUBLE,
-         TY_DEFAULT
-         };
+    #define pick(e,t) t,
+    #include "typcldef.h"
+    #undef pick
+    TY_DEFAULT,
+    TY_UNKNOWN
+};
 
 
 extern  type_def        *ClassType( type_class_def tipe ) {

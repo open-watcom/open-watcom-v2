@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
 #include "model.h"
 #include "addrname.h"
 #include "procdef.h"

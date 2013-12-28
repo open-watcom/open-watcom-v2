@@ -38,8 +38,6 @@
 #include "objrep.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include "dbgstrct.h"
-#include "dbcue.h"
 #include "data.h"
 #include "types.h"
 #include "makeins.h"
@@ -54,6 +52,7 @@
 #include "cv4.h"
 #include "cvsyms.h"
 #include "namelist.h"
+#include "dbsyms.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -65,15 +64,13 @@ extern  dbg_loc         LocDupl(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);
 extern  dbg_loc         LocParm(dbg_loc,name*);
 
-extern  opcode_entry    DbgInfo[];
-
-static  void        EmitDbg( oc_class class, pointer ptr );
-static  dbg_block   *MkBlock( void );
-static  void        AddBlockInfo( dbg_block *blk, bool start );
+static opcode_entry     DbgInfo[] = {
+/*           op1   op2   res   eq      verify          reg           gen             fu  */
+_OE( _None(                         ), V_NO,           RG_,          G_DEBUG,        FU_NO )
+};
 
 cue_ctl     LineInfo;
 fname_ctl   DBFiles;
-
 
 static  void    SrcFileNoInit( void )
 /***********************************/
@@ -477,6 +474,20 @@ static  void    AddLocal( dbg_local **owner, dbg_local *lcl )
     *owner = lcl;
 }
 
+static  dbg_block *MkBlock( void )
+/********************************/
+{
+    dbg_block   *blk;
+
+    blk = CGAlloc( sizeof( dbg_block ) );
+    blk->parent = CurrProc->targ.debug->blk;
+    CurrProc->targ.debug->blk = blk;
+    blk->locals = NULL;
+    blk->patches = NULL;
+    return( blk );
+}
+
+
 extern  void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
 /*********************************************************************/
 {
@@ -632,6 +643,22 @@ void    _CGAPI DBLocalType( cg_sym_handle sym, bool kind )
     }
 }
 
+static  void    AddBlockInfo( dbg_block *blk, bool start )
+/********************************************************/
+{
+    instruction *ins;
+
+    ins = MakeNop();
+    ins->table = DbgInfo;
+    ins->u.gen_table = ins->table;
+    ins->flags.nop_flags = NOP_DBGINFO;
+    if( start )
+        ins->flags.nop_flags |= NOP_DBGINFO_START;
+    ins->operands[ 0 ] = (name *)blk;
+    AddIns( ins );
+}
+
+
 extern  dbg_block *DoDBBegBlock( int fast_codegen )
 /*************************************************/
 {
@@ -656,20 +683,6 @@ extern  void _CGAPI     DBBegBlock( void )
 }
 
 
-static  dbg_block *MkBlock( void )
-/********************************/
-{
-    dbg_block   *blk;
-
-    blk = CGAlloc( sizeof( dbg_block ) );
-    blk->parent = CurrProc->targ.debug->blk;
-    CurrProc->targ.debug->blk = blk;
-    blk->locals = NULL;
-    blk->patches = NULL;
-    return( blk );
-}
-
-
 extern  void    DoDBEndBlock( int fast_codegen )
 /**********************************************/
 {
@@ -691,22 +704,6 @@ extern  void _CGAPI     DBEndBlock( void )
 /****************************************/
 {
     DoDBEndBlock( 0 );
-}
-
-
-static  void    AddBlockInfo( dbg_block *blk, bool start )
-/********************************************************/
-{
-    instruction *ins;
-
-    ins = MakeNop();
-    ins->table = DbgInfo;
-    ins->u.gen_table = ins->table;
-    ins->flags.nop_flags = NOP_DBGINFO;
-    if( start )
-        ins->flags.nop_flags |= NOP_DBGINFO_START;
-    ins->operands[ 0 ] = (name *)blk;
-    AddIns( ins );
 }
 
 
@@ -781,6 +778,19 @@ extern  void    DbgRetOffset( type_length offset )
 }
 
 
+static  void    EmitDbg( oc_class class, pointer ptr )
+/****************************************************/
+{
+    any_oc      oc;
+
+    oc.oc_debug.hdr.class = OC_INFO + class;
+    oc.oc_debug.hdr.reclen = sizeof( oc_debug );
+    oc.oc_debug.hdr.objlen = 0;
+    oc.oc_debug.ptr = ptr;
+    InputOC( &oc );
+}
+
+
 extern  void    EmitRtnBeg( void )
 /********************************/
 {
@@ -822,19 +832,6 @@ extern  void    EmitRtnEnd( void )
     old = SetOP( AskCodeSeg() );
     EmptyQueue();
     SetOP( old );
-}
-
-
-static  void    EmitDbg( oc_class class, pointer ptr )
-/****************************************************/
-{
-    any_oc      oc;
-
-    oc.oc_debug.hdr.class = OC_INFO + class;
-    oc.oc_debug.hdr.reclen = sizeof( oc_debug );
-    oc.oc_debug.hdr.objlen = 0;
-    oc.oc_debug.ptr = ptr;
-    InputOC( &oc );
 }
 
 

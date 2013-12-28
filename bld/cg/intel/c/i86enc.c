@@ -47,10 +47,11 @@
 #include "data.h"
 #include "display.h"
 #include "rtrtn.h"
-#include "feprotos.h"
 #include "utils.h"
 #include "i86obj.h"
 #include "objout.h"
+#include "dbsyms.h"
+#include "feprotos.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
 extern  void            DoFunnyRef(int);
@@ -58,7 +59,6 @@ extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            DoSegRef(segment_id);
 extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
-extern  void            EmitDbgInfo(instruction*);
 extern  void            DoCall(label_handle,bool,bool,oc_class);
 extern  void            RTCall( rt_class rtn, oc_class pop_bit );
 extern  void            GenMJmp(instruction*);
@@ -82,7 +82,9 @@ extern  void            Gen4RNeg(instruction*);
 extern  void            Gen4Neg(instruction*);
 extern  void            Pow2Div(instruction*);
 extern  void            By2Div(instruction*);
+#if _TARGET & _TARG_IAPX86
 extern  void            Pow2Div286(instruction*);
+#endif
 extern  void            LayLeaRegOp(instruction*);
 extern  void            GenUnkLea(pointer);
 extern  name            *IntEquivalent(name*);
@@ -532,9 +534,6 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
         break;
     default:
         switch( gen ) {
-    #if _TARGET & _TARG_IAPX86
-        case G_POW2DIV_286:
-    #endif
         case G_SR:
         case G_RS:
         case G_MS1:

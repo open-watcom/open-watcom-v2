@@ -32,20 +32,19 @@
 
 #include "cgstd.h"
 #include "coderep.h"
+#include "addrname.h"
 #include "procdef.h"
 #include "ocentry.h"
-#include "dbcue.h"
 #include "owl.h"
 #include "model.h"
 #include "zoiks.h"
 #include "utils.h"
-#include "addrname.h"
 #include "objout.h"
+#include "dbsyms.h"
 
 extern  void    ObjBytes( const void *, unsigned );
 extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
 extern  void    DoAlignment( offset );
-extern  void    DbgSetBase( void );
 extern  void    TellScrapLabel( label_handle );
 extern  void    OutFuncStart( label_handle, offset, cg_linenum );
 extern  void    OutFuncEnd( offset );
@@ -55,13 +54,6 @@ extern  void    EncodeRet( oc_ret * );
 extern  void    EncodeCall( oc_handle * );
 extern  void    EncodeJump( oc_handle * );
 extern  void    EncodeCond( oc_jcond * );
-
-extern  void    DbgRtnBeg( dbg_rtn *, offset );
-extern  void    DbgProEnd( dbg_rtn *, offset );
-extern  void    DbgBlkBeg( dbg_block *, offset );
-extern  void    DbgBlkEnd( dbg_block *, offset );
-extern  void    DbgEpiBeg( dbg_rtn *, offset );
-extern  void    DbgRtnEnd( dbg_rtn *, offset );
 
 static  offset  LastUnique = ADDR_UNKNOWN;
 static  any_oc  debugOC;

@@ -38,7 +38,6 @@
 #include "objrep.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
-#include "dbgstrct.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <setjmp.h>
@@ -77,11 +76,6 @@ segment_id              CVTypes;
 
 static  void            DumpLocals( dbg_local *local );
 
-typedef struct block_patch {
-    struct block_patch  *link;
-    dbg_patch_handle    handle;
-} block_patch;
-
 struct sf_info {
     char       size;
     s_values   code;
@@ -101,8 +95,8 @@ static  void    NewBuff( cv_out *out, segment_id seg )
     out->seg = seg;
 }
 
-static void BuffPatchSet( segment_id seg, dbg_patch_handle *patch )
-/*****************************************************************/
+static void BuffPatchSet( segment_id seg, dbg_patch *dpatch )
+/***********************************************************/
 {
     long_offset         off;
     segment_id          old;
@@ -110,8 +104,8 @@ static void BuffPatchSet( segment_id seg, dbg_patch_handle *patch )
     old = SetOP(seg );
     off = AskBigLocation();
     SetOP( old );
-    patch->segment = seg;
-    patch->offset = off;
+    dpatch->segment = seg;
+    dpatch->offset = off;
 }
 
 static  void    BuffWrite( cv_out *out, void *to )
@@ -534,7 +528,7 @@ extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc )
     lc  = lc;
 }
 
-static dbg_patch_handle RtnPatch[1];
+static dbg_patch    RtnPatch[1];
 
 static  name    *LocSymBP( dbg_loc loc )
 /**************************************/
@@ -663,8 +657,8 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
 extern  void    CVBlkBeg( dbg_block *blk, offset lc )
 /***************************************************/
 {
-    block_patch        *patch;
-    dbg_patch_handle   *handle;
+    block_patch        *bpatch;
+    dbg_patch          *dpatch;
     cv_out             out[1];
     offset             start;
     cg_sym_handle      sym;
@@ -672,8 +666,8 @@ extern  void    CVBlkBeg( dbg_block *blk, offset lc )
     byte               *nm;
 
 
-    patch = CGAlloc( sizeof( block_patch ) );
-    blk->patches = patch;
+    bpatch = CGAlloc( sizeof( block_patch ) );
+    blk->patches = bpatch;
     NewBuff( out, CVSyms );
     ptr = StartSym(  out, SG_BLOCK );
     ptr->pParent = 0;
@@ -684,8 +678,8 @@ extern  void    CVBlkBeg( dbg_block *blk, offset lc )
     nm = out->ptr;     /* mark name */
     CVPutNullStr( out );
     EndSym( out );
-    handle = &((block_patch *)(blk->patches))->handle;
-    BuffPatchSet( CVSyms, handle );
+    dpatch = &blk->patches->patch;
+    BuffPatchSet( CVSyms, dpatch );
     BuffWrite( out, &ptr->offset );
     sym = AskForLblSym( CurrProc->label );
     start = lc - CurrProc->targ.debug->blk->start;
@@ -701,13 +695,13 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc )
     fsize               length;
     long_offset         here;
     segment_id          old;
-    dbg_patch_handle    *handle;
+    dbg_patch           *dpatch;
     cv_out              out[1];
 
-    handle = &((block_patch *)(blk->patches))->handle;
-    old = SetOP( handle->segment );
+    dpatch = &blk->patches->patch;
+    old = SetOP( dpatch->segment );
     here = AskBigLocation();
-    SetBigLocation( handle->offset + offsetof( s_block, f.length ) );
+    SetBigLocation( dpatch->offset + offsetof( s_block, f.length ) );
     length = lc - blk->start;
     DataBytes( sizeof( length ), &length );
     SetBigLocation( here );
@@ -716,7 +710,7 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc )
     StartSym(  out, SG_END );
     EndSym( out );
     buffEnd( out );
-   CGFree( blk->patches );
+    CGFree( blk->patches );
 }
 
 extern  void    CVEpiBeg( dbg_rtn *rtn, offset lc )
@@ -732,18 +726,18 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )
     cv_out              out[1];
     fsize               proc_length;
     fsize               debug_end;
-    dbg_patch_handle    *handle;
+    dbg_patch           *dpatch;
     long_offset         here;
     segment_id          old;
 
-    handle = RtnPatch;
-    old = SetOP( handle->segment );
+    dpatch = RtnPatch;
+    old = SetOP( dpatch->segment );
     here = AskBigLocation();
-    SetBigLocation( handle->offset + offsetof( s_gproc, f.proc_length ) );
+    SetBigLocation( dpatch->offset + offsetof( s_gproc, f.proc_length ) );
     proc_length = lc - rtn->rtn_blk->start;
     DataBytes( sizeof( proc_length ), &proc_length );
-    SetBigLocation( handle->offset+ offsetof( s_gproc, f.debug_end ) );
-    debug_end   = rtn->epi_start - rtn->rtn_blk->start;
+    SetBigLocation( dpatch->offset + offsetof( s_gproc, f.debug_end ) );
+    debug_end = rtn->epi_start - rtn->rtn_blk->start;
     DataBytes( sizeof( debug_end ), &debug_end );
     SetBigLocation( here );
     SetOP( old );

@@ -31,8 +31,8 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
 #include "coderep.h"
+#include "addrname.h"
 #include "symdbg.h"
 #include "ocentry.h"
 #include "objrep.h"
@@ -41,26 +41,19 @@
 #include "jumps.h"
 #include "zoiks.h"
 #include "fppatch.h"
-#include "feprotos.h"
 #include "rtclass.h"
 #include "i86obj.h"
-#include "addrname.h"
 #include "objout.h"
 #include "cgauxinf.h"
+#include "dbsyms.h"
+#include "feprotos.h"
 
-extern  void            DbgSetBase( void );
 extern  void            OutFPPatch(fp_patches);
 extern  void            OutImport(cg_sym_handle,fix_class,bool);
 extern  void            OutRTImport(rt_class,fix_class);
 extern  void            OutRTImportRel(rt_class,fix_class,bool rel);
 extern  void            OutSelect(bool);
 extern  byte            ReverseCondition(byte);
-extern  void            DbgRtnEnd(dbg_rtn *,offset);
-extern  void            DbgBlkEnd(dbg_block *,offset);
-extern  void            DbgEpiBeg(dbg_rtn *,offset);
-extern  void            DbgProEnd(dbg_rtn *,offset);
-extern  void            DbgBlkBeg(dbg_block *,offset);
-extern  void            DbgRtnBeg(dbg_rtn *,offset);
 extern  void            TellScrapLabel(label_handle);
 extern  void            GenKillLabel(label_handle);
 extern  void            TellKeepLabel(label_handle);

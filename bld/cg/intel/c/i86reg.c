@@ -36,8 +36,8 @@
 #include "cgaux.h"
 #include "cgmem.h"
 #include "data.h"
-#include "feprotos.h"
 #include "utils.h"
+#include "feprotos.h"
 
 extern  hw_reg_set      FullReg(hw_reg_set);
 extern  bool            IsRegClass(hw_reg_set,type_class_def);

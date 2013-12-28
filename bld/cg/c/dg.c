@@ -37,7 +37,6 @@
 #include "cgstd.h"
 #include "cg.h"
 #include "bckdef.h"
-#include "cgdefs.h"
 #include "cgmem.h"
 #include "typclass.h"
 #include "typedef.h"
@@ -46,10 +45,9 @@
 #include "cgaux.h"
 #include "model.h"
 #include "cgstub.h"
-#include "dbcue.h"
-#include "feprotos.h"
-
 #include "stubdata.h"
+#include "dbsyms.h"
+#include "feprotos.h"
 
 extern  unsigned_16     TypeIdx;
 
@@ -250,8 +248,8 @@ static char *LopNames[] = {
 "",
 "IND_2",
 "IND_4",
-"IND_A286",
-"IND_A386",
+"IND_A16",
+"IND_A32",
 "ZEB",
 "ZEW",
 "MK_FP",

@@ -32,20 +32,18 @@
 
 #include "cgstd.h"
 #include "coderep.h"
+#include "typedef.h"
 #include "procdef.h"
-#include "cgdefs.h"
 #include "model.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include "typedef.h"
 #include "types.h"
-#include "dbgstrct.h"
 #include "wvdbg.h"
+#include "objout.h"
 #include "feprotos.h"
 #include "cgprotos.h"
-#include "objout.h"
 
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
@@ -83,7 +81,7 @@ extern  void    BuffEnd( segment_id seg ) {
     segment_id          old;
     byte                *buff;
     type_def            *ptr_type;
-    dbg_patch_handle    *save;
+    dbg_patch           *save;
     uint                i;
     uint                last;
     uint                size;
@@ -224,10 +222,10 @@ extern  void    BuffAddr( pointer sym ) {
 }
 
 
-extern  void    BuffForward( dbg_patch_handle *handle ) {
-/*******************************************************/
-
-    BuffRelocatable( handle, FIX_FORWARD, 0 );
+extern  void    BuffForward( dbg_patch *dpatch )
+/**********************************************/
+{
+    BuffRelocatable( dpatch, FIX_FORWARD, 0 );
 }
 
 

@@ -31,14 +31,13 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "procdef.h"
-#include "cgdefs.h"
 #include "typedef.h"
+#include "procdef.h"
 #include "types.h"
 #include "regset.h"
 #include "zoiks.h"
-#include "feprotos.h"
 #include "cgaux.h"
+#include "feprotos.h"
 
 
 extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);

@@ -31,12 +31,11 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
 #include "coderep.h"
+#include "typedef.h"
 #include "procdef.h"
 #include "model.h"
 #include "cgauxinf.h"
-#include "typedef.h"
 #include "feprotos.h"
 
 extern  pointer FindAuxInfo( name *name, aux_class request )

@@ -174,7 +174,7 @@ typedef enum {
 typedef struct abspatch {
         struct abspatch         *link;
         object                  *obj;
-        patch                   pat;
+        obj_patch               pat;
         long_offset             value;
         abspatch_flags          flags;
 } abspatch;

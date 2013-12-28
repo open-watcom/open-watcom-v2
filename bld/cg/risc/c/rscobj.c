@@ -40,7 +40,6 @@
 #include "cgmem.h"
 #include "reloc.h"
 #include "cgswitch.h"
-#include "dbcue.h"
 #include "import.h"
 #include "owl.h"
 #include "rscobj.h"
@@ -50,6 +49,7 @@
 #include "rtrtn.h"
 #include "utils.h"
 #include "objout.h"
+#include "dbsyms.h"
 #include "feprotos.h"
 
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)(x + 1))

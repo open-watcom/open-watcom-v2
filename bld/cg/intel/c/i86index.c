@@ -33,9 +33,9 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "data.h"
-#include "feprotos.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "feprotos.h"
 
 extern  opcode_entry    String[];
 

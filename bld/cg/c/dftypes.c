@@ -32,14 +32,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
+#include "typedef.h"
 #include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
-#include "typedef.h"
 #include "types.h"
 #include "zoiks.h"
-#include "dbgstrct.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <setjmp.h>

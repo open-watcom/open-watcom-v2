@@ -32,10 +32,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
+#include "addrname.h"
 #include "procdef.h"
 #include "regset.h"
-#include "addrname.h"
 #include "zoiks.h"
 #include "x87.h"
 

@@ -40,12 +40,13 @@
 #include "encode.h"
 #include "cgaux.h"
 #include "data.h"
-#include "feprotos.h"
 #include <assert.h>
 #include <stdio.h>
 #include "rtrtn.h"
 #include "cgauxinf.h"
 #include "dumpio.h"
+#include "dbsyms.h"
+#include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
 extern void DumpGen( opcode_entry * );
@@ -54,7 +55,6 @@ extern void             ObjBytes( const void *buffer, unsigned size );
 extern byte             RegTrans( hw_reg_set );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( label_handle );
-extern void             EmitDbgInfo( instruction * );
 extern void             ObjEmitSeq( byte_seq * );
 extern void             InputOC( any_oc * );
 extern opcode_defs      FlipOpcode( opcode_defs );

@@ -32,6 +32,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
+#include "cgdefs.h"
 #include "procdef.h"
 #include "score.h"
 #include "zerobits.h"

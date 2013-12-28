@@ -33,9 +33,9 @@
 #include "coderep.h"
 #include "targsys.h"
 #include "data.h"
-#include "feprotos.h"
 #include "cfloat.h"
 #include "objout.h"
+#include "feprotos.h"
 
 static    pointer_int   MemLimit;
 static    bool          IckyWicky;

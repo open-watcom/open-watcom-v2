@@ -35,9 +35,8 @@
 #include "zoiks.h"
 #include "typedef.h"
 #include "model.h"
-#include "cgdefs.h"
-#include "feprotos.h"
 #include "objout.h"
+#include "feprotos.h"
 
 extern  hw_reg_set      DisplayReg(void);
 extern  name            *DeAlias(name*);

@@ -34,8 +34,8 @@
 #include "cgdefs.h"
 #include "cg.h"
 #include "coderep.h"
-#include "feprotos.h"
 #include "utils.h"
+#include "feprotos.h"
 
 
 extern  bool    GetEnvVar( const char *what, char *buff, int len ) {

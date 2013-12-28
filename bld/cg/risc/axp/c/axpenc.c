@@ -46,6 +46,7 @@
 #include "rtrtn.h"
 #include "dumpio.h"
 #include "cgauxinf.h"
+#include "dbsyms.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
@@ -59,7 +60,6 @@ extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( label_handle );
-extern void             EmitDbgInfo(instruction*);
 extern  void            ObjEmitSeq( byte_seq * );
 extern  void            InputOC( any_oc * );
 extern  opcode_defs     FlipOpcode( opcode_defs );

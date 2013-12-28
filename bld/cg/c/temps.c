@@ -36,8 +36,8 @@
 #include "cgmem.h"
 #include "cgaux.h"
 #include "data.h"
-#include "feprotos.h"
 #include "zoiks.h"
+#include "feprotos.h"
 
 typedef struct stack_temp {
         struct stack_temp       *others;

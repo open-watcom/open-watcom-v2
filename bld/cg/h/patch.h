@@ -29,9 +29,6 @@
 *
 ****************************************************************************/
 
-#ifndef INVALID
-#include "objrep.h"
-#endif
 
 #if 0
 extern void DeadBeef();
@@ -46,8 +43,21 @@ extern void DeadBeef();
 #define PatchArea() Bytes_512 Bytes_256
 #endif
 
+typedef struct {
+#ifndef NDEBUG
+    use_info    useinfo;
+#endif
+    union {
+        tn              node;
+        instruction     *ins;
+    } u;
+    bool        in_tree;        // are we hanging in a tree somewhere?
+    bool        patched;        // has someone made a node out of us yet?
+} patch;
+
 extern  patch   *BGNewPatch( void );
-extern  an      TNPatch( tn node );
 extern  cg_name BGPatchNode( patch *hdl, type_def *tipe );
 extern  void    BGPatchInteger( patch *hdl, signed_32 value );
 extern  void    BGFiniPatch( patch *hdl );
+extern  an      TNPatch( tn node );
+extern  tn      TGPatch( patch *hdl, type_def *tipe );

@@ -185,7 +185,7 @@ _OE( _Un( ANY,  ANY,  NONE ),  V_NO,         RG_,          R_MAKECALL,     FU_NO
     RT_MAP( C7D_U8, RT_FDU87 )
 
 typedef enum {
-    #define pick(e) C##e,
+    #define pick(e,t) C##e,
     #include "typcldef.h"
     #undef pick
     OK,

@@ -39,12 +39,12 @@
 #include "makeins.h"
 #include "data.h"
 #include "display.h"
-#include "cgprotos.h"
 #include "rtrtn.h"
 #include "objout.h"
 #include "types.h"
 #include "makeaddr.h"
 #include "namelist.h"
+#include "cgprotos.h"
 
 extern  name            *AddrConst(name*,segment_id,constant_class);
 extern  name            *AllocRegName(hw_reg_set);

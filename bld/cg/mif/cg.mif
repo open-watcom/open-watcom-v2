@@ -25,7 +25,6 @@ cg_objs = &
     dataflo.obj &
     dbsyms.obj &
     dbsupp.obj &
-    dbtable.obj &
     dbtypes.obj &
     dfsyms.obj &
     dftypes.obj &

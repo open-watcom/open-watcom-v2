@@ -32,6 +32,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
+#include "cgdefs.h"
 #include "indvars.h"
 #include "model.h"
 #include "memout.h"

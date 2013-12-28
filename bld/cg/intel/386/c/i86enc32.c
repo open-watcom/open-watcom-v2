@@ -45,9 +45,9 @@
 #include "cgaux.h"
 #include "p5prof.h"
 #include "data.h"
-#include "feprotos.h"
 #include "objout.h"
 #include "i86obj.h"
+#include "feprotos.h"
 
 
 extern  void            RTCall( rt_class rtn, oc_class pop_bit );

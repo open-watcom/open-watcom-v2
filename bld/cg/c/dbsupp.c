@@ -32,17 +32,15 @@
 
 #include "cgstd.h"
 #include "coderep.h"
+#include "typedef.h"
 #include "procdef.h"
-#include "cgdefs.h"
 #include "cgmem.h"
 #include "model.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include "typedef.h"
 #include "types.h"
-#include "dbgstrct.h"
 #include "objout.h"
 #ifndef NDEBUG
 #include "echoapi.h"
