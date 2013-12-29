@@ -136,16 +136,16 @@ boolean StabGenerate(           // GENERATE A STATE TABLE
                 cgStateTableCmd( CgCmdArrayInit( se ), 0 );
                 break;
               case DTC_DLT_1 :
-                cgStateTableCmd( CgCmdDel1( se ), 0 );
+                cgStateTableCmd( CgCmdDlt1( se ), 0 );
                 break;
               case DTC_DLT_2 :
-                cgStateTableCmd( CgCmdDel2( se ), 0 );
+                cgStateTableCmd( CgCmdDlt2( se ), 0 );
                 break;
               case DTC_DLT_1_ARRAY :
-                cgStateTableCmd( CgCmdDel1Array( se ), 0 );
+                cgStateTableCmd( CgCmdDlt1Array( se ), 0 );
                 break;
               case DTC_DLT_2_ARRAY :
-                cgStateTableCmd( CgCmdDel2Array( se ), 0 );
+                cgStateTableCmd( CgCmdDlt2Array( se ), 0 );
                 break;
               case DTC_CTOR_TEST :
                 cgStateTableCmd( CgCmdCtorTest( se ), 0 );

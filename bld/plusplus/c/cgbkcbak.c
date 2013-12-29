@@ -398,14 +398,14 @@ SE* DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
     if( DtmTabular( fctl ) ) {
         if( 2 == SymFuncArgList( op_del )->num_args ) {
             se_dlt = SeAlloc( dlt2 );
-            se_dlt->del_2_array.size = elem_size;
+            se_dlt->dlt_2_array.size = elem_size;
         } else {
             se_dlt = SeAlloc( dlt1 );
         }
-        se_dlt->del_1_array.op_del = op_del;
+        se_dlt->dlt_1_array.op_del = op_del;
         var = CgVarRw( TY_POINTER, SC_AUTO );
         if( se_dlt->base.gen ) {
-            AutoRelRegister( var, &se_dlt->del_1_array.offset );
+            AutoRelRegister( var, &se_dlt->dlt_1_array.offset );
         }
         top_expr = CgExprPopType( &top_type );
         top_expr = CGLVAssign( CgSymbol( var ), top_expr, top_type );

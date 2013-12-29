@@ -263,10 +263,10 @@ union se                        // SE -- state entry: one of
     SE_FN_EXC fn_exc;           // - cmd: fn_exc
     SE_COMPONENT component;     // - cmd: component
     SE_ARRAY_INIT array_init;   // - cmd: data array initialization
-    SE_DLT_1 del_1;             // - cmd: new-delete (1 parm)
-    SE_DLT_2 del_2;             // - cmd: new-delete (2 parms)
-    SE_DLT_1 del_1_array;       // - cmd: new-delete-array (1 parm)
-    SE_DLT_2 del_2_array;       // - cmd: new-delete-array (2 parms)
+    SE_DLT_1 dlt_1;             // - cmd: new-delete (1 parm)
+    SE_DLT_2 dlt_2;             // - cmd: new-delete (2 parms)
+    SE_DLT_1 dlt_1_array;       // - cmd: new-delete-array (1 parm)
+    SE_DLT_2 dlt_2_array;       // - cmd: new-delete-array (2 parms)
     SE_CTOR_TEST ctor_test;     // - cmd: ctor-test
 };
 
@@ -326,23 +326,23 @@ typedef struct                  // CMD_CTOR_TEST
     unsigned flag_no;           // - flag number
 } CMD_CTOR_TEST;
 
-typedef struct                  // CMD_DEL_1
+typedef struct                  // CMD_DLT_1
 {   CMD_BASE base;              // - base
     SYMBOL op_del;              // - operator delete( void* )
     target_offset_t offset;     // - offset to ptr to object
     PAD_UNSIGNED
-} CMD_DEL_1;
+} CMD_DLT_1;
 
-typedef struct                  // CMD_DEL_2
+typedef struct                  // CMD_DLT_2
 {   CMD_BASE base;              // - base
     SYMBOL op_del;              // - operator delete( void*, size_t )
     target_offset_t offset;     // - offset to ptr to object
     target_offset_t size;       // - object size
     PAD_UNSIGNED
-} CMD_DEL_2;
+} CMD_DLT_2;
 
-typedef CMD_DEL_1 CMD_DEL_1_ARRAY;  // CMD_DEL_1_ARRAY
-typedef CMD_DEL_2 CMD_DEL_2_ARRAY;  // CMD_DEL_2_ARRAY
+typedef CMD_DLT_1 CMD_DLT_1_ARRAY;  // CMD_DLT_1_ARRAY
+typedef CMD_DLT_2 CMD_DLT_2_ARRAY;  // CMD_DLT_2_ARRAY
 
 
 typedef struct stab_defn        STAB_DEFN; // -- state table definition
@@ -665,16 +665,16 @@ SYMBOL CgCmdComponent(          // GET SYMBOL FOR DTC_COMP... COMMAND
 SYMBOL CgCmdCtorTest(           // GET SYMBOL FOR CTOR-TEST COMMAND
     SE* se )                    // - state entry
 ;
-SYMBOL CgCmdDel1(               // GET SYMBOL FOR DTC_DEL_1
+SYMBOL CgCmdDlt1(               // GET SYMBOL FOR DTC_DLT_1
     SE* se )                    // - state entry in state table
 ;
-SYMBOL CgCmdDel1Array(          // GET SYMBOL FOR DTC_DEL_1
+SYMBOL CgCmdDlt1Array(          // GET SYMBOL FOR DTC_DLT_1
     SE* se )                    // - state entry in state table
 ;
-SYMBOL CgCmdDel2(               // GET SYMBOL FOR DTC_DEL_2
+SYMBOL CgCmdDlt2(               // GET SYMBOL FOR DTC_DLT_2
     SE* se )                    // - state entry in state table
 ;
-SYMBOL CgCmdDel2Array(          // GET SYMBOL FOR DTC_DEL_2
+SYMBOL CgCmdDlt2Array(          // GET SYMBOL FOR DTC_DLT_2
     SE* se )                    // - state entry in state table
 ;
 SYMBOL CgCmdFnExc(              // GET SYMBOL FOR FN-EXCEPTION SPEC. COMMAND

@@ -2834,18 +2834,18 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 op_del = CgBackOpDelete( cl_type );
                 if( 1 == SymFuncArgList( op_del )->num_args ) {
                     se = SeAlloc( DTC_DLT_1 );
-                    se->del_1.op_del = op_del;
+                    se->dlt_1.op_del = op_del;
                     if( se->base.gen ) {
                         AutoRelRegister( FnCtlNewCtorPtr( fctl )
-                                       , &se->del_1.offset );
+                                       , &se->dlt_1.offset );
                     }
                 } else {
                     se = SeAlloc( DTC_DLT_2 );
-                    se->del_2.size = CgMemorySize( cl_type );
-                    se->del_2.op_del = op_del;
+                    se->dlt_2.size = CgMemorySize( cl_type );
+                    se->dlt_2.op_del = op_del;
                     if( se->base.gen ) {
                         AutoRelRegister( FnCtlNewCtorPtr( fctl )
-                                       , &se->del_2.offset );
+                                       , &se->dlt_2.offset );
                     }
                 }
                 CgCallBackNewCtored( se, fctl );

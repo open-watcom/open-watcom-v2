@@ -590,16 +590,16 @@ void DbgDumpStateEntry(         // DUMP STATE ENTRY
       case DTC_DLT_1 :
       case DTC_DLT_1_ARRAY :
         printf( "\n    op_del(%s) offset(%x)\n"
-              , DbgSymNameFull( se->del_1.op_del, &vbuf1 )
-              , se->del_1.offset );
+              , DbgSymNameFull( se->dlt_1.op_del, &vbuf1 )
+              , se->dlt_1.offset );
         VbufFree( &vbuf1 );
         break;
       case DTC_DLT_2 :
       case DTC_DLT_2_ARRAY :
         printf( "\n    op_del(%s) offset(%x) size(%x)\n"
-              , DbgSymNameFull( se->del_2.op_del, &vbuf1 )
-              , se->del_2.offset
-              , se->del_2.size );
+              , DbgSymNameFull( se->dlt_2.op_del, &vbuf1 )
+              , se->dlt_2.offset
+              , se->dlt_2.size );
         VbufFree( &vbuf1 );
         break;
     }
