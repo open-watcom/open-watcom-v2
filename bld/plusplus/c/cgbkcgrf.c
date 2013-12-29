@@ -88,7 +88,7 @@ typedef struct scope_dtor SCOPE_DTOR;
 struct scope_dtor               // SCOPE_DTOR -- delayed DTORing for a scope
 {   SCOPE_DTOR* next;           // - next in ring
     SYMBOL dtor;                // - dtor
-    DTOR_KIND kind;             // - type of dtor
+    DTORING_KIND kind;          // - type of dtor
     unsigned :0;                // - aligning
 };
 

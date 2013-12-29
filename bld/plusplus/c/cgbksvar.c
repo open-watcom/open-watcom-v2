@@ -51,21 +51,11 @@
 // Static Data
 //**********************************************************************
 
-static carve_t carveSE_SYM_AUTO;    // allocations for SE_SYM_AUTO
-static carve_t carveSE_SYM_STATIC;  // allocations for SE_SYM_STATIC
-static carve_t carveSE_SUBOBJ;      // allocations for SE_SUBOBJ
-static carve_t carveSE_TRY;         // allocations for SE_TRY
-static carve_t carveSE_CATCH;       // allocations for SE_CATCH
-static carve_t carveSE_FN_EXC;      // allocations for SE_FN_EXC
-static carve_t carveSE_SET_SV;      // allocations for SE_SET_SV
-static carve_t carveSE_TEST_FLAG;   // allocations for SE_TEST_FLAG
-static carve_t carveSE_COMPONENT;   // allocations for SE_COMPONENT
-static carve_t carveSE_ARRAY_INIT;  // allocations for SE_ARRAY_INIT
-static carve_t carveSE_DLT_1;       // allocations for SE_DLT_1
-static carve_t carveSE_DLT_2;       // allocations for SE_DLT_2
-static carve_t carveSE_DLT_1_ARRAY; // allocations for SE_DLT_1_ARRAY
-static carve_t carveSE_DLT_2_ARRAY; // allocations for SE_DLT_2_ARRAY
-static carve_t carveSE_CTOR_TEST;   // allocations for SE_CTOR_TEST
+#define pick(e,se,cmd,ring) static carve_t carveSE_ ## e;
+#include "_dtccarv.h"
+#undef pick
+static carve_t carveSE_ = NULL;
+
 static carve_t carveSTAB_DEFN;      // allocations for STAB_DEFN
 static carve_t carveSTAB_CTL;       // allocations for STAB_CTL
 
@@ -74,37 +64,11 @@ static carve_t carveSTAB_CTL;       // allocations for STAB_CTL
 // internal support
 //**********************************************************************
 
-#define carver_DTC_ARRAY        NULL
-#define carver_DTC_SYM_AUTO     &carveSE_SYM_AUTO
-#define carver_DTC_SYM_STATIC   &carveSE_SYM_STATIC
-#define carver_DTC_SUBOBJ       &carveSE_SUBOBJ
-#define carver_DTC_TEST_FLAG    &carveSE_TEST_FLAG
-#define carver_DTC_COMP_VBASE   &carveSE_COMPONENT
-#define carver_DTC_COMP_DBASE   &carveSE_COMPONENT
-#define carver_DTC_COMP_MEMB    &carveSE_COMPONENT
-#define carver_DTC_ACTUAL_VBASE &carveSE_COMPONENT
-#define carver_DTC_ACTUAL_DBASE &carveSE_COMPONENT
-#define carver_DTC_TRY          &carveSE_TRY
-#define carver_DTC_CATCH        &carveSE_CATCH
-#define carver_DTC_FN_EXC       &carveSE_FN_EXC
-#define carver_DTC_SET_SV       &carveSE_SET_SV
-#define carver_DTC_ARRAY_INIT   &carveSE_ARRAY_INIT
-#define carver_DTC_DLT_1        &carveSE_DLT_1
-#define carver_DTC_DLT_2        &carveSE_DLT_2
-#define carver_DTC_DLT_1_ARRAY  &carveSE_DLT_1_ARRAY
-#define carver_DTC_DLT_2_ARRAY  &carveSE_DLT_2_ARRAY
-#define carver_DTC_CTOR_TEST    &carveSE_CTOR_TEST
-
-static carve_t* seCarvers[] = {
-    #define DTC_DEF( a ) carver_ ## a
-    #define DTC_MRK( a )
-    #define DTC_VAL( a, b ) DTC_DEF( a )
-    DTC_DEFS
-    #undef  DTC_DEF
-    #undef  DTC_MRK
-    #undef  DTC_VAL
+static carve_t *seCarvers[] = {
+    #define pick(a,p) &carveSE_ ## p,
+    #include "_dtcdefs.h"
+    #undef pick
 };
-
 
 #ifndef NDEBUG
 static carve_t seCarver(        // GET CARVER FOR AN SE TYPE
@@ -472,13 +436,11 @@ char const * DbgSeName          // DUMP DTC_... name
     ( unsigned se_type )        // - type of state entry
 {
     static char* dtc_names[] = {// - names
-        #define DTC_DEF( a ) # a
-        #define DTC_MRK( a )
-        #define DTC_VAL( a, b ) DTC_DEF(a)
-        DTC_DEFS
-        #undef  DTC_DEF
-        #undef  DTC_MRK
-        #undef  DTC_VAL
+        #define strx(s) #s
+        #define pick(a,p) strx( DTC_ ## a ),
+        #include "_dtcdefs.h"
+        #undef pick
+        #undef strx
     };
     char const * sv_name;       // - name to be returned
     if( se_type >= MAX_DTC_DEF ) {
@@ -728,21 +690,11 @@ static void stabInit(           // INITIALIZATION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-    carveSE_SYM_STATIC  = CarveCreate( sizeof( SE_SYM_STATIC ),     32 );
-    carveSE_SYM_AUTO    = CarveCreate( sizeof( SE_SYM_AUTO ),       32 );
-    carveSE_SUBOBJ      = CarveCreate( sizeof( SE_SUBOBJ ),         16 );
-    carveSE_TRY         = CarveCreate( sizeof( SE_TRY ),            4  );
-    carveSE_CATCH       = CarveCreate( sizeof( SE_CATCH ),          8  );
-    carveSE_FN_EXC      = CarveCreate( sizeof( SE_FN_EXC ),         4  );
-    carveSE_SET_SV      = CarveCreate( sizeof( SE_SET_SV ),         8  );
-    carveSE_TEST_FLAG   = CarveCreate( sizeof( SE_TEST_FLAG ),      16 );
-    carveSE_COMPONENT   = CarveCreate( sizeof( SE_COMPONENT ),      16 );
-    carveSE_ARRAY_INIT  = CarveCreate( sizeof( SE_ARRAY_INIT ),     4  );
-    carveSE_DLT_1       = CarveCreate( sizeof( SE_DLT_1 ),          4  );
-    carveSE_DLT_2       = CarveCreate( sizeof( SE_DLT_2 ),          4  );
-    carveSE_DLT_1_ARRAY = CarveCreate( sizeof( SE_DLT_1_ARRAY ),    4  );
-    carveSE_DLT_2_ARRAY = CarveCreate( sizeof( SE_DLT_2_ARRAY ),    4  );
-    carveSE_CTOR_TEST   = CarveCreate( sizeof( SE_CTOR_TEST ),      4  );
+
+    #define pick(e,se,cmd,ring) carveSE_ ## e = CarveCreate( sizeof( SE_ ## e ), se );
+    #include "_dtccarv.h"
+    #undef pick
+
     carveSTAB_DEFN      = CarveCreate( sizeof( STAB_DEFN ),         8  );
     carveSTAB_CTL       = CarveCreate( sizeof( STAB_CTL ),          8  );
 }
@@ -752,21 +704,11 @@ static void stabFini(           // COMPLETION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-    CarveDestroy( carveSE_SYM_AUTO );
-    CarveDestroy( carveSE_SYM_STATIC );
-    CarveDestroy( carveSE_SUBOBJ );
-    CarveDestroy( carveSE_TRY );
-    CarveDestroy( carveSE_CATCH );
-    CarveDestroy( carveSE_FN_EXC );
-    CarveDestroy( carveSE_SET_SV );
-    CarveDestroy( carveSE_TEST_FLAG );
-    CarveDestroy( carveSE_COMPONENT );
-    CarveDestroy( carveSE_ARRAY_INIT );
-    CarveDestroy( carveSE_DLT_1 );
-    CarveDestroy( carveSE_DLT_2 );
-    CarveDestroy( carveSE_DLT_1_ARRAY );
-    CarveDestroy( carveSE_DLT_2_ARRAY );
-    CarveDestroy( carveSE_CTOR_TEST );
+
+    #define pick(e,se,cmd,ring) CarveDestroy( carveSE_ ## e );
+    #include "_dtccarv.h"
+    #undef pick
+
     CarveDestroy( carveSTAB_DEFN );
     CarveDestroy( carveSTAB_CTL );
 }

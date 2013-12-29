@@ -55,31 +55,15 @@ enum                                    // INDICES FOR STATE-TABLE COMMANDS
 ,   DTOR_CMD_INDEX_SETSV                // - set sv (must be last)
 };
 
+#define ONLY_DTC_CMDS
 
-static carve_t carveCMD_SET_SV;         // allocations for CMD_SET_SV
-static carve_t carveCMD_TEST_FLAG;      // allocations for CMD_TEST_FLAG
-static carve_t carveCMD_TRY;            // allocations for CMD_TRY
-static carve_t carveCMD_FN_EXC;         // allocations for CMD_FN_EXC
-static carve_t carveCMD_COMPONENT;      // allocations for CMD_COMPONENT
-static carve_t carveCMD_ARRAY_INIT;     // allocations for CMD_ARRAY_INIT
-static carve_t carveCMD_DLT_1;          // allocations for CMD_DLT_1
-static carve_t carveCMD_DLT_2;          // allocations for CMD_DLT_2
-static carve_t carveCMD_DLT_1_ARRAY;    // allocations for CMD_DLT_1_ARRAY
-static carve_t carveCMD_DLT_2_ARRAY;    // allocations for CMD_DLT_2_ARRAY
-static carve_t carveCMD_CTOR_TEST;      // allocations for CMD_CTOR_TEST
+#define pick(e,se,cmd,ring) static carve_t carveCMD_ ## e; // allocations for CMD_ ## e
+#include "_dtccarv.h"
+#undef pick
 
-static CMD_SET_SV* ringCmdsSetSv;       // commands: SET_SV
-static CMD_TEST_FLAG* ringCmdsTestFlag; // commands: TEST_FLAG
-static CMD_COMPONENT* ringCmdsComponent;// commands: COMPONENT (function)
-static CMD_TRY* ringCmdsTry;            // commands: TRY
-static CMD_FN_EXC* ringCmdsFnExc;       // commands: FN_EXC
-static CMD_DLT_1* ringCmdsDlt1;         // commands: DLT_1
-static CMD_DLT_2* ringCmdsDlt2;         // commands: DLT_2
-static CMD_DLT_1* ringCmdsDlt1Array;    // commands: DLT_1_ARRAY
-static CMD_DLT_2* ringCmdsDlt2Array;    // commands: DLT_2_ARRAY
-static CMD_ARRAY_INIT* ringCmdsArrayInit;//commands: array initialization
-static CMD_CTOR_TEST* ringCmdsCtorTest; // commands: CTOR_TEST
-
+#define pick(e,se,cmd,ring) static CMD_ ## e *ringCmds ## ring; // commands: e
+#include "_dtccarv.h"
+#undef pick
 
 static void* stateTableCmdAlloc(// ALLOCATE STATE-TABLE CMD
     carve_t allocation,         // - allocation
@@ -676,17 +660,9 @@ static void cgGenerateCmdsCtorTest( // EMIT CTOR_TEST CMDS
 void CgCmdsGenerate(            // GENERATE DTOR CMD.S
     void )
 {
-    cgGenerateCmdsSetSv();
-    cgGenerateCmdsTestFlag();
-    cgGenerateCmdsComponent();
-    cgGenerateCmdsTry();
-    cgGenerateCmdsFnExc();
-    cgGenerateCmdsArrayInit();
-    cgGenerateCmdsDlt1();
-    cgGenerateCmdsDlt2();
-    cgGenerateCmdsDlt1Array();
-    cgGenerateCmdsDlt2Array();
-    cgGenerateCmdsCtorTest();
+    #define pick(e,se,cmd,ring) cgGenerateCmds ## ring ## ();
+    #include "_dtccarv.h"
+    #undef pick
 }
 
 
@@ -694,28 +670,14 @@ static void cgCmdInit(          // INITIALIZATION FOR CGBKCMDS.C
     INITFINI* def )             // - init/fini definition
 {
     def = def;
-    ringCmdsSetSv = NULL;
-    ringCmdsTestFlag = NULL;
-    ringCmdsComponent = NULL;
-    ringCmdsTry = NULL;
-    ringCmdsFnExc = NULL;
-    ringCmdsDlt1 = NULL;
-    ringCmdsDlt2 = NULL;
-    ringCmdsDlt1Array = NULL;
-    ringCmdsDlt2Array = NULL;
-    ringCmdsArrayInit = NULL;
-    ringCmdsCtorTest = NULL;
-    carveCMD_TRY         = CarveCreate( sizeof( CMD_TRY ),           4  );
-    carveCMD_FN_EXC      = CarveCreate( sizeof( CMD_FN_EXC ),        4  );
-    carveCMD_SET_SV      = CarveCreate( sizeof( CMD_SET_SV ),        8  );
-    carveCMD_TEST_FLAG   = CarveCreate( sizeof( CMD_TEST_FLAG ),     16 );
-    carveCMD_COMPONENT   = CarveCreate( sizeof( CMD_COMPONENT ),     32 );
-    carveCMD_ARRAY_INIT  = CarveCreate( sizeof( CMD_ARRAY_INIT ),    8  );
-    carveCMD_DLT_1       = CarveCreate( sizeof( CMD_DLT_1 ),         4  );
-    carveCMD_DLT_2       = CarveCreate( sizeof( CMD_DLT_2 ),         4  );
-    carveCMD_DLT_1_ARRAY = CarveCreate( sizeof( CMD_DLT_1_ARRAY ),   4  );
-    carveCMD_DLT_2_ARRAY = CarveCreate( sizeof( CMD_DLT_2_ARRAY ),   4  );
-    carveCMD_CTOR_TEST   = CarveCreate( sizeof( CMD_CTOR_TEST ),     1  );
+
+    #define pick(e,se,cmd,ring) ringCmds ## ring = NULL;
+    #include "_dtccarv.h"
+    #undef pick
+
+    #define pick(e,se,cmd,ring) carveCMD_ ## e = CarveCreate( sizeof( CMD_ ## e ), cmd );
+    #include "_dtccarv.h"
+    #undef pick
 }
 
 
@@ -723,18 +685,12 @@ static void cgCmdFini(          // COMPLETION FOR CGBKCMDS.C
     INITFINI* def )             // - init/fini definition
 {
     def = def;
-    CarveDestroy( carveCMD_TRY );
-    CarveDestroy( carveCMD_FN_EXC );
-    CarveDestroy( carveCMD_SET_SV );
-    CarveDestroy( carveCMD_TEST_FLAG );
-    CarveDestroy( carveCMD_COMPONENT );
-    CarveDestroy( carveCMD_ARRAY_INIT );
-    CarveDestroy( carveCMD_DLT_1 );
-    CarveDestroy( carveCMD_DLT_2 );
-    CarveDestroy( carveCMD_DLT_1_ARRAY );
-    CarveDestroy( carveCMD_DLT_2_ARRAY );
-    CarveDestroy( carveCMD_CTOR_TEST );
+
+    #define pick(e,se,cmd,ring) CarveDestroy( carveCMD_ ## e );
+    #include "_dtccarv.h"
+    #undef pick
 }
 
+#undef ONLY_DTC_CMDS
 
 INITDEFN( cg_cmds, cgCmdInit, cgCmdFini )
