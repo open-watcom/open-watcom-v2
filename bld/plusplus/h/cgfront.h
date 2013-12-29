@@ -47,12 +47,12 @@
 #define BIT_VECT( b1, b2, b3, b4, b5, b6, b7, b8 ) \
     b8 + b7*2 + b6*4 + b5*8 + b4*16 + b3*32 + b2*64 +b1*128
 
-typedef enum                    // DTOR_KIND -- kind of DTORing to be applied
+typedef enum                    // DTORING_KIND -- kind of DTORing to be applied
 {   DTORING_NONE                // - none
 ,   DTORING_SCOPE               // - auto variable or component in DTOR
 ,   DTORING_TEMP                // - temporary variable
 ,   DTORING_COMPONENT           // - component
-} DTOR_KIND;
+} DTORING_KIND;
 
 enum                            // DEFINE TYPE OF POINTER CONVERSION
 {   CNVPTR_DERIVED_ONLY    = 0  // - can only convert derived
@@ -476,7 +476,7 @@ void CgFrontReturnSymbol(       // SET RETURN SYMBOL
 void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
     SYMBOL fun,                 // - function called
     SYMBOL dtor,                // - dtor, when function is ctor
-    DTOR_KIND kind )            // - kind of dtoring
+    DTORING_KIND kind )         // - kind of dtoring
 ;
 void CgFrontStatInit(           // START OF STATIC-INIT TEST IN FUNCTION
     void )

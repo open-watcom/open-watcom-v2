@@ -745,7 +745,7 @@ void CgFrontReturnSymbol(       // SET RETURN SYMBOL
 void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
     SYMBOL fun,                 // - function called
     SYMBOL dtor,                // - dtor, when function is ctor
-    DTOR_KIND kind )            // - kind of dtoring
+    DTORING_KIND kind )         // - kind of dtoring
 {
     boolean keep_scope;         // - TRUE ==> keep the current scope
 
@@ -763,7 +763,7 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
             CgFrontCodePtr( IC_SCOPE_CALL_CDTOR, dtor );
             keep_scope = TRUE;
             break;
-          DbgDefault( "CgFrontScopeCall -- bad DTOR_KIND" );
+          DbgDefault( "CgFrontScopeCall -- bad DTORING_KIND" );
         }
     }
     if( fun != NULL && ( fun->flag & SF_NO_LONGJUMP ) ) {

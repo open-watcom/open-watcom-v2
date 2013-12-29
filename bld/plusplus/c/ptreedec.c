@@ -787,7 +787,7 @@ void PtdGenAfter                // GENERATE AFTER NODE PROCESSED
     PTD* ptd;                   // - current decoration
     SYMBOL fun;                 // - function called
     SYMBOL dtor;                // - destructor
-    DTOR_KIND kind;             // - kind of dtoring
+    DTORING_KIND kind;          // - kind of dtoring
 
     fun = NULL;
     dtor = NULL;
