@@ -73,10 +73,10 @@ static CMD_TEST_FLAG* ringCmdsTestFlag; // commands: TEST_FLAG
 static CMD_COMPONENT* ringCmdsComponent;// commands: COMPONENT (function)
 static CMD_TRY* ringCmdsTry;            // commands: TRY
 static CMD_FN_EXC* ringCmdsFnExc;       // commands: FN_EXC
-static CMD_DLT_1* ringCmdsDel1;         // commands: DLT_1
-static CMD_DLT_2* ringCmdsDel2;         // commands: DLT_2
-static CMD_DLT_1* ringCmdsDel1Array;    // commands: DLT_1_ARRAY
-static CMD_DLT_2* ringCmdsDel2Array;    // commands: DLT_2_ARRAY
+static CMD_DLT_1* ringCmdsDlt1;         // commands: DLT_1
+static CMD_DLT_2* ringCmdsDlt2;         // commands: DLT_2
+static CMD_DLT_1* ringCmdsDlt1Array;    // commands: DLT_1_ARRAY
+static CMD_DLT_2* ringCmdsDlt2Array;    // commands: DLT_2_ARRAY
 static CMD_ARRAY_INIT* ringCmdsArrayInit;//commands: array initialization
 static CMD_CTOR_TEST* ringCmdsCtorTest; // commands: CTOR_TEST
 
@@ -234,7 +234,7 @@ SYMBOL CgCmdDlt1(               // GET SYMBOL FOR DTC_DLT_1
     DbgVerify( UNDEF_AREL != se->dlt_1.offset
              , "CgCmdDlt1 -- no offset for DLT_1" );
     cmd = NULL;
-    RingIterBeg( ringCmdsDel1, cur ) {
+    RingIterBeg( ringCmdsDlt1, cur ) {
         if( cur->op_del == se->dlt_1.op_del
          && cur->offset == se->dlt_1.offset ) {
             cmd = cur;
@@ -243,7 +243,7 @@ SYMBOL CgCmdDlt1(               // GET SYMBOL FOR DTC_DLT_1
     } RingIterEnd( cur )
     if( cmd == NULL ) {
         cmd = stateTableCmdAllocVar( carveCMD_DLT_1
-                                   , &ringCmdsDel1
+                                   , &ringCmdsDlt1
                                    , 1 );
         cmd->op_del = se->dlt_1.op_del;
         cmd->offset = CgOffsetRw( se->dlt_1.offset );
@@ -261,7 +261,7 @@ SYMBOL CgCmdDlt1Array(          // GET SYMBOL FOR DTC_DLT_1
     DbgVerify( UNDEF_AREL != se->dlt_1_array.offset
              , "CgCmdDlt1 -- no offset for DLT_1" );
     cmd = NULL;
-    RingIterBeg( ringCmdsDel1Array, cur ) {
+    RingIterBeg( ringCmdsDlt1Array, cur ) {
         if( cur->op_del == se->dlt_1_array.op_del
          && cur->offset == se->dlt_1_array.offset ) {
             cmd = cur;
@@ -270,7 +270,7 @@ SYMBOL CgCmdDlt1Array(          // GET SYMBOL FOR DTC_DLT_1
     } RingIterEnd( cur )
     if( cmd == NULL ) {
         cmd = stateTableCmdAllocVar( carveCMD_DLT_1_ARRAY
-                                   , &ringCmdsDel1Array
+                                   , &ringCmdsDlt1Array
                                    , 1 );
         cmd->op_del = se->dlt_1_array.op_del;
         cmd->offset = CgOffsetRw( se->dlt_1_array.offset );
@@ -288,7 +288,7 @@ SYMBOL CgCmdDlt2(               // GET SYMBOL FOR DTC_DLT_2
     DbgVerify( UNDEF_AREL != se->dlt_2.offset
              , "CgCmdDlt2 -- no offset for DLT_2" );
     cmd = NULL;
-    RingIterBeg( ringCmdsDel2, cur ) {
+    RingIterBeg( ringCmdsDlt2, cur ) {
         if( cur->op_del == se->dlt_2.op_del
          && cur->offset == se->dlt_2.offset
          && cur->size   == se->dlt_2.size ) {
@@ -298,7 +298,7 @@ SYMBOL CgCmdDlt2(               // GET SYMBOL FOR DTC_DLT_2
     } RingIterEnd( cur )
     if( cmd == NULL ) {
         cmd = stateTableCmdAllocVar( carveCMD_DLT_2
-                                   , &ringCmdsDel2
+                                   , &ringCmdsDlt2
                                    , 1 );
         cmd->op_del = se->dlt_2.op_del;
         cmd->offset = CgOffsetRw( se->dlt_2.offset );
@@ -317,7 +317,7 @@ SYMBOL CgCmdDlt2Array(          // GET SYMBOL FOR DTC_DLT_2
     DbgVerify( UNDEF_AREL != se->dlt_2_array.offset
              , "CgCmdDlt2 -- no offset for DLT_2" );
     cmd = NULL;
-    RingIterBeg( ringCmdsDel2Array, cur ) {
+    RingIterBeg( ringCmdsDlt2Array, cur ) {
         if( cur->op_del == se->dlt_2_array.op_del
          && cur->offset == se->dlt_2_array.offset
          && cur->size   == se->dlt_2_array.size ) {
@@ -327,7 +327,7 @@ SYMBOL CgCmdDlt2Array(          // GET SYMBOL FOR DTC_DLT_2
     } RingIterEnd( cur )
     if( cmd == NULL ) {
         cmd = stateTableCmdAllocVar( carveCMD_DLT_2_ARRAY
-                                   , &ringCmdsDel2Array
+                                   , &ringCmdsDlt2Array
                                    , 1 );
         cmd->op_del = se->dlt_2_array.op_del;
         cmd->offset = CgOffsetRw( se->dlt_2_array.offset );
@@ -553,12 +553,12 @@ static void cgGenerateCmdsArrayInit( // EMIT ARRAY-INIT CMDS
 }
 
 
-static void cgGenerateCmdsDel1( // EMIT DELETE-1 CMDS
+static void cgGenerateCmdsDlt1( // EMIT DELETE-1 CMDS
     void )
 {
     CMD_DLT_1* curr;            // - current command
 
-    RingIterBegSafe( ringCmdsDel1, curr ) {
+    RingIterBegSafe( ringCmdsDlt1, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_1 ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
@@ -577,12 +577,12 @@ static void cgGenerateCmdsDel1( // EMIT DELETE-1 CMDS
 }
 
 
-static void cgGenerateCmdsDel1Array( // EMIT DELETE-1-ARRAY CMDS
+static void cgGenerateCmdsDlt1Array( // EMIT DELETE-1-ARRAY CMDS
     void )
 {
     CMD_DLT_1* curr;            // - current command
 
-    RingIterBegSafe( ringCmdsDel1Array, curr ) {
+    RingIterBegSafe( ringCmdsDlt1Array, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_1_ARRAY ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
@@ -601,12 +601,12 @@ static void cgGenerateCmdsDel1Array( // EMIT DELETE-1-ARRAY CMDS
 }
 
 
-static void cgGenerateCmdsDel2( // EMIT DELETE-2 CMDS
+static void cgGenerateCmdsDlt2( // EMIT DELETE-2 CMDS
     void )
 {
     CMD_DLT_2* curr;            // - current command
 
-    RingIterBegSafe( ringCmdsDel2, curr ) {
+    RingIterBegSafe( ringCmdsDlt2, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_2 ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
@@ -627,12 +627,12 @@ static void cgGenerateCmdsDel2( // EMIT DELETE-2 CMDS
 }
 
 
-static void cgGenerateCmdsDel2Array( // EMIT DELETE-2-ARRAY CMDS
+static void cgGenerateCmdsDlt2Array( // EMIT DELETE-2-ARRAY CMDS
     void )
 {
     CMD_DLT_2* curr;            // - current command
 
-    RingIterBegSafe( ringCmdsDel2Array, curr ) {
+    RingIterBegSafe( ringCmdsDlt2Array, curr ) {
         if( cgGenerateCmdBase( &curr->base, DTC_DLT_2_ARRAY ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
@@ -682,10 +682,10 @@ void CgCmdsGenerate(            // GENERATE DTOR CMD.S
     cgGenerateCmdsTry();
     cgGenerateCmdsFnExc();
     cgGenerateCmdsArrayInit();
-    cgGenerateCmdsDel1();
-    cgGenerateCmdsDel2();
-    cgGenerateCmdsDel1Array();
-    cgGenerateCmdsDel2Array();
+    cgGenerateCmdsDlt1();
+    cgGenerateCmdsDlt2();
+    cgGenerateCmdsDlt1Array();
+    cgGenerateCmdsDlt2Array();
     cgGenerateCmdsCtorTest();
 }
 
@@ -699,10 +699,10 @@ static void cgCmdInit(          // INITIALIZATION FOR CGBKCMDS.C
     ringCmdsComponent = NULL;
     ringCmdsTry = NULL;
     ringCmdsFnExc = NULL;
-    ringCmdsDel1 = NULL;
-    ringCmdsDel2 = NULL;
-    ringCmdsDel1Array = NULL;
-    ringCmdsDel2Array = NULL;
+    ringCmdsDlt1 = NULL;
+    ringCmdsDlt2 = NULL;
+    ringCmdsDlt1Array = NULL;
+    ringCmdsDlt2Array = NULL;
     ringCmdsArrayInit = NULL;
     ringCmdsCtorTest = NULL;
     carveCMD_TRY         = CarveCreate( sizeof( CMD_TRY ),           4  );
