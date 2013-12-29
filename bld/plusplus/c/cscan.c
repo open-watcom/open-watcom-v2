@@ -170,8 +170,8 @@ int ReScanToken( void )
 {
     int saved_currchar;
     int (*saved_nextchar)(void);
-    int saved_line;
-    int saved_column;
+    LINE_NO saved_line;
+    COLUMN_NO saved_column;
 
     saved_line = TokenLine;
     saved_column = TokenColumn;
@@ -309,7 +309,7 @@ static void scanCComment( void )
 {
     int c;
     int prev_char;
-    unsigned start_line;
+    LINE_NO start_line;
 
     SrcFileCurrentLocation();
     start_line = TokenLine;

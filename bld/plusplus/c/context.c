@@ -52,7 +52,7 @@ static char const *switch_addr; // - - address of switch
                                 // - FORCED_INCS, SOURCE, FUNC_GEN, CG_FUNC
 static SYMBOL func;             // - - function being generated
 #ifndef NDEBUG
-static unsigned line;           // - - current line
+static LINE_NO line;            // - - current line
 #endif
 
                                 // - FORCED_INCS, SOURCE
@@ -123,7 +123,7 @@ void CtxFunction(               // SET FUNCTION BEING PROCESSED
 
 #ifndef NDEBUG
 void CtxLine(                   // SET LINE BEING PROCESSED
-    unsigned curr )             // - current line no.
+    LINE_NO curr )              // - current line no.
 {
     line = curr;
 }

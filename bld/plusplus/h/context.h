@@ -103,7 +103,7 @@ void CtxSwitchAddr(             // SET ADDRESS OF CURRENT SWITCH
 
 #ifndef NDEBUG
 void CtxLine(                   // SET LINE BEING PROCESSED
-    unsigned curr )             // - current line no.
+    LINE_NO curr )              // - current line no.
 ;
 void CtxScanToken(              // SET TOKEN LOCATION FOR SCANNED TOKEN
     void )

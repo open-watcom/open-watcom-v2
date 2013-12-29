@@ -798,13 +798,14 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
             case IC_BR_DCL_MACRO :      // DECLARE: MACRO
                                         // - saved MACVALUE
             {
-                MACVALUE const * mptr = ins->value.pvalue;
-                char const *     string = BrinfMacValueName( mptr );
+                MACVALUE const   *mptr = ins->value.pvalue;
+                char const       *string = BrinfMacValueName( mptr );
                 unsigned         num_parms = BrinfMacValueParmCount( mptr );
                 unsigned         length;
-                uint_8 const *   defn = BrinfMacValueDefn( mptr, &length );
-                TOKEN_LOCN const * locn = BrinfMacValueLocn( mptr );
-                uint_32          line, column;
+                uint_8 const     *defn = BrinfMacValueDefn( mptr, &length );
+                TOKEN_LOCN const *locn = BrinfMacValueLocn( mptr );
+                LINE_NO          line;
+                COLUMN_NO        column;
 
                 if( defn != NULL ){
                     line = locn->line;
