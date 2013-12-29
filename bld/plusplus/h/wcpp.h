@@ -78,45 +78,14 @@ enum
 #define RA_CDISP        0x01    // RA_CDISP -- apply ctor-disp adjustment
 #define RA_RUNTIME      0x01    // keep these bits for runtime structure
 
-
-
 #define MAX_SET_SV  32                  // max. static set_sv commands
 
-#define DTC_DEFS                                                             \
-                                        /* commands:                       */\
-  DTC_DEF( DTC_ARRAY                  ) /* - array object                  */\
-, DTC_DEF( DTC_SET_SV                 ) /* - set state variable            */\
-, DTC_DEF( DTC_TRY                    ) /* - TRY start                     */\
-, DTC_DEF( DTC_CATCH                  ) /* - CATCH block end               */\
-, DTC_DEF( DTC_FN_EXC                 ) /* - function exception spec       */\
-, DTC_DEF( DTC_TEST_FLAG              ) /* - select state from flag        */\
-, DTC_DEF( DTC_COMP_VBASE             ) /* - component : virtual base      */\
-, DTC_DEF( DTC_COMP_DBASE             ) /* - component : direct base       */\
-, DTC_DEF( DTC_COMP_MEMB              ) /* - component : member            */\
-, DTC_DEF( DTC_ARRAY_INIT             ) /* - array initialization          */\
-, DTC_DEF( DTC_DLT_1                  ) /* - delete: op del(void*)         */\
-, DTC_DEF( DTC_DLT_2                  ) /* - delete: op del(void*,size_t)  */\
-, DTC_DEF( DTC_DLT_1_ARRAY            ) /* - dlt-array:op del(void*)       */\
-, DTC_DEF( DTC_DLT_2_ARRAY            ) /* - dlt-array:op del(void*,size_t)*/\
-, DTC_DEF( DTC_CTOR_TEST              ) /* - test if ctor'ed               */\
-, DTC_DEF( DTC_ACTUAL_VBASE           ) /* - vbase always dtor'ed          */\
-, DTC_DEF( DTC_ACTUAL_DBASE           ) /* - dbase always dtor'ed          */\
-  DTC_MRK( DTC_COUNT                  ) /* # of commands                   */\
-                                        /* following are used internally   */\
-, DTC_VAL( DTC_SYM_STATIC, DTC_COUNT  ) /* - dtor static symbol            */\
-, DTC_DEF( DTC_SYM_AUTO               ) /* - dtor auto symbol              */\
-, DTC_DEF( DTC_SUBOBJ                 ) /* - sub-object                    */
-
-enum {
-    #define DTC_DEF( a ) a
-    #define DTC_MRK( a ) , DTC_DEF( a )
-    #define DTC_VAL( a, b ) a = b
-    DTC_DEFS
-    #undef  DTC_DEF
-    #undef  DTC_MRK
-    #undef  DTC_VAL
-,   MAX_DTC_DEF
-};
+typedef enum {
+    #define pick(a,p) DTC_ ## a,
+    #include "_dtcdefs.h"
+    #undef pick
+    MAX_DTC_DEF
+} DTC_KIND;
 
 typedef uint_8 DTOR_CMD_CODE;
 
