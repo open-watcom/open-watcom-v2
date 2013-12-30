@@ -831,7 +831,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         break;
     case AC:
         if( asgn_check ) {
-            unsigned long   fsize_1 = 0, fsize_2 = 0;
+            unsigned    fsize_1 = 0, fsize_2 = 0;
 
             if( TypeSizeEx( typ2, &fsize_2 ) > TypeSizeEx( typ1, &fsize_1 ) ) {
                 CWarnP1( parmno, WARN_LOSE_PRECISION, ERR_LOSE_PRECISION );

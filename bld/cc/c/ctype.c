@@ -876,10 +876,8 @@ unsigned GetTypeAlignment( TYPEPTR typ )
 }
 
 
-local unsigned long FieldAlign( unsigned long next_offset,
-                                FIELDPTR field,
-                                unsigned int *worst_alignment )
-{                               /* 05-jan-89 */
+local unsigned FieldAlign( unsigned next_offset, FIELDPTR field, unsigned *worst_alignment )
+{
     unsigned    pack_adjustment;
     unsigned    align;
 
@@ -892,7 +890,7 @@ local unsigned long FieldAlign( unsigned long next_offset,
         *worst_alignment = align;
     }
     if( align != 1 ) {
-        unsigned long old_offset = next_offset;
+        unsigned old_offset = next_offset;
 
         next_offset = _RoundUp( next_offset, align );
         if( CompFlags.slack_byte_warning && (next_offset - old_offset) ) {
@@ -983,16 +981,16 @@ static void AdjFieldTypeNode( FIELDPTR field, type_modifiers decl_mod )
     }
 }
 
-local unsigned long GetFields( TYPEPTR decl )
+local unsigned GetFields( TYPEPTR decl )
 {
-    unsigned long       start = 0;
+    unsigned            start = 0;
     TYPEPTR             typ;
     decl_state          state;
     FIELDPTR            field;
     unsigned            scalar_size;
     unsigned            bits_available, bits_total;
-    unsigned long       struct_size;
-    unsigned long       next_offset;
+    unsigned            struct_size;
+    unsigned            next_offset;
     int                 width;
     unsigned int        worst_alignment;                /* 24-jul-91 */
     char                unqualified_type, prev_unqualified_type;
@@ -1200,14 +1198,14 @@ local void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
 }
 
 
-local unsigned long GetComplexFields( TYPEPTR decl )
+local unsigned GetComplexFields( TYPEPTR decl )
 {
-    unsigned long       start = 0;
+    unsigned            start = 0;
     TYPEPTR             typ;
     decl_state          state;
     FIELDPTR            field;
-    unsigned long       struct_size;
-    unsigned long       next_offset;
+    unsigned            struct_size;
+    unsigned            next_offset;
     unsigned int        worst_alignment;
     decl_info           info;
 
@@ -1501,17 +1499,18 @@ TYPEPTR FuncNode( TYPEPTR return_typ, type_modifiers flag, TYPEPTR *parm_types )
 }
 
 /* CarlYoung 31-Oct-03 */
-unsigned long TypeSize( TYPEPTR typ )
+unsigned TypeSize( TYPEPTR typ )
 {
     return( TypeSizeEx( typ, NULL ) );
 }
 
 /* CarlYoung 31-Oct-03 */
-unsigned long TypeSizeEx( TYPEPTR typ, unsigned long *pFieldWidth )
+unsigned TypeSizeEx( TYPEPTR typ, unsigned *pFieldWidth )
 {
-    unsigned long   size;
+    unsigned    size;
 
-    if( typ == NULL ) return( 0 );                      /* 22-feb-90 */
+    if( typ == NULL )
+        return( 0 );
     SKIP_TYPEDEFS( typ );
     switch( typ->decl_type ) {
     case TYPE_CHAR:
@@ -1596,7 +1595,7 @@ unsigned long TypeSizeEx( TYPEPTR typ, unsigned long *pFieldWidth )
  * requested size if 'exact' is true, or the next larger type will be
  * returned (eg. 64-bit integer if 6 byte size is requested).
  */
-TYPEPTR GetIntTypeBySize( unsigned long size, bool sign, bool exact )
+TYPEPTR GetIntTypeBySize( unsigned size, bool sign, bool exact )
 {
     static const DATA_TYPE  s_types[] = { TYPE_CHAR, TYPE_SHORT, TYPE_INT, TYPE_LONG, TYPE_LONG64 };
     static const DATA_TYPE  u_types[] = { TYPE_UCHAR, TYPE_USHORT, TYPE_UINT, TYPE_ULONG, TYPE_ULONG64 };

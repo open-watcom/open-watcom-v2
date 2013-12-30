@@ -46,7 +46,7 @@
 
 // DATA:
 
-global  int     OptSize;         /* 100 => make pgm small as possible */
+global  int     OptSize;                /* 100 => make pgm small as possible */
 
 #if _CPU == 386
 global  char    CDLL_Name[16];          // C runtime library (-br)
@@ -73,33 +73,33 @@ global PRAG_STACK *HeadPacks;
 global PRAG_STACK *HeadEnums;
 global PRAG_STACK *FreePrags;
 
-global char    *TextSegName;   /* name of the text segment */
-global char    *DataSegName;   /* name of the data segment */
-global char    *CodeClassName; /* name of the code class */
-global char    *ModuleName;    /* name of module */
-global char    *ObjectFileName;/* name of object file */
-global char    *DependFileName;/* name of the autodep file */
-global char    *DependHeaderPath;/* name of paths for headers without one */
-global char    *TargetFileName;/* name of the target in the autodep file */
-global char    *SrcDepFileName;/* name of source depend in autodep file */
-global char     ForceSlash;    /* slash character to force autodep to */
-global unsigned PackAmount;    /* current packing alignment for fields */
-global unsigned GblPackAmount; /* packing alignment given on command line */
+global char     *TextSegName;           /* name of the text segment */
+global char     *DataSegName;           /* name of the data segment */
+global char     *CodeClassName;         /* name of the code class */
+global char     *ModuleName;            /* name of module */
+global char     *ObjectFileName;        /* name of object file */
+global char     *DependFileName;        /* name of the autodep file */
+global char     *DependHeaderPath;      /* name of paths for headers without one */
+global char     *TargetFileName;        /* name of the target in the autodep file */
+global char     *SrcDepFileName;        /* name of source depend in autodep file */
+global char     ForceSlash;             /* slash character to force autodep to */
+global unsigned PackAmount;             /* current packing alignment for fields */
+global unsigned GblPackAmount;          /* packing alignment given on command line */
 
-                                     /* switches for code generator         */
-global  unsigned long GenSwitches;   /* - generation info.                  */
-global  unsigned long TargetSwitches;/* - target dependant generation info. */
-global  unsigned long CpuSwitches;   /* - hardware info.                    */
-global  char    *GenCodeGroup;  /* pointer to code group name */
-global  int     ProEpiDataSize; /* data to be alloc'd for pro/epi hook */
+                                        /* switches for code generator         */
+global unsigned GenSwitches;            /* - generation info.                  */
+global unsigned TargetSwitches;         /* - target dependant generation info. */
+global unsigned CpuSwitches;            /* - hardware info.                    */
+global char     *GenCodeGroup;          /* pointer to code group name */
+global int      ProEpiDataSize;         /* data to be alloc'd for pro/epi hook */
 
-global  int      DataThreshold; /* sizeof(obj) > this ==> separate segment */
+global int      DataThreshold;          /* sizeof(obj) > this ==> separate segment */
 
-global  int     DataPtrSize;
-global  int     CodePtrSize;
-global  char    Stack87;
+global int      DataPtrSize;
+global int      CodePtrSize;
+global char     Stack87;
 
-global  FILE    *DefFile;       /* output for func prototypes */
-global  char    *ErrorFileName;
+global FILE     *DefFile;               /* output for func prototypes */
+global char     *ErrorFileName;
 
 #endif

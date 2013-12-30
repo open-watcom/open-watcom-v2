@@ -70,8 +70,8 @@
 
 #include "cgtargsw.h"
 
-typedef unsigned long           cg_switches;
-typedef unsigned long           cg_target_switches;
+typedef unsigned                cg_switches;
+typedef unsigned                cg_target_switches;
 
 #define _CG_SWITCH_INCLUDED
 #endif

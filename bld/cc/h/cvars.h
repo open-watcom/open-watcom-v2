@@ -29,11 +29,6 @@
 ****************************************************************************/
 
 
-#ifdef __WATCOMC__
-    #pragma off( check_stack )
-#endif
-
-
 #define BY_C_FRONT_END
 
 #include <stdio.h>
@@ -53,9 +48,9 @@
 #endif
 
 #ifdef __UNIX__
-    #define FNAMECMPSTR      strcmp      /* for case sensitive file systems */
+    #define FNAMECMPSTR     strcmp      /* for case sensitive file systems */
 #else
-    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
+    #define FNAMECMPSTR     stricmp     /* for case insensitive file systems */
 #endif
 
 typedef char        *MACADDR_T; /* contains actual pointer to block of memory */
@@ -81,205 +76,205 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
     #define global  extern
 #endif
 
-#define SYM_HASH_SIZE               241
-#define ENUM_HASH_SIZE              241
-#define MACRO_HASH_SIZE             4093
-#define MAX_PARM_LIST_HASH_SIZE     15
+#define SYM_HASH_SIZE           241
+#define ENUM_HASH_SIZE          241
+#define MACRO_HASH_SIZE         4093
+#define MAX_PARM_LIST_HASH_SIZE 15
 
-global  char    *PCH_Start;     // start of precompiled memory block
-global  char    *PCH_End;       // end of precompiled memory block
-global  char    *PCH_Macros;    // macros loaded from pre-compiled header
-global  char    *PCH_FileName;  // name to use for pre-compiled header
-global  INCFILE *IncFileList;   // list of primary include files for PCH
-global  SYMPTR  *PCH_SymArray;  // array of symbol table pointers from PCH
-global  int     PCH_MaxSymHandle;// number of symbols in PCH_SymArray
-global  int     DebugFlag;
-global  TOKEN   CurToken;
-global  int     BadTokenInfo;
-global  int     TokenLen;
-global  source_loc TokenLoc;
-global  source_loc SrcFileLoc;  /* duplicate of SrcFile->src_line */
-global  source_loc CommentLoc;
-global  int     CurrChar;
-global  DATA_TYPE  ConstType;
-global  unsigned long Constant;
-global  uint64  Const64;
-global  int     CLitLength;     /* length of string literal */
-global  FCB     *MainSrcFile;   /* primary source file being compiled */
-global  FCB     *SrcFile;
-global  char    *SrcFName;      /* source file name without suffix */
-global  char    *DefFName;      /* .def file name (prototypes) */
-global  char    *WholeFName;    /* whole file name with suffix */
-global  char    *ForceInclude;
+global char     *PCH_Start;     // start of precompiled memory block
+global char     *PCH_End;       // end of precompiled memory block
+global char     *PCH_Macros;    // macros loaded from pre-compiled header
+global char     *PCH_FileName;  // name to use for pre-compiled header
+global INCFILE  *IncFileList;   // list of primary include files for PCH
+global SYMPTR   *PCH_SymArray;  // array of symbol table pointers from PCH
+global int      PCH_MaxSymHandle;// number of symbols in PCH_SymArray
+global int      DebugFlag;
+global TOKEN    CurToken;
+global int      BadTokenInfo;
+global int      TokenLen;
+global source_loc TokenLoc;
+global source_loc SrcFileLoc;   /* duplicate of SrcFile->src_line */
+global source_loc CommentLoc;
+global int      CurrChar;
+global DATA_TYPE ConstType;
+global unsigned Constant;
+global uint64   Const64;
+global int      CLitLength;     /* length of string literal */
+global FCB      *MainSrcFile;   /* primary source file being compiled */
+global FCB      *SrcFile;
+global char     *SrcFName;      /* source file name without suffix */
+global char     *DefFName;      /* .def file name (prototypes) */
+global char     *WholeFName;    /* whole file name with suffix */
+global char     *ForceInclude;
 #if _CPU == 370
-global  char    *AuxName;
+global char     *AuxName;
 #endif
-global  fname_list *FNames;     /* list of file names processed */
-global  rdir_list *RDirNames;   /* list of read only directorys */
-global  ialias_list *IAliasNames;  /* list of include aliases */
-global  FILE    *ErrFile;       /* error file */
-global  FILE    *DefFile;       /* output for func prototypes */
-global  FILE    *CppFile;       /* output for preprocessor */
-global  FILE    *DepFile;       /* make style auto depend file */
-global  struct  cpp_info *CppStack; /* #if structure control stack */
-global  char    *IncPathList;   /* list of path names to try for include files */
-global  source_loc SrcLoc;
-global  unsigned SrcLineCount;   /* # of lines in primary source file */
-global  unsigned IncLineCount;   /* # of lines in all included files  */
-global  unsigned ErrCount;       /* total # of errors encountered     */
-global  unsigned WngCount;       /* total # of warnings encountered   */
-global  int     WngLevel;       /* warning severity level */
-global  int     TypeCount;      /* total # of type nodes allocated   */
-global  int     GblSymCount;    /* total # of global symbols */
-global  int     LclSymCount;    /* total # of local and temporary symbols */
-global  int     FuncCount;      /* total # of functions defined in module */
-global  int     MacroCount;     /* total # of macros defined */
-global  int     TagCount;       /* total # of tag entries */
-global  int     FieldCount;     /* total # of struct field names */
-global  int     EnumCount;      /* total # of enumerated symbols */
-global  int     SizeOfCount;    /* # of nested sizeof() expressions  */
-global  int     NestLevel;      /* pre-processing level of #if */
-global  int     SkipLevel;      /* pre-processing level of #if to skip to */
-global  int     SymLevel;       /* current lex level (# of nested {) */
-global  int     HashValue;      /* hash value for identifier */
-global  int     MacHashValue;   /* hash value for macro name */
-global  char    *SavedId;       /* saved id when doing look ahead */
-global  int     SavedHash;      /* hash value for saved id */
-global  source_loc SavedTokenLoc; /* value of TokenLine when id saved */
-global  TOKEN   LAToken;        /* look ahead token */
-global  LABELPTR LabelHead;     /* list of all labels defined in function */
-global  TAGPTR  TagHead;        /* list of all struct, union, enum tags */
-global  TAGPTR  DeadTags;       /* list of all tags that are out of scope */
-global  TYPEPTR TypeHead;       /* list of all type nodes allocated */
-global  TYPEPTR FuncTypeHead[ MAX_PARM_LIST_HASH_SIZE + 1 ];
-global  TYPEPTR VoidParmList[2];/* function with void parm */
-global  PARMPTR ParmList;       /* list of parms for function */
-global  SYM_HANDLE GlobalSym;   /* global symbol table list head */
+global fname_list *FNames;      /* list of file names processed */
+global rdir_list *RDirNames;    /* list of read only directorys */
+global ialias_list *IAliasNames;/* list of include aliases */
+global FILE     *ErrFile;       /* error file */
+global FILE     *DefFile;       /* output for func prototypes */
+global FILE     *CppFile;       /* output for preprocessor */
+global FILE     *DepFile;       /* make style auto depend file */
+global struct cpp_info *CppStack; /* #if structure control stack */
+global char     *IncPathList;   /* list of path names to try for include files */
+global source_loc SrcLoc;
+global unsigned SrcLineCount;   /* # of lines in primary source file */
+global unsigned IncLineCount;   /* # of lines in all included files  */
+global unsigned ErrCount;       /* total # of errors encountered     */
+global unsigned WngCount;       /* total # of warnings encountered   */
+global int      WngLevel;       /* warning severity level */
+global int      TypeCount;      /* total # of type nodes allocated   */
+global int      GblSymCount;    /* total # of global symbols */
+global int      LclSymCount;    /* total # of local and temporary symbols */
+global int      FuncCount;      /* total # of functions defined in module */
+global int      MacroCount;     /* total # of macros defined */
+global int      TagCount;       /* total # of tag entries */
+global int      FieldCount;     /* total # of struct field names */
+global int      EnumCount;      /* total # of enumerated symbols */
+global int      SizeOfCount;    /* # of nested sizeof() expressions  */
+global int      NestLevel;      /* pre-processing level of #if */
+global int      SkipLevel;      /* pre-processing level of #if to skip to */
+global int      SymLevel;       /* current lex level (# of nested {) */
+global int      HashValue;      /* hash value for identifier */
+global int      MacHashValue;   /* hash value for macro name */
+global char     *SavedId;       /* saved id when doing look ahead */
+global int      SavedHash;      /* hash value for saved id */
+global source_loc SavedTokenLoc; /* value of TokenLine when id saved */
+global TOKEN    LAToken;        /* look ahead token */
+global LABELPTR LabelHead;      /* list of all labels defined in function */
+global TAGPTR   TagHead;        /* list of all struct, union, enum tags */
+global TAGPTR   DeadTags;       /* list of all tags that are out of scope */
+global TYPEPTR  TypeHead;       /* list of all type nodes allocated */
+global TYPEPTR  FuncTypeHead[ MAX_PARM_LIST_HASH_SIZE + 1 ];
+global TYPEPTR  VoidParmList[2];/* function with void parm */
+global PARMPTR  ParmList;       /* list of parms for function */
+global SYM_HANDLE GlobalSym;    /* global symbol table list head */
 #if _CPU == 386
-global  SYM_HANDLE SymSTOD;     /* builtin symbol for 'rep stosd' */
-global  SYM_HANDLE SymSTOSB;    /* builtin symbol for '__STOSB' */
-global  SYM_HANDLE SymSTOSD;    /* builtin symbol for '__STOSD' */
+global SYM_HANDLE SymSTOD;      /* builtin symbol for 'rep stosd' */
+global SYM_HANDLE SymSTOSB;     /* builtin symbol for '__STOSB' */
+global SYM_HANDLE SymSTOSD;     /* builtin symbol for '__STOSD' */
 #endif
 #ifdef __SEH__
-global  SYM_HANDLE SymTryInit;  /* builtin symbol for '__TryInit' */
-global  SYM_HANDLE SymTryFini;  /* builtin symbol for '__TryFini' */
-global  SYM_HANDLE SymExcept;   /* builtin symbol for '__Except' */
-global  SYM_HANDLE SymFinally;  /* builtin symbol for '__Finally' */
-global  SYM_HANDLE SymTryUnwind;/* builtin symbol for '__TryUnwind' */
-global  SYM_HANDLE TrySymHandle;/* builtin symbol for local try block */
-global  tryindex_t TryScope;    /* current scope of _try blocks */
-global  tryindex_t TryCount;    /* current number of _try blocks */
+global SYM_HANDLE SymTryInit;   /* builtin symbol for '__TryInit' */
+global SYM_HANDLE SymTryFini;   /* builtin symbol for '__TryFini' */
+global SYM_HANDLE SymExcept;    /* builtin symbol for '__Except' */
+global SYM_HANDLE SymFinally;   /* builtin symbol for '__Finally' */
+global SYM_HANDLE SymTryUnwind; /* builtin symbol for '__TryUnwind' */
+global SYM_HANDLE TrySymHandle; /* builtin symbol for local try block */
+global tryindex_t TryScope;     /* current scope of _try blocks */
+global tryindex_t TryCount;     /* current number of _try blocks */
 #endif
-global  SYM_HANDLE SymSTOW;     /* builtin symbol for 'rep stosw' */
-global  SYM_HANDLE SymSTOWB;    /* builtin symbol for 'rep stosw, stosb' */
-global  SYM_HANDLE SymMIN;      /* builtin symbol for 'min(a,b)' */
-global  SYM_HANDLE SymMAX;      /* builtin symbol for 'max(a,b)' */
-global  SYM_HANDLE SymMEMCMP;   /* builtin symbol for 'memcmp' func */
-global  SYM_HANDLE SpecialSyms; /* builtin symbols (thread linked) */
-global  SYM_HANDLE CharSymHandle;/* sym handle for "char" typedef */
-global  SYM_HANDLE Sym_CS;      /* sym handle for __segname("_CODE") ie. CS */
-global  SYM_HANDLE Sym_SS;      /* sym handle for __segname("_STACK")ie. SS */
-global  SYM_HANDLE SymCover;    /* sym handle for '__COVERAGE' */
-global  SYM_HANDLE SymDFAbbr;   /* sym handle for '__DFABBREV' */
-global  SYM_HANDLE SymChipBug;  /* sym handle for '__chipbug' */
-global  FIELDPTR ErrSym;
+global SYM_HANDLE SymSTOW;      /* builtin symbol for 'rep stosw' */
+global SYM_HANDLE SymSTOWB;     /* builtin symbol for 'rep stosw, stosb' */
+global SYM_HANDLE SymMIN;       /* builtin symbol for 'min(a,b)' */
+global SYM_HANDLE SymMAX;       /* builtin symbol for 'max(a,b)' */
+global SYM_HANDLE SymMEMCMP;    /* builtin symbol for 'memcmp' func */
+global SYM_HANDLE SpecialSyms;  /* builtin symbols (thread linked) */
+global SYM_HANDLE CharSymHandle;/* sym handle for "char" typedef */
+global SYM_HANDLE Sym_CS;       /* sym handle for __segname("_CODE") ie. CS */
+global SYM_HANDLE Sym_SS;       /* sym handle for __segname("_STACK")ie. SS */
+global SYM_HANDLE SymCover;     /* sym handle for '__COVERAGE' */
+global SYM_HANDLE SymDFAbbr;    /* sym handle for '__DFABBREV' */
+global SYM_HANDLE SymChipBug;   /* sym handle for '__chipbug' */
+global FIELDPTR ErrSym;
 
 #if _CPU == 386
-global  BACK_HANDLE FunctionProfileBlock;  /* handle for profiling data block */
-global  segment_id FunctionProfileSegment; /* segment for profiling data block */
+global BACK_HANDLE FunctionProfileBlock;  /* handle for profiling data block */
+global segment_id FunctionProfileSegment; /* segment for profiling data block */
 #endif
 
-global  int         MacroDepth;
-global  char        *MacroPtr;
-global  MEPTR       NextMacro;
-global  MEPTR       UndefMacroList;
-global  MEPTR       *MacHash;       /* [ MACRO_HASH_SIZE ] */
-global  ENUMPTR     EnumTable[ ENUM_HASH_SIZE ];
-global  SYM_HASHPTR *HashTab;
-global  TYPEPTR     BaseTypes[TYPE_LAST_ENTRY];
-global  int         CTypeCounts[TYPE_LAST_ENTRY];
+global int          MacroDepth;
+global char         *MacroPtr;
+global MEPTR        NextMacro;
+global MEPTR        UndefMacroList;
+global MEPTR        *MacHash;           /* [ MACRO_HASH_SIZE ] */
+global ENUMPTR      EnumTable[ ENUM_HASH_SIZE ];
+global SYM_HASHPTR  *HashTab;
+global TYPEPTR      BaseTypes[TYPE_LAST_ENTRY];
+global int          CTypeCounts[TYPE_LAST_ENTRY];
 
-#define BUF_SIZE 512
-global  size_t BufSize;
-global  char *Buffer;
-global  char *TokenBuf;
+#define BUF_SIZE    512
+global size_t       BufSize;
+global char         *Buffer;
+global char         *TokenBuf;
 
-global  unsigned long   GenSwitches;    /* target independant switches for code generator */
-global  unsigned long   TargetSwitches; /* target specific code generator switches */
+global unsigned     GenSwitches;        /* target independant switches for code generator */
+global unsigned     TargetSwitches;     /* target specific code generator switches */
 
-global  unsigned      ProcRevision;   /* processor revision for c.g. */
-global  char    *GenCodeGroup;        /* pointer to code group name */
-global  int     ProEpiDataSize;       /* data to be alloc'd for pro/epi hook */
-global  int     Toggles;              /* global toggle flags */
-global  unsigned ErrLimit;
+global unsigned     ProcRevision;       /* processor revision for c.g. */
+global char         *GenCodeGroup;      /* pointer to code group name */
+global int          ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
+global int          Toggles;            /* global toggle flags */
+global unsigned     ErrLimit;
 
-global  unsigned DataThreshold; /* sizeof(obj) > this ==> separate segment */
-global  unsigned Inline_Threshold;      /* -oe=num for function inlining */
+global unsigned     DataThreshold;      /* sizeof(obj) > this ==> separate segment */
+global unsigned     Inline_Threshold;   /* -oe=num for function inlining */
 
-global  int     DataPtrSize;
-global  int     CodePtrSize;
-global  int     DeadCode;       /* non-zero => next stmt is unreachable */
-global  int     TmpSymCount;
-global  int     LitCount;
-global  int     LitPoolSize;
-global  unsigned MacroSize;
-global  struct  comp_flags             CompFlags;
-global  struct  global_comp_flags      GlobalCompFlags;
-global  segment_id SegmentNum;     /* next PRIVATE segment number to use */
-global  segment_id FarStringSegment;
+global int          DataPtrSize;
+global int          CodePtrSize;
+global int          DeadCode;           /* non-zero => next stmt is unreachable */
+global int          TmpSymCount;
+global int          LitCount;
+global int          LitPoolSize;
+global unsigned     MacroSize;
+global struct comp_flags CompFlags;
+global struct global_comp_flags GlobalCompFlags;
+global segment_id   SegmentNum;         /* next PRIVATE segment number to use */
+global segment_id   FarStringSegment;
 
-global  jmp_buf *Environment;   /* var for Suicide() */
+global jmp_buf      *Environment;       /* var for Suicide() */
 
-#define MAX_LEVEL       1024
+#define MAX_LEVEL   1024
 
 /* The ValueStack array is also used by CGEN for saving _try block info */
-global  TREEPTR     ValueStack[ MAX_LEVEL ];
-global  char        Token[ MAX_LEVEL ];
-global  token_class Class[ MAX_LEVEL ];
-global  int         Level;
+global TREEPTR      ValueStack[ MAX_LEVEL ];
+global char         Token[ MAX_LEVEL ];
+global token_class  Class[ MAX_LEVEL ];
+global int          Level;
 
-global  segment_list *SegListHead;
-global  segment_id   SegImport;              /* next segment # for import sym */
-global  segment_id   SegData;                /* data segment # for -nd option */
+global segment_list *SegListHead;
+global segment_id   SegImport;              /* next segment # for import sym */
+global segment_id   SegData;                /* data segment # for -nd option */
 
-global TREEPTR  FirstStmt;              /* root of expression tree */
+global TREEPTR      FirstStmt;              /* root of expression tree */
 
-global dbug_type ScopeStruct;
-global dbug_type ScopeUnion;
-global dbug_type ScopeEnum;
+global dbug_type    ScopeStruct;
+global dbug_type    ScopeUnion;
+global dbug_type    ScopeEnum;
 
-global dbug_type B_Int_1;
-global dbug_type B_UInt_1;
-global dbug_type B_Short;
-global dbug_type B_UShort;
-global dbug_type B_Int;
-global dbug_type B_UInt;
-global dbug_type B_Int32;
-global dbug_type B_UInt32;
-global dbug_type B_Int64;
-global dbug_type B_UInt64;
-global dbug_type B_Bool;
+global dbug_type    B_Int_1;
+global dbug_type    B_UInt_1;
+global dbug_type    B_Short;
+global dbug_type    B_UShort;
+global dbug_type    B_Int;
+global dbug_type    B_UInt;
+global dbug_type    B_Int32;
+global dbug_type    B_UInt32;
+global dbug_type    B_Int64;
+global dbug_type    B_UInt64;
+global dbug_type    B_Bool;
 
-global  int     OptSize;        /* 100 => make pgm small as possible */
-global  char    __Time[10];     /* "HH:MM:SS" for __TIME__ macro */
-global  char    __Date[12];     /* "MMM DD YYYY" for __DATE__ macro */
+global int      OptSize;        /* 100 => make pgm small as possible */
+global char     __Time[10];     /* "HH:MM:SS" for __TIME__ macro */
+global char     __Date[12];     /* "MMM DD YYYY" for __DATE__ macro */
 
-global  unsigned char   *MsgFlags;      /* Bit mask of disabled messages */
+global unsigned char *MsgFlags;     /* Bit mask of disabled messages */
 
-global  struct macro_seg_list {
+global struct macro_seg_list {
     struct macro_seg_list *next;
     MACADDR_T             macro_seg;
-} *MacSegList;                  /* pointer to list of macro segments */
+} *MacSegList;                      /* pointer to list of macro segments */
 
-global  MACADDR_T MacroSegment; /* segment for macro definitions */
-global  MACADDR_T MacroOffset;  /* first free byte in MacroSegment */
-global  MACADDR_T MacroLimit;   /* last  free byte in MacroSegment */
+global MACADDR_T    MacroSegment;   /* segment for macro definitions */
+global MACADDR_T    MacroOffset;    /* first free byte in MacroSegment */
+global MACADDR_T    MacroLimit;     /* last  free byte in MacroSegment */
 
-global  int     SwitchChar;     /* DOS switch character */
-global  int     LoopDepth;      /* current nesting of loop constructs */
-global  char    CLIB_Name[10];   /* "1CLIBMT3x" */
-global  char    MATHLIB_Name[10];/* "5MATHx" or "8MATH87x" */
-global  char    *EmuLib_Name;   /* "9emu87" for -fpi, "9noemu87" for -fpi */
+global int      SwitchChar;         /* DOS switch character */
+global int      LoopDepth;          /* current nesting of loop constructs */
+global char     CLIB_Name[10];      /* "1CLIBMT3x" */
+global char     MATHLIB_Name[10];   /* "5MATHx" or "8MATH87x" */
+global char     *EmuLib_Name;       /* "9emu87" for -fpi, "9noemu87" for -fpi */
 
 #define USER_LIB_PRIO '9'
 
@@ -288,81 +283,81 @@ typedef struct library_list {
     char                    libname[2]; // first char is priority '1'-'9' followed by library name
 } library_list;
 
-global  library_list        *HeadLibs;
+global library_list        *HeadLibs;
 
 typedef struct alias_list {
     struct  alias_list      *next;
-    const char              *name;  /* one of 'name', 'a_sym' is valid */
+    const char              *name;      /* one of 'name', 'a_sym' is valid */
     SYM_HANDLE              a_sym;
     const char              *subst;
-    SYM_HANDLE              s_sym;  /* one of 'subst', 's_sym' is valid */
+    SYM_HANDLE              s_sym;      /* one of 'subst', 's_sym' is valid */
     char                    names[1];
 } alias_list;
 
-global  alias_list          *AliasHead;
+global alias_list          *AliasHead;
 
-global  SYMPTR  CurFunc;        /* current function being worked on */
-global  SYM_ENTRY CurFuncSym;   /* for contents of current function symbol */
-global  SYM_HANDLE CurFuncHandle;/* sym_handle for current function */
-global  SYM_HANDLE LastFuncOutOfMem; /* cinfo: */
-global  SYM_HASHPTR HashFreeList;/* list of available hash entries */
+global SYMPTR       CurFunc;            /* current function being worked on */
+global SYM_ENTRY    CurFuncSym;         /* for contents of current function symbol */
+global SYM_HANDLE   CurFuncHandle;      /* sym_handle for current function */
+global SYM_HANDLE   LastFuncOutOfMem;   /* cinfo: */
+global SYM_HASHPTR  HashFreeList;       /* list of available hash entries */
 
-global  unsigned SymBufNum;     /* current buffer in memory */
-global  unsigned SymSegNum;     /* segment # containing buffer */
-global  unsigned LastSymBuf;    /* # of last symbol table buffer */
-global  unsigned SymBufDirty;   /* 1 => buffer has been changed */
-global  SEGADDR_T SymSegment;   /* segment # for symbol table buffers */
+global unsigned SymBufNum;              /* current buffer in memory */
+global unsigned SymSegNum;              /* segment # containing buffer */
+global unsigned LastSymBuf;             /* # of last symbol table buffer */
+global unsigned SymBufDirty;            /* 1 => buffer has been changed */
+global SEGADDR_T SymSegment;            /* segment # for symbol table buffers */
 
-global  TYPEPTR StringType;     /* "unsigned char *" for use by literals */
-global  TYPEPTR ConstCharType;  /* "const char" type */
-global  TYPEPTR StringArrayType;/* "unsigned char []" used by literals */
+global TYPEPTR  StringType;             /* "unsigned char *" for use by literals */
+global TYPEPTR  ConstCharType;          /* "const char" type */
+global TYPEPTR  StringArrayType;        /* "unsigned char []" used by literals */
 
 typedef struct nested_parm_lists {
     struct nested_parm_lists    *prev_list;
     TYPEPTR                     *next_parm_type;
 } nested_parm_lists;
 
-global  nested_parm_lists   *NestedParms;
+global nested_parm_lists    *NestedParms;
 
 #ifndef LARGEST_QUAD_INDEX
-    #define LARGEST_QUAD_INDEX             0xFFFF
-    #define LARGEST_DATA_QUAD_INDEX        0xFFFFF
+    #define LARGEST_QUAD_INDEX      0xFFFF
+    #define LARGEST_DATA_QUAD_INDEX 0xFFFFF
 #else
-    #define LARGEST_DATA_QUAD_INDEX        LARGEST_QUAD_INDEX
+    #define LARGEST_DATA_QUAD_INDEX LARGEST_QUAD_INDEX
 #endif
-#define LARGEST_SYM_INDEX   0xFFFF
+#define LARGEST_SYM_INDEX           0xFFFF
 
-#define SYM_BUF_SIZE    1024
-#define SYMS_PER_BUF    (SYM_BUF_SIZE/sizeof(SYM_ENTRY))
-#define SYMBUFS_PER_SEG 16
-#define SYM_SEG_SIZE    (SYM_BUF_SIZE*SYMBUFS_PER_SEG)
+#define SYM_BUF_SIZE            1024
+#define SYMS_PER_BUF            (SYM_BUF_SIZE/sizeof(SYM_ENTRY))
+#define SYMBUFS_PER_SEG         16
+#define SYM_SEG_SIZE            (SYM_BUF_SIZE*SYMBUFS_PER_SEG)
 
-#define MAX_SYM_SEGS  (LARGEST_SYM_INDEX/(SYMS_PER_BUF*SYMBUFS_PER_SEG)+1)
+#define MAX_SYM_SEGS    (LARGEST_SYM_INDEX/(SYMS_PER_BUF*SYMBUFS_PER_SEG)+1)
 
-global  seg_info SymSegs[MAX_SYM_SEGS];  /* segments for symbols */
+global seg_info SymSegs[MAX_SYM_SEGS];  /* segments for symbols */
 
 #define STRING_HASH_SIZE        1024
-global  STR_HANDLE StringHash[STRING_HASH_SIZE];    /* string literals */
-global  char    *TextSegName;   /* name of the text segment */
-global  char    *DataSegName;   /* name of the data segment */
-global  char    *CodeClassName; /* name of the code class */
-global  char    *ModuleName;    /* name of module */
-global  char    *ObjectFileName;/* name of object file */
-global  char    *DependFileName;/* name of make style auto depend file */
-global  char    *DependHeaderPath;/* path to prepend if included header has none */
-global  char    *DependTarget;  /* name of target in make style autodep */
-global  char    *SrcDepName;    /* name of first depend (sourcefile)*/
-global  char     DependForceSlash;/* type of slash to force to in depend output */
-global  int      PackAmount;    /* current packing alignment */
-global  int      GblPackAmount; /* packing alignment given on command line */
-global  textsegment *TextSegList; /* list of #pragma alloc_text segs*/
+global STR_HANDLE StringHash[STRING_HASH_SIZE]; /* string literals */
+global char     *TextSegName;       /* name of the text segment */
+global char     *DataSegName;       /* name of the data segment */
+global char     *CodeClassName;     /* name of the code class */
+global char     *ModuleName;        /* name of module */
+global char     *ObjectFileName;    /* name of object file */
+global char     *DependFileName;    /* name of make style auto depend file */
+global char     *DependHeaderPath;  /* path to prepend if included header has none */
+global char     *DependTarget;      /* name of target in make style autodep */
+global char     *SrcDepName;        /* name of first depend (sourcefile)*/
+global char     DependForceSlash;   /* type of slash to force to in depend output */
+global int      PackAmount;         /* current packing alignment */
+global int      GblPackAmount;      /* packing alignment given on command line */
+global textsegment *TextSegList;    /* list of #pragma alloc_text segs*/
 
 typedef enum {
-    SEGTYPE_CODE       = 1,     /* #pragma code_seg("segname","class") */
-    SEGTYPE_DATA       = 2,     /* #pragma data_seg("segname","class") */
-    SEGTYPE_BASED      = 3,     /* __based(__segname("segname")) */
-    SEGTYPE_INITFINI   = 4,     /* "XI" or "YI" segment */
-    SEGTYPE_INITFINITR = 5,     /* thread data */
+    SEGTYPE_CODE       = 1,         /* #pragma code_seg("segname","class") */
+    SEGTYPE_DATA       = 2,         /* #pragma data_seg("segname","class") */
+    SEGTYPE_BASED      = 3,         /* __based(__segname("segname")) */
+    SEGTYPE_INITFINI   = 4,         /* "XI" or "YI" segment */
+    SEGTYPE_INITFINITR = 5,         /* thread data */
 } seg_type;
 
 typedef struct extref_info {
@@ -371,26 +366,26 @@ typedef struct extref_info {
     char                name[1];
 } extref_info;
 
-global extref_info      *ExtrefInfo;
+global extref_info  *ExtrefInfo;
 
-global  int     (*NextChar)( void );
-global  struct debug_fwd_types *DebugNameList;
+global int          (*NextChar)( void );
+global struct debug_fwd_types *DebugNameList;
 
-global  unsigned Column;        /* skip to Column when reading */
-global  unsigned Trunc;         /* stop at Trunc when reading  */
-global  int     EnumRecSize;    /* size of largest enum entry */
-global  int     PreProcChar;
-global  TYPEPTR PrevProtoType;          /* prev func prototype */
+global unsigned     Column;             /* skip to Column when reading */
+global unsigned     Trunc;              /* stop at Trunc when reading  */
+global int          EnumRecSize;        /* size of largest enum entry */
+global int          PreProcChar;
+global TYPEPTR      PrevProtoType;      /* prev func prototype */
 
-global  unsigned SegAlignment[FIRST_PRIVATE_SEGMENT];
-global  unsigned TargSys;
-global  segment_id DefDataSegment;  /* #pragma data_seg("segname","class") */
-global  textsegment *DefCodeSegment; /* #pragma code_seg("seg","c") */
+global unsigned     SegAlignment[FIRST_PRIVATE_SEGMENT];
+global unsigned     TargSys;
+global segment_id   DefDataSegment;     /* #pragma data_seg("segname","class") */
+global textsegment  *DefCodeSegment;    /* #pragma code_seg("seg","c") */
 
-global  unsigned        UnrollCount;    /* #pragma unroll(#); */
-global  macro_flags     InitialMacroFlag;
-global  unsigned char   Stack87;
-global  char            *ErrorFileName;
+global unsigned         UnrollCount;    /* #pragma unroll(#); */
+global macro_flags      InitialMacroFlag;
+global unsigned char    Stack87;
+global char             *ErrorFileName;
 
 typedef struct undef_names {
     struct undef_names  *next;
@@ -399,29 +394,32 @@ typedef struct undef_names {
 
 global undef_names      *UndefNames;
 
-global  TREEPTR         CurFuncNode;
+global TREEPTR         CurFuncNode;
 
 //================= Function Prototypes ========================
 
 #if defined(__WATCOMC__) && defined(_M_IX86) && defined(__FLAT__)
 
-extern  int     far_strcmp( char *, char *, int );
-#pragma aux     far_strcmp = 0xf3        /* rep   */\
-                             0xa6        /* cmpsb */\
-                             0x74 0x01   /* je L1 */\
-                             0x41        /* inc ecx */\
-         parm caller [edi] [esi] [ecx] value [ecx] modify exact [esi edi ecx];
-extern  int     far_strlen_plus1( char * );
-#pragma aux     far_strlen_plus1 = 0x29 0xc0    /* sub eax,eax */\
-                                   0x4f         /* dec edi */\
-                                   0x47         /* L1:inc edi */\
-                                   0x40         /* inc eax */\
-                                   0x80 0x3f 0x00 /* cmp [edi],0 */\
-                                   0x75 0xf9    /* jne L1 */\
-        parm caller [edi] value [eax] modify exact [edi eax];
+extern  int far_strcmp( char *, char *, int );
+#pragma aux far_strcmp = \
+    0xf3            /* rep     */ \
+    0xa6            /* cmpsb   */ \
+    0x74 0x01       /* je L1   */ \
+    0x41            /* inc ecx */ \
+    parm caller [edi] [esi] [ecx] value [ecx] modify exact [esi edi ecx];
+extern  int far_strlen_plus1( char * );
+#pragma aux far_strlen_plus1 = \
+    0x29 0xc0       /* sub eax,eax */ \
+    0x4f            /* dec edi     */ \
+    0x47            /* L1:inc edi  */ \
+    0x40            /* inc eax     */ \
+    0x80 0x3f 0x00  /* cmp [edi],0 */ \
+    0x75 0xf9       /* jne L1      */ \
+    parm caller [edi] value [eax] modify exact [edi eax];
 extern  void    far_memcpy( char *, char *, int );
-#pragma aux     far_memcpy = 0xf3 0xa4  /* rep movsb */\
-        parm caller [edi] [esi] [ecx] modify exact [esi edi ecx];
+#pragma aux     far_memcpy = \
+    0xf3 0xa4       /* rep movsb */ \
+    parm caller [edi] [esi] [ecx] modify exact [esi edi ecx];
 
 #else
 
@@ -571,7 +569,7 @@ extern  TREEPTR Expr(void);
 extern  TREEPTR AddrExpr(void);
 extern  TREEPTR BoolExpr(TREEPTR);
 extern  TREEPTR CommaExpr(void);
-extern  long int ConstExpr(void);
+extern  int     ConstExpr(void);
 typedef struct {
     int64     value;
     DATA_TYPE type;
@@ -587,7 +585,7 @@ extern  TREEPTR BasedPtrNode(TYPEPTR,TREEPTR);
 extern  bool    IsLValue(TREEPTR);
 extern  op_flags OpFlags( type_modifiers  flags );
 extern  type_modifiers FlagOps( op_flags ops );
-extern  FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned long *field_offset, char *name );
+extern  FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned *field_offset, char *name );
 
 //cfold.c
 extern  int64   LongValue64( TREEPTR leaf );
@@ -608,7 +606,7 @@ extern  void    GenInLineFunc( SYM_HANDLE sym_handle );
 extern  bool    IsInLineFunc( SYM_HANDLE sym_handle );
 
 extern  void    EmitDataQuads(void);            /* cgendata */
-extern  void    EmitZeros(unsigned long);       /* cgendata */
+extern  void    EmitZeros(unsigned);            /* cgendata */
 extern  void    AlignIt(TYPEPTR);               /* cgendata */
 
 extern  int     GetNextChar(void);              /* cgetch */
@@ -765,7 +763,7 @@ extern  TOKEN   IdLookup( const char *, int );  /* cscan */
 extern  TOKEN   NextToken( void );              /* cscan */
 extern  TOKEN   PPNextToken( void );            /* cscan */
 
-extern  unsigned long SizeOfArg(TYPEPTR);       /* csizeof */
+extern  unsigned SizeOfArg(TYPEPTR);            /* csizeof */
 
 extern  void    InitStats(void);                /* cstats */
 extern  void    PrintStats(void);               /* cstats */
@@ -828,9 +826,9 @@ extern  void    FullDeclSpecifier( decl_info *info );
 extern  TAGPTR  NullTag(void);
 extern  TAGPTR  TagLookup(void);
 extern  void    FreeTags(void);
-extern  unsigned long TypeSize(TYPEPTR);
-extern  unsigned long TypeSizeEx( TYPEPTR, unsigned long * pFieldWidth );
-extern  TYPEPTR GetIntTypeBySize( unsigned long size, bool sign, bool exact );
+extern  unsigned TypeSize(TYPEPTR);
+extern  unsigned TypeSizeEx( TYPEPTR, unsigned *pFieldWidth );
+extern  TYPEPTR GetIntTypeBySize( unsigned size, bool sign, bool exact );
 extern  TAGPTR  VfyNewTag( TAGPTR, int );
 extern  void    VfyNewSym( int, char * );
 extern  unsigned GetTypeAlignment( TYPEPTR );
@@ -865,7 +863,7 @@ extern  void    FreePreCompiledHeader( void );
 extern  void    CBanner( void );                        /* watcom */
 extern  void    MyExit( int ret );                      /* cintmain */
 
-extern  void    DBSetSymLoc( CGSYM_HANDLE, long );      /* dbsupp */
+extern  void    DBSetSymLoc( CGSYM_HANDLE, unsigned );  /* dbsupp */
 
 // cstmt.c
 extern  SYM_HANDLE GetBlockSymList( void );

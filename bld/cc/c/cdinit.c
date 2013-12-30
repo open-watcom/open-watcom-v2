@@ -711,9 +711,9 @@ local FIELDPTR InitBitField( FIELDPTR field )
 /* Detects a C99 designated initializer */
 local void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
 {
-    TREEPTR             tree;
-    unsigned long       offs;
-    static int          new_field = 1;
+    TREEPTR         tree;
+    unsigned        offs;
+    static int      new_field = 1;
 
     if( !CompFlags.extensions_enabled && !CompFlags.c99_extensions ) {
         return( field );
@@ -736,7 +736,7 @@ local void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
         tree = SingleExpr();
         if( IsConstLeaf( tree ) ) {
             CastConstValue( tree, typ->decl_type );
-            *(unsigned long *)field = tree->op.u2.ulong_value;
+            *(unsigned *)field = tree->op.u2.ulong_value;
         } else {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
         }
@@ -783,11 +783,11 @@ local bool DesignatedInSubAggregate( DATA_TYPE decl_type )
 
 local void InitArray( TYPEPTR typ, TYPEPTR ctyp )
 {
-    unsigned long       n;
-    unsigned long       m;
-    unsigned long       *pm;
-    unsigned long       array_size;
-    unsigned long       elem_size;
+    unsigned    n;
+    unsigned    m;
+    unsigned    *pm;
+    unsigned    array_size;
+    unsigned    elem_size;
 
     array_size = TypeSize( typ );
     n = 0;
@@ -795,7 +795,8 @@ local void InitArray( TYPEPTR typ, TYPEPTR ctyp )
     for( ;; ) {
         m = n;
         pm = DesignatedInit( typ, ctyp, pm );
-        if( pm == NULL ) break;
+        if( pm == NULL )
+            break;
         if( m != n ) {
             elem_size = SizeOfArg( typ->object );
             if( typ->u.array->unspecified_dim && m > array_size ) {
@@ -836,16 +837,17 @@ local void InitArray( TYPEPTR typ, TYPEPTR ctyp )
 /* Initialize struct or union fields */
 local void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
 {
-    TYPEPTR             ftyp;
-    unsigned long       n;
-    unsigned long       offset;
+    TYPEPTR         ftyp;
+    unsigned        n;
+    unsigned        offset;
 
     n = typ->u.tag->size;      /* get full size of the struct or union */
     offset = 0;
 
     for( ;; ) {
         field = DesignatedInit( typ, ctyp, field );
-        if( field == NULL ) break;
+        if( field == NULL )
+            break;
         /* The first field might not start at offset 0;  19-mar-91 */
         if( field->offset != offset ) {                 /* 14-dec-88 */
             RelSeekBytes( field->offset - offset );

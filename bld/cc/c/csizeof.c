@@ -31,9 +31,9 @@
 
 #include "cvars.h"
 
-unsigned long SizeOfArg( TYPEPTR typ )
+unsigned SizeOfArg( TYPEPTR typ )
 {
-    unsigned long       size;
+    unsigned    size;
 
     SKIP_TYPEDEFS( typ );
     size = TypeSize( typ );

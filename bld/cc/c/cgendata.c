@@ -40,7 +40,7 @@
 
 static void EmitDQuad( DATA_QUAD *dq );
 
-void EmitZeros( unsigned long amount )
+void EmitZeros( unsigned amount )
 {
     while( amount > 8*1024 ) {
         DGIBytes( 8*1024, 0 );
@@ -84,11 +84,11 @@ static void EmitDQuad( DATA_QUAD *dq )
 {
     cg_type             data_type;
     int                 size_of_item;
-    unsigned long       amount;
+    unsigned            amount;
     auto SYM_ENTRY      sym;
 
-    static segment_id    segment;
-    static unsigned long size = 0;
+    static segment_id   segment;
+    static unsigned     size = 0;
 
     if( dq->flags & Q_NEAR_POINTER ) {
         data_type = TY_NEAR_POINTER;

@@ -928,8 +928,7 @@ TREEPTR PtrOp( TREEPTR tree )
 
 
 
-FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned long *field_offset,
-                             char *name )
+FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned *field_offset, char *name )
 {
     FIELDPTR    field;
     FIELDPTR    subfield;
@@ -983,7 +982,7 @@ TREEPTR DotOp( TREEPTR tree )
     TYPEPTR             typ;
     TYPEPTR             get_typ;
     FIELDPTR            field;
-    unsigned long       offset;
+    unsigned            offset;
     op_flags            opflag;
     SYM_ENTRY           sym;
 
@@ -1036,7 +1035,7 @@ TREEPTR ArrowOp( TREEPTR tree )
     TYPEPTR             typ;
     TYPEPTR             get_typ;
     FIELDPTR            field;
-    unsigned long       offset;
+    unsigned            offset;
     type_modifiers      flags;
 
     if( CurToken != T_ID ) {
@@ -1137,7 +1136,7 @@ bool ConstExprAndType( const_val *val )
     return( ret );
 }
 
-long int ConstExpr( void )
+int ConstExpr( void )
 {
     const_val   val;
 
