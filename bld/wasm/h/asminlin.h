@@ -129,7 +129,11 @@ extern enum sym_type    AsmQueryType( void *handle );
 
 struct asmfixup {
         struct asmfixup         *next;
+#if defined( _STANDALONE_ )
         unsigned long           offset;
+#else
+        unsigned                offset;
+#endif
         unsigned                fixup_loc;
         enum fixup_types        fixup_type;
         enum fixup_options      fixup_option;
