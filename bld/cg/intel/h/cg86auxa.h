@@ -65,6 +65,9 @@ typedef unsigned long long      call_class;
 
 #define FLOATING_FIXUP_BYTE     0xFF
 
+#define BYTE_SEQ_SYM    void *
+#define BYTE_SEQ_OFF    unsigned
+
 typedef enum {
     #define pick_fp(enum,name,alt_name) FIX_ ## enum,
     #include "fppatche.h"

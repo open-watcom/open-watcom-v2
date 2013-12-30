@@ -719,6 +719,8 @@ static int insertFixups( VBUF *src_code )
             *owner = fix;
         }
         len = 0;
+        cg_fix = 0;
+        sym = NULL;
         src_start = VbufBuffer( src_code );
         src_end = src_start + VbufLen( src_code );
         fix = FixupHead;
@@ -812,10 +814,10 @@ static int insertFixups( VBUF *src_code )
                 }
                 if( skip != 0 ) {
                     dst[len++] = cg_fix;
-                    *((void **)&dst[len]) = (void *)sym;
-                    len += sizeof( void * );
-                    *((unsigned_32 *)&dst[len]) = fix->offset;
-                    len += sizeof( unsigned_32 );
+                    *((BYTE_SEQ_SYM *)&dst[len]) = sym;
+                    len += sizeof( BYTE_SEQ_SYM );
+                    *((BYTE_SEQ_OFF *)&dst[len]) = fix->offset;
+                    len += sizeof( BYTE_SEQ_OFF );
                     src += skip;
                 }
 #if _CPU == 8086
@@ -875,7 +877,7 @@ static void AddAFix(
     unsigned i,
     char *name,
     unsigned type,
-    unsigned long off )
+    unsigned off )
 {
     struct asmfixup        *fix;
 
@@ -984,7 +986,7 @@ static byte *copyCodeLen( byte *d, void *v, unsigned len )
 void AsmSysPCHWriteCode( AUX_INFO *info )
 /***************************************/
 {
-    SYMBOL sym;
+    BYTE_SEQ_SYM sym;
     byte_seq_len code_length;
     byte_seq_len seq_size;
     unsigned fixup;
@@ -1033,11 +1035,11 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
                 case FIX_SYM_OFFSET:
                 case FIX_SYM_SEGMENT:
                 case FIX_SYM_RELOFF:
-                    sym = SymbolGetIndex( *((SYMBOL*)p) );
+                    sym = SymbolGetIndex( *((BYTE_SEQ_SYM *)p) );
                     d = copyCodeLen( d, &sym, sizeof( sym ) );
-                    p += sizeof( SYMBOL );
-                    d = copyCodeLen( d, p, sizeof( unsigned long ) );
-                    p += sizeof( unsigned long );
+                    p += sizeof( BYTE_SEQ_SYM );
+                    d = copyCodeLen( d, p, sizeof( BYTE_SEQ_OFF ) );
+                    p += sizeof( BYTE_SEQ_OFF );
                     break;
                 default:
                     break;
@@ -1060,7 +1062,7 @@ void AsmSysPCHReadCode( AUX_INFO *info )
     byte *s;
     byte_seq *code;
     unsigned fixup;
-    SYMBOL sym;
+    BYTE_SEQ_SYM sym;
     byte_seq_len seq_size;
     byte_seq_len code_length;
 
@@ -1086,9 +1088,9 @@ void AsmSysPCHReadCode( AUX_INFO *info )
                     case FIX_SYM_OFFSET:
                     case FIX_SYM_SEGMENT:
                     case FIX_SYM_RELOFF:
-                        sym = SymbolMapIndex( *((SYMBOL*)p) );
+                        sym = SymbolMapIndex( *((BYTE_SEQ_SYM *)p) );
                         copyCodeLen( p, &sym, sizeof( sym ) );
-                        p += sizeof( SYMBOL ) + sizeof( unsigned long );
+                        p += sizeof( BYTE_SEQ_SYM ) + sizeof( BYTE_SEQ_OFF );
                         break;
                     default:
                         break;
@@ -1115,7 +1117,7 @@ static int GetByteSeq( void )
 {
     int             len;
     char            *name;
-    unsigned long   offset;
+    unsigned        offset;
     unsigned        fixword;
     int             uses_auto;
     VBUF            code_buffer;
@@ -1128,6 +1130,8 @@ static int GetByteSeq( void )
     PPCTL_ENABLE_MACROS();
     NextToken();
     len = 0;
+    offset = 0;
+    name = NULL;
     for( ;; ) {
         /* reserve at least ASM_BLOCK bytes in the buffer */
         VbufReqd( &code_buffer, _RoundUp( len + ASM_BLOCK, ASM_BLOCK ) );

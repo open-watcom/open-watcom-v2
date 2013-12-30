@@ -395,7 +395,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
 /********************************************************************************/
 {
                         /* additional slop in buffer to simplify the code */
-    unsigned char       temp[MAXIMUM_BYTESEQ + 1 + 2 * sizeof( long )];
+    unsigned char       temp[MAXIMUM_BYTESEQ + 1 + 2 + sizeof( BYTE_SEQ_SYM ) + sizeof( BYTE_SEQ_OFF )];
     struct asmfixup     *fix;
     struct asmfixup     *head;
     struct asmfixup     *chk;
@@ -539,10 +539,10 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                 }
                 if( skip != 0 ) {
                     *dst++ = cg_fix;
-                    *(void **)dst = (void *)sym_handle;
-                    dst += sizeof( void * );
-                    *((unsigned_32 *)dst) = fix->offset;
-                    dst += sizeof( unsigned_32 );
+                    *(BYTE_SEQ_SYM *)dst = sym_handle;
+                    dst += sizeof( BYTE_SEQ_SYM );
+                    *((BYTE_SEQ_OFF *)dst) = fix->offset;
+                    dst += sizeof( BYTE_SEQ_OFF );
                     src += skip;
                 }
 #if _CPU == 8086
@@ -602,8 +602,8 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
 }
 
 
-local void AddAFix( unsigned loc, char *name, unsigned type, unsigned long off )
-/******************************************************************************/
+local void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
+/*************************************************************************/
 {
     struct asmfixup     *fix;
 
@@ -644,7 +644,7 @@ local bool GetByteSeq( byte_seq **code )
 {
     unsigned char       buff[MAXIMUM_BYTESEQ + 32];
     char                *name;
-    unsigned long       offset;
+    unsigned            offset;
     fix_words           fixword;
     bool                uses_auto;
     char                too_many_bytes;

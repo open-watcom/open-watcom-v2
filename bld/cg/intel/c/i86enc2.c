@@ -269,10 +269,10 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
                 case FIX_SYM_SEGMENT:
                 case FIX_SYM_RELOFF:
                     p += 2;
-                    sym = (cg_sym_handle)*(void **)p;
-                    p += sizeof( void * );
-                    off = (offset)*(unsigned_32 *)p;
-                    p += sizeof( unsigned_32 );
+                    sym = *(BYTE_SEQ_SYM *)p;
+                    p += sizeof( BYTE_SEQ_SYM );
+                    off = *(BYTE_SEQ_OFF *)p;
+                    p += sizeof( BYTE_SEQ_OFF );
                     attr = FEAttr( sym );
                     switch( type ) {
                     case FIX_SYM_SEGMENT:
