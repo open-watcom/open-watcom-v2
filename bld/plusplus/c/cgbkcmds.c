@@ -660,7 +660,7 @@ static void cgGenerateCmdsCtorTest( // EMIT CTOR_TEST CMDS
 void CgCmdsGenerate(            // GENERATE DTOR CMD.S
     void )
 {
-    #define pick(e,se,cmd,ring) cgGenerateCmds ## ring ## ();
+    #define pick(e,se,cmd,ring) cgGenerateCmds ## ring();
     #include "_dtccarv.h"
     #undef pick
 }
