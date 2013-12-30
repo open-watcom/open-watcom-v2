@@ -1155,7 +1155,7 @@ static  void    DupObjectName( aux_info *dst, aux_info *src ) {
 
     char        *new_name;
 
-    new_name = FMemAlloc( strlen( src->objname ) + sizeof( char ) );
+    new_name = FMemAlloc( strlen( src->objname ) + 1 );
     strcpy( new_name, src->objname );
     dst->objname = new_name;
 }
@@ -1211,16 +1211,16 @@ static  void            ObjectName( void ) {
 
     if( *TokStart != '"' )
         return;
-    if( TokStart == TokEnd - sizeof( char ) )
+    if( TokStart == TokEnd - 1 )
         CSuicide();
-    if( *(TokEnd - sizeof( char )) != '"' )
+    if( *(TokEnd - 1) != '"' )
         CSuicide();
-    obj_len = TokEnd - TokStart - 2*sizeof( char );
-    name = FMemAlloc( obj_len + sizeof( char ) );
+    obj_len = TokEnd - TokStart - 2;
+    name = FMemAlloc( obj_len + 1 );
     if( CurrAux->objname != DefaultInfo.objname ) {
         FMemFree( CurrAux->objname );
     }
-    memcpy( name, TokStart + sizeof( char ), obj_len );
+    memcpy( name, TokStart + 1, obj_len );
     name[obj_len] = NULLCHAR;
     CurrAux->objname = name;
     ScanToken();
@@ -1254,7 +1254,7 @@ enum    sym_type        AsmQueryType( void *handle ) {
 static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
 //===================================================================
                         // additional slop in buffer to simplify the code
-    unsigned char       temp[MAXIMUM_BYTESEQ + 2 * sizeof( byte )];
+    unsigned char       temp[MAXIMUM_BYTESEQ + 2];
     struct asmfixup     *fix;
     struct asmfixup     *head;
     struct asmfixup     *chk;
@@ -1413,10 +1413,9 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len len ) {
 
 #if _CPU == 8086
 
-static  void    AddAFix( unsigned i, char *name, unsigned type,
-                         unsigned long off ) {
-//============================================
-
+static  void    AddAFix( unsigned i, char *name, unsigned type, unsigned off )
+//============================================================================
+{
     struct asmfixup     *fix;
 
     fix = FMemAlloc( sizeof( *fix ) );
@@ -1449,22 +1448,22 @@ static  void    GetByteSeq( void ) {
 #endif
     for(;;) {
         if( *TokStart == '"' ) {
-            if( TokStart == TokEnd - sizeof( char ) )
+            if( TokStart == TokEnd - 1 )
                 CSuicide();
-            if( *(TokEnd - sizeof( char )) != '"' )
+            if( *(TokEnd - 1) != '"' )
                 CSuicide();
-            *(char *)(TokEnd - sizeof( char )) = NULLCHAR;
+            *(char *)(TokEnd - 1) = NULLCHAR;
             AsmCodeAddress = seq_len;
             AsmCodeBuffer = buff;
 #if _INTEL_CPU
   #if _CPU == 8086
-            AsmLine( &TokStart[1], use_fpu_emu );
+            AsmLine( TokStart + 1, use_fpu_emu );
             use_fpu_emu = FALSE;
   #else
-            AsmLine( &TokStart[1], FALSE );
+            AsmLine( TokStart + 1, FALSE );
   #endif
 #else
-            AsmLine( &TokStart[1] );
+            AsmLine( TokStart + 1 );
 #endif
             if( AsmCodeAddress <= MAXIMUM_BYTESEQ ) {
                 seq_len = AsmCodeAddress;
@@ -1523,7 +1522,7 @@ static  hw_reg_set      RegSet( void ) {
     HW_CAsgn( reg_set, HW_EMPTY );
     for(;;) {
         TokUpper();
-        reg = KwLookUp( RegNames, MaxReg, TokStart, TokEnd-TokStart, TRUE );
+        reg = KwLookUp( RegNames, MaxReg, TokStart, TokEnd - TokStart, TRUE );
         if( reg == 0 )
             break;
         HW_TurnOn( reg_set, RegValue[reg] );
