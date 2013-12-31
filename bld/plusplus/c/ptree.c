@@ -396,18 +396,18 @@ static PTREE allocConstant( uint_8 op, type_id id )
 PTREE PTreeBoolConstant( int v )
 /******************************/
 {
-    return PTreeIntConstant( v, TYP_BOOL );
+    return( PTreeIntConstant( v, TYP_BOOL ) );
 }
 
 
-PTREE PTreeIntConstant( signed long v, type_id id )
-/*************************************************/
+PTREE PTreeIntConstant( int v, type_id id )
+/*****************************************/
 {
     PTREE new_tree;
 
     new_tree = allocConstant( PT_INT_CONSTANT, id );
     Int64From32( new_tree->type, v, &new_tree->u.int64_constant );
-    return new_tree;
+    return( new_tree );
 }
 
 
@@ -1709,7 +1709,7 @@ PTREE MakeBuiltinIsFloat( PTREE expr )
 
     type = FloatingType( expr->type );
     PTreeFree( expr );
-    return PTreeIntConstant( type != 0, TYP_SINT );
+    return( PTreeIntConstant( ( type != NULL ) ? 1 : 0, TYP_SINT ) );
 }
 
 void PTreeDeleteSizeExpr( PTREE expr )

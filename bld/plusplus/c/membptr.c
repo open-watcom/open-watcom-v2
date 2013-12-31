@@ -1394,7 +1394,7 @@ static PTREE replaceCompare(    // REPLACE COMPARISON WITH A CONSTANT
     PTREE con;                  // - constant node
 
     if( expr->cgop == CO_NE ) {
-        val = ! val;
+        val = !val;
     }
     con = PTreeBoolConstant( val );
     return NodeReplace( expr, con );

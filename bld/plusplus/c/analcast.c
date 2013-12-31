@@ -1725,8 +1725,7 @@ static PTREE doCastResult           // DO CAST RESULT
         break;
       case CAST_REPLACE_INTEGRAL :
       { expr = PTreeOp( &ctl->expr->u.subtree[1] );
-        expr = NodeIntegralConstant( NodeConstantValue( expr )
-                                   , ctl->tgt.orig );
+        expr = NodeIntegralConstant( NodeConstantValue( expr ), ctl->tgt.orig );
         expr = PTreeCopySrcLocation( expr, ctl->expr->u.subtree[1] );
         expr = NodeReplace( ctl->expr, expr );
 //      expr = CheckCharPromotion( expr );

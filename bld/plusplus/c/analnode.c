@@ -698,24 +698,24 @@ boolean NodeIsConstant(         // TEST IF NODE IS A CONSTANT
 }
 
 
-unsigned long NodeConstantValue(// GET CONSTANT VALUE FOR A NODE
-    PTREE node )                // - a constant node
+int NodeConstantValue(  // GET CONSTANT VALUE FOR A NODE
+    PTREE node )        // - a constant node
 {
-    SYMBOL sym;                 // - symbol for node
-    unsigned long retn = 0;     // - return value
+    SYMBOL sym;         // - symbol for node
+    int retn = 0;       // - return value
 
     node = NodeRemoveCasts( node );
     switch( node->op ) {
-      case PT_INT_CONSTANT :
+    case PT_INT_CONSTANT :
         retn = node->u.int_constant;
         break;
-      case PT_SYMBOL :
+    case PT_SYMBOL :
         sym = node->u.symcg.symbol;
         retn = sym->u.sval;
         break;
-      DbgDefault( "non-constant node passed to NodeConstantValue" );
+    DbgDefault( "non-constant node passed to NodeConstantValue" );
     }
-    return retn;
+    return( retn );
 }
 
 
