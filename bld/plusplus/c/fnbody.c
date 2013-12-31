@@ -1509,14 +1509,12 @@ static boolean endOfStmt(       // PROCESS END-OF-STATEMENT
             closeScope();
             if( NULL == top_block->u.s.imm_block ) {
                 if( ! top_block->u.s.default_dropped ) {
-                    CgFrontCodeUint( IC_SWITCH_OUTSIDE
-                                   , top_block->outside.id - 1 );
+                    CgFrontCodeUint( IC_SWITCH_OUTSIDE, top_block->outside.id - 1 );
                     if( top_block->outside.defn == NULL ) {
                         top_block->outside.defn = LabelAllocLabDef();
                     }
                 }
-                if( ( ! currFunction->dead_code )
-                  &&( ! top_block->u.s.block_after ) ) {
+                if( ( !currFunction->dead_code ) && ( !top_block->u.s.block_after ) ) {
                     jumpFwdBlkLabel( &top_block->outside );
                 }
             }

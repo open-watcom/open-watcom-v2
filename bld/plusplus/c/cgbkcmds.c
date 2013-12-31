@@ -105,9 +105,7 @@ SYMBOL CgCmdFnExc(              // GET SYMBOL FOR FN-EXCEPTION SPEC. COMMAND
     CMD_FN_EXC* cmd;            // - command
 
     sigs = BeTypeSigEntsCopy( se->fn_exc.sigs );
-    cmd = stateTableCmdAllocVar
-                    ( carveCMD_FN_EXC
-                    , &ringCmdsFnExc
+    cmd = stateTableCmdAllocVar( carveCMD_FN_EXC, &ringCmdsFnExc
                     , 2 + CgbkInfo.size_offset + RingCount( sigs ) * CgbkInfo.size_data_ptr );
     cmd->sigs = sigs;
     return cmd->base.sym;
@@ -134,8 +132,7 @@ SYMBOL CgCmdTestFlag(           // GET SYMBOL FOR TEST_FLAG CMD TO BE GEN'ED
         }
     } RingIterEnd( curr )
     if( cmd == NULL ) {
-        cmd = stateTableCmdAllocVar( carveCMD_TEST_FLAG
-                                   , &ringCmdsTestFlag
+        cmd = stateTableCmdAllocVar( carveCMD_TEST_FLAG, &ringCmdsTestFlag
                                    , 2 + 3 * CgbkInfo.size_offset );
         cmd->index           = se->test_flag.index;
         cmd->state_var_true  = sv_true;
@@ -181,11 +178,8 @@ SYMBOL CgCmdComponent(          // GET SYMBOL FOR DTC_COMP... COMMAND
 {
     CMD_COMPONENT* cmd;         // - command
 
-    DbgVerify( UNDEF_AREL != se->component.obj->offset
-             , "CgCmdComponent -- no offset" );
-    cmd = stateTableCmdAllocVar( carveCMD_COMPONENT
-                               , &ringCmdsComponent
-                               , 1 );
+    DbgVerify( UNDEF_AREL != se->component.obj->offset, "CgCmdComponent -- no offset" );
+    cmd = stateTableCmdAllocVar( carveCMD_COMPONENT, &ringCmdsComponent, 1 );
     cmd->obj = se->component.obj;
     cmd->dtor = se->component.dtor;
     cmd->offset = se->component.offset;
@@ -199,11 +193,8 @@ SYMBOL CgCmdArrayInit(          // GET SYMBOL FOR DTC_ARRAY_INIT COMMAND
 {
     CMD_ARRAY_INIT* cmd;        // - command
 
-    DbgVerify( UNDEF_AREL != se->array_init.reg->offset
-             , "cgAddCmdArrayInit -- no offset" );
-    cmd = stateTableCmdAllocVar( carveCMD_ARRAY_INIT
-                               , &ringCmdsArrayInit
-                               , 1 );
+    DbgVerify( UNDEF_AREL != se->array_init.reg->offset, "cgAddCmdArrayInit -- no offset" );
+    cmd = stateTableCmdAllocVar( carveCMD_ARRAY_INIT, &ringCmdsArrayInit, 1 );
     cmd->reg = se->array_init.reg;
     return cmd->base.sym;
 }
@@ -327,14 +318,10 @@ SYMBOL CgCmdTry(                // GET SYMBOL FOR TRY BLOCK
     TYPE_SIG_ENT* sigs;         // - ring of type signatures
     CMD_TRY* cmd;               // - command
 
-    DbgVerify( UNDEF_AREL != se->try_blk.try_impl->offset_jmpbuf
-             , "cgGenerateCmdsTry -- no offset for jmpbuf" );
-    DbgVerify( UNDEF_AREL != se->try_blk.try_impl->offset_var
-             , "cgGenerateCmdsTry -- no offset for var" );
+    DbgVerify( UNDEF_AREL != se->try_blk.try_impl->offset_jmpbuf, "cgGenerateCmdsTry -- no offset for jmpbuf" );
+    DbgVerify( UNDEF_AREL != se->try_blk.try_impl->offset_var, "cgGenerateCmdsTry -- no offset for var" );
     sigs = BeTypeSigEntsCopy( se->try_blk.sigs );
-    cmd = stateTableCmdAllocVar
-                    ( carveCMD_TRY
-                    , &ringCmdsTry
+    cmd = stateTableCmdAllocVar( carveCMD_TRY, &ringCmdsTry
                     , 2 + 2 + 3 * CgbkInfo.size_offset + RingCount( sigs ) * CgbkInfo.size_data_ptr );
     cmd->state = SeStateVar( FstabPrevious( se ) );
     cmd->offset_var = CgOffsetRw( se->try_blk.try_impl->offset_var );
@@ -349,9 +336,7 @@ SYMBOL CgCmdCtorTest(           // GET SYMBOL FOR CTOR-TEST COMMAND
 {
     CMD_CTOR_TEST* cmd;         // - command
 
-    cmd = stateTableCmdAllocVar( carveCMD_CTOR_TEST
-                               , &ringCmdsCtorTest
-                               , 1 + CgbkInfo.size_offset );
+    cmd = stateTableCmdAllocVar( carveCMD_CTOR_TEST, &ringCmdsCtorTest, 1 + CgbkInfo.size_offset );
     cmd->flag_no = se->ctor_test.flag_no;
     return cmd->base.sym;
 }
@@ -360,9 +345,9 @@ SYMBOL CgCmdCtorTest(           // GET SYMBOL FOR CTOR-TEST COMMAND
 #define cgGenerateCmdCode( code ) DGInteger( code, TY_UINT_1 )
 
 
-static boolean cgGenerateCmdBase(  // EMIT BASE FOR COMMAND
-    CMD_BASE* base,             // - base for command
-    uint_8 code )               // - code for command
+static boolean cgGenerateCmdBase(   // EMIT BASE FOR COMMAND
+    CMD_BASE* base,                 // - base for command
+    DTC_KIND code )                 // - code for command
 {
     boolean genning;            // - TRUE ==> genning entry
 
@@ -400,8 +385,7 @@ static void cgGenerateCmdsSetSv(// EMIT SET_SV COMMANDS
         if( cgGenerateCmdBase( &curr->base, DTC_SET_SV ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
-                printf( "DTC_SET_SV state=%d\n"
-                      , curr->state_var );
+                printf( "DTC_SET_SV state=%d\n", curr->state_var );
             }
 #endif
             DgAlignPad( sizeof( DTOR_CMD_CODE ) );
@@ -493,12 +477,12 @@ static void cgGenerateCmdsComponent(// EMIT COMPONENT CMDS
                 const char* code;
                 VBUF vbuf;
                 switch( curr->cmd_type ) {
-                  case DTC_COMP_VBASE : code = "DTC_COMP_VBASE"; break;
-                  case DTC_COMP_DBASE : code = "DTC_COMP_DBASE"; break;
+                  case DTC_COMP_VBASE :   code = "DTC_COMP_VBASE"; break;
+                  case DTC_COMP_DBASE :   code = "DTC_COMP_DBASE"; break;
                   case DTC_ACTUAL_VBASE : code = "DTC_ACTUAL_VBASE"; break;
                   case DTC_ACTUAL_DBASE : code = "DTC_ACTUAL_DBASE"; break;
-                  case DTC_COMP_MEMB  : code = "DTC_COMP_MEMB "; break;
-                  default:              code = "*****BAD******"; break;
+                  case DTC_COMP_MEMB  :   code = "DTC_COMP_MEMB "; break;
+                  default:                code = "*****BAD******"; break;
                 }
                 printf( "%s obj-offset=%x var-offset=%x %s\n"
                       , code
@@ -646,8 +630,7 @@ static void cgGenerateCmdsCtorTest( // EMIT CTOR_TEST CMDS
         if( cgGenerateCmdBase( &curr->base, DTC_CTOR_TEST ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
-                printf( "DTC_CTOR_TEST %d\n"
-                      , curr->flag_no );
+                printf( "DTC_CTOR_TEST %d\n", curr->flag_no );
             }
 #endif
             DgAlignPad( sizeof( DTOR_CMD_CODE ) );

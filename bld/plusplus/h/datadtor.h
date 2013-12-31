@@ -46,7 +46,7 @@ PTREE DataDtorCompBeg(          // START OF DTORABLE OBJECT COMPONENTS
 PTREE DataDtorCompClass(        // MARK CLASS OBJECT AS DTORABLE COMPONENT
     PTREE expr,                 // - expression to be decorated
     target_offset_t offset,     // - offset of component
-    DTC_KIND dtc_kind )         // - kind of component
+    DTC_KIND kind )             // - kind of component
 ;
 PTREE DataDtorObjPop(           // COMPLETE DTORABLE OBJECT
     PTREE expr )                // - expression to be decorated

@@ -645,16 +645,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             }
             if( control & EFFECT_CTOR_DECOR ) {
                 if( control & EFFECT_DECOR_COMP ) {
-                    DTC_KIND kind;
                     node = PtdScopeCall( node, ctor );
-                    if( control & EFFECT_EXACT ) {
-                        kind = DTC_COMP_MEMB;
-                    } else if( control & EFFECT_VIRTUAL ) {
-                        kind = DTC_COMP_VBASE;
-                    } else {
-                        kind = DTC_COMP_DBASE;
-                    }
-                    node = PtdDtorKind( node, kind );
                     node = PtdCtoredComponent( node, base_type );
                 } else if( control & EFFECT_DECOR_TEMP ) {
                     node = PtdCtoredExprType( node, ctor, base_type );

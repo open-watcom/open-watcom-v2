@@ -131,7 +131,7 @@ PTREE DataDtorCompClass(        // MARK CLASS OBJECT AS DTORABLE COMPONENT
     }
 #endif
     FunctionHasCtorTest();
-    return PtdCompCtored( expr, offset, kind );
+    return( PtdCompCtored( expr, offset, kind ) );
 }
 
 

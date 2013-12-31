@@ -72,11 +72,11 @@ static carve_t *seCarvers[] = {
 
 #ifndef NDEBUG
 static carve_t seCarver(        // GET CARVER FOR AN SE TYPE
-    uint_8 se_type )            // - code for entry
+    DTC_KIND se_type )           // - code for entry
 {
     DbgVerify( se_type < MAX_DTC_DEF, "seCarver -- BAD DTC_..." );
     DbgVerify( se_type != DTC_ARRAY,  "seCarver -- BAD DTC_..." );
-    return *seCarvers[ se_type ];
+    return( *seCarvers[se_type] );
 }
 #else
     #define seCarver(a) *seCarvers[a]
@@ -91,13 +91,11 @@ static void seFree(             // FREE AN SE ENTRY
 
 
 static void pruneSE(            // PRUNE STATE ENTRY
-    SE** a_stab,                // - addr[ state table pointer ]
-    SE* se )                    // - entry to be removed
+    SE **a_stab,                // - addr[ state table pointer ]
+    SE *se )                    // - entry to be removed
 {
-    SE* prev                    // - previous entry
-        = se->base.prev;
-    SE* next                    // - next entry
-        = se->base.next;
+    SE *prev = se->base.prev;   // - previous entry
+    SE *next = se->base.next;   // - next entry
 
     RingPrune( a_stab, se );
 #ifndef NDEBUG

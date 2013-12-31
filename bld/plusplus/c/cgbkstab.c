@@ -97,8 +97,7 @@ boolean StabGenerate(           // GENERATE A STATE TABLE
         if( se->base.gen ) {
             switch( se->base.se_type ) {
               case DTC_SYM_AUTO :
-                DbgVerify( UNDEF_AREL != se->sym_auto.offset
-                         , "cgStateTable -- no offset for SYM_AUTO" );
+                DbgVerify( UNDEF_AREL != se->sym_auto.offset, "cgStateTable -- no offset for SYM_AUTO" );
                 DgPtrSymCode( se->sym_auto.dtor );
                 DgOffset( CgOffsetRw( se->sym_auto.offset ) );
                 padOffsetToPtrSize();
@@ -114,8 +113,7 @@ boolean StabGenerate(           // GENERATE A STATE TABLE
                 se->try_blk.sym = cgStateTableCmd( CgCmdTry( se ), 0 );
                 break;
               case DTC_CATCH :
-                cgStateTableCmd( se->catch_blk.try_blk->try_blk.sym
-                               , sizeof( DTOR_CMD_CODE ) );
+                cgStateTableCmd( se->catch_blk.try_blk->try_blk.sym, sizeof( DTOR_CMD_CODE ) );
                 break;
               case DTC_FN_EXC :
                 cgStateTableCmd( CgCmdFnExc( se ), 0 );
@@ -154,7 +152,7 @@ boolean StabGenerate(           // GENERATE A STATE TABLE
             }
         }
     } RingIterEnd( se )
-#if ! defined( NDEBUG ) || ! defined( _INTEL_CPU )
+#if !defined( NDEBUG ) || !defined( _INTEL_CPU )
     DgPtrSymCode( NULL );
     DgPtrSymData( NULL );
 #endif

@@ -731,9 +731,7 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
                 TYPE eltype;
                 eltype = arrayBaseStructType( info->type );
                 index = info->u.a.index;
-                for( prev = info; ; ) {
-                    prev = prev->previous;
-                    if( prev == NULL ) break;
+                for( prev = info->previous; prev != NULL; prev = prev->previous ) {
                     if( prev->target != DT_ARRAY ) break;
                     artype = ArrayType( prev->type );
                     if( eltype != arrayBaseStructType( artype ) ) break;
@@ -747,15 +745,14 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
                 expr = DataDtorCompArrEl( expr, index );
                 dataInitCodeFileClose();
             } else {
-                for( prev = curr
-                   ; prev != NULL && prev->type == curr->type
-                   ; prev = prev->previous );
-                if( prev != NULL ) {
-                    dataInitCodeFileOpen( TRUE );
-                    _dumpDtorInt( "dtorableObjectCtored -- class offset %x\n"
-                                , info->offset );
-                    expr = DataDtorCompClass( expr, info->offset, DTC_COMP_MEMB );
-                    dataInitCodeFileClose();
+                for( prev = curr; prev != NULL; prev = prev->previous ) {
+                    if( prev->type != curr->type ) {
+                        dataInitCodeFileOpen( TRUE );
+                        _dumpDtorInt( "dtorableObjectCtored -- class offset %x\n", info->offset );
+                        expr = DataDtorCompClass( expr, info->offset, DTC_COMP_MEMB );
+                        dataInitCodeFileClose();
+                        break;
+                    }
                 }
             }
         }

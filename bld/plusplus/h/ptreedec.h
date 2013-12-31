@@ -80,10 +80,6 @@ PTREE PtdDltDtorSize            // DECORATE FOR SIZE OF DTORABLE-ELEMENT
     ( PTREE expr                // - expression
     , target_size_t size )      // - size
 ;
-PTREE PtdDtorKind               // SPECIFY KIND OF DTOR ENTRY
-    ( PTREE expr                // - expression
-    , DTC_KIND kind )           // - kind (DTC_COMP_...)
-;
 #if 0
 PTREE PtdDtorRefType            // DECORATE WITH DTOR REFERENCE (TYPE)
     ( PTREE expr                // - expression

@@ -431,17 +431,14 @@ static PTREE exprCtoring        // EXPRESSION CTORING
               }
               break;
             case PTD_DTOR_EXPR :
-              DbgVerify( dtor == ptd->symbol.sym
-                       , "exprCtoring -- dtor mismatch" );
+              DbgVerify( dtor == ptd->symbol.sym, "exprCtoring -- dtor mismatch" );
               ptd->base.kind = kind;
               dtor_decorated = TRUE;
               break;
             case PTD_DTOR_SCOPE :
             case PTD_CTORED_COMP :
-              DbgVerify( dtor == ptd->symbol.sym
-                       , "exprCtoring -- dtor mismatch" );
-              DbgVerify( kind == PTD_DTOR_EXPR
-                       , "exprCtoring -- not PTD_EXPR" );
+              DbgVerify( dtor == ptd->symbol.sym, "exprCtoring -- dtor mismatch" );
+              DbgVerify( kind == PTD_DTOR_EXPR, "exprCtoring -- not PTD_EXPR" );
               dtor_decorated = TRUE;
               break;
           }
@@ -695,16 +692,6 @@ PTREE PtdDltDtorEnd             // DECORATE FOR END OF DTORABLE-ELEMENT ON DEL
     ScopeKeep( GetCurrScope() );
     FunctionHasRegistration();
     return ptdBase( expr, PTD_DEL_DTORED );
-}
-
-
-PTREE PtdDtorKind               // SPECIFY KIND OF DTOR ENTRY
-    ( PTREE expr                // - expression
-    , DTC_KIND kind )           // - kind (DTC_COMP_...)
-{
-//    return ptdOffset( expr, kind, PTD_DTOR_KIND );
-    kind = kind;
-    return expr;
 }
 
 
@@ -1028,10 +1015,10 @@ void PtdPrint(                  // DEBUG: print decoration for a node
 
     printf( "%d. Decorated Node: %p\n", numb, node );
     RingIterBeg( node->decor, curr ) {
-        if( curr->base.kind >= MAX_PTD_KIND ) {
-            name = "PtdPrint -- bad PTD type";
+        if( curr->base.kind < MAX_PTD_KIND ) {
+            name = name_kind[curr->base.kind];
         } else {
-            name = name_kind[ curr->base.kind ];
+            name = "PtdPrint -- bad PTD type";
         }
         printf( "  %s:", name );
         switch( curr->base.fmt ) {

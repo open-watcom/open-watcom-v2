@@ -871,7 +871,7 @@ static void freeObjTables(      // FREE OBJECT STATE TABLES
 
 
 static SE* cgAddSeComponent     // ADD STATE DTC_COMPONENT STATE ENTRY
-    ( unsigned se_type          // - entry type
+    ( DTC_KIND se_type          // - entry type
     , target_offset_t offset    // - offset of entry
     , SYMBOL dtor )             // - destructor to be used
 {
@@ -3067,17 +3067,12 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 if( NULL != dtor_last_reqd ) {
                     SE* se;
                     cg_name expr;
-                    se = cgAddSeComponent( dtor_kind
-                                         , ins_value.uvalue
-                                         , dtor_last_reqd );
+                    se = cgAddSeComponent( dtor_kind, ins_value.uvalue, dtor_last_reqd );
                     fctl->ctored_obj = se;
                     BlkPosnTempEndSet( se );
-                    expr = CgCallBackCtorStart( NULL
-                                              , TY_POINTER
-                                              , se );
+                    expr = CgCallBackCtorStart( NULL, TY_POINTER, se );
                     CgCommaBefore( expr, TY_POINTER );
-                    if( dtor_kind == DTC_ACTUAL_DBASE
-                     || dtor_kind == DTC_ACTUAL_VBASE ) {
+                    if( dtor_kind == DTC_ACTUAL_DBASE || dtor_kind == DTC_ACTUAL_VBASE ) {
                         if( DtmTabular( fctl ) ) {
                             expr = ObjInitRegActualBase( se );
                             CgCommaBefore( expr, TY_POINTER );

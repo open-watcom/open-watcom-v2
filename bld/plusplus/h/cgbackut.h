@@ -145,7 +145,7 @@ typedef struct                  // SE_BASE -- base for state entries
 {   SE* next;                   // - next in ring
     SE* prev;                   // - previous in ring
     STATE_VAR state_var;        // - state variable for entry
-    uint_8 se_type;             // - type of entry
+    DTC_KIND se_type;           // - type of entry
     uint_8 gen              :1; // - TRUE ==> entry is to be generated
     PAD_UNSIGNED
 } SE_BASE;
