@@ -184,16 +184,6 @@ extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp )
     return( loc );
 }
 
-extern void         DBSetSymLoc( cg_sym_handle sym, long off ) {
-/**************************************************************/
-
-    name        *tmp;
-
-    tmp = DeAlias( AllocUserTemp( sym, XX ) );
-    tmp->v.usage |= VAR_VOLATILE|NEEDS_MEMORY|USE_IN_ANOTHER_BLOCK|USE_ADDRESS;
-    tmp->t.location = off;
-}
-
 extern  dbg_loc _CGAPI DBLocConst( dbg_loc loc, unsigned_32 val )
 /***************************************************************/
 {

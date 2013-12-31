@@ -863,8 +863,6 @@ extern  void    FreePreCompiledHeader( void );
 extern  void    CBanner( void );                        /* watcom */
 extern  void    MyExit( int ret );                      /* cintmain */
 
-extern  void    DBSetSymLoc( CGSYM_HANDLE, unsigned );  /* dbsupp */
-
 // cstmt.c
 extern  SYM_HANDLE GetBlockSymList( void );
 extern  void    InitStmt( void );
