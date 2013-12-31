@@ -45,10 +45,7 @@ static segment_id   ThreadSeg;
 
 void Chk_Struct_Union_Enum( TYPEPTR typ )
 {
-    while( typ->decl_type == TYPE_TYPEDEF ) {           /* 24-nov-94 */
-        if( !(typ->type_flags & TF2_DUMMY_TYPEDEF) ) break;
-        typ = typ->object;
-    }
+    SKIP_DUMMY_TYPEDEFS( typ );
     switch( typ->decl_type ) {
     case TYPE_STRUCT:
     case TYPE_UNION:
@@ -275,15 +272,6 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     return( sym_handle );
 }
 
-TYPEPTR SkipDummyTypedef( TYPEPTR typ )                 /* 25-nov-94 */
-{
-    while( typ->decl_type == TYPE_TYPEDEF &&
-           (typ->type_flags & TF2_DUMMY_TYPEDEF) ) {
-        typ = typ->object;
-    }
-    return( typ );
-}
-
 local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
 {
     bool                old_def;
@@ -480,7 +468,8 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
 new_var:
         old_sym_handle = 0;
         sym->flags |= SYM_DEFINED;
-        typ = SkipDummyTypedef( sym->sym_type );        /* 25-nov-94 */
+        typ = sym->sym_type;
+        SKIP_DUMMY_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_TYPEDEF ) {          /* 12-mar-92 */
             SymGet( &sym2, typ->u.typedefn );
             if( sym->u.var.segment == 0  &&  sym2.u.var.segment != 0 ) {
@@ -905,21 +894,22 @@ struct mod_info {
     SYM_HANDLE       based_sym;
 };
 
-local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
+local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
 {
     type_modifiers  flags;
     SYM_HANDLE      sym_handle;
     SYM_ENTRY       sym;
 
     sym_handle = 0;
-    if( (ptr_typ != NULL) && (ptr_typ->decl_type == TYPE_TYPEDEF) ) {
-     // get segment from typedef TODO should be done sooner
-        TYPEPTR     typ;
+    if( (typ != NULL) && (typ->decl_type == TYPE_TYPEDEF) ) {
+        // get segment from typedef TODO should be done sooner
+        TYPEPTR     ptr_typ;
         SYMPTR      symp;
 
-        typ = SkipDummyTypedef( ptr_typ );              /* 25-nov-94 */
-        if( typ->decl_type == TYPE_TYPEDEF ) {          /* 15-mar-92 */
-            symp = SymGetPtr( typ->u.typedefn );
+        ptr_typ = typ;
+        SKIP_DUMMY_TYPEDEFS( ptr_typ );
+        if( ptr_typ->decl_type == TYPE_TYPEDEF ) {
+            symp = SymGetPtr( ptr_typ->u.typedefn );
             if( info->modifier & FLAG_BASED ) {
                 info->segment = symp->u.var.segment;
                 sym_handle = SegSymHandle( info->segment );
@@ -946,27 +936,27 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
                 use_seg = TRUE;
             }
             switch( CurToken ) {
-            case T_ID:          /* __based(variable) */
+            case T_ID:                                  /* __based(variable) */
                 sym_handle = SymLook( HashValue, Buffer );
-                if( sym_handle == 0 ) {         /* 10-jan-92 */
+                if( sym_handle == 0 ) {
                     SymCreate( &sym, Buffer );
                     sym.attribs.stg_class = SC_EXTERN;  /* indicate extern decl */
                     CErr2p( ERR_UNDECLARED_SYM, Buffer );
                     sym.sym_type = GetType( TYPE_INT );
                     sym_handle = SymAdd( HashValue, &sym );
                 } else {
-                    TYPEPTR     typ;
+                    TYPEPTR     ptr_typ;
 
                     SymGet( &sym, sym_handle );
-                    typ = sym.sym_type;
-                    SKIP_TYPEDEFS( typ );
+                    ptr_typ = sym.sym_type;
+                    SKIP_TYPEDEFS( ptr_typ );
                     if( use_seg ) {
                         info->based_kind = BASED_VARSEG;
-                        if( typ->decl_type != TYPE_POINTER ) {
+                        if( ptr_typ->decl_type != TYPE_POINTER ) {
                            CErr1( ERR_SYM_MUST_BE_TYPE_SEGMENT );
                            info->based_kind = BASED_NONE;
                        }
-                    } else if( typ->decl_type == TYPE_POINTER ) {
+                    } else if( ptr_typ->decl_type == TYPE_POINTER ) {
                         info->based_kind = BASED_VAR;
                     } else if( sym.mods & FLAG_SEGMENT ) {
                         info->based_kind = BASED_SEGVAR;
@@ -975,20 +965,20 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
                         info->based_kind = BASED_NONE;
                     }
                 }
-                if( !(sym.flags & SYM_REFERENCED) ) {   /* 10-jan-92 */
+                if( !(sym.flags & SYM_REFERENCED) ) {
                     sym.flags |= SYM_REFERENCED;
                     SymReplace( &sym, sym_handle );
                 }
                 NextToken();
                 break;
-            case T_VOID:                /* __based(void)  */
+            case T_VOID:            /* __based(void)  */
                 if( use_seg ) {
                     CErr1( ERR_INVALID_BASED_DECLARATOR );
                 }
                 info->based_kind = BASED_VOID;
                 NextToken();
                 break;
-            case T___SEGNAME:   /* __based(__segname("string")) */
+            case T___SEGNAME:       /* __based(__segname("string")) */
                 if( use_seg ) {
                     CErr1( ERR_INVALID_BASED_DECLARATOR );
                 }
@@ -1008,27 +998,27 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
                 }
                 MustRecog( T_RIGHT_PAREN );
                 break;
-            case T___SELF:              /* __based(__self) */
+            case T___SELF:          /* __based(__self) */
                 info->based_kind = BASED_SELFSEG;
                 NextToken();
                 break;
-            case T_AND:                /* __based((__segment) &var ) */
+            case T_AND:             /* __based((__segment) &var ) */
                 if( !use_seg ) {
                     CErr1( ERR_INVALID_BASED_DECLARATOR );
                 }
                 NextToken();
                 if( CurToken == T_ID ) {
                     sym_handle = SymLook( HashValue, Buffer );
-                    if( sym_handle == 0 ) {         /* 10-jan-92 */
+                    if( sym_handle == 0 ) {
                         SymCreate( &sym, Buffer );
-                        sym.attribs.stg_class = SC_EXTERN; /* indicate extern decl */
+                        sym.attribs.stg_class = SC_EXTERN;  /* indicate extern decl */
                         CErr2p( ERR_UNDECLARED_SYM, Buffer );
                         sym.sym_type = GetType( TYPE_INT );
                         sym_handle = SymAdd( HashValue, &sym );
                     } else {
                         SymGet( &sym, sym_handle );
                     }
-                    if( !(sym.flags & SYM_REFERENCED) ) {   /* 10-jan-92 */
+                    if( !(sym.flags & SYM_REFERENCED) ) {
                         sym.flags |= SYM_REFERENCED;
                         SymReplace( &sym, sym_handle );
                     }
@@ -1050,9 +1040,7 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
             NextToken();
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
             // * seg16 binds with * cause of IBM dorks, and so does far16
-            if( (CurToken == T__SEG16)
-              || (CurToken == T__FAR16)
-              || (CurToken == T___FAR16) ) {
+            if( (CurToken == T__SEG16) || (CurToken == T__FAR16) || (CurToken == T___FAR16) ) {
 #if _CPU == 386
                 info->modifier |= FLAG_FAR16;
 #else
@@ -1062,7 +1050,7 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
             }
 #endif
             flags = info->modifier & ~FLAG_EXPORT;
-            ptr_typ = BPtrNode( ptr_typ, flags, info->segment, sym_handle, info->based_kind );
+            typ = BPtrNode( typ, flags, info->segment, sym_handle, info->based_kind );
             sym_handle = 0;
             info->segment = 0;  // start over
             info->modifier = (flags & FLAG_INLINE) | TypeQualifier();  // .. * const
@@ -1071,7 +1059,7 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
             break;
         }
     }
-    return( ptr_typ );
+    return( typ );
 }
 
 

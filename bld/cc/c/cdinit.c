@@ -34,7 +34,7 @@
 #include "i64.h"
 
 
-local unsigned long BitMask[] = {
+local unsigned BitMask[] = {
     0x00000001,
     0x00000003,
     0x00000007,
@@ -72,7 +72,7 @@ local unsigned long BitMask[] = {
 /* use a double-linked list of dataquads to facilitate insertions */
 typedef struct data_quad_list {
     DATA_QUAD               dq;
-    unsigned long           size;
+    unsigned                size;
     struct data_quad_list   *prev, *next;
 } DATA_QUAD_LIST;
 
@@ -91,7 +91,7 @@ local   bool            CharArray( TYPEPTR typ );
 local   bool            WCharArray( TYPEPTR typ );
 local   void            InitCharArray( TYPEPTR typ );
 local   void            InitWCharArray( TYPEPTR typ );
-local   void            StoreFloat( DATA_TYPE dtype, unsigned long size );
+local   void            StoreFloat( DATA_TYPE dtype, unsigned size );
 local   void            StoreInt64( TYPEPTR typ );
 
 int DataQuadsAvailable( void )
@@ -175,12 +175,12 @@ local DATA_QUAD_LIST *NewDataQuad( void )
 
 /* splits the dataquad pointed to by dql so that the current one
    will have size "size" and the new one "oldsize - size" */
-local void SplitDataQuad( DATA_QUAD_LIST *dql, unsigned long size )
+local void SplitDataQuad( DATA_QUAD_LIST *dql, unsigned size )
 {
     DATA_QUAD_LIST  *ndql;
     DATA_QUAD       *ndq;
     DATA_QUAD       *dq;
-    unsigned long   oldsize;
+    unsigned        oldsize;
 
     ndql = NewDataQuad();
     ndql->next = dql->next;
@@ -231,10 +231,10 @@ local void DeleteDataQuad( DATA_QUAD_LIST *dql )
         dql->next->prev = dql->prev;
 }
 
-local void GenDataQuad( DATA_QUAD *dq, unsigned long size )
+local void GenDataQuad( DATA_QUAD *dq, unsigned size )
 {
     DATA_QUAD_LIST  *dql;
-    unsigned long   cursize;
+    unsigned        cursize;
 
     dql = CurDataQuad->next;
     if( dql != NULL ) {
@@ -263,7 +263,7 @@ local void GenDataQuad( DATA_QUAD *dq, unsigned long size )
     CurDataQuad = dql;
 }
 
-local void ZeroBytes( long n )
+local void ZeroBytes( int n )
 {
     DATA_QUAD   dq;
 
@@ -275,12 +275,12 @@ local void ZeroBytes( long n )
     GenDataQuad( &dq, n );
 }
 
-local void RelSeekBytes( long n )
+local void RelSeekBytes( int n )
 {
     DATA_QUAD_LIST  *dql;
 
     dql = CurDataQuad;
-    while( n < 0 && n <= -(long)dql->size ) {
+    while( n < 0 && n <= -(int)dql->size ) {
         n += dql->size;
         dql = dql->prev;
     }
@@ -299,7 +299,7 @@ local void RelSeekBytes( long n )
     }
 }
 
-local void ChkConstant( unsigned long value, unsigned long max_value )
+local void ChkConstant( unsigned value, unsigned max_value )
 {
     if( value > max_value ) {                   /* 13-sep-91 */
         if( (value | (max_value >> 1)) != ~0UL ) {
@@ -308,8 +308,8 @@ local void ChkConstant( unsigned long value, unsigned long max_value )
     }
 }
 
-local void StoreIValue( DATA_TYPE dtype, unsigned long value,
-                        unsigned long size )
+local void StoreIValue( DATA_TYPE dtype, unsigned value,
+                        unsigned size )
 {
     static DATA_QUAD_LIST   *LastCurDataQuad;
     DATA_QUAD_LIST          *dql;
@@ -369,7 +369,7 @@ local void StoreIValue64( DATA_TYPE dtype, uint64 value )
 
 
 typedef struct {
-    long                        offset;
+    int                         offset;
     union {
         STR_HANDLE                  str_h;
         SYM_HANDLE                  sym_h;
@@ -384,7 +384,7 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
 {
 // Assume tree has been const folded
     SYM_ENTRY           sym;
-    long                offset = 0;
+    int                 offset = 0;
 
     switch( tree->op.opr ) {
     case OPR_PUSHINT:
@@ -395,7 +395,7 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
     case OPR_PUSHFLOAT:
         info->state = IS_ADDR;
         if( tree->op.u2.float_value->len != 0 ) {
-            info->offset = (long)atof( tree->op.u2.float_value->string );
+            info->offset = (int)atof( tree->op.u2.float_value->string );
         } else {
 #ifdef _LONG_DOUBLE_
             long_double ld;
@@ -403,9 +403,9 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
 
             ld = tree->op.u2.float_value->ld;
             __iLDFD( &ld, &d );
-            info->offset = (long)d;
+            info->offset = (int)d;
 #else
-            info->offset = (long)tree->op.u2.float_value->ld.u.value;
+            info->offset = (int)tree->op.u2.float_value->ld.u.value;
 #endif
         }
         if( info->offset != 0 ) CompFlags.non_zero_data = 1;
@@ -521,7 +521,7 @@ local void AddrFold( TREEPTR tree, addrfold_info *info )
     }
 }
 
-local void StorePointer( TYPEPTR typ, unsigned long size )
+local void StorePointer( TYPEPTR typ, unsigned size )
 {
 //    type_modifiers      flags;
     TREEPTR             tree;
@@ -637,11 +637,11 @@ local void StoreInt64( TYPEPTR typ )
 local FIELDPTR InitBitField( FIELDPTR field )
 {
     TYPEPTR             typ;
-    unsigned long       value;
-    unsigned long       size;
+    unsigned            value;
+    unsigned            size;
     uint64              value64;
-    unsigned long       bit_value;
-    unsigned long       offset;
+    unsigned            bit_value;
+    unsigned            offset;
     TOKEN               token;
     int                 is64bit;
 
@@ -905,11 +905,11 @@ local void InitUnion( TYPEPTR typ, TYPEPTR ctyp )
 
 void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
 {
-    TOKEN               token;
-    unsigned long       size;
+    TOKEN           token;
+    unsigned        size;
 
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_ENUM ) typ = typ->object;        /* 07-nov-90 */
+    SKIP_ENUM( typ );
     token = CurToken;
     if( CurToken == T_LEFT_BRACE ) {
         NextToken();
@@ -1040,7 +1040,7 @@ local void InitCharArray( TYPEPTR typ )
 {
     unsigned            len;
     STRING_LITERAL      *str_lit;
-    unsigned long       size;
+    unsigned            size;
     DATA_QUAD           dq;
 
 /*      This function handles the initialization of statements like:  */
@@ -1077,7 +1077,7 @@ local void InitWCharArray( TYPEPTR typ )
     STRING_LITERAL      *str_lit;
     unsigned            value;
     unsigned short      *pwc;
-    unsigned long       size;
+    unsigned            size;
     DATA_QUAD           dq;
 
     dq.type = QDT_SHORT;
@@ -1116,7 +1116,7 @@ local void InitWCharArray( TYPEPTR typ )
  }
 
 
-local void StoreFloat( DATA_TYPE dtype, unsigned long size )
+local void StoreFloat( DATA_TYPE dtype, unsigned size )
 {
     TREEPTR     tree;
     DATA_QUAD   dq;

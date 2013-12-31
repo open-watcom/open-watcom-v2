@@ -330,13 +330,7 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
             break;
         typ = obj;
     }
-    for( ;; ) {
-        if( typ->decl_type != TYPE_TYPEDEF )
-            break;
-        if( !(typ->type_flags & TF2_DUMMY_TYPEDEF) )
-            break;
-        typ = typ->object;                      // skip over dummy typedef
-    }
+    SKIP_DUMMY_TYPEDEFS( typ );
     if( typ->decl_type == TYPE_TYPEDEF ) {
         SymGet( &sym, typ->u.typedefn );
         ChunkSaveStrWord( pch, SymName( &sym, typ->u.typedefn ) );

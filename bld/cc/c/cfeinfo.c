@@ -431,7 +431,8 @@ aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
         inf = InfoLookup( sym );
     }
     if( inf == &DefaultInfo ) {
-        typ = SkipDummyTypedef( sym->sym_type );
+        typ = sym->sym_type;
+        SKIP_DUMMY_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_TYPEDEF ) {
             SymGet( &sym_typedef, typ->u.typedefn );
             if( sym_typedef.name != NULL ) {

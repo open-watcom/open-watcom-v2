@@ -972,7 +972,7 @@ static void SwitchStmt( void )
 //    switch_type = TYPE_INT;         /* assume int */
     tree = RValue( BracketExpr() );
     typ = TypeOf( tree );
-    if( typ->decl_type == TYPE_ENUM ) typ = typ->object;
+    SKIP_ENUM( typ );
     if( typ->decl_type == TYPE_UFIELD ) {
         if( typ->u.f.field_width == (TARGET_INT * 8) ) {
             sw->case_format = "%lu";

@@ -150,9 +150,7 @@ static bool ChkParmPromotion( TYPEPTR typ )
 TYPEPTR  SkipTypeFluff( TYPEPTR typ )
 {
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_ENUM ) {
-        typ = typ->object;
-    }
+    SKIP_ENUM( typ );
     return( typ );
 }
 
@@ -386,9 +384,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
 
         if( !IdenticalType( typ, typ2 ) ) {
             ret_val = NO;
-            while( typ->decl_type == TYPE_ARRAY ) {
-                typ = typ->object;
-            }
+            SKIP_ARRAYS( typ );
             if( IdenticalType( typ, typ2 ) ) {
                 ret_val = PM;
             }
@@ -398,9 +394,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
 
         if( !IdenticalType( typ, typ1 ) ) {
             ret_val = NO;
-            while( typ->decl_type == TYPE_ARRAY ) {
-                typ = typ->object;
-            }
+            SKIP_ARRAYS( typ );
             if( IdenticalType( typ, typ1 ) ) {
                 ret_val = PM;
             }

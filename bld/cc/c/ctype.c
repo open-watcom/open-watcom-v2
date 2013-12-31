@@ -904,9 +904,7 @@ local unsigned FieldAlign( unsigned next_offset, FIELDPTR field, unsigned *worst
 local int UnQualifiedType( TYPEPTR typ )                        /* 21-mar-91 */
 {
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_ENUM ) {
-        typ = typ->object;
-    }
+    SKIP_ENUM( typ );
     switch( typ->decl_type ) {
     case TYPE_CHAR:
     case TYPE_UCHAR:
@@ -1284,9 +1282,7 @@ local void CheckBitfieldType( TYPEPTR typ )
 {
     SKIP_TYPEDEFS( typ );
     if( CompFlags.extensions_enabled ) {
-        if( typ->decl_type == TYPE_ENUM ) {
-            typ = typ->object;
-        }
+        SKIP_ENUM( typ );
     }
     switch( typ->decl_type ) {
     case TYPE_INT:
@@ -1551,9 +1547,8 @@ unsigned TypeSizeEx( TYPEPTR typ, unsigned *pFieldWidth )
         } else if( typ->u.p.decl_flags & FLAG_NEAR ) {
             size = TARGET_POINTER;
         } else {
-            do {
-                typ = typ->object;
-            } while( typ->decl_type == TYPE_TYPEDEF );
+            typ = typ->object;
+            SKIP_TYPEDEFS( typ );
             if( typ->decl_type == TYPE_FUNCTION ) {
                 size = CodePtrSize;
             } else {

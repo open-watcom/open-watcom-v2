@@ -502,7 +502,6 @@ extern  void    Chk_Struct_Union_Enum(TYPEPTR);
 extern  void    Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state );
 extern  int     DeclList(SYM_HANDLE *);
 extern  FIELDPTR FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state );
-extern  TYPEPTR SkipDummyTypedef(TYPEPTR);
 extern  TYPEPTR TypeName(void);
 
 // cdecl2.c
@@ -871,5 +870,17 @@ extern  void    SwitchPurge( void );
 /* Macro to skip all typedefs and arrive at the underlying type */
 #define SKIP_TYPEDEFS( typeptr )                        \
     while( typeptr->decl_type == TYPE_TYPEDEF ) {       \
+        typeptr = typeptr->object;                      \
+    }
+#define SKIP_DUMMY_TYPEDEFS( typeptr )                  \
+    while( typeptr->decl_type == TYPE_TYPEDEF && (typeptr->type_flags & TF2_DUMMY_TYPEDEF) ) { \
+        typeptr = typeptr->object;                      \
+    }
+#define SKIP_ENUM( typeptr )                            \
+    if( typeptr->decl_type == TYPE_ENUM ) {             \
+        typeptr = typeptr->object;                      \
+    }
+#define SKIP_ARRAYS( typeptr )                          \
+    while( typeptr->decl_type == TYPE_ARRAY ) {         \
         typeptr = typeptr->object;                      \
     }
