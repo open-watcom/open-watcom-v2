@@ -94,7 +94,7 @@ void DbgRememberScope(          // REMEMBER A NEWLY-DEFINED SCOPE
     SCOPE new_scope )           // - scope
 ;
 char const * DbgSeName          // DUMP DTC_... name
-    ( unsigned se_type )        // - type of state entry
+    ( DTC_KIND se_type )        // - type of state entry
 ;
 void DbgSetState(               // PRINT STATE VALUE SET, IF REQ'D
     const char* msg,            // - message text

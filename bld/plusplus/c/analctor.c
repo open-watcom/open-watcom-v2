@@ -645,7 +645,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             }
             if( control & EFFECT_CTOR_DECOR ) {
                 if( control & EFFECT_DECOR_COMP ) {
-                    unsigned kind;
+                    DTC_KIND kind;
                     node = PtdScopeCall( node, ctor );
                     if( control & EFFECT_EXACT ) {
                         kind = DTC_COMP_MEMB;

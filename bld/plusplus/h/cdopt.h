@@ -117,7 +117,7 @@ TITER CDoptIterNextComp(        // GET NEXT COMPONENT
 TITER CDoptIterNextElement(     // GET NEXT ELEMENT FOR COMPONENT
     CDOPT_ITER* iter )          // - iteration data
 ;
-unsigned CDoptObjectKind        // DETERMINE DTC_... OBJECT KIND
+DTC_KIND CDoptObjectKind        // DETERMINE DTC_... OBJECT KIND
     ( CDOPT_ITER* iter )        // - iteration data
 ;
 target_offset_t CDoptIterOffsetComp( // GET EXACT OFFSET OF CURRENT COMPONENT

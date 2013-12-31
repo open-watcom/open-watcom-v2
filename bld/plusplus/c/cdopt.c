@@ -713,10 +713,10 @@ TITER CDoptIterNextElement(     // GET NEXT ELEMENT ACTION FOR COMPONENT
 #define isLevelZero( iter ) ( 0 == VstkDimension( &iter->stack ) )
 
 
-unsigned CDoptObjectKind        // DETERMINE DTC_... OBJECT KIND
+DTC_KIND CDoptObjectKind        // DETERMINE DTC_... OBJECT KIND
     ( CDOPT_ITER* iter )        // - iteration data
 {
-    unsigned retn = 0;          // - return value: DTC_...
+    DTC_KIND retn = 0;          // - return value: DTC_...
     CL_ELEM* elem;              // - current element
 
     elem = activeElement( iter );
@@ -734,7 +734,7 @@ unsigned CDoptObjectKind        // DETERMINE DTC_... OBJECT KIND
         break;
       DbgDefault( "CDoptObjectKind -- bad TOB_..." );
     }
-    return retn;
+    return( retn );
 }
 
 

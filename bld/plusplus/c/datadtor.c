@@ -123,7 +123,7 @@ PTREE DataDtorObjPop(           // COMPLETE DTORABLE OBJECT
 PTREE DataDtorCompClass(        // MARK CLASS OBJECT AS DTORABLE COMPONENT
     PTREE expr,                 // - expression to be decorated
     target_offset_t offset,     // - offset of component
-    unsigned dtc_kind )         // - kind of component
+    DTC_KIND kind )             // - kind of component
 {
 #ifndef NDEBUG
     if( PragDbgToggle.dump_data_dtor ) {
@@ -131,7 +131,7 @@ PTREE DataDtorCompClass(        // MARK CLASS OBJECT AS DTORABLE COMPONENT
     }
 #endif
     FunctionHasCtorTest();
-    return PtdCompCtored( expr, offset, dtc_kind );
+    return PtdCompCtored( expr, offset, kind );
 }
 
 

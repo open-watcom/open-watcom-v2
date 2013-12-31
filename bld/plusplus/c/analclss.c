@@ -1833,13 +1833,12 @@ static PTREE ctorOfDtorable(    // MARK CTOR OF DTORABLE, IF REQUIRED
     PTREE expr,                 // - current expression
     TYPE type,                  // - elemental type
     target_size_t offset,       // - offset of component
-    unsigned dtc_kind )         // - kind of component
+    DTC_KIND kind )             // - kind of component
 {
-    if( ( expr == NULL || expr->op != PT_ERROR )
-     && TypeExactDtorable( type ) ) {
-        expr = DataDtorCompClass( expr, offset, dtc_kind );
+    if( ( expr == NULL || expr->op != PT_ERROR ) && TypeExactDtorable( type ) ) {
+        expr = DataDtorCompClass( expr, offset, kind );
     }
-    return expr;
+    return( expr );
 }
 
 static TYPE getCtorThisType( ctor_prologue *data )
@@ -1860,7 +1859,7 @@ static void ctorGenComponent(   // GENERATE CTOR OF COMPONENT
     TYPE type,                  // - component type
     target_offset_t offset,     // - component offset
     PTREE expr,                 // - NULL or initialization expression
-    unsigned kind )             // - kind of component
+    DTC_KIND kind )             // - kind of component
 {
     PTREE target;               // - ctor target
     TYPE this_type;             // - type of 'this'
@@ -1901,16 +1900,16 @@ static boolean isForThisItem(   // IS CDOPT ITER FOR THIS ITEM?
 }
 
 
-static unsigned getComponentKind( // GET DTC_... FOR COMPONENT
+static DTC_KIND getComponentKind( // GET DTC_... FOR COMPONENT
     ctor_init options )         // - options
 {
-    unsigned kind = DTC_COMP_DBASE;
+    DTC_KIND kind = DTC_COMP_DBASE;
     if( options & CI_EXACT ) {
         kind = DTC_COMP_MEMB;
     } else if( options & CI_VIRTUAL ) {
         kind = DTC_COMP_VBASE;
     }
-    return kind;
+    return( kind );
 }
 
 static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS

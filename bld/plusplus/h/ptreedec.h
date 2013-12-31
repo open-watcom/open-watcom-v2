@@ -49,7 +49,7 @@ typedef union ptd PTD;
 PTREE PtdCompCtored             // DECORATE INDICATING COMPONENT CTORED
     ( PTREE expr                // - expression
     , target_offset_t offset    // - offset
-    , unsigned dtc_kind )       // - kind of component
+    , DTC_KIND kind )           // - kind of component
 ;
 PTREE PtdCtoredComponent        // CTORED COMPONENT (BASE OR ELEMENT)
     ( PTREE expr                // - expression
@@ -82,7 +82,7 @@ PTREE PtdDltDtorSize            // DECORATE FOR SIZE OF DTORABLE-ELEMENT
 ;
 PTREE PtdDtorKind               // SPECIFY KIND OF DTOR ENTRY
     ( PTREE expr                // - expression
-    , target_offset_t kind )    // - kind (DTC_COMP_...)
+    , DTC_KIND kind )           // - kind (DTC_COMP_...)
 ;
 #if 0
 PTREE PtdDtorRefType            // DECORATE WITH DTOR REFERENCE (TYPE)

@@ -384,8 +384,8 @@ static void patchForDtorDelBeg( // CALL-BACK: patch state for DTOR-DEL (start)
 SE* DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
     FN_CTL* fctl,               // - function information
     target_size_t elem_size,    // - size of one element in area
-    unsigned dlt1,              // - entry type when one arg
-    unsigned dlt2,              // - entry type when two args
+    DTC_KIND dlt1,              // - entry type when one arg
+    DTC_KIND dlt2,              // - entry type when two args
     SYMBOL op_del )             // - operator delete to be used
 {
     SE* se_dlt;                 // - entry allocated

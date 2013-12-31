@@ -433,7 +433,7 @@ void DbgDumpTypeSigEnt(         // DUMP TYPE_SIG_ENT entries
 
 
 char const * DbgSeName          // DUMP DTC_... name
-    ( unsigned se_type )        // - type of state entry
+    ( DTC_KIND se_type )        // - type of state entry
 {
     static char* dtc_names[] = {// - names
         #define strx(s) #s
@@ -629,7 +629,7 @@ SE* StateTableAdd(              // ADD TO STATE TABLE
 
 
 SE* SeAlloc(                    // ALLOCATE AN SE ENTRY
-    uint_8 se_type )            // - code for entry
+    DTC_KIND se_type )          // - code for entry
 {
     SE* se;                     // - new entry
 

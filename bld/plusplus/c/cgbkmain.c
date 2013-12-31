@@ -698,7 +698,7 @@ static void cgDestruct(         // DESTRUCT UP TO STATE ENTRY
 
 static SE* buildObjectSe        // BUILD SUBOBJ STATE ENTRY
     ( CDOPT_ITER* iter          // - object iterator
-    , unsigned object_kind )    // - kind of object
+    , DTC_KIND kind )           // - kind of object
 {
     SE* se;                     // - current state entry
     TYPE type;                  // - type of object
@@ -707,7 +707,7 @@ static SE* buildObjectSe        // BUILD SUBOBJ STATE ENTRY
     se = SeAlloc( DTC_SUBOBJ );
     se->subobj.original = CDoptIterOffsetComp( iter );
     se->subobj.offset = CDoptIterOffsetExact( iter );
-    se->subobj.kind = object_kind;
+    se->subobj.kind = kind;
     type = CDoptIterType( iter );
     array_type = ArrayType( type );
     if( NULL == array_type ) {
@@ -1356,7 +1356,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
     unsigned ic_sp;             // - IC parm stack pointer
     CGVALUE ic_parms[IC_PARM_STACK_SIZE]; // - parm stack for complex ICs
     SYMBOL dtor_last_reqd;      // - dtor set by IC_SCOPE_CALL_CDTOR
-    unsigned dtor_kind;         // - DTC_... when ctor called
+    DTC_KIND dtor_kind;         // - DTC_... when ctor called
     label_handle lbl;           // - Label for IC_GOTO_NEAR
 
     static cg_op cg_opcodes[] ={// - opcodes for code generator

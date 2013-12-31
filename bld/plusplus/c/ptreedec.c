@@ -516,17 +516,17 @@ static void emitCodeUint        // EMIT STAND-ALONE OPCODE + UNSIGNED
 PTREE PtdCompCtored             // DECORATE INDICATING COMPONENT CTORED
     ( PTREE expr                // - expression
     , target_offset_t offset    // - offset
-    , unsigned dtc_kind )       // - kind of component
+    , DTC_KIND kind )           // - kind of component
 {
     if( NULL == expr ) {
-        CgFrontCodeUint( IC_DTOR_KIND, dtc_kind );
+        CgFrontCodeUint( IC_DTOR_KIND, kind );
         emitCodeUint( IC_COMPCTOR_BEG, offset );
         emitCodeUint( IC_COMPCTOR_END, offset );
     } else {
-        expr = ptdOffset( expr, dtc_kind, PTD_DTOR_KIND );
+        expr = ptdOffset( expr, kind, PTD_DTOR_KIND );
         expr = ptdOffset( expr, offset, PTD_CTORCOMP );
     }
-    return expr;
+    return( expr );
 }
 
 
@@ -700,7 +700,7 @@ PTREE PtdDltDtorEnd             // DECORATE FOR END OF DTORABLE-ELEMENT ON DEL
 
 PTREE PtdDtorKind               // SPECIFY KIND OF DTOR ENTRY
     ( PTREE expr                // - expression
-    , target_offset_t kind )    // - kind (DTC_COMP_...)
+    , DTC_KIND kind )           // - kind (DTC_COMP_...)
 {
 //    return ptdOffset( expr, kind, PTD_DTOR_KIND );
     kind = kind;

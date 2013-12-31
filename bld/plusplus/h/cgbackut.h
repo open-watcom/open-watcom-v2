@@ -170,7 +170,7 @@ typedef struct                  // SE_SUBOBJ -- sub-object
     SYMBOL dtor;                // - DTOR for symbol
     target_offset_t offset;     // - offset within object (DTOR object)
     target_offset_t original;   // - offset within object (original object)
-    uint_8 kind;                // - kind of object (DTC_...)
+    DTC_KIND kind;              // - kind of object (DTC_...)
     PAD_UNSIGNED
 } SE_SUBOBJ;
 
@@ -311,7 +311,7 @@ typedef struct                  // CMD_COMPONENT
 {   CMD_BASE base;              // - base
     DTREG_OBJ* obj;             // - object
     SYMBOL dtor;                // - DTOR for component
-    unsigned cmd_type;          // - command type
+    DTC_KIND cmd_type;          // - command type
     target_offset_t offset;     // - offset of component
     PAD_UNSIGNED
 } CMD_COMPONENT;
@@ -936,11 +936,7 @@ label_handle CgSwitchBeg        // GENERATE CODE FOR START OF SWITCH STMT
     ( FN_CTL* fctl )            // - function control
 ;
 void CgSwitchCase               // GENERATE CODE FOR SWITCH CASE
-    ( long case_value )         // - case value
-;
-void CgSwitchCaseRange          // GENERATE CODE FOR RANGE OF SWITCH CASES
-    ( long range_start          // - start of range
-    , long range_end )          // - end of range
+    ( int case_value )          // - case value
 ;
 void CgSwitchDefault            // GENERATE CODE FOR DEFAULT STMT
     ( void )
@@ -1089,8 +1085,8 @@ boolean DtmTabularFunc(         // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD
 SE* DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
     FN_CTL* fctl,               // - function information
     target_size_t elem_size,    // - size of one element in area
-    unsigned dlt1,              // - entry type when one arg
-    unsigned dlt2,              // - entry type when two args
+    DTC_KIND dlt1,              // - entry type when one arg
+    DTC_KIND dlt2,              // - entry type when two args
     SYMBOL op_del )             // - operator delete to be used
 ;
 void DtorForDelEnd(             // DTORING AREA TO BE DELETED: end
@@ -1356,7 +1352,7 @@ OBJ_INIT* ObjInitTop(           // GET TOP INITIALIZATION OBJECT
     void )
 ;
 SE* SeAlloc(                    // ALLOCATE AN SE ENTRY
-    uint_8 se_type )            // - code for entry
+    DTC_KIND se_type )          // - code for entry
 ;
 SE* SeSetSvPosition(            // LOCATE STATE ENTRY PAST OPTIONAL SET_SV'S
     SE* se )                    // - starting position

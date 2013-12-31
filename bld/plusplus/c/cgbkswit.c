@@ -103,7 +103,7 @@ label_handle CgSwitchBeg        // GENERATE CODE FOR START OF SWITCH STMT
 
 
 void CgSwitchCase               // GENERATE CODE FOR SWITCH CASE
-    ( long case_value )         // - case value
+    ( int case_value )          // - case value
 {
     CGSelCase( switch_id(), switch_label(), case_value );
 }
