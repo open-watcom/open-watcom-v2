@@ -64,6 +64,6 @@ typedef short           target_short;
 typedef unsigned short  target_ushort;
 typedef short           target_int;
 typedef unsigned short  target_uint;
-typedef long            target_long;
-typedef unsigned long   target_ulong;
+typedef int             target_long;
+typedef unsigned int    target_ulong;
 
