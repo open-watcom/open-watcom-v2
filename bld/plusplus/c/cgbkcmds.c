@@ -65,6 +65,29 @@ enum                                    // INDICES FOR STATE-TABLE COMMANDS
 #include "_dtccarv.h"
 #undef pick
 
+// Following definitions and routine must correspond with appropriate items
+// declaration in C++ run-time library
+// see the AlignPad... macros in RTEXCEPT.H and CPPLIB.H
+//
+#if ( _CPU == 8086 )
+    #define DG_ALIGN 2
+#else
+    #define DG_ALIGN 4
+#endif
+
+#define CMD_SIZE DG_ALIGN
+
+static void DgAlignPad(         // INSERT PADDING IN A STRUCTURE
+    unsigned total )            // - number of bytes emitted so far
+{
+    unsigned left;
+
+    left = ( ( total + DG_ALIGN - 1 ) & ( - DG_ALIGN ) ) - total;
+    if( left > 0 ) {
+        DgUninitBytes( left );
+    }
+}
+
 static void* stateTableCmdAlloc(// ALLOCATE STATE-TABLE CMD
     carve_t allocation,         // - allocation
     void* hdr )                 // - ring hdr
@@ -91,10 +114,10 @@ static void* stateTableCmdAllocVar( // ALLOCATE STATE-TABLE CMD, SET VAR
 }
 
 
-static SYMBOL stateTableCmdName(// CREATE COMDEF VARIABLE FOR DTOR_CMD
-    unsigned index )            // - command index
+static SYMBOL stateTableCmdName(    // CREATE COMDEF VARIABLE FOR DTOR_CMD
+    unsigned index )                // - command index
 {
-    return CgVarRo( 1, SC_PUBLIC, CppNameStateTableCmd( index ) );
+    return CgVarRo( CMD_SIZE + CgbkInfo.size_offset, SC_PUBLIC, CppNameStateTableCmd( index ) );
 }
 
 
@@ -105,8 +128,8 @@ SYMBOL CgCmdFnExc(              // GET SYMBOL FOR FN-EXCEPTION SPEC. COMMAND
     CMD_FN_EXC* cmd;            // - command
 
     sigs = BeTypeSigEntsCopy( se->fn_exc.sigs );
-    cmd = stateTableCmdAllocVar( carveCMD_FN_EXC, &ringCmdsFnExc
-                    , 2 + CgbkInfo.size_offset + RingCount( sigs ) * CgbkInfo.size_data_ptr );
+    cmd = stateTableCmdAllocVar( carveCMD_FN_EXC, &ringCmdsFnExc,
+                    CMD_SIZE + CgbkInfo.size_offset + RingCount( sigs ) * CgbkInfo.size_data_ptr );
     cmd->sigs = sigs;
     return cmd->base.sym;
 }
@@ -132,8 +155,7 @@ SYMBOL CgCmdTestFlag(           // GET SYMBOL FOR TEST_FLAG CMD TO BE GEN'ED
         }
     } RingIterEnd( curr )
     if( cmd == NULL ) {
-        cmd = stateTableCmdAllocVar( carveCMD_TEST_FLAG, &ringCmdsTestFlag
-                                   , 2 + 3 * CgbkInfo.size_offset );
+        cmd = stateTableCmdAllocVar( carveCMD_TEST_FLAG, &ringCmdsTestFlag, CMD_SIZE + 3 * CgbkInfo.size_offset );
         cmd->index           = se->test_flag.index;
         cmd->state_var_true  = sv_true;
         cmd->state_var_false = sv_false;
@@ -179,7 +201,8 @@ SYMBOL CgCmdComponent(          // GET SYMBOL FOR DTC_COMP... COMMAND
     CMD_COMPONENT* cmd;         // - command
 
     DbgVerify( UNDEF_AREL != se->component.obj->offset, "CgCmdComponent -- no offset" );
-    cmd = stateTableCmdAllocVar( carveCMD_COMPONENT, &ringCmdsComponent, 1 );
+    cmd = stateTableCmdAllocVar( carveCMD_COMPONENT, &ringCmdsComponent,
+                    CMD_SIZE + 2 * CgbkInfo.size_offset + CgbkInfo.size_code_ptr );
     cmd->obj = se->component.obj;
     cmd->dtor = se->component.dtor;
     cmd->offset = se->component.offset;
@@ -194,7 +217,7 @@ SYMBOL CgCmdArrayInit(          // GET SYMBOL FOR DTC_ARRAY_INIT COMMAND
     CMD_ARRAY_INIT* cmd;        // - command
 
     DbgVerify( UNDEF_AREL != se->array_init.reg->offset, "cgAddCmdArrayInit -- no offset" );
-    cmd = stateTableCmdAllocVar( carveCMD_ARRAY_INIT, &ringCmdsArrayInit, 1 );
+    cmd = stateTableCmdAllocVar( carveCMD_ARRAY_INIT, &ringCmdsArrayInit, CMD_SIZE + CgbkInfo.size_offset );
     cmd->reg = se->array_init.reg;
     return cmd->base.sym;
 }
@@ -210,16 +233,14 @@ SYMBOL CgCmdDlt1(               // GET SYMBOL FOR DTC_DLT_1
              , "CgCmdDlt1 -- no offset for DLT_1" );
     cmd = NULL;
     RingIterBeg( ringCmdsDlt1, cur ) {
-        if( cur->op_del == se->dlt_1.op_del
-         && cur->offset == se->dlt_1.offset ) {
+        if( cur->op_del == se->dlt_1.op_del && cur->offset == se->dlt_1.offset ) {
             cmd = cur;
             break;
         }
     } RingIterEnd( cur )
     if( cmd == NULL ) {
-        cmd = stateTableCmdAllocVar( carveCMD_DLT_1
-                                   , &ringCmdsDlt1
-                                   , 1 );
+        cmd = stateTableCmdAllocVar( carveCMD_DLT_1, &ringCmdsDlt1,
+                        CMD_SIZE + CgbkInfo.size_offset + CgbkInfo.size_code_ptr );
         cmd->op_del = se->dlt_1.op_del;
         cmd->offset = CgOffsetRw( se->dlt_1.offset );
     }
@@ -237,16 +258,14 @@ SYMBOL CgCmdDlt1Array(          // GET SYMBOL FOR DTC_DLT_1
              , "CgCmdDlt1 -- no offset for DLT_1" );
     cmd = NULL;
     RingIterBeg( ringCmdsDlt1Array, cur ) {
-        if( cur->op_del == se->dlt_1_array.op_del
-         && cur->offset == se->dlt_1_array.offset ) {
+        if( cur->op_del == se->dlt_1_array.op_del && cur->offset == se->dlt_1_array.offset ) {
             cmd = cur;
             break;
         }
     } RingIterEnd( cur )
     if( cmd == NULL ) {
-        cmd = stateTableCmdAllocVar( carveCMD_DLT_1_ARRAY
-                                   , &ringCmdsDlt1Array
-                                   , 1 );
+        cmd = stateTableCmdAllocVar( carveCMD_DLT_1_ARRAY, &ringCmdsDlt1Array,
+                        CMD_SIZE + CgbkInfo.size_offset + CgbkInfo.size_code_ptr );
         cmd->op_del = se->dlt_1_array.op_del;
         cmd->offset = CgOffsetRw( se->dlt_1_array.offset );
     }
@@ -272,9 +291,8 @@ SYMBOL CgCmdDlt2(               // GET SYMBOL FOR DTC_DLT_2
         }
     } RingIterEnd( cur )
     if( cmd == NULL ) {
-        cmd = stateTableCmdAllocVar( carveCMD_DLT_2
-                                   , &ringCmdsDlt2
-                                   , 1 );
+        cmd = stateTableCmdAllocVar( carveCMD_DLT_2, &ringCmdsDlt2,
+                        CMD_SIZE + 2 * CgbkInfo.size_offset + CgbkInfo.size_code_ptr );
         cmd->op_del = se->dlt_2.op_del;
         cmd->offset = CgOffsetRw( se->dlt_2.offset );
         cmd->size   = se->dlt_2.size;
@@ -301,9 +319,8 @@ SYMBOL CgCmdDlt2Array(          // GET SYMBOL FOR DTC_DLT_2
         }
     } RingIterEnd( cur )
     if( cmd == NULL ) {
-        cmd = stateTableCmdAllocVar( carveCMD_DLT_2_ARRAY
-                                   , &ringCmdsDlt2Array
-                                   , 1 );
+        cmd = stateTableCmdAllocVar( carveCMD_DLT_2_ARRAY, &ringCmdsDlt2Array,
+                        CMD_SIZE + 2 * CgbkInfo.size_offset + CgbkInfo.size_code_ptr );
         cmd->op_del = se->dlt_2_array.op_del;
         cmd->offset = CgOffsetRw( se->dlt_2_array.offset );
         cmd->size   = se->dlt_2_array.size;
@@ -321,8 +338,8 @@ SYMBOL CgCmdTry(                // GET SYMBOL FOR TRY BLOCK
     DbgVerify( UNDEF_AREL != se->try_blk.try_impl->offset_jmpbuf, "cgGenerateCmdsTry -- no offset for jmpbuf" );
     DbgVerify( UNDEF_AREL != se->try_blk.try_impl->offset_var, "cgGenerateCmdsTry -- no offset for var" );
     sigs = BeTypeSigEntsCopy( se->try_blk.sigs );
-    cmd = stateTableCmdAllocVar( carveCMD_TRY, &ringCmdsTry
-                    , 2 + 2 + 3 * CgbkInfo.size_offset + RingCount( sigs ) * CgbkInfo.size_data_ptr );
+    cmd = stateTableCmdAllocVar( carveCMD_TRY, &ringCmdsTry,
+                    CMD_SIZE + 4 * CgbkInfo.size_offset + RingCount( sigs ) * CgbkInfo.size_data_ptr );
     cmd->state = SeStateVar( FstabPrevious( se ) );
     cmd->offset_var = CgOffsetRw( se->try_blk.try_impl->offset_var );
     cmd->offset_jmpbuf = CgOffsetRw( se->try_blk.try_impl->offset_jmpbuf );
@@ -336,7 +353,7 @@ SYMBOL CgCmdCtorTest(           // GET SYMBOL FOR CTOR-TEST COMMAND
 {
     CMD_CTOR_TEST* cmd;         // - command
 
-    cmd = stateTableCmdAllocVar( carveCMD_CTOR_TEST, &ringCmdsCtorTest, 1 + CgbkInfo.size_offset );
+    cmd = stateTableCmdAllocVar( carveCMD_CTOR_TEST, &ringCmdsCtorTest, CMD_SIZE + CgbkInfo.size_offset );
     cmd->flag_no = se->ctor_test.flag_no;
     return cmd->base.sym;
 }
@@ -510,8 +527,7 @@ static void cgGenerateCmdsArrayInit( // EMIT ARRAY-INIT CMDS
         if( cgGenerateCmdBase( &curr->base, DTC_ARRAY_INIT ) ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
-                printf( "DTC_ARRAY_INIT offset=%x\n"
-                      , curr->reg->offset );
+                printf( "DTC_ARRAY_INIT offset=%x\n", curr->reg->offset );
             }
 #endif
             DgAlignPad( sizeof( DTOR_CMD_CODE ) );

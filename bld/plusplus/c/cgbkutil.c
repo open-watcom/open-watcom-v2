@@ -51,28 +51,6 @@
 //***********************************************************************
 
 
-// This routine must be called to correspond to the AlignPad... macros in
-// RTEXCEPT.H and CPPLIB.H
-//
-void DgAlignPad(                // INSERT PADDING IN A STRUCTURE
-    unsigned total )            // - number of bytes emitted so far
-{
-    unsigned left;
-
-#if ( _CPU == 8086 )
-    #define ALIGN 2
-#else
-    #define ALIGN 4
-#endif
-
-    left = ( ( total + ALIGN - 1 ) & ( - ALIGN ) ) - total;
-    if( left > 0 ) {
-        DgUninitBytes( left );
-    }
-#undef ALIGN
-}
-
-
 static void alignInSegment(     // PUT OUT ALIGNMENT WITHIN A SEGMENT
     target_size_t adjust,       // - adjustment
     fe_seg_id segid )           // - segment id

@@ -80,169 +80,169 @@ typedef enum                    // flags controlling grouped destruction
 #define UNDEFINED_TYPE  (-1)    // indicates no type defined
 
 typedef struct cond_info COND_INFO;
-struct cond_info                // COND_INFO -- info. for conditional DTOR
-{   SYMBOL sym;                 // - base symbol for test
-    target_offset_t offset;     // - offset of byte to be tested/set/reset
-    uint_8 mask;                // - mask for byte
+struct cond_info                    // COND_INFO -- info. for conditional DTOR
+{   SYMBOL          sym;            // - base symbol for test
+    target_offset_t offset;         // - offset of byte to be tested/set/reset
+    uint_8          mask;           // - mask for byte
     PAD_UNSIGNED
 };
 
-typedef struct                  // CGBK_INFO -- useful info for CGBK...
-{   target_size_t size_code_ptr;// - size of code pointer
-    target_size_t size_data_ptr;// - size of data pointer
-    target_size_t size_offset;  // - size of offset
-    target_size_t size_rw_base; // - base of RW_DTREG_..
-    target_size_t size_fs_hand; // - size of fs handle
+typedef struct                      // CGBK_INFO -- useful info for CGBK...
+{   target_size_t size_code_ptr;    // - size of code pointer
+    target_size_t size_data_ptr;    // - size of data pointer
+    target_size_t size_offset;      // - size of offset
+    target_size_t size_rw_base;     // - base of RW_DTREG_..
+    target_size_t size_fs_hand;     // - size of fs handle
     PAD_UNSIGNED
 } CGBK_INFO;
 
-extern CGBK_INFO CgbkInfo;      // found in CGBKMAIN
+extern CGBK_INFO CgbkInfo;          // found in CGBKMAIN
 
 
 typedef struct throw_ro THROW_RO;
-struct throw_ro                 // THROW_RO -- R/O blocks for thrown types
-{   THROW_RO *next;             // - next in ring( hdr. in ring_throw_ro )
-    SYMBOL sym;                 // - symbol for the block
-    TYPE_SIG *sig;              // - type signature for the type
-    unsigned emitted : 1;       // - TRUE ==> has been emitted to codegen
+struct throw_ro                     // THROW_RO -- R/O blocks for thrown types
+{   THROW_RO    *next;              // - next in ring( hdr. in ring_throw_ro )
+    SYMBOL      sym;                // - symbol for the block
+    TYPE_SIG    *sig;               // - type signature for the type
+    unsigned        emitted :1;     // - TRUE ==> has been emitted to codegen
     PAD_UNSIGNED
 };
 
 typedef target_offset_t STATE_VAR;
 
-typedef struct                  // RT_DEF -- definitions for a R/T call
-{   call_handle handle;         // - call handle
-    cg_type type;               // - type for R/T call
+typedef struct                      // RT_DEF -- definitions for a R/T call
+{   call_handle handle;             // - call handle
+    cg_type     type;               // - type for R/T call
 } RT_DEF;
 
 typedef struct try_impl TRY_IMPL;
-struct try_impl                 // TRY_IMPL -- try's implemented in a function
-{   TRY_IMPL* next;             // - next in ring
-    SYMBOL try_sym;             // - try symbol
-    SYMBOL jmp_sym;             // - jmpbuf variable
-    target_offset_t offset_var;  // - offset of try variable from fun R/W
-    target_offset_t offset_jmpbuf;//- offset of jmpbuf from fun R/W
+struct try_impl                     // TRY_IMPL -- try's implemented in a function
+{   TRY_IMPL        *next;          // - next in ring
+    SYMBOL          try_sym;        // - try symbol
+    SYMBOL          jmp_sym;        // - jmpbuf variable
+    target_offset_t offset_var;     // - offset of try variable from fun R/W
+    target_offset_t offset_jmpbuf;  //- offset of jmpbuf from fun R/W
     PAD_UNSIGNED
 };
 
-typedef struct dtreg_obj        DTREG_OBJ; // - registration variables
-struct dtreg_obj
-{   DTREG_OBJ* next;            // - next in ring
-    SYMBOL sym;                 // - symbol for object (in use)
-    SYMBOL cg_sym;              // - symbol for object (defined)
-    target_offset_t offset;     // - offset of symbol
-    unsigned in_use :1;         // - TRUE ==> in use
+typedef struct dtreg_obj DTREG_OBJ;
+struct dtreg_obj                    // DTREG_OBJ -- registration variables
+{   DTREG_OBJ       *next;          // - next in ring
+    SYMBOL          sym;            // - symbol for object (in use)
+    SYMBOL          cg_sym;         // - symbol for object (defined)
+    target_offset_t offset;         // - offset of symbol
+    unsigned        in_use :1;      // - TRUE ==> in use
     PAD_UNSIGNED
 };
 
-typedef struct type_sig_ent     TYPE_SIG_ENT;
-struct type_sig_ent             // TYPE_SIG_ENT -- entry in ring of type sig.s
-{   TYPE_SIG_ENT *next;         // - next entry
-    TYPE_SIG* sig;              // - type signature
+typedef struct type_sig_ent TYPE_SIG_ENT;
+struct type_sig_ent                 // TYPE_SIG_ENT -- entry in ring of type sig.s
+{   TYPE_SIG_ENT    *next;          // - next entry
+    TYPE_SIG        *sig;           // - type signature
 };
 
-typedef struct                  // SE_BASE -- base for state entries
-{   SE* next;                   // - next in ring
-    SE* prev;                   // - previous in ring
-    STATE_VAR state_var;        // - state variable for entry
-    DTC_KIND se_type;           // - type of entry
-    uint_8 gen              :1; // - TRUE ==> entry is to be generated
+typedef struct                      // SE_BASE -- base for state entries
+{   SE          *next;              // - next in ring
+    SE          *prev;              // - previous in ring
+    STATE_VAR   state_var;          // - state variable for entry
+    DTC_KIND    se_type;            // - type of entry
+    uint_8      gen :1;             // - TRUE ==> entry is to be generated
     PAD_UNSIGNED
 } SE_BASE;
 
-typedef struct                  // SE_SYM_AUTO -- auto symbol to be DTORed
-{   SE_BASE base;               // - base
-    SYMBOL sym;                 // - auto symbol
-    SYMBOL dtor;                // - DTOR for symbol
-    target_offset_t offset;     // - offset of symbol from R/W block
+typedef struct                      // SE_SYM_AUTO -- auto symbol to be DTORed
+{   SE_BASE         base;           // - base
+    SYMBOL          sym;            // - auto symbol
+    SYMBOL          dtor;           // - DTOR for symbol
+    target_offset_t offset;         // - offset of symbol from R/W block
     PAD_UNSIGNED
 } SE_SYM_AUTO;
 
-typedef struct                  // SE_SYM_STATIC -- static symbol to be DTORed
-{   SE_BASE base;               // - base
-    SYMBOL sym;                 // - static symbol
-    SYMBOL dtor;                // - DTOR for symbol
+typedef struct                      // SE_SYM_STATIC -- static symbol to be DTORed
+{   SE_BASE         base;           // - base
+    SYMBOL          sym;            // - static symbol
+    SYMBOL          dtor;           // - DTOR for symbol
 } SE_SYM_STATIC;
 
-typedef struct                  // SE_SUBOBJ -- sub-object
-{   SE_BASE base;               // - base
-    TYPE type;                  // - object type
-    SYMBOL dtor;                // - DTOR for symbol
-    target_offset_t offset;     // - offset within object (DTOR object)
-    target_offset_t original;   // - offset within object (original object)
-    DTC_KIND kind;              // - kind of object (DTC_...)
+typedef struct                      // SE_SUBOBJ -- sub-object
+{   SE_BASE         base;           // - base
+    TYPE            type;           // - object type
+    SYMBOL          dtor;           // - DTOR for symbol
+    target_offset_t offset;         // - offset within object (DTOR object)
+    target_offset_t original;       // - offset within object (original object)
+    DTC_KIND        kind;           // - kind of object (DTC_...)
     PAD_UNSIGNED
 } SE_SUBOBJ;
 
-typedef struct                  // SE_ARRAY -- array in object table
-{   SE_BASE base;               // - base
-    TYPE_SIG* sig;              // - type signature for element
-    target_offset_t offset;     // - offset of array
-    target_size_t count;        // - number of elements
+typedef struct                      // SE_ARRAY -- array in object table
+{   SE_BASE         base;           // - base
+    TYPE_SIG        *sig;           // - type signature for element
+    target_offset_t offset;         // - offset of array
+    target_offset_t count;          // - number of elements
     PAD_UNSIGNED
 } SE_ARRAY;
 
-typedef struct                  // SE_CTOR_TEST -- command: test if ctor'ed
-{   SE_BASE base;               // - base
-    unsigned flag_no;           // - flag number
+typedef struct                      // SE_CTOR_TEST -- command: test if ctor'ed
+{   SE_BASE         base;           // - base
+    target_offset_t flag_no;        // - flag number
 } SE_CTOR_TEST;
 
-typedef struct                  // SE_SET_SV -- command: set_sv
-{   SE_BASE base;               // - base
-    SE* se;                     // - entry to be set
+typedef struct                      // SE_SET_SV -- command: set_sv
+{   SE_BASE         base;           // - base
+    SE              *se;            // - entry to be set
 } SE_SET_SV;
 
-typedef struct                  // SE_TEST_FLAG -- command: test_flag
-{   SE_BASE base;               // - base
-    SE* se_true;                // - entry, when TRUE
-    SE* se_false;               // - entry, when FALSE
-    target_offset_t index;      // - index
+typedef struct                      // SE_TEST_FLAG -- command: test_flag
+{   SE_BASE         base;           // - base
+    SE              *se_true;       // - entry, when TRUE
+    SE              *se_false;      // - entry, when FALSE
+    target_offset_t index;          // - index
     PAD_UNSIGNED
 } SE_TEST_FLAG;
 
-typedef struct                  // SE_TRY -- try block start
-{   SE_BASE base;               // - base
-    TRY_IMPL* try_impl;         // - try implementation to be used
-    TYPE_SIG_ENT* sigs;         // - type signatures for catches
-    SYMBOL sym;                 // - symbol for try, catches
+typedef struct                      // SE_TRY -- try block start
+{   SE_BASE         base;           // - base
+    TRY_IMPL        *try_impl;      // - try implementation to be used
+    TYPE_SIG_ENT    *sigs;          // - type signatures for catches
+    SYMBOL          sym;            // - symbol for try, catches
 } SE_TRY;
 
-typedef struct                  // SE_CATCH -- catch block start
-{   SE_BASE base;               // - base
-    SE* try_blk;                // - try for catch
-    TYPE_SIG_ENT* sig;          // - type signature for caught variable
+typedef struct                      // SE_CATCH -- catch block start
+{   SE_BASE         base;           // - base
+    SE              *try_blk;       // - try for catch
+    TYPE_SIG_ENT    *sig;           // - type signature for caught variable
 } SE_CATCH;
 
-typedef struct                  // SE_FN_EXC -- function except. specification
-{   SE_BASE base;               // - base
-    TYPE_SIG_ENT* sigs;         // - type signatures in specification
+typedef struct                      // SE_FN_EXC -- function except. specification
+{   SE_BASE         base;           // - base
+    TYPE_SIG_ENT    *sigs;          // - type signatures in specification
 } SE_FN_EXC;
 
-typedef struct                  // SE_COMPONENT -- SUB-OBJECT COMPONENT
-{   SE_BASE base;               // - base
-    DTREG_OBJ* obj;             // - RW_DTREG_OBJECT symbol
-    SYMBOL dtor;                // - DTOR for component
-    target_offset_t offset;     // - offset of component
+typedef struct                      // SE_COMPONENT -- SUB-OBJECT COMPONENT
+{   SE_BASE         base;           // - base
+    DTREG_OBJ       *obj;           // - RW_DTREG_OBJECT symbol
+    SYMBOL          dtor;           // - DTOR for component
+    target_offset_t offset;         // - offset of component
     PAD_UNSIGNED
 } SE_COMPONENT;
 
-typedef struct                  // SE_OBJECT_INIT -- static/auto object init
-{   SE_BASE base;               // - base
-    DTREG_OBJ* reg;             // - registration element
+typedef struct                      // SE_OBJECT_INIT -- static/auto object init
+{   SE_BASE         base;           // - base
+    DTREG_OBJ       *reg;           // - registration element
 } SE_ARRAY_INIT;
 
-typedef struct                  // SE_DLT_1 -- new-delete, 1 parm
-{   SE_BASE base;               // - base
-    SYMBOL op_del;              // - operator delete( void* )
-    target_offset_t offset;     // - offset of ptr to object
+typedef struct                      // SE_DLT_1 -- new-delete, 1 parm
+{   SE_BASE         base;           // - base
+    SYMBOL          op_del;         // - operator delete( void * )
+    target_offset_t offset;         // - offset of ptr to object
     PAD_UNSIGNED
 } SE_DLT_1;
 
-typedef struct                  // SE_DLT_2 -- new-delete, 2 parms
-{   SE_BASE base;               // - base
-    SYMBOL op_del;              // - operator delete( void*, size_t )
-    target_offset_t offset;     // - offset of ptr to object
-    target_size_t size;         // - object size
+typedef struct                      // SE_DLT_2 -- new-delete, 2 parms
+{   SE_BASE         base;           // - base
+    SYMBOL          op_del;         // - operator delete( void*, size_t )
+    target_offset_t offset;         // - offset of ptr to object
+    target_offset_t size;           // - object size
     PAD_UNSIGNED
 } SE_DLT_2;
 
@@ -250,94 +250,94 @@ typedef SE_DLT_1 SE_DLT_1_ARRAY;    // SE_DLT_1_ARRAY
 typedef SE_DLT_2 SE_DLT_2_ARRAY;    // SE_DLT_2_ARRAY
 
 
-union se                        // SE -- state entry: one of
-{   SE_BASE base;               // - base
-    SE_SYM_AUTO sym_auto;       // - auto symbol
-    SE_SYM_STATIC sym_static;   // - static symbol
-    SE_ARRAY array;             // - array in object table
-    SE_SUBOBJ subobj;           // - sub-object
-    SE_SET_SV set_sv;           // - cmd: set_sv
-    SE_TEST_FLAG test_flag;     // - cmd: test_flag
-    SE_TRY try_blk;             // - cmd: try
-    SE_CATCH catch_blk;         // - cmd: catch
-    SE_FN_EXC fn_exc;           // - cmd: fn_exc
-    SE_COMPONENT component;     // - cmd: component
-    SE_ARRAY_INIT array_init;   // - cmd: data array initialization
-    SE_DLT_1 dlt_1;             // - cmd: new-delete (1 parm)
-    SE_DLT_2 dlt_2;             // - cmd: new-delete (2 parms)
-    SE_DLT_1 dlt_1_array;       // - cmd: new-delete-array (1 parm)
-    SE_DLT_2 dlt_2_array;       // - cmd: new-delete-array (2 parms)
-    SE_CTOR_TEST ctor_test;     // - cmd: ctor-test
+union se                            // SE -- state entry: one of
+{   SE_BASE         base;           // - base
+    SE_SYM_AUTO     sym_auto;       // - auto symbol
+    SE_SYM_STATIC   sym_static;     // - static symbol
+    SE_ARRAY        array;          // - array in object table
+    SE_SUBOBJ       subobj;         // - sub-object
+    SE_SET_SV       set_sv;         // - cmd: set_sv
+    SE_TEST_FLAG    test_flag;      // - cmd: test_flag
+    SE_TRY          try_blk;        // - cmd: try
+    SE_CATCH        catch_blk;      // - cmd: catch
+    SE_FN_EXC       fn_exc;         // - cmd: fn_exc
+    SE_COMPONENT    component;      // - cmd: component
+    SE_ARRAY_INIT   array_init;     // - cmd: data array initialization
+    SE_DLT_1        dlt_1;          // - cmd: new-delete (1 parm)
+    SE_DLT_2        dlt_2;          // - cmd: new-delete (2 parms)
+    SE_DLT_1        dlt_1_array;    // - cmd: new-delete-array (1 parm)
+    SE_DLT_2        dlt_2_array;    // - cmd: new-delete-array (2 parms)
+    SE_CTOR_TEST    ctor_test;      // - cmd: ctor-test
 };
 
 typedef struct blk_posn BLK_POSN;
 
-typedef struct cmd_base         CMD_BASE;
-struct cmd_base
-{   CMD_BASE* next;             // - next in ring
-    SYMBOL sym;                 // - symbol for generated command
-    unsigned emitted : 1;       // - TRUE ==> has been emitted to codegen
+typedef struct cmd_base CMD_BASE;
+struct cmd_base                     // CMD_BASE
+{   CMD_BASE        *next;          // - next in ring
+    SYMBOL          sym;            // - symbol for generated command
+    unsigned        emitted : 1;    // - TRUE ==> has been emitted to codegen
 };
 
-typedef struct                  // CMD_SET_SV
-{   CMD_BASE base;              // - base
-    STATE_VAR state_var;        // - state variable
+typedef struct                      // CMD_SET_SV
+{   CMD_BASE        base;           // - base
+    STATE_VAR       state_var;      // - state variable
     PAD_UNSIGNED
 } CMD_SET_SV;
 
-typedef struct                  // CMD_TEST_FLAG
-{   CMD_BASE base;              // - base
-    target_size_t index;        // - index
-    STATE_VAR state_var_true;   // - true value
-    STATE_VAR state_var_false;  // - false value
+typedef struct                      // CMD_TEST_FLAG
+{   CMD_BASE        base;           // - base
+    target_offset_t index;          // - index
+    STATE_VAR       state_var_true; // - true value
+    STATE_VAR       state_var_false;// - false value
     PAD_UNSIGNED
 } CMD_TEST_FLAG;
 
-typedef struct                  // CMD_TRY
-{   CMD_BASE base;              // - base
-    TYPE_SIG_ENT* sigs;         // - type signatures
-    target_offset_t offset_var; // - offset of try variable from fun R/W
-    target_offset_t offset_jmpbuf; // - offset of jmpbuf from fun R/W
-    STATE_VAR state;            // - state preceding try
+typedef struct                      // CMD_TRY
+{   CMD_BASE        base;           // - base
+    TYPE_SIG_ENT    *sigs;          // - type signatures
+    target_offset_t offset_var;     // - offset of try variable from fun R/W
+    target_offset_t offset_jmpbuf;  // - offset of jmpbuf from fun R/W
+    STATE_VAR       state;          // - state preceding try
     PAD_UNSIGNED
 } CMD_TRY;
 
-typedef struct                  // CMD_FN_EXC
-{   CMD_BASE base;              // - base
-    TYPE_SIG_ENT* sigs;         // - type signatures
+typedef struct                      // CMD_FN_EXC
+{   CMD_BASE        base;           // - base
+    TYPE_SIG_ENT    *sigs;          // - type signatures
 } CMD_FN_EXC;
 
-typedef struct                  // CMD_COMPONENT
-{   CMD_BASE base;              // - base
-    DTREG_OBJ* obj;             // - object
-    SYMBOL dtor;                // - DTOR for component
-    DTC_KIND cmd_type;          // - command type
-    target_offset_t offset;     // - offset of component
+typedef struct                      // CMD_COMPONENT
+{   CMD_BASE        base;           // - base
+    DTREG_OBJ       *obj;           // - object
+    SYMBOL          dtor;           // - DTOR for component
+    DTC_KIND        cmd_type;       // - command type
+    target_offset_t offset;         // - offset of component
     PAD_UNSIGNED
 } CMD_COMPONENT;
 
-typedef struct                  // CMD_ARRAY_INIT
-{   CMD_BASE base;              // - base
-    DTREG_OBJ* reg;             // - registration to be used
+typedef struct                      // CMD_ARRAY_INIT
+{   CMD_BASE        base;           // - base
+    DTREG_OBJ       *reg;           // - registration to be used
 } CMD_ARRAY_INIT;
 
-typedef struct                  // CMD_CTOR_TEST
-{   CMD_BASE base;              // - base
-    unsigned flag_no;           // - flag number
+typedef struct                      // CMD_CTOR_TEST
+{   CMD_BASE        base;           // - base
+    target_offset_t flag_no;        // - flag number
 } CMD_CTOR_TEST;
 
-typedef struct                  // CMD_DLT_1
-{   CMD_BASE base;              // - base
-    SYMBOL op_del;              // - operator delete( void* )
-    target_offset_t offset;     // - offset to ptr to object
+typedef struct                      // CMD_DLT_1
+{   CMD_BASE        base;           // - base
+    SYMBOL          op_del;         // - operator delete( void * )
+    target_offset_t offset;         // - offset to ptr to object
     PAD_UNSIGNED
 } CMD_DLT_1;
 
-typedef struct                  // CMD_DLT_2
-{   CMD_BASE base;              // - base
-    SYMBOL op_del;              // - operator delete( void*, size_t )
-    target_offset_t offset;     // - offset to ptr to object
-    target_offset_t size;       // - object size
+typedef struct                      // CMD_DLT_2
+{   CMD_BASE        base;           // - base
+    SYMBOL          op_del;         // - operator delete( void*, size_t )
+    target_offset_t offset;         // - offset to ptr to object
+    target_offset_t size;           // - object size
     PAD_UNSIGNED
 } CMD_DLT_2;
 
@@ -345,109 +345,109 @@ typedef CMD_DLT_1 CMD_DLT_1_ARRAY;  // CMD_DLT_1_ARRAY
 typedef CMD_DLT_2 CMD_DLT_2_ARRAY;  // CMD_DLT_2_ARRAY
 
 
-typedef struct stab_defn        STAB_DEFN; // -- state table definition
-struct stab_defn
-{   SE* state_table;            // - state table entries
-    SYMBOL ro;                  // - R/O symbol
-    unsigned kind;              // - kind of state table
+typedef struct stab_defn STAB_DEFN;
+struct stab_defn                    // STAB_DEFN -- state table definition
+{   SE              *state_table;   // - state table entries
+    SYMBOL          ro;             // - R/O symbol
+    unsigned        kind;           // - kind of state table
 };
 
 
-typedef struct stab_obj         STAB_OBJ; // -- state table for object
-struct stab_obj
-{   STAB_OBJ* next;             // - next in ring
-    TYPE obj;                   // - StructType of object
-    STAB_DEFN* defn;            // - definition
-    STATE_VAR state_virtual;    // - object: state for last virtual base
-    STATE_VAR state_direct;     // - object: state for last direct base
+typedef struct stab_obj STAB_OBJ;
+struct stab_obj                     // STAB_OBJ -- state table for object
+{   STAB_OBJ        *next;          // - next in ring
+    TYPE            obj;            // - StructType of object
+    STAB_DEFN       *defn;          // - definition
+    STATE_VAR       state_virtual;  // - object: state for last virtual base
+    STATE_VAR       state_direct;   // - object: state for last direct base
     PAD_UNSIGNED
 };
 
 
-typedef struct stab_ctl         STAB_CTL; // -- state table instance
-struct stab_ctl
-{   SYMBOL rw;                  // - R/W symbol
-    STAB_DEFN *defn;            // - state table definition
-    SE* marked_posn;            // - current state in generated code
+typedef struct stab_ctl STAB_CTL;
+struct stab_ctl                     // STAB_CTL -- state table instance
+{   SYMBOL          rw;             // - R/W symbol
+    STAB_DEFN       *defn;          // - state table definition
+    SE              *marked_posn;   // - current state in generated code
 };
 
-typedef struct obj_init         OBJ_INIT; // - object being init'ed
-struct obj_init
-{   DTREG_OBJ* reg;             // - object registration
-    SE* obj_se;                 // - state entry for that object
-    SE* ctor_test;              // - state entry for ctor-test
-    STAB_OBJ* defn;             // - components state table
-    TYPE obj_type;              // - type of object
-    SYMBOL obj_sym;             // - base symbol
-    patch_handle patch;         // - patch handle for state
-    target_offset_t obj_offset; // - offset from base symbol
+typedef struct obj_init OBJ_INIT;
+struct obj_init                     // OBJ_INIT - object being init'ed
+{   DTREG_OBJ       *reg;           // - object registration
+    SE              *se;            // - state entry for that object
+    SE              *ctor_test;     // - state entry for ctor-test
+    STAB_OBJ        *defn;          // - components state table
+    TYPE            type;           // - type of object
+    SYMBOL          sym;            // - base symbol
+    patch_handle    patch;          // - patch handle for state
+    target_offset_t offset;         // - offset from base symbol
     PAD_UNSIGNED
 };
 
 
-typedef struct call_stab        CALL_STAB; // - state-table info for call
-struct call_stab
-{   CALL_STAB *next;            // - next in ring
-    call_handle handle;         // - handle for a call
-    SE* se;                     // - current state-table position
-    unsigned cd_arg;            // - integral CDTOR arg
-    unsigned has_cd_arg :1;     // - "cd_arg" has been defined
+typedef struct call_stab CALL_STAB;
+struct call_stab                    // CALL_STAB - state-table info for call
+{   CALL_STAB       *next;          // - next in ring
+    call_handle     handle;         // - handle for a call
+    SE              *se;            // - current state-table position
+    unsigned        cd_arg;         // - integral CDTOR arg
+    unsigned        has_cd_arg :1;  // - "cd_arg" has been defined
     PAD_UNSIGNED
 };
 
 
 typedef struct fn_ctl FN_CTL;
-struct fn_ctl                   // FN_CTL -- for each active file in process
+struct fn_ctl                       // FN_CTL -- for each active file in process
 {
-    unsigned base_labs_cs;      // - stack base: labels (control)
-    unsigned base_goto_near;    // - stack base: gotos (near)
-    unsigned sym_trans_id;      // - symbol translation id at function start
-    unsigned cond_flags;        // - # conditional flags
-    unsigned cdtor_val;         // - CDTOR value, when has_cdtor_val is set
-    unsigned cond_next;         // - next bit offset for conditional flags
-    unsigned try_depth;         // - depth of nested try statements
-    SYMBOL return_symbol;       // - return symbol
-    SYMBOL this_sym;            // - this symbol
-    SYMBOL cdtor_sym;           // - extra cdtor int parm symbol
-    SYMBOL func;                // - function being generated
-    SYMBOL new_ctor_ptr;        // - points at new'ed item being ctor'ed
-    label_handle return_label;  // - return label
-    label_handle cdarg_lab;     // - label for CDARG test
-    label_handle try_label;     // - label at top of try statement
-    call_handle handle;         // - handle for IBRP substitution
-    back_handle prof_data;      // - profiling data handle
-    SE* state_table_bound;      // - bounding entry in function state table
-    SE* pre_init;               // - pos'n before symbol initialization
-    SE* fun_sv;                 // - current state entry for function
-    SE* ctor_components;        // - start of CTOR component SE.s
-    SE* dtor_components;        // - end of dtor components
-    SE* ctored_obj;             // - object ctored by current expression
-    SE* marked_at_start;        // - marked position at function start
-    STAB_OBJ* obj_registration; // - registration for type
-    CALL_STAB* expr_calls;      // - calls for current expression
-    CGFILE* cgfile;             // - CGFILE for this function
+    unsigned        base_labs_cs;       // - stack base: labels (control)
+    unsigned        base_goto_near;     // - stack base: gotos (near)
+    unsigned        sym_trans_id;       // - symbol translation id at function start
+    unsigned        cond_flags;         // - # conditional flags
+    unsigned        cdtor_val;          // - CDTOR value, when has_cdtor_val is set
+    unsigned        cond_next;          // - next bit offset for conditional flags
+    unsigned        try_depth;          // - depth of nested try statements
+    SYMBOL          return_symbol;      // - return symbol
+    SYMBOL          this_sym;           // - this symbol
+    SYMBOL          cdtor_sym;          // - extra cdtor int parm symbol
+    SYMBOL          func;               // - function being generated
+    SYMBOL          new_ctor_ptr;       // - points at new'ed item being ctor'ed
+    label_handle    return_label;       // - return label
+    label_handle    cdarg_lab;          // - label for CDARG test
+    label_handle    try_label;          // - label at top of try statement
+    call_handle     handle;             // - handle for IBRP substitution
+    back_handle     prof_data;          // - profiling data handle
+    SE              *state_table_bound; // - bounding entry in function state table
+    SE              *pre_init;          // - pos'n before symbol initialization
+    SE              *fun_sv;            // - current state entry for function
+    SE              *ctor_components;   // - start of CTOR component SE.s
+    SE              *dtor_components;   // - end of dtor components
+    SE              *ctored_obj;        // - object ctored by current expression
+    SE              *marked_at_start;   // - marked position at function start
+    STAB_OBJ        *obj_registration;  // - registration for type
+    CALL_STAB       *expr_calls;        // - calls for current expression
+    CGFILE          *cgfile;            // - CGFILE for this function
 
-    DT_METHOD dtor_method;      // - current destruction method
-    DT_METHOD func_dtor_method; // - function destruction method
+    DT_METHOD       dtor_method;        // - current destruction method
+    DT_METHOD       func_dtor_method;   // - function destruction method
 
-    uint deregistered   :1;     // - TRUE ==> function has been de-registered
-    uint has_fn_exc     :1;     // - TRUE ==> has function exception spec.
-    uint is_ctor        :1;     // - TRUE ==> is a CTOR
-    uint is_dtor        :1;     // - TRUE ==> is a DTOR
-    uint ctor_complete  :1;     // - TRUE ==> has completed the CTOR'ing
-    uint coded_return   :1;     // - TRUE ==> return in user code
-    uint has_ctor_test  :1;     // - TRUE ==> function might use CTOR-TEST
-    uint has_cdtor_val  :1;     // - TRUE ==> has integral CDTOR argument
-    uint temp_dtoring   :1;     // - TRUE ==> temporary DTORING req'd in expr.
-    uint ctor_test      :1;     // - TRUE ==> expr. causes CTOR-TEST
-    uint dtor_reg_reqd  :1;     // - TRUE ==> dtor registration required
-    uint debug_info     :1;     // - TRUE ==> debug info for function
+    uint            deregistered   :1;  // - TRUE ==> function has been de-registered
+    uint            has_fn_exc     :1;  // - TRUE ==> has function exception spec.
+    uint            is_ctor        :1;  // - TRUE ==> is a CTOR
+    uint            is_dtor        :1;  // - TRUE ==> is a DTOR
+    uint            ctor_complete  :1;  // - TRUE ==> has completed the CTOR'ing
+    uint            coded_return   :1;  // - TRUE ==> return in user code
+    uint            has_ctor_test  :1;  // - TRUE ==> function might use CTOR-TEST
+    uint            has_cdtor_val  :1;  // - TRUE ==> has integral CDTOR argument
+    uint            temp_dtoring   :1;  // - TRUE ==> temporary DTORING req'd in expr.
+    uint            ctor_test      :1;  // - TRUE ==> expr. causes CTOR-TEST
+    uint            dtor_reg_reqd  :1;  // - TRUE ==> dtor registration required
+    uint            debug_info     :1;  // - TRUE ==> debug info for function
     PAD_UNSIGNED
 };
 
-typedef struct                  // CTOR_FLAG_SET -- patch entry for ctor flag
-{   patch_handle ph_clr;        // - handle for clr mask
-    SE* se;                     // - state entry for CTOR
+typedef struct                      // CTOR_FLAG_SET -- patch entry for ctor flag
+{   patch_handle    ph_clr;         // - handle for clr mask
+    SE              *se;            // - state entry for CTOR
 } CTOR_FLAG_SET;
 
 #define UNDEF_AREL ((target_offset_t)(-1)) // undefined auto-relocation offset
@@ -460,22 +460,22 @@ void AutoRelFree(               // FREE ALL RELOCATIONS
 ;
 void AutoRelRegister(           // REGISTER A RELOCATION
     SYMBOL sym,                 // - symbol
-    target_offset_t* a_off )    // - addr[ offset to be relocated ]
+    target_offset_t *a_off )    // - addr[ offset to be relocated ]
 ;
 void BeGenTsRef(                // GENERATE REFERENCE TO TYPE-SIGNATURE
-    TYPE_SIG* ts )              // - type signature
+    TYPE_SIG *ts )              // - type signature
 ;
-TYPE_SIG_ENT* BeTypeSigEnt(     // ALLOCATE A TYPE_SIG_ENT
+TYPE_SIG_ENT *BeTypeSigEnt(     // ALLOCATE A TYPE_SIG_ENT
     TYPE type )                 // - type for signature
 ;
-TYPE_SIG_ENT* BeTypeSigEntsCopy(// MAKE COPY OF TYPE-SIGNATURE entries
-    TYPE_SIG_ENT* orig )        // - original entries
+TYPE_SIG_ENT *BeTypeSigEntsCopy(// MAKE COPY OF TYPE-SIGNATURE entries
+    TYPE_SIG_ENT *orig )        // - original entries
 ;
 TYPE_SIG *BeTypeSignature(      // GET TYPE_SIG FOR A TYPE
     TYPE type )                 // - input type
 ;
 void BeGenTypeSigEnts(          // EMIT TYPE_SIG_ENT RING
-    TYPE_SIG_ENT* ring )        // - ring of entries
+    TYPE_SIG_ENT *ring )        // - ring of entries
 ;
 void BeGenRttiInfo(             // GENERATE RTTI INFORMATION
     void )
@@ -483,10 +483,10 @@ void BeGenRttiInfo(             // GENERATE RTTI INFORMATION
 void BeGenTypeSignatures(       // GENERATE ALL TYPE SIGNATURES
     void )
 ;
-SE* BlkPosnCurr(                // GET CURRENT BLOCK POSITION
+SE *BlkPosnCurr(                // GET CURRENT BLOCK POSITION
     void )
 ;
-SE* BlkPosnEnclosing(           // GET CURRENT POSITION OF ENCLOSING BLOCK
+SE *BlkPosnEnclosing(           // GET CURRENT POSITION OF ENCLOSING BLOCK
     void )
 ;
 void BlkPosnPop(                // POP A BLOCK POSITION
@@ -495,26 +495,26 @@ void BlkPosnPop(                // POP A BLOCK POSITION
 void BlkPosnPush(               // PUSH A NEW BLOCK POSITION
     SCOPE scope )               // - defining scope
 ;
-SE* BlkPosnScope(               // GET BLOCK POSITION FOR A SCOPE
+SE *BlkPosnScope(               // GET BLOCK POSITION FOR A SCOPE
     SCOPE scope )               // - scope in question
 ;
-SE* BlkPosnTempBeg(             // GET STARTING POS'N FOR TEMP DTOR'ING
+SE *BlkPosnTempBeg(             // GET STARTING POS'N FOR TEMP DTOR'ING
     void )
 ;
-SE* BlkPosnTempBegSet(          // SET STARTING POS'N FOR TEMP DTOR'ING
-    SE* se )                    // - starting position
+SE *BlkPosnTempBegSet(          // SET STARTING POS'N FOR TEMP DTOR'ING
+    SE *se )                    // - starting position
 ;
-SE* BlkPosnTempEnd(             // GET ENDING POS'N FOR TEMP DTOR'ING
+SE *BlkPosnTempEnd(             // GET ENDING POS'N FOR TEMP DTOR'ING
     void )
 ;
-SE* BlkPosnTempEndSet(          // SET ENDING POS'N FOR TEMP DTOR'ING
-    SE* se )                    // - ending position
+SE *BlkPosnTempEndSet(          // SET ENDING POS'N FOR TEMP DTOR'ING
+    SE *se )                    // - ending position
 ;
 void BlkPosnTrash(              // TRASH TOP BLOCK POSITION
     void )
 ;
-SE* BlkPosnUpdate(              // UPDATE POSITION IN CURRENT BLOCK
-    SE* se )                    // - state entry for current position
+SE *BlkPosnUpdate(              // UPDATE POSITION IN CURRENT BLOCK
+    SE *se )                    // - state entry for current position
 ;
 boolean BlkPosnUseStab(         // TEST IF REALLY USING STATE TABLE IN SCOPE
     void )
@@ -531,9 +531,9 @@ void CallIndirectVirtual(       // MARK INDIRECT CALL AS VIRTUAL
     target_offset_t adj_this,   // - adjustment for "this"
     target_offset_t adj_retn )  // - adjustment for return
 ;
-CALL_STAB* CallStabAlloc(       // ALLOCATE CALL_STAB
+CALL_STAB *CallStabAlloc(       // ALLOCATE CALL_STAB
     call_handle handle,         // - handle for call
-    FN_CTL* fctl )              // - function hosting the call
+    FN_CTL *fctl )              // - function hosting the call
 ;
 boolean CallStabCdArgGet(       // GET CD-ARG FOR A CALL
     call_handle handle,         // - handle for call
@@ -544,10 +544,10 @@ unsigned CallStabCdArgSet(      // SET CD-ARG FOR A CALL
     unsigned cd_arg )           // - value for CD-ARG
 ;
 void CallStabFree(              // FREE CALL_STAB
-    FN_CTL* fctl,               // - function hosting the call
-    CALL_STAB* cstb )           // - call information
+    FN_CTL *fctl,               // - function hosting the call
+    CALL_STAB *cstb )           // - call information
 ;
-SE* CallStabStateTablePosn(     // GET STATE-TABLE POSITION AT CALL POINT
+SE *CallStabStateTablePosn(     // GET STATE-TABLE POSITION AT CALL POINT
     call_handle handle )        // - handle for inline call
 ;
 boolean CallStackTopInlined(    // TEST IF TOP OF CALL STACK IS INLINED
@@ -590,17 +590,17 @@ void CgAssignPtr(               // EMIT A POINTER ASSIGNMENT
 ;
 cg_name CgAssignStateVar(       // ASSIGN STATE-VAR VALUE
     SYMBOL blk,                 // - R/W Block
-    SE* se,                     // - state entry
+    SE *se,                     // - state entry
     target_offset_t offset )    // - offset of state variable
 ;
-CALL_STAB* CgBackCallGened(     // SETUP FOR GENERATED CALL
+CALL_STAB *CgBackCallGened(     // SETUP FOR GENERATED CALL
     call_handle handle )        // - call handle
 ;
-FN_CTL* CgBackFnCtlFini(        // COMPLETE FN_CTL WITH CGBKMAIN INFO
-    FN_CTL* fctl )              // - current file information
+FN_CTL *CgBackFnCtlFini(        // COMPLETE FN_CTL WITH CGBKMAIN INFO
+    FN_CTL *fctl )              // - current file information
 ;
-FN_CTL* CgBackFnCtlInit(        // INITIALIZE FN_CTL WITH CGBKMAIN INFO
-    FN_CTL* fctl )              // - current file information
+FN_CTL *CgBackFnCtlInit(        // INITIALIZE FN_CTL WITH CGBKMAIN INFO
+    FN_CTL *fctl )              // - current file information
 ;
 unsigned CgBackInlinedDepth(    // GET CURRENT INLINED DEPTH
     void )
@@ -611,41 +611,41 @@ SYMBOL CgBackOpDelete(          // GET ADDRESIBLE OPERATOR DELETE FOR A TYPE
 cg_name CgCallBackAutoCtor(     // SET CALL BACKS FOR A DCL'ED AUTO
     cg_name expr,               // - expression
     cg_type type,               // - type of expression
-    SE* se )                    // - state entry for ctored object
+    SE *se )                    // - state entry for ctored object
 ;
 cg_name CgCallBackCtorDone(     // SET A CALL BACK FOR A CTOR-TEST : DONE
     cg_name expr,               // - expression
     cg_type type,               // - type of expression
-    SE* se )                    // - state entry for ctored object
+    SE *se )                    // - state entry for ctored object
 ;
 cg_name CgCallBackCtorStart(    // SET A CALL BACK FOR A CTOR-TEST : START
     cg_name expr,               // - expression
     cg_type type,               // - type of expression
-    SE* se )                    // - state entry to be inserted on call back
+    SE *se )                    // - state entry to be inserted on call back
 ;
 cg_name CgCallBackInitRefBeg(   // START CALL-BACK FOR INIT-REF
-    SE* se )                    // - state entry for init-ref variable
+    SE *se )                    // - state entry for init-ref variable
 ;
 cg_name CgCallBackLeft(         // MAKE A LEFT CALL-BACK
     cg_name expr,               // - expression
-    void (*fun)( void* ),       // - call-back function
-    void* data,                 // - data for call back
+    void (*fun)(void *),        // - call-back function
+    void *data,                 // - data for call back
     cg_type type )              // - type of expression
 ;
 void CgCallBackNewCtored(       // NEW OBJECT WAS CTOR'ED
-    SE* se_del,                 // - state entry for delete during CTOR throw
-    FN_CTL* fctl )              // - function information
+    SE *se_del,                 // - state entry for delete during CTOR throw
+    FN_CTL *fctl )              // - function information
 ;
 cg_name CgCallBackRight(        // MAKE A RIGHT CALL-BACK
     cg_name expr,               // - expression
-    void (*fun)( void* ),       // - call-back function
-    void* data,                 // - data for call back
+    void (*fun)(void *),        // - call-back function
+    void *data,                 // - data for call back
     cg_type type )              // - type of expression
 ;
 cg_name CgCallBackTempCtor(     // SET CALL BACKS FOR TEMP CTORED
     cg_name expr,               // - expression
     cg_type type,               // - type of expression
-    SE* se )                    // - state entry to be inserted on call back
+    SE *se )                    // - state entry to be inserted on call back
 ;
 void CgCdArgDefine(             // DEFINE CDOPT VALUE
     unsigned value )            // - cdopt value
@@ -657,40 +657,40 @@ void CgCdArgUsed(               // USE A CALL-HANDLE DIRECTLY
     call_handle handle )        // - handle for call
 ;
 SYMBOL CgCmdArrayInit(          // GET SYMBOL FOR DTC_ARRAY_INIT COMMAND
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 SYMBOL CgCmdComponent(          // GET SYMBOL FOR DTC_COMP... COMMAND
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 SYMBOL CgCmdCtorTest(           // GET SYMBOL FOR CTOR-TEST COMMAND
-    SE* se )                    // - state entry
+    SE *se )                    // - state entry
 ;
 SYMBOL CgCmdDlt1(               // GET SYMBOL FOR DTC_DLT_1
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 SYMBOL CgCmdDlt1Array(          // GET SYMBOL FOR DTC_DLT_1
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 SYMBOL CgCmdDlt2(               // GET SYMBOL FOR DTC_DLT_2
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 SYMBOL CgCmdDlt2Array(          // GET SYMBOL FOR DTC_DLT_2
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 SYMBOL CgCmdFnExc(              // GET SYMBOL FOR FN-EXCEPTION SPEC. COMMAND
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 void CgCmdsGenerate(            // GENERATE DTOR CMD.S
     void )
 ;
 SYMBOL CgCmdSetSv(              // GET SYMBOL FOR SET_SV CMD TO BE GEN'ED
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 SYMBOL CgCmdTestFlag(           // GET SYMBOL FOR TEST_FLAG CMD TO BE GEN'ED
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 SYMBOL CgCmdTry(                // GET SYMBOL FOR TRY BLOCK
-    SE* se )                    // - state entry in state table
+    SE *se )                    // - state entry in state table
 ;
 cg_name CgComma(                // CONSTRUCT COMMA EXPRESSION
     cg_name lhs,                // - expression on left
@@ -716,7 +716,7 @@ void CgControl(                 // CONTROL OPCODE
     label_handle label )        // - label
 ;
 void CgCtorTestTempsRegister(   // REGISTER DTORING TEMPS FOR CTOR
-    FN_CTL* fctl )              // - function control
+    FN_CTL *fctl )              // - function control
 ;
 SYMBOL CgDeclHiddenParm(        // DECLARE HIDDEN ARG (THIS, CDTOR)
     SCOPE scope,                // - function parameters scope
@@ -735,7 +735,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
     SYMBOL sym )                // - current symbol
 ;
 cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
-    FN_CTL* fctl,               // - function control
+    FN_CTL *fctl,               // - function control
     SYMBOL dtor,                // - destructor
     SYMBOL sym,                 // - SYMBOL to be DTOR'ed
     target_offset_t offset,     // - offset from "sym"
@@ -748,7 +748,7 @@ cg_name CgDestructExpr(         // CONSTRUCT DTOR CALL FOR EXPRESSION
 ;
 void CgDestructExprTemps(       // DESTRUCT TEMPS IN AN EXPRESSION
     DGRP_FLAGS pop_type,        // - type of popping
-    FN_CTL* fctl )              // - current file information
+    FN_CTL *fctl )              // - current file information
 ;
 void CgDone(                    // COMPLETE CODE-GENERATION OF EXPRESSION
     cg_name expr,               // - expression
@@ -758,7 +758,7 @@ void CgDtorAll(                 // DTOR ALL IN FUNCTION
     void )
 ;
 void CgDtorSe(                  // DTOR UNTIL SE ENTRY
-    SE* bound )                 // - bounding entry
+    SE *bound )                 // - bounding entry
 ;
 cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     SYMBOL sym )                // - object symbol
@@ -778,7 +778,7 @@ void CgExprDtored(              // DTOR CG EXPRESSION
     cg_name expr,               // - expression
     cg_type type,               // - expression type
     DGRP_FLAGS pop_type,        // - type of popping destruction
-    FN_CTL* fctl )              // - function control
+    FN_CTL *fctl )              // - function control
 ;
 cg_name CgExprPop(              // POP CG EXPRESSION
     void )
@@ -787,7 +787,7 @@ boolean CgExprPopGarbage(       // POP EXPR STACK IF TOP EXPR IS GARBAGE
     void )
 ;
 cg_name CgExprPopType(          // POP CG EXPRESSION and TYPE
-    cg_type* a_type )           // - addr[ type ]
+    cg_type *a_type )           // - addr[ type ]
 ;
 void CgExprPush(                // PUSH CG EXPRESSION RESULT
     cg_name expr,               // - expression
@@ -826,7 +826,7 @@ void CgFunDeregister(           // DE-REGISTER A FUNCTION
 ;
 #endif
 void CgFunRegister(             // REGISTER A FUNCTION
-    FN_CTL* fctl,               // - function information
+    FN_CTL *fctl,               // - function information
     SYMBOL rw,                  // - symbol for R/W block
     SYMBOL ro )                 // - symbol for R/O block
 ;
@@ -834,7 +834,7 @@ cg_type CgGetCgType(            // GET CODEGEN TYPE
     TYPE type )                 // - type
 ;
 void CgGotoReturnLabel(         // GENERATE "GOTO RETURN-LABEL"
-    FN_CTL* fctl )              // - function being emitted
+    FN_CTL *fctl )              // - function being emitted
 ;
 void CgLabel(                   // EMIT A LABEL
     label_handle lab )          // - the label
@@ -844,7 +844,7 @@ void CgLabelsFinish(            // FINISH LABELS IN A VIRTUAL STACK
     int base )                  // - base for stack
 ;
 void CgLabelPlantReturn(        // PLANT RETURN LABEL, IF REQUIRED
-    FN_CTL* fctl )              // - function being emitted
+    FN_CTL *fctl )              // - function being emitted
 ;
 void CgLabelsPop(               // POP A LABELS STACK
     VSTK_CTL *stack,            // - the stack
@@ -860,7 +860,7 @@ cg_name CgMakeTwoDups(          // MAKE TWO DUPLICATES
     cg_type cgtype )            // - original type
 ;
 unsigned CgNonThunkDepth(       // COMPUTE INLINE DEPTH WITHOUT THUNKS
-    FN_CTL* fctl )              // - current function
+    FN_CTL *fctl )              // - current function
 ;
 cg_name CgOffset(               // PASS ABSOLUTE OFFSET TO CODE GENERATOR
     unsigned offset )           // - offset value
@@ -877,20 +877,20 @@ void CgPushGarbage(             // PUSH GARBAGE (TO BE TRASHED/POPPED)
     void )
 ;
 boolean CgRetnOptActive         // TEST IF RETURN OPTIMIZATION ACTIVE FOR FILE
-    ( FN_CTL* fctl )            // - file-activation control
+    ( FN_CTL *fctl )            // - file-activation control
 ;
 boolean CgRetnOptForFile        // TEST IF RETURN OPTIMIZATION FOR FILE
-    ( CGFILE* file_ctl )        // - file control
+    ( CGFILE *file_ctl )        // - file control
 ;
 boolean CgRetnOptIsOptVar       // TEST IF SYMBOL IS RETURN-OPTIMIZATION VAR
-    ( FN_CTL* fctl              // - file-activation control
+    ( FN_CTL *fctl              // - file-activation control
     , SYMBOL var )              // - var. to be tested
 ;
 void CgRetnOpt_RETNOPT_BEG      // PROCESS IC_RETNOPT_BEG
-    ( FN_CTL* fctl )            // - file-activation control
+    ( FN_CTL *fctl )            // - file-activation control
 ;
 void CgRetnOpt_RETNOPT_VAR      // PROCESS IC_RETNOPT_VAR
-    ( FN_CTL* fctl              // - file-activation control
+    ( FN_CTL *fctl              // - file-activation control
     , SYMBOL var )              // - variable
 ;
 cg_type CgReturnType(           // GET CG-TYPE FOR RETURN
@@ -923,7 +923,7 @@ void CgRtParamConstOffset(      // SET UP PARAMETER: CONSTANT OFFSET
     unsigned value )            // - parameter value
 ;
 cg_name CgSaveAsTemp(           // SAVE INTO A TEMPORARY
-    temp_handle* a_hand,        // - addr[ temp handle ]
+    temp_handle *a_hand,        // - addr[ temp handle ]
     cg_name expr,               // - expression to be saved
     cg_type type )              // - and its type
 ;
@@ -933,7 +933,7 @@ cg_name CgSideEffect(           // CONSTRUCT SIDE-EFFECT EXPRESSION
     cg_type type )              // - type of right expression
 ;
 label_handle CgSwitchBeg        // GENERATE CODE FOR START OF SWITCH STMT
-    ( FN_CTL* fctl )            // - function control
+    ( FN_CTL *fctl )            // - function control
 ;
 void CgSwitchCase               // GENERATE CODE FOR SWITCH CASE
     ( int case_value )          // - case value
@@ -983,47 +983,47 @@ void CondInfoFalse(             // SET UP CALL-BACK FOR IC_COND_FALSE
     void )
 ;
 void CondInfoNewCtorBeg(        // CTOR OF NEW'ED OBJECT: START
-    FN_CTL* fctl )              // - function information
+    FN_CTL *fctl )              // - function information
 ;
 void CondInfoNewCtorEnd(        // CTOR OF NEW'ED OBJECT: END
-    FN_CTL* fctl )              // - function information
+    FN_CTL *fctl )              // - function information
 ;
 void CondInfoPush(              // PUSH COND_INFO STACK
-    FN_CTL* fctl )              // - function control
+    FN_CTL *fctl )              // - function control
 ;
 void CondInfoPop(               // POP COND_INFO STACK
     void )
 ;
 void CondInfoSetCtorTest(       // SET/RESET FLAG FOR CTOR-TEST
-    FN_CTL* fctl,               // - function control
+    FN_CTL *fctl,               // - function control
     boolean set_flag )          // - TRUE ==> set the flag; FALSE ==> clear
 ;
 void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
-    FN_CTL* fctl,               // - function control
+    FN_CTL *fctl,               // - function control
     boolean set_flag )          // - TRUE ==> set the flag; FALSE ==> clear
 ;
 void CondInfoSetup(             // SETUP UP CONDITIONAL INFORMATION
     unsigned index,             // - index of flag
-    COND_INFO* cond,            // - conditional information
-    FN_CTL* fctl )              // - function information
+    COND_INFO *cond,            // - conditional information
+    FN_CTL *fctl )              // - function information
 ;
 void CondInfoTrue(              // SET UP CALL-BACK FOR IC_COND_TRUE
     void )
 ;
 label_handle CondLabelAdd       // ADD A CONDITIONAL LABEL
-    ( COND_LABEL** a_ring       // - addr[ ring of labels ]
-    , SE* se )                  // - state entry
+    ( COND_LABEL **a_ring       // - addr[ ring of labels ]
+    , SE *se )                  // - state entry
 ;
 boolean CondLabelEmit           // EMIT CONDITIONAL LABEL IF REQ'D
-    ( COND_LABEL** a_ring       // - addr[ ring of labels ]
-    , SE* se )                  // - state entry at current position
+    ( COND_LABEL **a_ring       // - addr[ ring of labels ]
+    , SE *se )                  // - state entry at current position
 ;
-SE* CondLabelNext               // FIND STATE ENTRY FOR NEXT COND. LABEL
-    ( COND_LABEL** a_ring       // - addr[ ring of labels ]
-    , SE* se )                  // - default state entry
+SE *CondLabelNext               // FIND STATE ENTRY FOR NEXT COND. LABEL
+    ( COND_LABEL **a_ring       // - addr[ ring of labels ]
+    , SE *se )                  // - default state entry
 ;
 void CondLabelsEmit(            // EMIT ANY REMAINING CONDITIONAL LABELS
-    COND_LABEL** a_ring )       // - addr[ ring of labels ]
+    COND_LABEL **a_ring )       // - addr[ ring of labels ]
 ;
 void DgByte(                    // DATA GENERATE A BYTE
     uint_8 byte )               // - to be generated
@@ -1061,9 +1061,6 @@ void DgAlignInternal(           // ALIGN INTERNAL CONTROL BLOCK
 #else
 #define DgAlignInternal()
 #endif
-void DgAlignPad(                // INSERT PADDING IN A STRUCTURE
-    unsigned total )            // - number of bytes emitted so far
-;
 void DgAlignSymbol(             // ALIGN SYMBOL TO CORRECT BOUNDARY
     SYMBOL sym )                // - symbol to align
 ;
@@ -1077,27 +1074,27 @@ DT_METHOD DtmDirect(            // CONVERT DTOR METHOD TO DIRECT COUNTERPART
     DT_METHOD dtm )             // - default method
 ;
 boolean DtmTabular(             // DETERMINE IF SCOPE TABULAR DTOR METHOD
-    FN_CTL* fctl )              // - function control
+    FN_CTL *fctl )              // - function control
 ;
 boolean DtmTabularFunc(         // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD, FUNCTION
-    FN_CTL* fctl )              // - function control
+    FN_CTL *fctl )              // - function control
 ;
-SE* DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
-    FN_CTL* fctl,               // - function information
+SE *DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
+    FN_CTL *fctl,               // - function information
     target_size_t elem_size,    // - size of one element in area
     DTC_KIND dlt1,              // - entry type when one arg
     DTC_KIND dlt2,              // - entry type when two args
     SYMBOL op_del )             // - operator delete to be used
 ;
 void DtorForDelEnd(             // DTORING AREA TO BE DELETED: end
-    FN_CTL* fctl,               // - function information
-    SE* se_dlt )                // - entry
+    FN_CTL *fctl,               // - function information
+    SE *se_dlt )                // - entry
 ;
-DTREG_OBJ* DtregActualBase(     // REGISTER AN ACTUAL BASE
-    FN_CTL* fctl )              // - current function information
+DTREG_OBJ *DtregActualBase(     // REGISTER AN ACTUAL BASE
+    FN_CTL *fctl )              // - current function information
 ;
-DTREG_OBJ* DtregObj(            // LOCATE RW_DTREG_OBJ SYMBOL
-    FN_CTL* fctl )              // - current function information
+DTREG_OBJ *DtregObj(            // LOCATE RW_DTREG_OBJ SYMBOL
+    FN_CTL *fctl )              // - current function information
 ;
 unsigned FnCtlCondFlagCtor(     // GET FLAG # FOR CTOR-TEST
     FN_CTL *fctl )              // - current function information
@@ -1118,35 +1115,35 @@ FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
     call_handle handle,         // - handle for IBRP substitution
     CGFILE *cgfile )            // - fn's CGFILE
 ;
-FN_CTL* FnCtlPrev(              // GET PREVIOUS FN_CTL ITEM
-    FN_CTL* curr )              // - current file control
+FN_CTL *FnCtlPrev(              // GET PREVIOUS FN_CTL ITEM
+    FN_CTL *curr )              // - current file control
 ;
-FN_CTL* FnCtlTop(               // GET TOP FN_CTL ITEM
+FN_CTL *FnCtlTop(               // GET TOP FN_CTL ITEM
     void )
 ;
 void FreeDtregObjs(             // FREE OBJECT REGISTRATIONS (FUNCTION)
     void )
 ;
-SE* FstabActualPosn(            // GET ACTUAL POSITION IN STATE TABLE
+SE *FstabActualPosn(            // GET ACTUAL POSITION IN STATE TABLE
     void )
 ;
-SE* FstabAdd(                   // ADD STATE ENTRY TO STATE TABLE
-    SE* se )                    // - state entry
+SE *FstabAdd(                   // ADD STATE ENTRY TO STATE TABLE
+    SE *se )                    // - state entry
 ;
 void FstabAssignStateVar(       // EMIT CODE TO ASSIGN STATE VARIABLE
-    SE* se )                    // - NULL or state entry to be set
+    SE *se )                    // - NULL or state entry to be set
 ;
-SE* FstabCtorTest(              // ALLOCATE CTOR-TEST COMMAND
-    FN_CTL* fctl )              // - function being emitted
+SE *FstabCtorTest(              // ALLOCATE CTOR-TEST COMMAND
+    FN_CTL *fctl )              // - function being emitted
 ;
-SE* FstabCurrPosn(              // GET CURRENT STATE ENTRY FOR FUNCTION
+SE *FstabCurrPosn(              // GET CURRENT STATE ENTRY FOR FUNCTION
     void )
 ;
 void FstabDeRegister(           // DE-REGISTER FUNCTION
-    FN_CTL* fctl )              // - function control
+    FN_CTL *fctl )              // - function control
 ;
 void FstabRegister(             // REGISTER FUNCTION
-    FN_CTL* fctl )              // - function control
+    FN_CTL *fctl )              // - function control
 ;
 #ifndef NDEBUG
 void FstabDump(                 // DEBUG ONLY: DUMP FUNCTION STATE TABLE
@@ -1154,16 +1151,16 @@ void FstabDump(                 // DEBUG ONLY: DUMP FUNCTION STATE TABLE
 ;
 #endif
 cg_name FstabEmitStateVar(      // EMIT CODE TO SET STATE VARIABLE, IF REQ'D
-    SE* se,                     // - NULL or state entry to be set
-    FN_CTL* fctl )              // - function being emitted
+    SE *se,                     // - NULL or state entry to be set
+    FN_CTL *fctl )              // - function being emitted
 ;
 void FstabEmitStateVarExpr(     // EMIT EXPR'N TO SET STATE VARIABLE, IF REQ'D
-    SE* se,                     // - NULL or state entry to be set
-    FN_CTL* fctl )              // - function being emitted
+    SE *se,                     // - NULL or state entry to be set
+    FN_CTL *fctl )              // - function being emitted
 ;
 cg_name FstabEmitStateVarPatch( // EMIT CODE TO PATCH STATE VARIABLE, IF REQ'D
-    patch_handle* a_handle,     // - addr[ handle ]
-    FN_CTL* fctl )              // - function being emitted
+    patch_handle *a_handle,     // - addr[ handle ]
+    FN_CTL *fctl )              // - function being emitted
 ;
 #if _CPU == _AXP
 SYMBOL FstabExcData(            // ALPHA: SET EXCEPTION DATA
@@ -1176,7 +1173,7 @@ SYMBOL FstabExcRw(              // ALPHA: GET R/W DATA SYMBOL
     void )
 ;
 #endif
-SE* FstabFindAuto(              // FIND AUTO VAR ENTRY IN STATE TABLE
+SE *FstabFindAuto(              // FIND AUTO VAR ENTRY IN STATE TABLE
     SYMBOL auto_var )           // - the auto variable
 ;
 boolean FstabGenerate(          // GENERATE FUNCTION STATE TABLE
@@ -1188,24 +1185,24 @@ boolean FstabHasStateTable(     // DETERMINE IF STATE TABLE BEING GEN'ED
 void FstabInit(                 // INITIALIZE FUNCTION STATE TABLE
     void )
 ;
-SE* FstabMarkedPosn(            // GET MARKED POSITION
+SE *FstabMarkedPosn(            // GET MARKED POSITION
     void )
 ;
-SE* FstabMarkedPosnSet(         // SET MARKED POSITION
-    SE* se )                    // - new position
+SE *FstabMarkedPosnSet(         // SET MARKED POSITION
+    SE *se )                    // - new position
 ;
-SE* FstabPosnGened(             // GET GENNED POSITION IF REQUIRED
-    SE* src,                    // - source entry
-    SE* tgt )                   // - target entry
+SE *FstabPosnGened(             // GET GENNED POSITION IF REQUIRED
+    SE *src,                    // - source entry
+    SE *tgt )                   // - target entry
 ;
-SE* FstabPrecedes(              // GET PRECEDING STATE ENTRY
-    SE* se )                    // - starting entry
+SE *FstabPrecedes(              // GET PRECEDING STATE ENTRY
+    SE *se )                    // - starting entry
 ;
-SE* FstabPrevious(              // GET PREVIOUS STATE ENTRY
-    SE* se )                    // - starting entry
+SE *FstabPrevious(              // GET PREVIOUS STATE ENTRY
+    SE *se )                    // - starting entry
 ;
 void FstabPrune(                // PRUNE END OF STATE TABLE
-    SE* end )                   // - actual ending position
+    SE *end )                   // - actual ending position
 ;
 void FstabRemove(               // REMOVE LAST STATE ENTRY
     void )
@@ -1214,31 +1211,31 @@ SYMBOL FstabRw(                 // GET R/W SYMBOL FOR FUNCTION STATE TABLE
     void )
 ;
 void FstabSetDtorState(         // SET STATE VAR. FOR DTOR
-    SE* se,                     // - state entry being DTOR'ed
-    FN_CTL* fctl )              // - file information
+    SE *se,                     // - state entry being DTOR'ed
+    FN_CTL *fctl )              // - file information
 ;
-SE* FstabSetSvSe(               // ADD SET_SV FOR SE TO STATE TABLE
-    SE* tgt )                   // - state entry
+SE *FstabSetSvSe(               // ADD SET_SV FOR SE TO STATE TABLE
+    SE *tgt )                   // - state entry
 ;
 boolean FstabSetup(             // SETUP FUNCTION STATE TABLE
-    CGFILE* file_ctl,           // - current file information
-    FN_CTL* fctl )              // - current file generation information
+    CGFILE *file_ctl,           // - current file information
+    FN_CTL *fctl )              // - current file generation information
 ;
-SE* FstabTestFlag(              // CREATE TEST-FLAG ENTRY
+SE *FstabTestFlag(              // CREATE TEST-FLAG ENTRY
     unsigned flag_no,           // - flag #
-    SE* se_true,                // - entry when true
-    SE* se_false )              // - entry when false
+    SE *se_true,                // - entry when true
+    SE *se_false )              // - entry when false
 ;
-SE* FunctionStateTablePosn(     // GET CURRENT STATE ENTRY FOR FUNCTION
+SE *FunctionStateTablePosn(     // GET CURRENT STATE ENTRY FOR FUNCTION
     void )
 ;
 void FunctionStateTableSetSvSe( // ADD SET_SV FOR SE TO STATE TABLE
-    SE* se )                    // - state entry for SETSV command
+    SE *se )                    // - state entry for SETSV command
 ;
 void IbpAdd(                    // ADD AN IBRP ENTRY
     SYMBOL binding,             // - symbol to bind reference to
     target_offset_t offset,     // - offset into symbol
-    FN_CTL* fctl )              // - current file information
+    FN_CTL *fctl )              // - current file information
 ;
 void IbpDefineIndex(            // DEFINE CURRENT PARAMETER INDEX
     unsigned index )            // - index
@@ -1272,13 +1269,13 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
     SYMBOL vf_this,             // - original symbol (for access)
     target_offset_t vf_offset,  // - offset to vf table ptr
     vindex vf_index,            // - index in vf table
-    boolean* is_vcall,          // - addr[ TRUE ==> real virtual call ]
-    target_offset_t* a_adj_this,// - addr[ this adjustment ]
-    target_offset_t* a_adj_retn,// - addr[ return adjustment ]
-    SYMBOL* a_exact_vfun )      // - addr[ exact vfun to be used ]
+    boolean *is_vcall,          // - addr[ TRUE ==> real virtual call ]
+    target_offset_t *a_adj_this,// - addr[ this adjustment ]
+    target_offset_t *a_adj_retn,// - addr[ return adjustment ]
+    SYMBOL *a_exact_vfun )      // - addr[ exact vfun to be used ]
 ;
 void IbpFlush(                  // REMOVE ALL IBRP ENTRIES FOR THIS CALL CONTEXT
-    FN_CTL* fctl )              // - current file control
+    FN_CTL *fctl )              // - current file control
 ;
 boolean IbpReference(           // LOCATE A BOUND REFERENCE
     SYMBOL sym,                 // - original symbol
@@ -1307,124 +1304,124 @@ void MstabModDtor(              // DTOR MODULE (FILE-SCOPE) STATIC
 void MstabRegister(             // EMIT CODE TO REGISTER MODULE STATE TABLE
     void )
 ;
-OBJ_INIT* ObjInitArray(         // GET OBJ_INIT FOR INDEXING
+OBJ_INIT *ObjInitArray(         // GET OBJ_INIT FOR INDEXING
     void )
 ;
 TYPE ObjInitArrayBaseType(      // GET BASE TYPE FOR ARRAY
-    OBJ_INIT* curr )            // - current entry
+    OBJ_INIT *curr )            // - current entry
 ;
 cg_name ObjInitAssignBase(      // ASSIGN BASE REGISTRATION
-    FN_CTL* fctl,               // - current function information
-    OBJ_INIT* init )            // - initialization element
+    FN_CTL *fctl,               // - current function information
+    OBJ_INIT *init )            // - initialization element
 ;
 cg_name ObjInitAssignBaseExpr(  // ASSIGN BASE REGISTRATION, FROM EXPR'N
-    FN_CTL* fctl,               // - current function information
-    OBJ_INIT* init,             // - initialization element
+    FN_CTL *fctl,               // - current function information
+    OBJ_INIT *init,             // - initialization element
     cg_name expr )              // - expression
 ;
 cg_name ObjInitAssignIndex(     // ASSIGN INDEX TO RT_ARRAY_INIT
-    FN_CTL* fctl,               // - current function information
-    OBJ_INIT* init,             // - initialization element
+    FN_CTL *fctl,               // - current function information
+    OBJ_INIT *init,             // - initialization element
     unsigned index )            // - index
 ;
-OBJ_INIT* ObjInitClass(         // GET OBJ_INIT FOR A CLASS
+OBJ_INIT *ObjInitClass(         // GET OBJ_INIT FOR A CLASS
     void )
 ;
-SE* ObjInitDtorAuto(            // UPDATE OBJ_INIT FOR AUTO DTOR
-    SE* se,                     // - entry for symbol
+SE *ObjInitDtorAuto(            // UPDATE OBJ_INIT FOR AUTO DTOR
+    SE *se,                     // - entry for symbol
     SYMBOL sym )                // - symbol needing dtor
 ;
-OBJ_INIT* ObjInitPush(          // PUSH INITIALIZATION OBJECT (HAS COMPONENTS)
+OBJ_INIT *ObjInitPush(          // PUSH INITIALIZATION OBJECT (HAS COMPONENTS)
     TYPE obj_type )             // - type of object
 ;
-OBJ_INIT* ObjInitPop(           // POP INITIALIZATION OBJECT (HAS COMPONENTS)
+OBJ_INIT *ObjInitPop(           // POP INITIALIZATION OBJECT (HAS COMPONENTS)
     void )
 ;
 cg_name ObjInitRegActualBase    // REGISTER FOR AN ACTUAL BASE
-    ( SE* se )                  // - component for actual base
+    ( SE *se )                  // - component for actual base
 ;
 cg_name ObjInitRegisterObj(     // CREATE AN OBJECT REGISTRATION
-    FN_CTL* fctl,               // - current function information
+    FN_CTL *fctl,               // - current function information
     cg_name base_expr,          // - base expression
     boolean use_fun_cdtor )     // - TRUE ==> use CDTOR parm of function
 ;
-OBJ_INIT* ObjInitTop(           // GET TOP INITIALIZATION OBJECT
+OBJ_INIT *ObjInitTop(           // GET TOP INITIALIZATION OBJECT
     void )
 ;
-SE* SeAlloc(                    // ALLOCATE AN SE ENTRY
+SE *SeAlloc(                    // ALLOCATE AN SE ENTRY
     DTC_KIND se_type )          // - code for entry
 ;
-SE* SeSetSvPosition(            // LOCATE STATE ENTRY PAST OPTIONAL SET_SV'S
-    SE* se )                    // - starting position
+SE *SeSetSvPosition(            // LOCATE STATE ENTRY PAST OPTIONAL SET_SV'S
+    SE *se )                    // - starting position
 ;
 STATE_VAR SeStateVar(           // GET STATE VARIABLE AT CURRENT POSITION
-    SE* se )                    // - state entry
+    SE *se )                    // - state entry
 ;
 STATE_VAR SeStateOptimal(       // GET STATE VALUE FOR POSITION (OPTIMAL)
-    SE* se )                    // - state entry
+    SE *se )                    // - state entry
 ;
 void StabCtlFreeStateTable(     // FREE A STATE TABLE
-    STAB_CTL* sctl )            // - state-table information
+    STAB_CTL *sctl )            // - state-table information
 ;
-STAB_CTL* StabCtlInit(          // INITIALIZE STAB_CTL
-    STAB_CTL* stab,             // - control info: instance
-    STAB_DEFN* defn )           // - control information: definition
+STAB_CTL *StabCtlInit(          // INITIALIZE STAB_CTL
+    STAB_CTL *stab,             // - control info: instance
+    STAB_DEFN *defn )           // - control information: definition
 ;
-SE* StabCtlPosnGened(           // GET GENERATED POSITION IF REQUIRED
-    STAB_CTL* sctl,             // - control info
-    SE* src,                    // - source entry
-    SE* tgt )                   // - target entry
+SE *StabCtlPosnGened(           // GET GENERATED POSITION IF REQUIRED
+    STAB_CTL *sctl,             // - control info
+    SE *src,                    // - source entry
+    SE *tgt )                   // - target entry
 ;
-SE* StabCtlPrecedes(            // GET PRECEDING ENTRY OR NULL
-    STAB_CTL* sctl,             // - control info
-    SE* se )                    // - state entry
+SE *StabCtlPrecedes(            // GET PRECEDING ENTRY OR NULL
+    STAB_CTL *sctl,             // - control info
+    SE *se )                    // - state entry
 ;
-SE* StabCtlPrevious(            // GET PREVIOUS ENTRY OR NULL
-    STAB_CTL* sctl,             // - control info
-    SE* se )                    // - state entry
+SE *StabCtlPrevious(            // GET PREVIOUS ENTRY OR NULL
+    STAB_CTL *sctl,             // - control info
+    SE *se )                    // - state entry
 ;
 void StabCtlPrune(              // PRUNE END OF STATE STATE
-    SE* se,                     // - ending entry
-    STAB_CTL* sctl )            // - state table definition
+    SE *se,                     // - ending entry
+    STAB_CTL *sctl )            // - state table definition
 ;
 void StabCtlRemove(             // REMOVE LAST STATE ENTRY
-    STAB_CTL* sctl )            // - state-table information
+    STAB_CTL *sctl )            // - state-table information
 ;
-SE* StabCtlSkipComp(            // SKIP PAST A COMPONENT
-    STAB_CTL* sctl,             // - control info
-    SE* se )                    // - state entry
+SE *StabCtlSkipComp(            // SKIP PAST A COMPONENT
+    STAB_CTL *sctl,             // - control info
+    SE *se )                    // - state entry
 ;
-SE* StabDefnAddSe(              // ADD STATE ENTRY TO STATE TABLE
-    SE* se,                     // - entry to be added
-    STAB_DEFN* defn )           // - state table definition
+SE *StabDefnAddSe(              // ADD STATE ENTRY TO STATE TABLE
+    SE *se,                     // - entry to be added
+    STAB_DEFN *defn )           // - state table definition
 ;
-STAB_DEFN* StabDefnAllocate(    // ALLOCATE STAB_DEFN
+STAB_DEFN *StabDefnAllocate(    // ALLOCATE STAB_DEFN
     unsigned kind )             // - kind of table
 ;
 void StabDefnFree(              // FREE AN STAB_DEFN
-    STAB_DEFN* defn )           // - entry to be freed
+    STAB_DEFN *defn )           // - entry to be freed
 ;
 void StabDefnFreeStateTable(    // FREE A STATE TABLE
-    STAB_DEFN* defn )           // - definition for state table
+    STAB_DEFN *defn )           // - definition for state table
 ;
-STAB_DEFN* StabDefnInit(        // INITIALIZE STAB_DEFN
-    STAB_DEFN* defn,            // - definition
+STAB_DEFN *StabDefnInit(        // INITIALIZE STAB_DEFN
+    STAB_DEFN *defn,            // - definition
     unsigned kind )             // - kind of table
 ;
 boolean StabGenerate(           // GENERATE A STATE TABLE
-    STAB_CTL* sctl )            // - state-table information
+    STAB_CTL *sctl )            // - state-table information
 ;
-SE* StateTableActualPosn(       // GET (UN-OPTIMIZED) CURRENT STATE ENTRY
-    STAB_CTL* sctl )            // - control info
+SE *StateTableActualPosn(       // GET (UN-OPTIMIZED) CURRENT STATE ENTRY
+    STAB_CTL *sctl )            // - control info
 ;
-SE* StateTableAdd(              // ADD TO STATE TABLE
-    SE* se,                     // - state entry
-    STAB_CTL* sctl )            // - state table information
+SE *StateTableAdd(              // ADD TO STATE TABLE
+    SE *se,                     // - state entry
+    STAB_CTL *sctl )            // - state table information
 ;
-SE* StateTableCurrPosn(         // GET STATE ENTRY FOR CURRENT POSITION
-    STAB_CTL* sctl )            // - control info
+SE *StateTableCurrPosn(         // GET STATE ENTRY FOR CURRENT POSITION
+    STAB_CTL *sctl )            // - control info
 ;
-void* SymTrans(                 // TRANSLATE SYMBOL/SCOPE
+void *SymTrans(                 // TRANSLATE SYMBOL/SCOPE
     void *src )                 // - source value
 ;
 #ifndef NDEBUG
@@ -1435,10 +1432,10 @@ void SymTransEmpty(             // DEBUG: VERIFY SYMBOL TRANSLATIONS OVER
     #define SymTransEmpty()
 #endif
 void SymTransFuncBeg(           // START NEW FUNCTION TRANSLATION
-    FN_CTL* fctl )              // - function control
+    FN_CTL *fctl )              // - function control
 ;
 void SymTransFuncEnd(           // COMPLETE FUNCTION TRANSLATION
-    FN_CTL* fctl )              // - function control
+    FN_CTL *fctl )              // - function control
 ;
 void SymTransNewBlock(          // START NEW BLOCK OF TRANSLATIONS
     void )

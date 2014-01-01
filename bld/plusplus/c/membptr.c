@@ -297,11 +297,11 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
 
 
 static TYPE dereferenceFnType(  // GET TYPE OF DE-REFERENCING FUNCTION
-    TYPE obj_type )             // - type of object pointed at
+    TYPE type )                 // - type of object pointed at
 {
     TYPE fn_type;               // - function type
 
-    fn_type = MakeSimpleFunction( MakePointerTo( obj_type ), NULL );
+    fn_type = MakeSimpleFunction( MakePointerTo( type ), NULL );
     fn_type = MakeCommonCodeData( fn_type );
     return fn_type;
 }

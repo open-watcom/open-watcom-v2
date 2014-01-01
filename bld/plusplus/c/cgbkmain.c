@@ -882,7 +882,7 @@ static SE* cgAddSeComponent     // ADD STATE DTC_COMPONENT STATE ENTRY
     se->component.offset = offset;
     se->component.dtor = dtor;
     init = ObjInitTop();
-    init->obj_se = se;
+    init->se = se;
     if( se_type == DTC_ACTUAL_VBASE
      || se_type == DTC_ACTUAL_DBASE ) {
         se->component.obj = DtregActualBase( FnCtlTop() );
@@ -2370,7 +2370,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_DTOBJ_SYM :               // DTORABLE OBJECT: SYMBOL
           { OBJ_INIT* init;                 // - top initialization object
             init = ObjInitTop();
-            init->obj_sym = SymTrans( ins_value.pvalue );
+            init->sym = SymTrans( ins_value.pvalue );
           } break;
 
           case IC_DTOBJ_OFF :               // DTORABLE OBJECT: OFFSET
@@ -2378,17 +2378,17 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             SE* se;                         // - state entry for object
             TYPE array_element;             // - type of array element
             init = ObjInitTop();
-            init->obj_offset = ins_value.uvalue;
+            init->offset = ins_value.uvalue;
             array_element = ObjInitArrayBaseType( init );
             if( NULL == array_element ) {
-                init->defn = buildObjectStateTable( init->obj_type );
+                init->defn = buildObjectStateTable( init->type );
             } else {
                 init = ObjInitArray();
-                if( init->obj_se == NULL ) {
+                if( init->se == NULL ) {
                     fctl->pre_init = FstabCurrPosn();
                     se = SeAlloc( DTC_ARRAY_INIT );
                     se->array_init.reg = NULL;
-                    init->obj_se = se;
+                    init->se = se;
                     se = FstabAdd( se );
                     if( DtmTabular( fctl ) ) {
                         cg_name e1;                 // - expression(1)
@@ -2422,7 +2422,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //                SE* se;                     // - stacked entry
                 cg_name expr;               // - expression pushed
                 init = ObjInitArray();
-//                se = init->obj_se;
+//                se = init->se;
                 expr = ObjInitAssignIndex( fctl, init, ins_value.uvalue + 1 );
                 CgExprPush( expr, TY_POINTER );
             } else {
@@ -3089,11 +3089,8 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             if(NULL == init){
                 CFatal( "ObjInitClass returned NULL\nPossible: http://bugzilla.openwatcom.org/show_bug.cgi?id=63" );
             }
-            if( init->defn != NULL
-             && init->obj_se != NULL ) {
-                expr = CgCallBackCtorDone( NULL
-                                         , TY_POINTER
-                                         , init->obj_se );
+            if( init->defn != NULL && init->se != NULL ) {
+                expr = CgCallBackCtorDone( NULL, TY_POINTER, init->se );
                 CgCommaOptional( expr, TY_POINTER );
             }
           } break;

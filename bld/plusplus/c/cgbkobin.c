@@ -160,7 +160,7 @@ OBJ_INIT* ObjInitArray(         // GET OBJ_INIT FOR INDEXING
         init_base_type = ObjInitArrayBaseType( init );
         if( init_base_type == NULL ) {
             if( base_type == NULL ) {
-                base_type = StructType( init->obj_type );
+                base_type = StructType( init->type );
             } else {
                 break;
             }
@@ -188,7 +188,7 @@ TYPE ObjInitArrayBaseType(      // GET BASE TYPE FOR ARRAY
     if( curr == NULL ) {
         base_type = NULL;
     } else {
-        base_type = ArrayType( curr->obj_type );
+        base_type = ArrayType( curr->type );
         if( base_type != NULL ) {
             base_type = ArrayBaseType( base_type );
         }
@@ -205,14 +205,14 @@ OBJ_INIT* ObjInitClass(         // GET OBJ_INIT FOR A CLASS
 
     clss = ObjInitTop();
     DbgVerify( clss != NULL, "ObjInitClass -- no class element" );
-    DbgVerify( StructType( clss->obj_type ) != NULL
+    DbgVerify( StructType( clss->type ) != NULL
              , "ObjInitClass -- not class type" );
     for( ; ; ) {
         init = objInitNext( clss );
         if( init == NULL ) break;
-        if( init->obj_offset != clss->obj_offset ) break;
-        if( init->obj_type   != clss->obj_type   ) break;
-        if( init->obj_sym    != clss->obj_sym    ) break;
+        if( init->offset != clss->offset ) break;
+        if( init->type != clss->type ) break;
+        if( init->sym != clss->sym ) break;
         clss = init;
     }
     return clss;
@@ -220,18 +220,18 @@ OBJ_INIT* ObjInitClass(         // GET OBJ_INIT FOR A CLASS
 
 
 OBJ_INIT* ObjInitPush(          // PUSH INITIALIZATION OBJECT (HAS COMPONENTS)
-    TYPE obj_type )             // - type of object
+    TYPE type )                 // - type of object
 {
     OBJ_INIT* init;             // - new object
 
     init = VstkPush( &stack_object_init );
-    init->obj_type = arrayOrStructType( obj_type );
-    init->obj_se = NULL;
+    init->type = arrayOrStructType( type );
+    init->se = NULL;
     init->ctor_test = NULL;
     init->reg = NULL;
     init->defn = NULL;
-    init->obj_sym = NULL;
-    init->obj_offset = 0;
+    init->sym = NULL;
+    init->offset = 0;
     init->patch = 0;
     return init;
 }
@@ -262,8 +262,7 @@ cg_name ObjInitAssignBase(      // ASSIGN BASE REGISTRATION
 {
     return objInitAssignBaseExpr( fctl
                                 , init
-                                , CgSymbolPlusOffset( init->obj_sym
-                                                    , init->obj_offset ) );
+                                , CgSymbolPlusOffset( init->sym, init->offset ) );
 }
 
 
@@ -339,12 +338,12 @@ SE* ObjInitDtorAuto(            // UPDATE OBJ_INIT FOR AUTO DTOR
 
     zap = NULL;
     for( init = ObjInitTop(); init != NULL; init = objInitNext( init ) ) {
-        if( init->obj_sym == sym ) {
+        if( init->sym == sym ) {
             zap = init;
         }
     }
     if( zap != NULL ) {
-        zap->obj_se = se;
+        zap->se = se;
     }
     return se;
 }
