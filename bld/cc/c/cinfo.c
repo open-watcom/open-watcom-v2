@@ -105,7 +105,7 @@ void SetFarHuge( SYMPTR sym, int report )
 {
     TYPEPTR             typ;
     type_modifiers      attrib;
-    unsigned long       size;
+    unsigned            size;
 
     report = report; /* in case not used */
 #if _CPU == 8086
@@ -256,7 +256,7 @@ segment_id SymSegId( SYMPTR sym )
 void SetSegment( SYMPTR sym )
 {
     segment_list        *seg;
-    unsigned long       size;
+    unsigned            size;
 
 
 #if _CPU == 8086

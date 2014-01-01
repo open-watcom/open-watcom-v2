@@ -738,10 +738,10 @@ static void StmtExpr( void )
 }
 
 
-static void AddCaseLabel( unsigned long value )
+static void AddCaseLabel( unsigned value )
 {
     CASEPTR         ce, prev_ce, new_ce;
-    unsigned long   old_value, converted_value;
+    unsigned        old_value, converted_value;
     TREEPTR         tree;
     char            buffer[12];
 

@@ -93,23 +93,23 @@ typedef unsigned short  LABEL_INDEX;
 
 struct patch_entry {
         TREEPTR owner;
-        long    value;
+        int     value;
 };
 
 typedef struct  case_entry {
         struct  case_entry  *next_case;
-        long                value;
+        int                 value;
         LABEL_INDEX         label;
         bool                gen_label;
 } CASEDEFN, *CASEPTR;
 
 typedef struct  switch_entry {
         struct  switch_entry *prev_switch;
-        unsigned int     default_label;
-        int              number_of_cases;
+        unsigned int    default_label;
+        int             number_of_cases;
         struct  case_entry *case_list;
-        unsigned long    low_value;
-        unsigned long    high_value;
+        unsigned        low_value;
+        unsigned        high_value;
         LABEL_INDEX     last_case_label;
         char            *case_format;           /* "%ld" or "%lu" */
 } SWITCHDEFN, *SWITCHPTR;
@@ -154,8 +154,8 @@ typedef struct  opnode {
         SYM_HANDLE      sym_handle;     // OPR_PUSHSYM, OPR_PUSHADDR, ...
                                         // OPR_CALL_INDIRECT
         source_loc      src_loc;        // OPR_STMT
-        long            long_value;     // OPR_PUSHINT
-        unsigned long   ulong_value;    // OPR_PUSHINT
+        int             long_value;     // OPR_PUSHINT
+        unsigned int    ulong_value;    // OPR_PUSHINT
         int64           long64_value;   // OPR_PUSHINT
         uint64          ulong64_value;  // OPR_PUSHINT
         FLOATVAL        *float_value;   // OPR_PUSHFLOAT

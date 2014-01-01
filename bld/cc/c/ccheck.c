@@ -647,15 +647,15 @@ extern void ChkCallParms( void )
 
 static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 {
-    unsigned       long high;
+    unsigned        high;
 
     if( opnd2->op.opr == OPR_PUSHINT ) {
         switch( typ1->decl_type ) {
         case TYPE_FIELD:
         case TYPE_UFIELD:
-            high = 0xfffffffful >> (MAXSIZE - (typ1->u.f.field_width));
+            high = 0xffffffffU >> (MAXSIZE - (typ1->u.f.field_width));
             if( opnd2->op.u2.ulong_value > high ) {
-                if( (opnd2->op.u2.ulong_value | (high >> 1)) != ~0UL ) {
+                if( (opnd2->op.u2.ulong_value | (high >> 1)) != ~0U ) {
                     return( FALSE );
                 }
             }
@@ -668,7 +668,7 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
             break;
         case TYPE_UCHAR:
             if( opnd2->op.u2.ulong_value > 0xff) {
-                if( (opnd2->op.u2.ulong_value | (0xff >> 1)) != ~0UL ) {
+                if( (opnd2->op.u2.ulong_value | (0xff >> 1)) != ~0U ) {
                     return( FALSE );
                 }
             }
@@ -680,7 +680,7 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
             // fall throught
         case TYPE_USHORT:
             if( opnd2->op.u2.ulong_value > 0xffff ) {
-                if( (opnd2->op.u2.ulong_value | (0xffff >> 1)) != ~0UL ) {
+                if( (opnd2->op.u2.ulong_value | (0xffff >> 1)) != ~0U ) {
                     return( FALSE );
                 }
             }
@@ -692,7 +692,7 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
             // fall throught
         case TYPE_SHORT:
             if( opnd2->op.u2.long_value > 32767 ||
-                opnd2->op.u2.long_value < -32768L ) {
+                opnd2->op.u2.long_value < -32768 ) {
                 return( FALSE );
             }
             break;

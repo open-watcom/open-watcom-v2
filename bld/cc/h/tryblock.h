@@ -45,7 +45,7 @@ struct  _CONTEXT;
 struct  try_block {
         struct try_block        *next;
         void                    (*try_handler)( void );
-        unsigned long           saved_EBP;
+        unsigned                saved_EBP;
         struct scope_entry      *scope_table;
         unsigned char           scope_index;
         unsigned char           unwindflag;
@@ -64,7 +64,7 @@ struct  try_block {
  * see CRTL startup directory for seh386.asm
  */
 
-#define TRY_BLOCK_SIZE	    28
+#define TRY_BLOCK_SIZE      28
 
 #define FLD_next            0
 #define FLD_scope_table     12

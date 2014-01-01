@@ -41,26 +41,9 @@ extern  unsigned char   TokValue[];
 extern  unsigned short  UniCode[];
 
 enum scan_class {
-    SCAN_NAME = 0,      // identifier
-    SCAN_WIDE,          // L"abc" or L'a' or Lname
-    SCAN_NUM,           // number that starts with a digit
-    SCAN_QUESTION,      // '?'
-    SCAN_SLASH,         // '/'
-    SCAN_MINUS,         // '-'
-    SCAN_EQUAL,         // '='
-    SCAN_COLON,         // ':'
-    SCAN_STAR,          // '*'
-    SCAN_DELIM1,        // single character delimiter
-    SCAN_DELIM2,        // one, two, or three byte delimiter
-    SCAN_DOT,           // .
-    SCAN_STRING,        // "string"
-    SCAN_CHARCONST,     // 'a'
-    SCAN_CR,            // '\r'
-    SCAN_NEWLINE,       // '\n'
-    SCAN_WHITESPACE,    // all whitespace
-    SCAN_INVALID,       // all other characters
-    SCAN_MACRO,         // get next token from macro
-    SCAN_EOF            // end-of-file
+    #define pick(e,p) e,
+    #include "_scnclas.h"
+    #undef pick
 };
 
 static  FCB             rescan_tmp_file;
@@ -529,10 +512,10 @@ static TOKEN ScanPPDot( void )
 
 static int ScanHex( int max, const unsigned char **pbuf )
 {
-    int                 c;
-    int                 count;
-    char                too_big;
-    unsigned long       value;
+    int             c;
+    int             count;
+    char            too_big;
+    unsigned        value;
 
     too_big = 0;
     count = max;
@@ -575,7 +558,7 @@ static cnv_cc Cnv8( void )
     char    *curr;
     char    c;
     int     len;
-    long    value;
+    int     value;
     uint64  value64;
     cnv_cc  ret;
 
@@ -610,7 +593,7 @@ static cnv_cc Cnv16( void )
     unsigned char   *curr;
     unsigned char   c;
     int             len;
-    unsigned long   value;
+    unsigned        value;
     uint64          value64;
     cnv_cc          ret;
 
@@ -651,7 +634,7 @@ static cnv_cc Cnv10( void )
     char            *curr;
     char            c;
     int             len;
-    unsigned long   value;
+    unsigned        value;
     uint64          value64;
     cnv_cc          ret;
 
@@ -865,7 +848,7 @@ static TOKEN ScanNum( void )
 #if TARGET_INT < TARGET_LONG
             } else if( Constant <= TARGET_UINT_MAX && con.form != CON_DEC ) {
                 ConstType = TYPE_UINT;
-            } else if( Constant <= 0x7ffffffful ) {
+            } else if( Constant <= 0x7fffffffU ) {
                 ConstType = TYPE_LONG;
             } else {
                 ConstType = TYPE_ULONG;
@@ -879,7 +862,7 @@ static TOKEN ScanNum( void )
 #endif
             break;
         case SUFF_L:
-            if( Constant <= 0x7FFFFFFFul ) {     /* 13-sep-89 */
+            if( Constant <= 0x7FFFFFFFU ) {
                 ConstType = TYPE_LONG;
             } else {
                 ConstType = TYPE_ULONG;
@@ -1225,7 +1208,7 @@ static TOKEN CharConst( int char_type )
     int         i;
     int         n;
     TOKEN       token;
-    long        value;
+    int         value;
     bool        error;
 
     c = SaveNextChar();
@@ -1610,26 +1593,9 @@ static TOKEN ScanEof( void )
 }
 
 static TOKEN (*ScanFunc[])( void ) = {
-    ScanName,
-    ScanWide,
-    ScanNum,
-    ScanQuestionMark,
-    ScanSlash,
-    ScanMinus,
-    ScanEqual,
-    ScanColon,
-    ScanStar,
-    ScanDelim1,
-    ScanDelim2,
-    ScanDot,
-    ScanString,
-    ScanCharConst,
-    ScanCarriageReturn,
-    ScanNewline,
-    ScanWhiteSpace,
-    ScanInvalid,
-    ScanMacroToken,
-    ScanEof
+    #define pick(e,p) p,
+    #include "_scnclas.h"
+    #undef pick
 };
 
 TOKEN ScanToken( void )

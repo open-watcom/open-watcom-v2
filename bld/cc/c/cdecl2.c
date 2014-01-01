@@ -1262,7 +1262,7 @@ FIELDPTR FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state )
 
 local TYPEPTR ArrayDecl( TYPEPTR typ )
 {
-    long        dimension;
+    int         dimension;
     TYPEPTR     first_node, next_node, prev_node;
 
     if( typ != NULL ) {                                 /* 16-mar-90 */

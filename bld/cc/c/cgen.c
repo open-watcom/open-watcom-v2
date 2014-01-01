@@ -581,7 +581,7 @@ static cg_name ArrowOperator( cg_name op1, OPNODE *node, cg_name op2 )
 
 static cg_name IndexOperator( cg_name op1, OPNODE *node, cg_name op2 )
 {
-    long        element_size;
+    int         element_size;
     int         index_type;
 
     // node->u2.result_type is the type of the data
@@ -1438,7 +1438,7 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     TYPEPTR             typ;
     segment_id          segment;
-    unsigned long       size;
+    unsigned            size;
 
     typ = sym->sym_type;
     if( (GenSwitches & DBG_TYPES) && (sym->attribs.stg_class == SC_TYPEDEF) ) {

@@ -263,13 +263,13 @@ static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
 
 static void DumpArray( TYPEPTR typ, STRCHUNK *pch )
 {
-    unsigned long   size;
+    unsigned        size;
     char            tempbuf[20];
 
     while( typ->decl_type == TYPE_ARRAY ) {
         size = typ->u.array->dimension;
         if( size != 0 ) {
-            sprintf( tempbuf, "[%lu]", size );
+            sprintf( tempbuf, "[%u]", size );
             ChunkSaveStr( pch, tempbuf );
         } else {
             ChunkSaveStr( pch, "[]" );

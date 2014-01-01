@@ -66,7 +66,7 @@ SetOp()         { ; }
 ResetOp()       { ; }
 
 DGInteger( value, t )
-        register long value;
+        register int value;
         register int t;
         { ; }
 DGFloat( value, t )

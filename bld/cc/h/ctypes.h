@@ -154,7 +154,7 @@ typedef struct parm_list {
 } parm_list;
 
 typedef struct array_info {
-    unsigned long   dimension;
+    unsigned        dimension;
     int             refno;
     bool            unspecified_dim;    // or flexible array member?
 } array_info;
@@ -350,11 +350,7 @@ typedef struct field_entry {
     struct field_entry  *next_field;    /* also used by pre-compiled header */
     TYPEPTR             field_type;     /* also used by pre-compiled header */
     XREFPTR             xref;
-#if _CPU == 386
-    unsigned long       offset;
-#else
     unsigned            offset;
-#endif
     type_modifiers      attrib;         /* LANG_CDECL, _PASCAL, _FORTRAN */
     int                 level;
     int                 hash;
@@ -383,7 +379,7 @@ typedef struct tag_entry {
         ENUMPTR         enum_list;      /* for ENUM */
         FIELDPTR        field_list;     /* for STRUCT or UNION */
     } u;
-    unsigned long       size;           /* size of STRUCT, UNION or ENUM */
+    unsigned            size;           /* size of STRUCT, UNION or ENUM */
     int                 refno;          /* also used by pre-compiled header */
 #if defined( _M_IX86 ) || defined( _M_X64 )
     unsigned short      hash;           /* hash value for tag */
@@ -429,13 +425,13 @@ enum quad_type {
 
 typedef struct {
     union   {
-        long        long_values[2];
+        int         long_values[2];
         int64       long64;
         double      double_value;
         long_double long_double_value;
         STR_HANDLE  string_leaf;
         struct {
-            long        offset;
+            int         offset;
             SYM_HANDLE  sym_handle;
         } var;
     } u;

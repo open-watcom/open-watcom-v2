@@ -766,7 +766,7 @@ local void CUndef( void )
 local void CLine( void )
 {
     FNAMEPTR        flist;
-    unsigned long   src_line;
+    unsigned        src_line;
 
     src_line = 0;
     PPCTL_ENABLE_MACROS();

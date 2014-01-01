@@ -899,7 +899,7 @@ TREEPTR FlowOp( TREEPTR op1, opr_code opr, TREEPTR op2 )
 }
 
 
-local TREEPTR MulByConst( TREEPTR opnd, long amount )
+local TREEPTR MulByConst( TREEPTR opnd, int amount )
 {
     TREEPTR     tree;
 
@@ -924,7 +924,7 @@ local TREEPTR MulByConst( TREEPTR opnd, long amount )
 }
 
 
-local TREEPTR PtrSubtract( TREEPTR result, unsigned long size, int result_type)
+local TREEPTR PtrSubtract( TREEPTR result, unsigned size, int result_type)
 {
     int         shift_count;
     int         n;
@@ -1084,7 +1084,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     DATA_TYPE           op1_type, op2_type, result_type;
     TYPEPTR             op1_tp, op2_tp;
     TYPEPTR             res_type;
-    unsigned long       size;
+    unsigned            size;
     TREEPTR             result;
     TREEPTR             tree;
 
@@ -1270,7 +1270,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     case T_OR_EQUAL:
         /* if op2 is a constant, check to see if constant truncated */
         if( op2->op.opr == OPR_PUSHINT ) {
-            unsigned long       max_value;
+            unsigned    max_value;
 
             switch( TypeSize( typ ) ) {
             case 1:

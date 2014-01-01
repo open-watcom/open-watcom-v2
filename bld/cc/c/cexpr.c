@@ -1121,7 +1121,7 @@ bool ConstExprAndType( const_val *val )
         break;
     case OPR_PUSHFLOAT:
         CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
-        I32ToI64( (long)atof( tree->op.u2.float_value->string ), &val->value );
+        I32ToI64( (int)atof( tree->op.u2.float_value->string ), &val->value );
         ret = FALSE;
         break;
     default:
@@ -2639,7 +2639,7 @@ TREEPTR ScalarExpr( TREEPTR tree )
 local TREEPTR SizeofOp( TYPEPTR typ )
 {
     TREEPTR             tree;
-    unsigned long       size;
+    unsigned            size;
 
     if( typ->decl_type == TYPE_FIELD || typ->decl_type == TYPE_UFIELD ) {
         CErr1( ERR_CANT_TAKE_SIZEOF_FIELD );

@@ -301,11 +301,11 @@ void DumpProgram( void )
     }
 }
 
-static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
+static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
 {
     cg_type             data_type;
     int                 size_of_item;
-    unsigned long       amount;
+    unsigned            amount;
     SYM_ENTRY           sym;
 
     if( dq->flags & Q_NEAR_POINTER ) {
@@ -380,12 +380,12 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
     case QDT_LONG:
     case QDT_ULONG:
         amount = TARGET_LONG;
-        printf( "%6lu byte long (%s): %ld\n",
+        printf( "%6lu byte long (%s): %d\n",
                 amount, dq->type == QDT_LONG ? "QDT_LONG" :
                 "QDT_ULONG", dq->u.long_values[0] );
         *psize += amount;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            printf( "%6lu byte second long: %ld\n", amount,
+            printf( "%6lu byte second long: %d\n", amount,
                     dq->u.long_values[1] );
             *psize += amount;
         }
@@ -456,7 +456,7 @@ void DumpDataQuads( void )
 {
     DATA_QUAD       *dq;
     void            *cookie;
-    unsigned long   size;
+    unsigned        size;
 
     cookie = StartDataQuadAccess();
     if( cookie != NULL ) {

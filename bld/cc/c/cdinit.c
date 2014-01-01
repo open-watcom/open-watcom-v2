@@ -302,7 +302,7 @@ local void RelSeekBytes( int n )
 local void ChkConstant( unsigned value, unsigned max_value )
 {
     if( value > max_value ) {                   /* 13-sep-91 */
-        if( (value | (max_value >> 1)) != ~0UL ) {
+        if( (value | (max_value >> 1)) != ~0U ) {
             CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
         }
     }

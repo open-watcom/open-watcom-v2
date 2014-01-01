@@ -697,7 +697,7 @@ static  void    Copy8( char const *nstr, char *name )
 local int SymBucket( SYM_ENTRY *sym )   /* determine bucket # for symbol */
 {
     int             bucket;
-    unsigned long   size;
+    unsigned        size;
 
     bucket = 0; /* assume its a function */
     if( (sym->flags & SYM_FUNCTION) == 0 ) {    /* if variable */

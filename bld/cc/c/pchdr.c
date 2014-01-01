@@ -112,13 +112,13 @@ static  INCFILE         *PCHOldIncFileList; /* temporary copy of old include fil
 static  int             PCHOldIncListValid; /* flag to indicate if PCHOldIncFileList is valid */
 
 typedef struct pheader {
-    unsigned long   signature;      //  'WPCH'
-    unsigned long   version;
+    unsigned        signature;      //  'WPCH'
+    unsigned        version;
     unsigned        size_of_header;
     unsigned        size_of_int;
     unsigned        pack_amount;    // PackAmount
-    unsigned long   gen_switches;   // GenSwitches
-    unsigned long   target_switches;// TargetSwitches
+    unsigned        gen_switches;   // GenSwitches
+    unsigned        target_switches;// TargetSwitches
     int             toggles;        // Toggles
     unsigned        size;
     unsigned        macro_size;
