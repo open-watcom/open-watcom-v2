@@ -164,7 +164,7 @@ void VbufConcStr(               // CONCATENATE STRING TO vbuf->buf
 
 void VbufConcDecimal(           // CONCATENATE DECIMAL # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    unsigned long value )       // - value to be concatenated
+    unsigned value )            // - value to be concatenated
 {
     char    buffer[16];         // - temp buffer
 
@@ -175,7 +175,7 @@ void VbufConcDecimal(           // CONCATENATE DECIMAL # TO vbuf->buf
 
 void VbufConcInteger(           // CONCATENATE INTEGER # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    long value )                // - value to be concatenated
+    int value )                 // - value to be concatenated
 {
     char    buffer[16];         // - temp buffer
 

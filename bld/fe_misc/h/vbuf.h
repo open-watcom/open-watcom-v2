@@ -80,11 +80,11 @@ void VbufConcChr(               // CONCATENATE CHAR TO vbuf->buf
 ;
 void VbufConcDecimal(           // CONCATENATE DECIMAL # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    unsigned long value )       // - value to be concatenated
+    unsigned value )            // - value to be concatenated
 ;
 void VbufConcInteger(           // CONCATENATE INTEGER # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    long value )                // - value to be concatenated
+    int value )                 // - value to be concatenated
 ;
 void VbufConcI64(               // CONCATENATE I64 # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure

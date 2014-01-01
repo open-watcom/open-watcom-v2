@@ -56,33 +56,33 @@ typedef union rptreg RPTREG;
 
 typedef struct rptreg_base RPTREG_BASE;
 struct rptreg_base              // RPTREG_BASE -- report registration
-{   RPTREG* next;               // - next in ring
+{   RPTREG *next;               // - next in ring
     void (*processor)(          // - print processor
         FILE *,                 // - - output file
-        RPTREG* );              // - - takes self as arg.
+        RPTREG * );             // - - takes self as arg.
 };
 
 typedef struct rptreg_ctr RPTREG_CTR;
 struct rptreg_ctr               // RPTREG_CTR -- report registration for ctr
 {   RPTREG_BASE base;           // - base
-    const char* text;           // - report line
-    long* a_ctr;                // - addr[ ctr ]
+    const char *text;           // - report line
+    int *a_ctr;                 // - addr[ ctr ]
 };
 
 typedef struct rptreg_avg RPTREG_AVG;
 struct rptreg_avg               // RPTREG_AVG -- report registration for average
 {   RPTREG_BASE base;           // - base
-    const char* text;           // - report line
-    RPTREG* total;              // - total accumulation
-    RPTREG* count;              // - count accumulation
+    const char *text;           // - report line
+    RPTREG *total;              // - total accumulation
+    RPTREG *count;              // - count accumulation
 };
 
 typedef struct rptreg_tab RPTREG_TAB;
 struct rptreg_tab               // RPTREG_TAB -- report registration for table
 {   RPTREG_BASE base;           // - base
-    const char* title;          // - title
+    const char *title;          // - title
     const char * const *row_labels;// - row labels
-    long* table;                // - values
+    int *table;                 // - values
     unsigned dim_row;           // - row dimension
     unsigned dim_col;           // - column dimension
 };
@@ -90,7 +90,7 @@ struct rptreg_tab               // RPTREG_TAB -- report registration for table
 typedef struct rptreg_tit RPTREG_TIT;
 struct rptreg_tit               // RPTREG_TIT -- report registration for title
 {   RPTREG_BASE base;           // - base
-    const char* title;          // - title
+    const char *title;          // - title
 };
 
 union rptreg                    // RPTREG: one of
@@ -101,14 +101,14 @@ union rptreg                    // RPTREG: one of
     RPTREG_TIT tit;             // - title
 };
 
-static RPTREG* reportList;      // registrations
+static RPTREG *reportList;      // registrations
 static carve_t carveRPTREG_CTR; // carving: RPTREG_CTR
 static carve_t carveRPTREG_AVG; // carving: RPTREG_AVG
 static carve_t carveRPTREG_TAB; // carving: RPTREG_TAB
 static carve_t carveRPTREG_TIT; // carving: RPTREG_TIT
 
 static void extraRptInit(       // INITIALIZATION FOR EXTRA REPORTING
-    INITFINI* defn )            // - definition
+    INITFINI *defn )            // - definition
 {
     defn = defn;
     reportList = NULL;
@@ -120,7 +120,7 @@ static void extraRptInit(       // INITIALIZATION FOR EXTRA REPORTING
 
 
 static void extraRptFini(       // COMPLETION FOR EXTRA REPORTING
-    INITFINI* defn )            // - definition
+    INITFINI *defn )            // - definition
 {
     defn = defn;
     CarveDestroy( carveRPTREG_CTR );
@@ -206,7 +206,7 @@ void ExtraRptDumpReport(        // DUMP REPORT INTO FILE
 
 static void extraRptPrintCtr(   // PRINT A COUNTER
     FILE *fp,                   // - file pointer
-    RPTREG* reg )               // - registration
+    RPTREG *reg )               // - registration
 {
     if( reg->ctr.text != NULL ) {
         char buffer[32];
@@ -222,10 +222,10 @@ static void extraRptPrintCtr(   // PRINT A COUNTER
 
 
 void ExtraRptRegisterCtr(       // REGISTER A COUNTER
-    long* a_ctr,                // - addr( counter )
-    const char* rpt_line )      // - report line
+    int *a_ctr,                 // - addr( counter )
+    const char *rpt_line )      // - report line
 {
-    RPTREG* reg;                // - registration entry
+    RPTREG *reg;                // - registration entry
 
     reg = RingCarveAlloc( carveRPTREG_CTR, &reportList );
     reg->base.processor = extraRptPrintCtr;
@@ -236,8 +236,8 @@ void ExtraRptRegisterCtr(       // REGISTER A COUNTER
 
 
 void ExtraRptRegisterMax(       // REGISTER A MAXIMUM
-    long* a_ctr,                // - addr( counter )
-    const char* rpt_line )      // - report line
+    int *a_ctr,                 // - addr( counter )
+    const char *rpt_line )      // - report line
 {
     ExtraRptRegisterCtr( a_ctr, rpt_line );
 }
@@ -245,7 +245,7 @@ void ExtraRptRegisterMax(       // REGISTER A MAXIMUM
 
 static void extraRptPrintTitle( // PRINT A TITLE
     FILE *fp,                   // - file pointer
-    RPTREG* reg )               // - registration
+    RPTREG *reg )               // - registration
 {
     if( reg->tit.title != NULL ) {
         outputLineArgs( fp, "", NULL );
@@ -256,9 +256,9 @@ static void extraRptPrintTitle( // PRINT A TITLE
 
 
 void ExtraRptRegisterTitle(     // REGISTER A TITLE
-    const char* title )         // - title line
+    const char *title )         // - title line
 {
-    RPTREG* reg;                // - registration entry
+    RPTREG *reg;                // - registration entry
 
     reg = RingCarveAlloc( carveRPTREG_TIT, &reportList );
     reg->base.processor = extraRptPrintTitle;
@@ -266,11 +266,11 @@ void ExtraRptRegisterTitle(     // REGISTER A TITLE
 }
 
 
-static RPTREG* extraRptLookupCtr( // LOOK UP CTR ENTRY
-    long* a_ctr )               // - addr[ counter ]
+static RPTREG *extraRptLookupCtr( // LOOK UP CTR ENTRY
+    int *a_ctr )                // - addr[ counter ]
 {
-    RPTREG* curr;               // - search entry
-    RPTREG* entry;              // - entry
+    RPTREG *curr;               // - search entry
+    RPTREG *entry;              // - entry
 
     entry = NULL;
     RingIterBeg( reportList, curr ) {
@@ -287,13 +287,13 @@ static RPTREG* extraRptLookupCtr( // LOOK UP CTR ENTRY
 
 static void extraRptPrintAvg(   // PRINT AN AVERAGE
     FILE *fp,                   // - file pointer
-    RPTREG* reg )               // - registration
+    RPTREG *reg )               // - registration
 {
-    long count;                 // - ctr: count
-    long total;                 // - ctr: total
-    long integ;                 // - computed average: integral part
-    long fract;                 // - computed average: fractional part
-    char* p;                    // - walks thru buffer
+    int count;                  // - ctr: count
+    int total;                  // - ctr: total
+    int integ;                  // - computed average: integral part
+    int fract;                  // - computed average: fractional part
+    char *p;                    // - walks thru buffer
     auto char int_part[16];     // - formatting buffers
     auto char frac_part[16];
 
@@ -321,11 +321,11 @@ static void extraRptPrintAvg(   // PRINT AN AVERAGE
 
 
 void ExtraRptRegisterAvg(       // REGISTER AVERAGING
-    long* a_total,              // - addr[ total ]
-    long* a_count,              // - addr[ count ]
-    const char* rpt_line )      // - report line
+    int *a_total,               // - addr[ total ]
+    int *a_count,               // - addr[ count ]
+    const char *rpt_line )      // - report line
 {
-    RPTREG* reg;                // - registration entry
+    RPTREG *reg;                // - registration entry
 
     reg = RingCarveAlloc( carveRPTREG_AVG, &reportList );
     reg->base.processor = extraRptPrintAvg;
@@ -337,18 +337,18 @@ void ExtraRptRegisterAvg(       // REGISTER AVERAGING
 
 static void extraRptTable(      // PRINT A TABLE
     FILE *fp,                   // - file pointer
-    RPTREG* reg )               // - registration
+    RPTREG *reg )               // - registration
 {
     unsigned i;                 // - row index
     unsigned r, c;              // - row, column indices
-    long maxval;                // - maximum table value
+    int maxval;                 // - maximum table value
     unsigned digits;            // - # of digits
 
     digits = 0;
     maxval = 1;
     for( r = 0; r < reg->tab.dim_row; ++ r ) {
         for( c = 0; c < reg->tab.dim_col; ++ c ) {
-            long val = reg->tab.table[ r * reg->tab.dim_col + c ];
+            int val = reg->tab.table[ r * reg->tab.dim_col + c ];
             for( ; maxval < val; ++ digits, maxval *= 10 );
         }
     }
@@ -372,11 +372,11 @@ static void extraRptTable(      // PRINT A TABLE
         }
         VbufInit( &buffer );
         outputLine( fp, "" );
-        outputLine( fp, (char*)reg->tab.title );
+        outputLine( fp, (char *)reg->tab.title );
         outputLine( fp, "" );
         sprintf( fmt, "%%%dd", digits + 1 );
         for( r = 0; r < reg->tab.dim_row; ++ r ) {
-            long* row = &reg->tab.table[ r * reg->tab.dim_col ];
+            int *row = &reg->tab.table[ r * reg->tab.dim_col ];
             VbufRewind( &buffer );
             if( row_lbl == NULL ) {
                 sprintf( buf, "%4d", r );
@@ -406,13 +406,13 @@ static void extraRptTable(      // PRINT A TABLE
 
 
 void ExtraRptRegisterTab(       // REGISTER TABLE
-    char const* title,          // - title
+    char const *title,          // - title
     char const * const *row_labels,//- row labels
-    long* table,                // - table
+    int *table,                 // - table
     unsigned rows,              // - # rows
     unsigned cols )             // - # columns
 {
-    RPTREG* reg;                // - new registration
+    RPTREG *reg;                // - new registration
 
     reg = RingCarveAlloc( carveRPTREG_TAB, &reportList );
     reg->base.processor = &extraRptTable;

@@ -131,7 +131,7 @@ unsigned init_hash[ MAX_KEYWORDS+1 ];
 unsigned done[ MAX_KEYWORDS+1 ];
 unsigned hash[ MAX_KEYWORDS+1 ];
 unsigned ordered[ MAX_KEYWORDS+1 ];
-unsigned long collisions[ MAX_KEYWORDS+1 ];
+unsigned collisions[ MAX_KEYWORDS+1 ];
 
 keyword_t used[ MAX_HASHSIZE ];
 keyword_t partial[ MAX_HASHSIZE ];
@@ -152,7 +152,7 @@ unsigned last_scale;
 unsigned min_len;
 unsigned max_len;
 unsigned extra;
-unsigned long len_mask;
+unsigned len_mask;
 
 struct {
     unsigned    quiet : 1;      /* no console output req'd */

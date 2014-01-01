@@ -1492,7 +1492,7 @@ void forceRebuild( void ) {
         struct utimbuf uinfo;
 
         if( stat( outputFNames[i], &info ) != -1 ) {
-            unsigned long three_years_ago = 60 * 60 * 24 * 366 * 3;
+            unsigned three_years_ago = 60 * 60 * 24 * 366 * 3;
             memset( &uinfo, 0, sizeof(uinfo) );
             uinfo.actime = info.st_mtime - three_years_ago;
             uinfo.modtime = info.st_mtime - three_years_ago;
