@@ -245,7 +245,7 @@ static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
     offset      off;
     segment_id  old;
 
-    old = SetOP( -1 );
+    old = SetOP( UNDEFSEG );
     while( blk->patches != NULL ) {
         bpatch = blk->patches;
         blk->patches = bpatch->link;

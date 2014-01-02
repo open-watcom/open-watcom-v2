@@ -1150,11 +1150,11 @@ extern  segment_id  SetOP( segment_id seg )
     segment_id  old;
 
     if( CurrSeg == NULL ) {
-        old = -1;
+        old = UNDEFSEG;
     } else {
         old = CurrSeg->seg;
     }
-    if( seg == -1 ) {
+    if( seg == UNDEFSEG ) {
         CurrSeg = NULL;
     } else {
         CurrSeg = AskSegIndex( seg );

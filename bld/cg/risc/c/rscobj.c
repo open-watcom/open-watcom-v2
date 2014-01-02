@@ -766,11 +766,11 @@ extern  segment_id  SetOP( segment_id seg )
 
 
     if( currSection == NULL ) {
-        old = -1;
+        old = UNDEFSEG;
     } else {
         old = currSection->id;
     }
-    if( seg == -1 ) {
+    if( seg == UNDEFSEG ) {
         currSection = NULL;
     } else {
         new = FindSection( seg );

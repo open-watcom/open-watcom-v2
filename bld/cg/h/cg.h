@@ -185,9 +185,8 @@ typedef enum {
         MSG_SYMBOL_TOO_LONG     /*  symbol too long, truncated (sym) */
 } msg_class;                    /*  fatal cg error message */
 
-#define DBG_NIL_TYPE    0
-#define DBG_FWD_TYPE    0xffffffff
-#define SEG_EXTRN_FAR   0x80
+#define DBG_NIL_TYPE    ((dbg_type)0)
+#define DBG_FWD_TYPE    ((dbg_type)-1)
 
 typedef union   cg_init_info {
         struct {
