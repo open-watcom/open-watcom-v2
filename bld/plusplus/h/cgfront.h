@@ -1474,5 +1474,10 @@ unsigned UserDefCnvToType(      // DO A USER-DEFINED CONVERSION TO A TYPE
     TYPE src,                   // - source type (a class)
     TYPE tgt )                  // - target type
 ;
+PTREE NodeAddToLeft(            // FABRICATE AN ADDITION TO LEFT
+    PTREE left,                 // - left operand
+    PTREE right,                // - right operand
+    TYPE type )                 // - type of result
+;
 
 #endif

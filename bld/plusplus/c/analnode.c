@@ -2511,3 +2511,16 @@ PTREE NodeIntDummy              // BUILD A DUMMY INTEGRAL NODE
 {
     return PTreeIntConstant( 12345, TYP_SINT );
 }
+
+
+PTREE NodeAddToLeft(            // FABRICATE AN ADDITION TO LEFT
+    PTREE left,                 // - left operand
+    PTREE right,                // - right operand
+    TYPE type )                 // - type of result
+{
+    PTREE expr;                 // - resultant expression
+
+    expr = NodeBinary( CO_PLUS, left, right );
+    expr->type = type;
+    return( expr );
+}

@@ -220,19 +220,6 @@ static PTREE accessOp(          // ACCESS AN OPERAND
 }
 
 
-static PTREE addToLeft(         // FABRICATE AN ADDITION TO LEFT
-    PTREE left,                 // - left operand
-    PTREE right,                // - right operand
-    TYPE type )                 // - type of result
-{
-    PTREE expr;                 // - resultant expression
-
-    expr = NodeBinary( CO_PLUS, left, right );
-    expr->type = type;
-    return expr;
-}
-
-
 static PTREE addOffset(         // ADD AN OFFSET TO AN LVALUE
     PTREE field,                // - field
     unsigned offset,            // - offset
@@ -240,7 +227,7 @@ static PTREE addOffset(         // ADD AN OFFSET TO AN LVALUE
 {
     PTREE expr;                 // - resultant expression
 
-    expr = addToLeft( field, NodeOffset( offset ), type );
+    expr = NodeAddToLeft( field, NodeOffset( offset ), type );
     expr->flags &= ~ PTF_LVALUE;
     return expr;
 }
@@ -271,8 +258,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
     type_ret = SymFuncReturnType( func );
     ret = SymFunctionReturn();
     if( SymIsThisDataMember( refed ) ) {
-        expr = NodeBinary( CO_PLUS, NodeThis(), NodeOffset( refed->u.member_offset ) );
-        expr->type = refed->sym_type;
+        expr = NodeAddToLeft( NodeThis(), NodeOffset( refed->u.member_offset ), refed->sym_type );
         expr = NodeFetchReference( expr );
     } else {
         if( SymIsVirtual( refed ) ) {
@@ -1065,11 +1051,11 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
         temp = accessOp( NodeDupExpr( &lhs )
                        , ScopeVBPtrOffset( scope )
                        , MakePointerTo( type_offset ) );
-        expr = addToLeft( NodeFetch( NodeDupExpr( &temp ) )
+        expr = NodeAddToLeft( NodeFetch( NodeDupExpr( &temp ) )
                         , NodeDupExpr( &index )
                         , type_offset );
         expr->flags |= PTF_LVALUE;
-        expr = addToLeft( temp, NodeFetch( expr ), type_cp );
+        expr = NodeAddToLeft( temp, NodeFetch( expr ), type_cp );
         expr->flags &= ~ PTF_LVALUE;
         expr = NodeBinary( CO_COLON, expr, lhs );
         expr->type = type_cp;
@@ -1079,7 +1065,7 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
         expr = lhs;
     }
     NodeFreeDupedExpr( expr_root );
-    expr = addToLeft( delta, expr, type_cp );
+    expr = NodeAddToLeft( delta, expr, type_cp );
     expr = NodeArg( expr );
     func = NodeUnaryCopy( CO_CALL_SETUP_IND, func );
     func->type = type_fn;

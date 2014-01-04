@@ -106,17 +106,11 @@ target_size_t CgCodePtrSize(    // SIZE OF DEFAULT CODE POINTER
 target_size_t CgDataPtrSize(    // SIZE OF DEFAULT DATA POINTER
     void )
 ;
-unsigned CgTargetSizeT(         // GET CODE-GEN TYPE FOR TARGET'S size_t
-    void )
-;
 cg_type CgTypeOffset(          // GET CODEGEN TYPE FOR AN OFFSET
     void )
 ;
 SYMBOL DtorFindCg(              // FIND DTOR, DURING CODE-GEN
     TYPE type )                 // - a class or array class type
-;
-unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
-    void )
 ;
 
 #endif

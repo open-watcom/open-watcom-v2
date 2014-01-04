@@ -1643,8 +1643,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
               case CO_BPRE_PLUS_PLUS :
               case CO_BPRE_BOOL_PLUS_PLUS :
               case CO_BPRE_MINUS_MINUS :
-                CgExprPush( CGLVPreGets( cg_opcode, op1, op2, exprn_type )
-                          , lvalue_type );
+                CgExprPush( CGLVPreGets( cg_opcode, op1, op2, exprn_type ), lvalue_type );
                 break;
 
               case CO_EQ :
@@ -1681,8 +1680,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                                  , CGInteger( 0, exprn_type )
                                  , exprn_type );
                 op2 = CGBinary( O_PLUS, op1, op2, exprn_type );
-                CgExprPush( CGChoose( test, op2, second, exprn_type )
-                          , exprn_type );
+                CgExprPush( CGChoose( test, op2, second, exprn_type ), exprn_type );
               } break;
 
 #if _CPU == _AXP
@@ -1697,8 +1695,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 #endif
 
               default :
-                CgExprPush( CGBinary( cg_opcode, op1, op2, exprn_type )
-                          , exprn_type );
+                CgExprPush( CGBinary( cg_opcode, op1, op2, exprn_type ), exprn_type );
                 break;
             }
             break;

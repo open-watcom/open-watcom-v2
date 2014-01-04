@@ -188,8 +188,7 @@ static PTREE setupArrayStorage( // STORE COUNT IN ARRAY_STORAGE,POINT TO ARRAY
     expr = NodeConvertFlags( GetBasicType( TYP_UINT ), expr, PTF_LVALUE );
     expr = NodeAssign( expr, array_number );
     expr = NodeConvert( new_expr_type, expr );
-    expr = NodeBinary( CO_PLUS, expr, sizeOfUInt() );
-    expr->type = new_expr_type;
+    expr = NodeAddToLeft( expr, sizeOfUInt(), new_expr_type );
     return expr;
 }
 
@@ -503,8 +502,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
         node->type = offset_type;
         node = FoldBinary( node );
         if( flag.needs_count ) {
-            node = NodeBinary( CO_PLUS, node, sizeOfUInt() );
-            node->type = offset_type;
+            node = NodeAddToLeft( node, sizeOfUInt(), offset_type );
             node = FoldBinary( node );
         }
     } else {
@@ -885,8 +883,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     args = NodeBinary( CO_TIMES, NodeRvalue( expr ), args );
                     offset_type = args->u.subtree[1]->type;
                     args->type = offset_type;
-                    args = NodeBinary( CO_PLUS, args, sizeOfUInt() );
-                    args->type = offset_type;
+                    args = NodeAddToLeft( args, sizeOfUInt(), offset_type );
                     expr = dup2;
                     if( ! flag.test_null ) {
                         flag.test_null = TRUE;
