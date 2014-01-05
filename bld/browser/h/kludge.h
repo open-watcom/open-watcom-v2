@@ -34,10 +34,4 @@
 // since it can't /undefine something it /defines.
 
 #include "mem.h"
-typedef unsigned char bool;
-#ifndef TRUE
-#    define TRUE 1
-#endif
-#ifndef FALSE
-#    define FALSE 0
-#endif
+#include "bool.h"

@@ -34,12 +34,8 @@
 #define _WSTD_H_INCLUDED
 
 #include "watcom.h"
+#include "bool.h"
 
-#if !defined( UNIX )  &&  !defined( _MSC_VER )
-    #if !defined(__cplusplus)
-        typedef unsigned char   bool;
-    #endif
-#endif
 typedef unsigned char   boolean;
 typedef unsigned char   byte;
 typedef unsigned_8      bit;

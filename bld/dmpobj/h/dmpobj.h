@@ -33,9 +33,9 @@
 #include <setjmp.h>
 #include "watcom.h"
 #include "pcobj.h"
+#include "bool.h"
 
 typedef unsigned_8          byte;
-typedef enum {FALSE, TRUE}  bool;
 
 #define CRLF            "\n"
 

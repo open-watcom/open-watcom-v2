@@ -29,10 +29,7 @@
 ****************************************************************************/
 
 
-typedef enum {
-    FALSE = 0,
-    TRUE
-} bool;
+#include "bool.h"
 
 typedef int         f_handle;
 

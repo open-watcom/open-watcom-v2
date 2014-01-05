@@ -114,7 +114,7 @@ typedef struct instruction {
         unsigned_16             sequence;
         union {
                 byte            byte;
-                bool            bool;
+                bool            bool_flag;
                 call_flags      call_flags;
                 nop_flags       nop_flags;
                 byte            zap_value;      /* for conversions on AXP */

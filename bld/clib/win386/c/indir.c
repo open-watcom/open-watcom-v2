@@ -49,14 +49,14 @@ extern void PopStack( DWORD );
         0x03 0xE0 /* add esp, eax */ \
         parm [eax] modify[esp];
 
-typedef char bool;
+typedef unsigned char bool;
 
 typedef struct indir {
-FARPROC proc;
-short num;
-bool msc;
-char filler;
-short lens[1];
+    FARPROC proc;
+    short num;
+    bool msc;
+    char filler;
+    short lens[1];
 } indir;
 
 /*

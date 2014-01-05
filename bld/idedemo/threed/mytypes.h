@@ -54,7 +54,7 @@
     #define WINREXP __export CALLBACK
 #endif
 
-typedef char            bool;
+typedef unsigned char   bool;
 
 #define _max( x, y ) ( ( (x) < (y) ) ? (y) : (x) )
 #define _min( x, y ) ( ( (x) > (y) ) ? (y) : (x) )

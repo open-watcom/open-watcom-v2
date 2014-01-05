@@ -36,6 +36,7 @@
 #include "watcom.h"
 #include "exepe.h"
 #include "exedos.h"
+#include "bool.h"
 
 
 #ifndef COMMON_H
@@ -59,12 +60,6 @@
 #define RT_GROUP_ICON           14
 
 #define RT_COUNT                15
-
-
-typedef enum {
-    false = 0,
-    true
-} bool;
 
 typedef enum {
     TABLE,

@@ -64,12 +64,7 @@ extern void             AsmNote( int level, int msgnum, ... );
 
 #if defined( _STANDALONE_ )
 
-    #define MAX_MESSAGE_SIZE    128
-
-    #define MSG_SHARE_BASE      1
-    #define MSG_WOMP_BASE       200
-    #define MSG_WASM_BASE       500
-    #define MSG_USAGE_BASE      900
+#include "asmrcmsg.h"
 
     extern bool MsgInit( void );
     extern bool MsgGet( int, char * );
@@ -77,29 +72,7 @@ extern void             AsmNote( int level, int msgnum, ... );
     extern void OpenLstFile( void );
     extern void LstMsg( const char *format, ... );
 
-#if defined( USE_TEXT_MSGS )
-
-enum {
-#define pick(c,e,j) c,
-    START_BASE1 = MSG_SHARE_BASE - 1,
-#include "../h/asmshare.msg"
-    MSG_SHARE_LAST,
-    START_BASE2 = MSG_WOMP_BASE - 1,
-#include "../h/womp.msg"
-    MSG_WOMP_LAST,
-    START_BASE3 = MSG_WASM_BASE - 1,
-#include "../h/wasm.msg"
-    MSG_WASM_LAST,
-#undef pick
-};
-
-#else
-
-    #define MSG_LANG_SPACING    1000
-
-    #include "msg.gh"
-    #include "wmpmsg.gh"
-    #include "wasmmsg.gh"
+#if !defined( USE_TEXT_MSGS )
 
     extern void MsgPutUsage( void );
     extern void MsgSubStr( char *, char *, char );

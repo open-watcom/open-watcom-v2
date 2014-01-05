@@ -200,7 +200,7 @@ typedef __int64 _int64;
 #ifdef TRUE
 typedef UCHAR bool;
 #else
-typedef enum { FALSE, TRUE } bool;
+#include "bool.h"
 #endif
 
 #define _inp(p)         READ_PORT_UCHAR((PUCHAR)(ext->Controller + (p)))

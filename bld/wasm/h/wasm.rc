@@ -1,4 +1,4 @@
-#include "asmerr.h"
+#include "asmrcmsg.h"
 #include "wreslang.h"
 
 STRINGTABLE

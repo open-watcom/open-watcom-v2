@@ -83,7 +83,7 @@ extern  void    DumpInsOffsets() {
     DO_DUMPOFFSET( "base_type_class", offsetof( instruction, base_type_class ) );
     DO_DUMPOFFSET( "sequence", offsetof( instruction, sequence ) );
     DO_DUMPOFFSET( "flags.byte", offsetof( instruction, flags.byte ) );
-    DO_DUMPOFFSET( "flags.bool", offsetof( instruction, flags.bool ) );
+    DO_DUMPOFFSET( "flags.bool_flag", offsetof( instruction, flags.bool_flag ) );
     DO_DUMPOFFSET( "flags.call_flag", offsetof( instruction, flags.call_flags ) );
     DO_DUMPOFFSET( "flags.nop_flags", offsetof( instruction, flags.nop_flags ) );
     DO_DUMPOFFSET( "t.index_needs", offsetof( instruction, t.index_needs ) );

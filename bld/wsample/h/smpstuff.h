@@ -31,6 +31,7 @@
 
 typedef unsigned short seg;
 #include "offset.h"
+#include "bool.h"
 
 typedef struct {
     off         offset;
@@ -54,10 +55,6 @@ typedef struct {
 #define TIMER0          0x40    /* timer port */
 #define INT_CTRL        0x20    /* interrupt controler port */
 #define EOI             0x20    /* End-Of-Interrupt */
-
-#undef TRUE
-#undef FALSE
-typedef enum { FALSE, TRUE } bool;
 
 extern unsigned                 InsiderTime;
 extern unsigned                 Margin;
