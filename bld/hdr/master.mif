@@ -102,18 +102,20 @@ options_typeinfo = -kCNAME
 # Special case for included C++ cname style headers
 #   for optimize C++ declaration out of C part
 #
-options_c_ctype   = -kCONLY
-options_c_locale  = -kCONLY
-options_c_math    = -kCONLY
-options_c_signal  = -kCONLY
-options_c_stdarg  = -kCONLY
-options_c_stddef  = -kCONLY
-options_c_stdio   = -kCONLY
-options_c_stdlib  = -kCONLY
-options_c_string  = -kCONLY
-options_c_time    = -kCONLY
-options_c_wchar   = -kCONLY
-options_c_wctype  = -kCONLY
+options_c_ctype    = -kCONLY
+options_c_inttypes = -kCONLY
+options_c_locale   = -kCONLY
+options_c_math     = -kCONLY
+options_c_signal   = -kCONLY
+options_c_stdarg   = -kCONLY
+options_c_stdbool  = -kCONLY
+options_c_stddef   = -kCONLY
+options_c_stdio    = -kCONLY
+options_c_stdlib   = -kCONLY
+options_c_string   = -kCONLY
+options_c_time     = -kCONLY
+options_c_wchar    = -kCONLY
+options_c_wctype   = -kCONLY
 
 #
 # Special case for graph2.h and pgchart2.h headers

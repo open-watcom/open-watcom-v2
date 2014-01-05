@@ -1,16 +1,26 @@
 /***************************************************************************
- * FILE: stdbool.h (Macros to simulate the 'bool' type in C)
+ * FILE: stdbool.h/cstdbool (Macros to simulate the 'bool' type in C)
  *
 :include crwat.sp
  *
- * Description: This header is part of the C99 standard library. It
+ * Description: This header is part of the C99/C++ standard library. It
  *              provides a way for the programmer, at his/her option
  *              to introduce the type 'bool' into a C program.
  ***************************************************************************/
+:segment CNAME
+#ifndef _CSTDBOOL_INCLUDED
+#define _CSTDBOOL_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+:elsesegment
 #ifndef _STDBOOL_H_INCLUDED
 #define _STDBOOL_H_INCLUDED
 
 :include readonly.sp
+:endsegment
+
 ::
 :: To prevent compatibility problems for C++ programs that call C
 :: functions using the 'bool' defined here, the sizeof(C++'s bool)
@@ -22,17 +32,26 @@
 :: C++ compiler. That appears to be the case with 1 and 0 (is that
 :: a consequence of the C++ standard?)
 ::
-
+:segment CNAME
 :: C++ programs should use the built in bool type.
-#ifndef __cplusplus
+#define __bool_true_false_are_defined 1
+:elsesegment
+#ifdef __cplusplus
+
+#include <cstdbool>
+
+#else /* __cplusplus not defined */
+
  #define bool _Bool
  #define true  1
  #define false 0
  #if __STDC_VERSION__ < 199901L
   typedef unsigned char _Bool;
  #endif
-#endif
 
-#define __bool_true_false_are_defined 1
+ #define __bool_true_false_are_defined 1
+
+#endif /* __cplusplus not defined */
+:endsegment
 
 #endif

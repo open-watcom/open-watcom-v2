@@ -3,7 +3,7 @@
  *
 :include crwat.sp
  *
- * Description: This header is part of the C standard library. It
+ * Description: This header is part of the C99/C++ standard library. It
  *              describes a number of useful integer types.
  ***************************************************************************/
 :segment CNAME
@@ -57,45 +57,6 @@ using std::uintmax_t;
 :: End .h version additions
 :endsegment
 
-:: In cname version place all these typedefs in std namespace
-:segment CNAME
-namespace std {
-
-:endsegment
-:include exactint.sp
-
-/* Minimum-width types. */
-typedef signed   char      int_least8_t;
-typedef signed   short     int_least16_t;
-typedef signed   long      int_least32_t;
-typedef signed   long long int_least64_t;
-
-typedef unsigned char      uint_least8_t;
-typedef unsigned short     uint_least16_t;
-typedef unsigned long      uint_least32_t;
-typedef unsigned long long uint_least64_t;
-
-/* Fastest minimum-width types. */
-typedef signed   int       int_fast8_t;
-typedef signed   int       int_fast16_t;
-typedef signed   long      int_fast32_t;
-typedef signed   long long int_fast64_t;
-
-typedef unsigned int       uint_fast8_t;
-typedef unsigned int       uint_fast16_t;
-typedef unsigned long      uint_fast32_t;
-typedef unsigned long long uint_fast64_t;
-
-:include intptr.sp
-
-/* Greatest-width types. */
-typedef long long intmax_t;
-typedef unsigned long long uintmax_t;
-
-:segment CNAME
-} // namespace std
-
-:endsegment
 /* Limit macros */
 
 :: According to C99 these are only visible in C++ programs
@@ -292,6 +253,45 @@ typedef unsigned long long uintmax_t;
 
 :include saferepi.sp
 
+:: In cname version place all these typedefs in std namespace
+:segment CNAME
+namespace std {
+
+:endsegment
+:include exactint.sp
+
+/* Minimum-width types. */
+typedef signed   char      int_least8_t;
+typedef signed   short     int_least16_t;
+typedef signed   long      int_least32_t;
+typedef signed   long long int_least64_t;
+
+typedef unsigned char      uint_least8_t;
+typedef unsigned short     uint_least16_t;
+typedef unsigned long      uint_least32_t;
+typedef unsigned long long uint_least64_t;
+
+/* Fastest minimum-width types. */
+typedef signed   int       int_fast8_t;
+typedef signed   int       int_fast16_t;
+typedef signed   long      int_fast32_t;
+typedef signed   long long int_fast64_t;
+
+typedef unsigned int       uint_fast8_t;
+typedef unsigned int       uint_fast16_t;
+typedef unsigned long      uint_fast32_t;
+typedef unsigned long long uint_fast64_t;
+
+:include intptr.sp
+
+/* Greatest-width types. */
+typedef long long intmax_t;
+typedef unsigned long long uintmax_t;
+
+:segment CNAME
+} // namespace std
+
+:endsegment
 :segment !CNAME
 #endif /* __cplusplus not defined */
 :endsegment

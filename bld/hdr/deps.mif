@@ -14,25 +14,27 @@ cplus     = ../cpluspro.sp ../cplusepi.sp
 # These dependency lists are used for both standard name.h and cname
 # headers. This is only relevant for headers in the C++ standard library.
 
-assert_deps = assert.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(extension)
-ctype_deps  = ctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(extension) $(c99ext)
-errno_deps  = errno.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp
-float_deps  = float.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(extension)
-iso646_deps = iso646.mh ../crwat.sp ../readonly.sp
-limits_deps = limits.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../mbmax.sp $(unixext) $(extension)
-locale_deps = locale.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(packll) ../wchar_t.sp ../null.sp
-math_deps   = math.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) $(packll)
-setjmp_deps = setjmp.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) $(unixext) $(packll)
-signal_deps = signal.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../incdir.sp $(posixext) $(unixext) $(packll)
-stdarg_deps = stdarg.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../valist.sp $(extension)
-stddef_deps = stddef.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../ptrdiff.sp ../intptr.sp $(saferc) $(extension)
-stdint_deps = stdint.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(saferc) ../exactint.sp ../intptr.sp
-stdio_deps  = stdio.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../valist.sp ../wchar_t.sp ../wctypet.sp $(saferc)
-stdlib_deps = stdlib.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp
-string_deps = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp
-time_deps   = time.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp ../null.sp ../timet.sp ../clockt.sp $(saferc) $(unixext) $(extension)
-wchar_deps  = wchar.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp
-wctype_deps = wctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp
+assert_deps   = assert.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(extension)
+ctype_deps    = ctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(extension) $(c99ext)
+errno_deps    = errno.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp
+float_deps    = float.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(extension)
+inttypes_deps = inttypes.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp
+iso646_deps   = iso646.mh ../crwat.sp ../readonly.sp
+limits_deps   = limits.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../mbmax.sp $(unixext) $(extension)
+locale_deps   = locale.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(packll) ../wchar_t.sp ../null.sp
+math_deps     = math.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) $(packll)
+setjmp_deps   = setjmp.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) $(unixext) $(packll)
+signal_deps   = signal.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../incdir.sp $(posixext) $(unixext) $(packll)
+stdarg_deps   = stdarg.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../valist.sp $(extension)
+stdbool_deps  = stdbool.mh ../crwat.sp ../readonly.sp ../cpponly.sp
+stddef_deps   = stddef.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../ptrdiff.sp ../intptr.sp $(saferc) $(extension)
+stdint_deps   = stdint.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(saferc) ../exactint.sp ../intptr.sp
+stdio_deps    = stdio.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../valist.sp ../wchar_t.sp ../wctypet.sp $(saferc)
+stdlib_deps   = stdlib.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp
+string_deps   = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp
+time_deps     = time.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp ../null.sp ../timet.sp ../clockt.sp $(saferc) $(unixext) $(extension)
+wchar_deps    = wchar.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp
+wctype_deps   = wctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp
 
 cassert      : cassert.mh $(assert_deps)
 cctype       : cctype.mh $(ctype_deps)
@@ -42,9 +44,11 @@ ciso646      : ciso646.mh $(iso646_deps)
 climits      : climits.mh $(limits_deps)
 clocale      : clocale.mh $(locale_deps)
 cmath        : cmath.mh $(math_deps)
+cinttype     : cinttype.mh $(inttypes_deps)
 csetjmp      : csetjmp.mh $(setjmp_deps)
 csignal      : csignal.mh $(signal_deps)
 cstdarg      : cstdarg.mh $(stdarg_deps)
+cstdbool     : cstdbool.mh $(stdbool_deps)
 cstddef      : cstddef.mh $(stddef_deps)
 cstdint      : cstdint.mh $(stdint_deps)
 cstdio       : cstdio.mh $(stdio_deps)
@@ -173,7 +177,7 @@ generic.h       : generic.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 graph.h         : $(graph_deps)
 graph2.h        : $(graph_deps)
 i86.h           : i86.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
-inttypes.h      : inttypes.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp
+inttypes.h      : $(inttypes_deps)
 io.h            : io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../maxpath.sp $(extension)
 iomanip.h       : $(iomanip_deps)
 ios.h           : $(ios_deps)
@@ -204,7 +208,7 @@ share.h         : share.mh ../crwat.sp ../readonly.sp $(extension)
 signal.h        : $(signal_deps)
 sstream.h       : $(sstream_deps)
 stdarg.h        : $(stdarg_deps)
-stdbool.h       : stdbool.mh ../crwat.sp ../readonly.sp
+stdbool.h       : $(stdbool_deps)
 stddef.h        : $(stddef_deps)
 stdexcep.h      : $(stdexcept_deps)
 stdint.h        : $(stdint_deps)

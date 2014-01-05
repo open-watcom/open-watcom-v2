@@ -3,36 +3,63 @@
  *
 :include crwatqnx.sp
  *
- * Description: This header is part of the C standard library. It declares
- *              various macros to help format stdint integers.
+ * Description: This header is part of the C99/C++ standard library.
+ *              It declares various macros to help format stdint integers.
  ***************************************************************************/
+:segment CNAME
+#ifndef _CINTTYPES_INCLUDED
+#define _CINTTYPES_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+:elsesegment
 #ifndef _INTTYPES_H_INCLUDED
 #define _INTTYPES_H_INCLUDED
 
 :include readonly.sp
 
+:: In C++ .h header version import names into standard namespace
+#ifdef __cplusplus
+
+#include <cinttypes>
+
+// C99 types in inttypes.h.
+using std::imaxdiv_t;
+
+// C99 functions in inttypes.h.
+using std::imaxabs;
+using std::imaxdiv;
+using std::strtoimax;
+using std::strtoumax;
+using std::wcstoimax;
+using std::wcstoumax;
+
+#else /* __cplusplus not defined */
+:: End .h version additions
+:endsegment
+
 :include owrtlink.sp
 
+:segment CNAME
+#ifndef _CSTDINT_INCLUDED
+ #include <cstdint>
+#endif
+:elsesegment
 #ifndef _STDINT_H_INCLUDED
  #include <stdint.h>
 #endif
-
-:include cpluspro.sp
-
-:include wchar_t.sp
-
-typedef struct {
-    intmax_t    quot;
-    intmax_t    rem;
-} imaxdiv_t;
+:endsegment
 
 /* Format macros */
 
 :: According to C99 these are only visible in C++ programs
 :: if __STDC_FORMAT_MACROS is defined. */
 ::
-#if !defined(__cplusplus) || defined(__STDC_FORMAT_MACROS)
+:segment CNAME
+#if defined(__STDC_FORMAT_MACROS)
 
+:endsegment
 #define PRId8   "hhd"
 #define PRId16  "hd"
 #define PRId32  "ld"
@@ -267,7 +294,29 @@ typedef struct {
 #endif
 :endsegment
 
+:segment CNAME
 #endif  /* __STDC_FORMAT_MACROS */
+
+:endsegment
+:include pshpackl.sp
+
+:segment CNAME
+:: Only need extern "C" in cinttype
+:include cpluspro.sp
+
+:elsesegment
+:include wchar_t.sp
+
+:endsegment
+:: In cname version place all these typedefs in std namespace
+:segment CNAME
+namespace std {
+
+:endsegment
+typedef struct {
+    intmax_t    quot;
+    intmax_t    rem;
+} imaxdiv_t;
 
 _WCRTLINK extern intmax_t   imaxabs( intmax_t __j );
 _WCRTLINK extern imaxdiv_t  imaxdiv( intmax_t __numer, intmax_t __denom );
@@ -276,6 +325,15 @@ _WCRTLINK extern uintmax_t  strtoumax( const char *__nptr, char **__endptr, int 
 _WCRTLINK extern intmax_t   wcstoimax( const wchar_t *__nptr, wchar_t **__endptr, int __base );
 _WCRTLINK extern uintmax_t  wcstoumax( const wchar_t *__nptr, wchar_t **__endptr, int __base );
 
+:segment CNAME
+} // namespace std
+
 :include cplusepi.sp
 
+:elsesegment
+:include poppack.sp
+
+#endif /* __cplusplus not defined */
+
+:endsegment
 #endif

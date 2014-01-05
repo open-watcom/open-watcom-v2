@@ -21,6 +21,7 @@
 !inject cdrom.h                               hqnx
 !inject cerrno           noext hcpp
 !inject cfloat           noext hcpp
+!inject cinttype         noext hcpp
 !inject ciso646          noext hcpp
 !inject climits          noext hcpp
 !inject clocale          noext hcpp
@@ -33,6 +34,7 @@
 !inject csetjmp          noext hcpp
 !inject csignal          noext hcpp
 !inject cstdarg          noext hcpp
+!inject cstdbool         noext hcpp
 !inject cstddef          noext hcpp
 !inject cstdint          noext hcpp
 !inject cstdio           noext hcpp

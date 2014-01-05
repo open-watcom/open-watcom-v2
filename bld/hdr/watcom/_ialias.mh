@@ -9,6 +9,7 @@
 :include readonly.sp
 
 #pragma include_alias( <algorithm>,     <algorith>   )
+#pragma include_alias( <cinttypes>,     <cinttype>   )
 #pragma include_alias( <exception>,     <exceptio>   )
 #pragma include_alias( <exception.h>,   <exceptio.h> )
 #pragma include_alias( <functional>,    <function>   )
