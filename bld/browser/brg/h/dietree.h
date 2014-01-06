@@ -44,7 +44,7 @@ struct DIETreeNode {
             DIETreeNode( bool leaf )
                     : _leaf( leaf ), _degree( 0 ) {}
 
-    bool    _leaf    : 1;               // true if this is a bucket node
+    uint    _leaf    : 1;               // true if this is a bucket node
     uint    _degree  : 15;              // how many elements in this node
 };
 
