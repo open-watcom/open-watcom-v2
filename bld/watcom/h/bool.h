@@ -30,17 +30,17 @@
 ****************************************************************************/
 
 
-#if !defined( BOOL_DEFINED )  &&  !defined( bool ) && !defined(__cplusplus)
-    #define BOOL_DEFINED
-    typedef unsigned char bool;
-
-  #ifndef true
-    #define true 1
-  #endif
-  #ifndef false
+#if !defined( __cplusplus ) && !defined( __bool_true_false_are_defined )
+  #if defined( __WATCOMC__ ) || __STDC_VERSION__ >= 199901L && defined( __UNIX__ )
+    #include <stdbool.h>
+  #else
+    #define bool unsigned char
+    #define true  1
     #define false 0
+    #define __bool_true_false_are_defined 1
   #endif
 #endif
+
 #ifndef TRUE
     #define TRUE 1
 #endif
