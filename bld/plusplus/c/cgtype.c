@@ -89,29 +89,6 @@ static PTR_CLASS defaultDataPtrClass;// default data pointer type
 static PTR_CLASS defaultCodePtrClass;// default code pointer type
 
 
-boolean IsBigData(              // TEST IF DEFAULT MEMORY MODEL IS BIG DATA
-    void )
-{
-    return( ( TargetSwitches & BIG_DATA ) != 0 );
-}
-
-
-#define __HUGE_DATA_SWITCHES    ( BIG_CODE | BIG_DATA | CHEAP_POINTER )
-#define __HUGE_DATA_SETTING     ( BIG_CODE | BIG_DATA             )
-boolean IsHugeData(             // TEST IF DEFAULT MEMORY MODEL IS HUGE DATA
-    void )
-{
-    return( ( TargetSwitches & __HUGE_DATA_SWITCHES ) == __HUGE_DATA_SETTING );
-}
-
-
-boolean IsBigCode(              // TEST IF DEFAULT MEMORY MODEL IS BIG CODE
-    void )
-{
-    return TargetSwitches & BIG_CODE;
-}
-
-
 static PTR_CLASS ptr_type(      // CLASSIFY POINTER TYPE
     type_flag mod_flags,        // - modifier flags
     PTR_CLASS ptr_class )       // - default classification
@@ -590,7 +567,7 @@ static void init(               // MODULE INITIALIZATION
 #elif _INTEL_CPU
     defaultDataPtrClass = PTR_NEAR;
     defaultCodePtrClass = PTR_NEAR;
-    if(( TargetSwitches & FLAT_MODEL ) == 0 ) {
+    if( !IsFlat() ) {
         if( IsHugeData() ) {
             defaultDataPtrClass = PTR_HUGE;
         } else if( IsBigData() ) {

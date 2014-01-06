@@ -855,7 +855,7 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
 
     defn = defn;
     if( *TextSegName == '\0' ) {
-        if( TargetSwitches & BIG_CODE ) {
+        if( IsBigCode() ) {
             stpcpy( stpcpy( seg_name, ModuleName ), TS_SEG_CODE );
         } else {
             stpcpy( seg_name, TS_SEG_CODE );

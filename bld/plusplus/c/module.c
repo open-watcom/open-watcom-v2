@@ -282,7 +282,7 @@ static void genInitFiniReference( // GENERATE INIT/FINI REFERENCE TO FUNCTION
     CgFrontDataPtr( IC_DATA_LABEL, init_ref );
     #if _INTEL_CPU
         CgFrontDataPtr( IC_SET_TYPE, GetBasicType( TYP_UCHAR ) );
-        if( TargetSwitches & BIG_CODE ) {
+        if( IsBigCode() ) {
             CgFrontDataInt( IC_DATA_INT, 1 );
         } else {
             CgFrontDataInt( IC_DATA_INT, 0 );
@@ -299,7 +299,7 @@ static void genInitFiniReference( // GENERATE INIT/FINI REFERENCE TO FUNCTION
     CgFrontDataInt( IC_DATA_PTR_OFFSET, 0 );
     CgFrontDataPtr( IC_DATA_PTR_SYM, func );
     #if _CPU == 8086
-        if( 0 == ( TargetSwitches & BIG_CODE ) ) {
+        if( !IsBigCode() ) {
             CgFrontDataInt( IC_DATA_INT, 0 );
         }
     #elif COMP_CFG_COFF == 1

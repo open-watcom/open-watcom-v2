@@ -64,6 +64,7 @@
 #include "pragdefn.h"
 #include "specfuns.h"
 #include "autodept.h"
+#include "cgfront.h"
 #include "feprotos.h"
 
 #if _INTEL_CPU && ( _CPU != 8086 )
@@ -455,7 +456,7 @@ static inline_funcs *Flat( inline_funcs *ifunc )
 {
   #if _CPU != 8086
     byte_seq **p;
-    if( TargetSwitches & FLAT_MODEL ) {
+    if( IsFlat() ) {
         for( p = FlatAlternates; p[0] != NULL; p += 2 ) {
             if( p[0] == ifunc->code ) {
                 ifunc->code = p[1];
@@ -482,7 +483,7 @@ static inline_funcs *InlineLookup( NAME name )
     }
     if( OptSize == 100 ) {              /* if /os specified */
         ifunc = SInline_Functions;
-        if( TargetSwitches & BIG_DATA ) {
+        if( IsBigData() ) {
   #if _CPU == 8086
             if( TargetSwitches & FLOATING_DS ) {
                 ifunc = ZF_Data_Functions;
@@ -504,7 +505,7 @@ static inline_funcs *InlineLookup( NAME name )
         if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( ifunc );
         ++ifunc;
     }
-    if( TargetSwitches & FLAT_MODEL ) {
+    if( IsFlat() ) {
         ifunc = Flat_Functions;
         while( ifunc->name ) {
             if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( ifunc );
@@ -513,7 +514,7 @@ static inline_funcs *InlineLookup( NAME name )
     }
   #endif
     ifunc = Inline_Functions;
-    if( TargetSwitches & BIG_DATA ) {
+    if( IsBigData() ) {
   #if _CPU == 8086
         if( TargetSwitches & FLOATING_DS ) {
             ifunc = DF_Data_Functions;
@@ -805,7 +806,7 @@ static call_class getCallClass( // GET CLASS OF CALL
             } else if( flags & TF1_FAR16 ) {
                 value |= FAR16_CALL;
             } else {
-                if( TargetSwitches & BIG_CODE ) {
+                if( IsBigCode() ) {
                     if( makeFileScopeStaticNear( sym ) ) {
                         value &= ~FAR_CALL;
                     }
@@ -1023,7 +1024,7 @@ static void addDefaultImports( void )
 #if _INTEL_CPU
     #if _CPU == 8086
         if( CompFlags.external_defn_found ) {
-            if( TargetSwitches & BIG_CODE ) {
+            if( IsBigCode() ) {
                 CgInfoAddImport( "_big_code_" );
             } else {
                 CgInfoAddImport( "_small_code_" );

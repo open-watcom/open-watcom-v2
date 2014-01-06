@@ -43,6 +43,7 @@
 #include "cginimps.h"
 #include "asmstmt.h"
 #include "pcheader.h"
+#include "cgfront.h"
 
 #define IS_REGSET(t)    (t == T_LEFT_BRACKET || t == T_LEFT_BRACE)
 
@@ -553,7 +554,7 @@ static enum sym_type CodePtrType( type_flag flags )
         retn = SYM_FFAR;
     } else if( flags & TF1_NEAR ) {
         retn = SYM_FNEAR;
-    } else if( TargetSwitches & BIG_CODE ) {
+    } else if( IsBigCode() ) {
         retn = SYM_FFAR;
     } else {
         retn = SYM_FNEAR;
@@ -571,7 +572,7 @@ static enum sym_type PtrType( type_flag flags )
         retn = SYM_DFAR;
     } else if( flags & TF1_NEAR ) {
         retn = SYM_DNEAR;
-    } else if( TargetSwitches & BIG_DATA ) {
+    } else if( IsBigData() ) {
         retn = SYM_DFAR;
     } else {
         retn = SYM_DNEAR;

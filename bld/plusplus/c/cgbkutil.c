@@ -280,7 +280,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
                 if( IsBigData() ) {
                     str_seg = SegmentAddStringCodeFar( str_len, str_align );
                 } else {
-                    if( TargetSwitches & FLAT_MODEL ) {
+                    if( IsFlat() ) {
                         str_seg = SegmentAddStringCodeFar( str_len, str_align );
                     } else {
                         str_seg = SEG_CONST;

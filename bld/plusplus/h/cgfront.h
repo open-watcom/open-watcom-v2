@@ -199,6 +199,14 @@ typedef enum                    // CALL_OPT -- types of call optimizations
 #define ___NodeIsOp(node,op) ( (node)->cgop == (op) )
 #define conversionWorked( val ) ( (val) <= CNV_WORKED )
 
+// TEST IF DEFAULT MEMORY MODEL USES BIG CODE
+#define IsBigCode()     ((TargetSwitches & BIG_CODE) != 0)
+// TEST IF DEFAULT MEMORY MODEL USES BIG DATA
+#define IsBigData()     ((TargetSwitches & BIG_DATA) != 0)
+// TEST IF DEFAULT MEMORY MODEL USES HUGE DATA
+#define IsHugeData()    ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == (BIG_DATA))
+// TEST IF DEFAULT MEMORY MODEL IS FLAT
+#define IsFlat()        ((TargetSwitches & FLAT_MODEL) != 0)
 
 // PROTOTYPES : exposed to C++ compiler
 
@@ -797,15 +805,6 @@ PTREE IcEmitExpr(               // EMIT EXPRESSION
 ;
 void InitRefFixup(              // TRAVERSAL FOR REFERENCE INITIALIZATION
     PTREE expr )                // - initialization expression
-;
-boolean IsBigCode(              // TEST IF DEFAULT MEMORY MODEL IS BIG CODE
-    void )
-;
-boolean IsBigData(              // TEST IF DEFAULT MEMORY MODEL IS BIG DATA
-    void )
-;
-boolean IsHugeData(             // TEST IF DEFAULT MEMORY MODEL IS HUGE DATA
-    void )
 ;
 TYPE LvalueErr(                 // NOT-LVALUE ERROR (NODE)
     PTREE expr_chk,             // - expression, to be checked

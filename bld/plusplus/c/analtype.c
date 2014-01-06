@@ -219,15 +219,11 @@ TYPE TypeTargetSizeT(           // GET TYPE OF TARGET'S size_t
 {
     TYPE type;                  // - return type
 
-#if _CPU == 8086
-    if( ( TargetSwitches & ( BIG_DATA | CHEAP_POINTER ) ) == BIG_DATA ) {
+    if( IsHugeData() ) {
         type = GetBasicType( TYP_ULONG );
     } else {
         type = GetBasicType( TYP_UINT );
     }
-#else
-    type = GetBasicType( TYP_UINT );
-#endif
     return type;
 }
 
@@ -237,15 +233,11 @@ unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
 {
     unsigned size;              // - size of type
 
-#if _CPU == 8086
-    if( ( TargetSwitches & ( BIG_DATA | CHEAP_POINTER ) ) == BIG_DATA ) {
+    if( IsHugeData() ) {
         size = TARGET_ULONG;
     } else {
         size = TARGET_UINT;
     }
-#else
-    size = TARGET_UINT;
-#endif
     return size;
 }
 
@@ -253,7 +245,7 @@ unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
 boolean TypeTruncByMemModel(    // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
     TYPE type )                 // - the type
 {
-    boolean retn;               // - TRUE ==> type matches default mem. model
+    boolean retn;               // - TRUE ==> type doesn't matches default mem. model
     type_flag flags;            // - flags for the type
     type_flag mflags;           // - memory-model flags for the type
 
@@ -263,17 +255,9 @@ boolean TypeTruncByMemModel(    // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
         retn = FALSE;
     } else {
         if( type->id == TYP_FUNCTION ) {
-            if( IsBigCode() ) {
-                retn = FALSE;
-            } else {
-                retn = ! ( TF1_NEAR & mflags );
-            }
+            retn = ( !IsBigCode() && (TF1_NEAR & mflags) == 0 );
         } else {
-            if( IsBigData() ) {
-                retn = FALSE;
-            } else {
-                retn = ! ( ( TF1_NEAR | TF1_HUGE ) & mflags );
-            }
+            retn = ( !IsBigData() && (TF1_NEAR & mflags) == 0 );
         }
     }
     return retn;

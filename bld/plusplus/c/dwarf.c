@@ -268,7 +268,7 @@ static uint  dwarfAddressClassFlags( TYPE type ) {
 #if _CPU == _AXP
         flags = DW_PTR_TYPE_DEFAULT;
 #else
-        if(  TargetSwitches & FLAT_MODEL ) {
+        if( IsFlat() ) {
             flags = DW_PTR_TYPE_DEFAULT;
         } else {
             offset_type = CgTypeOffset();
@@ -360,10 +360,10 @@ static dw_handle dwarfDebugMemberFuncDef( CLASSINFO *info, SYMBOL sym )
     #if _CPU == _AXP
         dl_seg = NULL;
     #else
-        if(!( TargetSwitches & FLAT_MODEL )) {
-            dl_seg =  dwarfDebugStaticSeg( sym );
-        } else {
+        if( IsFlat() ) {
             dl_seg = NULL;
+        } else {
+            dl_seg =  dwarfDebugStaticSeg( sym );
         }
     #endif
         dh = DWBeginMemFuncDecl( Client,
@@ -596,7 +596,7 @@ static boolean dwarfClassInfo( TYPE type )
                 if( InDebug ) {
                     dl = dwarfDebugStaticLoc( curr );
 #if _INTEL_CPU
-                    if(!( TargetSwitches & FLAT_MODEL )) {
+                    if( !IsFlat() ) {
                         dl_seg =  dwarfDebugStaticSeg( curr );
                     }
 #endif
@@ -867,7 +867,7 @@ static bool dwarfRefSymLoc( dw_loc_id locid, SYMBOL sym ) {
         DFDwarfLocal( Client, locid, sym );
     } else {
 #if _INTEL_CPU
-        if(!( TargetSwitches & FLAT_MODEL )) {  /* should check Client */
+        if( !IsFlat() ) {  /* should check Client */
             DWLocSegment( Client, locid, (dw_sym_handle)sym );
             ret = TRUE;
         }
@@ -898,7 +898,7 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags ) {
     // on stack top->| offset 0 | seg sym |
         if( SegmentFindBased( btype ) == SEG_CODE ) {
 #if _INTEL_CPU
-            if(!( TargetSwitches & FLAT_MODEL )) {  /* should check Client */
+            if( !IsFlat() ) {  /* should check Client */
                 DWLocSegment( Client, locid, (dw_sym_handle)DefaultCodeSymbol );
                 DbgAddrTaken( DefaultCodeSymbol );
             }
@@ -910,7 +910,7 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags ) {
             // DGROUP.  Note that defining a symbol in that segment
             // may require defining that segment.
 #if _INTEL_CPU
-            if(!( TargetSwitches & FLAT_MODEL )) {  /* should check Client */
+            if( !IsFlat() ) {  /* should check Client */
                 DWLocSegment( Client, locid, (dw_sym_handle) DefaultDataSymbol );
                 DefaultDataSymbol->flag |= SF_REFERENCED;
             }
@@ -957,7 +957,7 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags ) {
         bptr = TypeModFlagsEC( bptr->of, &bflags );
         if( bflags & TF1_NEAR ) {
 #if _INTEL_CPU
-            if(!( TargetSwitches & FLAT_MODEL )) {  /* should check Client */
+            if( !IsFlat() ) {  /* should check Client */
                 if( bptr->id == TYP_FUNCTION ) {
                     DWLocSegment( Client, locid, (dw_sym_handle)DefaultCodeSymbol );
                     DbgAddrTaken( DefaultCodeSymbol );
@@ -1617,7 +1617,7 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
     if( InDebug ) {
         dl = dwarfDebugStaticLoc( sym );
 #if _INTEL_CPU
-        if(!( TargetSwitches & FLAT_MODEL )) {  /* should check Client */
+        if( !IsFlat() ) {  /* should check Client */
             dl_seg =  dwarfDebugStaticSeg( sym );
         }
 #endif
@@ -2194,7 +2194,7 @@ extern void DwarfSymDebugGenSymbol( SYMBOL sym, boolean scoped, boolean by_ref )
         pt = MakePointerTo( sym->sym_type );
         dl = DBLocOp( dl, DB_OP_POINTS, CgTypeOutput( pt ) );
 #if _INTEL_CPU
-        if(!( TargetSwitches & FLAT_MODEL )) {  /* should check Client */
+        if( !IsFlat() ) {  /* should check Client */
             if( !IsBigData() ) {
                 dl = symbolicDebugSetSegment( dl, DefaultDataSymbol );
                 DefaultDataSymbol->flag |= SF_REFERENCED;
