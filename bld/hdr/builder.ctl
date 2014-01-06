@@ -23,6 +23,7 @@ set PROJNAME=Standard header files
     <CPCMD> dos/cctype         <OWRELROOT>/h/
     <CPCMD> dos/cerrno         <OWRELROOT>/h/
     <CPCMD> dos/cfloat         <OWRELROOT>/h/
+    <CPCMD> dos/cinttype       <OWRELROOT>/h/
     <CPCMD> dos/ciso646        <OWRELROOT>/h/
     <CPCMD> dos/climits        <OWRELROOT>/h/
     <CPCMD> dos/clocale        <OWRELROOT>/h/
@@ -31,6 +32,7 @@ set PROJNAME=Standard header files
     <CPCMD> dos/csetjmp        <OWRELROOT>/h/
     <CPCMD> dos/csignal        <OWRELROOT>/h/
     <CPCMD> dos/cstdarg        <OWRELROOT>/h/
+    <CPCMD> dos/cstdbool       <OWRELROOT>/h/
     <CPCMD> dos/cstddef        <OWRELROOT>/h/
     <CPCMD> dos/cstdint        <OWRELROOT>/h/
     <CPCMD> dos/cstdio         <OWRELROOT>/h/
@@ -84,6 +86,7 @@ set PROJNAME=Standard header files
     <CPCMD> linux/cctype       <OWRELROOT>/lh/
     <CPCMD> linux/cerrno       <OWRELROOT>/lh/
     <CPCMD> linux/cfloat       <OWRELROOT>/lh/
+    <CPCMD> linux/cinttype     <OWRELROOT>/lh/
     <CPCMD> linux/ciso646      <OWRELROOT>/lh/
     <CPCMD> linux/climits      <OWRELROOT>/lh/
     <CPCMD> linux/clocale      <OWRELROOT>/lh/
@@ -92,6 +95,7 @@ set PROJNAME=Standard header files
     <CPCMD> linux/csetjmp      <OWRELROOT>/lh/
     <CPCMD> linux/csignal      <OWRELROOT>/lh/
     <CPCMD> linux/cstdarg      <OWRELROOT>/lh/
+    <CPCMD> linux/cstdbool     <OWRELROOT>/lh/
     <CPCMD> linux/cstddef      <OWRELROOT>/lh/
     <CPCMD> linux/cstdint      <OWRELROOT>/lh/
     <CPCMD> linux/cstdio       <OWRELROOT>/lh/
