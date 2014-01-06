@@ -1268,8 +1268,8 @@ static CALL_DIAG diagCall =         // diagnosis for function call
     };
 
 
-static boolean isRelationalOperator(    // TEST IF RELATIONAL OPERATOR
-    PTREE node )                // - node containing operator
+static bool isRelationalOperator(   // TEST IF RELATIONAL OPERATOR
+    PTREE node )                    // - node containing operator
 {
     if( node->op == PT_BINARY ) {
         switch( node->cgop ) {
@@ -1288,8 +1288,8 @@ static void warnPointerZero(    // WARN IF POINTER COMPARISON TO 0 IS CONST
     PTREE left,                 // - left subtree
     PTREE right )               // - right subtree
 {
-    boolean zero_left;          // - TRUE ==> zero on left
-    boolean zero_right;         // - TRUE ==> zero on right
+    bool zero_left;             // - TRUE ==> zero on left
+    bool zero_right;            // - TRUE ==> zero on right
 
     zero_left = NodeIsZeroConstant( left );
     zero_right = NodeIsZeroConstant( right );
@@ -1412,7 +1412,7 @@ void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
     signed_64       val, low, high;
     int             op1_size, result_size;
     cmp_result      ret;
-    boolean         rev_ret;
+    bool            rev_ret;
     rel_op          rel;
     char            num1[25], num2[25];
     INT_CONSTANT    icon;
@@ -1505,7 +1505,8 @@ static void warnUselessCompare( // WARN IF COMPARISON IS USELESS (CONSTANT)
     PTREE right )               // - right operand
 {
     PTREE       op1, op2;
-    boolean     constant_right, constant_left;
+    bool        constant_right;
+    bool        constant_left;
     CGOP        cgop;
 
     constant_right = FALSE;
@@ -1632,12 +1633,12 @@ static TYPE analyse_err(        // ANALYSE KIND OF ERROR MESSAGE TO WRITE
 }
 
 
-static boolean is_ptr_constant( // CHECK IF NODE IS TYPED AS PTR TO A CONSTANT
+static bool is_ptr_constant(    // CHECK IF NODE IS TYPED AS PTR TO A CONSTANT
     PTREE expr )                // - node
 {
     TYPE type;                  // - type pointed at
     type_flag flags;            // - modifier flags
-    boolean retn;               // - TRUE ==> has a constant type
+    bool retn;                  // - TRUE ==> has a constant type
 
     type = TypedefModifierRemove( expr->type );
     if( type->id == TYP_POINTER ) {
@@ -1747,7 +1748,7 @@ static TYPE binary_arith_result(// COMPUTE RESULT OF BINARY ARITHMETIC
 }
 
 
-static boolean ptr_scales(      // TEST IF EXPRESSION IF PTR. IS SCALABLE
+static bool ptr_scales(         // TEST IF EXPRESSION IF PTR. IS SCALABLE
     PTREE expr )                // - expression
 {
     TYPE type;                  // - type
@@ -2089,7 +2090,7 @@ enum                            // USED TO INDICATE TYPE OF '&' RESOLUTION
 };
 
 
-static boolean analyseStaticFunc( // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
+static bool analyseStaticFunc(  // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
     TYPE result_type,           // - NULL or type to be zapped in
     PTREE* root,                // - root of expression
     PTREE func,                 // - function node found
@@ -2097,7 +2098,7 @@ static boolean analyseStaticFunc( // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
 {
     PTREE expr;                 // - current node being analysed
     PTREE* prune;               // - point at which to prune
-    boolean retn;               // - return: TRUE ==> static fun is ok
+    bool retn;                  // - return: TRUE ==> static fun is ok
 
     if( NULL == func ) {
         retn = TRUE;
@@ -2153,11 +2154,11 @@ static boolean analyseStaticFunc( // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
 // A function may appear to be overloaded, because of default arguments. This
 // routine finds the symbol which is not a default symbol.
 //
-static boolean resolveActualAddrOf(// RESOLVE &func FOR ACTUAL NON-OVERLOAD
+static bool resolveActualAddrOf(// RESOLVE &func FOR ACTUAL NON-OVERLOAD
     PTREE node )                // - node for lookup
 {
     SYMBOL func;                // - function from lookup
-    boolean retn;               // - return: TRUE ==> all ok
+    bool retn;                  // - return: TRUE ==> all ok
 
     func = ActualNonOverloadedFunc( node->u.symcg.symbol, node->u.symcg.result );
     if( CNV_OK == ConvertOvFunNode( MakePointerTo( func->sym_type )
@@ -2174,12 +2175,12 @@ static boolean resolveActualAddrOf(// RESOLVE &func FOR ACTUAL NON-OVERLOAD
 }
 
 
-static boolean analyseAddrOfFunc( // ANALYSE '&func'
+static bool analyseAddrOfFunc(  // ANALYSE '&func'
     PTREE* a_expr,              // - addr[ expression ]
     unsigned resolution )       // - ADDRFN_RESOLVE_... bits
 {
     PTREE expr;                 // - actual expression
-    boolean retn;               // - return: TRUE ==> all ok
+    bool retn;                  // - return: TRUE ==> all ok
     PTREE addrof;               // - '&' node or function node
     PTREE fnode;                // - function node
 
@@ -2248,7 +2249,7 @@ static boolean analyseAddrOfFunc( // ANALYSE '&func'
 }
 
 
-static boolean isInitRef(       // DETERMINE IF INITIALIZATION REFERENCE
+static bool isInitRef(          // DETERMINE IF INITIALIZATION REFERENCE
     PTREE node )                // - LVALUE node
 {
     return ( PTreeOpFlags( node ) & PTO_RVALUE )
@@ -2280,11 +2281,11 @@ static void convertInitRef(     // CONVERT SUBTREE TO INITIALIZATION REFER.
 }
 
 
-static boolean reqdBoolOperand( // VERIFY A BOOLEAN OPERAND
+static bool reqdBoolOperand(    // VERIFY A BOOLEAN OPERAND
     PTREE operand )
 {
     TYPE type;                  // - operand type
-    boolean retn;               // - return: TRUE ==> is a boolean operand
+    bool retn;               	// - return: TRUE ==> is a bool operand
 
     type = operand->type;
     if( ( NULL != ArithType( type ) )
@@ -2337,7 +2338,7 @@ static unsigned getConstBitsType( // GET NUMBER OF SIGNIFICANT BITS FOR A TYPE
     return CgMemorySize( type ) * TARGET_BITS_CHAR;
 }
 
-static boolean truncDueToPromotion(// SEE IF TRUNCATION CAN BE DUE TO DEFAULT PROMOTIONS
+static bool truncDueToPromotion(// SEE IF TRUNCATION CAN BE DUE TO DEFAULT PROMOTIONS
     PTREE node,                 // - source node
     TYPE tgt_type )             // - target type
 {
@@ -2491,11 +2492,11 @@ void AnalyseIntTrunc(           // ANALYSE INTEGRAL TRUNCATION
 }
 
 
-static boolean diagThisMemberFun( // DIAGNOSE NON-STATIC MEMBER FUNCTION
+static bool diagThisMemberFun(  // DIAGNOSE NON-STATIC MEMBER FUNCTION
     PTREE expr,                 // - expression to be tested
     PTREE err_expr )            // - expression being analysed
 {
-    boolean retn;               // - return: TRUE ==> diagnosed as error
+    bool retn;                  // - return: TRUE ==> diagnosed as error
     SYMBOL fun;                 // - potential non-static member fun.
 
     if( expr->op == PT_SYMBOL ) {
@@ -2514,10 +2515,10 @@ static boolean diagThisMemberFun( // DIAGNOSE NON-STATIC MEMBER FUNCTION
 }
 
 
-static boolean allowClassCastAsLValue( PTREE *p_expr )
+static bool allowClassCastAsLValue( PTREE *p_expr )
 {
     TYPE class_type = StructType( NodeType( *p_expr ) );
-    boolean retn;
+    bool retn;
 
     if( class_type == NULL ) {
         retn = FALSE;
@@ -2654,7 +2655,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     OPAC *ap;                   // - actions pointer
     PTREE templ;
 
-    {   boolean opsok;          // - indicates analysis ok
+    {   bool opsok;             // - indicates analysis ok
         PTREE on_left;          // - operand on left
         PTREE on_right;         // - operand on right
         PTREE orig;             // - original node (avoid use of "expr")
@@ -2691,7 +2692,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
                 on_right = orig->u.subtree[1];
                 if( on_right != NULL
                  && ! ( on_right->flags & PTF_LV_CHECKED ) ) {
-                    boolean al_ret = AnalyseLvalue( &orig->u.subtree[1] );
+                    bool al_ret = AnalyseLvalue( &orig->u.subtree[1] );
                     DbgAssert( DbgIsBoolean( al_ret ) );
                     opsok &= al_ret;
                 }
@@ -3784,8 +3785,8 @@ start_opac_string:
             if( TypesIdentical( type_right, type_left ) ) {
                 type = type_left;
             } else {
-                boolean force_rvalue;
-                boolean cast_to_left;
+                bool force_rvalue;
+                bool cast_to_left;
                 if( type_left->id == TYP_POINTER
                  && type_right->id == TYP_POINTER
                  && ( type_left->flag & TF1_REFERENCE )
@@ -4325,7 +4326,7 @@ PTREE AnalyseStmtExpr(      // ANALYZE A STATEMENT EXPRESSION
 
 PTREE AnalyseInitExpr(      // ANALYZE AN INITIALIZATION EXPRESSION
     PTREE expr,             // - expression
-    boolean is_static )     // - is target a static
+    bool is_static )        // - is target a static
 {
     if( expr != NULL ) {
         if( NodeIsBinaryOp( expr, CO_INIT ) ) {

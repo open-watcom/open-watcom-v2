@@ -81,7 +81,7 @@ struct nested_context {
 
 // PROTOTYPES : always called
 
-boolean CtxCurrent(             // GET CURRENT CONTEXT
+bool CtxCurrent(                // GET CURRENT CONTEXT
     CTX *a_context,             // - addr[ current context ]
     void **a_data,              // - addr[ ptr to data for context ]
     char **a_prefix )           // - addr[ prefix for header line in error ]

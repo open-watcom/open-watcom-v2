@@ -555,8 +555,8 @@ static void verifyBasedRef( SEARCH_RESULT *result, SYMBOL sym )
       __based(__segname("_STACK"))      (stack segment)
       __based(__segname("_MYSEG"))      (user-defined segment)
 */
-TYPE MakeBasedModifier( type_flag mod, boolean seg_cast, PTREE base )
-/*******************************************************************/
+TYPE MakeBasedModifier( type_flag mod, bool seg_cast, PTREE base )
+/****************************************************************/
 {
     int based_msg;
     SEARCH_RESULT *result;
@@ -754,9 +754,9 @@ TYPE MakeMemberPointerTo( TYPE class_type, TYPE base_type )
     return MakeTypeOf( mptr_type, base_type );
 }
 
-static boolean newTypeIllegal( TYPE type )
+static bool newTypeIllegal( TYPE type )
 {
-    boolean error_occurred;
+    bool error_occurred;
     TYPE test_type;
     type_flag flags;
 
@@ -840,7 +840,7 @@ DECL_INFO *MakeNewTypeId( PTREE type_id )
     return( dinfo );
 }
 
-static boolean dupCompare( TYPE test1, TYPE test2 )
+static bool dupCompare( TYPE test1, TYPE test2 )
 {
     arg_list *args1;
     arg_list *args2;
@@ -1300,7 +1300,7 @@ static void removeDefaultArgs( DECL_INFO *dinfo )
     } RingIterEnd( curr )
 }
 
-static boolean cantHaveDefaultArgs( int err_msg, DECL_INFO *dinfo )
+static bool cantHaveDefaultArgs( int err_msg, DECL_INFO *dinfo )
 {
     DECL_INFO *curr;
 
@@ -1335,7 +1335,7 @@ void FreeArgs( DECL_INFO *dinfo )
     freeDeclList( &dinfo );
 }
 
-static boolean isVoid( TYPE type )
+static bool isVoid( TYPE type )
 {
     type = TypedefRemove( type );
     if( type->id == TYP_VOID ) {
@@ -1930,8 +1930,8 @@ NAME SimpleTypeName( TYPE typ )
     return( name );
 }
 
-boolean TypeDefined( TYPE typ )
-/*****************************/
+bool TypeDefined( TYPE typ )
+/**************************/
 {
     for(;;) {
         if( typ == NULL ) return( FALSE );
@@ -1954,8 +1954,8 @@ boolean TypeDefined( TYPE typ )
     }
 }
 
-boolean TypePartiallyDefined( TYPE typ )
-/**************************************/
+bool TypePartiallyDefined( TYPE typ )
+/***********************************/
 {
     for(;;) {
         if( typ == NULL ) return( FALSE );
@@ -1982,7 +1982,7 @@ boolean TypePartiallyDefined( TYPE typ )
     }
 }
 
-static boolean verifyAbstractStatus( TYPE class_type )
+static bool verifyAbstractStatus( TYPE class_type )
 {
     CLASSINFO *info;
 
@@ -2001,8 +2001,8 @@ static boolean verifyAbstractStatus( TYPE class_type )
     return( info->abstract );
 }
 
-boolean TypeAbstract( TYPE typ )
-/******************************/
+bool TypeAbstract( TYPE typ )
+/***************************/
 {
     for(;;) {
         if( typ == NULL ) return( FALSE );
@@ -2051,10 +2051,10 @@ TYPE TypeNeedsCtor( TYPE type )
     ( 1 << TYP_UCHAR )    | \
     ( 1 << TYP_WCHAR )
 
-boolean TypeIsCharString( TYPE type )
-/***********************************/
+bool TypeIsCharString( TYPE type )
+/********************************/
 {
-    boolean retn = FALSE;       // - TRUE ==> is a character string
+    bool retn = FALSE;       // - TRUE ==> is a character string
 
     // includes L"string" (wide chars)
     TypeStripTdMod( type );
@@ -2310,14 +2310,14 @@ static SYMBOL checkPreviouslyDeclared( SYMBOL sym, NAME name )
     return( sym );
 }
 
-static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, boolean decl_done )
+static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
 {
     NAME name;
     TYPE type;
     TYPE original_type;
     SYMBOL sym;
     SCOPE scope;
-    boolean bad_friend;
+    bool bad_friend;
 
     sym = dspec->typedef_defined;
     if(( dspec->specifier & STY_FRIEND ) == 0 || ! decl_done ) {
@@ -2394,8 +2394,8 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, boolean decl_done )
     return( dspec );
 }
 
-DECL_SPEC *PTypeDone( DECL_SPEC *dspec, boolean decl_done )
-/*********************************************************/
+DECL_SPEC *PTypeDone( DECL_SPEC *dspec, bool decl_done )
+/******************************************************/
 {
     dspec = checkForClassFriends( dspec, decl_done );
     return( dspec );
@@ -2524,7 +2524,7 @@ DECL_SPEC *PTypeSpecifier( specifier_t val )
 DECL_SPEC *CheckNoDeclarator( DECL_SPEC *dspec )
 /**********************************************/
 {
-    boolean no_special_case;
+    bool no_special_case;
 
     /* defining a new class or enum doesn't need a declarator */
     figureOutStgClass( dspec );
@@ -2945,7 +2945,7 @@ static int scanDeclarator( TYPE declarator_list, unsigned *count )
 {
     arg_list *args;
     int status;
-    boolean cv_function_OK;
+    bool cv_function_OK;
 
     /*
         for "int X::* (*pf)( int )" the declarator_list is:
@@ -3022,7 +3022,7 @@ static type_flag convertFnSpec( specifier_t spec )
     return( flag );
 }
 
-static boolean applyFnSpec( TYPE declarator, DECL_SPEC *dspec, int status )
+static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, int status )
 {
     specifier_t fn_spec;
     type_flag flags;
@@ -3192,7 +3192,7 @@ static TYPE combineFunctionMods( TYPE fnmod_type, TYPE curr_type )
     return( fnmod_type );
 }
 
-static boolean validModifierCombo( type_flag flag )
+static bool validModifierCombo( type_flag flag )
 {
     flag &= TF1_MEM_MODEL;
     switch( flag ) {
@@ -3275,7 +3275,7 @@ static TYPE extractMemoryModel( TYPE mod_type, TYPE *leftover )
     return( mod_type );
 }
 
-static TYPE extractFunctionMods( TYPE curr, TYPE *ptail, boolean stop_at_nonmod )
+static TYPE extractFunctionMods( TYPE curr, TYPE *ptail, bool stop_at_nonmod )
 {
     TYPE head;
     TYPE tail;
@@ -3992,8 +3992,8 @@ DECL_INFO *AddMSCVQualifierKludge( type_flag extra_cv, DECL_INFO *dinfo )
 }
 
 
-boolean IdenticalClassModifiers( TYPE cmod1, TYPE cmod2 )
-/*******************************************************/
+bool IdenticalClassModifiers( TYPE cmod1, TYPE cmod2 )
+/****************************************************/
 {
 #ifndef NDEBUG
     {
@@ -4408,8 +4408,8 @@ TYPE FloatingType( TYPE type )
     ( 1 << TYP_SLONG64 )
 
 
-boolean SignedIntType( TYPE type )
-/********************************/
+bool SignedIntType( TYPE type )
+/*****************************/
 {
     TypeStripTdModEnumChar( type );
     return TypeIdMasked( type, MASK_TYPE_SIGNED_INT );
@@ -4424,8 +4424,8 @@ boolean SignedIntType( TYPE type )
     ( 1 << TYP_ULONG64 )
 
 
-boolean UnsignedIntType( TYPE type )
-/**********************************/
+bool UnsignedIntType( TYPE type )
+/*******************************/
 {
     TypeStripTdModEnumChar( type );
     return TypeIdMasked( type, MASK_TYPE_UNSIGNED_INT );
@@ -5543,7 +5543,7 @@ SYMBOL InsertSymbol( SCOPE scope, SYMBOL sym, NAME name )
     return( tryInsertion( scope, sym, name ) );
 }
 
-static boolean defaultArgCantExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
+static bool defaultArgCantExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
 {
     SYMBOL decl_sym;
     SYMBOL base_sym;
@@ -5636,7 +5636,7 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
 {
     unsigned control;
     unsigned arg_index;
-    boolean is_template;
+    bool is_template;
     DECL_INFO *curr;
     SYMBOL def_arg_sym;
     SYMBOL head;
@@ -5771,7 +5771,7 @@ static SCOPE figureOutFriendScope( SCOPE scope, DECL_INFO *dinfo )
     return( scope );
 }
 
-static boolean memberCheck( SCOPE scope, DECL_INFO *dinfo, TYPE *scope_type )
+static bool memberCheck( SCOPE scope, DECL_INFO *dinfo, TYPE *scope_type )
 {
     SCOPE id_scope;
     TYPE class_type;
@@ -5791,7 +5791,7 @@ static boolean memberCheck( SCOPE scope, DECL_INFO *dinfo, TYPE *scope_type )
     return( FALSE );
 }
 
-static unsigned howManyArgs( boolean non_static_member, TYPE fn_type )
+static unsigned howManyArgs( bool non_static_member, TYPE fn_type )
 {
     unsigned num_args;
 
@@ -5803,7 +5803,7 @@ static unsigned howManyArgs( boolean non_static_member, TYPE fn_type )
     return( num_args );
 }
 
-static boolean isVoidPtr( TYPE type )
+static bool isVoidPtr( TYPE type )
 {
     type = TypedefRemove( type );
     if( type->id == TYP_POINTER ) {
@@ -5816,7 +5816,7 @@ static boolean isVoidPtr( TYPE type )
     return( FALSE );
 }
 
-static boolean isClassPtr( TYPE type )
+static bool isClassPtr( TYPE type )
 {
     type = TypedefRemove( type );
     if( type->id == TYP_POINTER ) {
@@ -5877,7 +5877,7 @@ static TYPE genericOrGenericRef( TYPE type )
     return( generic_type );
 }
 
-static boolean arrowReturnOK( TYPE type, NAME arrow_name, boolean undefd_OK )
+static bool arrowReturnOK( TYPE type, NAME arrow_name, bool undefd_OK )
 {
     TYPE class_type;
     SCOPE scope;
@@ -5904,8 +5904,8 @@ static boolean arrowReturnOK( TYPE type, NAME arrow_name, boolean undefd_OK )
     return( FALSE );
 }
 
-boolean ArrowMemberOK( SYMBOL sym )
-/*********************************/
+bool ArrowMemberOK( SYMBOL sym )
+/******************************/
 {
     TYPE fn_type;
 
@@ -5920,7 +5920,7 @@ boolean ArrowMemberOK( SYMBOL sym )
     return( FALSE );
 }
 
-static boolean isSize_t( TYPE arg )
+static bool isSize_t( TYPE arg )
 {
     TypeStripTdMod( arg );
     switch( arg->id ) {
@@ -5936,7 +5936,7 @@ static boolean isSize_t( TYPE arg )
     return( FALSE );
 }
 
-static void verifyIncDecSecondArg( TYPE fn_type, boolean non_static_member )
+static void verifyIncDecSecondArg( TYPE fn_type, bool non_static_member )
 {
     int arg_idx;
     TYPE arg;
@@ -5983,7 +5983,7 @@ static void verifyDelSecondArg( NAME name, TYPE fn_type )
     }
 }
 
-static boolean checkOperatorArgs( TYPE fn_type )
+static bool checkOperatorArgs( TYPE fn_type )
 {
     arg_list *args;
     TYPE *curr;
@@ -6059,7 +6059,7 @@ static TYPE functionReturnsPtrVoid( SYMBOL sym )
     return( adjustFunctionType( sym->sym_type, TF1_NULL, TypeGetCache( TYPC_VOID_PTR ) ) );
 }
 
-static boolean quietStaticMember( SYMBOL sym, PTREE id )
+static bool quietStaticMember( SYMBOL sym, PTREE id )
 {
     if( id->cgop == CO_NAME_OPERATOR ) {
         switch( id->id_cgop ) {
@@ -6074,8 +6074,8 @@ static boolean quietStaticMember( SYMBOL sym, PTREE id )
     return( FALSE );
 }
 
-static void extraInfoAboutArgs( unsigned num_args, boolean is_a_member,
-                                                   boolean non_static_member )
+static void extraInfoAboutArgs( unsigned num_args, bool is_a_member,
+                                                   bool non_static_member )
 {
     int msg;
 
@@ -6135,10 +6135,10 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
     TYPE udc_type;
     derived_status udc_class_check;
     unsigned num_args;
-    boolean is_a_member;
-    boolean is_out_of_class_member;
-    boolean non_static_member;
-    boolean check_args_for_class;
+    bool is_a_member;
+    bool is_out_of_class_member;
+    bool non_static_member;
+    bool check_args_for_class;
 
     id = nameOfId( dinfo->id );
     if( id == NULL ) {
@@ -6379,7 +6379,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
         }
     }
     if( check_args_for_class ) {
-        boolean operator_OK;
+        bool operator_OK;
 
         operator_OK = TRUE;
         if( ! non_static_member ) {
@@ -6449,10 +6449,10 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
     SYMBOL sym;
     SYMBOL check_sym;
     SYMBOL decl_sym;
-    boolean is_a_function;
-    boolean is_template_function;
-    boolean is_redefined;
-    boolean is_block_sym;
+    bool is_a_function;
+    bool is_template_function;
+    bool is_redefined;
+    bool is_block_sym;
 
     scope = ScopeNearestNonTemplate( insert_scope );
     VerifySpecialFunction( scope, dinfo );
@@ -6648,10 +6648,10 @@ void InsertArgs( DECL_INFO **args )
     ( 1 << TYP_FUNCTION  )  | \
     ( 1 << TYP_ARRAY     )
 
-static boolean typePoints(      // TEST IF POINTER, ARRAY, REFERENCE, FUNCTION
+static bool typePoints(         // TEST IF POINTER, ARRAY, REFERENCE, FUNCTION
     TYPE type )                 // - type to be tested
 {
-    boolean retn;               // - TRUE ==> type points at something
+    bool retn;                  // - TRUE ==> type points at something
 
     if( type == NULL ) {
         retn = FALSE;
@@ -6717,8 +6717,8 @@ arg_list *TypeArgList(          // GET ARGUMENT LIST FOR A FUNCTION TYPE
     return( NULL );
 }
 
-boolean TypeHasReverseArgs( TYPE type )
-/*************************************/
+bool TypeHasReverseArgs( TYPE type )
+/**********************************/
 {
     AUX_INFO *fn_pragma;
 
@@ -6736,8 +6736,8 @@ boolean TypeHasReverseArgs( TYPE type )
     return( ReverseParms( fn_pragma ) );
 }
 
-boolean TypeHasNumArgs( TYPE fn_type, unsigned num_args )
-/*******************************************************/
+bool TypeHasNumArgs( TYPE fn_type, unsigned num_args )
+/****************************************************/
 {
     arg_list *args;
 
@@ -6788,7 +6788,7 @@ uint_32 TypeHash( TYPE type )
     return( hash | 1 );
 }
 
-static TYPE makeVTableType( TYPE type, boolean add_in_consts )
+static TYPE makeVTableType( TYPE type, bool add_in_consts )
 {
     type = MakePointerTo( type );
     if( add_in_consts ) {
@@ -6797,8 +6797,8 @@ static TYPE makeVTableType( TYPE type, boolean add_in_consts )
     return( type );
 }
 
-TYPE MakeVFTableFieldType( boolean add_in_consts )
-/************************************************/
+TYPE MakeVFTableFieldType( bool add_in_consts )
+/*********************************************/
 {
     TYPE vftable;
 
@@ -6809,8 +6809,8 @@ TYPE MakeVFTableFieldType( boolean add_in_consts )
     return( vftable );
 }
 
-TYPE MakeVBTableFieldType( boolean add_in_consts )
-/************************************************/
+TYPE MakeVBTableFieldType( bool add_in_consts )
+/*********************************************/
 {
     TYPE vbtable;
 
@@ -6820,8 +6820,8 @@ TYPE MakeVBTableFieldType( boolean add_in_consts )
     return( vbtable );
 }
 
-boolean VerifyPureFunction( DECL_INFO *dinfo )
-/*****************************************************/
+bool VerifyPureFunction( DECL_INFO *dinfo )
+/*****************************************/
 {
     SYMBOL sym;
     TYPE type;
@@ -6923,8 +6923,8 @@ SYMBOL MakeVBTableSym( SCOPE scope, vindex num_vbases, target_offset_t delta )
     return( sym );
 }
 
-SYMBOL MakeVMTableSym( SCOPE from, SCOPE to, boolean *had_to_define )
-/*******************************************************************/
+SYMBOL MakeVMTableSym( SCOPE from, SCOPE to, bool *had_to_define )
+/****************************************************************/
 {
     SYMBOL sym;
     TYPE vmtable_type;
@@ -7003,10 +7003,10 @@ void TypedefUsingDecl( DECL_SPEC *dspec, SYMBOL typedef_sym, TOKEN_LOCN *locn )
     SymCreateAtLocn( type, SC_TYPEDEF, SF_NULL, name, GetCurrScope(), locn );
 }
 
-boolean TypeHasVirtualBases( TYPE type )
-/**************************************/
+bool TypeHasVirtualBases( TYPE type )
+/***********************************/
 {
-    boolean retn;
+    bool retn;
 
     type = StructType( type );
     if( type == NULL ) {
@@ -7017,8 +7017,8 @@ boolean TypeHasVirtualBases( TYPE type )
     return retn;
 }
 
-boolean TypeIsClassInstantiation( TYPE type )
-/*******************************************/
+bool TypeIsClassInstantiation( TYPE type )
+/****************************************/
 {
     if( type != NULL ) {
         TypeStripTdMod( type );
@@ -7031,8 +7031,8 @@ boolean TypeIsClassInstantiation( TYPE type )
     return( FALSE );
 }
 
-boolean TypeIsConst( TYPE type )
-/******************************/
+bool TypeIsConst( TYPE type )
+/***************************/
 {
     type_flag flags;
 
@@ -7040,8 +7040,8 @@ boolean TypeIsConst( TYPE type )
     return( flags & TF1_CONST );
 }
 
-boolean TypeHasEllipsisArg( TYPE type )
-/*************************************/
+bool TypeHasEllipsisArg( TYPE type )
+/**********************************/
 {
     unsigned num_args;
     arg_list *args;
@@ -7061,8 +7061,8 @@ boolean TypeHasEllipsisArg( TYPE type )
     return( FALSE );
 }
 
-boolean TypeVAStartWontWork( TYPE fn_type, int *msg )
-/***************************************************/
+bool TypeVAStartWontWork( TYPE fn_type, int *msg )
+/************************************************/
 {
     unsigned num_args;
     arg_list *args;
@@ -7125,8 +7125,8 @@ TYPE MemberPtrClass( TYPE type )
     return( type );
 }
 
-boolean TypeCtorDispRequired( TYPE host_class, TYPE base_class )
-/**************************************************************/
+bool TypeCtorDispRequired( TYPE host_class, TYPE base_class )
+/***********************************************************/
 {
     SCOPE base_scope;
     CLASSINFO *info;
@@ -7145,8 +7145,8 @@ boolean TypeCtorDispRequired( TYPE host_class, TYPE base_class )
     return( TRUE );
 }
 
-boolean TypeHasSpecialFields( TYPE type )
-/***************************************/
+bool TypeHasSpecialFields( TYPE type )
+/************************************/
 {
     CLASSINFO *info;
 
@@ -7160,8 +7160,8 @@ boolean TypeHasSpecialFields( TYPE type )
     return( FALSE );
 }
 
-boolean TypeParmSize( TYPE fn_type, target_size_t *parm_size )
-/************************************************************/
+bool TypeParmSize( TYPE fn_type, target_size_t *parm_size )
+/*********************************************************/
 {
     unsigned i;
     target_size_t size;
@@ -7183,8 +7183,8 @@ boolean TypeParmSize( TYPE fn_type, target_size_t *parm_size )
     return( TRUE );
 }
 
-boolean CurrFunctionHasEllipsis( void )
-/*************************************/
+bool CurrFunctionHasEllipsis( void )
+/**********************************/
 {
     SYMBOL sym;
 
@@ -7195,8 +7195,8 @@ boolean CurrFunctionHasEllipsis( void )
     return( FALSE );
 }
 
-boolean TypeIsAnonymousEnum( TYPE type )
-/**************************************/
+bool TypeIsAnonymousEnum( TYPE type )
+/***********************************/
 {
     TypeStripTdMod( type );
     if( type->id == TYP_ENUM && ( type->flag & TF1_UNNAMED ) != 0 ) {
@@ -7205,7 +7205,7 @@ boolean TypeIsAnonymousEnum( TYPE type )
     return( FALSE );
 }
 
-static boolean markAllUnused( SCOPE scope, void (*diag)( SYMBOL ) )
+static bool markAllUnused( SCOPE scope, void (*diag)( SYMBOL ) )
 {
     type_flag all_flags;
     type_flag curr_flags;
@@ -7428,8 +7428,8 @@ static void scanForGenerics( PSTK_CTL *stk, TYPE type )
     }
 }
 
-boolean FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
-/*****************************************************************************/
+bool FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
+/**************************************************************************/
 {
     TYPE fn_type;
     TYPE *top;
@@ -7499,8 +7499,8 @@ static void clearGenericBindings( PSTK_CTL *stk, SCOPE decl_scope )
     }
 }
 
-boolean TypeBasesEqual( type_flag flags, void *base1, void *base2 )
-/*****************************************************************/
+bool TypeBasesEqual( type_flag flags, void *base1, void *base2 )
+/**************************************************************/
 {
     /* assumes both are the same type of base already */
     if(( flags & TF1_BASED ) == TF1_BASED_STRING ) {
@@ -7513,7 +7513,7 @@ boolean TypeBasesEqual( type_flag flags, void *base1, void *base2 )
     return( TRUE );
 }
 
-static boolean compareClassTypes( TYPE b_type, TYPE u_type,
+static bool compareClassTypes( TYPE b_type, TYPE u_type,
     type_bind_info *data )
 {
     CLASSINFO *b_info;
@@ -7589,7 +7589,7 @@ static boolean compareClassTypes( TYPE b_type, TYPE u_type,
     return( FALSE );
 }
 
-static boolean modifiersMatch( type_flag b_flags, type_flag u_flags,
+static bool modifiersMatch( type_flag b_flags, type_flag u_flags,
                                void *b_base, void *u_base )
 {
     //if( u_flags != b_flags )
@@ -7604,7 +7604,7 @@ static boolean modifiersMatch( type_flag b_flags, type_flag u_flags,
     return( TRUE );
 }
 
-static unsigned typesBind( type_bind_info *data, boolean is_function )
+static unsigned typesBind( type_bind_info *data, bool is_function )
 {
     type_flag t_flags;
     type_flag b_flags;
@@ -7629,7 +7629,7 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
     arg_list *b_args;
     arg_list *u_args;
     type_flag u_cv_mask;
-    boolean u_allow_base;
+    bool u_allow_base;
     TYPE match;
     unsigned i;
     unsigned status;
@@ -8112,7 +8112,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
     TYPE typ;
     NAME name;
     int num_explicit;
-    boolean something_went_wrong;
+    bool something_went_wrong;
 
     num_explicit = 0;
     something_went_wrong = FALSE;
@@ -8185,13 +8185,13 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
     return num_explicit;
 }
 
-boolean BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
-                          boolean is_function, unsigned int explicit_args )
-/*************************************************************************/
+bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
+                          bool is_function, unsigned int explicit_args )
+/**********************************************************************/
 {
     SYMBOL curr, stop;
     unsigned bind_status;
-    boolean result;
+    bool result;
     auto type_bind_info data;
 
     DbgAssert( parm_scope != NULL );
@@ -9321,7 +9321,7 @@ pch_status PCHReadTypes( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitTypes( boolean writing )
+pch_status PCHInitTypes( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveTYPE ) );
@@ -9338,7 +9338,7 @@ pch_status PCHInitTypes( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniTypes( boolean writing )
+pch_status PCHFiniTypes( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveTYPE );

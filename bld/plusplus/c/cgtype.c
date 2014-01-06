@@ -224,11 +224,11 @@ cg_type CgTypeOutput(           // COMPUTE TYPE FOR CODE GENERATOR
 }
 
 
-boolean IsCgTypeAggregate(      // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
+bool IsCgTypeAggregate(         // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
     TYPE type,                  // - C++ type
-    boolean string )            // - array of string not aggregate
+    bool string )               // - array of string not aggregate
 {
-    boolean retn = FALSE;       // - TRUE if aggregate
+    bool retn = FALSE;          // - TRUE if aggregate
     CLASSINFO *info;            // - info part of class type
 
     type = TypedefModifierRemove( type );
@@ -276,7 +276,7 @@ target_size_t CgCodePtrSize(    // SIZE OF DEFAULT CODE POINTER
 
 static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
     TYPE type,                  // - type
-    boolean ref_as_ptr )        // - TRUE ==> treat reference as pointer
+    bool ref_as_ptr )           // - TRUE ==> treat reference as pointer
 {
     type_flag mod_flags;        // - modifier flags
     target_size_t size;         // - size of type

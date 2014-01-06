@@ -49,11 +49,11 @@ static CNV_DIAG diagCtor =      // diagnosis for CTORing
     };
 
 
-static boolean ctorDefineDefault(   // DEFINE A DEFAULT CTOR
+static bool ctorDefineDefault(  // DEFINE A DEFAULT CTOR
     TYPE cl_type,               // - class type
     arg_list *alist )           // - arguments list
 {
-    boolean retn;               // - TRUE ==> a default CTOR was defined
+    bool retn;                  // - TRUE ==> a default CTOR was defined
     SYMBOL ctor;                // - CTOR symbol
 
     if( ! TypeDefined( cl_type ) ) {
@@ -77,11 +77,11 @@ static boolean ctorDefineDefault(   // DEFINE A DEFAULT CTOR
 }
 
 
-static boolean ctorDefineDefaultCnv( // DEFINE A DEFAULT CTOR FOR CONVERSION
-    TYPE cl_type,               // - class type
-    arg_list *alist )           // - arguments list
+static bool ctorDefineDefaultCnv(   // DEFINE A DEFAULT CTOR FOR CONVERSION
+    TYPE cl_type,                   // - class type
+    arg_list *alist )               // - arguments list
 {
-    boolean retn;               // - TRUE ==> a default CTOR was defined
+    bool retn;                      // - TRUE ==> a default CTOR was defined
 
     if( ! TypeDefined( cl_type ) ) {
         retn = FALSE;
@@ -562,7 +562,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
         if( ctor == NULL ) {
             node = ClassDefaultCopy( this_node, bareArg( initial ) );
         } else {
-            boolean check_dtoring;  // - TRUE ==> need to check DTORing
+            bool check_dtoring;     // - TRUE ==> need to check DTORing
             TYPE this_type;         // - type of this arg
             CALL_OPT opt;           // - type of optimization
             PTREE bare;             // - bare source operand

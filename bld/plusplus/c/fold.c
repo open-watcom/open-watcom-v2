@@ -94,7 +94,7 @@ signed_64 BFCnvF64( float_handle flt )
 {
     signed_64 result;
     float_handle absol, t0, t1, t2, t3;
-    boolean positive;
+    bool positive;
 
     int sign = BFSign( flt );
     if( 0 == sign ) {
@@ -148,10 +148,10 @@ target_long FoldSignedRShiftMax( target_long v )
 }
 
 
-static boolean isCondDecor(     // TEST IF CONDITIONALLY DECORATED
+static bool isCondDecor(        // TEST IF CONDITIONALLY DECORATED
     PTREE node )                // - the expression
 {
-    boolean retn;               // - TRUE ==> conditionally decorated
+    bool retn;                  // - TRUE ==> conditionally decorated
 
     if( NodeIsBinaryOp( node, CO_COMMA ) ) {
         node = node->u.subtree[0];
@@ -182,14 +182,14 @@ static PTREE overCondDecor(     // BY-PASS CONDITIONAL DECORATION
 }
 
 
-boolean Zero64                  // TEST IF 64-BITTER IS ZERO
+bool Zero64                     // TEST IF 64-BITTER IS ZERO
     ( signed_64 const *test )   // - value to be tested
 {
     return( test->u._32[0] == 0 && test->u._32[1] == 0 );
 }
 
 
-static boolean zeroConstant(    // TEST IF NODE IS ZERO CONSTANT
+static bool zeroConstant(       // TEST IF NODE IS ZERO CONSTANT
     PTREE expr )                // - the expression
 {
     PTREE orig;
@@ -215,7 +215,7 @@ static boolean zeroConstant(    // TEST IF NODE IS ZERO CONSTANT
 }
 
 
-static boolean nonZeroExpr(     // TEST IF NODE IS NON-ZERO EXPRESSION
+static bool nonZeroExpr(        // TEST IF NODE IS NON-ZERO EXPRESSION
     PTREE expr )                // - the expression
 {
     PTREE orig;
@@ -240,7 +240,7 @@ static boolean nonZeroExpr(     // TEST IF NODE IS NON-ZERO EXPRESSION
 }
 
 
-static boolean notFoldable(     // TEST IF NON-FOLDABLE EXPRESSION
+static bool notFoldable(        // TEST IF NON-FOLDABLE EXPRESSION
     PTREE expr )                // - the expression
 {
     switch( expr->op ) {
@@ -256,13 +256,13 @@ static boolean notFoldable(     // TEST IF NON-FOLDABLE EXPRESSION
     }
 }
 
-PTREE CastIntConstant( PTREE expr, TYPE type, boolean *happened )
+PTREE CastIntConstant( PTREE expr, TYPE type, bool *happened )
 {
     PTREE new_expr;
     target_ulong ul_val;
     float_handle dbl_val;
     type_id id;
-    boolean signed_type;
+    bool signed_type;
 
 
     signed_type = SignedIntType( expr->type );
@@ -413,7 +413,7 @@ PTREE CastIntConstant( PTREE expr, TYPE type, boolean *happened )
     return( new_expr );
 }
 
-static PTREE castFloatingConstant( PTREE expr, TYPE type, boolean *happened )
+static PTREE castFloatingConstant( PTREE expr, TYPE type, bool *happened )
 {
     target_long value;
     PTREE new_expr;
@@ -465,7 +465,7 @@ static PTREE castFloatingConstant( PTREE expr, TYPE type, boolean *happened )
     return( new_expr );
 }
 
-static PTREE castConstant( PTREE expr, TYPE type, boolean *happened )
+static PTREE castConstant( PTREE expr, TYPE type, bool *happened )
 {
     TYPE type_final;
 
@@ -488,7 +488,7 @@ static PTREE castConstant( PTREE expr, TYPE type, boolean *happened )
     return( expr );
 }
 
-static boolean soFarSoGood( PTREE expr, unsigned op, CGOP cgop )
+static bool soFarSoGood( PTREE expr, unsigned op, CGOP cgop )
 {
     if( expr != NULL && expr->op == op && expr->cgop == cgop ) {
         return( TRUE );
@@ -496,7 +496,7 @@ static boolean soFarSoGood( PTREE expr, unsigned op, CGOP cgop )
     return( FALSE );
 }
 
-static boolean referenceSymbol( PTREE expr )
+static bool referenceSymbol( PTREE expr )
 {
     SYMBOL ref_sym;
 
@@ -507,7 +507,7 @@ static boolean referenceSymbol( PTREE expr )
     return( FALSE );
 }
 
-static boolean thisSymbol( PTREE expr )
+static bool thisSymbol( PTREE expr )
 {
     SYMBOL this_sym;
 
@@ -518,7 +518,7 @@ static boolean thisSymbol( PTREE expr )
     return( FALSE );
 }
 
-static boolean anachronismFound( PTREE expr )
+static bool anachronismFound( PTREE expr )
 {
     /* two anachronisms supported:
 
@@ -601,7 +601,7 @@ PTREE FoldUnary( PTREE expr )
 {
     PTREE op1;
     TYPE result_type;
-    boolean dont_care;
+    bool dont_care;
 
     op1 = expr->u.subtree[0];
     if( notFoldable( op1 ) ) {
@@ -1160,10 +1160,10 @@ PTREE FoldBinary( PTREE expr )
     TYPE type;
     unsigned typ1;
     unsigned typ2;
-    boolean cast_happened;
-    boolean has_decoration_left;
-    boolean has_decoration_right;
-    boolean has_decoration;
+    bool cast_happened;
+    bool has_decoration_left;
+    bool has_decoration_right;
+    bool has_decoration;
 
     type = expr->type;
     orig1 = expr->u.subtree[0];

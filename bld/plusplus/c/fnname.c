@@ -156,11 +156,11 @@ static TYPE typeLookAhead( TYPE type, type_flag *flags, void **base )
                          , TC1_NOT_MEM_MODEL | TC1_NOT_ENUM_CHAR );
 }
 
-static boolean nameHasPrefix(   // TEST IF NAME HAS A PREFIX
+static bool nameHasPrefix(      // TEST IF NAME HAS A PREFIX
     const NAME name,            // - name to be tested
     const char *prefix )        // - prefix
 {
-    boolean retn = TRUE;        // - TRUE ==> has prefix
+    bool retn = TRUE;           // - TRUE ==> has prefix
     const char *sname = NameStr( name );
 
     for( ; *prefix != '\0'; ++sname, ++prefix ) {
@@ -756,7 +756,7 @@ static char *cppDataName(       // GET C++ DATA NAME
     return( formatGlobalName( sym ) );
 }
 
-boolean CppLookupOperatorName(  // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
+bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
     NAME name,                  // - name to find
     CGOP *oper )                // - index found
 {
@@ -827,7 +827,7 @@ NAME CppSpecialName(            // CREATE NAME OF SPECIAL INTERNAL ID
     return( specialNames[index] );
 }
 
-boolean IsCppSpecialName(       // TEST IF NAME IS SPECIAL NAME
+bool IsCppSpecialName(          // TEST IF NAME IS SPECIAL NAME
     NAME name,                  // - name to find
     unsigned *idx )             // - index found
 {
@@ -947,7 +947,7 @@ NAME CppVFTableName(            // CREATE NAME OF VIRTUAL FN ADDR TABLE
     return( tableName( scope, delta, IN_VFTABLE_NAME ) );
 }
 
-boolean IsVftName(              // TEST IF SYMBOL IS VFT NAME
+bool IsVftName(                 // TEST IF SYMBOL IS VFT NAME
     NAME name )                 // - name to be tested
 {
     return( nameHasPrefix( name, IN_NAME_PREFIX IN_SYM_WATCOM IN_VFTABLE_NAME ) );
@@ -1009,7 +1009,7 @@ NAME CppMembPtrOffsetName(      // CREATE NAME FOR MEMBER-PTR OFFSET FUNCTION
 }
 
 
-boolean IsCppMembPtrOffsetName( // TEST IF NAME IS MEMBER-PTR OFFSET FUNCTION
+bool IsCppMembPtrOffsetName(    // TEST IF NAME IS MEMBER-PTR OFFSET FUNCTION
     NAME name )                 // - name of field for offsetting
 {
     return( nameHasPrefix( name, IN_NAME_PREFIX IN_SYM_WATCOM IN_NAME_MEMPTR_FUNC ) );
@@ -1122,8 +1122,8 @@ static char *cppNameCgop(       // PRODUCE PRINTABLE OPERATOR NAME
     return( name );
 }
 
-boolean IsCppNameInterestingDebug(      // CHECK FOR INTERNAL NAMES
-    SYMBOL sym )                        // - symbol
+bool IsCppNameInterestingDebug( // CHECK FOR INTERNAL NAMES
+    SYMBOL sym )                // - symbol
 {
     NAME name;
 
@@ -1399,13 +1399,13 @@ pch_status PCHWriteOpNames( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitOpNames( boolean writing )
+pch_status PCHInitOpNames( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniOpNames( boolean writing )
+pch_status PCHFiniOpNames( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

@@ -288,9 +288,9 @@ static SEARCH_RESULT *lookupUsingId( PTREE using_id )
     return( result );
 }
 
-static boolean verifyUsingDecl( SCOPE scope )
+static bool verifyUsingDecl( SCOPE scope )
 {
-    boolean error_occurred;
+    bool error_occurred;
 
     if( scope == NULL ) {
         return( TRUE );

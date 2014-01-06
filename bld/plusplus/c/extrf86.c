@@ -192,7 +192,7 @@ void *ExtrefVirtualSymbol(      // GET NEXT DEPENDENCY SYMBOL
     return retn;
 }
 
-static boolean pureSymCanBeUndefd( SYMBOL sym )
+static bool pureSymCanBeUndefd( SYMBOL sym )
 {
     if( SymIsPure( sym ) && ! SymIsDtor( sym ) ) {
         return( TRUE );
@@ -200,7 +200,7 @@ static boolean pureSymCanBeUndefd( SYMBOL sym )
     return( FALSE );
 }
 
-static boolean symIsCtorDtor( SYMBOL sym )
+static bool symIsCtorDtor( SYMBOL sym )
 {
     return( SymIsCtorOrDtor( sym )
         || SymIsThunkCtorDflt( sym )

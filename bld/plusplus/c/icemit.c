@@ -312,10 +312,10 @@ static SYMBOL getAliasDtorSym(  // GET ALIASED DTOR SYMBOL
 }
 
 
-static boolean emitAutoMarking( // EMIT MARKING FOR AN AUTO VAR
+static bool emitAutoMarking(    // EMIT MARKING FOR AN AUTO VAR
     SYMBOL sym )                // - the auto var
 {
-    boolean br = CgFrontRetnOptVar( sym );
+    bool br = CgFrontRetnOptVar( sym );
     CgFrontCodePtr( IC_DTOR_AUTO, sym );
     FunctionHasCtorTest();
     return br;
@@ -359,7 +359,7 @@ static void emitDtorMarking(    // EMIT DTOR MARKING OF FOR SYMBOL
                 init_ref_temp = alias;
                 CgFrontCodePtr( IC_DTOR_REF, dtor );
             } else {
-                boolean br = emitAutoMarking( alias );
+                bool br = emitAutoMarking( alias );
                 CgFrontCodePtr( IC_DTOR_REF, dtor );
                 if( br ) {
                     CgFrontRetnOptEnd();
@@ -422,11 +422,11 @@ static void exprCondEnd(        // END OF CONDITIONAL DTORING, IF REQ'D
 }
 
 #ifndef NDEBUG
-static boolean klugedTyping(    // DEBUG -- see if ptr/ref consistency
+static bool klugedTyping(       // DEBUG -- see if ptr/ref consistency
     TYPE t1,                    // - type[1]
     TYPE t2 )                   // - type[2]
 {
-    boolean retn;               // - return: TRUE ==> ok
+    bool retn;                  // - return: TRUE ==> ok
 
     t1 = TypePointedAtModified( t1 );
     if( t1 == NULL ) {
@@ -443,10 +443,10 @@ static boolean klugedTyping(    // DEBUG -- see if ptr/ref consistency
 }
 
 
-static boolean goodArgType(     // DEBUG -- verify arg/expr consistency
+static bool goodArgType(        // DEBUG -- verify arg/expr consistency
     PTREE expr )                // - CO_LIST expression
 {
-    boolean retn;               // - return: TRUE ==> ok
+    bool retn;                  // - return: TRUE ==> ok
     TYPE atype;                 // - argument type
     TYPE etype;                 // - expression type
 

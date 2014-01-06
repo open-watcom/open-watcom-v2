@@ -212,8 +212,8 @@ static EXPR_ANAL exprAnalyse(
 }
 
 static void warnBoolConstVal(   // WARN: FOR A CONSTANT VALUE
-    boolean is_zero,            // - TRUE ==> zero constant
-    boolean parsed_int_const,   // - user coded an int constant
+    bool is_zero,               // - TRUE ==> zero constant
+    bool parsed_int_const,      // - user coded an int constant
     PTREE expr )                // - expression
 {
     CSTACK *ctl;                // - top control stack
@@ -266,7 +266,7 @@ static void warnBoolConstVal(   // WARN: FOR A CONSTANT VALUE
 
 static void warnBoolConst(      // WARN, WHEN SPECIFIC BOOLEAN CONSTANT
     PTREE expr,                 // - analysed expression
-    boolean parsed_int_const )  // - user coded an int constant
+    bool parsed_int_const )     // - user coded an int constant
 {
     if( NodeIsConstantInt( expr ) ) {
         warnBoolConstVal( NodeIsZeroIntConstant( expr )
@@ -282,7 +282,7 @@ static EXPR_ANAL parseBracketExpr(
 {
     PTREE expr;
     EXPR_ANAL retn;
-    boolean parsed_int_const;
+    bool parsed_int_const;
 
     mustRecog( T_LEFT_PAREN );
     expr = safeParseExpr( T_RIGHT_PAREN );
@@ -327,7 +327,7 @@ static void emitStmtExpr( PTREE expr_tree )
     expr_tree = emitCodeExpr( expr_tree );
 }
 
-static void declExprStmt( boolean for_stmts_decl )
+static void declExprStmt( bool for_stmts_decl )
 {
     PTREE expr_tree;
 
@@ -585,7 +585,7 @@ static void parseForStmt( void )
     PTREE inc_expr;
     CSTACK *loop;
     CGLABEL around;
-    boolean test_was_const;
+    bool test_was_const;
 
     nextYYToken();
     mustRecog( T_LEFT_PAREN );
@@ -692,7 +692,7 @@ static void parseSwitchStmt( void )
     }
 }
 
-static boolean is_dup_case(     // DIAGNOSE A DUPLICATE CASE
+static bool is_dup_case(        // DIAGNOSE A DUPLICATE CASE
     CSTACK *my_switch,          // - control-stack entry
     PTREE  case_value,          // - exprn for case
     unsigned err_code )         // - code for error message
@@ -723,7 +723,7 @@ static SWCASE *makeCaseEntry(   // MAKE CASE/DEFAULT ENTRY
 {
     SWCASE *ce;
     PTREE case_value;
-    boolean casted;
+    bool casted;
 
     case_value = safeParseExpr( T_COLON );
     ce = NULL;
@@ -918,8 +918,8 @@ static void parseReturnStmt( SYMBOL func )
     PTREE expr;
     SYMBOL return_sym;
     SYMBOL return_operand;
-    boolean expecting_return;
-    boolean optimizing_return;
+    bool expecting_return;
+    bool optimizing_return;
 
     ensureLiveCode();
     nextYYToken();
@@ -977,7 +977,7 @@ static void parseReturnStmt( SYMBOL func )
     FunctionBodyDeadCode();
 }
 
-boolean FnRetnOpt(              // TEST IF RETURN OPTIMIZATION ACTIVE
+bool FnRetnOpt(                 // TEST IF RETURN OPTIMIZATION ACTIVE
     void )
 {
     return currFunction->retn_opt;
@@ -1002,10 +1002,10 @@ SYMBOL FnRetnOptSym(            // GET SYMBOL FOR RETURN OPTIMIZATION
 }
 
 
-boolean FnRetnOptimizable(      // TEST IF SYMBOL COULD BE OPTIMIZED AWAY
+bool FnRetnOptimizable(         // TEST IF SYMBOL COULD BE OPTIMIZED AWAY
     SYMBOL sym )                // - candidate symbol
 {
-    boolean retn;               // - return: FALSE ==> symbol never optimized
+    bool retn;                  // - return: FALSE ==> symbol never optimized
 
     if( currFunction->retn_opt
      && SymIsAutomatic( sym )
@@ -1173,7 +1173,7 @@ static void catchMsg( unsigned msg, FNCATCH *catch_entry )
     }
 }
 
-static boolean makeFNCATCH(     // MAKE CATCH ENTRY
+static bool makeFNCATCH(        // MAKE CATCH ENTRY
     TYPE type,                  // - type of entry
     CSTACK *try_block,          // - try block for entry
     TOKEN_LOCN* cat_locn )      // - position of catch
@@ -1184,9 +1184,9 @@ static boolean makeFNCATCH(     // MAKE CATCH ENTRY
     uint_8 old_attrs;           // - attributes: old
     TYPE new_test;              // - test type: new
     TYPE old_test;              // - test type: old
-    boolean errors;             // - indicates errors during typesig lookup
+    bool errors;                // - indicates errors during typesig lookup
     TYPE_SIG_ACCESS access;     // - type of type-sig access
-    boolean retn;               // - TRUE ==> no errors
+    bool retn;                  // - TRUE ==> no errors
     #define CATT_REF_PTR_CLS (CATT_CLS | CATT_PTR | CATT_REF)
 
     SetErrLoc( cat_locn );
@@ -1380,13 +1380,13 @@ static void parseAsmStmt( TYPE fn_type )
 }
 
 
-static boolean endOfStmt(       // PROCESS END-OF-STATEMENT
-    boolean recog )             // - TRUE ==> need to recognize token
+static bool endOfStmt(          // PROCESS END-OF-STATEMENT
+    bool recog )                // - TRUE ==> need to recognize token
 {
     CSTACK *top_block;
     CSTACK *next;
     int id;
-    boolean dead_code;
+    bool dead_code;
 
     top_block = currFunction->control;
     id = top_block->id;
@@ -1598,7 +1598,7 @@ static void insertFunctionReturn( SYMBOL func )
 static void exceptSpec(         // GENERATE AN EXCEPTION SPECIFICATION
     TYPE except )               // - type of spec
 {
-    boolean err_occurred;       // - TRUE ==> error during type-sig
+    bool err_occurred;          // - TRUE ==> error during type-sig
 
     TypeSigFind( 0, except, NULL, &err_occurred );
 #ifndef NDEBUG
@@ -1616,7 +1616,7 @@ static void setExceptionSpecs(  // SET EXCEPTION SPEC.S FOR FUNCTION
 {
     TYPE *excepts;              // - vector of exception specifications
     TYPE except;                // - current exception specification
-    boolean no_excepts_allowed; // - TRUE ==> no exceptions allowed
+    bool no_excepts_allowed;    // - TRUE ==> no exceptions allowed
 
     excepts = SymFuncArgList( func )->except_spec;
     if( excepts != NULL ) {
@@ -2029,7 +2029,7 @@ static void handleDefnChangesToSym( SYMBOL func )
     }
 }
 
-static boolean noPendingForwardGotos( FUNCTION_DATA *fdata )
+static bool noPendingForwardGotos( FUNCTION_DATA *fdata )
 {
     CSTACK *curr_cs;
     FNLABEL *curr_lbl;
@@ -2061,7 +2061,7 @@ void FunctionBody( DECL_INFO *dinfo )
     TYPE fn_type;
     SCOPE enclosing_scope;
     SCOPE parsing_scope;
-    boolean recog_token;
+    bool recog_token;
     SYMBOL previous_func;
     tc_fn_control fn_control;
 
@@ -2290,7 +2290,7 @@ static void functionFini( INITFINI* defn )
 INITDEFN( functions, functionInit, functionFini )
 
 
-boolean DefargBeingCompiled(    // TEST IF DEFARG-FUNCTION BEING COMPILED
+bool DefargBeingCompiled(       // TEST IF DEFARG-FUNCTION BEING COMPILED
     void )
 {
     return currFunction->is_defarg;
@@ -2312,7 +2312,7 @@ unsigned FunctionRegistrationFlag( // GET NEXT FUNCTION REGISTRATION FLAG
 }
 
 
-boolean FunctionBodyCtor(       // TEST IF COMPILING CTOR
+bool FunctionBodyCtor(          // TEST IF COMPILING CTOR
     void )
 {
     return currFunction->is_ctor;

@@ -145,9 +145,9 @@ static void OpenPgmFile(        // OPEN PROGRAM FILE
 
 int OpenSrcFile(                // OPEN A SOURCE FILE
     const char * filename,      // - file name
-    boolean is_lib )            // - TRUE ==> is <file>
+    bool is_lib )               // - TRUE ==> is <file>
 {
-    boolean     retn;           // - return: TRUE ==> opened ok
+    bool        retn;           // - return: TRUE ==> opened ok
     int         save;           // - saved pre-proc status
 
     // See if there's an alias for this file name
@@ -184,11 +184,11 @@ int OpenSrcFile(                // OPEN A SOURCE FILE
 }
 
 
-static boolean parseCmdLine(    // PARSE COMMAND LINE
+static bool parseCmdLine(       // PARSE COMMAND LINE
     char **argv )               // command line vector
 {
     char    *p;
-    boolean display_only;
+    bool    display_only;
 
     if( argv[0] == NULL ) argv[0] = "";
     p = argv[0];
@@ -252,7 +252,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
     char **argv )               // - command line vector
 {
     int exit_status;            // - status for exit return code
-    boolean gen_code;           // - generate code?
+    bool gen_code;              // - generate code?
     jmp_buf env;                // - for suicide
 
     exit_status = WPP_SUCCESS;

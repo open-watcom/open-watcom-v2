@@ -48,11 +48,11 @@ static void leading( VBUF *pbuf, char lead, int len )
     }
 }
 
-static boolean formatClassForSym( SYMBOL sym, VBUF *buf )
-/*******************************************************/
+static bool formatClassForSym( SYMBOL sym, VBUF *buf )
+/****************************************************/
 {
     CLASSINFO *info;            // - class information for symbol
-    boolean retn = FALSE;       // - return: TRUE ==> is class member
+    bool retn = FALSE;          // - return: TRUE ==> is class member
     NAME name;                  // - class name
 
     info = SymClassInfo( sym );

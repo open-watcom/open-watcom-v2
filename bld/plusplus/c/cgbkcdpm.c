@@ -87,7 +87,7 @@ void CgCdArgDefine(             // DEFINE CDOPT VALUE
 
 static void processCdtor(       // PROCESS A CDTOR ENTRY IF POSSIBLE
     call_handle handle,         // - handle for call
-    boolean direct )            // - TRUE ==> direct call
+    bool direct )               // - TRUE ==> direct call
 {
     cdtor_entry* curr;          // - current entry
     cdtor_entry* prev;          // - previous entry

@@ -530,15 +530,15 @@ static void popSrcFile( SRCFILE srcfile, OPEN_FILE *act )
     set_srcFile( srcfile->parent );
 }
 
-boolean SrcFileClose(           // CLOSE A SOURCE FILE
-    boolean shutdown )          // - shutdown in progress
+bool SrcFileClose(              // CLOSE A SOURCE FILE
+    bool shutdown )             // - shutdown in progress
 {
     SRCFILE tmp_src;            // - extra SRCFILE
     SRCFILE old_src;            // - SRCFILE being closed
     OPEN_FILE *act;             // - open-file information
     LINE_NO lines_read;         // - number of lines read from file
-    boolean retn;               // - return: TRUE ==> not EOF
-    boolean browsed;            // - TRUE ==> file was browsed
+    bool retn;                  // - return: TRUE ==> not EOF
+    bool browsed;               // - TRUE ==> file was browsed
 
     if( CompFlags.scanning_c_comment ) {
         SrcFileCurrentLocation();
@@ -690,8 +690,8 @@ void SrcFileCurrentLocation(    // SET LOCATION FOR CURRENT SOURCE FILE
 }
 
 
-static boolean readBuffer(      // READ NEXT BUFFER
-    boolean close_top_file )    // - TRUE ==> close top file
+static bool readBuffer(         // READ NEXT BUFFER
+    bool close_top_file )       // - TRUE ==> close top file
 {
     OPEN_FILE *act;             // - open file
     SRCFILE src_file;           // - unaliased source file
@@ -950,7 +950,7 @@ static int tryTrigraphStart( void )
 
 static int tryBackSlashNewLine( OPEN_FILE *act )
 {
-    boolean skipped_ws = FALSE;
+    bool skipped_ws = FALSE;
     int nc;
 
     // CurrChar is '\\' and act->column is up to date
@@ -1437,7 +1437,7 @@ void SrcFileScanCppComment()
     }
 }
 
-boolean IsSrcFilePrimary(       // DETERMINE IF PRIMARY SOURCE FILE
+bool IsSrcFilePrimary(          // DETERMINE IF PRIMARY SOURCE FILE
     SRCFILE sf )                // - a source file
 {
     return(( sf != NULL ) && sf->primary );
@@ -1494,21 +1494,21 @@ void SrcFileCommand(            // MARK CURRENT SOURCE FILE AS A COMMAND FILE
 }
 
 
-boolean IsSrcFileLibrary(       // DETERMINE IF SOURCE FILE IS #include <file.h>
+bool IsSrcFileLibrary(          // DETERMINE IF SOURCE FILE IS #include <file.h>
     SRCFILE sf )                // - a source file
 {
     return(( sf != NULL ) && sf->lib_inc );
 }
 
 
-boolean IsSrcFileCmdLine(       // DETERMINE IF SOURCE FILE IS FOR CMD-LINE
+bool IsSrcFileCmdLine(          // DETERMINE IF SOURCE FILE IS FOR CMD-LINE
     SRCFILE sf )                // - a source file
 {
     return( sf != NULL && sf->cmdline );
 }
 
 
-boolean SrcFilesOpen(           // DETERMINE IF ANY SOURCE FILES OPEN
+bool SrcFilesOpen(              // DETERMINE IF ANY SOURCE FILES OPEN
     void )
 {
     return( srcFile != NULL && !srcFile->cmdline );
@@ -1531,7 +1531,7 @@ void SrcFileResetTokenLocn(     // RESET TOKEN_LOCN
     TokenColumn = tgt->column;
 }
 
-boolean SrcFileAreTLSameLine(   // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
+bool SrcFileAreTLSameLine(      // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
     TOKEN_LOCN *l1,             // - location one
     TOKEN_LOCN *l2 )            // - location two
 {
@@ -1583,7 +1583,7 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
     SRCFILE curr )              // - current source file
 {
     DIR_LIST* srch;             // - search R/O entry
-    boolean read_only;          // - TRUE ==> file is in read-only directory
+    bool read_only;             // - TRUE ==> file is in read-only directory
     char const *file_name;      // - file name of current entry
 
     for( ; curr != NULL; curr = curr->unique ) {
@@ -1741,7 +1741,7 @@ void SrcFileGuardStateSig(      // SIGNAL SIGNIFICANCE (TOKEN, ETC) IN FILE
 }
 
 
-boolean SrcFileGuardedIf(       // SKIP REST OF GUARDED FILE, IF POSSIBLE
+bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
     int value )                 // - <value> in #if <value>
 {
     if( getGuardState() == GUARD_IF ) {
@@ -1757,7 +1757,7 @@ boolean SrcFileGuardedIf(       // SKIP REST OF GUARDED FILE, IF POSSIBLE
 }
 
 
-boolean SrcFileProcessOnce(     // CHECK WHETHER WE HAVE TO OPEN THE FILE
+bool SrcFileProcessOnce(        // CHECK WHETHER WE HAVE TO OPEN THE FILE
     char *name )
 {
     SRCFILE old;                // - existing SRCFILE
@@ -1843,7 +1843,7 @@ void SrcFileTraceBack(          // INDICATE SRCFILE USED IN TRACE-BACK
 }
 
 
-boolean SrcFileTraceBackReqd(   // DETERMINE IF MSG TRACE-BACK REQ'D
+bool SrcFileTraceBackReqd(      // DETERMINE IF MSG TRACE-BACK REQ'D
     SRCFILE sf )                // - source-file in message
 {
     return( ( sf != NULL ) && ( sf != traced_back ) );
@@ -1856,7 +1856,7 @@ SRCFILE SrcFileTraceBackFile(   // GET SRCFILE TRACED BACK
     return( traced_back );
 }
 
-boolean SrcFileSame(            // ARE THESE SRC FILES THE SAME FILE?
+bool SrcFileSame(               // ARE THESE SRC FILES THE SAME FILE?
     SRCFILE f1,                 // - src-file 1
     SRCFILE f2 )                // - src-file 2
 {
@@ -1873,7 +1873,7 @@ unsigned SrcFileIndex(          // GET INDEX OF THIS SRCFILE
 }
 
 
-static boolean srcFileCacheClose( boolean close_all_ok )
+static bool srcFileCacheClose( bool close_all_ok )
 {
     SRCFILE curr;
     SRCFILE last;
@@ -1913,7 +1913,7 @@ static boolean srcFileCacheClose( boolean close_all_ok )
 }
 
 
-static boolean recursiveIncludeDetected( char *name )
+static bool recursiveIncludeDetected( char *name )
 {
     SRCFILE curr;
 
@@ -2123,7 +2123,7 @@ SRCFILE SrcFileMapIndex( SRCFILE e )
     return( CarveMapIndex( carveSrcFile, e ) );
 }
 
-pch_status PCHInitSrcFiles( boolean writing )
+pch_status PCHInitSrcFiles( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveSrcFile ) );
@@ -2135,7 +2135,7 @@ pch_status PCHInitSrcFiles( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniSrcFiles( boolean writing )
+pch_status PCHFiniSrcFiles( bool writing )
 {
     if( !writing ) {
         carve_t tmp;
@@ -2173,7 +2173,7 @@ void SrcFileOnceOnly(           // CURRENT SRCFILE CAN BE SKIPPED IF #INCLUDE AG
 }
 
 void SrcFileSetSwEnd(           // SET CURRENT SRCFILE IGNORE CMDLINE SW END STATUS
-    boolean val )               // - value to use to set status
+    bool val )                  // - value to use to set status
 {
     SRCFILE srcfile;            // - current source file
 

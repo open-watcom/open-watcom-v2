@@ -42,7 +42,7 @@ void SymbolicDebugEmit( void );
 void SymbolicDebugFini( void );
 void SymbolicDebugInit( void );
 dbg_type SymbolicDebugType( TYPE, SD_CONTROL );
-void SymbolicDebugGenSymbol( SYMBOL, boolean, boolean );
+void SymbolicDebugGenSymbol( SYMBOL, bool, bool );
 void SymbolicDebugMemberFunc( SYMBOL func, SYMBOL this_sym );
 dbg_loc SymbolicDebugSetDataSegment( dbg_loc dl );
 

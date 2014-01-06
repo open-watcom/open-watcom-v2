@@ -245,11 +245,11 @@ static SCOPE dtorScope(         // FIND SIGNIFICANT SCOPE FOR DTOR'ING
 }
 
 
-static boolean labelMarkDtorSym(// MARK A SYMBOL FOR DTORing
+static bool labelMarkDtorSym(   // MARK A SYMBOL FOR DTORing
     BLK_INIT *blk,              // - current initialization block
     SYMBOL sym )                // - symbol
 {
-    boolean retn;               // - TRUE ==> requires DTOR
+    bool retn;                  // - TRUE ==> requires DTOR
     SYMBOL dtor;                // - DTOR for symbol
 
     if( SymRequiresDtoring( sym ) ) {
@@ -377,11 +377,11 @@ static void bypassError(        // BYPASS OF INIT/CTOR DETECTED!
 }
 
 
-static boolean popsTryCatch(    // CHECK IF JUMP POPS A TRY/CATCH BLOCK
+static bool popsTryCatch(       // CHECK IF JUMP POPS A TRY/CATCH BLOCK
     BLK_INIT* src,              // - source block
     BLK_INIT* tgt )             // - target block
 {
-    boolean popped;             // - TRUE ==> catch was popped
+    bool popped;                // - TRUE ==> catch was popped
 
     popped = FALSE;
     for( ; tgt != src; src = src->containing ) {
@@ -394,11 +394,11 @@ static boolean popsTryCatch(    // CHECK IF JUMP POPS A TRY/CATCH BLOCK
 }
 
 
-static boolean popsCatch(       // CHECK IF JUMP POPS A CATCH BLOCK
+static bool popsCatch(          // CHECK IF JUMP POPS A CATCH BLOCK
     BLK_INIT* src,              // - source block
     BLK_INIT* tgt )             // - target block
 {
-    boolean popped;             // - TRUE ==> catch was popped
+    bool popped;                // - TRUE ==> catch was popped
 
     popped = FALSE;
     for( ; tgt != src; src = src->containing ) {
@@ -411,7 +411,7 @@ static boolean popsCatch(       // CHECK IF JUMP POPS A CATCH BLOCK
 }
 
 
-static boolean labelCheckJump(  // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
+static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
     LAB_POSN *src,              // - source (goto)
     LAB_POSN *tgt,              // - target (label)
     BLK_INIT **cblk,            // - addr( common block ptr )
@@ -420,7 +420,7 @@ static boolean labelCheckJump(  // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
     BLK_INIT *blk;              // - BLK_INIT's for label definition
     BLK_INIT *blk_com;          // - BLK_INIT's for common scope
     BLK_INIT *blk_src;          // - BLK_INIT for source of jump
-    boolean retn;               // - TRUE ==> success
+    bool retn;                  // - TRUE ==> success
     unsigned src_var_no;        // - source: variable no.
     unsigned tgt_var_no;        // - target: variable no.
     SYMBOL tgt_sym;             // - target: init. symbol
@@ -481,10 +481,10 @@ void LabelDefine(               // DEFINE A LABEL
     BLK_INIT *src;              // - goto source BLK_INIT
     BLK_INIT *tgt;              // - goto target BLK_INIT
     SYMBOL sym;                 // - common symbol
-    boolean ok;                 // - label is ok
+    bool ok;                    // - label is ok
     LAB_REF *ref;               // - forward reference to label
     SYMBOL entry_sym;           // - DTORable symbol at label
-    boolean set_label_state;    // - TRUE ==> set state at label
+    bool set_label_state;       // - TRUE ==> set state at label
 
     labelCurrPosn( &curr );
     ok = labelCheckJump( &def->posn, &curr, &com, &sym );
@@ -591,7 +591,7 @@ void LabelSwitch(               // CHECK A CASE/DEFAULT LABEL
 
 void LabelSwitchLabel(          // PROCESSING FOR A BLOCK OF SWITCH LABELS
     SCOPE defn,                 // - scope for switch
-    boolean deadcode )          // - TRUE==> state is dead-code
+    bool deadcode )             // - TRUE==> state is dead-code
 {
     deadcode = deadcode;
     checkSwitchState( defn );
@@ -685,7 +685,7 @@ void LabelFiniFunc(             // COMPLETION OF LABELS (FUNCTION)
 // Assumption: IC_BLOCK_OPEN never occurs at offset 0 in block 0
 //
 void LabelBlockOpen(            // EMIT OPENING OF CURRENT SCOPE
-    boolean dead_code )         // - TRUE ==> in dead-code state
+    bool dead_code )            // - TRUE ==> in dead-code state
 {
     BLK_INIT *blk;              // - BLK_INIT for scope
 
@@ -702,11 +702,11 @@ void LabelBlockOpen(            // EMIT OPENING OF CURRENT SCOPE
 
 
 void LabelBlockClose(           // CLOSE CURRENT BLOCK SCOPE
-    boolean dead_code )         // - TRUE ==> in dead-code state
+    bool dead_code )            // - TRUE ==> in dead-code state
 {
     BLK_INIT *blk;              // - BLK_INIT for scope
     BLK_INIT *enclosing;        // - BLK_INIT for enclosing scope
-    boolean  blk_end;           // - emit IC_BLOCK_END
+    bool  blk_end;              // - emit IC_BLOCK_END
 
     blk_end = FALSE;
     blk = labelFindBlk( GetCurrScope() );

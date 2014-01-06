@@ -36,10 +36,6 @@
 
 #include <stdlib.h>
 
-#ifndef boolean
-#   define boolean int
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -76,7 +72,7 @@ void RingInsert(                // INSERT ELEMENT INTO RING
 ;
 void *RingLookup(               // LOOKUP IN A RING
     void *hdr,                  // - ring hdr
-    boolean (*compare_rtn)      // - comparison routine
+    bool (*compare_rtn)         // - comparison routine
         ( void *element,        // - - element
           const void *comparand ),// - - comparand
     const void *comparand )     // - comparand

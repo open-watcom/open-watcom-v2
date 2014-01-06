@@ -82,7 +82,7 @@ static PTREE genFnCall( NAME name )
     return( PTreeBinary( CO_CALL, PTreeId( name ), NULL ) );
 }
 
-static boolean endOfAsmStmt( void )
+static bool endOfAsmStmt( void )
 {
     if( CurToken == T_EOF ) return( TRUE );
     if( CurToken == T_NULL ) return( TRUE );
@@ -155,7 +155,7 @@ TOKEN NextTokenSkipEOL( void )
 PTREE AsmStmt( void )
 /*******************/
 {
-    boolean     uses_auto;
+    bool        uses_auto;
     AUX_INFO    *auxinfo;
     TOKEN       skip_token;
     TOKEN       skip_alt_token;

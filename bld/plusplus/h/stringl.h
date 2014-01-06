@@ -50,7 +50,7 @@ extern void StringTrash( STRING_CONSTANT );
 extern STRING_CONSTANT StringCreate( char *, unsigned );
 extern STRING_CONSTANT StringConcat( STRING_CONSTANT, STRING_CONSTANT );
 extern void StringConcatDifferentLines( STRING_CONSTANT );
-extern boolean StringSame( STRING_CONSTANT, STRING_CONSTANT );
+extern bool StringSame( STRING_CONSTANT, STRING_CONSTANT );
 extern size_t StringByteLength( STRING_CONSTANT );
 extern size_t StringAWStrLen( STRING_CONSTANT );
 extern char *StringBytes( STRING_CONSTANT );

@@ -88,8 +88,8 @@ static TYPE baseTypeInfo( TYPE type, base_info *extra )
     return( type );
 }
 
-boolean ConstNeedsExplicitInitializer( TYPE type )
-/************************************************/
+bool ConstNeedsExplicitInitializer( TYPE type )
+/*********************************************/
 {
     CLASSINFO *info;
     SYMBOL dummy;
@@ -115,7 +115,7 @@ boolean ConstNeedsExplicitInitializer( TYPE type )
     return( FALSE );
 }
 
-static boolean diagnoseAbstractDefn( SYMBOL sym, TYPE type )
+static bool diagnoseAbstractDefn( SYMBOL sym, TYPE type )
 {
     type = ArrayBaseType( type );
     CErr( ERR_CANNOT_DEFINE_ABSTRACT_VARIABLE, sym, type );
@@ -123,8 +123,8 @@ static boolean diagnoseAbstractDefn( SYMBOL sym, TYPE type )
     return( FALSE );
 }
 
-boolean DeclNoInit( DECL_INFO *dinfo )
-/************************************/
+bool DeclNoInit( DECL_INFO *dinfo )
+/*********************************/
 {
     SYMBOL sym;
     SCOPE scope;
@@ -209,8 +209,8 @@ boolean DeclNoInit( DECL_INFO *dinfo )
     return( TRUE );
 }
 
-boolean DeclWithInit( DECL_INFO *dinfo )
-/**************************************/
+bool DeclWithInit( DECL_INFO *dinfo )
+/***********************************/
 {
     TYPE type;
     SYMBOL sym;
@@ -344,7 +344,7 @@ void DeclDefaultStorageClass( SCOPE scope, SYMBOL sym )
     }
 }
 
-static boolean commonCheck( SYMBOL prev, SYMBOL curr, decl_check *control )
+static bool commonCheck( SYMBOL prev, SYMBOL curr, decl_check *control )
 {
     SCOPE scope;
 
@@ -474,7 +474,7 @@ static fn_stg_class_status checkFnStorageClass( SYMBOL prev, SYMBOL curr, decl_c
     return( FSCS_SAME_FN );
 }
 
-static boolean checkVarStorageClass( SYMBOL prev, SYMBOL curr, decl_check *control )
+static bool checkVarStorageClass( SYMBOL prev, SYMBOL curr, decl_check *control )
 {
     /* check storage class specifiers for two identical variables */
     if( commonCheck( prev, curr, control ) ) {
@@ -517,7 +517,7 @@ static SYMBOL combineVariables( SYMBOL prev, SYMBOL curr, prev_sym_adjust contro
     return( prev );
 }
 
-static boolean memModelModifiersOK( type_flag prev_flags, type_flag curr_flags,
+static bool memModelModifiersOK( type_flag prev_flags, type_flag curr_flags,
                                     prev_sym_adjust *adjust )
 {
     // MSC allows:
@@ -553,7 +553,7 @@ static boolean memModelModifiersOK( type_flag prev_flags, type_flag curr_flags,
 }
 
 static type_flag cannotChangeFlags( type_flag prev, type_flag curr,
-                                    boolean ignore_mem_model )
+                                    bool ignore_mem_model )
 {
     /* truth table:
 
@@ -607,7 +607,7 @@ static void prevCurrErr( unsigned msg, SYMBOL prev, SYMBOL curr )
     }
 }
 
-static boolean combinableSyms( SYMBOL prev, SYMBOL curr, prev_sym_adjust *adjust, type_flag *new_flags )
+static bool combinableSyms( SYMBOL prev, SYMBOL curr, prev_sym_adjust *adjust, type_flag *new_flags )
 {
     TYPE prev_type;
     TYPE curr_type;
@@ -618,7 +618,7 @@ static boolean combinableSyms( SYMBOL prev, SYMBOL curr, prev_sym_adjust *adjust
     void *prev_base;
     void *curr_base;
     target_size_t curr_size;
-    boolean ret;
+    bool ret;
     struct {
         unsigned file_scope : 1;
     } flag;
@@ -849,7 +849,7 @@ static void verifyCanBeOverloaded( SYMBOL_NAME sym_name, SYMBOL sym, NAME name )
     }
 }
 
-static boolean userWantsTypeSymOverload( SYMBOL typedef_sym, SYMBOL non_typedef_sym )
+static bool userWantsTypeSymOverload( SYMBOL typedef_sym, SYMBOL non_typedef_sym )
 {
     SRCFILE typedef_file;
     SRCFILE non_typedef_file;
@@ -876,7 +876,7 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
     SYMBOL chk_sym;
     SYMBOL ret_sym;
     FNOV_RESULT check;
-    boolean new_sym_is_function;
+    bool new_sym_is_function;
     NAME name;
     prev_sym_adjust sym_adjust;
     fn_stg_class_status fn_sc_status;

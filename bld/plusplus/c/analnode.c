@@ -58,7 +58,7 @@ static PTREE set_meaningful_side_effects(   // SET MEANINGFUL, SIDE_EFFECTS
 
 
 #ifndef NDEBUG
-boolean NodeIsUnaryOp(          // TEST IF UNARY OPERATION OF GIVEN TYPE
+bool NodeIsUnaryOp(             // TEST IF UNARY OPERATION OF GIVEN TYPE
     PTREE node,                 // - node
     CGOP operation )            // - operation
 {
@@ -68,7 +68,7 @@ boolean NodeIsUnaryOp(          // TEST IF UNARY OPERATION OF GIVEN TYPE
 }
 
 
-boolean NodeIsBinaryOp(         // TEST IF BINARY OPERATION OF GIVEN TYPE
+bool NodeIsBinaryOp(            // TEST IF BINARY OPERATION OF GIVEN TYPE
     PTREE node,                 // - node
     CGOP operation )            // - operation
 {
@@ -650,10 +650,10 @@ PTREE NodeGetConstantNode(      // RETURN CONSTANT-INT NODE
 }
 
 
-boolean NodeIsConstantInt(      // TEST IF A CONSTANT INT NODE
+bool NodeIsConstantInt(         // TEST IF A CONSTANT INT NODE
     PTREE node )                // - node
 {
-    boolean retn;               // - TRUE ==> is zero constant
+    bool retn;                  // - TRUE ==> is zero constant
 
     if( node == NULL ) {
         retn = FALSE;
@@ -675,10 +675,10 @@ boolean NodeIsConstantInt(      // TEST IF A CONSTANT INT NODE
 }
 
 
-boolean NodeIsConstant(         // TEST IF NODE IS A CONSTANT
+bool NodeIsConstant(            // TEST IF NODE IS A CONSTANT
     PTREE node )                // - node
 {
-    boolean retn;               // - TRUE ==> is constant
+    bool retn;                  // - TRUE ==> is constant
 
     if( TypeIsConst( NodeType( node ) ) ) {
         retn = TRUE;
@@ -719,11 +719,11 @@ int NodeConstantValue(  // GET CONSTANT VALUE FOR A NODE
 }
 
 
-static boolean nodeGetConstant  // TEST IF CONSTANT AND GET VALUE
+static bool nodeGetConstant     // TEST IF CONSTANT AND GET VALUE
     ( PTREE node                // - potential constant node
     , INT_CONSTANT* pval )      // - addr[ value ]
 {
-    boolean retn;               // - return: TRUE ==> is integral constant
+    bool retn;                  // - return: TRUE ==> is integral constant
     SYMBOL sym;                 // - symbol for node
 
     if( node == NULL ) {
@@ -752,11 +752,11 @@ static boolean nodeGetConstant  // TEST IF CONSTANT AND GET VALUE
 }
 
 
-boolean NodeIsIntConstant       // TEST IF INTEGRAL CONSTANT AND GET VALUE
+bool NodeIsIntConstant          // TEST IF INTEGRAL CONSTANT AND GET VALUE
     ( PTREE node                // - potential constant node
     , INT_CONSTANT* pval )      // - addr[ value ]
 {
-    boolean retn;               // - return: TRUE ==> is integral constant
+    bool retn;                  // - return: TRUE ==> is integral constant
 
     if( NULL == IntegralType( node->type ) ) {
         retn = FALSE;
@@ -767,10 +767,10 @@ boolean NodeIsIntConstant       // TEST IF INTEGRAL CONSTANT AND GET VALUE
 }
 
 
-boolean NodeIsZeroConstant(     // TEST IF A ZERO CONSTANT
+bool NodeIsZeroConstant(        // TEST IF A ZERO CONSTANT
     PTREE node )                // - node
 {
-    boolean retn;               // - TRUE ==> is zero constant
+    bool retn;                  // - TRUE ==> is zero constant
     INT_CONSTANT icon;          // - integral constant
 
     if( nodeGetConstant( node, &icon ) ) {
@@ -782,10 +782,10 @@ boolean NodeIsZeroConstant(     // TEST IF A ZERO CONSTANT
 }
 
 
-boolean NodeIsZeroIntConstant(  // TEST IF A ZERO INTEGER CONSTANT
+bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
     PTREE node )                // - node
 {
-    boolean retn;               // - TRUE ==> is zero constant
+    bool retn;                  // - TRUE ==> is zero constant
     INT_CONSTANT icon;          // - integral constant
 
     if( nodeGetConstant( node, &icon ) ) {
@@ -824,7 +824,7 @@ void NodeFreeSearchResult(      // FREE SEARCH_RESULT FROM A NODE
 }
 
 
-static boolean nodeIsAssignment(// TEST IF NODE IS "=" or initialization
+static bool nodeIsAssignment(   // TEST IF NODE IS "=" or initialization
     PTREE node )                // - node
 {
     return NodeIsBinaryOp( node, CO_EQUAL )
@@ -1269,10 +1269,10 @@ PTREE NodeArguments(            // MAKE A LIST OF ARGUMENTS
 }
 
 
-static boolean nodeIsFetchSym(  // TEST IF NODE IS FETCH OF A SYMBOL
+static bool nodeIsFetchSym(     // TEST IF NODE IS FETCH OF A SYMBOL
     PTREE expr )                // - expression
 {
-    boolean retn;               // - TRUE ==> is a fetch
+    bool retn;                  // - TRUE ==> is a fetch
 
     if( NodeIsUnaryOp( expr, CO_RARG_FETCH ) ) {
         retn = TRUE;
@@ -1336,10 +1336,10 @@ PTREE NodeDupExpr(              // DUPLICATE EXPRESSION
 }
 
 
-boolean NodeBitField(           // TEST IF NODE IS A BIT FIELD
+bool NodeBitField(              // TEST IF NODE IS A BIT FIELD
     PTREE node )                // - the node
 {
-    boolean retn;               // - TRUE ==> is a bit field
+    bool retn;                  // - TRUE ==> is a bit field
 
     for( ; ; node = PTreeOpLeft( node ) ) {
         if( node == NULL ) {
@@ -1622,7 +1622,7 @@ PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
 
 PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
     TYPE type,                  // - type for class
-    boolean exact )             // - TRUE ==> exact CTORing of classes
+    bool exact )                // - TRUE ==> exact CTORing of classes
 {
     PTREE arg;                  // - NULL or CDTOR argument
     unsigned ctor_code;         // - code for cdtor'ing
@@ -1644,7 +1644,7 @@ PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
 PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
     PTREE args,                 // - other arguments
     TYPE type,                  // - type for class
-    boolean exact )             // - TRUE ==> exact CTORing of classes
+    bool exact )                // - TRUE ==> exact CTORing of classes
 {
     PTREE arg = CallArgumentExactCtor( type, exact );
 
@@ -1737,10 +1737,10 @@ addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
 }
 
 
-boolean NodePtrNonZero(         // TEST IF A PTR NODE IS ALWAYS NON-ZERO
+bool NodePtrNonZero(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
     PTREE node )                // - node to be tested
 {
-    boolean non_zero;           // - TRUE ==> is non-zero
+    bool non_zero;              // - TRUE ==> is non-zero
 
     if( node->flags & PTF_PTR_NONZERO ) {
         non_zero = TRUE;
@@ -1758,7 +1758,7 @@ boolean NodePtrNonZero(         // TEST IF A PTR NODE IS ALWAYS NON-ZERO
 
 
 PTREE NodeTestExpr(             // GENERATE A TERNARY TEST EXPRESSION
-    PTREE b_expr,               // - boolean expression
+    PTREE b_expr,               // - bool expression
     PTREE t_expr,               // - TRUE expression
     PTREE f_expr )              // - FALSE expression
 {
@@ -1858,10 +1858,10 @@ static CNV_DIAG diag_deref =    // diagnosis for de-referencing
 };
 
 
-boolean NodeDerefPtr(           // DEREFERENCE A POINTER
+bool NodeDerefPtr(              // DEREFERENCE A POINTER
     PTREE *a_ptr )              // - addr[ ptr operand ]
 {
-    boolean retn;               // - TRUE ==> all ok
+    bool retn;                  // - TRUE ==> all ok
     PTREE ptr;                  // - ptr operand
 
     ptr = *a_ptr;
@@ -1880,10 +1880,10 @@ boolean NodeDerefPtr(           // DEREFERENCE A POINTER
 }
 
 
-boolean NodeCallsCtor(          // DETERMINE IF NODE CALLS CTOR
+bool NodeCallsCtor(             // DETERMINE IF NODE CALLS CTOR
     PTREE node )                // - a call node
 {
-    boolean retn;               // - TRUE ==> calling a ctor
+    bool retn;                  // - TRUE ==> calling a ctor
     if( NodeIsBinaryOp( node, CO_CALL_EXEC )
      || NodeIsBinaryOp( node, CO_CALL_NOOVLD ) ) {
         retn = SymIsCtor( node->u.subtree[0]->u.subtree[0]->u.symcg.symbol );
@@ -1970,7 +1970,7 @@ static PTREE* nodePossibleTemp( // LOCATE POSSIBLE TEMPORARY LOCATION
 }
 
 
-static boolean isNonConstRef(   // DETERMINE IF NON-CONSTANT REFERENCE
+static bool isNonConstRef(      // DETERMINE IF NON-CONSTANT REFERENCE
     TYPE arg_type )             // - type to be checked
 {
     TYPE refed;                 // - type referenced
@@ -1980,10 +1980,10 @@ static boolean isNonConstRef(   // DETERMINE IF NON-CONSTANT REFERENCE
 }
 
 
-static boolean nodeMakesTemporary(  // CHECK IF NODE PRODUCES A TEMPORARY
+static bool nodeMakesTemporary( // CHECK IF NODE PRODUCES A TEMPORARY
     PTREE node )                // - possible temporary
 {
-    boolean retn;               // - TRUE ==> is invalid
+    bool retn;                  // - TRUE ==> is invalid
     SYMBOL fun;                 // - function called
 
     fun = NULL;
@@ -2039,7 +2039,7 @@ static boolean nodeMakesTemporary(  // CHECK IF NODE PRODUCES A TEMPORARY
 }
 
 
-boolean NodeNonConstRefToTemp(  // CHECK IF TEMP. PASSED AS NON-CONST REF
+bool NodeNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
     TYPE arg_type,              // - possible non-const reference
     PTREE node )                // - possible temporary
 {
@@ -2062,12 +2062,12 @@ boolean NodeNonConstRefToTemp(  // CHECK IF TEMP. PASSED AS NON-CONST REF
 }
 
 
-boolean NodeReferencesTemporary( // CHECK IF NODE PRODUCES OR IS TEMPORARY
+bool NodeReferencesTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY
     PTREE node )                // - possible temporary
 {
     PTREE dtor;                 // - addr CO_DTOR ( not used )
     PTREE* src;                 // - source operand
-    boolean retn;               // - TRUE ==> non-const ref && temp. ref.ed
+    bool retn;                  // - TRUE ==> non-const ref && temp. ref.ed
 
     src = nodePossibleTemp( &node, &dtor );
     if( node->op == PT_SYMBOL
@@ -2122,10 +2122,10 @@ PTREE NodeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
 }
 
 
-static boolean nonVolatileSymbol(  // TEST IF EXPRESSION IS NON-VOLATILE SYM
+static bool nonVolatileSymbol(  // TEST IF EXPRESSION IS NON-VOLATILE SYM
     PTREE expr )                // - expression to be tested
 {
-    boolean retn;               // - TRUE ==> is non-volatile symbol
+    bool retn;                  // - TRUE ==> is non-volatile symbol
     type_flag flags;            // - modifier flags
 
     if( expr->op == PT_SYMBOL ) {
@@ -2246,12 +2246,12 @@ PTREE NodeFuncForCall(          // GET FUNCTION NODE FOR CALL
 }
 
 
-boolean NodeGetIbpSymbol(       // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
+bool NodeGetIbpSymbol(          // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
     PTREE node,                 // - node
     SYMBOL* a_ibp,              // - bound parameter to use
     target_offset_t* a_offset ) // - addr[ offset to basing symbol ]
 {
-    boolean retn;               // - TRUE ==> have got one
+    bool retn;                  // - TRUE ==> have got one
     PTREE act;                  // - actual node used for access
     SYMBOL bound;               // - bound symbol
     target_offset_t offset;     // - offset to it

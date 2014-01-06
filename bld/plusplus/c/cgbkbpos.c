@@ -276,10 +276,10 @@ SE* BlkPosnTempEnd(             // GET ENDING POS'N FOR TEMP DTOR'ING
 }
 
 
-boolean BlkPosnUseStab(         // TEST IF REALLY USING STATE TABLE IN SCOPE
+bool BlkPosnUseStab(            // TEST IF REALLY USING STATE TABLE IN SCOPE
     void )
 {
-    boolean retn;               // - TRUE ==> gen state table code
+    bool retn;                  // - TRUE ==> gen state table code
     BLK_POSN* bpos;             // - current position
 
     bpos = VstkTop( &stack_blk_posn );

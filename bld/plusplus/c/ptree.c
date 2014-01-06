@@ -65,7 +65,7 @@ ExtraRptCtr( simple_frees );        // # PTreeFreeSubtrees( node )
 // for use by IsLinkerConstant traversal routine
 static PTREE linkerConstantSymbolNode;
 static target_size_t linkerConstantOffset;
-static boolean linkerConstantFlag;
+static bool linkerConstantFlag;
 
 // enumerate OP_CNV_NO_... as 0, 1, 2, ...
 //
@@ -500,7 +500,7 @@ PTREE PTreeCDtorExtra( void )
 }
 
 
-boolean PTreePropogateError(    // CHECK AND PROPOGATE ERRORS FROM SUB-TREES
+bool PTreePropogateError(       // CHECK AND PROPOGATE ERRORS FROM SUB-TREES
     PTREE curr )                // - current node
 {
     unsigned op;                // - current expr op
@@ -1452,7 +1452,7 @@ PTREE PTreeOpRight(             // GET RIGHT NODE, SKIPPING "," OPERATOR, DUPS
     return PTreeOp( &expr->u.subtree[1] );
 }
 
-static boolean symAccessNeedsCode( SYMBOL sym )
+static bool symAccessNeedsCode( SYMBOL sym )
 {
     if( SymIsAutomatic( sym ) ) {
         return TRUE;
@@ -1566,8 +1566,8 @@ static PTREE linker_constant_tree_node( PTREE expr )
     return expr;
 }
 
-boolean IsLinkerConstant( PTREE tree, PTREE *ctree, target_size_t *offset )
-/*************************************************************************/
+bool IsLinkerConstant( PTREE tree, PTREE *ctree, target_size_t *offset )
+/**********************************************************************/
 // return TRUE when it is a constant
 {
     // handle "int a = ( b=1, 2 );"
@@ -1599,11 +1599,11 @@ boolean IsLinkerConstant( PTREE tree, PTREE *ctree, target_size_t *offset )
     }
 }
 
-boolean IsStringConstant( PTREE node, boolean *multi_line_concat )
-/****************************************************************/
+bool IsStringConstant( PTREE node, bool *multi_line_concat )
+/**********************************************************/
 {
     STRING_CONSTANT str;
-    boolean retn;
+    bool retn;
 
     *multi_line_concat = FALSE;
     retn = FALSE;
@@ -1971,7 +1971,7 @@ pch_status PCHReadPTrees( void )
     return PCHCB_OK;
 }
 
-pch_status PCHInitPTrees( boolean writing )
+pch_status PCHInitPTrees( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carvePTREE ) );
@@ -1982,7 +1982,7 @@ pch_status PCHInitPTrees( boolean writing )
     return PCHCB_OK;
 }
 
-pch_status PCHFiniPTrees( boolean writing )
+pch_status PCHFiniPTrees( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carvePTREE );

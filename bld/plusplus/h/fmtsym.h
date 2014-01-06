@@ -38,7 +38,7 @@ char *FormatSym( SYMBOL, VBUF * );
 char *FormatSymWithTypedefs( SYMBOL, VBUF * );
 char *FormatFnDefnWithTypedefs( SYMBOL, VBUF * );
 char *FormatFnDefn( SYMBOL, VBUF * );
-void FormatScope( SCOPE, VBUF *, boolean );
+void FormatScope( SCOPE, VBUF *, bool );
 char *FormatName( NAME, VBUF * );
 void FormatTemplateParms( VBUF *, TYPE );
 void FormatUnboundTemplateParms( VBUF *, TYPE );

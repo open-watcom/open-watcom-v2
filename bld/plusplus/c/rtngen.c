@@ -116,7 +116,7 @@ void RtnGenerate( void )
 /**********************/
 {
     RTN_GEN *c;
-    boolean keep_going = TRUE;
+    bool keep_going = TRUE;
 
     SetCurrScope( GetFileScope() );
     while( keep_going ) {
@@ -205,13 +205,13 @@ pch_status PCHWriteGenerators( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitGenerators( boolean writing )
+pch_status PCHInitGenerators( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniGenerators( boolean writing )
+pch_status PCHFiniGenerators( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

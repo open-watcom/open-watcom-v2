@@ -33,11 +33,11 @@
 #ifndef _FOLD_H
 #define _FOLD_H
 
-extern PTREE CastIntConstant( PTREE, TYPE, boolean* );
+extern PTREE CastIntConstant( PTREE, TYPE, bool * );
 extern PTREE Fold( PTREE );
 extern PTREE FoldUnary( PTREE );
 extern PTREE FoldBinary( PTREE );
 extern target_long FoldSignedRShiftMax( target_long );
-extern boolean Zero64( signed_64 const *test );
+extern bool Zero64( signed_64 const *test );
 
 #endif

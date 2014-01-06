@@ -490,7 +490,7 @@ pch_status PCHWriteRttiDescriptors( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitRttiDescriptors( boolean writing )
+pch_status PCHInitRttiDescriptors( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveRTTI_CLASS ) );
@@ -507,7 +507,7 @@ pch_status PCHInitRttiDescriptors( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniRttiDescriptors( boolean writing )
+pch_status PCHFiniRttiDescriptors( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveRTTI_CLASS );

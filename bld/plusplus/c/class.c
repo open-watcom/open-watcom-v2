@@ -388,7 +388,7 @@ static void typeError( int msg, TYPE type )
     CErr2p( msg, type );
 }
 
-static boolean verifyNoChangePerm( CLASS_DATA *data, symbol_flag perm, NAME name )
+static bool verifyNoChangePerm( CLASS_DATA *data, symbol_flag perm, NAME name )
 {
     if( perm != data->perm ) {
         /* data->perm is 'protected' or 'public' */
@@ -406,7 +406,7 @@ static boolean verifyNoChangePerm( CLASS_DATA *data, symbol_flag perm, NAME name
     return( FALSE );
 }
 
-static boolean handleAccessDeclaration( PTREE id_tree )
+static bool handleAccessDeclaration( PTREE id_tree )
 {
     PTREE scope_tree;
     PTREE name_tree;
@@ -424,7 +424,7 @@ static boolean handleAccessDeclaration( PTREE id_tree )
     SYMBOL access_sym;
     symbol_flag perm;
     symbol_flag curr_perm;
-    boolean error_diagnosed;
+    bool error_diagnosed;
     auto TOKEN_LOCN name_locn;
 
     error_diagnosed = FALSE;
@@ -532,7 +532,7 @@ void ClassAccessDeclaration( PTREE id_tree, TOKEN_LOCN *locn )
     }
 }
 
-static boolean handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
+static bool handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
 {
     CLASS_DATA *data;
     NAME name;
@@ -545,7 +545,7 @@ static boolean handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
     SYMBOL sym;
     PTREE id;
     symbol_flag perm;
-    boolean error_diagnosed;
+    bool error_diagnosed;
 
     error_diagnosed = FALSE;
     data = classDataStack;
@@ -896,8 +896,8 @@ TYPE ClassPreDefined( NAME name, TOKEN_LOCN *locn )
 CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
 /********************************************************/
 {
-    boolean scoped_id;
-    boolean something_went_wrong;
+    bool scoped_id;
+    bool something_went_wrong;
     NAME name;
     CLASS_DATA *data;
     CLASS_DATA *enclosing_data;
@@ -1150,7 +1150,7 @@ static void changeToInlineFunction( DECL_INFO *dinfo )
     }
 }
 
-void ClassProcessFunction( DECL_INFO *inline_func, boolean is_inline )
+void ClassProcessFunction( DECL_INFO *inline_func, bool is_inline )
 {
     REWRITE *last_rewrite;
     void (*last_source)( void );
@@ -1357,7 +1357,7 @@ static SYMBOL checkPresence( SCOPE scope, NAME name )
 }
 
 static SYMBOL findMember( SYMBOL syms, TYPE class_type,
-                          boolean (*check)( SYMBOL, TYPE ) )
+                          bool (*check)( SYMBOL, TYPE ) )
 {
     SYMBOL sym;
 
@@ -1455,7 +1455,7 @@ SYMBOL ClassAddDefaultAssign( SCOPE scope )
     return( sym );
 }
 
-static boolean addDefaultCtor( CLASS_DATA *data, SCOPE scope, TYPE class_type )
+static bool addDefaultCtor( CLASS_DATA *data, SCOPE scope, TYPE class_type )
 {
     CLASSINFO *info;
 
@@ -1471,7 +1471,7 @@ static boolean addDefaultCtor( CLASS_DATA *data, SCOPE scope, TYPE class_type )
     return( FALSE );
 }
 
-static boolean addDefaultCopy( CLASS_DATA *data, SCOPE scope, TYPE class_type )
+static bool addDefaultCopy( CLASS_DATA *data, SCOPE scope, TYPE class_type )
 {
     CLASSINFO *info;
 
@@ -1486,7 +1486,7 @@ static boolean addDefaultCopy( CLASS_DATA *data, SCOPE scope, TYPE class_type )
     return( FALSE );
 }
 
-static boolean addDefaultDtor( CLASS_DATA *data, SCOPE scope, TYPE class_type )
+static bool addDefaultDtor( CLASS_DATA *data, SCOPE scope, TYPE class_type )
 {
     CLASSINFO *info;
 
@@ -1502,7 +1502,7 @@ static boolean addDefaultDtor( CLASS_DATA *data, SCOPE scope, TYPE class_type )
     return( FALSE );
 }
 
-static boolean addDefaultOpEq( CLASS_DATA *data, SCOPE scope, TYPE class_type )
+static bool addDefaultOpEq( CLASS_DATA *data, SCOPE scope, TYPE class_type )
 {
     CLASSINFO *info;
 
@@ -1615,7 +1615,7 @@ static void warnAboutHiding( CLASS_DATA *data )
     }
 }
 
-static void createVFPtrField( CLASS_DATA *data, boolean do_creation )
+static void createVFPtrField( CLASS_DATA *data, bool do_creation )
 {
     TYPE vfptr_type;
     CLASSINFO *info;
@@ -1646,7 +1646,7 @@ DECL_SPEC *ClassEnd( void )
     BASE_CLASS *base;
     BASE_CLASS *vbptr_base;
     BASE_CLASS *vfptr_base;
-    boolean gen_defaults;
+    bool gen_defaults;
 
     data = classDataStack;
     data->is_explicit = FALSE;
@@ -1868,15 +1868,15 @@ static void propagateKnowledge( CLASSINFO *from, CLASSINFO *to, prop_type what )
     }
 }
 
-boolean ClassIsDefaultCtor( SYMBOL sym, TYPE class_type )
-/*******************************************************/
+bool ClassIsDefaultCtor( SYMBOL sym, TYPE class_type )
+/****************************************************/
 {
     /* name has already been checked */
     class_type = class_type;
     return TypeHasNumArgs( sym->sym_type, 0 );
 }
 
-static boolean isDefaultCopy( SYMBOL sym, TYPE class_type, unsigned *arg_info )
+static bool isDefaultCopy( SYMBOL sym, TYPE class_type, unsigned *arg_info )
 {
     arg_list *args;
     TYPE arg_type;
@@ -1909,28 +1909,28 @@ static boolean isDefaultCopy( SYMBOL sym, TYPE class_type, unsigned *arg_info )
     return( FALSE );
 }
 
-static boolean isDefaultAssign( SYMBOL sym, TYPE class_type, unsigned *arg_info )
+static bool isDefaultAssign( SYMBOL sym, TYPE class_type, unsigned *arg_info )
 {
     return( isDefaultCopy( sym, class_type, arg_info ) );
 }
 
-boolean ClassIsDefaultCopy( SYMBOL sym, TYPE class_type )
-/*******************************************************/
+bool ClassIsDefaultCopy( SYMBOL sym, TYPE class_type )
+/****************************************************/
 {
     unsigned arg_info;
 
     return( isDefaultCopy( sym, class_type, &arg_info ) );
 }
 
-boolean ClassIsDefaultAssign( SYMBOL sym, TYPE class_type )
-/*********************************************************/
+bool ClassIsDefaultAssign( SYMBOL sym, TYPE class_type )
+/******************************************************/
 {
     unsigned arg_info;
 
     return( isDefaultAssign( sym, class_type, &arg_info ) );
 }
 
-boolean GeneratedDefaultFunction(// IS SYMBOL A DEFAULT CTOR,COPY, OR DTOR?
+bool GeneratedDefaultFunction(  // IS SYMBOL A DEFAULT CTOR,COPY, OR DTOR?
     SYMBOL sym )                // - symbol to check
 {
     NAME name;
@@ -1976,7 +1976,7 @@ static void checkAllBasesForVDtor( CLASSINFO *info )
     TYPE base_type;
     BASE_CLASS *curr;
     CLASSINFO *base_info;
-    boolean ok_to_diagnose;
+    bool ok_to_diagnose;
 
     RingIterBeg( info->bases, curr ) {
         base_type = curr->type;
@@ -1998,7 +1998,7 @@ static void checkAllBasesForVDtor( CLASSINFO *info )
     } RingIterEnd( curr )
 }
 
-static boolean hasNonRefArg( SYMBOL sym, TYPE class_type )
+static bool hasNonRefArg( SYMBOL sym, TYPE class_type )
 {
     arg_list *args;
     TYPE arg_type;
@@ -2085,7 +2085,7 @@ static void addVFHide( CLASS_DATA *data, SYMBOL d, SYMBOL b )
     RingPush( &data->vf_hide_list, hide );
 }
 
-static boolean checkForCallingConventionChange( SYMBOL sym, SYMBOL above )
+static bool checkForCallingConventionChange( SYMBOL sym, SYMBOL above )
 {
     TYPE fn_type1 = FunctionDeclarationType( sym->sym_type );
     TYPE fn_type2 = FunctionDeclarationType( above->sym_type );
@@ -2106,9 +2106,9 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
 {
     vindex vf_index;
     unsigned arg_info;
-    boolean is_virtual;
-    boolean is_pure;
-    boolean is_different;
+    bool is_virtual;
+    bool is_pure;
+    bool is_different;
     find_virtual_status fv_status;
     CLASSINFO *info;
     TYPE fn_type;
@@ -2260,7 +2260,7 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
     }
 }
 
-static void verifyClassMember( CLASS_DATA *data, TYPE typ, boolean static_member )
+static void verifyClassMember( CLASS_DATA *data, TYPE typ, bool static_member )
 {
     prop_type prop_control;
     CLASSINFO *info;
@@ -2620,7 +2620,7 @@ static BASE_CLASS *findVBase( BASE_CLASS *ring, TYPE type )
 BASE_CLASS *ClassBaseSpecifier( inherit_flag flags, DECL_SPEC *dspec )
 /********************************************************************/
 {
-    boolean error_detected;
+    bool error_detected;
     TYPE base_type;
     BASE_CLASS *base;
     CLASS_DATA *data;
@@ -2696,7 +2696,7 @@ static BASE_CLASS *grabVBases( BASE_CLASS **ring, BASE_CLASS *base )
     BASE_CLASS *insert;
     CLASSINFO *info;
     CLASS_DATA *data;
-    boolean reuse_indices;
+    bool reuse_indices;
 
     insert = NULL;
     info = base->type->u.c.info;
@@ -2960,8 +2960,8 @@ DECL_SPEC *ClassRefDef( void )
     return( dspec );
 }
 
-boolean ClassOKToRewrite( void )
-/******************************/
+bool ClassOKToRewrite( void )
+/***************************/
 {
     CLASS_DATA *data;
 
@@ -3118,8 +3118,8 @@ static void doPromotion( SYMBOL_NAME sym_name )
 
 static void promoteMembers( TYPE class_type, SYMBOL owner )
 {
-    boolean problems;
-    boolean promote_to_class;
+    bool problems;
+    bool promote_to_class;
     SCOPE scope;
     SYMBOL stop;
     SYMBOL curr;
@@ -3195,15 +3195,15 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
     setScopeOwner( class_type, scope );
 }
 
-boolean ClassAnonymousUnion( DECL_SPEC *dspec )
-/*********************************************/
+bool ClassAnonymousUnion( DECL_SPEC *dspec )
+/******************************************/
 {
     SYMBOL sym;
     NAME name;
     TYPE class_type;
     CLASSINFO *info;
     stg_class_t stg_class;
-    boolean emit_init;
+    bool emit_init;
 
     class_type = StructType( dspec->partial );
     if( class_type == NULL ) {
@@ -3264,7 +3264,7 @@ boolean ClassAnonymousUnion( DECL_SPEC *dspec )
     return( TRUE );
 }
 
-static boolean duplicateMemInit( PTREE curr, PTREE test )
+static bool duplicateMemInit( PTREE curr, PTREE test )
 {
     if( curr->op != test->op ) {
         return( FALSE );
@@ -3283,7 +3283,7 @@ static boolean duplicateMemInit( PTREE curr, PTREE test )
     return( FALSE );
 }
 
-static boolean verifyBaseClassInit( PTREE base, SCOPE scope )
+static bool verifyBaseClassInit( PTREE base, SCOPE scope )
 {
     TYPE class_type;
     SCOPE class_scope;
@@ -3302,7 +3302,7 @@ static boolean verifyBaseClassInit( PTREE base, SCOPE scope )
     return( TRUE );
 }
 
-static boolean verifyMemberInit( PTREE id, SCOPE scope )
+static bool verifyMemberInit( PTREE id, SCOPE scope )
 {
     NAME name;
     SEARCH_RESULT *result;
@@ -3331,7 +3331,7 @@ static boolean verifyMemberInit( PTREE id, SCOPE scope )
     return( FALSE );
 }
 
-static boolean symInitialized( PTREE mem_init, SYMBOL sym )
+static bool symInitialized( PTREE mem_init, SYMBOL sym )
 {
     PTREE curr;
     PTREE test;
@@ -3349,13 +3349,13 @@ static boolean symInitialized( PTREE mem_init, SYMBOL sym )
     return( FALSE );
 }
 
-static boolean verifyAllConstRefsInit( SCOPE scope, PTREE mem_init )
+static bool verifyAllConstRefsInit( SCOPE scope, PTREE mem_init )
 {
     SYMBOL stop;
     SYMBOL curr;
     TYPE type;
     type_flag flags;
-    boolean error_detected;
+    bool error_detected;
 
     error_detected = FALSE;
     stop = ScopeOrderedStart( scope );
@@ -3390,7 +3390,7 @@ static PTREE verifyMemInit( PTREE mem_init )
     PTREE test_member;
     SYMBOL sym;
     SCOPE scope;
-    boolean error_detected;
+    bool error_detected;
 
     sym = ScopeFunctionInProgress();
     scope = SymScope( sym );
@@ -3475,7 +3475,7 @@ void ClassPop( CLASS_DATA *data )
     classDataStack = data->next;
 }
 
-static boolean insideClassDefinition( void )
+static bool insideClassDefinition( void )
 {
     return( classDataStack != NULL );
 }
@@ -3562,8 +3562,8 @@ void ClassAssignNullBody( SYMBOL op_eq )
 }
 
 
-boolean ClassParmIsRef( TYPE class_type )
-/***************************************/
+bool ClassParmIsRef( TYPE class_type )
+/************************************/
 {
     CLASSINFO *info;
 
@@ -3572,8 +3572,8 @@ boolean ClassParmIsRef( TYPE class_type )
 }
 
 
-boolean ClassNeedsAssign( TYPE class_type, boolean exact )
-/********************************************************/
+bool ClassNeedsAssign( TYPE class_type, bool exact )
+/**************************************************/
 {
     CLASSINFO *info;
 
@@ -3589,7 +3589,7 @@ boolean ClassNeedsAssign( TYPE class_type, boolean exact )
     return( FALSE );
 }
 
-static boolean genDefaultCtor( TYPE class_type )
+static bool genDefaultCtor( TYPE class_type )
 {
     NAME name;
     SCOPE scope;
@@ -3608,7 +3608,7 @@ static boolean genDefaultCtor( TYPE class_type )
     return( FALSE );
 }
 
-static boolean genDefaultCopy( TYPE class_type )
+static bool genDefaultCopy( TYPE class_type )
 {
     NAME name;
     SCOPE scope;
@@ -3627,7 +3627,7 @@ static boolean genDefaultCopy( TYPE class_type )
     return( FALSE );
 }
 
-static boolean genDefaultDtor( TYPE class_type )
+static bool genDefaultDtor( TYPE class_type )
 {
     NAME name;
     SCOPE scope;
@@ -3647,7 +3647,7 @@ static boolean genDefaultDtor( TYPE class_type )
     return( FALSE );
 }
 
-static boolean genDefaultAssign( TYPE class_type )
+static bool genDefaultAssign( TYPE class_type )
 {
     NAME name;
     SCOPE scope;
@@ -3666,10 +3666,10 @@ static boolean genDefaultAssign( TYPE class_type )
     return( FALSE );
 }
 
-boolean ClassDefineRefdDefaults( void )
+bool ClassDefineRefdDefaults( void )
 /**********************************/
 {
-    boolean something_defined;
+    bool something_defined;
     TYPE head;
     TYPE curr;
     SCOPE save_scope;
@@ -3714,7 +3714,7 @@ boolean ClassDefineRefdDefaults( void )
 }
 
 
-boolean ClassCorrupted(         // TEST IF CLASS (FOR TYPE) IS CORRUPTED
+bool ClassCorrupted(            // TEST IF CLASS (FOR TYPE) IS CORRUPTED
     TYPE type )                 // - should be a class type
 {
     type = StructType( type );
@@ -3786,7 +3786,7 @@ BASE_CLASS *BaseClassMapIndex( BASE_CLASS *e )
     return( CarveMapIndex( carveBASE_CLASS, e ) );
 }
 
-pch_status PCHInitBases( boolean writing )
+pch_status PCHInitBases( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveBASE_CLASS ) );
@@ -3797,7 +3797,7 @@ pch_status PCHInitBases( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniBases( boolean writing )
+pch_status PCHFiniBases( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveBASE_CLASS );

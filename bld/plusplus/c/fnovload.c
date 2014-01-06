@@ -165,7 +165,7 @@ static void addRankVector( FNOV_LIST *candidate, FNOV_CONTROL control )
     candidate->rankvector = rank;
 }
 
-static boolean hasOneArg( arg_list *arg )
+static bool hasOneArg( arg_list *arg )
 {
     if( arg->num_args > 0  &&
        (arg->type_list[arg->num_args-1])->id  == TYP_DOT_DOT_DOT ) {
@@ -465,8 +465,8 @@ int FnovRejectParm( FNOV_DIAG *fnov_diag )
 // General Support
 //--------------------------------------------------------------------
 
-static boolean isEllipsisCandidate( TYPE type, int num_args )
-/***********************************************************/
+static bool isEllipsisCandidate( TYPE type, int num_args )
+/********************************************************/
 // determine if type is a candidate based on:
 //      type having more than zero arguments
 //      type having fewer or as many arguments as num_args+1 and
@@ -492,8 +492,8 @@ static boolean isEllipsisCandidate( TYPE type, int num_args )
     return( FALSE );
 }
 
-static boolean isMemberCandidate( TYPE type, int num_args )
-/*********************************************************/
+static bool isMemberCandidate( TYPE type, int num_args )
+/******************************************************/
 // determine if sym is a candidate based on the number of arguments
 // including a this pointer
 {
@@ -516,8 +516,8 @@ static boolean isMemberCandidate( TYPE type, int num_args )
 }
 
 
-static boolean isSimpleCandidate( TYPE type, int num_args )
-/*********************************************************/
+static bool isSimpleCandidate( TYPE type, int num_args )
+/******************************************************/
 // determine if sym is a candidate based on the number of arguments
 {
     type = FunctionDeclarationType( type );
@@ -772,11 +772,11 @@ static OV_RESULT compareInt( int first, int second )
     return( retn );
 }
 
-static boolean myTypesSame( TYPE first_type, TYPE second_type )
+static bool myTypesSame( TYPE first_type, TYPE second_type )
 {
     void        *refbase;
     type_flag   flag;
-    boolean     same;
+    bool        same;
 
     while( ( first_type->id == TYP_POINTER || first_type->flag & TF1_REFERENCE )
         && ( second_type->id == TYP_POINTER || second_type->flag & TF1_REFERENCE ) ) {
@@ -829,8 +829,8 @@ static OV_RESULT WP13332(
 }
 
 static OV_RESULT compareScalar( FNOV_SCALAR *first, TYPE *first_type,
- FNOV_SCALAR *second, TYPE *second_type, boolean isUDC, FNOV_CONTROL control )
-/****************************************************************************/
+ FNOV_SCALAR *second, TYPE *second_type, bool isUDC, FNOV_CONTROL control )
+/*************************************************************************/
 {
     OV_RESULT   retn;
 
@@ -1185,14 +1185,14 @@ static OV_RESULT compareFunction(
     return( retn );
 }
 
-static boolean isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
-/***************************************************************/
+static bool isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
+/************************************************************/
 // see if rank of entry is all <= level
 // if so, return TRUE, else FALSE
 {
-    int                 index;
-    FNOV_RANK           *rank;
-    boolean             retn;
+    int             index;
+    FNOV_RANK       *rank;
+    bool            retn;
 
     retn = TRUE;
     rank = entry->rankvector;
@@ -1210,11 +1210,11 @@ static boolean isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
     return( retn );
 }
 
-static boolean isReturnIdentical( TYPE sym1, TYPE sym2 )
-/******************************************************/
+static bool isReturnIdentical( TYPE sym1, TYPE sym2 )
+/***************************************************/
 // see if two functions have indentical return types
 {
-    boolean retn;
+    bool retn;
 
     retn = TypesSameExclude( FunctionDeclarationType( sym1 )->of
                            , FunctionDeclarationType( sym2 )->of
@@ -1248,7 +1248,7 @@ static void doComputeArgRank( SYMBOL sym, TYPE src, TYPE tgt, PTREE *pt,
 }
 
 
-static boolean computeUdcRank( FNOV_INFO* info )
+static bool computeUdcRank( FNOV_INFO* info )
 /***************************************************************/
 // fill in rankvector, ranking of conversion func return value to arg_list
 // if u-d conversion is a candidate, return TRUE, else FALSE
@@ -1283,8 +1283,8 @@ static void moveRingFromTo( FNOV_LIST **from, FNOV_LIST **to )
 }
 
 static void resolveOneList( FNOV_LIST **list, FNOV_LIST **match,
-/******************************************************************/
-FNOV_LIST **rejects, boolean *ambiguous, boolean is_ctor )
+            FNOV_LIST **rejects, bool *ambiguous, bool is_ctor )
+/**************************************************************/
 // Continue resolving, starting from the current 'match' and 'rejects' lists.
 {
     FNOV_LIST  *curr;           // current element of list
@@ -1344,14 +1344,14 @@ FNOV_LIST **rejects, boolean *ambiguous, boolean is_ctor )
 }
 
 FNOV_COARSE_RANK RankandResolveUDCsDiag( FNOV_LIST **ctorList,
+    FNOV_LIST **udcfList, TYPE src, TYPE tgt, bool *isctor,
+    FNOV_LIST **pmatch, FNOV_UDC_CONTROL control, FNOV_INTRNL_CONTROL ictl,
+    PTREE *src_ptree, FNOV_RANK *rank, FNOV_DIAG *fnov_diag)
 /***********************************************************************/
-FNOV_LIST **udcfList, TYPE src, TYPE tgt, boolean *isctor,
-FNOV_LIST **pmatch, FNOV_UDC_CONTROL control, FNOV_INTRNL_CONTROL ictl,
-PTREE *src_ptree, FNOV_RANK *rank, FNOV_DIAG *fnov_diag)
 // rank elements of both the ctor list an the udcf list
 // resolve ranks of both lists as if they were in one merged list
 {
-    boolean             ambiguous;
+    bool                ambiguous;
     FNOV_LIST           *between_match;
     FNOV_LIST           *rejects;
     FNOV_COARSE_RANK    result;
@@ -1414,9 +1414,9 @@ PTREE *src_ptree, FNOV_RANK *rank, FNOV_DIAG *fnov_diag)
 }
 
 static void computeFuncRankSym( SYMBOL fsym, SYMBOL curr, TYPE *tgt,
-/***********************************************************************/
+            FNOV_RANK *bestrank, FNOV_RANK *curr_rank, bool src_mptr )
+/********************************************************************/
 // ranks curr, updating bestrank
-FNOV_RANK *bestrank, FNOV_RANK *curr_rank, boolean src_mptr )
 {
     OV_RESULT       result;
     TYPE            curr_type;
@@ -1481,7 +1481,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
 /***********************************************************************/
 // called only when an argument is a (possible overloaded) function symbol
 {
-    boolean             src_mptr;   // can src be a pointer to member
+    bool                src_mptr;   // can src be a pointer to member
     PTREE               fn;
     addr_func_t         retn;
     SYMBOL              curr;
@@ -1526,8 +1526,8 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
     }
 }
 
-static boolean computeFunctionRank( FNOV_INFO* info )
-/***************************************************/
+static bool computeFunctionRank( FNOV_INFO* info )
+/************************************************/
 // fill in rankvector, ranking of conversion of arg_list to func arguments
 // if function is a candidate, return TRUE, else FALSE
 {
@@ -1587,12 +1587,12 @@ static boolean computeFunctionRank( FNOV_INFO* info )
     return( TRUE );
 }
 
-static boolean getRank( FNOV_INFO* info )
-/***************************************/
+static bool getRank( FNOV_INFO* info )
+/************************************/
 // get a rankvector (allocate if necessary) and compute the rank
 // returns TRUE if rank is a contender, else FALSE
 {
-    boolean contender;
+    bool contender;
     FNOV_LIST* candidate = info->candfunc;
 
     if( SymIsFunctionTemplateModel( candidate->sym )
@@ -1859,9 +1859,9 @@ SYMBOL sym, TYPE type, type_flag this_qualifier )
 }
 
 static FNOV_RESULT opOverloadedLimitExDiag( SYMBOL *resolved, SEARCH_RESULT *member,
-/******************************************************************/
-    SEARCH_RESULT *nonmember, SEARCH_RESULT *namesp, SYMBOL stdops, arg_list *alist, PTREE *ptlist,
-    boolean scalar_convert, FNOV_CONTROL control, FNOV_DIAG *fnov_diag )
+    SEARCH_RESULT *nonmember, SEARCH_RESULT *namesp, SYMBOL stdops, arg_list *alist,
+    PTREE *ptlist, bool scalar_convert, FNOV_CONTROL control, FNOV_DIAG *fnov_diag )
+/**********************************************************************************/
 // find overloaded operator from member, nonmember and stdops for alist specified
 // return FNOV_RESULT same as FuncOverloaded
 // result points at the symbol chosen, if non-ambiguous
@@ -2093,11 +2093,11 @@ FNOV_RESULT AreFunctionsDistinct( SYMBOL *pold_sym, SYMBOL new_sym, NAME name )
                                    name ) );
 }
 
-boolean IsOverloadedFunc( SYMBOL sym )
-/************************************/
+bool IsOverloadedFunc( SYMBOL sym )
+/*********************************/
 // test if a function has been overloaded
 {
-    boolean retn = FALSE;
+    bool retn = FALSE;
 
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
@@ -2115,12 +2115,11 @@ boolean IsOverloadedFunc( SYMBOL sym )
     return( retn );
 }
 
-static boolean doneCheckIdentical( SYMBOL curr, boolean isUDC, TYPE udc_retn,
-/********************************/
-SYMBOL *retn )
+static bool doneCheckIdentical( SYMBOL curr, bool isUDC, TYPE udc_retn, SYMBOL *retn )
+/************************************************************************************/
 {
-    boolean identical;
-    boolean done;
+    bool identical;
+    bool done;
 
     done = FALSE;
     identical = FALSE;
@@ -2146,16 +2145,16 @@ SYMBOL *retn )
 }
 
 SYMBOL ActualNonOverloadedFunc( // GET SYMBOL FOR ACTUAL NON-OVERLOADED FUNC.
+    SYMBOL sym,                 // - function for lookup
+    SEARCH_RESULT *result )     // - search result for function
 /*****************************/
-SYMBOL sym,                     // - function for lookup
-SEARCH_RESULT *result )         // - search result for function
 {
     SYMBOL      retn;           // - actual non-overloaded function
     SYMBOL      curr;           // - current function in overload ring
     TYPE        udc_retn;       // - return type for UDC function
-    boolean     isUDC;
+    bool        isUDC;
     SYM_REGION  *region;
-    boolean     done;
+    bool        done;
 
     retn = NULL;
     isUDC = SymIsUDC( sym );
@@ -2186,13 +2185,13 @@ SEARCH_RESULT *result )         // - search result for function
 }
 
 
-boolean IsActualOverloadedFunc( // TEST IF ACTUAL (IGNORE SC_DEFAULT) OVERLOAD
-/*****************************/
-SYMBOL sym, SEARCH_RESULT *result ) // - function to be tested
+bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SC_DEFAULT) OVERLOAD
+    SYMBOL sym, SEARCH_RESULT *result ) // - function to be tested
+/**************************************/
 // test if a function has been really overloaded
 // ignore functions with SC_DEFAULT id's
 {
-    boolean retn = ( NULL == ActualNonOverloadedFunc( sym, result ) );
+    bool retn = ( NULL == ActualNonOverloadedFunc( sym, result ) );
 #ifndef NDEBUG
     if( PragDbgToggle.dump_rank ) {
         VBUF name;

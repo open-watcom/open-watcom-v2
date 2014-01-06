@@ -362,11 +362,11 @@ SYMBOL CgCmdCtorTest(           // GET SYMBOL FOR CTOR-TEST COMMAND
 #define cgGenerateCmdCode( code ) DGInteger( code, TY_UINT_1 )
 
 
-static boolean cgGenerateCmdBase(   // EMIT BASE FOR COMMAND
+static bool cgGenerateCmdBase(      // EMIT BASE FOR COMMAND
     CMD_BASE* base,                 // - base for command
     DTC_KIND code )                 // - code for command
 {
-    boolean genning;            // - TRUE ==> genning entry
+    bool genning;                   // - TRUE ==> genning entry
 
     if( base->emitted ) {
         genning = FALSE;

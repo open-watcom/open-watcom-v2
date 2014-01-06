@@ -228,8 +228,8 @@ static PTREE symCheck( PTREE expr )
     return( expr );
 }
 
-boolean AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
-/*********************/
+bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
+/******************/
     SYMBOL func,                // - symbol being called
     PTREE expr )                // - expression for call
 {

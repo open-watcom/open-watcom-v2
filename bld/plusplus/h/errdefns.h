@@ -70,7 +70,7 @@ void AddNoteMessage(            // ADD A NOTE TO A MESSAGE
     MSG_NUM msg_num,            // - message number
     ... )                       // - error message arguments
 ;
-boolean MsgWillPrint(           // TEST WHETHER A MESSAGE WILL BE SEEN
+bool MsgWillPrint(              // TEST WHETHER A MESSAGE WILL BE SEEN
     MSG_NUM msgnum )            // - message number
 ;
 msg_status_t CErr(              // ISSUE ERROR
@@ -101,13 +101,13 @@ void CErrSuppressRestore(
 unsigned CErrUnsuppress(
     void )
 ;
-boolean CErrSuppressedOccurred(
+bool CErrSuppressedOccurred(
     error_state_t *saved_save )
 ;
 void CErrCheckpoint(            // save current state of error reporting
     error_state_t *save )       // - location to save data
 ;
-boolean CErrOccurred(           // has an error occurred since state was saved?
+bool CErrOccurred(              // has an error occurred since state was saved?
     error_state_t *saved_state )// - saved state
 ;
 void CFatal(                    // issue error message and CSuicide()

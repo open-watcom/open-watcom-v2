@@ -65,7 +65,7 @@ void CmdLnBatchOpen(            // OPEN CMD-LN BATCH FILE
 void CmdLnBatchFreeRecord(      // FREE A CMD-LN RECORD
     VBUF *buf )                 // - virtual buffer
 ;
-boolean CmdLnBatchRead(         // READ NEXT LINE IN COMMAND BUFFER
+bool CmdLnBatchRead(            // READ NEXT LINE IN COMMAND BUFFER
     VBUF *buf )                 // - virtual buffer
 ;
 void CmdLnSwNotImplemented(     // ISSUE WARNING FOR UN-IMPLEMENTED SWITCH
@@ -95,7 +95,7 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
     void );
 
 MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
-    boolean many_tokes )        // - TRUE ==> scan multiple tokens
+    bool many_tokes )           // - TRUE ==> scan multiple tokens
 ;
 void PreDefineStringMacro(      // PREDEFINE A MACRO
     char *str );                // - name to define

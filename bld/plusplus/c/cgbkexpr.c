@@ -119,11 +119,11 @@ void CgPushGarbage(             // PUSH GARBAGE (TO BE TRASHED/POPPED)
 }
 
 
-boolean CgExprPopGarbage(       // POP EXPR STACK IF TOP EXPR IS GARBAGE
+bool CgExprPopGarbage(          // POP EXPR STACK IF TOP EXPR IS GARBAGE
     void )
 {
     CGEXPR* top;                // - top of stack
-    boolean retn;               // - TRUE ==> garbage was popped
+    bool retn;                  // - TRUE ==> garbage was popped
 
     top = VstkTop( &expressions );
     if( top == NULL ) {
@@ -185,7 +185,7 @@ void CgExprDtored(              // DTOR CG EXPRESSION
       case 0 :
         break;
       case 1 :
-      { boolean temp_dtoring = fctl->temp_dtoring;
+      { bool temp_dtoring = fctl->temp_dtoring;
         SYMBOL temp = getExprTempSym( &type, fctl, pop_type );
         if( temp_dtoring ) {
             if( fctl->ctor_test ) {

@@ -79,7 +79,7 @@ static void fini                // MODULE COMPLETION
 
 INITDEFN( pragma_extref, init, fini );
 
-static boolean grabNum( unsigned *val )
+static bool grabNum( unsigned *val )
 {
     if( CurToken == T_CONSTANT ) {
         *val = U32Fetch( Constant64 );
@@ -325,13 +325,13 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
 // - "level" must be digit (0-9)
 // - "level==0" implies warning will be treated as an error
 //
-static boolean pragWarning(     // PROCESS #PRAGMA WARNING
+static bool pragWarning(        // PROCESS #PRAGMA WARNING
     void )
 {
     int msgnum;                 // - message number
     int level;                  // - new level
-    boolean change_all;         // - TRUE ==> change all levels
-    boolean error_occurred;     // - TRUE ==> error has occurred
+    bool change_all;            // - TRUE ==> change all levels
+    bool error_occurred;        // - TRUE ==> error has occurred
 
     error_occurred = FALSE;
     if( CurToken == T_TIMES ) {
@@ -368,7 +368,7 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
     void )
 {
     unsigned msgnum;
-    boolean error_occurred;
+    bool error_occurred;
 
     error_occurred = FALSE;
     MustRecog( T_LEFT_PAREN );
@@ -399,7 +399,7 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
     void )
 {
     unsigned msgnum;
-    boolean error_occurred;
+    bool error_occurred;
 
     error_occurred = FALSE;
     MustRecog( T_LEFT_PAREN );
@@ -435,7 +435,7 @@ static void endOfPragma(
 }
 
 void PragmaSetToggle(           // SET TOGGLE
-    boolean set_flag )          // - TRUE ==> set flag
+    bool set_flag )             // - TRUE ==> set flag
 {
     #define toggle_pick( x ) \
         if( strcmp( Buffer, #x ) == 0 ) {       \
@@ -452,11 +452,11 @@ void PragmaSetToggle(           // SET TOGGLE
     #include "tognam.h"
 }
 
-static boolean PragIdRecog(     // RECOGNIZE PRAGMA ID
+static bool PragIdRecog(        // RECOGNIZE PRAGMA ID
     char *what )                // - id
 {
     char *p = Buffer;
-    boolean rc;
+    bool rc;
 
     if( *p == '_' ) {
         ++p;
@@ -472,9 +472,9 @@ static boolean PragIdRecog(     // RECOGNIZE PRAGMA ID
 }
 
 
-static boolean startPragRecog( char *id )
+static bool startPragRecog( char *id )
 {
-    boolean rc;
+    bool rc;
 
     PPCTL_ENABLE_MACROS();
     rc = PragIdRecog( id );
@@ -483,7 +483,7 @@ static boolean startPragRecog( char *id )
 }
 
 
-boolean PragRecog(              // RECOGNIZE PRAGMA ID
+bool PragRecog(                 // RECOGNIZE PRAGMA ID
     char *what )                // - id
 {
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
@@ -494,7 +494,7 @@ boolean PragRecog(              // RECOGNIZE PRAGMA ID
 
 
 static void pragFlag(           // SET TOGGLES
-    boolean set_flag )          // - TRUE ==> set flag
+    bool set_flag )             // - TRUE ==> set flag
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
@@ -575,7 +575,7 @@ static void pushPrag( PRAG_STACK **h, unsigned value )
     StackPush( h, stack_entry );
 }
 
-static boolean popPrag( PRAG_STACK **h, unsigned *pvalue )
+static bool popPrag( PRAG_STACK **h, unsigned *pvalue )
 {
     PRAG_STACK *pack_entry;
 
@@ -761,7 +761,7 @@ void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
 
 
 static void pragIntrinsic(      // SET FUNCTIONS TO BE (NOT TO BE) INTRINSIC
-    boolean intrinsic )         // - TRUE ==> function to be intrinsic
+    bool intrinsic )            // - TRUE ==> function to be intrinsic
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
@@ -1095,7 +1095,7 @@ static void pragPack(           // #PRAGMA PACK
 
 void CPragma( void )                  // PROCESS A PRAGMA
 {
-    boolean check_end = TRUE;
+    bool check_end = TRUE;
 
     SrcFileGuardStateSig();
     CompFlags.in_pragma = 1;
@@ -1267,11 +1267,11 @@ void CreateAux(                 // CREATE AUX ID
 }
 
 
-static boolean setAuxInfo(          // SET CURRENT INFO. STRUCTURE
-    unsigned m_type,                // - type to be set
-    boolean create_new )            // - TRUE if we want a new aux_info
+static bool setAuxInfo(         // SET CURRENT INFO. STRUCTURE
+    unsigned m_type,            // - type to be set
+    bool create_new )           // - TRUE if we want a new aux_info
 {
-    boolean found;
+    bool found;
 
     found = TRUE;
     CurrInfo = magicWords[m_type].info;
@@ -1285,8 +1285,8 @@ static boolean setAuxInfo(          // SET CURRENT INFO. STRUCTURE
     return( found );
 }
 
-boolean PragmaName( void *pragma, char **id )
-/*******************************************/
+bool PragmaName( void *pragma, char **id )
+/****************************************/
 {
     *id = NULL;
     if( pragma == &DefaultInfo ) {
@@ -1370,7 +1370,7 @@ static void copyObjName(         // COPY OBJECT PORTION
 }
 
 void PragEnding(                // PROCESS END OF PRAGMA
-    boolean set_sym )           // - TRUE ==> set SYMBOL's aux_info
+    bool set_sym )              // - TRUE ==> set SYMBOL's aux_info
 {
     if( CurrEntry != NULL ) {
         if( CurrAlias != NULL ) {
@@ -1528,8 +1528,8 @@ struct textsegment *LkSegName(  // LOOKUP SEGMENT NAME
 #endif
 
 
-boolean ReverseParms( AUX_INFO *pragma )
-/**************************************/
+bool ReverseParms( AUX_INFO *pragma )
+/***********************************/
 {
     if( pragma->cclass & REVERSE_PARMS ) {
         return( TRUE );
@@ -1698,13 +1698,13 @@ pch_status PCHWritePragmaData( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitPragmaData( boolean writing )
+pch_status PCHInitPragmaData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniPragmaData( boolean writing )
+pch_status PCHFiniPragmaData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

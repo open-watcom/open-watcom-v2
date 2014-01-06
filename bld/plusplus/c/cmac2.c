@@ -212,7 +212,7 @@ static void CDefine( void )
     }
 }
 
-static unsigned addParmName( MAC_PARM **h, boolean add_name )
+static unsigned addParmName( MAC_PARM **h, bool add_name )
 {
     unsigned index;
     size_t len;
@@ -246,7 +246,7 @@ static unsigned findParmName( MAC_PARM **h )
     return( 0 );
 }
 
-static boolean skipEqualOrSharpOK( void )
+static bool skipEqualOrSharpOK( void )
 {
     switch( CurToken ) {
     case T_EQ :

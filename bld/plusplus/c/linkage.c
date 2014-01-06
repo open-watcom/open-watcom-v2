@@ -258,22 +258,22 @@ void LinkageSet( SYMBOL sym, char *language )
     }
 }
 
-boolean LinkageIsCpp( SYMBOL sym )
-/********************************/
+bool LinkageIsCpp( SYMBOL sym )
+/*****************************/
 {
     verifyFileScopeSym( sym );
     return(( sym->flag & SF_PLUSPLUS ) != 0 );
 }
 
-boolean LinkageIsC( SYMBOL sym )
-/******************************/
+bool LinkageIsC( SYMBOL sym )
+/***************************/
 {
     verifyFileScopeSym( sym );
     return(( sym->flag & SF_PLUSPLUS ) == 0 );
 }
 
-boolean LinkageIsCurr( SYMBOL sym )
-/*********************************/
+bool LinkageIsCurr( SYMBOL sym )
+/******************************/
 {
     verifyFileScopeSym( sym );
     if( CurrLinkage == CppLinkage ) {
@@ -282,8 +282,8 @@ boolean LinkageIsCurr( SYMBOL sym )
     return(( sym->flag & SF_PLUSPLUS ) == 0 );
 }
 
-boolean LinkageSpecified( void )
-/******************************/
+bool LinkageSpecified( void )
+/***************************/
 {
     return( nestedLinkages != resetLinkages );
 }

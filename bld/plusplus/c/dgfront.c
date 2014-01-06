@@ -92,12 +92,12 @@ void DgStoreString( PTREE expr )
     CgFrontDataPtr( IC_DATA_TEXT, expr->u.string );
 }
 
-static boolean DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
-/******************************************************************************/
+static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
+/***************************************************************************/
 // store constant pointer expr
 // return TRUE if pointer is zero
 {
-    boolean retn;
+    bool retn;
 
     CgFrontDataPtr( IC_SET_TYPE, type );
     retn = FALSE;
@@ -131,12 +131,12 @@ static boolean DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
     return( retn );
 }
 
-static boolean DgStoreMemberPointer( TYPE type, PTREE expr )
-/**********************************************************/
+static bool DgStoreMemberPointer( TYPE type, PTREE expr )
+/*******************************************************/
 // store constant member-pointer expr
 // return TRUE if member-pointer is zero
 {
-    boolean retn;
+    bool retn;
 
     CgFrontDataPtr( IC_SET_TYPE, type );
     retn = FALSE;
@@ -190,11 +190,11 @@ void DgStoreConstScalar( PTREE expr, TYPE type, SYMBOL sym )
     }
 }
 
-boolean DgStoreScalar( PTREE expr, target_size_t offset, TYPE type )
-/******************************************************************/
+bool DgStoreScalar( PTREE expr, target_size_t offset, TYPE type )
+/***************************************************************/
 // return TRUE If all bytes are zero
 {
-    boolean retn;
+    bool retn;
 
     type = TypedefModifierRemove( type );
     if( type->id == TYP_MEMBER_POINTER ) {
@@ -205,8 +205,8 @@ boolean DgStoreScalar( PTREE expr, target_size_t offset, TYPE type )
     return( retn );
 }
 
-boolean DgStoreBitfield( TYPE type, target_ulong value )
-/******************************************************/
+bool DgStoreBitfield( TYPE type, target_ulong value )
+/***************************************************/
 // store constant bitfield
 // return TRUE If all bytes are zero
 {

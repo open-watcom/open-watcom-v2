@@ -75,11 +75,11 @@ PTREE ConvCtlDiagnose           // DIAGNOSE CASTING ERROR
 }
 
 
-boolean ConvCtlWarning          // ISSUE WARNING
+bool ConvCtlWarning             // ISSUE WARNING
     ( CONVCTL* ctl              // - conversion control
     , unsigned msg_no )         // - message number
 {
-    boolean retn;               // - return: TRUE ==> ERROR was issued
+    bool retn;                  // - return: TRUE ==> ERROR was issued
     msg_status_t status;        // - message status
 
     status = PTreeErrorExpr( ctl->expr, msg_no );
@@ -107,13 +107,13 @@ static void diagnoseError       // DIAGNOSE ERROR AND SET UP ERROR OPERAND(S)
 }
 
 
-boolean ConvCtlTypeInit         // INITIALIZE CONVTYPE
+bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
     ( CONVCTL* ctl              // - conversion control
     , CONVTYPE* ctype           // - control info.
     , TYPE type )               // - type
 {
     type_id id;                 // - id for unmodified type
-    boolean retn;               // - TRUE ==> is bit_field, array, function
+    bool retn;                  // - TRUE ==> is bit_field, array, function
     TYPE cl_type;               // - class type
 
     ctype->orig = type;
@@ -596,14 +596,14 @@ static void moveAhead           // MOVES TYPE_FLAGS AHEAD ONE LEVEL
 }
 
 
-boolean ConvCtlAnalysePoints    // ANALYSE CONVERSION INFORMATION FOR POINTS
+bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
     ( CONVCTL* info )           // - pointer-conversion information
 {
-    boolean retn;               // - return: TRUE ==> can convert trivially
-    boolean first_level;        // - TRUE ==> at first level
-    boolean const_always;       // - TRUE ==> const on all preceding levels
-    boolean cv_ok;              // - TRUE ==> no CV mismatch
-    boolean got_array;          // - TRUE ==> found array
+    bool retn;                  // - return: TRUE ==> can convert trivially
+    bool first_level;           // - TRUE ==> at first level
+    bool const_always;          // - TRUE ==> const on all preceding levels
+    bool cv_ok;                 // - TRUE ==> no CV mismatch
+    bool got_array;             // - TRUE ==> found array
     TYPE_FLAGS src;             // - source typing info
     TYPE_FLAGS tgt;             // - target typing info
     CTD mp_ctd;                 // - host derivation for member-ptr
@@ -1174,7 +1174,7 @@ static unsigned classPtrConversion( // CONVERT CLASS PTR (UP OR DOWN)
     unsigned conversion )       // - type of conversion
 {
     TYPE expr_type;             // - type for expression
-    boolean retn;               // - return: CNV_...
+    bool retn;                  // - return: CNV_...
     type_flag pro_flags;        // - flags: target
     type_flag src_flags;        // - flags: source
     void *baser;                // - based entity
@@ -1233,7 +1233,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     TYPE tgt_type,              // - target pointer type
     PC_PTR type_tgt,            // - target classification
     PC_PTR type_src,            // - source classification
-    boolean cl_conv,            // - TRUE ==> do class conversion
+    bool cl_conv,               // - TRUE ==> do class conversion
     unsigned conversion )       // - type of conversion
 {
     PTREE expr;                 // - expression
@@ -1244,7 +1244,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     void *baser;                // - based entity
     unsigned retn;              // - return: CNV_...
     PTREE bself;                // - expression for based self
-    boolean is_ref;             // - TRUE ==> is reference
+    bool is_ref;                // - TRUE ==> is reference
 
     cnv_fun = pcPtrCnv[ type_src*8 + type_tgt ];
     if( cnv_fun == 10 ) {

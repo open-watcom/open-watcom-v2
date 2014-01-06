@@ -124,14 +124,14 @@ pch_status PCHWriteStats( void )
 }
 
 
-pch_status PCHInitStats( boolean writing )
+pch_status PCHInitStats( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
 
-pch_status PCHFiniStats( boolean writing )
+pch_status PCHFiniStats( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
@@ -205,7 +205,7 @@ static carve_t carve_sf;            // carving: REPO_STAT
 static VSTK_CTL srcFiles;           // SRCFILE usages
 
 
-static boolean isReposSym       // TEST IF REPOSITORY SYMBOL
+static bool isReposSym          // TEST IF REPOSITORY SYMBOL
     ( SYMBOL sym )              // - the symbol
 {
     return CompFlags.extra_stats_wanted

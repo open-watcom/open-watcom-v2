@@ -67,7 +67,7 @@ TYPE NodeConvertDerivedToBase(  // CONVERT DERIVED PTR TO NONVIRTUAL BASE PTR
     SCOPE derived_scope,        // - derived scope
     SCOPE base_scope )          // - base scope
 ;
-boolean PtrCnvInfo(             // FILL IN PTR-CONVERSION INFORMATION
+bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
     TYPE ptr_src,               // - source type
     TYPE ptr_tgt,               // - target type
     PTRCNV* info )              // - pointer-conversion information

@@ -414,8 +414,8 @@ static PTREE exprCtoring        // EXPRESSION CTORING
     , TYPE cl_type              // - class type
     , PTD_KIND kind )           // - kind of dtoring
 {
-    boolean ctor_called;        // - TRUE ==> CTOR-call already present
-    boolean dtor_decorated;     // - TRUE ==> DTOR decoration present
+    bool ctor_called;           // - TRUE ==> CTOR-call already present
+    bool dtor_decorated;        // - TRUE ==> DTOR decoration present
     PTD* ptd;                   // - current decoration
     SYMBOL dtor;                // - dtor for type
 
@@ -567,7 +567,7 @@ PTREE PtdInitSymEnd             // DECORATE FOR END OF SYMBOL INITIALIZATION
     , SYMBOL sym )              // - symbol
 {
     if( NULL == expr ) {
-        boolean br = CgFrontRetnOptVar( sym );
+        bool br = CgFrontRetnOptVar( sym );
         CgFrontCodePtr( IC_INIT_SYM_END, sym );
         if( br ) {
             CgFrontRetnOptEnd();
@@ -627,7 +627,7 @@ static target_offset_t getOffset // SEARCH FOR OFFSET IN DECORATION
     , PTD_KIND kind )           // - decoration kind
 {
 #ifndef NDEBUG
-    boolean found = FALSE;      // - checks for found
+    bool found = FALSE;         // - checks for found
 #endif
     PTD* ptd;                   // - current entry
     target_offset_t retn;       // - offset in decoration
@@ -972,7 +972,7 @@ pch_status PCHReadPtds( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitPtds( boolean writing )
+pch_status PCHInitPtds( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carvePTD ) );
@@ -983,7 +983,7 @@ pch_status PCHInitPtds( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniPtds( boolean writing )
+pch_status PCHFiniPtds( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carvePTD );

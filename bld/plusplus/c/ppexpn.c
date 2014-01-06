@@ -172,23 +172,23 @@ void DbgDumpOperandStack( void )        // dump PPEXPN_OPERAND_STACK
 #endif
 
 static void PrecedenceParse( ppvalue * );
-static boolean CStart( void );
-static boolean CRightParen( void );
-static boolean CLeftParen( void );
-static boolean CConditional( void );
-static boolean CLogicalOr( void );
-static boolean CLogicalAnd(void );
-static boolean COr( void );
-static boolean CXOr( void );
-static boolean CAnd( void );
-static boolean CEquality( void );
-static boolean CRelational( void );
-static boolean CShift( void );
-static boolean CAdditive( void );
-static boolean CMultiplicative( void );
-static boolean CUnary( void );
+static bool CStart( void );
+static bool CRightParen( void );
+static bool CLeftParen( void );
+static bool CConditional( void );
+static bool CLogicalOr( void );
+static bool CLogicalAnd(void );
+static bool COr( void );
+static bool CXOr( void );
+static bool CAnd( void );
+static bool CEquality( void );
+static bool CRelational( void );
+static bool CShift( void );
+static bool CAdditive( void );
+static bool CMultiplicative( void );
+static bool CUnary( void );
 
-boolean ( *CExpr[] )(void) = { // table of functions to reduce expressions
+bool ( *CExpr[] )(void) = { // table of functions to reduce expressions
     CStart,             /* Level 0 */
     CRightParen,        /* Level 1 */
     CLeftParen,         /* Level 2 */
@@ -255,7 +255,7 @@ static void PushCurToken( int prec )
 }
 
 
-static boolean PopOperator( TOKEN *token, loc_info *loc )
+static bool PopOperator( TOKEN *token, loc_info *loc )
 {
     PPEXPN_OPERATOR_STACK *stack_entry;
 
@@ -273,7 +273,7 @@ static boolean PopOperator( TOKEN *token, loc_info *loc )
     return( FALSE );
 }
 
-static boolean TopOperator( TOKEN *token, int *prec )
+static bool TopOperator( TOKEN *token, int *prec )
 {
     PPEXPN_OPERATOR_STACK *stack_entry;
 
@@ -310,7 +310,7 @@ static void PushOperandCurLocation( ppvalue p )
     PushOperand( p, &loc );
 }
 
-static boolean PopOperand( ppvalue *p, loc_info *loc )
+static bool PopOperand( ppvalue *p, loc_info *loc )
 {
     PPEXPN_OPERAND_STACK *stack_entry;
 
@@ -328,7 +328,7 @@ static boolean PopOperand( ppvalue *p, loc_info *loc )
     return( FALSE );
 }
 
-static boolean CheckToken( TOKEN prev_token )
+static bool CheckToken( TOKEN prev_token )
 {
     if( IS_OPERAND( prev_token ) && IS_OPERAND( CurToken ) ) {
         CErr1( ERR_CONSECUTIVE_OPERANDS ); //  can't have 2 operands in a row
@@ -348,7 +348,7 @@ static boolean CheckToken( TOKEN prev_token )
 }
 
 
-static boolean PpNextToken( void )  // scan the next token and check for errors
+static bool PpNextToken( void ) // scan the next token and check for errors
 {
     static TOKEN prev_token;
 
@@ -371,12 +371,12 @@ static void unexpectedCurToken( void )
     CErr2p( ERR_UNEXPECTED_IN_CONSTANT_EXPRESSION, Tokens[CurToken] );
 }
 
-static boolean COperand( void )
+static bool COperand( void )
 {
     ppvalue p;
     loc_info loc;
     TOKEN_LOCN left_loc;
-    boolean done;
+    bool done;
 
     done = FALSE;
     switch( CurToken ) {
@@ -466,7 +466,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
 {
     int prec_token;
     int prec_operator;
-    boolean done;
+    bool done;
     TOKEN top;
     ppvalue empty;
     loc_info loc;
@@ -529,7 +529,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
     while( PopOperator( NULL, NULL ) ); // free stack
 }
 
-static boolean CRightParen( void )  // reduce extra )
+static bool CRightParen( void ) // reduce extra )
 {
     TOKEN right_paren;
     loc_info right_info;
@@ -542,7 +542,7 @@ static boolean CRightParen( void )  // reduce extra )
     return( FALSE );
 }
 
-static boolean CLeftParen( void )   // reduce (expr)
+static bool CLeftParen( void )  // reduce (expr)
 {
     TOKEN left_paren;
     loc_info left_info;
@@ -566,7 +566,7 @@ static boolean CLeftParen( void )   // reduce (expr)
     return( TRUE );
 }
 
-static boolean CConditional( void ) // reduce an a?b:c expression
+static bool CConditional( void )    // reduce an a?b:c expression
 {
     loc_info e1_info;
     loc_info e2_info;
@@ -634,7 +634,7 @@ static boolean CConditional( void ) // reduce an a?b:c expression
     return( TRUE );
 }
 
-static boolean Binary( // pop binary operand and two operands, error check
+static bool Binary(     // pop binary operand and two operands, error check
     TOKEN *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
 {
     loc_info e1_info;
@@ -656,7 +656,7 @@ static boolean Binary( // pop binary operand and two operands, error check
     return( FALSE );
 }
 
-static boolean CLogicalOr( void )   // reduce a || b
+static bool CLogicalOr( void )  // reduce a || b
 {
     ppvalue e1;
     ppvalue e2;
@@ -681,7 +681,7 @@ static boolean CLogicalOr( void )   // reduce a || b
     return( TRUE );
 }
 
-static boolean CLogicalAnd( void )  // reduce a && b
+static bool CLogicalAnd( void ) // reduce a && b
 {
     ppvalue e1;
     ppvalue e2;
@@ -705,7 +705,7 @@ static boolean CLogicalAnd( void )  // reduce a && b
     return( TRUE );
 }
 
-static boolean COr( void )  // reduce a|b
+static bool COr( void )     // reduce a|b
 {
     ppvalue e1;
     ppvalue e2;
@@ -721,7 +721,7 @@ static boolean COr( void )  // reduce a|b
     return( TRUE );
 }
 
-static boolean CXOr( void ) // reduce a^b
+static bool CXOr( void )    // reduce a^b
 {
     ppvalue e1;
     ppvalue e2;
@@ -737,7 +737,7 @@ static boolean CXOr( void ) // reduce a^b
     return( TRUE );
 }
 
-static boolean CAnd( void ) // reduce a&b
+static bool CAnd( void )    // reduce a&b
 {
     ppvalue e1;
     ppvalue e2;
@@ -753,7 +753,7 @@ static boolean CAnd( void ) // reduce a&b
     return( TRUE );
 }
 
-static boolean CEquality( void )    // reduce a == b or a != b
+static bool CEquality( void )   // reduce a == b or a != b
 {
     ppvalue e1;
     ppvalue e2;
@@ -775,7 +775,7 @@ static boolean CEquality( void )    // reduce a == b or a != b
     return( TRUE );
 }
 
-static boolean CRelational( void )  // reduce a<b, a>b, a<=b, or a>=b
+static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
 {
     ppvalue e1;
     ppvalue e2;
@@ -826,7 +826,7 @@ static boolean CRelational( void )  // reduce a<b, a>b, a<=b, or a>=b
     return( TRUE );
 }
 
-static boolean CShift( void )   // reduce a<<b or a>>b
+static bool CShift( void )  // reduce a<<b or a>>b
 {
     ppvalue e1;
     ppvalue e2;
@@ -869,7 +869,7 @@ static boolean CShift( void )   // reduce a<<b or a>>b
     return( TRUE );
 }
 
-static boolean CAdditive( void )    // reduce a+b or a-b
+static bool CAdditive( void )   // reduce a+b or a-b
 {
     ppvalue e1;
     ppvalue e2;
@@ -895,7 +895,7 @@ static boolean CAdditive( void )    // reduce a+b or a-b
 }
 
 
-static boolean CMultiplicative( void )  // reduce a/b or a*b
+static bool CMultiplicative( void ) // reduce a/b or a*b
 {
     ppvalue e1;
     ppvalue e2;
@@ -938,7 +938,7 @@ static boolean CMultiplicative( void )  // reduce a/b or a*b
     return( TRUE );
 }
 
-static boolean CUnary( void )   // reduce +a or -a or !a or ~a
+static bool CUnary( void )      // reduce +a or -a or !a or ~a
 {
     ppvalue p;
     loc_info operator_info;
@@ -978,7 +978,7 @@ static boolean CUnary( void )   // reduce +a or -a or !a or ~a
     return( FALSE );
 }
 
-static boolean CStart( void )
+static bool CStart( void )
 {
     TOKEN top;
 

@@ -122,7 +122,7 @@ static PSTK_CTL sym_scopes;     // active scopes for a definition
 static carve_t carve_blk_scope; // carver: active block scopes
 static carve_t carve_scope_ins; // carver: scope instructions
 static ACTBLK* ring_active_blks;// ring of active block scopes
-static boolean enableMacRefs;   // TRUE ==> macro references to be processed
+static bool enableMacRefs;      // TRUE ==> macro references to be processed
 static BRI_Handle* bri_handle;  // handle for browse-file writer
 
 
@@ -378,7 +378,7 @@ static void adjustSrcFile       // ADJUST OPEN/CLOSE OF SOURCE FILE(S)
 #endif
 
 
-static boolean activeScopesReset// RESET ACTIVE SCOPES
+static bool activeScopesReset   // RESET ACTIVE SCOPES
     ( SCOPE scope               // - new active scope
     , TOKEN_LOCN const * locn ) // - file location to synchronize to
 {
@@ -386,9 +386,9 @@ static boolean activeScopesReset// RESET ACTIVE SCOPES
     PSTK_ITER sym_iter;         // - iterator: new active scopes
     SCOPE ascope;               // - scope: old active scopes
     SCOPE sscope;               // - scope: new active scopes
-    boolean retn;               // - return: TRUE ==> scope was adjusted
-    boolean short_circuit;      // - can short-circuit scope adjustment
-    boolean in_template;        // - active scope is in a TEMPLATE_PARM scope
+    bool retn;                  // - return: TRUE ==> scope was adjusted
+    bool short_circuit;         // - can short-circuit scope adjustment
+    bool in_template;           // - active scope is in a TEMPLATE_PARM scope
 
     if( canWriteIc() ) {
         SCOPE top = PstkTopElement( &active_scopes );
@@ -479,10 +479,10 @@ static boolean activeScopesReset// RESET ACTIVE SCOPES
 #undef ShcVerify
 
 
-static boolean activeScopesAdjust // ADJUST ACTIVE SCOPES
+static bool activeScopesAdjust  // ADJUST ACTIVE SCOPES
     ( SYMBOL sym )
 {
-    boolean retn;               // - return: TRUE ==> scope for symbol
+    bool retn;                  // - return: TRUE ==> scope for symbol
     TOKEN_LOCN *locn;
 
     if( NULL == sym->name ) {
@@ -979,8 +979,8 @@ MEPTR BrinfReferenceMacro       // REFERENCE A MACRO VALUE
 }
 
 
-boolean BrinfDependsMacroDefined // DEPENDENCY: MACRO DEFINED OR NOT
-    ( boolean defed             // - whether defined or not
+bool BrinfDependsMacroDefined   // DEPENDENCY: MACRO DEFINED OR NOT
+    ( bool defed                // - whether defined or not
     , char const * name         // - characters in name
     , unsigned nlen )           // - name length
 {
@@ -1189,7 +1189,7 @@ void BrinfPchRead               // INSERT PCH REFERENCE INTO BROWSING
 
 
 void BrinfInit                  // START OF PROCESSING FOR BROWSE INFO
-    ( boolean primary )         // - TRUE ==> primary initialization
+    ( bool primary )            // - TRUE ==> primary initialization
 {
     if( primary ) {
         bri_handle = NULL;

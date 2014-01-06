@@ -77,7 +77,7 @@ static PTREE membPtrStoreTemp(  // STORE MEMBER PTR EXPR IN TEMPORARY
 }
 
 
-static boolean nodeIsMembPtrCon(// TEST IF NODE CAN BE MEMBER-PTR CONST
+static bool nodeIsMembPtrCon(   // TEST IF NODE CAN BE MEMBER-PTR CONST
     PTREE node )                // - node to be tested
 {
     if( node->op == PT_SYMBOL && node->flags & PTF_COLON_QUALED ) {
@@ -97,7 +97,7 @@ static TYPE membPtrObject(      // GET OBJECT TYPE FOR MEMBER PTR
 
 static CNV_RETN validateOkObjs( // VALIDATE TARGET ONLY ADDS QUALIFICATION
     PTREE expr,                 // - expression for errors
-    boolean check_qual,         // - TRUE ==> check CV qualification
+    bool check_qual,            // - TRUE ==> check CV qualification
     TYPE o1,                    // - source object type
     TYPE o2 )                   // - target object type
 {
@@ -137,7 +137,7 @@ static CNV_RETN validateOkObjs( // VALIDATE TARGET ONLY ADDS QUALIFICATION
 
 static CNV_RETN validateMpObjs( // VALIDATE BOTH MEMPTR'S ARE TO SAME TYPE
     PTREE expr,                 // - expression for error
-    boolean check_qual,         // - TRUE ==> check CV qualification
+    bool check_qual,            // - TRUE ==> check CV qualification
     TYPE mp1,                   // - source type
     TYPE mp2 )                  // - target type
 {
@@ -559,14 +559,14 @@ static CNV_DIAG diagMembPtrOps= // diagnosis for analyse of memb-ptr operands
 //       can be performed. On output, it is set to indicate whether an unsafe
 //       cast will be performed.
 //
-static boolean analyseMembPtr(  // ANALYSE MEMBER-PTR OPERANDS
+static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
     MEMBER_PTR_CAST *inf,       // - operands information
     PTREE expr )                // - expression for errors
 {
-    boolean retn;               // - TRUE ==> analysis ok
+    bool retn;                  // - TRUE ==> analysis ok
     CNV_RETN cnv;               // - CNV_...: conversion result
     SCOPE scope;                // - used to switch scopes
-    boolean check_safety;       // - check if safe req'd
+    bool check_safety;          // - check if safe req'd
     msg_status_t status;        // - status for warning
 
     check_safety = FALSE;
@@ -748,8 +748,8 @@ static PTREE analyseAddrOf(     // ANALYSE (& item)
 static PTREE memPtrAddrOfCon(   // MAKE MEMPTR EXPRN FROM &class::item
     PTREE expr,                 // - expression to be converted
     TYPE type_mp,               // - type of member ptr result
-    boolean safe,               // - TRUE ==> only safe assignment allowed
-    boolean init )              // - TRUE ==> an initialization
+    bool safe,                  // - TRUE ==> only safe assignment allowed
+    bool init )                 // - TRUE ==> an initialization
 {
     MEMBER_PTR_CAST castinfo;   // - information for casting
     PTREE mp_node;              // - member-ptr node
@@ -769,8 +769,8 @@ static PTREE memPtrAddrOfCon(   // MAKE MEMPTR EXPRN FROM &class::item
 static PTREE convertMembPtrExpr(// CONVERT A MEMBER POINTER EXPRESSION
     PTREE expr,                 // - expression (CO_MEMPTR)
     TYPE type,                  // - expression type
-    boolean safe,               // - TRUE ==> safe cast only
-    boolean init )              // - TRUE ==> initialization expression
+    bool safe,                  // - TRUE ==> safe cast only
+    bool init )                 // - TRUE ==> initialization expression
 {
     MEMBER_PTR_CAST inf;        // - cast information
 
@@ -787,7 +787,7 @@ static PTREE convertMembPtrExpr(// CONVERT A MEMBER POINTER EXPRESSION
 }
 
 
-static boolean membPtrAddrOfNode( // TEST IF (& class::member)
+static bool membPtrAddrOfNode(  // TEST IF (& class::member)
     PTREE node )
 {
     TYPE mbrptr;
@@ -813,7 +813,7 @@ static boolean membPtrAddrOfNode( // TEST IF (& class::member)
 }
 
 
-boolean MembPtrZeroConst(       // DETERMINE IF ZERO MEMBER-PTR CONSTANT
+bool MembPtrZeroConst(          // DETERMINE IF ZERO MEMBER-PTR CONSTANT
     PTREE expr )                // - CO_MEMPTR_CONST expression
 {
     expr = expr->u.subtree[0];
@@ -823,7 +823,7 @@ boolean MembPtrZeroConst(       // DETERMINE IF ZERO MEMBER-PTR CONSTANT
 }
 
 
-boolean MembPtrExtension        // TEST IF EXTENDED FUNCTION MEMBER PTR
+bool MembPtrExtension           // TEST IF EXTENDED FUNCTION MEMBER PTR
     ( PTREE expr )              // - expression
 {
     return CompFlags.extensions_enabled
@@ -834,7 +834,7 @@ boolean MembPtrExtension        // TEST IF EXTENDED FUNCTION MEMBER PTR
 
 
 static
-boolean membPtrExtensionFmt     // TEST IF EXTENDED FUNCTION MEMBER PTR FORMAT
+bool membPtrExtensionFmt        // TEST IF EXTENDED FUNCTION MEMBER PTR FORMAT
     ( PTREE expr )              // - expression
 {
     return CompFlags.extensions_enabled
@@ -1215,8 +1215,8 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
 {
     CNV_RETN retn;              // - return: CNV_...
     PTREE expr;                 // - conversion expression
-    boolean safe;               // - TRUE ==> only safe conversion allowed
-    boolean init;               // - TRUE ==> an initialization or assignment
+    bool safe;                  // - TRUE ==> only safe conversion allowed
+    bool init;                  // - TRUE ==> an initialization or assignment
     unsigned classification;    // - operand classification
 
     switch( conversion ) {
@@ -1295,12 +1295,12 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
 }
 
 
-static boolean validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
+static bool validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
     PTREE expr )                // expression
 {
     PTREE left;                 // - left operand
     PTREE right;                // - right operand
-    boolean retn;               // - TRUE ==> can convert
+    bool retn;                  // - TRUE ==> can convert
     CNV_RETN cnv_retn;          // - return from validation
 
     left = PTreeOpLeft( expr );
@@ -1375,7 +1375,7 @@ static PTREE compareConst(      // BUILD COMPARISON CONSTANT
 
 static PTREE replaceCompare(    // REPLACE COMPARISON WITH A CONSTANT
     PTREE expr,                 // - expression to be replaced
-    boolean val )               // - TRUE ==> operands are the same
+    bool val )                  // - TRUE ==> operands are the same
 {
     PTREE con;                  // - constant node
 

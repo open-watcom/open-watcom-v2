@@ -89,7 +89,7 @@ struct free_t {
     }
 
 #ifndef NDEBUG
-boolean restoreFromZapped( cv_t *cv )
+bool    restoreFromZapped( cv_t *cv )
 {
     unsigned elm_size;
     free_t *free_list;
@@ -267,7 +267,7 @@ void CarveDebugFree( carve_t cv, void *elm )
     char *start;
     unsigned esize;
     int i;
-    boolean do_search;
+    bool do_search;
 
     /* make sure object hasn't been freed before */
     restoreFromZapped( cv );
@@ -337,7 +337,7 @@ void CarveVerifyAllGone( carve_t cv, char const *node_name )
     free_t *check;
     blk_t *block;
     char *compare;
-    boolean some_unfreed;
+    bool some_unfreed;
 
 #ifdef ERR_RET
     if( ERR_RET ) {
@@ -922,7 +922,7 @@ pch_status PCHReadTest( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitTest( boolean writing )
+pch_status PCHInitTest( bool writing )
 {
     cv_index nm, ns1, ns2;
 
@@ -950,7 +950,7 @@ pch_status PCHInitTest( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniTest( boolean writing )
+pch_status PCHFiniTest( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveMASTER );

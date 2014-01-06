@@ -441,7 +441,7 @@ REWRITE *RewritePackageFunction( PTREE multi )
 /********************************************/
 {
     ppctl_t old_ppctl;
-    boolean skip_first;
+    bool skip_first;
     REWRITE *r;
     unsigned depth;
     unsigned asm_depth;
@@ -830,7 +830,7 @@ REWRITE *RewritePackageClassTemplate( REWRITE *r, TOKEN_LOCN *locn )
 /******************************************************************/
 {
     unsigned brace_depth;
-    boolean first_time;
+    bool first_time;
     TOKEN_LOCN start_locn;
 
     SrcFileGetTokenLocn( &start_locn );
@@ -877,7 +877,7 @@ REWRITE *RewritePackageClassTemplateMember( REWRITE *r, TOKEN_LOCN *locn )
 /************************************************************************/
 {
     unsigned brace_depth;
-    boolean first_time;
+    bool first_time;
     TOKEN_LOCN start_locn;
 
     SrcFileGetTokenLocn( &start_locn );
@@ -1258,7 +1258,7 @@ pch_status PCHReadRewrites( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitRewrites( boolean writing )
+pch_status PCHInitRewrites( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveREWRITE ) );
@@ -1275,7 +1275,7 @@ pch_status PCHInitRewrites( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniRewrites( boolean writing )
+pch_status PCHFiniRewrites( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveREWRITE );

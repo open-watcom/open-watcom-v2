@@ -263,19 +263,19 @@ void CgrfPruneFunction(         // PRUNE FUNCTION (AND CALLS) FROM GRAPH
 
 void CgrfWalkFunctions(         // WALK FUNCTIONS IN GRAPH
     CALLGRAPH *ctl,             // - call graph information
-    boolean (*walker)           // - walking routine
+    bool (*walker)              // - walking routine
         ( CALLGRAPH *           // - - control information
         , CALLNODE * ) )        // - - function
 {
     DgrfWalkObjects( &ctl->base
-                   , (boolean (*)( DIRGRAPH_CTL*, DIRGRAPH_NODE*))walker );
+                   , (bool (*)( DIRGRAPH_CTL*, DIRGRAPH_NODE*))walker );
 }
 
 
-boolean CgrfWalkCalls(          // WALK CALLS FROM NODE IN GRAPH
+bool CgrfWalkCalls(             // WALK CALLS FROM NODE IN GRAPH
     CALLGRAPH *ctl,             // - call graph information
     CALLNODE *node,             // - source node
-    boolean (*walker)           // - walking routine
+    bool (*walker)              // - walking routine
         ( CALLGRAPH *           // - - control information
         , CALLEDGE * ) )        // - - edge
 {
@@ -283,7 +283,7 @@ boolean CgrfWalkCalls(          // WALK CALLS FROM NODE IN GRAPH
     return DgrfWalkEdges
             ( &ctl->base
             , &node->base
-            , (boolean (*)( DIRGRAPH_CTL*, DIRGRAPH_EDGE*))walker );
+            , (bool (*)( DIRGRAPH_CTL*, DIRGRAPH_EDGE*))walker );
 }
 
 #ifndef NDEBUG
@@ -292,7 +292,7 @@ boolean CgrfWalkCalls(          // WALK CALLS FROM NODE IN GRAPH
     #include "dbg.h"
 
 
-static boolean cgrfDumpCall(    // DUMP CALL GRAPH EDGE
+static bool cgrfDumpCall(       // DUMP CALL GRAPH EDGE
     CALLGRAPH *ctl,             // - call graph information
     CALLEDGE *edge )            // - edge in graph
 {
@@ -308,7 +308,7 @@ static boolean cgrfDumpCall(    // DUMP CALL GRAPH EDGE
 }
 
 
-static boolean cgrfDumpNode(    // DUMP CALL GRAPH NODE
+static bool cgrfDumpNode(       // DUMP CALL GRAPH NODE
     CALLGRAPH *ctl,             // - call graph information
     CALLNODE *node )            // - node to dump
 {

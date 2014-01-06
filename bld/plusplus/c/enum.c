@@ -317,7 +317,7 @@ DECL_SPEC *MakeEnumType( ENUM_DATA *edata )
     return( dspec );
 }
 
-static boolean enumNameOK( TYPE type, NAME name )
+static bool enumNameOK( TYPE type, NAME name )
 {
     TYPE enum_type;
 

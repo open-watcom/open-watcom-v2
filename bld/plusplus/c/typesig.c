@@ -44,7 +44,7 @@
 SYMBOL DefaultCtorFind(         // GET SYMBOL FOR DEFAULT CTOR
     TYPE type,                  // - class type
     TOKEN_LOCN* err_locn,       // - error location
-    boolean optional )          // - TRUE ==> is optional
+    bool optional )             // - TRUE ==> is optional
 {
     unsigned retn;              // - return from attempt to find
     SYMBOL ctor;                // - constructor
@@ -85,7 +85,7 @@ static TYPE_SIG *type_sigs;     // - TYPE_SIGs so far
 typedef struct                  // ACCINFO -- access information
 {   TYPE type;                  // - class type
     TOKEN_LOCN *err_locn;       // - error location
-    boolean *err_occurred;      // - TRUE ==> error occurred
+    bool *err_occurred;         // - TRUE ==> error occurred
     SCOPE access_scope;         // - scope for access
     SCOPE class_scope;          // - scope for class
     TYPE_SIG_ACCESS acc;        // - access type (type signature)
@@ -100,7 +100,7 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
     SYMBOL sym;                 // - symbol for routine
     TYPE type;                  // - class type
     TOKEN_LOCN *err_locn;       // - error location
-    boolean fill_out;           // - TRUE ==> fill out the entry
+    bool fill_out;              // - TRUE ==> fill out the entry
 
     sym = *a_sym;
     if( acc_var & info->acc ) {
@@ -154,7 +154,7 @@ static void typeSigAccess(      // HANDLE ACCESS FOR TYPE-SIGNATURE
     TYPE_SIG_ACCESS acc,        // - access type
     TYPE_SIG *sig,              // - current signature
     TOKEN_LOCN* err_locn,       // - error location for access errors
-    boolean *error_occurred )   // - to set error indication
+    bool *error_occurred )      // - to set error indication
 {
     ACCINFO info;               // - access information
 
@@ -206,7 +206,7 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
     TYPE_SIG_ACCESS acc,        // - access type
     TYPE type,                  // - type for signature
     TOKEN_LOCN* err_locn,       // - error location for access errors
-    boolean *error_occurred )   // - to set error indication
+    bool *error_occurred )      // - to set error indication
 {
     TYPE_SIG *srch;             // - signature for searching
     TYPE_SIG *sig;              // - signature
@@ -214,7 +214,7 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
     unsigned size;              // - size of R/O data
     NAME typesig_name;          // - name of type signature
     TYPE typesig_type;          // - type of type signature
-    boolean err_this_time;      // - TRUE ==> we have error
+    bool err_this_time;         // - TRUE ==> we have error
     TYPE_SIG_ACCESS acc_ind;    // - indirect access
 
     err_this_time = FALSE;
@@ -461,7 +461,7 @@ TYPE_SIG *TypeSigMapIndex( TYPE_SIG *e )
     return( CarveMapIndex( carveTYPE_SIG, e ) );
 }
 
-pch_status PCHInitTypeSigs( boolean writing )
+pch_status PCHInitTypeSigs( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveTYPE_SIG ) );
@@ -472,7 +472,7 @@ pch_status PCHInitTypeSigs( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniTypeSigs( boolean writing )
+pch_status PCHFiniTypeSigs( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveTYPE_SIG );

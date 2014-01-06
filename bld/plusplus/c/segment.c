@@ -497,9 +497,9 @@ struct seg_look {                           // used to lookup segments
 };
 
 
-static boolean same_segment(    // DETERMINE IF SAME SEGMENT
+static bool same_segment(   // DETERMINE IF SAME SEGMENT
     void * _curr,           // - current segment
-    const void * _lk )  // - segment lookup structure
+    const void * _lk )      // - segment lookup structure
 {
     PC_SEGMENT *curr = _curr;
     const struct seg_look* lk = _lk;
@@ -921,7 +921,7 @@ SYMBOL SegmentLabelStackReset(  // RESET STACK-SEGMENT LABEL
 #endif
 #define ENDING_SIZE (sizeof(CODE_ENDING)-1)
 
-static boolean isCodeSegmentName( char *segname )
+static bool isCodeSegmentName( char *segname )
 {
     size_t len;
 
@@ -935,7 +935,7 @@ static boolean isCodeSegmentName( char *segname )
 
 }
 
-static boolean segmentIsCode(
+static bool segmentIsCode(
     fe_seg_id segid )           // - function symbol
 {
     PC_SEGMENT *seg;
@@ -1178,7 +1178,7 @@ static fe_seg_id nextZmSegment( // GET NEXT CODE SEGMENT FOR -zm
     return segid;
 }
 
-boolean SegmentIfBasedOK( SYMBOL func )
+bool SegmentIfBasedOK( SYMBOL func )
 {
     fe_seg_id segid;
 
@@ -1472,13 +1472,13 @@ pch_status PCHWriteSegments( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitSegments( boolean writing )
+pch_status PCHInitSegments( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniSegments( boolean writing )
+pch_status PCHFiniSegments( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

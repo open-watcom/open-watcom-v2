@@ -239,7 +239,7 @@ static CGFILE* nodeCgFile(      // GET CGFILE FOR NODE
 }
 
 
-static boolean funcInlineable(  // DETERMINE IF FUNCTION INLINE-ABLE
+static bool funcInlineable(     // DETERMINE IF FUNCTION INLINE-ABLE
     SYMBOL sym )                // - function symbol
 {
     AUX_INFO *pragma;
@@ -274,11 +274,11 @@ static boolean funcInlineable(  // DETERMINE IF FUNCTION INLINE-ABLE
 }
 
 
-static boolean oeInlineable(    // DETERMINE IF /oe CAN INLINE THE FUNCTION
+static bool oeInlineable(       // DETERMINE IF /oe CAN INLINE THE FUNCTION
     SYMBOL sym,                 // - symbol for node
     CGFILE *cgfile )            // - code gen file for function
 {
-    boolean retn;               // - TRUE ==> CAN BE /oe inlined
+    bool retn;                  // - TRUE ==> CAN BE /oe inlined
 
     if( funcInlineable( sym ) ) {
         if( cgfile == NULL ) {
@@ -295,14 +295,14 @@ static boolean oeInlineable(    // DETERMINE IF /oe CAN INLINE THE FUNCTION
 }
 
 
-static boolean canBeOeInlined(  // DETERMINE IF /oe CAN INLINE THE FUNCTION
+static bool canBeOeInlined(     // DETERMINE IF /oe CAN INLINE THE FUNCTION
     CALLNODE* node )            // - node for function
 {
     return oeInlineable( node->base.object, nodeCgFile( node ) );
 }
 
 
-static boolean shouldBeInlined( // DETERMINE IF INLINING AN INLINABLE FN IS OK
+static bool shouldBeInlined(    // DETERMINE IF INLINING AN INLINABLE FN IS OK
     SYMBOL sym )                // - function symbol
 {
     FN_CTL *fctl;               // - current file control
@@ -905,7 +905,7 @@ static void checkForExpandOnceInlines(  // scan for "at most 1" inline requests
 }
 
 
-static boolean recursiveExpand( // DETERMINE IF RECURSIVE EXPANSION
+static bool recursiveExpand(    // DETERMINE IF RECURSIVE EXPANSION
     CALLGRAPH *ctl,             // - control information
     CALLNODE *target )          // - node for caller
 {
@@ -962,7 +962,7 @@ static void forceGeneration(    // FORCE CODE FILE TO BE GENERATED
 }
 
 
-static boolean procEdge(        // PROCESS EDGE IN CALL GRAPH
+static bool procEdge(           // PROCESS EDGE IN CALL GRAPH
     CALLGRAPH *ctl,             // - control information
     CALLEDGE *edge )            // - call to inline/static
 {
@@ -1028,7 +1028,7 @@ static void genFunction(        // INDICATE FUNCTION NEEDS TO BE GEN'ED
 }
 
 
-static boolean procInlineFunction( // PROCESS INLINE FUNCTIONS IN CALL GRAPH
+static bool procInlineFunction( // PROCESS INLINE FUNCTIONS IN CALL GRAPH
     CALLGRAPH *ctl,             // - control information
     CALLNODE *node )            // - function in graph
 {
@@ -1078,7 +1078,7 @@ static boolean procInlineFunction( // PROCESS INLINE FUNCTIONS IN CALL GRAPH
 
 // Static functions include all defined functions when /oe is specified
 //
-static boolean procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
+static bool procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
     CALLGRAPH *ctl,             // - control information
     CALLNODE *node )            // - function in graph
 {
@@ -1162,7 +1162,7 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
 }
 
 
-static boolean procFunction(    // POST-PROCESS FUNCTION IN CALL GRAPH
+static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
     CALLGRAPH *ctl,             // - control information
     CALLNODE *node )            // - function in graph
 {
@@ -1201,7 +1201,7 @@ static boolean procFunction(    // POST-PROCESS FUNCTION IN CALL GRAPH
 }
 
 
-static boolean pruneFunction(   // PRUNE UNREFERENCED FUNCTION
+static bool pruneFunction(      // PRUNE UNREFERENCED FUNCTION
     CALLGRAPH *ctl,             // - control information
     CALLNODE *node )            // - function in graph
 {
@@ -1224,7 +1224,7 @@ static boolean pruneFunction(   // PRUNE UNREFERENCED FUNCTION
 }
 
 
-static boolean procStabEdge(    // PROCESS INLINE-CALL EDGE FROM NODE
+static bool procStabEdge(       // PROCESS INLINE-CALL EDGE FROM NODE
     CALLGRAPH *ctl,             // - control information
     CALLEDGE *edge )            // - call to inline/static
 {
@@ -1243,7 +1243,7 @@ static boolean procStabEdge(    // PROCESS INLINE-CALL EDGE FROM NODE
 }
 
 
-static boolean setFunctionStab( // SET STATE-TABLE INFO. FOR FUNCTION
+static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
     CALLGRAPH *ctl,             // - control information
     CALLNODE *node )            // - function in graph
 {
@@ -1252,8 +1252,8 @@ static boolean setFunctionStab( // SET STATE-TABLE INFO. FOR FUNCTION
     unsigned depth;             // - current depth
     unsigned cond_flags;        // - # conditional flags
     unsigned max_cond_flags;    // - maximum # conditional flags
-    boolean state_table;        // - TRUE ==> requires state table
-    boolean stab_gen;           // - TRUE ==> state table to be genned
+    bool state_table;           // - TRUE ==> requires state table
+    bool stab_gen;              // - TRUE ==> state table to be genned
 
     ExtraRptIncrementCtr( ctr_nodes_visited );
     if( ! node->is_vft ) {
@@ -1447,7 +1447,7 @@ void CgBackSetOeSize(           // SET SIZE FOR INLINING STATICS
 }
 
 
-boolean CgBackFuncInlined(      // DETERMINE IF FUNCTION INVOCATION INLINED
+bool CgBackFuncInlined(         // DETERMINE IF FUNCTION INVOCATION INLINED
     SYMBOL sym )                // - function symbol
 {
     return ( sym->flag & SF_CG_INLINEABLE )
@@ -1456,13 +1456,13 @@ boolean CgBackFuncInlined(      // DETERMINE IF FUNCTION INVOCATION INLINED
 
 
 void CgBackSetInlineRecursion(  // SET INLINE RECURSION
-    boolean allowed )           // - TRUE ==> inline recursion allowed
+    bool allowed )              // - TRUE ==> inline recursion allowed
 {
     callGraphFlags.inline_recursion = allowed;
 }
 
 
-boolean CgBackGetInlineRecursion(// GET INLINE RECURSION
+bool CgBackGetInlineRecursion(  // GET INLINE RECURSION
     void )
 {
     return( callGraphFlags.inline_recursion );

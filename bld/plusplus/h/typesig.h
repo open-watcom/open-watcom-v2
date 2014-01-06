@@ -76,7 +76,7 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
     TYPE_SIG_ACCESS acc,        // - access type
     TYPE type,                  // - type for signature
     TOKEN_LOCN* err_locn,       // - error location for access errors
-    boolean *error_occurred )   // - to set error indication
+    bool *error_occurred )      // - to set error indication
 ;
 void TypeSigSymOffset(          // GET SYMBOL,OFFSET FOR TYPE-SIG REFERENCE
     TYPE_SIG* sig,              // - type signature

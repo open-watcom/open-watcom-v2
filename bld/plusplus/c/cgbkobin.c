@@ -280,7 +280,7 @@ cg_name ObjInitAssignIndex(     // ASSIGN INDEX TO RT_ARRAY_INIT
 cg_name ObjInitRegisterObj(     // CREATE AN OBJECT REGISTRATION
     FN_CTL* fctl,               // - current function information
     cg_name base_expr,          // - base expression
-    boolean use_fun_cdtor )     // - TRUE ==> use CDTOR parm of function
+    bool use_fun_cdtor )        // - TRUE ==> use CDTOR parm of function
 {
     OBJ_INIT* init;             // - initialization element
     cg_name expr;               // - initialization expression

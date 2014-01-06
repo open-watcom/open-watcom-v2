@@ -200,13 +200,13 @@ pch_status PCHWriteMacros( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitMacros( boolean writing )
+pch_status PCHInitMacros( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniMacros( boolean writing )
+pch_status PCHFiniMacros( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
@@ -281,10 +281,10 @@ void PCHDumpMacroCheck(         // DUMP MACRO CHECK INFO INTO PCHDR
     PCHWriteUInt( 0 );
 }
 
-boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
+bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     void )
 {
-    boolean ret;
+    bool ret;
     int macros_different;
     unsigned max_rlen;
     unsigned rlen;
@@ -616,12 +616,12 @@ MEPTR MacroLookup(          // LOOKUP CURRENT NAME AS A MACRO
 }
 
 
-boolean MacroExists(        // TEST IF MACRO EXISTS
+bool MacroExists(           // TEST IF MACRO EXISTS
     const char *macname,    // - macro name
     unsigned len )          // - length of name
 {
     unsigned hash;
-    boolean exists;
+    bool exists;
     MEPTR mac;
 
     mac = macroFind( macname, len, &hash );
@@ -635,10 +635,10 @@ boolean MacroExists(        // TEST IF MACRO EXISTS
 }
 
 
-boolean MacroDependsDefined // MACRO DEPENDENCY: DEFINED OR NOT
+bool MacroDependsDefined    // MACRO DEPENDENCY: DEFINED OR NOT
     ( void )
 {
-    boolean retn = MacroExists( Buffer, TokenLen );
+    bool retn = MacroExists( Buffer, TokenLen );
 #ifdef OPT_BR
     retn = BrinfDependsMacroDefined( retn, Buffer, TokenLen );
 #endif
@@ -646,7 +646,7 @@ boolean MacroDependsDefined // MACRO DEPENDENCY: DEFINED OR NOT
 }
 
 
-static void doMacroUndef( char *name, unsigned len, boolean quiet )
+static void doMacroUndef( char *name, unsigned len, bool quiet )
 {
     MEPTR fmentry;          // - current macro entry
     unsigned hash;          // - current macro hash
@@ -705,8 +705,8 @@ void MacroStateGet( MACRO_STATE *ms )
     ms->undef_count = undefCount;
 }
 
-boolean MacroStateMatchesCurrent( MACRO_STATE *ms )
-/*************************************************/
+bool MacroStateMatchesCurrent( MACRO_STATE *ms )
+/**********************************************/
 {
     if( ms->curr_offset != MacroOffset ) {
         return( FALSE );

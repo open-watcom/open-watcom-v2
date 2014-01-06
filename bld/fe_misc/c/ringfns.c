@@ -321,7 +321,7 @@ void *RingConcatAppend(         // APPEND A RING
 
 void *RingLookup(               // LOOKUP IN A RING
     void *hdr,                  // - ring hdr
-    boolean (*compare_rtn)      // - comparison routine
+    bool (*compare_rtn)         // - comparison routine
         ( void *element,        // - - element
           const void *comparand ),// - - comparand
     const void *comparand )     // - comparand

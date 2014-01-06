@@ -139,7 +139,7 @@ static TYPE getThisBaseType( SYMBOL sym )
 
 TYPE TypeThisSymbol(            // GET TYPE OF THIS FOR SYMBOL MEMBER
     SYMBOL sym,                 // - symbol
-    boolean reference )         // - use reference?
+    bool reference )            // - use reference?
 {
     TYPE base;                  // - return: NULL or TYPE of "this" for symbol
     type_flag flags;            // - flags for "this" pointer
@@ -242,10 +242,10 @@ unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
 }
 
 
-boolean TypeTruncByMemModel(    // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
+bool TypeTruncByMemModel(       // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
     TYPE type )                 // - the type
 {
-    boolean retn;               // - TRUE ==> type doesn't matches default mem. model
+    bool retn;                  // - TRUE ==> type matches default mem. model
     type_flag flags;            // - flags for the type
     type_flag mflags;           // - memory-model flags for the type
 
@@ -301,10 +301,10 @@ TYPE TypeSegAddr(               // GET INTERNAL TYPE OF BASE :> ADDRESS
 }
 
 
-boolean TypeIsBasedPtr(         // SEE IF A PTR TO BASED ITEM
+bool TypeIsBasedPtr(            // SEE IF A PTR TO BASED ITEM
     TYPE type )                 // - the type
 {
-    boolean retn;               // - FALSE ==> not based
+    bool retn;                  // - FALSE ==> not based
     type_flag flags;            // - flags for item pointed at
 
     if( NULL == TypePointedAt( type, &flags ) ) {
@@ -521,17 +521,17 @@ CTD TypeCommonDerivation(       // GET COMMON TYPE DERIVATION FOR TWO TYPES
 }
 
 
-boolean TypeRequiresCtorParm(   // TEST IF EXTRA CTOR PARM REQUIRED
+bool TypeRequiresCtorParm(      // TEST IF EXTRA CTOR PARM REQUIRED
     TYPE type )                 // - the type
 {
     return TypeHasVirtualBases( type );
 }
 
 
-boolean PointerToFuncEquivalent( // TEST IF EQUIVALENT TO PTR(FUNCTION)
+bool PointerToFuncEquivalent(   // TEST IF EQUIVALENT TO PTR(FUNCTION)
     TYPE type )
 {
-    boolean retn;               // - return: TRUE ==> equiv. to ptr to funct.
+    bool retn;                  // - return: TRUE ==> equiv. to ptr to funct.
     type_flag not_used;
 
     type = TypedefModifierRemove( type );
@@ -550,10 +550,10 @@ boolean PointerToFuncEquivalent( // TEST IF EQUIVALENT TO PTR(FUNCTION)
 
 
 #if 0 // not used
-boolean TypeIsCppFunc(          // TEST IF C++ FUNCTION TYPE
+bool TypeIsCppFunc(             // TEST IF C++ FUNCTION TYPE
     TYPE type )                 // - type to be tested
 {
-    boolean retn;               // - return: TRUE ==> C++ function
+    bool retn;                  // - return: TRUE ==> C++ function
 
     type = FunctionDeclarationType( type );
     if( type == NULL ) {
@@ -625,11 +625,11 @@ static CLASSINFO* getClassInfo( // GET CLASS INFO FOR GOOD ELEMENTAL TYPE
 }
 
 
-boolean TypeRequiresRWMemory(   // TEST IF TYPE MUST BE IN NON-CONST STORAGE
+bool TypeRequiresRWMemory(      // TEST IF TYPE MUST BE IN NON-CONST STORAGE
     TYPE type )                 // - type
 {
     CLASSINFO* info;            // - information for class
-    boolean retn;               // - TRUE ==> requires CTOR'ING
+    bool retn;                  // - TRUE ==> requires CTOR'ING
 
     retn = FALSE;
     info = getClassInfo( type );
@@ -642,11 +642,11 @@ boolean TypeRequiresRWMemory(   // TEST IF TYPE MUST BE IN NON-CONST STORAGE
 }
 
 
-boolean TypeRequiresCtoring(    // TEST IF TYPE MUST BE CTOR'ED
+bool TypeRequiresCtoring(       // TEST IF TYPE MUST BE CTOR'ED
     TYPE type )                 // - type
 {
     CLASSINFO* info;            // - information for class
-    boolean retn;               // - TRUE ==> requires CTOR'ING
+    bool retn;                  // - TRUE ==> requires CTOR'ING
 
     info = getClassInfo( type );
     if( info == NULL ) {
@@ -660,11 +660,11 @@ boolean TypeRequiresCtoring(    // TEST IF TYPE MUST BE CTOR'ED
 }
 
 
-boolean TypeRequiresDtoring(    // TEST IF TYPE MUST BE DTOR'ED
+bool TypeRequiresDtoring(       // TEST IF TYPE MUST BE DTOR'ED
     TYPE type )                 // - type
 {
     CLASSINFO* info;            // - information for class
-    boolean retn;               // - TRUE ==> requires CTOR'ING
+    bool retn;                  // - TRUE ==> requires CTOR'ING
 
     info = getClassInfo( type );
     if( info == NULL ) {
@@ -727,10 +727,10 @@ TYPE TypeForLvalue              // GET TYPE FOR LVALUE
 }
 
 
-boolean ExprIsLvalue            // TEST IF EXPRESSION IS LVALUE
+bool ExprIsLvalue               // TEST IF EXPRESSION IS LVALUE
     ( PTREE expr )              // - expression
 {
-    boolean retn;               // - return: TRUE ==> is lvalue
+    bool retn;                  // - return: TRUE ==> is lvalue
 
     if( expr->flags & PTF_LVALUE ) {
         retn = TRUE;
@@ -749,13 +749,13 @@ boolean ExprIsLvalue            // TEST IF EXPRESSION IS LVALUE
 }
 
 
-boolean TypeDefedNonAbstract    // REQUIRE DEFINED, NON-ABSTRACT TYPE
+bool TypeDefedNonAbstract       // REQUIRE DEFINED, NON-ABSTRACT TYPE
     ( TYPE type                 // - the type
     , PTREE expr                // - NULL or expression for error
     , MSG_NUM msg_abstract      // - message when abstract
     , MSG_NUM msg_undefed )     // - message when undefined
 {
-    boolean retn;               // - return: TRUE ==> defined & non-abstract
+    bool retn;                  // - return: TRUE ==> defined & non-abstract
 
     expr = expr;
     if( ! TypeDefined( type ) ) {

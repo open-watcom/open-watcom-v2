@@ -99,7 +99,7 @@ void BeVftRef(                  // REFERENCE TO VFT
 }
 
 
-boolean BeVftReqd(              // CHECK IF VFT REQUIRED
+bool BeVftReqd(                 // CHECK IF VFT REQUIRED
     SYMBOL vft )                // - the VFT
 {
     return NULL != findVftGen( vft );

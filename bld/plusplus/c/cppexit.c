@@ -38,7 +38,7 @@
 
 #define MAX_EXITS 2
 
-static boolean exiting;                         // TRUE ==> in exit phase
+static bool exiting;                            // TRUE ==> in exit phase
 static void (*exit_list[MAX_EXITS])( void );    // exit list
 static unsigned exit_count;                     // # in list
 

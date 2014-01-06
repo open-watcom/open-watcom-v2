@@ -312,7 +312,7 @@ static void freeGenData(        // FREE GENERATION DATA
 }
 
 
-static boolean saveGenData(     // TEST IF GENERATION DATA REQ'D AFTER CLOSE
+static bool saveGenData(        // TEST IF GENERATION DATA REQ'D AFTER CLOSE
     CGFILE *ctl )               // - control for file
 {
     SYMBOL func;                // - symbol for file
@@ -403,12 +403,12 @@ void CgioCloseInputFile(        // CLOSE VIRTUAL FILE AFTER INPUT PHASE
 }
 
 
-static boolean changeRing(      // CHANGE RING FOR A CGFILE IN cg_file_ring
+static bool changeRing(         // CHANGE RING FOR A CGFILE IN cg_file_ring
     CGFILE** a_new,             // - addr[ new ring header ]
     CGFILE* element,            // - element
     CGFILE** a_old )            // - addr[ old ring header ]
 {
-    boolean retn;               // - TRUE ==> changed the ring
+    bool retn;                  // - TRUE ==> changed the ring
     CGFILE* prev;               // - preceding element
 
     prev = RingPred( *a_old, element );
@@ -768,7 +768,7 @@ pch_status PCHReadCGFiles( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitCGFiles( boolean writing )
+pch_status PCHInitCGFiles( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveCGFILE ) );
@@ -792,7 +792,7 @@ pch_status PCHInitCGFiles( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniCGFiles( boolean writing )
+pch_status PCHFiniCGFiles( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveCGFILE );

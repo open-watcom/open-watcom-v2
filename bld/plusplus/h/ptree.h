@@ -322,7 +322,7 @@ PTREE PTreeOpRight(             // GET RIGHT NODE, SKIPPING "," OPERATOR
 PTREE PTreePromoteLocn(         // ENSURE TOP OF TREE HAS SOURCE LOCATION
     PTREE tree )                // - the tree
 ;
-boolean PTreePropogateError(    // CHECK AND PROPOGATE ERRORS FROM SUB-TREES
+bool PTreePropogateError(       // CHECK AND PROPOGATE ERRORS FROM SUB-TREES
     PTREE curr )                // - current node
 ;
 PTREE *PTreeRef(                // FIND REFERENCE TO OPERAND
@@ -386,8 +386,8 @@ extern PTREE CheckScopedId( PTREE );
 extern PTREE MakeScopedDestructorId( PTREE, PTREE );
 extern PTREE MakeScopedUserConversionId( PTREE, PTREE );
 extern PTREE MakeScopedOperatorId( PTREE, CGOP );
-extern boolean IsLinkerConstant( PTREE, PTREE *, target_size_t * );
-extern boolean IsStringConstant( PTREE, boolean * );
+extern bool IsLinkerConstant( PTREE, PTREE *, target_size_t * );
+extern bool IsStringConstant( PTREE, bool * );
 extern SYMBOL FunctionSymbol( PTREE );
 extern PTREE PTreeIntrinsicOperator( PTREE, CGOP );
 extern PTREE PTreeExtractLocn( PTREE, TOKEN_LOCN * );

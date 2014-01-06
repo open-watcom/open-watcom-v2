@@ -147,16 +147,16 @@ void DgrfPruneNode(             // PRUNE NODE (AND EMANATING EDGES)
     DIRGRAPH_CTL *ctl,          // - control information
     DIRGRAPH_NODE *node )       // - node
 ;
-boolean DgrfWalkEdges(          // WALK ALL EDGES FROM OBJECT
+bool DgrfWalkEdges(             // WALK ALL EDGES FROM OBJECT
     DIRGRAPH_CTL *ctl,          // - control information
     DIRGRAPH_NODE *node,        // - node
-    boolean (*walker)           // - walking routine
+    bool (*walker)              // - walking routine
         ( DIRGRAPH_CTL *        // - - control information
         , DIRGRAPH_EDGE * ) )   // - - EDGE
 ;
-boolean DgrfWalkObjects(        // WALK ALL OBJECTS
+bool DgrfWalkObjects(           // WALK ALL OBJECTS
     DIRGRAPH_CTL *ctl,          // - control information
-    boolean (*walker)           // - walking routine
+    bool (*walker)              // - walking routine
         ( DIRGRAPH_CTL *        // - - control information
         , DIRGRAPH_NODE * ) )   // - - object
 ;

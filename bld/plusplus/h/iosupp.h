@@ -68,7 +68,7 @@ typedef unsigned                DISK_OFFSET;    // offset in disk block
 
 // PROTOTYPES:
 
-boolean IoSuppCloseFile(        // CLOSE FILE IF OPENED
+bool IoSuppCloseFile(           // CLOSE FILE IF OPENED
     FILE **file_ptr )           // - addr( file pointer )
 ;
 #if 0
@@ -90,7 +90,7 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     char *buff,                 // - output buffer
     unsigned size )             // - output buffer size
 ;
-boolean IoSuppOpenSrc(          // OPEN A SOURCE FILE (PRIMARY,HEADER)
+bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
     enum file_type )            // - what type of file is it?
 ;

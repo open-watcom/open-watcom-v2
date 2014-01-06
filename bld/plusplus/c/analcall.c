@@ -96,7 +96,7 @@ static PTREE makeCall(          // MAKE A CALL OR INDIRECT CALL
     PTREE proc,                 // - procedure
     TYPE type,                  // - return type
     PTREE args,                 // - arguments
-    boolean direct_call )       // - TRUE ==> do a direct call
+    bool direct_call )          // - TRUE ==> do a direct call
 {
     PTREE node;                 // - new node
 
@@ -179,11 +179,11 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
 }
 
 
-boolean NodeConvertArgument(    // CONVERT AN ARGUMENT VALUE
+bool NodeConvertArgument(       // CONVERT AN ARGUMENT VALUE
     PTREE *a_expr,              // - addr( argument value )
     TYPE proto )                // - prototype type
 {
-    boolean retn;               // - return: TRUE ==> conversion ok
+    bool retn;                  // - return: TRUE ==> conversion ok
 
     if( NULL != ArrayType( proto ) ) {
         proto = PointerTypeForArray( proto );
@@ -218,11 +218,11 @@ static PTREE arg_finish(        // FINISH A CONVERTED VALUE
 }
 
 
-static boolean arg_convert(     // CONVERT AN ARGUMENT
+static bool arg_convert(        // CONVERT AN ARGUMENT
     PTREE arg,                  // - argument node
     TYPE proto )                // - prototype type
 {
-    boolean retn;               // - return: TRUE ==> ok
+    bool retn;                  // - return: TRUE ==> ok
 
     if( NodeConvertArgument( &arg->u.subtree[1], proto ) ) {
         arg_fillout( arg );
@@ -235,7 +235,7 @@ static boolean arg_convert(     // CONVERT AN ARGUMENT
 }
 
 
-static boolean passStructOnStack( // PASS A STRUCT/CLASS ON STACK
+static bool passStructOnStack(  // PASS A STRUCT/CLASS ON STACK
     PTREE arg,                  // - argument (CO_LIST)
     unsigned warning )          // - internal-data warning
 {
@@ -271,10 +271,10 @@ static boolean passStructOnStack( // PASS A STRUCT/CLASS ON STACK
 }
 
 
-static boolean convertEllipsisArg(// CONVERT AN ELLIPSIS (...) ARGUMENT
+static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
     PTREE arg )                 // - argument
 {
-    boolean retn;               // - return: TRUE ==> ok
+    bool retn;                  // - return: TRUE ==> ok
     PTREE right;                // - argument
     PTREE afun;                 // - &[ function ]
     TYPE type;                  // - node type
@@ -383,7 +383,7 @@ PTREE NodeConvertCallArgList(   // CONVERT CALL ARGUMENT LIST, AS REQ'D
     unsigned pcount;            // - # args, prototype
     TYPE *pptr;                 // - prototype type ptr.
     TYPE proto;                 // - prototype arg. type
-    boolean extern_c_fun;       // - TRUE ==> extern "C" function
+    bool extern_c_fun;          // - TRUE ==> extern "C" function
     TEMP_TYPE old;              // - old default class for temp.s
 
     if( call_expr != NULL
@@ -444,7 +444,7 @@ PTREE NodeConvertCallArgList(   // CONVERT CALL ARGUMENT LIST, AS REQ'D
 
 
 #if _CPU == _AXP
-static boolean canCoaxVAStartSym( PTREE *parg )
+static bool canCoaxVAStartSym( PTREE *parg )
 {
     PTREE orig_arg;
     PTREE arg;
@@ -580,7 +580,7 @@ static PTREE transformVaStart   // TRANSFORM TO CO_VASTART OPCODE
 #endif
 
 
-static boolean adjustForVirtualCall( // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
+static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
     PTREE *this_node,           // - addr[ "this" node ]
     PTREE *routine,             // - routine to be called
     SEARCH_RESULT *result )     // - search result for routine
@@ -589,7 +589,7 @@ static boolean adjustForVirtualCall( // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
     unsigned retn;              // - return: TRUE ==> adjusted for virtual
     TYPE this_type;             // - target type for "this"
     PTREE expr;                 // - transformed expression
-    boolean exact_call;         // - TRUE ==> this node is exact
+    bool exact_call;            // - TRUE ==> this node is exact
 
     expr = *this_node;
     this_type = NodeType( expr );
@@ -860,9 +860,9 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
     arg_list *alist;            // - arg_list for caller
     intrinsic_mapping *intr_map;// - mapping for intrinsic function
     SEARCH_RESULT *result;      // - searching result
-    boolean membptr_deref;      // - TRUE ==> member pointer dereference
-//    boolean has_ellipsis;       // - TRUE ==> ellipsis in argument list
-    boolean virtual_call;       // - TRUE ==> virtual call
+    bool membptr_deref;         // - TRUE ==> member pointer dereference
+//    bool has_ellipsis;          // - TRUE ==> ellipsis in argument list
+    bool virtual_call;          // - TRUE ==> virtual call
     TEMP_PT_LIST default_list;  // - default PTREE list
     TEMP_ARG_LIST default_args; // - default arg_list
     FNOV_DIAG fnov_diag;        // - diagnosis information;
@@ -1224,7 +1224,7 @@ PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
     PTREE dtor_id;              // - node for dtor symbol
     PTREE expr;                 // - expression under construction
     TYPE return_type;           // - type of return
-    boolean virtual_call;       // - TRUE ==> virtual dtor
+    bool virtual_call;          // - TRUE ==> virtual dtor
     TOKEN_LOCN err_locn;        // - error location
 
     /* assumes class_type->u.c.info->needs_dtor is TRUE */

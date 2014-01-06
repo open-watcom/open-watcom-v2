@@ -589,10 +589,10 @@ static void unGetChar( int c )
     }
 }
 
-boolean ScanOptionalComment( void )
-/*********************************/
+bool ScanOptionalComment( void )
+/******************************/
 {
-    boolean retn;
+    bool retn;
     int c;
 
     retn = FALSE;
@@ -1809,8 +1809,8 @@ void GetNextToken( void )       // used ONLY if generating pre-processed output
     }
 }
 
-boolean TokenUsesBuffer( TOKEN token )
-/************************************/
+bool TokenUsesBuffer( TOKEN token )
+/*********************************/
 {
     switch( token ) {
     case T_ID:

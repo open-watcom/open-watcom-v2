@@ -106,7 +106,7 @@ static PTREE processInitNode(   // PROCESS A NODE IN INITIALIZATION TREE
 }
 
 
-static boolean returnsStruct(   // TEST IF STRUCT RETURNED BY CALL
+static bool returnsStruct(      // TEST IF STRUCT RETURNED BY CALL
     PTREE call )                // - call expression
 {
     TYPE func_type;             // - type of function call
@@ -137,7 +137,7 @@ static PTREE getArgNode(        // GET ARGUMENT NODE OF SPECIFIED TYPE
 void InitRefFixup(              // TRAVERSAL FOR REFERENCE INITIALIZATION
     PTREE expr )                // - initialization expression
 {
-    boolean zapped_auto;        // - TRUE ==> zapped to block scope
+    bool zapped_auto;           // - TRUE ==> zapped to block scope
     PTREE setup;                // - CO_CALL_SETUP node
     PTREE caller;               // - PT_SYMBOL for caller
     symbol_class id;            // - CLASS FOR TEMP

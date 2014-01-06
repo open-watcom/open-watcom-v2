@@ -190,16 +190,16 @@ void CgrfPruneFunction(         // PRUNE FUNCTION (AND CALLS) FROM GRAPH
     CALLGRAPH *ctl,             // - call graph information
     CALLNODE *node )            // - node for function
 ;
-boolean CgrfWalkCalls(          // WALK CALLS FROM NODE IN GRAPH
+bool CgrfWalkCalls(             // WALK CALLS FROM NODE IN GRAPH
     CALLGRAPH *ctl,             // - call graph information
     CALLNODE *node,             // - source node
-    boolean (*walker)           // - walking routine
+    bool (*walker)              // - walking routine
         ( CALLGRAPH *           // - - control information
         , CALLEDGE * ) )        // - - edge
 ;
 void CgrfWalkFunctions(         // WALK FUNCTIONS IN GRAPH
     CALLGRAPH *ctl,             // - call graph information
-    boolean (*walker)           // - walking routine
+    bool (*walker)              // - walking routine
         ( CALLGRAPH *           // - - control information
         , CALLNODE * ) )        // - - function
 ;

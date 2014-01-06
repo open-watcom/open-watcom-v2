@@ -48,7 +48,7 @@ extern NAME                 NameCreateNoLen( const char *name );
 extern NAME                 NameCreateLen( const char *name, unsigned len );
 extern NAME                 NameDummy( void );
 extern name_dummy_index_t   NameNextDummyIndex( void );
-extern boolean              IsNameDummy( NAME name );
+extern bool                 IsNameDummy( NAME name );
 
 // hash returned is 0..4095 i.e., mod NAME_RAW_HASH
 extern unsigned             NameCalcHashLen( const char *, unsigned );

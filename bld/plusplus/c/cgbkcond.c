@@ -252,7 +252,7 @@ void CondInfoSetup(             // SETUP UP CONDITIONAL INFORMATION
 
 static cg_name condSet(         // SET/RESET FLAG
     unsigned index,             // - index of flag
-    boolean set_flag,           // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag,              // - TRUE ==> set the flag; FALSE ==> clear
     FN_CTL* fctl )              // - function information
 {
     cg_name op_flg;             // - expression for flag setting
@@ -274,7 +274,7 @@ static cg_name condSet(         // SET/RESET FLAG
 
 void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
     FN_CTL* fctl,               // - function control
-    boolean set_flag )          // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag )             // - TRUE ==> set the flag; FALSE ==> clear
 {
     COND_STK* stk;              // - conditional entry
     cg_name op_flg;             // - expression for flag setting
@@ -304,7 +304,7 @@ void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
 
 void CondInfoSetCtorTest(       // SET/RESET FLAG FOR CTOR-TEST
     FN_CTL* fctl,               // - function control
-    boolean set_flag )          // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag )             // - TRUE ==> set the flag; FALSE ==> clear
 {
     CGDone( condSet( FnCtlCondFlagCtor( fctl ), set_flag, fctl ) );
 }
@@ -323,7 +323,7 @@ void CondInfoDirectFlags(       // SET FOR DIRECT-FLAGS PROCESSING
 
 static void condInfoCallBack(   // SET A CALL-BACK
     void (*rtn)( void* ),       // - call-back routine
-    boolean on_left )           // - TRUE ==> call-back on left
+    bool on_left )              // - TRUE ==> call-back on left
 {
     cg_name expr;               // - top expression
     cg_type type;               // - top type

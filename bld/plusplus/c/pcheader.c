@@ -67,11 +67,11 @@ static pch_status (*writeFunctions[])( void ) = {
 #include "pcregdef.h"
 };
 
-static pch_status (*initFunctions[])( boolean ) = {
+static pch_status (*initFunctions[])( bool ) = {
 #define PCH_EXEC( s, g )        PCHInit##g,
 #include "pcregdef.h"
 };
-static pch_status (*finiFunctions[])( boolean ) = {
+static pch_status (*finiFunctions[])( bool ) = {
 #define PCH_EXEC( s, g )        PCHFini##g,
 #include "pcregdef.h"
 };
@@ -259,7 +259,7 @@ static long cursorWriteFilePosition( void )
     return( posn );
 }
 
-static void alignPCH( unsigned i, boolean writing )
+static void alignPCH( unsigned i, bool writing )
 {
     unsigned skip;
     char dummy[PCH_ALIGN] = {0};
@@ -295,7 +295,7 @@ static void alignPCH( unsigned i, boolean writing )
 #endif
 }
 
-static void execInitFunctions( boolean writing )
+static void execInitFunctions( bool writing )
 {
     int i;
     pch_status ist;
@@ -309,7 +309,7 @@ static void execInitFunctions( boolean writing )
     }
 }
 
-static void execFiniFunctions( boolean writing )
+static void execFiniFunctions( bool writing )
 {
     int i;
     pch_status fst;
@@ -323,7 +323,7 @@ static void execFiniFunctions( boolean writing )
     }
 }
 
-static void execControlFunctions( boolean writing, pch_status (**tbl)( void ) )
+static void execControlFunctions( bool writing, pch_status (**tbl)( void ) )
 {
     unsigned i;
     pch_status st;
@@ -532,7 +532,7 @@ void PCHeaderCreate( char *include_file )
 #endif
 }
 
-static boolean headerIsOK( precompiled_header_header const* hp )
+static bool headerIsOK( precompiled_header_header const* hp )
 {
     if( hp->signature[0] != PHH_SIGNATURE_0 ) {
         return( FALSE );
@@ -567,7 +567,7 @@ static boolean headerIsOK( precompiled_header_header const* hp )
     return( TRUE );
 }
 
-static boolean sameStamp( char *name, time_t saved )
+static bool sameStamp( char *name, time_t saved )
 {
     struct stat statbuf;
 
@@ -613,7 +613,7 @@ void PCHWarn2p( unsigned msg, void *p )
     }
 }
 
-static boolean checkCompFlags( COMP_FLAGS *testflags )
+static bool checkCompFlags( COMP_FLAGS *testflags )
 {
     #define _VERIFY_FLAG( f ) if( testflags->f ^ CompFlags.f ) return( TRUE );
     _VERIFY_FLAG( signed_char );
@@ -649,7 +649,7 @@ static void transferCompFlags( COMP_FLAGS *testflags )
     #undef _COPY_FLAG
 }
 
-static boolean stringIsDifferent( const char *from_pch, const char *curr, unsigned msg )
+static bool stringIsDifferent( const char *from_pch, const char *curr, unsigned msg )
 {
     if( ! CompFlags.pch_min_check ) {
         if( FNAMECMPSTR( from_pch, curr ) != 0 ) {
@@ -669,7 +669,7 @@ static void flushUntilNullString( char *buff )
     }
 }
 
-static boolean stalePCH( char *include_file )
+static bool stalePCH( char *include_file )
 {
     time_t stamp;
     unsigned long test_gen;
@@ -993,15 +993,15 @@ pch_status PCHWriteVerify( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitVerify( boolean writing )
-/*****************************************/
+pch_status PCHInitVerify( bool writing )
+/**************************************/
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniVerify( boolean writing )
-/*****************************************/
+pch_status PCHFiniVerify( bool writing )
+/**************************************/
 {
     writing = writing;
     return( PCHCB_OK );

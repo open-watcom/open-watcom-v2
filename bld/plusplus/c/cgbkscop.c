@@ -236,7 +236,7 @@ static void _printFunction( SYMBOL fun, char const * msg )
     }
 }
 
-static boolean _printCallNode
+static bool _printCallNode
     ( CALLGRAPH* ctl
     , CALLNODE* node )
 {
@@ -439,7 +439,7 @@ static SCOPE_RES* scopeResolve  // COMPLETE SCOPE RESOLUTION, IF POSSIBLE
     if( 0 == sr->toresolve && ! sr->scanning ) {
         if( ! sr->gen_stab ) {
             UNR_USAGE* su;      // - current usage
-            boolean thrdt;      // - throwable dtor found
+            bool thrdt;         // - throwable dtor found
             thrdt = FALSE;
             RingIterBeg( sr->unresolved, su ) {
                 switch( su->type ) {
@@ -578,11 +578,11 @@ void CgResScopeGen              // FORCE GENERATION OF CURRENT SCOPE
 }
 
 
-static boolean resolveSymbol    // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
+static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
     ( SYMBOL fun                // - the function
     , CALLNODE** a_callnode )   // - addr[ NULL or CALLNODE for function ]
 {
-    boolean retn;               // - return: TRUE ==> process it
+    bool retn;                  // - return: TRUE ==> process it
 
     *a_callnode = NULL;
     if( NULL == fun ) return TRUE;
@@ -835,7 +835,7 @@ static void resolveDtorBlk      // ADD: DTOR IN SCOPE TO RESOLVE
     ( SYMBOL fun )              // - function (DTOR)
 {
     SCOPE_RES* sr;              // - an open scope
-    boolean top_scope;          // - TRUE ==> is top scope
+    bool top_scope;             // - TRUE ==> is top scope
     CALLNODE* called;           // - NULL or node for unresolved dtor
 
     fun = symDefaultBase( fun );
@@ -867,7 +867,7 @@ static void resolveDtorStmt     // ADD: DTOR IN STATEMENT TO RESOLVE
     , SYMBOL dtor )             // - function (DTOR)
 {
     SCOPE_RES* sr;              // - an open scope
-    boolean top_scope;          // - TRUE ==> is top scope
+    bool top_scope;             // - TRUE ==> is top scope
     CALLNODE* dtornode;         // - NULL or node for unresolved dtor
     CALLNODE* ctornode;         // - NULL or node for unresolved ctor
 
@@ -1116,7 +1116,7 @@ static void resolveScopeNoGen   // RESOLUTIONS FOR SCOPE WITHOUT STATE TABLE
 void CgResolve                  // RESOLVE ANY PENDING ACTIONS
     ( void )
 {
-    static boolean active;      // - TRUE ==> resolution is active
+    static bool active;         // - TRUE ==> resolution is active
 
     if( active ) return;
     active = TRUE;
@@ -1142,7 +1142,7 @@ void CgResolve                  // RESOLVE ANY PENDING ACTIONS
 }
 
 
-boolean CgResolveNonThrow       // RESOLVE A FUNCTION AS NON-THROW
+bool CgResolveNonThrow          // RESOLVE A FUNCTION AS NON-THROW
     ( CALLGRAPH* ctl            // - call graph
     , CALLNODE* node )          // - possible non-throw
 {

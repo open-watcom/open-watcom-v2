@@ -55,7 +55,7 @@ FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
 {
     FN_CTL *fctl;               // - file control
     unsigned cd_arg;            // - integral cdtor arg
-    boolean has_cdtor;          // - TRUE ==> has inlined CDTOR argument
+    bool has_cdtor;             // - TRUE ==> has inlined CDTOR argument
 
     fctl = VstkTop( &stack_files );
     if( fctl == NULL ) {

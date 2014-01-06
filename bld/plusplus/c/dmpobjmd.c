@@ -342,7 +342,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     char buf[16];               // - buffer
     long numb;                  // - a numeric value
     const char *name;           // - name to be printed
-    boolean sign;               // - TRUE ==> signed enum
+    bool sign;                  // - TRUE ==> signed enum
     unsigned long mask;         // - used to mask to true size
     unsigned long val;          // - value as unsigned
 

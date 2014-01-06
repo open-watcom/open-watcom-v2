@@ -349,10 +349,10 @@ DT_METHOD DtmDirect(            // CONVERT DTOR METHOD TO DIRECT COUNTERPART
 }
 
 
-static boolean dtmTabular(      // DETERMINE IF METHOD IS TABULAR
+static bool dtmTabular(         // DETERMINE IF METHOD IS TABULAR
     DT_METHOD method )          // - the method
 {
-    boolean retn;               // - TRUE ==> is tabular
+    bool retn;                  // - TRUE ==> is tabular
 
     switch( method ) {
       DbgDefault( "dtmTabular -- bad method" );
@@ -370,14 +370,14 @@ static boolean dtmTabular(      // DETERMINE IF METHOD IS TABULAR
 }
 
 
-boolean DtmTabular(             // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD, SCOPE
+bool DtmTabular(                // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD, SCOPE
     FN_CTL* fctl )              // - function control
 {
     return dtmTabular( fctl->dtor_method );
 }
 
 
-boolean DtmTabularFunc(         // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD, FUNCTION
+bool DtmTabularFunc(            // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD, FUNCTION
     FN_CTL* fctl )              // - function control
 {
     return dtmTabular( fctl->func_dtor_method );
@@ -674,7 +674,7 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
     SYMBOL trans;               // - translated symbol
     SYMBOL bound;               // - bound reference
     target_offset_t bound_off;  // - bound offset
-    boolean inlined;            // - TRUE ==> inlined dtor call
+    bool inlined;               // - TRUE ==> inlined dtor call
 
     handle = initDtorCall( dtor );
     inlined = CgBackFuncInlined( dtor );

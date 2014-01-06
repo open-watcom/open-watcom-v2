@@ -174,7 +174,7 @@ pch_status PCHReadTokenLocns( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitTokenLocns( boolean writing )
+pch_status PCHInitTokenLocns( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveSYMBOL_LOCN ) );
@@ -185,7 +185,7 @@ pch_status PCHInitTokenLocns( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniTokenLocns( boolean writing )
+pch_status PCHFiniTokenLocns( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveSYMBOL_LOCN );

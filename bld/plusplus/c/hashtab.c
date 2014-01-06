@@ -205,8 +205,8 @@ void HashDestroy( HASHTAB hash )
     CarveFree( carveHASHTAB, hash );
 }
 
-boolean HashEmpty( HASHTAB hash )
-/*******************************/
+bool HashEmpty( HASHTAB hash )
+/****************************/
 {
     if( hash->avg == 0 && hash->remainder == 0 ) {
         return( TRUE );
@@ -556,8 +556,8 @@ HASHTAB HashMapIndex( HASHTAB i )
     return( CarveMapIndex( carveHASHTAB, i ) );
 }
 
-pch_status PCHInitHashTables( boolean writing )
-/*********************************************/
+pch_status PCHInitHashTables( bool writing )
+/******************************************/
 {
     unsigned i;
 
@@ -577,8 +577,8 @@ pch_status PCHInitHashTables( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniHashTables( boolean writing )
-/*********************************************/
+pch_status PCHFiniHashTables( bool writing )
+/******************************************/
 {
     unsigned i;
     if( ! writing ) {

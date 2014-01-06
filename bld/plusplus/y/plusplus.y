@@ -846,7 +846,7 @@ postfix-expression-before-dot
     : postfix-expression
     {
         PTREE AnalyseNode( PTREE );
-        boolean AnalyseLvalue( PTREE * );
+        bool AnalyseLvalue( PTREE * );
 
         $1 = PTreeTraversePostfix( $1, &AnalyseNode );
         if( ! ( $1->flags & PTF_LV_CHECKED ) ) {
@@ -882,7 +882,7 @@ postfix-expression-before-arrow
     : postfix-expression
     {
         PTREE AnalyseNode( PTREE );
-        boolean AnalyseLvalue( PTREE * );
+        bool AnalyseLvalue( PTREE * );
         PTREE OverloadOperator( PTREE );
 
         $1 = PTreeTraversePostfix( $1, &AnalyseNode );

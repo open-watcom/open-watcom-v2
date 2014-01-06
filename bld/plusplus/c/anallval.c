@@ -87,10 +87,10 @@ TYPE LvalueErrLeft(             // NOT-LVALUE ERROR (LEFT NODE)
 }
 
 
-static boolean requiresThis(    // TEST IF SYMBOL REQUIRES A THIS
+static bool requiresThis(       // TEST IF SYMBOL REQUIRES A THIS
     SYMBOL sym )                // - symbol
 {
-    boolean retn;               // - TRUE ==> requires "this"
+    bool retn;                  // - TRUE ==> requires "this"
     SCOPE func_class_scope;     // - scope for function
 
     if( SymIsClassMember( sym ) ) {
@@ -114,13 +114,13 @@ static boolean requiresThis(    // TEST IF SYMBOL REQUIRES A THIS
 }
 
 
-boolean AnalyseSymbolAccess(    // ANALYSE ACCESS TO SYMBOL
+bool AnalyseSymbolAccess(       // ANALYSE ACCESS TO SYMBOL
     PTREE expr,                 // - expression for errors
     PTREE symbol,               // - symbol being accessed
     PTREE this_expr,            // - expression for "this"
     SYMBOL_DIAG *diag )         // - diagnosis to be used
 {
-    boolean retn;               // - return: TRUE ==> access ok
+    bool retn;                  // - return: TRUE ==> access ok
     SEARCH_RESULT *result;      // - search result
     TOKEN_LOCN err_locn;        // - location for errors
 
@@ -164,10 +164,10 @@ static SYMBOL_DIAG diagMemb =   // diagnosis for member
 };
 
 
-boolean AnalyseThisDataItem(    // ANALYSE "THIS" DATA ITEM IN PARSE TREE
+bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
     PTREE *a_expr )             // - addr[ expression ]
 {
-    boolean retn;               // - return: TRUE ==> ok
+    bool retn;                  // - return: TRUE ==> ok
     PTREE expr;                 // - expression
     SEARCH_RESULT *result;      // - search result for node
     PTREE *r_right;             // - ref[ node for symbol to be adjusted ]
@@ -256,12 +256,12 @@ static PTREE thisPointsNode(    // MAKE this->node
 }
 
 
-static boolean checkConversionLookup( // CHECK RESULT OF CONVERSION LOOKUP
+static bool checkConversionLookup( // CHECK RESULT OF CONVERSION LOOKUP
     SEARCH_RESULT *result,      // - result of lookup
     PTREE conv,                 // - node for conversion routine
     PTREE expr )                // - node being analysed
 {
-    boolean retn;               // - TRUE ==> ok
+    bool retn;                  // - TRUE ==> ok
 
     if( ( result == NULL ) || ( result->sym == NULL ) ) {
         PTreeErrorExpr( conv, ERR_CONVERSION_NOT_DEFINED );
@@ -276,13 +276,13 @@ static boolean checkConversionLookup( // CHECK RESULT OF CONVERSION LOOKUP
 }
 
 
-static boolean checkIdLookup(   // CHECK RESULT OF ID LOOKUP
+static bool checkIdLookup(      // CHECK RESULT OF ID LOOKUP
     SEARCH_RESULT *result,      // - result of lookup
     SCOPE scope,                // - scope for lookup
     PTREE id,                   // - node for id
     PTREE expr )                // - node being analysed
 {
-    boolean retn;               // - TRUE ==> ok
+    bool retn;                  // - TRUE ==> ok
     SYMBOL sym;                 // - a symbol lookup up
     unsigned msg;               // - undeclared sym error message
     NAME name;                  // - id name
@@ -332,11 +332,11 @@ static boolean checkIdLookup(   // CHECK RESULT OF ID LOOKUP
 }
 
 
-static boolean analyseFunction( // ANALYSE FUNCTION NODE
+static bool analyseFunction(    // ANALYSE FUNCTION NODE
     PTREE expr,                 // - original expression
     PTREE func )                // - function node
 {
-    boolean retn;               // - TRUE ==> function ok
+    bool retn;                  // - TRUE ==> function ok
 
     if( ScopeImmediateCheck( func->u.symcg.result ) ) {
         PTreeErrorNode( expr );
@@ -361,12 +361,12 @@ static void checkVolatileVar(   // SET SIDE EFFECT IF VOLATILE VARIABLE
 }
 
 
-static boolean analyseBareSymbol( // ANALYSE AN BARE SYMBOL
+static bool analyseBareSymbol(  // ANALYSE AN BARE SYMBOL
     PTREE *a_expr )             // - addr( symbol entry )
 {
     PTREE expr;                 // - symbol entry
     PTREE alias;                // - alias expr
-    boolean retn;               // - return: TRUE ==> all ok
+    bool retn;                  // - return: TRUE ==> all ok
     SYMBOL sym;                 // - the symbol
 
     expr = *a_expr;
@@ -413,11 +413,11 @@ static boolean analyseBareSymbol( // ANALYSE AN BARE SYMBOL
     return retn;
 }
 
-static boolean massageStaticEnumAccess( // x.static, x.enum adjustments
+static bool massageStaticEnumAccess( // x.static, x.enum adjustments
     PTREE *a_expr )             // - addr( member expr )
 {
 #ifdef OLD_STATIC_MEMBER_ACCESS
-    boolean retn;
+    bool retn;
 
     reduceToRight( a_expr );
     retn = analyseBareSymbol( a_expr );
@@ -425,7 +425,7 @@ static boolean massageStaticEnumAccess( // x.static, x.enum adjustments
     PTREE expr;
     PTREE lhs;
     PTREE rhs;
-    boolean retn;
+    bool retn;
 
     expr = *a_expr;
     DbgAssert( NodeIsBinaryOp( expr, CO_ARROW ) || NodeIsBinaryOp( expr, CO_DOT ) );
@@ -441,11 +441,11 @@ static boolean massageStaticEnumAccess( // x.static, x.enum adjustments
 }
 
 
-static boolean analyseMemberExpr( // ANALYSE A MEMBER EXPRESION
+static bool analyseMemberExpr(  // ANALYSE A MEMBER EXPRESION
     PTREE *a_expr )             // - addr( member expression )
 {
     PTREE expr;                 // - symbol entry
-    boolean retn;               // - return value
+    bool retn;                  // - return value
     SYMBOL sym;                 // - the symbol
 
     expr = *a_expr;
@@ -480,11 +480,11 @@ static boolean analyseMemberExpr( // ANALYSE A MEMBER EXPRESION
 }
 
 
-static boolean analyseSymbol(   // ANALYSE AN UNDECORATED SYMBOL
+static bool analyseSymbol(      // ANALYSE AN UNDECORATED SYMBOL
     PTREE *a_expr )             // - addr( symbol entry )
 {
     PTREE expr;                 // - symbol entry
-    boolean retn;               // - return value
+    bool retn;                  // - return value
     SYMBOL sym;                 // - the symbol
 
     expr = *a_expr;
@@ -509,7 +509,7 @@ static boolean analyseSymbol(   // ANALYSE AN UNDECORATED SYMBOL
 }
 
 
-static boolean analyseMember(   // ANALYSE A MEMBER NODE
+static bool analyseMember(      // ANALYSE A MEMBER NODE
     PTREE *a_expr,              // - addr( expression for member )
     SCOPE start,                // - scope to start lookup
     SCOPE disamb )              // - scope to disambiguate
@@ -517,7 +517,7 @@ static boolean analyseMember(   // ANALYSE A MEMBER NODE
     PTREE member;               // - node for member
     PTREE expr;                 // - expression
     SEARCH_RESULT *result;      // - result of search
-    boolean retn = FALSE;       // - TRUE ==> ok
+    bool retn = FALSE;          // - TRUE ==> ok
 
     expr = *a_expr;
     member = PTreeOpRight( expr );
@@ -547,11 +547,11 @@ static boolean analyseMember(   // ANALYSE A MEMBER NODE
 }
 
 
-static boolean simpleTypeDtor(  // TEST IF DTOR OF A SIMPLE TYPE
+static bool simpleTypeDtor(     // TEST IF DTOR OF A SIMPLE TYPE
     TYPE type,                  // - type to be DTOR'd
     PTREE expr )                // - "->" or "." expression
 {
-    boolean retn;               // - return: TRUE ==> is DTOR of simple type
+    bool retn;                  // - return: TRUE ==> is DTOR of simple type
     PTREE right;                // - right  operand
 
     type = type;                // may have to check some day
@@ -572,14 +572,14 @@ static boolean simpleTypeDtor(  // TEST IF DTOR OF A SIMPLE TYPE
 }
 
 
-static boolean analyseDtor(     // ANALYSE A DTOR CALL
+static bool analyseDtor(        // ANALYSE A DTOR CALL
     PTREE *a_expr,              // - addr[ DTOR expression, before lookup ]
     SCOPE scope,                // - scope of object
     SCOPE disamb )              // - NULL or disambiguating scope
 {
     PTREE expr;                 // - DTOR expression, before lookup
     PTREE dtor;                 // - possible DTOR symbol
-    boolean retn;               // - return: TRUE ==> everything ok
+    bool retn;                  // - return: TRUE ==> everything ok
     SEARCH_RESULT *result;      // - result of search
 
     expr = *a_expr;
@@ -616,11 +616,11 @@ static boolean analyseDtor(     // ANALYSE A DTOR CALL
 }
 
 
-static boolean analyseMembRight(// ANALYSE MEMBER ON RIGHT
+static bool analyseMembRight(   // ANALYSE MEMBER ON RIGHT
     PTREE *a_expr,              // - addr( expression for member )
     TYPE type )                 // - type for class on left
 {
-    boolean retn = FALSE;       // - return: TRUE ==> is ok
+    bool retn = FALSE;          // - return: TRUE ==> is ok
     PTREE expr;                 // - operation
     PTREE right;                // - right operand
     SCOPE scope;                // - scope for class
@@ -755,10 +755,10 @@ static TYPE analyseClassLeft(   // ANALYSE A CLASS ON LEFT
 }
 
 
-static boolean analyseClQual(   // ANALYSE :: operator
+static bool analyseClQual(      // ANALYSE :: operator
     PTREE *a_expr )             // - addr( expression to be analysed )
 {
-    boolean retn;               // - return: TRUE ==> all ok
+    bool retn;                  // - return: TRUE ==> all ok
     PTREE expr;                 // - expression to be analysed
     SCOPE start;                // - starting scope
     SCOPE disam;                // - disambiguating scope
@@ -798,12 +798,12 @@ static boolean analyseClQual(   // ANALYSE :: operator
 }
 
 
-boolean AnalyseLvalue(          // ANALYSE AN LVALUE
+bool AnalyseLvalue(             // ANALYSE AN LVALUE
     PTREE *a_expr )             // - addr( expression to be analysed )
 {
     PTREE expr;                 // - expression to be analysed
     PTREE right;                // - expression on right
-    boolean retn;               // - return: TRUE ==> all ok
+    bool retn;                  // - return: TRUE ==> all ok
     SEARCH_RESULT *result;      // - result of lookup
 
     DbgStmt( retn = UNKNOWN );
@@ -864,10 +864,10 @@ boolean AnalyseLvalue(          // ANALYSE AN LVALUE
 }
 
 
-boolean AnalyseLvalueAddrOf(    // ANALYSE LVALUE FOR "&"
+bool AnalyseLvalueAddrOf(       // ANALYSE LVALUE FOR "&"
     PTREE *a_expr )             // - addr[ expression to be analysed ]
 {
-    boolean retn;               // - return: TRUE ==> all ok
+    bool retn;                  // - return: TRUE ==> all ok
     SYMBOL sym;                 // - symbol
 
     if( NodeIsBinaryOp( *a_expr, CO_COLON_COLON ) ) {
@@ -968,7 +968,7 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
     return expr;
 }
 
-static boolean diagnoseOffsetof(// DIAGNOSE ERROR IN OFFSETOF
+static bool diagnoseOffsetof(   // DIAGNOSE ERROR IN OFFSETOF
     PTREE id,                   // - node for id
     SYMBOL sym )                // - member symbol
 {

@@ -98,13 +98,13 @@ SYMBOL SymBindConstant              // BIND A CONSTANT TO A SYMBOL
     ( SYMBOL sym                    // - the symbol
     , signed_64 con )               // - the constant
 ;
-boolean SymCDtorExtraParm(      // does the CTOR/DTOR need the extra int arg?
+bool SymCDtorExtraParm(         // does the CTOR/DTOR need the extra int arg?
     SYMBOL sym )                // - the symbol
 ;
 TYPE SymClass(                  // GET TYPE FOR CLASS CONTAINING A SYMBOL
     SYMBOL sym )                // - the symbol
 ;
-boolean SymClassCorrupted(      // TEST IF SYMBOL'S CLASS CORRUPTED
+bool SymClassCorrupted(         // TEST IF SYMBOL'S CLASS CORRUPTED
     SYMBOL sym )                // - the symbol
 ;
 CLASSINFO *SymClassInfo(        // GET CLASSINFO FOR SYMBOL
@@ -167,163 +167,163 @@ SYMBOL SymIsAnonymous(          // TEST IF SYMBOL IS AN ANONYMOUS UNION MEMBER
     SYMBOL sym )                // - the symbol
 ;
 #ifdef OPT_BR
-boolean SymIsBrowsable          // TEST IF SYMBOL CAN BE BROWSED
+bool SymIsBrowsable             // TEST IF SYMBOL CAN BE BROWSED
     ( SYMBOL sym )              // - the symbol
 ;
 #endif
-boolean SymIsArgument(          // TEST IF SYMBOL IS AN ARGUMENT
+bool SymIsArgument(             // TEST IF SYMBOL IS AN ARGUMENT
     SYMBOL sym )                // - symbol
 ;
-boolean SymIsAutomatic(         // TEST IF SYMBOL IS AUTOMATIC VARIABLE
+bool SymIsAutomatic(            // TEST IF SYMBOL IS AUTOMATIC VARIABLE
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsClass(             // DETERMINE IF SYMBOL IS A CLASS OBJECT
+bool SymIsClass(                // DETERMINE IF SYMBOL IS A CLASS OBJECT
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsClassArray(        // DETERMINE IF SYMBOL IS ARRAY OF CLASS ITEMS
+bool SymIsClassArray(           // DETERMINE IF SYMBOL IS ARRAY OF CLASS ITEMS
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsClassDefinition(   // TEST IF SYMBOL IS TYPEDEF FOR A CLASS
+bool SymIsClassDefinition(      // TEST IF SYMBOL IS TYPEDEF FOR A CLASS
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsClassMember(       // TEST IF SYMBOL IS MEMBER OF CLASS
+bool SymIsClassMember(          // TEST IF SYMBOL IS MEMBER OF CLASS
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsNameSpaceMember(    // TEST IF SYMBOL IS MEMBER OF NAMESPACE
+bool SymIsNameSpaceMember(      // TEST IF SYMBOL IS MEMBER OF NAMESPACE
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsClassTemplateMember(// TEST IF SYMBOL IS MEMBER OF CLASS TEMPLATE
+bool SymIsClassTemplateMember(  // TEST IF SYMBOL IS MEMBER OF CLASS TEMPLATE
     SYMBOL sym )                // - the symbol    \\ i.e., a class instantiation
 ;
-boolean SymIsComdatData(        // TEST IF DATA SYMBOL IS IN COMDAT SEGMENT
+bool SymIsComdatData(           // TEST IF DATA SYMBOL IS IN COMDAT SEGMENT
     SYMBOL sym )                // - data symbol
 ;
 scf_mask SymComdatFunInfo(      // TEST IF FUNCTION IS IN COMDAT SEGMENT
     SYMBOL sym )                // - function symbol
 ;
-boolean SymIsConstant(          // TEST IF SYMBOL IS A CONSTANT
+bool SymIsConstant(             // TEST IF SYMBOL IS A CONSTANT
     SYMBOL sym )                // - symbol
 ;
-boolean SymIsThreaded(          // TEST IF SYMBOL IS A __declspec(thread)
+bool SymIsThreaded(             // TEST IF SYMBOL IS A __declspec(thread)
     SYMBOL sym )                // - symbol
 ;
-boolean SymIsDllImport(         // TEST IF SYMBOL IS A __declspec(dllimport)
+bool SymIsDllImport(            // TEST IF SYMBOL IS A __declspec(dllimport)
     SYMBOL sym )                // - symbol
 ;
-boolean SymIsConversionToType(  // SYMBOL IS operator T()?
+bool SymIsConversionToType(     // SYMBOL IS operator T()?
     SYMBOL sym,                 // - symbol to check
     TYPE type )                 // - type T
 ;
-boolean SymIsCtor(              // TEST IF SYMBOL IS A CTOR FUNCTION
+bool SymIsCtor(                 // TEST IF SYMBOL IS A CTOR FUNCTION
     SYMBOL ctor )               // - potential CTOR function
 ;
-boolean SymIsCtorOrDtor(        // TEST IF SYMBOL IS CTOR OR DTOR
+bool SymIsCtorOrDtor(           // TEST IF SYMBOL IS CTOR OR DTOR
     SYMBOL sym )                // - hopefully, one of them
 ;
-boolean SymIsAssign(            // TEST IF SYMBOL IS "operator ="
+bool SymIsAssign(               // TEST IF SYMBOL IS "operator ="
     SYMBOL op_eq )              // - potential op= function
 ;
-boolean SymIsData(              // TEST IF SYMBOL IS DATA
+bool SymIsData(                 // TEST IF SYMBOL IS DATA
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsDtor(              // TEST IF SYMBOL IS A DTOR FUNCTION
+bool SymIsDtor(                 // TEST IF SYMBOL IS A DTOR FUNCTION
     SYMBOL dtor )               // - potential DTOR function
 ;
-boolean SymIsEnumDefinition(    // TEST IF SYMBOL IS AN ENUMERATION
+bool SymIsEnumDefinition(       // TEST IF SYMBOL IS AN ENUMERATION
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsExtern(            // SYMBOL IS DEFINED OUTSIDE THIS MODULE
+bool SymIsExtern(               // SYMBOL IS DEFINED OUTSIDE THIS MODULE
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsFuncMember(        // TEST IF SYMBOL IS A MEMBER FUNCTION
+bool SymIsFuncMember(           // TEST IF SYMBOL IS A MEMBER FUNCTION
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsFunction(          // TEST IF SYMBOL IS A FUNCTION
+bool SymIsFunction(             // TEST IF SYMBOL IS A FUNCTION
     SYMBOL sym )                // - the function
 ;
 SYMBOL SymIsFunctionTemplateInst(// TEST IF SYMBOL WAS GENERATED FROM A FUNCTION
     SYMBOL sym )                // - symbol                     \\     TEMPLATE
 ;
-boolean SymIsGenedFunc(         // DETERMINE IF SYMBOL IS A GENERATED FUNC.
+bool SymIsGenedFunc(            // DETERMINE IF SYMBOL IS A GENERATED FUNC.
     SYMBOL func )               // - the symbol
 ;
-boolean SymIsHugeData(          // TEST IF SYMBOL IS HUGE DATA
+bool SymIsHugeData(             // TEST IF SYMBOL IS HUGE DATA
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsInjectedTypedef(   // TEST IF SYMBOL IS INJECTED TYPEDEF
+bool SymIsInjectedTypedef(      // TEST IF SYMBOL IS INJECTED TYPEDEF
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsInline(            // TEST IF FUNCTION IS INLINE
+bool SymIsInline(               // TEST IF FUNCTION IS INLINE
     SYMBOL fun )                // - function symbol
 ;
-boolean SymIsInMem(             // TEST IF SYMBOL SHOULD STAY IN MEMORY
+bool SymIsInMem(                // TEST IF SYMBOL SHOULD STAY IN MEMORY
     SYMBOL sym )                // - symbol
 ;
-boolean SymIsModuleDtorable(    // TEST IF SYMBOL IS MODULE-DTORABLE
+bool SymIsModuleDtorable(       // TEST IF SYMBOL IS MODULE-DTORABLE
     SYMBOL sym )                // - a DTORable symbol
 ;
-boolean SymIsNextInitializableMember(// SYMBOL CAN BE BRACE INITIALIZED
+bool SymIsNextInitializableMember(// SYMBOL CAN BE BRACE INITIALIZED
     SYMBOL *prev,               // - previous initializable member
     SYMBOL sym )                // - the member
 ;
-boolean SymIsOpDel(             // TEST IF SYMBOL IS "operator delete"
+bool SymIsOpDel(                // TEST IF SYMBOL IS "operator delete"
     SYMBOL op_del )             // - potential operator delete
 ;
-boolean SymIsOpDelar(           // TEST IF SYMBOL IS "operator delete[]"
+bool SymIsOpDelar(              // TEST IF SYMBOL IS "operator delete[]"
     SYMBOL op_del )             // - potential operator delete[]
 ;
-boolean SymIsPure(              // TEST IF A PURE VIRTUAL FUNCTION
+bool SymIsPure(                 // TEST IF A PURE VIRTUAL FUNCTION
     SYMBOL sym )                // - a function
 ;
-boolean SymIsRegularStaticFunc( // TEST IF SYMBOL IF NON-MEMBER STATIC FUNC.
+bool SymIsRegularStaticFunc(    // TEST IF SYMBOL IF NON-MEMBER STATIC FUNC.
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsStatic(            // DETERMINE IF SYMBOL IS STATIC
+bool SymIsStatic(               // DETERMINE IF SYMBOL IS STATIC
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsStaticData(        // TEST IF SYMBOL IS STATIC DATA ELEMENT
+bool SymIsStaticData(           // TEST IF SYMBOL IS STATIC DATA ELEMENT
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsStaticDataMember(  // TEST IF SYMBOL IS STATIC DATA MEMBER
+bool SymIsStaticDataMember(     // TEST IF SYMBOL IS STATIC DATA MEMBER
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsStaticFuncMember(  // TEST IF SYMBOL IS A STATIC MEMBER FUNC.
+bool SymIsStaticFuncMember(     // TEST IF SYMBOL IS A STATIC MEMBER FUNC.
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsStaticMember(      // TEST IF SYMBOL IS STATIC MEMBER
+bool SymIsStaticMember(         // TEST IF SYMBOL IS STATIC MEMBER
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsTemporary(         // DETERMINE IF INTERNAL SYMBOL
+bool SymIsTemporary(            // DETERMINE IF INTERNAL SYMBOL
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsThisDataMember(    // TEST IF SYMBOL IS THIS DATA MEMBER
+bool SymIsThisDataMember(       // TEST IF SYMBOL IS THIS DATA MEMBER
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsThisFuncMember(    // TEST IF SYMBOL IS A THIS MEMBER FUNC.
+bool SymIsThisFuncMember(       // TEST IF SYMBOL IS A THIS MEMBER FUNC.
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsThisMember(        // TEST IF SYMBOL IS DATA/FUNCTION MEMBER
+bool SymIsThisMember(           // TEST IF SYMBOL IS DATA/FUNCTION MEMBER
     SYMBOL sym )                // - the symbol
 ;
-boolean SymIsThunk(             // DETERMINE IF FUNCTION IS THUNK
+bool SymIsThunk(                // DETERMINE IF FUNCTION IS THUNK
     SYMBOL func )               // - function which is possible thunk
 ;
-boolean SymIsThunkCtorCopy(     // TEST IF COPY CTOR ADDRESSABILITY THUNK
+bool SymIsThunkCtorCopy(        // TEST IF COPY CTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 ;
-boolean SymIsThunkCtorDflt(     // TEST IF DEFAULT CTOR ADDRESSABILITY THUNK
+bool SymIsThunkCtorDflt(        // TEST IF DEFAULT CTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 ;
-boolean SymIsThunkDtor(         // TEST IF DTOR ADDRESSABILITY THUNK
+bool SymIsThunkDtor(            // TEST IF DTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 ;
-boolean SymIsUDC(               // TEST IF SYMBOL IS USER-DEFINED CONVERSION
+bool SymIsUDC(                  // TEST IF SYMBOL IS USER-DEFINED CONVERSION
     SYMBOL udc )                // - symbol in question
 ;
-boolean SymIsVft(               // TEST IF SYMBOL IS VFT SYMBOL
+bool SymIsVft(                  // TEST IF SYMBOL IS VFT SYMBOL
     SYMBOL sym )                // - symbol
 ;
-boolean SymIsVirtual(           // TEST IF FUNCTION IS VIRTUAL
+bool SymIsVirtual(              // TEST IF FUNCTION IS VIRTUAL
     SYMBOL fun )                // - function symbol
 ;
 void SymLocnCopy(               // COPY LOCATION TO SYMBOL FROM ANOTHER SYMBOL
@@ -341,10 +341,10 @@ SYMBOL SymReloc (               // RELOCATE SYMBOL
     SYMBOL src,                 // - source symbol
     RELOC_LIST *reloc_list )    // - reloc list
 ;
-boolean SymRequiresCtoring(     // TEST IF SYMBOL REQUIRES CTOR-ING
+bool SymRequiresCtoring(        // TEST IF SYMBOL REQUIRES CTOR-ING
     SYMBOL sym )                // - the symbol
 ;
-boolean SymRequiresDtoring(     // TEST IF SYMBOL REQUIRES DTOR-ING
+bool SymRequiresDtoring(        // TEST IF SYMBOL REQUIRES DTOR-ING
     SYMBOL sym )                // - the symbol
 ;
 SCOPE SymScope(                 // GET SCOPE FOR SYMBOL

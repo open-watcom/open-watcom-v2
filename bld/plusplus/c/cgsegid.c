@@ -53,8 +53,8 @@ static target_offset_t cgSegIdAlign( SYMBOL sym, type_flag flags )
     return( align );
 }
 
-static boolean cgSegIdConst( SYMBOL sym, type_flag flags, SEGID_CONTROL control )
-/*******************************************************************************/
+static bool cgSegIdConst( SYMBOL sym, type_flag flags, SEGID_CONTROL control )
+/****************************************************************************/
 {
     if(( flags & TF1_CONST ) == TF1_NULL ) {
         // symbol is not declared const
@@ -226,7 +226,7 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
     } else if( flags & TF1_FAR ) {
         id = cgSegIdFarVariable( sym, flags, size, control );
     } else {
-        boolean assume_near = TRUE;
+        bool assume_near = TRUE;
         if( IsBigData() ) {
             if( flags & TF1_DEFAULT_FAR ) {
                 assume_near = FALSE;

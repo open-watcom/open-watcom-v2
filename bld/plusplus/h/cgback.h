@@ -64,7 +64,7 @@ void CgBackFreeIndCall(         // FREE INDIRECT-CALL SYMBOL
 void CgBackFreeIndCalls(        // FREE ALL INDIRECT-CALL SYMBOLS
     void )
 ;
-boolean CgBackFuncInlined(      // DETERMINE IF FUNCTION INVOCATION INLINED
+bool CgBackFuncInlined(         // DETERMINE IF FUNCTION INVOCATION INLINED
     SYMBOL sym )                // - function symbol
 ;
 fe_seg_id CgBackGenLabel(       // GENERATE A LABEL
@@ -80,9 +80,9 @@ unsigned CgBackGetInlineDepth(  // GET MAXIMUM INLINE DEPTH
     void )
 ;
 void CgBackSetInlineRecursion(  // SET INLINE RECURSION
-    boolean allowed )           // - TRUE ==> inline recursion allowed
+    bool allowed )              // - TRUE ==> inline recursion allowed
 ;
-boolean CgBackGetInlineRecursion(// GET INLINE RECURSION
+bool CgBackGetInlineRecursion(  // GET INLINE RECURSION
     void )
 ;
 void CgBackPopBlocks(           // POP BLOCKS

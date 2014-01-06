@@ -151,7 +151,7 @@ static SYMBOL checkDeleteResult( // CHECK ACCESS FOR DELETE SEARCH_RESULT
     SYMBOL sym,                 // - delete operator
     SEARCH_RESULT* result,      // - search result
     TOKEN_LOCN *locn,           // - error location
-    boolean compiling_dtor )    // - TRUE ==> compiling delete inside DTOR
+    bool compiling_dtor )       // - TRUE ==> compiling delete inside DTOR
 {
     if( result != NULL ) {
         ScopeResultErrLocn( result, locn );
@@ -169,7 +169,7 @@ static SYMBOL checkDeleteAccess( // CHECK ACCESS OF DELETE OPERATOR
     SCOPE scope,                // - scope for operator
     unsigned *num_args,         // - number of arguments
     TOKEN_LOCN *locn,           // - error location
-    boolean compiling_dtor )    // - TRUE ==> compiling delete inside DTOR
+    bool compiling_dtor )       // - TRUE ==> compiling delete inside DTOR
 {
     SYMBOL sym;                 // - delete operator
     SEARCH_RESULT *result;      // - search result
@@ -537,7 +537,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
             unsigned rt_code;       // - run-time function code
             PTREE args;             // - run-time call arguments
             TYPE_SIG *sig;          // - type signature for class
-            boolean errors;         // - TRUE ==> errors
+            bool errors;            // - TRUE ==> errors
             TYPE_SIG_ACCESS acc;    // - rtn.s to be accessed
             if( flag.needs_dtor ) {
                 acc = TSA_DTOR | TSA_DEFAULT_CTOR;
@@ -672,7 +672,7 @@ static PTREE setDeleteType( PTREE expr, TOKEN_LOCN *locn )
 
 PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     PTREE expr,                 // - delete expression
-    boolean in_dtor )           // - TRUE ==> call from inside DTOR
+    bool in_dtor )              // - TRUE ==> call from inside DTOR
 {
     CGOP oper;                  // - operator (original)
     CGOP del_op;                // - delete operator class
@@ -816,7 +816,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     }
                 } else if( flag.array_delete ) {
                     // handle cases: 4, 6
-                    boolean errors; // - errors accessing DTOR
+                    bool errors;    // - errors accessing DTOR
                     TYPE_SIG* sig;  // - class type signature
                     sig = TypeSigFind( TSA_DTOR, cltype, &err_locn, &errors );
                     if( !errors ) {

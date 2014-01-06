@@ -91,7 +91,7 @@ static unsigned parm_no;            // parm # being defined
         }
     }
 
-    boolean IbpEmpty(               // DEBUG -- verify empty
+    bool IbpEmpty(                  // DEBUG -- verify empty
         void )
     {
         return ibrps == NULL;
@@ -216,14 +216,14 @@ void IbpDefineIndex(            // DEFINE CURRENT PARAMETER INDEX
 }
 
 
-boolean IbpReference(           // LOCATE A BOUND REFERENCE
+bool IbpReference(              // LOCATE A BOUND REFERENCE
     SYMBOL sym,                 // - original symbol
     SYMBOL *trans,              // - addr[ translated symbol ]
     SYMBOL *bound,              // - addr[ bound reference ]
     target_offset_t *offset )   // - addr[ offset from bound reference ]
 {
     IBRP *ibrp;                 // - current inline bound reference parm.
-    boolean retn;               // - TRUE ==> bound was located
+    bool retn;                  // - TRUE ==> bound was located
     FN_CTL* fctl;               // - current file control
 
     fctl = FnCtlTop();
@@ -478,14 +478,14 @@ cg_name IbpFetchVbRef(          // MAKE A REFERENCE FROM A BOUND PARAMETER
 //  - inline calls another inline (inline will not necessarily force out
 //    other inlines)
 //
-static boolean locatedVFun(     // LOCATE VIRTUAL FUNCTION FOR BASE
+static bool locatedVFun(        // LOCATE VIRTUAL FUNCTION FOR BASE
     SYMBOL sym,                 // - symbol
     SYMBOL vfun,                // - original virtual function
     SYMBOL* a_vfun,             // - addr[ virtual function for base ]
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn)// - addr[ return adjustment ]
 {
-    boolean retn;               // - TRUE ==> can directly call *a_vfun
+    bool retn;                  // - TRUE ==> can directly call *a_vfun
     SYMBOL exact_vfun;          // - exact vfun called
 
     exact_vfun = ScopeFindExactVfun( vfun
@@ -531,7 +531,7 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
     SYMBOL vf_this,             // - original symbol (for access)
     target_offset_t vf_offset,  // - offset to vf table ptr
     vindex vf_index,            // - index in vf table
-    boolean* is_vcall,          // - addr[ TRUE ==> real virtual call ]
+    bool *is_vcall,             // - addr[ TRUE ==> real virtual call ]
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn,// - addr[ return adjustment ]
     SYMBOL* a_exact_vfun )      // - addr[ exact vfun to be used ]

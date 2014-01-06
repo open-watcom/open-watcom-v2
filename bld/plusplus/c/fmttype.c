@@ -193,8 +193,8 @@ static void fmtTypeArray( TYPE type, VBUF *pvbuf )
     VbufFree( &working );
 }
 
-static boolean willPrintBased( type_flag flags )
-/**********************************************/
+static bool willPrintBased( type_flag flags )
+/*******************************************/
 {
     return( ( flags & TF1_BASED ) != TF1_NULL );
 }
@@ -403,8 +403,8 @@ static void fmtModifierTypeFlag( TYPE type, type_flag flag, VBUF *pvbuf )
     }
 }
 
-static boolean willPrintModifier( TYPE type, type_flag flag )
-/***********************************************************/
+static bool willPrintModifier( TYPE type, type_flag flag )
+/********************************************************/
 {
     unsigned    i;
     type_flag   mask;

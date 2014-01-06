@@ -1026,8 +1026,8 @@ static void symbolicDebugFundamentalType( void )
     TypeTraverse( TYP_MEMBER_POINTER, &doSymbolicDebugFundamentalType, (void *)&data );
 }
 
-static boolean typedef_is_of_basic_types( TYPE type )
-/***************************************************/
+static bool typedef_is_of_basic_types( TYPE type )
+/************************************************/
 {
     int         i;
     arg_list    *alist;
@@ -1073,8 +1073,8 @@ static void symbolicDebugNamedType( void )
     TypeTraverse( TYP_TYPEDEF, &doSymbolicDebugNamedType, (void *)&data );
 }
 
-void SymbolicDebugGenSymbol( SYMBOL sym, boolean scoped, boolean by_ref )
-/***********************************************************************/
+void SymbolicDebugGenSymbol( SYMBOL sym, bool scoped, bool by_ref )
+/*****************************************************************/
 {
     TYPE        pt;
     dbg_loc     dl;

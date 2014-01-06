@@ -236,7 +236,7 @@ PTREE AnalyseCtorExpr(          // ANALYSE CTOR EXPRESSION
 ;
 PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     PTREE expr,                 // - delete expression
-    boolean in_dtor )           // - TRUE ==> call from inside DTOR
+    bool in_dtor )              // - TRUE ==> call from inside DTOR
 ;
 PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
     TYPE class_type,            // - class to be destructed
@@ -245,7 +245,7 @@ PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
 ;
 PTREE AnalyseInitExpr(          // ANALYZE AN INITIALIZATION EXPRESSION
     PTREE expr,                 // - expresion
-    boolean is_static )         // - is target a static
+    bool is_static )            // - is target a static
 ;
 PTREE AnalyseIntegralExpr(      // ANALYZE AN EXPRESSION, MAKE IT AN INT. VALUE
     PTREE expr )
@@ -254,10 +254,10 @@ void AnalyseIntTrunc(           // ANALYSE INTEGRAL TRUNCATION
     PTREE expr,                 // - expression for error
     TYPE type )                 // - target type
 ;
-boolean AnalyseLvalue(          // ANALYSE AN LVALUE
+bool AnalyseLvalue(             // ANALYSE AN LVALUE
     PTREE *a_expr )             // - addr( expression to be analysed )
 ;
-boolean AnalyseLvalueAddrOf(    // ANALYSE LVALUE FOR "&"
+bool AnalyseLvalueAddrOf(       // ANALYSE LVALUE FOR "&"
     PTREE *a_expr )             // - addr[ expression to be analysed ]
 ;
 PTREE AnalyseLvArrow(           // ANALYSE LVALUE "->"
@@ -301,13 +301,13 @@ PTREE AnalyseStmtExpr(          // ANALYZE A STATEMENT EXPRESSION
 PTREE AnalyseRawExpr(           // ANALYZE A SUB-TREE WITH NO EXTRA SEMANTICS
     PTREE expr )
 ;
-boolean AnalyseSymbolAccess(    // ANALYSE ACCESS TO SYMBOL
+bool AnalyseSymbolAccess(       // ANALYSE ACCESS TO SYMBOL
     PTREE expr,                 // - expression for errors
     PTREE symbol,               // - symbol being accessed
     PTREE this_expr,            // - expression for "this"
     SYMBOL_DIAG *diag )         // - diagnosis to be used
 ;
-boolean AnalyseThisDataItem(    // ANALYSE "THIS" DATA ITEM IN PARSE TREE
+bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
     PTREE *a_expr )             // - addr[ expression ]
 ;
 CNV_RETN AnalyseTypeCtor(       // ANALYSE CONSTRUCTOR FOR A TYPE
@@ -325,7 +325,7 @@ target_size_t ArrayTypeNumberItems( // GET ACTUAL NUMBER OF ITEMS FOR AN ARRAY
 ;
 PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
     TYPE type,                  // - type for class
-    boolean exact )             // - TRUE ==> exact CTORing of classes
+    bool exact )                // - TRUE ==> exact CTORing of classes
 ;
 PTREE CallArgsArrange(          // ARRANGE CALL ARGUMENTS
     TYPE ftype,                 // - function type
@@ -339,7 +339,7 @@ CALL_DIAG* CallDiagFromCnvDiag  // MAKE CALL_DIAG FROM CNV_DIAG
     ( CALL_DIAG* call_diag      // - call diagnosis
     , CNV_DIAG* cnv_diag )      // - conversion diagnosis
 ;
-boolean CastCommonClass         // CAST (IMPLICITLY) TO A COMMON CLASS
+bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
     ( PTREE* a_expr             // - addr[ expression ]
     , CNV_DIAG* diagnosis )     // - diagnosis
 ;
@@ -352,7 +352,7 @@ PTREE CastImplicit              // IMPLICIT CAST
 PTREE CastImplicitCommonPtrExpr // CONVERT TO COMMON PTR EXPRESSION
     ( PTREE expr                // - the expression
     , CNV_DIAG *diagnosis       // - diagnosis
-    , boolean check_cv )        // - TRUE ==> check CV QUALIFICATION
+    , bool check_cv )           // - TRUE ==> check CV QUALIFICATION
 ;
 PTREE CastImplicitRight         // IMPLICIT CAST OF RIGHT OPERAND
     ( PTREE expr                // - expression
@@ -408,7 +408,7 @@ void CgFrontFileScope(          // SET FILE SCOPE
 void CgFrontRetnOptEnd(         // COMPLETE BRACKETTING FOR RETURN OPT.
     void )
 ;
-boolean CgFrontRetnOptVar(      // START BRACKETTING FOR VAR. (RETURN OPT>)
+bool CgFrontRetnOptVar(         // START BRACKETTING FOR VAR. (RETURN OPT>)
     SYMBOL var )                // - the symbol
 ;
 void CgFrontFini(               // RELEASE ANY FRONT-END CODE GENERATION MEMORY
@@ -494,13 +494,13 @@ void CgFrontSwitchBeg(          // START A SWITCH STATEMENT
 ;
 void CgFrontSwitchCase(         // CASE STATEMENT IN SWITCH STATEMENT
     SCOPE scope_sw,             // - scope for switch jump
-    boolean deadcode,           // - dead-code state
+    bool deadcode,              // - dead-code state
     TOKEN_LOCN *posn,           // - source-file position
     uint_32 value )             // - switch value
 ;
 void CgFrontSwitchDefault(      // DEFAULT STATEMENT IN SWITCH STATEMENT
     SCOPE scope_sw,             // - scope for switch jump
-    boolean deadcode,           // - dead-code state
+    bool deadcode,              // - dead-code state
     TOKEN_LOCN *posn )          // - source-file position
 ;
 void CgFrontSwitchEnd(          // END A SWITCH STATEMENT
@@ -532,14 +532,14 @@ unsigned CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
     TYPE tgt,                   // - target type
     TYPE src )                  // - source type
 ;
-boolean CharIsPromoted          // CHECK IF char PROMOTED TO int
+bool CharIsPromoted             // CHECK IF char PROMOTED TO int
     ( TYPE src_type             // - source type
     , TYPE tgt_type )           // - target type
 ;
 PTREE CheckCharPromotion        // CHECK FOR CHARACTER-TO-INT promotion
     ( PTREE expr )              // - expression
 ;
-boolean ClassAccessDefaultCopy( // CHECK ACCESS TO DEFAULT COPY CTOR
+bool ClassAccessDefaultCopy(    // CHECK ACCESS TO DEFAULT COPY CTOR
     TYPE type )                 // - type for class
 ;
 PTREE ClassAssign(              // ASSIGNMENT TO CLASS OBJECT
@@ -567,7 +567,7 @@ PTREE ClassDefaultCopyTemp(     // COPY TEMP TO CLASS OBJECT, WITH DIAGNOSIS
     PTREE src,                  // - source expression
     CNV_DIAG *cnvdiag )         // - conversion diagnosis
 ;
-boolean ClassAccessDtor(        // CHECK ACCESS TO DTOR
+bool ClassAccessDtor(           // CHECK ACCESS TO DTOR
     TYPE type )                 // - type for class
 ;
 CNV_RETN ClassDefaultCtorDefine(// DEFINE DEFAULT CTOR FOR A CLASS
@@ -622,7 +622,7 @@ PTREE ConvertCommonReference(   // CONVERT TO COMMON REFERENCE
     PTREE expr,                 // - binary expression
     CNV_DIAG *diagnosis )       // - used to diagnose errors
 ;
-boolean ConvertCommonType(      // CONVERT TO COMMON TYPE (:, ==, !=)
+bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
     PTREE *expr,                // - addr[ expression ]
     CNV_DIAG *diag_class,       // - diagnosis: class
     CNV_DIAG *diag_mem_ptr )    // - diagnosis: member ptr.
@@ -704,7 +704,7 @@ void CtorPrologue(              // GENERATE PROLOGUE FOR CTOR
 void CtorEpilogue(              // GENERATE EPILOGUE FOR CTOR
     SYMBOL ctor )               // - constructor SYMBOL
 ;
-boolean DefargBeingCompiled(    // TEST IF DEFARG-FUNCTION BEING COMPILED
+bool DefargBeingCompiled(       // TEST IF DEFARG-FUNCTION BEING COMPILED
     void )
 ;
 void DgStaticDataMember(        // DATA GENERATE: STATIC DATA MEMBER OF CLASS
@@ -728,7 +728,7 @@ void DgZeroBytes(               // STORE SIZE ZERO BYTES
 void DgStoreString(             // STORE CHARACTER STRING
     PTREE expr )                // - expression for string
 ;
-boolean DgStoreBitfield(        // STORE BITFIELD VALUE
+bool DgStoreBitfield(           // STORE BITFIELD VALUE
     TYPE type,                  // - type of bitfield
     target_ulong value )        // - value to store
 ;
@@ -737,7 +737,7 @@ void DgStoreConstScalar(        // STORE CONST SCALAR IN SYMBOL
     TYPE type,                  // - type of scalar
     SYMBOL sym )                // - symbol to store it in
 ;
-boolean DgStoreScalar(          // STORE SCALAR VALUE
+bool DgStoreScalar(             // STORE SCALAR VALUE
     PTREE expr,                 // - expression to store (caller must free)
     target_size_t offset,       // - associated offset
     TYPE type )                 // - type to store
@@ -758,7 +758,7 @@ void DtorEpilogue(              // GENERATE EPILOGUE FOR DTOR
     CGLABEL end,                // - "real" end of dtor
     CGFILE_INS *rtbeg )         // - position for run-time call
 ;
-boolean GeneratedDefaultFunction(// IS SYMBOL A DEFAULT CTOR,COPY, OR DTOR?
+bool GeneratedDefaultFunction(  // IS SYMBOL A DEFAULT CTOR,COPY, OR DTOR?
     SYMBOL sym )                // - symbol to check
 ;
 PTREE EffectCtor(               // EFFECT A CONSTRUCTION
@@ -779,7 +779,7 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
 TYPE EnumTypeForType(           // GET ENUM TYPE FOR TYPE OR REFERENCE TO IT
     TYPE type )                 // - input type
 ;
-boolean ExprIsLvalue            // TEST IF EXPRESSION IS LVALUE
+bool ExprIsLvalue               // TEST IF EXPRESSION IS LVALUE
     ( PTREE expr )              // - expression
 ;
 void GenerateDefaultCtor(       // EMIT A DEFAULT CTOR
@@ -825,7 +825,7 @@ arg_list *MakeMockArgList(      // ALLOCATE MOCK ARG.LIST FOR OVERLOADING
 PTREE MakeNodeSymbol(           // MAKE PT_SYMBOL NODE FROM SYMBOL
     SYMBOL sym )                // - symbol
 ;
-boolean MainProcedure(          // DETECT IF SYMBOL IS "MAIN" procedure
+bool MainProcedure(             // DETECT IF SYMBOL IS "MAIN" procedure
     SYMBOL sym )                // - symbol
 ;
 void MainProcSetup(             // SETUP FOR "MAIN"
@@ -857,7 +857,7 @@ TYPE MembPtrDerefFnPtr(         // GET TYPE OF DE-REFERENCING FUNC. POINTER
 PTREE MembPtrExtend             // FAKE AN ADDRESS-OF NODE FOR BARE FUNCTION
     ( PTREE expr )              // - expression
 ;
-boolean MembPtrExtension        // TEST IF EXTENDED FUNCTION MEMBER PTR
+bool MembPtrExtension           // TEST IF EXTENDED FUNCTION MEMBER PTR
     ( PTREE expr )              // - expression
 ;
 PTREE MembPtrFuncArg(           // EXPRESSION FOR FUNCTION ARGUMENT
@@ -867,7 +867,7 @@ CNV_RETN MembPtrReint(          // REINTERPRET A MEMBER POINTER
     PTREE *a_expr,              // - addr[ conversion expression, not class ]
     TYPE tgt_type )             // - target type (member-pointer)
 ;
-boolean MembPtrZeroConst(       // DETERMINE IF ZERO MEMBER-PTR CONSTANT
+bool MembPtrZeroConst(          // DETERMINE IF ZERO MEMBER-PTR CONSTANT
     PTREE expr )                // - CO_MEMPTR_CONST expression
 ;
 PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
@@ -891,7 +891,7 @@ PTREE NodeArgument(             // MAKE AN ARGUMENT NODE
 PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
     PTREE args,                 // - other arguments
     TYPE type,                  // - type for class
-    boolean exact )             // - TRUE ==> exact CTORing of classes
+    bool exact )                // - TRUE ==> exact CTORing of classes
 ;
 PTREE NodeArguments(            // MAKE A LIST OF ARGUMENTS
     PTREE arg,                  // - first arg
@@ -922,7 +922,7 @@ PTREE NodeBinary(               // MAKE A BINARY NODE
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 ;
-boolean NodeBitField(           // TEST IF NODE IS A BIT FIELD
+bool NodeBitField(              // TEST IF NODE IS A BIT FIELD
     PTREE node )                // - the node
 ;
 PTREE NodeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
@@ -934,7 +934,7 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
     PTREE arg,                  // - arguments
     unsigned count )            // - number of arguments
 ;
-boolean NodeCallsCtor(          // DETERMINE IF NODE CALLS CTOR
+bool NodeCallsCtor(             // DETERMINE IF NODE CALLS CTOR
     PTREE node )                // - a call node
 ;
 PTREE NodeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
@@ -985,7 +985,7 @@ PTREE NodeConvert(              // MAKE A CONVERSION NODE
     TYPE type,                  // - type for conversion
     PTREE expr )                // - expression to be converted
 ;
-boolean NodeConvertArgument(    // CONVERT AN ARGUMENT VALUE
+bool NodeConvertArgument(       // CONVERT AN ARGUMENT VALUE
     PTREE *a_expr,              // - addr( argument value )
     TYPE proto )                // - prototype type
 ;
@@ -1013,7 +1013,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
     PTREE *expr,                // - addr( ptr to be converted )
     TYPE base,                  // - base type
     SEARCH_RESULT *result,      // - search result
-    boolean positive )          // - TRUE ==> use positive value
+    bool positive )             // - TRUE ==> use positive value
 ;
 PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     PTREE expr,                 // - expr to cast
@@ -1025,7 +1025,7 @@ PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
     PTREE tgt,                  // - target object (LVALUE)
     PTREE src )                 // - source object (RVALUE)
 ;
-boolean NodeDerefPtr(           // DEREFERENCE A POINTER
+bool NodeDerefPtr(              // DEREFERENCE A POINTER
     PTREE *a_ptr )              // - addr[ ptr operand ]
 ;
 PTREE NodeDone(                 // MAKE A NODE-DONE
@@ -1072,7 +1072,7 @@ PTREE NodeGetCallExpr(          // POINT AT CALL EXPRESSION
 PTREE NodeGetConstantNode(      // RETURN CONSTANT NODE
     PTREE node )                // - node
 ;
-boolean NodeGetIbpSymbol(       // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
+bool NodeGetIbpSymbol(          // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
     PTREE node,                 // - node
     SYMBOL* a_ibp,              // - bound parameter to use
     target_offset_t* a_offset ) // - addr[ offset to basing symbol ]
@@ -1094,38 +1094,38 @@ PTREE NodeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
 #ifdef NDEBUG
 #define NodeIsBinaryOp(node,op) ___NodeIsOp(node,op)
 #else
-boolean NodeIsBinaryOp(         // TEST IF BINARY OPERATION OF GIVEN TYPE
+bool NodeIsBinaryOp(            // TEST IF BINARY OPERATION OF GIVEN TYPE
     PTREE node,                 // - node
     CGOP operation )            // - operation
 ;
 #endif
-boolean NodeIsConstantInt(      // TEST IF A CONSTANT INT NODE
+bool NodeIsConstantInt(         // TEST IF A CONSTANT INT NODE
     PTREE node )                // - node
 ;
-boolean NodeIsConstant(         // TEST IF A CONSTANT NODE
+bool NodeIsConstant(            // TEST IF A CONSTANT NODE
     PTREE node )                // - node
 ;
 #if 0 // not used
-boolean NodeIsCppFuncCall(      // DETERMINE IF NODE IS CALL TO C++ FUNCTION
+bool NodeIsCppFuncCall(         // DETERMINE IF NODE IS CALL TO C++ FUNCTION
     PTREE node )                // - node
 ;
 #endif
-boolean NodeIsIntConstant       // TEST IF INTEGRAL CONSTANT AND GET VALUE
+bool NodeIsIntConstant          // TEST IF INTEGRAL CONSTANT AND GET VALUE
     ( PTREE node                // - potential constant node
     , INT_CONSTANT* pval )      // - addr[ value ]
 ;
 #ifdef NDEBUG
 #define NodeIsUnaryOp(node,op) ___NodeIsOp(node,op)
 #else
-boolean NodeIsUnaryOp(          // TEST IF UNARY OPERATION OF GIVEN TYPE
+bool NodeIsUnaryOp(             // TEST IF UNARY OPERATION OF GIVEN TYPE
     PTREE node,                 // - node
     CGOP operation )            // - operation
 ;
 #endif
-boolean NodeIsZeroConstant(     // TEST IF A ZERO CONSTANT
+bool NodeIsZeroConstant(        // TEST IF A ZERO CONSTANT
     PTREE node )                // - node
 ;
-boolean NodeIsZeroIntConstant(  // TEST IF A ZERO INTEGER CONSTANT
+bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
     PTREE node )                // - node
 ;
 PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
@@ -1158,7 +1158,7 @@ PTREE NodeMarkRvalue(           // SET TYPE, FLAGS FOR LVALUE
 PTREE NodeModInitTemporary(     // CREATE TEMP NODE (STATIC IF IN MODULE-INIT)
     TYPE type )                 // - type of temporary
 ;
-boolean NodeNonConstRefToTemp(  // CHECK IF TEMP. PASSED AS NON-CONST REF
+bool NodeNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
     TYPE arg_type,              // - possible non-const reference
     PTREE node )                // - possible temporary
 ;
@@ -1186,10 +1186,10 @@ PTREE NodePruneRight(            // PRUNE RIGHT OPERAND
 PTREE NodePruneTop(             // PRUNE TOP OPERAND
     PTREE expr )                // - expression
 ;
-boolean NodePtrNonZero(         // TEST IF A PTR NODE IS ALWAYS NON-ZERO
+bool NodePtrNonZero(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
     PTREE node )                // - node to be tested
 ;
-boolean NodeReferencesTemporary( // CHECK IF NODE PRODUCES OR IS TEMPORARY
+bool NodeReferencesTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY
     PTREE node )                // - possible temporary
 ;
 PTREE NodeRemoveCasts(          // REMOVE CASTING FROM NODE
@@ -1301,16 +1301,16 @@ PTREE NodeZero                  // BUILD A ZERO NODE
 PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
     PTREE op )                  // - node containing operator
 ;
-boolean PointerToFuncEquivalent( // TEST IF EQUIVALENT TO PTR(FUNCTION)
+bool PointerToFuncEquivalent(   // TEST IF EQUIVALENT TO PTR(FUNCTION)
     TYPE type )
 ;
 unsigned PtrConvertCommon(      // CONVERT TO COMMON PTR
     PTREE expr )                // - expression
 ;
-boolean ReverseParms(           // ASK IF PRAGMA REQUIRES REVERSED PARMS
+bool ReverseParms(              // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
 ;
-boolean PragmaName(             // RETURN TRUE IF NAME OF PRAGMA IS SIMPLE
+bool PragmaName(                // RETURN TRUE IF NAME OF PRAGMA IS SIMPLE
     AUX_INFO *pragma,           // - pragma
     char **id )                 // - returned name
 ;
@@ -1365,13 +1365,13 @@ TYPE TypeAutoDefault(           // ADD NEAR QUALIFIER FOR AUTO SYMBOL
 TYPE TypeConvertFromPcPtr(      // TRANSFORM TYPE AFTER CONVERSION FROM PC PTR
     TYPE type )                 // - pointer type
 ;
-boolean TypeDefedNonAbstract    // REQUIRE DEFINED, NON-ABSTRACT TYPE
+bool TypeDefedNonAbstract       // REQUIRE DEFINED, NON-ABSTRACT TYPE
     ( TYPE type                 // - the type
     , PTREE expr                // - NULL or expression for error
     , MSG_NUM msg_abstract      // - message when abstract
     , MSG_NUM msg_undefed )     // - message when undefined
 ;
-boolean TypeExactDtorable(      // TEST IF EXACT TYPE REALLY NEEDS DTOR'ING
+bool TypeExactDtorable(         // TEST IF EXACT TYPE REALLY NEEDS DTOR'ING
     TYPE type )                 // - declared type
 ;
 TYPE TypeForLvalue              // GET TYPE FOR LVALUE
@@ -1380,14 +1380,14 @@ TYPE TypeForLvalue              // GET TYPE FOR LVALUE
 TYPE TypeFunctionCalled(        // GET FUNCTION DECLARATION TYPE CALLED
     TYPE type )                 // - function type called
 ;
-boolean TypeHasDtorableObjects( // TEST IF TYPE HAS DTORABLE SUB-OBJECTS
+bool TypeHasDtorableObjects(    // TEST IF TYPE HAS DTORABLE SUB-OBJECTS
     TYPE type )                 // - a class type
 ;
-boolean TypeIsBasedPtr(         // SEE IF A PTR TO BASED ITEM
+bool TypeIsBasedPtr(            // SEE IF A PTR TO BASED ITEM
     TYPE type )                 // - the type
 ;
 #if 0 // not used
-boolean TypeIsCppFunc(          // TEST IF C++ FUNCTION TYPE
+bool TypeIsCppFunc(             // TEST IF C++ FUNCTION TYPE
     TYPE type )                 // - type to be tested
 ;
 #endif
@@ -1398,10 +1398,10 @@ TYPE TypeMergeForMember(        // CREATE MERGED TYPE FOR A MEMBER
 PC_PTR TypePcPtr(               // CLASSIFY PTR FOR PC
     type_flag flag )            // - modifier flags for pointed item
 ;
-boolean TypeReallyDefCtorable(  // TEST IF TYPE REALLY NEEDS DEFAULT CTOR'ING
+bool TypeReallyDefCtorable(     // TEST IF TYPE REALLY NEEDS DEFAULT CTOR'ING
     TYPE type )                 // - declared type
 ;
-boolean TypeReallyDtorable(     // TEST IF TYPE REALLY NEEDS DTOR'ING
+bool TypeReallyDtorable(        // TEST IF TYPE REALLY NEEDS DTOR'ING
     TYPE type )                 // - declared type
 ;
 TYPE TypeRebuildPcPtr(          // REBUILD PC-PTR TYPE
@@ -1412,16 +1412,16 @@ TYPE TypeRebuildPcPtr(          // REBUILD PC-PTR TYPE
 TYPE TypeReferenced(            // GET TYPE OR TYPE REFERENCED
     TYPE type )                 // - original type
 ;
-boolean TypeRequiresRWMemory(   // TEST IF TYPE MUST BE IN NON-CONST STORAGE
+bool TypeRequiresRWMemory(      // TEST IF TYPE MUST BE IN NON-CONST STORAGE
     TYPE type )                 // - type
 ;
-boolean TypeRequiresCtoring(    // TEST IF TYPE MUST BE CTOR'ED
+bool TypeRequiresCtoring(       // TEST IF TYPE MUST BE CTOR'ED
     TYPE type )                 // - type
 ;
-boolean TypeRequiresCtorParm(   // TEST IF EXTRA CTOR PARM REQUIRED
+bool TypeRequiresCtorParm(      // TEST IF EXTRA CTOR PARM REQUIRED
     TYPE type )                 // - the type
 ;
-boolean TypeRequiresDtoring(    // TEST IF TYPE MUST BE DTOR'ED
+bool TypeRequiresDtoring(       // TEST IF TYPE MUST BE DTOR'ED
     TYPE type )                 // - type
 ;
 TYPE TypeSegAddr(               // GET INTERNAL TYPE OF BASE :> ADDRESS
@@ -1448,9 +1448,9 @@ TYPE TypeThisForCall(           // GET "THIS" TYPE FOR A CALL
 ;
 TYPE TypeThisSymbol(            // GET TYPE OF THIS FOR SYMBOL MEMBER
     SYMBOL sym,                 // - symbol
-    boolean reference )         // - use reference?
+    bool reference )            // - use reference?
 ;
-boolean TypeTruncByMemModel(    // TEST TYPE TRUNCATED TO DEF. MEMORY MODEL
+bool TypeTruncByMemModel(       // TEST TYPE TRUNCATED TO DEF. MEMORY MODEL
     TYPE type )                 // - the type
 ;
 TYPE TypeUnArithResult(         // TYPE OF UNARY ARITHMETIC RESULT

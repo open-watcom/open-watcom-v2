@@ -153,11 +153,11 @@ typedef enum {
 #include "pcregdef.h"
 
 /* Init function prototypes */
-#define PCH_EXEC( s, g )        extern pch_status PCHInit##g( boolean writing );
+#define PCH_EXEC( s, g )        extern pch_status PCHInit##g( bool writing );
 #include "pcregdef.h"
 
 /* Fini function prototypes */
-#define PCH_EXEC( s, g )        extern pch_status PCHFini##g( boolean writing );
+#define PCH_EXEC( s, g )        extern pch_status PCHFini##g( bool writing );
 #include "pcregdef.h"
 
 /* Relocation function indices */

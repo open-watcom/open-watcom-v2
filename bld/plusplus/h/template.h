@@ -163,36 +163,36 @@ typedef enum tc_fn_control {
     TCF_NULL            = 0x00
 } tc_fn_control;
 
-extern boolean IsTemplateInstantiationActive( void );
+extern bool IsTemplateInstantiationActive( void );
 extern void TemplateDeclInit( TEMPLATE_DATA * );
 extern void TemplateDeclAddArgument( DECL_INFO *new_dinfo );
 extern void TemplateDeclFini( void );
 extern void TemplateFunctionCheck( SYMBOL, DECL_INFO * );
-extern void TemplateFunctionDeclaration( SYMBOL, boolean is_defn );
+extern void TemplateFunctionDeclaration( SYMBOL, bool is_defn );
 extern void TemplateFunctionAttachDefn( DECL_INFO * );
 extern SYMBOL TemplateFunctionGenerate( SYMBOL, arg_list *, PTREE, TOKEN_LOCN * );
 extern void TemplateClassDeclaration( PTREE, SCOPE, NAME );
-extern boolean TemplateClassDefinition( PTREE, SCOPE, NAME );
+extern bool TemplateClassDefinition( PTREE, SCOPE, NAME );
 extern TYPE TemplateClassReference( PTREE, PTREE );
 extern void TemplateHandleClassMember( DECL_INFO * );
-extern void TemplateMemberAttachDefn( DECL_INFO *, boolean );
-extern boolean TemplateProcessInstantiations( void );
+extern void TemplateMemberAttachDefn( DECL_INFO *, bool );
+extern bool TemplateProcessInstantiations( void );
 extern void TemplateFreeDefns( void );
-extern boolean TemplateMemberCanBeIgnored( void );
-extern boolean TemplateVerifyDecl( SYMBOL );
+extern bool TemplateMemberCanBeIgnored( void );
+extern bool TemplateVerifyDecl( SYMBOL );
 extern void TemplateSpecificDefnStart( PTREE, TYPE );
 extern void TemplateSpecificDefnEnd( void );
 extern void TemplateSpecializationDefn( TYPE );
 extern SCOPE TemplateClassInstScope( TYPE );
 extern SCOPE TemplateClassParmScope( TYPE );
-extern boolean TemplateParmEqual( SYMBOL, SYMBOL );
-extern SYMBOL TemplateFunctionTranslate( SYMBOL, boolean, SCOPE * );
+extern bool TemplateParmEqual( SYMBOL, SYMBOL );
+extern SYMBOL TemplateFunctionTranslate( SYMBOL, bool, SCOPE * );
 extern tc_fn_control TemplateFunctionControl( void );
 extern TYPE TemplateUnboundInstantiate( TYPE, arg_list *, TOKEN_LOCN * );
 extern SYMBOL ClassTemplateLookup( SCOPE scope, NAME );
 extern SYMBOL TemplateSymFromClass( TYPE );
 extern void TemplateSetDepth( unsigned );
-extern boolean TemplateUnboundSame( TYPE, TYPE );
+extern bool TemplateUnboundSame( TYPE, TYPE );
 extern void TemplateClassDirective( TYPE, TOKEN_LOCN *, tc_directive );
 extern void TemplateUsingDecl( SYMBOL, TOKEN_LOCN * );
 

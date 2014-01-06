@@ -317,8 +317,8 @@ STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
     return( stringAdd( literal, &uniqueStrings ) );
 }
 
-boolean StringSame( STRING_CONSTANT v1, STRING_CONSTANT v2 )
-/**********************************************************/
+bool StringSame( STRING_CONSTANT v1, STRING_CONSTANT v2 )
+/*******************************************************/
 {
     if( v1->len != v2->len ) {
         return( FALSE );
@@ -367,7 +367,7 @@ static int cmpString( const void *lp, const void *rp )
     return( 0 );
 }
 
-pch_status PCHInitStringPool( boolean writing )
+pch_status PCHInitStringPool( bool writing )
 {
     STRING_CONSTANT curr;
     STRING_CONSTANT *p;
@@ -395,7 +395,7 @@ pch_status PCHInitStringPool( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniStringPool( boolean writing )
+pch_status PCHFiniStringPool( bool writing )
 {
     writing = writing;
     CMemFreePtr( &stringTranslateTable );

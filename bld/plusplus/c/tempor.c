@@ -54,7 +54,7 @@ TEMP_TYPE TemporaryClass(       // SET DEFAULT CLASS FOR TEMPORARIES
 
 static SYMBOL makeTemporary(    // ALLOCATE A TEMPORARY
     TYPE type,                  // - type of temporary
-    boolean storage )           // - allocate storage if needed
+    bool storage )              // - allocate storage if needed
 {
     SYMBOL sym;                 // - symbol for temporary
     NAME name;                  // - name for temporary

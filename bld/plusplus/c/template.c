@@ -160,8 +160,8 @@ static void popInstContext( void )
     StackPop( &(activeInstantiations.inst_stack) );
 }
 
-boolean IsTemplateInstantiationActive( void )
-/*******************************************/
+bool IsTemplateInstantiationActive( void )
+/****************************************/
 {
     return templateData.curr_depth > 0;
 }
@@ -376,11 +376,11 @@ void TemplateDeclAddArgument( DECL_INFO *new_dinfo )
 }
 
 static unsigned getArgList( DECL_INFO *args, TYPE *type_list, NAME *names,
-                            REWRITE **defarg_list, boolean allow_defargs )
+                            REWRITE **defarg_list, bool allow_defargs )
 {
     DECL_INFO *curr;
     unsigned count;
-    boolean prev_defarg;
+    bool prev_defarg;
 
     /*
      * see 14.1 p11:
@@ -559,7 +559,7 @@ SYMBOL ClassTemplateLookup( SCOPE scope, NAME name )
     return( NULL );
 }
 
-static boolean templateArgListsSame( DECL_INFO *args, TEMPLATE_INFO *tinfo )
+static bool templateArgListsSame( DECL_INFO *args, TEMPLATE_INFO *tinfo )
 {
     unsigned curr_count;
     unsigned i;
@@ -581,7 +581,7 @@ static boolean templateArgListsSame( DECL_INFO *args, TEMPLATE_INFO *tinfo )
     return( TRUE );
 }
 
-static boolean sameArgNames( DECL_INFO *args, NAME *names )
+static bool sameArgNames( DECL_INFO *args, NAME *names )
 {
     DECL_INFO *curr;
 
@@ -608,7 +608,7 @@ static NAME *getUniqueArgNames( DECL_INFO *args, TEMPLATE_SPECIALIZATION *tspec 
     return( arg_names );
 }
 
-static boolean templateArgSame( PTREE left, PTREE right )
+static bool templateArgSame( PTREE left, PTREE right )
 {
     if( ( left->op == PT_TYPE ) && ( right->op == PT_TYPE ) ) {
         return TypesIdentical( left->type, right->type );
@@ -658,8 +658,8 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
     TYPE arg_type;
     SYMBOL curr, stop;
     unsigned i;
-    boolean something_went_wrong;
-    boolean is_primary;
+    bool something_went_wrong;
+    bool is_primary;
 
     /* pre-process args */
     DbgAssert( args != NULL );
@@ -812,7 +812,7 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
         } else {
             SCOPE parm_scope;
             unsigned char mask;
-            boolean bound;
+            bool bound;
 
             if( ( nr_specs - 2 ) & 128 ) {
                 /* grow the bitmap as needed */
@@ -897,7 +897,7 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
     TEMPLATE_SPECIALIZATION *tspec;
     REWRITE *defn;
     REWRITE **defarg_list;
-    boolean primary_specialization;
+    bool primary_specialization;
  
     tinfo = old_sym->u.tinfo;
     args = data->args;
@@ -1275,8 +1275,8 @@ void TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
     sym->sym_type = MakePlusPlusFunction( sym->sym_type );
 }
 
-void TemplateFunctionDeclaration( SYMBOL sym, boolean is_defn )
-/*************************************************************/
+void TemplateFunctionDeclaration( SYMBOL sym, bool is_defn )
+/**********************************************************/
 {
     if( sym->u.defn == NULL ) {
         sym->u.defn = newTemplateFunction( sym );
@@ -1372,7 +1372,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
     SCOPE parm_scope;
     arg_list *parms;
     PTREE pparms, pargs;
-    boolean bound;
+    bool bound;
     unsigned i;
     unsigned num_parms, num_args;
     int num_explicit;
@@ -1742,8 +1742,8 @@ void TemplateClassDeclaration( PTREE id, SCOPE scope, NAME name )
     commonTemplateClass( data, id, scope, name );
 }
 
-boolean TemplateClassDefinition( PTREE id, SCOPE scope, NAME name )
-/*****************************************************************/
+bool TemplateClassDefinition( PTREE id, SCOPE scope, NAME name )
+/**************************************************************/
 {
     TEMPLATE_DATA *data;
     TOKEN_LOCN *locn;
@@ -1764,7 +1764,7 @@ boolean TemplateClassDefinition( PTREE id, SCOPE scope, NAME name )
     return( r == NULL );
 }
 
-static boolean okForTemplateParm( PTREE parm )
+static bool okForTemplateParm( PTREE parm )
 {
     SYMBOL sym;
     SCOPE scope;
@@ -1852,7 +1852,7 @@ static PTREE templateParmSimpleEnough( TYPE arg_type, PTREE parm )
     return( parm );
 }
 
-static boolean suitableForIntegralParm( PTREE parm )
+static bool suitableForIntegralParm( PTREE parm )
 {
     switch( parm->op ) {
     case PT_INT_CONSTANT:
@@ -1861,7 +1861,7 @@ static boolean suitableForIntegralParm( PTREE parm )
     return( FALSE );
 }
 
-static boolean suitableForAddressParm( PTREE parm )
+static bool suitableForAddressParm( PTREE parm )
 {
     switch( parm->op ) {
     case PT_SYMBOL:
@@ -1899,7 +1899,7 @@ static PTREE processIndividualParm( TYPE arg_type, PTREE parm )
     return( parm );
 }
 
-static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, boolean *is_generic )
+static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool *is_generic )
 {
     SCOPE save_scope;
     SCOPE parm_scope;
@@ -1909,8 +1909,8 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, boole
     TEMPLATE_SPECIALIZATION *tprimary;
     unsigned num_parms;
     unsigned i;
-    boolean something_went_wrong;
-    boolean inside_decl_scope;
+    bool something_went_wrong;
+    bool inside_decl_scope;
     TOKEN_LOCN start_locn;
 
     something_went_wrong = FALSE;
@@ -2090,7 +2090,7 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, boole
 }
 
 
-static boolean sameConstantInt( SYMBOL s1, SYMBOL s2 )
+static bool sameConstantInt( SYMBOL s1, SYMBOL s2 )
 {
     INT_CONSTANT con1;
     INT_CONSTANT con2;
@@ -2100,8 +2100,8 @@ static boolean sameConstantInt( SYMBOL s1, SYMBOL s2 )
     return 0 == U64Cmp( &con1.u.value, &con2.u.value );
 }
 
-boolean TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
-/*****************************************************/
+bool TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
+/**************************************************/
 {
     SYMBOL sym1;
     SYMBOL sym2;
@@ -2120,7 +2120,7 @@ boolean TemplateParmEqual( SYMBOL parm1, SYMBOL parm2 )
     return( FALSE );
 }
 
-static boolean parmsDifferent( SYMBOL temp_arg, PTREE temp_parm )
+static bool parmsDifferent( SYMBOL temp_arg, PTREE temp_parm )
 {
     SYMBOL sym;
 
@@ -2153,7 +2153,7 @@ static boolean parmsDifferent( SYMBOL temp_arg, PTREE temp_parm )
     return( TRUE );
 }
 
-static boolean sameParms( SCOPE parm_scope, PTREE parms )
+static bool sameParms( SCOPE parm_scope, PTREE parms )
 {
     SYMBOL curr;
     SYMBOL stop;
@@ -2198,7 +2198,7 @@ static SCOPE findInstScope( TEMPLATE_SPECIALIZATION *tspec, PTREE parms,
 
 static CLASS_INST *newClassInstantiation( TEMPLATE_SPECIALIZATION *tspec,
                                           TYPE unbound_type, SCOPE scope,
-                                          boolean specific )
+                                          bool specific )
 {
     CLASS_INST *new_inst;
 
@@ -2273,7 +2273,7 @@ static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
 }
 
 static void injectTemplateParms( TEMPLATE_SPECIALIZATION *tspec, SCOPE scope,
-                                 PTREE parms, boolean unnamed )
+                                 PTREE parms, bool unnamed )
 {
     PTREE list;
     NAME *pname;
@@ -2349,7 +2349,7 @@ static TYPE instantiateClass( TEMPLATE_INFO *tinfo, PTREE parms,
 }
 
 static TYPE createUnboundClass( TEMPLATE_INFO *tinfo,
-                                PTREE parms, boolean is_generic )
+                                PTREE parms, bool is_generic )
 {
     TYPE new_type;
     SCOPE file_scope;
@@ -2390,7 +2390,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
     PTREE spec_list;
     unsigned num_args;
     unsigned i;
-    boolean ambiguous;
+    bool ambiguous;
 
     candidate_list = NULL;
     tprimary = RingFirst( tinfo->specializations );
@@ -2413,7 +2413,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
         spec_list = curr_spec->spec_args;
         if( spec_list != NULL ) {
             SCOPE parm_scope;
-            boolean bound;
+            bool bound;
 
             parm_scope = ScopeCreate( SCOPE_TEMPLATE_SPEC_PARM );
             ScopeSetEnclosing( parm_scope, curr_spec->decl_scope );
@@ -2438,8 +2438,8 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
                  * ordering rules to determine which one to use. */
                 if( candidate_list != NULL ) {
                     RingIterBegSafe( candidate_list, candidate_iter ) {
-                        boolean curr_at_least_as_specialized;
-                        boolean candidate_at_least_as_specialized;
+                        bool curr_at_least_as_specialized;
+                        bool candidate_at_least_as_specialized;
 
                         curr_at_least_as_specialized =
                             curr_spec->ordering[ candidate_iter->idx / 8 ] & ( 1 << ( candidate_iter->idx & 7 ) );
@@ -2535,7 +2535,7 @@ TYPE TemplateClassReference( PTREE tid, PTREE parms )
     TYPE typ;
     TEMPLATE_INFO *tinfo;
     SYMBOL sym;
-    boolean is_generic;
+    bool is_generic;
 
     typ = TypeError;
 
@@ -2765,8 +2765,8 @@ TYPE BoundTemplateClass( TYPE typ )
     return ( ( tptr == NULL ) && ( bound != NULL ) ) ? bound : typ;
 }
 
-TYPE BindTemplateClass( TYPE typ, TOKEN_LOCN *locn, boolean deref_ptrs )
-/**********************************************************************/
+TYPE BindTemplateClass( TYPE typ, TOKEN_LOCN *locn, bool deref_ptrs )
+/*******************************************************************/
 {
     TYPE unbound = typ;
     TYPE bound = NULL;
@@ -2823,8 +2823,8 @@ void TemplateHandleClassMember( DECL_INFO *dinfo )
     FreeDeclInfo( dinfo );
 }
 
-void TemplateMemberAttachDefn( DECL_INFO *dinfo, boolean is_inline )
-/******************************************************************/
+void TemplateMemberAttachDefn( DECL_INFO *dinfo, bool is_inline )
+/***************************************************************/
 {
     CLASS_INST *instance;
     MEMBER_INST *member;
@@ -2851,7 +2851,7 @@ void TemplateMemberAttachDefn( DECL_INFO *dinfo, boolean is_inline )
     member->is_inline = is_inline;
 }
 
-static boolean sameParmArgNames( SCOPE parm_scope, NAME *arg_names )
+static bool sameParmArgNames( SCOPE parm_scope, NAME *arg_names )
 {
     SYMBOL curr;
     SYMBOL stop;
@@ -2957,12 +2957,12 @@ static TYPE classTemplateType( CLASS_INST *instance )
     return( class_sym->sym_type );
 }
 
-static boolean classTemplateWasDefined( CLASS_INST *instance )
+static bool classTemplateWasDefined( CLASS_INST *instance )
 {
     return( TypeDefined( classTemplateType( instance ) ) );
 }
 
-static boolean makeSureSymIsAMember( SCOPE scope, SYMBOL sym )
+static bool makeSureSymIsAMember( SCOPE scope, SYMBOL sym )
 {
     if( templateData.extra_members ) {
         if( ScopeClass( scope ) == NULL ) {
@@ -2974,9 +2974,9 @@ static boolean makeSureSymIsAMember( SCOPE scope, SYMBOL sym )
     return( FALSE );
 }
 
-SYMBOL TemplateFunctionTranslate( SYMBOL sym, boolean friend_fn,
+SYMBOL TemplateFunctionTranslate( SYMBOL sym, bool friend_fn,
                                   SCOPE *parse_scope )
-/**************************************************************/
+/***********************************************************/
 {
     SCOPE sym_scope;
     SYMBOL replace_sym;
@@ -3008,8 +3008,8 @@ tc_fn_control TemplateFunctionControl( void )
 }
 
 
-boolean TemplateVerifyDecl( SYMBOL sym )
-/**************************************/
+bool TemplateVerifyDecl( SYMBOL sym )
+/***********************************/
 {
     SCOPE sym_scope;
 
@@ -3217,8 +3217,8 @@ static void processInstantiationMembers( CLASS_INST *instance )
     ScopeAdjustUsing( NULL, GetCurrScope() );
 }
 
-boolean TemplateProcessInstantiations( void )
-/*******************************************/
+bool TemplateProcessInstantiations( void )
+/****************************************/
 {
     TEMPLATE_INFO *curr_tinfo;
     CLASS_INST *curr_instance;
@@ -3278,8 +3278,8 @@ boolean TemplateProcessInstantiations( void )
     return templateData.keep_going;
 }
 
-boolean TemplateMemberCanBeIgnored( void )
-/****************************************/
+bool TemplateMemberCanBeIgnored( void )
+/*************************************/
 {
     return( templateData.extra_members );
 }
@@ -3388,8 +3388,8 @@ SYMBOL TemplateSymFromClass( TYPE class_type )
     return( sym );
 }
 
-boolean TemplateUnboundSame( TYPE ub1, TYPE ub2 )
-/***********************************************/
+bool TemplateUnboundSame( TYPE ub1, TYPE ub2 )
+/********************************************/
 {
     SYMBOL ub1_curr;
     SYMBOL ub1_stop;
@@ -3774,7 +3774,7 @@ pch_status PCHReadTemplates( void )
     SCOPE scope;
     REWRITE *memb_defn;
     NAME *memb_arg_names;
-    boolean cont;
+    bool cont;
     auto cvinit_t data;
 
     PCHReadVar( templateData.max_depth );
@@ -3902,7 +3902,7 @@ pch_status PCHReadTemplates( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitTemplates( boolean writing )
+pch_status PCHInitTemplates( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveCLASS_INST ) );
@@ -3919,7 +3919,7 @@ pch_status PCHInitTemplates( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniTemplates( boolean writing )
+pch_status PCHFiniTemplates( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveCLASS_INST );

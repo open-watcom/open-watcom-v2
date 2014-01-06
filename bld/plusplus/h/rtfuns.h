@@ -36,7 +36,7 @@ PTREE RunTimeCall(              // GENERATE A RUN-TIME CALL PARSE SUBTREE
     TYPE type,                  // - type for function return
     RTF code )                  // - code for function
 ;
-boolean RunTimeIsThrow(         // TEST IF FUNCTION IS A C++ THROW
+bool RunTimeIsThrow(            // TEST IF FUNCTION IS A C++ THROW
     SYMBOL func )               // - function symbol
 ;
 SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL

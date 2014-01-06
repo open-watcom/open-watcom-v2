@@ -87,7 +87,7 @@ typedef enum file_scope_control {
     FS_NULL             = 0x00
 } fs_control;
 
-typedef boolean (*special_name_fn)( SYMBOL_NAME );
+typedef bool (*special_name_fn)( SYMBOL_NAME );
 
 typedef struct save_mapping SAVE_MAPPING;
 struct save_mapping {
@@ -558,7 +558,7 @@ static void dumpData( MEMBER_PTR_CAST *data )
 
 }
 
-static boolean recordableScope( SCOPE scope )
+static bool recordableScope( SCOPE scope )
 {
     switch( scope->id ) {
     case SCOPE_TEMPLATE_DECL:
@@ -899,8 +899,7 @@ static SCOPE findCommonEnclosing( SCOPE scope1, SCOPE scope2 )
     return( GetFileScope() );
 }
 
-static void addLexicalTrigger( SCOPE gets_trigger, SCOPE using_scope,
-                               boolean append )
+static void addLexicalTrigger( SCOPE gets_trigger, SCOPE using_scope, bool append )
 {
     USING_NS *lexical_entry;
 
@@ -961,8 +960,8 @@ static void addUsingDirective( SCOPE gets_using, SCOPE using_scope, SCOPE trigge
     }
 }
 
-void ScopeRestoreUsing( SCOPE scope, boolean append )
-/***************************************************/
+void ScopeRestoreUsing( SCOPE scope, bool append )
+/************************************************/
 {
     USING_NS *curr;
 
@@ -1705,8 +1704,8 @@ SYMBOL_NAME AllocSymbolName( NAME name, SCOPE scope )
     return( new_sym );
 }
 
-boolean EnumTypeName( SYMBOL_NAME sym_name )
-/******************************************/
+bool EnumTypeName( SYMBOL_NAME sym_name )
+/***************************************/
 {
     SYMBOL sym;
     TYPE type;
@@ -1722,8 +1721,8 @@ boolean EnumTypeName( SYMBOL_NAME sym_name )
     return( TRUE );
 }
 
-boolean ClassTypeName( SYMBOL_NAME sym_name )
-/*******************************************/
+bool ClassTypeName( SYMBOL_NAME sym_name )
+/****************************************/
 {
     SYMBOL sym;
     TYPE type;
@@ -1739,7 +1738,7 @@ boolean ClassTypeName( SYMBOL_NAME sym_name )
     return( TRUE );
 }
 
-static boolean colonColonName( SYMBOL_NAME sym_name )
+static bool colonColonName( SYMBOL_NAME sym_name )
 {
     SYMBOL sym;
     TYPE type;
@@ -1758,7 +1757,7 @@ static boolean colonColonName( SYMBOL_NAME sym_name )
     return( TRUE );
 }
 
-static boolean colonColonTildeName( SYMBOL_NAME sym_name )
+static bool colonColonTildeName( SYMBOL_NAME sym_name )
 {
     SYMBOL sym;
     TYPE type;
@@ -1777,7 +1776,7 @@ static boolean colonColonTildeName( SYMBOL_NAME sym_name )
     return( TRUE );
 }
 
-static boolean nameSpaceName( SYMBOL_NAME sym_name )
+static bool nameSpaceName( SYMBOL_NAME sym_name )
 {
     SYMBOL sym;
 
@@ -1788,8 +1787,8 @@ static boolean nameSpaceName( SYMBOL_NAME sym_name )
     return( SymIsNameSpace( sym ) );
 }
 
-boolean VariableName( SYMBOL_NAME sym_name )
-/******************************************/
+bool VariableName( SYMBOL_NAME sym_name )
+/***************************************/
 {
     SYMBOL var_sym;
     TYPE var_type;
@@ -1840,8 +1839,8 @@ static SCOPE findAccessScope( void )
 }
 
 
-boolean ScopeAccessType( scope_type_t scope_type )
-/************************************************/
+bool ScopeAccessType( scope_type_t scope_type )
+/*********************************************/
 {
     SCOPE scope;
 
@@ -1853,8 +1852,8 @@ boolean ScopeAccessType( scope_type_t scope_type )
 }
 
 
-boolean ScopeType( SCOPE scope, scope_type_t scope_type )
-/*******************************************************/
+bool ScopeType( SCOPE scope, scope_type_t scope_type )
+/****************************************************/
 {
     if( scope == NULL ) {
         return( FALSE );
@@ -1865,8 +1864,8 @@ boolean ScopeType( SCOPE scope, scope_type_t scope_type )
     return( FALSE );
 }
 
-boolean ScopeEquivalent( SCOPE scope, scope_type_t scope_type )
-/*************************************************************/
+bool ScopeEquivalent( SCOPE scope, scope_type_t scope_type )
+/**********************************************************/
 {
     if( scope_type == SCOPE_FILE ) {
         scope = ScopeNearestNonTemplate( scope );
@@ -2013,8 +2012,8 @@ FRIEND *ScopeFriends( SCOPE scope )
     return( friends );
 }
 
-boolean ScopeDirectBase( SCOPE scope, TYPE type )
-/***********************************************/
+bool ScopeDirectBase( SCOPE scope, TYPE type )
+/********************************************/
 {
     BASE_CLASS *base;
     TYPE base_type;
@@ -2030,8 +2029,8 @@ boolean ScopeDirectBase( SCOPE scope, TYPE type )
     return( FALSE );
 }
 
-boolean ScopeIndirectVBase( SCOPE scope, TYPE type )
-/**************************************************/
+bool ScopeIndirectVBase( SCOPE scope, TYPE type )
+/***********************************************/
 {
     BASE_CLASS *base;
     TYPE base_type;
@@ -2047,8 +2046,8 @@ boolean ScopeIndirectVBase( SCOPE scope, TYPE type )
     return( FALSE );
 }
 
-boolean ScopeHasVirtualBases( SCOPE scope )
-/*****************************************/
+bool ScopeHasVirtualBases( SCOPE scope )
+/**************************************/
 {
     TYPE class_type;
 
@@ -2062,8 +2061,8 @@ boolean ScopeHasVirtualBases( SCOPE scope )
     return( TRUE );
 }
 
-boolean ScopeHasVirtualFunctions( SCOPE scope )
-/*********************************************/
+bool ScopeHasVirtualFunctions( SCOPE scope )
+/******************************************/
 {
     TYPE class_type;
 
@@ -2143,8 +2142,8 @@ SYMBOL ScopePromoteSymbol( SCOPE scope, SYMBOL sym, NAME name )
 }
 
 
-boolean ScopeCarefulInsert( SCOPE scope, SYMBOL *psym, NAME name )
-/****************************************************************/
+bool ScopeCarefulInsert( SCOPE scope, SYMBOL *psym, NAME name )
+/*************************************************************/
 {
     decl_check decl_status;
     SYMBOL_NAME sym_name;
@@ -2216,7 +2215,7 @@ void ScopeAddFriendSym( SCOPE scope, SYMBOL sym )
     TYPE scopes_class_type;
     TYPE class_type;
     FRIEND *a_friend;
-    boolean OK_for_friend;
+    bool OK_for_friend;
 
     class_type = StructType( sym->sym_type );
     if( ScopeLocalClass( scope ) ) {
@@ -2272,7 +2271,7 @@ void ScopeAddFriendType( SCOPE scope, TYPE type, SYMBOL sym )
     TYPE scopes_class_type;
     TYPE class_type;
     FRIEND *a_friend;
-    boolean OK_for_friend;
+    bool OK_for_friend;
 
     class_type = StructType( type );
     if( ScopeLocalClass( scope ) ) {
@@ -2573,7 +2572,7 @@ static inherit_flag findPtrOffset( BASE_STACK *top, SCOPE scope, CLASS_TABLE *ta
 
 static walk_status countBases( BASE_STACK *top, void *parm )
 {
-    boolean err;
+    bool err;
     SCOPE scope;
     TYPE base_type;
     unsigned *data = parm;
@@ -2795,7 +2794,7 @@ static walk_status quickDerivedBase( BASE_STACK *top, void *parm )
     return( WALK_NORMAL );
 }
 
-static boolean notABase( SCOPE derived, SCOPE possible_base )
+static bool notABase( SCOPE derived, SCOPE possible_base )
 {
     TYPE derived_type;
     TYPE base_type;
@@ -2865,7 +2864,7 @@ static derived_status isScopeDerived( scope_derived_walk *data )
     return( DERIVED_YES );
 }
 
-static boolean isFriendly( SCOPE check, SCOPE friendly )
+static bool isFriendly( SCOPE check, SCOPE friendly )
 {
     FRIEND *a_friend;
     SYMBOL sym;
@@ -2929,7 +2928,7 @@ static SCOPE nextAccessScope( SCOPE scope )
     return( scope );
 }
 
-static boolean isScopeFriend( SCOPE access, SCOPE friendly )
+static bool isScopeFriend( SCOPE access, SCOPE friendly )
 {
     SCOPE check;
 
@@ -2947,7 +2946,7 @@ static boolean isScopeFriend( SCOPE access, SCOPE friendly )
     return( FALSE );
 }
 
-static boolean protectedPathOK( access_data *data )
+static bool protectedPathOK( access_data *data )
 {
     BASE_PATH *path;
     SCOPE check;
@@ -3219,7 +3218,7 @@ static void deleteCap( PATH_CAP *cap )
     CarveFree( carvePATH_CAP, cap );
 }
 
-static boolean okToUseAccess( lookup_walk *data, SYMBOL sym, BASE_PATH *path )
+static bool okToUseAccess( lookup_walk *data, SYMBOL sym, BASE_PATH *path )
 {
     SCOPE base_scope;
 
@@ -3365,12 +3364,12 @@ static FNOV_RESULT matchVirtualFunction( SYMBOL *sym, lookup_walk *data )
 }
 
 
-boolean ScopeSameVFuns( SYMBOL fun1, SYMBOL fun2 )
-/************************************************/
+bool ScopeSameVFuns( SYMBOL fun1, SYMBOL fun2 )
+/*********************************************/
 {
     SYMBOL *a_fun1;             // - addr[ fun1 ]
     NAME name;                  // - name for checking
-    boolean retn;               // - TRUE ==> is same virtual function
+    bool retn;                  // - TRUE ==> is same virtual function
 
     a_fun1 = &fun1;
     name = fun1->name->name;
@@ -3386,7 +3385,7 @@ boolean ScopeSameVFuns( SYMBOL fun1, SYMBOL fun2 )
     return retn;
 }
 
-static TYPE symReturnsClassRefPtr( SYMBOL sym, boolean *is_reference )
+static TYPE symReturnsClassRefPtr( SYMBOL sym, bool *is_reference )
 {
     TYPE fn_type;
     TYPE ptr_type;
@@ -3401,14 +3400,14 @@ static TYPE symReturnsClassRefPtr( SYMBOL sym, boolean *is_reference )
     return( StructType( ptr_type->of ) );
 }
 
-static boolean badVirtualReturn( SYMBOL old, SYMBOL new, boolean *return_thunk )
+static bool badVirtualReturn( SYMBOL old, SYMBOL new, bool *return_thunk )
 {
     SCOPE old_scope;
     SCOPE new_scope;
     TYPE old_base;
     TYPE new_base;
-    boolean old_ref;
-    boolean new_ref;
+    bool old_ref;
+    bool new_ref;
     derived_status derived;
     SEARCH_RESULT *result;
 
@@ -3447,8 +3446,8 @@ static SYMBOL sameVirtualFnSignature( SYMBOL_NAME sym_name, lookup_walk *data )
     SYMBOL chk_sym;
     TYPE fn_type;
     FNOV_RESULT check;
-    boolean complain_if_virtual;
-    boolean return_thunk;
+    bool complain_if_virtual;
+    bool return_thunk;
 
     complain_if_virtual = FALSE;
     chk_sym = sym_name->name_syms;
@@ -3489,7 +3488,7 @@ static SYMBOL sameVirtualFnSignature( SYMBOL_NAME sym_name, lookup_walk *data )
     return( chk_sym );
 }
 
-static boolean anyVirtualFns( SYMBOL_NAME sym_name )
+static bool anyVirtualFns( SYMBOL_NAME sym_name )
 {
     SYMBOL sym;
     TYPE fn_type;
@@ -3984,13 +3983,13 @@ static inherit_flag setAccess( PATH_CAP *cap )
     return( perm );
 }
 
-static boolean setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
+static bool setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
 {
     SYMBOL_NAME sym_name;
     SYMBOL syms;
     SYMBOL sym;
     BASE_PATH *path;
-    boolean protected_checked;
+    bool protected_checked;
     auto access_data access_data;
 
     if( data->protected_OK ) {
@@ -4090,7 +4089,7 @@ static void findBestAccess( lookup_walk *data )
     removeDead( data );
 }
 
-static boolean symbolIsExcluded( PATH_CAP *cap, SYMBOL sym )
+static bool symbolIsExcluded( PATH_CAP *cap, SYMBOL sym )
 {
     SYMBOL_EXCLUDE *exclude;
 
@@ -4214,7 +4213,7 @@ static FNOV_LIST *gatherOverloadList( lookup_walk *data )
     return( root );
 }
 
-static boolean findBestConversion( lookup_walk *data )
+static bool findBestConversion( lookup_walk *data )
 {
     applyUniqueSymbolName( data );
     applyOverrideConversion( data );
@@ -4255,7 +4254,7 @@ static void applySameVTable( lookup_walk *data )
     /* one path will be left */
 }
 
-static boolean findVirtualOverride( lookup_walk *data )
+static bool findVirtualOverride( lookup_walk *data )
 {
     applyDominance( data );
     if( data->path_count != 0 ) {
@@ -4272,7 +4271,7 @@ static void applyDisambiguation( lookup_walk *data )
     removeDead( data );
 }
 
-static boolean findSinglePath( lookup_walk *data, SCOPE start )
+static bool findSinglePath( lookup_walk *data, SCOPE start )
 {
     data->start = start;
     if( data->no_inherit ) {
@@ -4313,7 +4312,7 @@ static boolean findSinglePath( lookup_walk *data, SCOPE start )
     return( TRUE );
 }
 
-static boolean findMember( lookup_walk *data, SCOPE scope )
+static bool findMember( lookup_walk *data, SCOPE scope )
 {
     PATH_CAP *cap;
 
@@ -4382,7 +4381,7 @@ static SYMBOL_NAME doRecordedLookup( lookup_walk *data, SCOPE scope )
     return( sym_name );
 }
 
-static boolean allFunctionNames( lookup_walk *data )
+static bool allFunctionNames( lookup_walk *data )
 {
     PATH_CAP *cap;
     PATH_CAP *next;
@@ -4430,7 +4429,7 @@ static boolean allFunctionNames( lookup_walk *data )
     return( TRUE );
 }
 
-static boolean removeDuplicateNS( lookup_walk *data )
+static bool removeDuplicateNS( lookup_walk *data )
 {
     PATH_CAP *dead;
     PATH_CAP *cap;
@@ -4463,13 +4462,13 @@ static boolean removeDuplicateNS( lookup_walk *data )
     return( FALSE );
 }
 
-static boolean processNSLookup( lookup_walk *data )
+static bool processNSLookup( lookup_walk *data )
 {
     PATH_CAP *cap;
     SYMBOL sym;
     SYMBOL aliasee;
     unsigned path_count;
-    boolean dead;
+    bool dead;
 
     path_count = data->path_count;
     if( path_count <= 1 ) {
@@ -4514,7 +4513,7 @@ static boolean processNSLookup( lookup_walk *data )
     return( TRUE );
 }
 
-static boolean tryDisambigLookup( lookup_walk *data, SCOPE scope,
+static bool tryDisambigLookup( lookup_walk *data, SCOPE scope,
                                   PSTK_CTL *from_stack, PSTK_CTL *to_stack,
                                   PSTK_CTL *cycle )
 {
@@ -4541,9 +4540,9 @@ static boolean tryDisambigLookup( lookup_walk *data, SCOPE scope,
     return( processNSLookup( data ) );
 }
 
-static boolean disambigNSLookup( lookup_walk *data, SCOPE scope )
+static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
 {
-    boolean retn;
+    bool retn;
     SYMBOL_NAME sym_name;
     PSTK_CTL *curr;
     PSTK_CTL *next;
@@ -4578,9 +4577,9 @@ static boolean disambigNSLookup( lookup_walk *data, SCOPE scope )
     return( retn );
 }
 
-static boolean simpleNSLookup( lookup_walk *data, SCOPE scope )
+static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
 {
-    boolean retn;
+    bool retn;
     SCOPE trigger_scope;
     SCOPE top_scope;
     SCOPE edge_scope;
@@ -4631,7 +4630,7 @@ static boolean simpleNSLookup( lookup_walk *data, SCOPE scope )
     return( retn );
 }
 
-static boolean searchScope( lookup_walk *data, SCOPE scope )
+static bool searchScope( lookup_walk *data, SCOPE scope )
 {
     SCOPE disambig;
 
@@ -4952,7 +4951,7 @@ CLASS_VBTABLE *ScopeCollectVBTable( SCOPE scope, scv_control control )
     return( data.tables );
 }
 
-static boolean overloadedSym( SYMBOL derived_sym, SYMBOL base_sym )
+static bool overloadedSym( SYMBOL derived_sym, SYMBOL base_sym )
 {
     FNOV_RESULT check;
     NAME derived_name;
@@ -4973,7 +4972,7 @@ static boolean overloadedSym( SYMBOL derived_sym, SYMBOL base_sym )
     return( FALSE );
 }
 
-static boolean scopeInBaseStack( SCOPE scope, BASE_STACK *top )
+static bool scopeInBaseStack( SCOPE scope, BASE_STACK *top )
 {
     for( ; top != NULL; top = top->parent ) {
         if( top->scope == scope ) {
@@ -5091,7 +5090,7 @@ static void pushDisambig( vftable_walk *data, SYMBOL override_sym )
     *pscope = scope;
 }
 
-static boolean nonTrivialReturnConversions( VSTK_CTL *vstk, SCOPE *derived )
+static bool nonTrivialReturnConversions( VSTK_CTL *vstk, SCOPE *derived )
 {
     SCOPE *pscope;
     SCOPE scope;
@@ -5592,13 +5591,13 @@ CLASS_VFTABLE *ScopeCollectVFTable( SCOPE scope, scv_control control )
     return( data.tables );
 }
 
-boolean ScopeHasPureFunctions( SCOPE scope )
+bool ScopeHasPureFunctions( SCOPE scope )
 /******************************************/
 {
     CLASS_VFTABLE *tables;
     CLASS_VFTABLE *table;
     THUNK_ACTION *thunk;
-    boolean has_a_pure;
+    bool has_a_pure;
 
     DbgVerify( TypeDefined( ScopeClass( scope ) )
              , "undefined type passed to ScopeHasPureFunctions" );
@@ -5689,7 +5688,7 @@ SYMBOL ScopePureVirtualThunk( THUNK_ACTION *thunk )
     return( NULL );
 }
 
-static boolean isIdentityMapping( SCOPE from, SCOPE to, vindex *except)
+static bool isIdentityMapping( SCOPE from, SCOPE to, vindex *except)
 {
     TYPE find_base;
     TYPE from_type;
@@ -5828,7 +5827,7 @@ void ScopeEmitIndexMappings( void )
 static SYMBOL genIndexMapping( vindex map_0, SCOPE from, SCOPE to )
 {
     SAVE_MAPPING *mapping;
-    boolean new_sym;
+    bool new_sym;
     SYMBOL sym;
 
     sym = MakeVMTableSym( from, to, &new_sym );
@@ -5856,9 +5855,9 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
     target_offset_t delta;
     vindex map_0;
     vindex except[2];
-    boolean base_has_vbases;
-    boolean derived_has_vbases;
-    boolean identity_mapping;
+    bool base_has_vbases;
+    bool derived_has_vbases;
+    bool identity_mapping;
 
     base_scope = data->base;
     if( top->scope != base_scope ) {
@@ -6360,8 +6359,8 @@ SEARCH_RESULT *ScopeFindLexicalEnumType( SCOPE scope, NAME name )
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, NAME name, boolean tilde )
-/********************************************************************************/
+SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, NAME name, bool tilde )
+/*****************************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6497,7 +6496,7 @@ static msg_status_t lookupError( SEARCH_RESULT *result, MSG_NUM msg )
     return( CErr1( msg ) );
 }
 
-static boolean searchError( SEARCH_RESULT *result, SYMBOL sym, unsigned msg )
+static bool searchError( SEARCH_RESULT *result, SYMBOL sym, unsigned msg )
 {
 #if 1
     if( result->errlocn.src_file != NULL ) {
@@ -6510,7 +6509,7 @@ static boolean searchError( SEARCH_RESULT *result, SYMBOL sym, unsigned msg )
     return TRUE;
 }
 
-static boolean diagnoseAmbiguity( SEARCH_RESULT *result, SYMBOL sym )
+static bool diagnoseAmbiguity( SEARCH_RESULT *result, SYMBOL sym )
 {
     if( result->ambiguous ) {
         return searchError( result, sym, ERR_AMBIGUOUS_MEMBER );
@@ -6518,8 +6517,8 @@ static boolean diagnoseAmbiguity( SEARCH_RESULT *result, SYMBOL sym )
     return( FALSE );
 }
 
-boolean ScopeImmediateCheck( SEARCH_RESULT *result )
-/**************************************************/
+bool ScopeImmediateCheck( SEARCH_RESULT *result )
+/***********************************************/
 {
     SYMBOL sym;
 
@@ -6533,7 +6532,7 @@ boolean ScopeImmediateCheck( SEARCH_RESULT *result )
     return( diagnoseAmbiguity( result, sym ) );
 }
 
-boolean ScopeAmbiguousSymbol( SEARCH_RESULT *result, SYMBOL sym )
+bool ScopeAmbiguousSymbol( SEARCH_RESULT *result, SYMBOL sym )
 /***************************************************************/
 {
     if( ! _IsClassScope( result->scope ) ) {
@@ -6557,8 +6556,8 @@ void ScopeDontCheckSymbol( SEARCH_RESULT *result )
     }
 }
 
-boolean ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
-/***********************************************************/
+bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
+/********************************************************/
 {
     SCOPE located;
     inherit_flag perm;
@@ -6679,8 +6678,8 @@ void ScopeFreeResult( SEARCH_RESULT *result )
 }
 
 
-boolean ScopeEnclosed( SCOPE encloser, SCOPE enclosed )
-/*****************************************************/
+bool ScopeEnclosed( SCOPE encloser, SCOPE enclosed )
+/**************************************************/
 {
     for( ; enclosed != NULL; enclosed = enclosed->enclosing ) {
         if( encloser == enclosed ) {
@@ -6893,8 +6892,8 @@ void ScopeRestoreModuleFunction( SCOPE fn_scope )
     }
 }
 
-boolean ScopeLocalClass( SCOPE scope )
-/************************************/
+bool ScopeLocalClass( SCOPE scope )
+/*********************************/
 {
     if( ! _IsClassScope( scope ) ) {
         return( FALSE );
@@ -6940,8 +6939,8 @@ target_offset_t ScopeVBPtrOffset( SCOPE scope )
 ** entry points for #pragma code when symbol accesses are required
 */
 
-SYMBOL ScopeASMUseSymbol( NAME name, boolean *uses_auto )
-/*******************************************************/
+SYMBOL ScopeASMUseSymbol( NAME name, bool *uses_auto )
+/****************************************************/
 {
     SYMBOL sym;
 
@@ -6993,8 +6992,8 @@ SYMBOL ScopeASMLookup( NAME name )
     return( sym );
 }
 
-SYMBOL ScopeIntrinsic( boolean turn_on )
-/**************************************/
+SYMBOL ScopeIntrinsic( bool turn_on )
+/***********************************/
 {
     NAME name;
     SEARCH_RESULT *result;
@@ -7035,11 +7034,11 @@ static void changeSymType( SYMBOL sym, TYPE type )
     }
 }
 
-static boolean changePragmaType(// TEST IF NEW NEW PRAGMA TYPE REQUIRED
+static bool changePragmaType(   // TEST IF NEW NEW PRAGMA TYPE REQUIRED
     SYMBOL sym,                 // - old symbol
-    AUX_INFO *auxinfo )        // - new aux info
+    AUX_INFO *auxinfo )         // - new aux info
 {
-    boolean     retn;           // - return: TRUE ==> change required
+    bool        retn;           // - return: TRUE ==> change required
     AUX_INFO    *old_pragma;    // - old aux info
 
     old_pragma = TypeHasPragma( sym->sym_type );
@@ -7202,10 +7201,10 @@ void ScopeWalkAncestry(         // VISIT ONCE ALL CLASSES IN ANCESTRY
     walkDirectBases( scope, walkNotVisited, &walk_data );
 }
 
-boolean ScopeDebugable(         // DETERMINE IF SCOPE TO BE DEBUGGED
+bool ScopeDebugable(            // DETERMINE IF SCOPE TO BE DEBUGGED
     SCOPE scope )               // - the scope
 {
-    boolean retn;               // - TRUE ==> pass scope to debugger
+    bool retn;                  // - TRUE ==> pass scope to debugger
 
     if( NULL == scope ) {
         retn = FALSE;
@@ -7843,7 +7842,7 @@ pch_status PCHReadScopes( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitScopes( boolean writing )
+pch_status PCHInitScopes( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carveUSING_NS ) );
@@ -7866,7 +7865,7 @@ pch_status PCHInitScopes( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniScopes( boolean writing )
+pch_status PCHFiniScopes( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carveUSING_NS );

@@ -76,7 +76,7 @@ static SYMBOL cgStateTableCmd(  // GENERATE A STATE-TABLE ENTRY FOR A CMD
 }
 
 
-boolean StabGenerate(           // GENERATE A STATE TABLE
+bool StabGenerate(              // GENERATE A STATE TABLE
     STAB_CTL* sctl )            // - state-table information
 {
     STAB_DEFN* defn;            // - state-table definition

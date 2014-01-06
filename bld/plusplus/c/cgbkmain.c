@@ -134,7 +134,7 @@ static carve_t carveSTAB_OBJ;       // allocations for STAB_OBJ
 static SCOPE scope_exit;            // scope exited by IC_SCOPE_EXIT
 static CGFILE *data_file;           // data file
 static STAB_OBJ* state_tables_obj;  // state tables for objects
-static boolean sig_thunk_genned;    // TRUE ==> significant thunk genned
+static bool sig_thunk_genned;       // TRUE ==> significant thunk genned
 
 static SYMBOL thisSym;              // model for 'this' symbol
 static SYMBOL cdtorSym;             // model for cdtor extra parm
@@ -835,12 +835,12 @@ static STAB_OBJ* buildObjectStateTable( // BUILD STATE TABLE FOR OBJECT
 }
 
 
-static boolean initCDtorStateTable( // OBTAIN STATE TABLE FOR CTOR OR DTOR
+static bool initCDtorStateTable(// OBTAIN STATE TABLE FOR CTOR OR DTOR
     FN_CTL* fctl,               // - CTOR/DTOR function information
     TYPE type )                 // - type of object
 {
     STAB_OBJ* obj;              // - object ptr for type
-    boolean retn;               // - TRUE ==> set up the table
+    bool retn;                  // - TRUE ==> set up the table
     OBJ_INIT* init;             // - initialization entry
 
     obj = buildObjectStateTable( type );
@@ -906,7 +906,7 @@ static void ftabAddSubobjs(     // ADD SUB-OBJECTS TO DTOR'S FUNCTION TABLE
     if( otab != NULL
      || ! fctl->has_cdtor_val
      || ! ( fctl->cdtor_val & DTOR_DELETE_VECTOR ) ) {
-        boolean is_component;
+        bool is_component;
         if( fctl->has_cdtor_val && ( fctl->cdtor_val & DTOR_COMPONENT ) ) {
             is_component = TRUE;
         } else {
@@ -1037,7 +1037,7 @@ static SE* dtorAutoSymbol(      // SIGNAL DTOR OF AUTO SYMBOL
 static void cdArgTest(          // TESTING CODE FOR CDARG
     FN_CTL* fctl,               // - function information
     unsigned mask,              // - test mask
-    boolean branch_on )         // - TRUE ==> branch if on
+    bool branch_on )            // - TRUE ==> branch if on
 {
     unsigned optype;            // - type of goto
     cg_name expr;               // - expression under construction
@@ -1126,7 +1126,7 @@ static void genExactVPtrInit(   // generate a vptr init with exact delta
     FN_CTL* fctl,               // - function information
     target_offset_t delta,      // - offset in class of vptr
     SYMBOL table_sym,           // - symbol of table to init vptr with
-    boolean vbptr )             // - a vbptr?
+    bool vbptr )                // - a vbptr?
 {
     cg_name e1;
     cg_name e2;
@@ -1148,7 +1148,7 @@ static void genVBaseVPtrInit(   // generate a vptr init in a virtual base
     vindex vb_index,            // - vbase index in table
     target_offset_t delta,      // - offset in class of vptr
     SYMBOL table_sym,           // - symbol of table to init vptr with
-    boolean vbptr )             // - a vbptr?
+    bool vbptr )                // - a vbptr?
 {
     cg_name e1;
     cg_name e2;
@@ -2520,7 +2520,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_EXACT_VPTR_INIT : // GENERATE EXACT OFFSET VPTR INIT CODE
           { SYMBOL table_sym;
-            boolean vbptr;
+            bool vbptr;
             IC_PARM_POP_PTR( table_sym );
             IC_PARM_POP_INT( vbptr );
             IC_PARM_DONE;
@@ -2532,7 +2532,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             target_offset_t vb_offset;
             vindex vb_index;
 //            target_offset_t exact_delta;
-            boolean vbptr;
+            bool vbptr;
 //            IC_PARM_POP_INT( exact_delta );
             IC_PARM_SKIP;
             IC_PARM_POP_INT( vb_index );
@@ -2638,7 +2638,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //          Virtual Function reference with inlined args
 //
         {
-            boolean vf_call;            // TRUE ==> virtual call gen'ed
+            bool vf_call;               // TRUE ==> virtual call gen'ed
             target_offset_t vf_offset;  // offset to virtual function ptr
             vindex vf_index;            // index for virtual function
             target_offset_t vf_adj_this;// adjustment for "this" on virt call

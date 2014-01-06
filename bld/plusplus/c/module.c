@@ -81,7 +81,7 @@ static SYMBOL staticInitFuncVar(// DEFINE VARIABLE FOR INITIALIZATION FLAGS
 
 static void moduleInitVar(      // GENERATE REFERENCE TO MODULE-INIT VAR.
     SYMBOL var,                 // - variable
-    boolean base_type )         // - base_type or pointer to it
+    bool base_type )            // - base_type or pointer to it
 {
     unsigned offset;            // - offset to be tested
     TYPE type;                  // - type for flags variable
@@ -358,19 +358,19 @@ pch_status PCHReadModuleData( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitModuleData( boolean writing )
+pch_status PCHInitModuleData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniModuleData( boolean writing )
+pch_status PCHFiniModuleData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-boolean ModuleIsZap1( CGFILE_INS *p )
+bool ModuleIsZap1( CGFILE_INS *p )
 {
     if( p->block != module_fd.init_state_tab.block ) {
         return( FALSE );

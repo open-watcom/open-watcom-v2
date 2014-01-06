@@ -168,7 +168,7 @@ pch_status PCHReadConstantPool( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitConstantPool( boolean writing )
+pch_status PCHInitConstantPool( bool writing )
 {
     if( writing ) {
         PCHWriteCVIndex( CarveLastValidIndex( carvePOOL_CON ) );
@@ -179,7 +179,7 @@ pch_status PCHInitConstantPool( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniConstantPool( boolean writing )
+pch_status PCHFiniConstantPool( bool writing )
 {
     if( ! writing ) {
         CarveMapUnoptimize( carvePOOL_CON );

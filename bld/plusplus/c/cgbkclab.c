@@ -113,12 +113,12 @@ static void cgCondLabel         // CODE-GENERATE CONDITIONAL LABEL
 }
 
 
-boolean CondLabelEmit           // EMIT CONDITIONAL LABEL IF REQ'D
+bool CondLabelEmit              // EMIT CONDITIONAL LABEL IF REQ'D
     ( COND_LABEL** a_ring       // - addr[ ring of labels ]
     , SE* se )                  // - state entry at current position
 {
     COND_LABEL* lab;            // - conditional label for current state
-    boolean retn;               // - return: TRUE ==> label emitted
+    bool retn;                  // - return: TRUE ==> label emitted
 
     lab = condLabelFind( a_ring, se );
     if( lab == NULL ) {

@@ -48,7 +48,6 @@
 #define IS_REGSET(t)    (t == T_LEFT_BRACKET || t == T_LEFT_BRACE)
 
 
-static int      GetAliasInfo();
 static byte_seq *AuxCodeDup( byte_seq *code );
 static int      GetByteSeq( void );
 
@@ -208,11 +207,11 @@ static void AuxCopy(           // COPY AUX STRUCTURE
     to->code = AuxCodeDup( from->code );
 }
 
-static boolean GetAliasInfo(
+static bool GetAliasInfo(
     void )
 {
     char buff[256];
-    boolean isfar16;
+    bool isfar16;
 
     CurrAlias = &DefaultInfo;
     if( CurToken != T_LEFT_PAREN )              // #pragma aux symbol ....
@@ -692,7 +691,7 @@ static int insertFixups( VBUF *src_code )
     byte_seq_len        len;
     unsigned            skip;
     int                 mutate_to_segment;
-    boolean             uses_auto;
+    bool                uses_auto;
 #if _CPU == 8086
     int                 fixup_padding;
 #endif
@@ -915,10 +914,10 @@ void AsmSysCopyCode( void )
     }
 }
 
-boolean AsmSysInsertFixups( VBUF *code )
-/**************************************/
+bool AsmSysInsertFixups( VBUF *code )
+/***********************************/
 {
-    boolean uses_auto;
+    bool uses_auto;
 
     uses_auto = insertFixups( code );
     AsmSymFini();
@@ -1265,7 +1264,7 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
     return( name );
 }
 
-static boolean parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
+static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
 {
     if( parms1 == parms2 ) {
         return( TRUE );
@@ -1303,7 +1302,7 @@ static boolean parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
                           | DLL_EXPORT              \
                           )
 
-boolean PragmasTypeEquivalent(  // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
+bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
     AUX_INFO *inf1,             // - pragma [1]
     AUX_INFO *inf2 )            // - pragma [2]
 {
@@ -1326,7 +1325,7 @@ boolean PragmasTypeEquivalent(  // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         && ( inf1->flags == inf2->flags );
 }
 
-boolean PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
+bool PragmaOKForInlines(        // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 {
     if( fnp->code != NULL ) {
@@ -1338,7 +1337,7 @@ boolean PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     return TRUE;
 }
 
-boolean PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
+bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     AUX_INFO *datap )           // - pragma
 {
     AUX_INFO *def_info;
@@ -1377,7 +1376,7 @@ boolean PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
 }
 
 
-static boolean okClassChange(   // TEST IF OK TO CHANGE A CLASS IN PRAGMA
+static bool okClassChange(      // TEST IF OK TO CHANGE A CLASS IN PRAGMA
     call_class oldp,                 // - old
     call_class newp,                 // - new
     call_class defp )                // - default
@@ -1385,7 +1384,7 @@ static boolean okClassChange(   // TEST IF OK TO CHANGE A CLASS IN PRAGMA
     return ( ( oldp & newp) == oldp ) || ( oldp == defp );
 }
 
-static boolean okPtrChange(     // TEST IF OK TO CHANGE A PTR IN PRAGMA
+static bool okPtrChange(        // TEST IF OK TO CHANGE A PTR IN PRAGMA
     void *oldp,                 // - old ptr
     void *newp,                 // - new ptr
     void *defp )                // - default pointer
@@ -1394,7 +1393,7 @@ static boolean okPtrChange(     // TEST IF OK TO CHANGE A PTR IN PRAGMA
 }
 
 
-static boolean okStrChange(     // TEST IF OK TO CHANGE A STRING IN PRAGMA
+static bool okStrChange(        // TEST IF OK TO CHANGE A STRING IN PRAGMA
     void *oldp,                 // - old ptr
     void *newp,                 // - new ptr
     void *defp )                // - default pointer
@@ -1407,7 +1406,7 @@ static boolean okStrChange(     // TEST IF OK TO CHANGE A STRING IN PRAGMA
 }
 
 
-static boolean okHwChange(      // TEST IF OK TO CHANGE HARDWARE DEFINITION
+static bool okHwChange(         // TEST IF OK TO CHANGE HARDWARE DEFINITION
     hw_reg_set oldr,            // - reg. set, old
     hw_reg_set newr,            // - reg. set, new
     hw_reg_set defr )           // - reg. set, default
@@ -1416,7 +1415,7 @@ static boolean okHwChange(      // TEST IF OK TO CHANGE HARDWARE DEFINITION
 }
 
 
-static boolean okParmChange(    // TEST IF OK TO CHANGE PARMS
+static bool okParmChange(       // TEST IF OK TO CHANGE PARMS
     hw_reg_set *oldr,           // - addr[ reg. set, old ]
     hw_reg_set *newr,           // - addr[ reg. set, new ]
     hw_reg_set *defr )          // - addr[ reg. set, default ]
@@ -1425,7 +1424,7 @@ static boolean okParmChange(    // TEST IF OK TO CHANGE PARMS
 }
 
 
-boolean PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
+bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
     AUX_INFO *oldp,             // - pragma (old)
     AUX_INFO *newp )            // - pragma (new)
 {

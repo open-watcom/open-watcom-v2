@@ -71,8 +71,7 @@ static void popTC_DATA( TC_DATA **h )
     CarveFree( carveTC_DATA, e );
 }
 
-static boolean typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2,
-                                   type_exclude mask )
+static bool typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2, type_exclude mask )
 {
     type_flag   flag1;
     type_flag   flag2;
@@ -236,8 +235,8 @@ static boolean typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2,
     return( TRUE );
 }
 
-boolean TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
-/*********************************************************************/
+bool TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
+/******************************************************************/
 {
     TC_STATE    state;
     type_flag   flag1;
@@ -349,18 +348,16 @@ boolean TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
     return( FALSE );
 }
 
-boolean TypesSameExclude( TYPE type1, TYPE type2, type_exclude mask )
-/*******************************************************************/
+bool TypesSameExclude( TYPE type1, TYPE type2, type_exclude mask )
+/****************************************************************/
 {
     return( TypeCompareExclude( type1, type2, mask | TC1_PTR_FUN ) );
 }
 
-boolean TypesIdentical( TYPE type1, TYPE type2 )
-/**********************************************/
+bool TypesIdentical( TYPE type1, TYPE type2 )
+/*******************************************/
 {
-    return TypeCompareExclude( type1
-                             , type2
-                             , TC1_PTR_FUN | TC1_NOT_ENUM_CHAR );
+    return TypeCompareExclude( type1, type2, TC1_PTR_FUN | TC1_NOT_ENUM_CHAR );
 }
 
 static void typeCompareInit(    // INITIALIZATION

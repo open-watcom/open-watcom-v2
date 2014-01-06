@@ -56,7 +56,7 @@ static TYPE type_pointed_to(    // GET BASE TYPE POINTED TO
 }
 
 
-static boolean same_ptr_types(  // TEST FOR EQUIVALENT POINTER TYPES
+static bool same_ptr_types(     // TEST FOR EQUIVALENT POINTER TYPES
     TYPE t1,                    // - type [1]
     TYPE t2 )                   // - type [2]
 {
@@ -66,7 +66,7 @@ static boolean same_ptr_types(  // TEST FOR EQUIVALENT POINTER TYPES
 }
 
 
-static boolean ptr_to_void(     // TEST IF PTR TYPE IS POINTER TO VOID
+static bool ptr_to_void(        // TEST IF PTR TYPE IS POINTER TO VOID
     TYPE type )                 // - the type
 {
     return type_pointed_to( type )->id == TYP_VOID;
@@ -128,7 +128,7 @@ static void adjust_by_delta(    // COMPUTE DELTA ADJUSTMENT
     PTREE *a_expr,              // - addr( ptr to be converted )
     TYPE base,                  // - base type
     unsigned delta,             // - adjustment
-    boolean positive )          // - TRUE ==> use positive value
+    bool positive )             // - TRUE ==> use positive value
 {
     PTREE offset;               // - node containing delta
 
@@ -148,7 +148,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
     PTREE *a_expr,              // - addr( ptr to be converted )
     TYPE base,                  // - base type
     SEARCH_RESULT *result,      // - search result
-    boolean positive )          // - TRUE ==> use positive value
+    bool positive )             // - TRUE ==> use positive value
 {
     target_offset_t vb_offset;  // - offset of vbptr
     vindex vb_index;            // - index in vbtable
@@ -236,7 +236,7 @@ static TYPE convert_base_ptr(   // CONVERT TO A BASE-CLASS POINTER
     TYPE base,                  // - base type
     SCOPE derived_scope,        // - derived scope
     SCOPE base_scope,           // - base scope
-    boolean positive )          // - TRUE ==> use positive value
+    bool positive )             // - TRUE ==> use positive value
 {
     SEARCH_RESULT *result;
 
@@ -654,14 +654,14 @@ unsigned PtrConvertCommon(      // CONVERT TO COMMON PTR
     return retn;
 }
 
-boolean PtrCnvInfo(             // FILL IN PTR-CONVERSION INFORMATION
+bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
     TYPE ptr_src,               // - source type
     TYPE ptr_tgt,               // - target pointer type
     PTRCNV* info )              // - pointer-conversion information
 {
-    boolean retn;               // - return: TRUE ==> can convert trivially
-    boolean first_level;        // - TRUE ==> at first level
-    boolean const_always;       // - TRUE ==> const on all preceding levels
+    bool retn;                  // - return: TRUE ==> can convert trivially
+    bool first_level;           // - TRUE ==> at first level
+    bool const_always;          // - TRUE ==> const on all preceding levels
     TYPE orig_src;              // - original src type
 
     info->converts = FALSE;

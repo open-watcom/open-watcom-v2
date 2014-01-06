@@ -122,7 +122,7 @@ static void makeThrowCnvAccess( // MAKE A THROW CONVERSION, WITH ACCESS
     TYPE_SIG_ACCESS access )    // - type of access
 {
     THROW_CNV *cnv;             // - conversion entry
-    boolean err_occurred;       // - set to TRUE if error occurred
+    bool err_occurred;          // - set to TRUE if error occurred
 
     cnv = RingCarveAlloc( ctl->carver, &ctl->hdr );
     cnv->offset = offset;
@@ -169,11 +169,11 @@ target_offset_t ThrowBaseOffset(  // GET OFFSET OF BASE
 }
 
 
-static boolean validateBase(    // VALIDATE BASE CLASS OK
+static bool validateBase(       // VALIDATE BASE CLASS OK
     SCOPE base_scope,           // - scope for base class
     THROW_CNV_CTL *ctl )        // - control area
 {
-    boolean retn;               // - TRUE ==> generate conversion
+    bool retn;                  // - TRUE ==> generate conversion
     SCOPE thr_scope;            // - scope for throw
 
     thr_scope = TypeScope( ctl->src_type );
@@ -317,11 +317,11 @@ void ThrowCnvFini(              // THROW CONVERSIONS: COMPLETION
 }
 
 
-static boolean throwCnvFront(   // GET FRONT-END INFO. FOR THROW TYPE
+static bool throwCnvFront(      // GET FRONT-END INFO. FOR THROW TYPE
     TYPE type,                  // - type to be thrown
     PTREE expr )                // - expression for errors
 {
-    boolean ret;                // - return value
+    bool ret;                   // - return value
     THROW_CNV_CTL ctl;          // - control information
 
     PTreeExtractLocn( expr, &ctl.err_locn );

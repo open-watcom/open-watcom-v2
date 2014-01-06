@@ -37,8 +37,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include "bool.h"
 
-typedef enum { FALSE = 0, TRUE = 1 } boolean;
 typedef enum {
     LETTER_0 = 1,
     LETTER_1,
@@ -141,7 +141,7 @@ unsigned weights[ LETTER_MAX+1 ];
 letter_t next[ LETTER_MAX+1 ];
 letter_t prev[ LETTER_MAX+1 ];
 
-boolean available[ MAX_WEIGHTS+1 ];
+bool    available[ MAX_WEIGHTS+1 ];
 
 letter_t most_used_character;
 unsigned num_keywords;
@@ -498,7 +498,7 @@ void sort_frequency( void )
     letter_t after_c;
     letter_t c;
     char prt_c;
-    boolean change;
+    bool change;
 
     /* find the alphabetic character that occurs the most in the keywords */
     most_used_character = LETTER_MIN;
@@ -615,7 +615,7 @@ void undo( letter_t c, keyword_t i )
     }
 }
 
-boolean share_letter( letter_t c, letter_t *p1, letter_t *p2 )
+bool share_letter( letter_t c, letter_t *p1, letter_t *p2 )
 /************************************************************/
 {
     keyword_t i;
@@ -640,7 +640,7 @@ boolean share_letter( letter_t c, letter_t *p1, letter_t *p2 )
     return( FALSE );
 }
 
-boolean check( letter_t c )
+bool check( letter_t c )
 /*************************/
 {
     /*
@@ -673,13 +673,13 @@ boolean check( letter_t c )
     return( TRUE );
 }
 
-boolean try_hash( letter_t c )
+bool try_hash( letter_t c )
 /****************************/
 {
     unsigned found;
     keyword_t index;
     keyword_t i;
-    boolean works;
+    bool works;
     unsigned first_weight;
     unsigned last_weight;
     unsigned adjust;
@@ -741,7 +741,7 @@ unsigned next_weight( void )
 void try_for_hash( void )
 /***********************/
 {
-    boolean     works;
+    bool        works;
     letter_t    c;
     keyword_t   search;
 
@@ -782,7 +782,7 @@ void try_for_hash( void )
     }
 }
 
-boolean hash_ok( void )
+bool hash_ok( void )
 /*********************/
 {
     keyword_t i,j,h;
@@ -798,7 +798,7 @@ boolean hash_ok( void )
     return( TRUE );
 }
 
-boolean quick_failure( void )
+bool quick_failure( void )
 /***************************/
 {
     keyword_t i,j;
@@ -818,7 +818,7 @@ boolean quick_failure( void )
     return( FALSE );
 }
 
-boolean hash_func( unsigned first_index, unsigned last_index )
+bool hash_func( unsigned first_index, unsigned last_index )
 /************************************************************/
 {
     keyword_t i,w;
@@ -1094,11 +1094,11 @@ void dump_tiny( unsigned first_index, unsigned last_index )
     fclose( outfile );
 }
 
-boolean hash_search( void )
+bool hash_search( void )
 /*************************/
 {
     unsigned i,j;
-    boolean ok;
+    bool ok;
 
     hashsize = num_keywords;
     for( hashmask = 1; hashmask < hashsize; hashmask <<= 1 ) {

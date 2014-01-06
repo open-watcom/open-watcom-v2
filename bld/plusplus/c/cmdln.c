@@ -104,7 +104,7 @@ static MEPTR defineStringMacro( // DEFINE A MACRO NAME
 
 MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
                                 // (assumes position is one char after "-D")
-    boolean many_tokes )        // - TRUE ==> scan multiple tokens
+    bool many_tokes )           // - TRUE ==> scan multiple tokens
 {
     MEPTR mptr;
     int (*old_scanner)( void );

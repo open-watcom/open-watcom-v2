@@ -137,15 +137,15 @@ typedef struct                  // CL_EXPAND -- expansion information
 } CL_EXPAND;
 
 struct memb_vfuns               // VFT for CD_DESCR
-{   boolean (*basePushable)     // - base class pushable ?
+{   bool (*basePushable)        // - base class pushable ?
         ( BASE_CLASS* );        // - - base class
-    boolean (*membPushable)     // - member pushable ?
+    bool (*membPushable)        // - member pushable ?
         ( SYMBOL );             // - - symbol for member
     SYMBOL (*find)              // - find symbol for type
         ( CL_ELEM* );           // - - type
-    boolean (*optimizable)      // - optimizable function ?
+    bool (*optimizable)         // - optimizable function ?
         ( CL_ELEM* );           // - - class entry
-    boolean (*include)          // - include function after expansion ?
+    bool (*include)             // - include function after expansion ?
         ( CL_ELEM* );           // - - class entry
     SYMBOL (*array_cdtor)       // - get array cdtor
         ( SYMBOL );             // - - array member symbol
@@ -784,10 +784,10 @@ SYMBOL CDoptIterSymbol(         // GET SYMBOL FOR CURRENT ELEMENT
 #endif
 
 
-boolean CDoptIterExact(         // GET cdarg "exact" FOR CURRENT ELEMENT
+bool CDoptIterExact(            // GET cdarg "exact" FOR CURRENT ELEMENT
     CDOPT_ITER* iter )          // - iteration data
 {
-    boolean retn;               // - return value: true ==> is eact
+    bool retn;                  // - return value: true ==> is eact
     CL_ITER* exp;               // - expansion information
     CL_ELEM* elem;              // - current element
 
@@ -841,12 +841,12 @@ BASE_CLASS* CDoptIterVBase(     // GET VIRTUAL BASE CLASS FOR CURRENT ELEMENT
 }
 
 
-boolean CDoptIterCannotDefine(  // CHECK FOR UNDEFINEABLE CTOR
+bool CDoptIterCannotDefine(     // CHECK FOR UNDEFINEABLE CTOR
     CDOPT_ITER* iter )          // - iteration data
 {
     CL_ITER* exp;               // - expansion information
     CL_ELEM* elem;              // - NULL (at component) or element
-    boolean retn;               // - TRUE ==> issue "cannot define error"
+    bool retn;                  // - TRUE ==> issue "cannot define error"
 
     exp = VstkTop( &iter->stack );
     elem = exp->elem;
@@ -859,11 +859,11 @@ boolean CDoptIterCannotDefine(  // CHECK FOR UNDEFINEABLE CTOR
 }
 
 
-boolean CDoptInlinedMember(     // DETERMINE IF INLINED MEMBER
+bool CDoptInlinedMember(        // DETERMINE IF INLINED MEMBER
     CDOPT_ITER* iter )          // - iteration data
 {
     CL_ITER* exp;               // - expansion information
-    boolean retn;               // - TRUE ==> inlined member
+    bool retn;                  // - TRUE ==> inlined member
     SYMBOL sym;                 // - NULL or symbol for member
 
     exp = VstkTop( &iter->stack );
@@ -990,7 +990,7 @@ static void cacheEmpty(         // FREE DESCRIPTORS FROM A CACHE
 // Virtual functions for DTOR processing
 //-------------------------------------------------------------------------
 
-static boolean classCanBeDtorOpt( // IS CLASS DTORABLE UNDER ANY CONDITIONS ?
+static bool classCanBeDtorOpt(  // IS CLASS DTORABLE UNDER ANY CONDITIONS ?
     CLASSINFO *ci )             // - class info
 {
     ci->dtor_user_code_checked = TRUE;
@@ -1000,10 +1000,10 @@ static boolean classCanBeDtorOpt( // IS CLASS DTORABLE UNDER ANY CONDITIONS ?
 }
 
 
-static boolean dtorOptimizable( // CAN DTOR BE OPTIMIZED UNDER ANY CONDITIONS?
+static bool dtorOptimizable(    // CAN DTOR BE OPTIMIZED UNDER ANY CONDITIONS?
     CL_ELEM* elem )             // - class element
 {
-    boolean retn;               // - FALSE ==> can never be optimized
+    bool retn;                  // - FALSE ==> can never be optimized
     SYMBOL dtor;                // - the DTOR in question
 
     dtor = elem->cdtor;
@@ -1036,14 +1036,14 @@ static SYMBOL dtorFind(         // FIND DTOR FOR CLASS ELEMENT
 }
 
 
-static boolean dtorBasePushable(// TEST IF BASE CLASS FOR DTOR NEEDS PUSHING
+static bool dtorBasePushable(   // TEST IF BASE CLASS FOR DTOR NEEDS PUSHING
     BASE_CLASS *bcl )           // - base class
 {
     return TypeRequiresDtoring( bcl->type );
 }
 
 
-static boolean dtorMembPushable(// TEST IF MEMBER FOR DTOR NEEDS PUSHING
+static bool dtorMembPushable(   // TEST IF MEMBER FOR DTOR NEEDS PUSHING
     SYMBOL sym )                // - symbol for dtor
 {
     return SymIsThisDataMember( sym ) && SymRequiresDtoring( sym );
@@ -1057,10 +1057,10 @@ static SYMBOL dtorArraySym(     // GET ARRAY DTOR SYMBOL
 }
 
 
-static boolean dtorInclude(     // TEST IF DTOR NEEDS TO BE INCLUDED
+static bool dtorInclude(        // TEST IF DTOR NEEDS TO BE INCLUDED
     CL_ELEM* elem )             // - the element
 {
-    boolean retn;               // - TRUE ==> include anyway
+    bool retn;                  // - TRUE ==> include anyway
     CD_DESCR* info;             // - class infomation
 
     info = elem->descr;
@@ -1131,7 +1131,7 @@ static void dtorRptElKept(      // RPT: element kept
 // Virtual functions for Default CTOR processing
 //-------------------------------------------------------------------------
 
-static boolean classCanBeCtorOpt( // CAN CLASS BE DEF-CTOR OPTIMIZED
+static bool classCanBeCtorOpt(  // CAN CLASS BE DEF-CTOR OPTIMIZED
     CLASSINFO *ci )             // - class info for ctor
 {
     ci->ctor_user_code_checked = TRUE;
@@ -1142,10 +1142,10 @@ static boolean classCanBeCtorOpt( // CAN CLASS BE DEF-CTOR OPTIMIZED
 }
 
 
-static boolean defCtorOptSym(   // CAN DEF.CTOR BE OPTIMIZED UNDER ANY CONDITIONS?
+static bool defCtorOptSym(      // CAN DEF.CTOR BE OPTIMIZED UNDER ANY CONDITIONS?
     SYMBOL ctor )               // - the CTOR in question
 {
-    boolean retn;               // - FALSE ==> can never be optimized
+    bool retn;                  // - FALSE ==> can never be optimized
 
     if( ctor == NULL ) {
         retn = TRUE;
@@ -1156,10 +1156,10 @@ static boolean defCtorOptSym(   // CAN DEF.CTOR BE OPTIMIZED UNDER ANY CONDITION
 }
 
 
-static boolean defCtorOptimizable( // CAN DEF.CTOR TYPE BE OPTIMIZED UNDER ANY CONDITIONS?
+static bool defCtorOptimizable( // CAN DEF.CTOR TYPE BE OPTIMIZED UNDER ANY CONDITIONS?
     CL_ELEM* elem )             // - class element
 {
-    boolean retn;               // - TRUE ==> might be optimizable
+    bool retn;                  // - TRUE ==> might be optimizable
 
     if( TypeRequiresCtoring( elem->cltype ) ) {
         retn = defCtorOptSym( elem->cdtor );
@@ -1232,7 +1232,7 @@ static SYMBOL defCtorFind(      // FIND DEF.CTOR FOR TYPE
 }
 
 
-static boolean defCtorBasePushable(// TEST IF BASE CLASS PUSHABLE FOR DEF.CTOR
+static bool defCtorBasePushable(// TEST IF BASE CLASS PUSHABLE FOR DEF.CTOR
     BASE_CLASS *bcl )           // - base class
 {
     return TypeRequiresCtoring( bcl->type )
@@ -1240,7 +1240,7 @@ static boolean defCtorBasePushable(// TEST IF BASE CLASS PUSHABLE FOR DEF.CTOR
 }
 
 
-static boolean defCtorMembPushable(// TEST IF MEMBER PUSHABLE FOR DEF.CTOR
+static bool defCtorMembPushable(// TEST IF MEMBER PUSHABLE FOR DEF.CTOR
     SYMBOL sym )                // - symbol for ctor
 {
     return SymIsThisDataMember( sym )
@@ -1248,10 +1248,10 @@ static boolean defCtorMembPushable(// TEST IF MEMBER PUSHABLE FOR DEF.CTOR
 }
 
 
-static boolean defCtorInclude(  // TEST IF CTOR REQUIRED TO BE INCLUDED
+static bool defCtorInclude(     // TEST IF CTOR REQUIRED TO BE INCLUDED
     CL_ELEM* elem )             // - the element
 {
-    boolean retn;               // - TRUE ==> include anyway
+    bool retn;                  // - TRUE ==> include anyway
     CD_DESCR* info;             // - class infomation
 
     info = elem->descr;
@@ -1323,7 +1323,7 @@ static void defCtorRptElKept(   // RPT: element kept
 // Virtual functions for Default Assignment generation
 //-------------------------------------------------------------------------
 
-static boolean defAssForType(   // CAN OP= TYPE BE OPTIMIZED AWAY FOR A CLASS
+static bool defAssForType(      // CAN OP= TYPE BE OPTIMIZED AWAY FOR A CLASS
     CLASSINFO *ci )             // - class info for type
 {
     ci->assign_user_code_checked = TRUE;
@@ -1334,10 +1334,10 @@ static boolean defAssForType(   // CAN OP= TYPE BE OPTIMIZED AWAY FOR A CLASS
 }
 
 
-static boolean defAssOptimizable( // CAN OP= BE OPTIMIZED AWAY AT ALL
+static bool defAssOptimizable(  // CAN OP= BE OPTIMIZED AWAY AT ALL
     CL_ELEM* elem )             // - class element
 {
-    boolean retn;               // - FALSE ==> cannot be optimized
+    bool retn;                  // - FALSE ==> cannot be optimized
     SYMBOL assop;               // - the op= in question
 
     assop = elem->cdtor;
@@ -1366,7 +1366,7 @@ static SYMBOL defAssFind(       // GET DEFAULT OP= (OR NULL IF SCALAR )
 }
 
 
-static boolean defAssBasePushable(// TEST IF BASE CLASS PUSHABLE FOR OP=
+static bool defAssBasePushable( // TEST IF BASE CLASS PUSHABLE FOR OP=
     BASE_CLASS *bcl )           // - base class
 {
     bcl = bcl;
@@ -1374,7 +1374,7 @@ static boolean defAssBasePushable(// TEST IF BASE CLASS PUSHABLE FOR OP=
 }
 
 
-static boolean defAssMembPushable(// TEST IF MEMBER PUSHABLE FOR OP=
+static bool defAssMembPushable( // TEST IF MEMBER PUSHABLE FOR OP=
     SYMBOL sym )                // - symbol for ctor
 {
     sym = sym;
@@ -1382,10 +1382,10 @@ static boolean defAssMembPushable(// TEST IF MEMBER PUSHABLE FOR OP=
 }
 
 
-static boolean defAssInclude(   // TEST IF OP= MUST BE INCLUDED
+static bool defAssInclude(      // TEST IF OP= MUST BE INCLUDED
     CL_ELEM* elem )             // - the element
 {
-    boolean retn;               // - TRUE ==> include anyway
+    bool retn;                  // - TRUE ==> include anyway
     CD_DESCR* info;             // - class infomation
 
     info = elem->descr;
@@ -1782,19 +1782,19 @@ CD_DESCR* CDoptDefOpeqBuild(    // BUILD LIST OF OBJECTS TO BE DEFAULT OP='ED
 }
 
 
-boolean CDoptErrorOccurred(     // TEST IF ERROR OCCURRED
+bool CDoptErrorOccurred(        // TEST IF ERROR OCCURRED
     CD_DESCR* info )
 {
     return info->err_occurred;
 }
 
 
-boolean TypeHasDtorableObjects( // TEST IF TYPE HAS DTORABLE SUB-OBJECTS
+bool TypeHasDtorableObjects(    // TEST IF TYPE HAS DTORABLE SUB-OBJECTS
     TYPE type )                 // - a class type
 {
     CD_DESCR* dtor_info;        // - DTOR information
     CDOPT_ITER* iter;           // - and an iterator for it
-    boolean retn;               // - return: TRUE ==> really dtor it
+    bool retn;                  // - return: TRUE ==> really dtor it
 
     dtor_info = CDoptDtorBuild( type );
     if( CDoptErrorOccurred( dtor_info ) ) {
@@ -1814,12 +1814,12 @@ boolean TypeHasDtorableObjects( // TEST IF TYPE HAS DTORABLE SUB-OBJECTS
 }
 
 
-static boolean typeDtorable(    // TEST IF TYPE REALLY NEEDS DTOR'ING
+static bool typeDtorable(       // TEST IF TYPE REALLY NEEDS DTOR'ING
     TYPE type,                  // - declared type
-    boolean is_exact )          // - TRUE ==> exact type is known
+    bool is_exact )             // - TRUE ==> exact type is known
 {
     SYMBOL dtor;                // - destructor to be used
-    boolean retn;               // - return: TRUE ==> really dtor it
+    bool retn;                  // - return: TRUE ==> really dtor it
     TYPE base_type;             // - base type
 
     if( type == NULL ) {
@@ -1849,26 +1849,26 @@ static boolean typeDtorable(    // TEST IF TYPE REALLY NEEDS DTOR'ING
 }
 
 
-boolean TypeReallyDtorable(     // TEST IF TYPE REALLY NEEDS DTOR'ING
+bool TypeReallyDtorable(        // TEST IF TYPE REALLY NEEDS DTOR'ING
     TYPE type )                 // - declared type
 {
     return typeDtorable( type, FALSE );
 }
 
 
-boolean TypeExactDtorable(      // TEST IF EXACT TYPE REALLY NEEDS DTOR'ING
+bool TypeExactDtorable(         // TEST IF EXACT TYPE REALLY NEEDS DTOR'ING
     TYPE type )                 // - declared type
 {
     return typeDtorable( type, TRUE );
 }
 
 
-boolean TypeReallyDefCtorable(  // TEST IF TYPE REALLY NEEDS DEFAULT CTOR'ING
+bool TypeReallyDefCtorable(     // TEST IF TYPE REALLY NEEDS DEFAULT CTOR'ING
     TYPE type )                 // - declared type
 {
     CD_DESCR* ctor_info;        // - DTOR information
     CDOPT_ITER* iter;           // - and an iterator for it
-    boolean retn;               // - return: TRUE ==> really dtor it
+    bool retn;                  // - return: TRUE ==> really dtor it
 
     if( TypeRequiresCtoring( type ) ) {
         if( classCanBeCtorOpt( TypeClassInfo( type ) ) ) {
@@ -1971,13 +1971,13 @@ pch_status PCHReadCdOptData( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitCdOptData( boolean writing )
+pch_status PCHInitCdOptData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniCdOptData( boolean writing )
+pch_status PCHFiniCdOptData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

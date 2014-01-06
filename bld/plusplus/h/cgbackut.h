@@ -516,7 +516,7 @@ void BlkPosnTrash(              // TRASH TOP BLOCK POSITION
 SE *BlkPosnUpdate(              // UPDATE POSITION IN CURRENT BLOCK
     SE *se )                    // - state entry for current position
 ;
-boolean BlkPosnUseStab(         // TEST IF REALLY USING STATE TABLE IN SCOPE
+bool BlkPosnUseStab(            // TEST IF REALLY USING STATE TABLE IN SCOPE
     void )
 ;
 void CallIndirectPop(           // POP AN INDIRECT CALL ENTRY
@@ -527,7 +527,7 @@ SYMBOL CallIndirectPush(        // PUSH SYMBOL FOR INDIRECT CALL
 ;
 void CallIndirectVirtual(       // MARK INDIRECT CALL AS VIRTUAL
     SYMBOL vfunc,               // - the virtual function
-    boolean is_virtual,         // - TRUE ==> an actual virtual call
+    bool is_virtual,            // - TRUE ==> an actual virtual call
     target_offset_t adj_this,   // - adjustment for "this"
     target_offset_t adj_retn )  // - adjustment for return
 ;
@@ -535,7 +535,7 @@ CALL_STAB *CallStabAlloc(       // ALLOCATE CALL_STAB
     call_handle handle,         // - handle for call
     FN_CTL *fctl )              // - function hosting the call
 ;
-boolean CallStabCdArgGet(       // GET CD-ARG FOR A CALL
+bool CallStabCdArgGet(          // GET CD-ARG FOR A CALL
     call_handle handle,         // - handle for call
     unsigned *a_cd_arg )        // - addr[ value for CD-ARG ]
 ;
@@ -550,7 +550,7 @@ void CallStabFree(              // FREE CALL_STAB
 SE *CallStabStateTablePosn(     // GET STATE-TABLE POSITION AT CALL POINT
     call_handle handle )        // - handle for inline call
 ;
-boolean CallStackTopInlined(    // TEST IF TOP OF CALL STACK IS INLINED
+bool CallStackTopInlined(       // TEST IF TOP OF CALL STACK IS INLINED
     void )
 ;
 call_handle CallStackPop(       // POP CALL STACK
@@ -728,7 +728,7 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
     FN_CTL *fctl,               // - current function control pointer
     SCOPE scope )               // - argument scope
 ;
-boolean CgDeclSkippableConstObj(// DETERMINE IF SKIPPABLE CONST OBJECT
+bool CgDeclSkippableConstObj(   // DETERMINE IF SKIPPABLE CONST OBJECT
     SYMBOL sym )                // - symbol
 ;
 void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
@@ -783,7 +783,7 @@ void CgExprDtored(              // DTOR CG EXPRESSION
 cg_name CgExprPop(              // POP CG EXPRESSION
     void )
 ;
-boolean CgExprPopGarbage(       // POP EXPR STACK IF TOP EXPR IS GARBAGE
+bool CgExprPopGarbage(          // POP EXPR STACK IF TOP EXPR IS GARBAGE
     void )
 ;
 cg_name CgExprPopType(          // POP CG EXPRESSION and TYPE
@@ -876,13 +876,13 @@ target_offset_t CgOffsetRw(     // COMPUTE OFFSET FROM R/W REGISTRATION
 void CgPushGarbage(             // PUSH GARBAGE (TO BE TRASHED/POPPED)
     void )
 ;
-boolean CgRetnOptActive         // TEST IF RETURN OPTIMIZATION ACTIVE FOR FILE
+bool CgRetnOptActive            // TEST IF RETURN OPTIMIZATION ACTIVE FOR FILE
     ( FN_CTL *fctl )            // - file-activation control
 ;
-boolean CgRetnOptForFile        // TEST IF RETURN OPTIMIZATION FOR FILE
+bool CgRetnOptForFile           // TEST IF RETURN OPTIMIZATION FOR FILE
     ( CGFILE *file_ctl )        // - file control
 ;
-boolean CgRetnOptIsOptVar       // TEST IF SYMBOL IS RETURN-OPTIMIZATION VAR
+bool CgRetnOptIsOptVar          // TEST IF SYMBOL IS RETURN-OPTIMIZATION VAR
     ( FN_CTL *fctl              // - file-activation control
     , SYMBOL var )              // - var. to be tested
 ;
@@ -996,11 +996,11 @@ void CondInfoPop(               // POP COND_INFO STACK
 ;
 void CondInfoSetCtorTest(       // SET/RESET FLAG FOR CTOR-TEST
     FN_CTL *fctl,               // - function control
-    boolean set_flag )          // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag )             // - TRUE ==> set the flag; FALSE ==> clear
 ;
 void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
     FN_CTL *fctl,               // - function control
-    boolean set_flag )          // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag )             // - TRUE ==> set the flag; FALSE ==> clear
 ;
 void CondInfoSetup(             // SETUP UP CONDITIONAL INFORMATION
     unsigned index,             // - index of flag
@@ -1014,7 +1014,7 @@ label_handle CondLabelAdd       // ADD A CONDITIONAL LABEL
     ( COND_LABEL **a_ring       // - addr[ ring of labels ]
     , SE *se )                  // - state entry
 ;
-boolean CondLabelEmit           // EMIT CONDITIONAL LABEL IF REQ'D
+bool CondLabelEmit              // EMIT CONDITIONAL LABEL IF REQ'D
     ( COND_LABEL **a_ring       // - addr[ ring of labels ]
     , SE *se )                  // - state entry at current position
 ;
@@ -1073,10 +1073,10 @@ void DgUninitBytes(             // DATA GENERATE UNINIT BYTES
 DT_METHOD DtmDirect(            // CONVERT DTOR METHOD TO DIRECT COUNTERPART
     DT_METHOD dtm )             // - default method
 ;
-boolean DtmTabular(             // DETERMINE IF SCOPE TABULAR DTOR METHOD
+bool DtmTabular(                // DETERMINE IF SCOPE TABULAR DTOR METHOD
     FN_CTL *fctl )              // - function control
 ;
-boolean DtmTabularFunc(         // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD, FUNCTION
+bool DtmTabularFunc(            // DETERMINE IF SCOPE TABULAR DESTRUCTION METHOD, FUNCTION
     FN_CTL *fctl )              // - function control
 ;
 SE *DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
@@ -1176,10 +1176,10 @@ SYMBOL FstabExcRw(              // ALPHA: GET R/W DATA SYMBOL
 SE *FstabFindAuto(              // FIND AUTO VAR ENTRY IN STATE TABLE
     SYMBOL auto_var )           // - the auto variable
 ;
-boolean FstabGenerate(          // GENERATE FUNCTION STATE TABLE
+bool FstabGenerate(             // GENERATE FUNCTION STATE TABLE
     void )
 ;
-boolean FstabHasStateTable(     // DETERMINE IF STATE TABLE BEING GEN'ED
+bool FstabHasStateTable(        // DETERMINE IF STATE TABLE BEING GEN'ED
     void )
 ;
 void FstabInit(                 // INITIALIZE FUNCTION STATE TABLE
@@ -1217,7 +1217,7 @@ void FstabSetDtorState(         // SET STATE VAR. FOR DTOR
 SE *FstabSetSvSe(               // ADD SET_SV FOR SE TO STATE TABLE
     SE *tgt )                   // - state entry
 ;
-boolean FstabSetup(             // SETUP FUNCTION STATE TABLE
+bool FstabSetup(                // SETUP FUNCTION STATE TABLE
     CGFILE *file_ctl,           // - current file information
     FN_CTL *fctl )              // - current file generation information
 ;
@@ -1250,7 +1250,7 @@ void IbpDefineSym(              // DEFINE SYMBOL FOR BOUND PARAMETER
     call_handle handle,         // - handle for call
     SYMBOL sym )                // - the symbol
 ;
-boolean IbpEmpty(               // DEBUG -- verify empty
+bool IbpEmpty(                  // DEBUG -- verify empty
     void )
 ;
 cg_name IbpFetchRef(            // FETCH A REFERENCE PARAMETER
@@ -1269,7 +1269,7 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
     SYMBOL vf_this,             // - original symbol (for access)
     target_offset_t vf_offset,  // - offset to vf table ptr
     vindex vf_index,            // - index in vf table
-    boolean *is_vcall,          // - addr[ TRUE ==> real virtual call ]
+    bool *is_vcall,             // - addr[ TRUE ==> real virtual call ]
     target_offset_t *a_adj_this,// - addr[ this adjustment ]
     target_offset_t *a_adj_retn,// - addr[ return adjustment ]
     SYMBOL *a_exact_vfun )      // - addr[ exact vfun to be used ]
@@ -1277,7 +1277,7 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
 void IbpFlush(                  // REMOVE ALL IBRP ENTRIES FOR THIS CALL CONTEXT
     FN_CTL *fctl )              // - current file control
 ;
-boolean IbpReference(           // LOCATE A BOUND REFERENCE
+bool IbpReference(              // LOCATE A BOUND REFERENCE
     SYMBOL sym,                 // - original symbol
     SYMBOL *trans,              // - addr[ translated symbol ]
     SYMBOL *bound,              // - addr[ bound reference ]
@@ -1343,7 +1343,7 @@ cg_name ObjInitRegActualBase    // REGISTER FOR AN ACTUAL BASE
 cg_name ObjInitRegisterObj(     // CREATE AN OBJECT REGISTRATION
     FN_CTL *fctl,               // - current function information
     cg_name base_expr,          // - base expression
-    boolean use_fun_cdtor )     // - TRUE ==> use CDTOR parm of function
+    bool use_fun_cdtor )        // - TRUE ==> use CDTOR parm of function
 ;
 OBJ_INIT *ObjInitTop(           // GET TOP INITIALIZATION OBJECT
     void )
@@ -1408,7 +1408,7 @@ STAB_DEFN *StabDefnInit(        // INITIALIZE STAB_DEFN
     STAB_DEFN *defn,            // - definition
     unsigned kind )             // - kind of table
 ;
-boolean StabGenerate(           // GENERATE A STATE TABLE
+bool StabGenerate(              // GENERATE A STATE TABLE
     STAB_CTL *sctl )            // - state-table information
 ;
 SE *StateTableActualPosn(       // GET (UN-OPTIMIZED) CURRENT STATE ENTRY

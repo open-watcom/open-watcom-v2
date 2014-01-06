@@ -52,7 +52,7 @@
 #endif
 
 static carve_t carveTYPE_SIG_ENT;   // allocations for TYPE_SIG_ENT
-static boolean type_sig_gened;      // TRUE ==> a type signature was gen'ed
+static bool type_sig_gened;         // TRUE ==> a type signature was gen'ed
 
 
 TYPE_SIG *BeTypeSignature(      // GET TYPE_SIG FOR A TYPE
@@ -60,7 +60,7 @@ TYPE_SIG *BeTypeSignature(      // GET TYPE_SIG FOR A TYPE
 {
     TYPE_SIG *sig;              // - type signature for type
     TYPE_SIG *base;             // - base type signatures for type
-    boolean errors;             // - TRUE set if error occurred
+    bool errors;                // - TRUE set if error occurred
 
     sig = TypeSigFind( TSA_GEN, type, NULL, &errors );
     DbgVerify( ! errors, "BeTypeSignature -- unexpected errors" );

@@ -87,7 +87,7 @@ struct initialize_info {                // size and offset of current item
             target_ulong    mask;       // initialized bits
         } b;                            // - bitfield specific
         struct {
-            boolean         bitf;       // part of a bitfield
+            bool            bitf;       // part of a bitfield
         } s;                            // - scalar specific
     } u;
     INITIALIZE_ENTRY        entry;      // what is the stack entry

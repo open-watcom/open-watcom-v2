@@ -321,10 +321,10 @@ static void freeBuffer(         // FREE A BUFFER
 }
 
 
-boolean IoSuppCloseFile(        // CLOSE FILE IF OPENED
+bool IoSuppCloseFile(           // CLOSE FILE IF OPENED
     FILE **file_ptr )           // - addr( file pointer )
 {
-    boolean retn;               // - return: TRUE ==> was open
+    bool retn;                  // - return: TRUE ==> was open
     BUF_ALLOC* ba;              // - current allocated buffer
 
     if( *file_ptr == NULL ) {
@@ -374,14 +374,14 @@ static void makeDirName(        // MAKE FILE NAME (WITHOUT DRIVE)
 }
 
 
-static boolean openSrc(         // ATTEMPT TO OPEN FILE
+static bool openSrc(            // ATTEMPT TO OPEN FILE
     char *name,                 // - file name
     enum file_type typ )        // - type of file being opened
 {
     pch_absorb pch_OK;          // - pre-compiled header load status
     FILE *fp;                   // - file pointer
 #ifdef OPT_BR
-    boolean might_browse;       // - true ==> might browse, if right file type
+    bool might_browse;          // - true ==> might browse, if right file type
 #endif
 
     if( SrcFileProcessOnce( name ) ) {
@@ -477,13 +477,13 @@ static char *openSrcExts(       // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
 }
 
 
-static boolean openSrcPath(     // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
+static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     char *path,                 // - path
     char **exts,                // - file extensions
     struct path_descr *fd,      // - file descriptor
     enum file_type typ )        // - type of file being opened
 {
-    boolean retn = FALSE;       // - return: TRUE ==> opened
+    bool retn = FALSE;          // - return: TRUE ==> opened
     struct path_descr pd;       // - path descriptor
     char dir[ _MAX_PATH*2 ];    // - new path
     char *pp;                   // - pointer into path
@@ -518,13 +518,13 @@ static boolean openSrcPath(     // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
 }
 
 
-static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
+static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     struct path_descr *fd,      // - descriptor for file name
     enum file_type typ )        // - type of search path to use
 {
     char **paths;               // - optional paths to prepend
     char **exts;                // - optional extensions to append
-    boolean retn;               // - return: TRUE ==> opened
+    bool retn;                  // - return: TRUE ==> opened
     char *path;                 // - next path
     char bufpth[ _MAX_PATH ];   // - buffer for next path
     SRCFILE curr;               // - current included file
@@ -653,7 +653,7 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
 }
 
 
-boolean IoSuppOpenSrc(          // OPEN A SOURCE FILE (PRIMARY,HEADER)
+bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
     enum file_type typ )        // - type of search path to use
 {
@@ -864,11 +864,11 @@ void IoSuppTempRead(            // READ FROM TEMPORARY FILE
 }
 
 
-static boolean pathExists(      // TEST IF A PATH EXISTS
+static bool pathExists(         // TEST IF A PATH EXISTS
     char *path )                // - path to be tested
 {
     DIR *dir;                   // - control for directory
-    boolean retn;               // - return: TRUE ==> directory exists
+    bool retn;                  // - return: TRUE ==> directory exists
 
     retn = FALSE;
     dir = opendir( path );

@@ -108,7 +108,7 @@ void DgrfConstruct(             // CONSTRUCTOR FOR DIRGRAPH_CTL
 }
 
 
-static boolean free_edge(       // FREE AN EDGE
+static bool free_edge(          // FREE AN EDGE
     DIRGRAPH_CTL *ctl,          // - control information
     DIRGRAPH_EDGE *edge )       // - edge to be freed
 {
@@ -117,7 +117,7 @@ static boolean free_edge(       // FREE AN EDGE
 }
 
 
-static boolean free_node(       // FREE A NODE
+static bool free_node(          // FREE A NODE
     DIRGRAPH_CTL *ctl,          // - control information
     DIRGRAPH_NODE *node )       // - node to be freed
 {
@@ -136,15 +136,15 @@ void DgrfDestruct(              // DESTRUCTOR FOR DIRGRAPH_CTL
 }
 
 
-boolean DgrfWalkEdges(          // WALK ALL EDGES FROM OBJECT
+bool DgrfWalkEdges(             // WALK ALL EDGES FROM OBJECT
     DIRGRAPH_CTL *ctl,          // - control information
     DIRGRAPH_NODE *node,        // - node
-    boolean (*walker)           // - walking routine
+    bool (*walker)              // - walking routine
         ( DIRGRAPH_CTL *        // - - control information
         , DIRGRAPH_EDGE * ) )   // - - EDGE
 {
     DIRGRAPH_EDGE *edge;        // - current edge
-    boolean retn;               // - TRUE ==> walking terminated
+    bool retn;                  // - TRUE ==> walking terminated
 
     retn = FALSE;
     RingIterBegSafe( node->edges, edge ){
@@ -155,14 +155,14 @@ boolean DgrfWalkEdges(          // WALK ALL EDGES FROM OBJECT
 }
 
 
-boolean DgrfWalkObjects(        // WALK ALL OBJECTS
+bool DgrfWalkObjects(           // WALK ALL OBJECTS
     DIRGRAPH_CTL *ctl,          // - control information
-    boolean (*walker)           // - walking routine
+    bool (*walker)              // - walking routine
         ( DIRGRAPH_CTL *        // - - control information
         , DIRGRAPH_NODE * ) )   // - - node
 {
     DIRGRAPH_NODE *node;        // - current object
-    boolean retn;               // - TRUE ==> walking terminated
+    bool retn;                  // - TRUE ==> walking terminated
 
     retn = FALSE;
     RingIterBegSafe( ctl->objects, node ) {
@@ -173,7 +173,7 @@ boolean DgrfWalkObjects(        // WALK ALL OBJECTS
 }
 
 
-static boolean pruneEdge(       // PRUNE EDGE FROM GRAPH
+static bool pruneEdge(          // PRUNE EDGE FROM GRAPH
     DIRGRAPH_CTL *ctl,          // - control information
     DIRGRAPH_EDGE *edge )       // - edge to be pruned
 {

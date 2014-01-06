@@ -1180,10 +1180,10 @@ extern void LinkagePop( void );
 extern LINKAGE LinkageMergePop( void );
 extern int  LinkageDeclaration( void );
 extern void LinkageSet( SYMBOL, char * );
-extern boolean LinkageIsCpp( SYMBOL );
-extern boolean LinkageIsC( SYMBOL );
-extern boolean LinkageIsCurr( SYMBOL );
-extern boolean LinkageSpecified( void );
+extern bool LinkageIsCpp( SYMBOL );
+extern bool LinkageIsC( SYMBOL );
+extern bool LinkageIsCurr( SYMBOL );
+extern bool LinkageSpecified( void );
 
 // defined in SCOPE.C
 
@@ -1204,9 +1204,9 @@ extern SYMBOL ChipBugSym;
 extern SYMBOL PCHDebugSym;
 extern SYMBOL DFAbbrevSym;
 
-extern boolean ScopeAccessType( scope_type_t );
-extern boolean ScopeType( SCOPE, scope_type_t );
-extern boolean ScopeEquivalent( SCOPE, scope_type_t );
+extern bool ScopeAccessType( scope_type_t );
+extern bool ScopeType( SCOPE, scope_type_t );
+extern bool ScopeEquivalent( SCOPE, scope_type_t );
 #define ScopeId( s )    ((s)->id)
 #define ScopeEnclosedInUnnamedNameSpace( sc )   ((sc)->u.s.in_unnamed)
 
@@ -1229,7 +1229,7 @@ extern SCOPE ScopeEnd( scope_type_t );
 extern void ScopeEndFileScope( void );
 extern SCOPE ScopeCreate( scope_type_t );
 extern void ScopeOpen( SCOPE );
-extern void ScopeRestoreUsing( SCOPE, boolean );
+extern void ScopeRestoreUsing( SCOPE, bool );
 extern void ScopeAdjustUsing( SCOPE, SCOPE );
 extern void ScopeEstablish( SCOPE );
 extern SCOPE ScopeOpenNameSpace( NAME, SYMBOL );
@@ -1240,13 +1240,13 @@ extern SCOPE ScopeSetContaining( SYMBOL_NAME, SCOPE );
 extern SCOPE ScopeClose( void );
 extern void ScopeCreatePCHDebugSym( void );
 extern target_offset_t ScopeVBPtrOffset( SCOPE );
-extern boolean ScopeHasVirtualBases( SCOPE );
-extern boolean ScopeHasVirtualFunctions( SCOPE );
+extern bool ScopeHasVirtualBases( SCOPE );
+extern bool ScopeHasVirtualFunctions( SCOPE );
 extern void ScopeJumpForward( SCOPE );
 extern void ScopeJumpBackward( SCOPE );
 extern BASE_CLASS *ScopeFindVFPtrInVBase( TYPE );
 extern TYPE ScopeFindBoundBase( TYPE, TYPE );
-extern boolean ScopeHasPureFunctions( SCOPE );
+extern bool ScopeHasPureFunctions( SCOPE );
 extern void ScopeNotePureFunctions( TYPE );
 extern SYMBOL ScopePureVirtualThunk( THUNK_ACTION * );
 extern SYMBOL ScopeAlreadyExists( SCOPE, NAME );
@@ -1254,7 +1254,7 @@ extern SYMBOL_NAME ScopeYYLexical( SCOPE, NAME );
 extern SYMBOL_NAME ScopeYYMember( SCOPE, NAME );
 extern SEARCH_RESULT *ScopeFindSymbol( SYMBOL );
 extern SEARCH_RESULT *ScopeFindLexicalNameSpace( SCOPE, NAME );
-extern SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE, NAME, boolean );
+extern SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE, NAME, bool );
 extern SEARCH_RESULT *ScopeFindMemberColonColon( SCOPE, NAME );
 extern SEARCH_RESULT *ScopeFindBaseMember( SCOPE, NAME );
 extern SEARCH_RESULT *ScopeFindLexicalClassType( SCOPE, NAME );
@@ -1270,13 +1270,13 @@ extern SEARCH_RESULT *ScopeFindNakedConversion( SCOPE, TYPE, type_flag );
 extern SEARCH_RESULT *ScopeFindScopedNakedConversion( SCOPE, SCOPE, TYPE, type_flag );
 extern FNOV_LIST *ScopeConversionList( SCOPE, type_flag, TYPE );
 extern SEARCH_RESULT *ScopeContainsMember( SCOPE, NAME );
-extern boolean ScopeImmediateCheck( SEARCH_RESULT * );
-extern boolean ScopeAmbiguousSymbol( SEARCH_RESULT *, SYMBOL );
-extern boolean ScopeCheckSymbol( SEARCH_RESULT *, SYMBOL );
+extern bool ScopeImmediateCheck( SEARCH_RESULT * );
+extern bool ScopeAmbiguousSymbol( SEARCH_RESULT *, SYMBOL );
+extern bool ScopeCheckSymbol( SEARCH_RESULT *, SYMBOL );
 extern void ScopeDontCheckSymbol( SEARCH_RESULT * );
 extern void ScopeFreeResult( SEARCH_RESULT * );
 extern SEARCH_RESULT *ScopeDupResult( SEARCH_RESULT * );
-extern boolean ScopeEnclosed( SCOPE, SCOPE );
+extern bool ScopeEnclosed( SCOPE, SCOPE );
 extern void ScopeKeep( SCOPE );
 extern void ScopeArgumentCheck( SCOPE );
 extern void ScopeQualifyPush( SCOPE, SCOPE );
@@ -1294,13 +1294,13 @@ extern SCOPE ScopeFunctionScopeInProgress( void );
 extern SYMBOL ScopeFunctionScope( SCOPE );
 extern void ScopeMemberModuleFunction( SCOPE, SCOPE );
 extern void ScopeRestoreModuleFunction( SCOPE );
-extern boolean ScopeLocalClass( SCOPE );
+extern bool ScopeLocalClass( SCOPE );
 extern SCOPE ScopeHostClass( SCOPE );
 extern BASE_CLASS *ScopeFindVBase( SCOPE, TYPE );
 extern void ScopeMemberPtrCastAction( MEMBER_PTR_CAST * );
 extern void ScopeEmitIndexMappings( void );
 extern void ScopeClear( SCOPE );
-extern boolean ScopeDebugable( SCOPE );
+extern bool ScopeDebugable( SCOPE );
 extern void ScopeSetParmClass( SCOPE, TEMPLATE_INFO * );
 extern void ScopeSetParmFn( SCOPE, FN_TEMPLATE * );
 extern void ScopeSetParmCopy( SCOPE, SCOPE );
@@ -1315,14 +1315,14 @@ extern CLASS_VBTABLE *ScopeCollectVBTable( SCOPE, scv_control );
 extern CLASS_VFTABLE *ScopeCollectVFTable( SCOPE, scv_control );
 
 /* front-end #pragma support */
-extern SYMBOL ScopeASMUseSymbol( NAME, boolean * );
+extern SYMBOL ScopeASMUseSymbol( NAME, bool * );
 extern void ScopeASMUsesAuto( void );
 extern SYMBOL ScopeASMLookup( NAME );
-extern SYMBOL ScopeIntrinsic( boolean );
+extern SYMBOL ScopeIntrinsic( bool );
 extern void ScopeAuxName( char *, AUX_INFO * );
 
 extern SYMBOL ScopeInsert( SCOPE, SYMBOL, NAME );
-extern boolean ScopeCarefulInsert( SCOPE, SYMBOL *, NAME );
+extern bool ScopeCarefulInsert( SCOPE, SYMBOL *, NAME );
 extern SYMBOL ScopePromoteSymbol( SCOPE, SYMBOL, NAME );
 extern void ScopeInsertErrorSym( SCOPE, PTREE );
 extern void ScopeRawAddFriendSym( CLASSINFO *, SYMBOL );
@@ -1332,8 +1332,8 @@ extern void ScopeAddFriendType( SCOPE, TYPE, SYMBOL );
 extern SYMBOL AllocSymbol( void );
 extern SYMBOL AllocTypedSymbol( TYPE );
 extern SYMBOL_NAME AllocSymbolName( NAME, SCOPE );
-boolean EnumTypeName( SYMBOL_NAME sym_name );
-boolean ClassTypeName( SYMBOL_NAME sym_name );
+extern bool EnumTypeName( SYMBOL_NAME sym_name );
+extern bool ClassTypeName( SYMBOL_NAME sym_name );
 extern void FreeSymbol( SYMBOL );
 extern void FreeSymbolName( SYMBOL_NAME );
 extern void ScopeBurn( SCOPE );
@@ -1354,20 +1354,20 @@ extern SEARCH_RESULT *ScopeBaseResult( SCOPE , SCOPE );
 extern SEARCH_RESULT *ScopeResultFromBase( TYPE, BASE_CLASS * );
 extern BASE_CLASS *ScopeInherits( SCOPE );
 extern FRIEND *ScopeFriends( SCOPE );
-extern boolean ScopeDirectBase( SCOPE, TYPE );
-extern boolean ScopeIndirectVBase( SCOPE, TYPE );
+extern bool ScopeDirectBase( SCOPE, TYPE );
+extern bool ScopeIndirectVBase( SCOPE, TYPE );
 extern NAME ScopeUnnamedNamespaceName( TOKEN_LOCN * );
 extern NAME ScopeNameSpaceName( SCOPE );
 extern const char *ScopeNameSpaceFormatName( SCOPE );
 extern TYPE ScopeClass( SCOPE );
 extern SYMBOL ScopeFunction( SCOPE );
 extern unsigned ScopeIndex( SCOPE );
-extern boolean VariableName( SYMBOL_NAME );
+extern bool VariableName( SYMBOL_NAME );
 extern SYMBOL ScopeFunctionInProgress( void );
 extern SCOPE ScopeForTemps( void );
 extern SYMBOL ScopeFuncParm( unsigned );
 extern void ScopeResultErrLocn( SEARCH_RESULT*, TOKEN_LOCN* );
-extern boolean ScopeSameVFuns( SYMBOL, SYMBOL );
+extern bool ScopeSameVFuns( SYMBOL, SYMBOL );
 
 SYMBOL ScopeFindExactVfun(      // FIND EXACT VIRTUAL FUNCTION IN DERIVED CLASS
     SYMBOL vfun,                // - virtual fun in a base class
@@ -1405,30 +1405,30 @@ extern TYPE TypedefRemove( TYPE );
 extern TYPE TypedefModifierRemove( TYPE );
 TYPE TypedefModifierRemoveOnly( TYPE );
 extern arg_list *TypeArgList( TYPE type );
-extern boolean TypeCompareExclude( TYPE, TYPE, type_exclude );
-extern boolean TypesSameExclude( TYPE, TYPE, type_exclude );
-extern boolean TypesIdentical( TYPE, TYPE );
-// extern boolean TypesSame( TYPE, TYPE );
+extern bool TypeCompareExclude( TYPE, TYPE, type_exclude );
+extern bool TypesSameExclude( TYPE, TYPE, type_exclude );
+extern bool TypesIdentical( TYPE, TYPE );
+// extern bool TypesSame( TYPE, TYPE );
 extern SYMBOL MakeTypeidSym( TYPE );
 extern SYMBOL MakeVATableSym( SCOPE );
 extern SYMBOL MakeVBTableSym( SCOPE, vindex, target_offset_t );
 extern SYMBOL MakeVFTableSym( SCOPE, vindex, target_offset_t );
-extern SYMBOL MakeVMTableSym( SCOPE, SCOPE, boolean * );
+extern SYMBOL MakeVMTableSym( SCOPE, SCOPE, bool * );
 
 extern target_offset_t PackAlignment( target_offset_t, target_size_t );
 
-extern boolean TypePartiallyDefined( TYPE );
-extern boolean TypeDefined( TYPE );
-extern boolean TypeAbstract( TYPE );
+extern bool TypePartiallyDefined( TYPE );
+extern bool TypeDefined( TYPE );
+extern bool TypeAbstract( TYPE );
 extern TYPE TypeNeedsCtor( TYPE );
-extern boolean TypeIsCharString( TYPE );
-extern boolean TypeIsClassInstantiation( TYPE );
-extern boolean TypeIsConst( TYPE );
-extern boolean TypeIsAnonymousEnum( TYPE );
-extern boolean TypeHasEllipsisArg( TYPE );
-extern boolean TypeHasNumArgs( TYPE, unsigned );
-extern boolean TypeHasReverseArgs( TYPE );
-extern boolean TypeVAStartWontWork( TYPE, int * );
+extern bool TypeIsCharString( TYPE );
+extern bool TypeIsClassInstantiation( TYPE );
+extern bool TypeIsConst( TYPE );
+extern bool TypeIsAnonymousEnum( TYPE );
+extern bool TypeHasEllipsisArg( TYPE );
+extern bool TypeHasNumArgs( TYPE, unsigned );
+extern bool TypeHasReverseArgs( TYPE );
+extern bool TypeVAStartWontWork( TYPE, int * );
 extern TYPE DefaultIntType( TYPE );
 extern TYPE CleanIntType( TYPE );
 extern TYPE SegmentShortType( TYPE );
@@ -1459,17 +1459,17 @@ extern TYPE StructOpened( TYPE );
 extern TYPE PolymorphicType( TYPE );
 extern TYPE ElaboratableType( TYPE );
 extern TYPE AbstractClassType( TYPE );
-extern boolean SignedIntType( TYPE );
-extern boolean UnsignedIntType( TYPE );
+extern bool SignedIntType( TYPE );
+extern bool UnsignedIntType( TYPE );
 extern TYPE TypeMergeForMember( TYPE, TYPE );
 extern TYPE TypePointedAt( TYPE, type_flag* );
 extern TYPE TypePointedAtModified( TYPE );
 extern TYPE TypePointedAtReplace( TYPE, TYPE );
-extern boolean TypeHasVirtualBases( TYPE );
-extern boolean TypeCtorDispRequired( TYPE, TYPE );
-extern boolean TypeHasSpecialFields( TYPE );
-extern boolean TypeParmSize( TYPE, target_size_t * );
-extern boolean TypeBasesEqual( type_flag, void *, void * );
+extern bool TypeHasVirtualBases( TYPE );
+extern bool TypeCtorDispRequired( TYPE, TYPE );
+extern bool TypeHasSpecialFields( TYPE );
+extern bool TypeParmSize( TYPE, target_size_t * );
+extern bool TypeBasesEqual( type_flag, void *, void * );
 
 extern SCOPE TypeScope( TYPE );
 extern CLASS_INST *TypeClassInstantiation( TYPE );
@@ -1495,7 +1495,7 @@ extern DECL_SPEC *PTypeActualTypeName( TYPE, PTREE );
 extern DECL_SPEC *PTypeClassInstantiation( TYPE, PTREE );
 extern void PTypeClassInstantiationUndo( DECL_SPEC * );
 extern DECL_SPEC *PTypeCombine( DECL_SPEC *, DECL_SPEC * );
-extern DECL_SPEC *PTypeDone( DECL_SPEC *, boolean );
+extern DECL_SPEC *PTypeDone( DECL_SPEC *, bool );
 extern DECL_SPEC *PTypeDefault( void );
 extern DECL_SPEC *PTypeTypeid( PTREE );
 extern DECL_SPEC *PTypeExpr( PTREE );
@@ -1536,7 +1536,7 @@ extern TYPE GetReferenceTo( TYPE );
 extern TYPE MakeTypedefOf( TYPE, SCOPE, SYMBOL );
 extern TYPE TypeClassModCombine( TYPE, TYPE );
 extern TYPE MakeClassModDeclSpec( DECL_SPEC * );
-extern boolean IdenticalClassModifiers( TYPE, TYPE );
+extern bool IdenticalClassModifiers( TYPE, TYPE );
 extern TYPE AbsorbBaseClassModifiers( TYPE, type_flag *, type_flag *, AUX_INFO ** );
 extern TYPE ProcessClassModifiers( TYPE, type_flag *, type_flag *, AUX_INFO ** );
 extern void SetFnClassMods( TYPE, type_flag, AUX_INFO * );
@@ -1592,19 +1592,19 @@ extern TYPE MakeSimpleFlagFunction( type_flag, TYPE, ... );
 extern TYPE MakeModifiableFunction( TYPE, ... );
 extern TYPE TypeUserConversion( DECL_SPEC *, DECL_INFO * );
 extern PTREE DoDeclSpec( DECL_SPEC * );
-extern TYPE MakeBasedModifier( type_flag, boolean, PTREE );
+extern TYPE MakeBasedModifier( type_flag, bool, PTREE );
 extern TYPE MakeBitfieldType( DECL_SPEC *, TYPE, unsigned, unsigned );
 extern uint_32 TypeHash( TYPE type );
-extern boolean ArrowMemberOK( SYMBOL );
+extern bool ArrowMemberOK( SYMBOL );
 extern DECL_INFO *MakeNewDynamicArray( PTREE );
 extern DECL_INFO *MakeNewPointer( specifier_t, DECL_INFO *, PTREE );
 extern DECL_INFO *MakeNewDeclarator( DECL_SPEC *, DECL_INFO *, DECL_INFO * );
 extern DECL_INFO *MakeNewTypeId( PTREE );
 extern PTREE MakeNewExpr( PTREE, PTREE, DECL_INFO *, PTREE );
 extern void CheckNewModifier( type_flag );
-extern TYPE MakeVFTableFieldType( boolean );
-extern TYPE MakeVBTableFieldType( boolean );
-extern boolean VerifyPureFunction( DECL_INFO * );
+extern TYPE MakeVFTableFieldType( bool );
+extern TYPE MakeVBTableFieldType( bool );
+extern bool VerifyPureFunction( DECL_INFO * );
 extern void VerifyMemberFunction( DECL_SPEC *, DECL_INFO * );
 extern void TypedefReset( SYMBOL, TYPE );
 extern AUX_INFO *TypeHasPragma( TYPE );
@@ -1614,17 +1614,16 @@ extern void ForceNoDefaultArgs( DECL_INFO *, int );
 
 extern TYPE MakePragma( char * );
 extern TYPE MakeIndexPragma( unsigned );
-extern boolean CurrFunctionHasEllipsis( void );
+extern bool CurrFunctionHasEllipsis( void );
 extern void TypeTraverse( type_id, void (*)( TYPE, void *), void * );
-extern boolean FunctionUsesAllTypes( SYMBOL, SCOPE, void (*)( SYMBOL ) );
+extern bool FunctionUsesAllTypes( SYMBOL, SCOPE, void (*)( SYMBOL ) );
 extern type_flag ExplicitModifierFlags( TYPE );
 
 extern TYPE CreateBoundType( TYPE unbound_type, TOKEN_LOCN *locn );
 extern int BindExplicitTemplateArguments( SCOPE param_scope,
                                           PTREE templ_args );
-extern boolean BindGenericTypes( SCOPE param_scope, PTREE parms, PTREE args,
-                                 boolean is_function,
-                                 unsigned int explicit_args );
+extern bool BindGenericTypes( SCOPE param_scope, PTREE parms, PTREE args,
+                            bool is_function, unsigned int explicit_args );
 
 arg_list* ArgListTempAlloc(     // ALLOCATE TEMPORARY ARG LIST
     TEMP_ARG_LIST* default_args,// - default args
@@ -1729,12 +1728,12 @@ type_flag TypeExplicitModFlags( // GET EXPLICIT MODIFIER FLAGS
 TYPE CgStripType(               // STRIP ONE LEVEL OF TYPE INFORMATION
     TYPE type )                 // - type
 ;
-cg_type CgTypeOutput(          // COMPUTE TYPE FOR CODE GENERATOR
+cg_type CgTypeOutput(           // COMPUTE TYPE FOR CODE GENERATOR
     TYPE type )                 // - C++ type
 ;
-boolean IsCgTypeAggregate(      // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
+bool IsCgTypeAggregate(         // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
     TYPE type,                  // - C++ type
-    boolean string )            // - array of string not aggregate
+    bool string )               // - array of string not aggregate
 ;
 target_size_t CgMemorySize(     // COMPUTE SIZE OF A TYPE IN MEMORY
     TYPE type )                 // - type
@@ -1789,7 +1788,7 @@ extern TYPE TypeCache[];
 
 // defined in template.c
 extern TYPE         BoundTemplateClass( TYPE );
-extern TYPE         BindTemplateClass( TYPE , TOKEN_LOCN *, boolean );
+extern TYPE         BindTemplateClass( TYPE , TOKEN_LOCN *, bool );
 
 // pre-compiled header support
 extern TYPE         TypeGetIndex( TYPE );

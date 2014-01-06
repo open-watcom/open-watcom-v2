@@ -110,12 +110,12 @@ static void pruneSE(            // PRUNE STATE ENTRY
 }
 
 
-static boolean sameSE(          // DETERMINE IF SAME STATE ENTRY
+static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
     SE* se,                     // - state entry to be added
     SE* state_table )           // - state table
 {
     SE* last;                   // - last state entry in table
-    boolean retn;               // - TRUE ==> same entry
+    bool retn;                  // - TRUE ==> same entry
 
     last = state_table;
     if( last == NULL ) {
@@ -346,7 +346,7 @@ void StabCtlPrune(              // PRUNE UN-GENNED ENTRIES UP TO AN ENTRY
     SE* se;                     // - current entry
     SE* prev;                   // - previous entry
     SE** hdr;                   // - addr[ state table ]
-    boolean done;               // - terminator
+    bool done;                  // - terminator
 
     hdr = &sctl->defn->state_table;
     se = *hdr;

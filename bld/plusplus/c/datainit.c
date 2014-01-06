@@ -109,8 +109,8 @@ static unsigned long bitMask[] = {      // for bitfields
 
 #if 0
 
-static void *dataInitCodeFileOpen( boolean modified, SCOPE *save )
-/****************************************************************/
+static void *dataInitCodeFileOpen( bool modified, SCOPE *save )
+/*************************************************************/
 {
     void    *handle;
 
@@ -156,8 +156,8 @@ static int code_file_save_depth;        // depth of open's
 static int code_file_open_depth;        // depth of actual open (-1 ==> none)
 
 
-static void dataInitCodeFileOpen( boolean modified )
-/**************************************************/
+static void dataInitCodeFileOpen( bool modified )
+/***********************************************/
 {
     switch( currInit->location ) {
 #if 0
@@ -199,7 +199,7 @@ static void dataInitCodeFileClose( void )
 #endif
 
 
-static boolean isDataInitConstant( PTREE tree
+static bool isDataInitConstant( PTREE tree
                                  , PTREE *ctree
                                  , target_size_t *offset )
 /********************************************************/
@@ -361,8 +361,8 @@ static void dataInitCheckHugeSegment( target_size_t position )
 #endif
 }
 
-static boolean dataInitCheckHugeAlign( TYPE type )
-/************************************************/
+static bool dataInitCheckHugeAlign( TYPE type )
+/*********************************************/
 // returns TRUE if cannot align to segment
 {
     target_size_t   total_size;
@@ -593,7 +593,7 @@ static TYPE_SIG *dataInitTypeSigFind( TYPE base_type, TYPE_SIG_ACCESS access )
 /****************************************************************************/
 {
     TYPE_SIG    *sig;          // - type signature
-    boolean     errors;        // - TRUE ==> errors occurred
+    bool        errors;        // - TRUE ==> errors occurred
 
     dataInitCodeFileOpen( FALSE );
     if( SymIsStaticMember( currInit->sym ) ) {
@@ -703,7 +703,7 @@ static PTREE emitDtorInitExpr(  // EMIT DTOR MARKING FOR AN EXPRESSION
 static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
     INITIALIZE_INFO* curr,      // - info on current entry
     PTREE expr,                 // - expression to be emitted
-    boolean index_updated )     // - TRUE ==> index has been updated
+    bool index_updated )        // - TRUE ==> index has been updated
 {
     TYPE type;                  // - NULL or type of dtorable element
     INITIALIZE_INFO* info;      // - info on previous entry
@@ -850,9 +850,8 @@ static void dataInitFini( INITFINI* defn )
 INITDEFN( data_init, dataInitInit, dataInitFini )
 
 
-static void dataInitStartLocal( INITIALIZE_DATA *init, DECL_INFO *dinfo,
-/**********************************************************************/
-    boolean initializer )
+static void dataInitStartLocal( INITIALIZE_DATA *init, DECL_INFO *dinfo, bool initializer )
+/*****************************************************************************************/
 // called internally for both initializer and no-initializer case
 // initializer=TRUE indicates initializer to follow
 {
@@ -1071,11 +1070,11 @@ void DataInitFinish( INITIALIZE_DATA *init )
     }
 }
 
-static boolean dataInitCheckAnalyse( PTREE *pexpr )
-/*************************************************/
+static bool dataInitCheckAnalyse( PTREE *pexpr )
+/**********************************************/
 {
     PTREE   expr = *pexpr;
-    boolean retn = TRUE;        // return TRUE if no error
+    bool    retn = TRUE;        // return TRUE if no error
 
     _dump( "- Analysed Expression ---------------------------------" );
     _dumpPTree( expr );
@@ -1109,14 +1108,14 @@ static void setModuleInitFnScope( void )
     }
 }
 
-static boolean dataInitAnalyseExpr( PTREE *pexpr )
-/************************************************/
+static bool dataInitAnalyseExpr( PTREE *pexpr )
+/*********************************************/
 // return FALSE if error during analysis
 {
     PTREE       expr = *pexpr;
     PTREE       left;
     PTREE       right;
-    boolean     retn;
+    bool        retn;
     TOKEN_LOCN  locn;       // - location of RHS
 
     right = PTreeExtractLocn( expr, &locn );
@@ -1155,11 +1154,11 @@ static boolean dataInitAnalyseExpr( PTREE *pexpr )
     return( retn );
 }
 
-static boolean dataInitAnalyseCtor( PTREE *pexpr )
-/************************************************/
+static bool dataInitAnalyseCtor( PTREE *pexpr )
+/*********************************************/
 // return FALSE if error in analysis
 {
-    boolean     retn;
+    bool     retn;
 
     currInit->use_simple = TRUE;
     retn = dataInitAnalyseExpr( pexpr );
@@ -1361,7 +1360,7 @@ static void dataInitFlushQueue( void )
 static void dataInitStashExpr( PTREE expr )
 /*****************************************/
 {
-    boolean         constant;
+    bool            constant;
     target_size_t   size;
     target_size_t   offset;
     PTREE           cexpr;
@@ -1484,12 +1483,12 @@ void DataInitConstructorParms( PTREE expr )
     }
 }
 
-static boolean dataInitIsFull( INITIALIZE_INFO *nest )
-/****************************************************/
+static bool dataInitIsFull( INITIALIZE_INFO *nest )
+/*************************************************/
 // return TRUE if stack entry is full
 // braces and root_type are never full
 {
-    boolean retn = FALSE;
+    bool retn = FALSE;
 
     if( ( nest->entry != DE_BRACE ) && ( nest->entry != DE_ROOT_TYPE ) ) {
         switch( nest->target ) {
@@ -1688,8 +1687,8 @@ static void dataInitUpdatePrevious( INITIALIZE_INFO *top )
     }
 }
 
-static void dataInitPushNest( boolean brace )
-/*******************************************/
+static void dataInitPushNest( bool brace )
+/****************************************/
 // push the level of nesting
 // if brace, then push a brace entry first
 {
@@ -1786,7 +1785,7 @@ static void dataInitSaveBits( PTREE expr )
 static void dataInitStashBitfield( PTREE expr )
 /*********************************************/
 {
-    boolean         constant;
+    bool            constant;
     target_size_t   size;
     target_size_t   offset;
     PTREE           cexpr;
@@ -1804,8 +1803,8 @@ static void dataInitStashBitfield( PTREE expr )
     currInit->nest->offset += size;
 }
 
-static void dataInitCheckStringConcat( boolean string
-                                     , boolean multi_line_concat
+static void dataInitCheckStringConcat( bool string
+                                     , bool multi_line_concat
                                      , PTREE expr )
 /*************************************************/
 {
@@ -1821,7 +1820,7 @@ void DataInitExpr( PTREE expr )
 /*****************************/
 // called for an expression
 {
-    boolean string, multi_line_concat;
+    bool string, multi_line_concat;
 
     if( currInit == NULL ) {
         _fatal( "datainit: currInit null in DataInitExpr" );

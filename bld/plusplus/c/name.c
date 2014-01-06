@@ -280,8 +280,8 @@ NAME NameDummy( void )
     return( nameAdd( head, bucket, xhash, buff, len ) );
 }
 
-boolean IsNameDummy( NAME name )
-/******************************/
+bool IsNameDummy( NAME name )
+/***************************/
 {
     return( NameStr( name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 && NameStr( name )[1] == NAME_DUMMY_PREFIX2 );
 }
@@ -299,7 +299,7 @@ static int cmpName( const void *lp, const void *rp )
     return( 0 );
 }
 
-pch_status PCHInitNames( boolean writing )
+pch_status PCHInitNames( bool writing )
 {
     int i;
     idname *name;
@@ -331,7 +331,7 @@ pch_status PCHInitNames( boolean writing )
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniNames( boolean writing )
+pch_status PCHFiniNames( bool writing )
 {
     writing = writing;
     nameFlags.no_creates_allowed = FALSE;

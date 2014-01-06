@@ -141,7 +141,7 @@ struct convctl                  // CONVCTL -- conversion control information
 CNV_RETN CastPtrToPtr           // EXPLICIT CAST PTR -> PTR
     ( CONVCTL* ctl )            // - conversion control
 ;
-boolean ConvCtlAnalysePoints    // ANALYSE CONVERSION INFORMATION FOR POINTS
+bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
     ( CONVCTL* info )           // - pointer-conversion information
 ;
 void ConvCtlClassAnalysis       // ANALYSE CLASS TYPE
@@ -173,12 +173,12 @@ PTREE ConvCtlDiagnose           // DIAGNOSE CASTING ERROR
 PTREE ConvCtlDiagnoseTypes      // DIAGNOSE CASTING TYPES
     ( CONVCTL* ctl )            // - conversion control
 ;
-boolean ConvCtlTypeInit         // INITIALIZE CONVTYPE
+bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
     ( CONVCTL* ctl              // - conversion control
     , CONVTYPE* ctype           // - control info.
     , TYPE type )               // - type
 ;
-boolean ConvCtlWarning          // ISSUE WARNING
+bool ConvCtlWarning             // ISSUE WARNING
     ( CONVCTL* ctl              // - conversion control
     , unsigned msg_no )         // - message number
 ;

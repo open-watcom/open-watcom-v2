@@ -38,13 +38,13 @@ typedef enum decl_check {
     DC_NULL             = 0x00
 } decl_check;
 
-extern boolean DeclNoInit( DECL_INFO * );
-extern boolean ConstNeedsExplicitInitializer( TYPE );
-extern boolean DeclWithInit( DECL_INFO * );
-extern void DeclDefaultStorageClass( SCOPE, SYMBOL );
-extern SYMBOL DeclCheck( SYMBOL_NAME, SYMBOL, decl_check * );
+extern bool     DeclNoInit( DECL_INFO * );
+extern bool     ConstNeedsExplicitInitializer( TYPE );
+extern bool     DeclWithInit( DECL_INFO * );
+extern void     DeclDefaultStorageClass( SCOPE, SYMBOL );
+extern SYMBOL   DeclCheck( SYMBOL_NAME, SYMBOL, decl_check * );
 extern DECL_INFO *DeclFunction( DECL_SPEC *, DECL_INFO * );
-extern void DeclVerifyNoOtherCLinkage( SYMBOL, SYMBOL );
+extern void     DeclVerifyNoOtherCLinkage( SYMBOL, SYMBOL );
 
 #define _DECL_H
 #endif

@@ -103,7 +103,7 @@ void DumpObjectModelClass(      // DUMP OBJECT MODEL: CLASS
 void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     TYPE type )                 // - enum type
 ;
-boolean IsPragmaAborts(         // TEST IF FUNCTION NEVER RETURNS
+bool IsPragmaAborts(         // TEST IF FUNCTION NEVER RETURNS
     SYMBOL sym )                // - function symbol
 ;
 struct textsegment *LkSegName(  // LOOKUP SEGMENT NAME
@@ -116,7 +116,7 @@ void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
     void )
 ;
 void PragEnding(                // PROCESS END OF PRAGMA
-    boolean set_sym )           // - TRUE ==> set SYMBOL's aux_info
+    bool set_sym )           // - TRUE ==> set SYMBOL's aux_info
 ;
 void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
     ( void )
@@ -133,27 +133,27 @@ void PragInitDefaultInfo(
 void PragManyRegSets(           // GET PRAGMA REGISTER SETS
     void )
 ;
-boolean PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
+bool PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
     AUX_INFO *oldp,             // - pragma, old
     AUX_INFO *newp )            // - pragma, new
 ;
-boolean PragmasTypeEquivalent(  // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
+bool PragmasTypeEquivalent(  // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
     AUX_INFO *inf1,             // - pragma [1]
     AUX_INFO *inf2 )            // - pragma [2]
 ;
-boolean PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
+bool PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     AUX_INFO *datap )           // - pragma
 ;
-boolean PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
+bool PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 ;
 void PragmaSetToggle(           // SET TOGGLE
-    boolean set_flag )          // - TRUE ==> set flag
+    bool set_flag )          // - TRUE ==> set flag
 ;
 void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
     void )
 ;
-boolean PragRecog(              // RECOGNIZE PRAGMA ID
+bool PragRecog(              // RECOGNIZE PRAGMA ID
     char *what )                // - id
 ;
 hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
@@ -162,7 +162,7 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
 hw_reg_set PragRegName(         // GET REGISTER NAME
     char *str )                 // - register
 ;
-boolean ReverseParms(           // ASK IF PRAGMA REQUIRES REVERSED PARMS
+bool ReverseParms(           // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
 ;
 void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE

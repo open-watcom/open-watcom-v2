@@ -83,7 +83,7 @@ SCOPE ModuleInitScope(          // GET BLOCK SCOPE FOR MODULE INITIALIZATION
     void )
 ;
 
-boolean ModuleIsZap1( CGFILE_INS *p );
+bool ModuleIsZap1( CGFILE_INS *p );
 void ModuleAdjustZap1( CGFILE * );
 void *ModuleIsZap2( CGFILE_INS *p );
 void ModuleAdjustZap2( CGFILE *, void *h );

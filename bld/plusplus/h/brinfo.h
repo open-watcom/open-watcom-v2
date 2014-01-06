@@ -66,8 +66,8 @@ void BrinfDeclTemplateClass     // VALID CLASS TEMPLATE HAS BEEN DECLARED
 void BrinfDeclTypedef           // VALID TYPEDEF HAS BEEN DECLARED
     ( SYMBOL tc )               // - namespace defined
 ;
-boolean BrinfDependsMacroDefined // DEPENDENCY: MACRO DEFINED OR NOT
-    ( boolean defed             // - whether defined or not
+bool BrinfDependsMacroDefined   // DEPENDENCY: MACRO DEFINED OR NOT
+    ( bool defed                // - whether defined or not
     , char const * name         // - characters in name
     , unsigned nlen )           // - name length
 ;
@@ -76,7 +76,7 @@ void BrinfIncludeSource         // INCLUDE A SOURCE
     , TOKEN_LOCN * locn )       // - place
 ;
 void BrinfInit                  // START OF PROCESSING FOR BROWSE INFO
-    ( boolean )                 // - TRUE ==> primary initialization
+    ( bool )                    // - TRUE ==> primary initialization
 ;
 void BrinfMacroRelease          // RELEASE BROWSE MACRO-ING WHEN NO BROWSING
     ( void )

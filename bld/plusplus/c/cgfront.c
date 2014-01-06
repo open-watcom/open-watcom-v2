@@ -693,7 +693,7 @@ void CgFrontSwitchEnd(          // END A SWITCH STATEMENT
 
 void CgFrontSwitchDefault(      // DEFAULT STATEMENT IN SWITCH STATEMENT
     SCOPE scope_sw,             // - scope for switch jump
-    boolean deadcode,           // - dead-code state
+    bool deadcode,              // - dead-code state
     TOKEN_LOCN *posn )          // - source-file position
 {
     CGFILE_GEN *gen;            // - generation data
@@ -708,7 +708,7 @@ void CgFrontSwitchDefault(      // DEFAULT STATEMENT IN SWITCH STATEMENT
 
 void CgFrontSwitchCase(         // CASE STATEMENT IN SWITCH STATEMENT
     SCOPE scope_sw,             // - scope for switch jump
-    boolean deadcode,           // - dead-code state
+    bool deadcode,              // - dead-code state
     TOKEN_LOCN *posn,           // - source-file position
     uint_32 value )             // - switch value
 {
@@ -747,7 +747,7 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
     SYMBOL dtor,                // - dtor, when function is ctor
     DTORING_KIND kind )         // - kind of dtoring
 {
-    boolean keep_scope;         // - TRUE ==> keep the current scope
+    bool keep_scope;            // - TRUE ==> keep the current scope
 
     keep_scope = FALSE;
     if( dtor != NULL ) {
@@ -785,10 +785,10 @@ void CgFrontCtorTest(           // INDICATE FUNCTION MIGHT HAVE CTOR-TEST
 }
 
 
-boolean CgFrontRetnOptVar(      // START BRACKETTING FOR VAR. (RETURN OPT>)
+bool CgFrontRetnOptVar(         // START BRACKETTING FOR VAR. (RETURN OPT>)
     SYMBOL var )                // - the symbol
 {
-    boolean retn;               // - return: TRUE ==> bracketting started
+    bool retn;                  // - return: TRUE ==> bracketting started
 
     if( FnRetnOptimizable( var ) ) {
         CgFrontCodePtr( IC_RETNOPT_VAR, var );
@@ -906,13 +906,13 @@ pch_status PCHReadFrontData( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitFrontData( boolean writing )
+pch_status PCHInitFrontData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniFrontData( boolean writing )
+pch_status PCHFiniFrontData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

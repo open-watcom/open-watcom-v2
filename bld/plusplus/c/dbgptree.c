@@ -47,7 +47,7 @@ static carve_t carveNode;       // memory: nodes
 static carve_t carveLine;       // memory: lines
 static carve_t carveSubtree;    // memory: subtrees
 static carve_t carveDecoration; // memory: decoration
-static boolean printTypes;      // TRUE ==> print types with nodes
+static bool printTypes;         // TRUE ==> print types with nodes
 
 typedef struct node NODE;
 typedef struct line LINE;
@@ -322,7 +322,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
 {
     char *text;                 // - text pointer (returned)
     static char buffer[256];    // - buffer (valid until next call)
-    boolean type_add;           // - TRUE ==> add type
+    bool type_add;              // - TRUE ==> add type
     PTREE pnode;                // - parse-tree node
 
     pnode = node->pnode;
@@ -538,14 +538,14 @@ static void printNode(          // PRINT A NODE
 
 
 static void printSubtree(       // PRINT A SUBTREE
-    void *_subtree )          // - subtree to be printed
+    void *_subtree )            // - subtree to be printed
 {
     char buffer[ 256 ];         // - buffer
     char *bptr;                 // - buffer ptr
     LINE *line;                 // - current line
     NODE *node;                 // - current node
     TOKEN_LOCN locn;            // - subtree location
-    boolean print_locn;         // - TRUE ==> print location
+    bool print_locn;            // - TRUE ==> print location
 
     SUBTREE *subtree = _subtree;
 

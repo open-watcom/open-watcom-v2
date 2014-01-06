@@ -724,7 +724,7 @@ char *FEExtName( cg_sym_handle sym, int request ) {
 }
 
 #if _INTEL_CPU
-static boolean makeFileScopeStaticNear( SYMBOL sym )
+static bool makeFileScopeStaticNear( SYMBOL sym )
 {
     // make a file-scope static function near in big code models if:
     //   - address has not been taken
@@ -1159,8 +1159,8 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     static EXTRF res_info;      // - external-symbol resolution information
     SYMBOL sym = _sym;
 #ifndef NDEBUG
-    boolean isSym = TRUE;       // DEBUGGING: TRUE ==> "sym" is SYMBOL
-    boolean isRetn = TRUE;      // DEBUGGING: TRUE ==> "retn" is SYMBOL
+    bool isSym = TRUE;          // DEBUGGING: TRUE ==> "sym" is SYMBOL
+    bool isRetn = TRUE;         // DEBUGGING: TRUE ==> "retn" is SYMBOL
 #endif
 
     if( buf != NULL ) CMemFreePtr( &buf );
@@ -1529,7 +1529,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 }
 
 
-boolean IsPragmaAborts(         // TEST IF FUNCTION NEVER RETURNS
+bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
     SYMBOL sym )                // - function symbol
 {
     return(( getLangInfo( sym )->cclass & SUICIDAL ) != 0 );

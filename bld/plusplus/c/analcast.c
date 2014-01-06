@@ -163,10 +163,10 @@ typedef enum
 #undef dfnCAST_RESULT
 
 
-static boolean okSoFar          // TEST IF STILL OK
+static bool okSoFar             // TEST IF STILL OK
     ( CONVCTL* ctl )            // - conversion control
 {
-    boolean retn;               // - return: TRUE ==> is ok so far
+    bool retn;                  // - return: TRUE ==> is ok so far
     PTREE expr;                 // - current expression
 
     expr = ctl->expr;
@@ -186,7 +186,7 @@ static boolean okSoFar          // TEST IF STILL OK
 
 static PTREE stripOffCast       // STRIP CAST NODES
     ( CONVCTL* ctl              // - conversion control
-    , boolean ok )              // - true ==> set type from cast node
+    , bool ok )                 // - true ==> set type from cast node
 {
     if( ! ctl->keep_cast
      && ( NodeIsBinaryOp( ctl->expr, CO_CONVERT )
@@ -237,7 +237,7 @@ static void markUserCast        // MARK AS USER CAST
 }
 
 
-static boolean getClassRvalue   // GET RVALUE FOR CLASS EXPRESSION
+static bool getClassRvalue      // GET RVALUE FOR CLASS EXPRESSION
     ( CONVCTL* ctl )            // - conversion control
 {
     PTREE expr = ctl->expr->u.subtree[1];
@@ -251,9 +251,9 @@ static boolean getClassRvalue   // GET RVALUE FOR CLASS EXPRESSION
 }
 
 
-static boolean getLvalue        // GET LVALUE FOR EXPRESSION
+static bool getLvalue           // GET LVALUE FOR EXPRESSION
     ( CONVCTL* ctl              // - conversion control
-    , boolean force_to_temp )   // - TRUE ==> force it into a temp
+    , bool force_to_temp )      // - TRUE ==> force it into a temp
 {
     PTREE expr = ctl->expr->u.subtree[1];
 
@@ -370,7 +370,7 @@ static CAST_RESULT findConvRtn   // LOCATE UDC FOR CONVERSION
 {
     CAST_RESULT result;         // - cast result
     FNOV_COARSE_RANK rank;      // - UDC RANKING
-    boolean is_ctor;            // - TRUE ==> ctor udc, FALSE ==> udcf udc
+    bool is_ctor;               // - TRUE ==> ctor udc, FALSE ==> udcf udc
     FNOV_LIST* fnov_list;       // - matches list
 
     result = 0;
@@ -557,12 +557,12 @@ static CNV_DIAG* getDiagnosis   // GET DIAGNOSIS TO BE USED
 }
 
 
-static boolean warnTruncTypes   // WARN IF TRUNCATION
+static bool warnTruncTypes      // WARN IF TRUNCATION
     ( CONVCTL* ctl              // - conversion control
     , TYPE src                  // - source type
     , TYPE tgt )                // - target type
 {
-    boolean retn;               // - return: TRUE ==> no truncation error
+    bool retn;                  // - return: TRUE ==> no truncation error
     unsigned msg_no;            // - message #
 
     if( src == tgt ) {
@@ -596,7 +596,7 @@ static CAST_RESULT warnRefTruncation // WARN IF TRUNCATION
 }
 
 
-static boolean zeroSrc          // TEST IF SOURCE OPERAND IS CONST ZERO
+static bool zeroSrc             // TEST IF SOURCE OPERAND IS CONST ZERO
     ( CONVCTL* ctl )            // - conversion control
 {
     PTREE expr = PTreeOpRight( ctl->expr );
@@ -681,7 +681,7 @@ static TYPE getTargetAsReference// GET TARGET TYPE AS A REFERENCE
 }
 
 
-static boolean castToBase       // DO CAST TO LV --> LV BASE
+static bool castToBase          // DO CAST TO LV --> LV BASE
     ( CONVCTL* ctl )            // - conversion control
 {
     NodeConvertDerivedToBase( &ctl->expr->u.subtree[1]
@@ -736,12 +736,12 @@ static PTREE castRvToRvBase     // CAST RV-DERIVED --> LV-BASE
 }
 
 
-static boolean castCtor         // APPLY CTOR
+static bool castCtor            // APPLY CTOR
     ( CONVCTL* ctl )            // - conversion control
 {
     PTREE inp_node;             // - input node
     PTREE node;                 // - node under construction
-    boolean retn;               // - return: TRUE ==> conversion worked
+    bool retn;                  // - return: TRUE ==> conversion worked
 
     if( ctl->src.reference
      || getLvalue( ctl, FALSE ) ) {
@@ -939,7 +939,7 @@ static PTREE castUdcfRv         // UDCF --> RVALUE
 }
 
 
-static boolean castToDerived    // CAST LV-BASE --> LV_DERIVED
+static bool castToDerived       // CAST LV-BASE --> LV_DERIVED
     ( CONVCTL* ctl )            // - conversion control
 {
     NodeConvertBaseToDerived( &ctl->expr->u.subtree[1]
@@ -1294,10 +1294,10 @@ static PTREE diagnoseCast       // DIAGNOSE CASTING ERROR
 }
 
 
-static boolean ptrToIntTruncs   // TEST IF TRUNCATION ON PTR --> INT
+static bool ptrToIntTruncs      // TEST IF TRUNCATION ON PTR --> INT
     ( CONVCTL* ctl )            // - conversion control
 {
-    boolean retn;
+    bool retn;
     if( CNV_OK != NodeCheckPtrCastTrunc( ctl->tgt.unmod, ctl->src.orig )
      && ( CompFlags.extensions_enabled
        || CgMemorySize( GetBasicType( TYP_SINT ) ) >
@@ -1942,8 +1942,8 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
         }
         expr = ctl->expr;
     } else {
-        boolean fold_it = FALSE;
-        boolean has_convert = FALSE;
+        bool fold_it = FALSE;
+        bool has_convert = FALSE;
         if( ctl->clscls_implicit
          && ! ctl->keep_cast ) {
             expr = stripOffCastOk( ctl );
@@ -2665,7 +2665,7 @@ static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 // 99 - do old conversion for now
 
 
-boolean CharIsPromoted          // CHECK IF char PROMOTED TO int
+bool CharIsPromoted             // CHECK IF char PROMOTED TO int
     ( TYPE src_type             // - source type
     , TYPE tgt_type )           // - target type
 {
@@ -3032,7 +3032,7 @@ static PTREE commonCastEx       // EXPLICIT CAST FOR COMMON
 PTREE CastImplicitCommonPtrExpr // CONVERT TO COMMON PTR EXPRESSION
     ( PTREE expr                // - the expression
     , CNV_DIAG *diagnosis       // - diagnosis
-    , boolean check_cv )        // - TRUE ==> check CV QUALIFICATION
+    , bool check_cv )           // - TRUE ==> check CV QUALIFICATION
 {
     TYPE final_type;            // - final type
     CONVCTL ctl;                // - controller
@@ -3190,11 +3190,11 @@ static PTREE castCommonExpr     // CAST TO COMMON EXPRESSION
 //
 // One or both of the operands are class values.
 //
-boolean CastCommonClass         // CAST (IMPLICITLY) TO A COMMON CLASS
+bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
     ( PTREE* a_expr             // - addr[ expression ]
     , CNV_DIAG* diagnosis )     // - diagnosis
 {
-    boolean retn;               // - return: TRUE ==> converted or diagnosed
+    bool retn;                  // - return: TRUE ==> converted or diagnosed
     PTREE expr;                 // - expression
     CAST_RESULT result_left;    // - result of cast to left
     CAST_RESULT result_right;   // - result of cast to right

@@ -272,13 +272,13 @@ AUX_INFO *PragmaMapIndex( AUX_INFO *i )
     return( infoTranslate[PCHGetUInt( i )] );
 }
 
-pch_status PCHInitPragmas( boolean writing )
+pch_status PCHInitPragmas( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniPragmas( boolean writing )
+pch_status PCHFiniPragmas( bool writing )
 {
     if( !writing ) {
         CMemFreePtr( &infoTranslate );

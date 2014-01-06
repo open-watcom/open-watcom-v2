@@ -77,7 +77,7 @@ static MACRO_TOKEN *internalTokenList;
 static unsigned macroDepth;
 
 static MACRO_TOKEN  *macroExpansion( MEPTR, int );
-static MACRO_TOKEN  *nestedMacroExpansion( MEPTR, boolean );
+static MACRO_TOKEN  *nestedMacroExpansion( MEPTR, bool );
 
 typedef struct special_macro_name SPECIAL_MACRO_NAME;
 static struct special_macro_name {
@@ -171,9 +171,9 @@ static unsigned copyMTokToBuffer( MACRO_TOKEN *mtok )
 }
 
 
-static MACRO_TOKEN *doGetMacroToken(    // GET NEXT TOKEN
-    MACRO_TOKEN *list,          // - list of tokens
-    boolean doing_macro_expansion ) // - TRUE ==> doing an expansion
+static MACRO_TOKEN *doGetMacroToken(// GET NEXT TOKEN
+    MACRO_TOKEN *list,              // - list of tokens
+    bool doing_macro_expansion )    // - TRUE ==> doing an expansion
 {
     char *token_end;
     MACRO_TOKEN *mtok;
@@ -253,7 +253,7 @@ static MACRO_TOKEN *doGetMacroToken(    // GET NEXT TOKEN
 }
 
 void GetMacroToken(                 // GET NEXT TOKEN
-    boolean doing_macro_expansion ) // - TRUE ==> doing an expansion
+    bool doing_macro_expansion )    // - TRUE ==> doing an expansion
 {
     scannerTokenList = doGetMacroToken( scannerTokenList, doing_macro_expansion );
 }
@@ -1302,7 +1302,7 @@ static MACRO_TOKEN *macroExpansion( MEPTR fmentry, int rescanning )
     return( head );
 }
 
-static MACRO_TOKEN *nestedMacroExpansion( MEPTR fmentry, boolean rescanning )
+static MACRO_TOKEN *nestedMacroExpansion( MEPTR fmentry, bool rescanning )
 {
     return( expandNestedMacros( macroExpansion( fmentry, FALSE ), rescanning ) );
 }

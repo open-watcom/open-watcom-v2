@@ -37,7 +37,7 @@
 typedef struct ialias_list {
     struct ialias_list  *next;
     char                *real_name;
-    boolean             is_lib;
+    bool                is_lib;
     char                alias_name[1];
 } ialias_list;
 
@@ -62,8 +62,8 @@ void IAliasFini( void )
     }
 }
 
-const char *IAliasLookup( const char *filename, boolean is_lib )
-/*************************************************************/
+const char *IAliasLookup( const char *filename, bool is_lib )
+/***********************************************************/
 {
     IALIASPTR   alias;
     
@@ -75,8 +75,8 @@ const char *IAliasLookup( const char *filename, boolean is_lib )
     return( filename );
 }
 
-void IAliasAdd( const char *alias_name, const char *real_name, boolean is_lib )
-/****************************************************************************/
+void IAliasAdd( const char *alias_name, const char *real_name, bool is_lib )
+/**************************************************************************/
 {
     unsigned    alias_size, alias_len;
     IALIASPTR   alias, old_alias;
@@ -144,13 +144,13 @@ pch_status PCHWriteIncAlias( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitIncAlias( boolean writing )
+pch_status PCHInitIncAlias( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniIncAlias( boolean writing )
+pch_status PCHFiniIncAlias( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

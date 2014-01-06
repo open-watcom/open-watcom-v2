@@ -147,7 +147,7 @@ struct init_var                         // STATIC VARIABLE ONCE ONLY CONTROL
 #include "fnbodydt.h"
 
 extern void FunctionBody( DECL_INFO * );
-extern boolean FunctionBodyCtor( void );
+extern bool FunctionBodyCtor( void );
 extern void FunctionBodyDeadCode( void );
 extern INIT_VAR *FunctionBodyGetInit( FUNCTION_DATA * );
 extern void FunctionBodyShutdown( SYMBOL, FUNCTION_DATA * );
@@ -171,10 +171,10 @@ void AccessErrMsg(              // ISSUE PROTECTION MESSAGE
     SYMBOL fun,                 // - function
     TOKEN_LOCN* a_locn )        // - addr[ error location ]
 ;
-boolean FnRetnOpt(              // TEST IF RETURN OPTIMIZATION ACTIVE
+bool FnRetnOpt(                 // TEST IF RETURN OPTIMIZATION ACTIVE
     void )
 ;
-boolean FnRetnOptimizable(      // TEST IF SYMBOL COULD BE OPTIMIZED AWAY
+bool FnRetnOptimizable(         // TEST IF SYMBOL COULD BE OPTIMIZED AWAY
     SYMBOL sym )                // - candidate symbol
 ;
 void FnRetnOptOff(              // TURN OFF RETURN OPTIMIZATION

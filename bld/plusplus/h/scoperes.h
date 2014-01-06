@@ -53,7 +53,7 @@ void CgResInit                  // INITIALIZATION
 void CgResolve                  // RESOLVE ANY PENDING ACTIONS
     ( void )
 ;
-boolean CgResolveNonThrow       // RESOLVE A FUNCTION AS NON-THROW
+bool CgResolveNonThrow          // RESOLVE A FUNCTION AS NON-THROW
     ( CALLGRAPH* ctl            // - call graph
     , CALLNODE* node )          // - possible non-throw
 ;

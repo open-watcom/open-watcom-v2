@@ -37,14 +37,14 @@
 #include "cgbackut.h"
 
 
-boolean CgRetnOptForFile        // TEST IF RETURN OPTIMIZATION FOR FILE
+bool CgRetnOptForFile           // TEST IF RETURN OPTIMIZATION FOR FILE
     ( CGFILE* file_ctl )        // - file control
 {
     return file_ctl->u.s.opt_retn_val || file_ctl->u.s.opt_retn_ref;
 }
 
 
-boolean CgRetnOptActive         // TEST IF RETURN OPTIMIZATION ACTIVE FOR FILE
+bool CgRetnOptActive            // TEST IF RETURN OPTIMIZATION ACTIVE FOR FILE
     ( FN_CTL* fctl )            // - file-activation control
 {
     CGFILE* file_ctl;           // - file control
@@ -55,7 +55,7 @@ boolean CgRetnOptActive         // TEST IF RETURN OPTIMIZATION ACTIVE FOR FILE
 }
 
 
-boolean CgRetnOptIsOptVar       // TEST IF SYMBOL IS RETURN-OPTIMIZATION VAR
+bool CgRetnOptIsOptVar          // TEST IF SYMBOL IS RETURN-OPTIMIZATION VAR
     ( FN_CTL* fctl              // - file-activation control
     , SYMBOL var )              // - var. to be tested
 {

@@ -59,7 +59,7 @@ NAME CppIndexMappingName(       // CREATE NAME OF VIRTUAL BASE INDEX MAPPING
     SCOPE from,                 // - from scope
     SCOPE to )                  // - to scope
 ;
-boolean CppLookupOperatorName(  // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
+bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
     NAME name,                  // - name to find
     CGOP *oper )                // - index found
 ;
@@ -69,8 +69,8 @@ const char *GetMangledName(     // MANGLE SYMBOL NAME
 NAME CppMembPtrOffsetName(      // CREATE NAME FOR MEMBER-PTR OFFSET FUNCTION
     SYMBOL sym )                // - field for offsetting
 ;
-boolean IsCppNameInterestingDebug(      // CHECK FOR INTERNAL NAMES
-    SYMBOL sym )                        // - symbol
+bool IsCppNameInterestingDebug( // CHECK FOR INTERNAL NAMES
+    SYMBOL sym )                // - symbol
 ;
 char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
     SYMBOL sym )                // - symbol
@@ -146,14 +146,14 @@ void Int64FromU32               // CREATE 64-BIT VALUE FROM UNSIGNED 32-BIT VALU
     ( unsigned_32 value         // - integral value (unsigned)
     , unsigned_64* result )     // - addr[ result (unsigned) ]
 ;
-boolean IsCppMembPtrOffsetName( // TEST IF NAME IS MEMBER-PTR OFFSET FUNCTION
+bool IsCppMembPtrOffsetName(    // TEST IF NAME IS MEMBER-PTR OFFSET FUNCTION
     NAME name )                 // - name of field for offsetting
 ;
-boolean IsCppSpecialName(       // TEST IF NAME IS SPECIAL NAME
+bool IsCppSpecialName(          // TEST IF NAME IS SPECIAL NAME
     NAME name,                  // - name to find
     unsigned *idx )             // - index found
 ;
-boolean IsVftName(              // TEST IF SYMBOL IS VFT NAME
+bool IsVftName(                 // TEST IF SYMBOL IS VFT NAME
     NAME name )                 // - name to be tested
 ;
 int octal_dig(                  // GET OCTAL DIGIT FOR CHAR (OR 8)

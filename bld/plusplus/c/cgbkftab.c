@@ -119,7 +119,7 @@ SE* FstabAdd(                   // ADD STATE ENTRY TO STATE TABLE
 }
 
 
-boolean FstabHasStateTable(     // DETERMINE IF STATE TABLE BEING GEN'ED
+bool FstabHasStateTable(        // DETERMINE IF STATE TABLE BEING GEN'ED
     void )
 {
     return fStabDefn.ro != NULL;
@@ -159,11 +159,11 @@ void FstabInit(                 // INITIALIZE FUNCTION STATE TABLE
 }
 
 
-boolean FstabSetup(             // SETUP FUNCTION STATE TABLE
+bool FstabSetup(                // SETUP FUNCTION STATE TABLE
     CGFILE* file_ctl,           // - current file information
     FN_CTL* fctl )              // - current file generation information
 {
-    boolean retn;               // - TRUE ==> state table will be genned
+    bool retn;                  // - TRUE ==> state table will be genned
     unsigned flag_bytes;        // - number of flag bytes
 
     if( 0 == CgNonThunkDepth( fctl ) && ! SymIsThunk( fctl->func ) ) {
@@ -230,7 +230,7 @@ void FstabAssignStateVar(       // EMIT EXPRESSION TO ASSIGN STATE VARIABLE
 }
 
 
-static boolean emitSv(          // TEST IF SV TO BE UPDATED
+static bool emitSv(             // TEST IF SV TO BE UPDATED
     FN_CTL* fctl )              // - function being emitted
 {
     return BlkPosnUseStab() && DtmTabular( fctl );
@@ -317,7 +317,7 @@ void FstabSetDtorState(         // SET STATE VAR. FOR DTOR
 }
 
 
-boolean FstabGenerate(          // GENERATE FUNCTION STATE TABLE
+bool FstabGenerate(             // GENERATE FUNCTION STATE TABLE
     void )
 {
     return StabGenerate( &fstab );

@@ -151,7 +151,7 @@ void BrinfDepWrite              // WRITE DEPENDENCY INFORMATION
 }
 
 
-static boolean srcfilePrecedes  // SEE IF A SOURCE FILE PRECEDES ANOTHER
+static bool srcfilePrecedes     // SEE IF A SOURCE FILE PRECEDES ANOTHER
     ( SRCFILE curr              // - current source file
     , SRCFILE pred )            // - potential predecessor or NULL
 {

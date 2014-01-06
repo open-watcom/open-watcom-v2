@@ -117,7 +117,7 @@ typedef struct {
 
 void MacroStateClear( MACRO_STATE * );
 void MacroStateGet( MACRO_STATE * );
-boolean MacroStateMatchesCurrent( MACRO_STATE * );
+bool MacroStateMatchesCurrent( MACRO_STATE * );
 
 // provide a temporary source of tokens
 void (*SetTokenSource( void (*)( void ) ))( void );
@@ -125,7 +125,7 @@ void (*SetTokenSource( void (*)( void ) ))( void );
 // restore source of tokens
 void ResetTokenSource( void (*)( void ) );
 
-boolean TokenUsesBuffer( TOKEN t );
+bool TokenUsesBuffer( TOKEN t );
 
 void GetNextToken(              // GET THE NEXT TOKEN FOR PROCESSOR
     void )
@@ -145,10 +145,10 @@ void UndoNextToken(             // make NextToken return the current token
 void MacroDefsSysind            // SYSTEM-INDEPENDENT MACRO DEFINITIONS
     ( void )
 ;
-boolean MacroDependsDefined     // MACRO DEPENDENCY: DEFINED OR NOT
+bool MacroDependsDefined        // MACRO DEPENDENCY: DEFINED OR NOT
     ( void )
 ;
-boolean MacroExists(            // TEST IF MACRO EXISTS
+bool MacroExists(               // TEST IF MACRO EXISTS
     const char *macname,        // - macro name
     unsigned len )              // - length of macro name
 ;
@@ -161,7 +161,7 @@ void MacroInit(                 // MACRO PROCESSING -- INITIALIZATION
 void PCHDumpMacroCheck(         // DUMP MACRO CHECK INFO INTO PCHDR
     void )
 ;
-boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
+bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     void )
 ;
 void MacroCanBeRedefined(       // SET MACRO SO THAT USE CAN REDEFINE IN SOURCE
@@ -172,7 +172,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
 ;
 int OpenSrcFile(                // OPEN A SOURCE FILE
     const char * filename,      // - file name
-    boolean is_lib )            // - TRUE ==> is <file>
+    bool is_lib )               // - TRUE ==> is <file>
 ;
 void PpInit(                    // INITIALIZE PREPROCESSING
     void )
@@ -253,7 +253,7 @@ int ExpectingToken(             // ISSUE EXPECTING ERROR FOR A TOKEN
     TOKEN token )               // - required token
 ;
 void GetMacroToken(             // GET NEXT TOKEN
-    boolean doing_macro_expansion ) // - TRUE ==> doing an expansion
+    bool doing_macro_expansion )// - TRUE ==> doing an expansion
 ;
 int GetNextChar(                // GET NEXT CHARACTER FROM A SOURCE FILE
     void )
@@ -328,7 +328,7 @@ void ReScanInit(                // RE-SCAN TOKEN INITIALIZATION
 int ReScanToken(                // RE-SCAN TOKEN FROM BUFFER
     void )
 ;
-boolean ScanOptionalComment(    // SCAN AN OPTIONAL COMMENT
+bool ScanOptionalComment(       // SCAN AN OPTIONAL COMMENT
     void )
 ;
 TOKEN ScanToken(                // SCAN NEXT TOKEN

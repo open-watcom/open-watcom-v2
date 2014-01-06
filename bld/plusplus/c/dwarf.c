@@ -71,8 +71,8 @@ typedef enum
 
 
 static uint      dwarfMarkInternalName( SYMBOL, uint );
-static boolean   dwarfClassInfoFriend( TYPE, boolean );
-static boolean   dwarfClassInfo( TYPE );
+static bool      dwarfClassInfoFriend( TYPE, bool );
+static bool      dwarfClassInfo( TYPE );
 static dw_handle dwarfClass( TYPE, DC_CONTROL );
 static dw_handle dwarfEnum( TYPE, DC_CONTROL );
 static dw_handle dwarfTypedef( TYPE, DC_CONTROL );
@@ -405,12 +405,12 @@ static void dwarfPumpArgTypes( TYPE type )
 }
 #endif
 
-static boolean dwarfClassInfoFriend( TYPE type, boolean addfriend )
-/*****************************************************************/
+static bool dwarfClassInfoFriend( TYPE type, bool addfriend )
+/***********************************************************/
 {
     dw_handle   dh;
     FRIEND      *friend;
-    boolean     check_friends;
+    bool        check_friends;
 
     check_friends = FALSE;
     if( !InDebug ) {    /* TODO: if debug need handle */
@@ -431,16 +431,16 @@ static boolean dwarfClassInfoFriend( TYPE type, boolean addfriend )
     return( check_friends );
 }
 
-static boolean dwarfClassInfo( TYPE type )
-/****************************************/
+static bool dwarfClassInfo( TYPE type )
+/*************************************/
 {
     dw_handle       dh;
     SYMBOL          stop, curr;
-    BASE_CLASS     *base;
+    BASE_CLASS      *base;
     dw_loc_id       locid;
     dw_loc_handle   dl;
-    CLASSINFO      *info;
-    boolean         check_friends;
+    CLASSINFO       *info;
+    bool            check_friends;
 
     // define any template typedefs
     for( ;; ) {
@@ -677,8 +677,8 @@ static dw_handle dwarfClass( TYPE type, DC_CONTROL control )
 {
     dw_handle       dh;
     const char      *name;
-    boolean         defined;
-    boolean         check_friends;
+    bool            defined;
+    bool            check_friends;
 
     type_reset( type );
     if( type->dbgflag & TF2_DWARF ) {
@@ -1249,8 +1249,8 @@ static void dwarf_define_parm( SYMBOL sym )
     sym_update( sym, SF2_DW_HANDLE_DEF, dh );
 }
 
-static boolean dwarfValidateSymbol( SYMBOL sym )
-/**********************************************/
+static bool dwarfValidateSymbol( SYMBOL sym )
+/*******************************************/
 {
     unsigned    junk;
 
@@ -1692,7 +1692,7 @@ static dw_handle dwarfSymbol( SYMBOL sym, DC_CONTROL control )
 static void doDwarfForwardFollowupClass( TYPE type, void *ignore )
 /****************************************************************/
 {
-    boolean *keep_going = ignore;
+    bool *keep_going = ignore;
     if( (type->dbgflag & TF2_DWARF) == TF2_DWARF_FWD ) {
 #ifndef NDEBUG
         if( type->flag & TF1_UNBOUND ) {
@@ -1708,7 +1708,7 @@ static void doDwarfForwardFollowupClass( TYPE type, void *ignore )
 static void doDwarfForwardFollowupTypedef( TYPE type, void *ignore )
 /******************************************************************/
 {
-    boolean *keep_going = ignore;
+    bool *keep_going = ignore;
     if( (type->dbgflag & TF2_DWARF) == TF2_DWARF_FWD ) {
         dwarfTypedef( type, DC_DEFINE );
         *keep_going = TRUE;
@@ -1718,20 +1718,20 @@ static void doDwarfForwardFollowupTypedef( TYPE type, void *ignore )
 static void doDwarfForwardFollowupEnum( TYPE type, void *ignore )
 /***************************************************************/
 {
-    boolean *keep_going = ignore;
+    bool *keep_going = ignore;
     if( (type->dbgflag & TF2_DWARF) == TF2_DWARF_FWD ) {
         dwarfEnum( type, DC_DEFINE );
         *keep_going = TRUE;
     }
 }
 
-static boolean dwarfForwardFollowup( void )
-/*****************************************/
+static bool dwarfForwardFollowup( void )
+/**************************************/
 {
-    boolean did_something = FALSE;
+    bool did_something = FALSE;
 
     for(;;) {
-        boolean keep_going = FALSE;
+        bool keep_going = FALSE;
         TypeTraverse( TYP_CLASS, &doDwarfForwardFollowupClass, &keep_going );
         TypeTraverse( TYP_TYPEDEF, &doDwarfForwardFollowupTypedef, &keep_going );
         TypeTraverse( TYP_ENUM, &doDwarfForwardFollowupEnum, &keep_going );
@@ -1971,7 +1971,7 @@ static int dwarfUsedTempScope( SCOPE scope ) {
 
 
 static bool dwarfUsedNameSpace( SYMBOL curr )
-/***************************************/
+/*******************************************/
 {
     bool   has_changed;
 
@@ -2086,8 +2086,8 @@ static void dwarfPreUsedSymbol( SCOPE scope )
 }
 
 #if 0   // not sure if needed
-static boolean typedef_is_of_basic_types( TYPE type )
-/***************************************************/
+static bool typedef_is_of_basic_types( TYPE type )
+/************************************************/
 {
     int         i;
     arg_list    *alist;
@@ -2160,8 +2160,8 @@ static void dwarfDebugTemplateParm( TYPE p )
     }
 }
 
-extern void DwarfDebugGenSymbol( SYMBOL sym, boolean scoped )
-/*******************************************************/
+extern void DwarfDebugGenSymbol( SYMBOL sym, bool scoped )
+/********************************************************/
 {
     if( scoped ) {  /* if scoped need to feed thu codegen */
         dwarfDebugTemplateParm( sym->sym_type );
@@ -2182,8 +2182,8 @@ static dbg_loc symbolicDebugSetSegment( dbg_loc dl, SYMBOL sym )
 }
 #endif
 
-extern void DwarfSymDebugGenSymbol( SYMBOL sym, boolean scoped, boolean by_ref )
-/******************************************************************************/
+extern void DwarfSymDebugGenSymbol( SYMBOL sym, bool scoped, bool by_ref )
+/************************************************************************/
 //TODO :it would be nice to get rid of this WV dbg dep.
 {
     TYPE        pt;

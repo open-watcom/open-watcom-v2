@@ -362,7 +362,7 @@ static void fatalParserError( void )
     CSuicide();
 }
 
-static boolean doFnbodyRewrite( void )
+static bool doFnbodyRewrite( void )
 {
     switch( ScopeId( GetCurrScope() ) ) {
     case SCOPE_CLASS:
@@ -578,7 +578,7 @@ static TYPE findGenericType( SCOPE scope, NAME name )
 }
 
 static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
-                              boolean special_typename )
+                              bool special_typename )
 {
     NAME name;
     TYPE test_type;
@@ -658,7 +658,7 @@ static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
 }
 
 static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
-                        unsigned ctrl, boolean special_typename )
+                        unsigned ctrl, bool special_typename )
 {
     lk_result id_check;
     NAME name;
@@ -667,8 +667,8 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
     SCOPE member_lookup;
     PTREE curr;
     TYPE class_type;
-    boolean undefined_scope;
-    boolean special_template;
+    bool undefined_scope;
+    bool special_template;
 
     undefined_scope = FALSE;
     scope = GetCurrScope();
@@ -779,7 +779,7 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
     }
 }
 
-static int templateScopedChain( PARSE_STACK *state, boolean special_typename )
+static int templateScopedChain( PARSE_STACK *state, bool special_typename )
 {
     lk_result id_check;
     PTREE scope_tree;
@@ -790,8 +790,8 @@ static int templateScopedChain( PARSE_STACK *state, boolean special_typename )
     NAME name;
     SCOPE scope;
     int adjusted_token;
-    boolean undefined_scope;
-    boolean special_template;
+    bool undefined_scope;
+    bool special_template;
 
     template_type = BindTemplateClass( state->class_colon, NULL, FALSE );
     name = SimpleTypeName( template_type );
@@ -880,7 +880,7 @@ static int templateScopedChain( PARSE_STACK *state, boolean special_typename )
     }
 }
 
-static int globalChain( PARSE_STACK *state, boolean special_typename )
+static int globalChain( PARSE_STACK *state, bool special_typename )
 {
     PTREE tree;
     PTREE id;
@@ -1120,7 +1120,7 @@ REWRITE *ParseGetRecordingInProgress( TOKEN_LOCN **plocn )
     return( r );
 }
 
-static boolean tokenMakesPTREE( unsigned token )
+static bool tokenMakesPTREE( unsigned token )
 {
     switch( token ) {
     case Y_TYPE_NAME:
@@ -1349,7 +1349,7 @@ static void tryCtorStyleInit( PARSE_STACK *state, DECL_INFO *dinfo )
 
 static p_action doAction( YYTOKENTYPE, PARSE_STACK * );
 
-static void initParseStacks( PARSE_STACK *stack, boolean look_ahead )
+static void initParseStacks( PARSE_STACK *stack, bool look_ahead )
 {
     /* get new stack */
     StackPush( &currParseStack, stack );
@@ -2172,7 +2172,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
 static void makeStable( TOKEN end_token )
 {
     unsigned depth;
-    boolean token_absorbed;
+    bool token_absorbed;
     TOKEN alt_token;
 
     /* also accept alternative tokens (digraphs) */
@@ -2873,13 +2873,13 @@ pch_status PCHReadParserData( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitParserData( boolean writing )
+pch_status PCHInitParserData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniParserData( boolean writing )
+pch_status PCHFiniParserData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

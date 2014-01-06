@@ -269,11 +269,11 @@ static unsigned diagnoseCommon( // DIAGNOSE A COMMON CONVERSION
     return CNV_ERR;
 }
 
-static boolean convertCommonClass(// CONVERT TO COMMON TYPE, FROM CLASS
+static bool convertCommonClass( // CONVERT TO COMMON TYPE, FROM CLASS
     PTREE *a_expr,              // - binary expression
     CNV_DIAG *diagnosis )       // - used to diagnose errors
 {
-    boolean cretn;              // - TRUE ==> conversion handled
+    bool cretn;                 // - TRUE ==> conversion handled
     PTREE expr;                 // - expression
     PTREE *a_cnv = NULL;        // - converted subtree
     PTREE cnv;                  // - converted subtree
@@ -325,19 +325,19 @@ static boolean convertCommonClass(// CONVERT TO COMMON TYPE, FROM CLASS
 }
 
 
-static boolean nodeMemberPtr(   // TEST IF NODE IS MEMB-PTR
+static bool nodeMemberPtr(      // TEST IF NODE IS MEMB-PTR
     PTREE node )                // - NODE
 {
     return NULL != MemberPtrType( TypeReferenced( node->type ) );
 }
 
 
-boolean ConvertCommonType(      // CONVERT TO COMMON TYPE (:, ==, !=)
+bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
     PTREE *a_expr,              // - addr [ expression ]
     CNV_DIAG *diag_class,       // - diagnosis: class
     CNV_DIAG *diag_mem_ptr )    // - diagnosis: member ptr.
 {
-    boolean retn;               // - FALSE ==> diagnose bad operands
+    bool retn;                  // - FALSE ==> diagnose bad operands
     PTREE expr;                 // - expression
 
     expr = *a_expr;

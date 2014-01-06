@@ -93,16 +93,16 @@ CD_DESCR* CDoptDefCtorBuild(    // BUILD LIST OF OBJECTS TO BE DEFAULT CTOR'ED
 CD_DESCR* CDoptDtorBuild(       // BUILD LIST OF OBJECTS TO BE DTOR'D
     TYPE cltype )               // - type for dtor
 ;
-boolean CDoptErrorOccurred(     // TEST IF ERROR OCCURRED
+bool CDoptErrorOccurred(        // TEST IF ERROR OCCURRED
     CD_DESCR* info )
 ;
-boolean CDoptInlinedMember(     // DETERMINE IF INLINED MEMBER
+bool CDoptInlinedMember(        // DETERMINE IF INLINED MEMBER
     CDOPT_ITER* iter )          // - iteration data
 ;
 CDOPT_ITER* CDoptIterBeg(       // START OF ITERATION
     CD_DESCR* info )            // - information for class
 ;
-boolean CDoptIterCannotDefine(  // CHECK FOR UNDEFINEABLE CTOR
+bool CDoptIterCannotDefine(     // CHECK FOR UNDEFINEABLE CTOR
     CDOPT_ITER* iter )          // - iteration data
 ;
 void CDoptIterEnd(              // COMPLETION OF ITERATION
@@ -129,7 +129,7 @@ target_offset_t CDoptIterOffsetExact( // GET EXACT OFFSET OF CURRENT ELEMENT
 TYPE CDoptIterType(             // GET TYPE FOR CURRENT ELEMENT
     CDOPT_ITER* iter )          // - iteration data
 ;
-boolean CDoptIterExact(         // GET cdarg "exact" FOR CURRENT ELEMENT
+bool CDoptIterExact(            // GET cdarg "exact" FOR CURRENT ELEMENT
     CDOPT_ITER* iter )          // - iteration data
 ;
 BASE_CLASS* CDoptIterVBase(     // GET VIRTUAL BASE CLASS FOR CURRENT ELEMENT

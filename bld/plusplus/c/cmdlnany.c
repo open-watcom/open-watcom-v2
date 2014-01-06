@@ -668,7 +668,7 @@ static void handleOptionFC( OPT_STORAGE *data, int value )
 
 #include "cmdlnpr2.gh"
 
-static boolean openCmdFile(     // OPEN A COMMAND FILE
+static bool openCmdFile(        // OPEN A COMMAND FILE
     char const *filename,       // - file name
     size_t size )               // - size of name
 {

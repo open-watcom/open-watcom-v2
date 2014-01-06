@@ -52,7 +52,7 @@ float_handle BFCheckFloatLimit( float_handle f )
 /************************************/
 {
     int sign;
-    boolean err;
+    bool err;
 
     err = FALSE;
     sign = BFSign( f );
@@ -82,7 +82,7 @@ float_handle BFCheckFloatLimit( float_handle f )
 extern float_handle BFCheckDblLimit( float_handle f )
 {
     int sign;
-    boolean err;
+    bool err;
 
     err = FALSE;
     sign = BFSign( f );

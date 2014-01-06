@@ -201,13 +201,13 @@ static void setupOVOP(          // SETUP OVOP
 }
 
 
-static boolean initOLINF(       // INITIALIZE OVERLOAD INFORMATION
+static bool initOLINF(          // INITIALIZE OVERLOAD INFORMATION
     PTREE node,                 // - overload node
     OLINF* olinf )              // - overload information
 {
     unsigned cnv;               // - conversion number for operator
     OP_MASK mask;               // - conversion mask
-    boolean scov;               // - TRUE ==> needs scalar overload processing
+    bool scov;                  // - TRUE ==> needs scalar overload processing
 
     olinf->expr = node;
     olinf->flags = PTreeOpFlags( node );
@@ -371,7 +371,7 @@ static void scalarOperators(    // FIND SYMBOLS FOR SCALAR OPERATORS
             }
         } else {
             if( olinf->have_user_type ) {
-                boolean complex_assign = ( olinf->mask & OPM_ASSIGN )
+                bool complex_assign = ( olinf->mask & OPM_ASSIGN )
                                        &&( olinf->left.class_type != NULL );
                 if( !complex_assign ||
                    ( complex_assign && (olinf->mask & OPM_REF_MASK ) ) ) {
@@ -464,7 +464,7 @@ static PTREE transform_conversions( // TRANSFORM OPERAND(S) BY CONVERSIONS
 }
 
 // did this symbol come from this search result ?
-static boolean symInResult( SYMBOL sym, SEARCH_RESULT *result )
+static bool symInResult( SYMBOL sym, SEARCH_RESULT *result )
 {
     SYMBOL      curr;
     SYM_REGION  *ptr;
@@ -684,8 +684,8 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
     if( ovret == FNOV_AMBIGUOUS && CompFlags.extensions_enabled ) {
         FNOV_LIST* amb_list;    // - ambiguity list
         SYMBOL next;            // - next symbol
-        boolean have_user_defined = FALSE;
-        boolean have_void = FALSE;
+        bool have_user_defined = FALSE;
+        bool have_void = FALSE;
         if( ((olinf->mask & OPM_NV) == 0) && (olinf->mask & OPM_PP ) ) {
             // we're in the (void *, void *) area
             for( amb_list = NULL; ; ) {
@@ -729,7 +729,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
     if( ovret == FNOV_AMBIGUOUS && CompFlags.overload_13332 ) {
         FNOV_LIST* amb_list;    // - ambiguity list
         SYMBOL next;            // - next symbol
-        boolean have_user_defined = FALSE;
+        bool have_user_defined = FALSE;
         for( amb_list = NULL; ; ) {
             next = FnovGetAmbiguousEntry( &fnov_diag, &amb_list );
             if( next == NULL ) break;
@@ -917,11 +917,11 @@ PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
 }
 
 
-static boolean isBadFun(        // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
+static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
     PTREE expr,                 // - expression being analysed
     PTREE operand )             // - operand to be diagnosed
 {
-    boolean retn;               // - return: TRUE ==> diagnosed
+    bool retn;                  // - return: TRUE ==> diagnosed
     PTREE fnode;                // - function node
     PTREE node;                 // - node to be examined
 
@@ -954,7 +954,7 @@ static boolean isBadFun(        // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
 
 
 PTREE ConvertBoolean(           // CONVERSION TO BOOLEAN EXPRESSION
-    PTREE bexpr )               // - the boolean expression
+    PTREE bexpr )               // - the bool expression
 {
     PTREE left;                 // - left expression
     OLINF oli;                  // - overload info
@@ -1191,13 +1191,13 @@ pch_status PCHReadOperatorOverloadData( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitOperatorOverloadData( boolean writing )
+pch_status PCHInitOperatorOverloadData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniOperatorOverloadData( boolean writing )
+pch_status PCHFiniOperatorOverloadData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

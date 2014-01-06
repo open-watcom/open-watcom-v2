@@ -43,7 +43,7 @@ static char batch_buffer[ 1024 ];   // - buffer
 static int batch_file;              // - # for batch file
 static unsigned batch_bytes;        // - # bytes left in buffer
 static char* batch_cursor;          // - cursor thru batch_buffer
-static boolean real_eof;            // - TRUE ==> a real EOF detected
+static bool real_eof;               // - TRUE ==> a real EOF detected
 
 
 static void cmdLnBatchClose(    // CLOSE BATCH FILE
@@ -147,7 +147,7 @@ void CmdLnBatchOpen(            // OPEN CMD-LN BATCH FILE
 }
 
 
-boolean CmdLnBatchRead(         // READ NEXT LINE IN COMMAND BUFFER
+bool CmdLnBatchRead(            // READ NEXT LINE IN COMMAND BUFFER
     VBUF *buf )                 // - virtual buffer
 {
     VbufInit( buf );

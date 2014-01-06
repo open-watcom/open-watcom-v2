@@ -60,13 +60,13 @@ void SrcFileScanWhiteSpace(     // SCAN WHITESPACE
 void SrcFileScanCppComment(      // SCAN C++ COMMENT
     void )
 ;
-boolean IsSrcFileCmdLine(       // DETERMINE IF SOURCE FILE IS FOR CMD-LINE
+bool IsSrcFileCmdLine(          // DETERMINE IF SOURCE FILE IS FOR CMD-LINE
     SRCFILE sf )                // - a source file
 ;
-boolean IsSrcFileLibrary(       // DETERMINE IF SOURCE FILE IS #include <file.h>
+bool IsSrcFileLibrary(          // DETERMINE IF SOURCE FILE IS #include <file.h>
     SRCFILE sf )                // - a source file
 ;
-boolean IsSrcFilePrimary(       // DETERMINE IF PRIMARY SOURCE FILE
+bool IsSrcFilePrimary(          // DETERMINE IF PRIMARY SOURCE FILE
     SRCFILE sf )                // - a source file
 ;
 SRCFILE SrcFileEnclosingPrimary(// FIND ENCLOSING PRIMARY SOURCE FILE
@@ -77,8 +77,8 @@ void SrcFileAlias(              // SET UP ALIAS FOR SOURCE FILE
     LINE_NO line,               // - line no. (used in #line)
     int adjust )                // - amount to adjust line no. before setting
 ;
-boolean SrcFileClose(           // CLOSE A SOURCE FILE
-    boolean shutdown )          // - shutdown in progress
+bool SrcFileClose(              // CLOSE A SOURCE FILE
+    bool shutdown )             // - shutdown in progress
 ;
 void SrcFileCmdLnDummyClose(    // CLOSE DUMMY FILE FOR COMMAND LINE
     void )
@@ -107,7 +107,7 @@ void SrcFileGetTokenLocn(       // FILL IN TOKEN_LOCN FROM CURRENT TOKEN LOCATIO
 void SrcFileResetTokenLocn(     // RESET TOKEN_LOCN
     TOKEN_LOCN *tgt )           // - from SrcFileGetTokenLocn
 ;
-boolean SrcFileAreTLSameLine(   // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
+bool SrcFileAreTLSameLine(      // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
     TOKEN_LOCN *l1,             // - location one
     TOKEN_LOCN *l2 )            // - location two
 ;
@@ -148,7 +148,7 @@ void SetSrcFilePrimary(         // MARK CURRENT SOURCE FILE AS THE PRIMARY FILE
 SRCFILE SrcFileGetPrimary(      // GET PRIMARY SOURCE FILE
     void )
 ;
-boolean SrcFilesOpen(           // DETERMINE IF ANY SOURCE FILES OPEN
+bool SrcFilesOpen(              // DETERMINE IF ANY SOURCE FILES OPEN
     void )
 ;
 void SrcFileReadOnlyFile(       // SPECIFY FILE AS READ-ONLY
@@ -166,7 +166,7 @@ void SrcFileTraceBack(          // INDICATE SRCFILE USED IN TRACE-BACK
 SRCFILE SrcFileTraceBackFile(   // GET SRCFILE TRACED BACK
     void )
 ;
-boolean SrcFileTraceBackReqd(   // DETERMINE IF MSG TRACE-BACK REQ'D
+bool SrcFileTraceBackReqd(      // DETERMINE IF MSG TRACE-BACK REQ'D
     SRCFILE sf )                // - source-file in message
 ;
 SRCFILE SrcFileWalkInit(        // START WALK OF SOURCE FILES
@@ -184,10 +184,10 @@ SRCFILE SrcFileIncluded(        // FILE THAT INCLUDES THIS FILE
 
 #define GUARD_IMPL              // indicate source file guarding implemented
 
-boolean SrcFileGuardedIf(       // SKIP REST OF GUARDED FILE, IF POSSIBLE
+bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
     int value )                 // - <value> in #if <value>
 ;
-boolean SrcFileProcessOnce(     // CHECK WHETHER WE HAVE TO OPEN THE FILE
+bool SrcFileProcessOnce(        // CHECK WHETHER WE HAVE TO OPEN THE FILE
     char *name )
 ;
 void SrcFileGuardPpElse(        // #ELSE DETECTED IN SOURCE FILE
@@ -206,7 +206,7 @@ void SrcFileGuardPpIfndef(      // SUPPLY #IFNDEF NAME
 void SrcFileGuardStateSig(      // SIGNAL SIGNIFICANCE (TOKEN, ETC) IN FILE
     void )
 ;
-boolean SrcFileSame(            // ARE THESE SRC FILES THE SAME FILE?
+bool SrcFileSame(               // ARE THESE SRC FILES THE SAME FILE?
     SRCFILE f1,                 // - src-file 1
     SRCFILE f2 )                // - src-file 2
 ;
@@ -230,7 +230,7 @@ void SrcFileOnceOnly(           // CURRENT SRCFILE CAN BE SKIPPED IF #INCLUDE AG
     void )
 ;
 void SrcFileSetSwEnd(           // SET CURRENT SRCFILE IGNORE CMDLINE SW END STATUS
-    boolean val )               // - value to use to set status
+    bool val )                  // - value to use to set status
 ;
 
 #define DEF_TAB_WIDTH 8

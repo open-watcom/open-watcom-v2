@@ -984,7 +984,7 @@ void DbgRememberScope(          // REMEMBER A NEWLY-DEFINED SCOPE
     new_defn->defn = new_scope;
 }
 
-static boolean findScope( void *e, const void *s )
+static bool findScope( void *e, const void *s )
 {
     SCOPE_DEFN *holder = e;
 

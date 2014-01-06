@@ -75,7 +75,7 @@ void PragAux(                   // #PRAGMA AUX ...
 }
 
 
-boolean PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
+bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
     AUX_INFO *oldp,             // - pragma (old)
     AUX_INFO *newp )            // - pragma (new)
 {
@@ -88,7 +88,7 @@ boolean PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
     return FALSE;
 }
 
-boolean PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
+bool PragmaOKForInlines(        // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 {
     if( fnp->code != NULL ) {
@@ -97,7 +97,7 @@ boolean PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     return( TRUE );
 }
 
-boolean PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
+bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     AUX_INFO *datap )           // - pragma
 {
     AUX_INFO *def_info;
@@ -128,7 +128,7 @@ boolean PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
                           | NO_MEMORY_READ          \
                           )
 
-boolean PragmasTypeEquivalent(  // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
+bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
     AUX_INFO *inf1,             // - pragma [1]
     AUX_INFO *inf2 )            // - pragma [2]
 {
@@ -147,11 +147,11 @@ boolean PragmasTypeEquivalent(  // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         && ( inf1->flags == inf2->flags );
 }
 
-boolean AsmSysInsertFixups( VBUF *code )
-/**************************************/
+bool AsmSysInsertFixups( VBUF *code )
+/***********************************/
 {
     SYMBOL          sym;
-    boolean         uses_auto;
+    bool            uses_auto;
     asmreloc        *curr;
     byte_seq_reloc  **lnk;
     byte_seq_reloc  *new_reloc;

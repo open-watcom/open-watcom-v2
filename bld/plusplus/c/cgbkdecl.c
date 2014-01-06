@@ -304,7 +304,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
 }
 
 
-boolean CgDeclSkippableConstObj(// DETERMINE IF SKIPPABLE CONST OBJ
+bool CgDeclSkippableConstObj(   // DETERMINE IF SKIPPABLE CONST OBJ
     SYMBOL sym )                // - symbol
 {
     if( SymAddrTaken( sym ) ) {

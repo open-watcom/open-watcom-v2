@@ -36,7 +36,7 @@
 #include "decl.h"
 
 
-boolean MainProcedure(          // DETECT IF FUNCTION SYMBOL IS "main" procedure
+bool MainProcedure(             // DETECT IF FUNCTION SYMBOL IS "main" procedure
     SYMBOL sym )                // - symbol
 {
     return SPFN_MAIN == SpecialFunction( sym );

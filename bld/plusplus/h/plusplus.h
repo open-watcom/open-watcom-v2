@@ -117,7 +117,8 @@ typedef const struct idname *NAME;      // name pointer
 #endif
 #include "dbgzap.h"
 
-typedef int boolean;                // - boolean: FALSE, ! FALSE
+#include "bool.h"
+
 typedef unsigned MSG_NUM;           // - message number
 
 #define BY_CPP_FRONT_END            // - for use in code-generator

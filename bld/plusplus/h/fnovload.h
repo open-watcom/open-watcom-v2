@@ -143,7 +143,7 @@ void FnovArgRank(               // RANK AN ARGUMENT LIST
     PTREE *pt,                  // - addr[ argument ]
     FNOV_RANK *rank )           // - ranking
 ;
-boolean FnovCvFlagsRank(        // RANK USING CV FLAGS
+bool FnovCvFlagsRank(           // RANK USING CV FLAGS
     type_flag src,              // - source type
     type_flag tgt,              // - target type
     FNOV_RANK *rank )           // - ranking
@@ -232,7 +232,7 @@ FNOV_COARSE_RANK UdcLocate(     // SELECT A DIRECT OR COPY INITIALIZTION
     TYPE src,                   // - source class type
     TYPE tgt,                   // - target class type
     PTREE *src_ptree,           // - source PTREE node
-    boolean *isctor,            // - set to TRUE if ctor selected
+    bool *isctor,               // - set to TRUE if ctor selected
                                 //   FALSE if UDCF selected
     FNOV_LIST **match,          // - will point to selected UDC if
                                 //   non-ambig match
@@ -245,7 +245,7 @@ FNOV_COARSE_RANK UdcLocateRef(  // SELECT A DIRECT OR COPY INITIALIZTION
     TYPE src,                   // - source class type
     TYPE tgt,                   // - target class type
     PTREE *src_ptree,           // - source PTREE node
-    boolean *isctor,            // - set to TRUE if ctor selected
+    bool *isctor,               // - set to TRUE if ctor selected
                                 //   FALSE if UDCF selected
     FNOV_LIST **match,          // - will point to selected UDC if
                                 //   non-ambig match
@@ -287,10 +287,10 @@ FNOV_RESULT OpOverloadedLimitDiag(       // SELECT OVERLOADED OPERATOR
     FNOV_CONTROL control,
     FNOV_DIAG *fnov_diag )      // - diagnosis information
 ;
-boolean IsOverloadedFunc(       // TEST IF A FUNCTION HAS BEEN OVERLOADED
+bool IsOverloadedFunc(          // TEST IF A FUNCTION HAS BEEN OVERLOADED
     SYMBOL sym )                // - symbol
 ;
-boolean IsActualOverloadedFunc( // TEST IF ACTUAL (IGNORE SC_DEFAULT) OVERLOAD
+bool IsActualOverloadedFunc(    // TEST IF ACTUAL (IGNORE SC_DEFAULT) OVERLOAD
     SYMBOL sym,                 // - symbol
     SEARCH_RESULT *result )     // - search result
 ;
@@ -330,7 +330,7 @@ FNOV_COARSE_RANK RankandResolveUDCsDiag( // RANK CTOR an UDCF LISTS
     FNOV_LIST **udcfList,       // - list of udcfs from class src
     TYPE src,                   // - src class of UDC
     TYPE tgt,                   // - tgt class of UDC
-    boolean *isctor,            // - TRUE if ctor in match list
+    bool *isctor,               // - TRUE if ctor in match list
     FNOV_LIST **pmatch,         // - will point to selected UDC if
                                 //   non-ambig match
     FNOV_UDC_CONTROL control,   // - control copy or direct init

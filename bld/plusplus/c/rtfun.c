@@ -138,7 +138,7 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
 }
 
 
-boolean RunTimeIsThrow(         // TEST IF FUNCTION IS A C++ THROW
+bool RunTimeIsThrow(            // TEST IF FUNCTION IS A C++ THROW
     SYMBOL func )               // - function symbol
 {
     return GetInternalScope() == SymScope( func ) && ( func->flag & SF_IS_THROW ) != 0;
@@ -292,13 +292,13 @@ pch_status PCHWriteRTFNames( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitRTFNames( boolean writing )
+pch_status PCHInitRTFNames( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniRTFNames( boolean writing )
+pch_status PCHFiniRTFNames( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

@@ -115,7 +115,7 @@ void* SegmentBoundReg(          // GET REGISTER BOUND TO SEGMENT
 void SegmentCgDefineCode(       // DEFINE CODE SEGMENT IF REQ'D
     fe_seg_id segid )           // - segment id
 ;
-boolean SegmentIfBasedOK(       // GIVE ERROR IF BASED SEGMENT IS NOT A CODE SEGMENT
+bool SegmentIfBasedOK(          // GIVE ERROR IF BASED SEGMENT IS NOT A CODE SEGMENT
     SYMBOL func )               // - symbol that may be based
 ;
 void SegmentCgInit(             // INITIALIZE SEGMENTS FOR CODE-GENERATION

@@ -107,7 +107,7 @@ static void fini(               // module completion
 INITDEFN( cg_call_back, init, fini );
 
 
-static boolean ctorTestReqd(    // TEST IF CTOR-TEST REQUIRED
+static bool ctorTestReqd(       // TEST IF CTOR-TEST REQUIRED
     SE* top,                    // - top entry
     SE* object )                // - object being ctored
 {

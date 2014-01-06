@@ -298,7 +298,7 @@ static void initClassFunction(  // START GENERATION OF CLASS FUNCTION
     SYMBOL fun,                 // - symbol for function
     FUNCTION_DATA *fn_data,     // - function data storage
     error_state_t *check,       // - error state at beginning of func
-    boolean fun_is_copy )       // - function is a copy ctor or op=
+    bool fun_is_copy )          // - function is a copy ctor or op=
 {
     TYPE fn_type;               // - type for function
     arg_list *alist;            // - prototype for function
@@ -751,7 +751,7 @@ SYMBOL ClassDefaultOpEq(        // GET DEFAULT OP= FOR A CLASS
 }
 
 
-static boolean canBinaryCopy(   // TEST IF COPY CAN BE BINARY
+static bool canBinaryCopy(      // TEST IF COPY CAN BE BINARY
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 {
@@ -993,11 +993,11 @@ static PTREE genDefaultCopyDiag(// GENERATE COPY TO CLASS OBJECT, WITH DIAGNOSIS
 }
 
 
-static boolean accessCopyCtor(  // CHECK ACCESS TO DEFAULT COPY CTOR
+static bool accessCopyCtor(     // CHECK ACCESS TO DEFAULT COPY CTOR
     TYPE type,                  // - type for class
     SYMBOL *ctor )              // - addr[ copy ctor ]
 {
-    boolean retn;               // - TRUE ==> access is ok
+    bool retn;                  // - TRUE ==> access is ok
     SEARCH_RESULT *result;      // - search result
 
     type = ClassTypeForType( type );
@@ -1017,7 +1017,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
     PTREE left,                 // - target expression
     PTREE src,                  // - source expression
     CALL_DIAG* diagnosis,       // - call diagnosis
-    boolean temp_ok,            // - TRUE ==> temp ok
+    bool temp_ok,               // - TRUE ==> temp ok
     SYMBOL* a_ctor_used )       // - ctor used
 {
     TYPE type;                  // - type being initialized (unmodified)
@@ -1030,7 +1030,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
     SYMBOL ctor_udc;            // - udcf/ctor from udc lookup
     CALL_OPT opt;               // - type of optimization
     FNOV_COARSE_RANK rank;      // - UDC RANKING
-    boolean is_ctor;            // - TRUE ==> ctor udc, FALSE ==> udcf udc
+    bool is_ctor;               // - TRUE ==> ctor udc, FALSE ==> udcf udc
     FNOV_LIST* fnov_list;       // - matches list
     FNOV_DIAG fnov_diag;        // - for diagnostics
     TOKEN_LOCN err_locn;        // - location for errors
@@ -1228,11 +1228,11 @@ PTREE ClassCopyTemp(            // COPY A TEMPORARY
 
 
 #if 0
-boolean ClassAccessDefaultCopy( // CHECK ACCESS TO DEFAULT COPY CTOR
+bool ClassAccessDefaultCopy(    // CHECK ACCESS TO DEFAULT COPY CTOR
     TYPE type )                 // - type for class
 {
     SYMBOL ctor;                // - copy ctor (not used)
-    boolean retn;               // - TRUE ==> access if OK
+    bool retn;                  // - TRUE ==> access if OK
 
     type = ClassTypeForType( type );
     if( OMR_CLASS_VAL == ObjModelArgument( type ) ) {
@@ -1297,7 +1297,7 @@ static PTREE generateArrayDtorCall( // CALL R/T ROUTINE TO DTOR ARRAY
 {
     TYPE base_type;             // - array base type
     TYPE_SIG *base_sig;         // - type signature for base type
-    boolean error_occurred;     // - TRUE ==> error occurred
+    bool error_occurred;        // - TRUE ==> error occurred
     PTREE expr;                 // - generated expression
 
     base_type = ArrayBaseType( array_type );
@@ -1422,10 +1422,10 @@ SEARCH_RESULT *DtorFindResult(  // FIND DTOR FOR A POSSIBLE VIRTUAL CALL
 }
 
 
-boolean ClassAccessDtor(        // CHECK ACCESS TO DTOR
+bool ClassAccessDtor(           // CHECK ACCESS TO DTOR
     TYPE type )                 // - type for class
 {
-    boolean retn;               // - TRUE ==> access is ok
+    bool retn;                  // - TRUE ==> access is ok
     SEARCH_RESULT *result;      // - search result
     SYMBOL dtor;
 
@@ -1443,10 +1443,10 @@ boolean ClassAccessDtor(        // CHECK ACCESS TO DTOR
 
 static SYMBOL findOrDefineDtor( // FIND OR DEFINE DTOR FOR DIRECT CALL
     TYPE cl_type,               // - class type for dtor
-    boolean check,              // - check access
+    bool check,                 // - check access
     SCOPE access,               // - derived access scope
     TOKEN_LOCN *locn,           // - error location
-    boolean del )               // - TRUE ==> return NULL on access violation
+    bool del )                  // - TRUE ==> return NULL on access violation
 {
     NAME dtor_name;
     SYMBOL dtor;
@@ -1490,10 +1490,10 @@ static SYMBOL findOrDefineDtor( // FIND OR DEFINE DTOR FOR DIRECT CALL
 
 static SYMBOL findOrDefineArrayDtor( // FIND (OR ALLOCATE) ARRAY DTOR FOR SYMBOL
     TYPE ar_type,               // - array type for dtor
-    boolean check,              // - check access
+    bool check,                 // - check access
     SCOPE access,               // - derived access scope
     TOKEN_LOCN *locn,           // - error location
-    boolean del )               // - TRUE ==> return NULL on access violation
+    bool del )                  // - TRUE ==> return NULL on access violation
 {
     NAME name;                  // - name of array dtor
     SCOPE scope;                // - scope for name
@@ -1735,7 +1735,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
     TYPE cltype;                // - type of array element
     unsigned rtn_code;          // - code for run-time routine
     PTREE stmt;                 // - executable statement
-    boolean errors;             // - indicates error
+    bool errors;                // - indicates error
     TYPE_SIG_ACCESS tsa;        // - access for type sig
     TYPE_SIG *sig;              // - type signature for class
 
@@ -1884,7 +1884,7 @@ static void ctorGenComponent(   // GENERATE CTOR OF COMPONENT
     EmitAnalysedStmt( expr );
 }
 
-static boolean isForThisItem(   // IS CDOPT ITER FOR THIS ITEM?
+static bool isForThisItem(      // IS CDOPT ITER FOR THIS ITEM?
     ctor_prologue *data  )      // - traversal data
 {
     CDOPT_ITER* optiter;        // - next input ctor for CD optimization
@@ -1916,7 +1916,7 @@ static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS
     ctor_prologue* data )       // - traversal data
 {
     ctor_init remove_mask;      // - flasg to turn off after ctor genned
-    boolean have_cdopt;         // - TRUE ==> have cdopt component
+    bool have_cdopt;            // - TRUE ==> have cdopt component
 
     if( ! data->have_cdopt && ! data->done_cdopt ) {
         if( TITER_NONE == CDoptIterNextComp( data->optiter ) ) {
@@ -1950,7 +1950,7 @@ static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS
             CErr2p( ERR_NO_DEFAULT_INIT_CTOR, data->comp_type );
         } else {
             for(;;) {
-                boolean is_exact;
+                bool is_exact;
                 TITER elem_titer = CDoptIterNextElement( data->optiter );
                 target_offset_t offset = CDoptIterOffsetExact( data->optiter );
                 TYPE type = CDoptIterType( data->optiter );
@@ -2137,7 +2137,7 @@ static void emitOffset( target_offset_t offset )
     PTreeFreeSubtrees( expr );
 }
 
-static void emitVPtrInit( CLASS_TABLE *locn, SYMBOL sym, boolean vbptr )
+static void emitVPtrInit( CLASS_TABLE *locn, SYMBOL sym, bool vbptr )
 {
     CgFrontCodeUint( IC_PARM_BIN, vbptr );
     CgFrontCodePtr( IC_PARM_SYM, sym );
@@ -2190,7 +2190,7 @@ static void genCtorDispInit( SCOPE scope )
 {
     TYPE host_class;
     CLASSINFO *info;
-    boolean no_code_reqd;
+    bool no_code_reqd;
     BASE_CLASS *base;
 
     host_class = ScopeClass( scope );
@@ -2302,11 +2302,11 @@ static void genVFPtrCode( SCOPE scope, SYMBOL ctor, CLASS_VFTABLE *table )
     }
 }
 
-static boolean genVFPtrInits( SCOPE scope, SYMBOL ctor )
+static bool genVFPtrInits( SCOPE scope, SYMBOL ctor )
 {
     CLASS_VFTABLE *tables;
     CLASS_VFTABLE *table;
-    boolean something_went_wrong;
+    bool something_went_wrong;
 
     tables = ScopeCollectVFTable( scope, SCV_CTOR );
     something_went_wrong = FALSE;
@@ -2334,9 +2334,9 @@ static boolean genVFPtrInits( SCOPE scope, SYMBOL ctor )
 }
 
 
-static void testExtraParm(          // EMIT TEST OF EXTRA PARAMETER
-    unsigned mask,                  // - mask
-    boolean branch_on )             // - TRUE ==> branch if on
+static void testExtraParm(      // EMIT TEST OF EXTRA PARAMETER
+    unsigned mask,              // - mask
+    bool branch_on )            // - TRUE ==> branch if on
 {
     CgFrontCodeUint( branch_on ? IC_CDARG_TEST_ON : IC_CDARG_TEST_OFF, mask );
 }
@@ -2344,7 +2344,7 @@ static void testExtraParm(          // EMIT TEST OF EXTRA PARAMETER
 
 static void ctorPrologueBaseGen(    // GENERATE FOR CTOR BASE CLASS
     BASE_CLASS *base,               // - base
-    void *_data )           // - traversal data
+    void *_data )                   // - traversal data
 {
     ctor_prologue * data = _data;
     data->comp_type = base->type;
@@ -2486,7 +2486,7 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
     CLASSINFO *info;            // - class information
     CD_DESCR* optinfo;          // - traversal data
     CDOPT_ITER* iter;           // - iterator for traversal data
-    boolean regster;            // - TRUE ==> function needs registration
+    bool regster;               // - TRUE ==> function needs registration
     TYPE class_type;            // - type for class
 
     rtbeg = rtbeg;              // - can remove argument
@@ -2518,7 +2518,7 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
         if( iter_status == TITER_NONE ) break;
         depth = 0;
         for(;;) {
-//            boolean is_exact;
+//            bool is_exact;
             TITER sub_status = CDoptIterNextElement( iter );
             switch( sub_status ) {
               case TITER_NONE :

@@ -68,7 +68,7 @@ static FILE *err_file;              // ERROR FILE
 static TOKEN_LOCN err_locn;         // error location
 static TOKEN_LOCN notes_locn;       // notes location
 static unsigned char* orig_err_levs;// original error levels
-static boolean errLimitExceeded;    // have exceeded error limit
+static bool errLimitExceeded;       // have exceeded error limit
 static IntlData *internationalData; // translated messages
 
 static SUICIDE_CALLBACK *suicideCallbacks;
@@ -206,7 +206,7 @@ static SYMBOL msgBuild(         // BUILD ERROR MESSAGE
 }
 
 
-static IDEBool IDEAPI idePrt // PRINT FOR IDE
+static IDEBool IDEAPI idePrt    // PRINT FOR IDE
     ( IDECBHdl hdl              // - handle
     , IDEMsgInfo *info )        // - information
 {
@@ -238,7 +238,7 @@ static void ideDisplay          // DISPLAY USING IDE INTERFACE
     IDECallBacks* cbs;          // - pointer to call backs
     IDEMsgInfo inf;             // - message information
     char *fname;                // - file name
-    boolean goes_in_err_file;   // - output msg into .err file
+    bool goes_in_err_file;      // - output msg into .err file
 
     IdeMsgInit( &inf, severity, msg );
     IdeMsgSetMsgNo( &inf, msgnum );
@@ -332,7 +332,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     CTX context;                // - current context
     void *inf;                  // - information about context
     char *inf_prefix;           // - prefix for information
-    boolean context_changed;    // - TRUE ==> new context from last time
+    bool context_changed;       // - TRUE ==> new context from last time
 
     context_changed = CtxCurrent( &context, &inf, &inf_prefix );
     setMsgLocation( context );
@@ -584,11 +584,11 @@ void SetErrLoc(                 // SET ERROR LOCATION
 }
 
 
-static boolean okToPrintMsg     // SEE IF OK TO PRINT MESSAGE
+static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
     ( MSG_NUM msgnum            // - message number
     , int *plevel )             // - addr[ level ]
 {
-    boolean print_err;
+    bool print_err;
     int level;
 
     print_err = TRUE;
@@ -614,7 +614,7 @@ static boolean okToPrintMsg     // SEE IF OK TO PRINT MESSAGE
     return( print_err );
 }
 
-boolean MsgWillPrint(           // TEST WHETHER A MESSAGE WILL BE SEEN
+bool MsgWillPrint(              // TEST WHETHER A MESSAGE WILL BE SEEN
     MSG_NUM msgnum )            // - message number
 {
     int level;                  // - warning level of message
@@ -782,7 +782,7 @@ unsigned CErrUnsuppress(
     return val;
 }
 
-boolean CErrSuppressedOccurred(
+bool CErrSuppressedOccurred(
     error_state_t *previous_state )
 {
     suppressCount--;
@@ -799,7 +799,7 @@ void CErrCheckpoint(
     *save = ErrCount;
 }
 
-boolean CErrOccurred(
+bool CErrOccurred(
     error_state_t *previous_state )
 {
     if( *previous_state != ErrCount ) {
@@ -808,10 +808,10 @@ boolean CErrOccurred(
     return( FALSE );
 }
 
-static boolean warnLevelValidate( // VALIDATE WARNING LEVEL
+static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
     int level )                 // - level to be validated
 {
-    boolean retn;               // - return: TRUE ==> good level
+    bool retn;                  // - return: TRUE ==> good level
 
     if( ( level < 0 )
       ||( level > 9 ) ) {
@@ -1054,13 +1054,13 @@ pch_status PCHWriteErrWarnData( void )
     return( PCHCB_OK );
 }
 
-pch_status PCHInitErrWarnData( boolean writing )
+pch_status PCHInitErrWarnData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );
 }
 
-pch_status PCHFiniErrWarnData( boolean writing )
+pch_status PCHFiniErrWarnData( bool writing )
 {
     writing = writing;
     return( PCHCB_OK );

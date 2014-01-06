@@ -52,7 +52,7 @@ extern void HashPostInit( SCOPE );      // called after scopes are initialized
 extern HASHTAB HashCreate( unsigned init_table_size);
 extern void HashDestroy( HASHTAB );
 extern HASHTAB HashMakeMax( HASHTAB );
-extern boolean HashEmpty( HASHTAB );
+extern bool HashEmpty( HASHTAB );
 extern SYMBOL_NAME HashLookup( HASHTAB, NAME );
 extern void HashInsert( HASHTAB, SYMBOL_NAME, NAME );
 extern void HashWalk( HASHTAB, void (*)( SYMBOL_NAME ) );
