@@ -414,9 +414,9 @@ extern  void      DFBegStruct( dbg_struct st )
 
 typedef struct {
     dw_loc_id       locid;
-    bool            addr_seg:1;
-    bool            seg     :1;
-    bool            offset  :1;
+    unsigned        addr_seg:1;
+    unsigned        seg     :1;
+    unsigned        offset  :1;
 }loc_state;
 
 static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
