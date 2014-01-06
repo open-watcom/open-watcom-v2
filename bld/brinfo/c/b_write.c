@@ -35,18 +35,7 @@
 #include <assert.h>
 #include "b_write.h"
 #include "carve.h"
-
-#ifndef boolean
-typedef int boolean;
-#endif
-
-#ifndef TRUE
-#define TRUE (1)
-#endif
-
-#ifndef FALSE
-#define FALSE (0)
-#endif
+#include "bool.h"
 
 #ifndef EOF
 #include <stdio.h>
@@ -75,7 +64,7 @@ typedef int boolean;
 typedef struct BRI_FileCounter {
     BRI_StringID                filename_id;
     uint_32                     line,column;
-    boolean                     template;
+    bool                        template;
     struct BRI_FileCounter *    next;
 } BRI_FileCounter;
 
@@ -596,7 +585,7 @@ void BRIEndTemplate( BRI_HANDLE handle )
     BRI_RecordType      template_rt = BRI_Rec_TemplateEnd;
     BRI_FileCounter *   current;
     BRI_FileCounter *   prev;
-    boolean             template = FALSE;
+    bool                template = FALSE;
 
     for( current = handle->files; current != NULL && !template; ){
         template = current->template;
