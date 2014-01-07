@@ -169,7 +169,7 @@ typedef struct {
     ( 1 << TYP_BOOL )     | \
     ( 1 << TYP_CHAR )
 
-#define TypeIdMasked( typ, mask ) ( (mask) & ( 1 << ( (typ)->id ) ) )
+#define TypeIdMasked( typ, mask ) (((mask) & (1 << ((typ)->id))) != 0)
 
 #define TypeStrip( type, mask ) if( type != NULL ) \
     for( ; TypeIdMasked( type, mask ); type = type->of );
