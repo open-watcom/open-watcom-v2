@@ -38,20 +38,20 @@
 
 #include "intsupp.h"
 
-#define SymAddrTaken(s)     ( (s)->flag & SF_ADDR_TAKEN )
-#define SymDbgAddrTaken(s)  ( (s)->flag & SF_DBG_ADDR_TAKEN )
-#define SymIsAnError(s)     ( (s)->flag & SF_ERROR )
-#define SymIsConstantInt(s) ( (s)->flag & SF_CONSTANT_INT )
-#define SymIsConstantNoCode(s) ( (s)->flag & SF_CONST_NO_CODE )
-#define SymIsInitialized(s) ( (s)->flag & SF_INITIALIZED )
-#define SymIsReferenced(s)  ( (s)->flag & SF_REFERENCED )
-#define SymInVft(s)         ( (s)->flag & SF_IN_VFT )
-#define SymIsAnonymousMember(s) ( (s)->flag & SF_ANONYMOUS )
-#define SymIsUninlineable(s)    ( (s)->flag & SF_DONT_INLINE )
-#define SymIsMustGen(s)     ( (s)->flag & SF_MUST_GEN )
-#define SymIsFnTemplateMatchable(s) ( (s)->flag & SF_TEMPLATE_FN )
+#define SymAddrTaken(s)     (((s)->flag & SF_ADDR_TAKEN) != 0)
+#define SymDbgAddrTaken(s)  (((s)->flag & SF_DBG_ADDR_TAKEN) != 0)
+#define SymIsAnError(s)     (((s)->flag & SF_ERROR) != 0)
+#define SymIsConstantInt(s) (((s)->flag & SF_CONSTANT_INT) != 0)
+#define SymIsConstantNoCode(s) (((s)->flag & SF_CONST_NO_CODE) != 0)
+#define SymIsInitialized(s) (((s)->flag & SF_INITIALIZED) != 0)
+#define SymIsReferenced(s)  (((s)->flag & SF_REFERENCED) != 0)
+#define SymInVft(s)         (((s)->flag & SF_IN_VFT) != 0)
+#define SymIsAnonymousMember(s) (((s)->flag & SF_ANONYMOUS) != 0)
+#define SymIsUninlineable(s)    (((s)->flag & SF_DONT_INLINE) != 0)
+#define SymIsMustGen(s)     (((s)->flag & SF_MUST_GEN) != 0)
+#define SymIsFnTemplateMatchable(s) (((s)->flag & SF_TEMPLATE_FN) != 0)
 
-#define SymIsAlias(s)       ( (s)->flag & SF_ALIAS )
+#define SymIsAlias(s)       (((s)->flag & SF_ALIAS) != 0)
 #define SymIsCatchAlias(s)  ( (s)->id == SC_AUTO && ( (s)->flag & SF_CATCH_ALIAS ))
 
 #define SymIsTypedef(s)     ( (s)->id == SC_TYPEDEF )
