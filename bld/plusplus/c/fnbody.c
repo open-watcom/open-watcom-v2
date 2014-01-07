@@ -1148,9 +1148,9 @@ static TYPE getCatchTypeAttrs(  // GET CATCH TYPE ATTRIBUTES
                 attrs = CATT_PTR + CATT_CLS;
             }
             TypePointedAt( spectype, &flags );
-            if( flags & ( TF1_BASED | TF1_FAR16 ) ) {
+            if( flags & (TF1_BASED | TF1_FAR16) ) {
                 attrs |= CATT_PCPTR;
-            } else if( ( flags & TF1_FAR ) && ! IsBigData() ) {
+            } else if( (flags & TF1_FAR) && !IsBigData() ) {
                 attrs |= CATT_FAR;
             }
         }
@@ -1201,7 +1201,7 @@ static bool makeFNCATCH(        // MAKE CATCH ENTRY
         try_block->u.t.catch_err = TRUE;
         return FALSE;
     }
-    if( ( new_attrs & CATT_REF_PTR_CLS ) == CATT_CLS ) {
+    if( (new_attrs & CATT_REF_PTR_CLS) == CATT_CLS ) {
         if( ! TypeDefedNonAbstract( type
                                   , NULL
                                   , ERR_CATCH_ABSTRACT
@@ -1822,7 +1822,7 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
         ScopeJumpForward( dinfo->scope );
     }
     ScopeBeginFunction( func );
-    if(( TargetSwitches & FLOATING_SS ) == 0 ) {
+    if( (TargetSwitches & FLOATING_SS) == 0 ) {
         if( fn_type->flag & TF1_INTERRUPT ) {
             if( ! CompFlags.mfi_switch_used ) {
                 TargetSwitches |= FLOATING_SS;
@@ -2352,7 +2352,7 @@ PTREE FunctionCalled(           // RECORD A FUNCTION CALL
 
     if( called_flag & SF_LONGJUMP ) {
         expr = FunctionCouldThrow( expr );
-    } else if( ! ( called_flag & SF_NO_LONGJUMP ) ) {
+    } else if( (called_flag & SF_NO_LONGJUMP) == 0 ) {
         currFunction->can_throw = TRUE;
     }
     return expr;

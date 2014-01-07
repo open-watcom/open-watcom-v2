@@ -227,7 +227,7 @@ SYMBOL ClassFunMakeAddressable( // MAKE SURE THE FUNCTION CAN BE ADDRESSED
       &&( ! TypeHasPragma( orig_sym->sym_type ) ) ) {
         type_flag flags;
         TypeModFlags( orig_sym->sym_type, &flags );
-        if( ! ( flags & TF1_DLLIMPORT ) ) {
+        if( (flags & TF1_DLLIMPORT) == 0 ) {
             return orig_sym;
         }
     }
@@ -347,7 +347,7 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
     if( ptr_type != NULL ) {
         /* only need NULL checks for pointer casts */
         if( ptr_type->id == TYP_POINTER ) {
-            if(( ptr_type->flag & TF1_REFERENCE ) == 0 ) {
+            if( (ptr_type->flag & TF1_REFERENCE) == 0 ) {
                 dup1 = NodeDupExpr( &expr );
             }
         }

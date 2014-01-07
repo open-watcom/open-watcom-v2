@@ -467,8 +467,7 @@ static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
                     }
                 }
             }
-            if( !( control & LK_LEXICAL )
-             && ScopeType( scope, SCOPE_CLASS ) ) {
+            if( (control & LK_LEXICAL) == 0 && ScopeType( scope, SCOPE_CLASS ) ) {
                 if( ScopeClass( scope )->u.c.info->name == name ) {
                     /* see 3.4.3.1 Class members [class.qual]:
                      *
@@ -1710,7 +1709,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, unsigned *pa 
     for(;;) {
         if( yybitcheck[bit_index + yybitbase[top_state]] & mask ) {
             raw_action = yyaction[t + yyactionbase[top_state]];
-            if(( raw_action & RAW_REDUCTION ) == 0 ) {
+            if( (raw_action & RAW_REDUCTION) == 0 ) {
                 /* we have a shift */
                 *pa = raw_action;
                 return( P_NULL );
@@ -1723,7 +1722,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, unsigned *pa 
         }
         /* we have a reduction */
         rule = raw_action & RAW_MASK;
-        if(( raw_action & RAW_UNIT_REDUCTION ) == 0 ) {
+        if( (raw_action & RAW_UNIT_REDUCTION) == 0 ) {
             *pa = rule + YYUSED;
             return( P_NULL );
         }

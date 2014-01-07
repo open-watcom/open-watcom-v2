@@ -2470,7 +2470,7 @@ static void dtorSubObject(      // PROCESS DTOR FOR SUB-OBJECT
 {
     SymMarkRefed( sub_dtor );
     CgFrontScopeCall( NULL, sub_dtor, DTORING_SCOPE );
-    if( ! ( sub_dtor->flag & SF_NO_LONGJUMP ) ) {
+    if( (sub_dtor->flag & SF_NO_LONGJUMP) == 0 ) {
         FunctionMightThrow();
     }
 }

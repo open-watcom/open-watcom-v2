@@ -351,7 +351,7 @@ static void scalarOperators(    // FIND SYMBOLS FOR SCALAR OPERATORS
     olinf->result_nonmem_namespace = NULL;
     right = NULL;
     if( olinf->flags & PTO_BINARY ) {
-        if( !( olinf->mask & OPM_LT ) ) {
+        if( (olinf->mask & OPM_LT) == 0 ) {
             right = olinf->expr->u.subtree[1];
         }
     }
@@ -371,10 +371,8 @@ static void scalarOperators(    // FIND SYMBOLS FOR SCALAR OPERATORS
             }
         } else {
             if( olinf->have_user_type ) {
-                bool complex_assign = ( olinf->mask & OPM_ASSIGN )
-                                       &&( olinf->left.class_type != NULL );
-                if( !complex_assign ||
-                   ( complex_assign && (olinf->mask & OPM_REF_MASK ) ) ) {
+                bool complex_assign = ( olinf->mask & OPM_ASSIGN ) && ( olinf->left.class_type != NULL );
+                if( !complex_assign || ( complex_assign && (olinf->mask & OPM_REF_MASK) ) ) {
                     for( curr = 0; curr < MAX_FUN_PROTOS; ++ curr ) {
                         OP_MASK fun_mask;
                         fun_mask = opfun_mask[ curr ];
@@ -411,7 +409,7 @@ static CNV_RETN transform_operand(// TRANSFORM AN OPERAND (TO SCALAR)
 
     nd_type = (*a_operand)->type;
     if( ( NULL != PointerTypeEquivalent( type ) || MemberPtrType( type ) )
-      &&( 0 == ( mask & OPM_RR ) ) ) {
+      && ( 0 == ( mask & OPM_RR ) ) ) {
         type = UdcFindType( nd_type, type );
     }
     if( ( type != NULL ) && ( NULL == EnumType( nd_type ) ) ) {
@@ -448,8 +446,7 @@ static PTREE transform_conversions( // TRANSFORM OPERAND(S) BY CONVERSIONS
         error_left = transform_operand( &node->u.subtree[0]
                                       , alist->type_list[0]
                                       , mask );
-        if( alist->num_args > 1
-         && ! ( mask & OPM_POST ) ) {
+        if( alist->num_args > 1 && (mask & OPM_POST) == 0 ) {
             error_right = transform_operand( &node->u.subtree[1]
                                            , alist->type_list[1]
                                            , mask );
@@ -654,8 +651,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         } else if( olinf->mask & OPM_LT ) {
             count = 1;
         } else {
-            if( ( olinf->mask & OPM_SUB )
-              &&( olinf->result_mem != NULL ) ) {
+            if( ( olinf->mask & OPM_SUB ) && ( olinf->result_mem != NULL ) ) {
                 olinf->scalars = NULL;
             }
             ptlist[1] = olinf->right.operand;
@@ -686,7 +682,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         SYMBOL next;            // - next symbol
         bool have_user_defined = FALSE;
         bool have_void = FALSE;
-        if( ((olinf->mask & OPM_NV) == 0) && (olinf->mask & OPM_PP ) ) {
+        if( ( (olinf->mask & OPM_NV) == 0 ) && (olinf->mask & OPM_PP) ) {
             // we're in the (void *, void *) area
             for( amb_list = NULL; ; ) {
                 next = FnovGetAmbiguousEntry( &fnov_diag, &amb_list );
@@ -1011,7 +1007,7 @@ static TYPE getOperandType(     // GET OPERAND TYPE
         if( ctl & GETOP_CONST ) {
             if( ctl & GETOP_VOLATILE ) {
                 // const volatile
-                DbgAssert( ( ctl & GETOP_NOVOID ) == 0 );
+                DbgAssert( (ctl & GETOP_NOVOID) == 0 );
                 type = TypePtrToConstVolatileVoidStdop();
             } else {
                 // const
@@ -1024,7 +1020,7 @@ static TYPE getOperandType(     // GET OPERAND TYPE
         } else {
             if( ctl & GETOP_VOLATILE ) {
                 // volatile
-                DbgAssert( ( ctl & GETOP_NOVOID ) == 0 );
+                DbgAssert( (ctl & GETOP_NOVOID) == 0 );
                 type = TypePtrToVolatileVoidStdop();
             } else {
                 // neither const nor volatile

@@ -5681,7 +5681,7 @@ SYMBOL ScopePureVirtualThunk( THUNK_ACTION *thunk )
     }
     if( final_sym != NULL ) {
         fn_type = FunctionDeclarationType( final_sym->sym_type );
-        if( fn_type != NULL && ( fn_type->flag & TF1_PURE ) != TF1_NULL ) {
+        if( fn_type != NULL && ( fn_type->flag & TF1_PURE ) != 0 ) {
             return( final_sym );
         }
     }

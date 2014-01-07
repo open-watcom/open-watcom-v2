@@ -401,7 +401,7 @@ PTREE PtdScopeCall              // SCOPE-CALL RECORDING
     ( PTREE expr                // - expression
     , SYMBOL fun )              // - function/ctor called
 {
-    if( fun != NULL && ! ( fun->flag & SF_NO_LONGJUMP ) ) {
+    if( fun != NULL && (fun->flag & SF_NO_LONGJUMP) == 0 ) {
         expr = ptdSymbol( expr, fun, PTD_SCOPE_CALL );
     }
     return expr;

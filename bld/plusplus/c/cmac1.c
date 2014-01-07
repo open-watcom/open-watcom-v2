@@ -531,7 +531,7 @@ static MACRO_ARG *collectParms( MEPTR fmentry )
                     break;
                 --bracket;
             } else if( tok == T_COMMA && bracket == 0 &&
-                  !( (fmentry->macro_flags & MFLAG_HAS_VAR_ARGS) && curr_cnt == fmentry->parm_count - 2 ) ) {
+                  !( (fmentry->macro_flags & MFLAG_HAS_VAR_ARGS) && curr_cnt == ( fmentry->parm_count - 2 ) ) ) {
                 TokenBufRemoveWhiteSpace( htokenbuf );
                 if( macro_parms != NULL ) {     // if expecting parms
                     saveParm( fmentry, curr_cnt, macro_parms, token_head, total, &htokenbuf );
@@ -577,7 +577,7 @@ static MACRO_ARG *collectParms( MEPTR fmentry )
             ++curr_cnt;
         }
         if( ( ( fmentry->macro_flags & MFLAG_HAS_VAR_ARGS ) && ( curr_cnt < parm_cnt_reqd - 1 ) )
-            ||( !(fmentry->macro_flags & MFLAG_HAS_VAR_ARGS ) && ( curr_cnt < parm_cnt_reqd ) ) ) {
+            || ( (fmentry->macro_flags & MFLAG_HAS_VAR_ARGS) == 0 && ( curr_cnt < parm_cnt_reqd ) ) ) {
             CErr( ERR_TOO_FEW_MACRO_PARMS, fmentry->macro_name );
             InfMacroDecl( fmentry );
             macroDiagNesting();
@@ -586,7 +586,7 @@ static MACRO_ARG *collectParms( MEPTR fmentry )
                 saveParm( fmentry, curr_cnt, macro_parms, NULL, 1, &htokenbuf );
                 ++curr_cnt;
             } while( curr_cnt < parm_cnt_reqd );
-        } else if( !( fmentry->macro_flags & MFLAG_HAS_VAR_ARGS ) && ( curr_cnt > parm_cnt_reqd ) ) {
+        } else if( (fmentry->macro_flags & MFLAG_HAS_VAR_ARGS) == 0 && ( curr_cnt > parm_cnt_reqd ) ) {
             CErr( ANSI_TOO_MANY_MACRO_PARMS, fmentry->macro_name );
             InfMacroDecl( fmentry );
             macroDiagNesting();

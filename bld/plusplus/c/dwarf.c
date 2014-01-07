@@ -60,7 +60,7 @@
 ( ((type)->dbgflag & (TF2_SYMDBG|TF2_DWARF_DEF)) == (TF2_SYMDBG|TF2_DWARF_DEF) )
 
 #define _typeHasPCHDwarfHandle( type ) \
-( CompFlags.pch_debug_info_read && ((type)->dbgflag & TF2_DBG_IN_PCH ) != 0 )
+( CompFlags.pch_debug_info_read && ((type)->dbgflag & TF2_DBG_IN_PCH) != 0 )
 
 typedef enum
 {   DC_RETURN           = 0x01,         // this is a return type
@@ -121,7 +121,7 @@ static void type_reset( TYPE type )
 /*********************************/
 {
     if( InDebug ) {
-        if( !(type->dbgflag & TF2_SYMDBG ) ) {
+        if( (type->dbgflag & TF2_SYMDBG) == 0 ) {
             if(( type->dbgflag & TF2_PCH_DBG_EXTERN ) && CompFlags.pch_debug_info_read ) {
                 type->dbgflag |= TF2_SYMDBG | TF2_DWARF_DEF;
                 type->dbg.handle = DWRefPCH( Client, type->dbg.pch_handle );
@@ -143,7 +143,7 @@ static void sym_reset( SYMBOL sym )
 /*********************************/
 {
     if( InDebug ) {
-        if( !(sym->flag2 & SF2_SYMDBG) ) {
+        if( (sym->flag2 & SF2_SYMDBG) == 0 ) {
             sym->flag2 = (sym->flag2 & ~SF2_DW_HANDLE) | SF2_SYMDBG;
         }
     }
@@ -476,7 +476,7 @@ static bool dwarfClassInfo( TYPE type )
             flags |= DW_FLAG_PUBLIC;
             break;
         default:
-            if( type->flag & TF1_UNION || type->flag & TF1_STRUCT ) {
+            if( (type->flag & TF1_UNION) || (type->flag & TF1_STRUCT) ) {
                 flags |= DW_FLAG_PUBLIC;
             } else {
                 flags |= DW_FLAG_PRIVATE;
@@ -555,7 +555,7 @@ static bool dwarfClassInfo( TYPE type )
         sym_reset( curr );
         if( !IsCppNameInterestingDebug( curr ) ) {
              dh = 0;
-        } else if( !InDebug && (curr->flag2 & SF2_TOKEN_LOCN)==0 )  {
+        } else if( !InDebug && (curr->flag2 & SF2_TOKEN_LOCN) == 0 )  {
              dh = 0;
         } else if( SymIsClassDefinition( curr ) ) {
             dh = dwarfSymbol( curr, DC_DEFINE );
@@ -1201,7 +1201,7 @@ static dw_handle dwarfType( TYPE type, DC_CONTROL control )
         break;
     }
 #ifndef NDEBUG
-    if( dh == 0 && !(control & DC_RETURN) ) {
+    if( dh == 0 && (control & DC_RETURN) == 0 ) {
         DumpFullType( type );
         CFatal( "dwarf: unable to define type" );
     }
@@ -1232,7 +1232,7 @@ static void dwarf_define_parm( SYMBOL sym )
     dw_handle   dh;
     char        *name;
 
-    if( (sym->flag2 & SF2_TOKEN_LOCN)==0 ) return;
+    if( (sym->flag2 & SF2_TOKEN_LOCN) == 0 ) return;
     if( IsCppNameInterestingDebug( sym ) ) {
         name = CppNameDebug( sym );
     } else {
@@ -1268,7 +1268,7 @@ static void dwarf_block_open( SYMBOL sym )
     dw_handle   dh;
 
     sym_reset( sym );
-    if( (sym->flag2 & SF2_TOKEN_LOCN)==0 ) return;
+    if( (sym->flag2 & SF2_TOKEN_LOCN) == 0 ) return;
     if( sym->flag2 & SF2_DW_HANDLE ) return;
     if( !dwarfValidateSymbol( sym ) ) return;
 

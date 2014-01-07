@@ -936,7 +936,7 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
      || AnalyseLvalue( &expr->u.subtree[0] ) ) {
         if( expr->type == NULL ) {
             PTREE left = expr->u.subtree[0];
-            if( ! ( left->flags & PTF_LVALUE ) ) {
+            if( (left->flags & PTF_LVALUE) == 0 ) {
                 TYPE cl_type = StructType( left->type );
                 if( cl_type != NULL ) {
 #if 0

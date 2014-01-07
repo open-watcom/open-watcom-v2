@@ -196,7 +196,7 @@ static void fmtTypeArray( TYPE type, VBUF *pvbuf )
 static bool willPrintBased( type_flag flags )
 /*******************************************/
 {
-    return( ( flags & TF1_BASED ) != TF1_NULL );
+    return( (flags & TF1_BASED) != 0 );
 }
 
 static void fmtTypeBased( TYPE type, VBUF *pvbuf )
@@ -360,7 +360,7 @@ static void fmtTypeFunction( arg_list *alist, VBUF *pvbuf, int num_def,
         }
     } else {
         // only keep whether we want typedef names
-        arg_control = control & ( FF_TYPEDEF_STOP | FF_ARG_NAMES );
+        arg_control = control & (FF_TYPEDEF_STOP | FF_ARG_NAMES);
         for( i = 0 ; i < num_def ; i++ ) {
             if( i > 0 ) {
                 VbufTruncWhite( &working );
@@ -395,8 +395,7 @@ static void fmtModifierTypeFlag( TYPE type, type_flag flag, VBUF *pvbuf )
     for( i = 0 ; modifierFlags[i].name != NULL ; i++ ) {
         mask = modifierFlags[i].mask;
         if( (flag & mask) == mask ) {
-            if( ( ( mask & TF1_MEM_MODEL ) == 0 ) ||
-                  ( ( DefaultMemoryFlag( type ) & mask ) != mask ) ) {
+            if( ( (mask & TF1_MEM_MODEL) == 0 ) || ( (DefaultMemoryFlag( type ) & mask) != mask ) ) {
                 VbufConcStr( pvbuf, modifierFlags[i].name );
             }
         }
@@ -412,8 +411,7 @@ static bool willPrintModifier( TYPE type, type_flag flag )
     for( i = 0 ; modifierFlags[i].name != NULL ; i++ ) {
         mask = modifierFlags[i].mask;
         if( (flag & mask) == mask ) {
-            if( ( ( mask & TF1_MEM_MODEL ) == 0 ) ||
-                  ( ( DefaultMemoryFlag( type ) & mask ) != mask ) ) {
+            if( ( (mask & TF1_MEM_MODEL) == 0 ) || ( (DefaultMemoryFlag( type ) & mask) != mask ) ) {
                 return TRUE;
             }
         }
@@ -476,7 +474,7 @@ static void fmtTypePush( FMT_INFO **pStackFMT, TYPE type, FMT_CONTROL control )
         if( type->id == TYP_GENERIC ) break;
         if( type->id == TYP_CHAR ) break;
         if( type->id == TYP_BOOL ) break;
-        if( type->id == TYP_TYPEDEF && control & FF_TYPEDEF_STOP ) break;
+        if( type->id == TYP_TYPEDEF && (control & FF_TYPEDEF_STOP) ) break;
         if( type->id == TYP_FUNCTION ) {
             if( main_function == NULL ) {
                 entry->main_function = TRUE;
@@ -587,7 +585,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 VbufConcStr( pprefix, typeName[top->type->id] );
                 break;
             case TYP_TYPEDEF:
-                if( !(control & FF_TYPEDEF_STOP) ) break;
+                if( (control & FF_TYPEDEF_STOP) == 0 ) break;
                 // otherwise drop through
             case TYP_ENUM:
                 fmtTypeScope( top->type->u.t.scope, pprefix );
@@ -646,7 +644,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
             case TYP_MODIFIER:
                 flags = top->type->flag;
                 pragma = top->type->u.m.pragma;
-                if(( flags & TF1_DISPLAY ) == TF1_NULL && pragma == NULL ) {
+                if( (flags & TF1_DISPLAY) == 0 && pragma == NULL ) {
                     lr_state = RIGHT;
                 } else {
                     if( willPrintModifier( type, flags ) ||

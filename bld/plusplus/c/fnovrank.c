@@ -96,8 +96,7 @@ void FnovMemFlagsRank( type_flag src, type_flag tgt,
     if( src != tgt ) {
         rank->rank = OV_RANK_STD_CONV;
         rank->u.no_ud.standard++;
-    } else if( (src & TF1_BASED) &&
-               !TypeBasesEqual( src, srcbase, tgtbase ) ) {
+    } else if( (src & TF1_BASED) && !TypeBasesEqual( src, srcbase, tgtbase ) ) {
         rank->rank = OV_RANK_STD_CONV;
         rank->u.no_ud.standard++;
     }
@@ -133,8 +132,7 @@ static RKD initFNOV_TYPE( FNOV_TYPE *ft, TYPE basic, PTREE* pt )
                           , &ft->leadflag
                           , &ft->leadbase
                           , TC1_NOT_ENUM_CHAR|TC1_NOT_MEM_MODEL );
-    if( ( basic->id == TYP_POINTER )
-      &&( basic->flag & TF1_REFERENCE ) ) {
+    if( ( basic->id == TYP_POINTER ) && ( basic->flag & TF1_REFERENCE ) ) {
         ft->reference = TRUE;
         ft->reftype = basic;
         basic = TypeModExtract( basic->of
@@ -202,14 +200,14 @@ static bool trivialRankPtrToPtr( FNOV_CONV *conv )
 
     // check for stdop conversion that should ignore cv-qualifiers
     if( ( conv->wtgt.final->id == TYP_VOID )
-      &&( conv->wtgt.final->flag & TF1_STDOP )
-      &&( ( conv->rank->control & FNC_STDOP_CV_VOID ) == 0 ) ) {
+      && ( conv->wtgt.final->flag & TF1_STDOP )
+      && ( (conv->rank->control & FNC_STDOP_CV_VOID) == 0 ) ) {
         return FALSE;
     } else {
         // need to look down all levels here
         src = conv->wsrc.original;
         tgt = conv->wtgt.original;
-        if( !( conv->rank->control & FNC_DISTINCT_CHECK ) ) {
+        if( (conv->rank->control & FNC_DISTINCT_CHECK) == 0 ) {
             src = BindTemplateClass( src, NULL, TRUE );
             tgt = BindTemplateClass( tgt, NULL, TRUE );
         }
@@ -248,13 +246,13 @@ TYPE *CompareWP13332(
         // first: S cv1 &
         // second: S cv1 cv2 &
         // first is better
-        if( ( first_flag & ~second_flag ) == 0 ) { // didn't remove anything
+        if( (first_flag & ~second_flag) == 0 ) { // didn't remove anything
             better = first_type;
         } else {
             // first: S cv1 cv2 &    or S cv1 cv2 *
             // second: S cv1 &       or S cv1 *
             // second is better
-            if( ( second_flag & ~first_flag ) == 0 ) {
+            if( (second_flag & ~first_flag) == 0 ) {
                 better = second_type;
             }
         }
@@ -520,7 +518,7 @@ static bool rankPtrToVoid( FNOV_CONV* conv )
         } else {
             // if TF1_STDOP then this is not a conversion to void but an
             // exact match because the void * is a stand-in for all T*
-            if( ( conv->wtgt.final->flag & TF1_STDOP ) == 0 ) {
+            if( (conv->wtgt.final->flag & TF1_STDOP) == 0 ) {
                 conv->rank->rank = OV_RANK_STD_CONV_VOID;
                 conv->rank->u.no_ud.standard++;
             }
@@ -810,8 +808,7 @@ static FNOV_COARSE_RANK fnovUdcLocateRef( FNOV_UDC_CONTROL control,
                     }
                 }
 
-                if( !found_non_ref &&
-                    ( ictl & FNOV_INTRNL_8_5_3_ANSI ) == 0 ) {
+                if( !found_non_ref && (ictl & FNOV_INTRNL_8_5_3_ANSI) == 0 ) {
                     FnovFreeDiag( &my_fnov_diag );
                     FnovListFree( &match );
                     coarse = fnovUdcLocate( FNOV_UDC_COPY
@@ -965,7 +962,7 @@ static void clstoClsRank( FNOV_CONV *conv )
 
     src_basic = conv->wsrc.basic;
     tgt_basic = conv->wtgt.basic;
-    if( !( rank->control & FNC_DISTINCT_CHECK ) ) {
+    if( (rank->control & FNC_DISTINCT_CHECK) == 0 ) {
         src_basic = BindTemplateClass( src_basic, NULL, FALSE );
         tgt_basic = BindTemplateClass( tgt_basic, NULL, FALSE );
     }

@@ -80,7 +80,7 @@ static PTREE membPtrStoreTemp(  // STORE MEMBER PTR EXPR IN TEMPORARY
 static bool nodeIsMembPtrCon(   // TEST IF NODE CAN BE MEMBER-PTR CONST
     PTREE node )                // - node to be tested
 {
-    if( node->op == PT_SYMBOL && node->flags & PTF_COLON_QUALED ) {
+    if( node->op == PT_SYMBOL && (node->flags & PTF_COLON_QUALED) ) {
         return TRUE;
     } else {
         return CompFlags.extensions_enabled;    // KLUGE for MFC
@@ -584,7 +584,7 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
         // drops thru
       case CTD_LEFT_VIRTUAL :
         status = PTreeWarnExpr( expr, ANSI_MPTR_ACROSS_VIRTUAL );
-        if( !( status & MS_WARNING ) ) {
+        if( (status & MS_WARNING) == 0 ) {
             cnv = CNV_ERR;
             break;
         }
@@ -1657,7 +1657,7 @@ PTREE ConvertMembPtrConst(      // CONVERT TO TEMP. A MEMBER-PTR CONST
     PTREE expr;                 // - expression
 
     expr = *a_expr;
-    if( ! ( PTreeOpFlags( expr ) & PTO_RVALUE ) ) {
+    if( (PTreeOpFlags( expr ) & PTO_RVALUE) == 0 ) {
         MembPtrConvert( a_expr, expr->type, CNV_EXPR );
         expr = *a_expr;
         if( NodeIsUnaryOp( expr, CO_MEMPTR_CONST ) ) {

@@ -588,7 +588,7 @@ static unsigned cgDestructGroup(// DESTRUCT UP TO STATE ENTRY
                 if( ! fctl->ctor_complete ) {
                     if( flags & DGRP_COMPS ) {
                         flags = emitTryedPosn( try_se, fctl, flags );
-                        if( ! ( flags & DGRP_VTEST ) ) {
+                        if( (flags & DGRP_VTEST) == 0 ) {
                             cg_name expr;       // - expression
                             cg_type type;       // - expression type
                             type = CgExprType( fctl->cdtor_sym->sym_type );
@@ -642,7 +642,7 @@ static unsigned cgDestructGroup(// DESTRUCT UP TO STATE ENTRY
         }
         CondLabelsEmit( &lab_ring );
     } else {
-        if( ! ( flags & DGRP_COUNT ) ) {
+        if( (flags & DGRP_COUNT) == 0 ) {
             if( flags & DGRP_TAB_CALL ) {
                 flags = emitXstBeg( fctl, flags );
                 cgDtorTabCall( start, bound );
@@ -650,10 +650,9 @@ static unsigned cgDestructGroup(// DESTRUCT UP TO STATE ENTRY
             flags = emitTryedPosn( try_se, fctl, flags );
         }
     }
-    if( ! ( flags & DGRP_COUNT ) ) {
+    if( (flags & DGRP_COUNT) == 0 ) {
         FstabMarkedPosnSet( bound );
-        if( 0 == destructions
-         && bound != start ) {
+        if( 0 == destructions && bound != start ) {
             FstabEmitStateVarExpr( bound, fctl );
         }
     }
@@ -905,7 +904,7 @@ static void ftabAddSubobjs(     // ADD SUB-OBJECTS TO DTOR'S FUNCTION TABLE
     otab = odef->defn;
     if( otab != NULL
      || ! fctl->has_cdtor_val
-     || ! ( fctl->cdtor_val & DTOR_DELETE_VECTOR ) ) {
+     || (fctl->cdtor_val & DTOR_DELETE_VECTOR) == 0 ) {
         bool is_component;
         if( fctl->has_cdtor_val && ( fctl->cdtor_val & DTOR_COMPONENT ) ) {
             is_component = TRUE;
@@ -2234,7 +2233,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_DTOR_DLT_BEG :            // START OF DTOR-DELETION CODE
             if( fctl->has_cdtor_val ) {
-                if( ! ( fctl->cdtor_val & DTOR_DELETE_THIS ) ) {
+                if( (fctl->cdtor_val & DTOR_DELETE_THIS) == 0 ) {
                     CgioReadICUntilOpcode( file_ctl, IC_DTOR_DLT_END );
                 } else if( fctl->cdtor_val & DTOR_DELETE_VECTOR ) {
                     CgioReadICUntilOpcode( file_ctl, IC_DTOR_DLT_END );
@@ -2248,7 +2247,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_DTOR_DAR_BEG :            // START OF DTOR-DELETION CODE
             if( fctl->has_cdtor_val ) {
-                if( ! ( fctl->cdtor_val & DTOR_DELETE_VECTOR ) ) {
+                if( (fctl->cdtor_val & DTOR_DELETE_VECTOR) == 0 ) {
                     CgioReadICUntilOpcode( file_ctl, IC_DTOR_DAR_END );
                 }
             }
@@ -2966,7 +2965,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
           case IC_EXCEPT_SPEC :             // FUNCTION EXCEPTION SPEC.
-            if( ! ( fctl->func->flag & SF_NO_LONGJUMP ) ) {
+            if( (fctl->func->flag & SF_NO_LONGJUMP) == 0 ) {
                 SE* fn_exc;
                 if( fctl->has_fn_exc ) {
                     fn_exc = BlkPosnCurr();
@@ -3014,7 +3013,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_DTOR_SUBOBJS :            // DESTRUCT SUBOBJECTS
             if( ! fctl->has_cdtor_val
-             || ! ( fctl->cdtor_val & DTOR_DELETE_VECTOR ) ) {
+             || (fctl->cdtor_val & DTOR_DELETE_VECTOR) == 0 ) {
                 if( NULL != fctl->obj_registration ) {
                     SE* start = FstabActualPosn();
                     switch( fctl->dtor_method ) {

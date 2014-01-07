@@ -388,7 +388,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
         }
         prev_token = CurToken;
         CurToken = ScanToken( 0 );
-        if( ! ( defn & MSCAN_MANY ) ) break;
+        if( (defn & MSCAN_MANY) == 0 ) break;
     }
     if( prev_token == T_WHITE_SPACE ) {
         mlen -= sizeof( TOKEN );
@@ -405,7 +405,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
     mptr = MacroDefine( mentry, mlen, name_len );
     InitialMacroFlag &= ~MFLAG_HAS_VAR_ARGS;
     BrinfDeclMacro( mptr );
-    if( ! ( defn & MSCAN_MANY ) ) {
+    if( (defn & MSCAN_MANY) == 0 ) {
         while( CurToken == T_WHITE_SPACE ) {
             CurToken = ScanToken( 0 );
         }
@@ -439,7 +439,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     parm_names = NULL;
     MacroOffsetAddMemNoCopy( &mlen, Buffer, TokenLen + 1 );
     if( CurrChar == '(' ) {         /* parms present */
-        if( ! ( defn & MSCAN_MANY ) ) {
+        if( (defn & MSCAN_MANY) == 0 ) {
             BadCmdLine( ERR_INVALID_OPTION );
             return( NULL );
         }

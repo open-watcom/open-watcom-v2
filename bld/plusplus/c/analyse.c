@@ -2106,8 +2106,7 @@ static bool analyseStaticFunc(  // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
         SYMBOL funsym = func->u.symcg.symbol;
 //      funsym->flag |= SF_REFERENCED;
         if( SymIsThisFuncMember( funsym ) ) {
-            if( ( func->flags & PTF_COLON_QUALED )
-              ||( resolution & ADDRFN_MEMBPTR_KLUGE ) ) {
+            if( ( func->flags & PTF_COLON_QUALED ) || ( resolution & ADDRFN_MEMBPTR_KLUGE ) ) {
                 retn = TRUE;
             } else {
                 PTreeErrorExprSymInf( *root
@@ -2213,10 +2212,8 @@ static bool analyseAddrOfFunc(  // ANALYSE '&func'
             if( resolveActualAddrOf( fnode ) ) {
                 SYMBOL sym;     // - symbol for function
                 sym =  fnode->u.symcg.symbol;
-                if( ( fnode->flags & PTF_COLON_QUALED )
-                  &&( SymIsThisFuncMember( sym ) ) ) {
-                    expr->type = MakeMemberPointerTo( SymClass( sym )
-                                                    , fnode->type );
+                if( ( fnode->flags & PTF_COLON_QUALED ) && ( SymIsThisFuncMember( sym ) ) ) {
+                    expr->type = MakeMemberPointerTo( SymClass( sym ), fnode->type );
                     expr->flags |= PTF_PTR_NONZERO;
                     retn = TRUE;
                 } else {
@@ -2285,7 +2282,7 @@ static bool reqdBoolOperand(    // VERIFY A BOOLEAN OPERAND
     PTREE operand )
 {
     TYPE type;                  // - operand type
-    bool retn;               	// - return: TRUE ==> is a bool operand
+    bool retn;                  // - return: TRUE ==> is a bool operand
 
     type = operand->type;
     if( ( NULL != ArithType( type ) )
@@ -2676,22 +2673,19 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         if( flags & PTO_UNARY ) {
             if( orig->cgop == CO_ADDR_OF
              || orig->cgop == CO_INDIRECT ) {
-                if( ! ( on_left->flags & PTF_LV_CHECKED ) ) {
+                if( (on_left->flags & PTF_LV_CHECKED) == 0 ) {
                     opsok = AnalyseLvalueAddrOf( &orig->u.subtree[0] );
                 }
-            } else if( on_left != NULL
-                    && !( on_left->flags & PTF_LV_CHECKED ) ) {
+            } else if( on_left != NULL && (on_left->flags & PTF_LV_CHECKED) == 0 ) {
                 opsok = AnalyseLvalue( &orig->u.subtree[0] );
             }
         } else {
-            if( on_left != NULL
-             && !( on_left->flags & PTF_LV_CHECKED ) ) {
+            if( on_left != NULL && (on_left->flags & PTF_LV_CHECKED) == 0 ) {
                 opsok = AnalyseLvalue( &orig->u.subtree[0] );
             }
             if( flags & PTO_BINARY ) {
                 on_right = orig->u.subtree[1];
-                if( on_right != NULL
-                 && ! ( on_right->flags & PTF_LV_CHECKED ) ) {
+                if( on_right != NULL && (on_right->flags & PTF_LV_CHECKED) == 0 ) {
                     bool al_ret = AnalyseLvalue( &orig->u.subtree[1] );
                     DbgAssert( DbgIsBoolean( al_ret ) );
                     opsok &= al_ret;
@@ -3315,7 +3309,7 @@ start_opac_string:
                 }
                 type_l = PointerTypeEquivalent( type );
                 if( ( NULL != type_l )
-                  &&( ! ( type_l->flag & TF1_REFERENCE ) )
+                  &&( (type_l->flag & TF1_REFERENCE) == 0 )
                   &&( NULL != ArithType( right->type ) )
                   &&( ! NodeIsZeroIntConstant( right ) ) ) {
                     exprError( right, ERR_NOT_PTR_OR_ZERO );
@@ -3329,7 +3323,7 @@ start_opac_string:
           case RESULT_RETURN_PA :
           { TYPE type_l;        // - left type
             type_l = PointerTypeEquivalent( type );
-            if( ! ( type_l->flag & TF1_REFERENCE ) ) {
+            if( (type_l->flag & TF1_REFERENCE) == 0 ) {
                 if( ! NodeIsZeroIntConstant( right ) ) {
                     exprError( right, ERR_NOT_PTR_OR_ZERO );
                     break;
@@ -3456,8 +3450,7 @@ start_opac_string:
                     break;
                 }
                 sym->flag |= SF_ADDR_TAKEN;
-                if( ( left->flags & PTF_COLON_QUALED )
-                  &&( SymIsThisMember( sym ) ) ) {
+                if( ( left->flags & PTF_COLON_QUALED ) && ( SymIsThisMember( sym ) ) ) {
                     type = MakeMemberPointerTo( SymClass(sym )
                                               , sym->sym_type );
                     expr->flags |= PTF_PTR_NONZERO;
@@ -3465,8 +3458,7 @@ start_opac_string:
                 } else if( SymIsThisFuncMember( sym ) ) {
                     if( CompFlags.extensions_enabled ) {
                         // KLUGE for MFC
-                        type = MakeMemberPointerTo( SymClass(sym )
-                                                  , sym->sym_type );
+                        type = MakeMemberPointerTo( SymClass(sym ), sym->sym_type );
                         expr->flags |= PTF_PTR_NONZERO;
                         continue;
                     } else {
@@ -4118,7 +4110,7 @@ start_opac_string:
             PTreeWarnExpr( expr, WARN_ADJACENT_RELN_OPS );
             continue;
           case WARN_OPEQ_INT_TRUNC :
-            if(( PTreeOpFlags( expr ) & PTO_ASSIGN_SAME ) == 0 ) continue;
+            if( (PTreeOpFlags( expr ) & PTO_ASSIGN_SAME) == 0 ) continue;
             /* fall through */
           case WARN_INT_TRUNC :
             { unsigned tgt_bits;        // bits in target
@@ -4302,8 +4294,7 @@ static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
     if( expr->op != PT_ERROR) {
         expr = PTreeTraversePostfix( expr, &clearAnalysedFlag );
     }
-    if( expr->op != PT_ERROR
-     && !( expr->flags & PTF_LV_CHECKED ) ) {
+    if( expr->op != PT_ERROR && (expr->flags & PTF_LV_CHECKED) == 0 ) {
 //      AnalyseLvalue( PTreeRef( &expr ) );
         AnalyseLvalue( &expr );
     }

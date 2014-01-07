@@ -41,7 +41,7 @@
 #include "ring.h"
 #include "conpool.h"
 
-#define stgClassInSet( s, m )   ((( 1 << (s)->id ) & (m) ) != 0 )
+#define stgClassInSet( s, m )   ((( 1 << (s)->id ) & (m)) != 0)
 
 #define SCM_AUTOMATIC   \
         ( 1 << SC_AUTO )        | \
@@ -59,7 +59,7 @@
         ( 1 << SC_ACCESS )
 
 #define symIsDataFunction( s )  ( \
-        (( (s)->flag & SF_ERROR ) == 0 ) && \
+        ( ((s)->flag & SF_ERROR) == 0 ) && \
         ( ! stgClassInSet( sym, SCM_NOT_DATA_OR_FUNC ) ) \
         )
 
@@ -150,7 +150,7 @@ bool SymIsHugeData(             // TEST IF SYMBOL IS HUGE DATA
 
     if( SymIsData( sym ) ) {
         TypeModFlags( sym->sym_type, &flag );
-        return(( flag & TF1_HUGE ) != 0 );
+        return( (flag & TF1_HUGE) != 0 );
     }
     return( FALSE );
 }
@@ -162,7 +162,7 @@ bool SymIsInMem(                // TEST IF SYMBOL SHOULD STAY IN MEMORY
     type_flag flag;
 
     TypeModFlags( sym->sym_type, &flag );
-    return(( flag & TF1_STAY_MEMORY ) != 0 );
+    return( (flag & TF1_STAY_MEMORY) != 0 );
 }
 
 
@@ -602,7 +602,7 @@ bool SymIsThreaded(             // TEST IF SYMBOL IS A __declspec(thread)
     type_flag flags;            // - flags
 
     TypeModFlags( sym->sym_type, &flags );
-    return( ( flags & TF1_THREAD ) != 0 );
+    return( (flags & TF1_THREAD) != 0 );
 }
 
 
@@ -612,7 +612,7 @@ bool SymIsDllImport(            // TEST IF SYMBOL IS A __declspec(dllimport)
     type_flag flags;            // - flags
 
     TypeModFlags( sym->sym_type, &flags );
-    return( ( flags & TF1_DLLIMPORT ) != 0 );
+    return( (flags & TF1_DLLIMPORT) != 0 );
 }
 
 
@@ -627,8 +627,8 @@ bool SymIsConstant(             // TEST IF SYMBOL IS A CONSTANT
         retn = TRUE;
     } else if( SymIsData( sym ) ) {
         type = TypeModFlags( sym->sym_type, &flags );
-        if(( flags & TF1_CONST ) && stgClassInSet( sym, SCM_CONSTANT )
-          &&( NULL != IntegralType( type ) ) ) {
+        if( (flags & TF1_CONST) && stgClassInSet( sym, SCM_CONSTANT )
+          && ( NULL != IntegralType( type ) ) ) {
             retn = TRUE;
         } else {
             retn = FALSE;
@@ -651,7 +651,7 @@ static bool funTypeFlagged(     // TEST IF ANY FLAGS ON IN FUNCTION TYPE
     if( type == NULL ) {
         retn = FALSE;
     } else {
-        retn = ( type->flag & flags ) != 0;
+        retn = (type->flag & flags) != 0;
     }
     return retn;
 }
@@ -920,7 +920,7 @@ bool SymIsClassTemplateMember(  // TEST IF SYMBOL IS MEMBER OF CLASS TEMPLATE
     if( host_scope != NULL ) {
         /* properly handle members of nested classes within a class template */
         host_class = ScopeClass( ScopeHostClass( host_scope ) );
-        if(( host_class->flag & TF1_INSTANTIATION ) != 0 ) {
+        if( (host_class->flag & TF1_INSTANTIATION) != 0 ) {
             return( TRUE );
         }
     }
@@ -1211,10 +1211,10 @@ SYMBOL SymDeriveThrowBits(      // DERIVE SF_.._LONGJUMP BITS FROM SOURCE
 
 #ifndef NDEBUG
     if( src_flag & SF_LONGJUMP ) {
-        DbgVerify( !( tgt->flag & SF_NO_LONGJUMP )
+        DbgVerify( (tgt->flag & SF_NO_LONGJUMP) == 0
                  , "SymDeriveThrowBits -- target has SF_NO_LONGJUMP" );
     } else if( src_flag & SF_NO_LONGJUMP ) {
-        DbgVerify( !( tgt->flag & SF_LONGJUMP )
+        DbgVerify( (tgt->flag & SF_LONGJUMP) == 0
                  , "SymDeriveThrowBits -- target has SF_LONGJUMP" );
     }
 #endif
@@ -1229,8 +1229,7 @@ symbol_flag SymThrowFlags(      // GET SYMBOL'S THROW BITS
 {
     symbol_flag flags;          // - symbol's flags
 
-    flags = ( sym->flag & SF_LONGJUMP )
-          | ( sym->flag & SF_NO_LONGJUMP );
+    flags = ( sym->flag & SF_LONGJUMP ) | ( sym->flag & SF_NO_LONGJUMP );
     DbgVerify( flags != ( SF_LONGJUMP | SF_NO_LONGJUMP )
              , "SymThrowFlags -- both throw bits computed" );
     return flags;

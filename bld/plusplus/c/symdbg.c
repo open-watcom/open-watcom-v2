@@ -190,7 +190,7 @@ static dbg_type symWVDebugClassType( TYPE type )
     CLASSINFO   *base_info;
     TYPE        root = TypedefModifierRemoveOnly( type );
 
-    ds = DBBegStruct( CgTypeOutput( type ), !(root->flag & TF1_UNION) );
+    ds = DBBegStruct( CgTypeOutput( type ), (root->flag & TF1_UNION) == 0 );
     dt = DBStructForward( ds );
     info = root->u.c.info;
     if( dt != DBG_NIL_TYPE  ){
@@ -341,7 +341,7 @@ static dbg_type symWVDebugClassType( TYPE type )
     info->dbg_no_vbases= dt;
 
     if( ScopeHasVirtualBases( root->u.c.scope ) ) {
-        ds = DBBegStruct( CgTypeOutput( type ), !(root->flag & TF1_UNION) );
+        ds = DBBegStruct( CgTypeOutput( type ), (root->flag & TF1_UNION) == 0 );
 
         // define own component
         dl = DBLocInit();
@@ -442,9 +442,9 @@ static dbg_type symCVDebugClassType( TYPE type )
 
     info = root->u.c.info;
     if( info->unnamed ){
-        ds = DBBegStruct( CgTypeOutput( type ), !(root->flag & TF1_UNION) );
+        ds = DBBegStruct( CgTypeOutput( type ), (root->flag & TF1_UNION) == 0 );
     }else{
-        ds = DBBegNameStruct( NameStr( info->name ), CgTypeOutput( type ), !(root->flag & TF1_UNION) );
+        ds = DBBegNameStruct( NameStr( info->name ), CgTypeOutput( type ), (root->flag & TF1_UNION) == 0 );
     }
     DBNested( FALSE );
     dt = DBStructForward( ds );
@@ -652,7 +652,7 @@ static dbg_type basedPointerType( TYPE type, TYPE base, SD_CONTROL control )
 
     btype = BasedType( base->of );
     dl = DBLocInit();
-    switch(  btype->flag & TF1_BASED  ) {
+    switch( btype->flag & TF1_BASED ) {
     //a caution if you change these  expressions
     //codeview and dwarf might not be able to translate them
     case TF1_BASED_STRING:
@@ -872,7 +872,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
     case TYP_CLASS:
     {   NAME name;
 
-        switch( base->flag & (TF1_UNION|TF1_STRUCT) ) {
+        switch( base->flag & (TF1_UNION | TF1_STRUCT) ) {
         case TF1_STRUCT:
             fwd_info->dt = scopeStruct;
             break;
@@ -886,7 +886,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
         if( base->u.c.info->defined ) {
             type->dbgflag |= TF2_SYMDBG;
             type->dbg.handle = DBG_FWD_TYPE;
-            if( !(base->flag & TF1_INSTANTIATION) ) {
+            if( (base->flag & TF1_INSTANTIATION) == 0 ) {
                 name = SimpleTypeName( base );
                 if( name != NULL ) {
                     fwd_info->dn = DBBegName( NameStr( name ), fwd_info->dt );
@@ -972,7 +972,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
         CFatal( "symdbg: illegal type" );
         break;
     }
-    if( !(control & SD_NO_UPDATE) ) {
+    if( (control & SD_NO_UPDATE) == 0 ) {
         type->dbgflag |= TF2_SYMDBG;
         type->dbg.handle = dt;
     }
@@ -1080,7 +1080,7 @@ void SymbolicDebugGenSymbol( SYMBOL sym, bool scoped, bool by_ref )
     dbg_loc     dl;
     dl = DBLocInit();
     dl = DBLocSym( dl, symbolicDebugSymAlias( sym ) );
-    if( !(GenSwitches & DBG_CV) ){
+    if( (GenSwitches & DBG_CV) == 0 ){
         if( by_ref ) {
             pt = MakePointerTo( sym->sym_type );
             dl = DBLocOp( dl, DB_OP_POINTS, CgTypeOutput( pt ) );

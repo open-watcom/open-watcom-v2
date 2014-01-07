@@ -56,7 +56,7 @@ static target_offset_t cgSegIdAlign( SYMBOL sym, type_flag flags )
 static bool cgSegIdConst( SYMBOL sym, type_flag flags, SEGID_CONTROL control )
 /****************************************************************************/
 {
-    if(( flags & TF1_CONST ) == TF1_NULL ) {
+    if( (flags & TF1_CONST) == 0 ) {
         // symbol is not declared const
         return( FALSE );
     }
@@ -89,7 +89,7 @@ static fe_seg_id cgSegIdBased( SYMBOL sym, type_flag flags )
 
     size = CgMemorySize( sym->sym_type );
 #ifdef _CHECK_SIZE      // only defined if needed
-    if( !(flags & TF1_HUGE) ) {
+    if( (flags & TF1_HUGE) == 0 ) {
         if( _CHECK_SIZE( size ) ) {
             CErr2p( ERR_DATA_TOO_BIG, sym );
             return( SEG_NULL );
@@ -130,7 +130,7 @@ static fe_seg_id cgSegIdThread( SYMBOL sym, type_flag flags )
 
     flags = flags;
 #ifdef _CHECK_SIZE      // only defined if needed
-    if( !(flags & TF1_HUGE) ) {
+    if( (flags & TF1_HUGE) == 0 ) {
         target_size_t   size;       // - size of symbol
         size = CgMemorySize( sym->sym_type );
         if( _CHECK_SIZE( size ) ) {
@@ -212,7 +212,7 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
 
     size = CgMemorySize( sym->sym_type );
 #ifdef _CHECK_SIZE      // only defined if needed
-    if( !(flags & TF1_HUGE) ) {
+    if( (flags & TF1_HUGE) == 0 ) {
         if( _CHECK_SIZE( size ) ) {
             CErr2p( ERR_DATA_TOO_BIG, sym );
             return( SEG_NULL );

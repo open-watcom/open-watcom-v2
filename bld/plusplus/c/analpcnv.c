@@ -471,7 +471,7 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
         }
         break;
       case CTD_RIGHT_PROTECTED :
-        if( ! ( conversion & CNVPTR_CAST ) ) {
+        if( (conversion & CNVPTR_CAST) == 0 ) {
             if( conversion & CNVPTR_VIRT_TO_DERIVED ) {
                 retn = CNV_PROTECTED;
             } else {
@@ -481,7 +481,7 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
         }
         // drops thru
       case CTD_RIGHT_PRIVATE :
-        if( ! ( conversion & CNVPTR_CAST ) ) {
+        if( (conversion & CNVPTR_CAST) == 0 ) {
             if( conversion & CNVPTR_VIRT_TO_DERIVED ) {
                 retn = CNV_PRIVATE;
             } else {
@@ -513,13 +513,13 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
         }
         break;
       case CTD_LEFT_PRIVATE :
-        if( ! ( conversion & CNVPTR_CAST ) ) {
+        if( (conversion & CNVPTR_CAST) == 0 ) {
             retn = CNV_PRIVATE;
             break;
         }
         // drops thru
       case CTD_LEFT_PROTECTED :
-        if( ! ( conversion & CNVPTR_CAST ) ) {
+        if( (conversion & CNVPTR_CAST) == 0 ) {
             retn = CNV_PROTECTED;
             break;
         }
@@ -547,7 +547,7 @@ static unsigned propogateNonZero( // PROPOGATE PTF_PTR_NONZERO TO COMMON
 {
     if( NodeIsBinaryOp( expr, CO_COLON ) ) {
         if( ( PTreeOpLeft( expr )->flags & PTF_PTR_NONZERO )
-          &&( PTreeOpRight( expr )->flags & PTF_PTR_NONZERO ) ) {
+          && ( PTreeOpRight( expr )->flags & PTF_PTR_NONZERO ) ) {
             expr->flags |= PTF_PTR_NONZERO;
         }
     }
@@ -756,7 +756,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                     break;
                 }
             }
-            if( ! ( cv_tgt & TF1_CONST ) ) {
+            if( (cv_tgt & TF1_CONST) == 0 ) {
                 const_always = FALSE;
             }
             if( ptr_src == ptr_tgt ) {

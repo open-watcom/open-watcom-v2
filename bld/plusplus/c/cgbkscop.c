@@ -383,8 +383,8 @@ static CALLNODE* makeThrowFun   // FUNCTION BECOMES A THROWING FUNCTION
 
     fun = owner->base.object;
     fun = symDefaultBase( fun );
-    DbgVerify( ! ( fun->flag & SF_NO_LONGJUMP ), "makeThrowFun -- has SF_NO_LONGJUMP" );
-    if( ! ( fun->flag & SF_LONGJUMP ) ) {
+    DbgVerify( (fun->flag & SF_NO_LONGJUMP) == 0, "makeThrowFun -- has SF_NO_LONGJUMP" );
+    if( (fun->flag & SF_LONGJUMP) == 0 ) {
         fun->flag |= SF_LONGJUMP;
         _printAction1( pushActionCaller( owner, RES_FN_TH ), "Function resolved: throwable" );
         CgResolve();
@@ -400,8 +400,8 @@ static CALLNODE* makeNonThrowFun// FUNCTION BECOMES A NON-THROWING FUNCTION
 
     fun = owner->base.object;
     fun = symDefaultBase( fun );
-    DbgVerify( ! ( fun->flag & SF_LONGJUMP ), "makeNonThrowFun -- has SF_LONGJUMP" );
-    if( ! ( fun->flag & SF_NO_LONGJUMP ) ) {
+    DbgVerify( (fun->flag & SF_LONGJUMP) == 0, "makeNonThrowFun -- has SF_LONGJUMP" );
+    if( (fun->flag & SF_NO_LONGJUMP) == 0 ) {
         fun->flag |= SF_NO_LONGJUMP;
         _printAction1( pushActionCaller( owner, RES_FN_NT ), "Function resolved: non-throwable" );
         CgResolve();
@@ -760,8 +760,7 @@ void CgResCall                  // ADD: CALL TO RESOLVE
     CALLNODE* called;           // - NULL or node for unresolved function
 
     fun = symDefaultBase( fun );
-    if( resolveSymbol( fun, &called )
-     && ! ( fun->flag & SF_NO_LONGJUMP ) ) {
+    if( resolveSymbol( fun, &called ) && (fun->flag & SF_NO_LONGJUMP) == 0 ) {
         resolveCall( caller, fun, called );
         OpenScopesIterBeg( sr ) {
             if( sr->statement ) {
@@ -1151,7 +1150,7 @@ bool CgResolveNonThrow          // RESOLVE A FUNCTION AS NON-THROW
         SYMBOL fun = node->base.object;
         if( fun != NULL ) {
             fun = symDefaultBase( fun );
-            if( ! ( fun->flag & SF_FN_LONGJUMP ) ) {
+            if( (fun->flag & SF_FN_LONGJUMP) == 0 ) {
                 makeNonThrowFun( node );
             }
         }

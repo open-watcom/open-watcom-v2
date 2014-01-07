@@ -144,7 +144,7 @@ static void initRankVector( FNOV_CONTROL control, FNOV_RANK *rv, int num_args )
     }
     // for standard operators which are member functions,
     // don't check any conversion on first parm
-    if( ( control & FNC_STDOPS) && ( control & FNC_MEMBER ) ) {
+    if( (control & FNC_STDOPS) && (control & FNC_MEMBER) ) {
         rv->control |= FNC_EXCLUDE_CONV;
     }
 }
@@ -203,11 +203,11 @@ FNOV_UDC_CONTROL control, FNOV_INTRNL_CONTROL ictl, PTREE *src_ptree )
         curr_control = fnov_control;
         if( hasOneArg( arg ) &&
             ( ( control & FNOV_UDC_USE_EXPLICIT ) ||
-              ( curr->sym->sym_type->flag & TF1_EXPLICIT ) == 0 ) ) {
+              (curr->sym->sym_type->flag & TF1_EXPLICIT) == 0 ) ) {
             inter = arg->type_list[0];
-            if( ( ictl & FNOV_INTRNL_EXCLUDE_UDCONV_PARAM ) == 0 &&
-                IsCopy(control) && CompFlags.extensions_enabled &&
-                ( ictl & FNOV_INTRNL_ONCE_ONLY ) == 0 ) {
+            if( (ictl & FNOV_INTRNL_EXCLUDE_UDCONV_PARAM) == 0 &&
+                IsCopy( control ) && CompFlags.extensions_enabled &&
+                (ictl & FNOV_INTRNL_ONCE_ONLY) == 0 ) {
                 TYPE    tgt_type;
                 TYPE    inter_type;
                 tgt_type = ClassTypeForType( tgt );
@@ -342,8 +342,8 @@ static void addListEntry( FNOV_CONTROL control, FNOV_INFO *info, SYMBOL sym,
     } else {
         new->free_args = FALSE;
     }
-    new->member = ((control & FNC_MEMBER) != 0 );
-    new->stdops = ((control & FNC_STDOPS) != 0 );
+    new->member = ( (control & FNC_MEMBER) != 0 );
+    new->stdops = ( (control & FNC_STDOPS) != 0 );
     new->rankvector = NULL;
     initRankVector( FNC_DEFAULT, &new->thisrank, 1 );
     new->thisrank.rank = OV_RANK_EXACT;
@@ -448,7 +448,7 @@ int FnovRejectParm( FNOV_DIAG *fnov_diag )
     if( ( fnov_diag != NULL ) && ( fnov_diag->diag_reject != NULL ) ) {
         rank = fnov_diag->diag_reject->rankvector;
         num_args = fnov_diag->diag_reject->num_args;
-        if( (num_args == 0) || (rank->control & FNC_RANK_RETURN) ) {
+        if( ( num_args == 0 ) || (rank->control & FNC_RANK_RETURN) ) {
             num_args = 1;
         }
         for( index = 0; index < num_args ; index++, rank++ ) {
@@ -547,7 +547,7 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
     TYPE sym_type = sym->sym_type;
     int num_args = ( info->alist != NULL ) ? info->alist->num_args : 0;
 
-    if(( control & FNC_NO_DEALIAS ) == 0 ) {
+    if( (control & FNC_NO_DEALIAS) == 0 ) {
         sym = SymDeAlias( sym );
     }
 
@@ -562,7 +562,7 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
             return;
         }
     } else {
-        if( SymIsDefArg( sym ) && (control & FNC_EXCLUDE_DEFARG ) ) {
+        if( SymIsDefArg( sym ) && (control & FNC_EXCLUDE_DEFARG) ) {
             return;
         } else if( ! isSimpleCandidate( sym_type, num_args ) ) {
             if( (control & FNC_EXCLUDE_ELLIPSIS)
@@ -581,7 +581,7 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
             return;
         }
 
-        if( ! ( control & FNC_DISTINCT_CHECK ) ) {
+        if( (control & FNC_DISTINCT_CHECK) == 0 ) {
             SYMBOL result;
 
             if( control & FNC_MEMBER ) {
@@ -632,7 +632,7 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
                     break;
                 }
 
-                if( ! ( control & FNC_DISTINCT_CHECK ) ) {
+                if( (control & FNC_DISTINCT_CHECK) == 0 ) {
                     old_curr->sym_type =
                         BindTemplateClass( old_curr->sym_type,
                                            &old_curr->locn->tl, TRUE );
@@ -778,8 +778,8 @@ static bool myTypesSame( TYPE first_type, TYPE second_type )
     type_flag   flag;
     bool        same;
 
-    while( ( first_type->id == TYP_POINTER || first_type->flag & TF1_REFERENCE )
-        && ( second_type->id == TYP_POINTER || second_type->flag & TF1_REFERENCE ) ) {
+    while( ( first_type->id == TYP_POINTER || (first_type->flag & TF1_REFERENCE) )
+        && ( second_type->id == TYP_POINTER || (second_type->flag & TF1_REFERENCE) ) ) {
         first_type = TypeModExtract( first_type->of
                               , &flag
                               , &refbase
@@ -792,7 +792,7 @@ static bool myTypesSame( TYPE first_type, TYPE second_type )
     same = TypesSameExclude( first_type, second_type,
                              TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
     if( !same ) {
-        if( first_type->flag & TF1_STDOP || second_type->flag & TF1_STDOP ) {
+        if( (first_type->flag & TF1_STDOP) || (second_type->flag & TF1_STDOP) ) {
             same = TRUE;
         }
     }
@@ -1175,9 +1175,9 @@ static OV_RESULT compareFunction(
     if( retn == OV_CMP_SAME ) {
         // prefer non-template functions
         if( ( first->sym->flag & SF_TEMPLATE_FN )
-         && ! ( second->sym->flag & SF_TEMPLATE_FN ) ) {
+         && (second->sym->flag & SF_TEMPLATE_FN) == 0 ) {
             retn = OV_CMP_BETTER_SECOND;
-        } else if( ! ( first->sym->flag & SF_TEMPLATE_FN )
+        } else if( (first->sym->flag & SF_TEMPLATE_FN) == 0
                 && ( second->sym->flag & SF_TEMPLATE_FN ) ) {
             retn = OV_CMP_BETTER_FIRST;
         }
@@ -1227,8 +1227,7 @@ static void doComputeArgRank( SYMBOL sym, TYPE src, TYPE tgt, PTREE *pt,
 /**********************************************************************/
     FNOV_RANK *rank )
 {
-    if( (rank->control & FNC_TEMPLATE) &&
-        SymIsFunctionTemplateModel( sym ) ) {
+    if( (rank->control & FNC_TEMPLATE) && SymIsFunctionTemplateModel( sym ) ) {
         rank->rank = OV_RANK_NO_MATCH;
         return;
     }
@@ -1304,9 +1303,9 @@ static void resolveOneList( FNOV_LIST **list, FNOV_LIST **match,
                 if( result == OV_CMP_SAME ) {
                     // prefer non-template functions
                     if( ( (*match)->sym->flag & SF_TEMPLATE_FN )
-                     && ! ( curr->sym->flag & SF_TEMPLATE_FN ) ) {
+                     && (curr->sym->flag & SF_TEMPLATE_FN) == 0 ) {
                         result = OV_CMP_BETTER_SECOND;
-                    } else if( ! ( (*match)->sym->flag & SF_TEMPLATE_FN )
+                    } else if( ((*match)->sym->flag & SF_TEMPLATE_FN) == 0
                             && ( curr->sym->flag & SF_TEMPLATE_FN ) ) {
                         result = OV_CMP_BETTER_FIRST;
                     }
@@ -1596,7 +1595,7 @@ static bool getRank( FNOV_INFO* info )
     FNOV_LIST* candidate = info->candfunc;
 
     if( SymIsFunctionTemplateModel( candidate->sym )
-     && !( info->control & FNC_DISTINCT_CHECK ) ) {
+     && (info->control & FNC_DISTINCT_CHECK) == 0 ) {
         // this means that template argument deduction failed, so it
         // can't be a contender
         contender = FALSE;
@@ -2070,7 +2069,7 @@ FNOV_RESULT IsOverloadedFuncDistinct( SYMBOL *pold_sym, SYMBOL new_sym, NAME nam
 //    FNOV_EXACT_MATCH          - function matches exactly
 //    *pold_sym = new_sym if arguments match exactly else NULL
 {
-    DbgAssert(( control & ~(FNC_NO_DEALIAS) ) == 0 );
+    DbgAssert( (control & ~(FNC_NO_DEALIAS)) == 0 );
     control |= FNC_EXCLUDE_ELLIPSIS | FNC_DISTINCT_CHECK;
     return doFunctionDistinctCheck( control, pold_sym, new_sym, name );
 }

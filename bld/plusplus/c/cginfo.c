@@ -164,7 +164,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
     case MSG_SCHEDULER_DIED:
     case MSG_REGALLOC_DIED:
     case MSG_SCOREBOARD_DIED:
-        if( ! (GenSwitches & NO_OPTIMIZATION) ) {
+        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
             if( lastFunctionOutOfMem != parm ) {
                 lastFunctionOutOfMem = parm;
                 CErr2p( WARN_CG_MEM_PROC, FEName( (SYMBOL)parm ) );
@@ -172,7 +172,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         }
         break;
     case MSG_PEEPHOLE_FLUSHED:
-        if( ! (GenSwitches & NO_OPTIMIZATION) ) {
+        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
             if( ! CompFlags.low_on_memory_printed ) {
                 CompFlags.low_on_memory_printed = TRUE;
                 CErr1( WARN_CG_MEM_PEEPHOLE );
@@ -314,12 +314,12 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
         if( mod_flags & TF1_THREAD ) {
             attr |= FE_THREAD_DATA;
         }
-        if( ! ( mod_flags & TF1_HUGE ) ) {
+        if( (mod_flags & TF1_HUGE) == 0 ) {
             attr |= FE_ONESEG;
         }
     }
     // don't export addressability thunks
-    if(( sym->flag & SF_ADDR_THUNK ) == 0 ) {
+    if( (sym->flag & SF_ADDR_THUNK) == 0 ) {
         if( mod_flags & (TF1_DLLEXPORT|TF1_DLLIMPORT) ) {
             if( SymIsInitialized( sym ) ) {
                 if( mod_flags & TF1_DLLEXPORT ) {
@@ -347,7 +347,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
             attr |= FE_STATIC;
             /* only set FE_GLOBAL if it's not an in-class
          * initialization of a const static member */
-            if( ! ( sym->flag & SF_IN_CLASS_INIT ) ) {
+            if( (sym->flag & SF_IN_CLASS_INIT) == 0 ) {
                 attr |= FE_GLOBAL;
             }
         } else {
@@ -447,7 +447,7 @@ int FEStackChk(                 // STACK CHECKING ?
     SYMBOL sym = _sym;
 
     fn_type = FunctionDeclarationType( sym->sym_type );
-    return(( fn_type->flag & TF1_STACK_CHECK ) != 0 );
+    return( (fn_type->flag & TF1_STACK_CHECK) != 0 );
 }
 
 

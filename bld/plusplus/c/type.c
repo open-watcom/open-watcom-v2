@@ -357,7 +357,7 @@ TYPE MakeClassType( void )
 
 static void typeFree( TYPE type )
 {
-    DbgVerify( ! ( type->dbgflag & TF2_DBG_IN_PCH ), "type was in a pre-compiled header!" );
+    DbgVerify( (type->dbgflag & TF2_DBG_IN_PCH) == 0, "type was in a pre-compiled header!" );
     switch( type->id ) {
     case TYP_CLASS:
         DbgAssert( type->u.c.info->cdopt_cache == NULL );
@@ -475,9 +475,9 @@ TYPE MakeVolatileTypeOf( TYPE type )
 
 static TYPE makeCompilerData( TYPE type, type_flag flags )
 {
-    if( defaultDataMemFlag & ( TF1_FAR | TF1_HUGE ) ) {
+    if( defaultDataMemFlag & (TF1_FAR | TF1_HUGE) ) {
 #if _CPU == 8086
-        if(( flags & TF1_CONST ) == 0 ) {
+        if( (flags & TF1_CONST) == 0 ) {
             if( TargetSwitches & WINDOWS ) {
                 /* R/W data must be near for 16-bit Windows */
                 flags |= TF1_NEAR;
@@ -1918,7 +1918,7 @@ NAME SimpleTypeName( TYPE typ )
         case TYP_ENUM:
             sym = typ->u.t.sym;
             if( sym != NULL ) {
-                if(( typ->flag & TF1_UNNAMED ) == 0 ) {
+                if( (typ->flag & TF1_UNNAMED) == 0 ) {
                     name = sym->name->name;
                 }
             }
@@ -2320,8 +2320,8 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
     bool bad_friend;
 
     sym = dspec->typedef_defined;
-    if(( dspec->specifier & STY_FRIEND ) == 0 || ! decl_done ) {
-        if( sym != NULL && ! dspec->generic ) {
+    if( (dspec->specifier & STY_FRIEND) == 0 || !decl_done ) {
+        if( sym != NULL && !dspec->generic ) {
             scope = GetCurrScope();
             if( ! dspec->class_idiom ) {
                 scope = ScopeNearestNonClass( scope );
@@ -2653,7 +2653,7 @@ static TYPE dupFunction( TYPE fn_type, unsigned control )
     TYPE new_fn_type;
 
     args = fn_type->u.f.args;
-    if(( control & DF_REUSE_ARGLIST ) == 0 ) {
+    if( (control & DF_REUSE_ARGLIST) == 0 ) {
         old_args = args;
         args = AllocArgListPerm( old_args->num_args );
         args->except_spec = old_args->except_spec;
@@ -2700,7 +2700,7 @@ static TYPE makeThunkType( TYPE type, unsigned mtt_control )
         new_fn_type = dupFunction( old_fn_type, DF_REUSE_ARGLIST );
     }
     new_fn_type->flag &= TF1_FN_THUNK_KEEP;
-    if( ! ( mtt_control & MTT_COPY_PRAGMA ) ) {
+    if( (mtt_control & MTT_COPY_PRAGMA) == 0 ) {
         new_fn_type->u.f.pragma = NULL;
     }
     if( mtt_control & MTT_INLINE ) {
@@ -2997,7 +2997,7 @@ static int scanDeclarator( TYPE declarator_list, unsigned *count )
         }
         declarator_list = declarator_list->of;
     }
-    if(( status & SM_SAW_FUNCTION ) == 0 ) {
+    if( (status & SM_SAW_FUNCTION) == 0 ) {
         /* function type was never found! */
         status |= SM_NOT_A_FUNCTION;
     }
@@ -3031,7 +3031,7 @@ static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, int status )
 
     fn_spec = dspec->specifier;
     flags = convertFnSpec( fn_spec );
-    if( flags == TF1_NULL && ( fn_spec & STY_FRIEND ) == 0 ) {
+    if( flags == TF1_NULL && (fn_spec & STY_FRIEND) == 0 ) {
         return( FALSE );
     }
     fn_type = NULL;
@@ -3083,7 +3083,7 @@ static void checkUserConversion( TYPE return_type, int status, unsigned arg_cnt)
 {
     if( status & SM_NOT_A_FUNCTION ) {
         CErr1( ERR_USER_CONV_BAD_DECL );
-    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || status & SM_RETURN_DECLARATOR ) {
+    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (status & SM_RETURN_DECLARATOR) ) {
         CErr1( ERR_USER_CONV_BAD_RETURN );
     }
     if( status == SM_NULL && arg_cnt != 0 ) {
@@ -3095,7 +3095,7 @@ static void checkDestructor( TYPE return_type, int status, unsigned arg_count )
 {
     if( status & SM_NOT_A_FUNCTION ) {
         CErr1( ERR_DESTRUCTOR_BAD_DECL );
-    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || status & SM_RETURN_DECLARATOR ) {
+    } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (status & SM_RETURN_DECLARATOR) ) {
         CErr1( ERR_DESTRUCTOR_BAD_RETURN );
     }
     if( status == SM_NULL && arg_count != 0 ) {
@@ -3242,13 +3242,13 @@ static TYPE combineNormalMods( TYPE mod_type, TYPE curr_type )
     curr_flag = curr_type->flag;
     curr_flag &= ~TF1_HUG_FUNCTION;
     mod_flag = mod_type->flag;
-    if((( mod_flag & curr_flag ) & TF1_BASED ) != TF1_NULL ) {
+    if( ((mod_flag & curr_flag) & TF1_BASED) != 0 ) {
         CErr1( ERR_REPEATED_BASED_MODS );
         curr_flag &= ~TF1_BASED;
     } else if( curr_flag & TF1_BASED ) {
         mod_type->u.m.base = curr_type->u.m.base;
     }
-    if(( mod_flag & curr_flag ) != TF1_NULL ) {
+    if( mod_flag & curr_flag ) {
         if( CErr1( WARN_REPEATED_DATA_MODS ) & MS_PRINTED ) {
             dumpInfoDataMods( mod_flag & curr_flag );
         }
@@ -3828,7 +3828,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         if( flag.add_type ) {
             if( mod_type != NULL ) {
                 if( flag.memory_model_movement ) {
-                    if(( mod_type->flag & TF1_MOD_MOVE ) == 0 ) {
+                    if( (mod_type->flag & TF1_MOD_MOVE) == 0 ) {
                         flag.memory_model_movement = FALSE;
                     }
                 }
@@ -4335,7 +4335,7 @@ TYPE CleanIntType( TYPE type )
     if( type->id != TYP_SINT ) {
         return( NULL );
     }
-    if(( type->flag & TF1_CLEAN ) == 0 ) {
+    if( (type->flag & TF1_CLEAN) == 0 ) {
         return( NULL );
     }
     return( type );
@@ -4350,7 +4350,7 @@ TYPE SegmentShortType( TYPE type )
     if( type->id != TYP_USHORT ) {
         return( NULL );
     }
-    if(( type->flag & TF1_SEGMENT ) == 0 ) {
+    if( (type->flag & TF1_SEGMENT) == 0 ) {
         return( NULL );
     }
     return( type );
@@ -4620,7 +4620,7 @@ TYPE PointerType( TYPE type )
 /***************************/
 {
     TypeStripTdMod( type );
-    if( type->id == TYP_POINTER && ( type->flag & TF1_REFERENCE ) == 0 ) {
+    if( type->id == TYP_POINTER && (type->flag & TF1_REFERENCE) == 0 ) {
         return( type );
     }
     return( NULL );
@@ -4808,7 +4808,7 @@ TYPE MakeFarPointerToNear( TYPE base )
         type_flag mod;
 
         TypeModFlagsEC( base, &mod );
-        if( ! ( mod & (TF1_FAR|TF1_HUGE) ) ) {
+        if( (mod & (TF1_FAR | TF1_HUGE)) == 0 ) {
             CFatal( "dual far/near pointer must point to a far object" );
         }
     }
@@ -5012,7 +5012,7 @@ TYPE TypeModExtract(            // EXTRACT MODIFIER INFORMATION
           case TYP_BOOL :
           case TYP_CHAR :
           case TYP_ENUM :
-            if(( mask & TC1_NOT_ENUM_CHAR ) == 0 ) {
+            if( (mask & TC1_NOT_ENUM_CHAR) == 0 ) {
                 type = type->of;
             }
             // drops thru
@@ -5807,7 +5807,7 @@ static bool isVoidPtr( TYPE type )
 {
     type = TypedefRemove( type );
     if( type->id == TYP_POINTER ) {
-        if(( type->flag & TF1_REFERENCE ) == 0 ) {
+        if( (type->flag & TF1_REFERENCE) == 0 ) {
             if( isVoid( type->of ) ) {
                 return( TRUE );
             }
@@ -5820,7 +5820,7 @@ static bool isClassPtr( TYPE type )
 {
     type = TypedefRemove( type );
     if( type->id == TYP_POINTER ) {
-        if(( type->flag & TF1_REFERENCE ) == 0 ) {
+        if( (type->flag & TF1_REFERENCE) == 0 ) {
             if( StructType( type->of ) != NULL ) {
                 return( TRUE );
             }
@@ -5837,7 +5837,7 @@ static TYPE classOrClassRef( TYPE type )
     if( class_type == NULL ) {
         TypeStripTdMod( type );
         if( type->id == TYP_POINTER ) {
-            if(( type->flag & TF1_REFERENCE ) != 0 ) {
+            if( (type->flag & TF1_REFERENCE) != 0 ) {
                 class_type = StructType( type->of );
             }
         }
@@ -5853,7 +5853,7 @@ static TYPE enumOrEnumRef( TYPE type )
     if( enum_type == NULL ) {
         TypeStripTdMod( type );
         if( type->id == TYP_POINTER ) {
-            if(( type->flag & TF1_REFERENCE ) != 0 ) {
+            if( (type->flag & TF1_REFERENCE) != 0 ) {
                 enum_type = EnumType( type->of );
             }
         }
@@ -5869,7 +5869,7 @@ static TYPE genericOrGenericRef( TYPE type )
     if( generic_type == NULL ) {
         TypeStripTdMod( type );
         if( type->id == TYP_POINTER ) {
-            if(( type->flag & TF1_REFERENCE ) != 0 ) {
+            if( (type->flag & TF1_REFERENCE) != 0 ) {
                 generic_type = GenericType( type->of );
             }
         }
@@ -6165,7 +6165,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
     fn_type = FunctionDeclarationType( type );
     cv_qualifiers = fn_type->u.f.args->qualifier;
     if( is_a_member ) {
-        if(( fn_type->flag & TF1_PLUSPLUS ) == 0 ) {
+        if( (fn_type->flag & TF1_PLUSPLUS) == 0 ) {
             /* all member functions must be linkage "C++" */
             type = MakePlusPlusFunction( type );
             sym->sym_type = type;
@@ -6776,7 +6776,7 @@ uint_32 TypeHash( TYPE type )
             hash += num_args + 1;
             type = type->of;
             if( num_args != 0 ) {
-                if((( num_args & hash ) & 1 ) != 0 ) {
+                if( ((num_args & hash) & 1) != 0 ) {
                     num_args = hash % num_args;
                     type = args->type_list[num_args];
                 }
@@ -7229,7 +7229,7 @@ static bool markAllUnused( SCOPE scope, void (*diag)( SYMBOL ) )
         all_flags &= curr_flags;
         generic_type->flag = curr_flags & ~TF1_USED;
     }
-    return(( all_flags & TF1_USED ) != 0 );
+    return( (all_flags & TF1_USED) != 0 );
 }
 
 static void pushArguments( PSTK_CTL *stk, arg_list *args )
@@ -7405,7 +7405,7 @@ static void scanForGenerics( PSTK_CTL *stk, TYPE type )
             type = type->of;
             break;
         case TYP_CLASS:
-            if(( type->flag & ( TF1_UNBOUND | TF1_INSTANTIATION )) == 0 ) {
+            if( (type->flag & ( TF1_UNBOUND | TF1_INSTANTIATION )) == 0 ) {
                 return;
             }
             /* class was generated by a class template; check its arguments */
@@ -7907,12 +7907,12 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
         }
         switch( b_unmod_type->id ) {
         case TYP_CLASS:
-            if( is_function && !( u_unmod_type->flag & TF1_UNBOUND ) ) {
+            if( is_function && (u_unmod_type->flag & TF1_UNBOUND) == 0 ) {
                 break;
             }
 
             if( compareClassTypes( b_unmod_type, u_unmod_type, data ) ) {
-                if( u_allow_base && u_unmod_type->flag & TF1_UNBOUND ) {
+                if( u_allow_base && (u_unmod_type->flag & TF1_UNBOUND) ) {
                     b_unmod_type = ScopeFindBoundBase( b_unmod_type, u_unmod_type );
                     if( b_unmod_type != NULL ) {
                         if( compareClassTypes( b_unmod_type, u_unmod_type, data ) ) {
@@ -9361,7 +9361,7 @@ static void relocType( void *e, carve_walk_base *d )
     if( s->id == TYP_FREE ) {
         return;
     }
-    if( ! ( s->dbgflag & TF2_DBG_IN_PCH ) ) {
+    if( (s->dbgflag & TF2_DBG_IN_PCH) == 0 ) {
         return;
     }
     pch_type_index = *((unsigned*)(ed->curr));

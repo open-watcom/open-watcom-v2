@@ -138,7 +138,7 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
         } else {
             sym = ClassFunMakeAddressable( sym );
             sym->flag |= SF_ADDR_TAKEN;
-            if( ! ( info->acc & TSA_NO_REF ) ) {
+            if( (info->acc & TSA_NO_REF) == 0 ) {
                 if( acc_var & info->acc ) {
                     sym = SymMarkRefed( sym );
                 }
@@ -158,7 +158,7 @@ static void typeSigAccess(      // HANDLE ACCESS FOR TYPE-SIGNATURE
 {
     ACCINFO info;               // - access information
 
-    if( !( TSA_GEN & acc ) ) {
+    if( (TSA_GEN & acc) == 0 ) {
         info.acc = acc;
         info.type = StructType( sig->type );
         if( info.type != NULL ) {

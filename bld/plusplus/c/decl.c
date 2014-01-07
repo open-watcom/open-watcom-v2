@@ -149,7 +149,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
         /* "int C::a;" instead of "static int a;" in "class C" */
         CompFlags.external_defn_found = TRUE;
         if( SymIsInitialized( sym ) ) {
-            if( ! ( sym->flag & SF_IN_CLASS_INIT ) ) {
+            if( (sym->flag & SF_IN_CLASS_INIT) == 0 ) {
                 if( ! TemplateMemberCanBeIgnored() ) {
                     CErr2p( ERR_CANNOT_INIT_AGAIN, sym );
                 }
@@ -307,7 +307,7 @@ void DeclDefaultStorageClass( SCOPE scope, SYMBOL sym )
     }
     if( scope->id == SCOPE_FILE ) {
         fn_type = FunctionDeclarationType( sym->sym_type );
-        if( fn_type != NULL && ( fn_type->flag & TF1_INLINE ) != 0 ) {
+        if( fn_type != NULL && (fn_type->flag & TF1_INLINE) != 0 ) {
             handleInlineFunction( sym );
         }
     }
@@ -652,8 +652,8 @@ static bool combinableSyms( SYMBOL prev, SYMBOL curr, prev_sym_adjust *adjust, t
             ret = FALSE;
         }
     }
-    if( ret && ( prev_flags & TF1_BASED ) != TF1_NULL ) {
-        if((( prev_flags ^ curr_flags ) & TF1_BASED ) == TF1_NULL ) {
+    if( ret && ( prev_flags & TF1_BASED ) != 0 ) {
+        if((( prev_flags ^ curr_flags ) & TF1_BASED ) == 0 ) {
             if( ! TypeBasesEqual( prev_flags, prev_base, curr_base ) ) {
                 prevCurrErr( ERR_CONFLICTING_MODIFIERS, prev, curr );
                 ret = FALSE;
@@ -735,8 +735,8 @@ static SYMBOL combineFunctions( SYMBOL prev_fn, SYMBOL curr_fn )
             flag.check_bases = FALSE;
         }
     }
-    if( flag.check_bases && ( prev_flags & TF1_BASED ) != TF1_NULL ) {
-        DbgAssert((( prev_flags ^ curr_flags ) & TF1_BASED ) == TF1_NULL );
+    if( flag.check_bases && ( prev_flags & TF1_BASED ) != 0 ) {
+        DbgAssert( (( prev_flags ^ curr_flags ) & TF1_BASED ) == 0 );
         if( ! TypeBasesEqual( prev_flags, prev_base, curr_base ) ) {
             prevCurrErr( ERR_CONFLICTING_MODIFIERS, prev_fn, curr_fn );
             curr_flags = prev_flags;

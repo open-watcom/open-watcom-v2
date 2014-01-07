@@ -590,7 +590,7 @@ static void moveAhead           // MOVES TYPE_FLAGS AHEAD ONE LEVEL
     if( tf->id != TYP_ARRAY ) {
         tf->cv = TF1_NULL;
     }
-    tf->cv |= TF1_EXT_CV   & tf->object;
+    tf->cv |= TF1_EXT_CV & tf->object;
     tf->id  = tf->type->id;
     tf->ext = TF1_EXT_ATTR & tf->object;
 }
@@ -733,17 +733,14 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                     info->mismatch = src.cv & ~both;
                 }
             }
-            if( const_always
-             && ! ( tgt.cv & TF1_CONST ) ) {
+            if( const_always && (tgt.cv & TF1_CONST) == 0 ) {
                 const_always = FALSE;
             }
         }
         if( src.type == tgt.type ) {
             if( src.ext == tgt.ext ) {
                 if( TYP_FUNCTION != src.id
-                 || ( (TF1_MEM_MODEL & src.object)
-                    ==(TF1_MEM_MODEL & tgt.object) )
-                  ) {
+                 || ( (TF1_MEM_MODEL & src.object) == (TF1_MEM_MODEL & tgt.object) ) ) {
                     retn = TRUE;
                     break;
                 }
@@ -830,11 +827,11 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             break;
           case CTD_LEFT :
             if( info->to_derived
-             || ( info->from_void && ! info->to_void ) ) {
+             || ( info->from_void && !info->to_void ) ) {
                 info->implicit_cast_ok = FALSE;
                 info->const_cast_ok = FALSE;
             } else if( info->to_base
-                    || ( info->to_void & ! info->from_void )
+                    || ( info->to_void && !info->from_void )
                     || info->diff_mptr_class ) {
                 info->const_cast_ok = FALSE;
             }
@@ -926,7 +923,7 @@ static void checkFuncLinkages(  // WARN IF INCOMPATIBLE FUNC. LINKAGES
                 PTreeWarnExpr( expr, WARN_CNV_FUNC_PRAGMA );
             }
             if( pted_arg->flag & TF1_PLUSPLUS ) {
-                if( ! ( pted_pro->flag & TF1_PLUSPLUS ) ) {
+                if( (pted_pro->flag & TF1_PLUSPLUS) == 0 ) {
                     checkClassValue( pted_pro
                                    , expr
                                    , WARN_CNV_PRO_CLASS_VALUE );
@@ -1320,8 +1317,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
             tgt_type = TypePointedAtModified( tgt_type );
             TypeModExtract( tgt_type, &flags_tgt, &baser, TC1_NOT_MEM_MODEL );
             tgt_type = TypePointedAt( expr_type, &flags_src );
-            flags_tgt = ( flags_tgt & TF1_MEM_MODEL ) |
-                        ( flags_src & ~ TF1_MEM_MODEL );
+            flags_tgt = ( flags_tgt & TF1_MEM_MODEL ) | ( flags_src & ~TF1_MEM_MODEL );
             tgt_type = MakeBasedModifierOf( tgt_type, flags_tgt, baser );
             if( is_ref ) {
                 tgt_type = MakeReferenceTo( tgt_type );
