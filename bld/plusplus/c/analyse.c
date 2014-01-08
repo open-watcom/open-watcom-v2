@@ -1473,10 +1473,7 @@ void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
                     ret = CMP_FALSE;
                 }
             }
-            if( PTreeWarnExpr( expr,
-                               ret == CMP_TRUE ?
-                               WARN_ALWAYS_TRUE :
-                               WARN_ALWAYS_FALSE ) & MS_PRINTED ) {
+            if( PTreeWarnExpr( expr, ret == CMP_TRUE ? WARN_ALWAYS_TRUE : WARN_ALWAYS_FALSE ) & MS_PRINTED ) {
                 // msg was issued so give informational messages
                 if( NumSign(op1_size) ) { // signed
                     sprintf( num1, "%lld", low );
@@ -2106,7 +2103,7 @@ static bool analyseStaticFunc(  // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
         SYMBOL funsym = func->u.symcg.symbol;
 //      funsym->flag |= SF_REFERENCED;
         if( SymIsThisFuncMember( funsym ) ) {
-            if( ( func->flags & PTF_COLON_QUALED ) || ( resolution & ADDRFN_MEMBPTR_KLUGE ) ) {
+            if( (func->flags & PTF_COLON_QUALED) || (resolution & ADDRFN_MEMBPTR_KLUGE) ) {
                 retn = TRUE;
             } else {
                 PTreeErrorExprSymInf( *root
@@ -2212,7 +2209,7 @@ static bool analyseAddrOfFunc(  // ANALYSE '&func'
             if( resolveActualAddrOf( fnode ) ) {
                 SYMBOL sym;     // - symbol for function
                 sym =  fnode->u.symcg.symbol;
-                if( ( fnode->flags & PTF_COLON_QUALED ) && ( SymIsThisFuncMember( sym ) ) ) {
+                if( (fnode->flags & PTF_COLON_QUALED) && ( SymIsThisFuncMember( sym ) ) ) {
                     expr->type = MakeMemberPointerTo( SymClass( sym ), fnode->type );
                     expr->flags |= PTF_PTR_NONZERO;
                     retn = TRUE;
@@ -2707,18 +2704,12 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         if( PT_BINARY == orig->op ) {
             right = PTreeOpRight( orig );
             index_right = classify_operand( right );
-            orig->flags |=
-                ( ( PTreeEffFlags( left ) | PTreeEffFlags( right ) )
-                & ( PTF_SIDE_EFF | PTF_MEANINGFUL )
-                );
+            orig->flags |= (PTreeEffFlags( left ) | PTreeEffFlags( right )) & (PTF_SIDE_EFF | PTF_MEANINGFUL);
         } else {
             right = NULL;
             orig->u.subtree[1] = NULL;      // robustness addition
             index_right = index_left;
-            orig->flags |=
-                ( ( PTreeEffFlags( left ) )
-                & ( PTF_SIDE_EFF | PTF_MEANINGFUL )
-                );
+            orig->flags |= PTreeEffFlags( left ) & (PTF_SIDE_EFF | PTF_MEANINGFUL);
         }
         expr = orig;
     }
@@ -3534,16 +3525,14 @@ start_opac_string:
           } continue;
           case RESULT_COMMA :
             warnMeaningfulSideEffect( expr->u.subtree[0] );
-            if( NodeIsUnaryOp( expr->u.subtree[0]
-                             , CO_BITFLD_CONVERT ) ) {
+            if( NodeIsUnaryOp( expr->u.subtree[0], CO_BITFLD_CONVERT ) ) {
                 left = NodeRvalueLeft( expr );
             }
             right = expr->u.subtree[1];
             if( NodeIsUnaryOp( right, CO_BITFLD_CONVERT ) ) {
                 expr->u.subtree[1] = right->u.subtree[0];
                 expr = AnalyseOperator( expr );
-                right->flags |= expr->flags
-                              & ( PTF_SIDE_EFF | PTF_MEANINGFUL );
+                right->flags |= expr->flags & (PTF_SIDE_EFF | PTF_MEANINGFUL);
                 right->u.subtree[0] = expr;
                 expr = right;
                 type = expr->type;
@@ -3622,9 +3611,7 @@ start_opac_string:
             expr->flags |= PTF_LVALUE;
             continue;
           case RESULT_INDIRECT :
-            expr->flags |= PTF_LVALUE
-                         | PTF_MEANINGFUL
-                         | ( PTF_PTR_NONZERO & left->flags );
+            expr->flags |= PTF_LVALUE | PTF_MEANINGFUL | (PTF_PTR_NONZERO & left->flags);
             continue;
           case RESULT_BARE :
             expr->flags |= PTF_SIDE_EFF | PTF_MEANINGFUL;

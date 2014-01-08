@@ -269,8 +269,7 @@ TYPE TypeRebuildPcPtr(          // REBUILD PC-PTR TYPE
     type_flag old_flags,        // - old flags
     type_flag new_flags )       // - new flags
 {
-    return makePointerToModType( type
-                               , ( old_flags & ~TF1_MEM_MODEL ) | new_flags );
+    return makePointerToModType( type, (old_flags & ~TF1_MEM_MODEL) | new_flags );
 }
 
 

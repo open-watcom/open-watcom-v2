@@ -386,7 +386,7 @@ static CAST_RESULT findConvRtn   // LOCATE UDC FOR CONVERSION
                            , &fnov_list
                            , &ctl->fnov_diag );
         if( rank == OV_RANK_NO_MATCH
-         && ! ( ctl->tgt.ptedflags & TF1_CONST )
+         && (ctl->tgt.ptedflags & TF1_CONST) == 0
          && ! ( ( ctl->clscls_explicit || ctl->clscls_static )
              && ctl->src.reference )
          && NULL != ctl->tgt.pted
@@ -1327,8 +1327,7 @@ static PTREE doReintPtrToArith  // DO REINTERPRET: PTR -> ARITH
                 TOKEN_LOCN locn;
                 PTreeExtractLocn( ctl->expr, &locn );
                 stripOffCastOrig( ctl );
-                argument = MakeModifiedType( GetBasicType( TYP_VOID )
-                                           , TF1_FAR );
+                argument = MakeModifiedType( GetBasicType( TYP_VOID ), TF1_FAR );
                 argument = MakePointerTo( argument );
                 expr = NodeConvert( argument, ctl->expr );
                 argument = GetBasicType( TYP_ULONG );
@@ -1950,8 +1949,7 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
         } else {
             expr = ctl->expr;
             if( NodeIsBinaryOp( expr, CO_CONVERT ) ) {
-                expr->flags |= expr->u.subtree[1]->flags
-                                & ~( PTF_NEVER_PROPPED );
+                expr->flags |= expr->u.subtree[1]->flags & ~( PTF_NEVER_PROPPED );
                 fold_it = TRUE;
                 has_convert = TRUE;
                 expr = expr->u.subtree[1];

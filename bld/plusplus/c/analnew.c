@@ -123,7 +123,7 @@ static SEARCH_RESULT *findNewDelOp( SCOPE search_scope, NAME name )
 }
 
 static SYMBOL accessDelete(     // ACCESS DELETE OPERATOR SYMBOL
-    unsigned delete_op,         // - CO_DELETE or CO_DELETE_ARRAY
+    CGOP delete_op,             // - CO_DELETE or CO_DELETE_ARRAY
     SCOPE scope,                // - scope to search
     unsigned *num_args,         // - fill in # of arguments
     SEARCH_RESULT **presult )   // - fill in SEARCH_RESULT (if req'd)
@@ -165,7 +165,7 @@ static SYMBOL checkDeleteResult( // CHECK ACCESS FOR DELETE SEARCH_RESULT
 
 
 static SYMBOL checkDeleteAccess( // CHECK ACCESS OF DELETE OPERATOR
-    unsigned delete_op,         // - CO_DELETE or CO_DELETE_ARRAY
+    CGOP delete_op,             // - CO_DELETE or CO_DELETE_ARRAY
     SCOPE scope,                // - scope for operator
     unsigned *num_args,         // - number of arguments
     TOKEN_LOCN *locn,           // - error location
@@ -285,7 +285,7 @@ static PTREE buildNewCall(      // BUILD CALL TO NEW OPERATOR
     TYPE new_expr_type,         // - type of new'ed expression
     unsigned count_placement,   // - # arguments
     TOKEN_LOCN* err_locn,       // - error location
-    unsigned operator_code )    // - operator code
+    CGOP operator_code )        // - operator code
 {
     arg_list *alist;            // - arguments structure
     PTREE *ptlist;              // - parse tree for arguments
@@ -662,9 +662,7 @@ static PTREE deleteCheckForNULL( PTREE value, PTREE t_expr )
 
 static PTREE setDeleteType( PTREE expr, TOKEN_LOCN *locn )
 {
-    expr = NodeConvertFlags( GetBasicType( TYP_VOID )
-                           , expr
-                           , PTF_MEANINGFUL | PTF_SIDE_EFF );
+    expr = NodeConvertFlags( GetBasicType( TYP_VOID ), expr, PTF_MEANINGFUL | PTF_SIDE_EFF );
     PTreeSetLocn( expr, locn );
     return( expr );
 }
@@ -878,8 +876,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     // 'expr' must already be adjusted down by sizeof(unsigned)
                     dup2 = expr;
                     expr = NodeDupExpr( &dup2 );
-                    expr = NodeConvert( MakeReferenceTo( GetBasicType( TYP_UINT ) )
-                                      , expr );
+                    expr = NodeConvert( MakeReferenceTo( GetBasicType( TYP_UINT ) ), expr );
                     args = NodeBinary( CO_TIMES, NodeRvalue( expr ), args );
                     offset_type = args->u.subtree[1]->type;
                     args->type = offset_type;

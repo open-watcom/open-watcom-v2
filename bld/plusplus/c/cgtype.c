@@ -541,16 +541,10 @@ unsigned CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
 cg_type CgTypeOffset(          // GET CODEGEN TYPE FOR AN OFFSET
     void )
 {
-#if _INTEL_CPU
-  #if _CPU == 386
-    return TY_UINT_4;
-  #else
+#if _CPU == 8086
     return TY_UINT_2;
-  #endif
-#elif _CPU == _AXP
-    return TY_UINT_4;
 #else
-    #error bad target
+    return TY_UINT_4;
 #endif
 }
 

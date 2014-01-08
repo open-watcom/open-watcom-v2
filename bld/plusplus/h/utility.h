@@ -97,7 +97,7 @@ NAME CppNameTypeSig(            // NAME OF TYPE SIGNATURE
     TYPE type )                 // - the type
 ;
 NAME CppOperatorName(           // GET C++ OPERATOR NAME
-    unsigned op )               // - operator number
+    CGOP op )                   // - operator number
 ;
 NAME CppSpecialName(            // CREATE NAME OF SPECIAL INTERNAL ID
     unsigned index )            // - index of special name

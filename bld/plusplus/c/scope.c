@@ -1146,7 +1146,7 @@ static SCOPE findBlockScope( SCOPE scope )
 
 static void diagnoseSym( SYMBOL sym )
 {
-    if( sym->flag & ( SF_REFERENCED | SF_NO_REF_WARN ) ) {
+    if( sym->flag & (SF_REFERENCED | SF_NO_REF_WARN) ) {
         return;
     }
     if( SymIsInline( sym ) ) {
@@ -1158,8 +1158,7 @@ static void diagnoseSym( SYMBOL sym )
     if( sym->id == SC_DEFAULT ) {
         return;
     }
-    if( SymIsFunction( sym )
-     && sym->flag & SF_ADDR_TAKEN ) {
+    if( SymIsFunction( sym ) && (sym->flag & SF_ADDR_TAKEN) ) {
         return;
     }
     if( SymIsAnonymous( sym ) ) {
@@ -2162,11 +2161,11 @@ bool ScopeCarefulInsert( SCOPE scope, SYMBOL *psym, NAME name )
     decl_sym = DeclCheck( sym_name, sym, &decl_status );
     if( decl_sym != sym ) {
         /* either an error occurred (decl_sym==NULL) or we should use decl_sym*/
-        if(( decl_status & DC_KEEP_SYMBOL ) == 0 ) {
+        if( (decl_status & DC_KEEP_SYMBOL) == 0 ) {
             FreeSymbol( sym );
         }
         *psym = decl_sym;
-        return( ( decl_status & DC_REDEFINED ) != 0 );
+        return( (decl_status & DC_REDEFINED) != 0 );
     }
     addOrdered( scope, sym );
     if( _IsClassScope( scope ) ) {
@@ -2653,7 +2652,7 @@ static walk_status fillLeaps( BASE_STACK *top, void *parm )
     }
     location.delta = 0;
     access_flags = findPtrOffset( top, data->start, &location );
-    if(( access_flags & ( IN_PRIVATE | IN_PROTECTED )) == 0 ) {
+    if( (access_flags & (IN_PRIVATE | IN_PROTECTED)) == 0 ) {
         leap->control |= RL_PUBLIC;
     }
     if( location.delta != location.exact_delta ) {
@@ -3316,7 +3315,7 @@ static SYMBOL foundUserConv( lookup_walk *data, SYMBOL syms )
             curr_this_qualifier &= reqd_this_qualifier;
             if( curr_this_qualifier == reqd_this_qualifier ) {
                 if( data->virtual_override ) {
-                    if(( fn_type->flag & TF1_VIRTUAL ) != 0 ) {
+                    if( (fn_type->flag & TF1_VIRTUAL) != 0 ) {
                         return( sym );
                     }
                 } else {
@@ -4636,7 +4635,7 @@ static bool searchScope( lookup_walk *data, SCOPE scope )
 
     DbgAssert( data->is_special == NULL || data->check_special );
     ExtraRptIncrementCtr( scopes_searched );
-    if(( _ScopeMask( scope->id ) & data->consider_mask ) == 0 ) {
+    if( (_ScopeMask( scope->id ) & data->consider_mask) == 0 ) {
         return( FALSE );
     }
     if( _IsClassScope( scope ) ) {
@@ -4939,7 +4938,7 @@ CLASS_VBTABLE *ScopeCollectVBTable( SCOPE scope, scv_control control )
     data.tables = NULL;
     data.start = scope;
     data.already_done = FALSE;
-    if(( control & SCV_CTOR ) != 0 ) {
+    if( (control & SCV_CTOR) != 0 ) {
         info = ScopeClass( scope )->u.c.info;
         if( info->vbtable_done ) {
             data.already_done = TRUE;
@@ -5433,7 +5432,7 @@ static void scanForVFNs( SYMBOL_NAME sym_name, void *_data )
     RingIterBeg( sym_name->name_syms, sym ) {
         fn_type = FunctionDeclarationType( sym->sym_type );
         if( fn_type == NULL ) break;
-        if(( fn_type->flag & TF1_VIRTUAL ) == 0 ) {
+        if( (fn_type->flag & TF1_VIRTUAL) == 0 ) {
             /* skip non-virtual functions */
             continue;
         }
@@ -5580,7 +5579,7 @@ CLASS_VFTABLE *ScopeCollectVFTable( SCOPE scope, scv_control control )
         }
         info->vftable_done = TRUE;
     }
-    if(( control & SCV_NO_DIAGNOSE ) == 0 ) {
+    if( (control & SCV_NO_DIAGNOSE) == 0 ) {
         data.OK_to_diagnose = TRUE;
     }
     VstkOpen( &data.disambig, sizeof( SCOPE ), 8 );
@@ -7541,7 +7540,7 @@ static void saveSymbol( void *e, carve_walk_base *d )
         s->u.type = TypeGetIndex( save_u_type );
         break;
     default:
-        if( s->flag & ( SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS ) ) {
+        if( s->flag & (SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS) ) {
             save_u_sym = s->u.sym;
             s->u.sym = SymbolGetIndex( save_u_sym );
         } else if( s->flag & SF_CONSTANT_INT64 ) {
@@ -7582,8 +7581,8 @@ static void saveSymbol( void *e, carve_walk_base *d )
         s->u.type = save_u_type;
         break;
     default:
-        DbgVerify( SymIsThunk( s ) == (( s->flag & SF_ADDR_THUNK ) != 0 ), "SF_ADDR_THUNK not set properly" );
-        if( s->flag & ( SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS ) ) {
+        DbgVerify( SymIsThunk( s ) == ( (s->flag & SF_ADDR_THUNK) != 0 ), "SF_ADDR_THUNK not set properly" );
+        if( s->flag & (SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS) ) {
             s->u.sym = save_u_sym;
         } else if( s->flag & SF_CONSTANT_INT64 ) {
             s->u.pval = save_con;
@@ -7811,7 +7810,7 @@ static void readSymbols( void )
             sym->u.type = TypeMapIndex( sym->u.type );
             break;
         default:
-            if( sym->flag & ( SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS ) ) {
+            if( sym->flag & (SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS) ) {
                 sym->u.sym = SymbolMapIndex( sym->u.sym );
             } else if( sym->flag & SF_CONSTANT_INT64 ) {
                 sym->u.pval = ConstantPoolMapIndex( sym->u.pval );

@@ -760,9 +760,9 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
     NAME name,                  // - name to find
     CGOP *oper )                // - index found
 {
-    unsigned index;
+    CGOP index;
 #ifndef NDEBUG
-    unsigned i;
+    CGOP i;
 #endif
 
     ExtraRptIncrementCtr( ctr_lookups );
@@ -770,7 +770,7 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
         if( nameHasPrefix( name, IN_OP_PREFIX ) ) {
             // name is an operator
             ExtraRptIncrementCtr( ctr_lookups_slow );
-            index = NameHash( name ) - NameHash( operatorNames[ 0 ] );
+            index = (CGOP)( NameHash( name ) - NameHash( operatorNames[ 0 ] ) );
 #ifndef NDEBUG
             operatorNames[ MAX_OP_NAMES ] = name;
             i = 0;
@@ -789,15 +789,15 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
     #endif
             DbgAssert( i == index );
 #endif
-            *oper = (CGOP)index;
+            *oper = index;
             return( TRUE );
         }
     }
     return( FALSE );
 }
 
-NAME CppOperatorName(           // GET FUNCTION NAME FOR AN OPERATOR
-    unsigned oper )             // - operator
+NAME CppOperatorName(       // GET FUNCTION NAME FOR AN OPERATOR
+    CGOP oper )             // - operator
 {
     DbgVerify( oper < MAX_OP_NAMES, "Illegal operator name" );
     return( operatorNames[oper] );

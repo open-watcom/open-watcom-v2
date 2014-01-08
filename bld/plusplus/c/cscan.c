@@ -67,29 +67,9 @@ ExtraRptCtr( nextTokenNormal );
 ExtraRptCtr( lookPastRewrite );
 
 typedef enum {
-    SCAN_NAME = 0,      // identifier
-    SCAN_WIDE,          // L"abc" or L'a' or Lname
-    SCAN_NUM,           // number that starts with a digit
-    SCAN_DELIM1,        // single character delimiter
-    SCAN_DELIM12,       // @ or @@ token
-    SCAN_DELIM12EQ,     // @, @@, or @= token
-    SCAN_DELIM12EQ2EQ,  // @, @@, @=, or @@= token
-    SCAN_DELIM1EQ,      // @ or @= token
-    SCAN_SLASH,         // /, /=, // comment, or /* comment */
-    SCAN_LT,            // <, <=, <<, <<=, <%, <:
-    SCAN_PERCENT,       // %, %=, %>, %:, %:%:
-    SCAN_COLON,         // :, ::, or :>
-    SCAN_MINUS,         // -, -=, --, ->, or ->*
-    SCAN_FLOAT,         // .
-    SCAN_STRING,        // "string"
-    SCAN_STRING2,       // "string" continued
-    SCAN_LSTRING2,      // L"string" continued
-    SCAN_CHARCONST,     // 'a'
-    SCAN_CR,            // '\r'
-    SCAN_NEWLINE,       // '\n'
-    SCAN_WHITESPACE,    // all whitespace
-    SCAN_INVALID,       // all other characters
-    SCAN_EOF,           // end-of-file
+    #define pick(e,p) e,
+    #include "_scnclas.h"
+    #undef pick
     SCAN_MAX
 } scan_class;
 
@@ -1663,29 +1643,9 @@ static TOKEN scanEof( int expanding )
 }
 
 static TOKEN (*scanFunc[])( int ) = {
-    scanName,
-    scanWide,
-    scanNum,
-    scanDelim1,
-    scanDelim12,
-    scanDelim12EQ,
-    scanDelim12EQ2EQ,
-    scanDelim1EQ,
-    scanSlash,
-    scanLT,
-    scanPercent,
-    scanColon,
-    scanMinus,
-    scanFloat,
-    scanString,
-    scanStringContinue,
-    scanLStringContinue,
-    scanCharConst,
-    scanCarriageReturn,
-    scanNewline,
-    scanWhiteSpace,
-    scanInvalid,
-    scanEof,
+    #define pick(e,p) p,
+    #include "_scnclas.h"
+    #undef pick
 };
 
 #define dispatchFunc( _ex ) (scanFunc[ClassTable[CurrChar]]( (_ex) ))

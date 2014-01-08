@@ -407,8 +407,7 @@ PTREE NodeConvert(              // MAKE A CONVERSION NODE IF REQ'D
     PTREE expr )                // - expression to be converted
 {
     if( ( ! TypesIdentical( NodeType( expr ), type )
-      ||( ( expr->flags & PTF_LVALUE )
-        &&( NULL == TypeReference( type ) ) ) ) ) {
+      ||( ( expr->flags & PTF_LVALUE ) && ( NULL == TypeReference( type ) ) ) ) ) {
         expr = nodeMakeConvert( type, expr );
     }
     return expr;
@@ -526,7 +525,7 @@ PTREE NodeRemoveCasts(          // REMOVE CASTING FROM NODE
 
         while( ( node->op == PT_BINARY )
             && ( node->cgop == CO_COMMA )
-            && !( node->u.subtree[0]->flags & PTF_SIDE_EFF ) ) {
+            && (node->u.subtree[0]->flags & PTF_SIDE_EFF) == 0 ) {
 
             node = node->u.subtree[1];
         }
@@ -1031,8 +1030,7 @@ PTREE NodeRvalue(               // GET RVALUE, IF LVALUE
             new_left = NodeRvalueLeft( colon );
             new_right = NodeRvalueRight( colon );
             colon->flags &= ~ PTF_LVALUE;
-            mod_flags = ( new_right->flags | new_left->flags )
-                      & ( PTF_FETCH & ~ PTF_MEANINGFUL );
+            mod_flags = (new_right->flags | new_left->flags) & (PTF_FETCH & ~ PTF_MEANINGFUL);
             colon->flags |= mod_flags;
             curr->flags |= mod_flags;
             curr->flags &= ~ PTF_LVALUE;
@@ -1400,7 +1398,7 @@ PTREE NodeCommaIfSideEffect(    // MAKE A COMMA PTREE NODE (IF LHS HAS side-effe
     } else if( right == NULL ) {
         node = left;
     } else {
-        if(( left->flags & PTF_SIDE_EFF ) != 0 ) {
+        if( (left->flags & PTF_SIDE_EFF) != 0 ) {
             node = NodeBinary( CO_COMMA, left, right );
             node = nodeCommaPropogate( node );
         } else {
@@ -1583,9 +1581,7 @@ PTREE NodeFetchReference(       // FETCH A REFERENCE, IF REQ'D
     if( expr->op == PT_SYMBOL
      && ( type_refd != NULL || OMR_CLASS_REF == ObjModelArgument( type ) )
      && SymIsArgument( expr->u.symcg.symbol )
-     && ( TF1_PLUSPLUS
-        & FunctionDeclarationType( ScopeFunctionInProgress()->sym_type )
-          ->flag ) ) {
+     && (TF1_PLUSPLUS & FunctionDeclarationType( ScopeFunctionInProgress()->sym_type )->flag) ) {
         expr = nodeDoFetchRef( expr );
         if( type_refd == NULL ) {
             expr->type = type;
@@ -1608,7 +1604,7 @@ PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
 {
     PTREE expr;                 // - created expression
 
-    DbgVerify( tgt->flags & PTF_LVALUE, "NodeCopyClassObject to non-lvalue" );
+    DbgVerify( (tgt->flags & PTF_LVALUE), "NodeCopyClassObject to non-lvalue" );
     tgt->flags |= PTF_MEMORY_EXACT;
     expr = NodeBinary( CO_COPY_OBJECT, tgt, src );
     expr->type = tgt->type;
@@ -1780,9 +1776,7 @@ TYPE NodeType(                  // GET TYPE FOR A NODE
     TYPE type;                  // - type for the node
 
     type = node->type;
-    if( ( node->flags & PTF_LVALUE )
-      &&( NULL != type )
-      &&( NULL == TypeReference( type ) ) ) {
+    if( (node->flags & PTF_LVALUE) && ( NULL != type ) && ( NULL == TypeReference( type ) ) ) {
         type = MakeReferenceTo( type );
     }
     return type;

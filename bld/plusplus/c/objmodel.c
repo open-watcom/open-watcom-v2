@@ -48,8 +48,7 @@ OMR ObjModelFunctionReturn(     // DETERMINE TYPE OF RETURN FOR OBJECT MODEL
         retn = OMR_VOID;
         break;
       case TYP_CLASS :
-        if( fun_type->flag & TF1_PLUSPLUS
-         && ClassParmIsRef( StructType( fun_type->of ) ) ) {
+        if( (fun_type->flag & TF1_PLUSPLUS) && ClassParmIsRef( StructType( fun_type->of ) ) ) {
             retn = OMR_CLASS_REF;
         } else {
             retn = OMR_CLASS_VAL;

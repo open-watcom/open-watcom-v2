@@ -347,7 +347,7 @@ static void emitDtorMarking(    // EMIT DTOR MARKING OF FOR SYMBOL
                 CgFrontRetnOptEnd();
             }
         } else if( SymIsTemporary( sym )
-                && ! ( expr->flags & PTF_BLOCK_INIT ) ) {
+                && (expr->flags & PTF_BLOCK_INIT) == 0 ) {
             LabelTempDtored( expr->u.subtree[1], alias );
             CgFrontCodePtr( IC_DTOR_TEMP, alias );    // - temporary
             PtdDtorUseSym( expr, dtor );

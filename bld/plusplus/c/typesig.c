@@ -104,7 +104,7 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
 
     sym = *a_sym;
     if( acc_var & info->acc ) {
-        fill_out = info->acc & TSA_FILL_OUT;
+        fill_out = ( (info->acc & TSA_FILL_OUT) != 0 );
         if( fill_out ) {
             SetCurrScope(info->class_scope);
         } else {

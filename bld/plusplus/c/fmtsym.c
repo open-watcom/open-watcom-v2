@@ -74,9 +74,8 @@ static char *fmtSymCgop( CGOP number )
     return( name );
 }
 
-static void fmtSymFunction( SYMBOL sym, VBUF *prefix, VBUF *suffix,
-/*****************************************************************/
-    FMT_CONTROL control )
+static void fmtSymFunction( SYMBOL sym, VBUF *prefix, VBUF *suffix, FMT_CONTROL control )
+/***************************************************************************************/
 {
     unsigned num_def;
     TYPE fn_type;

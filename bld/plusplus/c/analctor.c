@@ -595,8 +595,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
                 args = SymFuncArgList( ctor );
                 this_type = base_type;
                 if( args->qualifier != 0 ) {
-                    this_type = MakeModifiedType( this_type
-                                                , args->qualifier );
+                    this_type = MakeModifiedType( this_type, args->qualifier );
                 }
                 if( NULL == PointerTypeEquivalent( this_node->type ) ) {
                     this_type = MakeReferenceTo( this_type );

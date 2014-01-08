@@ -334,10 +334,7 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
                   ||( ( def_flags & TF1_HUGE )
                     &&( act_flags != TF1_HUGE ) )
                   ) {
-                    type = MakeModifiedType( base_type
-                                           , ( arg_flags
-                                             & ~TF1_MEM_MODEL )
-                                           | def_flags );
+                    type = MakeModifiedType( base_type, (arg_flags & ~TF1_MEM_MODEL) | def_flags );
                     type = MakePointerTo( type );
                     cnv = CastImplicit( arg->u.subtree[1]
                                       , type
@@ -968,8 +965,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                   &&( ! SymIsDtor( orig ) )
                   &&( CNV_OK != AnalysePtrCV
                                 ( this_node
-                                , TypeThisSymbol( orig
-                                                , this_node->flags & PTF_LVALUE )
+                                , TypeThisSymbol( orig, (this_node->flags & PTF_LVALUE) != 0 )
                                 , NodeType( this_node )
                                 , CNV_FUNC_THIS ) ) ) {
                     PTreeErrorNode( expr );
