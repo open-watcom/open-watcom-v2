@@ -2819,7 +2819,7 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
             result = analyseImplicitPtrToPtr( &ctl );
             break;
           case  6 : // arith,enum->ptr
-            result = implicitArithToPtr( & ctl );
+            result = implicitArithToPtr( &ctl );
             break;
           case  7 : // arith -> enum
             if( ConvCtlWarning( &ctl, ERR_BAD_ENUM_ASSIGNMENT ) ) {

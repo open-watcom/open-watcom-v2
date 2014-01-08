@@ -799,7 +799,7 @@ static int templateScopedChain( PARSE_STACK *state, bool special_typename )
     scope_tree->type = template_class_type;
     if( template_class_type != NULL ) {
         scope_tree->u.id.scope = template_class_type->u.c.scope;
-        undefined_scope = ( template_class_type->flag & TF1_UNBOUND );
+        undefined_scope = ( (template_class_type->flag & TF1_UNBOUND) != 0 );
     } else {
         undefined_scope = TRUE;
     }

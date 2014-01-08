@@ -310,7 +310,7 @@ bool TypeIsBasedPtr(            // SEE IF A PTR TO BASED ITEM
     if( NULL == TypePointedAt( type, &flags ) ) {
         retn = FALSE;
     } else {
-        retn = flags & TF1_BASED;
+        retn = ( (flags & TF1_BASED) != 0 );
     }
     return retn;
 }

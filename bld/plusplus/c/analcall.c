@@ -606,12 +606,10 @@ static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
     this_type = TypeThisForCall( expr, sym );
     /* virtual calls don't have to check for NULL pointers when they convert */
     expr->flags |= PTF_PTR_NONZERO;
-    exact_call = expr->flags & PTF_MEMORY_EXACT;
+    exact_call = ( (expr->flags & PTF_MEMORY_EXACT) != 0 );
     NodeConvertToBasePtr( this_node, this_type, result, TRUE );
     sym = SymDefaultBase( sym );
-    if( ( SymIsVirtual( sym ) )
-      &&( ! ( (*routine)->flags & PTF_COLON_QUALED ) )
-      &&( ! exact_call ) ) {
+    if( SymIsVirtual( sym ) && ((*routine)->flags & PTF_COLON_QUALED) == 0 && !exact_call ) {
         expr = AccessVirtualFnAddress( NodeDupExpr( this_node )
                                      , result
                                      , sym );

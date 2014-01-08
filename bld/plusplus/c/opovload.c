@@ -220,7 +220,7 @@ static bool initOLINF(          // INITIALIZE OVERLOAD INFORMATION
         scov = FALSE;
     } else {
         mask = opr_masks[ cnv - 1 ];
-        scov = ( mask & OPM_NOAMB ) ? FALSE : TRUE;
+        scov = ( (mask & OPM_NOAMB) == 0 );
     }
     olinf->mask = mask;
     olinf->scalar_overloadable = FALSE;

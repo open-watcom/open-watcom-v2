@@ -70,6 +70,11 @@
 
 #define zero_table( table ) memset( table, 0, sizeof( table ) )
 
+enum {
+    FILLER_TF1_CONST  = 0x01,
+    FILLER_ALLOW_BASE = 0x02
+};
+
 TYPE TypeError;
 TYPE TypeCache[ TYPC_LAST ];
 
@@ -7037,7 +7042,7 @@ bool TypeIsConst( TYPE type )
     type_flag flags;
 
     TypeModFlags( type, &flags );
-    return( flags & TF1_CONST );
+    return( (flags & TF1_CONST) != 0 );
 }
 
 bool TypeHasEllipsisArg( TYPE type )
@@ -7741,11 +7746,8 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
              * cv-qualifier information down the stack. We do this by
              * using the "filler" field in the PTREE struct.
              */
-            u_cv_mask = (*u_top)->filler & TF1_CONST;
-            if( u_cv_mask & TF1_CONST ) {
-                u_cv_mask |= TF1_VOLATILE;
-            }
-            u_allow_base = ( (*u_top)->filler & 0x80 ) != 0;
+            u_cv_mask = ((*u_top)->filler & FILLER_TF1_CONST) ? TF1_CONST | TF1_VOLATILE : 0;
+            u_allow_base = ( ((*u_top)->filler & FILLER_ALLOW_BASE) != 0 );
         }
 
         PTreeFree( *b_top );
@@ -7936,11 +7938,10 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
             }
             PstkPush( &(data->without_generic), PTreeType( b_unmod_type->of ) );
             u_tree = PTreeType( u_unmod_type->of );
-            u_tree->filler = u_cv_mask & TF1_CONST;
-            if( ! flags.arg_1st_level ) {
-                u_tree->filler &= u_flags;
+            if( flags.arg_1st_level ) {
+                u_tree->filler = (u_cv_mask & TF1_CONST) ? (FILLER_TF1_CONST | FILLER_ALLOW_BASE): FILLER_ALLOW_BASE;
             } else {
-                u_tree->filler |= 0x80;
+                u_tree->filler = (u_cv_mask & u_flags & TF1_CONST) ? FILLER_TF1_CONST : 0;
             }
             PstkPush( &(data->with_generic), u_tree );
             break;
