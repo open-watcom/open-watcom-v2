@@ -695,7 +695,7 @@ static void parseSwitchStmt( void )
 static bool is_dup_case(        // DIAGNOSE A DUPLICATE CASE
     CSTACK *my_switch,          // - control-stack entry
     PTREE  case_value,          // - exprn for case
-    unsigned err_code )         // - code for error message
+    MSG_NUM err_code )          // - code for error message
 {
     SWCASE *curr;               // - current case in search
     target_ulong case_uint;     // - value to look for
@@ -1166,7 +1166,7 @@ static TYPE getCatchTypeAttrs(  // GET CATCH TYPE ATTRIBUTES
     return sptype;
 }
 
-static void catchMsg( unsigned msg, FNCATCH *catch_entry )
+static void catchMsg( MSG_NUM msg, FNCATCH *catch_entry )
 {
     if( CErr1( msg ) & MS_PRINTED ) {
         InfMsgPtr( INF_PREVIOUS_CATCH, &catch_entry->defined );
@@ -1917,7 +1917,7 @@ static void skipFunctionBody( unsigned depth )
     }
 }
 
-static void badFunction( int msg, SYMBOL sym )
+static void badFunction( MSG_NUM msg, SYMBOL sym )
 {
     CErr2p( msg, sym );
     skipFunctionBody( 1 );
@@ -1977,7 +1977,7 @@ INIT_VAR *FunctionBodyGetInit( FUNCTION_DATA *fd )
 
 static TYPE handleDefnChecks( SYMBOL func )
 {
-    int msg;
+    MSG_NUM msg;
     TYPE fn_type;
     type_flag flags;
 
@@ -2055,7 +2055,7 @@ static bool noPendingForwardGotos( FUNCTION_DATA *fdata )
 void FunctionBody( DECL_INFO *dinfo )
 /***********************************/
 {
-    int msg;
+    MSG_NUM msg;
     SYMBOL func;
     FUNCTION_DATA fn_data;
     TYPE fn_type;

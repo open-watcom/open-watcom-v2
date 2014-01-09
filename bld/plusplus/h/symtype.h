@@ -1428,7 +1428,7 @@ extern bool TypeIsAnonymousEnum( TYPE );
 extern bool TypeHasEllipsisArg( TYPE );
 extern bool TypeHasNumArgs( TYPE, unsigned );
 extern bool TypeHasReverseArgs( TYPE );
-extern bool TypeVAStartWontWork( TYPE, int * );
+extern bool TypeVAStartWontWork( TYPE, MSG_NUM * );
 extern TYPE DefaultIntType( TYPE );
 extern TYPE CleanIntType( TYPE );
 extern TYPE SegmentShortType( TYPE );

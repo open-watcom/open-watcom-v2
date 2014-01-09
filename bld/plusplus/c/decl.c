@@ -600,7 +600,7 @@ static type_flag cannotChangeFlags( type_flag prev, type_flag curr,
     return( result );
 }
 
-static void prevCurrErr( unsigned msg, SYMBOL prev, SYMBOL curr )
+static void prevCurrErr( MSG_NUM msg, SYMBOL prev, SYMBOL curr )
 {
     if( CErr2p( msg, prev ) & MS_PRINTED ) {
         CErr2p( INF_CURR_DECL_TYPE, curr->sym_type );

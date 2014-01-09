@@ -328,7 +328,7 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
 static bool pragWarning(        // PROCESS #PRAGMA WARNING
     void )
 {
-    int msgnum;                 // - message number
+    unsigned msgnum;            // - message number
     int level;                  // - new level
     bool change_all;            // - TRUE ==> change all levels
     bool error_occurred;        // - TRUE ==> error has occurred

@@ -926,7 +926,7 @@ PTREE PTreeErrorNode(           // MAKE NODE AN ERROR NODE
 
 msg_status_t PTreeErrorExpr(    // ISSUE ERROR MESSAGE FOR PTREE NODE
     PTREE expr,                 // - node for error
-    unsigned err_code )         // - error code
+    MSG_NUM err_code )          // - error code
 {
     msg_status_t status;
     PTreeSetErrLoc( expr );
@@ -942,7 +942,7 @@ msg_status_t PTreeErrorExpr(    // ISSUE ERROR MESSAGE FOR PTREE NODE
 
 void PTreeErrorExprName(        // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     NAME name )                 // - name
 {
     PTreeSetErrLoc( expr );
@@ -954,7 +954,7 @@ void PTreeErrorExprName(        // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME
 
 void PTreeErrorExprSym(         // ISSUE ERROR MESSAGE FOR PTREE NODE, SYMBOL
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     SYMBOL sym )                // - symbol
 {
     PTreeSetErrLoc( expr );
@@ -966,7 +966,7 @@ void PTreeErrorExprSym(         // ISSUE ERROR MESSAGE FOR PTREE NODE, SYMBOL
 
 void PTreeErrorExprSymInf(      // ISSUE ERROR MESSAGE FOR PTREE NODE, SYMBOL
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     SYMBOL sym )                // - symbol
 {
     msg_status_t retn;          // - message status
@@ -982,7 +982,7 @@ void PTreeErrorExprSymInf(      // ISSUE ERROR MESSAGE FOR PTREE NODE, SYMBOL
 
 void PTreeErrorExprType(        // ISSUE ERROR MESSAGE FOR PTREE NODE, TYPE
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     TYPE type )                 // - type
 {
     PTreeSetErrLoc( expr );
@@ -993,7 +993,7 @@ void PTreeErrorExprType(        // ISSUE ERROR MESSAGE FOR PTREE NODE, TYPE
 
 void PTreeErrorExprNameType(    // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME, TYPE
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     NAME name,                  // - name
     TYPE type )                 // - type
 {
@@ -1006,7 +1006,7 @@ void PTreeErrorExprNameType(    // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME, TYP
 
 msg_status_t PTreeWarnExpr(     // ISSUE WARNING MESSAGE FOR PTREE NODE
     PTREE expr,                 // - node for error
-    unsigned err_code )         // - error code
+    MSG_NUM err_code )          // - error code
 {
     PTreeSetErrLoc( expr );
     return CErr1( err_code );

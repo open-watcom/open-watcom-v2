@@ -721,7 +721,7 @@ extern void __SetIOMode( int, unsigned );
 #endif
 
 static void ioSuppError(        // SIGNAL I/O ERROR AND ABORT
-    int error_code )            // - error code
+    MSG_NUM error_code )            // - error code
 {
     CErr2( error_code, errno );
     CSuicide();

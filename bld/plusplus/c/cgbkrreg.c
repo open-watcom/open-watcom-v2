@@ -201,8 +201,7 @@ void CgFunRegister(             // REGISTER A FUNCTION
             rw = registerHandler( rw, RTF_FS_HANDLER_RTN );
         }
     }
-    CgAssignPtr( CgSymbolPlusOffset
-                    ( rw, CgbkInfo.size_data_ptr + CgbkInfo.size_fs_hand )
+    CgAssignPtr( CgSymbolPlusOffset( rw, CgbkInfo.size_data_ptr + CgbkInfo.size_fs_hand )
                , CgAddrSymbol( ro ) );
 #endif
     if( fctl->is_dtor ) {

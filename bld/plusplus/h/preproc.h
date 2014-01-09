@@ -79,7 +79,7 @@ typedef enum ppctl_t {
 
 global  ppctl_t     PPControl;          // pre-processor control bits
 global  TOKEN       CurToken;           // current token
-global  unsigned    BadTokenInfo;       // error message that describes why T_BAD_TOKEN is bad
+global  MSG_NUM     BadTokenInfo;       // error message that describes why T_BAD_TOKEN is bad
 global  int         TokenLen;           // length of current token
 global  LINE_NO     TokenLine;          // line # of current token
 global  COLUMN_NO   TokenColumn;        // column # of current token

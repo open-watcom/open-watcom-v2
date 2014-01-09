@@ -190,7 +190,7 @@ static PTREE copyRtn (  // Copy Routine -- pass to PTreeCopyPrefix
     return copy;
 }
 
-static PTREE defaultArgSymError( int msg, PTREE expr, SYMBOL sym )
+static PTREE defaultArgSymError( MSG_NUM msg, PTREE expr, SYMBOL sym )
 {
     PTreeSetErrLoc( expr );
     if( sym != NULL ) {

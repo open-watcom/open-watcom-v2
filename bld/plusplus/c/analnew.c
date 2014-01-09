@@ -586,8 +586,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
                     args = PtdScopeCall( args, op_dlt );
                 }
             } else {
-                DbgVerify( flag.needs_count
-                         , "AnalyseNew -- flags mismatch" );
+                DbgVerify( flag.needs_count, "AnalyseNew -- flags mismatch" );
                 rt_code = RTF_CTAS_2S;
                 args = NodeArg( MakeNodeSymbol( addr_op_del ) );
                 args = PtdScopeCall( args, op_dlt );

@@ -308,8 +308,7 @@ cg_name ObjInitRegActualBase    // REGISTER FOR AN ACTUAL BASE
     cg_name expr1;              // - initialization expression
     cg_name expr2;              // - initialization expression
 
-    expr1 = CGLVAssign( CgSymbolPlusOffset( se->component.obj->sym
-                                          , CgbkInfo.size_data_ptr )
+    expr1 = CGLVAssign( CgSymbolPlusOffset( se->component.obj->sym, CgbkInfo.size_data_ptr )
                       , CGInteger( DTOR_COMPONENT, TY_UINT_1 )
                       , TY_UINT_1 );
 #if 0

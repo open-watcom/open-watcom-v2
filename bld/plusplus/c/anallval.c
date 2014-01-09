@@ -48,8 +48,8 @@ extern void DumpPTree( PTREE );
 static TYPE lvalueErrMsg(       // GENERATE NOT-LVALUE ERROR MESSAGE
     PTREE expr_chk,             // - expression, to be checked
     PTREE expr_err,             // - expression, for error
-    unsigned msg_normal,        // - msg, when normal
-    unsigned msg_cast )         // - msg, when cast
+    MSG_NUM msg_normal,         // - msg, when normal
+    MSG_NUM msg_cast )          // - msg, when cast
 {
     if( NodeIsBinaryOp( expr_chk, CO_CONVERT ) ) {
         expr_chk = PTreeOpLeft( expr_chk );
@@ -284,7 +284,7 @@ static bool checkIdLookup(      // CHECK RESULT OF ID LOOKUP
 {
     bool retn;                  // - TRUE ==> ok
     SYMBOL sym;                 // - a symbol lookup up
-    unsigned msg;               // - undeclared sym error message
+    MSG_NUM msg;                // - undeclared sym error message
     NAME name;                  // - id name
 
     if( result == NULL ) {
@@ -682,7 +682,7 @@ static bool analyseMembRight(   // ANALYSE MEMBER ON RIGHT
     return retn;
 }
 
-static TYPE diagMember( PTREE left, PTREE expr, unsigned msg )
+static TYPE diagMember( PTREE left, PTREE expr, MSG_NUM msg )
 {
     TYPE left_type;
 

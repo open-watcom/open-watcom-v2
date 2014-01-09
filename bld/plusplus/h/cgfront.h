@@ -152,23 +152,23 @@ typedef enum                    // TEMP_TYPE:
 } TEMP_TYPE;
 
 typedef struct                  // USED FOR DIAGNOSIS OF CONVERSIONS
-{   int msg_impossible;         // - error message for CNV_IMPOSSIBLE
-    int msg_ambiguous;          // - error message for CNV_AMBIGUOUS
-    int msg_virt_der;           // - error message for CNV_VIRT_DIR
-    int msg_private;            // - error message for CNV_PRIVATE
-    int msg_protected;          // - error message for CNV_PROTECTED
+{   MSG_NUM msg_impossible;     // - error message for CNV_IMPOSSIBLE
+    MSG_NUM msg_ambiguous;      // - error message for CNV_AMBIGUOUS
+    MSG_NUM msg_virt_der;       // - error message for CNV_VIRT_DIR
+    MSG_NUM msg_private;        // - error message for CNV_PRIVATE
+    MSG_NUM msg_protected;      // - error message for CNV_PROTECTED
 } CNV_DIAG;
 
 typedef struct                  // USED FOR DIAGNOSIS OF CALL
-{   int msg_ambiguous;          // - when ambiguous
-    int msg_no_match_one;       // - no match, only one function declared
-    int msg_no_match_many;      // - no match, several functions declared
+{   MSG_NUM msg_ambiguous;      // - when ambiguous
+    MSG_NUM msg_no_match_one;   // - no match, only one function declared
+    MSG_NUM msg_no_match_many;  // - no match, several functions declared
 } CALL_DIAG;
 
 typedef struct                  // USED FOR DIAGNOSIS OF SYMBOL ACCESS
-{   int msg_no_this;            // - "this" required, not supplied
-    int msg_extra_this;         // - "this" supplied, may not be used
-    int msg_enclosing;          // - "this" accesses item in enclosing class
+{   MSG_NUM msg_no_this;        // - "this" required, not supplied
+    MSG_NUM msg_extra_this;     // - "this" supplied, may not be used
+    MSG_NUM msg_enclosing;      // - "this" accesses item in enclosing class
 } SYMBOL_DIAG;
 
 typedef enum                    // CTD -- common-type derivations

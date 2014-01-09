@@ -1543,7 +1543,7 @@ static void warnMeaningfulSideEffect( // CHECK EXPRESSION FOR MEANING, SIDE EFF
 
 static void exprError(          // PRINT ERROR MESSAGE WITH EXPR TYPE
     PTREE expr,                 // - expr
-    unsigned msg )              // - error message
+    MSG_NUM msg )               // - error message
 {
     TYPE result_type;
 
@@ -1557,7 +1557,7 @@ static void exprError(          // PRINT ERROR MESSAGE WITH EXPR TYPE
 
 static TYPE operandError(       // PRINT ERROR MESSAGE WITH OPERAND TYPES
     PTREE expr,                 // - expression
-    unsigned msg )              // - error message
+    MSG_NUM msg )               // - error message
 {
     PTREE left_expr;
     PTREE right_expr;
@@ -1596,10 +1596,10 @@ static TYPE operandError(       // PRINT ERROR MESSAGE WITH OPERAND TYPES
 
 static TYPE analyse_err_left(   // ANALYSE KIND OF ERROR MESSAGE TO WRITE
     PTREE expr,                 // - expression in error
-    unsigned unary_msg,         // - message when unary operator
-    unsigned binary_msg )       // - message when binary operator
+    MSG_NUM unary_msg,          // - message when unary operator
+    MSG_NUM binary_msg )        // - message when binary operator
 {
-    unsigned msg;               // - message code to be used
+    MSG_NUM msg;                // - message code to be used
 
     if( expr->op == PT_UNARY ) {
         msg = unary_msg;
@@ -1615,7 +1615,7 @@ static TYPE analyse_err(        // ANALYSE KIND OF ERROR MESSAGE TO WRITE
     unsigned left_kind,         // - kind of operand on left
     ERROR_CODES *msgs )         // - messages
 {
-    unsigned msg;               // - message code to be used
+    MSG_NUM msg;                // - message code to be used
 
     if( expr->op == PT_UNARY ) {
         msg = msgs->err_unary;
@@ -2365,7 +2365,7 @@ static void warnIntTrunc(       // WARN WHEN INTEGER TRUNCATION
     unsigned tgt_bits )         // - # bits (maximum) in target
 {
     unsigned bits;              // - bits in value
-    unsigned warning;           // - warning msg to use
+    MSG_NUM warning;            // - warning msg to use
     unsigned right_bits;        // - # bits in rhs expr
     PTREE constant;             // - constant node
     PTREE colon;                // - colon node
@@ -2795,8 +2795,7 @@ start_opac_string:
                                  , ADDRFN_RESOLVE_ONE ) ) {
 #endif
                 if( left->flags & PTF_CALLED_ONLY ) {
-                    PTreeErrorExpr( left
-                                  , ERR_MEMB_PTR_FUNC_NOT_CALLED );
+                    PTreeErrorExpr( left, ERR_MEMB_PTR_FUNC_NOT_CALLED );
                     break;
                 }
                 left = PTreeOpLeft( expr );
@@ -3425,19 +3424,15 @@ start_opac_string:
                 CErr2p( WARN_ASSUMING_NO_OVERLOADED_OP_ADDR, class_type );
             }
             if( NodeIsUnaryOp( left, CO_BITFLD_CONVERT ) ) {
-                PTreeErrorExpr( expr
-                              , ERR_CANT_TAKE_ADDR_OF_BIT_FIELD );
+                PTreeErrorExpr( expr, ERR_CANT_TAKE_ADDR_OF_BIT_FIELD );
                 break;
             }
             if( left->op == PT_SYMBOL ) {
                 sym = left->u.symcg.symbol;
                 if( sym->id == SC_REGISTER ) {
-                    PTreeWarnExpr( expr
-                                 , WARN_CANT_TAKE_ADDR_OF_REGISTER );
+                    PTreeWarnExpr( expr, WARN_CANT_TAKE_ADDR_OF_REGISTER );
                 } else if( sym->id == SC_ENUM ) {
-                    PTreeErrorExprSymInf( expr
-                                        , ERR_CANT_TAKE_ADDR_OF_RVALUE
-                                        , sym );
+                    PTreeErrorExprSymInf( expr, ERR_CANT_TAKE_ADDR_OF_RVALUE, sym );
                     break;
                 }
                 sym->flag |= SF_ADDR_TAKEN;
@@ -3770,10 +3765,8 @@ start_opac_string:
                  && type_right->id == TYP_POINTER
                  && ( type_left->flag & TF1_REFERENCE )
                  && ( type_right->flag & TF1_REFERENCE ) ) {
-                    ref_right = TypeGetActualFlags( type_right->of
-                                                  , &flags_right );
-                    ref_left = TypeGetActualFlags( type_left->of
-                                                 , &flags_left );
+                    ref_right = TypeGetActualFlags( type_right->of, &flags_right );
+                    ref_left = TypeGetActualFlags( type_left->of, &flags_left );
                     if( ref_right == ref_left ) {
                         type_flag common;
                         flags_right &= TF1_CV_MASK;

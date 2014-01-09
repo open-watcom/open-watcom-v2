@@ -6495,7 +6495,7 @@ static msg_status_t lookupError( SEARCH_RESULT *result, MSG_NUM msg )
     return( CErr1( msg ) );
 }
 
-static bool searchError( SEARCH_RESULT *result, SYMBOL sym, unsigned msg )
+static bool searchError( SEARCH_RESULT *result, SYMBOL sym, MSG_NUM msg )
 {
 #if 1
     if( result->errlocn.src_file != NULL ) {
@@ -6560,7 +6560,7 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
 {
     SCOPE located;
     inherit_flag perm;
-    int err_msg;
+    MSG_NUM err_msg;
     msg_status_t msg_status;
     auto access_data access_data;
 

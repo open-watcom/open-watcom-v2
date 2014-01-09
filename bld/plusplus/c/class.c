@@ -383,7 +383,7 @@ void ClassPermission( symbol_flag new_perm )
     classDataStack->perm = new_perm;
 }
 
-static void typeError( int msg, TYPE type )
+static void typeError( MSG_NUM msg, TYPE type )
 {
     CErr2p( msg, type );
 }

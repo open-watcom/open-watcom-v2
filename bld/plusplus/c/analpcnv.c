@@ -375,7 +375,7 @@ static CNV_RETN emitConvMsg(    // EMIT A CONVERSION MESSAGE
     PTREE expr,                 // - expression for error
     TYPE src,                   // - source type
     TYPE tgt,                   // - target type
-    unsigned msg )              // - message code
+    MSG_NUM msg )               // - message code
 {
     ConversionTypesSet( src, tgt );
     PTreeErrorExpr( expr, msg );
@@ -415,7 +415,7 @@ CNV_RETN NodeCheckCnvPtrVoid(   // CHECK CONVERSION TO 'VOID*'
             if( src_flags == tgt_flags ) {
                 retn = CNV_OK;
             } else {
-                unsigned msg;   // - message code
+                MSG_NUM msg;    // - message code
                 switch( tgt_flags ) {
                   case 0:
                     msg = ERR_CNV_VOID_STAR;
@@ -682,8 +682,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
         if( ptr_tgt->id == TYP_VOID ) {
             info->to_void = TRUE;
         }
-        if( NULL != orig_src
-         && IntegralType( orig_src ) ) {
+        if( NULL != orig_src && IntegralType( orig_src ) ) {
             info->reint_cast_ok = TRUE;
         }
         retn = FALSE;

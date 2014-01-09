@@ -68,7 +68,7 @@ static void nextSwitch(         // POSITION FOR NEXT SWITCH
 
 
 void BadCmdLine(                // SIGNAL CMD-LINE ERROR
-    int error_code )            // - error code
+    MSG_NUM error_code )        // - error code
 {
     CErr1( error_code );
     nextSwitch();
@@ -76,7 +76,7 @@ void BadCmdLine(                // SIGNAL CMD-LINE ERROR
 }
 
 void CmdLnWarn(                 // ISSUE WARNING FOR A SWITCH
-    unsigned message )          // - message code
+    MSG_NUM message )           // - message code
 {
     CErr1( message );
     nextSwitch();

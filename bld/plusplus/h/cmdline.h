@@ -54,7 +54,7 @@ void AddUndefName(              // SAVE A #UNDEF NAME
     void );
 
 void BadCmdLine(                // SIGNAL CMD-LINE ERROR
-    int error_code );           // - error code
+    MSG_NUM error_code );       // - error code
 
 void CmdLnBatchAbort(           // ABANDON BATCH-FILE PROCESSING
     void )

@@ -257,7 +257,7 @@ bool TypeTruncByMemModel(       // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
         if( type->id == TYP_FUNCTION ) {
             retn = ( !IsBigCode() && (TF1_NEAR & mflags) == 0 );
         } else {
-            retn = ( !IsBigData() && (TF1_NEAR & mflags) == 0 );
+            retn = ( !IsBigData() && ((TF1_NEAR | TF1_FAR | TF1_HUGE) & mflags) == 0 );
         }
     }
     return retn;

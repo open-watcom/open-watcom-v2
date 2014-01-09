@@ -170,12 +170,10 @@ static bool okSoFar             // TEST IF STILL OK
     PTREE expr;                 // - current expression
 
     expr = ctl->expr;
-    if( PT_ERROR == expr->op ) {
-        retn = FALSE;
-    } else {
+    retn = FALSE;
+    if( PT_ERROR != expr->op ) {
         if( PT_ERROR == expr->u.subtree[1]->op ) {
             PTreeErrorNode( expr );
-            retn = FALSE;
         } else {
             retn = TRUE;
         }
@@ -459,11 +457,9 @@ static CAST_RESULT findConvRtn   // LOCATE UDC FOR CONVERSION
                             , &is_ctor
                             , &fnov_list
                             , &ctl->fnov_diag );
-            if( rank == OV_RANK_UD_CONV
-             && is_ctor ) {
+            if( rank == OV_RANK_UD_CONV && is_ctor ) {
                 // don't extend to explicit ctor.s
-                TYPE ctor_type
-                    = FunctionDeclarationType( fnov_list->sym->sym_type );
+                TYPE ctor_type = FunctionDeclarationType( fnov_list->sym->sym_type );
                 if( ctor_type->flag & TF1_EXPLICIT ) {
                     rank = OV_RANK_NULL;
                 }
@@ -484,8 +480,7 @@ static CAST_RESULT findConvRtn   // LOCATE UDC FOR CONVERSION
         ctl->conv_fun = fnov_list->sym;
         ctl->conv_type = SymFuncReturnType( ctl->conv_fun );
         if( is_ctor ) {
-            if( NULL == ctl->destination
-             && TypeAbstract( ctl->tgt.class_type ) ) {
+            if( NULL == ctl->destination && TypeAbstract( ctl->tgt.class_type ) ) {
                 result = DIAG_TGT_ABSTRACT;
             } else {
                 result = CAST_CTOR;
@@ -563,7 +558,7 @@ static bool warnTruncTypes      // WARN IF TRUNCATION
     , TYPE tgt )                // - target type
 {
     bool retn;                  // - return: TRUE ==> no truncation error
-    unsigned msg_no;            // - message #
+    MSG_NUM msg_no;             // - message #
 
     if( src == tgt ) {
         retn = TRUE;
@@ -576,11 +571,7 @@ static bool warnTruncTypes      // WARN IF TRUNCATION
             trunc = NodeCheckPtrCastTrunc( src, tgt );
             msg_no = WARN_POINTER_TRUNCATION_CAST;
         }
-        if( trunc == CNV_OK ) {
-            retn = TRUE;
-        } else {
-            retn = ! ConvCtlWarning( ctl, msg_no );
-        }
+        retn = ( trunc == CNV_OK ) || !ConvCtlWarning( ctl, msg_no );
     }
     return retn;
 }
@@ -743,8 +734,8 @@ static bool castCtor            // APPLY CTOR
     PTREE node;                 // - node under construction
     bool retn;                  // - return: TRUE ==> conversion worked
 
-    if( ctl->src.reference
-     || getLvalue( ctl, FALSE ) ) {
+    retn = FALSE;
+    if( ctl->src.reference || getLvalue( ctl, FALSE ) ) {
         inp_node = NodeArg( ctl->expr->u.subtree[1] );
         ctl->expr->u.subtree[1] = inp_node;
         NodeConvertCallArgList( ctl->expr
@@ -772,10 +763,8 @@ static bool castCtor            // APPLY CTOR
                                  , &dtor_node
                                  , &src_node );
             if( opt == CALL_OPT_NONE ) {
-                if( ctl->tgt.class_type
-                        == ClassTypeForType( inp_node->type )
-                 && OMR_CLASS_VAL
-                        == ObjModelArgument( ctl->tgt.class_type ) ) {
+                if( ctl->tgt.class_type == ClassTypeForType( inp_node->type )
+                 && OMR_CLASS_VAL == ObjModelArgument( ctl->tgt.class_type ) ) {
                     ctl->conv_fun = NULL;
                     inp_node = NodeRvalue( inp_node->u.subtree[1] );
                     PTreeFree( ctl->expr->u.subtree[1] );
@@ -822,11 +811,7 @@ static bool castCtor            // APPLY CTOR
             }
             ctl->expr->u.subtree[1] = node;
             retn = okSoFar( ctl );
-        } else {
-            retn = FALSE;
         }
-    } else {
-        retn = FALSE;
     }
     return retn;
 }
@@ -1265,7 +1250,7 @@ static PTREE diagnoseCastError  // DIAGNOSE CASTING ERROR
 
 static PTREE diagnoseCast       // DIAGNOSE CASTING ERROR
     ( CONVCTL* ctl              // - conversion control
-    , unsigned msg )            // - message #
+    , MSG_NUM msg )             // - message #
 {
     if( ctl->cv_mismatch ) {
         type_flag cv_add = ctl->mismatch & TF1_CV_MASK;
@@ -1298,14 +1283,14 @@ static bool ptrToIntTruncs      // TEST IF TRUNCATION ON PTR --> INT
     ( CONVCTL* ctl )            // - conversion control
 {
     bool retn;
+
+    retn = FALSE;
     if( CNV_OK != NodeCheckPtrCastTrunc( ctl->tgt.unmod, ctl->src.orig )
      && ( CompFlags.extensions_enabled
        || CgMemorySize( GetBasicType( TYP_SINT ) ) >
           CgMemorySize( ctl->src.unmod ) ) ) {
         ctl->size_ptr_to_int = TRUE;
         retn = TRUE;
-    } else {
-        retn = FALSE;
     }
     return retn;
 }
@@ -1835,15 +1820,11 @@ static PTREE doCastResult           // DO CAST RESULT
         expr = diagnoseCast( ctl, ERR_DYNAMIC_CAST_EXPR );
         break;
       case DIAG_DYNAMIC_CAST_NO_VFN_SRC :
-        PTreeErrorExprType( ctl->expr
-                          , ERR_DYNAMIC_CAST_NO_VFN
-                          , ctl->src.pted );
+        PTreeErrorExprType( ctl->expr, ERR_DYNAMIC_CAST_NO_VFN, ctl->src.pted );
         expr = ctl->expr;
         break;
       case DIAG_DYNAMIC_CAST_NO_VFN_TGT :
-        PTreeErrorExprType( ctl->expr
-                          , ERR_DYNAMIC_CAST_NO_VFN
-                          , ctl->tgt.pted );
+        PTreeErrorExprType( ctl->expr, ERR_DYNAMIC_CAST_NO_VFN, ctl->tgt.pted );
         expr = ctl->expr;
         break;
       case DIAG_EXPLICIT_CAST_TYPE :
@@ -1881,9 +1862,7 @@ static PTREE doCastResult           // DO CAST RESULT
         expr = diagnoseCast( ctl, ERR_CONVERT_TO_UNDEFD_TYPE );
         break;
       case DIAG_TGT_ABSTRACT :
-        PTreeErrorExprType( ctl->expr
-                          , ERR_CONVERT_TO_ABSTRACT_TYPE
-                          , ctl->tgt.class_type );
+        PTreeErrorExprType( ctl->expr, ERR_CONVERT_TO_ABSTRACT_TYPE, ctl->tgt.class_type );
         ScopeNotePureFunctions( ctl->tgt.class_type );
         expr = doCastResult( ctl, DIAG_ALREADY );
         break;
@@ -1943,8 +1922,7 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
     } else {
         bool fold_it = FALSE;
         bool has_convert = FALSE;
-        if( ctl->clscls_implicit
-         && ! ctl->keep_cast ) {
+        if( ctl->clscls_implicit && !ctl->keep_cast ) {
             expr = stripOffCastOk( ctl );
         } else {
             expr = ctl->expr;
@@ -1977,21 +1955,17 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
                     }
                 }
             }
-            if( ctl->dtor_destination
-             && ctl->tgt.class_operand
-             && PT_ERROR != expr->op ) {
+            if( ctl->dtor_destination && ctl->tgt.class_operand && PT_ERROR != expr->op ) {
                 expr = NodeDtorExpr( expr, ctl->destination->u.symcg.symbol );
             }
-            if( PT_ERROR != expr->op
-             && ! ctl->tgt.reference ) {
+            if( PT_ERROR != expr->op && !ctl->tgt.reference ) {
                 expr = NodeRvalue( expr );
             }
             fold_it = FALSE;
         }
         if( has_convert ) {
             ctl->expr->u.subtree[1] = expr;
-            if( okSoFar( ctl )
-             && RKD_MEMBPTR == ctl->tgt.kind ) {
+            if( okSoFar( ctl ) && RKD_MEMBPTR == ctl->tgt.kind ) {
                 stripOffCastOk( ctl );
                 fold_it = FALSE;
             }
@@ -2001,8 +1975,7 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
             if( fold_it ) {
                 expr = Fold( expr );
             }
-            if( NodeIsUnaryOp( expr, CO_MEMPTR_CONST )
-             && CNV_FUNC_ARG == _CNV_TYPE( ctl->req ) ) {
+            if( NodeIsUnaryOp( expr, CO_MEMPTR_CONST ) && CNV_FUNC_ARG == _CNV_TYPE( ctl->req ) ) {
                 expr = MembPtrFuncArg( expr );
             }
         }
@@ -2545,8 +2518,7 @@ PTREE CastExplicit              // EXPLICIT CASTE: ( TYPE )( EXPR )
         break;
       case CRUFF_NO_CL :
         jump = explicitTable[ ctl.tgt.kind ][ ctl.src.kind ];
-        if( jump > 1
-         && ctl.tgt.reference != ctl.src.reference ) {
+        if( jump > 1 && ctl.tgt.reference != ctl.src.reference ) {
             result = DIAG_CAST_ILLEGAL;
             break;
         }
@@ -2679,8 +2651,7 @@ PTREE CheckCharPromotion        // CHECK FOR CHARACTER-TO-INT promotion
      && NULL != expr
      && NULL != expr->u.subtree[0]
      && NULL != expr->u.subtree[1] ) {
-        if( CharIsPromoted( expr->u.subtree[1]->type
-                          , expr->u.subtree[0]->type ) ) {
+        if( CharIsPromoted( expr->u.subtree[1]->type, expr->u.subtree[0]->type ) ) {
             PTreeWarnExpr( expr, WARN_CHAR_PROMOTION );
         }
     }
@@ -2945,7 +2916,7 @@ PTREE CopyClassRetnVal          // COPY TO RETURN SYMBOL A CLASS VALUE
 
 static TYPE commonDiag          // PRINT DIAGNOSIS MESSAGE
     ( PTREE expr                // - original expression
-    , unsigned msg              // - error message
+    , MSG_NUM msg               // - error message
     , TYPE src                  // - source type
     , TYPE tgt )                // - target type
 {
@@ -3208,11 +3179,11 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
                              , NodeType( expr->u.subtree[1] )
                              , diagnosis
                              , &ctl_right );
+    retn = TRUE;
     if( result_right == CAST_ERR_NODE || result_left == CAST_ERR_NODE ) {
         stripOffCastOrig( &ctl_left );
         stripOffCastOrig( &ctl_right );
         PTreeErrorNode( expr );
-        retn = TRUE;
     } else if( castCommonOk( result_left ) ) {
         if( castCommonOk( result_right ) ) {
             if( result_right >= DIAGNOSIS_START || result_left  >= DIAGNOSIS_START ) {
@@ -3226,19 +3197,16 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
                 InfSymbolAmbiguous( ctl_left.conv_fun );
                 InfSymbolAmbiguous( ctl_right.conv_fun );
             }
-            retn = TRUE;
         } else {
             expr->type = ctl_left.tgt.orig;
             stripOffCastOrig( &ctl_right );
             expr->u.subtree[1] = castCommonExpr( &ctl_left, result_left );
-            retn = TRUE;
         }
     } else {
         if( castCommonOk( result_right ) ) {
             expr->type = ctl_right.tgt.orig;
             stripOffCastOrig( &ctl_left );
             expr->u.subtree[0] = castCommonExpr( &ctl_right, result_right );
-            retn = TRUE;
         } else {
             stripOffCastOrig( &ctl_left );
             stripOffCastOrig( &ctl_right );

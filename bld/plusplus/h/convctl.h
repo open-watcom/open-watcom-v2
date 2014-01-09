@@ -121,7 +121,7 @@ struct convctl                  // CONVCTL -- conversion control information
     CNV_DIAG* diag_cast;        // - error-message list: for cast
     SYMBOL conv_fun;            // - CTOR or UDF conversion function
     TYPE conv_type;             // - conversion type, when UDF
-    unsigned msg_no;            // - message # when error
+    MSG_NUM msg_no;             // - message # when error
     FNOV_DIAG fnov_diag;        // - diagnosis list
     PTREE destination;          // - node for destination
     CNV_REQD req;               // - conversion request
@@ -180,7 +180,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
 ;
 bool ConvCtlWarning             // ISSUE WARNING
     ( CONVCTL* ctl              // - conversion control
-    , unsigned msg_no )         // - message number
+    , MSG_NUM msg_no )          // - message number
 ;
 PTREE DynamicCast               // DYNAMIC CAST CODE
     ( CONVCTL* ctl )            // - conversion information

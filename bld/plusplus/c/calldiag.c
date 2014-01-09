@@ -46,7 +46,7 @@ typedef struct {                // DIAG_INFO -- diagnostic information
 
 void CallDiagnoseRejects(       // DIAGNOSE FUNCTIONS IN REJECT LIST
     PTREE expr,                 // - expression for error
-    unsigned msg,               // - message for error
+    MSG_NUM msg,                // - message for error
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 {
     PTreeErrorExpr( expr, msg );
@@ -93,7 +93,7 @@ static PTREE diagnoseArg(       // GET ARGUMENT TO BE DIAGNOSED
 
 void CallDiagAmbiguous(         // DIAGNOSE AMBIGUOUS CALL
     PTREE expr,                 // - expression for error
-    unsigned msg,               // - message for error
+    MSG_NUM msg,                // - message for error
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 {
     PTreeErrorExpr( expr, msg );
@@ -163,7 +163,7 @@ static void displayParmMismatch(// DISPLAY PARAMETER MISMATCH
 
 static void displayDiagInfo(    // DISPLAY DIAG_INFO FOR ARGUMENT
     DIAG_INFO* diag,            // - diagnostic information
-    unsigned msg,               // - error message
+    MSG_NUM msg,                // - error message
     PTREE expr,                 // - expression
     SYMBOL orig )               // - original function
 {
@@ -186,8 +186,8 @@ static void displayDiagInfo(    // DISPLAY DIAG_INFO FOR ARGUMENT
 
 void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
     PTREE expr,                 // - call expression
-    unsigned msg_one,           // - message: one function
-    unsigned msg_many,          // - message: many functions
+    MSG_NUM msg_one,            // - message: one function
+    MSG_NUM msg_many,           // - message: many functions
     PTREE this_node,            // - this node (or NULL)
     SYMBOL orig,                // - original symbol for overloading
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
@@ -229,7 +229,7 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
 
 void CtorDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CTOR
     PTREE expr,                 // - ctor expression
-    unsigned msg_none,          // - message: no CTOR's
+    MSG_NUM msg_none,           // - message: no CTOR's
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 {
     int bad_parm;
@@ -263,8 +263,8 @@ void CtorDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CTOR
 void UdcDiagNoMatch(            // DIAGNOSE NO MATCHES FOR UDC LOOKUP
     PTREE src,                  // - ctor expression
     TYPE tgt_type,              // - target type
-    unsigned msg_none,          // - message: no UDC's
-    unsigned msg_many,          // - message: many functions
+    MSG_NUM msg_none,           // - message: no UDC's
+    MSG_NUM msg_many,           // - message: many functions
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 {
     SYMBOL orig;

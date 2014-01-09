@@ -167,7 +167,7 @@ void AccessErrClear(            // CLEAR FUNCTION OF ACCESS ERRORS
     void )
 ;
 void AccessErrMsg(              // ISSUE PROTECTION MESSAGE
-    int msg,                    // - message
+    MSG_NUM msg,                // - message
     SYMBOL fun,                 // - function
     TOKEN_LOCN* a_locn )        // - addr[ error location ]
 ;

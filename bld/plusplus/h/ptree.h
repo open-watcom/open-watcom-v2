@@ -272,31 +272,31 @@ PTREE PTreeSetErrLoc(           // SET THE ERROR LOCATION FOR A TREE
 ;
 msg_status_t PTreeErrorExpr(    // ISSUE ERROR MESSAGE FOR PTREE NODE
     PTREE expr,                 // - node for error
-    unsigned err_code )         // - error code
+    MSG_NUM err_code )          // - error code
 ;
 void PTreeErrorExprName(        // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     NAME name )                 // - name
 ;
 void PTreeErrorExprSym(         // ISSUE ERROR MESSAGE FOR PTREE NODE, SYMBOL
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     SYMBOL sym )                // - symbol
 ;
 void PTreeErrorExprSymInf(      // ISSUE ERROR MESSAGE FOR PTREE NODE, SYMBOL
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     SYMBOL sym )                // - symbol
 ;
 void PTreeErrorExprType(        // ISSUE ERROR MESSAGE FOR PTREE NODE, TYPE
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     TYPE type )                 // - type
 ;
 void PTreeErrorExprNameType(    // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME, TYPE
     PTREE expr,                 // - node for error
-    unsigned err_code,          // - error code
+    MSG_NUM err_code,           // - error code
     NAME name,                  // - name
     TYPE type )                 // - type
 ;
@@ -366,7 +366,7 @@ PTREE PTreeUnary(               // CREATE UNARY PTREE NODE
 ;
 msg_status_t PTreeWarnExpr(     // ISSUE WARNING MESSAGE FOR PTREE NODE
     PTREE expr,                 // - node for error
-    unsigned err_code )         // - error code
+    MSG_NUM err_code )          // - error code
 ;
 
 extern PTREE SimpleDestructorId( TYPE );

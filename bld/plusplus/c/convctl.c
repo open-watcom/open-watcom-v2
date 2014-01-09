@@ -77,7 +77,7 @@ PTREE ConvCtlDiagnose           // DIAGNOSE CASTING ERROR
 
 bool ConvCtlWarning             // ISSUE WARNING
     ( CONVCTL* ctl              // - conversion control
-    , unsigned msg_no )         // - message number
+    , MSG_NUM msg_no )          // - message number
 {
     bool retn;                  // - return: TRUE ==> ERROR was issued
     msg_status_t status;        // - message status
@@ -99,7 +99,7 @@ bool ConvCtlWarning             // ISSUE WARNING
 
 static void diagnoseError       // DIAGNOSE ERROR AND SET UP ERROR OPERAND(S)
     ( CONVCTL* ctl              // - conversion control
-    , unsigned msg_no )         // - message #
+    , MSG_NUM msg_no )          // - message #
 {
     ctl->msg_no = msg_no;
     ConvCtlDiagnose( ctl );
@@ -175,8 +175,7 @@ void ConvCtlClassAnalysis       // ANALYSE CLASS TYPE
     ( CONVTYPE* ctype )         // - control info.
 {
     if( ctype->reference ) {
-        ctype->pted = TypeGetActualFlags( ctype->unmod->of
-                                        , &ctype->ptedflags );
+        ctype->pted = TypeGetActualFlags( ctype->unmod->of, &ctype->ptedflags );
     } else {
         ctype->ptedflags = ctype->modflags;
         ctype->pted = ctype->unmod;
@@ -186,7 +185,7 @@ void ConvCtlClassAnalysis       // ANALYSE CLASS TYPE
 
 static void errForFunc          // ISSUE ERROR FOR A FUNCTION
     ( PTREE func                // - function node
-    , unsigned msg_no           // - message #
+    , MSG_NUM msg_no            // - message #
     , CONVCTL* ctl )            // - conversion control
 {
     PTreeErrorExpr( func, msg_no );
@@ -360,8 +359,7 @@ static void adjustFnAddrMembPtr // ADJUST FOR &FUNCTION --> MEMB-PTR
 static void checkSrcForError    // CHECK IF SOURCE HAS ERROR
     ( CONVCTL* ctl )            // - control info.
 {
-    if( PT_ERROR == ctl->expr->op
-     || PT_ERROR == ctl->expr->u.subtree[1]->op ) {
+    if( PT_ERROR == ctl->expr->op || PT_ERROR == ctl->expr->u.subtree[1]->op ) {
         ctl->has_err_operand = TRUE;
         ctl->tgt.kind = RKD_ERROR;
     }
@@ -447,15 +445,12 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                 } else if( TYP_MEMBER_POINTER == id ) {
                     adjustFnAddrMembPtr( ctl );
                     checkSrcForError( ctl );
-                } else if( NodeIsUnaryOp( ctl->expr->u.subtree[1]
-                                        , CO_BITFLD_CONVERT ) ) {
+                } else if( NodeIsUnaryOp( ctl->expr->u.subtree[1], CO_BITFLD_CONVERT ) ) {
                     if( TypeIsConst( ctl->tgt.unmod->of ) ) {
-                        ctl->expr->u.subtree[1]
-                            = NodeRvalue( ctl->expr->u.subtree[1] );
+                        ctl->expr->u.subtree[1] = NodeRvalue( ctl->expr->u.subtree[1] );
                     } else {
                         ConversionInfDisable();
-                        PTreeErrorExpr( ctl->expr->u.subtree[1]
-                                      , ERR_CANT_REFERENCE_A_BIT_FIELD );
+                        PTreeErrorExpr( ctl->expr->u.subtree[1], ERR_CANT_REFERENCE_A_BIT_FIELD );
                         PTreeErrorNode( ctl->expr );
                         ctl->has_err_operand = TRUE;
                     }
@@ -466,8 +461,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
             } else if ( TYP_VOID == id ) {
                 TYPE pted_src;
                 NodeRvalueRight( expr );
-                expr->u.subtree[1]->type =
-                    BindTemplateClass( expr->u.subtree[1]->type, NULL, TRUE );
+                expr->u.subtree[1]->type = BindTemplateClass( expr->u.subtree[1]->type, NULL, TRUE );
                 ConvCtlTypeInit( ctl, &ctl->src, expr->u.subtree[1]->type );
                 pted_src = TypedefModifierRemoveOnly( ctl->src.unmod->of );
                 if( pted_src != NULL && pted_src->id == TYP_FUNCTION ) {
@@ -491,8 +485,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                 ref_type = TypeReference( ctl->tgt.unmod );
                 if( TypeIsConst( ref_type ) ) {
                     PTREE exp;
-                    exp = NodeAssignTemporary( ref_type
-                                             , ctl->expr->u.subtree[1] );
+                    exp = NodeAssignTemporary( ref_type, ctl->expr->u.subtree[1] );
                     ctl->expr->u.subtree[1] = exp;
                 } else {
                     diagnoseError( ctl, ERR_TEMP_AS_NONCONST_REF );
@@ -516,8 +509,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
             ConvCtlClassAnalysis( &ctl->tgt );
             if( ctl->src.class_operand ) {
                 ConvCtlClassAnalysis( &ctl->src );
-                ctl->ctd = TypeCommonDerivation( ctl->src.class_type
-                                               , ctl->tgt.class_type );
+                ctl->ctd = TypeCommonDerivation( ctl->src.class_type, ctl->tgt.class_type );
                 ctl->rough = CRUFF_CL_TO_CL;
             } else {
                 ctl->rough = CRUFF_SC_TO_CL;
@@ -619,8 +611,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
     mp_ctd = CTD_LEFT;
     if( TYP_MEMBER_POINTER == src.type->id ) {
         if( src.type->u.mp.host != tgt.type->u.mp.host ) {
-            mp_ctd = TypeCommonDerivation( tgt.type->u.mp.host
-                                         , src.type->u.mp.host );
+            mp_ctd = TypeCommonDerivation( tgt.type->u.mp.host, src.type->u.mp.host );
             if( CTD_NO == mp_ctd ) {
                 info->bad_mptr_class = TRUE;
             }
@@ -655,8 +646,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                     } else if( src.type != NULL ) {
                         if( TYP_CLASS == src.id ) {
                             if( TYP_CLASS == tgt.id ) {
-                                info->ctd = TypeCommonDerivation( src.type
-                                                                , tgt.type );
+                                info->ctd = TypeCommonDerivation( src.type, tgt.type );
                                 switch( info->ctd ) {
                                   case CTD_NO :
                                     break;
@@ -693,8 +683,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                                 && IntegralType( src.type )
                                 && tgt.id != TYP_ENUM
                                 && src.id != TYP_ENUM
-                                && CgMemorySize( src.type )
-                                   == CgMemorySize( tgt.type ) ) {
+                                && CgMemorySize( src.type ) == CgMemorySize( tgt.type ) ) {
                             info->ptr_integral_ext = TRUE;
                         } else if( src.id == TYP_VOID ) {
                             if( CgTypeSize( info->tgt.unmod ) <=
@@ -749,16 +738,13 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             retn = FALSE;
             break;
         } else if( src.id != tgt.id ) {
-            if( info->to_void
-             || info->from_void ) {
+            if( info->to_void || info->from_void ) {
                 retn = TRUE;
                 break;
             }
-            if( TYP_FUNCTION != src.id
-             && TYP_FUNCTION != tgt.id ) {
+            if( TYP_FUNCTION != src.id && TYP_FUNCTION != tgt.id ) {
                 info->reint_cast_ok = cv_ok;
             }
-
             retn = FALSE;
             break;
         } else if( src.ext != tgt.ext ) {
@@ -766,8 +752,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             retn = FALSE;
             break;
         }
-        if( TYP_FUNCTION == src.id
-         || TYP_ENUM     == src.id ) {
+        if( TYP_FUNCTION == src.id || TYP_ENUM == src.id ) {
             info->reint_cast_ok = cv_ok;
             retn = ( src.ext == tgt.ext )
                 && TypeCompareExclude( src.type
@@ -783,8 +768,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             }
         } else if( TYP_CLASS == src.id ) {
             info->reint_cast_ok = cv_ok;
-            if( info->to_base
-             || info->to_derived ) {
+            if( info->to_base || info->to_derived ) {
                 retn = TRUE;
             } else {
                 retn = FALSE;
@@ -826,8 +810,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             info->const_cast_ok = FALSE;
             break;
           case CTD_LEFT :
-            if( info->to_derived
-             || ( info->from_void && !info->to_void ) ) {
+            if( info->to_derived || ( info->from_void && !info->to_void ) ) {
                 info->implicit_cast_ok = FALSE;
                 info->const_cast_ok = FALSE;
             } else if( info->to_base
@@ -853,9 +836,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
         }
     }
     info->explicit_cast_ok = TRUE;
-    if( retn
-     && ! info->to_derived
-     && ! info->to_base ) {
+    if( retn && !info->to_derived && !info->to_base ) {
         info->converts = TRUE;
     }
     return retn;
@@ -876,8 +857,7 @@ static unsigned checkPtrTrunc(  // CHECK POINTER TRUNCATION
         retn = NodeCheckPtrTrunc( proto, argument );
     }
     if( ( retn != CNV_OK )
-      &&( ( conversion == CNV_FUNC_THIS )
-        ||( conversion == CNV_FUNC_CD_THIS ) ) ) {
+      &&( ( conversion == CNV_FUNC_THIS ) || ( conversion == CNV_FUNC_CD_THIS ) ) ) {
         retn = CNV_TRUNC_THIS;
     }
     return retn;
@@ -887,7 +867,7 @@ static unsigned checkPtrTrunc(  // CHECK POINTER TRUNCATION
 static void checkClassValue(    // CHECK THAT FUNC. ARG.S, RETURN ARE NOT CLASS
     TYPE ftype,                 // - function type
     PTREE expr,                 // - expression, in case of error
-    unsigned msg )              // - message to be used
+    MSG_NUM msg )               // - message to be used
 {
     unsigned count;             // - number of args
     arg_list *alist;            // - function arguments
@@ -950,8 +930,7 @@ static PTREE nodeBasedSelfExpr( // FIND EXPR TO BE USED FOR BASED __SELF
     SYMBOL baser;               // - baser symbol
     type_flag flags;            // - flags for umod
 
-    DbgVerify( PTreeOpFlags( expr ) & PTO_RVALUE
-             , "nodeBasedSelfExpr -- not CO_FETCH" );
+    DbgVerify( (PTreeOpFlags( expr ) & PTO_RVALUE), "nodeBasedSelfExpr -- not CO_FETCH" );
     node_type = NodeType( expr->u.subtree[0] );
     pted = TypePointedAtModified( node_type );
     umod = TypeModExtract( pted, &flags, &baser, TC1_NOT_ENUM_CHAR );
@@ -1247,8 +1226,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     if( cnv_fun == 10 ) {
         retn = CNV_OK;
     } else {
-        if( ( type_src == PC_PTR_BASED_SELF )
-          &&( ( cnv_fun == 4 ) || ( cnv_fun == 5 ) ) ) {
+        if( ( type_src == PC_PTR_BASED_SELF ) && ( ( cnv_fun == 4 ) || ( cnv_fun == 5 ) ) ) {
             bself = nodeBasedSelfExpr( *a_expr );
         } else {
             bself = NULL;

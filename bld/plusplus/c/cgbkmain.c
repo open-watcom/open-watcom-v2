@@ -2393,8 +2393,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                         e2 = ObjInitAssignIndex( fctl, init, 0 );
                         e2 = CgComma( e1, e2, TY_POINTER );
                         e1 = CGLVAssign
-                                ( CgSymbolPlusOffset( init->reg->sym
-                                                    , CgbkInfo.size_data_ptr )
+                                ( CgSymbolPlusOffset( init->reg->sym, CgbkInfo.size_data_ptr )
                                 , CgSymbol( BeTypeSignature( array_element )
                                              ->sym )
                                 , TY_POINTER );

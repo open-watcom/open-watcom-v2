@@ -1305,7 +1305,7 @@ static void removeDefaultArgs( DECL_INFO *dinfo )
     } RingIterEnd( curr )
 }
 
-static bool cantHaveDefaultArgs( int err_msg, DECL_INFO *dinfo )
+static bool cantHaveDefaultArgs( MSG_NUM err_msg, DECL_INFO *dinfo )
 {
     DECL_INFO *curr;
 
@@ -1375,7 +1375,7 @@ static TYPE *makeExceptionList( PTREE tree )
     return( vector );
 }
 
-static void abstractDiagnose( unsigned msg, TYPE type )
+static void abstractDiagnose( MSG_NUM msg, TYPE type )
 {
     type = ArrayBaseType( type );
     CErr2p( msg, type );
@@ -3599,7 +3599,7 @@ static void checkForUnnamedStruct( DECL_SPEC *dspec, NAME id )
     ClassMakeUniqueName( base_type, id );
 }
 
-static msg_status_t errWithSymLoc( unsigned msg, SYMBOL sym )
+static msg_status_t errWithSymLoc( MSG_NUM msg, SYMBOL sym )
 {
     SetErrLoc( &(sym->locn->tl) );
     return( CErr1( msg ) );
@@ -3621,7 +3621,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     TYPE leftover_type;
     unsigned arg_count;
     int status;
-    int msg_num;
+    MSG_NUM msg_num;
     type_flag mod_flags;
     type_flag fn_flag;
     type_flag ptr_flags;
@@ -7066,8 +7066,8 @@ bool TypeHasEllipsisArg( TYPE type )
     return( FALSE );
 }
 
-bool TypeVAStartWontWork( TYPE fn_type, int *msg )
-/************************************************/
+bool TypeVAStartWontWork( TYPE fn_type, MSG_NUM *msg )
+/****************************************************/
 {
     unsigned num_args;
     arg_list *args;

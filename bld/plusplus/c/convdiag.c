@@ -45,23 +45,21 @@ void ConversionInfDisable(      // DISABLE DISPLAY OF CONVERSION INFORMATION
 
 
 static void infMsgType(         // DISPLAY INFORMATION FOR A CONVERSION TYPE
-    int msg_num,                // - message number
+    MSG_NUM msg_num,            // - message number
     TYPE type )                 // - TYPE in error
 {
     TYPE cl_type;               // - type, when class or ref to class
 
     InfMsgPtr( msg_num, type );
     cl_type = ClassTypeForType( type );
-    if( cl_type != NULL
-     && ! TypeDefined( cl_type ) ) {
+    if( cl_type != NULL && !TypeDefined( cl_type ) ) {
         InfMsgPtr( INF_CLASS_NOT_DEFINED, cl_type );
     } else {
         TYPE ptr_type = PointerTypeEquivalent( type );
         if( NULL != ptr_type ) {
             type_flag not_used;
             cl_type = StructType( TypePointedAt( type, &not_used ) );
-            if( NULL != cl_type
-             && ! TypeDefined( cl_type ) ) {
+            if( NULL != cl_type && !TypeDefined( cl_type ) ) {
                 InfMsgPtr( INF_CLASS_NOT_DEFINED, cl_type );
             }
         }
@@ -93,7 +91,7 @@ void ConversionDiagnoseInf(     // DIAGNOSE SOURCE/TARGET CONVERSION
 
 static unsigned conversionErr(  // ISSUE CONVERSION ERROR
     PTREE expr,                 // - current expression
-    unsigned msg_no )           // - diagnostic
+    MSG_NUM msg_no )            // - diagnostic
 {
     PTreeErrorExpr( expr, msg_no );
     ConversionDiagnoseInf();

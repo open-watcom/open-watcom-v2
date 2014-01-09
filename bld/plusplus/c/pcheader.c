@@ -582,7 +582,7 @@ static bool sameStamp( char *name, time_t saved )
     return( FALSE );
 }
 
-static void pchWarn( unsigned msg )
+static void pchWarn( MSG_NUM msg )
 {
     if( CompFlags.no_pch_warnings ) {
         return;
@@ -597,8 +597,8 @@ static void pchWarn( unsigned msg )
     }
 }
 
-void PCHWarn2p( unsigned msg, void *p )
-/*************************************/
+void PCHWarn2p( MSG_NUM msg, void *p )
+/************************************/
 {
     if( CompFlags.no_pch_warnings ) {
         return;

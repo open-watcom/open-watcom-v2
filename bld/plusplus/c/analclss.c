@@ -409,7 +409,7 @@ static SEARCH_RESULT *classAssignResult( // GET SEARCH_RESULT FOR OPERATOR=()
 
 static SYMBOL classArrayRtn(    // OBTAIN ARRAY ROUTINE FOR ARRAY TYPE
     TYPE cltype,                // - class type
-    unsigned ambig_msg,         // - ambiguity message
+    MSG_NUM ambig_msg,          // - ambiguity message
     type_flag this_qualifier,   // - T cv-qual *this; (cv-qual part)
     SEARCH_RESULT *result )     // - search result for function called
 {
@@ -776,7 +776,7 @@ static bool canBinaryCopy(      // TEST IF COPY CAN BE BINARY
 
 static TYPE checkCopyModel(     // CHECK ASSIGNMENT FOR MEMORY-MODEL VIOLATION
     PTREE expr,                 // - expression to be checked
-    unsigned error_code )       // - error code
+    MSG_NUM error_code )        // - error code
 {
     TYPE type;                  // - type for checking
 
@@ -792,8 +792,8 @@ static TYPE checkCopyModel(     // CHECK ASSIGNMENT FOR MEMORY-MODEL VIOLATION
 static PTREE doBinaryCopy(      // DO A BINARY COPY
     PTREE tgt,                  // - target
     PTREE src,                  // - source
-    unsigned code_tgt,          // - error for truncation on "this"
-    unsigned code_src )         // - error for truncation on source
+    MSG_NUM code_tgt,           // - error for truncation on "this"
+    MSG_NUM code_src )          // - error for truncation on source
 {
     TYPE tgt_type;              // - type for class being assigned to
 //    TYPE src_type;              // - type for class being assigned from

@@ -237,7 +237,7 @@ static bool arg_convert(        // CONVERT AN ARGUMENT
 
 static bool passStructOnStack(  // PASS A STRUCT/CLASS ON STACK
     PTREE arg,                  // - argument (CO_LIST)
-    unsigned warning )          // - internal-data warning
+    MSG_NUM warning )           // - internal-data warning
 {
     PTREE right;                // - right operand
     TYPE type;                  // - class type

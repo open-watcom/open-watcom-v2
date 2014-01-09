@@ -35,25 +35,25 @@
 
 void CallDiagAmbiguous(         // DIAGNOSE AMBIGUOUS CALL
     PTREE expr,                 // - expression for error
-    unsigned msg,               // - message for error
+    MSG_NUM msg,                // - message for error
     FNOV_DIAG *fnov_diag )      // - diagnosis information
 ;
 void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
     PTREE expr,                 // - call or ctor expression
-    unsigned msg_one,           // - message: one function
-    unsigned msg_many,          // - message: many functions
+    MSG_NUM msg_one,            // - message: one function
+    MSG_NUM msg_many,           // - message: many functions
     PTREE this_node,            // - this node (or NULL)
     SYMBOL orig,                // - original symbol for overloading
     FNOV_DIAG *fnov_diag )      // - diagnosis information
 ;
 void CtorDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CTOR
     PTREE expr,                 // - ctor expression
-    unsigned msg_none,          // - message: no CTOR's
+    MSG_NUM msg_none,           // - message: no CTOR's
     FNOV_DIAG *fnov_diag )      // - diagnosis information
 ;
 void CallDiagnoseRejects(       // DIAGNOSE FUNCTIONS IN REJECT LIST
     PTREE expr,                 // - expression for error
-    unsigned msg,               // - message for error
+    MSG_NUM msg,                // - message for error
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 ;
 CNV_RETN AnalyseCtorDiag(       // ANALYSE CONSTRUCTOR
@@ -65,8 +65,8 @@ CNV_RETN AnalyseCtorDiag(       // ANALYSE CONSTRUCTOR
 void UdcDiagNoMatch(            // DIAGNOSE NO MATCHES FOR UDC LOOKUP
     PTREE src,                  // - ctor expression
     TYPE tgt_type,              // - target type
-    unsigned msg_none,          // - message: no UDC's
-    unsigned msg_many,          // - message: many functions
+    MSG_NUM msg_none,           // - message: no UDC's
+    MSG_NUM msg_many,           // - message: many functions
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 ;
 

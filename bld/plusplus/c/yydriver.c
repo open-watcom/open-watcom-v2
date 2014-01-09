@@ -2235,7 +2235,7 @@ static void makeStable( TOKEN end_token )
     }
 }
 
-static void genIdSyntaxError( int msg, char *expect )
+static void genIdSyntaxError( MSG_NUM msg, char *expect )
 {
     PTREE id;
 
@@ -2248,7 +2248,7 @@ static void genIdSyntaxError( int msg, char *expect )
     }
 }
 
-static void genScopedIdSyntaxError( int msg, char *expect )
+static void genScopedIdSyntaxError( MSG_NUM msg, char *expect )
 {
     PTREE id;
     VBUF vbuf;
