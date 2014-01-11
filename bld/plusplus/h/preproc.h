@@ -112,7 +112,7 @@ extern  int     (*NextChar)( void );    // next-character routine (initialized i
 
 typedef struct {
     void                *curr_offset;
-    unsigned long       undef_count;
+    unsigned            undef_count;
 } MACRO_STATE;
 
 void MacroStateClear( MACRO_STATE * );

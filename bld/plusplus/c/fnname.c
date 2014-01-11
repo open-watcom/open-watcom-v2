@@ -216,7 +216,7 @@ static char *utoa_zz( unsigned value, char *buffer )
     return( buffer );
 }
 
-static char *xtoa( unsigned long value, char *p, unsigned base )
+static char *xtoa( unsigned value, char *p, unsigned base )
 {
     unsigned    rem;
 
@@ -229,7 +229,7 @@ static char *xtoa( unsigned long value, char *p, unsigned base )
     return( p );
 }
 
-static char *my_ultoa( unsigned long value, char *buffer, unsigned base )
+static char *my_ultoa( unsigned value, char *buffer, unsigned base )
 {
     char        *p = buffer;
 
@@ -684,7 +684,7 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
     SYMBOL curr;
     SYMBOL stop;
     SYMBOL fn_symbol;
-    char buff[1 + sizeof( unsigned long ) * 2 + 1];
+    char buff[1 + sizeof( unsigned ) * 2 + 1];
 
     for(;;) {
         if( scope == NULL ) break;

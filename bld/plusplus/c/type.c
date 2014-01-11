@@ -1503,9 +1503,9 @@ TYPE MakeTypeOf(                // MAKE UNIQUE TYPE OF
 #ifndef NDEBUG
 
 typedef struct {
-    unsigned long sum;
-    unsigned long max;
-    unsigned long chains;
+    unsigned sum;
+    unsigned max;
+    unsigned chains;
 } DUMP_STATS;
 
 static void dumpStatsZero(      // ZERO DUMP STATISTICS
@@ -1529,7 +1529,7 @@ static TYPE* dumpTypeRing(      // DUMP A TYPE RING
     TYPE* ring,
     DUMP_STATS *stats )
 {
-    long length = 0;
+    int length = 0;
     TYPE curr;
 
     ++ stats->chains;

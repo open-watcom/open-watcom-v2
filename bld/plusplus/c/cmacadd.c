@@ -63,7 +63,7 @@ static MEPTR            *macroHashTable;    // hash table [ MACRO_HASH_SIZE ]
 static MEPTR            beforeIncludeChecks;// #undef macros defined before first #include
 static MACRO_SEG_LIST   *macroSegmentList;  // pointer to list of macro segments
 static PCH_DELMAC       *macroPCHDeletes;   // macros to delete after PCH load
-static unsigned long    undefCount;         // # macros #undef'd
+static unsigned         undefCount;         // # macros #undef'd
 
 ExtraRptCtr( macro_segments );
 ExtraRptCtr( macros_defined );

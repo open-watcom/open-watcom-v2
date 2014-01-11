@@ -50,8 +50,8 @@ global unsigned WngCount;       // - total # of warnings encountered
 
 #ifdef XTRA_RPT
 
-#define ExtraRptCtr( ctr ) static long ctr;
-#define ExtraRptSpace( ctr ) static long ctr;
+#define ExtraRptCtr( ctr ) static int ctr;
+#define ExtraRptSpace( ctr ) static int ctr;
 #define ExtraRptAddtoCtr( tgt, val ) ((tgt) += (val))
 #define ExtraRptDecrementCtr( ctr ) (--(ctr))
 #define ExtraRptIncrementCtr( ctr ) (++(ctr))
@@ -65,25 +65,25 @@ global unsigned WngCount;       // - total # of warnings encountered
 #define ExtraRptTabIncr( table, r, c ) ++ table[r][c];
 #define ExtraRptTabAdd( table, r, c, a ) table[r][c] += (a);
 #define ExtraRptTabSub( table, r, c, a ) table[r][c] -= (a);
-#define ExtraRptTable( table, r, c ) static long table[r][c];
+#define ExtraRptTable( table, r, c ) static int table[r][c];
 
 void ExtraRptRegisterAvg(       // REGISTER AVERAGING
-    long* a_total,              // - addr[ total ]
-    long* a_count,              // - addr[ count ]
-    const char* rpt_line )      // - report line
+    int *a_total,               // - addr[ total ]
+    int *a_count,               // - addr[ count ]
+    const char *rpt_line )      // - report line
 ;
 void ExtraRptRegisterCtr(       // REGISTER A COUNTER
-    long* a_ctr,                // - addr( counter )
-    const char* rpt_line )      // - report line
+    int *a_ctr,                 // - addr( counter )
+    const char *rpt_line )      // - report line
 ;
 void ExtraRptRegisterMax(       // REGISTER A MAXIMUM
-    long* a_ctr,                // - addr( counter )
-    const char* rpt_line )      // - report line
+    int *a_ctr,                 // - addr( counter )
+    const char *rpt_line )      // - report line
 ;
 void ExtraRptRegisterTab(       // REGISTER TABLE
-    char const* title,          // - title
-    char const * const *row_labels,//- row labels
-    long* table,                // - table
+    char const *title,          // - title
+    char const * const *row_labels, //- row labels
+    int *table,                 // - table
     unsigned rows,              // - # rows
     unsigned cols )             // - # columns
 ;

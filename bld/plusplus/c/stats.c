@@ -162,7 +162,7 @@ typedef struct rptreg_ctr RPTREG_CTR;
 struct rptreg_ctr               // RPTREG_CTR -- report registration for ctr
 {   RPTREG_BASE base;           // - base
     const char* text;           // - report line
-    long* a_ctr;                // - addr[ ctr ]
+    int *a_ctr;                 // - addr[ ctr ]
 };
 
 typedef struct rptreg_avg RPTREG_AVG;
@@ -178,7 +178,7 @@ struct rptreg_tab               // RPTREG_TAB -- report registration for table
 {   RPTREG_BASE base;           // - base
     const char* title;          // - title
     const char * const *row_labels;// - row labels
-    long* table;                // - values
+    int *table;                 // - values
     unsigned dim_row;           // - row dimension
     unsigned dim_col;           // - column dimension
 };
@@ -194,7 +194,7 @@ typedef struct                  // REPO_STAT -- repository statistics
 {   VSTK_CTL refset;            // - set of references to symbols
     VSTK_CTL typeset;           // - set of references to types
     SRCFILE srcfile;            // - source file
-    long defns;                 // - # definitions
+    int defns;                  // - # definitions
 } REPO_STAT;
 
 static RPTREG* rpt_registrations;   // registrations
@@ -340,11 +340,11 @@ static void rptRepository       // PRINT REPOSITORY REPORT
 {
     REPO_STAT** last;           // - addr[ REPO_STAT ]
     REPO_STAT* repo;            // - REPO_STAT for source file
-    long ref_syms;              // - # symbol references
-    long ref_types;             // - # type references
-    long avg_defs;              // - average definitions
-    long avg_syms;              // - average symbol references
-    long avg_types;             // - average type references
+    int ref_syms;               // - # symbol references
+    int ref_types;              // - # type references
+    int avg_defs;               // - average definitions
+    int avg_syms;               // - average symbol references
+    int avg_types;              // - average type references
     unsigned file_count;        // - # files
 
     defn = defn;
@@ -390,7 +390,7 @@ static void rptRepository       // PRINT REPOSITORY REPORT
         VstkClose( &repo->typeset );
     }
     if( 0 < file_count ) {
-        long fuzz = file_count / 2;
+        int fuzz = file_count / 2;
         MsgDisplayLine( "" );
         sprintf( sbuff
               , fmt_repos
@@ -478,7 +478,7 @@ static void extraRptPrintCtr(   // PRINT A COUNTER
 
 
 void ExtraRptRegisterCtr(       // REGISTER A COUNTER
-    long* a_ctr,                // - addr( counter )
+    int *a_ctr,                 // - addr( counter )
     const char* rpt_line )      // - report line
 {
     RPTREG* reg;                // - registration entry
@@ -492,7 +492,7 @@ void ExtraRptRegisterCtr(       // REGISTER A COUNTER
 
 
 void ExtraRptRegisterMax(       // REGISTER A MAXIMUM
-    long* a_ctr,                // - addr( counter )
+    int *a_ctr,                 // - addr( counter )
     const char* rpt_line )      // - report line
 {
     ExtraRptRegisterCtr( a_ctr, rpt_line );
@@ -500,7 +500,7 @@ void ExtraRptRegisterMax(       // REGISTER A MAXIMUM
 
 
 static RPTREG* extraRptLookupCtr( // LOOK UP CTR ENTRY
-    long* a_ctr )               // - addr[ counter ]
+    int *a_ctr )                // - addr[ counter ]
 {
     RPTREG* curr;               // - search entry
     RPTREG* entry;              // - entry
@@ -521,10 +521,10 @@ static RPTREG* extraRptLookupCtr( // LOOK UP CTR ENTRY
 static void extraRptPrintAvg(   // PRINT AN AVERAGE
     RPTREG* reg )               // - registration
 {
-    long count;                 // - ctr: count
-    long total;                 // - ctr: total
-    long integ;                 // - computed average: integral part
-    long fract;                 // - computed average: fractional part
+    int count;                  // - ctr: count
+    int total;                  // - ctr: total
+    int integ;                  // - computed average: integral part
+    int fract;                  // - computed average: fractional part
     char* p;                    // - walks thru buffer
     auto char int_part[16];     // - formatting buffers
     auto char frac_part[16];
@@ -552,8 +552,8 @@ static void extraRptPrintAvg(   // PRINT AN AVERAGE
 
 
 void ExtraRptRegisterAvg(       // REGISTER AVERAGING
-    long* a_total,              // - addr[ total ]
-    long* a_count,              // - addr[ count ]
+    int *a_total,               // - addr[ total ]
+    int *a_count,               // - addr[ count ]
     const char* rpt_line )      // - report line
 {
     RPTREG* reg;                // - registration entry
@@ -571,14 +571,14 @@ static void extraRptTable(      // PRINT A TABLE
 {
     unsigned i;                 // - row index
     unsigned r, c;              // - row, column indices
-    long maxval;                // - maximum table value
+    int maxval;                 // - maximum table value
     unsigned digits;            // - # of digits
 
     digits = 0;
     maxval = 1;
     for( r = 0; r < reg->tab.dim_row; ++ r ) {
         for( c = 0; c < reg->tab.dim_col; ++ c ) {
-            long val = reg->tab.table[ r * reg->tab.dim_col + c ];
+            int val = reg->tab.table[ r * reg->tab.dim_col + c ];
             for( ; maxval < val; ++ digits, maxval *= 10 );
         }
     }
@@ -606,7 +606,7 @@ static void extraRptTable(      // PRINT A TABLE
         MsgDisplayLine( "" );
         sprintf( fmt, "%%%dd", digits + 1 );
         for( r = 0; r < reg->tab.dim_row; ++ r ) {
-            long* row = &reg->tab.table[ r * reg->tab.dim_col ];
+            int *row = &reg->tab.table[ r * reg->tab.dim_col ];
             VbufRewind( &buffer );
             if( row_lbl == NULL ) {
                 sprintf( buf, "%4d", r );
@@ -638,7 +638,7 @@ static void extraRptTable(      // PRINT A TABLE
 void ExtraRptRegisterTab(       // REGISTER TABLE
     char const* title,          // - title
     char const * const *row_labels,//- row labels
-    long* table,                // - table
+    int *table,                 // - table
     unsigned rows,              // - # rows
     unsigned cols )             // - # columns
 {

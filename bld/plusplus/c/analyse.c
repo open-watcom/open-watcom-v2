@@ -2018,7 +2018,7 @@ static void warnBoolAssignment( // WARN IF ASSIGNMENT IN BOOLEAN EXPRESSION
 
 
 static void warnBoolConstVal(   // WARNING FOR BOOLEAN CONSTANT VALUES
-    long value,                 // - value
+    int value,                  // - value
     PTREE err_expr,             // - expression for error
     PTREE expr )                // - expression
 {

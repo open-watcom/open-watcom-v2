@@ -340,11 +340,11 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     TYPE base;                  // - base type
     VBUF buffer;                // - printing buffer
     char buf[16];               // - buffer
-    long numb;                  // - a numeric value
+    int numb;                   // - a numeric value
     const char *name;           // - name to be printed
     bool sign;                  // - TRUE ==> signed enum
-    unsigned long mask;         // - used to mask to true size
-    unsigned long val;          // - value as unsigned
+    unsigned mask;              // - used to mask to true size
+    unsigned val;               // - value as unsigned
 
     CompFlags.log_note_msgs = TRUE;
     base = TypedefModifierRemoveOnly( type );
@@ -404,7 +404,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     VbufConcStr( &buffer, name );
     vbufWrite( &buffer );
     mask = CgMemorySize( base );
-    if( mask == sizeof( unsigned long ) ) {
+    if( mask == sizeof( unsigned ) ) {
         mask = -1;
     } else {
         mask = ( 1 << ( mask * 8 ) ) - 1;

@@ -433,7 +433,7 @@ static TOKEN charConst( int char_type, int expanding )
     int c;
     int i;
     TOKEN token;
-    long value;
+    int value;
     struct {
         unsigned double_byte_char : 1;
     } flag;

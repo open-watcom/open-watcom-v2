@@ -463,10 +463,10 @@ static void init(               // INITIALIZATION
 #ifndef NDEBUG
 void dumpNames( void )
 {
-    unsigned long sum;
-    unsigned long length;
-    unsigned long max;
-    unsigned long min;
+    unsigned sum;
+    unsigned length;
+    unsigned max;
+    unsigned min;
     double uniform_stat;
     double perfect_stat;
     int i;

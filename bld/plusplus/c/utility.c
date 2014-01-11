@@ -238,7 +238,7 @@ int classify_escape_char(       // CLASSIFY TYPE OF ESCAPE
 
 char *stdcpy(                   // CONCATENATE DECIMAL NUMBER
     char *tgt,                  // - target location
-    unsigned long value )       // - value to be concatenated
+    unsigned int value )        // - value to be concatenated
 {
     char buffer[16];
 
@@ -248,7 +248,7 @@ char *stdcpy(                   // CONCATENATE DECIMAL NUMBER
 
 char *sticpy(                   // CONCATENATE INTEGER NUMBER
     char *tgt,                  // - target location
-    long value )                // - value to be concatenated
+    signed int value )          // - value to be concatenated
 {
     char buffer[16];
 

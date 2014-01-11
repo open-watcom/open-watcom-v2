@@ -40,8 +40,8 @@
 typedef struct {                // INTEGER CONSTANT
     union {                     // - value
         signed_64     value;    // - - 64-bit int
-        long          sval;     // - - signed long
-        unsigned long uval;     // - - unsigned long
+        signed int    sval;     // - - signed 32-bit int
+        unsigned int  uval;     // - - unsigned 32-bit int
     } u;
     TYPE              type;     // - type (not modified)
 } INT_CONSTANT;

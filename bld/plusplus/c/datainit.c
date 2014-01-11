@@ -65,7 +65,7 @@ static carve_t carveQUEUE;
 static carve_t carveNEST;
 static INITIALIZE_DATA *currInit;
 static unsigned runTimeThreshold = 1;
-static unsigned long bitMask[] = {      // for bitfields
+static unsigned bitMask[] = {       // for bitfields
     0x00000001, 0x00000003, 0x00000007, 0x0000000F,
     0x0000001F, 0x0000003F, 0x0000007F, 0x000000FF,
     0x000001FF, 0x000003FF, 0x000007FF, 0x00000FFF,

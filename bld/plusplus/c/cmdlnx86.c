@@ -311,7 +311,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
 {
     char model;
-    unsigned long bit;
+    unsigned bit;
 
     if( data->mem_model == OPT_mem_model_default ) {
 #if _CPU == 8086

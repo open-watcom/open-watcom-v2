@@ -164,11 +164,11 @@ double SafeAtof(                // CONVERT STRING TO DOUBLE
 ;
 char *stdcpy(                   // CONCATENATE DECIMAL NUMBER
     char *tgt,                  // - target location
-    unsigned long value )       // - value to be concatenated
+    unsigned int value )        // - value to be concatenated
 ;
 char *sticpy(                   // CONCATENATE INTEGER NUMBER
     char *tgt,                  // - target location
-    long value )                // - value to be concatenated
+    signed int value )          // - value to be concatenated
 ;
 char *sti64cpy(                 // CONCATENATE I64 NUMBER
     char *tgt,                  // - target location
