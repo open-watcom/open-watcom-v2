@@ -406,10 +406,6 @@ File: source\diag0216.c
   'NONPODS' defined at: (10,8)
   source conversion type is 'NONPODS __far (lvalue)'
   target conversion type is 'NONPODS (lvalue)'
-(39,5): Error! E161: attempt to call member function for far object when the data model is near
-(39,10): Warning! W005: pointer or reference truncated
-(40,10): Warning! W005: pointer or reference truncated
-(41,5): Error! E161: attempt to call member function for far object when the data model is near
 (44,5): Error! E161: attempt to call member function for far object when the data model is near
   'NONPODS' defined at: (10,8)
   definition: 'NONPODS & NONPODS::operator =( NONPODS const & )'
@@ -420,10 +416,10 @@ File: source\diag0216.c
 (46,5): Error! E161: attempt to call member function for far object when the data model is near
   'NONPODS' defined at: (10,8)
   definition: 'NONPODS & NONPODS::operator =( NONPODS const & )'
-(49,5): Error! E160: attempt to destroy a far object when data model is near
+(49,5): Error! E160: attempt to destroy a far object when the data model is near
   'PODS' defined at: (6,8)
   definition: 'PODS::~PODS( void )'
-(52,5): Error! E160: attempt to destroy a far object when data model is near
+(52,5): Error! E160: attempt to destroy a far object when the data model is near
   'NONPODS' defined at: (10,8)
   definition: 'NONPODS::~NONPODS( void )'
 (55,15): Warning! W005: pointer or reference truncated

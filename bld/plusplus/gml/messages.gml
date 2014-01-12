@@ -2118,7 +2118,7 @@ void fn( char *p )
 :eerrbad.
 
 :MSGSYM. ERR_DTOR_OBJ_MEM_MODEL
-:MSGTXT. attempt to destroy a far object when data model is near
+:MSGTXT. attempt to destroy a far object when the data model is near
 :MSGJTXT. データモデルがnearであるとき，farオブジェクトにデストラクタを適用しています
 Destructors cannot be applied to objects which are stored in far memory
 when the default memory model for data is near.
@@ -9501,7 +9501,7 @@ The identifier used in the
 declaration modifier is not supported by Open Watcom C++.
 
 :MSGSYM. ERR_CTOR_OBJ_MEM_MODEL
-:MSGTXT. attempt to construct a far object when data model is near
+:MSGTXT. attempt to construct a far object when the data model is near
 :MSGJTXT. データモデルがnearであるとき，farオブジェクトをつくろうとしています
 Constructors cannot be applied to objects which are stored in far memory
 when the default memory model for data is near.

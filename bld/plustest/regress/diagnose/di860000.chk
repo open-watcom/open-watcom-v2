@@ -1692,24 +1692,24 @@ Warning! W018: no reference to anonymous union member 'b'
 File: source\diag0080.c
 (2,6): Error! E080: system dependent test for 386
 File: source\diag0081.c
-(20,11): Warning! W005: pointer or reference truncated
+(25,11): Warning! W005: pointer or reference truncated
   'Y' defined at: (10,8)
   source conversion type is 'Y __far (lvalue)'
   target conversion type is 'Y (lvalue)'
-(21,15): Error! E723: attempt to construct a far object when data model is near
-(29,11): Warning! W005: pointer or reference truncated
+(26,15): Error! E723: attempt to construct a far object when the data model is near
+(39,11): Warning! W005: pointer or reference truncated
   'Y' defined at: (10,8)
   source conversion type is 'Y __far (lvalue)'
   target conversion type is 'Y (lvalue)'
-(32,10): Warning! W005: pointer or reference truncated
+(44,10): Warning! W005: pointer or reference truncated
   'Y' defined at: (10,8)
   source conversion type is 'Y __far (lvalue)'
   target conversion type is 'Y const (lvalue)'
-(34,5): Error! E161: attempt to call member function for far object when the data model is near
+(46,5): Error! E161: attempt to call member function for far object when the data model is near
   'Y' defined at: (10,8)
   definition: 'Y & Y::operator =( Y const & )'
-(36,12): Error! E163: attempt to delete a far object when the data model is near
-(39,5): Error! E161: attempt to call member function for far object when the data model is near
+(48,12): Error! E163: attempt to delete a far object when the data model is near
+(51,5): Error! E161: attempt to call member function for far object when the data model is near
   'Y' defined at: (10,8)
   definition: 'int Y::foo( void )'
 File: source\diag0082.c
