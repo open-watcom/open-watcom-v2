@@ -179,6 +179,8 @@
 /wcl/owcc/*/*.owc
 #
 /wgml/test/testlib/*.bat
+/wgml/test/testgml/*
+!/wgml/test/testgml/makefile
 #
 /win386/conv/win386/*
 !/win386/conv/win386/makefile
