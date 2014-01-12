@@ -45,7 +45,6 @@ static carve_t carve_call_stab; // carve control: CALL_STAB
 
 #ifndef NDEBUG
 
-#include <stdio.h>
 #include "pragdefn.h"
 
 static void __dump( const char* text, CALL_STAB* cstb )

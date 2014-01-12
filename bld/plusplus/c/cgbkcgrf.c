@@ -61,7 +61,6 @@
 #include "rtti.h"
 
 #ifndef NDEBUG
-    #include <stdio.h>
     #include "dbg.h"
     #include "pragdefn.h"
 

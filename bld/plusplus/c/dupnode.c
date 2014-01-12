@@ -36,7 +36,6 @@
 #include "ring.h"
 #include "initdefs.h"
 #ifndef NDEBUG
-    #include <stdio.h>
     #include "pragdefn.h"
     #include "dbg.h"
     #include "toggle.h"

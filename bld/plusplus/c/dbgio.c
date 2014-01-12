@@ -31,8 +31,6 @@
 
 #include "plusplus.h"
 
-#include <stdio.h>
-
 #include "dbg.h"
 
 #define MX_FSTK         10

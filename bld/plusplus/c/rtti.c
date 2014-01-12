@@ -32,8 +32,6 @@
 
 #include "plusplus.h"
 
-#include <stdio.h>
-
 #include "carve.h"
 #include "pcheader.h"
 #include "initdefs.h"

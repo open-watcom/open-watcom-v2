@@ -1203,7 +1203,6 @@ pch_status PCHFiniOperatorOverloadData( bool writing )
 #ifndef NDEBUG
 
 #include "dbg.h"
-#include <stdio.h>
 
 static void dumpOVOP            // DEBUG -- DUMP OVOP structure
     ( OVOP* ovop                // - OVOP

@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 
-#include <stdio.h>
 #include <errno.h>
 
 #ifdef OPT_BR

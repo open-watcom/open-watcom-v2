@@ -34,8 +34,6 @@
 
 #include "plusplus.h"
 
-#include <stdio.h>
-
 #include "memmgr.h"
 #include "iosupp.h"
 #include "srcfile.h"

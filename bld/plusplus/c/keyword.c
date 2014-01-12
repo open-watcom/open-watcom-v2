@@ -64,7 +64,7 @@ TOKEN KwLookup(         // TRANSFORM TO T_ID OR KEYWORD TOKEN
         ExtraRptIncrementCtr( ctr_len_min );
     if( len > LEN_MAX )
         ExtraRptIncrementCtr( ctr_len_max );
-    if(( (1<<len) & LEN_MASK ) == 0 )
+    if( (( 1 << len ) & LEN_MASK) == 0 )
         ExtraRptIncrementCtr( ctr_len_mask );
 #endif
     token = keyword_hash( Buffer, TokValue, len ) + FIRST_KEYWORD;

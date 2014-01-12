@@ -64,7 +64,6 @@ static unsigned parm_no;            // parm # being defined
 #ifdef NDEBUG
     #define dump_ibrp( ibrp, text )
 #else
-    #include <stdio.h>
     #include "dbg.h"
     #include "pragdefn.h"
 

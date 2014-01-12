@@ -32,8 +32,6 @@
 
 #include "plusplus.h"
 
-#include <stdio.h>
-
 #include "memmgr.h"
 #include "cgfront.h"
 #include "carve.h"

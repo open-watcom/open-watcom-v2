@@ -32,7 +32,6 @@
 #ifndef _PCHEADER_H
 #define _PCHEADER_H
 
-#include <stdio.h>
 #include "carve.h"
 
 // constants used for non-carve pointer indices (similar to CARVE_* in carve.h)

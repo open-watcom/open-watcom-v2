@@ -61,7 +61,6 @@ typedef struct {                // INFO FOR A CONDITION
 } COND_STK;
 
 #ifndef NDEBUG
-    #include <stdio.h>
     #include "dbg.h"
     #include "toggle.h"
     #include "pragdefn.h"

@@ -1144,7 +1144,7 @@ static PTREE pruneExpr(         // PRUNE ONE SIDE FROM EXPRESSION
 }
 
 #define isIntFloatOp( op ) \
-    ((( 1L << (op) ) & ((1L<<PT_INT_CONSTANT) | (1L<<PT_FLOATING_CONSTANT))) != 0 )
+    (((1L << (op)) & ((1L << PT_INT_CONSTANT) | (1L << PT_FLOATING_CONSTANT))) != 0 )
 
 
 PTREE FoldBinary( PTREE expr )
@@ -1227,7 +1227,7 @@ PTREE FoldBinary( PTREE expr )
             // X, c -- can be optimized when X is PT_IC( IC_COND_TRUE )
             // and comma node has PTF_COND_END set
             //
-            if( expr->flags & PTF_COND_END
+            if( (expr->flags & PTF_COND_END)
              && op1->op == PT_IC
              && op1->u.ic.opcode == IC_COND_TRUE ) {
                 expr = pruneExpr( expr, &expr->u.subtree[1], op2 );

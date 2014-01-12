@@ -40,7 +40,6 @@
     #include "dbg.h"
     #include "toggle.h"
     #include "pragdefn.h"
-    #include <stdio.h>
 #endif
 
 

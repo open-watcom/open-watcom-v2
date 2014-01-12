@@ -277,7 +277,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
     unmod_type = TypeModFlags( sym->sym_type, &mod_flags );
     if( unmod_type->id == TYP_FUNCTION ) {
         attr |= FE_PROC;
-        if( !IsCppNameInterestingDebug( sym ) ){
+        if( !IsCppNameInterestingDebug( sym ) ) {
             attr |= FE_COMPILER;
         }
         if( SymIsInitialized( sym ) ) {
@@ -356,14 +356,13 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
     } else {
         attr |= basic_attributes( sym );
     }
-    if( mod_flags & TF1_COMMON
-     && 0 == mask ) {
+    if( (mod_flags & TF1_COMMON) && 0 == mask ) {
         /* should never execute this but just in case ... */
         attr |= FE_COMMON | FE_GLOBAL;
     } else if( attr & FE_COMMON ) {
         attr |= FE_GLOBAL;
     }
-    DbgAssert( mask == 0 || ( attr & FE_COMMON ) == 0 );
+    DbgAssert( mask == 0 || (attr & FE_COMMON) == 0 );
     attr &= ~mask;
 #ifndef NDEBUG
     if( PragDbgToggle.auxinfo ) {
@@ -590,8 +589,7 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
         unmod_type = TypeModFlags( sym->sym_type, &mod_flags );
         if( unmod_type->id == TYP_FUNCTION ) {
             inf = NULL;
-            if( ( unmod_type->flag & TF1_INTRINSIC )
-             && ( sym->name != NULL ) ) {
+            if( (unmod_type->flag & TF1_INTRINSIC) && ( sym->name != NULL ) ) {
                 inf = IntrinsicAuxLookup( sym );
             }
             if( inf == NULL ) {
@@ -738,11 +736,11 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
     if( ScopeId( SymScope( sym ) ) != SCOPE_FILE ) {
         return( FALSE );
     }
-    if(( sym->flag & SF_ADDR_TAKEN ) != 0 ) {
+    if( (sym->flag & SF_ADDR_TAKEN) != 0 ) {
         // function may be called as a FAR function through a pointer
         return( FALSE );
     }
-    if(( GenSwitches & (DBG_TYPES|DBG_LOCALS)) != 0 ) {
+    if( (GenSwitches & (DBG_TYPES | DBG_LOCALS)) != 0 ) {
         // function's debugging info will be FAR
         return( FALSE );
     }
@@ -816,7 +814,7 @@ static call_class getCallClass( // GET CLASS OF CALL
             fn_flags = fn_type->flag;
 #if _INTEL_CPU
             // don't export addressability thunks
-            if(( sym->flag & SF_ADDR_THUNK ) == 0 ) {
+            if( (sym->flag & SF_ADDR_THUNK) == 0 ) {
                 if( flags & TF1_DLLEXPORT ) {
                     if( fn_flags & TF1_INLINE ) {
                         // may be COMDATed so make sure the calling convention
@@ -1340,7 +1338,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         save_set = inf->save;
         if( sym != NULL ) {
             type = FunctionDeclarationType( sym->sym_type );
-            if( type != NULL && ( type->flag & TF1_SAVEREGS ) != 0 ) {
+            if( type != NULL && (type->flag & TF1_SAVEREGS) != 0 ) {
                 HW_CTurnOn( save_set, HW_SEGS );
             }
         }
@@ -1532,7 +1530,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
     SYMBOL sym )                // - function symbol
 {
-    return(( getLangInfo( sym )->cclass & SUICIDAL ) != 0 );
+    return( (getLangInfo( sym )->cclass & SUICIDAL) != 0 );
 }
 
 
@@ -1542,7 +1540,7 @@ dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL
     dbg_type ret;
     SYMBOL sym = _sym;
 
-    if( GenSwitches & DBG_DF ){
+    if( GenSwitches & DBG_DF ) {
         ret = DwarfDebugSym( sym );
     } else {
         ret = SymbolicDebugType( sym->sym_type, SD_DEFAULT );
@@ -1563,7 +1561,7 @@ dbg_type FEDbgRetType(           // GET DEBUG RETURN TYPE FOR SYMBOL
     } else {
         type = type->of;
     }
-    if( GenSwitches & DBG_DF ){
+    if( GenSwitches & DBG_DF ) {
         ret = DwarfDebugType( type );
     } else {
         ret = SymbolicDebugType( type, SD_DEFAULT );

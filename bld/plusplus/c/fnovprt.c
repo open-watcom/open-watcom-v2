@@ -34,8 +34,6 @@
 
 #include "plusplus.h"
 
-#include <stdio.h>
-
 #include "vbuf.h"
 #include "ring.h"
 #include "fmtsym.h"

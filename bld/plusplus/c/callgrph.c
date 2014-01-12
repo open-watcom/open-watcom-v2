@@ -288,7 +288,6 @@ bool CgrfWalkCalls(             // WALK CALLS FROM NODE IN GRAPH
 
 #ifndef NDEBUG
 
-    #include <stdio.h>
     #include "dbg.h"
 
 

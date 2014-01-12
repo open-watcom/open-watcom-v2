@@ -61,7 +61,6 @@ static PSTK_CTL stack_new_ctors;    // stack: newed ctoring
 
 #ifndef NDEBUG
 
-    #include <stdio.h>
     #include "toggle.h"
     #include "pragdefn.h"
 

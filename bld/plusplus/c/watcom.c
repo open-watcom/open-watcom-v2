@@ -31,7 +31,6 @@
 
 #include "plusplus.h"
 
-#include <stdio.h>
 #include <banner.h>
 
 #include "fingprnt.h"

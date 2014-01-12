@@ -33,7 +33,6 @@
 #ifndef _CGDATA_H_
 #define _CGDATA_H_
 
-#include <stdio.h>
 #include "cgswitch.h"
 #include "toggle.h"
 

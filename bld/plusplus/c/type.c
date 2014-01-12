@@ -7342,7 +7342,6 @@ static void pushPrototypeAndArguments( type_bind_info *data,
             }
 
             p_tree = PTreeType( p_type );
-            p_tree->filler = 0;
             PstkPush( &(data->with_generic), p_tree );
 
             if( control & PA_FUNCTION ) {
@@ -7570,7 +7569,6 @@ static bool compareClassTypes( TYPE b_type, TYPE u_type,
             PstkPush( &(data->without_generic),
                       PTreeType( b_curr->sym_type ) );
             u_tree = PTreeType( u_curr->sym_type );
-            u_tree->filler = 0;
             PstkPush( &(data->with_generic), u_tree );
         } else if( b_curr->id == SC_STATIC ) {
             if( u_curr->id == SC_ADDRESS_ALIAS ) {
@@ -7948,12 +7946,10 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
         case TYP_MEMBER_POINTER:
             PstkPush( &(data->without_generic), PTreeType( b_unmod_type->u.mp.host ) );
             u_tree = PTreeType( u_unmod_type->u.mp.host );
-            u_tree->filler = 0;
             PstkPush( &(data->with_generic), u_tree );
 
             PstkPush( &(data->without_generic), PTreeType( b_unmod_type->of ) );
             u_tree = PTreeType( u_unmod_type->of );
-            u_tree->filler = 0;
             PstkPush( &(data->with_generic), u_tree );
             break;
         case TYP_ARRAY:
@@ -7962,7 +7958,6 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
             }
             PstkPush( &(data->without_generic), PTreeType( b_unmod_type->of ) );
             u_tree = PTreeType( u_unmod_type->of );
-            u_tree->filler = 0;
             PstkPush( &(data->with_generic), u_tree );
             break;
         case TYP_FUNCTION:
@@ -7983,7 +7978,6 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
                 for( i = b_args->num_args; i != 0; --i ) {
                     PstkPush( &(data->without_generic), PTreeType( *pb ) );
                     u_tree = PTreeType( *pu );
-                    u_tree->filler = 0;
                     PstkPush( &(data->with_generic), u_tree );
                     ++pb;
                     ++pu;
@@ -7991,7 +7985,6 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
             }
             PstkPush( &(data->without_generic), PTreeType( b_unmod_type->of ) );
             u_tree = PTreeType( u_unmod_type->of );
-            u_tree->filler = 0;
             PstkPush( &(data->with_generic), u_tree );
             break;
         default:

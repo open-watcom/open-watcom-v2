@@ -40,7 +40,6 @@
 #include "initdefs.h"
 
 #ifndef NDEBUG
-    #include <stdio.h>
     #include "dbg.h"
 #endif
 

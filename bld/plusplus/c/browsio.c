@@ -31,7 +31,6 @@
 
 #include "plusplus.h"
 
-#include <stdio.h>
 #include <setjmp.h>
 #include <stdarg.h>
 #include <errno.h>

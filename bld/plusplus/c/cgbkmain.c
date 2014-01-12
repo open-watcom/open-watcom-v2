@@ -111,7 +111,6 @@
         --ic_sp;
 
 #ifndef NDEBUG
-    #include <stdio.h>
     #include "dbg.h"
     #define dump_label( ins ) if( PragDbgToggle.dump_labels ) ins
 #else

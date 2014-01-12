@@ -37,7 +37,6 @@
 #include "pstk.h"
 
 #ifndef NDEBUG
-#   include <stdio.h>
 #   include "pragdefn.h"
 #endif
 

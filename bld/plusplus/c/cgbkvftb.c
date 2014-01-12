@@ -32,7 +32,6 @@
 
 #error nothing in this module is ever referenced (94/05/10 AFS)
 #include <float.h>
-#include <stdlib.h>
 
 #include "plusplus.h"
 #include "cgfront.h"
@@ -44,7 +43,6 @@
 #include "initdefs.h"
 
 #ifndef NDEBUG
-    #include <stdio.h>
     #include "dbg.h"
     #include "toggle.h"
 #endif

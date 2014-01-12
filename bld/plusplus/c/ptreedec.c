@@ -994,7 +994,6 @@ pch_status PCHFiniPtds( bool writing )
 
 #ifndef NDEBUG
 
-#include <stdio.h>
 #include "dbg.h"
 #include "fmttype.h"
 

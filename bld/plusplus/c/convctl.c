@@ -1407,7 +1407,6 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
 
 #ifndef NDEBUG
 
-#include <stdio.h>
 #include "dbg.h"
 
 #define dfnRKD(a) # a

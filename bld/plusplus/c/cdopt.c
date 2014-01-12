@@ -204,7 +204,6 @@ ExtraRptCtr( ctr_caches    );   // # caches
 
 #ifndef NDEBUG
 
-#include <stdio.h>
 #include "dbg.h"
 #include "toggle.h"
 

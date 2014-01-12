@@ -144,6 +144,7 @@ PTREE PTreeAlloc( void )
     tree->locn.line = 0;
     tree->locn.column = 0;
     tree->decor = NULL;
+    tree->filler = 0;
     return tree;
 }
 

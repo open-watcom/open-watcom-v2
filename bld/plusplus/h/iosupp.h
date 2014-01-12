@@ -38,8 +38,6 @@
 // 91/06/04 -- J.W.Welch        -- defined
 // 92/12/29 -- B.J. Stecher     -- QNX support
 
-#include <stdio.h>
-
 enum file_type                  // TYPES OF FILES
 {   FT_SRC                      // - primary source file
 ,   FT_HEADER                   // - header file (i.e., #include "file.h")

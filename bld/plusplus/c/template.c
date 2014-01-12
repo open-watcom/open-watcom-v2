@@ -2750,8 +2750,8 @@ TYPE BoundTemplateClass( TYPE typ )
         }
 
         if( ( unbound->id == TYP_CLASS )
-         && ( unbound->flag & TF1_UNBOUND )
-         && !( unbound->flag & TF1_GENERIC ) ) {
+         && (unbound->flag & TF1_UNBOUND)
+         && (unbound->flag & TF1_GENERIC) == 0 ) {
             if( unbound->of != NULL ) {
                 bound = unbound->of;
 
@@ -2783,8 +2783,8 @@ TYPE BindTemplateClass( TYPE typ, TOKEN_LOCN *locn, bool deref_ptrs )
         }
 
         if( ( unbound->id == TYP_CLASS )
-         && ( unbound->flag & TF1_UNBOUND )
-         && !( unbound->flag & TF1_GENERIC ) ) {
+         && (unbound->flag & TF1_UNBOUND)
+         && (unbound->flag & TF1_GENERIC) == 0 ) {
             if( unbound->of == NULL ) {
                 bound = TemplateUnboundInstantiate( unbound, NULL, locn );
                 DbgAssert( ( unbound->of == NULL )

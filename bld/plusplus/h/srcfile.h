@@ -32,9 +32,6 @@
 
 #ifndef _SRCFILE_H
 
-#include <stdio.h>
-#include <time.h>
-
 #include "toknlocn.h"
 
 #define PRODUCTION_BUFFER_SIZE  (1024*8)

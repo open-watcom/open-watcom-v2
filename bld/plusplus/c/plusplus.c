@@ -63,7 +63,6 @@
 #include "ialias.h"
 
 #ifndef NDEBUG
-#include <stdio.h>
 #include "pragdefn.h"
 #include "enterdb.h"
 #endif

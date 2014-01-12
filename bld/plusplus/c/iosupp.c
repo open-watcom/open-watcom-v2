@@ -31,7 +31,6 @@
 
 #include "plusplus.h"
 
-#include <stdio.h>
 #include <stdarg.h>
 #if defined(__UNIX__)
  #include <dirent.h>

@@ -239,8 +239,7 @@ static void generateCallRefICs( // GENERATE IC'S FOR REFERENCE PARAMETERS
     for( expr = expr->u.subtree[1], arg_no = 0
        ; expr != NULL
        ; expr = expr->u.subtree[0], ++arg_no ) {
-        if( expr->flags & PTF_ARG_THIS
-         || NULL != TypeReference( NodeType( expr ) ) ) {
+        if( (expr->flags & PTF_ARG_THIS) || NULL != TypeReference( NodeType( expr ) ) ) {
             arg = getChildNode( &expr->u.subtree[1] );
             if( arg->op == PT_SYMBOL ) {
                 generateRarg( arg, arg_no );
@@ -346,8 +345,7 @@ static void emitDtorMarking(    // EMIT DTOR MARKING OF FOR SYMBOL
             if( emitAutoMarking( sym ) ) {
                 CgFrontRetnOptEnd();
             }
-        } else if( SymIsTemporary( sym )
-                && (expr->flags & PTF_BLOCK_INIT) == 0 ) {
+        } else if( SymIsTemporary( sym ) && (expr->flags & PTF_BLOCK_INIT) == 0 ) {
             LabelTempDtored( expr->u.subtree[1], alias );
             CgFrontCodePtr( IC_DTOR_TEMP, alias );    // - temporary
             PtdDtorUseSym( expr, dtor );

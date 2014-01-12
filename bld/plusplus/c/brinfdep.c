@@ -42,7 +42,6 @@
 #ifndef NDEBUG
 #   include "dbg.h"
 #   include "pragdefn.h"
-#   include <stdio.h>
 #endif
 
 struct MACDEP                   // MACDEP -- macro dependency

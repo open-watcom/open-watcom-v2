@@ -110,11 +110,6 @@ extern  int     (*NextChar)( void );    // next-character routine (initialized i
 
 // PROTOTYPES: exposed to C++ project
 
-typedef struct {
-    void                *curr_offset;
-    unsigned            undef_count;
-} MACRO_STATE;
-
 void MacroStateClear( MACRO_STATE * );
 void MacroStateGet( MACRO_STATE * );
 bool MacroStateMatchesCurrent( MACRO_STATE * );

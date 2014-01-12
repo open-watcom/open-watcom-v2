@@ -40,7 +40,6 @@
 #ifndef NDEBUG
 #   include "dbg.h"
 #   include "pragdefn.h"
-#   include <stdio.h>
 #endif
 
 typedef struct pp_ins PP_INS;

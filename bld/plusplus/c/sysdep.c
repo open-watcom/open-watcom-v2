@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 #include <sys/types.h>
-#include <stdio.h>
 #include "wio.h"
 
 #include "sysdep.h"

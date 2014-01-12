@@ -49,7 +49,6 @@ static STAB_DEFN fStabDefn;     // function state table definition
 static target_offset_t rw_offset_fun; // offset of R/W var. in function
 
 #ifndef NDEBUG
-    #include <stdio.h>
     #include "toggle.h"
     #include "pragdefn.h"
 
