@@ -62,38 +62,38 @@ RT_TYPE_SIG CPPLIB( ts_pnted )( // POINT PAST POINTER TYPE-SIG
 rboolean CPPLIB( ts_equiv )(    // TEST IF TYPE SIG.S ARE EQUIVALENT
     RT_TYPE_SIG tgt,            // - target type signature
     RT_TYPE_SIG src,            // - source type signature
-    rboolean zero_thrown )      // - TRUE ==> zero was thrown
+    rboolean zero_thrown )      // - true ==> zero was thrown
 {
-    rboolean retn;              // - TRUE ==> conversion possible
+    rboolean retn;              // - true ==> conversion possible
 
     if( tgt == NULL ) {
-        retn = TRUE;
+        retn = true;
     } else {
         tgt = CPPLIB( ts_refed )( tgt );
-        retn = FALSE;
+        retn = false;
         if( zero_thrown ) {
             switch( tgt->hdr.type ) {
               case THROBJ_PTR_SCALAR :
               case THROBJ_VOID_STAR :
               case THROBJ_PTR_CLASS :
-                retn = TRUE;
+                retn = true;
                 break;
             }
         }
         if( ! retn ) {
             src = CPPLIB( ts_refed )( src );
             if( src == tgt ) {
-                retn = TRUE;
+                retn = true;
             } else if( tgt->hdr.type != src->hdr.type ) {
-                retn = FALSE;
+                retn = false;
             } else switch( tgt->hdr.type ) {
               case THROBJ_VOID_STAR :
               case THROBJ_ANYTHING :
-                retn = TRUE;
+                retn = true;
                 break;
               case THROBJ_PTR_SCALAR :
                 if( tgt->base.indirect != src->base.indirect ) {
-                    retn = FALSE;
+                    retn = false;
                     break;
                 }
                 // drops thru
@@ -106,24 +106,24 @@ rboolean CPPLIB( ts_equiv )(    // TEST IF TYPE SIG.S ARE EQUIVALENT
               case THROBJ_CLASS_VIRT :
                 if( tgt->clss.size == src->clss.size ) {
                     if( 0 == strcmp( tgt->clss.name, src->clss.name ) ) {
-                        retn = TRUE;
+                        retn = true;
                     } else {
-                        retn = FALSE;
+                        retn = false;
                     }
                 } else {
-                    retn = FALSE;
+                    retn = false;
                 }
                 break;
               case THROBJ_PTR_FUN :
               case THROBJ_SCALAR :
                 if( tgt->scalar.size == src->scalar.size ) {
                     if( 0 == strcmp( tgt->scalar.name, src->scalar.name ) ) {
-                        retn = TRUE;
+                        retn = true;
                     } else {
-                        retn = FALSE;
+                        retn = false;
                     }
                 } else {
-                    retn = FALSE;
+                    retn = false;
                 }
                 break;
               default :

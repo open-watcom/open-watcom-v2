@@ -86,7 +86,7 @@ static void fs_root             // ESTABLISH ROOT ENTRY
     ( void )
 {
     THREAD_CTL* thr = &_RWD_ThreadData;
-    thr->flags.executable = TRUE;
+    thr->flags.executable = true;
 }
 
 

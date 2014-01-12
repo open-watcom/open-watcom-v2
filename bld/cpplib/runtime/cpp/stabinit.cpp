@@ -54,7 +54,7 @@ inline
 static void dispatch_init(      // INITIALIZE DISPATCH BLOCK
     DISPATCH_EXC *dispatch,     // - dispatch control
     THROW_RO *throw_ro,         // - thrown R/O block
-    rboolean is_zero,           // - TRUE ==> thrown object is zero constant
+    rboolean is_zero,           // - true ==> thrown object is zero constant
     _RTCTL* rtc )               // - R/T control
 {
     dispatch->ro = throw_ro;
@@ -64,12 +64,12 @@ static void dispatch_init(      // INITIALIZE DISPATCH BLOCK
     dispatch->try_cmd = NULL;
     dispatch->exc = rtc->thr->excepts;
     if( 0 == throw_ro ) {
-        dispatch->rethrow = TRUE;
+        dispatch->rethrow = true;
     } else {
-        dispatch->rethrow = FALSE;
+        dispatch->rethrow = false;
     }
-    dispatch->popped = FALSE;
-    dispatch->non_watcom = FALSE;
+    dispatch->popped = false;
+    dispatch->non_watcom = false;
     dispatch->fnexc_skip = NULL;
     dispatch->srch_ctl = rtc->thr->exc_pr;
 }
@@ -78,7 +78,7 @@ static void dispatch_init(      // INITIALIZE DISPATCH BLOCK
 void CPPLIB( exc_setup )        // SETUP DISPATCH, EXCEPTION RECORDS
     ( DISPATCH_EXC* disp        // - dispatch record
     , THROW_RO* throw_ro        // - throw r/o block
-    , rboolean is_zero          // - TRUE ==> thrown object is zero constant
+    , rboolean is_zero          // - true ==> thrown object is zero constant
     , _RTCTL* rt_ctl            // - R/T control
     , void* object              // - thrown object
     , FsExcRec* rec )           // - exception record

@@ -66,7 +66,7 @@ longjmpDtoring                  // longjmp INTERFACE
     //              after the setjmp to ensure the state is always the
     //              state before the setjmp)
     //
-    CPPLIB( exc_setup )( &dispatch, 0, FALSE, &rt_ctl, 0, &excrec );
+    CPPLIB( exc_setup )( &dispatch, 0, false, &rt_ctl, 0, &excrec );
     rw = rt_ctl.thr->registered;
     last = rw;
     for( ; ; rw = rw->base.prev ) {

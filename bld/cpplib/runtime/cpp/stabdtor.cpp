@@ -136,7 +136,7 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
 
     rtc = rtc->setRwRo( rw );
     CPPLIB( stab_trav_init )( &traversal, rtc );
-    traversal.unwinding = TRUE;
+    traversal.unwinding = true;
     traversal.bound = state_var;
     next_state = nextDtorPosn( &traversal );
     ro = rtc->ro;
@@ -322,7 +322,7 @@ int CPPLIB( cmd_active )(       // INFO CAN BE DISPLAYED ABOUT IT
     RW_DTREG* rw,               // - active r/w entry
     DTOR_CMD* cmd )             // - command in question
 {
-    int retn;                   // - TRUE ==> command was active
+    int retn;                   // - true ==> command was active
     _RTCTL rt_ctl;              // - R/T control
     STAB_TRAVERSE traversal;    // - traversal information
     RO_STATE* curr_state;       // - current state entry

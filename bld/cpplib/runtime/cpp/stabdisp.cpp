@@ -42,7 +42,7 @@ static size_t typesigIndex(     // FIND BASE-1 INDEX OF MATCHING TYPE SIGNATURE
 {
     size_t index;               // - base-1 index
     THROW_RO* throw_ro;         // - throw R/O block
-    rboolean zero_thrown;       // - TRUE ==> zero was thrown
+    rboolean zero_thrown;       // - true ==> zero was thrown
     unsigned thr_ctr;           // - throw ctr.
     unsigned ctr;               // - testing ctr.
     RT_TYPE_SIG tsig;           // - current type signature, in tsigs
@@ -91,19 +91,19 @@ static rboolean dispatchableCatch(// CHECK IF DISPATCHABLE CATCH
     DISPATCH_EXC *dispatch,     // - dispatch control
     DTOR_CMD* cmd )             // - DTOR_CMD_TRY command
 {
-    rboolean retn;              // - return: TRUE ==> dispatachable
+    rboolean retn;              // - return: true ==> dispatachable
     size_t index;               // - index of match catch (base-1)
 
     index = typesigIndex( dispatch
                         , cmd->try_cmd.count
                         , cmd->try_cmd.sigs );
     if( index == 0 ) {
-        retn = FALSE;
+        retn = false;
     } else {
         -- index;
         dispatch->try_cmd = cmd;
         dispatch->catch_no = index;
-        retn = TRUE;
+        retn = true;
     }
     return retn;
 }
@@ -120,7 +120,7 @@ static DISPATCHABLE dispatchable( // DETERMINE WHERE CATCHABLE WITHIN FUNCTION
     DISPATCHABLE retn;          // - return: dispatchability
     DTOR_CMD* cmd;              // - command pointer
     ACTIVE_EXC *exc;            // - active exception
-    rboolean rethrow;           // - TRUE ==> re-throw from top block
+    rboolean rethrow;           // - true ==> re-throw from top block
 
     if( dispatch->rethrow ) {
         exc = dispatch->exc;
@@ -129,9 +129,9 @@ static DISPATCHABLE dispatchable( // DETERMINE WHERE CATCHABLE WITHIN FUNCTION
         }
         dispatch->ro = exc->throw_ro;
         dispatch->zero = exc->zero_thrown;
-        rethrow = TRUE;
+        rethrow = true;
     } else {
-        rethrow = FALSE;
+        rethrow = false;
     }
     rt_ctl.setRwRo( rw );
     CPPLIB( stab_trav_init )( &traverse, &rt_ctl );
@@ -147,9 +147,9 @@ static DISPATCHABLE dispatchable( // DETERMINE WHERE CATCHABLE WITHIN FUNCTION
           case DTC_CATCH :
             if( rethrow ) {
                 if( exc->cat_try == TryFromCatch( cmd ) ) {
-                    dispatch->popped = TRUE;
+                    dispatch->popped = true;
                 }
-                rethrow = FALSE;
+                rethrow = false;
             }
             continue;
           case DTC_FN_EXC :

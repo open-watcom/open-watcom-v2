@@ -92,12 +92,12 @@ static void dump(               // FORMATTED DUMP
     enum FT ft, ... )           // - FT formatting
 {
     va_list args;               // - for variable arguments
-    rboolean done;              // - TRUE ==> done formatting
+    rboolean done;              // - true ==> done formatting
     size_t blk_type;            // - type of block
     RW_DTREG* rw;               // - R/W header
 
     va_start( args, ft );
-    for( done = FALSE; ! done; ft = va_arg( args, enum FT ) ) {
+    for( done = false; ! done; ft = va_arg( args, enum FT ) ) {
         switch( ft ) {
           case FT_RW :
           { const char* text;   // - text
@@ -313,12 +313,12 @@ static void dump(               // FORMATTED DUMP
             }
           } break;
           case FT_CONT :
-            done = TRUE;
+            done = true;
             break;
           case FT_END :
             printf( "\n" );
             fflush( __get_std_stream( STDOUT_FILENO ) );
-            done = TRUE;
+            done = true;
             break;
         }
     }

@@ -194,7 +194,7 @@ static void catchDispatch(      // DISPATCH A CATCH BLOCK
 static void processThrow(       // PROCESS A THROW
     void *object,               // - address of object
     THROW_RO *throw_ro,         // - thrown R/O block
-    rboolean is_zero )          // - TRUE ==> thrown object is zero constant
+    rboolean is_zero )          // - true ==> thrown object is zero constant
 {
     _RTCTL rt_ctl;              // - R/T control
     DISPATCH_EXC dispatch;      // - dispatch control
@@ -249,7 +249,7 @@ static void processThrow(       // PROCESS A THROW
                        , object
                        , &excrec );
     force_this_routine_to_have_an_EBP_frame = alloca(16);
-    unwound = FALSE;
+    unwound = false;
 //
 // raising exception locates the catch/fn-exception to be dispatched
 // also fills in excrec.addr
@@ -291,7 +291,7 @@ static void processThrow(       // PROCESS A THROW
       case DISPATCHABLE_CATCH :
         if( ! unwound ) {
             ACTIVE_EXC *active; // - saved exception
-            unwound = TRUE;
+            unwound = true;
             if( dispatch.rethrow ) {
 // do we still need fnexc_state ?
                 dispatch.exc->fnexc_state = dispatch.exc->state;
@@ -364,7 +364,7 @@ _WPRTLINK
 void CPPLIB( rethrow )(        // RE-THROW AN EXCEPTION
     void )
 {
-    processThrow( NULL, NULL, FALSE );
+    processThrow( NULL, NULL, false );
 }
 
 
@@ -401,7 +401,7 @@ void CPPLIB( throw )(           // THROW AN EXCEPTION OBJECT (NOT CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 {
-    processThrow( object, throw_ro, FALSE );
+    processThrow( object, throw_ro, false );
 }
 
 
@@ -411,5 +411,5 @@ void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 {
-    processThrow( object, throw_ro, TRUE );
+    processThrow( object, throw_ro, true );
 }

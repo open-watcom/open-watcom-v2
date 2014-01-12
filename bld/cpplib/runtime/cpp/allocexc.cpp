@@ -133,7 +133,7 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
     active->sig = throw_ro->cnvs[0].signature;
     active->throw_ro = throw_ro;
     active->state = EXCSTATE_CTOR;
-    active->zero_thrown = FALSE;
+    active->zero_thrown = false;
     active->dispatch = NULL;
     active->rw = NULL;
     switch( sig->hdr.type ) {

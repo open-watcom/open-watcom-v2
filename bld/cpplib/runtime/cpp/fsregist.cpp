@@ -51,7 +51,7 @@ void CPPLIB( dispatch_dummy )   // CREATE DUMMY DISPATCH BLOCK
     , _RTCTL* rtc )             // - R/T control
 {
     dispatch->rtc = rtc;
-    dispatch->zero = FALSE;
+    dispatch->zero = false;
     dispatch->rethrow = 0;
     dispatch->non_watcom = 0;
     dispatch->ro = 0;

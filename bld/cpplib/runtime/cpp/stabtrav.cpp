@@ -131,7 +131,7 @@ void CPPLIB( stab_trav_init )   // INITIALIZE STATE-TABLE TRAVERSAL
     rw = rtc->rw;
     ctl->state_var = rw->base.state_var;
     ctl->bound = 0;
-    ctl->unwinding = FALSE;
+    ctl->unwinding = false;
     ctl->obj_type = OBT_OBJECT;
     travPosn( ctl, ctl->state_var );
 }
