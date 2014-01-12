@@ -43,7 +43,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-
+#include "bool.h"
 #include "wcpp.h"
 #include "target.h"
 #if defined( __WATCOMC__ ) && !defined( NDEBUG )
@@ -89,16 +89,16 @@ typedef const struct idname *NAME;      // name pointer
 #define NameStr(x)          (x)->name
 #endif
 
+#define VAL64(x)            (x.u._64[0])
+
 #ifndef NDEBUG
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
     #define DbgVerify( cond, msg ) if( ! ( cond ) ) CFatal( msg __location );
-    #define DbgDefault( msg ) default: CFatal( msg __location )
+    #define DbgDefault( msg )   default: CFatal( msg __location )
     #define DbgAssert( cond )   if( !(cond) ) CFatal( #cond __location );
     #define DbgStmt( stmt )     stmt;
     #define XTRA_RPT
-    #define IfDbgToggle( n ) if( PragDbgToggle.n )
-
-    #define DbgIsBoolean( x )   (((unsigned)(x))<=1)
+    #define IfDbgToggle( n )    if( PragDbgToggle.n )
 
     #define DbgNever()          (CFatal( "should never execute this" __location ))
     #define DbgUseless()        (CFatal( "this code isn't useless!" __location ))
@@ -110,14 +110,10 @@ typedef const struct idname *NAME;      // name pointer
     #define DbgStmt( stmt )
     #define IfDbgToggle( n )
 
-    #define DbgIsBoolean( x )   (1)
-
     #define DbgNever()
     #define DbgUseless()
 #endif
 #include "dbgzap.h"
-
-#include "bool.h"
 
 typedef unsigned MSG_NUM;           // - message number
 

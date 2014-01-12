@@ -845,9 +845,6 @@ postfix-expression
 postfix-expression-before-dot
     : postfix-expression
     {
-        PTREE AnalyseNode( PTREE );
-        bool AnalyseLvalue( PTREE * );
-
         $1 = PTreeTraversePostfix( $1, &AnalyseNode );
         if( ! ( $1->flags & PTF_LV_CHECKED ) ) {
             AnalyseLvalue( &$1 );
@@ -881,18 +878,13 @@ postfix-expression-before-dot
 postfix-expression-before-arrow
     : postfix-expression
     {
-        PTREE AnalyseNode( PTREE );
-        bool AnalyseLvalue( PTREE * );
-        PTREE OverloadOperator( PTREE );
-
         $1 = PTreeTraversePostfix( $1, &AnalyseNode );
         if( ! ( $1->flags & PTF_LV_CHECKED ) ) {
             AnalyseLvalue( &$1 );
         }
         $$ = PTreeBinary( CO_ARROW, $1, NULL );
         $$ = OverloadOperator( $$ );
-        $$->u.subtree[0] = PTreeTraversePostfix( $$->u.subtree[0],
-                                                 &setAnalysedFlag );
+        $$->u.subtree[0] = PTreeTraversePostfix( $$->u.subtree[0], &setAnalysedFlag );
         if( $$->u.subtree[0] ) {
             TYPE cls;
 
@@ -1070,7 +1062,7 @@ new-declarator
     { $$ = MakeNewDeclarator( state->gstack->u.dspec, $1, $2 ); }
     | partial-ptr-declarator
     { $$ = MakeNewDeclarator( state->gstack->u.dspec, $1, NULL ); }
-    |                        direct-new-declarator
+    | direct-new-declarator
     { $$ = MakeNewDeclarator( state->gstack->u.dspec, NULL, $1 ); }
     ;
 
@@ -1382,8 +1374,7 @@ static_assert-declaration
         DbgAssert( $6->op == PT_STRING_CONSTANT );
 
         if( $3->u.int_constant == 0 ) {
-            CErr2p( ERR_STATIC_ASSERTION_FAILURE,
-                    StringBytes( $6->u.string ) );
+            CErr2p( ERR_STATIC_ASSERTION_FAILURE, StringBytes( $6->u.string ) );
         }
 
         PTreeFreeSubtrees( $3 );
@@ -1406,13 +1397,13 @@ decl-specifier-seq
         $$ = PTypeDone( $$, t == Y_SEMI_COLON );
         pushUserDeclSpec( state, $$ );
     }
-    |                            type-specifier maybe-type-decl-specifier-seq
+    | type-specifier maybe-type-decl-specifier-seq
     {
         $$ = PTypeCombine( $1, $2 );
         $$ = PTypeDone( $$, t == Y_SEMI_COLON );
         pushUserDeclSpec( state, $$ );
     }
-    |                            type-specifier
+    | type-specifier
     {
         $$ = PTypeDone( $1, t == Y_SEMI_COLON );
         pushUserDeclSpec( state, $$ );
@@ -2078,14 +2069,14 @@ direct-abstract-declarator
     }
     | direct-abstract-declarator Y_LEFT_BRACKET constant-expression Y_RIGHT_BRACKET
     { $$ = AddArrayDeclarator( $1, $3 ); }
-    |                            Y_LEFT_BRACKET constant-expression Y_RIGHT_BRACKET
+    | Y_LEFT_BRACKET constant-expression Y_RIGHT_BRACKET
     {
         $$ = MakeAbstractDeclarator( NULL );
         $$ = AddArrayDeclarator( $$, $2 );
     }
     | direct-abstract-declarator Y_LEFT_BRACKET Y_RIGHT_BRACKET
     { $$ = AddArrayDeclarator( $1, NULL ); }
-    |                            Y_LEFT_BRACKET Y_RIGHT_BRACKET
+    | Y_LEFT_BRACKET Y_RIGHT_BRACKET
     {
         $$ = MakeAbstractDeclarator( NULL );
         $$ = AddArrayDeclarator( $$, NULL );
@@ -2258,14 +2249,14 @@ function-declaration
         GStackPush( &(state->gstack), GS_DECL_INFO );
         state->gstack->u.dinfo = $$;
     }
-    |                    declarator ctor-initializer
+    | declarator ctor-initializer
     {
         $1->mem_init = $2;
         $$ = DeclFunction( NULL, $1 );
         GStackPush( &(state->gstack), GS_DECL_INFO );
         state->gstack->u.dinfo = $$;
     }
-    |                    declarator
+    | declarator
     {
         $$ = DeclFunction( NULL, $1 );
         GStackPush( &(state->gstack), GS_DECL_INFO );
@@ -2591,7 +2582,7 @@ simple-member-declaration
     {
         GStackPop( &(state->gstack) );
     }
-    |                 member-declarator-list
+    | member-declarator-list
     {
     }
     | decl-specifier-seq
@@ -2643,7 +2634,7 @@ member-declarator
         $$ = $1;
         DeclNoInit( $$ );
     }
-    |         Y_COLON constant-expression
+    | Y_COLON constant-expression
     {
         ClassBitfield( state->gstack->u.dspec, NULL, $2 );
         $$ = NULL;
@@ -3026,14 +3017,12 @@ template-opt-parameter-list
     : /* nothing */
     {
         pushDefaultDeclSpec( state );
-        state->template_record_tokens =
-            RewriteRecordInit( &(state->template_record_locn) );
+        state->template_record_tokens = RewriteRecordInit( &(state->template_record_locn) );
     }
     | template-parameter-list
     {
         pushDefaultDeclSpec( state );
-        state->template_record_tokens =
-            RewriteRecordInit( &(state->template_record_locn) );
+        state->template_record_tokens = RewriteRecordInit( &(state->template_record_locn) );
     }
     ;
 
@@ -3065,7 +3054,7 @@ type-parameter-no-defarg
     {
         DECL_SPEC *dspec;
 
-        pushClassData( state, TF1_NULL, CLINIT_NULL, NULL);
+        pushClassData( state, TF1_NULL, CLINIT_NULL, NULL );
         ClassName( NULL, CLASS_GENERIC );
         dspec = ClassRefDef();
         GStackPop( &(state->gstack) );
@@ -3076,7 +3065,7 @@ type-parameter-no-defarg
     {
         DECL_SPEC *dspec;
 
-        pushClassData( state, TF1_NULL, CLINIT_NULL, NULL);
+        pushClassData( state, TF1_NULL, CLINIT_NULL, NULL );
         ClassName( $2, CLASS_GENERIC );
         dspec = ClassRefDef();
         GStackPop( &(state->gstack) );
@@ -3523,11 +3512,11 @@ special-new-direct-abstract-declarator
     }
     | special-new-direct-abstract-declarator Y_LEFT_BRACKET constant-expression Y_RIGHT_BRACKET
     { $$ = AddArrayDeclarator( $1, $3 ); }
-    |                            Y_LEFT_BRACKET expression Y_RIGHT_BRACKET
+    | Y_LEFT_BRACKET expression Y_RIGHT_BRACKET
     { $$ = MakeNewDynamicArray( $2 ); }
     | special-new-direct-abstract-declarator Y_LEFT_BRACKET Y_RIGHT_BRACKET
     { $$ = AddArrayDeclarator( $1, NULL ); }
-    |                            Y_LEFT_BRACKET Y_RIGHT_BRACKET
+    | Y_LEFT_BRACKET Y_RIGHT_BRACKET
     {
         $$ = MakeAbstractDeclarator( NULL );
         $$ = AddArrayDeclarator( $$, NULL );

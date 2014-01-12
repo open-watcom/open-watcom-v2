@@ -34,6 +34,7 @@
 #define _CGDATA_H_
 
 #include <stdio.h>
+#include "cgswitch.h"
 #include "toggle.h"
 
 // CGDATA -- C++ data used during code generation
@@ -87,9 +88,10 @@ global unsigned PackAmount;             /* current packing alignment for fields 
 global unsigned GblPackAmount;          /* packing alignment given on command line */
 
                                         /* switches for code generator         */
-global unsigned GenSwitches;            /* - generation info.                  */
-global unsigned TargetSwitches;         /* - target dependant generation info. */
-global unsigned CpuSwitches;            /* - hardware info.                    */
+global cg_switches          GenSwitches;    /* - generation info.                  */
+global cg_target_switches   TargetSwitches; /* - target dependant generation info. */
+global proc_revision        CpuSwitches;    /* - hardware info.                    */
+
 global char     *GenCodeGroup;          /* pointer to code group name */
 global int      ProEpiDataSize;         /* data to be alloc'd for pro/epi hook */
 

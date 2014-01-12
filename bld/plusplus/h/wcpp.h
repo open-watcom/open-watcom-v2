@@ -40,12 +40,6 @@
 #include <stddef.h>
 #include "watcom.h"
 
-                                    // COMMON CONSTANTS
-#define TRUE  1                     // - truth
-#define FALSE 0                     // - not truth
-#define UNKNOWN 2                   // - not true or false
-
-
 // run-time constants for destructor's flag parm
 enum
 {   DTOR_COMPONENT      = 0x01          // be a component dtor

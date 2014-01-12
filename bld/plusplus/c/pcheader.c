@@ -672,8 +672,8 @@ static void flushUntilNullString( char *buff )
 static bool stalePCH( char *include_file )
 {
     time_t stamp;
-    unsigned long test_gen;
-    unsigned long test_target;
+    cg_switches test_gen;
+    cg_target_switches test_target;
     auto char buff1[_MAX_PATH];
     auto char buff2[_MAX_PATH];
     auto COMP_FLAGS testflags;

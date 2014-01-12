@@ -178,7 +178,7 @@ void DumpMDefn(                 // DUMP MACRO DEFINITION
                     putchar( c );
                 break;
             default:
-                printf( F_S64, Constant64 );
+                printf( F_S64, VAL64( Constant64 ) );
                 p += sizeof( Constant64 );
                 break;
             }
@@ -1146,7 +1146,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
                       );
             } else {
                 printf( " integer-64" F_S64
-                      , node->u.int64_constant
+                      , VAL64( node->u.int64_constant )
                       );
             }
             dumpNodeType( node );

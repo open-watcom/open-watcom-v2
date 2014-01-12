@@ -1476,19 +1476,19 @@ void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
             if( PTreeWarnExpr( expr, ret == CMP_TRUE ? WARN_ALWAYS_TRUE : WARN_ALWAYS_FALSE ) & MS_PRINTED ) {
                 // msg was issued so give informational messages
                 if( NumSign(op1_size) ) { // signed
-                    sprintf( num1, "%lld", low );
-                    sprintf( num2, "%lld", high );
+                    sprintf( num1, "%lld", VAL64( low ) );
+                    sprintf( num2, "%lld", VAL64( high ) );
                     CErr( INF_SIGNED_TYPE_RANGE, op1->type, num1, num2 );
                 } else {
-                    sprintf( num1, "%llu", low );
-                    sprintf( num2, "%llu", high );
+                    sprintf( num1, "%llu", VAL64( low ) );
+                    sprintf( num2, "%llu", VAL64( high ) );
                     CErr( INF_UNSIGNED_TYPE_RANGE, op1->type, num1, num2 );
                 }
                 if( NumSign(result_size) ) {
-                    sprintf( num1, "%lld", val );
+                    sprintf( num1, "%lld", VAL64( val ) );
                     CErr( INF_SIGNED_CONST_EXPR_VALUE, num1 );
                 } else {
-                    sprintf( num1, "%llu", val );
+                    sprintf( num1, "%llu", VAL64( val ) );
                     CErr( INF_UNSIGNED_CONST_EXPR_VALUE, num1 );
                 }
             }
@@ -2305,8 +2305,7 @@ static unsigned getConstBits(   // GET SIGNIFICANT BITS IN CONSTANT NODE
     unsigned bits;              // - number of bits
 
     value = con->u.int64_constant;
-    if( SignedIntType( con->type )
-     && value.u.sign.v ) {
+    if( SignedIntType( con->type ) && value.u.sign.v ) {
         U64Neg( &value, &value );
     }
     if( 0 == value.u._32[I64HI32] ) {
@@ -2654,6 +2653,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         PTREE on_right;         // - operand on right
         PTREE orig;             // - original node (avoid use of "expr")
         PTO_FLAG flags;         // - flags for operator
+
         flags = PTreeOpFlags( expr );
         orig = expr;
         templ = NULL;
@@ -2668,8 +2668,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
             templ->u.subtree[0] = NULL;
         }
         if( flags & PTO_UNARY ) {
-            if( orig->cgop == CO_ADDR_OF
-             || orig->cgop == CO_INDIRECT ) {
+            if( orig->cgop == CO_ADDR_OF || orig->cgop == CO_INDIRECT ) {
                 if( (on_left->flags & PTF_LV_CHECKED) == 0 ) {
                     opsok = AnalyseLvalueAddrOf( &orig->u.subtree[0] );
                 }
@@ -2683,13 +2682,13 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
             if( flags & PTO_BINARY ) {
                 on_right = orig->u.subtree[1];
                 if( on_right != NULL && (on_right->flags & PTF_LV_CHECKED) == 0 ) {
-                    bool al_ret = AnalyseLvalue( &orig->u.subtree[1] );
-                    DbgAssert( DbgIsBoolean( al_ret ) );
-                    opsok &= al_ret;
+                    if( !AnalyseLvalue( &orig->u.subtree[1] ) ) {
+                        opsok = FALSE;
+                    }
                 }
             }
         }
-        if( ! opsok ) {
+        if( !opsok ) {
             PTreeErrorNode( orig );
             return orig;
         }

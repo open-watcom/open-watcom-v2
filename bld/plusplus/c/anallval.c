@@ -806,15 +806,14 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
     bool retn;                  // - return: TRUE ==> all ok
     SEARCH_RESULT *result;      // - result of lookup
 
-    DbgStmt( retn = UNKNOWN );
+    retn = FALSE;
     expr = *a_expr;
     switch( expr->op ) {
-      case PT_ID :
+    case PT_ID :
         if( expr->cgop == CO_NAME_THIS ) {
             right = NodeThisCopyLocation( expr );
             if( NULL == right ) {
                 PTreeErrorExpr( expr, ERR_NO_THIS_PTR_DEFINED );
-                retn = FALSE;
             } else {
                 right->flags |= PTF_LV_CHECKED;
                 *a_expr = right;
@@ -827,38 +826,35 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
             retn = TRUE;
         } else if( expr->cgop == CO_NAME_DTOR ) {
             PTreeErrorExpr( expr, ERR_DTOR_NO_OBJECT );
-            retn = FALSE;
         } else {
             if( isUDF( expr ) ) {
-                result = ScopeFindNakedConversion( GetCurrScope()
-                                                 , expr->type
-                                                 , TF1_NULL );
+                result = ScopeFindNakedConversion( GetCurrScope(), expr->type, TF1_NULL );
                 retn = checkConversionLookup( result, expr, expr );
             } else {
                 result = ScopeFindNaked( GetCurrScope(), expr->u.id.name );
                 retn = checkIdLookup( result, GetCurrScope(), expr, expr );
             }
-            if( ! retn ) break;
-            retn = analyseSymbol( a_expr );
+            if( retn ) {
+                retn = analyseSymbol( a_expr );
+            }
         }
         break;
-      case PT_BINARY :
+    case PT_BINARY :
         if( CO_COLON_COLON == expr->cgop ){
             retn = analyseClQual( a_expr );
-            if( ! retn ) break;
-            retn = analyseSymbol( a_expr );
+            if( retn ) {
+                retn = analyseSymbol( a_expr );
+            }
             break;
         }
         // drops thru
-      default :
+    default :
         expr->flags |= PTF_LV_CHECKED;
         retn = TRUE;
         break;
     }
-    DbgAssert( DbgIsBoolean( retn ) );
     if( retn ) {
-        (*a_expr)->type =
-            BindTemplateClass( (*a_expr)->type, &(*a_expr)->locn, FALSE );
+        (*a_expr)->type = BindTemplateClass( (*a_expr)->type, &(*a_expr)->locn, FALSE );
     }
     return retn;
 }
