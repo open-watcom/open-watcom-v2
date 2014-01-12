@@ -35,7 +35,7 @@
 
 #include "label.h"
 
-enum {
+typedef enum {
     CS_FUNCTION         = 0x01,
     CS_BLOCK            = 0x02,
     CS_IF               = 0x03,
@@ -47,7 +47,7 @@ enum {
     CS_TRY              = 0x09,
     CS_CATCH            = 0x0a,
     CS_NULL             = 0x00
-};
+} cs_block_type;
 
 #define BLOCK_CSTACK    (16)
 #define BLOCK_SWCASE    (32)
@@ -122,7 +122,7 @@ struct control_stack {
             unsigned    block_switch :1;// - block { .. } following switch
         } b;
     } u;
-    uint_8              id;             // - type of block
+    cs_block_type       id;             // - type of block
     unsigned            expr_true   : 1;// bracketted expr. was TRUE
     unsigned            expr_false  : 1;// bracketted expr. was FALSE
 };

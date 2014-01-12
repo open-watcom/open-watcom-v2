@@ -125,7 +125,7 @@ static void CSkip( void )
 {
 }
 
-static void IncLevel( int value )
+static void IncLevel( bool value )
 {
     struct cpp_info *cpp;
 
@@ -145,7 +145,7 @@ static void IncLevel( int value )
 
 static void CSkipIf( void )
 {
-    IncLevel( 0 );
+    IncLevel( FALSE );
 }
 
 static void CUnknown( void )
@@ -497,7 +497,7 @@ static void ChkEOL( void )
     }
 }
 
-static void ppIf( int value )    // PREPROCESSOR IF
+static void ppIf( bool value )      // PREPROCESSOR IF
 {
     if( SrcFileGuardedIf( value ) ) {
         return;
@@ -506,7 +506,7 @@ static void ppIf( int value )    // PREPROCESSOR IF
     ChkEOL();
 }
 
-static void ppIfId( int value )  // PREPROCESSOR IFDEF IFNDEF
+static void ppIfId( bool value )    // PREPROCESSOR IFDEF IFNDEF
 {
     NextToken();
     ppIf( value );
@@ -517,7 +517,7 @@ static void CIfDef( void )
     SrcFileGuardPpIf();
     NextToken();
     if( !ExpectingToken( T_ID ) ) {
-        IncLevel( 0 );
+        IncLevel( FALSE );
         return;
     }
     ppIfId( MacroDependsDefined() );
@@ -529,7 +529,7 @@ static void CIfNDef( void )
     SrcFileGuardPpIf();
     NextToken();
     if( !ExpectingToken( T_ID ) ) {
-        IncLevel( 0 );
+        IncLevel( FALSE );
         return;
     }
     SrcFileGuardPpIfndef( Buffer, TokenLen );
@@ -551,7 +551,7 @@ static void CIf( void )
 
 static void CElif( void )
 {
-    int         value;
+    bool        value;
 
     SrcFileGuardPpElse();
     PPCTL_ENABLE_MACROS();

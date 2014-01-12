@@ -141,7 +141,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         if( CompFlags.ide_console_output ) {
             if( ! CompFlags.quiet_mode ) {
                 char buffer[16];
-                ultoa( (unsigned long)parm, buffer, 10 );
+                ultoa( (unsigned)(pointer_int)parm, buffer, 10 );
                 MsgDisplayLineArgs( "\rCode size: ", buffer, NULL );
             }
         }

@@ -185,7 +185,7 @@ SRCFILE SrcFileIncluded(        // FILE THAT INCLUDES THIS FILE
 #define GUARD_IMPL              // indicate source file guarding implemented
 
 bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
-    int value )                 // - <value> in #if <value>
+    bool value )                // - <value> in #if <value>
 ;
 bool SrcFileProcessOnce(        // CHECK WHETHER WE HAVE TO OPEN THE FILE
     char *name )

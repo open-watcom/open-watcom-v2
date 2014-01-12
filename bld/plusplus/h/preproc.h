@@ -84,7 +84,7 @@ global  int         TokenLen;           // length of current token
 global  LINE_NO     TokenLine;          // line # of current token
 global  COLUMN_NO   TokenColumn;        // column # of current token
 global  int         CurrChar;           // current character
-global  int         ConstType;          // type of constant
+global  type_id     ConstType;          // type of constant
 global  signed_64   Constant64;         // value of constant: 33-64 bits
 global  int         NestLevel;          // pre-processing level of #if
 global  int         SkipLevel;          // pre-processing level of #if to skip to
@@ -310,7 +310,7 @@ void MustRecog(                 // REQUIRE A SPECIFIC TOKEN AND SCAN NEXT
 TOKEN NextToken(                // GET NEXT TOKEN
     void )
 ;
-long int PpConstExpr(           // PREPROCESSOR CONSTANT EXPRESSION
+bool PpConstExpr(               // PREPROCESSOR CONSTANT EXPRESSION
     void )
 ;
 void PrtChar(                   // PRINT PREPROC CHAR IF REQ'D

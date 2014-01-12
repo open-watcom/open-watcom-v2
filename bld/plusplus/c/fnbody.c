@@ -342,7 +342,7 @@ static void declExprStmt( bool for_stmts_decl )
     }
 }
 
-static CSTACK *beginControl( int id )
+static CSTACK *beginControl( cs_block_type id )
 {
     CSTACK *new_block;
 
@@ -534,7 +534,7 @@ static void parseElseStmt( void )
 }
 
 
-static CSTACK *beginLoopControl( int id )
+static CSTACK *beginLoopControl( cs_block_type id )
 {
     CSTACK *loop;
 
@@ -546,7 +546,7 @@ static CSTACK *beginLoopControl( int id )
 }
 
 
-static CSTACK *beginLoop( int id )
+static CSTACK *beginLoop( cs_block_type id )
 {
     CSTACK *loop;
 
@@ -1385,7 +1385,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
 {
     CSTACK *top_block;
     CSTACK *next;
-    int id;
+    cs_block_type id;
     bool dead_code;
 
     top_block = currFunction->control;

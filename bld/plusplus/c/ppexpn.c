@@ -358,7 +358,7 @@ static bool PpNextToken( void ) // scan the next token and check for errors
     return( CheckToken( prev_token ) );
 }
 
-long int PpConstExpr( void )    // Entry into ppexpn module
+bool PpConstExpr( void )        // Entry into ppexpn module
 {
     ppvalue val;
 

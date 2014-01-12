@@ -309,7 +309,7 @@ static void saveToken( REWRITE *r, TOKEN_LOCN *locn )
         break;
     case T_CONSTANT:
         putToken( r, CurToken );
-        putByte( r, ConstType );
+        putBinary( r, (uint_8*)&ConstType, sizeof( ConstType ) );
         switch( ConstType ) {
         case TYP_LONG_DOUBLE:
         case TYP_DOUBLE:
@@ -1099,7 +1099,7 @@ void RewriteToken( void )
         TokenLen = len + 1;
         break;
     case T_CONSTANT:
-        ConstType = getByte( r, &rt, &stop );
+        getBinary( r, &rt, &stop, (uint_8*)&ConstType, sizeof( ConstType ) );
         switch( ConstType ) {
         case TYP_LONG_DOUBLE:
         case TYP_DOUBLE:

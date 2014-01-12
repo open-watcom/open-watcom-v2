@@ -224,29 +224,26 @@ static int createBrowseFile(FILE* browseFile,       /* target file */
     }
 
     // write section_header_index0
-    mywrite( browseFile, (void *)&section_header_index0,
-                         sizeof( section_header_index0 ) );
+    mywrite( browseFile, (void *)&section_header_index0, sizeof( section_header_index0 ) );
 
     // write section_header_string_table
-    mywrite( browseFile, (void *)&section_header_string_table,
-                         sizeof( section_header_string_table ) );
+    mywrite( browseFile, (void *)&section_header_string_table, sizeof( section_header_string_table ) );
 
     // write rest of section headers
     for (fileNum=0;fileNum<5;fileNum++) {
         section_header_template.sh_name = string_table_offsets[fileNum];
         section_header_template.sh_offset = sectionOffset[fileNum];
         section_header_template.sh_size = inFile[fileNum]->length;
-        mywrite( browseFile, (void *)&section_header_template,
-                             sizeof( section_header_template ) );
+        mywrite( browseFile, (void *)&section_header_template, sizeof( section_header_template ) );
     }
     return 0;
 }
 //---------------------------------------------------------------------------
 
 static void dw_write( dw_sectnum section, const void *block, dw_size_t len )
-/********************************************************************/
+/**************************************************************************/
 {
-    #ifdef __DD__
+#ifdef __DD__
     //int i;
     printf( "\nDW_WRITE(%d:%d): offset: %d len: %d ",
         section,
@@ -256,7 +253,7 @@ static void dw_write( dw_sectnum section, const void *block, dw_size_t len )
     //for( i = 0 ; i < len; i++ ) {
     //    printf( "%02x ", (int)((char *)block)[i] );
     //}
-    #endif
+#endif
     dw_sections[section].offset += len;
     if( dw_sections[section].offset > dw_sections[section].length ) {
         dw_sections[section].length = dw_sections[section].offset;
@@ -265,18 +262,18 @@ static void dw_write( dw_sectnum section, const void *block, dw_size_t len )
 }
 
 static long dw_tell( dw_sectnum section )
-/*********************************/
+/***************************************/
 {
-    #ifdef __DD__
+#ifdef __DD__
     printf( "DW_TELL (%d:%d): %d\n", section,
         dw_sections[section].length,
         dw_sections[section].offset );
-    #endif
+#endif
     return dw_sections[section].offset;
 }
 
 static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
-/********************************************************/
+/*******************************************************************/
 {
     va_list         args;
     dw_targ_addr    targ_data;
@@ -322,7 +319,7 @@ static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
 }
 
 static void dw_seek( dw_sectnum section, long offset, uint mode )
-/*********************************************************/
+/***************************************************************/
 {
     switch( mode ) {
     case DW_SEEK_SET:
@@ -334,12 +331,12 @@ static void dw_seek( dw_sectnum section, long offset, uint mode )
         offset = dw_sections[section].length - offset;
         break;
     }
-    #ifdef __DD__
+#ifdef __DD__
     printf( "DW_SEEK (%d:%d): offset: %d\n",
         section,
         dw_sections[section].length,
         offset );
-    #endif
+#endif
     if( dw_sections[section].offset != offset ) {
         DwioSeek( dw_sections[section].file, offset );
         dw_sections[section].offset = offset;

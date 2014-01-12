@@ -1742,11 +1742,11 @@ void SrcFileGuardStateSig(      // SIGNAL SIGNIFICANCE (TOKEN, ETC) IN FILE
 
 
 bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
-    int value )                 // - <value> in #if <value>
+    bool value )                // - <value> in #if <value>
 {
     if( getGuardState() == GUARD_IF ) {
-        if( value == 0 ) {
-            if( ! readBuffer( TRUE ) ) {
+        if( !value ) {
+            if( !readBuffer( TRUE ) ) {
                 GetNextChar();
             }
             return( TRUE );

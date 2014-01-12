@@ -382,7 +382,7 @@ static void scanCppComment( void )
     CompFlags.scanning_cpp_comment = 0;
 }
 
-static int doESCChar( int c, int expanding, int char_type )
+static int doESCChar( int c, int expanding, type_id char_type )
 {
     unsigned    n;
     unsigned    i;
@@ -428,7 +428,7 @@ static int doESCChar( int c, int expanding, int char_type )
     return( n );
 }
 
-static TOKEN charConst( int char_type, int expanding )
+static TOKEN charConst( type_id char_type, int expanding )
 {
     int c;
     int i;
@@ -692,7 +692,7 @@ static TOKEN doScanFloat( void )
     }
 }
 
-static void willContinueStringLater( int string_type )
+static void willContinueStringLater( type_id string_type )
 {
     if( string_type == TYP_WCHAR ) {
         CurrChar = LCHR_CONTINUE_LSTRING;
@@ -702,7 +702,7 @@ static void willContinueStringLater( int string_type )
     ++TokenLen;
 }
 
-static TOKEN doScanString( int string_type, int expanding )
+static TOKEN doScanString( type_id string_type, int expanding )
 {
     int c;
     int ok;
@@ -851,7 +851,7 @@ static TOKEN scanWide( int expanding )  // scan something that starts with L
     return( token );
 }
 
-static void msIntSuffix( uint_32 signed_max, unsigned sid, unsigned uid, unsigned_64 *max_value )
+static void msIntSuffix( uint_32 signed_max, type_id sid, type_id uid, unsigned_64 *max_value )
 {
     if( U64IsU32( Constant64 ) ) {
         uint_32 v = U32Fetch( Constant64 );
