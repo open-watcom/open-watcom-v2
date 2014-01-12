@@ -60,7 +60,7 @@ void WEXPORT WBoolSwitch::setCheck( bool check ) {
 bool WEXPORT WBoolSwitch::checked() {
 /***********************************/
 
-    return( (bool) GUIIsChecked( parent()->handle(), controlId() ) );
+    return( GUIIsChecked( parent()->handle(), controlId() ) != 0 );
 }
 
 #ifdef __WATCOMC__

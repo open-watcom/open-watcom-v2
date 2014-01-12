@@ -110,7 +110,7 @@ bool WEXPORT WMenu::itemEnabled( int index ) {
 /********************************************/
 
     WMenuObject *item = (WMenuObject *)_children[index];
-    return( (bool) item->enabled() );
+    return( item->enabled() != 0 );
 }
 
 void WEXPORT WMenu::checkItem( bool check, int index ) {
