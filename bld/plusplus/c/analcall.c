@@ -328,11 +328,8 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
                 base_type = TypeGetActualFlags( type->of, &arg_flags );
                 act_flags = arg_flags & TF1_MEM_MODEL;
                 def_flags = DefaultMemoryFlag( type->of );
-                if( ( ( def_flags & TF1_FAR )
-                    &&( act_flags != TF1_HUGE )
-                    &&( act_flags != TF1_FAR ) )
-                  ||( ( def_flags & TF1_HUGE )
-                    &&( act_flags != TF1_HUGE ) )
+                if( ( (def_flags & TF1_FAR) && ( (act_flags & (TF1_HUGE | TF1_FAR)) == 0 ) )
+                  || ( (def_flags & TF1_HUGE) && ( (act_flags & TF1_HUGE) == 0 ) )
                   ) {
                     type = MakeModifiedType( base_type, (arg_flags & ~TF1_MEM_MODEL) | def_flags );
                     type = MakePointerTo( type );
@@ -341,8 +338,7 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
                                       , CNV_EXPR
                                       , NULL );
                     arg->u.subtree[1] = cnv;
-                    DbgVerify( PT_ERROR != cnv->op
-                             , "convertEllipsisArg -- failed ptr.cnv" );
+                    DbgVerify( PT_ERROR != cnv->op, "convertEllipsisArg -- failed ptr.cnv" );
                     arg_fillout( arg );
                     retn = TRUE;
                 } else {
@@ -422,13 +418,11 @@ PTREE NodeConvertCallArgList(   // CONVERT CALL ARGUMENT LIST, AS REQ'D
                 cl_type = StructType( proto );
                 if( NULL != cl_type ) {
                     if( extern_c_fun ) {
-                        if( ! passStructOnStack( arg
-                                               , WARN_EXTERN_C_CLASS_ARG ) ) {
+                        if( !passStructOnStack( arg, WARN_EXTERN_C_CLASS_ARG ) ) {
                             PTreeErrorNode( call_expr );
                             break;
                         }
-                    } else if( OMR_CLASS_VAL
-                                == ObjModelArgument( cl_type ) ) {
+                    } else if( OMR_CLASS_VAL == ObjModelArgument( cl_type ) ) {
                         passStructOnStack( arg, ERR_CALL_WATCOM );
                     }
                 }

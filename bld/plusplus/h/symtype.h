@@ -614,7 +614,7 @@ typedef PCH_struct {
     unsigned        passed_ref : 1; // class value is passed as a reference
     unsigned        has_def_ctor :1;// has an explicit default constructor
     unsigned        vftable_done :1;// vftable has been collected already
-    unsigned        vbtable_done :1;// vftable has been collected already
+    unsigned        vbtable_done :1;// vbtable has been collected already
     unsigned        has_udc : 1;    // has a user-defined conversion declared
     unsigned        common : 1;     // used when searching for common bases
 
@@ -984,7 +984,7 @@ struct search_result {                  // * means private to SCOPE.C
     MSG_NUM             info_msg;       // * info message
     SYMBOL              info1;          // * parm for info message #1
     SYMBOL              info2;          // * parm for info message #2
-    target_offset_t     vb_offset;      // - offset of vftable pointer
+    target_offset_t     vb_offset;      // - offset of vbtable pointer
     vindex              vb_index;       // - index of virtual base
     target_offset_t     delta;          // - last base class offset
     target_offset_t     exact_delta;    // - last base class direct offset

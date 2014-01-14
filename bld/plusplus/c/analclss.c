@@ -741,9 +741,7 @@ SYMBOL ClassDefaultOpEq(        // GET DEFAULT OP= FOR A CLASS
     SYMBOL opeq;                // - op= to be accessed
     SEARCH_RESULT *result;      // - search result for op=
 
-    result = classAssignResult( cltype
-                              , &opeq
-                              , StructType( derived )->u.c.scope );
+    result = classAssignResult( cltype, &opeq, StructType( derived )->u.c.scope );
     if( result != NULL ) {
         ScopeFreeResult( result );
     }
@@ -773,35 +771,17 @@ static bool canBinaryCopy(      // TEST IF COPY CAN BE BINARY
     return( OMR_CLASS_VAL == ObjModelArgument( src_type ) );
 }
 
-
-static TYPE checkCopyModel(     // CHECK ASSIGNMENT FOR MEMORY-MODEL VIOLATION
-    PTREE expr,                 // - expression to be checked
-    MSG_NUM error_code )        // - error code
-{
-    TYPE type;                  // - type for checking
-
-    type = NodeType( expr );
-    type = TypeReferenced( type );
-    if( TypeTruncByMemModel( type ) ) {
-        PTreeWarnExpr( expr, error_code );
-    }
-    return type;
-}
-
-
 static PTREE doBinaryCopy(      // DO A BINARY COPY
     PTREE tgt,                  // - target
-    PTREE src,                  // - source
-    MSG_NUM code_tgt,           // - error for truncation on "this"
-    MSG_NUM code_src )          // - error for truncation on source
+    PTREE src )                 // - source
 {
-    TYPE tgt_type;              // - type for class being assigned to
-//    TYPE src_type;              // - type for class being assigned from
+    TYPE        tgt_type;       // - type for class being assigned to
 
-    tgt_type = checkCopyModel( tgt, code_tgt );
+    tgt_type = NodeType( tgt );
+    tgt_type = TypeReferenced( tgt_type );
+
     src = NodeRvalue( src );
-//    src_type = checkCopyModel( src, code_src );
-    checkCopyModel( src, code_src );
+
     if( OMR_CLASS_REF == ObjModelArgument( tgt_type ) ) {
         src->flags &= ~PTF_CLASS_RVREF;
         src->flags |= PTF_LVALUE | PTF_MEMORY_EXACT;
@@ -814,7 +794,6 @@ static PTREE doBinaryCopy(      // DO A BINARY COPY
     tgt = NodeConvertFlags( tgt_type, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
     return NodeCopyClassObject( tgt, src );
 }
-
 
 static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
     PTREE expr,                 // - expression ( "=" at top )
@@ -832,15 +811,10 @@ static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
     src = expr->u.subtree[1];
     tgt_type = ClassTypeForType( tgt->type );
     if( TypeDefined( tgt_type ) ) {
-        if( ! ClassNeedsAssign( tgt_type, FALSE )
-         && canBinaryCopy( tgt, src )
-         && 0 == cvFlags( expr->u.subtree[0] )
-         && 0 == ( cvFlags( expr->u.subtree[1] ) & TF1_VOLATILE ) ) {
+        if( !ClassNeedsAssign( tgt_type, FALSE ) && 0 == cvFlags( tgt )
+         && canBinaryCopy( tgt, src ) && 0 == (cvFlags( src ) & TF1_VOLATILE) ) {
             PTreeFree( expr );
-            call_expr = doBinaryCopy( tgt
-                                    , src
-                                    , ERR_THIS_OBJ_MEM_MODEL
-                                    , WARN_POINTER_TRUNCATION );
+            call_expr = doBinaryCopy( tgt, src );
         } else {
             result = classAssignResult( tgt_type, &assign, access );
             if( result == NULL ) {
@@ -959,12 +933,8 @@ static PTREE genDefaultCopyDiag(// GENERATE COPY TO CLASS OBJECT, WITH DIAGNOSIS
     SYMBOL ctor;                // - CTOR for copy
     PTREE this_arg;             // - "this" argument, after call analysis
 
-    if( canBinaryCopy( tgt, src )
-     && 0 == ( cvFlags( src ) & TF1_VOLATILE ) ) {
-        expr = doBinaryCopy( tgt
-                           , src
-                           , ERR_CTOR_OBJ_MEM_MODEL
-                           , WARN_POINTER_TRUNCATION );
+    if( canBinaryCopy( tgt, src ) && 0 == (cvFlags( src ) & TF1_VOLATILE) ) {
+        expr = doBinaryCopy( tgt, src );
         *a_ctor_used = NULL;
     } else {
         tgt_type = ClassTypeForType( tgt->type );
