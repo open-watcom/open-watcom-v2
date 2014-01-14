@@ -330,7 +330,7 @@ struct STAB_TRAVERSE            // STAB_TRAVERSE -- control for traversal
     RT_STATE_VAR state_var;     // - state variable for position
     RT_STATE_VAR bound;         // - bound for traversal
     OB_TYPE obj_type;           // - type of object
-    uint_8 unwinding :1;        // - TRUE ==> unwinding stack
+    uint_8 unwinding :1;        // - true ==> unwinding stack
     unsigned :0;                // - alignment
 };
 
@@ -399,10 +399,10 @@ struct DISPATCH_EXC             // DISPATCH_EXC -- dispatch control
     unsigned catch_no;          // - catch number
     RT_STATE_VAR state_var;     // - state variable after dispatch
     DISPATCHABLE type;          // - type of dispatch
-    uint_8 zero              :1;// - TRUE ==> zero thrown
-    uint_8 rethrow           :1;// - TRUE ==> is re-throw
-    uint_8 popped            :1;// - TRUE ==> original catch handler popped
-    uint_8 non_watcom        :1;// - TRUE ==> non-watcom exc. & catch(...)
+    uint_8 zero              :1;// - true ==> zero thrown
+    uint_8 rethrow           :1;// - true ==> is re-throw
+    uint_8 popped            :1;// - true ==> original catch handler popped
+    uint_8 non_watcom        :1;// - true ==> non-watcom exc. & catch(...)
     unsigned :0;                // - alignment
     long system_exc;            // - system exc code
     RW_DTREG* fnexc_skip;       // - fn-exc skipping R/W block
@@ -539,13 +539,13 @@ void CPPLIB( dtor_free_exc )    // DESTRUCT AND FREE EXCEPTION
     ( ACTIVE_EXC* active        // - exception
     , _RTCTL* rtc )             // - R/T control
 ;
-void CPPLIB( exc_setup )            // SETUP DISPATCH, EXCEPTION RECORDS
-    ( DISPATCH_EXC* disp            // - dispatch record
-    , THROW_RO* throw_ro            // - throw r/o block
-    , rboolean is_zero              // - TRUE ==> thrown object is zero constant
-    , _RTCTL* rt_ctl                // - R/T control
-    , void* object                  // - thrown object
-    , FsExcRec* rec )               // - exception record
+void CPPLIB( exc_setup )        // SETUP DISPATCH, EXCEPTION RECORDS
+    ( DISPATCH_EXC* disp        // - dispatch record
+    , THROW_RO* throw_ro        // - throw r/o block
+    , rboolean is_zero          // - true ==> thrown object is zero constant
+    , _RTCTL* rt_ctl            // - R/T control
+    , void* object              // - thrown object
+    , FsExcRec* rec )           // - exception record
 ;
 ACTIVE_EXC* CPPLIB( find_active )( // FIND EXCEPTION FOR A POSITION
     _RTCTL* rtc,                // - R/T control

@@ -55,13 +55,13 @@ namespace std {
         return( NULL );
     }
     if( (buf == NULL) || (len <= 0) ) {
-        setb( NULL, NULL, FALSE );
+        setb( NULL, NULL, false );
     } else {
         if( len <= DEFAULT_PUTBACK_SIZE ) {
-            setb( NULL, NULL, FALSE );
+            setb( NULL, NULL, false );
             return( NULL );
         }
-        setb( buf, buf + len, FALSE );
+        setb( buf, buf + len, false );
     }
     return( this );
   }

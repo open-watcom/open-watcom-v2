@@ -221,12 +221,12 @@ _WPRTLINK int WCIsvListBase::base_index( const WCSLink * datum ) const {
     WCSLink * rover;
     int index = 0;
 
-    rover = base_next( rover, TRUE );
+    rover = base_next( rover, true );
     while( rover != 0 ) {
         if( rover == datum ) {
             return( index );
         }
-        rover = base_next( rover, FALSE );
+        rover = base_next( rover, false );
         index++;
     }
     return( -1 );
@@ -262,9 +262,9 @@ _WPRTLINK void WCIsvListBase::base_destroy( void ) {
     WCSLink * rover;
     WCSLink * next_link;
 
-    rover = base_next( rover, TRUE );
+    rover = base_next( rover, true );
     while( rover != 0 ) {
-        next_link = base_next( rover, FALSE );
+        next_link = base_next( rover, false );
         WCListDelete( rover );
         rover = next_link;
     }

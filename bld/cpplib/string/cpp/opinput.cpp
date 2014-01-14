@@ -60,17 +60,14 @@
 
 #include "strng.h"
 
-#define FALSE    0
-#define TRUE     1
-
 _WPRTLINK istream &operator >> ( istream &strm, String &s ) {
 /**********************************************************/
 // Input (get from) operator: read a String from the stream.
     #define CHUNK_SIZE          128
     char    chunk[CHUNK_SIZE+1];
     int     count               = 0;
-    char    done                = FALSE;
-    char    assigned            = FALSE;
+    char    done                = false;
+    char    assigned            = false;
 
     if( strm.flags() & ios::skipws ) {
         ws( strm );
@@ -79,12 +76,12 @@ _WPRTLINK istream &operator >> ( istream &strm, String &s ) {
         for( ; count < CHUNK_SIZE; ++count ) {
             chunk[count] = (char)strm.get();
             if( !strm.good() ) {
-                done = TRUE;
+                done = true;
                 break;
             }
             if( isspace( chunk[count] ) ) {
                 strm.putback( chunk[count] );
-                done = TRUE;
+                done = true;
                 break;
             }
         }
@@ -93,7 +90,7 @@ _WPRTLINK istream &operator >> ( istream &strm, String &s ) {
             if( assigned ) {
                 s += chunk;
             } else {
-                assigned = TRUE;
+                assigned = true;
                 s        = chunk;
             }
             count = 0;

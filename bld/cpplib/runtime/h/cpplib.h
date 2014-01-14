@@ -388,10 +388,10 @@ void CPPLIB(fatal_runtime_error)(   // FATAL RUNTIME ERROR
     char *msg,                      // - diagnostic message
     int code )                      // - exit code
 ;
-rboolean CPPLIB( ts_equiv )(         // TEST IF TYPE SIG.S ARE EQUIVALENT
+rboolean CPPLIB( ts_equiv )(        // TEST IF TYPE SIG.S ARE EQUIVALENT
     RT_TYPE_SIG tgt,                // - target type signature
     RT_TYPE_SIG src,                // - source type signature
-    rboolean zero_thrown )           // - TRUE ==> zero was thrown
+    rboolean zero_thrown )          // - true ==> zero was thrown
 ;
 RT_TYPE_SIG CPPLIB( ts_pnted )(     // POINT PAST POINTER TYPE-SIG
     RT_TYPE_SIG sig )               // - the signature

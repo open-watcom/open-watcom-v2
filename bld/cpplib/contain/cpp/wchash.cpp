@@ -223,16 +223,16 @@ _WPRTLINK void WCHashBase::clear() {
 _WPRTLINK WCbool WCHashBase::insert( TTypePtr elem ) {
     if( num_buckets == 0 ) {
         base_throw_out_of_memory();
-        return( FALSE );
+        return( false );
     }
     BaseHashLink * link = WCHashNew( elem );
     if( link == 0 ) {
         base_throw_out_of_memory();
-        return( FALSE );
+        return( false );
     }
     hash_array[ base_get_bucket( elem ) ].append( link );
     num_entries++;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -318,22 +318,22 @@ _WPRTLINK WCbool WCHashIterBase::base_advance() {
     if( curr_hash == 0 || at_end ) {
         at_end = 1;
         base_throw_undef_iter();
-        return( FALSE );
+        return( false );
     }
     if( curr_hash->num_buckets == 0 ) {
         at_end = 1;
-        return( FALSE );
+        return( false );
     }
     for( ;; ) {
         if( ++bucket_iter != 0 ) {
-            return( TRUE );
+            return( true );
         }
         curr_bucket++;
         if( curr_bucket >= curr_hash->num_buckets ) break;
         bucket_iter.reset( curr_hash->hash_array[ curr_bucket ] );
     };
     at_end = 1;
-    return( FALSE );
+    return( false );
 };
 
 

@@ -79,7 +79,7 @@ std::ios::iostate __getLDFmantissa( std::streambuf *sb, char *&bufptr ) {
 
     state = std::ios::goodbit;
     mant_digits  = 0;
-    have_decimal = FALSE;
+    have_decimal = false;
     for( ;; ) {
         c = sb->speekc();
         if( c == EOF ) {
@@ -99,7 +99,7 @@ std::ios::iostate __getLDFmantissa( std::streambuf *sb, char *&bufptr ) {
                     break;
                 }
             }
-            have_decimal = TRUE;
+            have_decimal = true;
             sb->sbumpc();
         } else {
            break;
@@ -129,7 +129,7 @@ std::ios::iostate __getLDFexponent( std::streambuf *sb, char *&bufptr ) {
     }
     exp = sb->sbumpc();
     *(bufptr++) = (char)exp;  // keep the 'E'
-    state |= __getLDFsign( sb, bufptr, TRUE );
+    state |= __getLDFsign( sb, bufptr, true );
     if ( state & std::ios::eofbit ) {
         bufptr--;             // discard the 'E'
         sb->sputbackc( (char)exp );
@@ -168,7 +168,7 @@ std::ios::iostate __GetLDFloat( std::streambuf *sb, char *buffer ) {
 
     state = std::ios::goodbit;
     bufptr = buffer;
-    state |= __getLDFsign( sb, bufptr, FALSE );
+    state |= __getLDFsign( sb, bufptr, false );
     if( state & std::ios::eofbit ) {
         state |= std::ios::failbit;
     }

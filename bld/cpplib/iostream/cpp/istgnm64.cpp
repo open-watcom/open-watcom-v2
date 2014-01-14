@@ -89,7 +89,7 @@ std::ios::iostate __getnumberint64( std::streambuf *sb,
     state    = std::ios::goodbit;
     result   = 0;
     overflow = 0;
-    is_digit = TRUE;
+    is_digit = true;
     __lock_it( sb->__b_lock );
     while( is_digit ) {
         ch = sb->speekc();
@@ -108,7 +108,7 @@ std::ios::iostate __getnumberint64( std::streambuf *sb,
                 low_char = (char)tolower( ch );
                 if( low_char >= 'a'  &&  low_char <= 'f' ) {
                     digit_value = low_char - 'a' + 10;
-                    is_digit    = TRUE;
+                    is_digit    = true;
                 }
             }
         }

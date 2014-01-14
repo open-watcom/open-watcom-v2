@@ -66,7 +66,7 @@ namespace std {
         }
         if( newbuf != NULL ) {
             ::memcpy( newbuf, oldbuf, size );
-            setb( newbuf, newbuf + size, FALSE );
+            setb( newbuf, newbuf + size, false );
 
             if( pbase() != NULL ) {
                 size_t base_offset = (__huge_ptr_int)(pbase() - oldbuf);

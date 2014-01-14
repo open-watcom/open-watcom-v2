@@ -455,7 +455,7 @@ _WPRTLINK WCbool WCSkipNonTempBase::remove( TTypePtr elem ) {
     node_ptr node = base_remove_but_not_delete( elem, num_ptrs_in_node );
     if( node ) {
         base_delete_node( node, num_ptrs_in_node );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

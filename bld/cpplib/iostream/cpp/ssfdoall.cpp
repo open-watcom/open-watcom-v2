@@ -71,7 +71,7 @@ namespace std {
     if( newbuf == NULL ) {
         return( EOF );
     }
-    setb( newbuf, newbuf + newbufsize, FALSE );
+    setb( newbuf, newbuf + newbufsize, false );
 
     // Copy the get area. This can be done directly by copying bytes and
     // setting new pointers. The size of the get area does not change.

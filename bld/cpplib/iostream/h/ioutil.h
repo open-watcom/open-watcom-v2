@@ -40,9 +40,6 @@
 #include <stdio.h>
 #include "xfloat.h"
 
-#define TRUE  1
-#define FALSE 0
-
 typedef int __huge_ptr_int;
 
 union ipvalue {

@@ -80,7 +80,7 @@ namespace std {
         __unlimited = 1;
         eget = get + DEFAULT_MAINBUF_SIZE;
     }
-    setb( get, eget, FALSE );
+    setb( get, eget, false );
     if( (pstart == NULL)
       ||(pstart < get)
       ||( (pstart >= eget) && (!__unlimited) ) ) {

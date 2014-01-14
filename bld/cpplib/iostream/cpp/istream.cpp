@@ -363,7 +363,7 @@ static ios::iostate getnumber( streambuf *sb, unsigned long &number,
     state    = ios::goodbit;
     result   = 0;
     overflow = 0;
-    is_digit = TRUE;
+    is_digit = true;
     __lock_it( sb->__b_lock );
     while( is_digit ) {
         ch = sb->speekc();
@@ -382,7 +382,7 @@ static ios::iostate getnumber( streambuf *sb, unsigned long &number,
                 low_char = (char)tolower( ch );
                 if( low_char >= 'a'  &&  low_char <= 'f' ) {
                     digit_value = low_char - 'a' + 10;
-                    is_digit    = TRUE;
+                    is_digit    = true;
                 }
             }
         }
@@ -686,7 +686,7 @@ namespace std {
     ios::iostate state;
 
     __lock_it( __i_lock );
-    state = getaline( *this, buf, len, delim, TRUE, __last_read_length );
+    state = getaline( *this, buf, len, delim, true, __last_read_length );
     __WATCOM_ios::setstate( this, state );
     return( *this );
   }
@@ -697,7 +697,7 @@ namespace std {
     ios::iostate state;
 
     __lock_it( __i_lock );
-    state = getaline( *this, buf, len, delim, FALSE, __last_read_length );
+    state = getaline( *this, buf, len, delim, false, __last_read_length );
     __WATCOM_ios::setstate( this, state );
     return( *this );
   }

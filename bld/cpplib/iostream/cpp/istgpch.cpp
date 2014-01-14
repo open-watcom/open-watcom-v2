@@ -44,7 +44,7 @@ namespace std {
     ios::iostate state;
 
     __lock_it( __i_lock );
-    state = __getaline( *this, buf, len, delim, TRUE, __last_read_length );
+    state = __getaline( *this, buf, len, delim, true, __last_read_length );
     setstate( state );
     return( *this );
   }
