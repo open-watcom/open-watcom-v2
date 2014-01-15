@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
-#include "wio.h"
-#include <assert.h>
-#include <string.h>
 #include "cgstd.h"
+#include <string.h>
+#include "wio.h"
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cgauxinf.h"
@@ -971,7 +970,7 @@ extern  void    OutLabel( label_handle label )
     }
 }
 
-static long const Zero = 0;
+static int const Zero = 0;
 
 #if _TARGET & _TARG_PPC
 extern void OutTOCRec( label_handle label )

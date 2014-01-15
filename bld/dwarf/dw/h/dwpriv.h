@@ -51,18 +51,14 @@ typedef uint_32                 debug_ref;
 #include "dwcarve.h"
 #include "dwhandle.h"
 
-#define CLIReloc2( __s, __i )   cli->funcs.reloc( __s, __i )
-#define CLIReloc3( __s, __i, __v )      \
-                                cli->funcs.reloc( __s, __i, __v )
-#define CLIReloc4( __s, __i, __v1, __v2 )      \
-                                cli->funcs.reloc( __s, __i, __v1, __v2 )
-#define CLIWrite( __s,  __b, __l )      \
-                                cli->funcs.write( __s, __b, __l )
-#define CLISeek( __s, __o, __t ) \
-                                cli->funcs.seek( __s, __o, __t )
-#define CLITell( __s )          cli->funcs.tell( __s )
-#define CLIAlloc( __size )      cli->funcs.alloc( __size )
-#define CLIFree( __ptr )        cli->funcs.free( __ptr )
+#define CLIReloc2( __s, __i )       cli->funcs.reloc( __s, __i )
+#define CLIReloc3( __s, __i, __v )  cli->funcs.reloc( __s, __i, __v )
+#define CLIReloc4( __s, __i, __v1, __v2 ) cli->funcs.reloc( __s, __i, __v1, __v2 )
+#define CLIWrite( __s,  __b, __l )  cli->funcs.write( __s, __b, __l )
+#define CLISeek( __s, __o, __t )    cli->funcs.seek( __s, __o, __t )
+#define CLITell( __s )              cli->funcs.tell( __s )
+#define CLIAlloc( __size )          cli->funcs.alloc( __size )
+#define CLIFree( __ptr )            cli->funcs.free( __ptr )
 
 
 struct handles_private {

@@ -29,12 +29,11 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "cgstd.h"
 #include "coderep.h"
 #include "typedef.h"
 #include "types.h"

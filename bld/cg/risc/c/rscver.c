@@ -30,7 +30,6 @@
 
 
 #include "cgstd.h"
-#include <assert.h>
 #include <stdlib.h>
 #include "cgdefs.h"
 #include "coderep.h"

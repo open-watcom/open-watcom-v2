@@ -30,6 +30,7 @@
 
 
 #include "cgstd.h"
+#include <stdio.h>
 #include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
@@ -40,8 +41,6 @@
 #include "encode.h"
 #include "cgaux.h"
 #include "data.h"
-#include <assert.h>
-#include <stdio.h>
 #include "rtrtn.h"
 #include "cgauxinf.h"
 #include "dumpio.h"

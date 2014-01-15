@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "cgstd.h"
+#include <string.h>
 #include "coderep.h"
 #include "typedef.h"
 #include "cgmem.h"

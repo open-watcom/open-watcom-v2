@@ -158,7 +158,7 @@ typedef struct{
 
 typedef struct{
     field_entry         entry;
-    unsigned long       vfptr_off;
+    unsigned            vfptr_off;
     cg_type             vft_cgtype;
     int                 vft_size;
     dbg_type            base;
@@ -178,13 +178,13 @@ typedef struct struct_list {
     field_any          *list;
     field_any           **list_tail;
     uint                num;
-    unsigned long       size;
+    unsigned            size;
     dbg_type            me;
     unsigned            is_struct :1;
     unsigned            is_nested :1;
     unsigned            is_cnested:1;
     unsigned            is_class  :1;
-    unsigned long       vtbl_off;
+    unsigned            vtbl_off;
     dbg_type            vtbl_type;
     cg_type             ptr_type;
     int                 vtbl_esize;
@@ -239,7 +239,7 @@ typedef union dim_any {
 typedef struct array_list {
     dim_any         *list;
     uint            num;
-    unsigned long   size;
+    unsigned        size;
     dbg_type        base;
     unsigned        is_col_major :1;
     unsigned        is_variable  :1;

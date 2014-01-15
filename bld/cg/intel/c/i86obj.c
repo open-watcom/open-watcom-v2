@@ -29,8 +29,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "cgstd.h"
+#include <string.h>
+#include <setjmp.h>
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgauxinf.h"
@@ -46,6 +47,7 @@
 #include "utils.h"
 #include "objout.h"
 #include "dbsyms.h"
+#include "dw.h"
 #include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -144,7 +146,7 @@ extern  void            DoOutObjectName(cg_sym_handle,void(*)(const char*,void*)
 /* DF interface */
 extern  void            DFObjInitInfo( void );
 extern  void            DFObjLineInitInfo( void );
-extern  void            DFBegCCU( segment_id code, long dbg_pch );
+extern  void            DFBegCCU( segment_id code, dw_sym_handle dbg_pch );
 extern  void            DFDefSegs( void );
 extern  void            DFObjFiniDbgInfo( offset codesize );
 extern  void            DFObjLineFiniDbgInfo( void );
@@ -455,8 +457,8 @@ static  void    OutByte( byte value, array_control *dest )
     dest->used = need;
 }
 
-static  void    OutInt( int value, array_control *dest )
-/******************************************************/
+static  void    OutShort( unsigned_16 value, array_control *dest )
+/****************************************************************/
 {
     unsigned    need;
 
@@ -464,12 +466,12 @@ static  void    OutInt( int value, array_control *dest )
     if( need > dest->alloc ) {
         ReallocArray( dest, need );
     }
-    _ARRAY( dest, unsigned_16 ) = _TargetInt( value );
+    _ARRAY( dest, unsigned_16 ) = _TargetShort( value );
     dest->used = need;
 }
 
-static  void    OutLongInt( long value, array_control *dest )
-/***********************************************************/
+static  void    OutLongInt( unsigned_32 value, array_control *dest )
+/******************************************************************/
 {
     unsigned    need;
 
@@ -601,7 +603,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     PutObjRec( cmd, obj->data.array, obj->data.used );
     if( rec->exec ) {
         obj->data.used = 0;
-        OutInt( LINKER_COMMENT, &obj->data );
+        OutShort( LINKER_COMMENT, &obj->data );
         OutByte( LDIR_OPT_FAR_CALLS, &obj->data );
         OutIdx( rec->sidx, &obj->data );
         PutObjRec( CMD_COMENT, obj->data.array, obj->data.used );
@@ -1045,7 +1047,7 @@ extern  void    ObjInit( void )
 #ifdef _OMF_32
     if( _IsTargetModel( EZ_OMF ) || _IsTargetModel( FLAT_MODEL ) ) {
         names->used = 0;
-        OutInt( PHAR_LAP_COMMENT, names );
+        OutShort( PHAR_LAP_COMMENT, names );
         if( _IsntTargetModel( EZ_OMF ) ) {
             OutString( "OS220", names );
         } else {
@@ -1054,23 +1056,23 @@ extern  void    ObjInit( void )
         PutObjRec( CMD_COMENT, names->array, names->used );
     }
 #else
-    OutInt( DEBUG_COMMENT, names );
+    OutShort( DEBUG_COMMENT, names );
     PutObjRec( CMD_COMENT, names->array, names->used );
 #endif
 
     names->used = 0;
-    OutInt( MODEL_COMMENT, names );
+    OutShort( MODEL_COMMENT, names );
     OutModel( names );
     PutObjRec( CMD_COMENT, names->array, names->used );
     if( _IsTargetModel( FLAT_MODEL ) && _IsModel( DBG_DF ) ) {
         names->used = 0;
-        OutInt( LINKER_COMMENT, names );
+        OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_FLAT_ADDRS, names );
         PutObjRec( CMD_COMENT, names->array, names->used );
     }
     if( _IsntModel( DBG_DF | DBG_CV ) ) {
         names->used = 0;
-        OutInt( LINKER_COMMENT, names );
+        OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_SOURCE_LANGUAGE, names );
         OutByte( DEBUG_MAJOR_VERSION, names );
         if( _IsModel( DBG_TYPES | DBG_LOCALS ) ) {
@@ -1087,14 +1089,14 @@ extern  void    ObjInit( void )
         depend = FEAuxInfo( depend, NEXT_DEPENDENCY );
         if( depend == NULL )
             break;
-        OutInt( DEPENDENCY_COMMENT, names );
+        OutShort( DEPENDENCY_COMMENT, names );
         OutLongInt( *(unsigned_32 *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ), names );
         OutName( FEAuxInfo( depend, DEPENDENCY_NAME ), names );
         PutObjRec( CMD_COMENT, names->array, names->used );
         names->used = 0;
     }
     /* mark end of dependancy list */
-    OutInt( DEPENDENCY_COMMENT, names );
+    OutShort( DEPENDENCY_COMMENT, names );
     PutObjRec( CMD_COMENT, names->array, names->used );
     names->used = 0;
 
@@ -1378,7 +1380,7 @@ static void     EjectLEData( void )
         if( obj->fixes.used != 0 ) {
             if( CurrSeg->data_ptr_in_code ) {
                 obj->data.used = 0;
-                OutInt( LINKER_COMMENT, &obj->data );
+                OutShort( LINKER_COMMENT, &obj->data );
                 OutByte( LDIR_OPT_UNSAFE, &obj->data );
                 PutObjRec( CMD_COMENT, obj->data.array, obj->data.used );
             }
@@ -1422,7 +1424,7 @@ extern  void    OutSelect( bool starts )
             EjectLEData();
             obj = CurrSeg->obj;
             obj->data.used = 0;
-            OutInt( DISASM_COMMENT, &obj->data );
+            OutShort( DISASM_COMMENT, &obj->data );
 #ifdef _OMF_32
             OutByte( DDIR_SCAN_TABLE_32, &obj->data );
 #else
@@ -1562,7 +1564,7 @@ static  void    GenComdef( void )
     array_control       *comdef;
     unsigned            count;
     unsigned_8          ind;
-    unsigned long       size;
+    unsigned            size;
     cg_sym_handle       sym;
     cmd_omf             cmd;
 
@@ -1699,6 +1701,12 @@ static  index_rec       *AskIndexRec( unsigned_16 sidx )
     return( rec );
 }
 
+#if _TARGET & _TARG_IAPX86
+#define _TargetInt _TargetShort
+#else
+#define _TargetInt _TargetBigInt
+#endif
+
 static  void    FiniTarg( void )
 /******************************/
 {
@@ -1718,12 +1726,12 @@ static  void    FiniTarg( void )
     }
     rec = AskIndexRec( obj->index );
 #ifdef _OMF_32
-    size.s = (offset)_TargetInt( rec->max_size );
+    size.s = _TargetInt( rec->max_size );
 #else //SEG32DBG dwarf, codeview
     if( rec->attr & SEG_USE_32 ) {
         size.l = _TargetLongInt( rec->max_size );
     } else {
-        size.s = (offset)_TargetInt( rec->max_size );
+        size.s = _TargetInt( rec->max_size );
     }
 #endif
     if( rec->exec ) {
@@ -1851,35 +1859,34 @@ static void DoSegARange( offset *codesize, index_rec *rec )
 static  void    DoPatch( obj_patch *pat, offset lc )
 /**************************************************/
 {
-    unsigned_32 lword;
-    unsigned_16 word;
-    byte        bite;
+    unsigned_32 lword_val;
+    unsigned_16 word_val;
+    byte        byte_val;
 
     if( pat->attr & LONG_PATCH ) {
         if( pat->attr & ADD_PATCH ) {
-            GetFromObj( pat->ref, pat->where,
-                       (byte *)&lword, sizeof( long_offset ) );
-            _TargetAddL( lword, lc );
+            GetFromObj( pat->ref, pat->where, (byte *)&lword_val, sizeof( lword_val ) );
+            _TargetAddL( lword_val, lc );
         } else {
-            lword = _TargetLongInt( lc );
+            lword_val = _TargetLongInt( lc );
         }
-        PatchObj( pat->ref, pat->where, (byte *)&lword, sizeof( long_offset ) );
+        PatchObj( pat->ref, pat->where, (byte *)&lword_val, sizeof( lword_val ) );
     } else if( pat->attr & WORD_PATCH ) {
         if( pat->attr & ADD_PATCH ) {
-            GetFromObj( pat->ref, pat->where, (byte *)&word, sizeof( short_offset ) );
-            _TargetAddW( word, lc );
+            GetFromObj( pat->ref, pat->where, (byte *)&word_val, sizeof( word_val ) );
+            _TargetAddW( word_val, lc );
         } else {
-            word = (unsigned_16)_TargetInt( lc );
+            word_val = _TargetShort( lc );
         }
-        PatchObj( pat->ref, pat->where, (byte *)&word, sizeof( short_offset ) );
+        PatchObj( pat->ref, pat->where, (byte *)&word_val, sizeof( word_val ) );
     } else {
         if( pat->attr & ADD_PATCH ) {
-            GetFromObj( pat->ref, pat->where, &bite, sizeof( byte ) );
-            _TargetAddB( bite, lc );
+            GetFromObj( pat->ref, pat->where, (byte *)&byte_val, sizeof( byte_val ) );
+            byte_val += lc;
         } else {
-            bite = (byte)_TargetInt( lc );
+            byte_val = lc;
         }
-        PatchObj( pat->ref, pat->where, &bite, sizeof( byte ) );
+        PatchObj( pat->ref, pat->where, (byte *)&byte_val, sizeof( byte_val ) );
     }
 }
 
@@ -1998,7 +2005,7 @@ extern  void    ObjFini( void )
         lib = FEAuxInfo( lib, NEXT_LIBRARY );
         if( lib == NULL )
             break;
-        OutInt( LIBNAME_COMMENT, Imports );
+        OutShort( LIBNAME_COMMENT, Imports );
         OutString( ( (char *)FEAuxInfo( lib, LIBRARY_NAME ) ) + 1, Imports );
         PutObjRec( CMD_COMENT, Imports->array, Imports->used );
         Imports->used = 0;
@@ -2217,7 +2224,7 @@ static void     OutVirtFuncRef( cg_sym_handle virt )
     EjectLEData();
     obj = CurrSeg->obj;
     obj->data.used = 0;
-    OutInt( LINKER_COMMENT, &obj->data );
+    OutShort( LINKER_COMMENT, &obj->data );
     OutByte( LDIR_VF_REFERENCE, &obj->data );
     OutIdx( extdef, &obj->data );
     if( CurrSeg->comdat_symbol != NULL ) {
@@ -2241,7 +2248,7 @@ extern  void    OutDLLExport( uint words, cg_sym_handle sym )
     EjectLEData();
     obj = CurrSeg->obj;
     obj->data.used = 0;
-    OutInt( EXPORT_COMMENT, &obj->data );
+    OutShort( EXPORT_COMMENT, &obj->data );
     OutByte( 2, &obj->data );
 #if _TARGET & _TARG_IAPX86
     OutByte( words, &obj->data );
@@ -2329,15 +2336,15 @@ extern  void    OutLabel( label_handle lbl )
                         } else if( curr_pat->pat.attr & WORD_PATCH ) {
                             _TargetAddW( *(unsigned_16 *)patptr, lc );
                         } else {
-                            _TargetAddB( *(byte *)patptr, lc );
+                            *(byte *)patptr += lc;
                         }
                     } else {
                         if( curr_pat->pat.attr & LONG_PATCH ) {
                             *(unsigned_32 *)patptr = _TargetLongInt( lc );
                         } else if( curr_pat->pat.attr & WORD_PATCH ) {
-                            *(unsigned_16 *)patptr = (unsigned_16)_TargetInt( lc );
+                            *(unsigned_16 *)patptr = _TargetShort( lc );
                         } else {
-                            *(byte *)patptr = (byte)_TargetInt( lc );
+                            *(byte *)patptr = lc;
                         }
                     }
                     *owner = curr_pat->link;
@@ -2680,7 +2687,7 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
         InitLineInfo( obj );
     }
     obj->line_info = TRUE;
-    OutInt( line, obj->lines );
+    OutShort( line, obj->lines );
     OutOffset( lc, obj->lines );
 }
 
@@ -2704,10 +2711,10 @@ static  void    SetPendingLine( void )
         InitLineInfo( obj );
     } else {
         old_line = &_ARRAY( obj->lines, line_num_entry ) - 1;
-        if( line == _HostInt( old_line->line ) )
+        if( line == _HostShort( old_line->line ) )
             return;
         if( (offset)CurrSeg->location <= _HostOffset( old_line->off ) ) {
-            old_line->line = (unsigned_16)_TargetInt( line );
+            old_line->line = _TargetShort( line );
             return;
         }
     }
@@ -2747,8 +2754,8 @@ extern  void    OutDataByte( byte value )
     _ARRAYOF( &obj->data, byte )[i] = value;
 }
 
-extern  void    OutDataInt( int value )
-/*************************************/
+extern  void    OutDataShort( unsigned_16 value )
+/***********************************************/
 {
     unsigned    i;
     unsigned    need;
@@ -2767,12 +2774,12 @@ extern  void    OutDataInt( int value )
         obj->data.used = need;
     }
     SetMaxWritten();
-    *(unsigned_16 *)&_ARRAYOF( &obj->data, byte )[i] = _TargetInt( value );
+    *(unsigned_16 *)&_ARRAYOF( &obj->data, byte )[i] = _TargetShort( value );
 }
 
 
-extern  void    OutDataLong( long value )
-/***************************************/
+extern  void    OutDataLong( unsigned_32 value )
+/**********************************************/
 {
     unsigned    i;
     unsigned    need;
@@ -2816,7 +2823,7 @@ extern  void    OutAbsPatch( abspatch *patch, patch_attr attr )
     if( attr & LONG_PATCH ) {
         OutDataLong( value );
     } else if( attr & WORD_PATCH ) {
-        OutDataInt( value );
+        OutDataShort( value );
     } else {
         OutDataByte( (byte)value );
     }
@@ -2841,24 +2848,24 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
         type = (pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
         switch( type ) {
         case IMPORT_IS_LAZY:
-            OutInt( LAZY_EXTRN_COMMENT, cmt );
+            OutShort( LAZY_EXTRN_COMMENT, cmt );
             OutIdx( idx, cmt );
             OutIdx( def_idx, cmt );
             break;
         case IMPORT_IS_WEAK:
-            OutInt( WEAK_EXTRN_COMMENT, cmt );
+            OutShort( WEAK_EXTRN_COMMENT, cmt );
             OutIdx( idx, cmt );
             OutIdx( def_idx, cmt );
             break;
         case IMPORT_IS_CONDITIONAL_PURE:
-            OutInt( WEAK_EXTRN_COMMENT, cmt );
+            OutShort( WEAK_EXTRN_COMMENT, cmt );
             OutIdx( idx, cmt );
             OutIdx( def_idx, cmt );
             PutObjRec( CMD_COMENT, cmt->array, cmt->used );
             cmt->used = 0;
             /* fall through */
         case IMPORT_IS_CONDITIONAL:
-            OutInt( LINKER_COMMENT, cmt );
+            OutShort( LINKER_COMMENT, cmt );
             if( type == IMPORT_IS_CONDITIONAL ) {
                 OutByte( LDIR_VF_TABLE_DEF, cmt );
             } else {
@@ -3127,12 +3134,12 @@ extern  void    OutIBytes( byte pat, offset len )
         if( _IsntTargetModel( EZ_OMF ) ) {
             OutOffset( len, &obj->data );          /* repeat count */
         } else {
-            OutInt( len, &obj->data );             /* repeat count */
+            OutShort( len, &obj->data );           /* repeat count */
         }
 #else
-        OutInt( len, &obj->data );                 /* repeat count */
+        OutShort( len, &obj->data );               /* repeat count */
 #endif
-        OutInt( 0, &obj->data );                   /* nesting count */
+        OutShort( 0, &obj->data );                 /* nesting count */
         OutByte( 1, &obj->data );                  /* pattern length */
         OutByte( pat, &obj->data );
         if( CurrSeg->comdat_label != NULL ) {

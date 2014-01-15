@@ -46,7 +46,7 @@
 
 #define LINKAGES (LINKAGE_OS+LINKAGE_OSFUNC+LINKAGE_OSENTRY+LINKAGE_CLINK)
 
-typedef unsigned long   call_class;
+typedef unsigned    call_class;
 
 typedef struct {
     hw_reg_set      gp;

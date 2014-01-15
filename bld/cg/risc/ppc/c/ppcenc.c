@@ -30,6 +30,7 @@
 
 
 #include "cgstd.h"
+#include <stdio.h>
 #include "coderep.h"
 #include "reloc.h"
 #include "zoiks.h"
@@ -37,8 +38,6 @@
 #include "cgaux.h"
 #include "ppcenc.h"
 #include "ppcgen.h"
-#include <assert.h>
-#include <stdio.h>
 #include "data.h"
 #include "objout.h"
 #include "dumpio.h"

@@ -55,8 +55,7 @@
 
 extern  void            DoBigBckPtr(back_handle,offset);
 extern  name            *DeAlias(name*);
-extern  void            DataInt(short_offset);
-extern  void            DataLong( long );
+extern  void            DataLong( unsigned_32 );
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes( offset len, byte pat );
 extern  void            DataLabel( label_handle );
@@ -171,7 +170,7 @@ static void DoSegLblReloc( back_handle bck ){
 static void DoSectOffset( dw_sectnum section  ){
 /**********************************/
     back_handle bck;
-    uint_32     pos;
+    long        pos;
     segment_id  id;
 
     pos = CLITell( section );
@@ -441,7 +440,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     if( CcuDef ) {
         cu.source_filename = FEAuxInfo( NULL, SOURCE_NAME );
         cu.directory = "";
-        cu.dbg_pch   = dbg_pch;
+        cu.dbg_pch = dbg_pch;
         cu.inc_list = NULL;
         cu.inc_list_len = 0;
         old = SetOP( code );
@@ -604,7 +603,7 @@ extern  void    DFObjLineInitInfo( void ) {
         }
         cu.source_filename = FEAuxInfo( NULL, SOURCE_NAME );
         cu.directory = "";
-        cu.dbg_pch   = 0;
+        cu.dbg_pch = NULL;
         cu.inc_list = NULL;
         cu.inc_list_len = 0;
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )

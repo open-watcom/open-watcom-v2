@@ -39,7 +39,6 @@
 #include "convins.h"
 #include "data.h"
 #include "rtrtn.h"
-#include <assert.h>
 #include "namelist.h"
 
 extern  instruction     *rMOVRESREG(instruction*);

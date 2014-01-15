@@ -35,7 +35,6 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "data.h"
-#include <assert.h>
 
 
 extern  void    InitFrl( pointer **head ) {

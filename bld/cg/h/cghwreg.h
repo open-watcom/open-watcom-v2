@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <limits.h>
+#include "cgstd.h"
 
 #ifdef HW_NEED_160
     #define HW_160( x ) x
@@ -45,8 +45,6 @@
     #endif
 #endif
 #define HW_COMMA ,
-
-#include "cgstd.h"
 
 #define __0(x) x##_0
 #define __1(x) x##_1

@@ -38,7 +38,6 @@
 #include "cgmem.h"
 #include "data.h"
 #include "objout.h"
-#include <assert.h>
 #include "namelist.h"
 #include "feprotos.h"
 
@@ -75,17 +74,17 @@ extern  void    DataBytes( unsigned_32 len, const void *src ) {
     TellByPassOver();
 }
 
-extern  void    DataInt( short_offset val ) {
-/*******************************************/
-
+extern  void    DataShort( unsigned_16 val )
+/******************************************/
+{
     TellOptimizerByPassed();
     ObjBytes( &val, sizeof( val ) );
     TellByPassOver();
 }
 
-extern  void    DataLong( long val ) {
-/*************************************/
-
+extern  void    DataLong( unsigned_32 val )
+/*****************************************/
+{
     TellOptimizerByPassed();
     ObjBytes( &val, sizeof( val ) );
     TellByPassOver();
@@ -95,9 +94,9 @@ extern  void    DataLong( long val ) {
 #define MAX_HACK_LEN    ( 8 * 1024 )
 static byte     Buffer[ MAX_HACK_LEN ];
 
-extern  void    IterBytes( offset len, byte pat ) {
+extern  void    IterBytes( offset len, byte pat )
 /***********************************************/
-
+{
     TellOptimizerByPassed();
     if( len > MAX_HACK_LEN ) {
         byte    *buff;
@@ -113,9 +112,9 @@ extern  void    IterBytes( offset len, byte pat ) {
     TellByPassOver();
 }
 
-extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe ) {
+extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
 /*************************************************************************************/
-
+{
     seg = seg; tipe = tipe;
     assert( tipe->length == 4 );
     TellOptimizerByPassed();
@@ -125,7 +124,7 @@ extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def 
 }
 
 extern  void    BackBigOffset( back_handle bck, segment_id seg, offset plus )
-/*************************************************************************/
+/***************************************************************************/
 {
     seg = seg;
     TellOptimizerByPassed();
@@ -134,8 +133,9 @@ extern  void    BackBigOffset( back_handle bck, segment_id seg, offset plus )
     TellByPassOver();
 }
 
-extern  void    BackPtrBase( back_handle bck, segment_id seg ) {
+extern  void    BackPtrBase( back_handle bck, segment_id seg )
 /************************************************************/
+{
     TellOptimizerByPassed();
     OutSegReloc( bck->lbl, seg );
     ObjBytes( "\0\0", 2 );

@@ -359,7 +359,7 @@ static  void    AllocNewLocal( name *temp )
     // to trigger this assert.
     /* such as:
     enum MonthEnum { InvalidMonth = 0, January, February, March };
-    long       IntoDays() {
+    int IntoDays( void ) {
         MonthEnum i = January;
         for ( ; i <= 11; ((short&) i)++ ) ;
         return 0;

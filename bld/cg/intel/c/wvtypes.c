@@ -47,8 +47,8 @@ extern  uint            BuffLoc(void);
 extern  void            BuffByte(byte);
 extern  void            BuffWSLString(const char *);
 extern  void            ChkDbgSegSize( offset, bool );
-extern  void            DataInt(short_offset);
-extern  void            DataLong(long);
+extern  void            DataShort(unsigned_16);
+extern  void            DataLong(unsigned_32);
 extern  void            DataBytes(unsigned_32,const void *);
 extern  void            BuffIndex(uint);
 extern  void            BuffForward(dbg_patch *);
@@ -208,7 +208,7 @@ extern void WVBackRefType( dbg_name name, dbg_type tipe )
     old = SetOP( name->patch.segment );
     here = AskLocation();
     SetLocation( name->patch.offset );
-    DataInt( 0x80 | (tipe >> 8) | (tipe << 8) );
+    DataShort( 0x80 | (tipe >> 8) | (tipe << 8) );
     SetLocation( here );
     SetOP( old );
 }
@@ -617,10 +617,10 @@ static void DmpFileInfo( void ){
     unsigned_16 index;
 
     lst = DBFiles.lst;
-    DataInt( DBFiles.count );
+    DataShort( DBFiles.count );
     index = 0;
     while( lst != NULL ){
-        DataInt( index );
+        DataShort( index );
         index += lst->len;
         lst = lst->next;
     }
@@ -651,13 +651,13 @@ extern void WVDmpCueInfo( long_offset where ){
     SetOP( old );
     ctl = &LineInfo;
     blk = ctl->head;
-    DataInt( ctl->count );  // number of entries
+    DataShort( ctl->count );  // number of entries
     if( ctl->count > 0 ){
         curr = &ctl->start[0];
-        DataInt( curr->cue );
-        DataInt( curr->fno );
-        DataInt( curr->line );
-        DataInt( curr->col );
+        DataShort( curr->cue );
+        DataShort( curr->fno );
+        DataShort( curr->line );
+        DataShort( curr->col );
     }
     while( blk != NULL ){
         curr = &blk->info[0];
@@ -667,10 +667,10 @@ extern void WVDmpCueInfo( long_offset where ){
             end = &blk->info[CUES_PER_BLK];
         }
         while( curr != end ){
-            DataInt( curr->cue );
-            DataInt( curr->fno );
-            DataInt( curr->line );
-            DataInt( curr->col );
+            DataShort( curr->cue );
+            DataShort( curr->fno );
+            DataShort( curr->line );
+            DataShort( curr->col );
             ++curr;
         }
         blk = blk->next;

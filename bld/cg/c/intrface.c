@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
 #include "cgstd.h"
+#include <ctype.h>
 #include "coderep.h"
 #include "cgdefs.h"
 #include "seldef.h"
@@ -57,7 +57,6 @@
 #include "echoapi.h"
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 #endif
 
 extern  void            InitBlip(void);
@@ -97,7 +96,7 @@ extern  void            BGProcInline(cg_sym_handle,type_def*);
 extern  void            DataAlign( unsigned_32 );
 
 #ifdef QNX_FLAKEY
-unsigned long   OrigModel;
+unsigned        OrigModel;
 #endif
 
 #define MAX_BCK_INFO    1000    // number of bck_info's per carve block

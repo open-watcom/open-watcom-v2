@@ -59,11 +59,9 @@ essentially no worst case performance scenario.
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
-
 #include "cgstd.h"
+#include <stdlib.h>
+#include <string.h>
 #include "cg.h"
 #if defined( _M_IX86 ) && defined( __WATCOMC__ )
     #include <i86.h>
@@ -86,19 +84,19 @@ essentially no worst case performance scenario.
 #include "dosmem.h"
 
 typedef struct {
-    unsigned long largest_free;
-    unsigned long max_unlocked_page_alloc;
-    unsigned long max_locked_page_alloc;
-    unsigned long linear_addr_space_in_pages;
-    unsigned long total_unlocked_pages;
-    unsigned long free_pages;
-    unsigned long physical_pages;
-    unsigned long free_linear_addr_space_in_pages;
-    unsigned long size_of_page_file_in_pages;
-    unsigned long fill[4];
+    unsigned largest_free;
+    unsigned max_unlocked_page_alloc;
+    unsigned max_locked_page_alloc;
+    unsigned linear_addr_space_in_pages;
+    unsigned total_unlocked_pages;
+    unsigned free_pages;
+    unsigned physical_pages;
+    unsigned free_linear_addr_space_in_pages;
+    unsigned size_of_page_file_in_pages;
+    unsigned fill[4];
 } dpmi_mem;
 
-extern long _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
+extern int _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
 #pragma aux _TinyDPMIGetFreeMemoryInformation = \
         "push es"    \
         "push ds"    \

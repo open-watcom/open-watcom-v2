@@ -185,7 +185,7 @@ dw_handle DWENTRY DWRefPCH(
     dw_handle                   new_hdl;
 
     _Validate( ref != 0 );
-    _Validate( cli->dbg_pch != 0 );
+    _Validate( cli->dbg_pch != NULL );
     new_hdl = GetHandle( cli );
     StartDIE( cli, AB_INDIRECT_TYPE );
     CLIReloc4( DW_DEBUG_INFO, DW_W_EXT_REF, cli->dbg_pch, ref  );

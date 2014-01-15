@@ -48,14 +48,14 @@ typedef struct cue_blk {
 } cue_blk;
 
 typedef struct cue_ctl {
-    cue_blk        *head;
-    cue_blk        *curr;
-    cue_blk       **lnk;
-    cue_state      *next;
-    cue_state      *end;
+    cue_blk         *head;
+    cue_blk         *curr;
+    cue_blk         **lnk;
+    cue_state       *next;
+    cue_state       *end;
     cue_state       state;
     cue_state       start[1];
-    long            count;
+    int             count;
 } cue_ctl;
 
 /* filename to number mapping */

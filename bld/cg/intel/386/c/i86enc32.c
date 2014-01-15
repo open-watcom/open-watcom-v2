@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
@@ -89,8 +88,8 @@ extern  unsigned        DepthAlign( unsigned );
 extern  void            TellOptimizerByPassed( void );
 extern  void            SetUpObj( bool );
 extern  void            OutDataByte( byte );
-extern  void            OutDataInt( int );
-extern  void            OutDataLong(long);
+extern  void            OutDataShort( unsigned_16 );
+extern  void            OutDataLong(unsigned_32);
 extern  void            OutRTImport( rt_class, fix_class );
 extern  void            TellKeepLabel( label_handle );
 extern  void            OutReloc( segment_id, fix_class, bool );
@@ -286,9 +285,9 @@ extern  byte    DoMDisp( name *op, bool alt_encoding )
 }
 
 
-static  void    EA( hw_reg_set base, hw_reg_set index,
-                    int scale, signed_32 val, name *mem_loc, bool lea )
-/*********************************************************************/
+static  void    EA( hw_reg_set base, hw_reg_set index, int scale,
+                         signed_32 val, name *mem_loc, bool lea )
+/***************************************************************/
 {
     if( HW_CEqual( index, HW_SP ) ) _Zoiks( ZOIKS_079 );
     if( HW_CEqual( base, HW_EMPTY ) ) {
@@ -404,8 +403,7 @@ extern  void    LayLeaRegOp( instruction *ins )
     case OP_ADD:
         if( right->n.class == N_CONSTANT ) {
             if( right->c.const_type == CONS_ABSOLUTE ) {
-                EA( HW_EMPTY, left->r.reg, 0, neg*right->c.int_value,
-                                NULL, TRUE );
+                EA( HW_EMPTY, left->r.reg, 0, neg*right->c.int_value, NULL, TRUE );
             } else {
                 EA( HW_EMPTY, left->r.reg, 0, 0, right, TRUE );
             }
@@ -609,7 +607,7 @@ extern  void    GenUnkLea( pointer value )
     Inst[ RMR ] |= DoIndex( HW_BP );
 }
 
-extern  void    GenLeaSP( long offset )
+extern  void    GenLeaSP( int offset )
 /**************************************
     LEA         sp,offset[bp]
 */
@@ -635,17 +633,17 @@ extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remov
     SetUpObj( FALSE );
     OutLabel( label );
     OutDataByte( 0xb9 );                /* mov cx,# */
-    OutDataInt( parms_size );
+    OutDataShort( parms_size );
     OutDataByte( 0x9a );
     OutRTImport( RT_Far32Func, F_FAR16 );
-    OutDataInt( 0 );
-    OutDataInt( 0 );
+    OutDataShort( 0 );
+    OutDataShort( 0 );
     if( remove_parms ) {
         OutDataByte( 0xca );
-        OutDataInt( parms_size );
+        OutDataShort( parms_size );
     } else {
         OutDataByte( 0xcb );
-        OutDataInt( 0 );                // padding
+        OutDataShort( 0 );              // padding
     }
     // emit "reloc for offset of code_32 label"
     SetUpObj( TRUE );

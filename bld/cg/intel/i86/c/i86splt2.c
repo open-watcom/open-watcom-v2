@@ -737,17 +737,17 @@ static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *ou
         switch( ins->type_class ) {
         case I8:
         case U8:
-            out->low      = AllocIntConst( _TargetInt( tosplit->c.int_value & 0xffff ) );
-            out->mid_low  = AllocIntConst( _TargetInt( tosplit->c.int_value >> 16 ) );
-            out->mid_high = AllocIntConst( _TargetInt( tosplit->c.int_value_2 & 0xffff ) );
-            out->high     = AllocIntConst( _TargetInt( tosplit->c.int_value_2 >> 16 ) );
+            out->low      = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.int_value & 0xffff ) );
+            out->mid_low  = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.int_value >> 16 ) );
+            out->mid_high = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.int_value_2 & 0xffff ) );
+            out->high     = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.int_value_2 >> 16 ) );
             break;
         case FD:
             floatval = GetFloat( tosplit, FD );
-            out->low      = AllocIntConst( _TargetInt( floatval->value[ 0 ] ) );
-            out->mid_low  = AllocIntConst( _TargetInt( floatval->value[ 1 ] ) );
-            out->mid_high = AllocIntConst( _TargetInt( floatval->value[ 2 ] ) );
-            out->high     = AllocIntConst( _TargetInt( floatval->value[ 3 ] ) );
+            out->low      = AllocIntConst( (unsigned_16)_TargetShort( floatval->value[ 0 ] ) );
+            out->mid_low  = AllocIntConst( (unsigned_16)_TargetShort( floatval->value[ 1 ] ) );
+            out->mid_high = AllocIntConst( (unsigned_16)_TargetShort( floatval->value[ 2 ] ) );
+            out->high     = AllocIntConst( (unsigned_16)_TargetShort( floatval->value[ 3 ] ) );
             break;
         default:
             Zoiks( ZOIKS_136 );

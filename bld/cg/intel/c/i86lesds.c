@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <assert.h>
-
 #include "cgstd.h"
 #include "coderep.h"
 #include "data.h"

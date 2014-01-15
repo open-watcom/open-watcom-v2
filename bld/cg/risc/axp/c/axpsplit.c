@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "tables.h"
 #include "zoiks.h"
-#include <assert.h>
 #include "data.h"
 #include "makeins.h"
 #include "rtrtn.h"

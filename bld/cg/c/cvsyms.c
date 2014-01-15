@@ -52,8 +52,7 @@
 
 extern  void            SetUpObj(bool);
 extern  name            *DeAlias(name*);
-extern  void            DataInt(short_offset);
-extern  void            DataLong( long );
+extern  void            DataLong( unsigned_32 );
 extern  char            GetMemModel( void );
 #if _TARGET & _TARG_IAPX86
 extern  hw_reg_set      Low32Reg(hw_reg_set);
@@ -315,8 +314,8 @@ static  void    SymReloc( segment_id seg, cg_sym_handle sym, offset lc )
     SetOP( old );
 }
 
-static void LabelReloc( segment_id seg, back_handle bck, long disp )
-/******************************************************************/
+static void LabelReloc( segment_id seg, back_handle bck, offset disp )
+/********************************************************************/
 {
     type_def    *ptr_type;
     segment_id  id;
@@ -351,8 +350,8 @@ extern  void    CVOutBck( cv_out *out, back_handle bck, offset add, dbg_type tip
     buffEnd( out );
 }
 
-static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, long disp )
-/***  local rel to  frame  **************************************************/
+static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, int disp )
+/***  local rel to  frame  *************************************************/
 #if 1     // it seems like BPREL works for AXP so I'll give it a try
 {
 //#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
@@ -461,8 +460,8 @@ extern  void    CVTypedef( const char *nm, dbg_type tipe )
     buffEnd( out );
 }
 
-extern  void    CVOutSymICon( cv_out *out, const char *nm, long val, dbg_type tipe )
-/*** Put a const sym to out********************************************************/
+extern  void    CVOutSymICon( cv_out *out, const char *nm, int val, dbg_type tipe )
+/*** Put a const sym to out*******************************************************/
 {
     cs_constant *ptr;
     void        *ptr1;
@@ -479,7 +478,7 @@ extern  void    CVOutSymICon( cv_out *out, const char *nm, long val, dbg_type ti
     buffEnd( out );
 }
 
-extern  void    CVSymIConst( const char *nm, long val, dbg_type tipe )
+extern  void    CVSymIConst( const char *nm, int val, dbg_type tipe )
 /*** emit UDT********************************************************/
 {
     cv_out      out[1];

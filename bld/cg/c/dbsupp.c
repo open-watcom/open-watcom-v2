@@ -50,7 +50,6 @@
 
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
-extern  void            DataInt(short_offset);
 #if _TARGET & _TARG_IAPX86
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 #elif _TARGET & _TARG_80386

@@ -35,7 +35,7 @@
 
 #include "offset.h"
 
-typedef unsigned long           objhandle;
+typedef unsigned        objhandle;
 
 typedef enum {
         BYTE_PATCH              = 0x00,

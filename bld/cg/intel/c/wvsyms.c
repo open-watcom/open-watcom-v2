@@ -47,7 +47,7 @@
 #include "cgprotos.h"
 
 extern  void            SetUpObj(bool);
-extern  void            DataInt(short_offset);
+extern  void            DataShort(unsigned_16);
 extern  void            BuffIndex(uint);
 extern  void            BuffForward(dbg_patch *);
 extern  void            BuffBack(back_handle, offset);
@@ -252,7 +252,7 @@ static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
         SetOP( bpatch->patch.segment );
         off = AskLocation();
         SetLocation( bpatch->patch.offset );
-        DataInt( off );
+        DataShort( off );
         SetLocation( off );
         CGFree( bpatch );
     }

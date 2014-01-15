@@ -137,13 +137,13 @@ typedef union field_any{
 typedef struct struct_list {
     field_entry         *list;
     uint                num;
-    unsigned long       size;
+    unsigned            size;
     dbg_type            me;
     unsigned            is_struct :1;
     unsigned            is_nested :1;
     unsigned            is_cnested:1;
     unsigned            is_class  :1;
-    unsigned long       vtbl_off;
+    unsigned            vtbl_off;
     dbg_type            vtbl_type;
     cg_type             ptr_type;
     int                 vtbl_esize;
@@ -187,7 +187,7 @@ typedef union{
 typedef struct array_list {
     dim_entry      *list;
     uint            num;
-    unsigned long   size;
+    unsigned        size;
     dbg_type        base;
     unsigned        is_col_major :1;
 } array_list;

@@ -181,9 +181,8 @@ extern cue_idx CueAdd( int fno, int line, int col )
         COL_NO   = 0x02,
         FNO_NO   = 0x04,
     } cmp;
-    cue_ctl    *ctl;
-    long diff;
-
+    cue_ctl     *ctl;
+    int         diff;
 
     if( fno == 0 && col == 1 && line < PRIMARY_RANGE ) {
         return( line );
@@ -223,10 +222,10 @@ extern cue_idx CueAdd( int fno, int line, int col )
 extern bool CueFind( cue_idx cue, cue_state *ret )
 /************************************************/
 {
-    cue_ctl    *ctl;
-    cue_blk    *blk;
+    cue_ctl     *ctl;
+    cue_blk     *blk;
     cue_state   *hi;
-    long        diff;
+    int         diff;
 
     ctl = &LineInfo;
     if( ctl->count == 0 || cue < PRIMARY_RANGE ) {
@@ -268,10 +267,10 @@ static void CueLen( cue_ctl *ctl )
 /********************************/
 //Set map number to #cues with entry
 {
-    cue_ctl    *ctl;
-    cue_blk    *blk;
+    cue_ctl     *ctl;
+    cue_blk     *blk;
     cue_state   *curr, *last;
-    long        diff;
+    int         diff;
 
     if( ctl->count > 0 ) {
         last = &ctl->start[0];

@@ -24,48 +24,56 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Order ints from host into 8086 format
 *
 ****************************************************************************/
 
 
-/* order ints from host into 8086 format*/
-unsigned short TargetInt( short int value )
-  {
-   union  { char b(:2:);
-             short val;
-           }in,out;
+unsigned_16 TargetShort( unsigned_16 value )
+{
+    union {
+        char        b(:2:);
+        unsigned_16 val;
+    } in, out;
+
     in.val = value;
     out.b(:0:) = in.b(:1:);
     out.b(:1:) = in.b(:0:);
     return( out.val );
-  }
-int TargetOffset( int  value )
-  {
+}
+
+int TargetOffset( int value )
+{
     return( value );
-  }
-int TargetBigInt( int value )
-  {
-   union  { char b(:4:);
-            int val;
-           }in,out;
+}
+
+unsigned_32 TargetBigInt( unsigned_32 value )
+{
+    union {
+        char        b(:4:);
+        unsigned_32 val;
+    } in, out;
+
     in.val = value;
     out.b(:0:) = in.b(:3:);
     out.b(:1:) = in.b(:2:);
     out.b(:2:) = in.b(:1:);
     out.b(:3:) = in.b(:0:);
     return( out.val );
-  }
-int TargAddL( int *targetw, int value )
-  {
-    int out;
+}
+
+void TargAddL( unsigned_32 *targetw, unsigned_32 value )
+{
+    unsigned_32 out;
+
     out = TargetBigInt( *targetw ) + value;
     *targetw = TargetBigInt( out );
-  }
-int TargAddW( short *targetw, int value )
-  {
-    short out;
-    out = TargetInt( *targetw ) + value;
-    *targetw = TargetInt( out );
-  }
+}
+
+void TargAddW( unsigned_16 *targetw, unsigned_16 value )
+{
+    unsigned_16 out;
+
+    out = TargetShort( *targetw ) + value;
+    *targetw = TargetShort( out );
+}

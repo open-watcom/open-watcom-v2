@@ -43,25 +43,25 @@
 #define B_RET_NOPOP     0x0001
 
 #define _OutShortD( addr )      OutDataByte( addr - AskLocation() - 1 )
-#define _OutFarSeg( seg )       OutDataInt( seg )
-#if _TARGET & _TARG_80386
+#define _OutFarSeg( seg )       OutDataShort( seg )
+#if _TARGET & _TARG_IAPX86
+    #define _OutOpndSize
+    #define _OutFarD( seg, off )    OutDataShort( seg ); \
+                                    OutDataShort( off )
+    #define _OutFarOff( off )       OutDataShort( off )
+    #define _OutNearD( addr )       OutDataShort( addr - AskLocation() - 2 )
+    #define _OFFSET_PATCH           WORD_PATCH
+    #define _NEAR_PATCH             (ADD_PATCH | WORD_PATCH)
+#else
     #define _OutOpndSize            if( _IsntTargetModel( USE_32 ) ) { \
                                         OutDataByte( 0x66 ); \
                                     }
     #define _OutFarOff( off )       OutDataLong( off );
     #define _OutNearD( addr )       OutDataLong( (addr)-AskLocation()-4 );
-    #define _OutFarD( seg, off )    OutDataInt( seg ); \
+    #define _OutFarD( seg, off )    OutDataShort( seg ); \
                                     OutDataLong( (unsigned)off );
     #define _OFFSET_PATCH           LONG_PATCH
     #define _NEAR_PATCH             (ADD_PATCH | LONG_PATCH)
-#else
-    #define _OutOpndSize
-    #define _OutFarD( seg, off )    OutDataInt( seg ); \
-                                    OutDataInt( off )
-    #define _OutFarOff( off )       OutDataInt( off )
-    #define _OutNearD( addr )       OutDataInt( addr - AskLocation() - 2 )
-    #define _OFFSET_PATCH           WORD_PATCH
-    #define _NEAR_PATCH             (ADD_PATCH | WORD_PATCH)
 #endif
 #define _OutCCyp                OutDataByte( 0x0e ); \
                                 _OutOpndSize; \

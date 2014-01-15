@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
 #include "wio.h"
-#include "cgstd.h"
 #include "cgdefs.h"
 #include "cgmem.h"
 #include "cg.h"
@@ -348,7 +348,7 @@ void    PutObjRec( byte class, byte *buff, uint len )
         NeedSeek = FALSE;
     }
     header.class = class;
-    header.len = _TargetInt( len + 1 );
+    header.len = _TargetShort( len + 1 );
     cksum = DoSum( (byte *)&header, 3 );
     cksum += DoSum( buff, len );
     cksum = -cksum;
@@ -377,7 +377,7 @@ void    PatchObj( objhandle rec, uint roffset, byte *buff, uint len )
 
     SeekStream( ObjFile, recoffset + 1 );
     GetStream( ObjFile, (byte *)&reclen, 2 );
-    reclen = _HostInt( reclen );
+    reclen = _HostShort( reclen );
     SeekStream( ObjFile, recoffset + roffset + 3 );
     GetStream( ObjFile, inbuff, len );
 

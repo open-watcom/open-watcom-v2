@@ -30,7 +30,6 @@
 
 
 #include "cgstd.h"
-#include <limits.h>
 #include "coderep.h"
 #include "indvars.h"
 #include "cgmem.h"

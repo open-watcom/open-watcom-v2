@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "cgstd.h"
+#include <stdio.h>
 #include "dumpio.h"
 
 static  char    *dumpFileName = "cgdump.tmp";

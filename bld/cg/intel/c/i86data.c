@@ -54,8 +54,8 @@ extern  void            OutBckImport( const char *name, back_handle bck, fix_cla
 extern  void            CodeBytes(byte*,uint);
 extern  void            CodeLabel(label_handle, unsigned);
 extern  void            OutIBytes(byte,offset);
-extern  void            OutDataLong(long);
-extern  void            OutDataInt(int);
+extern  void            OutDataLong(unsigned_32);
+extern  void            OutDataShort(unsigned_16);
 extern  void            OutDBytes(unsigned,const byte*);
 extern  void            SetUpObj(bool);
 extern  void            TellObjNewLabel( cg_sym_handle );
@@ -99,18 +99,18 @@ extern  void    DataBytes( unsigned len, const void *src ) {
 }
 
 
-extern  void    DataInt( short_offset val ) {
-/*************************************/
-
+extern  void    DataShort( unsigned_16 val )
+/******************************************/
+{
     TellOptimizerByPassed();
     SetUpObj( TRUE );
-    OutDataInt( val );
+    OutDataShort( val );
     TellByPassOver();
 }
 
-extern  void    DataLong( long val ) {
-/*************************************/
-
+extern  void    DataLong( unsigned_32 val )
+/*****************************************/
+{
     TellOptimizerByPassed();
     SetUpObj( TRUE );
     OutDataLong( val );
@@ -189,9 +189,9 @@ extern  void    BackImpPtr( const char *nm, back_handle bck, offset plus ) {
     }
 }
 
-extern  void    OutLblPatch( label_handle lbl, fix_class class, offset plus ) {
-/*****************************************************************************/
-
+extern  void    OutLblPatch( label_handle lbl, fix_class class, offset plus )
+/***************************************************************************/
+{
     offset      val;
 
     val = AskAddress( lbl );
@@ -274,7 +274,7 @@ extern  void    FEPtrBase( cg_sym_handle sym ) {
 
 
 extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
-/***********************************************************************************/
+/*************************************************************************************/
 {
     TellOptimizerByPassed();
     if( tipe->length != WORD_SIZE ) {
@@ -286,7 +286,7 @@ extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def 
 }
 
 extern  void    BackBigOffset( back_handle bck, segment_id seg, offset plus )
-/*************************************************************************/
+/***************************************************************************/
 {
     TellOptimizerByPassed();
     DoLblPtr( bck->lbl, seg, F_BIG_OFFSET, plus );

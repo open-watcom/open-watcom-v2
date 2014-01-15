@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include <stdio.h>
-#include <stddef.h>
 #include "memsydep.h"
 #include "memcheck.h"
 #include "zoiks.h"

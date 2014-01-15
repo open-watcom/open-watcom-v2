@@ -33,7 +33,6 @@
 
 
 #include "cgstd.h"
-#include <assert.h>
 #include "coderep.h"
 #include "indvars.h"
 #include "cgmem.h"

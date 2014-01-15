@@ -47,7 +47,6 @@
 
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
-extern  void            DataInt(short_offset);
 #if _TARGET & _TARG_IAPX86
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 #elif _TARGET & _TARG_80386
@@ -165,10 +164,10 @@ extern  void    BuffDWord( unsigned_32 w ) {
 extern  void    BuffOffset( offset w )
 /************************************/
 {
-#if _TARG_INTEGER == 32
-    BuffDWord( w );
-#else
+#if _TARG_INTEGER == 16
     BuffWord( w );
+#else
+    BuffDWord( w );
 #endif
 }
 
@@ -331,7 +330,7 @@ static  uint    MultiReg( register_name *reg ) {
 static  void    DoLocDump( dbg_loc loc ) {
 /****************************************/
 
-    long        offset;
+    int         offset;
     uint        reg;
     uint        patch;
 

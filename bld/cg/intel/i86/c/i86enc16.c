@@ -682,7 +682,7 @@ extern  void    GenUnkLea( pointer value )
     Inst[RMR] |= DoIndex( HW_BP );
 }
 
-extern  void    GenLeaSP( long offset )
+extern  void    GenLeaSP( int offset )
 /**************************************
     LEA         sp,offset[bp]
 */

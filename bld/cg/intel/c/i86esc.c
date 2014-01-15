@@ -57,8 +57,8 @@ extern  byte            ReverseCondition(byte);
 extern  void            TellScrapLabel(label_handle);
 extern  void            GenKillLabel(label_handle);
 extern  void            TellKeepLabel(label_handle);
-extern  void            OutDataInt(int);
-extern  void            OutDataLong(long);
+extern  void            OutDataShort(unsigned_16);
+extern  void            OutDataLong(unsigned_32);
 extern  void            OutPatch(label_handle,patch_attr);
 extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutDataByte(byte);
@@ -667,7 +667,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl )
         }
         if( base & ATTR_POP ) {
             OutDataByte( len );
-            OutDataInt( oc->oc_ret.pops );
+            OutDataShort( oc->oc_ret.pops );
         } else {
             OutDataByte( len | B_RET_NOPOP );
         }

@@ -31,7 +31,6 @@
 
 
 #define _DBit_DEFINE_BITNEXT
-#include <assert.h>
 #include "cgstd.h"
 #include "coderep.h"
 #include "cgdefs.h"

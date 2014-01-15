@@ -58,14 +58,14 @@ static struct lf_info LFInfo[LFG_LAST] = {
 };
 
 extern  void        ChkDbgSegSize( offset, bool );
-extern  void        DataInt(short_offset);
+extern  void        DataShort(unsigned_16);
 extern  void        LocDump( dbg_loc );
 extern  dbg_loc     LocDupl( dbg_loc );
 extern  offset      LocSimpField( dbg_loc );
 extern  void        DataBytes(unsigned,const void *);
-extern  void        CVSymIConst( const char *nm, long val, dbg_type tipe );
+extern  void        CVSymIConst( const char *nm, int val, dbg_type tipe );
 extern  void        CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe );
-extern  void        CVOutSymICon( cv_out *out, const char *nm, long val, dbg_type tipe );
+extern  void        CVOutSymICon( cv_out *out, const char *nm, int val, dbg_type tipe );
 extern  void        CVOutSym( cv_out *out, cg_sym_handle sym );
 extern  void        CVOutBck( cv_out *out, back_handle bck, offset add,  dbg_type tipe );
 extern  void        CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe );
@@ -230,7 +230,7 @@ static  void    PatchLen( long_offset where, u2 what )
     old = SetOP( CVTypes );
     here = AskBigLocation();
     SetBigLocation( where );
-    DataInt( what );
+    DataShort( what );
     SetBigLocation( here );
     SetOP( old );
 }
@@ -570,7 +570,7 @@ extern void CVBackRefType( dbg_name name, dbg_type tipe )
     old = SetOP( name->patch.segment );
     here = AskBigLocation();
     SetBigLocation( name->patch.offset );
-    DataInt( tipe );
+    DataShort( tipe );
     SetBigLocation( here );
     SetOP( old );
     name->refno = tipe;
@@ -652,8 +652,8 @@ static dbg_type  OutBckSym( back_handle bck, int off, dbg_type tipe )
     return( ++TypeIdx );
 }
 
-static dbg_type  OutBckCon( long val, dbg_type tipe )
-/***************************************************/
+static dbg_type  OutBckCon( int val, dbg_type tipe )
+/**************************************************/
 {
     cv_out          out[1];
 
@@ -694,7 +694,7 @@ typedef struct {
       cg_sym_handle s;
       name      *n;
     } v;
-    long       o;
+    int         o;
     enum {
         EXPR_NONE     = 0x00,
         EXPR_NAME     = 0x01,

@@ -37,7 +37,6 @@
 #include "zoiks.h"
 #include "model.h"
 #include "makeins.h"
-#include <assert.h>
 #include "namelist.h"
 
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);

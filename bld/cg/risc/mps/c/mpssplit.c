@@ -34,7 +34,6 @@
 #include "tables.h"
 #include "zoiks.h"
 #include "makeins.h"
-#include <assert.h>
 #include "data.h"
 #include "rtrtn.h"
 #include "namelist.h"
