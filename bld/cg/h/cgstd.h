@@ -35,6 +35,7 @@
 
 #include <limits.h>
 #include <stddef.h>
+#include <string.h>
 #include <assert.h>
 #include "cgapi.h"
 #include "bool.h"

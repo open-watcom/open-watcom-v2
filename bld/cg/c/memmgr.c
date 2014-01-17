@@ -61,7 +61,6 @@ essentially no worst case performance scenario.
 
 #include "cgstd.h"
 #include <stdlib.h>
-#include <string.h>
 #include "cg.h"
 #if defined( _M_IX86 ) && defined( __WATCOMC__ )
     #include <i86.h>

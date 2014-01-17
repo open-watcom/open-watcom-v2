@@ -33,7 +33,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include "coderep.h"
 #include "typedef.h"
 #include "types.h"

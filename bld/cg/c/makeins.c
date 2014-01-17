@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "cgstd.h"
 #include "coderep.h"
 #include "zoiks.h"

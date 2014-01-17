@@ -191,6 +191,7 @@ typedef struct array_list {
     dbg_type        base;
     unsigned        is_col_major :1;
 } array_list;
+
 typedef struct enum_list {
     uint                num;
     const_entry         *list;

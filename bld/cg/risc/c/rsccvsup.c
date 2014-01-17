@@ -31,7 +31,6 @@
 
 
 #include "cgstd.h"
-#include <string.h>
 #include "coderep.h"
 #include "typedef.h"
 #include "procdef.h"
@@ -43,6 +42,8 @@
 #include "owl.h"
 #include "rscobj.h"
 #include "dbsyms.h"
+#include "cvsyms.h"
+#include "rsccvsup.h"
 
 extern  segment_id          DbgSegDef( const char *name );
 

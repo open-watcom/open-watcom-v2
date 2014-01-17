@@ -30,7 +30,6 @@
 
 
 #include "cgstd.h"
-#include <string.h>
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"

@@ -31,10 +31,9 @@
 
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
 #include "cgstd.h"
+#include <stdio.h>
+#include <stdarg.h>
 #include "cg.h"
 #include "bckdef.h"
 #include "cgmem.h"

@@ -30,9 +30,11 @@
 
 
 extern  void    DFInitDbgInfo( void );
-extern  void    DFObjInitInfo( void );
 extern  void    DFFiniDbgInfo( void );
+extern  void    DFObjInitDbgInfo( void );
 extern  void    DFObjFiniDbgInfo( offset );
+extern  void    DFObjLineInitDbgInfo( void );
+extern  void    DFObjLineFiniDbgInfo( void );
 extern  void    DFGenStatic( cg_sym_handle sym, dbg_loc loc );
 extern  void    DFTypedef( const char *nm, dbg_type tipe );
 extern  void    DFProEnd( dbg_rtn *rtn, offset lc );
@@ -40,3 +42,8 @@ extern  void    DFBlkBeg( dbg_block *blk, offset lc );
 extern  void    DFBlkEnd( dbg_block *blk, offset lc );
 extern  void    DFEpiBeg( dbg_rtn *rtn, offset lc );
 extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc );
+extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch );
+extern  void    DFDefSegs( void );
+extern  void    DFLineNum( cue_state *, offset );
+extern  void    DFSegRange( void );
+extern  void    DFSymRange( cg_sym_handle, offset );

@@ -30,8 +30,8 @@
 
 
 extern  void    CVInitDbgInfo( void );
-extern  void    CVObjInitInfo( void );
 extern  void    CVFiniDbgInfo( void );
+extern  void    CVObjInitDbgInfo( void );
 extern  void    CVObjFiniDbgInfo( void );
 extern  void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem );
 extern  void    CVTypedef( const char *nm, dbg_type tipe );
@@ -42,3 +42,4 @@ extern  void    CVBlkBeg( dbg_block *blk, offset lc );
 extern  void    CVBlkEnd( dbg_block *blk, offset lc );
 extern  void    CVEpiBeg( dbg_rtn *rtn, offset lc );
 extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc );
+extern  void    CVDefSegs( void );

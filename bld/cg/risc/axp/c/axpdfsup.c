@@ -42,7 +42,6 @@
 #include <stdarg.h>
 #include <setjmp.h>
 #include <stdlib.h>
-#include <string.h>
 #include "dw.h"
 #include "axpregn.h"
 #include "dwarf.h"

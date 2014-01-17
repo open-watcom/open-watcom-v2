@@ -34,7 +34,6 @@
 #include <stdarg.h>
 #include <setjmp.h>
 #include <stdlib.h>
-#include <string.h>
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"
@@ -47,9 +46,9 @@
 #include "data.h"
 #include "types.h"
 #include "objout.h"
+#include "dbsyms.h"
 #include "dfsyms.h"
 #include "dfsupp.h"
-#include "dbsyms.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 
@@ -96,8 +95,9 @@ static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size )
     SetOP( old );
 }
 
-static long CLITell( dw_sectnum sect ) {
-/*********************************/
+static long CLITell( dw_sectnum sect )
+/************************************/
+{
     sect_info           *curr;
     long_offset         off;
     segment_id          old;
@@ -109,8 +109,9 @@ static long CLITell( dw_sectnum sect ) {
    return( off );
 }
 
-static void CLISeek( dw_sectnum sect, long offs, uint type ) {
-/******************************************************/
+static void CLISeek( dw_sectnum sect, long offs, uint type )
+/**********************************************************/
+{
     sect_info           *curr;
     long_offset         from;
     segment_id          old;
@@ -149,7 +150,7 @@ static void DoSegReloc( dw_sym_handle sym ){
     FEPtrBase( (cg_sym_handle)sym );
 }
 
-static void DoLblReloc( back_handle bck, long disp ){
+static void DoLblReloc( back_handle bck, int disp ){
 /**********************************/
     type_def        *ptr_type;
     segment_id      id;
@@ -504,7 +505,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     }
 }
 
-extern  void    DFObjInitInfo( void ) {
+extern  void    DFObjInitDbgInfo( void ) {
 /*****************************************************/
 /* called by objinit to init segments and dwarf writing library */
     static const dw_funcs cli_funcs = {
@@ -574,7 +575,7 @@ extern  void    DFObjInitInfo( void ) {
     }
 }
 
-extern  void    DFObjLineInitInfo( void ) {
+extern  void    DFObjLineInitDbgInfo( void ) {
 /*****************************************************/
 /* called by objinit to init segments and dwarf writing library */
     static const dw_funcs cli_funcs = {

@@ -30,7 +30,7 @@
 
 
 #include "cgstd.h"
-#include <string.h>
+#include <setjmp.h>
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"
@@ -42,17 +42,18 @@
 #include "types.h"
 #include "makeins.h"
 #include "objout.h"
+#include "dbsyms.h"
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
 #include "wvsyms.h"
 #endif
+#include "dw.h"
 #include "dfsyms.h"
 #include "cv4.h"
 #include "cvsyms.h"
 #include "namelist.h"
-#include "dbsyms.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 

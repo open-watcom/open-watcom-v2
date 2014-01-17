@@ -31,6 +31,8 @@
 
 extern  void    WVInitDbgInfo( void );
 extern  void    WVFiniDbgInfo( void );
+extern  void    WVObjInitDbgInfo( void );
+extern  void    WVObjFiniDbgInfo( void );
 extern  void    WVGenStatic( cg_sym_handle sym, dbg_loc loc );
 extern  void    WVObjectPtr( cg_type ptr_type );
 extern  void    WVSetBase( void );

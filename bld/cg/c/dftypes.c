@@ -31,6 +31,10 @@
 
 
 #include "cgstd.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include <setjmp.h>
+#include <stdlib.h>
 #include "coderep.h"
 #include "typedef.h"
 #include "cgmem.h"
@@ -38,11 +42,6 @@
 #include "model.h"
 #include "types.h"
 #include "zoiks.h"
-#include <stdio.h>
-#include <stdarg.h>
-#include <setjmp.h>
-#include <stdlib.h>
-#include <string.h>
 #include "dw.h"
 #include "dwarf.h"
 #include "utils.h"

@@ -62,8 +62,6 @@ extern  uint    Length( const char *string ) {
 
 #else
 
-#include <string.h>
-
 extern  byte    *Copy( const void *x, void *y, uint len ) {
 /*********************************************************/
 

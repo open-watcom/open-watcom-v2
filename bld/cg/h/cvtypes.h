@@ -30,23 +30,23 @@
 
 
 /* CV interface */
-extern  dbg_type       CVFtnType( const char *name, dbg_ftn_type tipe );
-extern  dbg_type       CVScalar( const char *name, cg_type tipe );
+extern  dbg_type        CVFtnType( const char *name, dbg_ftn_type tipe );
+extern  dbg_type        CVScalar( const char *name, cg_type tipe );
 extern  dbg_type        CVScope( const char *name );
 extern  void            CVDumpName( dbg_name name, dbg_type tipe );
 extern  void            CVBackRefType( dbg_name name, dbg_type tipe );
-extern  dbg_type       CVCharBlock( unsigned_32 len );
-extern  dbg_type       CVIndCharBlock( back_handle len, cg_type len_type, int off );
-extern  dbg_type       CVLocCharBlock( dbg_loc loc, cg_type len_type );
-extern  dbg_type       CVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elts_tipe, int off, dbg_type base );
-extern  dbg_type       CVArray( dbg_type idx, dbg_type base );
-extern  dbg_type       CVIntArray( unsigned_32 hi, dbg_type base );
-extern  dbg_type       CVEndArray( dbg_array ar );
-extern  dbg_type       CVArraySize( offset size, unsigned_32 hi, dbg_type base );
-extern  dbg_type       CVSubRange( signed_32 lo, signed_32 hi, dbg_type base );
-extern  dbg_type       CVDereference( cg_type ptr_type, dbg_type base );
-extern  dbg_type       CVPtr( cg_type ptr_type, dbg_type base );
-extern  dbg_type       CVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment );
-extern  dbg_type       CVEndStruct( dbg_struct st );
-extern  dbg_type       CVEndEnum( dbg_enum en );
-extern  dbg_type       CVEndProc( dbg_proc pr );
+extern  dbg_type        CVCharBlock( unsigned_32 len );
+extern  dbg_type        CVIndCharBlock( back_handle len, cg_type len_type, int off );
+extern  dbg_type        CVLocCharBlock( dbg_loc loc, cg_type len_type );
+extern  dbg_type        CVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elts_tipe, int off, dbg_type base );
+extern  dbg_type        CVArray( dbg_type idx, dbg_type base );
+extern  dbg_type        CVIntArray( unsigned_32 hi, dbg_type base );
+extern  dbg_type        CVEndArray( dbg_array ar );
+extern  dbg_type        CVArraySize( offset size, unsigned_32 hi, dbg_type base );
+extern  dbg_type        CVSubRange( signed_32 lo, signed_32 hi, dbg_type base );
+extern  dbg_type        CVDereference( cg_type ptr_type, dbg_type base );
+extern  dbg_type        CVPtr( cg_type ptr_type, dbg_type base );
+extern  dbg_type        CVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment );
+extern  dbg_type        CVEndStruct( dbg_struct st );
+extern  dbg_type        CVEndEnum( dbg_enum en );
+extern  dbg_type        CVEndProc( dbg_proc pr );

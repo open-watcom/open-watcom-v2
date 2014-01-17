@@ -30,6 +30,10 @@
 
 
 #include "cgstd.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include <setjmp.h>
+#include <stdlib.h>
 #include "coderep.h"
 #include "typedef.h"
 #include "procdef.h"
@@ -37,11 +41,6 @@
 #include "ocentry.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include <stdio.h>
-#include <stdarg.h>
-#include <setjmp.h>
-#include <stdlib.h>
-#include <string.h>
 #include "dw.h"
 #include "mipsregn.h"
 #include "dwarf.h"

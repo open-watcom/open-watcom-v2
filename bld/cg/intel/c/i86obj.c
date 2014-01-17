@@ -30,7 +30,6 @@
 
 
 #include "cgstd.h"
-#include <string.h>
 #include <setjmp.h>
 #include "coderep.h"
 #include "cgdefs.h"
@@ -47,7 +46,11 @@
 #include "utils.h"
 #include "objout.h"
 #include "dbsyms.h"
+#include "cvsyms.h"
 #include "dw.h"
+#include "dfsyms.h"
+#include "wvsyms.h"
+#include "wvtypes.h"
 #include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -143,25 +146,6 @@ extern  void            TellCommonLabel(label_handle,import_handle);
 extern  void            TellUnreachLabels(void);
 extern  void            KillLblRedirects( void );
 extern  void            DoOutObjectName(cg_sym_handle,void(*)(const char*,void*),void*,import_type);
-/* DF interface */
-extern  void            DFObjInitInfo( void );
-extern  void            DFObjLineInitInfo( void );
-extern  void            DFBegCCU( segment_id code, dw_sym_handle dbg_pch );
-extern  void            DFDefSegs( void );
-extern  void            DFObjFiniDbgInfo( offset codesize );
-extern  void            DFObjLineFiniDbgInfo( void );
-extern  void            DFLineNum( cue_state *, offset );
-extern  void            DFSegRange( void );
-extern  void            DFSymRange( cg_sym_handle, offset );
-/* CV interface */
-extern  void            CVObjInitInfo( void );
-extern  void            CVDefSegs( void );
-extern  void            CVLineNum( cue_state *, offset );
-extern  void            CVObjFiniDbgInfo( void );
-/* WV interface */
-extern  void            WVObjInitInfo( void );
-extern  void            WVTypesEof( void );
-extern  void            WVDmpCueInfo( long_offset here );
 
 extern  bool            Used87;
 
@@ -803,7 +787,7 @@ extern  void    DefSegment( segment_id id, seg_attr attr, const char *str, uint 
         SegDefs = NULL;
     }
     if( first_code != BACKSEGS && _IsModel( DBG_DF ) ) {
-        DFBegCCU( first_code, 0 );
+        DFBegCCU( first_code, NULL );
     }
 }
 
@@ -1132,16 +1116,16 @@ extern  void    ObjInit( void )
     AbsPatches = NULL;
     if( _IsModel( DBG_DF ) ) {
         if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
-            DFObjInitInfo();
+            DFObjInitDbgInfo();
 #if 0 // save for JimR and linker
         } else if( _IsModel( NUMBERS ) ) {
-            DFObjLineInitInfo();
+            DFObjLineInitDbgInfo();
 #endif
         }
     } else if( _IsModel( DBG_CV ) ) {
-        CVObjInitInfo();
+        CVObjInitDbgInfo();
     } else {
-        WVObjInitInfo();
+        WVObjInitDbgInfo();
     }
 }
 
@@ -1956,6 +1940,7 @@ extern  void    ObjFini( void )
         if( _IsModel( DBG_TYPES ) ) {
             FiniWVTypes();
         }
+        WVObjFiniDbgInfo();
     }
     rec = SegInfo->array;
     for( i = 0; i < SegInfo->used; ++i ) {

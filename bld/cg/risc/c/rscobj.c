@@ -30,7 +30,7 @@
 
 
 #include "cgstd.h"
-#include <string.h>
+#include <setjmp.h>
 #include "wio.h"
 #include "cgdefs.h"
 #include "coderep.h"
@@ -49,6 +49,10 @@
 #include "utils.h"
 #include "objout.h"
 #include "dbsyms.h"
+#include "cvsyms.h"
+#include "dw.h"
+#include "dfsyms.h"
+#include "rsccvsup.h"
 #include "feprotos.h"
 
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)(x + 1))
@@ -69,24 +73,6 @@ extern  void            EmptyQueue( void );
 extern  void            TellUnreachLabels( void );
 extern  void            *SortList( void *, unsigned, bool (*)( void *, void * ) );
 extern  void            EmitInsReloc( axp_ins, pointer, owl_reloc_type );
-
-/* DF interface */
-extern  void            DFObjInitInfo( void );
-extern  void            DFObjLineInitInfo( void );
-extern  void            DFBegCCU( segment_id code, long sym );
-extern  void            DFDefSegs( void );
-extern  void            DFObjFiniDbgInfo( offset codesize );
-extern  void            DFObjLineFiniDbgInfo( void );
-extern  void            DFLineNum( cue_state *, offset );
-extern  void            DFSegRange( void );
-extern  void            DFSymRange( cg_sym_handle, offset );
-/* CV interface */
-extern  void            CVObjInitInfo( void );
-extern  void            CVDefSegs( void );
-extern  void            CVDefSymNormal( void );
-extern  void            CVDefSymComdat( owl_section_handle depof );
-extern  void            CVLineNum( cue_state *, offset );
-extern  void            CVObjFiniDbgInfo( void );
 
 static  owl_section_handle      owlTocSect; // contributions to TOC for PPC
 static  owl_section_handle      globalPdata;
@@ -173,16 +159,16 @@ extern  void    ObjInit( void )
     if( _IsModel( DBG_DF ) ) {
         if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
             DFDefSegs();
-            DFObjInitInfo();
+            DFObjInitDbgInfo();
 #if 0 //save for jimr
         } else if( _IsModel( NUMBERS ) ) {
             DFDefSegs();
-            DFObjLineInitInfo();
+            DFObjLineInitDbgInfo();
 #endif
         }
     } else if( _IsModel( DBG_CV ) ) {
         CVDefSegs();
-        CVObjInitInfo();
+        CVObjInitDbgInfo();
     }
 }
 
@@ -514,7 +500,7 @@ extern  void    DefSegment( segment_id id, seg_attr attr, const char *str, uint 
         if( codeSection == BACKSEGS ) {
             codeSection = id;
             if( _IsModel( DBG_DF ) ) {
-                DFBegCCU( id, 0 );
+                DFBegCCU( id, NULL );
             }
         }
     } else if( attr & INIT ) {

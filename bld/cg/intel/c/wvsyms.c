@@ -72,23 +72,29 @@ static  void            DumpDbgBlk( dbg_block *blk, offset lc );
 
 static  offset          CodeOffset;
 
-extern  void    WVInitDbgInfo( void ) {
-/******************************/
-
+extern  void    WVInitDbgInfo( void )
+/***********************************/
+{
     TypeIdx   = 0;
     DbgLocals = 0;
     DbgTypes  = 0;
 }
 
-extern  void    WVObjInitInfo( void ) {
-/******************************/
+extern  void    WVObjInitDbgInfo( void )
+/**************************************/
 // Called right after define seg's in Obj
+{
     WVSrcCueLoc();
 }
 
-extern  void    WVFiniDbgInfo( void ) {
-/******************************/
+extern  void    WVFiniDbgInfo( void )
+/***********************************/
+{
+}
 
+extern  void    WVObjFiniDbgInfo( void )
+/**************************************/
+{
 }
 
 extern  void    WVGenStatic( cg_sym_handle sym, dbg_loc loc ) {

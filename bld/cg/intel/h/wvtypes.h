@@ -49,4 +49,6 @@ extern  dbg_type        WVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc
 extern  dbg_type        WVEndStruct( dbg_struct st );
 extern  dbg_type        WVEndEnum( dbg_enum en );
 extern  dbg_type        WVEndProc( dbg_proc pr );
+extern  void            WVTypesEof( void );
+extern  void            WVDmpCueInfo( long_offset where );
 #endif

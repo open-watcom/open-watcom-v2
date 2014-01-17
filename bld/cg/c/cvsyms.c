@@ -30,7 +30,10 @@
 
 
 #include "cgstd.h"
-#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <setjmp.h>
+#include <stdlib.h>
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"
@@ -38,10 +41,6 @@
 #include "objrep.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
-#include <stdio.h>
-#include <stdarg.h>
-#include <setjmp.h>
-#include <stdlib.h>
 #include "cvdbg.h"
 #include "data.h"
 #include "types.h"
@@ -226,8 +225,8 @@ static  void    InitSegBck( void )
 }
 
 
-extern  void    CVObjInitInfo( void )
-/***********************************/
+extern  void    CVObjInitDbgInfo( void )
+/**************************************/
 /* called by objinit to init segments and for codeview */
 {
     cv_out      out[1];
