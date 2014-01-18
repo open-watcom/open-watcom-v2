@@ -46,6 +46,7 @@
 #include "pcheader.h"
 #include "dbgsupp.h"
 #include "initdefs.h"
+#include "cgbackut.h"
 
 
 typedef struct pc_segment PC_SEGMENT;

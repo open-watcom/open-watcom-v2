@@ -376,6 +376,7 @@ static bool cgGenerateCmdBase(      // EMIT BASE FOR COMMAND
         }
 #endif
         base->emitted = TRUE;
+        DgSetSegSym( base->sym );
         CgBackGenLabelInternal( base->sym );
 #if 1 // this kludge allows old run-time systems to work
         switch( code ) {
