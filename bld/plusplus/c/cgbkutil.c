@@ -65,28 +65,15 @@ static void alignInSegment(     // PUT OUT ALIGNMENT WITHIN A SEGMENT
 }
 
 
-void DgAlignSymbol(             // ALIGN SYMBOL TO CORRECT BOUNDARY
-    SYMBOL sym )                // - symbol to align
+void DgAlignSegment(            // ALIGN SEGMENT TO CORRECT BOUNDARY
+    fe_seg_id segid,            // - aligned segment
+    unsigned amount )           // - amount to align
 {
     target_size_t adjust;
-    fe_seg_id segid;
 
-    segid = sym->segid;
-    adjust = SegmentAdjust( segid, DGTell(), SegmentAlignment( sym ) );
+    adjust = SegmentAdjust( segid, DGTell(), amount );
     alignInSegment( adjust, segid );
 }
-
-
-#if _CPU == _AXP
-void DgAlignInternal(           // ALIGN INTERNAL CONTROL BLOCK
-    void )
-{
-    target_size_t adjust;
-
-    adjust = SegmentAdjust( SEG_CONST, DGTell(), TARGET_POINTER );
-    alignInSegment( adjust, SEG_CONST );
-}
-#endif
 
 
 void DgUninitBytes(             // DATA GENERATE UNINIT BYTES
@@ -138,21 +125,21 @@ void DgByte(                    // DATA GENERATE A BYTE
 void DgSymbolDefInit(           // DATA GENERATE SYMBOL (DEFAULT DATA)
     SYMBOL sym )                // - the symbol
 {
-    segment_id      old_id;     // - old segment
+    segment_id      old_seg;    // - old segment
     segment_id      seg_id;     // - symbol segment
     target_size_t   size;       // - size of symbol
 
     seg_id = FESegID( sym );
-    old_id = BESetSeg( seg_id );
-    DgAlignSymbol( sym );
-    DGLabel( FEBack( sym ) );
+    old_seg = BESetSeg( seg_id );
+    DgAlignSegment( seg_id, SegmentAlignment( sym->sym_type ) );
+    CgBackGenLabel( sym );
     size = CgMemorySize( sym->sym_type );
     if( sym->segid == SEG_BSS ) {
         DgUninitBytes( size );
     } else {
         DgInitBytes( size, 0 );
     }
-    BESetSeg( old_id );
+    BESetSeg( old_seg );
 }
 
 
@@ -215,39 +202,34 @@ void DgPtrSymCode(              // GENERATE POINTER FOR A CODE SYMBOL
 }
 
 
-fe_seg_id CgBackGenLabel(       // GENERATE A LABEL
+void CgBackGenLabel(            // GENERATE A LABEL
     SYMBOL sym )                // - symbol defining label
 {
-    segment_id      old_id;     // - old segment
-    segment_id      seg_id;     // - new segment
-
-    seg_id = FESegID( sym );
-    old_id = BESetSeg( seg_id );
     DGLabel( FEBack( sym ) );
-    return old_id;
 }
 
 
-fe_seg_id CgBackGenLabelInternal(// GENERATE A LABEL FOR INTERNAL STRUCTURE
+void CgBackGenLabelInternal(    // GENERATE A LABEL FOR INTERNAL STRUCTURE
     SYMBOL sym )                // - symbol defining label
 {
-    segment_id      old_id;     // - old segment
-    segment_id      seg_id;     // - new segment
-
-    seg_id = FESegID( sym );
-    old_id = BESetSeg( seg_id );
-    DgAlignInternal();
+#if _CPU == _AXP
+    DgAlignSegment( SEG_CONST, TARGET_POINTER );
+#endif
     DGLabel( FEBack( sym ) );
-    return old_id;
 }
 
-static fe_seg_id dgCurrSeg( void )
+segment_id DgCurrSeg( void )
 {
-    fe_seg_id curr_seg;
+    segment_id curr_seg;
 
-    curr_seg = BESetSeg( SEG_CONST );
+    curr_seg = BESetSeg( UNDEFSEG );
     BESetSeg( curr_seg );
     return( curr_seg );
+}
+
+segment_id DgSetSegSym( SYMBOL sym )
+{
+    return( BESetSeg( FESegID( sym ) ) );
 }
 
 back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
@@ -311,7 +293,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
         }
     } else {
         // char a[] = "asdf"; initialization (use current segment)
-        str_seg = dgCurrSeg();
+        str_seg = DgCurrSeg();
         str->segid = str_seg;
         DGString( str->string, str->len );
         DgByte( 0 );
@@ -931,6 +913,7 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     STAB_DEFN dctl;             // - state-table definition
     RT_DEF def;                 // - control for run-time call
     SE* se;                     // - state entry
+    segment_id old_seg;         // - old segment
 
     StabCtlInit( &sctl, &dctl );
     StabDefnInit( &dctl, DTRG_STATIC_INITLS );
@@ -947,14 +930,16 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     se->sym_static.dtor = RoDtorFind( sym );
     se = StateTableAdd( se, &sctl );
     StabGenerate( &sctl );
+    old_seg = DgSetSegSym( sctl.rw );
     CgBackGenLabelInternal( sctl.rw );
     DgInitBytes( CgbkInfo.size_data_ptr, 0 );
     DgPtrSymData( dctl.ro );
     DgOffset( 1 );
     DgPtrSymData( sym );
+    BESetSeg( old_seg );
     CgRtCallInit( &def, RTF_REG_LCL );
     CgRtParamAddrSym( &def, sctl.rw );
-    return CgRtCallExec( &def );
+    return( CgRtCallExec( &def ) );
 }
 
 

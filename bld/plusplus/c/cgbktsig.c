@@ -177,6 +177,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
     TYPE_SIG *ts )              // - to be gen'ed
 {
     THROBJ thr;                 // - category of object
+    segment_id old_seg;         // - old segment
 
     if( ! ts->cgref ) return;
     if( ts->cggen ) return;
@@ -205,11 +206,11 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
               , thr );
     }
 #endif
-    BESetSeg( ts->sym->segid );
-    DGLabel( FEBack( ts->sym ) );
+    old_seg = BESetSeg( ts->sym->segid );
+    CgBackGenLabel( ts->sym );
     switch( thr ) {
-      case THROBJ_PTR_SCALAR :
-      case THROBJ_PTR_CLASS :
+    case THROBJ_PTR_SCALAR :
+    case THROBJ_PTR_CLASS :
         genBaseHdr( thr, 1 );
         BeGenTsRef( ts );
 #ifndef NDEBUG
@@ -218,18 +219,18 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
         }
 #endif
         break;
-      case THROBJ_VOID_STAR :
+    case THROBJ_VOID_STAR :
         genBaseHdr( thr, 0 );
         genScalarHdr( ts );
         break;
-      case THROBJ_PTR_FUN :
-      case THROBJ_SCALAR :
+    case THROBJ_PTR_FUN :
+    case THROBJ_SCALAR :
         genBaseHdr( thr, 0 );
         genScalarHdr( ts );
         genName( thr, ts->type );
         break;
-      case THROBJ_CLASS :
-      case THROBJ_CLASS_VIRT :
+    case THROBJ_CLASS :
+    case THROBJ_CLASS_VIRT :
       { unsigned size;
         genBaseHdr( thr, 0 );
         DgPtrSymCode( ts->default_ctor );
@@ -257,8 +258,9 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
         }
 #endif
       } break;
-      DbgDefault( "\ngenTypeSig -- invalid throw category" );
+    DbgDefault( "\ngenTypeSig -- invalid throw category" );
     }
+    BESetSeg( old_seg );
 }
 
 

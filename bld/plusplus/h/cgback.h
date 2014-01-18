@@ -67,10 +67,10 @@ void CgBackFreeIndCalls(        // FREE ALL INDIRECT-CALL SYMBOLS
 bool CgBackFuncInlined(         // DETERMINE IF FUNCTION INVOCATION INLINED
     SYMBOL sym )                // - function symbol
 ;
-fe_seg_id CgBackGenLabel(       // GENERATE A LABEL
+void CgBackGenLabel(            // GENERATE A LABEL
     SYMBOL sym )                // - symbol defining label
 ;
-fe_seg_id CgBackGenLabelInternal( // GENERATE A LABEL FOR INTERNAL STRUCTURE
+void CgBackGenLabelInternal(    // GENERATE A LABEL FOR INTERNAL STRUCTURE
     SYMBOL sym )                // - symbol defining label
 ;
 void CgBackSetInlineDepth(      // SET MAXIMUM INLINE DEPTH

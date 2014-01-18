@@ -2027,8 +2027,8 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             if( sym_seg > 0 ) {
                 curr_seg = sym_seg;
                 BESetSeg( curr_seg );
-                DgAlignSymbol( sym );
-                DGLabel( FEBack( sym ) );
+                DgAlignSegment( curr_seg, SegmentAlignment( sym->sym_type ) );
+                CgBackGenLabel( sym );
                 if( curr_seg == SEG_BSS ) {
                     DgUninitBytes( CgMemorySize( sym->sym_type ) );
                 }

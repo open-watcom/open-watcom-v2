@@ -70,7 +70,7 @@ static void doRttiGen( RTTI_CLASS *r )
     sym = r->sym;
     if( r->too_big ) {
         old_seg = BESetSeg( sym->segid );
-        DGLabel( FEBack( sym ) );
+        CgBackGenLabel( sym );
         DgByte( 0 );
         BESetSeg( old_seg );
         return;
@@ -79,7 +79,7 @@ static void doRttiGen( RTTI_CLASS *r )
     nleaps = ScopeRttiLeaps( class_type, &leaps );
     DbgAssert( nleaps >= 1 );
     old_seg = BESetSeg( sym->segid );
-    DGLabel( FEBack( sym ) );
+    CgBackGenLabel( sym );
     DbgStmt( offset = 0 );
     RingIterBeg( r->vfptrs, vfptr ) {
         DbgAssert( vfptr->offset == offset );
@@ -198,7 +198,7 @@ static void doTypeidGen( RTTI_TYPEID *r )
     }
     sym->flag |= SF_INITIALIZED;
     old_seg = BESetSeg( sym->segid );
-    DGLabel( FEBack( sym ) );
+    CgBackGenLabel( sym );
     DgInitBytes( CgDataPtrSize(), 0 );
     raw_name = CppGetTypeidContents( r->type, &raw_len );
     if( CompFlags.obfuscate_typesig_names ) {

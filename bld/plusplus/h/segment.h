@@ -104,8 +104,8 @@ target_offset_t SegmentAdjust(  // SEGMENT: ADJUST OFFSET TO ALIGN
     target_size_t offset,       // - current offset
     target_offset_t align )     // - required aligment
 ;
-target_offset_t SegmentAlignment(   // SEGMENT: ALIGNMENT FOR SYMBOL
-    SYMBOL sym )                    // - symbol to align
+target_offset_t SegmentAlignment(   // SEGMENT: ALIGNMENT FOR TYPE
+    TYPE type )                     // - TYPE to align
 ;
 #if _INTEL_CPU
 void* SegmentBoundReg(          // GET REGISTER BOUND TO SEGMENT

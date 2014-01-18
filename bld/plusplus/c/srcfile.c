@@ -415,7 +415,7 @@ SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
     OPEN_FILE *new_act;         // - open-file information (new)
 
     new_src = srcFileAlloc( fp, FNameAdd( name ) );
-    if( CompFlags.cpp_output && !new_src->cmdline ) {
+    if( CompFlags.cpp_output ) {
         EmitLine( 1, new_src->name );
     }
     set_srcFile( new_src );

@@ -658,9 +658,13 @@ static void cgGenerateCmdsCtorTest( // EMIT CTOR_TEST CMDS
 void CgCmdsGenerate(            // GENERATE DTOR CMD.S
     void )
 {
+    segment_id old_seg;         // - old segment
+
+    old_seg = DgCurrSeg();
     #define pick(e,se,cmd,ring) cgGenerateCmds ## ring();
     #include "_dtccarv.h"
     #undef pick
+    BESetSeg( old_seg );
 }
 
 

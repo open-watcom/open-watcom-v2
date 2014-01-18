@@ -1054,21 +1054,21 @@ back_handle DgStringConst(      // STORE STRING CONSTANT WITH NULL
     uint_16         *psegid,    // - addr(string segid)
     unsigned        control )   // - control mask (DSC_*)
 ;
-#if _CPU == _AXP
-void DgAlignInternal(           // ALIGN INTERNAL CONTROL BLOCK
-    void )
-;
-#else
-#define DgAlignInternal()
-#endif
-void DgAlignSymbol(             // ALIGN SYMBOL TO CORRECT BOUNDARY
-    SYMBOL sym )                // - symbol to align
+void DgAlignSegment(            // ALIGN SEGMENT TO CORRECT BOUNDARY
+    fe_seg_id segid,            // - aligned segment
+    unsigned amount )           // - amount to align
 ;
 void DgSymbolDefInit(           // DATA GENERATE SYMBOL (DEFAULT DATA)
     SYMBOL sym )                // - the symbol
 ;
 void DgUninitBytes(             // DATA GENERATE UNINIT BYTES
     target_size_t   size )      // - number of bytes
+;
+segment_id DgCurrSeg(
+    void )
+;
+segment_id DgSetSegSym(
+    SYMBOL sym )
 ;
 DT_METHOD DtmDirect(            // CONVERT DTOR METHOD TO DIRECT COUNTERPART
     DT_METHOD dtm )             // - default method

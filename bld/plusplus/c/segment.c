@@ -165,13 +165,16 @@ static SYMBOL segEmitLabel(         // EMIT SEGMENT LABEL
     PC_SEGMENT* seg )               // - current segment
 {
     SYMBOL label;                   // - label in segment
+    segment_id old_seg;             // - old segment
 
     label = seg->label;
     if( label != NULL && ! seg->lab_gened ) {
         if( seg->seg_id == SEG_STACK ) {
             CGAutoDecl( (cg_sym_handle)label, TY_UINT_1 );
         } else {
+            old_seg = DgSetSegSym( label );
             CgBackGenLabel( label );
+            BESetSeg( old_seg );
         }
         seg->lab_gened = TRUE;
         _markUsed( seg, TRUE );
@@ -423,11 +426,10 @@ target_size_t segmentTypeSize(  // SEGMENT: SIZE OF TYPE
 }
 
 
-target_offset_t SegmentAlignment(   // SEGMENT: ALIGNMENT FOR SYMBOL
-    SYMBOL sym )                    // - symbol to align
+target_offset_t SegmentAlignment(   // SEGMENT: ALIGNMENT FOR TYPE
+    TYPE type )                     // - TYPE to align
 {
     target_offset_t align;
-    TYPE type;
     TYPE align_type;
 
     if( CompFlags.dont_align_segs ) {
@@ -438,7 +440,6 @@ target_offset_t SegmentAlignment(   // SEGMENT: ALIGNMENT FOR SYMBOL
 #else
     if( OptSize <= 50 || PackAmount != TARGET_CHAR ) {
 #endif
-        type = sym->sym_type;
         align_type = AlignmentType( type );
         align = segmentTypeSize( align_type );
         if( align == TARGET_CHAR ) {

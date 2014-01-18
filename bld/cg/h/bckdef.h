@@ -34,7 +34,6 @@
 typedef int             import_handle;
 typedef pointer         abspatch_handle;
 #define BACKSEGS        (segment_id)32767
-#define UNDEFSEG        (segment_id)-1
 
 #define ADDR_UNKNOWN    ((offset)(-1))
 #define NOT_IMPORTED    0

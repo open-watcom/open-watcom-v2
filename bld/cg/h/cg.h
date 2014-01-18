@@ -72,6 +72,8 @@ typedef enum {
         EXTN_CALLBACKNAME,  /* return callback function name */
 } extn_request;
 
+#define UNDEFSEG        (segment_id)-1
+
 typedef char                *char_ptr;
 typedef const char          *cchar_ptr;
 

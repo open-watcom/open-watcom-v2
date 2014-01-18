@@ -85,9 +85,9 @@ void DbgSuppInit( dsi_control control )
     }
     if(( control & DSI_ONLY_SYMS ) == 0 ) {
         old_seg = BESetSeg( code_sym->segid );
-        DGLabel( FEBack( code_sym ) );
+        CgBackGenLabel( code_sym );
         BESetSeg( data_sym->segid );
-        DGLabel( FEBack( data_sym ) );
+        CgBackGenLabel( data_sym );
         BESetSeg( old_seg );
     }
 }

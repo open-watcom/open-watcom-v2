@@ -48,7 +48,7 @@ static target_offset_t cgSegIdAlign( SYMBOL sym, type_flag flags )
     if( flags & TF1_HUGE ) {
         align = 16;
     } else {
-        align = SegmentAlignment( sym );
+        align = SegmentAlignment( sym->sym_type );
     }
     return( align );
 }
