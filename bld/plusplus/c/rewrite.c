@@ -1162,6 +1162,18 @@ REWRITE *RewriteMapIndex( REWRITE *i )
     return( CarveMapIndex( carveREWRITE, i ) );
 }
 
+static REWRITE_TOKENS *RewriteTokensGetIndex( REWRITE_TOKENS *e )
+/***************************************************************/
+{
+    return( CarveGetIndex( carveREWRITE_TOKENS, e ) );
+}
+
+static REWRITE_TOKENS *RewriteTokensMapIndex( REWRITE_TOKENS *i )
+/***************************************************************/
+{
+    return( CarveMapIndex( carveREWRITE_TOKENS, i ) );
+}
+
 static void markFreeRewrite( void *p )
 {
     REWRITE *b = p;
@@ -1184,12 +1196,12 @@ static void saveRewrite( void *e, carve_walk_base *d )
     save_list = s->list;
     save_curr = s->curr;
     s->stream = _TokenPosGetIndex( s );  // must be first
-    s->list = CarveGetIndex( carveREWRITE_TOKENS, save_list );
-    s->curr = CarveGetIndex( carveREWRITE_TOKENS, save_curr );
+    s->list = RewriteTokensGetIndex( save_list );
+    s->curr = RewriteTokensGetIndex( save_curr );
     PCHWriteCVIndex( d->index );
     PCHWriteVar( *s );
     for( h = s->srcfiles_refd; h != NULL; h = h->next ) {
-        PCHWriteCVIndex( (cv_index)(pointer_int)SrcFileGetIndex( h->srcfile ) );
+        SrcFilePCHWrite( h->srcfile );
     }
     PCHWriteCVIndexTerm();
     s->list = save_list;
@@ -1213,7 +1225,7 @@ static void saveRewriteTokens( void *e, carve_walk_base *d )
         return;
     }
     save_next = s->next;
-    s->next = CarveGetIndex( carveREWRITE_TOKENS, save_next );
+    s->next = RewriteTokensGetIndex( save_next );
     PCHWriteCVIndex( d->index );
     PCHWriteVar( *s );
     s->next = save_next;
@@ -1234,7 +1246,7 @@ pch_status PCHWriteRewrites( void )
 
 pch_status PCHReadRewrites( void )
 {
-    cv_index i;
+    SRCFILE srcfile;
     REWRITE *r;
     REWRITE_TOKENS *rt;
     cvinit_t data;
@@ -1242,18 +1254,18 @@ pch_status PCHReadRewrites( void )
     CarveInitStart( carveREWRITE, &data );
     for( ; (r = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *r );
-        r->list = CarveMapIndex( carveREWRITE_TOKENS, r->list );
-        r->curr = CarveMapIndex( carveREWRITE_TOKENS, r->curr );
+        r->list = RewriteTokensMapIndex( r->list );
+        r->curr = RewriteTokensMapIndex( r->curr );
         r->stream = _TokenPosMapIndex( r );  // must be last
         r->srcfiles_refd = NULL;
-        for( ; (i = PCHReadCVIndex()) != CARVE_NULL_INDEX; ) {
-            newSrcFileHandle( r, SrcFileMapIndex( (SRCFILE)(pointer_int)i ) );
+        while( (srcfile = SrcFilePCHRead()) != NULL ) {
+            newSrcFileHandle( r, srcfile );
         }
     }
     CarveInitStart( carveREWRITE_TOKENS, &data );
     for( ; (rt = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *rt );
-        rt->next = CarveMapIndex( carveREWRITE_TOKENS, rt->next );
+        rt->next = RewriteTokensMapIndex( rt->next );
     }
     return( PCHCB_OK );
 }

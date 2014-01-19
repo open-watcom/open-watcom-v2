@@ -611,8 +611,8 @@ static void saveCGFILE( void *e, carve_walk_base *d )
         return;
     }
     PCHWriteCVIndex( d->index );
-    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( file->symbol ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( file->opt_retn ) );
+    SymbolPCHWrite( file->symbol );
+    SymbolPCHWrite( file->opt_retn );
     PCHWriteUInt( file->u.flags );
     h = CgioBuffRdOpen( file->first );
     cursor = (CGINTER *)( h->data + file->offset );
@@ -730,8 +730,8 @@ pch_status PCHReadCGFiles( void )
     CarveInitStart( carveCGFILE, &data );
     for( ; (curr = PCHReadCVIndexElement( &data )) != NULL; ) {
         RingAppend( &cg_file_ring, curr );
-        initCGFILE( curr, SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() ) );
-        curr->opt_retn = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
+        initCGFILE( curr, SymbolPCHRead() );
+        curr->opt_retn = SymbolPCHRead();
         curr->u.flags = PCHReadUInt();
         for(;;) {
             // The following comment is a trigger for the ICMASK program to

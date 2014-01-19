@@ -43,6 +43,13 @@
 #define BLOCK_RTTI_CLASS        16
 #define BLOCK_RTTI_TYPEID       16
 #define BLOCK_RTTI_VFPTR        16
+
+#define rttiClassPCHRead()      rttiClassMapIndex( (RTTI_CLASS *)(pointer_int)PCHReadCVIndex() )
+#define rttiTypeidPCHRead()     rttiTypeidMapIndex( (RTTI_TYPEID *)(pointer_int)PCHReadCVIndex() )
+
+#define rttiClassPCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_int)rttiClassGetIndex(x) );
+#define rttiTypeidPCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_int)rttiTypeidGetIndex(x) );
+
 static carve_t carveRTTI_CLASS;         // - allocations for RTTI_CLASSs
 static carve_t carveRTTI_TYPEID;        // - allocations for RTTI_TYPEIDs
 static carve_t carveRTTI_VFPTR;         // - allocations for RTTI_VFPTRs
@@ -359,8 +366,8 @@ pch_status PCHReadRttiDescriptors( void )
     auto cvinit_t data;
 
     // NYI: use read in place optimizations
-    rttiClasses = rttiClassMapIndex( (RTTI_CLASS *)(pointer_int)PCHReadCVIndex() );
-    rttiTypeids = rttiTypeidMapIndex( (RTTI_TYPEID *)(pointer_int)PCHReadCVIndex() );
+    rttiClasses = rttiClassPCHRead();
+    rttiTypeids = rttiTypeidPCHRead();
     CarveInitStart( carveRTTI_CLASS, &data );
     for( ; (c = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *c );
@@ -474,8 +481,8 @@ pch_status PCHWriteRttiDescriptors( void )
 {
     auto carve_walk_base data;
 
-    PCHWriteCVIndex( (cv_index)(pointer_int)rttiClassGetIndex( rttiClasses ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)rttiTypeidGetIndex( rttiTypeids ) );
+    rttiClassPCHWrite( rttiClasses );
+    rttiTypeidPCHWrite( rttiTypeids );
     CarveWalkAllFree( carveRTTI_CLASS, markFreeClass );
     CarveWalkAll( carveRTTI_CLASS, saveClass, &data );
     PCHWriteCVIndexTerm();

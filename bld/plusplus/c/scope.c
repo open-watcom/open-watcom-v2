@@ -65,14 +65,13 @@
 
 #define _ScopeMask( i )         ( 1 << (i) )
 
-#define _IsClassScope( s )      \
-        ((s)->id == SCOPE_CLASS)
-#define _IsFunctionScope( s )   \
-        ((s)->id == SCOPE_FUNCTION)
-#define _IsBlockScope( s )   \
-        ((s)->id == SCOPE_BLOCK)
-#define _IsFileScope( s )   \
-        ((s)->id == SCOPE_FILE)
+#define _IsClassScope( s )      ((s)->id == SCOPE_CLASS)
+#define _IsFunctionScope( s )   ((s)->id == SCOPE_FUNCTION)
+#define _IsBlockScope( s )      ((s)->id == SCOPE_BLOCK)
+#define _IsFileScope( s )       ((s)->id == SCOPE_FILE)
+
+#define NameSpacePCHRead()      NameSpaceMapIndex( (NAME_SPACE *)(pointer_int)PCHReadCVIndex() )
+#define NameSpacePCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_int)NameSpaceGetIndex(x) )
 
 static int hashTableSize[SCOPE_MAX] = {
     #define SCOPE_DEF(a,b) b
@@ -6414,8 +6413,8 @@ static walk_status findExactOverride( BASE_STACK *top, void *parm )
     FNOV_RESULT save_check;
     BASE_STACK *save_top;
     BASE_STACK *curr;
-    target_offset_t vfn_thunk_delta;
-    auto CLASS_TABLE location;
+    auto CLASS_TABLE location1;
+    auto CLASS_TABLE location2;
 
     scope = top->scope;
     if( scope == data->base ) {
@@ -6451,13 +6450,11 @@ static walk_status findExactOverride( BASE_STACK *top, void *parm )
                 /* return conversions are too ugly for now */
                 return( WALK_FINISH );
             }
-            location.delta = 0;
-            findPtrOffset( top, data->derived, &location );
-            vfn_thunk_delta = location.exact_delta;
-            location.delta = 0;
-            findPtrOffset( save_top, data->derived, &location );
-            vfn_thunk_delta -= location.exact_delta;
-            data->this_delta = vfn_thunk_delta;
+            location1.delta = 0;
+            findPtrOffset( top, data->derived, &location1 );
+            location2.delta = 0;
+            findPtrOffset( save_top, data->derived, &location2 );
+            data->this_delta = location1.exact_delta - location2.exact_delta;
             data->vfn_override = vfn_override;
         }
         return( WALK_ABANDON );
@@ -7249,9 +7246,6 @@ SYMBOL SymbolGetIndex( SYMBOL e )
 SYMBOL SymbolMapIndex( SYMBOL i )
 /*******************************/
 {
-    if( i == NULL ) {
-        return i;
-    }
     return( CarveMapIndex( carveSYMBOL, i ) );
 }
 
@@ -7622,14 +7616,14 @@ pch_status PCHWriteScopes( void )
 {
     auto carve_walk_base data;
 
-    PCHWriteUInt( PCHGetUInt( NameGetIndex( uniqueNameSpaceName ) ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)NameSpaceGetIndex( allNameSpaces ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex( GetCurrScope() ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex( GetFileScope() ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex( GetInternalScope() ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( ChipBugSym ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( DFAbbrevSym ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( PCHDebugSym ) );
+    NamePCHWrite( uniqueNameSpaceName );
+    NameSpacePCHWrite( allNameSpaces );
+    ScopePCHWrite( GetCurrScope() );
+    ScopePCHWrite( GetFileScope() );
+    ScopePCHWrite( GetInternalScope() );
+    SymbolPCHWrite( ChipBugSym );
+    SymbolPCHWrite( DFAbbrevSym );
+    SymbolPCHWrite( PCHDebugSym );
     CarveWalkAllFree( carveSYM_REGION, markFreeSymRegion );
     CarveWalkAll( carveSYM_REGION, saveSymRegion, &data );
     PCHWriteCVIndexTerm();
@@ -7822,14 +7816,14 @@ static void readSymbols( void )
 
 pch_status PCHReadScopes( void )
 {
-    uniqueNameSpaceName = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
-    allNameSpaces = NameSpaceMapIndex( (NAME_SPACE *)(pointer_int)PCHReadCVIndex() );
-    SetCurrScope(ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() ));
-    SetFileScope(ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() ));
-    SetInternalScope(ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() ));
-    ChipBugSym = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
-    DFAbbrevSym = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
-    PCHDebugSym = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
+    uniqueNameSpaceName = NamePCHRead();
+    allNameSpaces = NameSpacePCHRead();
+    SetCurrScope( ScopePCHRead() );
+    SetFileScope( ScopePCHRead() );
+    SetInternalScope( ScopePCHRead() );
+    ChipBugSym = SymbolPCHRead();
+    DFAbbrevSym = SymbolPCHRead();
+    PCHDebugSym = SymbolPCHRead();
     readSymRegion();
     readUsingNS();
     readNameSpaces();

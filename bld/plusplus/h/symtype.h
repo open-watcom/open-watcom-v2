@@ -35,6 +35,18 @@
 
 #include "cgdefs.h"
 
+#define SymbolPCHRead()         SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() )
+#define SymbolPCHWrite(x)       PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex(x) )
+
+#define SymbolNamePCHRead()     SymbolNameMapIndex( (SYMBOL_NAME)(pointer_int)PCHReadCVIndex() )
+#define SymbolNamePCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_int)SymbolNameGetIndex(x) )
+
+#define ScopePCHRead()          ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() )
+#define ScopePCHWrite(x)        PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex(x) )
+
+#define TypePCHRead()           TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() )
+#define TypePCHWrite(x)         PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex(x) )
+
 typedef struct cdopt_cache CDOPT_CACHE;
 typedef struct friend_list FRIEND;
 typedef struct name_space NAME_SPACE;

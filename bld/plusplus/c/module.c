@@ -336,9 +336,9 @@ pch_status PCHWriteModuleData( void )
 {
     uint_8 has_state_table;
 
-    PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( module_init_func ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex( module_init_scope ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)ScopeGetIndex( module_fd.fn_scope ) );
+    SymbolPCHWrite( module_init_func );
+    ScopePCHWrite( module_init_scope );
+    ScopePCHWrite( module_fd.fn_scope );
     has_state_table = module_fd.has_state_tab;
     PCHWriteVar( has_state_table );
     LabelPCHWrite( &module_fd.label_mem );
@@ -349,9 +349,9 @@ pch_status PCHReadModuleData( void )
 {
     uint_8 has_state_table;
 
-    module_init_func = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
-    module_init_scope = ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() );
-    module_fd.fn_scope = ScopeMapIndex( (SCOPE)(pointer_int)PCHReadCVIndex() );
+    module_init_func = SymbolPCHRead();
+    module_init_scope = ScopePCHRead();
+    module_fd.fn_scope = ScopePCHRead();
     PCHReadVar( has_state_table );
     module_fd.has_state_tab = ( has_state_table != 0 );
     LabelPCHRead( &module_fd.label_mem );

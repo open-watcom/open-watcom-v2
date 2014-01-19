@@ -53,6 +53,9 @@
 
 #define CS_LABEL_BLOCK  4       // number of CS labels to allocate at a time
 
+#define CGFilePCHRead()     CGFileMapIndex( (CGFILE *)(pointer_int)PCHReadCVIndex() )
+#define CGFilePCHWrite(x)   PCHWriteCVIndex( (cv_index)(pointer_int)CGFileGetIndex(x) )
+
 static CGFILE *dataCGFILE;      // file for data
 static CGFILE *codeCGFILE;      // file for code
 static CGFILE **emitDataCGFILE; // points to dataCGFILE or codeCGFILE
@@ -894,15 +897,15 @@ INITDEFN( front_end, cgfrontInit, cgfrontFini )
 
 pch_status PCHWriteFrontData( void )
 {
-    PCHWriteCVIndex( (cv_index)(pointer_int)CGFileGetIndex( dataCGFILE ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)CGFileGetIndex( codeCGFILE ) );
+    CGFilePCHWrite( dataCGFILE );
+    CGFilePCHWrite( codeCGFILE );
     return( PCHCB_OK );
 }
 
 pch_status PCHReadFrontData( void )
 {
-    dataCGFILE = CGFileMapIndex( (CGFILE *)(pointer_int)PCHReadCVIndex() );
-    codeCGFILE = CGFileMapIndex( (CGFILE *)(pointer_int)PCHReadCVIndex() );
+    dataCGFILE = CGFilePCHRead();
+    codeCGFILE = CGFilePCHRead();
     return( PCHCB_OK );
 }
 

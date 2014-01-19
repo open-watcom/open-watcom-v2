@@ -179,10 +179,10 @@ pch_status PCHReadGenerators( void )
     carveRTN_GEN = CarveRestart( carveRTN_GEN );
     useSYMBOL = NULL;
     useTYPE = NULL;
-    for( ; (read_symbol = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() )) != NULL; ) {
+    while( (read_symbol = SymbolPCHRead()) != NULL ) {
         addGenRoutine( &useSYMBOL, PCHReadUInt(), read_symbol );
     }
-    for( ; (read_type = TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() )) != NULL; ) {
+    while( (read_type = TypePCHRead()) != NULL ) {
         addGenRoutine( &useTYPE, PCHReadUInt(), read_type );
     }
     return( PCHCB_OK );
@@ -193,12 +193,12 @@ pch_status PCHWriteGenerators( void )
     RTN_GEN *c;
 
     for( c = useSYMBOL; c != NULL; c = c->next ) {
-        PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( c->parm ) );
+        SymbolPCHWrite( c->parm );
         PCHWriteUInt( c->index );
     }
     PCHWriteCVIndexTerm();
     for( c = useTYPE; c != NULL; c = c->next ) {
-        PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( c->parm ) );
+        TypePCHWrite( c->parm );
         PCHWriteUInt( c->index );
     }
     PCHWriteCVIndexTerm();

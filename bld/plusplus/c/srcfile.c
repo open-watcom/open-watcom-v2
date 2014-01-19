@@ -1987,7 +1987,7 @@ pch_status PCHWriteSrcFiles( void )
 {
     auto carve_walk_base dsrc;
 
-    PCHWriteCVIndex( (cv_index)(pointer_int)SrcFileGetIndex( srcFilesUnique ) );
+    SrcFilePCHWrite( srcFilesUnique );
     CarveWalkAllFree( carveSrcFile, markFreeSrcFile );
     CarveWalkAll( carveSrcFile, saveSrcFile, &dsrc );
     PCHWriteCVIndexTerm();
@@ -2018,7 +2018,7 @@ pch_status PCHReadSrcFiles( void )
     auto cvinit_t data;
 
     // primarySrcFile will already be set properly so it is unaffected by PCH
-    unique_srcfiles = SrcFileMapIndex( (SRCFILE)(pointer_int)PCHReadCVIndex() );
+    unique_srcfiles = SrcFilePCHRead();
     buff_len = 80;
     buff = CMemAlloc( buff_len );
     CarveInitStart( carveSrcFile, &data );

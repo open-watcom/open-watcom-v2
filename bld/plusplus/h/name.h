@@ -42,6 +42,9 @@
 #define NAME_DUMMY_PREFIX2              '#'
 #define NAME_OPERATOR_PREFIX2           '@'
 
+#define NamePCHRead()       NameMapIndex( PCHSetUInt( PCHReadUInt() ) )
+#define NamePCHWrite(x)     PCHWriteUInt( PCHGetUInt( NameGetIndex(x) ) )
+
 typedef unsigned            name_dummy_index_t;
 
 extern NAME                 NameCreateNoLen( const char *name );

@@ -1627,7 +1627,7 @@ static void writeExtrefs( void )
 
     RingIterBeg( pragmaExtrefs, e ) {
         if( e->symbol != NULL ) {
-            PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( e->symbol ) );
+            SymbolPCHWrite( e->symbol );
         }
     } RingIterEnd( e )
     PCHWriteCVIndexTerm();
@@ -1643,17 +1643,17 @@ static void writeExtrefs( void )
 
 static void readExtrefs( void )
 {
-    cv_index     i;
+    SYMBOL       sym;
     unsigned     len;
     PRAG_EXT_REF *entry;
 
     RingFree( &pragmaExtrefs );
-    for( ; (i = PCHReadCVIndex()) != CARVE_NULL_INDEX; ) {
+    while( (sym = SymbolPCHRead()) != NULL ) {
         entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + 1 );
-        entry->symbol = SymbolMapIndex( (SYMBOL)(pointer_int)i );
+        entry->symbol = sym;
         entry->name[0] = '\0';
     }
-    for( ; (len = PCHReadUInt()) != 0; ) {
+    while( (len = PCHReadUInt()) != 0 ) {
         entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + len + 1 );
         PCHRead( entry->name, len + 1 );
         entry->symbol = NULL;

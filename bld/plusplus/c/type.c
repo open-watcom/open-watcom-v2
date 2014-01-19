@@ -8764,11 +8764,11 @@ static void pchWriteArgLists( type_pch_walk *data )
         args->except_spec = PCHSetUInt( except_spec_count );
         PCHWrite( args, offsetof( arg_list, type_list ) );
         for( i = 0; i < args->num_args; ++i ) {
-            PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( args->type_list[i] ) );
+            TypePCHWrite( args->type_list[i] );
         }
         if( save_except_spec != NULL ) {
             for( etype = save_except_spec; *etype != NULL; ++etype ) {
-                PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( *etype ) );
+                TypePCHWrite( *etype );
             }
         }
         args->except_spec = save_except_spec;
@@ -8944,9 +8944,9 @@ static void saveClassInfo( void *e, carve_walk_base *d )
         friend_is_type = FriendIsType( friend );
         PCHWriteVar( friend_is_type );
         if( friend_is_type ) {
-            PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( FriendGetType( friend ) ) );
+            TypePCHWrite( FriendGetType( friend ) );
         } else {
-            PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( FriendGetSymbol( friend ) ) );
+            SymbolPCHWrite( FriendGetSymbol( friend ) );
         }
     } RingIterEnd( friend )
     friend_is_type = -1;
@@ -9037,7 +9037,7 @@ static void saveDeclInfo( void *e, carve_walk_base *d )
 
 static void writeType( TYPE t )
 {
-    PCHWriteCVIndex( (cv_index)(pointer_int)TypeGetIndex( t ) );
+    TypePCHWrite( t );
 }
 
 static void writeTypeHashed( TYPE *vector )
@@ -9114,7 +9114,7 @@ pch_status PCHWriteTypes( void )
 
 static void readType( TYPE *t )
 {
-    *t = TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() );
+    *t = TypePCHRead();
 }
 
 static void readTypeHashed( TYPE *vector )
@@ -9200,9 +9200,9 @@ static void readClassInfos( void )
             if( friend_is_type == -1 )
                 break;
             if( friend_is_type ) {
-                ScopeRawAddFriendType( ci, TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() ) );
+                ScopeRawAddFriendType( ci, TypePCHRead() );
             } else {
-                ScopeRawAddFriendSym( ci, SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() ) );
+                ScopeRawAddFriendSym( ci, SymbolPCHRead() );
             }
         }
     }
@@ -9293,13 +9293,13 @@ pch_status PCHReadTypes( void )
         args = AllocArgListPerm( tmp_arglist.num_args );
         args->qualifier = tmp_arglist.qualifier;
         for( j = 0; j < tmp_arglist.num_args; ++j ) {
-            args->type_list[j] = TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() );
+            args->type_list[j] = TypePCHRead();
         }
         except_spec_count = PCHGetUInt( tmp_arglist.except_spec );
         if( except_spec_count != 0 ) {
             args->except_spec = CPermAlloc( ( except_spec_count + 1 ) * sizeof( TYPE ) );
             for( j = 0; j < except_spec_count; ++j ) {
-                args->except_spec[j] = TypeMapIndex( (TYPE)(pointer_int)PCHReadCVIndex() );
+                args->except_spec[j] = TypePCHRead();
             }
             args->except_spec[j] = NULL;
         } else {

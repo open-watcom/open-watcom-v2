@@ -1166,10 +1166,10 @@ pch_status PCHWriteOperatorOverloadData( void )
     unsigned arg;
 
     for( arg = 0; arg < MAX_FUN_PROTOS; ++arg ) {
-        PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( ovfuns[ arg ] ) );
+        SymbolPCHWrite( ovfuns[ arg ] );
     }
     for( arg = 0; arg < MAX_FUN_PROTOS_EXTRA; ++arg ) {
-        PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( ovfuns_extra[ arg ] ) );
+        SymbolPCHWrite( ovfuns_extra[ arg ] );
     }
     return( PCHCB_OK );
 }
@@ -1179,10 +1179,10 @@ pch_status PCHReadOperatorOverloadData( void )
     unsigned arg;
 
     for( arg = 0; arg < MAX_FUN_PROTOS; ++arg ) {
-        ovfuns[arg] = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
+        ovfuns[arg] = SymbolPCHRead();
     }
     for( arg = 0; arg < MAX_FUN_PROTOS_EXTRA; ++arg ) {
-        ovfuns_extra[arg] = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() );
+        ovfuns_extra[arg] = SymbolPCHRead();
     }
     return( PCHCB_OK );
 }

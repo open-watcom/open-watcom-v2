@@ -42,6 +42,9 @@
 #include "floatsup.h"
 
 
+#define ConstantPoolPCHRead()   ConstantPoolMapIndex( (POOL_CON *)(pointer_int)PCHReadCVIndex() )
+#define ConstantPoolPCHWrite(x) PCHWriteCVIndex( (cv_index)(pointer_int)ConstantPoolGetIndex(x) );
+
 static carve_t carvePOOL_CON;   // - carving info. -- floating point
 static POOL_CON *pool_float;    // - floating pool
 static POOL_CON *pool_int64;    // - int-64 pool
@@ -139,8 +142,8 @@ pch_status PCHWriteConstantPool( void )
 {
     auto carve_walk_base data;
 
-    PCHWriteCVIndex( (cv_index)(pointer_int)ConstantPoolGetIndex( pool_float ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)ConstantPoolGetIndex( pool_int64 ) );
+    ConstantPoolPCHWrite( pool_float );
+    ConstantPoolPCHWrite( pool_int64 );
     CarveWalkAllFree( carvePOOL_CON, markFreeConstant );
     CarveWalkAll( carvePOOL_CON, saveConstant, &data );
     PCHWriteCVIndexTerm();
@@ -153,8 +156,8 @@ pch_status PCHReadConstantPool( void )
     POOL_CON *c;
     auto cvinit_t data;
 
-    pool_float = ConstantPoolMapIndex( (POOL_CON *)(pointer_int)PCHReadCVIndex() );
-    pool_int64 = ConstantPoolMapIndex( (POOL_CON *)(pointer_int)PCHReadCVIndex() );
+    pool_float = ConstantPoolPCHRead();
+    pool_int64 = ConstantPoolPCHRead();
     CarveInitStart( carvePOOL_CON, &data );
     for( ; (c = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *c );

@@ -273,7 +273,7 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
     PCHWriteUInt( code_size );
     PCHWrite( code, code_size );
     for( reloc = code->relocs; reloc != NULL; reloc = reloc->next ) {
-        PCHWriteCVIndex( (cv_index)(pointer_int)SymbolGetIndex( reloc->sym ) );
+        SymbolPCHWrite( reloc->sym );
         PCHWriteVar( reloc->off );
         PCHWriteVar( reloc->type );
     }
@@ -298,7 +298,7 @@ void AsmSysPCHReadCode( AUX_INFO *info )
     info->code = code;
     PCHRead( code, code_size );
     head = &(code->relocs);
-    for( ; (sym = SymbolMapIndex( (SYMBOL)(pointer_int)PCHReadCVIndex() )) != NULL; ) {
+    for( ; (sym = SymbolPCHRead()) != NULL; ) {
         reloc = CMemAlloc( sizeof( *reloc ) );
         reloc->sym = sym;
         PCHReadVar( reloc->off );

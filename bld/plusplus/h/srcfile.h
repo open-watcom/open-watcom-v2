@@ -36,6 +36,9 @@
 
 #define PRODUCTION_BUFFER_SIZE  (1024*8)
 
+#define SrcFilePCHRead()    SrcFileMapIndex( (SRCFILE)(pointer_int)PCHReadCVIndex() )
+#define SrcFilePCHWrite(x)  PCHWriteCVIndex( (cv_index)(pointer_int)SrcFileGetIndex(x) );
+
 typedef enum {
     SFO_SOURCE_FILE,
     SFO_READ_TEXT,

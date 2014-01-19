@@ -1377,10 +1377,10 @@ pch_status PCHReadOpNames( void )
     NAME *cp;
 
     for( op = operatorNames; op < &operatorNames[MAX_OP_NAMES]; ++op ) {
-        *op = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
+        *op = NamePCHRead();
     }
     for( cp = specialNames; cp < &specialNames[MAX_SPECIAL_NAMES]; ++cp ) {
-        *cp = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
+        *cp = NamePCHRead();
     }
     return( PCHCB_OK );
 }
@@ -1391,10 +1391,10 @@ pch_status PCHWriteOpNames( void )
     NAME *cp;
 
     for( op = operatorNames; op < &operatorNames[MAX_OP_NAMES]; ++op ) {
-        PCHWriteUInt( PCHGetUInt( NameGetIndex( *op ) ) );
+        NamePCHWrite( *op );
     }
     for( cp = specialNames; cp < &specialNames[MAX_SPECIAL_NAMES]; ++cp ) {
-        PCHWriteUInt( PCHGetUInt( NameGetIndex( *cp ) ) );
+        NamePCHWrite( *cp );
     }
     return( PCHCB_OK );
 }

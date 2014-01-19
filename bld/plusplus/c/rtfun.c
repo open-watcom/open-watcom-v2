@@ -277,7 +277,7 @@ pch_status PCHReadRTFNames( void )
     NAME *name;
 
     for( name = runTimeCodeName; name < &runTimeCodeName[ RTF_LAST ]; ++name ) {
-        *name = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
+        *name = NamePCHRead();
     }
     return( PCHCB_OK );
 }
@@ -287,7 +287,7 @@ pch_status PCHWriteRTFNames( void )
     NAME *name;
 
     for( name = runTimeCodeName; name < &runTimeCodeName[ RTF_LAST ]; ++name ) {
-        PCHWriteUInt( PCHGetUInt( NameGetIndex( *name ) ) );
+        NamePCHWrite( *name );
     }
     return( PCHCB_OK );
 }

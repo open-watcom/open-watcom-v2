@@ -977,7 +977,7 @@ pch_status PCHReadVerify( void )
 {
     char buff[10];
 
-    pchDebugInfoName = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
+    pchDebugInfoName = NamePCHRead();
     PCHRead( buff, 10 );
     if( memcmp( buff, "WATCOM-PCH", 10 ) != 0 ) {
         return( PCHCB_ERROR );
@@ -988,7 +988,7 @@ pch_status PCHReadVerify( void )
 pch_status PCHWriteVerify( void )
 /*******************************/
 {
-    PCHWriteUInt( PCHGetUInt( NameGetIndex( pchDebugInfoName ) ) );
+    NamePCHWrite( pchDebugInfoName );
     PCHWrite( "WATCOM-PCH", 10 );
     return( PCHCB_OK );
 }

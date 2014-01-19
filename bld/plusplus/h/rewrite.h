@@ -33,6 +33,9 @@
 #ifndef _REWRITE_H
 #define _REWRITE_H
 
+#define RewritePCHRead()        RewriteMapIndex( (REWRITE *)(pointer_int)PCHReadCVIndex() )
+#define RewritePCHWrite(x)      PCHWriteCVIndex( (cv_index)(pointer_int)RewriteGetIndex(x) )
+
 typedef struct rewrite_tokens   REWRITE_TOKENS;
 typedef struct srcfile_handle   SRCFILE_HANDLE;
 

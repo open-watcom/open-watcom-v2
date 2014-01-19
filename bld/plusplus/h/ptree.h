@@ -38,6 +38,9 @@
 #include "srcfile.h"
 #include "ptreedec.h"
 
+#define PTreePCHRead()      PTreeMapIndex( (PTREE)(pointer_int)PCHReadCVIndex() )
+#define PTreePCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_int)PTreeGetIndex(x) )
+
 /*
     flags are organized into three classes:
 

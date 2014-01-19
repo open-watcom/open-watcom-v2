@@ -39,6 +39,9 @@
 #include "initdefs.h"
 
 
+#define TypeSigPCHRead()    TypeSigMapIndex( (TYPE_SIG *)(pointer_int)PCHReadCVIndex() )
+#define TypeSigPCHWrite(x)  PCHWriteCVIndex( (cv_index)(pointer_int)TypeSigGetIndex(x) )
+
 //************* temporary ****************
 
 SYMBOL DefaultCtorFind(         // GET SYMBOL FOR DEFAULT CTOR
@@ -379,7 +382,7 @@ pch_status PCHReadTypeSigs( void )
     TYPE_SIG *s;
     auto cvinit_t data;
 
-    type_sigs = TypeSigMapIndex( (TYPE_SIG *)(pointer_int)PCHReadCVIndex() );
+    type_sigs = TypeSigPCHRead();
     CarveInitStart( carveTYPE_SIG, &data );
     for( ; (s = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *s );
@@ -444,7 +447,7 @@ pch_status PCHWriteTypeSigs( void )
 {
     auto carve_walk_base data;
 
-    PCHWriteCVIndex( (cv_index)(pointer_int)TypeSigGetIndex( type_sigs ) );
+    TypeSigPCHWrite( type_sigs );
     CarveWalkAllFree( carveTYPE_SIG, markFreeTypeSig );
     CarveWalkAll( carveTYPE_SIG, saveTypeSig, &data );
     PCHWriteCVIndexTerm();
