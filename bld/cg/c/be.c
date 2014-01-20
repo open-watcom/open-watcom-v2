@@ -270,28 +270,24 @@ extern  void    BEFiniPatch( void *hdl ) {
 //========================================
     Action( "BEFiniPatch( %p )%n", hdl );
 }
-#define PTR_INT( x )            (*(pointer_int*)&(x))
-#define FAKE_BACK               ((pointer_int)1)
-#define REAL_BACK( bck )        ( ( PTR_INT( bck ) & FAKE_BACK ) == 0 )
-#define TO_REAL_BACK( bck )     ((b*)( PTR_INT( bck ) & ~FAKE_BACK ))
-#define RETURN_NULL             (pointer)1
-#define RETURN_NORMAL           NULL
-static  pointer                 NewBackReturn = RETURN_NORMAL;
 
+#define FAKE_NULL               ((pointer)(pointer_int)1)
+#define PTR_INT( x )            (*(pointer_int*)&(x))
+#define IS_REAL_BACK( bck )     ((PTR_INT( bck ) & 1) == 0)
+#define TO_FAKE_BACK( bck )     ((b*)(PTR_INT( bck ) | 1))
+#define TO_REAL_BACK( bck )     ((b*)(PTR_INT( bck ) & ~((pointer_int)1)))
+
+static  pointer                 NewBackReturn = NULL;
 
 extern  pointer LkAddBack( sym_handle sym, pointer curr_back ) {
 /**************************************************************/
 
     b   *bk;
 
-    if( curr_back == NULL ) {
-        NewBackReturn = RETURN_NULL;
-    } else {
-        NewBackReturn = (pointer)( PTR_INT( curr_back ) | FAKE_BACK );
-    }
+    NewBackReturn = TO_FAKE_BACK( curr_back );
     bk = FEBack( sym );
-    NewBackReturn = RETURN_NORMAL;
-    return( (pointer)( PTR_INT( bk ) & ~FAKE_BACK ) );
+    NewBackReturn = NULL;
+    return( TO_REAL_BACK( bk ) );
 }
 
 extern  b       *BENewBack(sym s) {
@@ -300,9 +296,9 @@ extern  b       *BENewBack(sym s) {
     b   *bk;
 
     Action( "BENewBack" );
-    if( NewBackReturn == RETURN_NULL ) {
+    if( NewBackReturn == FAKE_NULL ) {
         bk = NULL;
-    } else if( NewBackReturn != RETURN_NORMAL ) {
+    } else if( NewBackReturn != NULL ) {
         bk = NewBackReturn;
     } else {
         bk = CGAlloc( sizeof( b  ));
@@ -312,7 +308,9 @@ extern  b       *BENewBack(sym s) {
         bk->i = ++BackId;
         bk->lp = NewLabel();
         BackList = bk;
-        if( !REAL_BACK( bk ) ) CGError( "Internal error - odd memory" );
+        if( !IS_REAL_BACK( bk ) ) {
+            CGError( "Internal error - odd memory" );
+        }
     }
     Action( "( %s ) -> %p%n", FEName( s ), bk );
     return(bk);
@@ -321,7 +319,7 @@ extern  void    BEFiniBack( b *bk ) {
 //===================================
 
     Action( "BEFiniBack" );
-    if( !REAL_BACK( bk ) ) {
+    if( !IS_REAL_BACK( bk ) ) {
         Action( "( %s )%n", FEName( TO_REAL_BACK( bk )->s ) );
         return;
     }
@@ -333,7 +331,7 @@ extern  void    BEFreeBack( b *bk ) {
 
     b   **o;
     Action( "BEFreeBack" );
-    if( !REAL_BACK( bk ) ) {
+    if( !IS_REAL_BACK( bk ) ) {
         Action( "( %s )%n", FEName( TO_REAL_BACK( bk )->s ) );
         return;
     }

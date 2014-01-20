@@ -435,27 +435,23 @@ extern  void _CGAPI     BEFiniPatch( patch_handle hdl )
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
+#define FAKE_NULL               ((pointer)(pointer_int)1)
 #define PTR_INT( x )            (*(pointer_int*)&(x))
-#define FAKE_BACK               ((pointer_int)1)
-#define REAL_BACK( bck )        ( ( PTR_INT( bck ) & FAKE_BACK ) == 0 )
-#define RETURN_NULL             (pointer)(pointer_int)1
-#define RETURN_NORMAL           NULL
-static  pointer                 NewBackReturn = RETURN_NORMAL;
+#define IS_REAL_BACK( bck )     ((PTR_INT( bck ) & 1) == 0)
+#define TO_REAL_BACK( bck )     ((pointer)(PTR_INT( bck ) & ~((pointer_int)1)))
+#define TO_FAKE_BACK( bck )     ((pointer)(PTR_INT( bck ) | 1))
 
+static  pointer                 NewBackReturn = NULL;
 
 extern  pointer LkAddBack( cg_sym_handle sym, pointer curr_back )
-/************************************************************/
+/***************************************************************/
 {
     back_handle bck;
 
-    if( curr_back == NULL ) {
-        NewBackReturn = RETURN_NULL;
-    } else {
-        NewBackReturn = (pointer)( PTR_INT( curr_back ) | FAKE_BACK );
-    }
+    NewBackReturn = TO_FAKE_BACK( curr_back );
     bck = FEBack( sym );
-    NewBackReturn = RETURN_NORMAL;
-    return( (pointer)( PTR_INT( bck ) & ~FAKE_BACK ) );
+    NewBackReturn = NULL;
+    return( TO_REAL_BACK( bck ) );
 }
 
 extern back_handle SymBack( cg_sym_handle sym )
@@ -464,7 +460,7 @@ extern back_handle SymBack( cg_sym_handle sym )
     back_handle bck;
 
     bck = FEBack( sym );
-    return( (back_handle)( PTR_INT( bck ) & ~FAKE_BACK ) );
+    return( TO_REAL_BACK( bck ) );
 }
 
 static void AllocMoreBckInfo( void )
@@ -496,13 +492,13 @@ extern  back_handle _CGAPI      BENewBack( cg_sym_handle sym )
 #ifndef NDEBUG
     EchoAPI( "BENewBack( %s )", sym );
 #endif
-    if( NewBackReturn == RETURN_NULL ) {
+    if( NewBackReturn == FAKE_NULL ) {
 #ifndef NDEBUG
-    EchoAPI( " -> %B\n", NULL );
+        EchoAPI( " -> %B\n", NULL );
 #endif
         return( NULL );
     }
-    if( NewBackReturn != RETURN_NORMAL ) {
+    if( NewBackReturn != NULL ) {
 #ifndef NDEBUG
     EchoAPI( " -> %B\n", NewBackReturn );
 #endif
@@ -522,7 +518,8 @@ extern  back_handle _CGAPI      BENewBack( cg_sym_handle sym )
     } else {
         bck->seg = FESegID( sym );
     }
-    if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_067 );
+    if( !IS_REAL_BACK( bck ) )
+        _Zoiks( ZOIKS_067 );
 #ifndef NDEBUG
     EchoAPI( " -> %B\n", bck );
 #endif
@@ -535,7 +532,7 @@ extern  void _CGAPI     BEFiniBack( back_handle bck )
 #ifndef NDEBUG
     EchoAPI( "BEFiniBack( %L )\n", bck );
 #endif
-    if( REAL_BACK( bck ) ) {
+    if( IS_REAL_BACK( bck ) ) {
         TellNoSymbol( bck->lbl );
     }
 }
@@ -546,7 +543,7 @@ extern  void _CGAPI     BEFreeBack( back_handle bck )
 #ifndef NDEBUG
     EchoAPI( "BEFreeBack( %L )\n", bck );
 #endif
-    if( REAL_BACK( bck ) ) {
+    if( IS_REAL_BACK( bck ) ) {
 //      CGFree( bck );
         uback_info      *p;
 
@@ -791,7 +788,7 @@ extern  cg_name _CGAPI CGFEName( cg_sym_handle sym, cg_type tipe )
     cg_name     leaf;
 
 
-    if( (FEAttr( sym ) & FE_DLLIMPORT ) && ( FindAuxInfoSym( sym, CALL_BYTES ) == NULL ) ) {
+    if( (FEAttr( sym ) & FE_DLLIMPORT) && ( FindAuxInfoSym( sym, CALL_BYTES ) == NULL ) ) {
         leaf = TGLeaf( BGName( CG_FE, sym, TypeAddress( TY_POINTER ) ) );
 #ifndef NDEBUG
         EchoAPI( "CGFEName( %s, %t ) declspec(dllimport)", sym, tipe );
@@ -821,7 +818,8 @@ extern  cg_name _CGAPI CGBackName( back_handle bck, cg_type tipe )
     EchoAPI( "CGBackName( %B, %t )", bck, tipe );
 #endif
 
-    if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_068 );
+    if( !IS_REAL_BACK( bck ) )
+        _Zoiks( ZOIKS_068 );
 
 #ifndef NDEBUG
     retn = TGLeaf( BGName( CG_BACK, bck, TypeAddress( tipe ) ) );
@@ -1434,7 +1432,8 @@ extern  void _CGAPI     DGLabel( back_handle bck )
 #ifndef NDEBUG
     EchoAPI( "DGLabel( %B )\n", bck );
 #endif
-    if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_068 );
+    if( !IS_REAL_BACK( bck ) )
+        _Zoiks( ZOIKS_068 );
     DGBlip();
     DataLabel( bck->lbl );
     bck->seg = AskOP();
@@ -1447,7 +1446,8 @@ extern  void _CGAPI     DGBackPtr( back_handle bck, segment_id seg,
 #ifndef NDEBUG
     EchoAPI( "DGBackPtr( %B, %S, %i, %t )\n", bck, seg, offset, tipe );
 #endif
-    if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_068 );
+    if( !IS_REAL_BACK( bck ) )
+        _Zoiks( ZOIKS_068 );
     DGBlip();
     BackPtr( bck, seg, offset, TypeAddress( tipe ) );
 }
@@ -1689,7 +1689,8 @@ extern  unsigned_32 _CGAPI      DGBackTell( back_handle bck )
     EchoAPI( "DGBackTell( %B )", bck );
 #endif
 
-    if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_068 );
+    if( !IS_REAL_BACK( bck ) )
+        _Zoiks( ZOIKS_068 );
 
 #ifndef NDEBUG
     retn = AskAddress( bck->lbl );
