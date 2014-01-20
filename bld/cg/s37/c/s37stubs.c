@@ -34,7 +34,6 @@
 #include "cgdefs.h"
 #include "regset.h"
 #include "addrname.h"
-#include "ptrint.h"
 #include "x87.h"
 
 
