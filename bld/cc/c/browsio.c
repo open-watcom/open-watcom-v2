@@ -474,7 +474,7 @@ dw_client DwarfInit( void )
     cu.model           = DW_MODEL_NONE;
     cu.inc_list        = inclist;
     cu.inc_list_len    = incsize;
-    cu.dbg_pch         = 0;
+    cu.dbg_pch         = NULL;
     DWBeginCompileUnit( client, &cu );
     CMemFree( inclist );
     DWDeclFile( client, fname );

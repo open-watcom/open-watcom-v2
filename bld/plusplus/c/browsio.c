@@ -414,7 +414,7 @@ extern dw_client DwarfInit( void )
     cu.model           = DW_MODEL_NONE;
     cu.inc_list        = incbuf;
     cu.inc_list_len    = incsize;
-    cu.dbg_pch         = 0;
+    cu.dbg_pch         = NULL;
 
 
     DWBeginCompileUnit( client, &cu );
