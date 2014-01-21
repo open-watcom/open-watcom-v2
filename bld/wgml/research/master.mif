@@ -16,7 +16,7 @@ wgml_research_autodepends = .AUTODEPEND
 
 inc_dirs = -I. -I"../h" -I"../../h" $(wres_inc_dirs)
 
-.c: ../c;../../c
+.c: ../c;../../c;$(watcom_dir)/c
 
 wgml_libs = $(wres_lib)
 
