@@ -153,8 +153,9 @@ static char *initialize_cur_directory_list( void )
 {
     char    *list;
 
-    list = mem_alloc( 1 );
-    *list = '\0';
+    list = mem_alloc( 2 );
+    list[0] = '.';
+    list[1] = '\0';
     return( list );
 }
 
