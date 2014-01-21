@@ -1555,8 +1555,7 @@ void    process_text( char * text, font_number font )
                             h_char->type = norm;
                             h_char->width = hy_width;
 
-                            h_char->x_address = t_line->last->x_address \
-                                                    + t_line->last->width;
+                            h_char->x_address = t_line->last->x_address + t_line->last->width;
                             h_char->prev = t_line->last;
                             t_line->last->next = h_char;
                             t_line->last = h_char;

@@ -295,10 +295,9 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, ch
  *          the format must be entirely present for there to be no error.
 */
 
-static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver, \
-                                       fontstyle_block * fontstyle_block_ptr, \
-                                       p_buffer * * p_buffer_set, \
-                                       char **current, uint8_t count )
+static cop_driver *parse_font_style( FILE *in_file, cop_driver *in_driver,
+        fontstyle_block *fontstyle_block_ptr, p_buffer **p_buffer_set,
+        char **current, uint8_t count )
 {
 
     char *          string_ptr              = NULL;

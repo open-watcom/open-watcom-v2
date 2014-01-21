@@ -503,7 +503,7 @@ extern  void    show_include_stack( void );
  */
 
 #define pick( name, length, mand_parms, opt_parms, routine ) \
-    extern condcode routine( parm parms[MAX_FUN_PARMS], size_t parm_count, char * * ppval, int32_t valsize );
+    extern condcode routine( parm parms[MAX_FUN_PARMS], size_t parm_count, char **ppval, int32_t valsize );
 
 #include "gsfuncs.h"
 

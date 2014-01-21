@@ -68,9 +68,9 @@ void    init_page_geometry( void )
     g_max_char_width = 0;
     g_max_line_height = 0;
     for( k = 0; k < wgml_font_cnt; k++ ) {
-        if( g_max_char_width < wgml_fonts[k].default_width ) \
+        if( g_max_char_width < wgml_fonts[k].default_width )
             g_max_char_width = wgml_fonts[k].default_width;
-        if( g_max_line_height < wgml_fonts[k].line_height ) \
+        if( g_max_line_height < wgml_fonts[k].line_height )
             g_max_line_height = wgml_fonts[k].line_height;
     }
     g_curr_font = layout_work.defaults.font;

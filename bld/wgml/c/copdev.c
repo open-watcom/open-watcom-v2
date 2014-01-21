@@ -1062,7 +1062,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Set defaultfont_ptr and defaultfonts.font and adjust next_offset. */
 
-    size = sizeof( out_device->defaultfonts.font_count) * out_device->defaultfonts.font_count;
+    size = sizeof( *out_device->defaultfonts.fonts ) * out_device->defaultfonts.font_count;
     if( out_device->allocated_size < (out_device->next_offset + size ) ) {
         out_device = resize_cop_device( out_device, size );
     }
@@ -1133,8 +1133,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Get the font_space. */
 
-        fread( &defaultfont_ptr[i].font_space, \
-                            sizeof( defaultfont_ptr[i].font_space ), 1, in_file );
+        fread( &defaultfont_ptr[i].font_space, sizeof( defaultfont_ptr[i].font_space ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_device );
             out_device = NULL;
@@ -1252,8 +1251,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Ensure that the CodeBlock can be found. */
 
-        return_value = find_cumulative_index( cop_functions, cumulative_index, \
-                                                                            &j );
+        return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
         if( return_value == not_valid ) {
             mem_free( raw_functions );
             raw_functions = NULL;
@@ -1353,8 +1351,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Ensure that the CodeBlock can be found. */
 
-        return_value = find_cumulative_index( cop_functions, cumulative_index, \
-                                                                            &j );
+        return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
         if( return_value == not_valid ) {
             mem_free( raw_functions );
             raw_functions = NULL;
@@ -1454,8 +1451,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Ensure that the CodeBlock can be found. */
 
-        return_value = find_cumulative_index( cop_functions, cumulative_index, \
-                                                                            &j );
+        return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
         if( return_value == not_valid ) {
             mem_free( raw_functions );
             raw_functions = NULL;
@@ -1555,8 +1551,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Ensure that the CodeBlock can be found. */
 
-        return_value = find_cumulative_index( cop_functions, cumulative_index, \
-                                                                            &j );
+        return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
         if( return_value == not_valid ) {
             mem_free( raw_functions );
             raw_functions = NULL;
@@ -1633,8 +1628,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the number of Devicefonts. */
 
-    fread( &out_device->devicefonts.font_count, \
-                    sizeof( out_device->devicefonts.font_count ), 1, in_file );
+    fread( &out_device->devicefonts.font_count, sizeof( out_device->devicefonts.font_count ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( raw_functions );
         raw_functions = NULL;
@@ -1829,8 +1823,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Get the resident font indicator. */
 
-        fread( &devicefont_ptr[i].resident, \
-                            sizeof( devicefont_ptr[i].resident ), 1, in_file );
+        fread( &devicefont_ptr[i].resident, sizeof( devicefont_ptr[i].resident ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( raw_functions );
             raw_functions = NULL;
@@ -1872,8 +1865,7 @@ cop_device * parse_device( FILE * in_file )
 
             /* Ensure that the CodeBlock can be found. */
 
-            return_value = find_cumulative_index( cop_functions, \
-                                                  cumulative_index, &j );
+            return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
             if( return_value == not_valid ) {
                 mem_free( raw_functions );
                 raw_functions = NULL;

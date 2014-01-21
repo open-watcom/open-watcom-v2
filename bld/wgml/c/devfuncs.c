@@ -1215,8 +1215,7 @@ static void *process_parameter( void )
 {
     /* Reset current_df_data for the parameter. */
 
-    memcpy_s( &current_df_data.df_code, sizeof( current_df_data.df_code ), \
-                    current_df_data.current, sizeof( current_df_data.df_code ) );
+    memcpy_s( &current_df_data.df_code, sizeof( current_df_data.df_code ), current_df_data.current, sizeof( current_df_data.df_code ) );
     current_df_data.current += sizeof( current_df_data.df_code );
 
     /* Invoke parameter function. */
@@ -1463,8 +1462,7 @@ static void * df_cancel( void )
     if( wgml_fonts[font].font_style != NULL ) {
         if( !stricmp( first, wgml_fonts[font].font_style->type ) ) {
             if( wgml_fonts[font].font_style->startvalue != NULL ) {
-                df_interpret_driver_functions( \
-                    wgml_fonts[font].font_style->startvalue->text );
+                df_interpret_driver_functions( wgml_fonts[font].font_style->startvalue->text );
             }
         }
     }
@@ -1472,8 +1470,7 @@ static void * df_cancel( void )
     if( wgml_fonts[font].font_switch != NULL ) {
         if( !stricmp( first, wgml_fonts[font].font_switch->type ) ) {
             if( wgml_fonts[font].font_switch->startvalue != NULL ) {
-                df_interpret_driver_functions( \
-                    wgml_fonts[font].font_switch->startvalue->text );
+                df_interpret_driver_functions( wgml_fonts[font].font_switch->startvalue->text );
             }
         }
     }
