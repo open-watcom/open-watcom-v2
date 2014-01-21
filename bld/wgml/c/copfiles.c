@@ -876,7 +876,7 @@ void cop_setup( void )
     /* Process the :DEFAULTFONT Blocks. */
 
     cur_def_fonts = bin_device->defaultfonts.fonts;
-    for( fnt = 0; fnt < bin_device->defaultfonts.font_count; i++ ) {
+    for( fnt = 0; fnt < bin_device->defaultfonts.font_count; fnt++ ) {
         if( (cur_def_fonts[fnt].font_name == NULL) || (strlen( cur_def_fonts[fnt].font_name ) == 0) ) {
             continue; /* Do not initialize skipped font numbers. */
         } else {
