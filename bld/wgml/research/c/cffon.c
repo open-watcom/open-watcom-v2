@@ -305,8 +305,7 @@ cop_font * parse_font( FILE * in_file )
 
         /* Get the 32-bit scale_basis. */
 
-        fread( &out_font->scale_basis, sizeof( out_font->scale_basis ), 1, \
-                                                                        in_file );
+        fread( &out_font->scale_basis, sizeof( out_font->scale_basis ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_font );
             out_font = NULL;
@@ -347,8 +346,7 @@ cop_font * parse_font( FILE * in_file )
 
         /* Get the 32-bit line_height. */
 
-        fread( &out_font->line_height, sizeof( out_font->line_height), 1, \
-                                                                        in_file );
+        fread( &out_font->line_height, sizeof( out_font->line_height), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_font );
             out_font = NULL;
@@ -357,8 +355,7 @@ cop_font * parse_font( FILE * in_file )
 
         /* Get the 32-bit line_space. */
 
-        fread( &out_font->line_space, sizeof( out_font->line_space ), 1, \
-                                                                       in_file );
+        fread( &out_font->line_space, sizeof( out_font->line_space ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_font );
             out_font = NULL;
@@ -367,8 +364,7 @@ cop_font * parse_font( FILE * in_file )
 
         /* Get the 32-bit scale_basis. */
 
-        fread( &out_font->scale_basis, sizeof( out_font->scale_basis ), 1, \
-                                                                        in_file );
+        fread( &out_font->scale_basis, sizeof( out_font->scale_basis ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_font );
             out_font = NULL;
@@ -395,8 +391,7 @@ cop_font * parse_font( FILE * in_file )
 
         /* Get the 32-bit char_width. */
 
-        fread( &out_font->char_width, sizeof( out_font->char_width ), 1, \
-                                                                        in_file );
+        fread( &out_font->char_width, sizeof( out_font->char_width ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_font );
             out_font = NULL;
@@ -549,8 +544,7 @@ cop_font * parse_font( FILE * in_file )
             /* The count should be 0x00. */
 
             if( count8 != 0x00 ) {
-                printf_s( "Incorrect byte-width OuttransBlock count: %i\n", \
-                                                                        count8 );
+                printf_s( "Incorrect byte-width OuttransBlock count: %i\n", count8 );
                 free( out_font );
                 out_font = NULL;
                 return( out_font );
@@ -641,8 +635,7 @@ cop_font * parse_font( FILE * in_file )
             /* The count should be equal to the data_count. */
         
             if( count8 != data_count ) {
-                printf_s( "Incorrect OuttransBlock data_count: %i instead of " \
-                                                  "%i\n", data_count, count8 );
+                printf_s( "Incorrect OuttransBlock data_count: %i instead of %i\n", data_count, count8 );
                 free( out_font );
                 out_font = NULL;
                 return( out_font );

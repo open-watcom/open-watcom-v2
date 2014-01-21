@@ -60,6 +60,8 @@
 
 #define BUF_SIZE        512             // default buffersize for filecb e.a.
 
+#define PCD_EXT         ".pcd"
+
 /* Local structs. */
 
 /* This was suggested by wgml's tag struct, which should be studied when
@@ -194,8 +196,7 @@ static int get_dev_func( void )
 
         /* First call: start by getting data into the buffer. */
 
-        cur_file->usedlen = fread( cur_file->filebuf, 1, \
-                                            cur_file->buflen, cur_file->fp );
+        cur_file->usedlen = fread( cur_file->filebuf, 1, cur_file->buflen, cur_file->fp );
         if( ferror( cur_file->fp ) ) return( FAILURE );
         if( cur_file->usedlen == 0 ) return( FAILURE );
 
@@ -251,13 +252,10 @@ static int get_dev_func( void )
              */
 
             scanned = cur_token->start - cur_file->filebuf;
-            unscanned = &cur_file->filebuf[cur_file->usedlen] - \
-                                                            cur_token->start;
-            memmove_s( cur_file->filebuf, cur_file->buflen, \
-                                                cur_token->start, unscanned );
+            unscanned = &cur_file->filebuf[cur_file->usedlen] - cur_token->start;
+            memmove_s( cur_file->filebuf, cur_file->buflen, cur_token->start, unscanned );
 
-            cur_file->usedlen = fread( &cur_file->filebuf[ unscanned ], 1, \
-                                cur_file->buflen - unscanned, cur_file->fp );
+            cur_file->usedlen = fread( &cur_file->filebuf[ unscanned ], 1, cur_file->buflen - unscanned, cur_file->fp );
             cur_file->usedlen += unscanned;
             if( ferror( cur_file->fp ) ) return( FAILURE );
             if( cur_file->usedlen == 0 ) return( FAILURE );
@@ -272,8 +270,7 @@ static int get_dev_func( void )
          * of a device function name: replace the entire buffer.
          */
 
-        cur_file->usedlen = fread( cur_file->filebuf, 1, \
-                                            cur_file->buflen, cur_file->fp );
+        cur_file->usedlen = fread( cur_file->filebuf, 1, cur_file->buflen, cur_file->fp );
         if( ferror( cur_file->fp ) ) return( FAILURE );
         if( cur_file->usedlen == 0 ) return( FAILURE );
 
@@ -301,8 +298,7 @@ static int check_directory( void )
     DIR                 *   current_dir     = NULL;
     struct dirent       *   dir_entry       = NULL;
     FILE                *   current_file    = NULL;
-    int                     dev_func_cnt    = sizeof( dev_funcs ) / \
-                                              sizeof( dev_funcs[ 0 ] );
+    int                     dev_func_cnt    = sizeof( dev_funcs ) / sizeof( dev_funcs[ 0 ] );
     int                     i;
     int                     j;
     int                     ret_val;
@@ -347,8 +343,7 @@ static int check_directory( void )
             /* Search the table. */
 
             for( i = 0; i < dev_func_cnt; i++ ) {
-                if( !memicmp( dev_funcs[i].func_name, cur_token->start, \
-                                                    cur_token->count ) ) break;
+                if( !memicmp( dev_funcs[i].func_name, cur_token->start, cur_token->count ) ) break;
 
             }
 

@@ -70,8 +70,7 @@
  *      the same length in horizontal_base_units.
  */
  
-static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, \
-                                                       wgml_font * in_font )
+static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, wgml_font * in_font )
 {
     uint32_t    divisor;
     uint64_t    units;

@@ -111,8 +111,7 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
         /* Get the pass, shifting it if necessary. */
             
         if( position == 76 ) {
-            printf_s( "Parsing %s block: CodeBlock %i has a shifted pass." \
-                      "\n", block, i);
+            printf_s( "Parsing %s block: CodeBlock %i has a shifted pass.\n", block, i);
             display_hex_char( junk_byte, **current );
             display_hex_char( first_byte, *(*current + 1) );
             display_hex_char( second_byte, *(*current + 2) );
@@ -126,8 +125,7 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
         /* Get the count, shifting it if necessary. */
             
         if( position == 74 ) {
-            printf_s( "Parsing %s block: CodeBlock %i has a shifted count\n", \
-                                                                        block, i);
+            printf_s( "Parsing %s block: CodeBlock %i has a shifted count\n", block, i);
             display_hex_char( junk_byte, **current );
             display_hex_char( first_byte, *(*current + 1) );
             display_hex_char( second_byte, *(*current + 2) );

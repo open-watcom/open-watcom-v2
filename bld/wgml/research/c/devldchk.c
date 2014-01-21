@@ -83,20 +83,17 @@ static void display_binary_device_library( void )
         if( wgml_fonts[i].bin_font == NULL ) {
             out_msg( "Font name not found: ERROR!\n" );
         } else {
-            out_msg( "  Font name:          %s\n", \
-                                        wgml_fonts[i].bin_font->defined_name );
+            out_msg( "  Font name:          %s\n", wgml_fonts[i].bin_font->defined_name );
         }
         if( wgml_fonts[1].font_switch == NULL ) {
             out_msg( "Font switch: none\n" );
         } else {
-            out_msg( "  Font switch:        %s\n", \
-                                                wgml_fonts[i].font_switch->type );
+            out_msg( "  Font switch:        %s\n", wgml_fonts[i].font_switch->type );
         }
         if( wgml_fonts[i].font_style == NULL ) {
             out_msg( "Font style not found: ERROR!\n" );
         } else {
-            out_msg( "  Font style:         %s\n", \
-                                                wgml_fonts[i].font_style->type );
+            out_msg( "  Font style:         %s\n", wgml_fonts[i].font_style->type );
         }
         out_msg( "  Font pause present: " );
         if( wgml_fonts[i].font_pause == NULL ) out_msg( "No\n" );

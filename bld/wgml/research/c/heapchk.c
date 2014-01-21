@@ -64,8 +64,7 @@ static _HEAPINFO do_heapcheck( char * location )
         if( heap_node._useflag == _USEDENTRY ) block_status = "USED";
         else block_status = "FREE";
 
-        printf_s( "%s block at 0x%llx of size 0x%x\n", block_status, \
-                                            heap_node._pentry, heap_node._size );
+        printf_s( "%s block at 0x%llx of size 0x%x\n", block_status, heap_node._pentry, heap_node._size );
         return_node._pentry = heap_node._pentry;
         return_node._size = heap_node._size;
         return_node._useflag = heap_node._useflag;
@@ -107,8 +106,8 @@ void    end_heapcheck( char * location )
 
     heap_node = do_heapcheck( location );
 
-    if( heap_node._pentry != save_node._pentry ) \
-                                    puts( "NOTE: Heap changed from saved value");
+    if( heap_node._pentry != save_node._pentry )
+        puts( "NOTE: Heap changed from saved value");
     return;
 };
 

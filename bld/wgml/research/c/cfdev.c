@@ -1883,7 +1883,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the number of Devicefonts. */
 
-    fread( &out_device->devicefonts.font_count, \
+    fread( &out_device->devicefonts.font_count,
            sizeof( out_device->devicefonts.font_count ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         free( raw_functions );

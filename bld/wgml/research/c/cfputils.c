@@ -67,6 +67,8 @@
 #define BAD_MATCH  3
 #define GOOD_MATCH 4
 
+#define COP_EXT         ".cop"
+
 /*  Local variables. */
 
 /*  Load the usage text array. */
@@ -280,8 +282,7 @@ void check_directory( FILE * in_file, uint32_t count )
             for( ;; ) {
                 fread( &entry_type, sizeof( entry_type ), 1, in_file );
                 if( feof( in_file ) || ferror( in_file ) ) {
-                    puts( "File error or EOF: entry counts may not match " \
-                          "expected total");
+                    puts( "File error or EOF: entry counts may not match expected total");
                     break;
                 }
                 switch( entry_type) {
@@ -300,10 +301,10 @@ void check_directory( FILE * in_file, uint32_t count )
 
                     dev_file_count++;
                     retval = get_extended_entry( in_file, &current_entry );
-                    if( retval == FAILURE ) printf_s( "No data for device entry " \
-                                            "%i of type %i\n", i+1, entry_type );
-                    else printf_s( "Entry: %i Device Name: %s File Name: %s\n", \
-                        i+1, current_entry.defined_name, current_entry.member_name );
+                    if( retval == FAILURE )
+                        printf_s( "No data for device entry %i of type %i\n", i+1, entry_type );
+                    else
+                        printf_s( "Entry: %i Device Name: %s File Name: %s\n", i+1, current_entry.defined_name, current_entry.member_name );
                     retval = verify_device( file_path, current_entry.member_name );
                     if( retval == BAD_MATCH ) mismatch_count++;
                     else if( retval != GOOD_MATCH) bad_file_count++;
@@ -313,11 +314,10 @@ void check_directory( FILE * in_file, uint32_t count )
 
                     drv_file_count++;
                     retval = get_extended_entry( in_file, &current_entry );
-                    if( retval == FAILURE ) \
-                            printf_s( "No data for device entry %i of type %i\n", \
-                                                                i+1, entry_type );
-                    else printf_s( "Entry: %i Driver Name: %s File Name: %s\n", \
-                        i+1, current_entry.defined_name, current_entry.member_name );
+                    if( retval == FAILURE )
+                        printf_s( "No data for device entry %i of type %i\n", i+1, entry_type );
+                    else
+                        printf_s( "Entry: %i Driver Name: %s File Name: %s\n", i+1, current_entry.defined_name, current_entry.member_name );
                     retval = verify_driver( file_path, current_entry.member_name );
                     if( retval == BAD_MATCH ) mismatch_count++;
                     else if( retval != GOOD_MATCH) bad_file_count++;
@@ -327,11 +327,10 @@ void check_directory( FILE * in_file, uint32_t count )
 
                     fon_file_count++;
                     retval = get_extended_entry( in_file, &current_entry );
-                    if( retval == FAILURE ) \
-                            printf_s( "No data for device entry %i of type %i\n", \
-                                                                i+1, entry_type );
-                    else printf_s( "Entry: %i Font Name: %s File Name: %s\n", \
-                        i+1, current_entry.defined_name, current_entry.member_name );
+                    if( retval == FAILURE )
+                        printf_s( "No data for device entry %i of type %i\n", i+1, entry_type );
+                    else
+                        printf_s( "Entry: %i Font Name: %s File Name: %s\n", i+1, current_entry.defined_name, current_entry.member_name );
                     retval = verify_font( file_path, current_entry.member_name );
                     if( retval == BAD_MATCH ) mismatch_count++;
                     else if( retval != GOOD_MATCH) bad_file_count++;
@@ -340,13 +339,11 @@ void check_directory( FILE * in_file, uint32_t count )
                     /* Unknown ExtendedDirEntry type. */
 
                     retval = get_extended_entry( in_file, &current_entry );
-                    if( retval == FAILURE ) \
-                        printf_s( "No data for unknown entry %i of type %i\n", \
-                                                            i+1, entry_type);
-                    else printf_s( "Entry: %i Unknown Item Type: %i Name: %20s " \
-                                    "File Name: %s\n", i+1, entry_type, \
-                                    current_entry.defined_name, \
-                                    current_entry.member_name );
+                    if( retval == FAILURE )
+                        printf_s( "No data for unknown entry %i of type %i\n", i+1, entry_type);
+                    else
+                        printf_s( "Entry: %i Unknown Item Type: %i Name: %20s File Name: %s\n", i+1, entry_type, current_entry.defined_name, current_entry.member_name );
+                    break;
                 }
                 /* Ensure loop is exited for any ExtendedDirEntry. */
 
@@ -358,10 +355,10 @@ void check_directory( FILE * in_file, uint32_t count )
 
             dev_file_count++;
             retval = get_compact_entry( in_file, &current_entry );
-            if( retval == FAILURE ) \
+            if( retval == FAILURE )
                 printf_s( "No data for entry %i of type %i\n", i+1, entry_type);
-            else printf_s( "Entry: %i Device Name: %s File Name: %s\n", i+1, \
-                            current_entry.defined_name, current_entry.member_name );
+            else
+                printf_s( "Entry: %i Device Name: %s File Name: %s\n", i+1, current_entry.defined_name, current_entry.member_name );
             retval = verify_device( file_path, current_entry.member_name );
             if( retval == BAD_MATCH ) mismatch_count++;
             else if( retval != GOOD_MATCH) bad_file_count++;
@@ -371,10 +368,10 @@ void check_directory( FILE * in_file, uint32_t count )
 
             drv_file_count++;
             retval = get_compact_entry( in_file, &current_entry );
-            if( retval == FAILURE ) \
+            if( retval == FAILURE )
                 printf_s( "No data for entry %i of type %i\n", i+1, entry_type);
-            else printf_s( "Entry: %i Driver Name: %s File Name: %s\n", i+1, \
-                            current_entry.defined_name, current_entry.member_name );
+            else
+                printf_s( "Entry: %i Driver Name: %s File Name: %s\n", i+1, current_entry.defined_name, current_entry.member_name );
             retval = verify_driver( file_path, current_entry.member_name );
             if( retval == BAD_MATCH ) mismatch_count++;
             else if( retval != GOOD_MATCH) bad_file_count++;
@@ -384,10 +381,10 @@ void check_directory( FILE * in_file, uint32_t count )
 
             fon_file_count++;
             retval = get_compact_entry( in_file, &current_entry );
-            if( retval == FAILURE ) \
+            if( retval == FAILURE )
                 printf_s( "No data for entry %i of type %i\n", i+1, entry_type);
-            else printf_s( "Entry: %i Font Name: %s File Name: %s\n", i+1, \
-                            current_entry.defined_name, current_entry.member_name );
+            else
+                printf_s( "Entry: %i Font Name: %s File Name: %s\n", i+1, current_entry.defined_name, current_entry.member_name );
             retval = verify_font( file_path, current_entry.member_name );
             if( retval == BAD_MATCH ) mismatch_count++;
             else if( retval != GOOD_MATCH) bad_file_count++;
@@ -396,24 +393,19 @@ void check_directory( FILE * in_file, uint32_t count )
             /* Unknown CompactDirEntry type. */
 
             retval = get_compact_entry( in_file, &current_entry );
-            if( retval == FAILURE ) \
-                printf_s( "No data for unknown entry %i of type %i\n", i+1, \
-                                                                    entry_type);
-            else printf_s( "Entry: %i Unknown Item Type: %i Name: %20s " \
-                           "File Name: %s\n", i+1, entry_type, \
-                           current_entry.defined_name, current_entry.member_name );
+            if( retval == FAILURE )
+                printf_s( "No data for unknown entry %i of type %i\n", i+1, entry_type);
+            else
+                printf_s( "Entry: %i Unknown Item Type: %i Name: %20s File Name: %s\n", i+1, entry_type, current_entry.defined_name, current_entry.member_name );
       }
     }
 
     /* Report the number of each type of entry. */
 
     printf_s( "Entries requested: %i\n", count );
-    printf_s( "Entries found:     %i\n", dev_file_count + drv_file_count + \
-                                                                fon_file_count );
-    printf_s( "   of which %i could not be opened or, if opened, read\n", \
-                                                                bad_file_count++);
-    printf_s( "   and of which %i had a different designator (DEV, DRV, FON) " \
-              "than was expected\n", mismatch_count);
+    printf_s( "Entries found:     %i\n", dev_file_count + drv_file_count + fon_file_count );
+    printf_s( "   of which %i could not be opened or, if opened, read\n", bad_file_count++ );
+    printf_s( "   and of which %i had a different designator (DEV, DRV, FON) than was expected\n", mismatch_count);
     puts( "By type:");
     printf_s( "Device entries:    %i\n", dev_file_count );
     printf_s( "Driver entries:    %i\n", drv_file_count );
@@ -443,20 +435,19 @@ void display_device( cop_device * in_device )
     if( in_device->output_name == NULL ) puts( "Output File Name:" );
     else printf_s( "Output File Name:          %s\n", in_device->output_name );
     if( in_device->output_extension == NULL ) puts( "Output File Extension:" );
-    else printf_s( "Output File Extension:     %s\n", \
-                                                    in_device->output_extension );
+    else printf_s( "Output File Extension:     %s\n", in_device->output_extension );
     printf_s( "Page Width:                %i\n", in_device->page_width );
     printf_s( "Page Depth:                %i\n", in_device->page_depth );
-    printf_s( "Horizontal Base Units:     %i\n", \
-                                                in_device->horizontal_base_units );
+    printf_s( "Horizontal Base Units:     %i\n", in_device->horizontal_base_units );
     printf_s( "Vertical Base Units:       %i\n", in_device->vertical_base_units );
     printf_s( "Page Start X Value:        %i\n", in_device->x_start );
     printf_s( "Page Start Y Value:        %i\n", in_device->y_start );
     printf_s( "Page Offset X Value:       %i\n", in_device->x_offset );
     printf_s( "Page Offset Y Value:       %i\n", in_device->y_offset );
-    if( in_device->box.font_name == NULL ) printf_s( "Box Font Number:           " \
-                                           "%i\n", in_device->box.font );
-    else printf_s( "Box Font Name:             %s\n", in_device->box.font_name );
+    if( in_device->box.font_name == NULL )
+        printf_s( "Box Font Number:           %i\n", in_device->box.font );
+    else
+        printf_s( "Box Font Name:             %s\n", in_device->box.font_name );
     printf_s( "Horizontal line character: %c\n", in_device->box.horizontal_line );
     printf_s( "Vertical line character:   %c\n", in_device->box.vertical_line );
     printf_s( "Top left character:        %c\n", in_device->box.top_left );
@@ -496,30 +487,26 @@ void display_device( cop_device * in_device )
                 display_char( font_character, (char) i );
                 printf_s( "%c%c ", font_character[0], font_character[1] );
                 for( j = 0; j < in_device->outtrans->table[i]->count; j++ ) {
-                    display_char( translation, \
-                                    in_device->outtrans->table[i]->data[j] );
+                    display_char( translation, in_device->outtrans->table[i]->data[j] );
                     printf_s( "%c%c ", translation[0], translation[1] );
                 }
                 puts( "" );
             }
         }
     }
-    printf_s( "Number of Default Fonts: %i\n", \
-                                            in_device->defaultfonts.font_count );
+    printf_s( "Number of Default Fonts: %i\n", in_device->defaultfonts.font_count );
     for( i = 0; i < in_device->defaultfonts.font_count; i++ ) {
         printf_s( "  Default Font Number  %i:\n", i );
-        if( in_device->defaultfonts.fonts[i].font_name == NULL ) \
-                                                        puts( "    Font Name:");
-        else printf_s( "    Font Name:         %s\n", \
-                                    in_device->defaultfonts.fonts[i].font_name );
-        if( in_device->defaultfonts.fonts[i].font_style == NULL ) \
-                                                        puts( "    FontStyle:");
-        else printf_s( "    Font Style:        %s\n", \
-                                    in_device->defaultfonts.fonts[i].font_style );
-        printf_s( "    Font Height:       %i\n", \
-                                    in_device->defaultfonts.fonts[i].font_height );
-        printf_s( "    Font Space:        %i\n", \
-                                    in_device->defaultfonts.fonts[i].font_space );
+        if( in_device->defaultfonts.fonts[i].font_name == NULL )
+            puts( "    Font Name:");
+        else
+            printf_s( "    Font Name:         %s\n", in_device->defaultfonts.fonts[i].font_name );
+        if( in_device->defaultfonts.fonts[i].font_style == NULL )
+            puts( "    FontStyle:");
+        else
+            printf_s( "    Font Style:        %s\n", in_device->defaultfonts.fonts[i].font_style );
+        printf_s( "    Font Height:       %i\n", in_device->defaultfonts.fonts[i].font_height );
+        printf_s( "    Font Space:        %i\n", in_device->defaultfonts.fonts[i].font_space );
     }
     if( in_device->pauses.start_pause == NULL ) puts( "No START Pause" );
     else {
@@ -544,16 +531,14 @@ void display_device( cop_device * in_device )
     printf_s( "Number of Device Fonts: %i\n", in_device->devicefonts.font_count );
     for( i = 0; i < in_device->devicefonts.font_count; i++ ) {
         printf_s( "  Device Font Index:   %i:\n", i );
-        printf_s( "    Font Name:         %s\n", \
-                                    in_device->devicefonts.fonts[i].font_name );
-        if( in_device->devicefonts.fonts[i].font_switch == NULL ) \
-                                                        puts( "    Font Switch:");
-        else printf_s( "    Font Switch:       %s\n", \
-                                    in_device->devicefonts.fonts[i].font_switch );
-        printf_s( "    Resident Font:     %i\n", \
-                                        in_device->devicefonts.fonts[i].resident );
-        if( in_device->devicefonts.fonts[i].font_pause == NULL ) \
-                                                    puts( "    No Font Pause" );
+        printf_s( "    Font Name:         %s\n", in_device->devicefonts.fonts[i].font_name );
+        if( in_device->devicefonts.fonts[i].font_switch == NULL )
+            puts( "    Font Switch:");
+        else
+            printf_s( "    Font Switch:       %s\n", in_device->devicefonts.fonts[i].font_switch );
+        printf_s( "    Resident Font:     %i\n", in_device->devicefonts.fonts[i].resident );
+        if( in_device->devicefonts.fonts[i].font_pause == NULL )
+            puts( "    No Font Pause" );
         else {
             puts( "    Font Pause:" );
             interpret_function( in_device->devicefonts.fonts[i].font_pause->text );
@@ -629,8 +614,7 @@ int verify_device( char * in_path, char * in_name )
         return( READ_ERROR );
     }
     designator[3] = '\0';
-    printf_s( "%s has incorrect designator for a device file: %s\n", tgt_path, \
-                                                                    designator );
+    printf_s( "%s has incorrect designator for a device file: %s\n", tgt_path, designator );
     fclose( device_file );
     return( BAD_MATCH );
 }
@@ -658,18 +642,20 @@ void display_driver( cop_driver * in_driver )
     puts( "Start :INIT Block:" );
     if( in_driver->inits.start != NULL ) {
         for( i = 0; i < in_driver->inits.start->count; i++ ) {
-            if( in_driver->inits.start->codeblock[i].is_fontvalue ) \
-                                                    puts( ":FONTVALUE Block:");
-            else puts( ":VALUE Block:");
+            if( in_driver->inits.start->codeblock[i].is_fontvalue )
+                puts( ":FONTVALUE Block:");
+            else
+                puts( ":VALUE Block:");
             interpret_function( in_driver->inits.start->codeblock[i].text );
         }
     }
     puts( "Document :INIT Block:" );
     if( in_driver->inits.document != NULL ) {
         for( i = 0; i < in_driver->inits.document->count; i++ ) {
-            if( in_driver->inits.document->codeblock[i].is_fontvalue ) \
-                                                    puts( ":FONTVALUE Block:");
-            else puts( ":VALUE Block:");
+            if( in_driver->inits.document->codeblock[i].is_fontvalue )
+                puts( ":FONTVALUE Block:");
+            else
+                puts( ":VALUE Block:");
             interpret_function( in_driver->inits.document->codeblock[i].text );
         }
     }
@@ -685,8 +671,7 @@ void display_driver( cop_driver * in_driver )
     else {
         puts( ":NEWLINE Block(s):" );
         for( i = 0; i < in_driver->newlines.count; i++ ) {
-            printf_s( "  Advance: %i\n", \
-                                    in_driver->newlines.newlineblocks[i].advance );
+            printf_s( "  Advance: %i\n", in_driver->newlines.newlineblocks[i].advance );
             if( in_driver->newlines.newlineblocks[i].text != NULL ) {
                 interpret_function( in_driver->newlines.newlineblocks[i].text );
             }
@@ -700,22 +685,19 @@ void display_driver( cop_driver * in_driver )
     if( in_driver->htab.text != NULL ) {
         interpret_function( in_driver->htab.text );
     }
-    if( in_driver->fontswitches.fontswitchblocks == NULL ) \
-                                                    puts( ":FONTSWITCH Block:");
+    if( in_driver->fontswitches.fontswitchblocks == NULL )
+        puts( ":FONTSWITCH Block:");
     else {
         puts( ":FONTSWITCH Block(s):" );    
         for( i = 0; i < in_driver->fontswitches.count; i++ ) {
-            printf_s( "  Type: %s\n", \
-                                in_driver->fontswitches.fontswitchblocks[i].type );
+            printf_s( "  Type: %s\n", in_driver->fontswitches.fontswitchblocks[i].type );
             if( in_driver->fontswitches.fontswitchblocks[i].startvalue != NULL ) {
                 puts( "  :STARTVALUE Block:");
-                interpret_function( \
-                    in_driver->fontswitches.fontswitchblocks[i].startvalue->text );
+                interpret_function( in_driver->fontswitches.fontswitchblocks[i].startvalue->text );
             }
             if( in_driver->fontswitches.fontswitchblocks[i].endvalue != NULL ) {
                 puts( "  :ENDVALUE Block:");
-                interpret_function( \
-                    in_driver->fontswitches.fontswitchblocks[i].endvalue->text );
+                interpret_function( in_driver->fontswitches.fontswitchblocks[i].endvalue->text );
             }
         }
     }
@@ -723,68 +705,54 @@ void display_driver( cop_driver * in_driver )
     else {
         puts( ":FONTSTYLE Block(s):" );    
         for( i = 0; i < in_driver->fontstyles.count; i++ ) {
-            printf_s( "  Type: %s\n", \
-                                in_driver->fontstyles.fontstyleblocks[i].type );
+            printf_s( "  Type: %s\n", in_driver->fontstyles.fontstyleblocks[i].type );
             if( in_driver->fontstyles.fontstyleblocks[i].startvalue == NULL ) {
                 puts( "  No :STARTVALUE Block");
             } else {
                 puts( "  :STARTVALUE Block:");
-                interpret_function( \
-                    in_driver->fontstyles.fontstyleblocks[i].startvalue->text );
+                interpret_function( in_driver->fontstyles.fontstyleblocks[i].startvalue->text );
             }
             if( in_driver->fontstyles.fontstyleblocks[i].endvalue == NULL ) {
                 puts( "  No :ENDVALUE Block");
             } else {
                 puts( "  :ENDVALUE Block:");
-                interpret_function( \
-                        in_driver->fontstyles.fontstyleblocks[i].endvalue->text );
+                interpret_function( in_driver->fontstyles.fontstyleblocks[i].endvalue->text );
             }
             if(in_driver->fontstyles.fontstyleblocks[i].lineprocs == NULL ) {
                 puts( "  No :LINEPROC Blocks");
             } else {
                 puts( "  :LINEPROC Block(s):");
-                for( j = 0; j < in_driver->fontstyles.fontstyleblocks[i].passes; \
-                                                                            j++ ) { 
+                for( j = 0; j < in_driver->fontstyles.fontstyleblocks[i].passes; j++ ) { 
                     printf_s( "  Pass: %i\n", j+1 );
-                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].\
-                                                            startvalue == NULL ) {
+                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].startvalue == NULL ) {
                         puts( "  No :STARTVALUE Block");
                     } else {
                         puts( "  :STARTVALUE Block:");
-                        interpret_function( in_driver->fontstyles.\
-                                fontstyleblocks[i].lineprocs[j].startvalue->text );
+                        interpret_function( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].startvalue->text );
                     }
-                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].\
-                                                            firstword == NULL ) {
+                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].firstword == NULL ) {
                         puts( "  No :FIRSTWORD Block");
                     } else {
                         puts( "  :FIRSTWORD Block:");
-                        interpret_function( in_driver->fontstyles.\
-                                fontstyleblocks[i].lineprocs[j].firstword->text );
+                        interpret_function( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].firstword->text );
                     }
-                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].\
-                                                            startword == NULL ) {
+                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].startword == NULL ) {
                         puts( "  No :STARTWORD Block");
                     } else {
                         puts( "  :STARTWORD Block");
-                        interpret_function( in_driver->fontstyles.\
-                                fontstyleblocks[i].lineprocs[j].startword->text );
+                        interpret_function( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].startword->text );
                     }
-                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].\
-                                                                endword == NULL ) {
+                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].endword == NULL ) {
                         puts( "  No :ENDWORD Block");
                     } else {
                         puts( "  :ENDWORD Block:");
-                        interpret_function( in_driver->fontstyles.\
-                                fontstyleblocks[i].lineprocs[j].endword->text );
+                        interpret_function( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].endword->text );
                     }
-                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].\
-                                                            endvalue == NULL ) {
+                    if( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].endvalue == NULL ) {
                         puts( "  No :ENDVALUE Block");
                     } else {
                         puts( "  :ENDVALUE Block:");
-                        interpret_function( in_driver->fontstyles.\
-                                fontstyleblocks[i].lineprocs[j].endvalue->text );
+                        interpret_function( in_driver->fontstyles.fontstyleblocks[i].lineprocs[j].endvalue->text );
                     }
                 }
             }
@@ -927,8 +895,7 @@ void display_font( cop_font * in_font )
             if( in_font->intrans->table[i] != i ) {
                 display_char( font_character, (char) i );
                 display_char( translation, in_font->intrans->table[i] );
-                printf_s( "%c%c %c%c\n", font_character[0], font_character[1], \
-                                         translation[0], translation[1] );
+                printf_s( "%c%c %c%c\n", font_character[0], font_character[1], translation[0], translation[1] );
             }
         }
     }
@@ -941,8 +908,7 @@ void display_font( cop_font * in_font )
                 display_char( font_character, (char) i );
                 printf_s( "%c%c ", font_character[0], font_character[1] );
                 for( j = 0; j < in_font->outtrans->table[i]->count; j++ ) {
-                    display_char( translation, \
-                                        in_font->outtrans->table[i]->data[j] );
+                    display_char( translation, in_font->outtrans->table[i]->data[j] );
                     printf_s( "%c%c ", translation[0], translation[1] );
                 }
                 puts( "" );
@@ -956,8 +922,7 @@ void display_font( cop_font * in_font )
         for( i = 0; i < 0x100; i++ ) {
             if( in_font->width->table[i] != in_font->char_width ) {
                 display_char( font_character, (char) i );
-                printf_s( "%c%c %lu\n", font_character[0], \
-                                    font_character[1], in_font->width->table[i] );
+                printf_s( "%c%c %lu\n", font_character[0], font_character[1], in_font->width->table[i] );
             }
         }
     }
@@ -1031,8 +996,7 @@ int verify_font( char * in_path, char * in_name )
         return( READ_ERROR );
     }
     designator[3] = '\0';
-    printf_s( "%s has incorrect designator for a font file: %s\n", tgt_path, \
-                                                                    designator );
+    printf_s( "%s has incorrect designator for a font file: %s\n", tgt_path, designator );
     fclose( font_file );
     return( BAD_MATCH );
 }
