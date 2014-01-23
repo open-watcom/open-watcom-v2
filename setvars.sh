@@ -14,9 +14,6 @@ export OWUSENATIVETOOLS=0
 # Subdirectory to be used for building OW build tools
 export OWOBJDIR=binbuild
 
-# Set this variable to 1 to get debug build
-export OWDEBUGBUILD=0
-
 # Set this variable to 1 to get default windowing support in clib
 export OWDEFAULT_WINDOWING=0
 
