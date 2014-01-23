@@ -469,7 +469,7 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
                     We want a '$' symbol to have the value at it's
                     point of definition, not point of expansion.
                 */
-                sprintf( buff, ".$%lx/%lx", (unsigned long)GetCurrSeg(), (unsigned long)GetCurrAddr() );
+                sprintf( buff, ".$%p/%lx", GetCurrSeg(), (unsigned long)GetCurrAddr() );
                 AsmBuffer[start+i]->string_ptr = buff;
                 if( AsmGetSymbol( buff ) == NULL ) {
                     new_constant = TRUE;
