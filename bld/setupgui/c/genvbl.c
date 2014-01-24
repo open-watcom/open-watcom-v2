@@ -298,27 +298,6 @@ extern vhandle SetVariableByHandle( vhandle var_handle, const char *strval )
     return( DoSetVariable( var_handle, strval, NULL ) );
 }
 
-#if defined( __NT__ )
-typedef BOOL (WINAPI *ISWOW64PROCESS_FN)( HANDLE, PBOOL );
-
-static BOOL isWOW64( void )
-{
-    ISWOW64PROCESS_FN   fn;
-    BOOL                retval;
-    HANDLE              h;
-
-    retval = FALSE;
-    h = GetModuleHandle( "kernel32" );
-    fn = (ISWOW64PROCESS_FN)GetProcAddress( h, "IsWow64Process" );
-    if( fn != NULL ) {
-        if( !fn( GetCurrentProcess(), &retval ) ) {
-            retval = FALSE;
-        }
-    }
-    return( retval );
-}
-#endif
-
 extern void SetDefaultGlobalVarList( void )
 /*****************************************/
 {
@@ -362,7 +341,7 @@ extern void SetDefaultGlobalVarList( void )
 #elif defined( __NT__ )
     {
         DWORD   version = GetVersion();
-        if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && isWOW64() ) {
+        if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && IsWOW64() ) {
             SetVariableByName( "IsWin64", "1" );
             SetVariableByName( "IsWin32", "0" );
             SetVariableByName( "IsWin32s", "0" );

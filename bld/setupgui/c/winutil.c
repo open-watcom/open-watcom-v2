@@ -520,3 +520,23 @@ void SetDialogFont()
 #endif
 }
 
+#if defined( __NT__ ) && !defined( _M_X64 )
+typedef BOOL (WINAPI *ISWOW64PROCESS_FN)( HANDLE, PBOOL );
+
+bool IsWOW64( void )
+{
+    ISWOW64PROCESS_FN   fn;
+    BOOL                retval;
+    HANDLE              h;
+
+    retval = FALSE;
+    h = GetModuleHandle( "kernel32" );
+    fn = (ISWOW64PROCESS_FN)GetProcAddress( h, "IsWow64Process" );
+    if( fn != NULL ) {
+        if( !fn( GetCurrentProcess(), &retval ) ) {
+            retval = FALSE;
+        }
+    }
+    return( retval );
+}
+#endif

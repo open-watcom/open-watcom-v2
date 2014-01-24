@@ -182,7 +182,7 @@ bool CheckForSetup32( int argc, char **argv )
 }
 #endif
 
-#if defined( __NT__ )
+#if defined( __NT__ ) && !defined( _M_X64 )
 static bool CheckWin95Uninstall( int argc, char **argv )
 {
 // The Windows 95 version of setup gets installed as the
@@ -215,6 +215,16 @@ static bool CheckWin95Uninstall( int argc, char **argv )
             WinExec( buff, SW_SHOW );
             return( TRUE );
         }
+    }
+    return( FALSE );
+}
+
+static bool CheckWow64( void )
+{
+    DWORD   version = GetVersion();
+    if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && IsWOW64() ) {
+        MsgBox( NULL, "IDS_USEINST64BIT", GUI_OK );
+        return( TRUE );
     }
     return( FALSE );
 }
@@ -395,8 +405,9 @@ extern void GUImain( void )
 
     GUIMemOpen();
     GUIGetArgs( &argv, &argc );
-#if defined( __NT__ )
+#if defined( __NT__ ) && !defined( _M_X64 )
     if( CheckWin95Uninstall( argc, argv ) ) return;
+    if( CheckWow64() ) return;
 #endif
 #ifdef __WINDOWS__
     if( CheckForSetup32( argc, argv ) ) return;

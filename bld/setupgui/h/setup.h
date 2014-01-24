@@ -125,6 +125,9 @@ extern bool             GetRegString( HKEY, char *, char *, char *, DWORD );
 extern bool             ModifyRegAssoc( bool );
 extern bool             AddToUninstallList( bool );
 #endif
+#if defined( __NT__ ) && !defined( _M_X64 )
+extern bool             IsWOW64( void );
+#endif
 extern long             GetODBCUsage( void );
 extern void             SetODBCUsage( long );
 extern void             WriteProfileStrings( bool );

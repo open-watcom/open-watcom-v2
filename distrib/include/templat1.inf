@@ -1,24 +1,24 @@
 name=InsertDisk
 static_text=\
-        //1"@ needs the following diskette:"\
-        //2"@ は以下のディスケットを必要とします。"\
-        //0
+    //1"@ needs the following diskette:"\
+    //2"@ は以下のディスケットを必要とします。"\
+    //0
 dynamic_text=DiskDesc,""
 static_text=
 static_text=\
-        //1"Please insert or specify new path"\
-        //2"ディスクを入れるか新しいパスを指定してください"\
-        //0
+    //1"Please insert or specify new path"\
+    //2"ディスクを入れるか新しいパスを指定してください"\
+    //0
 edit_control=SrcDir,,\
-        //1"Source Directory:"\
-        //2"コピー元ディレクトリ:"\
-        //0
+    //1"Source Directory:"\
+    //2"コピー元ディレクトリ:"\
+    //0
 static_text=
 push_button=+"&OK"
 push_button=^\
-        //1"&Cancel"\
-        //2"キャンセル(&C)"\
-        //0
+    //1"&Cancel"\
+    //2"キャンセル(&C)"\
+    //0
 
 [Dialog]
 name=Modify
@@ -26,70 +26,70 @@ static_text=
 dynamic_text=AutoText,""
 static_text=
 static_text=\
-        //1"@ can:"\
-        //2"@ は:"\
-        //0
+    //1"@ can:"\
+    //2"@ は:"\
+    //0
 radio_button=ModNow,1,\
-        //1"&Make all the modifications for you"\
-        //2"すべての修正を行います (&M)"\
-        //0
+    //1"&Make all the modifications for you"\
+    //2"すべての修正を行います (&M)"\
+    //0
 radio_button=ModLater,0,\
-        //1"&Let you make the modifications later"\
-        //2"後でユーザー自身で修正します (&L)"\
-        //0
+    //1"&Let you make the modifications later"\
+    //2"後でユーザー自身で修正します (&L)"\
+    //0
 static_text=
 push_button=+"&OK"
 push_button=^\
-        //1"&Cancel"\
-        //2"キャンセル(&C)"\
-        //0
+    //1"&Cancel"\
+    //2"キャンセル(&C)"\
+    //0
 
 [Dialog]
 name=ModifyEnvironment
 static_text=
 static_text=\
-	//1"@ needs to modify environment variables in the registry."\
-	//2"@ はレジストリに環境変数を設定する必要があります。"\
-	//0
+    //1"@ needs to modify environment variables in the registry."\
+    //2"@ はレジストリに環境変数を設定する必要があります。"\
+    //0
 static_text=
 static_text=\
-	//1="@ can:"\
-	//2="@ は:"\
-	//0
+    //1="@ can:"\
+    //2="@ は:"\
+    //0
 radio_button=ModUser,0,\
-	//1="Modify current &user environment variables"\
-	//2="カレント・ユーザ環境変数として更新(&U)"\
-	//0
+    //1="Modify current &user environment variables"\
+    //2="カレント・ユーザ環境変数として更新(&U)"\
+    //0
 radio_button=ModMachine,1,\
-	//1="Modify local &machine environment variables"\
-	//2="ローカル・マシン環境変数として更新(&M)"\
-	//0
+    //1="Modify local &machine environment variables"\
+    //2="ローカル・マシン環境変数として更新(&M)"\
+    //0
 radio_button=ModLater,0,\
-	//1="&Let you make the modifications later"\
-        //2"後でユーザー自身で修正します (&L)"\
-	//0
+    //1="&Let you make the modifications later"\
+    //2"後でユーザー自身で修正します (&L)"\
+    //0
 static_text=
 push_button=+"&OK"
 push_button=?\
-        //1"&Help"\
-        //2"ヘルプ(&H)"\
-        //0
+    //1"&Help"\
+    //2"ヘルプ(&H)"\
+    //0
 push_button=^\
-        //1"&Cancel"\
-        //2"キャンセル(&C)"\
-        //0
+    //1"&Cancel"\
+    //2"キャンセル(&C)"\
+    //0
 
 [Dialog]
 name=Help_ModifyEnvironment
 static_text=
 static_text=\
-	//1"Components of this application can be run as an NT service. \
-	    If you wish to run this application as a service, or you are not \
-	    sure, choose the 'modify local machine' option."\
-	//2"このアプリケーションのコンポーネントは NT サービスとして動作することがで\
-	    きます。サービスとしてこのアプリケーションを動作させるか、または、そうで\
-	    なければ 'ローカル・マシンの更新' オプションを選択して下さい。"\
-	//0
+    //1"Components of this application can be run as an NT service. \
+        If you wish to run this application as a service, or you are not \
+        sure, choose the 'modify local machine' option."\
+    //2"このアプリケーションのコンポーネントは NT サービスとして動作することがで\
+        きます。サービスとしてこのアプリケーションを動作させるか、または、そうで\
+        なければ 'ローカル・マシンの更新' オプションを選択して下さい。"\
+    //0
 static_text=
 push_button=+"&OK"
 
@@ -97,13 +97,13 @@ push_button=+"&OK"
 name=ModifyAssociations
 static_text=
 static_text=\
-        //1"@ can modify associations so that files will automatically"\
-        //2"@ can modify associations so that files will automatically"\
-        //0
+    //1"@ can modify associations so that files will automatically"\
+    //2"@ can modify associations so that files will automatically"\
+    //0
 static_text=\
-        //1"open with the Open Watcom tools."\
-        //2"open with the Open Watcom tools."\
-        //0
+    //1"open with the Open Watcom tools."\
+    //2"open with the Open Watcom tools."\
+    //0
 radio_button=ModEnv,1,="&Modify associations"
 radio_button=NoModEnv,0,="&Don't modify associations"
 static_text=
@@ -124,926 +124,930 @@ push_button=+"&OK"
 [Dialog]
 name=DLLInstall
 static_text=\
-        //1"@ attempted to install the file:"\
-        //2"@ は以下のファイルをインストールしようとしました。"\
-        //0
+    //1"@ attempted to install the file:"\
+    //2"@ は以下のファイルをインストールしようとしました。"\
+    //0
 dynamic_text=FileDesc,\
-        //1"    "\
-        //2"    "\
-        //0
+    //1"    "\
+    //2"    "\
+    //0
 static_text=\
-        //1"in this directory:"\
-        //2"ディレクトリ:"\
-        //0
+    //1"in this directory:"\
+    //2"ディレクトリ:"\
+    //0
 dynamic_text=DLLDir,\
-        //1"    "\
-        //2"    "\
-        //0
+    //1"    "\
+    //2"    "\
+    //0
 static_text=\
-        //1"but, it currently exists in"\
-        //2"同じファイルが以下のディレクトリにあります"\
-        //0
+    //1"but, it currently exists in"\
+    //2"同じファイルが以下のディレクトリにあります"\
+    //0
 dynamic_text=OtherDLLDir,\
-        //1"    "\
-        //2"    "\
-        //0
+    //1"    "\
+    //2"    "\
+    //0
 static_text=
 radio_button=DLL_Delete_Old,,\
-        //1"Install the new file and &delete the existing file"\
-        //2"新しいファイルをインストールし、既存ファイルを削除します (&D)"\
-        //0
+    //1"Install the new file and &delete the existing file"\
+    //2"新しいファイルをインストールし、既存ファイルを削除します (&D)"\
+    //0
 radio_button=DLL_Keep_Both,,\
-        //1"Install the new file and &keep the existing file"\
-        //2"新しいファイルをインストールし、既存ファイルを残します (&K)"\
-        //0
+    //1"Install the new file and &keep the existing file"\
+    //2"新しいファイルをインストールし、既存ファイルを残します (&K)"\
+    //0
 radio_button=DLL_Replace_Old,,\
-        //1"&Replace the existing file with the new file"\
-        //2"既存ファイルを新しいファイルで置き換えます (&R)"\
-        //0
+    //1"&Replace the existing file with the new file"\
+    //2"既存ファイルを新しいファイルで置き換えます (&R)"\
+    //0
 radio_button=DLL_Dont_Install,,\
-        //1"Do &not install the new file"\
-        //2"新しいファイルをインストールしません (&N)"\
-        //0
+    //1"Do &not install the new file"\
+    //2"新しいファイルをインストールしません (&N)"\
+    //0
 static_text=
 check_box=DLL_Skip_Dialog,0,\
-        //1"&Use the current choice for all subsequent DLLs"\
-        //2"以降の全てのDLLに対して、今回と同じ選択をします (&U)"\
-        //0
+    //1"&Use the current choice for all subsequent DLLs"\
+    //2"以降の全てのDLLに対して、今回と同じ選択をします (&U)"\
+    //0
 static_text=
 push_button=+"&OK"
 push_button=^\
-        //1"&Cancel"\
-        //2"キャンセル(&C)"\
-        //0
+    //1"&Cancel"\
+    //2"キャンセル(&C)"\
+    //0
 
 [Dialog]
 name=ReadOnlyFile
 static_text=\
-        //1"@ attempted to install the file:"\
-        //2"@ は以下のファイルをインストールしようとしました。"\
-        //0
+    //1"@ attempted to install the file:"\
+    //2"@ は以下のファイルをインストールしようとしました。"\
+    //0
 dynamic_text=FileDesc,\
-        //1"    "\
-        //2"    "\
-        //0
+    //1"    "\
+    //2"    "\
+    //0
 static_text=\
-        //1"but found it marked read-only"\
-        //2"しかし、そのファイルは書き込み禁止になっています"\
-        //0
+    //1"but found it marked read-only"\
+    //2"しかし、そのファイルは書き込み禁止になっています"\
+    //0
 static_text=
 radio_button=RO_Replace_Old,,\
-        //1"&Install the file anyway"\
-        //2"このファイルをインストールします (&I)"\
-        //0
+    //1"&Install the file anyway"\
+    //2"このファイルをインストールします (&I)"\
+    //0
 radio_button=RO_Dont_Install,,\
-        //1"&Do not install this file"\
-        //2"このファイルをインストールしません (&D)"\
-        //0
+    //1"&Do not install this file"\
+    //2"このファイルをインストールしません (&D)"\
+    //0
 static_text=
 check_box=RO_Skip_Dialog,0,\
-        //1"&Use the current choice for all read-only files"\
-        //2"全ての書き込み禁しファイルに対して、今回と同じ選択をします (&U)"\
-        //0
+    //1"&Use the current choice for all read-only files"\
+    //2"全ての書き込み禁しファイルに対して、今回と同じ選択をします (&U)"\
+    //0
 static_text=
 push_button=+"&OK"
 push_button=^\
-        //1"&Cancel"\
-        //2"キャンセル(&C)"\
-        //0
+    //1"&Cancel"\
+    //2"キャンセル(&C)"\
+    //0
 
 [Dialog]
 name=DeleteReadOnlyFile
 static_text=\
-        //1"@ attempted to remove the file:"\
-        //2"@ は、以下のファイルを削除します。"\
-        //0
+    //1"@ attempted to remove the file:"\
+    //2"@ は、以下のファイルを削除します。"\
+    //0
 dynamic_text=FileDesc,\
-        //1"    "\
-        //2"    "\
-        //0
+    //1"    "\
+    //2"    "\
+    //0
 static_text=\
-        //1"but found it marked read-only"\
-        //2"しかし、そのファイルは書き込み禁止になっています"\
-        //0
+    //1"but found it marked read-only"\
+    //2"しかし、そのファイルは書き込み禁止になっています"\
+    //0
 static_text=
 radio_button=RO_Remove_Old,,\
-        //1"&Remove the file anyway"\
-        //2"強制的にファイルを削除(&R)"\
-        //0
+    //1"&Remove the file anyway"\
+    //2"強制的にファイルを削除(&R)"\
+    //0
 radio_button=RO_Dont_Remove,,\
-        //1"&Do not remove this file"\
-        //2"このファイルを削除しない(&D)"\
-        //0
+    //1"&Do not remove this file"\
+    //2"このファイルを削除しない(&D)"\
+    //0
 static_text=
 check_box=RO_Skip_Remove,0,\
-        //1"&Use the current choice for all read-only files"\
-        //2"全ての書き込み禁止ファイルに対して、今回と同じ選択をします (&U)"\
-        //0
+    //1"&Use the current choice for all read-only files"\
+    //2"全ての書き込み禁止ファイルに対して、今回と同じ選択をします (&U)"\
+    //0
 static_text=
 push_button=+"&OK"
 push_button=^\
-        //1"&Cancel"\
-        //2"キャンセル(&C)"\
-        //0
+    //1"&Cancel"\
+    //2"キャンセル(&C)"\
+    //0
 
 [Dialog]
 name=CantOpen
 static_text=
 dynamic_text=OpenError,\
-        //1"                                                                 "\
-        //2"                                                                 "\
-        //0
+    //1"                                                                 "\
+    //2"                                                                 "\
+    //0
 static_text=
 static_text=\
-        //1"@ will now stop."\
-        //2"@ は今停止します。"\
-        //0
+    //1"@ will now stop."\
+    //2"@ は今停止します。"\
+    //0
 push_button=*"&OK"
 
 
 [Dialog]
 name=NewerFile
 static_text=\
-        //1"@ attempted to install the file:"\
-        //2"@ は以下のファイルをインストールしようとしました。"\
-        //0
+    //1"@ attempted to install the file:"\
+    //2"@ は以下のファイルをインストールしようとしました。"\
+    //0
 dynamic_text=FileDesc,\
-        //1"    "\
-        //2"    "\
-        //0
+    //1"    "\
+    //2"    "\
+    //0
 static_text=\
-        //1"but found a newer version already existed"\
-        //2"しかし、新しいバージョンが既にあることがわかりました"\
-        //0
+    //1"but found a newer version already existed"\
+    //2"しかし、新しいバージョンが既にあることがわかりました"\
+    //0
 static_text=
 radio_button=Newer_Replace_Old,,\
-        //1"&Install the file anyway"\
-        //2"このファイルをインストールする (&I)"\
-        //0
+    //1"&Install the file anyway"\
+    //2"このファイルをインストールする (&I)"\
+    //0
 radio_button=Newer_Dont_Install,,\
-        //1"&Do not install this file"\
-        //2"このファイルをインストールしない (&D)"\
-        //0
+    //1"&Do not install this file"\
+    //2"このファイルをインストールしない (&D)"\
+    //0
 static_text=
 check_box=Newer_Skip_Dialog,0,\
-        //1"&Use the current choice for all newer files"\
-        //2"以降のファイルに対して、同様な選択をします (&U)"\
-        //0
+    //1"&Use the current choice for all newer files"\
+    //2"以降のファイルに対して、同様な選択をします (&U)"\
+    //0
 static_text=
 push_button=+"&OK"
 push_button=^\
-        //1"&Cancel"\
-        //2"キャンセル(&C)"\
-        //0
+    //1"&Cancel"\
+    //2"キャンセル(&C)"\
+    //0
 
 [Dialog]
 name=LocCfg
 static_text=\
-        //1"@ Can not find the following file:"\
-        //2"@は、以下のファイルが見つけられません。"
-        //0
+    //1"@ Can not find the following file:"\
+    //2"@は、以下のファイルが見つけられません。"
+    //0
 dynamic_text=FileToFind,""
 static_text=
 check_box=CfgFileCreate,1,\
-        //1"&Create the file"\
-        //2"&ファイルを作成します"\
-        //0
+    //1"&Create the file"\
+    //2"&ファイルを作成します"\
+    //0
 static_text=
 static_text=\
-        //1"Otherwise, specify a new drive:"\
-        //2"もしくは新しいドライブ名を指定:"\
-        //0
+    //1"Otherwise, specify a new drive:"\
+    //2"もしくは新しいドライブ名を指定:"\
+    //0
 edit_control=CfgDir,,\
-	//1"Drive Letter:"\
-	//2"ドライブ名:"
-        //0
+    //1"Drive Letter:"\
+    //2"ドライブ名:"
+    //0
 static_text=
 push_button=+"&OK"
 push_button=^\
-        //1"&Cancel"\
-        //2"キャンセル(&C)"\
-        //0
+    //1"&Cancel"\
+    //2"キャンセル(&C)"\
+    //0
 
 [ErrorMessage]
 IDS_ERROR=\
-        //1"%s"\
-        //2"%s"\
-        //0
+    //1"%s"\
+    //2"%s"\
+    //0
 IDS_NODISKFOROPTION=\
-        //1"This diskette set does not contain the requried option."\
-        //2"このディスケット・セットには、必要なオプションが入っていません。"\
-        //0
+    //1"This diskette set does not contain the requried option."\
+    //2"このディスケット・セットには、必要なオプションが入っていません。"\
+    //0
 IDS_BADCRC=\
-        //1"Internal error unpacking: '%s' - bad CRC."\
-        //2"内部エラー アンパッキング: '%s' - CRCの不一致"\
-        //0
+    //1"Internal error unpacking: '%s' - bad CRC."\
+    //2"内部エラー アンパッキング: '%s' - CRCの不一致"\
+    //0
 IDS_NOMEMORY=\
-        //1"Insufficient memory to run @.&\n Close an application and try again."\
-        //2"メモリ不足が発生しました @.&\n アプリケーションを終了して、再度、起動してください。"\
-        //0
+    //1"Insufficient memory to run @.&\n Close an application and try again."\
+    //2"メモリ不足が発生しました @.&\n アプリケーションを終了して、再度、起動してください。"\
+    //0
 IDS_NOSETUPINFOFILE=\
-        //1"The %s file cannot be found.\nPlease verify the distribution diskette."\
-        //2"ファイル %s が見つかりません。\nディスケットを確認してください。"\
-        //0
+    //1"The %s file cannot be found.\nPlease verify the distribution diskette."\
+    //2"ファイル %s が見つかりません。\nディスケットを確認してください。"\
+    //0
 ID_NOTEMPSPACE=\
-	//1"A drive could not be found with at least %ldK free to write a temporary file needed by @."\
-	//2"@ が必要としているテンポラリ・ファイルを書き出すための最低 %ldK のフリースペースがドライブにありません。"\
-	//0
+    //1"A drive could not be found with at least %ldK free to write a temporary file needed by @."\
+    //2"@ が必要としているテンポラリ・ファイルを書き出すための最低 %ldK のフリースペースがドライブにありません。"\
+    //0
 IDS_NODISKSPACE=\
-        //1"Drive %c: contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
-        //2"ドライブ %c: には %ldK のフリーなディスクスペースがあります。\n@ は最低 %ldK 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
-        //0
+    //1"Drive %c: contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
+    //2"ドライブ %c: には %ldK のフリーなディスクスペースがあります。\n@ は最低 %ldK 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
+    //0
 IDS_NODISKSPACE_UNC=\
-        //1"'%s' contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
-        //2"'%s' には  %ldK のフリーなディスクスペースがあります。\n@ は最低 %ldK 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
-        //0
+    //1"'%s' contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
+    //2"'%s' には  %ldK のフリーなディスクスペースがあります。\n@ は最低 %ldK 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
+    //0
 IDS_UNCPATH_NOTEXIST=\
-	//1"Error: Drive '%s' does not exist.\nTry another drive."\
-	//2"エラー: ドライブ '%s' がありません。\n他のドライブを指定してください。"\
-	//0
+    //1"Error: Drive '%s' does not exist.\nTry another drive."\
+    //2"エラー: ドライブ '%s' がありません。\n他のドライブを指定してください。"\
+    //0
 IDS_UNCPATH_NOTWRITABLE=\
-	//1"Error: Drive '%s' is not writable.\nTry another drive."\
-	//2"エラー: ドライブ '%s' には書き込めません。\n他のドライブを指定してください。"\
-	//0
+    //1"Error: Drive '%s' is not writable.\nTry another drive."\
+    //2"エラー: ドライブ '%s' には書き込めません。\n他のドライブを指定してください。"\
+    //0
 IDS_ASSUME_ENOUGHSPACE=\
-	//1"Cannot determine how much free disk space is on '%s'.\nAssume there is enough space and continue?"\
-	//2"'%s' にフリーなディスクスペースがどれぐらいあるかわかりません。\n十分なスペースがあるものとして続けますか?"\
-	//0
+    //1"Cannot determine how much free disk space is on '%s'.\nAssume there is enough space and continue?"\
+    //2"'%s' にフリーなディスクスペースがどれぐらいあるかわかりません。\n十分なスペースがあるものとして続けますか?"\
+    //0
 IDS_CANTMAKEDIR=\
-        //1"The %s directory cannot be created.&\nEnter another directory or try another drive."\
-        //2"ディレクトリ %s を作成することができません。&\n他のディレクトリまたはドライブを指定してください。"\
-        //0
+    //1"The %s directory cannot be created.&\nEnter another directory or try another drive."\
+    //2"ディレクトリ %s を作成することができません。&\n他のディレクトリまたはドライブを指定してください。"\
+    //0
 IDS_QUERYABORT=\
-        //1"@ has not completed installing the software.\nAre you sure you want to stop installation?"\
-        //2"@ はソフトウェアのインストールを完了していません。\n本当にインストールを中止しますか?"\
-        //0
+    //1"@ has not completed installing the software.\nAre you sure you want to stop installation?"\
+    //2"@ はソフトウェアのインストールを完了していません。\n本当にインストールを中止しますか?"\
+    //0
 IDS_SETUPNOGOOD=\
-        //1"The software has not been successfully installed!\nYou must run @ again before using the software."\
-        //2"ソフトウェアのインストールは成功しませんでした!\nソフトウェアを使用する前に、再度 @ を実行しなければなりません。"\
-        //0
+    //1"The software has not been successfully installed!\nYou must run @ again before using the software."\
+    //2"ソフトウェアのインストールは成功しませんでした!\nソフトウェアを使用する前に、再度 @ を実行しなければなりません。"\
+    //0
 IDS_UNSETUPNOGOOD=\
-        //1"The software has not been successfully uninstalled!\nYou must run @ again to completely remove the software."\
-        //2"ソフトウェアは、正しく削除されていません。\nもう一度 @ を実行してソフトウェアを完全に削除してください。"\
-        //0
+    //1"The software has not been successfully uninstalled!\nYou must run @ again to completely remove the software."\
+    //2"ソフトウェアは、正しく削除されていません。\nもう一度 @ を実行してソフトウェアを完全に削除してください。"\
+    //0
 IDS_PMADDNOGOOD=\
-        //1"@ could not add the application(s) to the Program Manager.&\nDo you wish to ignore this problem and continue?"\
-        //2"@ はプログラム・マネージャへアプリケーションを追加できません。&\nこの問題を無視して続けますか?"\
-        //0
+    //1"@ could not add the application(s) to the Program Manager.&\nDo you wish to ignore this problem and continue?"\
+    //2"@ はプログラム・マネージャへアプリケーションを追加できません。&\nこの問題を無視して続けますか?"\
+    //0
 IDS_PMREMNOGOOD=\
-        //1"@ could not remove application(s) from the Program Manager.&\nDo you wish to ignore this problem and continue?"\
-        //2"@ はプログラム・マネージャからアプリケーションを削除できません。&\nこの問題を無視して続けますか?"\
-        //0
+    //1"@ could not remove application(s) from the Program Manager.&\nDo you wish to ignore this problem and continue?"\
+    //2"@ はプログラム・マネージャからアプリケーションを削除できません。&\nこの問題を無視して続けますか?"\
+    //0
 IDS_UNSETUPCOMPLETE=\
-        //1"@ has completed successfully."\
-        //2"@ はソフトウェアのインストールを完了しました。"\
-        //0
+    //1"@ has completed successfully."\
+    //2"@ はソフトウェアのインストールを完了しました。"\
+    //0
 IDS_COMPLETE=\
-        //1"@ has completed successfully."\
-        //2"@ はソフトウェアのインストールを完了しました。"\
-        //0
+    //1"@ has completed successfully."\
+    //2"@ はソフトウェアのインストールを完了しました。"\
+    //0
 IDS_NOMEMORYCOPY=\
-        //1"Insufficient memory to copy file.&\nTry again or cancel @."\
-        //2"メモリ不足でコピーが失敗しました。&\n再度、実行するかキャンセルしてください @"\
-        //0
+    //1"Insufficient memory to copy file.&\nTry again or cancel @."\
+    //2"メモリ不足でコピーが失敗しました。&\n再度、実行するかキャンセルしてください @"\
+    //0
 IDS_CANTOPENDST=\
-        //1"Cannot create destination file:\n %s.&\nTry again or cancel @."\
-        //2"次のファイルが作成できません。:\n %s.&\n再度、実行するかキャンセルしてください @"\
-        //0
+    //1"Cannot create destination file:\n %s.&\nTry again or cancel @."\
+    //2"次のファイルが作成できません。:\n %s.&\n再度、実行するかキャンセルしてください @"\
+    //0
 IDS_CANTOPENDST_NONAME=\
-        //1"Cannot create destination file.&\nTry again or cancel @."\
-        //2"送信先ファイルが作成できません。&\n再度、実行するかキャンセルしてください @"\
-        //0
+    //1"Cannot create destination file.&\nTry again or cancel @."\
+    //2"送信先ファイルが作成できません。&\n再度、実行するかキャンセルしてください @"\
+    //0
 IDS_CANTFINDAUTOEXEC=\
-        //1"@ cannot find the original AUTOEXEC.BAT file"\
-        //2"@ は元の AUTOEXEC.BAT を見つけられません"\
-        //0
+    //1"@ cannot find the original AUTOEXEC.BAT file"\
+    //2"@ は元の AUTOEXEC.BAT を見つけられません"\
+    //0
 IDS_CANTFINDCONFIGSYS=\
-        //1"@ cannot find the original CONFIG.SYS file"\
-        //2"@ は元の CONFIG.SYS を見つけられません"\
-        //0
+    //1"@ cannot find the original CONFIG.SYS file"\
+    //2"@ は元の CONFIG.SYS を見つけられません"\
+    //0
 IDS_COPYAUTOEXEC=\
-        //1"@ will place the contents of your original\nAUTOEXEC.BAT and CONFIG.SYS files\n in the following backup files:\n\n    %s\n    %s"\
-	//2"@ はAUTOEXEC.BAT と\n CONFIG.SYS の元の内容\nを以下のバックアップ・ファイルに入れます。\n\n    %s\n    %s"\
-        //0
+    //1"@ will place the contents of your original\nAUTOEXEC.BAT and CONFIG.SYS files\n in the following backup files:\n\n    %s\n    %s"\
+    //2"@ はAUTOEXEC.BAT と\n CONFIG.SYS の元の内容\nを以下のバックアップ・ファイルに入れます。\n\n    %s\n    %s"\
+    //0
 IDS_COPYCONFIGSYS=\
-        //1"@ will place the contents of your original CONFIG.SYS file in the following backup file: \n\n    %s\n"\
-        //2"@ は元の CONFIG.SYS の内容を以下のバックアップ・ファイルに入れます。 \n\n    %s\n"\
-        //0
+    //1"@ will place the contents of your original CONFIG.SYS file in the following backup file: \n\n    %s\n"\
+    //2"@ は元の CONFIG.SYS の内容を以下のバックアップ・ファイルに入れます。 \n\n    %s\n"\
+    //0
 IDS_NEWAUTOEXEC=\
-        //1"@ will save the changes it would make to\nyour AUTOEXEC.BAT and CONFIG.SYS files\nin the following backup files:\n\n    %s\n    %s"\
-        //2"@ が以下のファイル\nAUTOEXEC.BAT と CONFIG.SYS files\nに行おうとした変更を以下のバックアップ・ファイルに保存します。\n\n    %s\n    %s"\
-        //0
+    //1"@ will save the changes it would make to\nyour AUTOEXEC.BAT and CONFIG.SYS files\nin the following backup files:\n\n    %s\n    %s"\
+    //2"@ が以下のファイル\nAUTOEXEC.BAT と CONFIG.SYS files\nに行おうとした変更を以下のバックアップ・ファイルに保存します。\n\n    %s\n    %s"\
+    //0
 IDS_NEWCONFIGSYS=\
-        //1"@ will save the changes it would make to your CONFIG.SYS file in the following backup file:\n\n    %s\n"\
-        //2"@ が CONFIG.SYS に行おうとした変更を、以下のバックアップ・ファイルに保存します。\n\n    %s\n"\
-        //0
+    //1"@ will save the changes it would make to your CONFIG.SYS file in the following backup file:\n\n    %s\n"\
+    //2"@ が CONFIG.SYS に行おうとした変更を、以下のバックアップ・ファイルに保存します。\n\n    %s\n"\
+    //0
 IDS_ERRORBACKAUTO=\
-        //1"An error occurred trying to create the backup\ncopy of your AUTOEXEC.BAT file"\
-        //2"元の AUTOEXEC.BAT のバックアップを作成するときに\nエラーが起きました"\
-        //0
+    //1"An error occurred trying to create the backup\ncopy of your AUTOEXEC.BAT file"\
+    //2"元の AUTOEXEC.BAT のバックアップを作成するときに\nエラーが起きました"\
+    //0
 IDS_ERRORBACKCONFIG=\
-        //1"An error occurred trying to create the backup\ncopy of your CONFIG.SYS file"\
-        //2"元の CONFIG.SYS のバックアップを作成するときに\nエラーが起きました"\
-        //0
+    //1"An error occurred trying to create the backup\ncopy of your CONFIG.SYS file"\
+    //2"元の CONFIG.SYS のバックアップを作成するときに\nエラーが起きました"\
+    //0
 IDS_CHANGES=\
-        //1"@ will save the changes it would make to\nyour Environment in the following file:\n\n    %s"\
-        //2"@ が環境に対して行おうとした変更を\n以下のファイルに保存します。\n\n    %s"\
-        //0
+    //1"@ will save the changes it would make to\nyour Environment in the following file:\n\n    %s"\
+    //2"@ が環境に対して行おうとした変更を\n以下のファイルに保存します。\n\n    %s"\
+    //0
 IDS_OS2CONFIGSYS=\
-        //1"The changes to the CONFIG.SYS file are required to run the software.  Please shutdown your system and restart to allow the changes to take effect.\n"\
-        //2"CONFIG.SYS への変更はソフトウェアの実行に必要です。システムをシャットダウンし、再起動して変更を有効にしてください。\n"\
-        //0
+    //1"The changes to the CONFIG.SYS file are required to run the software.  Please shutdown your system and restart to allow the changes to take effect.\n"\
+    //2"CONFIG.SYS への変更はソフトウェアの実行に必要です。システムをシャットダウンし、再起動して変更を有効にしてください。\n"\
+    //0
 IDS_NT_REBOOT=\
-        //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your system setup\nwill take effect."\
-        //2"@ : インストールを完了しました。&\n\n変更した設定を有効にするには、\nコンピュータを再起動する必要\nがあります。"\
-        //0
+    //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your system setup\nwill take effect."\
+    //2"@ : インストールを完了しました。&\n\n変更した設定を有効にするには、\nコンピュータを再起動する必要\nがあります。"\
+    //0
 IDS_OS2_REBOOT=\
-        //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your CONFIG.SYS\nwill take effect."\
-        //2"@ : インストールを完了しました。&\n\nCONFIG.SYSの設定の変更を有効にする\nには、コンピュータを再起動する必要\nがあります。"\
-        //0
+    //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your CONFIG.SYS\nwill take effect."\
+    //2"@ : インストールを完了しました。&\n\nCONFIG.SYSの設定の変更を有効にする\nには、コンピュータを再起動する必要\nがあります。"\
+    //0
 IDS_WINDOWS_REBOOT=\
-        //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your AUTOEXEC.BAT,\nCONFIG.SYS and Windows .INI files will take effect."\
-        //2"@ : インストールを完了しました。&\n\nAUTOEXEC.BAT、CONFIG.SYS と\nWindows.INI の設定の変更を有効にする\nには、コンピュータを再起動する必要があります。"\
-        //0
+    //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your AUTOEXEC.BAT,\nCONFIG.SYS and Windows .INI files will take effect."\
+    //2"@ : インストールを完了しました。&\n\nAUTOEXEC.BAT、CONFIG.SYS と\nWindows.INI の設定の変更を有効にする\nには、コンピュータを再起動する必要があります。"\
+    //0
 IDS_DOS_REBOOT=\
-        //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your AUTOEXEC.BAT\nand CONFIG.SYS will take effect."\
-        //2"@ : インストールを完了しました。&\n\nAUTOEXEC.BAT と CONFIG.SYS の設定\nの変更を有効にするには、コンピュータ\nを再起動する必要があります。"\
-        //0
+    //1"@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your AUTOEXEC.BAT\nand CONFIG.SYS will take effect."\
+    //2"@ : インストールを完了しました。&\n\nAUTOEXEC.BAT と CONFIG.SYS の設定\nの変更を有効にするには、コンピュータ\nを再起動する必要があります。"\
+    //0
 IDS_ERROR_WRITING=\
-        //1"An I/O error occurred while writing to the file '%s'"\
-        //2"書き込み中に I/O エラー発生、ファイル '%s'"\
-        //0
+    //1"An I/O error occurred while writing to the file '%s'"\
+    //2"書き込み中に I/O エラー発生、ファイル '%s'"\
+    //0
 IDS_ERROR_OPENING=\
-        //1"An I/O error occurred while opening the file '%s'"\
-        //2"オープン中に I/O エラー発生、ファイル '%s'"\
-        //0
+    //1"An I/O error occurred while opening the file '%s'"\
+    //2"オープン中に I/O エラー発生、ファイル '%s'"\
+    //0
 IDS_ERROR_CLOSING=\
-        //1"An I/O error occurred while closing the file '%s'"\
-        //2"クローズ中に I/O エラー発生、ファイル '%s'"\
-        //0
+    //1"An I/O error occurred while closing the file '%s'"\
+    //2"クローズ中に I/O エラー発生、ファイル '%s'"\
+    //0
 IDS_FIRST=\
-        //1"%s"\
-        //2"%s"\
-        //0
+    //1"%s"\
+    //2"%s"\
+    //0
 IDS_UNKNOWNERROR=\
-        //1"Unknown error"\
-        //2"未知のエラー"\
-        //0
+    //1"Unknown error"\
+    //2"未知のエラー"\
+    //0
 IDS_RENAMEERROR=\
-        //1"Cannot rename to %s.&\nContinue with PATCH process?"\
-        //2"%s をリネームできません。&\nパッチの適用を続けますか?"\
-        //0
+    //1"Cannot rename to %s.&\nContinue with PATCH process?"\
+    //2"%s をリネームできません。&\nパッチの適用を続けますか?"\
+    //0
 IDS_PATCHFILEERROR=\
-        //1"Cannot apply patch file %s.&\nContinue with PATCH process?"\
-        //2"パッチファイル %s を適用できません。&\nパッチの適用を続けますか?"\
-        //0
+    //1"Cannot apply patch file %s.&\nContinue with PATCH process?"\
+    //2"パッチファイル %s を適用できません。&\nパッチの適用を続けますか?"\
+    //0
 IDS_COPYFILEERROR =\
-        //1"Cannot copy file %s.&\nContinue with PATCH process?"\
-        //2"%s をコピーできません。&\nパッチの適用を続けますか?"\
-        //0
+    //1"Cannot copy file %s.&\nContinue with PATCH process?"\
+    //2"%s をコピーできません。&\nパッチの適用を続けますか?"\
+    //0
 IDS_DELETEFILEERROR =\
-        //1"Cannot delete file %s.&\nContinue with PATCH Process?"\
-        //2"%s を削除できません。&\nパッチの適用を続けますか?"\
-        //0
+    //1"Cannot delete file %s.&\nContinue with PATCH Process?"\
+    //2"%s を削除できません。&\nパッチの適用を続けますか?"\
+    //0
 IDS_CREATEDIRERROR=\
-	//1"Cannot create directory %s.&\nContinue with PATCH Process?"\
-	//2"ディレクトリ %s を作成できません。&\nパッチ処理を続けますか?"\
-	//0
+    //1"Cannot create directory %s.&\nContinue with PATCH Process?"\
+    //2"ディレクトリ %s を作成できません。&\nパッチ処理を続けますか?"\
+    //0
 IDS_NOTPATCHFILE=\
-        //1"%s is not a patch file."\
-        //2"%s はパッチ・ファイルではありません。"\
-        //0
+    //1"%s is not a patch file."\
+    //2"%s はパッチ・ファイルではありません。"\
+    //0
 IDS_CANTFINDOUTPUT=\
-        //1"Cannot find output file (to be patched) %s."\
-        //2"(パッチされる)出力ファイル %s が見つかりません。"\
-        //0
+    //1"Cannot find output file (to be patched) %s."\
+    //2"(パッチされる)出力ファイル %s が見つかりません。"\
+    //0
 IDS_NOATTRIBUTES=\
-        //1"Cannot find file attributes of %s."\
-        //2"%s のファイル属性が見つかりません。"\
-        //0
+    //1"Cannot find file attributes of %s."\
+    //2"%s のファイル属性が見つかりません。"\
+    //0
 IDS_CANTWRITE=\
-        //1"Cannot write to file %s."\
-        //2"ファイル %s に書き込めません。"\
-        //0
+    //1"Cannot write to file %s."\
+    //2"ファイル %s に書き込めません。"\
+    //0
 IDS_BADLENGTH=\
-        //1"File length Error"\
-        //2"ファイル長エラー"\
-        //0
+    //1"File length Error"\
+    //2"ファイル長エラー"\
+    //0
 IDS_WRONGCHECKSUM=\
-        //1"Invalid Checksum Error"\
-        //2"不正なチェックサム・エラーInvalid Checksum Error"\
-        //0
+    //1"Invalid Checksum Error"\
+    //2"不正なチェックサム・エラーInvalid Checksum Error"\
+    //0
 IDS_CANTCREATEFILE=\
-        //1"Cannot create file %s."\
-        //2"ファイル %s を作成できません。"\
-        //0
+    //1"Cannot create file %s."\
+    //2"ファイル %s を作成できません。"\
+    //0
 IDS_CANTDELETEFILE=\
-        //1"Cannot delete file %s."\
-        //2"ファイル %s を削除できません。"\
-        //0
+    //1"Cannot delete file %s."\
+    //2"ファイル %s を削除できません。"\
+    //0
 IDS_CANTOPENSRC=\
-        //1"Cannot open source file:\n%s."\
-        //2"ソースファイル %s オープンできません。"\
-        //0
+    //1"Cannot open source file:\n%s."\
+    //2"ソースファイル %s オープンできません。"\
+    //0
 IDS_CANTRENAME=\
-        //1"Cannot rename %s to %s."\
-        //2"%s を %s にファイル名変更できません。"\
-        //0
+    //1"Cannot rename %s to %s."\
+    //2"%s を %s にファイル名変更できません。"\
+    //0
 IDS_PATCHABORT=\
-        //1"Patch Process Aborted."\
-        //2"パッチ・プロセスは中断しました。"\
-        //0
+    //1"Patch Process Aborted."\
+    //2"パッチ・プロセスは中断しました。"\
+    //0
 IDS_ENV_CHANGES=\
-        //1"Required changes to environment:"\
-        //2"環境の変更を要求しました。"\
-        //0
+    //1"Required changes to environment:"\
+    //2"環境の変更を要求しました。"\
+    //0
 IDS_ADD_TO_VAR=\
-        //1"add the following to the '%s' variable"\
-        //2"'%s'変数に以下を追加 "\
-        //0
+    //1"add the following to the '%s' variable"\
+    //2"'%s'変数に以下を追加 "\
+    //0
 IDS_SET_VAR_TO=\
-        //1"set variable '%s' to"\
-        //2"'%s'変数の設定"\
-        //0
+    //1"set variable '%s' to"\
+    //2"'%s'変数の設定"\
+    //0
 IDS_DISKETTES_NEEDED=\
-        //1"You will need %d diskettes"\
-        //2"%d ディスケットが必要です"\
-        //0
+    //1"You will need %d diskettes"\
+    //2"%d ディスケットが必要です"\
+    //0
 IDS_DRIVE_SPEC=\
-        //1"Drive %c: "\
-        //2"ドライブ %c:"\
-        //0
+    //1"Drive %c: "\
+    //2"ドライブ %c:"\
+    //0
 IDS_DRIVE_SPEC_UNC=\
-        //1"Drive '%s' "\
-        //2"ドライブ '%s' "\
-        //0
+    //1"Drive '%s' "\
+    //2"ドライブ '%s' "\
+    //0
 IDS_DRIVE_FREED=\
-        //1" will be freed."\
-        //2"開放されます。"\
-        //0
+    //1" will be freed."\
+    //2"開放されます。"\
+    //0
 IDS_DRIVE_REQUIRED=\
-        //1" required,  "\
-        //2"要求しました"\
-        //0
+    //1" required,  "\
+    //2"要求しました"\
+    //0
 IDS_DRIVE_AVAILABLE=\
-        //1" available."\
-        //2"使用可能です。"\
-        //0
+    //1" available."\
+    //2"使用可能です。"\
+    //0
 IDS_MODIFY_AUTOEXEC=\
-        //1"@ needs to modify AUTOEXEC.BAT and CONFIG.SYS."\
-        //2"@ AUTOEXEC.BAT と CONFIG.SYS を更新する必要があります。"\
-        //0
+    //1"@ needs to modify AUTOEXEC.BAT and CONFIG.SYS."\
+    //2"@ AUTOEXEC.BAT と CONFIG.SYS を更新する必要があります。"\
+    //0
 IDS_MODIFY_CONFIG=\
-        //1"@ needs to modify CONFIG.SYS."\
-        //2"@ CONFIG.SYS を更新する必要があります。"\
-        //0
+    //1"@ needs to modify CONFIG.SYS."\
+    //2"@ CONFIG.SYS を更新する必要があります。"\
+    //0
 IDS_MODIFY_ENVIRONMENT=\
-        //1"@ needs to modify environment variables in the registry."\
-        //2"@ はレジストリの環境変数を更新する必要があります。"\
-        //0
+    //1"@ needs to modify environment variables in the registry."\
+    //2"@ はレジストリの環境変数を更新する必要があります。"\
+    //0
 IDS_INCONSISTENT=\
-        //1"@ has determined that you are installing over a previous version of the software, or have manually added or removed files.  Do you wish to install all missing files?"\
-        //2"@ は、ユーザーがインストーラを使わずにファイルを削除したか、手動でサブセットをインストールしたと判断しました。すべての不足しているファイルをインストールしますか?"\
-        //0
+    //1"@ has determined that you are installing over a previous version of the software, or have manually added or removed files.  Do you wish to install all missing files?"\
+    //2"@ は、ユーザーがインストーラを使わずにファイルを削除したか、手動でサブセットをインストールしたと判断しました。すべての不足しているファイルをインストールしますか?"\
+    //0
 IDS_NO_FILES_PATCHED=\
-	//1"No files were patched"\
-	//2"ファイルはパッチされていません。"\
-	//0
+    //1"No files were patched"\
+    //2"ファイルはパッチされていません。"\
+    //0
 IDS_REMOVE_ODBC=\
-	//1"@ has determined that after this uninstall, the ODBC core components will no longer be used. Should these files be deleted?"\
-	//2"@ は、この削除後には、ODBC のコア・コンポーネントは使用されないことを決定しています。これらのファイルを削除しますか?"\
-	//0
+    //1"@ has determined that after this uninstall, the ODBC core components will no longer be used. Should these files be deleted?"\
+    //2"@ は、この削除後には、ODBC のコア・コンポーネントは使用されないことを決定しています。これらのファイルを削除しますか?"\
+    //0
 IDS_REMOVE_DLL=\
-	//1"@ has determined that after this uninstall, the file %s will no longer be used. Should this file be deleted?"\
-	//2"@ は、この削除後には、ファイル %s は使用されないことを決定しています。このファイルを削除しますか?"\
-	//0
+    //1"@ has determined that after this uninstall, the file %s will no longer be used. Should this file be deleted?"\
+    //2"@ は、この削除後には、ファイル %s は使用されないことを決定しています。このファイルを削除しますか?"\
+    //0
 
 IDS_ERASE_OK=\
-        //1"All files on drive '%c' will be erased.\nProceed anyway?"\
-        //2"ドライブ '%c' のすべてのファイルは削除されます。\n続けますか?"\
-        //0
+    //1"All files on drive '%c' will be erased.\nProceed anyway?"\
+    //2"ドライブ '%c' のすべてのファイルは削除されます。\n続けますか?"\
+    //0
 IDS_ERASE_ARE_YOU_SURE=\
-        //1"Are you sure you want to erase all files on drive '%c'?"\
-        //2"ドライブ '%c' のすべてのファイルを削除してもよいですか?"\
-        //0
+    //1"Are you sure you want to erase all files on drive '%c'?"\
+    //2"ドライブ '%c' のすべてのファイルを削除してもよいですか?"\
+    //0
 IDS_INVALID_DISKETTE_SPEC=\
-        //1"'%s' is not a valid diskette drive name.\n"\
-        //2"'%s' は、正しいディスケット・ドライブ名ではありません。\n"\
-        //0
+    //1"'%s' is not a valid diskette drive name.\n"\
+    //2"'%s' は、正しいディスケット・ドライブ名ではありません。\n"\
+    //0
 IDS_LOGFILE_EXISTS=\
-        //1"Requested log file: %s exists already.&\nReplace it?\n(If you choose 'NO', this program will abort.)"\
-        //2"ログ・ファイルを要求しました: %s はすでに存在しています。\n置き換えますか?\n('いいえ'を選んだ場合, このプログラムをアボートします。)"\
-	//0
+    //1"Requested log file: %s exists already.&\nReplace it?\n(If you choose 'NO', this program will abort.)"\
+    //2"ログ・ファイルを要求しました: %s はすでに存在しています。\n置き換えますか?\n('いいえ'を選んだ場合, このプログラムをアボートします。)"\
+    //0
 IDS_CANT_OPEN_LOGFILE=\
-        //1"Requested log file: %s could not be opened."\
-        //2"ログ・ファイルを要求しました: %s をオープンすることができません。"\
-	//0
+    //1"Requested log file: %s could not be opened."\
+    //2"ログ・ファイルを要求しました: %s をオープンすることができません。"\
+    //0
 IDS_CANT_WRITE_LOGFILE=\
-        //1"%s could not be written."\
-        //2"%s に書き込むことができません。"\
-	//0
+    //1"%s could not be written."\
+    //2"%s に書き込むことができません。"\
+    //0
 IDS_UNPACKING=\
-	//1"Unpacking %s... "\
-	//2"アンパッキング %s"\
-	//0
+    //1"Unpacking %s... "\
+    //2"アンパッキング %s"\
+    //0
 IDS_DELETING=\
-	//1"Deleting %s... "\
-	//2"削除 %s"\
-	//0
+    //1"Deleting %s... "\
+    //2"削除 %s"\
+    //0
 IDS_CREATINGDIR=\
-	//1"Creating directory %s... "\
-	//2"ディレクトリ %s を作成しています。"\
-	//0
+    //1"Creating directory %s... "\
+    //2"ディレクトリ %s を作成しています。"\
+    //0
 IDS_SUCCESS=\
-	//1"Successful"\
-	//2"成功"\
-	//0
+    //1"Successful"\
+    //2"成功"\
+    //0
 IDS_FAILED_UNPACKING=\
-	//1"Failed unpacking"\
-	//2"アンパッキング失敗"\
-	//0
+    //1"Failed unpacking"\
+    //2"アンパッキング失敗"\
+    //0
 IDS_INVALID_EXE=\
-	//1"Existing executable is invalid"\
-	//2"実行モジュールが存在することが不当です"\
-	//0
+    //1"Existing executable is invalid"\
+    //2"実行モジュールが存在することが不当です"\
+    //0
 IDS_FAILED_PATCHING=\
-	//1"Failed patching new file"\
-	//2"新しいファイルのパッチに失敗しました"\
-	//0
+    //1"Failed patching new file"\
+    //2"新しいファイルのパッチに失敗しました"\
+    //0
 IDS_FAILED_DELETING=\
-        //1"Failed deleting."\
-        //2"削除に失敗しました。"\
-        //0
+    //1"Failed deleting."\
+    //2"削除に失敗しました。"\
+    //0
 IDS_FAILED_CREATINGDIR=\
-	//1"Failed creating directory"\
-	//2"ディレクトリの作成に失敗しました。"\
-	//0
+    //1"Failed creating directory"\
+    //2"ディレクトリの作成に失敗しました。"\
+    //0
 IDS_CANTREPLACE=\
-	//1"Cannot replace the file %s.&\nContinue with the install?"\
-	//2"ファイル %s を置き換えることができません。&\nインストールを続けますか?"\
-	//0
+    //1"Cannot replace the file %s.&\nContinue with the install?"\
+    //2"ファイル %s を置き換えることができません。&\nインストールを続けますか?"\
+    //0
 IDS_NOSPACE_AFTER_DELETING=\
-        //1"The package will require about %ldK of space in the path '%s', yet even after the current contents of this path are deleted, only %ldK will be free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"\
-        //2"このパッケージは、パス '%s' において約 %ldK のスペースを必要としています。このパスが削除された後の現在の内容は、 %ldK だけフリーになります。\nあと %ld バイト (%ldK) 必要となります。失敗するかもしれないしれませんが、続けてパッケージを作成しますか?"\
-	//0
+    //1"The package will require about %ldK of space in the path '%s', yet even after the current contents of this path are deleted, only %ldK will be free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"\
+    //2"このパッケージは、パス '%s' において約 %ldK のスペースを必要としています。このパスが削除された後の現在の内容は、 %ldK だけフリーになります。\nあと %ld バイト (%ldK) 必要となります。失敗するかもしれないしれませんが、続けてパッケージを作成しますか?"\
+    //0
 IDS_NOTENOUGHSPACE=\
-	//1"The package will require about %ldK of space in the path '%s', yet %ldK is free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"\
-	//2"このパッケージは、パス '%s' において約 %ldK のスペースを必要としています。 \nまだ %ldK フリーです。あと %ld バイト (%ldK) 必要となります。失敗するかもしれないしれませんが、続けてパッケージを作成しますか?"\
-	//0
+    //1"The package will require about %ldK of space in the path '%s', yet %ldK is free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"\
+    //2"このパッケージは、パス '%s' において約 %ldK のスペースを必要としています。 \nまだ %ldK フリーです。あと %ld バイト (%ldK) 必要となります。失敗するかもしれないしれませんが、続けてパッケージを作成しますか?"\
+    //0
 IDS_BAD_PATH=\
-	//1"The path: '%s' that you entered is either inaccessible, not valid, or cannot be made.\nCheck the path and run this program again."\
-	//2"入力したパス '%s' は、アクセスできないか、不当か、または作成できません。\nパスを確認し、このプログラムをサイド実行してください。"\
-	//0
+    //1"The path: '%s' that you entered is either inaccessible, not valid, or cannot be made.\nCheck the path and run this program again."\
+    //2"入力したパス '%s' は、アクセスできないか、不当か、または作成できません。\nパスを確認し、このプログラムをサイド実行してください。"\
+    //0
 IDS_EMPTY_DIR=\
-	//1"WARNING: Before copying files, this program will attempt to delete the contents of the existing directory: '%s'.\nAre you sure you wish to proceed?\n"\
-	//2"警告:ファイルをコピーする前に、このプログラムは、存在するディレクトリ '%s' の内容を削除しようとします。\n続けて実行しますか?\n"\
-	//0
+    //1"WARNING: Before copying files, this program will attempt to delete the contents of the existing directory: '%s'.\nAre you sure you wish to proceed?\n"\
+    //2"警告:ファイルをコピーする前に、このプログラムは、存在するディレクトリ '%s' の内容を削除しようとします。\n続けて実行しますか?\n"\
+    //0
 IDS_FAILED_COPYING=\
-	//1"Error: The package could not be successfully copied to the directory: '%s'."\
-	//2"エラー: パッケージは、ディレクトリ '%s' へのコピーに成功しませんでした。"\
-	//0
+    //1"Error: The package could not be successfully copied to the directory: '%s'."\
+    //2"エラー: パッケージは、ディレクトリ '%s' へのコピーに成功しませんでした。"\
+    //0
 IDS_PDF_FAILED=\
-	//1"Error: Failed to create the .pdf file for this package successfully."\
-	//2"エラー: このパッケージのための .pdf ファイルを作成するのに失敗しました。"\
-	//0
+    //1"Error: Failed to create the .pdf file for this package successfully."\
+    //2"エラー: このパッケージのための .pdf ファイルを作成するのに失敗しました。"\
+    //0
 IDS_NO_LICENSEINFO=\
-	//1"Could not apply the license because a user name and company were not found in c:\sms.ini."\
-	//2"c:\sms.ini にユーザ名と会社がなかったため、ライセンスの適用ができませんでした。"\
-	//0
+    //1"Could not apply the license because a user name and company were not found in c:\sms.ini."\
+    //2"c:\sms.ini にユーザ名と会社がなかったため、ライセンスの適用ができませんでした。"\
+    //0
 IDS_PACKAGE_CREATED=\
-	//1"A package for Microsoft BackOffice has been successfully created in the directory: '%s'.\nThe package definition file: '%s' can also be found in the same directory."\
-	//2"Microsoft BackOffice のパッケージの作成が、ディレクトリ '%s' に成功しました。\nパッケージ定義ファイル '%s' は、同一のディレクトリにあります。"\
-	//0
+    //1"A package for Microsoft BackOffice has been successfully created in the directory: '%s'.\nThe package definition file: '%s' can also be found in the same directory."\
+    //2"Microsoft BackOffice のパッケージの作成が、ディレクトリ '%s' に成功しました。\nパッケージ定義ファイル '%s' は、同一のディレクトリにあります。"\
+    //0
 IDS_CANTOPENFILE=\
-	//1"Cannot open file '%s'."\
-	//2"ファイル '%s' をオープンできません。"\
-	//0
+    //1"Cannot open file '%s'."\
+    //2"ファイル '%s' をオープンできません。"\
+    //0
 IDS_CANTALLOCATEMEMORY=\
-	//1"Could not allocate memory."\
-	//2"メモリを割り当てできません。"\
-	//0
+    //1"Could not allocate memory."\
+    //2"メモリを割り当てできません。"\
+    //0
 IDS_ERROREDITING=\
-	//1"Error editing the file '%s'."\
-	//2"ファイル '%s' を変更できません。"\
-	//0
+    //1"Error editing the file '%s'."\
+    //2"ファイル '%s' を変更できません。"\
+    //0
 IDS_REGERROR=\
-	//1"An error occurred while attempting to modify the registry."\
-	//2"レジストリを変更中にエラーが発生しました。"\
-	//0
+    //1"An error occurred while attempting to modify the registry."\
+    //2"レジストリを変更中にエラーが発生しました。"\
+    //0
 IDS_REG_ODBC_ERROR=\
-	//1"Information about ODBC was expected in the registry, but not found."\
-	//2"レジストリから ODBC の情報を取得しようとしましたが、みつかりませんでした。"\
-	//0	
+    //1"Information about ODBC was expected in the registry, but not found."\
+    //2"レジストリから ODBC の情報を取得しようとしましたが、みつかりませんでした。"\
+    //0     
 IDS_FAILED_MODIFYING_FILE=\
-	//1"Could not modify the configuration file:\n%s&\nDo you wish to continue?"\
-	//2"設定ファイル '%s' を更新できません。\n処理を続けますか?\
-	//0
+    //1"Could not modify the configuration file:\n%s&\nDo you wish to continue?"\
+    //2"設定ファイル '%s' を更新できません。\n処理を続けますか?\
+    //0
 IDS_HELP_BUTTON=\
-        //1"?&Help"\
-        //2"?ヘルプ(&H)"\
-        //0
+    //1"?&Help"\
+    //2"?ヘルプ(&H)"\
+    //0
 IDS_CANCEL_BUTTON=\
-        //1"^&Cancel"\
-        //2"^キャンセル(&C)"\
-        //0
+    //1"^&Cancel"\
+    //2"^キャンセル(&C)"\
+    //0
 IDS_OK_BUTTON=\
-	//1".+&OK"\
-	//2".+&OK"\
-	//0
+    //1".+&OK"\
+    //2".+&OK"\
+    //0
 IDS_FAILEDBACKUP=\
-	//1"The file '%s' could not be copied to '%s'.&\n\nDo you wish to continue without a backup?"\
-	//2"ファイル '%s' を '%s' へコピーできません。&\n\nバックアップせずに続けますか?"\
-	//0
+    //1"The file '%s' could not be copied to '%s'.&\n\nDo you wish to continue without a backup?"\
+    //2"ファイル '%s' を '%s' へコピーできません。&\n\nバックアップせずに続けますか?"\
+    //0
 IDS_INVALID_DIR=\
-	//1"'%s' is not a valid directory."\
-	//2"'%s' は有効なディレクトリではありません。"\
-	//0
+    //1"'%s' is not a valid directory."\
+    //2"'%s' は有効なディレクトリではありません。"\
+    //0
 IDS_NODIR=\
-	//1"The directory '%s' does not exist.&  Do you want to create it?\n\n(Choose YES to create the directory, or NO to enter a different directory.)"\
-	//2"ディレクトリ '%s' がありません。&  作成しますか?\n\n作成しない場合は他のディレクトリを入力してください。"\
-	//0
+    //1"The directory '%s' does not exist.&  Do you want to create it?\n\n(Choose YES to create the directory, or NO to enter a different directory.)"\
+    //2"ディレクトリ '%s' がありません。&  作成しますか?\n\n作成しない場合は他のディレクトリを入力してください。"\
+    //0
 IDS_ALIAS_EXISTS=\
-	//1"The alias '%s' exists already.&  Do you wish to enter a different alias?\n\n(Choose YES to go back and enter a different alias, or NO to overwrite the the existing alias.)"\
-	//2"エイリアス '%s' はすでに存在してます。&  新しいエイリアスを入力しますか?\n\n入力しない場合は置き換えます。"\
-        //0
+    //1"The alias '%s' exists already.&  Do you wish to enter a different alias?\n\n(Choose YES to go back and enter a different alias, or NO to overwrite the the existing alias.)"\
+    //2"エイリアス '%s' はすでに存在してます。&  新しいエイリアスを入力しますか?\n\n入力しない場合は置き換えます。"\
+    //0
 IDS_NODESTINFO=\
-	//1"Disk space information from the destination path: '%s' could not be found.  An estimate is that about %ldK of space is needed.&\n\nDo you wish to continue anyway?"\
-	//2"送信先パスからのディスク・スペース情報 : '%s' はありません。 estimate には約 %ldK のスペースが必要です。&\n\このまま続けますか?"\
-        //0
+    //1"Disk space information from the destination path: '%s' could not be found.  An estimate is that about %ldK of space is needed.&\n\nDo you wish to continue anyway?"\
+    //2"送信先パスからのディスク・スペース情報 : '%s' はありません。 estimate には約 %ldK のスペースが必要です。&\n\このまま続けますか?"\
+    //0
 IDS_NOSRCINFO=\
-	//1"Disk space information for the source path: '%s' could not be found.&\n\nDo you wish to continue anyway?"\
-	//2"ソースパスからのディスク・スペース情報 : '%s' はありません。&\n\n続けますか?"\
-        //0
+    //1"Disk space information for the source path: '%s' could not be found.&\n\nDo you wish to continue anyway?"\
+    //2"ソースパスからのディスク・スペース情報 : '%s' はありません。&\n\n続けますか?"\
+    //0
 IDS_NOFREESPACEINFO=\
-	//1"The amount of free space on '%s' cannot be determined.  About %ldK free space is needed.&\n\nDo you wish to continue anyway?"\
-	//2"'%s' のフリーなディスクスペースのサイズがわかりません。約 %ldK のフリーなスペースが必要です。&\n\n続けますか?"\
-        //0
+    //1"The amount of free space on '%s' cannot be determined.  About %ldK free space is needed.&\n\nDo you wish to continue anyway?"\
+    //2"'%s' のフリーなディスクスペースのサイズがわかりません。約 %ldK のフリーなスペースが必要です。&\n\n続けますか?"\
+    //0
 IDS_NSCONFIG_1=\
-	//1"Netscape Server was found in:"\
-	//2"Netscape Server がありません:"\
-	//0
+    //1"Netscape Server was found in:"\
+    //2"Netscape Server がありません:"\
+    //0
 IDS_NSCONFIG_2=\
-        //1"This dialog lets you choose how to configure Netscape Server for NetImpact Dynamo."\
-        //2"ここではどのように NetImpact Dynamo に対する Netscape Server の設定をするか選んでください。"\
-	//0
+    //1"This dialog lets you choose how to configure Netscape Server for NetImpact Dynamo."\
+    //2"ここではどのように NetImpact Dynamo に対する Netscape Server の設定をするか選んでください。"\
+    //0
 IDS_NSCONFIG_3=\
-	//1"Select where to place the NetImpact Dynamo NSAPI DLLs for use by Netscape Server:"\
-	//2"Netscape サーバによって使用する NetImpact Dynamo NSAPI DLLをどこに置くか選択してください:"\
-	//0
+    //1"Select where to place the NetImpact Dynamo NSAPI DLLs for use by Netscape Server:"\
+    //2"Netscape サーバによって使用する NetImpact Dynamo NSAPI DLLをどこに置くか選択してください:"\
+    //0
 IDS_NSCONFIG_4=\
-	//1"Use the path: %s (&recommended)"\
-	//2"パス %s を使用することをおすすめします(&R)"\
-	//0
+    //1"Use the path: %s (&recommended)"\
+    //2"パス %s を使用することをおすすめします(&R)"\
+    //0
 IDS_NSCONFIG_5=\
-	//1"Use the &path: %s"\
-	//2"パス %s を使用(&P)"\
-	//0
+    //1"Use the &path: %s"\
+    //2"パス %s を使用(&P)"\
+    //0
 IDS_NSCONFIG_6=\
-	//1"&Enter a path."\
-	//2"パスの入力(&E)"\
-	//0
+    //1"&Enter a path."\
+    //2"パスの入力(&E)"\
+    //0
 IDS_NSCONFIG_7=\
-	//1"NSAPI DLL path:"\
-	//2"NSAPI DLL パス:"\
-	//0
+    //1"NSAPI DLL path:"\
+    //2"NSAPI DLL パス:"\
+    //0
 IDS_NSCONFIG_8=\
-        //1"@ can modify the '%s' file for each Web server under this install of Netscape Server that you want to work with NetImpact Dynamo."\
-        //2"@ はこのインストール下の各 Web サーバを NetImpact Dynamoで動かしたい Netscape Server に対して '%s' ファイルを修正することができるます。"\
-	//0
+    //1"@ can modify the '%s' file for each Web server under this install of Netscape Server that you want to work with NetImpact Dynamo."\
+    //2"@ はこのインストール下の各 Web サーバを NetImpact Dynamoで動かしたい Netscape Server に対して '%s' ファイルを修正することができるます。"\
+    //0
 IDS_NSCONFIG_9=\
-	//1"&List selected file(s)..."\
-	//2"選択されたファイル・リスト(&L)"\
-	//0
+    //1"&List selected file(s)..."\
+    //2"選択されたファイル・リスト(&L)"\
+    //0
 IDS_NSCONFIG_10=\
-	//1"Modify the '%s' file(s)."\
-	//2"ファイル '%s' を更新します。"\
-	//0
+    //1"Modify the '%s' file(s)."\
+    //2"ファイル '%s' を更新します。"\
+    //0
 IDS_NSCONFIG_11=\
-	//1"Below is a list of the %s file(s) for Netscape Web Servers found under this install of Netscape Server.  Select the %s file(s) you want @ to configure for NetImpact Dynamo:"\
-	//2"このインストール下でみつかった Netscape Server の Netscape Web Servers に対する %s ファイルのリストです。NetImpact Dynamo に対して設定するために @ したい %s ファイルを選択してください:"\
-	//0
+    //1"Below is a list of the %s file(s) for Netscape Web Servers found under this install of Netscape Server.  Select the %s file(s) you want @ to configure for NetImpact Dynamo:"\
+    //2"このインストール下でみつかった Netscape Server の Netscape Web Servers に対する %s ファイルのリストです。NetImpact Dynamo に対して設定するために @ したい %s ファイルを選択してください:"\
+    //0
 IDS_NSCONFIG_12=\
-	//1"Before modifying the %s file(s) do you want to copy the original to a backup with the extension %s in the same directory?"\
-	//2"ファイル %s を更新する前にオリジナルを同じディレクトリの拡張子 %s でバックアップのためにコピーしますか?"\
-	//0
+    //1"Before modifying the %s file(s) do you want to copy the original to a backup with the extension %s in the same directory?"\
+    //2"ファイル %s を更新する前にオリジナルを同じディレクトリの拡張子 %s でバックアップのためにコピーしますか?"\
+    //0
 IDS_NSCONFIG_13=\
-	//1"Yes, backup the %s file(s)."\
-	//2"はい、ファイル %s をバックアップする。"\
-	//0
+    //1"Yes, backup the %s file(s)."\
+    //2"はい、ファイル %s をバックアップする。"\
+    //0
 IDS_IISCONFIG_1=\
-	//1"'%s' was found on this machine."\
-	//2"'%s' がこのマシンには見つかりません。"\
-	//0
+    //1"'%s' was found on this machine."\
+    //2"'%s' がこのマシンには見つかりません。"\
+    //0
 IDS_IISCONFIG_2=\
-	//1"Location: %s"\
-	//2"ロケーション: %s"\
-	//0
+    //1"Location: %s"\
+    //2"ロケーション: %s"\
+    //0
 IDS_IISCONFIG_3=\
-	//1"This dialog lets you choose how to configure the Web server for NetImpact Dynamo."\
-	//2"ここでは NetImpact Dynamo の Web サーバをどのように設定するかを選ぶことができます。."\
-	//0
+    //1"This dialog lets you choose how to configure the Web server for NetImpact Dynamo."\
+    //2"ここでは NetImpact Dynamo の Web サーバをどのように設定するかを選ぶことができます。."\
+    //0
 IDS_IISCONFIG_4=\
-	//1"Select where to place the NetImpact Dynamo ISAPI DLLs for use by the Web server:"\
-	//2"Web サーバによって使用する NetImpact Dynamo ISAPI DLLをどこに置くか選択してください:"\
-	//0
+    //1"Select where to place the NetImpact Dynamo ISAPI DLLs for use by the Web server:"\
+    //2"Web サーバによって使用する NetImpact Dynamo ISAPI DLLをどこに置くか選択してください:"\
+    //0
 IDS_IISCONFIG_5=\
-	//1"Use the path: %s (&recommended)"\
-	//2"パス %s を使用することをおすすめします(&R)"\
-	//0
+    //1"Use the path: %s (&recommended)"\
+    //2"パス %s を使用することをおすすめします(&R)"\
+    //0
 IDS_IISCONFIG_6=\
-	//1"Use the &path: %s"\
-	//2"パス %s を使用(&P)"\
-	//0
+    //1"Use the &path: %s"\
+    //2"パス %s を使用(&P)"\
+    //0
 IDS_IISCONFIG_7=\
-	//1"&Enter a path."\
-	//2"パスの入力(&E)"\
-	//0
+    //1"&Enter a path."\
+    //2"パスの入力(&E)"\
+    //0
 IDS_IISCONFIG_8=\
-	//1"ISAPI DLL path:"\
-	//2"ISAPI DLL パス:"\
-	//0
+    //1"ISAPI DLL path:"\
+    //2"ISAPI DLL パス:"\
+    //0
 IDS_IISCONFIG_9=\
-	//1"You must enter a virtual alias for this path (e.g. '/Sybase' )."\
-	//2"このパスに対する仮想エイリアスを入力してください ( 例 '\\Sybase' )."\
-	//0
+    //1"You must enter a virtual alias for this path (e.g. '/Sybase' )."\
+    //2"このパスに対する仮想エイリアスを入力してください ( 例 '\\Sybase' )."\
+    //0
 IDS_IISCONFIG_10=\
-	//1"Virtual alias:"\
-	//2"仮想エイリアス:"\
-	//0
+    //1"Virtual alias:"\
+    //2"仮想エイリアス:"\
+    //0
 IDS_NID_NS=\
-	//1"Netscape Server"\
-	//2"Netscape サーバ"\
-	//0
+    //1"Netscape Server"\
+    //2"Netscape サーバ"\
+    //0
 IDS_NID_IIS=\
-	//1"Microsoft Web servers"\
-	//2"Microsoft Web サーバ"\
-	//0
+    //1"Microsoft Web servers"\
+    //2"Microsoft Web サーバ"\
+    //0
 IDS_NID_CGI=\
-	//1"CGI"\
-	//2"CGI"\
-	//0
+    //1"CGI"\
+    //2"CGI"\
+    //0
 IDS_NID_WINCGI=\
-	//1"Win-CGI"\
-	//2"Win-CGI"\
-	//0
+    //1"Win-CGI"\
+    //2"Win-CGI"\
+    //0
 IDS_NID_IS_CGI_PRESENT=\
-	//1"Do you have a CGI / Win-CGI Web Server on this machine?"\
-	//2"このマシンには CGI / Win-CGI Web Server がありますか?"\
-	//0
+    //1"Do you have a CGI / Win-CGI Web Server on this machine?"\
+    //2"このマシンには CGI / Win-CGI Web Server がありますか?"\
+    //0
 IDS_NID_LOOKFORSERVERS=\
-	//1"@ will attempt to detect Microsoft and/or Netscape Web servers on this machine.\n\nIf a Web server is found, @ will offer to do some of the configuration needed for the Web server work with NetImpact Dynamo.\n\nNote that NetImpact Dynamo must already be installed, and your Web server(s) should not be currently running for this to work."\
-	//2"@ はこのマシンに Microsoft または Netscape Web サーバの検出を行います。Web サーバがあった場合、@ は NetImpact Dynamo が動作するするために必要な設定を行います。\n\nこれが動作するためには、NetImpact Dynamo はすでにインストールされていなければならないことに注意してください。"\
-	//0
+    //1"@ will attempt to detect Microsoft and/or Netscape Web servers on this machine.\n\nIf a Web server is found, @ will offer to do some of the configuration needed for the Web server work with NetImpact Dynamo.\n\nNote that NetImpact Dynamo must already be installed, and your Web server(s) should not be currently running for this to work."\
+    //2"@ はこのマシンに Microsoft または Netscape Web サーバの検出を行います。Web サーバがあった場合、@ は NetImpact Dynamo が動作するするために必要な設定を行います。\n\nこれが動作するためには、NetImpact Dynamo はすでにインストールされていなければならないことに注意してください。"\
+    //0
 IDS_NID_QUERY_LOOKFORSERVERS=\
-	//1"Do you want @ to attempt to detect Microsoft and/or Netscape Web servers on this machine?\n\n(If a Web server is found, @ will offer to do some of the configuration needed for the Web Server to work with NetImpact Dynamo.  Note that your Web server(s) should not be currently running for this to work.)"\
-	//2"@ はこのマシン上の Microsoft または Netscape Web サーバの検出を行います（ Web サーバが見つかった場合、@ は Web Server が NetImpact Dynamo で動作するために必要な設定を変更します)。"\
-	//0
+    //1"Do you want @ to attempt to detect Microsoft and/or Netscape Web servers on this machine?\n\n(If a Web server is found, @ will offer to do some of the configuration needed for the Web Server to work with NetImpact Dynamo.  Note that your Web server(s) should not be currently running for this to work.)"\
+    //2"@ はこのマシン上の Microsoft または Netscape Web サーバの検出を行います（ Web サーバが見つかった場合、@ は Web Server が NetImpact Dynamo で動作するために必要な設定を変更します)。"\
+    //0
 IDS_NID_NOSERVERSFOUND=\
-	//1"@ could not detect Microsoft or Netscape Web servers on this machine.  If a web server is installed but was not detected, consult the NetImpact Dynamo documentation to set up your web server manually."\
-	//2"@ は このマシン上に Microsoft または Netscape Web サーバを検出しませんでした。サーバがインストールされて、検出されなかった場合、NetImpact Dynamo ドキュメントの web サーバの手動セットアップを参照してください。"\
-	//0
+    //1"@ could not detect Microsoft or Netscape Web servers on this machine.  If a web server is installed but was not detected, consult the NetImpact Dynamo documentation to set up your web server manually."\
+    //2"@ は このマシン上に Microsoft または Netscape Web サーバを検出しませんでした。サーバがインストールされて、検出されなかった場合、NetImpact Dynamo ドキュメントの web サーバの手動セットアップを参照してください。"\
+    //0
 IDS_NID_CANTSETUPSERVERS=\
-	//1"Note: @ will not try to detect %s on your machine because one or more of the following NetImpact Dynamo files used by this Web server was not found:\n\n%s&\nReinstall NetImpact Dynamo if you want to detect and configure this Web server."\
-	//2"注意: @ は複数の以下の NetImpact Dynamo ファイルはみつからなかったこの Web サーバによって使われているので、このマシン上に %s を検出しないでしょう。:\n\n%s&\n検出とこの Web server の設定をする場合、NetImpact Dynamo を再インストールしてください。"\
-	//0
+    //1"Note: @ will not try to detect %s on your machine because one or more of the following NetImpact Dynamo files used by this Web server was not found:\n\n%s&\nReinstall NetImpact Dynamo if you want to detect and configure this Web server."\
+    //2"注意: @ は複数の以下の NetImpact Dynamo ファイルはみつからなかったこの Web サーバによって使われているので、このマシン上に %s を検出しないでしょう。:\n\n%s&\n検出とこの Web server の設定をする場合、NetImpact Dynamo を再インストールしてください。"\
+    //0
 IDS_NID_CANTSETUPCGI=\
-	//1"Note: One or more of the following files that make up the NetImpact Dynamo Application Server for %s Web servers was not found:\n\n%s\nReinstall NetImpact Dynamo if you want to use these files."\
-	//2"注意: %s Web サーバに対する NetImpact Dynamo Application サーバがメイクアップした以下のファイルがみつかりません:\n\n%s\nこれらのファイルを使用する場合、 NetImpact Dynamo を再インストールしてください。"\
-	//0
+    //1"Note: One or more of the following files that make up the NetImpact Dynamo Application Server for %s Web servers was not found:\n\n%s\nReinstall NetImpact Dynamo if you want to use these files."\
+    //2"注意: %s Web サーバに対する NetImpact Dynamo Application サーバがメイクアップした以下のファイルがみつかりません:\n\n%s\nこれらのファイルを使用する場合、 NetImpact Dynamo を再インストールしてください。"\
+    //0
 IDS_NID_OPTIMAFILESMISSING=\
-	//1"@ cannot set up the Web server(s) on this machine because one or more of the following NetImpact Dynamo files was not found in '%s' as expected:\n\n%s&\nTry reinstalling NetImpact Dynamo."\
-	//2"@ は 以下の NetImpact Dynamo ファイルが '%s' にみつからないので、このマシン上の Web サーバをセットアップできません。:\n\n%s&\nNetImpact Dynamo を再インストールしてください。"\
-	//0
+    //1"@ cannot set up the Web server(s) on this machine because one or more of the following NetImpact Dynamo files was not found in '%s' as expected:\n\n%s&\nTry reinstalling NetImpact Dynamo."\
+    //2"@ は 以下の NetImpact Dynamo ファイルが '%s' にみつからないので、このマシン上の Web サーバをセットアップできません。:\n\n%s&\nNetImpact Dynamo を再インストールしてください。"\
+    //0
 IDS_NID_SUCCESS=\
-	//1"Web server configuration completed successfully."\
-	//2"Web サーバの設定が正常に完了しました。"\
-	//0
+    //1"Web server configuration completed successfully."\
+    //2"Web サーバの設定が正常に完了しました。"\
+    //0
 IDS_NID_FAILED=\
-	//1"Web server configuration was aborted or did not complete successfully."\
-	//2"Web サーバの設定が失敗または正常に終了しませんでした。"\
-	//0
+    //1"Web server configuration was aborted or did not complete successfully."\
+    //2"Web サーバの設定が失敗または正常に終了しませんでした。"\
+    //0
 IDS_NID_ACCESSDENIED=\
-	//1"The destination file '%s' exists already and cannot be written to.\nThe file is probably being used by another application right now.\nMake sure that no applications that could use this file are running (like your Web server), and try this program again."\
-	//2"送信先ファイル '%s' は、すでに存在し、書込むことができません。\nこのファイルは、別のアプリケーションが使用しています。このファイルを使用しているアプリケーション( Web Server など )を終了して、再度このプログラムを実行してください。"\
-	//0
-	
+    //1"The destination file '%s' exists already and cannot be written to.\nThe file is probably being used by another application right now.\nMake sure that no applications that could use this file are running (like your Web server), and try this program again."\
+    //2"送信先ファイル '%s' は、すでに存在し、書込むことができません。\nこのファイルは、別のアプリケーションが使用しています。このファイルを使用しているアプリケーション( Web Server など )を終了して、再度このプログラムを実行してください。"\
+    //0
+IDS_USEINST64BIT=\
+    //1"Use 64-bit installer on 64-bit host!."\
+    //2"Use 64-bit installer on 64-bit host!."\
+    //0
+        
 [SetupErrorMessage]
 IDS_WRITEERROR=\
-        //1"Error writing to destination file"\
-        //2"コピー先ファイルへの書き込みエラー"\
-        //0
+    //1"Error writing to destination file"\
+    //2"コピー先ファイルへの書き込みエラー"\
+    //0
 IDS_NULLSTRING=\
-        //1"NULL String"\
-        //2"空(NULL)の文字列"\
-        //0
+    //1"NULL String"\
+    //2"空(NULL)の文字列"\
+    //0
 IDS_HEAPOK=\
-        //1"Heap OK"\
-        //2"ヒープ OK"\
-        //0
+    //1"Heap OK"\
+    //2"ヒープ OK"\
+    //0
 IDS_HEAPEND=\
-        //1"End of Heap"\
-        //2"ヒープの終端"\
-        //0
+    //1"End of Heap"\
+    //2"ヒープの終端"\
+    //0
 IDS_HEAPEMPTY=\
-        //1"Heap is Empty"\
-        //2"ヒープは空です"\
-        //0
+    //1"Heap is Empty"\
+    //2"ヒープは空です"\
+    //0
 IDS_HEAPDAMAGE=\
-        //1"Head is Damaged"\
-        //2"ヒープは壊れています"\
-        //0
+    //1"Head is Damaged"\
+    //2"ヒープは壊れています"\
+    //0
 IDS_CONTROLERROR=\
-        //1"Error creating control"\
-        //2"コントロール作成エラー"\
-        //0
+    //1"Error creating control"\
+    //2"コントロール作成エラー"\
+    //0
 IDS_CONTROLCLASSERROR=\
-        //1"Invalid control class"\
-        //2"不正なコントロールクラス"\
-        //0
+    //1"Invalid control class"\
+    //2"不正なコントロールクラス"\
+    //0
 IDS_QUERYFSERROR=\
-        //1"DosQueryFSInfo error: return code = %ld"\
-        //2"DosQueryFSInfo エラー: 戻り値 = %ld"\
-        //0
+    //1"DosQueryFSInfo error: return code = %ld"\
+    //2"DosQueryFSInfo エラー: 戻り値 = %ld"\
+    //0
 
 [StatusLineMessage]
 IDS_CHECKING=\
-        //1"Checking directory for existing components ..."\
-        //2"既存コンポーネントのためのディレクトリ・チェック..."\
-        //0
+    //1"Checking directory for existing components ..."\
+    //2"既存コンポーネントのためのディレクトリ・チェック..."\
+    //0
 IDS_CREATEPROGRAMFOLDER=\
-        //1"Creating Program Folder"\
-        //2"プログラム・フォルダの作成"\
-        //0
+    //1"Creating Program Folder"\
+    //2"プログラム・フォルダの作成"\
+    //0
 IDS_CREATEDIRECTORY=\
-        //1"Creating Directories..."\
-        //2"ディレクトリ作成..."\
-        //0
+    //1"Creating Directories..."\
+    //2"ディレクトリ作成..."\
+    //0
 IDS_RELOCATING=\
-        //1"Relocating Files..."\
-        //2"ファイルの再配置..."\
-        //0
+    //1"Relocating Files..."\
+    //2"ファイルの再配置..."\
+    //0
 IDS_COPYFILE=\
-        //1"Installing Files..."\
-        //2"ファイルのインストール..."\
-        //0
+    //1"Installing Files..."\
+    //2"ファイルのインストール..."\
+    //0
 IDS_COPYINGFILE=\
-        //1"Copying Files..."\
-        //2"ファイルのコピー..."\
-        //0
+    //1"Copying Files..."\
+    //2"ファイルのコピー..."\
+    //0
 IDS_REMOVING=\
-        //1"Removing Files..."\
-        //2"ファイルの削除..."\
-        //0
+    //1"Removing Files..."\
+    //2"ファイルの削除..."\
+    //0
 IDS_CREATEFILE=\
-        //1"Copying New File"\
-        //2"新しいファイルのコピー"\
-        //0
+    //1"Copying New File"\
+    //2"新しいファイルのコピー"\
+    //0
 IDS_DELETEFILE=\
-        //1"Deleting File"\
-        //2"ファイルの削除(delete)"\
-        //0
+    //1"Deleting File"\
+    //2"ファイルの削除(delete)"\
+    //0
 IDS_PATCHFILE=\
-        //1"Applying Patch File"\
-        //2"パッチファイルの適用"\
-        //0
+    //1"Applying Patch File"\
+    //2"パッチファイルの適用"\
+    //0
 IDS_DISK_NOT_WRITEABLE=\
-        //1"Diskette cannot be written!"\
-        //2"ディスケットは書き込めません!"\
-        //0
+    //1"Diskette cannot be written!"\
+    //2"ディスケットは書き込めません!"\
+    //0
 IDS_DISK_NOT_ENOUGH_FREE=\
-        //1"Diskette does not have enough free space!"\
-        //2"ディスケットには十分な空き容量がありません!"\
-        //0
+    //1"Diskette does not have enough free space!"\
+    //2"ディスケットには十分な空き容量がありません!"\
+    //0
 IDS_CREATESERVICE=\
-        //1"Creating Windows NT Service..."\
-        //2"Windows NT サービスの作成"\
-        //0
+    //1"Creating Windows NT Service..."\
+    //2"Windows NT サービスの作成"\
+    //0
 IDS_CREATING_FILE=\
-	//1"Creating File..."\
-	//2"ファイルの作成"\
-	//0
+    //1"Creating File..."\
+    //2"ファイルの作成"\
+    //0
 IDS_DELETEFILES=\
-	//1"Deleting Files..."\
-	//2"ファイルの削除"\
-	//0
+    //1"Deleting Files..."\
+    //2"ファイルの削除"\
+    //0
 IDS_CHECKINGPATH=\
-	//1"Checking destination path..."\
-	//2"パスをチェックしてます"\
-	//0
+    //1"Checking destination path..."\
+    //2"パスをチェックしてます"\
+    //0
 IDS_EMBEDDED=\
-	//1"Renaming files for embedded application..."\
-	//2"組込まれたアプリケーションのファイルのリネーム"\
-	//0
+    //1"Renaming files for embedded application..."\
+    //2"組込まれたアプリケーションのファイルのリネーム"\
+    //0
 
 [LicenseMessage]
 IDS_LICENSEMESSAGE=\
-        //1"Name and Company name must be filled in"\
-        //2"名前と会社/組織名は入力しなければなりません"\
-        //0
+    //1"Name and Company name must be filled in"\
+    //2"名前と会社/組織名は入力しなければなりません"\
+    //0
 IDS_APPLYLICENSE=\
-        //1"Applying License..."\
-        //2"ライセンスの適用..."\
-        //0
+    //1"Applying License..."\
+    //2"ライセンスの適用..."\
+    //0
 
 [Application]
 DLL_Delete_Old=0
