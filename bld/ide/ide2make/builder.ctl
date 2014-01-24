@@ -17,6 +17,11 @@ set PROJNAME=ide2make
     cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/ide2make.exe <OWBINDIR>/bide2mak<CMDEXT>
 
+[ BLOCK <BINTOOL> clean ]
+#========================
+    echo rm -f <OWBINDIR>/bide2mak<CMDEXT>
+    rm -f <OWBINDIR>/bide2mak<CMDEXT>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> dos386/ide2make.exe   <OWRELROOT>/binw/

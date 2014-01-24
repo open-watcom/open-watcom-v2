@@ -17,6 +17,11 @@ set PROJNAME=whc
     cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/whc.exe <OWBINDIR>/bwhc<CMDEXT>
 
+[ BLOCK <BINTOOL> clean ]
+#========================
+    echo rm -f <OWBINDIR>/bwhc<CMDEXT>
+    rm -f <OWBINDIR>/bwhc<CMDEXT>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> dos386/whc.exe      <OWRELROOT>/binw/

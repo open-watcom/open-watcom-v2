@@ -17,6 +17,11 @@ set PROJNAME=wipfc
     cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/wipfc.exe <OWBINDIR>/bwipfc<CMDEXT>
 
+[ BLOCK <BINTOOL> clean ]
+#========================
+    echo rm -f <OWBINDIR>/bwipfc<CMDEXT>
+    rm -f <OWBINDIR>/bwipfc<CMDEXT>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CPCMD> helper/*.nls          <OWRELROOT>/wipfc/
