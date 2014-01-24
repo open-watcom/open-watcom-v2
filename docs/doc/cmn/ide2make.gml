@@ -40,6 +40,8 @@ The following is a description of the options available.
 loads wpjfile.wpj (project.wpj by default)
 .note c <cfgfile>
 loads cfgfile instead of ide.cfg
+.note i
+directory to search configuration files
 .note d
 generate makefiles using development switch set
 .note r

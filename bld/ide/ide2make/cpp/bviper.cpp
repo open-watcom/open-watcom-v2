@@ -77,6 +77,7 @@ static const char *usage[] = {
     "options:",
     "  -p wpjfile       - loads wpjfile.wpj (project.wpj by default).",
     "  -c cfgfile       - loads cfgfile instead of ide.cfg.",
+    "  -i incdir        - directory to search configuration files.",
     "  -d               - generate makefiles using development switch set.",
     "  -r               - generate makefiles using release switch set.",
     "  -h host type     - generate makefiles for selected host.",
@@ -118,6 +119,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
     bool debug = FALSE;
     HostType host = HOST_UNDEFINED;
     int  i;
+    char *incdir = NULL;
 
     for( i=1; i<argc; i++ ) {
         if( streq( argv[i], "-c" ) ) {
@@ -132,6 +134,11 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
             }
         } else if( streq( argv[i], "-d" ) ) {
             sMode = 'd';
+        } else if( streq( argv[i], "-i" ) ) {
+            if( i+1 < argc ) {
+                i++;
+                incdir = argv[i];
+            }
         } else if( streq( argv[i], "-r" ) ) {
             sMode = 'r';
         } else if( streq( argv[i], "-x" ) ) {
@@ -149,7 +156,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
         pfile.setExt( ".wpj" );
     }
 
-    new MConfig( cfg, debug, host );
+    new MConfig( cfg, debug, host, incdir );
     WString err;
     if( !_config->ok() ) {
         printf( "ide2make: %s\n", (const char*)_config->errMsg() );

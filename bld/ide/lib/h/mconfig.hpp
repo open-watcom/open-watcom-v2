@@ -57,7 +57,7 @@ WCLASS MConfig : public WObject
 {
     Declare( MConfig )
     public:
-        MConfig( WFileName& filename, bool debug=FALSE, HostType host=HOST_UNDEFINED );
+        MConfig( WFileName& filename, bool debug=FALSE, HostType host=HOST_UNDEFINED, const char *include_path=NULL );
         ~MConfig();
         bool ok() { return _ok; }
         const WString& errMsg() { return _errMsg; }
@@ -146,6 +146,7 @@ WCLASS MConfig : public WObject
         WFileName       _editorParms;
         void expandMacroes( WString &str );
         char            _pathsep;
+        const char      *_include_path;
 };
 
 #define _config MConfig::_configPtr

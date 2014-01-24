@@ -62,7 +62,7 @@ Define( MConfig )
 
 MConfig* MConfig::_configPtr;
 
-MConfig::MConfig( WFileName& filename, bool debug, HostType host )
+MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *include_path )
     : _ok( FALSE )
     , _dirty( FALSE )
     , _filename( filename )
@@ -72,6 +72,7 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host )
     , _version( 0 )
     , _kludge( 0 )
     , _hostType( HOST_UNDEFINED )
+    , _include_path( include_path )
 {
     struct {
         const char    *batserv;
@@ -166,7 +167,6 @@ bool MConfig::readConfig()
     _tools.add( _nilTool );
     _nilRule = new MRule( "NIL", _nilTool );
     _rules.add( _nilRule );
-    _ok = TRUE;
     if( readFile( _filename ) ) {
         zapTargetMasks();
         return TRUE;
@@ -197,9 +197,14 @@ void MConfig::zapTargetMasks()
 bool MConfig::readFile( const WFileName& filename, bool reqd )
 {
     WTokenFile fil;
-    if( !fil.open( filename, "PATH" ) ) {
-        if( reqd ) {
-            _ok = FALSE;
+
+    _ok = fil.open( filename, OStyleRead, _include_path );
+    if( !_ok ) {
+        _ok = fil.open( filename, "PATH" );
+    }
+    if( !_ok ) {
+        _ok = !reqd;
+        if( !_ok ) {
             _errMsg.printf( "Unable to open '%s'", (const char*)filename );
         }
     } else {
