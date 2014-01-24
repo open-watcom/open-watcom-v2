@@ -81,9 +81,9 @@ WEXPORT WObjectFile::~WObjectFile()
         _objects.reset();
 }
 
-bool WEXPORT WObjectFile::open( const char* name, OpenStyle style )
+bool WEXPORT WObjectFile::open( const char* name, OpenStyle style, const char *path )
 {
-        _objOk = _objOk & WFile::open( name, style );
+        _objOk = _objOk & WFile::open( name, style, path );
         if( _objOk ) {
                 _objects.reset();
                 if( style & OStyleWrite ) {
