@@ -926,10 +926,6 @@ IDS_NID_ACCESSDENIED=\
     //1"The destination file '%s' exists already and cannot be written to.\nThe file is probably being used by another application right now.\nMake sure that no applications that could use this file are running (like your Web server), and try this program again."\
     //2"送信先ファイル '%s' は、すでに存在し、書込むことができません。\nこのファイルは、別のアプリケーションが使用しています。このファイルを使用しているアプリケーション( Web Server など )を終了して、再度このプログラムを実行してください。"\
     //0
-IDS_USEINST64BIT=\
-    //1"Use 64-bit installer on 64-bit host!."\
-    //2"Use 64-bit installer on 64-bit host!."\
-    //0
         
 [SetupErrorMessage]
 IDS_WRITEERROR=\
