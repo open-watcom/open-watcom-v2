@@ -9,17 +9,17 @@
 !include $(dwarfw_dir)/client.mif
 
 !ifeq bootstrap 1
-obj_dir = $(%OWOBJDIR)
+obj_dir = $(objs_subdir)
 !else ifeq dll_cg 1
-obj_dir = $(host_os)$(host_cpu).cgd
+obj_dir = $(objs_subdir).cgd
 !else ifeq $(proj_name)_rtdll 1
-obj_dir = $(host_os)$(host_cpu).rtd
+obj_dir = $(objs_subdir).rtd
 !else ifeq $(proj_name)_dll 1
-obj_dir = $(host_os)$(host_cpu).dll
+obj_dir = $(objs_subdir).dll
 !else ifdef debug_cg
-obj_dir = $(host_os)$(host_cpu).dbg
+obj_dir = $(objs_subdir).dbg
 !else
-obj_dir = $(host_os)$(host_cpu)
+obj_dir = $(objs_subdir)
 !endif
 
 o_dir_386    = $(cg_dir)/intel/386/$(obj_dir)

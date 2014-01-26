@@ -1,0 +1,47 @@
+#
+# There should be settings for supported building platforms
+#
+
+dosemu_wgml_batch=wgml.bat
+
+wgml_tmpfile=TMP.PTF
+wgml_sysfile_01=SYSUSR01.GML
+wgml_sysfile_02=SYSUSR02.GML
+wgml_sysfile_03=SYSUSR03.GML
+
+!ifeq bld_os dos
+
+WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
+
+!else ifeq bld_os os2
+
+WGMLCMD = $(docs_dir)\gml\os2\wgml $(wgml_cmdl_params)
+
+!else ifeq bld_os nt
+
+!ifdef %OWDOSBOX
+WGMLCMD = $(%OWDOSBOX) -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
+use_dosemu = dosbox
+!else
+WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
+!endif
+
+!else ifeq bld_os linux
+
+WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) $(wgml_cmdl_params)
+use_dosemu = dosemu
+wgml_tmpfile=tmp.ptf
+wgml_sysfile_01=sysusr01.gml
+wgml_sysfile_02=sysusr02.gml
+wgml_sysfile_03=sysusr03.gml
+
+!else ifeq bld_os bsd
+
+WGMLCMD = dosbox -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
+use_dosemu = dosbox
+
+!else
+!error Unsupported building platform !!!!!!
+!endif
+
+wgml_additional_files = $(wgml_tmpfile) $(wgml_sysfile_01) $(wgml_sysfile_02) $(wgml_sysfile_03)

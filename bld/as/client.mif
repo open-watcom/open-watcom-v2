@@ -1,43 +1,24 @@
 # AS in-line library finder.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-#
-# 'as' in-line library finder
-#
 
-asminline_lib_386 = $(as_dir)/$(target_cpu)/osi386/asinline.lib
-asminline_lib_axp = $(as_dir)/$(target_cpu)/osiaxp/asinline.lib
-asminline_lib_ppc = $(as_dir)/$(target_cpu)/osippc/asinline.lib
-asminline_lib_mps = $(as_dir)/$(target_cpu)/osimps/asinline.lib
-asminline_lib_x64 = $(as_dir)/$(target_cpu)/osix64/asinline.lib
-
-#
-# AS in-line DLL used
-#
-!ifeq $(proj_name)_dll 1
-asminline_lib_os2_386 = $(as_dir)/$(target_cpu)/os2386.dll/asinline.lib
-asminline_lib_nt_386  = $(as_dir)/$(target_cpu)/nt386.dll/asinline.lib
-asminline_lib_nt_axp  = $(as_dir)/$(target_cpu)/ntaxp.dll/asinline.lib
-asminline_lib_nt_x64  = $(as_dir)/$(target_cpu)/ntx64.dll/asinline.lib
-!endif
-
+!ifeq bootstrap 1
+asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
+!else ifeq $(proj_name)_rtdll 1
 #
 # AS in-line run-time DLL used
 #
-!ifeq $(proj_name)_rtdll 1
-asminline_lib_os2_386 = $(as_dir)/$(target_cpu)/os2386.rtd/asinline.lib
-asminline_lib_nt_386  = $(as_dir)/$(target_cpu)/nt386.rtd/asinline.lib
-asminline_lib_nt_axp  = $(as_dir)/$(target_cpu)/ntaxp.rtd/asinline.lib
-asminline_lib_nt_x64  = $(as_dir)/$(target_cpu)/ntx64.rtd/asinline.lib
-!endif
-
+asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir).rtd/asinline.lib
+!else ifeq $(proj_name)_dll 1
 #
-!ifeq bootstrap 1
-asminline_lib = $(as_dir)/$(target_cpu)/$(%OWOBJDIR)/asinline.lib
-!else ifdef asminline_lib_$(host_os)_$(host_cpu)
-asminline_lib = $(asminline_lib_$(host_os)_$(host_cpu))
+# AS in-line DLL used
+#
+asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir).dll/asinline.lib
 !else
-asminline_lib = $(asminline_lib_$(host_cpu))
+#
+# AS in-line OSI library used
+#
+asminline_lib = $(as_dir)/$(target_cpu)/osi$(host_cpu)/asinline.lib
 !endif
 
 #

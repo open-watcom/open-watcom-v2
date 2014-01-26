@@ -96,7 +96,7 @@ book_src=foo
 
 !else ifeq hbook c_readme
 # c_readme
-book_title=$(company) $(%BLD_VER_STR) C/C++ Getting Started
+book_title=$(company) $(bld_ver_str) C/C++ Getting Started
 book_objs=$(objs_gs) $(objs_cg)
 book_objs_ps=$(objs_gs_ps)
 book_incs=$(incs_gs);$(incs_cg)
@@ -106,7 +106,7 @@ book_multi_chapter=1
 
 !else ifeq hbook cbooks
 # cbooks
-book_title=$(company) $(%BLD_VER_STR) C/C++ On-line Documentation
+book_title=$(company) $(bld_ver_str) C/C++ On-line Documentation
 book_objs=$(objs_gs)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
@@ -114,7 +114,7 @@ book_src=cbooks
 
 !else ifeq hbook cguide
 # cguide
-book_title=$(company) $(%BLD_VER_STR) C/C++ User's Guide
+book_title=$(company) $(bld_ver_str) C/C++ User's Guide
 book_objs=$(objs_cg) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
 book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
 book_bmroot=$(bmroot_cg)
@@ -123,7 +123,7 @@ book_multi_chapter=1
 
 !else ifeq hbook cguideq
 # cguideq
-book_title=$(company) $(%BLD_VER_STR) C/C++ User's Guide for QNX
+book_title=$(company) $(bld_ver_str) C/C++ User's Guide for QNX
 book_objs=$(objs_cg) $(objs_lg) $(objs_cmn) $(objs_plusplus) $(objs_cc)
 book_incs=$(incs_cg);$(incs_lg);$(incs_cmn);$(incs_plusplus);$(incs_cc)
 book_bmroot=$(bmroot_cg)
@@ -132,7 +132,7 @@ book_multi_chapter=1
 
 !else ifeq hbook clbtst
 # clbtst
-book_title=$(company) $(%BLD_VER_STR) C Library Reference
+book_title=$(company) $(bld_ver_str) C Library Reference
 book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 book_bmroot=$(bmroot_lr3)
@@ -141,7 +141,7 @@ book_multi_chapter=1
 
 !else ifeq hbook clib
 # clib
-book_title=$(company) $(%BLD_VER_STR) C Library Reference
+book_title=$(company) $(bld_ver_str) C Library Reference
 book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 book_bmroot=$(bmroot_lr3)
@@ -150,7 +150,7 @@ book_multi_chapter=1
 
 !else ifeq hbook clib_fox
 # clib_fox
-book_title=$(company) $(%BLD_VER_STR) C Library Reference for FoxPro
+book_title=$(company) $(bld_ver_str) C Library Reference for FoxPro
 book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 book_bmroot=$(bmroot_lr3)
@@ -158,7 +158,7 @@ book_src=clib_fox
 
 !else ifeq hbook clib_nec
 # clib_nec
-book_title=$(company) $(%BLD_VER_STR) C Library Reference Kanji Functions subset
+book_title=$(company) $(bld_ver_str) C Library Reference Kanji Functions subset
 book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 book_bmroot=$(bmroot_lr3)
@@ -166,7 +166,7 @@ book_src=clib_nec
 
 !else ifeq hbook clibnt
 # clibnt
-book_title=$(company) $(%BLD_VER_STR) C Library Reference for Win32
+book_title=$(company) $(bld_ver_str) C Library Reference for Win32
 book_objs=$(objs_lr1) $(objs_lr2) $(objs_cmn)
 book_incs=$(incs_lr1);$(incs_lr2);$(incs_cmn)
 book_src=clib_nt
@@ -174,7 +174,7 @@ book_multi_chapter=1
 
 !else ifeq hbook clibqnx
 # clibqnx
-book_title=$(company) $(%BLD_VER_STR) C Library Reference for QNX
+book_title=$(company) $(bld_ver_str) C Library Reference for QNX
 book_objs=$(objs_lr1) $(objs_lr2) $(objs_lr3) $(objs_cmn)
 book_incs=$(incs_lr1);$(incs_lr2);$(incs_lr3);$(incs_cmn)
 book_bmroot=$(bmroot_lr3)
@@ -183,7 +183,7 @@ book_multi_chapter=1
 
 !else ifeq hbook clr
 # clr
-book_title=$(company) $(%BLD_VER_STR) C Language Reference
+book_title=$(company) $(bld_ver_str) C Language Reference
 book_objs=$(objs_cl)
 book_incs=$(incs_cl)
 book_bmroot=$(bmroot_cl)
@@ -192,21 +192,21 @@ book_multi_chapter=1
 
 !else ifeq hbook clslib
 # clslib
-book_title=$(company) $(%BLD_VER_STR) C++ Class Library Reference
+book_title=$(company) $(bld_ver_str) C++ Class Library Reference
 book_objs=$(objs_cpplib)
 book_incs=$(incs_cpplib)
 book_src=clslib
 
 !else ifeq hbook cmix
 # cmix
-book_title=$(company) $(%BLD_VER_STR) C/C++ Master Index
+book_title=$(company) $(bld_ver_str) C/C++ Master Index
 book_objs=$(hlpmix_objs)
 book_incs=$(hlpmix_incs)
 book_src=cmix
 
 !else ifeq hbook cpplib
 # cpplib
-book_title=$(company) $(%BLD_VER_STR) C++ Class Library Reference
+book_title=$(company) $(bld_ver_str) C++ Class Library Reference
 book_objs=$(objs_cpplib)
 book_incs=$(incs_cpplib)
 book_src=cpplib
@@ -221,7 +221,7 @@ book_src=cw
 
 !else ifeq hbook ddespy
 # ddespy
-book_title=$(company) $(%BLD_VER_STR) DDE Spy
+book_title=$(company) $(bld_ver_str) DDE Spy
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -229,14 +229,14 @@ book_src=guitool
 
 !else ifeq hbook devguide
 # devguide
-book_title=$(company) $(%BLD_VER_STR) Developer's Guide
+book_title=$(company) $(bld_ver_str) Developer's Guide
 book_objs=$(objs_devguide) $(objs_cmn)
 book_incs=$(incs_devguide);$(incs_cmn)
 book_src=devguide
 
 !else ifeq hbook drnt
 # drnt
-book_title=Dr. Watcom $(%BLD_VER_STR) NT
+book_title=Dr. Watcom $(bld_ver_str) NT
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -244,7 +244,7 @@ book_src=guitool
 
 !else ifeq hbook drwatcom
 # drwatcom
-book_title=Dr. Watcom $(%BLD_VER_STR)
+book_title=Dr. Watcom $(bld_ver_str)
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -252,7 +252,7 @@ book_src=guitool
 
 !else ifeq hbook ebooks
 # ebooks
-book_title=$(company) $(%BLD_VER_STR) Editor On-line Documentation
+book_title=$(company) $(bld_ver_str) Editor On-line Documentation
 book_objs=$(objs_gs)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
@@ -260,7 +260,7 @@ book_src=ebooks
 
 !else ifeq hbook editor
 # editor
-book_title=$(company) $(%BLD_VER_STR) Editor
+book_title=$(company) $(bld_ver_str) Editor
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -269,7 +269,7 @@ book_multi_chapter=1
 
 !else ifeq hbook f_readme
 # f_readme
-book_title=$(company) $(%BLD_VER_STR) FORTRAN 77 Getting Started
+book_title=$(company) $(bld_ver_str) FORTRAN 77 Getting Started
 book_objs=$(objs_gs)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
@@ -278,7 +278,7 @@ book_multi_chapter=1
 
 !else ifeq hbook f77graph
 # f77graph
-book_title=$(company) $(%BLD_VER_STR) FORTRAN 77 Graphics Library Reference
+book_title=$(company) $(bld_ver_str) FORTRAN 77 Graphics Library Reference
 book_objs=$(objs_lr1) $(objs_lr3) $(objs_cmn)
 book_incs=$(incs_lr1);$(incs_lr3);$(incs_cmn)
 book_bmroot=$(bmroot_lr3)
@@ -287,7 +287,7 @@ book_multi_chapter=1
 
 !else ifeq hbook f77lr
 # f77lr
-book_title=$(company) $(%BLD_VER_STR) FORTRAN 77 Language Reference
+book_title=$(company) $(bld_ver_str) FORTRAN 77 Language Reference
 book_objs=$(objs_fl)
 book_incs=$(incs_fl)
 book_src=f77lr
@@ -295,7 +295,7 @@ book_multi_chapter=1
 
 !else ifeq hbook fbooks
 # fbooks
-book_title=$(company) $(%BLD_VER_STR) FORTRAN 77 On-line Documentation
+book_title=$(company) $(bld_ver_str) FORTRAN 77 On-line Documentation
 book_objs=$(objs_gs)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
@@ -303,14 +303,14 @@ book_src=fbooks
 
 !else ifeq hbook fmix
 # fmix
-book_title=$(company) $(%BLD_VER_STR) FORTRAN 77 Master Index
+book_title=$(company) $(bld_ver_str) FORTRAN 77 Master Index
 book_objs=$(hlpmix_objs)
 book_incs=$(hlpmix_incs)
 book_src=fmix
 
 !else ifeq hbook fpguide
 # fpguide
-book_title=$(company) $(%BLD_VER_STR) FORTRAN 77 Programmer's Guide
+book_title=$(company) $(bld_ver_str) FORTRAN 77 Programmer's Guide
 book_objs=$(objs_pg) $(objs_cmn) $(objs_fg) $(objs_rsi) $(objs_win386) $(objs_lr1)
 book_incs=$(incs_pg);$(incs_cmn);$(incs_fg);$(incs_rsi);$(incs_win386);$(incs_lr1);
 book_bmroot=$(bmroot_pg)
@@ -319,7 +319,7 @@ book_multi_chapter=1
 
 !else ifeq hbook ftools
 # ftools
-book_title=$(company) $(%BLD_VER_STR) FORTRAN 77 Tools User's Guide
+book_title=$(company) $(bld_ver_str) FORTRAN 77 Tools User's Guide
 book_objs=$(objs_cmn) $(objs_lg) $(objs_fg)
 book_incs=$(incs_cmn);$(incs_lg);$(incs_fg)
 book_bmroot=$(bmroot_fg)
@@ -328,7 +328,7 @@ book_multi_chapter=1
 
 !else ifeq hbook fuguide
 # fuguide
-book_title=$(company) $(%BLD_VER_STR) FORTRAN 77 User's Guide
+book_title=$(company) $(bld_ver_str) FORTRAN 77 User's Guide
 book_objs=$(objs_fg) $(objs_lg) $(objs_cmn)
 book_incs=$(incs_fg);$(incs_lg);$(incs_cmn)
 book_bmroot=$(bmroot_fg)
@@ -337,7 +337,7 @@ book_multi_chapter=1
 
 !else ifeq hbook guitool
 # guitool
-book_title=$(company) $(%BLD_VER_STR) Graphical Tools User's Guide
+book_title=$(company) $(bld_ver_str) Graphical Tools User's Guide
 book_objs=$(objs_gui) $(objs_cg)
 book_objs_ps=$(objs_gui_ps)
 book_incs=$(incs_gui);$(incs_cg)
@@ -346,7 +346,7 @@ book_src=guitool
 
 !else ifeq hbook heapwalk
 # heapwalk
-book_title=$(company) $(%BLD_VER_STR) Heap Walker
+book_title=$(company) $(bld_ver_str) Heap Walker
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -354,7 +354,7 @@ book_src=guitool
 
 !else ifeq hbook ide
 # ide
-book_title=$(company) $(%BLD_VER_STR) IDE
+book_title=$(company) $(bld_ver_str) IDE
 book_objs=$(objs_gui) $(objs_cg)
 book_objs_ps=$(objs_gui_ps)
 book_incs=$(incs_gui);$(incs_cg)
@@ -364,7 +364,7 @@ book_src=guitool
 
 !else ifeq hbook lguide
 # lguide
-book_title=$(company) $(%BLD_VER_STR) Linker Guide
+book_title=$(company) $(bld_ver_str) Linker Guide
 book_objs=$(objs_lg)
 book_incs=$(incs_lg)
 book_src=lguide
@@ -372,7 +372,7 @@ book_multi_chapter=1
 
 !else ifeq hbook owstl
 # owstldg
-book_title=$(company) $(%BLD_VER_STR) OWSTL developer guide
+book_title=$(company) $(bld_ver_str) OWSTL developer guide
 book_objs=$(objs_owstldev)
 book_incs=$(incs_owstldev)
 book_src=owstl
@@ -380,7 +380,7 @@ book_src=owstl
 
 !else ifeq hbook pguide
 # pguide
-book_title=$(company) $(%BLD_VER_STR) C/C++ Programmer's Guide
+book_title=$(company) $(bld_ver_str) C/C++ Programmer's Guide
 book_objs=$(objs_pg) $(objs_cmn) $(objs_cg) $(objs_rsi) $(objs_win386) $(objs_lr1)
 book_incs=$(incs_pg);$(incs_cmn);$(incs_cg);$(incs_rsi);$(incs_win386);$(incs_lr1);
 book_bmroot=$(bmroot_pg)
@@ -389,7 +389,7 @@ book_multi_chapter=1
 
 !else ifeq hbook resacc
 # resacc
-book_title=$(company) $(%BLD_VER_STR) Accelerator Editor
+book_title=$(company) $(bld_ver_str) Accelerator Editor
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -397,7 +397,7 @@ book_src=guitool
 
 !else ifeq hbook rescomp
 # rescomp
-book_title=$(company) $(%BLD_VER_STR) Resource Compiler
+book_title=$(company) $(bld_ver_str) Resource Compiler
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -405,7 +405,7 @@ book_src=guitool
 
 !else ifeq hbook resdlg
 # resdlg
-book_title=$(company) $(%BLD_VER_STR) Dialog Editor
+book_title=$(company) $(bld_ver_str) Dialog Editor
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -413,7 +413,7 @@ book_src=guitool
 
 !else ifeq hbook resedt
 # resedt
-book_title=$(company) $(%BLD_VER_STR) Resource Editor
+book_title=$(company) $(bld_ver_str) Resource Editor
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -421,7 +421,7 @@ book_src=guitool
 
 !else ifeq hbook resimg
 # resimg
-book_title=$(company) $(%BLD_VER_STR) Image Editor
+book_title=$(company) $(bld_ver_str) Image Editor
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -429,7 +429,7 @@ book_src=guitool
 
 !else ifeq hbook resmnu
 # resmnu
-book_title=$(company) $(%BLD_VER_STR) Menu Editor
+book_title=$(company) $(bld_ver_str) Menu Editor
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -437,7 +437,7 @@ book_src=guitool
 
 !else ifeq hbook resstr
 # resstr
-book_title=$(company) $(%BLD_VER_STR) String Table Editor
+book_title=$(company) $(bld_ver_str) String Table Editor
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -445,7 +445,7 @@ book_src=guitool
 
 !else ifeq hbook spy
 # spy
-book_title=$(company) $(%BLD_VER_STR) Spy
+book_title=$(company) $(bld_ver_str) Spy
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -453,7 +453,7 @@ book_src=guitool
 
 !else ifeq hbook tools
 # tools
-book_title=$(company) $(%BLD_VER_STR) C/C++ Tools User's Guide
+book_title=$(company) $(bld_ver_str) C/C++ Tools User's Guide
 book_objs=$(objs_cmn) $(objs_lg) $(objs_cg)
 book_incs=$(incs_cmn);$(incs_lg);$(incs_cg)
 book_bmroot=$(bmroot_cg)
@@ -462,14 +462,14 @@ book_multi_chapter=1
 
 !else ifeq hbook wasaxp
 # wasaxp
-book_title=wasaxp $(%BLD_VER_STR)
+book_title=wasaxp $(bld_ver_str)
 book_objs=$(objs_cmn)
 book_incs=$(incs_cmn)
 book_src=wasaxp
 
 !else ifeq hbook wbrw
 # wbrw
-book_title=$(company) $(%BLD_VER_STR) Source Browser
+book_title=$(company) $(bld_ver_str) Source Browser
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -478,7 +478,7 @@ book_src=guitool
 
 !else ifeq hbook wccerrs
 # wccerrs
-book_title=$(company) $(%BLD_VER_STR) C Diagnostic Messages
+book_title=$(company) $(bld_ver_str) C Diagnostic Messages
 book_objs=$(objs_cg) $(objs_plusplus) $(objs_cc)
 book_incs=$(incs_cg);$(incs_plusplus);$(incs_cc)
 book_bmroot=$(bmroot_cg)
@@ -487,7 +487,7 @@ book_src=wccerrs
 
 !else ifeq hbook wd
 # wd
-book_title=$(company) $(%BLD_VER_STR) Debugger Guide
+book_title=$(company) $(bld_ver_str) Debugger Guide
 book_objs=$(objs_wd)
 book_objs_ps=$(objs_wd_ps)
 book_incs=$(incs_wd)
@@ -498,7 +498,7 @@ book_multi_chapter=1
 
 !else ifeq hbook trap
 # wd
-book_title=$(company) $(%BLD_VER_STR) Trap Developers Guide
+book_title=$(company) $(bld_ver_str) Trap Developers Guide
 book_objs=$(objs_trap)
 book_objs_ps=$(objs_trap_ps)
 book_incs=$(incs_trap)
@@ -509,7 +509,7 @@ book_multi_chapter=1
 
 !else ifeq hbook wfcerrs
 # wfcerrs
-book_title=$(company) $(%BLD_VER_STR) FORTRAN 77 Diagnostic Messages
+book_title=$(company) $(bld_ver_str) FORTRAN 77 Diagnostic Messages
 book_objs=$(objs_fg)
 book_incs=$(incs_fg)
 book_bmroot=$(bmroot_fg)
@@ -527,7 +527,7 @@ book_src=wjcerrs
 
 !else ifeq hbook wlnkerrs
 # wlnkerrs
-book_title=$(company) $(%BLD_VER_STR) Linker Diagnostic Messages
+book_title=$(company) $(bld_ver_str) Linker Diagnostic Messages
 book_objs=$(objs_lg)
 book_incs=$(incs_lg)
 book_src=wlinkerr
@@ -535,7 +535,7 @@ book_src=wlinkerr
 
 !else ifeq hbook wpperrs
 # wpperrs
-book_title=$(company) $(%BLD_VER_STR) C++ Diagnostic Messages
+book_title=$(company) $(bld_ver_str) C++ Diagnostic Messages
 book_objs=$(objs_cg) $(objs_plusplus)
 book_incs=$(incs_cg);$(incs_plusplus)
 book_bmroot=$(bmroot_cg)
@@ -544,7 +544,7 @@ book_src=wpperrs
 
 !else ifeq hbook wprof
 # wprof
-book_title=$(company) $(%BLD_VER_STR) Profiler
+book_title=$(company) $(bld_ver_str) Profiler
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -554,7 +554,7 @@ book_multi_chapter=1
 
 !else ifeq hbook wrcerrs
 # wrcerrs
-book_title=$(company) $(%BLD_VER_STR) Resource Compiler Diagnostic Messages
+book_title=$(company) $(bld_ver_str) Resource Compiler Diagnostic Messages
 book_objs=$(objs_gui)
 book_incs=$(incs_gui)
 book_bmroot=$(bmroot_gui)
@@ -563,7 +563,7 @@ book_src=rcerrs
 
 !else ifeq hbook zoom
 # zoom
-book_title=$(company) $(%BLD_VER_STR) Zoom
+book_title=$(company) $(bld_ver_str) Zoom
 book_objs=$(objs_gui) $(objs_cg)
 book_incs=$(incs_gui);$(incs_cg)
 book_bmroot=$(bmroot_gui)
@@ -571,21 +571,21 @@ book_src=guitool
 
 !else ifeq hbook cgdoc
 # cgdoc
-book_title=$(company) $(%BLD_VER_STR) Code Generator
+book_title=$(company) $(bld_ver_str) Code Generator
 book_objs=$(objs_cgdoc)
 book_incs=$(incs_cgdoc)
 book_src=cgdoc
 
 !else ifeq hbook wddoc
 # wddoc
-book_title=$(company) $(%BLD_VER_STR) Debugger
+book_title=$(company) $(bld_ver_str) Debugger
 book_objs=$(objs_wddoc)
 book_incs=$(incs_wddoc)
 book_src=wddoc
 
 !else ifeq hbook vi
 # vi
-book_title=$(company) $(%BLD_VER_STR) VI Editor
+book_title=$(company) $(bld_ver_str) VI Editor
 book_objs=$(objs_vi)
 book_objs_ps=$(objs_vi_ps)
 book_incs=$(incs_vi)

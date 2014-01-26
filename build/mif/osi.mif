@@ -6,9 +6,9 @@ lname = $^@
 
 !ifeq host_os osi
 !ifdef __UNIX__
-osildr = $(%OWSRCDIR)/w32loadr/os2ldr/os2ldr.exe
+osildr = $(src_dir)/w32loadr/os2ldr/os2ldr.exe
 !else
-osildr = $(%OWSRCDIR)\w32loadr\os2ldr\os2ldr.exe
+osildr = $(src_dir)\w32loadr\os2ldr\os2ldr.exe
 !endif
 !endif
 

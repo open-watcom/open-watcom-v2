@@ -75,6 +75,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/w32loadr/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
 # Build help compilers and tools
 [ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
@@ -231,12 +232,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
 # Build documentation
 [ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE <OWROOT>/docs/builder.ctl ]
+[ INCLUDE <OWDOCSDIR>/builder.ctl ]
 [ ENDIF ]
 
 [ BLOCK <1> docs docsclean ]
 #===========================
-[ INCLUDE <OWROOT>/docs/builder.ctl ]
+[ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
 [ BLOCK <1> test testclean ]
 #===========================

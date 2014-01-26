@@ -8,18 +8,11 @@ ui_os = $(ui_os_$(host_os))
 !else
 ui_os = $(host_os)
 !endif
-!ifeq bootstrap 1
-ui_path = $(ui_dir)/$(ui_os)/$(%OWOBJDIR)
-ncurses_path = $(ncurses_dir)/$(%OWOBJDIR)
-!else
-ui_path = $(ui_dir)/$(ui_os)/$(host_os)$(host_cpu)
-ncurses_path = $(ncurses_dir)/$(host_os)$(host_cpu)
-!endif
 !ifeq ui_os unix
 ui_inc_dirs = -I"$(ui_dir)/h" -I"$(ncurses_dir)/h"
-ui_lib = $(ui_path)/ui.lib $(ncurses_path)/ncurses.lib
+ui_lib = $(ui_dir)/$(ui_os)/$(objs_subdir)/ui.lib $(ncurses_dir)/$(objs_subdir)/ncurses.lib
 !else
 ui_inc_dirs = -I"$(ui_dir)/h"
-ui_lib = $(ui_path)/ui.lib
+ui_lib = $(ui_dir)/$(ui_os)/$(objs_subdir)/ui.lib
 !endif
 !endif

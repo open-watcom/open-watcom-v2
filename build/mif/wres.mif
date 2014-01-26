@@ -52,7 +52,7 @@ name_mps = $(wres_dir)/$(host_os)mps/_s/wres.lib
 name_x64 = $(wres_dir)/$(host_os)x64/_s/wres.lib
 
 !ifeq bootstrap 1
-wres_lib = $(wres_dir)/$(%OWOBJDIR)/wres.lib
+wres_lib = $(wres_dir)/$(objs_subdir)/wres.lib
 !else
 wres_lib = $(name_$(host_cpu))
 !endif

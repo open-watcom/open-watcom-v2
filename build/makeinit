@@ -1,15 +1,19 @@
-bld_ver      = $(%BLD_VER)
+bld_ver      = $(%OWBLDVER)
+bld_ver_str  = $(%OWBLDVERSTR)
 patch_level  = 0
 contrib_dir  = $(%OWROOT)/contrib
 build_dir    = $(%OWROOT)/build
 src_dir      = $(%OWSRCDIR)
-verbose      = $(%OWVERBOSE)
+docs_dir     = $(%OWDOCSDIR)
 
+bin_subdir   = $(%OWOBJDIR)
 !ifdef %OWDLLOBJDIR
 dll_subdir   = $(%OWDLLOBJDIR)
 !else
 dll_subdir   = dllobjs
 !endif
+
+verbose      = $(%OWVERBOSE)
 
 # don't ask, just nuke the files
 .ERASE

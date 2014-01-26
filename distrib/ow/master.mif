@@ -1,17 +1,17 @@
-installer_c_dos_386     = open-watcom-$(%BLD_VER_STR:.=_)-c-dos.exe
-installer_c_nt_386      = open-watcom-$(%BLD_VER_STR:.=_)-c-win-x86.exe
-installer_c_os2_386     = open-watcom-$(%BLD_VER_STR:.=_)-c-os2.exe
-installer_c_linux_386   = open-watcom-$(%BLD_VER_STR:.=_)-c-linux-x86
-installer_c_nt_x64      = open-watcom-$(%BLD_VER_STR:.=_)-c-win-x64.exe
-installer_c_linux_x64   = open-watcom-$(%BLD_VER_STR:.=_)-c-linux-x64
+installer_c_dos_386     = open-watcom-$(bld_ver_str:.=_)-c-dos.exe
+installer_c_nt_386      = open-watcom-$(bld_ver_str:.=_)-c-win-x86.exe
+installer_c_os2_386     = open-watcom-$(bld_ver_str:.=_)-c-os2.exe
+installer_c_linux_386   = open-watcom-$(bld_ver_str:.=_)-c-linux-x86
+installer_c_nt_x64      = open-watcom-$(bld_ver_str:.=_)-c-win-x64.exe
+installer_c_linux_x64   = open-watcom-$(bld_ver_str:.=_)-c-linux-x64
 installer_c = $(installer_c_$(host_os)_$(host_cpu))
 
-installer_f77_dos_386   = open-watcom-$(%BLD_VER_STR:.=_)-f77-dos.exe
-installer_f77_nt_386    = open-watcom-$(%BLD_VER_STR:.=_)-f77-win-x86.exe
-installer_f77_os2_386   = open-watcom-$(%BLD_VER_STR:.=_)-f77-os2.exe
-installer_f77_linux_386 = open-watcom-$(%BLD_VER_STR:.=_)-f77-linux-x86
-installer_f77_nt_x64    = open-watcom-$(%BLD_VER_STR:.=_)-f77-win-x64.exe
-installer_f77_linux_x64 = open-watcom-$(%BLD_VER_STR:.=_)-f77-linux-x64
+installer_f77_dos_386   = open-watcom-$(bld_ver_str:.=_)-f77-dos.exe
+installer_f77_nt_386    = open-watcom-$(bld_ver_str:.=_)-f77-win-x86.exe
+installer_f77_os2_386   = open-watcom-$(bld_ver_str:.=_)-f77-os2.exe
+installer_f77_linux_386 = open-watcom-$(bld_ver_str:.=_)-f77-linux-x86
+installer_f77_nt_x64    = open-watcom-$(bld_ver_str:.=_)-f77-win-x64.exe
+installer_f77_linux_x64 = open-watcom-$(bld_ver_str:.=_)-f77-linux-x64
 installer_f77 = $(installer_f77_$(host_os)_$(host_cpu))
 
 setup_c_dos_386     = $(setupgui_dir)/dos386/setup.exe

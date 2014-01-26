@@ -1,4 +1,4 @@
 echo on
-set gmllib=r:\wgml\syslib\
-set gmlinc=r:\doc\layouts;supp
+set gmllib=%OWDOCSDIR%\wgml\syslib\
+set gmlinc=%OWDOCSDIR%\doc\layouts;supp
 wgml dwdoc.gml (file cgdps line

@@ -27,6 +27,12 @@ win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 
 !ifeq bootstrap 1
+objs_subdir = $(bin_subdir)
+!else
+objs_subdir = $(host_os)$(host_cpu)
+!endif
+
+!ifeq bootstrap 1
 
 cc_386          = *wcc386
 cc_i86          = *wcc

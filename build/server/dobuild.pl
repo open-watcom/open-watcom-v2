@@ -267,12 +267,15 @@ sub make_build_batch
         elsif (/$setenv WATCOM=/i)   { ; }
         elsif (/$setenv INCLUDE=/i)  { ; }
         elsif (/$setenv PATH=/i)     { ; }
-        elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{'DOSBOX'}; }
+        elsif (/$setenv OWDOSBOX=/i) { ; }
         else                         { print BATCH; }
     }
     close(INPUT);
     print BATCH "$setenv OWRELROOT=", $relroot;
     # Add additional commands to do the build.
+    if (($Common::config{'DOSBOX'} || '') ne '') {
+        print BATCH "$setenv OWDOSBOX=", $Common::config{'DOSBOX'};
+    }
     print BATCH "$setenv OWDOCBUILD=0";
     print BATCH "$setenv OWDOCQUIET=1";
     # start building by bootstrap tools.
@@ -299,7 +302,7 @@ sub make_docs_batch
         elsif (/$setenv WATCOM=/i)            { ; }
         elsif (/$setenv INCLUDE=/i)           { ; }
         elsif (/$setenv PATH=/i)              { ; }
-        elsif (/$setenv OWDOSBOX=/i)          { print BATCH "$setenv OWDOSBOX=", $Common::config{'DOSBOX'}; }
+        elsif (/$setenv OWDOSBOX=/i)          { ; }
         elsif (/$setenv OWGHOSTSCRIPTPATH=/i) { ; }
         elsif (/$setenv OWWIN95HC=/i)         { ; }
         elsif (/$setenv OWHHC=/i)             { ; }
@@ -308,6 +311,9 @@ sub make_docs_batch
     close(INPUT);
     print BATCH "$setenv OWRELROOT=", $relroot;
     # Add additional commands to do the build.
+    if (($Common::config{'DOSBOX'} || '') ne '') {
+        print BATCH "$setenv OWDOSBOX=", $Common::config{'DOSBOX'};
+    }
     if (($Common::config{'GHOSTSCRIPTPATH'} || '') ne '') {
         print BATCH "$setenv OWGHOSTSCRIPTPATH=", $Common::config{'GHOSTSCRIPTPATH'};
     }
@@ -337,12 +343,15 @@ sub make_test_batch
         elsif (/$setenv WATCOM=/i)   { ; }
         elsif (/$setenv INCLUDE=/i)  { ; }
         elsif (/$setenv PATH=/i)     { ; }
-        elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{'DOSBOX'}; }
+        elsif (/$setenv OWDOSBOX=/i) { ; }
         else                         { print BATCH; }
     }
     close(INPUT);
     batch_output_set_test_env();
     # Add additional commands to do the testing.
+    if (($Common::config{'DOSBOX'} || '') ne '') {
+        print BATCH "$setenv OWDOSBOX=", $Common::config{'DOSBOX'};
+    }
     print BATCH '';
     if ($^O eq 'MSWin32') { 
         if ($Config{archname} =~ /64/) {

@@ -1,16 +1,16 @@
-!ifeq bootstrap 1
-aui_path = $(aui_dir)/$(%OWOBJDIR)
-!else
 !ifeq sys_windowed 1
-aui_path_os2i86 = $(aui_dir)/os2i86.pm
-aui_path_os2386 = $(aui_dir)/os2386.pm
+!ifeq host_os os2
+aui_os2_pm = 1
 !endif
-!ifdef aui_path_$(host_os)$(host_cpu)
-aui_path = $(aui_path_$(host_os)$(host_cpu))
+!endif
+!ifeq bootstrap 1
+aui_path = $(aui_dir)/$(objs_subdir)
+!else ifdef aui_os2_pm
+aui_path = $(aui_dir)/$(objs_subdir).pm
 !else
-aui_path = $(aui_dir)/$(host_os)$(host_cpu)
+aui_path = $(aui_dir)/$(objs_subdir)
 !endif
-!endif
+
 aui_dialogs = &
     $(aui_dir)/res/dlgs/dlgrx.dlg &
     $(aui_dir)/res/dlgs/dlgsrch.dlg &

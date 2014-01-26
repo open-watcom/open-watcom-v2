@@ -14,7 +14,6 @@ set PROJNAME=misc
 
 [ BLOCK <1> rel cprel ]
 #======================
-    set OWDOCROOT=<OWROOT>/docs
 
     <CPCMD> watcom.ico              <OWRELROOT>/
     <CPCMD> <OWROOT>/license.txt    <OWRELROOT>/

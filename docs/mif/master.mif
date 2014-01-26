@@ -1,21 +1,13 @@
 !include ../mif/books.mif
 
-!ifdef __UNIX__
-SL=/
-CPYCMD=cp
-RENCMD=mv
-LOWERC=$#
-!else
-SL=\
-CPYCMD=copy
-RENCMD=ren
-LOWERC=ren
-!endif
-
 all: .SYMBOLIC $(books)
     @%null
 
 $(books) : .SYMBOLIC
-    @wmake -h -f ../mif/onebook.mif hbook=$@ dotarget=$(dotarget) header=$(header)
+    @wmake -h -f ../mif/onebook.mif hbook=$@ dotarget=$(dotarget) header=$(header) $(%OW_BOOK_CLEAN)
 
-!include ../mif/clean.mif
+clean: set_clean .SYMBOLIC $(books)
+    @set OW_BOOK_CLEAN=
+
+set_clean : .SYMBOLIC
+    @set OW_BOOK_CLEAN=clean

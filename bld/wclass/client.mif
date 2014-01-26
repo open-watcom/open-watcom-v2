@@ -10,8 +10,4 @@ wclass_inc_dirs = $(wclass_inc_dirs_$(host_os)_$(host_cpu))
 wclass_inc_dirs = $(wclass_inc_dirs_$(host_os))
 !endif
 
-!ifeq bootstrap 1
-wclass_lib = $(wclass_dir)/$(%OWOBJDIR)/wclass.lib
-!else
-wclass_lib = $(wclass_dir)/$(host_os)$(host_cpu)/wclass.lib
-!endif
+wclass_lib = $(wclass_dir)/$(objs_subdir)/wclass.lib

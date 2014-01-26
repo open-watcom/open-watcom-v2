@@ -37,6 +37,16 @@ export OWDOCBUILD=0
 # export OWWIN95HC=hcrtf
 # export OWHHC=hhc
 
+# build process requires WGML utility which is available only as DOS executable
+# it is necessary to have some DOS emulator installed
+# DOSBOX emulator is available on most platforms
+# DOSEMU emulator is available on Linux (Intel platform)
+# if DOSBOX emulator is used then OWDOSBOX variable must be set
+# Uncoment and set OWDOSBOX variable bellow to point to DOSBOX emulator executable
+
+# export OWDOSBOX=dosbox
+
+:common_setup
 # Invoke the script for the common environment
 . $OWROOT/cmnvars.sh
 

@@ -6,8 +6,8 @@
 #       the end.
 
 # Set the version numbers
-export BLD_VER=20
-export BLD_VER_STR=2.0
+export OWBLDVER=20
+export OWBLDVERSTR=2.0
 
 # Set up default path information variable
 if [ -z "$OWDEFPATH" ]; then
@@ -21,6 +21,9 @@ export OWBINDIR=$OWROOT/build/bin
 
 # Subdirectory containing OW sources
 export OWSRCDIR=$OWROOT/bld
+
+# Subdirectory containing documentation sources
+export OWDOCSDIR=$OWROOT/docs
 
 # Set environment variables
 export PATH=$OWBINDIR:$OWROOT/build:$OWDEFPATH

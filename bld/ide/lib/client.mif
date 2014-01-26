@@ -1,6 +1,2 @@
 idelib_inc_dirs = -I"$(idelib_dir)/h"
-!ifeq bootstrap 1
-idelib_lib = $(idelib_dir)/$(%OWOBJDIR)/ide.lib
-!else
-idelib_lib = $(idelib_dir)/$(host_os)$(host_cpu)/ide.lib
-!endif
+idelib_lib = $(idelib_dir)/$(objs_subdir)/ide.lib

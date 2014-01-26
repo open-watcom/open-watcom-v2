@@ -2,42 +2,23 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-#
-# DWARF library
-#
-dwarfw_lib_386     = $(dwarfw_dir)/osi386/dwarfw.lib
-dwarfw_lib_axp     = $(dwarfw_dir)/osiaxp/dwarfw.lib
-dwarfw_lib_ppc     = $(dwarfw_dir)/osippc/dwarfw.lib
-dwarfw_lib_mps     = $(dwarfw_dir)/osimps/dwarfw.lib
-dwarfw_lib_x64     = $(dwarfw_dir)/osix64/dwarfw.lib
-
-#
-# DWARF DLL used
-#
-!ifeq $(proj_name)_dll 1
-dwarfw_lib_os2_386 = $(dwarfw_dir)/os2386.dll/dwarfw.lib
-dwarfw_lib_nt_386  = $(dwarfw_dir)/nt386.dll/dwarfw.lib
-dwarfw_lib_nt_axp  = $(dwarfw_dir)/ntaxp.dll/dwarfw.lib
-dwarfw_lib_nt_x64  = $(dwarfw_dir)/ntx64.dll/dwarfw.lib
-!endif
-
+!ifeq bootstrap 1
+dwarfw_lib = $(dwarfw_dir)/$(objs_subdir)/dwarfw.lib
+!else ifeq $(proj_name)_rtdll 1
 #
 # DWARF run-time DLL used
 #
-!ifeq $(proj_name)_rtdll 1
-dwarfw_lib_os2_386 = $(dwarfw_dir)/os2386.rtd/dwarfw.lib
-dwarfw_lib_nt_386  = $(dwarfw_dir)/nt386.rtd/dwarfw.lib
-dwarfw_lib_nt_axp  = $(dwarfw_dir)/ntaxp.rtd/dwarfw.lib
-dwarfw_lib_nt_x64  = $(dwarfw_dir)/ntx64.rtd/dwarfw.lib
-!endif
-
+dwarfw_lib = $(dwarfw_dir)/$(objs_subdir).rtd/dwarfw.lib
+!else ifeq $(proj_name)_dll 1
 #
-!ifeq bootstrap 1
-dwarfw_lib = $(dwarfw_dir)/$(%OWOBJDIR)/dwarfw.lib
-!else ifdef dwarfw_lib_$(host_os)_$(host_cpu)
-dwarfw_lib = $(dwarfw_lib_$(host_os)_$(host_cpu))
+# DWARF DLL used
+#
+dwarfw_lib = $(dwarfw_dir)/$(objs_subdir).dll/dwarfw.lib
 !else
-dwarfw_lib = $(dwarfw_lib_$(host_cpu))
+#
+# DWARF OSI library used
+#
+dwarfw_lib = $(dwarfw_dir)/osi$(host_cpu)/dwarfw.lib
 !endif
 
 dwarfw_inc_dirs = -I"$(dwarfw_dir)/h"

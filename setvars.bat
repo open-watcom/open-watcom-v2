@@ -40,12 +40,15 @@ REM Change these variables to point Windows help compilers which you have instal
 REM set OWWIN95HC=hcrtf
 REM set OWHHC=hhc
 
-REM check if DOS is available on Windows
-REM set OWDOSBOX variable to point to DOSBOX emulator
-REM it can be LFN, but must not include any spaces
 if not '%OS%' == 'Windows_NT' goto common_setup
-if exist %SystemRoot%\system32\dosx.exe goto common_setup
-set OWDOSBOX=dosbox
+REM build process requires WGML utility which is available only as DOS executable
+REM on Windows platforms which don't have NTVDM or if WGML doesn't work under NTVDM
+REM DOSBOX emulator must be installed and OWDOSBOX variable must be set
+REM It is necessary for all 64-bit Windows and Windows 7 32-bit
+REM Uncoment and set OWDOSBOX variable bellow to point to DOSBOX emulator executable
+REM path must not include any spaces
+
+REM set OWDOSBOX=dosbox
 
 :common_setup
 

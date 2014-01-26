@@ -6,8 +6,8 @@ REM NOTE: All scripts to set the environment must call this script at
 REM       the end.
 
 REM Set the version numbers
-set BLD_VER=20
-set BLD_VER_STR=2.0
+set OWBLDVER=20
+set OWBLDVERSTR=2.0
 
 REM Set up default path information variable
 if not "%OWDEFPATH%" == "" goto defpath_set
@@ -22,6 +22,9 @@ set OWBINDIR=%OWROOT%\build\bin
 
 REM Subdirectory containing OW sources
 set OWSRCDIR=%OWROOT%\bld
+
+REM Subdirectory containing documentation sources
+set OWDOCSDIR=%OWROOT%\docs
 
 REM Set environment variables
 set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%

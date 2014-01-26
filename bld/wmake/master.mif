@@ -89,7 +89,11 @@ extra_l_flags_dos_386 = opt stack=4k
 !endif
 extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
 
+!ifeq host_cpu i86
+libs = $(wres_lib)
+!else
 libs = $(wres_lib) $(orl_lib)
+!endif
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res

@@ -13,6 +13,10 @@ to_os_path=/=\
 !include ../mif/depends.mif
 !include ../mif/books.mif
 
+wgml_cmdl_params = "$(book_src) ( file $(wgml_optfile)"
+
+!include wgmlcmd.mif
+
 # If 'verbose' is set to 1, wgml displays warnings and statistics.
 # The default is a quiet build.
 doc_verbose = $(verbose)
@@ -34,13 +38,8 @@ doc_verbose = 0
 company=Open Watcom
 
 wgml_optfile=wgmlopts.tmp
-wgml_tmpfile=TMP.PTF
-wgml_sysfile_01=SYSUSR01.GML
-wgml_sysfile_02=SYSUSR02.GML
-wgml_sysfile_03=SYSUSR03.GML
 whpcvt_optfile=whpcopts.tmp
 gml_lib=../gml/syslib
-dosemu_wgml_batch=wgml.bat
 wine_hc_batch=winehc.bat
 
 #
@@ -89,34 +88,6 @@ dep_ps = $(hbook).ps
 dep_pdf = $(hbook).pdf
 !endif
 dep_txt = readme.txt freadme.txt
-
-#
-# There should be settings for supported building platforms
-#
-!ifeq bld_os dos
-WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(wgml_optfile)"
-!else ifeq bld_os os2
-WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(wgml_optfile)"
-!else ifeq bld_os nt
-!ifdef %OWDOSBOX
-WGMLCMD = $(%OWDOSBOX) -c "mount c $(%OWROOT)\docs" -c "mount d ." -c "mount e $(%OWSRCDIR)" -c "d:$(dosemu_wgml_batch)" -noconsole
-use_dosemu = dosbox
-!else
-WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(wgml_optfile)"
-!endif
-!else ifeq bld_os linux
-WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) "$(book_src) ( file $(wgml_optfile)"
-use_dosemu = dosemu
-wgml_tmpfile=tmp.ptf
-wgml_sysfile_01=sysusr01.gml
-wgml_sysfile_02=sysusr02.gml
-wgml_sysfile_03=sysusr03.gml
-!else ifeq bld_os bsd
-WGMLCMD = dosbox -c "mount c $(%OWROOT)/docs" -c "mount d ." -c "mount e $(%OWSRCDIR)" -c "d:$(dosemu_wgml_batch)" -noconsole
-use_dosemu = dosbox
-!else
-!error Unsupported building platform !!!!!!
-!endif
 
 #
 # wgml targets
@@ -287,17 +258,6 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
 .EXTENSIONS: .pdf
 
 $(hbook).pdf : $(hbook).ps
-!ifeq bld_os nt
-#
-# it is simple workaround for bug in OW 1.9 wmake
-#
-    @%create pdf.bat
-    @%append pdf.bat @set OWDOCS_OLD_PATH=$(%PATH)
-    @%append pdf.bat @set PATH=$(%OWGHOSTSCRIPTPATH);$(%PATH)
-    @%append pdf.bat $(hc_pdf) -r600 $[@ $(hbook).pdf
-    @%append pdf.bat @set PATH=%OWDOCS_OLD_PATH%
-    @pdf.bat
-!else
     @set OWDOCS_OLD_PATH=$(%PATH)
 !ifdef __UNIX__
     @set PATH=$(%OWGHOSTSCRIPTPATH):$(%PATH)
@@ -306,7 +266,7 @@ $(hbook).pdf : $(hbook).ps
 !endif
     !$(hc_pdf) -r600 $[@ $(hbook).pdf
     @set PATH=$(%OWDOCS_OLD_PATH)
-!endif
+    @set OWDOCS_OLD_PATH=
 
 ####################################################
 #
@@ -464,9 +424,10 @@ prepare_wgml_opts : .PROCEDURE
 # create DOSEMU batch file to run wgml utility
 #-------------------------------------------------------
     @%create $(dosemu_wgml_batch)
+    @%append $(dosemu_wgml_batch) lredir e: linux\fs$(docs_dir)
     @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
     @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
-    @%append $(dosemu_wgml_batch) ..\gml\dos\wgml.exe "$(book_src) ( file $(wgml_optfile)"
+    @%append $(dosemu_wgml_batch) e:\gml\dos\wgml.exe $(wgml_cmdl_params)
     @%append $(dosemu_wgml_batch) exitemu
 !else ifeq use_dosemu dosbox
 #-------------------------------------------------------
@@ -476,7 +437,7 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(dosemu_wgml_batch) d:
     @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
     @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
-    @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe "$(book_src) ( file $(wgml_optfile)"
+    @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe $(wgml_cmdl_params)
     @%append $(dosemu_wgml_batch) exit
 !endif
     @%create $(wgml_optfile)
@@ -538,7 +499,7 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(wgml_optfile) ( cpinch 10
     @%append $(wgml_optfile) ( index
     @%append $(wgml_optfile) ( setsymbol dotarget $(wgml_target)
-    @%append $(wgml_optfile) ( setsymbol book_ver $(%BLD_VER_STR)
+    @%append $(wgml_optfile) ( setsymbol book_ver $(bld_ver_str)
 # add default windowing for NT
 #    @%append $(wgml_optfile) ( setsymbol defwinnt 1
 # add default windowing for OS/2

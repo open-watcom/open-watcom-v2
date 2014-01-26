@@ -6,11 +6,9 @@ sys_windowed = 1
 ide_autodepends = .autodepend
 !endif
 
-docs_root = $(%OWROOT)/docs
-
-doc_path_nt     = $(docs_root)/nt
-doc_path_os2    = $(docs_root)/os2
-doc_path_win    = $(docs_root)/win
+doc_path_nt     = $(docs_dir)/nt
+doc_path_os2    = $(docs_dir)/os2
+doc_path_win    = $(docs_dir)/win
 
 ide_h_os2   = $(doc_path_os2)/ide.h
 ide_h_win   = $(doc_path_win)/ide.h
