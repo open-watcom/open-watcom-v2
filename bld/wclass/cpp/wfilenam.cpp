@@ -671,6 +671,27 @@ void WEXPORT WFileName::normalize()
     }
 }
 
+bool WEXPORT WFileName::addPath( const char *path )
+{
+    FullName    s;
+
+    _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
+    if( _x.dir[0] == PATHSEP_CHAR || _x.dir[0] == '.' ) {
+        return( FALSE );
+    }
+    _splitpath( path, s.drive, s.dir, NULL, NULL );
+    if( s.dir[0] == '\0' && s.drive[0] == '\0' ) {
+        return( FALSE );
+    }
+    if( _x.drive[0] != '\0' && _x.drive[0] != s.drive[0] ) {
+        return( FALSE );
+    }
+    strcat( s.dir, _x.dir );
+    makepath( _x.path, s.drive, s.dir, _x.fname, _x.ext );
+    *this = _x.path;
+    return( TRUE );
+}
+
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
 // definition only for warning levels above 8 

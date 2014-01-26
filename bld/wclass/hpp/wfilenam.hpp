@@ -87,6 +87,7 @@ WCLASS WFileName : public WString {
         char WEXPORT setPathSep( char );
         char WEXPORT getPathSep();
         void WEXPORT normalize();
+        bool WEXPORT addPath( const char *path );
     private:
         char _pathsep[4];
 };

@@ -66,18 +66,17 @@ WEXPORT WFile::~WFile()
     freeBuffer();
 }
 
-bool WEXPORT WFile::open( const char* name, OpenStyle style, const char *path )
+bool WEXPORT WFile::open( const char* name, OpenStyle style )
 {
-    _filename = name;
-    _filename.absoluteTo( path );
-    _handle = ::open( _filename, style, PMODE_RW );
+    _handle = ::open( name, style, PMODE_RW );
     _style = style;
     _ok = ( _handle != FILE_ERROR );
     _eof = !_ok;
     _chsaved = FALSE;
     _lineCount = 0;
-    if( !_ok ) {
-        _filename = "";
+    if( _ok ) {
+        _filename = name;
+        _filename.absoluteTo();
     }
     return _ok;
 }

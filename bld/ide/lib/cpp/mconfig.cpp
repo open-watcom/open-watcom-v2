@@ -197,8 +197,12 @@ void MConfig::zapTargetMasks()
 bool MConfig::readFile( const WFileName& filename, bool reqd )
 {
     WTokenFile fil;
+    WFileName tmp_name( filename );
 
-    _ok = fil.open( filename, OStyleRead, _include_path );
+    _ok = FALSE;
+    if( tmp_name.addPath( _include_path ) ) {
+        _ok = fil.open( tmp_name, OStyleRead );
+    }
     if( !_ok ) {
         _ok = fil.open( filename, "PATH" );
     }

@@ -54,7 +54,7 @@ class WFile : public WObject {
     public:
         WEXPORT WFile();
         WEXPORT ~WFile();
-        virtual bool WEXPORT open( const char* name, OpenStyle style=OStyleRead, const char *path=NULL );
+        virtual bool WEXPORT open( const char* name, OpenStyle style=OStyleRead );
         virtual bool WEXPORT open( const char* name, const char* env, OpenStyle style=OStyleRead );
         virtual bool WEXPORT close();
         bool WEXPORT ok() { return _ok; }

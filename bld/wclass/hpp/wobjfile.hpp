@@ -42,7 +42,7 @@ WCLASS WObjectFile : public WFile {
     public:
         WEXPORT WObjectFile( long version=0 );
         WEXPORT ~WObjectFile();
-        bool WEXPORT open( const char *name, OpenStyle style=OStyleRead, const char *path=NULL );
+        bool WEXPORT open( const char *name, OpenStyle style=OStyleRead );
         bool WEXPORT open( const char *name, const char* env, OpenStyle style=OStyleRead );
         bool WEXPORT close();
         long WEXPORT version() { return _version; }
