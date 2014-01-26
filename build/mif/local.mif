@@ -108,8 +108,8 @@ ext_lib_shared = .so
 # extra objects for linking via cl
 cl_objs_gen =
 cl_objs_dll =
-cl_libs_gen = $(watcom_dir)/$(objs_subdir)/clibext.lib
-cl_libs_dll = $(watcom_dir)/$(objs_subdir)/clibexts.lib
+cl_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+cl_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 
 !ifeq sys_dll 1
 cl_objs = $(cl_objs_dll)
@@ -261,8 +261,8 @@ ext_lib_shared = .so
 # extra objects for linking via cl
 cl_objs_gen =
 cl_objs_dll =
-cl_libs_gen = $(watcom_dir)/$(objs_subdir)/clibext.lib
-cl_libs_dll = $(watcom_dir)/$(objs_subdir)/clibexts.lib
+cl_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+cl_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 
 !ifeq sys_dll 1
 cl_objs = $(cl_objs_dll)
@@ -411,8 +411,8 @@ ext_lib_shared = .dll
 # extra objects for linking via cl
 cl_objs_gen =
 cl_objs_dll =
-cl_libs_gen = $(watcom_dir)/$(objs_subdir)/clibext.lib
-cl_libs_dll = $(watcom_dir)/$(objs_subdir)/clibexts.lib
+cl_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+cl_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 
 !ifeq sys_dll 1
 cl_objs = $(cl_objs_dll)
