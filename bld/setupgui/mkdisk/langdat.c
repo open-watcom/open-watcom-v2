@@ -395,6 +395,7 @@ static void ProcessLine( const char *line )
     char    *keys;
 //    char    *pack, *patch;
     int     special;
+    size_t  len;
 
     special = FALSE;
     type = DEFVAL( DefType );
@@ -431,11 +432,35 @@ static void ProcessLine( const char *line )
         } else if( !stricmp( cmd, "rel" ) ) {
             rel = str;
         } else if( !stricmp( cmd, "cond" ) ) {
-            cond = str;
+            cond = strdup( str );
+        } else if( !stricmp( cmd, "conda" ) ) {
+            if( *cond == '\0' ) {
+                cond = strdup( str );
+            } else {
+                len = strlen( cond ) + strlen( str ) + 1 + 1;
+                p = Alloc( len );
+                strcpy( p, cond );
+                free( cond );
+                cond = p;
+                strcat( p, " " );
+                strcat( p, str );
+            }
         } else if( !stricmp( cmd, "pack" ) ) {
 //            pack = str;
         } else if( !stricmp( cmd, "where" ) ) {
-            where = str;
+            where = strdup( str );
+        } else if( !stricmp( cmd, "wherea" ) ) {
+            if( *where == '\0' ) {
+                where = strdup( str );
+            } else {
+                len = strlen( where ) + strlen( str ) + 1 + 1;
+                p = Alloc( len );
+                strcpy( p, where );
+                free( where );
+                where = p;
+                strcat( p, " " );
+                strcat( p, str );
+            }
         } else if( !stricmp( cmd, "desc" ) ) {
             desc = str;
         } else if( !stricmp( cmd, "descr" ) ) {     //  Multiple spellings
@@ -468,6 +493,12 @@ static void ProcessLine( const char *line )
         }
     }
     free( line_copy );
+    if( *cond != '\0' ) {
+        free( cond );
+    }
+    if( *where != '\0' ) {
+        free( where );
+    }
 }
 
 static void ProcessDefault( const char *line )
