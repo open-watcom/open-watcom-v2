@@ -1,16 +1,16 @@
-[ DEFAULT type="e" desc="DOS4GW stub program" where="c jc f77 jf77" ]
-dir="binw"     usr="wstub.exe"  cond="doshost winhost | dostarg"  old="binb"
-dir="binw"     usr="wstubq.exe" cond="doshost winhost | dostarg"  old="binb"
-dir="binnt"    usr="wstub.exe"  cond="wnthost dostarg"
-dir="binnt"    usr="wstubq.exe" cond="wnthost dostarg"
-dir="binnt64"  usr="wstub.exe"  cond="wnt64host dostarg" keys="ntx64"
-dir="binnt64"  usr="wstubq.exe" cond="wnt64host dostarg" keys="ntx64"
-dir="binp"     usr="wstub.exe"  cond="os2host dostarg"
-dir="binp"     usr="wstubq.exe" cond="os2host dostarg"
-dir="binl"     usr="wstub.exe"  cond="lnxhost dostarg"
-dir="binl"     usr="wstubq.exe" cond="lnxhost dostarg"
-dir="binl64"   usr="wstub.exe"  cond="lnx64host dostarg" keys="lx64"
-dir="binl64"   usr="wstubq.exe" cond="lnx64host dostarg" keys="lx64"
+[ DEFAULT cond="dostarg" type="e" where="c jc f77 jf77" desc="DOS4GW stub program" ]
+dir="binw"      usr="wstub.exe"     conda="doshost winhost |"   old="binb"
+dir="binw"      usr="wstubq.exe"    conda="doshost winhost |"   old="binb"
+dir="binnt"     usr="wstub.exe"     conda="wnthost"
+dir="binnt"     usr="wstubq.exe"    conda="wnthost"
+dir="binnt64"   usr="wstub.exe"     conda="wnt64host"           keys="ntx64"
+dir="binnt64"   usr="wstubq.exe"    conda="wnt64host"           keys="ntx64"
+dir="binp"      usr="wstub.exe"     conda="os2host"
+dir="binp"      usr="wstubq.exe"    conda="os2host"
+dir="binl"      usr="wstub.exe"     conda="lnxhost"
+dir="binl"      usr="wstubq.exe"    conda="lnxhost"
+dir="binl64"    usr="wstub.exe"     conda="lnx64host"           keys="lx64"
+dir="binl64"    usr="wstubq.exe"    conda="lnx64host"           keys="lx64"
 
-[ DEFAULT desc="DOS4GW stub program source" where="c jc f77 jf77" ]
-type="s" dir="src"      usr="wstub.asm"  cond="samples"
+[ DEFAULT type="s" where="c jc f77 jf77" desc="DOS4GW stub program source" ]
+dir="src"       usr="wstub.asm"     cond="samples"

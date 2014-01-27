@@ -3,8 +3,8 @@
 #
 [ DEFAULT dir="binw" cond="doshost winhost | cplusplus" where="c jc" ]
 #  i86 target
-    type="e" usr="wpp.exe"          cond="doshost winhost | cplusplus tools16"
-    type="s" usr="wppi8601.int"     cond="doshost winhost | cplusplus tools16"
+    type="e" usr="wpp.exe"          conda="tools16"
+    type="s" usr="wppi8601.int"     conda="tools16"
 #  386 target
     type="e" usr="wpp386.exe"
     type="s" usr="wpp38601.int"
@@ -17,9 +17,9 @@
 #
 [ DEFAULT dir="binp" cond="os2host cplusplus" where="c jc" ]
 #  i86 target
-    type="e" usr="wpp.exe"                      cond="os2host cplusplus tools16"
-    type="d" usr="wppdi86.dll"  dir="binp/dll"  cond="os2host cplusplus tools16"
-    type="s" usr="wppi8601.int" dir="binp/dll"  cond="os2host cplusplus tools16"
+    type="e" usr="wpp.exe"                      conda="tools16"
+    type="d" usr="wppdi86.dll"  dir="binp/dll"  conda="tools16"
+    type="s" usr="wppi8601.int" dir="binp/dll"  conda="tools16"
 #  386 target
     type="e" usr="wpp386.exe"
     type="d" usr="wppd386.dll"  dir="binp/dll"
@@ -34,9 +34,9 @@
 #
 [ DEFAULT dir="binnt" cond="wnthost cplusplus" where="c jc ac" ]
 #  i86 target
-    type="e" usr="wpp.exe"          cond="wnthost cplusplus tools16"
-    type="d" usr="wppdi86.dll"      cond="wnthost cplusplus tools16"
-    type="s" usr="wppi8601.int"     cond="wnthost cplusplus tools16"
+    type="e" usr="wpp.exe"          conda="tools16"
+    type="d" usr="wppdi86.dll"      conda="tools16"
+    type="s" usr="wppi8601.int"     conda="tools16"
 #  386 target
     type="e" usr="wpp386.exe"
     type="d" usr="wppd386.dll"
@@ -64,9 +64,9 @@
 #
 [ DEFAULT dir="binnt64" cond="wnt64host cplusplus" where="c jc" keys="ntx64" ]
 #  i86 target
-    type="e" usr="wpp.exe"          cond="wnt64host cplusplus tools16"
-    type="d" usr="wppdi86.dll"      cond="wnt64host cplusplus tools16"
-    type="s" usr="wppi8601.int"     cond="wnt64host cplusplus tools16"
+    type="e" usr="wpp.exe"          conda="tools16"
+    type="d" usr="wppdi86.dll"      conda="tools16"
+    type="s" usr="wppi8601.int"     conda="tools16"
 #  386 target
     type="e" usr="wpp386.exe"
     type="d" usr="wppd386.dll"
@@ -81,8 +81,8 @@
 #
 [ DEFAULT dir="binl" cond="lnxhost cplusplus" where="c jc" ]
 #  i86 target
-    type="e" usr="wpp"              cond="lnxhost cplusplus tools16"
-    type="s" usr="wppi8601.int"     cond="lnxhost cplusplus tools16"
+    type="e" usr="wpp"              conda="tools16"
+    type="s" usr="wppi8601.int"     conda="tools16"
 #  386 target
     type="e" usr="wpp386"
     type="s" usr="wpp38601.int"
@@ -95,8 +95,8 @@
 #
 [ DEFAULT dir="binl64" cond="lnx64host cplusplus" where="c jc" keys="lx64" ]
 #  i86 target
-    type="e" usr="wpp"              cond="lnx64host cplusplus tools16"
-    type="s" usr="wppi8601.int"     cond="lnx64host cplusplus tools16"
+    type="e" usr="wpp"              conda="tools16"
+    type="s" usr="wppi8601.int"     conda="tools16"
 #  386 target
     type="e" usr="wpp386"
     type="s" usr="wpp38601.int"

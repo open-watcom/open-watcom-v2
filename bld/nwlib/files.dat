@@ -1,14 +1,14 @@
 # NWLIB component of lang.dat
 
-[ DEFAULT ]
-type="e" dir="binw"     usr="wlib.exe"  cond="doshost winhost |"    where="c jc f77 jf77"
-type="e" dir="binp"     usr="wlib.exe"  cond="os2host"              where="c jc f77 jf77"
-type="d" dir="binp/dll" usr="wlibd.dll" cond="os2host"              where="c jc f77 jf77"
-type="e" dir="binnt"    usr="wlib.exe"  cond="wnthost"              where="c jc f77 jf77 ac"
-type="d" dir="binnt"    usr="wlibd.dll" cond="wnthost"              where="c jc f77 jf77 ac"
-type="e" dir="binnt64"  usr="wlib.exe"  cond="wnt64host"            where="c jc f77 jf77" keys="ntx64"
-type="d" dir="binnt64"  usr="wlibd.dll" cond="wnt64host"            where="c jc f77 jf77" keys="ntx64"
-type="e" dir="axpnt"    usr="wlib.exe"  cond="alphahost"            where="ac"
-type="d" dir="axpnt"    usr="wlibd.dll" cond="alphahost"            where="ac"
-type="e" dir="binl"     usr="wlib"      cond="lnxhost"              where="c f77 jc jf77"
-type="e" dir="binl64"   usr="wlib"      cond="lnx64host"            where="c f77 jc jf77" keys="lx64"
+[ DEFAULT where="c jc f77 jf77" ]
+type="e" dir="binw"     usr="wlib.exe"  cond="doshost winhost |"
+type="e" dir="binp"     usr="wlib.exe"  cond="os2host"
+type="d" dir="binp/dll" usr="wlibd.dll" cond="os2host"
+type="e" dir="binnt"    usr="wlib.exe"  cond="wnthost"      wherea="ac"
+type="d" dir="binnt"    usr="wlibd.dll" cond="wnthost"      wherea="ac"
+type="e" dir="binnt64"  usr="wlib.exe"  cond="wnt64host"                    keys="ntx64"
+type="d" dir="binnt64"  usr="wlibd.dll" cond="wnt64host"                    keys="ntx64"
+type="e" dir="axpnt"    usr="wlib.exe"  cond="alphahost"    where="ac"
+type="d" dir="axpnt"    usr="wlibd.dll" cond="alphahost"    where="ac"
+type="e" dir="binl"     usr="wlib"      cond="lnxhost"
+type="e" dir="binl64"   usr="wlib"      cond="lnx64host"                    keys="lx64"

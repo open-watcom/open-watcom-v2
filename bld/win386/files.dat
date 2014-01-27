@@ -1,19 +1,19 @@
 # Win386 component of install manifest
 
-[ DEFAULT dir="binw" where="c jc f77 jf77" ]
-type="e" usr="win386.ext"       cond="wintarg"          desc="32-bit Windows Supervisor"
-type="e" usr="w386dll.ext"      cond="wintarg"          desc="32-bit Windows Supervisor for DLLs"
-type="e" usr="wemu387.386"      cond="wintarg"
-type="e" usr="wdebug.386"       cond="winhost wintarg MinimalInstall | |"
+[ DEFAULT dir="binw" cond="wintarg" type="e" where="c jc f77 jf77" ]
+usr="win386.ext"    desc="32-bit Windows Supervisor"
+usr="w386dll.ext"   desc="32-bit Windows Supervisor for DLLs"
+usr="wemu387.386"      
+usr="wdebug.386"    conda="winhost MinimalInstall | |"
 
-[ DEFAULT where="c jc f77 jf77" desc="32-bit Windows supervisor bind utility" ]
-type="e" dir="binw"     usr="wbind.exe"     cond="doshost winhost | wintarg"    old="binb"
-type="e" dir="binp"     usr="wbind.exe"     cond="os2host wintarg"
-type="e" dir="binnt"    usr="wbind.exe"     cond="wnthost wintarg"
-type="e" dir="axpnt"    usr="wbind.exe"     cond="alphahost wintarg" where="ac"
-type="e" dir="binnt64"  usr="wbind.exe"     cond="wnt64host wintarg" keys="ntx64"
-type="e" dir="binl"     usr="wbind"         cond="lnxhost wintarg"
-type="e" dir="binl64"   usr="wbind"         cond="lnx64host wintarg" keys="lx64"
+[ DEFAULT cond="wintarg" type="e" where="c jc f77 jf77" desc="32-bit Windows supervisor bind utility" ]
+dir="binw"      usr="wbind.exe" conda="doshost winhost |"       old="binb"
+dir="binp"      usr="wbind.exe" conda="os2host"
+dir="binnt"     usr="wbind.exe" conda="wnthost"
+dir="axpnt"     usr="wbind.exe" conda="alphahost"   where="ac"
+dir="binnt64"   usr="wbind.exe" conda="wnt64host"               keys="ntx64"
+dir="binl"      usr="wbind"     conda="lnxhost"
+dir="binl64"    usr="wbind"     conda="lnx64host"               keys="lx64"
 
 [ DEFAULT rel="." cond="wintarg" where="c jc f77 jf77" ]
 type="l" dir="lib386/win"   usr="win386.lib"

@@ -2,8 +2,8 @@
 # DOS and Windows 3.x
 #
 [ DEFAULT dir="binw" cond="doshost winhost |" where="c jc" ]
-type="e" usr="wcc.exe"          cond="doshost winhost | tools16"
-type="s" usr="wcci8601.int"     cond="doshost winhost | tools16"
+type="e" usr="wcc.exe"          conda="tools16"
+type="s" usr="wcci8601.int"     conda="tools16"
 type="e" usr="wcc386.exe"
 type="s" usr="wcc38601.int"
 #type="e" usr="wccaxp.exe"
@@ -13,9 +13,9 @@ type="s" usr="wcc38601.int"
 # OS/2
 #
 [ DEFAULT dir="binp" cond="os2host" where="c jc" ]
-type="e" usr="wcc.exe"                      cond="os2host tools16"
-type="d" usr="wccd.dll"     dir="binp/dll"  cond="os2host tools16"
-type="s" usr="wcci8601.int" dir="binp/dll"  cond="os2host tools16"
+type="e" usr="wcc.exe"                      conda="tools16"
+type="d" usr="wccd.dll"     dir="binp/dll"  conda="tools16"
+type="s" usr="wcci8601.int" dir="binp/dll"  conda="tools16"
 type="e" usr="wcc386.exe"
 type="d" usr="wccd386.dll"  dir="binp/dll"
 type="s" usr="wcc38601.int" dir="binp/dll"
@@ -24,9 +24,9 @@ type="s" usr="wcc38601.int" dir="binp/dll"
 # Windows NT - 386
 #
 [ DEFAULT dir="binnt" cond="wnthost" where="c jc ac" ]
-type="e" usr="wcc.exe"          cond="wnthost tools16"
-type="d" usr="wccd.dll"         cond="wnthost tools16"
-type="s" usr="wcci8601.int"     cond="wnthost tools16"
+type="e" usr="wcc.exe"          conda="tools16"
+type="d" usr="wccd.dll"         conda="tools16"
+type="s" usr="wcci8601.int"     conda="tools16"
 type="e" usr="wcc386.exe"
 type="d" usr="wccd386.dll"
 type="s" usr="wcc38601.int"
@@ -38,9 +38,9 @@ type="s" usr="wccaxp01.int"
 # Windows NT - AXP
 #
 [ DEFAULT dir="axpnt" cond="alphahost" where="ac" ]
-type="e" usr="wcc.exe"          cond="alphahost tools16"
-type="d" usr="wccd.dll"         cond="alphahost tools16"
-type="s" usr="wcci8601.int"     cond="alphahost tools16"
+type="e" usr="wcc.exe"          conda="tools16"
+type="d" usr="wccd.dll"         conda="tools16"
+type="s" usr="wcci8601.int"     conda="tools16"
 type="e" usr="wcc386.exe"
 type="d" usr="wccd386.dll"
 type="s" usr="wcc38601.int"
@@ -52,9 +52,9 @@ type="s" usr="wccaxp01.int"
 # Windows NT - X64
 #
 [ DEFAULT dir="binnt64" cond="wnt64host" where="c jc" keys="ntx64" ]
-type="e" usr="wcc.exe"          cond="wnt64host tools16"
-type="d" usr="wccd.dll"         cond="wnt64host tools16"
-type="s" usr="wcci8601.int"     cond="wnt64host tools16"
+type="e" usr="wcc.exe"          conda="tools16"
+type="d" usr="wccd.dll"         conda="tools16"
+type="s" usr="wcci8601.int"     conda="tools16"
 type="e" usr="wcc386.exe"
 type="d" usr="wccd386.dll"
 type="s" usr="wcc38601.int"
@@ -66,8 +66,8 @@ type="s" usr="wccaxp01.int"
 # Linux - 386
 #
 [ DEFAULT dir="binl" cond="lnxhost" where="c jc" ]
-type="e" usr="wcc"              cond="lnxhost tools16"
-type="s" usr="wcci8601.int"     cond="lnxhost tools16"
+type="e" usr="wcc"              conda="tools16"
+type="s" usr="wcci8601.int"     conda="tools16"
 type="e" usr="wcc386"
 type="s" usr="wcc38601.int"
 
@@ -75,7 +75,7 @@ type="s" usr="wcc38601.int"
 # Linux - X64
 #
 [ DEFAULT dir="binl64" cond="lnx64host" where="c jc" keys="lx64" ]
-type="e" usr="wcc"              cond="lnx64host tools16"
-type="s" usr="wcci8601.int"     cond="lnx64host tools16"
+type="e" usr="wcc"              conda="tools16"
+type="s" usr="wcci8601.int"     conda="tools16"
 type="e" usr="wcc386"
 type="s" usr="wcc38601.int"

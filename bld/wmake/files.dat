@@ -1,10 +1,10 @@
 # wmake component
-[ DEFAULT type="e" ]
-dir="binw"      usr="wmaker.exe"    cond="doshost"              where="c jc f77 jf77"
-dir="binw"      usr="wmake.exe"     cond="doshost winhost |"    where="c jc f77 jf77"
-dir="binp"      usr="wmake.exe"     cond="os2host"              where="c jc f77 jf77"
-dir="binnt"     usr="wmake.exe"     cond="wnthost"              where="c jc ac f77 jf77"
-dir="binnt64"   usr="wmake.exe"     cond="wnt64host"            where="c jc f77 jf77" keys="ntx64"
-dir="axpnt"     usr="wmake.exe"     cond="alphahost"            where="ac"
-dir="binl"      usr="wmake"         cond="lnxhost"              where="c jc f77 jf77"
-dir="binl64"    usr="wmake"         cond="lnx64host"            where="c jc f77 jf77" keys="lx64"
+[ DEFAULT type="e" where="c jc f77 jf77" ]
+dir="binw"      usr="wmaker.exe"    cond="doshost"
+dir="binw"      usr="wmake.exe"     cond="doshost winhost |"
+dir="binp"      usr="wmake.exe"     cond="os2host"
+dir="binnt"     usr="wmake.exe"     cond="wnthost"      wherea="ac"
+dir="binnt64"   usr="wmake.exe"     cond="wnt64host"                    keys="ntx64"
+dir="axpnt"     usr="wmake.exe"     cond="alphahost"    where="ac"
+dir="binl"      usr="wmake"         cond="lnxhost"
+dir="binl64"    usr="wmake"         cond="lnx64host"                    keys="lx64"

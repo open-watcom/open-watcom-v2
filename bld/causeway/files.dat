@@ -1,22 +1,22 @@
 # Causeway Extender redistributable binaries component of install manifest
 
-[ DEFAULT type="e" desc="Causeway executable compressor utility" ]
-dir="binw"      usr="cwc.exe"       cond="doshost winhost | dostarg"    where="c jc f77 jf77"
-dir="binp"      usr="cwc.exe"       cond="os2host dostarg"              where="c jc f77 jf77"
-dir="binnt"     usr="cwc.exe"       cond="wnthost dostarg"              where="c jc f77 jf77 ac"
-dir="binnt64"   usr="cwc.exe"       cond="wnt64host dostarg"            where="c jc f77 jf77" keys="ntx64"
-dir="axpnt"     usr="cwc.exe"       cond="alphahost dostarg"            where="ac"
-dir="binl"      usr="cwc"           cond="lnxhost dostarg"              where="c f77 jc jf77"
-dir="binl64"    usr="cwc"           cond="lnx64host dostarg"            where="c f77 jc jf77" keys="lx64"
+[ DEFAULT cond="dostarg type="e" where="c jc f77 jf77" desc="Causeway executable compressor utility" ]
+dir="binw"      usr="cwc.exe"       conda="doshost winhost |"
+dir="binp"      usr="cwc.exe"       conda="os2host"
+dir="binnt"     usr="cwc.exe"       conda="wnthost"
+dir="binnt64"   usr="cwc.exe"       conda="wnt64host"                   keys="ntx64"
+dir="axpnt"     usr="cwc.exe"       conda="alphahost"   where="ac"
+dir="binl"      usr="cwc"           conda="lnxhost"
+dir="binl64"    usr="cwc"           conda="lnx64host"                   keys="lx64"
 
-[ DEFAULT type="e" desc="Causeway DOS extender stub program" ]
-dir="binw"      usr="cwstub.exe"    cond="doshost winhost | dostarg"    where="c jc f77 jf77"
-dir="binp"      usr="cwstub.exe"    cond="os2host dostarg"              where="c jc f77 jf77"
-dir="binnt"     usr="cwstub.exe"    cond="wnthost dostarg"              where="c jc f77 jf77 ac"
-dir="binnt64"   usr="cwstub.exe"    cond="wnt64host dostarg"            where="c jc f77 jf77" keys="ntx64"
-dir="axpnt"     usr="cwstub.exe"    cond="alphahost dostarg"            where="ac"
-dir="binl"      usr="cwstub.exe"    cond="lnxhost dostarg"              where="c f77 jc jf77"
-dir="binl64"    usr="cwstub.exe"    cond="lnx64host dostarg"            where="c f77 jc jf77" keys="lx64"
+[ DEFAULT cond="dostarg type="e" where="c jc f77 jf77" desc="Causeway DOS extender stub program" ]
+dir="binw"      usr="cwstub.exe"    conda="doshost winhost |"
+dir="binp"      usr="cwstub.exe"    conda="os2host"
+dir="binnt"     usr="cwstub.exe"    conda="wnthost"
+dir="binnt64"   usr="cwstub.exe"    conda="wnt64host"                   keys="ntx64"
+dir="axpnt"     usr="cwstub.exe"    conda="alphahost"   where="ac"
+dir="binl"      usr="cwstub.exe"    conda="lnxhost"
+dir="binl64"    usr="cwstub.exe"    conda="lnx64host"                   keys="lx64"
 
 [ DEFAULT cond="dostarg" rel="." where="c jc f77 jf77 ac" ]
 type="l" dir="lib386/dos"   usr="cwdll.lib"

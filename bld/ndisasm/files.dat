@@ -1,10 +1,10 @@
 # WDIS component of install manifest
 
-[ DEFAULT type="e" ]
-dir="binw"      usr="wdis.exe"  cond="doshost winhost |"    where="c jc f77 jf77"
-dir="binp"      usr="wdis.exe"  cond="os2host"              where="c jc f77 jf77"
-dir="binnt"     usr="wdis.exe"  cond="wnthost"              where="c jc f77 jf77 ac"
-dir="binnt64"   usr="wdis.exe"  cond="wnt64host"            where="c jc f77 jf77" keys="ntx64"
-dir="axpnt"     usr="wdis.exe"  cond="alphahost"            where="ac"
-dir="binl"      usr="wdis"      cond="lnxhost"              where="c jc f77 jf77"
-dir="binl64"    usr="wdis"      cond="lnx64host"            where="c jc f77 jf77" keys="lx64"
+[ DEFAULT type="e" where="c jc f77 jf77" ]
+dir="binw"      usr="wdis.exe"  cond="doshost winhost |"
+dir="binp"      usr="wdis.exe"  cond="os2host"
+dir="binnt"     usr="wdis.exe"  cond="wnthost"      wherea="ac"
+dir="binnt64"   usr="wdis.exe"  cond="wnt64host"                    keys="ntx64"
+dir="axpnt"     usr="wdis.exe"  cond="alphahost"    where="ac"
+dir="binl"      usr="wdis"      cond="lnxhost"
+dir="binl64"    usr="wdis"      cond="lnx64host"                    keys="lx64"

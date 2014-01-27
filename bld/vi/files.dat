@@ -5,9 +5,11 @@
 #
 [ DEFAULT dir="binw" cond="doshost winhost |" where="c f77 jc jf77" ]
 type="e" usr="vi.exe"
-type="e" usr="viw.exe"      cond="winhost"
 type="e" usr="ctags.exe"
 type="e" usr="edbind.exe"
+
+[ DEFAULT dir="binw" cond="winhost" where="c f77 jc jf77" ]
+type="e" usr="viw.exe"
 
 #######################
 # OS/2

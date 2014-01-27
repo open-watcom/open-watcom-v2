@@ -2,35 +2,35 @@
 # DOS and Windows 3.x
 #
 [ DEFAULT dir="binw" cond="doshost winhost |" where="c jc f77 jf77" ]
-type="e" usr="wcl.exe"      cond="doshost winhost | tools16" desc=" Compile and link utility for 16-bit C and C++ compiler" old="binb"
-type="e" usr="wcl386.exe"                                   desc=" Compile and link utility for 32-bit C and C++ compiler" old="binb"
-type="e" usr="owcc.exe"                                     desc=" POSIX style Compile and link utility for C and C++ compiler"
-type="s" usr="specs.owc"                                    desc=" POSIX style Compile and link utility control file"
+type="e" usr="wcl.exe"      conda="tools16" desc=" Compile and link utility for 16-bit C and C++ compiler" old="binb"
+type="e" usr="wcl386.exe"                   desc=" Compile and link utility for 32-bit C and C++ compiler" old="binb"
+type="e" usr="owcc.exe"                     desc=" POSIX style Compile and link utility for C and C++ compiler"
+type="s" usr="specs.owc"                    desc=" POSIX style Compile and link utility control file"
 
 #######################
 # OS/2
 #
 [ DEFAULT dir="binp" cond="os2host" where="c jc f77 jf77" ]
-type="e" usr="wcl.exe"      cond="os2host tools16"  desc=" Compile and link utility for 16-bit C and C++ compiler"
-type="e" usr="wcl386.exe"                           desc=" Compile and link utility for 32-bit C and C++ compiler"
-type="e" usr="owcc.exe"                             desc=" POSIX style Compile and link utility for C and C++ compiler"
-type="s" usr="specs.owc"                            desc=" POSIX style Compile and link utility control file"
+type="e" usr="wcl.exe"      conda="tools16" desc=" Compile and link utility for 16-bit C and C++ compiler"
+type="e" usr="wcl386.exe"                   desc=" Compile and link utility for 32-bit C and C++ compiler"
+type="e" usr="owcc.exe"                     desc=" POSIX style Compile and link utility for C and C++ compiler"
+type="s" usr="specs.owc"                    desc=" POSIX style Compile and link utility control file"
 
 #######################
 # Windows NT - 386
 #
 [ DEFAULT dir="binnt" cond="wnthost" where="c jc f77 jf77" ]
-type="e" usr="wcl.exe"      cond="wnthost tools16"  desc=" Compile and link utility for 16-bit C and C++ compiler"
-type="e" usr="wcl386.exe"                           desc=" Compile and link utility for 32-bit C and C++ compiler"
-type="e" usr="wclaxp.exe"   where="c jc f77 jf77 ac"
-type="e" usr="owcc.exe"                             desc=" POSIX style Compile and link utility for C and C++ compiler"
-type="s" usr="specs.owc"                            desc=" POSIX style Compile and link utility control file"
+type="e" usr="wcl.exe"      conda="tools16" desc=" Compile and link utility for 16-bit C and C++ compiler"
+type="e" usr="wcl386.exe"                   desc=" Compile and link utility for 32-bit C and C++ compiler"
+type="e" usr="wclaxp.exe"   wherea="ac"
+type="e" usr="owcc.exe"                     desc=" POSIX style Compile and link utility for C and C++ compiler"
+type="s" usr="specs.owc"                    desc=" POSIX style Compile and link utility control file"
 
 #######################
 # Windows NT - AXP
 #
 [ DEFAULT dir="axpnt" cond="alphahost" where="ac" ]
-type="e" usr="wcl.exe"      cond="alphahost tools16"
+type="e" usr="wcl.exe"      conda="tools16"
 type="e" usr="wclaxp.exe"
 type="e" usr="wcl386.exe"
 type="e" usr="owcc.exe"
@@ -40,26 +40,26 @@ type="s" usr="specs.owc"
 # Windows NT - X64
 #
 [ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="ntx64" ]
-type="e" usr="wcl.exe"      cond="wnt64host tools16"  desc=" Compile and link utility for 16-bit C and C++ compiler"
-type="e" usr="wcl386.exe"                           desc=" Compile and link utility for 32-bit C and C++ compiler"
-type="e" usr="wclaxp.exe"   where="c jc f77 jf77 ac"
-type="e" usr="owcc.exe"                             desc=" POSIX style Compile and link utility for C and C++ compiler"
-type="s" usr="specs.owc"                            desc=" POSIX style Compile and link utility control file"
+type="e" usr="wcl.exe"      conda="tools16" desc=" Compile and link utility for 16-bit C and C++ compiler"
+type="e" usr="wcl386.exe"                   desc=" Compile and link utility for 32-bit C and C++ compiler"
+type="e" usr="wclaxp.exe"   wherea="ac"
+type="e" usr="owcc.exe"                     desc=" POSIX style Compile and link utility for C and C++ compiler"
+type="s" usr="specs.owc"                    desc=" POSIX style Compile and link utility control file"
 
 #######################
 # Linux - 386
 #
 [ DEFAULT dir="binl" cond="lnxhost" where="c f77 jc jf77" ]
-type="e" usr="wcl"          cond="lnxhost tools16"  desc=" Compile and link utility for 16-bit C and C++ compiler"
-type="e" usr="wcl386"                               desc=" Compile and link utility for 32-bit C and C++ compiler"
-type="e" usr="owcc"                                 desc=" POSIX style Compile and link utility for C and C++ compiler"
-type="s" usr="specs.owc"                            desc=" POSIX style Compile and link utility control file"
+type="e" usr="wcl"          conda="tools16" desc=" Compile and link utility for 16-bit C and C++ compiler"
+type="e" usr="wcl386"                       desc=" Compile and link utility for 32-bit C and C++ compiler"
+type="e" usr="owcc"                         desc=" POSIX style Compile and link utility for C and C++ compiler"
+type="s" usr="specs.owc"                    desc=" POSIX style Compile and link utility control file"
 
 #######################
 # Linux - X64
 #
 [ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="lx64" ]
-type="e" usr="wcl"          cond="lnx64host tools16"  desc=" Compile and link utility for 16-bit C and C++ compiler"
-type="e" usr="wcl386"                               desc=" Compile and link utility for 32-bit C and C++ compiler"
-type="e" usr="owcc"                                 desc=" POSIX style Compile and link utility for C and C++ compiler"
-type="s" usr="specs.owc"                            desc=" POSIX style Compile and link utility control file"
+type="e" usr="wcl"          conda="tools16" desc=" Compile and link utility for 16-bit C and C++ compiler"
+type="e" usr="wcl386"                       desc=" Compile and link utility for 32-bit C and C++ compiler"
+type="e" usr="owcc"                         desc=" POSIX style Compile and link utility for C and C++ compiler"
+type="s" usr="specs.owc"                    desc=" POSIX style Compile and link utility control file"

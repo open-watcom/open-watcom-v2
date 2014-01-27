@@ -1,9 +1,9 @@
 # IDEBATCH component of LANG11.DAT
-[ DEFAULT type="e" ]
-dir="binw"      usr="dosserv.exe"   cond="doshost winhost |"    where="c jc f77 jf77"
-dir="binp"      usr="batserv.exe"   cond="os2host"              where="c jc f77 jf77"
-dir="binnt"     usr="batserv.exe"   cond="wnthost"              where="c jc ac f77 jf77"
-dir="binnt64"   usr="batserv.exe"   cond="wnt64host"            where="c jc f77 jf77" keys="ntx64"
-dir="axpnt"     usr="batserv.exe"   cond="alphahost"            where="ac"
+[ DEFAULT type="e" where="c jc f77 jf77" ]
+dir="binw"      usr="dosserv.exe"   cond="doshost winhost |"
+dir="binp"      usr="batserv.exe"   cond="os2host"
+dir="binnt"     usr="batserv.exe"   cond="wnthost"      wherea="ac"
+dir="binnt64"   usr="batserv.exe"   cond="wnt64host"                    keys="ntx64"
+dir="axpnt"     usr="batserv.exe"   cond="alphahost"    where="ac"
 
-dir="binw"  usr="batchbox.pif"  cond="winhost"              where="c jc f77 jf77"
+dir="binw"      usr="batchbox.pif"  cond="winhost"

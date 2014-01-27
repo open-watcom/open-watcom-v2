@@ -60,18 +60,19 @@ dir="lib386/linux"      usr="flib7.lib"         cond="lnxtarg 3r"       desc="32
 dir="lib386/linux"      usr="flibs.lib"         cond="lnxtarg 3s"       desc="32-bit Linux FORTRAN 77 library"
 dir="lib386/linux"      usr="flib7s.lib"        cond="lnxtarg 3s"       desc="32-bit Linux FORTRAN 77 library"
 
+[ DEFAULT cond="tools16" type="l" where="f77 jf77" ]
 
-dir="lib286/dos"        usr="flibl.lib"         cond="dostarg ml tools16"       desc="16-bit DOS FORTRAN 77 library"
-dir="lib286/dos"        usr="flib7l.lib"        cond="dostarg ml tools16"       desc="16-bit DOS FORTRAN 77 library"
-dir="lib286/dos"        usr="flibm.lib"         cond="dostarg mm tools16"       desc="16-bit DOS FORTRAN 77 library"
-dir="lib286/dos"        usr="flib7m.lib"        cond="dostarg mm tools16"       desc="16-bit DOS FORTRAN 77 library"
+dir="lib286/dos"        usr="flibl.lib"         conda="dostarg ml"      desc="16-bit DOS FORTRAN 77 library"
+dir="lib286/dos"        usr="flib7l.lib"        conda="dostarg ml"      desc="16-bit DOS FORTRAN 77 library"
+dir="lib286/dos"        usr="flibm.lib"         conda="dostarg mm"      desc="16-bit DOS FORTRAN 77 library"
+dir="lib286/dos"        usr="flib7m.lib"        conda="dostarg mm"      desc="16-bit DOS FORTRAN 77 library"
 
-dir="lib286/os2"        usr="flibl.lib"         cond="os2targ ml tools16"       desc="16-bit OS/2 FORTRAN 77 library"
-dir="lib286/os2"        usr="flib7l.lib"        cond="os2targ ml tools16"       desc="16-bit OS/2 FORTRAN 77 library"
-dir="lib286/os2"        usr="flibm.lib"         cond="os2targ mm tools16"       desc="16-bit OS/2 FORTRAN 77 library"
-dir="lib286/os2"        usr="flib7m.lib"        cond="os2targ mm tools16"       desc="16-bit OS/2 FORTRAN 77 library"
+dir="lib286/os2"        usr="flibl.lib"         conda="os2targ ml"      desc="16-bit OS/2 FORTRAN 77 library"
+dir="lib286/os2"        usr="flib7l.lib"        conda="os2targ ml"      desc="16-bit OS/2 FORTRAN 77 library"
+dir="lib286/os2"        usr="flibm.lib"         conda="os2targ mm"      desc="16-bit OS/2 FORTRAN 77 library"
+dir="lib286/os2"        usr="flib7m.lib"        conda="os2targ mm"      desc="16-bit OS/2 FORTRAN 77 library"
 
-dir="lib286/win"        usr="flibl.lib"         cond="wintarg ml tools16"       desc="16-bit Windows FORTRAN 77 library"
-dir="lib286/win"        usr="flib7l.lib"        cond="wintarg ml tools16"       desc="16-bit Windows FORTRAN 77 library"
-dir="lib286/win"        usr="flibm.lib"         cond="wintarg mm tools16"       desc="16-bit Windows FORTRAN 77 library"
-dir="lib286/win"        usr="flib7m.lib"        cond="wintarg mm tools16"       desc="16-bit Windows FORTRAN 77 library"
+dir="lib286/win"        usr="flibl.lib"         conda="wintarg ml"      desc="16-bit Windows FORTRAN 77 library"
+dir="lib286/win"        usr="flib7l.lib"        conda="wintarg ml"      desc="16-bit Windows FORTRAN 77 library"
+dir="lib286/win"        usr="flibm.lib"         conda="wintarg mm"      desc="16-bit Windows FORTRAN 77 library"
+dir="lib286/win"        usr="flib7m.lib"        conda="wintarg mm"      desc="16-bit Windows FORTRAN 77 library"

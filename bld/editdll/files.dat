@@ -1,13 +1,14 @@
 # EditDLL component of install manifest
 
-[ DEFAULT type="d" ]
+[ DEFAULT type="d" where="c f77 jc jf77" ]
 dir="binw"      usr="weditviw.dll"  cond="winhost"      where="c jc"
-dir="binw"      usr="weditcw.dll"   cond="winhost"      where="c f77 jc jf77"
-dir="binnt"     usr="weditviw.dll"  cond="wnthost"      where="c f77 jc jf77 ac"
-dir="binnt"     usr="weditcw.dll"   cond="wnthost"      where="c f77 jc jf77 ac"
+dir="binw"      usr="weditcw.dll"   cond="winhost"
+dir="binnt"     usr="weditviw.dll"  cond="wnthost"      wherea="ac"
+dir="binnt"     usr="weditcw.dll"   cond="wnthost"      wherea="ac"
 dir="axpnt"     usr="weditviw.dll"  cond="alphahost"    where="ac"
-dir="binp/dll"  usr="epmlink.dll"   cond="os2host"      where="c f77 jc jf77"   desc="EPM editor interface DLL for IDE and source browser"
-dir="binnt64"   usr="weditviw.dll"  cond="wnt64host"    where="c f77 jc jf77" keys="ntx64"
+dir="binnt64"   usr="weditviw.dll"  cond="wnt64host"                    keys="ntx64"
+
+dir="binp/dll"  usr="epmlink.dll"   cond="os2host"      desc="EPM editor interface DLL for IDE and source browser"
 
 [ DEFAULT type="s" dir="src/editdll" cond="samples" where="c f77 jc jf77" desc="CodeWright editor DLL source code" ]
 usr="wedit.doc"
