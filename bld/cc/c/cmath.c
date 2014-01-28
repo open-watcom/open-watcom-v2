@@ -1280,7 +1280,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
                 max_value = 0x0000FFFF;
                 break;
             default:
-                max_value = ~0ul;
+                max_value = ~0U;
                 break;
             }
             if( op2->op.u2.ulong_value > max_value ) {
