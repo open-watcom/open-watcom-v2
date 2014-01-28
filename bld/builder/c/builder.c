@@ -261,11 +261,13 @@ static bool GetALine( char *line )
         if( ferror( IncludeStk->fp ) ) {
             Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno + 1, strerror( errno ) );
         }
-        if( !feof( IncludeStk->fp ) )
+        if( !feof( IncludeStk->fp ) ) {
             IncludeStk->lineno++;
             break;
-        if( !PopInclude() )
+        }
+        if( !PopInclude() ) {
             return( FALSE );
+        }
     }
     return( TRUE );
 }
