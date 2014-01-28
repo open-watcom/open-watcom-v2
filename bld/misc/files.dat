@@ -81,8 +81,8 @@ dir="lib386/linux"      usr="wresfs.lib"    cond="lnxtarg 3s"
 dir="lib386"            usr="wresf.lib"     cond="os2targ wnttarg | 3r"
 dir="lib386"            usr="wresfs.lib"    cond="os2targ wnttarg | 3s"
 
-#dir="lib286"            usr="wresm.lib"     cond="dostarg"
-#dir="lib286"            usr="wresl.lib"     cond="dostarg"
+dir="lib286"            usr="wresm.lib"     cond="dostarg mm"
+dir="lib286"            usr="wresl.lib"     cond="dostarg ml"
 
 
 # "Miscellaneous junk" component of install manifest

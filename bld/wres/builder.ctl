@@ -33,13 +33,12 @@ set PROJNAME=wres library
 #    <CCCMD> qnx386/ms_s/wres.lib    <OWRELROOT>/lib386/qnx/wresfs.lib
 
 # DOS 16-bit version
-#    <CCCMD> dosi86/mm/wres.lib      <OWRELROOT>/lib286/wresm.lib
-#    <CCCMD> dosi86/ml/wres.lib      <OWRELROOT>/lib286/wresl.lib
-#    <CCCMD> dosi86/ms/wres.lib      <OWRELROOT>/lib286/wress.lib
-#    <CCCMD> dosi86/mc/wres.lib      <OWRELROOT>/lib286/wresc.lib
-#    <CCCMD> dosi86/mh/wres.lib      <OWRELROOT>/lib286/wresh.lib
+    <CCCMD> dosi86/mm/wres.lib      <OWRELROOT>/lib286/wresm.lib
+    <CCCMD> dosi86/ml/wres.lib      <OWRELROOT>/lib286/wresl.lib
 # OS2 16-bit version
 #    <CCCMD> os2i86/ml/wres.lib      <OWRELROOT>/lib286/os2/wresl.lib
+# WIN 16-bit version
+#    <CCCMD> wini86/ml/wres.lib      <OWRELROOT>/lib286/win/wresl.lib
 
 # Netware version
     <CCCMD> osi386/ms_r/wres.lib    <OWRELROOT>/lib386/netware/wresf.lib
