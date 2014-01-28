@@ -68,6 +68,22 @@ type="s" usr="unicode.852"
 type="s" usr="unicode1.250"
 type="s" usr="unicode1.252"
 
+#######################
+# F77 Resources
+#
+[ DEFAULT type="l" where="f77 jf77" desc="Miscelaneous Fortran Resource Libraries" ]
+dir="lib386/dos"        usr="wresf.lib"     cond="dostarg 3r"
+dir="lib386/dos"        usr="wresfs.lib"    cond="dostarg 3s"
+dir="lib386/netware"    usr="wresf.lib"     cond="nlmtarg 3r"
+dir="lib386/netware"    usr="wresfs.lib"    cond="nlmtarg 3s"
+dir="lib386/linux"      usr="wresf.lib"     cond="lnxtarg 3r"
+dir="lib386/linux"      usr="wresfs.lib"    cond="lnxtarg 3s"
+dir="lib386"            usr="wresf.lib"     cond="os2targ wnttarg | 3r"
+dir="lib386"            usr="wresfs.lib"    cond="os2targ wnttarg | 3s"
+
+#dir="lib286"            usr="wresm.lib"     cond="dostarg"
+#dir="lib286"            usr="wresl.lib"     cond="dostarg"
+
 
 # "Miscellaneous junk" component of install manifest
 
@@ -87,17 +103,6 @@ type="e"                        dir="binp"      usr="techinfo.exe"      cond="os
 #type="e"       redist="X"      dir="binw"      usr="ftui.dll"          cond="winhost wnthost |"        where="c jc f77 jf77"
 #type="e"       redist="X"      dir="binw"      usr="ftengine.dll"      cond="winhost wnthost |"        where="c jc f77 jf77"
 #type="e"       redist="X"      dir="binw"      usr="mvapi.dll"         cond="winhost wnthost |"        where="c jc f77 jf77"
-
-type="l"                        dir="lib386/dos"     usr="wresf.lib"    cond="dostarg"                  where="f77 jf77"
-type="l"                        dir="lib386/dos"     usr="wresfs.lib"   cond="dostarg"                  where="f77 jf77"
-type="l"                        dir="lib386/netware" usr="wresf.lib"    cond="nlmtarg"                  where="f77 jf77"
-type="l"                        dir="lib386/netware" usr="wresfs.lib"   cond="nlmtarg"                  where="f77 jf77"
-type="l"                        dir="lib386/linux"   usr="wresf.lib"    cond="lnxtarg"                  where="f77 jf77"
-type="l"                        dir="lib386/linux"   usr="wresfs.lib"   cond="lnxtarg"                  where="f77 jf77"
-type="l"                        dir="lib386"    usr="wresf.lib"         cond="os2targ wnttarg |"        where="f77 jf77"
-type="l"                        dir="lib386"    usr="wresfs.lib"        cond="os2targ wnttarg |"        where="f77 jf77"
-#type="l"                       dir="lib286"    usr="wresm.lib"         cond="dostarg"                  where="f77 jf77"
-#type="l"                       dir="lib286"    usr="wresl.lib"         cond="dostarg"                  where="f77 jf77"
 
 #type="e"                       dir="binw"      usr="cfig386.exe"       cond="doshost winhost |"        where="c jc f77 jf77"   desc="PharLap DOS extender configuration utility"       old="bin"
 #type="e"                       dir="binw"      usr="privatxm.exe"      cond="doshost winhost |"        where="c jc f77 jf77"           old="bin"
