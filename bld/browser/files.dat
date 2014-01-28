@@ -5,7 +5,7 @@ dir="binw"      usr="wbrw.exe"  cond="winhost"
 dir="binnt"     usr="wbrw.exe"  cond="wnthost wnt64host |"
 dir="axpnt"     usr="wbrw.exe"  cond="alphahost"    where="ac"
 
-[DEFAULT type="e where="c jc" desc="Browsing information merger" ]
+[DEFAULT type="e" where="c jc" desc="Browsing information merger" ]
 dir="binw"      usr="wbrg.exe"  cond="winhost os2host |"                old="binb"
 dir="binnt"     usr="wbrg.exe"  cond="wnthost wnt64host |"              old="binb"
 dir="axpnt"     usr="wbrg.exe"  cond="alphahost"    where="ac"

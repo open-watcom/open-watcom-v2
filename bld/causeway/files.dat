@@ -1,6 +1,6 @@
 # Causeway Extender redistributable binaries component of install manifest
 
-[ DEFAULT cond="dostarg type="e" where="c jc f77 jf77" desc="Causeway executable compressor utility" ]
+[ DEFAULT cond="dostarg" type="e" where="c jc f77 jf77" desc="Causeway executable compressor utility" ]
 dir="binw"      usr="cwc.exe"       conda="doshost winhost |"
 dir="binp"      usr="cwc.exe"       conda="os2host"
 dir="binnt"     usr="cwc.exe"       conda="wnthost"
@@ -9,7 +9,7 @@ dir="axpnt"     usr="cwc.exe"       conda="alphahost"   where="ac"
 dir="binl"      usr="cwc"           conda="lnxhost"
 dir="binl64"    usr="cwc"           conda="lnx64host"                   keys="lx64"
 
-[ DEFAULT cond="dostarg type="e" where="c jc f77 jf77" desc="Causeway DOS extender stub program" ]
+[ DEFAULT cond="dostarg" type="e" where="c jc f77 jf77" desc="Causeway DOS extender stub program" ]
 dir="binw"      usr="cwstub.exe"    conda="doshost winhost |"
 dir="binp"      usr="cwstub.exe"    conda="os2host"
 dir="binnt"     usr="cwstub.exe"    conda="wnthost"

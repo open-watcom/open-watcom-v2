@@ -220,6 +220,7 @@ usr="wpperrs.chm" conda="cplusplus" where="c jc ac" desc="Help file for C++ comp
 [ DEFAULT type="s" dir="binw" cond="whelp_helpfiles helpfiles" where="c f77 jc jf77" ]
 
 usr="wccerrs.ihp"       where="c jc"        desc="Help file for C compiler error messages binb"
+usr="wfcerrs.ihp"       where="f77 jf77"    desc="Help file for FORTRAN 77 error messages"
 usr="wpperrs.ihp"       where="c jc"        desc="Help file for C++ compiler error messages binb"
 usr="rescomp.ihp"                           desc="Help file for resource compiler binb"
 usr="wprof.ihp"                             desc="Help file for execution profiler binb"
@@ -283,6 +284,7 @@ usr="rescomp.inf"                           desc="Help file for resource compile
 usr="clr.inf"           where="c jc"        desc="C language reference"
 usr="cw.inf"                                desc="CauseWay documentation"
 usr="vi.inf"             
+usr="wipfc.inf"                             desc="OS/2 Help Compiler"
 usr="wccerrs.inf"       where="c jc"        desc="Help file for C compiler error messages"
 usr="wfcerrs.inf"       where="f77 jf77"    desc="Help file for FORTRAN 77 compiler error messages"
 usr="wpperrs.inf" conda="cplusplus" where="c jc" desc="Help file for C++ compiler error messages"
@@ -310,6 +312,7 @@ usr="pguide.pdf"
 usr="tools.pdf"
 usr="vi.pdf"
 usr="wd.pdf"
+usr="wipfc.pdf"
 
 #-----------------------------------------------------------------------------
 [ DEFAULT type="s" dir="."]
