@@ -72,7 +72,7 @@ usr="varargs.h"
 usr="wdefwin.h"
 usr="wsample.h"
 
-[ DEFAULT type="s" dir="h/sys" where="c jc ac" cond="dostarg wintarg os2targ wnttarg nlmtarg rdostarg | | | | |" ]
+[ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg rdostarg | | | | |" ]
 usr="locking.h"
 usr="stat.h"
 usr="time.h"
@@ -80,7 +80,7 @@ usr="timeb.h"
 usr="types.h"
 usr="utime.h"
 
-[ DEFAULT type="s" dir="h/sys" where="c jc ac" cond="dostarg" ]
+[ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg" ]
 usr="_lfndos.h"
 
 [ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg rdostarg | | | | | cplusplus" ]
@@ -372,7 +372,7 @@ usr="exceptio.h"
 usr="stdexcep.h"
 usr="typeinfo.h"
 
-[ DEFAULT type="s" dir="lh/sys" where="c jc ac" cond="lnxtarg" ]
+[ DEFAULT type="s" dir="lh/sys" where="c jc f77 jf77 ac" cond="lnxtarg" ]
 usr="ioctl.h"
 usr="locking.h"
 usr="mman.h"
@@ -389,20 +389,20 @@ usr="un.h"
 usr="utsname.h"
 usr="wait.h"
 
-[ DEFAULT type="s" dir="lh/arpa" where="c jc ac" cond="lnxtarg" ]
+[ DEFAULT type="s" dir="lh/arpa" where="c jc f77 jf77 ac" cond="lnxtarg" ]
 usr="inet.h"
 
-[ DEFAULT type="s" dir="lh/netinet" where="c jc ac" cond="lnxtarg" ]
+[ DEFAULT type="s" dir="lh/netinet" where="c jc f77 jf77 ac" cond="lnxtarg" ]
 usr="in.h"
 usr="tcp.h"
 
-[ DEFAULT type="s" dir="lh/arch/i386" where="c jc ac" cond="lnxtarg" ]
+[ DEFAULT type="s" dir="lh/arch/i386" where="c jc f77 jf77 ac" cond="lnxtarg" ]
 usr="err_no.h"
 usr="fcntl.h"
 usr="signal.h"
 usr="sigposix.h"
 
-[ DEFAULT type="s" dir="lh/arch/i386/sys" where="c jc ac" cond="lnxtarg" ]
+[ DEFAULT type="s" dir="lh/arch/i386/sys" where="c jc f77 jf77 ac" cond="lnxtarg" ]
 usr="ioctl.h"
 usr="resource.h"
 usr="socket.h"
