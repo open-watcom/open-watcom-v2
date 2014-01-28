@@ -223,6 +223,7 @@ static void PushInclude( const char *name )
     new->prev = IncludeStk;
     new->skipping = 0;
     new->ifdefskipping = 0;
+    new->lineno = 0;
     new->reset_abit = NULL;
     IncludeStk = new;
     new->fp = fopen( name, "rb" );      // We will cook (handle \r) internally
@@ -258,9 +259,10 @@ static bool GetALine( char *line )
     for( ;; ) {
         fgets( line, MAX_LINE, IncludeStk->fp );
         if( ferror( IncludeStk->fp ) ) {
-            Fatal( "Error reading '%s': %s\n", IncludeStk->name, strerror( errno ) );
+            Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno + 1, strerror( errno ) );
         }
         if( !feof( IncludeStk->fp ) )
+            IncludeStk->lineno++;
             break;
         if( !PopInclude() )
             return( FALSE );
@@ -323,7 +325,7 @@ static char *SubstOne( const char **inp, char *out )
             p = SubstOne( &in, p );
             break;
         case '\0':
-            Fatal( "Missing '>'\n" );
+            Fatal( "Missing '>' in '%s' line %d\n", IncludeStk->name, IncludeStk->lineno );
             break;
         default:
             *p++ = *in++;
@@ -521,7 +523,7 @@ static int ProcessCtlFile( const char *name )
                     IncludeStk->ifdefskipping--;
                 break;
             } else {
-                Fatal( "Unknown directive '%s'\n", p );
+                Fatal( "Unknown directive '%s' in '%s' line %d\n", p, IncludeStk->name, IncludeStk->lineno );
             }
             break;
         default:

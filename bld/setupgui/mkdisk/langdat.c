@@ -71,7 +71,6 @@ static char     *DefPatch  = NULL;
 static char     *DefDstvar = NULL;
 static char     *DefKeys   = NULL;
 
-
 static void AddToList( const char *name, ctl_file **owner )
 {
     ctl_file    *curr;
@@ -175,6 +174,7 @@ static void PushInclude( const char *name )
     new->prev = IncludeStk;
     new->skipping = 0;
     new->ifdefskipping = 0;
+    new->lineno = 0;
     new->reset_abit = NULL;
     IncludeStk = new;
     new->fp = fopen( name, "rb" );
@@ -217,9 +217,10 @@ static bool GetALine( char *line )
     for( ;; ) {
         fgets( line, MAX_LINE, IncludeStk->fp );
         if( ferror( IncludeStk->fp ) ) {
-            Fatal( "Error reading '%s': %s\n", IncludeStk->name, strerror( errno ) );
+            Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno, strerror( errno ) );
         }
         if( !feof( IncludeStk->fp ) ) {
+            IncludeStk->lineno++;
             break;
         }
         if( !PopInclude() ) {
@@ -385,6 +386,7 @@ static bool ContainsWord( const char *str, ctl_file *word_list )
 }
 
 #define DEFVAL(x)   ((x==NULL)?"":x)
+#define DEFVALA(x)  ((x==NULL)?NULL:strdup(x))
 
 static void ProcessLine( const char *line )
 {
@@ -403,9 +405,9 @@ static void ProcessLine( const char *line )
     dir = DEFVAL( DefDir );
     usr = DEFVAL( DefUsr );
     rel = DEFVAL( DefRel );
-    cond = DEFVAL( DefCond );
+    cond = DEFVALA( DefCond );
 //    pack = DEFVAL( DefPack );
-    where = DefWhere;
+    where = DEFVALA( DefWhere );
     desc = DEFVAL( DefDesc );
     old = DEFVAL( DefOld );
 //    patch = DEFVAL( DefPatch );
@@ -432,9 +434,12 @@ static void ProcessLine( const char *line )
         } else if( !stricmp( cmd, "rel" ) ) {
             rel = str;
         } else if( !stricmp( cmd, "cond" ) ) {
+            if( cond != NULL ) {
+                free( cond );
+            }
             cond = strdup( str );
         } else if( !stricmp( cmd, "conda" ) ) {
-            if( *cond == '\0' ) {
+            if( cond == NULL ) {
                 cond = strdup( str );
             } else {
                 len = strlen( cond ) + strlen( str ) + 1 + 1;
@@ -448,9 +453,12 @@ static void ProcessLine( const char *line )
         } else if( !stricmp( cmd, "pack" ) ) {
 //            pack = str;
         } else if( !stricmp( cmd, "where" ) ) {
+            if( where != NULL ) {
+                free( where );
+            }
             where = strdup( str );
         } else if( !stricmp( cmd, "wherea" ) ) {
-            if( *where == '\0' ) {
+            if( where == NULL ) {
                 where = strdup( str );
             } else {
                 len = strlen( where ) + strlen( str ) + 1 + 1;
@@ -475,11 +483,14 @@ static void ProcessLine( const char *line )
             keys = str;
         } else {
             printf( "langdat warning: unknown keyword %s\n", cmd );
-            printf( "(in file %s)\n", IncludeStk->name );
+            printf( "(in file %s line %d)\n", IncludeStk->name, IncludeStk->lineno );
         }
         cmd = strtok( NULL, " \t=" );
     } while( cmd != NULL );
     if( !special ) {
+        if( cond == NULL ) {
+            cond = "";
+        }
         if( where == NULL ) {
             where = "";
         }
@@ -493,10 +504,10 @@ static void ProcessLine( const char *line )
         }
     }
     free( line_copy );
-    if( *cond != '\0' ) {
+    if( cond != NULL && *cond != '\0' ) {
         free( cond );
     }
-    if( *where != '\0' ) {
+    if( where != NULL && *where != '\0' ) {
         free( where );
     }
 }
@@ -563,7 +574,7 @@ static void ProcessDefault( const char *line )
                 DefKeys = strdup( str );
             } else {
                 printf( "langdat warning: unknown default %s\n", cmd );
-                printf( "(in file %s)\n", IncludeStk->name );
+                printf( "(in file %s line %d)\n", IncludeStk->name, IncludeStk->lineno );
             }
             cmd = strtok( NULL, " \t=" );
         } while( cmd != NULL );

@@ -47,6 +47,7 @@ struct include {
     FILE        *fp;
     unsigned    skipping;
     unsigned    ifdefskipping;
+    unsigned    lineno;
     char        name[_MAX_PATH];
     char        cwd[_MAX_PATH];
     copy_entry  *reset_abit;
