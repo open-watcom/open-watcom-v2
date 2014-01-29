@@ -1,9 +1,0 @@
-SYS dos
-OPTION case, map, verbose
-# root
-FILE quoi, check_if, set_fals, do_it, dont_do
-# overlays
-BEGIN
-    SECTION FILE fetch
-    SECTION FILE set_true, show
-END

@@ -83,8 +83,65 @@ extra_a_flags_dllthunk = -DDLL32
 
 # linker flags stuff
 ###############
-vxdlink : .PROCEDURE
+importlink : .PROCEDURE
+    %create imports.lnk
+    @%append imports.lnk import CONVERTOUTLINEFONTFILE GDI.312
+    @%append imports.lnk import COPYCURSOR USER.369
+    @%append imports.lnk import COPYICON USER.368
+    @%append imports.lnk import DLGDIRSELECTCOMBOBOXEX USER.423
+    @%append imports.lnk import DLGDIRSELECTEX USER.422
+    @%append imports.lnk import ENGINEMAKEFONTDIR GDI.306
+    @%append imports.lnk import EXITWINDOWSEXEC USER.246
+    @%append imports.lnk import GETASPECTRATIOFILTEREX GDI.486
+    @%append imports.lnk import GETBITMAPDIMENSIONEX GDI.468
+    @%append imports.lnk import GETBRUSHORGEX GDI.469
+    @%append imports.lnk import GETCURRENTPOSITIONEX GDI.470
+    @%append imports.lnk import GETFREESYSTEMRESOURCES USER.284
+    @%append imports.lnk import GETTEXTEXTENTPOINT GDI.471
+    @%append imports.lnk import GETTIMERRESOLUTION USER.14
+    @%append imports.lnk import GETVIEWPORTEXTEX GDI.472
+    @%append imports.lnk import GETVIEWPORTORGEX GDI.473
+    @%append imports.lnk import GETWINDOWEXTEX GDI.474
+    @%append imports.lnk import GETWINDOWORGEX GDI.475
+    @%append imports.lnk import GETWINDOWPLACEMENT USER.370
+    @%append imports.lnk import MOVETOEX GDI.483
+    @%append imports.lnk import OFFSETVIEWPORTORGEX GDI.476
+    @%append imports.lnk import OFFSETWINDOWORGEX GDI.477
+    @%append imports.lnk import QUERYABORT GDI.155
+    @%append imports.lnk import QUERYJOB GDI.248
+    @%append imports.lnk import SCALEVIEWPORTEXTEX GDI.484
+    @%append imports.lnk import SCALEWINDOWEXTEX GDI.485
+    @%append imports.lnk import SETBITMAPDIMENSIONEX GDI.478
+    @%append imports.lnk import SETMETAFILEBITSBETTER GDI.196
+    @%append imports.lnk import SETVIEWPORTEXTEX GDI.479
+    @%append imports.lnk import SETVIEWPORTORGEX GDI.480
+    @%append imports.lnk import SETWINDOWEXTEX GDI.481
+    @%append imports.lnk import SETWINDOWPLACEMENT USER.371
+    @%append imports.lnk import SETWINDOWORGEX GDI.482
+    @%append imports.lnk import SPOOLFILE GDI.254
+    @%append imports.lnk import SUBTRACTRECT USER.373
+    @%append imports.lnk import WNETADDCONNECTION USER.517
+    @%append imports.lnk import WNETCANCELCONNECTION USER.518
+    @%append imports.lnk import WNETGETCONNECTION USER.512
+
+dllentryset = 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 &
+    20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 &
+    40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 &
+    60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 &
+    80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 &
+    100 101 102 103 104 105 106 107 108 109 &
+    110 111 112 113 114 115 116 117 118 119 &
+    120 121 122 123 124 125 126 127 128
+
+exportlink : .PROCEDURE
+    %create exports.lnk
+    @for %n in ( $(dllentryset) ) do @%append exports.lnk export DLL%n
+    @%append exports.lnk export WEP.129 RESIDENT
+    @%append exports.lnk export Win386LibEntry.130 RESIDENT
+
 LNK = $^&.lnk
+
+vxdlink : .PROCEDURE
         %create $(LNK)
         @%append $(LNK) system win_vxd
         @%append $(LNK) name $^&.386
@@ -102,8 +159,9 @@ LNK = $^&.lnk
         @%append $(LNK) file wdebug.obj
 
 dllexelink : .PROCEDURE
-LNK = $^&.lnk
-        @%create $(LNK)
+        @%make importlink
+        @%make exportlink
+        %create $(LNK)
         @%append $(LNK) debug all
         @%append $(LNK) name $^&.ext
         @%append $(LNK) library clibs
@@ -119,7 +177,7 @@ LNK = $^&.lnk
         @%append $(LNK) segment CLASS 'DATA' PRELOAD MOVEABLE
         @%append $(LNK) segment CLASS 'BSS' PRELOAD MOVEABLE
         @for %i in ($(OBJS_$(fmt))) do @%append $(LNK) file %i
-        @%append $(LNK) @../imports.lnk
+        @%append $(LNK) @imports.lnk
 !ifeq fmt exe
         @%append $(LNK) sys windows mem font
         @%append $(LNK) option rwr
@@ -129,23 +187,23 @@ LNK = $^&.lnk
         @%append $(LNK) sys windows dll initinstance memory
         @%append $(LNK) option stack=8K
         @%append $(LNK) segment CLASS 'EMU' PRELOAD MOVEABLE
-        @%append $(LNK) @../exports.lnk
+        @%append $(LNK) @exports.lnk
 !endif
 
 # explicit rules
 #################
 wdebug.386: $(OBJS_vxd)
-        %make vxdlink
+        @%make vxdlink
         $(linker) @$(LNK)
 
 wemu387.386: $(OBJS_vxd)
-        %make vxdlink
+        @%make vxdlink
         $(linker) @$(LNK)
 
 w386dll.ext : $(OBJS_dll)
-        %make dllexelink
+        @%make dllexelink
         $(linker) @$(LNK)
 
 win386.ext : $(OBJS_exe)
-        %make dllexelink
+        @%make dllexelink
         $(linker) @$(LNK)

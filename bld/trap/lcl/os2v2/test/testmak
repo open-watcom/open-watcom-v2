@@ -64,22 +64,75 @@ dbg.obj: dbg.c
 
 try.exe : try.c
     wcc386 try /bw /d2 /i$(watcom_dir)\OS220_H
-    wlink sys os2v2_pm @try
+    %create try.lnk
+    @%append try.lnk debug all
+    @%append try.lnk system os2v2_pm
+    @%append try.lnk op stack=20k
+    @%append try.lnk file try.obj
+    @%append try.lnk import WINQUEUEFROMID PMWIN.305
+    @%append try.lnk import WINREPLYMSG PMWIN.307
+    @%append try.lnk import WINTHREADASSOCQUEUE PMWIN.304
+    @%append try.lnk import WINREPLYMSG PMWIN.307
+    @%append try.lnk import WINQUERYSENDMSG PMWIN.306
+    wlink name try @try.lnk
 
-hello.exe: hello.obj  hello.lnk hello.res
-    wlink @hello.lnk op symfile
+hello.exe: hello.obj  hello.res
+    %create hello.lnk
+    @%append hello.lnk debug all
+    @%append hello.lnk system os2v2_pm
+    @%append hello.lnk file hello.obj
+    @%append hello.lnk option map=hello.map, symfile
+    @%append hello.lnk option modname=hello
+    @%append hello.lnk option description 'OS/2 Presentation Manager Sample'
+    @%append hello.lnk option manyautodata
+    @%append hello.lnk option stack=16k
+    @%append hello.lnk option heapsize=1024
+    @%append hello.lnk option offset=0x10000
+    @%append hello.lnk option protmode
+    @%append hello.lnk import WINLOCKINPUT PMWIN.309
+    wlink name hello @hello.lnk
     $(os2_tools_root)\rc -p -x hello.res hello.exe
     copy/b hello.exe+hello.sym
 
-dbg.exe: dbg.sbj dbg.lnk hello.res
-    wlink @dbg.lnk
+dbg.exe: dbg.sbj hello.res
+    %create dbg.lnk
+    @%append dbg.lnk debug all
+    @%append dbg.lnk OPTION quiet,map
+    @%append dbg.lnk file dbg.sbj
+    @%append dbg.lnk file ..\..\os2\obj\dbgacc1.obj
+    @%append dbg.lnk file ..\..\os2\obj\dbgacc2.obj
+    @%append dbg.lnk file ..\..\os2\obj\os2lkup.obj
+    @%append dbg.lnk file ..\..\os2\obj\os2trap.obj
+    @%append dbg.lnk file ..\..\os2\obj\dbgstr.obj
+    wlink name dbg @dbg.lnk
 
 .before :
 
 pmdbg.exe: pmdbg.lnk pmdbg.obj dbg.obj pmdbg.res
-	wlink @pmdbg.lnk
-	$(os2_tools_root)\rc pmdbg.res
-	copy/b pmdbg.exe+pmdbg.sym
+    %create pmdbg.lnk
+    @%append pmdbg.lnk debug all op symfile,map
+    @%append pmdbg.lnk system os2 pm
+    @%append pmdbg.lnk file pmdbg.obj
+    @%append pmdbg.lnk option map=pmdbg.map
+    @%append pmdbg.lnk library e:\l\lib286\os2\clibl.lib
+    @%append pmdbg.lnk library d:\dev\watcom\lib\os2.lib
+    @%append pmdbg.lnk option alignment=16
+    @%append pmdbg.lnk option nodefaultlibs
+    @%append pmdbg.lnk option modname=pmdbg
+    @%append pmdbg.lnk option description 'OS/2 Presentation Manager Sample'
+    @%append pmdbg.lnk option manyautodata
+    @%append pmdbg.lnk option stack=4096
+    @%append pmdbg.lnk option heapsize=1024
+    @%append pmdbg.lnk option protmode
+    @%append pmdbg.lnk file dbg.obj
+    @%append pmdbg.lnk file ..\..\os2\obj\dbgacc1.obj
+    @%append pmdbg.lnk file ..\..\os2\obj\dbgacc2.obj
+    @%append pmdbg.lnk file ..\..\os2\obj\os2lkup.obj
+    @%append pmdbg.lnk file ..\..\os2\obj\os2trap.obj
+    @%append pmdbg.lnk file ..\..\os2\obj\dbgstr.obj
+    wlink name pmdbg @pmdbg.lnk
+    $(os2_tools_root)\rc pmdbg.res
+    copy/b pmdbg.exe+pmdbg.sym
 
 pmdbg.obj: pmdbg.c pmdbg.h
 	wcc /d2 /zdp /ml /zu /W4 /s pmdbg.c /id:\dev\watcom\os21x_h
