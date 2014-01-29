@@ -68,6 +68,7 @@ binbuild
 !/contrib/*/*/*/*/*.exe
 !/contrib/*/*/*/*/*.lib
 !/contrib/*/*/*/*/*.lnk
+!/contrib/*/*/*/*/*.map
 !/contrib/*/*/*/*/*.obj
 !/contrib/*/*/*/*/*.trp
 !/contrib/*/*/*/*/*/*.d32
