@@ -33,7 +33,7 @@ statname = owfs$(bld_ver)
 verrc_dll = $(dllname)
 !include verrc.mif
 
-inc_path += -I"../$(host_os)"
+inc_path += -I"../$(host_os)" -I"../h"
 
 splice = wsplice -i"$(hdr_dir)" $[@ $^@
 
@@ -83,26 +83,22 @@ dlls =                  &
         $(dllname).lib  &
         $(statname).lib
 
-libname = &
 !ifeq unicode 1
-!ifeq debug 1
-        uafxcwd
+libprefix=u
 !else
-        uafxcw
+libprefix=n
 !endif
-!else
 !ifeq debug 1
-        nafxcwd
+libsufix=d
 !else
-        nafxcw
-!endif
+libsufix=
 !endif
 
-libs =                  &
-        $(libname).lib
+libname = $(libprefix)afxcw$(libsufix)
 
-objs =                  &
-        animate.obj     &
+libs =  $(libname).lib
+
+objs =  animate.obj     &
         archive.obj     &
         archivex.obj    &
         arstream.obj    &
@@ -298,18 +294,17 @@ extra_cpp_flags += -D_AFXDLL
 !endif
 
 extra_c_flags += -fhwe -xs
-extra_lib_flags_386 = -io -ii
 
 additional_cleanup = *.h *.inl *.def
 
 all : $($(what_to_build)) .SYMBOLIC
     @%null
 
-.mh: $(include_dir)
-.mnl: $(include_dir)
-.mrc: $(include_dir)
+.mh: ../include
+.mnl: ../include
+.mrc: ../include
 
-.cpp: $(lib_dir)
+.cpp: ../cpp
 
 .mh.h:
     $(splice)
@@ -360,5 +355,5 @@ $(dllname).lib: $(dllname).dll
 $(statname).lib: $(static_objs)
     $(librarian) $(libflags) $<
 
-owf.res: ../lib/owf.rc .AUTODEPEND
+owf.res: ../h/owf.rc .AUTODEPEND
     $(rc) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$^@
