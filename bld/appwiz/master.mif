@@ -17,7 +17,7 @@ gendeps = rcstr.gh $(objs) $(libs) appwiz.lnk appwiz.res
 
 .c : ../c
 
-inc_dirs = -I"../h" $(gui_inc_dirs)
+inc_dirs = -I. -I"../h" $(gui_inc_dirs)
 
 all : appwiz.exe .SYMBOLIC
 
