@@ -217,6 +217,7 @@ system begin nt_dll
     libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
     libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
     libpath %OWSRCDIR%/cpplib/winnt.386/mf_rmt
+    libpath %OWSRCDIR%/cpplib/winnt.386/mf_r
     libpath %OWSRCDIR%/fpuemu/386/stub386
     libpath %OWSRCDIR%/w32api/nt386
     libpath %OWSRCDIR%/clib/rtdll/winnt.386/mf_r
