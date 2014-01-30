@@ -16,4 +16,4 @@ commands += prntdir
 !endif
 
 $(commands) : .symbolic
-        $(bld_cl) $@.c -I"../../../watcom/h" $(bld_clflags) $(bld_ldflags)
+        $(bld_cl) ../c/$@.c -I"../../../watcom/h" $(bld_clflags) $(bld_ldflags)
