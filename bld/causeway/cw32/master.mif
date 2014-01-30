@@ -31,7 +31,21 @@ objs = &
     cwkrnl3.obj &
     cwkrnl4.obj
 
-cwdll.lib : $(objs) ../../inc/cwapi.lbc
-    $(librarian) $(libflags) $(objs) @$]@
+cwdll.lib : $(objs)
+    @%make cwapi.lbc
+    $(librarian) $(libflags) $(objs) @cwapi.lbc
+
+cwapi.lbc : .procedure
+    %create cwapi.lbc
+    @%append cwapi.lbc ++'__CWAPI_CREATEPSP'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_DELETEPSP'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_EXECMODULE'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_DSIZESELECTOR'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_FINDMODULE'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_UNFINDMODULE'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_FINDFUNCTION'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_GETMEMLINEAR32'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_RESMEMLINEAR32'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_RELMEMLINEAR32'.'CAUSEWAY_KERNAL'
 
 !endif
