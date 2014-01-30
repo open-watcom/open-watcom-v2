@@ -49,13 +49,14 @@
 *.trp
 *.u
 
+/*/
+
+!/bld/
+
 stderr.txt
 stdout.txt
 
 binbuild
-
-/*/
-!/bld/
 
 !/contrib/
 !/contrib/*/*/*/*.d32

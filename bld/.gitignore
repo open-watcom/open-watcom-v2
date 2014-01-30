@@ -15,7 +15,7 @@
 /awk/*/proctab.c
 /awk/*/ytab.h
 #
-/browser/dlgprs/o/*.cpp
+#/browser/
 #
 /causeway/dlltest/*/*.dll
 #
@@ -163,11 +163,8 @@
 /win386/vxd/*
 !/win386/vxd/makefile
 #
-/wmake/regress/cmds/create
-/wmake/regress/cmds/envarg
-/wmake/regress/cmds/ifeq
-/wmake/regress/cmds/mkerr
-/wmake/regress/cmds/rem
+/wmake/regress/cmds/*
+!/wmake/regress/cmds/makefile
 #
 /wl/*/*.dll
 !/wl/ms2wlink/regress/*.lnk
