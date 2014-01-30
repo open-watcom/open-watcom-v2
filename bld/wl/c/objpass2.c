@@ -107,7 +107,7 @@ bool LoadObj( segdata *seg )
     CurrRec.seg = seg;
     if( leader->group == NULL ) {
         CurrRec.addr = leader->seg_addr;
-#if _DEVELOPMENT == _ON
+#ifdef _DEVELOPMENT
         LnkMsg( WRN+MSG_INTERNAL, "s", "null leader group found" );
 #endif
     } else {

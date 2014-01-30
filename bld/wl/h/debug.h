@@ -44,10 +44,6 @@
 #define DBG_NOCRLF      0x8000
 #define DBG_INFO_MASK   0x7FFF
 
-#ifndef _DEVELOPMENT
-#define _DEVELOPMENT    _OFF
-#endif
-
 #ifdef _INT_DEBUG
 
 #include <stdio.h>

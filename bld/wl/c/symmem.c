@@ -89,7 +89,7 @@ static bool ShrinkBlock( block_data *block )
     _LnkReAlloc( new, block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
-#if _DEVELOPMENT == _ON
+#ifdef _DEVELOPMENT
     if( new != block->list ) {
         LnkMsg( FTL+MSG_INTERNAL, "s", "realloc moved shrinked block!" );
     }

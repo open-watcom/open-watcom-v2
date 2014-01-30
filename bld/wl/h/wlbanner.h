@@ -31,7 +31,7 @@
 
 #if 0
     #define IDV     "** EXPERIMENTAL ** "
-#elif _DEVELOPMENT == _ON
+#elif defined( _DEVELOPMENT )
     #define IDV     "**INTERNAL DEVELOPMENT** "
 #else
     #define IDV

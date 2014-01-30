@@ -52,7 +52,7 @@ inc_dirs = -I. -I"../h" $(dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" $(w
 ################
 # c flags stuff
 
-extra_cpp_flags = -D__WLINK__
+extra_cpp_flags = -D__WLINK__ $(debug_cpp_flags)
 !ifdef DLLS_IMPLEMENTED
 extra_cpp_flags += -DDLLS_IMPLEMENTED
 !endif
