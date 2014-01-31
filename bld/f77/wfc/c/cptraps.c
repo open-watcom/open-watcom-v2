@@ -39,6 +39,7 @@
 #include <float.h>
 
 
+#if !defined( __QNX__ )
 static void _FPEHandler( int fpe_type ) {
 //=======================================
 
@@ -52,9 +53,11 @@ static void _FPEHandler( int fpe_type ) {
     }
 #endif
 }
+#endif
 
 
-#if defined( __OSI__ )
+#if defined( __QNX__ )
+#elif defined( __OSI__ )
 
 extern void (*__FPE_handler)(int);
 
@@ -76,7 +79,8 @@ void    TrapInit( void ) {
 //==================
 
     __XcptFlags = 0;
-#if defined( __OSI__ )
+#if defined( __QNX__ )
+#elif defined( __OSI__ )
     __FPE_handler = &_FPEHandler;
 #else
     signal( SIGFPE, (void (*)(int))&FPEHandler );

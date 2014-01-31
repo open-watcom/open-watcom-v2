@@ -35,7 +35,3 @@ gbl_defn ftn_type       IORslt;                 // for i/o items
 gbl_defn char           *FmtBuff;
 #include "iotype.h"
 gbl_defn void           (*FmtRoutine)(void);        // formatting routine
-
-#if !defined( __MT__ )
-    gbl_defn struct traceback PGM *ExCurr;      // head of traceback list
-#endif

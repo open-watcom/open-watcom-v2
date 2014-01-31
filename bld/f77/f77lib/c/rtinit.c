@@ -36,7 +36,6 @@
 #include "errcod.h"
 #include "trcback.h"
 #include "fapptype.h"
-#include "fthread.h"
 #include "rtinit.h"
 #include "rtdata.h"
 #include "errrtns.h"
@@ -62,8 +61,6 @@ void            (* _ExceptionFini)( void ) = { &R_TrapFini };
 static  char            RTSysInitialized = { 0 };
 
 #if defined( __MT__ )
-
-#include "fthread.h"
 
 static  void    __NullFIOAccess( void ) {}
 

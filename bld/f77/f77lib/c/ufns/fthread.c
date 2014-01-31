@@ -32,7 +32,6 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "xfflags.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "rmemmgr.h"
 

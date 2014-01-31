@@ -45,6 +45,10 @@ typedef struct traceback {
 
     #include "fthread.h"
 
-    #define     ExCurr          (*(traceback **)&(__FTHREADDATAPTR->__ExCurr))
+    #define ExCurr      (*(traceback **)&(__FTHREADDATAPTR->__ExCurr))
+
+#else
+
+    extern traceback PGM *ExCurr;        // head of traceback list
 
 #endif

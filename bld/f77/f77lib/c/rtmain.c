@@ -34,7 +34,6 @@
 #include "rundat.h"
 #include "xfflags.h"
 #include "errcod.h"
-#include "fthread.h"
 
 #include <stdlib.h>
 
