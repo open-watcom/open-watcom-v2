@@ -1,4 +1,4 @@
-#pmake: build huge cpu_i86 os_osi
+#pmake/120: build huge cpu_i86 os_osi
 processor  = 086
 system     = generic
 model      = mh

@@ -1,4 +1,4 @@
-#pmake: build flat cpu_386 os_osi
+#pmake/120: build flat cpu_386 os_osi
 processor  = 386
 system     = generic
 model      = ms

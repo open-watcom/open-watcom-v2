@@ -1,4 +1,4 @@
-#pmake: os_qnx cpu_386 flat
+#pmake/120: os_qnx cpu_386 flat
 processor  = 386
 system     = qnx
 model      = ms

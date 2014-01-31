@@ -1,4 +1,4 @@
-#pmake: build debug flat cpu_386 os_os2
+#pmake/120: build debug flat cpu_386 os_os2
 
 processor  = 386
 system     = os2
