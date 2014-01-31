@@ -1,7 +1,5 @@
 proj_name = grlib_fix
 
-additional_cleanup = *.mod *.ref *.stb
-
 !ifeq host_os qnx
 clibdir = $(clib_dir)/library/qnx.286/ms/clibs.lib
 !else ifeq host_cpu i86
@@ -120,27 +118,27 @@ graph23s.lib : ../../qnx386r/graphi2.lib ../../pgchart/dos386s/chart2.lib
 graph.lib : $(clibdir) tmp.lib
     @rm -f *.obj
   # find external references - and check for double precision usage
-    objxref -e=../except tmp.lib | sort >graph.ref
-    egrep "__FD" graph.ref >fdchk.tmp
+    objxref -e=../except tmp.lib | sort >ref.tmp
+    egrep "__FD" ref.tmp >fdchk.tmp
     diff fdchk.tmp ../fd.ok
     @if errorlevel 1 echo ERROR - double precision floating point used
   # find all modules in clib which are referenced from graph.lib
-    objfind -i=graph.ref $(clibdir) >clib.mod
+    objfind -i=ref.tmp $(clibdir) >modc.tmp
   # extract all modules from clib which are referenced from graph.lib
 !ifdef __UNIX__
-    awk -v host=unix -f ../fix1.awk clib.mod >clibget.lbc
+    awk -v host=unix -f ../fix1.awk modc.tmp >clibget.lbc
 !else
-    awk -v host= -f ../fix1.awk clib.mod >clibget.lbc
+    awk -v host= -f ../fix1.awk modc.tmp >clibget.lbc
 !endif
     $(librarian) -b $(clibdir) @clibget.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
   # they will be renamed later to don't conflict with public symbols in clib
 !ifeq host_os qnx
-    objxdef *.obj ../../qnxi86/fsmath.obj ../../qnxi86/dummy.obj >graph.stb
+    objxdef *.obj ../../qnxi86/fsmath.obj ../../qnxi86/dummy.obj >stb.tmp
 !else ifeq host_cpu i86
-    objxdef *.obj ../../dosi86/fsmath.obj ../../dosi86/dummy.obj >graph.stb
+    objxdef *.obj ../../dosi86/fsmath.obj ../../dosi86/dummy.obj >stb.tmp
 !else
-    objxdef *.obj ../../dos386r/dummy.obj ../../dos386r/fsmath.obj >graph.stb
+    objxdef *.obj ../../dos386r/dummy.obj ../../dos386r/fsmath.obj >stb.tmp
 !endif
 !ifeq host_cpu i86
   # extract all modules from graph.lib library
@@ -148,19 +146,19 @@ graph.lib : $(clibdir) tmp.lib
   # modify modules as needed
   # add _GR to names of all symbols in extracted files and fsmath, dummy
   # change _TEXT segment to GRAPH_TEXT
-    objchg -l=_TEXT=GRAPH_TEXT -m=_GR* -s=graph.stb *.obj
+    objchg -l=_TEXT=GRAPH_TEXT -m=_GR* -s=stb.tmp *.obj
 !else
   # extract all modules from graph.lib library, use alias for 8.3 format
-    objlist tmp.lib >graph.mod
+    objlist tmp.lib >modg.tmp
 !ifdef __UNIX__
-    awk -v host=unix -f ../fix2.awk graph.mod >extract.lbc
+    awk -v host=unix -f ../fix2.awk modg.tmp >extract.lbc
 !else
-    awk -v host= -f ../fix2.awk graph.mod >extract.lbc
+    awk -v host= -f ../fix2.awk modg.tmp >extract.lbc
 !endif
     $(librarian) -b tmp.lib @extract.lbc
   # modify modules as needed
   # add _GR to names of all symbols in extracted files and fsmath, dummy
-    objchg -m=_GR* -s=graph.stb *.obj
+    objchg -m=_GR* -s=stb.tmp *.obj
 !endif
   # put all modules together into new library
     @%create $^&.lbc
@@ -170,27 +168,27 @@ graph.lib : $(clibdir) tmp.lib
 graph2.lib : $(clibdir) tmp2.lib
     @rm -f *.obj
   # find external references - and check for double precision usage
-    objxref -e=../except tmp2.lib | sort >graph2.ref
-    egrep "__FD" graph2.ref >fdchk2.tmp
+    objxref -e=../except tmp2.lib | sort >ref2.tmp
+    egrep "__FD" ref2.tmp >fdchk2.tmp
     diff fdchk2.tmp ../fd.ok
     @if errorlevel 1 echo ERROR - double precision floating point used
   # find all modules in clib which are referenced from graph.lib
-    objfind -i=graph2.ref $(clibdir) >clib2.mod
+    objfind -i=ref2.tmp $(clibdir) >modc2.tmp
   # extract all modules from clib which are referenced from graph.lib
 !ifdef __UNIX__
-    awk -v host=unix -f ../fix1.awk clib2.mod >clibget2.lbc
+    awk -v host=unix -f ../fix1.awk modc2.tmp >clibget2.lbc
 !else
-    awk -v host= -f ../fix1.awk clib2.mod >clibget2.lbc
+    awk -v host= -f ../fix1.awk modc2.tmp >clibget2.lbc
 !endif
     $(librarian) -b $(clibdir) @clibget2.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
   # they will be renamed later to don't conflict with public symbols in clib
 !ifeq host_os qnx
-    objxdef *.obj ../../qnxi86/fsmath.obj ../../qnxi86/dummy.obj >graph2.stb
+    objxdef *.obj ../../qnxi86/fsmath.obj ../../qnxi86/dummy.obj >stb2.tmp
 !else ifeq host_cpu i86
-    objxdef *.obj ../../dosi86/fsmath.obj ../../dosi86/dummy.obj >graph2.stb
+    objxdef *.obj ../../dosi86/fsmath.obj ../../dosi86/dummy.obj >stb2.tmp
 !else
-    objxdef *.obj ../../dos386r/dummy.obj ../../dos386r/fsmath.obj >graph2.stb
+    objxdef *.obj ../../dos386r/dummy.obj ../../dos386r/fsmath.obj >stb2.tmp
 !endif
 !ifeq host_cpu i86
   # extract all modules from graph.lib library
@@ -198,19 +196,19 @@ graph2.lib : $(clibdir) tmp2.lib
   # modify modules as needed
   # add _GR to names of all symbols in extracted files and fsmath, dummy
   # change _TEXT segment to GRAPH_TEXT
-    objchg -l=_TEXT=GRAPH_TEXT -m=_GR* -s=graph2.stb *.obj
+    objchg -l=_TEXT=GRAPH_TEXT -m=_GR* -s=stb2.tmp *.obj
 !else
   # extract all modules from graph.lib library, use alias for 8.3 format
-    objlist tmp2.lib >graph2.mod
+    objlist tmp2.lib >modg2.tmp
 !ifdef __UNIX__
-    awk -v host=unix -f ../fix2.awk graph2.mod >extract2.lbc
+    awk -v host=unix -f ../fix2.awk modg2.tmp >extract2.lbc
 !else
-    awk -v host= -f ../fix2.awk graph2.mod >extract2.lbc
+    awk -v host= -f ../fix2.awk modg2.tmp >extract2.lbc
 !endif
     $(librarian) -b tmp2.lib @extract2.lbc
   # modify modules as needed
   # add _GR to names of all symbols in extracted files and fsmath, dummy
-    objchg -m=_GR* -s=graph2.stb *.obj
+    objchg -m=_GR* -s=stb2.tmp *.obj
 !endif
   # put all modules together into new library
     @%create $^&.lbc
