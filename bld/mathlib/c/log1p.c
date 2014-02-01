@@ -33,8 +33,8 @@
 *
 ****************************************************************************/
 
-#include <math.h>
 #include "variety.h"
+#include <math.h>
 
 _WMRTDATA extern const double __d_infinity;
 

@@ -33,8 +33,8 @@
 *
 ****************************************************************************/
 
-#include <math.h>
 #include "variety.h"
+#include <math.h>
 
 /* Numerator and denominator coefficients for rational minimax
  *     approximation over (0.5,1.5).

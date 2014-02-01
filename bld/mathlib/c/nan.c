@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
 #include <math.h>
 
 _WMRTDATA extern const float    __f_posqnan;

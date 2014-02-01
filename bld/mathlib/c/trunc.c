@@ -31,6 +31,7 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
 #include <math.h>
 
 _WMRTLINK double trunc(double x)

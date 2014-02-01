@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
 #include <math.h>
 
 _WMRTLINK double fma(double a, double b, double c)

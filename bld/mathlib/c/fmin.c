@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
 #include <math.h>
 
 _WMRTLINK double fmin(double x, double y)

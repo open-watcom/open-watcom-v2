@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
 #include <math.h>
 
 _WMRTLINK double remainder(double x, double y)

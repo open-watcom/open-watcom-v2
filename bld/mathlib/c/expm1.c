@@ -32,8 +32,8 @@
 * Author: J. Armstrong
 ****************************************************************************/
 
-#include <math.h>
 #include "variety.h"
+#include <math.h>
 
 #if defined(_M_I86)
  #define MAX_FACTORIAL   8

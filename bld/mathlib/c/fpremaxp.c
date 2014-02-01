@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <math.h>
 #include <float.h>
 #include <limits.h>
 
-#include "variety.h"
 #include "xfloat.h"
 #include "mathlib.h"
 
