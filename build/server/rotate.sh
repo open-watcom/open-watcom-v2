@@ -36,7 +36,7 @@ mv -f $WWWPATH/snaparch/ss.7z $WWWPATH/snaparch/ow-snapshot.7z
 
 # Move installers
 # =============
-mv -f $OWROOT/distrib/ow/open-watcom-* $WWWPATH/install/
+mv -f $OWROOT/distrib/ow/bin/* $WWWPATH/install/
 
 # Final Cleanup
 # =============

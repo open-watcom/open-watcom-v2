@@ -35,7 +35,7 @@ move %WWWPATH%\snaparch\ss.7z %WWWPATH%\snaparch\ow-snapshot.7z
 
 rem Move installers
 rem =============
-move %OWROOT%\distrib\ow\open-watcom-*.* %WWWPATH%\install\
+move %OWROOT%\distrib\ow\bin\*.* %WWWPATH%\install\
 
 rem Final Cleanup
 rem =============
