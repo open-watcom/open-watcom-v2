@@ -52,10 +52,8 @@ include math87.inc
         modstart __87LDI2
 
         xdefp   __87LDI2
-        xdefp   __87LDI2_
 
         defp    __87LDI2
-        defp    __87LDI2_
 ifdef __386__
         push    EAX                     ; allocate temporary
         fstcw   word ptr [ESP]          ; get 8087 control word
@@ -88,7 +86,6 @@ else
         pop     _BP                     ; restore BP
 endif
         ret                             ; return
-        endproc __87LDI2_
         endproc __87LDI2
 
         endmod

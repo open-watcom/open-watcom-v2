@@ -2,21 +2,11 @@ all : $(objfiles) $(libname).lib .symbolic
     @%null
 
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
-    @rm -f tmp.def
+    @rm -f export.tmp
+    @rm -f export.def
     $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ $(objs) $(libs)
 !ifeq linkage dynamic
-    sed -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
-    cat ../../../export.$(processor) tmp2.def > tmp3.def
-    sort < tmp3.def > tmp4.def
-    uniq tmp4.def > export.def
-    @rm -f tmp.def
-    @rm -f tmp2.def
-    @rm -f tmp3.def
-    @rm -f tmp4.def
-!endif
-!ifdef runtime_library_source
-    if exist sqrt386.obj $(librarian) $(lib_flags) $^@ -+sqrt386.obj
-    if exist sqrt086.obj $(librarian) $(lib_flags) $^@ -+sqrt086.obj
+    sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
 !endif
 
 .c.obj : .autodepend

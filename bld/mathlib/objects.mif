@@ -166,10 +166,8 @@
 !inject sincos.obj   d16c      d32c      n32c      wnc     axp ntp op
 !inject sinh.obj     d16c      d32c      n32c      wnc     axp ntp op
 !inject sqrt.obj     d16c      d32c      n32c      wnc     axp ntp op
-!ifndef runtime_library_source
 !inject sqrt086.obj  d16c                          wnc
 !inject sqrt386.obj            d32c      n32c
-!endif
 !inject sqrt87.obj        d16i      d32i      n32i     wni
 !inject sqrt087_.obj d16c                          wnc
 !inject sqrt387_.obj           d32c      n32c

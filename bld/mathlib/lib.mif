@@ -43,7 +43,7 @@ lib_linkage_flags_dynamic =
 lib_linkage_flags_alias   =
 !else
 lib_linkage_flags_static  = -z
-lib_linkage_flags_dynamic = -z=tmp.def
+lib_linkage_flags_dynamic = -z=export.tmp
 lib_linkage_flags_alias   =
 !endif
 lib_flags_linkage = $(lib_linkage_flags_$(linkage))
