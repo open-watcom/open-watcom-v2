@@ -4,11 +4,8 @@ processor       = 386
 model           = mf
 system          = os2
 convention      = register
-linkage         = alias
+linkage         = dynamic
 
 mathlib_release = 0
 
-!include ../../../objects.mif
-!include $(mathlib_dir)/master.mif
 !include $(mathlib_dir)/mklib.mif
-!include ../../../deps.mif

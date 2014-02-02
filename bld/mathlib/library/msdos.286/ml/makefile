@@ -4,7 +4,5 @@ model=ml
 subdir=ml
 system=msdos
 linkage=static
-!include $(mathlib_dir)/objects.mif
-!include $(mathlib_dir)/master.mif
-!include $(mathlib_dir)/mklib.mif
-!include $(mathlib_dir)/deps.mif
+
+!include $(mathlib_dir)/mrglib.mif

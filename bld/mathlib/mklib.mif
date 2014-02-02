@@ -1,31 +1,16 @@
+!include ../../../objects.mif
+!include $(mathlib_dir)/master.mif
+!include $(mathlib_dir)/librules.mif
+
+.c   : ../../../c
+.asm : ../../../a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
+
 all : $(objfiles) $(libname).lib .symbolic
     @%null
 
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
-    @rm -f export.tmp
-    @rm -f export.def
-    $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ $(objs) $(libs)
-!ifeq linkage dynamic
-    sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
-!endif
+    $(librarian) $(lib_flags) $^@ $(objs) $(libs)
 
-.c.obj : .autodepend
-!ifeq verbose 1
-    *$(cc) $[@ $(include_c_path) $(build_target) $(c_flags) $(c_dbg_flags) $($^&_flags)
-!else
-    @echo mlib_cc $@
-    @*$(cc) $[@ $(include_c_path) $(build_target) $(c_flags) $(c_dbg_flags) $($^&_flags)
-!endif
-
-.asm.obj : .autodepend
-!ifeq verbose 1
-    *$(as) $[@ $(include_a_path) $(build_target) $(a_flags) $(a_dbg_flags) $($^&_flags)
-!else
-    @echo mlib_as $@
-    @*$(as) $[@ $(include_a_path) $(build_target) $(a_flags) $(a_dbg_flags) $($^&_flags)
-!endif
-
-.c   : ../../../c
-.asm : ../../../a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
+!include ../../../deps.mif
 
 !include $(mathlib_dir)/clean.mif

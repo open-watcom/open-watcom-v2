@@ -1,10 +1,10 @@
 !include $(mathlib_dir)/lib.mif
 
-pfx__ =../../../
-__sfx =/library/$(system).$(processor)/$(subdir)/$(libname).lib
+pfx__ =../../..
+__sfx =$(system).$(processor)/$(subdir)$(subdir_suffix)/$(libname).lib
 
 libs = $+ &
-    $(pfx__)alias$(__sfx) &
+    $(pfx__)/alias/library/$(__sfx) &
     $-
 
 pfx__ =

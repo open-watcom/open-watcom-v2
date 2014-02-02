@@ -2,12 +2,9 @@
 
 processor  = 387
 model      = mf
-subdir     = mf_s.dll
+subdir     = mf_s
 system     = os2
 convention = stack
 linkage    = dynamic
 
-!include $(mathlib_dir)/objects.mif
-!include $(mathlib_dir)/master.mif
-!include $(mathlib_dir)/mklib.mif
-!include $(mathlib_dir)/deps.mif
+!include $(mathlib_dir)/mrglib.mif

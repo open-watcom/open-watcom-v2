@@ -40,7 +40,7 @@ _WMRTLINK void __cnvs2d( char *buf, double *value )
     *value = strtod( buf, NULL );
 }
 
-#ifdef __MAKE_DLL_MATHLIB
+#if defined( __MAKE_DLL_MATHLIB ) || defined( __MAKE_DLL_WRTLIB )
 _WMRTLINK void (*__get__cnvs2d( void ))( char *, double * )
 {
     return( &__cnvs2d );

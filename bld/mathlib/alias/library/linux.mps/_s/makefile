@@ -5,7 +5,4 @@ model     =
 system    = linux
 linkage   = static
 
-!include ../../../objects.mif
-!include $(mathlib_dir)/master.mif
 !include $(mathlib_dir)/mklib.mif
-!include ../../../deps.mif

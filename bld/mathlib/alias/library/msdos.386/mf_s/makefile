@@ -4,7 +4,5 @@ model=mf
 system=msdos
 linkage=static
 convention=stack
-!include ../../../objects.mif
-!include $(mathlib_dir)/master.mif
+
 !include $(mathlib_dir)/mklib.mif
-!include ../../../deps.mif

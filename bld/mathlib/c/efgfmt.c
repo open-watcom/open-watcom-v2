@@ -110,7 +110,7 @@ _WMRTLINK FAR_STRING _EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *
     return( buffer );
 } /* _EFG_Format() */
 
-#ifdef __MAKE_DLL_MATHLIB
+#if defined( __MAKE_DLL_MATHLIB ) || defined( __MAKE_DLL_WRTLIB )
 _WMRTLINK FAR_STRING (*__get_EFG_Format( void ))( char *, my_va_list *, SPECS __SLIB * )
 {
     return( &_EFG_Format );

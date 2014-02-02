@@ -7,7 +7,4 @@ system     = msdos
 linkage    = static
 convention = register
 
-!include $(mathlib_dir)/objects.mif
-!include $(mathlib_dir)/master.mif
-!include $(mathlib_dir)/mklib.mif
-!include $(mathlib_dir)/deps.mif
+!include $(mathlib_dir)/mrglib.mif

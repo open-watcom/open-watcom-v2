@@ -3,8 +3,6 @@ processor=387
 model=mf
 system=os2
 convention=stack
-linkage=alias
-!include ../../../objects.mif
-!include $(mathlib_dir)/master.mif
+linkage=dynamic
+
 !include $(mathlib_dir)/mklib.mif
-!include ../../../deps.mif

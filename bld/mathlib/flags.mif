@@ -17,8 +17,11 @@ sw_a_common += -D$(debug)
 sw_c_common += -D_ENABLE_AUTODEPEND
 
 sw_c_static  =
+!ifdef export_only
+sw_c_dynamic = -D__MAKE_DLL_WRTLIB
+!else
 sw_c_dynamic = -D__MAKE_DLL_MATHLIB
-sw_c_alias   = -D__MAKE_DLL_MATHLIB
+!endif
 
 sw_c_intel    = -of
 sw_c_calls    = -fpc
@@ -76,8 +79,11 @@ sw_c_qnx      =
 
 sw_a_intel   = -w8 -e -DPDIV -of
 sw_a_static  =
+!ifdef export_only
+sw_a_dynamic = -D__MAKE_DLL_WRTLIB -D_EXPORT
+!else
 sw_a_dynamic = -D__MAKE_DLL_MATHLIB -D_EXPORT
-sw_a_alias   = -D__MAKE_DLL_MATHLIB -D_EXPORT
+!endif
 
 sw_a_calls    =-fpc
 sw_a_16bit    =-0

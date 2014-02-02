@@ -40,7 +40,7 @@ _WMRTLINK void __cnvd2ld( dbl_arg src, ld_arg dst )
     __iFDLD( src, dst );
 }
 
-#ifdef __MAKE_DLL_MATHLIB
+#if defined( __MAKE_DLL_MATHLIB ) || defined( __MAKE_DLL_WRTLIB )
 _WMRTLINK void (*__get__cnvd2ld( void ))( dbl_arg src, ld_arg dst )
 {
     return( &__cnvd2ld );

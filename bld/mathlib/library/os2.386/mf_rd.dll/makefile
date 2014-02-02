@@ -2,14 +2,11 @@
 
 processor       = 386
 model           = mf
-subdir          = mf_rd.dll
+subdir          = mf_rd
 system          = os2
 convention      = register
 linkage         = dynamic
 
 mathlib_release = 0
 
-!include $(mathlib_dir)/objects.mif
-!include $(mathlib_dir)/master.mif
-!include $(mathlib_dir)/mklib.mif
-!include $(mathlib_dir)/deps.mif
+!include $(mathlib_dir)/mrglib.mif

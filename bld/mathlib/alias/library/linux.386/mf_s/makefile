@@ -3,8 +3,6 @@ processor=386
 model=mf
 system=linux
 convention=stack
-linkage=alias
-!include ../../../objects.mif
-!include $(mathlib_dir)/master.mif
+linkage=static
+
 !include $(mathlib_dir)/mklib.mif
-!include ../../../deps.mif

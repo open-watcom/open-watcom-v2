@@ -3,10 +3,9 @@ processor=386
 model=mf
 system=winnt
 convention=register
-linkage=alias
+linkage=dynamic
 profile=1
+
 mathlib_rtdll=1
-!include ../../../objects.mif
-!include $(mathlib_dir)/master.mif
+
 !include $(mathlib_dir)/mklib.mif
-!include ../../../deps.mif

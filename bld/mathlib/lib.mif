@@ -32,18 +32,23 @@ lib_flags += -s-t-zld
 !ifeq processor axp
 lib_linkage_flags_static  =
 lib_linkage_flags_dynamic =
-lib_linkage_flags_alias   =
 !else ifeq processor ppc
 lib_linkage_flags_static  =
 lib_linkage_flags_dynamic =
-lib_linkage_flags_alias   =
 !else ifeq processor mps
 lib_linkage_flags_static  =
 lib_linkage_flags_dynamic =
-lib_linkage_flags_alias   =
 !else
 lib_linkage_flags_static  = -z
 lib_linkage_flags_dynamic = -z=export.tmp
-lib_linkage_flags_alias   =
+!ifdef export_only
+subdir_suffix_dynamic = .wdl
+!else
+subdir_suffix_dynamic = .dll
+!endif
 !endif
 lib_flags_linkage = $(lib_linkage_flags_$(linkage))
+
+!ifdef subdir_suffix_$(linkage)
+subdir_suffix = $(subdir_suffix_$(linkage))
+!endif
