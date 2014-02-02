@@ -1,10 +1,12 @@
-pfx__          =$(cpplib_dir)
-__ifx__        =$(system).386/$(model)_$(dllname_$(convention))mt$(dllname_profile)$(dllname_debug)
+pfx__    =$(cpplib_dir)
+__ifx__  =$(system).386/$(model)_$(dllname_$(convention))mt$(dllname_profile)$(dllname_debug)
+__cifx__ =$(system).386/$(subdir)
+__mifx__ =$(system).387/$(subdir)
 
 dll_libs = $+ &
     $(pfx__)/library/$(__ifx__).dll/plbxmt3$(dllname_$(convention)).lib &
-    $(clib_dir)/rtdll/$(system).386/$(subdir)/clb$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
-    $(mathlib_dir)/rtdll/$(system).387/$(subdir)/mt7$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
+    $(clib_dir)/rtdll/$(__cifx__)/clb$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
+    $(mathlib_dir)/rtdll/$(__mifx__)/mt7$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
     $(pfx__)/library/$(__ifx__)/plbxmt3$(dllname_$(convention)).lib &
     $-
 
@@ -14,7 +16,7 @@ dll_def = $+ &
     $-
 
 dll_objs = $+ &
-    $(clib_dir)/startup/library/$(system).386/$(subdir)/clibdo32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdo32.obj &
     $-
 
 targdir = $(pfx__)/runtime/$(__ifx__).dll/

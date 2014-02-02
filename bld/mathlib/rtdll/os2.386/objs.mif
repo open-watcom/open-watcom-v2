@@ -1,9 +1,10 @@
-pfx__ =$(mathlib_dir)
-__ifx__ =$(system).$(processor)/$(subdir).dll
+pfx__    =$(mathlib_dir)
+__ifx__  =$(system).$(processor)/$(subdir).dll
+__cifx__ =$(system).386/$(subdir)
 
 dll_libs = $+ &
     $(pfx__)/library/$(__ifx__)/math3$(dllname_$(convention)).lib &
-    $(clib_dir)/rtdll/$(system).386/$(subdir)/clb$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
+    $(clib_dir)/rtdll/$(__cifx__)/clb$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
     $-
 
 dll_def = $+ &
@@ -12,7 +13,7 @@ dll_def = $+ &
     $-
 
 dll_objs = $+ &
-    $(clib_dir)/startup/library/$(system).386/$(subdir)/clibdo32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdo32.obj &
     $-
 
 static_objs =
