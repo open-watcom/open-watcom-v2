@@ -1,0 +1,15 @@
+.c.obj : .autodepend
+!ifeq verbose 1
+    $(cc) $[@ $(include_c_path) $(build_target) $($[&_opts) $(c_flags) $($[&_postopts) $(c_dbg_flags)
+!else
+    @echo clib_cc $@
+    @$(cc) $[@ $(include_c_path) $(build_target) $($[&_opts) $(c_flags) $($[&_postopts) $(c_dbg_flags)
+!endif
+
+.asm.obj : .autodepend
+!ifeq verbose 1
+    $(as) $[@ $(include_a_path) $(build_target) $($[&_opts) $(a_flags) $($[&_postopts) $(a_dbg_flags)
+!else
+    @echo clib_as $@
+    @$(as) $[@ $(include_a_path) $(build_target) $($[&_opts) $(a_flags) $($[&_postopts) $(a_dbg_flags)
+!endif

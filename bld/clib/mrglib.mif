@@ -1,24 +1,24 @@
+!include ../../objects.mif
 !include $(clib_dir)/master.mif
+!include $(clib_dir)/librules.mif
 !include ../libs.mif
+
+.c : ../../c
 
 all : $(libname).lib .symbolic
     @%null
 
-$(libname).lib : timstamp.obj $(libs)
+$(libname).lib : $(objs) $(libs)
     %create tmp.lbc
     @for %i in ($(libs)) do @%append tmp.lbc +%i
+    @for %i in ($(objs)) do @%append tmp.lbc +%i
     @rm -f export.tmp
-    $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ @tmp.lbc +timstamp.obj
+    @rm -f export.def
+    $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ @tmp.lbc
 !ifeq linkage dynamic
     sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
 !endif
 
-!ifeq processor axp
-timstamp.obj : ../../c/timstamp.c
-    *$(cc) $[@ $(include_c_path) $(build_target) $(c_flags) $($[&_opts)
-!else
-timstamp.obj : ../../c/timstamp.c
-    *$(cc) $[@ -nm=$[& $(include_c_path) $(build_target) $(c_flags) $($[&_opts)
-!endif
+!include ../../deps.mif
 
 !include $(clib_dir)/clean.mif

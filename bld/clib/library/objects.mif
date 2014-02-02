@@ -1,0 +1,9 @@
+objs=timstamp.obj
+
+086_timstamp_opts=-nm=$[&
+286_timstamp_opts=-nm=$[&
+386_timstamp_opts=-nm=$[&
+axp_timstamp_opts=
+mps_timstamp_opts=
+ppc_timstamp_opts=
+timstamp_opts=$($(processor)_timstamp_opts)

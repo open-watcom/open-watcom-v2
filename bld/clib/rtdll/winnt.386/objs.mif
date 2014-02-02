@@ -45,6 +45,7 @@ static_objs = $+ &
     $(pfx__)/intel/$(__ifx__)/dprfallo.obj &
     $(pfx__)/intel/$(__ifx__)/p5psegs.obj &
     $(pfx__)/intel/$(__ifx__)/tlsawnt.obj &
+    $(pfx__)/libwin32/$(__ifx__)/getmodfn.obj &
     $(pfx__)/mthread/$(__ifx__)/declwnt.obj &
     $(pfx__)/libwin32/$(__ifx__)/getmodfn.obj &
     $(pfx__)/startup/$(__ifx__)/argcv.obj &

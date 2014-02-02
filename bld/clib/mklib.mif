@@ -1,39 +1,14 @@
 !include ../../../objects.mif
 !include $(clib_dir)/master.mif
+!include $(clib_dir)/librules.mif
+
+.c   : ../../../c
+.asm : ../../../a
 
 all : $(objfiles) $(libname).lib .symbolic
     @%null
 
 $(libname).lib : $(objs)
     $(librarian) $(lib_flags) $^@ $(objs)
-
-.c.obj : .autodepend
-!ifeq verbose 1
-    $(cc) $[@ $(include_c_path) $(build_target) $($[&_opts) $(c_flags) $($[&_postopts) $(c_dbg_flags)
-!else
-    @echo clib_cc $@
-    @$(cc) $[@ $(include_c_path) $(build_target) $($[&_opts) $(c_flags) $($[&_postopts) $(c_dbg_flags)
-!endif
-
-.asm.obj : .autodepend
-!ifeq verbose 1
-    $(as) $[@ $(include_a_path) $(build_target) $($[&_opts) $(a_flags) $($[&_postopts) $(a_dbg_flags)
-!else
-    @echo clib_as $@
-    @$(as) $[@ $(include_a_path) $(build_target) $($[&_opts) $(a_flags) $($[&_postopts) $(a_dbg_flags)
-!endif
-
-# KB: I changed this below so that if you specify 'source_root' on the wmake command
-# line, it will pull source code from that directory as a complete path rather than
-# a relative path. I use this so that when I build from within SlickEdit, it will
-# properly process errors etc ;-)
-
-!ifndef source_root
-.c   : ../../../c
-.asm : ../../../a
-!else
-.c   : $(source_root)/c
-.asm : $(source_root)/a
-!endif
 
 !include $(clib_dir)/clean.mif
