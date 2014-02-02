@@ -137,7 +137,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/builder.ctl ]
 # Start with DOS4GW DOS extender stub.
 [ INCLUDE <OWSRCDIR>/wstuba/builder.ctl ]
