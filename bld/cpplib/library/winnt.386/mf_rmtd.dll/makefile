@@ -5,7 +5,7 @@ model      = mf
 convention = register
 linkage    = dynamic
 mthreaded  = 1
-subdir     = mf_rmtd.dll
+subdir     = mf_rmtd
 
 cpplib_release = 0
 

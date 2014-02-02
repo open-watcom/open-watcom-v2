@@ -131,7 +131,11 @@ extra_a_flags_386 += -3r
 !endif
 
 !ifeq linkage dynamic
+!ifdef export_only
+br_flags_=-D__MAKE_DLL_WRTLIB
+!else
 br_flags_=-D__MAKE_DLL_CPPLIB
+!endif
 br_flags_yes=-br
 !else
 br_flags_=

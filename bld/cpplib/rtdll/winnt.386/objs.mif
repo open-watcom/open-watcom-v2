@@ -1,10 +1,10 @@
-pfx__          =$(cpplib_dir)
-__ifx__        =$(system).386/$(model)_$(dllname_$(convention))mt$(dllname_profile)$(dllname_debug)
+pfx__   =$(cpplib_dir)
+__ifx__ =$(system).386/$(model)_$(dllname_$(convention))mt$(dllname_profile)$(dllname_debug)
 
 dll_libs = $+ &
     $(pfx__)/library/$(__ifx__).dll/plbxmt3$(dllname_$(convention)).lib &
     $(clib_dir)/rtdll/$(system).386/$(subdir)/clb$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
-    $(mathlib_dir)/rtdll/$(system).387/$(subdir)/mt7$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
+    $(mathlib_dir)/rtdll/$(system).387/$(subdir).dll/mt7$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
     $(pfx__)/library/$(__ifx__)/plbxmt3$(dllname_$(convention)).lib &
     $-
 

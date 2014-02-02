@@ -5,6 +5,6 @@ model      = mf
 convention = stack
 linkage    = dynamic
 mthreaded  = 1
-subdir     = mf_smt.dll
+subdir     = mf_smt
 
 !include $(cpplib_dir)/mrglib.mif

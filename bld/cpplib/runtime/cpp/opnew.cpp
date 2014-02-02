@@ -46,16 +46,16 @@
 #include "lock.h"
 #include <malloc>
 #include <stddef.h>
-#if defined(__MAKE_DLL_CPPLIB)
+#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
   #define __SW_BR
 #endif
 #include <new.h>
-#if defined(__MAKE_DLL_CPPLIB)
+#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
   #undef __SW_BR
 #endif
 
 
-#if defined(__MAKE_DLL_CPPLIB)
+#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
 static void* __do_new( unsigned size )
 #else
 _WPRTLINK void* operator new(    // ALLOCATE STORAGE FOR NEW
@@ -87,7 +87,7 @@ _WPRTLINK void* operator new(    // ALLOCATE STORAGE FOR NEW
     return p;
 }
 
-#if defined(__MAKE_DLL_CPPLIB)
+#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
 static _PUP __pfn_new = &__do_new;
 
 _WPRTLINK extern _PUP _set_op_new( _PUP on ) {

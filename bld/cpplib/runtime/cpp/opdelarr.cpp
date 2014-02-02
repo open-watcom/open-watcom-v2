@@ -43,15 +43,15 @@
 #include "cpplib.h"
 #include "lock.h"
 #include <malloc.h>
-#if defined(__MAKE_DLL_CPPLIB)
+#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
   #define __SW_BR
 #endif
 #include <new.h>
-#if defined(__MAKE_DLL_CPPLIB)
+#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
   #undef __SW_BR
 #endif
 
-#if defined(__MAKE_DLL_CPPLIB)
+#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
 static void __do_delete_array( void *p )
 #else
 _WPRTLINK void operator delete[](// RELEASE STORAGE FOR NEW[]
@@ -61,7 +61,7 @@ _WPRTLINK void operator delete[](// RELEASE STORAGE FOR NEW[]
     ::delete( (char *) p );
 }
 
-#if defined(__MAKE_DLL_CPPLIB)
+#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
 static _PVV __pfn_delete_array = &__do_delete_array;
 
 _WPRTLINK extern _PVV _set_op_delete_array( _PVV oda ) {
