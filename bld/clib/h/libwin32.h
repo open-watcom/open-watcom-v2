@@ -75,9 +75,9 @@ extern DWORD    __lib_GetFullPathNameW( LPCWSTR lpFileName,
                                         LPWSTR lpBuffer,
                                         LPWSTR *lpFilePart );
 
-_WCRTLINK extern DWORD  __lib_GetModuleFileNameW( HINSTANCE hModule,
-                                                  LPWSTR lpFilename,
-                                                  DWORD nSize );
+extern DWORD    __lib_GetModuleFileNameW( HINSTANCE hModule,
+                                          LPWSTR lpFilename,
+                                          DWORD nSize );
 
 extern BOOL     __lib_MoveFileW( LPCWSTR lpExistingFileName,
                                  LPCWSTR lpNewFileName );

@@ -46,12 +46,9 @@
  *
  * Note that we can't use osver.h either, since _osbuild and _osmajor are
  * also uninitialized at this point.
- *
- * This function is exported (_WCRTLINK'ed) so that the startup code works
- * when using the DLL version of the library.
  */
 
-_WCRTLINK DWORD __lib_GetModuleFileNameW( HINSTANCE hModule,
+DWORD __lib_GetModuleFileNameW( HINSTANCE hModule,
                                           LPWSTR lpFilename,
                                           DWORD nSize )
 /**********************************************************/
