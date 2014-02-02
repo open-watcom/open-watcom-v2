@@ -1,4 +1,4 @@
-#pmake: no_build flat stack 32bit calls winnt iX86 rtdll os_nt cpu_386
+#pmake: build flat stack 32bit calls winnt iX86 rtdll os_nt cpu_386
 component  = wrtlib
 processor  = 386
 model      = mf

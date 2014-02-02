@@ -1,4 +1,4 @@
-#pmake: no_build flat register 32bit inline winnt iX86 rtdll os_nt cpu_386
+#pmake: build flat register 32bit inline winnt iX86 rtdll os_nt cpu_386
 component  = wrtlib
 processor  = 387
 model      = mf
