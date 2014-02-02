@@ -32,13 +32,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "bool.h"
 #include "disksize.h"
 #include "iopath.h"
+#include "clibext.h"
 
 #define RoundUp( size, limit )  ( ( ( size + limit - 1 ) / limit ) * limit )
 
