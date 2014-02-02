@@ -33,7 +33,6 @@
 #ifndef __STRDUP_H_INCLUDED
 #define __STRDUP_H_INCLUDED
 
-#include "variety.h"
 #include "widechar.h"
 
 _WCRTLINK extern char *__clib_strdup( const char *str );

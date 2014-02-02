@@ -32,7 +32,6 @@
 #ifndef _FARSUPP_H_INCLUDED
 #define _FARSUPP_H_INCLUDED
 
-#include "variety.h"
 #include "widechar.h"
 #ifdef __LONG_LONG_SUPPORT__
   #include "clibi64.h"

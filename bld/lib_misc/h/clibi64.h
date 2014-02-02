@@ -32,7 +32,6 @@
 #ifndef _I64_H_INCLUDED
 #define _I64_H_INCLUDED
 
-#include "variety.h"
 #include "widechar.h"
 #include "watcom.h"
 

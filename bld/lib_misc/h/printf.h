@@ -33,7 +33,6 @@
 #ifndef _PRINTF_H_INCLUDED
 #define _PRINTF_H_INCLUDED
 
-#include "variety.h"
 #include "widechar.h"
 
 #if defined(__QNX__)
