@@ -181,7 +181,38 @@
 
 // handle building dll's with appropriate linkage
 #if !defined(__SW_BR) && (defined(__WARP__) || defined(__NT__))
-    #if defined(__MAKE_DLL_CLIB)
+    #if defined(__MAKE_DLL_WRTLIB)
+        #undef _WCRTLINK
+        #undef _WCIRTLINK
+        #undef _WCRTDATA
+        #undef _WMRTLINK
+        #undef _WMIRTLINK
+        #undef _WMRTDATA
+        #undef _WPRTLINK
+        #undef _WPIRTLINK
+        #undef _WPRTDATA
+        #if defined(__NT__)
+            #define _WCRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WCIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WCRTDATA  __declspec(dllexport) _WRTLDCONV
+            #define _WMRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WMIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WMRTDATA  __declspec(dllexport) _WRTLDCONV
+            #define _WPRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WPIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WPRTDATA  __declspec(dllexport) _WRTLDCONV
+        #elif defined(__WARP__)
+            #define _WCRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WCIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WCRTDATA  __declspec(dllexport) _WRTLDCONV
+            #define _WMRTLINK  _WRTLFCONV
+            #define _WMIRTLINK _WRTLFCONV
+            #define _WMRTDATA  _WRTLDCONV
+            #define _WPRTLINK  _WRTLFCONV
+            #define _WPIRTLINK _WRTLFCONV
+            #define _WPRTDATA  _WRTLDCONV
+        #endif
+    #elif defined(__MAKE_DLL_CLIB)
         #undef _WCRTLINK
         #undef _WCIRTLINK
         #undef _WCRTDATA
