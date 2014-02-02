@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include "variety.h"
+
 // these appear ahead of the include files to avoid collisions
 // between the _STACKLOW variable and the _STACKLOW macro
 

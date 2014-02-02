@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <sys/stat.h>
 
 _WCRTLINK int mkfifo( const char *__path, mode_t __mode )

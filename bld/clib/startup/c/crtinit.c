@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <windows.h>
 
-#ifdef __MAKE_DLL_CLIB
+#if defined( __MAKE_DLL_CLIB ) || defined( __MAKE_DLL_WRTLIB )
 __declspec(dllexport)
 #endif
 BOOL WINAPI _CRT_INIT( HINSTANCE hDLL, DWORD dwReason, LPVOID reserved )

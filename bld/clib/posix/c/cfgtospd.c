@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
 #include <termios.h>
 
 _WCRTLINK speed_t cfgetospeed( const struct termios *__termios_p )

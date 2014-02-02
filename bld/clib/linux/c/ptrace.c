@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <unistd.h>
 #include <sys/ptrace.h>
 #include <errno.h>

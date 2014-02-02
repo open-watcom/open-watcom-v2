@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <sched.h>
 #include <errno.h>
 #include "linuxsys.h"

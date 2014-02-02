@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "linuxsys.h"

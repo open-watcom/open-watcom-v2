@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <time.h>
 #include <errno.h>
 #include "linuxsys.h"

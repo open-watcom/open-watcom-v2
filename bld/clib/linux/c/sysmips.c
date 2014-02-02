@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <stdlib.h>
 #include <sys/sysmips.h>
 #include <errno.h>

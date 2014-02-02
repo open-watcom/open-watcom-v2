@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <stdarg.h>
 #include <fcntl.h>
 #include <errno.h>

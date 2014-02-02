@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <fnmatch.h>
 #include <ctype.h>
 #include <string.h>

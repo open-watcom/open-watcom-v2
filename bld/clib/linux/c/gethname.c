@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <unistd.h>
 #include <string.h>
 #include <sys/utsname.h>

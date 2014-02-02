@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <stdlib.h>
 #include <fcntl.h>
 #include <dirent.h>

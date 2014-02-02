@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <signal.h>
 #include <errno.h>
 #include "linuxsys.h"

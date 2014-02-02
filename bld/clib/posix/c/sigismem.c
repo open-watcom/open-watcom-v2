@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <signal.h>
 
 _WCRTLINK int sigismember( const sigset_t *__set, int __signum )

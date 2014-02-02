@@ -28,6 +28,8 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <signal.h>
 
 _WCRTLINK int sigfillset( sigset_t *__set )
