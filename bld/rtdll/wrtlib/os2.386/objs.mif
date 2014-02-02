@@ -1,29 +1,29 @@
-__cifx__       =/library/$(system).386/$(subdir)/
-__mifx__       =/library/$(system).386/$(subdir)
-__pifx__       =os23$(dllname_$(convention))mt
+__cifx__ =/library/$(system).386/$(subdir)/
+__mifx__ =/library/$(system).386/$(subdir)
+__pifx__ =os2.386/mf_$(dllname_$(convention))mt
 
 dll_libs = $+ &
-    $(new_clib)$(__cifx__)clib3$(dllname_$(convention)).lib &
-    $(new_mlib)$(__mifx__)dll/math3$(dllname_$(convention)).lib &
-    $(cpplib_dir)/$(__pifx__).dll/plbxmt3$(dllname_$(convention)).lib &
-    $(cpplib_dir)/$(__pifx__)/plbxmt3$(dllname_$(convention)).lib &
+    $(clib_dir)$(__cifx__)clib3$(dllname_$(convention)).lib &
+    $(mathlib_dir)$(__mifx__).dll/math3$(dllname_$(convention)).lib &
+    $(cpplib_dir)/library/$(__pifx__).dll/plbxmt3$(dllname_$(convention)).lib &
+    $(cpplib_dir)/library/$(__pifx__)/plbxmt3$(dllname_$(convention)).lib &
     $-
 
 dll_def = $+ &
-    $(new_clib)$(__cifx__)export.def &
-    $(new_clib)/fpu/export.def &
-    $(new_clib)/intel/export.def &
-    $(new_clib)/startup/export.def &
-    $(new_clib)/startup/$(convention).def &
-    $(new_clib)/startup/library/$(system).386/export.def &
-    $(new_mlib)$(__mifx__)dll/export.def &
-    $(new_mlib)/export.386 &
+    $(clib_dir)$(__cifx__)export.def &
+#    $(clib_dir)/fpu/export.def &
+    $(clib_dir)/intel/export.def &
+    $(clib_dir)/startup/export.def &
+    $(clib_dir)/startup/$(convention).def &
+#    $(clib_dir)/startup/library/$(system).386/export.def &
+    $(mathlib_dir)$(__mifx__).dll/export.def &
+    $(mathlib_dir)/export.386 &
     $(cpplib_dir)/runtime/os2386.def &
-    $(cpplib_dir)/$(__pifx__).dll/exportx.def &
+    $(cpplib_dir)/library/$(__pifx__).dll/exportx.def &
     $-
 
 dll_objs = $+ &
-    $(new_clib)/startup$(__cifx__)clibdo32.obj &
+    $(clib_dir)/startup$(__cifx__)clibdo32.obj &
     $-
 
 targdir = $(cpplib_dir)/runtime/$(__pifx__).dll/
@@ -31,18 +31,18 @@ targdir = $(cpplib_dir)/runtime/$(__pifx__).dll/
 targdir =
 
 static_objs += $+ &
-    $(new_clib)/startup$(__cifx__)cstrto32.obj &
-    $(new_clib)/startup$(__cifx__)dcinit.obj &
-    $(new_clib)/startup$(__cifx__)dmndo32.obj &
-    $(new_clib)/startup$(__cifx__)dstrt386.obj &
-    $(new_clib)/startup$(__cifx__)fltused.obj &
-    $(new_clib)/startup$(__cifx__)initrtns.obj &
-    $(new_clib)/startup$(__cifx__)main3o32.obj &
-    $(new_clib)/startup$(__cifx__)segdefns.obj &
-    $(new_clib)/startup$(__cifx__)seg386.obj &
-    $(new_clib)/streamio$(__cifx__)dsetefg.obj &
+    $(clib_dir)/startup$(__cifx__)cstrto32.obj &
+    $(clib_dir)/startup$(__cifx__)dcinit.obj &
+    $(clib_dir)/startup$(__cifx__)dmndo32.obj &
+    $(clib_dir)/startup$(__cifx__)dstrt386.obj &
+    $(clib_dir)/startup$(__cifx__)fltused.obj &
+    $(clib_dir)/startup$(__cifx__)initrtns.obj &
+    $(clib_dir)/startup$(__cifx__)main3o32.obj &
+    $(clib_dir)/startup$(__cifx__)segdefns.obj &
+    $(clib_dir)/startup$(__cifx__)seg386.obj &
+    $(clib_dir)/streamio$(__cifx__)dsetefg.obj &
     $-
 
-__cifx__       =
-__mifx__       =
-__pifx__       =
+__cifx__ =
+__mifx__ =
+__pifx__ =
