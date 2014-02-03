@@ -675,6 +675,9 @@ bool WEXPORT WFileName::addPath( const char *path )
 {
     FullName    s;
 
+    if( path == NULL ) {
+        return( FALSE );
+    }
     _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
     if( _x.dir[0] == PATHSEP_CHAR || _x.dir[0] == '.' ) {
         return( FALSE );
