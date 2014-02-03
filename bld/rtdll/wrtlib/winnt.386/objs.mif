@@ -2,16 +2,24 @@ __cifx__ =$(system).386/$(subdir)
 __mifx__ =$(system).386/$(subdir).wdl
 __pifx__ =$(system).386/mf_$(dllname_$(convention))mt
 
+!ifdef profile
+dll_libs = $+ &
+    $(clib_dir)/library/$(system).$(processor)/$(model)_rp/clib3$(dllname_$(convention)).lib &
+    $(mathlib_dir)/library/$(__mifx__)/math3$(dllname_$(convention)).lib &
+    $(cpplib_dir)/library/$(__pifx__).wdl/plbxmt3$(dllname_$(convention)).lib &
+    $(cpplib_dir)/library/$(__pifx__)/plbxmt3$(dllname_$(convention)).lib &
+    $-
+!else
 dll_libs = $+ &
     $(clib_dir)/library/$(__cifx__)/clib3$(dllname_$(convention)).lib &
     $(mathlib_dir)/library/$(__mifx__)/math3$(dllname_$(convention)).lib &
     $(cpplib_dir)/library/$(__pifx__).wdl/plbxmt3$(dllname_$(convention)).lib &
     $(cpplib_dir)/library/$(__pifx__)/plbxmt3$(dllname_$(convention)).lib &
     $-
+!endif
 
 dll_def = $+ &
     $(clib_dir)/library/$(__cifx__)/export.def &
-#    $(clib_dir)/fpu/export.def &
     $(clib_dir)/intel/export.def &
     $(clib_dir)/startup/export.def &
     $(clib_dir)/startup/$(convention).def &
@@ -22,29 +30,30 @@ dll_def = $+ &
     $(cpplib_dir)/library/$(__pifx__).wdl/exportx.def &
     $-
 
+!ifdef profile
+dll_objs = $+ &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/segdefns.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/p5prof2.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/prfalloc.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/profilog.obj &
+    $-
+!else
 dll_objs = $+ &
     $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
     $-
+!endif
 
 targdir = $(cpplib_dir)/runtime/$(__pifx__).wdl/
 !include $(cpplib_dir)/runtime/static.mif
+objs_tmp = $+ $(static_objs) $-
+targdir = $(cpplib_dir)/iostream/$(__pifx__).wdl/
+!include $(cpplib_dir)/iostream/static.mif
+objs_tmp += $+ $(static_objs) $-
 targdir =
-
-static_objs += $+ &
-    $(clib_dir)/libwin32/library/$(__cifx__)/getmodfn.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/cstrtwnt.obj &
-#    $(clib_dir)/startup/library/$(__cifx__)/cstrtwwt.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/dcinit.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/dmndwnt.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/dstrt386.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/fltused.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/initrtns.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/main3wnt.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/segdefns.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/seg386.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/wmndwnt.obj &
-    $(clib_dir)/streamio/library/$(__cifx__)/dsetefg.obj &
-    $-
+!include $(clib_dir)/rtdll/static.mif
+objs_tmp += $+ $(static_objs) $-
+static_objs = $+ $(objs_tmp) $-
 
 __cifx__ =
 __mifx__ =

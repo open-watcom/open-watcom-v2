@@ -1,0 +1,57 @@
+static_objs = $+ &
+!ifeq default_windowing 1
+    $(clib_dir)/defwin/library/$(__cifx__)/dinitwin.obj &
+!else
+    $(clib_dir)/defwin/library/$(__cifx__)/nodefwin.obj &
+!endif
+    $(clib_dir)/fpu/library/$(__cifx__)/old87.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/dp5prof.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/dp5prof2.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/dprfallo.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/p5psegs.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/atexit.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/argcv.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/wargcv.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/dcinit.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/dinitarg.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/diniwarg.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/dstrt386.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/fltused.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/fltuse80.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/getdsint.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/histsplt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/initrtns.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/seg386.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/segdefns.obj &
+    $(clib_dir)/streamio/library/$(__cifx__)/dsetefg.obj &
+!ifeq system winnt
+    $(clib_dir)/intel/library/$(__cifx__)/tlsawnt.obj &
+    $(clib_dir)/libwin32/library/$(__cifx__)/getmodfn.obj &
+    $(clib_dir)/mthread/library/$(__cifx__)/declwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/cstrtwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/cstrwwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/dllnmwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/dmndwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/ddgrpwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/lmainwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/lmn2wnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/main3wnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/main5wnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/rdllmwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/wmndwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/wmndwwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/wstrtwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/wstrwwnt.obj &
+!else ifeq system os2
+    $(clib_dir)/startup/library/$(__cifx__)/cstrto32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/cstrwo32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/dllmno32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/dmndo32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/ddgrpo32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/lmaino32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/libmno32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/main3o32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/main5o32.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/libterm.obj &
+!endif
+    $-

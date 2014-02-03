@@ -1,15 +1,14 @@
-pfx__    =$(mathlib_dir)
-__ifx__  =$(system).$(processor)/$(subdir).dll
+__mifx__ =$(system).$(processor)/$(subdir).dll
 __cifx__ =$(system).386/$(subdir)
 
 dll_libs = $+ &
-    $(pfx__)/library/$(__ifx__)/math3$(dllname_$(convention)).lib &
+    $(mathlib_dir)/library/$(__mifx__)/math3$(dllname_$(convention)).lib &
     $(clib_dir)/rtdll/$(__cifx__)/clb$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
     $-
 
 dll_def = $+ &
-    $(pfx__)/library/$(__ifx__)/export.def &
-    $(pfx__)/export.$(processor) &
+    $(mathlib_dir)/library/$(__mifx__)/export.def &
+    $(mathlib_dir)/export.$(processor) &
     $-
 
 dll_objs = $+ &
@@ -18,5 +17,5 @@ dll_objs = $+ &
 
 static_objs =
 
-pfx__ =
-__ifx__ =
+__cifx__ =
+__mifx__ =

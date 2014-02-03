@@ -1,82 +1,37 @@
-pfx__ =$(clib_dir)
-__ifx__ =$(system).$(processor)/$(subdir)
+__cifx__ =$(system).$(processor)/$(subdir)
 
 !ifdef profile
 dll_libs = $+ &
-    $(pfx__)/library/$(system).$(processor)/$(model)_rp/clib3$(dllname_$(convention)).lib &
+    $(clib_dir)/library/$(system).$(processor)/$(model)_rp/clib3$(dllname_$(convention)).lib &
     $-
 !else
 dll_libs = $+ &
-    $(pfx__)/library/$(__ifx__)/clib3$(dllname_$(convention)).lib &
+    $(clib_dir)/library/$(__cifx__)/clib3$(dllname_$(convention)).lib &
     $-
 !endif
 
 dll_def = $+ &
-    $(pfx__)/library/$(__ifx__)/export.def &
-    $(pfx__)/intel/export.def &
-    $(pfx__)/startup/export.def &
-    $(pfx__)/startup/$(convention).def &
-    $(pfx__)/startup/library/$(system).$(processor)/$(convention).def &
+    $(clib_dir)/library/$(__cifx__)/export.def &
+    $(clib_dir)/intel/export.def &
+    $(clib_dir)/startup/export.def &
+    $(clib_dir)/startup/$(convention).def &
+    $(clib_dir)/startup/library/$(system).$(processor)/$(convention).def &
     $-
 
 !ifdef profile
 dll_objs = $+ &
-    $(pfx__)/startup/library/$(__ifx__)/clibdwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/segdefns.obj &
-    $(pfx__)/intel/library/$(__ifx__)/p5prof2.obj &
-    $(pfx__)/intel/library/$(__ifx__)/prfalloc.obj &
-    $(pfx__)/intel/library/$(__ifx__)/profilog.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/segdefns.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/p5prof2.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/prfalloc.obj &
+    $(clib_dir)/intel/library/$(__cifx__)/profilog.obj &
     $-
 !else
 dll_objs = $+ &
-    $(pfx__)/startup/library/$(__ifx__)/clibdwnt.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
     $-
 !endif
 
-static_objs = $+ &
-!ifeq default_windowing 1
-    $(pfx__)/defwin/library/$(__ifx__)/dinitwin.obj &
-!else
-    $(pfx__)/defwin/library/$(__ifx__)/nodefwin.obj &
-!endif
-    $(pfx__)/fpu/library/$(__ifx__)/old87.obj &
-    $(pfx__)/intel/library/$(__ifx__)/dp5prof.obj &
-    $(pfx__)/intel/library/$(__ifx__)/dp5prof2.obj &
-    $(pfx__)/intel/library/$(__ifx__)/dprfallo.obj &
-    $(pfx__)/intel/library/$(__ifx__)/p5psegs.obj &
-    $(pfx__)/intel/library/$(__ifx__)/tlsawnt.obj &
-    $(pfx__)/libwin32/library/$(__ifx__)/getmodfn.obj &
-    $(pfx__)/mthread/library/$(__ifx__)/declwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/argcv.obj &
-    $(pfx__)/startup/library/$(__ifx__)/wargcv.obj &
-    $(pfx__)/startup/library/$(__ifx__)/atexit.obj &
-    $(pfx__)/startup/library/$(__ifx__)/cstrtwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/cstrwwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/dcinit.obj &
-    $(pfx__)/startup/library/$(__ifx__)/ddgrpwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/dinitarg.obj &
-    $(pfx__)/startup/library/$(__ifx__)/diniwarg.obj &
-    $(pfx__)/startup/library/$(__ifx__)/dllnmwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/dmndwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/dstrt386.obj &
-    $(pfx__)/startup/library/$(__ifx__)/fltused.obj &
-    $(pfx__)/startup/library/$(__ifx__)/fltuse80.obj &
-    $(pfx__)/startup/library/$(__ifx__)/getdsint.obj &
-    $(pfx__)/startup/library/$(__ifx__)/histsplt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/initrtns.obj &
-    $(pfx__)/startup/library/$(__ifx__)/lmainwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/lmn2wnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/main3wnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/main5wnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/rdllmwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/seg386.obj &
-    $(pfx__)/startup/library/$(__ifx__)/segdefns.obj &
-    $(pfx__)/startup/library/$(__ifx__)/wmndwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/wmndwwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/wstrtwnt.obj &
-    $(pfx__)/startup/library/$(__ifx__)/wstrwwnt.obj &
-    $(pfx__)/streamio/library/$(__ifx__)/dsetefg.obj &
-    $-
+!include ../../static.mif
 
-pfx__ =
-__ifx__ =
+__cifx__ =

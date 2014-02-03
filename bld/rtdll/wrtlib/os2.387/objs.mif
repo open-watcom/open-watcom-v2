@@ -11,7 +11,6 @@ dll_libs = $+ &
 
 dll_def = $+ &
     $(clib_dir)/library/$(__cifx__)/export.def &
-#    $(clib_dir)/fpu/export.def &
     $(clib_dir)/intel/export.def &
     $(clib_dir)/startup/export.def &
     $(clib_dir)/startup/$(convention).def &
@@ -29,20 +28,14 @@ dll_objs = $+ &
 
 targdir = $(cpplib_dir)/runtime/$(__pifx__).dll/
 !include $(cpplib_dir)/runtime/static.mif
+objs_tmp = $+ $(static_objs) $-
+targdir = $(cpplib_dir)/iostream/$(__pifx__).dll/
+!include $(cpplib_dir)/iostream/static.mif
+objs_tmp += $+ $(static_objs) $-
 targdir =
-
-static_objs += $+ &
-    $(clib_dir)/startup/library/$(__cifx__)/cstrto32.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/dcinit.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/dmndo32.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/dstrt386.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/fltused.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/initrtns.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/main3o32.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/segdefns.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/seg386.obj &
-    $(clib_dir)/streamio/library/$(__cifx__)/dsetefg.obj &
-    $-
+!include $(clib_dir)/rtdll/static.mif
+objs_tmp += $+ $(static_objs) $-
+static_objs = $+ $(objs_tmp) $-
 
 __cifx__ =
 __mifx__ =
