@@ -32,9 +32,7 @@
 
 #include "variety.h"
 #include "mathcode.h"
-#undef __math_func__
-#define __math_func__
-#include "mathcode.h"
+#include "_matherr.h"
 #include "cplx.h"
 
 // q1 not used
@@ -57,7 +55,7 @@ _WMRTLINK dcomplex __qmath2err( unsigned int err_info, dcomplex *arg1, dcomplex 
     else if( err_info & M_UNDERFLOW) { why = UNDERFLOW;}
     else if( err_info & M_PLOSS    ) { why = PLOSS;    }
     else if( err_info & M_TLOSS    ) { why = TLOSS;    }*/
-    __rterrmsg( why, MathFuncNames[ (err_info & FUNC_MASK) - 1 ] );
+    __rterrmsg( why, __rtmathfuncname( err_info & FUNC_MASK ) );
     if( err_info & V_ZERO ) {
         res.realpart = 0.0;
         res.imagpart = 0.0;

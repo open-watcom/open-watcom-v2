@@ -38,41 +38,11 @@
  #include <_comdef.h>
 #endif
 
-_WMRTLINK extern double __math1err( unsigned int, double *arg1 );
-_WMRTLINK extern double __math2err( unsigned int, double *arg1, double *arg2 );
-
-#ifndef __math_func__
- #define __math_func__(code,name)  code
- enum func_codes {
-#else
- #undef __math_func__
- #define __math_func__(code,name)  name
- static char *MathFuncNames[] = {
-#endif
-
-        __math_func__( FUNC_ACOS = 1,"acos" ),
-        __math_func__( FUNC_ASIN,    "asin" ),
-        __math_func__( FUNC_SQRT,    "sqrt" ),
-        __math_func__( FUNC_EXP,     "exp"  ),
-        __math_func__( FUNC_COSH,    "cosh" ),
-        __math_func__( FUNC_SINH,    "sinh" ),
-        __math_func__( FUNC_POW,     "pow"  ),
-        __math_func__( FUNC_ACOSH,   "acosh"),
-        __math_func__( FUNC_LOG2,    "log2" ),
-        __math_func__( FUNC_LOG,     "log"  ),
-        __math_func__( FUNC_LOG10,   "log10"),
-        __math_func__( FUNC_ATANH,   "atanh"),
-        __math_func__( FUNC_ATAN2,   "atan2"),
-        __math_func__( FUNC_IPOW,    "ipow" ),
-        __math_func__( FUNC_DPOWI,   "dpowi"),
-        __math_func__( FUNC_COS,     "cos"  ),
-        __math_func__( FUNC_SIN,     "sin"  ),
-        __math_func__( FUNC_TAN,     "tan"  ),
-        __math_func__( FUNC_Y0,      "y0"   ),
-        __math_func__( FUNC_Y1,      "y1"   ),
-        __math_func__( FUNC_YN,      "yn"   ),
-        __math_func__( FUNC_MOD,     "mod"  ),
-        __math_func__( FUNC_COTAN,   "cotan")
+enum func_codes {
+    FUNC_NULL,
+    #define pick(enum,name) enum,
+    #include "_mathfun.h"
+    #undef pick
 };
 #define FUNC_MASK       0x001F
 
@@ -91,3 +61,6 @@ _WMRTLINK extern double __math2err( unsigned int, double *arg1, double *arg2 );
 #define V_ZERO          0x2000
 #define V_ONE           0x4000
 #define V_HUGEVAL       0x8000
+
+_WMRTLINK extern double __math1err( unsigned int, double *arg1 );
+_WMRTLINK extern double __math2err( unsigned int, double *arg1, double *arg2 );

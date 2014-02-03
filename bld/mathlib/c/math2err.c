@@ -33,9 +33,9 @@
 #include "variety.h"
 #include <math.h>
 #include "mathcode.h"
-#undef  __math_func__
-#define __math_func__
-#include "mathcode.h"
+#include "mathlib.h"
+#include "_matherr.h"
+
 
 _WMRTLINK double __math1err( unsigned int err_info, double *arg1 )
 {
@@ -56,7 +56,7 @@ _WMRTLINK double __math2err( unsigned int err_info, double *arg1, double *arg2 )
     else if( err_info & M_PLOSS    ) { why = PLOSS;    }
     else if( err_info & M_TLOSS    ) { why = TLOSS;    }
     exc.type = why;
-    exc.name = MathFuncNames[ (err_info & FUNC_MASK) - 1 ];
+    exc.name = __rtmathfuncname( err_info & FUNC_MASK );
     if(      err_info & V_NEG_HUGEVAL ) { exc.retval = - HUGE_VAL; }
     else if( err_info & V_ZERO        ) { exc.retval = 0.0;        }
     else if( err_info & V_ONE         ) { exc.retval = 1.0;        }
