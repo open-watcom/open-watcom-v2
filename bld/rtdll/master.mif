@@ -48,6 +48,8 @@ rtdll_nosymfile = 1
 
 !ifeq component clib
 br_suffix=1
+!else ifeq component wrtlib
+br_suffix=1
 !else
 br_suffix=0
 !endif
