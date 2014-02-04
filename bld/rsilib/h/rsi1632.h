@@ -34,9 +34,13 @@
 #define far_strcpy(d,s)     _fstrcpy( d, s )
 #define far_setmem(p,l,w)   _fmemset( p, w, l )
 
-#define GDT32LIMIT(g)   (((ULONG)(g).lim_16_19)<<16 | (g).lim_0_15)
-#define GDT32LEN(g)     (g.xtype.page_gran ? (ULONG)GDT32LIMIT(g)<<12 | 0xFFF : (ULONG)GDT32LIMIT(g))
+#define GETLIMIT(g)     (((ULONG)(g).lim_16_19)<<16 | (g).lim_0_15)
+#define GDT32LIMIT(g)   (g.xtype.page_gran ? (ULONG)GETLIMIT(g)<<12 | 0xFFF : (ULONG)GETLIMIT(g))
 #define GDT32BASE(g)    makelong(((g).base_24_31 << 8)|(g).base_16_23,(g).base_0_15)
+
+#define MEMBLK_INVALID  0
+#define MEMBLK_PARTIAL  1
+#define MEMBLK_VALID    2
 
 #include "pushpck1.h"
 typedef struct {
@@ -171,9 +175,9 @@ extern int          D32Unrelocate( Fptr32 FarPtr fp );
 extern void         __cdecl peek32( OFFSET32, SELECTOR, void FarPtr, unsigned short );
 extern int          __cdecl poke32( OFFSET32, SELECTOR, void FarPtr, unsigned short );
 /* d32dbgrd.c */
-extern int          D32DebugRead( OFFSET32, SELECTOR, int, void FarPtr, unsigned );
+extern int          D32DebugRead( OFFSET32, SELECTOR, int, void FarPtr, unsigned short );
 /* d32dbgwr.c */
-extern int          D32DebugWrite( OFFSET32, SELECTOR, int, void FarPtr, unsigned );
+extern int          D32DebugWrite( OFFSET32, SELECTOR, int, void FarPtr, unsigned short );
 /* d32dbgsb.c */
 extern void         D32DebugSetBreak( OFFSET32, SELECTOR, int, unsigned char FarPtr, unsigned char FarPtr );
 

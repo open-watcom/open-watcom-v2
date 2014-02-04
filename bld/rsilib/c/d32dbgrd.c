@@ -17,13 +17,13 @@
 
 /* Return value: not used.
 */
-int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, unsigned n )
+int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, unsigned short len )
 {
     Fptr32      fp;
-    OFFSET32    new_n;
+    OFFSET32    new_len;
     int         check;
 
-    if( n == 0 )
+    if( len == 0 )
         return( 0 );
 
     fp.sel = sel;
@@ -38,14 +38,18 @@ int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, uns
         If the range is partially valid, we clip the address range to fit
         and read the memory.
     */
-    check = rsi_addr32_check( fp.off, fp.sel, (OFFSET32) n, &new_n );
+    check = rsi_addr32_check( fp.off, fp.sel, (OFFSET32)len, &new_len );
 
-    if( check <= 1 )
-        far_setmem( to, n, 0xFF );
-    if( check >= 1 ) {
+    if( check == MEMBLK_INVALID ) {
+        far_setmem( to, len, 0xFF );
+        return( 1 );
+    } else {
+        if( check != MEMBLK_VALID ) {
+            far_setmem( (unsigned char FarPtr)to + new_len, len - new_len, 0xFF );
+        }
+        len = (unsigned short)new_len;
         page_fault = 0;
-        n = (unsigned short)new_n;
-        peek32( fp.off, fp.sel, to, n );
+        peek32( fp.off, fp.sel, to, len );
 
         /* If a page fault occurred while reading the range, recurse until
             we either read without getting a page fault, or reach a 1-byte
@@ -55,14 +59,14 @@ int D32DebugRead( OFFSET32 off, SELECTOR sel, int translate, void FarPtr to, uns
         if( page_fault ) {
             page_fault = 0;
 
-            if( n == 1 ) {
+            if( len == 1 ) {
                 *(unsigned char FarPtr)to = 0xFF;
             } else {
-                check = ( n >> 1 );
-                D32DebugRead( off, sel, 0, to, check );
-                D32DebugRead( off + check, sel, 0, (unsigned char FarPtr)to + check, n - check );
+                unsigned short  check_len = ( len >> 1 );
+                D32DebugRead( off, sel, 0, to, check_len );
+                D32DebugRead( off + check_len, sel, 0, (unsigned char FarPtr)to + check_len, len - check_len );
             }
         }
+        return( 0 );
     }
-    return( 0 );
 }

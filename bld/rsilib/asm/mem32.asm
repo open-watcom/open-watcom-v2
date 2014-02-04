@@ -65,6 +65,7 @@ nocopy2:
         int 31H
         xor     ax,ax
 finish:
+        sbb     ax,ax
         ret
 poke32 endp
 

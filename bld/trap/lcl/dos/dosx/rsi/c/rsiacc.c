@@ -103,7 +103,7 @@ void SetDbgTask( void )
 {
 }
 
-static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void FarPtr,unsigned int), addr48_ptr *addr, byte FarPtr data, unsigned short req )
+static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void FarPtr,unsigned short), addr48_ptr *addr, byte FarPtr data, unsigned short req )
 {
     unsigned short  len;
 
@@ -114,16 +114,20 @@ static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void FarPtr,unsi
     _DBG_Write( " for 0x" );
     _DBG_Write16( req );
     _DBG_Write( " bytes -- " );
-    if( rsi_addr32_check( addr->offset, addr->segment, req, NULL ) && r( addr->offset, addr->segment, 0, data, req ) == 0 ) {
-        _DBG_Writeln( "OK" );
-        addr->offset += req;
-        return( req );
+    if( rsi_addr32_check( addr->offset, addr->segment, req, NULL ) == MEMBLK_VALID ) {
+        if( r( addr->offset, addr->segment, 0, data, req ) == 0 ) {
+            _DBG_Writeln( "OK" );
+            addr->offset += req;
+            return( req );
+        }
     }
     _DBG_Writeln(( "Bad" ));
     len = 0;
     while( req > 0 ) {
-        if( !rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) ) break;
-        if( r( addr->offset, addr->segment, 0, data, 1 ) != 0 ) break;
+        if( rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) != MEMBLK_VALID )
+            break;
+        if( r( addr->offset, addr->segment, 0, data, 1 ) != 0 )
+            break;
         ++addr->offset;
         ++data;
         ++len;
@@ -223,7 +227,7 @@ trap_retval ReqAddr_info( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->is_big = 0;
-    if( rsi_addr32_check( 0, acc->in_addr.segment, 1, NULL ) ) {
+    if( rsi_addr32_check( 0, acc->in_addr.segment, 1, NULL ) == MEMBLK_VALID ) {
         if( GetLAR( acc->in_addr.segment ) & 0x400000 ) {
             ret->is_big = 1;
         }
@@ -243,7 +247,7 @@ trap_retval ReqMachine_data( void )
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
     *data = 0;
-    if( rsi_addr32_check( 0, acc->addr.segment, 1, NULL ) ) {
+    if( rsi_addr32_check( 0, acc->addr.segment, 1, NULL ) == MEMBLK_VALID ) {
         if( GetLAR( acc->addr.segment ) & 0x400000 ) {
             *data = X86AC_BIG;
         }
@@ -253,9 +257,9 @@ trap_retval ReqMachine_data( void )
 
 trap_retval ReqChecksum_mem( void )
 {
-    trap_elen           len;
+    unsigned short      len;
     int                 i;
-    trap_elen           read;
+    unsigned short      read;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
@@ -289,13 +293,11 @@ trap_retval ReqRead_mem( void )
 {
     read_mem_req        *acc;
     void                FarPtr buff;
-    trap_elen           len;
 
     _DBG_Writeln( "ReadMem" );
     acc = GetInPtr( 0 );
     buff = GetOutPtr( 0 );
-    len = ReadMemory( (addr48_ptr *)&acc->mem_addr, buff, acc->len );
-    return( len );
+    return( ReadMemory( (addr48_ptr *)&acc->mem_addr, buff, acc->len ) );
 }
 
 trap_retval ReqWrite_mem( void )
@@ -834,8 +836,7 @@ static unsigned ProgRun( bool step )
                 addr.segment = Proc.cs;
                 addr.offset = Proc.eip;
 
-                if( ReadMemory( &addr, int_buff, 3 ) == 3
-                    && int_buff[0] == 0xcd ) {
+                if( ReadMemory( &addr, int_buff, 3 ) == 3 && int_buff[0] == 0xcd ) {
                     /* have to breakpoint across software interrupts because Intel
                         doesn't know how to design chips */
                     addr.offset = Proc.eip + 2;
