@@ -95,8 +95,8 @@ $(bin_dir)/$(installer_f77) : ../files.dat $(setup_f77) $(bin_dir) .ALWAYS
     mkexezip $@ setup.zip $]@
     @rm setup.zip
 
-$(bin_dir) : .symbolic
-    @if not exist $@ mkdir $@
+$(bin_dir) :
+    mkdir $@
 
 clean : .symbolic
     @if exist $(bin_dir)/$(installer_c) rm $(bin_dir)/$(installer_c)
