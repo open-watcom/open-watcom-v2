@@ -191,7 +191,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
             where.segment = Proc.edx & 0xffff;
             where.offset = Proc.eax;
             for( ;; ) {
-                if( !rsi_addr32_check( where.offset, where.segment, 1, NULL ) ) break;
+                if( rsi_addr32_check( where.offset, where.segment, 1, NULL ) != MEMBLK_VALID )
+                    break;
                 D32DebugRead( where.offset, where.segment, 0, &buff[len], 1 );
                 if( len == BSIZE ) break;
                 if( buff[len] == '\0' ) break;
