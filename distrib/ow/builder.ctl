@@ -26,5 +26,9 @@ echo Installer Build: <1> <2> <3> <4> <5>
     mkinf -x -i../include f77 filelist <OWRELROOT>
     rm -rf filelist
 
+[ BLOCK <1> clean ]
+#==================
+    rm -rf bin
+
 [ BLOCK . . ]
 cdsay .
