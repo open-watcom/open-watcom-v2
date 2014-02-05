@@ -67,7 +67,7 @@ skip_build: .symbolic
 !endif
 all : $(bin_dir)/$(installer_c) $(bin_dir)/$(installer_f77) .SYMBOLIC
 
-$(bin_dir)/$(installer_c) : ../files.dat $(setup_c) $(bin_dir) .ALWAYS
+$(bin_dir)/$(installer_c) : ../files.dat $(bin_dir) $(setup_c) .ALWAYS
     langdat -l filelist $(langdat_keys_$(bld_os)$(bld_cpu)) -c $[@ c
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) c filelist $(%OWRELROOT)
@@ -81,7 +81,7 @@ $(bin_dir)/$(installer_c) : ../files.dat $(setup_c) $(bin_dir) .ALWAYS
     mkexezip $@ setup.zip $]@
     @rm setup.zip
 
-$(bin_dir)/$(installer_f77) : ../files.dat $(setup_f77) $(bin_dir) .ALWAYS
+$(bin_dir)/$(installer_f77) : ../files.dat $(bin_dir) $(setup_f77) .ALWAYS
     langdat -l filelist $(langdat_keys_$(bld_os)$(bld_cpu)) -c $[@ f77
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) f77 filelist $(%OWRELROOT)
