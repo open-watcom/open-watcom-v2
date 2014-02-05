@@ -46,7 +46,6 @@ export OWDOCBUILD=0
 
 # export OWDOSBOX=dosbox
 
-:common_setup
 # Invoke the script for the common environment
 . $OWROOT/cmnvars.sh
 
