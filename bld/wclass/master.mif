@@ -61,6 +61,7 @@ WCLASS_OBJS = &
         wname.obj &
         wobjfile.obj &
         wobjmap.obj &
+        wstrmap.obj &
         wpaint.obj &
         wpickbox.obj &
         wpickcbx.obj &
