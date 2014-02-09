@@ -104,7 +104,7 @@ bool WEXPORT MFamily::hasSwitches( bool setable )
     return FALSE;
 }
 
-MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fix_version )
+MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fixed_version )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -115,7 +115,7 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fix_version )
     //
     int icount = _switches.count();
     bool isSetable = ( switchtag.size() > MASK_SIZE && switchtag[MASK_SIZE] != ' ' );
-    if( fix_version == 0 || !isSetable ) {
+    if( fixed_version == 0 || !isSetable ) {
         for( int i = 0; i < icount; i++ ) {
             MSwitch* sw = (MSwitch*)_switches[i];
             WString tag;
@@ -137,7 +137,7 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fix_version )
             //
             // hack for buggy version of configuration/project files
             //
-            if( _config->version() == 4 || fix_version == 40 ) {
+            if( _config->version() == 4 || fixed_version == 40 ) {
                 int jcount = tag.size();
                 if( jcount > MASK_SIZE && jcount == switchtag.size() ) {
                     for( int j = 0; j < jcount; j++ ) {
