@@ -100,7 +100,7 @@ void WEXPORT MTool::writeSelf( WObjectFile& p )
 }
 #endif
 
-MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, bool fix )
+MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fix_version )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -109,7 +109,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, bool fix )
     // It is very hard to detect what was broken in each OW version because
     // there vere no change to version number of project files
     //
-    if( fix && _config->version() == 4 ) {
+    if( fix_version != 0 && fix_version < 41 && _config->version() == 4 ) {
         //
         // hack for buggy version of configuration/project files
         //
@@ -118,7 +118,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, bool fix )
     int icount = _families.count();
     for( int i = 0; i < icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
-        MSwitch* sw = family->findSwitch( switchtag, fix );
+        MSwitch* sw = family->findSwitch( switchtag, fix_version );
         if( sw != NULL ) {
             return sw;
         }
@@ -126,7 +126,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, bool fix )
     icount = _incTools.count();
     for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
-        MSwitch* sw = tool->findSwitch( switchtag, fix );
+        MSwitch* sw = tool->findSwitch( switchtag, fix_version );
         if( sw != NULL ) {
             return sw;
         }

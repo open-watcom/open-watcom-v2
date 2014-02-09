@@ -104,7 +104,7 @@ bool WEXPORT MFamily::hasSwitches( bool setable )
     return FALSE;
 }
 
-MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, bool fix )
+MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fix_version )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -114,41 +114,55 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, bool fix )
     // there vere no change to version number of project files
     //
     int icount = _switches.count();
-    for( int i = 0; i < icount; i++ ) {
-        MSwitch* sw = (MSwitch*)_switches[i];
-        WString tag;
-        sw->getTag( tag );
-        if( tag == switchtag ) {
-            return sw;
+    bool isSetable = ( switchtag.size() > MASK_SIZE && switchtag[MASK_SIZE] != ' ' );
+    if( fix_version == 0 || !isSetable ) {
+        for( int i = 0; i < icount; i++ ) {
+            MSwitch* sw = (MSwitch*)_switches[i];
+            WString tag;
+            sw->getTag( tag );
+            if( tag == switchtag ) {
+                return sw;
+            }
         }
-        //
-        // hack for buggy version of configuration/project files
-        //
-        if( fix ) {
-            int jcount = tag.size();
-            if( jcount > MASK_SIZE && jcount == switchtag.size() ) {
-                for( int j = 0; j < jcount; j++ ) {
-                    int ct = (unsigned char)tag[j];
-                    int cs = (unsigned char)switchtag[j];
-                    if( ct == cs )
-                        continue;
-                    // mask must be same
-                    if( j < MASK_SIZE ) {
-                        sw = NULL;
-                        break;
+    } else {
+        for( int i = 0; i < icount; i++ ) {
+            MSwitch* sw = (MSwitch*)_switches[i];
+            WString tag;
+            if( !sw->isSetable() )
+                continue;
+            sw->getTag( tag );
+            if( tag == switchtag ) {
+                return sw;
+            }
+            //
+            // hack for buggy version of configuration/project files
+            //
+            if( _config->version() == 4 || fix_version == 40 ) {
+                int jcount = tag.size();
+                if( jcount > MASK_SIZE && jcount == switchtag.size() ) {
+                    for( int j = 0; j < jcount; j++ ) {
+                        int ct = (unsigned char)tag[j];
+                        int cs = (unsigned char)switchtag[j];
+                        if( ct == cs )
+                            continue;
+                        // mask must be same
+                        if( j < MASK_SIZE ) {
+                            sw = NULL;
+                            break;
+                        }
+                        // ignore dash/space mismatch
+                        if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
+                            continue;
+                        // ignore upper/lower case mismatch
+                        if( toupper( cs ) != toupper( ct ) ) {
+                            sw = NULL;
+                            break;
+                        }
                     }
-                    // ignore dash/space mismatch
-                    if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
-                        continue;
-                    // ignore upper/lower case mismatch
-                    if( toupper( cs ) != toupper( ct ) ) {
-                        sw = NULL;
-                        break;
+                    if( sw != NULL ) {
+                        switchtag = tag;
+                        return sw;
                     }
-                }
-                if( sw != NULL ) {
-                    switchtag = tag;
-                    return sw;
                 }
             }
         }

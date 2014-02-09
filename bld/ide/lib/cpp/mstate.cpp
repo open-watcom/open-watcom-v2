@@ -81,7 +81,7 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     //
     // hack for buggy version of configuration/project files
     //
-    _switch = _tool->findSwitch( _switchTag, ( _config->version() == 4 || p.version() == 40 ) );
+    _switch = _tool->findSwitch( _switchTag, p.version() );
     if( p.version() > 27 ) {
         p.readObject( &_mode );
     }
