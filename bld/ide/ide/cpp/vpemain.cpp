@@ -75,13 +75,17 @@ extern "C" {
 #include "ide.h"
 #include "autoenv.h"
 
-#define OLDEST_SUPPORTED_VERSION 23
+/*
+ * increment LATEST_SUPPORTED_VERSION macro 
+ * when some change in file formats is done
+ */
 #define LATEST_SUPPORTED_VERSION 40
 /*
  * 39 and 40 are written the same, but read in differently
  * 39 messed up .BEFORE / .AFTER containing CR/LF's
  * since this is the same as the separator char.
  */
+#define OLDEST_SUPPORTED_VERSION 23
 
 static char _projectIdent[] = { "projectIdent" };
 

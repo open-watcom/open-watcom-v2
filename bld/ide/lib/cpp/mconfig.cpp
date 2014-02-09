@@ -56,8 +56,6 @@ extern "C" {
 #define REALLOC(p,s) (char*)realloc(p,s)
 #define FREE(p) if( p != NULL ) free(p)
 
-#define CUR_CFG_VERSION         4
-
 Define( MConfig )
 
 MConfig* MConfig::_configPtr;
@@ -245,7 +243,7 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
             } else if( tok == "rem" ) {
                 fil.flushLine( tok );
                 fil.token( tok );
-            } else if( tok == "Compat" ) {
+            } else if( _version == 4 && tok == "Compat" ) {
                 WString good;
                 WString bad;
                 fil.token( good );

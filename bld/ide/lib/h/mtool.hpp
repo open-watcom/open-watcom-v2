@@ -51,7 +51,7 @@ WCLASS MTool : public WObject
         WString& tag() { return _tag; };
         void name( WString& s ) { s = _name; }
         const WString& help() { return _help; }
-        MSwitch* findSwitch( WString& switchtag );
+        MSwitch* findSwitch( WString& switchtag, bool fix=false );
         bool hasSwitches( bool setable );
         void addSwitches( WVList& list, const char* mask, bool setable );
         void addFamilies( WVList& list );

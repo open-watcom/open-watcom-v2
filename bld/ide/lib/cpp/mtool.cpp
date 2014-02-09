@@ -34,6 +34,7 @@
 #include "mconfig.hpp"
 #include "mfamily.hpp"
 #include "wobjfile.hpp"
+#include "mtypo.hpp"
 
 Define( MTool )
 
@@ -99,23 +100,34 @@ void WEXPORT MTool::writeSelf( WObjectFile& p )
 }
 #endif
 
-MSwitch* WEXPORT MTool::findSwitch( WString& switchtag )
+MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, bool fix )
 {
+    //
+    // Open Watcom IDE configuration/project files are buggy
+    // There are many switch ID's which were changed by incompatible way
+    // IDE uses various hacks to fix it later instead of proper solution
+    // It is very hard to detect what was broken in each OW version because
+    // there vere no change to version number of project files
+    //
+    if( fix && _config->version() == 4 ) {
+        //
+        // hack for buggy version of configuration/project files
+        //
+        FixTypo( switchtag );
+    }
     int icount = _families.count();
-    int i;
-
-    for( i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
-        MSwitch* sw = family->findSwitch( switchtag );
-        if( sw ) {
+        MSwitch* sw = family->findSwitch( switchtag, fix );
+        if( sw != NULL ) {
             return sw;
         }
     }
     icount = _incTools.count();
-    for( i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
-        MSwitch* sw = tool->findSwitch( switchtag );
-        if( sw ) {
+        MSwitch* sw = tool->findSwitch( switchtag, fix );
+        if( sw != NULL ) {
             return sw;
         }
     }
@@ -125,16 +137,14 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag )
 bool MTool::hasSwitches( bool setable )
 {
     int icount = _families.count();
-    int i;
-
-    for( i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
         if( family->hasSwitches( setable ) ) {
             return TRUE;
         }
     }
     icount = _incTools.count();
-    for( i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
         if( tool->hasSwitches( setable ) ) {
             return TRUE;
@@ -146,14 +156,12 @@ bool MTool::hasSwitches( bool setable )
 void MTool::addSwitches( WVList& list, const char* mask, bool setable )
 {
     int icount = _families.count();
-    int i;
-
-    for( i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
         family->addSwitches( list, mask, setable );
     }
     icount = _incTools.count();
-    for( i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
         tool->addSwitches( list, mask, setable );
     }
@@ -162,13 +170,11 @@ void MTool::addSwitches( WVList& list, const char* mask, bool setable )
 void MTool::addFamilies( WVList& list )
 {
     int icount = _families.count();
-    int i;
-
-    for( i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         list.add( _families[i] );
     }
     icount = _incTools.count();
-    for( i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
         tool->addFamilies( list );
     }

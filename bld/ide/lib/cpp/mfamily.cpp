@@ -35,6 +35,7 @@
 #include "mcswitch.hpp"
 #include "mrswitch.hpp"
 #include "mc2swtch.hpp"
+#include "mconfig.hpp"
 #include "wobjfile.hpp"
 
 Define( MFamily )
@@ -96,26 +97,60 @@ bool WEXPORT MFamily::hasSwitches( bool setable )
     int icount = _switches.count();
     for( int i=0; i<icount; i++ ) {
         MSwitch* sw = (MSwitch*)_switches[i];
-        if( !setable || ( sw->text().size() > 0 && sw->text()[0] != ' ' ) ) {
+        if( !setable || sw->isSetable() ) {
             return TRUE;
         }
     }
     return FALSE;
 }
 
-MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag )
+MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, bool fix )
 {
+    //
+    // Open Watcom IDE configuration/project files are buggy
+    // There are many switch ID's which were changed by incompatible way
+    // IDE uses various hacks to fix it later instead of proper solution
+    // It is very hard to detect what was broken in each OW version because
+    // there vere no change to version number of project files
+    //
     int icount = _switches.count();
-    for( int i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MSwitch* sw = (MSwitch*)_switches[i];
         WString tag;
         sw->getTag( tag );
         if( tag == switchtag ) {
             return sw;
         }
-        sw->getCompatibleTag( tag );
-        if( !stricmp( tag, switchtag ) ) {
-            return sw;
+        //
+        // hack for buggy version of configuration/project files
+        //
+        if( fix ) {
+            int jcount = tag.size();
+            if( jcount > MASK_SIZE && jcount == switchtag.size() ) {
+                for( int j = 0; j < jcount; j++ ) {
+                    int ct = (unsigned char)tag[j];
+                    int cs = (unsigned char)switchtag[j];
+                    if( ct == cs )
+                        continue;
+                    // mask must be same
+                    if( j < MASK_SIZE ) {
+                        sw = NULL;
+                        break;
+                    }
+                    // ignore dash/space mismatch
+                    if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
+                        continue;
+                    // ignore upper/lower case mismatch
+                    if( toupper( cs ) != toupper( ct ) ) {
+                        sw = NULL;
+                        break;
+                    }
+                }
+                if( sw != NULL ) {
+                    switchtag = tag;
+                    return sw;
+                }
+            }
         }
     }
     return NULL;
@@ -127,7 +162,7 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
     int icount = _switches.count();
     for( int i=0; i<icount; i++ ) {
         MSwitch* sw = (MSwitch*)_switches[i];
-        bool hasText = (sw->text().size() > 0 );
+        bool hasText = sw->hasText();
         if( !setable || hasText ) {
             if( !lastSw || !hasText || lastSw->text() != sw->text() ) {
                 if( sw->addSwitch( list, mask ) ) {

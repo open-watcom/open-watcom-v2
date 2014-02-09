@@ -35,7 +35,6 @@
 #include "wobjfile.hpp"
 #include "mtool.hpp"
 #include "mrule.hpp"            //temp
-#include "mtypo.hpp"
 
 Define( MState )
 
@@ -59,6 +58,13 @@ MState* WEXPORT MState::createSelf( WObjectFile& )
 
 void WEXPORT MState::readSelf( WObjectFile& p )
 {
+    //
+    // Open Watcom IDE configuration/project files are buggy
+    // There are many switch ID's which were changed by incompatible way
+    // IDE uses various hacks to fix it later instead of proper solution
+    // It is very hard to detect what was broken in each OW version because
+    // there vere no change to version number of project files
+    //
     p.readObject( &_toolTag );
     _tool = _config->findTool( _toolTag );
     if( !_tool ) {
@@ -72,8 +78,10 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     }
     p.readObject( &_switchTag );
     _config->kludgeString( _switchTag );
-    FixTypo( _switchTag );
-    _switch = _tool->findSwitch( _switchTag );
+    //
+    // hack for buggy version of configuration/project files
+    //
+    _switch = _tool->findSwitch( _switchTag, ( _config->version() == 4 || p.version() == 40 ) );
     if( p.version() > 27 ) {
         p.readObject( &_mode );
     }

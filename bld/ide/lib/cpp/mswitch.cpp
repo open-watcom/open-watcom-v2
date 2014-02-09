@@ -41,14 +41,6 @@ MSwitch::MSwitch( WTokenFile& fil, WString& tok )
     _panel = (int)fil.token( tok );
     fil.token( _mask );
     fil.token( _text );
-    _compatibleText = _text;
-    for( int i = 0; i < _compatibleText.size(); i++ ) {
-        // Prior to Open Watcom 1.9, the project files used spaces instead of dashes in a
-        // few of the switch names.  These old names need to be recognized for compatibility.
-        if( _compatibleText[i] == '-' ) {
-            _compatibleText.setChar( i, ' ' );
-        }
-    }
 }
 
 #ifndef NOPERSIST
@@ -105,12 +97,6 @@ void MSwitch::getTag( WString& tag )
 {
     tag = _mask;
     tag.concat( _text );
-}
-
-void MSwitch::getCompatibleTag( WString& tag )
-{
-    tag = _mask;
-    tag.concat( _compatibleText );
 }
 
 MSwitch* MSwitch::addSwitch( WVList& list, const char* mask )

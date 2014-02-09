@@ -272,7 +272,7 @@ void VSetup::initialize()
                 MSwitch         *sw;
 
                 sw = (MSwitch*)myList[j];
-                if( sw->text().size() > 0 && sw->text()[0] != ' ' ) {
+                if( sw->isSetable() ) {
                     MState      *st;
                     WString     text;
 

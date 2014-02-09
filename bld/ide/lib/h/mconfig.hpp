@@ -41,7 +41,11 @@
 #include "wwindow.hpp"
 #include "wkeydefs.hpp"
 
-#define LOG_HELP_WIDTH 3
+#define LOG_HELP_WIDTH      3
+
+#define CUR_CFG_VERSION     4
+
+#define MASK_SIZE           5
 
 //these are used for indexing by MConfig::zapTargetMasks()
 typedef enum HostType {
