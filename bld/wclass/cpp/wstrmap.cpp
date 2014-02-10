@@ -50,9 +50,9 @@ bool WEXPORT WStringMapItem::isEqual( const WObject* obj ) const
 {
         if( ((WStringMapItem*)obj)->_obj != NULL ) {
                 if( ((WStringMapItem*)obj)->_hand != NULL ) {
-                        return ((WStringMapItem*)obj)->_obj == _obj && ((WStringMapItem*)obj)->_hand->isEqual( _hand );
+                        return ((WStringMapItem*)obj)->_obj->isEqual( _obj ) && ((WStringMapItem*)obj)->_hand->isEqual( _hand );
                 }
-                return ((WStringMapItem*)obj)->_obj == _obj;
+                return ((WStringMapItem*)obj)->_obj->isEqual( _obj );
         } else if( ((WStringMapItem*)obj)->_hand != NULL ) {
                 return ((WStringMapItem*)obj)->_hand->isEqual( _hand );
         }
@@ -71,10 +71,10 @@ void WEXPORT WStringMap::clearThis( WObject* obj )
         delete remove( &x );
 }
 
-WObject* WEXPORT WStringMap::findThis( WString *hand )
+WObject* WEXPORT WStringMap::findThis( WString *hand, WObject *obj )
 {
         if( hand != NULL ) {
-                WStringMapItem  x( NULL, hand );
+                WStringMapItem  x( obj, hand );
                 WStringMapItem* m = (WStringMapItem*)find( &x );
                 if( m == NULL ) {
                         return _currThis;
