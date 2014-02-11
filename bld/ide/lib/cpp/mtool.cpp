@@ -48,12 +48,12 @@ MTool::MTool( WTokenFile& fil, WString& tok )
             _families.add( new MFamily( fil, tok ) );
         } else if( tok == "IncludeTool" ) {
             MTool* tool = _config->findTool( fil.token( tok ) );
-            if( tool ) {
+            if( tool != NULL ) {
                 _incTools.add( tool );
             }
             fil.token( tok );
 #if CUR_CFG_VERSION > 4
-        } else if( _config->version() > 4 && tok == "SwitchDef" ) {
+        } else if( _config->version() > 4 && tok == "SwitchText" ) {
             WString id;
             WString text;
             fil.token( id );

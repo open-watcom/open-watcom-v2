@@ -202,7 +202,7 @@ void writeEditor( WFile &ifile, char *edtext, char *isdlltext,
         || ( thisos && !( editor == _config->editor() ) )
         || ( thisos && isdll != _config->editorIsDLL() ) ) {
         ifile.printf( "%s=%s\n", edtext, editor.gets() );
-        ifile.printf( "%s=%d\n", isdlltext, isdll == TRUE );
+        ifile.printf( "%s=%d\n", isdlltext, isdll );
     }
 }
 

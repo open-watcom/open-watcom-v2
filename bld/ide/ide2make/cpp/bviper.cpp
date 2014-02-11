@@ -201,6 +201,7 @@ WEXPORT VpeMain::~VpeMain()
     delete _config;
 }
 
+#ifndef NOPERSIST
 VpeMain* WEXPORT VpeMain::createSelf( WObjectFile& )
 {
     return NULL;
@@ -215,6 +216,7 @@ void WEXPORT VpeMain::readSelf( WObjectFile& p )
 void WEXPORT VpeMain::writeSelf( WObjectFile& )
 {
 }
+#endif
 
 bool VpeMain::loadProject( const WFileName& fn )
 {

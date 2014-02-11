@@ -1701,8 +1701,7 @@ bool VpeMain::kDynAccel( WKeyCode kc ) {
                 for( i=0; i<icount; i++ ) {
                     action = (MAction*)actlist[i];
                     if( action->menuAccel() == kc ) {
-                        _activeVComp->doAction( _activeVComp->selectedItem(),
-                                                action );
+                        _activeVComp->doAction( _activeVComp->selectedItem(), action );
                         done = TRUE;
                         break;
                     }

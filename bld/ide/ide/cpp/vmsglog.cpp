@@ -357,7 +357,7 @@ void VMsgLog::connectTimer( WTimer* timer, DWORD )
     const char* err = "Unable to connect to batch server.";
     if( !_batserv ) {
 #ifdef __WINDOWS__
-        _serverConnected = (BOOL)VxDConnect();
+        _serverConnected = ( VxDConnect() != 0 );
 #endif
     } else {
         err = BatchLink( NULL );

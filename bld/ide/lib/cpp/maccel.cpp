@@ -173,6 +173,7 @@ WEXPORT MAccelerator::MAccelerator( WTokenFile& fil, WString& tok )
     fil.token( tok );   //read ahead
 }
 
+#ifndef NOPERSIST
 MAccelerator* WEXPORT MAccelerator::createSelf( WObjectFile& )
 {
     return( NULL );
@@ -187,3 +188,4 @@ void WEXPORT MAccelerator::writeSelf( WObjectFile& p )
 {
     p=p;
 }
+#endif

@@ -45,7 +45,7 @@ MState::MState( MTool* tool, SwMode mode, MSwitch* sw )
         , _switch( sw )
         , _mode( mode )
 {
-    if( _switch ) {
+    if( _switch != NULL ) {
         sw->getTag( _switchTag );
     }
 }
@@ -59,7 +59,7 @@ MState* WEXPORT MState::createSelf( WObjectFile& )
 void WEXPORT MState::readSelf( WObjectFile& p )
 {
     //
-    // Open Watcom IDE configuration/project files are buggy
+    // Open Watcom IDE configuration/project files up to version 1.9 are buggy
     // There are many switch ID's which were changed by incompatible way
     // IDE uses various hacks to fix it later instead of proper solution
     // It is very hard to detect what was broken in each OW version because
@@ -67,7 +67,7 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     //
     p.readObject( &_toolTag );
     _tool = _config->findTool( _toolTag );
-    if( !_tool ) {
+    if( _tool == NULL ) {
         MRule* r = _config->findRule( _toolTag );       //temp
         if( r ) {
             _tool = r->tool();
@@ -79,7 +79,8 @@ void WEXPORT MState::readSelf( WObjectFile& p )
     p.readObject( &_switchTag );
     _config->kludgeString( _switchTag );
     //
-    // hack for buggy version of configuration/project files
+    // fix _switchTag for current version of configuration files
+    // it use various hacks in dependency on project files version
     //
     _switch = _tool->findSwitch( _switchTag, p.version() );
     if( p.version() > 27 ) {
