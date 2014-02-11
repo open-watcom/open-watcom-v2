@@ -198,25 +198,27 @@ WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text, bool first )
 }
 
 #if CUR_CFG_VERSION > 4
-WString* WEXPORT MTool::findSwitchId( WString& switchtag, WString *id )
+WString* WEXPORT MTool::findSwitchId( WString& switchtag, MSwitch *sw )
 {
     WString text;
     WString *switchid;
     int icount;
 
-    text = switchtag;
-    text.chop( MASK_SIZE );
-    switchid = (WString *)_switchesIds.findThis( &text, id );
-    if( switchid != NULL ) {
-        switchtag.truncate( MASK_SIZE );
-        switchtag.concat( *switchid );
-        return &switchtag;
-    }
-    icount = _incTools.count();
-    for( int i = 0; i < icount; i++ ) {
-        MTool* tool = (MTool*)_incTools[i];
-        if( tool->findSwitchId( switchtag, id ) != NULL ) {
+    if( sw->isMaskEqual( switchtag ) ) {
+        text = switchtag;
+        text.chop( MASK_SIZE );
+        switchid = (WString *)_switchesIds.findThis( &text, &sw->text() );
+        if( switchid != NULL ) {
+            switchtag.truncate( MASK_SIZE );
+            switchtag.concat( *switchid );
             return &switchtag;
+        }
+        icount = _incTools.count();
+        for( int i = 0; i < icount; i++ ) {
+            MTool* tool = (MTool*)_incTools[i];
+            if( tool->findSwitchId( switchtag, sw ) != NULL ) {
+                return &switchtag;
+            }
         }
     }
     return NULL;

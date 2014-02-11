@@ -56,6 +56,7 @@ WCLASS MSwitch : public WObject
         virtual void displayText( WString& s );
         bool hasText() { return( _text.size() > 0 ); }
         bool isSetable() { return( _text.size() > 0 && _text[0] != ' ' ); }
+        bool isMaskEqual( WString& mask );
 
         MSwitch* addSwitch( WVList& list, const char* mask );
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;

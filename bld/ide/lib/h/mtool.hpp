@@ -55,7 +55,7 @@ WCLASS MTool : public WObject
         MSwitch* findSwitch( WString& switchtag, long fixed_version=0 );
         WString *displayText( MSwitch *sw, WString& text, bool first=true );
 #if CUR_CFG_VERSION > 4
-        WString* findSwitchId( WString& switchtag, WString *id );
+        WString* findSwitchId( WString& switchtag, MSwitch *sw );
 #endif
         bool hasSwitches( bool setable );
         void addSwitches( WVList& list, const char* mask, bool setable );

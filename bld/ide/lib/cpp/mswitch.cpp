@@ -33,6 +33,7 @@
 #include "mswitch.hpp"
 #include "wobjfile.hpp"
 #include "mstate.hpp"
+#include "mconfig.hpp"
 
 Define( MSwitch )
 
@@ -96,6 +97,16 @@ void MSwitch::getTag( WString& tag )
 {
     tag = _mask;
     tag.concat( _text );
+}
+
+bool MSwitch::isMaskEqual( WString& mask )
+{
+    for( int i = 0; i < MASK_SIZE; ++i ) {
+        if( _mask[i] != mask[i] ) {
+            return( FALSE );
+        }
+    }
+    return( TRUE );
 }
 
 MSwitch* MSwitch::addSwitch( WVList& list, const char* mask )

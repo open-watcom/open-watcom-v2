@@ -136,7 +136,7 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
                 continue;
 #if CUR_CFG_VERSION > 4
             if( _config->version() > 4 || fixed_version < 41 ) {
-                if( tool->findSwitchId( switchtag, &sw->text() ) == NULL ) {
+                if( tool->findSwitchId( switchtag, sw ) == NULL ) {
                     continue;
                 }
             }
