@@ -36,6 +36,7 @@
 #include "wstring.hpp"
 #include "wpicklst.hpp"
 #include "wtokfile.hpp"
+#include "wstrmap.hpp"
 
 WCLASS MFamily;
 WCLASS MSwitch;
@@ -52,6 +53,10 @@ WCLASS MTool : public WObject
         void name( WString& s ) { s = _name; }
         const WString& help() { return _help; }
         MSwitch* findSwitch( WString& switchtag, long fixed_version=0 );
+        WString *displayText( MSwitch *sw, WString& text, bool first=true );
+#if CUR_CFG_VERSION > 4
+        WString* findSwitchId( WString& switchtag, WString *id );
+#endif
         bool hasSwitches( bool setable );
         void addSwitches( WVList& list, const char* mask, bool setable );
         void addFamilies( WVList& list );
@@ -61,6 +66,10 @@ WCLASS MTool : public WObject
         WString         _help;
         WPickList       _families;
         WVList          _incTools;
+#if CUR_CFG_VERSION > 4
+        WStringMap      _switchesTexts; //<WString>
+        WStringMap      _switchesIds;   //<WString>
+#endif
 };
 
 #endif

@@ -49,7 +49,7 @@ WCLASS MFamily : public WObject
         void name( WString& name ) { name = _name; }
         WPickList& switches() { return _switches; }
         bool WEXPORT hasSwitches( bool setable );
-        MSwitch* WEXPORT findSwitch( WString& switchtag, long fixed_version=0 );
+        MSwitch* WEXPORT findSwitch( MTool *tool, WString& switchtag, long fixed_version=0 );
         void WEXPORT addSwitches( WVList& list, const char* mask, bool setable );
     private:
         WString         _name;

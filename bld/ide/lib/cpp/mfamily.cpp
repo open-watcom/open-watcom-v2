@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
-#include "mfamily.hpp"
 #include "mvswitch.hpp"
 #include "mcswitch.hpp"
 #include "mrswitch.hpp"
 #include "mc2swtch.hpp"
 #include "mconfig.hpp"
+#include "mtool.hpp"
+#include "mfamily.hpp"
 #include "wobjfile.hpp"
 
 Define( MFamily )
@@ -104,7 +105,7 @@ bool WEXPORT MFamily::hasSwitches( bool setable )
     return FALSE;
 }
 
-MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fixed_version )
+MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixed_version )
 {
     //
     // Open Watcom IDE configuration/project files are buggy
@@ -113,6 +114,9 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fixed_version )
     // It is very hard to detect what was broken in each OW version because
     // there vere no change to version number of project files
     //
+#if CUR_CFG_VERSION < 5
+    tool = tool;
+#endif
     int icount = _switches.count();
     bool isSetable = ( switchtag.size() > MASK_SIZE && switchtag[MASK_SIZE] != ' ' );
     if( fixed_version == 0 || !isSetable ) {
@@ -130,6 +134,13 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag, long fixed_version )
             WString tag;
             if( !sw->isSetable() )
                 continue;
+#if CUR_CFG_VERSION > 4
+            if( _config->version() > 4 || fixed_version < 41 ) {
+                if( tool->findSwitchId( switchtag, &sw->text() ) == NULL ) {
+                    continue;
+                }
+            }
+#endif
             sw->getTag( tag );
             if( tag == switchtag ) {
                 return sw;

@@ -292,7 +292,6 @@ void VSetup::initialize()
                             xoff = XBEG + rr.w()/2 + frame_width;
                         }
                     }
-                    sw->displayText( text );
                     //
                     // Create a radio button group
                     //
@@ -329,7 +328,7 @@ void VSetup::initialize()
                             } else {
                                 style = RStyleGroupLast;
                             }
-                            sw->displayText( text );
+                            _tool->displayText( sw, text );
                             WRect rbrect( xoff+xgoff, yoff+ygoff, wid-2*xgoff, radiobutton_hite );
                             WRadioButton* t = new WRadioButton( w, rbrect, text, style );
                             swList->add( new SwitchMap( sw, t, st ) );
@@ -351,6 +350,7 @@ void VSetup::initialize()
                     //
                     } else if( streq( sw->className(), "MCSwitch" )
                                || streq( sw->className(), "MC2Switch" ) ) {
+                        _tool->displayText( sw, text );
                         WCheckBox* t = new WCheckBox( w, WRect(xoff,yoff,wid,checkbox_hite), text );
                         swList->add( new SwitchMap( sw, t, st ) );
 #ifndef TEST
@@ -363,6 +363,7 @@ void VSetup::initialize()
                     //
                     } else if( streq( sw->className(), "MVSwitch" ) ) {
                         WBoolSwitch* tt = NULL;
+                        _tool->displayText( sw, text );
                         if( ((MVSwitch*)sw)->optional() ) {
                             tt = new WCheckBox( w, WRect(xoff,yoff,wid, checkbox_hite), text );
 #ifndef TEST

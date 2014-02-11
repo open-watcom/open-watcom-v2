@@ -66,7 +66,6 @@ void WEXPORT MSwitch::writeSelf( WObjectFile& p )
 
 void MSwitch::displayText( WString& s )
 {
-    s.puts( text() );
     if( on().size() > 0 ) {
         s.concat( ' ' );
         s.concat( '[' );
