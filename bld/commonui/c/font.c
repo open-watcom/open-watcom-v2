@@ -47,7 +47,7 @@ static char     *fontKey = "Font";
 /*
  * EnumFunc - enumerate fonts
  */
-WINEXPORT int CALLBACK EnumFunc( LPLOGFONT lf, LPTEXTMETRIC tm, UINT ftype, LPSTR data )
+static WINEXPORT int CALLBACK EnumFunc( LPLOGFONT lf, LPTEXTMETRIC tm, UINT ftype, LPSTR data )
 {
     tm = tm;
     ftype = ftype;
@@ -91,7 +91,11 @@ static void getCourierFont( HANDLE inst )
     inst = inst;        /* shut up the compiler for NT */
     hdc = GetDC( (HWND)NULL );
     fp = MakeProcInstance( (FARPROC)EnumFunc, inst );
-    EnumFonts( hdc, NULL, (LPVOID)fp, 0 );
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    EnumFonts( hdc, NULL, (OLDFONTENUMPROC)fp, 0 );
+#else
+    EnumFonts( hdc, NULL, (FONTENUMPROC)fp, 0 );
+#endif
     FreeProcInstance( fp );
     ReleaseDC( (HWND)NULL, hdc );
 
@@ -108,7 +112,7 @@ static void getCourierFont( HANDLE inst )
  */
 void SetDlgMonoFont( HWND hwnd, int id )
 {
-    SendDlgItemMessage( hwnd, id, WM_SETFONT, (UINT)fixedFont, 0L );
+    SendDlgItemMessage( hwnd, id, WM_SETFONT, (WPARAM)fixedFont, 0L );
 
 } /* SetDlgMonoFont */
 
@@ -117,7 +121,7 @@ void SetDlgMonoFont( HWND hwnd, int id )
  */
 void SetMonoFont( HWND hwnd )
 {
-    SendMessage( hwnd, WM_SETFONT, (UINT)fixedFont, 0L );
+    SendMessage( hwnd, WM_SETFONT, (WPARAM)fixedFont, 0L );
 
 } /* SetMonoFont */
 
@@ -126,7 +130,7 @@ void SetMonoFont( HWND hwnd )
  */
 void SetDlgCourierFont( HWND hwnd, int id )
 {
-    SendDlgItemMessage( hwnd, id, WM_SETFONT, (UINT)fixedFont, 0L );
+    SendDlgItemMessage( hwnd, id, WM_SETFONT, (WPARAM)fixedFont, 0L );
 
 } /* SetDlgCourierFont */
 
@@ -135,7 +139,7 @@ void SetDlgCourierFont( HWND hwnd, int id )
  */
 void SetCourierFont( HWND hwnd )
 {
-    SendMessage( hwnd, WM_SETFONT, (UINT)courierFont, 0L );
+    SendMessage( hwnd, WM_SETFONT, (WPARAM)courierFont, 0L );
 
 } /* SetCourierFont */
 

@@ -195,11 +195,6 @@ void VCompDialog::initialize()
         updateCurOs();
     } else {
         checkedbutton->setCheck( TRUE );
-#ifdef __OS2__
-    // this is a kludge until GUI starts calling our callback function
-    // when the check state is set under OS/2
-    osButton( checkedbutton );
-#endif
     }
     if( curtarg != NULL ) {
         icount = _tgList.count();

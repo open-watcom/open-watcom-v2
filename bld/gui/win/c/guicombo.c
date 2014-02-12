@@ -45,9 +45,9 @@ typedef struct {
 } enum_info;
 
 #if defined( __UNIX__ )
-BOOL GUIEnumFunc( HWND hwnd, LONG lparam )
+static BOOL EnumFunc( HWND hwnd, LONG lparam )
 #else
-BOOL CALLBACK GUIEnumFunc( HWND hwnd, LPARAM lparam )
+static BOOL CALLBACK EnumFunc( HWND hwnd, LPARAM lparam )
 #endif
 {
     char        buff[5];
@@ -78,7 +78,7 @@ WPI_PROC GUISubClassEditCombobox( HWND hwnd )
     WPI_ENUMPROC        enum_func;
 
     e_info.success = FALSE;
-    enum_func = _wpi_makeenumprocinstance( (WPI_PROC) GUIEnumFunc, GUIMainHInst );
+    enum_func = _wpi_makeenumprocinstance( (WPI_PROC)EnumFunc, GUIMainHInst );
     _wpi_enumchildwindows( hwnd, enum_func, (LPARAM)&e_info );
     if( e_info.success ) {
         return( e_info.old );

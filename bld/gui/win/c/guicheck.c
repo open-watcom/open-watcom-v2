@@ -49,7 +49,7 @@ bool GUISetChecked( gui_window *wnd, unsigned control, unsigned check )
 {
     if( ( check == GUI_CHECKED ) && !( wnd->flags & IS_RES_DIALOG ) ) {
         if( GUIIsChecked( wnd, control ) != GUI_CHECKED ) {
-            return( GUIProcessControlNotification( control, 0, wnd ) );
+            return( GUIProcessControlNotification( control, BN_CLICKED, wnd ) );
         }
     } else {
         GUISendDlgItemMessage( wnd->hwnd, control, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)NULL );

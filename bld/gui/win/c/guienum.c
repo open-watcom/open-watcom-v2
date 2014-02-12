@@ -50,9 +50,9 @@ typedef struct {
 } enum_info;
 
 #if defined( __UNIX__ )
-int EnumFunc( HWND hwnd, LONG lparam )
+static int EnumFunc( HWND hwnd, LONG lparam )
 #else
-BOOL CALLBACK EnumFunc( HWND hwnd, LPARAM lparam )
+static BOOL CALLBACK EnumFunc( HWND hwnd, LPARAM lparam )
 #endif
 {
     gui_window  *wnd;
