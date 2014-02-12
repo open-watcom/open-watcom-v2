@@ -100,14 +100,12 @@ void WPickDialog::initialize() {
     w += avg.x() * 2;
     h += avg.y() / 2;
 
-    WDefPushButton *bOk = new WDefPushButton( this, WRect( x, y, w, h ),
-                                              OKText );
+    WDefPushButton *bOk = new WDefPushButton( this, WRect( x, y, w, h ), OKText );
     bOk->onClick( this, (cbw)&WPickDialog::okButton );
     bOk->show();
     x += w + max.x();
 
-    WPushButton *bCancel = new WPushButton( this, WRect( x, y, w, h ),
-                                            CancelText );
+    WPushButton *bCancel = new WPushButton( this, WRect( x, y, w, h ), CancelText );
     bCancel->onClick( this, (cbw)&WPickDialog::cancelButton );
     bCancel->show();
 

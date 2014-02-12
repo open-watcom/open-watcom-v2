@@ -246,9 +246,9 @@ static void GetVariableVals( gui_window *gui,
                 if( VarIsRestrictedFalse( var_handle ) ) {
                     if( !closing ) {
                         MsgBox( gui, "IDS_NODISKFOROPTION", GUI_OK );
-                        GUISetChecked( gui, VarGetId( var_handle ), 0 );
+                        GUISetChecked( gui, VarGetId( var_handle ), FALSE );
                         if( var_handle == FullInstall ) {
-                            GUISetChecked( gui, VarGetId( SelectiveInstall ), 1 );
+                            GUISetChecked( gui, VarGetId( SelectiveInstall ), TRUE );
                         }
                     }
                     SetVariableByHandle( var_handle, "0" );
@@ -287,12 +287,12 @@ static void CheckAnyCheck( gui_window *gui, a_dialog_header *child )
         if( ControlClass( VarGetId( child->pVariables[i] ), child ) == GUI_CHECK_BOX &&
             VarGetIntVal( child->pVariables[i] ) ) {
             SetVariableByHandle( child->any_check, "1" );
-            GUISetChecked( gui, VarGetId( child->any_check ), 1 );
+            GUISetChecked( gui, VarGetId( child->any_check ), TRUE );
             return;
         }
     }
     SetVariableByHandle( child->any_check, "0" );
-    GUISetChecked( gui, VarGetId( child->any_check ), 0 );
+    GUISetChecked( gui, VarGetId( child->any_check ), FALSE );
 }
 
 
@@ -537,11 +537,11 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     }
 
     if( GUIIsControlEnabled( gui, checked_radio_id ) ) {
-        GUISetChecked( gui, checked_radio_id, 1 );
+        GUISetChecked( gui, checked_radio_id, TRUE );
     } else if( !visible_checked_radiobutton && new_check_candidate != 0 ) {
         // 'Check' a visible radio button if the currently checked button
         // is invisible.
-        GUISetChecked( gui, new_check_candidate, 1 );
+        GUISetChecked( gui, new_check_candidate, TRUE );
     }
 
     rect.height += curr_dialog->height_change;
@@ -658,7 +658,7 @@ static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
                         if( child->any_check != NO_VAR ) {
                             old_val = VarGetIntVal( child->any_check );
                             SetVariableByHandle( child->any_check, "1" );
-                            GUISetChecked( gui, VarGetId( child->any_check ), 1 );
+                            GUISetChecked( gui, VarGetId( child->any_check ), TRUE );
                             CheckChildChecks( child );
                             return_state = DoDialogByPointer( gui, child );
                             if( return_state != DLG_CAN &&

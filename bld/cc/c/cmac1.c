@@ -1174,7 +1174,8 @@ local MACRO_TOKEN *BuildString( char *p )
             default:
                 tokenstr = Tokens[tok];
                 len = strlen( tokenstr );
-                if( i >= (bufsize-len) )  buf = CMemRealloc( buf, 2 * i );
+                if( i >= (bufsize-len) )
+                    buf = CMemRealloc( buf, 2 * i );
                 memcpy( &buf[i], tokenstr, len );
                 i += len;
                 break;
@@ -1208,7 +1209,8 @@ static MACRO_TOKEN *BuildMTokenList( char *ptr, MACRO_ARG *macro_parms )
     nested = NestedMacros;
     buf[1] = '\0';
     prev_token = T_NULL;
-    if( p == NULL )  return( NULL );                    /* 12-nov-92 */
+    if( p == NULL )
+        return( NULL );
     while( (tok = *(TOKEN *)p) != T_NULL ) {
         p += sizeof( TOKEN );
         switch( tok ) {

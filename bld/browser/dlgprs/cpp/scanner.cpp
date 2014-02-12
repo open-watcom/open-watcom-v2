@@ -132,37 +132,37 @@ void Scanner::gobble()
 bool Scanner::isSpecial()
 //-----------------------
 {
-    return ( strchr( _SpecialCharacters, _current ) != NULL );
+    return( strchr( _SpecialCharacters, _current ) != NULL );
 }
 
 bool Scanner::isSpace()
 //---------------------
 {
-    return (bool)isspace( _current );
+    return( isspace( _current ) != 0 );
 }
 
 bool Scanner::isQuote()
 //---------------------
 {
-    return _current == '"';
+    return( _current == '"' );
 }
 
 bool Scanner::isEOF()
 //-------------------
 {
-    return _current == EOF;
+    return( _current == EOF );
 }
 
 bool Scanner::isDigit()
 //---------------------
 {
-    return (bool) isdigit( _current );
+    return( isdigit( _current ) != 0 );
 }
 
 bool Scanner::isHexDigit()
 //------------------------
 {
-    return (bool) isxdigit( _current );
+    return( isxdigit( _current ) != 0 );
 }
 
 void Scanner::readDecimal( YYSTYPE & lval )

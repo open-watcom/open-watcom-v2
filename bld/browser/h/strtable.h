@@ -36,7 +36,6 @@
 #include <string.h>
 
 #include <wstring.hpp>
-#include <wobject.hpp>
 #include <wtptlist.hpp>
 
 // Important : Since we're using variable argument lists, it's important

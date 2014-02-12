@@ -34,7 +34,6 @@
 #define classlattice_h
 
 #include <dr.h>
-#include <wobject.hpp>
 #include <wtptlist.hpp>
 #include "classtyp.h"
 

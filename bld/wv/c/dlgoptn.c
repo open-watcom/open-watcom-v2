@@ -94,7 +94,7 @@ static void SetDlgStatus( gui_window *gui )
     if( SupportsExactBreakpoints )
         GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, _IsOn ( SW_BREAK_ON_WRITE ) );
     else
-        GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, 0 );
+        GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, FALSE );
 }
 
 
