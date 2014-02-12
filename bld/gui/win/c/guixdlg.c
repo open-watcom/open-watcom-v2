@@ -699,8 +699,7 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
             GlobalFree( data );
             return( FALSE );
         }
-        if( GUIControlInsert( wnd, control->control_class, NULLHANDLE, control,
-                              NULL ) == NULL ) {
+        if( GUIControlInsert( wnd, control->control_class, NULLHANDLE, control, NULL ) == NULL ) {
             GlobalFree( data );
             return( FALSE );
         }
