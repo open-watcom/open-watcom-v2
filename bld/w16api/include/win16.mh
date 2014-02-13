@@ -52,6 +52,7 @@
 /* Variable attributes */
 #define FAR         __far
 #define NEAR        __near
+#define HUGE        __huge
 
 /* Macro used to specify an unspecified data type or an empty parameter list */
 #define VOID        void
@@ -59,8 +60,8 @@
 /* Calling conventions */
 #define PASCAL      __pascal
 #define CDECL       __cdecl
-#define WINAPI      __far __pascal
-#define CALLBACK    __far __pascal
+#define WINAPI      FAR PASCAL
+#define CALLBACK    FAR PASCAL
 
 /* Primitive data types */
 typedef int             BOOL;
@@ -807,8 +808,8 @@ HFILE WINAPI        _lclose( HFILE );
 HFILE WINAPI        _lcreat( LPCSTR, int );
 LONG WINAPI         _llseek( HFILE, LONG, int );
 HFILE WINAPI        _lopen( LPCSTR, int );
-UINT WINAPI         _lread( HFILE, void __huge *, UINT );
-UINT WINAPI         _lwrite( HFILE, const void __huge *, UINT );
+UINT WINAPI         _lread( HFILE, void HUGE *, UINT );
+UINT WINAPI         _lwrite( HFILE, const void HUGE *, UINT );
 #ifndef NOOPENFILE
 HFILE WINAPI        OpenFile( LPCSTR, OFSTRUCT FAR *, UINT );
 #endif
@@ -828,8 +829,8 @@ int WINAPI          lstrlen( LPCSTR );
 #endif
 #if (WINVER >= 0x030A)
 BOOL WINAPI         IsBadCodePtr( FARPROC );
-BOOL WINAPI         IsBadHugeReadPtr( const void __huge *, DWORD );
-BOOL WINAPI         IsBadHugeWritePtr( void __huge *, DWORD );
+BOOL WINAPI         IsBadHugeReadPtr( const void HUGE *, DWORD );
+BOOL WINAPI         IsBadHugeWritePtr( void HUGE *, DWORD );
 BOOL WINAPI         IsBadReadPtr( const void FAR *, UINT );
 BOOL WINAPI         IsBadStringPtr( const void FAR *, UINT );
 BOOL WINAPI         IsBadWritePtr( void FAR *, UINT );
@@ -842,11 +843,11 @@ void WINAPI         LogParamError( UINT, FARPROC, void FAR* );
 BOOL WINAPI         SetWinDebugInfo( const WINDEBUGINFO FAR * );
 #endif
 #ifndef NOLFILEIO
-long WINAPI         _hread( HFILE, void __huge *, long );
-long WINAPI         _hwrite( HFILE, const void __huge *, long );
+long WINAPI         _hread( HFILE, void HUGE *, long );
+long WINAPI         _hwrite( HFILE, const void HUGE *, long );
 #endif
 #ifndef NOLSTRING
-void WINAPI         hmemcpy( void __huge *, const void __huge *, long );
+void WINAPI         hmemcpy( void HUGE *, const void HUGE *, long );
 LPSTR WINAPI        lstrcpyn( LPSTR, LPCSTR, int );
 #endif
 #ifndef NODBCS
@@ -855,9 +856,9 @@ BOOL WINAPI         IsDBCSLeadByte( BYTE );
 #endif /* (WINVER >= 0x030A) */
 
 /* Functions in KEYBOARD.DRV */
-void WINAPI     AnsiToOem( const char __huge *, char __huge * );
+void WINAPI     AnsiToOem( const char HUGE *, char HUGE * );
 void WINAPI     AnsiToOemBuff( LPCSTR, LPSTR, UINT );
-void WINAPI     OemToAnsi( const char __huge *, char __huge * );
+void WINAPI     OemToAnsi( const char HUGE *, char HUGE * );
 void WINAPI     OemToAnsiBuff( LPCSTR, LPSTR, UINT );
 #ifndef NOKEYBOARDINFO
 int WINAPI      GetKBCodePage( void );

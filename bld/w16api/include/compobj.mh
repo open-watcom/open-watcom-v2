@@ -68,7 +68,7 @@
     #endif
 #endif
 #ifndef HUGEP
-    #define HUGEP           __huge
+    #define HUGEP           HUGE
 #endif
 
 /* This inclusion must occur after the declaration of STDAPI but before any functions or

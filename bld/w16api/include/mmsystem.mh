@@ -25,7 +25,7 @@
 #ifndef RC_INVOKED
 typedef WORD        VERSION;
 typedef DWORD       FOURCC;
-typedef char __huge *HPSTR;
+typedef char HUGE   *HPSTR;
 #endif
 
 /* Multimedia handle data types */
@@ -1502,7 +1502,7 @@ LRESULT WINAPI  mmioSendMessage( HMMIO, UINT, LPARAM, LPARAM );
 UINT WINAPI     mmioSetBuffer( HMMIO, LPSTR, LONG, UINT );
 UINT WINAPI     mmioSetInfo( HMMIO, const MMIOINFO FAR *, UINT );
 FOURCC WINAPI   mmioStringToFOURCC( LPCSTR, UINT );
-LONG WINAPI     mmioWrite( HMMIO, const char __huge *, LONG );
+LONG WINAPI     mmioWrite( HMMIO, const char HUGE *, LONG );
 WORD WINAPI     mmsystemGetVersion( void );
 BOOL WINAPI     sndPlaySound( LPCSTR, UINT );
 UINT WINAPI     timeBeginPeriod( UINT );
