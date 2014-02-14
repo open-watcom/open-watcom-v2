@@ -93,8 +93,12 @@
     #define WPI_HACCEL                  HACCEL
     #define WPI_MSG                     PM1632_WINDOW_MSG
     #define WPI_QMSG                    QMSG
+    #define WPI_DLGPROC                 PFNWP 
+    #define WPI_ENUMPROCx               WPI_ENUMPROC
     #define WPI_WNDPROC                 PFNWP 
+    #define WPI_WNDPROCx                PFNWP 
     #define WPI_PROC                    PFNWP
+    #define WPI_PROCx                   PFNWP
     #define WPI_PRES                    HPS
     #define WPI_POINT                   POINTL
     #define WPI_PPOINT                  PPOINTL
@@ -106,10 +110,9 @@
     #define WPI_RGBQUAD                 PM1632_RGB2
     #define WPI_INT2ULONG               ULONG
     #define WPI_DLGRESULT               MRESULT
-    #define WPI_DLGRESULT2              MRESULT
-    typedef void (__export APIENTRY *WPI_LINEDDAPROC) ( int, int, WPI_PARAM2 );
-    typedef BOOL (__export APIENTRY *WPI_ENUMPROC) ( HWND, LONG );
-    typedef int (__export APIENTRY *WPI_ENUMFONTPROC) ( WPI_LPLOGFONT,
+    typedef void (APIENTRY *WPI_LINEDDAPROC) ( int, int, WPI_PARAM2 );
+    typedef BOOL (APIENTRY *WPI_ENUMPROC) ( HWND, WPI_PARAM2 );
+    typedef int (APIENTRY *WPI_FONTENUMPROC) ( WPI_LPLOGFONT,
                                                         WPI_LPTEXTMETRIC,
                                                         unsigned int, PSZ );
     typedef struct WPI_INST {
@@ -156,17 +159,20 @@
     #define WPI_PRECT                   LPRECT
     #define WPI_RECTDIM                 int
     #define WPI_COLOUR                  COLORREF
+    #define WPI_DLGPROC                 DLGPROC
     #define WPI_WNDPROC                 WNDPROC
+    #define WPI_WNDPROCx                WNDPROCx
     #define WPI_PROC                    FARPROC
-    #define WPI_ENUMFONTPROC            int CALLBACK
+    #define WPI_PROCx                   FARPROCx
+    #define WPI_FONTENUMPROC            FONTENUMPROC
     #define WPI_LINEDDAPROC             LINEDDAPROC
     #define WPI_CHOOSEFONT              CHOOSEFONT
     #define WPI_LPCHOOSEFONT            LPCHOOSEFONT
     #define WPI_RGBQUAD                 RGBQUAD
     #define WPI_INT2ULONG               int
-    #define WPI_DLGRESULT               int
-    #define WPI_DLGRESULT2              BOOL
+    #define WPI_DLGRESULT               INT_PTR
     #define WPI_ENUMPROC                WNDENUMPROC
+    #define WPI_ENUMPROCx               WNDENUMPROCx
     #define WPI_IDYES                   IDYES
     #define WPI_IDNO                    IDNO
     #define WPI_IDOK                    IDOK

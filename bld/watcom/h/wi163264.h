@@ -98,12 +98,18 @@
 #define GET_WM_PARENTNOTIFY_HANDLE(wp,lp) (lp)
 #define GET_WM_PARENTNOTIFY_POINT(wp,lp) (lp)
 
-#else
+#else /* !defined(__NT__) */
 
+#ifdef __WINDOWS_386__
+#define INT_PTR                 short
+#define UINT_PTR                unsigned short
+#else
+#define INT_PTR                 int
+#define UINT_PTR                unsigned int
+#endif
 #define LONG_PTR                LONG
 #define ULONG_PTR               DWORD
-#define INT_PTR                 LONG
-#define UINT_PTR                DWORD
+
 #define GET_HINSTANCE(hwnd)     (HINSTANCE)GetWindowWord( hwnd, GWW_HINSTANCE )
 #define GET_WNDPROC(hwnd)       GetWindowLong( hwnd, GWL_WNDPROC )
 #define SET_WNDPROC(hwnd, proc) SetWindowLong( hwnd, GWL_WNDPROC, proc )
@@ -156,6 +162,34 @@
 
 #endif
 
+#ifdef __WINDOWS_386__
+
+#ifdef STRICT
+typedef BOOL (CALLBACK *DLGPROCx)(HWND,UINT,WPARAM,LPARAM);
+typedef void (CALLBACK *FARPROCx)(void);
+typedef int (CALLBACK *FONTENUMPROCx)( const LOGFONT FAR *, const TEXTMETRIC FAR *, int, LPARAM );
+typedef BOOL (CALLBACK *WNDENUMPROCx)( HWND, LPARAM );
+#else
+typedef FARPROC DLGPROCx;
+typedef int (CALLBACK *FARPROCx)();
+typedef FARPROC FONTENUMPROCx;
+typedef FARPROC WNDENUMPROCx;
+#endif
+typedef UINT (CALLBACK *__CDHOOKPROCx)(HWND,UINT,WPARAM,LPARAM );
+typedef __CDHOOKPROCx  LPOFNHOOKPROCx;
+typedef LRESULT (CALLBACK *WNDPROCx)(HWND,UINT,WPARAM,LPARAM);
+
+#else
+
+#define DLGPROCx                DLGPROC
+#define FARPROCx                FARPROC
+#define FONTENUMPROCx           FONTENUMPROC
+#define LPOFNHOOKPROCx          LPOFNHOOKPROC
+#define WNDENUMPROCx            WNDENUMPROC
+#define WNDPROCx                WNDPROC
+
+#endif
+
 #if defined( _M_I86 )
 #define FARstricmp _fstricmp
 #define FARstrcpy _fstrcpy
@@ -166,10 +200,10 @@
 #define FARmemcpy memcpy
 #endif
 
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
+#if defined( _M_I86 ) && defined( __WINDOWS__ )
 #define WINEXPORT       __declspec(dllexport)
 #else
 #define WINEXPORT
 #endif
 
-#endif
+#endif /* !defined(__NT__) */

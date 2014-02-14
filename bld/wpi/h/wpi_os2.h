@@ -947,7 +947,7 @@ extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *textmetric,
     #define _wpi_metricileading( metric ) (metric).lInternalLeading
 
 extern void _wpi_enumfonts( WPI_PRES pres, char *facename,
-                                        WPI_ENUMFONTPROC proc, char *data );
+                                        WPI_FONTENUMPROC proc, char *data );
 extern void _wpi_enumchildwindows( HWND hwnd, WPI_ENUMPROC proc, LPARAM data );
 
     #define _wpi_getnextwindow( hwnd ) WinGetNextWindow( hwnd )
@@ -1201,7 +1201,7 @@ extern WPI_HANDLE _wpi_getclipboarddata( WPI_INST inst, UINT format );
     #define _wpi_emptyclipboard( inst ) WinEmptyClipbrd( (inst).hab )
 
     #define _wpi_createdialog( inst, id, hwnd, proc ) \
-            WinLoadDlg( HWND_DESKTOP, hwnd, (WPI_PROC)proc, (inst).mod_handle, \
+            WinLoadDlg( HWND_DESKTOP, hwnd, proc, (inst).mod_handle, \
                                                     (ULONG)id, (PVOID)NULL )
 
     #define _wpi_enablewindow( hwnd, bool ) WinEnableWindow( hwnd, bool )
@@ -1404,8 +1404,7 @@ extern LONG _wpi_getclipbox( WPI_PRES pres, WPI_PRECT rcl );
 
 extern BOOL _wpi_equalrect( WPI_PRECT prect1, WPI_PRECT prect2 );
 extern WPI_COLOUR _wpi_palettergb( WPI_PRES, short, short, short );
-extern int _wpi_dlg_command( HWND dlg_hld, WPI_MSG *msg, WPI_PARAM1 *parm1,
-                                                        WPI_PARAM2 *parm2 );
+extern int _wpi_dlg_command( HWND dlg_hld, WPI_MSG *msg, WPI_PARAM1 *parm1, WPI_PARAM2 *parm2 );
 extern void _wpi_linedda( int x1, int y1, int x2, int y2,
                                     WPI_LINEDDAPROC line_proc, WPI_PARAM2 lp );
 
