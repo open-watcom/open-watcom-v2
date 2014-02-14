@@ -47,7 +47,11 @@ static char     *fontKey = "Font";
 /*
  * EnumFunc - enumerate fonts
  */
-static WINEXPORT int CALLBACK EnumFunc( LPLOGFONT lf, LPTEXTMETRIC tm, UINT ftype, LPSTR data )
+#ifdef __NT__
+int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data )
+#else
+int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, int ftype, LPARAM data )
+#endif
 {
     tm = tm;
     ftype = ftype;
@@ -82,7 +86,7 @@ static WINEXPORT int CALLBACK EnumFunc( LPLOGFONT lf, LPTEXTMETRIC tm, UINT ftyp
 /*
  * getCourierFont - find a mono font
  */
-static void getCourierFont( HANDLE inst )
+static void getCourierFont( HANDLE inst, FONTENUMPROCx fn )
 {
     LOGFONT     logfont;
     FARPROC     fp;
@@ -90,12 +94,8 @@ static void getCourierFont( HANDLE inst )
 
     inst = inst;        /* shut up the compiler for NT */
     hdc = GetDC( (HWND)NULL );
-    fp = MakeProcInstance( (FARPROC)EnumFunc, inst );
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
-    EnumFonts( hdc, NULL, (OLDFONTENUMPROC)fp, 0 );
-#else
+    fp = MakeProcInstance( (FARPROCx)fn, inst );
     EnumFonts( hdc, NULL, (FONTENUMPROC)fp, 0 );
-#endif
     FreeProcInstance( fp );
     ReleaseDC( (HWND)NULL, hdc );
 
@@ -161,7 +161,7 @@ void InitMonoFont( char *app, char *inifile, int default_font, HANDLE inst )
             }
         }
     }
-    getCourierFont( inst );
+    getCourierFont( inst, EnumFontsEnumFunc );
     if( need_stock ) {
 #if defined( __NT__ )
         fixedFont = courierFont;

@@ -48,24 +48,3 @@ int GUIWinMessageLoop( void )
     _wpi_getqmsgvalues( msg, NULL, NULL, &param1, NULL, NULL, NULL );
     return( (int)param1 );
 }
-
-#if defined( WINDU )
-#include <stdio.h>
-
-// This function is used by the UNIX signal handler as an interface
-// with the Wind/U windows message loop.
-
-void GUIPostQuitMsg( void )
-{
-    WPI_PARAM1  param1;
-    WPI_QMSG    msg;
-    gui_window *wnd;
-
-    wnd = GUIXGetRootWindow();
-
-    if( wnd ) {
-        /* Wind/U only works with the Windows API, so we know this will work */
-        PostMessage( wnd->hwnd, WM_CLOSE, NULL, NULL );
-    }
-}
-#endif

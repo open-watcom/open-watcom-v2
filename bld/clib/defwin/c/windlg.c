@@ -65,8 +65,7 @@ static itemdata _getint[] = {
 /*
  * _GetIntervalBox - control dialog for getting interval
  */
-BOOL CALLBACK _GetIntervalBox( HWND hwnd, unsigned message,
-                            UINT wparam, LONG lparam )
+BOOL CALLBACK _GetIntervalBox( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     char        tmp[128];
 
@@ -127,8 +126,7 @@ void _GetClearInterval( void )
     }
 
     _DoneAddingControls( data );
-    _DynamicDialogBox( (LPVOID) _GetIntervalBox, _MainWindowData->inst,
-                                _MainWindow, data );
+    _DynamicDialogBox( _GetIntervalBox, _MainWindowData->inst, _MainWindow, data );
 
 } /* _GetClearInterval */
 

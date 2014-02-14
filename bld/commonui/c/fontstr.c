@@ -43,8 +43,8 @@ static char     *inFmtString = "%d %d %d %d %d %d %d %d %d %d %d %d %d %[^\0]";
 int GetLogFontFromString( LOGFONT *l, char *data )
 {
     int num;
-    int i;
-    int len;
+    size_t i;
+    size_t len;
     int lfItalic;
     int lfUnderline;
     int lfStrikeOut;

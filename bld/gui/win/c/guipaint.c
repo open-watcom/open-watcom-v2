@@ -98,11 +98,11 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
 #ifdef __OS2_PM__
     if( isdlg ) {
         flags = DB_AREAATTRS | DB_DLGBORDER;
-        #ifdef __FLAT__
-        if( WinQueryActiveWindow( HWND_DESKTOP ) != hwnd ) {
-        #else
+  #ifdef _M_I86
         if( WinQueryActiveWindow( HWND_DESKTOP, FALSE ) != hwnd ) {
-        #endif
+  #else
+        if( WinQueryActiveWindow( HWND_DESKTOP ) != hwnd ) {
+  #endif
         //if( _wpi_getfocus() != hwnd ) {
             flags |= DB_PATINVERT;
         }
@@ -219,11 +219,11 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
 
     if( isdlg ) {
         flags = DB_AREAATTRS | DB_DLGBORDER;
-        #ifdef __FLAT__
-        if( WinQueryActiveWindow( HWND_DESKTOP ) != hwnd ) {
-        #else
+  #ifdef _M_I86
         if( WinQueryActiveWindow( HWND_DESKTOP, FALSE ) != hwnd ) {
-        #endif
+  #else
+        if( WinQueryActiveWindow( HWND_DESKTOP ) != hwnd ) {
+  #endif
         //if( _wpi_getfocus() != hwnd ) {
             flags |= DB_PATINVERT;
         }

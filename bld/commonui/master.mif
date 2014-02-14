@@ -26,72 +26,63 @@ msgfiles = &
         ../res/memwnd.msg &
         ../res/savelbox.msg
 
-commonui_objs =  mem.obj
-
-# code shared with gui project
-commonui_objs += &
-        loadcc.obj   &
-        statwnd.obj  &
-        toolbr.obj   &
-        wmdisim.obj
-
-# code shared with gui project
-# target specific
-commonui_os2_objs = os2dlg.obj
-commonui_win_objs = fontstr.obj windlg.obj wwinhelp.obj
-commonui_nt_objs = fontstr.obj windlg.obj wwinhelp.obj
-commonui_objs += $(commonui_$(host_os)_objs)
-
-!ifneq host_os os2
-commonui_objs += &
-        about.obj    &
-        alias.obj    &
-        bitmap.obj   &
-        ctl3d32.obj  &
-        ctl3dcvr.obj &
-        desknt.obj   &
-        dlgmod.obj   &
-        font.obj     &
-        hint.obj     &
-        inipath.obj  &
-        jdlg.obj     &
-        ldstr.obj    &
-        log.obj      &
-        mark.obj     &
-        memwnd.obj   &
-        memwndcd.obj &
-        palette.obj  &
-        pushwin.obj  &
-        savelbox.obj &
-        sdkasm.obj   &
-        srchmsg.obj  &
-        strsup.obj   &
-!endif
-
-# windows debug code (16-bit)
-windbg_objs = &
-        dbg386.obj   &
-        getcsip.obj  &
-        getsaddr.obj &
-        intdata.obj  &
-        inth.obj     &
-        ismod32.obj  &
-        mythelp.obj  &
-        segmem.obj
+#                     nt win os2 windbg
+#======================================
+!inject about.obj     nt win
+!inject alias.obj     nt win
+!inject bitmap.obj    nt win
+!inject ctl3d32.obj   nt win
+!inject ctl3dcvr.obj  nt win
+!inject dbg386.obj               windbg
+!inject desknt.obj    nt win
+!inject dlgmod.obj    nt win
+!inject font.obj      nt win
+!inject fontstr.obj   nt win             # shared with gui project
+!inject getcsip.obj              windbg
+!inject getsaddr.obj             windbg
+!inject hint.obj      nt win
+!inject inipath.obj   nt win
+!inject intdata.obj              windbg
+!inject inth.obj                 windbg
+!inject ismod32.obj              windbg
+!inject jdlg.obj      nt win
+!inject ldstr.obj     nt win
+!inject loadcc.obj    nt win os2         # shared with gui project
+!inject log.obj       nt win
+!inject mark.obj      nt win
+!inject mem.obj       nt win os2
+!inject memwnd.obj    nt win
+!inject memwndcd.obj  nt win
+!inject mythelp.obj              windbg
+!inject os2dlg.obj           os2         # shared with gui project
+!inject palette.obj   nt win
+!inject pushwin.obj   nt win
+!inject savelbox.obj  nt win
+!inject sdkasm.obj    nt win
+!inject segmem.obj               windbg
+!inject srchmsg.obj   nt win
+!inject statwnd.obj   nt win os2         # shared with gui project
+!inject strsup.obj    nt win
+!inject toolbr.obj    nt win os2         # shared with gui project
+!inject windlg.obj    nt win             # shared with gui project
+!inject wmdisim.obj   nt win os2         # shared with gui project
+!inject wwinhelp.obj  nt win             # shared with gui project
 
 !ifeq name windbg
-objs = $(windbg_objs)
+objs = $(windbg)
 !else 
-objs = $(commonui_objs)
-!ifeq host_os win
+objs = $($(host_os))
 !ifeq host_cpu i86
-objs += $(windbg_objs)
-!endif
+objs += $($(host_os)dbg)
 !endif
 !endif
 
 extra_cpp_flags_nt  = -DNOUSE3D
 extra_cpp_flags_os2 = -D__OS2_PM__
+
+!ifeq host_os win
+extra_c_flags_font = -DWINVER=0X0300
+!endif
 
 extra_c_flags = -fh
 extra_c_flags_i86 = -zu -zc

@@ -65,12 +65,10 @@ static BOOL lastChanceSave( HWND hwnd )
         return( TRUE );
     }
 
-    icon = GetImageNode( hwnd );
-    while( icon != NULL ) {
+    for( icon = GetImageNode( hwnd ); icon != NULL; icon = icon->nexticon ) {
         if( icon->issaved ) {
             return( TRUE );
         }
-        icon = icon->nexticon;
     }
 
     if( strnicmp( node->fname, IEImageUntitled, strlen( IEImageUntitled ) ) != 0 ) {
@@ -128,14 +126,8 @@ static void setTheCursor( int cursor_index, HWND hwnd )
     }
 
     cursorIndex = cursor_index;
-    node = GetHeadNode();
-    if( node == NULL ) {
-        return;
-    }
-
-    while( node != NULL ) {
+    for( node = GetHeadNode(); node != NULL; node = node->next ) {
         SET_CLASSCURSOR( node->hwnd, hCursor[cursorIndex] );
-        node = node->next;
     }
 #else
     hwnd = hwnd;

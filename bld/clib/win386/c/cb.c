@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "cover.h"
+#include "wi163264.h"
 
 #define MAX_CB_PARMS            50
 #define MAX_CB_JUMPTABLE        512
@@ -39,7 +40,7 @@
 DWORD               _CBJumpTable[MAX_CB_JUMPTABLE]; /* Callback jump table */
 BYTE                _CBRefsTable[MAX_CB_JUMPTABLE]; /* Callback reference counts */
 extern  CALLBACKPTR __16BitCallBackAddr;
-extern  void        (__far * __far *__32BitCallBackAddr)( void );
+extern  FARPROCx    __far *__32BitCallBackAddr;
 extern  void        __far __32BitCallBack( void );
 
 #pragma aux _CBJumpTable        "*";
@@ -228,7 +229,7 @@ static CALLBACKPTR DoEmitCode( int argcnt, int bytecnt, char *array,
                                         + *_CodeSelectorBaseAddr;
     _CBRefsTable[i]++;  /* increase reference count */
     if( i > MaxCBIndex )  MaxCBIndex = i;
-    *__32BitCallBackAddr = (void (__far *)(void))&__32BitCallBack;
+    *__32BitCallBackAddr = (FARPROCx)&__32BitCallBack;
     return( (char *)__16BitCallBackAddr - (i+1) * CB_CODE_SIZE );
 
 } /* DoEmitCode */
@@ -304,7 +305,7 @@ void *SetProc( FARPROC fp, int type )
 #undef FreeProcInstance
 #undef MakeProcInstance
 
-FARPROC PASCAL _Cover_MakeProcInstance( void __far *proc, HINSTANCE inst )
+FARPROC PASCAL _Cover_MakeProcInstance( FARPROCx proc, HINSTANCE inst )
 {
     inst;
     return( (FARPROC)proc );
@@ -321,8 +322,7 @@ void PASCAL FreeProcInstance( FARPROC fp )
     char        *cbp;
 
     for( i = 0; i <= MaxCBIndex  &&  _CBJumpTable[i] != 0L; i++ ) {
-        cbp = (char *)(_CBJumpTable[i] - *_CodeSelectorBaseAddr
-                                       + *_DataSelectorBaseAddr);
+        cbp = (char *)(_CBJumpTable[i] - *_CodeSelectorBaseAddr + *_DataSelectorBaseAddr);
         if( *(FARPROC *)(cbp+1) == fp ) {
             _CBRefsTable[i]--;  /* decrease reference count */
             if( _CBRefsTable[i] == 0 ) {

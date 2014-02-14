@@ -32,8 +32,8 @@
 
 #include "imgedit.h"
 
-static short    imgHeight;
-static short    imgWidth;
+static int      imgHeight;
+static int      imgWidth;
 static BOOL     stretchImage;
 
 /*
@@ -127,26 +127,26 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg,
  */
 void ChangeImageSize( void )
 {
-    img_node    *node;
-    WPI_PROC    fp;
-    int         button_type;
-    img_node    new_node;
-    WPI_PRES    pres;
-    HDC         srcdc;
-    WPI_PRES    srcpres;
-    HDC         destdc;
-    WPI_PRES    destpres;
-    HBITMAP     oldsrc;
-    HBITMAP     olddest;
-    int         retcode;
-    WPI_PARAM2  lparam;
-    WPI_RECT    rc;
-    short       new_width;
-    short       new_height;
-    int         y_src;
-    int         y_dest;
-    char        *title;
-    char        *text;
+    img_node        *node;
+    WPI_PROC        fp;
+    WPI_DLGRESULT   button_type;
+    img_node        new_node;
+    WPI_PRES        pres;
+    HDC             srcdc;
+    WPI_PRES        srcpres;
+    HDC             destdc;
+    WPI_PRES        destpres;
+    HBITMAP         oldsrc;
+    HBITMAP         olddest;
+    int             retcode;
+    WPI_PARAM2      lparam;
+    WPI_RECT        rc;
+    short           new_width;
+    short           new_height;
+    int             y_src;
+    int             y_dest;
+    char            *title;
+    char            *text;
 
     node = GetCurrentNode();
     if( node == NULL ) {
@@ -161,7 +161,7 @@ void ChangeImageSize( void )
     imgWidth = node->width;
 
     fp = _wpi_makeprocinstance( (WPI_PROC)ChangeSizeProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, fp, Instance, IMAGESIZE, 0L );
+    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, IMAGESIZE, 0L );
     _wpi_freeprocinstance( fp );
 
     if( button_type == DLGID_CANCEL ) {
@@ -185,8 +185,8 @@ void ChangeImageSize( void )
         return;
     }
 
-    new_node.width = imgWidth;
-    new_node.height = imgHeight;
+    new_node.width = (short)imgWidth;
+    new_node.height = (short)imgHeight;
     new_node.bitcount = node->bitcount;
     new_node.imgtype = BITMAP_IMG;
 
@@ -240,8 +240,8 @@ void ChangeImageSize( void )
 
     node->hxorbitmap = new_node.hxorbitmap;
     node->handbitmap = new_node.handbitmap;
-    node->width = imgWidth;
-    node->height = imgHeight;
+    node->width = (short)imgWidth;
+    node->height = (short)imgHeight;
 
     SetIsSaved( node->hwnd, FALSE );
     ResetUndoStack( node );

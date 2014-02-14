@@ -51,7 +51,3 @@
 objsuffix=files
 !include ../../../../objlist.mif
 objsuffix=
-
-# WORKAROUND: The Win386 version contains some suspect far pointer truncation
-windlg_postopts = -wcd310
-winmain_postopts = -wcd310

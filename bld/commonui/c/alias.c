@@ -110,7 +110,7 @@ static void insertAlias( AliasHdl hdl, AnAlias *alias )
 void AddAlias( AliasHdl hdl, char *text, unsigned long id )
 {
     AnAlias     *cur;
-    unsigned    len;
+    size_t      len;
 
     cur = findAlias( hdl, id );
     if( cur == NULL ) {
@@ -205,7 +205,7 @@ static AnAlias *findAliasFromText( AliasHdl hdl, char *alias )
 /*
  * AliasDlgProc - alias list dialog procedure
  */
-WINEXPORT BOOL CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     AnAlias     *cur;
     unsigned    len;
@@ -307,16 +307,13 @@ WINEXPORT BOOL CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     return( TRUE );
 }
 
-/*
- * Query4Aliases - display the alias list dialog box
- */
-void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
+static void _Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title, DLGPROCx fn )
 {
     FARPROC     fp;
-    WORD        ret;
+    INT_PTR     ret;
 
     CurHdl = hdl;
-    fp = MakeProcInstance( (FARPROC)AliasDlgProc, instance );
+    fp = MakeProcInstance( (FARPROCx)fn, instance );
     for( ;; ) {
         ret = DialogBoxParam( instance, "ALIAS_DLG", hwnd, (DLGPROC)fp, (LPARAM)title );
         if( ret != ALIAS_DO_MORE ) {
@@ -325,8 +322,15 @@ void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
     }
     FreeProcInstance( fp );
     CurHdl = NULL;
+}
 
-} /* Query4Aliases */
+/*
+ * Query4Aliases - display the alias list dialog box
+ */
+void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
+{
+    _Query4Aliases( hdl, instance, hwnd, title, AliasDlgProc );
+}
 
 /*
  * EnumAliases - enumerate all aliases in a given alias list

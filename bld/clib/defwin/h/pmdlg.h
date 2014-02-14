@@ -84,6 +84,6 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, long style, USHORT dtx,
                         USHORT children, ULONG nclass, char *class,
                         char *text, char *presparms, char *ctldata,
                         ULONG *ctldatlen );
-int _DynamicDialogBox( LPVOID fn, HWND hwnd, GLOBALHANDLE data );
+int _DynamicDialogBox( PFNWP fn, HWND hwnd, GLOBALHANDLE data );
 
 #endif

@@ -82,7 +82,7 @@ static BOOL writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
 /*
  * LBSaveHook - hook used called by common dialog - for 3D controls
  */
-WINEXPORT BOOL CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -102,11 +102,7 @@ WINEXPORT BOOL CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 #endif
 
-/*
- * GetSaveFName - let the user select a file name for a save operation
- *                fname must point to a buffer of length at least _MAX_PATH
- */
-BOOL GetSaveFName( HWND mainhwnd, char *fname )
+static BOOL _GetSaveFName( HWND mainhwnd, char *fname, LPOFNHOOKPROCx fn )
 {
     static char         filterList[] = "File (*.*)" \
                                        "\0" \
@@ -128,8 +124,7 @@ BOOL GetSaveFName( HWND mainhwnd, char *fname )
     of.Flags = OFN_HIDEREADONLY;
 #ifndef NOUSE3D
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (LPVOID)LBSaveHook,
-                                                   GET_HINSTANCE( mainhwnd ) );
+    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROCx)fn, GET_HINSTANCE( mainhwnd ) );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef NOUSE3D
@@ -138,6 +133,19 @@ BOOL GetSaveFName( HWND mainhwnd, char *fname )
     return( rc );
 
 } /* GetSaveFName */
+
+/*
+ * GetSaveFName - let the user select a file name for a save operation
+ *                fname must point to a buffer of length at least _MAX_PATH
+ */
+BOOL GetSaveFName( HWND mainhwnd, char *fname )
+{
+#ifndef NOUSE3D
+    return( _GetSaveFName( mainhwnd, fname, LBSaveHook ) );
+#else
+    return( _GetSaveFName( mainhwnd, fname, NULL ) );
+#endif
+}
 
 /*
  * GenTmpFileName - generate a unique file name based on tmpname

@@ -854,7 +854,11 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     WPI_MINMAXINFO _W386FAR *info;
     WPI_RECT            rect;
     HWND                parent;
+#ifdef __WINDOWS_386__
+    CREATESTRUCT __far  *lpcs;
+#else
     CREATESTRUCT FAR    *lpcs;
+#endif
     wmcreate_info _W386FAR *wmcreateinfo;
     gui_create_info     *createinfo;
     bool                use_defproc;
@@ -870,7 +874,11 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     ret = 0L;
     use_defproc = FALSE;
     if( msg == WM_CREATE ) {
-        lpcs = ( CREATESTRUCT FAR * )MK_FP32( (void *)lparam );
+#ifdef __WINDOWS_386__
+        lpcs = ( CREATESTRUCT __far * )MK_FP32( (void *)lparam );
+#else
+        lpcs = ( CREATESTRUCT FAR * )lparam;
+#endif
         wmcreateinfo = (wmcreate_info _W386FAR *)MK_FP32( _wpi_getcreateparms( lpcs ) );
         if ( wmcreateinfo != NULL ) {
             wnd = wmcreateinfo->wnd;

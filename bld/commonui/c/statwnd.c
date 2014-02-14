@@ -37,7 +37,6 @@
 #include "mem.h"
 #include "loadcc.h"
 
-
 /*
  * The window must always be the first member of this structure so that
  * GetHintHwnd() in hint.c will work properly.
@@ -322,20 +321,39 @@ WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PA
 
 } /* StatusWndCallback */
 
-/*
- * StatusWndInit - initialize for using the status window
- */
-int StatusWndInit( WPI_INST hinstance, statushook hook, int extra,
-                   HCURSOR hDefaultCursor )
+static int _StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefaultCursor, WPI_WNDPROCx fn )
 {
-#ifndef __OS2_PM__
+    int         rc;
+#ifdef __OS2_PM__
+    /* OS/2 PM version of the initialization */
+
+    colorButtonFace = CLR_PALEGRAY;
+
+    if( !hasGDIObjects ) {
+        brushButtonFace = _wpi_createsolidbrush( colorButtonFace );
+        penLight = _wpi_createpen( PS_SOLID, 1, CLR_WHITE );
+        penShade = _wpi_createpen( PS_SOLID, 1, CLR_DARKGRAY );
+        hasGDIObjects = TRUE;
+    }
+
+    statusWndHookFunc = hook;
+
+    rc = TRUE;
+    if( !classRegistered ) {
+        memcpy( &classHandle, &hinstance, sizeof( WPI_INST ) );
+        rc = WinRegisterClass( hinstance.hab, className, (PFNWP)fn,
+                               CS_SIZEREDRAW | CS_CLIPSIBLINGS,
+                               extra + sizeof( statwnd * ) );
+        classWinExtra = extra;
+        classRegistered = TRUE;
+    }
+#else
     /* Win16 and Win32 version of the initialization */
     WNDCLASS    wc;
-    int         rc;
 
 #ifdef __NT__
     if( LoadCommCtrl() ) {
-        return( 1 );
+        rc = TRUE;
     } else {
 #endif
         if( !hasGDIObjects ) {
@@ -354,7 +372,7 @@ int StatusWndInit( WPI_INST hinstance, statushook hook, int extra,
             classHandle = hinstance;
             classWinExtra = extra;
             wc.style = CS_HREDRAW | CS_VREDRAW;
-            wc.lpfnWndProc = (WNDPROC)StatusWndCallback;
+            wc.lpfnWndProc = (WNDPROC)fn;
             wc.cbClsExtra = 0;
             wc.cbWndExtra = extra + sizeof( statwnd * );
             wc.hInstance = hinstance;
@@ -369,38 +387,21 @@ int StatusWndInit( WPI_INST hinstance, statushook hook, int extra,
             rc = RegisterClass( &wc );
             classRegistered = TRUE;
         }
-        return( rc );
 #ifdef __NT__
     }
 #endif
-#else
-    /* OS/2 PM version of the initialization */
-    int         rc;
-
-    colorButtonFace = CLR_PALEGRAY;
-
-    if( !hasGDIObjects ) {
-        brushButtonFace = _wpi_createsolidbrush( colorButtonFace );
-        penLight = _wpi_createpen( PS_SOLID, 1, CLR_WHITE );
-        penShade = _wpi_createpen( PS_SOLID, 1, CLR_DARKGRAY );
-        hasGDIObjects = TRUE;
-    }
-
-    statusWndHookFunc = hook;
-
-    rc = TRUE;
-    if( !classRegistered ) {
-        memcpy( &classHandle, &hinstance, sizeof( WPI_INST ) );
-        rc = WinRegisterClass( hinstance.hab, className, (PFNWP)StatusWndCallback,
-                               CS_SIZEREDRAW | CS_CLIPSIBLINGS,
-                               extra + sizeof( statwnd * ) );
-        classWinExtra = extra;
-        classRegistered = TRUE;
-    }
-    return( rc );
 #endif
+    return( rc );
 
-} /* StatusWndInit */
+} /* _StatusWndInit */
+
+/*
+ * StatusWndInit - initialize for using the status window
+ */
+int StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefaultCursor )
+{
+    return( _StatusWndInit( hinstance, hook, extra, hDefaultCursor, StatusWndCallback ) );
+}
 
 /*
  * StatusWndStart - start a status window
@@ -579,7 +580,7 @@ void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UINT flags
 {
     WPI_RECT    ir;
     WPI_RECT    draw_rect;
-    int         len;
+    size_t      len;
     int         ext;
     int         width;
     WPI_RECTDIM ir_left;

@@ -173,12 +173,12 @@ WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg,
  */
 void SelectOptions( void )
 {
-    WPI_PROC    fp;
-    int         button_type;
-    HMENU       hmenu;
+    WPI_PROC        fp;
+    WPI_DLGRESULT   button_type;
+    HMENU           hmenu;
 
     fp = _wpi_makeprocinstance( (WPI_PROC)CurrentSettingsProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, fp, Instance, CURRENT_SETTINGS, 0L );
+    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, CURRENT_SETTINGS, 0L );
     _wpi_freeprocinstance( fp );
 
     if( button_type == DLGID_CANCEL ) {

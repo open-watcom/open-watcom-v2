@@ -109,12 +109,7 @@ typedef struct {
 //  BYTE    dtilData;
 } _DLGITEMTEMPLATE;
 
-#ifdef __NT__
-    #pragma pack( pop )
-#else
-    #pragma pack( pop )
-#endif
-
+#pragma pack( pop )
 
 extern TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
                                        int dtcx, int dtcy, char *menuname,
@@ -126,7 +121,7 @@ extern TEMPLATE_HANDLE AddControl    ( TEMPLATE_HANDLE data, int dtilx,
                                        int id, long style, char *class,
                                        char *text, BYTE infolen,
                                        char *infodata );
-int DynamicDialogBox                 ( LPVOID fn, HANDLE inst, HWND hwnd,
+INT_PTR DynamicDialogBox             ( DLGPROCx fn, HANDLE inst, HWND hwnd,
                                        TEMPLATE_HANDLE data, LPARAM lparam );
 
 #endif

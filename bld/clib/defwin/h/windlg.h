@@ -55,9 +55,9 @@ typedef BYTE INFOTYPE;
 #endif
 
 #ifdef __NT__
-    #include <pshpack2.h>
+    #include "pushpck2.h"
 #else
-    #pragma pack( push, 1 )
+    #include "pushpck1.h"
 #endif
 
 typedef struct {
@@ -103,11 +103,7 @@ typedef struct {
 //  BYTE    dtilData;
 } _DLGITEMTEMPLATE;
 
-#ifdef __NT__
-    #include <poppack.h>
-#else
-    #pragma pack( pop )
-#endif
+#include "poppck.h"
 
 extern GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
                        int dtcy, char *menuname, char *classname,
@@ -116,6 +112,6 @@ extern void _DoneAddingControls( GLOBALHANDLE data );
 extern GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
                    int dtilcx, int dtilcy, int id, long style, char *class,
                    char *text, BYTE infolen, char *infodata );
-int _DynamicDialogBox( LPVOID fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
+INT_PTR _DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
 
 #endif

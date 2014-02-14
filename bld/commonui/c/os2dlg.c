@@ -401,10 +401,9 @@ TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
     return( PMDoneAddingControls( data ) );
 }
 
-int DynamicDialogBox( PVOID fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data,
-                      LONG lparam )
+int DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data, LONG lparam )
 {
     inst = inst;
-    return( PMDynamicDialogBox( (PFNWP) fn, hwnd, data, (PVOID)lparam ) );
+    return( PMDynamicDialogBox( fn, hwnd, data, (PVOID)lparam ) );
 }
 

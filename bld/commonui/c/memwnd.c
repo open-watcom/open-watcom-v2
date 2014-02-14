@@ -92,8 +92,9 @@ static DWORD Disp_Types[] = {
 
 /* forward declarations */
 WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND, UINT, WPARAM, LPARAM );
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info );
-static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info );
+static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info, DLGPROCx fn );
 static void positionSegInfo( HWND hwnd );
 static BOOL genLine( char digits, DWORD limit, WORD type, WORD sel, char *buf, DWORD offset );
 
@@ -257,7 +258,7 @@ static void MemSave( MemWndInfo *info, HWND hwnd, BOOL gen_name )
     DWORD       offset;
     DWORD       limit;
     int         hdl;
-    unsigned    len;
+    size_t      len;
     BOOL        ret;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
@@ -302,16 +303,12 @@ static void MemSave( MemWndInfo *info, HWND hwnd, BOOL gen_name )
 
 } /* MemSave */
 
-/*
- * RegMemWndClass - must be called by the first instance of a using
- *                  program to register window classes
- */
-BOOL RegMemWndClass( HANDLE instance )
+BOOL _RegMemWndClass( HANDLE instance, WNDPROCx fn )
 {
     WNDCLASS    wc;
 
     wc.style = 0L;
-    wc.lpfnWndProc = (WNDPROC)MemDisplayProc;
+    wc.lpfnWndProc = (WNDPROC)fn;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;
@@ -322,7 +319,16 @@ BOOL RegMemWndClass( HANDLE instance )
     wc.lpszClassName = MEM_DISPLAY_CLASS;
     return( RegisterClass( &wc ) );
 
-} /* RegMemWndClass */
+} /* _RegMemWndClass */
+
+/*
+ * RegMemWndClass - must be called by the first instance of a using
+ *                  program to register window classes
+ */
+BOOL RegMemWndClass( HANDLE instance )
+{
+    return( _RegMemWndClass( instance, MemDisplayProc ) );
+}
 
 /*
  * SetMemWndConfig - set memory display window configuration info
@@ -817,7 +823,7 @@ static void scrollData( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info )
 /*
  * OffsetProc
  */
-WINEXPORT BOOL CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char                buf[41];
     unsigned long       offset;
@@ -892,10 +898,21 @@ WINEXPORT BOOL CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 } /* OffsetProc */
 
 
+static void displayOffsetDialogBox( HWND hwnd, DLGPROCx fn )
+{
+    HANDLE  inst;
+    FARPROC fp;
+
+    inst = GET_HINSTANCE( hwnd );
+    fp = MakeProcInstance( (FARPROCx)fn, inst );
+    DialogBox( inst, "OFFSETDLG", hwnd, (DLGPROC)fp );
+    FreeProcInstance( fp );
+}
+
 /*
  * MemDisplayProc
  */
-LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC                 dc;
     MemWndInfo          *info;
@@ -906,7 +923,6 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     BOOL                state;
     DWORD               size;
     HBRUSH              wbrush;
-    FARPROC             fp;
     WORD                cmd;
 
     info = WPI_GET_WNDINFO( hwnd );
@@ -938,7 +954,7 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         ShowWindow( info->scrlbar, SW_HIDE );
         SetScrollRange( info->scrlbar, SB_CTL, 0, SCROLL_RANGE, FALSE );
         if( MemConfigInfo.disp_info ) {
-            displaySegInfo( hwnd, inst, info );
+            displaySegInfo( hwnd, inst, info, SegInfoProc );
         }
         break;
     case WM_SIZE:
@@ -947,7 +963,7 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         } else {
             info->maximized = FALSE;
         }
-        resizeMemBox( hwnd, lparam, info );
+        resizeMemBox( hwnd, (DWORD)lparam, info );
     case WM_MOVE:
         if( info->autopos && IsWindow( info->dialog ) ) {
             positionSegInfo( info->dialog );
@@ -1019,7 +1035,7 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case MEMINFO_SHOW:
             inst = GET_HINSTANCE( hwnd );
-            displaySegInfo( hwnd, inst, info );
+            displaySegInfo( hwnd, inst, info, SegInfoProc );
             break;
         case MEMINFO_AUTO_POS:
             menu = GetMenu( hwnd );
@@ -1063,10 +1079,7 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             resizeMemBox( hwnd, size, info );
             break;
         case MEMINFO_OFFSET:
-            inst = GET_HINSTANCE( hwnd );
-            fp = MakeProcInstance( (FARPROC)OffsetProc, inst );
-            DialogBox( inst, "OFFSETDLG", hwnd, (DLGPROC)fp );
-            FreeProcInstance( fp );
+            displayOffsetDialogBox( hwnd, OffsetProc );
             break;
         }
         break;
@@ -1156,7 +1169,7 @@ static void positionSegInfo( HWND hwnd )
 /*
  * SegInfoProc
  */
-WINEXPORT BOOL CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        parent;
     HMENU       mh;
@@ -1199,12 +1212,13 @@ WINEXPORT BOOL CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 /*
  * displaySegInfo
  */
-static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
+static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info, DLGPROCx fn )
 {
 #ifdef __NT__
     parent = parent;
     instance = instance;
     info = info;
+    fn = fn;
 #else
     GLOBALENTRY         ge;
     descriptor          desc;
@@ -1217,7 +1231,7 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
     mh = GetMenu( parent );
     EnableMenuItem( mh, MEMINFO_SHOW, MF_GRAYED );
     if( DialCount == 0 ) {
-        DialProc = MakeProcInstance( (FARPROC)SegInfoProc, instance );
+        DialProc = MakeProcInstance( (FARPROCx)fn, instance );
     }
     DialCount++;
     if( info->isdpmi ) {

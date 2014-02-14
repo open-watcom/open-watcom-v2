@@ -68,7 +68,7 @@ typedef BYTE INFOTYPE;
 
 typedef struct {
     DWORD   dtStyle;
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     DWORD   dtExtendedStyle;
     WORD    dtItemCount;
 #else
@@ -89,7 +89,7 @@ typedef struct {
 } FONTINFO;
 
 typedef struct {
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     DWORD   dtilStyle;
     DWORD   dtExtendedStyle;
 #endif
@@ -100,7 +100,7 @@ typedef struct {
     WORD    dtilID;
 #ifdef __NT__
     WORD    crap;
-#elif !defined(WILLOWS)
+#else
     DWORD   dtilStyle;
 #endif
 //  char    dtilClass[];
@@ -109,11 +109,7 @@ typedef struct {
 //  BYTE    dtilData;
 } _DLGITEMTEMPLATE;
 
-#ifdef __NT__
-    #pragma pack( pop )
-#else
-    #pragma pack( pop )
-#endif
+#pragma pack( pop )
 
 
 extern TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
@@ -126,7 +122,7 @@ extern TEMPLATE_HANDLE AddControl    ( TEMPLATE_HANDLE data, int dtilx,
                                        int id, long style, char *class,
                                        char *text, BYTE infolen,
                                        char *infodata );
-int DynamicDialogBox                 ( LPVOID fn, HANDLE inst, HWND hwnd,
+INT_PTR DynamicDialogBox             ( DLGPROCx fn, HANDLE inst, HWND hwnd,
                                        TEMPLATE_HANDLE data, LONG lparam );
 
 #endif

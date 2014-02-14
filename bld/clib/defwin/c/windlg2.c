@@ -236,7 +236,7 @@ void _DoneAddingControls( GLOBALHANDLE data )
 {
     UINT        _ISFAR *numbytes;
 
-    numbytes = (UINT _ISFAR *) MK_FP32( GlobalLock( data ) );
+    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
     _FARmemcpy( numbytes, numbytes + 1, *numbytes - 2 );
     GlobalUnlock( data );
 
@@ -245,19 +245,19 @@ void _DoneAddingControls( GLOBALHANDLE data )
 /*
  * _DynamicDialogBox - create a dynamic dialog box
  */
-int _DynamicDialogBox( LPVOID fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data )
+INT_PTR _DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data )
 {
     FARPROC     fp;
-    int         rc;
+    INT_PTR     rc;
 
-    fp = MakeProcInstance( fn, inst );
+    fp = MakeProcInstance( (FARPROCx)fn, inst );
 #ifndef __NT__
-    rc = DialogBoxIndirect( inst, data, hwnd, (LPVOID) fp );
+    rc = DialogBoxIndirect( inst, data, hwnd, (DLGPROC)fp );
 #else
     {
         LPVOID  ptr;
         ptr = GlobalLock( data );
-        rc = DialogBoxIndirect( inst, ptr, hwnd, (LPVOID) fp );
+        rc = DialogBoxIndirect( inst, ptr, hwnd, (DLGPROC)fp );
         GlobalUnlock( data );
     }
 #endif

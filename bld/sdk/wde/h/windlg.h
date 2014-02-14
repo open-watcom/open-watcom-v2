@@ -110,6 +110,6 @@ typedef struct {
 extern GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx, int dtcy, char *menuname, char *classname, char *captiontext, int pointsize, char *typeface );
 extern void         DoneAddingControls( GLOBALHANDLE data );
 extern GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, int id, long style, char *class, char *text, BYTE infolen, char *infodata );
-extern int          DynamicDialogBox( LPVOID fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
+extern INT_PTR      DynamicDialogBox( DLGPROC fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
 
 #endif

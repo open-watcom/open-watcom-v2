@@ -107,7 +107,7 @@ Bool WdeGenericDefine( WdeDefineObjectInfo *info )
     BOOL                 redraw;
     BOOL                 quick;
     BOOL                 destroy_children;
-    DLGPROC              proc_inst;
+    FARPROC              proc_inst;
     HINSTANCE            app_inst;
 
     if( info->obj == NULL ) {
@@ -127,12 +127,12 @@ Bool WdeGenericDefine( WdeDefineObjectInfo *info )
 
     app_inst = WdeGetAppInstance();
 
-    proc_inst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeGenericDefineProc, app_inst );
+    proc_inst = MakeProcInstance ( (FARPROC)WdeGenericDefineProc, app_inst );
 
     redraw = JDialogBoxParam( app_inst, "WdeDefineGeneric", info->win,
-                              proc_inst, (LPARAM)info );
+                              (DLGPROC)proc_inst, (LPARAM)info );
 
-    FreeProcInstance ( (FARPROC)proc_inst );
+    FreeProcInstance ( proc_inst );
 
     if( redraw == -1 ) {
         WdeWriteTrail( "WdeGenericDefine: Dialog not created!" );

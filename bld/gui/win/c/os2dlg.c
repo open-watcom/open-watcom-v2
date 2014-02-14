@@ -80,8 +80,7 @@ static long safeStrLen( char _ISFAR *str )
 /*
  * PMDialogTemplate - build a dialog template
  */
-TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage,
-                                  USHORT focus )
+TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus )
 {
     TEMPLATE_HANDLE     data;
     UINT                blocklen;
@@ -401,10 +400,9 @@ TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
     return( PMDoneAddingControls( data ) );
 }
 
-int DynamicDialogBox( PVOID fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data,
-                      LPARAM lparam )
+int DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data, LPARAM lparam )
 {
     inst = inst;
-    return( PMDynamicDialogBox( (PFNWP) fn, hwnd, data, (PVOID)lparam ) );
+    return( PMDynamicDialogBox( fn, hwnd, data, (PVOID)lparam ) );
 }
 

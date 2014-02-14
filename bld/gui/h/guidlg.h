@@ -55,7 +55,7 @@ enum {
       NULL, \
       GUI_NOSCROLL, \
       GUI_AUTOMATIC, \
-      -1 }
+      (unsigned)-1 }
 
 #define DLG_DYNSTRING( s, i, x1, y1, x2 ) \
     { GUI_STATIC, s, \
@@ -66,7 +66,7 @@ enum {
       i }
 
 #define DLG_STRING( s, x1, y1, x2 ) \
-    DLG_DYNSTRING( s, -1, x1, y1, x2 )
+    DLG_DYNSTRING( s, (unsigned)-1, x1, y1, x2 )
 
 #define DLG_DOBUTTON( g, s, i, x1, y1, x2 ) \
     { g, s, \

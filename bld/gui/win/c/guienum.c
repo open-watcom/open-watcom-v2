@@ -49,11 +49,7 @@ typedef struct {
     void                *param;
 } enum_info;
 
-#if defined( __UNIX__ )
-static int EnumFunc( HWND hwnd, LONG lparam )
-#else
-static BOOL CALLBACK EnumFunc( HWND hwnd, LPARAM lparam )
-#endif
+BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
 {
     gui_window  *wnd;
     enum_info   *info;
@@ -81,17 +77,21 @@ static BOOL CALLBACK EnumFunc( HWND hwnd, LPARAM lparam )
     return( TRUE );
 }
 
-extern void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func,
-                                 void *param )
+static void _GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param, WPI_ENUMPROCx fn )
 {
-    WPI_ENUMPROC        enum_func;
-    enum_info           info;
+    WPI_ENUMPROC    fp;
+    enum_info       info;
 
-    enum_func = _wpi_makeenumprocinstance( EnumFunc, GUIMainHInst );
+    fp = _wpi_makeenumprocinstance( fn, GUIMainHInst );
     info.parent = wnd;
     info.func = func;
     info.param = param;
-    _wpi_enumchildwindows( wnd->hwnd, enum_func, (LPARAM)&info );
-    _wpi_freeprocinstance( (WPI_PROC)enum_func );
+    _wpi_enumchildwindows( wnd->hwnd, fp, (LPARAM)&info );
+    _wpi_freeprocinstance( (WPI_PROC)fp );
 }
 
+
+extern void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
+{
+    _GUIEnumChildWindows( wnd, func, param, GUIEnumChildWindowsEnumFunc );
+}

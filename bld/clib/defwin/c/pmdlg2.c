@@ -248,12 +248,12 @@ GLOBALHANDLE _DoneAddingControls( GLOBALHANDLE data )
 /*
  * _DynamicDialogBox - create a dynamic dialog box
  */
-int _DynamicDialogBox( LPVOID fn, HWND hwnd, GLOBALHANDLE data )
+int _DynamicDialogBox( PFNWP fn, HWND hwnd, GLOBALHANDLE data )
 {
     long rc;
     HWND handle;
 
-    handle = WinCreateDlg( HWND_DESKTOP, hwnd, (PFNWP)fn, (PDLGTEMPLATE)data, NULL );
+    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (PDLGTEMPLATE)data, NULL );
     if ( !handle ) {
         DISPLAY("Window Creation Error Occurred");
         return( 0 );

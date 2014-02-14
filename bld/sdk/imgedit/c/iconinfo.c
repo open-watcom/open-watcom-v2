@@ -413,16 +413,16 @@ WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg,
 BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
 {
     WPI_PROC            fp;
-    int                 button_type;
+    WPI_DLGRESULT       button_type;
 
     iconOperation = NEW_ICON_OP;
     resetIconInfo();
 
     fp = _wpi_makeprocinstance( (WPI_PROC)SelNonExistingProc, Instance );
     if( is_icon ) {
-        button_type = _wpi_dialogbox( HMainWindow, fp, Instance, ICONTYPE, 0L );
+        button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, ICONTYPE, 0L );
     } else {
-        button_type = _wpi_dialogbox( HMainWindow, fp, Instance, CURSORTYPE, 0L );
+        button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, CURSORTYPE, 0L );
     }
     _wpi_freeprocinstance( fp );
 
@@ -447,7 +447,7 @@ BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
 void AddNewIcon( void )
 {
     WPI_PROC            fp;
-    int                 button_type;
+    WPI_DLGRESULT       button_type;
     img_node            *currentnode;
     img_node            *node;
     img_node            new_icon;
@@ -465,7 +465,7 @@ void AddNewIcon( void )
 
     iconOperation = ADD_ICON_OP;
     fp = _wpi_makeprocinstance( (WPI_PROC)SelNonExistingProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, fp, Instance, ICONTYPE, 0L );
+    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, ICONTYPE, 0L );
     _wpi_freeprocinstance( fp );
 
     if( button_type == DLGID_CANCEL ) {
@@ -515,7 +515,7 @@ void AddNewIcon( void )
 void DeleteIconImg( void )
 {
     WPI_PROC            fp;
-    int                 button_type;
+    WPI_DLGRESULT       button_type;
     int                 icon_index;
     img_node            *currentnode;
     img_node            *node;
@@ -533,7 +533,7 @@ void DeleteIconImg( void )
     iconOperation = DELETE_ICON_OP;
 
     fp = _wpi_makeprocinstance( (WPI_PROC)SelExistingProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, fp, Instance, ICONTYPE, 0L );
+    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, ICONTYPE, 0L );
     _wpi_freeprocinstance( fp );
 
     if( button_type == DLGID_CANCEL ) {
@@ -578,7 +578,7 @@ void DeleteIconImg( void )
 void SelectIconImg( void )
 {
     WPI_PROC            fp;
-    int                 button_type;
+    WPI_DLGRESULT       button_type;
     int                 icon_index;
     img_node            *currentnode;
     img_node            *node;
@@ -593,7 +593,7 @@ void SelectIconImg( void )
     iconOperation = SEL_ICON_OP;
 
     fp = _wpi_makeprocinstance( (WPI_PROC)SelExistingProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, fp, Instance, ICONTYPE, 0L );
+    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, ICONTYPE, 0L );
     _wpi_freeprocinstance( fp );
 
     if( button_type == DLGID_CANCEL ) {

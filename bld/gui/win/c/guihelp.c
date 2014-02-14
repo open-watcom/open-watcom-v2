@@ -55,11 +55,11 @@ static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, char *title, char *
     help.idAccelTable = 0;
     help.idActionBar = 0;
     help.pszHelpWindowTitle = title;
-#ifdef __FLAT__
-    help.fShowPanelId = CMIC_HIDE_PANEL_ID;
-#else
+  #ifdef _M_I86
     help.usShowPanelId = CMIC_HIDE_PANEL_ID;
-#endif
+  #else
+    help.fShowPanelId = CMIC_HIDE_PANEL_ID;
+  #endif
     help.pszHelpLibraryName = help_lib;
     hwndHelpInstance = WinCreateHelpInstance( inst.hab, &help );
     if( hwndHelpInstance != (HWND)NULL ) {

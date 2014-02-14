@@ -36,6 +36,7 @@
 #include "wi163264.h"
 #include "desknt.h"
 
+
 static HBITMAP  deskTopBitmap;
 static short    screenWidth;
 static short    screenHeight;
@@ -95,16 +96,13 @@ WINEXPORT LRESULT CALLBACK DesktopProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
 } /* DesktopProc */
 
-/*
- * RegisterSnapClass - register the window class used to display the desktop
- */
-BOOL RegisterSnapClass( HANDLE instance )
+BOOL _RegisterSnapClass( HANDLE instance, WNDPROCx fn )
 {
     WNDCLASS    wc;
 
     thisInstance = instance;
     wc.style = 0L;
-    wc.lpfnWndProc = (WNDPROC)DesktopProc;
+    wc.lpfnWndProc = (WNDPROC)fn;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = thisInstance;
@@ -118,7 +116,15 @@ BOOL RegisterSnapClass( HANDLE instance )
     }
     return( TRUE );
 
-} /* RegisterSnapClass */
+} /* _RegisterSnapClass */
+
+/*
+ * RegisterSnapClass - register the window class used to display the desktop
+ */
+BOOL RegisterSnapClass( HANDLE instance )
+{
+    return( _RegisterSnapClass( instance, DesktopProc ) );
+}
 
 /*
  * getDesktopBitmap - returns the bitmap for the entire desktop

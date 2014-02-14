@@ -53,11 +53,11 @@ static void MBInit( void )
     int                 countRange, countVal;
     COUNTRYCODE         countryInfo;
     CHAR                leadBytes[12];
-    #ifdef __386__
-        APIRET          rc;
-    #else
+  #ifdef _M_I86
         USHORT          rc;
-    #endif
+  #else
+        APIRET          rc;
+  #endif
 #elif defined( __WINDOWS__ ) || defined( __UNIX__ )
     int                 countVal;
     DWORD               version;
@@ -81,11 +81,11 @@ static void MBInit( void )
         /*** Initialize the __CharLenTable values ***/
         countryInfo.country = 0;                /* default country */
         countryInfo.codepage = 0;       /* specified code page */
-        #ifdef __386__
-            rc = DosQueryDBCSEnv( 12, &countryInfo, leadBytes );
-        #else
-            rc = DosGetDBCSEv( 12, &countryInfo, leadBytes );
-        #endif
+      #ifdef _M_I86
+        rc = DosGetDBCSEv( 12, &countryInfo, leadBytes );
+      #else
+        rc = DosQueryDBCSEnv( 12, &countryInfo, leadBytes );
+      #endif
         if( rc != 0 )  return;
         for( countRange=0; !(leadBytes[countRange]==0x00 &&
              leadBytes[countRange+1]==0x00); countRange+=2 ) {

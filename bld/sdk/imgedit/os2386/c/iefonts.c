@@ -67,7 +67,7 @@ void CreateStatusFont( void )
 
     pres = _wpi_getpres( HWND_DESKTOP );
 #ifdef __OS2_PM__
-    _wpi_enumfonts( pres, NULL, (WPI_ENUMFONTPROC)EnumFontFunc, "Helv" );
+    _wpi_enumfonts( pres, NULL, (WPI_FONTENUMPROC)EnumFontFunc, "Helv" );
     fp = fp;
 #else
     fp = _wpi_makeprocinstance( EnumFontFunc, Instance );

@@ -35,15 +35,9 @@
 
 extern  WPI_INST                GUIMainHInst;
 WPI_INST                        GUIResHInst;
-#if defined( __UNIX__ )
-extern  long    GUIDialogFunc( HWND hwnd, WPI_MSG message,
-                                               WPI_PARAM1 wparam,
-                                               WPI_PARAM2 lparam );
-#else
 extern  WPI_DLGRESULT CALLBACK  GUIDialogFunc( HWND hwnd, WPI_MSG message,
                                                WPI_PARAM1 wparam,
                                                WPI_PARAM2 lparam );
-#endif
 
 typedef struct GetClassMap {
     gui_control_class   control_class;
@@ -189,11 +183,7 @@ gui_control_styles GUIGetControlStylesFromHWND( HWND cntl,
     return( styles );
 }
 
-#if defined( __UNIX__ )
-int InsertResDlgCntlFunc( HWND hwnd, LONG lparam )
-#else
 BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LPARAM lparam )
-#endif
 {
     GUIControlInsertByHWND( hwnd, (gui_window *)lparam );
     return( TRUE );
@@ -203,7 +193,7 @@ bool GUIInsertResDialogControls( gui_window *wnd )
 {
     WPI_ENUMPROC        enum_func;
 
-    enum_func = _wpi_makeenumprocinstance( (WPI_PROC) InsertResDlgCntlFunc, GUIMainHInst );
+    enum_func = _wpi_makeenumprocinstance( (WPI_PROC)InsertResDlgCntlFunc, GUIMainHInst );
     _wpi_enumchildwindows( wnd->hwnd, enum_func, (LPARAM)wnd );
     _wpi_freeprocinstance( (WPI_PROC)enum_func );
 

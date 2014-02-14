@@ -112,10 +112,10 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
 
     dt->dtStyle = dtStyle;
     dt->dtItemCount = 0;
-    dt->dtX = dtx;
-    dt->dtY = dty;
-    dt->dtCX = dtcx;
-    dt->dtCY = dtcy;
+    dt->dtX = (WORD)dtx;
+    dt->dtY = (WORD)dty;
+    dt->dtCX = (WORD)dtcx;
+    dt->dtCY = (WORD)dtcy;
 
     dlgtemp = (char _ISFAR *) (dt + 1);
 
@@ -136,7 +136,7 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
       #else
           fi = (FONTINFO _ISFAR *) dlgtemp;
       #endif
-      fi->PointSize = pointsize;
+      fi->PointSize = (WORD)pointsize;
       dlgtypeface = (char _ISFAR *) (fi + 1);
       copyString( dlgtypeface, typeface, typefacelen );
     }
@@ -216,11 +216,11 @@ TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
      */
     dit = (_DLGITEMTEMPLATE _ISFAR *) (((char _ISFAR *) numbytes) + *numbytes);
     dit->dtilStyle = style;
-    dit->dtilX = dtilx;
-    dit->dtilY = dtily;
-    dit->dtilCX = dtilcx;
-    dit->dtilCY = dtilcy;
-    dit->dtilID = id;
+    dit->dtilX = (WORD)dtilx;
+    dit->dtilY = (WORD)dtily;
+    dit->dtilCX = (WORD)dtilcx;
+    dit->dtilCY = (WORD)dtilcy;
+    dit->dtilID = (WORD)id;
 #if defined(__NT__) && !defined(__DEC__)
     dit->crap = 0xffff;
 #endif
@@ -251,9 +251,9 @@ TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
  */
 TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
 {
-    UINT        FAR *numbytes;
+    UINT       _ISFAR *numbytes;
 
-    numbytes = (UINT _ISFAR *) MK_FP32( GlobalLock( data ) );
+    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
     // This next line is dangerous, for a couple of reasons.
     // 1. The 2 at the end should be sizeof( UINT ).
     // 2. There should be parentheses around the *numbytes, for code readability.
@@ -276,16 +276,13 @@ TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
 /*
  * DynamicDialogBox - create a dynamic dialog box
  */
-int DynamicDialogBox( LPVOID fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data, LONG lparam )
+INT_PTR DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data, LONG lparam )
 {
     WPI_PROC    fp;
-    int         rc;
+    INT_PTR     rc;
 
-#if defined( WINDU )
-    return( -1 );
-#else
-    fp = _wpi_makeprocinstance( fn, inst );
-#if defined(__NT__) || defined(TWIN32)
+    fp = _wpi_makeprocinstance( (FARPROCx)fn, inst );
+#if defined(__NT__)
     {
         LPCSTR  ptr;
         ptr = GlobalLock( data );
@@ -293,11 +290,10 @@ int DynamicDialogBox( LPVOID fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data, L
         GlobalUnlock( data );
     }
 #else
-    rc = DialogBoxIndirectParam( inst, data, hwnd, (LPVOID) fp, lparam );
+    rc = DialogBoxIndirectParam( inst, data, hwnd, (DLGPROC)fp, lparam );
 #endif
     FreeProcInstance( fp );
     GlobalFree( data );
     return( rc );
-#endif
 
 } /* DynamicDialogBox */

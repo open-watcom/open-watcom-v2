@@ -215,7 +215,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname,
             path++;
         }
     }
-    copyPart( drive, startp, path - startp, _MAX_DRIVE );
+    copyPart( drive, startp, (int)( path - startp ), _MAX_DRIVE );
 #else
     /* processs drive specification */
     if( path[0] != 0  &&  path[1] == ':' ) {
@@ -254,7 +254,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname,
             dotp = NULL;
         }
     }
-    copyPart( dir, startp, fnamep - startp, _MAX_DIR - 1 );
+    copyPart( dir, startp, (int)( fnamep - startp ), _MAX_DIR - 1 );
     if( dotp == NULL ) {
         dotp = path;
     }
@@ -263,26 +263,26 @@ static void splitPath( char *path, char *drive, char *dir, char *fname,
         dotp = path;
     }
 #endif
-    copyPart( fname, fnamep, dotp - fnamep, _MAX_PATH - 1 );
-    copyPart( ext, dotp, path - dotp, _MAX_PATH - 1);
+    copyPart( fname, fnamep, (int)( dotp - fnamep ), _MAX_PATH - 1 );
+    copyPart( ext, dotp, (int)( path - dotp ), _MAX_PATH - 1);
 
 } /* splitPath */
 
 #ifdef __OS2__
-#ifdef __386__
-#define STUPID_UINT     unsigned long
-#else
+#ifdef _M_I86
 #define STUPID_UINT     unsigned short
+#else
+#define STUPID_UINT     unsigned long
 #endif
-static drive_type getDriveType( int drv )
+static drive_type getDriveType( char drive )
 {
     STUPID_UINT         disk;
     unsigned long       map;
-    int                 i;
+    char                drv;
 
     DosQCurDisk( &disk, &map );
-    for( i='A';i<='Z';i++ ) {
-        if( drv == i ) {
+    for( drv = 'A'; drv <= 'Z'; drv++ ) {
+        if( drive == drv ) {
             if( map & 1 ) {
                 return( DRIVE_IS_FIXED );
             } else {
@@ -295,7 +295,7 @@ static drive_type getDriveType( int drv )
 }
 #elif defined( __UNIX__ ) || defined( __NETWARE__ )
 #elif defined( __NT__ )
-static drive_type getDriveType( int drv )
+static drive_type getDriveType( char drv )
 {
     drive_type type;
     UINT       ret;
@@ -306,7 +306,7 @@ static drive_type getDriveType( int drv )
     drive[2] = '\\';
     drive[3] = 0;
 
-    ret = GetDriveType ( drive );
+    ret = GetDriveType( drive );
     switch ( ret ) {
         case DRIVE_REMOVABLE:
             type = DRIVE_IS_REMOVABLE;
@@ -328,7 +328,7 @@ static drive_type getDriveType( int drv )
     return ( type );
 }
 #elif defined( __RDOS__ )
-static drive_type getDriveType( int drv )
+static drive_type getDriveType( char drv )
 {
     drive_type type;
     int        CurDrive = RdosGetCurDrive();
@@ -355,7 +355,7 @@ extern short CheckRemovable( char );
         "done:" \
         parm [bl] value[ax];
 
-static drive_type getDriveType( int drv )
+static drive_type getDriveType( char drv )
 {
     return( CheckRemovable( drv - 'A' + 1 ) );
 }
@@ -367,11 +367,12 @@ static drive_type getDriveType( int drv )
 static bool hasWild( char *txt )
 {
     bool        has_wild;
-    int         len,i;
+    size_t      i;
+    size_t      len;
 
     has_wild = FALSE;
     len = strlen( txt );
-    for( i=0;i<len;i++ ) {
+    for( i = 0; i < len; i++ ) {
         if( txt[i] == '?' || txt[i] == '*' ) {
             has_wild = TRUE;
             break;
@@ -384,17 +385,17 @@ static bool hasWild( char *txt )
 /*
  * addToList - add an item to a list of items
  */
-static bool addToList( char ***list, int num, char *data, int len )
+static bool addToList( char ***list, int num, char *data, size_t len )
 {
-    *list = GUIMemRealloc( *list, (num+2) * sizeof( char * ) );
+    *list = GUIMemRealloc( *list, ( num + 2 ) * sizeof( char * ) );
     if( *list == NULL ) {
         return( FALSE );
     }
-    (*list)[num] = GUIMemAlloc( len+1 );
+    (*list)[num] = GUIMemAlloc( len + 1 );
     if( (*list)[num] == NULL ) {
         return( FALSE );
     }
-    (*list)[num+1] = NULL;
+    (*list)[num + 1] = NULL;
     strcpy( (*list)[num], data );
     return( TRUE );
 
@@ -428,16 +429,16 @@ static void freeStringList( void *ptr )
  */
 static void *buildDriveList( void )
 {
-    int         i;
+    char        drv;
     int         cnt;
     char        str[_MAX_PATH];
     char        **dirlist;
 
     cnt = 0;
     dirlist = NULL;
-    for( i='A';i<='Z';i++ ) {
-        if( getDriveType( i ) != DRIVE_NONE ) {
-            str[0] = i;
+    for( drv = 'A'; drv <= 'Z'; drv++ ) {
+        if( getDriveType( drv ) != DRIVE_NONE ) {
+            str[0] = drv;
             str[1] = ':';
             str[2] = 0;
             if( !addToList( &dirlist, cnt, str, 2 ) ) {
@@ -457,7 +458,7 @@ static void *buildDriveList( void )
  */
 static void *buildFileTypes( dlg_info *dlg, char *data )
 {
-    int         len;
+    size_t      len;
     char        **list1;
     int         num;
     char        *ptr;
@@ -501,7 +502,7 @@ static bool goToDir( gui_window *gui, char *dir )
     char        drive[_MAX_DRIVE];
     unsigned    total;
     bool        removed_end;
-    int         len;
+    size_t      len;
     int         rc;
 
     gui = gui;
@@ -516,9 +517,9 @@ static bool goToDir( gui_window *gui, char *dir )
     if( !(dir[1] == ':' && dir[2] == 0) ) {
         len = strlen( dir );
         removed_end = FALSE;
-        if( dir[len-1] == FILE_SEP_CHAR ) {
-            if( len > 1 && dir[len-2] != ':' ) {
-                dir[len-1] = 0;
+        if( dir[len - 1] == FILE_SEP_CHAR ) {
+            if( len > 1 && dir[len - 2] != ':' ) {
+                dir[len - 1] = 0;
                 removed_end = TRUE;
             }
         }
@@ -533,7 +534,7 @@ static bool goToDir( gui_window *gui, char *dir )
         DosError( 0 );
 #endif
         if( removed_end ) {
-            dir[len-1] = FILE_SEP_CHAR;
+            dir[len - 1] = FILE_SEP_CHAR;
         }
         if( rc ) {
             return( FALSE );
@@ -545,7 +546,7 @@ static bool goToDir( gui_window *gui, char *dir )
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
         total = 1;
 #else
-        _dos_setdrive( tolower( drive[0] ) - 'a'+1, &total );
+        _dos_setdrive( toupper( drive[0] ) - 'A' + 1, &total );
 #endif
     }
     return( TRUE );
@@ -698,8 +699,7 @@ static bool setFileList( gui_window *gui, char *ext )
         if( directory != NULL ) {
             while( ( dent = readdir( directory ) ) != NULL ) {
                 if( !isdir( dent, path ) ) {
-                    if( ( dlg->currOFN->flags & OFN_HIDEREADONLY ) &&
-                        isrdonly( dent, path ) ) {
+                    if( ( dlg->currOFN->flags & OFN_HIDEREADONLY ) && isrdonly( dent, path ) ) {
                         continue;
                     }
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
@@ -707,8 +707,7 @@ static bool setFileList( gui_window *gui, char *ext )
                         continue;
                     }
 #endif
-                    if( !addToList( &list, cnt, dent->d_name,
-                                        strlen( dent->d_name ) ) ) {
+                    if( !addToList( &list, cnt, dent->d_name, strlen( dent->d_name ) ) ) {
                         freeStringList( &list );
                         closedir( directory );
                         return( FALSE );
@@ -739,14 +738,15 @@ static bool setDirList( gui_window *gui )
 {
     char                path[_MAX_PATH];
     char                dir[_MAX_DIR];
-    char                drive[_MAX_DRIVE+3];
+    char                drive[_MAX_DRIVE + 3];
     DIR                 *directory;
     struct dirent       *dent;
     char                *ptr,*start;
     char                indent[80];
     char                tmp[256];
     char                **drvlist;
-    int                 i,len;
+    int                 i;
+    size_t              len;
     int                 curr,cnt;
     char                **list;
 
@@ -758,7 +758,7 @@ static bool setDirList( gui_window *gui )
         return( TRUE );
     }
 
-    if( path[strlen(path)-1] == FILE_SEP_CHAR ) {
+    if( path[strlen( path ) - 1] == FILE_SEP_CHAR ) {
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
         strcat( path, FILES_ALL );
 #endif
@@ -769,7 +769,7 @@ static bool setDirList( gui_window *gui )
         strcat( path, FILE_SEP FILES_ALL );
 #endif
     }
-    splitPath( path, drive+1, dir, NULL, NULL );
+    splitPath( path, drive + 1, dir, NULL, NULL );
 
     directory = opendir( path );
     if( directory == NULL ) {
@@ -793,8 +793,8 @@ static bool setDirList( gui_window *gui )
         i++;
     }
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        drive[3] = '\\';
-        drive[4] = 0;
+    drive[3] = '\\';
+    drive[4] = 0;
 #endif
     if( !addToList( &list, cnt, drive, strlen( drive ) ) ) {
         freeStringList( &list );
@@ -803,7 +803,7 @@ static bool setDirList( gui_window *gui )
     cnt++;
     strcpy( indent, INDENT_STR );
 
-    ptr = dir+1;
+    ptr = dir + 1;
     start = ptr;
     while( *ptr != 0 ) {
         if( *ptr == FILE_SEP_CHAR ) {
@@ -811,14 +811,14 @@ static bool setDirList( gui_window *gui )
             strcpy( tmp, indent );
             len = strlen( tmp );
             tmp[len] = OPENED_DIR_CHAR;
-            tmp[len+1] = 0;
+            tmp[len + 1] = 0;
             strcat( tmp, start );
             if( !addToList( &list, cnt, tmp, strlen( tmp ) ) ) {
                 freeStringList( &list );
                 return( FALSE );
             }
             cnt++;
-            start = ptr+1;
+            start = ptr + 1;
             strcat( indent, INDENT_STR );
         }
         ptr++;
@@ -834,7 +834,7 @@ static bool setDirList( gui_window *gui )
             strcpy( tmp, indent );
             len = strlen( tmp );
             tmp[len] = UNOPENED_DIR_CHAR;
-            tmp[len+1] = 0;
+            tmp[len + 1] = 0;
             strcat( tmp, dent->d_name );
             if( !addToList( &list, cnt, tmp, strlen( tmp ) ) ) {
                 freeStringList( &list );
@@ -846,10 +846,10 @@ static bool setDirList( gui_window *gui )
     closedir( directory );
 
     qsort( list, cnt, sizeof( char * ), Compare );
-    for( i=0;i<cnt;i++ ) {
+    for( i = 0; i < cnt; i++ ) {
         GUIAddText( gui, CTL_DIR_LIST, list[i] );
     }
-    GUISetCurrSelect( gui, CTL_DIR_LIST, curr-1 );
+    GUISetCurrSelect( gui, CTL_DIR_LIST, curr - 1 );
     freeStringList( &list );
 
     return( TRUE );
@@ -898,7 +898,7 @@ static process_rc processFileName( gui_window *gui )
 {
     char        *tmp;
     char        *txt;
-    int         len;
+    size_t      len;
     char        path[_MAX_PATH];
     char        dir[_MAX_DIR];
     char        drive[_MAX_DRIVE];
@@ -958,7 +958,7 @@ static process_rc processFileName( gui_window *gui )
         if( dlg->currOFN->base_file_name != NULL ) {
             len = strlen( txt );
             if( len >= dlg->currOFN->max_base_file_name ) {
-                len = dlg->currOFN->max_base_file_name-1;
+                len = dlg->currOFN->max_base_file_name - 1;
             }
             memcpy( dlg->currOFN->base_file_name, txt, len );
             dlg->currOFN->base_file_name[len] = 0;
@@ -966,9 +966,9 @@ static process_rc processFileName( gui_window *gui )
         if( dlg->currOFN->file_name != NULL ) {
             getcwd( path, sizeof( path ) );
             len = strlen( path );
-            if( path[len-1] != FILE_SEP_CHAR ) {
+            if( path[len - 1] != FILE_SEP_CHAR ) {
                 path[len] = FILE_SEP_CHAR;
-                path[len+1] = 0;
+                path[len + 1] = 0;
             }
             strcat( path, fname );
             strcat( path, ext );

@@ -66,5 +66,3 @@
 !inject wincb32.obj                                                             w32
 
 !include ../../../../objlist.mif
-
-cb_postopts = -wcd310

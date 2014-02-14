@@ -180,11 +180,11 @@ WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, 
 void ChooseBkColor( void )
 {
     WPI_PROC            fp;
-    int                 button_type;
+    WPI_DLGRESULT       button_type;
 
     screenColor.color = GetViewBkColor();
     fp = _wpi_makeprocinstance( (WPI_PROC)SelColorProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, fp, Instance, SELBKCOLOR, 0L );
+    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, SELBKCOLOR, 0L );
     _wpi_freeprocinstance( fp );
 
     if( button_type == IDCANCEL ) {

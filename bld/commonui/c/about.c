@@ -37,12 +37,7 @@
 #include "aboutdlg.h"
 #include "wi163264.h"
 #ifndef NOUSE3D
-  #ifdef WRCTL3D
-    #include "wrctl3d.h"
-    #define CvrCtl3dColorChange     WRCtl3dColorChange
-  #else
-    #include "ctl3dcvr.h"
-  #endif
+  #include "ctl3dcvr.h"
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
@@ -50,10 +45,11 @@
     #pragma library( "toolhelp.lib" )   /* For SystemHeapInfo */
 #endif
 
+
 /*
  * AboutProc - callback routine for settings dialog
  */
-WINEXPORT BOOL CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[256];
     LPABOUTINFO pai;
@@ -170,15 +166,20 @@ WINEXPORT BOOL CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 
 } /* AboutProc */
 
+static void _DoAbout( LPABOUTINFO ai, DLGPROCx fn )
+{
+    FARPROC fp;
+
+    fp = MakeProcInstance( (FARPROCx)fn, ai->inst );
+    DialogBoxParam( ai->inst, "About", ai->owner, (DLGPROC)fp, (LPARAM)ai );
+    FreeProcInstance( fp );
+}
+
 /*
  * DoAbout - show the startup dialog
  */
 void DoAbout( LPABOUTINFO ai )
 {
-    DLGPROC     proc;
-
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)AboutProc, ai->inst );
-    DialogBoxParam( ai->inst, "About", ai->owner, proc, (LPARAM)ai );
-    FreeProcInstance( (FARPROC)proc );
+    _DoAbout( ai, AboutProc );
 
 } /* DoAbout */

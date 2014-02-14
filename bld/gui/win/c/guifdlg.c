@@ -62,6 +62,7 @@
 #include "guixutil.h"
 #include "guistr.h"
 #include "guixhook.h"
+#include "clibext.h"
 
 extern  WPI_INST        GUIMainHInst;
 
@@ -81,174 +82,14 @@ void GUIHookFileDlg( bool hook )
     hookFileDlg = hook;
 }
 
-#if defined(__NT__)
-char *GetStrFromEdit( HWND hDlg, int id )
-{
-    char  *cp;
-    int    text_length;
-    int    text_copied;
-
-    text_length = SendDlgItemMessage( hDlg, id, WM_GETTEXTLENGTH, 0, 0 );
-    cp = (char *) GUIMemAlloc( text_length + 1 );
-    if( cp == NULL ) {
-        return ( NULL );
-    }
-
-    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length+1,
-                                      (LPARAM) (LPCSTR) cp);
-
-    if( text_copied != text_length ) {
-        // this is peculiar
-        // do nothing for now
-    }
-
-    cp[text_length] = '\0';
-
-    return( cp );
-}
-#endif
-
-#ifndef __OS2_PM__
-#define PATH_STATIC_CONTROL 1088
-
-#if defined( __UNIX__ )
-uint OpenHook( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
-#else
-UINT CALLBACK OpenHook( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
-#endif
-{
-    UINT        ret;
-
-    wparam = wparam;
-    lparam = lparam;
-    hwnd = hwnd;
-    ret = FALSE;
-    switch( msg ) {
-#if defined(__NT__)
-    case WM_DESTROY:
-        LastPath = GetStrFromEdit( hwnd, PATH_STATIC_CONTROL );
-        break;
-#endif
-    case WM_INITDIALOG:
-        // We must call this to subclass the directory listbox even
-        // if the app calls Ctl3dAutoSubclass (commdlg bug)
-        GUICtl3dSubclassDlg( hwnd, CTL3D_ALL );
-        ret = TRUE;
-        break;
-    }
-
-    return( ret );
-}
+#if defined( __OS2_PM__ )
 
 int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 {
-    OPENFILENAME        wofn;
-    bool                issave;
-    int                 rc;
-    unsigned            drive;
-#if defined(HAVE_DRIVES)
-    unsigned            old_drive;
-    unsigned            drives;
-#endif
-
-    LastPath = NULL;
-    if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' &&
-        ofn->initial_dir[1] == ':' ) {
-        drive = ofn->initial_dir[0];
-        memmove( ofn->initial_dir, ofn->initial_dir+2, strlen( ofn->initial_dir+2 ) + 1 );
-    } else {
-        drive = 0;
-    }
-
-    memset( &wofn, 0 , sizeof( wofn ) );
-
-    if( ofn->flags & OFN_ISSAVE ) {
-        issave = TRUE;
-    } else {
-        issave = FALSE;
-    }
-
-    wofn.Flags = 0;
-    if( hookFileDlg ) {
-        wofn.Flags |= OFN_ENABLEHOOK;
-    }
-    if( !(ofn->flags & OFN_CHANGEDIR) ) {
-        wofn.Flags |= OFN_NOCHANGEDIR;
-    }
-
-    if( ofn->flags & OFN_OVERWRITEPROMPT ) {
-        wofn.Flags |= OFN_OVERWRITEPROMPT;
-    }
-    if( ofn->flags & OFN_HIDEREADONLY ) {
-        wofn.Flags |= OFN_HIDEREADONLY;
-    }
-    if( ofn->flags & OFN_FILEMUSTEXIST ) {
-        wofn.Flags |= OFN_FILEMUSTEXIST;
-    }
-    if( ofn->flags & OFN_PATHMUSTEXIST ) {
-        wofn.Flags |= OFN_PATHMUSTEXIST;
-    }
-    if( ofn->flags & OFN_ALLOWMULTISELECT ) {
-        wofn.Flags |= OFN_ALLOWMULTISELECT;
-    }
-    wofn.hwndOwner = GUIGetParentFrameHWND( wnd );
-    wofn.hInstance = GUIMainHInst;
-    wofn.lStructSize = sizeof( wofn );
-    wofn.lpstrFilter = ofn->filter_list;
-    wofn.nFilterIndex = ofn->filter_index;
-    wofn.lpstrFile = ofn->file_name;
-    wofn.nMaxFile = ofn->max_file_name;
-    wofn.lpstrFileTitle = ofn->base_file_name;
-    wofn.nMaxFileTitle = ofn->max_base_file_name;
-    wofn.lpstrTitle = ofn->title;
-    wofn.lpstrInitialDir = ofn->initial_dir;
-    wofn.lpfnHook = (LPVOID)NULL;
-    if( hookFileDlg ) {
-        wofn.lpfnHook = (LPVOID) _wpi_makeprocinstance( (LPVOID) OpenHook, GUIMainHInst );
-    }
-
-#if defined( HAVE_DRIVES )
-    if( drive ) {
-        _dos_getdrive( &old_drive );
-        _dos_setdrive( tolower( drive ) - 'a' + 1, &drives );
-    }
-#endif
-    if( issave ) {
-        rc = GetSaveFileName( &wofn );
-    } else {
-        rc = GetOpenFileName( &wofn );
-    }
-
-    if( hookFileDlg ) {
-        #if !defined(__NT__)
-            _wpi_freeprocinstance( (WPI_PROC)wofn.lpfnHook );
-        #endif
-    }
-
-    if( LastPath && ( !rc || !( ofn->flags & OFN_WANT_LAST_PATH ) ) ) {
-        GUIMemFree( LastPath );
-        LastPath = NULL;
-    }
-    ofn->last_path = LastPath;
-#if defined( HAVE_DRIVES )
-    if( drive ) {
-        _dos_setdrive( old_drive, &drives );
-    }
-#endif
-    if( rc ) {
-        return( OFN_RC_FILE_SELECTED );
-    }
-    if( !CommDlgExtendedError() ) {
-        return( OFN_RC_NO_FILE_SELECTED );
-    }
-    return( OFN_RC_FAILED_TO_INITIALIZE );
-} /* GUIGetFileName */
-
-#else
-#ifdef __FLAT__
-
-int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
-{
+  #ifdef _M_I86
+    wnd = wnd;
+    ofn = ofn;
+  #else
     FILEDLG             fdlg;
     int                 str_index;
     int                 rc;
@@ -321,7 +162,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         }
     }
 
-#if defined( HAVE_DRIVES )
+  #if defined( HAVE_DRIVES )
     if( drive ) {
         _dos_getdrive( &old_drive );
         _dos_setdrive( tolower( drive ) - 'a' + 1, &drives );
@@ -329,7 +170,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
             chdir( initial_path );
         }
     }
-#endif
+  #endif
 
     rc = (int)WinFileDlg( HWND_DESKTOP, GUIGetParentFrameHWND( wnd ), &fdlg );
 
@@ -367,14 +208,14 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         }
     }
 
-#if defined( HAVE_DRIVES )
+  #if defined( HAVE_DRIVES )
     if( drive ) {
         _dos_setdrive( old_drive, &drives );
         if( *initial_path && *old_path ) {
             chdir( old_path );
         }
     }
-#endif
+  #endif
 
     if( fdlg.lReturn == DID_CANCEL ) {
         return( OFN_RC_NO_FILE_SELECTED );
@@ -383,17 +224,172 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     if( rc ) {
         return( OFN_RC_FILE_SELECTED );
     }
-
+  #endif
     return( OFN_RC_FAILED_TO_INITIALIZE );
 } /* GUIGetFileName */
+
 #else
+
+#if defined(__NT__)
+char *GetStrFromEdit( HWND hDlg, int id )
+{
+    char    *cp;
+    LRESULT text_length;
+    LRESULT text_copied;
+
+    text_length = SendDlgItemMessage( hDlg, id, WM_GETTEXTLENGTH, 0, 0 );
+    cp = (char *)GUIMemAlloc( text_length + 1 );
+    if( cp == NULL ) {
+        return ( NULL );
+    }
+
+    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length+1,
+                                      (LPARAM) (LPCSTR) cp);
+
+    if( text_copied != text_length ) {
+        // this is peculiar
+        // do nothing for now
+    }
+
+    cp[text_length] = '\0';
+
+    return( cp );
+}
+#endif
+
+#define PATH_STATIC_CONTROL 1088
+
+static int _GUIGetFileName( gui_window *wnd, open_file_name *ofn, LPOFNHOOKPROCx fn )
+{
+    OPENFILENAME        wofn;
+    bool                issave;
+    int                 rc;
+    unsigned            drive;
+    WPI_PROC            fp = NULL;
+#if defined(HAVE_DRIVES)
+    unsigned            old_drive;
+    unsigned            drives;
+#endif
+
+    LastPath = NULL;
+    if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' && ofn->initial_dir[1] == ':' ) {
+        drive = ofn->initial_dir[0];
+        memmove( ofn->initial_dir, ofn->initial_dir+2, strlen( ofn->initial_dir+2 ) + 1 );
+    } else {
+        drive = 0;
+    }
+
+    memset( &wofn, 0 , sizeof( wofn ) );
+
+    if( ofn->flags & OFN_ISSAVE ) {
+        issave = TRUE;
+    } else {
+        issave = FALSE;
+    }
+
+    wofn.Flags = 0;
+    if( hookFileDlg ) {
+        wofn.Flags |= OFN_ENABLEHOOK;
+    }
+    if( !(ofn->flags & OFN_CHANGEDIR) ) {
+        wofn.Flags |= OFN_NOCHANGEDIR;
+    }
+
+    if( ofn->flags & OFN_OVERWRITEPROMPT ) {
+        wofn.Flags |= OFN_OVERWRITEPROMPT;
+    }
+    if( ofn->flags & OFN_HIDEREADONLY ) {
+        wofn.Flags |= OFN_HIDEREADONLY;
+    }
+    if( ofn->flags & OFN_FILEMUSTEXIST ) {
+        wofn.Flags |= OFN_FILEMUSTEXIST;
+    }
+    if( ofn->flags & OFN_PATHMUSTEXIST ) {
+        wofn.Flags |= OFN_PATHMUSTEXIST;
+    }
+    if( ofn->flags & OFN_ALLOWMULTISELECT ) {
+        wofn.Flags |= OFN_ALLOWMULTISELECT;
+    }
+    wofn.hwndOwner = GUIGetParentFrameHWND( wnd );
+    wofn.hInstance = GUIMainHInst;
+    wofn.lStructSize = sizeof( wofn );
+    wofn.lpstrFilter = ofn->filter_list;
+    wofn.nFilterIndex = ofn->filter_index;
+    wofn.lpstrFile = ofn->file_name;
+    wofn.nMaxFile = ofn->max_file_name;
+    wofn.lpstrFileTitle = ofn->base_file_name;
+    wofn.nMaxFileTitle = ofn->max_base_file_name;
+    wofn.lpstrTitle = ofn->title;
+    wofn.lpstrInitialDir = ofn->initial_dir;
+    wofn.lpfnHook = (LPOFNHOOKPROC)NULL;
+    if( hookFileDlg ) {
+        fp = _wpi_makeprocinstance( (FARPROCx)fn, GUIMainHInst );
+        wofn.lpfnHook = (LPOFNHOOKPROC)fp;
+    }
+
+#if defined( HAVE_DRIVES )
+    if( drive ) {
+        _dos_getdrive( &old_drive );
+        _dos_setdrive( tolower( drive ) - 'a' + 1, &drives );
+    }
+#endif
+    if( issave ) {
+        rc = GetSaveFileName( &wofn );
+    } else {
+        rc = GetOpenFileName( &wofn );
+    }
+
+    if( fp != NULL ) {
+        _wpi_freeprocinstance( fp );
+    }
+
+    if( LastPath && ( !rc || !( ofn->flags & OFN_WANT_LAST_PATH ) ) ) {
+        GUIMemFree( LastPath );
+        LastPath = NULL;
+    }
+    ofn->last_path = LastPath;
+#if defined( HAVE_DRIVES )
+    if( drive ) {
+        _dos_setdrive( old_drive, &drives );
+    }
+#endif
+    if( rc ) {
+        return( OFN_RC_FILE_SELECTED );
+    }
+    if( !CommDlgExtendedError() ) {
+        return( OFN_RC_NO_FILE_SELECTED );
+    }
+    return( OFN_RC_FAILED_TO_INITIALIZE );
+} /* _GUIGetFileName */
+
+UINT CALLBACK OpenHook( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+{
+    UINT        ret;
+
+    wparam = wparam;
+    lparam = lparam;
+    hwnd = hwnd;
+    ret = FALSE;
+    switch( msg ) {
+  #if defined(__NT__)
+    case WM_DESTROY:
+        LastPath = GetStrFromEdit( hwnd, PATH_STATIC_CONTROL );
+        break;
+  #endif
+    case WM_INITDIALOG:
+        // We must call this to subclass the directory listbox even
+        // if the app calls Ctl3dAutoSubclass (commdlg bug)
+        GUICtl3dSubclassDlg( hwnd, CTL3D_ALL );
+        ret = TRUE;
+        break;
+    }
+
+    return( ret );
+}
 
 int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 {
-    wnd = wnd;
-    ofn = ofn;
-    return( OFN_RC_FAILED_TO_INITIALIZE );
+    return( _GUIGetFileName( wnd, ofn, OpenHook ) );
 }
-#endif
 
 #endif

@@ -298,8 +298,8 @@ BOOL    ReadCursorFromData( void *data, char *fname, WRInfo *info, WResLangNode 
 /* iesave.c */
 BOOL    SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size );
 BOOL    SaveImgToData( img_node *node, BYTE **data, uint_32 *size );
-BOOL    SaveFile( short how );
-BOOL    SaveFileFromNode( img_node *node, short how );
+BOOL    SaveFile( int how );
+BOOL    SaveFileFromNode( img_node *node, int how );
 BOOL    SaveColorPalette( void );
 void    SetInitialSaveDir( char *new_dir );
 char    *GetInitSaveDir( void );

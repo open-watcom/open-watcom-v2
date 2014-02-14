@@ -11,7 +11,7 @@
 *    Public License version 1.0 (the 'License'). You may not use this file
 *    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
 *    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
+*    provided with the Original Code and Modifications, and is also707
 *    available at www.sybase.com/developer/opensource.
 *
 *    The Original Code and all software distributed under the License are
@@ -285,11 +285,7 @@ bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
  *                 boxes
  */
 
-#if defined( __UNIX__ )
-long GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
-#else
 WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
-#endif
 {
     WORD                param;
     bool                escape_pressed;
@@ -350,7 +346,7 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         if( wnd != NULL ) {
             SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
                         GUIGetBack( wnd, GUI_BACKGROUND ) ) );
-            return( (long)wnd->bk_brush );
+            return( (WPI_DLGRESULT)wnd->bk_brush );
         }
         break;
 #endif
@@ -535,7 +531,6 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         return( _wpi_defdlgproc( hwnd, message, wparam, lparam ) );
     }
 #endif
-
     return( ret );
 }
 
@@ -566,6 +561,9 @@ static void AdjustForFrame( gui_coord *pos, gui_coord *size )
 #ifndef __OS2_PM__
     int xframe, yframe, ycaption;
 
+    xframe = 0;
+    yframe = 0;
+    ycaption = 0;
     if( ( pos != NULL )  || ( size != NULL ) ) {
         xframe   = _wpi_getsystemmetrics( SM_CXDLGFRAME );
         yframe   = _wpi_getsystemmetrics( SM_CYDLGFRAME );
@@ -694,7 +692,7 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
         }
         new = AddControl( data, pos.x, pos.y, size.x, size.y, control->id,
                           style, GUIControls[control->control_class].classname,
-                          text, pctldatalen, (char *)pctldata );
+                          text, (BYTE)pctldatalen, (char *)pctldata );
         if( new == NULL  ) {
             GlobalFree( data );
             return( FALSE );
@@ -706,7 +704,7 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
         data = new;
     }
     data = DoneAddingControls( data );
-    DynamicDialogBox( (LPVOID)GUIDialogFunc, GUIMainHInst, parent_hwnd, data, (WPI_PARAM2)wnd );
+    DynamicDialogBox( GUIDialogFunc, GUIMainHInst, parent_hwnd, data, (WPI_PARAM2)wnd );
     return( TRUE );
 }
 
@@ -731,11 +729,7 @@ static WPI_FONT         DlgFont;
  *
  */
 
-#if defined( __UNIX__ )
-long GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
-#else
 WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
-#endif
 {
     WPI_PRES            hdc;
     WPI_RECT            rect;
@@ -820,7 +814,7 @@ void GUIInitDialog( void )
                            LIT( Empty ), LIT( Empty ), PointSize, Font );
     if( data != NULL ) {
         data = DoneAddingControls( data );
-        DynamicDialogBox( (LPVOID) GUIInitDialogFunc, GUIMainHInst, NULLHANDLE, data, 0 );
+        DynamicDialogBox( GUIInitDialogFunc, GUIMainHInst, NULLHANDLE, data, 0 );
     }
 }
 

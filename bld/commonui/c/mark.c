@@ -42,7 +42,7 @@ static void             (*WriteFn)( char * );
 /*
  * MarkDlgProc - handle messages from the mark dialog
  */
-WINEXPORT BOOL CALLBACK MarkDlgProc( HWND hwnd, WORD msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buf[MARK_LEN];
     char        boxbuf[MARK_LEN];
@@ -106,20 +106,26 @@ WINEXPORT BOOL CALLBACK MarkDlgProc( HWND hwnd, WORD msg, WPARAM wparam, LPARAM 
 
 } /* MarkDlgProc */
 
-/*
- * ProcessMark - start a mark dialog
- */
-void ProcessMark( HWND owner, HANDLE instance, void (*fn)( char * ) )
+
+static void _ProcessMark( HWND owner, HANDLE instance, void (*func)( char * ), DLGPROCx fn )
 {
     FARPROC             fp;
 
     if( WriteFn != NULL ) {
         return;
     }
-    WriteFn = fn;
-    fp = MakeProcInstance( (FARPROC)MarkDlgProc, instance );
+    WriteFn = func;
+    fp = MakeProcInstance( (FARPROCx)fn, instance );
     DialogBox( instance, "MARK_DLG", owner, (DLGPROC)fp );
     FreeProcInstance( fp );
     WriteFn = NULL;
 
-} /* ProcessMark */
+} /* _ProcessMark */
+
+/*
+ * ProcessMark - start a mark dialog
+ */
+void ProcessMark( HWND owner, HANDLE instance, void (*fn)( char * ) )
+{
+    _ProcessMark( owner, instance, fn, MarkDlgProc );
+}

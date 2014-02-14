@@ -48,6 +48,8 @@
 
 #if defined( __NT__ )
     #include "pushpck2.h"
+#else
+    #include "pushpck1.h"
 #endif
 
 typedef struct {
@@ -72,9 +74,7 @@ typedef struct {
     //char      szTypeFace[];
 } FONTINFO;
 
-#if defined( __NT__ )
-    #include "poppck.h"
-#endif
+#include "poppck.h"
 
 static BYTE     *JFontInfo = NULL;
 static int      JFontInfoLen = 0;
@@ -220,7 +220,7 @@ static int getFontInfoSize( BYTE *fontinfo )
 
     afterFontinfo = fontinfo + sizeof( short );
     afterFontinfo = skipString( afterFontinfo );
-    return( afterFontinfo - fontinfo );
+    return( (int)( afterFontinfo - fontinfo ) );
 
 } /* getFontInfoSize */
 
@@ -338,12 +338,12 @@ static HGLOBAL createJTemplate( HGLOBAL htemplate, DWORD size )
     fontinfoSize = getFontInfoSize( fontinfo );
 
     /* calcualte the size of the original dialog header */
-    dlgHeaderSize = fontinfo - template + fontinfoSize;
+    dlgHeaderSize = (int)( fontinfo - template ) + fontinfoSize;
     ADJUST_BLOCKLEN( dlgHeaderSize );
     ctlInfoSize = size - dlgHeaderSize;
 
     /* calculate the size of the new dialog header */
-    newdlgHeaderSize = fontinfo - template + JFontInfoLen;
+    newdlgHeaderSize = (int)( fontinfo - template ) + JFontInfoLen;
     ADJUST_BLOCKLEN( newdlgHeaderSize );
 
     newSize = newdlgHeaderSize + ctlInfoSize;
@@ -563,7 +563,7 @@ DBIP_DEFAULT_ACTION:
 INT_PTR JDialogBoxIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
                         HWND hwndOwner, DLGPROC dlgproc )
 {
-    return( dbIndirect( hinst, hglblDlgTemp, hwndOwner, dlgproc, -1 ) );
+    return( dbIndirect( hinst, hglblDlgTemp, hwndOwner, dlgproc, (DWORD)-1 ) );
 
 } /* JDialogBoxIndirect */
 
@@ -574,7 +574,7 @@ INT_PTR JDialogBoxIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
                              HWND hwndOwner, DLGPROC dlgproc,
                              LPARAM lParamInit )
 {
-    return( dbIndirectParam( hinst, hglblDlgTemp, hwndOwner, dlgproc, lParamInit, -1 ) );
+    return( dbIndirectParam( hinst, hglblDlgTemp, hwndOwner, dlgproc, lParamInit, (DWORD)-1 ) );
 
 } /* JDialogBoxIndirectParam */
 
@@ -584,7 +584,7 @@ INT_PTR JDialogBoxIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
 HWND JCreateDialogIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
                             HWND hwndOwner, DLGPROC dlgproc )
 {
-    return( cdIndirect( hinst, hglblDlgTemp, hwndOwner, dlgproc, -1 ) );
+    return( cdIndirect( hinst, hglblDlgTemp, hwndOwner, dlgproc, (DWORD)-1 ) );
 
 } /* JCreateDialogIndirect */
 
@@ -595,7 +595,7 @@ HWND JCreateDialogIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
                                  HWND hwndOwner, DLGPROC dlgproc,
                                  LPARAM lParamInit )
 {
-    return( cdIndirectParam( hinst, hglblDlgTemp, hwndOwner, dlgproc, lParamInit, -1 ) );
+    return( cdIndirectParam( hinst, hglblDlgTemp, hwndOwner, dlgproc, lParamInit, (DWORD)-1 ) );
 
 } /* JCreateDialogIndirectParam */
 

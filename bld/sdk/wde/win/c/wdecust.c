@@ -187,7 +187,7 @@ Bool WdeSetCurrentCustControl( int which )
     }
 
     ret = JDialogBoxParam( inst, "WdeSelectCustom", WdeGetMainWindowHandle(),
-                           (DLGPROC) proc, (LPARAM)(LPVOID)&which );
+                           (DLGPROC)proc, (LPARAM)(LPVOID)&which );
 
     FreeProcInstance( proc );
 
@@ -271,16 +271,16 @@ BOOL WdeLoadMSCustomControls( WdeCustLib *lib )
     WdeCustStyleProc style_proc;
     WdeCustFlagsProc flags_proc;
     HWND             dialog_owner;
-    DLGPROC          proc_inst;
+    FARPROC          proc_inst;
     HINSTANCE        app_inst;
     BOOL             ok;
 
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();
-    proc_inst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeLoadCustProc, app_inst );
+    proc_inst = MakeProcInstance ( (FARPROC)WdeLoadCustProc, app_inst );
     ok = JDialogBoxParam( app_inst, "WdeLoadCustom", dialog_owner,
-                          proc_inst, (LPARAM)(LPVOID)lib );
-    FreeProcInstance ( (FARPROC)proc_inst );
+                          (DLGPROC)proc_inst, (LPARAM)(LPVOID)lib );
+    FreeProcInstance ( proc_inst );
 
     if( ok == -1 ) {
         WdeWriteTrail( "WdeLoadMSCustomControls: Dialog not created!" );

@@ -39,7 +39,7 @@
 #include "mem.h"
 
 #ifndef _WCI86HUGE
-    #if !defined( __386__ ) && defined( _M_IX86 )
+    #if defined( _M_I86 )
         #define _WCI86HUGE __huge
     #else
         #define _WCI86HUGE
