@@ -51,7 +51,7 @@
 #ifndef NOUSE3D
 #define LOGSAVEHOOK     LogSaveHook
 #else
-#define LOGSAVEHOOK
+#define LOGSAVEHOOK     NULL
 #endif
 
 static LogInfo          LogCurInfo;
