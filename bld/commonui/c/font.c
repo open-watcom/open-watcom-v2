@@ -95,7 +95,11 @@ static void getCourierFont( HANDLE inst, FONTENUMPROCx fn )
     inst = inst;        /* shut up the compiler for NT */
     hdc = GetDC( (HWND)NULL );
     fp = MakeProcInstance( (FARPROCx)fn, inst );
+#if defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
+    EnumFonts( hdc, NULL, (OLDFONTENUMPROC)fp, 0 );
+#else
     EnumFonts( hdc, NULL, (FONTENUMPROC)fp, 0 );
+#endif
     FreeProcInstance( fp );
     ReleaseDC( (HWND)NULL, hdc );
 

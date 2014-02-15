@@ -183,7 +183,7 @@ typedef LRESULT (CALLBACK *WNDPROCx)(HWND,UINT,WPARAM,LPARAM);
 
 #define DLGPROCx                DLGPROC
 #define FARPROCx                FARPROC
-#define FONTENUMPROCx           FONTENUMPROC
+#define FONTENUMPROCx           OLDFONTENUMPROC
 #define LPOFNHOOKPROCx          LPOFNHOOKPROC
 #define WNDENUMPROCx            WNDENUMPROC
 #define WNDPROCx                WNDPROC

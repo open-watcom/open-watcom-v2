@@ -80,10 +80,6 @@ objs += $($(host_os)dbg)
 extra_cpp_flags_nt  = -DNOUSE3D
 extra_cpp_flags_os2 = -D__OS2_PM__
 
-!ifeq host_os win
-extra_c_flags_font = -DWINVER=0X0300
-!endif
-
 extra_c_flags = -fh
 extra_c_flags_i86 = -zu -zc
 extra_c_flags_win_i86 = -zW
