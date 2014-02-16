@@ -31,6 +31,12 @@
 
 #if !defined( __OS2__ )
 
+#if defined( __WINDOWS_386__ )
+#define GetPtrGlobalLock(data) MK_FP32( GlobalLock( data ) )
+#else
+#define GetPtrGlobalLock(data) GlobalLock( data )
+#endif
+
 typedef GLOBALHANDLE    TEMPLATE_HANDLE;
 
 #if defined(__NT__) && !defined( TWIN )
@@ -39,9 +45,6 @@ typedef GLOBALHANDLE    TEMPLATE_HANDLE;
 #define ADJUST_BLOCKLEN( a )    a = (((a)+3) & ~3)
 #define ROUND_CLASSLEN( a )     (((a)+1) & ~1)
 #define _FARmemcpy              memcpy
-#ifndef MK_FP32
-#define MK_FP32( a )            a
-#endif
 #define _ISFAR
 //#define SLEN( a )               (strlen((a))*2+2)
 // fixed to handle DBCS strings properly - rnk 3/1/96
@@ -122,7 +125,7 @@ extern TEMPLATE_HANDLE AddControl    ( TEMPLATE_HANDLE data, int dtilx,
                                        int id, long style, char *class,
                                        char *text, BYTE infolen,
                                        char *infodata );
-INT_PTR DynamicDialogBox             ( DLGPROCx fn, HANDLE inst, HWND hwnd,
-                                       TEMPLATE_HANDLE data, LONG lparam );
+INT_PTR DynamicDialogBox             ( DLGPROCx fn, HINSTANCE inst, HWND hwnd,
+                                       TEMPLATE_HANDLE data, LPARAM lparam );
 
 #endif

@@ -34,6 +34,7 @@
 #include "wpi.h"
 #include "mem.h"
 #include "pushwin.h"
+#include "wprocmap.h"
 
 #define WPI_GET_WNDINFO( w )    ((PushWinInfo *)_wpi_getwindowlongptr( w, 0 ))
 #define WPI_SET_WNDINFO( w, d ) (_wpi_setwindowlongptr( w, 0, d ))
@@ -79,12 +80,15 @@ WINEXPORT LRESULT CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
 } /* PushWinProc */
 
-static BOOL _RegPushWin( HANDLE instance, WNDPROCx fn )
+/*
+ * RegPushWin - register the push window class
+ */
+BOOL RegPushWin( HANDLE instance )
 {
     WNDCLASS    wc;
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (WNDPROC)fn;
+    wc.lpfnWndProc = GetWndProc( PushWinProc );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;
@@ -98,15 +102,7 @@ static BOOL _RegPushWin( HANDLE instance, WNDPROCx fn )
     }
     return( TRUE );
 
-} /* _RegPushWin */
-
-/*
- * RegPushWin - register the push window class
- */
-BOOL RegPushWin( HANDLE instance )
-{
-    return( _RegPushWin( instance, PushWinProc ) );
-}
+} /* RegPushWin */
 
 /*
  * CreatePushWin - create a push window

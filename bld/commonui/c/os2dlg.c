@@ -287,8 +287,7 @@ TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE data )
 /*
  * PMDynamicDialogBox - create a dynamic dialog box
  */
-int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data,
-                        PVOID dlgdata )
+int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data, PVOID dlgdata )
 {
     long rc;
     HWND handle;

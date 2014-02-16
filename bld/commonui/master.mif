@@ -26,7 +26,7 @@ msgfiles = &
         ../res/memwnd.msg &
         ../res/savelbox.msg
 
-#                     nt win os2 windbg
+#                     nt win os2 win...
 #======================================
 !inject about.obj     nt win
 !inject alias.obj     nt win
@@ -67,11 +67,12 @@ msgfiles = &
 !inject windlg.obj    nt win             # shared with gui project
 !inject wmdisim.obj   nt win os2         # shared with gui project
 !inject wwinhelp.obj  nt win             # shared with gui project
+!inject wprocmap.obj             win386
 
 !ifeq name windbg
 objs = $(windbg)
 !else 
-objs = $($(host_os))
+objs = $($(host_os)) $($(host_os)$(host_cpu))
 !ifeq host_cpu i86
 objs += $($(host_os)dbg)
 !endif

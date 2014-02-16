@@ -41,6 +41,8 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
+#include "wprocmap.h"
+
 #if defined( __WATCOMC__ ) && defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
     #pragma library( "toolhelp.lib" )   /* For SystemHeapInfo */
 #endif
@@ -166,20 +168,15 @@ WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 } /* AboutProc */
 
-static void _DoAbout( LPABOUTINFO ai, DLGPROCx fn )
-{
-    FARPROC fp;
-
-    fp = MakeProcInstance( (FARPROCx)fn, ai->inst );
-    DialogBoxParam( ai->inst, "About", ai->owner, (DLGPROC)fp, (LPARAM)ai );
-    FreeProcInstance( fp );
-}
-
 /*
  * DoAbout - show the startup dialog
  */
 void DoAbout( LPABOUTINFO ai )
 {
-    _DoAbout( ai, AboutProc );
+    FARPROC     proc;
+
+    proc = MakeDlgProcInstance( AboutProc, ai->inst );
+    DialogBoxParam( ai->inst, "About", ai->owner, (DLGPROC)proc, (LPARAM)ai );
+    FreeProcInstance( proc );
 
 } /* DoAbout */

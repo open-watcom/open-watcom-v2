@@ -42,6 +42,7 @@
 #include "wi163264.h"
 #include "ldstr.h"
 #include "uistr.gh"
+#include "wprocmap.h"
 
 #define CONST_LEN       15
 
@@ -307,13 +308,16 @@ WINEXPORT INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
     return( TRUE );
 }
 
-static void _Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title, DLGPROCx fn )
+/*
+ * Query4Aliases - display the alias list dialog box
+ */
+void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
 {
     FARPROC     fp;
     INT_PTR     ret;
 
     CurHdl = hdl;
-    fp = MakeProcInstance( (FARPROCx)fn, instance );
+    fp = MakeDlgProcInstance( AliasDlgProc, instance );
     for( ;; ) {
         ret = DialogBoxParam( instance, "ALIAS_DLG", hwnd, (DLGPROC)fp, (LPARAM)title );
         if( ret != ALIAS_DO_MORE ) {
@@ -322,15 +326,8 @@ static void _Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *titl
     }
     FreeProcInstance( fp );
     CurHdl = NULL;
-}
 
-/*
- * Query4Aliases - display the alias list dialog box
- */
-void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
-{
-    _Query4Aliases( hdl, instance, hwnd, title, AliasDlgProc );
-}
+} /* Query4Aliases */
 
 /*
  * EnumAliases - enumerate all aliases in a given alias list

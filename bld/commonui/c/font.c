@@ -34,6 +34,7 @@
 #include <string.h>
 #include "font.h"
 #include "wi163264.h"
+#include "wprocmap.h"
 
 #define MAX_STR 256
 
@@ -97,16 +98,16 @@ WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRI
 /*
  * getCourierFont - find a mono font
  */
-static void getCourierFont( HANDLE inst, FONTENUMPROCx fn )
+static void getCourierFont( HANDLE inst )
 {
     LOGFONT     logfont;
     FARPROC     fp;
     HDC         hdc;
 
     inst = inst;        /* shut up the compiler for NT */
-    hdc = GetDC( (HWND)NULL );
-    fp = MakeProcInstance( (FARPROCx)fn, inst );
-#if defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
+    hdc = GetDC( HWND_DESKTOP );
+    fp = MakeFontEnumProcInstance( EnumFontsEnumFunc, inst );
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     EnumFonts( hdc, NULL, (OLDFONTENUMPROC)fp, 0 );
 #else
     EnumFonts( hdc, NULL, (FONTENUMPROC)fp, 0 );
@@ -176,7 +177,7 @@ void InitMonoFont( char *app, char *inifile, int default_font, HANDLE inst )
             }
         }
     }
-    getCourierFont( inst, EnumFontsEnumFunc );
+    getCourierFont( inst );
     if( need_stock ) {
 #if defined( __NT__ )
         fixedFont = courierFont;

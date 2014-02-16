@@ -54,6 +54,7 @@
 #include "wpi.h"
 #include "ldstr.h"
 #include "uistr.gh"
+#include "wprocmap.h"
 
 #define ISCODE( x )     ((x)->disp_type == MEMINFO_CODE_16 || \
                         (x)->disp_type == MEMINFO_CODE_32)
@@ -94,7 +95,7 @@ static DWORD Disp_Types[] = {
 WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND, UINT, WPARAM, LPARAM );
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info );
-static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info, DLGPROCx fn );
+static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info );
 static void positionSegInfo( HWND hwnd );
 static BOOL genLine( char digits, DWORD limit, WORD type, WORD sel, char *buf, DWORD offset );
 
@@ -303,12 +304,16 @@ static void MemSave( MemWndInfo *info, HWND hwnd, BOOL gen_name )
 
 } /* MemSave */
 
-BOOL _RegMemWndClass( HANDLE instance, WNDPROCx fn )
+/*
+ * RegMemWndClass - must be called by the first instance of a using
+ *                  program to register window classes
+ */
+BOOL RegMemWndClass( HANDLE instance )
 {
     WNDCLASS    wc;
 
     wc.style = 0L;
-    wc.lpfnWndProc = (WNDPROC)fn;
+    wc.lpfnWndProc = (WNDPROC)MemDisplayProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;
@@ -319,16 +324,7 @@ BOOL _RegMemWndClass( HANDLE instance, WNDPROCx fn )
     wc.lpszClassName = MEM_DISPLAY_CLASS;
     return( RegisterClass( &wc ) );
 
-} /* _RegMemWndClass */
-
-/*
- * RegMemWndClass - must be called by the first instance of a using
- *                  program to register window classes
- */
-BOOL RegMemWndClass( HANDLE instance )
-{
-    return( _RegMemWndClass( instance, MemDisplayProc ) );
-}
+} /* RegMemWndClass */
 
 /*
  * SetMemWndConfig - set memory display window configuration info
@@ -898,17 +894,6 @@ WINEXPORT INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 } /* OffsetProc */
 
 
-static void displayOffsetDialogBox( HWND hwnd, DLGPROCx fn )
-{
-    HANDLE  inst;
-    FARPROC fp;
-
-    inst = GET_HINSTANCE( hwnd );
-    fp = MakeProcInstance( (FARPROCx)fn, inst );
-    DialogBox( inst, "OFFSETDLG", hwnd, (DLGPROC)fp );
-    FreeProcInstance( fp );
-}
-
 /*
  * MemDisplayProc
  */
@@ -923,6 +908,7 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
     BOOL                state;
     DWORD               size;
     HBRUSH              wbrush;
+    FARPROC             fp;
     WORD                cmd;
 
     info = WPI_GET_WNDINFO( hwnd );
@@ -954,7 +940,7 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
         ShowWindow( info->scrlbar, SW_HIDE );
         SetScrollRange( info->scrlbar, SB_CTL, 0, SCROLL_RANGE, FALSE );
         if( MemConfigInfo.disp_info ) {
-            displaySegInfo( hwnd, inst, info, SegInfoProc );
+            displaySegInfo( hwnd, inst, info );
         }
         break;
     case WM_SIZE:
@@ -1035,7 +1021,7 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
             break;
         case MEMINFO_SHOW:
             inst = GET_HINSTANCE( hwnd );
-            displaySegInfo( hwnd, inst, info, SegInfoProc );
+            displaySegInfo( hwnd, inst, info );
             break;
         case MEMINFO_AUTO_POS:
             menu = GetMenu( hwnd );
@@ -1079,7 +1065,10 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
             resizeMemBox( hwnd, size, info );
             break;
         case MEMINFO_OFFSET:
-            displayOffsetDialogBox( hwnd, OffsetProc );
+            inst = GET_HINSTANCE( hwnd );
+            fp = MakeDlgProcInstance( OffsetProc, inst );
+            DialogBox( inst, "OFFSETDLG", hwnd, (DLGPROC)fp );
+            FreeProcInstance( fp );
             break;
         }
         break;
@@ -1212,13 +1201,12 @@ WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 /*
  * displaySegInfo
  */
-static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info, DLGPROCx fn )
+static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
 {
 #ifdef __NT__
     parent = parent;
     instance = instance;
     info = info;
-    fn = fn;
 #else
     GLOBALENTRY         ge;
     descriptor          desc;
@@ -1231,7 +1219,7 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info, DLGP
     mh = GetMenu( parent );
     EnableMenuItem( mh, MEMINFO_SHOW, MF_GRAYED );
     if( DialCount == 0 ) {
-        DialProc = MakeProcInstance( (FARPROCx)fn, instance );
+        DialProc = MakeDlgProcInstance( SegInfoProc, instance );
     }
     DialCount++;
     if( info->isdpmi ) {

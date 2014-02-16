@@ -48,6 +48,3 @@
         #include <commdlg.h>
     #endif
 #endif
-#if !defined( __WINDOWS__ )
-    #define MK_FP32( a )        ( a )
-#endif

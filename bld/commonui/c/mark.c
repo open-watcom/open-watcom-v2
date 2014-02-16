@@ -36,6 +36,7 @@
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
+#include "wprocmap.h"
 
 static void             (*WriteFn)( char * );
 
@@ -106,8 +107,10 @@ WINEXPORT INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
 } /* MarkDlgProc */
 
-
-static void _ProcessMark( HWND owner, HANDLE instance, void (*func)( char * ), DLGPROCx fn )
+/*
+ * ProcessMark - start a mark dialog
+ */
+void ProcessMark( HWND owner, HANDLE instance, void (*func)( char * ) )
 {
     FARPROC             fp;
 
@@ -115,17 +118,9 @@ static void _ProcessMark( HWND owner, HANDLE instance, void (*func)( char * ), D
         return;
     }
     WriteFn = func;
-    fp = MakeProcInstance( (FARPROCx)fn, instance );
+    fp = MakeDlgProcInstance( MarkDlgProc, instance );
     DialogBox( instance, "MARK_DLG", owner, (DLGPROC)fp );
     FreeProcInstance( fp );
     WriteFn = NULL;
 
-} /* _ProcessMark */
-
-/*
- * ProcessMark - start a mark dialog
- */
-void ProcessMark( HWND owner, HANDLE instance, void (*fn)( char * ) )
-{
-    _ProcessMark( owner, instance, fn, MarkDlgProc );
-}
+} /* ProcessMark */

@@ -45,6 +45,7 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
+#include "wprocmap.h"
 
 /*
  * writeListBoxContents
@@ -102,7 +103,11 @@ WINEXPORT UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
 #endif
 
-static BOOL _GetSaveFName( HWND mainhwnd, char *fname, LPOFNHOOKPROCx fn )
+/*
+ * GetSaveFName - let the user select a file name for a save operation
+ *                fname must point to a buffer of length at least _MAX_PATH
+ */
+BOOL GetSaveFName( HWND mainhwnd, char *fname )
 {
     static char         filterList[] = "File (*.*)" \
                                        "\0" \
@@ -124,28 +129,15 @@ static BOOL _GetSaveFName( HWND mainhwnd, char *fname, LPOFNHOOKPROCx fn )
     of.Flags = OFN_HIDEREADONLY;
 #ifndef NOUSE3D
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROCx)fn, GET_HINSTANCE( mainhwnd ) );
+    of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( LBSaveHook, GET_HINSTANCE( mainhwnd ) );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef NOUSE3D
-    FreeProcInstance( (LPVOID)of.lpfnHook );
+    FreeProcInstance( (FARPROC)of.lpfnHook );
 #endif
     return( rc );
 
 } /* GetSaveFName */
-
-/*
- * GetSaveFName - let the user select a file name for a save operation
- *                fname must point to a buffer of length at least _MAX_PATH
- */
-BOOL GetSaveFName( HWND mainhwnd, char *fname )
-{
-#ifndef NOUSE3D
-    return( _GetSaveFName( mainhwnd, fname, LBSaveHook ) );
-#else
-    return( _GetSaveFName( mainhwnd, fname, NULL ) );
-#endif
-}
 
 /*
  * GenTmpFileName - generate a unique file name based on tmpname

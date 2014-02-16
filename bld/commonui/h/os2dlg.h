@@ -36,9 +36,6 @@ extern void * PMrealloc( void * ptr, size_t size );
 
 #define _ISFAR
 #define _FARmemcpy      memcpy
-#ifndef MK_FP32
-    #define MK_FP32( a )        ( a )
-#endif
 #define SLEN( a ) (safeStrLen((a))+0)
 #define ADJUST_ITEMLEN( a )
 #define ADJUST_BLOCKLEN( a )

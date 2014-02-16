@@ -36,6 +36,7 @@
 #include "statwnd.h"
 #include "mem.h"
 #include "loadcc.h"
+#include "wprocmap.h"
 
 /*
  * The window must always be the first member of this structure so that
@@ -321,7 +322,10 @@ WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PA
 
 } /* StatusWndCallback */
 
-static int _StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefaultCursor, WPI_WNDPROCx fn )
+/*
+ * StatusWndInit - initialize for using the status window
+ */
+int StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefaultCursor )
 {
     int         rc;
 #ifdef __OS2_PM__
@@ -341,7 +345,7 @@ static int _StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURS
     rc = TRUE;
     if( !classRegistered ) {
         memcpy( &classHandle, &hinstance, sizeof( WPI_INST ) );
-        rc = WinRegisterClass( hinstance.hab, className, (PFNWP)fn,
+        rc = WinRegisterClass( hinstance.hab, className, (PFNWP)StatusWndCallback,
                                CS_SIZEREDRAW | CS_CLIPSIBLINGS,
                                extra + sizeof( statwnd * ) );
         classWinExtra = extra;
@@ -372,7 +376,7 @@ static int _StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURS
             classHandle = hinstance;
             classWinExtra = extra;
             wc.style = CS_HREDRAW | CS_VREDRAW;
-            wc.lpfnWndProc = (WNDPROC)fn;
+            wc.lpfnWndProc = GetWndProc( StatusWndCallback );
             wc.cbClsExtra = 0;
             wc.cbWndExtra = extra + sizeof( statwnd * );
             wc.hInstance = hinstance;
@@ -393,15 +397,7 @@ static int _StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURS
 #endif
     return( rc );
 
-} /* _StatusWndInit */
-
-/*
- * StatusWndInit - initialize for using the status window
- */
-int StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefaultCursor )
-{
-    return( _StatusWndInit( hinstance, hook, extra, hDefaultCursor, StatusWndCallback ) );
-}
+} /* StatusWndInit */
 
 /*
  * StatusWndStart - start a status window
