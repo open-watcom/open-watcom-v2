@@ -167,7 +167,7 @@
 #ifdef STRICT
 typedef BOOL (CALLBACK *DLGPROCx)(HWND,UINT,WPARAM,LPARAM);
 typedef void (CALLBACK *FARPROCx)(void);
-typedef int (CALLBACK *FONTENUMPROCx)( const LOGFONT FAR *, const TEXTMETRIC FAR *, int, LPARAM );
+typedef int (CALLBACK *FONTENUMPROCx)( const LOGFONT *, const TEXTMETRIC *, int, LPARAM );
 typedef BOOL (CALLBACK *WNDENUMPROCx)( HWND, LPARAM );
 #else
 typedef FARPROC DLGPROCx;
@@ -183,7 +183,7 @@ typedef LRESULT (CALLBACK *WNDPROCx)(HWND,UINT,WPARAM,LPARAM);
 
 #define DLGPROCx                DLGPROC
 #define FARPROCx                FARPROC
-#define FONTENUMPROCx           OLDFONTENUMPROC
+#define FONTENUMPROCx           FONTENUMPROC
 #define LPOFNHOOKPROCx          LPOFNHOOKPROC
 #define WNDENUMPROCx            WNDENUMPROC
 #define WNDPROCx                WNDPROC

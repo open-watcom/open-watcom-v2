@@ -47,13 +47,24 @@ static char     *fontKey = "Font";
 /*
  * EnumFunc - enumerate fonts
  */
-#ifdef __NT__
-int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data )
+#if defined( __WINDOWS_386__ )
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT *_lf, const TEXTMETRIC *tm, int ftype, LPARAM data )
+#elif defined( __WINDOWS__ )
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data )
 #else
-int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, int ftype, LPARAM data )
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data )
 #endif
 {
+#ifdef __WINDOWS_386__
+    const LOGFONT __far    *lf = MK_FP32( (void *)_lf );
     tm = tm;
+#elif defined( __WINDOWS__ )
+    const LOGFONT FAR      *lf = (const LOGFONT FAR *)elf;
+//    const TEXTMETRIC FAR *tm = (const TEXTMETRIC FAR *)ntm;
+    ntm = ntm;
+#else
+    tm = tm;
+#endif
     ftype = ftype;
     data = data;
 
@@ -259,4 +270,3 @@ void AllowVariableFonts( void )
     variableAllowed = TRUE;
 
 } /* AllowVariableFonts */
-
