@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "cover.h"
-#include "wi163264.h"
+#include "wclbproc.h"
 
 #define MAX_CB_PARMS            50
 #define MAX_CB_JUMPTABLE        512

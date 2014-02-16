@@ -31,6 +31,8 @@
 
 #ifndef __OS2__
 
+#include "wclbproc.h"
+
 #ifdef __NT__
 
 #define ADJUST_ITEMLEN( a )     a = (((a)+7) & ~7)
