@@ -600,7 +600,7 @@ void _CopyAllLines( LPWDATA w )
         _ReleaseWinLines();
         return;
     }
-    ptr = MK_FP32( GlobalLock( data ) );
+    ptr = GetPtrGlobalLock( data );
 
     /*
      * copy data into block

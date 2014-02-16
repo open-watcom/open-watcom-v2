@@ -52,6 +52,11 @@ extern  unsigned        __WinSetWindowPos(unsigned);
 #define _MBCS
 #include "mbdefwin.h"
 
+#if defined( __WINDOWS_386__ )
+#define GetPtrGlobalLock(data) MK_FP32( GlobalLock( data ) )
+#else
+#define GetPtrGlobalLock(data) GlobalLock( data )
+#endif
 
 #if defined(__NT__) && defined(__SW_BM)
 extern void _AccessWinLines( void );
@@ -72,7 +77,6 @@ extern void _ReleaseWinLines( void );
   #define FARrealloc realloc
   #define FARfree free
   #ifdef __NT__
-    #define MK_FP32( a ) a
     #define AllocAlias16( a ) a
     #define FreeAlias16( a )
   #endif

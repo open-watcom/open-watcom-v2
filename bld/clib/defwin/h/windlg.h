@@ -37,7 +37,6 @@
 #define ADJUST_BLOCKLEN( a )    a = (((a)+3) & ~3)
 #define ROUND_CLASSLEN( a )     (((a)+1) & ~1)
 #define _FARmemcpy              memcpy
-#define MK_FP32( a )            a
 #define _ISFAR
 #define SLEN( a )               (strlen((a))*2+2)
 typedef WORD INFOTYPE;

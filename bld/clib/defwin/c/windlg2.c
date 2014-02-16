@@ -80,22 +80,21 @@ GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     classlen = SLEN( classname );
     captionlen = SLEN( captiontext );
 
-    blocklen = sizeof( UINT ) + sizeof( _DLGTEMPLATE ) + menulen + classlen +
-              captionlen;
+    blocklen = sizeof( UINT ) + sizeof( _DLGTEMPLATE ) + menulen + classlen + captionlen;
     ADJUST_BLOCKLEN( blocklen );
 
     if( dtStyle & DS_SETFONT ) {
-      typefacelen = SLEN( typeface );
-      blocklen += sizeof(short) + typefacelen;
+        typefacelen = SLEN( typeface );
+        blocklen += sizeof(short) + typefacelen;
     } else {
-      typefacelen = 0;
+        typefacelen = 0;
     }
 
     data = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
     if( data == NULL ) return( (GLOBALHANDLE)NULL );
 
-    numbytes = (UINT _ISFAR *) MK_FP32( GlobalLock( data ) );
-    *numbytes = (UINT) blocklen;
+    numbytes = GetPtrGlobalLock( data );
+    *numbytes = (UINT)blocklen;
 
     /*
      * set up template
@@ -123,10 +122,10 @@ GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
      * add font data (if needed)
      */
     if (dtStyle & DS_SETFONT) {
-      fi = (FONTINFO _ISFAR *) dlgtemp;
-      fi->PointSize = pointsize;
-      dlgtypeface = (char _ISFAR *) (fi + 1);
-      copyString( dlgtypeface, typeface, typefacelen );
+        fi = (FONTINFO _ISFAR *) dlgtemp;
+        fi->PointSize = pointsize;
+        dlgtypeface = (char _ISFAR *) (fi + 1);
+        copyString( dlgtypeface, typeface, typefacelen );
     }
 
     GlobalUnlock( data );
@@ -175,22 +174,21 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
 #endif
     textlen  = SLEN( text );
 
-    blocklen = sizeof( _DLGITEMTEMPLATE ) + classlen + textlen +
-               sizeof( INFOTYPE ) + infolen;
+    blocklen = sizeof( _DLGITEMTEMPLATE ) + classlen + textlen + sizeof( INFOTYPE ) + infolen;
     ADJUST_ITEMLEN( blocklen );
 
-    blocklen += *(UINT _ISFAR *) MK_FP32( GlobalLock( data ) );
+    blocklen += *(UINT _ISFAR *)GetPtrGlobalLock( data );
     GlobalUnlock( data );
 
     new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
     if( new == NULL ) return( (GLOBALHANDLE)NULL );
 
-    numbytes = (UINT _ISFAR *) MK_FP32( GlobalLock( new ) );
+    numbytes = GetPtrGlobalLock( new );
 
     /*
      * one more item...
      */
-    dt = (_DLGTEMPLATE _ISFAR *) (numbytes + 1);
+    dt = (_DLGTEMPLATE _ISFAR *)( numbytes + 1 );
     dt->dtItemCount++;
 
 
@@ -221,7 +219,7 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
     _FARmemcpy( ditstr, infodata, infolen );
     ditstr += infolen;
 
-    *numbytes = (UINT) ( ditstr - (char _ISFAR *) numbytes);
+    *numbytes = (UINT) ( ditstr - (char _ISFAR *)numbytes);
     ADJUST_BLOCKLEN( *numbytes );
 
     GlobalUnlock( new );
@@ -236,7 +234,7 @@ void _DoneAddingControls( GLOBALHANDLE data )
 {
     UINT        _ISFAR *numbytes;
 
-    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
+    numbytes = GetPtrGlobalLock( data );
     _FARmemcpy( numbytes, numbytes + 1, *numbytes - 2 );
     GlobalUnlock( data );
 

@@ -50,7 +50,6 @@
  * minor differences.
  */
 #define _FARmemcpy      memcpy
-#define MK_FP32( a )    a
 #define SLEN( a ) (safeStrLen((a))+0)
 #define ADJUST_ITEMLEN( a )
 #define ADJUST_BLOCKLEN( a )

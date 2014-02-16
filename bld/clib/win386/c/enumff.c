@@ -32,10 +32,7 @@
 
 #include "cover.h"
 
-short PASCAL _Cover_EnumFontFamilies( HDC dc,
-                                      LPSTR family,
-                                      FONTENUMPROC p,
-                                      LPARAM data )
+short PASCAL _Cover_EnumFontFamilies( HDC dc, LPSTR family, FONTENUMPROC p, LPARAM data )
 {
     return( EnumFontFamilies( dc, family, SetProc( (FARPROC)p, GETPROC_ENUMFONTS ), data ) );
 }
