@@ -254,18 +254,10 @@ $(os2_yacc_file).c : ../y/rcos2.y ../y/yydrivr2.c
         $(yacc) $(os2_yacc_options) $< >$(nulldevice)
 
 keywordw.gh : ../hash/rcwin.key
-        findhash -q -m $<
-        @cat keywords.gh >keywordw.gh
-        @rm -f keywords.gh
-        @cat weights.gh >weightsw.gh
-        @rm -f weights.gh
+        findhash -q -s w -m $<
 
 keyword2.gh : ../hash/rcos2.key
-        findhash -q -m $<
-        @cat keywords.gh >keyword2.gh
-        @rm -f keywords.gh
-        @cat weights.gh >weights2.gh
-        @rm -f weights.gh
+        findhash -q -s 2 -m $<
 
 incltext.gh : ../h/incltext.h ../h/rc.msg
         $(cpp) $(rc_aui_flags) -I.. $(rc_defines) $[@ >$^@

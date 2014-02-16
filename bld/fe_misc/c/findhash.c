@@ -165,6 +165,8 @@ struct {
 FILE *outfile;
 
 char *pick_extension = NULL;
+char *filename_suffix = NULL;
+char filename_buffer[12];
 
 void error( char *msg )
 /*********************/
@@ -363,6 +365,11 @@ void init_tokens( char **input_file )
             }
             if( tolower( check[1] ) == 'm' && check[2] == '\0' ) {
                 flags.mask_hash = TRUE;
+                continue;
+            }
+            if( tolower( check[1] ) == 's' && check[2] == '\0' ) {
+                ++input_file;
+                filename_suffix = strdup( *input_file );
                 continue;
             }
             if( tolower( check[1] ) == 't' && check[2] == '\0' ) {
@@ -859,6 +866,30 @@ void dump_common_defs( unsigned first_index, unsigned last_index )
     fprintf( outfile, "#define LEN_MASK      0x%lx\n", len_mask );
 }
 
+char *get_gh_filename( const char *name )
+/***************************************/
+{
+    size_t  len1 = strlen( name );
+    if( len1 > 8 ) {
+        len1 = 8;
+    }
+    memcpy( filename_buffer, name, len1 );
+    filename_buffer[len1] = '\0';
+    if( filename_suffix != NULL ) {
+        size_t  len2 = strlen( filename_suffix );
+        if( len2 > 7 ) {
+            len2 = 7;
+        }
+        if( 8 - len2 < len1 ) {
+            len1 = 8 - len2;
+        }
+        memcpy( filename_buffer + len1, filename_suffix, len2 );
+        filename_buffer[len1 + len2] = '\0';
+    }
+    strcat( filename_buffer, ".gh" );
+    return( filename_buffer );
+}
+
 void dump_weights( unsigned first_index, unsigned last_index )
 /************************************************************/
 {
@@ -869,7 +900,7 @@ void dump_weights( unsigned first_index, unsigned last_index )
     keyword_t i;
     unsigned h;
 
-    outfile = fopen( "weights.gh", "w" );
+    outfile = fopen( get_gh_filename( "weights" ), "w" );
     dump_common_defs( first_index, last_index );
     bad_mask_hash = 0;
     for( mask = 1; mask != 0; mask <<= 1 ) {
@@ -999,7 +1030,7 @@ void dump_hash( void )
     unsigned k;
 
     init_ordered();
-    outfile = fopen( "keywords.gh", "w" );
+    outfile = fopen( get_gh_filename( "keywords" ), "w" );
     extra = 0;
     for( i = 1; i <= hashsize; ++i ) {
         ord = ordered[i];
@@ -1055,7 +1086,7 @@ void dump_tiny( unsigned first_index, unsigned last_index )
         }
     }
     assert( min_char != INT_MAX );
-    outfile = fopen( "tiny.gh", "w" );
+    outfile = fopen( get_gh_filename( "tiny" ), "w" );
     dump_common_defs( first_index, last_index );
     fprintf( outfile, "#define TINY_MIN_CHAR '%c'\n", min_char );
     fprintf( outfile, "static unsigned char TINY_WEIGHTS[%u] = {\n",
@@ -1138,12 +1169,13 @@ int main( int argc, char **argv )
 /*******************************/
 {
     if( argc == 1 ) {
-        error( "usage: findhash [-a] [-q] [-i] [-m] [-t] [-e \"text\"] <keyword_file> ..." );
+        error( "usage: findhash [-a] [-q] [-i] [-m] [-t] [-e \"text\"] [-s \"name suffix\"] <keyword_file> ..." );
         error( "-a: output aligned strings" );
         error( "-e \"text\": pick macro extension text" );
         error( "-i: allow imperfect hash functions" );
         error( "-m: force 2^n mask hash function" );
         error( "-q: quiet mode" );
+        error( "-s \"suffix\": file name suffix" );
         error( "-t: tiny mode: generate tiny.gh" );
         fatal( "" );
     }
