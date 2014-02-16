@@ -105,25 +105,29 @@ os2.lib: lib286.lbc msgseg.obj
         $(librarian) $(libflags) @$[@ +$]@
 
 lib286.lbc: $(components286)
-        cat $< > $@
+        %create $@
+        @for %l in ($<) do @%append $@ @%l
 
 os2386.lib: lib386.lbc msgseg32.obj
         $(librarian) $(libflags) @$[@ +$]@
 
 lib386.lbc: $(components386)
-        cat $< > $@
+        %create $@
+        @for %l in ($<) do @%append $@ @%l
 
 rexx.lib: rexxall.lbc
         $(librarian) $(libflags) @$<
 
 rexxall.lbc: $(componentsrexx)
-        cat $< > $@
+        %create $@
+        @for %l in ($<) do @%append $@ @%l
 
 mmpm2.lib: mmpm2all.lbc
         $(librarian) $(libflags) @$<
 
 mmpm2all.lbc: $(componentsmmpm2)
-        cat $< > $@
+        %create $@
+        @for %l in ($<) do @%append $@ @%l
 
 libuls.lib: libuni.lbc
         $(librarian) $(libflags) @$<
