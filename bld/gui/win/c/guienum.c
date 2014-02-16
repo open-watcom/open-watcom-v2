@@ -37,6 +37,7 @@
     // WindU stuff
     #include <windef.h>
 #endif
+#include "wprocmap.h"
 
 #define CLASS_LENGTH    8
 

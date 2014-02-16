@@ -35,6 +35,7 @@
 #include "guicombo.h"
 #include "guicontr.h"
 #include "guixhook.h"
+#include "wprocmap.h"
 
 extern  controls_struct GUIControls[];
 extern  WPI_INST        GUIMainHInst;

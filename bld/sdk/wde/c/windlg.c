@@ -37,6 +37,12 @@
     #define MB_ERR_INVALID_CHARS 0x00000000
 #endif
 
+#ifdef __WINDOWS_386__
+#define GetPtrGlobalLock(data)   MK_FP32( GlobalLock( data ) )
+#else
+#define GetPtrGlobalLock(data)   GlobalLock( data )
+#endif
+
 /*
  * stringLength - get length of string
  */
@@ -150,7 +156,7 @@ GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
         return( NULL );
     }
 
-    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
+    numbytes = GetPtrGlobalLock( data );
     *numbytes = (UINT)blocklen;
 
     /*
@@ -260,7 +266,7 @@ GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily,
                sizeof( INFOTYPE ) + infolen;
     ADJUST_ITEMLEN( blocklen );
 
-    blocklen += *(UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
+    blocklen += *(UINT _ISFAR *)GetPtrGlobalLock( data );
     GlobalUnlock( data );
 
     new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
@@ -268,7 +274,7 @@ GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily,
         return( NULL );
     }
 
-    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( new ) );
+    numbytes = GetPtrGlobalLock( new );
 
     /*
      * one more item...
@@ -331,7 +337,7 @@ void DoneAddingControls( GLOBALHANDLE data )
 {
     UINT        _ISFAR *numbytes;
 
-    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
+    numbytes = GetPtrGlobalLock( data );
     _FARmemcpy( numbytes, numbytes + 1, *numbytes - sizeof( UINT ) );
     GlobalUnlock( data );
 

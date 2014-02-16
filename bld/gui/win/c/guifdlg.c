@@ -63,6 +63,7 @@
 #include "guistr.h"
 #include "guixhook.h"
 #include "clibext.h"
+#include "wprocmap.h"
 
 extern  WPI_INST        GUIMainHInst;
 

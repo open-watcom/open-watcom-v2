@@ -31,6 +31,8 @@
 
 #if !defined( __OS2__ )
 
+#include "wprocmap.h"
+
 typedef GLOBALHANDLE    TEMPLATE_HANDLE;
 
 #if defined(__NT__) && !defined( TWIN )

@@ -38,6 +38,12 @@
     #define MB_ERR_INVALID_CHARS 0x00000000
 #endif
 
+#ifdef __WINDOWS_386__
+#define GetPtrGlobalLock(data)   MK_FP32( GlobalLock( data ) )
+#else
+#define GetPtrGlobalLock(data)   GlobalLock( data )
+#endif
+
 /*
  * stringLength - get length of string
  */
@@ -151,7 +157,7 @@ GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID,
         return( NULL );
     }
 
-    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
+    numbytes = GetPtrGlobalLock( data );
     *numbytes = (UINT)blocklen;
 
     /*
@@ -265,11 +271,10 @@ GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily,
 
     textlen = stringLength( text );
 
-    blocklen = sizeof( _DLGEXITEMTEMPLATE ) + classlen + textlen +
-               sizeof( INFOTYPE ) + infolen;
+    blocklen = sizeof( _DLGEXITEMTEMPLATE ) + classlen + textlen + sizeof( INFOTYPE ) + infolen;
     ADJUST_ITEMLEN_DWORD( blocklen );
 
-    blocklen += *(UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
+    blocklen += *(UINT _ISFAR *)GetPtrGlobalLock( data );
     GlobalUnlock( data );
 
     new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
@@ -277,7 +282,7 @@ GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily,
         return( NULL );
     }
 
-    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( new ) );
+    numbytes = GetPtrGlobalLock( new );
 
     /*
      * one more item...
