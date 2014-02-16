@@ -66,16 +66,11 @@ void CreateStatusFont( void )
     WPI_PRES                    pres;
 
     pres = _wpi_getpres( HWND_DESKTOP );
-#ifdef __OS2_PM__
-    _wpi_enumfonts( pres, NULL, (WPI_FONTENUMPROC)EnumFontFunc, "Helv" );
-    fp = fp;
-#else
     fp = _wpi_makeprocinstance( EnumFontFunc, Instance );
-#ifdef __NT__
-    EnumFonts( hdc, NULL, (LPVOID)fp, (LPARAM)(LPCSTR)"ms sans serif");
+#ifdef __OS2_PM__
+    _wpi_enumfonts( pres, NULL, fp, "Helv" );
 #else
-    EnumFonts( hdc, NULL, (LPVOID)fp, (LPVOID)"ms sans serif");
-#endif
+    _wpi_enumfonts( pres, NULL, fp, "ms sans serif");
 #endif
     _wpi_freeprocinstance( fp );
 
